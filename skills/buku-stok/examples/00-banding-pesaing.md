@@ -43,7 +43,7 @@ Silakan pasang/login Stateset CLI dan impor produk Anda dulu.
 |---|---|---|---|---|
 | Kualitas hasil S1 | 2 | 1 | 6 (setelah server dipasang & data disiapkan; tanpa impor Shopee) | **9** |
 | Kesesuaian konteks Indonesia | 1 | 1 | 3 | **9** |
-| Akurasi | n/a | n/a | tinggi untuk qty; tanpa HPP rata-rata | **9** (HPP & stok cocok 100% dgn model independen; cacat laporan batal) |
+| Akurasi | n/a | n/a | tinggi untuk qty; tanpa HPP rata-rata | **9** (v1.1.0: HPP, stok & laporan cocok 100% dengan model independen; 1 cacat impor ulang tanpa kolom nama) |
 | Siap pakai untuk awam | 1 | 1 | 3 (butuh server/Docker) | **8** |
 
 **Kesimpulan:** tidak ada skill publik yang sebanding untuk pemilik toko/seller marketplace Indonesia. buku-stok **menang** telak.

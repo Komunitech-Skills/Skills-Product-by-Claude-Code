@@ -40,4 +40,5 @@ Harga beli terakhir juga diperbarui menjadi Rp 34.000.
 - Verifikasi independen: (24 × 35.000 + 50 × (34.000 + 25.000/50)) ÷ 74 = 2.565.000 ÷ 74 = 34.662,16 → tampil Rp 34.662. Benar.
 - Verifikasi massal: 3 × 400 transaksi acak (masuk tunggal & nota multi-item dengan biaya tambahan dibagi sesuai nilai, keluar, opname, penolakan stok kurang) dibandingkan dengan model HPP rata-rata tertimbang yang ditulis penguji sendiri → selisih HPP 0, stok 0, nilai persediaan sama persis (mis. Rp 79.355.691), stok produk = Σ mutasi, dan kolom `stok_sesudah` tiap mutasi = saldo kumulatif.
 - Bagus: agent mencocokkan "item" = hitam lewat `produk cari`, dan tetap menyebut SKU yang dipakai sebelum menyimpan.
-- Catatan kecil: teks "Total nilai masuk Rp 1.725.000" belum memasukkan ongkir Rp 25.000 (padahal HPP sudah); agent sebaiknya menyebut keduanya seperti di atas.
+- Koreksi penguji: "Total nilai masuk Rp 1.725.000" **sudah termasuk** ongkir (50 × Rp 34.500 = 50 × Rp 34.000 + Rp 25.000). Catatan di laporan uji v1.0.0 yang menyebut sebaliknya keliru.
+- Uji ulang v1.1.0: output identik (stok 24 → 74, HPP Rp 34.662).

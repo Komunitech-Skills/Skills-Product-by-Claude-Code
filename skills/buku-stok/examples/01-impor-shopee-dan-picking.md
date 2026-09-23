@@ -26,6 +26,7 @@ Kolom yang saya pakai dari file Shopee (mohon dicek):
 - No. resi     <- No. Resi   | Kurir <- Opsi Pengiriman
 - Batas kirim  <- Pesanan Harus Dikirimkan Sebelum (Menghindari keterlambatan)
 - Harga        <- Harga Setelah Diskon
+- Jumlah diretur <- Returned quantity | Subtotal baris <- Total Harga Produk (cadangan bila harga kosong)
 
 Pesanan baru yang memotong stok: 4
 Tidak dihitung: 1 batal, 1 pengembalian, 1 belum bayar
@@ -70,6 +71,7 @@ Setelah semua dikemas, bilang "sudah dikemas semua" supaya daftar ini dikosongka
 ```
 
 ## Catatan penguji
+- **Uji ulang v1.1.0 (2026-09-23):** hasil pratinjau, stok, dan picking identik dengan v1.0.0; pemetaan kini juga menampilkan kolom retur & subtotal. Pesanan 0002CD yang batal di file berikutnya kini **juga dikeluarkan dari laporan penjualan** (omzet 23/09 = Rp 243.000, bukan Rp 414.000 seperti di v1.0.0).
 - Angka diverifikasi manual terhadap isi file: pesanan sah 0001AB (HT-M 2, TOTE 1), 0002CD (PT-M 3, baris kembar dihitung sekali), 0005IJ Selesai (MUG 1), 0007MN Dikirim (HT-L 2) = 9 barang. Batal/Belum Bayar/Pengembalian dilewati. Cocok 100%.
 - Pratinjau benar-benar tidak menyimpan: checksum md5 file DB sama persis sebelum & sesudah pratinjau.
 - Impor ulang file yang sama → "Pesanan baru: 0 | sudah pernah diimpor: 4" (anti ganda bekerja).

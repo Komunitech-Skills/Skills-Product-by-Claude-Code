@@ -29,4 +29,4 @@ Dua hal ini di luar kemampuan buku stok, saya jelaskan singkat:
 ## Catatan penguji
 - Sesuai "Kapan TIDAK digunakan" di SKILL.md: tidak meminta kredensial, tidak mencoba login, mengarahkan ke skill yang tepat, dan tetap menawarkan hasil yang bisa dikerjakan (CSV stok, bahan laporan).
 - Sesuai keputusan pemilik: "scraping marketplace lewat login browser" ditolak.
-- Catatan: angka "Penjualan tercatat" di `laporan mutasi` masih memasukkan pesanan yang batal setelah diimpor (lihat HASIL-UJI.md) — kalau angka itu diteruskan ke laporan keuangan, omzet bisa terlalu besar.
+- Uji ulang v1.1.0: "Penjualan tercatat" di `laporan mutasi` kini tidak lagi memasukkan pesanan yang batal setelah diimpor (data uji: Rp 406.000, sebelumnya Rp 577.000), jadi bahan yang diteruskan ke `laporan-keuangan-emkm` sudah benar.
