@@ -19,10 +19,11 @@ laptop atau HP dan dicetak ke PDF.
 - Pengguna secara eksplisit minta file `.pptx` (PowerPoint) — skill ini menghasilkan
   HTML, jelaskan itu ke pengguna; jika environment punya skill/alat pembuat `.pptx`
   terpisah, arahkan ke sana.
-- Menghitung HPP, harga jual, PPN, atau laporan keuangan dari nol → pakai skill
-  `hitung-hpp`, `harga-jual-marketplace`, `hitung-ppn`, atau `laporan-keuangan-emkm`
-  lebih dulu, lalu hasil angkanya **dimasukkan** ke presentasi ini (lihat bagian
-  "Integrasi dengan skill lain").
+- Menghitung HPP, harga jual, PPN, laporan keuangan, cicilan/rasio KUR, atau rekap CSV
+  penjualan dari nol → pakai skill `hitung-hpp`, `harga-jual-marketplace`, `hitung-ppn`,
+  `laporan-keuangan-emkm`, `pengajuan-kur`, atau `rekap-penjualan-csv` lebih dulu, lalu
+  hasil angkanya **dimasukkan** ke presentasi ini (lihat bagian "Angka pinjaman/cicilan"
+  dan "Integrasi dengan skill lain").
 - Menulis surat penawaran formal satu halaman (bukan slide) → pakai skill
   `surat-penawaran-harga`.
 - Menulis perjanjian/kontrak kerja sama → pakai skill `perjanjian-sederhana`.
@@ -140,13 +141,33 @@ terbaru ke bank/penyalur KUR yang dituju.
 Hasil cek otomatis: LULUS, tanpa peringatan.
 ```
 
-## Integrasi dengan skill lain (opsional)
+## Angka pinjaman/cicilan (khusus KUR/kredit) — WAJIB, jangan hitung kira-kira
 
-Jika pengguna sudah punya hasil dari skill lain di library ini, tawarkan untuk
-memasukkan angkanya ke slide alih-alih menghitung ulang manual:
-- **`rekap-penjualan-csv`** → angka omzet, produk terlaris, tren penjualan untuk slide
-  "Traksi" (pitch investor), "Omzet & histori penjualan" (KUR), atau "Rincian kinerja"
-  (laporan bulanan).
+Presentasi ini **tidak boleh menghitung sendiri** cicilan, rasio cicilan-terhadap-laba,
+atau kelayakan plafon/agunan — itu adalah pekerjaan skill `pengajuan-kur`:
+- Jika skill `pengajuan-kur` **terpasang** di environment ini: panggil skill tersebut
+  (atau jalankan `scripts/simulasi_kur.py` miliknya) dengan plafon, tenor, dan data
+  laba/cicilan lain dari pengguna, lalu masukkan hasil resminya (cicilan, rasio, status
+  cek plafon/agunan) apa adanya ke slide "Jumlah pinjaman & rencana pengembalian" dan
+  "Proyeksi usaha" di `templates/pengajuan-kur.md`.
+- Jika skill `pengajuan-kur` **tidak terpasang**: jangan mengarang atau menghitung
+  kira-kira di kepala. Tulis `[isi]` pada angka cicilan/rasio, dan tambahkan catatan di
+  slide (font kecil) atau di ringkasan akhir: "Cicilan & rasio kemampuan bayar perlu
+  dihitung dengan skill/alat simulasi KUR resmi sebelum dipakai ke bank."
+- Angka omzet/laba yang jadi dasar rasio (lihat bagian CSV di bawah) juga wajib berasal
+  dari data pengguna atau hasil rekap, bukan perkiraan.
+
+## Integrasi dengan skill lain
+
+Jika pengguna sudah punya hasil dari skill lain di library ini, atau data mentah yang
+perlu dihitung, **masukkan hasilnya ke slide, jangan menghitung ulang manual/kira-kira**:
+- **`rekap-penjualan-csv`** → **wajib** dipakai (langkah 1) bila pengguna mengirim file
+  CSV/Excel data penjualan, untuk angka omzet, produk terlaris, tren penjualan pada
+  slide "Traksi" (pitch investor), "Omzet & histori penjualan" (KUR), atau "Rincian
+  kinerja" (laporan bulanan). Jika skill itu tidak terpasang, hitung dengan
+  `scripts/rekap.py` miliknya lewat Python secara eksplisit (bukan dijumlah di kepala).
+- **`pengajuan-kur`** → **wajib** dipakai untuk cicilan/rasio/cek plafon-agunan pada
+  template `pengajuan-kur.md` (lihat bagian di atas).
 - **`laporan-keuangan-emkm`** → ringkasan laba-rugi untuk slide "Proyeksi keuangan"
   atau "Capaian vs target".
 - **`hitung-hpp`** → dasar perhitungan margin untuk slide "Perkiraan margin keuntungan"
@@ -154,8 +175,10 @@ memasukkan angkanya ke slide alih-alih menghitung ulang manual:
 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua angka Rupiah format `Rp 1.250.000`, tidak ada angka yang dikarang.
-- [ ] Tidak ada `<link>`/`<script src>` ke internet — sudah dicek `validasi_html.py`.
-- [ ] Ada blok `@media print` dan sudah dicoba tampilannya masuk akal.
+- [ ] Angka cicilan/rasio KUR berasal dari skill `pengajuan-kur` (atau ditandai `[isi]` + catatan bila skill itu tidak terpasang), bukan hitungan kira-kira.
+- [ ] Angka dari CSV penjualan berasal dari `rekap-penjualan-csv`/`scripts/rekap.py`, bukan dijumlah manual.
+- [ ] Tidak ada `<link>`/`<script src>` ke internet, tidak ada gambar dengan path lokal — sudah dicek `validasi_html.py`.
+- [ ] Ada `@page { size: 1920px 1080px; margin: 0; }` dan blok `@media print`, sudah dicoba cetak PDF-nya tidak terpotong.
 - [ ] Tidak ada klaim tanpa dasar (halal, BPOM, "terlaris") kecuali diberikan pengguna.
 - [ ] Bagian yang belum terisi ditandai jelas, bukan dikarang seolah-olah data asli.
 

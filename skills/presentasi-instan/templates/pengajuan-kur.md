@@ -22,7 +22,7 @@ dokumen resmi bank).
 4. **Omzet & histori penjualan** — data omzet bulanan/tahunan terakhir (bisa diambil dari skill `rekap-penjualan-csv` atau `laporan-keuangan-emkm` jika sudah ada), format Rupiah.
 5. **Aset usaha** — daftar aset yang dimiliki (peralatan, kendaraan, stok, tempat usaha) beserta perkiraan nilai — ini memperkuat kapasitas usaha.
 6. **Tujuan pinjaman** — untuk apa dana dipakai (modal kerja/pembelian alat/perluasan), spesifik dan realistis.
-7. **Jumlah pinjaman diajukan & rencana pengembalian** — nominal (Rupiah), lama tenor yang diinginkan, dan dari mana sumber pengembaliannya (proyeksi omzet/kas).
+7. **Jumlah pinjaman diajukan & rencana pengembalian** — nominal (Rupiah), lama tenor yang diinginkan, cicilan per bulan dan rasio cicilan-terhadap-laba (WAJIB dihitung lewat skill `pengajuan-kur`/`scripts/simulasi_kur.py`, bukan diperkirakan — lihat SKILL.md bagian "Angka pinjaman/cicilan"; kalau tidak tersedia, tulis `[isi]` + catatan), dan dari mana sumber pengembaliannya (proyeksi omzet/kas).
 8. **Proyeksi usaha setelah pinjaman** — perkiraan kenaikan omzet/kapasitas produksi setelah dana cair, dengan asumsi yang disebutkan jelas.
 9. **Legalitas usaha** — NIB, izin usaha, NPWP jika ada (sebutkan status, jangan mengarang nomor).
 10. **Penutup** — ringkasan kelayakan usaha, kontak pemilik usaha.
@@ -30,6 +30,10 @@ dokumen resmi bank).
 ## Wajib ada
 - Semua nominal (omzet, aset, pinjaman) wajib format Rupiah yang benar dan berdasarkan
   data yang diberikan pengguna — **jangan pernah mengarang angka omzet atau aset**.
+- Cicilan per bulan dan rasio cicilan-terhadap-laba **wajib** dihitung lewat skill
+  `pengajuan-kur` (atau `scripts/simulasi_kur.py`-nya), tidak boleh dikira-kira. Kalau
+  skill itu tidak terpasang di environment, tulis `[isi]` pada angka tersebut disertai
+  catatan bahwa cicilan perlu dihitung dengan alat simulasi KUR resmi.
 - Disclaimer bahwa ini pelengkap presentasi, bukan pengganti dokumen resmi bank, dan
   syarat KUR (plafon, bunga/margin, syarat usaha) berubah dari waktu ke waktu — arahkan
   ke bank/penyalur KUR resmi atau situs kur.ekon.go.id untuk info terbaru.

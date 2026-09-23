@@ -61,10 +61,12 @@ lisensi MIT di bawah untuk bagian yang berasal dari karya asli.
    `extract-pptx.py`) hanya untuk deploy, ekspor PDF via Playwright, dan konversi
    `.pptx`, yang semuanya membutuhkan instalasi paket/CLI tambahan.
 7. **Kerangka HTML ditulis ulang dari nol** (`references/kerangka-html.md`) dalam
-   Bahasa Indonesia dengan struktur yang disederhanakan: tanpa fitur edit inline di
-   browser (localStorage auto-save, mode edit teks langsung) yang ada di sumber, karena
-   menambah kerumitan yang tidak dibutuhkan pengguna awam untuk kasus penggunaan
-   sekali-jadi (buat → cetak/kirim).
+   Bahasa Indonesia dengan struktur yang disederhanakan. Versi 1.1.0 menambahkan mode
+   edit teks langsung di browser (tombol "Edit" yang men-toggle `contenteditable` pada
+   elemen teks, lalu pengguna menyimpan lewat `Ctrl+S`/`Cmd+S` bawaan browser) — ditulis
+   sendiri dari nol tanpa `localStorage`/auto-save dan tanpa melihat kode sumber; jauh
+   lebih sederhana daripada mode edit sumber, sesuai kebutuhan pengguna awam untuk kasus
+   penggunaan sekali-jadi (buat → cetak/kirim).
 8. **Disebutkan opsi integrasi** dengan skill lain di library ini
    (`rekap-penjualan-csv`, `laporan-keuangan-emkm`, `hitung-hpp`) agar angka penjualan/
    keuangan/margin tidak dihitung ulang manual — fitur ini tidak ada di sumber karena
@@ -79,6 +81,34 @@ Bahasa Indonesia dengan struktur dan penekanan berbeda untuk pengguna bisnis Ind
 yang awam teknologi; tidak ada bagian teks sumber yang disalin utuh — hanya konsep
 struktural (panggung 16:9 berskala, mode cetak per-slide) yang dipelajari lalu ditulis
 ulang dengan implementasi sendiri.
+
+## Riwayat perubahan
+
+### v1.1.0 (2026-09-23) — revisi hasil uji independen (skor 6, lihat `examples/HASIL-UJI.md`)
+- **Perbaikan cacat berat PDF terpotong:** tambah `@page { size: 1920px 1080px; margin: 0; }`
+  dan `print-color-adjust: exact` di `references/kerangka-html.md`; hapus anjuran memilih
+  kertas A4/orientasi Lanskap di SKILL.md & README (sudah otomatis lewat `@page`).
+- Overlay "Putar HP ke posisi mendatar" untuk layar HP tegak (CSS `orientation: portrait`
+  murni, tanpa JS eksternal); kontrol navigasi dikecilkan/dipudarkan di HP mendatar layar
+  pendek agar tidak menutupi isi slide.
+- Angka cicilan/rasio KUR dan rekap CSV kini wajib lewat skill `pengajuan-kur` /
+  `rekap-penjualan-csv` (atau script Python eksplisit) — SKILL.md &
+  `templates/pengajuan-kur.md` diperbarui, tidak boleh lagi dihitung kira-kira.
+- `scripts/validasi_html.py` diperluas: mendeteksi href/src/srcset tanpa tanda kutip,
+  `url(//...)`/`url(http...)` di CSS, `@import`, `fetch()`/`XMLHttpRequest`/`import()` ke
+  internet, `<img src>` yang bukan `data:` URI (path lokal), dan memberi ERROR bila
+  `@page` dengan `size` tidak ada. Ditambahkan `tests/uji_validasi.py` (unittest, 18 kasus
+  rusak + 2 kasus benar).
+- Komponen siap pakai baru di `references/kerangka-html.md`: kartu angka (KPI), tabel
+  dengan kolom uang rata kanan (`tabular-nums`), dua kolom, penanda `[isi]` mencolok,
+  timeline/langkah, kutipan/testimoni, plus panduan turunan warna kartu/garis untuk tiap
+  tema di `aturan-desain.md`.
+- Klaim tumpukan font diperbaiki (tidak lagi mengklaim identik di semua OS; tambah
+  `system-ui`/`Roboto` untuk cakupan Linux/Android). README tidak lagi mengklaim angka
+  "dihitung" oleh skill ini sendiri — diperjelas berasal dari data pengguna/skill hitung
+  lain.
+- Ditambahkan mode edit teks langsung di browser (`contenteditable` + simpan via
+  `Ctrl+S`/`Cmd+S` bawaan browser), ditulis dari nol tanpa library.
 
 ## Teks lisensi asli (MIT)
 

@@ -29,14 +29,23 @@ import sys
 from pathlib import Path
 
 # Pola yang menandakan file mencoba mengambil sesuatu dari internet.
+# Atribut href/src/srcset dicek dengan ATAU tanpa tanda kutip, http(s):// ATAU
+# protocol-relative (//...), supaya tidak bisa dilewati hanya dengan menghapus kutip.
 POLA_EKSTERNAL = [
-    (r'(?:href|src)\s*=\s*["\']https?://', "atribut href/src menunjuk ke URL internet (http/https)"),
-    (r'(?:href|src)\s*=\s*["\']//', "atribut href/src memakai protocol-relative URL (//...), ini tetap memanggil internet"),
-    (r'@import\s+(?:url\()?["\']?https?://', "@import CSS memanggil URL internet"),
-    (r'url\(\s*["\']?https?://', "CSS url() memanggil gambar/font dari internet"),
+    (r'(?:href|src|srcset)\s*=\s*["\']?(?:https?:)?//',
+     "atribut href/src/srcset menunjuk ke URL internet (http(s):// atau //, dengan/tanpa tanda kutip)"),
+    (r'@import\s+(?:url\()?["\']?(?:https?:)?//', "@import CSS memanggil URL internet"),
+    (r'url\(\s*["\']?(?:https?:)?//', "CSS url() memanggil gambar/font dari internet (http(s):// atau //)"),
+    (r'\bfetch\s*\(\s*["\']https?://', "kode JavaScript fetch() memanggil URL internet"),
+    (r'\bimport\s*\(\s*["\']https?://', "kode JavaScript import() dinamis memanggil URL internet"),
+    (r'\.open\s*\(\s*["\'][A-Za-z]+["\']\s*,\s*["\']https?://',
+     "kode JavaScript XMLHttpRequest .open() memanggil URL internet"),
     (r'fonts\.googleapis\.com|fonts\.gstatic\.com|api\.fontshare\.com|cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com|unpkg\.com',
      "menyebut layanan CDN/font online (Google Fonts, Fontshare, jsdelivr, cdnjs, unpkg)"),
 ]
+
+POLA_IMG_SRC = re.compile(r'<img\b[^>]*\bsrc\s*=\s*(["\']?)([^"\'\s>]+)\1', re.IGNORECASE)
+POLA_PAGE_SIZE = re.compile(r'@page\s*\{[^}]*\bsize\s*:', re.IGNORECASE | re.DOTALL)
 
 POLA_SLIDE = re.compile(r'<[a-zA-Z0-9]+[^>]*\bclass\s*=\s*"[^"]*\bslide\b[^"]*"[^>]*>', re.IGNORECASE)
 POLA_TAG = re.compile(r'<[^>]+>')
@@ -81,6 +90,17 @@ def validasi(path: Path, maks_kata_slide: int, maks_baris_kata_kunci: int = 8):
             cuplikan = html[max(0, m.start() - 20):m.start() + 60].replace("\n", " ")
             error.append(f"Ditemukan rujukan internet ({keterangan}): ...{cuplikan}...")
 
+    # 1b. Gambar dengan src bukan data: URI (path lokal seperti C:\... atau logo.png)
+    # rusak begitu file HTML dikirim ke komputer/HP lain (mis. lewat WA/email).
+    for m in POLA_IMG_SRC.finditer(html):
+        nilai_src = m.group(2)
+        if not nilai_src.lower().startswith("data:"):
+            cuplikan = html[max(0, m.start() - 10):m.start() + 80].replace("\n", " ")
+            error.append(
+                f"<img src=\"...\"> bukan data: URI (base64) — src=\"{nilai_src}\" adalah path lokal/relatif yang "
+                f"akan rusak (gambar hilang) saat file dikirim ke perangkat lain. Ubah gambar jadi base64: ...{cuplikan}..."
+            )
+
     # 2. Kelengkapan dasar
     if "<!doctype html>" not in html.lower():
         peringatan.append("Tidak ada <!DOCTYPE html> di awal file — tambahkan agar browser merender dengan benar.")
@@ -88,6 +108,12 @@ def validasi(path: Path, maks_kata_slide: int, maks_baris_kata_kunci: int = 8):
         peringatan.append("Tidak ada meta viewport — tampilan di HP bisa tidak pas.")
     if "@media print" not in html:
         error.append("Tidak ada blok CSS @media print — 'Print ke PDF' tidak akan rapi satu slide per halaman.")
+    if not POLA_PAGE_SIZE.search(html):
+        error.append(
+            "Tidak ada blok CSS @page dengan 'size' (mis. @page { size: 1920px 1080px; margin: 0; }) — "
+            "tanpa ini, browser memakai ukuran kertas default (A4/Letter) sehingga sisi kanan slide 1920x1080 "
+            "TERPOTONG saat dicetak ke PDF."
+        )
 
     # 3. Jumlah slide & panjang teks per slide
     potongan = potong_slide(html)

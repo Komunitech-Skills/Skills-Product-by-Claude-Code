@@ -6,8 +6,9 @@
 - ✅ Tidak perlu install PowerPoint/Canva atau bikin akun apa pun — hasilnya satu file HTML yang langsung bisa dibuka.
 - ✅ Bisa dibuka tanpa internet, di laptop maupun HP, kapan saja.
 - ✅ Tinggal cetak ke PDF (Print → Save as PDF) untuk dikirim lewat email/WA atau dicetak.
-- ✅ Sudah ada 7 kerangka slide siap pakai untuk konteks Indonesia: pitch investor, proposal ke perusahaan lain, pengajuan KUR/bank, laporan bulanan, profil perusahaan, penawaran ke reseller, dan materi pelatihan karyawan.
-- ✅ Angka Rupiah dihitung dan ditulis dengan format yang benar, bukan asal tempel.
+- ✅ Sudah ada 7 kerangka slide siap pakai untuk konteks Indonesia: pitch investor, proposal ke perusahaan lain, pengajuan KUR/bank, laporan bulanan, profil perusahaan, penawaran ke reseller, dan materi pelatihan karyawan, lengkap dengan kartu angka, tabel rapi, timeline, dan kutipan siap pakai.
+- ✅ Angka Rupiah ditulis dengan format yang benar (`Rp 1.250.000`) dan diambil dari data Anda atau skill hitung lain di library ini (mis. `pengajuan-kur`, `rekap-penjualan-csv`) — bukan ditebak.
+- ✅ Bisa dibuka & dicetak jadi PDF rapi satu slide per halaman, tidak terpotong; di HP tegak akan diingatkan untuk memutar ke posisi mendatar. Ada mode edit teks langsung di browser (tombol "Edit").
 
 ## Cocok untuk siapa
 - Pemilik UMKM yang mau mengajukan KUR ke bank tapi tidak punya desainer.
@@ -53,7 +54,9 @@ Hasilnya satu file `.html`. Buka dengan dua kali klik atau tarik ke jendela brow
 tambahan.
 
 **Bisa dijadikan PDF atau file PowerPoint?**
-Untuk PDF: bisa, tinggal buka file lalu Ctrl+P / Cmd+P dan pilih "Simpan sebagai PDF".
+Untuk PDF: bisa, tinggal buka file lalu Ctrl+P / Cmd+P, pilih "Simpan sebagai PDF",
+margin "Tidak ada", dan centang "Grafis latar" — halaman otomatis pas, tidak perlu
+pilih ukuran kertas atau orientasi manual.
 Untuk `.pptx` (PowerPoint asli): skill ini tidak menghasilkan format itu — kalau kamu
 butuh file PowerPoint yang bisa diedit di Microsoft Office, gunakan alat pembuat
 `.pptx` terpisah.
