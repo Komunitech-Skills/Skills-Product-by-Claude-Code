@@ -200,6 +200,7 @@ Per skill, tambahkan di README.md:
 - Tulis laporan sesi di `reports/YYYY-MM-DD.md` sebelum mengakhiri pekerjaan.
 - Jangan menghapus file di `rejected/` atau riwayat audit.
 - Jangan pernah menyimpan API key, token, atau data pembeli/pelanggan di repo.
+- **Pemilihan model agent (hemat limit):** Opus untuk membuat/menguji skill pajak, gaji, keuangan, dan hukum, serta verifikasi angka independen, uji A/B & banding pesaing. Sonnet untuk skill marketing/konten/CS/HR non-hitungan, riset, dan perbaikan dengan instruksi jelas. Pekerjaan mekanis dikerjakan langsung tanpa agent. Maksimal 4 agent paralel.
 - Tanyakan ke pemilik sebelum: menetapkan harga final, memasukkan skill berlisensi abu-abu, atau menginstal paket/dependensi baru dari sumber tak dikenal.
 
 ---
