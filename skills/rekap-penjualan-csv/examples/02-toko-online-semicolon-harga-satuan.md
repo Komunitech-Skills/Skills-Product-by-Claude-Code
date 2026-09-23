@@ -50,3 +50,4 @@ Rata-rata omzet Sabtu–Minggu Rp 519.150 per hari, sedangkan Senin–Jumat Rp 4
 - ~~Kurang (sedang): script tidak bisa menyaring status pesanan.~~ **Sudah diperbaiki di v1.1.0** (`--kolom-status`). File ini tidak punya kolom status, jadi hasilnya tidak berubah. Uji filter status ada di contoh 06, dan di sana ditemukan cacat baru.
 - Catatan: "sekitar 19%" adalah angka turunan (519.150 ÷ 435.380).
 - **Uji ulang v1.1.0 (2026-09-23):** hasil identik (Rp 13.899.100, 88 baris) dan cocok dengan verifikasi independen. Sebagai pembanding, parser "ambil digit saja" yang lazim dipakai agent tanpa skill menghasilkan **Rp 1.389.910.000** (100× lipat) pada file ini karena format `68.500,00`. Ini salah satu nilai tambah terbesar skill ini.
+- **Uji ulang v1.2.0 (2026-09-23):** hasil identik (Rp 13.899.100, 88 baris) dan cocok dengan verifikasi independen. Format `68.500,00` tetap terbaca benar setelah parser angka diperketat.

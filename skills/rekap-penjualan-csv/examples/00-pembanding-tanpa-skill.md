@@ -49,3 +49,6 @@ Output lengkap ada di `01-kasir-kedai-kopi-2-minggu.md`. Ringkasnya: angka yang 
 | Konsistensi format | Bergantung pada gaya agent saat itu. | Format tetap setiap kali, sehingga mudah dibandingkan antar-periode. |
 
 **Kesimpulan: hasil dengan skill lebih baik.** Pada file S1 yang rapi, angkanya sama. Di sini nilai tambah skill terletak pada insight yang tajam, nama hari, dan definisi rata-rata yang jelas. Nilai tambah terbesarnya adalah **keandalan angka pada format Indonesia yang berantakan**: cara umum yang dipakai agent tanpa skill bisa salah 100× lipat tanpa peringatan (dibuktikan pada file contoh 02). Karena itu skill ini jelas memberi nilai tambah. Catatan: pada ekspor marketplace berstatus "Pengembalian", skill v1.1.0 masih punya celah (lihat contoh 06 dan HASIL-UJI).
+
+---
+**Uji ulang v1.2.0 (2026-09-23):** pembanding ini tetap berlaku. Pada file S1, output skill v1.2.0 identik dengan v1.1.0 (Rp 5.084.000, 127 baris). Nilai tambah skill pada data marketplace makin jelas di v1.2.0: bila agent tanpa skill tidak menyaring status (tidak ada instruksi untuk itu), omzet file contoh 06 terhitung Rp 10.793.000 (semua status) padahal seharusnya Rp 9.006.000 (+19,8%).

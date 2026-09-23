@@ -59,3 +59,4 @@ Hari terbaik: Rabu, 16 September 2026 (Rp 1.045.000). Hari terendah: Minggu, 20 
 - Saran: script sebaiknya mengembalikan nomor baris yang dilewati (misalnya `contoh_baris_dilewati: [5, 11, 16]`) supaya agent tidak perlu mencari sendiri.
 - Catatan: "68%" adalah angka turunan (34,2% + 33,8%).
 - **Uji ulang v1.1.0 (2026-09-23):** hasil identik (Rp 4.220.000, 27 baris valid, 3 dilewati dengan alasan `tanggal tidak terbaca: 2`, `harga/total tidak valid atau meragukan: 1`) dan cocok dengan verifikasi independen. Saran nomor baris yang dilewati (`contoh_baris_dilewati`) **belum** diterapkan.
+- **Uji ulang v1.2.0 (2026-09-23):** hasil identik (Rp 4.220.000, 27 baris valid, 3 dilewati). Nomor baris yang dilewati **masih belum** dilaporkan script (R3).

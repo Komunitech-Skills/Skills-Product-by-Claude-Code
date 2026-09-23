@@ -30,6 +30,9 @@ STATUS_BATAL_DEFAULT = ["batal", "dibatalkan", "cancel", "retur", "return", "ref
                         "pengembalian", "dikembalikan", "belum bayar", "belum dibayar", "unpaid",
                         "menunggu pembayaran", "kedaluwarsa", "expired"]
 
+# Status yang mengandung kata di atas tetapi transaksinya TETAP sah (mis. "Pengembalian Ditolak")
+PENGECUALIAN_STATUS = ["ditolak", "rejected", "dibatalkan pembatalannya"]
+
 POLA_ISO = re.compile(r"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[ T].*)?$")
 POLA_ANGKA_3 = re.compile(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2}|\d{4})(?:[ T].*)?$")
 POLA_NAMA_BULAN = re.compile(r"^(\d{1,2})[\s\-/]+([A-Za-z]+)\.?[\s\-/,]+(\d{2}|\d{4})(?:[ T].*)?$")
@@ -102,6 +105,8 @@ def parse_angka(teks):
     s = str(teks).strip().lower()
     if not s:
         return None
+    if re.fullmatch(r"\(.*\)", s):
+        s = "-" + s[1:-1].strip()               # format akuntansi (15.000) = negatif
     if re.search(r"\d\s*e\s*[+-]?\s*\d", s):
         return None                               # notasi ilmiah dari Excel
     s = re.sub(r"\b(rp|idr)\b\.?", "", s)
@@ -173,7 +178,8 @@ def main():
     grup.add_argument("--kolom-harga", help="Harga satuan (dikali qty)")
     p.add_argument("--kolom-status", help="Kolom status pesanan (untuk membuang batal/retur)")
     p.add_argument("--abaikan-status",
-                   help="Kata status yang dibuang, pisahkan koma (default: batal, dibatalkan, cancel, retur, return, refund, gagal, failed)")
+                   help="Kata status yang dibuang, pisahkan koma. MENGGANTI seluruh daftar bawaan: "
+                        + ", ".join(STATUS_BATAL_DEFAULT))
     p.add_argument("--urutan-tanggal", choices=["auto", "dmy", "mdy"], default="auto",
                    help="Urutan tanggal angka: dmy (hari/bulan/tahun, Indonesia) atau mdy (AS)")
     p.add_argument("--top", type=int, default=5)
@@ -215,7 +221,8 @@ def main():
     for r in baris:
         if a.kolom_status:
             st = (r.get(a.kolom_status) or "").strip()
-            if any(k in st.lower() for k in abaikan):
+            st_kecil = st.lower()
+            if any(k in st_kecil for k in abaikan) and not any(k in st_kecil for k in PENGECUALIAN_STATUS):
                 dibuang_status[st] += 1
                 continue
             status_dihitung[st or "(kosong)"] += 1
@@ -223,7 +230,8 @@ def main():
         if tgl is None:
             dilewati["tanggal tidak terbaca"] += 1
             continue
-        qty = parse_angka(r.get(a.kolom_qty)) if a.kolom_qty else 1.0
+        teks_qty = (r.get(a.kolom_qty) or "").strip() if a.kolom_qty else ""
+        qty = parse_angka(teks_qty) if teks_qty else 1.0   # qty kosong dianggap 1
         if qty is None:
             dilewati["qty tidak valid"] += 1
             continue
