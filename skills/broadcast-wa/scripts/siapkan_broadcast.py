@@ -1,0 +1,334 @@
+#!/usr/bin/env python3
+"""Siapkan daftar kirim broadcast WhatsApp yang patuh izin (UU PDP) dari file kontak CSV.
+
+Yang dilakukan:
+1. Membaca kontak CSV (pemisah , ; atau tab dideteksi otomatis).
+2. HANYA memakai kontak yang kolom persetujuannya "ya/setuju/1/opt-in", dan membuang kontak yang
+   minta berhenti (kolom berhenti/opt-out atau file --daftar-berhenti).
+3. Merapikan nomor ke format 628xxx, membuang nomor tidak valid & duplikat.
+4. Mengisi {nama}, {sapaan}, dan kolom lain (mis. {kota}) ke beberapa variasi pesan, bergiliran.
+5. Mewajibkan teks cara berhenti (mis. "balas STOP") di SETIAP variasi.
+6. Membuat jadwal kirim bertahap (per batch, jeda, jam kirim, maks. per hari) dan link wa.me
+   untuk dikirim manual satu per satu.
+
+Script TIDAK mengirim pesan dan tidak mengakses internet. File output berisi data pribadi: simpan
+di komputer sendiri, jangan dibagikan.
+
+Hanya library standar Python 3.8+. Contoh:
+  python3 siapkan_broadcast.py --kontak pelanggan.csv --pesan pesan.txt --mulai "2026-09-28 10:00" \
+      --output broadcast_siap.csv
+"""
+import argparse
+import csv
+import json
+import re
+import sys
+from datetime import datetime, timedelta
+from urllib.parse import quote
+
+# Windows: pastikan teks Indonesia/emoji tercetak tanpa error encoding
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
+KOLOM_NAMA = ["nama", "name", "nama pelanggan", "nama kontak", "customer"]
+KOLOM_NOMOR = ["nomor", "no hp", "no. hp", "nohp", "hp", "no wa", "nomor wa", "whatsapp", "wa", "telepon",
+               "telp", "phone", "no telepon", "nomor hp", "handphone"]
+KOLOM_SETUJU = ["persetujuan", "setuju", "izin", "opt-in", "optin", "opt in", "consent", "bersedia",
+                "setuju broadcast", "boleh dihubungi"]
+KOLOM_BERHENTI = ["berhenti", "opt-out", "optout", "opt out", "stop", "unsubscribe", "tolak"]
+YA = {"ya", "y", "iya", "yes", "setuju", "1", "true", "opt-in", "optin", "ok", "oke", "sudah", "v", "✓", "bersedia", "boleh"}
+POLA_OPTOUT = re.compile(r"\bstop\b|\bberhenti\b|tidak (?:ingin|mau) (?:menerima|dapat)|unsubscribe", re.IGNORECASE)
+SAPAAN = {"bu": "Bu", "ibu": "Bu", "pak": "Pak", "bapak": "Pak", "kak": "Kak", "kakak": "Kak", "mas": "Mas",
+          "mbak": "Mbak", "mba": "Mbak", "bang": "Bang", "abang": "Bang", "teh": "Teh", "teteh": "Teh",
+          "aa": "Aa", "uda": "Uda", "uni": "Uni", "koh": "Koh", "cik": "Cik", "ci": "Ci", "om": "Om",
+          "tante": "Tante", "dek": "Dek", "sis": "Sis", "gan": "Gan", "bli": "Bli", "mbok": "Mbok"}
+
+
+def galat(pesan):
+    print("ERROR: " + pesan, file=sys.stderr)
+    sys.exit(1)
+
+
+def kunci(teks):
+    return re.sub(r"[^a-z0-9]+", "_", teks.strip().lower()).strip("_")
+
+
+def cari_kolom(header, pilihan, paksa=None, nama_arg=""):
+    if paksa:
+        for h in header:
+            if h.strip().lower() == paksa.strip().lower():
+                return h
+        galat("Kolom '{}' ({}) tidak ada. Kolom yang tersedia: {}".format(paksa, nama_arg, ", ".join(header)))
+    norm = {h.strip().lower(): h for h in header}
+    for p in pilihan:
+        if p in norm:
+            return norm[p]
+    return None
+
+
+def baca_kontak(path):
+    try:
+        with open(path, newline="", encoding="utf-8-sig") as f:
+            contoh = f.read(4096)
+            f.seek(0)
+            try:
+                dialek = csv.Sniffer().sniff(contoh, delimiters=",;\t")
+            except csv.Error:
+                dialek = csv.excel
+            r = csv.DictReader(f, dialect=dialek)
+            baris = list(r)
+            return (r.fieldnames or []), baris
+    except FileNotFoundError:
+        galat("File kontak tidak ditemukan: {}".format(path))
+    except UnicodeDecodeError:
+        galat("File kontak bukan UTF-8. Di Excel: Simpan Sebagai → 'CSV UTF-8 (Comma delimited)'.")
+    except OSError as e:
+        galat("Gagal membaca {}: {}".format(path, e))
+
+
+def rapikan_nomor(teks):
+    d = re.sub(r"\D", "", teks or "")
+    if d.startswith("620"):
+        d = "62" + d[3:]
+    elif d.startswith("0"):
+        d = "62" + d[1:]
+    elif d.startswith("8"):
+        d = "62" + d
+    if not d.startswith("628") or not 10 <= len(d) <= 15:
+        return None
+    return d
+
+
+def pecah_nama(nama, sapaan_default, nama_lengkap):
+    kata = (nama or "").strip().split()
+    sapaan = sapaan_default
+    if kata and kata[0].lower().rstrip(".") in SAPAAN and len(kata) > 1:
+        sapaan = SAPAAN[kata[0].lower().rstrip(".")]
+        kata = kata[1:]
+    if not kata:
+        return sapaan, ""
+    kata = [k if (k.isupper() and len(k) <= 3) else k.capitalize() for k in kata]
+    return sapaan, " ".join(kata) if nama_lengkap else kata[0]
+
+
+def rapikan_teks(t):
+    t = re.sub(r"[ \t]{2,}", " ", t)
+    t = re.sub(r" +([,.!?])", r"\1", t)
+    return "\n".join(b.rstrip() for b in t.split("\n")).strip()
+
+
+def baca_variasi(path):
+    try:
+        with open(path, encoding="utf-8-sig") as f:
+            isi = f.read()
+    except FileNotFoundError:
+        galat("File pesan tidak ditemukan: {}".format(path))
+    except UnicodeDecodeError:
+        galat("File pesan harus teks UTF-8 (.txt).")
+    bagian = re.split(r"^\s*-{3,}\s*$", isi, flags=re.MULTILINE)
+    return [b.strip() for b in bagian if b.strip()]
+
+
+def parse_jam(teks):
+    try:
+        a, b = [datetime.strptime(x.strip().replace(".", ":"), "%H:%M").time() for x in teks.split("-")]
+    except ValueError:
+        galat("--jam-kirim harus seperti 09:00-20:00.")
+    if a >= b:
+        galat("--jam-kirim: jam mulai harus sebelum jam selesai.")
+    return a, b
+
+
+def main():
+    p = argparse.ArgumentParser(description="Siapkan daftar kirim broadcast WA yang patuh izin.")
+    p.add_argument("--kontak", required=True, help="file CSV kontak (kolom nama, nomor, persetujuan)")
+    p.add_argument("--pesan", required=True, help="file .txt berisi variasi pesan, dipisah baris '---'")
+    p.add_argument("--output", default="broadcast_siap.csv", help="file CSV hasil (default broadcast_siap.csv)")
+    p.add_argument("--mulai", help="waktu mulai kirim 'YYYY-MM-DD HH:MM'. Tanpa ini, kolom jadwal dikosongkan")
+    p.add_argument("--jam-kirim", default="09:00-20:00", help="jendela jam kirim, default 09:00-20:00")
+    p.add_argument("--per-batch", type=int, default=20, help="jumlah pesan per batch, default 20")
+    p.add_argument("--jeda-pesan-detik", type=int, default=60, help="jeda antar pesan dalam batch, default 60 detik")
+    p.add_argument("--jeda-batch-menit", type=int, default=30, help="jeda antar batch, default 30 menit")
+    p.add_argument("--maks-per-hari", type=int, default=100, help="maks. pesan per hari, default 100 (saran konservatif)")
+    p.add_argument("--sapaan-default", default="Kak", help="sapaan bila nama tidak diawali Bu/Pak/dll. Default Kak")
+    p.add_argument("--nama-lengkap", action="store_true", help="pakai nama lengkap (default: nama depan saja)")
+    p.add_argument("--daftar-berhenti", help="file .txt/.csv berisi nomor yang minta berhenti (satu per baris)")
+    p.add_argument("--kolom-nama")
+    p.add_argument("--kolom-nomor")
+    p.add_argument("--kolom-persetujuan")
+    p.add_argument("--kolom-berhenti")
+    p.add_argument("--saya-pastikan-semua-setuju", action="store_true",
+                   help="HANYA jika file tidak punya kolom persetujuan dan kamu yakin semua kontak sudah setuju")
+    a = p.parse_args()
+
+    for nama, nilai, minimal in (("--per-batch", a.per_batch, 1), ("--jeda-pesan-detik", a.jeda_pesan_detik, 0),
+                                 ("--jeda-batch-menit", a.jeda_batch_menit, 0), ("--maks-per-hari", a.maks_per_hari, 1)):
+        if nilai < minimal:
+            galat("{} minimal {}.".format(nama, minimal))
+    jam_awal, jam_akhir = parse_jam(a.jam_kirim)
+
+    variasi = baca_variasi(a.pesan)
+    if not variasi:
+        galat("File pesan kosong. Tulis minimal 1 variasi pesan.")
+    tanpa_optout = [str(i + 1) for i, v in enumerate(variasi) if not POLA_OPTOUT.search(v)]
+    if tanpa_optout:
+        galat("Variasi ke-{} belum punya teks cara berhenti. Tambahkan, mis.: "
+              "\"Tidak ingin menerima info promo lagi? Balas STOP.\"".format(", ".join(tanpa_optout)))
+
+    header, baris = baca_kontak(a.kontak)
+    if not baris:
+        galat("File kontak tidak berisi data.")
+    k_nama = cari_kolom(header, KOLOM_NAMA, a.kolom_nama, "--kolom-nama")
+    k_nomor = cari_kolom(header, KOLOM_NOMOR, a.kolom_nomor, "--kolom-nomor")
+    k_setuju = cari_kolom(header, KOLOM_SETUJU, a.kolom_persetujuan, "--kolom-persetujuan")
+    k_berhenti = cari_kolom(header, KOLOM_BERHENTI, a.kolom_berhenti, "--kolom-berhenti")
+    if not k_nomor:
+        galat("Kolom nomor WA tidak ditemukan. Kolom tersedia: {}. Pakai --kolom-nomor \"Nama Kolom\".".format(
+            ", ".join(header)))
+    if not k_setuju and not a.saya_pastikan_semua_setuju:
+        galat("Kolom persetujuan (mis. 'Persetujuan' berisi ya/tidak) tidak ditemukan. UU PDP mensyaratkan dasar "
+              "pemrosesan seperti persetujuan. Tambahkan kolom itu, atau pakai --kolom-persetujuan. Jika kamu "
+              "YAKIN semua kontak sudah setuju, jalankan ulang dengan --saya-pastikan-semua-setuju.")
+
+    # placeholder yang tersedia
+    tersedia = {"nama", "sapaan"} | {kunci(h) for h in header}
+    dipakai = set()
+    for v in variasi:
+        dipakai |= set(re.findall(r"\{([^{}]+)\}", v))
+    asing = sorted(x for x in dipakai if kunci(x) not in tersedia)
+    if asing:
+        galat("Placeholder tidak dikenal: {}. Yang tersedia: {}.".format(
+            ", ".join("{" + x + "}" for x in asing), ", ".join("{" + x + "}" for x in sorted(tersedia))))
+
+    berhenti = set()
+    if a.daftar_berhenti:
+        try:
+            with open(a.daftar_berhenti, encoding="utf-8-sig") as f:
+                for t in re.split(r"[\n,;]", f.read()):
+                    n = rapikan_nomor(t)
+                    if n:
+                        berhenti.add(n)
+        except (OSError, UnicodeDecodeError) as e:
+            galat("Gagal membaca --daftar-berhenti: {}".format(e))
+
+    siap, dilewati, terlihat = [], {}, set()
+
+    def lewati(alasan, no):
+        dilewati.setdefault(alasan, []).append(no)
+
+    for no, b in enumerate(baris, start=2):  # nomor baris sesuai tampilan spreadsheet (baris 1 = judul)
+        nomor = rapikan_nomor(b.get(k_nomor))
+        if k_setuju and (b.get(k_setuju) or "").strip().lower() not in YA:
+            lewati("belum/tidak setuju menerima broadcast", no)
+            continue
+        if k_berhenti and (b.get(k_berhenti) or "").strip().lower() in YA:
+            lewati("minta berhenti (kolom berhenti)", no)
+            continue
+        if not nomor:
+            lewati("nomor kosong/tidak valid", no)
+            continue
+        if nomor in berhenti:
+            lewati("ada di daftar berhenti", no)
+            continue
+        if nomor in terlihat:
+            lewati("nomor duplikat", no)
+            continue
+        sapaan, nama = pecah_nama(b.get(k_nama) if k_nama else "", a.sapaan_default, a.nama_lengkap)
+        nilai = {kunci(h): (b.get(h) or "").strip() for h in header}
+        nilai["nama"], nilai["sapaan"] = nama, sapaan
+        kosong = [x for x in dipakai if kunci(x) not in ("nama", "sapaan") and not nilai.get(kunci(x))]
+        if kosong:
+            lewati("kolom {} kosong".format(", ".join("{" + x + "}" for x in sorted(kosong))), no)
+            continue
+        terlihat.add(nomor)
+        siap.append({"baris_asal": no, "nama": nama, "sapaan": sapaan, "nomor": nomor, "nilai": nilai})
+
+    if not siap:
+        galat("Tidak ada kontak yang lolos. Rincian: " + json.dumps(
+            {k: len(v) for k, v in dilewati.items()}, ensure_ascii=False))
+
+    mulai = None
+    if a.mulai:
+        try:
+            mulai = datetime.strptime(a.mulai.strip(), "%Y-%m-%d %H:%M")
+        except ValueError:
+            galat("--mulai harus 'YYYY-MM-DD HH:MM', mis. \"2026-09-28 10:00\".")
+
+    def geser_ke_jendela(t):
+        if t.time() < jam_awal:
+            return t.replace(hour=jam_awal.hour, minute=jam_awal.minute, second=0)
+        if t.time() > jam_akhir:
+            besok = t + timedelta(days=1)
+            return besok.replace(hour=jam_awal.hour, minute=jam_awal.minute, second=0)
+        return t
+
+    jadwal_list = [""] * len(siap)
+    if mulai:
+        t = geser_ke_jendela(mulai)
+        hari, hitung_hari, dalam_batch = t.date(), 0, 0
+        for i in range(len(siap)):
+            if hitung_hari >= a.maks_per_hari:
+                t = (t + timedelta(days=1)).replace(hour=jam_awal.hour, minute=jam_awal.minute, second=0)
+            t = geser_ke_jendela(t)
+            if t.date() != hari:
+                hari, hitung_hari, dalam_batch = t.date(), 0, 0
+            jadwal_list[i] = t.strftime("%Y-%m-%d %H:%M")
+            hitung_hari += 1
+            dalam_batch += 1
+            t = t + timedelta(seconds=a.jeda_pesan_detik)
+            if dalam_batch >= a.per_batch:
+                t = t + timedelta(minutes=a.jeda_batch_menit)
+                dalam_batch = 0
+
+    hasil, jumlah_varian = [], [0] * len(variasi)
+    for i, k in enumerate(siap):
+        idx = i % len(variasi)
+        jumlah_varian[idx] += 1
+
+        def ganti(m):
+            return k["nilai"].get(kunci(m.group(1)), "")
+        teks = rapikan_teks(re.sub(r"\{([^{}]+)\}", ganti, variasi[idx]))
+        jadwal = jadwal_list[i]
+        hasil.append({"no": i + 1, "jadwal_kirim": jadwal, "nama": k["nama"], "nomor": k["nomor"],
+                      "varian": idx + 1, "pesan": teks,
+                      "link_wa": "https://wa.me/{}?text={}".format(k["nomor"], quote(teks, safe=""))})
+
+    try:
+        with open(a.output, "w", newline="", encoding="utf-8-sig") as f:
+            w = csv.DictWriter(f, fieldnames=["no", "jadwal_kirim", "nama", "nomor", "varian", "pesan", "link_wa"])
+            w.writeheader()
+            w.writerows(hasil)
+    except OSError as e:
+        galat("Gagal menyimpan {}: {}".format(a.output, e))
+
+    peringatan = []
+    if len(variasi) < 2:
+        peringatan.append("Hanya 1 variasi pesan. Disarankan 3–5 variasi agar pesan terasa personal.")
+    for i, v in enumerate(variasi, start=1):
+        if len(v) > 700:
+            peringatan.append("Variasi {} cukup panjang ({} karakter); pesan singkat lebih jarang dilaporkan spam.".format(i, len(v)))
+        if len(re.findall(r"https?://|www\.", v)) > 1:
+            peringatan.append("Variasi {} berisi lebih dari 1 link; cukup 1 link.".format(i))
+    if a.saya_pastikan_semua_setuju and not k_setuju:
+        peringatan.append("Kolom persetujuan tidak ada; pengguna menyatakan semua kontak sudah setuju. "
+                          "Simpan bukti persetujuan masing-masing kontak.")
+    ringkasan = {
+        "file_output": a.output,
+        "total_baris_kontak": len(baris),
+        "siap_kirim": len(hasil),
+        "dilewati": {k: {"jumlah": len(v), "baris": v[:30]} for k, v in dilewati.items()},
+        "sebaran_varian": {"varian_{}".format(i + 1): n for i, n in enumerate(jumlah_varian)},
+        "jadwal_pertama": hasil[0]["jadwal_kirim"] or None,
+        "jadwal_terakhir": hasil[-1]["jadwal_kirim"] or None,
+        "kolom_terdeteksi": {"nama": k_nama, "nomor": k_nomor, "persetujuan": k_setuju, "berhenti": k_berhenti},
+        "peringatan": peringatan,
+        "catatan": "File output berisi data pribadi pelanggan. Simpan di komputer sendiri, jangan dibagikan.",
+    }
+    print(json.dumps(ringkasan, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()
