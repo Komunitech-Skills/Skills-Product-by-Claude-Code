@@ -55,7 +55,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 ### A. Mulai ("catat absen karyawan saya")
 1. `info --json`. Jika database belum ada → satu pesan: (1) boleh disimpan di `~/KomunitechData/absensi/`? (2) daftar karyawan: nama, pola 5/6 hari, jam masuk–pulang; (3) pakai mesin fingerprint? Jika ya, ID tiap karyawan di mesin; (4) toleransi terlambat berapa menit? (5) mau dihitung rupiah lemburnya? Jika ya, gaji pokok + tunjangan tetap.
 2. `init` → konfirmasi → `init --ya`. Shift selain REG: `shift tambah --kode MALAM --masuk 22.00 --pulang 06.00 [--istirahat 60] [--pulang-hari-pendek 13.00]` (pulang ≤ masuk = otomatis lewat tengah malam).
-3. Banyak karyawan: `karyawan impor karyawan.csv` (contoh `templates/karyawan.csv`). Sedikit: `karyawan tambah --kode A01 --nama Andi [--jabatan ..] [--shift ..] [--hari-kerja 6] [--id-mesin 1] [--gaji-pokok 5jt --tunjangan-tetap 500rb | --upah-harian 150rb] [--tanpa-lembur ya]`.
+3. Banyak karyawan: `karyawan impor karyawan.csv` (contoh `templates/karyawan.csv`; shift yang disebut di file harus sudah dibuat — contoh itu memakai REG, ENAM 08.00–16.00 hari pendek 13.00, dan MALAM). Sedikit: `karyawan tambah --kode A01 --nama Andi [--jabatan ..] [--shift ..] [--hari-kerja 6] [--id-mesin 1] [--gaji-pokok 5jt --tunjangan-tetap 500rb | --upah-harian 150rb] [--tanpa-lembur ya]`.
 4. Libur resmi bulan berjalan: `libur tambah --tanggal 2026-12-25 --nama "Natal"` atau `--file libur.csv`. Jangan mengarang tanggal libur; minta pengguna mengonfirmasi dari SKB libur nasional/pengumuman daerah.
 
 ### B. Catat harian lewat chat
