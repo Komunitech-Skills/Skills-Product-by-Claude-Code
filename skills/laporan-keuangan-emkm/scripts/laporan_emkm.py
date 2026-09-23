@@ -27,7 +27,7 @@ from collections import OrderedDict, defaultdict
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-VERSI = "1.2.0"
+VERSI = "1.3.0"
 
 # ---------------------------------------------------------------------------
 # Kategori & peran akuntansinya
@@ -546,9 +546,22 @@ def siapkan_aturan(path_pemetaan):
     return kategori, aturan
 
 
+POLA_PB1 = re.compile(r"(?<![a-z0-9])(pb1|pbjt|pajak (restoran|hotel|hiburan|parkir))")
+POLA_TANPA_PB1 = re.compile(r"(belum|tidak|tanpa|exclude|excl|di ?luar) (termasuk )?(pb1|pbjt|pajak)")
+
+
+def sebut_pb1(teks):
+    """Baris yang benar-benar tentang PB1/PBJT (bukan sekadar 'belum termasuk PB1')."""
+    t = normal_teks(teks)
+    return bool(POLA_PB1.search(t)) and not POLA_TANPA_PB1.search(t)
+
+
 def klasifikasi(teks, arah, kategori, aturan):
     t = normal_teks(teks)
-    for kode, pola, _ in aturan:
+    pb1_masuk = arah == "masuk" and sebut_pb1(teks)
+    for kode, pola, kustom in aturan:
+        if pb1_masuk and not kustom:
+            return None  # PB1 dari pembeli bukan penjualan: ditanyakan (titipan)
         info = kategori[kode]
         if info["arah"] not in (arah, "dua"):
             continue
@@ -843,7 +856,7 @@ def hitung(a):
             asumsi.append("Saldo awal {} tidak diberikan, dianggap Rp 0 (per awal data).".format(nama))
     pertanyaan_awal = []
     piutang_lain_awal = uang(a.piutang_lain_awal)
-    titipan_pajak_awal = 0
+    titipan_pajak_awal = uang(a.titipan_pajak_awal)
     modal_input = uang(a.modal_awal, None)
     kas_dari_baris = a.kas_awal is None and data["saldo_awal_baris"] is not None
     mode_saldo = a.saldo_awal_per or "awal-file"
@@ -888,12 +901,13 @@ def hitung(a):
         diberi = {"kas": a.kas_awal is not None, "piutang": a.piutang_awal is not None,
                   "aset": a.aset_tetap_awal is not None, "uu": a.utang_usaha_awal is not None,
                   "ub": a.utang_bank_awal is not None, "pl": a.piutang_lain_awal is not None,
+                  "tp": a.titipan_pajak_awal is not None,
                   "modal": a.modal_awal is not None}
 
         def gulir(pos):
             return mode_saldo == "awal-file" or not diberi[pos]
         aset0 = kas_awal + piutang_awal + persediaan_awal + aset_tetap_awal + piutang_lain_awal
-        liab0 = utang_usaha_awal + utang_bank_awal
+        liab0 = utang_usaha_awal + utang_bank_awal + titipan_pajak_awal
         if gulir("kas"):
             kas_awal += geser_kas
             dana_lain_awal = js("transfer", "keluar") - js("transfer", "masuk")
@@ -905,7 +919,8 @@ def hitung(a):
             utang_bank_awal += js("pinjaman_masuk") - js("bayar_pinjaman")
         if gulir("pl"):
             piutang_lain_awal += js("piutang_lain", "keluar") - js("piutang_lain", "masuk")
-        titipan_pajak_awal = js("titipan", "masuk") - js("titipan", "keluar")
+        if gulir("tp"):
+            titipan_pajak_awal += js("titipan", "masuk") - js("titipan", "keluar")
         if gulir("aset"):
             bln_seb = daftar_bulan(date(tgl_file.year, tgl_file.month, 1), p_awal - timedelta(days=1))
             dep_sebelum = sum(penyusutan_bulan(ym) for ym in bln_seb)
@@ -1059,6 +1074,15 @@ def hitung(a):
                       "Laba bisa sedikit lebih tinggi dari seharusnya.")
     penyusutan = min(penyusutan, aset_tetap_awal + total_beli_aset)
 
+    jadwal_penyusutan = []
+    if a.umur_aset_tahun is not None and a.umur_aset_tahun > 0:
+        bu = Decimal(str(a.umur_aset_tahun)) * 12
+        for biaya, mulai in daftar_aset:
+            n_aktif = sum(1 for ym in bulan_periode if 0 <= (ym[0] - mulai[0]) * 12 + ym[1] - mulai[1] < bu)
+            jadwal_penyusutan.append({"harga_perolehan": biaya, "mulai_disusutkan": "{} {}".format(
+                NAMA_BULAN[mulai[1] - 1], mulai[0]), "per_bulan": bulat(Decimal(biaya) / bu),
+                "bulan_dalam_periode": n_aktif})
+
     # --- Beban usaha
     beban_rinci = OrderedDict()
     for kd, info in kategori.items():
@@ -1188,8 +1212,8 @@ def hitung(a):
              "Utang usaha": "Cek angka utang pemasok awal/akhir.",
              "Kasbon": "Ada pelunasan kasbon yang kasbonnya tidak tercatat? Isi saldo kasbon awal.",
              "Aset tetap": "Cek nilai aset tetap awal dan penyusutan.",
-             "Titipan": "Penyetoran PB1 lebih besar dari PB1 yang dicatat dipungut. Jika PB1 sudah termasuk "
-                        "dalam penjualan, catat penyetorannya sebagai beban_pajak_lain."}
+             "Titipan": "Apakah ada PB1/PBJT bulan lalu yang belum disetor per {}? Isi --titipan-pajak-awal "
+                        "<nominal>.".format(tgl_indo(p_awal))}
     for x in anomali:
         tambah = next((v for k, v in saran.items() if x.startswith(k)), "Mohon cek saldo awal atau transaksi.")
         pertanyaan.append("Angka mustahil: " + x + " " + tambah)
@@ -1202,13 +1226,32 @@ def hitung(a):
                               "pengurang utang.) Jawab lalu jalankan ulang dengan --bunga {}=<nominal bunga>; "
                               "jika memang pokok saja, --bunga {}=0.".format(
                                   t["baris"], t["keterangan"], rp(t["nilai"]), t["baris"], t["baris"]))
-        if t["sumber"] != "ditetapkan pengguna" and t["kode"] != "titipan_pajak" and \
-                re.search(r"(?<![a-z0-9])(pb1|pbjt|pajak (restoran|hotel|hiburan|parkir))", normal_teks(t["keterangan"])):
-            pertanyaan.append("Baris {} \"{}\": apakah pajak daerah (PB1/PBJT) ini dipungut dari pembeli? (a) Jika "
-                              "PB1 dicatat terpisah dari penjualan saat dipungut, tetapkan pemungutan & penyetorannya "
-                              "sebagai titipan: --tetapkan {}=titipan_pajak. (b) Jika PB1 sudah ikut tercatat sebagai "
-                              "penjualan, biarkan sebagai beban pajak daerah: --tetapkan {}=beban_pajak_lain.".format(
-                                  t["baris"], t["keterangan"], t["baris"], t["baris"]))
+    pb1_baris = [t for t in trx if t["sumber"] != "ditetapkan pengguna" and t["kode"] != "titipan_pajak"
+                 and sebut_pb1(t["keterangan"])]
+    if pb1_baris:
+        masuk_b = [t["baris"] for t in pb1_baris if t["arah"] == "masuk"]
+        keluar_b = [t["baris"] for t in pb1_baris if t["arah"] == "keluar"]
+        cmd_a = " ".join("--tetapkan {}=titipan_pajak".format(b) for b in masuk_b + keluar_b)
+        cmd_b = " ".join(["--tetapkan {}=pendapatan_usaha".format(b) for b in masuk_b] +
+                         ["--tetapkan {}=beban_pajak_lain".format(b) for b in keluar_b])
+        pertanyaan.append("Baris {} menyebut PB1/PBJT (pajak restoran/hotel). Apakah PB1 dipungut terpisah dari "
+                          "pembeli? (a) Ya, dicatat terpisah lalu disetor: pemungutan & penyetorannya adalah TITIPAN "
+                          "(utang pajak daerah, bukan pendapatan/beban): {}. Bila ada PB1 bulan lalu yang belum disetor "
+                          "per {}, isi juga --titipan-pajak-awal <nominal>. (b) PB1 sudah termasuk harga jual/penjualan: "
+                          "{}.".format(", ".join(str(t["baris"]) for t in pb1_baris), cmd_a, tgl_indo(p_awal), cmd_b))
+    # setoran PB1 melebihi pemungutan yang tercatat, tetapi saldo titipan awal tidak diketahui
+    if a.titipan_pajak_awal is None and not titipan_pajak_awal and not any(x.startswith("Titipan") for x in anomali):
+        setor, jalan_tp = [], 0
+        for t in trx:
+            if t["kode"] == "titipan_pajak":
+                jalan_tp += t["nilai"] if t["arah"] == "masuk" else -t["nilai"]
+                if jalan_tp < 0:
+                    setor = [t]  # setoran melebihi PB1 yang sudah dipungut di periode ini
+                    break
+        if setor:
+            pertanyaan.append("Baris {} \"{}\" menyetor PB1/PBJT. Apakah ada PB1 bulan lalu yang belum disetor per "
+                              "{}? Isi --titipan-pajak-awal <nominal> (0 bila tidak ada).".format(
+                                  setor[0]["baris"], setor[0]["keterangan"], tgl_indo(p_awal)))
     if data.get("n_kurung_keluar"):
         peringatan.append("{} nominal minus/dalam kurung di kolom Keluar dibaca sebagai uang keluar.".format(
             data["n_kurung_keluar"]))
@@ -1309,6 +1352,7 @@ def hitung(a):
                           "terima_piutang": terima_piutang, "beli_aset_tetap": total_beli_aset,
                           "transfer_internal_bersih_keluar": dana_di_rekening_lain},
         "per_kategori": per_kategori,
+        "jadwal_penyusutan": jadwal_penyusutan,
         "pengeluaran_terbesar": [{"kode": kd, "label": label(kd), "nilai": v,
                                   "persen_dari_total_biaya": round(v * 100.0 / total_biaya, 1) if total_biaya else 0}
                                  for kd, v in biaya_urut[:5]],
@@ -1436,6 +1480,9 @@ def cetak_teks(h):
     if s["piutang_lain"]:
         b.append(("Kasbon karyawan & piutang lain-lain", rp(s["piutang_lain"])))
     b.append(("Persediaan", rp(s["persediaan"])))
+    lancar = s["kas_dan_setara_kas"] + s["piutang_usaha"] + s["piutang_lain"] + s["persediaan"]
+    b.append(("_Jumlah aset lancar_", "_{}_".format(rp(lancar))))
+    b.append(("_Aset tidak lancar_", ""))
     if s["aset_tetap_awal"] or s["pembelian_aset_tetap"]:
         b.append(("Aset tetap (awal + pembelian {})".format(rp(s["pembelian_aset_tetap"])),
                   rp(s["aset_tetap_awal"] + s["pembelian_aset_tetap"])))
@@ -1553,8 +1600,16 @@ def catatan(h):
              "Aset tetap dicatat sebesar biaya perolehan dikurangi akumulasi penyusutan.".format(
                  rp(s["aset_tetap_nilai_buku"]), rp(sa["aset_tetap"]), rp(s["pembelian_aset_tetap"]),
                  rp(s["penyusutan_periode_ini"])))
-    n.append("**7. Liabilitas.** Utang usaha {} dan utang bank/pinjaman {} (pinjaman diterima {}, pembayaran "
+    if h.get("jadwal_penyusutan"):
+        baris = ["| Harga perolehan | Mulai disusutkan | Penyusutan/bulan | Bulan di periode ini |", "|---:|---|---:|---:|"]
+        for j in h["jadwal_penyusutan"]:
+            baris.append("| {} | {} | {} | {} |".format(rp(j["harga_perolehan"]), j["mulai_disusutkan"],
+                                                       rp(j["per_bulan"]), j["bulan_dalam_periode"]))
+        n.append("Jadwal penyusutan per aset (garis lurus, total per bulan dibulatkan ke rupiah):\n\n" + "\n".join(baris))
+    n.append("**7. Liabilitas.** Utang usaha {} dan utang bank/pinjaman {}{} (pinjaman diterima {}, pembayaran "
              "pokok {}).".format(rp(l["utang_usaha"]), rp(l["utang_bank_pinjaman"]),
+                                 (", serta utang pajak daerah titipan PB1/PBJT {}".format(
+                                     rp(l["utang_pajak_daerah_titipan"])) if l["utang_pajak_daerah_titipan"] else ""),
                                  rp(h["arus_non_laba"]["pinjaman_diterima"]),
                                  rp(h["arus_non_laba"]["bayar_pokok_pinjaman"])))
     n.append("**8. Ekuitas.** Modal awal {} + tambahan modal {} + laba bersih {} - prive {} = modal akhir {}.".format(
@@ -1624,6 +1679,8 @@ def main(argv=None):
     p.add_argument("--piutang-awal-periode", help="piutang pelanggan per --periode-awal (menimpa hasil gulir)")
     p.add_argument("--utang-usaha-awal-periode", help="utang pemasok per --periode-awal (menimpa hasil gulir)")
     p.add_argument("--piutang-lain-awal", help="saldo kasbon karyawan/piutang lain awal")
+    p.add_argument("--titipan-pajak-awal", help="PB1/PBJT yang sudah dipungut tetapi belum disetor, per awal data "
+                   "(atau per awal periode dengan --saldo-awal-per awal-periode)")
     p.add_argument("--abaikan-kas-minus", action="store_true",
                    help="pemilik mengonfirmasi kas minus sementara hanya karena urutan pencatatan")
     p.add_argument("--saldo-awal-per", choices=["awal-file", "awal-periode"],

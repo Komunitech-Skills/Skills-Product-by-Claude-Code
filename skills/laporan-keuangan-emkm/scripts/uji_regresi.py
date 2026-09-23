@@ -61,6 +61,27 @@ TOTAL;;;
 10/07/2026,Setor pajak restoran PB1,,"Rp 100.000"
 11/07/2026,PB1 dipungut dari pembeli,"Rp 50.000",
 """,
+    "kafe.csv": """Tanggal,Keterangan,Masuk,Keluar
+01/07/2026,Saldo awal,"Rp 5.000.000",
+05/07/2026,Penjualan minggu 1 (belum termasuk PB1),"Rp 5.000.000",
+05/07/2026,PB1 10% dipungut dari pembeli minggu 1,"Rp 500.000",
+06/07/2026,Belanja bahan kopi & susu,,"Rp 2.500.000"
+10/07/2026,Setor PB1 Juni ke Bapenda,,"Rp 1.500.000"
+12/07/2026,Penjualan minggu 2 (belum termasuk PB1),"Rp 6.000.000",
+12/07/2026,PB1 10% dipungut dari pembeli minggu 2,"Rp 600.000",
+19/07/2026,Penjualan minggu 3 (belum termasuk PB1),"Rp 4.000.000",
+19/07/2026,PB1 10% dipungut dari pembeli minggu 3,"Rp 400.000",
+25/07/2026,Gaji barista,,"Rp 4.000.000"
+28/07/2026,Sewa tempat,,"Rp 3.000.000"
+02/08/2026,Penjualan minggu 1 (belum termasuk PB1),"Rp 7.000.000",
+02/08/2026,PB1 10% dipungut dari pembeli minggu 1,"Rp 700.000",
+05/08/2026,Belanja bahan kopi & susu,,"Rp 3.000.000"
+10/08/2026,Setor PB1 Juli ke Bapenda,,"Rp 1.500.000"
+16/08/2026,Penjualan minggu 2 (belum termasuk PB1),"Rp 5.000.000",
+16/08/2026,PB1 10% dipungut dari pembeli minggu 2,"Rp 500.000",
+25/08/2026,Gaji barista,,"Rp 4.000.000"
+28/08/2026,Sewa tempat,,"Rp 3.000.000"
+""",
     "rugi.csv": """Tanggal,Keterangan,Masuk,Keluar
 01/08/2026,Penjualan,"Rp 1.000.000",
 02/08/2026,Gaji karyawan,,"Rp 1.500.000"
@@ -225,6 +246,42 @@ def main():
         cek("BS3 titipan: utang pajak daerah 50.000",
             d["posisi_keuangan"]["liabilitas"]["utang_pajak_daerah_titipan"] == 50000)
         cek("BS3 --tetapkan menutup pertanyaan PB1", not d["pertanyaan"] and d["posisi_keuangan"]["seimbang"])
+
+        # --- S-1 PB1 disetor bulan berikutnya (titipan lintas bulan)
+        fk = os.path.join(tmp, "kafe.csv")
+        d = jalan([fk, "--periode-awal", "2026-07-01", "--periode-akhir", "2026-07-31", "--format", "json"])
+        q_pb1 = [q for q in d["pertanyaan"] if "PB1" in q]
+        cek("PB1 ditanya dalam SATU pertanyaan", len(q_pb1) == 1, q_pb1)
+        cek("'(belum termasuk PB1)' tetap penjualan & tidak ditanyakan", "Baris 3," not in q_pb1[0] and
+            [t["kategori"] for t in d["rincian_transaksi"] if t["baris"] == 3] == ["pendapatan_usaha"])
+        cek("'PB1 dipungut dari pembeli' bukan penjualan otomatis",
+            [t["kategori"] for t in d["rincian_transaksi"] if t["baris"] == 4] == [None])
+        tet = []
+        for b in (4, 6, 8, 10, 14, 16, 18):
+            tet += ["--tetapkan", "{}=titipan_pajak".format(b)]
+        d = jalan([fk, "--periode-awal", "2026-07-01", "--periode-akhir", "2026-07-31", "--format", "json"] + tet)
+        cek("setoran PB1 tanpa saldo awal titipan -> ditanyakan", d["status"] == "SEMENTARA" and
+            any("--titipan-pajak-awal" in q for q in d["pertanyaan"]))
+        jul = jalan([fk, "--periode-awal", "2026-07-01", "--periode-akhir", "2026-07-31", "--titipan-pajak-awal", "1,5jt",
+                     "--format", "json"] + tet)
+        agu = jalan([fk, "--periode-awal", "2026-08-01", "--periode-akhir", "2026-08-31", "--titipan-pajak-awal", "1,5jt",
+                     "--format", "json"] + tet)
+        cek("Juli: utang PB1 akhir 1.500.000", jul["posisi_keuangan"]["liabilitas"]["utang_pajak_daerah_titipan"] == 1500000)
+        cek("Juli: modal awal 3.500.000", jul["posisi_keuangan"]["ekuitas"]["modal_awal"] == 3500000)
+        cek("Juli: laba 5.500.000 & LENGKAP", jul["laba_rugi"]["laba_bersih"] == 5500000 and
+            jul["status"].startswith("LENGKAP"), jul["pertanyaan"])
+        cek("Agustus: utang PB1 akhir 1.200.000", agu["posisi_keuangan"]["liabilitas"]["utang_pajak_daerah_titipan"] == 1200000)
+        cek("Agustus: modal awal = modal akhir Juli", agu["posisi_keuangan"]["ekuitas"]["modal_awal"] ==
+            jul["posisi_keuangan"]["ekuitas"]["modal_akhir"])
+        cek("Agustus: LENGKAP & seimbang", agu["status"].startswith("LENGKAP") and agu["posisi_keuangan"]["seimbang"])
+        d = jalan([fk, "--periode-awal", "2026-08-01", "--periode-akhir", "2026-08-31", "--saldo-awal-per", "awal-periode",
+                   "--titipan-pajak-awal", "1,5jt", "--format", "json"] + tet)
+        cek("awal-periode: titipan awal dipakai apa adanya",
+            d["posisi_keuangan"]["liabilitas"]["utang_pajak_daerah_titipan"] == 1200000)
+        d = jalan([fk, "--periode-awal", "2026-08-01", "--periode-akhir", "2026-08-31", "--format", "json"] + tet)
+        cek("titipan negatif: saran bukan beban_pajak_lain",
+            not any("beban_pajak_lain" in q for q in d["pertanyaan"]) and
+            any("--titipan-pajak-awal" in q for q in d["pertanyaan"]), d["pertanyaan"])
 
         # --- file rusak
         kosong = os.path.join(tmp, "kosong.csv")

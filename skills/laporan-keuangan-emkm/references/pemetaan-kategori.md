@@ -64,7 +64,7 @@ python3 <folder-skill-ini>/scripts/laporan_emkm.py --daftar-kategori
 
 ## Kasus yang sengaja ditanyakan, bukan ditebak
 - **Angsuran/cicilan pinjaman**: porsi bunga vs pokok (script menanyakan otomatis; jawab dengan `--bunga BARIS=NOMINAL`).
-- **PB1/PBJT**: bila dipungut terpisah dari pembeli, tetapkan `titipan_pajak` untuk pemungutan & penyetorannya; bila sudah termasuk penjualan, tetapkan `beban_pajak_lain`. Pertanyaan tertutup setelah baris itu di-`--tetapkan`.
+- **PB1/PBJT**: bila dipungut terpisah dari pembeli, tetapkan `titipan_pajak` untuk pemungutan & penyetorannya; bila sudah termasuk penjualan, tetapkan `beban_pajak_lain`. Pertanyaan tertutup setelah baris itu di-`--tetapkan`. PB1 bulan lalu yang belum disetor: `--titipan-pajak-awal`. Jangan menjadikan setoran PB1 titipan sebagai beban. Baris uang masuk yang menyebut PB1/PBJT (kecuali "belum/tidak termasuk PB1") tidak diklasifikasi otomatis.
 - "Transfer", "kirim", "ambil ATM" tanpa keterangan lain.
 - "PPN", "zakat" (usaha atau pribadi?), "arisan", "belanja dapur rumah" (bila tidak jelas pribadi).
 - "Cicilan" motor/HP: script memperlakukannya sebagai pembayaran pinjaman; jika itu barang pribadi → minta pengguna menetapkan `prive`.
