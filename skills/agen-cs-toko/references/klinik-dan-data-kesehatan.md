@@ -15,6 +15,9 @@
 Kalimat standar saat pertanyaan medis muncul (isi lengkap ada di `ATURAN.md` hasil wawancara):
 > "Untuk keluhan kesehatan seperti ini sebaiknya dikonsultasikan langsung ke dokter kami, ya. Mau saya bantu buatkan jadwal konsultasi?"
 
+**Tambahan wajib untuk keluhan yang terdengar berat/mendesak atau di luar jam praktik** (tetap bukan triase — bot tidak menilai tingkat kegawatan, hanya mengarahkan ke jalur aman bila pasien menyebut kondisi memburuk/tidak tertahankan):
+> "Kalau kondisinya memburuk atau terasa darurat, mohon segera ke IGD terdekat atau hubungi 119, ya — jangan menunggu balasan chat ini."
+
 ## Data pribadi kesehatan & UU PDP
 - Data kesehatan termasuk **kategori data pribadi yang bersifat spesifik** menurut UU Pelindungan Data Pribadi (UU No. 27 Tahun 2022), yang perlindungannya lebih ketat daripada data pribadi umum. *(Status: rujukan umum pasal, bukan kutipan pasal persis — sebelum dipakai di materi jualan/legal, cek ulang nomor pasal & tanggal berlaku terbaru dengan sumber resmi/konsultan hukum.)*
 - Praktik agar patuh secara wajar:

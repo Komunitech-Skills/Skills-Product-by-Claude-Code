@@ -70,16 +70,19 @@ Di luar jam kerja (dari `ATURAN.md`), FAQ tetap boleh dijawab (info tidak beruba
 Draf pembuka pertama ke pelanggan baru menyebut "asisten virtual [nama toko]" saat relevan, dan pelanggan boleh minta bicara dengan manusia kapan saja.
 
 ### 6. Rekap harian (opsional, perlu OpenClaw automation)
-Bantu buat automation harian yang mengirim ke Telegram pemilik: jumlah chat dibalas, 5 pertanyaan terbanyak, daftar yang dieskalasi, dan **pertanyaan yang tidak ada jawabannya di `PENGETAHUAN.md`** (bahan perbaikan FAQ). Perintah OpenClaw & cara amannya ada di `references/eskalasi-dan-kanal.md` §3. Tanyakan dulu jadwal & kanal tujuan, tunjukkan ringkasan, minta konfirmasi "Lanjut? (ya/tidak)" sebelum menjalankan perintah apa pun yang mengubah config.
+Setiap kali membuat draf atau menandai eskalasi, tambahkan **satu baris log** ke `cs/log/<YYYY-MM-DD>.md` (kategori pertanyaan, eskalasi ya/tidak, ada-di-pengetahuan ya/tidak — **tanpa nama/nomor pelanggan/pasien**). Rekap harian otomatis membaca file log ini (bukan mengira-ngira), lalu mengirim ke Telegram pemilik: jumlah chat dibalas, 5 kategori pertanyaan terbanyak, daftar yang dieskalasi, dan **pertanyaan yang tidak ada jawabannya di `PENGETAHUAN.md`** (bahan perbaikan FAQ). Format log & perintah OpenClaw ada di `references/eskalasi-dan-kanal.md` §3. Tanyakan dulu jadwal & kanal tujuan, tunjukkan ringkasan, minta konfirmasi "Lanjut? (ya/tidak)" sebelum menjalankan perintah apa pun yang mengubah config.
 
 ### 7. Setup kanal
-Jelaskan pilihan kanal memakai `references/eskalasi-dan-kanal.md` (Telegram default, WA hanya nomor terpisah + persetujuan risiko tertulis, allowlist pengirim yang benar). Jangan pernah menuliskan/menjalankan `allowFrom: ["*"]` untuk kanal yang menerima chat pelanggan baru — jelaskan kenapa di referensi tsb.
+Jelaskan pilihan kanal memakai `references/eskalasi-dan-kanal.md` (Telegram default dengan `dmPolicy: "pairing"` + persetujuan manual; WA **hanya** nomor terpisah + persetujuan risiko tertulis dengan `dmPolicy: "allowlist"`, **tidak pernah** `"pairing"` di WA — lihat alasannya di referensi tsb). Jangan pernah menuliskan/menjalankan `allowFrom: ["*"]` untuk kanal yang menerima chat pelanggan baru. Level 2 (auto-reply nomor WA CS otomatis) hanya dijelaskan sebagai jasa setup berpendamping (`references/eskalasi-dan-kanal.md` §5), bukan langkah yang dijalankan sendiri oleh pengguna awam.
+
+### 8. Nada bicara draf
+Ikuti nada brand dari `PENGETAHUAN.md`. Bila belum diisi, tentukan dari **petunjuk pesan pengguna**: bahasa formal/istilah bisnis, chat B2B, atau produk profesional (mis. jasa cetak, kantor, korporat) → pakai nada **formal-ringkas** tanpa emoji; chat santai, produk konsumen sehari-hari (F&B, fashion, skincare) → pakai nada **ramah-sopan** default (sapaan "Kak", emoji secukupnya, mengikuti `balas-chat-cs`). Sebutkan nada yang dipakai di catatan bila diasumsikan, bukan ditanyakan.
 
 ## Periksa otomatis draf (opsional)
 ```
 python3 <folder-skill-ini>/scripts/periksa_draf.py --pengetahuan cs/PENGETAHUAN.md --draf draf.txt
 ```
-Script memeriksa (Python standar, tanpa dependensi): (a) apakah ada nominal Rupiah di draf yang **tidak** ditemukan di `PENGETAHUAN.md` (potensi mengarang harga/stok), (b) apakah draf memuat pola data sensitif (16 digit mirip NIK, nomor kartu, kata "OTP"/"PIN"/"password") yang seharusnya tidak dibocorkan balik ke pelanggan. Keluaran JSON + ringkasan teks, exit code 0 jika bersih, 1 jika ada temuan yang harus dicek. Jika Python tidak bisa dijalankan, periksa manual: cocokkan tiap angka Rupiah di draf ke `PENGETAHUAN.md` satu per satu.
+Script memeriksa (Python standar, tanpa dependensi): (a) apakah ada nominal **Rupiah** (dengan/tanpa "Rp", termasuk format "89rb"/"1,5 juta") di draf yang **tidak** ditemukan di `PENGETAHUAN.md` (potensi mengarang harga), (b) apakah draf memuat pola data sensitif (16 digit mirip NIK, nomor kartu, kode OTP/verifikasi, kata "PIN"/"password") yang seharusnya tidak dibocorkan balik ke pelanggan. **Script ini TIDAK memeriksa klaim stok** ("tinggal 2", "masih ada", dst.) — itu tetap wajib dicek manual oleh admin. Keluaran JSON + ringkasan teks, exit code 0 jika bersih, 1 jika ada temuan yang harus dicek. Jika Python tidak bisa dijalankan, periksa manual: cocokkan tiap angka Rupiah di draf ke `PENGETAHUAN.md` satu per satu, dan cek stok ke data toko sebenarnya.
 
 ## Format output
 
@@ -126,7 +129,7 @@ Untuk COD, area Bintaro termasuk yang kami layani (radius 5km). Mau pesan berapa
 - [ ] Untuk klinik: tidak ada diagnosis/saran dosis/triase; sudah diarahkan ke tenaga kesehatan bila relevan.
 
 ## Batasan & penanganan error
-- **Mode Copilot adalah satu-satunya mode untuk chat ke pelanggan lewat WA Web** (keputusan pemilik Komunitech, lihat CLAUDE.md). Skill ini **tidak akan** menyiapkan konfigurasi auto-reply otomatis ke nomor pelanggan tanpa manusia mengirim; jika pengguna memaksa, jelaskan risikonya (ToS WhatsApp melarang bulk/auto-messaging, nomor bisa diblokir) dan arahkan ke `references/eskalasi-dan-kanal.md` §1 (Level 2/3) yang mensyaratkan nomor terpisah + persetujuan risiko tertulis + jasa pendampingan.
+- **Mode Copilot adalah satu-satunya mode untuk chat ke pelanggan lewat WA Web.** Skill ini **tidak akan** menyiapkan konfigurasi auto-reply otomatis ke nomor pelanggan tanpa manusia mengirim; jika pengguna memaksa, jelaskan risikonya (ToS WhatsApp melarang bulk/auto-messaging, nomor bisa diblokir, dan `dmPolicy: "pairing"` di WA membuat bot otomatis mengirim pesan ke pengirim baru) dan arahkan ke `references/eskalasi-dan-kanal.md` §1 & §5 (Level 2/3), yang mensyaratkan nomor terpisah + persetujuan risiko tertulis + jasa pendampingan, bukan swalayan.
 - Basis pengetahuan kosong/belum dibuat → tawarkan bikin dulu dari `templates/PENGETAHUAN.template.md`, jangan menjawab pelanggan dari asumsi.
 - Pertanyaan di luar cakupan toko (obrolan umum, topik sensitif tidak terkait) → balas singkat netral, tidak perlu eskalasi.
 - Kesehatan/klinik: hanya edukasi umum & info operasional (jadwal, cara daftar), **tidak pernah** diagnosis/skrining/dosis; lihat `references/klinik-dan-data-kesehatan.md` untuk dasar UU PDP data kesehatan.

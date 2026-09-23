@@ -35,3 +35,4 @@
 - Bot hanya boleh: info jadwal, cara daftar, jam praktik, dan edukasi umum dari materi yang disetujui dokter/pemilik.
 - Bot TIDAK boleh: menjawab gejala, memberi diagnosis, menyarankan dosis obat, atau triase kegawatan.
 - Kalimat wajib saat pertanyaan medis muncul: "[isi ... — mis. 'Untuk keluhan kesehatan seperti ini sebaiknya dikonsultasikan langsung ke dokter kami. Mau saya bantu buatkan jadwal konsultasi?']"
+- Kalimat wajib tambahan saat keluhan terdengar berat/darurat (bukan triase, hanya arahan keselamatan umum): "Kalau kondisinya memburuk atau terasa darurat, mohon segera ke IGD terdekat atau hubungi 119, ya — jangan menunggu balasan chat ini."
