@@ -21,6 +21,13 @@ Dua jalur produksi:
 2. **PRODUK SIAP PAKAI pengganti SaaS berbayar** — software bisnis yang **jalan di komputer pembeli** (data lokal, tanpa biaya bulanan) dan bisa dioperasikan AI agent: (a) kurasi open-source terbukti untuk kebutuhan besar (akuntansi, CRM, kasir, dll.), (b) alat kecil buatan Komunitech bila open-source tidak cocok. Riset: `research/software-pengganti-saas-*.md`.
 3. **SOLUSI KEBUTUHAN MEMBER VIP** — semua member VIP sudah memakai **OpenClaw**. Solusi dirancang dari kebutuhan nyata mereka (`research/kebutuhan-member-vip-*.md`): paket skill + konfigurasi OpenClaw (jadwal/cron, kanal WhatsApp) + panduan langkah demi langkah. Data member bersifat pribadi: **jangan pernah menyimpan nama/kontak member di repo** — hanya agregat.
 
+**Keputusan pemilik untuk jalur 3 (2026-09-23):**
+- **Kanal:** Telegram (bot resmi) = default untuk laporan & notifikasi. WhatsApp (OpenClaw memakai WhatsApp Web, tidak resmi, nomor bisa diblokir) hanya dengan **nomor terpisah** untuk notifikasi ke pemilik sendiri + persetujuan risiko tertulis. Agen CS di WA = mode **Copilot** (AI menyiapkan balasan, manusia yang mengirim). Tidak ada broadcast/blast lewat OpenClaw.
+- **Mesin 24 jam:** berikan panduan (laptop/mini PC selalu menyala atau VPS milik member) + tawarkan **jasa setup berbayar** Komunitech.
+- **Kripto:** hanya riset, ringkasan berita, jurnal trading, dan notifikasi harga yang diatur member sendiri. **Tanpa** auto-trading, **tanpa** rekomendasi beli/jual.
+- **Kesehatan:** hanya edukasi pasien, balasan chat umum non-diagnosis, dan laporan operasional klinik. **Tanpa** skrining/diagnosis/kalkulator medis.
+- Ditolak: clone wajah/suara tanpa izin, posting otomatis yang diklaim padahal tidak didukung, scraping marketplace lewat login browser.
+
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
 Bahasa: Bahasa Indonesia sebagai utama; bilingual ID/EN bila relevan.
