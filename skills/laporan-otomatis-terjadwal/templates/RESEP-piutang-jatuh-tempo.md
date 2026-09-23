@@ -14,7 +14,7 @@ _Salin ke `laporan/RESEP-piutang-jatuh-tempo.md`, isi bagian `<isi>`._
 1. Cek kesiapan data:
    ```bash
    python3 <folder-skill-laporan-otomatis-terjadwal>/scripts/cek_sumber_data.py \
-     --folder "<folder sumber>" --pola "<isi>" --label "piutang" --maks-umur-hari 3
+     --folder "<folder sumber>" --pola "<isi>" --label "piutang" --maks-umur-hari 1
    ```
 2. Jalankan (lihat `tagih-piutang/SKILL.md` untuk detail argumen lengkap):
    ```bash

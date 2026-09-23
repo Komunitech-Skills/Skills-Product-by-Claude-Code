@@ -12,6 +12,21 @@ Exit code 1  : tidak siap (folder tidak ada / tidak ada file cocok / file
                kosong / file terlalu lama) -> pesan siap dipakai apa adanya,
                JANGAN membuat laporan dengan angka nol.
 Exit code 2  : argumen salah.
+
+PENTING soal "file terbaru" vs periode laporan: script ini hanya memeriksa
+KESIAPAN file (ada/tidak kosong/tidak basi), BUKAN apakah isinya benar-benar
+mencakup periode yang diminta (mis. seluruh minggu untuk laporan mingguan).
+Setelah file dihitung oleh script skill sumber (rekap.py, dll.), WAJIB
+bandingkan periode hasil hitung dengan periode yang seharusnya -- lihat
+SKILL.md langkah "Cek periode". Pasang `--maks-umur-hari` LEBIH KETAT dari
+irama jadwal (harian: 1, mingguan: 6, bulanan: ~27) supaya file basi/tertinggal
+tidak lolos tanpa peringatan.
+
+Kalau folder berisi BANYAK file yang masing-masing hanya mencakup sebagian
+periode (mis. satu file per hari untuk laporan mingguan), memakai "file
+terbaru" saja TIDAK CUKUP -- pakai `--daftar-semua` untuk melihat semua file
+yang cocok (dengan tanggalnya), lalu gabungkan (concat, satu header saja) file
+yang tanggalnya masuk periode target sebelum dijalankan ke script rekap.
 """
 import argparse
 import csv
@@ -59,6 +74,10 @@ def main():
                     help="Peringatan bila file terbaru lebih tua dari N hari (opsional)")
     p.add_argument("--label", default="data",
                     help="Nama data untuk pesan (mis. 'penjualan', 'buku kas', 'stok')")
+    p.add_argument("--daftar-semua", action="store_true",
+                    help="Sertakan daftar SEMUA file yang cocok (path, tanggal ubah, ukuran) "
+                         "di field 'file_cocok' -- dipakai untuk menggabungkan beberapa file "
+                         "harian saat laporan mingguan/bulanan butuh lebih dari satu file")
     a = p.parse_args()
 
     if not os.path.isdir(a.folder):
@@ -133,6 +152,15 @@ def main():
             "Data mungkin sudah tidak mencerminkan periode laporan ini -- sebutkan ini di laporan."
         )
 
+    if a.daftar_semua and len(kandidat) > 1:
+        peringatan.append(
+            f"Ada {len(kandidat) - 1} file lain yang juga cocok pola di folder ini. Kalau file "
+            f"terbaru saja tidak mencakup seluruh periode laporan (mis. laporan mingguan tapi "
+            "file diekspor harian), gabungkan file-file yang tanggalnya masuk periode target "
+            "(lihat field 'file_cocok') menjadi satu file sebelum dihitung -- jangan hanya "
+            "memakai file terbaru begitu saja."
+        )
+
     hasil = {
         "status": "siap",
         "siap": True,
@@ -145,6 +173,16 @@ def main():
         "peringatan": peringatan,
         "pesan": f"Data {a.label} siap: {os.path.basename(terbaru)} ({baris} baris data, umur {umur_hari} hari).",
     }
+    if a.daftar_semua:
+        hasil["file_cocok"] = [
+            {
+                "path": pth,
+                "diubah_pada": datetime.fromtimestamp(os.path.getmtime(pth), tz=timezone.utc)
+                .isoformat(timespec="seconds"),
+                "ukuran_bytes": os.path.getsize(pth),
+            }
+            for pth in kandidat
+        ]
     print(json.dumps(hasil, ensure_ascii=False, indent=2))
     sys.exit(0)
 

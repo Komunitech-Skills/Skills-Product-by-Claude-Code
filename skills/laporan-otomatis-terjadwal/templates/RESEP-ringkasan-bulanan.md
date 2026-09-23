@@ -15,7 +15,7 @@ _Salin ke `laporan/RESEP-ringkasan-bulanan.md`, isi bagian `<isi>`._
 1. Cek kesiapan data:
    ```bash
    python3 <folder-skill-laporan-otomatis-terjadwal>/scripts/cek_sumber_data.py \
-     --folder "<folder sumber>" --pola "<isi>" --label "buku kas" --maks-umur-hari 35
+     --folder "<folder sumber>" --pola "<isi>" --label "buku kas" --maks-umur-hari 27
    ```
 2. Jalankan (lihat `laporan-keuangan-emkm/SKILL.md` untuk detail argumen lengkap):
    ```bash

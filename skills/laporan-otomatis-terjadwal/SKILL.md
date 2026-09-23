@@ -58,7 +58,7 @@ Cocokkan jawaban wawancara ke salah satu resep di `templates/`:
 | Resep | File | Memakai skill/logika |
 |---|---|---|
 | Penjualan harian/mingguan | `templates/RESEP-penjualan.md` | `rekap-penjualan-csv` |
-| Stok menipis | `templates/RESEP-stok-menipis.md` | Perhitungan sendiri (script skill ini) atas CSV stok, atau aplikasi buku-stok bila pengguna sudah memakainya |
+| Stok menipis | `templates/RESEP-stok-menipis.md` | **Jalur utama:** skill `buku-stok` (`scripts/stok.py info`/`laporan menipis`, hanya baca). **Jalur cadangan** (bila `buku-stok` tidak dipakai): CSV stok lengkap dari aplikasi kasir/inventori lain, dibaca & dibandingkan manual terhadap ambang -- skill ini **tidak** punya script hitung stok sendiri |
 | Kas mingguan / proyeksi kas | `templates/RESEP-kas-mingguan.md` | `arus-kas-13minggu` |
 | Piutang jatuh tempo | `templates/RESEP-piutang-jatuh-tempo.md` | `tagih-piutang` |
 | Ringkasan bulanan (keuangan) | `templates/RESEP-ringkasan-bulanan.md` | `laporan-keuangan-emkm` |
@@ -72,28 +72,63 @@ bagian yang bertanda `<isi>` dengan jawaban wawancara (folder sumber, kolom, jad
 Ini jadi dokumentasi tetap: kalau pengguna lupa jadwalnya menghitung apa, tinggal buka file ini.
 
 ### 2. Cek kesiapan sumber data (SEBELUM menjanjikan jadwal)
+Untuk resep **stok menipis dengan `buku-stok`**, langkah ini diganti oleh `stok.py info --json`
+(lihat `templates/RESEP-stok-menipis.md`) -- lewati ke Langkah 3. Untuk resep berbasis CSV
+(penjualan, kas, piutang, ringkasan bulanan, atau stok tanpa `buku-stok`):
+
 ```bash
 python3 <folder-skill-ini>/scripts/cek_sumber_data.py --folder "<folder-sumber>" \
-  --pola "*.csv" --label "<label-data, mis. penjualan>" --maks-umur-hari 10
+  --pola "*.csv" --label "<label-data, mis. penjualan>" --maks-umur-hari <lihat tabel>
 ```
 (Windows: ganti `python3` dengan `python` atau `py`.)
+
+**`--maks-umur-hari` HARUS lebih ketat dari irama jadwal**, supaya file basi (mis. ekspor minggu
+lalu yang lupa diganti) tidak lolos tanpa peringatan dan terkirim ulang seolah data baru:
+
+| Jadwal | `--maks-umur-hari` |
+|---|---|
+| Harian | `1` |
+| Mingguan | `6` |
+| Bulanan | `27` |
+
 - Kalau `"siap": false` → **jangan lanjut membuat jadwal**. Tunjukkan `pesan` dari hasil JSON
   apa adanya ke pengguna, minta mereka menyiapkan file dulu, lalu berhenti di sini.
 - Kalau ada `peringatan` (mis. file sudah lama) → sampaikan ke pengguna sebelum lanjut.
+- Kalau pengguna kemungkinan mengekspor **satu file per hari** (dilihat dari `file_lain_cocok`
+  di hasil, atau langsung ditanyakan) padahal jadwalnya mingguan/bulanan: jalankan ulang dengan
+  `--daftar-semua`, lihat daftar `file_cocok`, lalu **gabungkan** (concat, satu baris header saja)
+  file-file yang tanggalnya masuk periode target menjadi satu file sebelum Langkah 3. Kalau
+  pengguna hanya punya satu ekspor per periode (disarankan, lebih sederhana), langkah ini tidak
+  perlu.
 
 ### 3. Hitung & rakit contoh laporan (uji manual pertama)
 1. Jalankan script skill sumber sesuai resep (lihat tabel Langkah 1 dan `SKILL.md` skill
-   tersebut untuk argumen lengkap), dengan file dari Langkah 2.
-2. Ambil angka-angka kunci dari output JSON script itu (JANGAN mengarang atau membulatkan
+   tersebut untuk argumen lengkap), dengan file (atau file gabungan) dari Langkah 2.
+2. **Cek periode hasil terhadap periode yang diminta.** Kalau script sumber mengembalikan
+   rentang tanggal (mis. `periode.awal`/`periode.akhir` dari `rekap-penjualan-csv`), bandingkan
+   dengan periode yang seharusnya dicakup jadwal ini (mis. laporan Senin pagi = Senin-Minggu
+   minggu lalu). Kalau rentangnya **tidak mencakup penuh** periode itu (mis. cuma 1 hari untuk
+   laporan mingguan, atau bulan yang salah) -- **jangan kirim sebagai laporan periode itu**.
+   Beri tahu pengguna: "Data yang tersedia mencakup <awal>-<akhir>, bukan seluruh <periode yang
+   diminta>" dan hentikan (sama seperti data kosong -- lihat Langkah 2), jangan diam-diam
+   mengirim angka yang cakupannya berbeda dari yang dijanjikan ke pengguna.
+3. Ambil angka-angka kunci dari output JSON script itu (JANGAN mengarang atau membulatkan
    sendiri -- salin apa adanya).
-3. Susun JSON pesan (lihat skema di `scripts/susun_pesan.py`, bagian atas file) berisi maksimal
+4. Susun JSON pesan (lihat skema di `scripts/susun_pesan.py`, bagian atas file) berisi maksimal
    4-6 baris angka utama + 1 daftar pendek (mis. 3-5 produk terlaris) -- **tanpa nama/kontak
-   pelanggan perorangan**, sesuai UU PDP.
-4. Format pesan akhir:
+   pelanggan perorangan**, sesuai UU PDP. Isi `catatan` dengan hal netral (mis. cakupan periode),
+   dan `peringatan` dengan hal yang perlu diwaspadai (mis. baris dilewati, data mendekati batas
+   umur) -- keduanya tampil beda di pesan akhir (lihat Langkah 4 `susun_pesan.py`).
+5. Format pesan akhir:
    ```bash
    python3 <folder-skill-ini>/scripts/susun_pesan.py --data <file-json-pesan> --maks-baris 15
    ```
-5. Tunjukkan hasil pesan ini ke pengguna sebagai **contoh laporan pertama**, sebelum jadwal
+   - Exit code **3** berarti script mendeteksi pola mirip data pribadi (NIK/KTP/nomor HP/email)
+     di salah satu baris (lihat pesan di stderr, bukan di pesan itu sendiri). **Berhenti**,
+     tinjau ulang baris yang dituding bersama pengguna, dan jangan lanjut membuat/mengaktifkan
+     jadwal sebelum yakin baris itu memang aman (agregat, bukan identitas orang) atau sudah
+     dihapus dari pesan.
+6. Tunjukkan hasil pesan ini ke pengguna sebagai **contoh laporan pertama**, sebelum jadwal
    dibuat, supaya mereka tahu persis apa yang akan mereka terima nanti.
 
 ### 4. Tentukan kanal pengiriman
@@ -122,11 +157,18 @@ tujuan apa. Minta konfirmasi "Lanjut? (ya/tidak)". Setelah "ya", jalankan (lihat
 `references/openclaw.md` §1-§2 untuk semua opsi & alasan pemilihannya; Windows: `python`/`py`):
 
 ```bash
-openclaw automations add "<cron atau --every>" \
+openclaw automations add "<jadwal cron, mis. 0 7 * * 1>" \
   "Jalankan resep laporan di laporan/RESEP-<nama>.md untuk periode <periode>. Tulis ringkas dalam Bahasa Indonesia, maksimal 15 baris, angka penting di atas, format Rupiah 'Rp 1.250.000', TANPA nama/kontak pelanggan perorangan. Kalau file sumber belum ada/kosong, katakan itu dengan jelas -- JANGAN kirim angka nol." \
   --name "<Nama jadwal, mis. Laporan penjualan Senin>" --tz "Asia/Jakarta" --session isolated \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
+Ini "Bentuk A" (jadwal & pesan sebagai argumen posisi, TANPA `--cron`) -- **jangan** menambahkan
+`--cron`/`--at`/`--every` di perintah ini sekaligus, karena begitu salah satunya dipakai,
+argumen posisi pertama berarti nama job, bukan jadwal, dan bentrok dengan `--name` (CLI menolak).
+Untuk pengingat sekali jalan (`--at`) atau interval (`--every`), pakai "Bentuk B" (opsi penuh,
+tanpa argumen posisi) -- lihat `references/openclaw.md` §1 untuk kedua bentuk lengkap, keduanya
+sudah dibuktikan jalan di Gateway uji.
+
 Untuk WhatsApp (hanya setelah syarat §4 dipenuhi): ganti baris terakhir dengan
 `--channel whatsapp --to "+62..."`.
 
@@ -134,9 +176,17 @@ Kalau `exec`/perintah komputer tidak diizinkan di platform yang dipakai (atau bu
 beri perintah ini sebagai teks siap salin-tempel untuk dijalankan pengguna sendiri di terminal
 tempat OpenClaw berjalan, atau arahkan ke Control UI (`Settings → Automations`).
 
+**Ambil `id` dari hasil `add`** (field `"id"` di output JSON, mis.
+`"1307d905-fe39-4490-9b62-2468ee9e1b94"`) dan **pakai id itu** untuk semua langkah berikutnya
+(6-7). `run`/`disable`/`enable`/`edit`/`rm` **hanya menerima id, BUKAN nama** -- diuji langsung
+di Gateway OpenClaw: memakai nama di situ menjawab `"Automation not found"`. Kalau id tidak
+sempat dicatat, cari lagi dengan `openclaw automations list --json` (cocokkan lewat field
+`"name"`) atau `openclaw automations show "<nama persis>" --json` (`show` saja yang menerima
+nama persis selain id).
+
 ### 6. Uji sekali sebelum aktif
 ```bash
-openclaw automations run <id-atau-nama> --wait
+openclaw automations run <id> --wait
 ```
 Tunjukkan hasil run ini ke pengguna sebagai bukti jadwal bekerja, **sebelum** menyatakan jadwal
 "aktif". Kalau run gagal atau hasilnya beda dari contoh Langkah 3, cek lagi resep/argumen --
@@ -147,12 +197,14 @@ Sertakan ringkasan ini ke pengguna setelah jadwal aktif (detail lengkap di
 `references/openclaw.md` §5):
 ```bash
 openclaw automations list --all          # lihat semua jadwal (termasuk yang nonaktif)
-openclaw automations show <id>            # lihat detail satu jadwal
-openclaw automations disable <id>         # jeda sementara
-openclaw automations enable <id>          # aktifkan lagi
-openclaw automations edit <id> --cron "..." --to "..."   # ubah jadwal/tujuan
-openclaw automations rm <id>              # hapus permanen
+openclaw automations show <id>            # lihat detail satu jadwal (juga menerima nama persis)
+openclaw automations disable <id>         # jeda sementara (WAJIB id)
+openclaw automations enable <id>          # aktifkan lagi (WAJIB id)
+openclaw automations edit <id> --cron "..." --to "..."   # ubah jadwal/tujuan (WAJIB id)
+openclaw automations rm <id>              # hapus permanen (WAJIB id)
 ```
+Ingatkan pengguna: kalau lupa id, jalankan `openclaw automations list --all` dulu untuk
+mencarinya lewat nama jadwal.
 
 ### 8. Ingatkan syarat "komputer harus menyala"
 Jelaskan **sebelum** jadwal dianggap selesai (lihat `references/mesin-24-jam.md` untuk teks
@@ -163,29 +215,38 @@ tanpa menyebut harga) dan sarankan `cek-privasi-openclaw` sebagai langkah lanjut
 baru saja dibuka ke WhatsApp/publik.
 
 ## Format output
-Pesan laporan mengikuti keluaran `susun_pesan.py`: judul tebal, subjudul (periode), baris blank,
-lalu maksimal ~15 baris berisi angka penting dahulu, daftar pendek (opsional), dan catatan/
-peringatan di bagian bawah bila ada. Contoh lengkap tiap resep ada di
+Pesan laporan mengikuti keluaran `susun_pesan.py`: judul tebal, subjudul (periode), lalu
+maksimal ~15 baris berisi angka penting dahulu, daftar pendek (opsional), catatan netral, dan
+peringatan (⚠️) di bagian bawah bila ada -- catatan & peringatan tampil beda supaya pengguna
+tahu mana info biasa dan mana yang perlu diwaspadai. Contoh lengkap tiap resep ada di
 `references/contoh-pesan.md`.
 
 ## Contoh
 **Input pengguna:** "Buatkan laporan penjualan otomatis tiap Senin jam 7 pagi, kirim ke
 Telegram saya."
 
-**Alur:** tanyakan sumber data & tujuan (ID chat Telegram) → cek folder sumber siap → hitung
-lewat `rekap-penjualan-csv` → rakit & tunjukkan contoh pesan → buat jadwal
-`openclaw automations add "0 7 * * 1" ... --tz Asia/Jakarta --announce --channel telegram --to "<id>"`
-→ uji dengan `openclaw automations run` → tunjukkan cara lihat/jeda/hapus jadwal → ingatkan
-syarat komputer menyala.
+**Alur:** tanyakan sumber data & tujuan (ID chat Telegram) → cek folder sumber siap (umur data <
+6 hari untuk mingguan) → hitung lewat `rekap-penjualan-csv` → cek periode hasil mencakup Senin-
+Minggu lalu → rakit & tunjukkan contoh pesan → buat jadwal
+`openclaw automations add "0 7 * * 1" ... --tz Asia/Jakarta --announce --channel telegram --to "<chat-id>"`
+→ catat `id` dari hasilnya → uji dengan `openclaw automations run <id> --wait` → tunjukkan cara
+lihat/jeda/hapus jadwal (pakai `id`) → ingatkan syarat komputer menyala.
 
 ## Checklist sebelum jadwal dianggap aktif
-- [ ] Sumber data sudah dicek `cek_sumber_data.py` dan berstatus siap (atau pengguna sudah
-      diberi tahu apa yang kurang, dan proses berhenti di situ).
+- [ ] Sumber data sudah dicek (`cek_sumber_data.py` atau `stok.py info` untuk buku-stok) dan
+      berstatus siap (atau pengguna sudah diberi tahu apa yang kurang, dan proses berhenti di
+      situ). `--maks-umur-hari` sesuai irama jadwal (harian 1 / mingguan 6 / bulanan 27).
+- [ ] Periode hasil hitung sudah dicek mencakup penuh periode yang diminta (Langkah 3.2) --
+      bukan cuma 1 hari untuk laporan mingguan, dsb.
 - [ ] Contoh laporan pertama sudah ditunjukkan ke pengguna sebelum jadwal dibuat.
+- [ ] `susun_pesan.py` tidak keluar dengan exit code 3 (indikasi data pribadi) untuk contoh ini,
+      atau sudah ditinjau ulang bersama pengguna sampai aman.
 - [ ] Penerima adalah pemilik/admin sendiri, bukan grup/pelanggan.
 - [ ] Kalau kanal WhatsApp: nomor terpisah + persetujuan risiko tertulis sudah didapat.
-- [ ] Jadwal sudah diuji sekali (`automations run`) dan hasilnya sesuai sebelum dianggap aktif.
-- [ ] Pengguna sudah diberi tahu cara melihat/menjeda/mengubah/menghapus jadwal.
+- [ ] `id` jadwal (dari hasil `automations add`) sudah dicatat.
+- [ ] Jadwal sudah diuji sekali (`automations run <id> --wait`) dan hasilnya sesuai sebelum
+      dianggap aktif.
+- [ ] Pengguna sudah diberi tahu cara melihat/menjeda/mengubah/menghapus jadwal (dengan `id`).
 - [ ] Pengguna sudah diberi tahu jadwal butuh komputer menyala terus + opsi-opsinya.
 
 ## Batasan & penanganan error
@@ -195,9 +256,17 @@ syarat komputer menyala.
   saat jadwal berjalan sendiri nanti (lihat Langkah 5).
 - **Tidak ada broadcast/kirim massal.** Tujuan pengiriman selalu satu penerima (pemilik/admin),
   tidak pernah grup atau banyak pelanggan sekaligus.
-- **Tanpa data pribadi pelanggan.** `susun_pesan.py` memperingatkan (tidak memblokir) bila
-  mendeteksi kata seperti "nomor HP"/"NIK" di baris pesan -- periksa ulang sebelum mengaktifkan
-  jadwal. Laporan piutang/CS hanya boleh berisi jumlah/nominal agregat, bukan daftar nama+kontak.
+- **Data basi/tidak lengkap tidak pernah dikirim seolah data terbaru.** `--maks-umur-hari` diatur
+  lebih ketat dari irama jadwal (Langkah 2), dan periode hasil hitung selalu dicek terhadap
+  periode yang diminta (Langkah 3.2) sebelum dikirim. Folder dengan banyak file per periode
+  (mis. ekspor harian untuk laporan mingguan) memakai `--daftar-semua` + penggabungan file,
+  bukan hanya file terbaru.
+- **Tanpa data pribadi pelanggan.** `susun_pesan.py` mendeteksi (bukan memblokir) pola NIK/KTP/
+  nomor HP/email dengan batas kata (tidak salah kena kata seperti "unik"/"Klinik") dan keluar
+  dengan **exit code 3** bila ada -- penjelasannya hanya di stderr, **tidak** ditambahkan ke isi
+  pesan yang dikirim. Exit code ini WAJIB ditindaklanjuti (lihat Langkah 3.5): tinjau ulang baris
+  yang dituding sebelum mengaktifkan jadwal. Laporan piutang/CS hanya boleh berisi jumlah/nominal
+  agregat, bukan daftar nama+kontak.
 - **Klinik/kesehatan:** hanya angka operasional agregat (kunjungan, pendapatan, jam ramai).
   Jangan pernah menjadwalkan laporan berisi nama pasien atau diagnosis.
 - **Gateway harus menyala** saat jam jadwal -- kalau tidak, run tidak pernah terjadi (bukan

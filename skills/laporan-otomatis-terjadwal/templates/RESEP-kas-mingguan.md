@@ -16,7 +16,7 @@ _Salin ke `laporan/RESEP-kas-mingguan.md`, isi bagian `<isi>`._
 1. Cek kesiapan file rencana kas:
    ```bash
    python3 <folder-skill-laporan-otomatis-terjadwal>/scripts/cek_sumber_data.py \
-     --folder "<folder sumber>" --pola "rencana-kas*.csv" --label "rencana kas" --maks-umur-hari 14
+     --folder "<folder sumber>" --pola "rencana-kas*.csv" --label "rencana kas" --maks-umur-hari 6
    ```
 2. Jalankan (lihat `arus-kas-13minggu/SKILL.md` untuk detail argumen lengkap):
    ```bash

@@ -18,19 +18,23 @@
 **Sebelum:** Buka Excel tiap Senin pagi, hitung omzet manual, ketik ulang ke WA -- 30-60 menit.
 
 **Sesudah (cukup ketik):** "Buatkan laporan penjualan otomatis tiap Senin jam 7 pagi, kirim ke Telegram saya."
-→ AI menyiapkan jadwal, menguji sekali dengan data asli, lalu setiap Senin pagi laporan seperti ini masuk sendiri ke Telegram:
+→ AI menyiapkan jadwal, menguji sekali dengan data asli, lalu setiap Senin pagi laporan seperti ini masuk sendiri ke Telegram (contoh nyata dari uji skill, kedai kopi, 62 baris transaksi seminggu):
 ```
-*Laporan Penjualan Harian*
-2026-09-21 s/d 2026-09-22
+*Laporan Penjualan Mingguan*
+Senin 14 - Minggu 20 Sep 2026
 
-Total omzet: Rp 469.000
-Jumlah transaksi: 4
-Rata-rata omzet/hari: Rp 234.500
+Total omzet: Rp 2.778.000
+Jumlah baris/item terjual: 62
+Rata-rata omzet/hari: Rp 396.857
+Hari terbaik: Minggu 20/09 (Rp 524.000)
+Hari terendah: Rabu 16/09 (Rp 270.000)
 
 *Produk terlaris*
-- Kopi Susu -- 22 pcs -- Rp 330.000
-- Roti Bakar -- 5 pcs -- Rp 75.000
-- Teh Manis -- 8 pcs -- Rp 64.000
+- Matcha Latte -- 39 pcs -- Rp 858.000
+- Roti Bakar Coklat -- 38 pcs -- Rp 570.000
+- Croissant -- 26 pcs -- Rp 520.000
+
+⚠️ 7 transaksi berstatus Batal tidak dihitung.
 ```
 
 ## Cara pakai
