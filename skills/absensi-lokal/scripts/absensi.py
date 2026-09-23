@@ -2201,7 +2201,8 @@ def _ekspor_gaji(args, hasil):
             r = list(r) + [""] * (len(header) - len(r))
             cari = isi.get(r[i_nama].strip().lower()) or (isi.get(r[i_nik].strip().lower()) if i_nik is not None else None)
             if cari is None:
-                catat.append("'%s' di file gaji tidak ada di data absensi; kolom lemburnya dibiarkan." % r[i_nama])
+                catat.append("'%s' di file gaji tidak ada di rekap ini (belum terdaftar di absensi, atau tersaring "
+                             "--pola/--karyawan); kolom lemburnya dibiarkan." % r[i_nama])
             else:
                 rr, lk, ll = cari
                 cocok.add(rr["kode"])
