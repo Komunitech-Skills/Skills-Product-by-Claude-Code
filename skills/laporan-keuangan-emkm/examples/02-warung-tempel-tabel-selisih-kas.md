@@ -1,4 +1,4 @@
-# 02 — Warung sembako, tabel ditempel di chat, uang laci kurang Rp 150.000 — diuji ulang dengan v1.1.0
+# 02 — Warung sembako, tabel ditempel di chat, uang laci kurang Rp 150.000 — diuji ulang dengan v1.2.0
 
 ## Skenario
 S2, permintaan normal dari pengguna awam. Tabel ditempel langsung di chat (format Markdown, tanggal "1 Agt 2026"). Pengguna memberi kas awal, stok awal/akhir, dan uang nyata di laci. Uang nyata di laci ternyata kurang dari hitungan buku.
@@ -27,7 +27,7 @@ S2, permintaan normal dari pengguna awam. Tabel ditempel langsung di chat (forma
 
 ## Output
 
-### Langkah agent (script v1.1.0)
+### Langkah agent (script v1.2.0)
 1. Tabel disimpan apa adanya ke `s2-tempel.md`, lalu:
    `python3 scripts/laporan_emkm.py s2-tempel.md --nama-usaha "Warung Bu Tini" --kas-awal "2 juta" --persediaan-awal "3,5jt" --persediaan-akhir "3 juta" --kas-akhir-aktual "Rp 7.650.000"`
 2. "Kulakan gas melon" kini otomatis masuk pembelian barang dagangan dan "Iuran kebersihan pasar" masuk beban lain-lain. Status SEMENTARA karena 2 transaksi belum jelas, 1 pertanyaan "angka mustahil" (kas sempat minus di 1 Agustus), dan selisih kas laci. Agent bertanya sekali:
@@ -40,15 +40,15 @@ S2, permintaan normal dari pengguna awam. Tabel ditempel langsung di chat (forma
 
 **Jawaban pengguna:** "dua2nya pribadi. tgl 1 itu pake uang jualan hari itu, jualan emang aku catet mingguan. yg kurang 150rb gatau, catet aja."
 
-3. Script dijalankan ulang dengan `--tetapkan 13=prive --tetapkan 17=prive --catat-selisih-kas`. Hasil:
+3. Script dijalankan ulang dengan `--tetapkan 13=prive --tetapkan 17=prive --catat-selisih-kas --abaikan-kas-minus`. Hasil:
 
 ---
 
 # Laporan Keuangan Warung Bu Tini
-Periode 1 Agustus 2026 s.d. 31 Agustus 2026 · disusun mengacu pada SAK EMKM · status: **SEMENTARA**
+Periode 1 Agustus 2026 s.d. 31 Agustus 2026 · disusun mengacu pada SAK EMKM · status: **LENGKAP (dengan asumsi)**
 
 ## Ringkasan untuk pemilik
-Usaha kamu UNTUNG Rp 6.100.000 selama 1 Agustus 2026 s.d. 31 Agustus 2026. Dari penjualan bersih Rp 14.700.000, yang tersisa jadi laba sekitar 41,5% (setiap Rp 100.000 penjualan, labanya sekitar Rp 41.497). Pengeluaran terbesar: pembelian bahan/barang dagangan sebesar Rp 6.950.000 (85,8% dari total biaya). Kamu mengambil Rp 950.000 untuk keperluan pribadi (prive). Ini tidak mengurangi laba, tetapi mengurangi modal usaha. Uang kas di akhir periode: Rp 7.650.000. Ada 1 hal yang perlu kamu jawab dulu (lihat 'Perlu dicek'), jadi angka ini masih SEMENTARA.
+Usaha kamu UNTUNG Rp 6.100.000 selama 1 Agustus 2026 s.d. 31 Agustus 2026. Dari penjualan bersih Rp 14.700.000, yang tersisa jadi laba sekitar 41,5% (setiap Rp 100.000 penjualan, labanya sekitar Rp 41.497). Pengeluaran terbesar: pembelian bahan/barang dagangan sebesar Rp 6.950.000 (85,8% dari total biaya). Kamu mengambil Rp 950.000 untuk keperluan pribadi (prive). Ini tidak mengurangi laba, tetapi mengurangi modal usaha. Uang kas di akhir periode: Rp 7.650.000.
 
 ## 1. Laporan Laba Rugi
 Warung Bu Tini — untuk periode 1 Agustus 2026 s.d. 31 Agustus 2026
@@ -98,8 +98,7 @@ Warung Bu Tini — per 31 Agustus 2026
 | Modal akhir | Rp 10.650.000 |
 | **Total liabilitas + ekuitas** | **Rp 10.650.000** |
 
-⚠ **Cek keseimbangan:** secara hitungan Aset = Liabilitas + Ekuitas (Rp 10.650.000), TETAPI ada angka mustahil sehingga laporan belum layak dipakai:
-- Saldo kas sempat minus (-Rp 450.000 pada 1 Agustus 2026).
+✔ **Cek keseimbangan:** Aset = Liabilitas + Ekuitas (Rp 10.650.000). Neraca seimbang.
 
 ## 3. Catatan atas Laporan Keuangan (ringkas)
 **1. Umum.** Warung Bu Tini adalah usaha yang laporan keuangannya disusun untuk periode 1 Agustus 2026 s.d. 31 Agustus 2026. [Lengkapi: bentuk usaha (perorangan/CV/dll.), alamat, dan kegiatan usaha utama.]
@@ -123,26 +122,23 @@ Warung Bu Tini — per 31 Agustus 2026
 **10. Beban** diakui saat terjadi. Total beban usaha Rp 1.150.000, beban keuangan Rp 0, beban pajak penghasilan Rp 0. [Lengkapi status perpajakan usaha bila perlu, mis. memakai PPh final UMKM.]
 
 
-## Perlu dicek
-**Pertanyaan untuk pemilik** (jawab agar laporan final):
-1. Angka mustahil: Saldo kas sempat minus (-Rp 450.000 pada 1 Agustus 2026). Berapa kas + saldo rekening di awal periode? Atau ada pemasukan yang belum dicatat?
-
 ## Asumsi yang dipakai
 - Periode laporan dianggap 1 Agustus 2026 s.d. 31 Agustus 2026 (bulan penuh dari transaksi pertama sampai terakhir).
-- Saldo awal piutang tidak diberikan, dianggap Rp 0.
-- Saldo awal aset tetap tidak diberikan, dianggap Rp 0.
-- Saldo awal utang ke pemasok tidak diberikan, dianggap Rp 0.
-- Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0.
+- Saldo awal piutang tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal aset tetap tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal utang ke pemasok tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0 (per awal data).
 - Selisih kas Rp 150.000 dicatat sebagai beban selisih kas (kas kurang) atas konfirmasi pemilik.
 - Modal awal dihitung dari (aset awal - utang awal) = Rp 5.500.000.
+- Saldo kas sempat minus (-Rp 450.000 pada 1 Agustus 2026) dan pemilik mengonfirmasi ini karena urutan pencatatan (mis. penjualan dicatat mingguan), bukan transaksi yang terlewat.
 
 ---
 _Laporan ini disusun dari data yang Anda berikan dan mengacu pada SAK EMKM. Ini BUKAN laporan yang telah diaudit akuntan publik dan bukan nasihat pajak. Untuk pengajuan kredit, tender, atau pelaporan pajak, mintalah akuntan/konsultan pajak untuk memeriksa. Nominal dibulatkan ke rupiah terdekat._
 
 ---
 
-### Penjelasan status SEMENTARA
-Semua angka sudah final menurut jawaban Ibu: laba **Rp 6.100.000** (setelah selisih kas Rp 150.000 dicatat sebagai beban) dan neraca seimbang secara hitungan (Rp 10.650.000). Label SEMENTARA hanya tersisa karena script menandai "kas sempat minus" pada 1 Agustus. Ibu sudah menjelaskan bahwa jualan dicatat mingguan, jadi kas tidak benar-benar minus. Kalau laporan ini mau dipakai di luar (bank/koperasi), sebaiknya mulai bulan depan jualan dicatat harian, atau catat hasil jualan tanggal 1–2 di tanggalnya.
+### Catatan untuk pemilik
+Kas sempat tercatat minus Rp 450.000 pada 1 Agustus hanya karena jualan dicatat mingguan (sudah Ibu konfirmasi), jadi ini tidak dianggap kesalahan dan sudah ditulis di bagian Asumsi. Kalau laporan ini mau dipakai untuk bank/koperasi, sebaiknya mulai bulan depan jualan dicatat harian.
 
 ### Saran tindakan
 1. Laba bersih **Rp 6.100.000** (41,5% dari penjualan). Prive Rp 950.000, jadi sebagian besar laba masih ada di usaha (stok + kas).
@@ -151,8 +147,7 @@ Semua angka sudah final menurut jawaban Ibu: laba **Rp 6.100.000** (setelah seli
 
 Mau dibuatkan versi PDF?
 
-## Catatan penguji (uji ulang v1.1.0)
+## Catatan penguji (uji ulang v1.2.0)
 - Verifikasi independen (hitung manual): penjualan Rp 14.700.000; HPP = 3.500.000 + 6.950.000 (sembako, rokok, **gas melon**) − 3.000.000 = Rp 7.450.000; beban = sewa 750.000 + listrik 185.000 + kresek 45.000 + iuran 20.000 + selisih kas 150.000 = Rp 1.150.000; laba **Rp 6.100.000 ✔**; aset 7.650.000 + 3.000.000 = Rp 10.650.000 = modal 5.500.000 + 6.100.000 − 950.000 ✔.
-- **Cacat S2 lama tuntas:** kulakan gas → pembelian barang, iuran kebersihan pasar → beban lain. **Cacat S4 lama tuntas:** `--catat-selisih-kas` membukukan selisih Rp 150.000 sebagai beban dan neraca seimbang.
-- **Cacat baru (sedang):** status tidak bisa lepas dari SEMENTARA. Pertanyaan "kas sempat minus" tetap muncul walau pemilik sudah menjelaskan (jualan dicatat mingguan), dan tidak ada opsi untuk mengonfirmasinya. Pola "jualan dicatat mingguan" sangat umum di warung. Agent harus menjelaskan sendiri mengapa label SEMENTARA tetap ada (lihat di atas).
-- Ringan: bagian "Tren per periode" sudah tidak tampil untuk 1 bulan (sesuai SKILL.md).
+- Kulakan gas → pembelian barang, iuran kebersihan pasar → beban lain (sejak v1.1.0). `--catat-selisih-kas` membukukan selisih Rp 150.000 sebagai beban; neraca seimbang.
+- **BS2 (v1.1.0) tuntas:** `--abaikan-kas-minus` menutup pertanyaan "kas sempat minus" setelah pemilik mengonfirmasi. Konfirmasinya dicatat di Asumsi, dan status menjadi **LENGKAP (dengan asumsi)**. Tanpa opsi ini, laporan tetap SEMENTARA dan ditanyakan (aman).

@@ -1,4 +1,4 @@
-# 07 — Warung makan: kulakan gas, air mineral, iuran pasar, PB1, dan "(200.000)" di kolom Keluar (uji S2 & S5 v1.1.0)
+# 07 — Warung makan: kulakan gas, air mineral, iuran pasar, PB1, dan "(200.000)" di kolom Keluar (uji S2 & S5, diuji ulang dengan v1.2.0)
 
 ## Skenario
 Uji ulang klasifikasi yang dulu salah (S2) dan nominal dalam kurung/minus di kolom Keluar (S5), dengan buku kas warung makan fiktif. Isinya kulakan gas untuk dijual, air mineral untuk dijual, gas untuk masak, air PDAM, iuran kebersihan pasar, setoran PB1, `(200.000)` dan `-150.000` di kolom Keluar, serta `(50.000)` di kolom Masuk.
@@ -35,15 +35,15 @@ Tanggal,Keterangan,Masuk,Keluar
 
 **Jawaban pengguna:** "PB1 aku tanggung sendiri, ga dipungut. yang retur itu salah ketik, hapus aja."
 
-3. Baris 30 Juli dihapus dari file (atas persetujuan pengguna), lalu script dijalankan ulang:
+3. Baris 30 Juli dihapus dari file (atas persetujuan pengguna), lalu script dijalankan ulang dengan `--tetapkan 8=beban_pajak_lain` (PB1 ditanggung sendiri, jadi beban):
 
 ---
 
 # Laporan Keuangan Warung Makan Mbak Yuni
-Periode 1 Juli 2026 s.d. 31 Juli 2026 · disusun mengacu pada SAK EMKM · status: **SEMENTARA**
+Periode 1 Juli 2026 s.d. 31 Juli 2026 · disusun mengacu pada SAK EMKM · status: **LENGKAP (dengan asumsi)**
 
 ## Ringkasan untuk pemilik
-Usaha kamu UNTUNG Rp 5.985.000 selama 1 Juli 2026 s.d. 31 Juli 2026. Dari penjualan bersih Rp 8.100.000, yang tersisa jadi laba sekitar 73,9% (setiap Rp 100.000 penjualan, labanya sekitar Rp 73.889). Pengeluaran terbesar: pembelian bahan/barang dagangan sebesar Rp 1.870.000 (77,4% dari total biaya). Uang kas di akhir periode: Rp 8.685.000. Ada 1 hal yang perlu kamu jawab dulu (lihat 'Perlu dicek'), jadi angka ini masih SEMENTARA.
+Usaha kamu UNTUNG Rp 5.985.000 selama 1 Juli 2026 s.d. 31 Juli 2026. Dari penjualan bersih Rp 8.100.000, yang tersisa jadi laba sekitar 73,9% (setiap Rp 100.000 penjualan, labanya sekitar Rp 73.889). Pengeluaran terbesar: pembelian bahan/barang dagangan sebesar Rp 1.870.000 (77,4% dari total biaya). Uang kas di akhir periode: Rp 8.685.000.
 
 ## 1. Laporan Laba Rugi
 Warung Makan Mbak Yuni — untuk periode 1 Juli 2026 s.d. 31 Juli 2026
@@ -116,9 +116,6 @@ Warung Makan Mbak Yuni — per 31 Juli 2026
 
 
 ## Perlu dicek
-**Pertanyaan untuk pemilik** (jawab agar laporan final):
-1. Baris 8 "Bayar pajak restoran PB1 Juni": apakah pajak daerah (PB1/PBJT) ini dipungut dari pembeli? Jika ya, uang itu titipan untuk disetor, bukan beban usaha; beri tahu agar dikoreksi.
-
 **Baris yang sengaja dilewati:** baris saldo awal (dipakai sebagai kas awal bila --kas-awal tidak diisi) (1 baris)
 
 **Peringatan:**
@@ -127,19 +124,16 @@ Warung Makan Mbak Yuni — per 31 Juli 2026
 ## Asumsi yang dipakai
 - Periode laporan dianggap 1 Juli 2026 s.d. 31 Juli 2026 (bulan penuh dari transaksi pertama sampai terakhir).
 - Kas awal diambil dari baris 'saldo awal' di file: Rp 3.000.000.
-- Saldo awal piutang tidak diberikan, dianggap Rp 0.
-- Saldo awal aset tetap tidak diberikan, dianggap Rp 0.
-- Saldo awal utang ke pemasok tidak diberikan, dianggap Rp 0.
-- Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0.
+- Saldo awal piutang tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal aset tetap tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal utang ke pemasok tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0 (per awal data).
 - Modal awal dihitung dari (aset awal - utang awal) = Rp 3.000.000.
 
 ---
 _Laporan ini disusun dari data yang Anda berikan dan mengacu pada SAK EMKM. Ini BUKAN laporan yang telah diaudit akuntan publik dan bukan nasihat pajak. Untuk pengajuan kredit, tender, atau pelaporan pajak, mintalah akuntan/konsultan pajak untuk memeriksa. Nominal dibulatkan ke rupiah terdekat._
 
 ---
-
-### Penjelasan status SEMENTARA
-Angka di atas sudah final sesuai jawaban Mbak. PB1 sudah dicatat sebagai biaya karena Mbak tanggung sendiri. Label SEMENTARA hanya karena script selalu menampilkan pertanyaan PB1 dan belum punya cara untuk menandainya "sudah dijawab".
 
 ### Saran tindakan
 1. Laba bersih **Rp 5.985.000** dari penjualan Rp 8.100.000 (73,9%). Angka ini tinggi karena gaji/tenaga sendiri dan sewa tempat tidak tercatat. Kalau Mbak menggaji diri sendiri, catat sebagai prive agar laba usaha tetap terlihat jujur.
@@ -149,4 +143,5 @@ Angka di atas sudah final sesuai jawaban Mbak. PB1 sudah dicatat sebagai biaya k
 - **Verifikasi independen:** pembelian 1.200.000 + 120.000 + 200.000 + 200.000 + 150.000 = Rp 1.870.000; HPP = 0 + 1.870.000 − 300.000 = Rp 1.570.000; beban usaha = iuran 25.000 + PB1 350.000 + gas masak 90.000 + PDAM 80.000 = Rp 545.000; laba = 8.100.000 − 1.570.000 − 545.000 = **Rp 5.985.000 ✔**; kas = 3.000.000 + 8.100.000 − 2.415.000 = **Rp 8.685.000 ✔**; aset Rp 8.985.000 = modal 3.000.000 + 5.985.000 ✔.
 - **Cacat S2 lama tuntas:** kulakan gas & air mineral = pembelian dagangan; gas masak/PDAM tetap utilitas; iuran kebersihan pasar = beban lain; PB1 = pajak daerah (bukan PPh) dan ditanyakan.
 - **Cacat S5 lama tuntas:** `(200.000)` dan `-150.000` di kolom Keluar menjadi uang keluar (v1.0.0 membaliknya menjadi uang masuk). Nilai kurung di kolom Masuk tidak ditebak, tetapi ditanyakan.
-- **Cacat baru (sedang):** pertanyaan PB1 dipicu oleh teks keterangan dan **tidak bisa ditutup**. Bahkan `--tetapkan 8=beban_pajak_lain` tetap membuat status SEMENTARA. Untuk rumah makan yang menyetor PB1 setiap bulan, laporan tidak pernah bisa final. Jika PB1 memang dipungut dari pembeli, tidak ada kategori/opsi "titipan pajak" untuk mengoreksinya (penjualan termasuk PB1 → pendapatan terlalu tinggi). *Saran:* lewati pertanyaan bila baris ditetapkan pengguna (`t["sumber"] == "ditetapkan pengguna"`), dan tambahkan kategori dua arah `titipan_pajak` (masuk = PB1 dipungut, keluar = penyetoran) yang hanya mengubah utang pajak di neraca.
+- **BS3 (v1.1.0) tuntas di v1.2.0:** `--tetapkan 8=beban_pajak_lain` menutup pertanyaan dan status menjadi **LENGKAP (dengan asumsi)**. Pertanyaan PB1 kini memberi dua pilihan jelas: (a) `titipan_pajak` bila PB1 dicatat terpisah saat dipungut, (b) `beban_pajak_lain` bila sudah ikut penjualan/ditanggung sendiri. Perlakuan titipan diuji di `09-kafe-pb1-titipan-lintas-bulan.md`.
+- *(Catatan v1.1.0, kini sudah diperbaiki:)* pertanyaan PB1 dipicu oleh teks keterangan dan **tidak bisa ditutup**. Bahkan `--tetapkan 8=beban_pajak_lain` tetap membuat status SEMENTARA. Untuk rumah makan yang menyetor PB1 setiap bulan, laporan tidak pernah bisa final. Jika PB1 memang dipungut dari pembeli, tidak ada kategori/opsi "titipan pajak" untuk mengoreksinya (penjualan termasuk PB1 → pendapatan terlalu tinggi). *Saran:* lewati pertanyaan bila baris ditetapkan pengguna (`t["sumber"] == "ditetapkan pengguna"`), dan tambahkan kategori dua arah `titipan_pajak` (masuk = PB1 dipungut, keluar = penyetoran) yang hanya mengubah utang pajak di neraca.

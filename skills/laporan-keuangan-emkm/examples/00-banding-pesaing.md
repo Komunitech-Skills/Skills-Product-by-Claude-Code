@@ -64,3 +64,6 @@ Penguji berperan sebagai agent yang memuat `laporan-keuangan-psak` dengan permin
 
 ## Pembaruan uji ulang v1.1.0 (2026-09-23)
 Pembanding pesaing tidak diulang (isi pesaing tidak berubah). Skill kita v1.1.0 kini juga memisahkan bunga KUR dan mencatat kasbon sebagai piutang, sehingga keunggulan akurasi atas `laporan-keuangan-psak` bertambah. Dua ide dari pesaing belum diadopsi: pemisahan aset/liabilitas lancar vs tidak lancar, dan jadwal penyusutan per aset di CaLK. Kesimpulan tetap: **skill kita menang**.
+
+## Pembaruan uji ulang v1.2.0 (2026-09-23)
+Tidak ada perubahan di pihak pesaing. Skill v1.2.0 menambah laporan bulanan bersambung, titipan PB1, dan penyusutan per aset dari harga beli (hitungan internal; jadwal per aset belum ditampilkan di CaLK). Kesimpulan tetap: **skill kita menang**. Ide pesaing yang belum diadopsi: pemisahan lancar/tidak lancar dan jadwal penyusutan per aset di CaLK.

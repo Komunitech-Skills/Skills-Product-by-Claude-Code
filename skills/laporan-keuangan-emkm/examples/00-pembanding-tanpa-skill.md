@@ -190,3 +190,6 @@ Data dan permintaan yang sama dijalankan ulang dengan script v1.1.0 (lihat `01-k
 - **Angsuran KUR** ditanyakan porsi bunganya dan dipecah dengan `--bunga 52=208.334`. Hasil akhir dengan skill: laba **−Rp 2.026.917**, utang KUR Rp 22.916.667, aset = L + E = Rp 37.939.750 (diverifikasi independen). Versi tanpa skill tetap menganggap angsuran sebagai pokok seluruhnya dan menebak zakat pribadi sebagai beban.
 
 Kesimpulan A/B tidak berubah: **skill jelas lebih baik**, dan selisih keunggulannya bertambah.
+
+## Pembaruan uji ulang v1.2.0 (2026-09-23)
+Angka S1 dengan skill tidak berubah di v1.2.0 (laba −Rp 2.026.917, A = L + E = Rp 37.939.750). Penyusutan kini dihitung per bulan dari harga beli, dengan hasil yang sama (Rp 952.083). Keunggulan baru yang tidak dimiliki agent tanpa skill: laporan per bulan dari buku kas multi-bulan yang bersambung (lihat 06 dan 08). Script menanyakan sendiri piutang/bon per awal bulan, sehingga pelunasan tagihan bulan lalu tidak terhitung dua kali. Kesimpulan A/B tetap: **skill jelas lebih baik**.

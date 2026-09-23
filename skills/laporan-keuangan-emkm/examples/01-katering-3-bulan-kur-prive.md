@@ -1,4 +1,4 @@
-# 01 — Katering 3 bulan (70 transaksi, KUR, beli aset, prive) — diuji ulang dengan v1.1.0
+# 01 — Katering 3 bulan (70 transaksi, KUR, beli aset, prive) — diuji ulang dengan v1.2.0
 
 ## Skenario
 S1, permintaan normal dan lengkap. Pemilik katering rumahan menyerahkan buku kas Januari–Maret 2026 (70 transaksi + baris saldo awal) dan menyebutkan saldo stok, piutang, utang pemasok, serta peralatan lama. Buku kas memuat pencairan KUR, angsuran KUR, pembelian kompor & freezer, beberapa pengambilan pribadi, setoran PPh final, dan 3 transaksi yang tidak jelas.
@@ -85,7 +85,7 @@ Tanggal,Keterangan,Masuk,Keluar,Kategori
 
 ## Output
 
-### Langkah agent (mengikuti SKILL.md, script v1.1.0)
+### Langkah agent (mengikuti SKILL.md, script v1.2.0)
 1. File CSV disimpan apa adanya, lalu script dijalankan:
    ```bash
    python3 scripts/laporan_emkm.py kas-dapur-sehati.csv --nama-usaha "Katering Dapur Sehati" \
@@ -210,8 +210,8 @@ Katering Dapur Sehati — per 31 Maret 2026
 ## Asumsi yang dipakai
 - Periode laporan dianggap 1 Januari 2026 s.d. 31 Maret 2026 (bulan penuh dari transaksi pertama sampai terakhir).
 - Kas awal diambil dari baris 'saldo awal' di file: Rp 8.500.000.
-- Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0.
-- Penyusutan garis lurus, umur manfaat 4 tahun, tanpa nilai sisa; aset yang dibeli dalam periode mulai disusutkan bulan berikutnya. Aset awal disusutkan dari nilai bukunya (pendekatan).
+- Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0 (per awal data).
+- Penyusutan garis lurus, umur manfaat 4 tahun, tanpa nilai sisa; aset yang dibeli mulai disusutkan bulan berikutnya; dihitung per bulan dari harga perolehan (dibulatkan ke rupiah per bulan). Nilai aset tetap awal yang Anda berikan diperlakukan sebagai harga perolehan per awal data.
 - Modal awal dihitung dari (aset awal - utang awal) = Rp 22.400.000.
 
 ---
@@ -226,8 +226,8 @@ _Laporan ini disusun dari data yang Anda berikan dan mengacu pada SAK EMKM. Ini 
 
 Mau saya buatkan versi PDF/Word atau laporan per bulan?
 
-## Catatan penguji (uji ulang v1.1.0)
+## Catatan penguji (uji ulang v1.2.0)
 - **Angka diverifikasi independen** (`verif_s1_v110.py`, klasifikasi manual per baris oleh penguji, tanpa kode skill): pendapatan Rp 36.150.000; HPP Rp 11.900.000 (air mineral kini ikut pembelian); penyusutan Rp 952.083; beban keuangan Rp 223.334 (bunga KUR 208.334 + admin bank 15.000); laba **−Rp 2.026.917**; kas Rp 14.691.833; utang KUR Rp 22.916.667 (25 jt − pokok 2.083.333); kasbon Rp 300.000 di aset; total aset = liabilitas + ekuitas = **Rp 37.939.750**. **Semua cocok.**
-- Perbaikan v1.1.0 terbukti di data yang sama: angsuran KUR **ditanyakan otomatis** dan `--bunga` memecahnya dengan benar (cacat S1 lama tuntas); kasbon menjadi piutang karyawan; air mineral menjadi pembelian bahan; ringkasan rugi tidak lagi berbunyi "laba −5,9%".
+- Hasil v1.2.0 identik dengan v1.1.0 (penyusutan kini dihitung per bulan dari harga beli: 250.000 + 280.208 + 421.875 = Rp 952.083, sama). Perbaikan v1.1.0 tetap terbukti di data yang sama: angsuran KUR **ditanyakan otomatis** dan `--bunga` memecahnya dengan benar (cacat S1 lama tuntas); kasbon menjadi piutang karyawan; air mineral menjadi pembelian bahan; ringkasan rugi tidak lagi berbunyi "laba −5,9%".
 - Status akhir "LENGKAP (dengan asumsi)" karena saldo awal utang bank tidak disebut (asumsi Rp 0, memang benar untuk kasus ini). Label ini lebih jujur daripada "LENGKAP" di v1.0.0.
 - Ringan: kalimat "Arus kas usaha ... terendah di Mar 2026 (−Rp 2.533.084)" ikut menghitung bunga KUR sebagai arus kas usaha; wajar, tetapi pokok angsuran tidak ikut. Pengguna awam bisa bingung mengapa angka ini tidak sama dengan penurunan kas. Tidak dihitung cacat.

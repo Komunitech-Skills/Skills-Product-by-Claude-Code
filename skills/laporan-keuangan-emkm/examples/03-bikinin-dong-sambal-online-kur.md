@@ -1,4 +1,4 @@
-# 03 — "Bikinin dong", jualan sambal online, format Jumlah + Jenis, untuk KUR — diuji ulang dengan v1.1.0
+# 03 — "Bikinin dong", jualan sambal online, format Jumlah + Jenis, untuk KUR — diuji ulang dengan v1.2.0
 
 ## Skenario
 S3, permintaan singkat/malas. Pengguna hanya melampirkan file dan minta cepat. Formatnya berbeda: kolom `Uraian, Jenis (Masuk/Keluar), Nominal`. Ada "cicilan motor" (bisa pribadi atau usaha), "transfer ke rekening pribadi", pembelian blender, dan botol kaca yang tidak dikenali.
@@ -36,7 +36,7 @@ Tanggal,Uraian,Jenis,Nominal
 
 ## Output
 
-### Langkah agent (script v1.1.0)
+### Langkah agent (script v1.2.0)
 Pengguna minta "langsung aja", jadi script dijalankan dengan default (`python3 scripts/laporan_emkm.py kas-sambal.csv`) dan asumsinya ditampilkan. Botol kaca kini otomatis dikenali sebagai kemasan. Hasil pertama berstatus **SEMENTARA** dengan tanda ⚠: script menemukan angka mustahil **utang bank akhir −Rp 1.700.000** (karena "Cicilan motor" dianggap angsuran pinjaman padahal tidak ada pinjaman tercatat) dan menanyakan porsi bunga kedua cicilan. Agent mengirim satu pesan:
 
 > Draf laporan sudah jadi (Juli–Agustus 2026), tapi masih SEMENTARA. Dua hal singkat biar angkanya benar:
@@ -139,11 +139,11 @@ Usaha kamu UNTUNG Rp 13.335.000 selama 1 Juli 2026 s.d. 31 Agustus 2026. Dari pe
 ## Asumsi yang dipakai
 - Periode laporan dianggap 1 Juli 2026 s.d. 31 Agustus 2026 (bulan penuh dari transaksi pertama sampai terakhir).
 - Kas awal tidak diberikan, dianggap Rp 0.
-- Saldo awal piutang tidak diberikan, dianggap Rp 0.
-- Saldo awal persediaan (stok) tidak diberikan, dianggap Rp 0.
-- Saldo awal aset tetap tidak diberikan, dianggap Rp 0.
-- Saldo awal utang ke pemasok tidak diberikan, dianggap Rp 0.
-- Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0.
+- Saldo awal piutang tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal persediaan (stok) tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal aset tetap tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal utang ke pemasok tidak diberikan, dianggap Rp 0 (per awal data).
+- Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0 (per awal data).
 - Stok akhir tidak diberikan: dianggap sama dengan stok awal (Rp 0), sehingga beban pokok penjualan = total pembelian bahan/barang. Isi --persediaan-akhir dari hasil hitung stok agar laba lebih akurat.
 - Penyusutan aset tetap BELUM dihitung (tidak ada --penyusutan / --umur-aset-tahun). Laba bisa sedikit lebih tinggi dari seharusnya.
 - Modal awal dihitung dari (aset awal - utang awal) = Rp 0.
@@ -164,8 +164,8 @@ _Laporan ini disusun dari data yang Anda berikan dan mengacu pada SAK EMKM. Ini 
 
 Mau saya buatkan versi PDF, atau jalankan ulang setelah nama usaha & stok akhir diisi?
 
-## Catatan penguji (uji ulang v1.1.0)
-- Verifikasi independen: penjualan Rp 18.690.000; bahan Rp 3.060.000; kemasan (botol) Rp 1.750.000; iklan 350.000; ongkir 95.000; paket data 100.000 → laba **Rp 13.335.000 ✔**; kas = 5.000.000 + 18.690.000 − 9.255.000 = **Rp 14.435.000 ✔**; aset Rp 15.635.000 = modal akhir Rp 15.635.000 ✔. Angka identik dengan v1.0.0 (tidak ada regresi).
+## Catatan penguji (uji ulang v1.2.0)
+- Verifikasi independen: penjualan Rp 18.690.000; bahan Rp 3.060.000; kemasan (botol) Rp 1.750.000; iklan 350.000; ongkir 95.000; paket data 100.000 → laba **Rp 13.335.000 ✔**; kas = 5.000.000 + 18.690.000 − 9.255.000 = **Rp 14.435.000 ✔**; aset Rp 15.635.000 = modal akhir Rp 15.635.000 ✔. Angka identik dengan v1.0.0–v1.2.0 (tidak ada regresi).
 - **Cacat S3 lama tuntas:** utang bank negatif sekarang membuat status SEMENTARA, cek keseimbangan memakai ⚠ (bukan ✔), dan menjadi pertanyaan wajib. Laporan dengan liabilitas negatif tidak bisa lagi terkirim sebagai "LENGKAP".
 - Bagus: "botol" kini dikenali sebagai kemasan; label akhir "LENGKAP (dengan asumsi)" jujur karena stok akhir & penyusutan memakai default.
 - Ringan: pertanyaan otomatis "berapa bagian bunga" untuk cicilan motor muncul bersamaan dengan pertanyaan "utang negatif". Agent perlu merangkum keduanya menjadi satu pertanyaan (pribadi atau usaha) agar tidak membingungkan pengguna awam.
