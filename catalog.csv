@@ -27,10 +27,10 @@ arus-kas-13minggu,Keuangan & Akuntansi,orisinal,,,7,ecer,99000,,,1.0.1,claude-co
 rekonsiliasi-bank,Keuangan & Akuntansi,orisinal,,,,ecer,149000,,,1.0.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
 pengajuan-kur,Keuangan & Akuntansi,orisinal,,,,ecer,99000,,,1.1.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
 ekstrak-nota-faktur,Keuangan & Akuntansi,kurasi,https://github.com/manairalabs/bicara-skills,MIT,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-analisis-ulasan,E-commerce/Marketplace Indonesia,orisinal,,,,ecer,99000,,,1.0.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
-promo-kalender,Marketing & Konten,orisinal,,,,ecer,99000,,,1.0.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
-katalog-reseller,Sales,orisinal,,,,ecer,149000,,,1.0.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
-foto-produk-brief,Marketing & Konten,orisinal,,,,ecer,49000,,,1.0.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
+analisis-ulasan,E-commerce/Marketplace Indonesia,orisinal,,,7,ecer,99000,,,1.0.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+promo-kalender,Marketing & Konten,orisinal,,,8,ecer,99000,,,1.0.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+katalog-reseller,Sales,orisinal,,,8,ecer,149000,,,1.0.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+foto-produk-brief,Marketing & Konten,orisinal,,,8,ecer,49000,,,1.0.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
 pph21-ter,Keuangan & Akuntansi,orisinal,,,,ecer,149000,,,1.0.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
 slip-gaji-bpjs,HR,orisinal,,,,ecer,149000,,,1.0.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
 hitung-thr,HR,orisinal,,,,ecer,99000,,,1.0.0,openclaw 2026.9.5 (uji muat CLI),draft,2026-09-23
