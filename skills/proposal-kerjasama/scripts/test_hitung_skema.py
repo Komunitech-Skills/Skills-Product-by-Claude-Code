@@ -41,6 +41,18 @@ class UjiSkenario(unittest.TestCase):
             with self.assertRaises(h.InputSalah):
                 h.parse_skenario(t, "skenario", True)
 
+    def test_regresi_uji_ulang(self):
+        for t in ("10 20 30", "1,5jt,2,5jt", "5 0"):
+            with self.assertRaises(h.InputSalah, msg=t):
+                h.parse_skenario(t, "skenario", False)
+        self.cek("Rp 25.000,-", [25000], bulat=False)
+        self.cek("Rp 25.000,-;Rp 30.000,-", [25000, 30000], bulat=False)
+        self.cek("1,5jt;2,5jt", [1500000, 2500000], bulat=False)
+        self.cek("10jt,25jt,50jt", [10**7, 25 * 10**6, 5 * 10**7], bulat=False)
+        r = jalan("bagi-hasil", "--porsi-mitra", "30%", "--skenario", "10 20 30")
+        self.assertNotEqual(r.returncode, 0)
+        self.assertNotIn("102030", r.stdout)
+
     def test_cli_koma_tidak_diam_diam(self):
         r = jalan("konsinyasi", "--harga-jual", "25000", "--porsi-toko", "20%", "--skenario", "10,20,30")
         self.assertEqual(r.returncode, 0, r.stderr)

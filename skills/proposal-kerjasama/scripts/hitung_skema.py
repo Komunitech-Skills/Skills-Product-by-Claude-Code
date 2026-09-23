@@ -86,10 +86,15 @@ PETUNJUK_PEMISAH = "Pisahkan beberapa skenario dengan titik koma, mis. '10;20;30
 
 def _pecah_koma(bagian, nama):
     """Pecah satu potong teks yang mungkin berisi koma. Kembalikan list potongan angka."""
-    b = bagian.strip()
+    b = re.sub(r"\s*[.,]-$", "", bagian.strip())  # 'Rp 25.000,-' -> 'Rp 25.000'
+    if re.search(r"\d\s+\d", b):
+        raise InputSalah(f"{nama} ambigu: {bagian!r} berisi angka yang dipisah spasi. " + PETUNJUK_PEMISAH)
     n = b.count(",")
     if n == 0:
         return [b]
+    if n >= 2 and re.search(r"(?i)\d,\d{1,2}\s*(jt|juta|rb|ribu|k)\b", b):
+        raise InputSalah(f"{nama} ambigu: {bagian!r} mencampur koma desimal dan koma pemisah. " + PETUNJUK_PEMISAH
+                         + " Contoh: '1,5jt;2,5jt'.")
     if n >= 2:
         # '10,20,30' -> 3 skenario (koma sebagai pemisah daftar)
         return [x for x in b.split(",") if x.strip()]
