@@ -34,7 +34,7 @@ from datetime import date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.1.1"
 SKEMA = 1
 APLIKASI = "buku-stok"
 EPS = 1e-9
@@ -1470,8 +1470,15 @@ def cmd_impor_pesanan(args):
                 if not sekarang_aktif["dibatalkan"] and sekarang_aktif["kategori"] not in ("batal", "retur", "belum_bayar"):
                     for it in conn.execute("SELECT * FROM pesanan_item WHERE pesanan_id=? AND produk_id IS NULL",
                                            (lama["id"],)).fetchall():
-                        sumber = next((f for f in ps["item"] if (f["sku"] and f["sku"] == it["sku_mp"]) or
-                                       ("%s %s" % (f["nama"], f["varian"])).strip() == it["nama_mp"]), None)
+                        # Cocokkan lewat SKU bila item punya SKU; lewat nama hanya bila SKU kosong DAN nama
+                        # tidak kosong (mencegah "" == "" mencocokkan item pertama pada file SKU-saja).
+                        if it["sku_mp"]:
+                            sumber = next((f for f in ps["item"] if f["sku"] == it["sku_mp"]), None)
+                        elif (it["nama_mp"] or "").strip():
+                            sumber = next((f for f in ps["item"] if not f["sku"] and
+                                           ("%s %s" % (f["nama"], f["varian"])).strip() == it["nama_mp"].strip()), None)
+                        else:
+                            sumber = None
                         if sumber is None:
                             continue
                         p = _cocokkan_produk(conn, sumber["sku"], sumber["nama"], sumber["varian"], cache)
@@ -1528,8 +1535,10 @@ def cmd_impor_pesanan(args):
             peringatan.append("Pesanan yang sebelumnya batal kini AKTIF lagi, stok dipotong ulang: %s"
                               % ", ".join(aktif_lagi[:20]))
         if diajukan:
-            peringatan.append("Pembatalan DIAJUKAN (belum pasti batal; stok tidak diubah, tidak masuk daftar ambil "
-                              "sampai statusnya jelas): %s" % ", ".join(diajukan[:20]))
+            peringatan.append("Pembatalan DIAJUKAN (belum pasti batal; tidak masuk daftar ambil sampai statusnya "
+                              "jelas). Pesanan yang sudah pernah diimpor: stok tidak diubah. Pesanan baru: stok "
+                              "tetap dipotong karena pesanan masih sah; bila akhirnya batal, stok dikembalikan saat "
+                              "impor berikutnya: %s" % ", ".join(diajukan[:20]))
         if tanda_retur:
             peringatan.append("Pesanan sah tetapi ada tanda retur/refund di kolom retur (stok TIDAK otomatis ditambah; "
                               "cek barangnya): %s" % ", ".join(tanda_retur[:20]))

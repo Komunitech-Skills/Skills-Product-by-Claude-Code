@@ -675,6 +675,17 @@ class UjiRevisi(Dasar):
         self.assertEqual(self.run_ok("impor-pesanan", f, "--ya")["item_lama_kini_terpotong"], [])
         self.konsisten()
 
+    def test_b2_impor_ulang_sku_saja_tidak_salah_potong(self):
+        f = self.tulis("wa.csv", "No. Pesanan;SKU;Qty;Status\n"
+                       "WA-001;MUG-KRM;1;Perlu Dikirim\nWA-001;GELAS-01;2;Perlu Dikirim\n")
+        self.run_ok("impor-pesanan", f, "--ya", "--lewati-tak-dikenal", "--tanggal-default", "2026-09-23") \
+            if "--tanggal-default" in stok.__doc__ else self.run_ok("impor-pesanan", f, "--ya", "--lewati-tak-dikenal")
+        awal = self.produk("MUG-KRM")["stok"]
+        d = self.run_ok("impor-pesanan", f, "--ya", "--lewati-tak-dikenal")     # GELAS-01 masih belum terdaftar
+        self.assertEqual(d["item_lama_kini_terpotong"], [])
+        self.assertAlmostEqual(self.produk("MUG-KRM")["stok"], awal)          # MUG tidak terpotong lagi
+        self.konsisten()
+
     def test_s2_pembatalan_diajukan_lalu_aktif_lagi(self):
         def impor(status):
             return self.run_ok("impor-pesanan", self.tulis("m.csv", SHOPEE_H +
