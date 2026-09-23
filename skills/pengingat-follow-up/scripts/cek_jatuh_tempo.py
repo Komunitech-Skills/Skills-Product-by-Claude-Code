@@ -658,12 +658,13 @@ def teks_rekap(h):
         if h["terlambat"]:
             L.append(f"TERLAMBAT ({len(h['terlambat'])})")
             for n, it in enumerate(h["terlambat"], 1):
-                L.append(_baris_item(n, it, f"lewat {it['hari_terlambat']} hari (jatuh tempo {it['tanggal_teks']})"))
+                label = "jatuh tempo" if it["jenis"] == "piutang" else "jadwal"
+                L.append(_baris_item(n, it, f"lewat {it['hari_terlambat']} hari ({label} {it['tanggal_teks']})"))
             L.append("")
         if h["jatuh_tempo_hari_ini"]:
             L.append(f"HARI INI ({len(h['jatuh_tempo_hari_ini'])})")
             for n, it in enumerate(h["jatuh_tempo_hari_ini"], 1):
-                L.append(_baris_item(n, it, "jatuh tempo hari ini"))
+                L.append(_baris_item(n, it, "jatuh tempo hari ini" if it["jenis"] == "piutang" else "hari ini"))
             L.append("")
         if h["besok_h_1"]:
             L.append(f"BESOK / H-1 ({len(h['besok_h_1'])})")

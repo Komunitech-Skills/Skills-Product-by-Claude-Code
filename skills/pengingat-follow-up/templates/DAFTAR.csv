@@ -1,0 +1,8 @@
+id,jenis,nama,tanggal,nominal,perihal,status,catatan,dibuat
+1,piutang,Bu Rina,2026-10-03,4500000,INV-012 seragam,aktif,biasanya bayar akhir pekan,2026-09-24
+2,piutang,CV Contoh Maju,2026-09-21,12500000,INV-0788,aktif,sudah diingatkan 1x lewat WA,2026-09-24
+3,prospek,Pak Budi,2026-10-02,,penawaran paket katering kantor,aktif,minta dihubungi setelah rapat direksi,2026-09-24
+4,timesheet,PT Kreatif Contoh,2026-10-02,,minggu ini,aktif,,2026-09-24
+5,janji,Bu Dewi,2026-10-02,,meeting jam 10.00 di kantor,aktif,,2026-09-24
+6,lainnya,Perpanjang izin usaha,2026-10-05,,,aktif,,2026-09-24
+7,piutang,PLG-07,2026-09-15,2250000,INV-0750,selesai,lunas 20 Sep,2026-09-10
