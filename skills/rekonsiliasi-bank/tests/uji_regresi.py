@@ -124,5 +124,49 @@ ps = pasangan(h)
 cek("nama lain di keterangan → PARSIAL 'KEMUNGKINAN TERTUKAR', bukan COCOK",
     ps["Yuni"][0] == "PARSIAL" and "TERTUKAR" in ps["Yuni"][2] and h["kemungkinan_tertukar"] == 1)
 
+# v1.2: nama mirip (data berisik 06)
+BCA_CAT = ["--catat-tanggal", "Tanggal", "--catat-nominal", "Total", "--catat-ref", "No Invoice", "--catat-nama", "Pelanggan"]
+k, h = jalankan("cocokkan", "--bank", d("berisik-bank.csv"), "--catatan", d("berisik-catatan.csv"), *BCA, *BCA_CAT)
+ps = pasangan(h)
+cek("berisik: Andi Wijaya ↔ ANDI WIJAYA (COCOK)", ps["INV-2026-0031"][0] == "COCOK" and "ANDI WIJAYA" in ps["INV-2026-0031"][1][0])
+cek("berisik: Andi Saputra ↔ ANDI SAPUTRA (COCOK)", ps["INV-2026-0032"][0] == "COCOK" and "ANDI SAPUTRA" in ps["INV-2026-0032"][1][0])
+cek("berisik: Rudi ↔ SURYA KENCANA bukan COCOK (PENGIRIM BERBEDA)",
+    ps["INV-2026-0033"][0] == "PARSIAL" and "PENGIRIM BERBEDA" in ps["INV-2026-0033"][2])
+cek("berisik: CV Maju Jaya vs PT JAYA MAJU MOTOR bukan COCOK", ps["INV-2026-0038"][0] == "PARSIAL"
+    and "nama/no. invoice ada" not in ps["INV-2026-0038"][2])
+cek("berisik: Bambang 3x cicilan terkumpul (hari ke-15)", len(ps["INV-2026-0037"][1]) == 3)
+cek("berisik: Heru ↔ HERU, Hermawan belum dibayar",
+    ps["INV-2026-0043"][0] == "COCOK" and ps["INV-2026-0044"][0] == "TIDAK ADA DI BANK")
+cek("berisik: ringkasan COCOK hanya pasangan pasti (4)", h["ringkasan"]["per_status"]["COCOK"]["jumlah_kelompok"] == 4)
+for f in ("andi-cat.csv", "andi-cat2.csv"):
+    k, h = jalankan("cocokkan", "--bank", d("andi-bank.csv"), "--catatan", d(f), *BCA, *BCA_CAT)
+    ps = pasangan(h)
+    cek(f"{f}: ANDI SAPUTRA ke Andi Saputra, Andi Wijaya belum dibayar",
+        ps["INV-2026-0032"][0] == "COCOK" and ps["INV-2026-0031"][0] == "TIDAK ADA DI BANK")
+
+# nama sebagian cocok dengan nama lain di bank → PARSIAL
+bank = tmp("Tanggal,Keterangan,Kredit\n05/09/2026,TRF DARI ANDI SAPUTRA,200000\n")
+cat = tmp("Tanggal,Pelanggan,Total\n05/09/2026,Andi Wijaya,200000\n")
+k, h = jalankan("cocokkan", "--bank", bank, "--catatan", cat, "--bank-tanggal", "Tanggal",
+                "--bank-keterangan", "Keterangan", "--bank-kredit", "Kredit", "--catat-tanggal", "Tanggal",
+                "--catat-nominal", "Total", "--catat-nama", "Pelanggan")
+ps = pasangan(h)
+cek("Andi Wijaya vs ANDI SAPUTRA saja → PARSIAL 'NAMA SEBAGIAN COCOK'",
+    ps["Andi Wijaya"][0] == "PARSIAL" and "SEBAGIAN" in ps["Andi Wijaya"][2])
+
+# deteksi Mandiri: semua kolom keterangan disarankan
+k, h = jalankan("deteksi", "--bank", d("mutasi-mandiri-agustus.csv"))
+cek("deteksi Mandiri: Description + Description_2",
+    h["bank"]["kolom_terdeteksi"]["keterangan"] == ["Description", "Description_2"]
+    and h["bank"]["argumen_bank_saran"].count("--bank-keterangan") == 2)
+
+# alasan toleransi nominal tidak berbunyi "nominal sama" bila beda
+k, h = jalankan("cocokkan", "--bank", d("mutasi-bri-okt.csv"), "--catatan", d("jual-okt.csv"),
+                "--bank-tanggal", "TGL_TRAN", "--bank-keterangan", "DESK_TRAN", "--bank-debet", "MUTASI_DEBET",
+                "--bank-kredit", "MUTASI_KREDIT", "--catat-tanggal", "Tanggal", "--catat-nominal", "Total",
+                "--catat-ref", "No", "--catat-nama", "Pelanggan", "--toleransi-nominal", "200")
+ps = pasangan(h)
+cek("toleransi: alasan 'beda Rp 100 (dalam toleransi)'", "beda Rp 100 (dalam toleransi)" in ps["210"][2])
+
 print(f"\n{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'}")
 sys.exit(1 if GAGAL else 0)

@@ -39,7 +39,7 @@ Jika catatan berupa tabel tempel di chat, simpan dulu sebagai CSV di folder kerj
    ```bash
    python3 <folder-skill-ini>/scripts/rekonsiliasi.py deteksi --bank mutasi.csv --catatan penjualan.csv
    ```
-   Script menebak baris judul (melewati baris info rekening di atas tabel), kolom tanggal/keterangan/nominal, kolom penanda CR/DB, dan format bank (tebakan).
+   Script menebak baris judul (melewati baris info rekening di atas tabel), kolom tanggal/keterangan/nominal, kolom penanda CR/DB, dan format bank (tebakan). Bila keterangan tersebar di beberapa kolom (mis. Mandiri: "Description" + "Description_2"), **semua** kolom disarankan. Pakai `argumen_bank_saran` apa adanya setelah dikonfirmasi.
 3. **Konfirmasi ke pengguna** dalam satu pesan singkat, contoh:
    > Saya membaca mutasi (mirip format BCA): tanggal = "Tanggal Transaksi", keterangan = "Keterangan", nominal = "Jumlah", penanda masuk/keluar = kolom ke-5 (CR/DB). Catatan: tanggal = "Tanggal", nominal = "Total", invoice = "No Invoice", pelanggan = "Pelanggan". Sudah benar?
 
@@ -65,9 +65,17 @@ Jika catatan berupa tabel tempel di chat, simpan dulu sebagai CSV di folder kerj
      5. Nama sama tetapi nominal beda: hanya bila bank ≤ catatan atau selisih ≤ 50%.
      6. Tanggal beda.
 
-     Pasangan yang keterangan banknya memuat nama pihak **lain** dari catatan tidak dianggap cocok. Pasangan seperti itu diberi label **KEMUNGKINAN TERTUKAR**.
+     Kandidat dengan **lebih banyak kata nama yang cocok** didahulukan. Contoh: "ANDI SAPUTRA" dipasangkan ke Andi Saputra, bukan ke Andi Wijaya.
+
+     Hanya pasangan yang namanya cocok penuh, atau yang keterangan banknya memang tanpa nama (setoran/QRIS), yang boleh ✅ COCOK. Selain itu diberi label PARSIAL:
+     - **NAMA SEBAGIAN COCOK**: hanya nama depan sama, ada nama lain di bank.
+     - **PENGIRIM BERBEDA**: keterangan bank memuat nama orang/usaha lain.
+     - **KEMUNGKINAN TERTUKAR**: nama di bank milik catatan lain.
+
+     Nama yang seluruhnya kata umum ("CV Maju Jaya") harus muncul dengan urutan sama dan jenis badan usaha tidak bertentangan.
    - `--format teks` untuk ringkasan cepat; default JSON.
 5. **Tulis laporan** (format di bawah). Semua angka dari output script. Pastikan `cek_rumus_seimbang` = true; jika false, laporkan sebagai kesalahan dan jangan menyimpulkan.
+   - Pasangan berlabel NAMA SEBAGIAN COCOK / PENGIRIM BERBEDA / KEMUNGKINAN TERTUKAR: tulis sebagai "perlu dicek" beserta pertanyaan konkret. Contoh: "Apakah Surya Kencana membayar untuk Rudi?" Jika tidak, invoice itu dianggap belum dibayar.
    - **Periksa nama di setiap pasangan COCOK/PARSIAL.** Bandingkan nama/ref di catatan dengan keterangan bank. Jika berbeda, atau alasan berbunyi "KEMUNGKINAN TERTUKAR" / "nama tidak terlihat", laporkan sebagai "perlu dicek / kemungkinan tertukar". Jangan beri ✅.
    - "Seimbang" hanya berarti angka penjelasan cocok dengan total selisih. Itu **bukan** bukti semua pasangan benar (lihat `catatan_seimbang`).
    - Sampaikan `transaksi_tertunda_pend` (tertunda, cek di mutasi periode berikutnya).

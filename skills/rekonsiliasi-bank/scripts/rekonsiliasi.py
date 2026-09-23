@@ -331,10 +331,23 @@ def cmd_deteksi(a):
             if nilai and sum(v in ("CR", "DB", "D", "K", "C", "DR", "KR") for v in nilai) >= 0.8 * len(nilai):
                 peta["dk"] = k
                 break
+    # semua kolom keterangan (mis. Mandiri: "Description" + "Description_2"); kolom yang isinya seragam
+    # (mis. selalu "TRANSFER DARI") tetap diikutkan tetapi ditaruh di belakang
+    saran = []
+    ket_kol = [h for h in header if any(cocok_kata(re.sub(r"_\d+$", "", h), [k]) for k in KATA["keterangan"])
+               and h not in (peta.get("tanggal"), peta.get("nominal"), peta.get("kredit"), peta.get("debet"))]
+    if ket_kol:
+        def ragam(h):
+            return len({(r.get(h) or "").strip().upper() for r in data if (r.get(h) or "").strip()})
+        seragam = [h for h in ket_kol if len(ket_kol) > 1 and ragam(h) <= 2 and len(data) >= 4]
+        if seragam:
+            saran.append("Kolom " + ", ".join(seragam) + " isinya hampir seragam (mis. 'TRANSFER DARI'); nama pengirim "
+                         "ada di kolom keterangan lain.")
+        peta["keterangan"] = ket_kol[0] if len(ket_kol) == 1 else ket_kol
     contoh = []
     for r in data[:3]:
-        contoh.append({k: samarkan(r.get(v, "")) for k, v in peta.items()})
-    saran = []
+        contoh.append({k: samarkan(" | ".join(r.get(x, "") for x in v) if isinstance(v, list) else r.get(v, ""))
+                       for k, v in peta.items()})
     if "kredit" in peta or "debet" in peta:
         saran.append("Kolom debet & kredit terpisah terdeteksi.")
     elif "nominal" in peta:
@@ -347,10 +360,21 @@ def cmd_deteksi(a):
             cari = [k for k in header if k.startswith("kolom_")]
             saran.append("Satu kolom nominal TANPA penanda CR/DB. Tanyakan pengguna: apakah uang keluar ditulis "
                          "negatif? Jika ada kolom tanpa judul berisi CR/DB, pakai --bank-dk " + (cari[0] if cari else "<kolom>"))
+    arg = []
+    for k, flag in (("tanggal", "--bank-tanggal"), ("keterangan", "--bank-keterangan"), ("kredit", "--bank-kredit"),
+                    ("debet", "--bank-debet"), ("nominal", "--bank-nominal"), ("dk", "--bank-dk")):
+        if k in ("nominal", "dk") and ("kredit" in peta or "debet" in peta):
+            continue
+        for v in (peta.get(k) if isinstance(peta.get(k), list) else [peta.get(k)]):
+            if v:
+                arg.append(f'{flag} "{v}"')
+    if isinstance(peta.get("keterangan"), list):
+        saran.append("Keterangan tersebar di beberapa kolom: pakai SEMUA (ulang --bank-keterangan) agar nama pengirim terbaca.")
     hasil["bank"] = {
         "file": a.bank, "pemisah": {"\t": "tab"}.get(sep, sep), "baris_judul": bj,
         "format_tebakan": tebak_format(header), "kolom_tersedia": header,
         "kolom_terdeteksi": peta, "contoh_3_baris": contoh, "jumlah_baris_data": len(data),
+        "argumen_bank_saran": " ".join(arg),
         "tahun_di_bagian_atas_file": (lambda t: f"{t[0].isoformat()}..{t[1].isoformat()}" if isinstance(t, tuple)
                                       else t)(tahun_dari_teks(pembuka)), "catatan": saran,
     }
@@ -521,13 +545,57 @@ def cocok_ref(c, b):
     return False
 
 
-def cocok_nama(c, b):
-    tb = set(token(b["keterangan"]))
+# Kata di keterangan bank yang BUKAN nama orang/usaha (kode & istilah perbankan umum)
+KATA_BANK = {"trsf", "trf", "transfer", "banking", "ebanking", "ftscy", "ftfva", "ftsmb", "esb", "nbmb", "nbib", "bif",
+             "fast", "bifast", "dari", "untuk", "kepada", "llg", "rtgs", "skn", "kliring", "otomatis", "antar",
+             "bank", "switching", "briva", "mcm", "atm", "setoran", "tunai", "penarikan", "tarikan", "bayar", "byr",
+             "pembayaran", "biaya", "adm", "admin", "bunga", "pajak", "giro", "jasa", "qris", "settlement", "edc",
+             "mdr", "merchant", "virtual", "account", "topup", "top", "mobile", "livin", "brimo", "mybca", "flip",
+             "dana", "ovo", "gopay", "shopeepay", "idr", "cab", "cabang", "kcp", "pend", "inv", "invoice", "berita",
+             "ref", "reff", "no", "nomor", "rek", "rekening", "kredit", "debet", "debit", "via", "online", "cms",
+             "ibank", "internet", "sms", "pemindahbukuan", "pindah", "buku", "trx", "transaksi", "dr", "cr", "kr",
+             "db", "bca", "bri", "bni", "mandiri", "bsi", "btn", "cimb", "permata", "danamon", "ocbc", "jago",
+             "seabank", "neo", "blu", "digibank", "va", "lainnya", "lain", "pribadi", "bulanan", "fee", "charge",
+             "materai", "kartu", "pelanggan", "supplier", "toko", "cv", "pt", "ud", "ibu", "bapak", "pak", "bu"}
+BADAN = {"cv", "pt", "ud", "fa", "koperasi", "kop", "yayasan"}
+
+
+def kata_orang_bank(b):
+    """Kata di keterangan bank yang kemungkinan nama orang/usaha (huruf >= 3, bukan istilah bank/bulan)."""
+    return {t for t in token(b["keterangan"]) if len(t) >= 3 and t.isalpha() and t not in KATA_BANK
+            and t not in KATA_UMUM_NAMA}
+
+
+def skor_nama(c, b):
+    """(jumlah kata nama yang cocok, cocok_penuh). cocok_penuh = semua kata khas nama catatan ada di bank."""
+    tb = token(b["keterangan"])
     kn = kata_nama(c)
     if kn:
-        return bool(kn & tb)
-    ku = kata_nama_umum(c)
-    return len(ku) >= 2 and ku <= tb
+        cocok = len(kn & set(tb))
+        return cocok, cocok == len(kn)
+    # nama seluruhnya kata umum (mis. "CV Maju Jaya"): urutan kata harus sama & jenis badan usaha tidak bertentangan
+    urut = [t for t in token(c["nama"]) if len(t) >= 3 and t.isalpha() and t not in SAPAAN_BADAN]
+    if len(urut) < 2:
+        return 0, False
+    ada = any(tb[i:i + len(urut)] == urut for i in range(len(tb) - len(urut) + 1))
+    badan_c = BADAN & set(token(c["nama"]))
+    badan_b = BADAN & set(tb)
+    if not ada or (badan_c and badan_b and not (badan_c & badan_b)):
+        return 0, False
+    return len(urut), True
+
+
+def nama_bentrok(c, b):
+    """Kata nama catatan hanya sebagian cocok dan keterangan bank memuat kata nama lain (mis. ANDI SAPUTRA vs Andi Wijaya)."""
+    skor, penuh = skor_nama(c, b)
+    if skor == 0 or penuh:
+        return False
+    sisa = kata_orang_bank(b) - kata_nama(c)
+    return bool(sisa)
+
+
+def cocok_nama(c, b):
+    return skor_nama(c, b)[0] > 0
 
 
 def petunjuk_teks(c, b):
@@ -546,15 +614,18 @@ def cocokkan(bank, catat, a):
     hasil = []
     petunjuk = {(c["id"], b["id"]): petunjuk_teks(c, b) for c in catat for b in bank}
 
+    skor = {(c["id"], b["id"]): (skor_nama(c, b)[0] + (10 if cocok_ref(c, b) else 0))
+            for c in catat for b in bank}
+
     def konflik(c, b):
-        """Keterangan bank memuat nama/ref catatan LAIN yang masih terbuka, tetapi bukan milik c."""
-        if petunjuk[(c["id"], b["id"])]:
-            return None
+        """Catatan LAIN yang masih terbuka lebih cocok dengan keterangan bank ini (nama/ref) daripada c."""
+        sk = skor[(c["id"], b["id"])]
         kn = kata_nama(c)
         for c2 in catat:
             if c2["id"] == c["id"] or c2["id"] in pakaiC:
                 continue
-            if petunjuk[(c2["id"], b["id"])] and not (kata_nama(c2) & kn and kn):
+            sk2 = skor[(c2["id"], b["id"])]
+            if sk2 > sk and not (sk and kn and kata_nama(c2) == kn):
                 return c2
         return None
 
@@ -585,16 +656,30 @@ def cocokkan(bank, catat, a):
     def teks_hari(dh):
         return "tanggal sama" if dh == 0 else f"tanggal bank {dh:+d} hari"
 
-    # 0. nama/no. invoice cocok + nominal sama (jendela lebar: --maks-hari-nama)
-    kand = [(abs(selisih_hari(c, b)), c["baris"], b["baris"], c, b) for c in sisaC() for b in sisaB()
+    def teks_nominal(c, b):
+        d = c["nominal"] - b["nominal"]
+        return "nominal sama" if d == 0 else f"nominal beda {rp(abs(d))} (dalam toleransi)"
+
+    def pengirim_lain(c, b):
+        """Catatan punya nama, keterangan bank memuat kata nama orang/usaha, tetapi tidak ada yang cocok."""
+        return bool(c["nama"]) and not petunjuk[(c["id"], b["id"])] and bool(kata_orang_bank(b))
+
+    # 0. nama/no. invoice cocok + nominal sama (jendela lebar: --maks-hari-nama); skor nama tertinggi dulu
+    kand = [(-skor[(c["id"], b["id"])], abs(selisih_hari(c, b)), c["baris"], b["baris"], c, b)
+            for c in sisaC() for b in sisaB()
             if petunjuk[(c["id"], b["id"])] and abs(c["nominal"] - b["nominal"]) <= tol_rp
             and abs(selisih_hari(c, b)) <= maks_nama]
 
     def buat0(c, b):
+        if konflik(c, b):
+            return None
         dh = selisih_hari(c, b)
+        if nama_bentrok(c, b) and not cocok_ref(c, b):
+            return ("PARSIAL", [c], [b], f"NAMA SEBAGIAN COCOK: {teks_nominal(c, b)}, {teks_hari(dh)}, tetapi keterangan "
+                                         f"bank memuat nama lain (bukan persis '{c['nama']}') — cek manual")
         if abs(dh) <= tol_hari:
-            return "COCOK", [c], [b], f"nominal sama, {teks_hari(dh)}, nama/no. invoice ada di keterangan bank"
-        return "PARSIAL", [c], [b], f"nominal & nama sama, tetapi tanggal berbeda {dh:+d} hari"
+            return "COCOK", [c], [b], f"{teks_nominal(c, b)}, {teks_hari(dh)}, nama/no. invoice ada di keterangan bank"
+        return "PARSIAL", [c], [b], f"{teks_nominal(c, b)} & nama cocok, tetapi tanggal berbeda {dh:+d} hari"
     pasang_satu(kand, buat0)
 
     # 1. nominal sama + tanggal dalam toleransi, tanpa konflik nama
@@ -605,8 +690,12 @@ def cocokkan(bank, catat, a):
     def buat1(c, b):
         if konflik(c, b):
             return None
-        return ("COCOK", [c], [b], f"nominal sama, {teks_hari(selisih_hari(c, b))}"
-                + ("" if not (c["nama"] or c["ref"]) else "; nama tidak terlihat di keterangan bank — cek sekilas"))
+        if pengirim_lain(c, b):
+            return ("PARSIAL", [c], [b], f"PENGIRIM BERBEDA: {teks_nominal(c, b)}, {teks_hari(selisih_hari(c, b))}, "
+                                         f"tetapi keterangan bank memuat nama lain, bukan '{c['nama']}' — cek "
+                                         f"(dibayarkan orang lain atau bukan pembayaran ini)")
+        return ("COCOK", [c], [b], f"{teks_nominal(c, b)}, {teks_hari(selisih_hari(c, b))}"
+                + ("" if not (c["nama"] or c["ref"]) else "; keterangan bank tanpa nama (mis. setoran/QRIS) — cek sekilas"))
     pasang_satu(kand, buat1)
 
     def kombinasi(calon, target):
@@ -632,8 +721,8 @@ def cocokkan(bank, catat, a):
     for c in sorted(sisaC(), key=lambda x: -x["nominal"]):
         if c["id"] in pakaiC:
             continue
-        calon = [b for b in sisaB() if b["nominal"] < c["nominal"] and -tol_hari <= selisih_hari(c, b) <= maks_hari
-                 and not konflik(c, b)]
+        calon = [b for b in sisaB() if b["nominal"] < c["nominal"] and not konflik(c, b)
+                 and -tol_hari <= selisih_hari(c, b) <= (maks_nama if petunjuk[(c["id"], b["id"])] else maks_hari)]
         calon = sorted(calon, key=lambda b: (0 if petunjuk[(c["id"], b["id"])] else 1,
                                              abs(selisih_hari(c, b))))[:a.maks_kandidat]
         kombo = kombinasi(calon, c["nominal"])
@@ -784,7 +873,7 @@ def cmd_cocokkan(a):
     penjelasan["cek_rumus_seimbang"] = (cek == total_c - total_b)
     penjelasan["catatan_seimbang"] = ("Seimbang hanya berarti angka penjelasan cocok dengan total selisih — BUKAN bukti "
                                       "setiap pasangan benar. Periksa pasangan PARSIAL dan yang bertanda KEMUNGKINAN TERTUKAR.")
-    tertukar = [h for h in hasil if "TERTUKAR" in h["alasan"]]
+    tertukar = [h for h in hasil if any(k in h["alasan"] for k in ("TERTUKAR", "SEBAGIAN COCOK", "PENGIRIM BERBEDA"))]
 
     def tampil(item, sumber):
         d = {"baris_file": item["baris"], "tanggal": item["tanggal"].isoformat(), "nominal": item["nominal"]}
@@ -830,7 +919,8 @@ def cmd_cocokkan(a):
     if pend:
         peringatan.append(f"{len(pend)} transaksi berstatus PEND (tertunda) tidak dihitung — cek di mutasi periode berikutnya.")
     if tertukar:
-        peringatan.append(f"{len(tertukar)} pasangan bertanda KEMUNGKINAN TERTUKAR (nama di bank berbeda dengan catatan) — cek manual.")
+        peringatan.append(f"{len(tertukar)} pasangan bertanda KEMUNGKINAN TERTUKAR / NAMA SEBAGIAN COCOK / PENGIRIM BERBEDA "
+                          "(nama di bank tidak persis sama dengan catatan) — cek manual.")
     if a.output_csv:
         tulis_csv(a.output_csv, a.pemisah, detail)
         out["file_csv"] = a.output_csv
