@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengajuan KUR Bengkel Maju Jaya Motor</title>
+<style>
+  /* ====== VARIABEL TEMA — ganti di sini untuk ubah seluruh tampilan ====== */
+  :root {
+    --warna-latar: #14231b;        /* latar panggung di luar slide (saat letterbox) */
+    --warna-latar-slide: #ffffff;  /* latar tiap slide */
+    --warna-teks: #14231b;
+    --warna-teks-lembut: #475569;
+    --warna-aksen: #15803d;        /* warna brand / merek pengguna */
+    --font-judul: Georgia, 'Times New Roman', serif;   /* pilih sesuai gaya di aturan-desain.md */
+    --font-isi: 'Segoe UI', Arial, Helvetica, sans-serif;
+    --ukuran-judul: 96px;   /* diukur pada kanvas 1920x1080 */
+    --ukuran-subjudul: 36px;
+    --ukuran-isi: 32px;
+    --padding-slide: 96px;
+    --warna-garis: #cbd5e1;
+    --warna-kartu: #f1f5f9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%; margin: 0; overflow: hidden;
+    background: var(--warna-latar);
+    font-family: var(--font-isi);
+  }
+
+  /* --- Panggung 16:9 tetap --- */
+  .panggung-luar { position: fixed; inset: 0; overflow: hidden; background: var(--warna-latar); }
+  .panggung {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    transform-origin: 0 0;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    padding: var(--padding-slide);
+    background: var(--warna-latar-slide);
+    color: var(--warna-teks);
+    visibility: hidden; opacity: 0; pointer-events: none;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .slide.aktif { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+
+  .slide h1 { font-family: var(--font-judul); font-size: var(--ukuran-judul); line-height: 1.1; color: var(--warna-teks); }
+  .slide h2 { font-family: var(--font-judul); font-size: 56px; margin-bottom: 32px; color: var(--warna-aksen); }
+  .slide p, .slide li { font-size: var(--ukuran-isi); line-height: 1.5; color: var(--warna-teks-lembut); }
+
+
+  /* ====== KOMPONEN TAMBAHAN (tabel, kartu angka, dua kolom) ====== */
+  .label { font-size: 26px; letter-spacing: 3px; text-transform: uppercase; color: var(--warna-aksen); font-weight: 700; margin-bottom: 20px; }
+  .slide ul { padding-left: 44px; }
+  .slide li { margin-bottom: 18px; }
+  .slide li strong, .slide p strong { color: var(--warna-teks); }
+  .kpi { display: grid; grid-template-columns: repeat(var(--kolom, 3), 1fr); gap: 40px; margin-top: 16px; }
+  .kartu { border: 3px solid var(--warna-garis); border-top: 12px solid var(--warna-aksen); border-radius: 16px; padding: 36px 40px; background: var(--warna-kartu); }
+  .kartu .angka { font-family: var(--font-judul); font-size: 60px; font-weight: 700; color: var(--warna-teks); line-height: 1.15; }
+  .kartu .ket { font-size: 28px; color: var(--warna-teks-lembut); margin-top: 12px; line-height: 1.4; }
+  .dua-kolom { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  table { border-collapse: collapse; width: 100%; font-size: 30px; }
+  th, td { text-align: left; padding: 18px 24px; border-bottom: 2px solid var(--warna-garis); color: var(--warna-teks); }
+  th { background: var(--warna-aksen); color: #fff; font-weight: 700; }
+  td.uang, th.uang { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tr.total td { font-weight: 700; border-top: 4px solid var(--warna-teks); }
+  .catatan { font-size: 24px; color: var(--warna-teks-lembut); margin-top: 32px; line-height: 1.45; }
+  .isi-sendiri { background: #fff3c4; color: #5c4400; padding: 0 10px; border-radius: 6px; }
+  .sampul { background: var(--warna-aksen) !important; }
+  .sampul h1, .sampul p, .sampul .label { color: #fff !important; }
+  .sampul p { font-size: 40px; margin-top: 28px; }
+  .kesimpulan { margin-top: 36px; font-size: 32px; padding: 24px 32px; border-left: 10px solid var(--warna-aksen); background: var(--warna-kartu); color: var(--warna-teks); }
+
+  img { max-width: 100%; max-height: 100%; }
+
+  /* --- Navigasi (disembunyikan saat cetak) --- */
+  .kontrol {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+    z-index: 1000; display: flex; gap: 12px; align-items: center;
+    font-family: var(--font-isi); font-size: 14px; color: #fff;
+    background: rgba(0,0,0,.5); padding: 8px 16px; border-radius: 999px;
+  }
+  .kontrol button { border: none; background: transparent; color: #fff; font-size: 16px; cursor: pointer; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  /* ====== MODE CETAK: WAJIB — supaya "Print > Save as PDF" rapi 1 slide/halaman ====== */
+  @media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .panggung-luar { position: static; overflow: visible; background: #fff; }
+    .panggung { position: static; width: auto; height: auto; transform: none !important; }
+    .slide {
+      position: relative; display: flex !important;
+      visibility: visible !important; opacity: 1 !important;
+      width: 1920px; height: 1080px;
+      break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .kontrol { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="panggung-luar">
+  <main class="panggung" id="panggung">
+    <section class="slide aktif sampul">
+      <div class="label">Pengajuan KUR · BRI</div>
+      <h1>Bengkel Maju Jaya Motor</h1>
+      <p>Bengkel servis &amp; suku cadang sepeda motor — Sidoarjo</p>
+      <p style="font-size:32px">Pemilik: [isi nama Anda]</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Profil usaha</div>
+      <h2>Lima tahun melayani pelanggan</h2>
+      <div class="kpi">
+        <div class="kartu"><div class="angka">5 tahun</div><div class="ket">Usaha berjalan</div></div>
+        <div class="kartu"><div class="angka">3 mekanik</div><div class="ket">Tenaga kerja tetap</div></div>
+        <div class="kartu"><div class="angka">Sidoarjo</div><div class="ket">Alamat: <span class="isi-sendiri">[isi alamat]</span></div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="label">Layanan</div>
+      <h2>Yang kami kerjakan</h2>
+      <ul>
+        <li>Servis berkala &amp; perbaikan sepeda motor</li>
+        <li>Penjualan suku cadang (sparepart)</li>
+        <li>Layanan lain: <span class="isi-sendiri">[isi, mis. ganti oli, tune-up injeksi]</span></li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <div class="label">Kinerja usaha</div>
+      <h2>Omzet dan laba per bulan</h2>
+      <div class="kpi" style="--kolom:2">
+        <div class="kartu"><div class="angka">Rp 42.500.000</div><div class="ket">Omzet rata-rata per bulan</div></div>
+        <div class="kartu"><div class="angka">Rp 9.800.000</div><div class="ket">Laba bersih rata-rata per bulan</div></div>
+      </div>
+      <p class="catatan">Sumber: catatan pemilik. Lampirkan buku kas / mutasi rekening 6–12 bulan terakhir.</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Aset usaha</div>
+      <h2>Aset yang dimiliki</h2>
+      <table>
+        <tr><th>Aset</th><th class="uang">Perkiraan nilai</th></tr>
+        <tr><td>Peralatan bengkel</td><td class="uang">Rp 65.000.000</td></tr>
+        <tr><td>Motor operasional</td><td class="uang">Rp 18.000.000</td></tr>
+        <tr><td>Stok suku cadang</td><td class="uang">Rp 30.000.000</td></tr>
+        <tr class="total"><td>Total</td><td class="uang">Rp 113.000.000</td></tr>
+      </table>
+      <p class="catatan">Tempat usaha: sewa.</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Tujuan pinjaman</div>
+      <h2>Rencana penggunaan dana</h2>
+      <table>
+        <tr><th>Keperluan</th><th class="uang">Nominal</th><th class="uang">Porsi</th></tr>
+        <tr><td>Alat: kompresor, scanner injeksi, lift motor</td><td class="uang">Rp 85.000.000</td><td class="uang">56,7%</td></tr>
+        <tr><td>Tambah stok suku cadang</td><td class="uang">Rp 50.000.000</td><td class="uang">33,3%</td></tr>
+        <tr><td>Renovasi tempat usaha</td><td class="uang">Rp 15.000.000</td><td class="uang">10,0%</td></tr>
+        <tr class="total"><td>Total pinjaman</td><td class="uang">Rp 150.000.000</td><td class="uang">100%</td></tr>
+      </table>
+    </section>
+
+    <section class="slide">
+      <div class="label">Rencana pengembalian</div>
+      <h2>Rp 150.000.000, tenor 36 bulan</h2>
+      <div class="kpi">
+        <div class="kartu"><div class="angka">Rp 4.563.291</div><div class="ket">Perkiraan cicilan per bulan</div></div>
+        <div class="kartu"><div class="angka">Rp 9.800.000</div><div class="ket">Laba bersih per bulan saat ini</div></div>
+        <div class="kartu"><div class="angka">46,6%</div><div class="ket">Cicilan dibanding laba</div></div>
+      </div>
+      <p class="catatan">Estimasi dengan asumsi bunga 6% efektif per tahun (anuitas); angka resmi mengikuti tabel angsuran bank. Sumber pembayaran: laba usaha.</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Proyeksi</div>
+      <h2>Setelah dana cair</h2>
+      <ul>
+        <li>Scanner injeksi &amp; lift: melayani servis motor injeksi yang sebelumnya dirujuk ke bengkel lain.</li>
+        <li>Perkiraan kenaikan omzet: <span class="isi-sendiri">Rp [isi angka]</span>/bulan — asumsi: <span class="isi-sendiri">[isi]</span></li>
+        <li>Stok lebih lengkap: pelanggan tidak menunggu suku cadang dipesan.</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <div class="label">Legalitas</div>
+      <h2>Dokumen usaha</h2>
+      <table>
+        <tr><th>Dokumen</th><th>Status</th></tr>
+        <tr><td>NIB (Nomor Induk Berusaha)</td><td>Ada</td></tr>
+        <tr><td>NPWP</td><td>Ada</td></tr>
+        <tr><td>Bukti sewa tempat usaha</td><td><span class="isi-sendiri">[isi status]</span></td></tr>
+      </table>
+      <p class="catatan">Nomor dokumen tidak dicantumkan di slide; bawa aslinya saat pertemuan.</p>
+    </section>
+
+    <section class="slide sampul">
+      <div class="label">Penutup</div>
+      <h1>Usaha berjalan, siap tumbuh</h1>
+      <p>5 tahun beroperasi · laba rutin setiap bulan · dana untuk alat &amp; stok</p>
+      <p style="font-size:32px">[isi nama Anda] · WA 0812-0000-xxxx</p>
+      <p style="font-size:24px">Presentasi ini pelengkap, bukan pengganti formulir resmi bank. Syarat KUR terbaru: bank penyalur / kur.ekon.go.id</p>
+    </section>
+  </main>
+</div>
+
+<div class="kontrol">
+  <button id="btnMundur" title="Sebelumnya (←)">‹</button>
+  <span id="halaman">1 / 1</span>
+  <button id="btnMaju" title="Berikutnya (→ / Spasi)">›</button>
+</div>
+
+<script>
+(function () {
+  var slide = document.querySelectorAll('.slide');
+  var indeks = 0;
+  var panggung = document.getElementById('panggung');
+  var labelHalaman = document.getElementById('halaman');
+
+  function skalakan() {
+    var faktor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    var x = (window.innerWidth - 1920 * faktor) / 2;
+    var y = (window.innerHeight - 1080 * faktor) / 2;
+    panggung.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + faktor + ')';
+  }
+  window.addEventListener('resize', skalakan);
+  skalakan();
+
+  function tampilkan(i) {
+    indeks = Math.max(0, Math.min(i, slide.length - 1));
+    slide.forEach(function (s, n) { s.classList.toggle('aktif', n === indeks); });
+    labelHalaman.textContent = (indeks + 1) + ' / ' + slide.length;
+  }
+  tampilkan(0);
+
+  document.getElementById('btnMaju').addEventListener('click', function () { tampilkan(indeks + 1); });
+  document.getElementById('btnMundur').addEventListener('click', function () { tampilkan(indeks - 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { tampilkan(indeks + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { tampilkan(indeks - 1); e.preventDefault(); }
+  });
+
+  // Geser jari di HP/tablet
+  var xAwal = null;
+  document.addEventListener('touchstart', function (e) { xAwal = e.touches[0].clientX; });
+  document.addEventListener('touchend', function (e) {
+    if (xAwal === null) return;
+    var beda = e.changedTouches[0].clientX - xAwal;
+    if (beda > 50) tampilkan(indeks - 1);
+    if (beda < -50) tampilkan(indeks + 1);
+    xAwal = null;
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laporan Penjualan Agustus 2026</title>
+<style>
+  /* ====== VARIABEL TEMA — ganti di sini untuk ubah seluruh tampilan ====== */
+  :root {
+    --warna-latar: #1f2937;        /* latar panggung di luar slide (saat letterbox) */
+    --warna-latar-slide: #ffffff;  /* latar tiap slide */
+    --warna-teks: #1f2937;
+    --warna-teks-lembut: #475569;
+    --warna-aksen: #111827;        /* warna brand / merek pengguna */
+    --font-judul: Verdana, Tahoma, sans-serif;   /* pilih sesuai gaya di aturan-desain.md */
+    --font-isi: Verdana, Tahoma, Arial, sans-serif;
+    --ukuran-judul: 88px;   /* diukur pada kanvas 1920x1080 */
+    --ukuran-subjudul: 36px;
+    --ukuran-isi: 32px;
+    --padding-slide: 96px;
+    --warna-garis: #cbd5e1;
+    --warna-kartu: #f1f5f9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%; margin: 0; overflow: hidden;
+    background: var(--warna-latar);
+    font-family: var(--font-isi);
+  }
+
+  /* --- Panggung 16:9 tetap --- */
+  .panggung-luar { position: fixed; inset: 0; overflow: hidden; background: var(--warna-latar); }
+  .panggung {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    transform-origin: 0 0;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    padding: var(--padding-slide);
+    background: var(--warna-latar-slide);
+    color: var(--warna-teks);
+    visibility: hidden; opacity: 0; pointer-events: none;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .slide.aktif { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+
+  .slide h1 { font-family: var(--font-judul); font-size: var(--ukuran-judul); line-height: 1.1; color: var(--warna-teks); }
+  .slide h2 { font-family: var(--font-judul); font-size: 56px; margin-bottom: 32px; color: var(--warna-aksen); }
+  .slide p, .slide li { font-size: var(--ukuran-isi); line-height: 1.5; color: var(--warna-teks-lembut); }
+
+
+  /* ====== KOMPONEN TAMBAHAN (tabel, kartu angka, dua kolom) ====== */
+  .label { font-size: 26px; letter-spacing: 3px; text-transform: uppercase; color: var(--warna-aksen); font-weight: 700; margin-bottom: 20px; }
+  .slide ul { padding-left: 44px; }
+  .slide li { margin-bottom: 18px; }
+  .slide li strong, .slide p strong { color: var(--warna-teks); }
+  .kpi { display: grid; grid-template-columns: repeat(var(--kolom, 3), 1fr); gap: 40px; margin-top: 16px; }
+  .kartu { border: 3px solid var(--warna-garis); border-top: 12px solid var(--warna-aksen); border-radius: 16px; padding: 36px 40px; background: var(--warna-kartu); }
+  .kartu .angka { font-family: var(--font-judul); font-size: 60px; font-weight: 700; color: var(--warna-teks); line-height: 1.15; }
+  .kartu .ket { font-size: 28px; color: var(--warna-teks-lembut); margin-top: 12px; line-height: 1.4; }
+  .dua-kolom { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  table { border-collapse: collapse; width: 100%; font-size: 30px; }
+  th, td { text-align: left; padding: 18px 24px; border-bottom: 2px solid var(--warna-garis); color: var(--warna-teks); }
+  th { background: var(--warna-aksen); color: #fff; font-weight: 700; }
+  td.uang, th.uang { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tr.total td { font-weight: 700; border-top: 4px solid var(--warna-teks); }
+  .catatan { font-size: 24px; color: var(--warna-teks-lembut); margin-top: 32px; line-height: 1.45; }
+  .isi-sendiri { background: #fff3c4; color: #5c4400; padding: 0 10px; border-radius: 6px; }
+  .sampul { background: var(--warna-aksen) !important; }
+  .sampul h1, .sampul p, .sampul .label { color: #fff !important; }
+  .sampul p { font-size: 40px; margin-top: 28px; }
+  .kesimpulan { margin-top: 36px; font-size: 32px; padding: 24px 32px; border-left: 10px solid var(--warna-aksen); background: var(--warna-kartu); color: var(--warna-teks); }
+
+  img { max-width: 100%; max-height: 100%; }
+
+  /* --- Navigasi (disembunyikan saat cetak) --- */
+  .kontrol {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+    z-index: 1000; display: flex; gap: 12px; align-items: center;
+    font-family: var(--font-isi); font-size: 14px; color: #fff;
+    background: rgba(0,0,0,.5); padding: 8px 16px; border-radius: 999px;
+  }
+  .kontrol button { border: none; background: transparent; color: #fff; font-size: 16px; cursor: pointer; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  /* ====== MODE CETAK: WAJIB — supaya "Print > Save as PDF" rapi 1 slide/halaman ====== */
+  @media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .panggung-luar { position: static; overflow: visible; background: #fff; }
+    .panggung { position: static; width: auto; height: auto; transform: none !important; }
+    .slide {
+      position: relative; display: flex !important;
+      visibility: visible !important; opacity: 1 !important;
+      width: 1920px; height: 1080px;
+      break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .kontrol { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="panggung-luar">
+  <main class="panggung" id="panggung">
+    <section class="slide aktif sampul">
+      <div class="label">Laporan Bulanan</div>
+      <h1>Penjualan Agustus 2026</h1>
+      <p>[isi nama usaha] · disiapkan untuk Owner</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Ringkasan</div>
+      <h2>Inti bulan ini</h2>
+      <ul>
+        <li>Omzet <strong>Rp 41.190.000</strong>, 91,5% dari target Rp 45.000.000.</li>
+        <li>Kurang <strong>Rp 3.810.000</strong> dari target.</li>
+        <li>Catering menyumbang 77,8% omzet; Nasi Box Ayam Bakar produk nomor 1.</li>
+        <li>Minggu kedua paling ramai: Rp 11.229.000.</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <div class="label">Capaian vs target</div>
+      <h2>Omzet belum capai target</h2>
+      <div class="kpi">
+        <div class="kartu"><div class="angka">Rp 45.000.000</div><div class="ket">Target Agustus</div></div>
+        <div class="kartu"><div class="angka">Rp 41.190.000</div><div class="ket">Realisasi (138 transaksi, 31 hari)</div></div>
+        <div class="kartu"><div class="angka">91,5%</div><div class="ket">Pencapaian · kurang Rp 3.810.000</div></div>
+      </div>
+      <p class="kesimpulan">Rata-rata omzet Rp 1.328.710 per hari.</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Rincian per produk</div>
+      <h2>Nasi box mendominasi</h2>
+      <table style="font-size:28px">
+        <tr><th>Produk</th><th class="uang">Qty</th><th class="uang">Omzet</th><th class="uang">Porsi</th></tr>
+        <tr><td>Nasi Box Ayam Bakar</td><td class="uang">638</td><td class="uang">Rp 17.864.000</td><td class="uang">43,4%</td></tr>
+        <tr><td>Nasi Box Rendang</td><td class="uang">315</td><td class="uang">Rp 11.025.000</td><td class="uang">26,8%</td></tr>
+        <tr><td>Tumpeng Mini</td><td class="uang">18</td><td class="uang">Rp 3.150.000</td><td class="uang">7,6%</td></tr>
+        <tr><td>Pempek Kapal Selam isi 5</td><td class="uang">52</td><td class="uang">Rp 2.860.000</td><td class="uang">6,9%</td></tr>
+        <tr><td>Risol Mayo isi 10</td><td class="uang">63</td><td class="uang">Rp 2.394.000</td><td class="uang">5,8%</td></tr>
+        <tr><td>Dimsum Ayam isi 20</td><td class="uang">53</td><td class="uang">Rp 2.385.000</td><td class="uang">5,8%</td></tr>
+        <tr><td>Nugget Sayur 500g</td><td class="uang">36</td><td class="uang">Rp 1.512.000</td><td class="uang">3,7%</td></tr>
+        <tr class="total"><td>Total</td><td class="uang">1.175</td><td class="uang">Rp 41.190.000</td><td class="uang">100%</td></tr>
+      </table>
+    </section>
+
+    <section class="slide">
+      <div class="label">Per kategori &amp; minggu</div>
+      <h2>Catering vs frozen food</h2>
+      <div class="dua-kolom">
+        <div>
+          <div class="kpi" style="--kolom:1;gap:28px">
+            <div class="kartu"><div class="angka">Rp 32.039.000</div><div class="ket">Catering · 77,8%</div></div>
+            <div class="kartu"><div class="angka">Rp 9.151.000</div><div class="ket">Frozen food · 22,2%</div></div>
+          </div>
+        </div>
+        <table style="font-size:28px">
+          <tr><th>Minggu</th><th class="uang">Omzet</th></tr>
+        <tr><td>1–7 Agustus</td><td class="uang">Rp 8.804.000</td></tr>
+        <tr><td>8–14 Agustus</td><td class="uang">Rp 11.229.000</td></tr>
+        <tr><td>15–21 Agustus</td><td class="uang">Rp 8.483.000</td></tr>
+        <tr><td>22–28 Agustus</td><td class="uang">Rp 8.143.000</td></tr>
+        <tr><td>29–31 Agustus (3 hari)</td><td class="uang">Rp 4.531.000</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="label">Kendala</div>
+      <h2>Yang menghambat bulan ini</h2>
+      <ul>
+        <li>Frozen food baru 22,2% omzet.</li>
+        <li>Hari terendah 4 Agustus: Rp 204.000 (hari terbaik 14 Agustus: Rp 3.135.000).</li>
+        <li>Penyebab lain: <span class="isi-sendiri">[isi dari tim]</span></li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <div class="label">Rencana September</div>
+      <h2>Langkah bulan depan</h2>
+      <ul>
+        <li><span class="isi-sendiri">[isi rencana 1 + penanggung jawab]</span></li>
+        <li><span class="isi-sendiri">[isi rencana 2 + penanggung jawab]</span></li>
+        <li><span class="isi-sendiri">[isi rencana 3 + penanggung jawab]</span></li>
+      </ul>
+    </section>
+
+    <section class="slide sampul">
+      <div class="label">Penutup</div>
+      <h1>Agustus: 91,5% dari target</h1>
+      <p>Catering kuat; frozen food perlu didorong di September.</p>
+    </section>
+  </main>
+</div>
+
+<div class="kontrol">
+  <button id="btnMundur" title="Sebelumnya (←)">‹</button>
+  <span id="halaman">1 / 1</span>
+  <button id="btnMaju" title="Berikutnya (→ / Spasi)">›</button>
+</div>
+
+<script>
+(function () {
+  var slide = document.querySelectorAll('.slide');
+  var indeks = 0;
+  var panggung = document.getElementById('panggung');
+  var labelHalaman = document.getElementById('halaman');
+
+  function skalakan() {
+    var faktor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    var x = (window.innerWidth - 1920 * faktor) / 2;
+    var y = (window.innerHeight - 1080 * faktor) / 2;
+    panggung.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + faktor + ')';
+  }
+  window.addEventListener('resize', skalakan);
+  skalakan();
+
+  function tampilkan(i) {
+    indeks = Math.max(0, Math.min(i, slide.length - 1));
+    slide.forEach(function (s, n) { s.classList.toggle('aktif', n === indeks); });
+    labelHalaman.textContent = (indeks + 1) + ' / ' + slide.length;
+  }
+  tampilkan(0);
+
+  document.getElementById('btnMaju').addEventListener('click', function () { tampilkan(indeks + 1); });
+  document.getElementById('btnMundur').addEventListener('click', function () { tampilkan(indeks - 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { tampilkan(indeks + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { tampilkan(indeks - 1); e.preventDefault(); }
+  });
+
+  // Geser jari di HP/tablet
+  var xAwal = null;
+  document.addEventListener('touchstart', function (e) { xAwal = e.touches[0].clientX; });
+  document.addEventListener('touchend', function (e) {
+    if (xAwal === null) return;
+    var beda = e.changedTouches[0].clientX - xAwal;
+    if (beda > 50) tampilkan(indeks - 1);
+    if (beda < -50) tampilkan(indeks + 1);
+    xAwal = null;
+  });
+})();
+</script>
+</body>
+</html>

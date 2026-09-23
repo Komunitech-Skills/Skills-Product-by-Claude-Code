@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pitch Deck Bersih Kilat Laundry</title>
+<style>
+  /* ====== VARIABEL TEMA — ganti di sini untuk ubah seluruh tampilan ====== */
+  :root {
+    --warna-latar: #0f172a;        /* latar panggung di luar slide (saat letterbox) */
+    --warna-latar-slide: #ffffff;  /* latar tiap slide */
+    --warna-teks: #0f172a;
+    --warna-teks-lembut: #475569;
+    --warna-aksen: #2563eb;        /* warna brand / merek pengguna */
+    --font-judul: Georgia, 'Times New Roman', serif;   /* pilih sesuai gaya di aturan-desain.md */
+    --font-isi: 'Segoe UI', Arial, Helvetica, sans-serif;
+    --ukuran-judul: 96px;   /* diukur pada kanvas 1920x1080 */
+    --ukuran-subjudul: 36px;
+    --ukuran-isi: 32px;
+    --padding-slide: 96px;
+    --warna-garis: #cbd5e1;
+    --warna-kartu: #f1f5f9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%; margin: 0; overflow: hidden;
+    background: var(--warna-latar);
+    font-family: var(--font-isi);
+  }
+
+  /* --- Panggung 16:9 tetap --- */
+  .panggung-luar { position: fixed; inset: 0; overflow: hidden; background: var(--warna-latar); }
+  .panggung {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    transform-origin: 0 0;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    padding: var(--padding-slide);
+    background: var(--warna-latar-slide);
+    color: var(--warna-teks);
+    visibility: hidden; opacity: 0; pointer-events: none;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .slide.aktif { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+
+  .slide h1 { font-family: var(--font-judul); font-size: var(--ukuran-judul); line-height: 1.1; color: var(--warna-teks); }
+  .slide h2 { font-family: var(--font-judul); font-size: 56px; margin-bottom: 32px; color: var(--warna-aksen); }
+  .slide p, .slide li { font-size: var(--ukuran-isi); line-height: 1.5; color: var(--warna-teks-lembut); }
+
+
+  /* ====== KOMPONEN TAMBAHAN (tabel, kartu angka, dua kolom) ====== */
+  .label { font-size: 26px; letter-spacing: 3px; text-transform: uppercase; color: var(--warna-aksen); font-weight: 700; margin-bottom: 20px; }
+  .slide ul { padding-left: 44px; }
+  .slide li { margin-bottom: 18px; }
+  .slide li strong, .slide p strong { color: var(--warna-teks); }
+  .kpi { display: grid; grid-template-columns: repeat(var(--kolom, 3), 1fr); gap: 40px; margin-top: 16px; }
+  .kartu { border: 3px solid var(--warna-garis); border-top: 12px solid var(--warna-aksen); border-radius: 16px; padding: 36px 40px; background: var(--warna-kartu); }
+  .kartu .angka { font-family: var(--font-judul); font-size: 60px; font-weight: 700; color: var(--warna-teks); line-height: 1.15; }
+  .kartu .ket { font-size: 28px; color: var(--warna-teks-lembut); margin-top: 12px; line-height: 1.4; }
+  .dua-kolom { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  table { border-collapse: collapse; width: 100%; font-size: 30px; }
+  th, td { text-align: left; padding: 18px 24px; border-bottom: 2px solid var(--warna-garis); color: var(--warna-teks); }
+  th { background: var(--warna-aksen); color: #fff; font-weight: 700; }
+  td.uang, th.uang { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tr.total td { font-weight: 700; border-top: 4px solid var(--warna-teks); }
+  .catatan { font-size: 24px; color: var(--warna-teks-lembut); margin-top: 32px; line-height: 1.45; }
+  .isi-sendiri { background: #fff3c4; color: #5c4400; padding: 0 10px; border-radius: 6px; }
+  .sampul { background: var(--warna-aksen) !important; }
+  .sampul h1, .sampul p, .sampul .label { color: #fff !important; }
+  .sampul p { font-size: 40px; margin-top: 28px; }
+  .kesimpulan { margin-top: 36px; font-size: 32px; padding: 24px 32px; border-left: 10px solid var(--warna-aksen); background: var(--warna-kartu); color: var(--warna-teks); }
+
+  img { max-width: 100%; max-height: 100%; }
+
+  /* --- Navigasi (disembunyikan saat cetak) --- */
+  .kontrol {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+    z-index: 1000; display: flex; gap: 12px; align-items: center;
+    font-family: var(--font-isi); font-size: 14px; color: #fff;
+    background: rgba(0,0,0,.5); padding: 8px 16px; border-radius: 999px;
+  }
+  .kontrol button { border: none; background: transparent; color: #fff; font-size: 16px; cursor: pointer; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  /* ====== MODE CETAK: WAJIB — supaya "Print > Save as PDF" rapi 1 slide/halaman ====== */
+  @media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .panggung-luar { position: static; overflow: visible; background: #fff; }
+    .panggung { position: static; width: auto; height: auto; transform: none !important; }
+    .slide {
+      position: relative; display: flex !important;
+      visibility: visible !important; opacity: 1 !important;
+      width: 1920px; height: 1080px;
+      break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .kontrol { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="panggung-luar">
+  <main class="panggung" id="panggung">
+    <section class="slide aktif sampul">
+      <div class="label">Pitch Deck · 2026</div>
+      <h1>Bersih Kilat Laundry</h1>
+      <p>Laundry kiloan antar-jemput untuk keluarga sibuk di Depok &amp; Bogor</p>
+      <p style="font-size:32px">[isi nama Anda] — Pendiri &amp; Pemilik</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Masalah</div>
+      <h2>Keluarga sibuk tidak punya waktu mencuci</h2>
+      <ul>
+        <li>Pasangan bekerja pulang malam; cucian menumpuk di akhir pekan.</li>
+        <li>Laundry kiloan lokal sering <strong>telat, tercampur, atau hilang</strong>.</li>
+        <li>Harus datang sendiri ke outlet untuk antar &amp; ambil.</li>
+      </ul>
+      <p class="catatan">Data pendukung: <span class="isi-sendiri">[isi data/survei pelanggan jika ada]</span></p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Solusi</div>
+      <h2>Cuci kiloan rapi, dijemput &amp; diantar</h2>
+      <div class="kpi">
+        <div class="kartu"><div class="angka">Pesan via WA</div><div class="ket">40% pelanggan sudah memesan lewat WhatsApp</div></div>
+        <div class="kartu"><div class="angka">Antar-jemput</div><div class="ket">Pelanggan tidak perlu datang ke outlet</div></div>
+        <div class="kartu"><div class="angka">Rp 8.000/kg</div><div class="ket">Harga jelas per kilogram</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="label">Cara kerja</div>
+      <h2>Empat langkah untuk pelanggan</h2>
+      <div class="kpi" style="--kolom:4">
+        <div class="kartu"><div class="angka">1</div><div class="ket">Pesan lewat chat WhatsApp</div></div>
+        <div class="kartu"><div class="angka">2</div><div class="ket">Kurir menjemput cucian ke rumah</div></div>
+        <div class="kartu"><div class="angka">3</div><div class="ket">Ditimbang, dicuci, disetrika di outlet</div></div>
+        <div class="kartu"><div class="angka">4</div><div class="ket">Diantar kembali, bayar di tempat/transfer</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="label">Pasar</div>
+      <h2>Ukuran pasar Depok &amp; Bogor</h2>
+      <ul>
+        <li>Jumlah rumah tangga di area layanan: <span class="isi-sendiri">[isi data BPS]</span></li>
+        <li>Perkiraan belanja laundry per rumah tangga: <span class="isi-sendiri">Rp [isi angka]</span>/bulan</li>
+        <li>Pasar yang bisa dijangkau 5 outlet: <span class="isi-sendiri">[isi estimasi]</span></li>
+      </ul>
+      <p class="catatan">Tandai sebagai "estimasi" bila bukan data resmi.</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Model bisnis</div>
+      <h2>Pendapatan dari cuci kiloan</h2>
+      <table>
+        <tr><th>Sumber pendapatan</th><th class="uang">Harga</th></tr>
+        <tr><td>Cuci + setrika kiloan</td><td class="uang">Rp 8.000/kg</td></tr>
+        <tr><td>Ongkos antar-jemput</td><td class="uang"><span class="isi-sendiri">Rp [isi]</span></td></tr>
+        <tr><td>Layanan satuan (bedcover, jas, dll.)</td><td class="uang"><span class="isi-sendiri">Rp [isi]</span></td></tr>
+      </table>
+    </section>
+
+    <section class="slide">
+      <div class="label">Traksi</div>
+      <h2>Sudah berjalan sejak 2023</h2>
+      <div class="kpi">
+        <div class="kartu"><div class="angka">Rp 38.000.000</div><div class="ket">Omzet gabungan per bulan (2 outlet)</div></div>
+        <div class="kartu"><div class="angka">620</div><div class="ket">Pelanggan aktif</div></div>
+        <div class="kartu"><div class="angka">±4.750 kg</div><div class="ket">Cucian per bulan (Rp 38.000.000 ÷ Rp 8.000/kg)</div></div>
+      </div>
+      <p class="kesimpulan">Dua outlet di Depok sudah terbukti diminati; model siap diperbanyak.</p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Kompetitor</div>
+      <h2>Kenapa pelanggan memilih kami</h2>
+      <table>
+        <tr><th>Aspek</th><th>Bersih Kilat</th><th>Laundry kiloan biasa</th><th>Aplikasi laundry besar</th></tr>
+        <tr><td>Antar-jemput</td><td>Ya</td><td>Jarang</td><td>Ya</td></tr>
+        <tr><td>Pesan via WA</td><td>Ya</td><td>Kadang</td><td>Lewat aplikasi</td></tr>
+        <tr><td>Harga per kg</td><td>Rp 8.000</td><td><span class="isi-sendiri">Rp [isi]</span></td><td><span class="isi-sendiri">Rp [isi]</span></td></tr>
+      </table>
+    </section>
+
+    <section class="slide">
+      <div class="label">Rencana pertumbuhan</div>
+      <h2>Dari 2 menjadi 5 outlet</h2>
+      <ul>
+        <li>Buka <strong>3 outlet baru</strong> di Depok &amp; Bogor.</li>
+        <li>Pertahankan pemesanan lewat WhatsApp dan antar-jemput di tiap outlet.</li>
+        <li>Target waktu pembukaan: <span class="isi-sendiri">[isi bulan/tahun]</span></li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <div class="label">Tim</div>
+      <h2>Tim pendiri</h2>
+      <div class="dua-kolom">
+        <div class="kartu"><div class="angka" style="font-size:44px">[isi nama Anda]</div><div class="ket">Pendiri &amp; operasional. 6 tahun supervisor laundry hotel.</div></div>
+        <div class="kartu"><div class="angka" style="font-size:44px">[isi nama adik]</div><div class="ket">Keuangan &amp; administrasi.</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="label">Kebutuhan dana</div>
+      <h2>Rp 450.000.000 untuk 15% saham</h2>
+      <table>
+        <tr><th>Rincian</th><th class="uang">Nominal</th></tr>
+        <tr><td>3 outlet baru (rata-rata per outlet)</td><td class="uang">Rp 150.000.000</td></tr>
+        <tr class="total"><td>Total dana dicari</td><td class="uang">Rp 450.000.000</td></tr>
+      </table>
+      <p class="catatan">Valuasi tersirat setelah pendanaan: Rp 450.000.000 ÷ 15% = Rp 3.000.000.000. Rincian per pos (mesin, sewa, renovasi, modal kerja): <span class="isi-sendiri">[isi]</span></p>
+    </section>
+
+    <section class="slide">
+      <div class="label">Proyeksi</div>
+      <h2>Proyeksi 12 bulan</h2>
+      <ul>
+        <li>Omzet per outlet saat ini rata-rata Rp 19.000.000/bulan (Rp 38.000.000 ÷ 2).</li>
+        <li>Proyeksi omzet 5 outlet: <span class="isi-sendiri">Rp [isi]</span> — asumsi: <span class="isi-sendiri">[isi]</span></li>
+        <li>Biaya operasional &amp; target balik modal: <span class="isi-sendiri">[isi]</span></li>
+      </ul>
+    </section>
+
+    <section class="slide sampul">
+      <div class="label">Terima kasih</div>
+      <h1>Mari tumbuh bersama Bersih Kilat</h1>
+      <p>Jadwalkan kunjungan ke outlet kami di Depok</p>
+      <p style="font-size:32px">WA: 0812-0000-xxxx · [isi email]</p>
+    </section>
+  </main>
+</div>
+
+<div class="kontrol">
+  <button id="btnMundur" title="Sebelumnya (←)">‹</button>
+  <span id="halaman">1 / 1</span>
+  <button id="btnMaju" title="Berikutnya (→ / Spasi)">›</button>
+</div>
+
+<script>
+(function () {
+  var slide = document.querySelectorAll('.slide');
+  var indeks = 0;
+  var panggung = document.getElementById('panggung');
+  var labelHalaman = document.getElementById('halaman');
+
+  function skalakan() {
+    var faktor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    var x = (window.innerWidth - 1920 * faktor) / 2;
+    var y = (window.innerHeight - 1080 * faktor) / 2;
+    panggung.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + faktor + ')';
+  }
+  window.addEventListener('resize', skalakan);
+  skalakan();
+
+  function tampilkan(i) {
+    indeks = Math.max(0, Math.min(i, slide.length - 1));
+    slide.forEach(function (s, n) { s.classList.toggle('aktif', n === indeks); });
+    labelHalaman.textContent = (indeks + 1) + ' / ' + slide.length;
+  }
+  tampilkan(0);
+
+  document.getElementById('btnMaju').addEventListener('click', function () { tampilkan(indeks + 1); });
+  document.getElementById('btnMundur').addEventListener('click', function () { tampilkan(indeks - 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { tampilkan(indeks + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { tampilkan(indeks - 1); e.preventDefault(); }
+  });
+
+  // Geser jari di HP/tablet
+  var xAwal = null;
+  document.addEventListener('touchstart', function (e) { xAwal = e.touches[0].clientX; });
+  document.addEventListener('touchend', function (e) {
+    if (xAwal === null) return;
+    var beda = e.changedTouches[0].clientX - xAwal;
+    if (beda > 50) tampilkan(indeks - 1);
+    if (beda < -50) tampilkan(indeks + 1);
+    xAwal = null;
+  });
+})();
+</script>
+</body>
+</html>
