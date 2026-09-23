@@ -1,6 +1,12 @@
 # Petunjuk Format Ekspor Mutasi Bank
 
-> **Status: BELUM TERVERIFIKASI dengan file ekspor asli terbaru.** Ringkasan di bawah adalah pola umum yang sering dijumpai; nama kolom, urutan, dan format angka dapat berbeda per kanal (internet banking pribadi vs bisnis, aplikasi mobile, CMS korporat) dan dapat berubah sewaktu-waktu. Karena itu skill ini **selalu** menjalankan `deteksi` lalu meminta konfirmasi pengguna. Diperbarui: 2026-09-23.
+> **Status: BELUM TERVERIFIKASI dengan dokumentasi resmi bank (dicek ulang 2026-09-23).**
+>
+> Hasil pengecekan ulang:
+> - **BCA:** halaman resmi bca.co.id (Des 2025) hanya menyebut mutasi/e-Statement bisa diunduh lewat myBCA dan KlikBCA. Tutorial KlikBCA Bisnis (klikbca.com/kbbdemo) memuat menu "Mutasi Rekening", tetapi tidak menulis struktur kolom file.
+> - **Mandiri, BRI, BNI:** tidak ditemukan dokumentasi resmi yang merinci kolom CSV. Sumber pihak ketiga hanya menyebut e-Statement BRImo bisa diunduh sebagai PDF atau CSV.
+>
+> Jadi nama kolom, urutan, dan format angka di bawah tetap berupa **pola umum**. Pola ini bisa berbeda per kanal (internet banking pribadi vs bisnis, aplikasi mobile, CMS korporat) dan bisa berubah sewaktu-waktu. Karena itu skill ini **selalu** menjalankan `deteksi` lalu meminta konfirmasi pengguna. Mohon uji dengan file ekspor asli dari tiap bank (dengan data disamarkan) sebelum rilis.
 
 ## Pola yang ditangani script
 | Pola | Contoh | Argumen `cocokkan` |

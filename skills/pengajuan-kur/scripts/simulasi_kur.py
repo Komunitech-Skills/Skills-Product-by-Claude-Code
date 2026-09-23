@@ -132,6 +132,47 @@ def plafon_maks(cicilan_maks, bunga_th, n, metode):
     return int(Decimal(cicilan_maks) / faktor // 1000 * 1000)  # dibulatkan ke bawah per Rp 1.000
 
 
+# Ketentuan KUR menurut teks Permenko Perekonomian No. 1 Tahun 2026 (berlaku 13 Jan 2026).
+# Dicek 2026-09-23; lihat references/regulasi.md. Bunga efektif per tahun; tenor dalam bulan.
+DASAR_KUR = "Permenko Perekonomian No. 1 Tahun 2026 (berlaku 13 Januari 2026)"
+ATURAN_KUR = {
+    "super-mikro": {"min": 0, "maks": 10_000_000, "pasal_plafon": "Pasal 29",
+                    "tenor": {"modal-kerja": 36, "investasi": 60}, "pasal_tenor": "Pasal 31"},
+    "mikro": {"min": 10_000_000, "maks": 100_000_000, "pasal_plafon": "Pasal 36",
+              "tenor": {"modal-kerja": 36, "investasi": 60}, "pasal_tenor": "Pasal 38"},
+    "kecil": {"min": 100_000_000, "maks": 500_000_000, "pasal_plafon": "Pasal 43",
+              "tenor": {"modal-kerja": 48, "investasi": 60}, "pasal_tenor": "Pasal 45"},
+}
+
+
+def jenis_dari_plafon(P):
+    if P <= 10_000_000:
+        return "super-mikro"
+    if P <= 100_000_000:
+        return "mikro"
+    if P <= 500_000_000:
+        return "kecil"
+    return None
+
+
+def bunga_acuan_kur(jenis, sektor, akad):
+    """Kembalikan (bunga % atau None, pasal, catatan)."""
+    if jenis == "super-mikro":
+        return Decimal(3), "Pasal 30", None
+    pasal = "Pasal 37" if jenis == "mikro" else "Pasal 44"
+    if sektor is None:
+        return None, pasal, "sektor belum diisi (--sektor produksi / perdagangan-ekspor / perdagangan)"
+    if sektor in ("produksi", "perdagangan-ekspor"):
+        return Decimal(6), pasal, None
+    tangga = {1: 6, 2: 7} if jenis == "mikro" else {1: 6, 2: 7, 3: 8, 4: 9}
+    if akad in tangga:
+        return Decimal(tangga[akad]), pasal, None
+    if jenis == "mikro":
+        return None, "Pasal 36 ayat (3)", ("KUR mikro sektor perdagangan non-ekspor paling banyak 2 kali akad — "
+                                            "akad ke-%d tidak tersedia" % akad)
+    return None, pasal, "bunga untuk akad ke-%d KUR kecil perdagangan non-ekspor tidak diatur di pasal ini — tanyakan bank" % akad
+
+
 def kategori_rasio(rasio):
     if rasio is None:
         return None
@@ -147,10 +188,17 @@ def kategori_rasio(rasio):
 def main():
     p = argparse.ArgumentParser(description="Simulasi cicilan KUR/kredit usaha: anuitas vs flat + rasio kemampuan bayar")
     p.add_argument("--plafon", required=True, help="Jumlah pinjaman, mis. 'Rp 50.000.000' atau 50jt")
-    p.add_argument("--bunga", required=True, help="Suku bunga PER TAHUN dalam persen, mis. 6 atau '6,5%%'")
+    p.add_argument("--bunga", help="Suku bunga PER TAHUN dalam persen, mis. 6 atau '6,5%%'. Boleh kosong bila "
+                   "--kur dipakai dan jenis/sektor KUR diketahui (bunga acuan Permenko 1/2026)")
     p.add_argument("--bunga-contoh", action="store_true",
                    help="Tandai bunga sebagai ANGKA CONTOH (belum dari bank) — akan diberi label di output")
     p.add_argument("--tenor", required=True, type=int, help="Jangka waktu dalam BULAN, mis. 36")
+    p.add_argument("--kur", action="store_true", help="Cek plafon, bunga acuan, tenor, NPWP & agunan terhadap Permenko 1/2026")
+    p.add_argument("--jenis-kur", choices=["super-mikro", "mikro", "kecil"], help="Default: ditebak dari plafon")
+    p.add_argument("--sektor", choices=["produksi", "perdagangan-ekspor", "perdagangan"],
+                   help="produksi = selain perdagangan (pertanian, industri pengolahan, jasa produksi, dll.)")
+    p.add_argument("--akad-ke", type=int, default=1, help="KUR ke berapa di jenis yang sama (default 1)")
+    p.add_argument("--penggunaan", choices=["modal-kerja", "investasi"], help="Untuk cek tenor maksimal")
     p.add_argument("--metode", choices=["anuitas", "flat", "keduanya"], default="keduanya")
     p.add_argument("--laba-bersih", help="Laba bersih usaha per bulan (setelah semua biaya usaha)")
     p.add_argument("--biaya-rumah-tangga", help="Kebutuhan rumah tangga per bulan yang diambil dari laba (opsional)")
@@ -168,6 +216,38 @@ def main():
     if P is None or P <= 0:
         gagal(f"Plafon tidak terbaca atau tidak positif: '{a.plafon}'. Contoh: 'Rp 50.000.000' atau 50jt.")
     P = bulat(P)
+    a.bunga_dari_acuan = False
+    if a.akad_ke < 1:
+        gagal("--akad-ke minimal 1.")
+    cek_kur = None
+    if a.kur or a.jenis_kur or a.sektor:
+        jenis = a.jenis_kur or jenis_dari_plafon(P)
+        if jenis is None:
+            gagal(f"Plafon {rp(P)} di atas batas KUR kecil Rp 500.000.000 (Pasal 43 Permenko 1/2026). "
+                  "Ini bukan KUR; hapus --kur untuk simulasi kredit biasa.")
+        at = ATURAN_KUR[jenis]
+        cek_kur = {"dasar": DASAR_KUR, "jenis": jenis, "sektor": a.sektor, "akad_ke": a.akad_ke,
+                   "sesuai": [], "perhatian": []}
+        if not (at["min"] < P <= at["maks"]):
+            cek_kur["perhatian"].append(f"Plafon {rp(P)} di luar rentang KUR {jenis} ({rp(at['min'])} < plafon ≤ "
+                                        f"{rp(at['maks'])}, {at['pasal_plafon']}).")
+        else:
+            cek_kur["sesuai"].append(f"Plafon masuk rentang KUR {jenis} ({at['pasal_plafon']}).")
+        acuan, pasal_b, cat_b = bunga_acuan_kur(jenis, a.sektor, a.akad_ke)
+        cek_kur["bunga_acuan_efektif_persen"] = float(acuan) if acuan is not None else None
+        cek_kur["pasal_bunga"] = pasal_b
+        if cat_b:
+            cek_kur["perhatian"].append(cat_b)
+    if a.bunga is None:
+        if cek_kur is None or cek_kur.get("bunga_acuan_efektif_persen") is None:
+            alasan = (" Catatan: " + "; ".join(cek_kur["perhatian"])) if cek_kur and cek_kur["perhatian"] else ""
+            gagal("Suku bunga belum diisi. Isi --bunga (dari bank), atau pakai --kur dengan --sektor "
+                  "(dan --akad-ke) agar dipakai bunga acuan Permenko 1/2026." + alasan)
+        a.bunga = str(cek_kur["bunga_acuan_efektif_persen"])
+        a.bunga_dari_acuan = True
+        sumber_bunga = (f"ACUAN {DASAR_KUR} {cek_kur['pasal_bunga']} — efektif/tahun; konfirmasi ke bank penyalur")
+    else:
+        sumber_bunga = ("ANGKA CONTOH — cek bank/kur.ekon.go.id" if a.bunga_contoh else "diisi pengguna/bank")
     teks_bunga = str(a.bunga).lower()
     per_bulan = bool(re.search(r"(/|per|tiap|sebulan|\bbln\b|bulan)", teks_bunga)) and not re.search(r"tahun|thn|p\.?a", teks_bunga)
     bunga = parse_angka(re.sub(r"(per|/)?\s*(bulan|bln|tahun|thn|p\.?a\.?)|sebulan|setahun", "", teks_bunga))
@@ -206,6 +286,30 @@ def main():
                           "Tanyakan ke bank apakah itu bunga flat atau efektif.")
     if bunga < 1 and bunga > 0:
         peringatan.append(f"Bunga {bunga}% per tahun sangat kecil — pastikan bukan bunga per BULAN.")
+    if cek_kur is not None:
+        at = ATURAN_KUR[cek_kur["jenis"]]
+        acuan = cek_kur.get("bunga_acuan_efektif_persen")
+        if acuan is not None and float(bunga) != acuan:
+            cek_kur["perhatian"].append(f"Bunga yang dipakai {float(bunga)}% berbeda dari bunga acuan KUR {acuan}% efektif/tahun "
+                                        f"({cek_kur['pasal_bunga']}). Jika bank menyebut angka FLAT, bandingkan dengan "
+                                        "'bunga_flat_setara' di hasil anuitas; jika lebih tinggi, tanyakan ke bank.")
+        if a.penggunaan:
+            tmax = at["tenor"][a.penggunaan]
+            if n > tmax:
+                cek_kur["perhatian"].append(f"Tenor {n} bulan melebihi batas awal {tmax} bulan untuk {a.penggunaan} "
+                                            f"KUR {cek_kur['jenis']} ({at['pasal_tenor']}); perpanjangan hanya lewat ketentuan bank.")
+            else:
+                cek_kur["sesuai"].append(f"Tenor {n} bulan ≤ batas {tmax} bulan untuk {a.penggunaan} ({at['pasal_tenor']}).")
+        else:
+            cek_kur["perhatian"].append("Penggunaan belum diisi (--penggunaan modal-kerja/investasi); batas tenor: "
+                                        f"modal kerja {at['tenor']['modal-kerja']} bulan, investasi {at['tenor']['investasi']} bulan "
+                                        f"({at['pasal_tenor']}).")
+        if cek_kur["jenis"] == "kecil" or (cek_kur["jenis"] == "mikro" and P > 50_000_000):
+            cek_kur["sesuai"].append("Wajib punya NPWP (" + ("Pasal 41" if cek_kur["jenis"] == "kecil" else "Pasal 34") + ").")
+        if P <= 100_000_000:
+            cek_kur["sesuai"].append("Plafon ≤ Rp 100.000.000: bank TIDAK BOLEH meminta agunan tambahan (Pasal 20 ayat 1).")
+        else:
+            cek_kur["sesuai"].append("Plafon > Rp 100.000.000: bank boleh meminta agunan tambahan (Pasal 20 ayat 2).")
     if a.bunga_contoh:
         peringatan.append("Suku bunga yang dipakai adalah ANGKA CONTOH, bukan penawaran bank. Cek suku bunga KUR "
                           "terbaru di bank penyalur atau kur.ekon.go.id.")
@@ -283,12 +387,32 @@ def main():
             d["jadwal"] = jd
         hasil_metode[m] = d
 
+    if cek_kur is not None and cek_kur.get("bunga_acuan_efektif_persen") is not None:
+        acuan = Decimal(str(cek_kur["bunga_acuan_efektif_persen"]))
+        ja = jadwal_anuitas(P, acuan, n)
+        flat_setara = Decimal(sum(x["bunga"] for x in ja)) / P / n * 12 * 100
+        cek_kur["bunga_flat_setara_acuan_persen"] = float(round(flat_setara, 2))
+        cek_kur["cicilan_anuitas_pada_bunga_acuan"] = ja[0]["cicilan"]
+        if "flat" in hasil_metode:
+            ef = efektif_setara(P, Decimal(hasil_metode["flat"]["cicilan_per_bulan"]), n)
+            if ef > acuan + Decimal("0.05"):
+                teks = (f"Bunga KUR diatur {float(acuan)}% EFEKTIF/tahun ({cek_kur['pasal_bunga']}); untuk tenor {n} bulan, "
+                        f"bunga FLAT yang setara hanya ±{float(round(flat_setara, 2))}%/tahun. ")
+                if a.bunga_dari_acuan:
+                    teks += (f"Kolom FLAT pada simulasi ini hanya ILUSTRASI bila angka {float(bunga)}% dihitung flat "
+                             f"(setara efektif ±{float(round(ef, 2))}%) — yang berlaku untuk KUR adalah kolom ANUITAS/efektif.")
+                else:
+                    teks += (f"Hitungan flat {float(bunga)}% setara efektif ±{float(round(ef, 2))}% — bila bank menawarkan "
+                             f"flat {float(bunga)}% untuk KUR, minta penjelasan dan tabel angsuran resmi.")
+                cek_kur["perhatian"].append(teks)
+
     out = {
         "input": {"plafon": P, "bunga_per_tahun_persen": float(bunga),
-                  "sumber_bunga": "ANGKA CONTOH — cek bank/kur.ekon.go.id" if a.bunga_contoh else "diisi pengguna/bank",
+                  "sumber_bunga": sumber_bunga,
                   "tenor_bulan": n, "tenor_tahun": round(n / 12, 2)},
         "hasil": hasil_metode,
         "rencana_penggunaan_dana": rincian,
+        "cek_ketentuan_kur": cek_kur,
         "pembulatan": "Bunga & pokok per bulan dibulatkan ke rupiah penuh (0,5 ke atas); selisih pembulatan di cicilan terakhir.",
         "peringatan": peringatan,
         "disclaimer": "Simulasi ini bukan penawaran atau jaminan persetujuan kredit. Angka final mengikuti perjanjian & "
@@ -342,6 +466,12 @@ def main():
         if a.jadwal:
             for x in d["jadwal"]:
                 print(f"  {x['bulan']:>3} | {rp(x['cicilan'])} | pokok {rp(x['pokok'])} | bunga {rp(x['bunga'])} | sisa {rp(x['sisa_pokok'])}")
+    if cek_kur:
+        print(f"\nCek ketentuan KUR {cek_kur['jenis']} ({cek_kur['dasar']}):")
+        for x in cek_kur["sesuai"]:
+            print("  ✔ " + x)
+        for x in cek_kur["perhatian"]:
+            print("  ⚠ " + x)
     if rincian:
         print("\nRencana penggunaan dana:")
         for x in rincian["pos"]:

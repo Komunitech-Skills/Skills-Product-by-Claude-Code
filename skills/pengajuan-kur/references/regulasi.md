@@ -1,50 +1,65 @@
-# Ketentuan KUR — Catatan Verifikasi
+# Ketentuan KUR — Dasar Aturan & Status Verifikasi
 
-**Tanggal pengecekan: 2026-09-23.** Situs resmi (kur.ekon.go.id, ekon.go.id, peraturan DDTC) **tidak dapat dibuka langsung** dari lingkungan riset (akses diblokir), sehingga fakta di bawah diambil dari cuplikan hasil pencarian yang mengutip peraturan/pernyataan pemerintah. Karena itu **tidak ada** angka di bawah yang boleh ditulis skill sebagai kepastian. Selalu arahkan pengguna mengecek ke bank penyalur dan https://kur.ekon.go.id.
+**Berlaku per: 2026-09-23 (tanggal pengecekan).** Tinjau ulang minimal tiap 6 bulan atau saat terbit Permenko KUR baru.
+
+## Sumber yang dibaca langsung (2026-09-23)
+1. **Teks lengkap Permenko Perekonomian No. 1 Tahun 2026 tentang Pedoman Pelaksanaan KUR**. Ditetapkan 5 Januari 2026 dan diundangkan 13 Januari 2026 (Berita Negara 2026 No. 17). Permenko ini mencabut Permenko 1/2022 beserta perubahannya (terakhir Permenko 12/2025). Teks dibaca dari basis data hukum DDTC: https://perpajakan.ddtc.co.id/id/sumber-hukum/peraturan-pusat/peraturan-menteri-koordinator-bidang-perekonomian-1-tahun-2026
+2. **Siaran Pers resmi Kemenko Perekonomian** HM.02.04/23/SET.M.EKON.3/01/2026 (27 Jan 2026). Isinya: Permenko 1/2026 berlaku sejak 13 Januari 2026; Super Mikro 3% efektif; Mikro/Kecil sektor produksi & perdagangan berorientasi ekspor 6% efektif; kekayaan intelektual dapat menjadi agunan tambahan. Sumber: https://www.ekon.go.id/publikasi/detail/6784/konsolidasi-kredit-program-pemerintah-2026-perkuat-pedoman-pelaksanaan-kredit-program-optimalkan-penyaluran-dan-wujudkan-pertumbuhan-ekonomi-inklusif-berbasis-usaha-mikro-dan-kecil
+3. **Portal kur.ekon.go.id** (halaman Kebijakan KUR, Landasan Hukum, FAQ). Isinya **usang**: daftar landasan hukum berhenti di 2021 dan FAQ masih menyebut bunga 7%. Portal ini hanya dipakai untuk konteks sejarah, bukan untuk angka 2026.
+
+Pencarian 2026-09-23 tidak menemukan perubahan atas Permenko 1/2026. Salinan resmi di JDIH Kemenko (jdih.ekon.go.id) tidak dapat diakses saat pengecekan.
 
 Label status:
-- **DILAPORKAN KONSISTEN** — muncul sama di ≥ 2 sumber berbeda (termasuk media nasional/judul halaman pemerintah), tetapi teks resmi belum dibaca langsung. Boleh disebut dengan kalimat "menurut ketentuan yang dilaporkan per September 2026 … — cek ke bank".
-- **BELUM TERVERIFIKASI** — hanya dari blog/satu sumber, atau sumber saling bertentangan. Jangan dinyatakan; jika perlu disebut, tulis "informasi belum terverifikasi, tanyakan ke bank".
+- **TERVERIFIKASI-RESMI**: tertulis di teks Permenko 1/2026 (pasal disebut) dan/atau siaran pers resmi Kemenko. Boleh disebut dengan kalimat "menurut Permenko Perekonomian 1/2026 Pasal …", tetap dengan anjuran konfirmasi ke bank penyalur.
+- **BELUM TERVERIFIKASI**: tidak ditemukan di sumber resmi (praktik bank, blog, atau media). Jangan dinyatakan pasti.
 
-## Dasar aturan
-| Fakta | Status | Sumber |
-|---|---|---|
-| Pedoman pelaksanaan KUR 2026: **Permenko Perekonomian No. 1 Tahun 2026**, ditetapkan 5 Jan 2026, diundangkan 13 Jan 2026 | DILAPORKAN KONSISTEN | https://www.ekon.go.id/publikasi/detail/6784/konsolidasi-kredit-program-pemerintah-2026-perkuat-pedoman-pelaksanaan-kredit-program-optimalkan-penyaluran-dan-wujudkan-pertumbuhan-ekonomi-inklusif-berbasis-usaha-mikro-dan-kecil ; https://perpajakan.ddtc.co.id/sumber-hukum/peraturan-pusat/peraturan-menteri-koordinator-bidang-perekonomian-1-tahun-2026 ; https://smartid.co.id/en/permenko-perekonomian-nomor-1-tahun-2026/ |
-| Portal resmi informasi KUR | — | https://kur.ekon.go.id |
+## Jenis, plafon, bunga, tenor (TERVERIFIKASI-RESMI)
+| Jenis | Plafon per akad | Bunga efektif/tahun | Tenor awal (modal kerja / investasi) | Pasal |
+|---|---|---|---|---|
+| Super Mikro | ≤ Rp10 juta | **3%** | 3 th / 5 th | 29, 30, 31 |
+| Mikro | > Rp10 juta s.d. Rp100 juta | Produksi & perdagangan berorientasi ekspor: **6%**. Perdagangan non-ekspor: **6% (akad ke-1), 7% (akad ke-2)**, paling banyak 2 kali akad | 3 th / 5 th | 36, 37, 38 |
+| Kecil | > Rp100 juta s.d. Rp500 juta | Produksi & perdagangan berorientasi ekspor: **6%**. Perdagangan non-ekspor: **6% / 7% / 8% / 9%** untuk akad ke-1 s.d. ke-4; akumulasi penarikan maks. Rp500 juta (termasuk KUR mikro) | 4 th / 5 th | 43, 44, 45 |
 
-## Plafon & agunan
-| Fakta | Status | Sumber |
-|---|---|---|
-| KUR Super Mikro: plafon s.d. **Rp10 juta** per penerima | DILAPORKAN KONSISTEN | journalarta.com (Jul 2026); tribunnews Pos-Kupang (Jun–Jul 2026) |
-| KUR Kecil: plafon **> Rp100 juta s.d. Rp500 juta** | DILAPORKAN KONSISTEN | ringkasan Permenko 1/2026 di hasil pencarian; skorlife.com |
-| KUR Mikro: **> Rp10 juta s.d. Rp100 juta** | BELUM TERVERIFIKASI (batas bawah disimpulkan, tidak dikutip langsung) | — |
-| Plafon **s.d. Rp100 juta tidak boleh diminta agunan tambahan**; agunan pokok = usaha yang dibiayai. Pemerintah (Kemenko & Kementerian UMKM) menegaskan ulang Agustus 2026 dan meminta masyarakat melapor bila diminta agunan tambahan/pungutan | DILAPORKAN KONSISTEN | https://www.antaranews.com/berita/5674532/kementerian-umkm-tegaskan-kur-hingga-rp100-juta-tanpa-agunan-tambahan ; https://www.cnnindonesia.com/ekonomi/20260803080301-92-1387852/pemerintah-tegaskan-kur-di-bawah-rp100-juta-tanpa-agunan-tambahan ; https://investortrust.id/macro/111540/pemerintah-tegaskan-kur-di-bawah-rp-100-juta-bebas-agunan-tambahan-masyarakat-diminta-lapor-pungli |
-| Plafon > Rp100 juta dapat diminta agunan tambahan sesuai penilaian bank | DILAPORKAN KONSISTEN | sumber yang sama |
+Catatan pasal:
+- Setiap pasal bunga berbunyi "…% efektif per tahun, dengan Suku Bunga/Marjin **flat/anuitas yang setara menyesuaikan**" (Pasal 30, 37, 44). Artinya bila bank menyebut bunga flat, angkanya harus setara dengan bunga efektif tersebut, dan angka flat itu lebih kecil. Contoh: 6% efektif untuk 36 bulan setara ±3,17% flat. Angka ini dihitung script lewat `--kur`.
+- Sektor produksi = kegiatan yang menghasilkan barang/jasa **di luar sektor perdagangan** (Pasal 1 angka 2). Perdagangan berorientasi ekspor harus dibuktikan dengan dokumen proses ekspor (Pasal 36 ayat 3, Pasal 43 ayat 3).
+- Tenor dapat diperpanjang (di luar restrukturisasi): Super Mikro sampai 4 th (modal kerja) / 7 th (investasi); Mikro dan Kecil sampai 5 th / 7 th. Grace period mengikuti ketentuan penyalur (Pasal 31, 38, 45).
+- Debitur graduasi dari Super Mikro: akad awal di Mikro/Kecil dihitung sebagai akad pertama (Pasal 37 ayat 2, Pasal 44 ayat 2).
+- Ada juga jenis KUR khusus dan KUR penempatan Pekerja Migran Indonesia (Pasal 24). Keduanya di luar cakupan skill ini; arahkan ke bank.
 
-## Suku bunga (subsidi pemerintah; efektif per tahun)
-| Fakta | Status | Sumber |
-|---|---|---|
-| KUR Mikro & Kecil sektor produksi dan perdagangan berorientasi ekspor: **6% efektif/tahun** | DILAPORKAN KONSISTEN | mediaindonesia.com (Update KUR BRI 2026); desaglawan.id; ringkasan Permenko 1/2026 |
-| Sektor perdagangan non-ekspor, pengajuan berulang: **6% (ke-1), 7% (ke-2), 8% (ke-3), 9% (ke-4)** | DILAPORKAN KONSISTEN | ringkasan Permenko 1/2026 di hasil pencarian; bengkulu.pikiran-rakyat.com |
-| KUR Super Mikro: **3% efektif/tahun** | **BELUM TERVERIFIKASI** — beberapa sumber menyebut 3%, satu sumber menyebut 6% | journalarta.com; kayonews.co.id (3%) vs mediaindonesia.com (6%) |
-| Metode perhitungan cicilan yang dipakai tiap bank (anuitas/efektif menurun) | BELUM TERVERIFIKASI | Minta tabel angsuran resmi ke bank |
+## Agunan (TERVERIFIKASI-RESMI)
+- Agunan pokok adalah usaha atau objek yang dibiayai. Agunan tambahan bisa berupa aset berwujud maupun tidak berwujud, **termasuk kekayaan intelektual** (Pasal 19).
+- Untuk plafon **s.d. Rp100 juta**, penyalur **tidak diperbolehkan** mensyaratkan agunan tambahan (Pasal 20 ayat 1). Jika dilanggar, subsidi bunga untuk debitur tersebut tidak dibayarkan kepada penyalur (Pasal 21).
+- Untuk plafon di atas Rp100 juta, agunan tambahan dapat diberlakukan. Pengecualian: petani tebu rakyat dan KUR khusus pertanian dengan offtaker sebagai avalis (Pasal 20 ayat 2).
+- Pemerintah menegaskan ulang aturan ini pada Agustus 2026 dan meminta masyarakat melapor bila diminta agunan tambahan atau pungutan. Status: dilaporkan media (Antara, CNN Indonesia, 3–4 Agustus 2026), sejalan dengan Pasal 20.
 
-Catatan uji silang: simulasi skill (anuitas, Rp10.000.000, 3%/tahun, 36 bulan) menghasilkan cicilan **Rp 290.812**, sama dengan angka yang dikutip salah satu artikel simulasi KUR BRI 2026 — menandakan rumus anuitas skill konsisten dengan tabel yang beredar.
+## Biaya & pencairan
+| Fakta | Status |
+|---|---|
+| Jumlah KUR yang diterima debitur **harus sesuai** dengan jumlah di akad (Pasal 13 ayat 2), jadi tidak boleh ada potongan dari nilai pencairan | TERVERIFIKASI-RESMI |
+| "Tanpa biaya provisi & administrasi" | **BELUM TERVERIFIKASI**. Kata "provisi" tidak ditemukan di teks Permenko 1/2026. Sampaikan hanya sebagai: "tanyakan rincian biaya (asuransi, notaris, materai) ke bank; nilai yang cair harus sama dengan nilai akad". |
 
-## Tenor, biaya, dan syarat debitur
-| Fakta | Status | Sumber |
-|---|---|---|
-| Tenor maksimal modal kerja 3 tahun, investasi 5 tahun | BELUM TERVERIFIKASI (blog) | blog.itera.ac.id; kiakrikil.com |
-| Tidak dikenakan biaya provisi & administrasi | BELUM TERVERIFIKASI (blog bank tertentu) | temanusaha.com; desaglawan.id |
-| Usaha produktif berjalan min. 6 bulan (sebagian bank: 1 tahun untuk perdagangan) | BELUM TERVERIFIKASI | temanusaha.com; morf.id |
-| Tidak sedang menerima kredit **produktif** lain dari bank; kredit konsumtif (KPR/KKB) lancar biasanya boleh | BELUM TERVERIFIKASI | jateng.idntimes.com; morf.id; lantaibursa.id |
-| Riwayat SLIK OJK lancar (kolektibilitas 1) | BELUM TERVERIFIKASI (praktik bank) | sumber yang sama |
-| Dokumen: e-KTP, KK, NIB atau Surat Keterangan Usaha, NPWP (sebagian bank: untuk plafon > Rp50 juta), surat nikah bila menikah | BELUM TERVERIFIKASI — berbeda per bank | morf.id; lantaibursa.id; slendra.id |
-| Prioritas KUR Super Mikro untuk ibu rumah tangga & pekerja terkena PHK yang berusaha | BELUM TERVERIFIKASI | tribunnews Pos-Kupang |
+## Syarat calon penerima (TERVERIFIKASI-RESMI, Pasal 27, 34, 41)
+| Syarat | Super Mikro | Mikro | Kecil |
+|---|---|---|---|
+| Usaha produktif & layak, berjalan **≥ 6 bulan** | Ya. Jika < 6 bulan: ikut pendampingan/pelatihan, tergabung kelompok usaha, atau punya anggota keluarga yang sudah berusaha (Pasal 27 ayat 2) | Ya. Pengecualian: pekerja terkena PHK dengan usaha ≥ 3 bulan + pelatihan kewirausahaan; petani tebu dengan offtaker | Ya. Pengecualian: petani tebu dengan offtaker |
+| **NIB atau surat keterangan usaha** mikro/kecil dari pejabat berwenang | Ya | Ya | Ya |
+| **NIK** (KTP-el atau surat keterangan pembuatan KTP-el) | Ya | Ya | Ya |
+| **NPWP** | Tidak disebut | Hanya jika pinjaman **> Rp50 juta** | **Wajib** |
+| Belum pernah menerima kredit/pembiayaan **komersial** | Ya | Ya | Ya |
+
+- Pengecualian "kredit komersial" (Pasal 27 ayat 3, 34 ayat 3, 41 ayat 3): kredit konsumsi rumah tangga; kredit ultra mikro s.d. Rp20 juta; pinjaman **fintech P2P/pembiayaan digital**; kredit konsumtif s.d. Rp500 juta yang tercatat sebagai produktif.
+- Boleh **sedang** menerima kredit berikut, asalkan kolektibilitas lancar (Pasal 28, 35, 42): KPR, kredit/leasing motor roda dua untuk tujuan produktif, kredit dengan jaminan SK pensiun, kartu kredit, kredit resi gudang, kredit konsumsi rumah tangga.
+- Penyalur mengecek kelayakan lewat **SLIK** OJK. Bila masih tercatat ada baki debet kredit produktif yang sebenarnya sudah lunas, siapkan **surat keterangan lunas/roya** plus bukti cetak rekening dari pemberi kredit sebelumnya (Pasal 14).
+
+## Masih BELUM TERVERIFIKASI (praktik per bank, jangan dinyatakan pasti)
+- Kartu Keluarga, surat nikah/KTP pasangan, pas foto, mutasi rekening, foto usaha: umum diminta bank, tetapi **tidak** tercantum di Permenko. Beri tanda "cek ke bank penyalur".
+- Metode angsuran & pembulatan tiap bank. Minta tabel angsuran resmi.
+- Lama proses pencairan.
 
 ## Aturan pemakaian di skill
-1. Suku bunga pada simulasi **diisi pengguna**. Bila pengguna tidak tahu, boleh memakai angka contoh 6% dengan flag `--bunga-contoh` dan label "contoh — cek suku bunga KUR terbaru di bank/kur.ekon.go.id".
-2. Checklist dokumen selalu diberi tanda **"cek ke bank penyalur"**.
-3. Jangan menjanjikan persetujuan, besaran plafon yang akan disetujui, atau lama proses.
-4. Informasi "tanpa agunan tambahan s.d. Rp100 juta" dan "laporkan pungutan" boleh disampaikan sebagai hak debitur yang **dilaporkan** ditegaskan pemerintah Agustus 2026, dengan anjuran konfirmasi ke bank.
-5. Tinjau ulang file ini minimal tiap 6 bulan atau saat ada Permenko KUR baru.
+1. Bunga pada simulasi diisi dari bank/pengguna. Jika belum ada, jalankan script dengan `--kur --sektor … --akad-ke …` agar dipakai **bunga acuan Permenko 1/2026** berlabel "acuan … konfirmasi ke bank penyalur". Bila sektor tidak diketahui, pakai contoh 6% dengan `--bunga-contoh`.
+2. Syarat yang TERVERIFIKASI-RESMI boleh disebut beserta pasalnya. Tetap tulis "konfirmasi ke bank penyalur", karena bank juga menilai kelayakan sendiri (Pasal 28/35/42 ayat 3).
+3. Checklist dokumen tambahan (KK, surat nikah, dll.) selalu bertanda **"cek ke bank penyalur"**.
+4. Jangan menjanjikan persetujuan, plafon yang akan disetujui, atau lama proses.
+5. Hak debitur yang boleh disampaikan dengan pasti: plafon ≤ Rp100 juta tanpa agunan tambahan (Pasal 20) dan nilai cair = nilai akad (Pasal 13 ayat 2).
