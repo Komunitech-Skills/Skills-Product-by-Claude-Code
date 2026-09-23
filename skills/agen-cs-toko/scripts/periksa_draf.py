@@ -149,18 +149,19 @@ def ekstrak_nominal(teks):
     yang sama (dan bukan pola tahun 19xx/20xx)."""
     hasil = set()
 
-    # (1) Rp / IDR
-    for m in re.finditer(r"(?:Rp|IDR)\.?\s*(\d[\d.,]*)", teks, re.IGNORECASE):
-        if diikuti_non_uang(teks, m.end(1)):
-            continue
-        angka = normalisasi_angka(m.group(1))
+    # (1) Rp / IDR -- boleh langsung diikuti pengali ("Rp 89rb"). Tidak
+    # difilter oleh diikuti_non_uang(): "Rp"/pengali sudah jadi penanda uang
+    # yang jelas, walau diikuti "/pcs" dsb. (harga per satuan, mis. "55rb/pcs").
+    for m in re.finditer(
+        r"(?:Rp|IDR)\.?\s*(\d[\d.,]*)\s*(ribu|rb|k|juta|jt)?\b", teks, re.IGNORECASE
+    ):
+        num, mult = m.group(1), m.group(2)
+        angka = normalisasi_dengan_pengali(num, mult) if mult else normalisasi_angka(num)
         if angka:
             hasil.add(angka)
 
-    # (2) angka + pengali
+    # (2) angka + pengali tanpa "Rp" di depan (mis. "55rb/pcs", "1,5 juta")
     for m in re.finditer(r"\b(\d+(?:[.,]\d{1,2})?)\s*(ribu|rb|k|juta|jt)\b", teks, re.IGNORECASE):
-        if diikuti_non_uang(teks, m.end()):
-            continue
         angka = normalisasi_dengan_pengali(m.group(1), m.group(2))
         if angka:
             hasil.add(angka)

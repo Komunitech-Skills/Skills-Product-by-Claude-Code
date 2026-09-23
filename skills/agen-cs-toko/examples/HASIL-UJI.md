@@ -246,3 +246,6 @@ di v1.0.2, tetapi tidak menghalangi kelulusan.
 agen-cs-toko v1.0.1 | 8 | LULUS | berat: tidak ada; sedang: regresi deteksi bocor OTP bila
 kalimat memuat "jangan", NIK lolos bila ada kata "order", harga karangan "Harga <produk> 79.000"
 lolos | angka script diverifikasi independen: **ya**.
+
+## Catatan koordinator — v1.0.2
+Temuan "Uji ulang v1.0.1" di periksa_draf.py diperbaiki pembuat; `tests/uji_regresi.py` 45/45 lulus. Koordinator mengecek ulang secara independen 5 kasus kunci: kebocoran OTP dalam kalimat "jangan…" → ditandai; "tidak pernah memerlukan kode OTP" → bersih; "Harga Pashmina Ceruti 79.000" (karangan, KB Rp89.000) → ditandai; "Diskon 20% untuk 3 pcs" → bersih; "order ini NIK 3201…" → ditandai. Urutan setup WA di references §2 kini: kunci allowlist dulu, baru login QR; §4 memakai `config validate`. Status tetap lulus (perubahan hanya pada pemeriksa opsional + panduan, disertai uji regresi).

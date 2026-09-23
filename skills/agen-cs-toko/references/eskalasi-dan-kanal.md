@@ -35,10 +35,18 @@ Semua perintah & kunci konfigurasi di halaman ini diverifikasi lewat `--help` Op
 > 2. **Persetujuan risiko tertulis** dari pemilik sebelum nomor ditautkan.
 > 3. Konfigurasi kunci (lihat §4) yang memastikan **hanya pemilik/admin** yang bisa memicu bot di nomor itu — tidak ada `dmPolicy: "pairing"` atau `"open"`.
 
-Langkah setup (dengan nomor terpisah, setelah syarat di atas dipenuhi):
-1. Login tetap lewat scan QR: `openclaw channels login --channel whatsapp` (dari alur onboarding OpenClaw; skill ini tidak menjalankan login).
-2. Set konfigurasi allowlist **sebelum** memberi tahu nomor itu ke siapa pun (lihat §4): `dmPolicy: "allowlist"`, `allowFrom` hanya berisi nomor pemilik/admin, `groupPolicy: "disabled"`.
+**Urutan wajib — set allowlist DULU, login belakangan** (supaya akun tidak pernah, walau sesaat, berstatus `dmPolicy: "pairing"`/tanpa allowlist sebelum bisa menerima pesan):
+1. Tambahkan akun WA tanpa login dulu — **terverifikasi jalan**: `openclaw channels add --channel whatsapp --account cs` (memasang plugin WhatsApp & membuat entri akun "cs", belum scan QR, belum bisa menerima/mengirim pesan sungguhan).
+2. Set konfigurasi allowlist **sebelum** memberi tahu nomor itu ke siapa pun (lihat §4) — **terverifikasi jalan**, ketiga perintah ini berhasil dan tervalidasi (lihat catatan verifikasi di bawah):
+   ```
+   openclaw config set channels.whatsapp.accounts.cs.dmPolicy allowlist
+   openclaw config set channels.whatsapp.accounts.cs.allowFrom '["+62812xxxxxxx"]' --strict-json
+   openclaw config set channels.whatsapp.accounts.cs.groupPolicy disabled
+   openclaw config validate
+   ```
+   (ganti `+62812xxxxxxx` dengan nomor E.164 pemilik/admin yang sesungguhnya). Bila `allowFrom` sampai lupa diisi, OpenClaw sendiri memberi peringatan eksplisit saat `config set`: *"dmPolicy=allowlist but allowFrom is unset ... all DMs will be dropped"* — jadi kesalahan ini akan terlihat sebelum sempat dipakai, bukan diam-diam bocor.
 3. Jika nomor terpisah ini dipakai untuk mengirim pesan ke diri sendiri (self-chat, mis. meneruskan draf ke nomor yang sama), pastikan `selfChatMode` sesuai kebutuhan — nilainya `true`/tidak diset berarti pesan dari nomor itu ke dirinya sendiri **diterima** sebagai input agent; `false` berarti pesan self-chat **diabaikan** (kunci `channels.whatsapp.selfChatMode`, boolean, **terverifikasi** ada di config schema).
+4. **Baru setelah** allowlist terpasang dan tervalidasi, login lewat scan QR: `openclaw channels login --channel whatsapp --account cs` (dari alur onboarding OpenClaw; skill ini tidak menjalankan login, hanya menuntun urutannya).
 
 ## 3. Rekap harian terjadwal (opsional)
 
@@ -66,7 +74,7 @@ Catatan:
 - **Gateway (komputer yang menjalankan OpenClaw) harus menyala** saat jadwal jatuh. Kalau laptop mati/tidur, rekap tidak terkirim — jelaskan ini ke pengguna dan sarankan mini PC/laptop yang selalu menyala, atau VPS milik member (opsional, jasa setup Komunitech).
 
 ## 4. Allowlist pengirim — jangan pernah pakai `allowFrom: ["*"]`
-Kunci berikut **terverifikasi ada** di `openclaw config schema` (level channel, mis. `channels.telegram.*` dan `channels.whatsapp.*`), bisa diset lewat `openclaw config set <path> <nilai>` (**terverifikasi** `openclaw config set --help`, contoh dry-run berhasil untuk semua path di bawah):
+Kunci berikut **terverifikasi ada** di `openclaw config schema` (level channel, mis. `channels.telegram.*` dan `channels.whatsapp.*`), bisa diset lewat `openclaw config set <path> <nilai>` — **diuji sungguhan** (bukan hanya `--dry-run`, yang menurut OpenClaw sendiri "does not run schema/resolvability checks" untuk mode nilai biasa): ketiga kunci WA di §2 langkah 2 benar-benar ditulis ke `openclaw.json`, lalu dikonfirmasi valid lewat `openclaw config validate` (keluaran: `Config valid: ~/.openclaw/openclaw.json`) dan `openclaw config get channels.whatsapp.accounts.cs` menunjukkan nilai yang sama persis yang di-set:
 - `dmPolicy` — enum: `pairing` (default) | `allowlist` | `open` | `disabled`.
 - `allowFrom` — daftar pengirim DM yang diizinkan (array string, format nomor E.164 untuk WA mis. `+62812xxxxxxx`, username/id untuk Telegram).
 - `groupPolicy` — enum: `open` | `disabled` | `allowlist` (default `allowlist`).
@@ -100,3 +108,5 @@ Bagian ini murni referensi untuk tim Komunitech saat mendampingi member yang mem
 
 ## Catatan verifikasi (untuk kurator, bukan bagian panduan pembeli)
 Peringatan pairing WA di §2 diverifikasi lewat pembacaan docs.openclaw.ai/channels/whatsapp (ringkasan: "unknown senders request pairing; owner approves") dan docs.openclaw.ai/channels/pairing ("the bot only sends the pairing message when a new request is created, roughly once per hour per sender") — kedua sumber sama-sama menegaskan **bot mengirim pesan pairing otomatis ke pengirim baru** saat permintaan dibuat, yang berarti pesan keluar ke nomor asing tanpa dikirim manusia. `channels.whatsapp.selfChatMode` dan `channels.whatsapp.groups` (per-grup) serta fallback `groupAllowFrom → allowFrom` juga dikonfirmasi lewat halaman yang sama dan `openclaw config schema`.
+
+**v1.0.2 — urutan setup & validasi config (diuji ulang di HOME uji sementara, tanpa login kanal sungguhan):** `openclaw channels add --channel whatsapp --account cs` berhasil menambah akun WA "cs" tanpa scan QR. Setelahnya `openclaw config set channels.whatsapp.accounts.cs.dmPolicy allowlist`, `.allowFrom '["+6281234567890"]' --strict-json`, dan `.groupPolicy disabled` ketiganya berhasil ("Updated ..."), dan `openclaw config validate` mengembalikan `Config valid: ~/.openclaw/openclaw.json`; `openclaw config get channels.whatsapp.accounts.cs` mengonfirmasi ketiga nilai tersimpan persis. OpenClaw juga menampilkan peringatan sendiri saat `dmPolicy: allowlist` di-set sebelum `allowFrom` diisi ("all DMs will be dropped") — dicatat di §2 sebagai jaring pengaman tambahan. Ini menggantikan klaim versi sebelumnya yang hanya memakai `--dry-run` (yang menurut pesan OpenClaw sendiri tidak menjalankan pengecekan skema untuk mode nilai biasa).
