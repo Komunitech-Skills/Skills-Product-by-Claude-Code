@@ -320,7 +320,13 @@ def main():
         except (OSError, UnicodeDecodeError) as e:
             galat("Gagal membaca --daftar-berhenti: {}".format(e))
         for no_b, t in enumerate(isi_stop.splitlines(), start=1):
+            # Huruf O/o yang diapit angka hampir pasti salah ketik nol (0812-OOOO-0332)
+            t = re.sub(r"(?<=[\dOo\s.\-])[Oo](?=[Oo\d\s.\-]*\d)", "0", t) if re.search(r"\d", t) else t
             nomor_b, sisa = cari_nomor_di_teks(t)
+            # Baris berisi teks tapi tanpa nomor terbaca (mis. "Bu Tuti minta stop") tidak boleh diabaikan
+            # diam-diam; hanya baris judul pertama tanpa angka yang dilewati.
+            if not nomor_b and not sisa and t.strip() and not (no_b == 1 and not re.search(r"\d", t)):
+                stop_tak_terbaca.append({"baris": no_b, "teks": t.strip()[:80]})
             berhenti.update(nomor_b)
             for n in nomor_b:
                 asal_stop.setdefault(n, []).append(no_b)

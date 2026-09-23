@@ -1,4 +1,9 @@
-# 07 — Uji ulang v1.0.2: daftar berhenti bercatatan, opt-out palsu, gelar ganda
+# 07 — Uji ulang v1.0.2: daftar berhenti bercatatan, opt-out palsu, gelar ganda (+ hasil v1.0.3)
+
+> **Pembaruan v1.0.3:** data yang sama dijalankan ulang dengan v1.0.3 — **ke-24 baris terbaca benar, 26/26 nomor
+> dikecualikan, status SIAP**, 5 kontak aman tetap dikirimi (kolom terakhir tabel). Opt-out salah lolos/salah tolak di bawah
+> kini benar semua, dan gelar yang tersisa (Hj.Nurul, Dr.Rina, H.M., Muh., Ny., Tn.) sudah dirapikan. Output di bawah adalah
+> keluaran v1.0.2 dan dipertahankan sebagai riwayat; uji lanjutan v1.0.3 ada di `08-uji-daftar-berhenti-v103.md`.
 
 ## Skenario
 Uji ulang perbaikan v1.0.2 atas cacat v1.0.1 (B3 daftar berhenti bercatatan, S-1 opt-out salah lolos, S-2 gelar).
@@ -39,32 +44,32 @@ status menjadi SIAP dan 5 kontak itu tetap terkirimi.)*
 
 ## Tabel verifikasi daftar berhenti (24 baris, 26 nomor sasaran)
 
-| # | Baris di stop.txt | Nomor yang dimaksud | Dibaca script sebagai | Status | Hasil |
-|---|---|---|---|---|---|
-| 1 | `0812-0000-0120 tgl 12/09` | 0812-0000-0120 | 6281200000120 | - | dikecualikan ✔ |
-| 2 | `Galih 0812 0000 0139 (minta stop 2026-09-01)` | 0812-0000-0139 | 6281200000139 | - | dikecualikan ✔ |
-| 3 | `0812 0000 0201 12 Sept 2026` | 0812-0000-0201 | 628120000020112 | - | **TETAP DIKIRIMI — diam-diam** ✘ |
-| 4 | `0812-0000-0202 - 3x minta` | 0812-0000-0202 | 62812000002023 | - | **TETAP DIKIRIMI — diam-diam** ✘ |
-| 5 | `0812-0000-0203 (2)` | 0812-0000-0203 | 62812000002032 | - | **TETAP DIKIRIMI — diam-diam** ✘ |
-| 6 | `0812 0000 0204 jam 10.30` | 0812-0000-0204 | 6281200000204 | - | dikecualikan ✔ |
-| 7 | `+62 812 0000 0205 / via DM` | 0812-0000-0205 | 6281200000205 | - | dikecualikan ✔ |
-| 8 | `Bu Ros: 0812-0000-0206, udah 2 kali komplain` | 0812-0000-0206 | 6281200000206 | - | dikecualikan ✔ |
-| 9 | `0812-0000-0207 0812-0000-0208` | 0812-0000-0207 / 0812-0000-0208 | 6281200000207, 6281200000208 | - | dikecualikan ✔ |
-| 10 | `0812-0000-0209,0812-0000-0210` | 0812-0000-0209 / 0812-0000-0210 | 6281200000209, 6281200000210 | - | dikecualikan ✔ |
-| 11 | `081200000211 stop 25/9` | 0812-0000-0211 | 6281200000211 | - | dikecualikan ✔ |
-| 12 | `Pak Dedi (0812) 0000-0212 blokir` | 0812-0000-0212 | 6281200000212 | - | dikecualikan ✔ |
-| 13 | `0812.0000.0213` | 0812-0000-0213 | 6281200000213 | - | dikecualikan ✔ |
-| 14 | `0812-0000-0214 no.5` | 0812-0000-0214 | 6281200000214 | - | dikecualikan ✔ |
-| 15 | `5. 0812-0000-0215` | 0812-0000-0215 | (tidak terbaca) | PERIKSA DULU | tetap di file kirim, tapi status PERIKSA DULU ⚠ |
-| 16 | `1) 0812 0000 0216` | 0812-0000-0216 | (tidak terbaca) | PERIKSA DULU | tetap di file kirim, tapi status PERIKSA DULU ⚠ |
-| 17 | `0812-0000-0217 ke-2` | 0812-0000-0217 | 6281200000217 | - | dikecualikan ✔ |
-| 18 | `0062 812 0000 0218 (TKI Malaysia)` | 0812-0000-0218 | 6281200000218 | - | dikecualikan ✔ |
-| 19 | `0812-0000-0219 minta stop 2026` | 0812-0000-0219 | 6281200000219 | - | dikecualikan ✔ |
-| 20 | `0812-0000-0220 RT 03 RW 05` | 0812-0000-0220 | 6281200000220 | - | dikecualikan ✔ |
-| 21 | `0812 0000 0221 25 September` | 0812-0000-0221 | 628120000022125 | - | **TETAP DIKIRIMI — diam-diam** ✘ |
-| 22 | `Andi 812 0000 0222` | 0812-0000-0222 | 6281200000222 | - | dikecualikan ✔ |
-| 23 | `0812-0000-0223 x2` | 0812-0000-0223 | 6281200000223 | - | dikecualikan ✔ |
-| 24 | `0812 0000 0224 - 17 Agustus` | 0812-0000-0224 | 628120000022417 | - | **TETAP DIKIRIMI — diam-diam** ✘ |
+| # | Baris di stop.txt | Nomor yang dimaksud | Dibaca v1.0.2 | Status v1.0.2 | Hasil v1.0.2 | Dibaca & hasil v1.0.3 |
+|---|---|---|---|---|---|---|
+| 1 | `0812-0000-0120 tgl 12/09` | 0812-0000-0120 | 6281200000120 | - | dikecualikan ✔ | 6281200000120 → dikecualikan ✔ |
+| 2 | `Galih 0812 0000 0139 (minta stop 2026-09-01)` | 0812-0000-0139 | 6281200000139 | - | dikecualikan ✔ | 6281200000139 → dikecualikan ✔ |
+| 3 | `0812 0000 0201 12 Sept 2026` | 0812-0000-0201 | 628120000020112 | - | **TETAP DIKIRIMI — diam-diam** ✘ | 6281200000201 → dikecualikan ✔ |
+| 4 | `0812-0000-0202 - 3x minta` | 0812-0000-0202 | 62812000002023 | - | **TETAP DIKIRIMI — diam-diam** ✘ | 6281200000202 → dikecualikan ✔ |
+| 5 | `0812-0000-0203 (2)` | 0812-0000-0203 | 62812000002032 | - | **TETAP DIKIRIMI — diam-diam** ✘ | 6281200000203 → dikecualikan ✔ |
+| 6 | `0812 0000 0204 jam 10.30` | 0812-0000-0204 | 6281200000204 | - | dikecualikan ✔ | 6281200000204 → dikecualikan ✔ |
+| 7 | `+62 812 0000 0205 / via DM` | 0812-0000-0205 | 6281200000205 | - | dikecualikan ✔ | 6281200000205 → dikecualikan ✔ |
+| 8 | `Bu Ros: 0812-0000-0206, udah 2 kali komplain` | 0812-0000-0206 | 6281200000206 | - | dikecualikan ✔ | 6281200000206 → dikecualikan ✔ |
+| 9 | `0812-0000-0207 0812-0000-0208` | 0812-0000-0207 / 0812-0000-0208 | 6281200000207, 6281200000208 | - | dikecualikan ✔ | 6281200000207, 6281200000208 → dikecualikan ✔ |
+| 10 | `0812-0000-0209,0812-0000-0210` | 0812-0000-0209 / 0812-0000-0210 | 6281200000209, 6281200000210 | - | dikecualikan ✔ | 6281200000209, 6281200000210 → dikecualikan ✔ |
+| 11 | `081200000211 stop 25/9` | 0812-0000-0211 | 6281200000211 | - | dikecualikan ✔ | 6281200000211 → dikecualikan ✔ |
+| 12 | `Pak Dedi (0812) 0000-0212 blokir` | 0812-0000-0212 | 6281200000212 | - | dikecualikan ✔ | 6281200000212 → dikecualikan ✔ |
+| 13 | `0812.0000.0213` | 0812-0000-0213 | 6281200000213 | - | dikecualikan ✔ | 6281200000213 → dikecualikan ✔ |
+| 14 | `0812-0000-0214 no.5` | 0812-0000-0214 | 6281200000214 | - | dikecualikan ✔ | 6281200000214 → dikecualikan ✔ |
+| 15 | `5. 0812-0000-0215` | 0812-0000-0215 | (tidak terbaca) | PERIKSA DULU | tetap di file kirim, tapi status PERIKSA DULU ⚠ | 6281200000215 → dikecualikan ✔ |
+| 16 | `1) 0812 0000 0216` | 0812-0000-0216 | (tidak terbaca) | PERIKSA DULU | tetap di file kirim, tapi status PERIKSA DULU ⚠ | 6281200000216 → dikecualikan ✔ |
+| 17 | `0812-0000-0217 ke-2` | 0812-0000-0217 | 6281200000217 | - | dikecualikan ✔ | 6281200000217 → dikecualikan ✔ |
+| 18 | `0062 812 0000 0218 (TKI Malaysia)` | 0812-0000-0218 | 6281200000218 | - | dikecualikan ✔ | 6281200000218 → dikecualikan ✔ |
+| 19 | `0812-0000-0219 minta stop 2026` | 0812-0000-0219 | 6281200000219 | - | dikecualikan ✔ | 6281200000219 → dikecualikan ✔ |
+| 20 | `0812-0000-0220 RT 03 RW 05` | 0812-0000-0220 | 6281200000220 | - | dikecualikan ✔ | 6281200000220 → dikecualikan ✔ |
+| 21 | `0812 0000 0221 25 September` | 0812-0000-0221 | 628120000022125 | - | **TETAP DIKIRIMI — diam-diam** ✘ | 6281200000221 → dikecualikan ✔ |
+| 22 | `Andi 812 0000 0222` | 0812-0000-0222 | 6281200000222 | - | dikecualikan ✔ | 6281200000222 → dikecualikan ✔ |
+| 23 | `0812-0000-0223 x2` | 0812-0000-0223 | 6281200000223 | - | dikecualikan ✔ | 6281200000223 → dikecualikan ✔ |
+| 24 | `0812 0000 0224 - 17 Agustus` | 0812-0000-0224 | 628120000022417 | - | **TETAP DIKIRIMI — diam-diam** ✘ | 6281200000224 → dikecualikan ✔ |
 
 **Rekap:** 17 baris (19 nomor) dikecualikan dengan benar; 2 baris (nomor urut di depan) ditandai PERIKSA DULU;
 **5 baris dibaca menjadi nomor yang salah tanpa peringatan apa pun** — angka kecil di belakang nomor (tanggal "12 Sept",
@@ -81,15 +86,15 @@ Daftar kirim akhir memuat 7 kontak yang sudah minta berhenti (5 tanpa tanda + 2 
 | "beli sekarang untuk berhenti pusing mikir lauk!" | tolak | DITOLAK ✔ |
 | "Bus stop Senen … Kirim stoples kosongnya ya" | tolak | DITOLAK ✔ |
 | "diskon unsubscribe-proof!" | tolak | DITOLAK ✔ |
-| "**jangan balas STOP ya**, nanti rugi!" | tolak | LOLOS ✘ |
-| "pokoknya **jangan sampai kirim berhenti**" | tolak | LOLOS ✘ |
-| "Ketik **stop-motion** di IG kami" | tolak | LOLOS ✘ |
+| "**jangan balas STOP ya**, nanti rugi!" | tolak | LOLOS ✘ (v1.0.3: DITOLAK ✔) |
+| "pokoknya **jangan sampai kirim berhenti**" | tolak | LOLOS ✘ (v1.0.3: DITOLAK ✔) |
+| "Ketik **stop-motion** di IG kami" | tolak | LOLOS ✘ (v1.0.3: DITOLAK ✔) |
 | "Tidak ingin menerima info promo lagi? Balas STOP." | lolos | LOLOS ✔ |
 | "Balas \*STOP\* untuk berhenti." / "Balas “BERHENTI” …" / "Balas 'stop' bila tidak berkenan." | lolos | LOLOS ✔ |
 | "Mau berhenti terima info? Balas STOP/BERHENTI." / "Reply STOP to unsubscribe." | lolos | LOLOS ✔ |
-| "Balas **dengan kata** STOP jika tidak ingin dikirimi lagi." | lolos | DITOLAK ✘ (aman, tapi mengganggu) |
-| "cukup **balas: STOP**" | lolos | DITOLAK ✘ (aman) |
-| "**Balas ke nomor ini dengan** STOP untuk berhenti." | lolos | DITOLAK ✘ (aman) |
+| "Balas **dengan kata** STOP jika tidak ingin dikirimi lagi." | lolos | DITOLAK ✘ (v1.0.3: LOLOS ✔) |
+| "cukup **balas: STOP**" | lolos | DITOLAK ✘ (v1.0.3: LOLOS ✔) |
+| "**Balas ke nomor ini dengan** STOP untuk berhenti." | lolos | DITOLAK ✘ (v1.0.3: LOLOS ✔) |
 
 Tiga salah lolos memerlukan kalimat yang sengaja menyesatkan/kebetulan ("jangan balas STOP", "stop-motion"); teks buatan
 agent yang mengikuti SKILL.md selalu sah. Tiga salah tolak bersifat aman (script berhenti dengan pesan jelas).
@@ -105,9 +110,9 @@ agent yang mengikuti SKILL.md selalu sah. Tiga salah tolak bersifat aman (script
 | H. Rahmat / Haji Lulung / KH. Ma'ruf / Drs. H. Tono, M.Si. | Pak Rahmat / Pak Lulung / Pak Ma'ruf / Pak Tono | ✔ |
 | dr. Andi / Sdr. Andi Wijaya / Andi, S.T. / NUR / Hj. | Kak Andi / Kak Andi / Kak Andi / Kak Nur / Bu | ✔ |
 | Bang H. Rhoma / Dra. Hj. Sri Mulyani, M.Pd. | Bang Rhoma / Bu Sri | ✔ |
-| **Hj.Nurul** / **Dr.Rina** (tanpa spasi) | Kak Hj.nurul / Kak Dr.rina | ✘ |
-| **H.M. Yusuf** | Kak H.m. | ✘ |
-| **Muh. Rizki** / **Ny. Susi** / **Tn. Budi** | Kak Muh. / Kak Ny. / Kak Tn. | ✘ |
+| **Hj.Nurul** / **Dr.Rina** (tanpa spasi) | Kak Hj.nurul / Kak Dr.rina | ✘ (v1.0.3: Bu Nurul / Kak Rina ✔) |
+| **H.M. Yusuf** | Kak H.m. | ✘ (v1.0.3: Pak Yusuf ✔) |
+| **Muh. Rizki** / **Ny. Susi** / **Tn. Budi** | Kak Muh. / Kak Ny. / Kak Tn. | ✘ (v1.0.3: Kak Rizki / Bu Susi / Pak Budi ✔) |
 | Kapten Budi / Cut Nyak Dien | Kak Kapten / Kak Cut | ± (jarang) |
 
 Dengan `--nama-lengkap`: gelar belakang bertitik tetap terbawa ("Bu Siti Aminah S.e. M.m.", "Pak Tono M.si.", "Kak Andi S.t.").

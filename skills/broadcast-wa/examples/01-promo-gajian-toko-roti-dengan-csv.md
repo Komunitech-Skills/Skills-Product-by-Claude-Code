@@ -88,5 +88,5 @@ Laweyan **tidak** disebut gratis karena tidak disebutkan. Mau versi lebih formal
 - **Uji ulang v1.0.2:** Variasi 2 diganti ke "Pesan ini dikirim karena {sapaan} …" (SKILL.md v1.0.2: satu sapaan per pesan),
   dan output menambah langkah konfirmasi jumlah penerima + status daftar berhenti. Script v1.0.2 pada data yang sama:
   25 siap kirim, status SIAP, nomor identik dengan v1.0.1. Ketiga teks berhenti lolos cek "instruksi tindakan" v1.0.2.
-- **Perhatian:** `stop.txt` di contoh ini bersih. Catatan berupa tanggal/angka kecil tepat di belakang nomor
-  ("0812 0000 0221 25 September") masih bisa tergabung ke nomor tanpa peringatan (cacat B3 sisa, lihat `HASIL-UJI.md`).
+- **Uji ulang v1.0.3:** data yang sama → 25 siap kirim, status SIAP, nomor identik. Catatan tanggal/jam/hitungan di
+  belakang nomor di `stop.txt` kini terbaca benar (lihat `08-uji-daftar-berhenti-v103.md`).

@@ -168,6 +168,18 @@ class Uji(unittest.TestCase):
         r, b = jalankan(k, "Halo {sapaan} {nama}!\nBalas STOP untuk berhenti.\n", "--nama-lengkap")
         self.assertEqual([x["pesan"].split("!")[0][5:] for x in b], ["Bu Sri Mulyani", "Pak Tono"])
 
+    def test_v103_baris_tanpa_nomor_dan_huruf_o(self):
+        d = tempfile.mkdtemp()
+        fs = os.path.join(d, "stop.txt")
+        with open(fs, "w", encoding="utf-8") as f:
+            f.write("Daftar berhenti\n0812-OOOO-0332\nBu Tuti minta stop\n")
+        r, b = jalankan("nama,nomor,setuju\nTuti,081200000332,ya\nAman,081200000500,ya\n",
+                        PESAN, "--daftar-berhenti", fs)
+        h = json.loads(r.stdout)
+        self.assertEqual([x["nomor"] if "nomor" in x else list(x.values())[1] for x in b][:1] and len(b), 1)
+        self.assertEqual(h["status"], "PERIKSA DULU")
+        self.assertEqual([x["baris"] for x in h["daftar_berhenti_tidak_terbaca"]], [3])
+
     def test_tanpa_kolom_persetujuan_ditolak(self):
         r, _ = jalankan("nama,nomor\nA,081200000001\n")
         self.assertNotEqual(r.returncode, 0)

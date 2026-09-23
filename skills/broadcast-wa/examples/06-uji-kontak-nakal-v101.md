@@ -1,4 +1,4 @@
-# 06 — Uji data tepi: file kontak "nakal" 55 baris + daftar berhenti (v1.0.1, diulang di v1.0.2)
+# 06 — Uji data tepi: file kontak "nakal" 55 baris + daftar berhenti (v1.0.1, diulang di v1.0.2 & v1.0.3)
 
 ## Skenario
 Uji ulang cacat berat v1.0.0 (B1: kolom Berhenti berisi "STOP"/"x"/tanggal tidak dianggap berhenti; B2: nomor yang
@@ -148,7 +148,7 @@ gelar, 19 teks berhenti) ada di `07-uji-daftar-berhenti-gelar-v102.md`.
 **File rusak:** file kosong / hanya judul → "File kontak tidak berisi data"; bukan UTF-8 → petunjuk simpan ulang "CSV UTF-8";
 pemisah `;` terbaca; judul kolom tak dikenal ("Setuju Promo (ya/tidak)") → ditolak dengan petunjuk `--kolom-persetujuan`. ✔
 
-**Uji regresi:** v1.0.1 → 6/6 OK; v1.0.2 → 11/11 OK.
+**Uji regresi:** v1.0.1 → 6/6 OK; v1.0.2 → 11/11 OK; v1.0.3 → 15/15 OK.
 
 ## Catatan penguji
 - **B1 dan B2 v1.0.0 sudah diperbaiki**, terbukti pada data yang dirancang penguji (bukan hanya pada uji regresi
@@ -157,3 +157,4 @@ pemisah `;` terbaca; judul kolom tak dikenal ("Setuju Promo (ya/tidak)") → dit
 - Jumat 11.30–13.00 selalu dilewati; 0062, nama hanya sapaan, dan cek "promo non-stop" sudah benar.
 - **v1.0.2:** hasil sama (26/26, salah kirim 0); sel tidak baku kini dilaporkan per nilai, gelar dirapikan, status SIAP/PERIKSA DULU
   dan jumlah nomor daftar berhenti yang terbaca muncul di ringkasan. Sisa cacat ada di `07-…` dan `HASIL-UJI.md`.
+- **v1.0.3:** dijalankan ulang — keluaran identik dengan v1.0.2 (26/26, status SIAP, rincian dilewati sama).
