@@ -1,0 +1,18 @@
+12/09/26, 08.02 - Pesan dan panggilan terenkripsi end-to-end. Tidak seorang pun di luar chat ini, termasuk WhatsApp, yang dapat membacanya.
+12/09/26, 08.05 - Budi Santoso: Pagi semua, jangan lupa meeting toko hari Jumat jam 10 ya
+12/09/26, 08.06 - Sari Wulandari: siap pak
+12/09/26, 08.10 - Dimas Prakoso: <Media tidak disertakan>
+12/09/26, 08.12 - Budi Santoso: itu foto stok gudang yang baru masuk
+12/09/26, 08.15 - Sari Wulandari: @Budi Santoso kalau supplier kain belum bayar invoice bulan lalu gimana pak? sudah lewat 2 minggu
+12/09/26, 08.20 - Budi Santoso: oke nanti saya transfer sore ini, Rp 4.500.000 kan?
+12/09/26, 08.21 - Sari Wulandari: betul pak, Rp 4.500.000
+12/09/26, 08.21 - Sari Wulandari: Ini pesan
+lanjutan dua baris
+untuk contoh multi-baris
+12/09/26, 09.00 - Fajar Nugroho bergabung menggunakan tautan undangan grup ini
+12/09/26, 09.05 - Fajar Nugroho: halo semua 👋
+12/09/26, 09.10 - Dimas Prakoso: Pesan ini dihapus
+12/09/26, 17.05 - Budi Santoso: oke fix ya kita naikkan harga produk A jadi Rp 85.000 mulai senin depan
+12/09/26, 17.06 - Sari Wulandari: siap dicatat pak, saya update di katalog jumat depan
+13/09/26, 07.30 - Budi Santoso: pagi, izin telpon nomor saya di 0812-3456-7890 kalau ada apa2 ya
+13/09/26, 07.31 - Sari Wulandari: siap pak

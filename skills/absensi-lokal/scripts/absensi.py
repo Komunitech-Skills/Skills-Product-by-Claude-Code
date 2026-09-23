@@ -90,6 +90,12 @@ def fjam(d):
     return s.replace(".", ",")
 
 
+def dstr(d):
+    """Decimal -> '3.5' (tanpa nol di belakang, untuk JSON)."""
+    s = format(Decimal(d).normalize(), "f")
+    return s.rstrip("0").rstrip(".") if "." in s else s
+
+
 def fmenit(m):
     """menit -> '7 jam 5 menit'."""
     m = int(m)
@@ -516,6 +522,7 @@ CREATE TABLE IF NOT EXISTS karyawan (
   tunjangan_tidak_tetap TEXT NOT NULL DEFAULT '',
   upah_harian TEXT NOT NULL DEFAULT '',
   tanpa_lembur INTEGER NOT NULL DEFAULT 0,
+  mulai TEXT NOT NULL DEFAULT '',
   aktif INTEGER NOT NULL DEFAULT 1,
   dibuat TEXT
 );
@@ -702,6 +709,7 @@ class Karyawan(object):
         self.upah_harian = parse_angka(r["upah_harian"])
         self.tanpa_lembur = bool(r["tanpa_lembur"])
         self.aktif = bool(r["aktif"])
+        self.mulai = date.fromisoformat(r["mulai"]) if r["mulai"] else None
 
     def pendek(self, d):
         return self.hari_kerja == 6 and self.hari_pendek and d.isoweekday() == self.hari_pendek
@@ -932,7 +940,7 @@ def analisa_karyawan(conn, k, dari, sampai, cfg, libur, kini):
         elif ada_tap:
             h["status"] = "hadir" if jh == "kerja" else "hadir di hari libur"
         elif jh == "kerja":
-            h["status"] = "belum absen" if d == kini.date() else "tanpa keterangan"
+            h["status"] = "belum absen" if (d == kini.date() and kini < selesai) else "tanpa keterangan"
         else:
             h["status"] = "libur"
         if ada_tap and valid and masuk and pulang:
@@ -1069,7 +1077,7 @@ def ringkas_karyawan(k, hari, lemb):
     r["upah_sejam"] = str(lemb["upah_sejam"].quantize(Decimal("0.01"))) if lemb["upah_sejam"] is not None else None
     r["upah_lembur"] = lemb["total"]
     r["tanpa_lembur"] = lemb["tanpa_lembur"]
-    r["lembur_rincian"] = [{kk: (str(v) if isinstance(v, Decimal) else v) for kk, v in it.items()}
+    r["lembur_rincian"] = [{kk: (dstr(v) if isinstance(v, Decimal) else v) for kk, v in it.items()}
                            for it in lemb["rincian"]]
     r["_list_kerja"], r["_list_libur"] = lemb["list_kerja"], lemb["list_libur"]
     return r
@@ -1093,7 +1101,15 @@ def analisa_semua(conn, dari, sampai, kini, kode=None, pola=None):
              sampai.isoformat(), k.kode, dari.isoformat(), sampai.isoformat())).fetchone()
         if not k.aktif and not punya_data:
             continue
-        hari, m, lem = analisa_karyawan(conn, k, dari, sampai, cfg, libur, kini)
+        awal = k.mulai
+        pertama = conn.execute("SELECT MIN(t) FROM (SELECT MIN(substr(waktu,1,10)) t FROM tap WHERE kode=? UNION ALL "
+                               "SELECT MIN(tanggal) FROM keterangan WHERE kode=? UNION ALL SELECT MIN(tanggal) FROM "
+                               "lembur WHERE kode=?)", (k.kode, k.kode, k.kode)).fetchone()[0]
+        if pertama and (awal is None or date.fromisoformat(pertama) < awal):
+            awal = date.fromisoformat(pertama)
+        if awal and awal > sampai:
+            continue
+        hari, m, lem = analisa_karyawan(conn, k, max(dari, awal) if awal else dari, sampai, cfg, libur, kini)
         lemb = hitung_lembur(k, hari, lem, libur, m)
         hasil.append(ringkas_karyawan(k, hari, lemb))
         harian[k.kode] = hari
@@ -1285,14 +1301,15 @@ def cmd_libur_daftar(args):
 # ---------------------------------------------------------------------------
 
 KOLOM_KARYAWAN = ["kode", "nama", "jabatan", "shift", "hari_kerja", "libur_mingguan", "hari_pendek", "id_mesin",
-                  "gaji_pokok", "tunjangan_tetap", "tunjangan_tidak_tetap", "upah_harian", "tanpa_lembur"]
+                  "gaji_pokok", "tunjangan_tetap", "tunjangan_tidak_tetap", "upah_harian", "tanpa_lembur", "mulai"]
 
 
-def _siapkan_karyawan(conn, d, lama=None):
+def _siapkan_karyawan(conn, d, lama=None, kini=None):
     """d: dict str mentah (kunci KOLOM_KARYAWAN; None = tidak diubah). Kembalikan dict siap simpan + peringatan."""
     out = dict(lama) if lama else {"jabatan": "", "shift": "REG", "hari_kerja": 5, "libur_mingguan": None,
                                    "hari_pendek": None, "id_mesin": "", "gaji_pokok": "", "tunjangan_tetap": "",
-                                   "tunjangan_tidak_tetap": "", "upah_harian": "", "tanpa_lembur": 0, "aktif": 1}
+                                   "tunjangan_tidak_tetap": "", "upah_harian": "", "tanpa_lembur": 0, "aktif": 1,
+                                   "mulai": (kini or sekarang()).date().replace(day=1).isoformat()}
     per = []
     if d.get("kode") is not None:
         kode = d["kode"].strip().upper()
@@ -1350,6 +1367,8 @@ def _siapkan_karyawan(conn, d, lama=None):
     if out.get("upah_harian") and out.get("gaji_pokok"):
         per.append("Upah harian dan gaji pokok sama-sama diisi; dasar lembur memakai upah harian x %d."
                    % (25 if out["hari_kerja"] == 6 else 21))
+    if d.get("mulai") is not None and str(d["mulai"]).strip():
+        out["mulai"] = tanggal_wajib(d["mulai"], "tanggal mulai").isoformat()
     if "kode" not in out or "nama" not in out:
         raise Gagal("Kode dan nama karyawan wajib diisi.")
     if out["id_mesin"]:
@@ -1362,11 +1381,11 @@ def _siapkan_karyawan(conn, d, lama=None):
 
 def _simpan_karyawan(conn, o):
     conn.execute("INSERT OR REPLACE INTO karyawan(kode,nama,jabatan,shift,hari_kerja,libur_mingguan,hari_pendek,"
-                 "id_mesin,gaji_pokok,tunjangan_tetap,tunjangan_tidak_tetap,upah_harian,tanpa_lembur,aktif,dibuat) "
-                 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT dibuat FROM karyawan WHERE kode=?),?))",
+                 "id_mesin,gaji_pokok,tunjangan_tetap,tunjangan_tidak_tetap,upah_harian,tanpa_lembur,aktif,mulai,dibuat) "
+                 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT dibuat FROM karyawan WHERE kode=?),?))",
                  (o["kode"], o["nama"], o["jabatan"], o["shift"], o["hari_kerja"], o["libur_mingguan"],
                   o["hari_pendek"], o["id_mesin"], o["gaji_pokok"], o["tunjangan_tetap"], o["tunjangan_tidak_tetap"],
-                  o["upah_harian"], o["tanpa_lembur"], o.get("aktif", 1), o["kode"], sekarang().isoformat(sep=" ")))
+                  o["upah_harian"], o["tanpa_lembur"], o.get("aktif", 1), o["mulai"] or "", o["kode"], sekarang().isoformat(sep=" ")))
 
 
 def _label_karyawan(o):
@@ -1401,7 +1420,7 @@ def cmd_karyawan_tambah(args):
         kode = (d["kode"] or "").strip().upper()
         if conn.execute("SELECT 1 FROM karyawan WHERE kode=?", (kode,)).fetchone():
             raise Gagal("Kode %s sudah terdaftar. Untuk mengubah pakai: karyawan ubah --kode %s ..." % (kode, kode))
-        o, per = _siapkan_karyawan(conn, d)
+        o, per = _siapkan_karyawan(conn, d, kini=sekarang(args))
         _simpan_karyawan(conn, o)
         return ({"karyawan": o, "peringatan": per, "ringkasan": {"tambah": o["kode"]}},
                 "Tambah karyawan:\n- " + _label_karyawan(o) + "".join("\nCatatan: " + p for p in per))
@@ -1454,6 +1473,7 @@ SIN_KARYAWAN = {
     "tunjangan_tidak_tetap": ["tunjangan_tidak_tetap", "tunjangan tidak tetap", "tunj tidak tetap"],
     "upah_harian": ["upah_harian", "upah harian", "gaji harian"],
     "tanpa_lembur": ["tanpa_lembur", "tanpa lembur"],
+    "mulai": ["mulai", "tanggal mulai", "mulai kerja", "tanggal masuk kerja"],
 }
 
 
@@ -1473,7 +1493,7 @@ def cmd_karyawan_impor(args):
             d = {f: sel(r, kol[f]) for f in kol}
             try:
                 lama = conn.execute("SELECT * FROM karyawan WHERE kode=?", (d["kode"].strip().upper(),)).fetchone()
-                o, p = _siapkan_karyawan(conn, d, dict(lama) if lama else None)
+                o, p = _siapkan_karyawan(conn, d, dict(lama) if lama else None, sekarang(args))
                 _simpan_karyawan(conn, o)
                 hasil.append(("ubah" if lama else "baru", o))
                 per.extend("%s: %s" % (o["kode"], x) for x in p)
@@ -1672,8 +1692,8 @@ def _catat_lembur(conn, k, d, jam_teks, catatan_input, ganti):
     if lama:
         catatan.append("Menggantikan lembur lama %s jam." % fjam(Decimal(lama[0])))
     teks += "".join("\nCatatan: " + c for c in catatan)
-    return {"karyawan": k.kode, "tanggal": d.isoformat(), "jam": str(jam), "jenis_hari": jh,
-            "jam_setara": str(setara), "perkiraan_upah": nominal, "catatan": catatan}, teks
+    return {"karyawan": k.kode, "tanggal": d.isoformat(), "jam": dstr(jam), "jenis_hari": jh,
+            "jam_setara": dstr(setara), "perkiraan_upah": nominal, "catatan": catatan}, teks
 
 
 SIN_LEMBUR = {"tanggal": ["tanggal", "tgl", "date"],
@@ -2011,6 +2031,11 @@ def cmd_impor_absen(args):
 
 
 def _periode(args, kini):
+    if args.bulan and norm(args.bulan) in ("lalu", "bulan-lalu", "kemarin", "sebelumnya"):
+        awal_ini = kini.date().replace(day=1)
+        args.bulan = (awal_ini - timedelta(days=1)).strftime("%Y-%m")
+    if args.bulan and norm(args.bulan) in ("ini", "sekarang"):
+        args.bulan = None
     if args.bulan:
         m = re.fullmatch(r"(\d{4})-(\d{1,2})", args.bulan.strip()) or re.fullmatch(r"(\d{1,2})[-/](\d{4})",
                                                                                   args.bulan.strip())
@@ -2113,7 +2138,7 @@ def cmd_rekap(args):
             "pengaturan": cfg, "libur_resmi": libur, "karyawan": [], "masalah": masalah,
             "total_upah_lembur": total_lembur, "disclaimer": DISCLAIMER}
     for r in hasil:
-        rr = {kk: (str(v) if isinstance(v, Decimal) else v) for kk, v in r.items() if not kk.startswith("_")}
+        rr = {kk: (dstr(v) if isinstance(v, Decimal) else v) for kk, v in r.items() if not kk.startswith("_")}
         data["karyawan"].append(rr)
     file = {}
     if args.csv:
@@ -2364,6 +2389,7 @@ def buat_parser():
         s.add_argument("--upah-harian", dest="upah_harian", help="Untuk pekerja harian (Pasal 33)")
         s.add_argument("--tanpa-lembur", dest="tanpa_lembur", choices=["ya", "tidak"],
                        help="ya = golongan jabatan tertentu (Pasal 27), tidak dibayar lembur")
+        s.add_argument("--mulai", help="Tanggal mulai dicatat (default tanggal 1 bulan ini)")
 
     s = ky.add_parser("tambah", parents=[umum, tulis])
     opsi_karyawan(s, True)
@@ -2421,7 +2447,7 @@ def buat_parser():
     s.set_defaults(fungsi=cmd_impor_absen)
 
     s = sub.add_parser("rekap", parents=[umum], help="Rekap bulanan + lembur")
-    s.add_argument("--bulan", help="YYYY-MM (default bulan ini s.d. hari ini)")
+    s.add_argument("--bulan", help="YYYY-MM, atau 'lalu' untuk bulan lalu (default bulan ini s.d. hari ini)")
     s.add_argument("--dari")
     s.add_argument("--sampai")
     s.add_argument("--karyawan")
