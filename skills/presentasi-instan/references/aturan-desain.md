@@ -62,18 +62,29 @@ merusak proporsi ukuran yang sudah dihitung.
 ## 5. Palet warna siap pakai (boleh diganti sesuai warna brand pengguna)
 
 Jika pengguna **tidak** menyebutkan warna brand, pakai salah satu palet netral berikut
-sesuai konteks (dari `--warna-latar-slide`, `--warna-teks`, `--warna-aksen`):
+sesuai konteks (dari `--warna-latar-slide`, `--warna-teks`, `--warna-teks-lembut`,
+`--warna-aksen`). **`--warna-teks-lembut` WAJIB diisi sesuai tabel ini** (dipakai untuk
+paragraf, poin, dan label kartu KPI) — jangan biarkan memakai nilai bawaan `#475569` di
+tema berlatar gelap, karena kontrasnya jatuh jauh di bawah standar (lihat cacat tema
+"Hitam Emas Premium" pada versi sebelumnya):
 
-| Nama | Latar slide | Teks | Aksen | Cocok untuk |
-|---|---|---|---|---|
-| Biru Korporat | `#ffffff` | `#0f172a` | `#2563eb` | Investor, B2B, KUR/bank |
-| Hijau Amanah | `#ffffff` | `#14231b` | `#15803d` | KUR/bank, laporan keuangan, koperasi |
-| Hitam Emas Premium | `#111111` | `#f5f1e6` | `#c9a227` | Profil perusahaan, produk premium |
-| Putih Minimalis | `#ffffff` | `#1f2937` | `#111827` | Laporan bulanan, materi pelatihan |
+| Nama | Latar slide | Teks | Teks lembut | Aksen | Kontras teks-lembut/latar | Cocok untuk |
+|---|---|---|---|---|---|---|
+| Biru Korporat | `#ffffff` | `#0f172a` | `#475569` | `#2563eb` | 7,6 : 1 | Investor, B2B, KUR/bank |
+| Hijau Amanah | `#ffffff` | `#14231b` | `#475569` | `#15803d` | 7,6 : 1 | KUR/bank, laporan keuangan, koperasi |
+| Hitam Emas Premium | `#111111` | `#f5f1e6` | `#cfc8b8` | `#c9a227` | 11,3 : 1 | Profil perusahaan, produk premium |
+| Putih Minimalis | `#ffffff` | `#1f2937` | `#475569` | `#111827` | 7,6 : 1 | Laporan bulanan, materi pelatihan |
+
+Semua kontras di atas dihitung dengan rumus WCAG 2.x (luminansi relatif) dan sudah di
+atas ambang minimum **4,5 : 1** untuk teks isi — lihat `scripts/validasi_html.py` yang
+otomatis memeriksa ulang rasio ini untuk `--warna-teks`/`--warna-teks-lembut` yang
+didefinisikan di `:root`.
 
 Jika pengguna memberi warna brand (mis. kode HEX logo), pakai warna itu sebagai
 `--warna-aksen` dan tetap jaga kontras sesuai aturan #3 (jangan pakai warna brand
-sebagai warna teks paragraf jika kontrasnya lemah terhadap latar).
+sebagai warna teks paragraf jika kontrasnya lemah terhadap latar). Kalau latar slide
+yang dipilih gelap, jangan lupa turunkan juga `--warna-teks-lembut` ke warna terang
+(mis. `#cfc8b8`), bukan memakai default `#475569` yang hanya aman di latar terang.
 
 ## 6. Angka Rupiah
 

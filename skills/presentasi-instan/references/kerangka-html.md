@@ -142,7 +142,7 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
     font-size: 14px; cursor: pointer;
   }
   .btn-edit.aktif { background: #16a34a; }
-  [contenteditable="true"] { outline: 2px dashed var(--warna-aksen); outline-offset: 4px; cursor: text; }
+  [contenteditable] { outline: 2px dashed var(--warna-aksen); outline-offset: 4px; cursor: text; }
 
   /* --- Overlay "putar HP" saat layar lebih tinggi dari lebar (potret) --- */
   .putar-hp {
@@ -152,9 +152,10 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
     align-items: center; justify-content: center; text-align: center;
     font-family: var(--font-isi); font-size: 22px; line-height: 1.5; padding: 40px;
   }
-  @media (orientation: portrait) and (max-width: 900px) {
+  @media (orientation: portrait) and (max-width: 600px) {
     .putar-hp { display: flex; }
   }
+  .putar-hp.tutup { display: none !important; }
 
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
@@ -180,11 +181,17 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
     }
     .slide:last-child { break-after: auto; page-break-after: auto; }
     .kontrol, .btn-edit, .putar-hp { display: none !important; }
+    [contenteditable] { outline: none !important; }
   }
 </style>
 </head>
 <body>
-<div class="putar-hp">🔄 Putar HP ke posisi mendatar (landscape) agar teks presentasi ini terbaca dengan baik.</div>
+<div class="putar-hp" id="putarHp">
+  <div>
+    🔄 Putar HP ke posisi mendatar (landscape) agar teks presentasi ini terbaca dengan baik.
+    <div style="margin-top:20px;"><button id="btnTetapLihat" style="font:inherit;padding:8px 20px;border-radius:999px;border:1px solid #fff;background:transparent;color:#fff;cursor:pointer;">Tetap lihat</button></div>
+  </div>
+</div>
 
 <div class="panggung-luar">
   <main class="panggung" id="panggung">
@@ -216,6 +223,15 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
   var indeks = 0;
   var panggung = document.getElementById('panggung');
   var labelHalaman = document.getElementById('halaman');
+  var btnEdit = document.getElementById('btnEdit');
+
+  // Bersihkan sisa mode edit: kalau file ini disimpan (Ctrl+S) SAAT mode edit masih
+  // aktif, atribut contenteditable ikut tersimpan di file. Lepas semuanya saat dibuka
+  // ulang supaya presentasi selalu terbuka dalam mode lihat (bukan mode edit).
+  document.querySelectorAll('[contenteditable]').forEach(function (el) {
+    el.removeAttribute('contenteditable');
+  });
+  document.body.classList.remove('mode-edit');
 
   function skalakan() {
     var faktor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
@@ -236,15 +252,26 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
   document.getElementById('btnMaju').addEventListener('click', function () { tampilkan(indeks + 1); });
   document.getElementById('btnMundur').addEventListener('click', function () { tampilkan(indeks - 1); });
 
+  // Sedang mengetik di teks yang bisa diedit? Jangan pindah slide (spasi/panah harus
+  // masuk ke teks, bukan menggerakkan presentasi).
+  function sedangMengedit(e) {
+    return e.target.isContentEditable || document.body.classList.contains('mode-edit');
+  }
+
   document.addEventListener('keydown', function (e) {
+    if (sedangMengedit(e)) return;
     if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { tampilkan(indeks + 1); e.preventDefault(); }
     if (e.key === 'ArrowLeft' || e.key === 'PageUp') { tampilkan(indeks - 1); e.preventDefault(); }
   });
 
   // Geser jari di HP/tablet
   var xAwal = null;
-  document.addEventListener('touchstart', function (e) { xAwal = e.touches[0].clientX; });
+  document.addEventListener('touchstart', function (e) {
+    if (sedangMengedit(e)) return;
+    xAwal = e.touches[0].clientX;
+  });
   document.addEventListener('touchend', function (e) {
+    if (sedangMengedit(e)) return;
     if (xAwal === null) return;
     var beda = e.changedTouches[0].clientX - xAwal;
     if (beda > 50) tampilkan(indeks - 1);
@@ -253,18 +280,30 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
   });
 
   // Mode edit teks langsung di browser (offline, tanpa library)
-  var btnEdit = document.getElementById('btnEdit');
   var editAktif = false;
-  btnEdit.addEventListener('click', function () {
-    editAktif = !editAktif;
-    document.querySelectorAll('.slide h1, .slide h2, .slide p, .slide li, .slide .angka, .slide .label, .slide td, .slide th')
-      .forEach(function (el) { el.setAttribute('contenteditable', editAktif ? 'true' : 'false'); });
-    btnEdit.textContent = editAktif ? '✔ Selesai edit' : '✏️ Edit';
-    btnEdit.classList.toggle('aktif', editAktif);
-    if (editAktif) {
-      alert('Mode edit aktif. Klik teks lalu ketik langsung. Setelah selesai, tekan Ctrl+S (Windows/Linux) atau Cmd+S (Mac), pilih "Webpage, HTML only" / "Laman Web, HTML saja" untuk menyimpan perubahan ke file ini.');
-    }
-  });
+  if (btnEdit) {
+    btnEdit.addEventListener('click', function () {
+      editAktif = !editAktif;
+      document.body.classList.toggle('mode-edit', editAktif);
+      document.querySelectorAll('.slide h1, .slide h2, .slide p, .slide li, .slide .angka, .slide .label, .slide td, .slide th')
+        .forEach(function (el) {
+          if (editAktif) { el.setAttribute('contenteditable', 'true'); }
+          else { el.removeAttribute('contenteditable'); }
+        });
+      btnEdit.textContent = editAktif ? '✔ Selesai edit' : '✏️ Edit';
+      btnEdit.classList.toggle('aktif', editAktif);
+      if (editAktif) {
+        alert('Mode edit aktif. Klik teks lalu ketik langsung — Spasi dan tombol panah tidak akan memindah slide selama Anda mengetik. Setelah selesai, klik "✔ Selesai edit" dulu, baru tekan Ctrl+S (Windows/Linux) atau Cmd+S (Mac) dan pilih "Webpage, HTML only" / "Laman Web, HTML saja" untuk menyimpan. Catatan: menyimpan file (Ctrl+S/Cmd+S) hanya bisa dilakukan di laptop/komputer — di HP, browser tidak punya cara menyimpan ulang file lokal seperti ini, jadi minta AI agent yang mengubah teksnya lalu kirim ulang filenya.');
+      }
+    });
+  }
+
+  // Tombol "Tetap lihat" pada overlay putar HP (mis. untuk HP yang kunci rotasinya aktif)
+  var btnTetapLihat = document.getElementById('btnTetapLihat');
+  var putarHp = document.getElementById('putarHp');
+  if (btnTetapLihat && putarHp) {
+    btnTetapLihat.addEventListener('click', function () { putarHp.classList.add('tutup'); });
+  }
 })();
 </script>
 </body>
@@ -328,10 +367,22 @@ konten — kelasnya sudah didefinisikan di kerangka di atas, tinggal pakai.
 
 Pakai salah satu dari 4 palet di `references/aturan-desain.md` #5 (Biru Korporat, Hijau
 Amanah, Hitam Emas Premium, Putih Minimalis) untuk `--warna-latar-slide`, `--warna-teks`,
-dan `--warna-aksen`. Untuk `--warna-kartu` dan `--warna-garis`, turunkan dari warna aksen
-dengan opacity rendah (`.06`–`.12`) agar kartu/tabel tetap kontras dengan latar — untuk
-tema gelap (Hitam Emas Premium), pakai warna terang dengan opacity rendah, misalnya
-`--warna-kartu: rgba(245, 241, 230, .08); --warna-garis: rgba(245, 241, 230, .18);`.
+**`--warna-teks-lembut`** (WAJIB diganti sesuai tabel di `aturan-desain.md` #5 — jangan
+biarkan nilai bawaan `#475569` pada tema berlatar gelap, kontrasnya jatuh jauh di bawah
+4,5:1), dan `--warna-aksen`. Untuk `--warna-kartu` dan `--warna-garis`, turunkan dari
+warna aksen dengan opacity rendah (`.06`–`.12`) agar kartu/tabel tetap kontras dengan
+latar — untuk tema gelap (Hitam Emas Premium), pakai warna terang dengan opacity rendah,
+misalnya `--warna-kartu: rgba(245, 241, 230, .08); --warna-garis: rgba(245, 241, 230, .18);`.
+
+Contoh lengkap variabel tema **Hitam Emas Premium** (latar gelap):
+```css
+--warna-latar-slide: #111111;
+--warna-teks: #f5f1e6;
+--warna-teks-lembut: #cfc8b8;  /* BUKAN #475569 — itu hanya aman di latar terang */
+--warna-aksen: #c9a227;
+--warna-kartu: rgba(245, 241, 230, .08);
+--warna-garis: rgba(245, 241, 230, .18);
+```
 
 ## Aturan wajib saat mengisi kerangka ini
 
@@ -362,6 +413,11 @@ tema gelap (Hitam Emas Premium), pakai warna terang dengan opacity rendah, misal
    (browser akan mengikuti `@page`). Yang perlu dipastikan pengguna hanya: tujuan cetak
    = "Simpan sebagai PDF"/"Save as PDF", margin = "Tidak ada"/"None", dan centang
    "Grafis latar"/"Background graphics" bila tersedia supaya warna ikut tercetak.
-6. Setelah HTML jadi, jalankan `python3 <folder-skill-ini>/scripts/validasi_html.py <file.html>` untuk memastikan
+6. **Kontras warna teks:** jika mengganti tema/warna (terutama latar gelap),
+   `--warna-teks` dan `--warna-teks-lembut` wajib punya kontras minimal **4,5:1**
+   terhadap `--warna-latar-slide` (lihat tabel di `aturan-desain.md` #5). Jangan biarkan
+   `--warna-teks-lembut` bawaan `#475569` terpakai di latar gelap.
+7. Setelah HTML jadi, jalankan `python3 <folder-skill-ini>/scripts/validasi_html.py <file.html>` untuk memastikan
    tidak ada rujukan internet, ada `@page` dengan ukuran serta CSS cetak, tidak ada gambar
-   dengan path lokal, dan tidak ada slide yang terlalu padat teks.
+   dengan path lokal, tidak ada slide yang terlalu padat teks, dan kontras warna teks
+   cukup.

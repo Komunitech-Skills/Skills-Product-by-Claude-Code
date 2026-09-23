@@ -106,6 +106,28 @@ class UjiFileBenar(unittest.TestCase):
         self.assertTrue(hasil["valid"])
         self.assertTrue(any("kata" in p for p in hasil["peringatan"]))
 
+    def test_tautan_wa_me_lulus_dengan_peringatan(self):
+        # Tautan <a href> ke internet (mis. wa.me) HANYA peringatan, bukan error —
+        # ini navigasi, bukan pemuatan sumber daya, jadi file tetap LULUS.
+        html = DASAR_BENAR.replace(
+            "<h2>Isi Singkat</h2>",
+            '<h2>Isi Singkat</h2><p><a href="https://wa.me/6281234567890">Hubungi via WhatsApp</a></p>',
+        )
+        hasil, _ = tulis_dan_validasi(html)
+        self.assertTrue(hasil["valid"], msg=hasil["error"])
+        self.assertEqual(hasil["error"], [])
+        self.assertTrue(any("wa.me" in p for p in hasil["peringatan"]))
+
+    def test_tema_gelap_kontras_cukup_lulus(self):
+        # Tema Hitam Emas Premium dengan --warna-teks-lembut yang benar (#cfc8b8) harus LULUS.
+        html = DASAR_BENAR.replace(
+            "--warna-aksen: #2563eb;",
+            "--warna-aksen: #c9a227; --warna-latar-slide: #111111; --warna-teks: #f5f1e6; "
+            "--warna-teks-lembut: #cfc8b8;",
+        )
+        hasil, _ = tulis_dan_validasi(html)
+        self.assertTrue(hasil["valid"], msg=hasil["error"])
+
 
 class UjiFileRusakHarusGagal(unittest.TestCase):
     """Setiap kasus di sini WAJIB membuat validator GAGAL (error tidak kosong)."""
@@ -239,6 +261,39 @@ class UjiFileRusakHarusGagal(unittest.TestCase):
         hasil, error_fatal = validasi_html.validasi(path, maks_kata_slide=70)
         self.assertIsNone(hasil)
         self.assertTrue(len(error_fatal) >= 1)
+
+    # 19. Tema gelap tapi --warna-teks-lembut masih memakai default terang-lemah
+    # (#475569 di atas latar #111111 -> kontras cuma ~2,5:1, di bawah 4,5:1 WCAG)
+    def test_19_kontras_tema_gelap_kurang(self):
+        html = DASAR_BENAR.replace(
+            "--warna-aksen: #2563eb;",
+            "--warna-aksen: #c9a227; --warna-latar-slide: #111111; --warna-teks: #f5f1e6; "
+            "--warna-teks-lembut: #475569;",
+        )
+        self._pastikan_gagal(html, "kontras")
+
+    # 20. CSS url() menunjuk file lokal (mis. foto-toko.jpg) — rusak saat dikirim
+    def test_20_css_url_lokal(self):
+        html = DASAR_BENAR.replace(
+            "</style>", '.z{background:url("foto-toko.jpg")}</style>'
+        )
+        self._pastikan_gagal(html, "url")
+
+    # 21. <video src="promo.mp4"> lokal — rusak saat dikirim ke perangkat lain
+    def test_21_video_src_lokal(self):
+        html = DASAR_BENAR.replace(
+            "<h2>Isi Singkat</h2>",
+            '<h2>Isi Singkat</h2><video src="promo.mp4" controls></video>',
+        )
+        self._pastikan_gagal(html, "video")
+
+    # 22. <source src="..."> lokal di dalam <video>/<audio> — rusak saat dikirim
+    def test_22_source_src_lokal(self):
+        html = DASAR_BENAR.replace(
+            "<h2>Isi Singkat</h2>",
+            '<h2>Isi Singkat</h2><video controls><source src="promo.mp4" type="video/mp4"></video>',
+        )
+        self._pastikan_gagal(html, "source")
 
 
 if __name__ == "__main__":

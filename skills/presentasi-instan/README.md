@@ -8,7 +8,7 @@
 - ✅ Tinggal cetak ke PDF (Print → Save as PDF) untuk dikirim lewat email/WA atau dicetak.
 - ✅ Sudah ada 7 kerangka slide siap pakai untuk konteks Indonesia: pitch investor, proposal ke perusahaan lain, pengajuan KUR/bank, laporan bulanan, profil perusahaan, penawaran ke reseller, dan materi pelatihan karyawan, lengkap dengan kartu angka, tabel rapi, timeline, dan kutipan siap pakai.
 - ✅ Angka Rupiah ditulis dengan format yang benar (`Rp 1.250.000`) dan diambil dari data Anda atau skill hitung lain di library ini (mis. `pengajuan-kur`, `rekap-penjualan-csv`) — bukan ditebak.
-- ✅ Bisa dibuka & dicetak jadi PDF rapi satu slide per halaman, tidak terpotong; di HP tegak akan diingatkan untuk memutar ke posisi mendatar. Ada mode edit teks langsung di browser (tombol "Edit").
+- ✅ Bisa dibuka & dicetak jadi PDF rapi satu slide per halaman, tidak terpotong; di HP tegak akan diingatkan untuk memutar ke posisi mendatar (bisa ditutup lewat tombol "Tetap lihat"). Ada mode edit teks langsung di browser (tombol "Edit") — menyimpan hasil edit (Ctrl+S/Cmd+S) hanya bisa di laptop/komputer, di HP minta AI yang mengubah teksnya.
 
 ## Cocok untuk siapa
 - Pemilik UMKM yang mau mengajukan KUR ke bank tapi tidak punya desainer.

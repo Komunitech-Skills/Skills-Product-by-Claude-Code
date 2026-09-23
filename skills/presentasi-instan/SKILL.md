@@ -108,11 +108,12 @@ Presentasi [judul] sudah jadi: [nama-file.html] ([jumlah] slide)
 Cara pakai:
 - Buka file-nya dua kali klik, atau tarik ke jendela browser (Chrome/Edge/Safari) — bisa dibuka di laptop maupun HP, tanpa internet.
 - Navigasi: tombol panah kiri/kanan atau geser jari (di HP), atau klik tombol ‹ › di bawah layar. Kalau HP dipegang tegak, akan muncul pesan untuk memutar ke posisi mendatar (landscape) supaya teks terbaca.
-- Mau edit teks langsung? Klik tombol "✏️ Edit" di pojok kanan bawah, ubah teksnya, lalu simpan dengan Ctrl+S/Cmd+S ("Webpage, HTML only").
+- Mau edit teks langsung? Klik tombol "✏️ Edit" di pojok kanan bawah, ubah teksnya, klik "✔ Selesai edit", lalu simpan dengan Ctrl+S/Cmd+S ("Webpage, HTML only") — **hanya bisa di laptop/komputer**; di HP, minta saya (AI) yang mengubah teksnya lalu kirim ulang filenya.
 - Cetak jadi PDF: buka file → Ctrl+P (Windows) / Cmd+P (Mac) → tujuan "Simpan sebagai PDF"/"Save as PDF" → margin "Tidak ada"/"None" → centang "Grafis latar"/"Background graphics" (ukuran halaman sudah otomatis pas, tidak perlu pilih kertas/orientasi manual).
 
 Asumsi yang dipakai (kalau ada): [...]
 Bagian yang masih perlu Anda lengkapi (kalau ada): [...]
+Catatan kelayakan pinjaman (khusus KUR, kalau ada, TIDAK ditaruh di slide): [mis. "rasio cicilan/laba 46,6% = kategori BERAT menurut pengajuan-kur; plafon yang lebih aman sekitar Rp ..."]
 Hasil cek otomatis: [ringkasan LULUS/ada peringatan dari validasi_html.py]
 ```
 
@@ -147,9 +148,13 @@ Presentasi ini **tidak boleh menghitung sendiri** cicilan, rasio cicilan-terhada
 atau kelayakan plafon/agunan — itu adalah pekerjaan skill `pengajuan-kur`:
 - Jika skill `pengajuan-kur` **terpasang** di environment ini: panggil skill tersebut
   (atau jalankan `scripts/simulasi_kur.py` miliknya) dengan plafon, tenor, dan data
-  laba/cicilan lain dari pengguna, lalu masukkan hasil resminya (cicilan, rasio, status
-  cek plafon/agunan) apa adanya ke slide "Jumlah pinjaman & rencana pengembalian" dan
-  "Proyeksi usaha" di `templates/pengajuan-kur.md`.
+  laba/cicilan lain dari pengguna. Masukkan **nominal cicilan dan rasio cicilan/laba
+  (angka)** ke slide "Jumlah pinjaman & rencana pengembalian" di
+  `templates/pengajuan-kur.md`. **Jangan** menaruh label penilaian kelayakan seperti
+  "BERAT"/"AMAN" dari `pengajuan-kur` di slide yang akan dilihat pihak bank — itu
+  penilaian internal untuk pengguna, bukan untuk presentasi ke bank. Sampaikan label
+  kelayakan itu (mis. "rasio 46,6% = kategori BERAT") beserta perkiraan plafon yang lebih
+  aman ke **pengguna** di ringkasan akhir, supaya dipertimbangkan sebelum diajukan.
 - Jika skill `pengajuan-kur` **tidak terpasang**: jangan mengarang atau menghitung
   kira-kira di kepala. Tulis `[isi]` pada angka cicilan/rasio, dan tambahkan catatan di
   slide (font kecil) atau di ringkasan akhir: "Cicilan & rasio kemampuan bayar perlu

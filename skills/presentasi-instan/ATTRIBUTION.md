@@ -84,6 +84,36 @@ ulang dengan implementasi sendiri.
 
 ## Riwayat perubahan
 
+### v1.1.1 (2026-09-23) — revisi hasil uji ulang v1.1.0 (skor 6, lihat "Uji ulang v1.1.0" di `examples/HASIL-UJI.md`)
+- **Perbaikan cacat berat mode Edit:** handler `keydown`/`touchstart`/`touchend` di
+  `references/kerangka-html.md` kini berhenti lebih dulu (`return`) bila target sedang
+  diedit (`e.target.isContentEditable`) atau mode edit aktif (`document.body` punya kelas
+  `mode-edit`) — Spasi/panah kiri-kanan tidak lagi memindah slide saat mengetik teks.
+  "Selesai edit" kini melepas atribut `contenteditable` sepenuhnya (`removeAttribute`,
+  bukan set ke `"false"`), dan file yang dibuka ulang membersihkan sisa `contenteditable`
+  saat load (mencegah file tersimpan-tengah-edit terbuka dalam kondisi aneh). Outline
+  putus-putus mode edit disembunyikan di `@media print`. README/SKILL.md menjelaskan
+  bahwa menyimpan (Ctrl+S/Cmd+S) hanya bisa di laptop/komputer, bukan di HP.
+- **Kontras tema gelap:** tabel palet di `aturan-desain.md` #5 kini mewajibkan
+  `--warna-teks-lembut` per tema (mis. `#cfc8b8` untuk Hitam Emas Premium, kontras
+  11,3:1), bukan memakai default `#475569` yang hanya 2,5:1 di atas latar gelap.
+  `scripts/validasi_html.py` menambahkan pemeriksaan kontras WCAG otomatis (ERROR bila
+  `--warna-teks`/`--warna-teks-lembut` vs `--warna-latar-slide` di bawah 4,5:1).
+- **Validator disempurnakan:** tautan `<a href="https://wa.me/...">` (navigasi, bukan
+  pemuatan sumber daya) kini hanya PERINGATAN, bukan ERROR; `<link href>` ke internet
+  tetap ERROR. Ditambahkan deteksi path lokal (bukan `data:`) pada `<video src>`,
+  `<audio src>`, `<source src>`, dan CSS `url("foto-lokal.jpg")` — sama seperti `<img>`
+  sebelumnya. `tests/uji_validasi.py` bertambah 6 kasus (kini 26 total): tautan wa.me
+  (lulus+peringatan), tema gelap kontras cukup (lulus), tema gelap kontras kurang
+  (gagal), CSS url() lokal, `<video src>` lokal, `<source src>` lokal.
+- **Overlay "putar HP":** ditambah tombol "Tetap lihat" untuk menutup overlay (mis. HP
+  yang kunci rotasinya aktif), dan ambang lebar diperketat ke `max-width: 600px` (dari
+  900px) supaya tidak lagi muncul di layar tablet tegak yang sebenarnya sudah terbaca.
+- **Label kelayakan KUR ("BERAT"/"AMAN") tidak lagi ditaruh di slide** yang akan dilihat
+  bank — SKILL.md & `templates/pengajuan-kur.md` kini memisahkan: slide berisi nominal
+  cicilan & rasio saja, sedangkan label kategori dan perkiraan plafon aman disampaikan ke
+  pengguna di ringkasan akhir (Format output).
+
 ### v1.1.0 (2026-09-23) — revisi hasil uji independen (skor 6, lihat `examples/HASIL-UJI.md`)
 - **Perbaikan cacat berat PDF terpotong:** tambah `@page { size: 1920px 1080px; margin: 0; }`
   dan `print-color-adjust: exact` di `references/kerangka-html.md`; hapus anjuran memilih
