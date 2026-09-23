@@ -26,7 +26,7 @@ kemarin,Putri Salju 500gr,1,75000
 
 **Total omzet:** Rp 4.220.000
 **Jumlah transaksi (baris):** 27
-**Rata-rata omzet per hari:** Rp 602.857
+**Rata-rata omzet per hari (kalender):** Rp 602.857  _(hari berjualan: Rp 602.857; 7 dari 7 hari ada penjualan)_
 
 ⚠️ **3 baris dilewati** dan tidak ikut dihitung:
 - 2 baris karena **tanggal tidak valid**: 1 baris tanggalnya kosong (Nastar Keju 500gr, 1 pcs, Rp 85.000) dan 1 baris tertulis "kemarin" (Putri Salju 500gr, 1 pcs, Rp 75.000).
@@ -58,3 +58,4 @@ Hari terbaik: Rabu, 16 September 2026 (Rp 1.045.000). Hari terendah: Minggu, 20 
 - Bagus: sesuai aturan SKILL.md, jumlah dan alasan baris yang dilewati disebutkan. Agent menambah nilai dengan menunjukkan baris mana yang rusak (dilihat langsung dari file), meskipun script hanya melaporkan jumlahnya.
 - Saran: script sebaiknya mengembalikan nomor baris yang dilewati (misalnya `contoh_baris_dilewati: [5, 11, 16]`) supaya agent tidak perlu mencari sendiri.
 - Catatan: "68%" adalah angka turunan (34,2% + 33,8%).
+- **Uji ulang v1.1.0 (2026-09-23):** hasil identik (Rp 4.220.000, 27 baris valid, 3 dilewati dengan alasan `tanggal tidak terbaca: 2`, `harga/total tidak valid atau meragukan: 1`) dan cocok dengan verifikasi independen. Saran nomor baris yang dilewati (`contoh_baris_dilewati`) **belum** diterapkan.

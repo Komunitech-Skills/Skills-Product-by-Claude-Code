@@ -20,7 +20,7 @@ No. Pesanan;Waktu Pesanan Dibuat;Nama Produk;Jumlah;Harga Satuan
 
 **Total omzet:** Rp 13.899.100
 **Jumlah transaksi (baris):** 88
-**Rata-rata omzet per hari:** Rp 463.303 (30 hari, semuanya ada penjualan)
+**Rata-rata omzet per hari (kalender):** Rp 463.303  _(hari berjualan: Rp 463.303; 30 dari 30 hari ada penjualan)_
 
 > Catatan: file berakhir di 30 Agustus. Tanggal 31 Agustus tidak ada di data. Omzet dihitung dari *Harga Satuan × Jumlah* dan belum dikurangi diskon, ongkir, atau potongan biaya marketplace.
 
@@ -47,5 +47,6 @@ Rata-rata omzet Sabtu–Minggu Rp 519.150 per hari, sedangkan Senin–Jumat Rp 4
 - Perintah: `python3 <skill>/scripts/rekap.py toko-agustus.csv --kolom-tanggal "Waktu Pesanan Dibuat" --kolom-produk "Nama Produk" --kolom-qty "Jumlah" --kolom-harga "Harga Satuan"`. Delimiter `;` dan format `68.500,00` terdeteksi otomatis dengan benar.
 - **Verifikasi independen:** dihitung ulang dengan Python terpisah (parser sendiri untuk `68.500,00`). Total Rp 13.899.100, 88 baris, top-5, dan hari terbaik/terendah **cocok 100%**.
 - Bagus: `--kolom-harga` (harga × qty) bekerja. Tanggal dengan jam terbaca.
-- Kurang (sedang): SKILL.md menyebut ekspor Shopee/Tokopedia, tetapi script **tidak bisa menyaring status pesanan** (Batal/Dikembalikan). Pada ekspor marketplace asli, pesanan batal akan ikut terhitung sebagai omzet tanpa peringatan. File uji ini sengaja tidak memuat kolom status.
+- ~~Kurang (sedang): script tidak bisa menyaring status pesanan.~~ **Sudah diperbaiki di v1.1.0** (`--kolom-status`). File ini tidak punya kolom status, jadi hasilnya tidak berubah. Uji filter status ada di contoh 06, dan di sana ditemukan cacat baru.
 - Catatan: "sekitar 19%" adalah angka turunan (519.150 ÷ 435.380).
+- **Uji ulang v1.1.0 (2026-09-23):** hasil identik (Rp 13.899.100, 88 baris) dan cocok dengan verifikasi independen. Sebagai pembanding, parser "ambil digit saja" yang lazim dipakai agent tanpa skill menghasilkan **Rp 1.389.910.000** (100× lipat) pada file ini karena format `68.500,00`. Ini salah satu nilai tambah terbesar skill ini.

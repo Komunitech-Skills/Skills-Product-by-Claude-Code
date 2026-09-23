@@ -21,7 +21,7 @@ Tanggal,Produk,Qty,Total
 
 **Total omzet:** Rp 5.084.000
 **Jumlah transaksi (baris):** 127
-**Rata-rata omzet per hari:** Rp 363.143 (14 hari, semuanya ada penjualan)
+**Rata-rata omzet per hari (kalender):** Rp 363.143  _(hari berjualan: Rp 363.143; 14 dari 14 hari ada penjualan)_
 
 ### 5 Produk Terlaris (omzet)
 | # | Produk | Qty | Omzet | % |
@@ -49,3 +49,4 @@ Minggu pertama (1–7 Sep) omzetnya Rp 2.475.000, minggu kedua (8–14 Sep) Rp 2
 - **Verifikasi independen:** total, jumlah baris, rata-rata, 5 produk (qty, omzet, %), serta hari terbaik/terendah dihitung ulang dengan script Python terpisah yang tidak memakai `parse_angka` bawaan skill. Hasilnya **cocok 100%**.
 - Bagus: format sesuai SKILL.md, rupiah bertitik, insight berbasis angka dan bisa ditindaklanjuti.
 - Catatan: angka turunan seperti "48,3%", "Rp 705.000", dan omzet per minggu dihitung agent dari JSON script (penjumlahan sederhana). SKILL.md menyatakan "semua angka harus berasal dari output script", jadi angka turunan berada di wilayah abu-abu. Sebaiknya aturan ini dipertegas (lihat HASIL-UJI.md).
+- **Uji ulang v1.1.0 (2026-09-23):** script versi baru dijalankan ulang pada file yang sama. Hasilnya identik (total Rp 5.084.000, 127 baris, top-5, hari terbaik/terendah) dan cocok dengan verifikasi independen. Baris rata-rata disesuaikan dengan format output baru (kalender + hari berjualan). Catatan "angka turunan" di atas **masih berlaku**, karena aturan di SKILL.md belum diubah.
