@@ -1,0 +1,4 @@
+nama;jabatan;jenis;ptkp;gaji_pokok;tunjangan_tetap;tanggal_mulai;bruto_bulan_bayar;upah_bulanan;tanggal_berhenti;thr_kebijakan
+Contoh Budi;Staf Gudang;tetap;K/1;5.000.000;500.000;2019-07-01;5.960.000;;;
+Contoh Rina;Admin;kontrak;TK/0;4.800.000;;2026-06-15;;;;
+Contoh Joko;Tukang;harian;TK/0;;;2026-01-05;;3jt+3,2jt+2,8jt+3jt+3,1jt+2,9jt+3jt+3jt+3,2jt+3jt+2,9jt;;
