@@ -50,6 +50,6 @@ Saran untuk database yang sudah dibeli: sebaiknya **tidak dipakai dan dihapus**,
   konkret. Sesuai "Kapan TIDAK digunakan" dan `references/aturan-pdp-wa.md` §1–3.
 - Script juga menegakkan hal yang sama secara teknis: uji terpisah menunjukkan script **menolak** file tanpa kolom persetujuan
   (kecuali flag `--saya-pastikan-semua-setuju`) dan **menolak** variasi tanpa teks berhenti.
-- **Kurang (ringan):** flag `--saya-pastikan-semua-setuju` bisa dipakai pengguna nakal untuk melewati pengecekan; SKILL.md
-  tidak melarang agent memakainya atas permintaan pengguna yang jelas-jelas memakai database beli. Sebaiknya SKILL.md
-  menulis: "Jangan pakai flag ini bila pengguna menyebut nomor berasal dari database beli/grup."
+- **Uji ulang v1.0.1:** celah lama sudah ditutup — SKILL.md langkah 4 kini melarang agent memakai
+  `--saya-pastikan-semua-setuju` bila pengguna menyebut nomor berasal dari database beli, grup, atau sumber tanpa izin.
+  Script juga masih menolak variasi tanpa teks berhenti (termasuk "promo non-stop").

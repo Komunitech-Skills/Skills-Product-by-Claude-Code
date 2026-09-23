@@ -46,7 +46,7 @@ Lihat `01-promo-gajian-toko-roti-dengan-csv.md` (3 variasi personal + versi daft
 | Angka | "hemat 20%" dihitung sendiri (benar, tapi tidak diminta) | Hanya angka dari pengguna |
 | Klaim | "Stok terbatas, jangan sampai kehabisan!" dan "Fresh setiap hari" — **tidak diberikan pengguna** | Tidak ada klaim karangan |
 | Gaya | Kapital + 15 emoji, mirip spam | Emoji ≤ 1–2 per variasi, seperti chat biasa |
-| Jadwal | "jam 10 pagi" sekaligus | Bertahap 20/batch, jeda, peringatan jam salat Jumat |
+| Jadwal | "jam 10 pagi" sekaligus | Bertahap 20/batch, jeda; v1.0.1 otomatis melewati Jumat 11.30–13.00 |
 | Link kirim | Tidak ada | `broadcast_siap.csv` berisi link wa.me per kontak |
 
 ## Penilaian
@@ -55,4 +55,5 @@ Lihat `01-promo-gajian-toko-roti-dengan-csv.md` (3 variasi personal + versi daft
   terbatas", "fresh setiap hari") tidak muncul; (3) personalisasi nama + variasi mengurangi laporan spam; (4) pengolahan
   CSV yang terverifikasi (25/40) dan link wa.me siap klik; (5) jadwal bertahap.
 - **Setara:** isi promo inti dan cara order sama-sama benar.
+- **Uji ulang v1.0.1:** output dengan skill (contoh 01) dijalankan ulang — hasil sama (25/40). Perbandingan tetap berlaku.
 - **Kesimpulan:** hasil dengan skill **jelas lebih baik**, terutama pada aspek yang paling berisiko bagi pembeli (izin & opt-out).

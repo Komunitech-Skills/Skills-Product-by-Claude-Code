@@ -75,7 +75,7 @@ sesekali, Pak? Bisa berhenti kapan saja." Catat "ya" + tanggal.
   Saran jadwal masuk akal (sebelum tanggal pindah) dan batas daftar siaran diberi label "cek ketentuan terbaru".
 - Pengguna menulis "minggu pertama" tanpa tanggal; agent tidak mengarang tanggal akhir promo di dalam pesan, hanya
   menyebut asumsinya dan meminta konfirmasi — sesuai aturan "tidak mengarang".
-- **Kurang (ringan):** format output SKILL.md mewajibkan `{sapaan} {nama}` di **setiap** variasi (langkah 2), tetapi
-  untuk daftar siaran ini justru salah. Aturannya bertentangan; perlu dirumuskan "kecuali untuk daftar siaran".
-  Variasi 1–2 juga tidak memuat "alasan menerima pesan" secara eksplisit selain "pelanggan kami"; masih wajar.
+- **Uji ulang v1.0.1:** kontradiksi lama (langkah 2 mewajibkan `{sapaan} {nama}` di setiap variasi) sudah diperbaiki —
+  SKILL.md langkah 2 kini menulis "kecuali versi khusus daftar siaran WhatsApp Business". Output di atas tetap sesuai.
+  Variasi 1–2 tidak memuat "alasan menerima pesan" secara eksplisit selain "pelanggan kami"; masih wajar.
 - Pesan info (bukan promo murni) tetap diberi opt-out — sesuai referensi.

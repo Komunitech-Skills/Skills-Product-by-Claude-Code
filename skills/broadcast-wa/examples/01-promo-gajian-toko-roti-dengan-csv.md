@@ -77,8 +77,12 @@ Laweyan **tidak** disebut gratis karena tidak disebutkan. Mau versi lebih formal
   nomor yang lolos identik dengan hasil script. Jadwal 10.00–10.19 (batch 1, 20 pesan), 10.19 + 1 menit + 30 menit = 10.50 (batch 2) — benar.
 - Normalisasi nomor benar: `0812-0000-1000`, `+62 812 0000 1000`, `(0812) ...`, `81200000004`, `+62 (0)812...` → `62812...`.
 - Script hanya memakai `urllib.parse.quote` untuk membuat link; **tidak ada pengiriman pesan dan tidak ada akses jaringan**.
-- **Kurang:** script tidak mengenal jam salat Jumat, padahal `references/aturan-pdp-wa.md` menyarankan menghindarinya.
-  Di sini aman karena hanya 25 kontak; dengan 100 kontak mulai Jumat 10.00, pesan ke-41 dst. jatuh di 11.30–13.00.
-  Agent harus mengingatkan sendiri.
-- **Cacat yang ditemukan di uji data tepi (tidak muncul di contoh ini, lihat HASIL-UJI.md):** kolom Berhenti yang
-  berisi "STOP" atau tanggal **tidak** dianggap berhenti, dan nomor yang punya baris "berhenti" tetap dikirimi bila ada baris duplikat tanpa tanda berhenti.
+- **Uji ulang v1.0.1:** data 40 baris yang sama dijalankan ulang dengan `siapkan_broadcast.py` v1.0.1 → hasil **sama persis**
+  (25 siap kirim, rincian dilewati sama, jadwal 10.00 → 10.54). Script kini juga melewati Jumat 11.30–13.00 secara otomatis
+  (diuji dengan 120 kontak: 0 pesan di jam itu, digeser ke 13.00), jadi agent tidak perlu lagi mengingatkan manual.
+- Cacat B1/B2 v1.0.0 (kolom Berhenti berisi "STOP"/tanggal; baris dobel menimpa permintaan berhenti) **sudah diperbaiki** —
+  diverifikasi dengan file kontak nakal 55 baris, lihat `06-uji-kontak-nakal-v101.md`.
+- **Kurang (ringan):** Variasi 2 menyapa "{sapaan} {nama}" (mis. "Bu Sri") lalu menutup dengan "Kamu menerima pesan ini …"
+  — sapaan bercampur, kurang sopan untuk pelanggan ibu-ibu. Pola ini berasal dari contoh di SKILL.md & references §5.
+- **Perhatian:** isi `stop.txt` di contoh ini bersih (satu nomor per baris). Jika pengguna menulis catatan di baris yang sama
+  ("0812… tgl 12/09"), nomor itu diabaikan diam-diam (cacat B3 di `HASIL-UJI.md`).
