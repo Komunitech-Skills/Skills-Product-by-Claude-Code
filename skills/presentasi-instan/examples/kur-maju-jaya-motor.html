@@ -125,7 +125,7 @@
     font-size: 14px; cursor: pointer;
   }
   .btn-edit.aktif { background: #16a34a; }
-  [contenteditable="true"] { outline: 2px dashed var(--warna-aksen); outline-offset: 4px; cursor: text; }
+  [contenteditable] { outline: 2px dashed var(--warna-aksen); outline-offset: 4px; cursor: text; }
 
   /* --- Overlay "putar HP" saat layar lebih tinggi dari lebar (potret) --- */
   .putar-hp {
@@ -135,9 +135,10 @@
     align-items: center; justify-content: center; text-align: center;
     font-family: var(--font-isi); font-size: 22px; line-height: 1.5; padding: 40px;
   }
-  @media (orientation: portrait) and (max-width: 900px) {
+  @media (orientation: portrait) and (max-width: 600px) {
     .putar-hp { display: flex; }
   }
+  .putar-hp.tutup { display: none !important; }
 
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
@@ -163,11 +164,17 @@
     }
     .slide:last-child { break-after: auto; page-break-after: auto; }
     .kontrol, .btn-edit, .putar-hp { display: none !important; }
+    [contenteditable] { outline: none !important; }
   }
 </style>
 </head>
 <body>
-<div class="putar-hp">🔄 Putar HP ke posisi mendatar (landscape) agar teks presentasi ini terbaca dengan baik.</div>
+<div class="putar-hp" id="putarHp">
+  <div>
+    🔄 Putar HP ke posisi mendatar (landscape) agar teks presentasi ini terbaca dengan baik.
+    <div style="margin-top:20px;"><button id="btnTetapLihat" style="font:inherit;padding:8px 20px;border-radius:999px;border:1px solid #fff;background:transparent;color:#fff;cursor:pointer;">Tetap lihat</button></div>
+  </div>
+</div>
 
 <div class="panggung-luar">
   <main class="panggung" id="panggung">
@@ -232,7 +239,7 @@
       <h2>Rp 150.000.000, tenor 36 bulan</h2>
       <div class="kartu-kpi">
         <div class="kpi"><div class="angka">Rp 4.563.291</div><div class="label">Cicilan per bulan (anuitas, bunga acuan 6% efektif/tahun)</div></div>
-        <div class="kpi"><div class="angka">46,6%</div><div class="label">Cicilan dibanding laba bersih — kategori: BERAT, perlu hati-hati</div></div>
+        <div class="kpi"><div class="angka">46,6%</div><div class="label">Cicilan dibanding laba bersih</div></div>
         <div class="kpi"><div class="angka">Rp 5.236.709</div><div class="label">Sisa laba setelah cicilan</div></div>
       </div>
       <p style="font-size:24px;margin-top:28px">Simulasi skill pengajuan-kur (Permenko 1/2026). Total bunga Rp 14.278.462; cicilan terakhir Rp 4.563.277. Angka resmi mengikuti tabel angsuran bank.</p>
@@ -281,6 +288,15 @@
   var indeks = 0;
   var panggung = document.getElementById('panggung');
   var labelHalaman = document.getElementById('halaman');
+  var btnEdit = document.getElementById('btnEdit');
+
+  // Bersihkan sisa mode edit: kalau file ini disimpan (Ctrl+S) SAAT mode edit masih
+  // aktif, atribut contenteditable ikut tersimpan di file. Lepas semuanya saat dibuka
+  // ulang supaya presentasi selalu terbuka dalam mode lihat (bukan mode edit).
+  document.querySelectorAll('[contenteditable]').forEach(function (el) {
+    el.removeAttribute('contenteditable');
+  });
+  document.body.classList.remove('mode-edit');
 
   function skalakan() {
     var faktor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
@@ -301,15 +317,26 @@
   document.getElementById('btnMaju').addEventListener('click', function () { tampilkan(indeks + 1); });
   document.getElementById('btnMundur').addEventListener('click', function () { tampilkan(indeks - 1); });
 
+  // Sedang mengetik di teks yang bisa diedit? Jangan pindah slide (spasi/panah harus
+  // masuk ke teks, bukan menggerakkan presentasi).
+  function sedangMengedit(e) {
+    return e.target.isContentEditable || document.body.classList.contains('mode-edit');
+  }
+
   document.addEventListener('keydown', function (e) {
+    if (sedangMengedit(e)) return;
     if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { tampilkan(indeks + 1); e.preventDefault(); }
     if (e.key === 'ArrowLeft' || e.key === 'PageUp') { tampilkan(indeks - 1); e.preventDefault(); }
   });
 
   // Geser jari di HP/tablet
   var xAwal = null;
-  document.addEventListener('touchstart', function (e) { xAwal = e.touches[0].clientX; });
+  document.addEventListener('touchstart', function (e) {
+    if (sedangMengedit(e)) return;
+    xAwal = e.touches[0].clientX;
+  });
   document.addEventListener('touchend', function (e) {
+    if (sedangMengedit(e)) return;
     if (xAwal === null) return;
     var beda = e.changedTouches[0].clientX - xAwal;
     if (beda > 50) tampilkan(indeks - 1);
@@ -318,18 +345,30 @@
   });
 
   // Mode edit teks langsung di browser (offline, tanpa library)
-  var btnEdit = document.getElementById('btnEdit');
   var editAktif = false;
-  btnEdit.addEventListener('click', function () {
-    editAktif = !editAktif;
-    document.querySelectorAll('.slide h1, .slide h2, .slide p, .slide li, .slide .angka, .slide .label, .slide td, .slide th')
-      .forEach(function (el) { el.setAttribute('contenteditable', editAktif ? 'true' : 'false'); });
-    btnEdit.textContent = editAktif ? '✔ Selesai edit' : '✏️ Edit';
-    btnEdit.classList.toggle('aktif', editAktif);
-    if (editAktif) {
-      alert('Mode edit aktif. Klik teks lalu ketik langsung. Setelah selesai, tekan Ctrl+S (Windows/Linux) atau Cmd+S (Mac), pilih "Webpage, HTML only" / "Laman Web, HTML saja" untuk menyimpan perubahan ke file ini.');
-    }
-  });
+  if (btnEdit) {
+    btnEdit.addEventListener('click', function () {
+      editAktif = !editAktif;
+      document.body.classList.toggle('mode-edit', editAktif);
+      document.querySelectorAll('.slide h1, .slide h2, .slide p, .slide li, .slide .angka, .slide .label, .slide td, .slide th')
+        .forEach(function (el) {
+          if (editAktif) { el.setAttribute('contenteditable', 'true'); }
+          else { el.removeAttribute('contenteditable'); }
+        });
+      btnEdit.textContent = editAktif ? '✔ Selesai edit' : '✏️ Edit';
+      btnEdit.classList.toggle('aktif', editAktif);
+      if (editAktif) {
+        alert('Mode edit aktif. Klik teks lalu ketik langsung — Spasi dan tombol panah tidak akan memindah slide selama Anda mengetik. Setelah selesai, klik "✔ Selesai edit" dulu, baru tekan Ctrl+S (Windows/Linux) atau Cmd+S (Mac) dan pilih "Webpage, HTML only" / "Laman Web, HTML saja" untuk menyimpan. Catatan: menyimpan file (Ctrl+S/Cmd+S) hanya bisa dilakukan di laptop/komputer — di HP, browser tidak punya cara menyimpan ulang file lokal seperti ini, jadi minta AI agent yang mengubah teksnya lalu kirim ulang filenya.');
+      }
+    });
+  }
+
+  // Tombol "Tetap lihat" pada overlay putar HP (mis. untuk HP yang kunci rotasinya aktif)
+  var btnTetapLihat = document.getElementById('btnTetapLihat');
+  var putarHp = document.getElementById('putarHp');
+  if (btnTetapLihat && putarHp) {
+    btnTetapLihat.addEventListener('click', function () { putarHp.classList.add('tutup'); });
+  }
 })();
 </script>
 </body>
