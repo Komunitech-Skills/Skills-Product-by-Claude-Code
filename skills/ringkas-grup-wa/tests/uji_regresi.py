@@ -231,7 +231,7 @@ class Samarkan(unittest.TestCase):
         self.assertEqual(peta, {"Sari": "Anggota 1", "Budi": "Anggota 2"})
 
     def test_nomor_telepon_disamarkan(self):
-        hasil = p.samarkan_nomor_dalam_teks("hubungi saya di 0812-3456-7890 ya")
+        hasil = p.samarkan_nomor_dalam_teks("hubungi saya di 0812-0000-0002 ya")
         self.assertNotIn("0812", hasil)
         self.assertIn("[nomor disamarkan]", hasil)
 
