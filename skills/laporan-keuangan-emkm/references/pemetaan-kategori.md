@@ -31,7 +31,7 @@ python3 <folder-skill-ini>/scripts/laporan_emkm.py --daftar-kategori
 | `beban_admin_penjualan` | keluar | Beban usaha | admin shopee, biaya layanan, komisi, MDR |
 | `beban_perlengkapan` | keluar | Beban usaha | kemasan, plastik, kardus, ATK, stiker, cup |
 | `beban_perawatan` | keluar | Beban usaha | servis, perbaikan, oli, sparepart |
-| `beban_pajak_lain` | keluar | Beban usaha | PBB, retribusi, pajak kendaraan, meterai |
+| `beban_pajak_lain` | keluar | Beban usaha (pajak daerah) | PB1/PBJT/pajak restoran (+ ditanyakan), PBB, retribusi, pajak kendaraan, meterai |
 | `beban_lain` | keluar | Beban usaha | iuran, keamanan, sampah, langganan aplikasi, asuransi |
 | `beban_keuangan` | keluar | Beban keuangan | bunga pinjaman, admin bank, biaya transfer |
 | `beban_pajak_penghasilan` | keluar | Beban pajak penghasilan | PPh, pajak UMKM, pajak final, "pajak" |
@@ -43,6 +43,7 @@ python3 <folder-skill-ini>/scripts/laporan_emkm.py --daftar-kategori
 | `terima_piutang` | masuk | Piutang turun | piutang, pelunasan bon, bayar tempo, tagihan pelanggan |
 | `aset_tetap` | keluar | Aset tetap naik | mesin, etalase, kulkas, oven, laptop, motor, renovasi |
 | `transfer_internal` | dua arah | Pindah dana antar kas/rekening sendiri | setor tunai, tarik tunai, pindah buku |
+| `piutang_lain` | dua arah | Kasbon karyawan/piutang lain (aset); keluar = kasbon diberikan, masuk = pelunasan/potong kasbon | kasbon, pinjaman karyawan, potong kasbon |
 
 **Kategori baru:** di file pemetaan boleh membuat kode baru berawalan `beban_` (menjadi beban usaha) atau `pendapatan_` (menjadi pendapatan usaha).
 
@@ -55,8 +56,15 @@ python3 <folder-skill-ini>/scripts/laporan_emkm.py --daftar-kategori
 }
 ```
 
+## Prioritas penting
+- Kata kerja pembelian barang dagangan (`kulakan`, `kulak`, `restock`, `stok`, `untuk dijual`, `air mineral`) dicek **sebelum** utilitas, sehingga "kulakan gas melon" = pembelian barang dagangan, bukan beban gas.
+- `iuran`, `keamanan`, `kebersihan`, `sampah` dicek **sebelum** kata `pasar`, sehingga "iuran kebersihan pasar" = beban lain, bukan pembelian bahan.
+- `bpjs` = beban gaji. `kasbon` dicek sebelum kata `pinjaman`.
+
 ## Kasus yang sengaja ditanyakan, bukan ditebak
+- **Angsuran/cicilan pinjaman**: porsi bunga vs pokok (script menanyakan otomatis; jawab dengan `--bunga BARIS=NOMINAL`).
+- **PB1/PBJT**: bila dipungut dari pembeli, itu titipan (bukan beban).
 - "Transfer", "kirim", "ambil ATM" tanpa keterangan lain.
-- "PPN", "zakat" (usaha atau pribadi?), "kasbon" (pinjaman karyawan?).
+- "PPN", "zakat" (usaha atau pribadi?), "arisan", "belanja dapur rumah" (bila tidak jelas pribadi).
 - "Cicilan" motor/HP: script memperlakukannya sebagai pembayaran pinjaman; jika itu barang pribadi → minta pengguna menetapkan `prive`.
 - Pembelian aset kecil (mis. rak Rp 50.000) otomatis masuk aset tetap bila kata kuncinya cocok; jika pengguna ingin langsung dibebankan, tetapkan ke `beban_perlengkapan`.

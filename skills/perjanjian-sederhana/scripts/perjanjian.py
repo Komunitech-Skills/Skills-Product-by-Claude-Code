@@ -8,6 +8,8 @@ Subperintah:
   termin      Jadwal pembayaran bertahap: termin --total "Rp 10.000.000" --persen 30,40,30
   bagihasil   Simulasi nisbah bagi hasil: bagihasil --persen 60,40 --pihak "Pemodal,Pengelola" --contoh "Rp 12.500.000"
   denda       Hitung denda keterlambatan: denda --nilai "Rp 5.000.000" --persen-per-hari 0,1 --hari 30 --maks-persen 5
+  sampai      Tanggal berakhir:           sampai 2026-10-01 --bulan 12   (-> 30 September 2027)
+  retainer    Jadwal bayar bulanan:       retainer --per-bulan "Rp 3.000.000" --bulan 6 --mulai 2026-10-01 --tanggal-bayar 5
   meterai     Kebutuhan bea meterai:      meterai --rangkap 2
   cek         Periksa draf (.md/.txt):    cek draf.md
 
@@ -20,7 +22,7 @@ import json
 import os
 import re
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, ROUND_FLOOR
 
 TARIF_METERAI = 10000          # UU 10/2020 Pasal 5 (berlaku per 2026-09-23)
@@ -176,8 +178,82 @@ def parse_tanggal(teks):
 # ---------------------------------------------------------------------------
 def cmd_terbilang(a):
     v = parse_rupiah(a.nominal)
+    catatan = []
+    if v != v.to_integral_value():
+        catatan.append("Nominal mengandung sen. Jika maksudnya juta/ribu, tulis satuannya (mis. '2,5jt' atau '2,5 juta').")
+    elif 0 < v < 1000:
+        catatan.append("Nominal di bawah Rp 1.000. Pastikan tidak lupa satuan 'rb'/'jt'.")
     return {"nominal": format_nominal(v), "terbilang": terbilang_rupiah(v),
-            "siap_tempel": "{} ({})".format(format_nominal(v), terbilang_rupiah(v))}
+            "siap_tempel": "{} ({})".format(format_nominal(v), terbilang_rupiah(v)), "catatan": catatan}
+
+
+def tambah_bulan(d, n):
+    y, m = divmod(d.month - 1 + n, 12)
+    y += d.year
+    m += 1
+    hari_maks = (date(y + (m // 12), m % 12 + 1, 1) - timedelta(days=1)).day
+    return date(y, m, min(d.day, hari_maks))
+
+
+def tanggal_panjang(d):
+    return "{} {} {}".format(d.day, BULAN[d.month - 1], d.year)
+
+
+def cmd_sampai(a):
+    mulai = parse_tanggal(a.mulai)
+    isi = [x for x in (a.hari, a.bulan, a.tahun) if x is not None]
+    if len(isi) != 1:
+        raise GalatInput("Isi tepat satu: --hari, --bulan, atau --tahun.")
+    n = isi[0]
+    if n <= 0:
+        raise GalatInput("Lama jangka waktu harus lebih dari 0.")
+    if a.hari is not None:
+        akhir, satuan = mulai + timedelta(days=n - 1), "hari"
+    else:
+        bln = n if a.bulan is not None else n * 12
+        target = tambah_bulan(mulai, bln)
+        # jika tanggal dipangkas (mis. 31 Jan + 1 bulan -> 28 Feb), berakhir di akhir bulan itu
+        akhir = target if target.day != mulai.day else target - timedelta(days=1)
+        satuan = "bulan" if a.bulan is not None else "tahun"
+    kalimat = "selama {} ({}) {}, terhitung sejak tanggal {} sampai dengan tanggal {}".format(
+        n, terbilang(n), satuan, tanggal_panjang(mulai), tanggal_panjang(akhir))
+    return {"mulai": mulai.isoformat(), "berakhir": akhir.isoformat(), "berakhir_teks": tanggal_panjang(akhir),
+            "hari_berakhir": HARI[akhir.weekday()], "kalimat": kalimat,
+            "catatan": "Tanggal berakhir = sehari sebelum ulang tanggal mulai (hitungan kalender)."}
+
+
+def cmd_retainer(a):
+    per_bulan = bulat(parse_rupiah(a.per_bulan))
+    if per_bulan <= 0 or a.bulan <= 0:
+        raise GalatInput("--per-bulan dan --bulan harus lebih dari 0.")
+    if a.bulan > 120:
+        raise GalatInput("--bulan maksimal 120.")
+    mulai = parse_tanggal(a.mulai)
+    if mulai.day > 28:
+        raise GalatInput("Untuk retainer, pilih tanggal mulai 1-28 agar periode bulanan tidak tumpang tindih.")
+    if not 1 <= a.tanggal_bayar <= 28:
+        raise GalatInput("--tanggal-bayar harus 1-28 agar ada di setiap bulan.")
+    jadwal = []
+    for i in range(a.bulan):
+        awal = tambah_bulan(mulai, i)
+        nxt = tambah_bulan(mulai, i + 1)
+        akhir = nxt if nxt.day != mulai.day else nxt - timedelta(days=1)
+        if a.bayar == "di-muka":
+            jatuh = awal if a.tanggal_bayar is None else date(awal.year, awal.month, a.tanggal_bayar)
+            if jatuh < awal:
+                jatuh = awal
+        else:
+            nb = tambah_bulan(date(akhir.year, akhir.month, 1), 1) if akhir.day >= a.tanggal_bayar else \
+                date(akhir.year, akhir.month, 1)
+            jatuh = date(nb.year, nb.month, a.tanggal_bayar)
+        jadwal.append({"bulan_ke": i + 1, "periode": "{} s.d. {}".format(tanggal_panjang(awal), tanggal_panjang(akhir)),
+                       "jatuh_tempo": tanggal_panjang(jatuh), "nilai": per_bulan, "nilai_teks": rp(per_bulan)})
+    total = per_bulan * a.bulan
+    return {"per_bulan": per_bulan, "per_bulan_teks": "{} ({})".format(rp(per_bulan), terbilang_rupiah(per_bulan)),
+            "jumlah_bulan": a.bulan, "total": total, "total_teks": "{} ({})".format(rp(total), terbilang_rupiah(total)),
+            "bayar": a.bayar, "jadwal": jadwal,
+            "catatan": "Cocok untuk jasa berulang (admin sosmed, konsultan bulanan). Pastikan pekerjaan tetap mandiri "
+                       "(bukan jam kerja/perintah seperti karyawan)."}
 
 
 def cmd_tanggal(a):
@@ -286,6 +362,8 @@ def cmd_denda(a):
 
 
 def cmd_meterai(a):
+    if a.rangkap is None:
+        a.rangkap = 2 if a.jenis == "perjanjian" else 1
     if a.rangkap < 1:
         raise GalatInput("--rangkap minimal 1.")
     hasil = {"tarif_per_meterai": TARIF_METERAI, "dasar": "UU 10/2020 tentang Bea Meterai (tarif tetap Rp10.000)"}
@@ -323,14 +401,27 @@ PASAL_WAJIB = [
     ("tanda tangan", r"tanda tangan|pihak pertama\s*\n[\s\S]*pihak kedua"),
 ]
 POLA_BAHAYA = [
-    (r"\b(jual beli|hibah|balik nama)\b[^.\n]{0,60}\b(tanah|rumah|bangunan|apartemen|ruko)\b|\bakta jual beli\b|\bppat\b",
-     "Pengalihan hak tanah/bangunan wajib lewat akta PPAT/notaris. Rujuk ke notaris/PPAT."),
-    (r"\b(saham|penyertaan modal|investor|imbal hasil (tetap|pasti)|keuntungan (tetap|pasti)|return pasti)\b",
-     "Unsur investasi/saham/imbal hasil pasti. Rujuk ke pengacara (dan cek aturan OJK bila menghimpun dana)."),
+    (r"\b(jual beli|hibah|balik nama)\b[^.\n]{0,80}\b(tanah|rumah|bangunan|apartemen|ruko|lahan|kavling|kaveling|"
+     r"shm|shgb|sertifikat)\b|\bakta jual beli\b|\bajb\b|\bppat\b|\bppjb\b|pengikatan jual beli|\bkavling\b|\bkaveling\b",
+     "Jual beli/pengikatan jual beli tanah, kavling, atau bangunan wajib lewat notaris/PPAT (PP 24/1997 Ps. 37). "
+     "Rujuk ke notaris/PPAT."),
+    (r"\b(saham|penyertaan modal|investor|investasi|dana investasi)\b(?! pemilik)|"
+     r"\b(imbal hasil|keuntungan|profit|return|bagi hasil|hasil)\s+(tetap|pasti|dijamin|minimal)\b|"
+     r"\b(keuntungan|imbal hasil|profit|bagi hasil|return)\b[^.\n]{0,15}\d+(?:[.,]\d+)?\s?%\s?(per|/|setiap|tiap)\s?"
+     r"(bulan|minggu|tahun|hari)|\bmodal\s+(kembali|balik)\s+(utuh|penuh|100)",
+     "Unsur investasi/imbal hasil tetap atau pasti. Rujuk ke pengacara (dan cek aturan OJK bila menghimpun dana)."),
     (r"\b(warga negara asing|wna|perusahaan asing|luar negeri|foreign|usd|dolar|dollar|sgd)\b",
      "Melibatkan pihak/mata uang asing. Wajib bahasa Indonesia (UU 24/2009 Ps. 31) + dwibahasa; rujuk ke pengacara."),
-    (r"\b(jaminan fidusia|hak tanggungan|gadai|agunan|jaminan sertifikat)\b",
-     "Ada jaminan kebendaan. Perlu akta/pendaftaran khusus; rujuk ke notaris/pengacara."),
+    (r"\b(jaminan fidusia|fidusia|hak tanggungan|gadai|agunan|jaminan sertifikat|bpkb)\b|sebagai jaminan|"
+     r"\bbunga\b[^.\n]{0,20}\d+(?:[.,]\d+)?\s?%|\bpinjam(an)? uang\b|\b(utang|hutang)[ -]piutang\b",
+     "Pinjam-meminjam uang dengan bunga dan/atau jaminan (BPKB, sertifikat, fidusia). Perlu akta/pendaftaran "
+     "khusus dan cermat soal bunga; rujuk ke notaris/pengacara."),
+    (r"\bharga (jual )?(kembali )?(minimum|minimal|terendah)\b|"
+     r"(dilarang|tidak boleh|tidak diperkenankan|wajib tidak)\s+menjual[^.\n]{0,40}(di bawah|lebih (murah|rendah))|"
+     r"menjual dengan harga (tidak kurang dari|minimal|serendah-rendahnya)|banting harga|\bmap\b|"
+     r"minimum advertised price",
+     "Klausul harga jual kembali minimum/larangan banting harga: berisiko melanggar UU 5/1999 Ps. 8 "
+     "(persaingan usaha). Ganti dengan 'harga jual yang disarankan' atau rujuk ke pengacara."),
     (r"\b(perjanjian kerja(?! ?sama)|pkwt|pkwtt|karyawan tetap|karyawan kontrak|pesangon)\b",
      "Unsur perjanjian kerja (ketenagakerjaan). Di luar cakupan skill; rujuk ke konsultan HR/pengacara."),
     (r"\bwaralaba|franchise\b", "Waralaba punya aturan khusus; rujuk ke pengacara."),
@@ -422,8 +513,10 @@ def cmd_cek(a):
     if semua_nilai and max(semua_nilai) >= BATAS_RUJUK_PROFESIONAL:
         rujuk.append("Ada nilai >= {} (patokan skill). Draf hanya bahan diskusi; wajib ditinjau pengacara.".format(
             rp(BATAS_RUJUK_PROFESIONAL)))
+    # catatan peninjauan (> ⚠ TINJAU PENGACARA ...) tidak dihitung sebagai isi perjanjian
+    isi_pasal = "\n".join(b for b in rendah.splitlines() if "tinjau pengacara" not in b)
     for pola, pesan in POLA_BAHAYA:
-        if re.search(pola, rendah):
+        if re.search(pola, isi_pasal):
             rujuk.append(pesan)
     if kosong:
         info.append("{} garis/titik isian (____ atau ........) ditemukan; pastikan memang untuk diisi tangan.".format(kosong))
@@ -437,6 +530,16 @@ def cetak_teks(perintah, h):
     o = []
     if perintah == "terbilang":
         o.append(h["siap_tempel"])
+        o.extend("Catatan: " + c for c in h["catatan"])
+    elif perintah == "sampai":
+        o.append(h["kalimat"])
+        o.append("Berakhir: {}, {}".format(h["hari_berakhir"], h["berakhir_teks"]))
+    elif perintah == "retainer":
+        o.append("Biaya per bulan: {}; {} bulan; total {}".format(h["per_bulan_teks"], h["jumlah_bulan"], h["total_teks"]))
+        for j in h["jadwal"]:
+            o.append("- Bulan ke-{} ({}): {} jatuh tempo {}".format(j["bulan_ke"], j["periode"], j["nilai_teks"],
+                                                                  j["jatuh_tempo"]))
+        o.append(h["catatan"])
     elif perintah == "tanggal":
         o.append(h["kalimat_pembuka"])
     elif perintah == "termin":
@@ -513,14 +616,22 @@ def main(argv=None):
     s.add_argument("--maks-persen"); s.add_argument("--maks")
     s = sub.add_parser("meterai", parents=[induk])
     s.add_argument("--jenis", choices=["perjanjian", "kwitansi"], default="perjanjian")
-    s.add_argument("--rangkap", type=int, default=2); s.add_argument("--nilai")
+    s.add_argument("--rangkap", type=int, help="jumlah rangkap asli (default: 2 untuk perjanjian, 1 untuk kwitansi)")
+    s.add_argument("--nilai")
+    s = sub.add_parser("sampai", parents=[induk]); s.add_argument("mulai")
+    s.add_argument("--hari", type=int); s.add_argument("--bulan", type=int); s.add_argument("--tahun", type=int)
+    s = sub.add_parser("retainer", parents=[induk])
+    s.add_argument("--per-bulan", required=True); s.add_argument("--bulan", type=int, required=True)
+    s.add_argument("--mulai", required=True); s.add_argument("--tanggal-bayar", type=int, default=5)
+    s.add_argument("--bayar", choices=["di-muka", "di-belakang"], default="di-muka")
     s = sub.add_parser("cek", parents=[induk]); s.add_argument("file")
     a = p.parse_args(argv)
     if not a.perintah:
         p.print_help()
         return 2
     fungsi = {"terbilang": cmd_terbilang, "tanggal": cmd_tanggal, "termin": cmd_termin, "bagihasil": cmd_bagihasil,
-              "denda": cmd_denda, "meterai": cmd_meterai, "cek": cmd_cek}[a.perintah]
+              "denda": cmd_denda, "meterai": cmd_meterai, "cek": cmd_cek, "sampai": cmd_sampai,
+              "retainer": cmd_retainer}[a.perintah]
     try:
         h = fungsi(a)
     except GalatInput as e:

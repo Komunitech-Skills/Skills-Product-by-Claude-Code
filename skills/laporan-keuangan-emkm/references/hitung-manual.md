@@ -23,7 +23,9 @@ Beri tahu pengguna: "Script tidak bisa dijalankan, jadi angka ini dihitung manua
    - Modal awal = aset awal − utang awal (jika tidak diberikan)
    - Modal akhir = modal awal + setoran modal + laba bersih − prive
    - **Cek:** total aset − (total liabilitas + modal akhir) harus 0. Jika tidak, tampilkan selisihnya.
-6. Sajikan dengan format output di SKILL.md dan cantumkan asumsi + disclaimer.
+6. **Laporan satu bulan dari catatan beberapa bulan:** kas awal bulan itu = saldo awal catatan + semua uang masuk − uang keluar sebelum tanggal 1 bulan itu. Utang bank, piutang, kasbon, dan aset tetap juga digulirkan dengan transaksi sebelumnya. Modal awal = aset awal − utang awal pada tanggal itu. Stok awal harus ditanyakan per tanggal itu.
+7. **Angsuran pinjaman:** pisahkan bunga (beban keuangan) dari pokok (mengurangi utang). Tanyakan rinciannya ke pengguna bila tidak ada.
+8. Sajikan dengan format output di SKILL.md dan cantumkan asumsi + disclaimer.
 
 ## Contoh angka kecil
 Kas awal Rp 1.000.000; jual Rp 5.000.000; beli bahan Rp 2.000.000; gaji Rp 1.000.000; prive Rp 500.000; stok awal 0, stok akhir Rp 300.000.

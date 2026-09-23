@@ -7,6 +7,8 @@ Default: sewa 1 tahun dibayar penuh di muka; deposit 1 bulan sewa dikembalikan 1
 Peringatan wajib ditampilkan ke pengguna:
 - Jika yang menyewakan BUKAN pemilik di sertifikat → minta surat kuasa/izin pemilik; jika sewa ulang (sublet) → minta izin tertulis pemilik asli.
 - Jika objek harta bersama suami-istri → persetujuan tertulis pasangan pemilik.
+- Kios/los di PASAR, MAL, atau pusat belanja sering berstatus hak pakai/sewa dari pengelola (PD Pasar, pengelola gedung). Orang yang "menyewakan" mungkin hanya pemegang hak pakai: minta bukti hak pakai/kartu kios dan IZIN TERTULIS pengelola untuk menyewakan ulang; cek juga aturan pengelola (jam buka, jenis usaha, iuran). Ganti huruf a latar belakang: "pemegang hak pakai atas kios ... berdasarkan ... dari [pengelola]" dan lampirkan izin pengelola.
+- Tanggal berakhir sewa dihitung dengan: perjanjian.py sampai YYYY-MM-DD --tahun 1 (atau --bulan N).
 - Sewa > 5 tahun, nilai >= Rp500 juta, sewa tanah untuk dibangun penyewa (bangun-guna-serah), atau ada opsi membeli → rujuk pengacara/notaris.
 - Ada ketentuan PPh atas sewa tanah/bangunan; jangan hitung, arahkan ke konsultan pajak/DJP.
 -->

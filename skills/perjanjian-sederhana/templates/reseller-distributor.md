@@ -58,7 +58,7 @@ c. Para Pihak sepakat mengikatkan diri dalam kerja sama reseller dengan ketentua
    c. tidak mengubah kemasan, label, atau merek Produk;
    d. menjaga nama baik merek dan tidak menjual produk tiruan dengan merek yang sama.
 (3) Harga jual kepada konsumen yang disarankan PIHAK PERTAMA adalah sebagaimana tercantum dalam Lampiran 1.
-> ⚠ TINJAU PENGACARA: jika ingin **mewajibkan** harga jual minimum atau memberi wilayah **eksklusif**, konsultasikan dulu. Kewajiban harga jual kembali minimum dapat bertentangan dengan UU 5/1999 tentang larangan praktik monopoli dan persaingan usaha tidak sehat.
+> ⚠ TINJAU PENGACARA: jika ingin **mewajibkan** reseller menjual pada harga tertentu (batas bawah) atau memberi wilayah **eksklusif**, konsultasikan dulu. Kewajiban seperti itu dapat bertentangan dengan UU 5/1999 tentang larangan praktik monopoli dan persaingan usaha tidak sehat.
 
 ## Pasal 4
 ### Harga dan Pembayaran

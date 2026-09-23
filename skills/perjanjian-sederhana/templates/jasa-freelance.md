@@ -5,6 +5,8 @@ PIHAK PERTAMA = klien/pemberi kerja proyek. PIHAK KEDUA = freelancer/penyedia ja
 Info wajib: identitas, lingkup pekerjaan & hasil (deliverables), jadwal/milestone, jumlah revisi, harga & termin, kepemilikan hasil karya (HKI), kota sengketa.
 Default: DP 50% saat tanda tangan, pelunasan 50% saat hasil akhir disetujui; revisi 2 kali; persetujuan dianggap diberikan jika klien tidak menanggapi dalam 5 hari kerja; hak atas hasil akhir beralih ke klien setelah lunas; freelancer boleh menampilkan di portofolio kecuali dilarang.
 Hitung termin dengan: perjanjian.py termin.
+Jasa BERULANG > 1 bulan (retainer: admin sosmed, konsultan, maintenance website): jangan pakai 50/50. Pakai biaya per bulan yang dibayar di muka setiap bulan (default tanggal 5), lingkup per bulan (mis. 12 feed + 8 story), dan pengakhiran dengan pemberitahuan 14–30 hari. Buat jadwal dengan: perjanjian.py retainer --per-bulan ... --bulan ... --mulai YYYY-MM-DD. Ganti Pasal 3 ayat (2) dengan tabel jadwal itu.
+Tanggal berakhir/jatuh tempo dihitung dengan: perjanjian.py sampai YYYY-MM-DD --bulan N.
 Ingatkan pengguna: jika pekerjaan rutin, di bawah perintah, jam kerja tetap, dan dibayar upah bulanan, itu bisa dinilai hubungan kerja (karyawan). Pakai perjanjian kerja dan konsultasikan ke HR/pengacara.
 Pajak atas jasa (PPh 21/23) bisa berlaku bila klien badan usaha; jangan hitung, arahkan ke konsultan pajak.
 -->

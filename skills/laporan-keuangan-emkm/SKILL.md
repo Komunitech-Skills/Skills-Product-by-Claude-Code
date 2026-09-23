@@ -54,18 +54,22 @@ Jika pengguna ingin cepat ("langsung saja"), jalankan dengan default dan tampilk
    Opsi penting (semua nominal boleh format Indonesia: `Rp 1.500.000`, `1,5jt`, `150rb`):
    - Saldo: `--kas-awal --piutang-awal --piutang-akhir --persediaan-awal --persediaan-akhir --aset-tetap-awal --utang-usaha-awal --utang-usaha-akhir --utang-bank-awal --modal-awal --kas-akhir-aktual`
    - Penyusutan: `--umur-aset-tahun 4` (garis lurus) **atau** `--penyusutan "Rp 150.000"`.
-   - Periode: `--periode-awal 2026-01-01 --periode-akhir 2026-03-31`; tren: `--rekap bulan|kuartal|tahun`.
+   - Periode: `--periode-awal 2026-02-01 --periode-akhir 2026-02-28`; tren: `--rekap bulan|kuartal|tahun`.
+     **Laporan satu bulan dari file multi-bulan:** saldo awal yang diberikan (atau baris "saldo awal" di file) dianggap per **awal data file**, lalu script **menggulirkan** kas, piutang, utang, kasbon, aset tetap, dan modal dengan transaksi sebelum periode. Jika pengguna memberi saldo per tanggal awal periode, tambahkan `--saldo-awal-per awal-periode`. Stok awal periode tidak bisa digulirkan, jadi tanyakan stok per tanggal awal periode.
+   - Angsuran pinjaman: `--bunga <baris>=<nominal bunga>` memecah angsuran menjadi pokok (mengurangi utang) + bunga (beban keuangan); `--bunga <baris>=0` = pokok saja.
+   - Selisih kas yang sudah dikonfirmasi pemilik: `--kas-akhir-aktual "Rp ..." --catat-selisih-kas` (dicatat sebagai beban/pendapatan selisih kas).
    - Kolom tidak terdeteksi: `--kolom-tanggal "Tgl" --kolom-masuk "Debet"` dst. Kolom Debit/Kredit wajib ditegaskan (artinya bisa terbalik antara buku kas dan mutasi bank).
    - `--format json` untuk angka mentah; default `teks` (Markdown siap tempel).
-3. **Baca bagian "Perlu dicek".** Jika ada transaksi belum terklasifikasi, tanyakan ke pengguna **dalam satu pesan** (tabel baris + keterangan + nominal, beri pilihan kategori yang masuk akal). Setelah dijawab, jalankan ulang dengan `--tetapkan <baris>=<kode>` (boleh berulang) atau file `--pemetaan` (lihat `templates/pemetaan-kustom.contoh.json`). Daftar kode: `--daftar-kategori`.
-4. **Cek neraca.** Jika output menyatakan TIDAK SEIMBANG, jelaskan selisih dan penyebab yang dilaporkan script; jangan "memaksa" angka agar seimbang.
+3. **Baca bagian "Perlu dicek".** Gabungkan **transaksi belum terklasifikasi** dan **"Pertanyaan untuk pemilik"** (angsuran tanpa rincian bunga, PB1/PBJT, angka mustahil seperti utang/HPP negatif atau kas minus) menjadi **satu pesan** bernomor. Beri pilihan jawaban yang masuk akal. Setelah dijawab, jalankan ulang dengan `--tetapkan <baris>=<kode>`, `--bunga <baris>=<nominal>`, saldo awal yang diperbaiki, atau file `--pemetaan` (lihat `templates/pemetaan-kustom.contoh.json`). Daftar kode: `--daftar-kategori`. Selama status SEMENTARA, jangan sajikan laporan sebagai final.
+4. **Cek neraca.** Jika TIDAK SEIMBANG, jelaskan selisih dan penyebab yang dilaporkan script; jangan "memaksa" angka agar seimbang. Jika selisihnya berasal dari kas nyata vs buku dan pemilik mengonfirmasi (mis. uang hilang/kembalian), tawarkan menjalankan ulang dengan `--catat-selisih-kas`. Tanda ⚠ di cek keseimbangan berarti ada angka mustahil; selesaikan dulu pertanyaannya.
 5. **Sajikan hasil** memakai format output di bawah. Semua angka HARUS dari output script. Lengkapi placeholder `[Lengkapi: ...]` di Catatan jika pengguna sudah memberi infonya.
 6. Periksa checklist sebelum mengirim.
 
 ### Aturan klasifikasi penting (dijalankan script, jelaskan bila ditanya)
 - **Prive** (ambil pribadi, belanja rumah tangga, SPP anak, "gaji pemilik") bukan beban: mengurangi modal, tidak mengurangi laba.
 - **Setoran modal, pinjaman diterima, cicilan pokok, bayar utang pemasok, terima piutang, beli aset tetap, pindah dana antar rekening** bukan pendapatan/beban: hanya mengubah pos neraca.
-- **Bunga pinjaman & biaya bank** = beban keuangan; **PPh** = beban pajak penghasilan (dipisah sesuai SAK EMKM). "PPN" sengaja tidak diklasifikasi otomatis (tanyakan).
+- **Bunga pinjaman & biaya bank** = beban keuangan; **PPh** = beban pajak penghasilan (dipisah sesuai SAK EMKM). "PPN" sengaja tidak diklasifikasi otomatis (tanyakan). **Angsuran/cicilan** selalu ditanyakan porsi bunganya kecuali ada baris bunga di bulan yang sama. **PB1/PBJT** (pajak restoran/hotel) dicatat sebagai pajak daerah dan ditanyakan apakah dipungut dari pembeli.
+- **Kasbon karyawan** = piutang lain-lain (aset), bukan beban; pelunasan/potong kasbon mengurangi piutang itu.
 - Aturan lengkap & kata kunci: `references/pemetaan-kategori.md`.
 
 ### Fallback jika Python tidak bisa dijalankan
@@ -113,13 +117,15 @@ sebesar Rp 5.400.000 (59,9% dari total biaya). ...
 - [ ] Semua angka berasal dari output script (atau hitungan manual yang ditandai jelas).
 - [ ] Format rupiah `Rp 1.250.000`; pengurang dalam kurung.
 - [ ] Prive tidak tercatat sebagai beban; setoran modal/pinjaman tidak tercatat sebagai pendapatan.
-- [ ] Status SEMENTARA dijelaskan + transaksi tak terklasifikasi ditanyakan (bukan ditebak diam-diam).
+- [ ] Status SEMENTARA dijelaskan + transaksi tak terklasifikasi dan "Pertanyaan untuk pemilik" ditanyakan (bukan ditebak diam-diam).
+- [ ] Laporan per bulan dari file multi-bulan: asumsi penggulungan saldo awal ditampilkan, stok awal per tanggal awal periode ditanyakan.
 - [ ] Hasil cek keseimbangan ditampilkan; jika selisih, penyebab dijelaskan.
 - [ ] Asumsi dan disclaimer "bukan laporan audit" tercantum.
 
 ## Batasan & penanganan error
+- Uji regresi script: `python3 <folder-skill-ini>/scripts/uji_regresi.py` (harus "SEMUA UJI LULUS").
 - Script keluar dengan kode ≠ 0 dan pesan `GALAT: ...` berbahasa Indonesia untuk file kosong, tidak ditemukan, Excel/PDF, biner, judul kolom tidak dikenal, atau tidak ada baris valid → sampaikan pesan itu dan langkah perbaikannya.
-- Baris dengan tanggal/nominal tak terbaca tidak dihitung dan dilaporkan nomornya; baris "TOTAL"/"saldo akhir" dilewati; baris "saldo awal" dipakai sebagai kas awal.
+- Baris dengan tanggal/nominal tak terbaca tidak dihitung dan dilaporkan nomornya; baris "TOTAL"/"saldo akhir" dilewati; baris "saldo awal" dipakai sebagai kas awal. Nominal dalam kurung/minus di kolom Keluar dibaca sebagai uang keluar; di kolom Masuk dijadikan baris bermasalah untuk ditanyakan.
 - Dasar akrual didekati dari buku kas + saldo awal/akhir yang diberikan pengguna; akurasi bergantung pada angka stok, piutang, dan utang tersebut.
 - Tidak menghitung pajak terutang, tidak menilai kelayakan kredit, tidak menggantikan akuntan. Dasar aturan & tanggal berlaku: `references/regulasi.md`.
 - Data pengguna diproses lokal; jangan mengirimnya ke layanan lain.

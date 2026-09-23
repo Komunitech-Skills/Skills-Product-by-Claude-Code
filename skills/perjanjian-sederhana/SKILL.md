@@ -53,15 +53,17 @@ Jika pengguna ingin cepat, isi dengan default template, biarkan data pribadi seb
    python3 <folder-skill-ini>/scripts/perjanjian.py termin --total "Rp 7.500.000" --persen 50,50 --nama "Uang muka,Pelunasan"
    python3 <folder-skill-ini>/scripts/perjanjian.py bagihasil --persen 60,40 --pihak "Pemodal,Pengelola" --contoh "Rp 10.000.000"
    python3 <folder-skill-ini>/scripts/perjanjian.py denda --nilai "Rp 5.000.000" --persen-per-hari 0,1 --hari 30 --maks-persen 5
-   python3 <folder-skill-ini>/scripts/perjanjian.py meterai --rangkap 2
+   python3 <folder-skill-ini>/scripts/perjanjian.py sampai 2026-10-01 --bulan 12     # berakhir 30 September 2027
+   python3 <folder-skill-ini>/scripts/perjanjian.py retainer --per-bulan "Rp 3.000.000" --bulan 6 --mulai 2026-10-01
+   python3 <folder-skill-ini>/scripts/perjanjian.py meterai --rangkap 2            # kuitansi: --jenis kwitansi --nilai ...
    ```
    Pembulatan: ke rupiah terdekat (0,5 ke atas). Sisa pembulatan termin/bagi hasil masuk ke baris terakhir agar total tepat.
 4. **Isi template.** Ganti setiap `[[...]]` dengan data pengguna. Data yang belum diketahui biarkan `[[...]]` agar terlihat. Hapus blok PANDUAN AGENT. Pertahankan tanda `> ⚠ TINJAU PENGACARA` pada pasal berisiko. Jangan menambah klaim (halal, BPOM, izin) yang tidak diberikan pengguna. Seimbangkan hak kedua pihak. Jangan membuat pasal yang hanya menguntungkan pengguna secara tidak wajar.
-5. **Periksa draf:** simpan ke file lalu jalankan `python3 <folder-skill-ini>/scripts/perjanjian.py cek draf.md`. Perbaiki semua temuan "Harus diperbaiki" (angka vs terbilang, penomoran pasal, meterai, bagian standar). Temuan "Rujuk profesional" → kembali ke langkah 1.
+5. **Periksa draf:** simpan ke file lalu jalankan `python3 <folder-skill-ini>/scripts/perjanjian.py cek draf.md`. Perbaiki semua temuan "Harus diperbaiki" (angka vs terbilang, penomoran pasal, meterai, bagian standar). Temuan "Rujuk profesional" (tanah/PPJB/kavling, investasi/keuntungan tetap per bulan, pinjaman berbunga/BPKB/jaminan, harga jual kembali minimum, pihak asing, dll.) → kembali ke langkah 1. Uji regresi pemeriksa: `python3 <folder-skill-ini>/scripts/uji_regresi.py`.
 6. **Sajikan** sesuai format output, lalu tawarkan versi .docx/PDF atau penyesuaian pasal.
 
 ### Fallback jika Python tidak bisa dijalankan
-Beri tahu pengguna bahwa angka dihitung manual. Aturan: terbilang ditulis per kelompok tiga digit (triliun, miliar, juta, ribu); "seribu" dan "seratus" untuk angka 1; 11 = "sebelas", 12–19 = "... belas". Termin = total × persen, dibulatkan ke rupiah, termin terakhir = total − jumlah termin lain. Denda = nilai × persen/hari × hari, maksimal batas yang disepakati. Meterai = Rp10.000 × jumlah rangkap asli. Cek kelengkapan pasal dengan daftar di "Checklist" di bawah secara manual.
+Beri tahu pengguna bahwa angka dihitung manual. Tanggal berakhir = sehari sebelum tanggal yang sama pada bulan/tahun berikutnya (mis. 1 Okt 2026 + 12 bulan → 30 Sep 2027). Aturan: terbilang ditulis per kelompok tiga digit (triliun, miliar, juta, ribu); "seribu" dan "seratus" untuk angka 1; 11 = "sebelas", 12–19 = "... belas". Termin = total × persen, dibulatkan ke rupiah, termin terakhir = total − jumlah termin lain. Denda = nilai × persen/hari × hari, maksimal batas yang disepakati. Meterai = Rp10.000 × jumlah rangkap asli. Cek kelengkapan pasal dengan daftar di "Checklist" di bawah secara manual.
 
 ## Format output
 ```
