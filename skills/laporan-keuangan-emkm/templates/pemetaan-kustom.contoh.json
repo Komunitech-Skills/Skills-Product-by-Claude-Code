@@ -1,0 +1,7 @@
+{
+  "_petunjuk": "Tambahkan kata kunci khas usaha Anda. Kunci = kode kategori (lihat --daftar-kategori). Kode baru boleh berawalan beban_ atau pendapatan_.",
+  "pembelian_bahan": ["deterjen", "pewangi", "biji kopi"],
+  "prive": ["kasih ke adik", "arisan keluarga"],
+  "beban_iuran_lingkungan": {"label": "Iuran lingkungan", "kata": ["pak rt", "iuran rt"]},
+  "pendapatan_jasa_antar": {"label": "Pendapatan jasa antar", "kata": ["jasa antar", "ongkir dari pembeli"]}
+}
