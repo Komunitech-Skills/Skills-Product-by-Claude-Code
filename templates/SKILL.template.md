@@ -1,38 +1,48 @@
 ---
-name: id-skill
-description: Satu kalimat tentang apa yang dilakukan skill ini, lalu kapan dipakai. Sertakan kata kunci yang mungkin diketik pengguna (Indonesia & Inggris).
-metadata: {"openclaw": {"emoji": "🧩"}}
+name: nama-skill
+description: <Apa yang dihasilkan> untuk <siapa>. Gunakan saat pengguna <situasi/kata kunci ID>, atau <kata kunci EN>. Satu baris, maks 1024 karakter.
 ---
 
-# Nama Skill
+# <Nama Skill>
 
-Satu paragraf singkat: masalah apa yang diselesaikan skill ini dan untuk siapa.
+## Tujuan
+Satu-dua kalimat: masalah apa yang diselesaikan dan hasil akhirnya.
 
-## Kapan dipakai
+## Kapan digunakan
+- ...
 
-- Situasi 1
-- Situasi 2
+## Kapan TIDAK digunakan
+- ... (arahkan ke apa yang sebaiknya dilakukan)
 
-## Alur kerja
+## Input
+| Info | Wajib? | Default jika tidak diberikan |
+|---|---|---|
+| ... | Ya | — (tanyakan) |
+| ... | Tidak | ... |
 
-1. Langkah pertama (apa yang perlu ditanyakan ke pengguna jika informasi kurang).
-2. Langkah kedua.
-3. Langkah ketiga.
+Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan singkat bernomor.
+Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya di akhir hasil.
+
+## Langkah kerja
+1. ...
+2. ...
+3. Periksa hasil dengan checklist di bawah sebelum dikirim.
 
 ## Format output
-
-Jelaskan atau beri contoh format hasil akhir.
+```
+...
+```
 
 ## Contoh
-
-**Input:** ...
+**Input pengguna:** "..."
 
 **Output:**
 ```
 ...
 ```
 
-## Aturan & batasan
+## Checklist sebelum mengirim hasil
+- [ ] ...
 
-- Hal yang wajib dilakukan.
-- Hal yang tidak boleh dilakukan.
+## Batasan & penanganan error
+- ...

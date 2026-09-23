@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Buat paket ZIP ber-watermark untuk pembeli ecer atau member VIP.
+"""Buat paket ZIP ber-watermark untuk pembeli ecer, bundle, atau member VIP.
 
 Contoh:
   python3 scripts/build.py --pembeli "Budi <budi@contoh.com>" --skill caption-sosmed-umkm
+  python3 scripts/build.py --pembeli "Budi <budi@contoh.com>" --bundle paket-toko-online
   python3 scripts/build.py --pembeli "Member VIP #0123" --vip
+
+Hanya skill berstatus 'rilis' yang dipaketkan (kecuali --izinkan-draft untuk uji coba).
 """
 import argparse
 import csv
 import hashlib
-import json
 import re
 import secrets
 import subprocess
@@ -39,46 +41,66 @@ def slug(teks):
     return re.sub(r"[^a-z0-9]+", "-", teks.lower()).strip("-")[:40] or "pembeli"
 
 
+def gagal(pesan):
+    sys.exit(f"❌ {pesan}")
+
+
+def pilih_skill(a, katalog):
+    if a.vip:
+        return [b for b in katalog.values() if b["status"] not in {"ide", "ditolak", "arsip"}], "VIP"
+
+    if a.bundle:
+        path = ROOT / "bundles" / f"{a.bundle}.txt"
+        if not path.is_file():
+            gagal(f"Bundle '{a.bundle}' tidak ada di bundles/.")
+        nama, jenis = path.read_text(encoding="utf-8").split(), "BUNDLE"
+    else:
+        nama, jenis = list(dict.fromkeys(a.skill)), "ECER"
+
+    hasil = []
+    for n in nama:
+        b = katalog.get(n)
+        if b is None:
+            gagal(f"Skill '{n}' tidak ada di catalog.csv.")
+        if b["status"] in {"ide", "ditolak", "arsip"}:
+            gagal(f"Skill '{n}' berstatus '{b['status']}', tidak bisa dijual.")
+        tier = b["tier_final"]
+        if not tier and not a.izinkan_draft:
+            gagal(f"Skill '{n}' belum punya tier_final dari pemilik.")
+        if tier == "vip":
+            gagal(f"Skill '{n}' eksklusif VIP, tidak dijual ecer/bundle.")
+        hasil.append(b)
+    return hasil, jenis
+
+
 def main():
     p = argparse.ArgumentParser(description="Build paket skill untuk pembeli")
     p.add_argument("--pembeli", required=True, help="Nama/email/ID member pembeli")
     target = p.add_mutually_exclusive_group(required=True)
-    target.add_argument("--skill", action="append", help="ID skill (paket ecer), bisa diulang")
+    target.add_argument("--skill", action="append", help="Nama skill (paket ecer), bisa diulang")
+    target.add_argument("--bundle", help="Nama bundle di bundles/<nama>.txt")
     target.add_argument("--vip", action="store_true", help="Semua skill (paket VIP)")
     p.add_argument("--izinkan-draft", action="store_true",
-                   help="Ikutkan skill berstatus draft (hanya untuk uji coba)")
+                   help="Ikutkan skill yang belum 'rilis' / belum ada tier_final (HANYA untuk uji coba)")
     a = p.parse_args()
 
     # Validasi dulu supaya paket yang terkirim selalu bersih
     if subprocess.run([sys.executable, str(ROOT / "scripts" / "validate.py")]).returncode != 0:
-        sys.exit("Build dibatalkan: perbaiki masalah validasi dulu.")
+        gagal("Build dibatalkan: perbaiki masalah validasi dulu.")
 
-    katalog = {s["id"]: s for s in json.loads((ROOT / "catalog.json").read_text("utf-8"))["skills"]}
+    with (ROOT / "catalog.csv").open(newline="", encoding="utf-8") as f:
+        katalog = {b["nama"]: b for b in csv.DictReader(f)}
 
-    if a.vip:
-        pilihan = [s for s in katalog.values() if s["status"] != "arsip"]
-        jenis = "VIP"
-    else:
-        pilihan = []
-        for sid in dict.fromkeys(a.skill):
-            if sid not in katalog:
-                sys.exit(f"Skill '{sid}' tidak ada di katalog.")
-            if not katalog[sid]["tersedia_ecer"]:
-                sys.exit(f"Skill '{sid}' tidak dijual ecer (khusus VIP).")
-            if katalog[sid]["status"] == "arsip":
-                sys.exit(f"Skill '{sid}' sudah diarsipkan.")
-            pilihan.append(katalog[sid])
-        jenis = "ECER"
-
-    draft = [s["id"] for s in pilihan if s["status"] == "draft"]
-    if draft and not a.izinkan_draft:
+    pilihan, jenis = pilih_skill(a, katalog)
+    belum_rilis = [b["nama"] for b in pilihan if b["status"] != "rilis"]
+    if belum_rilis and not a.izinkan_draft:
         if a.vip:
-            print(f"ℹ️  Skill draft dilewati: {', '.join(draft)}")
-            pilihan = [s for s in pilihan if s["status"] != "draft"]
+            print(f"ℹ️  Dilewati (belum rilis): {', '.join(belum_rilis)}")
+            pilihan = [b for b in pilihan if b["status"] == "rilis"]
         else:
-            sys.exit(f"Skill masih draft: {', '.join(draft)}. Pakai --izinkan-draft untuk uji coba.")
+            gagal(f"Belum rilis: {', '.join(belum_rilis)}. Pakai --izinkan-draft untuk uji coba.")
     if not pilihan:
-        sys.exit("Tidak ada skill untuk dipaketkan.")
+        gagal("Tidak ada skill untuk dipaketkan.")
 
     waktu = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     kode = buat_kode_lisensi(a.pembeli, waktu)
@@ -86,22 +108,26 @@ def main():
                  f"Dilarang menyebarluaskan. -->")
 
     DIST.mkdir(exist_ok=True)
-    nama_zip = f"komunitech-{jenis.lower()}-{slug(a.pembeli)}-{kode[4:].replace('-', '').lower()}.zip"
+    label = a.bundle if a.bundle else jenis.lower()
+    nama_zip = f"komunitech-{label}-{slug(a.pembeli)}-{kode[4:].replace('-', '').lower()}.zip"
     path_zip = DIST / nama_zip
     lisensi = (ROOT / "LICENSE").read_text("utf-8")
+    instalasi = ROOT / "docs" / "instalasi.md"
 
     with zipfile.ZipFile(path_zip, "w", zipfile.ZIP_DEFLATED) as z:
-        for s in pilihan:
-            folder = ROOT / "skills" / s["id"]
+        for b in pilihan:
+            folder = ROOT / "skills" / b["nama"]
             for f in sorted(folder.rglob("*")):
                 if not f.is_file() or DIABAIKAN & set(f.relative_to(folder).parts):
                     continue
-                arc = f"{s['id']}/{f.relative_to(folder).as_posix()}"
-                if f.name == "SKILL.md":
+                arc = f"{b['nama']}/{f.relative_to(folder).as_posix()}"
+                if f.name == "SKILL.md" and f.parent == folder:
                     z.writestr(arc, sisipkan_watermark(f.read_text("utf-8"), watermark))
                 else:
                     z.write(f, arc)
-        daftar = "\n".join(f"  - {s['id']} v{s['versi']}" for s in pilihan)
+        if instalasi.is_file():
+            z.write(instalasi, "CARA-INSTAL.md")
+        daftar = "\n".join(f"  - {b['nama']} v{b['versi']}" for b in pilihan)
         z.writestr("LISENSI.txt",
                    f"Kode lisensi : {kode}\nPemegang     : {a.pembeli}\nJenis        : {jenis}\n"
                    f"Tanggal      : {waktu}\nSkill:\n{daftar}\n\n{'=' * 60}\n\n{lisensi}")
@@ -113,12 +139,12 @@ def main():
         w = csv.writer(f)
         if baru:
             w.writerow(["kode", "pembeli", "jenis", "waktu", "skill", "file"])
-        w.writerow([kode, a.pembeli, jenis, waktu,
-                    ";".join(f"{s['id']}@{s['versi']}" for s in pilihan), nama_zip])
+        w.writerow([kode, a.pembeli, label, waktu,
+                    ";".join(f"{b['nama']}@{b['versi']}" for b in pilihan), nama_zip])
 
     print(f"✅ Paket {jenis} dibuat: {path_zip.relative_to(ROOT)}")
     print(f"   Kode lisensi: {kode}")
-    print(f"   Skill: {', '.join(s['id'] for s in pilihan)}")
+    print(f"   Skill: {', '.join(b['nama'] for b in pilihan)}")
 
 
 if __name__ == "__main__":

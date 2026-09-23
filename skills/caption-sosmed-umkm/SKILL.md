@@ -1,7 +1,6 @@
 ---
 name: caption-sosmed-umkm
 description: Membuat caption media sosial (Instagram, TikTok, Facebook, WhatsApp Status) berbahasa Indonesia untuk produk UMKM, lengkap dengan hook, CTA, dan hashtag. Gunakan saat pengguna minta caption, copywriting, teks promosi, atau konten jualan (social media caption, product post, promo copy).
-metadata: {"openclaw": {"emoji": "📣"}}
 ---
 
 # Caption Sosmed UMKM
