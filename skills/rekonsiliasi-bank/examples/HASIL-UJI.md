@@ -1,46 +1,72 @@
-# HASIL UJI — rekonsiliasi-bank
+# HASIL UJI — rekonsiliasi-bank v1.1.0 (uji ulang)
 
 - **Tanggal:** 2026-09-23
 - **Penguji:** agent penguji independen (simulasi, Claude Code)
-- **Folder kerja uji:** `/tmp/uji-rekonsiliasi-bank/` (data fiktif bergaya BCA, Mandiri, BRI)
-- **Script dijalankan:** ya (`deteksi`, `cocokkan` JSON/teks/CSV, arah masuk & keluar, data rusak/tepi)
-- **Verifikasi angka independen:** ya — `verif_bca.py` (parser terpisah) + hitung manual untuk Mandiri & BRI.
+- **Versi diuji:** v1.1.0 (commit `8d7f613`). Uji sebelumnya: v1.0.0, skor 6, REVISI.
+- **Folder kerja uji:** `/tmp/uji-rekonsiliasi-bank/`. Data fiktif bergaya BCA, Mandiri, dan BRI, ditambah data berisik baru.
+- **Script dijalankan:** ya.
+  - Skenario: S1 BCA, S2 Mandiri (1 dan 2 kolom keterangan), BRI masuk + `--toleransi-nominal 200`, BRI keluar.
+  - Data berisik: ref numerik "105", nama mirip, nominal sama beda orang, gabungan, termin 3×.
+  - Kasus tepi: file kosong, .xlsx, nominal 0/kosong, masking nomor bertanda hubung.
+- **Verifikasi independen:** ya. `verif_bca.py` (parser terpisah) dan `verif_v110.py` (kunci jawaban pasangan + rincian selisih):
+  - S1: 11/11 pasangan benar, rincian **+Rp 600.000 − Rp 662.346 + Rp 2.006.500 = Rp 1.944.154** ✔
+  - S2: 8/8 pasangan benar, rincian +1.750.001 − 8.123 + 12.350 ✔
+  - BRI keluar: rincian +1.350.000 − 1.005.500 + 6.500 ✔
+  - Data berisik: 5/9 pasangan sesuai kunci (lihat `06-data-berisik-nama-mirip.md`)
+- **Audit keamanan:** hanya library standar. Tidak ada jaringan atau subprocess. Satu-satunya file yang ditulis adalah `--output-csv`, dan masking nomor rekening kini juga menangani format bertanda hubung/spasi.
+
+## Status perbaikan cacat v1.0.0
+| # | Cacat v1.0.0 | Status v1.1.0 |
+|---|---|---|
+| 1 (berat) | Salah pasang karena nama diabaikan (Dewi↔Hendra, Fajar↔Yulia) | ✅ Diperbaiki. Pencocokan berpetunjuk nama didahulukan, ada `konflik()`, dan label KEMUNGKINAN TERTUKAR |
+| 2 | Substring nama ("andi"→"ANDIKA"), ref "105" di dalam nominal | ✅ Diperbaiki (kata utuh, ref angka ≥ 4 digit) |
+| 3 | Tahap 2e tanpa batas nominal | ✅ Diperbaiki (bank ≤ catatan atau selisih ≤ 50%) |
+| 4 | `--toleransi-nominal` membuat tidak seimbang | ✅ Diperbaiki (`dari_selisih_dalam_toleransi_cocok`) |
+| 5 | Header ganda saling menimpa | ✅ Diperbaiki (`Description_2`, `--bank-keterangan` bisa diulang). Lihat sisa #B |
+| 6 | Alasan tidak mengikuti `--arah` | ✅ Diperbaiki |
+| 7–11 (ringan) | PEND digabung; deteksi saldo/Supplier; masking bertanda hubung; alasan QRIS; "ganti PIN" | ✅ PEND terpisah; deteksi saldo & Supplier; masking; alasan QRIS. (#11 tidak dicek ulang) |
 
 ## Skor
 | Kriteria | Skor (1–10) | Catatan |
 |---|---:|---|
-| Pemicu (description tepat) | 9 | Jelas, sebut bank-bank, sinonim ID/EN, batas "bukan rekap omzet" |
-| Kemudahan awam | 8 | Konfirmasi kolom 1 pesan; boleh pakai tebakan bila pengguna minta cepat |
-| Kualitas output | 7 | Format 4 kelompok + tindakan sangat baik; alasan script kadang menyesatkan (QRIS "bayar sebagian", arah keluar "bukan penjualan") |
-| Akurasi (angka/fakta) | 5 | Total & selisih selalu benar; **pengelompokan salah** pada data realistis (lihat cacat berat) |
-| Penanganan input kurang | 9 | Bertanya sekali, 5 pertanyaan, default disebut |
-| Penanganan di luar cakupan | 9 | Tolak kredensial, arahkan ke unduh CSV & skill lain |
-| Keamanan | 9 | Tanpa jaringan/subprocess/penghapusan file; hanya tulis `--output-csv`; masking ≥ 8 digit |
-| **SKOR AKHIR** | **6** | Dibatasi cacat berat: pasangan salah (termasuk yang berlabel ✅ COCOK) mengubah tindakan pengguna |
+| Pemicu (description tepat) | 9 | Tetap tepat |
+| Kemudahan awam | 8 | Konfirmasi kolom 1 pesan. Untuk file kolom ganda, agent harus tahu menambahkan `Description_2` |
+| Kualitas output | 8 | Alasan per arah/QRIS sudah tepat; peringatan "seimbang ≠ semua pasangan benar" |
+| Akurasi (angka/fakta) | 7 | Total & selisih selalu benar. S1/S2/BRI pasangan benar. Masih ada kasus nama depan sama yang tertukar |
+| Penanganan input kurang | 9 | Tidak berubah (contoh 04) |
+| Penanganan di luar cakupan | 9 | Tidak berubah (contoh 05) |
+| Keamanan | 9 | Tetap aman; masking diperluas |
+| **SKOR AKHIR** | **7** | |
 
-**Status: REVISI**
+**Status: LULUS (7).** Batas bawah kelulusan. Cacat sedang di bawah sebaiknya diperbaiki sebelum rilis ke pembeli.
 
-## Cacat
+- Uji A/B ulang: skill sekarang **jelas lebih baik** (`00-pembanding-tanpa-skill.md`).
+- Banding pesaing: tetap menang (`00-banding-pesaing.md`).
+
+## Cacat tersisa
 ### Berat
-1. **Salah pasang karena nama diabaikan pada tahap awal** (`scripts/rekonsiliasi.py` fungsi `cocokkan`, tahap 1 baris 483–498 dan tahap 2a baris 503–513). Bukti: S1 — INV-106 Dewi dipasangkan ke transfer "HENDRA WIJAYA" Rp 1 jt (+6 hari), transfer Dewi Rp 993.500 jadi "tidak ada di catatan", INV-107 Hendra jadi "belum dibayar" (tagih 3 jt penuh, padahal sudah bayar 1 jt). S2 — transfer "FAJAR NUGROHO" diberi ✅ COCOK ke invoice **Yulia** (tanggal sama). Penjelasan selisih script (+3,6 jt − 1,66 jt + 0) berbeda dari yang benar (+0,6 jt − 0,66 jt + 2,0 jt); tanda "seimbang ✔" tetap muncul karena seimbang secara konstruksi.
-   **Saran:** (a) buat fungsi `konflik_nama(c, b)` = keterangan bank memuat nama/ref catatan *lain* yang masih terbuka tetapi tidak memuat milik `c`; pada tahap 1 turunkan ke PARSIAL "nama berbeda", pada 2a lewati kandidat itu; (b) jalankan pasangan berpetunjuk nama (2d/2e dengan `petunjuk_teks`) **sebelum** 2a tanpa petunjuk; (c) di SKILL.md langkah 5 tambahkan: "periksa setiap COCOK/PARSIAL yang nama di catatan berbeda dengan nama di keterangan bank; laporkan sebagai 'kemungkinan tertukar'"; (d) ubah teks "seimbang ✔" agar tidak dibaca sebagai bukti pengelompokan benar.
+- Tidak ada. Pada data S1/S2/BRI semua pasangan benar.
 
 ### Sedang
-2. **`petunjuk_teks` memakai substring** (baris 452–462): "andi" cocok dengan "ANDIKA" (S1: INV-112 ✅ COCOK "nama ada di keterangan" ke Andika Pratama); no. invoice numerik "105" cocok di dalam angka nominal "1050000.00" pada keterangan BCA → tahap 2e memberi PARSIAL "nama/no. invoice cocok" ke transfer orang lain Rp 1.050.000 untuk invoice Rp 300.000 (uji `noise-*.csv`). **Saran:** cocokkan per kata utuh (`\b`), ref numerik hanya bila dikelilingi non-digit dan ≥ 4 karakter atau berawalan huruf; abaikan deret angka yang sama dengan nominal.
-3. **Tahap 2e tanpa batas nominal** (baris 567–579): nama cocok → PARSIAL berapa pun selisihnya (bank bisa 3,5× catatan). **Saran:** batasi `b.nominal <= c.nominal` (bayar sebagian) atau selisih ≤ 50%, sisanya biarkan tak cocok.
-4. **`--toleransi-nominal` > 0 membuat `cek_rumus_seimbang` = false** (baris 647–655: selisih kelompok COCOK tidak ikut dijumlah). Uji BRI dengan `--toleransi-nominal 200` → false. **Saran:** jumlahkan selisih semua kelompok berpasangan (COCOK + PARSIAL), atau pindahkan pasangan beda nominal ke PARSIAL.
-5. **Kolom header ganda** (mis. dua "Description" gaya Mandiri) — `baca_tabel` baris 267 menimpa kolom pertama; "BUNGA JASA GIRO" hilang sehingga bunga tidak dikenali. **Saran:** ganti nama duplikat jadi "Description_2" dan izinkan `--bank-keterangan` beberapa kolom (digabung).
-6. **Teks alasan tidak mengikuti `--arah keluar`** (baris 564–565, 581–590): "bukan penjualan", "pemasukan lain", "potongan biaya transfer". **Saran:** kamus alasan per arah.
+A. **Nama depan sama → pasangan tertukar berlabel ✅ COCOK "nama ada di keterangan bank"** (`scripts/rekonsiliasi.py` `cocok_nama` baris 524–530, tahap 0 baris 588–598).
+   - Bukti di `06`: invoice Andi Wijaya ↔ transfer ANDI SAPUTRA, dan sebaliknya.
+   - Varian `andi-cat2.csv`: hanya ANDI SAPUTRA yang transfer, tetapi invoice Andi Wijaya yang ✅ COCOK, sementara Andi Saputra tercatat "belum dibayar". Akibatnya orang yang salah bisa ditagih.
+   - Saran: beri skor kecocokan = jumlah kata nama yang cocok (atau proporsinya), dan urutkan kandidat tahap 0 (serta 2b–2e) berdasarkan skor tertinggi dulu.
+   - Saran: bila ada catatan lain dengan skor lebih tinggi untuk transaksi bank yang sama, perlakukan sebagai `konflik()`. Bila hanya sebagian kata yang cocok dan ada kata lain yang berbeda, turunkan ke PARSIAL "nama sebagian cocok".
+B. **`deteksi` tidak menyarankan `Description_2`** sebagai kolom keterangan kedua pada file bergaya Mandiri (hanya "Description", yang isinya "TRANSFER DARI").
+   - Agent yang mengikuti saran deteksi mendapat rincian yang salah (+2,75 jt −0,996 jt +0), QRIS tidak terpasang, dan 4 COCOK "nama tidak terlihat".
+   - Saran: di `cmd_deteksi`, masukkan semua kolom dengan kata kunci keterangan (termasuk akhiran `_2`) ke `kolom_terdeteksi["keterangan"]` sebagai daftar. Bila isi kolom pertama nyaris seragam ("TRANSFER DARI"), sarankan kolom lain.
+C. **"Nama tidak terlihat" tetap berstatus COCOK dan ikut dihitung di baris ✅** (tahap 1, baris 600–610). Contoh: S1 INV-113 ↔ ANDIKA, `06` Rudi ↔ SURYA KENCANA.
+   - SKILL.md langkah 5 melarang memberi ✅ untuk pasangan seperti ini, tetapi angka ringkasan `per_status.COCOK` tetap memasukkannya, sehingga tabel ✅ tidak konsisten dengan daftar yang pasti.
+   - Saran: bila catatan punya nama dan keterangan bank memuat nama orang (ada kata huruf ≥ 3 selain kata umum/perbankan) yang tidak cocok, masukkan ke PARSIAL "pengirim berbeda — cek". Pertahankan COCOK hanya bila keterangan memang tidak memuat nama (mis. "SETORAN", "QRIS").
 
 ### Ringan
-7. PEND digabung dengan baris ringkasan saldo di `dilewati` (baris 377) padahal checklist meminta PEND disampaikan — hitung terpisah dan tampilkan keterangan PEND (disamarkan) sebagai "tertunda, cek periode berikut".
-8. `deteksi` memetakan "nominal" ke `SALDO_AKHIR_MUTASI` pada format BRI dan tidak mengenali "Supplier/Vendor/Pemasok" sebagai kolom nama (`KATA_CATAT["nama"]`).
-9. Masking hanya deret ≥ 8 digit berurutan; nomor bertanda hubung ("0021-01-000123-50-9") atau berspasi tidak disamarkan. Tambah pola `(\d[\s-]?){8,}`.
-10. Alasan PARSIAL untuk settlement QRIS berbunyi "kemungkinan baru bayar sebagian"; kenali kata "QRIS/SETTLEMENT/EDC/MDR" → "dipotong biaya merchant".
-11. SKILL.md bagian privasi: tambahkan "bila pengguna sudah menempel PIN/password, sarankan segera ganti".
+D. Nama yang seluruhnya kata umum ("CV Maju Jaya") dianggap cocok dengan "PT JAYA MAJU MOTOR" (`kata_nama_umum`, baris 498–500). Pertimbangkan membedakan CV/PT atau mensyaratkan urutan kata yang sama.
+E. Kombinasi cicilan untuk transaksi yang namanya cocok (tahap 2c) hanya memakai jendela `--maks-hari-parsial` (14 hari), bukan `--maks-hari-nama` (31 hari). Contoh: cicilan ke-3 Bambang (hari ke-15) tidak terkumpul. Saran: pakai `maks_nama` bila semua transfer dalam kombinasi berpetunjuk nama.
+F. COCOK dalam toleransi nominal (`--toleransi-nominal 200`) beralasan "nominal sama" padahal beda Rp 100. Sebutkan "beda Rp 100 (dalam toleransi)".
 
 ## Yang sudah bagus
-- Parser tangguh: baris info rekening, `'02/09` + tahun dari "Periode", kolom CR/DB tanpa judul, PEND, ringkasan saldo, `1,500,000.00` / `1.500.000,00` / `Rp 1.500.000` / `"1.750.000,50"`, file kosong, .xlsx, kolom hilang, nominal 0/kosong → pesan error JSON yang jelas.
-- Gabungan (2 invoice 1 transfer) dan terpecah (1 invoice 2 transfer) terdeteksi benar di BCA & BRI; potong biaya terdeteksi bila tidak didahului tahap 2a.
-- Totals & selisih semua skenario cocok dengan verifikasi independen.
-- Uji A/B: lebih baik dari agent tanpa skill secara keseluruhan (angka total benar, tunai/PEND ditangani, privasi); banding pesaing: menang atas PythonMuse `bank-reconciliation`.
+- Parser tetap tangguh untuk BCA/Mandiri/BRI, PEND dilaporkan terpisah, dan kesalahan input dijelaskan dengan pesan yang jelas.
+- Nama kata utuh bekerja: Heru ≠ Hermawan, Andi ≠ ANDIKA, ref "105" tidak cocok ke nominal 1.050.000.
+- Pembayaran gabungan, termin, potong biaya, bayar sebagian, dan telat bayar (sampai 31 hari bila nama cocok) terdeteksi dengan benar.
+- Rincian selisih kini mencakup selisih dalam toleransi, dan `catatan_seimbang` mencegah salah tafsir "seimbang ✔".

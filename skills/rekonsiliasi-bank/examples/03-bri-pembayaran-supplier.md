@@ -1,4 +1,4 @@
-# 03 — Cocokkan pembayaran supplier di mutasi BRI (arah keluar)
+# 03 — Cocokkan pembayaran supplier di mutasi BRI (arah keluar) — uji ulang v1.1.0
 
 **Skenario:** S3 — permintaan normal, variasi arah uang keluar. Ekspor bergaya BRI (`TGL_TRAN, DESK_TRAN, MUTASI_DEBET, MUTASI_KREDIT, SALDO_AKHIR_MUTASI`, tanggal+jam, info rekening di atas) vs daftar pembelian. Semua fiktif.
 
@@ -10,7 +10,7 @@
 > 🔒 Data rekening hanya dibaca di komputer ini; jangan tempel PIN/OTP. Hapus data sensitif sebelum membagikan hasil.
 
 Konfirmasi kolom:
-> Mutasi (**mirip BRI**, tebakan): tanggal = "TGL_TRAN", keterangan = "DESK_TRAN", uang keluar = "MUTASI_DEBET", uang masuk = "MUTASI_KREDIT" (kolom saldo tidak dipakai). Catatan pembelian: tanggal = "Tanggal", nominal = "Jumlah", faktur = "No Faktur", dan nama supplier = "Supplier" (kolom ini tidak terdeteksi otomatis — saya pakai). Saya cocokkan **uang keluar** (`--arah keluar`). Benar?
+> Mutasi (**mirip BRI**, tebakan): tanggal = "TGL_TRAN", keterangan = "DESK_TRAN", uang keluar = "MUTASI_DEBET", uang masuk = "MUTASI_KREDIT", saldo = "SALDO_AKHIR_MUTASI" (tidak dipakai). Catatan pembelian: tanggal = "Tanggal", nominal = "Jumlah", faktur = "No Faktur", nama supplier = "Supplier". Saya cocokkan **uang keluar** (`--arah keluar`). Benar?
 
 Pengguna: "betul".
 
@@ -45,14 +45,20 @@ Total catatan pembelian: **Rp 20.565.000** · Total uang keluar bank: **Rp 20.21
 | Catatan | Bank | Selisih | Alasan |
 |---|---|---:|---|
 | PB-03 CV Kemasan Jaya Rp 5.500.000 | 09/10 + 16/10 @ Rp 2.750.000 | Rp 0 | Dibayar 2 kali (termin) |
-| PB-04 PT Gula Manis Rp 8.000.000 | 20/10 Rp 7.993.500 | Rp 6.500 | Dibayar kurang Rp 6.500 — cek apakah ada potongan/diskon atau kekurangan bayar ke supplier |
+| PB-04 PT Gula Manis Rp 8.000.000 | 20/10 Rp 7.993.500 | Rp 6.500 | Bank lebih kecil: kemungkinan biaya transfer, diskon/potongan supplier, atau salah ketik; pastikan tidak ada kekurangan bayar |
 
 ✅ Cocok: PB-01 UD Sumber Pangan (02/10, nama ada di berita), PB-02 PLN (BRIVA, +1 hari).
 Dilewati: 1 baris "SALDO AWAL" (nominal kosong); 1 transaksi uang masuk diabaikan (arah = keluar).
 
 Catatan: nomor rekening di keterangan disamarkan (`****9991`). Hapus file mutasi & hasil setelah selesai.
 
-## Catatan penguji
-- ✅ Mode `--arah keluar` bekerja; termin 2× dan beda tipis terdeteksi; totals diverifikasi manual: pembelian 4.500.000+1.215.000+5.500.000+8.000.000+1.350.000 = 20.565.000; debet 4.500.000+1.215.000+2.750.000×2+7.993.500+1.000.000+5.500 = 20.214.000; 1.350.000 − 1.005.500 + 6.500 = 351.000 ✔. Angka format `"4.500.000,00"` terbaca benar.
-- ⚠ Teks alasan script tetap berorientasi penjualan pada arah keluar ("bukan penjualan", "pemasukan lain", "potongan biaya transfer ... bank lebih kecil") — agent harus menerjemahkan manual. Perbaiki: alasan bergantung `--arah`.
-- ⚠ `deteksi` memetakan "nominal" ke `SALDO_AKHIR_MUTASI` (salah, meski tak dipakai karena debet/kredit terpisah) dan tidak mengenali "Supplier" sebagai kolom nama (tambah "supplier", "vendor", "pemasok" ke `KATA_CATAT["nama"]`).
+## Catatan penguji (v1.1.0)
+- ✅ Hasil v1.1.0 identik dengan v1.0.0 untuk pengelompokan dan angka:
+  - Pembelian: 4.500.000 + 1.215.000 + 5.500.000 + 8.000.000 + 1.350.000 = 20.565.000
+  - Debet bank: 4.500.000 + 1.215.000 + 2.750.000×2 + 7.993.500 + 1.000.000 + 5.500 = 20.214.000
+  - Rincian: 1.350.000 − 1.005.500 + 6.500 = 351.000 ✔
+- ✅ Diperbaiki di v1.1.0:
+  - Teks alasan sekarang mengikuti `--arah keluar` ("tidak ada di catatan pembelian (pengeluaran lain … keperluan pribadi)", "bukan pembayaran ke supplier", "diskon/potongan supplier").
+  - `deteksi` kini mengenali kolom "Supplier" sebagai nama.
+  - "SALDO_AKHIR_MUTASI" dipetakan sebagai saldo, bukan nominal.
+- ✅ Termin 2× (CV Kemasan Jaya) dan beda tipis terdeteksi.

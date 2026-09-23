@@ -40,11 +40,11 @@ Mengikuti langkahnya secara harfiah: langkah 1–2 meminta konfirmasi "Use Case 
 |---|---|---|
 | Kualitas output | Format audit GL; butuh saldo buku besar yang tidak dimiliki UMKM | 4 kelompok + penjelasan selisih seimbang + tindakan |
 | Kesesuaian konteks Indonesia | Rendah (USD, GL, sign-off controller; tak kenal CR/DB, PEND, `'02/09`) | Tinggi (BCA/Mandiri/BRI, format angka, QRIS, tagih-piutang) |
-| Akurasi | Tergantung agent; tanpa script | Total & selisih akurat; ada cacat salah pasang (lihat 01/02) |
+| Akurasi | Tergantung agent; tanpa script | v1.1.0: total, selisih & pasangan S1/S2 benar; sisa kasus nama depan sama (lihat 06) |
 | Siap pakai | Rendah untuk awam (berhenti minta approval UC-001) | Tinggi |
-| **Skor** | 4/10 | 7/10 (sebelum perbaikan salah pasang) |
+| **Skor** | 4/10 | 8/10 (v1.1.0) |
 
-**Skill kita menang** secara keseluruhan.
+**Skill kita menang** secara keseluruhan (dinilai ulang untuk v1.1.0 pada 2026-09-23; pesaing tidak diubah).
 
 ## Yang bisa dipelajari dari pesaing (ide, bukan salinan)
 - Membedakan **timing difference** (akan beres periode depan, mis. PEND/transfer akhir bulan) vs **exception** sejati — label ini berguna untuk pengguna awam ("tunggu" vs "selidiki").
