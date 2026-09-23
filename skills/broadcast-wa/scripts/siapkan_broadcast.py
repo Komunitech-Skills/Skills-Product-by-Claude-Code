@@ -40,11 +40,20 @@ KOLOM_SETUJU = ["persetujuan", "setuju", "izin", "opt-in", "optin", "opt in", "c
                 "setuju broadcast", "boleh dihubungi"]
 KOLOM_BERHENTI = ["berhenti", "opt-out", "optout", "opt out", "stop", "unsubscribe", "tolak"]
 YA = {"ya", "y", "iya", "yes", "setuju", "1", "true", "opt-in", "optin", "ok", "oke", "sudah", "v", "✓", "bersedia", "boleh"}
+# Teks berhenti WAJIB berupa instruksi tindakan: balas/ketik/kirim + STOP/BERHENTI (atau setara).
+# Frasa seperti "tidak mau dapat diskon" atau "untuk berhenti pusing" tidak dihitung.
 POLA_OPTOUT = re.compile(
-    r"\b(?:balas|ketik|kirim|reply)\s+[\"'“‘]?(?:stop|berhenti|unreg)\b|tidak\s+(?:ingin|mau)\s+(?:menerima|dapat)"
-    r"|\buntuk\s+berhenti\b|\bunsubscribe\b", re.IGNORECASE)
+    r"\b(?:balas|ketik|kirim|reply|send)\s+(?:kata\s+|pesan\s+|dengan\s+)?[\"'“‘*_]?"
+    r"(?:stop|berhenti|unreg|unsubscribe|batal\s+langganan)\b", re.IGNORECASE)
 # Isi kolom Berhenti yang berarti "TIDAK berhenti". Isi lain yang tidak kosong (ya, STOP, x, tanggal, ...) = berhenti.
 BUKAN_BERHENTI = {"tidak", "tdk", "no", "n", "0", "-", "false", "belum", "aktif", "nggak", "gak", "enggak"}
+# Nilai baku untuk laporan: nilai lain tetap diperlakukan AMAN (tidak dikirimi) tetapi dilaporkan sebagai "tidak baku".
+TIDAK_SETUJU_BAKU = {"", "tidak", "tdk", "no", "n", "0", "-", "false", "belum", "nggak", "gak", "enggak", "tolak"}
+BERHENTI_BAKU = {"ya", "y", "iya", "yes", "1", "true", "stop", "berhenti", "x", "v", "✓", "unsubscribe", "unsub", "unreg", "opt-out", "optout"}
+POLA_TANGGAL = re.compile(r"(?<![\d\-./])(?:\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}(?:[-/.]\d{2,4})?)(?![\d\-./])")
+GELAR_BELAKANG = {"se", "st", "sh"}  # hanya dibuang bila di belakang nama (mis. "Andi, S.E."), bukan di depan
+GELAR = {"h", "hj", "haji", "hajjah", "hjh", "dr", "drs", "dra", "ir", "prof", "sdr", "sdri", "st", "se", "sh", "ust",
+         "ustadz", "ustazah", "ustadzah", "kh"}
 SAPAAN = {"bu": "Bu", "ibu": "Bu", "pak": "Pak", "bapak": "Pak", "kak": "Kak", "kakak": "Kak", "mas": "Mas",
           "mbak": "Mbak", "mba": "Mbak", "bang": "Bang", "abang": "Bang", "teh": "Teh", "teteh": "Teh",
           "aa": "Aa", "uda": "Uda", "uni": "Uni", "koh": "Koh", "cik": "Cik", "ci": "Ci", "om": "Om",
@@ -108,15 +117,54 @@ def rapikan_nomor(teks):
     return d
 
 
+def _bersih(k):
+    return k.lower().strip(".,")
+
+
+def cari_nomor_di_teks(teks):
+    """Cari nomor HP Indonesia di satu baris teks bebas (boleh ada nama/catatan/tanggal).
+    Tanggal dibuang dulu agar digitnya tidak tergabung ke nomor. Kembalikan (daftar nomor valid,
+    daftar potongan angka panjang yang tidak terbaca)."""
+    t = POLA_TANGGAL.sub(" ", teks)
+    valid, gagal = [], []
+    for run in re.findall(r"(?:\+|\()?\d[\d \t().\-]*\d|\d", t):
+        grup = run.split()
+        buf = ""
+        for g in grup:
+            awal_baru = re.match(r"^(?:\+?62|0062|08|\(08)", g)
+            if buf and awal_baru and rapikan_nomor(buf):
+                valid.append(rapikan_nomor(buf))
+                buf = ""
+            buf += g
+        if buf:
+            n = rapikan_nomor(buf)
+            if n:
+                valid.append(n)
+            elif len(re.sub(r"\D", "", buf)) >= 7:
+                gagal.append(buf)
+    return valid, gagal
+
+
 def pecah_nama(nama, sapaan_default, nama_lengkap):
     kata = (nama or "").strip().split()
-    sapaan = sapaan_default
-    if kata and kata[0].lower().rstrip(".") in SAPAAN:
-        sapaan = SAPAAN[kata[0].lower().rstrip(".")]
+    sapaan = None
+    if kata and _bersih(kata[0]) in SAPAAN:
+        sapaan = SAPAAN[_bersih(kata[0])]
         kata = kata[1:]
+    # Lewati gelar (H., Hj., dr., Ir., Prof., ...) selama masih ada kata sesudahnya.
+    while kata and _bersih(kata[0]) in GELAR and _bersih(kata[0]) not in GELAR_BELAKANG:
+        g = _bersih(kata[0])
+        if sapaan is None and g in ("hj", "hjh", "hajjah", "ustazah", "ustadzah"):
+            sapaan = "Bu"
+        elif sapaan is None and g in ("h", "haji", "kh", "ust", "ustadz"):
+            sapaan = "Pak"
+        kata = kata[1:]
+    sapaan = sapaan or sapaan_default
+    kata = [k for k in kata if _bersih(k) not in GELAR]
     if not kata:
         return sapaan, ""
-    kata = [k if (k.isupper() and len(k) <= 3) else k.capitalize() for k in kata]
+    kata = [k.strip(",") for k in kata]
+    kata = [k if (k.isupper() and len(k) <= 3 and len(kata) > 1) else k.capitalize() for k in kata]
     return sapaan, " ".join(kata) if nama_lengkap else kata[0]
 
 
@@ -211,16 +259,18 @@ def main():
         galat("Placeholder tidak dikenal: {}. Yang tersedia: {}.".format(
             ", ".join("{" + x + "}" for x in asing), ", ".join("{" + x + "}" for x in sorted(tersedia))))
 
-    berhenti = set()
+    berhenti, stop_tak_terbaca = set(), []
     if a.daftar_berhenti:
         try:
             with open(a.daftar_berhenti, encoding="utf-8-sig") as f:
-                for t in re.split(r"[\n,;]", f.read()):
-                    n = rapikan_nomor(t)
-                    if n:
-                        berhenti.add(n)
+                isi_stop = f.read()
         except (OSError, UnicodeDecodeError) as e:
             galat("Gagal membaca --daftar-berhenti: {}".format(e))
+        for no_b, t in enumerate(isi_stop.splitlines(), start=1):
+            nomor_b, sisa = cari_nomor_di_teks(t)
+            berhenti.update(nomor_b)
+            if sisa:
+                stop_tak_terbaca.append({"baris": no_b, "teks": t.strip()[:80]})
 
     siap, dilewati, terlihat = [], {}, set()
 
@@ -247,10 +297,18 @@ def main():
     for no, b in enumerate(baris, start=2):  # nomor baris sesuai tampilan spreadsheet (baris 1 = judul)
         nomor = rapikan_nomor(b.get(k_nomor))
         if tanda_tolak(b):
-            lewati("belum/tidak setuju menerima broadcast", no)
+            v = (b.get(k_setuju) or "").strip()
+            if v.lower() in TIDAK_SETUJU_BAKU:
+                lewati("belum/tidak setuju menerima broadcast", no)
+            else:
+                lewati("nilai persetujuan tidak baku '{}' (dianggap belum setuju; rapikan jadi ya/tidak)".format(v), no)
             continue
         if tanda_berhenti(b):
-            lewati("minta berhenti (kolom berhenti)", no)
+            v = (b.get(k_berhenti) or "").strip()
+            if v.lower() in BERHENTI_BAKU or POLA_TANGGAL.fullmatch(v):
+                lewati("minta berhenti (kolom berhenti)", no)
+            else:
+                lewati("nilai kolom berhenti tidak baku '{}' (dianggap berhenti; kosongkan bila masih aktif)".format(v), no)
             continue
         if not nomor:
             lewati("nomor kosong/tidak valid", no)
@@ -340,6 +398,11 @@ def main():
         galat("Gagal menyimpan {}: {}".format(a.output, e))
 
     peringatan = []
+    if stop_tak_terbaca:
+        peringatan.append(
+            "Ada {} baris di daftar berhenti yang nomornya TIDAK terbaca (baris: {}). JANGAN kirim dulu: rapikan "
+            "baris itu (satu nomor per baris, mis. 0812-3456-7890) lalu jalankan ulang, karena orang di baris itu "
+            "bisa tetap terkirimi.".format(len(stop_tak_terbaca), ", ".join(str(x["baris"]) for x in stop_tak_terbaca)))
     if len(variasi) < 2:
         peringatan.append("Hanya 1 variasi pesan. Disarankan 3–5 variasi agar pesan terasa personal.")
     for i, v in enumerate(variasi, start=1):
@@ -359,6 +422,9 @@ def main():
         "jadwal_pertama": hasil[0]["jadwal_kirim"] or None,
         "jadwal_terakhir": hasil[-1]["jadwal_kirim"] or None,
         "kolom_terdeteksi": {"nama": k_nama, "nomor": k_nomor, "persetujuan": k_setuju, "berhenti": k_berhenti},
+        "daftar_berhenti_terbaca": len(berhenti),
+        "daftar_berhenti_tidak_terbaca": stop_tak_terbaca,
+        "status": "PERIKSA DULU" if stop_tak_terbaca else "SIAP",
         "peringatan": peringatan,
         "catatan": "File output berisi data pribadi pelanggan. Simpan di komputer sendiri, jangan dibagikan.",
     }

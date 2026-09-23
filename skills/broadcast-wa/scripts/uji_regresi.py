@@ -67,6 +67,61 @@ class Uji(unittest.TestCase):
         self.assertEqual(b[0]["nomor"], "62812000000099")
         self.assertTrue(b[0]["pesan"].startswith("Halo Bu,"), b[0]["pesan"])
 
+    def test_b3_daftar_berhenti_bercatatan(self):
+        k = ("nama,nomor,setuju\nPutri,081200000120,ya\nGalih,081200000139,ya\nHana,081200000140,ya\n"
+             "Ika,081200000141,ya\nJoko,081200000142,ya\nLia,081200000143,ya\nMira,081200000144,ya\n")
+        d = tempfile.mkdtemp()
+        fs = os.path.join(d, "stop.txt")
+        with open(fs, "w", encoding="utf-8") as f:
+            f.write("Nama;No HP;Tanggal\n0812-0000-0120 tgl 12/09\nGalih 0812 0000 0139 (minta stop 2026-09-01)\n"
+                    "0812-0000-0140\t Hana\n+62 812-0000-0141 - Ika\n0812 0000 0142 0812 0000 0143\n")
+        r, b = jalankan(k, PESAN, "--daftar-berhenti", fs)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual([x["nama"] for x in b], ["Mira"])
+        h = json.loads(r.stdout)
+        self.assertEqual(h["daftar_berhenti_terbaca"], 6)
+        self.assertEqual(h["status"], "SIAP")
+
+    def test_b3_baris_tak_terbaca_diperingatkan(self):
+        d = tempfile.mkdtemp()
+        fs = os.path.join(d, "stop.txt")
+        with open(fs, "w", encoding="utf-8") as f:
+            f.write("0812-000 (nomor terpotong)\n081200000150\n")
+        r, _ = jalankan("nama,nomor,setuju\nA,081200000151,ya\n", PESAN, "--daftar-berhenti", fs)
+        h = json.loads(r.stdout)
+        self.assertEqual(h["status"], "PERIKSA DULU")
+        self.assertEqual(h["daftar_berhenti_tidak_terbaca"][0]["baris"], 1)
+        self.assertTrue(any("JANGAN kirim" in p for p in h["peringatan"]))
+
+    def test_s1_optout_harus_instruksi(self):
+        k = "nama,nomor,setuju\nA,081200000001,ya\n"
+        for teks in ("Halo {nama}, siapa yang tidak mau dapat diskon 50%?",
+                     "Halo {nama}. Kalau tidak ingin menerima kabar diskon, sayang banget lho",
+                     "Halo {nama}, lauk siap saji untuk berhenti pusing mikir lauk",
+                     "Halo {nama}, STOP! Jangan lewatkan promo"):
+            r, _ = jalankan(k, teks)
+            self.assertNotEqual(r.returncode, 0, teks)
+        r, _ = jalankan(k, "Halo {nama}. Ketik \"stop\" kalau tidak mau dapat info lagi.")
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_s2_gelar_dilewati(self):
+        nama = ["IBU HJ. AMINAH", "dr. Andi", "H. Rahmat", "Pak H. Ahmad", "Hj. Siti Aminah", "Prof. Dr. Ir. Joko",
+                "Sdr. Tono", "Andi, S.E."]
+        harap = ["Bu Aminah", "Kak Andi", "Pak Rahmat", "Pak Ahmad", "Bu Siti", "Kak Joko", "Kak Tono", "Kak Andi"]
+        k = "nama,nomor,setuju\n" + "".join('"{}",0812000002{:02d},ya\n'.format(n, i) for i, n in enumerate(nama))
+        r, b = jalankan(k, "Halo {sapaan} {nama}!\nBalas STOP untuk berhenti.\n")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual([x["pesan"].split("!")[0][5:] for x in b], harap)
+
+    def test_nilai_tidak_baku_dilaporkan(self):
+        k = "nama,nomor,persetujuan,berhenti\nA,081200000301,ya (lisan),\nB,081200000302,ya,masih aktif\n" \
+            "C,081200000303,ya,\n"
+        r, b = jalankan(k)
+        alasan = " ".join(json.loads(r.stdout)["dilewati"])
+        self.assertIn("ya (lisan)", alasan)
+        self.assertIn("masih aktif", alasan)
+        self.assertEqual([x["nama"] for x in b], ["C"])
+
     def test_tanpa_kolom_persetujuan_ditolak(self):
         r, _ = jalankan("nama,nomor\nA,081200000001\n")
         self.assertNotEqual(r.returncode, 0)

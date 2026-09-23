@@ -55,7 +55,7 @@ menolak permintaan seperti itu.
 ## 5. Teks opt-out siap pakai (wajib ada di setiap pesan)
 - "Tidak ingin menerima info promo lagi? Balas STOP."
 - "Balas BERHENTI kalau tidak mau dapat info lagi ya, Kak."
-- "Kamu menerima pesan ini karena bersedia dikirimi info dari <nama toko>. Balas STOP untuk berhenti."
+- "Pesan ini dikirim karena {sapaan} bersedia menerima info dari <nama toko>. Balas STOP untuk berhenti."
 
 Setelah ada yang membalas STOP: masukkan nomornya ke daftar berhenti (kolom Berhenti = ya) sebelum
 broadcast berikutnya, dan balas singkat: "Baik Kak, nomor Kakak sudah kami hapus dari daftar info promo. Terima kasih."
