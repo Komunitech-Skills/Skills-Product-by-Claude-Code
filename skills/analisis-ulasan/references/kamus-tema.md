@@ -9,15 +9,19 @@ beberapa tema (mis. "barang bagus tapi pengiriman lama" → pujian kualitas + ke
 2. Frasa: `fast respon` → `respons cepat`, `slow respon` → `respons lambat`, `real pict` → `sesuai foto`,
    `worth it` → `sepadan`, `bubble wrap` → `bubblewrap`, `murmer` → `murah`, `repeat order`/`ke-2 kali` → `order lagi`,
    `exp/expired/kadaluarsa` → `kedaluwarsa`, `size chart` → `tabel ukuran`.
-3. Slang/singkatan per kata (±250 entri), contoh: `brg`→barang, `bgt`→banget, `gk/ga/gak/nggak/tdk`→tidak,
+3. Slang/singkatan per kata (±310 entri, termasuk bahasa Inggris dasar: good quality, fast delivery, will buy again), contoh: `brg`→barang, `bgt`→banget, `gk/ga/gak/nggak/tdk`→tidak,
    `blm`→belum, `krg`→kurang, `mantul/mantab/joss`→mantap, `cpt/cepet/kilat`→cepat, `lelet/lemot`→lambat,
    `packing/paking/bungkus`→kemasan, `seller`→penjual, `cs/min`→admin, `size/uk`→ukuran, `ori`→asli, `kw`→palsu,
    `kegedean`→kebesaran, `enk/endul/maknyus`→enak, `krispi/kriuk`→renyah.
 4. Negasi digabung: `tidak sesuai` → `tidak_sesuai`, `kurang rapi` → `kurang_rapi`, `belum sampai` → `belum_sampai`,
    `tidak begitu bagus` → `tidak_bagus`, `tidak pernah kecewa` → `tidak_kecewa`.
    `tidak ada yang rusak` / `tanpa cacat` → `tidak_ada_rusak` / `tidak_ada_cacat` (dihitung sebagai pujian).
-5. Presedensi dalam satu klausa: keluhan kemasan mengalahkan "cacat produk" (`kemasan penyok`), keluhan
+5. Data pribadi (email, nomor HP, @akun, kode pesanan, sapaan+nama) **disamarkan sebelum kalimat dipecah**, jadi kutipan
+   dan kata teratas tidak memuat potongan email/nama. Titik di antara angka (Rp 1.500.000) tidak memecah kalimat.
+6. Presedensi dalam satu klausa: keluhan kemasan mengalahkan "cacat produk" (`kemasan penyok`), keluhan
    mengalahkan pujian aspek yang sama, "warna beda dengan foto" = tidak sesuai foto (bukan salah kirim).
+   Antar-keluhan juga berlaku per kalimat ("ga sesuai deskripsi, warnanya beda" dihitung satu tema: tidak sesuai).
+   "Tidak terlalu manis/asin" tidak dihitung sebagai keluhan rasa. "Nunggu paket lama" = pengiriman; "pelayanan lama" = waktu tunggu.
    "Puas secara umum" hanya dihitung bila ulasan tidak punya pujian yang lebih spesifik.
 
 ## Daftar id tema
@@ -35,6 +39,9 @@ beberapa tema (mis. "barang bagus tapi pengiriman lama" → pujian kualitas + ke
 | k_bau | Bau tidak sedap | produk & penyimpanan |
 | k_kedaluwarsa | Kedaluwarsa / tanggal expired dekat | stok & penyimpanan |
 | k_retur | Komplain/retur/garansi dipersulit | layanan (admin/CS) |
+| k_waktu_tunggu | Waktu tunggu/penyajian lama (tempat makan & jasa) | layanan (dapur/kasir/staf) |
+| k_kebersihan | Kebersihan / benda asing (rambut, serangga) — **prioritas keamanan** | kebersihan & keamanan pangan |
+| k_fasilitas | Fasilitas kurang (parkir, toilet, AC, wifi, tempat) | fasilitas tempat |
 | p_sesuai | Sesuai deskripsi/foto | produk & listing |
 | p_kualitas | Kualitas bagus / awet | produk |
 | p_pengiriman | Pengiriman/proses cepat | proses kirim & kurir |
@@ -46,6 +53,9 @@ beberapa tema (mis. "barang bagus tapi pengiriman lama" → pujian kualitas + ke
 | p_ukuran | Ukuran pas / sesuai tabel ukuran | produk & listing |
 | p_repeat | Pembeli berulang / akan beli lagi | loyalitas |
 | p_bonus | Bonus / hadiah kecil / sentuhan personal | packing & layanan |
+| p_suasana | Suasana/tempat nyaman | fasilitas tempat |
+| p_kebersihan | Bersih & higienis | kebersihan & keamanan pangan |
+| p_fasilitas | Fasilitas lengkap (parkir, toilet, wifi) | fasilitas tempat |
 | p_umum | Puas secara umum (tanpa detail) | umum |
 
 ## Menambah slang atau tema (`--kamus-tambahan`)
@@ -60,6 +70,9 @@ Buat file JSON di folder kerja pengguna (contoh lengkap: `templates/kamus-contoh
   ]
 }
 ```
+- `"kecualikan": ["regex", ...]` → potongan kalimat yang cocok dengan pola ini **tidak** dihitung untuk tema itu
+  (untuk membuang salah tangkap, mis. `"\\bmati\\W+lampu\\b"` pada `k_kualitas`). Jumlah yang dikecualikan tercatat di `sumber.dikecualikan`.
+- Alternatif cepat tanpa file: `--abaikan-id k_respons:3,14` (bisa diulang) membuang tema dari ulasan ber-id tersebut setelah dibaca.
 - `id` yang sudah ada → polanya **ditambahkan** ke tema itu. `id` baru → tema baru (`jenis`: `keluhan`/`pujian`).
 - Pola adalah regex Python yang dicocokkan ke teks **setelah normalisasi** (huruf kecil, slang diganti, negasi
   bergabung dengan `_`). Tulis kata versi baku (mis. `tidak_enak`, bukan `ga enak`).

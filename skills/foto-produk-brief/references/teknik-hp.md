@@ -1,8 +1,16 @@
 # Teknik Foto Produk dengan HP (tanpa studio)
 
 ## 1. Cahaya jendela (paling penting)
-- Pakai **jendela besar tanpa sinar matahari langsung** masuk. Jam aman: pagi ±08.00–10.30 atau sore ±14.30–16.00
-  (tergantung arah jendela). Sinar matahari langsung → bayangan keras; tempel **kertas kalkir/kain putih tipis/gorden putih**
+Pengaturan kamera di bawah ini "berlaku umum"; nama menu dan letaknya berbeda per merek & versi HP.
+
+- Pakai **jendela besar tanpa sinar matahari langsung** masuk. Jam terbaik tergantung arah jendela:
+
+  | Arah jendela | Jam yang biasanya aman (tanpa sinar langsung) |
+  |---|---|
+  | Timur | Siang–sore (±11.00–16.00); pagi matahari masuk langsung |
+  | Barat | Pagi–siang (±08.00–13.00); sore matahari masuk langsung |
+  | Utara / selatan | Hampir sepanjang hari (±08.00–16.00), paling rata |
+  | Tidak tahu | Lihat apakah ada "kotak sinar" di lantai/meja; kalau ada, tunggu atau pakai penyebar cahaya | Sinar matahari langsung → bayangan keras; tempel **kertas kalkir/kain putih tipis/gorden putih**
   di kaca sebagai penyebar cahaya.
 - Posisi dasar: **jendela di samping** produk (kiri atau kanan), HP di depan produk. Cahaya dari belakang HP membuat foto datar;
   cahaya dari belakang produk cocok untuk minuman/benda bening (efek bercahaya).
@@ -40,8 +48,9 @@ Sketsa setup (tampak atas):
 2. Nyalakan **garis bantu/grid 3×3** di pengaturan kamera.
 3. Pakai **lensa utama (1x) atau tele 2x/3x** bila ada. Hindari 0,5x (ultrawide) karena produk terdistorsi. Jangan zoom digital
    berlebihan; lebih baik HP didekatkan.
-4. **Ketuk produk untuk fokus**, lalu **tekan lama** untuk mengunci fokus & pencahayaan (AE/AF Lock), geser ikon matahari sedikit
-   turun bila produk putih terlalu terang, sedikit naik bila produk gelap.
+4. **Ketuk produk untuk fokus**, lalu kunci fokus & pencahayaan. Caranya **beda per merek HP**: di iPhone tekan lama sampai
+   muncul "AE/AF Lock"; di banyak Android tekan lama juga bisa, tetapi di sebagian HP fitur ini hanya ada di mode **Pro/Manual**
+   (atur kecerahan lewat **EV**/ikon ±). Turunkan kecerahan sedikit bila produk putih terlalu terang, naikkan bila produk gelap.
 5. Matikan **filter, mode kecantikan, dan flash**. Mode Portrait hanya untuk foto lifestyle (tepi produk kadang ikut buram).
 6. Pakai resolusi tertinggi & rasio 4:3 bawaan kamera (bingkai lebih luas → bisa dipotong ke 1:1 dan 3:4 tanpa kehilangan detail).
 7. Pakai **timer 3 detik** atau tombol volume/earphone agar tidak goyang.

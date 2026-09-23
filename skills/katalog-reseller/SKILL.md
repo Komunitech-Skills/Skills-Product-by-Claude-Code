@@ -24,8 +24,8 @@ Membantu produsen/pemilik brand membuka jaringan mitra yang **sehat**: harga ber
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
 | Produk + HPP/modal per unit | Ya | — (tanyakan; belum tahu → tawarkan `hitung-hpp`) |
-| Harga eceran anjuran ke konsumen | Tidak | Diusulkan script dari tier termahal + target untung mitra 20% (sebut sebagai usulan) |
-| Tier: nama, minimal beli, diskon dari eceran (atau target margin produsen) | Tidak | Contoh: Dropshipper 1 pcs, Reseller 12 pcs, Agen 60 pcs; diskon 15/25/35% (mode eceran) atau margin produsen 45/35/25% (mode HPP) |
+| Harga eceran anjuran ke konsumen | Tidak | Diusulkan script dari tier termahal agar mitra tier itu dapat 20% **bersih** setelah biaya jual & ongkir (sebut sebagai usulan) |
+| Tier: nama, minimal beli, diskon dari eceran (atau target margin produsen) | Tidak | Contoh: Dropshipper 1 pcs, Reseller 12 pcs, Agen 60 pcs; diskon 20/25/35% (mode eceran) atau margin produsen 45/35/25% (mode HPP) |
 | Mitra jualan di marketplace? perkiraan % potongan | Tidak | 0% (script mengingatkan untung bersih mitra lebih kecil) |
 | Batas diskon ke konsumen yang masih diizinkan | Tidak | 0% (harga minimum = harga eceran) |
 | Ongkir ke mitra, pembayaran, retur, wilayah | Tidak | Mitra tanggung ongkir; lunas sebelum kirim; retur hanya cacat/salah kirim 3 hari dengan video unboxing |
@@ -45,7 +45,7 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    # banyak produk: --config produk.json (contoh: templates/produk-contoh.json / .csv)
    # daftar harga untuk dibagikan ke mitra (tanpa HPP & margin produsen): --csv-keluar daftar-harga-mitra.csv
    ```
-   Opsi lain: `--biaya-produsen` (packing/label per unit), `--ongkir-ke-mitra` (Rp/unit), `--min-margin-mitra 15`, `--min-margin-dropship 10`, `--min-margin-produsen 15`, `--bulatkan 100`, `--format json`. Tier boleh punya batas sendiri: `"Agen:60:35:20"`.
+   Opsi lain: `--biaya-produsen` (packing/label per unit), `--ongkir-ke-mitra` (Rp/unit; otomatis **tidak** dikenakan ke tier yang namanya mengandung "drop", karena dropshipper tidak menerima kiriman stok), `--min-margin-mitra 15`, `--min-margin-dropship 10`, `--min-margin-produsen 15`, `--bulatkan 100`, `--format json`. Tier boleh punya batas sendiri: `"Agen:60:35:20"`.
 3. **Baca status & peringatan.** Jangan menyajikan tier berstatus `PRODUSEN RUGI`, `MITRA RUGI`, atau `HARGA MITRA ≥ ECERAN` sebagai final. Untuk `MARGIN MITRA TIPIS` / `RUGI DI HARGA MINIMUM` / selisih tier terlalu kecil: jalankan ulang dengan usulan perbaikan (diskon tier lebih besar, harga eceran lebih tinggi, tier dikurangi) dan tampilkan perbandingannya.
 4. **Susun dokumen** dengan format di bawah: tabel internal (dengan margin produsen) **terpisah** dari daftar harga untuk mitra (tanpa HPP/margin produsen).
 5. **Syarat & ketentuan** dari `references/syarat-kemitraan.md`; harga minimum ditulis sebagai "anjuran" + konsekuensi kebijakan kemitraan (bukan denda) sesuai `references/regulasi.md`.
@@ -58,8 +58,10 @@ M = HPP + biaya produsen per unit, E = harga eceran anjuran, d = diskon tier, m 
 Mode diskon : harga mitra = E × (1 − d)          → bulatkan KE BAWAH ke kelipatan Rp 100
 Mode margin : harga mitra = M ÷ (1 − m)          → bulatkan KE ATAS ke kelipatan Rp 100
 Margin produsen   = (harga mitra − M) ÷ harga mitra
-Untung mitra/unit = E − harga mitra − E×f − O     (% = ÷ E)
+Untung mitra/unit = E − harga mitra − E×f − O     (% = ÷ E; O = 0 untuk dropshipper)
 Harga minimum     = E × (1 − maks diskon konsumen) → bulatkan ke bawah ke kelipatan Rp 100
+Eceran usulan     = (harga tier termahal + O) ÷ (1 − target untung mitra − f) → bulatkan KE ATAS ke Rp 1.000
+(O = 0 untuk dropshipper)
 Contoh untung paket = untung mitra/unit × minimal beli
 ```
 Contoh: E = Rp 89.000, d = 25% → Rp 66.750 → Rp 66.700; f = 10% → untung mitra Rp 89.000 − 66.700 − 8.900 = Rp 13.400 (15,1%); HPP Rp 28.000 → margin produsen Rp 38.700 (58,0%).

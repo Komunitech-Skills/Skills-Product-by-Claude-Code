@@ -43,7 +43,7 @@ for _s in (sys.stdout, sys.stderr):
 VERSI = "1.0.0"
 NOL = Decimal(0)
 SERATUS = Decimal(100)
-TIER_DEFAULT = {"diskon": ["Dropshipper:1:15", "Reseller:12:25", "Agen:60:35"],
+TIER_DEFAULT = {"diskon": ["Dropshipper:1:20", "Reseller:12:25", "Agen:60:35"],
                 "margin": ["Dropshipper:1:45", "Reseller:12:35", "Agen:60:25"]}
 
 
@@ -168,6 +168,10 @@ def parse_tier(teks, mode):
             "min_margin_mitra": opsional(min_mitra, "min margin mitra tier " + nama)}
 
 
+def adalah_dropship(t):
+    return "drop" in t["nama"].lower()
+
+
 def hitung_produk(cfg, tiers, opsi):
     nama = str(cfg.get("produk") or cfg.get("nama") or "Produk").strip()
     lab = "[{}] ".format(nama)
@@ -202,12 +206,19 @@ def hitung_produk(cfg, tiers, opsi):
         harga.append(h)
 
     if eceran is None:
-        tertinggi = max(harga)
+        i_max = max(range(len(harga)), key=lambda i: harga[i])
+        tertinggi = harga[i_max]
+        o_max = NOL if adalah_dropship(tiers[i_max]) else ongkir_mitra
         tm = opsi["target_margin_mitra"]
-        eceran = bulat(tertinggi / (1 - tm / SERATUS), opsi["bulatkan_eceran"], ROUND_CEILING)
-        catatan.append("Harga eceran anjuran tidak diisi: diturunkan dari harga tier termahal ({}) agar mitra tier itu "
-                       "mendapat margin ±{}; dibulatkan ke atas ke kelipatan {} → {}.".format(
-                           rp(tertinggi), persen(tm), rp(opsi["bulatkan_eceran"]), rp(eceran)))
+        if tm + fee_mitra >= SERATUS:
+            raise GalatInput(lab + "target margin mitra + biaya jual mitra harus di bawah 100%")
+        # E = (harga tier termahal + ongkir) / (1 - target margin bersih mitra - biaya jual mitra)
+        eceran = bulat((tertinggi + o_max) / (1 - tm / SERATUS - fee_mitra / SERATUS), opsi["bulatkan_eceran"], ROUND_CEILING)
+        catatan.append("Harga eceran anjuran tidak diisi: diturunkan dari harga tier termahal ({}, tier {}) agar mitra tier itu "
+                       "mendapat ±{} BERSIH setelah biaya jual {} dan ongkir {}; rumus (harga + ongkir) ÷ (1 − target − biaya jual), "
+                       "dibulatkan ke atas ke kelipatan {} → {}.".format(
+                           rp(tertinggi), tiers[i_max]["nama"], persen(tm), persen(fee_mitra), rp(o_max),
+                           rp(opsi["bulatkan_eceran"]), rp(eceran)))
         eceran_diturunkan = True
     else:
         eceran_diturunkan = False
@@ -217,16 +228,17 @@ def hitung_produk(cfg, tiers, opsi):
 
     baris = []
     for t, h in zip(tiers, harga):
+        ongkir_t = NOL if adalah_dropship(t) else ongkir_mitra  # dropshipper tidak menerima kiriman stok
         m_prod = h - modal
         m_prod_p = m_prod / h * SERATUS if h > 0 else None
         fee = eceran * fee_mitra / SERATUS
-        untung = eceran - h - fee - ongkir_mitra
+        untung = eceran - h - fee - ongkir_t
         untung_p = untung / eceran * SERATUS
         fee_min = harga_min * fee_mitra / SERATUS
-        untung_min = harga_min - h - fee_min - ongkir_mitra
+        untung_min = harga_min - h - fee_min - ongkir_t
         batas = t["min_margin_mitra"]
         if batas is None:
-            batas = opsi["min_margin_dropship"] if "drop" in t["nama"].lower() else opsi["min_margin_mitra"]
+            batas = opsi["min_margin_dropship"] if adalah_dropship(t) else opsi["min_margin_mitra"]
         status = []
         if m_prod < 0:
             status.append("PRODUSEN RUGI")
@@ -246,7 +258,7 @@ def hitung_produk(cfg, tiers, opsi):
             "margin_produsen_rp": m_prod, "margin_produsen_persen": m_prod_p,
             "untung_mitra_per_unit_di_eceran": untung, "untung_mitra_persen": untung_p,
             "untung_mitra_per_unit_di_harga_minimum": untung_min,
-            "batas_margin_mitra_persen": batas,
+            "batas_margin_mitra_persen": batas, "ongkir_ke_mitra_dihitung": ongkir_t,
             "modal_mitra_min_order": h * t["min_beli"],
             "contoh_untung_min_order_di_eceran": untung * t["min_beli"],
             "status": status or ["AMAN"],
@@ -270,6 +282,9 @@ def hitung_produk(cfg, tiers, opsi):
     for a, b in zip(urut, urut[1:]):
         if a["min_beli"] == b["min_beli"]:
             peringatan.append("Tier {} dan {} punya minimal beli sama ({}).".format(a["tier"], b["tier"], int(a["min_beli"])))
+        elif a["harga_mitra"] == b["harga_mitra"]:
+            peringatan.append("Tier {} dan {} punya harga mitra SAMA ({}) setelah pembulatan: tidak ada alasan naik tier. "
+                              "Bedakan diskon/margin-nya.".format(a["tier"], b["tier"], rp(a["harga_mitra"])))
         elif b["harga_mitra"] > a["harga_mitra"]:
             peringatan.append("Tier {} (beli ≥ {}) lebih MAHAL dari tier {} (beli ≥ {}). Tier dengan pembelian lebih banyak "
                               "harus lebih murah.".format(b["tier"], int(b["min_beli"]), a["tier"], int(a["min_beli"])))
@@ -339,13 +354,21 @@ def tulis_csv(path, hasil):
     try:
         with open(path, "w", newline="", encoding="utf-8-sig") as f:
             w = csv.writer(f, delimiter=";")
+            fees = sorted({persen(h["biaya_jual_mitra_persen"]) for h in hasil})
+            ongk = sorted({rp(h["ongkir_ke_mitra_per_unit"]) for h in hasil})
             w.writerow(["Produk", "Tier", "Minimal beli", "Harga mitra per unit", "Harga eceran anjuran",
-                        "Harga minimum anjuran", "Untung per unit di harga eceran", "Modal minimal order"])
+                        "Harga minimum anjuran",
+                        "Perkiraan untung per unit di harga eceran (setelah potongan jualan {} & ongkir {}/unit; dropshipper tanpa ongkir)".format(
+                            "/".join(fees), "/".join(ongk)),
+                        "Modal minimal order"])
             for h in hasil:
                 for b in h["tier"]:
                     w.writerow([h["produk"], b["tier"], int(b["min_beli"]), rp(b["harga_mitra"]),
                                 rp(h["harga_eceran_anjuran"]), rp(h["harga_minimum_anjuran"]),
                                 rp(b["untung_mitra_per_unit_di_eceran"]), rp(b["modal_mitra_min_order"])])
+            w.writerow([])
+            w.writerow(["Catatan: untung adalah perkiraan bila semua barang terjual di harga eceran anjuran; bukan jaminan penghasilan. "
+                        "Potongan jualan = perkiraan biaya marketplace (cek Seller Center masing-masing)."])
     except OSError as e:
         raise GalatInput("gagal menulis '{}' ({})".format(path, e.strerror))
 
@@ -371,7 +394,7 @@ def cetak_teks(hasil, opsi):
             L.append("- Contoh {}: beli {} pcs = modal {}; jika semua terjual di harga eceran, untung ±{}.".format(
                 b["tier"], int(b["min_beli"]), rp(b["modal_mitra_min_order"]), rp(b["contoh_untung_min_order_di_eceran"])))
         if h["biaya_jual_mitra_persen"] or h["ongkir_ke_mitra_per_unit"]:
-            L.append("- Untung mitra sudah dikurangi biaya jual {} dan ongkir ke mitra {}/unit.".format(
+            L.append("- Untung mitra sudah dikurangi biaya jual {} dan ongkir ke mitra {}/unit (ongkir tidak dikenakan ke tier dropshipper).".format(
                 persen(h["biaya_jual_mitra_persen"]), rp(h["ongkir_ke_mitra_per_unit"])))
         for c in h["catatan"]:
             L.append("- Catatan: " + c)

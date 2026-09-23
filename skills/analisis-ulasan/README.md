@@ -45,7 +45,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 Tidak. Kolom nama/username diabaikan, dan nomor HP, email, nomor pesanan, serta sapaan nama di dalam ulasan disamarkan otomatis.
 
 **Ulasan saya banyak pakai bahasa gaul dan singkatan. Tetap terbaca?**
-Ya. Ratusan singkatan umum sudah dikenali. Kata khas usahamu bisa ditambahkan, dan ulasan yang belum dikenali tetap dibaca AI agent sebelum laporan dibuat.
+Ya. Sekitar 300 singkatan umum sudah dikenali. Kata khas usahamu bisa ditambahkan, dan ulasan yang belum dikenali tetap dibaca AI agent sebelum laporan dibuat.
 
 **Perlu Python?**
 Disarankan (gratis, biasanya sudah ada di Mac/Linux). Tanpa Python, AI agent tetap bisa menghitung manual dan akan memberi tahu bahwa hasilnya belum diverifikasi script.

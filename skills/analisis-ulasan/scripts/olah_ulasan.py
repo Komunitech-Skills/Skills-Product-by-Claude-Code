@@ -51,6 +51,12 @@ FRASA = [
     (r"\bthank\s*you\s*card\b|\bkartu\s*ucapan\b", "bonus kartu"),
     (r"\bno\s*minus\b|\btanpa\s*minus\b", "tidak ada minus"),
     (r"\bke\s*-?\s*[2-9]\s*(?:x|kali)\w*|\bkesekian\s*kali\w*|\byang\s*ke\s*-?\s*[2-9]\b", "order lagi"),
+    (r"\bgood\s*quality\b|\bhigh\s*quality\b", "kualitas bagus"),
+    (r"\bbad\s*quality\b|\blow\s*quality\b", "kualitas jelek"),
+    (r"\bfast\s*(?:delivery|shipping)\b", "pengiriman cepat"),
+    (r"\bslow\s*(?:delivery|shipping)\b", "pengiriman lambat"),
+    (r"\b(?:will|would)\s*(?:buy|order)\s*(?:again|more)\b|\bbuy\s*again\b|\border\s*again\b", "order lagi"),
+    (r"\bnot\s*as\s*described\b|\bnot\s*as\s*(?:pictured|expected)\b", "tidak sesuai"),
     (r"\bexp(?:ired|ire)?\b|\bkadaluarsa\b|\bkadaluwarsa\b|\bkedaluarsa\b|\bdaluwarsa\b", "kedaluwarsa"),
 ]
 
@@ -114,6 +120,20 @@ SLANG = {
     "komplennya": "komplain", "garansinya": "garansi",
     "expired": "kedaluwarsa", "ed": "kedaluwarsa",
     "bocor": "bocor", "tumpah": "tumpah", "sobek": "sobek", "robek": "sobek",
+    # tambahan (tempat makan, jasa, bahasa Inggris dasar)
+    "tebel": "tebal", "tebell": "tebal", "ketagihan": "nagih", "nagihh": "nagih", "dateng": "datang", "dtng": "datang",
+    "nunggu": "tunggu", "nungguin": "tunggu", "nunggunya": "tunggu", "menunggunya": "menunggu", "ngantri": "antri",
+    "ngantre": "antri", "antrinya": "antri", "antriannya": "antrian",
+    "pelayanannya": "pelayanan", "pelayanan2": "pelayanan", "servis": "pelayanan", "service": "pelayanan",
+    "servicenya": "pelayanan", "tempatnya": "tempat", "suasananya": "suasana", "parkirannya": "parkir",
+    "parkiran": "parkir", "parkirnya": "parkir", "toiletnya": "toilet", "wc": "toilet", "wcnya": "toilet",
+    "musholanya": "mushola", "wifinya": "wifi", "acnya": "ac", "makanannya": "makanan", "minumannya": "minuman",
+    "masakannya": "makanan", "menunya": "menu", "stafnya": "staf", "karyawannya": "staf", "pegawainya": "staf",
+    "waiter": "staf", "waitress": "staf", "pelayannya": "staf", "mbaknya": "staf", "masnya": "staf",
+    "nice": "bagus", "good": "bagus", "great": "bagus", "bad": "jelek", "slow": "lambat", "late": "telat",
+    "broken": "rusak", "damaged": "rusak", "cheap": "murah", "expensive": "mahal", "delicious": "enak",
+    "yummy": "enak", "tasty": "enak", "clean": "bersih", "dirty": "kotor", "friendly": "ramah", "fast": "cepat",
+    "fragrant": "wangi", "cozy": "cozy", "comfy": "nyaman", "comfortable": "nyaman", "recomend": "rekomendasi",
 }
 
 INTENSIFIER = r"(?:terlalu|begitu|sangat|gitu|sama\s+sekali|pernah)"
@@ -153,7 +173,7 @@ TEMA = [
          r"\b(?:lama|lambat|telat|terlambat|molor)\w*" + DEKAT +
          r"(?:sampai|datang|dikirim|kirim|pengiriman|diproses|proses|pengemasan)\b",
          r"\bbelum_(?:sampai|datang|dikirim|diterima|dikemas|diproses)\b", r"\btidak_dikirim(?:_\w+)?\b",
-         r"\bnunggu\w*" + DEKAT + r"(?:lama|seminggu|berhari)"]},
+         r"\btunggu\w*" + DEKAT + r"(?:seminggu|berhari|hari)\b"]},
     {"id": "k_kemasan", "label": "Kemasan kurang aman / rusak / bocor", "jenis": "keluhan",
      "pihak": "packing (gudang)", "pola": [
          r"\b(?:kemasan|kardus|plastik|segel)\w*" + DEKAT +
@@ -171,7 +191,7 @@ TEMA = [
     {"id": "k_respons", "label": "Respons penjual/CS lambat atau kurang ramah", "jenis": "keluhan",
      "pihak": "layanan (admin/CS)", "pola": [
          r"\brespons\W+(?:lambat|lama|lemot)", r"\b(?:lambat|lama)\W+(?:respons|dibalas|balas)\b",
-         r"\b(?:chat|pesan)\w*" + DEKAT + r"(?:tidak_dibalas|tidak_direspons|lama|dicuekin|diabaikan|tidak_ditanggapi)",
+         r"\b(?:chat|dm|inbox|pesan(?!an)|pesen(?!an))\w*" + DEKAT + r"(?:tidak_dibalas|tidak_direspons|lama|dicuekin|diabaikan|tidak_ditanggapi)",
          r"\btidak_(?:dibalas|direspons|ditanggapi|responsif|ramah|sopan|membantu)\b", r"\btidak_ada_respons\b",
          r"\b(?:jutek|judes|ketus|kasar|cuek|galak|sombong)\b", r"\bkurang_(?:ramah|responsif|sopan)\b"]},
     {"id": "k_harga", "label": "Harga terasa mahal / tidak sepadan", "jenis": "keluhan",
@@ -180,9 +200,9 @@ TEMA = [
          r"\bharga\w*" + DEKAT + r"(?:tidak_sesuai|tidak_sebanding|naik)\b", r"\brugi\b"]},
     {"id": "k_rasa", "label": "Rasa kurang enak / tidak konsisten", "jenis": "keluhan",
      "pihak": "produk", "pola": [
-         r"\b(?:hambar|keasinan|kemanisan|kepedasan|keasaman|basi|anyep|tengik|apek)\b",
+         r"\b(?:hambar|keasinan|kemanisan|kepedasan|keasaman|basi|anyep|tengik)\b",
          r"\bterlalu\W+(?:asin|manis|pedas|pahit|asam|keras|lembek|berminyak|kering)\b",
-         r"\b(?:tidak|kurang)_(?:enak|gurih|renyah|segar|fresh|manis|nikmat)\b",
+         r"\b(?:tidak|kurang)_(?:enak|gurih|renyah|segar|fresh|nikmat|lezat)\b",
          r"\brasa\w*" + DEKAT + r"(?:aneh|beda|berubah|hambar|pahit|tidak_sama|kurang|tidak_enak)",
          r"\b(?:alot|melempem|keras\W+banget)\b"]},
     {"id": "k_bau", "label": "Bau tidak sedap", "jenis": "keluhan",
@@ -195,6 +215,23 @@ TEMA = [
      "pihak": "layanan (admin/CS)", "pola": [
          r"\b(?:retur|refund|pengembalian|garansi|komplain|klaim|tukar)\w*" + DEKAT +
          r"(?:susah|sulit|ribet|ditolak|lama|tidak_ditanggapi|dipersulit|tidak_diproses|tidak_bisa|tidak_dilayani|tidak_direspons)"]},
+    {"id": "k_waktu_tunggu", "label": "Waktu tunggu/penyajian lama (tempat makan & jasa)", "jenis": "keluhan",
+     "pihak": "layanan (dapur/kasir/staf)", "pola": [
+         r"\b(?:pelayanan|layanan|penyajian|disajikan|dilayani|antri|antre|antrian|antrean|tunggu|menunggu|kasir|order|makanan|minuman)\w*" + DEKAT +
+         r"(?:lama|lambat|lelet|telat|panjang|menit|jam)\b",
+         r"\b(?:lama|lambat)\W+(?:\w+\W+)?(?:dilayani|disajikan|keluar|datangnya|nunggu|tunggu|menunggu)\b",
+         r"\bantri\w*\W+(?:\w+\W+)?(?:panjang|lama|mengular)\b"]},
+    {"id": "k_kebersihan", "label": "Kebersihan / benda asing (keamanan pangan)", "jenis": "keluhan",
+     "pihak": "kebersihan & keamanan pangan", "pola": [
+         r"(?<!_)\b(?:kotor|jorok|kumuh|berdebu|lengket|dekil|jijik)\b", r"\b(?:tidak|kurang)_(?:bersih|higienis|steril)\b",
+         r"\b(?:ada|nemu|menemukan|ketemu|terdapat|dapat|dapet|isi)\W+(?:\w+\W+){0,3}(?:rambut|serangga|lalat|kecoa|semut|ulat|belatung|kutu|plastik|staples|kerikil|benda\W+asing)\b",
+         r"\b(?:rambut|serangga|lalat|kecoa|belatung|ulat|benda\W+asing)\W+(?:\w+\W+){0,2}(?:di|dalam|dalem)\W+(?:\w+\W+){0,1}(?:makanan|minuman|nasi|kue|pastry|roti|mie|mi|sup|kuah|piring|gelas|produk|paket|kemasan)\b",
+         r"\b(?:banyak|ada)\W+(?:lalat|kecoa|tikus|nyamuk)\b"]},
+    {"id": "k_fasilitas", "label": "Fasilitas kurang (parkir, toilet, AC, wifi, tempat)", "jenis": "keluhan",
+     "pihak": "fasilitas tempat", "pola": [
+         r"\b(?:parkir|toilet|mushola|musala|ac|wifi|colokan|kursi|meja|tempat)\w*" + DEKAT +
+         r"(?:sempit|susah|sulit|penuh|tidak_ada|mahal|kotor|bau|rusak|mati|panas|lemot|lambat|tidak_dingin|kurang|sedikit|terbatas|sesak)\b",
+         r"\b(?:gerah|pengap|panas\W+banget|berisik|bising)\b", r"\btidak_ada_(?:parkir|toilet|mushola|musala|wifi|ac|colokan)\b"]},
     # ---------------------------------------------------------------- pujian
     {"id": "p_sesuai", "label": "Sesuai deskripsi/foto", "jenis": "pujian",
      "pihak": "produk & listing", "pola": [
@@ -230,7 +267,7 @@ TEMA = [
          r"\b(?:respons|admin|penjual|toko|owner|pelayanan|layanan)\w*" + DEKAT +
          r"(?:cepat|ramah|baik|sabar|membantu|informatif|mantap|sigap|tanggap|responsif|oke|jujur|amanah|komunikatif)\b",
          r"(?<!_)\b(?:ramah|sabar|amanah|komunikatif|responsif)\b", r"\bcepat\W+tanggap\b",
-         r"\b(?:chat|pesan)\w*" + DEKAT + r"(?:dibalas|direspons)\W+(?:\w+\W+)?cepat"]},
+         r"\b(?:chat|dm|inbox|pesan(?!an)|pesen(?!an))\w*" + DEKAT + r"(?:dibalas|direspons)\W+(?:\w+\W+)?cepat"]},
     {"id": "p_rasa", "label": "Rasa enak", "jenis": "pujian",
      "pihak": "produk", "pola": [
          r"(?<!_)\b(?:enak|lezat|nikmat|gurih|renyah|nagih|legit|fresh|segar|lumer|empuk|juicy)\b",
@@ -251,6 +288,16 @@ TEMA = [
      "pihak": "packing & layanan", "pola": [
          r"(?<!_)\b(?:bonus|hadiah|stiker|sticker|permen)\b", r"\bdikasih\W+(?:\w+\W+)?(?:bonus|hadiah|permen|stiker|sample|sampel)\b",
          r"\bbonus\W+kartu\b", r"\bsurat\W+(?:kecil|tulisan)\b"]},
+    {"id": "p_suasana", "label": "Suasana/tempat nyaman", "jenis": "pujian",
+     "pihak": "fasilitas tempat", "pola": [
+         r"\b(?:suasana|tempat|vibes|ambience|ambiance|interior|dekorasi|view|pemandangan)\w*" + DEKAT2 +
+         r"(?:nyaman|cozy|asik|asyik|enak|adem|estetik|aesthetic|instagramable|tenang|luas|homey|bagus|keren|cantik|sejuk)\b",
+         r"(?<!_)\b(?:nyaman|cozy|estetik|aesthetic|instagramable|homey|kekinian)\b"]},
+    {"id": "p_kebersihan", "label": "Bersih & higienis", "jenis": "pujian",
+     "pihak": "kebersihan & keamanan pangan", "pola": [r"(?<!_)\b(?:bersih|higienis|steril|wangi\W+bersih)\b"]},
+    {"id": "p_fasilitas", "label": "Fasilitas lengkap (parkir, toilet, wifi)", "jenis": "pujian",
+     "pihak": "fasilitas tempat", "pola": [
+         r"\b(?:parkir|toilet|mushola|musala|wifi|colokan|ac)\w*" + DEKAT2 + r"(?:luas|mudah|gampang|bersih|kencang|lengkap|dingin|ada|banyak|aman|gratis)\b"]},
     {"id": "p_umum", "label": "Puas secara umum (tanpa detail)", "jenis": "pujian",
      "pihak": "umum", "pola": [
          r"(?<!_)\b(?:mantap|puas|suka|keren|oke|rekomendasi|terbaik|love|recommended|top|amanah|memuaskan|luar\W+biasa)\b",
@@ -270,6 +317,12 @@ PRESEDEN = [
     ("k_rasa", "p_rasa"),
     ("k_bau", "p_aroma"),
     ("k_harga", "p_harga"),
+    ("k_pengiriman", "k_waktu_tunggu"),   # "nunggu paket lama" -> pengiriman
+    ("k_kebersihan", "p_kebersihan"),
+    ("k_fasilitas", "p_fasilitas"),
+    ("k_kebersihan", "k_kualitas"),
+    ("k_fasilitas", "p_suasana"),
+    ("k_kebersihan", "k_bau"),
 ]
 
 STOPWORDS = set("""
@@ -279,6 +332,7 @@ banget sangat sekali udah aja nih tuh kan yg dgn utk buat bisa mau masih lebih p
 sebelum sesudah setelah waktu hari kali orang barang produk pesanan beli dibeli membeli order toko
 penjual admin seller dapat dapet kasih semoga moga next time the and is it to of a in for good very
 nya kah tah mah si oh wah eh aduh hmm hehe wkwk wkwkwk
+disamarkan nama nomor kode akun email
 """.split())
 
 POLA_BINTANG_CHAR = re.compile(r"[★⭐]")
@@ -368,7 +422,7 @@ def normalisasi(teks):
 
 def pecah_klausa(teks):
     """Pecah teks asli menjadi klausa (dipakai untuk kutipan & pencocokan tema)."""
-    bagian = re.split(r"(?:[.!?;\n]+|\s+-\s+|,?\s+(?=(?:tapi|tp|tpi|namun|cuma|cuman|sayangnya|padahal|untung|untungnya)\s))",
+    bagian = re.split(r"(?:[!?;\n]+|\.+(?!\d)|\s+-\s+|,?\s+(?=(?:tapi|tp|tpi|namun|cuma|cuman|sayangnya|padahal|untung|untungnya)\s))",
                       teks, flags=re.I)
     return [b.strip(" ,") for b in bagian if b and b.strip(" ,")]
 
@@ -551,21 +605,29 @@ def muat_kamus_tambahan(path):
         SLANG[str(k).lower()] = str(v).lower()
     ada = {t["id"]: t for t in TEMA}
     for t in data.get("tema") or []:
-        if not isinstance(t, dict) or "id" not in t or not t.get("pola"):
-            raise GalatInput("setiap tema tambahan wajib punya 'id' dan 'pola' (daftar regex)")
-        for p in t["pola"]:
+        if not isinstance(t, dict) or "id" not in t or not (t.get("pola") or t.get("kecualikan")):
+            raise GalatInput("setiap tema tambahan wajib punya 'id' dan 'pola' dan/atau 'kecualikan' (daftar regex)")
+        for kunci in ("pola", "kecualikan"):
+            if kunci in t and not isinstance(t[kunci], list):
+                raise GalatInput("'{}' pada tema '{}' harus berupa daftar regex".format(kunci, t["id"]))
+        t.setdefault("pola", [])
+        for p in list(t["pola"]) + list(t.get("kecualikan", [])):
             try:
                 re.compile(p)
             except re.error as e:
                 raise GalatInput("regex tema '{}' tidak valid: {} ({})".format(t["id"], p, e))
         if t["id"] in ada:
             ada[t["id"]]["pola"] = list(ada[t["id"]]["pola"]) + list(t["pola"])
+            ada[t["id"]]["kecualikan"] = list(ada[t["id"]].get("kecualikan", [])) + list(t.get("kecualikan", []))
         else:
+            if not t["pola"]:
+                raise GalatInput("tema baru '{}' wajib punya 'pola'".format(t["id"]))
             jenis = t.get("jenis", "keluhan")
             if jenis not in ("keluhan", "pujian"):
                 raise GalatInput("jenis tema '{}' harus 'keluhan' atau 'pujian'".format(t["id"]))
             baru = {"id": t["id"], "label": t.get("label", t["id"]), "jenis": jenis,
-                    "pihak": t.get("pihak", "lainnya"), "pola": list(t["pola"])}
+                    "pihak": t.get("pihak", "lainnya"), "pola": list(t["pola"]),
+                    "kecualikan": list(t.get("kecualikan", []))}
             TEMA.append(baru)
             ada[baru["id"]] = baru
 
@@ -574,10 +636,36 @@ def muat_kamus_tambahan(path):
 BOBOT = {1: 5, 2: 4, 3: 3, 4: 2, 5: 1, None: 3}
 
 
+def parse_abaikan(daftar):
+    """'k_respons:3,14' (bisa diulang / dipisah ';') -> {tema: {id,...}}"""
+    hasil = defaultdict(set)
+    ids_tema = {t["id"] for t in TEMA}
+    for item in daftar or []:
+        for bagian in str(item).split(";"):
+            bagian = bagian.strip()
+            if not bagian:
+                continue
+            if ":" not in bagian:
+                raise GalatInput("--abaikan-id '{}' harus berformat tema:id,id (mis. k_respons:3,14)".format(bagian))
+            tema, ids = bagian.split(":", 1)
+            tema = tema.strip()
+            if tema not in ids_tema:
+                raise GalatInput("--abaikan-id: tema '{}' tidak dikenal".format(tema))
+            for x in ids.split(","):
+                x = x.strip()
+                if not x.isdigit():
+                    raise GalatInput("--abaikan-id: id ulasan '{}' harus angka".format(x))
+                hasil[tema].add(int(x))
+    return hasil
+
+
 def analisis(data, info, args):
-    pola_tema = [(t, [re.compile(p) for p in t["pola"]]) for t in TEMA]
+    pola_tema = [(t, [re.compile(p) for p in t["pola"]], [re.compile(p) for p in t.get("kecualikan", [])])
+                 for t in TEMA]
+    abaikan = parse_abaikan(getattr(args, "abaikan_id", None))
     ulasan = []
     bintang_invalid = 0
+    dikecualikan = Counter()
     for d in data:
         b = d["bintang_mentah"]
         if info["format"] == "csv":
@@ -585,30 +673,50 @@ def analisis(data, info, args):
         if b == "invalid":
             bintang_invalid += 1
             b = None
-        teks = d["teks"] or ""
+        # samarkan DULU (sebelum dipecah) agar email/nomor tidak terpotong jadi kutipan yang bocor
+        teks = samarkan(d["teks"] or "")
         klausa = pecah_klausa(teks) if teks else []
         norm_klausa = []
-        tema_hit = defaultdict(list)  # id -> [kutipan asli]
+        tema_hit = defaultdict(list)  # id -> [kutipan]
+        id_ulasan = len(ulasan) + 1
         for kalimat in klausa:
+            hit_kalimat = {}
             for bagian in pecah_koma(kalimat):
                 norm = normalisasi(bagian)
                 norm_klausa.append(norm)
-                hit = [t["id"] for t, pola in pola_tema if any(p.search(norm) for p in pola)]
+                hit = []
+                for t, pola, kecuali in pola_tema:
+                    if any(p.search(norm) for p in pola):
+                        if kecuali and any(k.search(norm) for k in kecuali):
+                            dikecualikan[t["id"]] += 1
+                            continue
+                        hit.append(t["id"])
                 for menang, kalah in PRESEDEN:
                     if menang in hit and kalah in hit:
                         hit.remove(kalah)
                 kutipan = kalimat if len(kalimat) <= 140 else bagian
                 for i in hit:
-                    if kutipan not in tema_hit[i]:
-                        tema_hit[i].append(kutipan)
+                    hit_kalimat.setdefault(i, kutipan)
+            # presedensi antar-keluhan berlaku per kalimat ("ga sesuai deskripsi, warnanya beda" = 1 tema)
+            for menang, kalah in PRESEDEN:
+                if menang.startswith("k_") and kalah.startswith("k_") and menang in hit_kalimat and kalah in hit_kalimat:
+                    del hit_kalimat[kalah]
+            for i, kutipan in hit_kalimat.items():
+                if kutipan not in tema_hit[i]:
+                    tema_hit[i].append(kutipan)
+        for i in list(tema_hit):
+            if id_ulasan in abaikan.get(i, ()):
+                del tema_hit[i]
+                dikecualikan["abaikan_id:" + i] += 1
         # p_umum hanya dihitung bila tidak ada pujian spesifik
         spesifik = [i for i in tema_hit if i.startswith("p_") and i != "p_umum"]
         if spesifik and "p_umum" in tema_hit:
             del tema_hit["p_umum"]
-        u = {"id": len(ulasan) + 1, "baris": d["baris"], "bintang": b, "teks": teks,
+        u = {"id": id_ulasan, "baris": d["baris"], "bintang": b, "teks": teks,
              "norm": " ".join(norm_klausa), "tema": dict(tema_hit), "produk": d.get("produk"),
              "bulan": parse_tanggal(d.get("tanggal_mentah")) if d.get("tanggal_mentah") else None}
         ulasan.append(u)
+    info["dikecualikan"] = dict(dikecualikan)
     return ulasan, bintang_invalid
 
 
@@ -843,7 +951,9 @@ def main():
     ap.add_argument("--contoh", type=int, default=3, help="Jumlah contoh kutipan per tema (default 3)")
     ap.add_argument("--maks-id", type=int, default=30, help="Maks. id ulasan/contoh yang dicantumkan per daftar")
     ap.add_argument("--detail-tema", help="Tampilkan semua ulasan untuk satu id tema (mis. k_pengiriman)")
-    ap.add_argument("--kamus-tambahan", help="File JSON berisi slang/tema tambahan")
+    ap.add_argument("--kamus-tambahan", help="File JSON berisi slang/tema tambahan/pola kecualikan")
+    ap.add_argument("--abaikan-id", action="append",
+                    help="Buang tema dari ulasan tertentu setelah dicek manual, mis. k_respons:3,14 (bisa diulang)")
     ap.add_argument("--format", choices=["json", "teks"], default="json")
     args = ap.parse_args()
     if args.contoh < 1 or args.maks_id < 1:

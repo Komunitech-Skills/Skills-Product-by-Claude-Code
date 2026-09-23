@@ -35,12 +35,17 @@ Gunakan bersama tabel "Foto wajib marketplace" di SKILL.md. Pilih yang relevan; 
 - Sedang dipakai/tersambung (menyala) — layar/lampu tampak nyata.
 - Skala: di tangan atau di samping HP.
 - Label spesifikasi/kotak (tanpa klaim sertifikasi yang tidak dimiliki).
+- **Keselamatan**: produk yang dinyalakan/dicolok (lampu, pemanas, diffuser) jangan ditinggal menyala tanpa diawasi; jauhkan dari
+  kain/karton latar yang bisa panas; cabut setelah selesai; jangan memotret di dekat air.
 
 ## Rumah tangga, dekorasi, kerajinan
 - Foto utama latar polos + **foto dalam ruangan** (meja, rak, dinding) untuk konteks.
 - Detail buatan tangan (serat, anyaman, ukiran) close-up.
 - Skala: di samping benda umum (gelas, buku) + ukuran cm.
 - Proses pembuatan (opsional) untuk cerita produk.
+- **Keselamatan produk api/panas** (lilin, dupa, diffuser, pemanas): nyalakan hanya sebentar untuk difoto, selalu diawasi, di atas
+  alas tahan panas, jauh dari kertas karton/kain latar, gorden, dan styrofoam (mudah terbakar/meleleh); siapkan air/penutup untuk
+  mematikan. Foto "menyala" bisa dibuat singkat, lalu padamkan.
 
 ## Jasa (laundry, salon, servis, jasa desain)
 - Sebelum–sesudah hasil kerja **nyata** (milik pelanggan yang setuju), sudut & cahaya sama.

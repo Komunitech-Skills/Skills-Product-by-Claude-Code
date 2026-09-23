@@ -34,6 +34,7 @@ import io
 import json
 import re
 import sys
+from collections import Counter
 from datetime import date, timedelta
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
@@ -50,6 +51,9 @@ SERATUS = Decimal(100)
 
 class GalatInput(Exception):
     pass
+
+
+PERINGATAN_INPUT = []
 
 
 # ---------------------------------------------------------------- angka & format
@@ -96,6 +100,9 @@ def parse_angka(nilai, nama="angka"):
     elif "," in s:
         bagian = s.split(",")
         if len(bagian) == 2:
+            if len(bagian[1]) == 3 and bagian[0] not in ("", "0"):
+                PERINGATAN_INPUT.append("{}: '{}' dibaca sebagai {},{} (koma = desimal). Jika maksudnya ribuan, "
+                                        "tulis {}.{}".format(nama, asli, bagian[0], bagian[1], bagian[0], bagian[1]))
             s = (bagian[0] or "0") + "." + bagian[1]
         else:
             cek_ribuan(bagian)
@@ -329,6 +336,10 @@ def analisis_produk(p, batas_tipis):
         "laba_per_unit_promo": lpu, "margin_promo_persen": margin,
         "penurunan_laba_per_unit": normal["laba_per_unit"] - lpu,
         "harga_impas_per_unit": impas, "diskon_maksimal_agar_tidak_rugi_persen": diskon_maks,
+        "voucher_per_unit": promo["voucher"] / qty,
+        "diskon_harga_maks_jika_voucher_tetap_persen": (
+            ((1 - (impas + promo["voucher"] / qty) / p["harga_normal"]) * SERATUS).quantize(Decimal("0.1"), ROUND_FLOOR)
+            if impas is not None and promo["voucher"] > 0 else None),
         "harga_minimal_margin_aman": harga_min_aman,
         "catatan": list(p["catatan"]), "peringatan": [],
     }
@@ -461,7 +472,13 @@ def cetak_margin(hasil_list, ringkas, batas_tipis, meta):
         L.append("")
         L.append("- Harga efektif per unit: {} (hemat nyata {}; klaim aman: \"hemat {}%\")".format(
             rp(h["harga_efektif_per_unit"]), persen(h["diskon_nyata_persen"]), int(h["diskon_boleh_diklaim_persen"])))
-        if h["harga_impas_per_unit"] is not None:
+        if h["harga_impas_per_unit"] is not None and h["voucher_per_unit"] > 0:
+            L.append("- Harga impas per unit yang DIBAYAR pembeli (laba Rp 0): {} → diskon maksimal TOTAL (termasuk voucher): {}".format(
+                rp(h["harga_impas_per_unit"]), persen(h["diskon_maksimal_agar_tidak_rugi_persen"])))
+            d2 = h["diskon_harga_maks_jika_voucher_tetap_persen"]
+            L.append("- Jika voucher {}/unit tetap berjalan, diskon harga maksimal hanya: {}".format(
+                rp(h["voucher_per_unit"]), persen(d2) if d2 is not None and d2 > 0 else "0% (tidak ada ruang diskon tambahan)"))
+        elif h["harga_impas_per_unit"] is not None:
             L.append("- Harga impas per unit (laba Rp 0): {} → diskon maksimal agar tidak rugi: {}".format(
                 rp(h["harga_impas_per_unit"]), persen(h["diskon_maksimal_agar_tidak_rugi_persen"])))
         if h["harga_minimal_margin_aman"] is not None:
@@ -499,6 +516,9 @@ def cetak_margin(hasil_list, ringkas, batas_tipis, meta):
                 h["produk"], h["status"], rp(h["laba_per_unit_promo"]),
                 persen(h["margin_promo_persen"]) if h["margin_promo_persen"] is not None else "-",
                 persen(h["diskon_maksimal_agar_tidak_rugi_persen"]) if h["diskon_maksimal_agar_tidak_rugi_persen"] is not None else "-"))
+        if ringkas.get("catatan"):
+            L.append("")
+            L.append("Catatan: " + ringkas["catatan"])
         if ringkas.get("total_target_unit"):
             L.append("")
             L.append("Total target {} unit, dibayar pembeli {}, laba sebelum anggaran {}, anggaran {}, **laba bersih {}**.".format(
@@ -533,13 +553,19 @@ FASE = [
 FASE_LEBARAN = [
     (-30, "Persiapan besar", "Hitung margin, pesan stok/bahan hampers & kemasan, tetapkan batas pre-order; ingat stok pemasok ikut tutup saat libur."),
     (-21, "Pre-order & pemanasan", "Buka pre-order hampers/paket Lebaran; konten persiapan Ramadan/Lebaran yang sopan."),
-    (-14, "THR mulai cair", "Promo utama & bundling; ingatkan batas pesan. THR umumnya paling lambat H-7 (cek aturan terbaru Kemnaker)."),
+    (-14, "THR mulai cair (umumnya paling lambat H-7)", "Promo utama & bundling; ingatkan batas pesan. THR wajib dibayar paling lambat H-7 (cek surat edaran Kemnaker tahun berjalan)."),
     (-10, "Batas kirim antarkota", "Umumkan batas akhir pengiriman antarkota — tanyakan jadwal operasional kurir yang dipakai, jangan menebak."),
     (-7, "Puncak belanja", "Flash sale/pengingat terakhir untuk kiriman antarkota; siapkan pengiriman instan dalam kota."),
     (-3, "Last call dalam kota", "Hanya pengiriman instan/ambil sendiri; informasikan jadwal libur toko."),
     (0, "HARI RAYA", "Ucapan hari raya tanpa jualan keras."),
     (3, "Toko buka kembali", "Info jadwal kirim & balas chat yang tertunda; balas ulasan."),
     (14, "Evaluasi", "Bandingkan target vs realisasi, catat stok sisa & pelajaran untuk tahun depan."),
+]
+FASE_KILAT = [
+    (-3, "Persiapan kilat", "Cek margin, stok, dan harga di sistem; siapkan 1–2 materi promo sederhana."),
+    (-1, "Pengumuman", "Umumkan promo + jam mulai ke pelanggan yang setuju menerima pesan."),
+    (0, "HARI H", "Promo berjalan; pantau stok & chat."),
+    (3, "Evaluasi", "Target vs realisasi."),
 ]
 FASE_PANJANG = [
     (-30, "Persiapan", "Hitung margin, pesan stok (ukuran/varian lengkap), siapkan foto & bundling kebutuhan."),
@@ -584,7 +610,11 @@ def buat_jadwal(args):
         if not 1 <= tg <= 28:
             raise GalatInput("--tanggal-gajian harus 1–28")
         hari_h = date(dari.year, dari.month, tg)
-        if hari_h < dari:
+        if (hari_h - dari).days < 7:
+            if hari_h >= dari:
+                catatan.append("Gajian tgl {} bulan ini tinggal {} hari: linimasa memakai bulan berikutnya. Untuk promo "
+                               "bulan ini, pakai versi kilat (--tanggal {} --pola kilat).".format(
+                                   tg, (hari_h - dari).days, hari_h.isoformat()))
             hari_h = date(dari.year + (dari.month == 12), dari.month % 12 + 1, tg)
         nama = "Gajian (tgl {})".format(tg)
         catatan.append("Tanggal gajian berbeda per target pembeli (swasta sering tgl 25/akhir bulan, ASN awal bulan) — sesuaikan.")
@@ -605,19 +635,47 @@ def buat_jadwal(args):
             pola = "panjang"
         else:
             pola = "standar"
-    fase_dipakai = {"standar": FASE, "lebaran": FASE_LEBARAN, "panjang": FASE_PANJANG}[pola]
+    fase_dipakai = {"standar": FASE, "lebaran": FASE_LEBARAN, "panjang": FASE_PANJANG, "kilat": FASE_KILAT}[pola]
+    akhir = hari_h
+    if args.sampai:
+        akhir = parse_tanggal_iso(args.sampai, "--sampai")
+        if akhir < hari_h:
+            raise GalatInput("--sampai tidak boleh sebelum hari H")
+        if (akhir - hari_h).days > 31:
+            raise GalatInput("rentang promo lebih dari 31 hari — pecah menjadi beberapa kampanye")
     if pola == "lebaran":
         catatan.append("Tanggal Ramadan/Idulfitri mengikuti SKB 3 Menteri & sidang isbat Kemenag; tandai '(perkiraan)' bila belum resmi.")
     baris = []
     for offset, fase, isi in fase_dipakai:
-        tgl = hari_h + timedelta(days=offset)
-        label = "H" if offset == 0 else ("H{}{}".format("+" if offset > 0 else "-", abs(offset)))
-        baris.append({"hari_ke": label, "tanggal": tgl.isoformat(), "tanggal_teks": fmt_tgl(tgl), "fase": fase,
-                      "kegiatan": isi, "sudah_lewat": tgl < dari})
+        acuan = akhir if offset > 0 else hari_h
+        tgl = acuan + timedelta(days=offset)
+        if offset == 0:
+            label = "H" if akhir == hari_h else "H (s.d. {})".format(fmt_tgl(akhir))
+        elif offset > 0 and akhir != hari_h:
+            label = "Selesai+{}".format(offset)
+        else:
+            label = "H{}{}".format("+" if offset > 0 else "-", abs(offset))
+        baris.append({"hari_ke": label, "tanggal": tgl.isoformat(), "tanggal_asli": tgl.isoformat(),
+                      "tanggal_teks": fmt_tgl(tgl), "fase": fase, "kegiatan": isi, "sudah_lewat": False, "digeser": False})
     sisa = (hari_h - dari).days
-    if 0 <= sisa < -fase_dipakai[0][0]:
-        catatan.append("Sisa waktu hanya {} hari: fase yang sudah lewat dipadatkan ke hari-hari tersisa.".format(sisa))
-    return {"momen": nama, "pola": pola, "hari_h": hari_h.isoformat(), "hari_h_teks": fmt_tgl(hari_h),
+    # fase sebelum hari H yang tanggalnya sudah lewat BENAR-BENAR digeser ke hari tersisa (dari .. H-1), urutan tetap
+    lewat = [b for b in baris if b["tanggal"] < dari.isoformat() and b["tanggal"] < hari_h.isoformat()]
+    if lewat and sisa >= 1:
+        k = len(lewat)
+        berikut = [b["tanggal"] for b in baris if dari.isoformat() <= b["tanggal"] < hari_h.isoformat()]
+        batas = min([date.fromisoformat(t) for t in berikut] + [hari_h])
+        jendela = max((batas - dari).days, 1)
+        for i, b in enumerate(lewat):
+            baru = dari + timedelta(days=(i * jendela) // k)
+            b.update({"tanggal": baru.isoformat(), "tanggal_teks": fmt_tgl(baru), "digeser": True})
+        catatan.append("Sisa waktu hanya {} hari: {} fase persiapan yang tanggal aslinya sudah lewat DIGESER ke "
+                       "{} s.d. {} (urutan tetap; kerjakan lebih ringkas).".format(
+                           sisa, k, fmt_tgl(dari), fmt_tgl(hari_h - timedelta(days=1))))
+    elif lewat:
+        catatan.append("Hari H sudah hari ini/lewat: fase persiapan tidak bisa dijalankan sesuai jadwal.")
+    for b in baris:
+        b["sudah_lewat"] = b["tanggal"] < dari.isoformat()
+    return {"momen": nama, "pola": pola, "hari_h": hari_h.isoformat(), "sampai": akhir.isoformat(), "hari_h_teks": fmt_tgl(hari_h),
             "tanggal_acuan": dari.isoformat(), "sisa_hari": sisa, "linimasa": baris, "catatan": catatan}
 
 
@@ -655,8 +713,9 @@ def main():
     j.add_argument("--tanggal", help="Tanggal hari H (YYYY-MM-DD) untuk momen yang tanggalnya berubah")
     j.add_argument("--tanggal-gajian", type=int, default=25)
     j.add_argument("--dari", help="Tanggal acuan (YYYY-MM-DD), default hari ini")
-    j.add_argument("--pola", choices=["auto", "standar", "lebaran", "panjang"], default="auto",
-                   help="standar H-14..H+7; lebaran H-30..H+14; panjang (back to school) H-30..H+14")
+    j.add_argument("--pola", choices=["auto", "standar", "lebaran", "panjang", "kilat"], default="auto",
+                   help="standar H-14..H+7; lebaran H-30..H+14; panjang (back to school) H-30..H+14; kilat H-3..H+3")
+    j.add_argument("--sampai", help="Tanggal akhir promo (YYYY-MM-DD) untuk promo beberapa hari; fase sesudah H dihitung dari tanggal ini")
     j.add_argument("--format", choices=["teks", "json"], default="teks")
     args = ap.parse_args()
     if not args.perintah:
@@ -672,8 +731,8 @@ def main():
                 print("| Hari | Tanggal | Fase | Kegiatan |")
                 print("|---|---|---|---|")
                 for b in h["linimasa"]:
-                    print("| {} | {}{} | {} | {} |".format(b["hari_ke"], b["tanggal_teks"],
-                                                         " (sudah lewat)" if b["sudah_lewat"] else "", b["fase"], b["kegiatan"]))
+                    ket = " (digeser dari {})".format(b["tanggal_asli"]) if b["digeser"] else (" (sudah lewat)" if b["sudah_lewat"] else "")
+                    print("| {} | {}{} | {} | {} |".format(b["hari_ke"], b["tanggal_teks"], ket, b["fase"], b["kegiatan"]))
                 for c in h["catatan"]:
                     print("- Catatan: " + c)
             return
@@ -700,9 +759,18 @@ def main():
                 "biaya_platform", "biaya_per_pesanan", "biaya_lain", "item_per_pesanan", "target_unit",
                 "unit_normal", "anggaran", "bulatkan")}]
             anggaran_kampanye = NOL
+            umum = {}
         hasil = [analisis_produk(siapkan_produk(c, "Produk {}".format(i)), batas) for i, c in enumerate(produk_cfg, 1)]
         ringkas = None
-        if len(hasil) > 1 or anggaran_kampanye > 0:
+        nama_c = Counter(h["produk"].strip().lower() for h in hasil)
+        mode_opsi = (args.config and str(umum.get("bandingkan", "")).lower() in ("true", "1", "ya", "yes")) or \
+            any(v > 1 for v in nama_c.values())
+        if mode_opsi and len(hasil) > 1:
+            ringkas = {"jumlah_produk": len(hasil), "mode": "perbandingan_opsi",
+                       "status": {s: sum(1 for h in hasil if h["status"] == s) for s in ("RUGI", "TIPIS", "AMAN")},
+                       "catatan": "Ada beberapa opsi untuk produk yang sama (atau \"bandingkan\": true): total TIDAK dijumlah. "
+                                  "Pilih satu opsi per produk, lalu jalankan ulang untuk rencana final."}
+        elif len(hasil) > 1 or anggaran_kampanye > 0:
             tot_unit = sum((h["kampanye"]["target_unit"] for h in hasil if "kampanye" in h and "target_unit" in h["kampanye"]), NOL)
             ringkas = {"jumlah_produk": len(hasil),
                        "status": {s: sum(1 for h in hasil if h["status"] == s) for s in ("RUGI", "TIPIS", "AMAN")}}
@@ -716,9 +784,12 @@ def main():
             else "TIDAK dihitung (0%) — jika jualan di marketplace, isi --biaya-platform"
         if args.format == "json":
             print(json.dumps(ke_json({"versi_script": VERSI, "batas_margin_aman_persen": batas, "produk": hasil,
-                                      "ringkasan": ringkas, "biaya_platform": biaya_meta}), ensure_ascii=False, indent=2))
+                                      "ringkasan": ringkas, "biaya_platform": biaya_meta,
+                                      "peringatan_input": PERINGATAN_INPUT}), ensure_ascii=False, indent=2))
         else:
             print(cetak_margin(hasil, ringkas, batas, biaya_meta))
+            for w in PERINGATAN_INPUT:
+                print("PERINGATAN INPUT: " + w)
     except GalatInput as e:
         print("ERROR: " + str(e), file=sys.stderr)
         sys.exit(2)

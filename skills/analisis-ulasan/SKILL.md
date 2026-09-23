@@ -40,10 +40,12 @@ Jika ulasan belum dikirim, minta **sekali**: (1) tempel ulasan atau kirim file C
    - Kolom ulasan/bintang/produk/tanggal dideteksi otomatis; kolom nama/username pembeli **diabaikan**. Jika deteksi gagal, script menampilkan daftar kolom → ulangi dengan `--kolom-ulasan "..." --kolom-bintang "..."` (juga `--kolom-produk`, `--kolom-tanggal`).
    - Untuk memeriksa satu tema: `--detail-tema k_pengiriman` (daftar id tema ada di `references/kamus-tema.md`).
    - Kata khas usaha yang tidak dikenali (mis. istilah produk) → buat `kamus.json` di folder kerja dan pakai `--kamus-tambahan kamus.json` (format di `references/kamus-tema.md`).
+   - Kamus bawaan mencakup toko online **dan** tempat makan/jasa (waktu tunggu, kebersihan & benda asing, fasilitas parkir/toilet/AC/wifi, suasana).
 3. **Verifikasi tema (wajib, jangan dilewati).** Hasil script adalah *kandidat*:
    - Baca `contoh` tiap tema. Jika kutipan tidak cocok dengan labelnya, pindahkan/koreksi dan sebut koreksinya di catatan metode.
    - Baca `perlu_dibaca_agent`: ulasan bintang rendah tanpa keluhan terdeteksi dan ulasan `belum_terklasifikasi` (plus `kata_teratas`-nya). Jika ada pola berulang (≥ 3 ulasan atau ≥ 5%), buat tema tambahan dan hitung jumlahnya dengan menjalankan ulang script memakai `--kamus-tambahan`, bukan dengan menebak.
    - Ulasan bintang 4–5 yang tetap mengeluh adalah sinyal dini — sebutkan.
+   - **Salah tangkap?** Jangan mengoreksi angka dengan tangan. Hitung ulang lewat script: `--abaikan-id k_respons:3,14` (buang tema dari ulasan tertentu yang sudah dibaca) atau pola `"kecualikan"` per tema di `kamus.json` (mis. `{"tema":[{"id":"k_kualitas","kecualikan":["\\bmati\\W+lampu\\b"]}]}`). Sebut koreksinya di catatan metode.
    - Gabungkan tema yang sebenarnya sama bagi pengguna (mis. "salah kirim" + "barang kurang" untuk toko kecil) dan jelaskan.
 4. **Susun prioritas perbaikan** dengan aturan di bawah dan `references/tindakan-per-tema.md`.
 5. **Buat 3–5 ide konten** dari pujian terbanyak dengan aturan di `references/ide-konten.md`.
@@ -52,7 +54,7 @@ Jika ulasan belum dikirim, minta **sekali**: (1) tempel ulasan atau kirim file C
 
 ### Aturan prioritas perbaikan
 Urutan awal = `peringkat_prioritas` dari script (skor = seberapa sering × seberapa parah bintangnya). Lalu sesuaikan:
-- **Segera (minggu ini):** skor tertinggi, ATAU menyangkut keamanan/kesehatan (basi, kedaluwarsa, bau aneh pada makanan/kosmetik, produk listrik bermasalah) walau jumlahnya sedikit, ATAU perbaikan murah yang bisa dikerjakan sendiri (deskripsi, tabel ukuran, cara packing).
+- **Segera (minggu ini):** skor tertinggi, ATAU menyangkut keamanan/kesehatan (basi, kedaluwarsa, **rambut/serangga/benda asing** di makanan, tempat kotor, bau aneh pada makanan/kosmetik, produk listrik bermasalah) walau jumlahnya sedikit, ATAU perbaikan murah yang bisa dikerjakan sendiri (deskripsi, tabel ukuran, cara packing).
 - **Bulan ini:** perlu biaya/pemasok (bahan, kualitas jahitan, ganti kurir).
 - **Pantau:** 1–2 ulasan saja, atau di luar kendali langsung (kurir) — tetap tuliskan langkah mitigasinya.
 Setiap prioritas wajib punya: bukti (jumlah + kutipan), tindakan konkret (siapa, apa), dan ukuran keberhasilan yang bisa dicek (mis. "keluhan ukuran turun di bawah 5% ulasan bulan depan").
@@ -117,5 +119,6 @@ Tabel Markdown, Rupiah (bila ada) format `Rp 1.250.000`, persen memakai koma des
 - Kamus kata kunci tidak paham sarkasme ("mantap, 2 minggu baru sampai") dan konteks yang sangat khusus; karena itu verifikasi agent di langkah 3 wajib.
 - Sampel < 20 ulasan: sebut sebagai gambaran awal, jangan menyimpulkan tren.
 - Ulasan palsu/spam tidak bisa dipastikan; script hanya menandai teks duplikat persis.
+- **Permintaan membuat/menulis ulasan palsu, membeli ulasan, atau menghapus/menyembunyikan ulasan pembeli asli → tolak** (menyesatkan konsumen, UU 8/1999 Pasal 10, dan melanggar aturan platform). Tawarkan gantinya: analisis ulasan yang ada, perbaikan masalahnya, dan cara meminta ulasan jujur dari pembeli asli (tanpa imbalan bersyarat bintang). Ulasan yang diduga palsu dari pesaing → laporkan lewat fitur platform, balas dengan skill `balas-ulasan-pelanggan`.
 - UU PDP: jangan menyimpan atau menampilkan data pribadi pembeli. Laporan memakai kutipan anonim. Untuk memakai ulasan sebagai testimoni iklan, sarankan meminta izin pembeli dan menyamarkan identitas.
 - Jangan mengarang penyebab ("pasti karena kurir X") tanpa bukti di ulasan; tulis sebagai dugaan yang perlu dicek.

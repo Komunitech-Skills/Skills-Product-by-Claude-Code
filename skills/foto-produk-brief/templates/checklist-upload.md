@@ -4,7 +4,7 @@
 - [ ] Foto utama: latar polos terang, produk utuh di tengah, mengisi ±70–85% bingkai, rasio 1:1.
 - [ ] Tidak ada nomor WA, link, atau ajakan transaksi di luar platform pada foto (dilarang di marketplace).
 - [ ] Tidak ada teks promo/watermark besar di foto utama; teks & infografik hanya di foto tambahan.
-- [ ] Warna di layar sudah dibandingkan dengan barang asli; tidak ada filter yang mengubah warna.
+- [ ] Tes warna: kertas putih di foto tampak putih netral, dan warna produk di layar sama dengan barang asli (dilihat berdampingan di cahaya siang); tidak ada filter yang mengubah warna.
 - [ ] Semua foto tajam (tidak goyang/berkabut), terang, tanpa bayangan HP/tangan yang mengganggu.
 - [ ] Ada foto ukuran/skala dengan angka ukuran yang sudah diukur ulang.
 - [ ] Isi paket di foto = isi yang benar-benar dikirim; varian diberi nama yang sama dengan pilihan varian di listing.

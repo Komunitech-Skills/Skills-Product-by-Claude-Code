@@ -36,10 +36,13 @@ Jika produk belum jelas, tanyakan **sekali** (maks. 5 pertanyaan bernomor): prod
 1. **Tentukan kategori** dan ambil shot list dasar + catatan khusus kategori dari `references/shot-list-kategori.md`.
 2. **Susun shot list** 8–10 foto (bukan lebih): foto wajib marketplace (tabel di bawah) disesuaikan dengan produk. Setiap foto harus menjawab satu pertanyaan pembeli (Seperti apa? Sebesar apa? Bahannya? Cara pakai? Dapat apa saja?).
 3. **Tulis setup** dari `references/teknik-hp.md`: lokasi dekat jendela & jam, latar, pantulan cahaya, properti murah (hanya yang relevan), pengaturan HP.
-4. **Tentukan rasio per kegunaan**: 1:1 untuk foto marketplace; 3:4 (atau 4:5 untuk feed Instagram) untuk feed; 9:16 untuk Story/Reels/TikTok/video. Sarankan memotret dengan ruang kosong di sekeliling produk agar bisa dipotong ke beberapa rasio.
-5. **Buat 2–3 ide video 15–30 detik** dengan storyboard per detik (`references/ide-video.md`): hook 0–3 detik, isi, penutup/CTA, teks layar, suara.
-6. **Tambahkan checklist sebelum upload** (`templates/checklist-upload.md`) dan urutan upload + penamaan file.
-7. Periksa checklist di bawah sebelum mengirim.
+4. **Tes warna (wajib, 1 menit)**: sebelum sesi, foto produk bersama selembar kertas putih HVS di cahaya jendela. Di layar,
+   kertas harus terlihat putih netral (tidak kuning/biru) dan warna produk sama dengan aslinya bila dilihat berdampingan.
+   Jika beda: matikan lampu ruangan, pindah ke cahaya siang, jangan pakai filter. Ulangi tes setelah menyunting.
+5. **Tentukan rasio per kegunaan**: 1:1 untuk foto marketplace; 3:4 (atau 4:5 untuk feed Instagram) untuk feed; 9:16 untuk Story/Reels/TikTok/video. Sarankan memotret dengan ruang kosong di sekeliling produk agar bisa dipotong ke beberapa rasio.
+6. **Buat 2–3 ide video 15–30 detik** dengan storyboard per detik (`references/ide-video.md`): hook 0–3 detik, isi, penutup/CTA, teks layar, suara.
+7. **Tambahkan checklist sebelum upload** (`templates/checklist-upload.md`) dan urutan upload + penamaan file.
+8. Periksa checklist di bawah sebelum mengirim.
 
 ### Foto wajib marketplace (urutan upload yang disarankan)
 | Slot | Foto | Menjawab | Aturan kunci |
@@ -53,6 +56,11 @@ Jika produk belum jelas, tanyakan **sekali** (maks. 5 pertanyaan bernomor): prod
 | 7 | **Varian** berjajar (warna/rasa/ukuran) | "Pilihannya apa?" | Diberi label nama varian, pencahayaan sama |
 | 8 | Label/komposisi/informasi kemasan (jika ada) | "Aman? Isinya apa?" | Foto label asli; jangan menambah klaim (BPOM/halal/SNI) yang tidak dimiliki |
 | 9 | Infografik keunggulan (opsional) | "Kenapa pilih ini?" | Teks singkat 3–4 poin, fakta dari pengguna |
+
+**Jika slot foto platform lebih sedikit dari shot list**, pakai urutan prioritas: foto utama → varian → ukuran/skala → sedang
+dipakai → detail → isi paket → label → infografik. Foto sisanya dipakai di deskripsi, sosmed, atau katalog WA.
+
+**Produk yang menyala/api/listrik** (lilin, diffuser, lampu, elektronik): tulis catatan keselamatan di brief (lihat `references/shot-list-kategori.md`).
 
 ## Format output
 ```
@@ -73,7 +81,7 @@ Posisi jendela–produk–pemantul (sketsa teks), pengaturan kamera langkah demi
 | Detik | Gambar | Teks di layar | Suara |
 
 ## 5. Checklist sebelum upload
-## 6. Urutan upload & nama file
+## 6. Urutan upload & nama file (+ urutan prioritas bila slot terbatas)
 ```
 
 ## Contoh
@@ -95,6 +103,8 @@ Posisi jendela–produk–pemantul (sketsa teks), pengaturan kamera langkah demi
 - [ ] Shot list 8–10 foto, masing-masing menjawab satu pertanyaan pembeli; foto utama latar polos 1:1.
 - [ ] Setup bisa dikerjakan dengan HP + jendela + properti murah/gratis; tidak mewajibkan alat mahal.
 - [ ] Rasio & kegunaan setiap foto/video jelas (1:1, 3:4/4:5, 9:16).
+- [ ] Ada langkah tes warna (kertas putih + bandingkan dengan barang asli) dan urutan prioritas bila slot terbatas.
+- [ ] Pengaturan kamera ditulis dengan catatan "beda per merek HP"; jam foto disesuaikan arah jendela.
 - [ ] Ada ide video 15–30 detik dengan storyboard per detik, hook di 3 detik pertama.
 - [ ] Tidak ada saran yang membuat foto menyesatkan (warna diubah, ukuran dipalsukan, klaim BPOM/halal/"terlaris" yang tidak diberikan pengguna, before-after tanpa bukti).
 - [ ] Ketentuan platform yang berubah-ubah (jumlah slot, ukuran file, durasi video) ditulis "cek ketentuan terbaru di Seller Center", bukan angka pasti.

@@ -15,6 +15,9 @@ bukan saran umum seperti "tingkatkan kualitas".
 | Harga mahal | Tonjolkan nilai (bahan, ukuran, garansi) di listing; tawarkan paket hemat | Cek harga pesaing & margin (skill `harga-jual-marketplace`) | Keluhan harga turun tanpa menurunkan margin |
 | Rasa | Standarkan takaran (timbang, bukan kira-kira); tulis level pedas/manis dengan jelas | Uji rasa berkala per batch | Keluhan rasa berubah turun |
 | Bau / kedaluwarsa | **Prioritas keamanan**: tarik stok bermasalah, cek penyimpanan (panas/lembap), terapkan FIFO, cantumkan tanggal kedaluwarsa jelas | Kurangi stok per batch; cek izin edar bila produk pangan/kosmetik | Nol keluhan basi/kedaluwarsa |
+| Kebersihan / benda asing | **Prioritas keamanan**: cek ulang SOP dapur (penutup rambut, sarung tangan, penutup makanan), bersihkan area & meja per jam, hubungi pembeli yang menemukan benda asing secara pribadi | Jadwal kebersihan tertulis + pengecekan harian (skill `sop-writer`); pengendalian hama | Nol keluhan benda asing/kotor |
+| Waktu tunggu lama | Tampilkan estimasi waktu saat pesan; siapkan bahan (mise en place) sebelum jam ramai; tambah 1 orang di jam puncak | Sederhanakan menu lambat; sistem nomor antrean | Waktu tunggu rata-rata ≤ target (mis. 15 menit) |
+| Fasilitas (parkir, toilet, AC, wifi) | Info parkir alternatif di Google Maps/sosmed; jadwal cek toilet per 2 jam; servis AC | Evaluasi biaya perbaikan vs dampak ke ulasan | Keluhan fasilitas turun |
 | Retur/garansi dipersulit | Tulis kebijakan retur singkat di deskripsi & template chat; minta video unboxing secara sopan | SOP komplain (skill `sop-writer`) | Komplain selesai < 3 hari |
 
 Catatan:

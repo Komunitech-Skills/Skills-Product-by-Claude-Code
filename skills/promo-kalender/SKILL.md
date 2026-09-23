@@ -26,7 +26,7 @@ Membuat rencana promo yang **tetap untung**: mekanisme dipilih berdasarkan hitun
 | Produk yang dipromokan + harga normal + HPP/modal per unit | Ya | — (tanyakan; HPP belum tahu → tawarkan `hitung-hpp`) |
 | Jualan di mana & total % potongan platform | Ya jika marketplace | 0% bila jualan langsung/WA; **jangan mengarang** — minta dari Seller Center |
 | Mekanisme yang diinginkan | Tidak | Agent menyimulasikan 2–3 opsi dan merekomendasikan yang labanya terbaik |
-| Penjualan normal per periode (unit) | Tidak | Tidak ada pembanding laba "tanpa promo" (sebut) |
+| Penjualan normal (unit) **dalam periode yang sama panjang dengan promo** (mis. 80/bulan → ±8 untuk promo 3 hari) | Tidak | Tidak ada pembanding laba "tanpa promo" (sebut) |
 | Target unit & anggaran (iklan, materi) | Tidak | Target = kelipatan yang dibutuhkan agar laba sama; anggaran Rp 0 |
 | Biaya per pesanan, subsidi ongkir, batas margin aman | Tidak | Rp 0; Rp 0; 10% |
 
@@ -49,12 +49,16 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - Status **RUGI** → jangan direkomendasikan. Sajikan alternatif yang sudah dihitung ulang (diskon ≤ `diskon maksimal agar tidak rugi`, bundling, hadiah).
    - Status **TIPIS** → hanya untuk produk pemancing berkuota; tulis risikonya.
    - Pakai angka "klaim aman" dari script untuk materi promo (dibulatkan ke bawah).
+   - Ada voucher? "Diskon maksimal TOTAL (termasuk voucher)" = gabungan diskon harga + voucher. Batas diskon harga saat voucher tetap berjalan ada di baris "Jika voucher ... tetap berjalan". Jangan menjumlahkan keduanya.
+   - **Membandingkan opsi**: jalankan tiap opsi terpisah (atau config dengan nama produk sama / `"bandingkan": true` — ringkasan tidak dijumlah). Config dengan total kampanye hanya untuk rencana final (satu opsi per produk).
+   - Perhatikan baris `PERINGATAN INPUT` (mis. "1,250" dibaca 1,25) dan konfirmasi ke pengguna.
 4. **Buat linimasa bertanggal:**
    ```bash
    python3 <folder-skill-ini>/scripts/cek_promo.py jadwal --momen 11.11
    python3 <folder-skill-ini>/scripts/cek_promo.py jadwal --momen "Lebaran 2027 (perkiraan)" --tanggal 2027-03-10
    ```
-   (`--momen gajian --tanggal-gajian 25`, `--dari YYYY-MM-DD` untuk tanggal acuan, `--pola lebaran|panjang|standar`).
+   (`--momen gajian --tanggal-gajian 25`, `--dari YYYY-MM-DD` untuk tanggal acuan, `--sampai YYYY-MM-DD` untuk promo beberapa hari, `--pola lebaran|panjang|standar|kilat`).
+   - Waktu mepet: fase persiapan yang tanggalnya sudah lewat **digeser otomatis** ke hari tersisa (ditandai "digeser dari ..."). Gajian yang tinggal < 7 hari otomatis dipindah ke bulan berikutnya; untuk promo bulan ini pakai `--tanggal <tgl> --pola kilat`.
 5. **Tulis rencana** dengan format di bawah: angka & tabel margin disalin **apa adanya** dari script.
 6. **Syarat & ketentuan promo** ditulis jujur: periode & jam, kuota, minimum belanja, produk yang ikut, tidak dapat digabung (jika benar), cara klaim hadiah. Jangan pakai "terlaris", "harga termurah", atau hitung mundur palsu.
 7. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tunjukkan langkahnya, dan tulis "dihitung manual, belum diverifikasi script".
