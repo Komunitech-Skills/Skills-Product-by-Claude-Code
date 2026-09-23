@@ -19,6 +19,7 @@ import argparse
 import csv
 import io
 import json
+import re
 import sys
 from datetime import date, datetime, timedelta
 
@@ -138,6 +139,15 @@ def susun(mulai, jumlah, pilar, platform, gajian, momen_user):
     info = [momen_hari(d, gajian, momen_user) for d in hari]
     paksa_promo = [any(t == "promo" for _, t in m) for m in info]
     larang_promo = [any(t == "peringatan" for _, t in m) for m in info]
+    tanggal_tua = [any(n.startswith("Tanggal tua") for n, _ in m) for m in info]
+    bentrok = []
+    for i, d in enumerate(hari):
+        if paksa_promo[i] and larang_promo[i]:
+            promo = [n for n, t in info[i] if t == "promo" and not n.startswith("Hari gajian")]
+            if promo:
+                bentrok.append("Momen promo '{}' pada {} bertepatan dengan hari peringatan ({}); TIDAK dijadwalkan "
+                               "sebagai promo — geser tanggalnya.".format(
+                                   "; ".join(promo), fmt_tgl(d), "; ".join(n for n, t in info[i] if t == "peringatan")))
 
     baris, putar = [], 0
     for i, d in enumerate(hari):
@@ -149,12 +159,13 @@ def susun(mulai, jumlah, pilar, platform, gajian, momen_user):
                 kandidat = pilar[putar % len(pilar)]
                 putar += 1
                 dekat_promo = any(paksa_promo[j] for j in (i - 1, i + 1) if 0 <= j < len(hari))
-                if idx_promo is not None and kandidat == pilar[idx_promo] and (larang_promo[i] or dekat_promo):
+                if idx_promo is not None and kandidat == pilar[idx_promo] and (
+                        larang_promo[i] or dekat_promo or tanggal_tua[i]):
                     continue
                 p = kandidat
                 break
             if p is None:
-                p = pilar[0] if not (idx_promo == 0 and larang_promo[i]) else pilar[-1]
+                p = next((x for j, x in enumerate(pilar) if j != idx_promo), pilar[0])
         catatan = "; ".join(n for n, _ in info[i])
         if larang_promo[i]:
             catatan += " — hari peringatan: konten penghormatan, hindari hard-selling"
@@ -163,7 +174,32 @@ def susun(mulai, jumlah, pilar, platform, gajian, momen_user):
             "Momen": catatan, "Pilar": p, "Platform": " + ".join(platform), "Format": format_untuk(p),
             "Ide Konten": "", "Hook / Judul": "", "CTA": "", "Status": "Belum",
         })
-    return baris
+    return baris, bentrok
+
+
+KATA_PROMO = re.compile(r"\b(?:promo|diskon|sale|potongan|gratis|cashback|flash|voucher|beli\s*\d+|harga\s+spesial)\b",
+                        re.IGNORECASE)
+
+
+def periksa_isi(baris, gajian, momen_user):
+    """Hitung ulang momen per tanggal pada hasil isian dan peringatkan promo di hari yang tidak pantas."""
+    pesan = []
+    for r in baris:
+        d = parse_tanggal(r["Tanggal"])
+        info = momen_hari(d, gajian, momen_user)
+        peringatan = [n for n, t in info if t == "peringatan"]
+        if not r["Momen"].strip() and info:
+            r["Momen"] = "; ".join(n for n, _ in info) + (
+                " — hari peringatan: konten penghormatan, hindari hard-selling" if peringatan else "")
+        teks = " ".join([r["Pilar"], r["Ide Konten"], r["Hook / Judul"], r["CTA"]])
+        berbau_promo = bool(re.search(r"promo|jual", r["Pilar"], re.IGNORECASE)) or bool(KATA_PROMO.search(teks))
+        if peringatan and berbau_promo:
+            pesan.append("Baris {} ({}) adalah hari peringatan ({}) tetapi berisi promo/jualan — ganti dengan konten "
+                         "penghormatan/edukasi.".format(r["No"], r["Tanggal_tampil"], "; ".join(peringatan)))
+        elif any(n.startswith("Tanggal tua") for n, _ in info) and re.search(r"promo|jual", r["Pilar"], re.IGNORECASE):
+            pesan.append("Baris {} ({}) jatuh di tanggal tua tetapi berpilar promo — sebaiknya konten nilai/hemat.".format(
+                r["No"], r["Tanggal_tampil"]))
+    return pesan
 
 
 def baca_isi(path):
@@ -257,12 +293,13 @@ def main():
         MOMEN_TETAP = {}
     if a.isi:
         baris = baca_isi(a.isi)
+        bentrok = periksa_isi(baris, gajian, momen_user)
         mulai = parse_tanggal(baris[0]["Tanggal"])
         akhir = parse_tanggal(baris[-1]["Tanggal"])
         a.hari = len(baris)
         pilar = list(dict.fromkeys(b["Pilar"] for b in baris))
     else:
-        baris = susun(mulai, a.hari, pilar, platform, gajian, momen_user)
+        baris, bentrok = susun(mulai, a.hari, pilar, platform, gajian, momen_user)
         akhir = mulai + timedelta(days=a.hari - 1)
     di_luar = sorted(d.isoformat() for d in momen_user if not mulai <= d <= akhir)
 
@@ -270,7 +307,7 @@ def main():
     for b in baris:
         hitung[b["Pilar"]] = hitung.get(b["Pilar"], 0) + 1
     ringkasan = {"mulai": mulai.isoformat(), "selesai": akhir.isoformat(), "jumlah_hari": a.hari,
-                 "sebaran_pilar": hitung, "momen_di_luar_rentang": di_luar, "peringatan": []}
+                 "sebaran_pilar": hitung, "momen_di_luar_rentang": di_luar, "peringatan": list(bentrok)}
     idx_promo = next((x for x in pilar if "promo" in x.lower() or "jual" in x.lower()), None)
     if idx_promo and hitung.get(idx_promo, 0) > 0.4 * a.hari:
         ringkasan["peringatan"].append(

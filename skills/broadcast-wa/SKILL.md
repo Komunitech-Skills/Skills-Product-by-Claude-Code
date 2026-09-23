@@ -41,12 +41,15 @@ pakai default dan sebutkan asumsinya di akhir.
    belum punya data persetujuan, tetap bantu buat pesannya, tapi sertakan cara mengumpulkan izin.
 2. **Tulis 3–5 variasi pesan** (±300–600 karakter, maks. ±700) dengan pembuka, isi, dan penutup yang
    berbeda-beda, bukan sekadar ganti satu kata. Setiap variasi wajib:
-   - menyapa dengan `{sapaan} {nama}` (hasilnya mis. "Bu Siti", "Kak Rina");
+   - menyapa dengan `{sapaan} {nama}` (hasilnya mis. "Bu Siti", "Kak Rina") — kecuali versi khusus daftar
+     siaran WhatsApp Business, yang memakai sapaan umum tanpa placeholder;
    - menyebut nama toko dan alasan singkat mereka menerima pesan (mis. "pelanggan setia Laundry X");
    - isi promo yang **persis** dari pengguna (harga, periode, syarat) — **jangan menghitung angka baru**
      (persen hemat, total); jika pengguna ingin menyebut "hemat X%", minta angkanya;
    - satu CTA jelas (balas chat, klik 1 link, datang ke toko);
    - **teks berhenti**, mis. "Tidak ingin menerima info promo lagi? Balas STOP."
+     Harus berupa kalimat instruksi ("Balas STOP/BERHENTI", "tidak ingin menerima..."); kata "stop" saja
+     (mis. "promo non-stop") tidak dihitung oleh script.
    Emoji secukupnya (maks. 3), tanpa huruf kapital semua, tanpa "URGENT!!!", maks. 1 link.
 3. **Saran jadwal kirim** sesuai audiens: jam kirim, hari, bertahap per batch (lihat references).
 4. **Jika pengguna memberi file kontak CSV**, simpan variasi ke file teks (dipisah baris `---`), lalu jalankan
@@ -55,10 +58,14 @@ pakai default dan sebutkan asumsinya di akhir.
    python3 <folder-skill-ini>/scripts/siapkan_broadcast.py --kontak pelanggan.csv --pesan pesan.txt \
      --mulai "2026-09-28 10:00" --jam-kirim 09:00-20:00 --output broadcast_siap.csv
    ```
-   Script hanya meloloskan kontak yang setuju, membuang yang minta berhenti (`--daftar-berhenti stop.txt`),
+   Script hanya meloloskan kontak yang setuju, membuang yang minta berhenti (kolom Berhenti berisi apa pun
+   selain kosong/tidak/0/-, misalnya "ya", "STOP", "x", atau tanggal; juga `--daftar-berhenti stop.txt`).
+   Nomor yang pernah berhenti/tidak setuju di satu baris tetap dikecualikan walau muncul lagi di baris lain. Script juga
    merapikan nomor ke 628xxx, membuang duplikat, menggilir variasi, membuat jadwal & link wa.me per
-   kontak. Script **menolak** berjalan bila ada variasi tanpa teks berhenti atau file tanpa kolom
-   persetujuan. Laporkan ringkasan (siap kirim, dilewati + alasannya, sebaran variasi, jadwal pertama/terakhir).
+   kontak, dan melewati Jumat 11.30–13.00 (geser ke 13.00; matikan dengan `--kirim-saat-jumatan` bila
+   audiens tidak relevan). Script **menolak** berjalan bila ada variasi tanpa teks berhenti atau file tanpa kolom
+   persetujuan. **Jangan** memakai `--saya-pastikan-semua-setuju` bila pengguna menyebut nomor berasal dari
+   database beli, grup, atau sumber tanpa izin. Laporkan ringkasan (siap kirim, dilewati + alasannya, sebaran variasi, jadwal pertama/terakhir).
    Jangan tampilkan seluruh daftar nomor di chat — cukup sebutkan nama file hasilnya.
    **Jika Python tidak bisa dijalankan:** beri langkah manual: saring kolom Persetujuan = ya di
    spreadsheet, hapus yang berhenti & duplikat, bagi per 20 kontak, kirim satu per satu dengan jeda.

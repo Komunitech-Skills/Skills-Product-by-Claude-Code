@@ -53,7 +53,9 @@ def parse_angka(teks, nama):
     elif "," in s:
         bagian = s.split(",")
         s = s.replace(",", ".") if (len(bagian) == 2 and len(bagian[1]) != 3) else s.replace(",", "")
-    elif s.count(".") > 1 or (s.count(".") == 1 and len(s.split(".")[1]) == 3 and pengali == 1):
+    elif s.count(".") > 1 or (s.count(".") == 1 and len(s.split(".")[1]) == 3
+                              and (pengali == 1 or re.match(r"^\d{1,3}(\.\d{3})+$", s))):
+        # '15.000' / '1.250.000' -> ribuan; '1.500rb' -> 1500 x 1000. '1.5jt' tetap desimal.
         s = s.replace(".", "")
     try:
         return Decimal(s) * pengali
@@ -132,7 +134,7 @@ def main():
             "potongan_teks": rp(potongan),
             "persen_hemat_boleh_diucapkan": int(pct),
             "kalimat_live": "Harga normal {}, khusus live jadi {} — hemat {}{}.".format(
-                rp(normal), rp(live), rp(potongan), " (±{}%)".format(int(pct)) if pct >= 1 else ""),
+                rp(normal), rp(live), rp(potongan), " ({}%)".format(int(pct)) if pct >= 1 else ""),
         })
         if pct >= 50:
             hasil["peringatan"].append(
@@ -174,10 +176,12 @@ def main():
         if hemat <= 0:
             hasil["peringatan"].append("Paket isi {} ({}) TIDAK lebih hemat dari harga normal satuan. Jangan disebut promo.".format(
                 isi, rp(harga)))
-        elif live is not None and per_pcs > live:
+        elif live is not None and per_pcs >= live:
             hasil["peringatan"].append(
-                "Paket isi {}: harga per pcs ({}) lebih mahal dari harga live satuan ({}). Penonton bisa merasa dirugikan.".format(
-                    isi, rp(per_pcs_bulat), rp(live)))
+                "Paket isi {}: harga per pcs ({}) {} harga live satuan ({}). Jangan sebut paket 'lebih hemat' dari harga "
+                "live; sebut hemat dibanding harga normal saja.".format(
+                    isi, rp(per_pcs_bulat), "sama dengan" if per_pcs == live else "lebih mahal dari", rp(live)))
+            item["lebih_hemat_dari_harga_live"] = False
         paket.append(item)
     if paket:
         hasil["bundling"] = paket

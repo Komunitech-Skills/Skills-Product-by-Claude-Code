@@ -35,18 +35,29 @@ POLA_DATA = [
     (r"\bINV/[\w/]+", "nomor invoice"),
     (r"\b(?=[A-Z0-9]*\d)(?=[A-Z0-9]*[A-Z])[A-Z0-9]{10,}\b", "kode pesanan/resi"),
     (r"\b\d{10,}\b", "deretan angka panjang (nomor pesanan/resi/HP?)"),
-    (r"\b(?:jl\.?|jalan|gg\.?|gang|rt\s*\d+|rw\s*\d+|blok\s+[a-z]\d*|no\.\s*\d+|kel\.|kec\.|perum)\b",
+    (r"\b(?:jl\.?|jalan|gg\.?|gang)\s+[A-Z][\w.]*(?:\s+[A-Z][\w.]*)*(?:\s+no\.?\s*\d+\w*)"
+     r"|\brt\s*\.?\s*\d+\s*/\s*rw\s*\.?\s*\d+|\b(?:rt|rw)\s*\.?\s*0\d+\b|\bblok\s+[a-z]\s*-?\s*\d+|\bkel\.\s*\w+|\bkec\.\s*\w+",
      "detail alamat"),
     (r"\b(?:resi|no\.?\s*pesanan|order\s*id|nomor\s+pesanan)\s*[:#]?\s*\w+", "nomor pesanan/resi"),
 ]
+# Perlu dicek manusia (bisa benar, bisa bocor)
+POLA_CEK_DATA = [
+    (r"\b(?:Kak|Kakak|Bu|Ibu|Pak|Bapak|Mbak|Mba|Mas|Bang|Teh|Sis|Gan|Om|Tante)\.?\s+[A-Z][a-z]+\s+[A-Z][a-z]+",
+     "kemungkinan NAMA LENGKAP pembeli — cukup sapaan + nama panggilan/nama akun"),
+    (r"\b(?:bilang|dibilang|katanya|kata\s+(?:kakak|ibu|bapak|anda)|menulis|tulis|chat(?:nya)?|di\s+chat"
+     r"|pesan(?:nya)?|sms|wa(?:nya)?)\s*(?:ke\s+kami\s*)?[:,]?\s*[\"'“‘]",
+     "kemungkinan KUTIPAN CHAT PRIBADI — jangan ungkap isi chat di balasan publik"),
+    (r"\b(?:[Jj]l\.?|[Jj]alan|[Gg]g\.?|[Gg]ang)\s+[A-Z][a-z]+", "kemungkinan nama jalan — pastikan bukan alamat pembeli"),
+]
 POLA_LUAR = [
     (r"https?://\S+|www\.\S+|wa\.me\S*", "link"),
-    (r"\b(?:whats\s?app|wa|dm\s+ig|instagram|telegram|line)\b", "ajakan ke aplikasi lain"),
+    (r"\b(?:whats\s?app|telegram|line\s*(?:id|@)|dm\s+ig|instagram)\b|\bwa\s*(?:ke|di|:|\d|kami|admin|toko)\b"
+     r"|\b(?:via|lewat|hubungi|chat|kontak)\s+wa\b", "ajakan ke aplikasi lain"),
     (r"(?<![\w.])@[A-Za-z0-9_.]{2,}[A-Za-z0-9_]", "@akun"),
 ]
 POLA_DEFENSIF = [
     r"\banda\s+salah\b", r"\bkakak\s+(?:yang\s+)?salah\b", r"\btidak\s+mungkin\b", r"\bmustahil\b",
-    r"\bbukan\s+salah\s+kami\b", r"\bbukan\s+tanggung\s+jawab\s+kami\b", r"\bseharusnya\s+(?:kakak|anda|agan|sis)\b",
+    r"\bbukan\s+salah\s+kami\b", r"\bbukan\s+tanggung\s+jawab\s+kami\b", r"(?<!yang\s)\bseharusnya\s+(?:kakak|anda|agan|sis)\b(?!\s+(?:dapat|dapatkan|terima|alami|rasakan|nikmati))",
     r"\bbaca\s+(?:dulu\s+)?deskripsi\b", r"\bsudah\s+(?:kami\s+)?(?:jelaskan|tulis)\b", r"\bfitnah\b",
     r"\bhoaks?\b", r"\bbohong\b", r"\bkami\s+laporkan\b", r"\bpolisi\b", r"\buu\s*ite\b", r"\bmakanya\b",
     r"\bsalah\s+(?:kurir|ekspedisi)\b", r"\bpembeli\s+lain\s+(?:tidak|gak|nggak)\b", r"\bjangan\s+asal\b",
@@ -81,6 +92,9 @@ def periksa(teks, platform, jenis):
         fl = 0 if label == "kode pesanan/resi" else re.IGNORECASE
         for x in temukan(pola, teks, fl):
             temuan.append(("GAGAL", "Kemungkinan data pribadi/pesanan terlihat publik ({}): '{}'. Hapus.".format(label, x)))
+    for pola, label in POLA_CEK_DATA:
+        for x in temukan(pola, teks, 0 if "NAMA" in label or "jalan" in label else re.IGNORECASE):
+            temuan.append(("CEK", "PRIVASI — {}: '{}'.".format(label[0].upper() + label[1:], x)))
     for pola, label in POLA_LUAR:
         for x in temukan(pola, teks):
             if platform in MARKETPLACE:
@@ -123,6 +137,7 @@ def periksa(teks, platform, jenis):
     return {
         "platform": platform, "jenis": jenis, "panjang": n, "batas_aman": batas,
         "lulus": not any(t == "GAGAL" for t, _ in temuan),
+        "perlu_dicek_privasi": any(p.startswith("PRIVASI") for _, p in temuan),
         "temuan": [{"tingkat": t, "pesan": p} for t, p in temuan],
         "catatan": "Batas panjang adalah batas aman skill, bukan batas resmi. Cek di platform.",
     }
@@ -160,7 +175,8 @@ def main():
         print(json.dumps(h, ensure_ascii=False, indent=2))
         return
     print("Platform: {} | Jenis: {} | Panjang: {}/{} | {}".format(
-        pf, a.jenis, h["panjang"], h["batas_aman"], "LULUS" if h["lulus"] else "PERLU DIPERBAIKI"))
+        pf, a.jenis, h["panjang"], h["batas_aman"],
+        "PERLU DIPERBAIKI" if not h["lulus"] else ("PERLU DICEK (privasi)" if h["perlu_dicek_privasi"] else "LULUS")))
     if not h["temuan"]:
         print("Tidak ada temuan.")
     for t in h["temuan"]:

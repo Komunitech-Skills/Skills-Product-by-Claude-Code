@@ -53,9 +53,13 @@ Jika pengguna ingin cepat, tulis balasan dengan asumsi aman dan sebutkan asumsin
    ```
    Platform: `shopee`, `tokopedia`, `tiktok`, `google`, `lainnya`. Perbaiki semua **GAGAL** (data pribadi,
    ajakan keluar platform di marketplace, permintaan ubah ulasan, terlalu panjang); tinjau **CEK** & **SARAN**.
+   Status **PERLU DICEK (privasi)** berarti ada kemungkinan nama lengkap pembeli (sapaan + 2 kata kapital),
+   kutipan isi chat pribadi ("Kakak bilang '...'"), atau nama jalan — hapus kecuali itu memang nama toko/
+   alamat usaha sendiri atau kalimat yang ditulis pengulas di ulasannya.
    **Jika Python tidak bisa dijalankan:** periksa manual dengan checklist di bawah dan hitung panjang teks;
    beri tahu pengguna bahwa pengecekan dilakukan manual.
 5. Berikan 1 balasan utama + 1 alternatif (lebih singkat atau lebih formal), lalu tawarkan revisi.
+   Untuk 3 ulasan atau lebih sekaligus, alternatif boleh dilewati agar hasil tetap ringkas.
 
 ## Format output
 ```

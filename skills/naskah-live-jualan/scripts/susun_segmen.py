@@ -6,7 +6,7 @@ Pola per produk:
 - normal (11 menit): Hook 1 | Demo 4 | Harga & promo 2 | CTA & cara checkout 2 | Tanya-jawab 2
 - ringkas (7 menit) dipakai otomatis bila durasi tidak cukup: Hook 1 | Demo 2 | Harga 1 | CTA 2 | Tanya-jawab 1
 Pembukaan 3 menit, penutup 3 menit (2 menit bila live < 30 menit). Rekap 1 menit untuk penonton baru
-disisipkan setiap ±15 menit. Sisa waktu diisi putaran ulang produk atau "Tanya-jawab bebas & rekap".
+disisipkan setiap ±15 menit (boleh di tengah blok produk) selama waktunya muat. Sisa waktu diisi putaran ulang produk atau "Tanya-jawab bebas & rekap".
 
 Hanya library standar Python 3.8+. Contoh:
   python3 susun_segmen.py --durasi 60 --produk "Hijab Voal,Pashmina Kaos,Inner Ninja" --mulai 19:00
@@ -61,7 +61,7 @@ def susun(durasi, produk):
         t += menit
 
     tambah("Pembukaan: sapa, hook besar, janji promo live", buka)
-    rekap_terakhir = 0
+    rekap = [0]  # menit mulai rekap terakhir (pembukaan dihitung sebagai rekap pertama)
     batas_isi = durasi - tutup
     putaran = 1
     idx = 0
@@ -69,15 +69,20 @@ def susun(durasi, produk):
         nama = produk[idx % n]
         if idx and idx % n == 0:
             putaran += 1
-        butuh = total(pola)
-        perlu_rekap = (t - rekap_terakhir) >= JEDA_REKAP and t + butuh + 1 <= batas_isi
-        if t + butuh > batas_isi:
+        if t + total(pola) > batas_isi:
             break
-        if perlu_rekap:
-            tambah("Rekap untuk penonton baru (promo & produk yang sudah dibahas)", 1)
-            rekap_terakhir = t
+        sisa_blok = total(pola)
         for bag, m in pola:
+            # Rekap disisipkan di mana saja (juga di tengah blok produk) bila sudah >= JEDA_REKAP menit
+            # sejak rekap terakhir, asalkan sisa blok tetap muat.
+            # Putaran pertama: sisakan waktu agar SEMUA produk tetap kebagian satu blok.
+            cadangan = sisa_blok + (max(0, n - idx - 1) * total(pola) if idx < n else 0)
+            # Jangan memotong antara Hook dan Demo agar alur produk tidak putus.
+            if bag != "Demo produk" and t - rekap[0] >= JEDA_REKAP - 1 and t + 1 + cadangan <= batas_isi:
+                tambah("Rekap untuk penonton baru (promo & produk yang sudah dibahas)", 1)
+                rekap[0] = t - 1
             tambah(bag, m, nama, putaran)
+            sisa_blok -= m
         idx += 1
     sisa = batas_isi - t
     if sisa > 0:

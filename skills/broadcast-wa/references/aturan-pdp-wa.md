@@ -22,7 +22,9 @@ Sumber: https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-
 - Via chat: "Boleh kami kirimi info promo lewat WA sesekali, Kak? Bisa berhenti kapan saja." → catat "ya" + tanggal.
 - **Jangan** membeli/menyewa database nomor, mengambil nomor dari grup WA, atau memakai nomor
   pelanggan yang hanya pernah bertanya harga tanpa setuju dikirimi promo.
-- Simpan kolom di spreadsheet: `Nama | Nomor | Persetujuan (ya/tidak) | Tanggal setuju | Berhenti (ya/kosong)`.
+- Simpan kolom di spreadsheet: `Nama | Nomor | Persetujuan (ya/tidak) | Tanggal setuju | Berhenti`.
+  Kolom Berhenti: kosong (atau "tidak"/"0"/"-") = masih aktif; isi apa pun lainnya ("ya", "STOP", "x",
+  tanggal berhenti) = **berhenti**. Script menganggap nomor itu berhenti di semua baris, termasuk baris duplikat.
 
 ## 2. Kebijakan & fitur WhatsApp (cek ketentuan terbaru — fitur sering berubah)
 - **Daftar siaran (broadcast list) di WhatsApp/WhatsApp Business**: pesan hanya sampai ke kontak yang
@@ -45,6 +47,7 @@ menolak permintaan seperti itu.
 - Jam kirim: ±09.00–11.00, ±15.30–17.00, ±19.00–20.30 waktu setempat. Hindari larut malam, dini hari,
   dan jam salat Jumat (±11.30–13.00 Jumat) untuk audiens muslim. Saat Ramadan: setelah berbuka
   (±19.00–21.00) atau selepas sahur/pagi.
+- Script otomatis melewati Jumat 11.30–13.00 (digeser ke 13.00).
 - Kirim bertahap (default script: 20 pesan per batch, jeda 60 detik antarpesan, 30 menit antarbatch,
   maks. 100 per hari). Angka ini saran konservatif, bukan batas resmi WhatsApp.
 - Perhatikan zona waktu: WIB, WITA (+1 jam), WIT (+2 jam).

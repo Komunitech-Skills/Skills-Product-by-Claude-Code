@@ -23,7 +23,7 @@ import csv
 import json
 import re
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from urllib.parse import quote
 
 # Windows: pastikan teks Indonesia/emoji tercetak tanpa error encoding
@@ -40,7 +40,11 @@ KOLOM_SETUJU = ["persetujuan", "setuju", "izin", "opt-in", "optin", "opt in", "c
                 "setuju broadcast", "boleh dihubungi"]
 KOLOM_BERHENTI = ["berhenti", "opt-out", "optout", "opt out", "stop", "unsubscribe", "tolak"]
 YA = {"ya", "y", "iya", "yes", "setuju", "1", "true", "opt-in", "optin", "ok", "oke", "sudah", "v", "✓", "bersedia", "boleh"}
-POLA_OPTOUT = re.compile(r"\bstop\b|\bberhenti\b|tidak (?:ingin|mau) (?:menerima|dapat)|unsubscribe", re.IGNORECASE)
+POLA_OPTOUT = re.compile(
+    r"\b(?:balas|ketik|kirim|reply)\s+[\"'“‘]?(?:stop|berhenti|unreg)\b|tidak\s+(?:ingin|mau)\s+(?:menerima|dapat)"
+    r"|\buntuk\s+berhenti\b|\bunsubscribe\b", re.IGNORECASE)
+# Isi kolom Berhenti yang berarti "TIDAK berhenti". Isi lain yang tidak kosong (ya, STOP, x, tanggal, ...) = berhenti.
+BUKAN_BERHENTI = {"tidak", "tdk", "no", "n", "0", "-", "false", "belum", "aktif", "nggak", "gak", "enggak"}
 SAPAAN = {"bu": "Bu", "ibu": "Bu", "pak": "Pak", "bapak": "Pak", "kak": "Kak", "kakak": "Kak", "mas": "Mas",
           "mbak": "Mbak", "mba": "Mbak", "bang": "Bang", "abang": "Bang", "teh": "Teh", "teteh": "Teh",
           "aa": "Aa", "uda": "Uda", "uni": "Uni", "koh": "Koh", "cik": "Cik", "ci": "Ci", "om": "Om",
@@ -91,6 +95,8 @@ def baca_kontak(path):
 
 def rapikan_nomor(teks):
     d = re.sub(r"\D", "", teks or "")
+    if d.startswith("00"):
+        d = d[2:]
     if d.startswith("620"):
         d = "62" + d[3:]
     elif d.startswith("0"):
@@ -105,7 +111,7 @@ def rapikan_nomor(teks):
 def pecah_nama(nama, sapaan_default, nama_lengkap):
     kata = (nama or "").strip().split()
     sapaan = sapaan_default
-    if kata and kata[0].lower().rstrip(".") in SAPAAN and len(kata) > 1:
+    if kata and kata[0].lower().rstrip(".") in SAPAAN:
         sapaan = SAPAAN[kata[0].lower().rstrip(".")]
         kata = kata[1:]
     if not kata:
@@ -155,6 +161,8 @@ def main():
     p.add_argument("--maks-per-hari", type=int, default=100, help="maks. pesan per hari, default 100 (saran konservatif)")
     p.add_argument("--sapaan-default", default="Kak", help="sapaan bila nama tidak diawali Bu/Pak/dll. Default Kak")
     p.add_argument("--nama-lengkap", action="store_true", help="pakai nama lengkap (default: nama depan saja)")
+    p.add_argument("--kirim-saat-jumatan", action="store_true",
+                   help="jangan lewati Jumat 11.30–13.00 (default: dilewati, digeser ke 13.00)")
     p.add_argument("--daftar-berhenti", help="file .txt/.csv berisi nomor yang minta berhenti (satu per baris)")
     p.add_argument("--kolom-nama")
     p.add_argument("--kolom-nomor")
@@ -216,15 +224,32 @@ def main():
 
     siap, dilewati, terlihat = [], {}, set()
 
+    def tanda_berhenti(b):
+        if not k_berhenti:
+            return False
+        v = (b.get(k_berhenti) or "").strip().lower()
+        return bool(v) and v not in BUKAN_BERHENTI
+
+    def tanda_tolak(b):
+        return bool(k_setuju) and (b.get(k_setuju) or "").strip().lower() not in YA
+
+    # Lintasan pertama: kumpulkan SEMUA nomor yang minta berhenti / tidak setuju di baris mana pun,
+    # supaya baris duplikat tanpa tanda tidak "menimpa" permintaan berhenti.
+    ditolak_di_baris_lain = set()
+    for b in baris:
+        n = rapikan_nomor(b.get(k_nomor))
+        if n and (tanda_berhenti(b) or tanda_tolak(b)):
+            ditolak_di_baris_lain.add(n)
+
     def lewati(alasan, no):
         dilewati.setdefault(alasan, []).append(no)
 
     for no, b in enumerate(baris, start=2):  # nomor baris sesuai tampilan spreadsheet (baris 1 = judul)
         nomor = rapikan_nomor(b.get(k_nomor))
-        if k_setuju and (b.get(k_setuju) or "").strip().lower() not in YA:
+        if tanda_tolak(b):
             lewati("belum/tidak setuju menerima broadcast", no)
             continue
-        if k_berhenti and (b.get(k_berhenti) or "").strip().lower() in YA:
+        if tanda_berhenti(b):
             lewati("minta berhenti (kolom berhenti)", no)
             continue
         if not nomor:
@@ -232,6 +257,9 @@ def main():
             continue
         if nomor in berhenti:
             lewati("ada di daftar berhenti", no)
+            continue
+        if nomor in ditolak_di_baris_lain:
+            lewati("nomor ini minta berhenti/tidak setuju di baris lain", no)
             continue
         if nomor in terlihat:
             lewati("nomor duplikat", no)
@@ -257,12 +285,19 @@ def main():
         except ValueError:
             galat("--mulai harus 'YYYY-MM-DD HH:MM', mis. \"2026-09-28 10:00\".")
 
+    jumat_awal, jumat_akhir = time(11, 30), time(13, 0)
+
     def geser_ke_jendela(t):
-        if t.time() < jam_awal:
-            return t.replace(hour=jam_awal.hour, minute=jam_awal.minute, second=0)
-        if t.time() > jam_akhir:
-            besok = t + timedelta(days=1)
-            return besok.replace(hour=jam_awal.hour, minute=jam_awal.minute, second=0)
+        for _ in range(3):
+            if t.time() < jam_awal:
+                t = t.replace(hour=jam_awal.hour, minute=jam_awal.minute, second=0)
+            elif t.time() > jam_akhir:
+                t = (t + timedelta(days=1)).replace(hour=jam_awal.hour, minute=jam_awal.minute, second=0)
+            # Jumat (weekday 4) 11.30–13.00: jeda salat Jumat, geser ke 13.00
+            if not a.kirim_saat_jumatan and t.weekday() == 4 and jumat_awal <= t.time() < jumat_akhir:
+                t = t.replace(hour=13, minute=0, second=0)
+                continue
+            break
         return t
 
     jadwal_list = [""] * len(siap)

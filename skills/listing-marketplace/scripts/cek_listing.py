@@ -36,22 +36,35 @@ ALIAS = {"tiktokshop": "tiktok", "tiktok-shop": "tiktok", "tts": "tiktok", "tokp
 AREA_TERLIHAT = 40  # perkiraan karakter judul yang terlihat di kartu hasil pencarian HP
 
 POLA_KONTAK = [
-    (r"(?:\+?62|\b0)8[\d\s.\-]{7,14}\d", "nomor HP/WA"),
+    (r"(?<!\d)(?<!barcode )(?<!ean )(?<!sku )(?:\+?62[\s.\-]?|\b0)8(?:[\s.\-]?\d){7,11}(?![\d])", "nomor HP/WA"),
     (r"(?:https?://|www\.)\S+?(?=[.,;!?)]?(?:\s|$))|(?<![@\w.\-])[\w\-]+(?:\.[\w\-]+)*\.(?:com|id|co\.id|net|me|ly)\b", "link/alamat situs"),
     (r"(?<![\w.])@[A-Za-z0-9_.]{2,}[A-Za-z0-9_]", "@akun media sosial"),
     (r"\b(?:wa\.me|whats\s?app|chat\s+wa|hubungi\s+wa|dm\s+ig|line\s*id|telegram)\b", "ajakan chat di luar platform"),
+    (r"\b(?:via|order|pesan|lewat|hubungi|kontak)\s+(?:wa|whatsapp|dm|ig|instagram)\b", "ajakan chat di luar platform"),
     (r"\b[\w.+-]+@[\w-]+\.[\w.]+\b", "alamat email"),
 ]
 POLA_BERISIKO = [
     (r"\bter(?:murah|laris|baik|laku|ampuh|aman)\b", "superlatif — pakai hanya jika ada data/bukti"),
     (r"\bno\.?\s?1\b|\bnomor\s+satu\b|\b#1\b", "klaim nomor 1 — butuh bukti"),
-    (r"\b(?:menyembuhkan|obat|mengobati|anti\s?kanker|detoks|pelangsing|diabetes|hipertensi)\b",
-     "klaim kesehatan/medis — dilarang tanpa izin edar yang sesuai"),
+    (r"\b(?:menyembuhkan|sembuhkan|obat|mengobati|anti\s?kanker|detoks|detox|pelangsing|melangsingkan|diabetes|hipertensi"
+     r"|kolesterol|asam\s+urat|imunitas|kekebalan|herbal|khasiat|berkhasiat|terapi|stroke|maag|jantung)\b",
+     "klaim kesehatan/medis — butuh bukti & izin edar yang sesuai"),
+    (r"\b(?:menurunkan|turunkan|meningkatkan|tingkatkan|mencegah|cegah|menghilangkan|hilangkan|mengatasi|atasi"
+     r"|menambah|mengontrol)\b.{0,25}?\b(?:kolesterol|gula\s+darah|imun|daya\s+tahan|jerawat|berat\s+badan|asam\s+urat"
+     r"|tekanan\s+darah|flek|kerutan|rambut\s+rontok|stamina|nafsu\s+makan|penyakit|kanker|virus)\b",
+     "klaim kesehatan/kecantikan — butuh bukti & izin edar yang sesuai"),
+    (r"\baman\s+(?:untuk|bagi|buat)\s+(?:ibu\s+hamil|bumil|busui|ibu\s+menyusui|bayi|balita|anak|penderita)\b",
+     "klaim keamanan untuk kelompok rentan — butuh bukti/izin"),
     (r"\b(?:halal|bpom|sni|pirt|p-irt|sertifikat)\b", "label resmi — pastikan pengguna punya nomor/sertifikat"),
-    (r"\b(?:original|ori|100%\s*asli|authentic)\b", "klaim keaslian — pastikan barang memang asli"),
-    (r"\b(?:kw|replika|mirip|grade\s?ori)\b", "indikasi barang tiruan — berisiko diturunkan/diblokir"),
+    (r"(?<!rasa )(?<!varian )(?<!/)\b(?:original|ori|100%\s*asli|authentic)\b(?!\s*/)",
+     "klaim keaslian — pastikan barang memang asli"),
     (r"\b(?:cod\s+luar|transfer\s+langsung|rekening)\b", "ajakan transaksi di luar platform"),
     (r"\b(?:garansi\s+seumur\s+hidup|dijamin\s+100%)\b", "janji mutlak — pastikan bisa dipenuhi"),
+]
+# Barang tiruan: melanggar hak merek & kebijakan marketplace -> GAGAL
+POLA_TIRUAN = [
+    (r"\b(?:kw\s*\d*|kw\s*super|replika|replica|grade\s*ori|ori\s*grade|mirror|premium\s+copy|1\s*:\s*1)\b"
+     r"|\bmirip\s+(?:aslinya|asli|original|[A-Z][\w]+)", "indikasi barang tiruan — marketplace melarang"),
 ]
 POLA_SIMBOL = re.compile(r"[^\w\s\-/&+,.()'\"%:]", re.UNICODE)
 
@@ -123,6 +136,8 @@ def periksa(platform, judul, deskripsi, kata_kunci, batas):
     for h in cari(POLA_KONTAK, gabungan):
         temuan.append(("GAGAL", "Info kontak/di luar platform: '{}' ({}). Hapus — melanggar aturan marketplace.".format(
             h["teks"], h["alasan"])))
+    for h in cari(POLA_TIRUAN, gabungan):
+        temuan.append(("GAGAL", "'{}' — {}. Jangan dibuatkan listing untuk barang tiruan.".format(h["teks"], h["alasan"])))
     for h in cari(POLA_BERISIKO, gabungan):
         temuan.append(("CEK", "'{}' — {}.".format(h["teks"], h["alasan"])))
 
@@ -148,11 +163,13 @@ def periksa(platform, judul, deskripsi, kata_kunci, batas):
             status.append({
                 "kata_kunci": kk,
                 "di_judul": pos >= 0,
+                "semua_kata_di_judul": all(w in jl.split() or w in jl for w in kk.lower().split()),
                 "posisi_di_judul": pos if pos >= 0 else None,
                 "di_deskripsi": (deskripsi or "").lower().find(kk.lower()) >= 0,
                 "total_muncul": gl.count(kk.lower()),
             })
-            if i == 0 and (pos < 0 or pos >= AREA_TERLIHAT):
+            if i == 0 and (pos < 0 or pos >= AREA_TERLIHAT) and not (
+                    pos < 0 and all(jl.find(w) != -1 and jl.find(w) < AREA_TERLIHAT for w in kk.lower().split())):
                 temuan.append(("SARAN", "Kata kunci utama '{}' belum ada di {} karakter pertama judul.".format(
                     kk, AREA_TERLIHAT)))
             if gl.count(kk.lower()) > 6:
@@ -179,7 +196,8 @@ def cetak_teks(hasil_list):
             print("Deskripsi : {}/{} karakter".format(i["panjang_deskripsi"], i["batas_deskripsi"]))
         for k in i.get("kata_kunci", []):
             print("  - kata kunci '{}': judul={} deskripsi={} muncul={}x".format(
-                k["kata_kunci"], "ya" if k["di_judul"] else "tidak",
+                k["kata_kunci"], "ya" if k["di_judul"] else ("semua kata ada (tidak berurutan)"
+                                                             if k["semua_kata_di_judul"] else "tidak"),
                 "ya" if k["di_deskripsi"] else "tidak", k["total_muncul"]))
         if not h["temuan"]:
             print("Tidak ada temuan.")

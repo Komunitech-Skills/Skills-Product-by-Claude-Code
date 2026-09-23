@@ -24,7 +24,7 @@ ditempel ke Google Sheets/Excel.
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
 | Jenis usaha & produk/jasa utama | Ya | — (tanyakan) |
-| Periode (tanggal mulai) | Tidak | Tanggal 1 bulan depan, 30 hari |
+| Periode (tanggal mulai) | Tidak | Tanggal 1 bulan depan, 30 hari. Jika pengguna menyebut nama bulan, pakai jumlah hari bulan itu (`--hari 31` untuk Oktober) |
 | Platform | Tidak | IG + TikTok + WA Status |
 | Target pembeli & kota | Tidak | Disimpulkan dari jenis usaha, disebut sebagai asumsi |
 | Pilar konten | Tidak | Dari tabel jenis usaha di `references/momen-dan-pilar.md` |
@@ -42,13 +42,15 @@ pakai default dan sebutkan asumsinya di akhir.
    tulis "(perkiraan — cek SKB 3 Menteri)".
 2. **Buat kerangka tanggal** dengan script (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
-   python3 <folder-skill-ini>/scripts/buat_kalender.py --mulai 2026-10-01 \
+   python3 <folder-skill-ini>/scripts/buat_kalender.py --mulai 2026-10-01 --hari 31 \
      --pilar "Menu & Promo,Proses Dapur,Ulasan Pelanggan,Tips Kopi,Hiburan" --platform "IG,TikTok,WA Status" \
      --momen "2026-10-17:Ulang tahun kedai ke-3:promo" --format json
    ```
    Script mengisi tanggal, nama hari, momen (tanggal kembar, Harbolnas, gajian, tanggal tua, hari nasional),
-   dan rotasi pilar: hari promo dipaksa ke pilar promo, hari peringatan (30 Sep, 1 Okt, 10 Nov) tidak
-   pernah promo. Nama pilar promo harus mengandung kata "Promo" atau "Jual" agar dikenali.
+   dan rotasi pilar: hari promo dipaksa ke pilar promo; hari peringatan (30 Sep, 1 Okt, 10 Nov) dan
+   tanggal tua tidak pernah diberi pilar promo. Jika momen promo pengguna jatuh di hari peringatan, script
+   **tidak** menjadwalkannya sebagai promo dan menulis PERINGATAN — sampaikan ke pengguna dan sarankan geser tanggal.
+   Di hari peringatan, isi dengan konten penghormatan/edukasi, bukan testimoni jualan. Nama pilar promo harus mengandung kata "Promo" atau "Jual" agar dikenali.
 3. **Isi kolom Ide Konten, Hook / Judul, CTA** untuk setiap baris: spesifik untuk produk pengguna
    (bukan "posting produk"), sesuai pilar & momen, dan realistis untuk UMKM (bisa dibuat dengan HP).
    Hook ≤ 10 kata. CTA sesuai cara order pengguna. Boleh ubah pilar satu hari bila momen menuntut.
@@ -59,7 +61,9 @@ pakai default dan sebutkan asumsinya di akhir.
    python3 <folder-skill-ini>/scripts/buat_kalender.py --isi kalender.json --format md
    python3 <folder-skill-ini>/scripts/buat_kalender.py --isi kalender.json --format csv --pemisah ";" --output kalender.csv
    ```
-   `--isi` menghitung ulang nama hari dari tanggal dan memberi tanda baris yang idenya masih kosong.
+   `--isi` menghitung ulang nama hari dan momen dari tanggal, memberi tanda baris yang idenya masih kosong,
+   dan memberi PERINGATAN bila ada promo/diskon di hari peringatan atau pilar promo di tanggal tua
+   (sertakan `--momen` & `--gajian` yang sama seperti langkah 2). Perbaiki barisnya sebelum menyerahkan hasil.
    Pemisah `;` untuk Excel berbahasa Indonesia, `,` untuk Google Sheets. File CSV disimpan UTF-8 (BOM)
    agar emoji/huruf terbaca di Excel.
 5. **Jika Python tidak bisa dijalankan:** susun tanggal & nama hari manual (cek hari pertama dengan
@@ -97,7 +101,7 @@ ulang tahun kedai ke-3, ada promo beli 2 gratis 1."
 | 2 | 02 Okt 2026 | Jumat | Hari Batik Nasional | Ulasan Pelanggan | IG + TikTok + WA Status | Foto ulasan / Story | Foto pelanggan berbatik yang ngopi di kedai + kutipan ulasannya (dengan izin) | Hari Batik, ngopinya juga rapi | Tag teman kantormu | Belum |
 | 10 | 10 Okt 2026 | Sabtu | Tanggal kembar 10.10 — musim promo akhir tahun | Menu & Promo | IG + TikTok + WA Status | Video pendek + Story/Status | [isi: promo 10.10 jika ada]. Jika tidak ada: video "menu favorit malam minggu" | Malam minggu ngopi apa? | Order lewat WA/GoFood | Belum |
 | 17 | 17 Okt 2026 | Sabtu | Ulang tahun kedai ke-3 | Menu & Promo | IG + TikTok + WA Status | Video pendek + Story/Status | Video terima kasih 3 tahun + promo beli 2 gratis 1 (syarat & batas waktu ditulis jelas) | 3 tahun, makasih Arek Malang! | Datang langsung / order WA | Belum |
-| 28 | 28 Okt 2026 | Rabu | Hari Sumpah Pemuda | Proses Dapur | IG + TikTok + WA Status | Video pendek proses | Dari biji arabika Malang sampai jadi kopi susu gula aren — bangga produk lokal | Kopi lokal, dari lereng ke gelasmu | Pesan via GoFood/GrabFood | Belum |
+| 28 | 28 Okt 2026 | Rabu | Hari Sumpah Pemuda | Tips Kopi | IG + TikTok + WA Status | Carousel / video tips | Carousel "kenalan sama arabika Malang": asal, rasa, cara seduh — bangga kopi lokal | Kopi lokal, dari lereng ke gelasmu | Simpan & bagikan ke teman | Belum |
 ```
 📝 Asumsi: gajian tgl 25 & 1; promo 10.10 belum ditentukan pengguna sehingga diberi alternatif non-promo.
 

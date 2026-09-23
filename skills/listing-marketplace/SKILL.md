@@ -32,8 +32,9 @@ pembeli, dan aman dari pelanggaran aturan (teks terpotong, kontak di luar platfo
 | Isi paket, cara pakai/perawatan, info pengiriman | Tidak | Bagian dibuat dengan penanda `[isi: ...]` |
 | Batas karakter terbaru dari Seller Center | Tidak | Batas aman di `references/batas-platform.md` |
 
-Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat,
-lanjutkan dengan penanda `[isi: ...]` untuk data yang belum ada dan sebutkan asumsinya di akhir.
+Jika produknya sendiri tidak jelas, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika produk jelas
+tapi spesifikasi minim, lanjutkan dengan penanda `[isi: ...]` untuk data yang belum ada, lalu tulis daftar
+yang perlu dilengkapi dan asumsinya di akhir.
 
 ## Langkah kerja
 1. **Baca `references/batas-platform.md`** untuk batas aman & aturan konten. Batas di sana belum
@@ -55,7 +56,10 @@ lanjutkan dengan penanda `[isi: ...]` untuk data yang belum ada dan sebutkan asu
      --judul "..." --deskripsi-file deskripsi.txt --kata-kunci "utama,pendukung1,pendukung2"
    ```
    Windows: ganti `python3` dengan `python` atau `py`. `--platform semua` memeriksa ketiganya; tambah
-   `--json` bila perlu. Perbaiki semua temuan **GAGAL**; tinjau **CEK** (klaim harus didukung data pengguna).
+   `--json` bila perlu. Perbaiki semua temuan **GAGAL** (termasuk indikasi barang tiruan: KW, replika,
+   grade ori, "mirip <merek>" — hentikan dan jelaskan bahwa listing barang tiruan tidak bisa dibantu);
+   tinjau **CEK** (klaim harus didukung data pengguna; klaim kesehatan seperti "turunkan kolesterol",
+   "meningkatkan imun", "aman untuk ibu hamil" hanya boleh bila pengguna punya izin edar/bukti yang sesuai).
    **Jika Python tidak bisa dijalankan:** hitung panjang judul/deskripsi secara manual (hitung per karakter,
    emoji = 2), cocokkan dengan tabel batas, dan periksa manual daftar larangan di checklist. Beri tahu
    pengguna bahwa pengecekan dilakukan manual.

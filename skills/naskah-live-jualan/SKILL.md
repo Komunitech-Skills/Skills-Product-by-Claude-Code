@@ -43,15 +43,20 @@ pakai default dan sebutkan asumsinya di akhir.
    python3 <folder-skill-ini>/scripts/hitung_promo.py --nama "Hijab Voal" --harga-normal "Rp 89.000" \
      --harga-live "Rp 69.000" --bundling "3=Rp 189.000"
    ```
-   Atau `--diskon-persen 10 --bulatkan 1000` bila promo berupa persen. Pakai `kalimat_live` dan
+   Atau `--diskon-persen 10 --bulatkan 1000` bila promo berupa persen. Produk tanpa promo tidak perlu
+   script: sebut harga normalnya saja. Pakai `kalimat_live` dan
    `persen_hemat_boleh_diucapkan` dari output. Script menolak harga live ≥ harga normal dan memberi
-   peringatan untuk diskon ≥ 50% atau bundling yang tidak lebih hemat — sampaikan ke pengguna.
+   peringatan untuk diskon ≥ 50% dan bundling yang per pcs-nya tidak lebih murah dari harga live
+   (paket seperti itu hanya boleh disebut hemat dibanding harga normal) — sampaikan ke pengguna.
 3. **Susun rundown**:
    ```bash
    python3 <folder-skill-ini>/scripts/susun_segmen.py --durasi 60 --produk "Hijab Voal,Pashmina Kaos" --mulai 19:00
    ```
-   Urutkan produk dari yang paling diandalkan. Script otomatis memakai pola ringkas bila waktu sempit
-   dan menolak durasi yang terlalu pendek.
+   Urutkan produk dari yang paling diandalkan. Script otomatis memakai pola ringkas bila waktu sempit,
+   menyisipkan rekap 1 menit kira-kira tiap 15 menit (bisa di tengah blok produk, tidak di antara Hook
+   dan Demo) selama waktunya muat, dan menolak durasi yang terlalu pendek. Jika produk sedikit sehingga
+   satu produk muncul beberapa putaran, beri sudut bahasan berbeda tiap putaran (cara pakai, ukuran,
+   perbandingan varian, jawab komentar).
 4. **Tulis naskah per segmen** mengikuti rundown: kalimat siap ucap (bukan poin), dengan arahan aksi
    dalam kurung siku, mis. `[angkat produk ke kamera]`, `[pin produk no. 1]`, `[baca komentar]`.
    - Hook: pertanyaan/masalah pembeli dalam 1–2 kalimat. Demo: tunjukkan bukti (tekstur, ukuran, dipakai).
@@ -105,8 +110,8 @@ Produk: Hijab Voal normal 89 ribu, live 69 ribu, paket 3 jadi 189 ribu. Pashmina
 ### Angka promo (dihitung script)
 | Produk | Normal | Harga live | Hemat | Bundling |
 |---|---|---|---|---|
-| Hijab Voal | Rp 89.000 | Rp 69.000 | Rp 20.000 (±22%) | Isi 3 Rp 189.000 → Rp 63.000/pcs |
-| Pashmina Kaos | Rp 65.000 | Rp 59.000 (10%, dibulatkan ke atas ke Rp 1.000) | Rp 6.000 (±9%) | – |
+| Hijab Voal | Rp 89.000 | Rp 69.000 | Rp 20.000 (22%) | Isi 3 Rp 189.000 → Rp 63.000/pcs |
+| Pashmina Kaos | Rp 65.000 | Rp 59.000 (10%, dibulatkan ke atas ke Rp 1.000) | Rp 6.000 (9%) | – |
 | Inner Ninja | Rp 25.000 | – | – | – |
 
 **[19:00–19:03] Pembukaan**
@@ -128,6 +133,7 @@ Catatan asumsi: host `[nama host]`; stok & voucher tidak disebut karena tidak di
 ## Checklist sebelum mengirim hasil
 - [ ] Semua angka harga/potongan/persen/per pcs berasal dari script (atau hitung manual tertulis)
 - [ ] Tidak ada kelangkaan palsu: stok/kuota hanya `[stok nyata]` atau angka dari pengguna
+- [ ] Harga normal adalah harga jual yang benar-benar berlaku sebelumnya (tanya bila ragu), bukan harga yang dinaikkan untuk dicoret
 - [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, original, terlaris, klaim kesehatan)
 - [ ] Setiap produk punya hook, demo, harga, CTA; ada rekap untuk penonton baru
 - [ ] CTA mengarah ke keranjang/checkout di aplikasi, bukan ke WA atau transfer di luar platform
