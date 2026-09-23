@@ -44,3 +44,14 @@ Docker, `exec.mode → ask` menolak automation, `--fix` mengubah `groupPolicy`) 
 di skill** (`references/dampak-perubahan.md`). Keunggulan "tidak merusak" kini berasal dari
 skill, bukan dari penguji. Kesimpulan A/B tetap: **dengan skill jelas lebih baik**. Sisa cacat
 kunci grup WA (`groupAllowFrom` vs `groups`) dijelaskan di HASIL-UJI.
+
+## Pembaruan uji ulang v1.1.1
+Diuji ulang dengan S1 baru (grup reseller tetap jalan, hanya pemilik + 2 admin yang boleh
+menyuruh bot). Agent **tanpa skill** di atas menawarkan `security audit --fix`. Diverifikasi
+nyata: `--fix` hanya mengubah `groupPolicy` `open` → `allowlist` dan membiarkan `allowFrom: ["*"]`,
+`groups`, dan `groupAllowFrom` apa adanya. Akibatnya **grup tetap bisa disuruh siapa saja**
+(pengirim jatuh ke `allowFrom: ["*"]`), DM tetap terbuka, dan audit masih critical 4. Pengguna
+tidak mendapat hasil yang dimintanya. Dengan skill v1.1.1 (contoh 01), pembatasan admin tercapai
+dengan kunci yang benar, dan setiap butir menyebut apa yang berhenti bekerja. Kesimpulan: **dengan
+skill jelas lebih baik**, dan keunggulan "tidak merusak / tidak memberi rasa aman palsu" kini
+sepenuhnya berasal dari skill.

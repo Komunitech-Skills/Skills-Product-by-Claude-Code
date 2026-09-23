@@ -2,7 +2,7 @@
 
 **Skenario:** S2 (normal, data kesehatan). Config nyata di HOME uji: WA `dmPolicy: open`,
 `allowFrom: ["*"]`, `groupPolicy: allowlist`, `tools.profile: full`. Exec, sandbox, dan dmScope
-tidak diatur.
+tidak diatur. Diuji ulang dengan skill **v1.1.1** (HOME uji baru `/tmp/uji-privasi2/home-dokter`).
 
 **Input pengguna (persis):**
 > saya dokter, openclaw saya pasang di WA praktik biar balas pasien otomatis. aman nggak buat data pasien? udah sesuai UU PDP belum?
@@ -34,7 +34,9 @@ tidak diatur.
 
 🟡 (tambahan) **Pembatasan grup belum benar-benar berlaku**: `groupPolicy = allowlist`, tapi
   daftar pengirim grup (`groupAllowFrom`) kosong, sehingga OpenClaw memakai `allowFrom = ["*"]`,
-  artinya siapa saja. Beres bersamaan dengan Butir 2.
+  artinya siapa saja. Beres bersamaan dengan Butir 2: setelah `allowFrom` berisi nomor dokter/asisten
+  saja, hanya nomor itu yang bisa memanggil bot di grup. Kalau nanti ada grup yang perlu melibatkan
+  orang lain, isi `groupAllowFrom` secara terpisah.
 
 🟢 **Hijau (1)**
 - Statistik pemakaian anonim nonaktif.
@@ -79,14 +81,18 @@ Batal: `openclaw config unset tools.exec.mode`. Masing-masing ditanyakan terpisa
 
 ---
 
-## Catatan penguji (uji ulang v1.1.0)
-- **Sesuai skill v1.1.0:** UU PDP dengan data kesehatan sebagai **data pribadi spesifik (Pasal
-  4)**, langkah manual (enkripsi disk, kunci layar, backup), aturan pemilik (agen CS WA = mode
-  Copilot, nomor terpisah; `references/openclaw.md` §8), dan dampak `exec.mode → ask` terhadap
-  automation (`references/dampak-perubahan.md` baris 12, kutipan docs cocok). Nilai efektif exec
-  dibaca via `approvals get` (`full`/`off`, terverifikasi).
-- **Koreksi penguji:** v1.0 contoh ini menandai grup 🟢 hanya karena `groupPolicy = allowlist`.
-  Menurut docs 2026.9.5, `groupAllowFrom` yang kosong jatuh ke `allowFrom = ["*"]`, sehingga grup
-  tetap terbuka. Skill v1.1.0 juga belum memuat aturan fallback ini (lihat HASIL-UJI, cacat berat #1).
-- Pilihan `dmPolicy → pairing` untuk praktik dokter punya batas 3 permintaan menunggu dan kode
-  berlaku 1 jam (docs `channels/pairing.md`). Skill baru menyebut yang 1 jam.
+## Catatan penguji (uji ulang v1.1.1)
+- **Sesuai skill v1.1.1:** UU PDP dengan data kesehatan sebagai **data pribadi spesifik (Pasal
+  4)** dan disclaimer; langkah manual (enkripsi disk, kunci layar); aturan pemilik (agen CS WA =
+  mode Copilot, nomor terpisah; `references/openclaw.md` §8); tidak ada diagnosis/saran medis
+  (sesuai keputusan pemilik jalur 3 bidang kesehatan); dampak `exec.mode → ask` terhadap automation
+  (`references/dampak-perubahan.md` baris 12).
+- **Butir grup kini berasal dari skill**, bukan koreksi penguji: `references/openclaw.md` §2
+  (baris `groupPolicy` + `groupAllowFrom`: "kosong ⚠️ jatuh ke `allowFrom`") dan
+  `references/dampak-perubahan.md` baris 10. Diverifikasi nyata: config ini → audit critical 4,
+  warn 4; setelah Butir 2 (`allowFrom` → nomor dokter, `dmPolicy` → `allowlist`) → critical 1
+  (token Gateway), warn 3, dan temuan `multi_user_heuristic` hilang. Kode plugin
+  `@openclaw/whatsapp` mengonfirmasi fallback `groupAllowFrom` kosong → `allowFrom`.
+- Bila dokter memilih `pairing` (bukan `allowlist`), skill kini menyebut kode berlaku 1 jam dan
+  batas **3 permintaan menunggu** (docs `channels/pairing.md`). Belum disebut: persetujuan pairing
+  hanya membuka chat pribadi, **tidak** membuka akses grup (docs yang sama). Ringan.

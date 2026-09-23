@@ -1,132 +1,165 @@
-# 01 — Pengusaha 50-an khawatir data pelanggan bocor (config berisiko)
+# 01 — Pengusaha 50-an, toko dengan grup reseller WA: grup harus tetap jalan, hanya admin yang boleh menyuruh bot
 
-**Skenario:** S1 (normal). Persona: pengusaha awam, kendala #4 "khawatir privasi". OpenClaw-nya
-tersambung ke WhatsApp dengan pengaturan terbuka: `dmPolicy: open`, `allowFrom: ["*"]`,
-`groupPolicy: open`, `tools.profile: full`. Telegram memakai `dmPolicy: pairing`.
-Diuji ulang dengan skill **v1.1.0**.
+**Skenario:** S1 (normal). Persona: pemilik toko, 50-an, awam, kendala "khawatir privasi".
+OpenClaw tersambung ke WhatsApp (nomor khusus bot) dengan pengaturan terbuka: `dmPolicy: open`,
+`allowFrom: ["*"]`, `groupPolicy: open`, `groups` belum diatur, `tools.profile: full`.
+Diuji ulang dengan skill **v1.1.1**.
 
 **Input pengguna (persis):**
-> tolong cek OpenClaw saya aman nggak. saya takut data pelanggan bocor, bot saya ada di WA toko sama beberapa grup reseller
+> tolong cek OpenClaw saya aman nggak. saya takut data pelanggan bocor, bot saya ada di grup reseller WA. grupnya tetap mau jalan, tapi yang boleh nyuruh bot cuma saya sama 2 admin
 
-**Yang dijalankan agent (nyata, HOME uji terisolasi, OpenClaw 2026.9.5). Semua hanya membaca:**
+**Yang dijalankan agent (nyata, HOME uji terisolasi `/tmp/uji-privasi2/home-s1`, OpenClaw 2026.9.5). Semua hanya membaca:**
 ```bash
-openclaw security audit --json            # summary: critical 4, warn 4, info 1
+openclaw security audit --json            # summary: critical 4, warn 5, info 1
 openclaw config get tools.profile --json               # "full"
-openclaw config get tools.exec.mode --json             # exit 1 "valid but unset" → bawaan
-openclaw approvals get --json                          # effectivePolicy: mode=full, security=full, ask=off
+openclaw approvals get --json                          # exec efektif: mode=full, security=full, ask=off
 openclaw sandbox explain                               # mode: off
-openclaw config get session.dmScope --json             # unset (bawaan: main)
+openclaw config get session.dmScope --json             # exit 1 "valid but unset" → bawaan main
 openclaw config get channels.whatsapp.dmPolicy --json  # "open"
 openclaw config get channels.whatsapp.allowFrom --json # ["*"]
-openclaw config get channels.whatsapp.groupPolicy --json  # "open"
-openclaw config get channels.whatsapp.groups --json    # unset (semua grup boleh masuk)
-openclaw config get channels.telegram.dmPolicy --json  # "pairing"
-openclaw telemetry show                                # Feature stats: disabled
+openclaw config get channels.whatsapp.groupPolicy --json      # "open"
+openclaw config get channels.whatsapp.groups --json           # unset → semua grup eligible
+openclaw config get channels.whatsapp.groupAllowFrom --json   # unset → jatuh ke allowFrom ["*"]
+openclaw telemetry show                                # statistik anonim: disabled
 ```
-Pertanyaan "dipakai untuk apa" disimpulkan dari pesan pengguna: **pelanggan (CS) + grup**.
-Sidik `openclaw.json` sebelum dan sesudah audit **identik**: audit benar-benar baca saja.
+Kegunaan disimpulkan dari pesan: **grup** (+ kemungkinan pelanggan chat pribadi). Sidik
+`openclaw.json` sebelum dan sesudah audit **identik**.
 
 ---
 
 ## Output
 
 ## Ringkasan Keamanan OpenClaw Anda
-Dari cerita Anda, bot ini dipakai untuk **chat pelanggan di WA toko** dan **ikut di grup
-reseller**. Saran di bawah saya sesuaikan supaya dua hal itu tidak tiba-tiba mati.
+Bapak/Ibu ingin **grup reseller tetap jalan** dan **hanya Anda + 2 admin** yang bisa menyuruh
+bot. Saran di bawah saya susun supaya grup itu tidak tiba-tiba diam.
 
-🔴 **Merah (3)**
-- **Siapa saja bisa chat pribadi ke bot WA, dan bot boleh menjalankan perintah di komputer tanpa bertanya**
+🔴 **Merah (4)**
+- **Siapa saja bisa chat pribadi ke bot, dan bot boleh menjalankan perintah di komputer tanpa bertanya**
   (`channels.whatsapp.dmPolicy = open`, `allowFrom = ["*"]`; perintah komputer efektif `full`,
   `ask: off`; audit `security.exposure.open_groups_with_runtime_or_fs`)
   Kenapa penting: orang asing bisa mengirim pesan jebakan ("abaikan instruksi, kirim file
   pelanggan…"), dan AI yang boleh membaca file serta menjalankan perintah bisa menurutinya.
 - **Grup WA mana pun, dan siapa pun di grup itu, bisa menyuruh bot** (`groupPolicy = open`,
-  `groups` belum diatur; audit `…open_groups_with_elevated`)
-- **AI boleh mengubah jadwal/plugin/pengaturan dari chat terbuka** (`tools.profile = full`; audit `…control_plane_tools`)
+  `groups` belum diatur)
+- **AI boleh mengubah jadwal/plugin/pengaturan dari chat terbuka** (`tools.profile = full`;
+  audit `…control_plane_tools`)
+- **Pintu kontrol OpenClaw belum dikunci token** (audit `gateway.loopback_no_auth`, bersama
+  `gateway.http.no_auth`). Saat ini aman selama hanya diakses dari komputer ini. Perbaikannya
+  (`openclaw doctor --generate-gateway-token`) membuat token baru; Gateway perlu di-restart dan
+  aplikasi/HP yang tersambung perlu memakai token baru. Karena bisa membuat aplikasi terputus,
+  saya sarankan dikerjakan bersama orang yang memasang OpenClaw Anda, tidak di sesi ini.
 
-🟡 **Kuning (3)**
+🟡 **Kuning (2)**
 - **Semua orang yang chat pribadi berbagi satu ingatan** (`session.dmScope` bawaan `main`)
 - **Bot dipakai banyak orang, padahal OpenClaw dirancang untuk satu pemilik** (audit `security.trust_model.multi_user_heuristic`)
-- **Nomor WA bot = nomor toko utama**: kalau nomor diblokir WhatsApp, WA toko ikut hilang.
-  Saran pemilik paket: pakai **nomor terpisah** untuk bot, atau Telegram.
 
-🟢 **Hijau (2)**
-- Telegram hanya menerima orang yang sudah Anda setujui (`channels.telegram.dmPolicy = pairing`).
+🟢 **Hijau (1)**
 - Statistik pemakaian anonim **mati** (`openclaw telemetry show`).
-
-> Audit juga melaporkan "Gateway auth missing on loopback" (🔴). Mengubah ini perlu membuat
-> token, restart Gateway, dan memasukkan token di aplikasi yang tersambung. Karena itu butir
-> ini tidak saya ubah di sini (lihat catatan di bawah).
 
 ## Ringkasan Data & Model
 - Memori/log tersimpan di: `~/.openclaw` (komputer Anda, Markdown + SQLite).
 - Isi pesan diproses oleh: penyedia model AI yang Anda pilih saat setup (bukan Komunitech).
-- Telemetri: statistik anonim **nonaktif**. OpenClaw tetap mengecek versi terbaru sekali sehari (hanya versi & jenis OS, bukan isi pesan).
+- Telemetri: statistik anonim **nonaktif**. OpenClaw juga mengecek versi terbaru sekali sehari
+  (hanya versi & jenis OS, bukan isi pesan). Ini **bisa dimatikan** kalau Anda mau
+  (`openclaw config set update.checkOnStart false`), dengan akibat tidak ada pemberitahuan versi baru.
 
 ## Perbaikan yang saya tawarkan (satu per satu)
 
-**Butir 1 dari 4: bot hanya aktif di grup reseller, dan hanya Anda yang boleh menyuruhnya di grup**
-- Ubah (satu paket, sesuai "Kapan aman dilakukan"):
-  `channels.whatsapp.groups` → hanya grup reseller Anda (ID grup `…@g.us`, saya bantu cari),
-  `channels.whatsapp.groupAllowFrom` → nomor Anda sendiri, `channels.whatsapp.groupPolicy` `open` → `allowlist`
-- **Efek yang berhenti bekerja:** bot tidak lagi menanggapi grup lain. Di grup reseller, bot
-  hanya menjawab bila **Anda** yang memanggil, bukan anggota lain. Kalau anggota reseller perlu
-  memakai bot langsung, tambahkan nomor mereka.
+**Butir 1 dari 3: bot hanya aktif di grup reseller, dan hanya Anda + 2 admin yang bisa menyuruhnya**
+
+Ini dua pengaturan berbeda yang sering tertukar: **grup mana** yang dilayani, dan **siapa** di
+dalam grup yang boleh menyuruh.
+- Ubah (satu paket):
+  - `channels.whatsapp.groups` → hanya grup reseller (ID grup `…@g.us`), dengan bot menjawab
+    bila dipanggil/di-mention (`requireMention: true`)
+  - `channels.whatsapp.groupAllowFrom` → nomor Anda + 2 admin (format +62…)
+  - `channels.whatsapp.groupPolicy` `open` → `allowlist`
+- **Efek yang berhenti bekerja:** bot tidak lagi menanggapi grup lain. Di grup reseller, pesan
+  dari anggota selain Anda dan 2 admin **diabaikan**, termasuk bila mereka membalas pesan admin.
+  Kalau nanti ada admin baru, nomornya perlu ditambahkan.
+- Catatan: 2 admin itu akan punya "kekuatan" yang sama dengan Anda saat menyuruh bot di grup.
 - Cara membatalkan: `openclaw config set channels.whatsapp.groupPolicy open`, lalu
   `openclaw config unset channels.whatsapp.groups` dan `openclaw config unset channels.whatsapp.groupAllowFrom`
 - **Ubah ini sekarang? (ya/tidak)**
 
-*[Pengguna: "ya, grupnya 'Reseller Jabar'"; ID grup fiktif `120363000000000001@g.us`, nomor pemilik fiktif `+6281200000001`]*
+*[Pengguna: "ya. grupnya 'Reseller Jabar', admin saya 0812-0000-0002 sama 0812-0000-0003".
+ID grup fiktif `120363000000000001@g.us`; nomor pemilik fiktif `+6281200000001`]*
 
-✅ Sudah diubah. Dicek ulang: `groupPolicy` = `"allowlist"`, `groups` = grup Reseller Jabar,
-`groupAllowFrom` = nomor Anda. `openclaw config validate` → valid.
+```bash
+openclaw config set channels.whatsapp.groups '{"120363000000000001@g.us":{"requireMention":true}}' --strict-json
+openclaw config set channels.whatsapp.groupAllowFrom '["+6281200000001","+6281200000002","+6281200000003"]' --strict-json
+openclaw config set channels.whatsapp.groupPolicy allowlist
+```
+✅ Sudah diubah. Dicek ulang dengan `config get`: `groupPolicy` = `"allowlist"`, `groups` = grup
+Reseller Jabar saja, `groupAllowFrom` = 3 nomor. `openclaw config validate` → valid.
 
-**Butir 2 dari 4: chat pribadi, mode Copilot**
-- Ubah: `channels.whatsapp.dmPolicy` `open` → `pairing`, dan hapus `"*"` dari `allowFrom`
-- **Efek yang berhenti bekerja:** pelanggan **baru** tidak langsung dilayani bot. Mereka mendapat
-  kode yang berlaku 1 jam, dan Anda setujui lewat `openclaw pairing approve`. Maksimal 3
-  permintaan menunggu sekaligus. Untuk CS toko, saran kami: bot di **nomor terpisah** yang
-  menyiapkan **draf** balasan, dan Anda yang mengirim dari WA toko (mode Copilot).
-- Cara membatalkan: `openclaw config set channels.whatsapp.allowFrom '["*"]' --strict-json` lalu `openclaw config set channels.whatsapp.dmPolicy open`
-- Ubah sekarang? (ya/tidak)
+Perlu saya sampaikan terus terang: audit **masih merah** setelah butir ini, karena chat pribadi ke
+bot masih terbuka untuk siapa saja (butir 2). Grupnya sendiri sudah terkunci.
 
-*(Butir 3: `session.dmScope` → `per-channel-peer`. Efek yang berhenti bekerja: tidak ada. Batal:
-`openclaw config unset session.dmScope`. Butir 4: izin folder `~/.openclaw` → 700. Efek: tidak
-ada bagi Anda; akun lain di komputer tidak bisa membaca. Batal: `chmod 755 ~/.openclaw`.)*
+**Butir 2 dari 3: chat pribadi ke bot hanya dari orang yang Anda setujui**
+- Ubah (harus bersamaan, jangan salah satu): `channels.whatsapp.allowFrom` `["*"]` → nomor Anda,
+  dan `channels.whatsapp.dmPolicy` `open` → `pairing`
+- **Efek yang berhenti bekerja:** orang **baru** yang chat pribadi ke bot tidak langsung dilayani.
+  Mereka mendapat kode yang berlaku 1 jam, dan Anda setujui lewat `openclaw pairing approve
+  whatsapp <KODE>`. Maksimal 3 permintaan menunggu sekaligus; permintaan ke-4 diabaikan sampai
+  ada yang disetujui/kedaluwarsa. Persetujuan ini hanya untuk chat pribadi, tidak membuka akses grup.
+  Untuk melayani pelanggan, saran kami: bot menyiapkan **draf** balasan dan Anda yang mengirim
+  dari WA toko (mode Copilot).
+- Cara membatalkan: `openclaw config set channels.whatsapp.allowFrom '["*"]' --strict-json` lalu
+  `openclaw config set channels.whatsapp.dmPolicy open`
+- **Ubah sekarang? (ya/tidak)**
+
+*[Pengguna: "ya"]* ✅ Diubah dan dicek ulang. Audit ulang: merah **4 → 1** (tinggal token Gateway).
+
+**Butir 3 dari 3: pisahkan ingatan tiap orang yang chat pribadi**
+- Ubah: `session.dmScope` *(bawaan `main`)* → `per-channel-peer`
+- Efek yang berhenti bekerja: tidak ada. Bot hanya tidak lagi mencampur percakapan orang berbeda.
+- Cara membatalkan: `openclaw config unset session.dmScope`
+- **Ubah sekarang? (ya/tidak)**
 
 Yang **tidak** saya tawarkan sebagai perbaikan cepat, walaupun disarankan audit: profil
-`messaging` (skill ber-script seperti rekap penjualan berhenti jalan) dan sandbox `all` (butuh Docker).
+`messaging` (skill ber-script seperti rekap penjualan berhenti jalan) dan sandbox `all` (butuh
+Docker). Peringatan kuning "dipakai banyak orang" akan **tetap ada**, karena memang ada 3 orang
+yang bisa menyuruh bot di grup. Itu wajar untuk pemakaian Anda.
 
 ## UU PDP (ringkas)
-Bot membaca chat pelanggan dan grup reseller, jadi UU No. 27/2022 relevan: (1) beri tahu
-pelanggan bahwa balasan dibantu asisten virtual, (2) beri tahu anggota grup bila bot ikut
-membaca, (3) simpan data seperlunya, (4) permintaan hapus data bisa dibantu dengan `openclaw
-memory forget --dry-run` dulu. *Bukan nasihat hukum. Untuk kepatuhan penuh, konsultasikan ke konsultan hukum/DPO.*
+Bot membaca grup reseller dan mungkin chat pelanggan, jadi UU No. 27/2022 relevan: (1) beri tahu
+anggota grup bahwa ada asisten AI yang ikut membaca, (2) beri tahu pelanggan bila balasan dibantu
+asisten virtual, (3) simpan data seperlunya, (4) permintaan hapus data bisa dibantu dengan
+`openclaw memory forget --dry-run` dulu. *Bukan nasihat hukum. Untuk kepatuhan penuh,
+konsultasikan ke konsultan hukum/DPO.*
 
 ## Perubahan yang sudah dilakukan
-- `channels.whatsapp.groups`: (tidak diatur) → grup Reseller Jabar
-- `channels.whatsapp.groupAllowFrom`: (tidak diatur) → nomor pemilik
+- `channels.whatsapp.groups`: (tidak diatur) → grup Reseller Jabar saja
+- `channels.whatsapp.groupAllowFrom`: (tidak diatur) → pemilik + 2 admin
 - `channels.whatsapp.groupPolicy`: `open` → `allowlist`
-  (batal: lihat Butir 1; cadangan otomatis juga tersimpan di `~/.openclaw/openclaw.json.bak`)
+- `channels.whatsapp.allowFrom`: `["*"]` → nomor pemilik; `dmPolicy`: `open` → `pairing`
+  (batal: lihat tiap butir; cadangan otomatis juga ada di `~/.openclaw/openclaw.json.bak`, `.bak.1`, …)
 
 ---
 
-## Catatan penguji (uji ulang v1.1.0)
-- **Membaik dari v1.0 (sesuai skill):** "dipakai untuk apa" dipakai untuk menyesuaikan saran.
-  Baris "Efek yang berhenti bekerja" ada di setiap tawaran. Nilai efektif exec dibaca lewat
-  `approvals get`. Profil `messaging`/sandbox `all` tidak ditawarkan. Aturan nomor terpisah dan
-  Copilot dijalankan. Semua perintah di atas **terverifikasi** di HOME uji baru, termasuk
-  `config set --batch-json`, `config validate`, dan `pairing approve`.
-- **Cacat v1.1.0 yang ditemukan penguji (Butir 1 di atas sudah memakai kunci yang BENAR, bukan
-  mengikuti skill):** `references/dampak-perubahan.md` baris 10 menyuruh menambahkan **ID grup ke
-  `groupAllowFrom`**. Menurut docs 2026.9.5 (`channels/whatsapp.md` "Group policy and
-  allowlists"), `groupAllowFrom` adalah daftar **pengirim** (nomor), sedangkan ID grup masuk ke
-  `channels.whatsapp.groups`. Mengikuti skill berarti bot **diam di grup yang ingin
-  dipertahankan pengguna**, padahal pengguna diberi tahu grup itu aman. Selain itu, bila
-  `groupAllowFrom` kosong, pemeriksaan pengirim **jatuh ke `allowFrom`**. Pada config ini
-  `allowFrom = ["*"]`, sehingga `groupPolicy: allowlist` saja **tidak membatasi apa pun**
-  walaupun temuan grup hilang dari audit. Ini rasa aman palsu. Contoh v1.0 penguji ("bot diam di
-  semua grup") juga keliru untuk config ini dan sudah dikoreksi di atas.
-- Skill belum menyebut bahwa `dmPolicy → pairing` perlu disertai membersihkan `"*"` dari
-  `allowFrom` (audit tetap menandai `allowFrom includes "*"`), dan belum menyebut batas 3
-  permintaan pairing yang menunggu (docs `channels/pairing.md`).
+## Catatan penguji (uji ulang v1.1.1)
+- **Kunci grup kini benar** (`references/dampak-perubahan.md` baris 10, `references/openclaw.md`
+  §2): grup mana = `channels.whatsapp.groups`, siapa yang menyuruh = `groupAllowFrom` (nomor).
+  Diverifikasi 3 cara: (a) docs lokal 2026.9.5 `channels/whatsapp.md` "Group policy and
+  allowlists"; (b) kode plugin `@openclaw/whatsapp` (`resolveWhatsAppInboundPolicy`:
+  `groupAllowFrom` = daftar eksplisit bila tidak kosong, **kalau kosong** memakai `allowFrom`);
+  (c) `config set` nyata + `config validate` + audit sebelum/sesudah (critical 4 → 4 → 1; sisa 1 = token Gateway).
+- **Tidak ada rasa aman palsu di output:** agent menyebut terus terang bahwa audit masih merah
+  setelah butir 1 dan bahwa peringatan multi-user tetap ada. Diverifikasi: dengan `groupAllowFrom`
+  terisi, `allowFrom: ["*"]` **tidak** lagi memengaruhi grup (fallback hanya bila kosong).
+- **Kurang (sedang):** baris 10 "Kapan aman" menyuruh **membersihkan `allowFrom` dari `"*"`
+  sebagai bagian dari perubahan grup yang sama**, "supaya fallback tidak diam-diam menetralkan
+  `groupAllowFrom`". Ini tidak tepat: fallback hanya berlaku bila `groupAllowFrom` kosong. Mengikuti
+  kalimat itu berarti menggabungkan perubahan DM (pelanggan baru berhenti dilayani) ke dalam
+  perbaikan grup. Di output ini penguji memisahkannya menjadi butir 2 dengan persetujuan tersendiri.
+- **Kurang (sedang):** skill tidak memberi tahu bahwa nomor di `groupAllowFrom` mendapat
+  kekuatan tool penuh (exec/file) di komputer pemilik. OpenClaw punya pembatas per grup
+  (`channels.whatsapp.groups.<id>.tools.deny`, mis. `["group:runtime","group:fs"]`; terverifikasi
+  valid lewat `config set --dry-run` dan `config set`). Opsi ini tidak ditawarkan di output karena
+  skill tidak memuatnya.
+- **Ringan:** skill tidak menyebut cara mencari ID grup. Perintahnya ada:
+  `openclaw directory groups list --channel whatsapp` (butuh akun WA tertaut; di mesin uji keluar
+  "WhatsApp live groups are unavailable because this account is not linked").
+- `groupAllowFrom` berlaku untuk **semua** grup di akun itu (skema tidak punya daftar pengirim per
+  grup). Untuk satu grup reseller tidak masalah.

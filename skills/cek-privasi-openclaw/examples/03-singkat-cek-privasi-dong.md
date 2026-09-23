@@ -46,7 +46,10 @@ hanya waktu modifikasi folder `state/` (database internal). Tidak ada config yan
 ## Ringkasan Data & Model
 - Memori/log tersimpan di: `~/.openclaw` (komputer Anda)
 - Isi pesan diproses oleh: penyedia model AI yang Anda pilih (skill ini tidak mengubahnya)
-- Telemetri: statistik anonim nonaktif. Pengecekan versi harian tetap jalan (hanya versi & OS).
+- Telemetri: statistik anonim nonaktif. OpenClaw mengecek versi terbaru sekali sehari (hanya versi
+  & OS, bukan isi pesan). Kalau Anda tidak mau ada permintaan keluar sama sekali, ini bisa dimatikan
+  (`openclaw config set update.checkOnStart false`). Akibatnya: tidak ada pemberitahuan versi baru,
+  jadi perlu cek pembaruan manual sesekali.
 
 ## Perbaikan yang saya tawarkan
 **Butir 1: kunci folder data agar hanya akun Anda yang bisa membaca**
@@ -60,17 +63,20 @@ setiap kali Anda menyambungkan WhatsApp/Telegram atau memasang skill yang membac
 
 ---
 
-## Catatan penguji (uji ulang v1.1.0)
-- **Sesuai skill v1.1.0:** path yang belum diatur ("valid but unset", exit 1) sekarang dijelaskan
-  di `references/openclaw.md` §2 sebagai "pakai nilai bawaan". Nilai efektif dibaca lewat
-  `approvals get` (bawaan `full`, `ask: off`) dan `sandbox explain`, dan pelaporannya sebagai
-  "jalan tanpa persetujuan" kini tertulis di skill. Peringatan restart untuk `gateway.auth.mode`
-  terverifikasi: OpenClaw mencetak "Restart the gateway to apply."
-- **Sisa:** `references/dampak-perubahan.md` (baris `gateway.auth.mode`) belum menyebut bahwa
-  mode `token` perlu token nyata (`openclaw doctor --generate-gateway-token`). Uji: `config set
-  gateway.auth.mode token` saja → audit **tetap** `critical gateway.loopback_no_auth`. Saran
-  token di output ini berasal dari penguji.
-- **Sisa:** telemetri. Skill v1.1.0 menulis cek pembaruan harian "selalu berjalan, bukan bagian
-  yang bisa dimatikan" (`references/openclaw.md` §5). Menurut docs `gateway/config-runtime.md`,
-  `update.checkOnStart: false` atau `OPENCLAW_NO_AUTO_UPDATE=1` menghentikan permintaan itu (path
-  terverifikasi valid). Output di atas sengaja tidak mengklaim "tidak bisa dimatikan".
+## Catatan penguji (uji ulang v1.1.1)
+- **Sesuai skill v1.1.1:** mulai audit tanpa menahan dengan pertanyaan (SKILL.md "Input"), path
+  "valid but unset" dijelaskan sebagai nilai bawaan, nilai efektif exec dibaca lewat `approvals get`.
+- **Token Gateway kini berasal dari skill** (`references/dampak-perubahan.md` baris 15,
+  `references/openclaw.md` §6). Diverifikasi nyata di HOME uji `/tmp/uji-privasi2/home`:
+  `openclaw doctor --generate-gateway-token` → "Updated config … Backup: ~/.openclaw/openclaw.json.bak",
+  `gateway.auth` = `{mode: "token", token: <acak>}`, audit ulang **critical 1 → 0**. Doctor juga
+  mencoba cek kesehatan Gateway (gagal wajar karena Gateway mati) dan menulis blok `wizard`; tidak
+  ada pengaturan lain yang berubah (dibandingkan dengan `.bak`).
+- **Telemetri kini benar di `references/openclaw.md` §5** (`update.checkOnStart false` /
+  `OPENCLAW_NO_AUTO_UPDATE=1`, terverifikasi dengan docs lokal `gateway/config-runtime.md` dan
+  `config set --dry-run`). **Sisa:** SKILL.md bagian "Batasan", butir "Telemetri", masih menulis
+  cek pembaruan harian "(selalu berjalan, bukan isi pesan)". Ini bertentangan dengan §5. Output di
+  atas mengikuti §5.
+- Jumlah `warn` bergantung mesin: di HOME kosong yang dibuat baru, audit hanya `critical 1, warn 2`
+  (folder `~/.openclaw` dibuat dengan izin 700, jadi temuan `fs.state_dir.perms_readable` tidak
+  muncul). Butir "izin folder" hanya ditawarkan bila audit memang melaporkannya.

@@ -2,7 +2,7 @@
 
 **Skenario:** S4 (input tidak lengkap). Pengguna tidak menyebut kanal atau kegunaan bot, dan minta
 semua diperbaiki sekaligus. Config sama dengan contoh 01 (WA `dmPolicy: open`, `allowFrom: ["*"]`,
-`groupPolicy: open`, profil `full`). Skill **v1.1.0** harus menanyakan kegunaan bot, menampilkan
+`groupPolicy: open`, profil `full`). Skill **v1.1.1** harus menanyakan kegunaan bot, menampilkan
 daftar lengkap dengan "Efek yang berhenti bekerja", lalu memproses satu per satu.
 
 **Input pengguna (persis):**
@@ -64,17 +64,19 @@ Sisa satu merah adalah token Gateway (lihat catatan di atas).
 
 ---
 
-## Catatan penguji (uji ulang v1.1.0)
-- **Sesuai skill v1.1.0:** pertanyaan kegunaan (4 opsi baku), kolom "Efek yang berhenti
-  bekerja" di setiap butir, daftar lengkap sebelum persetujuan borongan, eksekusi berurutan +
-  verifikasi, jaring pengaman `.bak`, dan larangan `messaging`/sandbox `all`/auth Gateway
-  sebagai perbaikan cepat. Audit ulang nyata: `critical 4 → 1`, `warn 4 → 3`.
-- **Koreksi penguji terhadap skill:** tabel `references/dampak-perubahan.md` hanya mengubah
-  `groupPolicy`/`dmPolicy`. Uji menunjukkan bahwa untuk config dengan `allowFrom: ["*"]`,
-  mengubah `groupPolicy` ke `allowlist` tanpa mengisi `groupAllowFrom` **tidak membatasi apa pun**,
-  karena pemeriksaan pengirim jatuh ke `allowFrom` (docs `channels/whatsapp.md`). Audit v1.0
-  penguji (`home-s4`: `groupPolicy` + `dmPolicy pairing` saja) masih menyisakan peringatan
-  `allowFrom includes "*"`. Versi di atas memperbaiki `allowFrom`/`groupAllowFrom` sekaligus, dan
-  baru itu yang menghilangkan peringatan multi-user.
-- `openclaw security audit --fix` tetap tidak dipakai. Skill v1.1.0 kini menjelaskan dengan
-  benar bahwa `--fix` juga mengubah `groupPolicy`.
+## Catatan penguji (uji ulang v1.1.1)
+- **Sesuai skill v1.1.1:** pertanyaan kegunaan (4 opsi baku), kolom "Efek yang berhenti bekerja"
+  di setiap butir, daftar lengkap sebelum persetujuan borongan, eksekusi berurutan + verifikasi,
+  jaring pengaman `.bak`, dan larangan `messaging`/sandbox `all`/auth Gateway sebagai perbaikan cepat.
+- **Butir 1 dan 2 kini berasal dari skill**, bukan koreksi penguji: `dmPolicy` diubah **bersama**
+  `allowFrom` (dampak-perubahan baris 11), dan `groupAllowFrom` diisi eksplisit (baris 10).
+- **Diverifikasi nyata** (HOME uji terpisah): `groupPolicy: allowlist` saja atau `audit --fix`
+  saja membuat `groupPolicy` = `allowlist` tetapi `groupAllowFrom` kosong, sehingga grup tetap
+  terbuka lewat `allowFrom: ["*"]` (kode plugin `@openclaw/whatsapp`: kosong → pakai `allowFrom`).
+  Juga: `dmPolicy: pairing` dengan `allowFrom` masih `["*"]` lolos `config validate` dan audit
+  turun ke critical 1, padahal **chat pribadi tetap terbuka untuk semua orang** (entri `"*"` cocok
+  dengan siapa pun di gerbang DM). Karena skill mewajibkan dua perubahan itu bersamaan, agent yang
+  mengikuti skill tidak jatuh ke jebakan ini.
+- Pengguna menjawab "1, cuma saya", jadi pengetatan grup ke nomor pemilik saja tepat. `groups`
+  sengaja tidak diisi (semua grup yang sudah ada tetap eligible, hanya pemilik yang bisa memanggil).
+- Hasil audit ulang nyata: `critical 4 → 1`, sisa token Gateway.

@@ -53,3 +53,17 @@ profil risiko), peta dampak + "kapan aman", jaring pengaman (`.bak`, `--dry-run`
 create`), dan langkah manual (enkripsi disk, kunci layar, backup). Pada aspek "tidak merusak",
 skill kita kini **setara** (8), dengan satu cacat kunci grup WA tersisa. Secara keseluruhan
 skill kita tetap **unggul** untuk persona member.
+
+## Pembaruan uji ulang v1.1.1 (2026-09-23)
+- Pencarian ulang: `healthcheck` masih satu-satunya skill bawaan OpenClaw 2026.9.5 untuk audit
+  keamanan. ClawHub API (`/api/v1/search?q=privacy audit`, `q=security audit`) tidak memunculkan
+  skill audit privasi **konfigurasi OpenClaw** yang baru; hasil teratas adalah pendeteksi PII
+  (`dcl-sentinel-trace`) dan asisten database, bukan pesaing untuk tugas ini.
+- `healthcheck` tidak memuat panduan kanal sama sekali (tidak ada `dmPolicy`, `allowFrom`,
+  `groups`, atau `groupAllowFrom` di isinya). Untuk skenario S1 (grup reseller tetap jalan, hanya
+  admin tertentu), `healthcheck` hanya akan menyarankan "tighten dmPolicy/groupPolicy", yang bila
+  dijalankan apa adanya (`groupPolicy: allowlist`) **tidak membatasi siapa pun** selama
+  `allowFrom: ["*"]` (terverifikasi). Skill kita v1.1.1 memberi tiga kunci yang benar, peringatan
+  fallback, dan efek yang berhenti bekerja.
+- Pada aspek "tidak merusak", skill kita kini **unggul** atas `healthcheck` untuk persona member.
+  Kesimpulan tetap: skill kita **unggul keseluruhan**.

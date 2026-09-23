@@ -204,8 +204,9 @@ agen CS WA harus mode Copilot (draf, bukan auto-reply langsung).
 - Skill ini **tidak** mengirim hasil audit ke server mana pun di luar percakapan ini, dan
   **tidak** menyimpan hasil audit sebagai data permanen kecuali pengguna memintanya disimpan
   ke file lokal mereka sendiri.
-- **Telemetri:** jangan menyamakan "cek pembaruan harian" (selalu berjalan, bukan isi pesan)
+- **Telemetri:** jangan menyamakan "cek pembaruan harian" (bukan isi pesan; bisa dimatikan dengan `openclaw config set update.checkOnStart false`)
   dengan "statistik pemakaian anonim" (opt-in, mati bawaan) — lihat `references/openclaw.md` §5.
+- **Perangkat kantor:** kalau pengguna adalah karyawan yang memakai OpenClaw di komputer/akun kantor, sarankan setiap perubahan disetujui pemilik usaha atau IT kantor dulu.
 - **Permintaan hapus data pelanggan (hak subjek data UU PDP):** ikuti `references/openclaw.md`
   §7 (`openclaw memory forget --dry-run` dulu, baru eksekusi dengan izin).
 - Skill ini **menolak** membantu memantau/menyadap chat atau perangkat orang lain — lihat
