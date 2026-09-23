@@ -1,0 +1,37 @@
+{
+  "jenis_dokumen": "invoice",
+  "nomor": "",
+  "prefix": "INV",
+  "tanggal": "2026-09-23",
+  "jatuh_tempo_hari": 14,
+  "penjual": {
+    "nama": "CV Contoh Kreasi",
+    "alamat": "Jl. Contoh No. 1, Bandung",
+    "telepon": "0812-0000-0000",
+    "email": "halo@contoh.id",
+    "npwp": "",
+    "pkp": false
+  },
+  "pembeli": {
+    "nama": "PT Pelanggan Contoh",
+    "alamat": "Jl. Pelanggan No. 2, Jakarta",
+    "telepon": "",
+    "email": ""
+  },
+  "items": [
+    {"nama": "Kaos sablon custom", "qty": 100, "satuan": "pcs", "harga": "65.000", "diskon": "5%"},
+    {"nama": "Biaya desain", "qty": 1, "satuan": "paket", "harga": "500.000"}
+  ],
+  "diskon": "",
+  "ongkir": "75.000",
+  "ppn": false,
+  "pembayaran": [
+    {"tanggal": "2026-09-20", "jumlah": "3.000.000", "keterangan": "DP"}
+  ],
+  "termin": [],
+  "rekening": [
+    {"bank": "BCA", "nomor": "0000000000", "atas_nama": "CV Contoh Kreasi"}
+  ],
+  "catatan": "Barang dikirim setelah pelunasan. Terima kasih atas kepercayaannya.",
+  "tanda_tangan": {"nama": "Budi Contoh", "jabatan": "Pemilik", "kota": "Bandung"}
+}

@@ -1,0 +1,8 @@
+kategori;nama;harga_beli;isi_beli;satuan_beli;pakai;satuan_pakai;biaya;per;upah_per_jam;jam;harga;umur_bulan
+bahan;Kain katun;45.000;1;yard;1,6;m;;;;;;
+bahan;Kancing;15.000;1;gross;7;pcs;;;;;;
+tenaga_kerja;Jahit;;;;;;35.000;unit;;;;
+kemasan;Plastik;;;;;;800;unit;;;;
+overhead;Sewa tempat;;;;;;1.500.000;bulan;;;;
+alat;Mesin jahit;;;;;;;;;;4.800.000;60
+biaya_tetap;Admin;;;;;;1jt;;;;;

@@ -1,0 +1,34 @@
+{
+  "nama_produk": "Brownies Panggang",
+  "jenis": "produk",
+  "satuan_produk": "loyang",
+  "hasil_per_batch": 2,
+  "produksi_per_bulan": 120,
+  "susut_bahan_persen": 0,
+  "bahan": [
+    {"nama": "Tepung terigu", "harga_beli": "14.000", "isi_beli": 1, "satuan_beli": "kg", "pakai": 250, "satuan_pakai": "g"},
+    {"nama": "Gula pasir", "harga_beli": "18.000", "isi_beli": 1, "satuan_beli": "kg", "pakai": 300, "satuan_pakai": "g"},
+    {"nama": "Telur", "harga_beli": "30.000", "isi_beli": 16, "satuan_beli": "butir", "pakai": 6, "satuan_pakai": "butir"},
+    {"nama": "Dark chocolate", "harga_beli": "25.000", "isi_beli": 250, "satuan_beli": "g", "pakai": 200, "satuan_pakai": "g"},
+    {"nama": "Mentega", "harga_beli": "12.000", "isi_beli": 200, "satuan_beli": "g", "pakai": 150, "satuan_pakai": "g"}
+  ],
+  "tenaga_kerja": [
+    {"nama": "Upah pembuat", "upah_per_jam": "15.000", "jam": 2, "per": "batch"}
+  ],
+  "overhead": [
+    {"nama": "Gas", "biaya": "5.000", "per": "batch"},
+    {"nama": "Listrik & air", "biaya": "150.000", "per": "bulan"}
+  ],
+  "kemasan": [
+    {"nama": "Box brownies", "harga_beli": "250.000", "isi_beli": 100, "satuan_beli": "pcs", "pakai": 1},
+    {"nama": "Stiker label", "biaya": "500"}
+  ],
+  "alat": [
+    {"nama": "Oven", "harga": "3.600.000", "umur_bulan": 36, "nilai_sisa": 0}
+  ],
+  "biaya_tetap_lain": [
+    {"nama": "Internet & pulsa", "biaya": "300.000"}
+  ],
+  "target_margin_persen": 40,
+  "bulatkan": 500
+}
