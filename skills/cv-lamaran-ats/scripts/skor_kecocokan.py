@@ -32,6 +32,12 @@ STOPWORDS = {
     "kerja", "kami", "perusahaan", "posisi", "kualifikasi", "tanggung",
     "jawab", "jobdesk", "requirement", "kandidat", "pelamar", "lowongan",
     "gaji", "benefit", "fasilitas", "lokasi", "penempatan", "kami",
+    "mampu", "bawah", "atas", "bekerja", "berkala", "menjadi", "memiliki",
+    "melakukan", "membuat", "baik", "sesuai", "setiap", "secara", "agar",
+    "terhadap", "antara", "sehingga", "lebih", "mau", "siap", "diutamakan",
+    "berpengalaman", "pengalaman", "bersedia", "usia", "pria", "wanita",
+    "lulusan", "terbiasa", "menguasai", "memahami", "tinggi", "cepat",
+    "besar", "baru", "lain", "hal", "tersebut", "yaitu", "seperti", "pt", "cv", "tbk",
     # Inggris
     "the", "and", "or", "of", "to", "in", "on", "for", "with", "a", "an",
     "is", "are", "be", "will", "we", "you", "our", "job", "role", "team",
@@ -104,6 +110,8 @@ def main():
     p.add_argument("--top", type=int, default=25, help="Jumlah kata kunci teratas dari lowongan yang dianalisis")
     p.add_argument("--format", choices=["json", "teks"], default="json")
     a = p.parse_args()
+    if a.top < 1:
+        p.error("--top harus angka positif (mis. 25)")
 
     teks_cv = baca_teks(a.cv)
     teks_lowongan = baca_teks(a.lowongan)

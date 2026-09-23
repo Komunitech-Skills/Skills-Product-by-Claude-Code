@@ -74,10 +74,10 @@ def main():
 
     try:
         bobot_list = [float(x) for x in a.bobot.split(",")]
-        if len(bobot_list) != 4:
+        if len(bobot_list) != 4 or any(w < 0 or w != w for w in bobot_list):
             raise ValueError
     except ValueError:
-        keluar_error({"error": "--bobot harus 4 angka dipisah koma, mis. 0.3,0.3,0.2,0.2"})
+        keluar_error({"error": "--bobot harus 4 angka tidak negatif dipisah koma, mis. 0.3,0.3,0.2,0.2"})
     bobot = dict(zip(KOLOM_SKOR, bobot_list))
     total_bobot = sum(bobot.values())
     if abs(total_bobot - 1.0) > 0.01:

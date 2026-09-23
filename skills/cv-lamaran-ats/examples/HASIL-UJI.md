@@ -110,3 +110,8 @@ script, bukan kesalahan angka), sehingga tidak menurunkan skor ke ≤6.
 ## Verifikasi independen script: **YA** (dua pasangan CV-lowongan realistis,
 kedua kasus verified manual matching persis; ditambah 5 edge case: file
 kosong, file tidak ada, lowongan hanya stopword, `--top 0`, `--top -5`).
+
+## Catatan koordinator — v1.0.1 (setelah uji, skor 8 LULUS)
+Cacat sedang/ringan dari penguji diperbaiki langsung dan dicek ulang dengan script:
+- cv-lamaran-ats: STOPWORDS diperluas (kata umum ID + "pt/cv/tbk"), SKILL.md langkah 3 wajib menyaring kata non-keahlian sebelum ditampilkan, langkah 4 menangani sinonim ID/EN, langkah 1 menangani CV PDF/Word; `--top` ≤ 0 kini ditolak dengan pesan jelas.
+- riset-calon-pelanggan: `--bobot` negatif kini ditolak (exit 1, pesan jelas); bobot default tetap sama (skor contoh tidak berubah).

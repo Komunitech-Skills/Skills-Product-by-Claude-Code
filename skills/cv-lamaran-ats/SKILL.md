@@ -36,13 +36,13 @@ Jika data wajib kurang (terutama riwayat pengalaman pengguna), tanyakan **sekali
 
 ## Langkah kerja
 
-1. **Kumpulkan bahan mentah dari pengguna** (CV lama jika ada, atau daftar pengalaman/pendidikan/skill secara bebas) dan **teks lowongan lengkap**. Jangan lanjut tanpa dua-duanya.
+1. **Kumpulkan bahan mentah dari pengguna** (CV lama jika ada — kalau berupa PDF/Word, minta pengguna menyalin-tempel teksnya atau baca filenya bila agent bisa membuka file; atau daftar pengalaman/pendidikan/skill secara bebas) dan **teks lowongan lengkap**. Jangan lanjut tanpa dua-duanya.
 
 2. **Analisis kata kunci lowongan.** Pisahkan tugas: (a) *hard skill/tools* (mis. Excel, Google Ads, SQL, mesin bubut, akuntansi dasar), (b) *kualifikasi* (pendidikan, tahun pengalaman, sertifikasi), (c) *kata sifat/soft skill* yang sering dipakai rekruter (teliti, komunikatif, target-oriented).
 
-3. **Jalankan skor kecocokan** dengan script (lihat bawah) untuk mendapat daftar kata kunci yang sudah/belum muncul di CV pengguna. Jika pengguna belum punya draf CV, lewati langkah ini dulu, susun draf CV pertama, baru jalankan skor pada draf tersebut untuk verifikasi akhir.
+3. **Jalankan skor kecocokan** dengan script (lihat bawah) untuk mendapat daftar kata kunci yang sudah/belum muncul di CV pengguna. Jika pengguna belum punya draf CV, lewati langkah ini dulu, susun draf CV pertama, baru jalankan skor pada draf tersebut untuk verifikasi akhir. **Saring hasil script sebelum ditampilkan:** buang kata umum/non-keahlian dan pecahan nama perusahaan yang lolos dari daftar stopword — tampilkan hanya kata kunci yang benar-benar keahlian, alat, atau kualifikasi.
 
-4. **Cocokkan, jangan mengarang.** Untuk tiap kata kunci yang hilang, cek ke pengguna atau ke bahan yang diberikan: apakah dia sebenarnya punya pengalaman itu tapi belum ditulis (→ tambahkan dengan kalimat jujur), atau memang tidak punya (→ **biarkan hilang**, jangan dipaksakan masuk CV).
+4. **Cocokkan, jangan mengarang.** Untuk tiap kata kunci yang hilang, cek ke pengguna atau ke bahan yang diberikan: apakah dia sebenarnya punya pengalaman itu tapi belum ditulis (→ tambahkan dengan kalimat jujur), atau memang tidak punya (→ **biarkan hilang**, jangan dipaksakan masuk CV). Perhitungkan sinonim ID/EN dan nama lain yang setara (mis. Meta Ads = Facebook Ads, anggaran = budget, Excel = spreadsheet) — tulis istilah persis seperti di lowongan bila pengguna memang punya keahliannya.
 
 5. **Susun CV versi ATS** mengikuti format di bawah: satu kolom, judul bagian standar, tanpa tabel/kolom ganda/foto/ikon/grafik batang skill, font dianggap standar (tidak perlu disebutkan karena ini teks). Urutan bagian: Data Diri → Ringkasan Profil (2–3 kalimat, mengandung kata kunci utama) → Pengalaman Kerja (urutan terbaru dulu, poin dengan kata kerja aktif + hasil terukur jika ada) → Pendidikan → Keahlian → (opsional) Sertifikasi/Organisasi/Bahasa.
 
