@@ -99,25 +99,25 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
 
   /* Timeline / langkah-langkah */
   .timeline { display: flex; gap: 0; margin-top: 40px; }
-  .timeline .langkah { flex: 1; position: relative; padding-top: 44px; padding-right: 32px; }
+  .timeline .langkah { flex: 1; position: relative; padding-top: 56px; padding-right: 32px; }
   .timeline .langkah::before {
     content: attr(data-nomor); position: absolute; top: 0; left: 0;
-    width: 32px; height: 32px; border-radius: 50%;
+    width: 40px; height: 40px; border-radius: 50%;
     background: var(--warna-aksen); color: #fff;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: bold;
+    font-size: 24px; font-weight: bold;
   }
   .timeline .langkah::after {
-    content: ""; position: absolute; top: 16px; left: 32px; right: 0; height: 2px;
+    content: ""; position: absolute; top: 20px; left: 40px; right: 0; height: 2px;
     background: var(--warna-garis);
   }
   .timeline .langkah:last-child::after { display: none; }
   .timeline .langkah h3 { font-family: var(--font-judul); font-size: 26px; margin-bottom: 8px; color: var(--warna-teks); }
-  .timeline .langkah p { font-size: 22px; }
+  .timeline .langkah p { font-size: 24px; }
 
   /* Kutipan / testimoni */
   .kutipan { border-left: 6px solid var(--warna-aksen); padding: 8px 32px; font-style: italic; font-size: 34px; color: var(--warna-teks); }
-  .kutipan .sumber { display: block; margin-top: 16px; font-style: normal; font-size: 22px; color: var(--warna-teks-lembut); }
+  .kutipan .sumber { display: block; margin-top: 16px; font-style: normal; font-size: 24px; color: var(--warna-teks-lembut); }
 
   /* --- Navigasi (disembunyikan saat cetak) --- */
   .kontrol {
@@ -232,6 +232,7 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
     el.removeAttribute('contenteditable');
   });
   document.body.classList.remove('mode-edit');
+  if (btnEdit) { btnEdit.textContent = '✏️ Edit'; btnEdit.classList.remove('aktif'); }
 
   function skalakan() {
     var faktor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);

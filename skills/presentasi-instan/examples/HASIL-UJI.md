@@ -149,3 +149,71 @@ Semua cacat v1.0 (PDF terpotong, teks HP, validator bocor, KUR tanpa `pengajuan-
 - `ss-01-laporan-slide4-laptop.png` — tabel per produk dengan komponen `tabel-data`.
 - `ss-02-pdf-v1.1-halaman-utuh.png` — halaman PDF (cetak bawaan Chromium) slide "Rencana penggunaan dana": semua nominal & porsi tampil.
 - `ss-03-hp-tegak-overlay-putar.png` — overlay "Putar HP" di 390×844.
+
+---
+
+# Uji ulang v1.1.1
+
+- **Tanggal:** 2026-09-23
+- **Penguji:** agent penguji independen (simulasi, Claude Code)
+- **Versi diuji:** 1.1.1 (commit b7caab9)
+- **Lingkungan:** /tmp/uji-presentasi-instan/v111; Playwright 1.56 + Chromium 1194 (`/opt/pw-browsers`); pypdfium2.
+- **Dibangun ulang dengan kerangka v1.1.1:** `kur-maju-jaya-motor.html` (Hijau Amanah), **`kur-maju-jaya-motor-gelap.html` (Hitam Emas Premium, baru)**, `laporan-agustus-2026.html`, `pitch-bersih-kilat.html`. Angka KUR dari `simulasi_kur.py --format json`, angka laporan dari `rekap.py`.
+
+## Verifikasi tiap klaim perbaikan
+
+| # | Klaim | Cara uji (Playwright/Chromium) | Hasil |
+|---|---|---|---|
+| 1 | Keydown/swipe diabaikan saat mengedit | Mode Edit → pilih angka slide 4 → ketik `Rp 43.000.000` → ←, ←, →, PageDown → End → ketik ` ok` → klik di luar teks lalu Spasi → swipe (TouchEvent 600→300px) di 844×390 | ✔ Halaman tetap 4/10 setelah semua ketikan, panah, PageDown, dan Spasi di luar teks; teks jadi `Rp 43.000.000 ok` (spasi masuk). Swipe saat edit tidak memindah slide; tombol ‹ › tetap bisa dipakai. Setelah "Selesai edit", panah & swipe kembali normal |
+| 2 | "Selesai edit" menghapus semua `contenteditable` | Hitung elemen `[contenteditable]` | ✔ 76 saat edit → **0** setelah selesai; class `mode-edit` terlepas |
+| 3 | Sisa `contenteditable` dibersihkan saat dibuka | Simpan halaman (DOM) **saat mode edit masih aktif**, buka ulang | ✔ 0 elemen editable, panah kanan berfungsi, perubahan teks tetap tersimpan. ✗ ringan: label tombol masih "✔ Selesai edit" (hijau) walau mode lihat — lihat cacat ringan 1 |
+| 4 | Outline disembunyikan saat print | `outline-style` elemen editable di media print; cetak PDF saat mode edit aktif | ✔ `none`; PDF saat mode edit 10 halaman, utuh |
+| 5 | Catatan Ctrl+S hanya laptop | Baca teks `alert` | ✔ Menyebut: Spasi/panah tidak memindah slide, klik "Selesai edit" dulu, Ctrl+S/Cmd+S hanya di laptop, di HP minta AI agent mengubah & mengirim ulang |
+| 6 | `--warna-teks-lembut` per tema | Tabel `aturan-desain.md` #5; bangun deck KUR tema gelap; hitung ulang kontras dengan rumus WCAG sendiri | ✔ Kolom baru; `#cfc8b8`/`#111111` = 11,34:1, `#475569`/`#ffffff` = 7,58:1 (cocok dengan tabel). Deck gelap terbaca di layar & PDF (label kartu, tabel, timeline, `[isi]`) |
+| 7 | Cek kontras WCAG di validator | Tema gelap dengan teks-lembut bawaan; kuning muda `#fde68a` di putih; tema gelap benar | ✔ ERROR pada dua kasus buruk, LULUS pada tema gelap benar. Celah ringan: warna `rgb()` dan latar yang diganti lewat CSS kelas tidak dicek (tanpa peringatan) |
+| 8 | wa.me → peringatan | `<a href="https://wa.me/…">` dengan & tanpa kutip | ✔ exit 0 + peringatan "tautan navigasi" |
+| 9 | CSS `url()` lokal & video/audio/source lokal → error | `url("foto-toko.jpg")`, `<video src="promo.mp4">`, `<audio><source src="jingle.mp3">` | ✔ ketiganya ERROR; `url(#grad)` & `url("data:…")` tetap LULUS (tidak salah tangkap) |
+| 10 | Overlay "Tetap lihat" + max-width 600px | 390×844, 412×915, 600×960, 768×1024, 820×1180; klik "Tetap lihat"; putar ke lanskap & kembali | ✔ Overlay muncul di ≤600px, hilang setelah "Tetap lihat" (slide bisa dinavigasi); tidak muncul di tablet 768/820 (teks di sana ±12,8–13,7px, terbaca). Lanskap: overlay hilang otomatis |
+| 11 | Label BERAT/AMAN tidak di slide, disampaikan ke pengguna + plafon aman | SKILL.md bagian KUR + Format output; deck KUR | ✔ Aturan & baris "Catatan kelayakan pinjaman (…TIDAK ditaruh di slide)" ada; deck berisi 0 kata "BERAT"; ringkasan ke pengguna memuat plafon aman Rp 96.640.000 dari `simulasi_kur.py` (lihat contoh 02) |
+| 12 | 26 tes validator | `python3 tests/uji_validasi.py` | ✔ 26/26 OK |
+
+### Validator: 38 file uji penguji
+- Semua 27 kasus v1.1.0 tetap benar (regresi nol): internet via `<link>`/`src`/`srcset`/tanpa kutip/huruf besar/iframe/`@import`/`url(//)`/fetch/XHR → ERROR; gambar lokal → ERROR; tanpa `@media print`/`@page size` → ERROR; kosong/tanpa slide → ERROR; bukan UTF-8 & file hilang → exit 2; slide padat → peringatan; kerangka asli & base64 → LULUS.
+- Kasus baru: kontras (3 kasus) ✔, wa.me tanpa kutip ✔, `url(#…)`/`url(data:)` tidak salah tangkap ✔, `<audio><source>` lokal ✔.
+- Masih lolos (ringan): `poster="sampul.jpg"` pada `<video>`, `<a href="brosur.pdf">` lokal, `<link rel="icon" href="favicon.png">` (tidak merusak tampilan), warna non-hex.
+
+### Regresi (semua deck v1.1.1)
+| Pemeriksaan | Hasil |
+|---|---|
+| Request jaringan | ✔ 0 di 4 deck |
+| `validasi_html.py` | ✔ LULUS tanpa peringatan di 4 deck |
+| Teks meluber / dekat tepi (1920×1080) | ✔ tidak ada |
+| Kontrol & tombol Edit menutupi teks (844×390, 932×430, 667×375, 1280×720, semua slide) | ✔ 0 tumpang-tindih |
+| PDF: Chromium bawaan, anjuran (margin 0 + latar), tanpa grafis latar, dipaksa A4 lanskap | ✔ jumlah halaman = jumlah slide (10/10/8/13), 1440×810pt; **0 nilai Rupiah/persen hilang** (KUR terang 19, KUR gelap 19, laporan 30); latar gelap ikut tercetak walau "grafis latar" tidak dicentang |
+
+## Skor v1.1.1
+| Kriteria | v1.0 | v1.1.0 | v1.1.1 | Alasan |
+|---|---|---|---|---|
+| Pemicu (description) | 8 | 8 | 8 | Tepat, kata kunci ID/EN |
+| Kemudahan awam | 7 | 7 | 9 | Buka offline, HP (overlay + "Tetap lihat"), PDF tanpa atur kertas, edit teks bekerja |
+| Kualitas output | 6 | 8 | 8 | Komponen rapi, 4 tema terbaca; desain tetap sederhana dibanding sumber |
+| Akurasi (angka/fakta) | 8 | 9 | 9 | Angka wajib dari `pengajuan-kur`/`rekap-penjualan-csv`; penilaian kelayakan ke pengguna, bukan ke bank |
+| Penanganan input kurang | 9 | 9 | 9 | — |
+| Penanganan di luar cakupan | 9 | 9 | 9 | — |
+| Keamanan | 9 | 9 | 9 | Tanpa jaringan/localStorage |
+
+## SKOR AKHIR v1.1.1: **8 / 10 — LULUS**
+Semua klaim perbaikan terbukti bekerja di Chromium, tanpa regresi. Tidak ada cacat berat atau sedang yang tersisa. Sisa cacat ringan di bawah tidak menghalangi uji platform asli oleh pemilik.
+
+## Cacat ringan tersisa (saran)
+1. `kerangka-html.md` blok "Bersihkan sisa mode edit": saat file yang disimpan dalam mode edit dibuka ulang, label tombol masih "✔ Selesai edit" + kelas `aktif`. Tambahkan reset `btnEdit.textContent = '✏️ Edit'; btnEdit.classList.remove('aktif');` di blok pembersih tersebut.
+2. Komponen timeline (`.langkah p` 22px, nomor 18px) dan `.kutipan .sumber` (22px) di bawah batas "jangan pernah di bawah 24px" di `aturan-desain.md` #2 — naikkan ke 24–26px.
+3. Validator: cek kontras hanya untuk hex di `:root`; beri peringatan bila warna memakai `rgb()`/nama warna, atau bila `.slide { background: … }` ditimpa di luar variabel. Tambahkan `poster=` dan `<a href>` ke file lokal (mis. `brosur.pdf`) sebagai peringatan.
+
+## Screenshot v1.1.1
+- `ss-01-laporan-slide4-laptop.png` — tabel per produk (tidak berubah dari v1.1.0).
+- `ss-02-pdf-v1.1-halaman-utuh.png` — kini halaman PDF **tema gelap** (cetak tanpa "grafis latar"): cicilan, rasio, sisa laba, tanpa label BERAT.
+- `ss-03-hp-tegak-overlay-putar.png` — overlay 390×844 dengan tombol "Tetap lihat".
+
+## Catatan koordinator — v1.1.2 (setelah uji ulang v1.1.1, skor 8 LULUS)
+Cacat ringan 1–2 diperbaiki langsung di `references/kerangka-html.md`: blok pembersih saat load kini juga mengembalikan label & kelas tombol Edit ke "✏️ Edit"; teks timeline, nomor timeline, dan sumber kutipan dinaikkan ke 24px (lingkaran nomor 40px) sesuai aturan-desain #2. Cacat ringan 3 (kontras rgb()/latar kelas, poster= dan tautan PDF lokal) dicatat untuk versi berikutnya.

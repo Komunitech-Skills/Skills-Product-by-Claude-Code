@@ -46,3 +46,10 @@ Hasil cek otomatis: LULUS, tanpa peringatan.
 ## Pembaruan uji ulang v1.1.0 (2026-09-23)
 File HTML di folder ini sudah **dibuat ulang dengan kerangka v1.1.0** (komponen `kartu-kpi`/`tabel-data`/`timeline`/`isi`, `@page 1920×1080`, overlay "putar HP", tombol Edit). Isi & angka sama dengan catatan di atas; cacat teknis v1.0 yang disebut di atas (PDF terpotong, teks kecil di HP tegak) sudah tidak terjadi — lihat bagian "Uji ulang v1.1.0" di `HASIL-UJI.md`.
 Khusus contoh ini di v1.1.0: angka cicilan, rasio, sisa laba, total bunga, cicilan terakhir, dan porsi dana diambil **langsung dari output JSON `skills/pengajuan-kur/scripts/simulasi_kur.py`** (`--kur --sektor produksi --penggunaan investasi --laba-bersih 9800000`), sesuai aturan wajib baru di SKILL.md. Kategori rasio "BERAT — perlu hati-hati" dan catatan agunan tambahan (plafon > Rp 100.000.000) ikut dimasukkan. Saran: di ringkasan akhir ke pengguna, sampaikan juga plafon aman dari script (±Rp 96.640.000 untuk rasio ≤ 30%) sebelum pertemuan dengan bank.
+
+## Pembaruan uji ulang v1.1.1 (2026-09-23)
+Sesuai aturan baru SKILL.md, label kelayakan **tidak lagi ditaruh di slide**: slide 7 hanya berisi cicilan Rp 4.563.291, rasio 46,6%, dan sisa laba Rp 5.236.709. Penilaiannya disampaikan ke pengguna di ringkasan akhir:
+```
+Catatan kelayakan pinjaman (tidak ditaruh di slide): rasio cicilan/laba 46,6% = kategori BERAT menurut pengajuan-kur. Plafon yang lebih aman (rasio ≤ 30%, cicilan maks Rp 2.940.000/bulan) sekitar Rp 96.640.000. Plafon > Rp 100.000.000 → bank boleh meminta agunan tambahan. Pertimbangkan ini sebelum mengajukan.
+```
+File: `kur-maju-jaya-motor.html` (Hijau Amanah) dan `kur-maju-jaya-motor-gelap.html` (Hitam Emas Premium, `--warna-teks-lembut: #cfc8b8`).

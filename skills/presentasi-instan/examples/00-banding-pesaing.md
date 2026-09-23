@@ -81,3 +81,26 @@ Skenario sama (S1 + deck KUR & laporan dibuat ulang dengan kerangka v1.1.0). Sum
 | **Keseluruhan** | **4** | **7,5** | **8,5** |
 
 **Kesimpulan:** untuk alur utama pembeli (minta → file jadi → buka offline di laptop/HP → cetak PDF), v1.1.0 kini **menang telak** atas sumbernya: sumber gagal di offline, konteks Indonesia, angka, dan PDF tanpa instalasi. Dua dimensi yang masih kalah: **mode edit** (punya kita rusak pada tombol Spasi) dan **variasi desain/tema gelap**. Mode edit harus diperbaiki sebelum rilis karena dianjurkan di setiap balasan. Setelah itu, kemenangan telak berlaku di semua dimensi yang relevan untuk pembeli.
+
+---
+
+## Uji ulang v1.1.1 (2026-09-23)
+
+| | frontend-slides (sumber) | presentasi-instan v1.1.1 |
+|---|---|---|
+| Mode edit | ✔ ada (localStorage) | ✔ **kini berfungsi**: Spasi/panah/swipe tidak memindah slide saat mengetik, sisa mode edit dibersihkan saat dibuka ulang, outline tidak ikut tercetak, petunjuk simpan jelas (laptop saja) |
+| Tema gelap | ✔ beberapa preset | ✔ Hitam Emas Premium terbaca (kontras teks sekunder 11,34:1) + validator memeriksa kontras WCAG |
+| PDF tanpa instalasi | ✗ terpotong | ✔ utuh di semua setelan, termasuk tema gelap |
+| HP tegak | teks ±6px tanpa petunjuk | overlay putar HP + "Tetap lihat"; tablet tidak diganggu |
+| Offline / angka Rupiah / konteks Indonesia | ✗ / ✗ / ✗ | ✔ / ✔ / ✔ |
+| Variasi desain | ✔ lebih kaya (12 preset + template bold, animasi) | ~ 4 tema + 6 komponen, tanpa animasi |
+
+| Kriteria (1–10, pembeli awam Indonesia) | frontend-slides | v1.0 | v1.1.0 | v1.1.1 |
+|---|---|---|---|---|
+| Kualitas output | 7 | 7 | 8 | 8 |
+| Kesesuaian konteks Indonesia | 2 | 9 | 9 | 9 |
+| Akurasi | 5 | 8 | 9 | 9 |
+| Siap pakai tanpa setup | 3 | 7 | 9 | 9 |
+| **Keseluruhan** | **4** | **7,5** | **8,5** | **9** |
+
+**Kesimpulan:** v1.1.1 **menang telak** atas sumbernya. Keunggulan sumber yang tersisa hanya variasi visual/animasi, yang bukan prioritas pembeli awam yang butuh deck bank/investor/laporan yang rapi, offline, dan bisa dicetak. Mode edit dan tema gelap, dua dimensi yang kalah di v1.1.0, kini setara.
