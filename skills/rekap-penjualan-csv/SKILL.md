@@ -7,6 +7,12 @@ description: Menganalisis file penjualan CSV (ekspor kasir, Shopee, Tokopedia, a
 
 Mengubah data penjualan mentah menjadi ringkasan yang mudah dipahami pemilik usaha.
 
+## Kapan TIDAK digunakan
+- Laporan laba rugi / neraca dari buku kas → pakai skill `laporan-keuangan-emkm`.
+- Menghitung pajak (PPh Final 0,5%) → pakai skill `pph-final-umkm`.
+- Prediksi/forecast penjualan masa depan → jelaskan bahwa skill ini hanya merekap data yang sudah terjadi.
+- File Excel `.xlsx` → minta pengguna menyimpannya sebagai CSV dulu (Excel: *File → Save As → CSV*).
+
 ## Alur kerja
 
 1. **Cek kolom file.** Lihat beberapa baris pertama CSV. Tentukan kolom untuk:
@@ -22,7 +28,12 @@ Mengubah data penjualan mentah menjadi ringkasan yang mudah dipahami pemilik usa
      --kolom-qty "Qty" --kolom-total "Total"
    ```
    - Jika tidak ada kolom total tapi ada harga satuan, pakai `--kolom-harga "Harga"` sebagai ganti `--kolom-total`.
-   - Delimiter (`,` atau `;`) dan format angka Indonesia (`Rp 15.000`, `15.000,50`) dideteksi otomatis.
+   - Jika ada kolom status pesanan (ekspor Shopee/Tokopedia), **selalu** tambahkan `--kolom-status "Status Pesanan"`
+     agar pesanan batal/retur/refund tidak dihitung sebagai omzet.
+   - Delimiter (`,` `;` tab), encoding Excel Windows, format angka (`Rp 15.000`, `Rp. 25000`, `15.000,-`, `15.000,50`),
+     dan tanggal (`01/09/2026`, `2026-09-01 10:00`, `1 Sep 2026`, `1 Agustus 2026`) dideteksi otomatis.
+   - Jika output berisi `peringatan` tentang urutan tanggal ambigu, tanyakan ke pengguna apakah formatnya
+     hari/bulan (Indonesia) atau bulan/hari (AS); jika AS, jalankan ulang dengan `--urutan-tanggal mdy`.
    - Jika Python tidak tersedia, hitung manual langkah demi langkah dan beri tahu pengguna bahwa hasil belum diverifikasi script.
 3. **Tulis rekap** berdasarkan output JSON script, dengan format di bawah.
 4. **Beri 2–3 insight** yang bisa langsung ditindaklanjuti, berdasarkan angka.
@@ -34,7 +45,7 @@ Mengubah data penjualan mentah menjadi ringkasan yang mudah dipahami pemilik usa
 
 **Total omzet:** Rp X
 **Jumlah transaksi (baris):** N
-**Rata-rata omzet per hari:** Rp Y
+**Rata-rata omzet per hari (kalender):** Rp Y  _(hari berjualan: Rp Z)_
 
 ### 5 Produk Terlaris (omzet)
 | # | Produk | Qty | Omzet | % |
@@ -52,6 +63,7 @@ Hari terbaik: <tanggal> (Rp ...). Hari terendah: <tanggal> (Rp ...).
 
 - Semua angka rupiah ditulis dengan pemisah ribuan titik: `Rp 1.250.000`.
 - Jangan mengarang angka: semua angka harus berasal dari output script.
-- Jika script melaporkan baris yang dilewati (`baris_dilewati` > 0), sebutkan jumlahnya dan alasannya.
+- Jika script melaporkan baris yang dilewati (`baris_dilewati` > 0) atau `dibuang_karena_status`, sebutkan jumlah dan alasannya.
+- Sampaikan setiap isi `peringatan` dari script kepada pengguna.
 - Insight harus berdasarkan data; hindari saran generik seperti "tingkatkan pemasaran".
 - Jangan mengirim isi file pengguna ke layanan eksternal.

@@ -1,11 +1,17 @@
 ---
 name: caption-sosmed-umkm
-description: Membuat caption media sosial (Instagram, TikTok, Facebook, WhatsApp Status) berbahasa Indonesia untuk produk UMKM, lengkap dengan hook, CTA, dan hashtag. Gunakan saat pengguna minta caption, copywriting, teks promosi, atau konten jualan (social media caption, product post, promo copy).
+description: Membuat caption media sosial (Instagram, TikTok, Facebook, WhatsApp Status) berbahasa Indonesia untuk produk UMKM, lengkap dengan hook, CTA, dan hashtag. Gunakan saat pengguna minta caption, copywriting, teks promosi, atau konten jualan untuk diposting di media sosial (social media caption, product post, promo copy). Bukan untuk membalas ulasan pelanggan atau menulis judul/deskripsi listing marketplace.
 ---
 
 # Caption Sosmed UMKM
 
 Menghasilkan caption jualan yang terasa lokal, tidak kaku, dan mendorong pembeli bertindak.
+
+## Kapan TIDAK digunakan
+- Membalas ulasan/komentar pelanggan → pakai skill `balas-ulasan-pelanggan`.
+- Judul & deskripsi produk untuk Shopee/Tokopedia/TikTok Shop → pakai skill `listing-marketplace`.
+- Pesan broadcast WhatsApp ke daftar kontak → pakai skill `broadcast-wa`.
+- Produk ilegal, obat/suplemen dengan klaim menyembuhkan, rokok elektrik, judi, investasi bodong → tolak dengan sopan.
 
 ## Alur kerja
 
@@ -16,17 +22,21 @@ Menghasilkan caption jualan yang terasa lokal, tidak kaku, dan mendorong pembeli
    - Promo/harga (opsional)
    - Cara order (DM, link bio, WA, Shopee, dll.)
 
-   Jika pengguna ingin cepat, lanjutkan dengan asumsi yang wajar dan sebutkan asumsinya.
+   **Kapan harus bertanya:** jika produknya belum jelas, atau platform WA Status tanpa harga/cara order.
+   Selain itu, **langsung kerjakan**: pakai asumsi wajar (default platform: Instagram), tulis placeholder
+   seperti `[harga]` atau `[nomor WA]` untuk info yang belum ada, dan sebutkan asumsinya di akhir.
 2. **Tulis 3 variasi** dengan gaya berbeda:
    - **A – Storytelling:** mulai dari masalah/cerita pembeli.
    - **B – Langsung jualan:** keunggulan + promo + CTA tegas.
    - **C – Santai/humor:** bahasa gaul yang ringan, sesuai target.
 3. **Sesuaikan dengan platform** (lihat tabel).
-4. Tawarkan revisi: nada, panjang, atau fokus.
+4. **Cek panjang** setiap variasi sebelum mengirim: hitung kata caption (hashtag tidak dihitung).
+   Jika di luar rentang tabel, tulis ulang sampai masuk rentang.
+5. Tawarkan revisi: nada, panjang, atau fokus.
 
 ## Aturan per platform
 
-| Platform | Panjang | Catatan |
+| Platform | Panjang (tanpa hashtag) | Catatan |
 |---|---|---|
 | Instagram | 80–150 kata | Hook di baris pertama, paragraf pendek, 5–10 hashtag di akhir |
 | TikTok | 1–3 kalimat | Hook sangat kuat, 3–5 hashtag, sarankan teks overlay |
@@ -54,5 +64,6 @@ Menghasilkan caption jualan yang terasa lokal, tidak kaku, dan mendorong pembeli
 - Setiap variasi wajib punya **CTA** yang jelas sesuai cara order.
 - Emoji secukupnya (maks. 1 per kalimat); jangan berlebihan.
 - Hashtag campuran: umum (#umkmindonesia), niche (#kuekeringlebaran), dan lokal (#kulinerbandung) jika lokasi diketahui.
-- **Jangan** membuat klaim yang tidak diberikan pengguna (mis. "halal", "BPOM", "100% organik", "terlaris") dan jangan membuat klaim kesehatan/medis.
+- **Jangan** membuat klaim yang tidak diberikan pengguna (mis. "halal", "BPOM", "100% organik", "terlaris").
+- **Jangan** menulis klaim kesehatan/medis (menyembuhkan, mencegah penyakit, menurunkan berat badan) **walaupun diminta pengguna**. Jelaskan singkat bahwa klaim seperti itu berisiko melanggar aturan iklan BPOM, lalu tawarkan alternatif yang aman (fokus rasa, bahan, pengalaman).
 - Jangan menjelekkan merek pesaing.

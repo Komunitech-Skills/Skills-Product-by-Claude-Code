@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Validasi format semua skill, catalog.csv, dan bundles/. Keluar dengan kode 1 jika ada masalah."""
+"""Validasi format semua skill, catalog.csv, dan bundles/. Keluar dengan kode 1 jika ada masalah.
+
+Pakai `--skill <nama>` (bisa diulang) untuk memvalidasi skill tertentu saja, mis. saat
+folder skill lain masih dalam pengerjaan.
+"""
+import argparse
 import csv
 import re
 import sys
@@ -134,6 +139,10 @@ def validasi_baris(b, no):
 
 
 def main():
+    ap = argparse.ArgumentParser(description="Validasi skill & katalog")
+    ap.add_argument("--skill", action="append", help="Hanya validasi skill ini (bisa diulang)")
+    args = ap.parse_args()
+    hanya = set(args.skill or [])
     errors = []
     try:
         katalog = baca_katalog()
@@ -149,12 +158,16 @@ def main():
         status[b["nama"]] = b["status"]
 
     folders = sorted(p for p in SKILLS_DIR.iterdir() if p.is_dir()) if SKILLS_DIR.is_dir() else []
+    if hanya:
+        tidak_ada = hanya - {f.name for f in folders}
+        errors += [f"{n}: folder skills/{n} tidak ada" for n in sorted(tidak_ada)]
+        folders = [f for f in folders if f.name in hanya]
     for f in folders:
         if f.name not in status:
             errors.append(f"{f.name}: ada di skills/ tapi tidak ada di catalog.csv")
             continue
         errors += validasi_skill(f, status[f.name])
-    nama_folder = {f.name for f in folders}
+    nama_folder = {p.name for p in SKILLS_DIR.iterdir() if p.is_dir()} if SKILLS_DIR.is_dir() else set()
     for nama, st in status.items():
         if st not in STATUS_TANPA_FOLDER and nama not in nama_folder:
             errors.append(f"catalog.csv: '{nama}' berstatus '{st}' tapi folder skills/{nama} tidak ada")
