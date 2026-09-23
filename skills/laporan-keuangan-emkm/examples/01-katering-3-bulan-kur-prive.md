@@ -1,4 +1,4 @@
-# 01 — Katering 3 bulan (70 transaksi, KUR, beli aset, prive)
+# 01 — Katering 3 bulan (70 transaksi, KUR, beli aset, prive) — diuji ulang dengan v1.1.0
 
 ## Skenario
 S1, permintaan normal dan lengkap. Pemilik katering rumahan menyerahkan buku kas Januari–Maret 2026 (70 transaksi + baris saldo awal) dan menyebutkan saldo stok, piutang, utang pemasok, serta peralatan lama. Buku kas memuat pencairan KUR, angsuran KUR, pembelian kompor & freezer, beberapa pengambilan pribadi, setoran PPh final, dan 3 transaksi yang tidak jelas.
@@ -85,34 +85,34 @@ Tanggal,Keterangan,Masuk,Keluar,Kategori
 
 ## Output
 
-### Langkah agent (mengikuti SKILL.md)
+### Langkah agent (mengikuti SKILL.md, script v1.1.0)
 1. File CSV disimpan apa adanya, lalu script dijalankan:
    ```bash
    python3 scripts/laporan_emkm.py kas-dapur-sehati.csv --nama-usaha "Katering Dapur Sehati" \
      --persediaan-awal "1,2jt" --persediaan-akhir "Rp 1.650.000" --piutang-awal "1.500.000" --piutang-akhir "2 juta" \
      --utang-usaha-awal 800rb --utang-usaha-akhir 600rb --aset-tetap-awal "Rp 12.000.000" --umur-aset-tahun 4
    ```
-2. Bagian "Perlu dicek" berisi 3 transaksi belum terklasifikasi (status SEMENTARA). Agent bertanya **sekali**:
+2. Status SEMENTARA. Bagian "Perlu dicek" berisi 1 pertanyaan otomatis (porsi bunga angsuran KUR baris 52) dan 2 transaksi belum terklasifikasi. "Kasbon Pak Darto" sekarang otomatis dicatat sebagai kasbon/piutang karyawan (aset), dan "Beli air mineral gelas" sebagai pembelian bahan. Agent menggabungkan semuanya menjadi **satu** pesan:
 
-> Laporannya hampir jadi. Ada 3 catatan yang belum jelas, boleh dijelaskan?
+> Laporannya hampir jadi. Ada 3 hal yang perlu Ibu jawab dulu:
 >
-> | Baris | Tanggal | Keterangan | Nominal | Pilihan |
-> |---:|---|---|---:|---|
-> | 18 | 18 Jan | Transfer dari Bu Rina (masuk) | Rp 750.000 | a) bayar pesanan · b) setoran modal · c) pinjaman · d) lainnya |
-> | 41 | 17 Feb | Kasbon Pak Darto (keluar) | Rp 300.000 | a) dipotong dari gaji (beban gaji) · b) pinjaman pribadi dari uang pribadi (prive) · c) lainnya |
-> | 72 | 31 Mar | Zakat (keluar) | Rp 250.000 | a) zakat pribadi (prive) · b) sumbangan atas nama usaha (beban lain-lain) |
+> 1. **Angsuran KUR BRI ke-1 (5 Mar, Rp 2.291.667):** berapa bagian **bunga**nya? Lihat di jadwal angsuran/buku tabungan BRI. Bunga dicatat sebagai beban, pokok mengurangi utang KUR. Kalau tidak tahu, saya bisa anggap pokok saja, tapi laba akan terlihat sedikit lebih tinggi.
+> 2. **Transfer dari Bu Rina (18 Jan, masuk Rp 750.000):** a) bayar pesanan · b) setoran modal · c) pinjaman · d) lainnya
+> 3. **Zakat (31 Mar, keluar Rp 250.000):** a) zakat pribadi (prive) · b) sumbangan atas nama usaha (beban lain-lain)
+>
+> Catatan: kasbon Pak Darto Rp 300.000 saya catat sebagai piutang karyawan (bukan biaya), karena nanti dipotong dari gaji.
 
-**Jawaban pengguna:** "Bu Rina itu pelunasan pesanan nasi box. Kasbon Pak Darto nanti dipotong gaji April. Zakat itu zakat pribadi aku."
+**Jawaban pengguna:** "Di jadwal BRI bunganya 208.334. Bu Rina itu pelunasan pesanan nasi box. Zakat itu zakat pribadi aku."
 
-3. Script dijalankan ulang dengan `--tetapkan 18=pendapatan_usaha --tetapkan 41=beban_gaji --tetapkan 72=prive`. Hasil akhir:
+3. Script dijalankan ulang dengan `--bunga 52=208.334 --tetapkan 18=pendapatan_usaha --tetapkan 72=prive`. Hasil akhir:
 
 ---
 
 # Laporan Keuangan Katering Dapur Sehati
-Periode 1 Januari 2026 s.d. 31 Maret 2026 · disusun mengacu pada SAK EMKM · status: **LENGKAP**
+Periode 1 Januari 2026 s.d. 31 Maret 2026 · disusun mengacu pada SAK EMKM · status: **LENGKAP (dengan asumsi)**
 
 ## Ringkasan untuk pemilik
-Usaha kamu RUGI Rp 2.118.583 selama 1 Januari 2026 s.d. 31 Maret 2026. Dari penjualan bersih Rp 36.150.000, yang tersisa jadi laba sekitar -5,9% (setiap Rp 100.000 penjualan, labanya sekitar -Rp 5.861). Pengeluaran terbesar: beban gaji & upah sebesar Rp 14.700.000 (38,0% dari total biaya). Arus kas usaha terbaik di Jan 2026 (Rp 1.280.000), terendah di Mar 2026 (-Rp 2.324.750). Kamu mengambil Rp 5.950.000 untuk keperluan pribadi (prive). Ini tidak mengurangi laba, tetapi mengurangi modal usaha. Uang kas di akhir periode: Rp 14.691.833.
+Usaha kamu RUGI Rp 2.026.917 selama 1 Januari 2026 s.d. 31 Maret 2026. Dari penjualan bersih Rp 36.150.000, setiap Rp 100.000 penjualan usaha rugi sekitar Rp 5.607. Pengeluaran terbesar: beban gaji & upah sebesar Rp 14.400.000 (37,3% dari total biaya). Arus kas usaha terbaik di Jan 2026 (Rp 1.280.000), terendah di Mar 2026 (-Rp 2.533.084). Kamu mengambil Rp 5.950.000 untuk keperluan pribadi (prive). Ini tidak mengurangi laba, tetapi mengurangi modal usaha. Uang kas di akhir periode: Rp 14.691.833.
 
 ## 1. Laporan Laba Rugi
 Katering Dapur Sehati — untuk periode 1 Januari 2026 s.d. 31 Maret 2026
@@ -126,26 +126,26 @@ Katering Dapur Sehati — untuk periode 1 Januari 2026 s.d. 31 Maret 2026
 | **Pendapatan usaha bersih** | **Rp 36.150.000** |
 | **Beban pokok penjualan** |  |
 | Persediaan awal | Rp 1.200.000 |
-| Pembelian bahan/barang dagangan | Rp 12.225.000 |
+| Pembelian bahan/barang dagangan | Rp 12.350.000 |
 | Persediaan akhir | (Rp 1.650.000) |
-| Beban pokok penjualan | (Rp 11.775.000) |
-| **Laba kotor** | **Rp 24.375.000** |
+| Beban pokok penjualan | (Rp 11.900.000) |
+| **Laba kotor** | **Rp 24.250.000** |
 | **Beban usaha** |  |
-| Beban gaji & upah | Rp 14.700.000 |
+| Beban gaji & upah | Rp 14.400.000 |
 | Beban sewa tempat | Rp 4.500.000 |
-| Beban listrik, air, gas & internet | Rp 3.275.000 |
+| Beban listrik, air, gas & internet | Rp 3.150.000 |
 | Beban transportasi & pengiriman | Rp 535.000 |
 | Beban iklan & promosi | Rp 550.000 |
 | Beban kemasan & perlengkapan | Rp 1.550.000 |
 | Beban perawatan & perbaikan | Rp 185.000 |
 | Beban lain-lain | Rp 75.000 |
 | Beban penyusutan aset tetap | Rp 952.083 |
-| Total beban usaha | (Rp 26.322.083) |
-| **Laba (rugi) usaha** | **-Rp 1.947.083** |
-| Beban bunga & biaya bank (beban keuangan) | (Rp 15.000) |
-| **Laba (rugi) sebelum pajak** | **-Rp 1.962.083** |
+| Total beban usaha | (Rp 25.897.083) |
+| **Laba (rugi) usaha** | **-Rp 1.647.083** |
+| Beban bunga & biaya bank (beban keuangan) | (Rp 223.334) |
+| **Laba (rugi) sebelum pajak** | **-Rp 1.870.417** |
 | Beban pajak penghasilan | (Rp 156.500) |
-| **LABA (RUGI) BERSIH** | **-Rp 2.118.583** |
+| **LABA (RUGI) BERSIH** | **-Rp 2.026.917** |
 
 ## 2. Laporan Posisi Keuangan (Neraca)
 Katering Dapur Sehati — per 31 Maret 2026
@@ -155,23 +155,24 @@ Katering Dapur Sehati — per 31 Maret 2026
 | **ASET** |  |
 | Kas dan setara kas | Rp 14.691.833 |
 | Piutang usaha | Rp 2.000.000 |
+| Kasbon karyawan & piutang lain-lain | Rp 300.000 |
 | Persediaan | Rp 1.650.000 |
 | Aset tetap (awal + pembelian Rp 8.250.000) | Rp 20.250.000 |
 | Penyusutan periode ini | (Rp 952.083) |
 | Aset tetap (nilai buku) | Rp 19.297.917 |
-| **Total aset** | **Rp 37.639.750** |
+| **Total aset** | **Rp 37.939.750** |
 | **LIABILITAS** |  |
 | Utang usaha (ke pemasok) | Rp 600.000 |
-| Utang bank / pinjaman | Rp 22.708.333 |
-| Total liabilitas | Rp 23.308.333 |
+| Utang bank / pinjaman | Rp 22.916.667 |
+| Total liabilitas | Rp 23.516.667 |
 | **EKUITAS** |  |
 | Modal awal | Rp 22.400.000 |
-| Laba (rugi) bersih periode ini | -Rp 2.118.583 |
+| Laba (rugi) bersih periode ini | -Rp 2.026.917 |
 | Prive (pengambilan pribadi) | (Rp 5.950.000) |
-| Modal akhir | Rp 14.331.417 |
-| **Total liabilitas + ekuitas** | **Rp 37.639.750** |
+| Modal akhir | Rp 14.423.083 |
+| **Total liabilitas + ekuitas** | **Rp 37.939.750** |
 
-✔ **Cek keseimbangan:** Aset = Liabilitas + Ekuitas (Rp 37.639.750). Neraca seimbang.
+✔ **Cek keseimbangan:** Aset = Liabilitas + Ekuitas (Rp 37.939.750). Neraca seimbang.
 
 ## 3. Catatan atas Laporan Keuangan (ringkas)
 **1. Umum.** Katering Dapur Sehati adalah usaha yang laporan keuangannya disusun untuk periode 1 Januari 2026 s.d. 31 Maret 2026. [Lengkapi: bentuk usaha (perorangan/CV/dll.), alamat, dan kegiatan usaha utama.]
@@ -182,17 +183,17 @@ Katering Dapur Sehati — per 31 Maret 2026
 
 **4. Piutang usaha** Rp 2.000.000 (awal Rp 1.500.000). Piutang dicatat sebesar jumlah tagihan kepada pelanggan.
 
-**5. Persediaan** Rp 1.650.000 (awal Rp 1.200.000). Persediaan dicatat sebesar biaya perolehan; beban pokok penjualan = persediaan awal + pembelian - persediaan akhir = Rp 11.775.000.
+**5. Persediaan** Rp 1.650.000 (awal Rp 1.200.000). Persediaan dicatat sebesar biaya perolehan; beban pokok penjualan = persediaan awal + pembelian - persediaan akhir = Rp 11.900.000.
 
 **6. Aset tetap** nilai buku Rp 19.297.917 (awal Rp 12.000.000, pembelian periode ini Rp 8.250.000, penyusutan periode ini Rp 952.083). Aset tetap dicatat sebesar biaya perolehan dikurangi akumulasi penyusutan.
 
-**7. Liabilitas.** Utang usaha Rp 600.000 dan utang bank/pinjaman Rp 22.708.333 (pinjaman diterima Rp 25.000.000, pembayaran pokok Rp 2.291.667).
+**7. Liabilitas.** Utang usaha Rp 600.000 dan utang bank/pinjaman Rp 22.916.667 (pinjaman diterima Rp 25.000.000, pembayaran pokok Rp 2.083.333).
 
-**8. Ekuitas.** Modal awal Rp 22.400.000 + tambahan modal Rp 0 + laba bersih -Rp 2.118.583 - prive Rp 5.950.000 = modal akhir Rp 14.331.417.
+**8. Ekuitas.** Modal awal Rp 22.400.000 + tambahan modal Rp 0 + laba bersih -Rp 2.026.917 - prive Rp 5.950.000 = modal akhir Rp 14.423.083.
 
 **9. Pendapatan** diakui saat barang/jasa diserahkan; pendapatan usaha bersih periode ini Rp 36.150.000.
 
-**10. Beban** diakui saat terjadi. Total beban usaha Rp 26.322.083, beban keuangan Rp 15.000, beban pajak penghasilan Rp 156.500. [Lengkapi status perpajakan usaha bila perlu, mis. memakai PPh final UMKM.]
+**10. Beban** diakui saat terjadi. Total beban usaha Rp 25.897.083, beban keuangan Rp 223.334, beban pajak penghasilan Rp 156.500. [Lengkapi status perpajakan usaha bila perlu, mis. memakai PPh final UMKM.]
 
 
 ## Tren per periode (arus kas usaha, sebelum penyesuaian stok/piutang/penyusutan)
@@ -200,8 +201,8 @@ Katering Dapur Sehati — per 31 Maret 2026
 | Periode | Uang masuk usaha | Uang keluar usaha | Selisih | Prive |
 |---|---:|---:|---:|---:|
 | Jan 2026 | Rp 11.400.000 | Rp 10.120.000 | Rp 1.280.000 | Rp 1.350.000 |
-| Feb 2026 | Rp 9.200.000 | Rp 11.171.750 | -Rp 1.971.750 | Rp 1.500.000 |
-| Mar 2026 | Rp 13.550.000 | Rp 15.874.750 | -Rp 2.324.750 | Rp 3.100.000 |
+| Feb 2026 | Rp 9.200.000 | Rp 10.871.750 | -Rp 1.671.750 | Rp 1.500.000 |
+| Mar 2026 | Rp 13.550.000 | Rp 16.083.084 | -Rp 2.533.084 | Rp 3.100.000 |
 
 ## Perlu dicek
 **Baris yang sengaja dilewati:** baris saldo awal (dipakai sebagai kas awal bila --kas-awal tidak diisi) (1 baris)
@@ -219,17 +220,14 @@ _Laporan ini disusun dari data yang Anda berikan dan mengacu pada SAK EMKM. Ini 
 ---
 
 ### Saran tindakan (berdasarkan angka di atas)
-1. **Biaya gaji Rp 14.700.000 = 40,7% dari penjualan** (termasuk THR Maret Rp 3.600.000). Gaji + sewa sudah 53% dari penjualan. Rugi Rp 2.118.583 terutama karena biaya tetap ini lebih besar dari laba kotor yang dihasilkan. Pertimbangkan menaikkan minimal pesanan atau harga nasi box, atau menambah pesanan rutin (katering harian karyawan paling stabil: Rp 2.100.000 per minggu).
-2. **Kas Rp 14,7 juta sebagian besar masih uang KUR** (sisa utang Rp 22,7 juta). Jangan anggap saldo ini sebagai laba. Sisihkan dana angsuran KUR tiap bulan.
-3. **Prive Rp 5.950.000 dalam 3 bulan** saat usaha rugi membuat modal turun dari Rp 22,4 juta ke Rp 14,3 juta. Coba tetapkan "gaji pemilik" tetap per bulan agar terkontrol.
+1. **Biaya gaji Rp 14.400.000 = 39,8% dari penjualan** (termasuk THR Maret Rp 3.600.000). Gaji + sewa sudah 52% dari penjualan. Rugi Rp 2.026.917 terutama karena biaya tetap lebih besar dari laba kotor. Pertimbangkan menaikkan minimal pesanan atau harga nasi box, atau menambah pesanan rutin (katering harian karyawan paling stabil: Rp 2.100.000 per minggu).
+2. **Kas Rp 14,7 juta sebagian besar masih uang KUR** (sisa pokok Rp 22,9 juta). Jangan anggap saldo ini sebagai laba. Sisihkan dana angsuran KUR (± Rp 2,3 juta) tiap bulan.
+3. **Prive Rp 5.950.000 dalam 3 bulan** saat usaha rugi. Coba tetapkan "gaji pemilik" tetap per bulan agar modal tidak terus turun.
 
-Mau saya buatkan versi PDF/Word, laporan per bulan, atau hitung ulang kalau angsuran KUR mau dipisah pokok dan bunganya?
+Mau saya buatkan versi PDF/Word atau laporan per bulan?
 
-## Catatan penguji
-- **Angka diverifikasi independen** (`verif_s1.py`, klasifikasi manual per baris oleh penguji, tanpa memakai kode skill): pendapatan Rp 36.150.000, HPP Rp 11.775.000, penyusutan Rp 952.083 (12 jt/48×3 + 1,45 jt/48×2 + 6,8 jt/48×1), laba −Rp 2.118.583, kas Rp 14.691.833, total aset = liabilitas + ekuitas = Rp 37.639.750. **Semua cocok.**
-- Bagus: prive (belanja rumah tangga, SPP, "ambil uang pribadi", sembako & baju lebaran keluarga, zakat pribadi) **tidak** masuk beban; KUR bukan pendapatan; beli kompor/freezer masuk aset tetap dan disusutkan mulai bulan berikutnya; PPh final masuk "Beban pajak penghasilan"; 3 transaksi ambigu **ditanyakan**, bukan ditebak; struktur SAK EMKM (Laba Rugi, Posisi Keuangan, CaLK) + disclaimer "bukan laporan audit".
-- Bagus: pada percobaan pertama penguji lupa memberi tanda kutip di "Setor PPh final 0,5% Januari" (koma di dalam keterangan). Script tidak diam-diam salah hitung; baris itu dilaporkan "nominal tidak terbaca".
-- **Kurang (sedang):** "Angsuran KUR BRI ke-1 Rp 2.291.667" seluruhnya dianggap cicilan pokok. Angsuran KUR hampir selalu berisi pokok + bunga, jadi beban bunga (±Rp 208.334) tidak tercatat. Akibatnya laba terlalu tinggi dan utang terlalu rendah dengan selisih yang sama. SKILL.md tidak meminta agent menanyakan pemisahan ini.
-- **Kurang (ringan):** "Beli air mineral gelas 5 dus" masuk "Beban listrik, air, gas" karena kata `air`. Total laba tetap benar, tetapi laba kotor terlalu tinggi Rp 125.000.
-- **Kurang (ringan):** tidak ada kategori "piutang karyawan/kasbon", jadi kasbon yang akan dipotong gaji April terpaksa dibebankan sekarang. Yang tepat: dicatat sebagai aset (piutang lain-lain).
-- Ringkasan untuk rugi terbaca janggal: "yang tersisa jadi laba sekitar -5,9% ... labanya sekitar -Rp 5.861".
+## Catatan penguji (uji ulang v1.1.0)
+- **Angka diverifikasi independen** (`verif_s1_v110.py`, klasifikasi manual per baris oleh penguji, tanpa kode skill): pendapatan Rp 36.150.000; HPP Rp 11.900.000 (air mineral kini ikut pembelian); penyusutan Rp 952.083; beban keuangan Rp 223.334 (bunga KUR 208.334 + admin bank 15.000); laba **−Rp 2.026.917**; kas Rp 14.691.833; utang KUR Rp 22.916.667 (25 jt − pokok 2.083.333); kasbon Rp 300.000 di aset; total aset = liabilitas + ekuitas = **Rp 37.939.750**. **Semua cocok.**
+- Perbaikan v1.1.0 terbukti di data yang sama: angsuran KUR **ditanyakan otomatis** dan `--bunga` memecahnya dengan benar (cacat S1 lama tuntas); kasbon menjadi piutang karyawan; air mineral menjadi pembelian bahan; ringkasan rugi tidak lagi berbunyi "laba −5,9%".
+- Status akhir "LENGKAP (dengan asumsi)" karena saldo awal utang bank tidak disebut (asumsi Rp 0, memang benar untuk kasus ini). Label ini lebih jujur daripada "LENGKAP" di v1.0.0.
+- Ringan: kalimat "Arus kas usaha ... terendah di Mar 2026 (−Rp 2.533.084)" ikut menghitung bunga KUR sebagai arus kas usaha; wajar, tetapi pokok angsuran tidak ikut. Pengguna awam bisa bingung mengapa angka ini tidak sama dengan penurunan kas. Tidak dihitung cacat.

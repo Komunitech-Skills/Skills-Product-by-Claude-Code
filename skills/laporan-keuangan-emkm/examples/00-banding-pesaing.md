@@ -61,3 +61,6 @@ Penguji berperan sebagai agent yang memuat `laporan-keuangan-psak` dengan permin
 1. **Pemisahan lancar / tidak lancar** di Laporan Posisi Keuangan, termasuk "bagian utang KUR yang jatuh tempo dalam 12 bulan". Bank sering melihat ini untuk rasio likuiditas.
 2. **Jadwal penyusutan per aset di CaLK** (nama aset, tanggal beli, harga, umur, penyusutan periode ini). Skill kita hanya menampilkan total.
 3. (Dari openaccountant `profit-loss`) tampilkan **margin kotor dan margin bersih** sebagai baris eksplisit di laba rugi, serta panduan "tanpa agent" berupa rumus spreadsheet. Ini bisa menjadi fallback yang ramah untuk pembeli yang tidak punya Python.
+
+## Pembaruan uji ulang v1.1.0 (2026-09-23)
+Pembanding pesaing tidak diulang (isi pesaing tidak berubah). Skill kita v1.1.0 kini juga memisahkan bunga KUR dan mencatat kasbon sebagai piutang, sehingga keunggulan akurasi atas `laporan-keuangan-psak` bertambah. Dua ide dari pesaing belum diadopsi: pemisahan aset/liabilitas lancar vs tidak lancar, dan jadwal penyusutan per aset di CaLK. Kesimpulan tetap: **skill kita menang**.

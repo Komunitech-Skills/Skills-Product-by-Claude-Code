@@ -1,4 +1,4 @@
-# 02 — Warung sembako, tabel ditempel di chat, uang laci kurang Rp 150.000
+# 02 — Warung sembako, tabel ditempel di chat, uang laci kurang Rp 150.000 — diuji ulang dengan v1.1.0
 
 ## Skenario
 S2, permintaan normal dari pengguna awam. Tabel ditempel langsung di chat (format Markdown, tanggal "1 Agt 2026"). Pengguna memberi kas awal, stok awal/akhir, dan uang nyata di laci. Uang nyata di laci ternyata kurang dari hitungan buku.
@@ -27,20 +27,20 @@ S2, permintaan normal dari pengguna awam. Tabel ditempel langsung di chat (forma
 
 ## Output
 
-### Langkah agent
+### Langkah agent (script v1.1.0)
 1. Tabel disimpan apa adanya ke `s2-tempel.md`, lalu:
    `python3 scripts/laporan_emkm.py s2-tempel.md --nama-usaha "Warung Bu Tini" --kas-awal "2 juta" --persediaan-awal "3,5jt" --persediaan-akhir "3 juta" --kas-akhir-aktual "Rp 7.650.000"`
-2. Ada 2 transaksi belum jelas. Agent bertanya sekali:
+2. "Kulakan gas melon" kini otomatis masuk pembelian barang dagangan dan "Iuran kebersihan pasar" masuk beban lain-lain. Status SEMENTARA karena 2 transaksi belum jelas, 1 pertanyaan "angka mustahil" (kas sempat minus di 1 Agustus), dan selisih kas laci. Agent bertanya sekali:
 
-> Sebelum saya finalkan, 2 catatan ini untuk usaha atau keperluan pribadi?
-> 1. 22 Agt, **Bayar arisan** Rp 200.000: a) arisan pribadi/keluarga (prive) · b) arisan pedagang pasar untuk modal usaha
-> 2. 30 Agt, **Belanja dapur rumah** Rp 600.000: a) kebutuhan rumah (prive) · b) barang untuk dijual di warung
->
-> Satu lagi: uang di laci Rp 7.650.000, tapi menurut catatan seharusnya Rp 7.800.000 (kurang Rp 150.000). Apakah ada pengeluaran/pengambilan yang belum dicatat?
+> Sebelum saya finalkan, 4 hal singkat:
+> 1. 22 Agt, **Bayar arisan** Rp 200.000: a) arisan pribadi/keluarga (prive) · b) arisan pedagang untuk modal usaha
+> 2. 30 Agt, **Belanja dapur rumah** Rp 600.000: a) kebutuhan rumah (prive) · b) barang untuk dijual
+> 3. Tanggal 1 Agustus kulakan Rp 2.450.000 padahal uang laci awal bulan Rp 2.000.000. Apakah ada uang lain yang dipakai (mis. hasil jualan tanggal 1–2 yang baru dicatat tanggal 3)?
+> 4. Uang di laci Rp 7.650.000, tapi menurut catatan seharusnya Rp 7.800.000 (kurang Rp 150.000). Kalau memang tidak ketemu, boleh saya catat sebagai "selisih kas (kurang)"?
 
-**Jawaban pengguna:** "dua2nya pribadi. yg kurang 150rb aku gatau, mungkin kembalian salah."
+**Jawaban pengguna:** "dua2nya pribadi. tgl 1 itu pake uang jualan hari itu, jualan emang aku catet mingguan. yg kurang 150rb gatau, catet aja."
 
-3. Script dijalankan ulang dengan `--tetapkan 13=prive --tetapkan 17=prive`. Hasil:
+3. Script dijalankan ulang dengan `--tetapkan 13=prive --tetapkan 17=prive --catat-selisih-kas`. Hasil:
 
 ---
 
@@ -48,7 +48,7 @@ S2, permintaan normal dari pengguna awam. Tabel ditempel langsung di chat (forma
 Periode 1 Agustus 2026 s.d. 31 Agustus 2026 · disusun mengacu pada SAK EMKM · status: **SEMENTARA**
 
 ## Ringkasan untuk pemilik
-Usaha kamu UNTUNG Rp 6.250.000 selama 1 Agustus 2026 s.d. 31 Agustus 2026. Dari penjualan bersih Rp 14.700.000, yang tersisa jadi laba sekitar 42,5% (setiap Rp 100.000 penjualan, labanya sekitar Rp 42.517). Pengeluaran terbesar: pembelian bahan/barang dagangan sebesar Rp 6.570.000 (82,6% dari total biaya). Kamu mengambil Rp 950.000 untuk keperluan pribadi (prive). Ini tidak mengurangi laba, tetapi mengurangi modal usaha. Uang kas di akhir periode: Rp 7.650.000.
+Usaha kamu UNTUNG Rp 6.100.000 selama 1 Agustus 2026 s.d. 31 Agustus 2026. Dari penjualan bersih Rp 14.700.000, yang tersisa jadi laba sekitar 41,5% (setiap Rp 100.000 penjualan, labanya sekitar Rp 41.497). Pengeluaran terbesar: pembelian bahan/barang dagangan sebesar Rp 6.950.000 (85,8% dari total biaya). Kamu mengambil Rp 950.000 untuk keperluan pribadi (prive). Ini tidak mengurangi laba, tetapi mengurangi modal usaha. Uang kas di akhir periode: Rp 7.650.000. Ada 1 hal yang perlu kamu jawab dulu (lihat 'Perlu dicek'), jadi angka ini masih SEMENTARA.
 
 ## 1. Laporan Laba Rugi
 Warung Bu Tini — untuk periode 1 Agustus 2026 s.d. 31 Agustus 2026
@@ -60,19 +60,21 @@ Warung Bu Tini — untuk periode 1 Agustus 2026 s.d. 31 Agustus 2026
 | **Pendapatan usaha bersih** | **Rp 14.700.000** |
 | **Beban pokok penjualan** |  |
 | Persediaan awal | Rp 3.500.000 |
-| Pembelian bahan/barang dagangan | Rp 6.570.000 |
+| Pembelian bahan/barang dagangan | Rp 6.950.000 |
 | Persediaan akhir | (Rp 3.000.000) |
-| Beban pokok penjualan | (Rp 7.070.000) |
-| **Laba kotor** | **Rp 7.630.000** |
+| Beban pokok penjualan | (Rp 7.450.000) |
+| **Laba kotor** | **Rp 7.250.000** |
 | **Beban usaha** |  |
 | Beban sewa tempat | Rp 750.000 |
-| Beban listrik, air, gas & internet | Rp 585.000 |
+| Beban listrik, air, gas & internet | Rp 185.000 |
 | Beban kemasan & perlengkapan | Rp 45.000 |
-| Total beban usaha | (Rp 1.380.000) |
-| **Laba (rugi) usaha** | **Rp 6.250.000** |
-| **Laba (rugi) sebelum pajak** | **Rp 6.250.000** |
+| Beban lain-lain | Rp 20.000 |
+| Selisih kas (kurang), dikonfirmasi pemilik | Rp 150.000 |
+| Total beban usaha | (Rp 1.150.000) |
+| **Laba (rugi) usaha** | **Rp 6.100.000** |
+| **Laba (rugi) sebelum pajak** | **Rp 6.100.000** |
 | Beban pajak penghasilan | Rp 0 |
-| **LABA (RUGI) BERSIH** | **Rp 6.250.000** |
+| **LABA (RUGI) BERSIH** | **Rp 6.100.000** |
 
 ## 2. Laporan Posisi Keuangan (Neraca)
 Warung Bu Tini — per 31 Agustus 2026
@@ -91,13 +93,13 @@ Warung Bu Tini — per 31 Agustus 2026
 | Total liabilitas | Rp 0 |
 | **EKUITAS** |  |
 | Modal awal | Rp 5.500.000 |
-| Laba (rugi) bersih periode ini | Rp 6.250.000 |
+| Laba (rugi) bersih periode ini | Rp 6.100.000 |
 | Prive (pengambilan pribadi) | (Rp 950.000) |
-| Modal akhir | Rp 10.800.000 |
-| **Total liabilitas + ekuitas** | **Rp 10.800.000** |
+| Modal akhir | Rp 10.650.000 |
+| **Total liabilitas + ekuitas** | **Rp 10.650.000** |
 
-✘ **Cek keseimbangan: TIDAK SEIMBANG.** Selisih -Rp 150.000 (aset Rp 10.650.000 vs liabilitas + ekuitas Rp 10.800.000).
-- Saldo kas nyata (Rp 7.650.000) berbeda -Rp 150.000 dari hasil hitung buku kas (Rp 7.800.000). Kemungkinan ada transaksi yang belum dicatat, salah ketik nominal, atau kas awal kurang tepat.
+⚠ **Cek keseimbangan:** secara hitungan Aset = Liabilitas + Ekuitas (Rp 10.650.000), TETAPI ada angka mustahil sehingga laporan belum layak dipakai:
+- Saldo kas sempat minus (-Rp 450.000 pada 1 Agustus 2026).
 
 ## 3. Catatan atas Laporan Keuangan (ringkas)
 **1. Umum.** Warung Bu Tini adalah usaha yang laporan keuangannya disusun untuk periode 1 Agustus 2026 s.d. 31 Agustus 2026. [Lengkapi: bentuk usaha (perorangan/CV/dll.), alamat, dan kegiatan usaha utama.]
@@ -108,28 +110,22 @@ Warung Bu Tini — per 31 Agustus 2026
 
 **4. Piutang usaha** Rp 0 (awal Rp 0). Piutang dicatat sebesar jumlah tagihan kepada pelanggan.
 
-**5. Persediaan** Rp 3.000.000 (awal Rp 3.500.000). Persediaan dicatat sebesar biaya perolehan; beban pokok penjualan = persediaan awal + pembelian - persediaan akhir = Rp 7.070.000.
+**5. Persediaan** Rp 3.000.000 (awal Rp 3.500.000). Persediaan dicatat sebesar biaya perolehan; beban pokok penjualan = persediaan awal + pembelian - persediaan akhir = Rp 7.450.000.
 
 **6. Aset tetap** nilai buku Rp 0 (awal Rp 0, pembelian periode ini Rp 0, penyusutan periode ini Rp 0). Aset tetap dicatat sebesar biaya perolehan dikurangi akumulasi penyusutan.
 
 **7. Liabilitas.** Utang usaha Rp 0 dan utang bank/pinjaman Rp 0 (pinjaman diterima Rp 0, pembayaran pokok Rp 0).
 
-**8. Ekuitas.** Modal awal Rp 5.500.000 + tambahan modal Rp 0 + laba bersih Rp 6.250.000 - prive Rp 950.000 = modal akhir Rp 10.800.000.
+**8. Ekuitas.** Modal awal Rp 5.500.000 + tambahan modal Rp 0 + laba bersih Rp 6.100.000 - prive Rp 950.000 = modal akhir Rp 10.650.000.
 
 **9. Pendapatan** diakui saat barang/jasa diserahkan; pendapatan usaha bersih periode ini Rp 14.700.000.
 
-**10. Beban** diakui saat terjadi. Total beban usaha Rp 1.380.000, beban keuangan Rp 0, beban pajak penghasilan Rp 0. [Lengkapi status perpajakan usaha bila perlu, mis. memakai PPh final UMKM.]
+**10. Beban** diakui saat terjadi. Total beban usaha Rp 1.150.000, beban keuangan Rp 0, beban pajak penghasilan Rp 0. [Lengkapi status perpajakan usaha bila perlu, mis. memakai PPh final UMKM.]
 
-
-## Tren per periode (arus kas usaha, sebelum penyesuaian stok/piutang/penyusutan)
-
-| Periode | Uang masuk usaha | Uang keluar usaha | Selisih | Prive |
-|---|---:|---:|---:|---:|
-| Agu 2026 | Rp 14.700.000 | Rp 7.950.000 | Rp 6.750.000 | Rp 950.000 |
 
 ## Perlu dicek
-**Peringatan:**
-- Saldo kas sempat minus (-Rp 450.000 pada 1 Agustus 2026). Biasanya karena kas awal belum diisi atau ada pemasukan yang belum dicatat.
+**Pertanyaan untuk pemilik** (jawab agar laporan final):
+1. Angka mustahil: Saldo kas sempat minus (-Rp 450.000 pada 1 Agustus 2026). Berapa kas + saldo rekening di awal periode? Atau ada pemasukan yang belum dicatat?
 
 ## Asumsi yang dipakai
 - Periode laporan dianggap 1 Agustus 2026 s.d. 31 Agustus 2026 (bulan penuh dari transaksi pertama sampai terakhir).
@@ -137,6 +133,7 @@ Warung Bu Tini — per 31 Agustus 2026
 - Saldo awal aset tetap tidak diberikan, dianggap Rp 0.
 - Saldo awal utang ke pemasok tidak diberikan, dianggap Rp 0.
 - Saldo awal utang bank/pinjaman tidak diberikan, dianggap Rp 0.
+- Selisih kas Rp 150.000 dicatat sebagai beban selisih kas (kas kurang) atas konfirmasi pemilik.
 - Modal awal dihitung dari (aset awal - utang awal) = Rp 5.500.000.
 
 ---
@@ -144,20 +141,18 @@ _Laporan ini disusun dari data yang Anda berikan dan mengacu pada SAK EMKM. Ini 
 
 ---
 
-### Penjelasan neraca belum seimbang
-Neraca selisih **Rp 150.000** karena uang di laci (Rp 7.650.000) lebih kecil dari hitungan buku kas (Rp 7.800.000). Saya tidak memaksa angkanya seimbang. Kalau memang tidak ketemu, selisih ini bisa dicatat sebagai "selisih kas (kurang)" di beban lain-lain dengan menambah satu baris di catatan, lalu laporan saya hitung ulang. Mau saya tambahkan?
+### Penjelasan status SEMENTARA
+Semua angka sudah final menurut jawaban Ibu: laba **Rp 6.100.000** (setelah selisih kas Rp 150.000 dicatat sebagai beban) dan neraca seimbang secara hitungan (Rp 10.650.000). Label SEMENTARA hanya tersisa karena script menandai "kas sempat minus" pada 1 Agustus. Ibu sudah menjelaskan bahwa jualan dicatat mingguan, jadi kas tidak benar-benar minus. Kalau laporan ini mau dipakai di luar (bank/koperasi), sebaiknya mulai bulan depan jualan dicatat harian, atau catat hasil jualan tanggal 1–2 di tanggalnya.
 
 ### Saran tindakan
-1. Laba bersih **Rp 6.250.000** (42,5% dari penjualan). Kamu mengambil Rp 950.000 untuk pribadi, jadi sebagian besar laba masih ada di usaha (stok + kas).
-2. Pembelian barang Rp 6.570.000 = 82,6% dari semua pengeluaran usaha. Stok turun Rp 500.000 dari awal bulan. Kalau mau stok tetap, kulakan bulan depan perlu sedikit lebih besar.
-3. Pisahkan uang laci untuk pribadi (arisan, belanja dapur) supaya selisih kas lebih mudah dilacak. Catat setiap pengambilan walau kecil.
+1. Laba bersih **Rp 6.100.000** (41,5% dari penjualan). Prive Rp 950.000, jadi sebagian besar laba masih ada di usaha (stok + kas).
+2. Pembelian barang Rp 6.950.000, stok turun Rp 500.000. Kalau mau stok tetap, kulakan bulan depan perlu sedikit lebih besar.
+3. Pisahkan uang laci untuk pribadi (arisan, belanja dapur) supaya selisih kas lebih mudah dilacak.
 
-Mau dibuatkan versi PDF, atau saya catat selisih Rp 150.000 sebagai beban supaya neraca seimbang?
+Mau dibuatkan versi PDF?
 
-## Catatan penguji
-- Verifikasi independen (hitung manual, klasifikasi penguji): penjualan 3,2+2,95+3,4+3,05+2,1 = Rp 14.700.000; HPP = 3.500.000 + 6.950.000 (kulakan sembako, rokok, gas) − 3.000.000 = Rp 7.450.000; beban = sewa 750.000 + listrik 185.000 + kresek 45.000 + iuran 20.000 = Rp 1.000.000; laba = **Rp 6.250.000 ✔** (total sama dengan script, tetapi pos HPP/beban berbeda, lihat di bawah). Aset Rp 10.650.000 vs L+E Rp 10.800.000 → selisih −Rp 150.000 ✔.
-- Bagus: tabel tempel Markdown & tanggal "1 Agt 2026" terbaca; "Ambil buat jajan anak" otomatis prive; kas nyata dipakai di neraca dan selisihnya **dijelaskan, tidak dipaksa seimbang**; peringatan "saldo kas sempat minus" (kulakan Rp 2,45 jt saat kas Rp 2 jt) relevan.
-- **Salah klasifikasi (sedang):** "Kulakan gas melon 20 tabung" (barang dagangan warung) masuk **Beban listrik, air, gas** karena aturan `gas` (utilitas) dicek sebelum `kulakan` (pembelian). "Iuran kebersihan pasar" Rp 20.000 masuk **Pembelian bahan** karena kata `pasar`. Laba bersih tetap benar, tetapi HPP, laba kotor, dan rincian beban salah. Pembeli warung sangat sering kulakan gas/air galon.
-- **Kurang (sedang):** tidak ada cara resmi mencatat selisih kas. Laporan tertahan di status SEMENTARA/TIDAK SEIMBANG, padahal selisih kas kecil sangat umum di warung. Agent harus mengarang langkah sendiri (menambah baris).
-- Ringan: "Belanja dapur rumah" tidak dikenali sebagai prive (kata kunci hanya "belanja rumah"). Tetap ditanyakan, jadi aman.
-- Ringan: bagian "Tren per periode" tetap muncul walau hanya 1 bulan (SKILL.md: "jika > 1 bulan").
+## Catatan penguji (uji ulang v1.1.0)
+- Verifikasi independen (hitung manual): penjualan Rp 14.700.000; HPP = 3.500.000 + 6.950.000 (sembako, rokok, **gas melon**) − 3.000.000 = Rp 7.450.000; beban = sewa 750.000 + listrik 185.000 + kresek 45.000 + iuran 20.000 + selisih kas 150.000 = Rp 1.150.000; laba **Rp 6.100.000 ✔**; aset 7.650.000 + 3.000.000 = Rp 10.650.000 = modal 5.500.000 + 6.100.000 − 950.000 ✔.
+- **Cacat S2 lama tuntas:** kulakan gas → pembelian barang, iuran kebersihan pasar → beban lain. **Cacat S4 lama tuntas:** `--catat-selisih-kas` membukukan selisih Rp 150.000 sebagai beban dan neraca seimbang.
+- **Cacat baru (sedang):** status tidak bisa lepas dari SEMENTARA. Pertanyaan "kas sempat minus" tetap muncul walau pemilik sudah menjelaskan (jualan dicatat mingguan), dan tidak ada opsi untuk mengonfirmasinya. Pola "jualan dicatat mingguan" sangat umum di warung. Agent harus menjelaskan sendiri mengapa label SEMENTARA tetap ada (lihat di atas).
+- Ringan: bagian "Tren per periode" sudah tidak tampil untuk 1 bulan (sesuai SKILL.md).

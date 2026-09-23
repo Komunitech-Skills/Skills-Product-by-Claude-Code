@@ -183,3 +183,10 @@ _Laporan ini disusun dari data yang Anda berikan dan mengacu pada SAK EMKM. Ini 
 **Di mana versi tanpa skill lebih baik:** kasbon karyawan dicatat sebagai **piutang karyawan** (aset). Itu perlakuan yang lebih tepat daripada `beban_gaji`, yang terpaksa dipakai skill karena tidak punya kategori piutang lain-lain. Keduanya **sama-sama gagal** memisahkan bunga dari angsuran KUR.
 
 Kesimpulan: nilai tambah skill nyata (akurasi, konsistensi, kepatuhan format, penanganan ambigu). Uji A/B **lulus**.
+
+## Pembaruan uji ulang v1.1.0 (2026-09-23)
+Data dan permintaan yang sama dijalankan ulang dengan script v1.1.0 (lihat `01-katering-3-bulan-kur-prive.md`). Dua kelemahan yang dicatat di atas sudah tertutup:
+- **Kasbon** kini otomatis menjadi piutang karyawan (aset), sama tepatnya dengan versi tanpa skill.
+- **Angsuran KUR** ditanyakan porsi bunganya dan dipecah dengan `--bunga 52=208.334`. Hasil akhir dengan skill: laba **−Rp 2.026.917**, utang KUR Rp 22.916.667, aset = L + E = Rp 37.939.750 (diverifikasi independen). Versi tanpa skill tetap menganggap angsuran sebagai pokok seluruhnya dan menebak zakat pribadi sebagai beban.
+
+Kesimpulan A/B tidak berubah: **skill jelas lebih baik**, dan selisih keunggulannya bertambah.

@@ -1,4 +1,4 @@
-# 03 — "Bikinin dong", jualan sambal online, format Jumlah + Jenis, untuk KUR
+# 03 — "Bikinin dong", jualan sambal online, format Jumlah + Jenis, untuk KUR — diuji ulang dengan v1.1.0
 
 ## Skenario
 S3, permintaan singkat/malas. Pengguna hanya melampirkan file dan minta cepat. Formatnya berbeda: kolom `Uraian, Jenis (Masuk/Keluar), Nominal`. Ada "cicilan motor" (bisa pribadi atau usaha), "transfer ke rekening pribadi", pembelian blender, dan botol kaca yang tidak dikenali.
@@ -36,22 +36,21 @@ Tanggal,Uraian,Jenis,Nominal
 
 ## Output
 
-### Langkah agent
-Pengguna minta "langsung aja", jadi script dijalankan dengan default (`python3 scripts/laporan_emkm.py kas-sambal.csv`) dan asumsinya ditampilkan. Hasil pertama berstatus SEMENTARA: 2 baris botol kaca belum terklasifikasi, dan ada peringatan **utang bank negatif −Rp 1.700.000** karena "Cicilan motor" dianggap angsuran pinjaman padahal tidak ada pinjaman tercatat. Agent mengirim satu pesan:
+### Langkah agent (script v1.1.0)
+Pengguna minta "langsung aja", jadi script dijalankan dengan default (`python3 scripts/laporan_emkm.py kas-sambal.csv`) dan asumsinya ditampilkan. Botol kaca kini otomatis dikenali sebagai kemasan. Hasil pertama berstatus **SEMENTARA** dengan tanda ⚠: script menemukan angka mustahil **utang bank akhir −Rp 1.700.000** (karena "Cicilan motor" dianggap angsuran pinjaman padahal tidak ada pinjaman tercatat) dan menanyakan porsi bunga kedua cicilan. Agent mengirim satu pesan:
 
-> Draf laporan sudah jadi (Juli–Agustus 2026), tapi masih SEMENTARA. Tiga hal singkat biar angkanya benar:
-> 1. **Beli botol kaca** (3 Jul Rp 700.000 dan 4 Agu Rp 1.050.000): kemasan sambal, kan? (saya catat sebagai beban kemasan)
-> 2. **Cicilan motor** Rp 850.000 × 2: motor pribadi (prive) atau motor usaha yang dibeli kredit? Kalau motor usaha, sebutkan sisa utang leasing per 1 Juli.
-> 3. Opsional tapi penting untuk bank: nama usaha, dan kira-kira nilai stok cabai/botol yang tersisa per 31 Agustus. Tanpa stok akhir, laba bisa terlihat terlalu kecil atau terlalu besar.
+> Draf laporan sudah jadi (Juli–Agustus 2026), tapi masih SEMENTARA. Dua hal singkat biar angkanya benar:
+> 1. **Cicilan motor** Rp 850.000 × 2: motor pribadi (prive) atau motor usaha yang dibeli kredit? Kalau motor usaha, sebutkan sisa utang leasing per 1 Juli dan berapa bunga per cicilan.
+> 2. Opsional tapi penting untuk bank: nama usaha, dan kira-kira nilai stok cabai/botol yang tersisa per 31 Agustus. Tanpa stok akhir, laba bisa terlihat terlalu besar.
 
-**Jawaban pengguna:** "botol iya kemasan. motor itu motor pribadi. stok gatau, pake aja yg ada."
+**Jawaban pengguna:** "motor itu motor pribadi. stok gatau, pake aja yg ada."
 
-Script dijalankan ulang dengan `--tetapkan 5=beban_perlengkapan --tetapkan 17=beban_perlengkapan --tetapkan 13=prive --tetapkan 22=prive`:
+Script dijalankan ulang dengan `--tetapkan 13=prive --tetapkan 22=prive`:
 
 ---
 
 # Laporan Keuangan [Nama Usaha]
-Periode 1 Juli 2026 s.d. 31 Agustus 2026 · disusun mengacu pada SAK EMKM · status: **LENGKAP**
+Periode 1 Juli 2026 s.d. 31 Agustus 2026 · disusun mengacu pada SAK EMKM · status: **LENGKAP (dengan asumsi)**
 
 ## Ringkasan untuk pemilik
 Usaha kamu UNTUNG Rp 13.335.000 selama 1 Juli 2026 s.d. 31 Agustus 2026. Dari penjualan bersih Rp 18.690.000, yang tersisa jadi laba sekitar 71,3% (setiap Rp 100.000 penjualan, labanya sekitar Rp 71.348). Pengeluaran terbesar: pembelian bahan/barang dagangan sebesar Rp 3.060.000 (57,1% dari total biaya). Arus kas usaha terbaik di Jul 2026 (Rp 6.985.000), terendah di Agu 2026 (Rp 6.350.000). Kamu mengambil Rp 2.700.000 untuk keperluan pribadi (prive). Ini tidak mengurangi laba, tetapi mengurangi modal usaha. Uang kas di akhir periode: Rp 14.435.000.
@@ -165,9 +164,8 @@ _Laporan ini disusun dari data yang Anda berikan dan mengacu pada SAK EMKM. Ini 
 
 Mau saya buatkan versi PDF, atau jalankan ulang setelah nama usaha & stok akhir diisi?
 
-## Catatan penguji
-- Verifikasi independen: penjualan Rp 18.690.000; bahan Rp 3.060.000; kemasan Rp 1.750.000; iklan 350.000; ongkir 95.000; paket data 100.000 → laba **Rp 13.335.000 ✔**; kas = 5.000.000 + 18.690.000 − 9.255.000 = **Rp 14.435.000 ✔**; aset Rp 15.635.000 = modal akhir Rp 15.635.000 ✔.
-- Bagus: format Jumlah + Jenis terbaca; "Modal awal dari tabungan pribadi" menjadi tambahan modal, bukan pendapatan; "Transfer ke rekening pribadi" jadi prive; blender jadi aset tetap; asumsi default ditulis lengkap sehingga pengguna tahu apa yang ditebak.
-- **Kurang (sedang):** pada hasil pertama neraca berlabel **"✔ seimbang"** padahal utang bank **negatif** −Rp 1.700.000. Status tidak otomatis SEMENTARA karena kondisi ini (hanya ada di "Peringatan"). Seandainya botol kaca dikenali, laporan berlabel LENGKAP dengan liabilitas negatif dan bisa terkirim ke bank. Saran: jadikan `utang_bank_akhir < 0`, `hpp < 0`, dan `piutang/utang` negatif sebagai pemicu status SEMENTARA + pertanyaan wajib.
-- Ringan: "botol" tidak ada di kata kunci kemasan (sangat umum untuk UMKM makanan/minuman).
-- Ringan: label status "LENGKAP" dipakai walau stok akhir & penyusutan memakai default. Untuk laporan ke bank, label ini bisa menyesatkan. Pertimbangkan "LENGKAP (dengan asumsi)".
+## Catatan penguji (uji ulang v1.1.0)
+- Verifikasi independen: penjualan Rp 18.690.000; bahan Rp 3.060.000; kemasan (botol) Rp 1.750.000; iklan 350.000; ongkir 95.000; paket data 100.000 → laba **Rp 13.335.000 ✔**; kas = 5.000.000 + 18.690.000 − 9.255.000 = **Rp 14.435.000 ✔**; aset Rp 15.635.000 = modal akhir Rp 15.635.000 ✔. Angka identik dengan v1.0.0 (tidak ada regresi).
+- **Cacat S3 lama tuntas:** utang bank negatif sekarang membuat status SEMENTARA, cek keseimbangan memakai ⚠ (bukan ✔), dan menjadi pertanyaan wajib. Laporan dengan liabilitas negatif tidak bisa lagi terkirim sebagai "LENGKAP".
+- Bagus: "botol" kini dikenali sebagai kemasan; label akhir "LENGKAP (dengan asumsi)" jujur karena stok akhir & penyusutan memakai default.
+- Ringan: pertanyaan otomatis "berapa bagian bunga" untuk cicilan motor muncul bersamaan dengan pertanyaan "utang negatif". Agent perlu merangkum keduanya menjadi satu pertanyaan (pribadi atau usaha) agar tidak membingungkan pengguna awam.

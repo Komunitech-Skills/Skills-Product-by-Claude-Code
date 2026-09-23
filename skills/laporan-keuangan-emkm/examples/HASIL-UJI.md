@@ -1,67 +1,78 @@
-# Hasil Uji — laporan-keuangan-emkm (kandidat VIP)
+# Hasil Uji Ulang — laporan-keuangan-emkm v1.1.0 (kandidat VIP)
 
 - **Tanggal:** 2026-09-23
 - **Penguji:** agent penguji independen (simulasi, Claude Code)
-- **Versi yang diuji:** SKILL.md, README.md, ATTRIBUTION.md, `references/` (hitung-manual, pemetaan-kategori, regulasi), `templates/` (buku-kas-template.csv, pemetaan-kustom.contoh.json), `scripts/laporan_emkm.py` v1.0.0
-- **Metode:** 5 skenario (01–05) + uji A/B (00-pembanding) + uji banding pesaing (00-banding). Script dijalankan sungguhan di `/tmp/uji-laporan-keuangan-emkm/`. Buku kas uji dibuat realistis: katering 3 bulan dengan 70 transaksi, prive, KUR (pencairan + angsuran), pembelian kompor & freezer, PPh final, piutang/utang, dan 3 transaksi ambigu. Semua angka diverifikasi ulang dengan python terpisah (`verif_s1.py`, klasifikasi manual per baris tanpa memakai kode skill).
+- **Versi yang diuji:** `scripts/laporan_emkm.py` **v1.1.0** (`VERSI = "1.1.0"`), SKILL.md, README.md, ATTRIBUTION.md, `references/` (hitung-manual, pemetaan-kategori, regulasi), `templates/`, `scripts/uji_regresi.py`
+- **Uji sebelumnya:** v1.0.0, skor 6 (REVISI), 1 cacat berat (B1) + 5 cacat sedang (S1–S5).
+- **Metode:** semua cacat lama diuji ulang dengan data uji lama (`/tmp/uji-laporan-keuangan-emkm/`) dan data baru. Data baru: buku kas konveksi 6 bulan (63 transaksi) dan warung makan. Setiap bulan dari 6 laporan bulanan dibandingkan dengan ledger akrual bulanan buatan penguji (`verif_6bln.py`, klasifikasi manual, tanpa kode skill). S1 diverifikasi ulang dengan `verif_s1_v110.py`. Skenario 04 (input kurang) dan 05 (di luar cakupan) tidak memakai script dan tidak terdampak perubahan, jadi tetap berlaku. Uji A/B (00-pembanding) dan banding pesaing (00-banding) dipertahankan dan diberi catatan pembaruan v1.1.0.
 
 ## Audit keamanan
-- `laporan_emkm.py` hanya memakai library standar (`argparse, csv, io, json, os, re, sys, unicodedata, collections, datetime, decimal`). **Tidak ada** socket/HTTP/urllib/subprocess/eval/exec, tidak menghapus/menulis file (output hanya ke stdout), tidak membaca variabel lingkungan atau kredensial. Hanya membaca file input dan file pemetaan yang disebut pengguna.
-- SKILL.md/README/references: tidak ada prompt injection. Ada instruksi "Data pengguna diproses lokal; jangan mengirimnya ke layanan lain".
-- **Aman.**
+- Script hanya memakai library standar (`argparse, csv, io, json, os, re, sys, unicodedata, collections, datetime, decimal`). Tidak ada socket/HTTP/urllib/subprocess/eval/exec. Tidak ada tulis/hapus file (output ke stdout). Tidak membaca env/kredensial. `open()` hanya untuk file input & file pemetaan.
+- `uji_regresi.py` memakai `subprocess` hanya untuk menjalankan script skill sendiri pada file sementara. Aman.
+- SKILL.md/README/references tidak mengandung prompt injection. **Aman.**
+
+## Status cacat lama
+| Cacat v1.0.0 | Uji ulang v1.1.0 | Status |
+|---|---|---|
+| **B1** laporan satu periode tidak menggulir kas | Data lama, laporan Februari: kas awal Rp 7.680.000, **kas akhir Rp 22.408.250 ✔**. Data baru 6 bulan: kas & setara kas, utang KUR, dan kasbon cocok dengan penguji **di setiap bulan**, dan neraca seimbang tiap periode (06) | **Tuntas untuk kas/utang bank/kasbon/aset.** Muncul cacat berat baru pada piutang/utang pemasok (lihat BB1) |
+| **S1** angsuran KUR tidak dipisah | Angsuran otomatis ditanyakan. `--bunga 52=208.334` → beban keuangan Rp 223.334, utang Rp 22.916.667, laba −Rp 2.026.917 ✔ (01). Data 6 bulan: 4 angsuran dipecah benar | Tuntas |
+| **S2** kulakan gas, air mineral, iuran pasar, PB1 | Kulakan gas & air mineral → pembelian dagangan; gas masak/PDAM → utilitas; iuran kebersihan pasar → beban lain; PB1 → pajak daerah + ditanyakan (02, 07) | Tuntas (tetapi pertanyaan PB1 tidak bisa ditutup, lihat BS3) |
+| **S3** angka mustahil tetap "LENGKAP ✔" | Utang bank −Rp 1.700.000 → SEMENTARA, ⚠, pertanyaan wajib (03). HPP negatif → SEMENTARA (uji regresi) | Tuntas |
+| **S4** tidak ada cara mencatat selisih kas | `--catat-selisih-kas` → beban selisih kas Rp 150.000, laba Rp 6.100.000, neraca seimbang ✔ (02) | Tuntas |
+| **S5** `(200.000)` di Keluar dibalik jadi masuk | `(200.000)` dan `-150.000` di Keluar → uang keluar; `(50.000)` di Masuk → ditanyakan. Kas Rp 8.685.000 ✔ (07) | Tuntas |
+| Ringan lama (kasbon, botol/jerigen/pouch, TOTAL di kolom tanggal, kalimat rugi, tren 1 bulan, label "LENGKAP (dengan asumsi)") | Semua terbukti diperbaiki | Tuntas |
 
 ## Verifikasi angka (independen)
 | Uji | Hasil |
 |---|---|
-| S1 katering 70 trx: pendapatan, HPP, penyusutan, laba, kas, neraca | Semua cocok dengan hitungan penguji (laba −Rp 2.118.583; aset = L+E = Rp 37.639.750) ✔ |
-| S2 warung (tabel tempel): laba, selisih kas | Laba Rp 6.250.000 ✔; selisih −Rp 150.000 dilaporkan, tidak dipaksa ✔ (pos HPP/beban salah klasifikasi, lihat S2) |
-| S3 format Jumlah+Jenis | Laba Rp 13.335.000, kas Rp 14.435.000 ✔ |
-| Penyusutan (aset baru mulai bulan berikutnya) | 12 jt/48×3 + 1,45 jt/48×2 + 6,8 jt/48×1 = Rp 952.083 ✔ |
-| Format nominal: `Rp 1.500.000`, `1.500.000,50` (→ 1.500.001, pembulatan 0,5 ke atas), `1,5jt`, `150rb`, `15.000,-`, `0` (dilewati), `abc` & `1.250.000.50` (dilaporkan rusak), masuk+keluar terisi (dilaporkan) | ✔ |
-| Tanggal `5 Januari 2026`, `2026-01-13`, `06-01-2026`, `02/13/2026` (diperingatkan format Amerika) | ✔ |
-| File kosong, header saja, tanpa kolom nominal, tanpa kolom keterangan, `.xlsx`, file tidak ada, kolom Debit/Kredit | Semua keluar dengan `GALAT: …` berbahasa Indonesia yang jelas ✔ |
-| Modal awal tidak cocok; stok akhir terlalu besar (HPP negatif) | Dilaporkan TIDAK SEIMBANG + penyebab; HPP negatif diperingatkan ✔ |
-| **Laporan satu bulan dari buku kas multi-bulan (`--periode-awal 2026-02-01 --periode-akhir 2026-02-28`)** | **SALAH**: kas awal tetap Rp 8.500.000 (baris saldo awal 1 Jan), padahal seharusnya Rp 7.680.000 (setelah transaksi Januari). Kas akhir tertulis Rp 23.228.250, seharusnya Rp 22.408.250 (selisih Rp 820.000), dan neraca tetap berlabel "✔ seimbang" (lihat B1) |
-| Nilai dalam kurung di kolom Keluar `(200.000)` | Dibalik menjadi **uang masuk** Rp 200.000 (lihat S5) |
+| S1 katering 70 trx (final, dengan bunga KUR) | pendapatan 36.150.000; HPP 11.900.000; penyusutan 952.083; laba −2.026.917; kas 14.691.833; A = L+E = 37.939.750. **Cocok** |
+| B1 data lama, Februari | kas akhir 22.408.250. **Cocok** |
+| 6 bulan, laporan Jan–Jun sekaligus | laba −1.996.000; kas 9.574.000; utang KUR 13.170.000; aset tetap 16.100.000; modal 14.504.000. **Cocok persis** |
+| 6 bulan, 6 laporan bulanan | Kas, utang KUR, kasbon, stok, keseimbangan: **cocok tiap bulan**. Laba: Jan cocok. Feb/Mar/Mei selisih 2.778–13.611 (penyusutan). **Apr selisih 1.210.000, Jun selisih 781.527** (piutang/utang dihitung dua kali). Modal akhir bulan ≠ modal awal bulan berikutnya di 4 dari 5 sambungan |
+| Warung sembako (tabel tempel) + selisih kas | laba 6.100.000, aset = L+E = 10.650.000. **Cocok** |
+| Warung makan (PB1, gas, air, kurung) | laba 5.985.000; kas 8.685.000. **Cocok** |
+| Sambal online (Jumlah+Jenis) | laba 13.335.000; kas 14.435.000. **Cocok** (sama dengan v1.0.0) |
+| Data rusak/tepi: `Rp 1.500.000`, `1.500.000,50`→1.500.001, `1,5jt`, `150rb`, `15.000,-`, `0`, `abc`, `1.250.000.50`, masuk+keluar terisi, `TOTAL` di kolom tanggal, file kosong, header saja, tanpa kolom nominal/keterangan, `.xlsx`, Debit/Kredit, file tidak ada | Semua benar/ditolak dengan `GALAT:` berbahasa Indonesia |
+| `scripts/uji_regresi.py` | **SEMUA UJI LULUS** (35 cek) |
 
 ## Skor
 | Kriteria | Skor (1–10) | Alasan singkat |
 |---|---|---|
-| Pemicu (description tepat) | 9 | Kata kunci awam ("untung berapa", KUR, neraca) + Inggris, batas dengan rekap-penjualan/pph/hpp jelas. |
-| Kemudahan awam | 8 | Cukup kirim file/tempel tabel; pertanyaan maks 5; ringkasan awam bagus. Istilah `--tetapkan` tersembunyi dari pengguna. |
-| Kualitas output | 8 | Struktur SAK EMKM lengkap (LR, LPK, CaLK 10 butir), tren, asumsi, "Perlu dicek", disclaimer. Ringkasan untuk kondisi rugi terbaca janggal. |
-| Akurasi (angka/fakta) | 5 | Aritmetika & neraca benar di semua uji normal (terverifikasi), tetapi filter periode menghasilkan kas/modal salah secara diam-diam; bunga di angsuran KUR hilang; beberapa klasifikasi kata kunci keliru. |
-| Penanganan input kurang | 9 | Tanya sekali, 5 poin, template ditawarkan, ada jalur "langsung aja" dengan asumsi tertulis. |
-| Penanganan di luar cakupan | 9 | Audit/SAK EP/konsolidasi/SPT ditolak dan diarahkan ke KAP/konsultan; tetap memberi bantuan yang aman. |
+| Pemicu (description tepat) | 9 | Tidak berubah. Kata kunci awam + Inggris, batas dengan skill lain jelas. |
+| Kemudahan awam | 8 | Satu pesan pertanyaan kini juga memuat bunga angsuran & PB1. Masih ada status SEMENTARA yang tidak bisa ditutup (kas minus karena jualan dicatat mingguan, PB1), sehingga agent harus menjelaskan sendiri. |
+| Kualitas output | 8 | Struktur SAK EMKM lengkap, kalimat rugi sudah wajar, label "LENGKAP (dengan asumsi)" jujur. Belum ada pemisahan lancar/tidak lancar dan jadwal penyusutan per aset. |
+| Akurasi (angka/fakta) | 6 | Semua laporan satu periode & laporan Jan–Jun cocok persis. Laporan bulanan dari file multi-bulan salah diam-diam bila bulan sebelumnya ada penjualan/pembelian tempo (BB1), dan penyusutan bulanan tidak konsisten. |
+| Penanganan input kurang | 9 | Tanya sekali, maksimal 5 butir, jalur "langsung aja" dengan asumsi tertulis (04). |
+| Penanganan di luar cakupan | 9 | Audit/SAK EP/konsolidasi/SPT diarahkan dengan benar (05). |
 | Keamanan | 10 | Lokal, tanpa jaringan, tanpa tulis file. |
 
 ## SKOR AKHIR: 6 / 10 → **REVISI**
 
-Skill ini **jelas lebih baik** daripada agent tanpa skill (A/B lulus) dan **menang** melawan satu-satunya pesaing Indonesia yang ditemukan. Alur tanya-bukan-tebak dan skrip deterministiknya sudah setara produk VIP. Namun ada **satu cacat berat**: fitur periode yang diiklankan di SKILL.md menghasilkan neraca dengan kas dan modal salah, tetapi tetap berlabel "seimbang". Kasusnya sangat umum ("laporan bulan ini" dari buku kas setahun). Sesuai aturan quality gate, skor dibatasi ≤ 6. Setelah B1 dan beberapa cacat sedang diperbaiki, skill ini realistis mencapai 8–9.
+Kemajuan v1.1.0 besar dan nyata. Keenam cacat lama (B1 dan S1–S5) serta semua cacat ringan terbukti tuntas. Hasil laporan satu periode kini akurat sampai rupiah di semua data uji, dan skill **makin unggul** atas agent tanpa skill maupun pesaing. Namun uji 6 bulan yang diminta (verifikasi tiap bulan) menemukan **cacat berat baru** di fitur yang sama dengan B1. Laporan per bulan menghitung pendapatan atau HPP **dua kali** ketika piutang/utang pemasok dari bulan sebelumnya dilunasi di bulan laporan. Laporan tetap berlabel **LENGKAP ✔ seimbang**, dan tidak ada cara CLI yang benar untuk menghindarinya. Kasus "pelanggan bayar bulan ini untuk pesanan bulan lalu" sangat umum dan termasuk pemakaian utama ("laporan bulan ini" dari buku kas setahun). Sesuai quality gate, skor dibatasi ≤ 6. Perbaikannya sempit (lihat BB1). Setelah BB1 dan BS1–BS3 diperbaiki, skill ini realistis mencapai 8–9.
 
-## Daftar cacat & saran perbaikan
+## Daftar cacat & saran perbaikan (v1.1.0)
 
 ### Berat
-- **B1 — `--periode-awal` tidak menggulirkan saldo kas awal** (`laporan_emkm.py` baris 730 `trx = [t for t in trx_semua if p_awal <= ...]` dan baris 770–777 penentuan `kas_awal`). Transaksi sebelum periode dibuang, tetapi kas awal tetap diambil dari baris "saldo awal" di awal file. Neraca menjadi salah sebesar arus kas bersih sebelum periode, dan cek keseimbangan tetap ✔ karena modal awal dihitung dari kas awal yang sama-sama salah. Bukti: laporan Februari dari buku kas Jan–Mar, kas akhir Rp 23.228.250 (seharusnya Rp 22.408.250).
-  *Saran:* bila `--kas-awal` tidak diisi dan ada transaksi dengan tanggal < `p_awal`, hitung `kas_awal = saldo_awal_baris (atau 0) + Σ(masuk − keluar)` transaksi sebelum `p_awal` (koreksi `transfer_internal` sama seperti baris 931–932), dan tambahkan asumsi "Kas awal periode = saldo awal file + arus kas sebelum <tanggal>". Tambahkan juga peringatan bahwa piutang/stok/utang/aset awal harus per tanggal `p_awal`, bukan per awal file. Di SKILL.md langkah 2, beri catatan untuk laporan per bulan dari file multi-bulan.
+- **BB1 — Piutang & utang pemasok tidak bergulir dengan benar pada laporan satu bulan dari file multi-bulan** (`laporan_emkm.py` baris 859–860: `piutang_awal = max(0, piutang_awal - js("terima_piutang"))`, `utang_usaha_awal = max(0, ... - js("bayar_utang_usaha"))`). Penjualan/pembelian tempo sebelum periode tidak diketahui script. Bukti (06): piutang jaket Maret Rp 1,2 jt dilunasi April → laba April −Rp 485.167 (seharusnya −Rp 1.695.167). Bon kain Mei Rp 800 rb dibayar Juni → laba Juni −Rp 2.548.194 (seharusnya −Rp 1.766.667). Keduanya "LENGKAP ✔". Jalan keluar CLI juga buntu. `--piutang-awal` dianggap per awal file, sedangkan `--saldo-awal-per awal-periode` berhenti menggulirkan aset tetap, utang bank, dan kasbon, dan kasbon tidak punya opsi saldo awal (pada uji "rantai", kasbon Rp 500.000 hilang dari neraca April yang tetap ✔).
+  *Saran:* (1) mode `awal-file` + ada transaksi sebelum periode → tambahkan ke `pertanyaan` "Berapa piutang pelanggan & utang pemasok per <awal periode>?" (status SEMENTARA sampai dijawab), kecuali tidak ada piutang/utang sama sekali di data; (2) tambah opsi yang berlaku per awal periode, mis. `--piutang-awal-periode`, `--utang-usaha-awal-periode` (atau ubah `--saldo-awal-per awal-periode` agar hanya pos yang diisi pengguna yang tidak digulir, sedangkan kas/utang bank/aset/kasbon tetap digulir); (3) tambah `--piutang-lain-awal`; (4) SKILL.md langkah 2: ganti "Stok awal periode tidak bisa digulirkan, jadi tanyakan stok" menjadi "stok, piutang, dan utang pemasok per tanggal awal periode wajib ditanyakan"; (5) tambah uji regresi "penjualan tempo bulan lalu dilunasi bulan ini" dan "modal akhir bulan N = modal awal bulan N+1".
 
 ### Sedang
-- **S1 — Angsuran KUR/pinjaman tidak dipisah pokok & bunga.** "Angsuran KUR BRI ke-1 Rp 2.291.667" seluruhnya mengurangi utang (kategori `bayar_pinjaman`). Beban bunga ±Rp 208.334 hilang, sehingga laba terlalu tinggi dan utang terlalu rendah. *Saran:* SKILL.md › "Kasus yang sengaja ditanyakan" (dan `references/pemetaan-kategori.md` bagian yang sama): wajib tanyakan rincian pokok/bunga setiap ada `bayar_pinjaman` tanpa baris bunga pada bulan yang sama. Di script: tambahkan peringatan otomatis + opsi `--bunga BARIS=NOMINAL` yang memecah satu baris menjadi pokok + beban keuangan.
-- **S2 — Urutan aturan kata kunci menimbulkan salah klasifikasi umum** (`ATURAN_BAWAAN`, baris 71–161): "Kulakan gas melon" → utilitas (seharusnya pembelian barang dagangan); "Beli air mineral gelas" → utilitas; "Iuran kebersihan pasar" → pembelian bahan (kata `pasar`); "Bayar pajak restoran PB1" → **PPh** (seharusnya pajak daerah, dan bila dipungut dari pembeli bukan beban). *Saran:* tambahkan aturan prioritas tinggi untuk kata kerja pembelian (`kulakan`, `kulak`, `restock`, `stok`, `untuk dijual`) sebelum `beban_utilitas`; pindahkan kata spesifik `beban_lain` (`iuran`, `keamanan`, `kebersihan`, `sampah`) sebelum `pembelian_bahan`; tambahkan `pajak restoran`, `pb1`, `pbjt`, `pajak hotel` ke `beban_pajak_lain` dan masukkan "PB1/PBJT" ke daftar yang ditanyakan (seperti PPN).
-- **S3 — Status "LENGKAP" dan "✔ seimbang" walau ada kondisi mustahil** (baris 1033). Utang bank negatif (−Rp 1.700.000 di S3), HPP negatif, atau piutang/utang negatif hanya masuk "Peringatan". Laporan ini bisa terkirim ke bank. *Saran:* status SEMENTARA bila `utang_bank_akhir < 0`, `hpp < 0`, `persediaan/piutang/utang < 0`, atau `kas_min < 0`, dan tampilkan kondisi itu di daftar pertanyaan "Perlu dicek".
-- **S4 — Tidak ada cara resmi mencatat selisih kas.** Dengan `--kas-akhir-aktual`, selisih kecil (S2: Rp 150.000) membuat neraca selamanya TIDAK SEIMBANG. SKILL.md langkah 4 hanya melarang "memaksa" angka. *Saran:* opsi `--catat-selisih-kas` (setelah pengguna mengonfirmasi) yang membukukan selisih sebagai "Selisih kas (kurang/lebih)" di beban/pendapatan lain-lain. Tambahkan juga satu kalimat di SKILL.md langkah 4 agar agent menawarkannya.
-- **S5 — Nominal dalam kurung/negatif di kolom Keluar dibalik menjadi uang masuk** (baris 638–641). `(200.000)` di kolom Keluar untuk "Beli tepung" dibaca sebagai pemasukan Rp 200.000, sehingga kas meleset Rp 400.000. Di buku kas, tanda kurung sering berarti "keluar". *Saran:* di mode Masuk/Keluar, nilai negatif/kurung pada kolom Keluar diperlakukan sebagai keluar (abs), atau dimasukkan ke `bermasalah` agar ditanyakan, bukan dibalik diam-diam.
+- **BS1 — Penyusutan periode dihitung dari nilai buku, bukan biaya perolehan** (baris 989 `dep = Decimal(aset_tetap_awal) / bulan_umur * n_bulan`, dengan `aset_tetap_awal` yang sudah dikurangi `dep_sebelum`). Laporan bulanan: Feb 213.889 / Mar 210.278 / Jun 273.194 vs benar 216.667 / 216.667 / 291.667. Laba bulanan tidak menjumlah ke laba semester (−1.544.751 vs −1.996.000, termasuk efek BB1), dan modal tidak bersambung antarbulan. *Saran:* simpan daftar aset (biaya, bulan mulai) dari saldo awal file + pembelian, lalu hitung penyusutan periode dari biaya perolehan seperti `dep_sebelum` (baris 864–870). Untuk mode `awal-periode`, minta biaya perolehan & akumulasi, bukan hanya nilai buku.
+- **BS2 — "Kas sempat minus" tidak bisa dikonfirmasi** (baris 1117). Warung yang mencatat jualan mingguan (02: kulakan tanggal 1, jualan dicatat tanggal 3) terkunci di SEMENTARA + ⚠ walau semua angka sudah benar dan pemilik sudah menjelaskan. *Saran:* opsi `--abaikan-kas-minus` (atau `--konfirmasi kas-minus`) setelah pemilik mengonfirmasi. Status lalu "LENGKAP (dengan asumsi)" dan asumsinya ditulis. Alternatif: jadikan kas minus pertanyaan hanya bila minus di akhir hari/akhir minggu.
+- **BS3 — Pertanyaan PB1/PBJT tidak bisa ditutup dan tidak ada perlakuan "titipan"** (baris 1138 memeriksa teks keterangan tanpa melihat `bunga_dikonfirmasi`/`--tetapkan`). `--tetapkan 8=beban_pajak_lain` tetap SEMENTARA. Rumah makan yang menyetor PB1 tiap bulan tidak pernah mendapat laporan final. *Saran:* lewati pertanyaan bila `t["sumber"] == "ditetapkan pengguna"`. Tambahkan kategori dua arah `titipan_pajak` (masuk = PB1 dipungut dari pembeli, keluar = penyetoran) yang hanya memengaruhi pos "Utang pajak daerah" di neraca, dan jelaskan di `references/pemetaan-kategori.md`.
 
 ### Ringan
-- Tidak ada kategori piutang lain-lain/kasbon karyawan/uang muka. Kasbon yang akan dipotong gaji terpaksa dibebankan. Tambahkan `piutang_lain` (keluar → aset; masuk → pelunasan).
-- Kata kunci kurang: `botol`, `jerigen`, `pouch` (kemasan); `belanja dapur rumah`, `arisan` (sebaiknya ditanyakan, dan sudah ditanyakan).
-- Baris total dengan teks "TOTAL" di kolom tanggal dilaporkan sebagai "tanggal tidak terbaca" alih-alih dilewati (baris 614–616 hanya memeriksa kolom keterangan).
-- Ringkasan awam saat rugi: "yang tersisa jadi laba sekitar -5,9% … labanya sekitar -Rp 5.861". Ganti dengan kalimat "setiap Rp 100.000 penjualan, usaha rugi sekitar Rp 5.861" (`ringkasan_awam`, baris 1103–1108).
-- "Tren per periode" tetap tampil untuk 1 bulan (SKILL.md: "jika > 1 bulan"), baris 1227.
-- Label "LENGKAP" saat stok akhir/penyusutan memakai default bisa menyesatkan untuk bank. Pertimbangkan "LENGKAP (dengan asumsi)".
-- README menyebut `CARA-INSTAL.md` yang tidak ada di folder skill. Pastikan ikut dalam paket.
-- Pembanding pesaing: pertimbangkan pemisahan aset/liabilitas lancar vs tidak lancar dan jadwal penyusutan per aset di CaLK (lihat `00-banding-pesaing.md`).
+- Peringatan "Stok awal periode dianggap Rp X karena stok per <tgl> tidak diketahui" tetap muncul walau pengguna memberi `--persediaan-awal` per awal periode (baris 885–887). Tampilkan hanya bila `a.persediaan_awal is None`.
+- Asumsi menulis "awal data (3 Januari 2026)" / "(2 Januari 2026)" padahal baris saldo awal bertanggal 1 Januari. Pakai tanggal baris saldo awal bila ada.
+- Neraca laporan bulanan: "Kas menurut buku / Dana dipindah ke rekening lain" hanya memakai transfer bulan berjalan (Maret: −Rp 2.000.000), sehingga tidak menunjukkan uang laci atau saldo bank sebenarnya. Total tetap benar. Hitung `dana_di_rekening_lain` kumulatif sejak awal file.
+- "Pelunasan pesanan X" (masuk) selalu menjadi penjualan tunai. Bila pengguna memberi piutang awal, pelunasan piutang lama bisa tercatat ganda lalu "dikoreksi" sebagai beban piutang tak tertagih. Ada peringatan, tetapi sebaiknya pelunasan ditanyakan bila `piutang_awal > 0`.
+- Belum diadopsi dari pesaing: aset/liabilitas lancar vs tidak lancar dan jadwal penyusutan per aset di CaLK.
 
-## Ringkasan uji tambahan
-- **A/B (00-pembanding-tanpa-skill.md):** skill **jelas lebih baik**. Transaksi ambigu ditanyakan, bukan ditebak (tanpa skill, zakat pribadi masuk beban). Penyusutan tepat per tanggal beli. Ada CaLK, disclaimer, dan hasil yang bisa diulang. Tanpa skill hanya unggul di perlakuan kasbon.
-- **Pesaing (00-banding-pesaing.md):** `adamriofc/laporan-keuangan-psak` (MIT) hanya kerangka ±25 baris tanpa script, aturan prive, atau disclaimer. Skill kita **menang** di semua kriteria.
+## Contoh yang diperbarui / ditambah
+- `01-katering-3-bulan-kur-prive.md`: output ulang v1.1.0 (bunga KUR ditanyakan & dipecah, kasbon jadi piutang).
+- `02-warung-tempel-tabel-selisih-kas.md`: output ulang v1.1.0 (kulakan gas, iuran pasar, `--catat-selisih-kas`; bukti BS2).
+- `03-bikinin-dong-sambal-online-kur.md`: langkah & status diperbarui (utang negatif → SEMENTARA ⚠; botol dikenali).
+- **Baru** `06-laporan-per-bulan-6-bulan-b1.md`: uji B1 data lama + 6 bulan, tabel verifikasi per bulan (bukti BB1, BS1).
+- **Baru** `07-warung-makan-pb1-gas-air-kurung.md`: uji S2/S5 dan bukti BS3.
+- `04`, `05`: tetap (tidak memakai script, tidak terdampak).
+- `00-pembanding-tanpa-skill.md`, `00-banding-pesaing.md`: dipertahankan, ditambah catatan pembaruan v1.1.0. **A/B: skill jelas lebih baik. Pesaing: skill kita menang.**
