@@ -18,6 +18,7 @@ Membantu pemilik usaha menagih pembayaran yang tertunda dengan urutan pesan yang
 - Membuat invoice/tagihan baru → `buat-invoice`.
 - Calon pembeli belum membeli → `follow-up-prospek`.
 - Menagih utang pribadi antar-teman/keluarga dengan emosi tinggi: boleh dibantu dengan nada kekeluargaan, tanpa format surat resmi.
+- Pinjaman uang berbunga antar-perorangan: tagih pokoknya saja; bunga/denda tanpa perjanjian tertulis jangan dihitung; sarankan advokat/LBH bila bersengketa.
 - Penagihan atas nama lembaga keuangan/pinjol/leasing (tunduk aturan OJK khusus), penagihan ke konsumen dengan jaminan fidusia, gugatan, atau pailit → jelaskan batasan, arahkan ke advokat.
 - Permintaan pesan yang mengancam, mempermalukan (sebar di grup/medsos), menghubungi keluarga/atasan debitur untuk menekan, atau memakai kata kasar → **tolak bagian itu**, jelaskan risikonya (lihat `references/regulasi.md`), tawarkan alternatif yang sah.
 
@@ -40,10 +41,12 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 1. **Hitung dengan script** (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
    python3 <folder-skill-ini>/scripts/hitung_telat.py --nominal "Rp 12.500.000" --dibayar "Rp 2.500.000" \
-     --jatuh-tempo 2026-08-24 --tanggal 2026-09-23
+     --jatuh-tempo 2026-08-24 --tanggal 2026-09-23 --sudah-diingatkan 2
    ```
+   - `--sudah-diingatkan N` = jumlah pengingat yang **sudah** terkirim (dari "Riwayat penagihan"; default 0). Script memakainya untuk menentukan tahap.
    - Denda **hanya** jika ada kesepakatan tertulis: tambahkan `--denda-persen 0,1 --denda-per hari` (atau `--denda-per bulan`, `--denda-tetap "Rp 100.000"`), `--tenggang 3`, `--denda-maks 5%`, dan `--dasar-denda "Pasal 4 Perjanjian No. ..."`. Jika script menulis PERINGATAN bahwa dasar denda kosong, jangan cantumkan denda di pesan sampai pengguna mengonfirmasi dasarnya.
    - Banyak tagihan: `--file piutang.csv` (kolom `pelanggan,no_invoice,nominal,jatuh_tempo,dibayar`) → rekap umur piutang + urutan prioritas penagihan.
+   - Script menolak denda > 1% per hari (atau setara per bulan) sebagai kemungkinan salah ketik, serta `--denda-maks` tanpa satuan ≤ 100 atau < Rp 1.000. Tanyakan konfirmasi ke pengguna; tambahkan `--konfirmasi-denda-tinggi` hanya bila pengguna memastikan angka itu memang tertulis di perjanjian.
    - Script keluar dengan kode ≠ 0 dan pesan `ERROR:` bila input salah; perbaiki, jangan menebak.
 2. **Tentukan tahap** dari output `tahap` script:
 
@@ -56,10 +59,11 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    | 5 | Lewat 14–29 hari | Resmi | Pemberitahuan tertulis, tawaran cicilan/jadwal, sebut denda bila tertulis |
    | 6 | Lewat ≥ 30 hari | Resmi-tegas | **Surat teguran (somasi)** dengan tenggat (mis. 7 hari) & langkah lanjutan yang sah |
 
+   **Pakai riwayat penagihan, bukan umur piutang saja.** Tahap maksimal: belum pernah diingatkan → tahap 4 (tahap 5 bila ≥ 30 hari); 1 pengingat → tahap 5; ≥ 2 pengingat tanpa hasil → boleh tahap 6 (somasi). Jadi invoice 39 hari yang belum pernah ditagih dimulai dari tahap 5 (pemberitahuan resmi yang tetap membuka opsi cicilan), bukan somasi. Naikkan satu tahap bila 7 hari tanpa respons. Script sudah menerapkan aturan ini dan menulis PERINGATAN bila tahap dibatasi.
    Jika debitur sudah memberi janji bayar, sesuaikan: tagih pada tanggal janji, rujuk janjinya secara faktual.
 3. **Tulis pesan** sesuai tahap (contoh lengkap semua tahap + surat teguran: `references/template-penagihan.md`). Selalu cantumkan: nomor invoice, nominal sisa (dari script), tanggal jatuh tempo, rekening, cara konfirmasi. Tahap 1–3 tambahkan "Abaikan pesan ini jika sudah membayar".
 4. **Surat teguran (tahap 6)**: format surat resmi, fakta kronologis (tanggal invoice, jatuh tempo, pengingat yang sudah dikirim, pembayaran sebagian), jumlah yang harus dibayar, tenggat, rekening, dan langkah lanjutan yang sah ("menempuh upaya hukum sesuai peraturan yang berlaku"). Tanda tangan pemilik/direktur. Tambahkan disclaimer di bawah hasil.
-5. **Beri saran tindakan** untuk pengguna: kapan tahap berikutnya dikirim, simpan bukti, tawarkan cicilan tertulis (surat pengakuan utang > Rp5.000.000 perlu meterai Rp10.000), kapan ke advokat/gugatan sederhana.
+5. **Beri saran tindakan** untuk pengguna: kapan tahap berikutnya dikirim, simpan bukti, tawarkan cicilan tertulis (surat kesepakatan cicilan/pengakuan utang adalah surat perjanjian/pernyataan → bermeterai Rp10.000 **berapa pun nilainya**; kuitansi pelunasan bermeterai bila > Rp5.000.000), kapan ke advokat/gugatan sederhana. Untuk layanan langganan yang masih berjalan (katering, jasa bulanan), jangan hentikan layanan sepihak tanpa pemberitahuan tertulis lebih dulu.
 6. **Periksa** dengan checklist.
 
 ### Fallback jika Python tidak bisa dijalankan
@@ -88,9 +92,9 @@ Bukan nasihat hukum. Dasar: KUHPerdata (wanprestasi/somasi), UU ITE, UU PDP, UU 
 Bila pengguna minta "semua tahap sekaligus", tampilkan tahap 1–6 berurutan dengan tanggal kirim masing-masing (tanggal = jatuh tempo −3, 0, +3, +7, +14, +30).
 
 ## Contoh
-**Input pengguna:** "Aku supplier kemasan 'Kemas Prima' di Tangerang. CV Sinar Abadi (Pak Hendra, bagian keuangan) invoice INV-0788 Rp 12.500.000, jatuh tempo 24 Agustus 2026, baru bayar 2,5 juta. Di PO ada denda 0,1% per hari setelah 3 hari, maks 5%. Hari ini 23 September."
+**Input pengguna:** "Aku supplier kemasan 'Kemas Prima' di Tangerang. CV Sinar Abadi (Pak Hendra, bagian keuangan) invoice INV-0788 Rp 12.500.000, jatuh tempo 24 Agustus 2026, baru bayar 2,5 juta. Di PO ada denda 0,1% per hari setelah 3 hari, maks 5%. Sudah 2 kali kuingatkan lewat WA (26 Agustus & 7 September), nggak ada respons. Hari ini 23 September."
 
-**Output (ringkas):** script → sisa Rp 10.000.000, terlambat 30 hari, tahap 6, denda Rp 270.000 (Rp 10.000.000 × 0,1% × 27 hari; dasar: PO), total Rp 10.270.000.
+**Output (ringkas):** script (`--sudah-diingatkan 2`) → sisa Rp 10.000.000, terlambat 30 hari, tahap 6, denda Rp 270.000 (Rp 10.000.000 × 0,1% × 27 hari; dasar: PO), total Rp 10.270.000.
 ```
 Nomor   : 015/KP/SP/IX/2026
 Perihal : Surat Teguran Pembayaran Invoice INV-0788
@@ -99,7 +103,7 @@ Kepada Yth. Pimpinan CV Sinar Abadi
 u.p. Bapak Hendra – Bagian Keuangan
 
 Dengan hormat,
-Berdasarkan Purchase Order yang telah disetujui, kami telah mengirimkan barang dan menerbitkan Invoice No. INV-0788 senilai Rp 12.500.000 dengan jatuh tempo 24 Agustus 2026. Hingga surat ini dibuat, kami telah menerima pembayaran sebesar Rp 2.500.000, sehingga masih terdapat sisa kewajiban Rp 10.000.000. Pengingat telah kami sampaikan pada [tanggal-tanggal pengingat].
+Berdasarkan Purchase Order yang telah disetujui, kami telah mengirimkan barang dan menerbitkan Invoice No. INV-0788 senilai Rp 12.500.000 dengan jatuh tempo 24 Agustus 2026. Hingga surat ini dibuat, kami telah menerima pembayaran sebesar Rp 2.500.000, sehingga masih terdapat sisa kewajiban Rp 10.000.000. Pengingat telah kami sampaikan pada 26 Agustus 2026 dan 7 September 2026 melalui WhatsApp.
 
 Sesuai ketentuan keterlambatan pada PO (denda 0,1% per hari setelah masa tenggang 3 hari, maksimal 5%), denda per 23 September 2026 adalah Rp 270.000. Total yang perlu diselesaikan: Rp 10.270.000.
 
@@ -110,7 +114,7 @@ Apabila hingga batas waktu tersebut belum ada pembayaran maupun tanggapan, denga
 Hormat kami,
 [Nama] – Pemilik, Kemas Prima
 ```
-Asumsi: tenggat 7 hari; pengingat sebelumnya perlu diisi tanggalnya oleh pengguna.
+Asumsi: tenggat 7 hari. (Jika pengguna belum pernah mengirim pengingat, script memberi tahap 5 — kirim pemberitahuan resmi dulu, bukan somasi.)
 
 ## Checklist sebelum mengirim hasil
 - [ ] Nominal, hari terlambat, denda dari output script (atau hitung manual tertulis + peringatan).

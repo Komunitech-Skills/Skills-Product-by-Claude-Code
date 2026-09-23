@@ -14,10 +14,10 @@ Setiap jenis punya "pertanyaan utama" calon mitra. Pastikan proposal menjawabnya
 ## 2. Reseller / agen / distributor
 **Pertanyaan mitra:** "Untung saya berapa per barang, modal awal berapa, dibantu jualan tidak?"
 - Tingkatan (reseller/agen/distributor) dengan minimal order & harga/diskon masing-masing (hitung tiap tingkat dengan script `reseller`).
-- HET agar harga pasar tidak rusak; aturan jual di marketplace (boleh/tidak, harga minimum).
+- Harga jual yang disarankan (HET/SRP — istilah HET resminya untuk harga eceran tertinggi yang ditetapkan pemerintah; untuk brand swasta lebih tepat "harga jual yang disarankan") agar harga pasar tidak rusak; aturan jual di marketplace (boleh/tidak, harga minimum).
 - Dukungan: foto/konten jualan, grup WA reseller, pelatihan, sistem retur cacat produksi.
 - Wilayah (eksklusif/tidak), target minimal per bulan (jika ada), cara order & pembayaran.
-- Hindari skema "rekrut orang untuk dapat bonus" tanpa penjualan barang nyata (berisiko dianggap skema piramida — dilarang UU Perdagangan). Jika pengguna meminta ini, tolak bagian tersebut dan jelaskan singkat.
+- Hindari skema "rekrut orang untuk dapat bonus" tanpa penjualan barang nyata (berisiko dianggap skema piramida — dilarang UU 7/2014 tentang Perdagangan, Pasal 9 jo. Pasal 105; dicek per 2026-09-23, sumber: https://www.ojk.go.id/waspada-investasi/id/regulasi/Pages/Undang-Undang-Nomor-7-Tahun-2014-tentang-Perdagangan.aspx). Jika pengguna meminta ini, tolak bagian tersebut dan jelaskan singkat. Skema menghimpun dana masyarakat dengan janji imbal hasil tetap berada di ranah pengawasan OJK — arahkan ke advokat.
 
 ## 3. Kerja sama B2B supply / langganan (pemasok → kafe, hotel, kantor, pabrik, sekolah)
 **Pertanyaan mitra:** "Lebih baik/lebih hemat dari pemasok sekarang? Pasokan terjamin?"

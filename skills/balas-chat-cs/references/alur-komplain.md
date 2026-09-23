@@ -50,7 +50,7 @@ Satu kali balasan sopan dan tegas: "Kami ingin membantu menyelesaikan masalah Ka
 - Janji yang belum pasti: "pasti sampai besok", "pasti kami ganti".
 - Meminta data sensitif: foto KTP, PIN, OTP, password, data kartu.
 
-## Dasar
+## Dasar (dicek per 2026-09-23)
 - Pelanggan berhak atas informasi yang benar dan kompensasi bila barang tidak sesuai perjanjian (UU 8/1999 tentang Perlindungan Konsumen). Rincian kewajiban & tenggang waktu: konsultasikan ke ahli hukum untuk kasus sengketa. Sumber: https://peraturan.bpk.go.id/Details/45288/uu-no-8-tahun-1999
 - Data pribadi pelanggan wajib dijaga (UU 27/2022 PDP). Sumber: https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-data-pribadi-lt5d588c1cc649e/
 - Aturan chat, pengembalian, dan kontak di luar platform berbeda per marketplace dan sering berubah — selalu cek Seller Center/Pusat Edukasi Penjual terbaru.

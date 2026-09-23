@@ -44,10 +44,11 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    python3 <folder-skill-ini>/scripts/hitung_skema.py konsinyasi --harga-jual "Rp 25.000" --porsi-toko 20% --modal 14000 --skenario "50;100;200"
    # Bagi hasil (dasar omzet atau laba)
    python3 <folder-skill-ini>/scripts/hitung_skema.py bagi-hasil --porsi-mitra 30% --dasar omzet --skenario "10jt;25jt;50jt"
-   # Reseller (HET vs harga reseller)
+   # Reseller (harga jual yang disarankan/HET-SRP vs harga reseller)
    python3 <folder-skill-ini>/scripts/hitung_skema.py reseller --het 150000 --diskon-reseller 20% --modal 90rb --skenario "20;50;100"
    ```
-   - Pisahkan skenario dengan `;` (maks. 5). Label otomatis: Pesimis/Realistis/Optimis.
+   - Pisahkan skenario dengan `;` (maks. 5), mis. `"50;100;200"`. Label otomatis: Pesimis/Realistis/Optimis. Input ambigu seperti `30,60` ditolak script dengan pesan `ambigu` — tulis ulang dengan `;`.
+   - Ada `test_hitung_skema.py` di folder `scripts/` untuk uji regresi (opsional, `python3 scripts/test_hitung_skema.py`).
    - Tabel "Bagian toko/mitra" masuk ke proposal; kolom modal/laba produsen **hanya untuk pengguna**, jangan dimasukkan ke proposal kecuali pengguna minta.
    - Jika script menampilkan `PERINGATAN` (skema rugi), sampaikan ke pengguna sebelum menulis proposal.
    - Sponsorship: nilai paket biasanya angka tetap; tidak perlu script kecuali ada potongan/perhitungan. Jika menjumlahkan beberapa paket, jumlahkan manual dan tulis rinciannya.
@@ -57,9 +58,9 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 
 ### Fallback jika Python tidak bisa dijalankan
 Hitung manual dan tulis rumusnya; beri tahu pengguna "angka dihitung manual, mohon dicek":
-- Konsinyasi: bagian toko/unit = harga jual × % toko (atau harga jual − harga titip); bagian pemilik = harga jual − bagian toko; total = per unit × jumlah terjual.
+- Konsinyasi: bagian toko = harga jual × % toko × jumlah terjual (atau (harga jual − harga titip) × jumlah); bagian pemilik = omzet − bagian toko (agar selalu menjumlah tepat).
 - Bagi hasil: bagian mitra = dasar (omzet/laba) × % mitra; sisanya pemilik usaha.
-- Reseller: harga reseller = HET × (100% − diskon); untung reseller/unit = HET − harga reseller.
+- Reseller: harga reseller = harga jual yang disarankan (HET/SRP) × (100% − diskon); untung reseller/unit = HET/SRP − harga reseller.
 - Bulatkan ke rupiah terdekat (0,5 ke atas).
 
 ## Format output
@@ -138,5 +139,6 @@ Asumsi yang disebut di akhir: stok awal 30 bungkus/cabang, isi ulang mingguan, d
 - Proposal bukan kontrak. Ingatkan: setelah mitra setuju, tuangkan dalam perjanjian tertulis (skill `perjanjian-sederhana`); perjanjian dikenai bea meterai Rp10.000 (UU 10/2020).
 - Jangan menjanjikan hasil penjualan pasti; tabel simulasi selalu diberi label "simulasi/perkiraan".
 - Sponsorship: jangan mengarang jumlah pengunjung/peserta/reach; minta data atau tulis `[perkiraan peserta]`.
+- Konsinyasi/penjualan bila salah satu pihak PKP: ada aspek PPN atas penyerahan barang titipan; sarankan konsultasi ke konsultan pajak (skill tidak menghitungnya).
 - Kerja sama yang menyangkut izin khusus (pangan olahan, obat, kosmetik, alkes, keuangan/investasi, waralaba): sarankan pengguna memastikan izin terkait sendiri; skill tidak menilai legalitas.
 - Skema yang terlihat seperti investasi dengan janji imbal hasil tetap dari dana publik: jangan dibantu menjadi penawaran ke masyarakat umum; sarankan konsultasi hukum (terkait ketentuan OJK).

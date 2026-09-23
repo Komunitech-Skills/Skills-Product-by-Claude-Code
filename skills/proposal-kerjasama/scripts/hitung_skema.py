@@ -5,16 +5,16 @@ Hanya library standar Python (3.8+). Tidak ada akses jaringan.
 
 Contoh:
   # Konsinyasi: produk dijual Rp 25.000, toko dapat 20%, modal Rp 14.000, skenario 50/100/200 pcs per bulan
-  python3 hitung_skema.py konsinyasi --harga-jual "Rp 25.000" --porsi-toko 20% --modal 14000 --skenario 50,100,200
+  python3 hitung_skema.py konsinyasi --harga-jual "Rp 25.000" --porsi-toko 20% --modal 14000 --skenario "50;100;200"
 
   # Konsinyasi dengan harga titip (toko bebas menjual Rp 25.000, pemilik terima Rp 20.000 per pcs)
   python3 hitung_skema.py konsinyasi --harga-jual 25000 --harga-titip 20000 --skenario 100
 
   # Bagi hasil omzet 30% untuk mitra
-  python3 hitung_skema.py bagi-hasil --porsi-mitra 30% --skenario "10jt,25jt,50jt"
+  python3 hitung_skema.py bagi-hasil --porsi-mitra 30% --skenario "10jt;25jt;50jt"
 
   # Reseller: HET Rp 150.000, diskon reseller 20%, modal 90rb, skenario 20/50/100 pcs
-  python3 hitung_skema.py reseller --het 150000 --diskon-reseller 20% --modal 90rb --skenario 20,50,100
+  python3 hitung_skema.py reseller --het 150000 --diskon-reseller 20% --modal 90rb --skenario "20;50;100"
 
 Pembulatan: nilai per unit dan total dibulatkan ke rupiah terdekat (0,5 ke atas).
 Total dihitung dari nilai tepat per unit x jumlah, lalu dibulatkan sekali.
@@ -34,6 +34,7 @@ def parse_angka(teks, nama="angka"):
     if teks is None or str(teks).strip() == "":
         raise InputSalah(f"{nama} kosong")
     s = str(teks).strip().lower().replace(" ", "")
+    s = re.sub(r"[.,]-$", "", s)  # "Rp 25.000,-"
     pengali = Decimal(1)
     for akhiran, kali in (("juta", 10**6), ("jt", 10**6), ("ribu", 10**3), ("rb", 10**3), ("k", 10**3)):
         if s.endswith(akhiran):
@@ -41,6 +42,8 @@ def parse_angka(teks, nama="angka"):
             pengali = Decimal(kali)
             break
     s = s.replace("rp", "").replace("idr", "")
+    if pengali != 1 and re.fullmatch(r"\d{1,3}(\.\d{3})+", s):
+        raise InputSalah(f"{nama} ambigu: {teks!r}. Tulis tanpa titik (mis. 1500rb) atau pakai koma desimal (mis. 1,5jt)")
     if not re.fullmatch(r"-?[\d.,]+", s or "x"):
         raise InputSalah(f"{nama} tidak bisa dibaca sebagai angka: {teks!r}")
     if "," in s and "." in s:
@@ -78,21 +81,47 @@ def persen_id(p):
     return (s[:-2] if s.endswith(".0") else s.replace(".", ",")) + "%"
 
 
+PETUNJUK_PEMISAH = "Pisahkan beberapa skenario dengan titik koma, mis. '10;20;30' atau '10jt;25jt;50jt'."
+
+
+def _pecah_koma(bagian, nama):
+    """Pecah satu potong teks yang mungkin berisi koma. Kembalikan list potongan angka."""
+    b = bagian.strip()
+    n = b.count(",")
+    if n == 0:
+        return [b]
+    if n >= 2:
+        # '10,20,30' -> 3 skenario (koma sebagai pemisah daftar)
+        return [x for x in b.split(",") if x.strip()]
+    kiri, kanan = [x.strip().lower() for x in b.split(",")]
+    satuan = re.compile(r".*(jt|juta|rb|ribu|k)$")
+    # '1,5jt' -> satu angka desimal; 'Rp 7.777.777,50' -> satu angka desimal
+    if re.fullmatch(r"\d+", kiri.replace(" ", "")) and satuan.match(kanan) and re.fullmatch(r"\d{1,2}\s*(jt|juta|rb|ribu|k)", kanan):
+        return [b]
+    if re.fullmatch(r"(rp|idr)?\s*\d{1,3}(\.\d{3})+", kiri) and re.fullmatch(r"\d{1,2}", kanan):
+        return [b]
+    # '10jt,25jt' / 'Rp 10.000,Rp 20.000' -> dua skenario
+    if (satuan.match(kiri) or kiri.startswith(("rp", "idr"))) and (satuan.match(kanan) or kanan.startswith(("rp", "idr"))):
+        return [kiri, kanan]
+    raise InputSalah(f"{nama} ambigu: {bagian!r} bisa berarti satu angka desimal atau dua skenario. " + PETUNJUK_PEMISAH)
+
+
 def parse_skenario(teks, nama, bilangan_bulat=True):
+    """Terima '10;20;30', '10/20/30', '10, 20, 30', '10,20,30', '10jt;25jt', '1,5jt;2,5jt'."""
     hasil = []
-    # pisah dengan '/' atau ';' atau ', ' (koma+spasi) atau koma biasa bila tiap bagian bukan desimal
-    bagian = [b for b in re.split(r"[;/]|,\s+", teks.strip()) if b]
-    if len(bagian) == 1 and "," in bagian[0] and not re.search(r"\d,\d{1,2}$", bagian[0]):
-        bagian = [b for b in bagian[0].split(",") if b]
+    potong = [b for b in re.split(r"[;/]|,\s+", teks.strip()) if b.strip()]
+    bagian = []
+    for b in potong:
+        bagian.extend(_pecah_koma(b, nama))
     for b in bagian:
         v = parse_angka(b, nama)
         if v <= 0:
-            raise InputSalah(f"{nama} harus lebih dari 0: {b!r}")
+            raise InputSalah(f"{nama} harus lebih dari 0: {b!r}. " + PETUNJUK_PEMISAH)
         if bilangan_bulat and v != v.to_integral():
-            raise InputSalah(f"{nama} harus bilangan bulat (jumlah unit): {b!r}")
+            raise InputSalah(f"{nama} harus bilangan bulat (jumlah unit): {b!r}. " + PETUNJUK_PEMISAH)
         hasil.append(v)
     if not hasil:
-        raise InputSalah(f"{nama} kosong")
+        raise InputSalah(f"{nama} kosong. " + PETUNJUK_PEMISAH)
     if len(hasil) > 5:
         raise InputSalah(f"{nama} maksimal 5 skenario")
     return hasil
@@ -129,20 +158,21 @@ def konsinyasi(a):
         peringatan.append("Modal per unit lebih besar dari bagian pemilik barang: skema ini RUGI untuk pemilik barang.")
     skenario = []
     for lbl, q in zip(label_skenario(len(a.skenario_v)), a.skenario_v):
-        s = {"skenario": lbl, "unit_terjual": int(q), "omzet": bulat(hj * q),
-             "bagian_toko": bulat(toko_unit * q), "bagian_pemilik_barang": bulat(pemilik_unit * q)}
+        omzet, toko = bulat(hj * q), bulat(toko_unit * q)
+        s = {"skenario": lbl, "unit_terjual": int(q), "omzet": omzet,
+             "bagian_toko": toko, "bagian_pemilik_barang": omzet - toko}
         if modal is not None:
             s["laba_kotor_pemilik_barang"] = bulat((pemilik_unit - modal) * q)
         skenario.append(s)
     return {
         "skema": "konsinyasi",
         "per_unit": {"harga_jual": bulat(hj), "porsi_toko_persen": float(round(porsi, 2)),
-                     "bagian_toko": bulat(toko_unit), "bagian_pemilik_barang": bulat(pemilik_unit),
+                     "bagian_toko": bulat(toko_unit), "bagian_pemilik_barang": bulat(hj) - bulat(toko_unit),
                      "modal": bulat(modal) if modal is not None else None,
                      "laba_kotor_pemilik_per_unit": bulat(pemilik_unit - modal) if modal is not None else None},
         "periode": a.periode, "skenario": skenario, "peringatan": peringatan,
         "catatan": ["Barang yang tidak laku dikembalikan ke pemilik barang sesuai kesepakatan (tidak dihitung).",
-                    "Pembulatan: rupiah terdekat (0,5 ke atas); total dihitung dari nilai tepat per unit."],
+                    "Pembulatan: omzet & bagian toko dibulatkan ke rupiah terdekat (0,5 ke atas); bagian pemilik = omzet - bagian toko, sehingga selalu menjumlah tepat."],
     }
 
 
@@ -158,7 +188,9 @@ def bagi_hasil(a):
                          "bagian_mitra": bulat(mitra), "bagian_pemilik_usaha": bulat(v) - bulat(mitra)})
     return {"skema": "bagi-hasil", "dasar_bagi_hasil": dasar, "porsi_mitra_persen": float(porsi),
             "porsi_pemilik_persen": float(100 - porsi), "periode": a.periode, "skenario": skenario,
-            "peringatan": [],
+            "peringatan": (["Ada nilai omzet/laba di bawah Rp 10.000 — kemungkinan satuan terlewat "
+                            "(maksud Anda '10jt;25jt;50jt'?). Konfirmasi ke pengguna."]
+                           if any(v < 10000 for v in a.skenario_v) else []),
             "catatan": [f"Bagi hasil dihitung dari {dasar}. Definisikan '{dasar}' secara tertulis di perjanjian.",
                         "Pembulatan: bagian mitra dibulatkan ke rupiah terdekat; sisanya bagian pemilik usaha."]}
 
@@ -254,7 +286,7 @@ def main():
     k.add_argument("--porsi-toko", help="Persentase untuk toko/penjual, mis. 20%%")
     k.add_argument("--harga-titip", help="Harga yang diterima pemilik barang per unit")
     k.add_argument("--modal", help="Modal/HPP per unit pemilik barang (opsional)")
-    umum(k, "Jumlah unit terjual, 1–5 nilai, mis. '50,100,200'")
+    umum(k, "Jumlah unit terjual, 1–5 nilai, mis. '50;100;200'")
 
     bh = sub.add_parser("bagi-hasil", help="Bagi hasil dari omzet/laba")
     bh.add_argument("--porsi-mitra", help="Persentase untuk mitra, mis. 30%%")
@@ -266,7 +298,7 @@ def main():
     r.add_argument("--harga-reseller")
     r.add_argument("--diskon-reseller", help="mis. 20%%")
     r.add_argument("--modal", help="Modal/HPP per unit produsen (opsional)")
-    umum(r, "Jumlah unit, 1–5 nilai, mis. '20,50,100'")
+    umum(r, "Jumlah unit, 1–5 nilai, mis. '20;50;100'")
 
     a = p.parse_args()
     if not a.skema:

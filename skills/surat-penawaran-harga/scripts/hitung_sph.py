@@ -11,12 +11,15 @@ Contoh:
     --ppn pkp --nomor-urut 12 --kode "SPH/MKS" --berlaku-hari 14
 
 Aturan pembulatan (dijelaskan juga di output):
-  - Semua nilai rupiah dibulatkan ke rupiah penuh terdekat (>= 0,5 naik) per baris.
-  - PPN non-mewah = 12% x (11/12 x DPP), dihitung tepat lalu dibulatkan sekali ke rupiah terdekat.
+  - Total baris & diskon dibulatkan ke rupiah penuh terdekat (>= 0,5 naik).
+  - PPN non-mewah = 12% x (11/12 x DPP), dihitung persis lalu DIBULATKAN KE BAWAH sekali.
+  - Harga termasuk PPN: DPP = rupiah bulat terbesar dengan DPP + PPN <= harga; sisa ditampilkan.
+  - Belum dicocokkan dengan Coretax.
 """
 import argparse
 import csv
 import json
+import math
 import re
 import sys
 from datetime import date, datetime, timedelta
@@ -38,6 +41,7 @@ def parse_angka(teks, nama="angka"):
     if teks is None:
         raise InputSalah(f"{nama} kosong")
     s = str(teks).strip().lower().replace(" ", "")
+    s = re.sub(r"[.,]-$", "", s)  # "Rp 25.000,-"
     pengali = Decimal(1)
     for akhiran, kali in (("juta", 10**6), ("jt", 10**6), ("ribu", 10**3), ("rb", 10**3), ("k", 10**3)):
         if s.endswith(akhiran):
@@ -45,6 +49,8 @@ def parse_angka(teks, nama="angka"):
             pengali = Decimal(kali)
             break
     s = s.replace("rp", "").replace("idr", "")
+    if pengali != 1 and re.fullmatch(r"\d{1,3}(\.\d{3})+", s):
+        raise InputSalah(f"{nama} ambigu: {teks!r}. Tulis tanpa titik (mis. 1500rb) atau pakai koma desimal (mis. 1,5jt)")
     if not re.fullmatch(r"-?[\d.,]+", s or "x"):
         raise InputSalah(f"{nama} tidak bisa dibaca sebagai angka: {teks!r}")
     if "," in s and "." in s:
@@ -71,6 +77,19 @@ def bulat(x):
     if isinstance(x, Fraction):
         x = Decimal(x.numerator) / Decimal(x.denominator)
     return int(Decimal(x).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
+
+def ppn_bawah(dpp, efektif):
+    """PPN = DPP x tarif efektif, dihitung persis lalu DIBULATKAN KE BAWAH sekali (standar library)."""
+    return math.floor(Fraction(dpp) * efektif)
+
+
+def dpp_dari_termasuk_ppn(harga, efektif):
+    """DPP = rupiah bulat terbesar sehingga DPP + PPN(DPP) <= harga termasuk PPN."""
+    dpp = math.floor(Fraction(harga) / (1 + efektif)) + 2
+    while dpp > 0 and dpp + ppn_bawah(dpp, efektif) > harga:
+        dpp -= 1
+    return dpp
 
 
 def rupiah(n):
@@ -156,6 +175,12 @@ def item_dari_csv(path):
             baris = list(csv.DictReader(f, dialect=dialek))
     except OSError as e:
         raise InputSalah(f"file item tidak bisa dibuka: {e}")
+    if baris:
+        kolom = {str(x).strip().lower() for x in baris[0].keys() if x}
+        kurang = [c for c in ("nama", "qty", "harga") if c not in kolom]
+        if kurang:
+            raise InputSalah(f"kolom {', '.join(repr(c) for c in kurang)} tidak ditemukan di file. "
+                             "Kolom yang dibutuhkan: nama, qty, satuan, harga, diskon (opsional)")
     hasil = []
     for b in baris:
         k = {str(kunci).strip().lower(): (v or "").strip() for kunci, v in b.items() if kunci}
@@ -217,26 +242,46 @@ def hitung(args):
     efektif = tarif * rasio  # 12% x 11/12 = 11%
 
     catatan = []
+    asumsi = []
     if args.ppn == "tidak":
         dpp, dpp_nilai_lain, ppn, total = dasar, 0, 0, dasar
         catatan.append("Tanpa PPN (penjual bukan PKP / tidak memungut PPN).")
     elif args.harga_termasuk_ppn:
-        dpp = bulat(Fraction(dasar) / (1 + efektif))
-        ppn = dasar - dpp
-        total = dasar
+        # PPN dikeluarkan HANYA dari harga item; ongkir dianggap nilai bersih (belum termasuk PPN).
+        dpp_item = dpp_dari_termasuk_ppn(setelah_diskon, efektif)
+        ppn_item = ppn_bawah(dpp_item, efektif)
+        selisih = setelah_diskon - dpp_item - ppn_item
+        dpp = dpp_item + ongkir
+        ppn = ppn_bawah(dpp, efektif)
+        total = dpp + ppn
         dpp_nilai_lain = bulat(Fraction(dpp) * rasio)
-        catatan.append("Harga yang dimasukkan sudah termasuk PPN; DPP dihitung mundur = harga / (1 + tarif efektif).")
+        catatan.append("Harga item sudah termasuk PPN; DPP item = rupiah bulat terbesar dengan DPP + PPN <= harga item. "
+                       "Ongkir dianggap belum termasuk PPN, sehingga PPN ongkir ditambahkan.")
+        if selisih:
+            catatan.append(f"Selisih pembulatan harga item termasuk PPN: {rupiah(selisih)} (harga item {rupiah(setelah_diskon)} "
+                           f"= DPP {rupiah(dpp_item)} + PPN {rupiah(ppn_item)} + selisih).")
     else:
         dpp = dasar
         dpp_nilai_lain = bulat(Fraction(dpp) * rasio)
-        ppn = bulat(Fraction(dpp) * efektif)
+        ppn = ppn_bawah(dpp, efektif)
         total = dpp + ppn
     if args.ppn == "pkp":
         catatan.append("PPN barang/jasa non-mewah: 12% x DPP nilai lain (11/12 x harga jual) = efektif 11% (PMK 131/2024).")
     elif args.ppn == "mewah":
         catatan.append("PPN barang mewah: 12% x harga jual penuh (PPnBM, jika ada, belum dihitung).")
-    catatan.append("Pembulatan: setiap nilai rupiah dibulatkan ke rupiah penuh terdekat (0,5 ke atas). "
-                   "PPN dihitung dari nilai tepat lalu dibulatkan sekali; faktur pajak resmi di Coretax bisa selisih Rp 1.")
+    if ongkir and args.ppn != "tidak":
+        asumsi.append(f"Ongkos kirim/biaya pasang {rupiah(ongkir)} ditagih penjual sehingga ikut DPP dan dikenai PPN. "
+                      "Jika ongkir hanya titipan/penggantian biaya kurir yang ditagih terpisah, hitung ulang tanpa --ongkir "
+                      "dan tulis di syarat pengiriman.")
+    nol = [i["nama"] for i in items if i["harga_satuan"] == 0]
+    if nol:
+        asumsi.append("Item berharga Rp 0 (bonus/gratis?): " + ", ".join(nol) + " — konfirmasi ke pengguna.")
+    if args.ppn != "tidak":
+        catatan.append("Pembulatan: total baris & diskon dibulatkan ke rupiah terdekat (0,5 ke atas); PPN dihitung persis "
+                       "dari DPP lalu DIBULATKAN KE BAWAH sekali (tidak memungut melebihi tarif). Pembulatan ini belum "
+                       "dicocokkan dengan Coretax; faktur pajak resmi bisa berbeda Rp 1.")
+    else:
+        catatan.append("Pembulatan: setiap nilai rupiah dibulatkan ke rupiah penuh terdekat (0,5 ke atas).")
 
     tgl = datetime.strptime(args.tanggal, "%Y-%m-%d").date() if args.tanggal else date.today()
     if args.berlaku_hari < 1:
@@ -267,6 +312,7 @@ def hitung(args):
         "total": total,
         "terbilang": terbilang(total),
         "catatan": catatan,
+        "asumsi_wajib_disebut": asumsi,
     }
 
 
@@ -298,6 +344,8 @@ def teks_rapi(h):
     baris.append(f"TOTAL                    : {rupiah(h['total'])}")
     baris.append(f"Terbilang                : {h['terbilang']}")
     baris.append("")
+    for a in h["asumsi_wajib_disebut"]:
+        baris.append(f"ASUMSI (sebutkan ke pengguna): {a}")
     for c in h["catatan"]:
         baris.append(f"* {c}")
     return "\n".join(baris)

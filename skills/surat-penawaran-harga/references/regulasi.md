@@ -14,13 +14,18 @@
 | Barang **mewah** (kena PPnBM) | PPN = 12% × harga jual | 12% (PPnBM dihitung terpisah) |
 | Barang/jasa yang punya DPP nilai lain / besaran tertentu tersendiri | Ikuti aturan khususnya | — (di luar cakupan skill) |
 
-Harga sudah termasuk PPN (non-mewah): DPP = harga ÷ 1,11; PPN = harga − DPP.
+Harga sudah termasuk PPN (non-mewah): DPP = rupiah bulat terbesar sehingga DPP + PPN ≤ harga (≈ harga ÷ 1,11); sisa Rp 0–1 ditampilkan sebagai selisih pembulatan.
+
+**Pembulatan (standar library Komunitech):** PPN dihitung persis dari DPP lalu dibulatkan **ke bawah** sekali (tidak memungut melebihi tarif); nominal lain ke rupiah terdekat. Belum dicocokkan dengan Coretax — faktur resmi bisa berbeda Rp 1.
 
 ## Faktur pajak
 - Faktur pajak dibuat PKP melalui Coretax / e-Faktur Desktop / H2H (KEP-54/PJ/2025). SPH **bukan** faktur pajak.
 
 ## Bea meterai
-- SPH pada umumnya bukan dokumen yang wajib bermeterai. Meterai Rp10.000 wajib untuk surat perjanjian, dan untuk dokumen penerimaan uang/pengakuan utang bernilai > Rp5.000.000 (UU 10/2020). Jika SPH ditandatangani bersama sebagai kesepakatan (menjadi perjanjian), sarankan pengguna memakai meterai / skill `perjanjian-sederhana`.
+- SPH pada umumnya bukan dokumen yang wajib bermeterai.
+- Bea meterai Rp10.000 (UU 10/2020 Pasal 3): **surat perjanjian/pernyataan** dikenai meterai **berapa pun nilainya**; ambang **> Rp5.000.000** hanya berlaku untuk dokumen yang menyebut **penerimaan uang** atau pernyataan bahwa utang **telah dilunasi** (mis. kuitansi/tanda terima pelunasan).
+- Jika SPH ditandatangani kedua pihak sebagai kesepakatan (menjadi perjanjian), sarankan pengguna memakai meterai / skill `perjanjian-sederhana`.
+- Dicek per 2026-09-23. Sumber ringkasan: https://www.online-pajak.com/pajak/materai-10000/ *(teks resmi UU 10/2020 Pasal 3 belum dibaca langsung — perlu review)*
 
 ## Sumber
 - https://www.pajak.go.id/en/node/113453

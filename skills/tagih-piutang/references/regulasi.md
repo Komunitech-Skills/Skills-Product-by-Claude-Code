@@ -19,7 +19,9 @@
 - Sumber: https://www.hukumonline.com/klinik/a/bunyi-pasal-27b-uu-ite-2024-tentang-ancaman-kekerasan-dan-pencemaran-lt668b79586ccd5/ ; https://jdih.komdigi.go.id/index.php/produk_hukum/view/id/884/t/undangundang+nomor+1+tahun+2024 ; https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-data-pribadi-lt5d588c1cc649e/
 
 ## 3. Kesepakatan cicilan & bea meterai (UU 10/2020)
-- Surat perjanjian (termasuk kesepakatan cicilan) dan dokumen pengakuan utang bernilai **> Rp5.000.000** dikenai bea meterai **Rp10.000** (meterai tempel atau e-meterai).
+- **Surat perjanjian/pernyataan** — termasuk kesepakatan cicilan dan surat pengakuan utang — dikenai bea meterai **Rp10.000 berapa pun nilainya** (meterai tempel atau e-meterai).
+- Ambang **> Rp5.000.000** hanya berlaku untuk dokumen yang menyebut **penerimaan uang** atau pernyataan bahwa utang **telah dilunasi** (mis. kuitansi/tanda terima pembayaran/pelunasan).
+- Dicek per 2026-09-23 dari ringkasan sekunder *(teks resmi UU 10/2020 Pasal 3 ayat (1)–(2) perlu review)*.
 - Sumber: https://www.online-pajak.com/pajak/materai-10000/
 
 ## 4. Jalur lanjutan (sebut umum saja di surat)

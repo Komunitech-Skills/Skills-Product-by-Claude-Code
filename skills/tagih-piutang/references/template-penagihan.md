@@ -65,7 +65,7 @@ Kirim lewat email + surat tercatat/kurir dengan tanda terima; simpan bukti. Tegu
 | Debitur bilang | Balasan inti |
 |---|---|
 | "Minggu depan ya" | "Baik, [Pak/Bu], kami catat pembayaran pada [tanggal pasti]. Mohon kirim bukti transfer setelahnya. Terima kasih." (Minta tanggal, bukan "minggu depan".) |
-| "Belum ada dana, bisa dicicil?" | Tawarkan jadwal tertulis: jumlah per termin + tanggal; > Rp5 juta sarankan surat kesepakatan bermeterai. |
+| "Belum ada dana, bisa dicicil?" | Tawarkan jadwal tertulis: jumlah per termin + tanggal, dituangkan dalam surat kesepakatan cicilan bermeterai Rp10.000 (berapa pun nilainya). Kuitansi tiap pembayaran > Rp5 juta juga bermeterai. |
 | "Barangnya ada yang cacat" | Hentikan eskalasi, minta detail/bukti, lakukan rekonsiliasi dulu. |
 | "Sudah transfer" | Minta bukti, cek mutasi, lalu kirim konfirmasi terima kasih. |
 | Tidak ada respons | Lanjut tahap berikutnya sesuai jadwal. |

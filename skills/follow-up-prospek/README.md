@@ -5,7 +5,7 @@
 ## Manfaat
 - ✅ Urutan pesan WhatsApp dan email hari ke-1, 3, 7, dan 14 yang sudah siap salin-kirim
 - ✅ Beda situasi, beda pesan: setelah kirim penawaran, setelah demo, setelah dijawab "nanti dulu", atau setelah tanya harga lalu hilang
-- ✅ Tanggal kirim dihitung otomatis dan digeser dari akhir pekan atau hari libur
+- ✅ Tanggal kirim dihitung otomatis, digeser dari akhir pekan atau hari libur tanpa membuat pesan menumpuk
 - ✅ Setiap pesan membawa alasan baru untuk membalas, bukan sekadar "gimana, Kak?"
 - ✅ Dilengkapi cara menjawab keberatan umum seperti "mahal" atau "tanya atasan dulu"
 
@@ -18,7 +18,7 @@
 **Sebelum:** Ragu mau follow-up karena takut dianggap mengganggu, akhirnya prospek dibiarkan dan hilang.
 
 **Sesudah (cukup ketik):** "Penawaran laundry seragam ke Pak Made Hotel Taman Sari tanggal 23 September belum dibalas, bikinin follow-up"
-→ Jadwal 24 Sep, 28 Sep, 30 Sep, 7 Okt beserta 4 pesan WA: cek diterima, gambaran layanan, tawaran uji coba 1 minggu, dan pesan pamit yang sopan.
+→ Jadwal 24 Sep, 28 Sep, 2 Okt, 9 Okt (jarak antar-pesan tetap terjaga) beserta 4 pesan WA: cek diterima, gambaran layanan, tawaran uji coba 1 minggu, dan pesan pamit yang sopan.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:

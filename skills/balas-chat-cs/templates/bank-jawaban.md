@@ -42,6 +42,12 @@ Nada: [santai-akrab / ramah-sopan / formal] · Sapaan: [Kak] · Tanda tangan: [A
 ## 8. Komplain (pakai alur E-S-T, lihat references/alur-komplain.md)
 **[8.1] Barang rusak** · **[8.2] Telat** · **[8.3] Salah kirim** · **[8.4] Kurang item** · **[8.5] Tidak sesuai foto**
 
+## 8b. Izin edar & klaim produk (HANYA bila benar ada — jangan dikarang)
+**[8b.1] Nomor izin** — "Produk kami terdaftar dengan nomor [BPOM NA/MD/ML ... / P-IRT ...]. Kakak bisa cek di situs resmi [BPOM: cekbpom.pom.go.id]."
+**[8b.2] Halal** — Isi hanya bila ada sertifikat halal: "Produk kami bersertifikat halal nomor [..]." Jika belum ada: "Mohon maaf, produk ini belum bersertifikat halal." 
+**[8b.3] Klaim manfaat** — Jawab sesuai label/izin produk saja; hindari janji hasil ("pasti putih", "menyembuhkan").
+**[8b.4] Kedaluwarsa** — "Tanggal kedaluwarsa tertera di [lokasi kemasan]. Stok yang kami kirim umumnya kedaluwarsa [isi, mis. ≥ 6 bulan lagi]."
+
 ## 9. Penutup
 **[9.1] Terima kasih** — "Terima kasih sudah belanja di [Toko], Kak! Kalau ada kendala, chat kami kapan saja 😊"
 **[9.2] Minta ulasan (tanpa imbalan)** — "Jika berkenan, ulasan jujur Kakak sangat membantu kami berkembang 🙏"

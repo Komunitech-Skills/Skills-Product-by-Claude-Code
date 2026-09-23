@@ -10,7 +10,7 @@ Mode 1 – satu tagihan:
       --dasar-denda "Pasal 4 Perjanjian Pasok No. 07/PKS/2026"
 
 Mode 2 – banyak tagihan (rekap umur piutang) dari CSV berkolom:
-  pelanggan,no_invoice,nominal,jatuh_tempo[,dibayar]
+  pelanggan,no_invoice,nominal,jatuh_tempo[,dibayar][,sudah_diingatkan]
   python3 hitung_telat.py --file piutang.csv --tanggal 2026-09-23
 
 Aturan hitung:
@@ -41,6 +41,7 @@ def parse_angka(teks, nama="angka"):
     if teks is None or str(teks).strip() == "":
         raise InputSalah(f"{nama} kosong")
     s = str(teks).strip().lower().replace(" ", "")
+    s = re.sub(r"[.,]-$", "", s)  # "Rp 25.000,-"
     pengali = Decimal(1)
     for akhiran, kali in (("juta", 10**6), ("jt", 10**6), ("ribu", 10**3), ("rb", 10**3), ("k", 10**3)):
         if s.endswith(akhiran):
@@ -48,6 +49,8 @@ def parse_angka(teks, nama="angka"):
             pengali = Decimal(kali)
             break
     s = s.replace("rp", "").replace("idr", "")
+    if pengali != 1 and re.fullmatch(r"\d{1,3}(\.\d{3})+", s):
+        raise InputSalah(f"{nama} ambigu: {teks!r}. Tulis tanpa titik (mis. 1500rb) atau pakai koma desimal (mis. 1,5jt)")
     if not re.fullmatch(r"-?[\d.,]+", s or "x"):
         raise InputSalah(f"{nama} tidak bisa dibaca sebagai angka: {teks!r}")
     if "," in s and "." in s:
@@ -102,6 +105,19 @@ def tahap(hari):
     return 6, f"Tahap 6 – lewat {hari} hari (surat teguran resmi/somasi)"
 
 
+def sesuaikan_riwayat(kode, label, hari, sudah_diingatkan):
+    """Jangan langsung somasi bila belum pernah diingatkan. Kembalikan (kode, label, pesan_pembatasan|None)."""
+    if sudah_diingatkan < 0:
+        raise InputSalah("jumlah pengingat yang sudah dikirim tidak boleh negatif")
+    maks = {0: 5 if hari >= 30 else 4, 1: 5}.get(sudah_diingatkan, 6)
+    if kode <= maks:
+        return kode, label, None
+    nama = {4: f"Tahap 4 – lewat {hari} hari, belum pernah diingatkan (pengingat tegas + minta tanggal bayar)",
+            5: f"Tahap 5 – lewat {hari} hari, pengingat sebelumnya {sudah_diingatkan}x (pemberitahuan resmi + tawaran solusi/cicilan)"}
+    return maks, nama[maks], (f"Menurut umur piutang seharusnya {label.split(' (')[0]}, tetapi baru {sudah_diingatkan} pengingat "
+                              f"terkirim. Mulai dari tahap {maks}; naikkan satu tahap bila 7 hari tanpa respons.")
+
+
 def ember_umur(hari):
     if hari <= 0:
         return "Belum jatuh tempo"
@@ -112,6 +128,24 @@ def ember_umur(hari):
     if hari <= 90:
         return "61–90 hari"
     return "> 90 hari"
+
+
+def baca_denda_maks(teks, sisa):
+    """'5%' -> 5% dari sisa pokok; 'Rp 500.000' / '500rb' / '500000' -> nominal. Tolak yang kemungkinan salah ketik."""
+    t = str(teks).strip()
+    if t.endswith("%"):
+        p = parse_angka(t[:-1], "batas denda")
+        if p <= 0 or p > 100:
+            raise InputSalah("batas denda dalam persen harus di atas 0 dan maksimal 100%")
+        return Decimal(sisa) * p / 100
+    n = parse_angka(t, "batas denda")
+    ada_satuan = bool(re.search(r"(?i)rp|idr|rb|ribu|jt|juta|k$", t))
+    if n <= 100 and not ada_satuan:
+        raise InputSalah(f"batas denda {t!r} ambigu: maksud Anda {t}% atau Rp {t}? Tulis dengan '%' atau 'Rp'.")
+    if n < 1000:
+        raise InputSalah(f"batas denda {t!r} kurang dari Rp 1.000 — kemungkinan salah ketik. "
+                         "Tulis sebagai persen (mis. 5%) atau nominal lengkap (mis. Rp 500.000).")
+    return n
 
 
 def hitung_denda(sisa, hari_denda, a):
@@ -131,6 +165,11 @@ def hitung_denda(sisa, hari_denda, a):
         p = parse_angka(str(a.denda_persen).rstrip("%"), "persen denda")
         if p < 0 or p > 100:
             raise InputSalah("persen denda harus 0–100")
+        harian = p if a.denda_per == "hari" else p / 30
+        if harian > 1 and not a.konfirmasi_denda_tinggi:
+            raise InputSalah(f"denda {format(p.normalize(), 'f').replace('.', ',')}% per {a.denda_per} sangat tinggi "
+                             f"(setara > 1% per hari). Kemungkinan salah ketik (mis. 0,100 dibaca 0,1 atau 100?). "
+                             "Cek angka di perjanjian; jika memang benar, ulangi dengan --konfirmasi-denda-tinggi.")
         if a.denda_per == "hari":
             periode = Decimal(hari_denda)
             satuan = f"{hari_denda} hari"
@@ -140,9 +179,7 @@ def hitung_denda(sisa, hari_denda, a):
         denda = Decimal(sisa) * p / 100 * periode
         rumus = f"{rupiah(sisa)} x {format(p.normalize(), 'f').replace('.', ',')}% x {satuan}"
     if a.denda_maks:
-        t = str(a.denda_maks).strip()
-        maks = Decimal(sisa) * parse_angka(t[:-1], "batas denda") / 100 if t.endswith("%") \
-            else parse_angka(t, "batas denda")
+        maks = baca_denda_maks(a.denda_maks, sisa)
         if denda > maks:
             denda = maks
             rumus += f" → dibatasi maksimal {rupiah(bulat(maks))}"
@@ -166,13 +203,19 @@ def satu(a, tgl):
     hari_denda = max(0, hari - a.tenggang)
     denda, rumus = hitung_denda(sisa, hari_denda, a)
     kode, label = tahap(hari)
+    kode, label, dibatasi = sesuaikan_riwayat(kode, label, hari, a.sudah_diingatkan)
     peringatan = []
+    if dibatasi:
+        peringatan.append(dibatasi)
     if sisa == 0:
         label, kode = "Lunas – kirim ucapan terima kasih, tidak perlu penagihan", -1
     if (a.denda_persen or a.denda_tetap) and not a.dasar_denda:
         peringatan.append("Denda HANYA boleh ditagih jika sudah disepakati tertulis (kontrak/invoice/PO yang disetujui). "
                           "Isi --dasar-denda; jika tidak ada kesepakatan, jangan cantumkan denda di pesan.")
-    if hari >= 30 and sisa >= 5_000_000:
+    if denda and denda > sisa:
+        peringatan.append("Denda melebihi sisa pokok. Periksa kembali persen & batas denda di perjanjian; "
+                          "denda yang berlebihan berisiko dipersoalkan/dikurangi hakim.")
+    if kode == 6 and sisa >= 5_000_000:
         peringatan.append("Nilai besar & lewat 30 hari: pertimbangkan surat teguran resmi dan konsultasi ke advokat "
                           "bila tidak ada respons.")
     return {
@@ -180,6 +223,7 @@ def satu(a, tgl):
         "jatuh_tempo": jt.isoformat(), "jatuh_tempo_teks": tgl_id(jt),
         "tanggal_hitung": tgl.isoformat(), "tanggal_hitung_teks": tgl_id(tgl),
         "hari_terlambat": hari, "masa_tenggang_hari": a.tenggang, "hari_kena_denda": hari_denda,
+        "sudah_diingatkan": a.sudah_diingatkan,
         "tahap_kode": kode, "tahap": label,
         "denda": denda, "rumus_denda": rumus, "dasar_denda": a.dasar_denda,
         "total_ditagih": sisa + denda,
@@ -215,6 +259,10 @@ def banyak(a, tgl):
         try:
             nominal = bulat(parse_angka(k["nominal"], "nominal"))
             dibayar = bulat(parse_angka(k["dibayar"], "dibayar")) if k.get("dibayar") else 0
+            ingat_teks = k.get("sudah_diingatkan", "")
+            if ingat_teks and not ingat_teks.isdigit():
+                raise InputSalah(f"sudah_diingatkan harus angka bulat: {ingat_teks!r}")
+            ingat = int(ingat_teks) if ingat_teks else 0
             jt = parse_tgl(k["jatuh_tempo"], "jatuh_tempo")
             if nominal <= 0 or dibayar < 0 or dibayar > nominal:
                 raise InputSalah("nominal/dibayar tidak masuk akal")
@@ -226,6 +274,7 @@ def banyak(a, tgl):
         if sisa == 0:
             continue
         kode, label = tahap(hari)
+        kode, label, _ = sesuaikan_riwayat(kode, label, hari, ingat)
         daftar.append({"pelanggan": k["pelanggan"], "no_invoice": k.get("no_invoice", ""), "sisa": sisa,
                        "jatuh_tempo": jt.isoformat(), "hari_terlambat": hari, "umur": ember_umur(hari),
                        "tahap_kode": kode, "tahap": label})
@@ -290,8 +339,12 @@ def main():
     p.add_argument("--proporsional", action="store_true", help="Denda bulanan dihitung proporsional per hari")
     p.add_argument("--denda-tetap", help="Denda tetap sekali bayar, mis. 'Rp 100.000'")
     p.add_argument("--denda-maks", help="Batas maksimal denda: '5%%' dari sisa pokok atau 'Rp 500.000'")
+    p.add_argument("--sudah-diingatkan", type=int, default=0,
+                   help="Jumlah pengingat yang SUDAH dikirim untuk tagihan ini (default 0 = belum pernah)")
+    p.add_argument("--konfirmasi-denda-tinggi", action="store_true",
+                   help="Konfirmasi bahwa denda > 1%%/hari memang sesuai perjanjian")
     p.add_argument("--dasar-denda", help="Rujukan kesepakatan tertulis, mis. 'Pasal 4 Perjanjian No. ...'")
-    p.add_argument("--file", help="CSV banyak tagihan: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar")
+    p.add_argument("--file", help="CSV banyak tagihan: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar,sudah_diingatkan")
     p.add_argument("--format", choices=["teks", "json", "keduanya"], default="keduanya")
     a = p.parse_args()
     try:

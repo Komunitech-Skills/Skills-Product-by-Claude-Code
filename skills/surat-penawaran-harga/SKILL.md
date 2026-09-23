@@ -17,6 +17,7 @@ Menghasilkan SPH yang rapi, benar hitungannya, dan siap dikirim (dokumen + teks 
 - Tagihan setelah barang dikirim/jasa selesai → skill `buat-invoice`.
 - Menawarkan kemitraan/sponsorship/konsinyasi (bukan jual-beli item) → `proposal-kerjasama`.
 - Hitung PPN saja tanpa surat → `hitung-ppn`. Menentukan harga jual dari modal → `hitung-hpp` / `harga-jual-marketplace`.
+- Jika skill rujukan di atas tidak terpasang, jelaskan singkat bedanya dan tawarkan draf sederhana tanpa mengubah SPH menjadi invoice/faktur.
 - Mengikuti tender/LPSE pemerintah dengan format baku dokumen pengadaan: skill ini boleh dipakai untuk draf rincian harga, tapi ingatkan pengguna mengikuti format & ketentuan dokumen tender.
 
 ## Input
@@ -45,6 +46,7 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - PKP, barang/jasa biasa → `--ppn pkp` (12% × DPP nilai lain 11/12 = efektif 11%).
    - PKP, barang mewah kena PPnBM → `--ppn mewah` (12% × harga penuh; PPnBM tidak dihitung skill ini, sarankan konsultan pajak).
    - Ragu apakah PKP → tanyakan. Jika tetap tidak tahu, pakai `tidak` dan beri catatan.
+   - **Ongkir/biaya pasang yang ditagih penjual ikut DPP dan dikenai PPN** (jika PKP). Selalu sebutkan ini di blok "Asumsi". Jika ongkir hanya titipan/penggantian biaya kurir yang ditagih terpisah (mis. pembeli membayar kurir langsung, atau reimburse sesuai resi), **jangan pakai `--ongkir`**; tulis di syarat pengiriman "Ongkos kirim ditanggung pembeli sesuai tarif ekspedisi".
 3. **Hitung dengan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/hitung_sph.py \
@@ -55,7 +57,8 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    ```
    - Format item: `Nama|qty|satuan|harga|diskon` (diskon opsional, `10%` atau `Rp 50.000` untuk baris itu). Jangan pakai tanda `|` di nama item.
    - Banyak item: simpan CSV berkolom `nama,qty,satuan,harga,diskon` lalu `--file items.csv`.
-   - Harga sudah termasuk PPN: tambahkan `--harga-termasuk-ppn`.
+   - Harga item sudah termasuk PPN: tambahkan `--harga-termasuk-ppn`. PPN hanya dikeluarkan dari harga item; ongkir dianggap nilai bersih (belum termasuk PPN) sehingga PPN ongkir ditambahkan. Jika ongkir juga sudah termasuk PPN, masukkan ongkir sebagai item (`Ongkos kirim|1|paket|...`).
+   - Semua baris `ASUMSI (sebutkan ke pengguna)` dari script **wajib** disalin ke blok "Asumsi yang dipakai".
    - `--format json` bila hanya butuh angka. Script keluar dengan kode ≠ 0 dan pesan `ERROR:` bila input salah; perbaiki lalu jalankan ulang, jangan menebak angka.
 4. **Susun surat** memakai angka dari output script apa adanya (lihat Format output). Kerangka lengkap & variasi kalimat pembuka ada di `references/kerangka-sph.md`.
 5. **Buat versi WhatsApp** (ringkas, tanpa tabel, ≤ 15 baris) untuk dikirim bersama PDF-nya.
@@ -66,8 +69,8 @@ Hitung manual langkah demi langkah dan tulis perhitungannya, lalu beri tahu peng
 1. Jumlah baris = qty × harga satuan − diskon baris (dibulatkan ke rupiah terdekat).
 2. Subtotal = Σ jumlah baris. Setelah diskon = subtotal − diskon total.
 3. DPP = setelah diskon + ongkir.
-4. PPN: bukan PKP = 0; PKP non-mewah = DPP × 11/12 × 12% (= DPP × 11%); mewah = DPP × 12%. Bulatkan sekali ke rupiah terdekat.
-5. Total = DPP + PPN. Jika harga sudah termasuk PPN (non-mewah): DPP = total ÷ 1,11; PPN = total − DPP.
+4. PPN: bukan PKP = 0; PKP non-mewah = DPP × 11/12 × 12% (= DPP × 11%); mewah = DPP × 12%. Hitung persis lalu **bulatkan ke bawah** sekali (buang pecahan rupiah).
+5. Total = DPP + PPN. Jika harga item sudah termasuk PPN (non-mewah): DPP item = rupiah bulat terbesar sehingga DPP + PPN (ke bawah) ≤ harga item setelah diskon (mulai dari harga ÷ 1,11 lalu cek); sisa Rp 0–1 ditampilkan sebagai selisih pembulatan; ongkir tetap ditambah PPN 11% di atasnya.
 
 ## Format output
 Berikan **dua bagian**: (A) surat lengkap dalam markdown, (B) teks WhatsApp.
@@ -145,7 +148,7 @@ Total: *Rp 23.781.750* (sudah termasuk PPN & ongkir Semarang)
 Berlaku s.d. 7 Oktober 2026. DP 50% saat PO, pelunasan sebelum kirim.
 Surat penawaran resmi terlampir ya, Bu. Jika jumlahnya ingin disesuaikan, kabari saja.
 ```
-Asumsi: pembayaran DP 50%, pengiriman 5 hari kerja (tidak disebutkan pengguna).
+Asumsi: ongkir Rp 300.000 ditagih penjual sehingga ikut DPP & dikenai PPN (jika ongkir hanya titipan biaya kurir, hitung ulang tanpa `--ongkir`); pembayaran DP 50%, pengiriman 5 hari kerja (tidak disebutkan pengguna).
 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua angka berasal dari output script (atau hitung manual yang ditulis lengkap + peringatan).
@@ -154,10 +157,12 @@ Asumsi: pembayaran DP 50%, pengiriman 5 hari kerja (tidak disebutkan pengguna).
 - [ ] Nomor surat, tanggal, masa berlaku, perihal, penerima terisi (atau `[isi ...]` yang jelas).
 - [ ] Syarat pembayaran & pengiriman ada; rekening tidak dikarang.
 - [ ] Tidak ada klaim yang tidak diberikan pengguna (garansi, SNI, TKDN, "termurah").
+- [ ] Jika ongkir dipakai dan penjual PKP, asumsi "ongkir ikut DPP & kena PPN" tertulis. Jika ongkir gratis, tulis "Ongkos kirim: Gratis" atau "Harga franco [alamat]" di syarat.
 - [ ] Asumsi ditulis jika memakai default.
 
 ## Batasan & penanganan error
-- Skill tidak menerbitkan faktur pajak; faktur resmi dibuat PKP lewat Coretax. Nilai PPN di SPH bisa selisih Rp 1 karena pembulatan.
+- Skill tidak menerbitkan faktur pajak; faktur resmi dibuat PKP lewat Coretax. Standar pembulatan library: total baris & diskon ke rupiah terdekat, PPN dihitung persis lalu **dibulatkan ke bawah** sekali (sama dengan skill `hitung-ppn` & `buat-invoice`). Pembulatan ini **belum dicocokkan dengan Coretax**, jadi faktur resmi bisa berbeda Rp 1.
+- Uji regresi script: `python3 scripts/test_hitung_sph.py` (opsional).
 - Tidak menghitung PPnBM, PPh 22/23, atau DPP khusus (mis. jasa/barang yang punya DPP nilai lain tersendiri). Jika pengguna menyebut hal itu, beri tahu dan sarankan konsultan pajak.
 - Harga satuan tidak bulat (mis. Rp 33.333,33): script menghitung jumlah dari nilai tepat, sedangkan harga satuan ditampilkan dibulatkan; beri tahu pengguna bila terlihat selisih.
 - Mata uang selain Rupiah: jelaskan bahwa skill ini untuk Rupiah; minta pengguna mengonversi sendiri dengan kurs yang disepakati.

@@ -19,6 +19,7 @@ Membuat admin toko bisa membalas chat pelanggan dengan cepat, ramah, konsisten, 
 - Menagih pembayaran yang sudah lewat tempo → `tagih-piutang`.
 - Mengejar calon pembeli yang tidak membalas → `follow-up-prospek`.
 - Kirim promo massal → `broadcast-wa`.
+- Jika skill rujukan di atas tidak terpasang, beri satu draf netral singkat dan jelaskan perbedaannya.
 - Sengketa hukum, ancaman lapor polisi/BPSK, atau klaim cedera/kesehatan akibat produk: tulis balasan penenang yang netral saja, lalu sarankan pemilik usaha menangani langsung / berkonsultasi dengan ahli hukum.
 
 ## Input
@@ -29,6 +30,7 @@ Membuat admin toko bisa membalas chat pelanggan dengan cepat, ramah, konsisten, 
 | Info toko relevan: produk, harga, stok, jam operasional, ekspedisi, cara bayar, kebijakan retur/garansi | Tidak* | Tulis `[isi ...]`; **jangan** mengarang |
 | Nada brand: santai-akrab / ramah-sopan / formal | Tidak | Ramah-sopan, sapaan "Kak" |
 | Nama admin/brand untuk tanda tangan | Tidak | `Admin [Nama Toko]` |
+| Jam operasional admin/gudang | Tidak | `[isi jam kerja]`; janji waktu tindak lanjut harus jatuh di jam kerja |
 | Solusi yang boleh ditawarkan (retur, tukar, refund, voucher, kirim ulang) | Tidak* | Tanyakan untuk komplain; jika tidak ada jawaban, tawarkan "cek dulu" tanpa menjanjikan |
 
 \*Wajib bila jawabannya bergantung pada fakta toko (stok, ongkir, kebijakan). Jika kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor), atau buat balasan dengan `[isi ...]` bila pengguna ingin cepat.
@@ -39,7 +41,7 @@ Membuat admin toko bisa membalas chat pelanggan dengan cepat, ramah, konsisten, 
 3. **Komplain** → pakai alur **E-S-T** (detail & contoh per kasus di `references/alur-komplain.md`):
    - **Empati**: akui perasaan & minta maaf atas ketidaknyamanan (tanpa menyalahkan pelanggan/kurir secara berlebihan).
    - **Solusi**: minta data minimum yang dibutuhkan (nomor pesanan, foto/video unboxing), jelaskan pilihan solusi yang **diizinkan pengguna** dan batas waktunya.
-   - **Tindak lanjut**: kapan admin akan mengabari lagi, lalu tepati. Tawarkan ringkasan tindakan untuk pengguna (apa yang harus dicek di gudang/ekspedisi).
+   - **Tindak lanjut**: kapan admin akan mengabari lagi (dalam jam operasional toko), lalu tepati. Tawarkan ringkasan tindakan untuk pengguna (apa yang harus dicek di gudang/ekspedisi).
 4. **Sesuaikan nada brand** (lihat tabel di `references/nada-brand.md`) dan saluran:
    - WA: boleh 1–2 emoji, paragraf pendek, bisa lebih personal.
    - Marketplace: lebih ringkas; arahkan proses (retur/komplain/pengembalian dana) lewat fitur resmi platform; **jangan** mengajak transaksi atau pindah chat ke luar platform (umumnya dilarang aturan marketplace — cek Seller Center).
@@ -94,6 +96,7 @@ Supaya keburu untuk Sabtu, dusty pink pengganti bisa kami kirim lebih dulu hari 
 
 ## Checklist sebelum mengirim hasil
 - [ ] Pertanyaan pelanggan terjawab di kalimat pertama/kedua.
+- [ ] Tidak meminta pelanggan mengulang info yang sudah ia berikan di chat (nomor pesanan, alamat, foto).
 - [ ] Komplain memakai urutan empati → solusi → tindak lanjut dengan waktu yang jelas.
 - [ ] Tidak ada fakta karangan: stok, harga, ongkir, estimasi tiba, kebijakan retur, biaya admin → dari pengguna atau `[isi ...]`.
 - [ ] Tidak menjanjikan solusi yang belum diizinkan pengguna (refund, voucher, kirim ulang) — tandai "usulan" di catatan admin.
