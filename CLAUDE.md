@@ -16,6 +16,11 @@ Dua jalur produksi:
 - **A. KURASI** — kumpulkan, audit, dan adaptasi skill publik yang lisensinya mengizinkan penggunaan komersial.
 - **B. KREASI** — rancang dan buat skill orisinal untuk kebutuhan yang belum terpenuhi (jalur utama, nilai jual tertinggi).
 
+### Tiga jalur kerja (dikerjakan bergiliran di setiap iterasi)
+1. **SKILL** — kurasi (ATM skill publik terbukti) & kreasi skill orisinal (Tahap 1–8 di bawah).
+2. **PRODUK SIAP PAKAI pengganti SaaS berbayar** — software bisnis yang **jalan di komputer pembeli** (data lokal, tanpa biaya bulanan) dan bisa dioperasikan AI agent: (a) kurasi open-source terbukti untuk kebutuhan besar (akuntansi, CRM, kasir, dll.), (b) alat kecil buatan Komunitech bila open-source tidak cocok. Riset: `research/software-pengganti-saas-*.md`.
+3. **SOLUSI KEBUTUHAN MEMBER VIP** — semua member VIP sudah memakai **OpenClaw**. Solusi dirancang dari kebutuhan nyata mereka (`research/kebutuhan-member-vip-*.md`): paket skill + konfigurasi OpenClaw (jadwal/cron, kanal WhatsApp) + panduan langkah demi langkah. Data member bersifat pribadi: **jangan pernah menyimpan nama/kontak member di repo** — hanya agregat.
+
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
 Bahasa: Bahasa Indonesia sebagai utama; bilingual ID/EN bila relevan.
