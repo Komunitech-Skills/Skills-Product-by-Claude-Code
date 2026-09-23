@@ -44,6 +44,23 @@ TOTAL;;;
 01/08/2026,Hasil jualan,"Rp 3.000.000",
 02/08/2026,Kulakan sembako,,"Rp 1.000.000"
 """,
+    "tempo.csv": """Tanggal,Keterangan,Masuk,Keluar
+01/01/2026,Saldo awal,"Rp 10.000.000",
+05/01/2026,Penjualan tunai,"Rp 2.000.000",
+10/01/2026,Beli mesin jahit,,"Rp 12.000.000"
+10/02/2026,Terima pelunasan piutang Januari,"Rp 1.000.000",
+12/02/2026,Penjualan tunai,"Rp 3.000.000",
+15/02/2026,Bayar bon supplier Januari,,"Rp 500.000"
+20/02/2026,Kasbon Mas Joko,,"Rp 200.000"
+05/03/2026,Penjualan tunai,"Rp 2.000.000",
+10/03/2026,Potong kasbon Mas Joko,"Rp 200.000",
+""",
+    "pb1.csv": """Tanggal,Keterangan,Masuk,Keluar
+01/07/2026,Penjualan makan,"Rp 1.000.000",
+01/07/2026,PB1 dipungut dari pembeli,"Rp 100.000",
+10/07/2026,Setor pajak restoran PB1,,"Rp 100.000"
+11/07/2026,PB1 dipungut dari pembeli,"Rp 50.000",
+""",
     "rugi.csv": """Tanggal,Keterangan,Masuk,Keluar
 01/08/2026,Penjualan,"Rp 1.000.000",
 02/08/2026,Gaji karyawan,,"Rp 1.500.000"
@@ -149,6 +166,65 @@ def main():
             "-" not in d["ringkasan_awam"].split("RUGI")[1].split(".")[0], d["ringkasan_awam"])
         p = jalan([os.path.join(tmp, "rugi.csv")])
         cek("tren tidak tampil untuk 1 bulan", "Tren per periode" not in p.stdout)
+
+        # --- BB1: piutang/utang pemasok per awal periode, kesinambungan bulanan, penyusutan dari harga beli
+        ft = os.path.join(tmp, "tempo.csv")
+        dasar = [ft, "--umur-aset-tahun", "3", "--format", "json"]
+        bulan = [("2026-01-01", "2026-01-31", [], ["--piutang-akhir", "1jt", "--utang-usaha-akhir", "500rb"]),
+                 ("2026-02-01", "2026-02-28", ["--piutang-awal-periode", "1jt", "--utang-usaha-awal-periode", "500rb"],
+                  ["--piutang-akhir", "0", "--utang-usaha-akhir", "0"]),
+                 ("2026-03-01", "2026-03-31", ["--piutang-awal-periode", "0", "--utang-usaha-awal-periode", "0"],
+                  ["--piutang-akhir", "0", "--utang-usaha-akhir", "0"])]
+        harap_laba = [2500000, 2666667, 1666667]
+        modal_lalu, total_laba = None, 0
+        for (pa, pz, awal, akhir), harap in zip(bulan, harap_laba):
+            d = jalan(dasar + ["--periode-awal", pa, "--periode-akhir", pz] + awal + akhir)
+            cek("BB1 laba {} = {}".format(pa[:7], harap), d["laba_rugi"]["laba_bersih"] == harap,
+                d["laba_rugi"]["laba_bersih"])
+            cek("BB1 {} status LENGKAP & seimbang".format(pa[:7]), d["status"].startswith("LENGKAP") and
+                d["posisi_keuangan"]["seimbang"], (d["status"], d["pertanyaan"]))
+            if modal_lalu is not None:
+                cek("BB1 modal akhir bulan lalu = modal awal {}".format(pa[:7]),
+                    d["posisi_keuangan"]["ekuitas"]["modal_awal"] == modal_lalu)
+            modal_lalu = d["posisi_keuangan"]["ekuitas"]["modal_akhir"]
+            total_laba += d["laba_rugi"]["laba_bersih"]
+        d = jalan(dasar + ["--piutang-akhir", "0", "--utang-usaha-akhir", "0"])
+        cek("BB1 jumlah laba bulanan = laba 3 bulan", d["laba_rugi"]["laba_bersih"] == total_laba,
+            (d["laba_rugi"]["laba_bersih"], total_laba))
+        cek("BB1 modal akhir 3 bulan = modal akhir Maret", d["posisi_keuangan"]["ekuitas"]["modal_akhir"] == modal_lalu)
+        d = jalan(dasar + ["--periode-awal", "2026-02-01", "--periode-akhir", "2026-02-28"])
+        cek("BS1 penyusutan Feb dari harga beli = 333.333", d["posisi_keuangan"]["aset"]["penyusutan_periode_ini"] == 333333)
+        cek("BB1 tanpa saldo per awal periode -> ditanyakan", d["status"] == "SEMENTARA" and
+            any("--piutang-awal-periode" in q for q in d["pertanyaan"]) and
+            any("--utang-usaha-awal-periode" in q for q in d["pertanyaan"]))
+        d = jalan(dasar + ["--periode-awal", "2026-03-01", "--saldo-awal-per", "awal-periode", "--kas-awal", "3.300.000",
+                           "--piutang-awal", "0", "--utang-usaha-awal", "0"])
+        cek("awal-periode tetap menggulir kasbon", d["saldo_awal"]["piutang_lain"] == 200000)
+        cek("awal-periode tetap menggulir aset tetap", d["saldo_awal"]["aset_tetap"] == 11666667,
+            d["saldo_awal"]["aset_tetap"])
+        d = jalan([ft, "--piutang-lain-awal", "300rb", "--format", "json"])
+        cek("--piutang-lain-awal dipakai", d["posisi_keuangan"]["aset"]["piutang_lain"] == 300000)
+
+        # --- BS2 kas minus dikonfirmasi
+        fm = os.path.join(tmp, "minus.csv")
+        with open(fm, "w", encoding="utf-8") as fh:
+            fh.write("Tanggal,Keterangan,Masuk,Keluar\n01/08/2026,Kulakan sembako,,\"Rp 1.000.000\"\n"
+                     "03/08/2026,Hasil jualan minggu 1,\"Rp 3.000.000\",\n")
+        d = jalan([fm, "--kas-awal", "0", "--format", "json"])
+        cek("BS2 kas minus -> SEMENTARA", d["status"] == "SEMENTARA")
+        d = jalan([fm, "--kas-awal", "0", "--abaikan-kas-minus", "--format", "json"])
+        cek("BS2 --abaikan-kas-minus -> LENGKAP", d["status"].startswith("LENGKAP") and d["posisi_keuangan"]["seimbang"])
+
+        # --- BS3 PB1 & titipan pajak
+        fp = os.path.join(tmp, "pb1.csv")
+        d = jalan([fp, "--format", "json"])
+        cek("BS3 PB1 ditanyakan", any("PB1" in q for q in d["pertanyaan"]))
+        d = jalan([fp, "--tetapkan", "3=titipan_pajak", "--tetapkan", "4=titipan_pajak", "--tetapkan", "5=titipan_pajak",
+                   "--format", "json"])
+        cek("BS3 titipan: laba hanya dari penjualan", d["laba_rugi"]["laba_bersih"] == 1000000)
+        cek("BS3 titipan: utang pajak daerah 50.000",
+            d["posisi_keuangan"]["liabilitas"]["utang_pajak_daerah_titipan"] == 50000)
+        cek("BS3 --tetapkan menutup pertanyaan PB1", not d["pertanyaan"] and d["posisi_keuangan"]["seimbang"])
 
         # --- file rusak
         kosong = os.path.join(tmp, "kosong.csv")

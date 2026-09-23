@@ -43,6 +43,7 @@ python3 <folder-skill-ini>/scripts/laporan_emkm.py --daftar-kategori
 | `terima_piutang` | masuk | Piutang turun | piutang, pelunasan bon, bayar tempo, tagihan pelanggan |
 | `aset_tetap` | keluar | Aset tetap naik | mesin, etalase, kulkas, oven, laptop, motor, renovasi |
 | `transfer_internal` | dua arah | Pindah dana antar kas/rekening sendiri | setor tunai, tarik tunai, pindah buku |
+| `titipan_pajak` | dua arah | Utang pajak daerah (neraca). Masuk = PB1/PBJT dipungut dari pembeli, keluar = penyetoran. Bukan pendapatan/beban. Hanya lewat `--tetapkan` atau pemetaan. | (tidak otomatis) |
 | `piutang_lain` | dua arah | Kasbon karyawan/piutang lain (aset); keluar = kasbon diberikan, masuk = pelunasan/potong kasbon | kasbon, pinjaman karyawan, potong kasbon |
 
 **Kategori baru:** di file pemetaan boleh membuat kode baru berawalan `beban_` (menjadi beban usaha) atau `pendapatan_` (menjadi pendapatan usaha).
@@ -63,7 +64,7 @@ python3 <folder-skill-ini>/scripts/laporan_emkm.py --daftar-kategori
 
 ## Kasus yang sengaja ditanyakan, bukan ditebak
 - **Angsuran/cicilan pinjaman**: porsi bunga vs pokok (script menanyakan otomatis; jawab dengan `--bunga BARIS=NOMINAL`).
-- **PB1/PBJT**: bila dipungut dari pembeli, itu titipan (bukan beban).
+- **PB1/PBJT**: bila dipungut terpisah dari pembeli, tetapkan `titipan_pajak` untuk pemungutan & penyetorannya; bila sudah termasuk penjualan, tetapkan `beban_pajak_lain`. Pertanyaan tertutup setelah baris itu di-`--tetapkan`.
 - "Transfer", "kirim", "ambil ATM" tanpa keterangan lain.
 - "PPN", "zakat" (usaha atau pribadi?), "arisan", "belanja dapur rumah" (bila tidak jelas pribadi).
 - "Cicilan" motor/HP: script memperlakukannya sebagai pembayaran pinjaman; jika itu barang pribadi → minta pengguna menetapkan `prive`.

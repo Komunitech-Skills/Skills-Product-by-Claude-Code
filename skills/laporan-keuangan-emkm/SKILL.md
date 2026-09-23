@@ -55,7 +55,8 @@ Jika pengguna ingin cepat ("langsung saja"), jalankan dengan default dan tampilk
    - Saldo: `--kas-awal --piutang-awal --piutang-akhir --persediaan-awal --persediaan-akhir --aset-tetap-awal --utang-usaha-awal --utang-usaha-akhir --utang-bank-awal --modal-awal --kas-akhir-aktual`
    - Penyusutan: `--umur-aset-tahun 4` (garis lurus) **atau** `--penyusutan "Rp 150.000"`.
    - Periode: `--periode-awal 2026-02-01 --periode-akhir 2026-02-28`; tren: `--rekap bulan|kuartal|tahun`.
-     **Laporan satu bulan dari file multi-bulan:** saldo awal yang diberikan (atau baris "saldo awal" di file) dianggap per **awal data file**, lalu script **menggulirkan** kas, piutang, utang, kasbon, aset tetap, dan modal dengan transaksi sebelum periode. Jika pengguna memberi saldo per tanggal awal periode, tambahkan `--saldo-awal-per awal-periode`. Stok awal periode tidak bisa digulirkan, jadi tanyakan stok per tanggal awal periode.
+     **Laporan satu bulan dari file multi-bulan:** saldo awal yang diberikan (atau baris "saldo awal" di file) dianggap per **awal data file**, lalu script **menggulirkan** kas, kasbon, utang bank, aset tetap (dikurangi penyusutan), dan modal dengan transaksi sebelum periode. Yang **tidak bisa** digulirkan dari buku kas dan **wajib ditanyakan per tanggal awal periode**: **stok** (`--persediaan-awal`), **piutang pelanggan** (`--piutang-awal-periode`), dan **utang pemasok** (`--utang-usaha-awal-periode`). Script memasukkan pertanyaan piutang/utang ke "Perlu dicek" bila datanya ada. Untuk laporan bulanan berurutan, pakai piutang/utang akhir bulan lalu sebagai nilai awal bulan ini; modal akhir bulan lalu otomatis sama dengan modal awal bulan ini. Jika pengguna memberi saldo per awal periode, `--saldo-awal-per awal-periode`: pos yang diisi dipakai apa adanya, pos lain (mis. kasbon, utang bank) tetap digulirkan.
+   - Saldo kasbon awal: `--piutang-lain-awal`. Kas minus yang dikonfirmasi pemilik hanya karena urutan pencatatan (mis. jualan dicatat mingguan): `--abaikan-kas-minus`.
    - Angsuran pinjaman: `--bunga <baris>=<nominal bunga>` memecah angsuran menjadi pokok (mengurangi utang) + bunga (beban keuangan); `--bunga <baris>=0` = pokok saja.
    - Selisih kas yang sudah dikonfirmasi pemilik: `--kas-akhir-aktual "Rp ..." --catat-selisih-kas` (dicatat sebagai beban/pendapatan selisih kas).
    - Kolom tidak terdeteksi: `--kolom-tanggal "Tgl" --kolom-masuk "Debet"` dst. Kolom Debit/Kredit wajib ditegaskan (artinya bisa terbalik antara buku kas dan mutasi bank).
@@ -68,7 +69,7 @@ Jika pengguna ingin cepat ("langsung saja"), jalankan dengan default dan tampilk
 ### Aturan klasifikasi penting (dijalankan script, jelaskan bila ditanya)
 - **Prive** (ambil pribadi, belanja rumah tangga, SPP anak, "gaji pemilik") bukan beban: mengurangi modal, tidak mengurangi laba.
 - **Setoran modal, pinjaman diterima, cicilan pokok, bayar utang pemasok, terima piutang, beli aset tetap, pindah dana antar rekening** bukan pendapatan/beban: hanya mengubah pos neraca.
-- **Bunga pinjaman & biaya bank** = beban keuangan; **PPh** = beban pajak penghasilan (dipisah sesuai SAK EMKM). "PPN" sengaja tidak diklasifikasi otomatis (tanyakan). **Angsuran/cicilan** selalu ditanyakan porsi bunganya kecuali ada baris bunga di bulan yang sama. **PB1/PBJT** (pajak restoran/hotel) dicatat sebagai pajak daerah dan ditanyakan apakah dipungut dari pembeli.
+- **Bunga pinjaman & biaya bank** = beban keuangan; **PPh** = beban pajak penghasilan (dipisah sesuai SAK EMKM). "PPN" sengaja tidak diklasifikasi otomatis (tanyakan). **Angsuran/cicilan** selalu ditanyakan porsi bunganya kecuali ada baris bunga di bulan yang sama. **PB1/PBJT** (pajak restoran/hotel) dicatat sebagai pajak daerah dan ditanyakan: bila dipungut terpisah dari pembeli, tetapkan pemungutan & penyetorannya sebagai `titipan_pajak` (utang pajak daerah di neraca, bukan pendapatan/beban); bila sudah termasuk penjualan, tetapkan `beban_pajak_lain`.
 - **Kasbon karyawan** = piutang lain-lain (aset), bukan beban; pelunasan/potong kasbon mengurangi piutang itu.
 - Aturan lengkap & kata kunci: `references/pemetaan-kategori.md`.
 
@@ -118,7 +119,7 @@ sebesar Rp 5.400.000 (59,9% dari total biaya). ...
 - [ ] Format rupiah `Rp 1.250.000`; pengurang dalam kurung.
 - [ ] Prive tidak tercatat sebagai beban; setoran modal/pinjaman tidak tercatat sebagai pendapatan.
 - [ ] Status SEMENTARA dijelaskan + transaksi tak terklasifikasi dan "Pertanyaan untuk pemilik" ditanyakan (bukan ditebak diam-diam).
-- [ ] Laporan per bulan dari file multi-bulan: asumsi penggulungan saldo awal ditampilkan, stok awal per tanggal awal periode ditanyakan.
+- [ ] Laporan per bulan dari file multi-bulan: asumsi penggulungan ditampilkan; stok, piutang, dan utang pemasok per tanggal awal periode sudah ditanyakan/diisi.
 - [ ] Hasil cek keseimbangan ditampilkan; jika selisih, penyebab dijelaskan.
 - [ ] Asumsi dan disclaimer "bukan laporan audit" tercantum.
 

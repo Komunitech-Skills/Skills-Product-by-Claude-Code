@@ -12,7 +12,7 @@ Beri tahu pengguna: "Script tidak bisa dijalankan, jadi angka ini dihitung manua
    - Pembelian tempo = utang pemasok akhir − utang pemasok awal + pembayaran utang pemasok (negatif → 0)
    - HPP = persediaan awal + (pembelian tunai + pembelian tempo) − persediaan akhir
    - Laba kotor = pendapatan usaha bersih − HPP
-   - Penyusutan (garis lurus) per bulan = nilai aset ÷ (umur tahun × 12); aset baru mulai bulan berikutnya
+   - Penyusutan (garis lurus) per bulan = HARGA BELI aset ÷ (umur tahun × 12), dibulatkan per bulan; aset baru mulai bulan berikutnya. Jangan dihitung dari nilai buku, agar laporan bulanan menjumlah sama dengan laporan beberapa bulan
    - Laba usaha = laba kotor − semua beban usaha (termasuk penyusutan)
    - Laba sebelum pajak = laba usaha + pendapatan lain − beban keuangan
    - Laba bersih = laba sebelum pajak − beban PPh
@@ -23,7 +23,7 @@ Beri tahu pengguna: "Script tidak bisa dijalankan, jadi angka ini dihitung manua
    - Modal awal = aset awal − utang awal (jika tidak diberikan)
    - Modal akhir = modal awal + setoran modal + laba bersih − prive
    - **Cek:** total aset − (total liabilitas + modal akhir) harus 0. Jika tidak, tampilkan selisihnya.
-6. **Laporan satu bulan dari catatan beberapa bulan:** kas awal bulan itu = saldo awal catatan + semua uang masuk − uang keluar sebelum tanggal 1 bulan itu. Utang bank, piutang, kasbon, dan aset tetap juga digulirkan dengan transaksi sebelumnya. Modal awal = aset awal − utang awal pada tanggal itu. Stok awal harus ditanyakan per tanggal itu.
+6. **Laporan satu bulan dari catatan beberapa bulan:** kas awal bulan itu = saldo awal catatan + semua uang masuk − uang keluar sebelum tanggal 1 bulan itu. Utang bank, piutang, kasbon, dan aset tetap juga digulirkan dengan transaksi sebelumnya. Modal awal = aset awal − utang awal pada tanggal itu. Stok, piutang pelanggan, dan utang pemasok per tanggal itu harus ditanyakan (penjualan/pembelian tempo tidak terlihat di buku kas). Cek: modal akhir bulan lalu = modal awal bulan ini.
 7. **Angsuran pinjaman:** pisahkan bunga (beban keuangan) dari pokok (mengurangi utang). Tanyakan rinciannya ke pengguna bila tidak ada.
 8. Sajikan dengan format output di SKILL.md dan cantumkan asumsi + disclaimer.
 
