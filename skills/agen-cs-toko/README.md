@@ -1,0 +1,61 @@
+# Karyawan CS AI yang Hafal Isi Toko Anda
+
+**Draf balasan pelanggan siap tempel dalam hitungan detik — Anda tetap yang memutuskan dan mengirim.**
+
+## Manfaat
+- ✅ Basis pengetahuan toko (harga, stok, ongkir, retur, FAQ) ditulis sekali, dipakai berulang — jawaban konsisten, tidak beda-beda tiap admin.
+- ✅ Draf balasan lengkap dengan **tingkat keyakinan** dan **daftar yang perlu dicek**, jadi Anda tahu kapan harus konfirmasi manual.
+- ✅ Aturan eskalasi otomatis: komplain berat, refund, ancaman, data sensitif, dan pertanyaan medis/hukum langsung ditandai untuk Anda tangani sendiri.
+- ✅ Aman: tidak pernah mengarang harga/stok, dan tidak pernah mengirim pesan sendiri ke pelanggan lewat WhatsApp Web — 100% mode Copilot.
+- ✅ Rekap harian pertanyaan terbanyak & pertanyaan yang belum ada jawabannya, jadi FAQ Anda makin lengkap dari hari ke hari.
+
+## Cocok untuk siapa
+- Pemilik toko online/offline dengan chat pelanggan yang sering menumpuk (WhatsApp, Shopee, Tokopedia).
+- Klinik/praktik kecil yang ingin membalas pertanyaan jadwal & info umum lebih cepat, tanpa risiko memberi saran medis yang keliru.
+- Siapa pun yang sudah pakai OpenClaw dan ingin laporan CS otomatis dikirim ke Telegram tiap hari.
+
+## Contoh sebelum & sesudah
+**Sebelum:** Admin membaca ulang daftar harga tiap kali ada pertanyaan, kadang lupa update stok, balasan beda gaya antar admin, dan komplain berat kadang dibalas buru-buru tanpa dicek dulu ke pemilik.
+
+**Sesudah (cukup ketik):** "Ini chat pelanggan: 'Kak espresso 250ml sama americano beda harga gak? Bisa COD area Bintaro?'"
+→
+```
+**Keyakinan:** Tinggi
+**Eskalasi:** Tidak
+
+**Draf 1:**
+Halo Kak! Beda ya — espresso 250ml Rp 22.000, americano 250ml Rp 20.000 🙏
+Untuk COD, area Bintaro termasuk yang kami layani. Mau pesan berapa cup, Kak?
+
+**Perlu dicek admin sebelum kirim:**
+- (tidak ada — semua fakta ada di basis pengetahuan)
+```
+Tinggal tempel ke WhatsApp/marketplace, kirim.
+
+## Cara pakai
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
+- "Siapkan asisten CS toko saya, ini daftar harganya..."
+- "Ini chat pelanggan, buatkan draf balasannya."
+- "Buatkan rekap harian pertanyaan CS ke Telegram saya tiap jam 8 malam."
+
+## Instalasi singkat
+Salin folder `agen-cs-toko` ke folder skills AI agent kamu:
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
+Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+## FAQ
+**Apakah bot ini otomatis membalas pelanggan di WhatsApp?**
+Tidak. Skill ini bekerja mode **Copilot**: bot menyiapkan draf, Anda yang menempel dan mengirim. Ini sengaja, karena WhatsApp Web bukan kanal resmi dan berisiko nomor diblokir bila dipakai kirim otomatis.
+
+**Apakah bot bisa mengarang harga atau stok kalau saya belum isi datanya?**
+Tidak. Jika info belum ada di basis pengetahuan, draf akan menandai bagian itu "perlu dicek admin" — tidak pernah mengira-ngira.
+
+**Bisa dipakai untuk klinik/praktik dokter?**
+Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** memberi diagnosis, saran dosis, atau triase — pertanyaan medis selalu diarahkan ke dokter.
