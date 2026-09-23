@@ -26,7 +26,7 @@ Masalah (diperiksa):
 ```
 *Laporan Penjualan Mingguan*
 Senin 14 - Minggu 20 Sep 2026
-Total omzet: Rp 2.778.000 | Jumlah transaksi: 62 | Rata-rata omzet/hari: Rp 396.857
+Total omzet: Rp 2.778.000 | Jumlah baris/item terjual: 62 | Rata-rata omzet/hari: Rp 396.857
 Hari terbaik: Minggu 20/09 (Rp 524.000) | Hari terendah: Rabu 16/09 (Rp 270.000)
 Produk terlaris: Matcha Latte 39 pcs Rp 858.000; Roti Bakar Coklat 38 pcs Rp 570.000; Croissant 26 pcs Rp 520.000
 ⚠️ 7 transaksi Batal tidak dihitung. ⚠️ 1 baris dilewati (tanggal tidak terbaca).

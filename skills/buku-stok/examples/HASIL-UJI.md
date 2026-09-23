@@ -1,4 +1,36 @@
-# HASIL UJI — buku-stok v1.1.0 (uji ulang)
+# HASIL UJI — buku-stok v1.1.1 (uji ulang ke-2)
+
+## SKOR AKHIR v1.1.1: **8 / 10 — LULUS**
+- **Tanggal:** 2026-09-23 · **Penguji:** agent penguji independen (simulasi, Claude Code) · **Versi:** v1.1.1 (commit `1f331ef`)
+
+| Uji v1.1.1 | Hasil |
+|---|---|
+| `scripts/uji_regresi.py` | **38 tes OK** (7,9 dtk) |
+| **B-2** `rekap-wa.csv` (SKU-saja: WA-001 = MUG-KRM ×1 + GELAS-01 ×2 tak terdaftar), impor `--lewati-tak-dikenal` lalu impor ulang 2× | MUG 12 → 11 → **11 → 11** (tidak salah potong lagi). Setelah `produk tambah GELAS-01` (stok 20) + impor ulang: GELAS-01 −2 (20 → 18) + peringatan "item lama kini dicocokkan"; MUG tetap 11; impor berikutnya tidak memotong lagi. **Beres** |
+| Model acak `acak2.py` **tanpa kolom nama** (pemicu B-2) — seed 1, 31, 32 × 1.500 langkah — dan **dengan kolom nama** — seed 33, 34 × 1.500 langkah | Stok, HPP, nilai persediaan, laporan ringkas tiap tanggal (27/seed), laporan mutasi bulanan **cocok 100%**; stok = Σ mutasi; ±1.200 mutasi & 105–132 penjualan dibatalkan per seed. Seed 1 yang dulu gagal di langkah 32 kini lolos |
+| R-6 versi | `info --json` → `versi_alat: 1.1.1`. **Beres** |
+| R-7 teks "Pembatalan Diajukan" | Kini membedakan pesanan lama (stok tidak diubah) dan pesanan baru (stok tetap dipotong, dikembalikan bila akhirnya batal). **Beres** |
+
+| Kriteria | Skor |
+|---|---|
+| Pemicu (description tepat) | 9 |
+| Kemudahan awam | 8 |
+| Kualitas output | 9 |
+| Akurasi (angka/fakta) | 9 |
+| Penanganan input kurang | 9 |
+| Penanganan di luar cakupan | 9 |
+| Keamanan | 9 |
+| **SKOR AKHIR** | **8 / 10 — LULUS** |
+
+Alasan: tidak ada lagi cacat berat/sedang. Mesin stok, HPP, dan laporan lolos sekitar 17.500 langkah acak terhadap model independen (uji v1.1.0 + v1.1.1). Skor tidak 9 karena semua file marketplace di uji ini adalah **tiruan buatan penguji**, dan nama kolom TikTok versi Indonesia belum dicocokkan dengan ekspor asli. Uji dengan ekspor asli dari beta tester adalah syarat sebelum rilis.
+
+**Cacat tersisa (ringan saja):**
+- R-8. Migrasi skema v1.0.0 → v1.1 berjalan saat perintah baca pertama tanpa membuat backup `sebelum-migrasi` lebih dulu (risiko kecil; hanya `ALTER TABLE` + penandaan dalam transaksi).
+- R-9. Nama kolom TikTok Shop versi Indonesia & status Tokopedia/TikTok terbaru perlu dicocokkan dengan file ekspor asli (sudah diakui di `references/marketplace.md`).
+
+---
+
+# Riwayat: uji ulang v1.1.0
 
 - **Tanggal:** 2026-09-23
 - **Penguji:** agent penguji independen (simulasi, Claude Code)

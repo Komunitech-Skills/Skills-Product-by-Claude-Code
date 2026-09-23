@@ -44,7 +44,7 @@ Catatan penguji atas output pesaing:
 |---|---|---|
 | Kualitas hasil S1 | 5 (jadwal jadi, isi laporan tak terjamin) | **8** |
 | Kesesuaian konteks Indonesia | 2 | **9** |
-| Akurasi (angka & perintah) | 5 (angka tidak dihitung script; 1 flag salah) | **7** (angka benar; beberapa perintah di references salah — lihat HASIL-UJI) |
+| Akurasi (angka & perintah) | 5 (angka tidak dihitung script; 1 flag salah) | **9** (v1.1.0: angka benar; semua perintah inti dijalankan sungguhan di Gateway uji) |
 | Siap pakai untuk awam | 4 | **8** |
 
 **Kesimpulan:** skill kita **menang** jelas. Pesaing hanya pembungkus CLI umum.

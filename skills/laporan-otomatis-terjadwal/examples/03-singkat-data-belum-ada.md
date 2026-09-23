@@ -31,5 +31,5 @@ penjualan kemarin (total omzet, jumlah transaksi, 3 produk terlaris).
 ## Catatan penguji
 - Sesuai Langkah 2: proses berhenti, pesan script ditampilkan apa adanya. Tidak ada jadwal dibuat.
 - Uji tepi `cek_sumber_data.py` (semua benar): folder tidak ada → `folder_tidak_ada`; file 0 byte → `file_kosong`; hanya judul → `tidak_ada_baris_data`; baris `;;;` saja → `tidak_ada_baris_data`; file 53 hari → `siap: true` + peringatan umur. Bila semua baris "Batal", `rekap.py` gagal dengan "Tidak ada baris valid" (exit 1) → juga tidak mengirim nol.
-- Celah: file **lama** (mis. ekspor minggu lalu yang lupa diganti, umur 7 hari dengan `--maks-umur-hari 10` di resep mingguan) lolos tanpa peringatan → angka minggu lalu bisa terkirim ulang sebagai laporan minggu ini. Lihat HASIL-UJI.md S-4.
+- Uji ulang v1.1.0: celah data basi dari uji pertama ditutup dua lapis: (1) `--maks-umur-hari` mengikuti irama jadwal (harian 1, mingguan 6, bulanan 27), sehingga file basi selalu memunculkan peringatan; (2) Langkah 3.2 mewajibkan periode hasil `rekap.py` dicocokkan dengan periode yang diminta. Bila folder berisi file harian, `--daftar-semua` menampilkan semua file + peringatan agar digabung (diuji: 3 file harian → `file_cocok` 3 item + peringatan).
 - Bagus: asumsi default disebutkan (jam, zona waktu, isi laporan).
