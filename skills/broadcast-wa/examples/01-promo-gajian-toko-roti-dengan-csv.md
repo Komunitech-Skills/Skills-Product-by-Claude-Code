@@ -30,7 +30,7 @@ Tidak ingin menerima info promo lagi? Balas STOP.
 Selamat gajian, {sapaan} {nama}! 🎉
 Roti Hangat Mbak Sri lagi ada promo sampai 30 September: Roti Sobek Cokelat Rp 20.000 dari Rp 25.000, dan roti manis beli 2 gratis 1. Pas buat sarapan keluarga.
 Balas "PESAN" + jumlahnya, nanti kami catat. Untuk area Laweyan bisa kami antar.
-Kamu menerima pesan ini karena bersedia dikirimi info dari Roti Hangat Mbak Sri. Balas STOP untuk berhenti.
+Pesan ini dikirim karena {sapaan} bersedia menerima info dari Roti Hangat Mbak Sri. Balas STOP untuk berhenti.
 ```
 
 ### Variasi 3
@@ -57,6 +57,9 @@ Siap kirim: **25** dari 40 baris | Dilewati: **10** belum/tidak setuju, **2** mi
 Sebaran variasi: V1 = 9, V2 = 8, V3 = 8 | Jadwal: 25 Sep 2026 10.00 → 10.54 WIB
 File: `broadcast_siap.csv` (berisi jadwal, pesan yang sudah terisi nama, dan link wa.me per kontak. Buka link satu per satu, cek pesannya, lalu tekan kirim. **Simpan di komputer sendiri, jangan dibagikan.**)
 
+**Konfirmasi dulu:** daftar berhenti terbaca 1 nomor, status **SIAP** (tidak ada baris stop.txt yang gagal dibaca).
+Siap kirim ke **25 kontak** mulai Jumat 25 September 10.00 WIB? Balas "ya" kalau sudah sesuai, atau sebutkan yang perlu diubah.
+
 Cara pakai file: buka di Excel/Google Sheets → urutkan menurut `jadwal_kirim` → klik `link_wa` → WhatsApp terbuka dengan pesan sudah terisi → tekan kirim.
 
 ### Sebelum kirim (UU PDP)
@@ -82,7 +85,8 @@ Laweyan **tidak** disebut gratis karena tidak disebutkan. Mau versi lebih formal
   (diuji dengan 120 kontak: 0 pesan di jam itu, digeser ke 13.00), jadi agent tidak perlu lagi mengingatkan manual.
 - Cacat B1/B2 v1.0.0 (kolom Berhenti berisi "STOP"/tanggal; baris dobel menimpa permintaan berhenti) **sudah diperbaiki** —
   diverifikasi dengan file kontak nakal 55 baris, lihat `06-uji-kontak-nakal-v101.md`.
-- **Kurang (ringan):** Variasi 2 menyapa "{sapaan} {nama}" (mis. "Bu Sri") lalu menutup dengan "Kamu menerima pesan ini …"
-  — sapaan bercampur, kurang sopan untuk pelanggan ibu-ibu. Pola ini berasal dari contoh di SKILL.md & references §5.
-- **Perhatian:** isi `stop.txt` di contoh ini bersih (satu nomor per baris). Jika pengguna menulis catatan di baris yang sama
-  ("0812… tgl 12/09"), nomor itu diabaikan diam-diam (cacat B3 di `HASIL-UJI.md`).
+- **Uji ulang v1.0.2:** Variasi 2 diganti ke "Pesan ini dikirim karena {sapaan} …" (SKILL.md v1.0.2: satu sapaan per pesan),
+  dan output menambah langkah konfirmasi jumlah penerima + status daftar berhenti. Script v1.0.2 pada data yang sama:
+  25 siap kirim, status SIAP, nomor identik dengan v1.0.1. Ketiga teks berhenti lolos cek "instruksi tindakan" v1.0.2.
+- **Perhatian:** `stop.txt` di contoh ini bersih. Catatan berupa tanggal/angka kecil tepat di belakang nomor
+  ("0812 0000 0221 25 September") masih bisa tergabung ke nomor tanpa peringatan (cacat B3 sisa, lihat `HASIL-UJI.md`).

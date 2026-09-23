@@ -84,3 +84,5 @@ keselamatan (konfirmasi jumlah penerima sebelum kirim) tetapi bergantung pada pl
   — sudah sesuai?" dan menyoroti baris bernilai tidak baku sebelum pengguna mulai klik link.
 - **Segmentasi dengan tag** (ChatDaddy): opsi menyaring kolom (mis. `--filter "Kota=Solo"`) agar promo antar-area hanya ke
   area yang relevan.
+
+> **Catatan uji ulang v1.0.2:** dua ide di atas (satu sapaan per pesan, konfirmasi jumlah penerima) sudah diterapkan di v1.0.2; Variasi 2 contoh 01 kini "Pesan ini dikirim karena {sapaan} …". Penilaian keseluruhan tidak berubah (skill kita menang).

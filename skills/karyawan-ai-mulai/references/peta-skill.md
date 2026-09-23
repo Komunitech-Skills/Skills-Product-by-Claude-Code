@@ -1,23 +1,26 @@
 # Peta Skill — Profesi/Tugas → Skill Library Komunitech
 
 Tabel statis ini dipakai `karyawan-ai-mulai` untuk mencocokkan jawaban wawancara ke skill yang
-sudah ada di `/home/user/Skills/skills/` (folder pembeli: skill yang sudah terpasang di
-`skills/`/`.agents/skills`/`~/.openclaw/skills` sesuai platform). Jangan menebak nama skill di
-luar tabel ini — kalau tidak ada padanan, katakan jujur dan tawarkan skill terdekat + alasan.
+sudah ada di folder skills platform Anda (mis. `~/.openclaw/skills`, `~/.claude/skills`,
+`~/.agents/skills`, `~/.cursor/skills`, tergantung platform yang dipakai). Jangan menebak nama
+skill di luar tabel ini — kalau tidak ada padanan, katakan jujur dan tawarkan skill terdekat +
+alasan.
 
 ## 1. Tugas paling menyita waktu → skill
 
 | Kata kunci dari jawaban pengguna | Skill yang direkomendasikan | Kenapa |
 |---|---|---|
-| Bikin laporan penjualan/omzet, rekap harian | `rekap-penjualan-csv` | Ubah file CSV kasir/marketplace jadi rekap omzet & tren dalam hitungan menit |
+| Bikin laporan penjualan/omzet, rekap harian (juga: "rekap jualan", "laporan omzet") | `rekap-penjualan-csv` | Ubah file CSV kasir/marketplace jadi rekap omzet & tren dalam hitungan menit |
+| Kirim laporan rutin otomatis ke Telegram/WA (harian/mingguan/bulanan) | `laporan-otomatis-terjadwal` | Menjadwalkan `openclaw automations` supaya laporan (penjualan/keuangan/stok/piutang) terkirim sendiri — **butuh komputer/Gateway menyala terus**, lihat §"Batasan" di SKILL.md |
+| Catat stok/inventori, stock opname, potong stok dari pesanan marketplace | `buku-stok` | Buku stok lokal: barang masuk/keluar, opname, impor pesanan Shopee/TikTok Shop/Tokopedia, laporan stok menipis |
 | Laporan keuangan, laba rugi, neraca | `laporan-keuangan-emkm` | Susun laporan sesuai SAK EMKM dari catatan kas |
 | Cek uang cukup sampai kapan, proyeksi kas | `arus-kas-13minggu` | Proyeksi kas 13 minggu + simulasi tindakan |
 | Cocokkan mutasi bank dengan penjualan | `rekonsiliasi-bank` | Cocokkan transfer masuk dengan catatan penjualan |
 | Ketik ulang nota/struk/faktur ke Excel | `ekstrak-nota-faktur` | Baca foto/teks nota jadi tabel & CSV |
-| Balas chat pelanggan (WA/marketplace) | `balas-chat-cs` | Draf balasan CS dari FAQ sampai komplain |
+| Balas chat pelanggan (WA/marketplace; juga: "bales wa", "balas wa") | `balas-chat-cs` | Draf balasan CS dari FAQ sampai komplain — **mode Copilot**: AI menyiapkan draf, manusia yang mengirim (lihat "Aturan pemilik" di SKILL.md) |
 | Balas ulasan/review publik | `balas-ulasan-pelanggan` | Balasan ulasan Shopee/Tokopedia/Google Maps |
 | Baca/rekap banyak ulasan sekaligus | `analisis-ulasan` | Ringkas ratusan ulasan jadi tema & prioritas perbaikan |
-| Bikin caption/konten sosmed harian | `caption-sosmed-umkm` | Caption siap tempel IG/TikTok/FB/WA Status |
+| Bikin caption/konten sosmed harian (juga: "bikin konten", "posting ig/instagram/tiktok") | `caption-sosmed-umkm` | Caption siap tempel IG/TikTok/FB/WA Status — skill menyiapkan teksnya, posting tetap manual oleh Anda (OpenClaw tidak punya kanal posting IG/TikTok resmi) |
 | Rencana konten sebulan | `kalender-konten-30hari` | Kalender 30 hari dengan momen lokal Indonesia |
 | Rencana promo (diskon, flash sale) | `promo-kalender` | Rencana kampanye + cek margin aman |
 | Follow-up calon pembeli yang belum deal | `follow-up-prospek` | Urutan pesan follow-up H+1/3/7/14 |
@@ -54,13 +57,13 @@ sesuai §"Batasan & penanganan error" di `SKILL.md`, dan tawarkan alternatif ama
 
 | Industri/peran | 3 skill prioritas | 1 otomasi awal |
 |---|---|---|
-| Toko/retail/F&B (owner/kasir) | `rekap-penjualan-csv`, `balas-chat-cs`, `caption-sosmed-umkm` | Laporan omzet mingguan (lihat §"Otomasi" di SKILL.md) |
-| Jasa/konsultasi/freelancer | `surat-penawaran-harga`, `follow-up-prospek`, `buat-invoice` | Pengingat follow-up harian |
+| Toko/retail/F&B (owner/kasir; termasuk restoran, rumah makan, warung, kafe) | `rekap-penjualan-csv`, `balas-chat-cs`, `caption-sosmed-umkm` | Laporan omzet mingguan lewat `laporan-otomatis-terjadwal` (default kanal **Telegram**, lihat §"Otomasi" di SKILL.md) |
+| Jasa/konsultasi/freelancer/bengkel | `surat-penawaran-harga`, `follow-up-prospek`, `buat-invoice` | Pengingat follow-up harian |
 | Kantor/admin/manager | `notulen-rapat`, `surat-resmi`, `sop-writer` | Pengingat tugas dari notulen |
 | Keuangan/akuntansi | `laporan-keuangan-emkm`, `rekonsiliasi-bank`, `arus-kas-13minggu` | Laporan kas mingguan |
-| HR/kepegawaian | `slip-gaji-bpjs`, `pph21-ter`, `lowongan-kerja` | Pengingat jadwal gajian |
+| HR/SDM/kepegawaian | `slip-gaji-bpjs`, `pph21-ter`, `lowongan-kerja` | Pengingat jadwal gajian |
 | Manufaktur/produksi | `hitung-hpp`, `arus-kas-13minggu`, `rekap-penjualan-csv` | Laporan produksi mingguan |
-| Kesehatan (klinik/dokter) | `sop-writer`, `surat-resmi`, `notulen-rapat` | **Tanpa** data pasien — lihat batasan di SKILL.md utama (rujuk `cek-privasi-openclaw`) |
+| Kesehatan — dokter solo/klinik | `balas-chat-cs` (draf balasan pasien, mode Copilot — bukan auto-reply langsung), `sop-writer`, `notulen-rapat` | Laporan operasional klinik (kunjungan, jam ramai) **tanpa** nama/diagnosis pasien. **Tanpa** skrining/diagnosis/kalkulator medis — lihat batasan di SKILL.md utama (rujuk juga `cek-privasi-openclaw` untuk data pasien) |
 | Properti/agen | `surat-penawaran-harga`, `follow-up-prospek`, `proposal-kerjasama` | Pengingat follow-up prospek |
 | Lainnya/tidak cocok tabel | `rekap-penjualan-csv`, `balas-chat-cs`, `surat-resmi` ("paket umum") | — (tanyakan dulu) |
 

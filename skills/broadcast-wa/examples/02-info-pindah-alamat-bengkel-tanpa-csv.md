@@ -43,7 +43,7 @@ Selamat siang {sapaan} {nama},
 Ini dari Bengkel Motor Maju Jaya. Kami mengabarkan bahwa mulai 1 Oktober 2026 bengkel pindah ke Jl. Kenanga No. 12, Bekasi Timur (sebelah minimarket).
 Minggu pertama di tempat baru, ganti oli sudah termasuk cek rem gratis.
 Silakan balas pesan ini untuk menanyakan arah atau membuat jadwal servis.
-Kamu menerima pesan ini karena terdaftar sebagai pelanggan Bengkel Motor Maju Jaya. Balas STOP untuk berhenti.
+Pesan ini dikirim karena {sapaan} terdaftar sebagai pelanggan Bengkel Motor Maju Jaya. Balas STOP untuk berhenti.
 ```
 
 ### Jadwal kirim yang disarankan
@@ -79,3 +79,5 @@ sesekali, Pak? Bisa berhenti kapan saja." Catat "ya" + tanggal.
   SKILL.md langkah 2 kini menulis "kecuali versi khusus daftar siaran WhatsApp Business". Output di atas tetap sesuai.
   Variasi 1–2 tidak memuat "alasan menerima pesan" secara eksplisit selain "pelanggan kami"; masih wajar.
 - Pesan info (bukan promo murni) tetap diberi opt-out — sesuai referensi.
+- **Uji ulang v1.0.2:** kalimat alasan menerima pesan diganti dari "Kamu menerima …" ke "Pesan ini dikirim karena {sapaan} …" agar
+  satu sapaan per pesan (aturan baru SKILL.md langkah 2). Semua teks berhenti lolos cek instruksi tindakan v1.0.2.

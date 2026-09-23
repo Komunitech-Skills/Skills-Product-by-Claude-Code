@@ -21,17 +21,24 @@ sistem diam-diam.
 - Meminta bantuan hukum PDP mendalam (kebocoran data besar, sengketa) → beri ringkasan di
   `references/uu-pdp.md`, lalu arahkan ke konsultan hukum/DPO. Skill ini bukan nasihat hukum.
 - Mengubah pengaturan tanpa diminta atau tanpa persetujuan eksplisit tiap butir.
+- **Permintaan memantau/menyadap perangkat atau chat orang lain** (pasangan, karyawan, anak
+  tanpa dasar hukum yang jelas, dsb.) — **tolak**. Skill ini untuk mengamankan OpenClaw milik
+  pengguna sendiri, bukan untuk mengintai orang lain.
 
 ## Input
 
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
+| OpenClaw ini dipakai untuk apa? — **4 opsi baku**: 1️⃣ pribadi saja, 2️⃣ juga dipakai pelanggan/pasien (CS), 3️⃣ juga ikut di grup, 4️⃣ juga punya laporan/automation terjadwal | Tidak, tapi tanyakan di awal | Anggap "mungkin semua" (pribadi + pelanggan + grup + automation) — audit jadi lebih lengkap, dan tawaran perbaikan lebih hati-hati |
 | Izin menjalankan `openclaw security audit` (dan perintah baca lain) | Ya (tanya sekali di awal) | Kalau `exec` tidak diizinkan, tawarkan versi salin-tempel (lihat Langkah 1) |
 | Apakah OpenClaw memproses data pelanggan/pihak ketiga (agen CS, bot grup, daftar piutang, dll.) | Tidak, tapi tanyakan | Anggap "mungkin ya" → tetap sertakan ringkasan UU PDP singkat |
 | Kanal yang dipakai (WhatsApp/Telegram/dll.) | Tidak | Cek semua kanal yang terlihat di config |
 
 Kalau pengguna hanya bilang "cek privasi saya", langsung mulai Langkah 1 tanpa menahan dengan
-banyak pertanyaan — ini pemeriksaan **baca saja**, risikonya rendah.
+banyak pertanyaan — ini pemeriksaan **baca saja**, risikonya rendah. Pertanyaan "dipakai untuk
+apa" tetap penting karena menentukan aman-tidaknya perbaikan yang nanti ditawarkan (lihat
+`references/dampak-perubahan.md`) — boleh ditanyakan singkat di awal, atau disimpulkan dari
+konteks percakapan kalau sudah jelas.
 
 ## Langkah kerja
 
@@ -51,8 +58,11 @@ tanpa benar-benar membacanya — nilai bawaan bisa berbeda dari yang tertulis di
 Yang dicek (ringkas; detail di `references/openclaw.md`):
 - **Tool yang aktif** & profilnya (`tools.profile`): apakah AI bisa menjalankan perintah komputer
   secara luas.
-- **Perintah komputer tanpa persetujuan** (`tools.exec.mode`/`.security`): apakah `exec` jalan
-  otomatis tanpa tanya.
+- **Perintah komputer tanpa persetujuan** (`tools.exec.mode`/`.security`, dibaca via `openclaw
+  approvals get --json` untuk nilai efektif): bawaan OpenClaw = `full` dengan `ask: "off"` —
+  artinya perintah komputer **jalan tanpa persetujuan** kecuali diubah. `auto` berarti ditinjau
+  AI reviewer/classifier dulu (bukan "tanpa tinjauan sama sekali"); `ask` berarti ditinjau
+  manusia lewat klien approval.
 - **Sandbox** (`agents.defaults.sandbox.mode`): apakah AI berjalan di kotak pasir terisolasi.
 - **Kanal & siapa boleh mengirim perintah** (`channels.<kanal>.dmPolicy`, `.allowFrom`,
   `.groupPolicy`, `commands.ownerAllowFrom`): siapa yang boleh chat pribadi/grup ke bot, siapa
@@ -81,19 +91,30 @@ Gabungkan temuan dari `security audit` + config menjadi daftar, masing-masing di
 Tulis setiap butir dalam **bahasa awam** (apa artinya, kenapa penting), bukan istilah teknis
 mentah. Sertakan path config asli di dalam tanda kurung untuk yang ingin cek sendiri.
 
-### 4. Tawarkan perbaikan — SATU PER SATU, DENGAN PERSETUJUAN
-Untuk tiap temuan 🔴/🟡 yang punya perbaikan jelas:
-1. Jelaskan apa yang akan diubah, dari nilai apa ke nilai apa, dan efeknya.
-2. Sebutkan **cara membatalkan** (nilai semula, atau `openclaw config unset <path>`).
-3. Tanya: "Ubah ini sekarang? (ya/tidak)". **Tunggu jawaban** sebelum menjalankan
+### 4. Tawarkan perbaikan — SATU PER SATU, DENGAN PERSETUJUAN, DENGAN PETA DAMPAK
+
+**WAJIB baca `references/dampak-perubahan.md` sebelum menawarkan perbaikan apa pun.** Setiap
+tawaran perbaikan harus punya baris **"Efek yang berhenti bekerja"** — bukan opsional. Untuk
+tiap temuan 🔴/🟡 yang punya perbaikan jelas:
+1. Jelaskan apa yang akan diubah, dari nilai apa ke nilai apa.
+2. **Sebutkan efek yang BERHENTI bekerja**, diambil dari `references/dampak-perubahan.md` dan
+   disesuaikan dengan jawaban "dipakai untuk apa" di awal (mis. kalau pengguna punya laporan
+   otomatis, ingatkan bahwa mengetatkan `tools.exec.mode` ke `ask` bisa mematikannya).
+3. Sebutkan **cara membatalkan** (nilai semula, atau `openclaw config unset <path>`).
+4. Tanya: "Ubah ini sekarang? (ya/tidak)". **Tunggu jawaban** sebelum menjalankan
    `openclaw config set ...` (lihat `references/openclaw.md` §6).
-4. Setelah diubah, verifikasi dengan `config get` ulang dan laporkan hasilnya.
-5. Lanjut ke butir berikutnya. Jangan menggabungkan beberapa perubahan dalam satu persetujuan,
+5. Setelah diubah, verifikasi dengan `config get`/`approvals get` ulang dan laporkan hasilnya.
+6. Lanjut ke butir berikutnya. Jangan menggabungkan beberapa perubahan dalam satu persetujuan,
    kecuali pengguna eksplisit bilang "ya untuk semua" **setelah** melihat daftar lengkapnya.
 
-Kalau `--fix` bawaan (`openclaw security audit --fix`) tersedia dan pengguna setuju memakainya
-untuk perbaikan otomatis "aman" (rapikan izin file dsb.), jelaskan dulu apa yang akan disentuh
-sebelum menjalankannya.
+**Larangan khusus** (lihat `references/dampak-perubahan.md` untuk alasannya): jangan menawarkan
+`tools.profile: "messaging"` atau `agents.defaults.sandbox.mode: "all"` sebagai perbaikan
+"default satu-klik" — keduanya bisa mematikan skill ber-script atau butuh Docker. Perubahan
+`gateway.auth.mode` butuh peringatan restart + token baru sebelum dijalankan.
+
+Kalau `--fix` bawaan (`openclaw security audit --fix`) tersedia dan pengguna setuju memakainya:
+jelaskan dulu **daftar findings yang akan disentuh** (`--fix` juga mengubah config seperti
+`groupPolicy`, bukan cuma izin file — lihat `references/openclaw.md` §1) sebelum menjalankannya.
 
 ### 5. UU PDP (bila relevan)
 Kalau pengguna memproses data pelanggan/pihak ketiga (dijawab "ya", atau default "mungkin ya"),
@@ -108,7 +129,10 @@ Selalu sertakan disclaimer bahwa ini bukan nasihat hukum.
 🔴 Merah (N)
 - <judul temuan, bahasa awam> (`path.config` atau checkId audit)
   Kenapa penting: ...
-  Saran perbaikan: ... — mau diubah sekarang? (ya/tidak)
+  Saran perbaikan: <dari nilai> → <ke nilai>
+  Efek yang berhenti bekerja: <dari references/dampak-perubahan.md, atau "tidak ada efek fungsi yang hilang">
+  Cara membatalkan: <nilai semula / config unset>
+  Mau diubah sekarang? (ya/tidak)
 
 🟡 Kuning (N)
 - ...
@@ -133,27 +157,36 @@ Selalu sertakan disclaimer bahwa ini bukan nasihat hukum.
 **Input pengguna:** "cek privasi saya dong, saya pakai OpenClaw buat CS toko online"
 
 **Output (ringkas):** laporan lampu lalu lintas berdasarkan hasil `security audit --json` dan
-`config get` nyata di komputer pengguna (bukan nilai contoh), misalnya menandai 🔴 kalau
-`tools.exec.mode` = `auto`/`full` pada agent yang juga membalas chat pelanggan, lalu menawarkan
-mengubahnya ke `ask` — dengan penjelasan efek & cara membatalkan — dan menunggu persetujuan
-sebelum menjalankan `openclaw config set tools.exec.mode ask`. Karena disebut "CS toko online",
-sertakan ringkasan UU PDP dari `references/uu-pdp.md`.
+`approvals get --json`/`config get` nyata di komputer pengguna (bukan nilai contoh), misalnya
+menandai 🔴 kalau `tools.exec.mode` efektifnya `full` dengan `ask: "off"` (bawaan runtime) pada
+agent yang juga membalas chat pelanggan, lalu menawarkan mengubahnya ke `ask` — **dengan baris
+"Efek yang berhenti bekerja": kalau pengguna juga punya laporan otomatis terjadwal, automation
+itu akan ditolak otomatis tanpa klien approval terhubung** — dan cara membatalkan, lalu menunggu
+persetujuan sebelum menjalankan `openclaw config set tools.exec.mode ask`. Karena disebut "CS
+toko online", sertakan ringkasan UU PDP dari `references/uu-pdp.md`, dan ingatkan aturan pemilik:
+agen CS WA harus mode Copilot (draf, bukan auto-reply langsung).
 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua temuan berasal dari hasil `security audit`/`config get` **nyata** (atau fallback
       salin-tempel), bukan dikarang.
 - [ ] Bahasa awam, tanpa jargon teknis mentah tanpa penjelasan.
 - [ ] Tidak ada perubahan config yang dijalankan tanpa persetujuan eksplisit per butir.
-- [ ] Setiap perubahan yang diusulkan menyertakan cara membatalkan.
-- [ ] UU PDP disertakan bila relevan, dengan disclaimer "bukan nasihat hukum".
+- [ ] **Setiap perubahan yang diusulkan menyertakan baris "Efek yang berhenti bekerja"**
+      (dari `references/dampak-perubahan.md`) DAN cara membatalkan.
+- [ ] Tidak menawarkan `tools.profile: "messaging"`/`sandbox.mode: "all"`/perubahan
+      `gateway.auth.mode` sebagai perbaikan "satu-klik" tanpa peringatan khusus.
+- [ ] UU PDP disertakan bila relevan, dengan disclaimer "bukan nasihat hukum"; data
+      kesehatan/pasien disebut sebagai data pribadi spesifik (Pasal 4).
 - [ ] Perintah yang disebut sudah terverifikasi (lihat `references/openclaw.md`); yang tidak
       bisa dipastikan ditulis sebagai "perlu dicek langsung", bukan perintah pasti.
 
 ## Batasan & penanganan error
 - **`exec` tidak diizinkan / OpenClaw tidak terpasang di komputer ini:** beri perintah sebagai
   salin-tempel (lihat `references/openclaw.md` §1–2), jangan berpura-pura sudah menjalankannya.
-- **Gateway tidak sedang berjalan:** `--deep` pada `security audit` butuh Gateway aktif; kalau
-  tidak aktif, jalankan tanpa `--deep` dan sebutkan keterbatasannya.
+- **Gateway tidak sedang berjalan:** `--deep` pada `security audit` dan `openclaw approvals
+  pending` sama-sama butuh Gateway aktif; kalau tidak aktif, jalankan tanpa `--deep`/lewati
+  `approvals pending`, dan sebutkan keterbatasannya. `openclaw approvals get` (tanpa `pending`)
+  tetap jalan tanpa Gateway aktif.
 - **Pengguna minta "benerin semua sekarang juga":** tetap tampilkan daftar lengkap dulu sebelum
   menerima "ya untuk semua" sebagai persetujuan borongan; tetap proses satu per satu agar bisa
   dihentikan di tengah jalan bila pengguna berubah pikiran.
@@ -169,3 +202,9 @@ sertakan ringkasan UU PDP dari `references/uu-pdp.md`.
 - Skill ini **tidak** mengirim hasil audit ke server mana pun di luar percakapan ini, dan
   **tidak** menyimpan hasil audit sebagai data permanen kecuali pengguna memintanya disimpan
   ke file lokal mereka sendiri.
+- **Telemetri:** jangan menyamakan "cek pembaruan harian" (selalu berjalan, bukan isi pesan)
+  dengan "statistik pemakaian anonim" (opt-in, mati bawaan) — lihat `references/openclaw.md` §5.
+- **Permintaan hapus data pelanggan (hak subjek data UU PDP):** ikuti `references/openclaw.md`
+  §7 (`openclaw memory forget --dry-run` dulu, baru eksekusi dengan izin).
+- Skill ini **menolak** membantu memantau/menyadap chat atau perangkat orang lain — lihat
+  "Kapan TIDAK digunakan".

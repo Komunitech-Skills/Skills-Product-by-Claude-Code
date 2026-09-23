@@ -20,9 +20,9 @@ dan rencana 7 hari yang jelas.
   skill itu, jangan wawancara ulang.
 - Permintaan tentang keamanan/privasi OpenClaw → pakai `cek-privasi-openclaw` (skill ini hanya
   **menyebut** dan menawarkannya di langkah terakhir).
-- Menjadwalkan laporan otomatis mendetail → ini di luar cakupan versi skill saat ini; beri
-  contoh perintah `openclaw automations` di `references/openclaw.md` sebagai titik awal, dan
-  jelaskan bahwa fitur penjadwalan penuh ada di skill terpisah bila sudah tersedia.
+- Menjadwalkan laporan otomatis secara mendetail (jadwal, sumber data, format) → arahkan ke
+  skill `laporan-otomatis-terjadwal` (atau `buku-stok` untuk stok). Skill ini hanya menyebutnya
+  sebagai "ide otomasi lanjutan" di rekomendasi awal, tidak menyusun jadwal penuh.
 
 ## Input — wawancara maksimal 5 pertanyaan
 
@@ -33,9 +33,9 @@ mendukung tool `ask_user` dengan pilihan, tawarkan pilihan bernomor 1️⃣–4�
 | # | Pertanyaan | Wajib? | Default jika tidak dijawab |
 |---|---|---|---|
 | 1 | Profesi/peran & industri usaha (mis. "owner toko F&B", "konsultan", "admin kantor") | Ya | Tanyakan ulang sekali; kalau tetap tidak ada, pakai "paket umum" |
-| 2 | Skala tim (solo / 2–5 / 6–15 / 16–50 / 50+ orang) | Tidak | "solo" |
+| 2 | Skala tim — **4 opsi baku**: 1️⃣ solo, 2️⃣ 2–15 orang, 3️⃣ 16–50 orang, 4️⃣ 50+ orang (usaha 50+ dengan banyak cabang: tanyakan juga jumlah cabang) | Tidak | "solo" |
 | 3 | 3 pekerjaan yang paling menyita waktu (bebas, boleh kurang dari 3) | Ya | Kalau kosong, tanyakan ulang sekali; kalau tetap kosong, pakai paket default industri |
-| 4 | Kanal favorit untuk dibantu AI (WhatsApp / Telegram / langsung di komputer) | Tidak | "WhatsApp" |
+| 4 | Kanal favorit untuk dibantu AI — **4 opsi baku**: 1️⃣ Telegram, 2️⃣ WhatsApp (nomor terpisah, baca risikonya dulu), 3️⃣ langsung di komputer, 4️⃣ belum tahu/terserah | Tidak | "Telegram" (kanal resmi, tanpa risiko blokir — lihat §7 `references/openclaw.md`) |
 | 5 | Apakah ada kekhawatiran soal privasi/data, dan apakah komputer/laptop biasanya menyala terus (untuk laporan otomatis nanti) | Tidak | Anggap "ada kekhawatiran" (lebih aman) dan "komputer tidak selalu menyala" |
 
 Kalau pengguna bilang "cepat saja" / "terserah" / ingin langsung mulai: **jangan** menahan di
@@ -53,15 +53,25 @@ wawancara. Pakai default di atas, sebutkan asumsinya secara singkat di akhir, da
    ```
    (Windows: `python`/`py`.) Kalau Python tidak bisa dijalankan, cocokkan **manual** memakai
    tabel di `references/peta-skill.md` — jangan menyebut nama skill yang tidak ada di tabel itu.
-3. **Rekomendasikan 3 skill "paket kerja pertama"** + alasan 1 baris per skill, dan sebutkan
-   1 ide otomasi lanjutan (tidak wajib dipasang sekarang) — lihat §5 di `references/openclaw.md`.
+3. **Rekomendasikan minimal 3 skill "paket kerja pertama"** + alasan 1 baris per skill, dan
+   sebutkan 1 ide otomasi lanjutan (tidak wajib dipasang sekarang) — lihat §5 di
+   `references/openclaw.md`. **Selalu terapkan aturan pemilik** di §7 `references/openclaw.md`
+   saat memberi rekomendasi/otomasi (kanal default Telegram, WA hanya nomor terpisah + izin
+   risiko, CS WA selalu mode Copilot, kripto hanya riset/notifikasi, tanpa scraping marketplace).
+   Untuk usaha 50+ karyawan dengan banyak cabang, sarankan eksplisit memisahkan rekap/laporan
+   **per cabang** (satu file/folder data per cabang), bukan digabung jadi satu.
 4. **Cek skill yang sudah terpasang.** Ikuti `references/openclaw.md` §1 (`openclaw skills list`,
    atau baca folder skills bila `exec` tidak diizinkan). Tandai skill yang sudah ada vs yang
    perlu dipasang.
 5. **Pandu pemasangan skill yang belum ada — SELALU minta izin eksplisit dulu.** Ikuti
-   `references/openclaw.md` §2. Jangan pernah memasang tanpa konfirmasi "ya/lanjut" dari
-   pengguna. Jangan memasang dari sumber di luar paket Komunitech tanpa izin eksplisit terpisah.
-   Jangan mempublikasikan skill apa pun ke ClawHub.
+   `references/openclaw.md` §2: cari dulu folder hasil ekstrak Starter Kit (biasanya di folder
+   Unduhan), lalu pasang. Jangan pernah memasang tanpa konfirmasi "ya/lanjut" dari pengguna.
+   Kalau muncul pesan "already exists", jelaskan artinya dan tanya dulu sebelum memakai `--force`.
+   Verifikasi hasil pasang dengan `openclaw skills info <nama>`. Jangan memasang dari sumber di
+   luar paket Komunitech tanpa izin eksplisit terpisah. Jangan mempublikasikan skill apa pun ke
+   ClawHub. Kalau `exec`/`read`/`write` tidak diizinkan (mis. profil tool `messaging`), jelaskan
+   ke pengguna dan beri langkah salin-tempel manual — lihat catatan prasyarat di
+   `references/openclaw.md` §1.
 6. **Jalankan SATU tugas pertama nyata** memakai skill yang paling relevan dari rekomendasi,
    dengan data pengguna kalau ada, atau data contoh (`examples/` skill terkait) kalau belum ada.
    Pengguna harus melihat **hasil siap pakai** di menit pertama, bukan penjelasan umum.
@@ -163,6 +173,9 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
       butuh komputer menyala).
 - [ ] Tidak menjanjikan hal di luar §"Batasan" (posting otomatis medsos, auto-trading,
       diagnosis medis, dll.).
+- [ ] Mengikuti aturan pemilik (§7 `references/openclaw.md`): Telegram sebagai kanal default,
+      WA hanya nomor terpisah + izin risiko, CS WA mode Copilot, kripto hanya riset/notifikasi,
+      tanpa scraping marketplace via login browser.
 
 ## Batasan & penanganan error
 - **Industri/tugas tanpa padanan di `peta-skill.md`:** katakan jujur, jangan mengarang nama
@@ -178,8 +191,12 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
   wawancara: jangan disimpan ke memori lokal kecuali perlu untuk pekerjaan itu sendiri, dan
   ingatkan pengguna soal UU PDP bila menyangkut data pelanggan/karyawan.
 - **Permintaan di luar cakupan library** (posting otomatis ke Instagram/TikTok, auto-trading
-  kripto, skrining/diagnosis medis, clone wajah/suara): tolak dengan sopan, jelaskan alasannya
-  singkat, dan arahkan ke `cek-privasi-openclaw` atau skill lain yang relevan bila ada.
+  kripto, skrining/diagnosis medis, clone wajah/suara, scraping/narik data marketplace lewat
+  login browser otomatis, auto-reply langsung ke pelanggan di WA tanpa Copilot): tolak dengan
+  sopan, jelaskan alasannya singkat sesuai §7 `references/openclaw.md`, dan arahkan ke
+  `cek-privasi-openclaw` atau skill lain yang relevan bila ada.
+- **Usaha besar/multi-cabang (50+ karyawan):** jangan menggabung data semua cabang jadi satu
+  rekap tanpa diminta — sarankan file/folder data terpisah per cabang agar laporan tetap akurat.
 - Skill ini **tidak** memasang paket dari luar Starter Kit Komunitech, **tidak** mempublikasikan
   apa pun ke ClawHub, dan **tidak** mengirim data pengguna ke server di luar penyedia model AI
   yang sudah dipilih pengguna sendiri.

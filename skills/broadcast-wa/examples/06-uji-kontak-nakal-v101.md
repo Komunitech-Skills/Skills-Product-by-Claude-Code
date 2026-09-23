@@ -1,4 +1,4 @@
-# 06 — Uji data tepi v1.0.1: file kontak "nakal" 55 baris + daftar berhenti
+# 06 — Uji data tepi: file kontak "nakal" 55 baris + daftar berhenti (v1.0.1, diulang di v1.0.2)
 
 ## Skenario
 Uji ulang cacat berat v1.0.0 (B1: kolom Berhenti berisi "STOP"/"x"/tanggal tidak dianggap berhenti; B2: nomor yang
@@ -24,36 +24,36 @@ Variasi pesan sama dengan contoh 01, ditambah `{kota}` ("Buat pelanggan kami di 
 teks berhenti ("Balas STOP" / "Balas BERHENTI").
 
 ### Hasil pengolahan kontak
+Status: **SIAP** (daftar berhenti: 2 nomor terbaca, 0 baris gagal dibaca)
 Siap kirim: **26** dari 55 baris
 Dilewati:
-- **10** minta berhenti (kolom Berhenti berisi STOP, stop, x, tanggal, ya, Unsub, Berhenti, ✓, "masih aktif", "N/A")
+- **8** minta berhenti (kolom Berhenti berisi STOP, stop, x, tanggal, ya, Unsub, Berhenti, ✓)
 - **3** nomornya minta berhenti/tidak setuju di **baris lain** (baris dobel)
-- **6** belum/tidak setuju (kosong, tidak, Tidak, belum, tdk, "ya (lisan)")
+- **5** belum/tidak setuju (kosong, tidak, Tidak, belum, tdk)
 - **2** ada di stop.txt
 - **5** nomor kosong/tidak valid (telepon rumah, format ilmiah Excel `8.12E+11`, nomor terlalu pendek, kosong, dua nomor dalam satu sel)
 - **2** nomor dobel
 - **1** kolom `{kota}` kosong (baris 25 — nomor yang sama di baris 26 sudah lengkap, jadi tetap dikirimi sekali)
+- **3 sel tidak baku — mohon dirapikan:** baris 23 Persetujuan "ya (lisan)" (dianggap belum setuju; kalau memang setuju,
+  ubah jadi "ya" + tanggal), baris 45 Berhenti "masih aktif" dan baris 53 "N/A" (dianggap berhenti; kosongkan bila masih aktif).
 
 Sebaran variasi: V1 = 9, V2 = 9, V3 = 8 | Jadwal: Jumat 25 Sep 2026 10.00 → 10.55 WIB (dua batch: 10.00–10.19 dan 10.50–10.55), selesai sebelum jam salat Jumat.
+Nama bergelar sudah dirapikan otomatis ("IBU HJ. AMINAH" → "Bu Aminah", "dr. Andi" → "Kak Andi").
 File: `broadcast_siap.csv` (jadwal, pesan terisi, link wa.me per kontak — simpan di komputer sendiri, jangan dibagikan).
 
-**Perlu dicek manual sebelum kirim (3 baris nilai tidak baku):**
-- Baris 23 Persetujuan "ya (lisan)" → dianggap **belum** setuju. Jika memang setuju, ubah jadi "ya" + catat tanggalnya.
-- Baris 45 Berhenti "masih aktif" dan baris 53 "N/A" → dianggap **berhenti** (script memilih aman). Jika maksudnya
-  masih aktif, kosongkan sel Berhenti.
-- 2 pelanggan tercatat dengan gelar (Hj., dr.) → di pesan tertulis "Bu Hj." / "Kak Dr." — sebaiknya ubah kolom Nama
-  jadi "Bu Aminah" / "Pak Andi" lalu jalankan ulang.
+**Konfirmasi dulu:** siap kirim ke **26 kontak** mulai Jumat 25 September 10.00 WIB? Kalau 3 sel di atas mau dirapikan dulu,
+perbaiki file lalu saya jalankan ulang.
 
 ### Sebelum kirim (UU PDP)
 - [ ] Semua penerima sudah setuju (kolom Persetujuan = ya)
-- [ ] Yang membalas STOP/BERHENTI dicatat di kolom Berhenti atau stop.txt (**satu nomor per baris, tanpa catatan**)
+- [ ] Yang membalas STOP/BERHENTI dicatat di kolom Berhenti atau stop.txt (satu nomor per baris; catatan taruh di **depan** nomor atau pisahkan dengan koma)
 - [ ] File kontak & `broadcast_siap.csv` disimpan aman, tidak dibagikan
 
 📝 Asumsi: WIB; sapaan default "Kak"; nama depan saja.
 
 ## Tabel verifikasi per baris (harapan penguji vs hasil script)
 
-| Baris | Nama | No HP (mentah) | Persetujuan | Berhenti | Kota | Harapan penguji | Hasil script |
+| Baris | Nama | No HP (mentah) | Persetujuan | Berhenti | Kota | Harapan penguji | Hasil script v1.0.2 |
 |---|---|---|---|---|---|---|---|
 | 2 | Bu Siti Aminah | `0812-0000-0101` | ya | (kosong) | Solo | KIRIM — 08 berstrip | **KIRIM** |
 | 3 | Pak Joko | `+62 812 0000 0102` | Ya | tidak | Solo | KIRIM — +62 spasi, Ya+spasi | **KIRIM** |
@@ -76,7 +76,7 @@ File: `broadcast_siap.csv` (jadwal, pesan terisi, link wa.me per kontak — simp
 | 20 | Rudi Dup | `812 0000 0116` | ya | (kosong) | Solo | TIDAK — B2 tolak di baris lain | lewat: nomor ini minta berhenti/tidak setuju di baris lain |
 | 21 | Maya | `0812-0000-0117` | (kosong) | (kosong) | Solo | TIDAK — persetujuan kosong | lewat: belum/tidak setuju menerima broadcast |
 | 22 | Nina | `0812-0000-0118` | belum | (kosong) | Solo | TIDAK — belum | lewat: belum/tidak setuju menerima broadcast |
-| 23 | Oki | `0812-0000-0119` | ya (lisan) | (kosong) | Solo | ABU — persetujuan tak baku | lewat: belum/tidak setuju menerima broadcast |
+| 23 | Oki | `0812-0000-0119` | ya (lisan) | (kosong) | Solo | ABU — persetujuan tak baku | lewat: nilai persetujuan tidak baku 'ya (lisan)' (dianggap belum setuju; rapikan jadi ya/tidak) |
 | 24 | Putri | `0812-0000-0120` | ya | (kosong) | Solo | TIDAK — ada di stop.txt | lewat: ada di daftar berhenti |
 | 25 | Qori | `0812-0000-0121` | ya | (kosong) | (kosong) | TIDAK — kota kosong -> baris ini dilewati | lewat: kolom {kota} kosong |
 | 26 | Qori | `0812-0000-0121` | ya | (kosong) | Solo | KIRIM — dup dengan kota terisi | **KIRIM** |
@@ -98,7 +98,7 @@ File: `broadcast_siap.csv` (jadwal, pesan terisi, link wa.me per kontak — simp
 | 42 | Gilang | `0812-0000-0132` | Tidak | (kosong) | Solo | TIDAK — Tidak kapital | lewat: belum/tidak setuju menerima broadcast |
 | 43 | Fajar | `0812-0000-0133` | ya | Berhenti | Solo | TIDAK — berhenti | lewat: minta berhenti (kolom berhenti) |
 | 44 | Eko | `0812-0000-0134` | ya | ✓ | Solo | TIDAK — centang di kolom berhenti | lewat: minta berhenti (kolom berhenti) |
-| 45 | Citra | `0812-0000-0135` | ya | masih aktif | Solo | ABU — frasa bebas | lewat: minta berhenti (kolom berhenti) |
+| 45 | Citra | `0812-0000-0135` | ya | masih aktif | Solo | ABU — frasa bebas | lewat: nilai kolom berhenti tidak baku 'masih aktif' (dianggap berhenti; kosongkan bila masih aktif) |
 | 46 | Dian | `0812 0000 0136` | ya | (kosong) | Solo | KIRIM | **KIRIM** |
 | 47 | Dian | `0062 812 0000 0136` | Ya | (kosong) | Solo | TIDAK — duplikat 0062 | lewat: nomor duplikat |
 | 48 | Endah | `+62 0812 0000 0137` | ya | (kosong) | Solo | KIRIM — +62 0812 | **KIRIM** |
@@ -106,13 +106,13 @@ File: `broadcast_siap.csv` (jadwal, pesan terisi, link wa.me per kontak — simp
 | 50 | Galih | `0812-0000-0139` | ya | (kosong) | Solo | TIDAK — stop.txt tanpa nol | lewat: ada di daftar berhenti |
 | 51 | Hana | `0812-0000-0140` | Y | (kosong) | Solo | KIRIM | **KIRIM** |
 | 52 | Ika | `0812-0000-0141` | ya | (spasi) | Solo | KIRIM — berhenti spasi saja | **KIRIM** |
-| 53 | Jaka | `0812-0000-0142` | ya | N/A | Solo | ABU — N/A | lewat: minta berhenti (kolom berhenti) |
+| 53 | Jaka | `0812-0000-0142` | ya | N/A | Solo | ABU — N/A | lewat: nilai kolom berhenti tidak baku 'N/A' (dianggap berhenti; kosongkan bila masih aktif) |
 | 54 | Kiki | `'0812-0000-0143` | ya | (kosong) | Solo | KIRIM — apostrof Excel | **KIRIM** |
 | 55 | Luki | `0812-0000-0144` | Setuju | TIDAK | Solo | KIRIM | **KIRIM** |
 | 56 | Siapa yang tidak mau | `0812-0000-0145` | tdk | (kosong) | Solo | TIDAK — tdk | lewat: belum/tidak setuju menerima broadcast |
 
 **Hasil verifikasi independen:** harapan KIRIM = 26 nomor; script = 26 nomor, unik, **identik**. Salah kirim (kontak
-TIDAK yang lolos) = **0**. Terlewat (kontak KIRIM yang dibuang) = **0**. Tiga baris ABU dibuang (arah aman).
+TIDAK yang lolos) = **0**. Terlewat (kontak KIRIM yang dibuang) = **0**. Tiga baris ABU dibuang (arah aman) dan di v1.0.2 dilaporkan per sel sebagai "nilai … tidak baku". Hasil v1.0.1 dan v1.0.2 identik (26 nomor yang sama).
 Semua link `wa.me/<nomor>?text=` terdekode sama persis dengan kolom `pesan`; tidak ada `{placeholder}` tersisa;
 semua pesan memuat "Balas STOP/BERHENTI".
 
@@ -131,42 +131,29 @@ semua pesan memuat "Balas STOP/BERHENTI".
 
 **Cek teks berhenti (script harus menolak variasi tanpa cara berhenti):**
 
-| Teks variasi | Hasil | Benar? |
+| Teks variasi | Hasil v1.0.1 | Hasil v1.0.2 |
 |---|---|---|
-| "promo non-stop sepanjang hari!" | DITOLAK | ✔ |
-| "STOP! Jangan lewatkan promo ini." | DITOLAK | ✔ |
-| 2 variasi, variasi 1 tanpa teks berhenti | DITOLAK ("Variasi ke-1") | ✔ |
-| "Ketik STOP untuk berhenti." / "Balas \"BERHENTI\" jika tidak mau lagi." / "cukup balas STOP ya" | LOLOS | ✔ |
-| "**Siapa yang tidak mau dapat diskon 50%?** Buruan order!" (tanpa cara berhenti) | **LOLOS** | ✘ salah lolos |
-| "Kalau **tidak ingin menerima** kabar diskon, sayang banget lho." | **LOLOS** | ✘ salah lolos |
-| "Beli sekarang **untuk berhenti** pusing mikir lauk!" | **LOLOS** | ✘ salah lolos |
+| "promo non-stop sepanjang hari!" | DITOLAK ✔ | DITOLAK ✔ |
+| "STOP! Jangan lewatkan promo ini." | DITOLAK ✔ | DITOLAK ✔ |
+| 2 variasi, variasi 1 tanpa teks berhenti | DITOLAK ✔ | DITOLAK ✔ |
+| "Ketik STOP untuk berhenti." / "Balas \"BERHENTI\" jika tidak mau lagi." / "cukup balas STOP ya" | LOLOS ✔ | LOLOS ✔ |
+| "**Siapa yang tidak mau dapat diskon 50%?** Buruan order!" (tanpa cara berhenti) | **LOLOS** ✘ | DITOLAK ✔ |
+| "Kalau **tidak ingin menerima** kabar diskon, sayang banget lho." | **LOLOS** ✘ | DITOLAK ✔ |
+| "Beli sekarang **untuk berhenti** pusing mikir lauk!" | **LOLOS** ✘ | DITOLAK ✔ |
 
-**Daftar berhenti (`--daftar-berhenti`) dengan catatan di baris yang sama:**
-```
-0812-0000-0120 tgl 12/09
-Galih 0812 0000 0139 (minta stop 2026-09-01)
-0812-0000-0140	 Hana
-+62 812-0000-0141 - Ika
-```
-Hasil: Hana & Ika dikecualikan, tetapi **Putri (0120) dan Galih (0139) tetap masuk daftar kirim** — angka tanggal ikut
-tergabung ke nomor sehingga baris itu dianggap tidak valid dan **dibuang diam-diam**. Ringkasan script tidak menyebut
-berapa nomor terbaca dari daftar berhenti dan tidak memberi peringatan. (Daftar berhenti dengan format bersih, format
-tanpa nol, atau CSV `Nama;No HP;Tanggal` terbaca benar.)
-
-**Nama bergelar:** "H. Rahmat" → "Kak H.", "Hj Aminah" → "Kak Hj", "Ir. Budi" → "Kak Ir.", "Bu dr. Rina" → "Bu Dr.",
-"Pak H. Ahmad" → "Pak H.", "IBU HJ. AMINAH" → "Bu HJ.", "NUR" → "Kak NUR". Nama tanpa gelar, nama hanya sapaan
-("Bu", "Pak", "Mas.") dan nama kosong sudah benar ("Halo Bu,", "Halo Kak,").
+**Daftar berhenti dengan catatan & nama bergelar:** v1.0.1 membuang diam-diam baris seperti `0812-0000-0120 tgl 12/09`
+dan menghasilkan "Bu HJ." / "Kak Dr.". Di v1.0.2 kedua hal itu sudah benar; uji lanjutan (24 variasi catatan, 29 variasi
+gelar, 19 teks berhenti) ada di `07-uji-daftar-berhenti-gelar-v102.md`.
 
 **File rusak:** file kosong / hanya judul → "File kontak tidak berisi data"; bukan UTF-8 → petunjuk simpan ulang "CSV UTF-8";
 pemisah `;` terbaca; judul kolom tak dikenal ("Setuju Promo (ya/tidak)") → ditolak dengan petunjuk `--kolom-persetujuan`. ✔
 
-**Uji regresi:** `python3 scripts/uji_regresi.py` → 6/6 OK.
+**Uji regresi:** v1.0.1 → 6/6 OK; v1.0.2 → 11/11 OK.
 
 ## Catatan penguji
 - **B1 dan B2 v1.0.0 sudah diperbaiki**, terbukti pada data yang dirancang penguji (bukan hanya pada uji regresi
   pembuat): STOP/stop/x/tanggal/Unsub/✓ dianggap berhenti, dan baris dobel (baik sebelum maupun sesudah baris berhenti,
   termasuk beda format +62/812/0062) ikut dikecualikan. Daftar kirim akhir 26/26 identik dengan hitungan penguji.
 - Jumat 11.30–13.00 selalu dilewati; 0062, nama hanya sapaan, dan cek "promo non-stop" sudah benar.
-- **Masih bocor:** daftar berhenti yang ditulis dengan catatan (tanggal/nama di baris yang sama) diabaikan tanpa
-  peringatan → kontak yang sudah minta berhenti tetap dikirimi. Cek teks berhenti bisa salah lolos oleh frasa promosi umum
-  ("siapa yang tidak mau dapat …"). Nama bergelar menghasilkan sapaan janggal. Rincian & saran perbaikan di `HASIL-UJI.md`.
+- **v1.0.2:** hasil sama (26/26, salah kirim 0); sel tidak baku kini dilaporkan per nilai, gelar dirapikan, status SIAP/PERIKSA DULU
+  dan jumlah nomor daftar berhenti yang terbaca muncul di ringkasan. Sisa cacat ada di `07-…` dan `HASIL-UJI.md`.

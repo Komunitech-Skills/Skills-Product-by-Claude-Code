@@ -1,0 +1,28 @@
+# Peta Dampak Perubahan — WAJIB dibaca sebelum menawarkan perbaikan apa pun
+
+Setiap perbaikan yang ditawarkan skill ini **wajib** menyertakan baris "**Efek yang berhenti
+bekerja**" (lihat Format Output di `SKILL.md`). Tabel ini adalah sumber kebenarannya — semua
+baris **diverifikasi langsung** di OpenClaw 2026.9.5 (mesin uji terisolasi) atau dari docs resmi
+`docs.openclaw.ai` yang dikutip apa adanya.
+
+| Perubahan | Apa yang BERHENTI bekerja | Kapan aman dilakukan |
+|---|---|---|
+| `channels.<kanal>.groupPolicy`: `open` → `allowlist`/`disabled` | Bot **diam di semua grup** sampai ID grup ditambahkan ke `groupAllowFrom` (untuk `allowlist`), atau selamanya untuk `disabled`. Kalau pengguna pakai bot di grup kerja, ini bisa mematikan fitur yang sedang dipakai. | Setelah pengguna mengonfirmasi grup mana saja yang **harus tetap bisa** memicu bot, dan ID grup itu ditambahkan **bersamaan** dengan perubahan ini (satu paket persetujuan). |
+| `channels.<kanal>.dmPolicy`: `open` → `pairing`/`allowlist` | Pelanggan/pasien **baru** (belum pernah chat/pairing/masuk allowlist) **tidak akan dilayani** sampai disetujui manual atau ditambahkan ke `allowFrom`. Untuk `pairing`, kode persetujuan berlaku terbatas (±1 jam sesuai dokumentasi WhatsApp) dan perlu tindakan pengguna tiap kontak baru. | Aman untuk kanal notifikasi pribadi (hanya pemilik yang chat). Untuk kanal yang dipakai pelanggan umum, jelaskan dulu bahwa proses onboarding pelanggan baru jadi butuh langkah tambahan. |
+| `tools.exec.mode` → `ask` (atau `allowlist`/`deny`) | **Automation/cron yang menjalankan script (dari `laporan-otomatis-terjadwal`, `buku-stok`, dll.) akan DITOLAK OTOMATIS**, bukan menunggu persetujuan — dari dokumentasi resmi (`docs.openclaw.ai/tools/exec-approvals`): *"chat channels never receive automation approvals... With no approval surface connected, the request is denied immediately."* Kalau pengguna tidak membuka Control UI/app untuk menyetujui tiap kali, laporan terjadwal berhenti total. | Aman kalau pengguna **tidak** memakai automation/cron ber-script, ATAU pengguna berjanji membuka Control UI/app tiap kali automation jalan (tidak realistis untuk laporan harian tanpa pengawasan). Kalau pengguna memakai `laporan-otomatis-terjadwal`/`buku-stok`, **peringatkan eksplisit** sebelum mengubah ini. |
+| `tools.profile` → `messaging` (sering muncul sebagai remediasi bawaan dari `security audit`) | Profil `messaging` **hanya** berisi tool pesan & sesi (`message`, `sessions*`, `ask_user`, `gateway` mode update-saja) — **TIDAK** ada `exec`, `read`, `write`, `edit`, `process`, `browser` (terverifikasi dari docs `tools/permission-modes`). Artinya **SEMUA skill ber-script Komunitech berhenti berfungsi** (rekap-penjualan-csv, hitung-hpp, buku-stok, dsb. — apa pun yang menjalankan `python3 .../scripts/*.py` atau membaca/menulis file). | **Jangan tawarkan ini sebagai perbaikan default.** Hanya cocok untuk agent yang memang khusus untuk chat/CS tanpa perlu skill ber-script (mis. agent CS terpisah). Kalau pengguna memakai skill ber-script di agent yang sama, jelaskan trade-off ini dengan tegas sebelum menawarkan. |
+| `agents.defaults.sandbox.mode` → `all` | AI berjalan di kotak pasir (container) untuk **setiap** sesi. **Butuh Docker (atau Podman) terpasang & berjalan** di komputer pengguna (dari docs `gateway/sandboxing`: backend sandbox berbasis Docker/Podman). Tanpa Docker, agent bisa gagal jalan sama sekali. | Hanya tawarkan setelah menanyakan apakah Docker Desktop/Podman sudah terpasang. Kalau pengguna awam dan belum punya Docker, ini **bukan** perbaikan "satu klik" — jelaskan sebagai langkah lanjutan yang butuh instalasi tambahan, jangan jalankan `config set` begitu saja. |
+| `gateway.auth.mode` (mis. `none` → `token`) | OpenClaw sendiri memberi peringatan: **"Restart the gateway to apply."** — perubahan tidak aktif sampai Gateway di-restart, dan klien (Control UI/app) butuh token baru untuk tetap bisa login. Kalau pengguna tidak tahu cara restart Gateway atau memasukkan token baru, mereka bisa "terkunci" dari Control UI. | Jelaskan langkah restart & di mana menyalin token baru **sebelum** menjalankan perubahan. Untuk pengguna yang sangat awam, sarankan ini dilakukan bersama jasa setup/pendampingan, bukan sendirian. |
+| `openclaw security audit --fix` | **Bukan hanya** merapikan izin file. Terbukti di mesin uji: `--fix` juga **mengubah nilai config secara langsung**, contoh terverifikasi: `channels.<kanal>.groupPolicy` dari `open` menjadi `allowlist` otomatis. Anggap `--fix` sebagai gabungan beberapa perubahan config sekaligus, bukan operasi "aman & netral". | Jelaskan dulu daftar findings yang akan disentuh `--fix` (dari hasil `security audit --json` sebelumnya) sebelum menjalankan, seperti perbaikan config manapun — bukan langsung dijalankan karena "cuma --fix". |
+
+## Cara membaca tabel ini saat memberi rekomendasi
+1. Cek dulu **untuk apa** OpenClaw pengguna dipakai (pertanyaan pertama di SKILL.md): pribadi
+   saja, dipakai pelanggan/pasien, ikut di grup, dan/atau punya automation/cron berjalan.
+2. Untuk tiap temuan 🔴/🟡 yang perbaikannya ada di tabel ini, **salin baris "Kapan aman
+   dilakukan"** ke dalam tawaran perbaikan, disesuaikan dengan jawaban pengguna di langkah 1.
+3. Kalau perbaikan yang disarankan hasil audit (`remediation`) termasuk `tools.profile:
+   "messaging"` atau `agents.defaults.sandbox.mode: "all"`, **jangan tawarkan sebagai default
+   satu-klik** — selalu jelaskan efeknya secara eksplisit dan tanyakan dulu apakah pengguna
+   memakai skill ber-script / punya Docker.
+4. Perubahan yang bisa "mengunci" pengguna dari akses (auth Gateway) sebaiknya dilakukan
+   bersama saat pengguna siap, bukan di tengah percakapan santai tentang privasi.

@@ -26,7 +26,7 @@ Tidak ingin menerima info promo lagi? Balas STOP.
 {sapaan} {nama}, stok lauk anak di freezer masih ada? 🍗
 Minggu ini Nugget Ayam 1 kg di Frozen Mama Nisa cuma Rp 55.000, sampai hari Minggu saja.
 Tinggal balas "NUGGET" + jumlahnya, nanti kami siapkan.
-Kamu menerima pesan ini karena pelanggan Frozen Mama Nisa. Balas STOP untuk berhenti.
+Pesan ini dikirim karena {sapaan} pelanggan Frozen Mama Nisa. Balas STOP untuk berhenti.
 ```
 
 ### Variasi 3
@@ -62,3 +62,5 @@ target pelanggan ibu rumah tangga; sapaan default "Kak". Mau versi lebih pendek 
 - Teks berhenti ada di tiap variasi; emoji ≤ 1 per variasi.
 - **Kurang (ringan):** Variasi 2 menebak target "lauk anak" dari asumsi — wajar, sudah disebut di asumsi, tetapi
   SKILL.md tidak mengatur boleh/tidaknya menambah sudut pandang pembeli yang tidak diberikan.
+- **Uji ulang v1.0.2:** kalimat alasan menerima pesan diganti dari "Kamu menerima …" ke "Pesan ini dikirim karena {sapaan} …" agar
+  satu sapaan per pesan (aturan baru SKILL.md langkah 2). Semua teks berhenti lolos cek instruksi tindakan v1.0.2.

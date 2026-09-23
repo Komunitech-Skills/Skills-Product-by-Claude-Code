@@ -25,6 +25,14 @@ lain, atau menyimpan daftar piutang/kontak pelanggan.
 5. **Notifikasi kalau ada kebocoran data**, sesuai jangka waktu yang diatur (ringkasan umum:
    dalam hitungan hari sejak diketahui — cek ketentuan resmi terbaru untuk angka pastinya).
 
+## Data kesehatan = kategori khusus (Pasal 4 UU PDP)
+UU PDP membedakan data pribadi **umum** (nama, alamat, nomor HP) dan data pribadi **spesifik**
+(Pasal 4), yang secara umum mencakup: data kesehatan, data biometrik, data genetika, catatan
+kejahatan, data keuangan pribadi, dan data anak. Data pribadi spesifik mendapat perlindungan
+lebih ketat. **Kalau OpenClaw pengguna memproses data pasien/kesehatan**, perlakukan sebagai
+kategori khusus ini — jangan disamakan dengan data pelanggan toko biasa. Skill ini tetap
+**tidak** memberi kepastian hukum untuk kasus kesehatan; arahkan ke tenaga profesional/legal.
+
 ## Yang bisa langsung diterapkan di OpenClaw (rekomendasi praktis, bukan kewajiban hukum pasti)
 - **Beri tahu identitas asisten virtual** di pesan pertama ke pelanggan (mis. "Ini asisten
   virtual toko kami, balasan bisa dibantu AI"). Jujur, tidak menyamar sebagai manusia.
@@ -32,10 +40,13 @@ lain, atau menyimpan daftar piutang/kontak pelanggan.
   yang berisi data sensitif (keluarga, pasien, HR internal).
 - **Simpan data pelanggan seperlunya** di file lokal (mis. daftar piutang), bukan lebih dari
   yang dipakai untuk pekerjaan itu.
-- **Data kesehatan/pasien** perlu perlakuan lebih hati-hati (kategori data sensitif) — skill ini
-  **tidak** memberi kepastian hukum untuk kasus kesehatan; arahkan ke tenaga profesional/legal.
 - **Kalau ada permintaan pelanggan untuk dihapus datanya**, pastikan pemilik usaha tahu di mana
-  data itu tersimpan secara lokal (folder workspace OpenClaw) agar bisa dihapus.
+  data itu tersimpan secara lokal (folder workspace OpenClaw), dan bisa dihapus lewat
+  `openclaw memory forget` (lihat `references/openclaw.md` §7) atau menghapus filenya langsung.
+- **Langkah manual tambahan untuk data sensitif** (di luar config OpenClaw, tapi tetap relevan
+  untuk kepatuhan praktis): aktifkan enkripsi disk penuh (FileVault di Mac, BitLocker di
+  Windows), kunci layar otomatis, dan backup terenkripsi untuk komputer yang menyimpan data
+  pasien/pelanggan sensitif.
 
 ## Disclaimer
 Ringkasan ini **bukan nasihat hukum**. Untuk kepatuhan penuh (terutama usaha yang memproses
