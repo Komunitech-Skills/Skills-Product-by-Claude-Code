@@ -1,0 +1,185 @@
+---
+name: karyawan-ai-mulai
+description: Onboarding "Starter Kit Karyawan AI" untuk pengguna OpenClaw yang belum tahu mulai dari mana — wawancara maks. 5 pertanyaan, rekomendasi paket skill dari library Komunitech, bantu pasang skill (dengan izin), jalankan satu tugas pertama nyata, rencana 7 hari, dan arahkan ke cek privasi. Gunakan saat pengguna bilang "mulai karyawan AI", "bantu saya mulai pakai AI di bisnis", "setup asisten", "gimana caranya mulai", atau get started with AI employee, AI onboarding, setup AI assistant. Bukan untuk memeriksa/mengubah pengaturan keamanan (pakai cek-privasi-openclaw) atau menjalankan tugas spesifik (langsung pakai skill terkait, mis. rekap-penjualan-csv).
+---
+
+# Starter Kit "Karyawan AI" — Onboarding
+
+## Tujuan
+Membuat pengguna OpenClaw yang awam teknologi **mulai memakai** library skill Komunitech
+dalam satu percakapan: dari "tidak tahu mulai dari mana" sampai punya hasil nyata di tangan
+dan rencana 7 hari yang jelas.
+
+## Kapan digunakan
+- Pemicu: "mulai karyawan AI", "bantu saya mulai pakai AI di bisnis", "setup asisten",
+  "gimana cara mulai pakai OpenClaw untuk bisnis saya", "onboarding", "karyawan AI".
+- Pengguna baru pertama kali, atau ingin mengatur ulang paket kerjanya.
+
+## Kapan TIDAK digunakan
+- Pengguna sudah tahu skill apa yang mau dipakai dan tinggal jalan → langsung arahkan ke
+  skill itu, jangan wawancara ulang.
+- Permintaan tentang keamanan/privasi OpenClaw → pakai `cek-privasi-openclaw` (skill ini hanya
+  **menyebut** dan menawarkannya di langkah terakhir).
+- Menjadwalkan laporan otomatis mendetail → ini di luar cakupan versi skill saat ini; beri
+  contoh perintah `openclaw automations` di `references/openclaw.md` sebagai titik awal, dan
+  jelaskan bahwa fitur penjadwalan penuh ada di skill terpisah bila sudah tersedia.
+
+## Input — wawancara maksimal 5 pertanyaan
+
+Tanyakan **sekali**, dalam satu pesan bernomor. Kalau OpenClaw berjalan di WhatsApp/kanal yang
+mendukung tool `ask_user` dengan pilihan, tawarkan pilihan bernomor 1️⃣–4️⃣ per pertanyaan (maks.
+4 opsi) supaya pengguna cukup membalas angka; kalau tidak, tanyakan sebagai teks biasa.
+
+| # | Pertanyaan | Wajib? | Default jika tidak dijawab |
+|---|---|---|---|
+| 1 | Profesi/peran & industri usaha (mis. "owner toko F&B", "konsultan", "admin kantor") | Ya | Tanyakan ulang sekali; kalau tetap tidak ada, pakai "paket umum" |
+| 2 | Skala tim (solo / 2–5 / 6–15 / 16–50 / 50+ orang) | Tidak | "solo" |
+| 3 | 3 pekerjaan yang paling menyita waktu (bebas, boleh kurang dari 3) | Ya | Kalau kosong, tanyakan ulang sekali; kalau tetap kosong, pakai paket default industri |
+| 4 | Kanal favorit untuk dibantu AI (WhatsApp / Telegram / langsung di komputer) | Tidak | "WhatsApp" |
+| 5 | Apakah ada kekhawatiran soal privasi/data, dan apakah komputer/laptop biasanya menyala terus (untuk laporan otomatis nanti) | Tidak | Anggap "ada kekhawatiran" (lebih aman) dan "komputer tidak selalu menyala" |
+
+Kalau pengguna bilang "cepat saja" / "terserah" / ingin langsung mulai: **jangan** menahan di
+wawancara. Pakai default di atas, sebutkan asumsinya secara singkat di akhir, dan lanjutkan.
+
+## Langkah kerja
+
+1. **Wawancara** (lihat tabel Input). Tulis ringkasan satu paragraf dari jawaban sebelum lanjut,
+   supaya pengguna bisa mengoreksi kalau salah tangkap.
+2. **Cocokkan ke rekomendasi skill.** Gunakan `references/peta-skill.md` (tabel statis) sebagai
+   sumber kebenaran. Kalau ingin hasil yang konsisten secara terprogram, jalankan (opsional):
+   ```bash
+   python3 <folder-skill-ini>/scripts/peta_kebutuhan.py --tugas "<tugas 1>" --tugas "<tugas 2>" \
+     --tugas "<tugas 3>" --industri "<industri>" --json
+   ```
+   (Windows: `python`/`py`.) Kalau Python tidak bisa dijalankan, cocokkan **manual** memakai
+   tabel di `references/peta-skill.md` — jangan menyebut nama skill yang tidak ada di tabel itu.
+3. **Rekomendasikan 3 skill "paket kerja pertama"** + alasan 1 baris per skill, dan sebutkan
+   1 ide otomasi lanjutan (tidak wajib dipasang sekarang) — lihat §5 di `references/openclaw.md`.
+4. **Cek skill yang sudah terpasang.** Ikuti `references/openclaw.md` §1 (`openclaw skills list`,
+   atau baca folder skills bila `exec` tidak diizinkan). Tandai skill yang sudah ada vs yang
+   perlu dipasang.
+5. **Pandu pemasangan skill yang belum ada — SELALU minta izin eksplisit dulu.** Ikuti
+   `references/openclaw.md` §2. Jangan pernah memasang tanpa konfirmasi "ya/lanjut" dari
+   pengguna. Jangan memasang dari sumber di luar paket Komunitech tanpa izin eksplisit terpisah.
+   Jangan mempublikasikan skill apa pun ke ClawHub.
+6. **Jalankan SATU tugas pertama nyata** memakai skill yang paling relevan dari rekomendasi,
+   dengan data pengguna kalau ada, atau data contoh (`examples/` skill terkait) kalau belum ada.
+   Pengguna harus melihat **hasil siap pakai** di menit pertama, bukan penjelasan umum.
+7. **Simpan profil kerja** (bukan data pribadi pelanggan) ke memori lokal sesuai
+   `references/openclaw.md` §4, supaya skill lain tidak bertanya ulang hal yang sama.
+8. **Beri rencana 7 hari** — satu kebiasaan baru per hari, memakai skill dari rekomendasi.
+   Format lihat di bawah. Sesuaikan urutan dengan tugas prioritas pengguna.
+9. **Tawarkan cek privasi.** Jelaskan singkat (2 kalimat) apa yang dicek `cek-privasi-openclaw`,
+   dan tanyakan apakah mau langsung dijalankan sekarang atau nanti. **Jangan** menjalankannya
+   sendiri di sini — itu tanggung jawab skill `cek-privasi-openclaw`.
+
+## Format output
+
+```
+## Ringkasan Anda
+<1 paragraf: profesi, skala tim, tugas prioritas, kanal, catatan privasi/komputer>
+
+## Rekomendasi Paket Kerja Pertama
+1. **<skill>** — <alasan 1 baris>
+2. **<skill>** — <alasan 1 baris>
+3. **<skill>** — <alasan 1 baris>
+
+Ide otomasi lanjutan (opsional, bisa nanti): <1 kalimat>
+
+## Status Pemasangan
+- Sudah terpasang: <daftar atau "belum ada">
+- Perlu dipasang: <daftar> → [tunggu izin pengguna sebelum memasang]
+
+## Hasil Tugas Pertama
+<hasil nyata dari skill yang dijalankan — bukan penjelasan, tapi output siap pakai>
+
+## Rencana 7 Hari
+| Hari | Kebiasaan baru | Skill |
+|---|---|---|
+| 1 | ... | ... |
+| 2 | ... | ... |
+| ... | ... | ... |
+| 7 | ... | ... |
+
+## Privasi
+Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang (skill
+`cek-privasi-openclaw`), atau lain kali saja?
+
+**Asumsi yang dipakai (bila ada default):** <sebutkan>
+```
+
+## Contoh
+
+**Input pengguna:** "mulai karyawan AI, saya owner toko kopi kecil, tim 4 orang, paling capek
+bikin caption tiap hari, balas chat WA, sama rekap jualan tiap minggu, semua lewat WhatsApp,
+laptop kadang mati"
+
+**Output (ringkas):**
+```
+## Ringkasan Anda
+Anda owner toko kopi (F&B), tim 4 orang, ingin dibantu untuk caption harian, balas chat
+pelanggan, dan rekap penjualan mingguan — semua lewat WhatsApp. Laptop tidak selalu menyala,
+jadi laporan otomatis terjadwal belum cocok dulu untuk Anda.
+
+## Rekomendasi Paket Kerja Pertama
+1. **caption-sosmed-umkm** — caption siap tempel tiap hari, hemat waktu bikin konten.
+2. **balas-chat-cs** — draf balasan chat pelanggan dari FAQ sampai komplain.
+3. **rekap-penjualan-csv** — kirim file penjualan mingguan, langsung dapat rekap omzet & tren.
+
+Ide otomasi lanjutan: laporan mingguan otomatis lewat Telegram (lebih stabil dari WA Web),
+tapi perlu komputer menyala terus — bisa dibahas nanti.
+
+## Status Pemasangan
+- Sudah terpasang: belum ada
+- Perlu dipasang: caption-sosmed-umkm, balas-chat-cs, rekap-penjualan-csv → boleh saya pasang
+  sekarang ke folder skill global OpenClaw Anda? (ya/tidak)
+
+[setelah "ya"]
+## Hasil Tugas Pertama
+<contoh: 3 caption siap tempel untuk promo kopi hari ini, dari brief singkat pengguna>
+
+## Rencana 7 Hari
+| Hari | Kebiasaan baru | Skill |
+|---|---|---|
+| 1 | Minta 1 caption pagi sebelum buka toko | caption-sosmed-umkm |
+| 2 | Coba draf balasan untuk 3 chat pelanggan | balas-chat-cs |
+| 3 | Kirim file penjualan kemarin, minta rekap singkat | rekap-penjualan-csv |
+| 4 | Minta caption untuk promo mingguan | caption-sosmed-umkm |
+| 5 | Balas 5 chat pelanggan pakai draf AI | balas-chat-cs |
+| 6 | Review rekap penjualan minggu ini | rekap-penjualan-csv |
+| 7 | Evaluasi: skill mana paling membantu, lanjut paket berikutnya? | — |
+
+## Privasi
+Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, atau lain kali?
+```
+
+## Checklist sebelum mengirim hasil
+- [ ] Wawancara maksimal 5 pertanyaan, dalam satu pesan.
+- [ ] Rekomendasi skill berasal dari `references/peta-skill.md` (atau script), bukan tebakan.
+- [ ] Tidak ada pemasangan skill tanpa izin eksplisit pengguna.
+- [ ] Ada minimal satu hasil nyata siap pakai (bukan cuma rencana).
+- [ ] Rencana 7 hari konkret dan sesuai prioritas pengguna.
+- [ ] Menyebut fakta yang belum pasti dengan jujur (mis. skill tidak ada padanan, otomasi
+      butuh komputer menyala).
+- [ ] Tidak menjanjikan hal di luar §"Batasan" (posting otomatis medsos, auto-trading,
+      diagnosis medis, dll.).
+
+## Batasan & penanganan error
+- **Industri/tugas tanpa padanan di `peta-skill.md`:** katakan jujur, jangan mengarang nama
+  skill. Tawarkan paket umum atau skill terdekat.
+- **`exec`/perintah komputer tidak diizinkan:** ikuti fallback di `references/openclaw.md` —
+  beri perintah salin-tempel, jangan berhenti begitu saja.
+- **Skill baru dipasang tapi belum "terlihat":** ini normal (snapshot skill dibaca ulang tiap
+  sesi baru). Minta pengguna mengulang permintaan atau membuka sesi baru.
+- **Pengguna minta otomasi terjadwal tapi komputer tidak menyala 24 jam:** jelaskan jujur bahwa
+  jadwal tidak akan berjalan kalau Gateway OpenClaw mati/komputer tidur, dan sarankan opsi
+  (komputer yang selalu menyala, atau tunda dulu otomasi).
+- **Data sensitif** (kesehatan pasien, keuangan pribadi orang lain, dsb.) yang muncul saat
+  wawancara: jangan disimpan ke memori lokal kecuali perlu untuk pekerjaan itu sendiri, dan
+  ingatkan pengguna soal UU PDP bila menyangkut data pelanggan/karyawan.
+- **Permintaan di luar cakupan library** (posting otomatis ke Instagram/TikTok, auto-trading
+  kripto, skrining/diagnosis medis, clone wajah/suara): tolak dengan sopan, jelaskan alasannya
+  singkat, dan arahkan ke `cek-privasi-openclaw` atau skill lain yang relevan bila ada.
+- Skill ini **tidak** memasang paket dari luar Starter Kit Komunitech, **tidak** mempublikasikan
+  apa pun ke ClawHub, dan **tidak** mengirim data pengguna ke server di luar penyedia model AI
+  yang sudah dipilih pengguna sendiri.

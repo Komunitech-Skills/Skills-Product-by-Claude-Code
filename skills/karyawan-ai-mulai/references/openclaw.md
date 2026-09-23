@@ -1,0 +1,91 @@
+# Perintah OpenClaw yang dipakai skill ini
+
+Semua perintah di bawah **diverifikasi** dengan `--help` di OpenClaw **2026.9.5** (mesin uji
+terisolasi, tanpa login kanal apa pun). Kalau versi OpenClaw pengguna berbeda dan perintah
+gagal, jalankan `<perintah> --help` dulu untuk memastikan opsinya masih sama, lalu beri tahu
+pengguna.
+
+**Fallback wajib:** kalau `exec`/perintah komputer tidak diizinkan (tidak ada respons, ditolak,
+atau pengguna memakai platform selain OpenClaw seperti Claude Code/Codex/Cursor), **jangan
+memaksa**. Tampilkan perintah sebagai teks yang bisa disalin-tempel pengguna sendiri di
+terminal, atau jelaskan langkah manual (salin folder skill ke folder skills platform yang
+dipakai — lihat `docs/instalasi.md` di paket).
+
+## 1. Cek skill yang sudah terpasang
+
+```bash
+openclaw skills list --eligible
+```
+atau untuk detail lebih lengkap (termasuk yang belum siap dan alasannya):
+```bash
+openclaw skills list --verbose --json
+```
+Kalau `exec` tidak diizinkan: cek langsung isi folder skills platform yang dipakai (mis.
+`~/.openclaw/skills/`, `~/.claude/skills/`) dengan `read`/`list file`, atau tanyakan ke
+pengguna skill apa saja yang sudah ada.
+
+## 2. Pasang skill yang belum ada (SELALU minta izin pengguna dulu)
+
+Paket Komunitech sudah berupa **folder skill** (bukan diinstal dari ClawHub/git pihak luar).
+Path folder ada di dalam Starter Kit yang diunduh pengguna, contoh: `./rekap-penjualan-csv`.
+
+```bash
+openclaw skills install ./<nama-skill> --global
+```
+- `--global` memasang ke folder terkelola bersama (`~/.openclaw/skills`), dipakai semua agent.
+- Skill yang baru dipasang baru terbaca pada **giliran/pesan berikutnya**. Kalau agent belum
+  "melihat" skill yang baru dipasang, minta pengguna mengetik ulang permintaannya atau membuka
+  sesi baru (`/new` bila tersedia).
+- **Jangan pernah** memasang skill dari sumber di luar paket Komunitech (ClawHub publik, git
+  pihak luar, dsb.) tanpa izin eksplisit pengguna — ini melanggar aturan library.
+- **Jangan** mempublikasikan skill Komunitech ke ClawHub (registry publik); skill ini berlisensi
+  untuk pembeli, bukan untuk dibagikan gratis.
+
+Contoh dialog persetujuan sebelum memasang:
+> "Saya akan pasang skill `rekap-penjualan-csv`, `balas-chat-cs`, dan `caption-sosmed-umkm` dari
+> Starter Kit ke folder skill global OpenClaw Anda (`~/.openclaw/skills`). Lanjut? (ya/tidak)"
+
+## 3. Menjalankan tugas pertama (quick win)
+
+Tidak ada perintah CLI khusus — cukup memakai skill yang baru dipasang seperti biasa lewat
+chat (mis. minta pengguna mengirim file CSV penjualan, atau pakai contoh data di `examples/`
+skill yang bersangkutan bila pengguna belum punya data sendiri).
+
+## 4. Menyimpan profil kerja ke memori lokal
+
+Simpan lewat file `USER.md`/`MEMORY.md` di workspace OpenClaw pengguna (`~/.openclaw/workspace`),
+BUKAN lewat perintah CLI khusus (tidak ada subperintah CLI untuk menulis memori secara langsung
+di versi ini). Gunakan tool `write`/`edit` file biasa untuk menambahkan baris ringkas, misalnya:
+
+```
+## Profil kerja (diisi karyawan-ai-mulai, <tanggal>)
+- Industri: F&B, skala 6–15 orang
+- Kanal favorit: WhatsApp (komputer TIDAK menyala 24 jam)
+- Tugas prioritas: rekap penjualan, balas chat CS, caption sosmed
+```
+
+Isi **hanya profil kerja**, bukan data pribadi pelanggan atau nomor kontak orang lain.
+
+## 5. Otomasi (opsional, tahap "rencana 7 hari" hari ke-7 atau setelahnya)
+
+Kalau pengguna sudah siap menjadwalkan laporan rutin, jelaskan bahwa itu perlu **komputer
+menyala terus** ("Cron runs inside the Gateway process; it does not fire if the Gateway is not
+running continuously" — dari FAQ resmi OpenClaw) dan arahkan ke skill `laporan-otomatis-terjadwal`
+(bila sudah tersedia) atau contoh perintah berikut untuk dijalankan **dengan persetujuan**:
+
+```bash
+openclaw automations add "0 7 * * 1" \
+  "Jalankan rekap-penjualan-csv untuk minggu lalu dari folder laporan/masuk. Tulis ringkas, Bahasa Indonesia." \
+  --name "Laporan penjualan Senin" --tz "Asia/Jakarta" --session isolated \
+  --announce --channel telegram --to "<ID chat pemilik>"
+```
+(`openclaw automations add` = alias `openclaw cron add`, terverifikasi lewat `openclaw automations create --help`.)
+Untuk WhatsApp ganti `--channel whatsapp --to "+62..."` — nomor pemilik harus ada di
+`allowFrom` kanal WA, dan pengguna harus disadarkan pada **risiko blokir WA Web** (bukan kanal
+resmi). **Rekomendasi default: Telegram.**
+
+## 6. Privasi
+
+Setelah paket pertama terpasang, tawarkan menjalankan skill `cek-privasi-openclaw` untuk
+memeriksa pengaturan keamanan dasar — terutama bagi pengguna yang menandai "khawatir privasi"
+saat wawancara.
