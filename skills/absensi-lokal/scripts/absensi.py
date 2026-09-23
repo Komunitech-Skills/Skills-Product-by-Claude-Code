@@ -919,6 +919,7 @@ def analisa_karyawan(conn, k, dari, sampai, cfg, libur, kini):
                    "salah")
         if ada_tap and (masuk is None or pulang is None):
             belum = pulang is None and masuk is not None and kini < selesai + timedelta(hours=8)
+            h["belum_pulang"] = belum
             if not belum:
                 tambah(d, "tap_tidak_lengkap", "hanya ada jam %s (%s); jam %s tidak tercatat"
                        % ("masuk" if masuk else "pulang", fjm(masuk or pulang), "pulang" if masuk else "masuk"),
@@ -931,7 +932,7 @@ def analisa_karyawan(conn, k, dari, sampai, cfg, libur, kini):
         elif ada_tap:
             h["status"] = "hadir" if jh == "kerja" else "hadir di hari libur"
         elif jh == "kerja":
-            h["status"] = "tanpa keterangan"
+            h["status"] = "belum absen" if d == kini.date() else "tanpa keterangan"
         else:
             h["status"] = "libur"
         if ada_tap and valid and masuk and pulang:
@@ -944,8 +945,6 @@ def analisa_karyawan(conn, k, dari, sampai, cfg, libur, kini):
                     h["terlambat_menit"] = tl
             if pulang and valid and pulang < selesai:
                 h["pulang_cepat_menit"] = int((selesai - pulang).total_seconds() // 60)
-                if h["pulang_cepat_menit"] == 0:
-                    h["pulang_cepat_menit"] = 0
         h["_mulai"], h["_selesai"], h["_masuk"], h["_pulang"], h["_valid"] = mulai, selesai, masuk, pulang, valid
         hari.append(h)
         d += timedelta(days=1)
@@ -1060,7 +1059,8 @@ def ringkas_karyawan(k, hari, lemb):
     r["pulang_cepat_kali"] = sum(1 for h in hari if h["pulang_cepat_menit"] > 0)
     r["pulang_cepat_menit"] = sum(h["pulang_cepat_menit"] for h in hari)
     r["menit_kerja"] = sum(h["menit_kerja"] or 0 for h in hari)
-    r["hari_tidak_lengkap"] = sum(1 for h in hari if (h["masuk"] or h["pulang"]) and h["menit_kerja"] is None)
+    r["hari_tidak_lengkap"] = sum(1 for h in hari if (h["masuk"] or h["pulang"]) and h["menit_kerja"] is None
+                                  and not h.get("belum_pulang"))
     r["lembur_jam_hari_kerja"] = lemb["jam_hari_kerja"]
     r["lembur_jam_hari_libur"] = lemb["jam_hari_libur"]
     r["lembur_jam_setara"] = lemb["jam_setara"]
@@ -1626,55 +1626,91 @@ def cmd_keterangan(args):
     return jalankan_tulis(args, "keterangan", kerja)
 
 
+def _catat_lembur(conn, k, d, jam_teks, catatan_input, ganti):
+    """Simpan satu lembur disetujui. Kembalikan (data, teks)."""
+    jam = parse_durasi_jam(jam_teks)
+    if jam is None or jam <= 0:
+        raise Gagal("Jam lembur '%s' tidak valid. Contoh: 2, 1,5, 1:30, '1 jam 30 menit'." % jam_teks)
+    if jam > 12:
+        raise Gagal("Jam lembur %s dalam sehari tidak wajar (> 12 jam). Periksa lagi." % fjam(jam))
+    jam = jam.quantize(Decimal("0.01"))
+    catatan = []
+    lama = conn.execute("SELECT jam FROM lembur WHERE kode=? AND tanggal=?", (k.kode, d.isoformat())).fetchone()
+    if lama and not ganti:
+        raise Gagal("Lembur %s tanggal %s sudah tercatat %s jam. Untuk mengganti, ulangi dengan --ganti."
+                    % (k.nama, ftgl(d), fjam(Decimal(lama[0]))))
+    conn.execute("INSERT OR REPLACE INTO lembur VALUES (?,?,?,?,?)",
+                 (k.kode, d.isoformat(), str(jam), catatan_input or "", sekarang().isoformat(sep=" ")))
+    jh = jenis_hari(k, d, libur_set(conn, d, d))
+    if jh == "kerja":
+        setara = jam_setara_hari_kerja(jam)
+        pola = "hari kerja (Pasal 31 ayat (1): jam pertama 1,5x, berikutnya 2x)"
+        if jam > MAKS_LEMBUR_HARI_KERJA:
+            catatan.append("Melebihi batas 4 jam/hari di hari kerja (Pasal 26 ayat (1)).")
+    else:
+        p = str(k.hari_kerja)
+        if k.hari_kerja == 6 and jh == "libur-resmi" and k.hari_pendek and d.isoweekday() == k.hari_pendek:
+            p = "6p"
+        setara, err = jam_setara_libur(jam, p)
+        pola = {"5": "hari istirahat/libur, pola 5 hari kerja (Pasal 31 ayat (3))",
+                "6": "hari istirahat/libur, pola 6 hari kerja (Pasal 31 ayat (2) huruf a)",
+                "6p": "libur resmi di hari kerja terpendek, pola 6 hari (Pasal 31 ayat (2) huruf b)"}[p]
+        if err:
+            raise Gagal("Lembur %s %s jam pada %s %s. Periksa jumlah jamnya." % (k.nama, fjam(jam), ftgl(d), err))
+    if k.tanpa_lembur:
+        catatan.append("Karyawan ini ditandai golongan jabatan tertentu: lembur dicatat tetapi tidak dibayar "
+                       "(Pasal 27).")
+    if not catatan_input:
+        catatan.append("Sebaiknya isi --catatan siapa yang memerintahkan/menyetujui (Pasal 28: perintah dan "
+                       "persetujuan tertulis/digital).")
+    dasar, _ = k.dasar_lembur()
+    nominal = bulat_rp(setara * dasar / PEMBAGI_UPAH_SEJAM) if dasar is not None and not k.tanpa_lembur else None
+    teks = "Lembur DISETUJUI - %s (%s), %s %s: %s jam\nJenis: %s\nJam setara: %s x upah sejam%s" % (
+        k.nama, k.kode, HARI[d.weekday()], ftgl(d), fjam(jam), pola, fjam(setara),
+        " = %s (upah sejam %s, dibulatkan untuk tampilan)" % (rp(nominal), rp(dasar / PEMBAGI_UPAH_SEJAM))
+        if nominal is not None else "")
+    if lama:
+        catatan.append("Menggantikan lembur lama %s jam." % fjam(Decimal(lama[0])))
+    teks += "".join("\nCatatan: " + c for c in catatan)
+    return {"karyawan": k.kode, "tanggal": d.isoformat(), "jam": str(jam), "jenis_hari": jh,
+            "jam_setara": str(setara), "perkiraan_upah": nominal, "catatan": catatan}, teks
+
+
+SIN_LEMBUR = {"tanggal": ["tanggal", "tgl", "date"],
+              "karyawan": ["kode", "karyawan", "nama", "kode karyawan", "nama karyawan"],
+              "jam": ["jam", "jam lembur", "lama lembur", "lama", "durasi"],
+              "catatan": ["disetujui_oleh", "disetujui oleh", "catatan", "keterangan", "perintah", "approval"]}
+
+
 def cmd_lembur(args):
     def kerja(conn):
+        if args.file:
+            tabel = baca_tabel(args.file)
+            hi = cari_header(tabel, SIN_LEMBUR, minimal=3)
+            if hi is None:
+                raise Gagal("File lembur wajib punya kolom tanggal, kode/nama karyawan, dan jam "
+                            "(contoh: templates/lembur-disetujui-contoh.csv).")
+            kol = deteksi_kolom(tabel[hi], SIN_LEMBUR)
+            hasil, galat = [], []
+            for i, r in enumerate(tabel[hi + 1:], start=hi + 2):
+                if not any((c or "").strip() for c in r):
+                    continue
+                try:
+                    k = cari_karyawan(conn, sel(r, kol["karyawan"]))
+                    d = tanggal_wajib(sel(r, kol["tanggal"]))
+                    hasil.append(_catat_lembur(conn, k, d, sel(r, kol["jam"]), sel(r, kol.get("catatan")), args.ganti))
+                except Gagal as e:
+                    galat.append("Baris %d: %s" % (i, e.pesan))
+            if galat:
+                raise Gagal("Ada %d baris lembur bermasalah; tidak ada yang disimpan." % len(galat), baris_rusak=galat)
+            teks = "Daftar lembur disetujui (%d baris):\n" % len(hasil) + "\n\n".join(t for _, t in hasil)
+            return {"lembur": [x for x, _ in hasil], "ringkasan": {"lembur_file": len(hasil)}}, teks
+        if not (args.karyawan and args.tanggal and args.jam):
+            raise Gagal("Isi --karyawan, --tanggal, dan --jam (atau --file daftar-lembur.csv).")
         k = cari_karyawan(conn, args.karyawan)
-        d = tanggal_wajib(args.tanggal)
-        jam = parse_durasi_jam(args.jam)
-        if jam is None or jam <= 0:
-            raise Gagal("Jam lembur '%s' tidak valid. Contoh: 2, 1,5, 1:30, '1 jam 30 menit'." % args.jam)
-        if jam > 12:
-            raise Gagal("Jam lembur %s dalam sehari tidak wajar (> 12 jam). Periksa lagi." % fjam(jam))
-        jam = jam.quantize(Decimal("0.01"))
-        catatan = []
-        lama = conn.execute("SELECT jam FROM lembur WHERE kode=? AND tanggal=?", (k.kode, d.isoformat())).fetchone()
-        if lama and not args.ganti:
-            raise Gagal("Lembur %s tanggal %s sudah tercatat %s jam. Untuk mengganti, ulangi dengan --ganti."
-                        % (k.nama, ftgl(d), fjam(Decimal(lama[0]))))
-        conn.execute("INSERT OR REPLACE INTO lembur VALUES (?,?,?,?,?)",
-                     (k.kode, d.isoformat(), str(jam), args.catatan or "", sekarang().isoformat(sep=" ")))
-        libur = libur_set(conn, d, d)
-        jh = jenis_hari(k, d, libur)
-        if jh == "kerja":
-            setara = jam_setara_hari_kerja(jam)
-            pola = "hari kerja (Pasal 31 ayat (1): jam pertama 1,5x, berikutnya 2x)"
-            if jam > MAKS_LEMBUR_HARI_KERJA:
-                catatan.append("Melebihi batas 4 jam/hari di hari kerja (Pasal 26 ayat (1)).")
-        else:
-            p = str(k.hari_kerja)
-            if k.hari_kerja == 6 and jh == "libur-resmi" and k.hari_pendek and d.isoweekday() == k.hari_pendek:
-                p = "6p"
-            setara, err = jam_setara_libur(jam, p)
-            pola = {"5": "hari istirahat/libur, pola 5 hari kerja (Pasal 31 ayat (3))",
-                    "6": "hari istirahat/libur, pola 6 hari kerja (Pasal 31 ayat (2) huruf a)",
-                    "6p": "libur resmi di hari kerja terpendek, pola 6 hari (Pasal 31 ayat (2) huruf b)"}[p]
-            if err:
-                raise Gagal("Lembur %s jam %s. Periksa jumlah jamnya." % (fjam(jam), err))
-        if k.tanpa_lembur:
-            catatan.append("Karyawan ini ditandai golongan jabatan tertentu: lembur dicatat tetapi tidak dibayar "
-                           "(Pasal 27).")
-        if not args.catatan:
-            catatan.append("Sebaiknya isi --catatan siapa yang memerintahkan/menyetujui (Pasal 28: perintah dan "
-                           "persetujuan tertulis/digital).")
-        dasar, _ = k.dasar_lembur()
-        nominal = bulat_rp(setara * dasar / PEMBAGI_UPAH_SEJAM) if dasar is not None and not k.tanpa_lembur else None
-        teks = "Lembur DISETUJUI - %s (%s), %s %s: %s jam\nJenis: %s\nJam setara: %s x upah sejam%s" % (
-            k.nama, k.kode, HARI[d.weekday()], ftgl(d), fjam(jam), pola, fjam(setara),
-            " = %s (upah sejam %s)" % (rp(nominal), rp(dasar / PEMBAGI_UPAH_SEJAM)) if nominal is not None else "")
-        teks += "".join("\nCatatan: " + c for c in catatan)
-        return {"karyawan": k.kode, "tanggal": d.isoformat(), "jam": str(jam), "jenis_hari": jh,
-                "jam_setara": str(setara), "perkiraan_upah": nominal, "catatan": catatan,
-                "ringkasan": {"lembur": k.kode, "tanggal": d.isoformat(), "jam": str(jam)}}, teks
+        data, teks = _catat_lembur(conn, k, tanggal_wajib(args.tanggal), args.jam, args.catatan, args.ganti)
+        data["ringkasan"] = {"lembur": k.kode, "tanggal": data["tanggal"], "jam": data["jam"]}
+        return data, teks
     return jalankan_tulis(args, "lembur", kerja)
 
 
@@ -1722,7 +1758,7 @@ SIN_ABSEN = {
     "pulang": ["scan pulang", "scan keluar", "pulang", "clock out", "check out", "checkout", "absen pulang",
                "jam pulang", "jam keluar", "keluar", "out"],
     "jam": ["jam", "time", "pukul", "jam scan", "waktu absen"],
-    "status": ["status", "state", "check type", "checktype", "punch state", "in/out", "tipe", "jenis", "mode absen",
+    "status": ["status", "state", "masuk/keluar", "status absen", "in/out status", "check type", "checktype", "punch state", "in/out", "tipe", "jenis", "mode absen",
                "type"],
 }
 STATUS_MASUK = {"c/in", "in", "check in", "checkin", "check-in", "masuk", "datang", "0", "i", "clock in", "duty on",
@@ -1863,7 +1899,8 @@ def cmd_impor_absen(args):
                         jm_teks = sel(r, kol["jam"])
                     if re.fullmatch(r"\d{5}\.\d+", sel(r, kol["waktu"])):      # seri Excel tanggal+jam
                         n = float(sel(r, kol["waktu"]))
-                        tg, jm_teks = str(int(n)), str(n - int(n))[1:] if n != int(n) else "0.0"
+                        tg = str(int(n))
+                        jm_teks = repr(n - int(n))[1:] if n != int(n) else (sel(r, kol["jam"]) if "jam" in kol else "")
                 else:
                     tg, jm_teks = pisah_tanggal_jam(sel(r, kol["tanggal"]))
                     if "jam" in kol:
@@ -1939,7 +1976,8 @@ def cmd_impor_absen(args):
             peringatan.append("%d baris rusak tidak diimpor (lihat daftar)." % len(rusak))
         contoh_baca = []
         for k, w, jenis, d in calon[:3]:
-            contoh_baca.append("%s: %s %s%s" % (k.nama, HARI[w.weekday()], w.strftime("%d %B %Y %H.%M"),
+            contoh_baca.append("%s: %s %d %s %d jam %s%s" % (k.nama, HARI[w.weekday()], w.day, BULAN_NAMA[w.month - 1],
+                                                    w.year, fjm(w),
                                                 " (%s)" % jenis if jenis else ""))
         teks = ["Impor absen dari %s (%s)" % (Path(args.file).name, "format per hari: masuk/pulang"
                                               if mode_harian else "format log tap"),
@@ -2089,8 +2127,7 @@ def cmd_rekap(args):
                          r["hadir"], r["hadir_di_hari_libur"], r["izin"], r["sakit"], r["cuti"], r["alpa"],
                          r["dinas"], r["tanpa_keterangan"], r["terlambat_kali"], r["terlambat_menit"],
                          r["pulang_cepat_kali"], r["pulang_cepat_menit"],
-                         fjam(Decimal(r["menit_kerja"]) / 60 if r["menit_kerja"] else 0).split(",")[0] + ":%02d"
-                         % (r["menit_kerja"] % 60), r["hari_tidak_lengkap"], fjam(r["lembur_jam_hari_kerja"]),
+                         "%d:%02d" % divmod(r["menit_kerja"], 60), r["hari_tidak_lengkap"], fjam(r["lembur_jam_hari_kerja"]),
                          fjam(r["lembur_jam_hari_libur"]), fjam(r["lembur_jam_setara"]),
                          r["dasar_upah_lembur"] if r["dasar_upah_lembur"] is not None else "",
                          r["upah_lembur"] if r["upah_lembur"] is not None else ""])
@@ -2220,7 +2257,7 @@ def cmd_harian(args):
                                                           h["pulang_cepat_menit"]))
         elif h["status"] == "hadir di hari libur":
             libur_masuk.append(r["nama"])
-        elif h["status"] == "tanpa keterangan":
+        elif h["status"] in ("tanpa keterangan", "belum absen"):
             belum.append(r["nama"])
         elif h["status"] in JENIS_KET:
             ket.append("%s (%s)" % (r["nama"], h["status"]))
@@ -2359,9 +2396,10 @@ def buat_parser():
     s.set_defaults(fungsi=cmd_keterangan)
 
     s = sub.add_parser("lembur", parents=[umum, tulis], help="Catat lembur yang DISETUJUI")
-    s.add_argument("--karyawan", required=True)
-    s.add_argument("--tanggal", required=True, help="Tanggal kerja (tanggal mulai shift)")
-    s.add_argument("--jam", required=True, help="Jam lembur disetujui, mis. 2 atau 1,5")
+    s.add_argument("--karyawan")
+    s.add_argument("--tanggal", help="Tanggal kerja (tanggal mulai shift)")
+    s.add_argument("--jam", help="Jam lembur disetujui, mis. 2 atau 1,5")
+    s.add_argument("--file", help="CSV daftar lembur disetujui (tanggal;kode;jam;disetujui_oleh)")
     s.add_argument("--catatan", help="Siapa yang memerintahkan/menyetujui")
     s.add_argument("--ganti", action="store_true")
     s.set_defaults(fungsi=cmd_lembur)

@@ -41,4 +41,8 @@ Hasil cek otomatis: LULUS, tanpa peringatan.
 - **Angka diverifikasi independen** dengan script Python terpisah (tanpa `rekap.py`): total 41.190.000 ✔, tiap baris Qty×Harga = Total ✔, 7 produk & persentase ✔, kategori ✔, 5 kelompok minggu berjumlah 41.190.000 ✔, hari terbaik/terendah ✔, 91,5% & selisih 3.810.000 ✔.
 - **Bagus:** tidak mengarang kendala/rencana; tabel 8 baris tetap muat (tanpa luber) pada 28px.
 - **Kurang:** SKILL.md tidak punya langkah eksplisit "jika pengguna memberi CSV, jalankan dulu `rekap-penjualan-csv`" — hanya bagian integrasi opsional. Font "Verdana/Tahoma" tidak ada di Linux/Android; tampil dengan font cadangan (aman, tapi klaim "terpasang bawaan di … Linux" di `aturan-desain.md` #4 tidak akurat).
-- **Cacat kerangka:** PDF A4 lanskap memotong kolom "Porsi" seluruhnya (lihat `ss-02-cacat-pdf-a4-lanskap-kolom-terpotong.png`).
+- **Cacat kerangka:** PDF A4 lanskap memotong kolom "Porsi" seluruhnya (screenshot v1.0 sudah diganti — lihat "Uji ulang v1.1.0" di HASIL-UJI.md).
+
+## Pembaruan uji ulang v1.1.0 (2026-09-23)
+File HTML di folder ini sudah **dibuat ulang dengan kerangka v1.1.0** (komponen `kartu-kpi`/`tabel-data`/`timeline`/`isi`, `@page 1920×1080`, overlay "putar HP", tombol Edit). Isi & angka sama dengan catatan di atas; cacat teknis v1.0 yang disebut di atas (PDF terpotong, teks kecil di HP tegak) sudah tidak terjadi — lihat bagian "Uji ulang v1.1.0" di `HASIL-UJI.md`.
+Khusus contoh ini di v1.1.0: angka per produk dari `rekap.py --kolom-produk Produk`, angka per kategori dari `rekap.py --kolom-produk Kategori` (rekap.py tidak punya rincian kategori, trik kolom ini dipakai), angka mingguan dijumlah eksplisit dengan Python dari `omzet_harian` hasil rekap.py (assert total = Rp 41.190.000). Hasil identik dengan v1.0 dan verifikasi independen.

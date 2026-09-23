@@ -22,9 +22,9 @@
 | Tanpa internet (request jaringan saat dibuka, 3 deck) | ✔ 0 request; tidak ada `<link>`/`<script src>`/font online |
 | `validasi_html.py` pada 3 deck | ✔ LULUS tanpa peringatan |
 | Teks meluber pada kanvas 1920×1080 (cek bounding box semua elemen) | ✔ 0 slide meluber di 31 slide |
-| HP 390×844 tegak | Tidak meluber, tetapi skala 0,203 → teks isi 28–32px menjadi **±5,7–6,5px** (lihat `ss-03-hp-390px-tegak-teks-kecil.png`). HP lanskap 844×390: skala 0,361 → ±10–11,6px, terbaca |
+| HP 390×844 tegak | Tidak meluber, tetapi skala 0,203 → teks isi 28–32px menjadi **±5,7–6,5px**. HP lanskap 844×390: skala 0,361 → ±10–11,6px, terbaca |
 | Cetak PDF, jumlah halaman | ✔ 13/10/8 halaman = 1 slide per halaman |
-| Cetak PDF, isi halaman | ✗ **Sisi kanan terpotong** di Letter tegak (bawaan) dan A4 lanskap (yang dianjurkan skill). Contoh: slide "Rencana penggunaan dana" KUR kehilangan seluruh kolom Rupiah; laporan kehilangan kolom "Porsi" (`ss-02-...png`) |
+| Cetak PDF, isi halaman | ✗ **Sisi kanan terpotong** di Letter tegak (bawaan) dan A4 lanskap (yang dianjurkan skill). Contoh: slide "Rencana penggunaan dana" KUR kehilangan seluruh kolom Rupiah; laporan kehilangan kolom "Porsi" |
 | Perbaikan diuji penguji | Menambah `@page { size: 1920px 1080px; margin: 0; }` + `* { -webkit-print-color-adjust: exact; print-color-adjust: exact; }` → 13 halaman 1440×810pt, utuh, warna latar ikut tercetak |
 | Format Rupiah | ✔ semua `Rp 1.250.000`, persen pakai koma desimal |
 | Angka | ✔ diverifikasi independen: aset 113.000.000; cicilan anuitas 4.563.291 (cocok `simulasi_kur.py`); rasio 46,6%; rekap CSV 41.190.000 / 91,5% / per produk, kategori, minggu |

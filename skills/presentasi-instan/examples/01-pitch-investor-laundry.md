@@ -45,3 +45,6 @@ Hasil cek otomatis: LULUS, tanpa peringatan.
 - **Uji teknis:** 0 permintaan jaringan (Playwright, halaman dimuat dari `file://`); tidak ada elemen meluber di 13 slide pada kanvas 1920×1080; `validasi_html.py` LULUS.
 - **Cacat (dari kerangka skill, bukan dari isi):** cetak PDF lewat Chromium memotong sisi kanan setiap slide — kolom "Nominal" (Rp 150.000.000 / Rp 450.000.000) hilang di A4 lanskap maupun Letter tegak. Di HP tegak 390px, skala panggung 0,203 → teks isi ±6,5px (harus diputar ke lanskap: ±11,6px, terbaca). Lihat HASIL-UJI.md.
 - Kerangka hanya menyediakan gaya h1/h2/p/li; kartu angka, tabel, dua kolom, penanda `[isi]` harus dirancang sendiri oleh agent → tampilan antar-agent bisa tidak konsisten.
+
+## Pembaruan uji ulang v1.1.0 (2026-09-23)
+File HTML di folder ini sudah **dibuat ulang dengan kerangka v1.1.0** (komponen `kartu-kpi`/`tabel-data`/`timeline`/`isi`, `@page 1920×1080`, overlay "putar HP", tombol Edit). Isi & angka sama dengan catatan di atas; cacat teknis v1.0 yang disebut di atas (PDF terpotong, teks kecil di HP tegak) sudah tidak terjadi — lihat bagian "Uji ulang v1.1.0" di `HASIL-UJI.md`.

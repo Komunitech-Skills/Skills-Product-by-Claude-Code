@@ -12,14 +12,14 @@
     --warna-teks: #14231b;
     --warna-teks-lembut: #475569;
     --warna-aksen: #15803d;        /* warna brand / merek pengguna */
+    --warna-kartu: rgba(21,128,61,.07);   /* latar kartu KPI/kotak — turunan lembut dari aksen */
+    --warna-garis: rgba(20,35,27,.14);    /* garis pembatas tabel/kartu/timeline */
     --font-judul: Georgia, 'Times New Roman', serif;   /* pilih sesuai gaya di aturan-desain.md */
-    --font-isi: 'Segoe UI', Arial, Helvetica, sans-serif;
+    --font-isi: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --ukuran-judul: 96px;   /* diukur pada kanvas 1920x1080 */
     --ukuran-subjudul: 36px;
     --ukuran-isi: 32px;
     --padding-slide: 96px;
-    --warna-garis: #cbd5e1;
-    --warna-kartu: #f1f5f9;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -45,6 +45,7 @@
     padding: var(--padding-slide);
     background: var(--warna-latar-slide);
     color: var(--warna-teks);
+    overflow: hidden;
     visibility: hidden; opacity: 0; pointer-events: none;
     display: flex; flex-direction: column; justify-content: center;
   }
@@ -54,30 +55,52 @@
   .slide h2 { font-family: var(--font-judul); font-size: 56px; margin-bottom: 32px; color: var(--warna-aksen); }
   .slide p, .slide li { font-size: var(--ukuran-isi); line-height: 1.5; color: var(--warna-teks-lembut); }
 
-
-  /* ====== KOMPONEN TAMBAHAN (tabel, kartu angka, dua kolom) ====== */
-  .label { font-size: 26px; letter-spacing: 3px; text-transform: uppercase; color: var(--warna-aksen); font-weight: 700; margin-bottom: 20px; }
-  .slide ul { padding-left: 44px; }
-  .slide li { margin-bottom: 18px; }
-  .slide li strong, .slide p strong { color: var(--warna-teks); }
-  .kpi { display: grid; grid-template-columns: repeat(var(--kolom, 3), 1fr); gap: 40px; margin-top: 16px; }
-  .kartu { border: 3px solid var(--warna-garis); border-top: 12px solid var(--warna-aksen); border-radius: 16px; padding: 36px 40px; background: var(--warna-kartu); }
-  .kartu .angka { font-family: var(--font-judul); font-size: 60px; font-weight: 700; color: var(--warna-teks); line-height: 1.15; }
-  .kartu .ket { font-size: 28px; color: var(--warna-teks-lembut); margin-top: 12px; line-height: 1.4; }
-  .dua-kolom { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
-  table { border-collapse: collapse; width: 100%; font-size: 30px; }
-  th, td { text-align: left; padding: 18px 24px; border-bottom: 2px solid var(--warna-garis); color: var(--warna-teks); }
-  th { background: var(--warna-aksen); color: #fff; font-weight: 700; }
-  td.uang, th.uang { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  tr.total td { font-weight: 700; border-top: 4px solid var(--warna-teks); }
-  .catatan { font-size: 24px; color: var(--warna-teks-lembut); margin-top: 32px; line-height: 1.45; }
-  .isi-sendiri { background: #fff3c4; color: #5c4400; padding: 0 10px; border-radius: 6px; }
-  .sampul { background: var(--warna-aksen) !important; }
-  .sampul h1, .sampul p, .sampul .label { color: #fff !important; }
-  .sampul p { font-size: 40px; margin-top: 28px; }
-  .kesimpulan { margin-top: 36px; font-size: 32px; padding: 24px 32px; border-left: 10px solid var(--warna-aksen); background: var(--warna-kartu); color: var(--warna-teks); }
-
   img { max-width: 100%; max-height: 100%; }
+
+  /* ====== KOMPONEN SIAP PAKAI (lihat contoh pemakaian di bawah kode) ====== */
+
+  /* Kartu angka / KPI */
+  .kartu-kpi { display: flex; gap: 32px; margin-top: 24px; flex-wrap: wrap; }
+  .kpi { flex: 1; min-width: 280px; background: var(--warna-kartu); border: 1px solid var(--warna-garis); border-radius: 16px; padding: 32px; }
+  .kpi .angka { font-family: var(--font-judul); font-size: 72px; font-weight: bold; color: var(--warna-aksen); line-height: 1; }
+  .kpi .label { font-size: 24px; color: var(--warna-teks-lembut); margin-top: 12px; }
+
+  /* Dua kolom */
+  .dua-kolom { display: flex; gap: 64px; align-items: flex-start; }
+  .dua-kolom > div { flex: 1; }
+
+  /* Tabel data — angka uang rata kanan & sejajar (tabular-nums) */
+  table.tabel-data { width: 100%; border-collapse: collapse; font-size: 28px; }
+  table.tabel-data th, table.tabel-data td { padding: 16px 20px; border-bottom: 1px solid var(--warna-garis); text-align: left; }
+  table.tabel-data th { color: var(--warna-teks-lembut); font-weight: 600; font-size: 24px; }
+  table.tabel-data td.uang, table.tabel-data th.uang {
+    text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+
+  /* Penanda bagian yang belum diisi pengguna — dibuat mencolok, TIDAK ikut tercetak sebagai warna aneh */
+  .isi { background: #fef08a; color: #713f12; padding: 2px 10px; border-radius: 4px; font-weight: 600; }
+
+  /* Timeline / langkah-langkah */
+  .timeline { display: flex; gap: 0; margin-top: 40px; }
+  .timeline .langkah { flex: 1; position: relative; padding-top: 44px; padding-right: 32px; }
+  .timeline .langkah::before {
+    content: attr(data-nomor); position: absolute; top: 0; left: 0;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--warna-aksen); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: bold;
+  }
+  .timeline .langkah::after {
+    content: ""; position: absolute; top: 16px; left: 32px; right: 0; height: 2px;
+    background: var(--warna-garis);
+  }
+  .timeline .langkah:last-child::after { display: none; }
+  .timeline .langkah h3 { font-family: var(--font-judul); font-size: 26px; margin-bottom: 8px; color: var(--warna-teks); }
+  .timeline .langkah p { font-size: 22px; }
+
+  /* Kutipan / testimoni */
+  .kutipan { border-left: 6px solid var(--warna-aksen); padding: 8px 32px; font-style: italic; font-size: 34px; color: var(--warna-teks); }
+  .kutipan .sumber { display: block; margin-top: 16px; font-style: normal; font-size: 22px; color: var(--warna-teks-lembut); }
 
   /* --- Navigasi (disembunyikan saat cetak) --- */
   .kontrol {
@@ -88,12 +111,47 @@
   }
   .kontrol button { border: none; background: transparent; color: #fff; font-size: 16px; cursor: pointer; }
 
+  /* Di HP posisi mendatar, layar pendek — kecilkan & pudarkan kontrol supaya tidak menutupi isi slide */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .kontrol { transform: translateX(-50%) scale(.75); opacity: .45; bottom: 4px; }
+    .kontrol:hover, .kontrol:active, .kontrol:focus-within { opacity: .95; }
+  }
+
+  /* --- Tombol mode edit teks (opsional, offline, tanpa library) --- */
+  .btn-edit {
+    position: fixed; right: 20px; bottom: 20px; z-index: 1000;
+    border: none; border-radius: 999px; padding: 10px 18px;
+    background: rgba(0,0,0,.5); color: #fff; font-family: var(--font-isi);
+    font-size: 14px; cursor: pointer;
+  }
+  .btn-edit.aktif { background: #16a34a; }
+  [contenteditable="true"] { outline: 2px dashed var(--warna-aksen); outline-offset: 4px; cursor: text; }
+
+  /* --- Overlay "putar HP" saat layar lebih tinggi dari lebar (potret) --- */
+  .putar-hp {
+    display: none;
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(15, 23, 42, .96); color: #fff;
+    align-items: center; justify-content: center; text-align: center;
+    font-family: var(--font-isi); font-size: 22px; line-height: 1.5; padding: 40px;
+  }
+  @media (orientation: portrait) and (max-width: 900px) {
+    .putar-hp { display: flex; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
   }
 
-  /* ====== MODE CETAK: WAJIB — supaya "Print > Save as PDF" rapi 1 slide/halaman ====== */
+  /* ====== UKURAN HALAMAN CETAK — WAJIB, mencegah sisi kanan slide terpotong ====== */
+  @page {
+    size: 1920px 1080px;
+    margin: 0;
+  }
+
+  /* ====== MODE CETAK: WAJIB — supaya "Print > Save as PDF" rapi 1 slide/halaman, utuh, warna ikut tercetak ====== */
   @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
     .panggung-luar { position: static; overflow: visible; background: #fff; }
     .panggung { position: static; width: auto; height: auto; transform: none !important; }
@@ -104,114 +162,107 @@
       break-after: page; page-break-after: always;
     }
     .slide:last-child { break-after: auto; page-break-after: auto; }
-    .kontrol { display: none !important; }
+    .kontrol, .btn-edit, .putar-hp { display: none !important; }
   }
 </style>
 </head>
 <body>
+<div class="putar-hp">🔄 Putar HP ke posisi mendatar (landscape) agar teks presentasi ini terbaca dengan baik.</div>
+
 <div class="panggung-luar">
   <main class="panggung" id="panggung">
-    <section class="slide aktif sampul">
-      <div class="label">Pengajuan KUR · BRI</div>
+    <section class="slide aktif">
+      <p style="color:var(--warna-aksen);font-weight:700;letter-spacing:3px">PENGAJUAN KUR · BRI</p>
       <h1>Bengkel Maju Jaya Motor</h1>
       <p>Bengkel servis &amp; suku cadang sepeda motor — Sidoarjo</p>
-      <p style="font-size:32px">Pemilik: [isi nama Anda]</p>
+      <p>Pemilik: <span class="isi">[isi nama Anda]</span></p>
     </section>
 
     <section class="slide">
-      <div class="label">Profil usaha</div>
-      <h2>Lima tahun melayani pelanggan</h2>
-      <div class="kpi">
-        <div class="kartu"><div class="angka">5 tahun</div><div class="ket">Usaha berjalan</div></div>
-        <div class="kartu"><div class="angka">3 mekanik</div><div class="ket">Tenaga kerja tetap</div></div>
-        <div class="kartu"><div class="angka">Sidoarjo</div><div class="ket">Alamat: <span class="isi-sendiri">[isi alamat]</span></div></div>
+      <h2>Profil usaha</h2>
+      <div class="kartu-kpi">
+        <div class="kpi"><div class="angka">5 tahun</div><div class="label">Usaha berjalan</div></div>
+        <div class="kpi"><div class="angka">3 mekanik</div><div class="label">Tenaga kerja</div></div>
+        <div class="kpi"><div class="angka">Sidoarjo</div><div class="label">Alamat: <span class="isi">[isi alamat]</span></div></div>
       </div>
     </section>
 
     <section class="slide">
-      <div class="label">Layanan</div>
-      <h2>Yang kami kerjakan</h2>
+      <h2>Layanan</h2>
       <ul>
         <li>Servis berkala &amp; perbaikan sepeda motor</li>
         <li>Penjualan suku cadang (sparepart)</li>
-        <li>Layanan lain: <span class="isi-sendiri">[isi, mis. ganti oli, tune-up injeksi]</span></li>
+        <li>Layanan lain: <span class="isi">[isi, mis. tune-up injeksi]</span></li>
       </ul>
     </section>
 
     <section class="slide">
-      <div class="label">Kinerja usaha</div>
       <h2>Omzet dan laba per bulan</h2>
-      <div class="kpi" style="--kolom:2">
-        <div class="kartu"><div class="angka">Rp 42.500.000</div><div class="ket">Omzet rata-rata per bulan</div></div>
-        <div class="kartu"><div class="angka">Rp 9.800.000</div><div class="ket">Laba bersih rata-rata per bulan</div></div>
+      <div class="kartu-kpi">
+        <div class="kpi"><div class="angka">Rp 42.500.000</div><div class="label">Omzet rata-rata per bulan</div></div>
+        <div class="kpi"><div class="angka">Rp 9.800.000</div><div class="label">Laba bersih rata-rata per bulan</div></div>
       </div>
-      <p class="catatan">Sumber: catatan pemilik. Lampirkan buku kas / mutasi rekening 6–12 bulan terakhir.</p>
+      <p style="font-size:24px;margin-top:32px">Sumber: catatan pemilik. Lampirkan buku kas / mutasi rekening 6–12 bulan terakhir.</p>
     </section>
 
     <section class="slide">
-      <div class="label">Aset usaha</div>
-      <h2>Aset yang dimiliki</h2>
-      <table>
+      <h2>Aset usaha</h2>
+      <table class="tabel-data">
         <tr><th>Aset</th><th class="uang">Perkiraan nilai</th></tr>
         <tr><td>Peralatan bengkel</td><td class="uang">Rp 65.000.000</td></tr>
         <tr><td>Motor operasional</td><td class="uang">Rp 18.000.000</td></tr>
         <tr><td>Stok suku cadang</td><td class="uang">Rp 30.000.000</td></tr>
-        <tr class="total"><td>Total</td><td class="uang">Rp 113.000.000</td></tr>
+        <tr><td><strong>Total</strong></td><td class="uang"><strong>Rp 113.000.000</strong></td></tr>
       </table>
-      <p class="catatan">Tempat usaha: sewa.</p>
+      <p style="font-size:24px;margin-top:24px">Tempat usaha: sewa.</p>
     </section>
 
     <section class="slide">
-      <div class="label">Tujuan pinjaman</div>
       <h2>Rencana penggunaan dana</h2>
-      <table>
+      <table class="tabel-data">
         <tr><th>Keperluan</th><th class="uang">Nominal</th><th class="uang">Porsi</th></tr>
         <tr><td>Alat: kompresor, scanner injeksi, lift motor</td><td class="uang">Rp 85.000.000</td><td class="uang">56,7%</td></tr>
         <tr><td>Tambah stok suku cadang</td><td class="uang">Rp 50.000.000</td><td class="uang">33,3%</td></tr>
         <tr><td>Renovasi tempat usaha</td><td class="uang">Rp 15.000.000</td><td class="uang">10,0%</td></tr>
-        <tr class="total"><td>Total pinjaman</td><td class="uang">Rp 150.000.000</td><td class="uang">100%</td></tr>
+        <tr><td><strong>Total pinjaman</strong></td><td class="uang"><strong>Rp 150.000.000</strong></td><td class="uang"><strong>100%</strong></td></tr>
       </table>
     </section>
 
     <section class="slide">
-      <div class="label">Rencana pengembalian</div>
       <h2>Rp 150.000.000, tenor 36 bulan</h2>
-      <div class="kpi">
-        <div class="kartu"><div class="angka">Rp 4.563.291</div><div class="ket">Perkiraan cicilan per bulan</div></div>
-        <div class="kartu"><div class="angka">Rp 9.800.000</div><div class="ket">Laba bersih per bulan saat ini</div></div>
-        <div class="kartu"><div class="angka">46,6%</div><div class="ket">Cicilan dibanding laba</div></div>
+      <div class="kartu-kpi">
+        <div class="kpi"><div class="angka">Rp 4.563.291</div><div class="label">Cicilan per bulan (anuitas, bunga acuan 6% efektif/tahun)</div></div>
+        <div class="kpi"><div class="angka">46,6%</div><div class="label">Cicilan dibanding laba bersih — kategori: BERAT, perlu hati-hati</div></div>
+        <div class="kpi"><div class="angka">Rp 5.236.709</div><div class="label">Sisa laba setelah cicilan</div></div>
       </div>
-      <p class="catatan">Estimasi dengan asumsi bunga 6% efektif per tahun (anuitas); angka resmi mengikuti tabel angsuran bank. Sumber pembayaran: laba usaha.</p>
+      <p style="font-size:24px;margin-top:28px">Simulasi skill pengajuan-kur (Permenko 1/2026). Total bunga Rp 14.278.462; cicilan terakhir Rp 4.563.277. Angka resmi mengikuti tabel angsuran bank.</p>
     </section>
 
     <section class="slide">
-      <div class="label">Proyeksi</div>
       <h2>Setelah dana cair</h2>
-      <ul>
-        <li>Scanner injeksi &amp; lift: melayani servis motor injeksi yang sebelumnya dirujuk ke bengkel lain.</li>
-        <li>Perkiraan kenaikan omzet: <span class="isi-sendiri">Rp [isi angka]</span>/bulan — asumsi: <span class="isi-sendiri">[isi]</span></li>
-        <li>Stok lebih lengkap: pelanggan tidak menunggu suku cadang dipesan.</li>
-      </ul>
+      <div class="timeline">
+        <div class="langkah" data-nomor="1"><h3>Alat baru</h3><p>Melayani servis injeksi yang sebelumnya dirujuk keluar.</p></div>
+        <div class="langkah" data-nomor="2"><h3>Stok lengkap</h3><p>Pelanggan tidak menunggu suku cadang dipesan.</p></div>
+        <div class="langkah" data-nomor="3"><h3>Omzet naik</h3><p>Perkiraan: <span class="isi">Rp [isi]</span>/bulan, asumsi <span class="isi">[isi]</span></p></div>
+      </div>
     </section>
 
     <section class="slide">
-      <div class="label">Legalitas</div>
-      <h2>Dokumen usaha</h2>
-      <table>
+      <h2>Legalitas</h2>
+      <table class="tabel-data">
         <tr><th>Dokumen</th><th>Status</th></tr>
-        <tr><td>NIB (Nomor Induk Berusaha)</td><td>Ada</td></tr>
-        <tr><td>NPWP</td><td>Ada</td></tr>
-        <tr><td>Bukti sewa tempat usaha</td><td><span class="isi-sendiri">[isi status]</span></td></tr>
+        <tr><td>NIB</td><td>Ada</td></tr>
+        <tr><td>NPWP (wajib untuk KUR Kecil)</td><td>Ada</td></tr>
+        <tr><td>Bukti sewa tempat usaha</td><td><span class="isi">[isi status]</span></td></tr>
+        <tr><td>Agunan tambahan (plafon &gt; Rp 100.000.000, bank boleh meminta)</td><td><span class="isi">[isi]</span></td></tr>
       </table>
-      <p class="catatan">Nomor dokumen tidak dicantumkan di slide; bawa aslinya saat pertemuan.</p>
     </section>
 
-    <section class="slide sampul">
-      <div class="label">Penutup</div>
-      <h1>Usaha berjalan, siap tumbuh</h1>
-      <p>5 tahun beroperasi · laba rutin setiap bulan · dana untuk alat &amp; stok</p>
-      <p style="font-size:32px">[isi nama Anda] · WA 0812-0000-xxxx</p>
-      <p style="font-size:24px">Presentasi ini pelengkap, bukan pengganti formulir resmi bank. Syarat KUR terbaru: bank penyalur / kur.ekon.go.id</p>
+    <section class="slide">
+      <h2>Penutup</h2>
+      <p>5 tahun beroperasi · laba rutin setiap bulan · dana untuk alat &amp; stok.</p>
+      <p><span class="isi">[isi nama Anda]</span> · WA 0812-0000-xxxx</p>
+      <p style="font-size:24px;margin-top:40px">Presentasi ini pelengkap, bukan pengganti formulir resmi bank. Syarat KUR terbaru: bank penyalur / kur.ekon.go.id</p>
     </section>
   </main>
 </div>
@@ -221,6 +272,8 @@
   <span id="halaman">1 / 1</span>
   <button id="btnMaju" title="Berikutnya (→ / Spasi)">›</button>
 </div>
+
+<button id="btnEdit" class="btn-edit" title="Ubah teks langsung di slide">✏️ Edit</button>
 
 <script>
 (function () {
@@ -262,6 +315,20 @@
     if (beda > 50) tampilkan(indeks - 1);
     if (beda < -50) tampilkan(indeks + 1);
     xAwal = null;
+  });
+
+  // Mode edit teks langsung di browser (offline, tanpa library)
+  var btnEdit = document.getElementById('btnEdit');
+  var editAktif = false;
+  btnEdit.addEventListener('click', function () {
+    editAktif = !editAktif;
+    document.querySelectorAll('.slide h1, .slide h2, .slide p, .slide li, .slide .angka, .slide .label, .slide td, .slide th')
+      .forEach(function (el) { el.setAttribute('contenteditable', editAktif ? 'true' : 'false'); });
+    btnEdit.textContent = editAktif ? '✔ Selesai edit' : '✏️ Edit';
+    btnEdit.classList.toggle('aktif', editAktif);
+    if (editAktif) {
+      alert('Mode edit aktif. Klik teks lalu ketik langsung. Setelah selesai, tekan Ctrl+S (Windows/Linux) atau Cmd+S (Mac), pilih "Webpage, HTML only" / "Laman Web, HTML saja" untuk menyimpan perubahan ke file ini.');
+    }
   });
 })();
 </script>

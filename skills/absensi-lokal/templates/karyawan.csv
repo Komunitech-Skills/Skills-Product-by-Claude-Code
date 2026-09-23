@@ -1,0 +1,5 @@
+kode;nama;jabatan;shift;hari_kerja;libur_mingguan;hari_pendek;id_mesin;gaji_pokok;tunjangan_tetap;tunjangan_tidak_tetap;upah_harian;tanpa_lembur
+A01;Andi;Staf Gudang;REG;5;sabtu,minggu;;1;5.000.000;500.000;;;tidak
+A02;Sari;Kasir;ENAM;6;minggu;sabtu;2;4.500.000;;600.000;;tidak
+A03;Joko;Satpam;MALAM;5;sabtu,minggu;;3;;;;200.000;tidak
+A04;Rina;Kepala Toko;REG;5;sabtu,minggu;;4;9.000.000;1.000.000;;;ya
