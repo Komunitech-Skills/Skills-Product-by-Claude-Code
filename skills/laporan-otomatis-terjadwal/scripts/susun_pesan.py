@@ -64,7 +64,10 @@ POLA_PDP = [
     ("nomor KTP", re.compile(r"\b(no\.?\s*ktp|nomor\s*ktp|ktp)\b", re.IGNORECASE)),
     ("nomor HP/telepon (kata)", re.compile(
         r"\b(nomor|no\.?)\s*(hp|telepon|telp|wa|whatsapp)\b", re.IGNORECASE)),
-    ("nomor HP/telepon (angka)", re.compile(r"(?<!\d)(\+62|62|0)8\d{7,11}(?!\d)")),
+    # Nomor HP polos atau dengan pemisah spasi/titik/strip (0812-0000-1234, +62 812 0000 1234);
+    # tidak menempel ke huruf/angka lain (mis. nomor resi "JNE0812345678" tidak dianggap nomor HP).
+    ("nomor HP/telepon (angka)", re.compile(
+        r"(?<![\w+\-/#])\(?(\+62|62|0)[\s.\-]?8\d{1,3}\)?(?:[\s.\-]?\d){6,10}(?![\w])")),
     ("email", re.compile(r"\b[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}\b")),
     ("alamat lengkap (kata)", re.compile(r"\balamat\s+(rumah|lengkap|tinggal)\b", re.IGNORECASE)),
 ]
@@ -135,7 +138,9 @@ def main():
 
     temuan_pdp = []
     entri = [Baris(f"*{data['judul']}*", "header")]
+    cek_data_pribadi(str(data["judul"]), "judul", temuan_pdp)
     if data.get("subjudul"):
+        cek_data_pribadi(str(data["subjudul"]), "subjudul", temuan_pdp)
         entri.append(Baris(str(data["subjudul"]), "header"))
 
     for b in data.get("baris", []):
@@ -173,8 +178,10 @@ def main():
             entri.append(Baris(teks_item, "daftar_item"))
 
     for c in data.get("catatan", []):
+        cek_data_pribadi(str(c), "catatan", temuan_pdp)
         entri.append(Baris(str(c), "catatan"))
     for pr in data.get("peringatan", []):
+        cek_data_pribadi(str(pr), "peringatan", temuan_pdp)
         entri.append(Baris(f"⚠️ {pr}", "peringatan"))
 
     # --- Potong bila melebihi --maks-baris ---
