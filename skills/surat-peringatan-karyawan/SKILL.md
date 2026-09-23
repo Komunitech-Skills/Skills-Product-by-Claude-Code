@@ -42,8 +42,9 @@ Jika info wajib kurang, tanyakan **sekali** (maks 5 pertanyaan bernomor). Jika p
 3. **Cek masa berlaku SP sebelumnya dan hitung masa berlaku SP baru dengan script** (jangan dihitung kira-kira). Path relatif terhadap folder SKILL.md ini; Windows: ganti `python3` dengan `python` atau `py`:
    ```bash
    python3 <folder-skill-ini>/scripts/masa_berlaku.py --terbit "<tanggal SP baru>" --format teks
-   python3 <folder-skill-ini>/scripts/masa_berlaku.py --terbit "<tanggal SP lama>" --cek "<tanggal pelanggaran baru>" --format teks
+   python3 <folder-skill-ini>/scripts/masa_berlaku.py --terbit "<tanggal SP lama>" --cek "<tanggal pelanggaran baru PERTAMA>" --format teks
    ```
+   Jika pelanggaran baru terjadi berulang kali, `--cek` memakai tanggal kejadian **pertama** setelah SP lama terbit. Jika sebagian kejadian terjadi setelah SP lama berakhir, jelaskan ke pengguna kejadian mana yang masuk masa berlaku dan mana yang tidak. SP yang sudah berakhir boleh disebut sebagai riwayat, tetapi tidak menjadi dasar menaikkan tingkat.
    Pakai `--bulan N` jika PK/PP/PKB menetapkan masa berlaku lain. Salin `kalimat_surat` dari output ke surat.
    **Fallback jika Python tidak bisa dijalankan:** tanggal berakhir = tanggal yang sama N bulan kemudian, dikurangi 1 hari (contoh: terbit 23 September 2026 → berakhir 22 Maret 2027). Jika tanggal itu tidak ada (mis. 31 Februari), pakai hari terakhir bulan tersebut. Beri tahu pengguna bahwa tanggal dihitung manual.
 4. **Tulis surat** dengan format output di bawah: nada tegas tapi sopan, tanpa menghina, tanpa menyebut hal pribadi di luar pelanggaran.
@@ -98,7 +99,7 @@ Template lengkap tiap tingkat + berita acara klarifikasi: `references/template-s
 **Output (ringkas):**
 ```
 SURAT PERINGATAN PERTAMA (SP-1)
-Nomor: 001/SP/TB-MAJU/IX/2026
+Nomor: 001/SP-1/TB-MAJU/IX/2026
 ...
 A. Pelanggaran
 Berdasarkan rekap absensi mesin sidik jari periode 1–22 September 2026, Saudari tercatat

@@ -46,6 +46,7 @@ Jika catatan tidak ada, minta ditempel. Info lain **tidak perlu ditanyakan dulu*
    python3 <folder-skill-ini>/scripts/tanggal_relatif.py --rapat "<tanggal rapat>" --ekspresi "jumat depan" "akhir bulan" --format teks
    python3 <folder-skill-ini>/scripts/tanggal_relatif.py --cek "<tanggal>"   # cek nama hari tanggal di catatan
    ```
+   Rapat hari **Minggu**: "minggu depan"/"<hari> depan" selalu `ambigu` (pekan depan bisa mulai besok atau pekan setelahnya). Script ini punya uji regresi: `python3 <folder-skill-ini>/scripts/uji_tanggal_relatif.py`.
    Tulis keduanya, mis. `Jumat, 2 Oktober 2026 ("Jumat depan")`. Hasil berstatus `ambigu`/`perkiraan` → masukkan ke "Perlu dikonfirmasi" beserta alternatifnya; `tidak_dikenali` (mis. "secepatnya", "ASAP") → tulis apa adanya + ⚠️. Jika tanggal rapat tidak diketahui, biarkan relatif dan tandai.
    **Fallback tanpa Python:** hitung dari kalender, tulis "(nama hari dicek manual)", dan anggap "<hari> depan" ambigu (hari terdekat vs minggu berikutnya).
 6. **Angka & nama** disalin persis dari catatan. Jika ejaan nama berbeda-beda (Rina/Rinna), pakai yang paling sering muncul dan catat di "Perlu dikonfirmasi".
@@ -138,7 +139,7 @@ Template kosong (untuk dicetak/diisi tangan) ada di `references/aturan-klasifika
 - [ ] Setiap action item punya PIC dan tenggat, atau diberi tanda ⚠️.
 - [ ] Tanggal relatif sudah dikonversi dan ditandai; nama hari sesuai tanggal.
 - [ ] Bagian "Perlu dikonfirmasi" berisi semua ambiguitas.
-- [ ] Pesan WA ≤ 120 kata, tanpa tabel, memuat keputusan dan tugas.
+- [ ] Pesan WA ≤ 120 kata, tanpa tabel, memuat keputusan dan tugas; hanya hal yang pasti (tanggal ambigu ditulis dua pilihan atau diberi tanda tanya).
 - [ ] Rupiah ditulis `Rp 150.000`.
 
 ## Batasan & penanganan error

@@ -12,18 +12,23 @@ Semua angka adalah **contoh (usulan, sesuaikan)**.
 A. Datang & keamanan (07.30)
 1. Datang paling lambat pukul 07.30.
 2. ⚠️ Cek gembok dan rolling door sebelum dibuka. (Jika rusak/terbuka, jangan masuk; telepon pemilik.)
-3. Buka pintu, nyalakan lampu dan kipas/AC.
+3. Buka rolling door dan pintu toko.
+4. Nyalakan lampu.
+5. Nyalakan kipas/AC.
 B. Kebersihan (07.35–07.50)
-4. Sapu dan pel lantai area depan & kasir.
-5. Lap meja kasir dan kaca etalase.
-6. Buang sampah kemarin ke tempat sampah luar.
+6. Sapu lantai area depan dan kasir.
+7. Pel lantai area depan dan kasir.
+8. Lap meja kasir dan kaca etalase.
+9. Buang sampah kemarin ke tempat sampah luar.
 C. Kesiapan jualan (07.50–08.00)
-7. Isi rak yang kosong dari stok gudang (barang lama di depan).
-8. Cek kulkas minuman: suhu dingin, pintu tertutup rapat.
-9. Nyalakan komputer/HP kasir dan aplikasi kasir.
-10. ⚠️ Hitung uang modal di laci: Rp [500.000] (usulan). Catat di Buku Kas.
-11. Foto kondisi toko & laci, kirim ke grup WA "Toko".
-12. Buka toko pukul 08.00 tepat.
+10. Isi rak yang kosong dari stok gudang (barang lama di depan).
+11. Cek suhu kulkas minuman: harus dingin dan pintunya tertutup rapat.
+12. Nyalakan komputer/HP kasir dan aplikasi kasir.
+13. ⚠️ Hitung uang modal di laci: Rp [500.000] (usulan). (Selisih ketahuan sejak pagi, bukan saat closing.)
+14. Catat jumlah modal di Buku Kas.
+15. Foto kondisi toko dan laci kasir.
+16. Kirim foto ke grup WA "Toko".
+17. Buka toko pukul 08.00 tepat.
 
 **Jika terjadi masalah:** listrik padam → pakai lampu darurat, catat transaksi manual di nota, lapor pemilik · modal kurang → jangan ditambah dari uang pribadi, lapor pemilik.
 **Indikator:** toko buka tepat 08.00 minimal 6 dari 7 hari; foto pembukaan terkirim setiap hari.
@@ -36,21 +41,27 @@ C. Kesiapan jualan (07.50–08.00)
 
 ### Langkah
 A. Persiapan
-1. Cetak daftar pesanan dan resi dari Seller Center (Shopee/TikTok Shop/Tokopedia).
+1. Cetak daftar pesanan dan resi dari Seller Center (Shopee/TikTok Shop/Tokopedia). (Admin)
 2. Siapkan plastik polymailer, bubble wrap, lakban, dan kartu terima kasih.
 B. Ambil & cek barang
-3. Ambil barang sesuai daftar: cek nama produk, warna, ukuran.
-4. ⚠️ Cocokkan barang dengan resi SEBELUM dibungkus. (Salah kirim = ongkos retur ditanggung toko.)
-5. Cek kondisi: tidak ada noda, jahitan lepas, atau label hilang.
+3. Ambil barang sesuai daftar pesanan.
+4. Cek nama produk, warna, dan ukuran.
+5. ⚠️ Cocokkan barang dengan resi SEBELUM dibungkus. (Salah kirim = ongkos retur ditanggung toko.)
+6. Cek kondisi barang: tidak ada noda, jahitan lepas, atau label hilang.
 C. Bungkus & bukti
-6. ⚠️ Nyalakan rekaman video HP, arahkan ke meja packing. (Bukti jika pembeli komplain barang kurang.)
-7. Tunjukkan resi dan barang ke kamera.
-8. Lipat rapi, masukkan plastik, tambah kartu terima kasih.
-9. Bungkus bubble wrap 1 lapis untuk barang mudah rusak.
-10. Tempel resi rata di bagian depan, tidak tertutup lakban.
-11. Matikan rekaman; simpan video dengan nama nomor pesanan (hapus setelah [30] hari jika tidak ada komplain).
+7. ⚠️ Nyalakan rekaman video HP. (Bukti jika pembeli komplain barang kurang.)
+8. Arahkan kamera ke meja packing (hanya meja, bukan wajah).
+9. Tunjukkan resi dan barang ke kamera.
+10. Lipat barang dengan rapi.
+11. Masukkan barang ke plastik polymailer.
+12. Masukkan kartu terima kasih.
+13. Bungkus bubble wrap 1 lapis untuk barang mudah rusak.
+14. Tempel resi rata di bagian depan, tidak tertutup lakban.
+15. Matikan rekaman.
+16. Simpan video dengan nama nomor pesanan. (Hapus setelah [30] hari jika tidak ada komplain.)
 D. Serah kurir
-12. Hitung paket bersama kurir; minta kurir scan/tanda tangan bukti serah.
+17. Hitung paket bersama kurir.
+18. Minta kurir scan atau tanda tangan bukti serah terima.
 
 **Jika terjadi masalah:** stok ternyata habis → jangan kirim barang pengganti tanpa izin pembeli, lapor admin · resi tidak terbaca → cetak ulang.
 **Indikator:** salah kirim 0 per minggu; semua pesanan hari itu dikirim sebelum batas pickup kurir; video packing tersedia 100%.
@@ -61,14 +72,15 @@ D. Serah kurir
 **Pelaksana:** pramusaji/kasir. **Pengambil keputusan kompensasi:** supervisor/pemilik.
 
 ### Langkah
-1. Dengarkan sampai selesai; jangan memotong.
+1. Dengarkan keluhan sampai selesai tanpa memotong.
 2. Minta maaf atas ketidaknyamanan (bukan menyalahkan dapur/pelanggan).
 3. Ulangi keluhannya untuk memastikan paham.
-4. ⚠️ Untuk keluhan makanan (rambut, basi, salah pesanan): ambil piringnya, ganti segera. (Jangan berdebat di meja.)
-5. Keluhan di luar wewenang (minta gratis, refund) → panggil supervisor dalam 2 menit.
-6. Catat di Buku Komplain: tanggal, jam, meja, keluhan, tindakan.
-7. Ucapkan terima kasih sudah memberi tahu.
-8. Supervisor membahas komplain di briefing esok pagi.
+4. ⚠️ Untuk keluhan makanan (rambut, basi, salah pesanan): angkat piringnya dari meja. (Jangan berdebat di meja.)
+5. Minta dapur membuat pengganti segera.
+6. Keluhan di luar wewenang (minta gratis, refund) → panggil supervisor dalam 2 menit.
+7. Catat di Buku Komplain: tanggal, jam, meja, keluhan, tindakan.
+8. Ucapkan terima kasih sudah memberi tahu.
+9. Bahas komplain di briefing esok pagi. (Supervisor)
 
 **Data pelanggan:** catat nomor HP hanya jika pelanggan setuju dihubungi kembali; jangan dibagikan (UU PDP).
 **Indikator:** komplain tertangani < 10 menit; komplain yang sama berulang ≤ 1 kali per bulan.

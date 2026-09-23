@@ -16,6 +16,8 @@ Aturan tafsir (hasil ambigu selalu diberi alternatif + catatan):
   - "<hari> depan" = diartikan sama, tetapi karena orang sering memaknainya sebagai hari
     terdekat, hasil diberi alternatif dan status "ambigu" bila keduanya berbeda.
   - "minggu ini" = ambigu (pekan ini s.d. Jumat, atau hari Minggu).
+  - Rapat hari MINGGU: "minggu depan", "<hari> depan", dan "<hari> minggu depan" selalu
+    "ambigu" (pekan depan bisa dimulai besok atau pekan setelahnya); alternatif = +7 hari.
   - "akhir minggu" = Jumat minggu yang sama; "akhir bulan" = hari terakhir bulan itu;
     "awal bulan depan" = tanggal 1 bulan berikutnya.
 Hanya library standar Python 3.8+. Tanpa akses jaringan.
@@ -30,14 +32,18 @@ from datetime import date, timedelta
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
          "Agustus", "September", "Oktober", "November", "Desember"]
 BULAN_ALIAS = {
-    "jan": 1, "januari": 1, "feb": 2, "februari": 2, "mar": 3, "maret": 3, "apr": 4,
+    "jan": 1, "januari": 1, "feb": 2, "peb": 2, "februari": 2, "mar": 3, "maret": 3, "apr": 4,
     "april": 4, "mei": 5, "jun": 6, "juni": 6, "jul": 7, "juli": 7, "agu": 8, "agt": 8,
     "agustus": 8, "sep": 9, "sept": 9, "september": 9, "okt": 10, "oktober": 10,
-    "nov": 11, "november": 11, "nopember": 11, "des": 12, "desember": 12,
+    "nov": 11, "nop": 11, "november": 11, "nopember": 11, "des": 12, "desember": 12,
 }
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 HARI_ALIAS = {"senin": 0, "selasa": 1, "rabu": 2, "kamis": 3, "jumat": 4, "jum'at": 4,
               "sabtu": 5, "minggu": 6, "ahad": 6}
+
+
+CATATAN_MINGGU = ("Rapat hari Minggu: 'minggu depan' bisa dimulai besok (Senin) atau pekan "
+                  "setelahnya. Mohon dikonfirmasi.")
 
 
 class InputSalah(Exception):
@@ -73,6 +79,7 @@ def teks(d):
 def tafsir(ekspresi, rapat):
     e = re.sub(r"\s+", " ", ekspresi.strip().lower())
     senin_ini = rapat - timedelta(days=rapat.weekday())
+    minggu_rapat = rapat.weekday() == 6  # rapat hari Minggu
     hasil = {"ekspresi": ekspresi, "status": "pasti", "alternatif": None, "catatan": ""}
 
     def set_(d, status="pasti", alt=None, cat=""):
@@ -91,7 +98,10 @@ def tafsir(ekspresi, rapat):
         n = int(m.group(1)) * (1 if m.group(2) == "hari" else 7)
         return set_(rapat + timedelta(days=n))
     if e in ("minggu depan", "pekan depan"):
-        return set_(senin_ini + timedelta(days=7), "perkiraan",
+        d = senin_ini + timedelta(days=7)
+        if minggu_rapat:
+            return set_(d, "ambigu", d + timedelta(days=7), CATATAN_MINGGU)
+        return set_(d, "perkiraan",
                     cat="Tidak menyebut hari; diartikan Senin minggu depan. Mohon dikonfirmasi.")
     if e in ("minggu ini", "pekan ini"):
         return set_(senin_ini + timedelta(days=4), "ambigu", senin_ini + timedelta(days=6),
@@ -120,6 +130,8 @@ def tafsir(ekspresi, rapat):
             return set_(d)
         if suf:  # depan / minggu depan
             d = senin_ini + timedelta(days=7 + h)
+            if minggu_rapat:
+                return set_(d, "ambigu", d + timedelta(days=7), CATATAN_MINGGU)
             if suf == "depan" and d != terdekat:
                 return set_(d, "ambigu", terdekat,
                             "'Depan' bisa berarti minggu berikutnya atau hari terdekat. Mohon dikonfirmasi.")

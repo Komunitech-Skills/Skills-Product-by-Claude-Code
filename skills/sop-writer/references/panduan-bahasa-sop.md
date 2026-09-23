@@ -10,7 +10,8 @@ Tujuan: karyawan lulusan SD–SMA, karyawan baru, atau karyawan paruh waktu bisa
 5. **Sebut benda yang nyata.** "Buku Closing warna biru di laci kasir", bukan "dokumen terkait".
 6. **Pakai "kamu" atau kalimat perintah netral.** Hindari "Saudara", "karyawan wajib..." di setiap baris.
 7. **Jelaskan alasan untuk langkah kritis** (⚠️) dalam 1 kalimat pendek.
-8. **Gambar/foto:** sarankan pengguna menambahkan foto contoh "benar vs salah" untuk langkah packing/display/kebersihan.
+8. **Pelaksana berbeda:** jika satu langkah dikerjakan peran lain, tulis `(Peran)` di akhir langkah, mis. "Cetak resi. (Admin)".
+9. **Gambar/foto:** sarankan pengguna menambahkan foto contoh "benar vs salah" untuk langkah packing/display/kebersihan.
 
 ## Kamus pengganti jargon
 | Hindari | Pakai |

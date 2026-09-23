@@ -18,7 +18,7 @@
 **Sebelum:** Cara closing kasir hanya diajarkan lisan. Selisih uang baru ketahuan di akhir bulan, dan tidak jelas siapa yang bertanggung jawab.
 
 **Sesudah (cukup ketik):** "Bikinin SOP closing kasir minimarket saya, 2 shift, ada QRIS dan tunai"
-→ SOP 11 langkah (siapkan, hitung, serah terima), tabel penanganan selisih kas, indikator keberhasilan, dan checklist per shift siap cetak.
+→ SOP 13 langkah (siapkan, hitung, serah terima), tabel penanganan selisih kas, indikator keberhasilan, dan checklist per shift siap cetak.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:

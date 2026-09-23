@@ -15,7 +15,7 @@ Menghasilkan surat resmi yang benar strukturnya, benar ejaannya (EYD Edisi V), s
 - **Surat kuasa** (pengambilan dokumen/barang, pengurusan izin, pengambilan paket, perwakilan rapat).
 - **Surat keterangan** (keterangan kerja, keterangan magang, keterangan usaha dari pemilik usaha).
 - **Surat pengantar** (pengiriman dokumen/barang, pengantar karyawan ke instansi).
-- Merapikan/mengoreksi surat resmi yang sudah ada sesuai EYD V.
+- Merapikan/mengoreksi surat resmi yang sudah ada sesuai EYD V (output: surat hasil perbaikan + tabel `Draf | Perbaikan | Alasan`, maks 15 baris).
 
 ## Kapan TIDAK digunakan
 - Surat penawaran harga → `surat-penawaran-harga`. Proposal kerja sama → `proposal-kerjasama`.
@@ -48,6 +48,9 @@ Jika info wajib kurang, tanyakan **sekali** (maks 5 pertanyaan bernomor). Jika p
    ```
    - Pola default: `{urut}/{kode}/{instansi}/{romawi}/{tahun}` → `007/UND/CV-MJ/IX/2026`. Jika pengguna punya pola sendiri, pakai `--pola`.
    - `--acara` memberi nama hari yang benar untuk undangan (mis. "Sabtu, 3 Oktober 2026") dan peringatan bila acara lebih awal dari tanggal surat.
+   - **Wajib: bandingkan nama hari yang ditulis pengguna** (mis. "Jumat, 3 Oktober 2026") dengan `hari`/`acara` dari script. Jika berbeda, **jangan memilih sendiri** dan jangan mengganti diam-diam. Tampilkan di awal jawaban:
+     `⚠️ "Jumat, 3 Oktober 2026" tidak cocok: 3 Oktober 2026 jatuh pada hari Sabtu. Mana yang benar: (a) Sabtu, 3 Oktober 2026 atau (b) Jumat, 2 Oktober 2026?`
+     Tunggu jawaban pengguna. Jika pengguna minta draf tetap dibuat, tulis bagian tanggal itu sebagai `[hari, tanggal: menunggu konfirmasi]`.
    - **Fallback tanpa Python:** tanggal ditulis `23 September 2026` (bulan lengkap, tanpa nol di depan); bulan Romawi I–XII sesuai bulan surat; hitung nama hari dengan kalender dan beri tahu pengguna bahwa hari perlu dicek.
 3. **Tulis surat** dengan struktur baku (lihat Format output). Terapkan aturan EYD V dari `references/aturan-eyd-dan-format.md`, terutama:
    - `Yth.` (bukan "Kepada Yth." yang berlebihan bila sudah ada "Yth."), `Bapak`/`Ibu` kapital sebagai sapaan.
@@ -99,7 +102,6 @@ KOPERASI SEJAHTERA BERSAMA
 ________________________________________________________________
 
 Nomor    : 012/UND/KSB/IX/2026                        Surabaya, 23 September 2026
-Lampiran : —
 Perihal  : Undangan Rapat Anggota
 
 Yth. Bapak/Ibu Anggota Koperasi Sejahtera Bersama
@@ -129,6 +131,7 @@ Contoh lain (surat kuasa ambil BPKB, surat keterangan kerja, pemberitahuan libur
 ## Checklist sebelum mengirim hasil
 - [ ] Struktur lengkap: kop, nomor, (lampiran bila ada), perihal, tanggal, alamat tujuan, salam pembuka, isi, penutup, salam penutup, tanda tangan, (tembusan).
 - [ ] Tanggal tanpa nol di depan & bulan ditulis lengkap; bulan Romawi dan nama hari berasal dari script (atau diberi label "cek manual").
+- [ ] Nama hari yang ditulis pengguna sudah dibandingkan dengan script; jika berbeda, ⚠️ ditampilkan dan pengguna ditanya (tidak dipilihkan).
 - [ ] Ejaan EYD V: `Yth.`, `di tempat`/`di Jakarta` (di- dipisah), `pukul 09.00`, `Rp`, huruf kapital sapaan, tanpa "Kepada Yth." ganda.
 - [ ] Tidak ada paragraf bertele-tele; isi pokok muncul di paragraf pertama/kedua.
 - [ ] Placeholder yang belum terisi disebut di "Catatan untuk kamu".

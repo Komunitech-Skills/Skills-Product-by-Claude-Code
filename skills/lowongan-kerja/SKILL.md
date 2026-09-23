@@ -53,6 +53,16 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan (maks 5 pertanyaan 
 8. Periksa dengan checklist, lalu tawarkan revisi (nada lebih santai/formal, bahasa Inggris untuk LinkedIn).
 
 ## Format output
+Untuk permintaan **cek/rapikan loker yang sudah ada**, awali dengan bagian 0, lalu lanjutkan bagian 1–4 berisi versi yang sudah dirapikan:
+```
+## 0) Hasil cek loker
+| Di loker lama | Masalah | Diganti menjadi |
+|---|---|---|
+| "Wanita, maks 25 th" | Syarat diskriminatif (SE Menaker M/6/HK.04/V/2025) | Dihapus; diganti "Ramah dan teliti" |
+| "Biaya seragam Rp 150.000" | Pola penipuan: pelamar diminta bayar | Dihapus; tambah "tidak dipungut biaya" |
+Ringkasan: [n] masalah ditemukan. [1 kalimat saran utama]
+```
+Untuk permintaan membuat loker baru:
 ```
 ## 1) Versi lengkap (JobStreet / LinkedIn / Glints)
 **[Judul Posisi]** — [Nama Usaha] | [Kota] ([WFO/Hybrid/Remote]) | [Status kerja]
@@ -76,6 +86,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan (maks 5 pertanyaan 
 **Cara melamar**
 Kirim [CV / portofolio] ke [email/WA] dengan subjek "[Posisi] - [Nama]" paling lambat [tanggal].
 Proses rekrutmen tidak dipungut biaya apa pun.
+Data lamaran hanya digunakan untuk proses rekrutmen [Nama Usaha]. (opsional)
 
 ## 2) Versi Instagram
 Teks desain feed: ...
@@ -137,6 +148,8 @@ Contoh lebih lengkap (kurir, barista, staf gudang, sales) ada di `references/con
 - [ ] Benefit hanya yang disebut pengguna; angka gaji/UMK tidak dikarang (pakai `[isi angka]`).
 - [ ] Ada cara melamar, batas waktu, dan kalimat "tidak dipungut biaya".
 - [ ] Versi IG ≤ 120 kata, versi WA ≤ 80 kata, format tebal WA memakai `*...*`.
+- [ ] Jika versi IG/WA masih memuat `[isi ...]`, tulis peringatan tebal tepat di atas bloknya: **⚠️ Isi dulu bagian [isi ...] sebelum dikirim.** Lebih baik lagi: hapus baris yang belum ada datanya dari versi IG/WA.
+- [ ] Untuk permintaan cek loker: bagian "0) Hasil cek loker" ada dan setiap masalah punya penggantinya.
 - [ ] Pertanyaan screening tidak menanyakan hal pribadi yang tidak relevan.
 
 ## Batasan & penanganan error

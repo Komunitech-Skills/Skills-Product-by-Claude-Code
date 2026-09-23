@@ -105,11 +105,11 @@ Berlaku untuk: ... | Tidak mengatur: ...
 ...
 ## 5. Langkah kerja
 ### A. Persiapan (15 menit sebelum shift selesai)
-1. Selesaikan transaksi pelanggan yang sedang antre.
+1. Layani pelanggan yang sedang antre sampai selesai.
 2. Pasang papan "Kasir Tutup" di meja kasir.
 ### B. Hitung uang
 3. Cetak laporan penjualan shift dari aplikasi kasir.
-4. Hitung uang tunai di laci, pisahkan per pecahan.
+4. Hitung uang tunai di laci per pecahan.
 5. Kurangi uang modal awal (Rp [isi]) dari total tunai.
 6. ⚠️ Bandingkan tunai dengan "Penjualan Tunai" di laporan. (Selisih harus ketahuan hari ini, bukan akhir bulan.)
 7. Cek total QRIS di aplikasi/mutasi dengan "Penjualan QRIS" di laporan.
@@ -117,7 +117,9 @@ Berlaku untuk: ... | Tidak mengatur: ...
 8. Tulis hasil di Form Closing: tunai, QRIS, selisih.
 9. Hitung ulang bersama kasir shift berikutnya atau supervisor.
 10. Tanda tangan berdua di Form Closing.
-11. Masukkan uang setoran ke amplop, tulis tanggal & shift, simpan di brankas.
+11. Masukkan uang setoran ke amplop.
+12. Tulis tanggal dan shift di amplop.
+13. Simpan amplop di brankas.
 
 ## 6. Jika terjadi masalah
 | Jika... | Maka... | Lapor ke |

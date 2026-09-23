@@ -25,10 +25,10 @@ from datetime import date, timedelta
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
          "Agustus", "September", "Oktober", "November", "Desember"]
 BULAN_ALIAS = {
-    "jan": 1, "januari": 1, "feb": 2, "februari": 2, "pebruari": 2, "mar": 3, "maret": 3,
+    "jan": 1, "januari": 1, "feb": 2, "peb": 2, "februari": 2, "pebruari": 2, "mar": 3, "maret": 3,
     "apr": 4, "april": 4, "mei": 5, "jun": 6, "juni": 6, "jul": 7, "juli": 7,
     "agu": 8, "agt": 8, "agus": 8, "agustus": 8, "sep": 9, "sept": 9, "september": 9,
-    "okt": 10, "oktober": 10, "nov": 11, "nopember": 11, "november": 11,
+    "okt": 10, "oktober": 10, "nov": 11, "nop": 11, "nopember": 11, "november": 11,
     "des": 12, "desember": 12,
 }
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
@@ -111,7 +111,9 @@ def hitung(terbit, bulan, cek=None):
         elif cek <= akhir:
             status = "masih_aktif"
             sisa = (akhir - cek).days
-            ket = (f"Pada {fmt_pendek(cek)} SP ini MASIH AKTIF (sisa {sisa} hari). Pelanggaran baru "
+            sisa_teks = ("hari ini adalah hari terakhir SP berlaku" if sisa == 0
+                         else f"sisa {sisa} hari")
+            ket = (f"Pada {fmt_pendek(cek)} SP ini MASIH AKTIF ({sisa_teks}). Pelanggaran baru "
                    "dalam periode ini umumnya dapat dinaikkan ke tingkat SP berikutnya.")
         else:
             status = "sudah_berakhir"

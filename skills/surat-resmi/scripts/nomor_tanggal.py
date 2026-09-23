@@ -25,10 +25,10 @@ from datetime import date
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
          "Agustus", "September", "Oktober", "November", "Desember"]
 BULAN_ALIAS = {
-    "jan": 1, "januari": 1, "feb": 2, "februari": 2, "pebruari": 2, "mar": 3, "maret": 3,
+    "jan": 1, "januari": 1, "feb": 2, "peb": 2, "februari": 2, "pebruari": 2, "mar": 3, "maret": 3,
     "apr": 4, "april": 4, "mei": 5, "jun": 6, "juni": 6, "jul": 7, "juli": 7,
     "agu": 8, "agt": 8, "agus": 8, "agustus": 8, "sep": 9, "sept": 9, "september": 9,
-    "okt": 10, "oktober": 10, "nov": 11, "nopember": 11, "november": 11,
+    "okt": 10, "oktober": 10, "nov": 11, "nop": 11, "nopember": 11, "november": 11,
     "des": 12, "desember": 12,
 }
 ROMAWI = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"]
@@ -95,7 +95,7 @@ def main():
     p.add_argument("--kota", help="Kota tempat surat dibuat, mis. Surabaya")
     p.add_argument("--urut", help="Nomor urut surat keluar (angka), mis. 7")
     p.add_argument("--digit", default="3", help="Jumlah digit nomor urut (default 3 -> 007)")
-    p.add_argument("--kode", help="Kode jenis surat, mis. UND / SK / SKU / SPm")
+    p.add_argument("--kode", help="Kode jenis surat, mis. UND / PMH / SKK / KSA / SPeng")
     p.add_argument("--instansi", help="Singkatan instansi/usaha, mis. CV-MJ")
     p.add_argument("--pola", default=POLA_DEFAULT, help=f"Pola nomor (default {POLA_DEFAULT})")
     p.add_argument("--acara", help="Opsional: tanggal kegiatan (untuk undangan)")
