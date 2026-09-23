@@ -1,0 +1,9 @@
+minggu;jenis;kategori;nominal;keterangan;kritis
+semua;masuk;Penjualan tunai;;perkiraan per minggu;
+;masuk;Pelunasan piutang;;nama pelanggan;
+semua;keluar;Bahan baku (supplier);;;ya
+tgl:25;keluar;Gaji karyawan;;tanggal gajian;ya
+tgl:1;keluar;Sewa;;;ya
+tgl:10;keluar;Cicilan;;;ya
+tgl:15;keluar;Pajak;;;ya
+tgl:20;keluar;Listrik, air, internet;;;ya
