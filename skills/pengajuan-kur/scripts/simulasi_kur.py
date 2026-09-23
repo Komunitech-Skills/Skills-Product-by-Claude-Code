@@ -39,6 +39,7 @@ def parse_angka(teks):
     s = str(teks).strip().lower().replace("%", "").strip()
     if not s:
         return None
+    s = re.sub(r"^(minus|min\.?|rugi)\s*", "-", s)
     pengali = Decimal(1)
     m = re.search(r"(miliar|milyar|juta|jt|ribu|rb)\s*$", s)
     if m:
@@ -155,8 +156,13 @@ def jenis_dari_plafon(P):
     return None
 
 
-def bunga_acuan_kur(jenis, sektor, akad):
-    """Kembalikan (bunga % atau None, pasal, catatan)."""
+def bunga_acuan_kur(jenis, sektor, akad, bunga_mikro_terakhir=None):
+    """Kembalikan (bunga % atau None, pasal, catatan).
+
+    bunga_mikro_terakhir: untuk debitur yang naik kelas dari KUR mikro ke KUR kecil sektor perdagangan
+    non-ekspor — Pasal 44 ayat (3) huruf b & ayat (4): akad pertama = bunga mikro terakhir + 1%, akad berikutnya
+    +1% per akad, paling tinggi 9%.
+    """
     if jenis == "super-mikro":
         return Decimal(3), "Pasal 30", None
     pasal = "Pasal 37" if jenis == "mikro" else "Pasal 44"
@@ -164,13 +170,18 @@ def bunga_acuan_kur(jenis, sektor, akad):
         return None, pasal, "sektor belum diisi (--sektor produksi / perdagangan-ekspor / perdagangan)"
     if sektor in ("produksi", "perdagangan-ekspor"):
         return Decimal(6), pasal, None
+    if jenis == "kecil" and bunga_mikro_terakhir is not None:
+        return (min(Decimal(bunga_mikro_terakhir) + akad, Decimal(9)), "Pasal 44 ayat (3)–(4)",
+                None)
     tangga = {1: 6, 2: 7} if jenis == "mikro" else {1: 6, 2: 7, 3: 8, 4: 9}
     if akad in tangga:
         return Decimal(tangga[akad]), pasal, None
     if jenis == "mikro":
         return None, "Pasal 36 ayat (3)", ("KUR mikro sektor perdagangan non-ekspor paling banyak 2 kali akad — "
                                             "akad ke-%d tidak tersedia" % akad)
-    return None, pasal, "bunga untuk akad ke-%d KUR kecil perdagangan non-ekspor tidak diatur di pasal ini — tanyakan bank" % akad
+    return None, pasal, ("bunga untuk akad ke-%d KUR kecil perdagangan non-ekspor tidak tercantum di Pasal 44 ayat (1) "
+                         "— tanyakan bank (untuk jalur naik kelas dari KUR mikro, Pasal 44 ayat (4) membatasi paling "
+                         "tinggi 9%%)" % akad)
 
 
 def kategori_rasio(rasio):
@@ -199,18 +210,26 @@ def main():
                    help="produksi = selain perdagangan (pertanian, industri pengolahan, jasa produksi, dll.)")
     p.add_argument("--akad-ke", type=int, default=1, help="KUR ke berapa di jenis yang sama (default 1)")
     p.add_argument("--penggunaan", choices=["modal-kerja", "investasi"], help="Untuk cek tenor maksimal")
+    p.add_argument("--bunga-mikro-terakhir", help="Untuk KUR kecil sektor perdagangan non-ekspor yang naik kelas dari "
+                   "KUR mikro: bunga KUR mikro terakhir (%%/tahun), mis. 7")
     p.add_argument("--metode", choices=["anuitas", "flat", "keduanya"], default="keduanya")
     p.add_argument("--laba-bersih", help="Laba bersih usaha per bulan (setelah semua biaya usaha)")
     p.add_argument("--biaya-rumah-tangga", help="Kebutuhan rumah tangga per bulan yang diambil dari laba (opsional)")
     p.add_argument("--cicilan-lain", default="0", help="Cicilan lain yang sedang berjalan per bulan (default 0)")
     p.add_argument("--target-rasio", type=float, default=30.0, help="Batas rasio aman (%%) untuk hitung plafon maksimal (default 30)")
-    p.add_argument("--rincian-dana", help="Rencana penggunaan dana: 'Etalase=5jt; Bahan baku=Rp 15.000.000' "
-                   "(dicek agar jumlahnya sama dengan plafon)")
+    p.add_argument("--rincian-dana", help="Rencana penggunaan dana: 'Etalase [inv]=5jt; Bahan baku [mk]=Rp 15.000.000' "
+                   "(dicek agar jumlahnya sama dengan plafon). Penanda [inv]=investasi, [mk]=modal kerja (opsional)")
     p.add_argument("--jadwal", action="store_true", help="Sertakan jadwal angsuran lengkap per bulan")
     p.add_argument("--output-csv", help="Tulis jadwal angsuran ke CSV (UTF-8 BOM)")
     p.add_argument("--pemisah", choices=[";", ","], default=";")
     p.add_argument("--format", choices=["json", "teks"], default="json")
-    a = p.parse_args()
+    # izinkan angka negatif tanpa '=' (mis. --laba-bersih -2jt)
+    argv = sys.argv[1:]
+    for i in range(len(argv) - 1):
+        if (argv[i] and argv[i + 1] and argv[i].startswith("--") and "=" not in argv[i]
+                and re.match(r"^-\d", argv[i + 1])):
+            argv[i], argv[i + 1] = f"{argv[i]}={argv[i + 1]}", None
+    a = p.parse_args([x for x in argv if x is not None])
 
     P = parse_angka(a.plafon)
     if P is None or P <= 0:
@@ -233,7 +252,23 @@ def main():
                                         f"{rp(at['maks'])}, {at['pasal_plafon']}).")
         else:
             cek_kur["sesuai"].append(f"Plafon masuk rentang KUR {jenis} ({at['pasal_plafon']}).")
-        acuan, pasal_b, cat_b = bunga_acuan_kur(jenis, a.sektor, a.akad_ke)
+        bmt = None
+        if a.bunga_mikro_terakhir:
+            bmt = parse_angka(a.bunga_mikro_terakhir)
+            if bmt is None or not 0 < bmt <= 20:
+                gagal(f"--bunga-mikro-terakhir tidak terbaca/wajar: '{a.bunga_mikro_terakhir}' (isi %/tahun, mis. 7).")
+            if jenis != "kecil" or a.sektor != "perdagangan":
+                cek_kur["perhatian"].append("--bunga-mikro-terakhir hanya berlaku untuk KUR kecil sektor perdagangan "
+                                            "non-ekspor (Pasal 44 ayat 3 huruf b); diabaikan.")
+                bmt = None
+        acuan, pasal_b, cat_b = bunga_acuan_kur(jenis, a.sektor, a.akad_ke, bmt)
+        if bmt is not None:
+            cek_kur["sesuai"].append(f"Naik kelas dari KUR mikro (bunga terakhir {float(bmt)}%): bunga KUR kecil akad ke-"
+                                     f"{a.akad_ke} = {float(acuan)}% (bunga mikro terakhir + 1% per akad, maks. 9%; "
+                                     "Pasal 44 ayat 3–4).")
+        elif jenis == "kecil" and a.sektor == "perdagangan":
+            cek_kur["perhatian"].append("Jika sebelumnya pernah KUR mikro (naik kelas), bunga KUR kecil perdagangan "
+                                        "= bunga mikro terakhir + 1% (Pasal 44 ayat 3–4). Isi --bunga-mikro-terakhir.")
         cek_kur["bunga_acuan_efektif_persen"] = float(acuan) if acuan is not None else None
         cek_kur["pasal_bunga"] = pasal_b
         if cat_b:
@@ -248,9 +283,12 @@ def main():
         sumber_bunga = (f"ACUAN {DASAR_KUR} {cek_kur['pasal_bunga']} — efektif/tahun; konfirmasi ke bank penyalur")
     else:
         sumber_bunga = ("ANGKA CONTOH — cek bank/kur.ekon.go.id" if a.bunga_contoh else "diisi pengguna/bank")
-    teks_bunga = str(a.bunga).lower()
-    per_bulan = bool(re.search(r"(/|per|tiap|sebulan|\bbln\b|bulan)", teks_bunga)) and not re.search(r"tahun|thn|p\.?a", teks_bunga)
-    bunga = parse_angka(re.sub(r"(per|/)?\s*(bulan|bln|tahun|thn|p\.?a\.?)|sebulan|setahun", "", teks_bunga))
+    teks_bunga = re.sub(r"\bpersen\b|%", " ", str(a.bunga).lower())
+    teks_bunga = re.sub(r"\s+", " ", teks_bunga).strip()
+    per_bulan = bool(re.search(r"\bper\s*(bulan|bln)\b|/\s*(bulan|bln)\b|\bsebulan\b|\btiap\s*bulan\b|\bbulanan\b",
+                               teks_bunga))
+    bunga = parse_angka(re.sub(r"\b(per|tiap)\b|/|\b(bulan|bln|bulanan|sebulan|tahun|thn|setahun|efektif|flat)\b|p\.?a\.?",
+                               " ", teks_bunga))
     if bunga is not None and per_bulan:
         bunga = bunga * 12
     if bunga is None or bunga < 0:
@@ -326,7 +364,12 @@ def main():
             v = parse_angka(nil)
             if v is None or v <= 0:
                 gagal(f"Nominal rincian '{nama.strip()}' tidak terbaca: '{nil.strip()}'.")
-            pos.append({"pos": nama.strip(), "nominal": bulat(v)})
+            jenis_pos = None
+            m = re.search(r"\[(inv|investasi|mk|modal[ -]?kerja)\]", nama, re.I)
+            if m:
+                jenis_pos = "investasi" if m.group(1).lower().startswith("inv") else "modal-kerja"
+                nama = nama[:m.start()] + nama[m.end():]
+            pos.append({"pos": nama.strip(), "nominal": bulat(v), "jenis": jenis_pos})
         tot = sum(x["nominal"] for x in pos)
         for x in pos:
             x["persen"] = float(round(Decimal(x["nominal"]) / tot * 100, 1))
@@ -335,6 +378,24 @@ def main():
         if tot != P:
             peringatan.append(f"Total rencana penggunaan dana {rp(tot)} tidak sama dengan plafon {rp(P)} "
                               f"(selisih {rp(P - tot)}). Sesuaikan agar bank melihat rencana yang rapi.")
+        porsi = {}
+        for x in pos:
+            if x["jenis"]:
+                porsi[x["jenis"]] = porsi.get(x["jenis"], 0) + x["nominal"]
+        if porsi:
+            rincian["porsi"] = porsi
+        if cek_kur is not None and porsi:
+            at = ATURAN_KUR[cek_kur["jenis"]]
+            for jp, nom in porsi.items():
+                tmax = at["tenor"][jp]
+                if n > tmax:
+                    cek_kur["perhatian"].append(
+                        f"Porsi {jp} {rp(nom)}: tenor {n} bulan melebihi batas awal {tmax} bulan ({at['pasal_tenor']}). "
+                        "Pertimbangkan dua akad/fasilitas terpisah, atau tenor sesuai porsi modal kerja — tanyakan bank.")
+                else:
+                    cek_kur["sesuai"].append(f"Porsi {jp} {rp(nom)}: tenor {n} bulan ≤ batas {tmax} bulan.")
+            if a.penggunaan is None:
+                cek_kur["perhatian"] = [x for x in cek_kur["perhatian"] if not x.startswith("Penggunaan belum diisi")]
 
     metode = ["anuitas", "flat"] if a.metode == "keduanya" else [a.metode]
     hasil_metode = {}
@@ -380,8 +441,11 @@ def main():
                 "target_rasio_persen": a.target_rasio,
                 "cicilan_maks_per_bulan": max(0, cmaks),
                 "plafon_maks": plafon_maks(cmaks, bunga, n, m),
-                "catatan": "dibulatkan ke bawah per Rp 1.000; dasar = laba bersih"
-                           + (" dikurangi biaya rumah tangga" if brt else ""),
+                "catatan": ("dibulatkan ke bawah per Rp 1.000; dasar = laba bersih"
+                            + (" dikurangi biaya rumah tangga" if brt else ""))
+                           + ("" if cmaks > 0 else
+                              "; plafon maks Rp 0 karena cicilan lain" + (" dan kebutuhan rumah tangga" if brt else "")
+                              + " sudah menghabiskan batas aman — kurangi/lunasi cicilan lain dulu atau naikkan laba"),
             }
         if a.jadwal or a.output_csv:
             d["jadwal"] = jd
@@ -475,7 +539,8 @@ def main():
     if rincian:
         print("\nRencana penggunaan dana:")
         for x in rincian["pos"]:
-            print(f"  - {x['pos']}: {rp(x['nominal'])} ({x['persen']}%)")
+            tag = {"investasi": " [investasi]", "modal-kerja": " [modal kerja]"}.get(x.get("jenis"), "")
+            print(f"  - {x['pos']}{tag}: {rp(x['nominal'])} ({x['persen']}%)")
         print(f"  Total {rp(rincian['total'])} → {rincian['status']}")
     if "perbandingan" in out:
         print(f"\nFlat lebih mahal {rp(out['perbandingan']['selisih_total_bunga_flat_minus_anuitas'])} total bunga.")

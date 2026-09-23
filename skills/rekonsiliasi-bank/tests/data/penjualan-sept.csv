@@ -1,0 +1,14 @@
+Tanggal,No Invoice,Pelanggan,Total,Metode,Status
+01/09/2026,INV-111,Rina Marlina,Rp 600.000,Transfer,Lunas
+02/09/2026,INV-101,Budi Santoso,Rp 1.500.000,Transfer,Lunas
+04/09/2026,INV-102,Toko Sari Roti,Rp 750.000,Transfer,Lunas
+08/09/2026,INV-103,CV Andalas Jaya,Rp 1.200.000,Transfer,Lunas
+09/09/2026,INV-104,CV Andalas Jaya,Rp 800.000,Transfer,Lunas
+11/09/2026,INV-105,PT Sumber Rejeki,Rp 5.000.000,Transfer,Lunas
+14/09/2026,INV-106,Dewi Lestari,Rp 1.000.000,Transfer,Lunas
+18/09/2026,INV-107,Hendra Wijaya,Rp 3.000.000,Transfer,Belum lunas
+20/09/2026,INV-109,Pak Rahmat,Rp 250.000,Tunai,Lunas
+21/09/2026,INV-110,Bu Wati,Rp 900.000,Transfer,Batal
+22/09/2026,INV-112,Andi Saputra,Rp 150.000,Transfer,Lunas
+23/09/2026,INV-113,Bu Tini,Rp 150.000,Transfer,Lunas
+25/09/2026,INV-108,Joko Susilo,Rp 450.000,Transfer,Belum lunas

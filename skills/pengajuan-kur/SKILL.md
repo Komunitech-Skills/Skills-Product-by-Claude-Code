@@ -18,6 +18,7 @@ Membuat pemilik usaha datang ke bank **siap dan realistis**: dokumen lengkap, ce
 - Proyeksi kas mingguan/kapan kas menipis → `arus-kas-13minggu` (boleh dipakai bersama untuk melihat dampak cicilan).
 - Laporan laba rugi/neraca resmi untuk lampiran → `laporan-keuangan-emkm`.
 - Pinjaman online/pinjol, gadai, atau "jasa pasti cair" → jangan dibantu; ingatkan risikonya dan arahkan ke lembaga resmi yang terdaftar OJK.
+- Membuat, menaikkan, atau "memoles" laporan keuangan/omzet agar pengajuan lolos → tolak dengan sopan (bisa masuk pemalsuan data kredit). Tawarkan menyusun laporan jujur lewat `laporan-keuangan-emkm`.
 - KUR khusus (klaster dengan mitra usaha) atau KUR penempatan Pekerja Migran Indonesia → jelaskan singkat bahwa skemanya berbeda dan arahkan ke bank penyalur.
 - Pertanyaan keputusan kredit spesifik ("apakah saya pasti disetujui?") → jelaskan hanya bank yang memutuskan.
 
@@ -28,7 +29,8 @@ Membuat pemilik usaha datang ke bank **siap dan realistis**: dokumen lengkap, ce
 | Tenor (bulan) | Ya | — (tanyakan; contoh umum 24–36 bulan) |
 | Suku bunga per tahun dari bank | Tidak | **Bunga acuan Permenko 1/2026** via `--kur --sektor …` (Super Mikro 3%, Mikro/Kecil 6% efektif; perdagangan non-ekspor naik per akad), berlabel "acuan — konfirmasi ke bank penyalur". Sektor tidak diketahui → contoh 6% dengan `--bunga-contoh` |
 | Sektor usaha (produksi / perdagangan berorientasi ekspor / perdagangan) & KUR ke berapa | Tidak | Tanyakan bila bunga dari bank belum ada; produksi = selain perdagangan |
-| Penggunaan: modal kerja atau investasi | Tidak | Tanyakan (untuk cek batas tenor) |
+| KUR sebelumnya: jenis & bunganya (untuk KUR Kecil sektor perdagangan) | Tidak | Tanyakan. Jika pernah KUR Mikro → `--bunga-mikro-terakhir` (bunga KUR Kecil = bunga Mikro terakhir + 1%, maks. 9%) |
+| Penggunaan: modal kerja, investasi, atau campuran | Tidak | Tanyakan (untuk cek batas tenor). Campuran → tandai tiap pos `[inv]`/`[mk]` di `--rincian-dana` |
 | Laba bersih usaha per bulan | Ya (untuk rasio) | — (tanyakan; bantu hitung: omzet − semua biaya usaha) |
 | Kebutuhan rumah tangga yang diambil dari usaha | Tidak | Tidak dihitung (sebut asumsi) |
 | Cicilan lain yang berjalan | Tidak | Rp 0 |
@@ -42,9 +44,9 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor): plafo
 1. **Simulasi & rasio** — jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/simulasi_kur.py --plafon "Rp 50.000.000" --tenor 36 \
-     --kur --sektor produksi --akad-ke 1 --penggunaan modal-kerja \
+     --kur --sektor produksi --akad-ke 1 \
      --laba-bersih "Rp 7.500.000" --cicilan-lain 0 \
-     --rincian-dana "Oven & mixer=18jt; Bahan baku 2 bulan=22jt; Etalase=10jt"
+     --rincian-dana "Oven & mixer [inv]=18jt; Bahan baku 2 bulan [mk]=22jt; Etalase [inv]=10jt"
    ```
    - `--kur` mengecek terhadap Permenko 1/2026: jenis KUR dari plafon, bunga acuan, batas tenor, kewajiban NPWP, dan larangan agunan tambahan ≤ Rp100 juta. Hasilnya ada di `cek_ketentuan_kur` (`sesuai` / `perhatian`). Sampaikan setiap `perhatian`.
    - Ada bunga dari bank → tambah `--bunga 6` (tetap boleh dengan `--kur`; bila berbeda dari acuan, script memberi catatan). Tanpa sektor dan tanpa bunga bank → `--bunga 6 --bunga-contoh`.
@@ -124,6 +126,8 @@ Rencana dana: Oven Rp 18.000.000 (36%) · Bahan baku Rp 22.000.000 (44%) · Etal
 - [ ] Tidak ada janji persetujuan, plafon, atau lama proses; disclaimer ada.
 
 ## Batasan & penanganan error
+- Penggunaan campuran: bila tenor melebihi batas modal kerja untuk porsi `[mk]`, script memberi `perhatian`. Sarankan dua fasilitas/akad terpisah atau tanyakan bank; jangan menyatakan pasti ditolak.
+- Laba rugi/negatif boleh ditulis `--laba-bersih -2jt` atau `"minus 2jt"`. Bila `plafon_maks` = 0, sampaikan `catatan`-nya (cicilan lain/biaya rumah tangga sudah menghabiskan batas aman).
 - Script keluar dengan kode ≠ 0 dan pesan JSON bila plafon/bunga/tenor tak terbaca, bunga kosong tanpa `--kur --sektor`, plafon > Rp500 juta dengan `--kur` (di atas KUR Kecil), akad ke-3 KUR Mikro perdagangan non-ekspor (tidak tersedia), bunga > 60%/tahun, tenor di luar 1–360 bulan, atau format rincian dana salah — jelaskan dan minta angka yang benar (tenor selalu dalam **bulan**).
 - Laba nol/negatif: jangan dorong mengambil pinjaman; sarankan perbaiki pembukuan & laba dulu, atau plafon lebih kecil.
 - Rumus anuitas/flat adalah standar; bank dapat memakai metode/pembulatan lain dan menambah biaya (asuransi, notaris, materai) — minta rincian resmi.

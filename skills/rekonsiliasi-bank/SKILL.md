@@ -34,7 +34,7 @@ Menjawab: **"Transfer mana yang sudah masuk, mana yang belum, dan kenapa saldo b
 Jika catatan berupa tabel tempel di chat, simpan dulu sebagai CSV di folder kerja pengguna. Jika info kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor).
 
 ## Langkah kerja
-1. **Ingatkan privasi (1 kalimat)** sebelum mulai: data rekening hanya dibaca di komputer ini; jangan tempel nomor rekening/PIN/OTP; hapus data sensitif sebelum membagikan hasil.
+1. **Ingatkan privasi (1 kalimat)** sebelum mulai: data rekening hanya dibaca di komputer ini; jangan tempel nomor rekening/PIN/OTP; hapus data sensitif sebelum membagikan hasil. Bila pengguna **sudah** menempel PIN/password/OTP, jangan dipakai atau diulang, dan sarankan segera menggantinya lewat aplikasi/bank.
 2. **Deteksi kolom** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/rekonsiliasi.py deteksi --bank mutasi.csv --catatan penjualan.csv
@@ -52,12 +52,25 @@ Jika catatan berupa tabel tempel di chat, simpan dulu sebagai CSV di folder kerj
      --catat-status "Status" --catat-metode "Metode" --output-csv hasil-rekonsiliasi.csv
    ```
    - Bank dengan kolom debet & kredit terpisah: `--bank-kredit "Kredit" --bank-debet "Debet"` (ganti `--bank-nominal/--bank-dk`).
+   - Keterangan tersebar di beberapa kolom: ulangi `--bank-keterangan`. Judul kolom ganda otomatis diberi akhiran, mis. dua "Description" → `Description` dan `Description_2`.
    - Nominal tunggal tanpa CR/DB, uang keluar bertanda minus: `--bank-tanpa-penanda negatif-keluar`.
    - Tanggal bank tanpa tahun (mis. `'02/09`): tahun diambil dari baris "Periode" di atas file; bila tidak ada, tambah `--tahun 2026`.
    - `--catat-metode` + default `--abaikan-metode tunai,cash` membuang penjualan tunai (tidak lewat bank). `--catat-status` membuang batal/refund.
-   - Atur toleransi: `--toleransi-hari 3 --maks-hari-parsial 14 --toleransi-selisih 10000 --toleransi-persen 1`. Periode: `--dari 2026-09-01 --sampai 2026-09-30`.
+   - Atur toleransi: `--toleransi-hari 3 --maks-hari-parsial 14 --maks-hari-nama 31 --toleransi-selisih 10000 --toleransi-persen 1`. Periode: `--dari 2026-09-01 --sampai 2026-09-30`.
+   - Urutan pencocokan script:
+     1. Nama/no. invoice di keterangan bank (dicocokkan sebagai **kata utuh**: "Andi" ≠ "ANDIKA"; no. invoice angka minimal 4 digit dan tidak menempel ke angka lain).
+     2. Nominal + tanggal.
+     3. Gabungan/cicilan.
+     4. Beda tipis.
+     5. Nama sama tetapi nominal beda: hanya bila bank ≤ catatan atau selisih ≤ 50%.
+     6. Tanggal beda.
+
+     Pasangan yang keterangan banknya memuat nama pihak **lain** dari catatan tidak dianggap cocok. Pasangan seperti itu diberi label **KEMUNGKINAN TERTUKAR**.
    - `--format teks` untuk ringkasan cepat; default JSON.
 5. **Tulis laporan** (format di bawah). Semua angka dari output script. Pastikan `cek_rumus_seimbang` = true; jika false, laporkan sebagai kesalahan dan jangan menyimpulkan.
+   - **Periksa nama di setiap pasangan COCOK/PARSIAL.** Bandingkan nama/ref di catatan dengan keterangan bank. Jika berbeda, atau alasan berbunyi "KEMUNGKINAN TERTUKAR" / "nama tidak terlihat", laporkan sebagai "perlu dicek / kemungkinan tertukar". Jangan beri ✅.
+   - "Seimbang" hanya berarti angka penjelasan cocok dengan total selisih. Itu **bukan** bukti semua pasangan benar (lihat `catatan_seimbang`).
+   - Sampaikan `transaksi_tertunda_pend` (tertunda, cek di mutasi periode berikutnya).
 6. **Beri tindak lanjut konkret** per kelompok (lihat bagian Format). Tawarkan `tagih-piutang` untuk invoice yang belum dibayar.
 7. Tutup dengan pengingat privasi & hapus file hasil bila sudah tidak diperlukan.
 
@@ -79,7 +92,7 @@ Total catatan: Rp … · Total uang masuk bank: Rp … · Selisih: Rp …
 + Rp … invoice belum terlihat masuk bank
 − Rp … uang masuk yang belum dicatat
 + Rp … beda nominal pada cocok parsial
-= Rp … (seimbang ✔)
+= Rp … (angka seimbang — tetap cek pasangan bertanda 🟡/tertukar; seimbang ≠ semua pasangan benar)
 
 ### ❌ Belum ada di bank → tindakan
 | Tgl | Invoice | Pelanggan | Nominal | Saran |
@@ -101,15 +114,16 @@ Total catatan Rp 25.700.000 · Uang masuk bank Rp 20.454.846 · Selisih Rp 5.245
 ✅ Cocok 3 · 🟡 Parsial 4 · ❌ Belum di bank 1 (Rp 1.250.000) · ❓ Belum di catatan 2 (Rp 1.011.346)
 Penjelasan: + Rp 1.250.000 (INV-0010 Joko belum masuk) − Rp 1.011.346 (Hendra Rp 999.000 & bunga Rp 12.346)
             + Rp 5.006.500 (PT Sinar baru bayar Rp 5.000.000 dari Rp 10.000.000; CV Maju kurang Rp 6.500 — biaya transfer?)
-            = Rp 5.245.154 ✔
+            = Rp 5.245.154 (angka seimbang; pasangan 🟡 tetap dicek satu per satu)
 Parsial lain: Andi Wijaya bayar INV-0006 + INV-0007 sekaligus Rp 3.000.000; Rina bayar INV-0008 dua kali @ Rp 1.000.000.
 ```
 
 ## Checklist sebelum mengirim hasil
 - [ ] Pemetaan kolom sudah dikonfirmasi (atau disebut sebagai asumsi).
-- [ ] Semua angka dari script; `cek_rumus_seimbang` = true.
+- [ ] Semua angka dari script; `cek_rumus_seimbang` = true, disertai catatan bahwa seimbang ≠ pasangan pasti benar.
+- [ ] Nama catatan vs keterangan bank sudah diperiksa di setiap COCOK/PARSIAL; "KEMUNGKINAN TERTUKAR" dilaporkan.
 - [ ] Setiap PARSIAL diberi label "perlu dicek" — bukan dianggap pasti benar.
-- [ ] Baris yang dilewati (PEND, baris saldo, tanggal tak terbaca), catatan tunai/batal yang dibuang, dan semua `peringatan` disampaikan.
+- [ ] Transaksi PEND (tertunda) disebut terpisah; baris yang dilewati (baris saldo, tanggal tak terbaca), catatan tunai/batal yang dibuang, dan semua `peringatan` disampaikan.
 - [ ] Tidak menampilkan nomor rekening/kartu lengkap; tidak menyarankan mengirim file mutasi ke pihak lain.
 - [ ] Pengingat hapus data sensitif ada di akhir.
 
@@ -118,5 +132,5 @@ Parsial lain: Andi Wijaya bayar INV-0006 + INV-0007 sekaligus Rp 3.000.000; Rina
 - Pencocokan otomatis bisa keliru bila banyak transaksi bernominal sama; tambahkan kolom invoice/nama pelanggan untuk akurasi lebih baik.
 - Settlement marketplace/QRIS/EDC biasanya dibayar gabungan dan sudah dipotong biaya → sering muncul sebagai PARSIAL/tidak cocok; sarankan mencocokkan dengan laporan penarikan dana (payout) marketplace, bukan per pesanan.
 - Script keluar dengan kode ≠ 0 dan pesan JSON bila file Excel/PDF, kolom tidak ada, tanggal tanpa tahun, atau tidak ada baris valid — sampaikan dengan bahasa sederhana beserta cara memperbaikinya.
-- Privasi: script tidak mengakses internet, tidak menyimpan apa pun selain `--output-csv` yang diminta, dan menyamarkan deret angka ≥ 8 digit (`--tampilkan-lengkap` hanya bila pengguna memintanya). Jangan pernah meminta PIN, password, OTP, atau token internet banking.
+- Privasi: script tidak mengakses internet, tidak menyimpan apa pun selain `--output-csv` yang diminta, dan menyamarkan deret angka ≥ 8 digit (termasuk nomor rekening bertanda hubung/berspasi) (`--tampilkan-lengkap` hanya bila pengguna memintanya). Jangan pernah meminta PIN, password, OTP, atau token internet banking.
 - Bukan audit; untuk sengketa dengan bank atau pelanggan, gunakan rekening koran resmi dari bank.

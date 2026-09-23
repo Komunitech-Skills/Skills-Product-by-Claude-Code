@@ -22,7 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
-DIABAIKAN = {"__pycache__", ".DS_Store", "Thumbs.db"}
+DIABAIKAN = {"__pycache__", ".DS_Store", "Thumbs.db", "tests"}  # tests/ = uji internal, tidak dikirim ke pembeli
 
 
 def buat_kode_lisensi(pembeli, waktu):

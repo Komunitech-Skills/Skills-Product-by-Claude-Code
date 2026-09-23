@@ -25,6 +25,12 @@ Catatan pasal:
 - Sektor produksi = kegiatan yang menghasilkan barang/jasa **di luar sektor perdagangan** (Pasal 1 angka 2). Perdagangan berorientasi ekspor harus dibuktikan dengan dokumen proses ekspor (Pasal 36 ayat 3, Pasal 43 ayat 3).
 - Tenor dapat diperpanjang (di luar restrukturisasi): Super Mikro sampai 4 th (modal kerja) / 7 th (investasi); Mikro dan Kecil sampai 5 th / 7 th. Grace period mengikuti ketentuan penyalur (Pasal 31, 38, 45).
 - Debitur graduasi dari Super Mikro: akad awal di Mikro/Kecil dihitung sebagai akad pertama (Pasal 37 ayat 2, Pasal 44 ayat 2).
+- **Naik kelas dari KUR Mikro ke KUR Kecil (Pasal 44 ayat 3–5):**
+  - Akad awal di KUR Kecil dihitung sebagai akad pertama.
+  - Sektor produksi atau perdagangan berorientasi ekspor: **6%**.
+  - Perdagangan non-ekspor: **bunga KUR Mikro terakhir + 1%**, lalu naik **1% per akad berikutnya**, **paling tinggi 9%**. Contoh: pernah KUR Mikro dagang 6% lalu 7% → KUR Kecil akad pertama 8%, akad berikutnya 9%.
+  - Pindah dari KUR Kecil dagang non-ekspor ke sektor produksi atau ekspor: 6%.
+  - Di script, isi dengan `--bunga-mikro-terakhir`.
 - Ada juga jenis KUR khusus dan KUR penempatan Pekerja Migran Indonesia (Pasal 24). Keduanya di luar cakupan skill ini; arahkan ke bank.
 
 ## Agunan (TERVERIFIKASI-RESMI)
@@ -49,6 +55,8 @@ Catatan pasal:
 | Belum pernah menerima kredit/pembiayaan **komersial** | Ya | Ya | Ya |
 
 - Pengecualian "kredit komersial" (Pasal 27 ayat 3, 34 ayat 3, 41 ayat 3): kredit konsumsi rumah tangga; kredit ultra mikro s.d. Rp20 juta; pinjaman **fintech P2P/pembiayaan digital**; kredit konsumtif s.d. Rp500 juta yang tercatat sebagai produktif.
+- Belum pernah menerima KUR dengan plafon **di atas** plafon jenis yang diajukan (kecuali KUR penempatan PMI). Contoh: yang pernah KUR Mikro tidak bisa kembali ke Super Mikro (Pasal 27 ayat 1 huruf d, Pasal 34 ayat 1 huruf e).
+- Pernah menerima KUR penempatan PMI atau kredit program pemerintah lain di luar KUR **yang sudah lunas** tetap boleh (Pasal 28 ayat 2, 35 ayat 2, 42 ayat 2).
 - Boleh **sedang** menerima kredit berikut, asalkan kolektibilitas lancar (Pasal 28, 35, 42): KPR, kredit/leasing motor roda dua untuk tujuan produktif, kredit dengan jaminan SK pensiun, kartu kredit, kredit resi gudang, kredit konsumsi rumah tangga.
 - Penyalur mengecek kelayakan lewat **SLIK** OJK. Bila masih tercatat ada baki debet kredit produktif yang sebenarnya sudah lunas, siapkan **surat keterangan lunas/roya** plus bukti cetak rekening dari pemberi kredit sebelumnya (Pasal 14).
 

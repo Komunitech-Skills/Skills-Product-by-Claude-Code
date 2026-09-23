@@ -147,7 +147,16 @@ def parse_tanggal(teks, urutan="dmy", tahun_default=None):
 
 
 def samarkan(teks):
-    return re.sub(r"\d{8,}", lambda m: "****" + m.group(0)[-4:], teks or "")
+    """Samarkan deret >= 8 digit, termasuk yang dipisah spasi/tanda hubung (mis. 0021-01-000123-50-9)."""
+    def ganti(m):
+        digit = re.sub(r"\D", "", m.group(0))
+        return "****" + digit[-4:]
+    pola = r"\d{4}(?: \d{4}){2,}|\d+(?:-\d+)+|\d{8,}"
+    def mungkin(m):
+        n = len(re.sub(r"\D", "", m.group(0)))
+        batas = 10 if "-" in m.group(0) else 8  # tanggal 12-09-2026 (8 digit) tidak disamarkan
+        return ganti(m) if n >= batas else m.group(0)
+    return re.sub(pola, mungkin, teks or "")
 
 
 def norm(s):
@@ -202,7 +211,8 @@ KATA_CATAT = {
                 "total tagihan", "harga"],
     "ref": ["no invoice", "nomor invoice", "invoice", "no. invoice", "no faktur", "nomor", "no", "ref",
             "referensi", "no pesanan", "order id", "kode"],
-    "nama": ["pelanggan", "nama pelanggan", "customer", "nama", "pembeli", "klien", "konsumen"],
+    "nama": ["pelanggan", "nama pelanggan", "customer", "nama", "pembeli", "klien", "konsumen", "supplier",
+             "vendor", "pemasok", "nama supplier", "penerima"],
     "status": ["status", "status pesanan", "status bayar"],
     "metode": ["metode", "metode bayar", "cara bayar", "pembayaran", "payment", "payment method"],
 }
@@ -225,6 +235,8 @@ def petakan(header, kamus):
         terbaik, skor = None, 0
         for i, h in enumerate(header):
             if i in terpakai:
+                continue
+            if kunci in ("nominal", "kredit", "debet") and re.search(r"saldo|balance", h or "", re.I):
                 continue
             sk = cocok_kata(h, daftar)
             if sk > skor:
@@ -260,6 +272,14 @@ def baca_tabel(path, baris_judul=None, kamus=KATA):
     header = [h.strip().strip("'\"") for h in semua[idx]]
     # kolom tanpa nama diberi nama agar bisa dirujuk
     header = [h if h else f"kolom_{i + 1}" for i, h in enumerate(header)]
+    # judul kolom ganda (mis. dua "Description") diberi akhiran _2, _3 agar tidak saling menimpa
+    dilihat = {}
+    for i, h in enumerate(header):
+        if h in dilihat:
+            dilihat[h] += 1
+            header[i] = f"{h}_{dilihat[h]}"
+        else:
+            dilihat[h] = 1
     data = []
     for no, row in enumerate(semua[idx + 1:], start=idx + 2):
         if not any(c.strip() for c in row):
@@ -360,7 +380,7 @@ def ambil_bank(a, header, data, tahun_def):
         return nilai
 
     kt = kol("tanggal", a.bank_tanggal)
-    kk = kol("keterangan", a.bank_keterangan)
+    kk_list = [kol("keterangan", k) for k in (a.bank_keterangan or [])]
     kkr, kdb = kol("kredit", a.bank_kredit), kol("debet", a.bank_debet)
     kn, kdk = kol("nominal", a.bank_nominal), kol("dk", a.bank_dk)
     if not kt:
@@ -368,13 +388,19 @@ def ambil_bank(a, header, data, tahun_def):
     if not (kkr or kdb or kn):
         gagal("Sebutkan kolom nominal bank: --bank-kredit/--bank-debet, atau --bank-nominal (+ --bank-dk).")
 
-    hasil, lewat, perlu_tahun = [], {}, 0
+    hasil, lewat, perlu_tahun, pend = [], {}, 0, []
     for r in data:
+        if (r.get(kt) or "").strip().strip("'").upper().startswith("PEND"):
+            ket_p = " ".join(str(r.get(k, "") or "").strip() for k in kk_list if k).strip()
+            nil = parse_angka(r.get(kkr or kn))[0] if (kkr or kn) else None
+            pend.append({"baris_file": r["__baris__"], "keterangan": ket_p,
+                         "nominal": bulat(abs(nil)) if nil else None})
+            continue
         tgl, butuh = parse_tanggal(r.get(kt), a.urutan_tanggal, tahun_def)
         if tgl is None:
             if butuh:
                 perlu_tahun += 1
-            alasan = "tanggal kosong/tidak terbaca (mis. baris ringkasan saldo atau PEND)"
+            alasan = "tanggal kosong/tidak terbaca (mis. baris ringkasan saldo)"
             lewat[alasan] = lewat.get(alasan, 0) + 1
             continue
         masuk = keluar = None
@@ -407,13 +433,13 @@ def ambil_bank(a, header, data, tahun_def):
             alasan = "nominal kosong/tidak terbaca"
             lewat[alasan] = lewat.get(alasan, 0) + 1
             continue
-        ket = " ".join(str(r.get(k, "")) for k in [kk] if k).strip()
+        ket = " ".join(str(r.get(k, "") or "").strip() for k in kk_list if k).strip()
         for arah, nilai in (("masuk", masuk), ("keluar", keluar)):
             if nilai:
                 hasil.append({"id": f"B{r['__baris__']}" + ("" if not (masuk and keluar) else arah[0]),
                               "baris": r["__baris__"], "tanggal": tgl, "nominal": bulat(nilai),
                               "arah": arah, "keterangan": ket})
-    return hasil, lewat, perlu_tahun
+    return hasil, lewat, perlu_tahun, pend
 
 
 def ambil_catatan(a, header, data):
@@ -449,26 +475,88 @@ def ambil_catatan(a, header, data):
     return hasil, lewat, dibuang
 
 
-def petunjuk_teks(c, b):
-    """True bila no. invoice atau nama pelanggan catatan muncul di keterangan bank."""
-    ket = norm(b["keterangan"])
-    if c["ref"] and len(norm(c["ref"])) >= 3 and norm(c["ref"]) in ket:
-        return True
-    if c["nama"]:
-        kata = [norm(k) for k in re.split(r"\s+", c["nama"]) if len(norm(k)) >= 4
-                and norm(k) not in ("toko", "bapak", "ibu", "sdri", "sdr", "cv", "pt", "ud")]
-        if kata and any(k in ket for k in kata):
+KATA_UMUM_NAMA = {"toko", "bapak", "ibu", "pak", "bu", "mas", "mbak", "sdri", "sdr", "cv", "pt", "ud", "tbk",
+                  "jaya", "abadi", "makmur", "sentosa", "maju", "sejahtera", "mandiri", "utama", "indonesia",
+                  "group", "grup", "store", "shop", "official", "penjualan", "jual", "transfer", "bayar",
+                  "pembayaran", "invoice", "inv", "dan", "the", "agt", "agu", "sep", "okt", "nov", "des", "jan",
+                  "feb", "mar", "apr", "mei", "jun", "jul", "supplier", "vendor"}
+KATA_MERCHANT = ["qris", "settlement", "edc", "mdr", "merchant", "shopeepay", "gopay", "ovo", "dana"]
+
+
+def token(teks):
+    return re.findall(r"[a-z0-9]+", (teks or "").lower())
+
+
+SAPAAN_BADAN = {"toko", "bapak", "ibu", "pak", "bu", "mas", "mbak", "sdri", "sdr", "cv", "pt", "ud", "tbk"}
+
+
+def kata_nama(c):
+    """Kata khas nama pelanggan/supplier (huruf, >= 3 huruf, bukan kata umum)."""
+    return {t for t in token(c["nama"]) if len(t) >= 3 and t.isalpha() and t not in KATA_UMUM_NAMA}
+
+
+def kata_nama_umum(c):
+    """Untuk nama yang seluruhnya kata umum (mis. 'CV Makmur Sentosa'): semua katanya harus muncul."""
+    return {t for t in token(c["nama"]) if len(t) >= 3 and t.isalpha() and t not in SAPAAN_BADAN}
+
+
+def cocok_ref(c, b):
+    """No. invoice ada di keterangan bank sebagai 'kata utuh' (tidak menempel ke huruf/angka lain)."""
+    ref = (c["ref"] or "").strip().lower()
+    if not ref:
+        return False
+    ket = (b["keterangan"] or "").lower()
+    varian = {ref, re.sub(r"[\s\-/_.]", "", ref), re.sub(r"[\s\-/_.]+", " ", ref)}
+    for v in varian:
+        if not v:
+            continue
+        hanya_angka = v.replace(" ", "").isdigit()
+        if hanya_angka and (len(v.replace(" ", "")) < 4 or v.replace(" ", "") == str(b["nominal"])
+                            or v.replace(" ", "") == str(c["nominal"])):
+            continue
+        if len(v) < 3:
+            continue
+        if re.search(r"(?<![a-z0-9])" + re.escape(v) + r"(?![a-z0-9])", ket):
             return True
     return False
 
 
+def cocok_nama(c, b):
+    tb = set(token(b["keterangan"]))
+    kn = kata_nama(c)
+    if kn:
+        return bool(kn & tb)
+    ku = kata_nama_umum(c)
+    return len(ku) >= 2 and ku <= tb
+
+
+def petunjuk_teks(c, b):
+    """True bila no. invoice atau nama pelanggan catatan muncul (sebagai kata utuh) di keterangan bank."""
+    return cocok_ref(c, b) or cocok_nama(c, b)
+
+
 def cocokkan(bank, catat, a):
-    tol_hari, maks_hari = a.toleransi_hari, a.maks_hari_parsial
+    tol_hari, maks_hari, maks_nama = a.toleransi_hari, a.maks_hari_parsial, max(a.maks_hari_parsial, a.maks_hari_nama)
     tol_rp = bulat(parse_angka(a.toleransi_nominal)[0] or Decimal(0))
     sel_rp = bulat(parse_angka(a.toleransi_selisih)[0] or Decimal(0))
     sel_pct = Decimal(str(a.toleransi_persen)) / 100
+    keluar = a.arah == "keluar"
+    pihak = "supplier" if keluar else "pelanggan"
     pakaiB, pakaiC = set(), set()
     hasil = []
+    petunjuk = {(c["id"], b["id"]): petunjuk_teks(c, b) for c in catat for b in bank}
+
+    def konflik(c, b):
+        """Keterangan bank memuat nama/ref catatan LAIN yang masih terbuka, tetapi bukan milik c."""
+        if petunjuk[(c["id"], b["id"])]:
+            return None
+        kn = kata_nama(c)
+        for c2 in catat:
+            if c2["id"] == c["id"] or c2["id"] in pakaiC:
+                continue
+            if petunjuk[(c2["id"], b["id"])] and not (kata_nama(c2) & kn and kn):
+                return c2
+        return None
 
     def selisih_hari(c, b):
         return (b["tanggal"] - c["tanggal"]).days
@@ -480,111 +568,149 @@ def cocokkan(bank, catat, a):
         pakaiC.update(c["id"] for c in cs)
         pakaiB.update(b["id"] for b in bs)
 
-    # 1. cocok persis: nominal sama (± toleransi_nominal) dan tanggal dalam toleransi
-    kandidat = []
-    for c in catat:
-        for b in bank:
-            dh = selisih_hari(c, b)
-            if abs(c["nominal"] - b["nominal"]) <= tol_rp and abs(dh) <= tol_hari:
-                bonus = 0 if petunjuk_teks(c, b) else 1
-                kandidat.append((bonus, abs(dh), 0 if dh >= 0 else 1, c["baris"], b["baris"], c, b))
-    for *_, c, b in sorted(kandidat, key=lambda x: x[:5]):
-        if c["id"] in pakaiC or b["id"] in pakaiB:
-            continue
+    def sisaC():
+        return [c for c in catat if c["id"] not in pakaiC]
+
+    def sisaB():
+        return [b for b in bank if b["id"] not in pakaiB]
+
+    def pasang_satu(kandidat, buat):
+        for *_, c, b in sorted(kandidat, key=lambda x: x[:-2]):
+            if c["id"] in pakaiC or b["id"] in pakaiB:
+                continue
+            r = buat(c, b)
+            if r:
+                catat_hasil(*r)
+
+    def teks_hari(dh):
+        return "tanggal sama" if dh == 0 else f"tanggal bank {dh:+d} hari"
+
+    # 0. nama/no. invoice cocok + nominal sama (jendela lebar: --maks-hari-nama)
+    kand = [(abs(selisih_hari(c, b)), c["baris"], b["baris"], c, b) for c in sisaC() for b in sisaB()
+            if petunjuk[(c["id"], b["id"])] and abs(c["nominal"] - b["nominal"]) <= tol_rp
+            and abs(selisih_hari(c, b)) <= maks_nama]
+
+    def buat0(c, b):
         dh = selisih_hari(c, b)
-        alasan = "nominal sama" + (f", tanggal bank {dh:+d} hari" if dh else ", tanggal sama")
-        if petunjuk_teks(c, b):
-            alasan += ", nama/no. invoice ada di keterangan bank"
-        catat_hasil("COCOK", [c], [b], alasan)
+        if abs(dh) <= tol_hari:
+            return "COCOK", [c], [b], f"nominal sama, {teks_hari(dh)}, nama/no. invoice ada di keterangan bank"
+        return "PARSIAL", [c], [b], f"nominal & nama sama, tetapi tanggal berbeda {dh:+d} hari"
+    pasang_satu(kand, buat0)
 
-    sisaC = lambda: [c for c in catat if c["id"] not in pakaiC]
-    sisaB = lambda: [b for b in bank if b["id"] not in pakaiB]
+    # 1. nominal sama + tanggal dalam toleransi, tanpa konflik nama
+    kand = [(abs(selisih_hari(c, b)), 0 if selisih_hari(c, b) >= 0 else 1, c["baris"], b["baris"], c, b)
+            for c in sisaC() for b in sisaB()
+            if abs(c["nominal"] - b["nominal"]) <= tol_rp and abs(selisih_hari(c, b)) <= tol_hari]
 
-    # 2a. nominal sama, tanggal di luar toleransi (<= maks_hari_parsial)
-    kandidat = []
-    for c in sisaC():
-        for b in sisaB():
-            dh = selisih_hari(c, b)
-            if abs(c["nominal"] - b["nominal"]) <= tol_rp and abs(dh) <= maks_hari:
-                kandidat.append((0 if petunjuk_teks(c, b) else 1, abs(dh), c["baris"], b["baris"], c, b))
-    for *_, c, b in sorted(kandidat, key=lambda x: x[:4]):
-        if c["id"] in pakaiC or b["id"] in pakaiB:
-            continue
-        catat_hasil("PARSIAL", [c], [b], f"nominal sama, tetapi tanggal berbeda {selisih_hari(c, b):+d} hari")
+    def buat1(c, b):
+        if konflik(c, b):
+            return None
+        return ("COCOK", [c], [b], f"nominal sama, {teks_hari(selisih_hari(c, b))}"
+                + ("" if not (c["nama"] or c["ref"]) else "; nama tidak terlihat di keterangan bank — cek sekilas"))
+    pasang_satu(kand, buat1)
 
-    # 2b. satu transfer bank = gabungan 2–3 catatan (mis. pelanggan bayar beberapa invoice sekaligus)
+    def kombinasi(calon, target):
+        for k in (2, 3):
+            for kombo in itertools.combinations(calon, k):
+                if abs(sum(x["nominal"] for x in kombo) - target) <= tol_rp:
+                    return kombo
+        return None
+
+    # 2b. satu transaksi bank = gabungan 2–3 catatan
     for b in sorted(sisaB(), key=lambda x: -x["nominal"]):
         if b["id"] in pakaiB:
             continue
-        calon = [c for c in sisaC() if c["nominal"] < b["nominal"] and
-                 -maks_hari <= selisih_hari(c, b) <= maks_hari]
-        calon = sorted(calon, key=lambda c: (0 if petunjuk_teks(c, b) else 1, abs(selisih_hari(c, b))))[:a.maks_kandidat]
-        ketemu = None
-        for k in (2, 3):
-            for kombo in itertools.combinations(calon, k):
-                if abs(sum(c["nominal"] for c in kombo) - b["nominal"]) <= tol_rp:
-                    ketemu = kombo
-                    break
-            if ketemu:
-                break
-        if ketemu:
-            catat_hasil("PARSIAL", list(ketemu), [b], f"1 transfer bank = gabungan {len(ketemu)} catatan")
+        calon = [c for c in sisaC() if c["nominal"] < b["nominal"] and abs(selisih_hari(c, b)) <= maks_hari
+                 and not konflik(c, b)]
+        calon = sorted(calon, key=lambda c: (0 if petunjuk[(c["id"], b["id"])] else 1,
+                                             abs(selisih_hari(c, b))))[:a.maks_kandidat]
+        kombo = kombinasi(calon, b["nominal"])
+        if kombo:
+            catat_hasil("PARSIAL", list(kombo), [b], f"1 transaksi bank = gabungan {len(kombo)} catatan")
 
-    # 2c. satu catatan dibayar dengan 2–3 transfer (cicilan / transfer terpisah)
+    # 2c. satu catatan dibayar dengan 2–3 transaksi bank
     for c in sorted(sisaC(), key=lambda x: -x["nominal"]):
         if c["id"] in pakaiC:
             continue
-        calon = [b for b in sisaB() if b["nominal"] < c["nominal"] and
-                 -tol_hari <= selisih_hari(c, b) <= maks_hari]
-        calon = sorted(calon, key=lambda b: (0 if petunjuk_teks(c, b) else 1, abs(selisih_hari(c, b))))[:a.maks_kandidat]
-        ketemu = None
-        for k in (2, 3):
-            for kombo in itertools.combinations(calon, k):
-                if abs(sum(b["nominal"] for b in kombo) - c["nominal"]) <= tol_rp:
-                    ketemu = kombo
-                    break
-            if ketemu:
-                break
-        if ketemu:
-            catat_hasil("PARSIAL", [c], list(ketemu), f"1 catatan dibayar dengan {len(ketemu)} transfer bank")
+        calon = [b for b in sisaB() if b["nominal"] < c["nominal"] and -tol_hari <= selisih_hari(c, b) <= maks_hari
+                 and not konflik(c, b)]
+        calon = sorted(calon, key=lambda b: (0 if petunjuk[(c["id"], b["id"])] else 1,
+                                             abs(selisih_hari(c, b))))[:a.maks_kandidat]
+        kombo = kombinasi(calon, c["nominal"])
+        if kombo:
+            catat_hasil("PARSIAL", [c], list(kombo), f"1 catatan dibayar dengan {len(kombo)} transaksi bank")
 
-    # 2d. nominal beda tipis (potongan biaya transfer/admin/MDR), tanggal dalam toleransi
-    kandidat = []
+    def alasan_beda(c, b, d):
+        lebih = "bank lebih kecil" if d > 0 else "bank lebih besar"
+        if any(k in (b["keterangan"] or "").lower() for k in KATA_MERCHANT):
+            return f"nominal beda {rp(abs(d))} ({lebih}; kemungkinan dipotong biaya merchant QRIS/EDC/MDR)"
+        if keluar:
+            return f"nominal beda {rp(abs(d))} ({lebih}; kemungkinan biaya transfer, diskon/potongan supplier, atau salah ketik)"
+        return f"nominal beda {rp(abs(d))} ({lebih}; kemungkinan potongan biaya transfer/admin, ongkir, atau salah ketik)"
+
+    # 2d. nominal beda tipis, tanggal dalam toleransi (berpetunjuk dulu), tanpa konflik
+    kand = []
     for c in sisaC():
         for b in sisaB():
-            dh = selisih_hari(c, b)
-            batas = max(sel_rp, bulat(Decimal(c["nominal"]) * sel_pct))
             d = abs(c["nominal"] - b["nominal"])
-            if 0 < d <= batas and abs(dh) <= tol_hari:
-                kandidat.append((0 if petunjuk_teks(c, b) else 1, d, abs(dh), c["baris"], b["baris"], c, b))
-    for *_, c, b in sorted(kandidat, key=lambda x: x[:5]):
-        if c["id"] in pakaiC or b["id"] in pakaiB:
-            continue
-        d = c["nominal"] - b["nominal"]
-        catat_hasil("PARSIAL", [c], [b], f"nominal beda {rp(abs(d))} ({'bank lebih kecil' if d > 0 else 'bank lebih besar'}"
-                                         "; kemungkinan potongan biaya transfer/admin, ongkir, atau salah ketik)")
+            batas = max(sel_rp, bulat(Decimal(c["nominal"]) * sel_pct))
+            if 0 < d <= batas and abs(selisih_hari(c, b)) <= tol_hari:
+                kand.append((0 if petunjuk[(c["id"], b["id"])] else 1, d, abs(selisih_hari(c, b)),
+                             c["baris"], b["baris"], c, b))
+    pasang_satu(kand, lambda c, b: None if konflik(c, b) else
+                ("PARSIAL", [c], [b], alasan_beda(c, b, c["nominal"] - b["nominal"])))
 
-    # 2e. nama/no. invoice cocok tapi nominal beda jauh (bayar sebagian / kurang bayar)
-    kandidat = []
+    # 2e. nama/no. invoice cocok, nominal beda: hanya bila bank <= catatan (bayar sebagian) atau selisih <= 50%
+    kand = []
     for c in sisaC():
         for b in sisaB():
             dh = selisih_hari(c, b)
-            if petunjuk_teks(c, b) and -tol_hari <= dh <= maks_hari:
-                kandidat.append((abs(dh), c["baris"], b["baris"], c, b))
-    for *_, c, b in sorted(kandidat, key=lambda x: x[:3]):
-        if c["id"] in pakaiC or b["id"] in pakaiB:
-            continue
+            if petunjuk[(c["id"], b["id"])] and -maks_nama <= dh <= maks_nama and (
+                    b["nominal"] <= c["nominal"] or abs(c["nominal"] - b["nominal"]) <= c["nominal"] * 0.5):
+                kand.append((abs(dh), c["baris"], b["baris"], c, b))
+
+    def buat2e(c, b):
         d = c["nominal"] - b["nominal"]
-        catat_hasil("PARSIAL", [c], [b], "nama/no. invoice cocok, nominal beda "
-                    + (f"{rp(d)} (kemungkinan baru bayar sebagian)" if d > 0 else f"{rp(-d)} (bank lebih besar)"))
+        if any(k in (b["keterangan"] or "").lower() for k in KATA_MERCHANT):
+            return "PARSIAL", [c], [b], "nama/ref cocok, " + alasan_beda(c, b, d)
+        if d > 0:
+            teks = f"{rp(d)} lebih kecil (kemungkinan baru {'dibayar' if keluar else 'bayar'} sebagian)"
+        else:
+            teks = f"{rp(-d)} lebih besar (cek apakah termasuk pembayaran lain)"
+        return "PARSIAL", [c], [b], "nama/no. invoice cocok, nominal bank " + teks
+    pasang_satu(kand, buat2e)
+
+    # 2a. nominal sama, tanggal di luar toleransi (<= maks_hari_parsial), tanpa konflik nama
+    kand = [(abs(selisih_hari(c, b)), c["baris"], b["baris"], c, b) for c in sisaC() for b in sisaB()
+            if abs(c["nominal"] - b["nominal"]) <= tol_rp and abs(selisih_hari(c, b)) <= maks_hari]
+    pasang_satu(kand, lambda c, b: None if konflik(c, b) else
+                ("PARSIAL", [c], [b], f"nominal sama, tetapi tanggal berbeda {selisih_hari(c, b):+d} hari; "
+                                      "nama tidak terlihat di keterangan bank"))
+
+    # 3. nominal & tanggal cocok tetapi keterangan bank memuat nama pihak lain → kemungkinan tertukar
+    kand = [(abs(selisih_hari(c, b)), c["baris"], b["baris"], c, b) for c in sisaC() for b in sisaB()
+            if abs(c["nominal"] - b["nominal"]) <= tol_rp and abs(selisih_hari(c, b)) <= tol_hari]
+
+    def buat3(c, b):
+        lain = konflik(c, b)
+        nama_lain = (lain["nama"] or lain["ref"]) if lain else "pihak lain"
+        return ("PARSIAL", [c], [b], f"KEMUNGKINAN TERTUKAR: nominal & tanggal sama, tetapi keterangan bank memuat "
+                                     f"nama/ref '{nama_lain}', bukan '{c['nama'] or c['ref']}' — cek manual")
+    pasang_satu(kand, buat3)
 
     for c in sisaC():
-        catat_hasil("TIDAK ADA DI BANK", [c], [], "tidak ada transfer yang cocok (belum dibayar, dibayar tunai, "
-                                                 "masuk ke rekening lain, atau salah catat)")
+        if keluar:
+            al = "tidak ada pembayaran keluar yang cocok (belum dibayar, dibayar tunai/rekening lain, atau salah catat)"
+        else:
+            al = "tidak ada transfer yang cocok (belum dibayar, dibayar tunai, masuk ke rekening lain, atau salah catat)"
+        catat_hasil("TIDAK ADA DI BANK", [c], [], al)
     for b in sisaB():
-        k = b["keterangan"].lower()
+        k = (b["keterangan"] or "").lower()
         if any(x in k for x in KATA_BIAYA_BANK):
-            al = "kemungkinan bunga/biaya/pajak bank — bukan penjualan"
+            al = ("kemungkinan biaya/pajak bank — bukan pembayaran ke " + pihak) if keluar else \
+                 "kemungkinan bunga/biaya/pajak bank — bukan penjualan"
+        elif keluar:
+            al = "tidak ada di catatan pembelian (pengeluaran lain, lupa dicatat, penarikan tunai, atau keperluan pribadi)"
         else:
             al = "tidak ada di catatan (pemasukan lain, lupa dicatat, atau dana pribadi)"
         catat_hasil("TIDAK ADA DI CATATAN", [], [b], al)
@@ -601,7 +727,7 @@ def cmd_cocokkan(a):
 
     catat, lewat_c, dibuang_c = ambil_catatan(a, hc, dc)
     tahun_def = a.tahun or tahun_dari_teks(pembuka) or (catat[0]["tanggal"].year if catat else None)
-    bank_all, lewat_b, perlu_tahun = ambil_bank(a, hb, db, tahun_def)
+    bank_all, lewat_b, perlu_tahun, pend = ambil_bank(a, hb, db, tahun_def)
     peringatan = []
     if perlu_tahun and not tahun_def:
         gagal("Tanggal di mutasi bank tanpa tahun (mis. '02/09'). Sebutkan tahunnya dengan --tahun 2026.")
@@ -645,14 +771,20 @@ def cmd_cocokkan(a):
     total_b = sum(b["nominal"] for b in bank)
     r = {s: ringkas(s) for s in ("COCOK", "PARSIAL", "TIDAK ADA DI BANK", "TIDAK ADA DI CATATAN")}
     sel_parsial = sum(h["selisih"] for h in hasil if h["status"] == "PARSIAL")
+    sel_cocok = sum(h["selisih"] for h in hasil if h["status"] == "COCOK")  # > 0 hanya bila --toleransi-nominal > 0
     penjelasan = {
         "total_catatan": total_c, "total_bank": total_b, "selisih_total (catatan - bank)": total_c - total_b,
         "dari_catatan_tidak_ada_di_bank": r["TIDAK ADA DI BANK"]["total_catatan"],
         "dari_bank_tidak_ada_di_catatan": -r["TIDAK ADA DI CATATAN"]["total_bank"],
         "dari_selisih_nominal_cocok_parsial": sel_parsial,
+        "dari_selisih_dalam_toleransi_cocok": sel_cocok,
     }
-    cek = penjelasan["dari_catatan_tidak_ada_di_bank"] + penjelasan["dari_bank_tidak_ada_di_catatan"] + sel_parsial
+    cek = (penjelasan["dari_catatan_tidak_ada_di_bank"] + penjelasan["dari_bank_tidak_ada_di_catatan"]
+           + sel_parsial + sel_cocok)
     penjelasan["cek_rumus_seimbang"] = (cek == total_c - total_b)
+    penjelasan["catatan_seimbang"] = ("Seimbang hanya berarti angka penjelasan cocok dengan total selisih — BUKAN bukti "
+                                      "setiap pasangan benar. Periksa pasangan PARSIAL dan yang bertanda KEMUNGKINAN TERTUKAR.")
+    tertukar = [h for h in hasil if "TERTUKAR" in h["alasan"]]
 
     def tampil(item, sumber):
         d = {"baris_file": item["baris"], "tanggal": item["tanggal"].isoformat(), "nominal": item["nominal"]}
@@ -688,10 +820,17 @@ def cmd_cocokkan(a):
         "detail": detail,
         "dilewati": {"bank": lewat_b, "catatan": lewat_c, "catatan_dibuang": dibuang_c,
                      "bank_arah_lain_diabaikan": diabaikan_arah},
+        "transaksi_tertunda_pend": [dict(p, keterangan=(p["keterangan"] if lengkap else samarkan(p["keterangan"])))
+                                    for p in pend],
+        "kemungkinan_tertukar": len(tertukar),
         "peringatan": peringatan,
-        "privasi": "Nomor panjang (>= 8 digit) di keterangan disamarkan." if not lengkap else
+        "privasi": "Nomor panjang (>= 8 digit, termasuk yang dipisah spasi/tanda hubung) di keterangan disamarkan." if not lengkap else
                    "PERINGATAN: keterangan ditampilkan lengkap; jangan bagikan output ini.",
     }
+    if pend:
+        peringatan.append(f"{len(pend)} transaksi berstatus PEND (tertunda) tidak dihitung — cek di mutasi periode berikutnya.")
+    if tertukar:
+        peringatan.append(f"{len(tertukar)} pasangan bertanda KEMUNGKINAN TERTUKAR (nama di bank berbeda dengan catatan) — cek manual.")
     if a.output_csv:
         tulis_csv(a.output_csv, a.pemisah, detail)
         out["file_csv"] = a.output_csv
@@ -724,7 +863,8 @@ def cetak_teks(o):
     print(f"Periode bank {o['periode']['bank'][0]} s.d. {o['periode']['bank'][1]}; "
           f"catatan {o['periode']['catatan'][0]} s.d. {o['periode']['catatan'][1]}")
     print(f"Total catatan {rp(p['total_catatan'])} | total bank ({o['pengaturan']['arah']}) {rp(p['total_bank'])} | "
-          f"selisih {rp(p['selisih_total (catatan - bank)'])}")
+          f"selisih {rp(p['selisih_total (catatan - bank)'])} | rumus seimbang: {p['cek_rumus_seimbang']} "
+          "(seimbang ≠ semua pasangan benar)")
     for s, v in r["per_status"].items():
         print(f"- {s}: {v['jumlah_kelompok']} kelompok, catatan {rp(v['total_catatan'])}, bank {rp(v['total_bank'])}")
     print()
@@ -754,7 +894,8 @@ def main():
     umum(c)
     c.add_argument("--catatan", required=True)
     c.add_argument("--bank-tanggal", required=True)
-    c.add_argument("--bank-keterangan")
+    c.add_argument("--bank-keterangan", action="append",
+                   help="Kolom keterangan; boleh diulang untuk menggabungkan beberapa kolom (mis. Description dan Description_2)")
     c.add_argument("--bank-kredit", help="Kolom uang masuk")
     c.add_argument("--bank-debet", help="Kolom uang keluar")
     c.add_argument("--bank-nominal", help="Kolom nominal tunggal (dengan CR/DB atau kolom --bank-dk)")
@@ -773,6 +914,8 @@ def main():
                    help="masuk = cocokkan uang masuk dgn penjualan (default); keluar = pembayaran ke supplier")
     c.add_argument("--toleransi-hari", type=int, default=3, help="Selisih tanggal untuk cocok persis (default 3)")
     c.add_argument("--maks-hari-parsial", type=int, default=14, help="Jendela hari untuk cocok parsial (default 14)")
+    c.add_argument("--maks-hari-nama", type=int, default=31,
+                   help="Jendela hari bila nama/no. invoice ada di keterangan bank (default 31)")
     c.add_argument("--toleransi-nominal", default="0", help="Beda nominal yg masih dianggap sama (default 0)")
     c.add_argument("--toleransi-selisih", default="10000", help="Beda nominal tipis utk parsial (default Rp 10.000)")
     c.add_argument("--toleransi-persen", type=float, default=1.0, help="...atau persen dari nominal (default 1)")
