@@ -12,7 +12,7 @@
 **Rincian THR Idul Fitri 1448 H — -**
 Hari raya: Rabu, 10 Maret 2027 · **Batas bayar (H-7): Rabu, 3 Maret 2027** · Rencana bayar: Rabu, 3 Maret 2027
 
-| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | Tambahan PPh 21 | THR diterima |
+| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | PPh 21 karena THR | THR diterima |
 |---|---|---:|---:|---|---:|---:|---:|
 | Contoh Karyawan Baru | Tetap (PKWTT) | 7 bln | Rp 4.500.000 | 7/12 × upah | **Rp 2.625.000** | – | Rp 2.625.000 |
 | **Total** | | | | | **Rp 2.625.000** | **Rp 0** | **Rp 2.625.000** |
@@ -51,6 +51,6 @@ _Alat bantu hitung, bukan nasihat hukum/pajak. Dasar: Permenaker 6/2016, SE Mena
 Asumsi: karyawan tetap/kontrak dengan gaji Rp 4,5 jt = gaji pokok tanpa tunjangan tetap; status PTKP tidak disebut sehingga potongan PPh 21 atas THR belum dihitung — kirim status PTKP (mis. TK/0) dan gaji bruto bulan Maret bila ingin sekalian dihitung.
 
 **Catatan penguji:**
-- 1 Agustus 2026 → 10 Maret 2027 = 7 bulan penuh → 7/12 × Rp 4.500.000 = **Rp 2.625.000**. Cocok.
+- 1 Agustus 2026 → 10 Maret 2027 = 7 bulan penuh (inklusif, v1.0.1) → 7/12 × Rp 4.500.000 = **Rp 2.625.000**. Cocok.
 - Permintaan singkat langsung dikerjakan dengan asumsi yang disebut. Sesuai prinsip "instan".
 - Uji lanjutan penguji: bila PTKP TK/0, tambahan PPh 21 bulan Maret = TER A 1,25% × Rp 7.125.000 = Rp 89.062 (script dengan `--ptkp TK/0` memberi angka yang sama).

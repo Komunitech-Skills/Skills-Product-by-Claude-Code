@@ -70,7 +70,7 @@ _Alat bantu hitung, bukan nasihat hukum/pajak. Dasar: Perpres 64/2020 (BPJS Kese
 
 _Ditanggung perusahaan (tidak memotong gaji): BPJS Kesehatan 4% Rp 220.000, JHT 3,7% Rp 203.500, JKK 0,54% Rp 29.700, JKM 0,3% Rp 16.500, JP 2% Rp 110.000._
 _PPh 21: TER kategori B 0,75% × penghasilan bruto pajak Rp 7.160.998 (termasuk premi JKK, JKM, BPJS Kesehatan perusahaan)._
-_Lembur: upah sejam = 1/173 × Rp 5.500.000 = Rp 31.791,91._
+_Lembur: upah sejam = 1/173 × Rp 5.500.000 = Rp 31.791,91; 25 jam setara × upah sejam = Rp 794.798._
 
 Asumsi: uang makan/transport dianggap tunjangan tidak tetap (tidak ikut dasar BPJS & lembur); pola 5 hari kerja; skema PPh 21 dipotong dari gaji (bukan ditanggung perusahaan); perusahaan bukan penerima PPh 21 DTP.
 

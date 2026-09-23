@@ -38,4 +38,4 @@ Uji massal skill kita: 3.000 slip acak (gaji, tunjangan tidak tetap, lembur hari
 
 ## Yang bisa dipelajari (ide)
 - Pesaing A: aturan BPJS disimpan per periode berlaku (`effective_from/to`) sehingga periode lampau otomatis memakai batas JP lama — skill kita sudah punya `BATAS_JP` berperiode; bisa diperluas ke tarif lain (mis. diskon JKK padat karya bila diperpanjang).
-- Pesaing A: menolak berjalan bila tanggal/aturan tidak ada ("fail-closed") — skill kita sudah melakukannya untuk batas JP; pertahankan pola ini untuk DTP (lihat cacat di HASIL-UJI).
+- Pesaing A: menolak berjalan bila tanggal/aturan tidak ada ("fail-closed") — skill kita sudah melakukannya untuk batas JP; pola ini kini juga dipakai untuk DTP di v1.0.1 (syarat masa 2026 & bruto tetap ≤ Rp 10 jt).

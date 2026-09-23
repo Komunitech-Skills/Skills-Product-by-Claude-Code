@@ -20,7 +20,7 @@ Mesin pesaing hanya menerima `gaji_pokok, tunjangan_tetap, masa_kerja_bulan` (ma
 | PPh 21 atas THR | Budi Rp 286.500, Rina Rp 120.000 | Tidak ada | sama dengan skill kita |
 | Pengumuman karyawan | Ada | Tidak ada | — |
 
-Akurasi rumus inti (≥ 12 bulan = 1 bulan upah; proporsional masa kerja/12) sama-sama benar. Uji massal skill kita: 3.000 kasus acak (tetap/kontrak/harian/satuan, masa kerja 0–26 bulan dan sekitar 12 bulan, PHK 1–60 hari sebelum hari raya, PPh 21 dengan/tanpa bruto bulan bayar) dibanding kalkulator independen penguji: **0 selisih** (di luar dua cacat berat yang dicatat di HASIL-UJI: PPh THR pegawai yang sudah berhenti, dan DTP tanpa cek).
+Akurasi rumus inti (≥ 12 bulan = 1 bulan upah; proporsional masa kerja/12) sama-sama benar. Uji massal skill kita: 3.000 kasus acak (tetap/kontrak/harian/satuan, masa kerja 0–26 bulan dan sekitar 12 bulan, PHK 1–60 hari sebelum hari raya, PPh 21 dengan/tanpa bruto bulan bayar) dibanding kalkulator independen penguji: **0 selisih** (uji ulang v1.0.1: 4.000 kasus termasuk mantan pegawai, DTP 2026/2027 dan masa kerja inklusif — 0 selisih).
 
 ## Penilaian
 
@@ -28,10 +28,10 @@ Akurasi rumus inti (≥ 12 bulan = 1 bulan upah; proporsional masa kerja/12) sam
 |---|---|---|
 | Kualitas output | 9 (tabel, catatan per orang, pengumuman, CSV) | 3 (JSON angka tunggal) |
 | Kesesuaian konteks Indonesia | 9 (harian lepas, PKWT/PKWTT, PHK, H-7, SE 2026, bahasa awam) | 4 |
-| Akurasi | 7 (THR benar; PPh pegawai berhenti & DTP bermasalah) | 6 (rumus inti benar, cakupan sangat sempit, tanpa PPh) |
+| Akurasi | 9 (v1.0.1: THR, PPh mantan pegawai, DTP benar) | 6 (rumus inti benar, cakupan sangat sempit, tanpa PPh) |
 | Siap pakai | 9 | 3 (butuh Node.js, masa kerja dihitung manual) |
 
-**Kesimpulan: skill kita menang secara keseluruhan.**
+**Kesimpulan: skill kita menang telak (v1.0.1).**
 
 ## Yang bisa dipelajari (ide)
 - Pesaing A menyatakan tegas "tidak dipakai untuk keputusan PHK tanpa pendamping" di metadata `not_for` — ide untuk mempertegas batas cakupan di awal output bila ada kasus PHK.

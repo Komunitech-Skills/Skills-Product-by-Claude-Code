@@ -1,4 +1,4 @@
-# 04 — Input tidak lengkap: slip Desember
+# 04 — Input tidak lengkap: slip Desember (diperbarui v1.0.1)
 
 **Skenario:** S4 — slip bulan Desember tanpa data Januari–November (wajib untuk hitung ulang PPh 21).
 
@@ -21,7 +21,7 @@ ERROR: data berikut harus diperbaiki dulu (tidak ada file yang dibuat):
 > 5. Tarif JKK perusahaan (kalau tidak tahu, saya pakai 0,24%).
 
 **Setelah pengguna menjawab** ("bruto Jan–Nov 114.994.000, PPh sudah dipotong 2.874.850, iuran 3.300.000, kerja penuh, JKK 0,24%"):
-`python3 scripts/payroll.py --periode 2026-12 --nama "Contoh Andi" --ptkp K/0 --gaji-pokok 10jt --jkk 0,24 --bruto-sd-bulan-lalu 114.994.000 --pph21-sd-bulan-lalu 2.874.850 --iuran-sd-bulan-lalu 3.300.000 --out payroll-2026-12`
+`python3 scripts/payroll.py --periode 2026-12 --nama "Contoh Andi" --ptkp K/0 --gaji-pokok 10jt --jkk 0,24 --bruto-sd-bulan-lalu 114.994.000 --pph21-sd-bulan-lalu 2.874.850 --iuran-sd-bulan-lalu 3.300.000 --bulan-mulai 1 --out payroll-2026-12`
 
 **Rekap payroll Desember 2026 — -** (1 karyawan)
 
@@ -73,4 +73,4 @@ _PPh 21: dihitung ulang setahun (Masa Pajak Terakhir); PPh setahun Rp 2.867.400 
 **Catatan penguji:**
 - Diverifikasi independen: setahun bruto Rp 125.448.000, biaya jabatan Rp 6 jt, iuran Rp 3,6 jt, PKP Rp 57.348.000, PPh setahun Rp 2.867.400 − Rp 2.874.850 = **lebih potong Rp 7.450** dikembalikan di slip. Cocok.
 - Script menolak dengan pesan jelas dan tidak membuat file setengah jadi. Bagus.
-- Kurang (sedang): bila `jumlah_bulan_kerja` tidak diisi, script memakai nomor bulan (12) sebagai jumlah bulan kerja (baris `n = int(angka(r.get("jumlah_bulan_kerja"), ..., Decimal(bulan)))` di `hitung_karyawan`). Untuk karyawan yang baru masuk di tengah tahun, biaya jabatan maksimal jadi terlalu besar (mis. Rp 6 jt padahal seharusnya Rp 500 rb × bulan kerja) → PPh Desember terlalu kecil, tanpa peringatan. Pertanyaan nomor 4 di atas menutup celah ini, tetapi SKILL.md tidak mewajibkannya.
+- v1.0.1: untuk Desember/bulan berhenti script kini **wajib** `jumlah_bulan_kerja` atau `bulan_mulai` (tanpa itu: ERROR, tidak ada file dibuat), sehingga karyawan yang masuk di tengah tahun tidak lagi mendapat batas biaya jabatan yang salah. Pertanyaan nomor 4 di atas sekarang memang diperlukan. Uji penguji: masuk September, gaji Rp 20 jt, `--bulan-mulai 9` → pengembalian Rp 2.726.150 (benar; v1.0.0 memberi Rp 2.832.650).

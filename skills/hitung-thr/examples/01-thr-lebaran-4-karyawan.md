@@ -1,4 +1,4 @@
-# 01 — THR Lebaran untuk 4 karyawan campuran
+# 01 — THR Lebaran untuk 4 karyawan campuran (diperbarui v1.0.1)
 
 **Skenario:** S1 — permintaan normal: karyawan tetap lama, kontrak baru, tukang harian lepas, dan karyawan yang di-PHK 18 hari sebelum Lebaran.
 
@@ -20,12 +20,12 @@ Contoh Wati;Kasir;tetap;TK/1;5.200.000;;2021-02-01;;;2027-02-20
 ```
 Perintah: `python3 scripts/thr.py --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" --perusahaan "CV Contoh Maju Jaya" --data karyawan.csv --csv rekap-thr.csv`
 
-**Output:**
+**Output (script v1.0.1):**
 
 **Rincian THR Idul Fitri 1448 H — CV Contoh Maju Jaya**
 Hari raya: Rabu, 10 Maret 2027 · **Batas bayar (H-7): Rabu, 3 Maret 2027** · Rencana bayar: Rabu, 3 Maret 2027
 
-| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | Tambahan PPh 21 | THR diterima |
+| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | PPh 21 karena THR | THR diterima |
 |---|---|---:|---:|---|---:|---:|---:|
 | Contoh Budi | Tetap (PKWTT) | 92 bln | Rp 5.500.000 | masa kerja ≥ 12 bulan → 1 × upah | **Rp 5.500.000** | Rp 286.500 | Rp 5.213.500 |
 | Contoh Rina | Kontrak (PKWT) | 8 bln | Rp 4.800.000 | 8/12 × upah | **Rp 3.200.000** | Rp 120.000 | Rp 3.080.000 |
@@ -37,11 +37,10 @@ Hari raya: Rabu, 10 Maret 2027 · **Batas bayar (H-7): Rabu, 3 Maret 2027** · R
 - Contoh Rina: PPh 21 bulan THR dibayar (TER A) = 1,5% × (Rp 4.800.000 + THR Rp 3.200.000) = Rp 120.000; tanpa THR 0% × Rp 4.800.000 = Rp 0 → tambahan Rp 120.000.
 - Contoh Joko: Pekerja harian/satuan: PPh 21 memakai aturan pegawai tidak tetap (TER harian atau TER bulanan bila dibayar bulanan) — hitung dengan skill pph21-ter.
 - Contoh Wati: PHK 18 hari sebelum hari raya (≤ 30 hari) — tetap berhak THR (Permenaker 6/2016 Pasal 7 ayat 1).
-- Contoh Wati: PPh 21 bulan THR dibayar (TER A) = 2,5% × (Rp 5.200.000 + THR Rp 5.200.000) = Rp 260.000; tanpa THR 0% × Rp 5.200.000 = Rp 0 → tambahan Rp 260.000.
+- Contoh Wati: THR dibayar setelah bulan berhenti bekerja → berstatus Mantan Pegawai: PPh 21 = tarif Pasal 17 × bruto THR = Rp 260.000 (PMK 168/2023 Pasal 16 ayat 6), bukan TER.
 
 ⚠️ Peringatan:
 - Contoh Rina: bruto gaji bulan THR dibayar tidak diisi; dipakai gaji pokok + tunjangan tetap (belum termasuk lembur, tunjangan tidak tetap, premi JKK/JKM/BPJS Kesehatan). Isi bruto_bulan_bayar agar PPh 21 tepat.
-- Contoh Wati: bruto gaji bulan THR dibayar tidak diisi; dipakai gaji pokok + tunjangan tetap (belum termasuk lembur, tunjangan tidak tetap, premi JKK/JKM/BPJS Kesehatan). Isi bruto_bulan_bayar agar PPh 21 tepat.
 
 Catatan:
 - THR wajib dibayar penuh (tidak dicicil) paling lambat 7 hari sebelum hari raya. Terlambat: denda 5% dari total THR, dan THR tetap wajib dibayar (Permenaker 6/2016 Pasal 10).
@@ -77,5 +76,5 @@ _Alat bantu hitung, bukan nasihat hukum/pajak. Dasar: Permenaker 6/2016, SE Mena
 **Catatan penguji:**
 - Besaran THR diverifikasi dengan kalkulator independen penguji (dari teks Permenaker 6/2016 Pasal 2–4 & 7 dan SE Menaker M/3/HK.04.00/III/2026 yang dibaca langsung dari pindaian JDIH): Budi Rp 5.500.000, Rina 8/12 × 4,8 jt = Rp 3.200.000, Joko rata-rata 12 bulan terakhir Rp 3.008.333 (masa kerja 14 bulan ≥ 12), Wati Rp 5.200.000 (PHK ≤ 30 hari, PKWTT) — **cocok**.
 - Tambahan PPh 21 Budi Rp 286.500 dan Rina Rp 120.000 benar (TER B 2,5% × 11,46 jt; TER A 1,5% × 8 jt).
-- **Masalah (cacat berat):** Wati sudah berhenti 20 Februari, THR dibayar 3 Maret. Pada saat dibayar ia **Mantan Pegawai**, sehingga PPh 21 atas THR = tarif Pasal 17 × bruto (PMK 168/2023 Pasal 12 ayat 8, Pasal 16 ayat 6; contoh resmi Tuan O). Script malah menambahkan gaji Maret Rp 5,2 jt yang tidak ada lalu memakai TER. Di kasus ini kebetulan hasilnya sama (5% × 5,2 jt = Rp 260.000), tetapi untuk gaji Rp 20 jt script memotong Rp 4.600.000 padahal yang benar Rp 1.000.000. Agent yang mengikuti skill **harus** mengoreksi baris ini secara manual sampai script diperbaiki.
+- v1.0.1: Wati sudah berhenti 20 Februari dan THR dibayar 3 Maret, jadi saat dibayar ia **Mantan Pegawai**. Script kini memakai tarif Pasal 17 × bruto THR (PMK 168/2023 Pasal 12 ayat 8 & Pasal 16 ayat 6; contoh resmi Tuan O) = 5% × Rp 5,2 jt = **Rp 260.000**, bukan TER + gaji fiktif. Diverifikasi: kasus gaji Rp 20 jt kini Rp 1.000.000 (v1.0.0: Rp 4.600.000); analog Tuan O (Rp 60 jt) Rp 3.000.000 sama dengan contoh resmi.
 - Pengumuman tanpa nominal pribadi, siap kirim. Bagus.

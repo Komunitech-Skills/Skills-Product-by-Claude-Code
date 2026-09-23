@@ -10,7 +10,7 @@
 **Rincian THR Natal 2026 — -**
 Hari raya: Jumat, 25 Desember 2026 · **Batas bayar (H-7): Jumat, 18 Desember 2026** · Rencana bayar: Jumat, 18 Desember 2026
 
-| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | Tambahan PPh 21 | THR diterima |
+| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | PPh 21 karena THR | THR diterima |
 |---|---|---:|---:|---|---:|---:|---:|
 | Contoh Yohanes | Tetap (PKWTT) | 56 bln | Rp 10.000.000 | masa kerja ≥ 12 bulan → 1 × upah | **Rp 10.000.000** | – | Rp 10.000.000 |
 | **Total** | | | | | **Rp 10.000.000** | **Rp 0** | **Rp 10.000.000** |
@@ -87,6 +87,7 @@ _Alat bantu hitung, bukan nasihat hukum/pajak. Dasar: Permenaker 6/2016, SE Mena
 
 Catatan:
 - Masa Pajak Terakhir: PPh 21 = PPh setahun (tarif Pasal 17 × PKP) − PPh yang sudah dipotong bulan sebelumnya. Bila hasilnya negatif, kelebihan dikembalikan ke pegawai paling lambat akhir bulan berikutnya (kecuali PPh DTP).
+- Bruto tiap bulan harus mencakup seluruh penghasilan: gaji, tunjangan, lembur, bonus/THR, PLUS premi JKK, JKM, dan iuran BPJS Kesehatan bagian perusahaan (PMK 168/2023 Pasal 5 ayat 3). JHT/JP bagian perusahaan tidak dimasukkan; JHT 2% + JP 1% bagian karyawan diisi sebagai iuran (pengurang).
 - Biaya jabatan 5% dari bruto, maks Rp 500.000 × jumlah bulan bekerja (maks Rp 6.000.000 setahun).
 - Status PTKP ditentukan keadaan awal tahun (1 Januari).
 - PPh 21 dibulatkan ke bawah ke rupiah penuh; PKP dibulatkan ke bawah hingga ribuan rupiah (PMK 168/2023 Pasal 8 ayat 4). Pembulatan belum dicocokkan dengan Coretax; bila Coretax menampilkan angka berbeda, ikuti Coretax.

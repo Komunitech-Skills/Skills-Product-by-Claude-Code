@@ -55,7 +55,7 @@ _Alat bantu hitung, bukan nasihat hukum/pajak. Dasar: Perpres 64/2020 (BPJS Kese
 
 _Ditanggung perusahaan (tidak memotong gaji): BPJS Kesehatan 4% Rp 280.000, JHT 3,7% Rp 259.000, JKK 0,89% Rp 62.300, JKM 0,3% Rp 21.000, JP 2% Rp 140.000._
 _PPh 21: TER kategori B 1% × penghasilan bruto pajak Rp 8.941.335 (termasuk premi JKK, JKM, BPJS Kesehatan perusahaan)._
-_Lembur: upah sejam = 1/173 × Rp 7.000.000 = Rp 40.462,43._
+_Lembur: upah sejam = 1/173 × Rp 7.000.000 = Rp 40.462,43; 39 jam setara × upah sejam = Rp 1.578.035._
 
 Penjelasan lembur: upah sejam = Rp 7.000.000 ÷ 173 = Rp 40.462,43. Minggu 8 jam = 8 × 2 = 16 jam setara; tanggal merah 10 jam = 8 × 2 + 1 × 3 + 1 × 4 = 23 jam setara (pola 5 hari kerja, PP 35/2021 Pasal 31 ayat 3). Total 39 × Rp 40.462,43 = **Rp 1.578.035**.
 
@@ -64,4 +64,4 @@ Ingat: lembur di hari kerja dibatasi 4 jam/hari & 18 jam/minggu; lembur di hari 
 **Catatan penguji:**
 - Diverifikasi independen: lembur Rp 1.578.035, bruto pajak Rp 8.941.335 → TER B 1% = Rp 89.413, THP Rp 8.208.622. Cocok.
 - Tabel pengali hari libur sesuai teks PP 35/2021 Pasal 31 ayat (3) yang penguji baca sendiri (jam 1–8 2×, jam 9 3×, jam 10–12 4×).
-- Kurang (ringan): ringkasan rekap tidak menampilkan rincian jam setara; agent perlu menjelaskannya sendiri (sudah dilakukan).
+- v1.0.1: slip kini menampilkan "39 jam setara × upah sejam", jadi rincian lembur ikut tercetak.

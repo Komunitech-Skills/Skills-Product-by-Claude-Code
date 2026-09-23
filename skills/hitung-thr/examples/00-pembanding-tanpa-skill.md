@@ -18,4 +18,4 @@ Metode: jawaban "tanpa skill" disimulasikan penguji sebagai AI agent biasa tanpa
 | Rekap | Di chat saja | Juga file CSV |
 
 ## Penilaian singkat
-Tanpa skill, total THR bisa meleset (Rina kelebihan Rp 400.000 bila memakai bulan kalender; Wati berisiko tidak dibayar padahal berhak → pelanggaran), dan potongan pajak tidak dihitung. Dengan skill, besaran THR benar dan lengkap dengan batas bayar, PPh 21, dan pengumuman. **Skill jelas lebih baik.** (Catatan: skill punya cacat berat pada PPh 21 THR karyawan yang sudah berhenti — lihat HASIL-UJI — tetapi besaran THR-nya sendiri tetap lebih andal daripada tanpa skill.)
+Tanpa skill, total THR bisa meleset (Rina kelebihan Rp 400.000 bila memakai bulan kalender; Wati berisiko tidak dibayar padahal berhak → pelanggaran), dan potongan pajak tidak dihitung. Dengan skill, besaran THR benar dan lengkap dengan batas bayar, PPh 21, dan pengumuman. **Skill jelas lebih baik.** (v1.0.1: PPh 21 THR karyawan yang sudah berhenti kini memakai aturan Mantan Pegawai — Wati Rp 260.000 — dan DTP dicek tahun & batas Rp 10 jt.)
