@@ -603,5 +603,159 @@ class UjiPerforma(Dasar):
         self.assertLess(t_lap, 30)
 
 
+TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
+SHOPEE_H = ("No. Pesanan,Status Pesanan,No. Resi,Opsi Pengiriman,Waktu Pesanan Dibuat,Nomor Referensi SKU,"
+            "Nama Produk,Nama Variasi,Harga Setelah Diskon,Jumlah\n")
+
+
+class UjiRevisi(Dasar):
+    """Kasus dari uji independen (HASIL-UJI.md: B-1, S-1..S-4, R-1..R-4)."""
+
+    def setUp(self):
+        super().setUp()
+        self.run_ok("produk", "impor", str(TEMPLATES / "daftar-produk.csv"), "--tanggal", "2026-09-01", "--ya")
+
+    def test_b1_batal_setelah_impor_tidak_masuk_laporan(self):
+        f1 = self.tulis("h1.csv", SHOPEE_H +
+                        "P1,Perlu Dikirim,R1,SPX,2026-09-23 08:00,KAOS-HT-M,Kaos,Hitam M,59.000,2\n"
+                        "P1,Perlu Dikirim,R1,SPX,2026-09-23 08:00,TOTE-NAT,Tote,Natural,35.000,1\n"
+                        "P2,Perlu Dikirim,R2,J&T,2026-09-23 09:00,KAOS-PT-M,Kaos,Putih M,57.000,3\n"
+                        "P3,Perlu Dikirim,R3,SPX,2026-09-23 10:00,MUG-KRM,Mug,Putih,45.000,2\n")
+        self.run_ok("impor-pesanan", f1, "--ya")
+        rk = self.run_ok("laporan", "ringkas", "--tanggal", "2026-09-23", "--hari-ini", "2026-09-23")
+        self.assertEqual(rk["omzet_tercatat"], 414000)
+        f2 = self.tulis("h2.csv", SHOPEE_H + "P2,Batal,R2,J&T,2026-09-23 09:00,KAOS-PT-M,Kaos,Putih M,57.000,3\n")
+        self.run_ok("impor-pesanan", f2, "--ya")
+        rk = self.run_ok("laporan", "ringkas", "--tanggal", "2026-09-23", "--hari-ini", "2026-09-23")
+        self.assertEqual(rk["omzet_tercatat"], 243000)       # bukan 414.000
+        self.assertEqual(rk["hpp_terjual"], 132500)           # 2x35.000 + 18.500 + 2x22.000
+        self.assertEqual(rk["laba_kotor_perkiraan"], 110500)
+        self.assertEqual(rk["terjual_qty"], 5)
+        self.assertEqual(rk["pesanan_marketplace_hari_ini"], 2)
+        self.assertNotIn("KAOS-PT-M", [t["sku"] for t in rk["top_terjual"]])
+        mt = self.run_ok("laporan", "mutasi", "--dari", "2026-09-01", "--sampai", "2026-09-30")
+        self.assertEqual(mt["nilai_penjualan_tercatat"], 243000)
+        self.assertEqual(mt["hpp_barang_terjual"], 132500)
+        per = {p["sku"]: p for p in mt["per_produk"]}
+        self.assertEqual(per["KAOS-PT-M"]["akhir"], 30)       # stok kembali utuh
+        mn = self.run_ok("laporan", "menipis", "--hari-ini", "2026-09-23")
+        self.assertTrue(all(p["sku"] != "KAOS-PT-M" for p in mn["produk"]))
+        self.konsisten()
+
+    def test_migrasi_database_lama(self):
+        f1 = self.tulis("h1.csv", SHOPEE_H + "P2,Perlu Dikirim,R2,J&T,2026-09-23,KAOS-PT-M,Kaos,Putih M,57000,3\n")
+        self.run_ok("impor-pesanan", f1, "--ya")
+        self.run_ok("impor-pesanan", self.tulis("h2.csv", SHOPEE_H + "P2,Batal,R2,J&T,2026-09-23,KAOS-PT-M,K,,57000,3\n"), "--ya")
+        c = sqlite3.connect(str(self.db))
+        try:
+            c.execute("ALTER TABLE mutasi DROP COLUMN dibatalkan")   # tiru database versi 1.0.0
+        except sqlite3.OperationalError:
+            c.close()
+            self.skipTest("SQLite terlalu lama untuk DROP COLUMN")
+        c.commit()
+        c.close()
+        rk = self.run_ok("laporan", "ringkas", "--tanggal", "2026-09-23", "--hari-ini", "2026-09-23")
+        self.assertEqual(rk["omzet_tercatat"], 0)
+
+    def test_s1_item_dilewati_dipotong_setelah_sku_didaftarkan(self):
+        f = self.tulis("s.csv", SHOPEE_H +
+                       "X1,Perlu Dikirim,R1,SPX,2026-09-23,KAOS-HT-XL,Kaos,Hitam XL,59000,2\n"
+                       "X1,Perlu Dikirim,R1,SPX,2026-09-23,TOTE-NAT,Tote,Natural,35000,1\n")
+        self.run_ok("impor-pesanan", f, "--ya", "--lewati-tak-dikenal")
+        self.assertAlmostEqual(self.produk("TOTE-NAT")["stok"], 39)
+        self.run_ok("produk", "tambah", "--sku", "KAOS-HT-XL", "--nama", "Kaos", "--varian", "Hitam XL",
+                    "--harga-beli", "36000", "--stok-awal", "10", "--lokasi", "A3", "--ya")
+        d = self.run_ok("impor-pesanan", f, "--ya")
+        self.assertEqual(d["pesanan_baru"], 0)
+        self.assertEqual(len(d["item_lama_kini_terpotong"]), 1)
+        self.assertAlmostEqual(self.produk("KAOS-HT-XL")["stok"], 8)
+        self.assertAlmostEqual(self.produk("TOTE-NAT")["stok"], 39)   # tidak terpotong dua kali
+        pk = self.run_ok("picking")
+        self.assertTrue(all(a["terdaftar"] for a in pk["daftar_ambil"]))
+        self.assertEqual(self.run_ok("impor-pesanan", f, "--ya")["item_lama_kini_terpotong"], [])
+        self.konsisten()
+
+    def test_s2_pembatalan_diajukan_lalu_aktif_lagi(self):
+        def impor(status):
+            return self.run_ok("impor-pesanan", self.tulis("m.csv", SHOPEE_H +
+                               "M1,%s,R1,SPX,2026-09-23,MUG-KRM,Mug,Putih,45000,2\n" % status), "--ya")
+        impor("Perlu Dikirim")
+        self.assertAlmostEqual(self.produk("MUG-KRM")["stok"], 10)
+        d = impor("Pembatalan Diajukan")
+        self.assertEqual(d["pembatalan_diajukan"], ["M1"])
+        self.assertAlmostEqual(self.produk("MUG-KRM")["stok"], 10)          # stok tidak berubah
+        self.assertEqual(self.run_ok("picking")["jumlah_pesanan"], 0)        # jangan dikemas dulu
+        impor("Perlu Dikirim")                                               # pembatalan ditolak
+        self.assertAlmostEqual(self.produk("MUG-KRM")["stok"], 10)
+        self.assertEqual(self.run_ok("picking")["jumlah_pesanan"], 1)
+        impor("Batal")
+        self.assertAlmostEqual(self.produk("MUG-KRM")["stok"], 12)
+        d = impor("Perlu Dikirim")                                           # aktif lagi -> potong ulang
+        self.assertEqual(d["pesanan_batal_kini_aktif_lagi"], ["M1"])
+        self.assertAlmostEqual(self.produk("MUG-KRM")["stok"], 10)
+        rk = self.run_ok("laporan", "ringkas", "--tanggal", "2026-09-23", "--hari-ini", "2026-09-23")
+        self.assertEqual((rk["terjual_qty"], rk["omzet_tercatat"]), (2, 90000))   # dihitung sekali
+        self.assertEqual(stok.kategori_status("Cancellation requested"), "batal_diajukan")
+        self.assertEqual(stok.kategori_status("Menunggu Konfirmasi Pembatalan"), "batal_diajukan")
+        self.assertEqual(stok.kategori_status("Pembatalan: Dibatalkan oleh pembeli"), "batal")
+        # pesanan baru yang langsung "pembatalan diajukan": stok dipotong, tidak masuk picking, diberi peringatan
+        d = self.run_ok("impor-pesanan", self.tulis("m2.csv", SHOPEE_H +
+                        "M2,Cancellation requested,R2,SPX,2026-09-23,TOTE-NAT,Tote,Natural,35000,1\n"), "--ya")
+        self.assertEqual(d["pembatalan_diajukan"], ["M2"])
+        self.assertEqual(self.run_ok("picking")["jumlah_pesanan"], 1)
+        self.konsisten()
+
+    def test_s3_s4_tiktok_harga_dan_versi_indonesia(self):
+        en = self.tulis("en.csv",
+                        "Order ID,Order Status,Cancelation/Return Type,Seller SKU,Product Name,Variation,Quantity,"
+                        "Sku Quantity of return,SKU Unit Original Price,SKU Subtotal After Discount,Created Time,Tracking ID,"
+                        "Shipping Provider Name\n"
+                        "T1,AWAITING_SHIPMENT,,KAOS-HT-M,Kaos,Hitam M,2,0,65.000,110.000,23/09/2026 10:00:00,JX1,J&T\n"
+                        "T2,Completed,Return/Refund,TOTE-NAT,Tote,Natural,1,1,40.000,35.000,23/09/2026 11:00:00,JX2,J&T\n")
+        d = self.run_ok("impor-pesanan", en, "--ya")
+        self.assertEqual(d["pemetaan_kolom"]["Subtotal baris"], "SKU Subtotal After Discount")
+        self.assertNotIn("Harga satuan", d["pemetaan_kolom"])               # harga asli (sebelum diskon) tidak dipakai
+        self.assertEqual(d["pesanan_bertanda_retur"], ["T2"])
+        rk = self.run_ok("laporan", "ringkas", "--tanggal", "2026-09-23", "--hari-ini", "2026-09-23")
+        self.assertEqual(rk["omzet_tercatat"], 145000)                        # 110.000 + 35.000
+        self.assertEqual(rk["baris_jual_tanpa_harga"], 0)
+        idn = self.tulis("id.csv",
+                         "ID Pesanan,Status Pesanan,Jenis Pembatalan/Pengembalian,SKU Penjual,Nama Produk,Variasi,Kuantitas,"
+                         "Jumlah Pengembalian SKU,Harga Satuan Asli SKU,Subtotal SKU Setelah Diskon,Waktu Dibuat,ID Pelacakan,"
+                         "Nama Penyedia Pengiriman\n"
+                         "5769001,Akan dikirim,,MUG-KRM,Mug,Putih,1,0,50.000,45.000,23/09/2026 12:00,JP9,J&T Express\n"
+                         "5769002,Dikirim,,MUG-KRM,Mug,Putih,1,0,50.000,45.000,23/09/2026 12:30,JP8,J&T Express\n")
+        d = self.run_ok("impor-pesanan", idn, "--ya")
+        self.assertEqual(d["platform"], "tiktok")
+        for label, kolom in (("No. resi", "ID Pelacakan"), ("Kurir", "Nama Penyedia Pengiriman"),
+                             ("Tanggal", "Waktu Dibuat"), ("Subtotal baris", "Subtotal SKU Setelah Diskon")):
+            self.assertEqual(d["pemetaan_kolom"][label], kolom)
+        pk = self.run_ok("picking")
+        nomor = [u["no_pesanan"] for u in pk["urutan_pesanan"]]
+        self.assertIn("5769001", nomor)                                       # "Akan dikirim" masuk picking
+        self.assertNotIn("5769002", nomor)
+        self.assertEqual([u["resi"] for u in pk["urutan_pesanan"] if u["no_pesanan"] == "5769001"], ["JP9"])
+        self.assertEqual(stok.kategori_status("Menunggu Konfirmasi Penjual"), "perlu_kirim")
+
+    def test_r1_ringkas_pisah_toko_marketplace(self):
+        self.run_ok("impor-pesanan", self.tulis("h.csv", SHOPEE_H +
+                    "P1,Perlu Dikirim,R1,SPX,2026-09-23,KAOS-HT-M,Kaos,Hitam M,59000,2\n"), "--ya")
+        self.run_ok("keluar", "--sku", "MUG-KRM", "--qty", "3", "--tanggal", "2026-09-23", "--ya")
+        self.run_ok("masuk", "--sku", "TOTE-NAT", "--qty", "10", "--harga", "18000", "--biaya-tambahan", "5000",
+                    "--tanggal", "2026-09-23", "--ya")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            stok.main(["laporan", "ringkas", "--tanggal", "2026-09-23", "--db", str(self.db)])
+        teks = out.getvalue()
+        self.assertIn("marketplace 2 dari 1 pesanan, toko/offline 3", teks)
+        self.assertIn("Rp 185.000, termasuk ongkir/biaya tambahan", teks)
+
+    def test_r4_backup_dihapus_bila_operasi_gagal(self):
+        folder = self.db.parent / "backup-stok"
+        sebelum = len(list(folder.glob("*.db"))) if folder.is_dir() else 0
+        self.run_gagal("opname", "--hitung", "KAOS-HT-M=1", "--ya")          # tanpa alasan -> gagal
+        self.assertEqual(len(list(folder.glob("*.db"))) if folder.is_dir() else 0, sebelum)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

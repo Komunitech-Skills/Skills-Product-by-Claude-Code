@@ -345,6 +345,13 @@ def cari_header(baris, sinonim, minimal=2, maks_scan=15):
     return terbaik
 
 
+KECUALI = {
+    # kolom harga "asli/awal/original" = harga SEBELUM diskon -> jangan dipakai sebagai harga jual
+    "harga": ["asli", "awal", "original", "sebelum diskon", "coret"],
+    "harga_total": ["asli", "awal", "original", "sebelum diskon"],
+}
+
+
 def deteksi_kolom(header, sinonim):
     """header: list nama kolom. sinonim: {field: [kata...]} (urutan = prioritas).
 
@@ -355,9 +362,11 @@ def deteksi_kolom(header, sinonim):
     dipakai, hasil = set(), {}
     for field, kata in sinonim.items():
         pilih = None
+        larang = KECUALI.get(field, []) if sinonim is SINONIM_PESANAN else []
+        boleh = lambda h: h and not any(x in h for x in larang)
         for k in kata:
             for i, h in enumerate(hn):
-                if i not in dipakai and h and h == k:
+                if i not in dipakai and boleh(h) and h == k:
                     pilih = i
                     break
             if pilih is not None:
@@ -367,7 +376,7 @@ def deteksi_kolom(header, sinonim):
                 if len(k) < 8:
                     continue
                 for i, h in enumerate(hn):
-                    if i not in dipakai and h and k in h:
+                    if i not in dipakai and boleh(h) and k in h:
                         pilih = i
                         break
                 if pilih is not None:
@@ -418,7 +427,8 @@ CREATE TABLE IF NOT EXISTS mutasi (
   stok_sesudah REAL NOT NULL,
   ref TEXT NOT NULL DEFAULT '',
   catatan TEXT NOT NULL DEFAULT '',
-  impor_id INTEGER
+  impor_id INTEGER,
+  dibatalkan INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS ix_mutasi_produk ON mutasi(produk_id, tanggal);
 CREATE INDEX IF NOT EXISTS ix_mutasi_tanggal ON mutasi(tanggal);
@@ -479,7 +489,20 @@ def buka(db, harus_ada=True):
         if not r or r[0] != APLIKASI:
             conn.close()
             raise Gagal("File %s bukan database buku-stok." % db)
+        migrasi(conn)
     return conn
+
+
+def migrasi(conn):
+    """Perbarui struktur database versi lama (aman diulang, tidak mengubah angka stok)."""
+    kolom = [r[1] for r in conn.execute("PRAGMA table_info(mutasi)")]
+    if "dibatalkan" not in kolom:
+        conn.execute("BEGIN IMMEDIATE")
+        conn.execute("ALTER TABLE mutasi ADD COLUMN dibatalkan INTEGER NOT NULL DEFAULT 0")
+        # Penjualan marketplace milik pesanan yang sudah batal tidak dihitung sebagai penjualan.
+        conn.execute("UPDATE mutasi SET dibatalkan=1 WHERE id IN (SELECT i.mutasi_id FROM pesanan_item i "
+                     "JOIN pesanan s ON s.id=i.pesanan_id WHERE s.dibatalkan=1 AND i.mutasi_id IS NOT NULL)")
+        conn.execute("COMMIT")
 
 
 def buat_backup(db, label):
@@ -519,6 +542,11 @@ def jalankan_tulis(args, db, perintah, kerja, label_backup=None, conn=None):
             data, teks = kerja(conn)
         except BaseException:
             conn.execute("ROLLBACK")
+            if backup is not None:
+                try:
+                    backup.unlink()  # operasi gagal -> backup tidak diperlukan
+                except OSError:
+                    pass
             raise
         if args.ya:
             conn.execute("INSERT INTO log(waktu, perintah, ringkasan) VALUES (?,?,?)",
@@ -1175,31 +1203,41 @@ SINONIM_PESANAN = {
     "no_pesanan": ["no. pesanan", "no pesanan", "nomor pesanan", "order id", "order no", "order number",
                    "nomor invoice", "no. invoice", "no invoice", "invoice", "id pesanan", "no. order"],
     "resi": ["no. resi", "nomor resi", "no resi", "tracking id", "tracking number", "no resi / kode booking",
-             "kode booking", "awb", "resi"],
+             "id pelacakan", "nomor pelacakan", "kode booking", "awb", "resi"],
     "batas_kirim": ["pesanan harus dikirimkan sebelum", "harus dikirimkan sebelum", "ship by date", "ship by",
                     "batas kirim", "batas pengiriman"],
-    "tanggal": ["waktu pesanan dibuat", "created time", "tanggal pesanan", "tanggal pembayaran", "waktu pembayaran dilakukan",
-                "paid time", "order date", "tanggal", "waktu"],
+    "tanggal": ["waktu pesanan dibuat", "created time", "waktu dibuat", "waktu pembuatan", "tanggal pesanan",
+                "tanggal pembayaran", "waktu pembayaran dilakukan", "paid time", "waktu dibayar", "order date",
+                "tanggal", "waktu"],
     "status": ["status pesanan", "order status", "status terakhir", "status"],
     "sku": ["nomor referensi sku", "seller sku", "sku penjual", "nomor sku", "sku", "kode sku", "sku induk",
             "kode produk", "kode barang"],
     "varian": ["nama variasi", "variation", "variasi", "varian", "tipe produk"],
     "nama": ["nama produk", "product name", "nama barang", "produk"],
+    "tipe_retur": ["cancelation/return type", "cancellation/return type", "tipe pembatalan/pengembalian",
+                   "jenis pembatalan/pengembalian"],
+    "qty_retur": ["returned quantity", "sku quantity of return", "jumlah dikembalikan", "jumlah produk dikembalikan",
+                  "jumlah sku yang dikembalikan", "jumlah pengembalian sku", "jumlah pengembalian"],
     "qty": ["jumlah", "quantity", "qty", "jumlah produk dibeli", "kuantitas", "jumlah barang"],
-    "kurir": ["opsi pengiriman", "shipping provider name", "shipping provider", "kurir", "jasa kirim", "ekspedisi",
-              "delivery option", "jasa pengiriman"],
-    "harga": ["harga setelah diskon", "harga satuan", "harga jual", "unit price", "harga"],
+    "kurir": ["opsi pengiriman", "shipping provider name", "nama penyedia pengiriman", "penyedia pengiriman",
+              "shipping provider", "kurir", "jasa kirim", "ekspedisi", "delivery option", "jasa pengiriman"],
+    "harga": ["harga setelah diskon", "harga satuan setelah diskon", "harga satuan", "harga jual", "unit price",
+              "harga"],
+    "harga_total": ["sku subtotal after discount", "subtotal sku setelah diskon", "subtotal setelah diskon",
+                    "total harga produk", "subtotal produk", "subtotal"],
 }
 LABEL_FIELD = {
     "no_pesanan": "No. pesanan", "sku": "SKU", "nama": "Nama produk", "varian": "Varian", "qty": "Jumlah",
     "status": "Status", "resi": "No. resi", "kurir": "Kurir", "tanggal": "Tanggal", "batas_kirim": "Batas kirim",
-    "harga": "Harga satuan",
+    "harga": "Harga satuan", "harga_total": "Subtotal baris", "tipe_retur": "Tipe batal/retur",
+    "qty_retur": "Jumlah diretur",
 }
 
 KATA_BATAL = ["batal", "dibatalkan", "cancel", "canceled", "cancelled", "gagal", "failed", "expired", "kedaluwarsa"]
 KATA_RETUR = ["retur", "return", "refund", "pengembalian", "dikembalikan"]
 KATA_BELUM_BAYAR = ["belum bayar", "belum dibayar", "unpaid", "menunggu pembayaran", "awaiting payment"]
-KATA_PERLU_KIRIM = ["perlu dikirim", "siap dikirim", "sedang dikemas", "dikemas", "to ship", "awaiting shipment",
+KATA_BATAL_DIAJUKAN = ["diajukan", "requested", "request", "permintaan", "pengajuan", "menunggu"]
+KATA_PERLU_KIRIM = ["akan dikirim", "menunggu pengiriman", "menunggu dikirim", "menunggu konfirmasi", "perlu dikirim", "siap dikirim", "sedang dikemas", "dikemas", "to ship", "awaiting shipment",
                     "awaiting collection", "ready to ship", "diproses", "pesanan baru", "belum dikirim",
                     "menunggu pickup", "menunggu penjemputan", "processing", "packed", "perlu diproses"]
 KATA_DIKIRIM = ["sedang dikirim", "dalam pengiriman", "telah dikirim", "dikirim", "shipped", "in transit",
@@ -1219,6 +1257,8 @@ def kategori_status(teks, abaikan=None):
         dikecualikan = any(k in s for k in PENGECUALIAN)
         if not dikecualikan:
             if any(k in s for k in KATA_BATAL):
+                if any(k in s for k in KATA_BATAL_DIAJUKAN):
+                    return "batal_diajukan"   # belum pasti batal: stok tidak diubah
                 return "batal"
             if any(k in s for k in KATA_RETUR):
                 return "retur"
@@ -1244,7 +1284,8 @@ def tebak_platform(header):
     h = {norm(x) for x in header}
     if "nomor referensi sku" in h or "no. pesanan" in h or any("dikirimkan sebelum" in x for x in h):
         return "shopee"
-    if "seller sku" in h or "order id" in h and "tracking id" in h:
+    if ("seller sku" in h or ("order id" in h and "tracking id" in h) or "id pelacakan" in h
+            or "sku penjual" in h or "nama penyedia pengiriman" in h):
         return "tiktok"
     if "nomor invoice" in h:
         return "tokopedia"
@@ -1328,9 +1369,17 @@ def cmd_impor_pesanan(args):
             lewat["qty_tidak_valid"].append(no)
             continue
         no_sebelum = nop
+        harga = parse_angka(sel(r, kol.get("harga"))) if "harga" in kol else None
+        if harga is None and "harga_total" in kol:
+            tot = parse_angka(sel(r, kol["harga_total"]))
+            harga = (tot / q) if tot is not None else None
+        tanda_retur = False
+        if "tipe_retur" in kol and re.search(r"retur|return|refund|pengembalian", sel(r, kol["tipe_retur"]).lower()):
+            tanda_retur = True
+        if "qty_retur" in kol and (parse_angka(sel(r, kol["qty_retur"])) or 0) > 0:
+            tanda_retur = True
         item = {"baris": no, "sku": sel(r, kol.get("sku")), "nama": sel(r, kol.get("nama")),
-                "varian": sel(r, kol.get("varian")), "qty": q,
-                "harga": parse_angka(sel(r, kol.get("harga"))) if "harga" in kol else None}
+                "varian": sel(r, kol.get("varian")), "qty": q, "harga": harga, "tanda_retur": tanda_retur}
         if nop not in pesanan:
             st = sel(r, kol.get("status"))
             tgl = parse_tanggal(sel(r, kol.get("tanggal"))) if "tanggal" in kol else None
@@ -1355,12 +1404,26 @@ def cmd_impor_pesanan(args):
         cache = {}
         hit = {"baru": 0, "sudah_ada": 0, "batal": 0, "retur": 0, "belum_bayar": 0}
         per_sku, tak_dikenal, minus, dibatalkan_ulang, cek_retur, status_asing = {}, {}, {}, [], [], {}
-        contoh_ganda = []
+        contoh_ganda, aktif_lagi, diajukan, item_lama_terpotong, tanda_retur = [], [], [], [], []
+
+        def potong(p, qty, harga, tanggal, nop):
+            m = catat_mutasi(conn, p, "keluar", "jual-mp", -qty, harga, tanggal, ref=nop, catatan=platform,
+                             impor_id=imp, izinkan_minus=True)
+            s = per_sku.setdefault(p["sku"], {"sku": p["sku"], "nama": label_produk(p), "qty": 0,
+                                              "stok_sebelum": m["stok_sebelum"], "stok_sesudah": 0})
+            s["qty"] = angka_json(s["qty"] + qty)
+            s["stok_sesudah"] = m["stok_sesudah"]
+            if m["minus"]:
+                minus[p["sku"]] = m["stok_sesudah"]
+            return m
         for nop in urut:
             ps = pesanan[nop]
             kat = ps["kategori"]
             if kat == "lainnya":
                 status_asing[ps["status"]] = status_asing.get(ps["status"], 0) + 1
+            if kat not in ("batal", "retur", "belum_bayar") and any(i["tanda_retur"] for i in ps["item"]):
+                tanda_retur.append(nop)
+            tgl_ps = ps["tanggal"] or tgl_default
             lama = conn.execute("SELECT * FROM pesanan WHERE no_pesanan=?", (nop,)).fetchone()
             if lama is not None:
                 hit["sudah_ada"] += 1
@@ -1375,11 +1438,22 @@ def cmd_impor_pesanan(args):
                             continue
                         p = conn.execute("SELECT * FROM produk WHERE id=?", (it["produk_id"],)).fetchone()
                         catat_mutasi(conn, p, "masuk", "batal-pesanan", it["qty"], it["hpp_keluar"],
-                                     ps["tanggal"] or tgl_default, ref=nop, catatan="pesanan batal setelah diimpor",
-                                     impor_id=imp)
+                                     tgl_ps, ref=nop, catatan="pesanan batal setelah diimpor", impor_id=imp)
+                        # penjualan asalnya tidak lagi dihitung di laporan penjualan
+                        conn.execute("UPDATE mutasi SET dibatalkan=1 WHERE id=?", (it["mutasi_id"],))
                     conn.execute("UPDATE pesanan SET dibatalkan=1, status=?, kategori=?, diubah=? WHERE id=?",
                                  (ps["status"], kat, sekarang(), lama["id"]))
                     dibatalkan_ulang.append(nop)
+                elif lama["dibatalkan"] and kat not in ("batal", "retur", "belum_bayar"):
+                    # Dulu batal, kini aktif lagi (mis. pembatalan ditolak) -> potong stok ulang.
+                    for it in conn.execute("SELECT * FROM pesanan_item WHERE pesanan_id=? AND produk_id IS NOT NULL",
+                                           (lama["id"],)).fetchall():
+                        p = conn.execute("SELECT * FROM produk WHERE id=?", (it["produk_id"],)).fetchone()
+                        m = potong(p, it["qty"], it["harga"], tgl_ps, nop)
+                        conn.execute("UPDATE pesanan_item SET mutasi_id=? WHERE id=?", (m["mutasi_id"], it["id"]))
+                    conn.execute("UPDATE pesanan SET dibatalkan=0, dikemas=0, status=?, kategori=?, diubah=? WHERE id=?",
+                                 (ps["status"], kat, sekarang(), lama["id"]))
+                    aktif_lagi.append(nop)
                 elif kat == "retur" and lama["kategori"] != "retur":
                     conn.execute("UPDATE pesanan SET status=?, kategori=?, diubah=? WHERE id=?",
                                  (ps["status"], kat, sekarang(), lama["id"]))
@@ -1389,10 +1463,35 @@ def cmd_impor_pesanan(args):
                                  " kurir=CASE WHEN ?<>'' THEN ? ELSE kurir END, diubah=? WHERE id=?",
                                  (ps["status"] or lama["status"], kat if ps["status"] else lama["kategori"],
                                   ps["resi"], ps["resi"], ps["kurir"], ps["kurir"], sekarang(), lama["id"]))
+                    if kat == "batal_diajukan" and lama["kategori"] != "batal_diajukan":
+                        diajukan.append(nop)
+                # Item yang dulu dilewati (SKU belum terdaftar): coba cocokkan lagi & potong stoknya.
+                sekarang_aktif = conn.execute("SELECT dibatalkan, kategori FROM pesanan WHERE id=?", (lama["id"],)).fetchone()
+                if not sekarang_aktif["dibatalkan"] and sekarang_aktif["kategori"] not in ("batal", "retur", "belum_bayar"):
+                    for it in conn.execute("SELECT * FROM pesanan_item WHERE pesanan_id=? AND produk_id IS NULL",
+                                           (lama["id"],)).fetchall():
+                        sumber = next((f for f in ps["item"] if (f["sku"] and f["sku"] == it["sku_mp"]) or
+                                       ("%s %s" % (f["nama"], f["varian"])).strip() == it["nama_mp"]), None)
+                        if sumber is None:
+                            continue
+                        p = _cocokkan_produk(conn, sumber["sku"], sumber["nama"], sumber["varian"], cache)
+                        if p is None:
+                            k = it["sku_mp"] or it["nama_mp"]
+                            d = tak_dikenal.setdefault(k, {"sku_marketplace": it["sku_mp"], "nama": sumber["nama"],
+                                                           "varian": sumber["varian"], "qty": 0, "pesanan": 0})
+                            d["qty"] = angka_json(d["qty"] + it["qty"])
+                            d["pesanan"] += 1
+                            continue
+                        m = potong(p, it["qty"], it["harga"], tgl_ps, nop)
+                        conn.execute("UPDATE pesanan_item SET produk_id=?, mutasi_id=? WHERE id=?",
+                                     (p["id"], m["mutasi_id"], it["id"]))
+                        item_lama_terpotong.append("%s (%s x%s)" % (nop, p["sku"], fq(it["qty"])))
                 continue
             if kat in ("batal", "retur", "belum_bayar"):
                 hit[kat] += 1
                 continue
+            if kat == "batal_diajukan":
+                diajukan.append(nop)
             hit["baru"] += 1
             pid = conn.execute(
                 "INSERT INTO pesanan(no_pesanan,platform,tanggal,status,kategori,resi,kurir,batas_kirim,impor_id,diubah)"
@@ -1409,16 +1508,7 @@ def cmd_impor_pesanan(args):
                     d["qty"] = angka_json(d["qty"] + it["qty"])
                     d["pesanan"] += 1
                 else:
-                    m = catat_mutasi(conn, p, "keluar", "jual-mp", -it["qty"], it["harga"],
-                                     ps["tanggal"] or tgl_default, ref=nop, catatan=platform, impor_id=imp,
-                                     izinkan_minus=True)
-                    mid = m["mutasi_id"]
-                    s = per_sku.setdefault(p["sku"], {"sku": p["sku"], "nama": label_produk(p), "qty": 0,
-                                                      "stok_sebelum": m["stok_sebelum"], "stok_sesudah": 0})
-                    s["qty"] = angka_json(s["qty"] + it["qty"])
-                    s["stok_sesudah"] = m["stok_sesudah"]
-                    if m["minus"]:
-                        minus[p["sku"]] = m["stok_sesudah"]
+                    mid = potong(p, it["qty"], it["harga"], tgl_ps, nop)["mutasi_id"]
                 conn.execute("INSERT INTO pesanan_item(pesanan_id,produk_id,sku_mp,nama_mp,qty,harga,mutasi_id)"
                              " VALUES (?,?,?,?,?,?,?)",
                              (pid, p["id"] if p else None, it["sku"], ("%s %s" % (it["nama"], it["varian"])).strip(),
@@ -1429,8 +1519,20 @@ def cmd_impor_pesanan(args):
                         "(produk tambah) atau jalankan dengan --lewati-tak-dikenal (stok barang itu tidak dikurangi)."
                         % (len(tak_dikenal), ", ".join(list(tak_dikenal)[:10])), sku_tak_dikenal=list(tak_dikenal.values()))
         peringatan = []
-        if hit["baru"] == 0:
+        if hit["baru"] == 0 and not (aktif_lagi or item_lama_terpotong):
             peringatan.append("Tidak ada pesanan baru di file ini (semua sudah pernah diimpor atau dilewati).")
+        if item_lama_terpotong:
+            peringatan.append("%d item pesanan lama yang dulu dilewati (SKU belum terdaftar) kini dicocokkan & "
+                              "stoknya dipotong: %s" % (len(item_lama_terpotong), ", ".join(item_lama_terpotong[:20])))
+        if aktif_lagi:
+            peringatan.append("Pesanan yang sebelumnya batal kini AKTIF lagi, stok dipotong ulang: %s"
+                              % ", ".join(aktif_lagi[:20]))
+        if diajukan:
+            peringatan.append("Pembatalan DIAJUKAN (belum pasti batal; stok tidak diubah, tidak masuk daftar ambil "
+                              "sampai statusnya jelas): %s" % ", ".join(diajukan[:20]))
+        if tanda_retur:
+            peringatan.append("Pesanan sah tetapi ada tanda retur/refund di kolom retur (stok TIDAK otomatis ditambah; "
+                              "cek barangnya): %s" % ", ".join(tanda_retur[:20]))
         if minus:
             peringatan.append("Stok menjadi MINUS setelah impor: %s. Kemungkinan stok belum dicatat/terlewat restock; "
                               "lakukan opname untuk SKU ini." % ", ".join("%s (%s)" % (k, fq(v)) for k, v in minus.items()))
@@ -1454,7 +1556,9 @@ def cmd_impor_pesanan(args):
             "pesanan_baru": hit["baru"], "pesanan_sudah_pernah_diimpor": hit["sudah_ada"],
             "contoh_pesanan_ganda": contoh_ganda, "diabaikan_batal": hit["batal"], "diabaikan_retur": hit["retur"],
             "diabaikan_belum_bayar": hit["belum_bayar"], "pesanan_lama_kini_batal_stok_dikembalikan": dibatalkan_ulang,
-            "pesanan_lama_kini_retur": cek_retur, "barang_keluar": list(per_sku.values()), "total_qty_keluar": angka_json(tq),
+            "pesanan_lama_kini_retur": cek_retur, "pesanan_batal_kini_aktif_lagi": aktif_lagi,
+            "pembatalan_diajukan": diajukan, "item_lama_kini_terpotong": item_lama_terpotong,
+            "pesanan_bertanda_retur": tanda_retur, "barang_keluar": list(per_sku.values()), "total_qty_keluar": angka_json(tq),
             "sku_tak_dikenal": list(tak_dikenal.values()), "stok_minus": {k: angka_json(v) for k, v in minus.items()},
             "baris_dilewati": {"qty_tidak_valid": len(lewat["qty_tidak_valid"]), "contoh_baris": lewat["qty_tidak_valid"][:10],
                                "nomor_pesanan_rusak": len(lewat["nomor_rusak"]), "baris_kembar": lewat["baris_kembar"]},
@@ -1463,7 +1567,7 @@ def cmd_impor_pesanan(args):
         }
         t = ["IMPOR PESANAN %s (%s) - file %s" % (platform.upper(), jenis_file.upper(), Path(args.file).name),
              "Pemetaan kolom (mohon dicek):"]
-        t += ["  %-13s <- %s" % (LABEL_FIELD[k], v) for k, v in pemetaan.items()]
+        t += ["  %-16s <- %s" % (LABEL_FIELD[k], v) for k, v in pemetaan.items()]
         t.append("Pesanan baru: %d | sudah pernah diimpor (dilewati): %d" % (hit["baru"], hit["sudah_ada"]))
         t.append("Diabaikan: batal %d, retur/refund %d, belum bayar %d" % (hit["batal"], hit["retur"], hit["belum_bayar"]))
         if dibatalkan_ulang:
@@ -1619,9 +1723,7 @@ def _status_stok(r):
 def _rata2_jual(conn, pid, acuan, hari=30):
     dari = (acuan - timedelta(days=hari - 1)).isoformat()
     q = conn.execute("SELECT COALESCE(SUM(-qty),0) FROM mutasi WHERE produk_id=? AND jenis IN ('jual','jual-mp') "
-                     "AND tanggal BETWEEN ? AND ?", (pid, dari, acuan.isoformat())).fetchone()[0]
-    q -= conn.execute("SELECT COALESCE(SUM(qty),0) FROM mutasi WHERE produk_id=? AND jenis='batal-pesanan' "
-                      "AND tanggal BETWEEN ? AND ?", (pid, dari, acuan.isoformat())).fetchone()[0]
+                     "AND dibatalkan=0 AND tanggal BETWEEN ? AND ?", (pid, dari, acuan.isoformat())).fetchone()[0]
     return max(q, 0) / hari
 
 
@@ -1686,7 +1788,7 @@ def lap_tidak_laku(conn, args):
     acuan = hari_ini(args)
     batas = (acuan - timedelta(days=args.hari)).isoformat()
     rows = conn.execute(
-        "SELECT p.*, (SELECT MAX(tanggal) FROM mutasi m WHERE m.produk_id=p.id AND m.jenis IN ('jual','jual-mp')) AS jual_terakhir, "
+        "SELECT p.*, (SELECT MAX(tanggal) FROM mutasi m WHERE m.produk_id=p.id AND m.jenis IN ('jual','jual-mp') AND m.dibatalkan=0) AS jual_terakhir, "
         "(SELECT MIN(tanggal) FROM mutasi m WHERE m.produk_id=p.id) AS pertama FROM produk p WHERE p.aktif=1 AND p.stok > 0").fetchall()
     out = []
     for r in rows:
@@ -1744,9 +1846,11 @@ def lap_mutasi(conn, args):
     detail = [{"tanggal": r["tanggal"], "sku": r["sku"], "arah": r["arah"], "jenis": r["jenis"], "qty": angka_json(r["qty"]),
                "harga": bulat_rp(r["harga"]) if r["harga"] is not None else None, "hpp": round(r["hpp"], 2),
                "stok_sesudah": angka_json(r["stok_sesudah"]), "ref": r["ref"], "catatan": r["catatan"]} for r in rows]
-    nilai_jual = sum(-r["qty"] * r["harga"] for r in rows if r["jenis"] in JENIS_JUAL and r["harga"] is not None)
-    hpp_jual = sum(-r["qty"] * r["hpp"] for r in rows if r["jenis"] in JENIS_JUAL)
-    hpp_batal = sum(r["qty"] * r["hpp"] for r in rows if r["jenis"] == "batal-pesanan")
+    # Penjualan milik pesanan yang kemudian batal (dibatalkan=1) tidak dihitung sebagai penjualan.
+    jual = [r for r in rows if r["jenis"] in JENIS_JUAL and not r["dibatalkan"]]
+    nilai_jual = sum(-r["qty"] * r["harga"] for r in jual if r["harga"] is not None)
+    hpp_jual = sum(-r["qty"] * r["hpp"] for r in jual)
+    hpp_batal = 0
     nilai_beli = sum(r["qty"] * r["harga"] for r in rows if r["arah"] == "masuk" and r["jenis"] == "beli")
     data = {"dari": dari.isoformat(), "sampai": sampai.isoformat(), "jumlah_mutasi": len(detail),
             "per_produk": list(ringkas.values()), "detail": detail if not args.ringkas_saja else [],
@@ -1775,8 +1879,10 @@ def lap_ringkas(conn, args):
     acuan = tanggal_wajib(args.tanggal) if args.tanggal else hari_ini(args)
     a = acuan.isoformat()
     jual = conn.execute("SELECT m.*, p.sku FROM mutasi m JOIN produk p ON p.id=m.produk_id "
-                        "WHERE m.tanggal=? AND m.jenis IN ('jual','jual-mp')", (a,)).fetchall()
+                        "WHERE m.tanggal=? AND m.jenis IN ('jual','jual-mp') AND m.dibatalkan=0", (a,)).fetchall()
     qty = sum(-r["qty"] for r in jual)
+    qty_mp = sum(-r["qty"] for r in jual if r["jenis"] == "jual-mp")
+    qty_toko = qty - qty_mp
     omzet = sum(-r["qty"] * r["harga"] for r in jual if r["harga"] is not None)
     hpp = sum(-r["qty"] * r["hpp"] for r in jual)
     tanpa_harga = sum(1 for r in jual if r["harga"] is None)
@@ -1791,16 +1897,18 @@ def lap_ringkas(conn, args):
     masuk = conn.execute("SELECT COALESCE(SUM(qty),0), COALESCE(SUM(qty*harga),0) FROM mutasi WHERE tanggal=? AND jenis='beli'", (a,)).fetchone()
     opn = conn.execute("SELECT COUNT(*) FROM mutasi WHERE tanggal=? AND arah='opname'", (a,)).fetchone()[0]
     tl, _, _, _ = lap_tidak_laku(conn, argparse.Namespace(hari_ini=a, hari=args.hari))
-    data = {"tanggal": a, "terjual_qty": angka_json(qty), "pesanan_marketplace_hari_ini": n_pesanan,
+    data = {"tanggal": a, "terjual_qty": angka_json(qty), "terjual_marketplace_qty": angka_json(qty_mp),
+            "terjual_toko_qty": angka_json(qty_toko), "pesanan_marketplace_hari_ini": n_pesanan,
             "omzet_tercatat": bulat_rp(omzet), "hpp_terjual": bulat_rp(hpp),
             "laba_kotor_perkiraan": bulat_rp(omzet - sum(-r["qty"] * r["hpp"] for r in jual if r["harga"] is not None)),
             "baris_jual_tanpa_harga": tanpa_harga, "top_terjual": [{"sku": s, "qty": angka_json(q)} for s, q in top],
             "pesanan_belum_dikemas": len(belum), "restock_qty": angka_json(masuk[0]), "restock_nilai": bulat_rp(masuk[1]),
             "opname_selisih_hari_ini": opn, "stok_menipis": menipis["produk"], "nilai_persediaan": bulat_rp(nilai),
             "tidak_laku": {"hari": args.hari, "jumlah": tl["jumlah"], "nilai_tertahan": tl["nilai_tertahan_total"]},
-            "catatan": "Omzet hanya dari transaksi yang punya harga jual; laba kotor = omzet - HPP rata-rata (sebelum biaya admin marketplace, ongkir, iklan)."}
+            "catatan": "Pesanan yang batal setelah diimpor tidak dihitung. Omzet hanya dari transaksi yang punya harga jual; laba kotor = omzet - HPP rata-rata (sebelum biaya admin marketplace, ongkir, iklan)."}
     t = ["Laporan Stok Harian - %s" % acuan.strftime("%d/%m/%Y"),
-         "Terjual: %s barang%s" % (fq(qty), (" dari %d pesanan marketplace" % n_pesanan) if n_pesanan else ""),
+         "Terjual: %s barang (marketplace %s dari %d pesanan, toko/offline %s)"
+         % (fq(qty), fq(qty_mp), n_pesanan, fq(qty_toko)),
          "Omzet tercatat: %s | HPP: %s | Laba kotor (perkiraan): %s" % (rp(omzet), rp(hpp), rp(data["laba_kotor_perkiraan"]))]
     if tanpa_harga:
         t.append("(%d transaksi jual tanpa harga, tidak masuk omzet)" % tanpa_harga)
@@ -1808,7 +1916,7 @@ def lap_ringkas(conn, args):
         t.append("Terlaris: " + ", ".join("%s (%s)" % (s, fq(q)) for s, q in top))
     t.append("Pesanan belum dikemas: %d" % len(belum))
     if masuk[0]:
-        t.append("Restock hari ini: %s barang (%s)" % (fq(masuk[0]), rp(masuk[1])))
+        t.append("Restock hari ini: %s barang (%s, termasuk ongkir/biaya tambahan)" % (fq(masuk[0]), rp(masuk[1])))
     t.append("Stok menipis/habis: %d produk" % len(menipis["produk"]))
     for d in menipis["produk"][:10]:
         t.append("  - %s %s: sisa %s (min %s)%s" % (d["sku"], d["nama"], fq(d["stok"]), fq(d["stok_min"]),

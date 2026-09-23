@@ -68,8 +68,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 1. Minta pengguna mengekspor file pesanan dari Seller Center (menu ekspor pesanan; nama menu bisa berbeda) dan mengirim filenya. **Jangan buka/simpan ulang di Excel** (nomor pesanan bisa rusak jadi `2,4E+17`).
 2. `impor-pesanan <file> --json` (pratinjau). Tampilkan ke pengguna: **pemetaan kolom** (No. pesanan, SKU, Jumlah, Status, Resi), jumlah pesanan baru, yang dilewati (sudah pernah diimpor, batal, retur, belum bayar), stok yang akan berkurang, SKU belum terdaftar, peringatan.
 3. Pemetaan salah → ulangi dengan `--kolom-sku "Nama Kolom"` dst. (`-` = abaikan kolom).
-4. SKU belum terdaftar → tawarkan tambah produk dulu, atau `--lewati-tak-dikenal` (stok barang itu tidak dipotong).
-5. Setuju → perintah sama + `--ya`. Aturan otomatis: pesanan batal/belum bayar/retur tidak memotong stok; nomor pesanan yang sudah pernah diimpor dilewati; pesanan lama yang kini **batal** dikembalikan stoknya; pesanan lama yang kini **retur** hanya dilaporkan (cek fisik dulu).
+4. SKU belum terdaftar → tawarkan tambah produk dulu, atau `--lewati-tak-dikenal` (stok barang itu belum dipotong). Setelah SKU didaftarkan, impor ulang file yang sama: item lama itu otomatis dicocokkan dan stoknya dipotong (`item_lama_kini_terpotong`).
+5. Setuju → perintah sama + `--ya`. Aturan otomatis: pesanan batal/belum bayar/retur tidak memotong stok; nomor pesanan yang sudah pernah diimpor dilewati; pesanan lama yang kini **batal** dikembalikan stoknya dan tidak lagi dihitung sebagai penjualan di laporan; pesanan batal yang **aktif lagi** dipotong ulang; status **"Pembatalan Diajukan"/"Cancellation requested"** tidak mengubah stok dan tidak masuk daftar ambil sampai statusnya jelas; pesanan lama yang kini **retur** (atau ada tanda retur di kolom retur) hanya dilaporkan (cek fisik dulu).
 
 ### D. Picking & urutan resi
 1. `picking --json` → daftar A (ambil di rak, urut lokasi) dan daftar B (urutan kemas/tempel resi, default urut kurir lalu resi; `--urut batas|resi|pesanan`).
@@ -101,7 +101,7 @@ Simpan? Balas "ya" untuk menyimpan.
 **Laporan harian** (dari `laporan ringkas`): kirim teks script apa adanya. Contoh nyata dari data `templates/` (produk + `contoh-pesanan-shopee.csv`):
 ```
 Laporan Stok Harian - 20/09/2026
-Terjual: 6 barang dari 2 pesanan marketplace
+Terjual: 6 barang (marketplace 6 dari 2 pesanan, toko/offline 0)
 Omzet tercatat: Rp 324.000 | HPP: Rp 190.500 | Laba kotor (perkiraan): Rp 133.500
 Terlaris: KAOS-PT-M (3), KAOS-HT-M (2), TOTE-NAT (1)
 Pesanan belum dikemas: 3
@@ -111,9 +111,10 @@ Nilai persediaan: Rp 3.246.500
 ```
 
 ## Laporan terjadwal di OpenClaw
-Opsi berikut diverifikasi dari `openclaw automations add --help` (OpenClaw 2026.9.5); pembuatan jadwal butuh Gateway OpenClaw yang sedang berjalan. Default kanal: **Telegram** (WhatsApp hanya dengan nomor terpisah). Bantu pengguna menjalankan (setelah ia setuju):
+Opsi berikut diverifikasi di OpenClaw 2026.9.5 (butuh Gateway OpenClaw yang sedang berjalan). `--tools exec,read` membatasi alat yang boleh dipakai jadwal; `--session isolated` memisahkannya dari percakapan utama. Default kanal: **Telegram** (WhatsApp hanya dengan nomor terpisah). Bantu pengguna menjalankan (setelah ia setuju):
 ```bash
 openclaw automations add --name "Laporan stok harian" --cron "0 21 * * *" --tz Asia/Jakarta \
+  --session isolated --tools exec,read \
   --message "Pakai skill buku-stok: jalankan laporan ringkas hari ini (hanya baca, jangan jalankan perintah tulis atau --ya) lalu kirim teksnya apa adanya." \
   --announce --channel telegram --to <chat-id-telegram-pemilik>
 ```
