@@ -65,5 +65,11 @@ Hari terbaik: <tanggal> (Rp ...). Hari terendah: <tanggal> (Rp ...).
 - Jangan mengarang angka: semua angka harus berasal dari output script.
 - Jika script melaporkan baris yang dilewati (`baris_dilewati` > 0) atau `dibuang_karena_status`, sebutkan jumlah dan alasannya.
 - Sampaikan setiap isi `peringatan` dari script kepada pengguna.
+- Jika memakai `--kolom-status`, tampilkan ke pengguna status yang **dihitung** (`status_dihitung`) dan yang **dibuang**
+  (`dibuang_karena_status`), agar pengguna bisa mengoreksi bila ada status yang salah golongan
+  (mis. jalankan ulang dengan `--abaikan-status` berisi daftar sendiri).
+- Jika `nama_produk_digabung` tidak kosong, sebutkan penggabungannya (mis. "Kopi" dan "kopi " dihitung sebagai satu produk).
+- Angka dengan format meragukan (mis. `15.000.00`, `15000.500`, notasi ilmiah `1.5E+06` dari Excel) sengaja **dilewati**,
+  bukan ditebak; sebutkan jumlahnya dan sarankan pengguna memperbaiki format kolom di Excel.
 - Insight harus berdasarkan data; hindari saran generik seperti "tingkatkan pemasaran".
 - Jangan mengirim isi file pengguna ke layanan eksternal.

@@ -50,3 +50,14 @@ Tidak ada cacat berat. Output siap pakai untuk pembeli awam. Poin terlemah adala
 - **R2 – Aturan emoji "maks. 1 per kalimat"** tidak jelas untuk daftar poin (✅). *Saran:* "maks. 1 emoji per kalimat atau per poin; total maks. ±6 per caption."
 - **R3 – Format output tidak punya tempat untuk daftar asumsi dan teks overlay TikTok**, padahal langkah 1 dan tabel TikTok memintanya. *Saran:* tambahkan baris opsional `Asumsi: …` sebelum Variasi A dan `🎬 Teks overlay: …` untuk TikTok di blok *Format output*.
 - **R4 – README merujuk `CARA-INSTAL.md` dan `LISENSI.txt`** (README *Instalasi singkat*; ATTRIBUTION.md) yang tidak ada di folder skill. Pastikan kedua file ikut dalam paket rilis.
+
+## Uji A/B
+- **Tanggal:** 2026-09-23 — ditambahkan oleh agent penguji independen (simulasi, Claude Code) karena uji A/B baru diwajibkan setelah uji awal. Isi di atas tidak diubah.
+- **Berkas:** `00-pembanding-tanpa-skill.md` (input S1 yang sama persis, dikerjakan tanpa membaca skill apa pun, lalu dibandingkan dengan `01-instagram-keripik-mahasiswa.md`).
+- **Hasil tanpa skill:** 1 caption, 62 kata (di bawah rentang IG 80–150), baris pertama berupa judul kapital (bukan hook), ±12 emoji, dan memuat
+  **klaim yang tidak diberikan pengguna** ("dibuat dari singkong pilihan", "diolah secara higienis") serta **urgensi palsu** ("Stok terbatas, buruan sebelum kehabisan!").
+- **Hasil dengan skill:** 3 variasi gaya berbeda dengan hook nyata, 81–82 kata, emoji terkendali, tanpa klaim/urgensi karangan, plus tips posting.
+- **Setara:** harga, paket, cara order, dan campuran hashtag sama-sama benar.
+- **Kesimpulan:** hasil dengan skill **jelas lebih baik**, terutama pada kejujuran klaim dan pilihan variasi. Selisihnya lebih kecil daripada skill yang
+  memakai script (tidak ada perhitungan angka), tetapi nyata dan relevan bagi pembeli awam. Tidak ada cacat berat "skill tidak memberi nilai tambah".
+- **Dampak ke skor:** **tidak perlu diturunkan** — SKOR AKHIR tetap **7 / 10 → LULUS**.

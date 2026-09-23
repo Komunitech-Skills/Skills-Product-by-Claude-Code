@@ -1,6 +1,6 @@
 nama,kategori,jalur,sumber_url,lisensi,skor_kualitas,tier_usulan,harga_usulan_idr,tier_final,harga_final_idr,versi,platform_teruji,status,tanggal_update
 caption-sosmed-umkm,Marketing & Konten,orisinal,,,7,gratis,0,,,1.1.0,claude-code (simulasi agent),lulus,2026-09-23
-rekap-penjualan-csv,Data & Analisis,orisinal,,,6,ecer,99000,,,1.1.0,claude-code (simulasi agent),uji,2026-09-23
+rekap-penjualan-csv,Data & Analisis,orisinal,,,6,ecer,99000,,,1.2.0,claude-code (simulasi agent),uji,2026-09-23
 lowongan-kerja,HR,orisinal,,,8,ecer,49000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
 surat-peringatan-karyawan,HR,orisinal,,,8,ecer,99000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
 surat-resmi,Legal & Dokumen,orisinal,,,8,ecer,49000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
@@ -11,11 +11,11 @@ proposal-kerjasama,Sales,orisinal,,,6,ecer,99000,,,1.0.0,claude-code (simulasi a
 follow-up-prospek,Sales,orisinal,,,8,ecer,49000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
 balas-chat-cs,Customer Service,orisinal,,,8,gratis,0,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
 tagih-piutang,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
-listing-marketplace,E-commerce/Marketplace Indonesia,orisinal,,,,ecer,99000,,,1.0.0,,draft,2026-09-23
-naskah-live-jualan,E-commerce/Marketplace Indonesia,orisinal,,,,ecer,99000,,,1.0.0,,draft,2026-09-23
-kalender-konten-30hari,Marketing & Konten,orisinal,,,,ecer,99000,,,1.0.0,,draft,2026-09-23
-broadcast-wa,Marketing & Konten,orisinal,,,,ecer,149000,,,1.0.0,,draft,2026-09-23
-balas-ulasan-pelanggan,Customer Service,orisinal,,,,ecer,49000,,,1.0.0,,draft,2026-09-23
+listing-marketplace,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,99000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
+naskah-live-jualan,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,99000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
+kalender-konten-30hari,Marketing & Konten,orisinal,,,8,ecer,99000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
+broadcast-wa,Marketing & Konten,orisinal,,,6,ecer,149000,,,1.0.0,claude-code (simulasi agent),uji,2026-09-23
+balas-ulasan-pelanggan,Customer Service,orisinal,,,8,ecer,49000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
 hitung-hpp,Keuangan & Akuntansi,orisinal,,,9,ecer,99000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
 harga-jual-marketplace,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
 hitung-ppn,Keuangan & Akuntansi,orisinal,,,8,gratis,0,,,1.0.0,claude-code (simulasi agent),lulus,2026-09-23
@@ -26,3 +26,4 @@ perjanjian-sederhana,Legal & Dokumen,orisinal,,,,vip,149000,,,1.0.0,,draft,2026-
 arus-kas-13minggu,Keuangan & Akuntansi,orisinal,,,,ecer,99000,,,1.0.0,,draft,2026-09-23
 rekonsiliasi-bank,Keuangan & Akuntansi,orisinal,,,,ecer,149000,,,1.0.0,,draft,2026-09-23
 pengajuan-kur,Keuangan & Akuntansi,orisinal,,,,ecer,99000,,,1.0.0,,draft,2026-09-23
+ekstrak-nota-faktur,Keuangan & Akuntansi,kurasi,https://github.com/manairalabs/bicara-skills,MIT,,ecer,99000,,,1.0.0,,draft,2026-09-23

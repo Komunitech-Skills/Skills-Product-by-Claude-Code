@@ -26,7 +26,9 @@ BULAN = {
     "nov": 11, "nop": 11, "november": 11, "nopember": 11,
     "des": 12, "desember": 12, "dec": 12, "december": 12,
 }
-STATUS_BATAL_DEFAULT = ["batal", "dibatalkan", "cancel", "retur", "return", "refund", "gagal", "failed"]
+STATUS_BATAL_DEFAULT = ["batal", "dibatalkan", "cancel", "retur", "return", "refund", "gagal", "failed",
+                        "pengembalian", "dikembalikan", "belum bayar", "belum dibayar", "unpaid",
+                        "menunggu pembayaran", "kedaluwarsa", "expired"]
 
 POLA_ISO = re.compile(r"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[ T].*)?$")
 POLA_ANGKA_3 = re.compile(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2}|\d{4})(?:[ T].*)?$")
@@ -82,17 +84,26 @@ def parse_tanggal(teks, urutan="dmy"):
     return None
 
 
+def _grup_ribuan_valid(bagian_bulat, pemisah):
+    """'1.250.000' valid; '15000.500' / '15.00' tidak (grup pertama 1–3 digit, sisanya tepat 3)."""
+    grup = bagian_bulat.split(pemisah)
+    return 1 <= len(grup[0]) <= 3 and all(len(g) == 3 for g in grup[1:])
+
+
 def parse_angka(teks):
     """Angka format Indonesia/Inggris -> float, atau None bila tidak valid/meragukan.
 
     Mendukung: '15000', 'Rp 15.000', 'Rp. 25000', 'IDR 25.000', 'Rp 15.000,-',
     '15.000,50', '15,000.50', '1.250.000', '12,5'.
+    Menolak (None) format ambigu: '15.000.00', '15000.500', notasi ilmiah '1.5E+06'.
     """
     if teks is None:
         return None
     s = str(teks).strip().lower()
     if not s:
         return None
+    if re.search(r"\d\s*e\s*[+-]?\s*\d", s):
+        return None                               # notasi ilmiah dari Excel
     s = re.sub(r"\b(rp|idr)\b\.?", "", s)
     s = re.sub(r"[,.]\s*-\s*$", "", s)          # akhiran ',-' atau '.-'
     s = re.sub(r"[^\d,.\-]", "", s).strip(".,")
@@ -104,21 +115,22 @@ def parse_angka(teks):
         return None
     digit = sum(c.isdigit() for c in s)
     if "," in s and "." in s:
-        # Pemisah desimal adalah yang muncul terakhir
-        if s.rfind(",") > s.rfind("."):
-            s = s.replace(".", "").replace(",", ".")
-        else:
-            s = s.replace(",", "")
-    elif "," in s:
-        bagian = s.split(",")
+        # Pemisah desimal adalah yang muncul terakhir; sisanya wajib grup ribuan yang rapi
+        desimal = "," if s.rfind(",") > s.rfind(".") else "."
+        ribuan = "." if desimal == "," else ","
+        bulat, _, pecahan = s.rpartition(desimal)
+        if ribuan in pecahan or not _grup_ribuan_valid(bulat, ribuan):
+            return None
+        s = bulat.replace(ribuan, "") + "." + pecahan
+    elif "," in s or "." in s:
+        pemisah = "," if "," in s else "."
+        bagian = s.split(pemisah)
         if len(bagian) == 2 and len(bagian[1]) != 3:
-            s = s.replace(",", ".")      # '12,5' -> desimal
+            s = bagian[0] + "." + bagian[1]       # '12,5' / '1.5' -> desimal
+        elif _grup_ribuan_valid(s, pemisah):
+            s = s.replace(pemisah, "")            # '15.000' / '1.250.000' -> ribuan
         else:
-            s = s.replace(",", "")       # '15,000' -> ribuan
-    elif "." in s:
-        bagian = s.split(".")
-        if len(bagian) > 2 or len(bagian[1]) == 3:
-            s = s.replace(".", "")       # '15.000' / '1.250.000' -> ribuan
+            return None                           # '15.000.00', '15000.500' -> ambigu
     try:
         nilai = float(s)
     except ValueError:
@@ -192,6 +204,9 @@ def main():
         urutan, ambigu = a.urutan_tanggal, False
 
     per_produk = defaultdict(lambda: {"qty": 0.0, "omzet": 0.0})
+    nama_tampil = {}                 # kunci ternormalisasi -> nama pertama yang ditemui
+    varian_nama = defaultdict(set)   # kunci -> semua ejaan asli
+    status_dihitung = defaultdict(int)
     per_hari = defaultdict(float)
     dilewati = defaultdict(int)
     dibuang_status = defaultdict(int)
@@ -203,6 +218,7 @@ def main():
             if any(k in st.lower() for k in abaikan):
                 dibuang_status[st] += 1
                 continue
+            status_dihitung[st or "(kosong)"] += 1
         tgl = parse_tanggal(r.get(a.kolom_tanggal), urutan)
         if tgl is None:
             dilewati["tanggal tidak terbaca"] += 1
@@ -219,7 +235,11 @@ def main():
         if nilai is None:
             dilewati["harga/total tidak valid atau meragukan"] += 1
             continue
-        produk = (r.get(a.kolom_produk) or "").strip() or "(tanpa nama)"
+        asli = " ".join((r.get(a.kolom_produk) or "").split()) or "(tanpa nama)"
+        kunci = asli.casefold()
+        nama_tampil.setdefault(kunci, asli)
+        varian_nama[kunci].add(asli)
+        produk = nama_tampil[kunci]
         per_produk[produk]["qty"] += qty
         per_produk[produk]["omzet"] += nilai
         per_hari[tgl.isoformat()] += nilai
@@ -263,6 +283,8 @@ def main():
         "baris_dilewati": sum(dilewati.values()),
         "alasan_dilewati": dict(dilewati),
         "dibuang_karena_status": dict(dibuang_status),
+        "status_dihitung": dict(status_dihitung),
+        "nama_produk_digabung": {nama_tampil[k]: sorted(v) for k, v in varian_nama.items() if len(v) > 1},
         "urutan_tanggal_dipakai": urutan,
         "peringatan": peringatan,
     }

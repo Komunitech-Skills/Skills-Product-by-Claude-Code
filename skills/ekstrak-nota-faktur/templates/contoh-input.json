@@ -1,0 +1,100 @@
+{
+  "dokumen": [
+    {
+      "id": "N1",
+      "jenis": "nota",
+      "nomor": null,
+      "tanggal": "02/09/2026",
+      "penjual": {"nama": "Toko Sembako Bu Yati", "npwp": null},
+      "kategori": "Bahan baku",
+      "item": [
+        {"nama": "Beras 5 kg", "qty": 2, "satuan": "karung", "harga_satuan": "Rp 72.000", "jumlah": "144.000"},
+        {"nama": "Minyak goreng 2 L", "qty": 3, "satuan": "pouch", "harga_satuan": "36.500", "jumlah": "109.500"},
+        {"nama": "Telur", "qty": "TIDAK_TERBACA", "satuan": "kg", "harga_satuan": "29.000", "jumlah": "TIDAK_TERBACA"}
+      ],
+      "subtotal": null,
+      "total": "TIDAK_TERBACA",
+      "metode_bayar": "tunai",
+      "catatan": "Nota tulisan tangan, bagian bawah terlipat; total terlihat '3?1.500'"
+    },
+    {
+      "id": "N2",
+      "jenis": "struk",
+      "nomor": "2609-0412-77",
+      "tanggal": "2026-09-05",
+      "penjual": {"nama": "Minimarket Sinar Jaya Cab. Depok"},
+      "kategori": "Operasional",
+      "harga_termasuk_ppn": true,
+      "jenis_ppn": "umum",
+      "item": [
+        {"nama": "Kertas HVS A4 70gr", "qty": 2, "satuan": "rim", "harga_satuan": "55.500", "jumlah": "111.000"},
+        {"nama": "Sabun cuci piring 780 ml", "qty": 1, "satuan": "pcs", "harga_satuan": "16.900", "jumlah": "16.900"}
+      ],
+      "subtotal": "127.900",
+      "dpp": "115.225",
+      "ppn": "12.675",
+      "total": "127.900",
+      "metode_bayar": "QRIS"
+    },
+    {
+      "id": "F1",
+      "jenis": "faktur_pajak",
+      "nsfp": "04.00.26.00001234567",
+      "tanggal": "10 September 2026",
+      "penjual": {"nama": "PT Kemasan Prima Nusantara", "npwp": "0012345678012345", "nitku": "0012345678012345000000"},
+      "pembeli": {"nama": "CV Dapur Rasa Makmur", "npwp": "0098765432109876"},
+      "kategori": "Bahan kemasan",
+      "jenis_ppn": "umum",
+      "item": [
+        {"nama": "Standing pouch 500 g", "qty": 2000, "satuan": "pcs", "harga_satuan": "1.850", "jumlah": "3.700.000"},
+        {"nama": "Stiker label", "qty": 2000, "satuan": "pcs", "harga_satuan": "400", "jumlah": "800.000"}
+      ],
+      "subtotal": "4.500.000",
+      "dpp": "4.500.000",
+      "dpp_nilai_lain": "4.125.000",
+      "ppn": "495.000",
+      "total": null
+    },
+    {
+      "id": "I1",
+      "jenis": "invoice",
+      "nomor": "INV/2026/09/015",
+      "tanggal": "2026-09-12",
+      "penjual": {"nama": "PT Solusi Digital Kreatif", "npwp": "01.234.567.8-901.234"},
+      "kategori": "Jasa",
+      "jenis_ppn": "umum",
+      "item": [
+        {"nama": "Jasa pembuatan website toko online", "qty": 1, "satuan": "paket", "harga_satuan": "8.000.000", "jumlah": "8.000.000"}
+      ],
+      "subtotal": "8.000.000",
+      "dpp": "8.000.000",
+      "ppn": "960.000",
+      "pph": "160.000",
+      "jenis_pph": "PPh 23 (2%)",
+      "total": "8.800.000",
+      "terbilang": "Delapan juta delapan ratus ribu rupiah"
+    },
+    {
+      "id": "K1",
+      "jenis": "kuitansi",
+      "nomor": "045/KW/IX/2026",
+      "tanggal": "15-09-2026",
+      "penjual": {"nama": "Pak Darto (Tukang)"},
+      "kategori": "Perbaikan",
+      "item": [],
+      "total": "Rp 6.750.000,-",
+      "terbilang": "Enam juta tujuh ratus ribu rupiah",
+      "metode_bayar": "transfer BRI"
+    },
+    {
+      "id": "T1",
+      "jenis": "bukti_transfer",
+      "nomor": "BRI-202609151234",
+      "tanggal": "2026-09-15",
+      "penjual": {"nama": "Pak Darto (Tukang)"},
+      "kategori": "Perbaikan",
+      "total": "6.750.000",
+      "metode_bayar": "transfer BRI"
+    }
+  ]
+}
