@@ -143,11 +143,12 @@ Jaga SKILL.md tetap ringkas (idealnya < 300 baris); materi panjang dipindah ke `
 2. Pengujian dilakukan oleh agent/sesi **terpisah** dari pembuat skill, yang hanya membaca folder skill tersebut.
 3. Jalankan 5 skenario: 3 normal, 1 input tidak lengkap, 1 di luar cakupan. Jika ada script, jalankan juga dengan data rusak dan verifikasi angka secara independen.
 4. **Uji A/B (wajib):** untuk skenario normal pertama, bandingkan output agent **tanpa skill** vs **dengan skill**. Simpan di `examples/00-pembanding-tanpa-skill.md`. Jika hasil dengan skill tidak jelas lebih baik, skill tidak memberi nilai tambah → skor maks. 6. Perbandingan ini juga menjadi bahan "sebelum/sesudah" di README.
-5. Simpan hasil uji di `examples/` skill tersebut (`01`–`05` + `HASIL-UJI.md`).
-6. Beri skor kualitas 1–10 dengan alasan. Di bawah 7 → revisi, jangan rilis. Setelah revisi, uji ulang oleh penguji independen.
-7. Kolom `platform_teruji` hanya diisi platform yang **benar-benar diuji**. Uji simulasi oleh agent ditulis apa adanya (mis. `claude-code (simulasi agent)`). Jangan klaim sebaliknya.
-8. **Uji platform asli (oleh pemilik/tim):** skill `lulus` diuji manusia di OpenClaw, Codex, Claude Code, dan/atau Cursor mengikuti `docs/uji-platform.md`. Hasilnya dicatat di `examples/UJI-PLATFORM.md` dan platform ditambahkan ke `platform_teruji` (mis. `openclaw;cursor`).
-9. **Beta tester:** skill yang lulus uji platform asli naik ke status `beta`, dibagikan gratis ke 5–10 member VIP selama ±7 hari mengikuti `docs/program-beta.md`. Masukan dirangkum di `examples/MASUKAN-BETA.md`, direvisi, lalu status `rilis`.
+5. **Uji banding pesaing (wajib):** cari skill/prompt publik terbaik untuk tugas yang sama (ClawHub, skills.sh, GitHub, anthropics/skills). Jika ada, jalankan skenario normal pertama dengan skill pesaing dan skill kita, nilai berdampingan, simpan di `examples/00-banding-pesaing.md`. Skill pesaing hanya **dibaca untuk dinilai**, tidak disalin; bila unggul, pelajari kelebihannya lalu tulis ulang dengan cara kita sendiri. Jika skill kita kalah → skor maks. 6. Jika tidak ada pesaing, catat kata kunci & sumber yang dicari.
+6. Simpan hasil uji di `examples/` skill tersebut (`01`–`05` + `HASIL-UJI.md`).
+7. Beri skor kualitas 1–10 dengan alasan. Di bawah 7 → revisi, jangan rilis. Setelah revisi, uji ulang oleh penguji independen.
+8. Kolom `platform_teruji` hanya diisi platform yang **benar-benar diuji**. Uji simulasi oleh agent ditulis apa adanya (mis. `claude-code (simulasi agent)`). Jangan klaim sebaliknya.
+9. **Uji platform asli (oleh pemilik/tim):** skill `lulus` diuji manusia di OpenClaw, Codex, Claude Code, dan/atau Cursor mengikuti `docs/uji-platform.md`. Hasilnya dicatat di `examples/UJI-PLATFORM.md` dan platform ditambahkan ke `platform_teruji` (mis. `openclaw;cursor`).
+10. **Beta tester:** skill yang lulus uji platform asli naik ke status `beta`, dibagikan gratis ke 5–10 member VIP selama ±7 hari mengikuti `docs/program-beta.md`. Masukan dirangkum di `examples/MASUKAN-BETA.md`, direvisi, lalu status `rilis`.
 
 ### Tahap 7 — Packaging & Tiering
 Usulkan (bukan putuskan) tier untuk disetujui pemilik:
