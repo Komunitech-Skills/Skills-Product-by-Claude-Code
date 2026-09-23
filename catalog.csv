@@ -1,3 +1,8 @@
 nama,kategori,jalur,sumber_url,lisensi,skor_kualitas,tier_usulan,harga_usulan_idr,tier_final,harga_final_idr,versi,platform_teruji,status,tanggal_update
 caption-sosmed-umkm,Marketing & Konten,orisinal,,,7,gratis,0,,,1.1.0,claude-code (simulasi agent),lulus,2026-09-23
 rekap-penjualan-csv,Data & Analisis,orisinal,,,,ecer,99000,,,1.1.0,,uji,2026-09-23
+lowongan-kerja,HR,orisinal,,,,ecer,49000,,,1.0.0,,draft,2026-09-23
+surat-peringatan-karyawan,HR,orisinal,,,,ecer,99000,,,1.0.0,,draft,2026-09-23
+surat-resmi,Legal & Dokumen,orisinal,,,,ecer,49000,,,1.0.0,,draft,2026-09-23
+notulen-rapat,Produktivitas,orisinal,,,,gratis,0,,,1.0.0,,draft,2026-09-23
+sop-writer,Produktivitas,orisinal,,,,ecer,99000,,,1.0.0,,draft,2026-09-23
