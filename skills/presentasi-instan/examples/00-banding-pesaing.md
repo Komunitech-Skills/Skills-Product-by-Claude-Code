@@ -54,3 +54,30 @@ Hasil (file uji: struktur & isi 13 slide sama dengan contoh 01, diberi gaya sesu
 - Mode baca untuk HP tegak (mis. saat lebar < tinggi, tampilkan slide bertumpuk yang bisa digulir, atau pesan "putar HP ke lanskap").
 - Opsi ringan untuk mengedit teks (mis. `contenteditable` tanpa penyimpanan otomatis + petunjuk "Simpan halaman"), karena pengguna awam sering hanya ingin mengganti satu angka.
 - Pemeriksaan visual setelah jadi (sumber mewajibkan cek screenshot overflow) — validator kita hanya menghitung kata.
+
+---
+
+## Uji ulang v1.1.0 (2026-09-23)
+
+Skenario sama (S1 + deck KUR & laporan dibuat ulang dengan kerangka v1.1.0). Sumber tidak berubah (commit 9906a34).
+
+| | frontend-slides (sumber) | presentasi-instan v1.1.0 |
+|---|---|---|
+| PDF lewat menu Print (tanpa instalasi) | ✗ terpotong (print CSS tanpa `@page size`, diuji v1.0 dengan CSS yang sama) | ✔ utuh di semua setelan, 1 slide/halaman, warna ikut tercetak |
+| PDF jalur lain | script Playwright (Node + unduh Chromium ±150MB + internet) | tidak perlu |
+| HP tegak | teks ±6px tanpa petunjuk | overlay "putar HP"; mendatar terbaca ±11px, kontrol tidak menutupi isi |
+| Komponen siap pakai | ✔ banyak (preset + template bold) | ✔ KPI, tabel uang, dua kolom, timeline, kutipan, `[isi]` (lebih sedikit, tapi cukup untuk konteks bisnis) |
+| Angka uang | tidak diatur | wajib dari `pengajuan-kur` / `rekap-penjualan-csv`, format `Rp 1.250.000` |
+| Tanpa internet | ✗ font online wajib | ✔ divalidasi (validator kini menutup 5 celah lama) |
+| Mode edit | ✔ ada (localStorage) | ✗ ada tapi **rusak**: Spasi/panah memindah slide saat mengetik |
+| Tema gelap | ✔ beberapa preset gelap | ✗ Hitam Emas: teks sekunder kontras 2,49:1 |
+
+| Kriteria (1–10, pembeli awam Indonesia) | frontend-slides | v1.0 | v1.1.0 |
+|---|---|---|---|
+| Kualitas output | 7 | 7 | 8 |
+| Kesesuaian konteks Indonesia | 2 | 9 | 9 |
+| Akurasi | 5 | 8 | 9 |
+| Siap pakai tanpa setup | 3 | 7 | 9 |
+| **Keseluruhan** | **4** | **7,5** | **8,5** |
+
+**Kesimpulan:** untuk alur utama pembeli (minta → file jadi → buka offline di laptop/HP → cetak PDF), v1.1.0 kini **menang telak** atas sumbernya: sumber gagal di offline, konteks Indonesia, angka, dan PDF tanpa instalasi. Dua dimensi yang masih kalah: **mode edit** (punya kita rusak pada tombol Spasi) dan **variasi desain/tema gelap**. Mode edit harus diperbaiki sebelum rilis karena dianjurkan di setiap balasan. Setelah itu, kemenangan telak berlaku di semua dimensi yang relevan untuk pembeli.

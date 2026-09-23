@@ -89,4 +89,63 @@ Dibatasi ≤ 6 karena **cacat berat**: janji utama "cetak jadi PDF satu slide pe
 ## File di folder ini
 - `00-pembanding-tanpa-skill.md`, `00-banding-pesaing.md`, `01`–`05` skenario.
 - Hasil nyata: `pitch-bersih-kilat.html`, `kur-maju-jaya-motor.html`, `laporan-agustus-2026.html`, data fiktif `penjualan-agustus-2026.csv`.
-- Screenshot: `ss-01-laporan-slide4-laptop.png`, `ss-02-cacat-pdf-a4-lanskap-kolom-terpotong.png`, `ss-03-hp-390px-tegak-teks-kecil.png`.
+- Screenshot v1.0 (PDF terpotong, teks kecil HP tegak) sudah diganti dengan screenshot v1.1.0 — lihat bagian di bawah. File HTML contoh kini hasil v1.1.0.
+
+---
+
+# Uji ulang v1.1.0
+
+- **Tanggal:** 2026-09-23
+- **Penguji:** agent penguji independen (simulasi, Claude Code)
+- **Versi diuji:** 1.1.0 (commit 40f8908)
+- **Lingkungan:** /tmp/uji-presentasi-instan/v11; Playwright 1.56 + Chromium 1194 (`/opt/pw-browsers`); pypdfium2.
+- **Deck dibuat ulang dengan kerangka baru:** `kur-maju-jaya-motor.html` (10 slide), `laporan-agustus-2026.html` (8 slide), `pitch-bersih-kilat.html` (13 slide). Ketiganya menggantikan file v1.0 di folder ini.
+
+## Verifikasi tiap klaim perbaikan
+
+| # | Klaim | Cara uji | Hasil |
+|---|---|---|---|
+| 1 | `@page 1920×1080` + `print-color-adjust` → PDF tidak terpotong | Chromium `--print-to-pdf` **bawaan** (tanpa opsi, dengan & tanpa header), setelan **anjuran** (margin 0 + grafis latar), **tanpa** grafis latar, dan **dipaksa A4 lanskap**. Hitung halaman, ukuran, posisi teks paling kanan, dan cocokkan SEMUA nilai `Rp …`/persen di HTML dengan teks PDF | ✔ 10/8/13 halaman = jumlah slide; ukuran 1440×810pt (=1920×1080px); teks paling kanan 94,4% lebar (= batas padding 96px); **0 dari 19 (KUR) dan 0 dari 30 (laporan) nilai hilang** di semua setelan. Pembanding v1.0 dengan metode sama: 10–18 nilai hilang. Warna latar ikut tercetak walau "grafis latar" tidak dicentang (juga pada tema gelap). Lihat `ss-02-pdf-v1.1-halaman-utuh.png` |
+| 2 | Panduan cetak baru tanpa "Lanskap/A4" | Baca SKILL.md Format output, contoh, README FAQ, `kerangka-html.md` aturan #5 | ✔ Tidak ada lagi anjuran A4/Lanskap; diganti "Simpan sebagai PDF → margin Tidak ada → centang Grafis latar" |
+| 3 | Overlay "putar HP" (CSS) | 390×844 tegak | ✔ overlay tampil penuh layar (390×844) dengan pesan jelas (`ss-03-hp-tegak-overlay-putar.png`). Catatan: juga muncul di tablet 820px tegak (di sana slide sebenarnya sudah terbaca ±14px) dan tidak bisa ditutup — lihat cacat ringan |
+| 4 | Kontrol tidak menutupi slide di HP mendatar | Cek tumpang-tindih kotak `.kontrol` & tombol Edit dengan setiap elemen teks, semua slide ketiga deck, di 844×390, 932×430, 667×375, 1280×720 | ✔ 0 tumpang-tindih; kontrol dikecilkan & dipudarkan (opacity 0,45) di HP mendatar |
+| 5 | Angka KUR wajib via `pengajuan-kur`, CSV via `rekap-penjualan-csv` | Ikuti SKILL.md baru: jalankan `simulasi_kur.py --format json` & `rekap.py`, isi slide dari JSON | ✔ Aturan jelas & bisa diikuti (termasuk jalur `[isi]` bila skill tidak terpasang). Angka identik dengan verifikasi independen v1.0: cicilan Rp 4.563.291, rasio 46,6% (BERAT), total bunga Rp 14.278.462; omzet Rp 41.190.000, kategori 77,8/22,2%, mingguan berjumlah tepat |
+| 6 | Validator diperluas + `tests/uji_validasi.py` 20 kasus | Jalankan tes bawaan + 27 file uji penguji (13 file lama dibuat ulang di atas kerangka baru + 14 kasus baru) | ✔ 20/20 tes bawaan OK. Semua 5 celah v1.0 kini tertangkap (tanpa kutip, `srcset`, `url(//…)`, `fetch`, `<img src="C:\…">`); baru juga tertangkap: tanpa `@page`, `@page` tanpa `size`, `<img src=logo.png>`, XHR, `@import "https://…"`, `SRC="HTTPS://…"` huruf besar, `<iframe src=https…>`. Kerangka asli & gambar base64 LULUS. Sisa celah/kekeliruan di cacat ringan |
+| 7 | Komponen siap pakai + 4 tema | Bangun 3 deck hanya dengan kelas bawaan (`kartu-kpi`, `tabel-data` + `uang`, `dua-kolom`, `timeline`, `kutipan`, `isi`) | ✔ Semua komponen jalan, tidak ada yang meluber, kolom uang rata kanan sejajar. ✗ Tema **Hitam Emas Premium**: `--warna-teks-lembut` tidak didefinisikan untuk tema gelap → paragraf, poin, dan label kartu memakai `#475569` di atas `#111111` = kontras **2,49:1** (minimal 4,5:1) |
+| 8 | Font stack sistem | Render di Linux (tanpa Segoe UI/Verdana) | ✔ Jatuh ke cadangan dengan rapi; klaim di `aturan-desain.md` #4 sudah jujur |
+| 9 | Mode Edit (`contenteditable`) | Playwright: klik Edit, pilih angka di slide 4, ketik "Rp 43.000.000", simpan halaman, buka ulang | ✗ **Tombol Spasi dan panah kiri/kanan tetap menggerakkan slide saat mengetik** (handler `keydown` tidak mengecualikan elemen yang sedang diedit dan memanggil `preventDefault`). Hasil: ketik "Rp" → Spasi → slide pindah ke 5/10, spasi tidak masuk, teks jadi "Rp". File yang disimpan saat mode edit masih aktif dibuka ulang dengan 76 elemen `contenteditable="true"` (garis putus-putus tampil) dan tombol "✔ Selesai edit" |
+| — | Tanpa internet & validator | 3 deck | ✔ 0 request jaringan; `validasi_html.py` LULUS tanpa peringatan |
+| — | Teks meluber (1920×1080) | Bounding box semua elemen, 31 slide | ✔ tidak ada elemen di luar area aman |
+
+## Skor v1.1.0
+| Kriteria | v1.0 | v1.1.0 | Alasan |
+|---|---|---|---|
+| Pemicu (description) | 8 | 8 | Tidak berubah, tetap tepat |
+| Kemudahan awam | 7 | 7 | PDF & HP kini beres; tetapi mode Edit yang dianjurkan di setiap balasan langsung "loncat slide" saat menekan spasi |
+| Kualitas output | 6 | 8 | Komponen rapi & konsisten, PDF utuh; tema gelap kontras buruk |
+| Akurasi (angka/fakta) | 8 | 9 | Angka KUR & CSV kini wajib dari script |
+| Penanganan input kurang | 9 | 9 | Ada kalimat "cukup jawab nomor 1" |
+| Penanganan di luar cakupan | 9 | 9 | — |
+| Keamanan | 9 | 9 | Bersih; mode edit tanpa localStorage/jaringan |
+
+## SKOR AKHIR v1.1.0: **6 / 10 — REVISI**
+Semua cacat v1.0 (PDF terpotong, teks HP, validator bocor, KUR tanpa `pengajuan-kur`, tanpa komponen) **terbukti sudah diperbaiki**. Skor tetap dibatasi ≤ 6 karena fitur baru yang **dianjurkan ke setiap pembeli di Format output** ("Mau edit teks langsung? Klik tombol ✏️ Edit…") rusak pada ketikan paling dasar (spasi), sehingga melanggar prinsip "reliable". Perbaikannya kecil (±3 baris); dengan perbaikan cacat berat + tema gelap, perkiraan skor **8**.
+
+## Cacat v1.1.0 & saran perbaikan
+
+### Berat
+1. **Mode Edit: Spasi/panah memindah slide dan menelan ketikan** — `references/kerangka-html.md`, handler `document.addEventListener('keydown', …)`. Tambahkan di baris pertama handler: `if (e.target.isContentEditable) return;` (dan sama untuk `touchstart/touchend` bila target sedang diedit). Saat `btnEdit` diklik untuk selesai, pastikan semua `contenteditable` dilepas; tambahkan `beforeprint`/`@media print { [contenteditable] { outline: none !important; } }` dan ingatkan "klik ✔ Selesai edit dulu sebelum Ctrl+S". Tambahkan catatan bahwa Ctrl+S tidak tersedia di HP (edit hanya di laptop).
+
+### Sedang
+2. **Tema Hitam Emas Premium tidak terbaca** — `aturan-desain.md` #5 dan `kerangka-html.md` bagian "Tema warna": tambahkan kolom `--warna-teks-lembut` untuk tiap tema (mis. `#cfc8b8` untuk Hitam Emas; kontras ≥ 4,5:1), lalu tambahkan cek kontras sederhana ke validator (bandingkan `--warna-teks-lembut` vs `--warna-latar-slide`).
+
+### Ringan
+3. **Validator menolak tautan WA/website yang sah** — `<a href="https://wa.me/62…">` diberi ERROR padahal tautan tidak memuat apa pun saat dibuka offline. Kecualikan `<a href>` (cukup peringatan), fokus ERROR pada `src`/`srcset`/`<link href>`/CSS.
+4. **Validator belum menangkap** `url("foto-toko.jpg")` lokal di CSS dan `<video src="promo.mp4">`/`<source src>` lokal — perlakukan sama seperti `<img>` non-`data:`.
+5. **Overlay "putar HP" tidak bisa ditutup** dan muncul juga di tablet tegak (≤900px). Tambahkan tombol "Tetap lihat" (untuk HP yang kunci rotasinya aktif) dan batasi ke `max-width: 600px`.
+6. **Label "BERAT" di slide ke bank** — SKILL.md bagian KUR menyuruh memasukkan hasil `pengajuan-kur` "apa adanya" ke slide. Sebaiknya: kategori BERAT dan plafon aman disampaikan ke **pengguna** di ringkasan akhir (untuk dipertimbangkan sebelum ke bank), sedangkan slide cukup berisi cicilan & rasio.
+
+## Screenshot v1.1.0
+- `ss-01-laporan-slide4-laptop.png` — tabel per produk dengan komponen `tabel-data`.
+- `ss-02-pdf-v1.1-halaman-utuh.png` — halaman PDF (cetak bawaan Chromium) slide "Rencana penggunaan dana": semua nominal & porsi tampil.
+- `ss-03-hp-tegak-overlay-putar.png` — overlay "Putar HP" di 390×844.
