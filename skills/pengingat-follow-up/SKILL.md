@@ -1,6 +1,6 @@
 ---
 name: pengingat-follow-up
-description: Daftar pantauan follow-up lokal (piutang, prospek, timesheet klien, janji) yang diisi lewat kalimat biasa ("ingatkan saya tagih Bu Rina tgl 3, 4,5 jt"), lalu rekap harian berisi yang jatuh tempo hari ini, terlambat (berapa hari), dan H-1, lengkap dengan DRAF pesan siap kirim yang dikirim sendiri oleh pemilik. Termasuk rekap jam & nilai timesheet per klien, dan jadwal otomatis jam 08.00 WIB ke Telegram lewat OpenClaw. Gunakan saat pengguna bilang ingatkan saya, jangan sampai lupa follow-up/nagih, pengingat jatuh tempo, daftar tagihan yang harus di-follow-up, rekap jam kerja klien, reminder, follow-up tracker, due date reminder, timesheet summary. Bukan untuk menyusun urutan pesan lengkap satu prospek (follow-up-prospek), surat teguran/denda (tagih-piutang), membuat invoice (buat-invoice), atau laporan penjualan terjadwal (laporan-otomatis-terjadwal).
+description: Daftar pantauan follow-up lokal (piutang, prospek, timesheet klien, janji) yang diisi lewat kalimat biasa, plus rekap harian berisi yang terlambat, jatuh tempo hari ini, dan H-1 dengan DRAF pesan yang dikirim sendiri oleh pemilik, rekap jam & nilai timesheet per klien, serta jadwal 08.00 WIB ke Telegram via OpenClaw. Gunakan saat pengguna bilang ingatkan saya, jangan sampai lupa nagih/follow-up, pengingat jatuh tempo, rekap jam kerja klien, reminder, follow-up tracker, due date reminder, timesheet. Bukan untuk urutan pesan satu prospek (follow-up-prospek) atau somasi/denda (tagih-piutang).
 ---
 
 # Pengingat Follow-up
