@@ -113,6 +113,7 @@ Ekosistem skill publik memiliki banyak skill bercelah dan berisi payload berbaha
 1. Definisikan masalah, target pengguna, input, output.
 2. Tulis langkah kerja yang jelas dan bertahap, dengan contoh input-output.
 3. Tambahkan template/checklist/script bila meningkatkan konsistensi. Perhitungan uang/pajak/gaji **wajib** lewat script atau rumus eksplisit, bukan perkiraan.
+   **Standar pembulatan (seluruh library):** PPN dihitung dari DPP persis lalu **dibulatkan ke bawah sekali** (tidak pernah memungut melebihi tarif). Nominal rupiah lain (total baris, diskon) dibulatkan ke rupiah terdekat. Mode harga termasuk PPN: DPP = rupiah bulat terbesar dengan DPP + PPN ≤ harga; sisa ditampilkan. Setiap skill pajak menyebut bahwa pembulatan belum dicocokkan dengan Coretax.
 4. Tentukan batasan: kapan skill tidak dipakai dan apa yang dilakukan jika input kurang.
 5. Domain sensitif (hukum, pajak, medis, keuangan): tambahkan disclaimer, cantumkan dasar aturan + tanggal berlaku, dan arahkan ke profesional.
 
