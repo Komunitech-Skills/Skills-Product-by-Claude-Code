@@ -17,8 +17,8 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Pasang harga Rp50.000 karena "modal 35 ribu, untung 15 ribu", ternyata setelah potongan marketplace untungnya tinggal separuh.
 
-**Sesudah (cukup ketik):** "Modal 35 ribu, admin Shopee 8%, gratis ongkir 4%, biaya proses 1.250. Mau margin 20%, harga jualnya berapa?"
-→ Harga minimal Rp42.152, harga rekomendasi Rp55.000, uang diterima Rp46.050, laba bersih Rp11.050 per barang, lengkap rincian potongannya.
+**Sesudah (cukup ketik):** "Modal 35 ribu, admin Shopee 8%, gratis ongkir 4%, biaya pembayaran 1,5%, biaya proses 1.250 per pesanan. Mau margin 20%, harga jualnya berapa?"
+→ Harga minimal Rp42.152, harga rekomendasi Rp55.000, uang diterima Rp46.050, laba bersih Rp11.050 per barang, lengkap rincian potongannya (termasuk PPh 22 0,5%).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:

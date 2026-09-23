@@ -32,7 +32,7 @@ Menjawab pertanyaan penjual online: "Berapa harga yang harus saya pasang supaya 
 | Target: margin %, laba Rp per barang, atau markup % | Tidak | Margin 20% dari harga setelah voucher (sebut asumsinya) |
 | Harga jual saat ini (untuk mode cek) | Tidak | — |
 
-**Jangan mengarang persentase biaya platform.** Angka berbeda per kategori, program, dan waktu. Minta pengguna mengisi dari Seller Center. Jika pengguna hanya ingin gambaran, boleh pakai angka di `templates/platform-contoh.json` tetapi **wajib** diberi label "contoh — cek angka terbaru di Seller Center".
+**Jangan mengarang persentase biaya platform.** Angka berbeda per kategori, program, dan waktu. Minta pengguna mengisi dari Seller Center. Jika pengguna hanya ingin gambaran, boleh pakai angka di `templates/platform-contoh.json` tetapi **wajib** diberi label "contoh — cek angka terbaru di Seller Center". Template itu berisi `"angka_contoh": true`, sehingga script mencetak peringatan **ANGKA CONTOH** di baris pertama; peringatan itu wajib ikut ditampilkan ke pengguna. Saat membuat file JSON dengan angka asli pengguna, hapus kunci `angka_contoh`.
 
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan).
 

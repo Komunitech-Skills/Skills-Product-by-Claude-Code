@@ -28,7 +28,6 @@ Menghitung PPN dengan benar sesuai aturan 2025–2026 (tarif 12% dengan DPP nila
 | Jenis: barang/jasa biasa atau barang mewah (kena PPnBM) | Tidak | Biasa (non-mewah) |
 | Jumlah unit | Tidak | 1 |
 | Status penjual: PKP / bukan PKP | Tidak | "belum tahu" → beri pengingat |
-| Cara pembulatan | Tidak | Ke bawah (buang pecahan rupiah) |
 
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya di akhir.
 
@@ -42,7 +41,6 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - `--jenis mewah` untuk barang mewah (kena PPnBM).
    - `--qty 10` bila harga per unit.
    - `--status-pkp non-pkp` bila penjual bukan PKP (hasil diberi label SIMULASI).
-   - `--pembulatan terdekat` bila pengguna minta pembulatan biasa.
    - `--format json` bila butuh angka mentah.
 3. Tulis hasil dengan format di bawah, **pakai angka dari script apa adanya**.
 4. Bila penjual bukan PKP: tegaskan bahwa ia **tidak boleh memungut PPN** atau mencantumkan PPN di tagihan.
@@ -63,7 +61,7 @@ Dasar: UU HPP & PMK 131/2024, berlaku per 2026-09-23. Detail & sumber: `referenc
 - Bulatkan DPP ke rupiah penuh, hitung PPN dari DPP itu (rumus A), lalu cek DPP + PPN ≤ T. Jika lebih, kurangi DPP Rp1 dan hitung ulang.
 - Selisih = T − (DPP + PPN); biasanya Rp0–Rp1 karena pembulatan.
 
-**Pembulatan:** PPN dibulatkan ke rupiah penuh **ke bawah** (pecahan rupiah dibuang). PPN dihitung langsung 11% × DPP (secara matematis sama dengan 12% × 11/12 × DPP) agar tidak terjadi pembulatan berantai. DPP nilai lain ditampilkan 2 desimal sebagai informasi.
+**Pembulatan (standar library):** PPN dihitung dari DPP persis lalu dibulatkan **ke bawah sekali** ke rupiah penuh (tidak pernah memungut melebihi tarif). Pembulatan ini belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. PPN dihitung langsung 11% × DPP (secara matematis sama dengan 12% × 11/12 × DPP) agar tidak terjadi pembulatan berantai. DPP nilai lain ditampilkan 2 desimal sebagai informasi.
 
 Contoh: H = Rp 1.000.000 → DPP nilai lain = Rp 916.666,67 → PPN = 12% × 916.666,67 = Rp 110.000 → Total Rp 1.110.000.
 
@@ -76,7 +74,7 @@ Contoh: H = Rp 1.000.000 → DPP nilai lain = Rp 916.666,67 → PPN = 12% × 916
 - **Total dibayar: Rp ...**
 
 Cara hitung: <1–2 kalimat rumus dengan angka pengguna>
-Pembulatan: PPN dibulatkan ke bawah ke rupiah penuh.
+Pembulatan: PPN dibulatkan ke bawah sekali ke rupiah penuh (belum dicocokkan dengan Coretax).
 <Peringatan PKP bila relevan>
 
 _Dasar: UU HPP & PMK 131/2024, berlaku per 23 September 2026. Alat bantu hitung, bukan nasihat pajak; untuk kasus khusus hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
@@ -113,6 +111,6 @@ _Dasar: UU HPP & PMK 131/2024, berlaku per 23 September 2026. Alat bantu hitung,
 ## Batasan & penanganan error
 - Script keluar dengan kode 2 dan pesan `ERROR: ...` untuk angka tidak valid, harga negatif, atau jumlah 0. Sampaikan pesan itu dengan bahasa sederhana dan minta angka yang benar.
 - Format angka Inggris (`1,250,000.50`) ditolak agar tidak salah baca; minta ditulis `1.250.000,50`.
-- Pembulatan resmi di Coretax bisa berbeda Rp1 pada kasus tertentu; bila berbeda, ikuti angka Coretax.
+- Pembulatan belum dicocokkan dengan Coretax dan bisa berbeda Rp1 pada kasus tertentu; bila berbeda, ikuti angka Coretax. Pengguna yang minta pembulatan lain: jelaskan bahwa library memakai standar ke bawah agar PPN tidak pernah melebihi tarif.
 - Barang/jasa dengan DPP atau tarif khusus, fasilitas dibebaskan/tidak dipungut, dan PPnBM di luar cakupan → arahkan ke DJP/konsultan.
 - Batas pengusaha kecil (wajib jadi PKP) umumnya omzet Rp4,8 miliar setahun; pastikan ke DJP bila pengguna mendekati batas itu.

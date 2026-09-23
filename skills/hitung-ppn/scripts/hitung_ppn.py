@@ -28,6 +28,12 @@ FAKTOR_NILAI_LAIN = {"umum": Decimal(11) / Decimal(12), "mewah": Decimal(1)}
 TARIF_EFEKTIF = {"umum": Decimal(11) / Decimal(100), "mewah": Decimal(12) / Decimal(100)}
 
 
+CATATAN_PEMBULATAN = ("PPN dihitung dari DPP persis lalu dibulatkan ke bawah sekali ke rupiah penuh "
+                      "(tidak pernah melebihi tarif). Mode harga termasuk PPN: DPP = rupiah bulat terbesar "
+                      "dengan DPP + PPN <= harga; sisanya ditampilkan. Pembulatan ini belum dicocokkan dengan "
+                      "Coretax; bila Coretax menampilkan angka berbeda, ikuti Coretax.")
+
+
 # ---------------------------------------------------------------- angka & format
 _PENGALI = [("miliar", 10 ** 9), ("milyar", 10 ** 9), ("juta", 10 ** 6), ("ribu", 10 ** 3),
             ("jt", 10 ** 6), ("rb", 10 ** 3), ("k", 10 ** 3), ("m", 10 ** 9)]
@@ -200,8 +206,7 @@ def buat_teks(h, a, catatan):
         baris.append("Selisih pembulatan: {} (harga termasuk PPN - total hitung)".format(
             format_rp(h["selisih_pembulatan"], True)))
     baris.append("")
-    baris.append("Pembulatan: PPN dibulatkan ke rupiah penuh, {}.".format(
-        "ke bawah (pecahan rupiah dibuang)" if a.pembulatan == "bawah" else "ke rupiah terdekat (>= 0,5 naik)"))
+    baris.append("Pembulatan: " + CATATAN_PEMBULATAN)
     for c in catatan:
         baris.append("! " + c)
     baris.append("")
@@ -221,8 +226,6 @@ def main(argv=None):
                    help="'umum' = non-mewah (default); 'mewah' = barang kena PPnBM")
     p.add_argument("--status-pkp", choices=["pkp", "non-pkp", "belum-tahu"], default="belum-tahu",
                    help="Status penjual. Hanya PKP yang boleh memungut PPN.")
-    p.add_argument("--pembulatan", choices=["bawah", "terdekat"], default="bawah",
-                   help="Cara membulatkan PPN ke rupiah penuh (default: bawah)")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
     a = p.parse_args(argv)
 
@@ -236,9 +239,9 @@ def main(argv=None):
         a.harga_satuan, a.qty = harga, qty
         nilai = harga * qty
         if a.mode == "sebelum":
-            h = hitung_ppn_dari_dpp(nilai, a.jenis, a.pembulatan)
+            h = hitung_ppn_dari_dpp(nilai, a.jenis)
         else:
-            h = hitung_ppn_dari_total(nilai, a.jenis, a.pembulatan)
+            h = hitung_ppn_dari_total(nilai, a.jenis)
     except ValueError as e:
         sys.stderr.write("ERROR: {}\n".format(e))
         return 2
@@ -266,7 +269,7 @@ def main(argv=None):
             "harga_satuan": harga,
             "qty": qty,
             "hasil": h,
-            "pembulatan": a.pembulatan,
+            "pembulatan": CATATAN_PEMBULATAN,
             "catatan": catatan,
             "dasar_aturan": DASAR_ATURAN,
             "berlaku_per": TANGGAL_ATURAN,

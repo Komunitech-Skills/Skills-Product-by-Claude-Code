@@ -201,7 +201,7 @@ def batas_setor(tahun, bulan):
     return datetime.date(tahun, bulan + 1, 15)
 
 
-def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0)):
+def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None):
     if not data:
         raise ValueError("belum ada data omzet")
     if len(data) > 12:
@@ -252,6 +252,7 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0)):
             "pph_final": pph,
             "pph22_marketplace_info": pph22,
             "setor_paling_lambat": batas_setor(tahun, b).isoformat(),
+            "batas_setor_sudah_lewat": bool(hari_ini and pph > 0 and batas_setor(tahun, b) < hari_ini),
             "keterangan": "; ".join(ket),
         })
 
@@ -275,6 +276,11 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0)):
     elif kumulatif > BATAS_OMZET_UMKM * Decimal("0.8"):
         catatan.append("Omzet kumulatif sudah di atas 80% dari batas Rp4,8 miliar. Siapkan pembukuan bila "
                        "batas terlewati.")
+    lewat = [r["nama_bulan"] for r in rows if r["batas_setor_sudah_lewat"]]
+    if lewat:
+        catatan.append("Batas setor untuk {} sudah lewat per {}. Jika belum disetor, segera setor dan cek ke DJP "
+                       "kemungkinan sanksi administrasi atas keterlambatan.".format(", ".join(lewat),
+                                                                                  hari_ini.isoformat()))
     if total_pph22 > 0:
         catatan.append("PPh 22 marketplace yang tercatat ({}) hanya informasi. DJP menyebut pungutan ini bukan pajak "
                        "baru dan dapat diperhitungkan, tetapi cara memperhitungkannya dengan PPh final Anda perlu "
@@ -300,7 +306,8 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0)):
 
 CATATAN_TETAP = [
     "Tarif 0,5% dihitung dari OMZET (peredaran bruto), bukan dari laba.",
-    "Pembulatan: PPh tiap bulan dibulatkan ke bawah ke rupiah penuh (pecahan rupiah dibuang).",
+    "Pembulatan: PPh tiap bulan dibulatkan ke bawah ke rupiah penuh (pecahan rupiah dibuang); belum dicocokkan "
+    "dengan Coretax - bila berbeda, ikuti Coretax.",
     "Batas setor tercantum = tanggal 15 bulan berikutnya (ketentuan umum PMK 81/2024); cek DJP bila jatuh di hari libur.",
     "PP 20/2026: ketentuan masa transisi untuk CV/firma/PT dan batas jangka waktu pemakaian tarif 0,5% belum "
     "kami verifikasi. Cek pajak.go.id atau Kring Pajak 1500200 sebelum mengambil keputusan.",
@@ -343,7 +350,8 @@ def teks_markdown(h, jenis_badan):
             b["nama_bulan"], format_rp(b["omzet"], True), format_rp(b["omzet_kumulatif"], True),
             format_rp(b["omzet_kena_pajak"], True), format_rp(b["pph_final"]),
             format_rp(b["pph22_marketplace_info"]) if b["pph22_marketplace_info"] else "-",
-            b["setor_paling_lambat"], b["keterangan"] or "-"))
+            b["setor_paling_lambat"] + (" (SUDAH LEWAT)" if b["batas_setor_sudah_lewat"] else ""),
+            b["keterangan"] or "-"))
     out.append("| **Total** | **{}** | | | **{}** | {} | | |".format(
         format_rp(r["total_omzet_periode"], True), format_rp(r["total_pph_final"]),
         format_rp(r["total_pph22_marketplace_info"]) if r["total_pph22_marketplace_info"] else "-"))
@@ -354,8 +362,11 @@ def teks_markdown(h, jenis_badan):
     if h["jenis_wp"] == "op":
         if r["sisa_omzet_bebas_pajak"] > 0:
             out.append("- Sisa omzet bebas pajak tahun ini: {}".format(format_rp(r["sisa_omzet_bebas_pajak"], True)))
-        else:
+        elif r["bulan_mulai_kena_pajak"]:
             out.append("- Batas Rp500 juta bebas pajak sudah terlewati ({}).".format(r["bulan_mulai_kena_pajak"]))
+        else:
+            out.append("- Omzet tepat mencapai batas Rp500 juta: belum ada omzet yang kena pajak, tetapi mulai rupiah "
+                       "berikutnya seluruh omzet kena 0,5%.")
     out.append("- Sisa ruang sebelum batas Rp4,8 miliar: {}".format(
         format_rp(max(BATAS_OMZET_UMKM - r["omzet_kumulatif_tahun"], Decimal(0)), True)))
     out.append("")
@@ -388,6 +399,7 @@ def main(argv=None):
     p.add_argument("--file", help="CSV (kolom bulan;omzet;pph22) atau JSON sebagai ganti --omzet")
     p.add_argument("--omzet-sebelumnya", default="0",
                    help="Omzet kumulatif tahun ini SEBELUM bulan pertama data (default 0)")
+    p.add_argument("--hari-ini", help="Tanggal acuan untuk menandai batas setor yang sudah lewat (YYYY-MM-DD, default hari ini)")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
     a = p.parse_args(argv)
 
@@ -414,7 +426,13 @@ def main(argv=None):
                              parse_angka(pph22[i], "pph22 " + NAMA_BULAN[b - 1]) if i < len(pph22) else Decimal(0)))
         else:
             raise ValueError("isi omzet dengan --omzet atau --file")
-        hasil = hitung(data, a.jenis, a.tahun, parse_angka(a.omzet_sebelumnya, "omzet sebelumnya"))
+        try:
+            hari_ini = (datetime.datetime.strptime(a.hari_ini.strip(), "%Y-%m-%d").date() if a.hari_ini
+                        else datetime.date.today())
+        except ValueError:
+            raise ValueError("--hari-ini '{}' tidak valid (pakai format 2026-09-23)".format(a.hari_ini))
+        hasil = hitung(data, a.jenis, a.tahun, parse_angka(a.omzet_sebelumnya, "omzet sebelumnya"), hari_ini)
+        hasil["hari_ini"] = hari_ini.isoformat()
     except ValueError as e:
         sys.stderr.write("ERROR: {}\n".format(e))
         return 2

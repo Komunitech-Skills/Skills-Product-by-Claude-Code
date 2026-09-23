@@ -45,7 +45,7 @@ Jasa: 1 unit = 1 proyek/sesi; isi tenaga kerja (jam × tarif) dan overhead bulan
    Opsi: `--margin` / `--markup` (pilih satu), `--harga-jual`, `--bulatkan 1000`, `--susut 5`, `--satuan-produk pcs`, `--format json`.
 3. Tampilkan tabel rincian, ringkasan HPP, harga jual, dan BEP dari script **apa adanya**.
 4. Jelaskan singkat beda **margin vs markup** bila pengguna menyebut salah satunya, lalu beri 2–3 saran berbasis angka (mis. komponen biaya terbesar, dampak kenaikan harga bahan).
-5. Jika ada asumsi (upah pemilik belum dihitung, produksi per bulan diperkirakan), sebutkan di akhir.
+5. Jika ada asumsi (upah pemilik belum dihitung — script otomatis memberi catatan bila tidak ada data tenaga kerja; produksi per bulan diperkirakan), sebutkan di akhir. "Laba kotor" = harga − HPP, belum dikurangi biaya tetap lain di luar HPP.
 6. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tunjukkan tiap langkah, beri tahu bahwa hasil dihitung manual.
 
 ## Rumus (untuk hitung manual)
@@ -88,7 +88,7 @@ Pembulatan: rincian ditampilkan 2 desimal; harga rekomendasi dan BEP dibulatkan 
 - Bahan baku: Rp 24.575 | Tenaga kerja: Rp 15.000 | Overhead: Rp 3.750 | Kemasan: Rp 3.000 | Penyusutan: Rp 833,33
 - **HPP per loyang: Rp 47.158,33** (variabel Rp 45.075 + tetap dialokasikan Rp 2.083,33)
 - Target margin 40% -> harga = HPP / (1 - 40%) = Rp 78.597,22 (setara markup 66,67%)
-- **Harga rekomendasi: Rp 79.000** -> laba Rp 31.841,67 per loyang (margin 40,31%)
+- **Harga rekomendasi: Rp 79.000** -> laba kotor Rp 31.841,67 per loyang (margin 40,31%; belum dikurangi biaya tetap lain)
 - Biaya tetap bulanan Rp 550.000; margin kontribusi Rp 33.925/loyang
 - **BEP: 17 loyang per bulan**, atau omzet **Rp 1.280.767** per bulan (13,51% dari rencana produksi)
 💡 Dark chocolate (Rp 10.000/loyang) adalah bahan termahal; harga naik 10% menambah HPP Rp 1.000.

@@ -46,6 +46,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - `--counter-file nomor-invoice.json` → nomor urut per bulan disimpan di file itu (jalankan sekali per dokumen final).
    - `--html <file>` → versi HTML siap cetak (buka di browser → Cetak → Simpan sebagai PDF).
    - `--format json` → angka mentah.
+   - Kuitansi DP/cicilan: isi `pembayaran` dengan uang yang diterima sekarang; kuitansi menampilkan uang diterima, baris diterima & sisa belum dibayar, dan **satu** terbilang untuk uang yang diterima.
 3. Kirim bagian Markdown (di atas garis `---`) sebagai invoice. Bagian "Info untuk penjual" **jangan** ikut dikirim ke pembeli; sampaikan ke pengguna sebagai catatan (meterai, PPN, peringatan).
 4. Bila meterai wajib: ingatkan untuk menempel meterai Rp10.000 atau e-meterai sebelum tanda tangan.
 5. **Fallback tanpa Python:** hitung dengan rumus di bawah, tulis invoice dengan format yang sama, dan beri tahu pengguna bahwa angka dihitung manual (cek ulang sebelum dikirim).

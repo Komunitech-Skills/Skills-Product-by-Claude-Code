@@ -303,13 +303,20 @@ def hitung(d):
 
 
 # ---------------------------------------------------------------- output Markdown
+def md(x):
+    """Escape ringan karakter Markdown dari teks pengguna agar tabel/format tidak rusak."""
+    t = str(x if x is not None else "").replace("\r", " ").replace("\n", " ")
+    t = re.sub(r"([\\`*_\[\]<>|])", r"\\\1", t)
+    return re.sub(r"^([#>+-])", r"\\\1", t.strip())
+
+
 def blok_pihak(p):
-    baris = ["**{}**".format(p.get("nama"))]
+    baris = ["**{}**".format(md(p.get("nama")))]
     for k in ("alamat", "telepon", "email"):
         if p.get(k):
-            baris.append(str(p[k]))
+            baris.append(md(p[k]))
     if p.get("npwp"):
-        baris.append("NPWP: {}".format(p["npwp"]))
+        baris.append("NPWP: {}".format(md(p["npwp"])))
     return baris
 
 
@@ -317,19 +324,47 @@ def label_diskon(nilai, persen):
     return "{}{}".format(format_rp(nilai), " ({}%)".format(format_angka(persen)) if persen is not None else "")
 
 
+def label_bayar(h, p):
+    awal = "Diterima" if h["jenis_dokumen"] == "kuitansi" else "Sudah dibayar"
+    return "{}{}{}".format(awal, " - " + p["keterangan"] if p["keterangan"] else "",
+                           " ({})".format(tanggal_id(p["tanggal"])) if p["tanggal"] else "")
+
+
+def label_sisa(h):
+    return "SISA TAGIHAN" if h["jenis_dokumen"] == "invoice" else "Sisa belum dibayar"
+
+
+def tampil_sisa(h):
+    """Baris dibayar/sisa ditampilkan bila ada pembayaran (invoice) atau kuitansi tidak lunas penuh."""
+    if h["jenis_dokumen"] == "invoice":
+        return bool(h["pembayaran"])
+    return h["dibayar"] != h["total"]
+
+
+def teks_terbilang(h):
+    """Satu terbilang saja: kuitansi = uang yang diterima; invoice = sisa tagihan (bila ada DP) atau total."""
+    if h["jenis_dokumen"] == "kuitansi":
+        return h["terbilang_diterima"] or terbilang(0)
+    return terbilang(h["sisa"]) if h["pembayaran"] else h["terbilang_total"]
+
+
 def markdown(h, nomor):
     judul = "KUITANSI" if h["jenis_dokumen"] == "kuitansi" else "INVOICE"
     out = ["# {}".format(judul), ""]
-    info = "**No.:** {}  \n**Tanggal:** {}".format(nomor, tanggal_id(h["tanggal"]))
+    info = "**No.:** {}  \n**Tanggal:** {}".format(md(nomor), tanggal_id(h["tanggal"]))
     if h["jatuh_tempo"]:
         info += "  \n**Jatuh tempo:** {}".format(tanggal_id(h["jatuh_tempo"]))
     info += "  \n**Status:** {}".format(h["status"])
     out += [info, ""]
     if h["jenis_dokumen"] == "kuitansi":
-        out.append("Telah terima dari: **{}**  ".format(h["pembeli"]["nama"]))
+        out.append("Telah terima dari: **{}**  ".format(md(h["pembeli"]["nama"])))
         out.append("Uang sejumlah: **{}**  ".format(format_rp(h["dibayar"])))
-        out.append("Terbilang: _{}_  ".format(h["terbilang_diterima"] or terbilang(0)))
-        out.append("Untuk pembayaran: {}".format(", ".join(b["nama"] for b in h["baris"])))
+        out.append("Terbilang: _{}_  ".format(teks_terbilang(h)))
+        out.append("Untuk pembayaran: {}{}".format(", ".join(md(b["nama"]) for b in h["baris"]),
+                                                  "  " if h["sisa"] > 0 else ""))
+        if h["sisa"] > 0:
+            out.append("Sisa yang belum dibayar: **{}** dari total {}".format(
+                format_rp(h["sisa"]), format_rp(h["total"])))
         out.append("")
     out.append("**Dari:**  ")
     out.append("  \n".join(blok_pihak(h["penjual"])))
@@ -339,7 +374,7 @@ def markdown(h, nomor):
     out += ["", "| No | Deskripsi | Qty | Harga | Diskon | Jumlah |", "|---:|---|---:|---:|---:|---:|"]
     for b in h["baris"]:
         out.append("| {} | {} | {}{} | {} | {} | {} |".format(
-            b["no"], b["nama"].replace("|", "/"), format_angka(b["qty"]), " " + b["satuan"] if b["satuan"] else "",
+            b["no"], md(b["nama"]), format_angka(b["qty"]), " " + md(b["satuan"]) if b["satuan"] else "",
             format_rp(b["harga"], True), label_diskon(b["diskon"], b["diskon_persen"]) if b["diskon"] else "-",
             format_rp(b["jumlah"])))
     out.append("")
@@ -357,35 +392,33 @@ def markdown(h, nomor):
             out.append("| DPP nilai lain (11/12) | {} |".format(format_rp(p["dpp_nilai_lain"], True)))
         out.append("| PPN 12% | {} |".format(format_rp(p["ppn"])))
     out.append("| **TOTAL** | **{}** |".format(format_rp(h["total"])))
-    for p in h["pembayaran"]:
-        if h["jenis_dokumen"] == "invoice":
-            out.append("| Sudah dibayar{}{} | -{} |".format(
-                " - " + p["keterangan"] if p["keterangan"] else "",
-                " ({})".format(tanggal_id(p["tanggal"])) if p["tanggal"] else "", format_rp(p["jumlah"])))
-    if h["jenis_dokumen"] == "invoice" and h["pembayaran"]:
-        out.append("| **SISA TAGIHAN** | **{}** |".format(format_rp(h["sisa"])))
-    out.append("")
-    out.append("Terbilang: _{}_".format(terbilang(h["sisa"]) if h["jenis_dokumen"] == "invoice" and h["pembayaran"]
-                                        else h["terbilang_total"]))
+    if tampil_sisa(h):
+        for p in h["pembayaran"]:
+            out.append("| {} | -{} |".format(md(label_bayar(h, p)), format_rp(p["jumlah"])))
+        out.append("| **{}** | **{}** |".format(label_sisa(h), format_rp(h["sisa"])))
+    if h["jenis_dokumen"] == "invoice":
+        out.append("")
+        out.append("Terbilang: _{}_".format(teks_terbilang(h)))
     if h["termin"]:
         out += ["", "**Jadwal pembayaran**", "", "| Termin | Persen | Jumlah | Jatuh tempo |", "|---|---:|---:|---|"]
         for t in h["termin"]:
             out.append("| {} | {} | {} | {} |".format(
-                t["nama"], "{}%".format(format_angka(t["persen"])) if t["persen"] is not None else "-",
+                md(t["nama"]), "{}%".format(format_angka(t["persen"])) if t["persen"] is not None else "-",
                 format_rp(t["jumlah"]), tanggal_id(t["jatuh_tempo"]) if t["jatuh_tempo"] else "-"))
     if h["rekening"] and h["sisa"] > 0:
         out += ["", "**Pembayaran ke:**"]
         for r in h["rekening"]:
-            out.append("- {} {} a.n. {}".format(r.get("bank", ""), r.get("nomor", ""), r.get("atas_nama", "")))
+            out.append("- {} {} a.n. {}".format(md(r.get("bank", "")), md(r.get("nomor", "")),
+                                                md(r.get("atas_nama", ""))))
     if h["catatan"]:
-        out += ["", "**Catatan:** " + h["catatan"]]
+        out += ["", "**Catatan:** " + md(h["catatan"])]
     tt = h["tanda_tangan"]
-    out += ["", "{}{}".format(tt.get("kota") + ", " if tt.get("kota") else "", tanggal_id(h["tanggal"]))]
+    out += ["", "{}{}".format(md(tt.get("kota")) + ", " if tt.get("kota") else "", tanggal_id(h["tanggal"]))]
     if h["meterai"]["wajib"]:
         out.append("[ Meterai Rp10.000 ]")
-    out += ["", "", "**{}**".format(tt.get("nama") or h["penjual"]["nama"])]
+    out += ["", "", "**{}**".format(md(tt.get("nama") or h["penjual"]["nama"]))]
     if tt.get("jabatan"):
-        out.append(tt["jabatan"])
+        out.append(md(tt["jabatan"]))
     return "\n".join(out)
 
 
@@ -448,19 +481,19 @@ def html_dok(h, nomor):
                 e(format_rp(p["dpp_nilai_lain"], True)))
         rk += "<tr><td>PPN 12%</td><td class='kanan'>{}</td></tr>".format(e(format_rp(p["ppn"])))
     rk += "<tr class='total'><td>TOTAL</td><td class='kanan'>{}</td></tr>".format(e(format_rp(h["total"])))
-    if h["jenis_dokumen"] == "invoice" and h["pembayaran"]:
+    if tampil_sisa(h):
         for p in h["pembayaran"]:
-            rk += "<tr><td>Sudah dibayar{}{}</td><td class='kanan'>-{}</td></tr>".format(
-                e(" - " + p["keterangan"]) if p["keterangan"] else "",
-                e(" (" + tanggal_id(p["tanggal"]) + ")") if p["tanggal"] else "", e(format_rp(p["jumlah"])))
-        rk += "<tr class='total'><td>SISA TAGIHAN</td><td class='kanan'>{}</td></tr>".format(e(format_rp(h["sisa"])))
+            rk += "<tr><td>{}</td><td class='kanan'>-{}</td></tr>".format(e(label_bayar(h, p)), e(format_rp(p["jumlah"])))
+        rk += "<tr class='total'><td>{}</td><td class='kanan'>{}</td></tr>".format(e(label_sisa(h)), e(format_rp(h["sisa"])))
     kuit = ""
     if h["jenis_dokumen"] == "kuitansi":
+        sisa = ("<br>Sisa yang belum dibayar: <strong>{}</strong> dari total {}".format(
+            e(format_rp(h["sisa"])), e(format_rp(h["total"]))) if h["sisa"] > 0 else "")
         kuit = ("<p class='kecil'>Telah terima dari: <strong>{}</strong><br>Uang sejumlah: <strong>{}</strong><br>"
-                "Terbilang: <em>{}</em><br>Untuk pembayaran: {}</p>").format(
-            e(pb.get("nama")), e(format_rp(h["dibayar"])), e(h["terbilang_diterima"] or terbilang(0)),
-            e(", ".join(b["nama"] for b in h["baris"])))
-    tb = terbilang(h["sisa"]) if h["jenis_dokumen"] == "invoice" and h["pembayaran"] else h["terbilang_total"]
+                "Terbilang: <em>{}</em><br>Untuk pembayaran: {}{}</p>").format(
+            e(pb.get("nama")), e(format_rp(h["dibayar"])), e(teks_terbilang(h)),
+            e(", ".join(b["nama"] for b in h["baris"])), sisa)
+    tb = "<p class='terbilang'>Terbilang: {}</p>".format(e(teks_terbilang(h))) if h["jenis_dokumen"] == "invoice" else ""
     termin = ""
     if h["termin"]:
         termin = "<p class='label'>Jadwal pembayaran</p><table class='item'><tr><th>Termin</th><th class='kanan'>Persen</th>" \
@@ -489,10 +522,10 @@ def html_dok(h, nomor):
 {kuit}<div class="pihak"><div><div class="label">Kepada</div>{pembeli}</div></div>
 <table class="item"><tr><th>No</th><th>Deskripsi</th><th class="kanan">Qty</th><th class="kanan">Harga</th>
 <th class="kanan">Diskon</th><th class="kanan">Jumlah</th></tr>{rows}</table>
-<table class="ringkas">{rk}</table><p class="terbilang">Terbilang: {tb}</p>
+<table class="ringkas">{rk}</table>{tb}
 {termin}{rek}{cat}{ttd}</div></body></html>
 """.format(judul=judul, nomor=e(nomor), css=CSS, penjual=pihak(pj), info=info, status=e(h["status"]), kuit=kuit,
-           pembeli=pihak(pb), rows=rows, rk=rk, tb=e(tb), termin=termin, rek=rek, cat=cat, ttd=ttd)
+           pembeli=pihak(pb), rows=rows, rk=rk, tb=tb, termin=termin, rek=rek, cat=cat, ttd=ttd)
 
 
 # ---------------------------------------------------------------- CLI
@@ -566,8 +599,9 @@ def main(argv=None):
         print("Info untuk penjual (jangan ikut dikirim):")
         print("- Bea meterai: " + h["meterai"]["pesan"])
         if h["ppn"]:
-            print("- PPN dihitung dengan DPP nilai lain 11/12 (PMK 131/2024, berlaku per {}), dibulatkan ke bawah. "
-                  "Invoice ini bukan faktur pajak; buat faktur pajak di Coretax.".format(TANGGAL_ATURAN))
+            print("- PPN dihitung dengan DPP nilai lain 11/12 (PMK 131/2024, berlaku per {}): dari DPP persis lalu "
+                  "dibulatkan ke bawah sekali. Pembulatan ini belum dicocokkan dengan Coretax; bila berbeda, ikuti "
+                  "Coretax. Invoice ini bukan faktur pajak; buat faktur pajak di Coretax.".format(TANGGAL_ATURAN))
         print("- Pembulatan: jumlah baris & diskon dibulatkan ke rupiah terdekat.")
         for w in h["peringatan"]:
             print("- PERHATIAN: " + w)

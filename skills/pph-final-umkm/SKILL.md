@@ -41,6 +41,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - Badan: `--jenis badan --jenis-badan pt-perorangan|koperasi|cv|firma|pt|lainnya`.
    - PPh 22 marketplace: `--pph22 0 0 250rb ...` (urutan sama dengan omzet).
    - Dari file: `--file omzet.csv` (kolom `bulan`, `omzet`, opsional `pph22`).
+   - `--hari-ini 2026-09-23` untuk menentukan tanggal acuan (default hari ini); bulan dengan PPh > 0 yang batas setornya sudah lewat ditandai "SUDAH LEWAT".
    - `--format json` untuk angka mentah.
 3. Salin tabel & ringkasan dari script apa adanya. Tambahkan 1–2 kalimat penjelasan dengan bahasa sederhana (mis. "Bulan Juni omzet Anda melewati Rp500 juta, jadi hanya Rp45 juta yang kena pajak").
 4. Selalu sertakan catatan penting dan disclaimer dari output.

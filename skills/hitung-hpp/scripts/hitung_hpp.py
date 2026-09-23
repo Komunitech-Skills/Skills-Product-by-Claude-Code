@@ -469,19 +469,19 @@ def teks(h, hg):
                 format_persen(m["persen"]), format_persen(m["persen"]), format_rp(m["harga_tepat"], True),
                 format_persen(m["setara_margin_persen"])))
         r = hg["harga_rekomendasi"]
-        out.append("- **Harga rekomendasi: {}** -> laba {} per {} (margin {}, markup {})".format(
+        out.append("- **Harga rekomendasi: {}** -> laba kotor {} per {} (margin {}, markup {})".format(
             format_rp(r["harga"]), format_rp(r["laba_per_unit"], True), s,
             format_persen(r["margin_persen"]) if r["margin_persen"] is not None else "-",
             format_persen(r["markup_persen"]) if r["markup_persen"] is not None else "-"))
     if hg.get("harga_saat_ini"):
         r = hg["harga_saat_ini"]
-        out.append("- Harga saat ini {}: laba {} per {} (margin {}, markup {}){}".format(
+        out.append("- Harga saat ini {}: laba kotor {} per {} (margin {}, markup {}){}".format(
             format_rp(r["harga"], True), format_rp(r["laba_per_unit"], True), s,
             format_persen(r["margin_persen"]), format_persen(r["markup_persen"]) if r["markup_persen"] is not None else "-",
             " - RUGI!" if r["laba_per_unit"] < 0 else ""))
     if hg.get("pilihan_margin"):
         out += ["Target margin belum ditentukan. Pilihan harga:", "",
-                "| Target margin | Harga jual | Laba per {} | Markup setara | BEP per bulan |".format(s),
+                "| Target margin | Harga jual | Laba kotor per {} | Markup setara | BEP per bulan |".format(s),
                 "|---:|---:|---:|---:|---:|"]
         for r in hg["pilihan_margin"]:
             b = r["bep"]
@@ -573,7 +573,12 @@ def main(argv=None):
         "Biaya 'per bulan' dan penyusutan dibagi ke produksi per bulan. Jika penjualan lebih sedikit dari itu, "
         "HPP per unit sebenarnya naik.",
         "Margin = laba / harga jual. Markup = laba / HPP. Margin 30% setara markup 42,86%.",
+        "'Laba kotor' = harga jual - HPP per unit. Angka ini BELUM dikurangi biaya tetap lain di luar HPP "
+        "(mis. admin, internet, marketing) dan belum dikurangi pajak; biaya tetap lain sudah diperhitungkan di BEP.",
     ]
+    if not (d.get("tenaga_kerja") or []):
+        catatan.insert(0, "Upah/gaji pemilik dan tenaga kerja BELUM dihitung (tidak ada data tenaga kerja). Jika Anda "
+                          "mengerjakan sendiri, masukkan upah wajar per jam agar HPP tidak terlalu rendah.")
     if a.format == "json":
         print(json.dumps({"hpp": h, "harga": hg, "catatan": catatan}, default=ke_json, ensure_ascii=False, indent=2))
     else:

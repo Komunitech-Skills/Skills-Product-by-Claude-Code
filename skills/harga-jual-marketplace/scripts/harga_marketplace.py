@@ -30,6 +30,8 @@ from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP, InvalidOperation
 TANGGAL_ATURAN = "2026-09-23"
 TARIF_PPH22 = Decimal("0.5")
 BATAS_ATAS_HARGA = Decimal(10) ** 12
+PERINGATAN_CONTOH = ("ANGKA CONTOH: persentase biaya platform di hasil ini berasal dari template contoh, BUKAN tarif "
+                     "resmi. Ganti dengan angka terbaru dari Seller Center masing-masing sebelum memakai harga ini.")
 
 
 # ---------------------------------------------------------------- angka & format
@@ -457,6 +459,10 @@ def main(argv=None):
         return 2
 
     catatan = []
+    angka_contoh = bool(cfg.get("angka_contoh")) or any(
+        "(contoh" in pf["nama"].lower() for pf in daftar)
+    if angka_contoh:
+        catatan.insert(0, PERINGATAN_CONTOH)
     if modal == 0:
         catatan.append("Modal diisi Rp 0. Pastikan ini benar; tanpa modal, harga minimal hanya menutup biaya platform.")
     if asumsi_target:
@@ -482,9 +488,14 @@ def main(argv=None):
 
     if a.format == "json":
         print(json.dumps({"modal": modal, "target": {"jenis": target[0], "nilai": target[1]},
-                          "target_asumsi": asumsi_target, "hasil": hasil, "catatan": catatan},
+                          "target_asumsi": asumsi_target, "angka_contoh": angka_contoh,
+                          "peringatan": PERINGATAN_CONTOH if angka_contoh else None,
+                          "hasil": hasil, "catatan": catatan},
                          default=ke_json, ensure_ascii=False, indent=2))
     else:
+        if angka_contoh:
+            print("> **!!! " + PERINGATAN_CONTOH + " !!!**")
+            print("")
         print(teks_hasil(hasil, modal, target, kelipatan, catatan))
     return 0
 
