@@ -91,6 +91,17 @@ Sumber: repo GitHub, skills.sh, ClawHub, Hermes Skills Hub, anthropics/skills, d
 
 Untuk SETIAP skill, catat di `research/sources/`: nama, URL, pembuat, tanggal update terakhir, **lisensi**, dan keputusan.
 
+**Hanya kurasi skill yang TERBUKTI, bukan AI slop.** Kandidat wajib lolos minimal 3 sinyal bukti pemakaian nyata:
+- Popularitas: jumlah instal/unduhan tinggi di ClawHub/skills.sh (peringkat atas di kategorinya), atau bintang GitHub tinggi (acuan: ≥ 500 untuk repo koleksi, ≥ 100 untuk repo satu skill).
+- Umur & perawatan: dirilis ≥ 3 bulan lalu dan masih diperbarui; ada riwayat commit bertahap, bukan puluhan skill muncul dalam beberapa hari.
+- Dipakai komunitas: ada issue/PR dari orang lain, fork aktif, disebut di daftar kurasi (awesome-list), artikel, atau dokumentasi resmi.
+- Pembuat kredibel: organisasi/vendor resmi (mis. Anthropic, OpenAI, Vercel) atau pengembang dengan rekam jejak.
+- Kualitas isi: instruksi spesifik & teruji (ada contoh nyata, script dengan tes), bukan teks generik.
+
+**Tanda AI slop (tolak):** puluhan–ratusan skill dibuat dalam hitungan hari, isi generik/berulang antar skill, klaim tanpa contoh, tidak ada tes, tidak ada pemakai lain, README mengakui belum divalidasi.
+
+**ATM = Amati, Tiru, Modifikasi dengan nilai tambah BESAR.** Ambil struktur/alur yang terbukti, lalu wajib tambahkan minimal: lokalisasi penuh konteks Indonesia (bahasa, regulasi, Rupiah, marketplace/WA), contoh kasus lokal, script/perhitungan yang teruji, penanganan input awam, dan dokumentasi pembeli. Hasilnya harus menang telak di uji banding melawan skill sumbernya.
+
 **Aturan lisensi (tidak boleh dilanggar):**
 - **MIT / MIT-0 / BSD** → boleh dimodifikasi & dijual. Sertakan atribusi dan teks lisensi asli (MIT-0 tidak wajib atribusi, tapi tetap dicatat).
 - **Apache-2.0** → boleh, dengan teks lisensi, atribusi, file `NOTICE` asli (jika ada), dan keterangan bahwa file telah diubah.
