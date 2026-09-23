@@ -1,0 +1,165 @@
+---
+name: presentasi-instan
+description: Membuat presentasi/pitch deck Indonesia sebagai satu file HTML mandiri yang bisa dibuka di browser laptop/HP tanpa internet dan tanpa PowerPoint/Canva, lalu dicetak jadi PDF lewat menu Print. Gunakan saat pengguna minta dibuatkan presentasi, slide, pitch deck, materi presentasi, proposal presentasi, company profile, atau presentation/slides untuk investor, bank/KUR, klien B2B, reseller, atasan, atau pelatihan karyawan.
+---
+
+# Presentasi Instan
+
+Mengubah poin-poin dari pengguna menjadi presentasi HTML siap pakai — satu file,
+tanpa instalasi, tanpa internet setelah file jadi, langsung bisa dibuka di browser
+laptop atau HP dan dicetak ke PDF.
+
+## Kapan digunakan
+- Pengguna minta dibuatkan presentasi/pitch deck/slide untuk investor, bank/KUR, klien
+  B2B, reseller, atasan/owner, profil perusahaan, atau pelatihan karyawan.
+- Pengguna sudah punya poin-poin/notes dan ingin diubah jadi slide rapi.
+- Pengguna hanya punya topik dan minta dibuatkan kerangka + isi presentasinya.
+
+## Kapan TIDAK digunakan
+- Pengguna secara eksplisit minta file `.pptx` (PowerPoint) — skill ini menghasilkan
+  HTML, jelaskan itu ke pengguna; jika environment punya skill/alat pembuat `.pptx`
+  terpisah, arahkan ke sana.
+- Menghitung HPP, harga jual, PPN, atau laporan keuangan dari nol → pakai skill
+  `hitung-hpp`, `harga-jual-marketplace`, `hitung-ppn`, atau `laporan-keuangan-emkm`
+  lebih dulu, lalu hasil angkanya **dimasukkan** ke presentasi ini (lihat bagian
+  "Integrasi dengan skill lain").
+- Menulis surat penawaran formal satu halaman (bukan slide) → pakai skill
+  `surat-penawaran-harga`.
+- Menulis perjanjian/kontrak kerja sama → pakai skill `perjanjian-sederhana`.
+
+## Input
+
+| Info | Wajib? | Default jika tidak diberikan |
+|---|---|---|
+| Untuk apa presentasi ini (konteks/tujuan) | Ya | — (tanyakan) |
+| Isi/poin-poin yang mau dimasukkan | Tidak | Buat kerangka + isi contoh berlabel jelas "contoh — sesuaikan", minta pengguna melengkapi |
+| Perkiraan jumlah slide / durasi presentasi | Tidak | Ikuti patokan per konteks di `references/aturan-desain.md` #8 |
+| Warna/logo brand | Tidak | Pakai salah satu palet netral di `references/aturan-desain.md` #5 |
+| Rencana pemakaian: ditampilkan di layar saja / dicetak ke PDF / dua-duanya | Tidak | Buat untuk dua-duanya (mode cetak selalu disertakan) |
+
+Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan
+singkat bernomor (maksimal 5 pertanyaan total, gabungkan baris di atas menjadi
+pertanyaan yang wajar, jangan tanya satu-satu). Contoh gabungan pertanyaan:
+
+1. Presentasi ini untuk apa? (mis. pitch ke investor, proposal ke perusahaan lain,
+   pengajuan KUR/bank, laporan bulanan ke atasan, profil perusahaan, penawaran ke
+   reseller, atau materi pelatihan karyawan)
+2. Boleh kirim poin-poin isinya, atau saya buatkan dulu kerangkanya dari topik saja?
+3. Kira-kira berapa slide / berapa lama presentasinya?
+4. Ada warna atau logo brand yang mau dipakai?
+5. Nanti dipakai untuk ditampilkan di layar, dicetak jadi PDF, atau dua-duanya?
+
+Jika pengguna terlihat ingin cepat ("buatkan aja", "yang penting jadi"), langsung
+pakai default masuk akal di atas dan sebutkan asumsi yang dipakai di ringkasan akhir.
+
+## Langkah kerja
+
+1. **Tentukan jenis presentasi** dari jawaban pengguna, lalu baca template yang sesuai
+   di `templates/`: `pitch-investor.md`, `proposal-b2b.md`, `pengajuan-kur.md`,
+   `laporan-bulanan.md`, `profil-perusahaan.md`, `produk-ke-reseller.md`, atau
+   `pelatihan-karyawan.md`. Jika tidak ada yang cocok persis, gabungkan struktur yang
+   paling dekat lalu sesuaikan dengan konteks pengguna.
+2. **Susun outline slide** mengikuti struktur di template terpilih, isi dengan konten
+   dari pengguna. Jika pengguna hanya memberi topik, buat isi contoh yang masuk akal
+   untuk konteks itu dan **tandai jelas** bagian yang perlu diisi pengguna (mis.
+   `[isi nama perusahaan Anda]`).
+3. **Baca `references/aturan-desain.md`** dan terapkan: batas kata per slide, kontras
+   warna, tumpukan font aman, palet warna, format Rupiah, jumlah slide wajar.
+4. **Baca `references/kerangka-html.md`** dan gunakan kerangkanya sebagai dasar file
+   HTML tunggal. Isi variabel warna/font sesuai palet yang dipilih (langkah 3), isi
+   tiap `<section class="slide">` dengan konten dari langkah 2.
+   - Semua CSS & JavaScript tetap inline di file yang sama — **jangan** menambahkan
+     `<link>`/`<script src>` ke internet.
+   - Jika ada logo/gambar dari pengguna, sisipkan sebagai `base64` (lihat
+     `kerangka-html.md` aturan #3).
+   - Format setiap angka uang sebagai `Rp 1.250.000` (lihat `aturan-desain.md` #6).
+5. **Simpan sebagai satu file `.html`** (nama file singkat, tanpa spasi, mis.
+   `pitch-usahaku.html`).
+6. **Validasi otomatis**, jalankan (Windows: ganti `python3` dengan `python` atau `py`):
+   ```
+   python3 <folder-skill-ini>/scripts/validasi_html.py <file.html>
+   ```
+   - Jika ada **ERROR** (mis. masih ada rujukan internet, atau `@media print` hilang),
+     perbaiki HTML lalu jalankan ulang sampai lulus.
+   - Jika ada **peringatan** (mis. slide terlalu padat teks), pertimbangkan
+     memperbaikinya; boleh dikirim ke pengguna apa adanya jika pengguna memang minta
+     konten sepadat itu, tapi sebutkan peringatannya.
+   - Jika Python tidak bisa dijalankan di lingkungan pengguna, periksa manual: pastikan
+     tidak ada teks `http://`/`https://` di dalam file, ada blok `@media print`, dan
+     tidak ada slide yang terlihat penuh sesak — lalu beri tahu pengguna bahwa
+     pengecekan otomatis dilewati.
+7. **Sampaikan hasil ke pengguna** mengikuti format output di bawah.
+
+## Format output
+
+```
+Presentasi [judul] sudah jadi: [nama-file.html] ([jumlah] slide)
+
+Cara pakai:
+- Buka file-nya dua kali klik, atau tarik ke jendela browser (Chrome/Edge/Safari) — bisa dibuka di laptop maupun HP, tanpa internet.
+- Navigasi: tombol panah kiri/kanan atau geser jari (di HP), atau klik tombol ‹ › di bawah layar.
+- Cetak jadi PDF: buka file → Ctrl+P (Windows) / Cmd+P (Mac) → pilih "Simpan sebagai PDF"/"Save as PDF" → orientasi Lanskap.
+
+Asumsi yang dipakai (kalau ada): [...]
+Bagian yang masih perlu Anda lengkapi (kalau ada): [...]
+Hasil cek otomatis: [ringkasan LULUS/ada peringatan dari validasi_html.py]
+```
+
+## Contoh
+
+**Input pengguna:** "Buatkan presentasi untuk pengajuan KUR ke BRI. Usaha saya warung
+sembako, sudah jalan 4 tahun, omzet rata-rata Rp 35.000.000/bulan. Mau pinjam Rp
+50.000.000 untuk nambah stok dan gerobak keliling."
+
+**Output (ringkas):**
+```
+Presentasi Pengajuan KUR - Warung Sembako sudah jadi: pengajuan-kur-warung.html (10 slide)
+
+Cara pakai:
+- Buka file-nya dua kali klik, bisa dibuka di laptop maupun HP, tanpa internet.
+- Cetak jadi PDF: Ctrl+P / Cmd+P → Simpan sebagai PDF → orientasi Lanskap.
+
+Asumsi yang dipakai: warna palet "Hijau Amanah" (belum ada warna brand disebutkan), 
+jumlah karyawan & alamat usaha ditulis sebagai [isi data Anda] karena belum diberikan.
+
+Perlu Anda lengkapi: jumlah karyawan, alamat usaha, dan legalitas usaha (NIB/NPWP jika ada).
+
+Catatan: presentasi ini pelengkap, bukan pengganti formulir resmi KUR — cek syarat 
+terbaru ke bank/penyalur KUR yang dituju.
+
+Hasil cek otomatis: LULUS, tanpa peringatan.
+```
+
+## Integrasi dengan skill lain (opsional)
+
+Jika pengguna sudah punya hasil dari skill lain di library ini, tawarkan untuk
+memasukkan angkanya ke slide alih-alih menghitung ulang manual:
+- **`rekap-penjualan-csv`** → angka omzet, produk terlaris, tren penjualan untuk slide
+  "Traksi" (pitch investor), "Omzet & histori penjualan" (KUR), atau "Rincian kinerja"
+  (laporan bulanan).
+- **`laporan-keuangan-emkm`** → ringkasan laba-rugi untuk slide "Proyeksi keuangan"
+  atau "Capaian vs target".
+- **`hitung-hpp`** → dasar perhitungan margin untuk slide "Perkiraan margin keuntungan"
+  di template `produk-ke-reseller.md`.
+
+## Checklist sebelum mengirim hasil
+- [ ] Semua angka Rupiah format `Rp 1.250.000`, tidak ada angka yang dikarang.
+- [ ] Tidak ada `<link>`/`<script src>` ke internet — sudah dicek `validasi_html.py`.
+- [ ] Ada blok `@media print` dan sudah dicoba tampilannya masuk akal.
+- [ ] Tidak ada klaim tanpa dasar (halal, BPOM, "terlaris") kecuali diberikan pengguna.
+- [ ] Bagian yang belum terisi ditandai jelas, bukan dikarang seolah-olah data asli.
+
+## Batasan & penanganan error
+- **Bukan pengganti PowerPoint/Canva penuh** — tidak ada transisi 3D, tidak ada
+  animasi kompleks; fokus pada kerapian, keterbacaan, dan kemudahan pakai tanpa
+  instalasi. Jika pengguna butuh fitur PowerPoint spesifik (mis. edit di Microsoft
+  Office, mode presenter dua layar bawaan PowerPoint), jelaskan keterbatasan ini.
+- **File gambar/logo besar** membuat ukuran HTML membesar (karena disisipkan base64).
+  Jika pengguna memberi banyak foto beresolusi tinggi, sarankan mengecilkan ukurannya
+  dulu atau batasi ke logo + 1-2 foto produk penting saja.
+- **Jika Python tidak tersedia** untuk menjalankan `validasi_html.py`, tetap lanjutkan
+  memberi file presentasi ke pengguna, tapi sebutkan bahwa pengecekan otomatis
+  dilewati dan lakukan pengecekan manual sesuai langkah 6.
+- **Di luar cakupan:** presentasi bahasa asing selain Indonesia (bisa dibuat jika
+  pengguna minta eksplisit, tapi bukan default), pembuatan video, atau publikasi ke
+  hosting/link publik — skill ini murni menghasilkan file lokal.
