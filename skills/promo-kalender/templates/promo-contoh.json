@@ -1,0 +1,14 @@
+{
+  "keterangan": "Contoh kampanye 11.11. Angka biaya platform hanya CONTOH — cek angka terbaru di Seller Center.",
+  "biaya_platform": "10",
+  "biaya_per_pesanan": "1.250",
+  "anggaran_kampanye": "Rp 750.000",
+  "produk": [
+    {"produk": "Kaos Polos Hitam", "harga_normal": "Rp 89.000", "hpp": "Rp 52.000",
+     "diskon_persen": "20", "target_unit": "120", "unit_normal": "50"},
+    {"produk": "Paket 3 Kaos", "harga_normal": "Rp 89.000", "hpp": "Rp 52.000",
+     "bundling": "3=Rp 229.000", "target_unit": "60"},
+    {"produk": "Totebag Kanvas", "harga_normal": "Rp 45.000", "hpp": "Rp 30.000",
+     "harga_promo": "Rp 33.000", "subsidi_ongkir": "Rp 5.000", "target_unit": "40"}
+  ]
+}

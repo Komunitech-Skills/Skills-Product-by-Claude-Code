@@ -1,0 +1,106 @@
+---
+name: foto-produk-brief
+description: Membuat brief & shot list foto/video produk dengan HP tanpa studio — foto wajib marketplace (utama latar polos, detail, ukuran/skala, cara pakai, kemasan, varian), properti murah, cahaya jendela, sudut, rasio 1:1/3:4/9:16, pengaturan kamera, ide video 15-30 detik dengan storyboard, dan checklist sebelum upload. Gunakan saat diminta cara foto produk pakai HP, shot list, product photography brief, product video ideas. Judul & deskripsi produk pakai listing-marketplace.
+---
+
+# Brief Foto & Video Produk dengan HP
+
+## Tujuan
+Memberi pengguna (atau staf/fotografer freelance) **satu lembar kerja siap eksekusi**: foto apa saja yang diambil, dari sudut mana, dengan latar & cahaya apa, rasio berapa, urutan upload, plus ide video pendek — cukup dengan HP, jendela, dan properti murah. Hasil akhirnya: foto yang jujur (sesuai barang asli) dan lengkap menjawab pertanyaan pembeli.
+
+## Kapan digunakan
+- "Gimana cara foto produk saya biar bagus di Shopee? Cuma punya HP."
+- "Bikinin shot list foto untuk produk baru", "ide video 15 detik buat TikTok Shop".
+- Brief untuk staf/fotografer/teman yang membantu memotret.
+- Setelah analisis ulasan menemukan keluhan "tidak sesuai foto" atau "ukuran tidak jelas".
+
+## Kapan TIDAK digunakan
+- Menulis judul/deskripsi/SEO produk → `listing-marketplace`; caption posting → `caption-sosmed-umkm`.
+- Naskah live jualan → `naskah-live-jualan`; jadwal konten sebulan → `kalender-konten-30hari`.
+- Mengedit/menghasilkan gambar secara langsung: skill ini membuat brief, bukan mengolah file foto.
+
+## Input
+| Info | Wajib? | Default jika tidak diberikan |
+|---|---|---|
+| Produk (apa, bentuk, ukuran kira-kira, bahan/warna) | Ya | — (tanyakan) |
+| Kategori | Tidak | Ditebak dari produk (kuliner, fashion, kecantikan, elektronik/aksesori, rumah/kerajinan, minuman) |
+| Tempat jualan | Tidak | Marketplace (Shopee/Tokopedia/TikTok Shop) + Instagram/TikTok |
+| Jumlah varian (warna/rasa/ukuran) | Tidak | 1 varian; jika banyak, tambah foto jajaran varian |
+| Alat yang dimiliki (tripod, lampu, HP) | Tidak | HP saja + jendela + properti rumah |
+| Keluhan pembeli yang ingin dijawab foto | Tidak | — |
+| Gaya/warna brand | Tidak | Bersih, terang, natural |
+
+Jika produk belum jelas, tanyakan **sekali** (maks. 5 pertanyaan bernomor): produk & ukurannya, kategori/varian, jualan di mana, alat yang dimiliki, pertanyaan yang paling sering ditanya pembeli. Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya.
+
+## Langkah kerja
+1. **Tentukan kategori** dan ambil shot list dasar + catatan khusus kategori dari `references/shot-list-kategori.md`.
+2. **Susun shot list** 8–10 foto (bukan lebih): foto wajib marketplace (tabel di bawah) disesuaikan dengan produk. Setiap foto harus menjawab satu pertanyaan pembeli (Seperti apa? Sebesar apa? Bahannya? Cara pakai? Dapat apa saja?).
+3. **Tulis setup** dari `references/teknik-hp.md`: lokasi dekat jendela & jam, latar, pantulan cahaya, properti murah (hanya yang relevan), pengaturan HP.
+4. **Tentukan rasio per kegunaan**: 1:1 untuk foto marketplace; 3:4 (atau 4:5 untuk feed Instagram) untuk feed; 9:16 untuk Story/Reels/TikTok/video. Sarankan memotret dengan ruang kosong di sekeliling produk agar bisa dipotong ke beberapa rasio.
+5. **Buat 2–3 ide video 15–30 detik** dengan storyboard per detik (`references/ide-video.md`): hook 0–3 detik, isi, penutup/CTA, teks layar, suara.
+6. **Tambahkan checklist sebelum upload** (`templates/checklist-upload.md`) dan urutan upload + penamaan file.
+7. Periksa checklist di bawah sebelum mengirim.
+
+### Foto wajib marketplace (urutan upload yang disarankan)
+| Slot | Foto | Menjawab | Aturan kunci |
+|---|---|---|---|
+| 1 | **Foto utama**: produk utuh, latar polos putih/terang, lurus sedikit dari atas | "Barangnya seperti apa?" | Rasio 1:1, produk mengisi ±70–85% bingkai, tanpa teks promo/kontak/watermark besar, warna sesuai aslinya |
+| 2 | Sudut lain: samping/belakang/45° | "Bagian lain?" | Latar sama dengan foto utama |
+| 3 | **Detail** close-up bahan/tekstur/isi | "Kualitasnya?" | Fokus tajam, tanpa zoom digital |
+| 4 | **Ukuran & skala**: dipegang tangan / di samping benda umum / dengan meteran + angka ukuran | "Sebesar apa?" | Angka ukuran = ukuran asli yang diukur |
+| 5 | **Cara pakai / sedang dipakai** (lifestyle) | "Cocok untuk saya?" | Suasana nyata, properti tidak menutupi produk |
+| 6 | **Isi paket & kemasan** | "Dapat apa saja?" | Semua isi terlihat, sesuai yang dikirim |
+| 7 | **Varian** berjajar (warna/rasa/ukuran) | "Pilihannya apa?" | Diberi label nama varian, pencahayaan sama |
+| 8 | Label/komposisi/informasi kemasan (jika ada) | "Aman? Isinya apa?" | Foto label asli; jangan menambah klaim (BPOM/halal/SNI) yang tidak dimiliki |
+| 9 | Infografik keunggulan (opsional) | "Kenapa pilih ini?" | Teks singkat 3–4 poin, fakta dari pengguna |
+
+## Format output
+```
+# Brief Foto & Video — <produk>
+**Tujuan:** <marketplace/sosmed> | **Waktu sesi:** ±60–90 menit | **Lokasi & jam:** <dekat jendela, jam ...>
+
+## 1. Persiapan (alat & properti)
+- [ ] ... (hanya yang relevan, sebut alternatif gratis/murah)
+
+## 2. Setup cahaya & pengaturan HP
+Posisi jendela–produk–pemantul (sketsa teks), pengaturan kamera langkah demi langkah.
+
+## 3. Shot list
+| No | Nama foto | Dipakai di (slot/platform) | Rasio | Sudut & jarak | Latar & properti | Catatan |
+
+## 4. Ide video 15–30 detik
+**Video 1 — <judul>** (9:16, <durasi>)
+| Detik | Gambar | Teks di layar | Suara |
+
+## 5. Checklist sebelum upload
+## 6. Urutan upload & nama file
+```
+
+## Contoh
+**Input pengguna:** "Saya jual sambal botol 150 ml, 3 varian level pedas. Mau foto sendiri pakai HP buat Shopee dan TikTok."
+
+**Output (dipersingkat):**
+```
+## 3. Shot list
+| 1 | Foto utama botol level 2 | Shopee slot 1 | 1:1 | Setinggi botol, sedikit dari atas (±15°), jarak ±40 cm, zoom 2x | Karton putih melengkung, pemantul styrofoam kanan | Label menghadap lurus, tutup bersih dari minyak |
+| 3 | Detail tekstur sambal | slot 3 + Reels | 1:1 & 9:16 | Sendok mengangkat sambal, close-up 45° | Piring putih polos | Tunjukkan potongan cabai & minyak asli, tanpa filter |
+| 4 | Skala | slot 4 | 1:1 | Botol dipegang tangan dewasa | Latar putih | Tambah teks "150 ml • tinggi ±12 cm" (ukur dulu) |
+## 4. Video 1 — "Sendok pertama" (9:16, 15 detik)
+| 0–2 | Tutup botol dibuka, bunyi "klik" | "Level 3 ini beneran pedes" | Suara asli |
+| 3–9 | Sambal dituang ke nasi hangat, uap terlihat | "Cabai asli, bukan bubuk" (hanya jika benar) | Suara asli + musik pelan |
+| 10–15 | Tiga botol berjajar + tangan menunjuk level | "Pilih level kamu → keranjang kuning" | Musik |
+```
+
+## Checklist sebelum mengirim hasil
+- [ ] Shot list 8–10 foto, masing-masing menjawab satu pertanyaan pembeli; foto utama latar polos 1:1.
+- [ ] Setup bisa dikerjakan dengan HP + jendela + properti murah/gratis; tidak mewajibkan alat mahal.
+- [ ] Rasio & kegunaan setiap foto/video jelas (1:1, 3:4/4:5, 9:16).
+- [ ] Ada ide video 15–30 detik dengan storyboard per detik, hook di 3 detik pertama.
+- [ ] Tidak ada saran yang membuat foto menyesatkan (warna diubah, ukuran dipalsukan, klaim BPOM/halal/"terlaris" yang tidak diberikan pengguna, before-after tanpa bukti).
+- [ ] Ketentuan platform yang berubah-ubah (jumlah slot, ukuran file, durasi video) ditulis "cek ketentuan terbaru di Seller Center", bukan angka pasti.
+
+## Batasan & penanganan error
+- Skill ini tidak menyunting foto dan tidak menjamin foto lolos moderasi; aturan tiap platform berubah — arahkan pengguna mengecek Seller Center/pusat edukasi penjual.
+- Memakai orang (model, tangan, wajah pelanggan) atau karya orang lain (foto dari internet, musik): minta izin dan pakai musik dari pustaka resmi platform. Jangan memakai foto milik toko/brand lain.
+- Produk kecantikan/kesehatan: jangan menyarankan foto before-after atau klaim hasil tanpa bukti yang sah; tampilkan tekstur & cara pakai saja.
+- Jika pengguna meminta "foto dibuat lebih bagus dari aslinya": jelaskan risikonya (ulasan "tidak sesuai foto", retur) dan fokus pada pencahayaan & komposisi yang jujur.

@@ -1,0 +1,16 @@
+{
+  "keterangan": "Contoh. Biaya jual mitra 10% hanya CONTOH potongan marketplace — cek angka terbaru di Seller Center.",
+  "mode": "diskon",
+  "biaya_jual_mitra": "10",
+  "maks_diskon_konsumen": "5",
+  "tier": [
+    {"nama": "Dropshipper", "min_beli": 1, "nilai": "20"},
+    {"nama": "Reseller", "min_beli": 12, "nilai": "30"},
+    {"nama": "Agen", "min_beli": 60, "nilai": "40", "min_margin_mitra": "20"}
+  ],
+  "produk": [
+    {"produk": "Serum Wajah 20 ml", "hpp": "Rp 28.000", "eceran": "Rp 89.000"},
+    {"produk": "Toner 100 ml", "hpp": "Rp 22.000", "eceran": "Rp 69.000"},
+    {"produk": "Sabun Cuci Muka 100 ml", "hpp": "Rp 18.500", "eceran": "Rp 39.000", "biaya_produsen": "1.500"}
+  ]
+}

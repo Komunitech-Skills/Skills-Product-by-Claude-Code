@@ -1,0 +1,19 @@
+{
+  "slang": {
+    "mantaf": "mantap",
+    "kriuknya": "renyah"
+  },
+  "tema": [
+    {
+      "id": "k_level_pedas",
+      "label": "Level pedas tidak sesuai",
+      "jenis": "keluhan",
+      "pihak": "produk",
+      "pola": ["\\blevel\\W+\\d\\W+(?:\\w+\\W+){0,3}(?:kayak|seperti|beda)", "\\bkepedasan\\b"]
+    },
+    {
+      "id": "p_rasa",
+      "pola": ["\\bpedasnya\\W+pas\\b"]
+    }
+  ]
+}
