@@ -42,14 +42,18 @@ tanpa alat ukur:
 ## 4. Tumpukan font aman (tanpa internet)
 
 Karena file harus mandiri (lihat `kerangka-html.md`), pakai tumpukan font sistem
-berikut — semuanya terpasang bawaan di Windows, macOS, atau Linux modern sehingga
-tampilan tetap rapi tanpa mengunduh apa pun:
+berikut — dipilih agar punya cadangan yang aman di semua OS (Windows, macOS, Linux,
+Android), bukan karena satu font yang sama persis terpasang di semua OS itu (mis.
+`Segoe UI` hanya ada di Windows, `Roboto` umum di Android/Chrome OS, `Verdana`/`Georgia`
+belum tentu ada di Linux/Android) — cadangan `system-ui`/`sans-serif`/`serif` di akhir
+daftar memastikan tampilan tetap rapi meski font pertama tidak tersedia, walau bentuknya
+tidak akan identik 100% di setiap perangkat:
 
 | Gaya | Untuk judul (`--font-judul`) | Untuk isi (`--font-isi`) |
 |---|---|---|
-| Formal / korporat (investor, bank, B2B) | `Georgia, 'Times New Roman', serif` | `'Segoe UI', Arial, Helvetica, sans-serif` |
-| Modern / bersih (profil perusahaan, produk) | `'Segoe UI', Helvetica, Arial, sans-serif` (bold) | `'Segoe UI', Arial, Helvetica, sans-serif` |
-| Hangat / bersahabat (pelatihan karyawan, laporan internal) | `Verdana, Tahoma, sans-serif` | `Verdana, Tahoma, Arial, sans-serif` |
+| Formal / korporat (investor, bank, B2B) | `Georgia, 'Times New Roman', serif` | `system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` |
+| Modern / bersih (profil perusahaan, produk) | `system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` (bold) | `system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` |
+| Hangat / bersahabat (pelatihan karyawan, laporan internal) | `Verdana, Tahoma, system-ui, sans-serif` | `Verdana, Tahoma, system-ui, Arial, sans-serif` |
 
 Jangan menulis nama font tunggal tanpa cadangan (mis. hanya `'Poppins'`) — kalau font
 itu tidak ada di komputer pembaca, browser mengganti diam-diam ke font lain yang bisa
@@ -107,9 +111,18 @@ Sebagai patokan (boleh disesuaikan permintaan pengguna):
 
 ## 9. Mode cetak (Print → Save as PDF)
 
-- Blok `@media print` di `kerangka-html.md` **wajib** ada persis seperti contoh — ini
-  yang membuat setiap slide jadi satu halaman PDF terpisah, ukuran penuh, tanpa tombol
-  navigasi ikut tercetak.
-- Ingatkan pengguna: di dialog cetak browser, pilih **"Simpan sebagai PDF" / "Save as
-  PDF"**, orientasi **Lanskap (Landscape)**, dan matikan "Print headers and footers" bila
-  tersedia agar tidak ada tanggal/URL kecil di pojok halaman.
+- Blok `@page { size: 1920px 1080px; margin: 0; }` dan `@media print` di
+  `kerangka-html.md` **wajib** ada persis seperti contoh — kombinasi keduanya yang
+  membuat setiap slide jadi satu halaman PDF penuh **tanpa terpotong di sisi kanan**,
+  dengan warna latar/aksen ikut tercetak, dan tanpa tombol navigasi ikut tercetak.
+  Tanpa `@page` dengan ukuran yang cocok, browser memakai ukuran kertas default (mis.
+  Letter tegak/A4) sehingga sisi kanan kanvas 1920×1080 terpotong — inilah cacat yang
+  wajib dihindari.
+- Ingatkan pengguna: di dialog cetak browser (Chrome/Edge — `Ctrl+P` Windows/Linux atau
+  `Cmd+P` Mac), pilih tujuan **"Simpan sebagai PDF" / "Save as PDF"**, margin
+  **"Tidak ada" / "None"**, dan centang **"Grafis latar" / "Background graphics"** agar
+  warna latar & aksen ikut tercetak. **Jangan** menyuruh pengguna memilih ukuran kertas
+  (A4/Letter) atau orientasi (Lanskap/Landscape) secara manual — ukuran halaman sudah
+  diatur otomatis lewat `@page` di file HTML-nya, browser akan mengikutinya sendiri.
+  Matikan juga "Print headers and footers" bila tersedia agar tidak ada tanggal/URL
+  kecil di pojok halaman.

@@ -29,8 +29,10 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
     --warna-teks: #0f172a;
     --warna-teks-lembut: #475569;
     --warna-aksen: #2563eb;        /* warna brand / merek pengguna */
+    --warna-kartu: rgba(37, 99, 235, .07);   /* latar kartu KPI/kotak — turunan lembut dari aksen */
+    --warna-garis: rgba(15, 23, 42, .12);    /* garis pembatas tabel/kartu/timeline */
     --font-judul: Georgia, 'Times New Roman', serif;   /* pilih sesuai gaya di aturan-desain.md */
-    --font-isi: 'Segoe UI', Arial, Helvetica, sans-serif;
+    --font-isi: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --ukuran-judul: 96px;   /* diukur pada kanvas 1920x1080 */
     --ukuran-subjudul: 36px;
     --ukuran-isi: 32px;
@@ -60,6 +62,7 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
     padding: var(--padding-slide);
     background: var(--warna-latar-slide);
     color: var(--warna-teks);
+    overflow: hidden;
     visibility: hidden; opacity: 0; pointer-events: none;
     display: flex; flex-direction: column; justify-content: center;
   }
@@ -71,6 +74,51 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
 
   img { max-width: 100%; max-height: 100%; }
 
+  /* ====== KOMPONEN SIAP PAKAI (lihat contoh pemakaian di bawah kode) ====== */
+
+  /* Kartu angka / KPI */
+  .kartu-kpi { display: flex; gap: 32px; margin-top: 24px; flex-wrap: wrap; }
+  .kpi { flex: 1; min-width: 280px; background: var(--warna-kartu); border: 1px solid var(--warna-garis); border-radius: 16px; padding: 32px; }
+  .kpi .angka { font-family: var(--font-judul); font-size: 72px; font-weight: bold; color: var(--warna-aksen); line-height: 1; }
+  .kpi .label { font-size: 24px; color: var(--warna-teks-lembut); margin-top: 12px; }
+
+  /* Dua kolom */
+  .dua-kolom { display: flex; gap: 64px; align-items: flex-start; }
+  .dua-kolom > div { flex: 1; }
+
+  /* Tabel data — angka uang rata kanan & sejajar (tabular-nums) */
+  table.tabel-data { width: 100%; border-collapse: collapse; font-size: 28px; }
+  table.tabel-data th, table.tabel-data td { padding: 16px 20px; border-bottom: 1px solid var(--warna-garis); text-align: left; }
+  table.tabel-data th { color: var(--warna-teks-lembut); font-weight: 600; font-size: 24px; }
+  table.tabel-data td.uang, table.tabel-data th.uang {
+    text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+
+  /* Penanda bagian yang belum diisi pengguna — dibuat mencolok, TIDAK ikut tercetak sebagai warna aneh */
+  .isi { background: #fef08a; color: #713f12; padding: 2px 10px; border-radius: 4px; font-weight: 600; }
+
+  /* Timeline / langkah-langkah */
+  .timeline { display: flex; gap: 0; margin-top: 40px; }
+  .timeline .langkah { flex: 1; position: relative; padding-top: 44px; padding-right: 32px; }
+  .timeline .langkah::before {
+    content: attr(data-nomor); position: absolute; top: 0; left: 0;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--warna-aksen); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: bold;
+  }
+  .timeline .langkah::after {
+    content: ""; position: absolute; top: 16px; left: 32px; right: 0; height: 2px;
+    background: var(--warna-garis);
+  }
+  .timeline .langkah:last-child::after { display: none; }
+  .timeline .langkah h3 { font-family: var(--font-judul); font-size: 26px; margin-bottom: 8px; color: var(--warna-teks); }
+  .timeline .langkah p { font-size: 22px; }
+
+  /* Kutipan / testimoni */
+  .kutipan { border-left: 6px solid var(--warna-aksen); padding: 8px 32px; font-style: italic; font-size: 34px; color: var(--warna-teks); }
+  .kutipan .sumber { display: block; margin-top: 16px; font-style: normal; font-size: 22px; color: var(--warna-teks-lembut); }
+
   /* --- Navigasi (disembunyikan saat cetak) --- */
   .kontrol {
     position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
@@ -80,12 +128,47 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
   }
   .kontrol button { border: none; background: transparent; color: #fff; font-size: 16px; cursor: pointer; }
 
+  /* Di HP posisi mendatar, layar pendek — kecilkan & pudarkan kontrol supaya tidak menutupi isi slide */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .kontrol { transform: translateX(-50%) scale(.75); opacity: .45; bottom: 4px; }
+    .kontrol:hover, .kontrol:active, .kontrol:focus-within { opacity: .95; }
+  }
+
+  /* --- Tombol mode edit teks (opsional, offline, tanpa library) --- */
+  .btn-edit {
+    position: fixed; right: 20px; bottom: 20px; z-index: 1000;
+    border: none; border-radius: 999px; padding: 10px 18px;
+    background: rgba(0,0,0,.5); color: #fff; font-family: var(--font-isi);
+    font-size: 14px; cursor: pointer;
+  }
+  .btn-edit.aktif { background: #16a34a; }
+  [contenteditable="true"] { outline: 2px dashed var(--warna-aksen); outline-offset: 4px; cursor: text; }
+
+  /* --- Overlay "putar HP" saat layar lebih tinggi dari lebar (potret) --- */
+  .putar-hp {
+    display: none;
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(15, 23, 42, .96); color: #fff;
+    align-items: center; justify-content: center; text-align: center;
+    font-family: var(--font-isi); font-size: 22px; line-height: 1.5; padding: 40px;
+  }
+  @media (orientation: portrait) and (max-width: 900px) {
+    .putar-hp { display: flex; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
   }
 
-  /* ====== MODE CETAK: WAJIB — supaya "Print > Save as PDF" rapi 1 slide/halaman ====== */
+  /* ====== UKURAN HALAMAN CETAK — WAJIB, mencegah sisi kanan slide terpotong ====== */
+  @page {
+    size: 1920px 1080px;
+    margin: 0;
+  }
+
+  /* ====== MODE CETAK: WAJIB — supaya "Print > Save as PDF" rapi 1 slide/halaman, utuh, warna ikut tercetak ====== */
   @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
     .panggung-luar { position: static; overflow: visible; background: #fff; }
     .panggung { position: static; width: auto; height: auto; transform: none !important; }
@@ -96,11 +179,13 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
       break-after: page; page-break-after: always;
     }
     .slide:last-child { break-after: auto; page-break-after: auto; }
-    .kontrol { display: none !important; }
+    .kontrol, .btn-edit, .putar-hp { display: none !important; }
   }
 </style>
 </head>
 <body>
+<div class="putar-hp">🔄 Putar HP ke posisi mendatar (landscape) agar teks presentasi ini terbaca dengan baik.</div>
+
 <div class="panggung-luar">
   <main class="panggung" id="panggung">
     <section class="slide aktif">
@@ -122,6 +207,8 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
   <span id="halaman">1 / 1</span>
   <button id="btnMaju" title="Berikutnya (→ / Spasi)">›</button>
 </div>
+
+<button id="btnEdit" class="btn-edit" title="Ubah teks langsung di slide">✏️ Edit</button>
 
 <script>
 (function () {
@@ -164,25 +251,117 @@ atau HP. Ini membuat tata letak selalu konsisten dan tidak pernah berantakan di 
     if (beda < -50) tampilkan(indeks + 1);
     xAwal = null;
   });
+
+  // Mode edit teks langsung di browser (offline, tanpa library)
+  var btnEdit = document.getElementById('btnEdit');
+  var editAktif = false;
+  btnEdit.addEventListener('click', function () {
+    editAktif = !editAktif;
+    document.querySelectorAll('.slide h1, .slide h2, .slide p, .slide li, .slide .angka, .slide .label, .slide td, .slide th')
+      .forEach(function (el) { el.setAttribute('contenteditable', editAktif ? 'true' : 'false'); });
+    btnEdit.textContent = editAktif ? '✔ Selesai edit' : '✏️ Edit';
+    btnEdit.classList.toggle('aktif', editAktif);
+    if (editAktif) {
+      alert('Mode edit aktif. Klik teks lalu ketik langsung. Setelah selesai, tekan Ctrl+S (Windows/Linux) atau Cmd+S (Mac), pilih "Webpage, HTML only" / "Laman Web, HTML saja" untuk menyimpan perubahan ke file ini.');
+    }
+  });
 })();
 </script>
 </body>
 </html>
 ```
 
+## Contoh pemakaian komponen siap pakai
+
+Sisipkan potongan ini di dalam `<section class="slide">...</section>` sesuai kebutuhan
+konten — kelasnya sudah didefinisikan di kerangka di atas, tinggal pakai.
+
+**Kartu angka (KPI)** — untuk highlight 2–4 angka penting (omzet, cicilan, rasio, dsb.):
+```html
+<div class="kartu-kpi">
+  <div class="kpi"><div class="angka">Rp 35.000.000</div><div class="label">Omzet rata-rata/bulan</div></div>
+  <div class="kpi"><div class="angka">4 tahun</div><div class="label">Lama usaha berjalan</div></div>
+  <div class="kpi"><div class="angka">46,6%</div><div class="label">Rasio cicilan terhadap laba</div></div>
+</div>
+```
+
+**Tabel data dengan kolom uang rata kanan:**
+```html
+<table class="tabel-data">
+  <tr><th>Aset</th><th class="uang">Perkiraan Nilai</th></tr>
+  <tr><td>Etalase & rak</td><td class="uang">Rp 8.000.000</td></tr>
+  <tr><td>Sepeda motor operasional</td><td class="uang">Rp 15.000.000</td></tr>
+</table>
+```
+
+**Dua kolom** (mis. teks + daftar, atau sebelum/sesudah):
+```html
+<div class="dua-kolom">
+  <div><h3>Sebelum</h3><p>...</p></div>
+  <div><h3>Sesudah</h3><p>...</p></div>
+</div>
+```
+
+**Penanda `[isi]` mencolok** — untuk bagian yang belum dilengkapi pengguna:
+```html
+<p>Alamat usaha: <span class="isi">[isi alamat usaha Anda]</span></p>
+```
+
+**Timeline / langkah kerja:**
+```html
+<div class="timeline">
+  <div class="langkah" data-nomor="1"><h3>Survei lokasi</h3><p>Analis KUR datang ke tempat usaha.</p></div>
+  <div class="langkah" data-nomor="2"><h3>Verifikasi berkas</h3><p>KTP, NPWP, dan legalitas dicek.</p></div>
+  <div class="langkah" data-nomor="3"><h3>Pencairan</h3><p>Dana masuk ke rekening usaha.</p></div>
+</div>
+```
+
+**Kutipan / testimoni:**
+```html
+<blockquote class="kutipan">
+  "Sejak pakai layanan ini, antrian laundry jadi lebih rapi."
+  <span class="sumber">— Ibu Sari, pelanggan tetap</span>
+</blockquote>
+```
+
+## Tema warna siap pakai
+
+Pakai salah satu dari 4 palet di `references/aturan-desain.md` #5 (Biru Korporat, Hijau
+Amanah, Hitam Emas Premium, Putih Minimalis) untuk `--warna-latar-slide`, `--warna-teks`,
+dan `--warna-aksen`. Untuk `--warna-kartu` dan `--warna-garis`, turunkan dari warna aksen
+dengan opacity rendah (`.06`–`.12`) agar kartu/tabel tetap kontras dengan latar — untuk
+tema gelap (Hitam Emas Premium), pakai warna terang dengan opacity rendah, misalnya
+`--warna-kartu: rgba(245, 241, 230, .08); --warna-garis: rgba(245, 241, 230, .18);`.
+
 ## Aturan wajib saat mengisi kerangka ini
 
 1. **Jangan tambahkan `<link>` atau `<script src>` eksternal apa pun** (font Google, CDN
    ikon, library JS). Semua styling & interaksi cukup CSS + JavaScript polos di atas.
-2. **Font:** pakai kombinasi font sistem yang tersedia di semua OS tanpa perlu koneksi
-   internet. Lihat pilihan tumpukan font di `references/aturan-desain.md`. Jangan
-   memakai satu nama font tunggal (mis. `font-family: 'Poppins'`) karena kalau font itu
-   tidak terpasang di komputer pengguna, browser diam-diam mengganti ke font lain yang
-   tampilannya bisa berbeda jauh — selalu tulis daftar cadangan seperti contoh di atas.
+2. **Font:** pakai kombinasi font sistem yang tersedia lintas OS (Windows, macOS, Linux,
+   Android) tanpa perlu koneksi internet. Lihat pilihan tumpukan font di
+   `references/aturan-desain.md`. Jangan memakai satu nama font tunggal (mis.
+   `font-family: 'Poppins'`) karena kalau font itu tidak terpasang di komputer pengguna,
+   browser diam-diam mengganti ke font lain yang tampilannya bisa berbeda jauh — selalu
+   tulis daftar cadangan seperti contoh di atas. Tampilan tidak akan identik 100% di
+   setiap OS (mis. `Segoe UI` hanya ada di Windows, `Roboto` umum di Android/Chrome OS),
+   tapi tetap rapi dan terbaca karena ada cadangan `system-ui`/`sans-serif`.
 3. **Gambar/logo:** jika pengguna memberi file logo/gambar, ubah ke `base64` dan tempel
    langsung di `src="data:image/png;base64,...."` supaya file tetap satu berkas mandiri
    dan tidak bergantung pada folder gambar terpisah yang bisa hilang saat dikirim.
+   **Jangan pernah** memakai path lokal (mis. `src="C:\Users\...\logo.png"` atau
+   `src="logo.png"`) — path seperti itu hanya berfungsi di komputer pembuatnya dan akan
+   rusak (gambar hilang) begitu file HTML dikirim ke orang lain lewat WA/email.
 4. **Rupiah:** setiap angka uang wajib format `Rp 1.250.000` (titik pemisah ribuan, tanpa
    desimal kecuali memang perlu, tanpa disingkat "1,2jt" kecuali pengguna secara eksplisit minta ringkas).
-5. Setelah HTML jadi, jalankan `python3 <folder-skill-ini>/scripts/validasi_html.py <file.html>` untuk memastikan
-   tidak ada rujukan internet, ada CSS cetak, dan tidak ada slide yang terlalu padat teks.
+5. **Cetak ke PDF:** blok `@page { size: 1920px 1080px; margin: 0; }` dan `@media print`
+   di atas **wajib** ada persis seperti contoh — ini yang membuat setiap slide jadi satu
+   halaman PDF penuh tanpa terpotong di sisi kanan, dan warna latar/aksen ikut tercetak.
+   **Jangan** menyarankan pengguna memilih kertas A4/Letter atau orientasi
+   Lanskap/Landscape di dialog cetak — ukuran halaman sudah diatur otomatis oleh
+   `@page` di atas; menu orientasi/ukuran kertas di dialog cetak cukup dibiarkan default
+   (browser akan mengikuti `@page`). Yang perlu dipastikan pengguna hanya: tujuan cetak
+   = "Simpan sebagai PDF"/"Save as PDF", margin = "Tidak ada"/"None", dan centang
+   "Grafis latar"/"Background graphics" bila tersedia supaya warna ikut tercetak.
+6. Setelah HTML jadi, jalankan `python3 <folder-skill-ini>/scripts/validasi_html.py <file.html>` untuk memastikan
+   tidak ada rujukan internet, ada `@page` dengan ukuran serta CSS cetak, tidak ada gambar
+   dengan path lokal, dan tidak ada slide yang terlalu padat teks.

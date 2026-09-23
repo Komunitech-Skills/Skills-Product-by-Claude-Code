@@ -49,6 +49,8 @@ pertanyaan yang wajar, jangan tanya satu-satu). Contoh gabungan pertanyaan:
 4. Ada warna atau logo brand yang mau dipakai?
 5. Nanti dipakai untuk ditampilkan di layar, dicetak jadi PDF, atau dua-duanya?
 
+(Kalau mau cepat, cukup jawab nomor 1 saja — sisanya saya pakai default yang wajar.)
+
 Jika pengguna terlihat ingin cepat ("buatkan aja", "yang penting jadi"), langsung
 pakai default masuk akal di atas dan sebutkan asumsi yang dipakai di ringkasan akhir.
 
@@ -59,6 +61,13 @@ pakai default masuk akal di atas dan sebutkan asumsi yang dipakai di ringkasan a
    `laporan-bulanan.md`, `profil-perusahaan.md`, `produk-ke-reseller.md`, atau
    `pelatihan-karyawan.md`. Jika tidak ada yang cocok persis, gabungkan struktur yang
    paling dekat lalu sesuaikan dengan konteks pengguna.
+   - **Jika pengguna mengirim file CSV/Excel data penjualan**, langkah wajib (bukan
+     opsional): rekap dulu datanya dengan skill `rekap-penjualan-csv` (bila terpasang)
+     atau `scripts/rekap.py`-nya, baru masukkan hasilnya ke slide. Jangan menjumlahkan
+     atau merata-rata angka dari CSV secara manual/kira-kira.
+   - **Jika presentasinya untuk pengajuan KUR/kredit** (`templates/pengajuan-kur.md`),
+     lihat aturan wajib di bagian "Angka pinjaman/cicilan (khusus KUR)" di bawah sebelum
+     mengisi slide cicilan/rasio/agunan.
 2. **Susun outline slide** mengikuti struktur di template terpilih, isi dengan konten
    dari pengguna. Jika pengguna hanya memberi topik, buat isi contoh yang masuk akal
    untuk konteks itu dan **tandai jelas** bagian yang perlu diisi pengguna (mis.
@@ -97,8 +106,9 @@ Presentasi [judul] sudah jadi: [nama-file.html] ([jumlah] slide)
 
 Cara pakai:
 - Buka file-nya dua kali klik, atau tarik ke jendela browser (Chrome/Edge/Safari) — bisa dibuka di laptop maupun HP, tanpa internet.
-- Navigasi: tombol panah kiri/kanan atau geser jari (di HP), atau klik tombol ‹ › di bawah layar.
-- Cetak jadi PDF: buka file → Ctrl+P (Windows) / Cmd+P (Mac) → pilih "Simpan sebagai PDF"/"Save as PDF" → orientasi Lanskap.
+- Navigasi: tombol panah kiri/kanan atau geser jari (di HP), atau klik tombol ‹ › di bawah layar. Kalau HP dipegang tegak, akan muncul pesan untuk memutar ke posisi mendatar (landscape) supaya teks terbaca.
+- Mau edit teks langsung? Klik tombol "✏️ Edit" di pojok kanan bawah, ubah teksnya, lalu simpan dengan Ctrl+S/Cmd+S ("Webpage, HTML only").
+- Cetak jadi PDF: buka file → Ctrl+P (Windows) / Cmd+P (Mac) → tujuan "Simpan sebagai PDF"/"Save as PDF" → margin "Tidak ada"/"None" → centang "Grafis latar"/"Background graphics" (ukuran halaman sudah otomatis pas, tidak perlu pilih kertas/orientasi manual).
 
 Asumsi yang dipakai (kalau ada): [...]
 Bagian yang masih perlu Anda lengkapi (kalau ada): [...]
@@ -117,7 +127,7 @@ Presentasi Pengajuan KUR - Warung Sembako sudah jadi: pengajuan-kur-warung.html 
 
 Cara pakai:
 - Buka file-nya dua kali klik, bisa dibuka di laptop maupun HP, tanpa internet.
-- Cetak jadi PDF: Ctrl+P / Cmd+P → Simpan sebagai PDF → orientasi Lanskap.
+- Cetak jadi PDF: Ctrl+P / Cmd+P → Simpan sebagai PDF → margin Tidak ada → centang Grafis latar.
 
 Asumsi yang dipakai: warna palet "Hijau Amanah" (belum ada warna brand disebutkan), 
 jumlah karyawan & alamat usaha ditulis sebagai [isi data Anda] karena belum diberikan.
