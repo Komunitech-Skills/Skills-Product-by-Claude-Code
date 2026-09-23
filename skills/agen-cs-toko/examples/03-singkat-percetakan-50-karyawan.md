@@ -57,3 +57,11 @@ openclaw automations create \
   satu baris ke cs/log/<tanggal>.md (tanpa nama/nomor pelanggan)".
 - Skala 50+ dengan ratusan chat/hari: skill tidak membahas beban (satu bot untuk 5 admin) atau
   pemisahan sesi per admin (`session.dmScope`). Hanya disebut untuk Level 2.
+
+## Uji ulang v1.0.1
+- **Cacat v1.0 tertangani:** skill kini menulis satu baris log per draf/eskalasi ke
+  `cs/log/<YYYY-MM-DD>.md` (kategori, eskalasi, ada_di_pengetahuan; tanpa nama/nomor), dan prompt
+  automation membaca file itu serta diperintahkan "jangan mengarang angka" bila kosong
+  (`references/eskalasi-dan-kanal.md` §3a–3b). Perintah `automations create` versi baru diterima
+  parser di HOME uji baru.
+- Aturan nada (SKILL.md §8): percetakan/B2B → **formal-ringkas tanpa emoji**. Pertanyaan di atas sudah netral-formal.

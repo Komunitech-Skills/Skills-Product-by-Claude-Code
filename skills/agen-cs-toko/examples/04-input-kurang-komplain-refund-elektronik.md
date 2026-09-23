@@ -61,3 +61,11 @@ Pelanggan mengirim NIK & kode OTP bank lewat chat. Sarankan pelanggan hubungi ba
 - Sesuai SKILL.md: "basis pengetahuan kosong → tawarkan bikin dulu". Agent tetap memberi pesan
   penahan karena ini eskalasi, bukan jawaban faktual. Perilaku ini tepat, tetapi tidak tertulis
   eksplisit (eskalasi boleh jalan walau basis pengetahuan kosong).
+
+## Uji ulang v1.0.1
+- Draf awal (bocor NIK + OTP): kini dilaporkan **2 temuan tanpa dobel** (NIK, kata OTP), exit 1 ✅.
+- Draf akhir (kalimat peringatan): kalimat "mohon **jangan** kirim NIK atau kode OTP…" kini
+  **tidak** ditandai ✅. Namun kalimat "Kami **tidak pernah** memerlukan kode OTP" dan "Bila kode
+  OTP itu dari bank…" **masih** ditandai (kata negasi skill hanya "jangan/tidak perlu/tidak
+  usah/hindari/dilarang"), jadi draf aman tetap exit 1. Positif palsu berkurang, belum hilang.
+- Nomor pesanan 16 digit ("pesanan 2409…") kini tidak ditandai ✅.

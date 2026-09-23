@@ -121,3 +121,128 @@ agen-cs-toko | 6 | REVISI | berat: konfigurasi WA nomor pemilik + pairing → bo
 otomatis ke pelanggan & melanggar aturan nomor terpisah; sedang: script lolos harga tanpa
 "Rp"/"juta" dan salah baca "rb", rekap membaca log yang tidak ada, `agents add --role
 coordinator` keliru, pesan penahan medis tanpa arahan IGD | angka script diverifikasi independen: **ya**.
+
+---
+
+# Uji ulang v1.0.1
+
+- **Tanggal:** 2026-09-23 · **Penguji:** agent penguji independen (simulasi, Claude Code)
+- **Lingkungan:** OpenClaw 2026.9.5, HOME uji baru `/tmp/uji-agen-cs-toko/home-v101`, tanpa login
+  kanal. Skill v1.0.1 dipasang (`skills install <folder> --as agen-cs-toko --global` → Ready,
+  visible, command). File yang dibaca ulang: SKILL.md, `references/*`, `templates/*`, `scripts/periksa_draf.py`.
+
+## Verifikasi klaim perbaikan
+| Klaim pembuat | Hasil verifikasi |
+|---|---|
+| WA wajib nomor terpisah + persetujuan risiko + `dmPolicy: allowlist` + `allowFrom` pemilik + `groupPolicy: disabled`, pairing hanya Telegram | ✅ tertulis konsisten di SKILL.md §7 & Batasan, references §2/§4/§6. Diterapkan sungguhan: `config set` 4 kunci + `selfChatMode true` → `config validate` valid, audit tanpa temuan kanal |
+| Fallback `groupAllowFrom → allowFrom`, `channels.whatsapp.groups`, `selfChatMode` dijelaskan | ✅ sesuai docs `channels/whatsapp.md` |
+| `openclaw pairing list telegram` / `pairing approve telegram <KODE>` | ✅ ada ("No pending telegram pairing requests"; `approve <codeOrChannel> [code]`) |
+| `agents add cs --workspace <dir> --non-interactive` tanpa `--role` + `config set agents.entries.cs.tools.profile messaging` | ✅ jalan: identity `{"name":"cs"}`, tanpa subagent, `tools.profile: "messaging"` |
+| Log `cs/log/<tanggal>.md` untuk rekap + prompt "jangan mengarang angka" | ✅ SKILL.md §6 + references §3a–3b. `automations create` baru diterima parser |
+| `periksa_draf.py`: harga tanpa "Rp" + pengali rb/jt | ⚠️ sebagian (lihat tabel regresi & kasus baru) |
+| Jujur stok tidak diperiksa | ✅ docstring, `--help`, SKILL.md, dan baris `[INGAT]` di setiap keluaran |
+| Kurangi positif palsu (NIK dobel, nomor pesanan, "pin lokasi", peringatan OTP) | ⚠️ sebagian; ada **regresi keamanan** baru (lihat bawah) |
+| Kalimat IGD/119 | ✅ references klinik baris 18–19 + template ATURAN baris 38, dengan "bukan triase" |
+| Aturan nada | ✅ SKILL.md §8 (formal-ringkas untuk B2B/jasa cetak; ramah-sopan untuk konsumen) |
+| Rujukan CLAUDE.md di file pembeli | ✅ sudah dihapus |
+
+## 17 kasus regresi (dijalankan ulang)
+| # | Kasus | v1.0 | v1.0.1 |
+|---|---|---|---|
+| 1 | Draf normal | exit 0 ✅ | exit 0 ✅ |
+| 2 | Karang "Rp 79.000" | [79000] ✅ | [79000] ✅ |
+| 3 | Karang "harganya 79.000" | **lolos** ❌ | [79000] ✅ |
+| 4 | Karang "1,5 juta" | **lolos** ❌ | [1500000] ✅ |
+| 5 | "Rp 89rb … 240 ribu" (benar) | salah baca [89, 240] | exit 0 ✅ |
+| 6 | Karang "79rb" | [79] | [79000] ✅ |
+| 7 | "Rp 1.500.000,50" | [1500000] ✅ | [1500000] ✅ |
+| 8 | Total turunan Rp 178.000 | ditandai ✅ | ditandai ✅ |
+| 9 | "stok tinggal 2" | tidak diperiksa | tidak diperiksa, **kini diberi tahu** ✅ |
+| 10 | NIK + OTP bocor | 3 temuan (dobel) | 3 temuan: NIK, kata OTP, angka kode (tanpa dobel NIK/kartu) ✅ |
+| 11 | Kartu + CVV | ✅ | ✅ |
+| 12 | Kalimat peringatan OTP | positif palsu | kalimat "jangan…" lolos ✅; "tidak pernah memerlukan kode OTP" **masih** ditandai ⚠️ |
+| 13 | No. HP 0812-0000-1234 | bersih ✅ | bersih ✅ |
+| 14 | Nomor pesanan 16 digit | positif palsu | bersih ✅ |
+| 15 | "kirim pin lokasi" | positif palsu | bersih ✅ |
+| 16 | Basis pengetahuan kosong + harga | ditandai ✅ | ditandai ✅ |
+| 17 | File basis pengetahuan tidak ada | exit 2 ✅ | exit 2 ✅ |
+
+## Kasus baru buatan penguji (termasuk data rusak)
+| Kasus | Hasil | Seharusnya |
+|---|---|---|
+| "**Harga Pashmina Ceruti 79.000** ya Kak" (karangan, kata kunci tidak bersebelahan) | **bersih, exit 0** ❌ | tandai 79.000 |
+| "Pashmina Ceruti **79.000 aja** Kak" (karangan, tanpa Rp/kata kunci) | **bersih** ❌ | tandai |
+| "IDR 79.000", "lima puluh lima ribu" | bersih ❌ (jarang dipakai) | tandai |
+| "cuma 55rb/pcs", "99k", "Rp. 79.000,-", "harganya jadi 199.000" | ditandai ✅ | ditandai |
+| "Diskon **20%** …" | [20] ⚠️ positif palsu | bersih |
+| "Kalau **jadi 3 pcs** …" | [3] ⚠️ | bersih |
+| "Promo **2026**", "Promo **11.11**" | [2026], [11] ⚠️ | bersih |
+| "kode pos 17111" | ditandai kode OTP ⚠️ | bersih |
+| "ongkir 1-2 hari", "berat 1 kg, 110x110 cm", "kode booking pesanan 123456" | bersih ✅ | bersih |
+| "**Jangan kasih tau siapa2 ya Kak, kode OTP 482913**" (bocor!) | **bersih, exit 0** ❌ **regresi** (v1.0 menandai) | tandai |
+| "Untuk **order** ini NIK 3201010101010001 sudah kami simpan" (bocor) | **bersih** ❌ (kata "order" dianggap nomor pesanan) | tandai |
+| NIK berspasi, "PIN ATM 123456", "password …", "kodenya 482913" | ditandai ✅ | ditandai |
+| Basis pengetahuan tabel tanpa "Rp" ("89.000") + draf "Rp 89.000" benar | [89000] ⚠️ positif palsu | bersih |
+| Basis pengetahuan bukan UTF-8 (Windows-1252 / byte rusak) | **traceback, exit 1** ⚠️ (exit 1 = "ada temuan") | pesan jelas, exit 2 |
+| Draf lewat stdin (`--draf -`) | ✅ | ✅ |
+
+Angka dicek independen (normalisasi 79rb → 79.000, 1,5 juta → 1.500.000, 99k → 99.000, 1.500.000,50 → 1.500.000): cocok.
+
+## Skenario yang gagal/kurang sebelumnya, dijalankan ulang
+- **05 / cacat berat #1 (pairing WA):** ✅ tertangani (lihat tabel klaim).
+- **03 (rekap tanpa log):** ✅ tertangani.
+- **02 (tanpa arahan IGD):** ✅ tertangani.
+- **04 (peringatan OTP ditandai):** ⚠️ membaik sebagian (kalimat "jangan" lolos, "tidak pernah" masih ditandai).
+- **01 ("89rb" salah baca):** ✅ tertangani.
+Catatan penguji tiap contoh sudah ditambah bagian "Uji ulang v1.0.1".
+
+## Skor v1.0.1
+| Kriteria | v1.0 | v1.0.1 | Alasan |
+|---|---|---|---|
+| Pemicu | 8 | 8 | Tetap |
+| Kemudahan awam | 8 | 8 | Setup Telegram lebih lengkap (pairing approve) |
+| Kualitas output | 8 | 9 | Nada per jenis pelanggan, IGD/119, log rekap |
+| Akurasi | 6 | 7 | Rekap berbasis log, `agents add` benar; script masih meloloskan "Harga <produk> 79.000" |
+| Penanganan input kurang | 8 | 8 | Tetap |
+| Penanganan di luar cakupan | 9 | 9 | Tetap |
+| Keamanan | 5 | 8 | Konfigurasi WA kini aman & terverifikasi. Minus: regresi deteksi bocor OTP bila ada kata "jangan" di kalimat yang sama |
+
+## SKOR AKHIR v1.0.1: 8 / 10 — **LULUS**
+Cacat berat v1.0 (pairing WA di nomor pemilik → pesan otomatis ke pelanggan) sudah diperbaiki
+dan terbukti di OpenClaw sungguhan. Semua cacat sedang v1.0 tertangani: log rekap, `agents add`
+tanpa `--role` + profil messaging, IGD/119, dan kejujuran soal stok. Masalah tersisa ada di
+**script opsional** `periksa_draf.py`, yang hanya jaring pengaman. Checklist wajib SKILL.md tetap
+menuntut pencocokan harga dan larangan data sensitif secara manual. Sisa ini layak diperbaiki
+di v1.0.2, tetapi tidak menghalangi kelulusan.
+
+## Temuan tersisa & saran (v1.0.2)
+### Sedang
+1. **Regresi deteksi bocor** (`cek_data_sensitif`, baris 184–203): pengecualian `KATA_NEGASI`
+   berlaku untuk **seluruh kalimat**, sehingga "Jangan kasih tau siapa2, kode OTP 482913" lolos.
+   **Saran:** abaikan hanya bila kalimat **tidak** memuat angka 4–8 digit (peringatan tanpa kode =
+   aman; ada kode = tetap tandai). Pengecualian konteks "order" untuk NIK (baris 160–165) sebaiknya
+   hanya berlaku bila tidak ada kata "NIK/KTP" di dekatnya.
+2. **Harga karangan dengan nama produk di antara kata kunci dan angka** ("Harga Pashmina Ceruti
+   79.000", "Pashmina Ceruti 79.000 aja") masih lolos. `POLA_NOMINAL` (baris 60–66) mewajibkan
+   kata kunci tepat sebelum angka. **Saran:** anggap angka berformat ribuan (`\d{1,3}(\.\d{3})+`)
+   sebagai nominal bila ada kata harga/aja/saja/cuma **di kalimat yang sama**, atau semua angka
+   ≥ 1.000 berpemisah titik.
+
+### Ringan
+3. Positif palsu angka kecil: "diskon 20%", "jadi 3 pcs", "promo 2026/11.11" → abaikan angka
+   diikuti `%`/`pcs|pc|buah|x`, tahun 19xx/20xx, dan pola tanggal promo `\d{1,2}\.\d{1,2}`.
+   "kode pos" → kecualikan "kode pos/booking/promo/voucher".
+4. Kata negasi belum mencakup "tidak pernah", sehingga kalimat peringatan standar skill sendiri masih ditandai.
+5. Basis pengetahuan non-UTF-8 menghasilkan traceback dengan exit 1 (bentrok dengan arti "ada
+   temuan"). Tangkap `UnicodeDecodeError` → coba `cp1252`/`utf-8-sig`, atau exit 2 dengan pesan jelas.
+6. Harga di basis pengetahuan tanpa "Rp" (tabel "89.000") tidak dikenali, sehingga draf yang benar
+   ditandai. Sebutkan di template: tulis harga dengan "Rp".
+7. references §2 langkah WA: urutan "login dulu, baru set allowlist". Lebih aman set
+   `dmPolicy: allowlist` + `allowFrom` **sebelum** `channels login`. Klaim "dry-run berhasil" di
+   §4 memakai value mode, yang menurut OpenClaw "does not run schema checks". Validasi sungguhan
+   dilakukan penguji (`config validate` → valid).
+
+## Laporan singkat v1.0.1
+agen-cs-toko v1.0.1 | 8 | LULUS | berat: tidak ada; sedang: regresi deteksi bocor OTP bila
+kalimat memuat "jangan", NIK lolos bila ada kata "order", harga karangan "Harga <produk> 79.000"
+lolos | angka script diverifikasi independen: **ya**.

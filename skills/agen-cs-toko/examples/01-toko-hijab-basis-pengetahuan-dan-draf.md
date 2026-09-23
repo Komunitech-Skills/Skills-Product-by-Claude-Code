@@ -82,3 +82,11 @@ Telegram, lalu bot membalas dengan draf. Setup (jalankan sendiri atau saya bantu
 - **Kurang:** pengguna menulis harga "89rb". Bila draf juga memakai "Rp 89rb", script membacanya
   sebagai **Rp 89** dan menandainya sebagai nominal asing (lihat HASIL-UJI). Draf di atas sengaja
   memakai format lengkap.
+
+## Uji ulang v1.0.1
+- "Rp 89rb" dan "240 ribu" kini dibaca benar (Rp 89.000 / Rp 240.000; draf harga benar → exit 0).
+  Draf di atas dijalankan ulang: tetap hanya menandai "hemat Rp 27.000" (angka turunan), sesuai harapan.
+- Script kini selalu mencetak pengingat "Klaim STOK tidak diperiksa", jadi baris "stok dusty pink
+  perlu dicek admin" di draf makin penting.
+- Kanal: v1.0.1 menjelaskan persetujuan pairing Telegram (`openclaw pairing list telegram`,
+  `openclaw pairing approve telegram <KODE>`). Keduanya terverifikasi ada di 2026.9.5.

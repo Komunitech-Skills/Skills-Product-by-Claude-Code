@@ -67,3 +67,10 @@ kepatuhan penuh ke konsultan hukum.*
   sebaiknya menyediakan kalimat baku ini agar agent tidak menilai kegawatan sendiri.
 - Skill tidak menyebut bahwa rekap harian untuk klinik harus menghapus nama pasien secara
   otomatis. Aturannya ada di referensi, tapi tidak di prompt automation §3.
+
+## Uji ulang v1.0.1
+- Kalimat keselamatan umum ("Kalau kondisinya memburuk atau terasa darurat, mohon segera ke IGD
+  terdekat atau hubungi 119…") kini **tertulis di skill** (`references/klinik-dan-data-kesehatan.md`
+  baris 18–19, `templates/ATURAN.template.md` baris 38), dengan penegasan "bukan triase". Draf
+  penahan di atas kini sesuai skill tanpa tambahan penguji.
+- Log rekap (`cs/log/<tanggal>.md`) wajib **tanpa nama/nomor pasien** (§3a). Catatan rekap klinik di v1.0 sudah tertangani.

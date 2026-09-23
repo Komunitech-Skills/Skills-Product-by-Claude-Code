@@ -42,3 +42,11 @@ Mau mulai dari mode Copilot dulu? Kirim daftar harga toko Anda, saya buatkan bas
   WA yang juga menerima chat pelanggan, pairing **mengirim kode pairing otomatis ke setiap
   pengirim baru** (docs `channels/pairing.md`). Ini tetap bentuk auto-send ke pelanggan (lihat
   HASIL-UJI, cacat berat).
+
+## Uji ulang v1.0.1
+- **Cacat berat v1.0 tertangani:** `references/eskalasi-dan-kanal.md` §2/§4/§6 kini mewajibkan WA
+  **nomor terpisah** + persetujuan risiko tertulis, `dmPolicy: "allowlist"` + `allowFrom` nomor
+  pemilik saja, `groupPolicy: "disabled"`, dan melarang `pairing` di WA (dengan alasan pesan
+  pairing otomatis). Batasan SKILL.md juga menyebut alasan pairing. Konfigurasi itu diterapkan
+  sungguhan di HOME uji: `config validate` valid, dan audit tidak lagi menandai kanal WA.
+- Penolakan di atas tetap sesuai skill v1.0.1.
