@@ -294,7 +294,7 @@ def hanya_digit(v):
     return re.sub(r"\D", "", str(v))
 
 
-def cek_npwp(v, label, hasil):
+def cek_npwp(v, label, hasil, tanggal=None):
     if kosong(v):
         return None
     if tidak_terbaca(v):
@@ -302,6 +302,9 @@ def cek_npwp(v, label, hasil):
     dig = hanya_digit(v)
     if len(dig) == 16:
         hasil.append(("ok", "{}: 16 digit (format NPWP/NIK baru)".format(label)))
+    elif len(dig) == 15 and tanggal is not None and tanggal < TGL_PPN_12:
+        hasil.append(("info", "{}: 15 digit = format NPWP lama, wajar untuk dokumen bertanggal sebelum 2025."
+                      .format(label)))
     elif len(dig) == 15:
         hasil.append(("peringatan", "{}: 15 digit = format NPWP lama. Sejak Coretax, NPWP badan umumnya "
                       "16 digit (NPWP lama diawali angka 0) dan orang pribadi memakai NIK. Minta penjual "
@@ -422,7 +425,7 @@ def cek_dokumen(dok, urut, hari_ini):
         for k in ("nama", "npwp", "nitku", "alamat"):
             if tidak_terbaca(obj.get(k)):
                 tt.append("{}.{}".format(peran, k))
-    for k in ("nomor", "nsfp", "terbilang", "metode_bayar"):
+    for k in ("nomor", "nsfp", "terbilang", "metode_bayar", "jatuh_tempo", "rekening_tujuan"):
         if tidak_terbaca(dok.get(k)):
             tt.append(k)
 
@@ -475,6 +478,8 @@ def cek_dokumen(dok, urut, hari_ini):
 
     # subtotal vs item
     subtotal = f["subtotal"].angka
+    subtotal_dihitung = None
+    dpp_dihitung = None
     if items and item_lengkap:
         tol = max(1, len(items))
         if f["subtotal"].ada:
@@ -485,6 +490,9 @@ def cek_dokumen(dok, urut, hari_ini):
                               .format(format_rp(jumlah_items), format_rp(subtotal), format_rp(subtotal - jumlah_items))))
         elif not f["subtotal"].tt:
             subtotal = jumlah_items
+            subtotal_dihitung = jumlah_items
+            hasil.append(("info", "Subtotal tidak tertulis; dihitung script dari jumlah item = {}".format(
+                format_rp(jumlah_items))))
     elif items and not item_lengkap:
         hasil.append(("info", "Ada angka item yang tidak terbaca; cek jumlah item vs subtotal dilewati"))
 
@@ -496,6 +504,7 @@ def cek_dokumen(dok, urut, hari_ini):
     dpp = f["dpp"].angka
     ppn = f["ppn"].angka
     ppn_label = None
+    ppn_harus = None
     if termasuk:
         if dpp is not None and ppn is not None and dasar is not None:
             if dekat(dpp + ppn, dasar, 2):
@@ -511,12 +520,14 @@ def cek_dokumen(dok, urut, hari_ini):
                               format_rp(dasar), format_rp(dpp_kira), format_rp(floor(dpp_kira * Decimal("0.11"))))))
     elif dpp is None and not f["dpp"].tt and dasar is not None and (ppn is not None or jenis_ppn in ("umum", "mewah")):
         dpp = dasar
-        hasil.append(("info", "DPP tidak tertulis; dipakai subtotal setelah diskon {}".format(format_rp(dpp))))
+        dpp_dihitung = dasar
+        hasil.append(("info", "DPP tidak tertulis; dihitung script = subtotal setelah diskon {}".format(format_rp(dpp))))
     elif dpp is not None and dasar is not None and not dekat(dpp, dasar):
         hasil.append(("peringatan", "DPP {} berbeda dengan subtotal setelah diskon {}. Wajar bila ada uang muka "
                       "atau potongan lain; bila tidak, cek ulang.".format(format_rp(dpp), format_rp(dasar))))
 
     if dpp is not None and jenis_ppn in ("tidak_ada", "dibebaskan"):
+        ppn_harus = Decimal(0)
         if ppn:
             hasil.append(("selisih", "Dokumen ditandai PPN {} tapi ada PPN {}".format(
                 "dibebaskan" if jenis_ppn == "dibebaskan" else "tidak ada", format_rp(ppn))))
@@ -525,6 +536,7 @@ def cek_dokumen(dok, urut, hari_ini):
     elif dpp is not None and ppn is not None:
         jenis_uji = jenis_ppn or "umum"
         harus, cara, dnl = ppn_seharusnya(dpp, jenis_uji, tanggal)
+        ppn_harus = ppn if dekat(harus, ppn) else harus  # selisih <= Rp1 dianggap pembulatan: pakai angka dokumen
         if dekat(harus, ppn):
             ppn_label = cara
             hasil.append(("ok", "PPN {} cocok: {}".format(format_rp(ppn), cara)))
@@ -546,8 +558,8 @@ def cek_dokumen(dok, urut, hari_ini):
     elif dpp is not None and ppn is None and not f["ppn"].tt and jenis in ("faktur_pajak",):
         hasil.append(("peringatan", "Faktur pajak tanpa angka PPN; cek ulang dokumen"))
 
-    npwp_penjual = cek_npwp(penjual.get("npwp"), "NPWP penjual", hasil)
-    npwp_pembeli = cek_npwp(pembeli.get("npwp"), "NPWP/NIK pembeli", hasil)
+    npwp_penjual = cek_npwp(penjual.get("npwp"), "NPWP penjual", hasil, tanggal)
+    npwp_pembeli = cek_npwp(pembeli.get("npwp"), "NPWP/NIK pembeli", hasil, tanggal)
     cek_nitku(penjual.get("nitku"), npwp_penjual, "NITKU penjual", hasil)
     cek_nitku(pembeli.get("nitku"), npwp_pembeli, "NITKU pembeli", hasil)
     if jenis == "faktur_pajak":
@@ -560,6 +572,7 @@ def cek_dokumen(dok, urut, hari_ini):
 
     # --- total
     total = f["total"].angka
+    total_harus = None
     if total is not None and not any(f[k].tt for k in ("ppn", "ppnbm", "biaya_lain", "potongan_lain")):
         basis = dasar if dasar is not None else dpp
         if basis is not None:
@@ -574,6 +587,17 @@ def cek_dokumen(dok, urut, hari_ini):
             if pph and met:
                 kandidat.append((harap - pph + met, "dipotong PPh dan meterai ditagihkan"))
             cocok = [k for k in kandidat if dekat(k[0], total)]
+            if ppn_harus is not None and not termasuk and ppn is not None and not dekat(ppn_harus, ppn):
+                koreksi = ppn_harus - ppn
+                acuan = cocok[0][0] if cocok else harap - (pph or 0)
+                total_harus = acuan + koreksi
+                hasil.append(("peringatan", "Bila PPN dihitung benar ({}), total seharusnya {} (beda {} dari "
+                              "total tertulis).".format(format_rp(ppn_harus), format_rp(total_harus),
+                                                        format_rp(total - total_harus))))
+            elif cocok:
+                total_harus = cocok[0][0]
+            else:
+                total_harus = harap - (pph or 0)
             if cocok:
                 hasil.append(("ok", "Total {} cocok{}".format(format_rp(total), " (" + cocok[0][1] + ")" if cocok[0][1] else "")))
             else:
@@ -600,6 +624,12 @@ def cek_dokumen(dok, urut, hari_ini):
         else:
             hasil.append(("selisih", "Terbilang tertulis bernilai {}, tapi total {}. Terbilang yang benar: '{}'".format(
                 format_rp(angka_tb), format_rp(total), terbilang(total))))
+
+    if f["total"].tt and not kosong(tb) and not tidak_terbaca(tb):
+        angka_tb = baca_terbilang(str(tb))
+        if angka_tb is not None:
+            hasil.append(("info", "Petunjuk: terbilang terbaca bernilai {}. Cocokkan dengan angka total di dokumen "
+                          "asli; total TIDAK diisi otomatis dari terbilang.".format(format_rp(angka_tb))))
 
     # --- meterai
     if jenis == "kuitansi" and total is not None and total > BATAS_METERAI and f["meterai"].angka is None \
@@ -632,13 +662,15 @@ def cek_dokumen(dok, urut, hari_ini):
         ("pembeli", OrderedDict((k, str_bersih(pembeli.get(k))) for k in ("nama", "npwp", "nitku", "alamat"))),
         ("nsfp", str_bersih(dok.get("nsfp"))), ("kategori", str_bersih(dok.get("kategori")) or "Belum dikategorikan"),
         ("item", items_out),
-        ("subtotal", TIDAK_TERBACA if f["subtotal"].tt else subtotal), ("diskon", out(f["diskon"])),
-        ("dpp", TIDAK_TERBACA if f["dpp"].tt else dpp), ("dpp_nilai_lain", out(f["dpp_nilai_lain"])),
-        ("ppn", out(f["ppn"])), ("jenis_ppn", jenis_ppn or None), ("harga_termasuk_ppn", termasuk),
+        ("subtotal", out(f["subtotal"])), ("subtotal_dihitung", subtotal_dihitung), ("diskon", out(f["diskon"])),
+        ("dpp", out(f["dpp"])), ("dpp_dihitung", dpp_dihitung), ("dpp_nilai_lain", out(f["dpp_nilai_lain"])),
+        ("ppn", out(f["ppn"])), ("ppn_seharusnya", ppn_harus), ("jenis_ppn", jenis_ppn or None), ("harga_termasuk_ppn", termasuk),
         ("ppnbm", out(f["ppnbm"])), ("pph", out(f["pph"])), ("jenis_pph", str_bersih(dok.get("jenis_pph"))),
         ("biaya_lain", out(f["biaya_lain"])), ("potongan_lain", out(f["potongan_lain"])),
-        ("meterai", out(f["meterai"])), ("total", out(f["total"])), ("total_rekap", total_rekap),
+        ("meterai", out(f["meterai"])), ("total", out(f["total"])), ("total_seharusnya", total_harus),
+        ("total_rekap", total_rekap),
         ("terbilang", str_bersih(tb)), ("metode_bayar", str_bersih(dok.get("metode_bayar"))),
+        ("jatuh_tempo", str_bersih(dok.get("jatuh_tempo"))), ("rekening_tujuan", str_bersih(dok.get("rekening_tujuan"))),
         ("catatan", str_bersih(dok.get("catatan"))),
         ("ikut_rekap", bool(dok.get("ikut_rekap", jenis != "bukti_transfer"))),
         ("status_cek", status),
@@ -646,6 +678,36 @@ def cek_dokumen(dok, urut, hari_ini):
         ("kolom_tidak_terbaca", tt),
     ])
     return rapi
+
+
+STATUS_INVALID = "INPUT TIDAK VALID"
+
+
+def cek_aman(dok, urut, hari_ini):
+    """Seperti cek_dokumen, tapi satu dokumen rusak tidak menggagalkan seluruh batch."""
+    try:
+        return cek_dokumen(dok, urut, hari_ini)
+    except GalatInput as e:
+        ident = str(dok.get("id") or "D{}".format(urut)) if isinstance(dok, dict) else "D{}".format(urut)
+        penjual = dok.get("penjual") if isinstance(dok, dict) else None
+        nama = penjual.get("nama") if isinstance(penjual, dict) else None
+        rapi = OrderedDict([("id", ident), ("jenis", "lainnya"), ("nomor", None), ("tanggal", None),
+                            ("penjual", OrderedDict([("nama", str_bersih(nama)), ("npwp", None), ("nitku", None),
+                                                     ("alamat", None), ("telepon", None)])),
+                            ("pembeli", OrderedDict([("nama", None), ("npwp", None), ("nitku", None), ("alamat", None)])),
+                            ("nsfp", None), ("kategori", "Belum dikategorikan"), ("item", [])])
+        for k in ("subtotal", "subtotal_dihitung", "diskon", "dpp", "dpp_dihitung", "dpp_nilai_lain", "ppn",
+                  "ppn_seharusnya", "jenis_ppn", "ppnbm", "pph", "jenis_pph", "biaya_lain", "potongan_lain",
+                  "meterai", "total", "total_seharusnya", "total_rekap", "terbilang", "metode_bayar",
+                  "jatuh_tempo", "rekening_tujuan", "catatan"):
+            rapi[k] = None
+        rapi["harga_termasuk_ppn"] = False
+        rapi["ikut_rekap"] = False
+        rapi["status_cek"] = STATUS_INVALID
+        rapi["hasil_cek"] = [OrderedDict([("level", "selisih"), ("pesan", "Data tidak valid: {}. Dokumen ini dilewati "
+                                          "(tidak ikut dicek & direkap); dokumen lain tetap diproses.".format(e))])]
+        rapi["kolom_tidak_terbaca"] = []
+        return rapi
 
 
 def cari_dobel(docs):
@@ -678,7 +740,8 @@ def rekap(docs):
     r = OrderedDict()
     r["jumlah_dokumen"] = len(docs)
     r["dokumen_direkap"] = len(ikut)
-    r["tidak_direkap"] = [d["id"] for d in docs if not d["ikut_rekap"]]
+    r["tidak_direkap"] = [d["id"] for d in docs if not d["ikut_rekap"] and d["status_cek"] != STATUS_INVALID]
+    r["tidak_valid"] = [d["id"] for d in docs if d["status_cek"] == STATUS_INVALID]
     tanpa_total = [d["id"] for d in ikut if not isinstance(d["total_rekap"], Decimal)]
     r["tanpa_total_terbaca"] = tanpa_total
 
@@ -723,10 +786,14 @@ def teks_laporan(docs, rk):
     b.append("| # | Tanggal | Penjual | Jenis | Total | Status |")
     b.append("|---|---|---|---|---|---|")
     for d in docs:
-        tot = d["total"] if d["total"] is not None else d["total_rekap"]
+        if d["total"] is not None:
+            tot = TIDAK_TERBACA if d["total"] == TIDAK_TERBACA else format_rp(d["total"])
+        elif d["total_rekap"] is not None:
+            tot = format_rp(d["total_rekap"]) + " (dihitung)"
+        else:
+            tot = "-"
         b.append("| {} | {} | {} | {} | {} | {} |".format(
-            d["id"], d["tanggal"] or "-", d["penjual"]["nama"] or "-", d["jenis"],
-            "TIDAK TERBACA" if tot == TIDAK_TERBACA else format_rp(tot), d["status_cek"]))
+            d["id"], d["tanggal"] or "-", d["penjual"]["nama"] or "-", d["jenis"], tot, d["status_cek"]))
     b.append("")
     for d in docs:
         b.append("{} - {} ({})".format(d["id"], d["penjual"]["nama"] or "-", d["status_cek"]))
@@ -751,6 +818,8 @@ def teks_laporan(docs, rk):
         if rk["tanpa_total_terbaca"]:
             b.append("")
             b.append("Belum masuk total (total tidak terbaca/tidak ada): " + ", ".join(rk["tanpa_total_terbaca"]))
+        if rk["tidak_valid"]:
+            b.append("INPUT TIDAK VALID (dilewati, perbaiki datanya): " + ", ".join(rk["tidak_valid"]))
         if rk["tidak_direkap"]:
             b.append("Tidak direkap (bukti transfer/ditandai ikut_rekap=false): " + ", ".join(rk["tidak_direkap"]))
         for c in rk["kemungkinan_dobel"]:
@@ -765,7 +834,7 @@ def _angka_csv(v, desimal):
     if v is None:
         return ""
     if v == TIDAK_TERBACA:
-        return "TIDAK TERBACA"
+        return TIDAK_TERBACA
     if isinstance(v, Decimal):
         if v == v.to_integral_value():
             return str(int(v))
@@ -778,7 +847,7 @@ def _id_csv(v, polos):
     if v is None:
         return ""
     if v == TIDAK_TERBACA:
-        return "TIDAK TERBACA"
+        return TIDAK_TERBACA
     return v if polos or not re.fullmatch(r"\d+", v) else '="{}"'.format(v)
 
 
@@ -787,14 +856,18 @@ def ke_csv(docs, mode, pemisah, desimal, id_polos):
     w = csv.writer(buf, delimiter=pemisah, lineterminator="\n")
     if mode == "dokumen":
         w.writerow(["No", "ID", "Tanggal", "Jenis", "Nomor Dokumen", "Penjual", "NPWP Penjual", "Pembeli",
-                    "Kategori", "Subtotal", "Diskon", "DPP", "PPN", "PPh", "Biaya Lain", "Total", "Metode Bayar",
+                    "Kategori", "Subtotal", "Diskon", "DPP", "PPN", "PPh", "Biaya Lain", "Total",
+                    "Subtotal Dihitung Script", "DPP Dihitung Script", "PPN Seharusnya", "Total Seharusnya",
+                    "Total Untuk Rekap", "Ikut Rekap", "Jatuh Tempo", "Rekening Tujuan", "Metode Bayar",
                     "Status Cek", "Kolom Tidak Terbaca", "Catatan"])
         for i, d in enumerate(docs, 1):
             w.writerow([i, d["id"], d["tanggal"] or "", d["jenis"], _id_csv(d["nomor"] or d["nsfp"], id_polos), d["penjual"]["nama"] or "",
                         _id_csv(d["penjual"]["npwp"], id_polos), d["pembeli"]["nama"] or "", d["kategori"]] +
-                       [_angka_csv(d[k], desimal) for k in ("subtotal", "diskon", "dpp", "ppn", "pph", "biaya_lain")] +
-                       [_angka_csv(d["total"] if d["total"] is not None else d["total_rekap"], desimal)] +
-                       [d["metode_bayar"] or "", d["status_cek"], ", ".join(d["kolom_tidak_terbaca"]), d["catatan"] or ""])
+                       [_angka_csv(d[k], desimal) for k in ("subtotal", "diskon", "dpp", "ppn", "pph", "biaya_lain",
+                                                             "total", "subtotal_dihitung", "dpp_dihitung",
+                                                             "ppn_seharusnya", "total_seharusnya", "total_rekap")] +
+                       ["ya" if d["ikut_rekap"] else "tidak", d["jatuh_tempo"] or "",
+                        _id_csv(d["rekening_tujuan"], id_polos), d["metode_bayar"] or "", d["status_cek"], ", ".join(d["kolom_tidak_terbaca"]), d["catatan"] or ""])
     else:
         w.writerow(["ID", "Tanggal", "Penjual", "Nomor Dokumen", "Kategori", "Nama Item", "Qty", "Satuan",
                     "Harga Satuan", "Diskon", "Jumlah"])
@@ -854,7 +927,8 @@ def main(argv=None):
             raise GalatInput("isi JSON harus objek dokumen atau {\"dokumen\": [...]}")
         if not isinstance(daftar, list) or not daftar:
             raise GalatInput("tidak ada dokumen untuk dicek")
-        docs = [cek_dokumen(d, i, hari_ini) for i, d in enumerate(daftar, 1)]
+        docs = [cek_aman(d, i, hari_ini) for i, d in enumerate(daftar, 1)]
+        tidak_valid = [d["id"] for d in docs if d["status_cek"] == STATUS_INVALID]
         rk = rekap(docs)
         if a.format == "json":
             keluar = json.dumps(OrderedDict([("dokumen", docs), ("rekap", rk),
@@ -870,6 +944,10 @@ def main(argv=None):
             print("Tersimpan: {}".format(a.output))
         else:
             sys.stdout.write(keluar if keluar.endswith("\n") else keluar + "\n")
+        if tidak_valid:
+            sys.stderr.write("PERINGATAN: {} dokumen tidak valid dan tidak ikut dicek/direkap: {}. "
+                             "Perbaiki datanya lalu jalankan ulang.\n".format(len(tidak_valid), ", ".join(tidak_valid)))
+            return 1
         return 0
     except GalatInput as e:
         sys.stderr.write("ERROR: {}\n".format(e))

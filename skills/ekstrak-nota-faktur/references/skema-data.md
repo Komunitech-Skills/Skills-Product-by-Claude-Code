@@ -40,6 +40,8 @@ Contoh lengkap berisi 6 dokumen ada di `templates/contoh-input.json`.
 | `total` | Total yang harus dibayar/yang dibayar | |
 | `terbilang` | Salin **persis** dari dokumen | Script membacanya jadi angka |
 | `metode_bayar` | tunai, transfer BCA, QRIS, kartu, dll. | |
+| `jatuh_tempo` | Tanggal jatuh tempo invoice | Salin persis |
+| `rekening_tujuan` | Bank + nomor rekening tujuan bayar | Bandingkan dengan rekening yang biasa dipakai penjual |
 | `catatan` | Hal penting: bagian terbaca sebagian, cap "LUNAS", coretan | |
 | `ikut_rekap` | `false` bila dokumen ini pembayaran atas nota lain | Default `false` untuk `bukti_transfer` |
 
@@ -64,3 +66,12 @@ Pakai kategori milik pengguna bila ia menyebutkan. Bila ragu, pakai "Lain-lain" 
 - Struk thermal yang pudar: angka 3/8, 1/7, 5/6, 0/8 sering tertukar. Bila ragu → `TIDAK_TERBACA`.
 - Bila total terbaca tapi item tidak: isi total, `item: []`, sebut di catatan.
 - Bila foto terpotong: tandai kolom yang terpotong sebagai `TIDAK_TERBACA`.
+
+## 6. Kolom tambahan di hasil script (bukan diisi agent)
+| Kunci | Arti |
+|---|---|
+| `subtotal_dihitung`, `dpp_dihitung` | Diisi script bila dokumen tidak mencantumkan subtotal/DPP. Kolom `subtotal`/`dpp` tetap berisi angka dokumen (atau kosong) |
+| `ppn_seharusnya` | PPN menurut aturan & tanggal dokumen. Sama dengan PPN dokumen bila selisihnya ≤ Rp1 (pembulatan) |
+| `total_seharusnya` | Total bila PPN dihitung benar (memperhitungkan PPh/meterai yang terdeteksi) |
+| `total_rekap` | Angka yang dipakai di rekap: total dokumen, atau DPP + PPN untuk faktur tanpa total (ditandai "dihitung") |
+| `status_cek` | `COCOK`, `PERLU DICEK`, `ADA SELISIH`, `ADA YANG TIDAK TERBACA`, `TERCATAT` (tak ada yang bisa dicocokkan), `INPUT TIDAK VALID` (dilewati) |

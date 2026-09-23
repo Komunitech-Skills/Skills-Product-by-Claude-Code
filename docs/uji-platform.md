@@ -3,6 +3,11 @@
 Dipakai pemilik/tim untuk menguji skill berstatus `lulus` di aplikasi sungguhan sebelum naik ke `beta`.
 Uji minimal di **satu** platform; idealnya OpenClaw + satu lainnya (Cursor/Codex/Claude Code).
 
+## Uji otomatis OpenClaw (tanpa API key)
+`bash scripts/uji_openclaw.sh` memasang OpenClaw terbaru di `/tmp`, memuat semua skill, lalu memastikan
+setiap skill **eligible, terlihat oleh model, dan bisa dipanggil sebagai perintah**. Jalankan setiap ada
+skill baru. Ini BUKAN pengganti uji manual di bawah (perilaku agent butuh API key model).
+
 ## Persiapan (sekali saja)
 1. Buat paket uji: `python3 scripts/build.py --pembeli "UJI INTERNAL" --skill <nama> --izinkan-draft`
 2. Pasang ZIP dari `dist/` mengikuti `docs/instalasi.md` (Anggap dirimu pembeli awam — kalau panduan instalasi membingungkan, catat!).

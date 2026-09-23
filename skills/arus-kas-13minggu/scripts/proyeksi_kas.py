@@ -120,10 +120,19 @@ KATA_MASUK = ["penjualan", "jual", "omzet", "piutang", "pelunasan", "tagihan mas
 KATA_PIUTANG = ["piutang", "pelunasan", "tagihan", "termin masuk", "invoice"]
 KATA_SUPPLIER = ["bahan", "supplier", "pemasok", "stok", "belanja barang", "kulakan", "persediaan", "material"]
 KATA_NONKRITIS = ["renovasi", "peralatan", "alat baru", "aset", "mesin", "iklan", "marketing", "promosi",
-                  "prive", "bonus", "perjalanan", "dekorasi", "investasi", "seragam", "event", "sponsor",
+                  "prive", "perjalanan", "dekorasi", "investasi", "seragam", "event", "sponsor",
                   "ekspansi", "cabang baru", "kendaraan", "furnitur", "laptop", "hp baru"]
-KATA_KRITIS = ["gaji", "upah", "sewa", "cicilan", "angsuran", "pajak", "listrik", "air", "bpjs", "bahan",
-               "supplier", "thr", "bunga"]
+# Kewajiban yang SELALU kritis (tidak boleh ikut simulasi "tunda"), apa pun isi kolom `kritis`.
+KATA_WAJIB = ["gaji", "upah", "cicilan", "angsuran", "leasing", "kredit", "pajak", "ppn", "pph", "thr",
+              "bpjs", "bonus karyawan", "bunga"]
+# Biasanya kritis (dicek sebelum daftar non-kritis), tetapi boleh diubah pengguna lewat kolom `kritis`.
+KATA_KRITIS = ["sewa", "listrik", "air", "pdam", "internet", "bahan", "supplier", "bonus", "tagihan", "asuransi"]
+
+
+def ada_kata(teks, daftar):
+    """Cocokkan kata utuh di awal kata (mis. 'air' tidak cocok dengan 'kursi pairing')."""
+    t = (teks or "").lower()
+    return next((k for k in daftar if re.search(r"(?<![a-z])" + re.escape(k), t)), None)
 
 
 def cari_kolom(header):
@@ -181,6 +190,9 @@ def parse_minggu(teks, n, mulai):
     s = (teks or "").strip().lower()
     if not s:
         raise ValueError("kolom minggu kosong")
+    # bentuk awam: "minggu 6", "minggu ke-6", "mg 3-5", "setiap 2 minggu mulai minggu 3"
+    s = re.sub(r"\b(?:minggu|mg|pekan)\s*(?:ke\s*-?\s*)?(?=\d)", "", s)
+    s = re.sub(r"\bke\s*-\s*(?=\d)", "", s).strip()
     if s in ("semua", "tiap minggu", "setiap minggu", "rutin", "mingguan", "all", "*"):
         return list(range(1, n + 1))
     m = re.fullmatch(r"(?:tgl|tanggal|bulanan)\s*[:=]?\s*(\d{1,2})", s)
@@ -223,24 +235,25 @@ def tebak_jenis(jenis, kategori):
         return "keluar"
     if j:
         return None
-    k = " " + (kategori or "").lower() + " "
-    return "masuk" if any(x in k for x in KATA_MASUK) else "keluar"
+    return "masuk" if ada_kata(kategori, KATA_MASUK) else "keluar"
 
 
 def tebak_kritis(nilai, kategori, jenis):
+    """Kembalikan (kritis: True/False/None, sumber) dengan sumber 'wajib' | 'pengguna' | 'tebakan' | None."""
     if jenis == "masuk":
-        return None
+        return None, None
+    if ada_kata(kategori, KATA_WAJIB):
+        return True, "wajib"
     v = (nilai or "").strip().lower()
     if v in ("ya", "y", "yes", "wajib", "kritis", "1", "true"):
-        return True
+        return True, "pengguna"
     if v in ("tidak", "t", "no", "n", "bisa ditunda", "0", "false", "opsional"):
-        return False
-    k = (kategori or "").lower()
-    if any(x in k for x in KATA_NONKRITIS):
-        return False
-    if any(x in k for x in KATA_KRITIS):
-        return True
-    return None  # tidak diketahui
+        return False, "pengguna"
+    if ada_kata(kategori, KATA_KRITIS):
+        return True, "tebakan"
+    if ada_kata(kategori, KATA_NONKRITIS):
+        return False, "tebakan"
+    return None, None  # tidak diketahui
 
 # ---------------------------------------------------------------- hitung
 
@@ -327,6 +340,7 @@ def main():
                "yang_dibutuhkan": "minggu, kategori, nominal (opsional: jenis, keterangan, kritis)"})
 
     item, dilewati, peringatan = [], [], []
+    ditebak_nonkritis, setelah_horizon = set(), []
     for no, r in enumerate(baris, start=2):
         kat = (r.get(kolom["kategori"]) or "").strip()
         if not kat and not (r.get(kolom["nominal"]) or "").strip():
@@ -355,13 +369,32 @@ def main():
             dilewati.append({"baris": no, "alasan": "tidak ada minggu yang valid"})
             continue
         ket = (r.get(kolom["keterangan"]) or "").strip() if "keterangan" in kolom else ""
-        kritis = tebak_kritis(r.get(kolom["kritis"]) if "kritis" in kolom else "", kat, jenis)
+        isian_kritis = r.get(kolom["kritis"]) if "kritis" in kolom else ""
+        kritis, sumber_kritis = tebak_kritis(isian_kritis, kat, jenis)
+        if sumber_kritis == "wajib" and (isian_kritis or "").strip().lower() in (
+                "tidak", "t", "no", "n", "bisa ditunda", "0", "false", "opsional"):
+            peringatan.append(f"Baris {no} ({kat}): ditandai 'tidak kritis', tetapi gaji/cicilan/angsuran/leasing/"
+                              "pajak/THR/BPJS selalu diperlakukan KRITIS dan tidak ikut simulasi 'tunda'.")
+        if jenis == "keluar" and kritis is False and sumber_kritis == "tebakan":
+            ditebak_nonkritis.add(kat)
         low = kat.lower() + " " + ket.lower()
+        spek = (r.get(kolom["minggu"]) or "").strip().lower()
+        mt = re.fullmatch(r"(?:tgl|tanggal|bulanan)\s*[:=]?\s*(\d{1,2})", spek)
+        if mt and mulai is not None:
+            hari = int(mt.group(1))
+            akhir_h = mulai + timedelta(days=7 * n - 1)
+            for k in range(1, 8):
+                d = akhir_h + timedelta(days=k)
+                if d.day == min(hari, calendar.monthrange(d.year, d.month)[1]):
+                    setelah_horizon.append(f"{kat} ({rp(bulat(nom))}) jatuh {fmt_tgl(d)} {d.year}, "
+                                           f"{k} hari setelah minggu {n}")
+                    break
         for w in mg:
             item.append({"minggu": w, "jenis": jenis, "kategori": kat or "(tanpa nama)",
                          "nominal": bulat(nom), "keterangan": ket, "kritis": kritis,
-                         "piutang": jenis == "masuk" and any(x in low for x in KATA_PIUTANG),
-                         "supplier": jenis == "keluar" and any(x in low for x in KATA_SUPPLIER)})
+                         "piutang": jenis == "masuk" and bool(ada_kata(low, KATA_PIUTANG)),
+                         "supplier": (jenis == "keluar" and sumber_kritis != "wajib"
+                                      and bool(ada_kata(low, KATA_SUPPLIER)))})
 
     if not item:
         gagal("Tidak ada baris valid yang bisa dihitung.", {"baris_dilewati": dilewati})
@@ -444,9 +477,17 @@ def main():
                 rg += r
             opsi.append(evaluasi("Gabungan semua opsi di atas", gab, dg, lw, rg, "Kombinasi opsi yang tersedia."))
         for o in opsi:
-            if o["jatuh_setelah_horizon"]:
-                o["catatan"] += (f" PERHATIAN: {rp(o['jatuh_setelah_horizon'])} jatuh setelah minggu {n} — "
-                                 "kewajiban tetap ada, hanya pindah waktu.")
+            lewat = o["jatuh_setelah_horizon"]
+            setelah = o["saldo_akhir_per_minggu_baru"][-1] - lewat
+            o["saldo_setelah_kewajiban_tertunda"] = setelah
+            o["hanya_menunda"] = bool(lewat) and setelah < 0
+            o["di_bawah_batas_setelah_kewajiban_tertunda"] = bool(lewat) and setelah < batas
+            if lewat:
+                o["catatan"] += (f" PERHATIAN: {rp(lewat)} jatuh setelah minggu {n} — kewajiban tetap ada, hanya pindah "
+                                 f"waktu. Setelah dibayar, saldo menjadi {rp(setelah)}.")
+            if o["hanya_menunda"]:
+                o["catatan"] += (" HANYA MENUNDA: opsi ini tidak menyelesaikan masalah, hanya memindahkan kekurangan "
+                                 "ke setelah periode proyeksi. Jangan ditulis sebagai solusi.")
 
     kebutuhan_negatif = max(0, -s_rendah)
     kebutuhan_batas = max(0, batas - s_rendah)
@@ -454,6 +495,17 @@ def main():
     if tidak_diketahui:
         peringatan.append("Pos pengeluaran berikut belum jelas kritis/tidak (tidak ikut simulasi 'tunda'): "
                           + ", ".join(tidak_diketahui) + ". Isi kolom 'kritis' (ya/tidak) bila perlu.")
+    if ditebak_nonkritis:
+        peringatan.append("Pos berikut DITEBAK tidak kritis dan ikut simulasi 'tunda belanja non-kritis': "
+                          + ", ".join(sorted(ditebak_nonkritis)) + ". Konfirmasi ke pengguna bahwa pos ini memang bisa ditunda.")
+    if setelah_horizon:
+        peringatan.append("Pos bulanan berikutnya jatuh tak lama setelah periode proyeksi (belum masuk tabel): "
+                          + "; ".join(setelah_horizon) + ". Pastikan saldo akhir cukup untuk itu.")
+    bersih = sum(masuk) - total_keluar
+    if bersih < 0:
+        peringatan.append(f"DEFISIT STRUKTURAL: selama {n} minggu uang keluar lebih besar {rp(-bersih)} daripada uang masuk "
+                          f"(rata-rata {rp(bulat(Decimal(-bersih) / n))}/minggu). Menggeser jadwal tidak cukup; perlu menaikkan "
+                          "pemasukan atau memangkas biaya rutin.")
     if not any(it["piutang"] for it in item):
         peringatan.append("Tidak ada pos pelunasan piutang terdeteksi (kategori mengandung 'piutang'/'pelunasan'/'tagihan').")
 
@@ -465,7 +517,9 @@ def main():
         },
         "ringkasan": {
             "total_masuk": sum(masuk), "total_keluar": total_keluar,
-            "arus_kas_bersih": sum(masuk) - total_keluar,
+            "arus_kas_bersih": bersih,
+            "defisit_struktural": bersih < 0,
+            "rata_rata_arus_kas_bersih_per_minggu": bulat(Decimal(bersih) / n),
             "saldo_akhir_minggu_terakhir": saldo[-1],
             "saldo_terendah": s_rendah, "minggu_saldo_terendah": w_rendah,
             "minggu_negatif": neg, "minggu_di_bawah_batas_aman": bawah,
@@ -530,6 +584,9 @@ def cetak_teks(h):
     print(f"Total masuk {rp(r['total_masuk'])}, total keluar {rp(r['total_keluar'])}, "
           f"saldo akhir {rp(r['saldo_akhir_minggu_terakhir'])}.")
     print(f"Saldo terendah {rp(r['saldo_terendah'])} di minggu {r['minggu_saldo_terendah']}.")
+    if r["defisit_struktural"]:
+        print(f"DEFISIT STRUKTURAL: arus kas bersih {rp(r['arus_kas_bersih'])} "
+              f"({rp(r['rata_rata_arus_kas_bersih_per_minggu'])}/minggu).")
     if r["minggu_negatif"]:
         print(f"Minggu NEGATIF: {r['minggu_negatif']} → butuh tambahan {rp(r['tambahan_dana_agar_tidak_negatif'])} agar tidak minus.")
     if r["minggu_di_bawah_batas_aman"]:

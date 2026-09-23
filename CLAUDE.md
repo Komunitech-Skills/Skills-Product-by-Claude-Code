@@ -163,9 +163,10 @@ Jaga SKILL.md tetap ringkas (idealnya < 300 baris); materi panjang dipindah ke `
 5. **Uji banding pesaing (wajib):** cari skill/prompt publik terbaik untuk tugas yang sama (ClawHub, skills.sh, GitHub, anthropics/skills). Jika ada, jalankan skenario normal pertama dengan skill pesaing dan skill kita, nilai berdampingan, simpan di `examples/00-banding-pesaing.md`. Skill pesaing hanya **dibaca untuk dinilai**, tidak disalin; bila unggul, pelajari kelebihannya lalu tulis ulang dengan cara kita sendiri. Jika skill kita kalah → skor maks. 6. Jika tidak ada pesaing, catat kata kunci & sumber yang dicari.
 6. Simpan hasil uji di `examples/` skill tersebut (`01`–`05` + `HASIL-UJI.md`).
 7. Beri skor kualitas 1–10 dengan alasan. Di bawah 7 → revisi, jangan rilis. Setelah revisi, uji ulang oleh penguji independen.
-8. Kolom `platform_teruji` hanya diisi platform yang **benar-benar diuji**. Uji simulasi oleh agent ditulis apa adanya (mis. `claude-code (simulasi agent)`). Jangan klaim sebaliknya.
-9. **Uji platform asli (oleh pemilik/tim):** skill `lulus` diuji manusia di OpenClaw, Codex, Claude Code, dan/atau Cursor mengikuti `docs/uji-platform.md`. Hasilnya dicatat di `examples/UJI-PLATFORM.md` dan platform ditambahkan ke `platform_teruji` (mis. `openclaw;cursor`).
-10. **Beta tester:** skill yang lulus uji platform asli naik ke status `beta`, dibagikan gratis ke 5–10 member VIP selama ±7 hari mengikuti `docs/program-beta.md`. Masukan dirangkum di `examples/MASUKAN-BETA.md`, direvisi, lalu status `rilis`.
+8. **Uji muat OpenClaw otomatis:** jalankan `bash scripts/uji_openclaw.sh` — setiap skill wajib eligible/terlihat model/bisa dipanggil di OpenClaw terbaru.
+9. Kolom `platform_teruji` hanya diisi platform yang **benar-benar diuji**. Uji simulasi oleh agent ditulis apa adanya (mis. `claude-code (simulasi agent)`). Jangan klaim sebaliknya.
+10. **Uji platform asli (oleh pemilik/tim):** skill `lulus` diuji manusia di OpenClaw, Codex, Claude Code, dan/atau Cursor mengikuti `docs/uji-platform.md`. Hasilnya dicatat di `examples/UJI-PLATFORM.md` dan platform ditambahkan ke `platform_teruji` (mis. `openclaw;cursor`).
+11. **Beta tester:** skill yang lulus uji platform asli naik ke status `beta`, dibagikan gratis ke 5–10 member VIP selama ±7 hari mengikuti `docs/program-beta.md`. Masukan dirangkum di `examples/MASUKAN-BETA.md`, direvisi, lalu status `rilis`.
 
 ### Tahap 7 — Packaging & Tiering
 Usulkan (bukan putuskan) tier untuk disetujui pemilik:
