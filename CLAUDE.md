@@ -73,7 +73,7 @@ Kolom `catalog.csv`:
 
 - `jalur`: `kurasi` | `orisinal`
 - `tier_usulan` / `tier_final`: `gratis` | `ecer` | `vip`. `tier_final` & `harga_final_idr` **hanya diisi oleh pemilik**.
-- `status`: `ide` | `draft` | `uji` | `lulus` | `rilis` | `ditolak` | `arsip`. Hanya `rilis` yang bisa dipaketkan untuk pembeli.
+- `status`: `ide` → `draft` → `uji` → `lulus` → `beta` → `rilis` (atau `ditolak` / `arsip`). Hanya `rilis` yang bisa dipaketkan untuk pembeli; `beta` hanya untuk beta tester (`build.py --beta`).
 - `versi`: semantic versioning `X.Y.Z`.
 
 ---
@@ -141,10 +141,13 @@ Jaga SKILL.md tetap ringkas (idealnya < 300 baris); materi panjang dipindah ke `
 ### Tahap 6 — Pengujian (Quality Gate)
 1. Uji di folder sementara (mis. scratchpad), **bukan** di `.claude/skills/` repo ini, agar skill tidak aktif di sesi kerja kurator.
 2. Pengujian dilakukan oleh agent/sesi **terpisah** dari pembuat skill, yang hanya membaca folder skill tersebut.
-3. Jalankan 5 skenario: 3 normal, 1 input tidak lengkap, 1 di luar cakupan. Jika ada script, jalankan juga dengan data rusak.
-4. Simpan hasil uji di `examples/` skill tersebut.
-5. Beri skor kualitas 1–10 dengan alasan. Di bawah 7 → revisi, jangan rilis.
-6. Kolom `platform_teruji` hanya diisi platform yang **benar-benar diuji**. Uji simulasi oleh agent ditulis apa adanya (mis. `claude-code (simulasi agent)`). Jangan klaim sebaliknya.
+3. Jalankan 5 skenario: 3 normal, 1 input tidak lengkap, 1 di luar cakupan. Jika ada script, jalankan juga dengan data rusak dan verifikasi angka secara independen.
+4. **Uji A/B (wajib):** untuk skenario normal pertama, bandingkan output agent **tanpa skill** vs **dengan skill**. Simpan di `examples/00-pembanding-tanpa-skill.md`. Jika hasil dengan skill tidak jelas lebih baik, skill tidak memberi nilai tambah → skor maks. 6. Perbandingan ini juga menjadi bahan "sebelum/sesudah" di README.
+5. Simpan hasil uji di `examples/` skill tersebut (`01`–`05` + `HASIL-UJI.md`).
+6. Beri skor kualitas 1–10 dengan alasan. Di bawah 7 → revisi, jangan rilis. Setelah revisi, uji ulang oleh penguji independen.
+7. Kolom `platform_teruji` hanya diisi platform yang **benar-benar diuji**. Uji simulasi oleh agent ditulis apa adanya (mis. `claude-code (simulasi agent)`). Jangan klaim sebaliknya.
+8. **Uji platform asli (oleh pemilik/tim):** skill `lulus` diuji manusia di OpenClaw, Codex, Claude Code, dan/atau Cursor mengikuti `docs/uji-platform.md`. Hasilnya dicatat di `examples/UJI-PLATFORM.md` dan platform ditambahkan ke `platform_teruji` (mis. `openclaw;cursor`).
+9. **Beta tester:** skill yang lulus uji platform asli naik ke status `beta`, dibagikan gratis ke 5–10 member VIP selama ±7 hari mengikuti `docs/program-beta.md`. Masukan dirangkum di `examples/MASUKAN-BETA.md`, direvisi, lalu status `rilis`.
 
 ### Tahap 7 — Packaging & Tiering
 Usulkan (bukan putuskan) tier untuk disetujui pemilik:

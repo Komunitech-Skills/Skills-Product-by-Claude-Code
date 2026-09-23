@@ -20,9 +20,9 @@ KOLOM = ["nama", "kategori", "jalur", "sumber_url", "lisensi", "skor_kualitas", 
          "status", "tanggal_update"]
 JALUR = {"kurasi", "orisinal"}
 TIER = {"gratis", "ecer", "vip"}
-STATUS = {"ide", "draft", "uji", "lulus", "rilis", "ditolak", "arsip"}
+STATUS = {"ide", "draft", "uji", "lulus", "beta", "rilis", "ditolak", "arsip"}
 STATUS_TANPA_FOLDER = {"ide", "ditolak"}
-STATUS_SUDAH_UJI = {"lulus", "rilis"}
+STATUS_SUDAH_UJI = {"lulus", "beta", "rilis"}
 
 POLA_NAMA = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 POLA_VERSI = re.compile(r"^\d+\.\d+\.\d+$")

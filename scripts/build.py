@@ -6,7 +6,8 @@ Contoh:
   python3 scripts/build.py --pembeli "Budi <budi@contoh.com>" --bundle paket-toko-online
   python3 scripts/build.py --pembeli "Member VIP #0123" --vip
 
-Hanya skill berstatus 'rilis' yang dipaketkan (kecuali --izinkan-draft untuk uji coba).
+Hanya skill berstatus 'rilis' yang dipaketkan. --beta mengikutkan status 'beta' (untuk beta tester);
+--izinkan-draft untuk uji coba internal.
 """
 import argparse
 import csv
@@ -65,7 +66,7 @@ def pilih_skill(a, katalog):
         if b["status"] in {"ide", "ditolak", "arsip"}:
             gagal(f"Skill '{n}' berstatus '{b['status']}', tidak bisa dijual.")
         tier = b["tier_final"]
-        if not tier and not a.izinkan_draft:
+        if not tier and not (a.izinkan_draft or a.beta):
             gagal(f"Skill '{n}' belum punya tier_final dari pemilik.")
         if tier == "vip":
             gagal(f"Skill '{n}' eksklusif VIP, tidak dijual ecer/bundle.")
@@ -80,6 +81,8 @@ def main():
     target.add_argument("--skill", action="append", help="Nama skill (paket ecer), bisa diulang")
     target.add_argument("--bundle", help="Nama bundle di bundles/<nama>.txt")
     target.add_argument("--vip", action="store_true", help="Semua skill (paket VIP)")
+    p.add_argument("--beta", action="store_true",
+                   help="Ikutkan skill berstatus 'beta' (paket untuk beta tester)")
     p.add_argument("--izinkan-draft", action="store_true",
                    help="Ikutkan skill yang belum 'rilis' / belum ada tier_final (HANYA untuk uji coba)")
     a = p.parse_args()
@@ -92,11 +95,12 @@ def main():
         katalog = {b["nama"]: b for b in csv.DictReader(f)}
 
     pilihan, jenis = pilih_skill(a, katalog)
-    belum_rilis = [b["nama"] for b in pilihan if b["status"] != "rilis"]
+    boleh = {"rilis", "beta"} if a.beta else {"rilis"}
+    belum_rilis = [b["nama"] for b in pilihan if b["status"] not in boleh]
     if belum_rilis and not a.izinkan_draft:
         if a.vip:
             print(f"ℹ️  Dilewati (belum rilis): {', '.join(belum_rilis)}")
-            pilihan = [b for b in pilihan if b["status"] == "rilis"]
+            pilihan = [b for b in pilihan if b["status"] in boleh]
         else:
             gagal(f"Belum rilis: {', '.join(belum_rilis)}. Pakai --izinkan-draft untuk uji coba.")
     if not pilihan:
