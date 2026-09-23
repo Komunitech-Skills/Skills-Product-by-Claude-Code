@@ -14,10 +14,10 @@ Mengubah data penjualan mentah menjadi ringkasan yang mudah dipahami pemilik usa
    - nama produk (wajib)
    - jumlah/qty (opsional, default 1)
    - total harga baris (wajib; jika tidak ada, gunakan harga satuan × qty)
-2. **Jalankan script analisis** `scripts/rekap.py` yang ada di folder skill ini
-   (pakai path lengkap ke folder skill; di Windows ganti `python3` dengan `python` atau `py`):
+2. **Jalankan script analisis** `scripts/rekap.py`. Path ini relatif terhadap folder yang berisi
+   SKILL.md ini; gunakan path lengkapnya. Di Windows, ganti `python3` dengan `python` atau `py`:
    ```bash
-   python3 <folder-skill>/scripts/rekap.py <file.csv> \
+   python3 <folder-skill-ini>/scripts/rekap.py <file.csv> \
      --kolom-tanggal "Tanggal" --kolom-produk "Produk" \
      --kolom-qty "Qty" --kolom-total "Total"
    ```
