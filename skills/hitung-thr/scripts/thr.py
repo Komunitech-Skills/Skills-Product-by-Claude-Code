@@ -81,14 +81,36 @@ def parse_tanggal(teks, nama):
     raise InputError("{}: '{}' bukan tanggal yang dikenali (pakai 2026-03-20 atau 20/03/2026)".format(nama, s))
 
 
+def tambah_bulan(d, n):
+    """Tanggal d ditambah n bulan; tanggal dipotong ke akhir bulan bila perlu (31 Jan + 1 bulan = 28/29 Feb)."""
+    y, m = divmod(d.month - 1 + n, 12)
+    y += d.year
+    m += 1
+    hari_akhir = [31, 29 if (y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)) else 28, 31, 30, 31, 30, 31, 31, 30, 31,
+                  30, 31][m - 1]
+    return datetime.date(y, m, min(d.day, hari_akhir))
+
+
 def bulan_penuh(mulai, sampai):
-    """Jumlah bulan penuh dari tanggal mulai sampai tanggal acuan (tanggal mulai dihitung hari pertama)."""
+    """Jumlah bulan penuh masa kerja, INKLUSIF: tanggal mulai dan tanggal acuan sama-sama dihitung sebagai hari kerja.
+
+    Contoh: 11 Mar 2026 s.d. 10 Mar 2027 = 12 bulan; 1 Jan s.d. 31 Jan = 1 bulan; 1 Jan s.d. 30 Jan = 0 bulan.
+    Kembalikan -1 bila sampai < mulai.
+    """
     if sampai < mulai:
         return -1
-    n = (sampai.year - mulai.year) * 12 + (sampai.month - mulai.month)
-    if sampai.day < mulai.day:
+    akhir = sampai + datetime.timedelta(days=1)       # batas eksklusif
+    n = (akhir.year - mulai.year) * 12 + (akhir.month - mulai.month)
+    while n > 0 and tambah_bulan(mulai, n) > akhir:
         n -= 1
+    while tambah_bulan(mulai, n + 1) <= akhir:
+        n += 1
     return n
+
+
+def kurang_hari_ke_bulan_berikut(mulai, sampai, n):
+    """Berapa hari lagi sampai masa kerja genap n+1 bulan (untuk peringatan kasus tepi)."""
+    return (tambah_bulan(mulai, n + 1) - (sampai + datetime.timedelta(days=1))).days
 
 
 def format_tanggal(d):
@@ -143,7 +165,15 @@ def hitung_karyawan(r, cfg):
         if n < 0:
             raise InputError("{}: tanggal_mulai {} setelah tanggal hari raya/berhenti".format(label, mulai))
         masa = Decimal(n)
-        sumber_masa = "bulan penuh dari {} s.d. {}".format(mulai.strftime("%d/%m/%Y"), acuan.strftime("%d/%m/%Y"))
+        sumber_masa = "bulan penuh dari {} s.d. {} (inklusif)".format(mulai.strftime("%d/%m/%Y"),
+                                                                        acuan.strftime("%d/%m/%Y"))
+        if n < 12:
+            kurang = kurang_hari_ke_bulan_berikut(mulai, acuan, n)
+            if 0 < kurang <= 3:
+                peringatan.append("{}: masa kerja {} bulan, kurang {} hari lagi menjadi {} bulan{}. Aturan tidak mengatur "
+                                  "pecahan bulan; pertimbangkan membulatkan ke atas agar tidak dipersoalkan (isi "
+                                  "masa_kerja_bulan).".format(label, n, kurang, n + 1,
+                                                              " (THR penuh)" if n + 1 == 12 else ""))
     if masa < 1:
         berhak, alasan = False, "Masa kerja kurang dari 1 bulan — belum wajib THR (Permenaker 6/2016 Pasal 2)."
 
@@ -196,14 +226,23 @@ def hitung_karyawan(r, cfg):
 
     # --- PPh 21 atas THR
     pph = {"dihitung": False}
-    if r.get("ptkp") and thr > 0 and jenis not in ("pkwtt", "pkwt"):
+    bayar = cfg["tanggal_bayar"]
+    mantan = bool(berhenti) and (bayar.year, bayar.month) > (berhenti.year, berhenti.month)
+    if thr > 0 and mantan:
+        # Mantan Pegawai: tarif Pasal 17 x bruto (PMK 168/2023 Pasal 12 ayat 8, Pasal 16 ayat 6; contoh Tuan O)
+        pajak, rincian = tc.pasal17(thr)
+        pph = {"dihitung": True, "metode": "mantan_pegawai", "tambahan_pph_thr": tc.bulat_bawah(pajak),
+               "rincian_pasal17": rincian, "dtp": False}
+        if ya_tidak(r.get("dtp"), label + ": dtp", False):
+            peringatan.append("{}: PPh 21 DTP tidak diterapkan untuk mantan pegawai.".format(label))
+    elif r.get("ptkp") and thr > 0 and jenis not in ("pkwtt", "pkwt"):
         tc.normalisasi_ptkp(r["ptkp"])
         pph = {"dihitung": False, "alasan": "Pekerja harian/satuan: PPh 21 memakai aturan pegawai tidak tetap "
                "(TER harian atau TER bulanan bila dibayar bulanan) — hitung dengan skill pph21-ter."}
     elif r.get("ptkp") and thr > 0:
         ptkp = tc.normalisasi_ptkp(r["ptkp"])
         kat = tc.kategori_ter(ptkp)
-        if cfg["bulan_bayar"] == 12 or (berhenti and berhenti.month == cfg["bulan_bayar"]):
+        if bayar.month == 12 or (berhenti and (berhenti.year, berhenti.month) == (bayar.year, bayar.month)):
             pph = {"dihitung": False, "alasan": "THR dibayar di Masa Pajak Terakhir (Desember/bulan berhenti): PPh 21 "
                    "dihitung ulang setahun — gunakan hitungan setahun (skill pph21-ter/slip-gaji-bpjs)."}
             peringatan.append("{}: {}".format(label, pph["alasan"]))
@@ -220,7 +259,19 @@ def hitung_karyawan(r, cfg):
             pph_tanpa, t1 = tc.pph_ter_bulanan(reguler, kat)
             pph_dengan, t2 = tc.pph_ter_bulanan(reguler + thr, kat)
             dtp = ya_tidak(r.get("dtp"), label + ": dtp", False)
-            pph = {"dihitung": True, "ptkp": ptkp, "kategori": kat, "bruto_reguler": reguler,
+            if dtp:
+                if r.get("bruto_tetap_januari"):
+                    bruto_tetap = angka(r["bruto_tetap_januari"], label + ": bruto_tetap_januari")
+                else:
+                    bruto_tetap = upah
+                    peringatan.append("{}: kolom bruto_tetap_januari kosong — syarat DTP dicek memakai gaji pokok + "
+                                      "tunjangan tetap ({}).".format(label, tc.format_rp(upah)))
+                ok, alasan_dtp = tc.cek_syarat_dtp(bayar.year, bruto_tetap)
+                if not ok:
+                    dtp = False
+                    peringatan.append("{}: TIDAK memenuhi syarat PPh 21 DTP — {}. PPh 21 dipotong normal.".format(
+                        label, alasan_dtp))
+            pph = {"dihitung": True, "metode": "ter", "ptkp": ptkp, "kategori": kat, "bruto_reguler": reguler,
                    "sumber_bruto": sumber_reg, "tarif_tanpa_thr": t1, "pph_tanpa_thr": pph_tanpa,
                    "tarif_dengan_thr": t2, "pph_dengan_thr": pph_dengan, "tambahan_pph_thr": pph_dengan - pph_tanpa,
                    "dtp": dtp}
@@ -307,7 +358,7 @@ def teks_hasil(hasil, cfg, total, csv_path):
     o = ["**Rincian THR {} — {}**".format(cfg["nama_hari_raya"], cfg["perusahaan"] or "-"),
          "Hari raya: {} · **Batas bayar (H-7): {}** · Rencana bayar: {}".format(
              format_tanggal(cfg["hari_raya"]), format_tanggal(cfg["batas_bayar"]), format_tanggal(cfg["tanggal_bayar"])),
-         "", "| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | Tambahan PPh 21 | THR diterima |",
+         "", "| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | PPh 21 karena THR | THR diterima |",
          "|---|---|---:|---:|---|---:|---:|---:|"]
     for h in hasil:
         p = h["pph21"]
@@ -327,7 +378,11 @@ def teks_hasil(hasil, cfg, total, csv_path):
         p = h["pph21"]
         if not p.get("dihitung") and p.get("alasan") and "Masa Pajak Terakhir" not in p["alasan"]:
             o.append("- {}: {}".format(h["nama"], p["alasan"]))
-        if p.get("dihitung"):
+        if p.get("dihitung") and p.get("metode") == "mantan_pegawai":
+            o.append("- {}: THR dibayar setelah bulan berhenti bekerja → berstatus Mantan Pegawai: PPh 21 = tarif "
+                     "Pasal 17 × bruto THR = {} (PMK 168/2023 Pasal 16 ayat 6), bukan TER.".format(
+                         h["nama"], tc.format_rp(p["tambahan_pph_thr"])))
+        elif p.get("dihitung"):
             o.append("- {}: PPh 21 bulan THR dibayar (TER {}) = {} × ({} + THR {}) = {}; tanpa THR {} × {} = {} → "
                      "tambahan {}{}.".format(
                          h["nama"], p["kategori"], tc.format_persen(p["tarif_dengan_thr"]),
@@ -377,7 +432,7 @@ def buat_parser():
     p.add_argument("--csv", help="Simpan rekap ke file CSV ini")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
     for k in ("nama", "jabatan", "jenis", "ptkp", "gaji-pokok", "tunjangan-tetap", "mulai", "masa-kerja-bulan",
-              "tanggal-berhenti", "upah-bulanan", "thr-kebijakan", "bruto-bulan-bayar", "dtp"):
+              "tanggal-berhenti", "upah-bulanan", "thr-kebijakan", "bruto-bulan-bayar", "dtp", "bruto-tetap-januari"):
         p.add_argument("--" + k)
     return p
 
@@ -405,7 +460,7 @@ def jalankan(args):
                  "tanggal_mulai": args.mulai or "", "masa_kerja_bulan": args.masa_kerja_bulan or "",
                  "tanggal_berhenti": args.tanggal_berhenti or "", "upah_bulanan": args.upah_bulanan or "",
                  "thr_kebijakan": args.thr_kebijakan or "", "bruto_bulan_bayar": args.bruto_bulan_bayar or "",
-                 "dtp": args.dtp or ""}]
+                 "dtp": args.dtp or "", "bruto_tetap_januari": args.bruto_tetap_januari or ""}]
     hasil, galat = [], []
     for r in rows:
         try:

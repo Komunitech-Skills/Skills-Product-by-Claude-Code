@@ -57,18 +57,26 @@ class TestTabel(unittest.TestCase):
 
 
 class TestMasaKerja(unittest.TestCase):
-    def test_bulan_penuh(self):
+    def test_bulan_penuh_inklusif(self):
         f = datetime.date.fromisoformat
+        self.assertEqual(thr.bulan_penuh(f("2026-03-11"), f("2027-03-10")), 12)   # regresi uji independen
+        self.assertEqual(thr.bulan_penuh(f("2026-03-12"), f("2027-03-10")), 11)
         self.assertEqual(thr.bulan_penuh(f("2026-03-10"), f("2027-03-10")), 12)
-        self.assertEqual(thr.bulan_penuh(f("2026-03-11"), f("2027-03-10")), 11)
-        self.assertEqual(thr.bulan_penuh(f("2027-02-10"), f("2027-03-10")), 1)
-        self.assertEqual(thr.bulan_penuh(f("2027-02-11"), f("2027-03-10")), 0)
+        self.assertEqual(thr.bulan_penuh(f("2027-01-01"), f("2027-01-31")), 1)
+        self.assertEqual(thr.bulan_penuh(f("2027-01-01"), f("2027-01-30")), 0)
+        self.assertEqual(thr.bulan_penuh(f("2027-01-31"), f("2027-02-27")), 1)   # akhir bulan: 31 Jan -> 28 Feb
+        self.assertEqual(thr.bulan_penuh(f("2027-01-31"), f("2027-02-26")), 0)
+        self.assertEqual(thr.bulan_penuh(f("2027-02-11"), f("2027-03-10")), 1)
+        self.assertEqual(thr.bulan_penuh(f("2027-02-12"), f("2027-03-10")), 0)
 
     def test_11_vs_12_bulan(self):
-        h11 = thr.hitung_karyawan(orang(gaji_pokok="6jt", tanggal_mulai="2026-03-11"), cfg())
-        h12 = thr.hitung_karyawan(orang(gaji_pokok="6jt", tanggal_mulai="2026-03-10"), cfg())
+        h11 = thr.hitung_karyawan(orang(gaji_pokok="6jt", tanggal_mulai="2026-03-12"), cfg())
+        h12 = thr.hitung_karyawan(orang(gaji_pokok="6jt", tanggal_mulai="2026-03-11"), cfg())
         self.assertEqual((h11["masa_kerja_bulan"], h11["thr"]), (11, 5500000))
         self.assertEqual((h12["masa_kerja_bulan"], h12["thr"]), (12, 6000000))
+        self.assertTrue(any("kurang 1 hari" in p for p in h11["peringatan"]))   # peringatan kasus tepi
+        h = thr.hitung_karyawan(orang(gaji_pokok="6jt", tanggal_mulai="2026-03-20"), cfg())
+        self.assertFalse(any("kurang" in p and "hari lagi" in p for p in h["peringatan"]))
 
     def test_kurang_1_bulan(self):
         h = thr.hitung_karyawan(orang(tanggal_mulai="2027-02-20"), cfg())
@@ -139,8 +147,39 @@ class TestPPh(unittest.TestCase):
         self.assertFalse(h["pph21"]["dihitung"])
         self.assertTrue(any("Masa Pajak Terakhir" in x for x in h["peringatan"]))
 
-    def test_dtp(self):
+    def test_mantan_pegawai_pasal17(self):
+        # regresi uji independen: PHK 20 Feb 2027 (<=30 hari), THR dibayar 3 Mar 2027 -> 5% x 20 jt
+        h = thr.hitung_karyawan(orang(ptkp="TK/0", gaji_pokok="20jt", tanggal_berhenti="2027-02-20"), cfg())
+        self.assertTrue(h["berhak"])
+        self.assertEqual(h["thr"], 20000000)
+        self.assertEqual(h["pph21"]["metode"], "mantan_pegawai")
+        self.assertEqual(h["pph21"]["tambahan_pph_thr"], 1000000)
+        self.assertEqual(h["thr_setelah_pph"], 19000000)
+        # contoh resmi Tuan O (PMK 168/2023): mantan pegawai, jasa produksi 60 jt -> Rp3.000.000
+        self.assertEqual(tc.bulat_bawah(tc.pasal17(D(60000000))[0]), 3000000)
+        # THR besar: lapisan progresif 5% & 15%
+        h = thr.hitung_karyawan(orang(ptkp="TK/0", gaji_pokok="80jt", tanggal_berhenti="2027-02-20"), cfg())
+        self.assertEqual(h["pph21"]["tambahan_pph_thr"], 3000000 + 3000000)
+
+    def test_berhenti_bulan_sama_dengan_bayar(self):
+        h = thr.hitung_karyawan(orang(ptkp="TK/0", tanggal_berhenti="2027-03-01"), cfg())
+        self.assertFalse(h["pph21"]["dihitung"])
+
+    def test_dtp_ditolak_tahun_2027(self):
+        # regresi uji independen: THR Maret 2027 -> bukan masa 2026
         h = thr.hitung_karyawan(orang(ptkp="TK/0", gaji_pokok="8jt", bruto_bulan_bayar="8jt", dtp="ya"), cfg())
+        self.assertFalse(h["pph21"]["dtp"])
+        self.assertLess(h["thr_setelah_pph"], h["thr"])
+
+    def test_dtp_ditolak_di_atas_10jt(self):
+        h = thr.hitung_karyawan(orang(ptkp="TK/0", gaji_pokok="20jt", bruto_bulan_bayar="20jt", dtp="ya"),
+                                cfg("2026-06-20"))
+        self.assertFalse(h["pph21"]["dtp"])
+        self.assertTrue(any("TIDAK memenuhi" in p for p in h["peringatan"]))
+
+    def test_dtp(self):
+        h = thr.hitung_karyawan(orang(ptkp="TK/0", gaji_pokok="8jt", bruto_bulan_bayar="8jt", dtp="ya"),
+                                cfg("2026-06-20"))
         self.assertTrue(h["pph21"]["dtp"])
         self.assertEqual(h["thr_setelah_pph"], h["thr"])
 

@@ -131,13 +131,53 @@ class TestHitung(unittest.TestCase):
         self.assertEqual(h["pph_info"]["bruto"], 10054000)
         self.assertEqual(h["pph"], 226215)
         r = orang(ptkp="K/0", gaji_pokok="10jt", ikut_bpjs_kesehatan="tidak", bruto_sd_bulan_lalu=str(11 * 10054000),
-                  pph21_sd_bulan_lalu=str(11 * 226215), iuran_sd_bulan_lalu=str(11 * 300000))
+                  pph21_sd_bulan_lalu=str(11 * 226215), iuran_sd_bulan_lalu=str(11 * 300000), bulan_mulai="1")
         h = payroll.hitung_karyawan(r, cfg(periode="2026-12"))
         d = h["pph_info"]["detail"]
         self.assertEqual(d["neto"], 120648000 - 6000000 - 3600000)
         self.assertEqual(d["pkp"], 52548000)
         self.assertEqual(d["pph_terutang"], 2627400)
         self.assertEqual(h["pph"], 2627400 - 11 * 226215)
+
+    def test_desember_wajib_jumlah_bulan(self):
+        r = orang(gaji_pokok="20jt", bruto_sd_bulan_lalu="62jt", pph21_sd_bulan_lalu="3jt", iuran_sd_bulan_lalu="900rb")
+        with self.assertRaises(payroll.InputError):
+            payroll.hitung_karyawan(r, cfg(periode="2026-12"))
+
+    def test_desember_masuk_september(self):
+        # regresi uji independen: masuk September -> 4 bulan -> biaya jabatan maks 4 x Rp500.000
+        base = dict(gaji_pokok="20jt", ikut_bpjs_kesehatan="tidak", ikut_bpjs_tk="tidak",
+                    bruto_sd_bulan_lalu="60jt", pph21_sd_bulan_lalu="0")
+        h1 = payroll.hitung_karyawan(orang(bulan_mulai="9", **base), cfg(periode="2026-12"))
+        h2 = payroll.hitung_karyawan(orang(jumlah_bulan_kerja="4", **base), cfg(periode="2026-12"))
+        d = h1["pph_info"]["detail"]
+        self.assertEqual(d["biaya_jabatan"], 2000000)
+        self.assertEqual(h1["pph"], h2["pph"])
+        # 80 jt - 2 jt = 78 jt; PKP 24 jt; 5% = 1.200.000
+        self.assertEqual(d["pkp"], 24000000)
+        self.assertEqual(h1["pph"], 1200000)
+        with self.assertRaises(payroll.InputError):
+            payroll.hitung_karyawan(orang(bulan_mulai="13", **base), cfg(periode="2026-12"))
+
+    def test_dtp_ditolak_gaji_di_atas_10jt(self):
+        # regresi uji independen: gaji 15 jt + dtp=ya -> bukan DTP
+        h = payroll.hitung_karyawan(orang(gaji_pokok="15jt", dtp="ya"), cfg())
+        self.assertFalse(h["dtp"])
+        self.assertEqual(h["pendapatan"]["PPh 21 DTP dibayar tunai"], 0)
+        self.assertEqual(h["pph_disetor"], h["pph"])
+        self.assertTrue(any("TIDAK memenuhi syarat" in p for p in h["peringatan"]))
+
+    def test_dtp_pakai_bruto_januari(self):
+        h = payroll.hitung_karyawan(orang(gaji_pokok="12jt", dtp="ya", bruto_tetap_januari="9jt"), cfg())
+        self.assertTrue(h["dtp"])
+        h = payroll.hitung_karyawan(orang(gaji_pokok="8jt", dtp="ya", bruto_tetap_januari="10.000.001"), cfg())
+        self.assertFalse(h["dtp"])
+        h = payroll.hitung_karyawan(orang(gaji_pokok="8jt", dtp="ya", bruto_tetap_januari="10jt"), cfg())
+        self.assertTrue(h["dtp"])                                  # tepat Rp10 jt masih memenuhi
+
+    def test_dtp_ditolak_bukan_2026(self):
+        h = payroll.hitung_karyawan(orang(gaji_pokok="8jt", dtp="ya"), cfg(periode="2027-01"))
+        self.assertFalse(h["dtp"])
 
     def test_lebih_potong_dikembalikan(self):
         r = orang(gaji_pokok="5jt", berhenti="ya", bruto_sd_bulan_lalu="20jt", pph21_sd_bulan_lalu="500rb",

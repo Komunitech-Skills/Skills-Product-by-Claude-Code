@@ -311,6 +311,9 @@ def cmd_setahun(args):
         "Masa Pajak Terakhir: PPh 21 = PPh setahun (tarif Pasal 17 × PKP) − PPh yang sudah dipotong bulan sebelumnya. "
         "Bila hasilnya negatif, kelebihan dikembalikan ke pegawai paling lambat akhir bulan berikutnya "
         "(kecuali PPh DTP).",
+        "Bruto tiap bulan harus mencakup seluruh penghasilan: gaji, tunjangan, lembur, bonus/THR, PLUS premi JKK, JKM, "
+        "dan iuran BPJS Kesehatan bagian perusahaan (PMK 168/2023 Pasal 5 ayat 3). JHT/JP bagian perusahaan tidak "
+        "dimasukkan; JHT 2% + JP 1% bagian karyawan diisi sebagai iuran (pengurang).",
         "Biaya jabatan 5% dari bruto, maks Rp 500.000 × jumlah bulan bekerja (maks Rp 6.000.000 setahun).",
         "Status PTKP ditentukan keadaan awal tahun (1 Januari).",
         tc.CATATAN_PEMBULATAN,
@@ -379,8 +382,12 @@ def teks_setahun(h):
     if rk["kelebihan_dikembalikan"]:
         out.append("- Kelebihan potong yang harus dikembalikan: {}".format(tc.format_rp(rk["kelebihan_dikembalikan"])))
     if dtp:
-        out.append("- Total PPh 21 DTP dibayar tunai ke pegawai (PMK 105/2025): {}".format(
+        out.append("- PPh 21 terutang setahun yang ditanggung pemerintah (hasil hitung ulang Masa Pajak Terakhir): {}".format(tc.format_rp(rk["pph21_terutang_setahun"])))
+        out.append("- PPh 21 DTP yang benar-benar dibayar tunai ke pegawai (jumlah bulan yang positif): {}".format(
             tc.format_rp(rk["total_dtp_dibayar_tunai"])))
+        if rk["total_dtp_dibayar_tunai"] != rk["pph21_terutang_setahun"]:
+            out.append("  Selisih {} = kelebihan DTP yang tidak dikembalikan (PMK 105/2025 Pasal 5 ayat 5).".format(
+                tc.format_rp(rk["total_dtp_dibayar_tunai"] - rk["pph21_terutang_setahun"])))
     if h["peringatan"]:
         out += ["", "⚠️ Peringatan:"] + ["- " + p for p in h["peringatan"]]
     out += ["", "Catatan:"] + ["- " + c for c in h["catatan"]]

@@ -31,12 +31,13 @@ Mengubah daftar gaji karyawan menjadi slip gaji siap cetak/kirim dan rekap payro
 | Pola kerja 5 atau 6 hari/minggu | Tidak | 5 hari |
 | Nama perusahaan | Tidak | Kosong |
 | Sektor/KLU (untuk PPh 21 DTP 2026) | Hanya bila gaji tetap ≤ Rp 10 jt | Tanyakan; jangan diasumsikan |
-| Desember/karyawan berhenti: total bruto pajak & PPh 21 Januari s.d. bulan lalu | Ya (bulan itu saja) | — (tanyakan) |
+| Bruto tetap & teratur Januari 2026 (atau bulan pertama kerja) — syarat DTP **≤ Rp 10.000.000** | Bila `dtp=ya` | Gaji pokok + tunjangan tetap bulan ini, dengan peringatan |
+| Desember/karyawan berhenti: total bruto pajak & PPh 21 Januari s.d. bulan lalu, **mulai kerja bulan apa** (atau jumlah bulan kerja tahun ini) | Ya (bulan itu saja) | — (tanyakan; script menolak bila kosong) |
 
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya.
 
 ## Langkah kerja
-1. Susun data karyawan menjadi CSV (pemisah `;` atau `,`) dengan kolom seperti `templates/karyawan-contoh.csv`. Kolom wajib: `nama`, `ptkp`, `gaji_pokok`. Kolom opsional: `jabatan`, `nik`, `tunjangan_tetap`, `tunjangan_tidak_tetap`, `lembur_hari_kerja` (jam per hari dipisah `+`, mis. `2+3+1`), `lembur_hari_libur` (mis. `8+5`; pola 6 hari: akhiran `p` bila libur resmi jatuh di hari kerja terpendek, mis. `5p`), `lembur_rp` (nominal lembur jadi, bila tidak pakai jam), `bonus`/`thr`, `potongan_lain`, `zakat`, `jkk_persen`, `ikut_jp`/`ikut_bpjs_tk`/`ikut_bpjs_kesehatan` (ya/tidak), `dtp` (ya/tidak), `dasar_bpjs_kesehatan`, dan untuk Desember/berhenti: `berhenti`, `bruto_sd_bulan_lalu`, `pph21_sd_bulan_lalu`, `iuran_sd_bulan_lalu`, `jumlah_bulan_kerja`.
+1. Susun data karyawan menjadi CSV (pemisah `;` atau `,`) dengan kolom seperti `templates/karyawan-contoh.csv`. Kolom wajib: `nama`, `ptkp`, `gaji_pokok`. Kolom opsional: `jabatan`, `nik`, `tunjangan_tetap`, `tunjangan_tidak_tetap`, `lembur_hari_kerja` (jam per hari dipisah `+`, mis. `2+3+1`), `lembur_hari_libur` (mis. `8+5`; pola 6 hari: akhiran `p` bila libur resmi jatuh di hari kerja terpendek, mis. `5p`), `lembur_rp` (nominal lembur jadi, bila tidak pakai jam), `bonus`/`thr`, `potongan_lain`, `zakat`, `jkk_persen`, `ikut_jp`/`ikut_bpjs_tk`/`ikut_bpjs_kesehatan` (ya/tidak), `dtp` (ya/tidak; hanya masa 2026, sektor/KLU sudah dikonfirmasi, dan `bruto_tetap_januari` ≤ Rp 10 jt — bila tidak memenuhi, script otomatis memotong PPh normal dan memberi ⚠️), `bruto_tetap_januari`, `dasar_bpjs_kesehatan`, dan untuk Desember/berhenti: `berhenti`, `bruto_sd_bulan_lalu`, `pph21_sd_bulan_lalu`, `iuran_sd_bulan_lalu`, serta **wajib** `jumlah_bulan_kerja` atau `bulan_mulai` (1 bila sejak Januari).
 2. Jalankan (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/payroll.py --data karyawan.csv --periode 2026-09 --perusahaan "CV Maju Jaya" --umk "5.396.761" --jkk 0,54 --out payroll-2026-09
@@ -80,11 +81,13 @@ Satu slip (isi file MD/HTML): identitas & periode → tabel Pendapatan → tabel
 - [ ] Batas JP sesuai periode; BPJS Kesehatan maks Rp 12 jt; JHT tanpa batas.
 - [ ] Peringatan UMK disampaikan bila UMK diisi; bila tidak, sebutkan cek dilewati.
 - [ ] Desember/karyawan berhenti memakai data Januari s.d. bulan lalu (hitung ulang).
-- [ ] DTP hanya bila pengguna mengonfirmasi sektor/KLU.
+- [ ] DTP hanya bila pengguna mengonfirmasi sektor/KLU, masa pajak 2026, dan bruto tetap Januari/bulan pertama kerja ≤ Rp 10 jt.
+- [ ] Desember/berhenti: jumlah bulan kerja (atau bulan mulai) diisi sesuai fakta, bukan ditebak.
 - [ ] Asumsi (JKK, pola kerja), pembulatan, dan disclaimer tercantum.
 
 ## Batasan & penanganan error
 - Kode keluar 2 + pesan `ERROR:` untuk PTKP salah (mis. K/4), angka rusak, periode salah, jam lembur hari libur melebihi aturan, kolom Desember kosong, atau batas JP periode belum diketahui. Sampaikan dengan bahasa sederhana dan minta data yang benar.
 - Batas 18 jam lembur/minggu tidak bisa dicek tanpa data per minggu; ingatkan pengguna.
+- Pekerja berupah harian (upah sebulan = upah sehari × 25 atau × 21, PP 35/2021 Pasal 33) dan upah satuan hasil tidak didukung otomatis: minta pengguna mengisi upah sebulan hasil konversi sebagai `gaji_pokok`, atau isi `lembur_rp` sendiri.
 - Data gaji adalah data pribadi: jangan kirim ke layanan luar; simpan file slip di komputer pengguna saja.
 - Uji otomatis: `python3 <folder-skill-ini>/scripts/test_payroll.py`.

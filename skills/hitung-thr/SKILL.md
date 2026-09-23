@@ -31,12 +31,13 @@ Menghitung THR setiap karyawan dengan benar menurut aturan, termasuk karyawan ba
 | Rencana tanggal bayar | Tidak | Batas H-7 |
 | THR menurut kebijakan perusahaan (bila lebih besar) | Tidak | Minimum aturan |
 | Tanggal berhenti (bila keluar sebelum hari raya) | Tidak | Masih bekerja |
-| Sektor/KLU untuk PPh 21 DTP 2026 | Hanya bila gaji tetap ≤ Rp 10 jt dan 2026 | Tanyakan; jangan diasumsikan |
+| Sektor/KLU untuk PPh 21 DTP 2026 | Hanya bila THR dibayar tahun 2026 dan gaji tetap ≤ Rp 10 jt | Tanyakan; jangan diasumsikan |
+| Bruto tetap & teratur Januari 2026/bulan pertama kerja (`bruto_tetap_januari`, syarat DTP ≤ Rp 10 jt) | Bila `dtp=ya` | Gaji pokok + tunjangan tetap, dengan peringatan |
 
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya.
 
 ## Langkah kerja
-1. Susun data karyawan (lihat `templates/karyawan-thr-contoh.csv`; pemisah `;` atau `,`). Kolom: `nama` (wajib), `jenis`, `ptkp`, `gaji_pokok`, `tunjangan_tetap`, `tanggal_mulai` atau `masa_kerja_bulan`, `upah_bulanan` (harian/satuan: upah tiap bulan urut dari terlama, dipisah `+`, mis. `3jt+3,2jt+2,8jt`), `bruto_bulan_bayar`, `thr_kebijakan`, `tanggal_berhenti`, `dtp` (ya/tidak), `jabatan`.
+1. Susun data karyawan (lihat `templates/karyawan-thr-contoh.csv`; pemisah `;` atau `,`). Kolom: `nama` (wajib), `jenis`, `ptkp`, `gaji_pokok`, `tunjangan_tetap`, `tanggal_mulai` atau `masa_kerja_bulan`, `upah_bulanan` (harian/satuan: upah tiap bulan urut dari terlama, dipisah `+`, mis. `3jt+3,2jt+2,8jt`), `bruto_bulan_bayar`, `thr_kebijakan`, `tanggal_berhenti`, `dtp` (ya/tidak; script menolak otomatis bila THR tidak dibayar di tahun 2026 atau `bruto_tetap_januari` > Rp 10 jt), `bruto_tetap_januari`, `jabatan`.
 2. Jalankan (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/thr.py --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" --perusahaan "CV Maju Jaya" --data karyawan.csv --csv rekap-thr.csv
@@ -48,11 +49,13 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Rumus (untuk hitung manual)
 Dasar: Permenaker 6/2016 & SE Menaker M/3/HK.04.00/III/2026, berlaku per 2026-09-23 (rincian: `references/regulasi.md`).
-- Masa kerja = bulan penuh dari tanggal mulai sampai tanggal hari raya (asumsi skill).
+- Masa kerja = bulan penuh dari tanggal mulai sampai tanggal hari raya, **inklusif** (hari mulai dan hari raya ikut dihitung): 11 Mar 2026 s.d. 10 Mar 2027 = 12 bulan; 12 Mar 2026 s.d. 10 Mar 2027 = 11 bulan (script memberi ⚠️ bila kurang ≤ 3 hari dari bulan berikutnya). Ini konvensi skill karena aturan tidak mengatur pecahan bulan.
 - < 1 bulan: tidak wajib · 1 s.d. < 12 bulan: **masa kerja ÷ 12 × upah 1 bulan** · ≥ 12 bulan: **1 × upah 1 bulan**.
 - Upah 1 bulan: gaji pokok + tunjangan tetap (atau upah bersih bila tanpa tunjangan). Harian lepas: rata-rata upah 12 bulan terakhir (≥ 12 bulan) atau rata-rata per bulan selama masa kerja. Satuan hasil: rata-rata 12 bulan terakhir.
 - Batas bayar = tanggal hari raya − 7 hari. Terlambat: denda 5% dari total THR (THR tetap wajib dibayar).
 - PPh 21: THR digabung ke gaji bulan dibayar → PPh 21 = TER(gaji + THR) × (gaji + THR). Tambahan karena THR = hasil itu − TER(gaji) × gaji.
+- Karyawan yang sudah berhenti (PHK ≤ 30 hari sebelum hari raya) dan THR dibayar **setelah bulan berhenti** berstatus Mantan Pegawai: PPh 21 = tarif Pasal 17 (5% s.d. Rp 60 jt, 15% berikutnya, dst.) × THR, bukan TER (PMK 168/2023 Pasal 16 ayat 6).
+- PPh 21 DTP (PMK 105/2025) hanya bila THR dibayar di tahun 2026, sektor/KLU dikonfirmasi, dan bruto tetap Januari 2026/bulan pertama kerja ≤ Rp 10 jt.
 - Pembulatan: THR ke rupiah terdekat; PPh 21 ke bawah (belum dicocokkan dengan Coretax).
 
 ## Format output
@@ -77,7 +80,8 @@ _Disclaimer + dasar aturan + tanggal berlaku_
 - [ ] Masa kerja 11 vs 12 bulan dicek teliti (12 bulan = THR penuh).
 - [ ] Komponen upah hanya gaji pokok + tunjangan tetap (bukan uang makan/transport harian yang tidak tetap).
 - [ ] Batas H-7 disebut; peringatan keterlambatan/denda bila relevan.
-- [ ] PPh 21 Desember diarahkan ke hitung ulang setahun; DTP hanya bila sektor dikonfirmasi.
+- [ ] PPh 21 Desember diarahkan ke hitung ulang setahun; mantan pegawai memakai Pasal 17 × THR.
+- [ ] DTP hanya bila dibayar tahun 2026, sektor dikonfirmasi, dan bruto tetap Januari ≤ Rp 10 jt.
 - [ ] Pengumuman tanpa nominal pribadi; disclaimer ada.
 
 ## Batasan & penanganan error

@@ -261,9 +261,19 @@ def hitung_karyawan(r, cfg):
                               "— PPh 21 bisa terlalu besar.".format(label))
         iuran_lalu = angka(r.get("iuran_sd_bulan_lalu"), label + ": iuran_sd_bulan_lalu", Decimal(0))
         zakat_lalu = angka(r.get("zakat_sd_bulan_lalu"), label + ": zakat_sd_bulan_lalu", Decimal(0))
-        n = int(angka(r.get("jumlah_bulan_kerja"), label + ": jumlah_bulan_kerja", Decimal(bulan)))
-        if not 1 <= n <= bulan:
-            raise InputError("{}: jumlah_bulan_kerja harus 1–{}".format(label, bulan))
+        if r.get("jumlah_bulan_kerja") not in (None, ""):
+            n_d = angka(r.get("jumlah_bulan_kerja"), label + ": jumlah_bulan_kerja")
+        elif r.get("bulan_mulai") not in (None, ""):
+            n_d = Decimal(bulan) - angka(r.get("bulan_mulai"), label + ": bulan_mulai") + 1
+        else:
+            raise InputError("{}: bulan ini Masa Pajak Terakhir — isi kolom jumlah_bulan_kerja (jumlah bulan bekerja "
+                             "tahun ini, termasuk bulan ini) atau bulan_mulai (1 bila bekerja sejak Januari). Batas "
+                             "biaya jabatan = Rp 500.000 × jumlah bulan, jadi angka ini memengaruhi PPh 21."
+                             .format(label))
+        if n_d != n_d.to_integral_value() or not 1 <= n_d <= bulan:
+            raise InputError("{}: jumlah bulan bekerja harus bilangan bulat 1–{} (dari jumlah_bulan_kerja/bulan_mulai)"
+                             .format(label, bulan))
+        n = int(n_d)
         mt = tc.hitung_masa_terakhir(bruto_lalu + bruto_pajak, iuran_lalu + iuran_pengurang, zakat_lalu + zakat, n,
                                      ptkp, pph_lalu)
         pph = mt["pph_masa_terakhir"]
@@ -272,8 +282,19 @@ def hitung_karyawan(r, cfg):
         pph, tarif = tc.pph_ter_bulanan(bruto_pajak, kat)
         pph_info.update({"metode": "TER bulanan", "tarif": tarif})
 
-    if dtp and cfg["tahun"] != 2026:
-        raise InputError("{}: PPh 21 DTP PMK 105/2025 hanya untuk masa Januari–Desember 2026".format(label))
+    if dtp:
+        if r.get("bruto_tetap_januari") not in (None, ""):
+            bruto_tetap = angka(r.get("bruto_tetap_januari"), label + ": bruto_tetap_januari")
+        else:
+            bruto_tetap = upah_tetap
+            peringatan.append("{}: kolom bruto_tetap_januari kosong — syarat DTP dicek memakai gaji pokok + tunjangan "
+                              "tetap bulan ini ({}). Syarat resmi memakai bruto tetap & teratur Januari 2026 atau bulan "
+                              "pertama kerja.".format(label, tc.format_rp(upah_tetap)))
+        ok, alasan = tc.cek_syarat_dtp(cfg["tahun"], bruto_tetap)
+        if not ok:
+            dtp = False
+            peringatan.append("{}: TIDAK memenuhi syarat PPh 21 DTP — {}. PPh 21 dipotong & disetor normal."
+                              .format(label, alasan))
     pph_dipotong = max(pph, Decimal(0))
     dtp_tunai = pph_dipotong if dtp else Decimal(0)
     pengembalian = -pph if (pph < 0 and not dtp) else Decimal(0)
@@ -400,8 +421,10 @@ def slip_md(h, cfg):
     if h["dtp"]:
         o.append("_PPh 21 Ditanggung Pemerintah (PMK 105/2025) dibayarkan tunai; tidak mengurangi gaji._")
     if h["lembur"]:
-        o.append("_Lembur: upah sejam = 1/173 × {} = {}._".format(tc.format_rp(h["lembur"]["dasar_upah"]),
-                                                                 tc.format_rp(h["lembur"]["upah_sejam"], True)))
+        setara = sum((x["jam_setara"] for x in h["lembur"]["rincian"]), Decimal(0))
+        o.append("_Lembur: upah sejam = 1/173 × {} = {}; {} jam setara × upah sejam = {}._".format(
+            tc.format_rp(h["lembur"]["dasar_upah"]), tc.format_rp(h["lembur"]["upah_sejam"], True),
+            tc.format_persen(setara).rstrip("%"), tc.format_rp(h["pendapatan"]["Lembur"])))
     return "\n".join(o)
 
 
@@ -557,6 +580,7 @@ def buat_parser():
     # satu karyawan tanpa CSV
     for k in ("nama", "ptkp", "gaji-pokok", "tunjangan-tetap", "tunjangan-tidak-tetap", "lembur-hari-kerja",
               "lembur-hari-libur", "lembur-rp", "bonus", "potongan-lain", "zakat", "jabatan", "nik", "dtp",
+              "bruto-tetap-januari", "bulan-mulai",
               "ikut-jp", "berhenti", "bruto-sd-bulan-lalu", "pph21-sd-bulan-lalu", "iuran-sd-bulan-lalu",
               "jumlah-bulan-kerja"):
         p.add_argument("--" + k)
@@ -586,7 +610,8 @@ def jalankan(args):
             raise InputError("Isi --data karyawan.csv, atau untuk satu orang: --nama, --ptkp, --gaji-pokok")
         rows = [{k.replace("-", "_"): getattr(args, k.replace("-", "_")) for k in (
             "nama", "ptkp", "gaji_pokok", "tunjangan_tetap", "tunjangan_tidak_tetap", "lembur_hari_kerja",
-            "lembur_hari_libur", "lembur_rp", "bonus", "potongan_lain", "zakat", "jabatan", "nik", "dtp", "ikut_jp",
+            "lembur_hari_libur", "lembur_rp", "bonus", "potongan_lain", "zakat", "jabatan", "nik", "dtp",
+            "bruto_tetap_januari", "bulan_mulai", "ikut_jp",
             "berhenti", "bruto_sd_bulan_lalu", "pph21_sd_bulan_lalu", "iuran_sd_bulan_lalu", "jumlah_bulan_kerja")}]
         rows = [{k: (v if v is not None else "") for k, v in rows[0].items()}]
     hasil, galat = [], []

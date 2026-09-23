@@ -1,3 +1,3 @@
-nama;jabatan;nik;ptkp;gaji_pokok;tunjangan_tetap;tunjangan_tidak_tetap;lembur_hari_kerja;lembur_hari_libur;bonus;potongan_lain;jkk_persen;ikut_jp;dtp;berhenti;bruto_sd_bulan_lalu;pph21_sd_bulan_lalu;iuran_sd_bulan_lalu;jumlah_bulan_kerja
-Contoh Budi;Staf Gudang;K001;K/1;5.000.000;500.000;600.000;2+3;8;;100.000;;;;;;;;
-Contoh Siti;Manajer;K002;K/3;15.000.000;3.000.000;;;;;;;;;;;;;
+nama;jabatan;nik;ptkp;gaji_pokok;tunjangan_tetap;tunjangan_tidak_tetap;lembur_hari_kerja;lembur_hari_libur;bonus;potongan_lain;jkk_persen;ikut_jp;dtp;bruto_tetap_januari;berhenti;bruto_sd_bulan_lalu;pph21_sd_bulan_lalu;iuran_sd_bulan_lalu;jumlah_bulan_kerja;bulan_mulai
+Contoh Budi;Staf Gudang;K001;K/1;5.000.000;500.000;600.000;2+3;8;;100.000;;;;;;;;;;
+Contoh Siti;Manajer;K002;K/3;15.000.000;3.000.000;;;;;;;;;;;;;;;

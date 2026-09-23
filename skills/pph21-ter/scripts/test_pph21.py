@@ -255,6 +255,22 @@ class TestContohResmi(unittest.TestCase):
         self.assertEqual(h["ringkasan"]["kelebihan_dikembalikan"], 0)
         self.assertEqual(h["ringkasan"]["total_dtp_dibayar_tunai"], 2100000)
 
+    def test_teks_catatan_premi_dan_ringkasan_dtp(self):
+        # regresi uji independen (ringan): catatan premi JKK/JKM/BPJS Kes & dua angka DTP
+        h = jalankan("setahun", "--ptkp", "TK/0", "--gaji", "9jt", "--mulai", "3", "--tambahan", "10=5jt", "--dtp")
+        teks = pph21.teks_setahun(h)
+        self.assertIn("premi JKK, JKM", teks)
+        self.assertIn("ditanggung pemerintah", teks)
+        self.assertIn("Rp 1.812.500", teks)      # terutang setahun (Lampiran B PMK 105 Tuan C)
+        self.assertIn("Rp 2.100.000", teks)      # dibayar tunai
+        self.assertIn("Rp 287.500", teks)        # selisih tidak dikembalikan
+
+    def test_syarat_dtp_core(self):
+        self.assertTrue(tc.cek_syarat_dtp(2026, D(10000000))[0])
+        self.assertFalse(tc.cek_syarat_dtp(2026, D(10000001))[0])
+        self.assertFalse(tc.cek_syarat_dtp(2027, D(5000000))[0])
+        self.assertFalse(tc.cek_syarat_dtp(2026, None)[0])
+
     def test_dtp_tidak_memenuhi(self):
         h = jalankan("setahun", "--ptkp", "TK/0", "--gaji", "10.000.001", "--dtp")
         self.assertFalse(h["dtp"])

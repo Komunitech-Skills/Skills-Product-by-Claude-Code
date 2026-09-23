@@ -365,3 +365,19 @@ def hitung_masa_terakhir(total_bruto, total_iuran, total_zakat, jumlah_bulan, pt
 def cek_dtp_bulanan(bruto_tetap_teratur):
     """PMK 105/2025: bruto tetap & teratur <= Rp10 jt (Januari 2026 / bulan pertama kerja)."""
     return Decimal(bruto_tetap_teratur) <= BATAS_DTP_BULANAN
+
+
+def cek_syarat_dtp(tahun, bruto_tetap):
+    """Syarat PPh 21 DTP pegawai tetap PMK 105/2025: Masa Pajak tahun 2026 (Pasal 2 ayat 3) DAN bruto tetap &
+    teratur Januari 2026 / bulan pertama kerja <= Rp10.000.000 (Pasal 4 ayat 2 huruf b).
+    Sektor/KLU (Pasal 3) TIDAK bisa dicek script — harus dikonfirmasi pengguna.
+    Kembalikan (memenuhi: bool, alasan: str)."""
+    if int(tahun) != 2026:
+        return False, ("PPh 21 DTP PMK 105/2025 hanya untuk Masa Pajak Januari–Desember 2026 (masa ini tahun {})"
+                       .format(tahun))
+    if bruto_tetap is None:
+        return False, "bruto tetap & teratur Januari 2026 (atau bulan pertama kerja) belum diketahui"
+    if Decimal(bruto_tetap) > BATAS_DTP_BULANAN:
+        return False, ("bruto tetap & teratur Januari 2026/bulan pertama kerja {} lebih dari Rp 10.000.000 "
+                       "(PMK 105/2025 Pasal 4 ayat 2 huruf b)".format(format_rp(bruto_tetap)))
+    return True, ""

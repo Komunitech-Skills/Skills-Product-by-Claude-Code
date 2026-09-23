@@ -18,7 +18,7 @@ Menghitung PPh 21 yang wajib dipotong pemberi kerja dari gaji karyawan dengan an
 ## Kapan TIDAK digunakan
 - Slip gaji lengkap + BPJS + take home pay → pakai `slip-gaji-bpjs`. THR → pakai `hitung-thr`.
 - PPh Final UMKM 0,5% → `pph-final-umkm`. PPN → `hitung-ppn`.
-- Pesangon, uang pensiun sekaligus, pencairan JHT, honorarium bukan pegawai/freelancer, komisaris, WNA non-residen (PPh 26), gross-up/tunjangan pajak, PNS/TNI/Polri → jelaskan di luar cakupan dan arahkan ke konsultan pajak atau Kring Pajak 1500200.
+- Pesangon, uang pensiun sekaligus, dan pencairan JHT (dikenai PPh 21 final dengan aturan tersendiri, bukan TER), honorarium bukan pegawai/freelancer, komisaris, WNA non-residen (PPh 26), gross-up/tunjangan pajak, PNS/TNI/Polri → jelaskan di luar cakupan dan arahkan ke konsultan pajak atau Kring Pajak 1500200.
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
