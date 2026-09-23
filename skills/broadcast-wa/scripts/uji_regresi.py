@@ -122,6 +122,52 @@ class Uji(unittest.TestCase):
         self.assertIn("masih aktif", alasan)
         self.assertEqual([x["nama"] for x in b], ["C"])
 
+    def test_b3b_angka_catatan_tidak_tergabung(self):
+        baris_stop = ["0812 0000 0221 25 September", "0812-0000-0203 (2)", "0812-0000-0202 - 3x minta",
+                      "0812 0000 0201 12 Sept 2026", "0812 0000 0224 - 17 Agustus", "5. 0812-0000-0215",
+                      "1) 0812 0000 0216", "0812 0000 0204 jam 10.30", "0812-0000-0223 x2"]
+        akhir = ["0221", "0203", "0202", "0201", "0224", "0215", "0216", "0204", "0223"]
+        k = "nama,nomor,setuju\n" + "".join("S{0},08120000{0},ya\n".format(x) for x in akhir) + \
+            "Aman,081200000999,ya\n"
+        d = tempfile.mkdtemp()
+        fs = os.path.join(d, "stop.txt")
+        with open(fs, "w", encoding="utf-8") as f:
+            f.write("\n".join(baris_stop) + "\n")
+        r, b = jalankan(k, PESAN, "--daftar-berhenti", fs)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual([x["nama"] for x in b], ["Aman"])
+        h = json.loads(r.stdout)
+        self.assertEqual(h["daftar_berhenti_terbaca"], 9)
+        self.assertEqual(h["status"], "SIAP")
+
+    def test_b3b_jaring_pengaman_nomor_stop_tak_cocok(self):
+        d = tempfile.mkdtemp()
+        fs = os.path.join(d, "stop.txt")
+        with open(fs, "w", encoding="utf-8") as f:
+            f.write("0812-0000-0777\n")
+        r, b = jalankan("nama,nomor,setuju\nA,081200000001,ya\n", PESAN, "--daftar-berhenti", fs)
+        h = json.loads(r.stdout)
+        self.assertEqual(h["status"], "PERIKSA DULU")
+        self.assertEqual(h["daftar_berhenti_tidak_cocok_kontak"][0]["baris"], [1])
+
+    def test_optout_v102(self):
+        k = "nama,nomor,setuju\nA,081200000001,ya\n"
+        for teks in ("Halo {nama}, jangan balas STOP ya", "Halo {nama}, jangan sampai kirim berhenti",
+                     "Halo {nama}. Ketik stop-motion untuk video"):
+            self.assertNotEqual(jalankan(k, teks)[0].returncode, 0, teks)
+        for teks in ("Halo {nama}. Balas dengan kata STOP untuk berhenti.", "Halo {nama}. Berhenti? balas: STOP"):
+            self.assertEqual(jalankan(k, teks)[0].returncode, 0, teks)
+
+    def test_gelar_v102(self):
+        nama = ["Hj.Nurul", "Dr.Rina", "H.M. Yusuf", "Ny. Susi", "Tn. Budi", "Muh. Rizki"]
+        harap = ["Bu Nurul", "Kak Rina", "Pak Yusuf", "Bu Susi", "Pak Budi", "Kak Rizki"]
+        k = "nama,nomor,setuju\n" + "".join('"{}",0812000004{:02d},ya\n'.format(n, i) for i, n in enumerate(nama))
+        r, b = jalankan(k, "Halo {sapaan} {nama}!\nBalas STOP untuk berhenti.\n")
+        self.assertEqual([x["pesan"].split("!")[0][5:] for x in b], harap)
+        k = 'nama,nomor,setuju\n"Dra. Hj. Sri Mulyani, M.Pd.",081200000501,ya\n"Drs. H. Tono, M.Si.",081200000502,ya\n'
+        r, b = jalankan(k, "Halo {sapaan} {nama}!\nBalas STOP untuk berhenti.\n", "--nama-lengkap")
+        self.assertEqual([x["pesan"].split("!")[0][5:] for x in b], ["Bu Sri Mulyani", "Pak Tono"])
+
     def test_tanpa_kolom_persetujuan_ditolak(self):
         r, _ = jalankan("nama,nomor\nA,081200000001\n")
         self.assertNotEqual(r.returncode, 0)

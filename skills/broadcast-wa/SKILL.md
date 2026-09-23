@@ -48,8 +48,9 @@ pakai default dan sebutkan asumsinya di akhir.
      (persen hemat, total); jika pengguna ingin menyebut "hemat X%", minta angkanya;
    - satu CTA jelas (balas chat, klik 1 link, datang ke toko);
    - **teks berhenti**, mis. "Tidak ingin menerima info promo lagi? Balas STOP."
-     Harus berupa instruksi tindakan: balas/ketik/kirim + STOP/BERHENTI (mis. "Balas STOP"). Kalimat seperti
-     "tidak ingin menerima..." tanpa instruksi itu, atau kata "stop" saja ("promo non-stop"), ditolak script.
+     Harus berupa instruksi tindakan: balas/ketik/kirim + STOP/BERHENTI (mis. "Balas STOP", "Balas dengan kata
+     STOP", "balas: STOP"). Script menolak kalimat tanpa instruksi itu ("tidak ingin menerima...", "promo
+     non-stop", "stop-motion") dan kalimat yang melarang ("jangan balas STOP").
    Pakai satu sapaan yang konsisten dalam satu pesan: jika menyapa "{sapaan} {nama}", jangan ganti ke "Kamu"
    di kalimat berikutnya (pakai "{sapaan}" lagi).
    Emoji secukupnya (maks. 3), tanpa huruf kapital semua, tanpa "URGENT!!!", maks. 1 link.
@@ -69,13 +70,18 @@ pakai default dan sebutkan asumsinya di akhir.
    persetujuan. **Jangan** memakai `--saya-pastikan-semua-setuju` bila pengguna menyebut nomor berasal dari
    database beli, grup, atau sumber tanpa izin. Laporkan ringkasan (siap kirim, dilewati + alasannya, sebaran variasi, jadwal pertama/terakhir).
    Jangan tampilkan seluruh daftar nomor di chat — cukup sebutkan nama file hasilnya.
-   - **Format daftar berhenti (`stop.txt`):** satu nomor per baris, mis. `0812-3456-7890`. Catatan atau nama di
-     baris yang sama boleh ("Galih 0812 0000 0139 (minta stop 2026-09-01)"), tanggal diabaikan. Ringkasan
-     menyebut `daftar_berhenti_terbaca`. Jika ada `daftar_berhenti_tidak_terbaca` (status **PERIKSA DULU**),
-     sampaikan baris mana yang harus dirapikan dan **sarankan tidak mengirim** sampai dijalankan ulang.
+   - **Format daftar berhenti (`stop.txt`):** paling aman satu nomor per baris, mis. `0812-3456-7890`. Nama,
+     catatan, nomor urut ("5. ", "1) "), dan tanggal di baris yang sama boleh ("Galih 0812 0000 0139 (minta stop
+     25 September)"); angka catatan di belakang nomor tidak ikut tergabung. Ringkasan menyebut
+     `daftar_berhenti_terbaca`. Status **PERIKSA DULU** muncul bila ada `daftar_berhenti_tidak_terbaca` (baris
+     tak terbaca) atau `daftar_berhenti_tidak_cocok_kontak` (nomor stop yang tidak cocok dengan kontak mana pun —
+     bisa memang bukan pelanggan di file ini, bisa juga salah baca). Sampaikan baris mana yang perlu dicek dan
+     **sarankan tidak mengirim** sampai dicocokkan. Sebagai pengaman tambahan, kontak yang nomornya muncul
+     sebagai deretan angka di baris stop mana pun juga dikecualikan.
    - Alasan "nilai ... tidak baku" di `dilewati` menunjukkan sel yang isinya tidak standar (mis. "ya (lisan)");
-     sebutkan ke pengguna agar dirapikan. Gelar (H., Hj., dr., Ir., Prof.) otomatis dilewati dari nama;
-     "Hj." tanpa sapaan menjadi "Bu", "H." menjadi "Pak".
+     sebutkan ke pengguna agar dirapikan. Gelar (H., Hj., H.M., dr., Ir., Prof., Muh., juga tanpa spasi seperti
+     "Hj.Nurul") otomatis dilewati dari nama, termasuk gelar belakang (S.E., M.Si., M.Pd.) pada `--nama-lengkap`;
+     tanpa sapaan, "Hj."/"Ny." menjadi "Bu" dan "H."/"Tn." menjadi "Pak".
    - **Konfirmasi sebelum kirim:** sebutkan jumlah siap kirim, jumlah dilewati per alasan, dan sel yang perlu
      dicek, lalu minta pengguna mengonfirmasi ("Siap kirim ke 142 kontak?") sebelum mulai mengirim.
    **Jika Python tidak bisa dijalankan:** beri langkah manual: saring kolom Persetujuan = ya di
