@@ -60,9 +60,17 @@ wawancara. Pakai default di atas, sebutkan asumsinya secara singkat di akhir, da
    risiko, CS WA selalu mode Copilot, kripto hanya riset/notifikasi, tanpa scraping marketplace).
    Untuk usaha 50+ karyawan dengan banyak cabang, sarankan eksplisit memisahkan rekap/laporan
    **per cabang** (satu file/folder data per cabang), bukan digabung jadi satu.
-4. **Cek skill yang sudah terpasang.** Ikuti `references/openclaw.md` §1 (`openclaw skills list`,
-   atau baca folder skills bila `exec` tidak diizinkan). Tandai skill yang sudah ada vs yang
-   perlu dipasang.
+4. **Cek skill yang sudah terpasang, DAN pastikan yang belum terpasang benar-benar ADA di paket
+   pembeli.** Ikuti `references/openclaw.md` §1 (`openclaw skills list`, atau baca folder skills
+   bila `exec` tidak diizinkan) untuk yang sudah terpasang. Untuk rekomendasi yang belum
+   terpasang, cek juga apakah foldernya ada di dalam Starter Kit/paket yang diunduh pengguna
+   (lihat §2) sebelum berjanji memasangnya — **jangan asumsikan semua skill di
+   `references/peta-skill.md` otomatis ada di paket pembeli** (bundle bisa berbeda-beda, dan
+   sebagian skill library terus bertambah). Kalau skill yang direkomendasikan ternyata tidak ada
+   di kedua tempat (belum terpasang DAN tidak ada foldernya), katakan jujur: *"<nama skill> belum
+   tersedia di paket Anda saat ini"*, lalu ganti dengan skill terdekat dari
+   `references/peta-skill.md` atau paket umum. Tandai hasilnya: sudah ada / perlu dipasang (ada
+   foldernya) / belum tersedia di paket.
 5. **Pandu pemasangan skill yang belum ada — SELALU minta izin eksplisit dulu.** Ikuti
    `references/openclaw.md` §2: cari dulu folder hasil ekstrak Starter Kit (biasanya di folder
    Unduhan), lalu pasang. Jangan pernah memasang tanpa konfirmasi "ya/lanjut" dari pengguna.
@@ -98,7 +106,8 @@ Ide otomasi lanjutan (opsional, bisa nanti): <1 kalimat>
 
 ## Status Pemasangan
 - Sudah terpasang: <daftar atau "belum ada">
-- Perlu dipasang: <daftar> → [tunggu izin pengguna sebelum memasang]
+- Perlu dipasang: <daftar, ada foldernya di paket> → [tunggu izin pengguna sebelum memasang]
+- Belum tersedia di paket Anda: <daftar, bila ada> — dipakai skill pengganti: <nama>
 
 ## Hasil Tugas Pertama
 <hasil nyata dari skill yang dijalankan — bukan penjelasan, tapi output siap pakai>
@@ -166,6 +175,8 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
 ## Checklist sebelum mengirim hasil
 - [ ] Wawancara maksimal 5 pertanyaan, dalam satu pesan.
 - [ ] Rekomendasi skill berasal dari `references/peta-skill.md` (atau script), bukan tebakan.
+- [ ] Skill yang belum terpasang sudah dicek benar-benar ada foldernya di paket pembeli sebelum
+      dijanjikan — bukan diasumsikan otomatis ada.
 - [ ] Tidak ada pemasangan skill tanpa izin eksplisit pengguna.
 - [ ] Ada minimal satu hasil nyata siap pakai (bukan cuma rencana).
 - [ ] Rencana 7 hari konkret dan sesuai prioritas pengguna.
@@ -180,6 +191,10 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
 ## Batasan & penanganan error
 - **Industri/tugas tanpa padanan di `peta-skill.md`:** katakan jujur, jangan mengarang nama
   skill. Tawarkan paket umum atau skill terdekat.
+- **Skill yang direkomendasikan (mis. `laporan-otomatis-terjadwal`, `buku-stok`, atau skill baru
+  lain) ternyata tidak ada di paket pembeli** (tidak terpasang DAN tidak ada foldernya di Starter
+  Kit): jangan berjanji memasangnya. Katakan jujur "belum tersedia di paket Anda saat ini" dan
+  pakai skill pengganti terdekat dari `references/peta-skill.md`.
 - **`exec`/perintah komputer tidak diizinkan:** ikuti fallback di `references/openclaw.md` —
   beri perintah salin-tempel, jangan berhenti begitu saja.
 - **Skill baru dipasang tapi belum "terlihat":** ini normal (snapshot skill dibaca ulang tiap

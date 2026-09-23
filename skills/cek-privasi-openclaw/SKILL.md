@@ -65,8 +65,10 @@ Yang dicek (ringkas; detail di `references/openclaw.md`):
   manusia lewat klien approval.
 - **Sandbox** (`agents.defaults.sandbox.mode`): apakah AI berjalan di kotak pasir terisolasi.
 - **Kanal & siapa boleh mengirim perintah** (`channels.<kanal>.dmPolicy`, `.allowFrom`,
-  `.groupPolicy`, `commands.ownerAllowFrom`): siapa yang boleh chat pribadi/grup ke bot, siapa
-  yang dianggap "pemilik".
+  `.groups`, `.groupPolicy`, `.groupAllowFrom`, `commands.ownerAllowFrom`): siapa yang boleh
+  chat pribadi ke bot, **grup mana** yang diproses (`groups`) vs **siapa** boleh memicu bot di
+  grup itu (`groupPolicy`/`groupAllowFrom`) — dua hal berbeda, jangan disamakan (lihat
+  `references/dampak-perubahan.md` baris pertama), dan siapa yang dianggap "pemilik".
 - **Isolasi percakapan** (`session.dmScope`): apakah semua orang yang chat pribadi berbagi satu
   ingatan (berisiko untuk agen yang dipakai banyak orang) atau terpisah per pengirim.
 - **Penyimpanan memori/log**: jelaskan bahwa transkrip & memori tersimpan lokal di folder

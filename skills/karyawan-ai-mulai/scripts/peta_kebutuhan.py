@@ -10,7 +10,7 @@ Pakai:
 
 Windows: ganti `python3` dengan `python` atau `py`.
 
-Uji sendiri (20 frasa member nyata, termasuk kasus yang dulu salah cocok):
+Uji sendiri (frasa member nyata, termasuk kasus yang dulu salah cocok):
     python3 scripts/peta_kebutuhan.py --self-test
 
 Keluaran: JSON berisi skill yang cocok per tugas (satu skill per tugas, yang paling
@@ -35,8 +35,8 @@ import unicodedata
 PEMETAAN = [
     (["rekap ulasan", "banyak ulasan", "ratusan ulasan", "analisis ulasan", "sentiment", "rangkum ulasan"], "analisis-ulasan"),
     (["balas ulasan", "balas review", "reply review", "rating jelek", "bintang 1", "review pelanggan"], "balas-ulasan-pelanggan"),
-    (["balas chat", "bales chat", "bales wa", "balas wa", "auto reply", "autoreply", "customer service",
-      "cs pelanggan", "quick reply", "faq pelanggan", "layani pelanggan", "chat pelanggan"], "balas-chat-cs"),
+    (["balas chat", "bales chat", "bales wa", "balas wa", "jawab wa", "balesin", "auto reply", "autoreply",
+      "customer service", "cs pelanggan", "quick reply", "faq pelanggan", "layani pelanggan", "chat pelanggan"], "balas-chat-cs"),
     (["arus kas", "cash flow", "proyeksi kas", "uang cukup sampai", "cash runway", "kas 13 minggu"], "arus-kas-13minggu"),
     (["laporan keuangan", "laba rugi", "neraca", "sak emkm", "untung berapa bulan ini"], "laporan-keuangan-emkm"),
     (["rekonsiliasi", "cocokkan mutasi", "rekening koran", "cek transfer masuk", "mutasi bank"], "rekonsiliasi-bank"),
@@ -44,15 +44,19 @@ PEMETAAN = [
       "sales report", "omzet harian", "laporan omzet"], "rekap-penjualan-csv"),
     (["laporan otomatis", "kirim laporan otomatis", "jadwalkan laporan", "laporan rutin terjadwal",
       "laporan terjadwal", "scheduled report", "auto-send report", "kirim rekap tiap pagi"], "laporan-otomatis-terjadwal"),
-    (["catat stok", "cek stok", "stock opname", "stok opname", "restock", "picking list",
-      "potong stok", "buku stok", "inventori toko", "stok menipis"], "buku-stok"),
+    (["catat stok", "cek stok", "ngecek stok", "stok bahan", "stok barang", "stock opname",
+      "stok opname", "restock", "picking list", "potong stok", "buku stok", "inventori toko",
+      "stok menipis"], "buku-stok"),
     (["input struk", "ketik ulang nota", "cek faktur pajak", "rekap nota belanja"], "ekstrak-nota-faktur"),
     (["kalender konten", "jadwal posting", "content plan", "content calendar", "rencana konten 30 hari"], "kalender-konten-30hari"),
     (["bikin caption", "buat caption", "caption sosmed", "copywriting", "konten sosmed",
-      "bikin konten", "buat konten", "posting instagram", "posting ig", "posting tiktok"], "caption-sosmed-umkm"),
+      "bikin konten", "buat konten", "posting instagram", "posting ig", "posting tiktok",
+      "upload konten"], "caption-sosmed-umkm"),
     (["rencana promo", "diskon aman", "flash sale", "campaign plan", "sale planning"], "promo-kalender"),
     (["follow up", "follow-up", "prospek belum balas", "chasing lead", "ghosting", "klien belum balas"], "follow-up-prospek"),
-    (["tagih piutang", "nagih utang", "belum bayar", "telat bayar", "debt collection", "overdue invoice"], "tagih-piutang"),
+    (["tagih piutang", "nagih utang", "nagih pelanggan", "nagih customer", "pelanggan belum bayar",
+      "customer belum bayar", "belum bayar tagihan", "pengingat tagihan", "pelanggan telat bayar",
+      "debt collection", "overdue invoice"], "tagih-piutang"),
     (["buat invoice", "bikin invoice", "kuitansi", "billing", "nota tagihan"], "buat-invoice"),
     (["penawaran harga", "surat penawaran", "sph", "quotation", "price quote"], "surat-penawaran-harga"),
     (["broadcast wa", "blast wa", "bulk message", "wa marketing", "pesan massal"], "broadcast-wa"),
@@ -61,7 +65,7 @@ PEMETAAN = [
     (["buat sop", "bikin sop", "prosedur kerja", "checklist harian", "standard operating procedure"], "sop-writer"),
     (["lowongan", "loker", "rekrut karyawan", "job posting", "hiring", "cari karyawan baru"], "lowongan-kerja"),
     (["surat peringatan", "surat sp1", "surat sp2", "surat sp3", "surat teguran karyawan"], "surat-peringatan-karyawan"),
-    (["slip gaji", "hitung gaji", "gaji karyawan", "payroll", "potongan bpjs"], "slip-gaji-bpjs"),
+    (["slip gaji", "hitung gaji", "gaji karyawan", "gajian", "payroll", "potongan bpjs"], "slip-gaji-bpjs"),
     (["pph 21", "pph21", "pajak karyawan", "withholding tax", "metode ter", "tarif efektif rata-rata"], "pph21-ter"),
     (["hitung thr", "thr lebaran", "thr natal", "holiday allowance"], "hitung-thr"),
     (["pph final", "pajak umkm", "pph umkm", "pph 0,5", "pph 0.5"], "pph-final-umkm"),
@@ -79,7 +83,17 @@ PEMETAAN = [
 
 # Industri/peran -> paket default (dipakai bila pengguna minta cepat/pakai default,
 # atau untuk mengisi rekomendasi sampai minimal 3 bila tugas belum cukup cocok).
+#
+# URUTAN SENGAJA: kunci lebih spesifik ditaruh SEBELUM kunci umum yang bisa jadi substringnya
+# (mis. "kesehatan"/"klinik"/"dokter" sebelum "jasa", supaya "jasa kesehatan" jatuh ke paket
+# kesehatan, bukan paket jasa umum -- dict Python menjaga urutan penyisipan).
 PAKET_INDUSTRI = {
+    # Dokter solo/klinik: prioritas balas pasien (Copilot -- draf balasan, bukan auto-reply
+    # langsung ke pasien) & edukasi, baru SOP/surat. TIDAK ada skrining/diagnosis medis.
+    "dokter": ["balas-chat-cs", "sop-writer", "surat-resmi"],
+    "klinik": ["balas-chat-cs", "sop-writer", "notulen-rapat"],
+    "apotek": ["rekap-penjualan-csv", "balas-chat-cs", "caption-sosmed-umkm"],
+    "kesehatan": ["balas-chat-cs", "sop-writer", "notulen-rapat"],
     "toko": ["rekap-penjualan-csv", "balas-chat-cs", "caption-sosmed-umkm"],
     "retail": ["rekap-penjualan-csv", "balas-chat-cs", "caption-sosmed-umkm"],
     "f&b": ["rekap-penjualan-csv", "balas-chat-cs", "caption-sosmed-umkm"],
@@ -90,30 +104,44 @@ PAKET_INDUSTRI = {
     "warung": ["rekap-penjualan-csv", "balas-chat-cs", "caption-sosmed-umkm"],
     "kafe": ["rekap-penjualan-csv", "balas-chat-cs", "caption-sosmed-umkm"],
     "cafe": ["rekap-penjualan-csv", "balas-chat-cs", "caption-sosmed-umkm"],
+    "salon": ["surat-penawaran-harga", "follow-up-prospek", "caption-sosmed-umkm"],
+    "bengkel": ["surat-penawaran-harga", "buat-invoice", "follow-up-prospek"],
+    "distributor": ["surat-penawaran-harga", "follow-up-prospek", "buat-invoice"],
+    "kontraktor": ["surat-penawaran-harga", "follow-up-prospek", "buat-invoice"],
     "jasa": ["surat-penawaran-harga", "follow-up-prospek", "buat-invoice"],
     "konsultasi": ["surat-penawaran-harga", "follow-up-prospek", "buat-invoice"],
     "konsultan": ["surat-penawaran-harga", "follow-up-prospek", "buat-invoice"],
     "freelance": ["surat-penawaran-harga", "follow-up-prospek", "buat-invoice"],
     "freelancer": ["surat-penawaran-harga", "follow-up-prospek", "buat-invoice"],
-    "bengkel": ["surat-penawaran-harga", "buat-invoice", "follow-up-prospek"],
     "kantor": ["notulen-rapat", "surat-resmi", "sop-writer"],
     "admin": ["notulen-rapat", "surat-resmi", "sop-writer"],
     "keuangan": ["laporan-keuangan-emkm", "rekonsiliasi-bank", "arus-kas-13minggu"],
     "akuntansi": ["laporan-keuangan-emkm", "rekonsiliasi-bank", "arus-kas-13minggu"],
+    "hrd": ["slip-gaji-bpjs", "pph21-ter", "lowongan-kerja"],
     "sdm": ["slip-gaji-bpjs", "pph21-ter", "lowongan-kerja"],
     "kepegawaian": ["slip-gaji-bpjs", "pph21-ter", "lowongan-kerja"],
     "human resources": ["slip-gaji-bpjs", "pph21-ter", "lowongan-kerja"],
     "manufaktur": ["hitung-hpp", "arus-kas-13minggu", "rekap-penjualan-csv"],
     "produksi": ["hitung-hpp", "arus-kas-13minggu", "rekap-penjualan-csv"],
-    # Dokter solo: prioritas balas pasien (Copilot -- draf balasan, bukan auto-reply
-    # langsung ke pasien) & edukasi, baru SOP/surat. TIDAK ada skrining/diagnosis medis.
-    "dokter": ["balas-chat-cs", "sop-writer", "surat-resmi"],
-    "klinik": ["balas-chat-cs", "sop-writer", "notulen-rapat"],
-    "kesehatan": ["balas-chat-cs", "sop-writer", "notulen-rapat"],
     "properti": ["surat-penawaran-harga", "follow-up-prospek", "proposal-kerjasama"],
 }
 
 PAKET_UMUM = ["rekap-penjualan-csv", "balas-chat-cs", "surat-resmi"]
+
+# Skill yang belum tentu ada di setiap paket pembeli (status "uji"/belum "rilis" di katalog
+# saat script ini ditulis). SELALU verifikasi ketersediaannya sebelum berjanji memasang --
+# lihat SKILL.md Langkah 4 & "Batasan". Daftar ini hanya pengingat, bukan pemeriksaan otomatis
+# (script tidak mengakses catalog.csv).
+SKILL_BELUM_TENTU_TERSEDIA = {"laporan-otomatis-terjadwal", "buku-stok"}
+
+# Aturan prioritas: kalau tugas menyebut "laporan" BERSAMA salah satu kata penanda
+# otomatis/jadwal, arahkan ke laporan-otomatis-terjadwal walau kata "penjualan"/"omzet" ikut
+# disebut (mis. "kirim laporan penjualan otomatis tiap pagi ke telegram"). Dicek LEBIH DULU,
+# sebelum daftar PEMETAAN umum, supaya sinyal "otomatis/terjadwal" selalu menang.
+_POLA_LAPORAN_KATA = re.compile(r"\blaporan\b")
+_POLA_PENANDA_OTOMATIS = re.compile(
+    r"\b(otomatis|terjadwal|jadwalkan|tiap\s+(pagi|hari|minggu|senin|bulan|selasa|rabu|kamis|jumat|sabtu|minggu))\b"
+)
 
 # Uji sendiri: frasa nyata dari persona member + kasus yang dulu salah cocok (regresi).
 # (tugas, industri_opsional) -> skill yang DIHARAPKAN, atau None untuk "tidak boleh cocok".
@@ -143,6 +171,22 @@ KASUS_UJI = [
     (None, "kafe kopi kecil", "rekap-penjualan-csv"),
     (None, "dokter gigi solo", "balas-chat-cs"),
     (None, "bengkel motor", "surat-penawaran-harga"),
+    # Tambahan uji ulang v1.1.0 (penguji independen):
+    ("kirim laporan penjualan otomatis tiap pagi ke telegram", None, "laporan-otomatis-terjadwal"),
+    ("laporan harian otomatis ke hp", None, "laporan-otomatis-terjadwal"),
+    ("ngecek stok bahan baku", None, "buku-stok"),
+    ("stok bahan baku menipis", None, "buku-stok"),
+    ("jawab wa pasien yang tanya jadwal", None, "balas-chat-cs"),
+    ("balesin chat pasien", None, "balas-chat-cs"),
+    ("nagih pelanggan yang belum bayar", None, "tagih-piutang"),
+    ("pengingat tagihan pelanggan", None, "tagih-piutang"),
+    ("gajian karyawan bulan ini", None, "slip-gaji-bpjs"),
+    ("upload konten tiktok tiap hari", None, "caption-sosmed-umkm"),
+    ("saya belum bayar pajak bulan ini", None, None),  # jangan ke tagih-piutang
+    (None, "hrd perusahaan", "slip-gaji-bpjs"),
+    (None, "apotek keluarga", "rekap-penjualan-csv"),
+    (None, "salon kecantikan", "surat-penawaran-harga"),
+    (None, "jasa kesehatan", "balas-chat-cs"),  # kesehatan menang atas "jasa"
 ]
 
 
@@ -165,6 +209,11 @@ _POLA_INDUSTRI = {kunci: _pola_kata_utuh(kunci) for kunci in PAKET_INDUSTRI}
 
 def cocokkan_tugas(tugas):
     t = normalisasi(tugas)
+    # Prioritas: "laporan" + penanda otomatis/jadwal menang atas kunci laporan spesifik lain
+    # (rekap-penjualan-csv, dst.), sesuai catatan uji ("kirim laporan penjualan otomatis tiap
+    # pagi" harus ke laporan-otomatis-terjadwal, bukan rekap-penjualan-csv).
+    if _POLA_LAPORAN_KATA.search(t) and _POLA_PENANDA_OTOMATIS.search(t):
+        return "laporan-otomatis-terjadwal"
     for pola_list, skill in _POLA_PEMETAAN:
         for pola in pola_list:
             if pola.search(t):

@@ -82,8 +82,8 @@ di versi ini). Gunakan tool `write`/`edit` file biasa untuk menambahkan baris ri
 
 ```
 ## Profil kerja (diisi karyawan-ai-mulai, <tanggal>)
-- Industri: F&B, skala 6–15 orang
-- Kanal favorit: WhatsApp (komputer TIDAK menyala 24 jam)
+- Industri: F&B, skala 2–15 orang
+- Kanal favorit: Telegram (komputer TIDAK menyala 24 jam)
 - Tugas prioritas: rekap penjualan, balas chat CS, caption sosmed
 ```
 
@@ -119,9 +119,7 @@ Setelah paket pertama terpasang, tawarkan menjalankan skill `cek-privasi-opencla
 memeriksa pengaturan keamanan dasar — terutama bagi pengguna yang menandai "khawatir privasi"
 saat wawancara.
 
-## 7. Aturan pemilik untuk jalur "Solusi Member VIP" (WAJIB diikuti)
-
-Sesuai keputusan pemilik di `CLAUDE.md` §1 ("Keputusan pemilik untuk jalur 3"):
+## 7. Aturan paket Komunitech untuk solusi member VIP (WAJIB diikuti)
 - **Kanal default = Telegram** untuk laporan & notifikasi ke pemilik usaha.
 - **WhatsApp OpenClaw** (berbasis WhatsApp Web, tidak resmi) hanya boleh dipakai dengan **nomor
   terpisah** untuk notifikasi ke pemilik sendiri, dan **hanya setelah pengguna menyetujui

@@ -54,9 +54,10 @@ Path yang relevan untuk audit privasi (terverifikasi ada di skema resmi `opencla
 | `tools.exec.security` | Sama kategorinya (`deny`/`allowlist`/`full`) tapi untuk tingkat keamanan perintah | Bawaan efektif `full` (sama sumber verifikasi seperti baris di atas). |
 | `agents.defaults.sandbox.mode` | Apakah AI berjalan di "kotak pasir" terisolasi (container): `off`, `non-main`, `all`. `all` **butuh Docker/Podman terpasang** — lihat `references/dampak-perubahan.md`. | `off` bila tidak diatur (dikonfirmasi lewat `openclaw sandbox explain`). |
 | `session.dmScope` | Bagaimana AI mengingat percakapan pribadi (DM): `main` (semua orang berbagi satu ingatan — **berisiko** bila banyak orang chat pribadi ke bot yang sama), `per-peer`/`per-channel-peer`/`per-account-channel-peer` (tiap pengirim terpisah) | `main` bila tidak diatur |
-| `channels.whatsapp.dmPolicy` (ganti `whatsapp` dengan kanal lain, mis. `telegram`) | Siapa yang boleh chat pribadi ke bot: `pairing` (harus disetujui dulu), `allowlist` (hanya nomor tertentu), `open` (siapa saja), `disabled` | `pairing` |
-| `channels.whatsapp.allowFrom` | Daftar nomor/akun yang diizinkan (kalau `dmPolicy` bukan `open`) | kosong |
-| `channels.whatsapp.groupPolicy` | Siapa yang boleh memicu bot di grup: `open`, `allowlist`, `disabled` | `allowlist` |
+| `channels.whatsapp.dmPolicy` (ganti `whatsapp` dengan kanal lain, mis. `telegram`) | Siapa yang boleh chat pribadi ke bot: `pairing` (harus disetujui dulu, maks. **3 permintaan menunggu** per akun kanal), `allowlist` (hanya nomor tertentu), `open` (siapa saja — **wajib** `allowFrom` berisi `"*"`), `disabled` | `pairing` |
+| `channels.whatsapp.allowFrom` | Daftar nomor pengirim yang diizinkan chat pribadi (DM). Kalau `groupAllowFrom` (di bawah) **tidak diisi**, ini juga jadi fallback untuk siapa yang boleh memicu bot di GRUP — lihat peringatan di `references/dampak-perubahan.md`. | kosong |
+| `channels.whatsapp.groups` | Grup **mana saja** yang eligible diproses (map berisi ID grup `...@g.us`; kosong/tidak diisi = semua grup eligible; `"*"` = semua grup). **BUKAN** tempat memasukkan nomor pengirim. | tidak diisi (semua grup eligible) |
+| `channels.whatsapp.groupPolicy` + `channels.whatsapp.groupAllowFrom` | Siapa (nomor pengirim) yang boleh memicu bot **di dalam** grup yang sudah eligible: `groupPolicy` = `open`/`allowlist`/`disabled`; `groupAllowFrom` = daftar nomor E.164. **Isi `groupAllowFrom` secara eksplisit** — jangan andalkan fallback ke `allowFrom` (lihat dampak di `references/dampak-perubahan.md`). | `groupPolicy: allowlist`, `groupAllowFrom` kosong (⚠️ jatuh ke `allowFrom`) |
 | `messages.groupChat.historyLimit` | Berapa banyak pesan grup lama yang dibaca AI sebagai konteks | sesuai skema, bisa diatur |
 | `commands.ownerAllowFrom` | Daftar "pemilik" yang boleh memakai perintah sensitif (jadwal, dsb.) | kosong |
 | `security.installPolicy` | Aturan pemasangan skill/plugin baru (mis. dari ClawHub) | tergantung setup |
@@ -95,17 +96,25 @@ sesi/agent saat ini — tanpa mengubah apa pun.
 
 ## 5. Telemetri — dua hal yang berbeda, jangan dicampur
 
-1. **Cek pembaruan harian** (versi, OS, arsitektur Node/CLI) — ini **selalu berjalan**, bukan
-   bagian dari "statistik anonim" yang bisa dimatikan. Bukan isi pesan, tapi tetap keluar dari
-   komputer pengguna sekali sehari.
-2. **Statistik pemakaian anonim** (opt-in) — **mati secara bawaan**. Cek & atur dengan:
+1. **Cek pembaruan harian** (versi, OS, arsitektur Node/CLI, sekali per 24 jam) — **bisa
+   dimatikan**, terverifikasi:
+   ```bash
+   openclaw config set update.checkOnStart false
+   ```
+   atau lewat environment variable `OPENCLAW_NO_AUTO_UPDATE=1`. Matikan ini kalau pengguna tidak
+   mau ada permintaan keluar sama sekali ke server OpenClaw — **konsekuensinya**: pengguna tidak
+   dapat pemberitahuan otomatis kalau ada versi baru, jadi perlu cek update manual sesekali
+   (`openclaw update --help`).
+2. **Statistik pemakaian anonim** (opt-in, terpisah dari cek pembaruan) — **mati secara
+   bawaan**. Cek & atur dengan:
    ```bash
    openclaw telemetry show
    openclaw telemetry on   # hanya dengan izin pengguna
    openclaw telemetry off
    ```
-Jelaskan kedua hal ini terpisah ke pengguna — jangan bilang "telemetri OpenClaw sepenuhnya mati"
-kalau yang dimaksud cuma statistik opt-in; cek versi harian tetap ada.
+Jelaskan kedua hal ini terpisah ke pengguna, dan sebutkan bahwa **keduanya sama-sama bisa
+dimatikan** kalau pengguna sangat khawatir privasi — bedanya hanya cara mematikannya dan efeknya
+(statistik = tidak ada data tambahan yang dikirim; cek pembaruan = tidak ada notifikasi versi baru).
 
 ## 6. Mengubah konfigurasi — SELALU satu per satu, SELALU dengan izin
 
@@ -124,6 +133,15 @@ openclaw config set <path> <nilai>
 bilang "ubah semua yang perlu", tetap sebutkan satu per satu dan minta konfirmasi tiap butir
 (boleh dipercepat dengan "ya untuk semua" **hanya** setelah pengguna melihat daftar lengkap
 perubahan yang diusulkan).
+
+**Pengecualian untuk auth Gateway:** jangan pakai `config set gateway.auth.mode token` biasa —
+nilai `token` saja tanpa token asli tidak memperbaiki apa pun (audit tetap `critical`). Pakai:
+```bash
+openclaw doctor --generate-gateway-token
+```
+(terverifikasi: menghasilkan token asli, mengatur `gateway.auth.mode: "token"` sekaligus, dan
+membuat cadangan `openclaw.json.bak` otomatis). Tetap jelaskan efek "butuh restart + token baru
+di klien" sebelum menjalankan.
 
 **Jaring pengaman bawaan** (boleh disebutkan ke pengguna sebagai penenang, bukan pengganti
 langkah "cara membatalkan" di atas):
@@ -150,9 +168,7 @@ tertentu dihapus dari memori/sesi OpenClaw. Jalankan `--dry-run` dulu, tunjukkan
 baru minta persetujuan untuk menjalankan ulang tanpa `--dry-run`. Untuk lokasi transkrip mentah,
 rujuk ke `~/.openclaw` (lihat §"Penyimpanan memori/log" di `SKILL.md`).
 
-## 8. Aturan pemilik untuk jalur "Solusi Member VIP" (WAJIB diikuti)
-
-Sesuai keputusan pemilik di `CLAUDE.md` §1 ("Keputusan pemilik untuk jalur 3"):
+## 8. Aturan paket Komunitech untuk solusi member VIP (WAJIB diikuti)
 - Kalau audit menemukan `channels.whatsapp.dmPolicy: "open"` pada nomor WA yang sama dengan
   nomor utama usaha, tandai ini 🔴 dan sarankan: (a) pindah ke **nomor WA terpisah** khusus
   bot dengan persetujuan risiko tertulis dari pengguna, atau (b) pakai **Telegram** sebagai
