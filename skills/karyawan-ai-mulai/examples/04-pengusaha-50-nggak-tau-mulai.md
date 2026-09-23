@@ -39,15 +39,12 @@ dan Anda bisa koreksi kapan saja.
 
 ---
 
-## Catatan penguji
-- **Bagus:** satu pesan, 5 pertanyaan, pilihan bernomor (maks. 4 opsi, sesuai SKILL.md baris
-  29–31), ada jalan pintas "terserah", dan kekhawatiran privasi langsung dijawab tanpa
-  menjalankan audit sendiri (sesuai langkah 9).
-- **Catatan:** pertanyaan 2 di SKILL.md punya 5 kategori (solo/2–5/6–15/16–50/50+). Agar
-  maksimal 4 opsi, agent penguji menggabungkan "2–5" dan "6–15". SKILL.md sebaiknya memberi versi
-  4 opsi yang baku agar konsisten antar sesi.
-- **Sedang:** default kanal di SKILL.md bila tidak dijawab = "WhatsApp" (baris 38). Menurut
-  keputusan pemilik, default harus **Telegram**. Di contoh ini Telegram ditaruh sebagai opsi 1,
-  tetapi bila pengguna menjawab "terserah", skill akan mengasumsikan WhatsApp.
-- Pertanyaan 5 di SKILL.md menggabungkan dua hal (privasi + komputer menyala). Di sini dipisah:
-  privasi dijawab sebagai penjelasan, bukan pertanyaan. Ini lebih ramah untuk usia 50+.
+## Catatan penguji (uji ulang v1.1.0)
+- **Bagus:** satu pesan, 5 pertanyaan, pilihan bernomor, jalan pintas "terserah", dan privasi
+  dijawab tanpa menjalankan audit sendiri. Di v1.1.0 skala tim sudah **4 opsi baku** (sama
+  persis dengan pesan di atas), dan kanal default = **Telegram** dengan opsi WA bertanda "nomor
+  terpisah, baca risikonya dulu". Isi pesan di atas sekarang sesuai skill tanpa penyesuaian
+  penguji. Satu penyesuaian: opsi 4 "belum tahu/terserah" di skill dilebur ke jalan pintas
+  "terserah" di akhir pesan.
+- **Catatan kecil:** pertanyaan 5 di SKILL.md masih menggabungkan privasi + komputer menyala.
+  Di contoh ini privasi dijawab sebagai penjelasan, cara yang lebih ramah untuk usia 50+.

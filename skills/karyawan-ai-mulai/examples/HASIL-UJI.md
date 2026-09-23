@@ -1,83 +1,96 @@
-# HASIL UJI — karyawan-ai-mulai
+# HASIL UJI — karyawan-ai-mulai v1.1.0 (uji ulang)
 
 - **Tanggal:** 2026-09-23
 - **Penguji:** agent penguji independen (simulasi, Claude Code)
-- **Lingkungan:** OpenClaw 2026.9.5 (ec9c1a1), HOME uji terisolasi `/tmp/uji-vip/home`, tanpa
-  login kanal apa pun. Skill dipasang sungguhan dengan `openclaw skills install ./<folder> --global`.
+- **Versi diuji:** v1.1.0 (revisi setelah uji v1.0: skor 6, REVISI)
+- **Lingkungan:** OpenClaw 2026.9.5 (ec9c1a1), **HOME uji baru** `/tmp/uji-vip/home-v11`, tanpa
+  login kanal. Skill dan skill terkait (rekap-penjualan-csv, buku-stok, laporan-otomatis-terjadwal,
+  cek-privasi-openclaw) dipasang sungguhan dengan `openclaw skills install ./<folder> --global`.
+  Data persona & uji v1.0 di `/tmp/uji-vip/` dipakai ulang.
 
-## Verifikasi perintah OpenClaw yang ditulis skill
-| Perintah / klaim | Hasil |
+## Verifikasi perintah OpenClaw (ulang, HOME baru)
+| Perintah / klaim di skill v1.1.0 | Hasil |
 |---|---|
-| `openclaw skills list --eligible` | ✅ jalan (27/27 ready; skill kita "openclaw-managed") |
-| `openclaw skills list --verbose --json` | ✅ jalan (JSON: workspaceDir, managedSkillsDir, skills) |
-| `openclaw skills install ./<skill> --global` | ✅ terpasang ke `~/.openclaw/skills/<skill>`, termasuk `scripts/`. Pasang ulang skill yang sudah ada: "Skill already exists… Re-run with force/update" (tidak disebut di skill) |
-| `openclaw skills check` / `skills info karyawan-ai-mulai` | ✅ Ready, visible to model, available as command |
-| `openclaw automations add "0 7 * * 1" "<pesan>" --name … --tz Asia/Jakarta --session isolated --announce --channel telegram --to …` | ✅ argumen diterima parser, gagal hanya karena Gateway belum berjalan/berkredensial (wajar di mesin uji). `automations` = alias `cron`, `create` = alias `add` ✅ |
-| Memori lewat `USER.md`/`MEMORY.md` di workspace, tanpa CLI tulis | ✅ sesuai docs (`concepts/agent-workspace.md`; USER.md dibatasi 4.000 karakter) |
-| Kutipan "Cron runs inside the Gateway process…" | ✅ konsisten dengan docs automation |
-| Semua nama skill di `peta-skill.md` & script ada di library | ✅ (35/35) |
+| `openclaw skills list --eligible`, `skills list --verbose --json`, `skills check` | ✅ jalan |
+| `openclaw skills install <folder> --global` | ✅ terpasang ke `~/.openclaw/skills/<nama>` (termasuk `scripts/`) |
+| Pesan "Skill already exists… Re-run with force/update" saat pasang ulang | ✅ persis seperti dikutip skill |
+| `--force` untuk menimpa (`skills install ./x --global --force`) | ✅ jalan (exit 0) |
+| `openclaw skills info <nama>` → Ready / Visible to model / Available as command | ✅ persis |
+| `openclaw automations add "0 7 * * 1" "<pesan>" --name … --tz Asia/Jakarta --session isolated --announce --channel telegram --to …` | ✅ argumen diterima (berhenti hanya karena Gateway tanpa kredensial di mesin uji). `automations` = alias `cron`, `create` = alias `add` |
+| Klaim `exec.mode → ask` membuat automation ditolak tanpa klien approval (references §5) | ✅ sesuai docs `tools/exec-approvals.md` |
+| Memori lewat `USER.md`/`MEMORY.md`, tanpa CLI tulis | ✅ sesuai docs |
+| Semua nama skill di `peta-skill.md` & script ada di library | ✅ (termasuk `buku-stok`, `laporan-otomatis-terjadwal`) |
+
+## Uji script `peta_kebutuhan.py` v1.1.0
+- `--self-test`: **25/25 lulus**, exit 0.
+- **Regresi salah cocok v1.0 (uji independen penguji):** "input no resi kurir", "cetak resi …
+  nomor resi kurir", "kirim barang lewat kurir", "gaji sopir", "pendapatan harian", "atur agenda
+  meeting", "urus notaris", "hitung amount", industri "shrimp farm" → **tidak ada lagi salah
+  cocok** ✅. "cek stok kurang" → `buku-stok` (benar).
+- **Frasa baru rancangan penguji (43 tugas + 18 industri):**
+  - Benar: "bales wa customer", "auto reply pasien", "laporan keuangan bulanan buat bank",
+    "bikin caption promo", "restock barang", "dropship"; industri restoran/rumah makan/toko
+    online/dokter/klinik gigi.
+  - Selalu ≥ 3 rekomendasi tanpa duplikat ✅ (3 persona dicek).
+  - **Tidak cocok (jatuh ke paket industri, tidak berbahaya):** "ngecek stok bahan baku", "stok
+    bahan baku" (`\bcek` tidak cocok dengan "ngecek"), "jawab wa pasien…", "balesin chat pasien",
+    "laporan harian otomatis ke hp", "bikin laporan", "upload konten tiktok", "gajian karyawan",
+    "nagih pelanggan", "pengingat tagihan pelanggan"; industri "HRD", apotek, salon, distributor, kontraktor.
+  - **Prioritas keliru:** "kirim laporan penjualan otomatis tiap pagi ke telegram" →
+    `rekap-penjualan-csv` (bukan `laporan-otomatis-terjadwal`, kebutuhan #1 member).
+  - **Salah cocok kecil yang tersisa:** "saya belum bayar pajak" → `tagih-piutang`; "follow up
+    supplier" → `follow-up-prospek`; "loker karyawan rusak" → `lowongan-kerja`; industri "jasa
+    kesehatan" → paket jasa (urutan dict: "jasa" sebelum "kesehatan").
 
 ## Audit keamanan singkat
-Tidak ada panggilan jaringan, perintah destruktif, pembacaan kredensial, atau prompt injection.
-Script hanya memakai stdlib (argparse/json/unicodedata). Instal dari luar paket dan publikasi ke
-ClawHub dilarang eksplisit. ✅
+Tidak ada panggilan jaringan, perintah destruktif, atau pembacaan kredensial. Tidak ada prompt
+injection. Script hanya memakai stdlib (argparse/json/re/unicodedata). `--force` hanya dengan izin
+eksplisit per perintah. Tidak memasang dari luar paket. ✅
 
 ## Skor
-| Kriteria | Skor | Alasan |
-|---|---|---|
-| Pemicu (description) | 8 | Kata kunci ID/EN jelas, batas dengan cek-privasi tegas |
-| Kemudahan awam | 8 | Satu pesan, pilihan bernomor, "terserah" → default. Minus: path Starter Kit untuk install tidak dijelaskan |
-| Kualitas output | 8 | Hasil nyata + rencana 7 hari + privasi (A/B jelas menang) |
-| Akurasi | 5 | Perintah OpenClaw benar, tapi script pemetaan salah cocok untuk frasa umum persona utama ("kurir" → pengajuan-kur) |
-| Penanganan input kurang | 8 | Tanya sekali + default. Minus: default kanal WA bertentangan dengan keputusan pemilik |
-| Penanganan di luar cakupan | 7 | Menolak auto-trading/posting otomatis/diagnosis. Aturan WA Copilot, kripto yang boleh, dan larangan scraping marketplace tidak tertulis |
-| Keamanan | 9 | Izin eksplisit sebelum install, tidak ada data pelanggan di memori |
+| Kriteria | v1.0 | v1.1.0 | Alasan |
+|---|---|---|---|
+| Pemicu (description) | 8 | 8 | Tidak berubah, tetap tepat |
+| Kemudahan awam | 8 | 9 | Cara menemukan folder Starter Kit, pesan "already exists" dijelaskan, 4 opsi baku |
+| Kualitas output | 8 | 8 | Hasil nyata + 7 hari + privasi; saran per cabang untuk 50+ |
+| Akurasi | 5 | 8 | Salah cocok berbahaya hilang, self-test 25 kasus; sisa sinonim/prioritas (sedang) |
+| Penanganan input kurang | 8 | 9 | Default Telegram, 4 opsi baku, asumsi disebut |
+| Penanganan di luar cakupan | 7 | 9 | Aturan pemilik tertulis: WA Copilot/nomor terpisah, kripto, kesehatan, tanpa scraping marketplace, tanpa broadcast |
+| Keamanan | 9 | 9 | Izin eksplisit, tidak ada data pelanggan di memori |
 
-## SKOR AKHIR: 6 / 10 — **REVISI**
-Kerangka dan pengalaman pengguna sangat baik, dan menang di A/B maupun uji banding pesaing.
-Skor dibatasi karena ada cacat berat pada script pemetaan: persona retail diarahkan ke skill
-yang salah. Setelah perbaikan di bawah, skill ini berpotensi 8.
+## SKOR AKHIR: 8 / 10 — **LULUS**
+Cacat berat v1.0 (salah cocok substring) sudah diperbaiki dan terbukti lewat regresi independen.
+Semua aturan pemilik jalur 3 sekarang tertulis di skill. A/B dan uji banding pesaing tetap menang.
+Sisa cacat berikut layak diperbaiki di v1.1.1 tetapi tidak menghalangi kelulusan.
 
-## Daftar cacat & saran perbaikan
+## Cacat tersisa & saran perbaikan
 
 ### Berat
-1. **`scripts/peta_kebutuhan.py` salah cocok karena substring** (fungsi `cocokkan_tugas`, baris
-   95–101, dan daftar `PEMETAAN` baris 26–62). Terbukti: "input no resi **kur**ir" → `pengajuan-kur`,
-   "gaji **sop**ir" → `sop-writer`, "pendapatan harian" → `perjanjian-sederhana` (kunci "nda"), "atur **agen**da" → `katalog-reseller`, "urus **nota**ris" → `ekstrak-nota-faktur`, "hitung
-   a**mou**nt" → perjanjian, industri "s**hr**imp farm" → paket HR (`cocokkan_industri`, baris 104–109).
-   **Perbaikan:** cocokkan per kata utuh (regex `\b…\b` setelah normalisasi), hapus kunci terlalu
-   pendek/ambigu ("kur", "nda", "mou", "agen", "hr", "ter "), dan tambah tes unit untuk 20 frasa
-   persona nyata (termasuk di atas).
+- Tidak ada.
 
 ### Sedang
-2. **Frasa sehari-hari & industri umum tidak dikenali**: "rekap jualan", "bales wa", "bikin konten",
-   "posting ig", "laporan omzet", "gaji karyawan"; industri "restoran", "rumah makan", "kafe",
-   "dokter", "bengkel" → `null`. Tambah sinonim ke `PEMETAAN`/`PAKET_INDUSTRI` dan tabel §2 peta-skill.md.
-3. **Script tidak menjamin 3 rekomendasi** (baris 135–139: paket industri hanya dipakai bila
-   *tidak ada* tugas yang cocok). Isi sisa slot dari paket industri, lalu paket umum, tanpa duplikat.
-4. **Bertentangan dengan keputusan pemilik jalur 3**: default kanal = "WhatsApp" (SKILL.md baris
-   38). Ubah ke **Telegram**. Tambahkan di "Batasan": WA hanya nomor terpisah + persetujuan risiko,
-   agen CS WA = mode **Copilot** (AI menyiapkan draf, manusia mengirim), tanpa broadcast. Tambahkan
-   juga aturan kripto (hanya riset/jurnal/notifikasi harga) dan larangan scraping marketplace
-   lewat login browser (persona retail resi Shopee).
-5. **Path install tidak jelas bagi awam** (SKILL.md langkah 5 dan references/openclaw.md §2 memakai
-   `./<nama-skill>`). Tambahkan langkah: tanyakan/temukan folder hasil ekstrak ZIP Starter Kit
-   (mis. cari `*/rekap-penjualan-csv/SKILL.md` di Downloads). Bila skill sudah ada, jelaskan pesan
-   "already exists" (pakai `--force` hanya dengan izin). Verifikasi dengan `openclaw skills info <nama>`.
-6. **Peta skill belum mencakup solusi VIP baru**: `laporan-otomatis-terjadwal` (sedang dibuat di
-   repo) belum ada di `peta-skill.md`/script, padahal otomasi laporan adalah kebutuhan #1 (~20
-   member). Paket "Kesehatan" (sop-writer, surat-resmi, notulen-rapat) tidak menjawab kebutuhan
-   dokter solo (balasan pasien, edukasi pasien). Tambahkan `balas-chat-cs` ke paket kesehatan.
+1. **Merekomendasikan skill yang belum rilis.** `buku-stok` dan `laporan-otomatis-terjadwal` berstatus
+   **uji** di `catalog.csv` (belum `rilis`), tetapi `peta-skill.md` (baris 14–15, 58) dan script
+   (`PEMETAAN` baris 45–48) merekomendasikannya seolah pasti ada di paket pembeli. **Perbaikan:**
+   tambahkan aturan "cek dulu ada di folder Starter Kit/terpasang; kalau tidak ada, katakan 'belum
+   tersedia di paket Anda' dan pakai skill terdekat", atau tahan rilis karyawan-ai-mulai sampai
+   kedua skill itu `rilis`.
+2. **Sinonim & prioritas script** (`PEMETAAN`): tambahkan "stok" berbentuk frasa ("stok bahan",
+   "stok barang", "ngecek stok"), "jawab wa", "balesin", "nagih", "gajian", "upload konten";
+   letakkan kunci `laporan-otomatis-terjadwal` ("otomatis", "tiap pagi", "terjadwal" bersama
+   "laporan") **sebelum** kunci `rekap-penjualan-csv`, atau dukung dua skill per tugas; tambahkan
+   industri "hrd", "apotek", "salon", "distributor". Tambahkan frasa-frasa itu ke `KASUS_UJI`.
 
 ### Ringan
-7. `references/peta-skill.md` baris 4 memuat path internal `/home/user/Skills/skills/`. Ganti dengan
-   "folder skills platform Anda".
-8. Pertanyaan 2 punya 5 kategori, bertabrakan dengan aturan "maks. 4 opsi" (baris 30–31). Sediakan versi 4 opsi baku.
-9. Tambahkan cek prasyarat: skill ini dan skill ber-script butuh `exec` (bukan `tools.profile:
-   messaging`). Ini ide dari pesaing, dan penting karena `cek-privasi-openclaw` bisa menyarankan profil ketat.
-10. Rekap belum per cabang. Untuk usaha multi-cabang (persona F&B 50+), sarankan file per cabang secara eksplisit.
+3. Salah cocok kecil: "belum bayar" (→ tagih-piutang) sebaiknya dibatasi dengan "pelanggan belum
+   bayar". "jasa kesehatan" → urutkan industri spesifik (kesehatan/klinik/dokter) sebelum "jasa".
+4. `references/openclaw.md` §7 merujuk `CLAUDE.md` §1. File itu tidak ada di paket pembeli; ganti
+   dengan "aturan paket Komunitech".
+5. Contoh profil memori (`references/openclaw.md` §4) masih "Kanal favorit: WhatsApp" dan "skala
+   6–15" (tidak cocok dengan 4 opsi baku dan default Telegram).
+6. Docstring script menyebut "20 frasa". Isinya 25.
 
 ## Verifikasi angka
-Script skill ini tidak menghitung uang. Angka pada contoh 01 berasal dari `rekap-penjualan-csv/scripts/rekap.py`
-dan **diverifikasi independen** dengan python terpisah: total Rp 46.477.000, rata-rata Rp 6.639.571/hari,
-urutan & persen 5 menu, hari terbaik (Sab 19/9, Rp 8.763.000) dan terendah (Sen 21/9, Rp 5.286.000). Semua cocok.
+Script skill ini tidak menghitung uang. Angka contoh 01 (dari `rekap-penjualan-csv/scripts/rekap.py`)
+**diverifikasi independen** dengan python terpisah: total Rp 46.477.000, rata-rata Rp 6.639.571/hari,
+urutan & persen 5 menu, hari terbaik Sab 19/9 Rp 8.763.000, terendah Sen 21/9 Rp 5.286.000. Semua cocok.

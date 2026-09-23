@@ -46,3 +46,10 @@ fokus kanal chat). **Pada aspek keselamatan perubahan, pesaing lebih baik.** Ini
    terverifikasi ada), kunci layar. Penting untuk data pasien/pelanggan.
 4. **`openclaw doctor --lint`** sebagai pemeriksaan baca-saja tambahan (flag terverifikasi ada di 2026.9.5).
 5. **Laporan "Gaps"**: sebutkan apa yang tidak bisa dicek (mis. `--deep` tanpa Gateway).
+
+## Pembaruan uji ulang v1.1.0
+Pelajaran dari `healthcheck` sudah diadopsi dengan cara sendiri: pertanyaan kegunaan bot (mirip
+profil risiko), peta dampak + "kapan aman", jaring pengaman (`.bak`, `--dry-run`, `backup
+create`), dan langkah manual (enkripsi disk, kunci layar, backup). Pada aspek "tidak merusak",
+skill kita kini **setara** (8), dengan satu cacat kunci grup WA tersisa. Secara keseluruhan
+skill kita tetap **unggul** untuk persona member.

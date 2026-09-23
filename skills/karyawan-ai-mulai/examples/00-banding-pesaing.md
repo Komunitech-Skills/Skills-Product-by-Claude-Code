@@ -52,3 +52,8 @@ Lihat `01-owner-resto-50-karyawan-laporan.md`.
    lebih ketat.
 4. **Langkah verifikasi setelah setup** (pesaing: `ls` semua file). Padanan kita: `openclaw skills
    check` atau `openclaw skills info <nama>` setelah install. Keduanya terverifikasi ada di 2026.9.5.
+
+## Pembaruan uji ulang v1.1.0
+Akurasi skill kita naik ke 8, karena salah cocok script sudah diperbaiki. Dua ide dari pesaing
+sudah diadopsi dengan cara sendiri: cek prasyarat `tools.profile`/`exec`, dan verifikasi pasang
+lewat `openclaw skills info`. Skill kita tetap **unggul**.

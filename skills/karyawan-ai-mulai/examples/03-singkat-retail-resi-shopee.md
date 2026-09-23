@@ -7,19 +7,20 @@ browser, yang **ditolak pemilik**.
 **Input pengguna (persis):**
 > bikinin dong asisten buat urus resi shopee, tiap hari cape cetak resi 200an paket + input no resi kurir
 
-**Yang dijalankan agent:**
+**Yang dijalankan agent (skill v1.1.0):**
 ```bash
 python3 ~/.openclaw/skills/karyawan-ai-mulai/scripts/peta_kebutuhan.py \
   --tugas "cetak resi shopee, input no resi kurir" --industri "toko online" --json
 ```
-Hasil nyata script:
+Hasil nyata script v1.1.0:
 ```json
-{"rekomendasi": [{"tugas": "cetak resi shopee, input no resi kurir", "skill": "pengajuan-kur"}], ...}
+{"rekomendasi": [{"tugas": null, "skill": "rekap-penjualan-csv"}, {"tugas": null, "skill": "balas-chat-cs"},
+ {"tugas": null, "skill": "caption-sosmed-umkm"}], "tugas_tanpa_padanan": ["cetak resi shopee, input no resi kurir"], ...}
 ```
-Hasil ini **salah**: kata "kurir" mengandung "kur", sehingga script merekomendasikan skill
-pengajuan KUR (pinjaman bank). Agent penguji mengabaikan hasil script dan mencocokkan manual ke
-tabel `peta-skill.md` (fallback yang diizinkan SKILL.md). Pengguna ingin cepat, jadi dipakai
-default + asumsi (tanpa wawancara).
+Salah cocok "kurir → pengajuan-kur" dari v1.0 **sudah hilang** (kata utuh). Agent mengganti
+`caption-sosmed-umkm` dengan `listing-marketplace` dari tabel peta karena lebih relevan untuk
+staf toko online, lalu memakai default + asumsi (pengguna ingin cepat). Larangan scraping
+marketplace lewat login browser kini tertulis di SKILL.md (Batasan) dan `references/openclaw.md` §7.
 
 ---
 
@@ -89,14 +90,14 @@ selalu menyala; ada kekhawatiran privasi (default aman). Silakan koreksi kapan s
 
 ---
 
-## Catatan penguji
-- **Bagus (karena agent mengikuti fallback manual):** jujur soal batas, tidak menjanjikan
-  otomasi login Shopee, tetap ada hasil siap pakai, dan asumsi disebut.
-- **Cacat berat (script):** `peta_kebutuhan.py` mencocokkan dengan substring, sehingga
-  **"kurir" → pengajuan-kur**. Persona retail yang menyebut "resi kurir" akan dapat rekomendasi
-  pinjaman KUR bila agent mempercayai script. Uji tambahan menunjukkan salah cocok serupa: "gaji
-  sopir" → sop-writer, "pendapatan harian" → perjanjian-sederhana ("nda"), "atur agenda" →
-  katalog-reseller ("agen"), "urus notaris" → ekstrak-nota-faktur, industri "shrimp farm" → paket HR.
-- **Sedang:** SKILL.md tidak menyebut larangan pemilik "scraping marketplace lewat login browser".
-  Penolakan di atas berasal dari penilaian agent, bukan dari skill. Kebutuhan stok/inventori
-  (kebutuhan #7) belum ada padanan di peta.
+## Catatan penguji (uji ulang v1.1.0)
+- **Bagus:** jujur soal batas cetak resi, **sesuai aturan tertulis di skill** (tanpa scraping
+  marketplace via login browser; arahkan ke fitur resmi/ekspor CSV). Tetap ada hasil siap pakai
+  dan asumsi disebut.
+- **Cacat berat v1.0 sudah diperbaiki:** script tidak lagi mencocokkan "kurir" → pengajuan-kur.
+  Uji regresi ulang oleh penguji: "gaji sopir", "pendapatan harian", "atur agenda", "urus
+  notaris", "hitung amount", "kirim barang lewat kurir", "cek stok kurang" (→ buku-stok, benar),
+  industri "shrimp farm" → tidak ada salah cocok. `--self-test` 25/25 lulus.
+- **Sisa:** `buku-stok` (bisa impor pesanan Shopee & membuat picking list) relevan untuk
+  persona ini, tapi hanya muncul bila pengguna menyebut "stok". Frasa resi/pesanan belum
+  diarahkan ke sana.

@@ -48,3 +48,8 @@ diverifikasi) → rencana 7 hari → tawaran cek privasi.
 **Kesimpulan:** dengan skill **jelas lebih baik**. Hasilnya siap pakai, konsisten, dan sesuai
 kendala member ("tidak tahu mulai", "tidak ada waktu", "privasi"). Catatan: keunggulan ini
 bergantung pada agent yang **tidak** mempercayai rekomendasi script yang salah (lihat 03).
+
+## Pembaruan uji ulang v1.1.0
+Catatan "bergantung pada agent yang tidak mempercayai script yang salah" **tidak berlaku lagi**.
+Script v1.1.0 mencocokkan kata utuh, lulus `--self-test` 25/25, dan tidak menghasilkan salah
+cocok berbahaya pada frasa persona. Kesimpulan A/B tetap: **dengan skill jelas lebih baik**.

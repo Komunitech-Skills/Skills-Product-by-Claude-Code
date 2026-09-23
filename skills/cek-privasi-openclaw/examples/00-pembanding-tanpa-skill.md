@@ -37,3 +37,10 @@ batal + verifikasi, dan satu perubahan dijalankan setelah "ya".
 Catatan: sebagian peringatan dampak (grup jadi diam, profil messaging mematikan exec) berasal
 dari penguji, bukan dari skill. Tanpa itu, skill hanya menang pada format dan izin, belum pada
 "tidak merusak" (lihat HASIL-UJI).
+
+## Pembaruan uji ulang v1.1.0
+Di v1.1.0, peringatan dampak (profil `messaging` mematikan skill ber-script, sandbox `all` butuh
+Docker, `exec.mode → ask` menolak automation, `--fix` mengubah `groupPolicy`) sudah **tertulis
+di skill** (`references/dampak-perubahan.md`). Keunggulan "tidak merusak" kini berasal dari
+skill, bukan dari penguji. Kesimpulan A/B tetap: **dengan skill jelas lebih baik**. Sisa cacat
+kunci grup WA (`groupAllowFrom` vs `groups`) dijelaskan di HASIL-UJI.

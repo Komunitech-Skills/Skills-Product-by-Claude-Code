@@ -60,12 +60,17 @@ setiap kali Anda menyambungkan WhatsApp/Telegram atau memasang skill yang membac
 
 ---
 
-## Catatan penguji
-- **Bagus:** langsung jalan tanpa banyak tanya, laporan singkat, lampu lalu lintas tepat.
-- **Kurang:** skill tidak menjelaskan bahwa `config get` untuk path yang *belum diatur* keluar
-  dengan error (exit 1, "valid but unset"). Pembacaan nilai efektif harus lewat `openclaw approvals
-  get --json` / `openclaw sandbox explain`. Tabel references §2 menulis "tergantung setup" untuk
-  `tools.exec.mode`, padahal docs 2026.9.5 menyatakan bawaan tanpa pengaturan = **`full` (tanpa
-  persetujuan)**. Ini fakta privasi terpenting, dan agent bisa salah melaporkannya sebagai hijau.
-- Saran perbaikan butir merah (token Gateway, restart, klien terputus) berasal dari docs
-  OpenClaw, tidak ada di skill.
+## Catatan penguji (uji ulang v1.1.0)
+- **Sesuai skill v1.1.0:** path yang belum diatur ("valid but unset", exit 1) sekarang dijelaskan
+  di `references/openclaw.md` §2 sebagai "pakai nilai bawaan". Nilai efektif dibaca lewat
+  `approvals get` (bawaan `full`, `ask: off`) dan `sandbox explain`, dan pelaporannya sebagai
+  "jalan tanpa persetujuan" kini tertulis di skill. Peringatan restart untuk `gateway.auth.mode`
+  terverifikasi: OpenClaw mencetak "Restart the gateway to apply."
+- **Sisa:** `references/dampak-perubahan.md` (baris `gateway.auth.mode`) belum menyebut bahwa
+  mode `token` perlu token nyata (`openclaw doctor --generate-gateway-token`). Uji: `config set
+  gateway.auth.mode token` saja → audit **tetap** `critical gateway.loopback_no_auth`. Saran
+  token di output ini berasal dari penguji.
+- **Sisa:** telemetri. Skill v1.1.0 menulis cek pembaruan harian "selalu berjalan, bukan bagian
+  yang bisa dimatikan" (`references/openclaw.md` §5). Menurut docs `gateway/config-runtime.md`,
+  `update.checkOnStart: false` atau `OPENCLAW_NO_AUTO_UPDATE=1` menghentikan permintaan itu (path
+  terverifikasi valid). Output di atas sengaja tidak mengklaim "tidak bisa dimatikan".

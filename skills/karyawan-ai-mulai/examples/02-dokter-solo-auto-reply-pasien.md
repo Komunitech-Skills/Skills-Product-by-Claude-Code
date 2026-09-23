@@ -12,8 +12,8 @@ memakai mode **Copilot** (AI menyiapkan draf, manusia yang mengirim).
 python3 ~/.openclaw/skills/karyawan-ai-mulai/scripts/peta_kebutuhan.py \
   --tugas "balas chat WA pasien soal jadwal praktik dan biaya" --tugas "nanya obat/keluhan" \
   --industri "dokter praktik mandiri" --json
-# → balas-chat-cs; "nanya obat/keluhan" tanpa padanan; paket_industri = null
-#   (script hanya mengenali "kesehatan"/"klinik", bukan "dokter")
+# v1.1.0 → balas-chat-cs, sop-writer, surat-resmi (paket industri "dokter");
+#   kedua tugas tidak cocok kata kunci ("jadwal praktik" tidak dikenali), jadi diisi dari paket industri
 openclaw skills list --eligible   # balas-chat-cs belum terpasang
 ```
 
@@ -97,15 +97,14 @@ dipakai membaca chat pasien. Mau saya jalankan sekarang, atau lain kali?
 
 ---
 
-## Catatan penguji
-- **Bagus:** hasil pertama langsung siap tempel. Batasan diagnosis dan data sensitif dijalankan.
-  Profil yang disimpan ke memori tidak memuat data pasien.
-- **Kurang (penting):** larangan auto-send dan anjuran mode Copilot di atas **tidak tertulis di
-  SKILL.md**. Agent penguji menambahkannya dari keputusan pemilik di CLAUDE.md. SKILL.md hanya
-  melarang "skrining/diagnosis medis". Agent lain yang mengikuti skill secara harfiah bisa saja
-  menjanjikan "WA dibalas otomatis". Default kanal di tabel wawancara (baris 38) juga "WhatsApp",
-  padahal keputusan pemilik: Telegram default, WA hanya lewat nomor terpisah + persetujuan risiko.
-- Script: industri "dokter" tidak dikenali (paket_industri null). Paket kesehatan di
-  `peta-skill.md` (sop-writer, surat-resmi, notulen-rapat) kurang pas untuk dokter solo yang
-  kebutuhan utamanya balasan pasien. Tidak ada padanan untuk "edukasi pasien" atau "laporan klinik"
-  (kebutuhan #11 di riset member).
+## Catatan penguji (uji ulang v1.1.0)
+- **Bagus:** hasil pertama langsung siap tempel. Batasan diagnosis dijalankan. Profil yang
+  disimpan tidak memuat data pasien. Di v1.1.0, larangan auto-reply dan anjuran **mode Copilot**
+  sudah **tertulis di skill** (SKILL.md Batasan + `references/openclaw.md` §7 "Kesehatan" dan
+  "Agen CS di WhatsApp"). Default kanal sekarang Telegram, WA hanya lewat nomor terpisah +
+  persetujuan risiko. Script mengenali "dokter" dan paket kesehatan kini berisi `balas-chat-cs`
+  (Copilot). Output di atas sekarang sesuai skill, bukan tambahan dari penguji.
+- **Sisa kecil:** frasa pasien ("jawab wa pasien soal jadwal praktik", "balesin chat pasien")
+  belum cocok ke `balas-chat-cs` lewat kata kunci. Hasil tetap benar karena terisi dari paket
+  industri. Tidak ada padanan untuk "edukasi pasien" (kebutuhan #11). Peta hanya menyebutnya di
+  aturan, belum ada skill.

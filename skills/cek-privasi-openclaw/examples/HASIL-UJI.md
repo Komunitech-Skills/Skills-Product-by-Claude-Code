@@ -1,86 +1,102 @@
-# HASIL UJI — cek-privasi-openclaw
+# HASIL UJI — cek-privasi-openclaw v1.1.0 (uji ulang)
 
 - **Tanggal:** 2026-09-23
 - **Penguji:** agent penguji independen (simulasi, Claude Code)
-- **Lingkungan:** OpenClaw 2026.9.5 (ec9c1a1), beberapa HOME uji terisolasi (baru, "berisiko",
-  "dokter", salinan untuk uji perubahan), tanpa login kanal. Skill dipasang dengan
-  `openclaw skills install ./cek-privasi-openclaw --global` → Ready, visible, available as command.
+- **Versi diuji:** v1.1.0 (revisi setelah uji v1.0: skor 6, REVISI)
+- **Lingkungan:** OpenClaw 2026.9.5 (ec9c1a1), **HOME uji baru** `/tmp/uji-vip/home-v11` + salinan
+  config persona di `/tmp/uji-cek-privasi-openclaw/` (berisiko, dokter, borongan), tanpa login
+  kanal. Skill dipasang dengan `openclaw skills install ./cek-privasi-openclaw --global` →
+  Ready, visible, available as command.
 
-## Verifikasi perintah & kunci config
-| Perintah / path | Hasil |
+## Verifikasi perintah & kunci config (ulang)
+| Perintah / klaim v1.1.0 | Hasil |
 |---|---|
-| `openclaw security audit --json` / `--deep` / `--fix` (help) | ✅ ada. **Baca saja terbukti**: sidik `openclaw.json` sama sebelum dan sesudah; hanya mtime folder `state/` (SQLite) yang berubah |
-| Bentuk JSON: `findings[]` berisi `severity`, `title`, `detail`, `remediation` | ⚠️ ada, tapi `remediation` **opsional** (tidak ada pada `summary.attack_surface`); ada juga `checkId` |
-| `openclaw config get <path> --json` | ✅. Untuk path yang belum diatur: **exit 1**, "Config path is valid but unset" (tidak dijelaskan skill) |
-| Path: `tools.profile`, `tools.exec.mode` (deny/allowlist/ask/auto/full), `tools.exec.security`, `agents.defaults.sandbox.mode`, `session.dmScope`, `channels.<kanal>.dmPolicy/allowFrom/groupPolicy`, `messages.groupChat.historyLimit`, `commands.ownerAllowFrom`, `security.installPolicy`, `approvals.exec` | ✅ semua ada di `openclaw config schema` dan diterima `config get` |
-| Default skema: dmPolicy `pairing`, groupPolicy `allowlist` | ✅ |
-| `openclaw approvals get --json` | ✅ dan berguna: menampilkan **nilai efektif** exec (bawaan: mode `full`, ask `off`) |
-| `openclaw approvals pending --json` | ⚠️ ada, tapi butuh Gateway berkredensial (gagal tanpa Gateway; skill tidak menyebut) |
-| `openclaw sandbox explain` | ✅ baca saja |
-| `openclaw telemetry show/on/off` | ✅. Statistik nonaktif bawaan ("consent has not been requested"); cek versi harian tetap ada |
-| `openclaw config set` / `config unset` (+ `--dry-run`) | ✅ jalan, perubahan terverifikasi dengan `config get`; OpenClaw membuat `openclaw.json.bak` otomatis |
+| `openclaw security audit --json` baca saja | ✅ sidik `openclaw.json` identik sebelum dan sesudah |
+| `findings[]`: `remediation` opsional, ada `checkId` | ✅ sesuai koreksi |
+| `config get` path belum diatur → exit 1 "valid but unset" | ✅ persis |
+| `openclaw approvals get --json` → nilai efektif bawaan `full`/`ask: off` | ✅ |
+| `openclaw approvals pending` butuh Gateway | ✅ (gagal tanpa kredensial Gateway, sesuai tulisan skill) |
+| `openclaw sandbox explain` → `mode: off` | ✅ |
+| Semua path di tabel references §2 + `gateway.auth.mode`, `channels.whatsapp.groupAllowFrom`, `channels.whatsapp.groups` | ✅ valid di skema |
+| `gateway.auth.mode` → "Restart the gateway to apply." | ✅ dicetak OpenClaw persis |
+| `config set/unset --dry-run`, `.bak` otomatis, `openclaw backup create` (+`--dry-run`) | ✅ |
+| `openclaw memory forget --session … --dry-run` (+ `--participant`, `--hook-source`, `--since`) | ✅ jalan, "Dry run: no memory files… were changed" |
+| `audit --fix` mengubah `groupPolicy` | ✅ (terverifikasi di uji v1.0, kini ditulis benar) |
+| `exec.mode → ask` menolak automation tanpa klien approval | ✅ kutipan docs cocok |
+| Profil `messaging` tanpa exec/read/write | ✅ isinya benar. Rujukan docs keliru: ditulis `tools/permission-modes`, seharusnya `gateway/config-tools/tool-policy` |
+| Kode pairing berlaku 1 jam | ✅ (docs `channels/pairing.md`). Batas **3 permintaan menunggu** belum disebut |
+| Telemetri: cek versi harian "selalu berjalan, bukan bagian yang bisa dimatikan" (§5) | ❌ docs `gateway/config-runtime.md`: `update.checkOnStart: false` / `OPENCLAW_NO_AUTO_UPDATE=1` menghentikannya (path valid) |
+| Dampak `groupPolicy open → allowlist`: "tambahkan **ID grup** ke `groupAllowFrom`" (dampak-perubahan.md baris 10) | ❌ lihat cacat berat #1 |
 
 ## Audit keamanan skill
-Tidak ada script, panggilan jaringan, perintah destruktif, pembacaan kredensial, atau prompt
-injection. Skill secara eksplisit melarang perubahan tanpa izin. ✅
+Tidak ada script, panggilan jaringan, perintah destruktif, atau pembacaan kredensial. Tidak ada
+prompt injection. Larangan perubahan tanpa izin dan larangan menyadap orang lain tertulis. ✅
 
 ## Skor
-| Kriteria | Skor | Alasan |
-|---|---|---|
-| Pemicu (description) | 8 | Kata kunci ID/EN pas, batas dengan karyawan-ai-mulai jelas |
-| Kemudahan awam | 8 | Lampu lalu lintas, bahasa sehari-hari, langsung jalan |
-| Kualitas output | 7 | Format rapi, UU PDP, cara batal; menang A/B |
-| Akurasi | 6 | Perintah/path benar. Tapi: `auto` ditulis "jalan tanpa tanya" (sebenarnya ditinjau AI reviewer, jatuh ke manusia); bawaan exec = `full` tidak disebut; `--fix` digambarkan hanya "rapikan izin file" padahal mengubah `groupPolicy` |
-| Penanganan input kurang | 7 | Default aman, bulk approval dengan daftar dulu; belum bertanya "bot dipakai untuk apa" |
-| Penanganan di luar cakupan | 7 | Hukum → konsultan. Permintaan memantau orang lain tidak diatur |
-| Keamanan (tidak merusak) | 5 | Izin per butir ada, tapi tanpa peringatan dampak perubahan yang bisa mematikan fungsi OpenClaw |
+| Kriteria | v1.0 | v1.1.0 | Alasan |
+|---|---|---|---|
+| Pemicu (description) | 8 | 8 | Tetap tepat |
+| Kemudahan awam | 8 | 8 | Pertanyaan kegunaan 4 opsi, bahasa awam |
+| Kualitas output | 7 | 8 | Baris "Efek yang berhenti bekerja", jaring pengaman, aturan pemilik |
+| Akurasi | 6 | 6 | Banyak koreksi benar (nilai efektif, `auto`, `--fix`, Pasal 4), tapi ada kesalahan baru pada kunci grup WA dan klaim telemetri |
+| Penanganan input kurang | 7 | 8 | Pertanyaan kegunaan + default "mungkin semua" |
+| Penanganan di luar cakupan | 7 | 9 | Penyadapan ditolak eksplisit, hukum → konsultan |
+| Keamanan (tidak merusak) | 5 | 6 | Peta dampak besar-besaran sudah ada, tetapi baris grup WA justru memandu ke pengaturan yang mematikan grup yang ingin dipertahankan / memberi rasa aman palsu |
 
-## SKOR AKHIR: 6 / 10 — **REVISI**
-Alur baca-dulu, izin per butir, dan bahasa awam sudah kuat, dan menang di A/B maupun uji banding
-secara keseluruhan. Skor dibatasi karena ada cacat berat: rekomendasi perubahan tidak disertai
-pengetahuan dampaknya. Pembeli awam yang menjawab "ya" bisa kehilangan layanan pelanggan, bot
-grup, atau laporan otomatis tanpa sadar. Ini persis kriteria "tidak mematikan sesuatu tanpa
-peringatan" dari pemilik.
+## SKOR AKHIR: 6 / 10 — **REVISI** (satu perbaikan kecil lagi menuju ≥ 8)
+Revisi v1.1.0 menutup hampir semua cacat v1.0 dan membuat skill jauh lebih aman: peta dampak,
+nilai efektif, larangan `messaging`/sandbox `all`, penjelasan `--fix`, aturan pemilik, UU PDP
+Pasal 4, `.bak`/`--dry-run`, dan `memory forget`. Namun baris pertama tabel dampak, yang menjadi
+"sumber kebenaran", memuat kesalahan konfigurasi yang persis menimbulkan kerusakan tanpa
+peringatan pada skenario paling umum (bot di grup reseller). Karena ini cacat berat, skor
+dibatasi ≤ 6. Perbaikannya sempit dan jelas (lihat #1). Setelah diperbaiki, skill layak dinilai 8.
 
-## Daftar cacat & saran perbaikan
+## Cacat tersisa & saran perbaikan
 
 ### Berat
-1. **Tidak ada peta dampak perubahan** (SKILL.md Langkah 4 baris 84–96, contoh baris 136–139,
-   references §6). Terbukti di mesin uji / docs 2026.9.5:
-   - `groupPolicy open → allowlist` dengan `groupAllowFrom` kosong → bot **diam di semua grup**.
-   - `dmPolicy open → pairing/allowlist` → pelanggan/pasien **baru tidak dilayani**.
-   - `tools.exec.mode → ask` (contoh utama skill) → automation/cron yang menjalankan script
-     **ditolak** bila tidak ada klien persetujuan (docs `tools/exec-approvals.md`: "chat channels
-     never receive automation approvals… denied immediately"). Ini merusak laporan otomatis yang
-     disarankan `karyawan-ai-mulai`/`laporan-otomatis-terjadwal`.
-   - Remediasi audit yang akan dibaca agent: `tools.profile="messaging"` (menghapus exec/read/write,
-     sehingga semua skill ber-script Komunitech berhenti) dan `sandbox.mode="all"` (butuh Docker).
-   - Auth Gateway: perubahan mode perlu restart + token di klien.
-   - `audit --fix` mengubah `channels.whatsapp.groupPolicy` (terverifikasi), bukan hanya izin file.
+1. **Kunci grup WhatsApp salah di `references/dampak-perubahan.md` baris 10** ("sampai ID grup
+   ditambahkan ke `groupAllowFrom`… ID grup itu ditambahkan bersamaan"). Menurut docs 2026.9.5
+   (`channels/whatsapp.md` → "Group policy and allowlists"; `channels/groups.md`):
+   - `groupAllowFrom` = daftar **pengirim** (nomor E.164) yang boleh memicu bot di grup. **ID grup
+     (`…@g.us`) masuk ke `channels.whatsapp.groups`** (map; `"*"` = semua grup).
+   - Bila `groupAllowFrom` kosong, pemeriksaan pengirim **jatuh ke `allowFrom`**. Dengan
+     `allowFrom: ["*"]` (wajib untuk `dmPolicy: open`), `groupPolicy: allowlist` saja **tidak
+     membatasi siapa pun**, padahal temuan grup hilang dari audit. Ini rasa aman palsu.
+   - Mengikuti skill (ID grup dimasukkan ke `groupAllowFrom`) → tidak ada pengirim yang cocok →
+     **bot diam di grup yang justru ingin dipertahankan**, sementara pengguna diberi tahu aman.
 
-   **Perbaikan:** tambah tabel "Perubahan → apa yang akan berhenti → kapan aman" di references,
-   wajibkan kolom "Efek yang berhenti bekerja" di setiap tawaran, larang menawarkan
-   `messaging`/sandbox `all`/perubahan auth Gateway tanpa peringatan khusus, dan jelaskan `--fix` apa adanya.
+   **Perbaikan:** tulis ulang baris itu: (a) grup yang boleh = `channels.whatsapp.groups`
+   (ID `…@g.us`); (b) siapa yang boleh menyuruh = `groupAllowFrom` (nomor); (c) peringatkan
+   fallback ke `allowFrom`, dan bila berisi `"*"`, rapikan `allowFrom` dulu. Contoh perintah yang
+   terverifikasi jalan (config valid, audit sesuai):
+   `openclaw config set channels.whatsapp.groups '{"<id>@g.us":{"requireMention":true}}' --strict-json`,
+   `openclaw config set channels.whatsapp.groupAllowFrom '["+62…"]' --strict-json`,
+   `openclaw config set channels.whatsapp.groupPolicy allowlist`.
 
 ### Sedang
-2. **Nilai efektif tidak dibaca dengan benar**: tambahkan aturan "`config get` exit 1 'valid but
-   unset' = pakai bawaan", lalu pakai `openclaw approvals get --json` (effectivePolicy) dan
-   `openclaw sandbox explain`. Tulis di tabel references §2: bawaan `tools.exec.mode` = **`full`,
-   tanpa persetujuan**, dan `auto` = ditinjau AI reviewer (bukan "tanpa tanya"; jangan otomatis merah).
-3. **Belum selaras dengan keputusan pemilik jalur 3**: tidak ada rekomendasi WA **nomor terpisah**,
-   agen CS WA = **mode Copilot**, dan penandaan `dmPolicy: open` di WA sebagai bertentangan dengan
-   Copilot. Tambahkan juga pertanyaan profil pemakaian di awal (pribadi / pelanggan / grup), ide dari `healthcheck`.
-4. **Data kesehatan**: references/uu-pdp.md sebaiknya menyebut data kesehatan sebagai "data pribadi
-   yang bersifat spesifik" (UU PDP Pasal 4) dan menambahkan langkah manual (enkripsi disk, kunci layar, backup).
+2. **`dmPolicy open → pairing/allowlist` tanpa merapikan `allowFrom: ["*"]`** (baris 11): audit
+   tetap menandai `allowFrom includes "*"` (terverifikasi). Tambahkan langkah "ganti `["*"]` dengan
+   nomor pemilik/asisten" dan urutannya: ubah `allowFrom` bersamaan dengan `dmPolicy`, karena
+   `open` tanpa `"*"` membuat semua DM dibuang. Sebutkan juga batas 3 permintaan pairing menunggu.
+3. **Telemetri** (`references/openclaw.md` §5, SKILL.md Batasan "Telemetri"): koreksi bahwa cek
+   pembaruan harian **bisa** dimatikan (`openclaw config set update.checkOnStart false` atau env
+   `OPENCLAW_NO_AUTO_UPDATE=1`), dengan konsekuensi tidak ada pemberitahuan versi baru. Bagi
+   member yang khawatir privasi ini opsi sah, bukan "tidak bisa".
+4. **Auth Gateway** (baris 15): `gateway.auth.mode: token` tanpa token nyata tidak memperbaiki
+   apa pun. Uji: audit tetap `critical gateway.loopback_no_auth`. Tambahkan `openclaw doctor
+   --generate-gateway-token` (flag terverifikasi) sebagai langkah yang benar.
 
 ### Ringan
-5. Telemetri (SKILL.md baris 69–70): bedakan statistik anonim (mati bawaan) dari cek versi harian (tetap jalan, kirim versi/OS).
-6. `approvals pending` butuh Gateway. Sebutkan, atau hapus dari langkah dasar.
-7. Sebutkan jaring pengaman bawaan: `openclaw config set … --dry-run`, `openclaw.json.bak`, `openclaw backup create`.
-8. Hak hapus data (UU PDP): sebutkan `openclaw memory forget` / lokasi sesi sebagai cara praktis.
-9. "Kapan TIDAK digunakan": tambahkan "memantau/menyadap perangkat atau chat orang lain → tolak".
-10. `findings[].remediation` bersifat opsional. Perbaiki kalimat di references §1.
+5. Rujukan docs profil `messaging` keliru (baris 13): `tools/permission-modes` → `gateway/config-tools/tool-policy`.
+6. `references/openclaw.md` §8 merujuk `CLAUDE.md` §1, yang tidak ada di paket pembeli.
+7. Tabel §2 kolom "Nilai bawaan" untuk `channels.whatsapp.groupPolicy` = `allowlist`: sebutkan
+   bahwa `allowlist` tanpa `groupAllowFrom` memakai `allowFrom` (lihat #1).
+
+## Uji A/B & pesaing
+Tetap: **dengan skill jelas lebih baik** daripada tanpa skill. Skill kita **unggul
+keseluruhan** atas `healthcheck` (bawaan OpenClaw, MIT) dan `clawdbot-security-check`; di v1.1.0
+aspek "tidak merusak" sudah setara `healthcheck`, kecuali cacat #1. Lihat `00-*.md`.
 
 ## Verifikasi angka
-Tidak ada script dan tidak ada perhitungan angka. Ringkasan jumlah temuan (`critical 4 → 1`
-setelah 3 perubahan) diambil dari keluaran audit nyata.
+Tidak ada script dan tidak ada perhitungan uang. Jumlah temuan audit (mis. `critical 4 → 1`,
+`warn 4 → 3` pada contoh 04) diambil dari audit nyata sebelum dan sesudah perubahan.

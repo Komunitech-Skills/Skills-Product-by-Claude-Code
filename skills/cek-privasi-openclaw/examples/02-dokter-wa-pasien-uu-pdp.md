@@ -32,8 +32,11 @@ tidak diatur.
   A bisa ikut terbawa saat membalas pasien B. Untuk praktik dokter, butir ini sebaiknya diperbaiki.
 - **Bot dipakai banyak orang** (audit: `security.trust_model.multi_user_heuristic`).
 
-🟢 **Hijau (2)**
-- Grup WA dibatasi (`groupPolicy = allowlist`).
+🟡 (tambahan) **Pembatasan grup belum benar-benar berlaku**: `groupPolicy = allowlist`, tapi
+  daftar pengirim grup (`groupAllowFrom`) kosong, sehingga OpenClaw memakai `allowFrom = ["*"]`,
+  artinya siapa saja. Beres bersamaan dengan Butir 2.
+
+🟢 **Hijau (1)**
 - Statistik pemakaian anonim nonaktif.
 
 ## Ringkasan Data & Model
@@ -56,9 +59,11 @@ bukan jalur resmi (nomor bisa diblokir).
 - Cara membatalkan: `openclaw config unset session.dmScope`
 - **Ubah sekarang? (ya/tidak)**
 
-*(Butir 2: `channels.whatsapp.dmPolicy` `open` → `pairing`. **Efek: pasien baru tidak dilayani bot
-sampai Anda setujui**, sehingga balasan otomatis ke pasien baru berhenti. Ini sejalan dengan mode
-Copilot. Batal: `openclaw config set channels.whatsapp.dmPolicy open`. Butir 3: minta persetujuan
+*(Butir 2: `channels.whatsapp.allowFrom` `["*"]` → nomor dokter/asisten saja, dan `dmPolicy` `open` →
+`allowlist`. **Efek yang berhenti bekerja: bot tidak lagi membalas pasien sama sekali.** Ini
+memang tujuannya: pasien tetap chat ke nomor praktik biasa, dan bot di **nomor terpisah**
+menyiapkan draf untuk Anda (mode Copilot). Batal: `openclaw config set channels.whatsapp.allowFrom
+'["*"]' --strict-json` lalu `openclaw config set channels.whatsapp.dmPolicy open`. Butir 3: minta persetujuan
 setiap kali AI menjalankan perintah komputer (`tools.exec.mode` → `ask`). **Efek: laporan/jadwal
 otomatis yang menjalankan script bisa gagal** bila tidak ada layar persetujuan yang terbuka.
 Batal: `openclaw config unset tools.exec.mode`. Masing-masing ditanyakan terpisah.)*
@@ -74,15 +79,14 @@ Batal: `openclaw config unset tools.exec.mode`. Masing-masing ditanyakan terpisa
 
 ---
 
-## Catatan penguji
-- **Bagus:** UU PDP disertakan dengan disclaimer, dan data kesehatan diarahkan ke profesional
-  sesuai references/uu-pdp.md. Temuan berasal dari audit nyata.
-- **Kurang:** skill tidak memuat aturan pemilik "agen CS WA = mode Copilot" maupun "nomor WA
-  terpisah". Kalimat "jangan biarkan AI membalas pasien sendiri" berasal dari penguji. Skill juga
-  tidak menyebut dampak `dmPolicy → pairing` (balasan ke pasien baru berhenti) dan dampak
-  `exec.mode → ask` (automation/cron ditolak bila tidak ada klien persetujuan; docs
-  `tools/exec-approvals.md`: "chat channels never receive automation approvals… With no approval
-  surface connected, the request is denied immediately"). Tanpa peringatan itu, agent yang
-  mengikuti contoh di SKILL.md (baris 136–139, "ubah ke `ask`") bisa merusak laporan otomatis
-  tanpa pengguna sadar.
-- Frasa "data spesifik" untuk data kesehatan (Pasal 4 UU PDP) sebaiknya dimasukkan ke references/uu-pdp.md, yang sekarang hanya menyebut "kategori data sensitif".
+## Catatan penguji (uji ulang v1.1.0)
+- **Sesuai skill v1.1.0:** UU PDP dengan data kesehatan sebagai **data pribadi spesifik (Pasal
+  4)**, langkah manual (enkripsi disk, kunci layar, backup), aturan pemilik (agen CS WA = mode
+  Copilot, nomor terpisah; `references/openclaw.md` §8), dan dampak `exec.mode → ask` terhadap
+  automation (`references/dampak-perubahan.md` baris 12, kutipan docs cocok). Nilai efektif exec
+  dibaca via `approvals get` (`full`/`off`, terverifikasi).
+- **Koreksi penguji:** v1.0 contoh ini menandai grup 🟢 hanya karena `groupPolicy = allowlist`.
+  Menurut docs 2026.9.5, `groupAllowFrom` yang kosong jatuh ke `allowFrom = ["*"]`, sehingga grup
+  tetap terbuka. Skill v1.1.0 juga belum memuat aturan fallback ini (lihat HASIL-UJI, cacat berat #1).
+- Pilihan `dmPolicy → pairing` untuk praktik dokter punya batas 3 permintaan menunggu dan kode
+  berlaku 1 jam (docs `channels/pairing.md`). Skill baru menyebut yang 1 jam.
