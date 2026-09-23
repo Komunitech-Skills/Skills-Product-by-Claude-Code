@@ -1,0 +1,319 @@
+#!/usr/bin/env python3
+"""Hitung keterlambatan piutang, tahap penagihan, dan (opsional) denda sesuai kesepakatan tertulis.
+
+Hanya library standar Python (3.8+). Tidak ada akses jaringan.
+
+Mode 1 – satu tagihan:
+  python3 hitung_telat.py --nominal "Rp 12.500.000" --jatuh-tempo 2026-08-24 --tanggal 2026-09-23
+  python3 hitung_telat.py --nominal 12500000 --dibayar "Rp 2.500.000" --jatuh-tempo 2026-08-24 \
+      --denda-persen 0,1 --denda-per hari --denda-maks 5% --tenggang 3 \
+      --dasar-denda "Pasal 4 Perjanjian Pasok No. 07/PKS/2026"
+
+Mode 2 – banyak tagihan (rekap umur piutang) dari CSV berkolom:
+  pelanggan,no_invoice,nominal,jatuh_tempo[,dibayar]
+  python3 hitung_telat.py --file piutang.csv --tanggal 2026-09-23
+
+Aturan hitung:
+  - Hari terlambat = tanggal hitung - tanggal jatuh tempo (hari kalender).
+  - Hari kena denda = hari terlambat - masa tenggang (minimal 0).
+  - Denda dihitung dari SISA POKOK saat ini (nominal - sudah dibayar), bukan bunga berbunga.
+  - Denda per bulan: setiap 30 hari atau bagiannya dihitung 1 bulan (kecuali --proporsional).
+  - Denda dibatasi --denda-maks bila diisi. Semua nilai dibulatkan ke rupiah terdekat (0,5 ke atas).
+"""
+import argparse
+import csv
+import json
+import math
+import re
+import sys
+from datetime import date, datetime
+from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
+
+BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
+         "Agustus", "September", "Oktober", "November", "Desember"]
+
+
+class InputSalah(Exception):
+    pass
+
+
+def parse_angka(teks, nama="angka"):
+    if teks is None or str(teks).strip() == "":
+        raise InputSalah(f"{nama} kosong")
+    s = str(teks).strip().lower().replace(" ", "")
+    pengali = Decimal(1)
+    for akhiran, kali in (("juta", 10**6), ("jt", 10**6), ("ribu", 10**3), ("rb", 10**3), ("k", 10**3)):
+        if s.endswith(akhiran):
+            s = s[: -len(akhiran)]
+            pengali = Decimal(kali)
+            break
+    s = s.replace("rp", "").replace("idr", "")
+    if not re.fullmatch(r"-?[\d.,]+", s or "x"):
+        raise InputSalah(f"{nama} tidak bisa dibaca sebagai angka: {teks!r}")
+    if "," in s and "." in s:
+        s = s.replace(".", "").replace(",", ".") if s.rfind(",") > s.rfind(".") else s.replace(",", "")
+    elif "," in s:
+        b = s.split(",")
+        s = s.replace(",", ".") if len(b) == 2 and len(b[1]) != 3 else s.replace(",", "")
+    elif s.count(".") > 1 or (s.count(".") == 1 and len(s.split(".")[1]) == 3 and pengali == 1):
+        s = s.replace(".", "")
+    try:
+        return Decimal(s) * pengali
+    except InvalidOperation:
+        raise InputSalah(f"{nama} tidak bisa dibaca sebagai angka: {teks!r}")
+
+
+def parse_tgl(teks, nama):
+    t = str(teks or "").strip()
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
+        try:
+            return datetime.strptime(t, fmt).date()
+        except ValueError:
+            pass
+    raise InputSalah(f"{nama} tidak dikenali: {teks!r}. Pakai format YYYY-MM-DD, mis. 2026-09-23")
+
+
+def bulat(x):
+    return int(Decimal(x).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
+
+def rupiah(n):
+    return ("-" if n < 0 else "") + f"Rp {abs(int(n)):,}".replace(",", ".")
+
+
+def tgl_id(d):
+    return f"{d.day} {BULAN[d.month - 1]} {d.year}"
+
+
+def tahap(hari):
+    """Kembalikan (kode, label) tahap penagihan berdasarkan hari terlambat (negatif = sebelum jatuh tempo)."""
+    if hari < -3:
+        return 0, f"Belum jatuh tempo ({-hari} hari lagi) – kirim pengingat halus pada H-3"
+    if hari < 0:
+        return 1, f"Tahap 1 – pengingat halus sebelum jatuh tempo (H{hari})"
+    if hari == 0:
+        return 2, "Tahap 2 – hari jatuh tempo"
+    if hari < 7:
+        return 3, f"Tahap 3 – lewat jatuh tempo {hari} hari (konfirmasi ramah)"
+    if hari < 14:
+        return 4, f"Tahap 4 – lewat {hari} hari (pengingat tegas + minta tanggal bayar)"
+    if hari < 30:
+        return 5, f"Tahap 5 – lewat {hari} hari (pemberitahuan resmi + tawaran solusi/cicilan)"
+    return 6, f"Tahap 6 – lewat {hari} hari (surat teguran resmi/somasi)"
+
+
+def ember_umur(hari):
+    if hari <= 0:
+        return "Belum jatuh tempo"
+    if hari <= 30:
+        return "1–30 hari"
+    if hari <= 60:
+        return "31–60 hari"
+    if hari <= 90:
+        return "61–90 hari"
+    return "> 90 hari"
+
+
+def hitung_denda(sisa, hari_denda, a):
+    if not a.denda_persen and not a.denda_tetap:
+        return 0, None
+    if a.denda_persen and a.denda_tetap:
+        raise InputSalah("pilih salah satu: --denda-persen ATAU --denda-tetap")
+    if hari_denda <= 0 or sisa <= 0:
+        return 0, "Belum ada denda (masih dalam masa tenggang / belum terlambat / sudah lunas)."
+    if a.denda_tetap:
+        d = parse_angka(a.denda_tetap, "denda tetap")
+        if d < 0:
+            raise InputSalah("denda tetap tidak boleh negatif")
+        denda = Decimal(d)
+        rumus = f"Denda tetap sekali {rupiah(bulat(d))}"
+    else:
+        p = parse_angka(str(a.denda_persen).rstrip("%"), "persen denda")
+        if p < 0 or p > 100:
+            raise InputSalah("persen denda harus 0–100")
+        if a.denda_per == "hari":
+            periode = Decimal(hari_denda)
+            satuan = f"{hari_denda} hari"
+        else:
+            periode = Decimal(hari_denda) / 30 if a.proporsional else Decimal(math.ceil(hari_denda / 30))
+            satuan = (f"{hari_denda}/30 bulan" if a.proporsional else f"{int(periode)} bulan (per 30 hari atau bagiannya)")
+        denda = Decimal(sisa) * p / 100 * periode
+        rumus = f"{rupiah(sisa)} x {format(p.normalize(), 'f').replace('.', ',')}% x {satuan}"
+    if a.denda_maks:
+        t = str(a.denda_maks).strip()
+        maks = Decimal(sisa) * parse_angka(t[:-1], "batas denda") / 100 if t.endswith("%") \
+            else parse_angka(t, "batas denda")
+        if denda > maks:
+            denda = maks
+            rumus += f" → dibatasi maksimal {rupiah(bulat(maks))}"
+    return bulat(denda), rumus
+
+
+def satu(a, tgl):
+    nominal = bulat(parse_angka(a.nominal, "nominal tagihan"))
+    if nominal <= 0:
+        raise InputSalah("nominal tagihan harus lebih dari 0")
+    dibayar = sum(bulat(parse_angka(x, "pembayaran")) for x in (a.dibayar or []))
+    if dibayar < 0:
+        raise InputSalah("pembayaran tidak boleh negatif")
+    if dibayar > nominal:
+        raise InputSalah(f"total pembayaran ({rupiah(dibayar)}) melebihi nominal tagihan ({rupiah(nominal)})")
+    jt = parse_tgl(a.jatuh_tempo, "tanggal jatuh tempo")
+    if a.tenggang < 0:
+        raise InputSalah("masa tenggang tidak boleh negatif")
+    hari = (tgl - jt).days
+    sisa = nominal - dibayar
+    hari_denda = max(0, hari - a.tenggang)
+    denda, rumus = hitung_denda(sisa, hari_denda, a)
+    kode, label = tahap(hari)
+    peringatan = []
+    if sisa == 0:
+        label, kode = "Lunas – kirim ucapan terima kasih, tidak perlu penagihan", -1
+    if (a.denda_persen or a.denda_tetap) and not a.dasar_denda:
+        peringatan.append("Denda HANYA boleh ditagih jika sudah disepakati tertulis (kontrak/invoice/PO yang disetujui). "
+                          "Isi --dasar-denda; jika tidak ada kesepakatan, jangan cantumkan denda di pesan.")
+    if hari >= 30 and sisa >= 5_000_000:
+        peringatan.append("Nilai besar & lewat 30 hari: pertimbangkan surat teguran resmi dan konsultasi ke advokat "
+                          "bila tidak ada respons.")
+    return {
+        "nominal": nominal, "sudah_dibayar": dibayar, "sisa_tagihan": sisa,
+        "jatuh_tempo": jt.isoformat(), "jatuh_tempo_teks": tgl_id(jt),
+        "tanggal_hitung": tgl.isoformat(), "tanggal_hitung_teks": tgl_id(tgl),
+        "hari_terlambat": hari, "masa_tenggang_hari": a.tenggang, "hari_kena_denda": hari_denda,
+        "tahap_kode": kode, "tahap": label,
+        "denda": denda, "rumus_denda": rumus, "dasar_denda": a.dasar_denda,
+        "total_ditagih": sisa + denda,
+        "peringatan": peringatan,
+        "catatan": ["Hari terlambat dihitung per hari kalender.",
+                    "Denda (jika ada) dihitung dari sisa pokok, dibulatkan ke rupiah terdekat."],
+    }
+
+
+def banyak(a, tgl):
+    try:
+        with open(a.file, newline="", encoding="utf-8-sig") as f:
+            contoh = f.read(4096)
+            f.seek(0)
+            try:
+                dialek = csv.Sniffer().sniff(contoh, delimiters=",;\t|")
+            except csv.Error:
+                dialek = csv.excel
+            baris = list(csv.DictReader(f, dialect=dialek))
+    except OSError as e:
+        raise InputSalah(f"file tidak bisa dibuka: {e}")
+    wajib = {"pelanggan", "nominal", "jatuh_tempo"}
+    if not baris:
+        raise InputSalah("file kosong")
+    kolom = {str(k).strip().lower() for k in baris[0].keys() if k}
+    if not wajib <= kolom:
+        raise InputSalah(f"kolom wajib tidak ada: {sorted(wajib - kolom)}. Kolom: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar")
+    daftar, dilewati = [], []
+    for no, b in enumerate(baris, start=2):
+        k = {str(x).strip().lower(): (v or "").strip() for x, v in b.items() if x}
+        if not any(k.values()):
+            continue
+        try:
+            nominal = bulat(parse_angka(k["nominal"], "nominal"))
+            dibayar = bulat(parse_angka(k["dibayar"], "dibayar")) if k.get("dibayar") else 0
+            jt = parse_tgl(k["jatuh_tempo"], "jatuh_tempo")
+            if nominal <= 0 or dibayar < 0 or dibayar > nominal:
+                raise InputSalah("nominal/dibayar tidak masuk akal")
+        except InputSalah as e:
+            dilewati.append({"baris": no, "alasan": str(e)})
+            continue
+        hari = (tgl - jt).days
+        sisa = nominal - dibayar
+        if sisa == 0:
+            continue
+        kode, label = tahap(hari)
+        daftar.append({"pelanggan": k["pelanggan"], "no_invoice": k.get("no_invoice", ""), "sisa": sisa,
+                       "jatuh_tempo": jt.isoformat(), "hari_terlambat": hari, "umur": ember_umur(hari),
+                       "tahap_kode": kode, "tahap": label})
+    daftar.sort(key=lambda x: (-x["hari_terlambat"], -x["sisa"]))
+    urutan = ["Belum jatuh tempo", "1–30 hari", "31–60 hari", "61–90 hari", "> 90 hari"]
+    rekap = {u: {"jumlah_invoice": 0, "total": 0} for u in urutan}
+    for d in daftar:
+        rekap[d["umur"]]["jumlah_invoice"] += 1
+        rekap[d["umur"]]["total"] += d["sisa"]
+    return {"tanggal_hitung": tgl.isoformat(), "tanggal_hitung_teks": tgl_id(tgl),
+            "total_piutang": sum(d["sisa"] for d in daftar), "rekap_umur": rekap,
+            "daftar": daftar, "baris_dilewati": dilewati}
+
+
+def teks_satu(h):
+    b = [f"Tagihan         : {rupiah(h['nominal'])}"]
+    if h["sudah_dibayar"]:
+        b.append(f"Sudah dibayar   : {rupiah(h['sudah_dibayar'])}")
+    b.append(f"Sisa tagihan    : {rupiah(h['sisa_tagihan'])}")
+    b.append(f"Jatuh tempo     : {h['jatuh_tempo_teks']}")
+    b.append(f"Dihitung per    : {h['tanggal_hitung_teks']}")
+    ht = h["hari_terlambat"]
+    b.append(f"Keterlambatan   : {ht} hari" if ht > 0 else
+             (f"Keterlambatan   : jatuh tempo hari ini" if ht == 0 else f"Keterlambatan   : belum jatuh tempo ({-ht} hari lagi)"))
+    b.append(f"Tahap           : {h['tahap']}")
+    if h["rumus_denda"]:
+        b.append(f"Denda           : {rupiah(h['denda'])}  ({h['rumus_denda']})")
+        if h["dasar_denda"]:
+            b.append(f"Dasar denda     : {h['dasar_denda']}")
+    b.append(f"TOTAL DITAGIH   : {rupiah(h['total_ditagih'])}")
+    for p in h["peringatan"]:
+        b.append(f"\nPERINGATAN: {p}")
+    b.append("")
+    b += [f"* {c}" for c in h["catatan"]]
+    return "\n".join(b)
+
+
+def teks_banyak(h):
+    b = [f"Rekap umur piutang per {h['tanggal_hitung_teks']} – total {rupiah(h['total_piutang'])}", "",
+         "| Umur | Jumlah invoice | Total |", "|---|---|---|"]
+    for u, v in h["rekap_umur"].items():
+        b.append(f"| {u} | {v['jumlah_invoice']} | {rupiah(v['total'])} |")
+    b += ["", "| Pelanggan | No. invoice | Sisa | Jatuh tempo | Terlambat | Tahap |", "|---|---|---|---|---|---|"]
+    for d in h["daftar"]:
+        t = f"{d['hari_terlambat']} hari" if d["hari_terlambat"] > 0 else "-"
+        b.append(f"| {d['pelanggan']} | {d['no_invoice'] or '-'} | {rupiah(d['sisa'])} | {d['jatuh_tempo']} | {t} | {d['tahap']} |")
+    if h["baris_dilewati"]:
+        b.append("\nBaris dilewati:")
+        b += [f"- baris {x['baris']}: {x['alasan']}" for x in h["baris_dilewati"]]
+    return "\n".join(b)
+
+
+def main():
+    p = argparse.ArgumentParser(description="Hitung keterlambatan piutang & denda (sesuai kesepakatan tertulis)")
+    p.add_argument("--nominal", help="Nominal tagihan, mis. 'Rp 12.500.000'")
+    p.add_argument("--dibayar", action="append", help="Pembayaran sebagian (bisa diulang)")
+    p.add_argument("--jatuh-tempo", help="Tanggal jatuh tempo YYYY-MM-DD")
+    p.add_argument("--tanggal", help="Tanggal hitung YYYY-MM-DD (default hari ini)")
+    p.add_argument("--tenggang", type=int, default=0, help="Masa tenggang tanpa denda (hari), default 0")
+    p.add_argument("--denda-persen", help="Persen denda per periode, mis. 0,1 (artinya 0,1%%)")
+    p.add_argument("--denda-per", choices=["hari", "bulan"], default="hari")
+    p.add_argument("--proporsional", action="store_true", help="Denda bulanan dihitung proporsional per hari")
+    p.add_argument("--denda-tetap", help="Denda tetap sekali bayar, mis. 'Rp 100.000'")
+    p.add_argument("--denda-maks", help="Batas maksimal denda: '5%%' dari sisa pokok atau 'Rp 500.000'")
+    p.add_argument("--dasar-denda", help="Rujukan kesepakatan tertulis, mis. 'Pasal 4 Perjanjian No. ...'")
+    p.add_argument("--file", help="CSV banyak tagihan: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar")
+    p.add_argument("--format", choices=["teks", "json", "keduanya"], default="keduanya")
+    a = p.parse_args()
+    try:
+        tgl = parse_tgl(a.tanggal, "tanggal hitung") if a.tanggal else date.today()
+        if a.file:
+            h = banyak(a, tgl)
+            tulis = teks_banyak
+        else:
+            if not a.nominal or not a.jatuh_tempo:
+                raise InputSalah("isi --nominal dan --jatuh-tempo (atau pakai --file untuk banyak tagihan)")
+            h = satu(a, tgl)
+            tulis = teks_satu
+    except InputSalah as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        sys.exit(1)
+    if a.format in ("teks", "keduanya"):
+        print(tulis(h))
+    if a.format == "keduanya":
+        print("\n--- JSON ---")
+    if a.format in ("json", "keduanya"):
+        print(json.dumps(h, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()
