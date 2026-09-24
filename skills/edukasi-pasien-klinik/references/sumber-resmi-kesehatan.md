@@ -18,6 +18,24 @@ mengarang statistik atau mengutip dari memori tanpa menyebut sumber yang jelas.
 - **CDC** — cdc.gov (boleh untuk konteks umum internasional, tetap utamakan Kemenkes/WHO untuk
   konteks Indonesia).
 
+## Contoh halaman resmi siap kutip (dicek tanggal seperti tercantum)
+Daftar awal ini membantu agent yang tidak bisa membuka web saat itu juga. **Selalu cek ulang**
+halaman masih ada & isinya belum berubah sebelum memakainya untuk konten baru — tandai
+`[perlu sumber]` bila daftar ini sudah kedaluwarsa atau topiknya tidak ada di sini.
+
+| Topik | Judul halaman | Lembaga | Tanggal terbit/cek | URL |
+|---|---|---|---|---|
+| DBD / 3M Plus | "Pemberantasan Sarang Nyamuk dengan 3M Plus" | Kemenkes (Ayo Sehat) | 22-06-2023 | https://ayosehat.kemkes.go.id/pemberantasan-sarang-nyamuk-dengan-3m-plus |
+| Imunisasi rutin | Program Imunisasi Nasional | Kemenkes | cek tanggal terbaru saat dipakai | https://kemkes.go.id (cari "imunisasi") |
+| Jadwal imunisasi anak | Jadwal Imunisasi | IDAI | cek tanggal terbaru saat dipakai | https://idai.or.id (cari "jadwal imunisasi") |
+| Persiapan medical check-up / puasa lab | Panduan puasa sebelum tes darah | Kemenkes/WHO (cari saat dipakai) | cek tanggal terbaru saat dipakai | who.int / kemkes.go.id |
+| Kesehatan gigi & mulut | Materi edukasi kesehatan gigi | PDGI | cek tanggal terbaru saat dipakai | https://pdgi.or.id |
+
+Bila topik yang diminta tidak ada di tabel ini, cari langsung di domain resmi pada daftar bagian
+"Lembaga & organisasi rujukan" di atas, catat judul halaman + tanggal akses persis seperti
+format kutipan di bawah, atau tandai `[perlu sumber — isi tautan sebelum dipublikasikan]` bila
+tidak bisa membuka web saat itu.
+
 ## Cara mengutip di konten
 Format standar di akhir konten:
 ```

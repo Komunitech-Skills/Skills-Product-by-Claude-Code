@@ -33,49 +33,108 @@ dan wajib diverifikasi ulang sebelum dijadikan dasar klaim hukum di materi juala
   5. Transkrip chat & data operasional tersimpan lokal (di komputer/Gateway klinik) — jaga
      keamanan fisik & akses komputer tersebut.
 
-## 2. Kerahasiaan medis (UU Kesehatan 17/2023)
+## 2. Kerahasiaan medis (UU Kesehatan 17/2023 & PP 28/2024)
 
-**Status: PERLU DICEK.** Nomor pasal spesifik tentang kewajiban rahasia kedokteran/rekam medis
-di UU No. 17 Tahun 2023 tentang Kesehatan **belum diverifikasi dari naskah resmi** (peraturan.bpk.go.id
-atau JDIH Kemenkes) dalam penyusunan skill ini. Yang bisa ditulis dengan aman:
+**Status: TERVERIFIKASI (naskah resmi dibaca langsung).**
+Sumber: UU No. 17 Tahun 2023 tentang Kesehatan — PDF resmi
+https://farmalkes.kemkes.go.id/en/unduh/uu-17-2023/ ; PP No. 28 Tahun 2024 (aturan pelaksana
+UU 17/2023) — PDF resmi https://farmalkes.kemkes.go.id/en/unduh/pp-28-2024/.
+(peraturan.bpk.go.id sempat menolak akses/403 saat verifikasi; sumber di atas dipakai sebagai
+gantinya. Bila mengutip di dokumen resmi/kontrak, cocokkan sekali lagi dengan salinan di
+jdih.kemkes.go.id.)
 
-> "Tenaga kesehatan dan fasilitas pelayanan kesehatan memiliki kewajiban menjaga kerahasiaan
-> data dan informasi kesehatan pasien sebagaimana diatur dalam peraturan perundang-undangan di
-> bidang kesehatan (termasuk UU No. 17 Tahun 2023 tentang Kesehatan) dan UU PDP. **Nomor pasal
-> persis perlu dicek ulang** di peraturan.bpk.go.id/JDIH Kemenkes sebelum dikutip di materi
-> resmi/kontrak."
+- **Pasal 4 ayat (1) huruf i, UU 17/2023:** setiap orang berhak memperoleh kerahasiaan data dan
+  informasi kesehatan pribadinya.
+- **Pasal 4 ayat (4):** hak kerahasiaan itu boleh dikecualikan hanya untuk: penegakan hukum;
+  KLB/wabah/bencana; pendidikan & penelitian terbatas; perlindungan orang lain; kepentingan
+  pengobatan pasien sendiri; **permintaan pasien sendiri**; kepentingan administratif/asuransi/
+  jaminan kesehatan; dan kepentingan lain menurut peraturan perundang-undangan.
+- **Pasal 274 huruf c:** tenaga medis & tenaga kesehatan wajib "menjaga rahasia Kesehatan
+  Pasien" dalam menjalankan praktik.
+- **Pasal 296 ayat (5):** rekam medis wajib disimpan dan dijaga kerahasiaannya oleh tenaga
+  medis, tenaga kesehatan, dan pimpinan fasilitas pelayanan kesehatan.
+- **Pasal 297 ayat (3):** fasyankes wajib menjaga keamanan, keutuhan, kerahasiaan, dan
+  ketersediaan data dalam dokumen rekam medis.
+- **Pasal 301:** ayat (1) tenaga medis/kesehatan wajib menyimpan rahasia kesehatan pribadi
+  pasien; ayat (2) pembukaan rahasia hanya untuk kepentingan sebagaimana Pasal 4 ayat (4); ayat
+  (3) diatur lebih lanjut dengan Peraturan Pemerintah.
+- **PP 28/2024 Pasal 788:** ayat (1) setiap fasyankes harus menyimpan rahasia kesehatan pribadi
+  pasien; ayat (3) rahasia itu meliputi identitas pasien, data & informasi kesehatan (anamnesis,
+  pemeriksaan, penunjang, diagnosis, pengobatan/tindakan), dan hal lain terkait pasien.
+- **PP 28/2024 Pasal 789:** pihak yang wajib menyimpan rahasia mencakup tenaga medis/kesehatan,
+  pimpinan & manajemen, tenaga pembiayaan, **"tenaga lainnya yang memiliki data pasien"**, dan
+  pihak lain yang terlibat. **Ini mencakup admin/staf non-medis klinik yang mengoperasikan
+  skill ini** — kewajiban rahasia berlaku untuk mereka juga, bukan hanya dokter.
 
-**Jangan** mengutip nomor pasal spesifik UU 17/2023 di materi jualan atau dokumen legal klinik
-sebelum diverifikasi dari naskah resmi. Skill ini sengaja tidak mencantumkan nomor pasal untuk
-menghindari kutipan yang salah.
+Kalimat siap pakai untuk dokumen klinik:
+> "Tenaga medis, tenaga kesehatan, dan tenaga lainnya yang memiliki akses ke data pasien
+> (termasuk staf admin) wajib menjaga kerahasiaan data dan informasi kesehatan pasien sesuai
+> UU No. 17 Tahun 2023 tentang Kesehatan (Pasal 4 ayat (1) huruf i & ayat (4), Pasal 274 huruf c,
+> Pasal 296 ayat (5), Pasal 297 ayat (3), Pasal 301) dan PP No. 28 Tahun 2024 (Pasal 788–789),
+> selain kewajiban UU PDP. Pembukaan data hanya untuk kepentingan yang diatur Pasal 4 ayat (4)
+> UU 17/2023 (mis. permintaan pasien sendiri, penegakan hukum, kepentingan pengobatan)."
 
-## 3. Iklan/promosi layanan kesehatan
+Ini kutipan isi pasal, **bukan analisis hukum lengkap** — untuk kasus spesifik (mis. permintaan
+pihak ketiga atas data pasien) tetap konsultasikan ke ahli hukum kesehatan.
 
-**Status: PERLU DICEK.** Ketentuan spesifik (mis. peraturan Kementerian Kesehatan tentang iklan
-dan publikasi pelayanan kesehatan, kode etik organisasi profesi seperti IDI/PDGI/IDAI) **belum
-diverifikasi naskah resminya** dalam penyusunan skill ini. Prinsip aman yang dipakai skill ini
-tanpa perlu menunggu verifikasi pasal (karena sejalan dengan etika kedokteran & perlindungan
-konsumen yang berlaku umum):
+## 3. Iklan/promosi layanan kesehatan (Permenkes 1787/MENKES/PER/XII/2010)
 
-- **Tidak membuat/menyetujui klaim "menyembuhkan", "100% berhasil", atau janji hasil medis
-  pasti.** Gunakan bahasa informatif ("dapat membantu", "salah satu pilihan penanganan"), bukan
-  janji.
-- **Tidak membuat/memasang testimoni pasien atau foto before-after** tanpa persetujuan tertulis
-  eksplisit dari pasien yang bersangkutan untuk keperluan promosi. Jika klinik memberi testimoni
-  yang sudah punya izin, skill hanya merapikan bahasa — tidak menambah klaim di luar yang
-  diberikan.
-- **Tidak mengklaim status/izin yang belum dikonfirmasi klinik** (mis. "terakreditasi",
-  "bersertifikat BPOM", "kerja sama resmi dengan RS X") kecuali klinik menyatakan itu benar dan
-  bisa dibuktikan.
-- Konten edukasi medsos tetap berupa **edukasi**, bukan iklan tindakan tertentu dengan harga
-  promo dan urgensi palsu ("buruan, kuota terbatas hari ini saja" untuk tindakan medis).
+**Status: TERVERIFIKASI isi pasal (naskah resmi dibaca langsung); status berlaku PERLU DICEK.**
+Sumber: Berita Negara RI 2010 No. 673 — salinan PDF resmi
+https://www.kemhan.go.id/itjen/wp-content/uploads/2017/03/bn673-2010.pdf ; salinan kompilasi
+Kemenkes: https://kms.kemkes.go.id/contents/1715917225382-bukuperaturaniklanpublikasikes.pdf.
+
+- **Pasal 3 ayat (2):** iklan/publikasi pelayanan kesehatan harus sesuai kode etik rumah sakit,
+  kode etik tenaga kesehatan, kode etik periklanan (Etika Pariwara Indonesia), dan peraturan
+  perundang-undangan.
+- **Pasal 4 ayat (1):** iklan/publikasi harus akurat, berbasis bukti, informatif, edukatif, dan
+  bertanggung jawab.
+- **Pasal 4 ayat (2):** **wajib mencantumkan nama dan alamat fasilitas pelayanan kesehatan serta
+  tanggal publikasi** pada setiap iklan/publikasi.
+- **Pasal 5** — iklan/publikasi TIDAK DIPERBOLEHKAN bila, antara lain: (b) tidak benar atau
+  menyesatkan; (c) menciptakan pengharapan/ekspektasi yang tidak tepat/berlebihan; (d)
+  membandingkan atau mencela fasyankes/tenaga kesehatan lain; (e) memuji diri berlebihan
+  (superlatif) atau mengklaim "satu-satunya"; (f) mempromosikan metode/obat yang belum terbukti
+  secara ilmiah; (h) mengiklankan layanan tanpa izin resmi; (l) secara aktif mendorong
+  penggunaan jasa di luar kebutuhan medis; **(m) berisi promosi penjualan termasuk pemberian
+  diskon**; **(n) memberi testimoni dalam bentuk iklan atau publikasi di media massa** (larangan
+  ini **tanpa pengecualian izin tertulis** — beda dengan asumsi sebelumnya); (o) memakai gelar
+  akademis atau sebutan profesi untuk tujuan promosi.
+- **Status berlaku:** UU 17/2023 Pasal 453 menyatakan peraturan pelaksana UU kesehatan lama
+  tetap berlaku sepanjang tidak bertentangan; PP 28/2024 tidak memuat bab khusus iklan
+  pelayanan fasyankes (hanya Pasal 424 untuk iklan sediaan farmasi/alkes/PKRT). Sampai
+  verifikasi ini, **belum ditemukan pencabutan** Permenkes 1787/2010. **Status berlaku tetap
+  PERLU DICEK ulang di jdih.kemkes.go.id** sebelum dijadikan dasar tunggal keputusan hukum, dan
+  apakah media sosial otomatis termasuk "media massa" di Pasal 5 huruf n juga perlu dicek —
+  sikap aman skill ini: **perlakukan media sosial sama seperti media massa.**
+
+**Praktik skill ini (sejalan dengan Pasal 4–5 di atas):**
+- Skill **tidak pernah membuat testimoni pasien atau foto before-after untuk iklan/publikasi**
+  — bukan karena kurang izin, tapi karena Pasal 5 huruf n melarangnya tanpa pengecualian. Kalau
+  pengguna meminta, skill menolak dan menjelaskan dasar ini, bukan menawarkan "asal ada izin".
+  Foto/video pasien tetap butuh izin tertulis terpisah untuk keperluan apa pun (dasar UU PDP),
+  tapi izin itu **tidak membuat testimoni jadi boleh diiklankan**.
+- Skill **tidak membuat promosi diskon/potongan harga untuk tindakan medis** dalam bentuk
+  iklan/publikasi (Pasal 5 huruf m) — pembahasan harga tetap boleh untuk FAQ informatif
+  (bukan format iklan berpromosi).
+- Skill **tidak membuat klaim "menyembuhkan", "100% berhasil", superlatif ("terbaik",
+  "satu-satunya"), atau perbandingan/celaan** terhadap faskes lain (Pasal 5 huruf c, d, e).
+- Skill **tidak mencantumkan gelar akademis/sebutan profesi untuk tujuan promosi** semata
+  (Pasal 5 huruf o).
+- Skill **tidak mengklaim status/izin yang belum dikonfirmasi klinik** (mis. "terakreditasi",
+  "kerja sama resmi dengan RS X") kecuali klinik menyatakan itu benar dan bisa dibuktikan.
+- **Setiap konten medsos yang dibuat skill ini mencantumkan nama & alamat klinik serta tanggal
+  publikasi** (Pasal 4 ayat (2)) — lihat format di `bahasa-awam-pasien.md` dan checklist
+  SKILL.md.
 - Sebelum kampanye iklan berbayar (Meta/Google Ads) untuk layanan kesehatan, klinik disarankan
   cek kebijakan platform iklan (biasanya ada pembatasan khusus kategori kesehatan) dan, bila
-  perlu, konsultasi ke organisasi profesi/konsultan kepatuhan setempat.
+  perlu, konsultasi ke organisasi profesi (IDI/PDGI/dst.)/konsultan kepatuhan setempat.
 
 ## Ringkasan sikap skill ini
 - Menulis materi berdasarkan **fakta yang diberikan klinik**, bukan mengarang klaim medis.
 - Tidak pernah menyalin data pasien individual ke output.
-- Menandai bagian hukum yang **PERLU DICEK** apa adanya, tidak berpura-pura sudah pasti.
-- Untuk kasus di luar cakupan (kontrak kerja sama, sengketa, audit kepatuhan penuh) → arahkan ke
-  konsultan hukum/kepatuhan kesehatan.
+- Mengutip pasal yang **sudah diverifikasi dari naskah resmi** (bagian 1–3 di atas), dan
+  menandai bagian yang **PERLU DICEK** (status berlaku Permenkes 1787/2010) apa adanya, tidak
+  berpura-pura sudah pasti.
+- Untuk kasus di luar cakupan (kontrak kerja sama, sengketa, audit kepatuhan penuh, tafsir kasus
+  spesifik) → arahkan ke konsultan hukum/kepatuhan kesehatan.
