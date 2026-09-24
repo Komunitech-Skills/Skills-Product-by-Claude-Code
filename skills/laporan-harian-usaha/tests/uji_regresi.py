@@ -483,8 +483,8 @@ class UjiGabungan(Dasar):
         asli.write_bytes(b"")
         d = self.jalan(akar, "--json")
         pesan = d["alat"]["absensi"]["pesan"]
-        self.assertIn(str(asli), pesan)
-        self.assertNotIn("laporan-usaha-", pesan)  # bukan path folder sementara
+        self.assertIn(str(asli), pesan)  # path file ASLI ada di pesan
+        self.assertNotIn(str(Path(tempfile.gettempdir())), pesan.replace(str(asli), ""))  # bukan path salinan
 
     # ------------------------------------------------------------- kosmetik: --tz di luar Indonesia ditolak
     def test_tz_di_luar_indonesia_ditolak(self):

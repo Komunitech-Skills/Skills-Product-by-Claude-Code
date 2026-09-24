@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Laporan harian/mingguan gabungan untuk pemilik usaha (laporan-harian-usaha 1.0.0).
+"""Laporan harian/mingguan gabungan untuk pemilik usaha (laporan-harian-usaha 1.0.1).
 
 Menggabungkan data dari alat lokal Komunitech yang terpasang di komputer yang sama:
   kasir-lokal (penjualan), buku-stok (stok), absensi-lokal (kehadiran),
@@ -41,7 +41,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 BULAN = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
          "Oktober", "November", "Desember"]
