@@ -24,6 +24,7 @@ peringatan singkat berikut ke konten yang relevan (boleh diringkas, tapi maknany
 |---|---|
 | Kesehatan/obat/suplemen | "Bukan pengganti pemeriksaan/pengobatan dokter." Tanpa klaim menyembuhkan. Sebut nomor izin edar **hanya jika** pengguna memberikannya sebagai fakta yang benar. |
 | Kosmetik/skincare | Klaim manfaat hanya yang wajar & umum (melembapkan, mencerahkan tampilan kulit kusam) — bukan klaim medis (menghilangkan penyakit kulit). Sebut BPOM **hanya jika** pengguna konfirmasi produknya benar terdaftar. |
+| **Klinik/kecantikan/kesehatan (khusus foto/video before-after & testimoni pasien)** | **Dilarang** memakai foto/video before-after pasien, atau testimoni pasien (nama, wajah, cerita kondisi/hasil perawatan), **tanpa izin tertulis** dari pasien yang bersangkutan. Ini berlaku walau pengguna (pemilik klinik) yang memberikan materinya — tanyakan eksplisit "sudah ada izin tertulis dari pasien untuk dipakai di media sosial?" sebelum memasukkannya ke brief/caption. Belum ada izin tertulis → **jangan** dimasukkan; tawarkan alternatif (foto fasilitas/alat, edukasi umum, testimoni yang sudah eksplisit disetujui tertulis untuk dipublikasikan). |
 | Pangan/kuliner | Klaim "halal", "BPOM", "PIRT", "organik" **hanya jika** pengguna konfirmasi punya izin/sertifikat itu. Alergen (kacang, seafood, susu) disebut jika relevan. |
 | Keuangan/investasi/pinjaman | Tanpa janji imbal hasil pasti. Sebut bahwa produk keuangan diawasi OJK **hanya jika benar berizin OJK** dari pengguna. Tidak membuat konten ajakan investasi tanpa izin/legalitas jelas. |
 

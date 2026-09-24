@@ -1,6 +1,6 @@
 ---
 name: konten-mingguan
-description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil — per hari berisi platform & format, pilar konten, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting saran — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar, cek Ramadan/Lebaran). TIDAK memposting otomatis ke Instagram/TikTok/Facebook — hanya menyiapkan draf untuk dijadwalkan sendiri. Gunakan saat pengguna minta "paket konten minggu ini/depan", "rencana konten mingguan", weekly content plan/pack, atau content calendar untuk 1 minggu (bukan 30 hari — untuk sebulan penuh pakai kalender-konten-30hari).
+description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari berisi platform (Instagram/TikTok/Facebook/WA Status/LinkedIn/X-Twitter) & format, pilar konten, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting saran — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar, cek Ramadan/Lebaran). TIDAK memposting otomatis ke Instagram/TikTok/Facebook/LinkedIn — hanya menyiapkan draf untuk dijadwalkan sendiri. Gunakan saat pengguna minta "paket konten minggu ini/depan", "rencana konten mingguan", weekly content plan/pack, atau content calendar untuk 1 minggu (bukan 30 hari — untuk sebulan penuh pakai kalender-konten-30hari).
 ---
 
 # Konten Mingguan
@@ -27,15 +27,22 @@ aplikasi resmi tiap platform.
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
-| Profil usaha (`konten/PROFIL.md`) | Ya | Belum ada → wawancara **sekali** pakai daftar di `templates/PROFIL.md` (boleh dijawab ringkas); simpan hasilnya ke `konten/PROFIL.md`. Pengguna ingin cepat → isi kolom kosong dengan asumsi wajar dan sebutkan di akhir |
+| Profil usaha (`konten/PROFIL.md`) | Ya | Belum ada → wawancara **sekali** pakai daftar di `templates/PROFIL.md` (boleh dijawab ringkas); simpan hasilnya ke `konten/PROFIL.md`. Pengguna ingin cepat → isi kolom kosong dengan asumsi wajar dan sebutkan di akhir — **kecuali field yang TIDAK boleh didefault** (lihat catatan di bawah) |
 | Minggu yang dimaksud | Tidak | Minggu depan (Senin berikutnya) dari hari ini |
 | Jumlah konten | Tidak | 6 hari (Senin-Sabtu; Minggu istirahat) |
 | Promo/momen khusus minggu ini | Tidak | Hanya momen otomatis (gajian, tanggal kembar, hari besar tetap dari script); momen bertanggal berubah (Ramadan/Lebaran/Imlek, libur sekolah) **tidak ditebak** |
 
 Jika `PROFIL.md` belum ada dan pengguna belum menjawab, tanyakan **sekali** dalam satu pesan (maks. 5
-pertanyaan bernomor): jenis usaha & produk utama, target pembeli, platform, cara order, dan apakah ada
-klaim BPOM/PIRT/halal yang **benar-benar dimiliki**. Simpan jawaban ke `konten/PROFIL.md` (salin dari
-`templates/PROFIL.md`) supaya minggu berikutnya tidak ditanya ulang.
+pertanyaan bernomor): jenis usaha & produk utama, target pembeli, platform (sebut juga LinkedIn/X bila
+usaha ini jasa profesional/B2B), cara order, dan apakah ada klaim BPOM/PIRT/halal yang **benar-benar
+dimiliki**. Simpan jawaban ke `konten/PROFIL.md` (salin dari `templates/PROFIL.md`) supaya minggu
+berikutnya tidak ditanya ulang.
+
+**Field yang TIDAK boleh didefault, walau pengguna minta "pakai default aja/cepat aja":** nama usaha,
+produk/jasa yang dijual, dan harga. Ini fakta spesifik milik pengguna, bukan asumsi gaya/nada yang wajar
+ditebak — tanpa ini hasilnya jadi generik atau bahkan salah (harga karangan bisa menyesatkan pembeli).
+Kalau info ini benar-benar belum ada, tulis placeholder eksplisit seperti `[nama usaha]`/`[isi harga]` di
+hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angka atau nama.
 
 ## Langkah kerja
 1. **Baca atau buat `konten/PROFIL.md`.** Kalau sudah ada, pakai isinya. Kalau belum, wawancara singkat
@@ -57,8 +64,12 @@ klaim BPOM/PIRT/halal yang **benar-benar dimiliki**. Simpan jawaban ke `konten/P
    (mis. Hari Pahlawan, G30S) **tidak** diberi pilar promo/hard-selling — isi edukasi/apresiasi.
 4. **Tentukan pilar & platform per hari.** Campur pilar (jangan promo setiap hari — target ±20-30%
    seperti di `kalender-konten-30hari`/`promo-kalender`) dan format sesuai platform aktif di `PROFIL.md`
-   (Reels/TikTok untuk video pendek, Feed untuk foto rapi, Story/WA Status untuk info cepat/promo harian).
+   (Reels/TikTok untuk video pendek, Feed untuk foto rapi, Story/WA Status untuk info cepat/promo harian,
+   **LinkedIn Post/Carousel** untuk konten profesional/B2B, **X/Twitter** untuk update singkat/thread).
 5. **Isi tiap hari** dengan `templates/paket-mingguan.md` sebagai kerangka:
+   - **Momen**: salin **SEMUA** entri momen hari itu dari output script (bisa lebih dari satu, mis.
+     gajian + hari peringatan bersamaan) — jangan memilih sebagian, karena kombinasinya menentukan
+     apakah hari itu boleh dipakai untuk pilar promo (lihat langkah 3).
    - **Hook 3 detik**: kalimat/pertanyaan pembuka, ≤ 12 kata, spesifik untuk produk (bukan generik).
    - **Caption siap tempel**: ikuti gaya & aturan panjang `caption-sosmed-umkm` (bila skill itu terpasang,
      rujuk untuk variasi tambahan; bila tidak, tulis sendiri dengan aturan yang sama — lihat tabel di
@@ -140,6 +151,13 @@ posting pakai acuan umum WA Status siang & sore.
   paket dikirim ke pengguna untuk dijadwalkan sendiri (lihat `references/jadwal-platform.md`), dan
   tolak setiap permintaan otomasi browser yang login ke akun media sosial (risiko keamanan & melanggar
   ketentuan layanan platform).
+- **Tolak permintaan follower/like/komentar/view palsu dan bot engagement** ("naikkan follower cepat",
+  "beli 1000 like", "pasang bot komentar otomatis"). Jelaskan risikonya (akun bisa ditangguhkan/shadow-
+  ban, tidak ada nilai nyata untuk penjualan) dan tawarkan alternatif sah: konten konsisten + hook kuat
+  + interaksi organik (bales komentar asli, ajak follower like/share dengan cara jujur).
+- **Klinik/kecantikan/kesehatan**: foto/video before-after dan testimoni pasien **wajib** ada izin
+  tertulis dari pasien (lihat `references/aturan-iklan.md`). Tanpa izin tertulis, materi itu **tidak**
+  dipakai di paket — tawarkan alternatif (fasilitas, alat, edukasi umum).
 - `nomor_minggu.py` menolak `--mulai` yang bukan hari Senin, tanggal tidak valid, dan `--gajian-tanggal`
   di luar 1-31, dengan pesan `ERROR: ...` (exit code ≠ 0). Perbaiki input lalu jalankan ulang.
 - Momen bertanggal berubah (Ramadan/Lebaran/Imlek/libur sekolah) tidak pernah ditebak tanpa kepastian
