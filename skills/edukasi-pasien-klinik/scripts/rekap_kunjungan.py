@@ -8,7 +8,7 @@ medis dan BUKAN alat skrining/diagnosis — hanya rekap jumlah untuk laporan
 operasional (lihat CLAUDE.md Komunitech & keputusan pemilik jalur 3, bidang
 kesehatan: tanpa skrining/diagnosis/kalkulator medis).
 
-Prinsip keandalan (v1.0.1, setelah uji independen):
+Prinsip keandalan & privasi (v1.0.2, setelah dua ronde uji independen):
 - Status kehadiran diklasifikasikan dari daftar kata kunci "hadir" dan
   "tidak datang". Status yang TIDAK cocok dengan salah satu daftar
   DILAPORKAN sebagai "tidak dikenal" — tidak pernah diam-diam dihitung
@@ -16,15 +16,28 @@ Prinsip keandalan (v1.0.1, setelah uji independen):
 - Format tanggal (hari/bulan vs bulan/hari) ditentukan SEKALI untuk seluruh
   file dari bukti tak ambigu di dalamnya (mis. tanggal > 12). Baris yang
   buktinya bertentangan dengan format mayoritas tetap dibaca memakai bukti
-  lokalnya sendiri, tapi diberi peringatan agar pengguna mengecek.
+  lokalnya sendiri, tapi diberi peringatan agar pengguna mengecek. File
+  tanpa bukti sama sekali (semua hari/bulan ≤ 12) diberi peringatan bahwa
+  ini asumsi, bukan kepastian, dengan cara mengesampingkannya lewat
+  `--urutan-tanggal`.
 - Semua angka agregat (total, hadir, tidak datang, persentase) dihitung
   eksplisit oleh script ini, bukan ditebak oleh agent.
+- SATU fungsi penyaring (`_nilai_aman_ditampilkan`, dipakai lewat
+  `_pisah_aman_dan_sembunyikan`) menentukan nilai kategori apa (status,
+  poli, penjamin) yang aman dicetak ulang. Nilai yang tidak lolos (banyak
+  kata, mengandung digit, pola sapaan+nama, atau kolom punya kelewat
+  banyak nilai unik) TIDAK PERNAH dicetak — hanya digabung jadi angka
+  agregat "N baris, K nilai berbeda disembunyikan". Ini mencegah kolom
+  yang sebenarnya berisi teks bebas (nama, no. HP, diagnosis) bocor lewat
+  bagian "rincian"/"nilai mencurigakan" walau nama kolomnya lolos deteksi
+  kolom sensitif.
 
 Hanya memakai library standar Python (3.8+). Lintas OS (Windows/macOS/Linux).
 
 Contoh pakai:
     python3 rekap_kunjungan.py --file kunjungan.csv
     python3 rekap_kunjungan.py --file kunjungan.csv --format json
+    python3 rekap_kunjungan.py --file kunjungan.csv --urutan-tanggal mdy
 
 Windows: ganti "python3" dengan "python" atau "py".
 """
@@ -40,24 +53,39 @@ from collections import Counter
 from datetime import date, datetime
 from decimal import ROUND_HALF_UP, Decimal
 
-# Pola nama/kata kolom yang mengandung data pribadi/klinis spesifik — kalau
-# nama kolom mengandung salah satu pola ini, ISI kolom itu SENGAJA tidak
-# pernah dibaca untuk ditampilkan (hanya nama kolomnya yang dilaporkan
-# sebagai "diabaikan demi privasi pasien").
+# Pola (regex, dicocokkan per KATA/token, bukan potongan huruf bebas) nama
+# kolom yang mengandung data pribadi/klinis spesifik — kalau nama kolom
+# mengandung salah satu token ini, ISI kolom itu SENGAJA tidak pernah dibaca
+# untuk ditampilkan (hanya nama kolomnya yang dilaporkan sebagai "diabaikan
+# demi privasi pasien"). Kolom yang benar-benar dipakai skill (tanggal, jam,
+# poli, penjamin, status) TIDAK PERNAH dilaporkan di sini meski pola cocok
+# (lihat `_kolom_sensitif_di_header`), supaya tidak ada pernyataan yang
+# saling bertentangan (mis. "Waktu" dipakai untuk jam tapi disebut sensitif).
 POLA_KOLOM_SENSITIF = [
-    "nama", "nik", "ktp", "rm", "rekam medis", "bpjs", "diagnos", "diagnosa",
-    "dx", "icd", "keluhan", "alamat", "telp", "telepon", "hp", "wa",
-    "no. wa", "email", "lahir", "kontak", "ortu", "orang tua", "ibu",
-    "ayah", "penanggung jawab", "asuransi no", "kartu",
+    r"\bnama\b", r"\bnik\b", r"\bktp\b", r"\brm\b", r"\brekam medis\b",
+    r"\bbpjs\b", r"\bdiagnos\w*\b", r"\bdx\b", r"\bicd[\w-]*\b",
+    r"\bkeluhan\b", r"\balamat\b", r"\btelp\w*\b", r"\btelepon\b", r"\bhp\b",
+    r"\bwa\b", r"\bemail\b", r"\blahir\b", r"\bkontak\b", r"\bortu\b",
+    r"\borang tua\b", r"\bibu\b", r"\bayah\b", r"\bpenanggung jawab\b",
+    r"\basuransi no\w*\b", r"\bkartu\b",
 ]
+POLA_KOLOM_SENSITIF_REGEX = [re.compile(p) for p in POLA_KOLOM_SENSITIF]
 
 # Alias nama kolom yang diterima (huruf kecil, tanpa spasi berlebih) untuk
-# setiap kolom agregat yang DIPAKAI.
-ALIAS_TANGGAL = ["tanggal", "tgl", "date", "tanggal kunjungan", "tanggal daftar"]
+# setiap kolom agregat yang DIPAKAI. "keterangan"/catatan bebas SENGAJA
+# TIDAK dimasukkan sebagai alias status (lihat B2, HASIL-UJI.md v1.0.1):
+# kolom catatan bebas sering berisi nama/no. HP/diagnosis, bukan kategori
+# kehadiran, dan hanya nama kolom yang eksplisit menyebut "status"/
+# "kehadiran" yang dipakai.
+ALIAS_TANGGAL = [
+    "tanggal", "tgl", "date", "tanggal kunjungan", "tgl kunjungan",
+    "tanggal daftar", "tgl daftar", "tanggal periksa", "tgl periksa",
+    "tanggal pelayanan",
+]
 ALIAS_JAM = ["jam", "waktu", "jam kunjungan", "time"]
 ALIAS_POLI = ["poli", "layanan", "unit", "poliklinik", "jenis layanan"]
 ALIAS_PENJAMIN = ["penjamin", "pembayaran", "cara bayar", "jenis pasien", "kelas"]
-ALIAS_STATUS = ["status", "status kunjungan", "status kehadiran", "keterangan"]
+ALIAS_STATUS = ["status", "status kunjungan", "status kehadiran"]
 
 # Kata kunci status "TIDAK DATANG" (dicocokkan setelah normalisasi: huruf
 # kecil, tanda baca dibuang, spasi dirapikan).
@@ -78,6 +106,17 @@ KATA_HADIR = [
     "terlayani", "konsul selesai", "kontrol selesai",
 ]
 SINGKATAN_HADIR = {"h", "y", "ok"}
+
+# B2: pola "sapaan + nama" (mis. "Bu Ani", "Pak Budi") — nilai yang cocok
+# pola ini tidak pernah dicetak ulang apa adanya, dipakai oleh fungsi
+# penyaring tunggal `_nilai_aman_ditampilkan`.
+POLA_SAPAAN_NAMA = re.compile(
+    r"\b(bu|pak|ibu|bapak|sdr|sdri|tn|ny|nyonya|tuan|mr|mrs|ms)\.?\s+[a-z]+",
+    re.IGNORECASE,
+)
+# Jumlah maksimum nilai unik yang boleh dicetak individual per kolom
+# kategori (status/poli/penjamin) — sisanya digabung jadi agregat.
+MAKS_NILAI_UNIK_TAMPIL = 20
 
 BULAN = {
     "jan": 1, "januari": 1, "january": 1,
@@ -125,11 +164,16 @@ def _cari_kolom(header_asli: list, alias: list) -> "str | None":
     return None
 
 
-def _kolom_sensitif_di_header(header: list) -> list:
+def _kolom_sensitif_di_header(header: list, kolom_dipakai: set) -> list:
+    """R10: cocokkan pola sensitif per token (word boundary), dan jangan
+    pernah laporkan kolom yang benar-benar dipakai skill (tanggal, jam,
+    poli, penjamin, status) sebagai kolom sensitif."""
     hasil = []
     for h in header:
+        if h in kolom_dipakai:
+            continue
         hn = _normalisasi_header(h)
-        if any(pola in hn for pola in POLA_KOLOM_SENSITIF):
+        if any(p.search(hn) for p in POLA_KOLOM_SENSITIF_REGEX):
             hasil.append(h)
     return sorted(set(hasil))
 
@@ -163,17 +207,22 @@ def deteksi_urutan(teks_tanggal_list):
     """Tentukan urutan tanggal angka ('dmy'/Indonesia atau 'mdy'/AS) untuk
     SATU FILE dari bukti tak ambigu (angka > 12 hanya mungkin di posisi
     hari). Mengembalikan (urutan_mayoritas, jumlah_bukti_dmy,
-    jumlah_bukti_mdy, baris_bertentangan) — baris_bertentangan berisi index
-    (1-based, termasuk header) baris yang bukti lokalnya berlawanan dengan
-    urutan mayoritas.
+    jumlah_bukti_mdy, total_baris_berpola_angka, baris_bertentangan) —
+    `total_baris_berpola_angka` = jumlah baris bertanggal angka a/b/tahun
+    (ambigu maupun tidak), dipakai untuk mendeteksi file yang SAMA SEKALI
+    tidak punya bukti (R12). `baris_bertentangan` berisi index (1-based,
+    termasuk header) baris yang bukti lokalnya berlawanan dengan urutan
+    mayoritas.
     """
     bukti_dmy = []   # list index baris
     bukti_mdy = []
+    total_pola_angka = 0
     for i, teks in enumerate(teks_tanggal_list, start=2):  # baris data dimulai setelah header
         bagian_tanggal, _ = _pisah_tanggal_jam((teks or "").strip())
         m = POLA_ANGKA_3.match(bagian_tanggal)
         if not m:
             continue
+        total_pola_angka += 1
         a, b = int(m.group(1)), int(m.group(2))
         if a > 12:
             bukti_dmy.append(i)
@@ -187,7 +236,7 @@ def deteksi_urutan(teks_tanggal_list):
         mayoritas = "mdy"
         bertentangan = bukti_dmy
 
-    return mayoritas, len(bukti_dmy), len(bukti_mdy), bertentangan
+    return mayoritas, len(bukti_dmy), len(bukti_mdy), total_pola_angka, bertentangan
 
 
 def parse_tanggal(teks: str, urutan_default: str = "dmy"):
@@ -262,7 +311,50 @@ def klasifikasi_status(nilai_asli: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Baca file (deteksi encoding, S1)
+# B2: penyaring TUNGGAL nilai kategori aman-ditampilkan (status/poli/penjamin)
+# ---------------------------------------------------------------------------
+
+def _nilai_aman_ditampilkan(nilai: str) -> bool:
+    """True bila SATU nilai kategori (status/poli/penjamin) aman dicetak
+    ulang apa adanya: tanpa digit, maksimal 3 kata, dan tidak cocok pola
+    sapaan+nama ("Bu Ani", "Pak Budi", dst). Dipakai untuk SEMUA jalur
+    output lewat `_pisah_aman_dan_sembunyikan` — satu fungsi, satu aturan,
+    supaya tidak ada jalur yang lupa menyaring (lihat B2)."""
+    n = (nilai or "").strip()
+    if not n:
+        return True  # nilai kosong direpresentasikan terpisah ("(kosong)"/"(tidak diisi)"), aman
+    if re.search(r"\d", n):
+        return False
+    if len(n.split()) > 3:
+        return False
+    if POLA_SAPAAN_NAMA.search(n):
+        return False
+    return True
+
+
+def _pisah_aman_dan_sembunyikan(counter: Counter):
+    """Pisahkan isi sebuah Counter nilai->jumlah menjadi:
+    - daftar nilai AMAN (lolos `_nilai_aman_ditampilkan`, dibatasi
+      `MAKS_NILAI_UNIK_TAMPIL` nilai unik pertama berdasarkan frekuensi),
+    - jumlah baris yang nilainya disembunyikan,
+    - jumlah nilai unik berbeda yang disembunyikan.
+    Nilai yang disembunyikan TIDAK PERNAH muncul di hasil apa pun (B2) —
+    hanya dua angka agregat di atas yang dilaporkan.
+    """
+    aman = []
+    baris_disembunyikan = 0
+    kategori_disembunyikan = 0
+    for nilai, jumlah in counter.most_common():
+        if len(aman) < MAKS_NILAI_UNIK_TAMPIL and _nilai_aman_ditampilkan(nilai):
+            aman.append((nilai, jumlah))
+        else:
+            baris_disembunyikan += jumlah
+            kategori_disembunyikan += 1
+    return aman, baris_disembunyikan, kategori_disembunyikan
+
+
+# ---------------------------------------------------------------------------
+# Baca file (deteksi encoding, S1 & R9)
 # ---------------------------------------------------------------------------
 
 def _decode_bytes(mentah: bytes):
@@ -276,6 +368,17 @@ def _decode_bytes(mentah: bytes):
             return mentah.decode("utf-8-sig"), "utf-8-sig"
         except UnicodeDecodeError:
             pass
+    # R9: UTF-16 TANPA BOM — banyak byte NUL (\x00) berselang-seling adalah
+    # ciri khas teks ASCII/Latin yang dikodekan UTF-16. Coba little-endian
+    # lalu big-endian sebelum jatuh ke pembacaan 8-bit biasa, supaya pesan
+    # error tidak menyesatkan ("kolom tanggal tidak ditemukan").
+    contoh = mentah[:4096]
+    if contoh and (contoh.count(b"\x00") / len(contoh)) > 0.2:
+        for enc in ("utf-16-le", "utf-16-be"):
+            try:
+                return mentah.decode(enc), enc
+            except UnicodeDecodeError:
+                continue
     for enc in ("utf-8", "cp1252", "latin-1"):
         try:
             return mentah.decode(enc), enc
@@ -324,13 +427,7 @@ def _persen(bagian: int, total: int) -> float:
     return float(nilai.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
 
 
-def _teks_mencurigakan(nilai: str) -> bool:
-    """Heuristik R2: teks bebas yang mungkin berisi nama orang, bukan
-    kategori (mis. staf mengetik 'Cabut gigi FIKTIF Ani' di kolom poli)."""
-    return len(nilai.split()) > 4
-
-
-def rekap(header: list, baris: list) -> dict:
+def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict:
     if not baris:
         raise DataError(
             "File tidak berisi baris data (hanya header). "
@@ -350,23 +447,46 @@ def rekap(header: list, baris: list) -> dict:
             + "). Beri nama kolom tanggal kunjungan, mis. 'Tanggal'."
         )
 
-    kolom_sensitif_terpakai = _kolom_sensitif_di_header(header)
+    kolom_dipakai = {
+        k for k in (kolom_tanggal, kolom_jam, kolom_poli, kolom_penjamin, kolom_status) if k
+    }
+    kolom_sensitif_terpakai = _kolom_sensitif_di_header(header, kolom_dipakai)
 
-    # --- tentukan urutan tanggal SEKALI untuk seluruh file (B1b) ---
-    urutan, n_dmy, n_mdy, baris_format_bertentangan = deteksi_urutan(
-        [row.get(kolom_tanggal, "") for row in baris]
-    )
+    # --- tentukan urutan tanggal SEKALI untuk seluruh file (B1b, R12) ---
     peringatan_tanggal = None
-    if n_dmy > 0 and n_mdy > 0:
-        contoh = ", ".join(str(i) for i in baris_format_bertentangan[:8])
-        lebih = "" if len(baris_format_bertentangan) <= 8 else f" (+{len(baris_format_bertentangan) - 8} baris lain)"
+    if urutan_tanggal_paksa in ("dmy", "mdy"):
+        urutan = urutan_tanggal_paksa
         peringatan_tanggal = (
-            f"Format tanggal tidak konsisten dalam satu file: {n_dmy} baris bergaya "
-            f"Indonesia (hari/bulan), {n_mdy} baris bergaya Amerika (bulan/hari). "
-            f"Baris ambigu diproses memakai format mayoritas ('{urutan}'); baris "
-            f"bernomor {contoh}{lebih} punya bukti format berbeda dan sudah dibaca "
-            "sesuai buktinya sendiri — mohon cek ulang baris tersebut."
+            f"Urutan tanggal dipaksa manual ke '{urutan}' lewat --urutan-tanggal "
+            "(deteksi otomatis tidak dijalankan)."
         )
+    else:
+        urutan, n_dmy, n_mdy, total_pola_angka, baris_format_bertentangan = deteksi_urutan(
+            [row.get(kolom_tanggal, "") for row in baris]
+        )
+        if n_dmy > 0 and n_mdy > 0:
+            contoh = ", ".join(str(i) for i in baris_format_bertentangan[:8])
+            lebih = (
+                "" if len(baris_format_bertentangan) <= 8
+                else f" (+{len(baris_format_bertentangan) - 8} baris lain)"
+            )
+            peringatan_tanggal = (
+                f"Format tanggal tidak konsisten dalam satu file: {n_dmy} baris bergaya "
+                f"Indonesia (hari/bulan), {n_mdy} baris bergaya Amerika (bulan/hari). "
+                f"Baris ambigu diproses memakai format mayoritas ('{urutan}'); baris "
+                f"bernomor {contoh}{lebih} punya bukti format berbeda dan sudah dibaca "
+                "sesuai buktinya sendiri — mohon cek ulang baris tersebut."
+            )
+        elif n_dmy == 0 and n_mdy == 0 and total_pola_angka > 0:
+            # R12: tidak ada bukti tegas sama sekali (semua hari & bulan <= 12) —
+            # jangan diam-diam pakai dmy tanpa memberi tahu ini cuma asumsi.
+            peringatan_tanggal = (
+                f"Tidak ada bukti tegas urutan tanggal di file ini (semua nilai hari & "
+                f"bulan pada {total_pola_angka} baris ≤ 12, bisa dibaca dua cara). "
+                f"Diasumsikan format Indonesia (hari/bulan) — hasil ini BISA SALAH bila "
+                "file sebenarnya bergaya Amerika (bulan/hari). Untuk memastikan, jalankan "
+                "ulang dengan tambahan '--urutan-tanggal mdy' dan bandingkan hasilnya."
+            )
 
     per_hari = Counter()
     per_poli = Counter()
@@ -377,8 +497,6 @@ def rekap(header: list, baris: list) -> dict:
     hadir = tidak_datang = tidak_dikenal_n = kosong_n = 0
     baris_tanggal_gagal = 0
     total = 0
-    poli_mencurigakan = set()
-    penjamin_mencurigakan = set()
     ada_sumber_jam = bool(kolom_jam)
 
     for row in baris:
@@ -392,13 +510,9 @@ def rekap(header: list, baris: list) -> dict:
         if kolom_poli:
             nilai = (row.get(kolom_poli) or "").strip() or "(tidak diisi)"
             per_poli[nilai] += 1
-            if _teks_mencurigakan(nilai):
-                poli_mencurigakan.add(nilai)
         if kolom_penjamin:
             nilai = (row.get(kolom_penjamin) or "").strip() or "(tidak diisi)"
             per_penjamin[nilai] += 1
-            if _teks_mencurigakan(nilai):
-                penjamin_mencurigakan.add(nilai)
 
         jam = None
         if kolom_jam:
@@ -426,19 +540,17 @@ def rekap(header: list, baris: list) -> dict:
 
     jam_ramai = per_jam.most_common(3)
 
-    # R2: kolom dengan terlalu banyak nilai unik sering berarti teks bebas
-    # (bisa memuat nama), bukan kategori tetap — beri peringatan terpisah.
-    kolom_terlalu_beragam = []
-    if kolom_poli and len(per_poli) > 20:
-        kolom_terlalu_beragam.append(kolom_poli)
-    if kolom_penjamin and len(per_penjamin) > 20:
-        kolom_terlalu_beragam.append(kolom_penjamin)
+    # B2: saring SEMUA nilai kategori lewat SATU fungsi sebelum ditampilkan.
+    poli_aman, poli_baris_sembunyi, poli_kategori_sembunyi = _pisah_aman_dan_sembunyikan(per_poli)
+    penjamin_aman, penjamin_baris_sembunyi, penjamin_kategori_sembunyi = _pisah_aman_dan_sembunyikan(per_penjamin)
 
     status_rincian = None
+    status_baris_sembunyi = status_kategori_sembunyi = 0
     if kolom_status:
+        status_aman, status_baris_sembunyi, status_kategori_sembunyi = _pisah_aman_dan_sembunyikan(status_unik)
         status_rincian = [
-            {"nilai": k, "jumlah": v, "kategori": status_kategori[k]}
-            for k, v in status_unik.most_common()
+            {"nilai": nilai, "jumlah": jumlah, "kategori": status_kategori[nilai]}
+            for nilai, jumlah in status_aman
         ]
 
     hasil = {
@@ -448,18 +560,27 @@ def rekap(header: list, baris: list) -> dict:
         "peringatan_format_tanggal": peringatan_tanggal,
         "baris_tanggal_tidak_terbaca": baris_tanggal_gagal,
         "per_hari": dict(sorted(per_hari.items())),
-        "per_poli": dict(per_poli.most_common()) if kolom_poli else None,
-        "per_penjamin": dict(per_penjamin.most_common()) if kolom_penjamin else None,
+        "per_poli": dict(poli_aman) if kolom_poli else None,
+        "per_penjamin": dict(penjamin_aman) if kolom_penjamin else None,
         "jam_ramai": (
             [{"jam": f"{j:02d}:00", "jumlah": n} for j, n in jam_ramai]
             if ada_sumber_jam else None
         ),
         "kolom_sensitif_diabaikan": kolom_sensitif_terpakai,
-        "kolom_nilai_mencurigakan": {
-            "poli": sorted(poli_mencurigakan),
-            "penjamin": sorted(penjamin_mencurigakan),
+        "nilai_disembunyikan": {
+            "poli": (
+                {"baris": poli_baris_sembunyi, "nilai_berbeda": poli_kategori_sembunyi}
+                if kolom_poli else None
+            ),
+            "penjamin": (
+                {"baris": penjamin_baris_sembunyi, "nilai_berbeda": penjamin_kategori_sembunyi}
+                if kolom_penjamin else None
+            ),
+            "status": (
+                {"baris": status_baris_sembunyi, "nilai_berbeda": status_kategori_sembunyi}
+                if kolom_status else None
+            ),
         },
-        "kolom_terlalu_beragam": kolom_terlalu_beragam,
     }
 
     if kolom_status:
@@ -486,6 +607,26 @@ def rekap(header: list, baris: list) -> dict:
     return hasil
 
 
+def _format_daftar_kategori(judul: str, aman_dict: dict, sembunyi: dict, total: int) -> list:
+    """R13: cetak daftar nilai aman + persentase, lalu satu baris agregat
+    untuk nilai yang disembunyikan (bila ada) — TANPA pernah mencetak nilai
+    yang disembunyikan itu sendiri (B2)."""
+    baris = ["", judul]
+    if aman_dict:
+        for nama, n in aman_dict.items():
+            persen = f" ({_persen(n, total)}%)" if total else ""
+            baris.append(f"  {nama}: {n}{persen}")
+    else:
+        baris.append("  (tidak ada nilai yang aman ditampilkan)")
+    if sembunyi and sembunyi.get("baris"):
+        baris.append(
+            f"  (nilai lain disembunyikan demi privasi): {sembunyi['baris']} baris, "
+            f"{sembunyi['nilai_berbeda']} nilai berbeda — kemungkinan teks bebas "
+            "(bisa memuat nama/kontak), periksa data asli bila perlu"
+        )
+    return baris
+
+
 def format_teks(hasil: dict) -> str:
     baris = []
     baris.append("REKAP OPERASIONAL KUNJUNGAN (agregat, tanpa nama/diagnosis)")
@@ -497,6 +638,8 @@ def format_teks(hasil: dict) -> str:
         )
     if hasil.get("peringatan_format_tanggal"):
         baris.append(f"⚠️  {hasil['peringatan_format_tanggal']}")
+
+    nilai_disembunyikan = hasil.get("nilai_disembunyikan") or {}
 
     if hasil["hadir"] is not None:
         baris.append("")
@@ -516,6 +659,13 @@ def format_teks(hasil: dict) -> str:
         baris.append("Rincian nilai status yang ditemukan (cek klasifikasinya sudah benar):")
         for s in hasil["status_rincian"]:
             baris.append(f"  '{s['nilai']}' -> {s['kategori']} ({s['jumlah']} baris)")
+        status_sembunyi = nilai_disembunyikan.get("status")
+        if status_sembunyi and status_sembunyi.get("baris"):
+            baris.append(
+                f"  (nilai status lain disembunyikan demi privasi): "
+                f"{status_sembunyi['baris']} baris, {status_sembunyi['nilai_berbeda']} nilai "
+                "berbeda — kemungkinan berisi teks bebas (nama/no. HP/diagnosis), cek data asli"
+            )
 
     baris.append("")
     baris.append("Kunjungan per hari:")
@@ -526,16 +676,16 @@ def format_teks(hasil: dict) -> str:
         baris.append("  (tidak ada)")
 
     if hasil["per_poli"] is not None:
-        baris.append("")
-        baris.append("Pendaftaran per poli/layanan:")
-        for nama, n in hasil["per_poli"].items():
-            baris.append(f"  {nama}: {n}")
+        baris.extend(_format_daftar_kategori(
+            "Pendaftaran per poli/layanan:", hasil["per_poli"],
+            nilai_disembunyikan.get("poli"), hasil["total_pendaftaran"],
+        ))
 
     if hasil["per_penjamin"] is not None:
-        baris.append("")
-        baris.append("Pendaftaran per penjamin/cara bayar:")
-        for nama, n in hasil["per_penjamin"].items():
-            baris.append(f"  {nama}: {n}")
+        baris.extend(_format_daftar_kategori(
+            "Pendaftaran per penjamin/cara bayar:", hasil["per_penjamin"],
+            nilai_disembunyikan.get("penjamin"), hasil["total_pendaftaran"],
+        ))
 
     if hasil["jam_ramai"] is not None:
         baris.append("")
@@ -545,26 +695,6 @@ def format_teks(hasil: dict) -> str:
                 baris.append(f"  {j['jam']}: {j['jumlah']} kunjungan")
         else:
             baris.append("  (kolom jam ada tapi tidak ada nilai yang terbaca)")
-
-    mencurigakan = hasil.get("kolom_nilai_mencurigakan") or {}
-    for label, kunci in (("poli/layanan", "poli"), ("penjamin/cara bayar", "penjamin")):
-        nilai_curiga = mencurigakan.get(kunci) or []
-        if nilai_curiga:
-            baris.append("")
-            baris.append(
-                f"⚠️  Nilai di kolom {label} berisi lebih dari 4 kata — periksa apakah "
-                "ini teks bebas yang mengandung nama pasien (jangan dikirim ke luar bila iya):"
-            )
-            for v in nilai_curiga:
-                baris.append(f"  '{v}'")
-
-    if hasil.get("kolom_terlalu_beragam"):
-        baris.append("")
-        baris.append(
-            "⚠️  Kolom berikut punya lebih dari 20 nilai unik — kemungkinan diisi teks "
-            "bebas (bukan kategori tetap), periksa apakah ini seharusnya kolom kategori: "
-            + ", ".join(hasil["kolom_terlalu_beragam"])
-        )
 
     if hasil["kolom_sensitif_diabaikan"]:
         baris.append("")
@@ -596,11 +726,16 @@ def main(argv=None):
         "--format", choices=["teks", "json"], default="teks",
         help="Format output (default: teks).",
     )
+    ap.add_argument(
+        "--urutan-tanggal", choices=["auto", "dmy", "mdy"], default="auto",
+        help="Urutan tanggal angka: dmy (hari/bulan/tahun, Indonesia) atau mdy (bulan/hari/tahun, "
+             "AS). Default auto (deteksi dari isi file, lihat peringatan bila ambigu).",
+    )
     args = ap.parse_args(argv)
 
     try:
         header, baris = baca_csv(args.file)
-        hasil = rekap(header, baris)
+        hasil = rekap(header, baris, urutan_tanggal_paksa=args.urutan_tanggal)
     except DataError as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1

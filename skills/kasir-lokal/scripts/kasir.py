@@ -33,14 +33,17 @@ import io
 import json
 import os
 import re
+import math
 import sqlite3
 import sys
-from datetime import date, datetime, timedelta
+import unicodedata
+from datetime import date, datetime, timedelta, timezone
+from fractions import Fraction
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
 APLIKASI = "kasir-lokal"
-VERSI = "1.0.0"
+VERSI = "1.1.0"
 
 
 def _timeout():
@@ -53,11 +56,29 @@ def _timeout():
 PESAN_TERKUNCI = ("Database kasir sedang dipakai program lain (mis. jadwal OpenClaw atau jendela lain) dan "
                   "tidak selesai dalam %d detik. Data aman, tidak rusak. Tunggu sebentar lalu ulangi perintah yang "
                   "sama. Jangan hapus file database.")
-SATUAN_PECAHAN = {"kg", "kilo", "kilogram", "gram", "gr", "g", "ons", "liter", "ltr", "l", "ml", "meter", "m", "cm"}
-MODE_PAJAK = ("tanpa", "ppn-belum", "ppn-termasuk")
+SATUAN_PECAHAN = {"kg", "kilo", "kilogram", "gram", "gr", "g", "ons", "liter", "ltr", "l", "ml", "cc", "meter", "m",
+                  "cm", "m2", "meter2", "m3", "meter3", "kubik", "ton", "kwintal"}
+# Kata satuan umum (selain satuan yang ada di tabel produk). Dipakai hanya untuk MEMBUANG kata satuan dari pesanan.
+SATUAN_UMUM = {"pcs", "buah", "bh", "biji", "unit", "porsi", "cup", "gelas", "bungkus", "bks", "botol", "btl", "sak",
+               "zak", "dus", "dos", "karton", "pak", "pack", "box", "lembar", "lbr", "batang", "btg", "rol", "roll",
+               "pail", "ikat", "lusin", "kodi", "set", "pasang", "psg", "kaleng", "sachet", "renteng", "tray", "rim",
+               "galon", "tabung", "piring", "mangkok", "potong", "ekor", "sisir", "papan", "keping"}
+# Satuan hitung generik: boleh dipakai untuk produk bersatuan hitung apa pun (1 buah = 1 pcs = 1 porsi dst.)
+SATUAN_GENERIK = {"pcs", "buah", "bh", "biji", "unit"}
+ALIAS_SATUAN = {"kilo": "kg", "kilogram": "kg", "gr": "gram", "g": "gram", "ltr": "liter", "l": "liter",
+                "meter": "m", "meter2": "m2", "meter3": "m3", "kubik": "m3", "zak": "sak", "dos": "dus",
+                "pack": "pak", "roll": "rol", "lbr": "lembar", "btg": "batang", "btl": "botol", "bks": "bungkus",
+                "psg": "pasang", "bh": "buah"}
+MODE_PAJAK = ("tanpa", "ppn-belum", "ppn-termasuk", "pbjt-belum", "pbjt-termasuk")
+# Zona waktu Indonesia (tanpa musim panas -> offset tetap selalu benar; dipakai bila tzdata tidak ada, mis. Windows)
+ZONA = {"Asia/Jakarta": (7, "WIB"), "Asia/Pontianak": (7, "WIB"), "Asia/Makassar": (8, "WITA"),
+        "Asia/Jayapura": (9, "WIT")}
+ALIAS_ZONA = {"wib": "Asia/Jakarta", "wita": "Asia/Makassar", "wit": "Asia/Jayapura"}
 MODE_STOK = ("tidak", "kasir", "buku-stok")
 LABEL_PAJAK = {"tanpa": "tanpa pajak", "ppn-belum": "PPN 12% (harga produk belum termasuk PPN)",
-               "ppn-termasuk": "PPN 12% (harga produk sudah termasuk PPN)"}
+               "ppn-termasuk": "PPN 12% (harga produk sudah termasuk PPN)",
+               "pbjt-belum": "PBJT makanan/minuman %s%% (harga menu belum termasuk PBJT)",
+               "pbjt-termasuk": "PBJT makanan/minuman %s%% (harga menu sudah termasuk PBJT)"}
 METODE = [  # (label, kata kunci)
     ("Tunai", ["tunai", "cash", "kontan", "cas"]),
     ("QRIS", ["qris", "qr"]),
@@ -73,6 +94,9 @@ ANGKA_KATA = {"satu": 1, "se": 1, "dua": 2, "tiga": 3, "empat": 4, "lima": 5, "e
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 BULAN = ["", "JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER",
          "OKTOBER", "NOVEMBER", "DESEMBER"]
+DISCLAIMER_PBJT = ("Dasar: UU 1/2022 (HKPD) Pasal 50 huruf a, 51, 56, 57 ayat (1), 58 ayat (1) & (4); tarif sesuai Perda "
+                   "daerah Anda (paling tinggi 10%); berlaku per 24 September 2026. Pembulatan belum dicocokkan dengan "
+                   "sistem pajak daerah/Bapenda. Alat bantu catat, bukan nasihat pajak; tanyakan Bapenda setempat.")
 DISCLAIMER_PAJAK = ("Dasar: UU HPP & PMK 131/2024 (PPN 12%, DPP nilai lain 11/12); PP 55/2022 jo. PP 20/2026 "
                     "(PPh final 0,5%); berlaku per 24 September 2026. Pembulatan belum dicocokkan dengan Coretax. "
                     "Alat bantu catat, bukan nasihat pajak; hubungi DJP (Kring Pajak 1500200) atau konsultan pajak.")
@@ -188,30 +212,64 @@ def norm(t):
 
 
 # --------------------------------------------------------------------------- pajak (inti)
-def hitung_pajak(netto, mode):
-    """netto = total harga setelah semua diskon (int rupiah). Kembalikan dict dpp, ppn, total, sisa.
+def jenis_pajak(mode):
+    return "PPN" if mode.startswith("ppn") else ("PBJT" if mode.startswith("pbjt") else "")
 
-    ppn-belum   : DPP = netto; PPN = floor(11% x DPP); total = DPP + PPN.
-    ppn-termasuk: DPP = rupiah bulat terbesar dengan DPP + floor(11% x DPP) <= netto; total = netto;
-                  sisa = netto - DPP - PPN (selisih pembulatan, biasanya Rp 0-1).
-    11% x DPP identik dengan 12% x (11/12 x DPP) -> satu kali pembulatan (tidak berantai).
+
+def tarif_efektif(mode, tarif=None):
+    """Fraction. PPN: 11/100 (= 12% x 11/12). PBJT: tarif Perda / 100 (dasar = jumlah dibayar, tanpa 11/12)."""
+    if mode.startswith("ppn"):
+        return Fraction(11, 100)
+    if mode.startswith("pbjt"):
+        if tarif in (None, ""):
+            raise Gagal("Tarif PBJT belum diatur (atur --tarif-pbjt N sesuai Perda daerah Anda).")
+        return Fraction(Decimal(str(tarif))) / 100
+    return Fraction(0)
+
+
+def hitung_pajak(netto, mode, tarif=None):
+    """netto = total harga setelah semua diskon (int rupiah). Kembalikan dict dpp, ppn, total, sisa.
+    Kunci 'ppn' = jumlah pajak (PPN atau PBJT sesuai mode); 'dpp' = dasar pengenaan.
+
+    *-belum   : dasar = netto; pajak = floor(r x dasar); total = dasar + pajak.
+    *-termasuk: dasar = rupiah bulat terbesar dengan dasar + floor(r x dasar) <= netto; total = netto;
+                sisa = netto - dasar - pajak (selisih pembulatan, biasanya Rp 0-1).
+    PPN: r = 11% (identik 12% x 11/12, satu kali pembulatan). PBJT: r = tarif Perda (Pasal 57-59 UU 1/2022).
+    Pajak selalu dibulatkan KE BAWAH sekali (tidak pernah memungut melebihi tarif).
     """
     netto = int(netto)
     if mode == "tanpa" or netto == 0:
         return {"dpp": netto, "ppn": 0, "total": netto, "sisa": 0}
     if netto < 0:
-        h = hitung_pajak(-netto, mode)
+        h = hitung_pajak(-netto, mode, tarif)
         return {k: -v for k, v in h.items()}
-    if mode == "ppn-belum":
-        ppn = netto * 11 // 100
-        return {"dpp": netto, "ppn": ppn, "total": netto + ppn, "sisa": 0}
-    if mode == "ppn-termasuk":
-        dpp = netto * 100 // 111 + 2
-        while dpp > 0 and dpp + dpp * 11 // 100 > netto:
+    r = tarif_efektif(mode, tarif)
+    if mode.endswith("-belum"):
+        pj = math.floor(netto * r)
+        return {"dpp": netto, "ppn": pj, "total": netto + pj, "sisa": 0}
+    if mode.endswith("-termasuk"):
+        dpp = math.floor(netto / (1 + r)) + 2
+        while dpp > 0 and dpp + math.floor(dpp * r) > netto:
             dpp -= 1
-        ppn = dpp * 11 // 100
-        return {"dpp": dpp, "ppn": ppn, "total": netto, "sisa": netto - dpp - ppn}
+        pj = math.floor(dpp * r)
+        return {"dpp": dpp, "ppn": pj, "total": netto, "sisa": netto - dpp - pj}
     raise Gagal("Mode pajak tidak dikenal: %s" % mode)
+
+
+def hitung_total(netto, mode, tarif=None, sc_persen=None, sc_kena=None):
+    """Tambah service charge (opsional) lalu pajak.
+    service = rupiah terdekat dari sc% x netto (setelah diskon). Hanya mode tanpa/*-belum.
+    Dasar pajak = netto + service bila sc_kena (ditentukan pemilik sesuai Perda/aturan), selain itu netto saja.
+    """
+    netto = int(netto)
+    sc = rhu(Decimal(netto) * Decimal(str(sc_persen)) / 100) if sc_persen not in (None, "", "0") else 0
+    if sc and mode.endswith("-termasuk"):
+        raise Gagal("Service charge tidak bisa dipakai dengan harga termasuk pajak. Pakai mode *-belum.")
+    kena = sc if (sc and sc_kena) else 0
+    h = hitung_pajak(netto + kena, mode, tarif)
+    h["total"] += sc - kena
+    h["service"] = sc
+    return h
 
 
 def dpp_nilai_lain(dpp):
@@ -274,11 +332,50 @@ def label_diskon(langkah):
 
 
 # --------------------------------------------------------------------------- waktu
+_ZONA_AKTIF = {"nama": "Asia/Jakarta"}
+
+
+def normal_zona(teks):
+    t = str(teks or "").strip()
+    z = ALIAS_ZONA.get(t.lower(), None)
+    if not z:
+        z = next((k for k in ZONA if k.lower() == t.lower()), None)
+    if not z:
+        raise Gagal("Zona waktu '%s' tidak dikenal. Pilihan: WIB (Asia/Jakarta), WITA (Asia/Makassar), WIT "
+                    "(Asia/Jayapura), Asia/Pontianak." % teks)
+    return z
+
+
+def tz_zona(nama):
+    """ZoneInfo bila tersedia; bila tzdata tidak ada (mis. Windows tanpa paket tzdata) pakai offset tetap."""
+    try:
+        from zoneinfo import ZoneInfo
+        return ZoneInfo(nama)
+    except Exception:
+        jam, label = ZONA[nama]
+        return timezone(timedelta(hours=jam), label)
+
+
+def offset_zona(nama):
+    jam = ZONA[nama][0]
+    return "+%02d:00" % jam
+
+
+def label_zona(offset):
+    return {"+07:00": "WIB", "+08:00": "WITA", "+09:00": "WIT"}.get(offset or "", "")
+
+
+def offset_komputer():
+    """Selisih jam komputer terhadap UTC (untuk peringatan bila berbeda dengan zona toko)."""
+    return datetime.now().astimezone().utcoffset() or timedelta(0)
+
+
 def sekarang(args):
+    """Waktu SEKARANG menurut zona toko (bukan zona komputer), tanpa info zona (disimpan terpisah)."""
     s = getattr(args, "hari_ini", None)
     if s:
         return parse_waktu(s)
-    return datetime.now().replace(microsecond=0)
+    return datetime.now(tz_zona(_ZONA_AKTIF["nama"])).replace(tzinfo=None, microsecond=0)
 
 
 def parse_waktu(teks):
@@ -350,7 +447,8 @@ CREATE TABLE IF NOT EXISTS nota (
   diskon_nota INTEGER NOT NULL, diskon_nota_label TEXT NOT NULL DEFAULT '', netto INTEGER NOT NULL,
   dpp INTEGER NOT NULL, ppn INTEGER NOT NULL, sisa INTEGER NOT NULL, total INTEGER NOT NULL,
   bayar INTEGER NOT NULL, kembalian INTEGER NOT NULL, kasir TEXT NOT NULL DEFAULT '', catatan TEXT NOT NULL DEFAULT '',
-  alasan TEXT NOT NULL DEFAULT '', sidik TEXT, sesi_id INTEGER, dicetak INTEGER NOT NULL DEFAULT 0, dibuat TEXT);
+  alasan TEXT NOT NULL DEFAULT '', sidik TEXT, sesi_id INTEGER, dicetak INTEGER NOT NULL DEFAULT 0, dibuat TEXT,
+  tarif_pajak TEXT, service INTEGER NOT NULL DEFAULT 0, service_persen TEXT, service_kena INTEGER, zona TEXT);
 CREATE TABLE IF NOT EXISTS nota_item (
   id INTEGER PRIMARY KEY, nota_id INTEGER NOT NULL, urut INTEGER NOT NULL, produk_id INTEGER, kode TEXT, nama TEXT,
   varian TEXT, satuan TEXT, qty REAL NOT NULL, harga INTEGER NOT NULL, bruto INTEGER NOT NULL,
@@ -367,7 +465,10 @@ CREATE INDEX IF NOT EXISTS i_nota_waktu ON nota(waktu);
 CREATE INDEX IF NOT EXISTS i_item_nota ON nota_item(nota_id);
 """
 PENGATURAN_DEFAULT = {"nama_toko": "", "alamat": "", "telp": "", "footer": "Terima kasih", "pajak": "tanpa",
-                      "pkp": "tidak", "stok": "tidak", "kertas": "58", "npwp": ""}
+                      "pkp": "tidak", "stok": "tidak", "kertas": "58", "npwp": "", "tarif_pbjt": "",
+                      "service_persen": "0", "service_kena_pajak": "", "zona": "Asia/Jakarta"}
+KOLOM_BARU_NOTA = [("tarif_pajak", "TEXT"), ("service", "INTEGER NOT NULL DEFAULT 0"), ("service_persen", "TEXT"),
+                   ("service_kena", "INTEGER"), ("zona", "TEXT")]
 
 
 def path_db(args):
@@ -410,6 +511,18 @@ def buka(db, harus_ada=True):
         if not r or r[0] != APLIKASI:
             conn.close()
             raise Gagal("File %s bukan database kasir-lokal." % db)
+        try:
+            ada = {x[1] for x in conn.execute("PRAGMA table_info(nota)")}
+            for k, tipe in KOLOM_BARU_NOTA:      # pembaruan otomatis database v1.0.0 (angka lama tidak berubah)
+                if k not in ada:
+                    conn.execute("ALTER TABLE nota ADD COLUMN %s %s" % (k, tipe))
+            z = conn.execute("SELECT nilai FROM meta WHERE kunci='zona'").fetchone()
+            _ZONA_AKTIF["nama"] = z[0] if z and z[0] in ZONA else "Asia/Jakarta"
+        except sqlite3.OperationalError as e:
+            conn.close()
+            if _terkunci(e):
+                raise Gagal(PESAN_TERKUNCI % _timeout())
+            raise
     return conn
 
 
@@ -495,7 +608,9 @@ def sel_aman(v):
     if isinstance(v, (int, float, Decimal)):
         return v
     s = str(v if v is not None else "")
-    if s and s[0] in "=+-@\t\r":
+    if re.fullmatch(r"-?\d+(?:[.,]\d+)?", s):          # angka biasa (termasuk minus pecahan '-2,5') tetap angka
+        return s
+    if s and (s[0] in "=+@\t\r" or (s[0] == "-" and not (len(s) > 1 and s[1].isdigit()))):
         return "'" + s
     return s
 
@@ -551,9 +666,9 @@ def cek_qty(q, satuan, konteks):
     if q <= 0:
         raise Gagal("%s: jumlah harus lebih dari 0." % konteks)
     if q != q.to_integral_value():
-        if norm(satuan) not in SATUAN_PECAHAN:
+        if not satuan_boleh_pecahan(satuan):
             raise Gagal("%s: jumlah %s pecahan, padahal satuannya '%s'. Pecahan hanya untuk satuan timbang/ukur "
-                        "(kg, gram, liter, meter). Periksa lagi jumlahnya." % (konteks, fmt_qty(q), satuan))
+                        "(kg, gram, liter, meter, m2, m3, ton). Periksa lagi jumlahnya." % (konteks, fmt_qty(q), satuan))
         if q != q.quantize(Decimal("0.001")):
             raise Gagal("%s: jumlah maksimal 3 angka di belakang koma." % konteks)
 
@@ -573,7 +688,7 @@ def validasi_produk(kode, nama, harga, satuan, stok):
                     "diskon 100%%." % (kode, fmt_rp(harga)))
     if stok is not None and stok < 0:
         raise Gagal("Stok %s tidak boleh negatif." % kode)
-    if stok is not None and stok != stok.to_integral_value() and norm(satuan) not in SATUAN_PECAHAN:
+    if stok is not None and stok != stok.to_integral_value() and not satuan_boleh_pecahan(satuan):
         raise Gagal("Stok %s pecahan, padahal satuannya '%s'." % (kode, satuan))
 
 
@@ -802,7 +917,10 @@ def cmd_produk_impor(args):
             t.append("Kode sudah ada (tidak diubah): %s. Pakai --perbarui untuk memperbarui nama/harga."
                      % ", ".join(dilewati[:10]))
         if not baru and not diperbarui:
-            raise Gagal("Tidak ada produk yang bisa diimpor.", baris_rusak=rusak, dilewati=dilewati, pemetaan=pemetaan)
+            raise Gagal("Tidak ada produk yang bisa diimpor.%s%s" % (
+                "".join("\n- baris %d: %s" % (x["baris"], x["alasan"]) for x in rusak[:20]),
+                ("\n(kode sudah ada: %s; pakai --perbarui untuk memperbarui)" % ", ".join(dilewati[:10])) if dilewati else ""),
+                baris_rusak=rusak, dilewati=dilewati, pemetaan=pemetaan)
         return {"pemetaan": pemetaan, "baru": baru, "dilewati": dilewati, "diperbarui": diperbarui,
                 "baris_rusak": rusak, "peringatan": peringatan,
                 "ringkasan": {"baru": len(baru), "diperbarui": len(diperbarui)}}, "\n".join(t)
@@ -852,15 +970,43 @@ def _terapkan_atur(conn, args, cfg, wajib_nama=False):
         v = getattr(args, k, None)
         if v is not None:
             ubah[k] = v.strip()
-    for k in ("pajak", "pkp", "stok", "kertas"):
+    for k in ("pajak", "pkp", "stok", "kertas", "service_kena_pajak"):
         v = getattr(args, k, None)
         if v is not None:
             ubah[k] = str(v)
+    if getattr(args, "zona", None):
+        ubah["zona"] = normal_zona(args.zona)
+    if getattr(args, "tarif_pbjt", None) not in (None, ""):
+        t = parse_angka(args.tarif_pbjt.rstrip("% "), "Tarif PBJT")
+        if t <= 0 or t > 10:
+            raise Gagal("Tarif PBJT %s%% tidak sah: UU 1/2022 Pasal 58 ayat (1) membatasi paling tinggi 10%%. Isi "
+                        "sesuai Perda daerah Anda (lihat SKPD/surat Bapenda)." % fmt_qty(t))
+        ubah["tarif_pbjt"] = fmt_qty(t).replace(",", ".")
+    if getattr(args, "service_charge", None) not in (None, ""):
+        sc = parse_angka(args.service_charge.rstrip("% "), "Service charge")
+        if sc < 0 or sc > 100:
+            raise Gagal("Service charge harus 0-100%.")
+        ubah["service_persen"] = fmt_qty(sc).replace(",", ".")
     baru = dict(cfg)
     baru.update(ubah)
     if wajib_nama and not baru["nama_toko"]:
         raise Gagal("Nama toko wajib diisi (--nama-toko), untuk kepala struk.")
-    if baru["pajak"] != "tanpa" and baru["pkp"] != "ya":
+    if baru["pajak"].startswith("ppn") and getattr(args, "tarif_pbjt", None) not in (None, ""):
+        raise Gagal("PPN dan PBJT tidak digabung: makanan/minuman yang menjadi objek PBJT (pajak daerah) bukan objek "
+                    "PPN (Pasal 4A ayat (2) huruf c UU PPN s.t.d.t.d. UU HPP). Pilih salah satu: --pajak pbjt-belum/"
+                    "pbjt-termasuk untuk restoran/kafe/warung makan, atau PPN untuk toko PKP non-kuliner.")
+    if baru["pajak"].startswith("pbjt") and not baru.get("tarif_pbjt"):
+        raise Gagal("Mode PBJT butuh tarif dari Perda daerah Anda: tambahkan --tarif-pbjt N (paling tinggi 10). "
+                    "Tarif tidak diisi otomatis karena berbeda per kabupaten/kota; lihat SKPD atau tanya Bapenda.")
+    sc_on = baru.get("service_persen") not in ("", "0", None)
+    if sc_on and baru["pajak"].endswith("-termasuk"):
+        raise Gagal("Service charge tidak bisa dipakai dengan harga termasuk pajak. Pakai --pajak pbjt-belum/"
+                    "ppn-belum, atau masukkan service charge ke harga menu.")
+    if sc_on and baru["pajak"] != "tanpa" and baru.get("service_kena_pajak") not in ("ya", "tidak"):
+        raise Gagal("Apakah service charge ikut dikenai pajak? Perlakuannya mengikuti Perda/aturan pajak yang berlaku "
+                    "untuk usaha Anda; skill ini tidak menentukannya. Tanyakan ke Bapenda/konsultan, lalu isi "
+                    "--sc-kena-pajak ya atau --sc-kena-pajak tidak.")
+    if baru["pajak"].startswith("ppn") and baru["pkp"] != "ya":
         raise Gagal("PPN hanya boleh dipungut oleh Pengusaha Kena Pajak (PKP). Jika toko sudah PKP, tambahkan "
                     "--pkp ya. Jika belum PKP, pakai --pajak tanpa (jangan cantumkan PPN di struk). "
                     "PPh final 0,5% tidak dicantumkan di struk; kasir hanya menyiapkan omzet.")
@@ -869,11 +1015,20 @@ def _terapkan_atur(conn, args, cfg, wajib_nama=False):
     return baru, ubah
 
 
+def label_pajak(mode, tarif):
+    lb = LABEL_PAJAK[mode]
+    return lb % (tarif or "?").replace(".", ",") if "%s" in lb else lb
+
+
 def ringkas_cfg(cfg):
-    return ("Toko: %s | Pajak: %s | Stok: %s | Kertas struk: %s mm"
-            % (cfg["nama_toko"] or "-", LABEL_PAJAK[cfg["pajak"]],
+    sc = cfg.get("service_persen") not in ("", "0", None)
+    return ("Toko: %s | Pajak: %s%s | Stok: %s | Kertas struk: %s mm | Zona: %s (%s)"
+            % (cfg["nama_toko"] or "-", label_pajak(cfg["pajak"], cfg.get("tarif_pbjt")),
+               (" | Service charge %s%%%s" % (cfg["service_persen"].replace(".", ","),
+                                             {"ya": " (kena pajak)", "tidak": " (tidak kena pajak)"}.get(
+                                                 cfg.get("service_kena_pajak"), ""))) if sc else "",
                {"tidak": "tidak dilacak", "kasir": "dipotong kasir", "buku-stok": "dikelola skill buku-stok"}[cfg["stok"]],
-               cfg["kertas"]))
+               cfg["kertas"], cfg.get("zona", "Asia/Jakarta"), ZONA[cfg.get("zona", "Asia/Jakarta")][1]))
 
 
 def cmd_init(args):
@@ -958,12 +1113,22 @@ def cmd_info(args):
         conn.close()
     fol = db.parent / "backup-kasir"
     bks = sorted(fol.glob("*.db")) if fol.is_dir() else []
+    peringatan = []
+    zona = cfg.get("zona") or "Asia/Jakarta"
+    kom = offset_komputer()
+    toko = timedelta(hours=ZONA[zona][0])
+    if kom != toko:
+        jam = kom.total_seconds() / 3600
+        peringatan.append("Jam komputer memakai zona UTC%+g, sedangkan toko %s (UTC+%d). Waktu nota tetap dicatat dalam "
+                          "%s; jadwal OpenClaw sebaiknya memakai --tz %s." % (jam, ZONA[zona][1], ZONA[zona][0],
+                                                                             ZONA[zona][1], zona))
     t = ["Database: %s" % db, ringkas_cfg(cfg), "Produk aktif: %d | Nota: %d%s" % (
         n_produk, n_nota, (" | nota terakhir %s (%s)" % (akhir["no"], akhir["waktu"])) if akhir else ""),
         ("Kasir DIBUKA sejak %s, kas awal %s" % (sesi["buka"], fmt_rp(sesi["kas_awal"]))) if sesi else "Kasir: belum dibuka",
-        "Backup terakhir: %s" % (bks[-1].name if bks else "-")]
+        "Backup terakhir: %s" % (bks[-1].name if bks else "-")] + ["Catatan: " + x for x in peringatan]
     return {"ok": True, "mode": "baca", "db": str(db), "pengaturan": cfg, "produk_aktif": n_produk, "nota": n_nota,
-            "sesi_terbuka": dict(sesi) if sesi else None, "teks": "\n".join(t)}, "\n".join(t)
+            "sesi_terbuka": dict(sesi) if sesi else None, "peringatan": peringatan,
+            "teks": "\n".join(t)}, "\n".join(t)
 
 
 # --------------------------------------------------------------------------- parse pesanan chat
@@ -1005,8 +1170,23 @@ def parse_bayar_segmen(seg):
     return hasil
 
 
-def parse_item_segmen(seg):
-    """'2 kopi susu diskon 10%' -> dict(teks_nama, qty, diskon_teks, qty_eksplisit)."""
+def satuan_kanonik(u):
+    u = norm(u).replace("²", "2").replace("³", "3")
+    return ALIAS_SATUAN.get(u, u)
+
+
+def satuan_boleh_pecahan(u):
+    return norm(u) in SATUAN_PECAHAN or satuan_kanonik(u) in SATUAN_PECAHAN
+
+
+SATUAN_BAWAAN = SATUAN_UMUM | SATUAN_PECAHAN | set(ALIAS_SATUAN)
+POLA_QTY = r"(\d+(?:[.,]\d+)?)"
+
+
+def parse_item_segmen(seg, satuan_dikenal=None):
+    """'2 sak semen diskon 10%' -> dict(teks, utuh, nama, qty, satuan, diskon, qty_eksplisit).
+    Satuan (kata setelah angka, atau di akhir: 'semen 2 sak') dipisahkan dan nanti dicek terhadap satuan produk."""
+    unit = set(SATUAN_BAWAAN) | set(satuan_dikenal or ())
     s = " ".join(seg.strip().split())
     diskon = ""
     m = re.search(r"\s*\(?\s*\b(?:diskon|disc|disk|potongan|pot)\b\.?\s*([\d.,%+\srbkjtribu]+)\)?\s*$", s, re.I)
@@ -1017,41 +1197,83 @@ def parse_item_segmen(seg):
     if m:
         raise Gagal("'%s': harga di pesanan (@...) tidak dipakai. Kasir memakai harga dari daftar produk; ubah "
                     "harga lewat 'produk ubah' atau beri diskon." % seg)
-    qty = None
+    qty, satuan = None, None
     low = s.lower()
-    m_kode = re.match(r"^([a-z0-9][a-z0-9._/-]*)\s*=\s*(\d+(?:[.,]\d+)?)$", low)
-    m = re.match(r"^(\d+(?:[.,]\d+)?)\s*(?:x\s+|x(?=[a-z])|\s)(.+)$", low)
+    m_kode = re.match(r"^([a-z0-9][a-z0-9._/-]*)\s*=\s*" + POLA_QTY + "$", low)
+    m_lekat = re.match(r"^" + POLA_QTY + r"([a-z][a-z0-9²³]*)\s+(.+)$", low)      # '2kg gula', '0,5m3 pasir'
+    m = re.match(r"^" + POLA_QTY + r"\s*(?:x\s+|x(?=[a-z])|\s)(.+)$", low)
     if m_kode:
         nama, qty = m_kode.group(1), m_kode.group(2)
+    elif m_lekat and norm(m_lekat.group(2)) in unit:
+        qty, satuan, nama = m_lekat.group(1), m_lekat.group(2), m_lekat.group(3)
     elif m:
         qty, nama = m.group(1), m.group(2)
+        kata = nama.split()
+        if len(kata) > 1 and norm(kata[0]) in unit:
+            satuan, nama = kata[0], " ".join(kata[1:])
     else:
         m = re.match(r"^(" + "|".join(ANGKA_KATA) + r")\s+(.+)$", low)
         if m and m.group(1) != "se":
             qty, nama = ANGKA_KATA[m.group(1)], m.group(2)
+            kata = nama.split()
+            if len(kata) > 1 and norm(kata[0]) in unit:
+                satuan, nama = kata[0], " ".join(kata[1:])
         else:
-            m = re.match(r"^(.+?)\s*(?:x\s*|\s)(\d+(?:[.,]\d+)?)\s*([a-z]+)?$", low)
-            if m and (m.group(3) is None or norm(m.group(3)) in SATUAN_PECAHAN | {"pcs", "buah", "porsi", "cup", "gelas",
-                                                                             "bungkus", "botol", "biji", "bh", "unit"}):
-                nama, qty = m.group(1), m.group(2)
-                if m.group(3):
-                    nama = nama + " " + m.group(3)   # satuan dibersihkan di bawah
+            m = re.match(r"^(.+?)\s*(?:x\s*|\s)" + POLA_QTY + r"\s*([a-z][a-z0-9²³]*)?$", low)
+            if m and (m.group(3) is None or norm(m.group(3)) in unit):
+                nama, qty, satuan = m.group(1), m.group(2), m.group(3)
             else:
                 nama, qty = low, None
     nama = nama.strip()
     qty_d = parse_angka(qty, "Jumlah") if qty is not None and not isinstance(qty, Decimal) else (
         Decimal(qty) if qty is not None else Decimal(1))
-    return {"teks": seg.strip(), "nama": nama, "qty": qty_d, "diskon": diskon, "qty_eksplisit": qty is not None}
+    return {"teks": seg.strip(), "utuh": low, "nama": nama, "qty": qty_d, "satuan": satuan, "diskon": diskon,
+            "qty_eksplisit": qty is not None}
 
 
-def buang_satuan(nama, satuan):
+def buang_satuan(nama, unit):
+    """Buang kata satuan di awal/akhir nama. Kembalikan (nama_bersih, satuan_dibuang|None)."""
     kata = nama.split()
-    satu = {norm(satuan)} | {"pcs", "buah", "porsi", "cup", "gelas", "bungkus", "botol", "biji", "bh", "unit"} | SATUAN_PECAHAN
-    if kata and norm(kata[0]) in satu:
-        kata = kata[1:]
-    if kata and norm(kata[-1]) in satu:
-        kata = kata[:-1]
-    return " ".join(kata)
+    dibuang = None
+    if len(kata) > 1 and norm(kata[0]) in unit:
+        dibuang, kata = kata[0], kata[1:]
+    elif len(kata) > 1 and norm(kata[-1]) in unit:
+        dibuang, kata = kata[-1], kata[:-1]
+    return " ".join(kata), dibuang
+
+
+def cocokkan_item(conn, it, rows, unit):
+    """Cocokkan satu item pesanan ke produk (atau baris nota). Kembalikan (produk, info_cocok, qty) atau
+    (None, info_masalah, None). Tidak pernah menebak; satuan yang berbeda dengan satuan produk ditolak."""
+    p, cara = cari_produk(conn, it["utuh"], rows)                  # nama produk berisi angka, mis. 'Air 600 ml'
+    if p is not None and cara in ("kode", "nama") and it["utuh"] != it["nama"]:
+        return p, cara, Decimal(1)
+    satuan = it["satuan"]
+    p, info = cari_produk(conn, it["nama"], rows)
+    if p is None and satuan:
+        p2, info2 = cari_produk(conn, satuan + " " + it["nama"], rows)   # produk yang namanya diawali kata satuan
+        if p2 is not None:
+            p, info, satuan = p2, info2, None
+    if p is None:
+        bersih, dibuang = buang_satuan(it["nama"], unit)
+        if dibuang:
+            p2, info2 = cari_produk(conn, bersih, rows)
+            if p2 is not None:
+                p, info, satuan = p2, info2, satuan or dibuang
+            else:
+                info = info2
+    if p is None:
+        info = dict(info)
+        info["teks"] = it["teks"]
+        return None, info, None
+    if satuan:
+        a, b = satuan_kanonik(satuan), satuan_kanonik(p["satuan"])
+        if a != b and not (a in SATUAN_GENERIK and not satuan_boleh_pecahan(p["satuan"])):
+            contoh = {"lusin": " (1 lusin = 12)", "kodi": " (1 kodi = 20)"}.get(a, "")
+            return None, {"teks": it["teks"], "masalah": "satuan '%s' berbeda dengan satuan produk %s ('%s'). Sebutkan "
+                          "jumlah dalam %s%s, atau daftarkan produk dengan satuan itu"
+                          % (satuan, label_produk(p), p["satuan"], p["satuan"], contoh)}, None
+    return p, info, it["qty"]
 
 
 def parse_pesan(pesan):
@@ -1127,7 +1349,26 @@ def susun_bayar(bayar_spek, total):
     return tetap, jumlah, kembalian, peringatan
 
 
-def hitung_nota(item_siap, diskon_nota_spek, mode_pajak):
+def param_pajak_cfg(cfg):
+    """Parameter pajak toko saat ini -> disimpan di nota agar nota lama tidak berubah bila pengaturan diubah."""
+    mode = cfg["pajak"]
+    sc = cfg.get("service_persen") if cfg.get("service_persen") not in ("", "0", None) else None
+    return {"mode": mode, "tarif": cfg.get("tarif_pbjt") if mode.startswith("pbjt") else (
+                "11/12x12" if mode.startswith("ppn") else None),
+            "sc_persen": sc, "sc_kena": (cfg.get("service_kena_pajak") == "ya") if sc else None}
+
+
+def param_pajak_nota(n):
+    return {"mode": n["pajak_mode"], "tarif": n["tarif_pajak"], "sc_persen": n["service_persen"],
+            "sc_kena": bool(n["service_kena"]) if n["service_kena"] is not None else None}
+
+
+def total_dari_param(netto, pp):
+    tarif = pp["tarif"] if pp["mode"].startswith("pbjt") else None
+    return hitung_total(netto, pp["mode"], tarif, pp["sc_persen"], pp["sc_kena"])
+
+
+def hitung_nota(item_siap, diskon_nota_spek, pp):
     """item_siap: list dict(produk, qty, diskon_spek). Kembalikan baris & total (int rupiah)."""
     baris = []
     for it in item_siap:
@@ -1144,10 +1385,11 @@ def hitung_nota(item_siap, diskon_nota_spek, mode_pajak):
         b["diskon_nota"] = a
         b["netto"] = b["setelah_item"] - a
     netto = subtotal - d_nota
-    pj = hitung_pajak(netto, mode_pajak)
+    pj = total_dari_param(netto, pp)
     return {"baris": baris, "bruto": sum(b["bruto"] for b in baris), "diskon_item": sum(b["diskon_item"] for b in baris),
             "subtotal": subtotal, "diskon_nota": d_nota, "diskon_nota_label": label_diskon(langkah_nota),
-            "netto": netto, "dpp": pj["dpp"], "ppn": pj["ppn"], "sisa": pj["sisa"], "total": pj["total"]}
+            "netto": netto, "service": pj["service"], "dpp": pj["dpp"], "ppn": pj["ppn"], "sisa": pj["sisa"],
+            "total": pj["total"], "pp": pp}
 
 
 def sidik_nota(h, bayar):
@@ -1166,21 +1408,38 @@ def teks_rincian(h, cfg_pajak):
     t.append("Subtotal: %s" % fmt_rp(h["subtotal"]))
     if h["diskon_nota"]:
         t.append("Diskon nota %s: -%s" % (h["diskon_nota_label"], fmt_rp(h["diskon_nota"])))
-    t += teks_pajak(h, cfg_pajak)
+    t += teks_pajak(h, h["pp"])
     return t
 
 
-def teks_pajak(h, mode):
+def label_tarif(pp):
+    return (pp["tarif"] or "?").replace(".", ",")
+
+
+def teks_pajak(h, pp):
+    mode = pp["mode"]
+    t = []
+    if h.get("service"):
+        t.append("Service charge %s%%: %s%s" % (pp["sc_persen"].replace(".", ","), fmt_rp(h["service"]),
+                                              "" if mode == "tanpa" else (" (ikut dasar pajak)" if pp["sc_kena"]
+                                                                          else " (tidak dikenai pajak)")))
+    if mode == "pbjt-belum":
+        return t + ["Dasar PBJT: %s | PBJT %s%%: %s" % (fmt_rp(h["dpp"]), label_tarif(pp), fmt_rp(h["ppn"])),
+                    "TOTAL: %s" % fmt_rp(h["total"])]
+    if mode == "pbjt-termasuk":
+        return t + ["TOTAL: %s (sudah termasuk PBJT %s%%)" % (fmt_rp(h["total"]), label_tarif(pp)),
+                    "  Dasar PBJT %s | PBJT %s%s" % (fmt_rp(h["dpp"]), fmt_rp(h["ppn"]),
+                                                    (" | selisih pembulatan %s" % fmt_rp(h["sisa"])) if h["sisa"] else "")]
     if mode == "ppn-belum":
-        return ["DPP: %s | DPP nilai lain 11/12: Rp %s | PPN 12%%: %s" % (
+        return t + ["DPP: %s | DPP nilai lain 11/12: Rp %s | PPN 12%%: %s" % (
                     fmt_rp(h["dpp"]), fmt_desimal(dpp_nilai_lain(h["dpp"])), fmt_rp(h["ppn"])),
                 "TOTAL: %s" % fmt_rp(h["total"])]
     if mode == "ppn-termasuk":
-        return ["TOTAL: %s (sudah termasuk PPN)" % fmt_rp(h["total"]),
+        return t + ["TOTAL: %s (sudah termasuk PPN)" % fmt_rp(h["total"]),
                 "  DPP %s | DPP nilai lain 11/12 Rp %s | PPN 12%% %s%s" % (
                     fmt_rp(h["dpp"]), fmt_desimal(dpp_nilai_lain(h["dpp"])), fmt_rp(h["ppn"]),
                     (" | selisih pembulatan %s" % fmt_rp(h["sisa"])) if h["sisa"] else "")]
-    return ["TOTAL: %s" % fmt_rp(h["total"])]
+    return t + ["TOTAL: %s" % fmt_rp(h["total"])]
 
 
 def fmt_desimal(d):
@@ -1215,12 +1474,14 @@ def simpan_nota(conn, jenis, no, waktu, ref_id, mode, h, bayar, jumlah_bayar, ke
                 baris_ref=None):
     nid = conn.execute(
         "INSERT INTO nota(no,jenis,waktu,ref_nota_id,pajak_mode,bruto,diskon_item,diskon_nota,diskon_nota_label,netto,"
-        "dpp,ppn,sisa,total,bayar,kembalian,kasir,catatan,alasan,sidik,sesi_id,dibuat) "
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "dpp,ppn,sisa,total,bayar,kembalian,kasir,catatan,alasan,sidik,sesi_id,dibuat,tarif_pajak,service,"
+        "service_persen,service_kena,zona) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (no, jenis, waktu, ref_id, mode, h["bruto"], h["diskon_item"], h["diskon_nota"], h.get("diskon_nota_label", ""),
          h["netto"], h["dpp"], h["ppn"], h["sisa"], h["total"], jumlah_bayar, kembalian, getattr(args, "kasir", "") or "",
          getattr(args, "catatan_nota", "") or "", alasan or "", sidik, sesi_id,
-         datetime.now().isoformat(" ", "seconds"))).lastrowid
+         datetime.now().isoformat(" ", "seconds"), h["pp"]["tarif"], h.get("service", 0), h["pp"]["sc_persen"],
+         None if h["pp"]["sc_kena"] is None else int(h["pp"]["sc_kena"]),
+         offset_zona(_ZONA_AKTIF["nama"]))).lastrowid
     for i, b in enumerate(h["baris"], 1):
         conn.execute("INSERT INTO nota_item(nota_id,urut,produk_id,kode,nama,varian,satuan,qty,harga,bruto,diskon_item,"
                      "diskon_item_label,diskon_nota,netto,ref_item_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -1230,6 +1491,15 @@ def simpan_nota(conn, jenis, no, waktu, ref_id, mode, h, bayar, jumlah_bayar, ke
     for m, v in bayar.items():
         conn.execute("INSERT INTO bayar(nota_id,metode,jumlah) VALUES (?,?,?)", (nid, m, v))
     return nid
+
+
+def pesan_tanpa_sesi(conn, waktu):
+    akhir = conn.execute("SELECT * FROM sesi WHERE tutup IS NOT NULL ORDER BY tutup DESC LIMIT 1").fetchone()
+    if akhir and waktu.isoformat(" ") >= akhir["tutup"]:
+        return ("Kasir sudah DITUTUP pukul %s; transaksi ini tidak masuk hitungan tutup kasir tadi. Bila toko masih "
+                "melayani, buka sesi baru (buka-kasir --kas-awal N) lalu tutup lagi nanti." % akhir["tutup"][:16])
+    return ("Kasir belum dibuka (buka-kasir). Nota tetap tersimpan, tetapi tidak masuk hitungan tutup kasir kecuali "
+            "kasir dibuka dengan --waktu sebelum jam nota ini.")
 
 
 def sesi_aktif(conn):
@@ -1258,21 +1528,16 @@ def cmd_jual(args):
         cfg = pengaturan(conn)
         waktu = parse_waktu(args.waktu) if args.waktu else sekarang(args)
         semua = conn.execute("SELECT * FROM produk WHERE aktif=1").fetchall()
+        unit = SATUAN_BAWAAN | {norm(x["satuan"]) for x in semua}
         masalah, siap, info_cocok = [], [], []
         for it in items:
-            p, info = cari_produk(conn, it["nama"], semua)
-            if p is None:
-                bersih = buang_satuan(it["nama"], "pcs")
-                if bersih and bersih != it["nama"]:
-                    p, info2 = cari_produk(conn, bersih, semua)
-                    if p is None:
-                        info = info2
+            p, info, qty = cocokkan_item(conn, it, semua, unit)
             if p is None:
                 masalah.append(info)
                 continue
             try:
-                cek_qty(it["qty"], p["satuan"], label_produk(p))
-                siap.append({"produk": p, "qty": it["qty"], "diskon_spek": parse_diskon(it["diskon"], "Diskon item")})
+                cek_qty(qty, p["satuan"], label_produk(p))
+                siap.append({"produk": p, "qty": qty, "diskon_spek": parse_diskon(it["diskon"], "Diskon item")})
             except Gagal as e:
                 masalah.append({"teks": it["teks"], "masalah": e.pesan})
             if info == "sebagian":
@@ -1289,13 +1554,14 @@ def cmd_jual(args):
                     baris += ". Pilih salah satu: " + "; ".join(m["pilihan"])
                 t.append(baris)
             raise Gagal("\n".join(t), masalah=masalah)
-        h = hitung_nota(siap, diskon_spek, cfg["pajak"])
+        h = hitung_nota(siap, diskon_spek, param_pajak_cfg(cfg))
         bayar, jumlah_bayar, kembalian, peringatan = susun_bayar(bayar_spek, h["total"])
         peringatan = info_cocok + peringatan
         sesi = sesi_aktif(conn)
         if not sesi:
-            peringatan.append("Kasir belum dibuka (buka-kasir). Nota tetap tersimpan, tetapi tidak masuk hitungan tutup kasir "
-                              "kecuali kasir dibuka dengan --waktu sebelum jam nota ini.")
+            peringatan.append(pesan_tanpa_sesi(conn, waktu))
+        elif not args.kasir and sesi["kasir"]:
+            args.kasir = sesi["kasir"]
         sidik = sidik_nota(h, bayar)
         batas = (waktu - timedelta(minutes=10)).isoformat(" ")
         kembar = conn.execute("SELECT no, waktu FROM nota WHERE sidik=? AND jenis='jual' AND waktu>=? AND waktu<=? "
@@ -1314,7 +1580,7 @@ def cmd_jual(args):
         nid = simpan_nota(conn, "jual", no, waktu.isoformat(" "), None, cfg["pajak"], h, bayar, jumlah_bayar, kembalian,
                           args, "", sidik, sesi["id"] if sesi else None)
         potong_stok(conn, cfg, h["baris"], -1, nid, waktu.isoformat(" "), args.izinkan_minus, peringatan)
-        t = ["Nota %s | %s" % (no, waktu.strftime("%d/%m/%Y %H:%M"))] + teks_rincian(h, cfg["pajak"])
+        t = ["Nota %s | %s %s" % (no, waktu.strftime("%d/%m/%Y %H:%M"), ZONA[_ZONA_AKTIF["nama"]][1])] + teks_rincian(h, None)
         t.append("Bayar: %s | Kembalian: %s" % (", ".join("%s %s" % (m, fmt_rp(v)) for m, v in bayar.items()),
                                                 fmt_rp(kembalian)))
         if args.catatan_nota:
@@ -1326,7 +1592,11 @@ def cmd_jual(args):
                            "harga": b["harga"], "bruto": b["bruto"], "diskon_item": b["diskon_item"],
                            "diskon_nota": b["diskon_nota"], "netto": b["netto"]} for b in h["baris"]],
                 "bruto": h["bruto"], "diskon_item": h["diskon_item"], "subtotal": h["subtotal"],
-                "diskon_nota": h["diskon_nota"], "netto": h["netto"], "dpp": h["dpp"], "ppn": h["ppn"],
+                "diskon_nota": h["diskon_nota"], "netto": h["netto"], "service": h["service"], "dpp": h["dpp"],
+                "jenis_pajak": jenis_pajak(cfg["pajak"]), "pajak": h["ppn"],
+                "ppn": h["ppn"] if cfg["pajak"].startswith("ppn") else 0,
+                "pbjt": h["ppn"] if cfg["pajak"].startswith("pbjt") else 0,
+                "tarif_pbjt": h["pp"]["tarif"] if cfg["pajak"].startswith("pbjt") else None, "zona": _ZONA_AKTIF["nama"],
                 "selisih_pembulatan": h["sisa"], "total": h["total"], "bayar": bayar, "jumlah_bayar": jumlah_bayar,
                 "kembalian": kembalian, "peringatan": peringatan, "perlu_izin_duplikat": perlu_izin,
                 "ringkasan": {"no": no, "total": h["total"]}}
@@ -1400,12 +1670,14 @@ def proses_retur(conn, args, n, pilihan, alasan, jenis, refund_metode):
                                 "netto": -(nb - na), "ref_item_id": it["id"], "diskon_item_label": ""})
     if not baris_retur:
         raise Gagal("Tidak ada barang yang diretur.")
-    pb, pa = hitung_pajak(net_sebelum, n["pajak_mode"]), hitung_pajak(net_sesudah, n["pajak_mode"])
+    pp = param_pajak_nota(n)
+    pb, pa = total_dari_param(net_sebelum, pp), total_dari_param(net_sesudah, pp)
     h = {"baris": baris_retur, "bruto": sum(b["bruto"] for b in baris_retur),
          "diskon_item": sum(b["diskon_item"] for b in baris_retur),
          "diskon_nota": sum(b["diskon_nota"] for b in baris_retur), "netto": net_sesudah - net_sebelum,
+         "service": pa["service"] - pb["service"],
          "dpp": pa["dpp"] - pb["dpp"], "ppn": pa["ppn"] - pb["ppn"], "sisa": pa["sisa"] - pb["sisa"],
-         "total": pa["total"] - pb["total"], "diskon_nota_label": ""}
+         "total": pa["total"] - pb["total"], "diskon_nota_label": "", "pp": pp}
     refund = -h["total"]
     ada_retur_lama = any(dr > 0 for _, dr in sebelum)
     if jenis == "void" and not ada_retur_lama and not refund_metode:
@@ -1421,6 +1693,8 @@ def proses_retur(conn, args, n, pilihan, alasan, jenis, refund_metode):
     if sum(bayar.values()) != h["total"]:
         raise Gagal("Kesalahan internal: pengembalian dana tidak seimbang.")
     sesi = sesi_aktif(conn)
+    if sesi and not getattr(args, "kasir", None) and sesi["kasir"]:
+        args.kasir = sesi["kasir"]
     no = nomor_nota(conn, jenis, waktu)
     nid = simpan_nota(conn, jenis, no, waktu.isoformat(" "), n["id"], n["pajak_mode"], h, bayar, sum(bayar.values()), 0,
                       args, alasan, None, sesi["id"] if sesi else None)
@@ -1436,19 +1710,25 @@ def proses_retur(conn, args, n, pilihan, alasan, jenis, refund_metode):
             "catat barang yang kembali di buku-stok (masuk --jenis retur-pembeli) setelah dicek fisik. Retur sebagian "
             "tidak ikut file ekspor buku-stok."))
     if not sesi:
-        peringatan.append("Kasir belum dibuka; pengembalian uang tidak masuk hitungan tutup kasir.")
+        peringatan.append(pesan_tanpa_sesi(conn, waktu) + " (pengembalian uang ini)")
     judul = "VOID" if jenis == "void" else "RETUR"
     t = ["%s %s atas nota %s | %s" % (judul, no, n["no"], waktu.strftime("%d/%m/%Y %H:%M")), "Alasan: " + alasan]
     for b in baris_retur:
         t.append("- %s (%s) %s x | nilai -%s" % (label_produk(b), b["kode"], fmt_qty(-b["qty"]),
                                                    fmt_rp(-b["netto"])))
     if h["ppn"]:
-        t.append("Koreksi PPN: %s | koreksi DPP: %s" % (fmt_rp(h["ppn"]), fmt_rp(h["dpp"])))
+        jp = jenis_pajak(n["pajak_mode"])
+        t.append("Koreksi %s: %s | koreksi %s: %s" % (jp, fmt_rp(h["ppn"]), "DPP" if jp == "PPN" else "dasar PBJT",
+                                                      fmt_rp(h["dpp"])))
+    if h["service"]:
+        t.append("Koreksi service charge: %s" % fmt_rp(h["service"]))
     t.append("Uang dikembalikan: %s" % (", ".join("%s %s" % (m, fmt_rp(-v)) for m, v in bayar.items()) or "Rp 0"))
     t.append("Nota asal tidak dihapus; entri ini membalik nilainya.")
     t += ["Catatan: " + p for p in peringatan]
     data = {"no": no, "jenis": jenis, "nota_asal": n["no"], "alasan": alasan, "total": h["total"], "netto": h["netto"],
-            "dpp": h["dpp"], "ppn": h["ppn"], "refund": {m: -v for m, v in bayar.items()},
+            "dpp": h["dpp"], "pajak": h["ppn"], "ppn": h["ppn"] if n["pajak_mode"].startswith("ppn") else 0,
+            "pbjt": h["ppn"] if n["pajak_mode"].startswith("pbjt") else 0, "service": h["service"],
+            "refund": {m: -v for m, v in bayar.items()},
             "baris": [{"kode": b["kode"], "qty": angka_json(b["qty"]), "netto": b["netto"]} for b in baris_retur],
             "peringatan": peringatan, "ringkasan": {"no": no, "nota_asal": n["no"], "total": h["total"]}}
     return data, "\n".join(t)
@@ -1475,14 +1755,16 @@ def cmd_retur(args):
             unik.setdefault(r["kode"], dict(r))
         sisa = {r["item"]["id"]: Decimal(str(r["item"]["qty"])) - r["diretur"] for r in pos}
         pilihan = []
+        unit = SATUAN_BAWAAN | {norm(r["satuan"]) for r in rows}
         for teks in args.item:
-            it = parse_item_segmen(teks)
-            p, info = cari_produk(conn, it["nama"], list(unik.values()))
+            it = parse_item_segmen(teks, unit)
+            p, info, qty = cocokkan_item(conn, it, list(unik.values()), unit)
             if p is None:
-                raise Gagal("Barang '%s' tidak ada di nota %s (atau kurang jelas). Isi nota: %s" % (
-                    teks, n["no"], "; ".join("%s (%s) x%s" % (r["nama"], r["kode"], fmt_qty(r["qty"])) for r in rows)))
-            cek_qty(it["qty"], p["satuan"], p["nama"])
-            butuh = it["qty"]
+                raise Gagal("Barang '%s' tidak ada di nota %s atau kurang jelas (%s). Isi nota: %s" % (
+                    teks, n["no"], info.get("masalah", ""),
+                    "; ".join("%s (%s) x%s %s" % (r["nama"], r["kode"], fmt_qty(r["qty"]), r["satuan"]) for r in rows)))
+            cek_qty(qty, p["satuan"], p["nama"])
+            butuh = qty
             baris_sama = [r for r in rows if r["kode"] == p["kode"]]
             for r in baris_sama:
                 ambil = min(butuh, sisa[r["id"]])
@@ -1566,32 +1848,73 @@ def cmd_nota(args):
     return d, d["teks"]
 
 
+def bersih_struk(teks):
+    """Buang emoji & simbol gambar (printer thermal umumnya tidak bisa mencetaknya dan lebarnya 2 kolom)."""
+    teks = str(teks)
+    hasil = []
+    for i, ch in enumerate(teks):
+        kat = unicodedata.category(ch)
+        if ord(ch) > 0xFFFF or kat in ("So", "Cs", "Co") or ch in "\u200d\ufe0f\ufe0e":
+            continue
+        if ch == " " and hasil and hasil[-1] == " " and i > 0 and teks[i - 1] != " ":
+            continue                        # spasi ganda yang tersisa setelah emoji dibuang
+        hasil.append(ch)
+    return "".join(hasil)
+
+
+def lebar_tampil(teks):
+    """Lebar di font monospace: huruf lebar (CJK, W/F) = 2 kolom, tanda gabung = 0."""
+    n = 0
+    for ch in teks:
+        if unicodedata.combining(ch):
+            continue
+        n += 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+    return n
+
+
+def _potong(k, lebar):
+    """Potong kata terlalu panjang menjadi potongan dengan lebar tampil <= lebar."""
+    hasil, cur = [], ""
+    for ch in k:
+        if lebar_tampil(cur + ch) > lebar:
+            hasil.append(cur)
+            cur = ""
+        cur += ch
+    return hasil + ([cur] if cur else [])
+
+
+def _tengah(teks, lebar):
+    sisa = max(0, lebar - lebar_tampil(teks))
+    return (" " * (sisa // 2) + teks).rstrip()
+
+
 def _kiri_kanan(kiri, kanan, lebar):
-    kiri, kanan = str(kiri), str(kanan)
-    if len(kiri) + len(kanan) + 1 > lebar:
-        return _bungkus(kiri, lebar) + [" " * (lebar - len(kanan)) + kanan]
-    return [kiri + " " * (lebar - len(kiri) - len(kanan)) + kanan]
+    kiri, kanan = bersih_struk(kiri), bersih_struk(kanan)
+    if lebar_tampil(kiri) + lebar_tampil(kanan) + 1 > lebar:
+        return _bungkus(kiri, lebar) + [" " * (lebar - lebar_tampil(kanan)) + kanan]
+    return [kiri + " " * (lebar - lebar_tampil(kiri) - lebar_tampil(kanan)) + kanan]
 
 
 def _bungkus(teks, lebar, tengah=False):
-    kata, baris, cur = str(teks).split(), [], ""
+    kata, baris, cur = bersih_struk(teks).split(), [], ""
     for k in kata:
-        while len(k) > lebar:
+        potongan = _potong(k, lebar) if lebar_tampil(k) > lebar else [k]
+        for k2 in potongan[:-1]:
             if cur:
                 baris.append(cur)
                 cur = ""
-            baris.append(k[:lebar])
-            k = k[lebar:]
+            baris.append(k2)
+        k = potongan[-1]
         if not cur:
             cur = k
-        elif len(cur) + 1 + len(k) <= lebar:
+        elif lebar_tampil(cur) + 1 + lebar_tampil(k) <= lebar:
             cur += " " + k
         else:
             baris.append(cur)
             cur = k
     if cur:
         baris.append(cur)
-    return [b.center(lebar).rstrip() if tengah else b for b in baris] or [""]
+    return [_tengah(b, lebar) if tengah else b for b in baris] or [""]
 
 
 def baris_struk(conn, n, lebar, cfg):
@@ -1608,7 +1931,8 @@ def baris_struk(conn, n, lebar, cfg):
         L += _bungkus("*** %s ***" % judul, lebar, tengah=True)
     w = datetime.fromisoformat(n["waktu"])
     L += _kiri_kanan("No", n["no"], lebar)
-    L += _kiri_kanan("Tgl", w.strftime("%d/%m/%Y %H:%M"), lebar)
+    zl = label_zona(n["zona"])
+    L += _kiri_kanan("Tgl", w.strftime("%d/%m/%Y %H:%M") + ((" " + zl) if zl else ""), lebar)
     if n["kasir"]:
         L += _kiri_kanan("Kasir", n["kasir"], lebar)
     if n["ref_nota_id"]:
@@ -1627,9 +1951,15 @@ def baris_struk(conn, n, lebar, cfg):
     if n["diskon_nota"]:
         L += _kiri_kanan("Diskon %s" % n["diskon_nota_label"],
                          ("-" + fmt_angka(n["diskon_nota"])) if n["diskon_nota"] > 0 else fmt_angka(-n["diskon_nota"]), lebar)
+    tarif = (n["tarif_pajak"] or "?").replace(".", ",")
+    if n["service"]:
+        L += _kiri_kanan("Service %s%%" % (n["service_persen"] or "").replace(".", ","), fmt_angka(n["service"]), lebar)
     if n["pajak_mode"] == "ppn-belum":
         L += _kiri_kanan("DPP", fmt_angka(n["dpp"]), lebar)
         L += _kiri_kanan("PPN 12% x DPP 11/12", fmt_angka(n["ppn"]), lebar)
+    if n["pajak_mode"] == "pbjt-belum":
+        L += _kiri_kanan("Dasar PBJT", fmt_angka(n["dpp"]), lebar)
+        L += _kiri_kanan("PBJT %s%%" % tarif, fmt_angka(n["ppn"]), lebar)
     L += _kiri_kanan("TOTAL", "Rp " + fmt_angka(n["total"]) if n["total"] >= 0 else "-Rp " + fmt_angka(-n["total"]), lebar)
     for b in conn.execute("SELECT * FROM bayar WHERE nota_id=?", (n["id"],)):
         L += _kiri_kanan(b["metode"] if b["jumlah"] >= 0 else "Dikembalikan (%s)" % b["metode"], fmt_angka(abs(b["jumlah"])), lebar)
@@ -1641,6 +1971,16 @@ def baris_struk(conn, n, lebar, cfg):
         L += _kiri_kanan("DPP", fmt_angka(n["dpp"]), lebar)
         L += _kiri_kanan("DPP nilai lain 11/12", fmt_desimal(dpp_nilai_lain(n["dpp"])), lebar)
         L += _kiri_kanan("PPN 12%", fmt_angka(n["ppn"]), lebar)
+    if n["pajak_mode"] == "pbjt-termasuk":
+        L.append(garis)
+        L += _bungkus("Harga sudah termasuk PBJT %s%%" % tarif, lebar)
+        L += _kiri_kanan("Dasar PBJT", fmt_angka(n["dpp"]), lebar)
+        L += _kiri_kanan("PBJT %s%%" % tarif, fmt_angka(n["ppn"]), lebar)
+    if n["jenis"] == "jual":
+        koreksi = conn.execute("SELECT no, jenis FROM nota WHERE ref_nota_id=? ORDER BY id", (n["id"],)).fetchall()
+        if koreksi:
+            L += _bungkus("Ada %s: %s" % ("/".join(sorted({k["jenis"] for k in koreksi})),
+                                          ", ".join(k["no"] for k in koreksi)), lebar)
     if n["alasan"]:
         L += _bungkus("Alasan: " + n["alasan"], lebar)
     if n["catatan"]:
@@ -1694,10 +2034,11 @@ def cmd_struk(args):
             raise Gagal("Kertas harus 58 atau 80 (mm).")
         lebar = 32 if kertas == "58" else 48
         baris = baris_struk(conn, n, lebar, cfg)
-        ke = n["dicetak"] + 1
+        ke = n["dicetak"] + (0 if args.teks else 1)     # teks untuk chat tidak dihitung sebagai cetakan
         if ke > 1:
-            baris.insert(0, ("SALINAN - cetak ke-%d" % ke).center(lebar).rstrip())
-        conn.execute("UPDATE nota SET dicetak=? WHERE id=?", (ke, n["id"]))
+            baris.insert(0, _tengah("SALINAN - cetak ke-%d" % ke, lebar))
+        if not args.teks:
+            conn.execute("UPDATE nota SET dicetak=? WHERE id=?", (ke, n["id"]))
     finally:
         conn.close()
     d = {"ok": True, "mode": "baca", "no": n["no"], "kertas": kertas, "baris": baris, "cetak_ke": ke}
@@ -1864,22 +2205,32 @@ def data_periode(conn, dari, sampai):
 def hitung_rekap(conn, dari, sampai):
     notas = data_periode(conn, dari, sampai)
     r = {"nota_jual": 0, "nota_retur": 0, "nota_void": 0, "penjualan_kotor": 0, "diskon": 0, "retur_void": 0,
-         "penjualan_bersih": 0, "ppn": 0, "total_diterima": 0, "omzet_tanpa_ppn": 0, "per_metode": {}, "per_produk": {},
-         "per_jam": {}, "per_bulan": {}, "per_hari": {}}
+         "penjualan_bersih": 0, "service": 0, "ppn": 0, "pbjt": 0, "pajak": 0, "total_diterima": 0,
+         "omzet_tanpa_pajak": 0, "per_metode": {}, "per_produk": {}, "per_jam": {}, "per_bulan": {}, "per_hari": {}}
+    di_void = {x[0] for x in conn.execute("SELECT ref_nota_id FROM nota WHERE jenis='void'")}
+    nota_sah, total_sah = 0, 0
     for n in notas:
         if n["jenis"] == "jual":
             r["nota_jual"] += 1
             r["penjualan_kotor"] += n["bruto"]
             r["diskon"] += n["diskon_item"] + n["diskon_nota"]
-            jam = n["waktu"][11:13]
-            pj = r["per_jam"].setdefault(jam, {"nota": 0, "total": 0})
-            pj["nota"] += 1
-            pj["total"] += n["total"]
+            if n["id"] not in di_void:          # nota yang di-void tidak dihitung di rata-rata & per jam
+                nota_sah += 1
+                total_sah += n["total"]
+                jam = n["waktu"][11:13]
+                pj = r["per_jam"].setdefault(jam, {"nota": 0, "total": 0})
+                pj["nota"] += 1
+                pj["total"] += n["total"]
         else:
             r["nota_" + n["jenis"]] += 1
             r["retur_void"] += n["netto"]
         r["penjualan_bersih"] += n["netto"]
-        r["ppn"] += n["ppn"]
+        r["service"] += n["service"] or 0
+        r["pajak"] += n["ppn"]
+        if n["pajak_mode"].startswith("ppn"):
+            r["ppn"] += n["ppn"]
+        elif n["pajak_mode"].startswith("pbjt"):
+            r["pbjt"] += n["ppn"]
         r["total_diterima"] += n["total"]
         bl = n["waktu"][:7]
         r["per_bulan"][bl] = r["per_bulan"].get(bl, 0) + n["total"] - n["ppn"]
@@ -1895,8 +2246,10 @@ def hitung_rekap(conn, dari, sampai):
                                               "satuan": it["satuan"], "qty": Decimal(0), "netto": 0})
             p["qty"] += Decimal(str(it["qty"]))
             p["netto"] += it["netto"]
-    r["omzet_tanpa_ppn"] = r["total_diterima"] - r["ppn"]
-    r["rata_rata_per_nota"] = rhu(Decimal(sum(v["total"] for v in r["per_jam"].values())) / r["nota_jual"]) if r["nota_jual"] else 0
+    r["omzet_tanpa_pajak"] = r["total_diterima"] - r["pajak"]
+    r["omzet_tanpa_ppn"] = r["omzet_tanpa_pajak"]          # nama lama (v1.0.0), nilainya sama
+    r["nota_dihitung_rata_rata"] = nota_sah
+    r["rata_rata_per_nota"] = rhu(Decimal(total_sah) / nota_sah) if nota_sah else 0
     r["per_metode"] = {m: v for m, v in r["per_metode"].items() if v}
     return r, notas
 
@@ -1923,19 +2276,25 @@ def teks_rekap(r, dari, sampai, jenis, cfg, top=10):
     if r["retur_void"]:
         t.append("Retur/void      : -%s" % fmt_rp(-r["retur_void"]))
     t.append("Penjualan bersih: %s" % fmt_rp(r["penjualan_bersih"]))
+    if r["service"]:
+        t.append("Service charge  : %s" % fmt_rp(r["service"]))
     if r["ppn"]:
         t.append("PPN terpungut   : %s" % fmt_rp(r["ppn"]))
+    if r["pbjt"]:
+        t.append("PBJT dipungut   : %s" % fmt_rp(r["pbjt"]))
     t.append("Uang diterima   : %s" % fmt_rp(r["total_diterima"]))
-    if r["ppn"]:
-        t.append("Omzet tanpa PPN : %s" % fmt_rp(r["omzet_tanpa_ppn"]))
-    if r["nota_jual"]:
-        t.append("Rata-rata/nota  : %s" % fmt_rp(r["rata_rata_per_nota"]))
+    if r["pajak"]:
+        t.append("Omzet tanpa %s: %s" % ("pajak" if r["ppn"] and r["pbjt"] else ("PPN " if r["ppn"] else "PBJT"),
+                                         fmt_rp(r["omzet_tanpa_pajak"])))
+    if r["nota_dihitung_rata_rata"]:
+        t.append("Rata-rata/nota  : %s%s" % (fmt_rp(r["rata_rata_per_nota"]),
+                                            " (tanpa nota void)" if r["nota_void"] else ""))
     if r["per_metode"]:
         t += ["", "Per metode bayar:"]
         for m, v in sorted(r["per_metode"].items(), key=lambda x: -x[1]):
             t.append("- %-13s %s" % (m, fmt_rp(v)))
     if jenis == "tahun":
-        t += ["", "Omzet per bulan (tanpa PPN):"]
+        t += ["", "Omzet per bulan (tanpa PPN/PBJT):"]
         for bl, v in sorted(r["per_bulan"].items()):
             t.append("- %s %s" % (BULAN[int(bl[5:7])].capitalize()[:3], fmt_rp(v)))
     prod = sorted(r["per_produk"].values(), key=lambda p: (-p["netto"], p["kode"]))
@@ -1953,10 +2312,15 @@ def teks_rekap(r, dari, sampai, jenis, cfg, top=10):
     elif r["per_jam"] and jenis in ("bulan", "rentang"):
         ramai = sorted(r["per_jam"].items(), key=lambda x: (-x[1]["nota"], x[0]))[:3]
         t += ["", "Jam paling ramai: " + ", ".join("%s.00 (%d nota)" % (j, v["nota"]) for j, v in ramai)]
+    if r["pbjt"] and jenis in ("bulan", "rentang", "tahun"):
+        t += ["", "PBJT yang dipungut dari pembeli periode ini %s: setor & laporkan ke Bapenda sesuai jadwal dan cara "
+              "yang diatur Perda daerah Anda (kasir tidak menyetor)." % fmt_rp(r["pbjt"])]
     if jenis in ("bulan", "tahun"):
-        t += ["", "Catatan PPh final UMKM: omzet (peredaran bruto, tanpa PPN) periode ini %s. Hitung PPh final 0,5%% "
-              "dengan skill pph-final-umkm (bergantung omzet kumulatif setahun dari SEMUA usaha dan status wajib pajak; "
-              "orang pribadi: Rp500 juta pertama setahun tidak kena)." % fmt_rp(r["omzet_tanpa_ppn"])]
+        t += ["", "Catatan PPh final UMKM: omzet (peredaran bruto, tanpa PPN/PBJT) periode ini %s. Hitung PPh final "
+              "0,5%% dengan skill pph-final-umkm (bergantung omzet kumulatif setahun dari SEMUA usaha dan status wajib "
+              "pajak; orang pribadi: Rp500 juta pertama setahun tidak kena)." % fmt_rp(r["omzet_tanpa_pajak"])]
+    if r["pbjt"]:
+        t += ["", "_" + DISCLAIMER_PBJT + "_"]
     if r["ppn"] or jenis in ("bulan", "tahun"):
         t += ["", "_" + DISCLAIMER_PAJAK + "_"]
     return "\n".join(t)
@@ -2137,6 +2501,11 @@ def buat_parser():
         s.add_argument("--pkp", choices=["ya", "tidak"], help="Status Pengusaha Kena Pajak (wajib 'ya' untuk mode PPN)")
         s.add_argument("--stok", choices=MODE_STOK, help="tidak | kasir (kasir memotong stok) | buku-stok")
         s.add_argument("--kertas", choices=["58", "80"])
+        s.add_argument("--tarif-pbjt", help="Tarif PBJT makanan/minuman (persen) sesuai Perda daerah, maks 10")
+        s.add_argument("--service-charge", help="Service charge persen (0 = tidak ada)")
+        s.add_argument("--sc-kena-pajak", dest="service_kena_pajak", choices=["ya", "tidak"],
+                       help="Apakah service charge ikut dasar pajak (ikuti Perda/aturan; tanya Bapenda/konsultan)")
+        s.add_argument("--zona", help="Zona waktu toko: WIB (default), WITA, WIT, atau Asia/Jakarta dst.")
 
     s = sub.add_parser("init", parents=[umum, tulis], help="Buat database kasir baru")
     opsi_toko(s)

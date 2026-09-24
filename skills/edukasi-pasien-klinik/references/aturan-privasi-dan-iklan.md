@@ -90,16 +90,26 @@ Kemenkes: https://kms.kemkes.go.id/contents/1715917225382-bukuperaturaniklanpubl
 - **Pasal 4 ayat (1):** iklan/publikasi harus akurat, berbasis bukti, informatif, edukatif, dan
   bertanggung jawab.
 - **Pasal 4 ayat (2):** **wajib mencantumkan nama dan alamat fasilitas pelayanan kesehatan serta
-  tanggal publikasi** pada setiap iklan/publikasi.
-- **Pasal 5** — iklan/publikasi TIDAK DIPERBOLEHKAN bila, antara lain: (b) tidak benar atau
-  menyesatkan; (c) menciptakan pengharapan/ekspektasi yang tidak tepat/berlebihan; (d)
-  membandingkan atau mencela fasyankes/tenaga kesehatan lain; (e) memuji diri berlebihan
-  (superlatif) atau mengklaim "satu-satunya"; (f) mempromosikan metode/obat yang belum terbukti
-  secara ilmiah; (h) mengiklankan layanan tanpa izin resmi; (l) secara aktif mendorong
-  penggunaan jasa di luar kebutuhan medis; **(m) berisi promosi penjualan termasuk pemberian
-  diskon**; **(n) memberi testimoni dalam bentuk iklan atau publikasi di media massa** (larangan
-  ini **tanpa pengecualian izin tertulis** — beda dengan asumsi sebelumnya); (o) memakai gelar
-  akademis atau sebutan profesi untuk tujuan promosi.
+  tanggal publikasi**. Di naskah, kewajiban ini berlaku untuk iklan/publikasi **melalui media
+  cetak, media elektronik, dan media luar ruang** — bukan "setiap iklan/publikasi" tanpa syarat.
+  Skill ini tetap menerapkannya ke **semua** konten medsos yang dibuat (termasuk yang mungkin di
+  luar cakupan literal tiga jenis media itu) sebagai **praktik aman**, bukan karena naskah
+  mewajibkannya secara harfiah untuk setiap kanal — ditulis jujur di sini supaya tidak dikira
+  kutipan pasal yang persis.
+- **Pasal 5** — iklan/publikasi TIDAK DIPERBOLEHKAN bila, antara lain (dikutip sedekat mungkin
+  dengan rumusan naskah, bukan diperluas/dipersempit): (b) tidak benar atau menyesatkan; (c)
+  menciptakan pengharapan yang tidak tepat; (d) **"membandingkan mutu pelayanan fasilitas
+  pelayanan kesehatan lain"** (naskah hanya menyebut fasyankes lain, bukan tenaga kesehatan
+  lain); (e) memuji diri berlebihan (superlatif) atau mengklaim "satu-satunya"; (f)
+  mempromosikan metode/obat yang belum terbukti secara ilmiah; (h) mengiklankan layanan tanpa
+  izin resmi; (l) **"memberi informasi kepada masyarakat dengan cara yang bersifat mendorong
+  penggunaan jasa tenaga kesehatan di fasilitas pelayanan kesehatan tersebut"** (naskah tidak
+  memuat syarat tambahan seperti "di luar kebutuhan medis" — larangannya seluas rumusan itu);
+  **(m) berisi promosi penjualan termasuk pemberian diskon**; **(n) memberi testimoni dalam
+  bentuk iklan atau publikasi di media massa** (larangan ini **tanpa pengecualian izin
+  tertulis**); (o) **"menggunakan gelar akademis dan/atau sebutan profesi di bidang
+  kesehatan"** (naskah tidak membatasi ini hanya "untuk tujuan promosi" — larangannya berlaku
+  atas penggunaan gelar/sebutan itu sendiri dalam iklan/publikasi).
 - **Status berlaku:** UU 17/2023 Pasal 453 menyatakan peraturan pelaksana UU kesehatan lama
   tetap berlaku sepanjang tidak bertentangan; PP 28/2024 tidak memuat bab khusus iklan
   pelayanan fasyankes (hanya Pasal 424 untuk iklan sediaan farmasi/alkes/PKRT). Sampai
@@ -117,10 +127,14 @@ Kemenkes: https://kms.kemkes.go.id/contents/1715917225382-bukuperaturaniklanpubl
 - Skill **tidak membuat promosi diskon/potongan harga untuk tindakan medis** dalam bentuk
   iklan/publikasi (Pasal 5 huruf m) — pembahasan harga tetap boleh untuk FAQ informatif
   (bukan format iklan berpromosi).
-- Skill **tidak membuat klaim "menyembuhkan", "100% berhasil", superlatif ("terbaik",
-  "satu-satunya"), atau perbandingan/celaan** terhadap faskes lain (Pasal 5 huruf c, d, e).
-- Skill **tidak mencantumkan gelar akademis/sebutan profesi untuk tujuan promosi** semata
-  (Pasal 5 huruf o).
+- Skill **tidak membuat klaim "menyembuhkan"/"100% berhasil", superlatif ("terbaik",
+  "satu-satunya"), atau perbandingan mutu pelayanan** dengan fasilitas kesehatan lain (Pasal 5
+  huruf c, d, e).
+- Skill **tidak mencantumkan gelar akademis/sebutan profesi di bidang kesehatan** dalam materi
+  iklan/publikasi (Pasal 5 huruf o — larangan berlaku umum, bukan hanya bila diniatkan promosi).
+- Skill **tidak menulis ajakan yang bersifat mendorong penggunaan jasa** tenaga
+  kesehatan/fasyankes (Pasal 5 huruf l) — konten tetap berupa edukasi umum, bukan ajakan
+  memakai layanan tertentu.
 - Skill **tidak mengklaim status/izin yang belum dikonfirmasi klinik** (mis. "terakreditasi",
   "kerja sama resmi dengan RS X") kecuali klinik menyatakan itu benar dan bisa dibuktikan.
 - **Setiap konten medsos yang dibuat skill ini mencantumkan nama & alamat klinik serta tanggal

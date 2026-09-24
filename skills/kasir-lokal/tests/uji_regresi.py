@@ -351,8 +351,9 @@ class UjiRekapStrukEkspor(Dasar):
         # tunai: 45.900 - 45.900 + 24.140 - 5.130 + 8.125 = 27.135 ; QRIS 40.000 ; jumlah = uang diterima
         self.assertEqual(r["per_metode"], {"Tunai": 27135, "QRIS": 40000})
         self.assertEqual(sum(r["per_metode"].values()), r["total_diterima"])
-        # rata-rata = (45.900 + 64.140 + 8.125) / 3 = 39.388,33 -> 39.388
-        self.assertEqual(r["rata_rata_per_nota"], 39388)
+        # v1.1.0: nota yang di-void (N-0001) tidak ikut rata-rata: (64.140 + 8.125) / 2 = 36.132,5 -> 36.133
+        self.assertEqual(r["rata_rata_per_nota"], 36133)
+        self.assertNotIn("08", r["per_jam"])                       # jam 08 hanya berisi nota yang di-void
         self.assertEqual(r["per_jam"]["09"], {"nota": 1, "total": 64140})
         gp = [p for p in r["per_produk"] if p["kode"] == "GP1"][0]
         self.assertEqual((gp["qty"], gp["netto"]), (1.75, 28875))     # 24.750 + 4.125
