@@ -130,10 +130,12 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 - [ ] Bahasa awam, sopan, tidak menakut-nakuti (lihat `references/bahasa-awam-pasien.md`).
 - [ ] Untuk balasan chat: bila menyentuh gejala, pakai kalimat baku arahkan ke dokter (dan
       kalimat darurat bila relevan) — tidak menilai kegawatan.
-- [ ] Untuk rekap: cek hasil di atas tidak memuat nama pasien sebelum dikirim; script sudah
-      menyembunyikan nilai status/poli/penjamin yang mencurigakan secara otomatis — **jangan**
-      membuka file CSV asli untuk melengkapi nilai yang disembunyikan itu ke dalam rekap. Status
-      yang "tidak dikenal" sudah dicek manual, bukan diasumsikan hadir.
+- [ ] **Wajib untuk rekap:** baca rincian per hari/poli/penjamin/status sebelum mengirim — nama
+      pasien yang salah diketik ≥3 kali di kolom kategori (mis. staf mengetik nama pasien di
+      kolom "Status") **masih bisa tampil** sebagai nama panggilan + jumlah baris (lihat batasan
+      di bawah). Script sudah menyaring & menyembunyikan nilai lain yang mencurigakan secara
+      otomatis — **jangan** membuka file CSV asli untuk melengkapi nilai yang disembunyikan itu
+      ke dalam rekap. Status yang "tidak dikenal" sudah dicek manual, bukan diasumsikan hadir.
 
 ## Batasan & penanganan error
 - **Input medis kosong/tidak lengkap untuk leaflet/pengingat:** jangan mengarang instruksi.
@@ -145,9 +147,11 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 - **File CSV rekap tidak ada kolom tanggal, atau file kosong/rusak:** script akan menampilkan
   pesan error jelas (exit code 1) dan tidak menghasilkan rekap — minta file yang benar.
 - **File CSV berisi kolom sensitif (nama/NIK/diagnosis dan variasinya seperti Dx/ICD-10/Keluhan
-  Utama/No. WA):** script otomatis mengabaikan isi kolom tersebut dan hanya memberi tahu nama
-  kolom yang diabaikan, demi privasi (UU PDP 27/2022; UU 17/2023 Ps. 301; PP 28/2024 Ps.
-  788-789).
+  Utama/No. WA):** isi kolom tersebut **tidak pernah ditampilkan** di rekap, hanya nama
+  kolomnya yang dilaporkan sebagai diabaikan, demi privasi (UU PDP 27/2022; UU 17/2023 Ps. 301;
+  PP 28/2024 Ps. 788-789). Khusus kolom bertipe "Nama", kata-katanya dibaca secara internal
+  HANYA untuk menyaring nilai status/poli/penjamin yang kebetulan sama dengan sepotong nama
+  pasien (lihat poin berikut) — isi kolom Nama sendiri tetap tidak pernah masuk ke output.
 - **Status kehadiran di rekap tidak dikenali script (bukan "hadir" maupun "tidak datang"):**
   dilaporkan terpisah sebagai "tidak dikenal" — **tidak** diam-diam dihitung hadir. Cek daftar
   rincian status di hasil rekap dan tanyakan ke klinik bila perlu diklasifikasikan ulang.
@@ -157,12 +161,18 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
   script tetap mengasumsikan format Indonesia tapi memberi peringatan bahwa itu asumsi — jalankan
   ulang dengan `--urutan-tanggal mdy` untuk membandingkan bila filenya diduga dari sumber Amerika.
 - **Nilai status/poli/penjamin yang berpotensi berisi nama/kontak/diagnosis** (banyak kata,
-  mengandung angka/"@", pola inisial "S.A.", kode ICD "J06", atau pola sapaan+nama seperti
-  "Bu Ani"): script **tidak pernah** mencetak nilai itu apa adanya, hanya jumlah baris & jumlah
-  nilai berbeda yang disembunyikan. Nilai yang muncul di **bawah 3 baris** juga disembunyikan
-  meski polanya aman (k-anonimitas sederhana — nilai langka kemungkinan besar salah isi/data
-  satu pasien). Jangan buka file CSV asli untuk "melengkapi" bagian yang disembunyikan ke dalam
-  rekap.
+  mengandung angka/"@", pola inisial "S.A.", kode ICD "J06", pola sapaan+nama seperti "Bu Ani",
+  atau sama dengan kata di kolom "Nama" file yang sama): script **tidak pernah** mencetak nilai
+  itu apa adanya, hanya jumlah baris & jumlah nilai berbeda yang disembunyikan. Nilai yang
+  muncul di **bawah 3 baris** juga disembunyikan meski polanya aman (k-anonimitas sederhana —
+  nilai langka kemungkinan besar salah isi/data satu pasien). Jangan buka file CSV asli untuk
+  "melengkapi" bagian yang disembunyikan ke dalam rekap.
+- **Batasan yang jujur harus diketahui pengguna:** bila staf klinik salah mengetik **nama
+  pasien** (bukan nomor/diagnosis) di kolom status/poli/penjamin **berulang ≥3 kali** (dan file
+  itu **tidak** punya kolom bertipe "Nama" terpisah untuk disaring silang), nama panggilan itu
+  bisa tetap tampil sebagai kategori + jumlah baris — bukan diam-diam disembunyikan. Ini kondisi
+  langka (kesalahan sistematis, bukan salah ketik sekali), tapi harus dicek manual lewat
+  checklist di atas sebelum rekap dikirim/dipublikasikan.
 - **Kolom "poli/layanan" berisi nama diagnosis/penyakit, bukan nama layanan** (mis. klinik
   memakai kolom itu untuk mencatat "Hipertensi", "ISPA"): jika istilah itu muncul berulang
   (≥ 3 baris) dan bukan pola kode ICD, script tetap menampilkannya sebagai **jumlah agregat per

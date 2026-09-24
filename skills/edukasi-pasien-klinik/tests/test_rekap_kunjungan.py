@@ -613,6 +613,147 @@ class TesBarisBergeser(unittest.TestCase):
         self.assertEqual(hasil["total_dapat_dibaca"], hasil["total_pendaftaran"])
 
 
+class TesS5PemisahUjungBaris(unittest.TestCase):
+    """S5 (uji ulang v1.0.3, 2026-09-24): pemisah kosong di ujung SETIAP
+    baris (kolom lebih yang seluruhnya kosong, atau kolom kurang yang
+    hanya di kolom terakhir header) BUKAN baris bergeser."""
+
+    def test_kolom_lebih_kosong_di_ujung_bukan_bergeser(self):
+        # "trailing_semua.csv": setiap baris diakhiri ',' tambahan (field
+        # kosong), header TIDAK punya kolom tambahan itu.
+        csv_text = "Tanggal,Poli,Penjamin,Status\n" + (
+            "2026-09-01,Gigi,BPJS,Selesai,\n" * 20
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["baris_bergeser_jumlah"], 0)
+        self.assertIsNone(hasil["peringatan_baris_bergeser"])
+        self.assertEqual(hasil["per_poli"], {"Gigi": 20})
+        self.assertEqual(hasil["hadir"], 20)
+        teks = rk.format_teks(hasil)
+        self.assertIn("Hadir: 20 (100.0%)", teks)
+
+    def test_kolom_kurang_hanya_di_kolom_terakhir_bukan_bergeser(self):
+        # Baris yang berhenti sebelum kolom terakhir (Status kosong tanpa
+        # koma penutup) — hanya SATU kolom hilang, dan itu kolom terakhir.
+        csv_text = (
+            "Tanggal,Poli,Penjamin,Status\n"
+            + "2026-09-01,Gigi,BPJS,Selesai\n" * 3
+            + "2026-09-01,Umum,Umum\n" * 2  # Status hilang, kolom terakhir
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["baris_bergeser_jumlah"], 0)
+
+    def test_kolom_lebih_berisi_data_tetap_dianggap_bergeser(self):
+        # Kelebihan kolom yang BUKAN kosong (ada isi) tetap bergeser —
+        # pengecualian S5 hanya untuk kelebihan yang kosong semua.
+        csv_text = (
+            "Tanggal,Poli,Penjamin,Status\n"
+            + "2026-09-01,Gigi,BPJS,Selesai\n" * 3
+            + "2026-09-02,Siti, Aminah,BPJS,Selesai\n"  # kolom lebih BERISI
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["baris_bergeser_jumlah"], 1)
+
+    def test_lebih_dari_separuh_bergeser_pesan_struktur(self):
+        csv_text = (
+            "Tanggal,Poli,Penjamin,Status\n"
+            + "2026-09-01,Gigi,BPJS,Selesai\n" * 2
+            + "2026-09-02,Siti, Aminah,BPJS,Selesai\n" * 8  # 8 dari 10 = 80%
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["baris_bergeser_jumlah"], 8)
+        self.assertIn("Struktur header dan baris tidak cocok", hasil["peringatan_baris_bergeser"])
+
+    def test_semua_baris_bergeser_tidak_menampilkan_hadir_nol_persen(self):
+        csv_text = (
+            "Tanggal,Poli,Penjamin,Status\n"
+            + "2026-09-01,Siti, Aminah,BPJS,Selesai\n" * 5
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["total_dapat_dibaca"], 0)
+        teks = rk.format_teks(hasil)
+        self.assertNotIn("Hadir: 0 (0.0%)", teks)
+        self.assertIn("tidak ada baris yang bisa dibaca", teks.lower())
+        self.assertNotIn("Siti", teks)
+        self.assertNotIn("Aminah", teks)
+
+    def test_100_baris_pemisah_ujung_rekap_tetap_normal(self):
+        """Reproduksi persis skenario penguji: 100 baris valid, SEMUA
+        diakhiri pemisah kosong tambahan -> rekap harus tetap normal,
+        bukan kosong."""
+        csv_text = "Tanggal,Poli,Penjamin,Status\n"
+        for i in range(100):
+            csv_text += f"2026-09-{(i % 28) + 1:02d},Gigi,BPJS,Selesai,\n"
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["total_pendaftaran"], 100)
+        self.assertEqual(hasil["baris_bergeser_jumlah"], 0)
+        self.assertEqual(hasil["hadir"], 100)
+        self.assertEqual(sum(hasil["per_hari"].values()), 100)
+
+
+class TesR15aFilterKolomNama(unittest.TestCase):
+    """R15(a) (opsional, dikerjakan): nilai kategori yang sama dengan kata
+    di kolom Nama disembunyikan, tanpa pernah mencetak isi kolom Nama."""
+
+    def test_nama_berulang_di_status_tersaring_bila_ada_di_kolom_nama(self):
+        csv_text = (
+            "Tanggal,Nama Pasien,Status\n"
+            + "2026-09-01,Joko Susanto,Joko\n" * 3
+            + "2026-09-01,Ani Wijaya,Selesai\n" * 3
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        teks = rk.format_teks(hasil)
+        dump = json.dumps(hasil, ensure_ascii=False)
+        # "Joko" walau muncul 3x (lolos ambang frekuensi) tetap disembunyikan
+        # karena juga muncul sebagai kata di kolom "Nama Pasien".
+        self.assertNotIn("Joko", teks)
+        self.assertNotIn("Susanto", teks)
+        self.assertNotIn("Wijaya", teks)
+        self.assertNotIn("Joko", dump)
+        # "Selesai" tidak ada di kolom nama manapun -> tetap tampil.
+        self.assertIn("Selesai", teks)
+        self.assertIn("Nama Pasien", hasil["kolom_sensitif_diabaikan"])
+
+    def test_kolom_nama_sendiri_tidak_pernah_tampil(self):
+        csv_text = "Tanggal,Nama Pasien,Poli\n" + "2026-09-01,Budi Setiawan,Gigi\n" * 3
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        teks = rk.format_teks(hasil)
+        dump = json.dumps(hasil, ensure_ascii=False)
+        self.assertNotIn("Budi", teks)
+        self.assertNotIn("Setiawan", teks)
+        self.assertNotIn("Budi", dump)
+        self.assertIn("TIDAK PERNAH ditampilkan", teks)
+
+    def test_tanpa_kolom_nama_perilaku_tidak_berubah(self):
+        header, baris = rk.baca_csv(CSV_NORMAL, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["per_poli"]["Gigi"], 3)
+
+    def test_token_pendek_tidak_dipakai_menyaring(self):
+        """Token < 3 huruf (mis. 'di', 'A') sengaja tidak dipakai untuk
+        menyaring, supaya kata umum tidak salah tersaring."""
+        csv_text = (
+            "Tanggal,Nama Pasien,Status\n"
+            + "2026-09-01,A Di,Hadir\n" * 3
+            + "2026-09-01,A Di,Selesai\n" * 3
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        teks = rk.format_teks(hasil)
+        # "Hadir" dan "Selesai" tidak mengandung token panjang dari nama
+        # ("A"/"Di" terlalu pendek untuk dipakai menyaring) -> tetap tampil.
+        self.assertIn("Hadir", teks)
+        self.assertIn("Selesai", teks)
+
+
 class TesTotalDanPersentase(unittest.TestCase):
     """S3: total pendaftaran, hadir, tidak datang, persentase eksplisit."""
 

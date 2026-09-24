@@ -38,13 +38,21 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - Sebagian dasar hukum (kerahasiaan medis, aturan iklan layanan kesehatan) ditandai **PERLU
   DICEK** karena belum diverifikasi dari naskah resmi — lihat
   `references/aturan-privasi-dan-iklan.md` sebelum dipakai untuk keperluan legal/kontrak.
-- Rekap kunjungan butuh file CSV berkolom tanggal (dan idealnya poli/penjamin/status); kolom
-  nama/NIK/diagnosis otomatis diabaikan, bukan dihapus dari file aslimu. Nilai kategori yang
-  jarang muncul (di bawah 3 baris) atau berpola nama/inisial/email/kode diagnosis tidak pernah
-  dicetak, hanya digabung jadi angka. **Isi kolom "poli/layanan" sebaiknya nama layanan saja**
-  (mis. "Gigi", "KIA") — bila klinik memasukkan nama diagnosis/penyakit ke kolom itu dan
-  diagnosis itu berulang di banyak baris, rekap akan menampilkan **jumlah per diagnosis**
-  (agregat, bukan identitas pasien), yang bisa jadi bukan yang kamu maksudkan.
+- Rekap kunjungan butuh file CSV berkolom tanggal (dan idealnya poli/penjamin/status); isi kolom
+  nama/NIK/diagnosis **tidak pernah ditampilkan** di rekap (bukan dihapus dari file aslimu).
+  Nilai kategori yang jarang muncul (di bawah 3 baris) atau berpola nama/inisial/email/kode
+  diagnosis tidak pernah dicetak, hanya digabung jadi angka. **Isi kolom "poli/layanan"
+  sebaiknya nama layanan saja** (mis. "Gigi", "KIA") — bila klinik memasukkan nama
+  diagnosis/penyakit ke kolom itu dan diagnosis itu berulang di banyak baris, rekap akan
+  menampilkan **jumlah per diagnosis** (agregat, bukan identitas pasien), yang bisa jadi bukan
+  yang kamu maksudkan.
+- **Batasan jujur soal nama yang salah diketik berulang:** bila staf klinik salah mengetik nama
+  pasien (bukan diagnosis/nomor) ke kolom status/poli/penjamin **≥3 kali** dalam satu file (dan
+  file itu tidak punya kolom "Nama" terpisah yang bisa dipakai script untuk menyaring silang),
+  nama panggilan itu bisa tetap tampil sebagai kategori + jumlah baris. Ini kejadian langka
+  (kesalahan berulang sistematis, bukan salah ketik sekali) — **selalu periksa rincian per
+  hari/poli/penjamin/status sebelum mengirim/mempublikasikan rekap**, ini bagian dari langkah
+  kerja skill (checklist di SKILL.md), bukan opsional.
 
 ## Instalasi singkat
 Salin folder `edukasi-pasien-klinik` ke folder skills AI agent kamu:

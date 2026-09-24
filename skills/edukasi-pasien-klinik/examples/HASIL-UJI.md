@@ -331,3 +331,6 @@ Tidak ada.
 ## SKOR AKHIR v1.0.3: **8 / 10 — LULUS**
 
 B2 dan B2-sisa **tuntas** untuk semua pola salah isi tunggal/jarang, email, inisial, kode ICD, sapaan, dan kolom bergeser. Angka pada data sah maupun rusak cocok dengan verifikasi independen. Sisa risiko (nilai berulang ≥3×) kecil, sebagian sudah diungkap jujur, dan dijaga checklist. **Sebelum naik ke status beta,** sebaiknya perbaiki S5 (pemisah di ujung baris) dan R15(b) (pengungkapan nama berulang). R15(a) dan R16 opsional. Tidak perlu uji ulang penuh; cukup cek singkat `trailing_semua.csv` setelah S5 diperbaiki.
+
+## Cek koordinator — v1.0.4
+S5 (pemisah di ujung setiap baris) diperbaiki: file penguji `trailing_semua.csv` (150 baris) kini menghasilkan rekap normal — total 150, hadir 40 (26,7%), tidak datang 103 (68,7%), sama dengan hitungan penguji di uji v1.0.3. R15(a) penyaringan silang dengan kolom Nama (isi kolom Nama tidak pernah ditampilkan), R15(b) pengungkapan jujur di README/SKILL (nama berulang ≥3x tanpa kolom Nama pembanding tetap bisa tampil — terlihat di file uji ini, sesuai pengungkapan), R16 kutipan persis Pasal 5 huruf d. 61/61 tes lulus. Status tetap lulus.
