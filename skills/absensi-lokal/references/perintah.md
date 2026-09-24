@@ -51,8 +51,10 @@ Perintah bertanda **(tulis)** hanya pratinjau sampai ditambah `--ya` setelah pen
 | `lembur_tanpa_absen` / `lembur_lebih_dari_absen` | cek | Lembur disetujui tidak sesuai jam absen (tetap dihitung) |
 | `lembur_lebih_4_jam` / `lembur_lebih_18_jam_seminggu` | cek | Melebihi Pasal 26 (tetap dihitung) |
 | `tap_ganda`, `golongan_jabatan_tertentu`, `upah_belum_diisi`, `lembur_masa_depan` | info | Informasi |
+| `pulang_lewat_jadwal`, `masuk_libur_tanpa_lembur` | info | Pulang > 60 menit lewat jadwal / masuk di hari libur **tanpa** lembur disetujui — tidak dihitung lembur |
+| `pengingat_makan_pasal_29` | info | Lembur ≥ 4 jam: makan-minum ≥ 1.400 kkal (Pasal 29) |
 
 ## CSV untuk `slip-gaji-bpjs`
-- Tanpa `--gabung`: kolom `nama;jabatan;ptkp;gaji_pokok;tunjangan_tetap;tunjangan_tidak_tetap;lembur_hari_kerja;lembur_hari_libur;kode_absensi;hari_hadir;hari_alpa;terlambat_menit`. `ptkp` & gaji dikosongkan (wajib diisi dulu).
+- Tanpa `--gabung`: kolom `nama;jabatan;ptkp;gaji_pokok;tunjangan_tetap;tunjangan_tidak_tetap;lembur_hari_kerja;lembur_hari_libur;kode_absensi;hari_hadir;hari_alpa;terlambat_menit`. Gaji & tunjangan diisi dari database absensi; pekerja upah harian diisi upah sebulan konversi (× 25 / × 21, Pasal 33) + catatan. `ptkp` wajib diisi dulu.
 - Dengan `--gabung file-gaji.csv`: kolom `lembur_hari_kerja` (mis. `2+1,5`) dan `lembur_hari_libur` (mis. `8+6p`, `p` = libur resmi di hari kerja terpendek) diisi ke file gaji yang sudah ada, dicocokkan lewat nama (atau kode di kolom `nik`). Baris yang sudah berisi `lembur_rp` tidak diisi jam (mencegah dobel).
 - `slip-gaji-bpjs` memakai satu `--hari-kerja` per jalan → ekspor terpisah per pola (`--pola 5` / `--pola 6`).

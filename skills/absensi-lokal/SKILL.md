@@ -18,6 +18,8 @@ Menjadi "aplikasi absensi" pemilik usaha tanpa langganan: data ada di **satu fil
 - Slip gaji, potongan BPJS, PPh 21 → `slip-gaji-bpjs` (skill ini hanya mengirim jam lembur/rekap ke sana)
 - Surat peringatan karena sering telat/alpa → `surat-peringatan-karyawan` (pakai angka rekap dari skill ini)
 - Menarik data langsung dari mesin lewat jaringan/SDK, absen wajah/GPS, atau aplikasi HP karyawan → tidak bisa; minta pengguna mengekspor file (USB/menu Download/Report) dari mesin
+- **Potong gaji/denda otomatis karena telat atau alpa** → tolak menghitungnya otomatis. Denda/pemotongan upah hanya sah bila diatur di Perjanjian Kerja/Peraturan Perusahaan/PKB dan ada batasnya (PP 36/2021); arahkan ke aturan perusahaan + konsultan/Disnaker. Pengguna boleh mengisi sendiri potongan yang sudah sah sebagai `potongan_lain` di `slip-gaji-bpjs`, atau membuat teguran lewat `surat-peringatan-karyawan`.
+- **Melacak lokasi/aktivitas karyawan diam-diam** (GPS, kamera, membaca chat pribadi) → tolak (UU 27/2022 Pelindungan Data Pribadi); skill ini hanya mencatat jam absen.
 - Pertanyaan hukum di luar hitungan (sengketa lembur, PHK) → sampaikan dasar aturan lalu arahkan ke Disnaker/konsultan
 
 ## Aturan keamanan data (WAJIB)
@@ -74,7 +76,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### D. Rekap bulanan
 1. `rekap --bulan 2026-09 --json` (tambah `--csv rekap.csv --csv-harian rincian.csv` bila diminta file Excel; pemisah `;`).
-2. Kirim teks rekap script **apa adanya** (siap tempel ke WA/Telegram). Lalu sampaikan bagian **PERLU DICEK** dan **hari tanpa keterangan** sebagai pertanyaan ke pengguna (izin/sakit/cuti/alpa?). Setelah dijawab, catat dengan `keterangan`, lalu rekap ulang.
+2. Kirim teks rekap script **apa adanya** (siap tempel ke WA/Telegram). Lalu sampaikan bagian **PERLU DICEK** dan **hari tanpa keterangan** sebagai pertanyaan ke pengguna (izin/sakit/cuti/alpa?). Jika script menulis "Belum ada data absen", jangan tanyakan alpa — tanyakan apakah file mesin sudah diimpor. Bagian "Catatan (bukan lembur)" (pulang jauh lewat jadwal / masuk di hari libur tanpa lembur disetujui, pengingat makan Pasal 29) cukup diteruskan; jangan mengubahnya menjadi lembur tanpa persetujuan pengguna. Setelah dijawab, catat dengan `keterangan`, lalu rekap ulang.
 3. Untuk gaji: `rekap --bulan 2026-09 --csv-gaji lembur-gaji.csv [--gabung file-gaji-slip.csv] [--pola 5|6]` → teruskan ke skill `slip-gaji-bpjs` (jalankan dengan `--hari-kerja` sesuai pola). Jika file gaji sudah berisi `lembur_rp`, jam lembur tidak diisi (mencegah dobel) — sampaikan catatannya.
 
 ### E. Laporan harian & jadwal
@@ -130,9 +132,10 @@ Setiap rekap yang memuat lembur diakhiri disclaimer dari script (PP 35/2021, pem
 
 ## Batasan & penanganan error
 - **Golongan jabatan tertentu** (pemikir/perencana/pengendali, waktu kerja tidak dapat dibatasi, upah lebih tinggi — Pasal 27 ayat (2)–(5)) tidak dibayar lembur **hanya bila diatur di PK/PP/PKB**; tandai dengan `--tanpa-lembur ya` atas keputusan pengguna. Sektor usaha tertentu dengan waktu kerja khusus (Pasal 23–25, 30: mis. migas, tambang daerah tertentu) dan upah satuan hasil (Pasal 33 ayat (2)–(3)) **tidak didukung** — arahkan ke konsultan/Disnaker.
-- Batas 4 jam/hari & 18 jam/minggu (Pasal 26) hanya diperingatkan; lembur tetap dihitung sesuai yang disetujui. Lembur hari libur di atas tangga Pasal 31 (11/9/12 jam) ditolak. Kewajiban makan-minum ≥ 1.400 kkal bila lembur ≥ 4 jam (Pasal 29) hanya diingatkan, tidak dihitung.
+- Batas 4 jam/hari & 18 jam/minggu (Pasal 26) hanya diperingatkan; lembur tetap dihitung sesuai yang disetujui. Lembur hari libur di atas tangga Pasal 31 (11/9/12 jam) ditolak. Batas 18 jam/minggu dihitung per minggu Senin–Minggu penuh, termasuk hari di luar periode rekap. Kewajiban makan-minum ≥ 1.400 kkal bila lembur ≥ 4 jam (Pasal 29) muncul sebagai pengingat di pratinjau lembur dan rekap, tidak dihitung rupiah.
 - Pola kerja di luar 5/6 hari (mis. 4 hari on/off, shift rotasi mingguan) belum didukung: satu karyawan = satu shift tetap; rotasi → ubah `--shift` per periode atau catat manual. Cuti bersama dianggap libur resmi **hanya jika** pengguna mencatatnya di `libur` — status cuti bersama untuk swasta perlu dikonfirmasi (lihat references).
 - Tanggal ambigu (hari/bulan vs bulan/hari) dideteksi dari isi file; bila tidak bisa dipastikan, dibaca format Indonesia dan diberi peringatan. Format campuran ditolak.
-- Kode keluar 1 + pesan `error`: jam tidak valid (mis. 25.10), pulang sebelum masuk, karyawan tak dikenal/ambigu, catatan ganda tanpa `--ganti`, jam di masa depan, file kosong/biner/.xls. Sampaikan dengan bahasa sederhana dan minta data yang benar.
+- Kode keluar 1 + pesan `error`: jam tidak valid (mis. 25.10), pulang sebelum masuk, karyawan tak dikenal/ambigu, catatan ganda tanpa `--ganti`, jam di masa depan, file kosong/hanya judul/biner/.xls, file CSV tujuan tidak bisa ditulis (biasanya masih dibuka di Excel: minta tutup lalu ulangi).
+- "Database sedang dipakai program lain" = data aman, hanya terkunci sementara (mis. jadwal OpenClaw sedang jalan): tunggu lalu ulangi. **Jangan pernah menyarankan menghapus/menimpa file database**; bila benar rusak, pulihkan dari `backup-absensi/`. Sampaikan dengan bahasa sederhana dan minta data yang benar.
 - Absen mandiri karyawan lewat chat bot tidak didukung di versi ini (identitas pengirim tidak diverifikasi); pencatatan dilakukan pemilik/admin atau dari mesin.
 - Jika Python tidak bisa dijalankan: aplikasi absensi tidak bisa dioperasikan — katakan terus terang, bantu pasang Python (python.org). Hitung lembur darurat boleh manual dengan rumus di atas, sebutkan "belum diverifikasi script".

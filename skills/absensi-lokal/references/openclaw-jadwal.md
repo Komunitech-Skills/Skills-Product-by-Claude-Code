@@ -16,7 +16,7 @@ Script dijalankan langsung oleh Gateway, keluaran teksnya dikirim apa adanya. Ti
    python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/absensi-lokal/scripts/absensi.py'))"
    ```
    Pastikan file itu ada. Jika skill dipasang di tempat lain, pakai path folder skill ini.
-2. Rekap harian, Senin–Sabtu jam 10.00 WIB:
+2. Rekap harian jam 10.00 WIB. Usaha pola 6 hari: `--cron "0 10 * * 1-6"` (Senin–Sabtu, seperti contoh). Usaha pola **5 hari**: pakai `--cron "0 10 * * 1-5"` (Senin–Jumat).
    ```bash
    openclaw automations add --name "Absensi harian" --cron "0 10 * * 1-6" --tz Asia/Jakarta \
      --command-argv '["python3","/home/NAMA/.openclaw/skills/absensi-lokal/scripts/absensi.py","harian"]' \
