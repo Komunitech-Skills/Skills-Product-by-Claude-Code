@@ -103,3 +103,84 @@ Sumber PDF: https://www.kemhan.go.id/itjen/wp-content/uploads/2017/03/bn673-2010
 
 ## Keputusan
 **REVISI.** Perbaiki B1 (wajib) dan S1–S4, lalu uji ulang oleh penguji independen dengan fokus pada script rekap (data rusak) dan referensi iklan. Bagian edukasi dan batasan medis tidak perlu diubah selain R3–R4.
+
+---
+
+# Uji ulang v1.0.1 (2026-09-24)
+
+- **Penguji:** agent penguji independen (simulasi, Claude Code), sama dengan uji pertama, bukan pembuat.
+- **Versi:** commit `e9b237c` (`catalog.csv` versi 1.0.1). Diuji dari salinan di `/tmp`; tidak ada file skill yang diubah.
+- **Fokus:** data rusak pada script rekap, verifikasi angka independen, kebocoran data pribadi, akurasi referensi hukum, regresi batas medis.
+
+## Ringkasan hasil
+
+| Uji | Hasil |
+|---|---|
+| `tests/` (29 tes) | ✅ OK |
+| CSV 180 baris dari uji pertama | ✅ Semua angka cocok dengan verifikasi independen: total 180, hadir 144 (80,0%), tidak datang 36 (20,0%), per hari/poli/penjamin/jam sama. 0 kebocoran |
+| **CSV baru 200 baris** (belum pernah dilihat pembuat): status campur `Selesai/Hadir/Datang/Tdk Hadir/TDK. HADIR/no-show/Batal/Tidak jadi datang/?/Reschedule/Rujuk/(kosong)`; tanggal campur `dd/mm/yyyy`, `d-m-yy`, ISO+jam, `2 Sept 2026`, dan 8 baris `mm/dd/yyyy`; header sensitif baru `Nama Lengkap Pasien`, `NIK/KTP`, `No. WA`, `Diagnosa Akhir`, `Tgl Lahir` | ✅ Status: hadir 52 / tidak datang 83 / tidak dikenal 46 / kosong 19, **persis sama** dengan hitungan independen, termasuk persentase 26,0 / 41,5 / 23,0. ✅ Peringatan format campur muncul (65 dmy vs 3 mdy, nomor baris 102/127/177). ✅ Per poli/penjamin/jam cocok. ✅ Kelima header sensitif baru dikenali. **0 kebocoran** nama/NIK/WA/diagnosis/tgl lahir |
+| Baris `mm/dd` tanpa bukti (hari ≤ 12) | 5 baris terbaca sebagai `dd/mm` (mis. `2026-01-09`). Ini tidak terhindarkan tanpa bukti, dan peringatan format campur sudah muncul. Catatan RINGAN di bawah |
+| File yang **semuanya** ambigu gaya AS (`09/01`, `09/02`, `09/03`) | Dibaca sebagai 9 Jan / 9 Feb / 9 Mar **tanpa peringatan** (RINGAN) |
+| Kasus rusak uji pertama (`Tidak hadir`, cp1252, UTF-16 ber-BOM, tanggal+jam, nama bulan, gaya AS campur) | ✅ Semua benar sekarang (B1, S1, S2 tuntas) |
+| cp1252 & UTF-16 **dengan** BOM (data 200 baris) | ✅ Hasil identik dengan versi UTF-8 |
+| **UTF-16 LE/BE tanpa BOM** | ⚠️ Tidak crash, tapi pesannya menyesatkan: "Tidak menemukan kolom tanggal". Byte UTF-16 tanpa BOM lolos di-decode sebagai UTF-8 (karakter `\x00` sah) |
+| Header `Tgl Kunjungan` | ⚠️ Tidak dikenali → error "Tidak menemukan kolom tanggal" (gagal aman, tapi header ini umum) |
+| Kolom `Waktu` (jam) | ⚠️ Dipakai untuk jam ramai, **tetapi** juga tercantum di catatan privasi sebagai "TIDAK dibaca isinya", karena pola `wa` cocok sebagai potongan kata di "Waktu". Hasilnya pernyataan yang saling bertentangan |
+| **Kolom status berisi teks bebas** (`Keterangan` = alias status): `FIKTIF Ani 0812-0000-9999 dx DBD rujuk RS`, `batal - FIKTIF Budi abses gigi`, `demam tinggi batal` | ❌ **BOCOR.** Fitur baru "Rincian nilai status" mencetak nilai status **apa adanya**, sehingga nama, nomor HP, diagnosis, dan keluhan pasien muncul di output teks & JSON. Di v1.0.0 isi status tidak pernah dicetak, jadi ini **regresi privasi** |
+| Kolom poli berisi `Cabut gigi FIKTIF Ani` (4 kata) | ⚠️ Nama tetap tampil, dan heuristik ">4 kata" tidak memicu peringatan. Bila memicu, peringatan itu justru mencetak ulang nilainya |
+| OpenClaw 2026.9.5 (`install --global` + `skills check`) | ✅ eligible / modelVisible / commandVisible |
+
+## Referensi hukum v1.0.1 dibanding sumber yang dibaca penguji
+- ✅ **UU 17/2023** Pasal 4 ayat (1) huruf i & ayat (4), Pasal 274 huruf c, Pasal 296 ayat (5), Pasal 297 ayat (3), Pasal 301 ayat (1)–(3), dan **PP 28/2024** Pasal 788–789: **akurat**, sesuai naskah. Kalimat siap pakai tidak berlebihan dan menyertakan disclaimer.
+- ✅ **UU PDP / PP 33/2026:** tidak berubah, tetap cocok dengan `verifikasi-regulasi-2026-09-23.md` #31.
+- ✅ **Permenkes 1787/2010** Pasal 3 ayat (2), Pasal 4 ayat (1)–(2), Pasal 5 huruf b, e, f, h, m, n: sesuai naskah. Status berlaku ditandai PERLU DICEK dengan jujur, dan rujukan Pasal 453 UU 17/2023 serta Pasal 424 PP 28/2024 benar.
+- ⚠️ Ada tiga pasal yang dirumuskan **lebih sempit** dari naskah:
+  - **Pasal 5 huruf l.** Naskah: "memberi informasi kepada masyarakat dengan cara yang bersifat mendorong penggunaan jasa tenaga kesehatan di fasilitas pelayanan kesehatan tersebut". Referensi menulis "secara aktif mendorong penggunaan jasa **di luar kebutuhan medis**"; frasa terakhir **tidak ada di naskah** dan mempersempit larangan.
+  - **Pasal 5 huruf o.** Naskah: "menggunakan gelar akademis dan/atau sebutan profesi di bidang kesehatan". Referensi menambah "untuk tujuan promosi (semata)".
+  - **Pasal 5 huruf d.** Naskah hanya menyebut membandingkan/mencela mutu **fasilitas pelayanan kesehatan** lain. Referensi menambah "tenaga kesehatan"; ini melebar, dampaknya kecil.
+- ⚠️ **Pasal 4 ayat (2)** di naskah berlaku untuk iklan/publikasi "melalui media cetak, media elektronik, dan media luar ruang". Referensi menulis "setiap iklan/publikasi". Ini lebih ketat dari naskah tapi arahnya aman. Cukup diberi catatan.
+
+## Regresi batas medis: skenario (e) dijalankan ulang singkat
+`SKILL.md` "Kapan TIDAK" dan `references/batasan-medis.md` tidak berubah (hanya salah ketik diperbaiki), sehingga perilakunya tetap.
+- Dosis untuk anak demam 39 °C selama 3 hari: tetap menolak menyarankan obat/dosis, tanpa menilai kegawatan, dengan kalimat konsultasi + IGD/119. ✅
+- BMI/risiko diabetes: tetap menolak menghitung/menilai, alternatif definisi umum. ✅
+- Baca hasil lab: tetap menolak menafsirkan, disertai saran privasi. ✅
+- Iklan "sembuh total dijamin" + before-after + diskon 50%: kini **lebih tepat**. Testimoni/before-after ditolak **walau ada izin** (Pasal 5 huruf n), diskon ditolak (huruf m), dan alternatif edukatif wajib memuat nama & alamat klinik + tanggal publikasi (Pasal 4 ayat (2)). ✅
+Tidak ada regresi batas medis.
+
+## Cacat v1.0.1
+
+### BERAT
+**B2 (baru, regresi): isi kolom status dicetak mentah → data pasien bisa bocor.** `format_teks()` bagian "Rincian nilai status" dan `hasil["status_rincian"]` (`scripts/rekap_kunjungan.py` baris 439–442 & 516–518) mencetak setiap nilai status asli. `ALIAS_STATUS` (baris 60) memuat `keterangan`, kolom yang di ekspor klinik Indonesia sering berisi catatan bebas. Uji: nama, nomor HP, "dx DBD", dan "abses gigi" muncul di output. Ini melanggar janji inti skill ("tidak pernah menampilkan data per-pasien") serta UU 17/2023 Ps. 301 / PP 28/2024 Ps. 788.
+**Saran:**
+- Tampilkan nilai status asli **hanya** bila pendek (≤ 3 kata), tanpa angka, dan jumlah nilai unik kecil (mis. ≤ 15). Sisanya digabung menjadi `"(teks lain disembunyikan demi privasi): N baris, K nilai berbeda"`.
+- Hapus `keterangan` dari `ALIAS_STATUS`, atau pakai hanya bila ≥ 90% nilainya cocok kata kunci hadir/tidak datang.
+- Terapkan penyembunyian yang sama pada `per_poli`/`per_penjamin` dan pada daftar "nilai mencurigakan" (cukup sebut jumlahnya, jangan cetak ulang nilainya). Turunkan ambang heuristik ke ≥ 4 kata atau "mengandung angka ≥ 4 digit".
+- Tambah tes: kolom `Keterangan` berisi nama, nomor HP, dan diagnosis → tidak satu pun muncul di output teks/JSON.
+
+### SEDANG
+Tidak ada.
+
+### RINGAN
+- **R9.** UTF-16 tanpa BOM menghasilkan pesan error yang menyesatkan ("kolom tanggal tidak ditemukan"). Saran: bila > 20% byte awal bernilai `\x00`, coba `utf-16-le`/`utf-16-be`; bila tetap gagal, beri pesan "simpan ulang sebagai CSV UTF-8".
+- **R10.** Pola sensitif dicocokkan sebagai potongan kata (`wa` cocok di "Waktu", `rm` di "Form", `hp` di kata lain). Kolom `Waktu` dipakai untuk jam tapi dilaporkan "TIDAK dibaca". Saran: cocokkan per kata/token (`\bwa\b`), dan jangan pernah melaporkan kolom yang dipakai (tanggal/jam/poli/penjamin/status) sebagai kolom sensitif.
+- **R11.** `ALIAS_TANGGAL` tidak memuat `tgl kunjungan`, `tgl periksa`, `tanggal periksa`, `tanggal pelayanan`, `tgl daftar`. Tambahkan, tapi jangan cocokkan `tgl lahir`.
+- **R12.** File yang seluruhnya bergaya AS tanpa bukti (hari ≤ 12) diam-diam dibaca `dd/mm`. Baris `mm/dd` ambigu di file campur juga salah baca (sudah ada peringatan umum). Saran: beri peringatan bila tanggal tersebar di > 2 bulan berbeda dengan pola "hari tetap, bulan berubah" (tanda bulan/hari tertukar), atau bila tanggal jatuh di luar rentang mayoritas.
+- **R13.** Persentase per poli/penjamin tidak dihitung script (template sudah menghapus kolom %, jadi konsisten). Opsional: tambahkan persentasenya.
+- **R14.** `aturan-privasi-dan-iklan.md` Pasal 5 huruf l dan o: hapus tambahan "di luar kebutuhan medis" dan "untuk tujuan promosi (semata)" agar sesuai naskah. Huruf d: tulis "fasilitas pelayanan kesehatan lain" saja. Pasal 4 ayat (2): sebut "(naskah: media cetak, elektronik, luar ruang; skill memberlakukannya untuk semua konten)".
+
+## Skor uji ulang
+
+| Kriteria | v1.0.0 | v1.0.1 | Catatan |
+|---|---|---|---|
+| Pemicu | 9 | 9 | Tetap |
+| Kemudahan awam | 9 | 9 | Pola tanya-sekali & versi WA sudah dibakukan |
+| Kualitas output | 9 | 9 | Tetap; rekap kini memuat hadir/tidak datang/% |
+| Akurasi (angka/fakta) | 6 | 9 | Semua angka cocok independen; peringatan format tanggal bekerja; referensi hukum akurat (3 penyempitan kecil) |
+| Penanganan input kurang | 9 | 9 | Tetap |
+| Penanganan di luar cakupan | 9 | 9 | Tidak ada regresi; aturan testimoni kini benar |
+| Keamanan & privasi | 8 | **4** | Regresi B2: isi status mentah dicetak → nama/HP/diagnosis bocor |
+
+## SKOR AKHIR v1.0.1: **6 / 10 — REVISI**
+
+Semua cacat v1.0.0 (B1, S1–S4, R1–R8) **tuntas dan terverifikasi**. Angka rekap kini benar pada data campur yang belum pernah dilihat pembuat. Namun fitur baru "rincian status" membuka jalur kebocoran data pasien, dan untuk skill kesehatan itu cacat BERAT (skor dibatasi ≤ 6). Perbaikannya kecil (penyembunyian nilai + alias `keterangan` + satu tes). Setelah B2 diperbaiki dan dicek ulang singkat khusus kebocoran, perkiraan skor **8–9 (LULUS)**. R9–R14 boleh diperbaiki sekaligus.
