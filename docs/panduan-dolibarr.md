@@ -128,8 +128,15 @@ Dolibarr **tidak punya** tarif PPN Indonesia bawaan dan **tidak punya** fitur "D
 ---
 
 ## 6. Buat user khusus API ("baca dulu")
-Jangan memakai akun **admin** untuk AI. Buat akun terpisah dengan hak sekecil mungkin.
-1. **Pengguna & Grup (Users & Groups) → Pengguna Baru (New user)**: nama "API Komunitech", login `api_komunitech`, **Administrator: Tidak**, sandi acak panjang (tidak perlu diingat). Simpan.
+Jangan memakai akun **admin** untuk AI. Buat akun terpisah dengan hak sekecil mungkin. Disarankan **dua** user:
+
+| User | Dipakai untuk | Kunci disimpan di |
+|---|---|---|
+| `api_baca` (**baca saja**) | laporan harian terjadwal, piutang, stok, cari pelanggan | file kunci default (`simpan-kunci`) — dipakai jadwal OpenClaw |
+| `api_draf` (opsional, belakangan) | tambah pelanggan & membuat **draf** invoice | file kunci terpisah, dipakai hanya saat Anda sendiri meminta (`--kunci-file`) |
+
+### 6.1 User baca-saja (wajib)
+1. **Pengguna & Grup (Users & Groups) → Pengguna Baru (New user)**: nama "API Baca", login `api_baca`, **Administrator: Tidak**, sandi acak panjang (tidak perlu diingat). Simpan.
 2. Buka user itu → tab **Izin (Permissions)** → beri **hanya** hak berikut (klik tanda tambah di barisnya):
    | Modul | Hak | Wajib? |
    |---|---|---|
@@ -137,12 +144,21 @@ Jangan memakai akun **admin** untuk AI. Buat akun terpisah dengan hak sekecil mu
    | Pihak ketiga | Perluas akses ke semua pihak ketiga (262) | ya (tanpa ini daftar pelanggan kosong) |
    | Nota | Baca faktur pelanggan (dan pembayaran) (11) | ya |
    | Produk | Membaca Produk (31) | ya |
-   | Stok | Baca gudang dan stok (1001) | ya |
-3. **Baru setelah yakin** (mis. 1–2 minggu memakai laporan), tambah hak menulis: **Buat/modifikasi pihak ketiga (122)** dan **Membuat/Merubah Nota Pelanggan (12)**.
-4. **Jangan** berikan: Validasi faktur, Terbitkan pembayaran, Hapus (faktur/pihak ketiga/produk), Buat/ubah produk, Pergerakan stok, Pengguna & grup.
-5. (Opsional) Hak **Buat/ubah pengguna sendiri (342)** membuat perintah `cek` bisa menampilkan daftar hak. Tanpa hak ini `cek` tetap berjalan (menguji baca satu per satu).
-- ✅ **Cek berhasil:** jalankan `cek` (bagian 7). Semua modul "aktif, bisa dibaca"; tidak ada catatan "hak berisiko".
-- ❌ **Kalau gagal:** "TIDAK BISA DIBACA" → hak baca modul itu belum diberikan (atau modulnya belum aktif). Daftar pelanggan kosong padahal ada → hak 262 belum diberikan.
+   | Stok | Baca gudang dan stok (1001) | ya, bila modul Stok dipakai |
+3. (Opsional) Hak **Buat/ubah pengguna sendiri (342)** membuat perintah `cek` bisa menampilkan daftar hak dan membedakan "modul Stok mati" dari "hak stok kurang". Tanpa hak ini `cek` tetap berjalan (menguji baca satu per satu).
+
+### 6.2 User pembuat draf (opsional, setelah 1–2 minggu yakin)
+Buat user kedua `api_draf` dengan hak 6.1 **ditambah** **Buat/modifikasi pihak ketiga (122)** dan **Membuat/Merubah Nota Pelanggan (12)**. Simpan kuncinya ke file lain, mis. `python3 dolibarr.py simpan-kunci --kunci-file ~/.komunitech/dolibarr-kunci-draf.txt`, dan minta AI memakai `--kunci-file` itu hanya saat membuat pelanggan/draf.
+
+> ⚠️ **Jujur soal risiko (diuji di Dolibarr 24.0.1, 25 Sep 2026):** di Dolibarr, hak **"Membuat/Merubah Nota Pelanggan" (12)** lewat API **juga cukup untuk MEMVALIDASI invoice, mengembalikannya ke draf, dan MENANDAI LUNAS/BELUM LUNAS**, serta mengubah/menghapus baris invoice. Hak "Validasi faktur" (14) hanya berlaku di layar Dolibarr bila izin lanjutan aktif, **tidak** di API. Yang tetap ditolak untuk hak 12 saja: **mencatat pembayaran** (butuh hak 16) dan **menghapus invoice** (butuh hak 19). Hak 122 juga bisa **mengubah** data pelanggan yang sudah ada.
+> Skill Dolibarr Usaha **tidak punya** perintah validasi, tandai lunas, bayar, ubah, atau hapus, dan agent dilarang memanggil API di luar script. Tetapi siapa pun yang memegang kunci `api_draf` secara teknis **mampu** melakukannya. Karena itu: jangan pakai kunci `api_draf` untuk jadwal otomatis, jangan bagikan, dan buat kunci baru bila curiga bocor.
+> Sumber: `htdocs/compta/facture/class/api_invoices.class.php` (24.0.1) — `validate`, `settodraft`, `settopaid`, `settounpaid` memeriksa `hasRight('facture','creer')`; `payments` memeriksa `paiement`; hapus memeriksa `supprimer`.
+
+### 6.3 Jangan pernah berikan ke user API
+Terbitkan pembayaran (16), Hapus (faktur 19 / pihak ketiga 125 / produk 34), Buat/ubah produk (32), Pergerakan stok (1005), Pengguna & grup (251–256), dan jangan jadikan Administrator.
+
+- ✅ **Cek berhasil:** jalankan `cek` (bagian 7). Semua modul "aktif, bisa dibaca". Untuk `api_baca` tidak ada catatan "hak berisiko". Untuk `api_draf` muncul catatan bahwa hak invoice bisa memvalidasi/menandai lunas — itu pengingat risiko di atas, bukan galat.
+- ❌ **Kalau gagal:** "TIDAK BISA DIBACA" → hak baca modul itu belum diberikan (atau modulnya belum aktif). Daftar pelanggan kosong padahal ada → hak 262 belum diberikan. "Modul Stok belum aktif" → aktifkan Stok (bagian 5) atau abaikan bila tidak memakai stok.
 
 ---
 
@@ -208,7 +224,7 @@ Salin `C:\dolibarr\www\dolibarr\htdocs\conf\conf.php` ke tempat cadangan yang **
 1. **Jangan buka Dolibarr ke internet**: jangan port-forward di router, jangan pakai tunnel (ngrok dsb.), jangan pasang di hosting tanpa HTTPS. Skill menolak alamat selain komputer ini kecuali Anda menegaskannya.
 2. Konfigurasi bawaan DoliWamp membuat Apache mendengar di **semua jaringan**. Jadi di Windows Firewall, **jangan izinkan** `httpd.exe` dan `mysqld.exe` untuk jaringan Public. Bila ragu, minta teknisi/jasa setup untuk membatasi Apache ke `127.0.0.1`.
 3. Ganti sandi database bawaan `changeme` (2.2.3) dan pakai sandi admin Dolibarr yang kuat.
-4. AI memakai **user khusus API** berhak minimal (bagian 6), bukan admin.
+4. AI memakai **user khusus API** berhak minimal (bagian 6), bukan admin. Jadwal otomatis memakai kunci **baca-saja**; kunci yang bisa membuat draf juga bisa memvalidasi/menandai lunas lewat API (6.2), jadi simpan terpisah.
 5. Perbarui DoliWamp bila ada versi baru (cadangkan dulu, bagian 9).
 6. Pasang antivirus, aktifkan Windows Update, dan kunci layar komputer toko.
 7. Cadangan disimpan terpisah dari komputer (ransomware bisa ikut mengunci file di disk yang sama).

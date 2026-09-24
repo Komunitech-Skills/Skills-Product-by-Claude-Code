@@ -23,6 +23,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 DIABAIKAN = {"__pycache__", ".DS_Store", "Thumbs.db", "tests"}  # tests/ = uji internal, tidak dikirim ke pembeli
+# Panduan bersama di docs/ yang dirujuk skill (`docs/nama.md` di SKILL.md/README.md) ikut dipaketkan ke docs/.
+POLA_DOCS = re.compile(r"\bdocs/([a-z0-9][a-z0-9-]*\.md)\b")
+DOCS_INTERNAL = {"instalasi.md", "program-beta.md", "uji-platform.md"}  # instalasi.md sudah jadi CARA-INSTAL.md
+
+
+def docs_dirujuk(folder):
+    """Nama file docs/*.md yang dirujuk SKILL.md/README.md sebuah skill dan memang ada di repo."""
+    hasil = set()
+    for nama in ("SKILL.md", "README.md"):
+        f = folder / nama
+        if f.is_file():
+            hasil.update(POLA_DOCS.findall(f.read_text("utf-8")))
+    return sorted(n for n in hasil - DOCS_INTERNAL if (ROOT / "docs" / n).is_file())
 
 
 def buat_kode_lisensi(pembeli, waktu):
@@ -119,8 +132,10 @@ def main():
     instalasi = ROOT / "docs" / "instalasi.md"
 
     with zipfile.ZipFile(path_zip, "w", zipfile.ZIP_DEFLATED) as z:
+        panduan = set()
         for b in pilihan:
             folder = ROOT / "skills" / b["nama"]
+            panduan.update(docs_dirujuk(folder))
             for f in sorted(folder.rglob("*")):
                 if not f.is_file() or DIABAIKAN & set(f.relative_to(folder).parts):
                     continue
@@ -131,6 +146,8 @@ def main():
                     z.write(f, arc)
         if instalasi.is_file():
             z.write(instalasi, "CARA-INSTAL.md")
+        for n in sorted(panduan):
+            z.write(ROOT / "docs" / n, f"docs/{n}")
         daftar = "\n".join(f"  - {b['nama']} v{b['versi']}" for b in pilihan)
         z.writestr("LISENSI.txt",
                    f"Kode lisensi : {kode}\nPemegang     : {a.pembeli}\nJenis        : {jenis}\n"

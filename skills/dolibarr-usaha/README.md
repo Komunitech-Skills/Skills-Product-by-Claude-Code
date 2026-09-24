@@ -5,7 +5,7 @@
 ## Manfaat
 - ✅ **Invoice dalam satu kalimat.** Pelanggan dan barang dicari otomatis, PPN 12% × DPP 11/12 dihitung, lalu dibuat sebagai **draf** di Dolibarr. Setelah itu angkanya dicocokkan dengan hitungan Dolibarr, dan bila beda sepeser pun Anda diberi tahu.
 - ✅ **Tahu siapa yang belum bayar.** Daftar piutang dikelompokkan per umur (belum jatuh tempo, telat 1–30, 31–60, 61–90, >90 hari), yang paling lama telat di atas.
-- ✅ **Stok tidak kecolongan.** Barang habis, minus, dan menipis muncul lengkap dengan saran jumlah beli.
+- ✅ **Stok tidak kecolongan.** Barang habis, minus, dan menipis muncul lengkap dengan saran jumlah beli. Bila modul Stok tidak dipakai, skill mengatakannya terus terang, tanpa alarm "habis" palsu.
 - ✅ **Laporan tiap malam ke Telegram.** Penjualan hari ini dibanding kemarin, piutang terlambat, dan stok menipis, dikirim otomatis lewat OpenClaw.
 - ✅ **Aman untuk data usaha.** Default hanya membaca. Menulis (pelanggan baru, draf invoice) selalu lewat pratinjau dan butuh persetujuan Anda. Validasi, pembayaran, dan hapus tetap Anda yang pegang. Kunci akses disimpan aman dan tidak pernah ditampilkan.
 
@@ -61,11 +61,11 @@ Setelah terpasang dan terhubung, cukup ketik permintaan biasa:
 
 Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, atau paket tambahan.
 
-**Status uji jujur:** diuji dengan Dolibarr asli **24.0.1 dan 22.0.4** (versi DoliWamp terbaru) di Linux, 46 uji otomatis, dan jadwal OpenClaw 2026.9.6 (tanpa pengiriman Telegram sungguhan). **Belum** diuji di DoliWamp Windows sungguhan; versi Dolibarr lain akan diberi tanda "belum diuji".
+**Status uji jujur (versi 1.0.1):** diuji dengan Dolibarr asli **24.0.1 dan 22.0.4** (versi DoliWamp terbaru) di Linux, uji independen v1.0.0 (temuannya diperbaiki di 1.0.1, menunggu uji ulang), uji otomatis, dan jadwal OpenClaw 2026.9.6 (tanpa pengiriman Telegram sungguhan). **Belum** diuji di DoliWamp Windows sungguhan; versi Dolibarr lain akan diberi tanda "belum diuji".
 
 ## FAQ
 **Apakah AI bisa salah mengirim atau menghapus invoice saya?**
-Tidak bisa lewat skill ini. Script tidak punya perintah validasi, kirim, bayar, atau hapus. Invoice selalu dibuat sebagai draf dan Anda yang memvalidasi di Dolibarr. Membuat pelanggan/draf pun harus lewat pratinjau dan persetujuan Anda.
+Tidak lewat skill ini: script tidak punya perintah validasi, kirim, bayar, atau hapus. Invoice selalu dibuat sebagai draf dan Anda yang memvalidasi di Dolibarr; membuat pelanggan/draf pun harus lewat pratinjau dan persetujuan Anda. Jujur saja: di Dolibarr, kunci yang boleh membuat invoice secara teknis juga bisa memvalidasi/menandai lunas lewat API. Karena itu panduan menyarankan kunci **baca-saja** untuk laporan harian dan kunci terpisah untuk membuat draf (`docs/panduan-dolibarr.md` bagian 6).
 
 **Kenapa PPN di Dolibarr kadang beda Rp 1 dengan hitungan skill?**
 Dolibarr menghitung PPN per baris lalu membulatkan ke terdekat, sedangkan standar Komunitech menghitung dari total lalu membulatkan ke bawah (agar tidak pernah memungut melebihi tarif). Skill menampilkan keduanya dan tidak mengubah apa pun. Nilai PPN resmi tetap mengikuti faktur di Coretax.

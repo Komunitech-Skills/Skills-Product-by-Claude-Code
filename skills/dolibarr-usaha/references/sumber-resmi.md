@@ -33,6 +33,9 @@ Semua fakta tentang Dolibarr di skill ini diambil dari sumber resmi **dan** dico
 | `POST /invoices` dengan `lines` sekaligus | berhasil tetapi memunculkan PHP Warning; script memakai `POST /invoices` lalu `POST /invoices/{id}/lines` per baris (tanpa warning) |
 | PPN per baris | 12.345 × 11% = 1.357,95 disimpan apa adanya (2 desimal); dengan "Maks. desimal harga total" = 0 → 1.358 |
 | `status=unpaid` | berisi juga invoice yang sudah dibayar penuh tapi belum ditutup (`remaintopay` = 0) |
+| Modul Stok dimatikan (24.0.1) | `GET /warehouses` = **403** walau user punya hak 1001 (hak tetap tercantum di `/users/info`); produk dikirim **tanpa** `stock_reel` (juga bila user tidak punya hak stok) |
+| Hak 12 "Buat/ubah invoice" saja (24.0.1, diuji 25 Sep 2026) | `POST invoices/{id}/validate` **berhasil** (PROV→IN…), `POST invoices/{id}/settopaid` **berhasil** (paye=1); `paymentsdistributed` **403** (butuh 16); `DELETE invoices/{id}` **403** (butuh 19). Sumber: `api_invoices.class.php` baris 1208, 1264 (`hasRight('facture','creer')`), 1752/1879 (`paiement`), 960 (`supprimer`) |
+| Zona PHP server ≠ zona toko | tanggal dikirim sebagai tengah malam zona server; server `Asia/Makassar` dengan `--tz WIB` → script membulatkan ke tanggal terdekat, hasil sama dengan server WIB (diuji) |
 | Filter `sqlfilters` | `(t.nom:like:'%x%')`, `(t.rowid:in:1,2)`, `(t.datef:=:'2026-09-24')` berfungsi di 22.0.4 & 24.0.1 |
 
 ## Belum diverifikasi

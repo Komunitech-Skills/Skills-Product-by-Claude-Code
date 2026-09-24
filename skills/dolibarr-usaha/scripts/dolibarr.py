@@ -38,10 +38,13 @@ import urllib.parse
 import urllib.request
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
-VERSI_SKRIP = "1.0.0"
+VERSI_SKRIP = "1.0.1"
 URL_DEFAULT = "http://localhost/dolibarr"
 VERSI_TERUJI = ("22.0.4", "24.0.1")
 BATAS_WAKTU = 20
+BATAS_JUMLAH = Decimal(1000000)          # jumlah per baris
+BATAS_HARGA = Decimal(100000000000)      # Rp 100 miliar per satuan
+BATAS_TEMPO = 3650                       # hari
 PER_HALAMAN = 100
 MAKS_HALAMAN = 50  # 5.000 baris; cukup untuk UMKM, mencegah loop tanpa akhir
 
@@ -166,14 +169,19 @@ def sekarang_lokal(offset):
 
 
 def tanggal_dari_ts(ts, offset):
-    """Timestamp Dolibarr (detik UTC) -> tanggal kalender di zona toko."""
+    """Timestamp tanggal Dolibarr (detik UTC) -> tanggal kalender di zona toko.
+
+    Kolom tanggal Dolibarr (tanggal invoice, jatuh tempo) dikirim sebagai timestamp tengah malam
+    menurut zona PHP server, yang bisa berbeda dengan zona toko (mis. DoliWamp = UTC, server Bali =
+    WITA, hosting luar negeri). Dibulatkan ke tanggal terdekat (+12 jam kurang 1 detik lalu dipotong) agar
+    tidak mundur/maju satu hari selama server paling jauh 12 jam di barat atau 11 jam di timur zona toko."""
     if ts in (None, "", 0, "0"):
         return None
     try:
         t = int(float(ts))
-    except (TypeError, ValueError):
+        return (dt.datetime.fromtimestamp(t, dt.timezone.utc) + dt.timedelta(hours=offset + 12, seconds=-1)).date()
+    except (TypeError, ValueError, OverflowError, OSError):
         return None
-    return (dt.datetime.fromtimestamp(t, dt.timezone.utc) + dt.timedelta(hours=offset)).date()
 
 
 def ts_siang(tanggal, offset):
@@ -215,17 +223,41 @@ def izin_file_aman(path):
     return (mode & 0o077) == 0
 
 
+def bersihkan_kunci(mentah, sumber):
+    """Kunci API harus satu baris tanpa spasi. Spasi/baris baru di ujung dibuang; di tengah = ditolak.
+    Semua potongan nilai mentah didaftarkan sebagai rahasia agar tidak pernah tercetak utuh."""
+    mentah = (mentah or "").replace("\ufeff", "")
+    for potong in re.split(r"\s+", mentah):
+        if len(potong) >= 4:
+            _RAHASIA.append(potong)
+    k = mentah.strip()
+    if not k:
+        return ""
+    if re.search(r"\s", k) or not re.fullmatch(r"[\x21-\x7e]+", k):
+        raise Gagal("Kunci API dari {} berisi spasi, baris baru, atau karakter aneh di tengahnya, jadi tidak "
+                    "dipakai.".format(sumber), KELUAR_AKSES,
+                    saran="Salin ulang kunci dari Dolibarr (tombol salin di kolom Token for API) lalu simpan "
+                          "lagi dengan `simpan-kunci`. File kunci harus berisi satu baris saja.")
+    if len(k) < 8:
+        raise Gagal("Kunci API dari {} terlalu pendek (kurang dari 8 karakter).".format(sumber), KELUAR_AKSES)
+    return k
+
+
 def baca_kunci(path_file=None):
-    k = os.environ.get("DOLIBARR_API_KEY", "").strip()
+    k = bersihkan_kunci(os.environ.get("DOLIBARR_API_KEY", ""), "ENV DOLIBARR_API_KEY")
     if k:
         return k, "ENV DOLIBARR_API_KEY"
-    path = path_file or os.environ.get("DOLIBARR_API_KEY_FILE") or lokasi_file_kunci()
+    path = os.path.expanduser(path_file or os.environ.get("DOLIBARR_API_KEY_FILE") or lokasi_file_kunci())
     if os.path.isfile(path):
         if not izin_file_aman(path):
             raise Gagal("File kunci {} bisa dibaca pengguna lain. Amankan dulu dengan: chmod 600 \"{}\""
                         .format(path, path), KELUAR_AKSES)
-        with open(path, encoding="utf-8") as f:
-            k = f.read().strip()
+        try:
+            with open(path, encoding="utf-8") as f:
+                isi = f.read(4096)
+        except (OSError, UnicodeDecodeError) as e:
+            raise Gagal("File kunci {} tidak bisa dibaca ({}).".format(path, type(e).__name__), KELUAR_AKSES)
+        k = bersihkan_kunci(isi, "file " + path)
         if k:
             return k, "file " + path
     raise Gagal(
@@ -473,6 +505,10 @@ def cmd_cek(api, args, catatan_url, sumber_kunci):
     if out.get("admin"):
         out["catatan"].append("Kunci ini milik user ADMIN. Sebaiknya buat user khusus API dengan hak minimal "
                               "(lihat docs/panduan-dolibarr.md bagian 'User khusus API').")
+    if out.get("hak", {}).get("buat/ubah draf invoice (menulis)"):
+        out["catatan"].append("Hak 'Buat/ubah invoice' di Dolibarr juga mengizinkan MEMVALIDASI dan MENANDAI LUNAS "
+                              "invoice lewat API (bukan hanya draf). Skill ini tidak punya perintah itu, tetapi "
+                              "kunci ini mampu. Untuk laporan terjadwal pakai kunci user baca-saja terpisah.")
     if out.get("hak_berisiko"):
         out["catatan"].append("User API punya hak yang tidak dibutuhkan skill ini: {}. Cabut di Dolibarr "
                               "agar lebih aman.".format(", ".join(out["hak_berisiko"])))
@@ -503,14 +539,14 @@ def cmd_cek(api, args, catatan_url, sumber_kunci):
 # ------------------------------------------------------------------ perintah: simpan-kunci
 def cmd_simpan_kunci(args):
     import getpass
-    path = args.kunci_file or lokasi_file_kunci()
+    path = os.path.expanduser(args.kunci_file or lokasi_file_kunci())
     if sys.stdin.isatty():
         k = getpass.getpass("Tempel kunci API Dolibarr (tidak akan tampil), lalu Enter: ").strip()
     else:
-        k = sys.stdin.readline().strip()
-    if not k or len(k) < 8 or re.search(r"\s", k):
-        raise Gagal("Kunci kosong atau tidak wajar. Tidak ada yang disimpan.", KELUAR_ARG)
-    _RAHASIA.append(k)
+        k = sys.stdin.readline()
+    k = bersihkan_kunci(k, "masukan")
+    if not k:
+        raise Gagal("Kunci kosong. Tidak ada yang disimpan.", KELUAR_ARG)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     if os.name != "nt":
         os.chmod(os.path.dirname(path), 0o700)
@@ -531,20 +567,48 @@ def ringkas_pelanggan(t):
             "kota": t.get("town") or "", "status": "aktif" if str(t.get("status", "1")) == "1" else "nonaktif"}
 
 
+def norm_hp(teks):
+    """Nomor telepon -> bentuk baku 08xxx: buang spasi/strip/titik/kurung; +62/62 -> 0; 8xx -> 08xx."""
+    d = re.sub(r"\D", "", str(teks or ""))
+    if d.startswith("62"):
+        d = "0" + d[2:]
+    elif d.startswith("8"):
+        d = "0" + d
+    return d
+
+
+def mirip_nomor(kata):
+    """Kata pencarian yang berupa nomor telepon (>= 6 angka, hanya angka/spasi/strip/titik/+/kurung)."""
+    return bool(re.fullmatch(r"[\d\s\-\.\+\(\)]+", kata or "")) and len(re.sub(r"\D", "", kata)) >= 6
+
+
+PROP_PELANGGAN = "id,name,name_alias,code_client,phone,phone_mobile,email,town,status"
+
+
+def semua_pelanggan(api):
+    return api.daftar_semua("thirdparties", {"sortfield": "t.nom", "sortorder": "ASC",
+                                             "properties": PROP_PELANGGAN})
+
+
 def cari_pelanggan(api, kata):
+    if mirip_nomor(kata):
+        # Nomor disimpan Dolibarr apa adanya (0812-..., +62 812 ...): cocokkan setelah dinormalkan.
+        cari = norm_hp(kata)
+        return [ringkas_pelanggan(t) for t in semua_pelanggan(api)
+                if any(cari in norm_hp(t.get(f)) for f in ("phone", "phone_mobile") if t.get(f))]
     k = kata_aman(kata)
     if len(k) < 2:
         raise Gagal("Kata pencarian terlalu pendek (minimal 2 huruf/angka).", KELUAR_ARG)
     kolom = ["t.nom", "t.name_alias", "t.email", "t.phone", "t.code_client"]
     filt = " or ".join("({}:like:'%{}%')".format(c, k) for c in kolom)
     data = api.daftar_semua("thirdparties", {"sqlfilters": "(" + filt + ")", "sortfield": "t.nom",
-                                             "sortorder": "ASC"})
+                                             "sortorder": "ASC", "properties": PROP_PELANGGAN})
     return [ringkas_pelanggan(t) for t in data]
 
 
 def cmd_pelanggan_cari(api, args):
     hasil = cari_pelanggan(api, args.kata)
-    b = ["CARI PELANGGAN: '{}'".format(kata_aman(args.kata))]
+    b = ["CARI PELANGGAN: '{}'".format(norm_hp(args.kata) if mirip_nomor(args.kata) else kata_aman(args.kata))]
     if not hasil:
         b.append("Tidak ada pelanggan yang cocok. Untuk menambah: pelanggan tambah --nama \"...\"")
     for p in hasil[:30]:
@@ -580,12 +644,28 @@ def cmd_pelanggan_tambah(api, args):
 
     mirip = []
     try:
-        mirip = cari_pelanggan(api, nama)
+        mirip = [dict(p, alasan="nama mirip") for p in cari_pelanggan(api, nama)]
     except Gagal as e:
-        if e.kode == KELUAR_ARG:
-            mirip = []
-        else:
+        if e.kode != KELUAR_ARG:
             raise
+    if telp or email:
+        # Ganda per nomor HP (dinormalkan 62.../+62/strip) dan per email (huruf kecil)
+        sudah = {p["id"] for p in mirip}
+        hp = norm_hp(telp)
+        for t in semua_pelanggan(api):
+            alasan = []
+            if hp and any(norm_hp(t.get(f)) == hp for f in ("phone", "phone_mobile") if t.get(f)):
+                alasan.append("nomor HP sama")
+            if email and (t.get("email") or "").strip().lower() == email.lower():
+                alasan.append("email sama")
+            if alasan:
+                p = ringkas_pelanggan(t)
+                if p["id"] in sudah:
+                    for m in mirip:
+                        if m["id"] == p["id"]:
+                            m["alasan"] += ", " + ", ".join(alasan)
+                else:
+                    mirip.append(dict(p, alasan=", ".join(alasan)))
     b = ["PRATINJAU PELANGGAN BARU" if not args.ya else "TAMBAH PELANGGAN",
          "Nama: {}".format(nama), "Telepon: {}".format(telp or "-"), "Email: {}".format(email or "-"),
          "Alamat: {}".format(data.get("address", "-")), "Kota: {}".format(data.get("town", "-")),
@@ -593,9 +673,10 @@ def cmd_pelanggan_tambah(api, args):
     out = {"data": data, "mirip": mirip, "dibuat": False}
     if mirip:
         b.append("")
-        b.append("Sudah ada pelanggan dengan nama mirip:")
+        b.append("Kemungkinan pelanggan yang sama sudah ada:")
         for p in mirip[:5]:
-            b.append("- ID {}: {} {}".format(p["id"], p["nama"], p["telepon"]))
+            b.append("- ID {}: {} {} {} ({})".format(p["id"], p["nama"], p["telepon"], p["email"], p["alasan"])
+                     .replace("  ", " "))
         if not args.tetap_buat:
             b.append("Tidak dibuat untuk mencegah data ganda. Pakai ID di atas, atau ulangi dengan --tetap-buat.")
             out["teks"] = "\n".join(b)
@@ -629,17 +710,27 @@ def parse_item(teks, nomor):
                     .format(nomor, teks), KELUAR_ARG)
 
     def angka(x, label):
-        x = x.replace("Rp", "").replace("rp", "").replace(" ", "")
+        asli = x
+        x = re.sub(r"(?i)^rp\.?", "", x.replace(" ", ""))
+        if x.startswith("-"):
+            raise Gagal("Item {}: {} tidak boleh negatif.".format(nomor, label), KELUAR_ARG)
+        if re.fullmatch(r"\d{1,3}(,\d{3})+", x):
+            # "62,500" / "1,250,000": gaya Inggris (ribuan) atau desimal? Jangan menebak.
+            raise Gagal("Item {}: {} '{}' ambigu (62,500 bisa berarti Rp 62.500 atau Rp 62,50). Tulis tanpa "
+                        "pemisah, mis. 62500, atau pakai titik untuk ribuan: 62.500.".format(nomor, label, asli),
+                        KELUAR_ARG)
         if re.fullmatch(r"\d{1,3}(\.\d{3})+(,\d+)?", x):
             x = x.replace(".", "").replace(",", ".")
         elif re.fullmatch(r"\d+,\d+", x):
             x = x.replace(",", ".")
-        try:
-            d = Decimal(x)
-        except InvalidOperation:
-            raise Gagal("Item {}: {} '{}' bukan angka.".format(nomor, label, x), KELUAR_ARG)
-        if d < 0:
-            raise Gagal("Item {}: {} tidak boleh negatif.".format(nomor, label), KELUAR_ARG)
+        if not re.fullmatch(r"\d+(\.\d+)?", x):
+            raise Gagal("Item {}: {} '{}' bukan angka biasa (contoh benar: 3, 2,5, 85000, 85.000)."
+                        .format(nomor, label, asli), KELUAR_ARG)
+        d = Decimal(x)
+        batas = BATAS_JUMLAH if label == "jumlah" else BATAS_HARGA
+        if label != "diskon" and d > batas:
+            raise Gagal("Item {}: {} {} terlalu besar (maks. {}). Periksa lagi angkanya."
+                        .format(nomor, label, format_angka(d), format_angka(batas)), KELUAR_ARG)
         return d
 
     item = {"nomor": nomor, "produk_ref": None, "deskripsi": bagian[0], "harga": None,
@@ -746,6 +837,7 @@ def cmd_invoice_buat(api, args, offset):
                                          "properties": "id,ref,total_ht,date"})
     kembar = [d for d in draf if desimal(d.get("total_ht")) == hit["dpp"]]
     if kembar and not args.tetap_buat:
+        b[0] = "DRAF INVOICE TIDAK DIBUAT (kemungkinan dobel)"
         b += ["", "DIBATALKAN: sudah ada draf untuk pelanggan ini dengan jumlah sama: {}."
               .format(", ".join("{} (ID {})".format(d.get("ref"), d.get("id")) for d in kembar)),
               "Periksa di Dolibarr. Jika memang ingin draf baru, ulangi dengan --tetap-buat."]
@@ -797,7 +889,10 @@ def cmd_invoice_buat(api, args, offset):
     else:
         b.append("BEDA dengan hitungan Komunitech: " + "; ".join(
             "{} {}{}".format(k.upper(), "+" if v > 0 else "", format_rp(v)) for k, v in beda.items()))
-        b.append("Sebab umum: Dolibarr menghitung PPN per baris lalu membulatkan ke terdekat (2 desimal, atau "
+        if "dpp" in beda:
+            b.append("Selisih DPP: Dolibarr menyimpan total baris dengan sen (2 desimal), standar Komunitech "
+                     "membulatkan total baris ke rupiah terdekat.")
+        b.append("Sebab umum selisih PPN: Dolibarr menghitung PPN per baris lalu membulatkan ke terdekat (2 desimal, atau "
                  "sesuai pengaturan 'Maks. desimal untuk harga total'), sedangkan standar Komunitech menghitung "
                  "PPN dari total DPP lalu membulatkan ke bawah sekali. Selisih kecil (Rp 0-beberapa rupiah) wajar. "
                  "Draf TIDAK diubah otomatis; pemilik memutuskan. Nilai PPN resmi mengikuti faktur di Coretax.")
@@ -909,7 +1004,47 @@ def cmd_piutang(api, args, offset):
 
 
 # ------------------------------------------------------------------ perintah: stok
+def pastikan_stok_aktif(api):
+    """Pastikan modul Stok aktif & bisa dibaca. Tanpa ini Dolibarr tetap mengirim daftar produk tetapi TANPA
+    jumlah stok, sehingga semua barang akan tampak 'habis' (alarm palsu).
+
+    Diamati pada Dolibarr 24.0.1: modul Stok mati -> GET /warehouses = 403 walau user punya hak 'stock lire'
+    (hak tetap tercantum di /users/info), dan produk dikirim tanpa field stock_reel."""
+    try:
+        api.minta("GET", "warehouses", {"limit": 1}, daftar=True)
+        return
+    except Gagal as e:
+        if e.kode != KELUAR_MODUL and e.http != 403:
+            raise
+        mati = e.kode == KELUAR_MODUL
+    if not mati:
+        try:
+            u = api.minta("GET", "users/info", {"includepermissions": 1})
+            mati = punya_hak((u or {}).get("rights") or {}, "stock", "lire", None)
+            if not mati:
+                raise Gagal("User API belum punya hak 'Baca gudang dan stok', jadi stok tidak dinilai.",
+                            KELUAR_AKSES, http=403,
+                            saran="Dolibarr > Pengguna & Grup > user API > Izin > Stok > Baca gudang dan stok. "
+                                  "Lihat docs/panduan-dolibarr.md bagian 6.")
+        except Gagal as e2:
+            if e2.http != 403 or e2.kode == KELUAR_AKSES and "Baca gudang" in e2.pesan:
+                raise
+            try:
+                mods = api.minta("GET", "setup/modules")
+                mati = isinstance(mods, list) and "stock" not in mods
+            except Gagal:
+                pass
+    if mati:
+        raise Gagal("Modul Stok belum aktif di Dolibarr, jadi jumlah stok tidak dicatat. Status habis/menipis "
+                    "tidak dinilai.", KELUAR_MODUL,
+                    saran="Jika ingin memantau stok: Pengaturan > Modul/Aplikasi > aktifkan 'Stok'.")
+    raise Gagal("Stok tidak bisa dibaca: modul Stok belum aktif, atau user API tidak punya hak 'Baca gudang dan "
+                "stok'. Status habis/menipis tidak dinilai.", KELUAR_AKSES, http=403,
+                saran="Jalankan `cek`; periksa modul Stok dan izin user API (docs/panduan-dolibarr.md bagian 5-6).")
+
+
 def ambil_produk(api, kata=None):
+    pastikan_stok_aktif(api)
     params = {"mode": 1, "includestockdata": 1, "sortfield": "t.ref", "sortorder": "ASC",
               "properties": "id,ref,label,status,status_buy,type,stock_reel,seuil_stock_alerte,desiredstock,"
                             "price,stock_warehouse"}
@@ -921,8 +1056,14 @@ def ambil_produk(api, kata=None):
             .format(k)
     data = api.daftar_semua("products", params)
     hasil = []
+    tanpa_angka = 0
     for p in data:
         if str(p.get("type", "0")) != "0":
+            continue
+        if str(p.get("status", "1")) == "0" and str(p.get("status_buy", "1")) == "0":
+            continue  # produk nonaktif (tidak dijual & tidak dibeli)
+        if p.get("stock_reel") in (None, ""):
+            tanpa_angka += 1
             continue
         stok = desimal(p.get("stock_reel"))
         batas = desimal(p.get("seuil_stock_alerte"), None)
@@ -934,12 +1075,16 @@ def ambil_produk(api, kata=None):
         else:
             status = "aman"
         target = ingin if ingin is not None and ingin > 0 else batas
-        saran = (target - stok) if target is not None and target > 0 and stok < target else Decimal(0)
+        saran = (target - stok) if status != "aman" and target is not None and target > 0 and stok < target \
+            else Decimal(0)
         hasil.append({"id": int(p["id"]), "ref": p.get("ref"), "nama": p.get("label") or "",
                       "stok": stok, "batas_minimum": batas if batas and batas > 0 else None,
                       "stok_ideal": ingin if ingin and ingin > 0 else None, "status": status,
                       "saran_beli": saran,
                       "dijual": str(p.get("status", "1")) == "1"})
+    if tanpa_angka and not hasil:
+        raise Gagal("Dolibarr tidak mengirim jumlah stok untuk produk (modul Stok mati atau hak baca stok kurang). "
+                    "Status habis/menipis tidak dinilai.", KELUAR_MODUL)
     return hasil
 
 
@@ -1016,6 +1161,7 @@ def cmd_laporan_harian(api, args, offset):
             if e.kode == KELUAR_KONEKSI:
                 raise
             out["bagian"][nama] = {"galat": e.pesan}
+            out.setdefault("kode_galat", []).append(e.kode)
             return None
 
     hari = bagian("penjualan", lambda: penjualan_tanggal(api, tgl, offset))
@@ -1045,7 +1191,8 @@ def cmd_laporan_harian(api, args, offset):
     b.append("")
 
     pi = bagian("piutang", lambda: ambil_piutang(api, offset, tgl))
-    b.append("PIUTANG")
+    b.append("PIUTANG" if tgl == sekarang_lokal(offset).date() else
+             "PIUTANG (status bayar saat ini; umur dihitung per {})".format(tgl.isoformat()))
     if pi is None:
         b.append("Tidak bisa dibaca: {}".format(out["bagian"]["piutang"]["galat"]))
     else:
@@ -1082,6 +1229,11 @@ def cmd_laporan_harian(api, args, offset):
                 b.append("- {} {}: stok {} {}".format(p["ref"], p["nama"], format_angka(p["stok"]), p["status"]))
             if len(perlu) > 5:
                 b.append("... dan {} lainnya (perintah `stok --menipis`).".format(len(perlu) - 5))
+    gagal = [k for k in ("penjualan", "piutang", "stok") if "galat" in (out["bagian"].get(k) or {})]
+    if len(gagal) == 3:
+        raise Gagal("Laporan tidak bisa dibuat: semua bagian gagal dibaca ({}).".format(
+            out["bagian"]["penjualan"]["galat"]), out["kode_galat"][0],
+            saran="Jalankan `cek` untuk melihat modul & hak akses yang kurang.")
     if out["perhatian"]:
         b += ["", "PERLU PERHATIAN"] + ["{}. {}".format(i, c) for i, c in enumerate(out["perhatian"], 1)]
     b += ["", "Sumber: Dolibarr {} (hanya dibaca).".format(api.url)]
@@ -1166,8 +1318,8 @@ def main(argv=None):
             hasil = cmd_simpan_kunci(args)
         else:
             offset = zona_offset(args.tz)
-            if args.perintah == "invoice" and args.jatuh_tempo < 0:
-                raise Gagal("--jatuh-tempo tidak boleh negatif.", KELUAR_ARG)
+            if args.perintah == "invoice" and not 0 <= args.jatuh_tempo <= BATAS_TEMPO:
+                raise Gagal("--jatuh-tempo harus 0 sampai {} hari.".format(BATAS_TEMPO), KELUAR_ARG)
             luar = args.izinkan_url_luar or os.environ.get("DOLIBARR_IZINKAN_URL_LUAR") == "1"
             url, lokal, catatan_url = cek_url(args.url or os.environ.get("DOLIBARR_URL") or URL_DEFAULT, luar)
             kunci, sumber = baca_kunci(args.kunci_file)
@@ -1195,6 +1347,18 @@ def main(argv=None):
             if e.saran:
                 cetak("Saran: " + e.saran, file=sys.stderr)
         return e.kode
+    except KeyboardInterrupt:
+        cetak("DIBATALKAN oleh pengguna.", file=sys.stderr)
+        return KELUAR_LAIN
+    except Exception as e:  # jangan pernah traceback (bisa memuat kunci); pesan tetap disamarkan
+        pesan = "Galat tak terduga ({}): {}".format(type(e).__name__, str(e)[:200])
+        if getattr(args, "json", False):
+            cetak(json.dumps({"ok": False, "kode_keluar": KELUAR_LAIN, "galat": pesan}, ensure_ascii=False))
+        else:
+            cetak("GAGAL: " + pesan, file=sys.stderr)
+            cetak("Saran: jalankan `cek`; bila tetap gagal, kirim pesan ini (tanpa kunci) ke dukungan Komunitech.",
+                  file=sys.stderr)
+        return KELUAR_LAIN
     if args.json:
         hasil["ok"] = True
         cetak(json.dumps(hasil, default=ke_json, ensure_ascii=False, indent=2))

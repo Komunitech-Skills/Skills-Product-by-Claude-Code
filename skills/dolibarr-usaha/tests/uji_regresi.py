@@ -155,13 +155,18 @@ class Tiruan(BaseHTTPRequestHandler):
         if root in tolak:
             return self.kirim(403, FIX["error_403_body"])
         if metode == "GET" and jalur == "status":
+            if "status_aneh" in K.mode:
+                return self.kirim(200, 123)
             st = copy.deepcopy(FIX["status"])
             st["success"]["dolibarr_version"] = K.versi
             return self.kirim(200, st)
         if metode == "GET" and jalur == "users/info":
             if not tulis:
                 return self.galat(403, "Forbidden: Not allowed")
-            return self.kirim(200, FIX["users_info_tulis"])
+            info = copy.deepcopy(FIX["users_info_tulis"])
+            if "stok_tanpa_hak" in K.mode:
+                info["rights"].pop("stock", None)
+            return self.kirim(200, info)
         # ---- pihak ketiga
         if jalur == "thirdparties" and metode == "GET":
             d = saring(K.pelanggan, q.get("sqlfilters"), {"t.nom": "name", "t.rowid": "id", "t.phone": "phone",
@@ -193,6 +198,8 @@ class Tiruan(BaseHTTPRequestHandler):
             d = self.halaman(d, q)
             if q.get("includestockdata") != "1":
                 d = [dict(p, stock_warehouse=[], stock_theorique=None) for p in d]
+            if K.mode & {"stok_mati", "stok_tanpa_hak"}:  # asli: field stok tidak dikirim sama sekali
+                d = [{k: v for k, v in p.items() if not k.startswith("stock")} for p in d]
             return self.kirim(200, [properti(x, q.get("properties")) for x in d])
         m = re.fullmatch(r"products/ref/(.+)", jalur)
         if m and metode == "GET":
@@ -202,6 +209,8 @@ class Tiruan(BaseHTTPRequestHandler):
                     return self.kirim(200, p)
             return self.kirim(404, FIX["error_404_product_ref_body"])
         if jalur == "warehouses" and metode == "GET":
+            if K.mode & {"stok_mati", "stok_tanpa_hak"}:
+                return self.kirim(403, FIX["error_403_body"])  # asli 24.0.1: 403 walau modul yang mati
             return self.kirim(200, [{"id": "1", "label": "Gudang Utama", "statut": "1"}])
         # ---- invoice
         if jalur == "invoices" and metode == "GET":
@@ -672,6 +681,160 @@ class UjiDolibarr(unittest.TestCase):
 
     def test_laporan_zona_salah(self):
         self.assertEqual(self.jalan("laporan-harian", "--tz", "Europe/London").returncode, 2)
+
+    # ---------------------------------------------------------- revisi 1.0.1
+    def test_s1_modul_stok_mati_tanpa_alarm_palsu(self):
+        K.mode.add("stok_mati")
+        p = self.jalan("stok")
+        self.assertEqual(p.returncode, 4)
+        self.assertIn("Modul Stok belum aktif", p.stderr)
+        self.assertNotIn("HABIS", p.stdout + p.stderr)
+        p = self.jalan("laporan-harian", "--tanggal", "2026-09-24")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn("STOK\nTidak bisa dibaca: Modul Stok belum aktif", p.stdout)
+        self.assertNotIn("HABIS", p.stdout)
+        self.assertNotIn("beli", p.stdout)
+
+    def test_s1_tanpa_hak_stok(self):
+        K.mode.add("stok_tanpa_hak")
+        p = self.jalan("stok", "--menipis")
+        self.assertEqual(p.returncode, 5)
+        self.assertIn("Baca gudang dan stok", p.stderr)
+        self.assertNotIn("HABIS", p.stdout + p.stderr)
+
+    def test_s1_ambigu_tanpa_info_user(self):
+        K.mode.add("stok_mati")
+        p = self.jalan("stok", kunci=KUNCI_BACA)
+        self.assertEqual(p.returncode, 5)
+        self.assertIn("modul Stok belum aktif, atau user API tidak punya hak", p.stderr)
+
+    def test_s2_cek_peringatan_hak_invoice(self):
+        p = self.jalan("cek")
+        self.assertIn("MEMVALIDASI dan MENANDAI LUNAS", p.stdout)
+
+    def test_s3_kunci_baris_baru_env(self):
+        for k in ("kunciDuaBaris-AAAABBBB\nbaris2", "kunci dengan spasi-12345", "kunci\ttab-123456789"):
+            p = self.jalan("cek", kunci=k)
+            self.assertEqual(p.returncode, 5, k)
+            self.assertNotIn("Traceback", p.stderr)
+            self.assertIn("baris baru", p.stderr)
+            for potong in k.split():
+                self.assertNotIn(potong, p.stdout + p.stderr)
+        self.assertEqual(K.log, [])
+
+    def test_s3_kunci_spasi_di_ujung_dibersihkan(self):
+        p = self.jalan("cek", kunci="  " + KUNCI_TULIS + "\r\n")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertTrue(all(x["kunci"] == KUNCI_TULIS for x in K.log))
+
+    @unittest.skipIf(os.name == "nt", "izin file POSIX")
+    def test_s3_file_kunci_dua_baris(self):
+        path = os.path.join(self.tmp, "kunci-dua-baris.txt")
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(KUNCI_TULIS + "\nbarisKedua-ZZZZ\n")
+        p = self.jalan("cek", kunci=None, env_tambah={"DOLIBARR_API_KEY_FILE": path})
+        self.assertEqual(p.returncode, 5)
+        self.assertNotIn("Traceback", p.stderr)
+        self.assertNotIn("barisKedua-ZZZZ", p.stdout + p.stderr)
+        os.remove(path)
+
+    def test_s3_galat_tak_terduga_tanpa_traceback(self):
+        K.mode.add("status_aneh")
+        p = self.jalan("cek")
+        self.assertEqual(p.returncode, 6)
+        self.assertNotIn("Traceback", p.stderr)
+        self.assertIn("Galat tak terduga", p.stderr)
+
+    def test_s4_ganda_per_nomor_hp_dan_email(self):
+        p = self.jalan("pelanggan", "tambah", "--nama", "Ibu Rina Wati", "--telepon", "+62 812-3456-7890", "--ya")
+        self.assertIn("nomor HP sama", p.stdout)
+        self.assertIn("ID 1: CV Maju Jaya", p.stdout)
+        self.assertEqual(self.tulis_dilakukan(), [])
+        p = self.jalan("pelanggan", "tambah", "--nama", "Pak Joko Susilo", "--email", "MAJU@contoh.id", "--ya")
+        self.assertIn("email sama", p.stdout)
+        self.assertEqual(self.tulis_dilakukan(), [])
+        p = self.jalan("pelanggan", "tambah", "--nama", "Pak Joko Susilo", "--email", "MAJU@contoh.id", "--ya",
+                       "--tetap-buat")
+        self.assertEqual(len(self.tulis_dilakukan()), 1)
+
+    def test_s4_cari_nomor_dinormalkan(self):
+        for kata in ("0812-3456-7890", "+62 812 3456 7890", "6281234567890", "3456 7890"):
+            p = self.jalan("pelanggan", "cari", kata)
+            self.assertEqual(p.returncode, 0, p.stderr)
+            self.assertIn("ID 1: CV Maju Jaya", p.stdout, kata)
+        K.pelanggan[1]["phone"] = "+62 857-1111-2222"
+        p = self.jalan("pelanggan", "cari", "085711112222")
+        self.assertIn("Toko Sinar Abadi", p.stdout)
+
+    def test_r1_angka_aneh_ditolak(self):
+        for item in ("Kopi|NaN|1000", "Kopi|1|Infinity", "Kopi|1|1e30", "Kopi|1e3|1000", "Kopi|1|-0",
+                     "Kopi|2000000|1000", "Kopi|1|1000000000000"):
+            p = self.jalan("invoice", "buat", "--pelanggan", "1", "--item", item)
+            self.assertEqual(p.returncode, 2, item + p.stderr)
+            self.assertNotIn("Traceback", p.stderr)
+        for hari in ("99999999", "-1"):
+            p = self.jalan("invoice", "buat", "--pelanggan", "1", "--item", "Kopi|1|1000", "--jatuh-tempo", hari)
+            self.assertEqual(p.returncode, 2, hari)
+            self.assertNotIn("Traceback", p.stderr)
+
+    def test_r2_koma_ribuan_ambigu(self):
+        p = self.jalan("invoice", "buat", "--pelanggan", "1", "--item", "Kopi|1|62,500")
+        self.assertEqual(p.returncode, 2)
+        self.assertIn("ambigu", p.stderr)
+        p = self.jalan("invoice", "buat", "--pelanggan", "1", "--item", "Kopi|2,5|62.500", "--json")
+        d = json.loads(p.stdout)
+        self.assertEqual(d["items"][0]["harga"], 62500)
+        self.assertEqual(d["items"][0]["total_baris"], 156250)
+
+    def test_r3_zona_server_berbeda(self):
+        import datetime as dt
+        for jam in (8, 9, 0, -5, -4, 1, 2):  # WITA, WIT, UTC (DoliWamp), New York, Eropa
+            K.reset()
+            tengah_malam = int(dt.datetime(2026, 9, 24, tzinfo=dt.timezone(dt.timedelta(hours=jam))).timestamp())
+            K.invoice = [{"id": "70", "ref": "IN2609-0070", "socid": "1", "type": "0", "statut": "1",
+                          "date": tengah_malam, "date_lim_reglement": tengah_malam, "total_ttc": "1000",
+                          "remaintopay": "1000", "totalpaid": 0}]
+            p = self.jalan("piutang", "--per-tanggal", "2026-09-24", "--json")
+            d = json.loads(p.stdout)
+            self.assertEqual(d["invoice"][0]["hari_lewat"], 0, "zona server {}".format(jam))
+            self.assertEqual(d["invoice"][0]["jatuh_tempo"], "2026-09-24")
+
+    def test_r4_selisih_dpp_dijelaskan(self):
+        p = self.jalan("invoice", "buat", "--pelanggan", "1", "--item", "Kain|3|10.333|7,5", "--ya")
+        self.assertIn("BEDA", p.stdout)
+        self.assertIn("Selisih DPP", p.stdout)
+
+    def test_r5_semua_bagian_gagal_kode_bukan_nol(self):
+        K.mode.update({"403:invoices", "stok_mati"})
+        p = self.jalan("laporan-harian", "--tanggal", "2026-09-24")
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn("semua bagian gagal", p.stderr)
+
+    def test_k1_rapi(self):
+        K.produk.append({"id": "12", "ref": "OLD", "label": "Produk lama", "type": "0", "status": "0",
+                         "status_buy": "0", "stock_reel": 0, "seuil_stock_alerte": "5"})
+        K.produk.append({"id": "13", "ref": "PAS6", "label": "Enam", "type": "0", "status": "1",
+                         "stock_reel": 6, "seuil_stock_alerte": "6", "desiredstock": "10"})
+        p = self.jalan("stok")
+        self.assertNotIn("OLD", p.stdout)
+        self.assertIn("PAS6 Enam: stok 6 (min 6) aman\n", p.stdout + "\n")
+        self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertTrue(p.stdout.startswith("DRAF INVOICE TIDAK DIBUAT"))
+        p = self.jalan("laporan-harian", "--tanggal", "2026-09-20")
+        self.assertIn("PIUTANG (status bayar saat ini", p.stdout)
+
+    def test_t1_build_menyertakan_panduan(self):
+        build = os.path.join(SINI, "..", "..", "..", "scripts", "build.py")
+        if not os.path.isfile(build):
+            self.skipTest("hanya di repo pengembang")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("build_komunitech", build)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        from pathlib import Path
+        self.assertEqual(mod.docs_dirujuk(Path(SINI).parent), ["panduan-dolibarr.md"])
 
     # ---------------------------------------------------------- statis
     def test_statis_tidak_ada_perintah_berbahaya(self):

@@ -17,7 +17,7 @@
 
 ## 1. Siapkan (sekali)
 1. Gateway OpenClaw berjalan di **komputer yang sama dengan Dolibarr (DoliWamp)** dan keduanya menyala saat jadwal. Komputer mati/DoliWamp belum dijalankan jam 21.00 → laporan gagal. Opsi: komputer toko yang tidak dimatikan, mini PC, atau jasa setup Komunitech.
-2. Kunci API sudah disimpan **oleh akun yang menjalankan Gateway**: `python3 <path dolibarr.py> simpan-kunci` (lihat SKILL.md). **Jangan** menaruh kunci di `--command-env` atau `--message`: isi jadwal tersimpan di database Gateway dan bisa terbaca.
+2. Pakai kunci user **baca-saja** (`api_baca`, panduan §6.1) untuk jadwal; kunci yang bisa membuat draf juga bisa memvalidasi/menandai lunas lewat API, jadi jangan dipakai untuk jadwal. Kunci sudah disimpan **oleh akun yang menjalankan Gateway**: `python3 <path dolibarr.py> simpan-kunci` (lihat SKILL.md). **Jangan** menaruh kunci di `--command-env` atau `--message`: isi jadwal tersimpan di database Gateway dan bisa terbaca.
 3. Telegram: buat bot di @BotFather → `openclaw channels add --channel telegram --token <token>` → kirim "halo" ke bot dari akun pemilik → `openclaw pairing list telegram` lalu `openclaw pairing approve telegram <KODE>`. Cara mencari ID chat: skill `laporan-otomatis-terjadwal`, `references/openclaw.md`.
 4. Cari path lengkap (argv tidak mengenal `~`):
    ```bash
