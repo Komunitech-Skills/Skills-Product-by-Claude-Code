@@ -1,0 +1,136 @@
+---
+name: laporan-harian-usaha
+description: Satu laporan harian/mingguan gabungan untuk pemilik usaha dari alat lokal Komunitech yang terpasang (kasir-lokal, buku-stok, absensi-lokal, pengingat-follow-up) - omzet & perbandingan % dengan kemarin/minggu lalu, stok menipis/habis, kehadiran & lembur, tagihan jatuh tempo, hal yang perlu perhatian - siap kirim ke Telegram pemilik lewat OpenClaw tiap malam/Senin pagi, hanya membaca data. Gunakan saat pengguna minta "laporan harian usaha", "ringkasan toko hari ini", "rekap semua", "dashboard usaha", daily business report, owner dashboard. Rekap satu alat saja pakai skill alat itu.
+---
+
+# Laporan Harian Usaha (pengganti dashboard SaaS)
+
+## Tujuan
+Pemilik usaha cukup membaca **satu pesan** tiap malam (dan satu tiap Senin pagi) untuk tahu kondisi usahanya: penjualan, stok, karyawan, tagihan, dan apa yang harus dibereskan besok. Semua angka diambil dari alat lokal Komunitech yang sudah ia pakai, dijalankan oleh `scripts/laporan.py`. Tanpa aplikasi dashboard berbayar, tanpa internet, data tetap di komputernya.
+
+## Kapan digunakan
+- "Laporan usaha hari ini", "ringkasan toko hari ini", "rekap semua", "gimana usaha kemarin?"
+- "Laporan minggu lalu", "bandingkan dengan minggu sebelumnya"
+- "Kirim laporan harian ke Telegram saya tiap jam 9 malam" / "tiap Senin pagi kirim laporan mingguan" (OpenClaw)
+
+## Kapan TIDAK digunakan
+- Hanya butuh satu hal: struk/tutup kasir/rekap bulanan pajak → `kasir-lokal`; opname/picking → `buku-stok`; rekap gaji & upah lembur → `absensi-lokal`; draf tagihan & nama pelanggan → `pengingat-follow-up` ("rekap pengingat").
+- Data dari file CSV/Excel aplikasi lain (Moka, Majoo, marketplace) → `rekap-penjualan-csv`. Laporan terjadwal dari file seperti itu → `laporan-otomatis-terjadwal`.
+- Laba rugi/neraca → `laporan-keuangan-emkm`. Arus kas ke depan → `arus-kas-13minggu`.
+- **Mengubah data** (catat penjualan, stok, absen, tandai lunas) → skill alatnya masing-masing. Skill ini **hanya membaca**.
+- Kirim laporan ke pelanggan/grup/broadcast → **tolak**. Laporan hanya untuk pemilik (keputusan pemilik Komunitech).
+
+## Cara kerja (penting untuk dijelaskan bila ditanya)
+1. Script mencari alat yang terpasang dari lokasi data default masing-masing alat (ENV sama: `KOMUNITECH_KASIR_DB`, `KOMUNITECH_STOK_DB`, `KOMUNITECH_ABSENSI_DB`, `KOMUNITECH_DATA`) dan `pengingat/DAFTAR.csv` (folder kerja, workspace OpenClaw `~/.openclaw/workspace`, atau `~/KomunitechData`). Alat yang tidak ada **dilewati dengan catatan**, bukan error.
+2. Database dibuka **read-only** (`mode=ro`, batas tunggu 10 detik) lalu disalin ke folder sementara. File asli tidak pernah ditulis (diuji: sidik file sebelum = sesudah).
+3. Angka dihitung oleh **perintah laporan resmi** tiap alat (`kasir.py rekap`, `stok.py laporan ringkas`, `absensi.py harian/rekap`, `cek_jatuh_tempo.py rekap`) pada salinan itu. Karena memakai "pintu resmi" alat, laporan tetap benar walau struktur database alat berubah di versi baru. Hanya selisih kas (tabel `sesi` kasir) dan cek "nota kasir sudah diimpor ke buku-stok" (tabel `pesanan`) dibaca langsung, dengan cek kolom dulu; jika berubah, bagian itu dilewati dengan catatan.
+4. Script alat dicari di folder skills yang sama dengan skill ini (lalu `~/.openclaw/skills`, `~/.claude/skills`, `~/.agents/skills`, `~/.cursor/skills`). Jadi pasang skill alat di folder yang sama.
+
+## Input
+| Info | Wajib? | Default |
+|---|---|---|
+| Periode | Tidak | Harian = hari ini (WIB). Mingguan = minggu lalu Senin–Minggu |
+| Tanggal | Tidak | `hari-ini`; bisa `kemarin`, `2026-09-24`, `24/09/2026` |
+| Zona waktu | Tidak | `Asia/Jakarta` (WIB). WITA `Asia/Makassar`, WIT `Asia/Jayapura` |
+| Lokasi data lain | Tidak | Lokasi default alat. Pakai `--kasir-db`, `--stok-db`, `--absensi-db`, `--pengingat` bila beda |
+| Samarkan nama karyawan | Tidak | Tidak. `--samarkan` = inisial (disarankan bila laporan dibaca orang lain) |
+
+Tidak perlu bertanya apa pun untuk laporan pertama: langsung jalankan. Bertanya hanya saat membuat jadwal (lihat Langkah C).
+
+## Langkah kerja
+
+### A. Laporan sekarang
+Jalankan (Windows: `python` atau `py` sebagai ganti `python3`):
+```bash
+python3 <folder-skill-ini>/scripts/laporan.py                       # harian, hari ini
+python3 <folder-skill-ini>/scripts/laporan.py --tanggal kemarin
+python3 <folder-skill-ini>/scripts/laporan.py --periode mingguan    # minggu lalu vs minggu sebelumnya
+python3 <folder-skill-ini>/scripts/laporan.py --json                # untuk dibaca agent (berisi juga "teks")
+```
+1. Kirim `teks` **apa adanya**. Boleh menambah 1–3 kalimat saran di bawahnya ("Besok: restock RB, tanya Joko kenapa tidak absen"), tetapi **jangan mengubah angka, persen, tanggal**, dan jangan menambah angka yang tidak ada di laporan.
+2. Bagian bertuliskan "Belum ada data" → jelaskan singkat: alat itu belum dipakai, atau lokasinya beda (tanya lokasinya, lalu pakai opsi `--...-db`). Jangan mengisi dengan perkiraan.
+3. Pengguna bertanya "siapa yang harus ditagih?" → laporan sengaja tanpa nama pelanggan; jalankan skill `pengingat-follow-up` ("rekap pengingat").
+4. Kode keluar 2 = argumen salah (mis. tanggal belum terjadi): sampaikan pesan error-nya dengan bahasa sederhana.
+
+### B. Pertanyaan lanjutan
+- "Kenapa omzet turun?" → lihat per metode bayar, terlaris, dan void/retur di laporan; detail per jam ada di `kasir-lokal` (`rekap --tanggal ...`).
+- "Detail stok menipis?" → `buku-stok` `laporan menipis`. "Rekap lembur bulan ini?" → `absensi-lokal` `rekap`.
+
+### C. Jadwal otomatis ke Telegram (OpenClaw)
+Ikuti `references/openclaw-jadwal.md` (perintah sudah diuji dengan CLI OpenClaw asli). Sebelum membuat jadwal, tanyakan **sekali**:
+1. Jam laporan harian (default 21.00 WIB, setelah tutup toko; toko tutup lewat tengah malam → jam 07.00 dengan `--tanggal kemarin`).
+2. Laporan mingguan Senin pagi juga? (default ya, 07.00 WIB)
+3. ID chat Telegram pemilik (cara mencarinya ada di referensi).
+4. Nama karyawan disamarkan? (default tidak)
+
+Lalu tunjukkan perintahnya + "Lanjut? (ya/tidak)". Kanal default **Telegram (bot resmi)**. WhatsApp hanya dengan **nomor terpisah** milik pemilik + persetujuan risiko tertulis. **Tanpa broadcast**, tanpa grup, tanpa pelanggan.
+
+## Format output
+Teks script (contoh nyata dari data uji, dipotong):
+```
+LAPORAN HARIAN USAHA
+Kamis, 24 September 2026
+Dibuat 2026-09-24 21:00 WIB
+
+PENJUALAN
+Omzet bersih: Rp 69.000
+Nota: 2 (+1 dibatalkan) | rata-rata Rp 34.500
+vs kemarin (Rab 23/9): Rp 36.000 -> naik 91,7%
+vs Kamis lalu (17/9): Rp 12.000 -> naik 475,0%
+Per metode bayar:
+- Tunai Rp 51.000
+- QRIS Rp 18.000
+Terlaris:
+1. Kopi Susu Gula Aren: 2 terjual, Rp 36.000
+
+STOK
+Minus 1 | habis 1 | menipis 1
+- RB Roti Bakar - Coklat: stok -5 (min 5) MINUS
+Perlu restock (sampai batas minimum): RB 10, ETM 5, KH 6
+
+KEHADIRAN
+Hadir 2 dari 5 terjadwal
+Terlambat (1): Andi 08.12 (12 mnt)
+Alpa: 1 (Rina)
+Lembur perlu keputusan (belum disetujui):
+- Sari 24/09: pulang 19.30, 2 jam 30 menit setelah jadwal, tanpa lembur disetujui
+
+TAGIHAN & FOLLOW-UP
+Terlambat 1 | hari ini 0 | besok 0
+- #2 piutang Rp 12.500.000, lewat 3 hari
+
+PERLU PERHATIAN
+1. Selisih kas saat tutup kasir 2026-09-24 20:00: KURANG Rp 11.000 (...)
+2. Penjualan kasir tanggal 2026-09-24 belum diimpor ke buku-stok (stok belum terpotong).
+```
+JSON (`--json`): `periode`, `alat` (status `ada`/`tidak_ada`/`gagal`/`dilewati` + pesan), `penjualan`, `stok`, `kehadiran`, `tagihan`, `perhatian`, `rumus`, `teks`.
+
+## Aturan hitung (eksplisit)
+- **Omzet bersih** = `penjualan_bersih` dari kasir-lokal (setelah diskon, retur & void). Uang diterima ditampilkan terpisah bila berbeda (pajak/service).
+- **Rata-rata per nota** = omzet bersih ÷ (nota jual − nota void), dibulatkan ke rupiah terdekat (0,5 ke atas). Tanpa nota sah → "-".
+- **Perubahan %** = (nilai sekarang − pembanding) ÷ pembanding × 100, dibulatkan **1 desimal**, 0,05 ke atas (menjauhi nol). Pembanding Rp 0 → "naik dari Rp 0 (persen tidak dihitung)"; keduanya 0 → "sama-sama Rp 0"; pembanding minus → tidak dihitung. Contoh: 69.000 vs 36.000 → 33.000 ÷ 36.000 × 100 = 91,666… → **91,7%**.
+- **Pembanding harian**: kemarin & hari yang sama minggu lalu. **Mingguan**: Senin–Minggu sebelumnya; minggu berjalan dipotong s.d. hari ini dan dibanding hari yang sama minggu sebelumnya.
+- **Perlu restock** = stok minimum − stok (dari buku-stok). Status minus/habis/menipis dari buku-stok, posisi saat laporan dibuat.
+- Tanpa kasir-lokal tetapi ada buku-stok → penjualan = `omzet_tercatat` buku-stok (dijumlah per hari).
+- Tanggal "hari ini" dihitung di zona `--tz` (default WIB), bukan jam server. Jam 00.30 WIB = sudah tanggal baru.
+
+## Privasi
+- **Tidak ada nama/nomor pelanggan**: tagihan ditampilkan sebagai nomor item (`#2 piutang Rp ...`). Perihal, catatan pribadi, dan nama penyetuju lembur tidak ditampilkan.
+- Nama karyawan = nama panggilan yang sudah ada di absensi; `--samarkan` mengubahnya jadi inisial.
+- Laporan hanya dikirim ke pemilik. Tidak ada data yang dikirim ke internet oleh script (pengiriman Telegram dilakukan OpenClaw milik pengguna).
+
+## Checklist sebelum mengirim
+- [ ] Teks laporan dari script, angka/persen/tanggal tidak diubah
+- [ ] Bagian "Belum ada data" tidak diisi perkiraan
+- [ ] Tidak ada nama pelanggan/nomor HP ditambahkan
+- [ ] Butir "PERLU PERHATIAN" disampaikan semua
+- [ ] Jadwal hanya dibuat setelah pemilik menjawab "ya", tujuan = chat pemilik sendiri
+
+## Batasan & penanganan error
+- Hanya membaca alat Komunitech di komputer yang sama. Bukan dashboard web, bukan multi-cabang, tidak menarik data marketplace/bank.
+- "sedang dipakai program lain" → saat itu ada transaksi yang sedang disimpan; data aman, jalankan lagi sebentar kemudian. Alat lain tetap dilaporkan.
+- "script ... tidak ditemukan" → skill alatnya belum terpasang di folder skills yang sama; pasang, atau beri `--kasir-script PATH` dst.
+- "Jam komputer ini bukan Asia/Jakarta" → kasir & absensi mencatat jam komputer; sarankan menyamakan zona waktu komputer.
+- File rusak/bukan database → bagian itu "Belum ada data" + pesan di PERLU PERHATIAN; sarankan pulihkan dari folder backup alatnya (jangan dihapus).
+- **Python tidak bisa dijalankan:** jalankan perintah laporan tiap alat satu per satu lewat skill masing-masing, gabungkan hasilnya secara manual dengan rumus di atas, dan beri label "disusun manual, mohon dicek".
+- Uji regresi: `python3 <folder-skill-ini>/tests/uji_regresi.py` (membutuhkan skill alat di folder yang sama).
