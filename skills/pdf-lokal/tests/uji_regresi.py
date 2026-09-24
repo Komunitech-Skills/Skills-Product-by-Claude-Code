@@ -44,6 +44,11 @@ def buat_zip_dummy():
 class TiruanStirlingHandler(http.server.BaseHTTPRequestHandler):
     server_version = "TiruanStirling/1.0"
     panggilan = []  # dicatat oleh kelas untuk pengecekan urutan panggilan
+    # Meniru Stirling-PDF versi 2.14.3/3.0.0 sungguhan dengan SECURITY_ENABLELOGIN aktif
+    # (default Docker): /api/v1/info/status TETAP membalas 200 tanpa login, tapi SEMUA
+    # operasi PDF nyata (POST) ditolak 401 - inilah skenario T1 yang pernah lolos
+    # (positif palsu) di 'cek' sebelum diperbaiki.
+    wajib_401 = False
 
     def log_message(self, fmt, *args):
         pass  # diam - jangan penuhi output uji
@@ -86,6 +91,9 @@ class TiruanStirlingHandler(http.server.BaseHTTPRequestHandler):
         panjang = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(panjang)
         TiruanStirlingHandler.panggilan.append(("POST", self.path))
+
+        if TiruanStirlingHandler.wajib_401 and self.headers.get("X-API-KEY") != "kunci-benar":
+            return self._kirim_json(401, {"error": "Authentication required"})
 
         if self.path == "/api/v1/general/merge-pdfs":
             return self._kirim_pdf("hasil_merged.pdf")
@@ -232,6 +240,33 @@ def main():
         rc, out, err = jalankan(["foto-ke-pdf", str(foto), "--keluaran", str(tmp / "nota.pdf")], base_env,
                                  cwd=str(tmp))
         cek("foto-ke-pdf-normal", rc == 0 and (tmp / "nota.pdf").is_file(), f"rc={rc} out={out!r} err={err!r}")
+
+        # --- T1 (perbaikan): server HIDUP & /info/status sukses, TAPI login aktif sehingga
+        # semua operasi PDF nyata ditolak 401. 'cek' HARUS gagal (bukan melapor "siap
+        # pakai" palsu) dan menyebut cara perbaikan (SECURITY_ENABLELOGIN / API key). ---
+        TiruanStirlingHandler.wajib_401 = True
+        try:
+            rc, out, err = jalankan(["cek"], base_env, cwd=str(tmp))
+            cek("cek-401-tidak-boleh-siap-pakai",
+                rc != 0 and "Siap dipakai" not in out and "menolak operasi PDF" in err
+                and "SECURITY_ENABLELOGIN" in err and "STIRLING_API_KEY" in err,
+                f"rc={rc} out={out!r} err={err!r}")
+
+            # --- T1: perintah lain (bukan cuma 'cek') juga harus kena 401 dengan pesan yang
+            # sama (perbaikan berlaku di semua perintah, bukan cuma 'cek'). ---
+            rc, out, err = jalankan(["gabung", str(f1), str(f2)], base_env, cwd=str(tmp))
+            cek("gabung-401-pesan-sama",
+                rc != 0 and "SECURITY_ENABLELOGIN" in err and "STIRLING_API_KEY" in err,
+                f"rc={rc} err={err!r}")
+
+            # --- Setelah API key yang benar diset, operasi harus lolos lagi (bukti pesan
+            # 401 memang menuntun ke perbaikan yang benar-benar bekerja). ---
+            env_dengan_key = dict(base_env, STIRLING_API_KEY="kunci-benar")
+            rc, out, err = jalankan(["cek"], env_dengan_key, cwd=str(tmp))
+            cek("cek-401-pulih-dengan-api-key", rc == 0 and "Operasi PDF diizinkan" in out,
+                f"rc={rc} out={out!r} err={err!r}")
+        finally:
+            TiruanStirlingHandler.wajib_401 = False
 
     finally:
         httpd.shutdown()

@@ -28,8 +28,9 @@ Contoh:
   python3 pdf.py rapikan-resi resi1.pdf resi2.pdf resi3.pdf resi4.pdf --per-lembar 4
 
 Referensi endpoint & parameter: lihat references/sumber-api-stirling.md (diambil dari
-Swagger /v1/api-docs server Stirling-PDF v2.14.3 yang sungguhan dijalankan untuk
-memverifikasi script ini, tanggal akses tercatat di file tsb).
+Swagger /v1/api-docs server Stirling-PDF v2.14.3 DAN v3.0.0 yang sungguhan dijalankan
+untuk memverifikasi script ini - keduanya dicoba, endpoint & nama field yang dipakai
+skill ini identik di kedua versi; tanggal akses tercatat di file tsb).
 """
 import argparse
 import json
@@ -43,9 +44,19 @@ import uuid
 import zipfile
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 APLIKASI = "pdf-lokal"
 LOKAL_DIIZINKAN = {"localhost", "127.0.0.1", "::1", "0.0.0.0"}
+
+# PDF 1 halaman kosong minimal (tanpa dependensi luar), dipakai HANYA oleh `cek` untuk
+# menguji apakah server benar-benar mengizinkan operasi PDF sungguhan (bukan cuma
+# mengecek endpoint status yang tidak butuh login) - lihat cmd_cek().
+PDF_UJI_MINIMAL = (
+    b"%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
+    b"2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
+    b"3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 300]>>endobj\n"
+    b"trailer<</Size 4/Root 1 0 R>>\n%%EOF"
+)
 
 
 class Gagal(Exception):
@@ -84,22 +95,28 @@ def _tebak_tipe(nama_file):
 
 def bangun_multipart(field_biasa, field_file):
     """field_biasa: list[(nama, nilai)] (urutan dijaga, boleh nama berulang untuk array).
-    field_file: list[(nama, path_lokal)] (boleh nama berulang, mis. beberapa fileInput)."""
+    field_file: list[(nama, sumber)] (boleh nama berulang, mis. beberapa fileInput).
+    `sumber` boleh path file lokal (str/Path), atau tuple (nama_file, bytes) untuk file
+    yang dibuat sendiri di memori (dipakai `cek` supaya tidak perlu menulis file sementara)."""
     boundary = uuid.uuid4().hex
     baris = []
     for nama, nilai in field_biasa:
         baris.append(f"--{boundary}\r\n".encode())
         baris.append(f'Content-Disposition: form-data; name="{nama}"\r\n\r\n'.encode())
         baris.append(str(nilai).encode("utf-8") + b"\r\n")
-    for nama, path in field_file:
-        p = Path(path)
-        nama_file = p.name
+    for nama, sumber in field_file:
+        if isinstance(sumber, tuple):
+            nama_file, data = sumber
+        else:
+            p = Path(sumber)
+            nama_file = p.name
+            data = p.read_bytes()
         baris.append(f"--{boundary}\r\n".encode())
         baris.append(
             f'Content-Disposition: form-data; name="{nama}"; filename="{nama_file}"\r\n'.encode()
         )
         baris.append(f"Content-Type: {_tebak_tipe(nama_file)}\r\n\r\n".encode())
-        baris.append(p.read_bytes() + b"\r\n")
+        baris.append(data + b"\r\n")
     baris.append(f"--{boundary}--\r\n".encode())
     body = b"".join(baris)
     content_type = f"multipart/form-data; boundary={boundary}"
@@ -142,12 +159,18 @@ def panggil_stirling(base_url, api_key, path, field_biasa=None, field_file=None,
     except urllib.error.HTTPError as e:
         mentah = e.read()
         pesan = _pesan_dari_json(mentah) or mentah.decode("utf-8", errors="replace")[:300]
-        if e.code == 401:
+        if e.code in (401, 403):
             raise Gagal(
-                "Stirling-PDF menolak permintaan (401 - butuh login/API key). Server ini punya "
-                "keamanan aktif. Ambil API key dari aplikasi Stirling-PDF (Account/Pengaturan > "
-                "API Key) lalu set ENV STIRLING_API_KEY, atau matikan login untuk pemakaian "
-                "pribadi (lihat docs/panduan-stirling-pdf.md bagian Keamanan)."
+                f"Stirling-PDF menolak permintaan ini ({e.code} - butuh login/API key). Server "
+                "ini menyalakan keamanan/login, jadi SEMUA operasi PDF ditolak sampai diperbaiki "
+                "salah satu dari 2 cara ini:\n"
+                "  1) Kalau kamu jalankan Stirling-PDF lewat Docker & ini komputer/pemakaian "
+                "pribadi: matikan login dengan menambahkan '-e SECURITY_ENABLELOGIN=false' saat "
+                "menjalankan 'docker run' (lihat docs/panduan-stirling-pdf.md bagian Keamanan), "
+                "lalu jalankan ulang containernya.\n"
+                "  2) Kalau login memang sengaja diaktifkan (mis. komputer dipakai bersama): "
+                "buka aplikasi Stirling-PDF > ikon gerigi > Account Settings > salin API Key, "
+                "lalu set ENV STIRLING_API_KEY ke nilai itu sebelum menjalankan perintah ini."
             ) from None
         if e.code == 404:
             catatan_ocr = ""
@@ -267,7 +290,8 @@ def periksa_file_ada(*paths):
 
 def cmd_cek(args):
     base = ambil_base_url(args.url)
-    ctype, _nama, isi = panggil_stirling(base, ambil_api_key(args.api_key), "/api/v1/info/status", method="GET")
+    api_key = ambil_api_key(args.api_key)
+    _ctype, _nama, isi = panggil_stirling(base, api_key, "/api/v1/info/status", method="GET")
     try:
         data = json.loads(isi.decode("utf-8"))
     except json.JSONDecodeError:
@@ -275,7 +299,24 @@ def cmd_cek(args):
     print(f"Stirling-PDF HIDUP di {base}")
     print(f"  Versi  : {data.get('version', '(tidak diketahui)')}")
     print(f"  Status : {data.get('status', '(tidak diketahui)')}")
-    print("Siap dipakai. Coba: python3 pdf.py gabung file1.pdf file2.pdf")
+
+    # PENTING: endpoint di atas (/api/v1/info/status) TIDAK butuh login di Stirling-PDF,
+    # jadi dia tetap membalas sukses walau keamanan/login aktif dan SEMUA operasi PDF
+    # sungguhan (gabung, kompres, dst.) akan ditolak. Supaya 'cek' tidak melapor "siap
+    # pakai" secara keliru, coba 1 operasi PDF nyata & kecil (putar 0 derajat pada PDF
+    # kosong 1 halaman buatan sendiri) yang memakai jalur otorisasi sama seperti semua
+    # perintah lain.
+    print("Menguji 1 operasi PDF nyata (bukan cuma cek status) untuk pastikan tidak diblokir login...")
+    try:
+        panggil_stirling(base, api_key, "/api/v1/general/rotate-pdf",
+                          [("angle", "0")], [("fileInput", ("uji-cek.pdf", PDF_UJI_MINIMAL))])
+    except Gagal as e:
+        raise Gagal(
+            "Stirling-PDF HIDUP (versi & status di atas benar), TAPI menolak operasi PDF "
+            "sungguhan - semua perintah lain (gabung, kompres, dst.) akan gagal sampai ini "
+            f"diperbaiki. Detail & cara perbaiki:\n{e}"
+        ) from None
+    print("Operasi PDF diizinkan. Siap dipakai. Coba: python3 pdf.py gabung file1.pdf file2.pdf")
 
 
 def cmd_gabung(args):
