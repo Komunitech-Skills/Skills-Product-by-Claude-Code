@@ -345,15 +345,43 @@ def klasifikasi_status(nilai_asli: str) -> str:
 # B2: penyaring TUNGGAL nilai kategori aman-ditampilkan (status/poli/penjamin)
 # ---------------------------------------------------------------------------
 
-def _nilai_aman_ditampilkan(nilai: str) -> bool:
+POLA_TOKEN_KATA = re.compile(r"[^\W\d_]+", re.UNICODE)
+# R15(a): token pendek ("di", "ke", "dr", dst.) sengaja tidak dipakai untuk
+# menyaring lewat kolom Nama — terlalu mudah bertabrakan dengan kata biasa.
+PANJANG_TOKEN_NAMA_MINIMAL = 3
+
+
+def _token_nama_dari_kolom_sensitif(header: list, baris: list, kolom_sensitif: list) -> set:
+    """R15(a): kumpulkan KATA (token, huruf kecil) dari kolom yang namanya
+    mengandung "nama" (mis. "Nama Pasien", "Nama Ibu") di antara kolom
+    sensitif yang sudah terdeteksi — HANYA untuk dipakai sebagai filter
+    tambahan di `_nilai_aman_ditampilkan`, supaya nilai kategori
+    (status/poli/penjamin) yang kebetulan sama dengan sepotong nama pasien
+    ikut disembunyikan. Isi kolom Nama itu SENDIRI tidak pernah dimasukkan
+    ke hasil/rekap apa pun — hanya kata-katanya yang dipakai untuk
+    mencocokkan, dan hasil pencocokan itu pun cuma berupa True/False."""
+    kolom_nama = [h for h in kolom_sensitif if re.search(r"\bnama\b", _normalisasi_header(h))]
+    if not kolom_nama:
+        return set()
+    token = set()
+    for row in baris:
+        for k in kolom_nama:
+            for kata in POLA_TOKEN_KATA.findall(row.get(k) or ""):
+                if len(kata) >= PANJANG_TOKEN_NAMA_MINIMAL:
+                    token.add(kata.lower())
+    return token
+
+
+def _nilai_aman_ditampilkan(nilai: str, token_nama: "set | None" = None) -> bool:
     """True bila SATU nilai kategori (status/poli/penjamin) aman dicetak
     ulang apa adanya berdasarkan POLANYA SAJA (belum menghitung syarat
     frekuensi — itu ada di `_pisah_aman_dan_sembunyikan`): tanpa digit,
-    tanpa "@", maksimal 3 kata, dan tidak cocok pola inisial ("S.A."),
-    kode ICD ("J06"), atau sapaan+nama ("Bu Ani", "Pak Budi"). Dipakai
-    untuk SEMUA jalur output lewat `_pisah_aman_dan_sembunyikan` — satu
-    fungsi, satu aturan, supaya tidak ada jalur yang lupa menyaring
-    (lihat B2)."""
+    tanpa "@", maksimal 3 kata, tidak cocok pola inisial ("S.A."), kode
+    ICD ("J06"), sapaan+nama ("Bu Ani", "Pak Budi"), dan (R15(a), bila
+    `token_nama` diberikan) tidak mengandung kata yang juga muncul di
+    kolom Nama file ini. Dipakai untuk SEMUA jalur output lewat
+    `_pisah_aman_dan_sembunyikan` — satu fungsi, satu aturan, supaya
+    tidak ada jalur yang lupa menyaring (lihat B2)."""
     n = (nilai or "").strip()
     if not n:
         return True  # nilai kosong direpresentasikan terpisah ("(kosong)"/"(tidak diisi)"), aman
@@ -369,10 +397,17 @@ def _nilai_aman_ditampilkan(nilai: str) -> bool:
         return False
     if POLA_SAPAAN_NAMA.search(n):
         return False
+    if token_nama:
+        if any(kata.lower() in token_nama for kata in POLA_TOKEN_KATA.findall(n)):
+            return False
     return True
 
 
-def _pisah_aman_dan_sembunyikan(counter: Counter, ambang_frekuensi: int = MIN_FREKUENSI_TAMPIL):
+def _pisah_aman_dan_sembunyikan(
+    counter: Counter,
+    ambang_frekuensi: int = MIN_FREKUENSI_TAMPIL,
+    token_nama: "set | None" = None,
+):
     """Pisahkan isi sebuah Counter nilai->jumlah menjadi:
     - daftar nilai AMAN (lolos `_nilai_aman_ditampilkan` DAN muncul di
       sekurang-kurangnya `ambang_frekuensi` baris — k-anonimitas
@@ -393,7 +428,7 @@ def _pisah_aman_dan_sembunyikan(counter: Counter, ambang_frekuensi: int = MIN_FR
         if (
             len(aman) < MAKS_NILAI_UNIK_TAMPIL
             and jumlah >= ambang_frekuensi
-            and _nilai_aman_ditampilkan(nilai)
+            and _nilai_aman_ditampilkan(nilai, token_nama)
         ):
             aman.append((nilai, jumlah))
         else:
@@ -540,6 +575,10 @@ def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict
         k for k in (kolom_tanggal, kolom_jam, kolom_poli, kolom_penjamin, kolom_status) if k
     }
     kolom_sensitif_terpakai = _kolom_sensitif_di_header(header, kolom_dipakai)
+    # R15(a): kata dari kolom Nama dipakai HANYA untuk menyaring nilai
+    # kategori yang kebetulan sama dengan sepotong nama pasien — isi kolom
+    # Nama sendiri tidak pernah masuk ke hasil/rekap apa pun.
+    token_nama = _token_nama_dari_kolom_sensitif(header, baris, kolom_sensitif_terpakai)
 
     # --- B2-sisa butir 3: baris yang jumlah kolomnya bergeser dari header ---
     # dideteksi dulu, supaya baris itu (a) tidak ikut jadi bukti format
