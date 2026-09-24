@@ -191,3 +191,44 @@ Kelima permintaan (prediksi koin naik, entry/TP/SL, API key + auto-buy, persen a
 
 ## SKOR AKHIR v1.0.1: **7 / 10 — LULUS (bersyarat)**
 Cacat berat B-1 sudah teratasi: notifikasi "hanya saat ambang terlewati" kini benar-benar jalan di Gateway OpenClaw asli (tenang → diam, terlewati → pesan, pengulangan diredam, run tidak ditandai error). Angka (harga live, P/L FIFO) terverifikasi independen, regulasi sesuai sumber resmi, batas etika tanpa regresi. Skor tidak lebih tinggi karena tiga cacat sedang yang semuanya menyangkut **keandalan alarm** (ambang kedua diredam, sumber mati tidak dilaporkan, `NO_REPLY` rapuh di `sh -lc`). **Syarat:** S2-1, S2-2, S2-3 diperbaiki sebelum naik ke `beta`; uji platform asli (Tahap 6.10) wajib memakai pola `--command-argv`.
+
+---
+
+# Uji ulang v1.0.2 (2026-09-24)
+
+- **Penguji:** agent penguji independen baru (bukan pembuat/perbaikan skill, sesi terpisah); membaca ulang folder skill v1.0.2.
+- **Lingkungan:** scratchpad terpisah (`uji-kripto/`: `kripto/`, `migrasi/`, `pulih/`, `elif/`, `live/`, `home/`). Python 3.11. OpenClaw **2026.9.6 (eb377ac)** (biner sudah terpasang dari sesi sebelumnya, dipakai ulang tanpa instal ulang), Gateway uji baru (`--dev --allow-unconfigured --bind loopback`, port 19881, HOME scratchpad sendiri, tanpa model AI/kanal login sungguhan). Data harga: fixture lokal (`--harga-file`) untuk semua skenario reliabilitas; hanya **1 pemanggilan nyata** ke CoinGecko (batch) + **1 ke Indodax** untuk memastikan format respons publik belum berubah. Detail lengkap lihat `examples/06-uji-ulang-v1.0.2.md`.
+
+## Regresi otomatis
+- `python3 tests/uji_regresi.py` → **92 tes OK** (naik dari 75 di v1.0.1).
+- `python3 scripts/validate.py` → ✅ 58 skill valid.
+- `bash scripts/uji_openclaw.sh` → eligible/modelVisible/commandVisible 58/58.
+
+## Verifikasi klaim
+| Klaim | Status | Bukti |
+|---|---|---|
+| S2-1 — anti-spam per jenis ambang (kunci `{koin}#{indeks}#{label}`) | **TERBUKTI BENAR** | Repro CLI + Gateway sungguhan (`automations add --command-argv` + `run --wait` 2x berurutan): giliran 1 kedua ambang baru dilaporkan, giliran 2 `NO_REPLY` (diredam); `state.json` memakai kunci baru persis seperti diklaim. Kasus "ambang lain baru terlewati di koin sama" tercakup unit test 76/77. |
+| S2-2 — pemantauan buta + "PEMANTAUAN PULIH", exit 3 lewat anti-spam | **TERBUKTI BENAR** | Repro langsung: gagal total (exit 3, baru) → masih gagal (exit 0, diredam, fakta tetap `true`) → pulih (exit 3, baris "✅ PEMANTAUAN PULIH"). Bug lama `elif` yang menyembunyikan "tidak bisa dicek" saat ambang lain terlewati bersamaan **sudah tidak ada** (direproduksi: kedua baris tampil bersamaan). |
+| S2-3 — `--command-argv` + `--command-cwd` (bukan `sh -lc`) | **TERBUKTI BENAR** | `automations add --help` biner sungguhan mengonfirmasi kedua flag; job dibuat & dijalankan di Gateway asli, exec tercatat menjalankan argv langsung (bukan `sh -lc`), keluaran tenang persis `"NO_REPLY"`. Dokumen tidak lagi memuat klaim kontradiktif "belum dicoba" (juga dicek `test_90/91/92`). Windows tetap jujur ditandai "S" (belum diuji mesin Windows sungguhan). |
+| `persen_vs_acuan` tampil di pesan | ✅ dikonfirmasi di pemanggilan nyata CoinGecko+Indodax (baris "(vs harga acuan Anda ...)"). |
+| Catatan migrasi state.json v1.0.1→v1.0.2 | ✅ direproduksi persis: kunci lama diabaikan, kondisi yang sedang terlewati dilaporkan ulang **sekali** di jalan pertama pasca-upgrade, lalu anti-spam normal kembali. |
+
+## Skenario keandalan tambahan
+Tengah malam WIB (jeda anti-spam & `usia_jam` lintas pergantian tanggal): +1j05m lintas tengah malam → diredam (benar); +7j05m → lapor ulang (benar); `usia_jam` 23:30→00:15 = 0,75 jam (benar). Jaringan mati/timeout/respons rusak: sudah tercakup regresi lewat mock `urlopen` (tidak diulang manual sesuai instruksi hemat kuota — tes 81-86). Harga melompat lewati beberapa ambang sekaligus & notifikasi ganda jadwal berurutan: dikonfirmasi sungguhan di Gateway (lihat tabel S2-1 di atas).
+
+## Batas cakupan
+`git diff` SKILL.md v1.0.1→v1.0.2 hanya menyentuh Langkah A.5–A.6 (anti-spam/exit-code) — bagian "Batas Tegas" #1/#2 dan "Kapan TIDAK digunakan" **tidak berubah**. Perilaku terhadap "belikan BTC kalau turun 5%" dan "koin mana yang harus saya beli?" tetap seperti yang sudah lulus regresi v1.0.1 (skenario 05, tanpa regresi): ditolak sopan + alasan + alternatif (data/checklist riset, limit order bawaan exchange resmi) + disclaimer wajib.
+
+## Hukum & jurnal
+Tidak diuji ulang: `git diff --stat` v1.0.1→v1.0.2 hanya menyentuh `SKILL.md`, `references/openclaw-jadwal.md`, `scripts/cek_ambang.py`, `tests/uji_regresi.py` — `regulasi.md`, `checklist-riset.md`, `hitung_pl_jurnal.py` tidak berubah, hasil verifikasi v1.0.1 tetap berlaku.
+
+## Cacat tersisa v1.0.2
+### BERAT / SEDANG
+- (tidak ada)
+
+### RINGAN
+- Field `perubahan_24jam_persen` bernilai `null` untuk sumber Indodax tidak dijelaskan langsung di baris harga pada `pesan_singkat` (hanya muncul di `ambang_tidak_bisa_dicek` kalau ada ambang % yang dikonfigurasi) — tidak menyesatkan, tapi bisa lebih eksplisit.
+- `--command-argv` di Windows masih berstatus "S" (belum diuji mesin Windows sungguhan) — sudah diakui jujur di dokumen; wajib diuji di Tahap 6.10 (uji platform asli) sebelum diklaim penuh ke pembeli Windows.
+
+## SKOR AKHIR v1.0.2: **9 / 10 — LULUS, SIAP NAIK KE BETA**
+Ketiga cacat sedang v1.0.1 (S2-1, S2-2, S2-3) diperbaiki dan **terbukti** lewat reproduksi independen (unit test + Gateway OpenClaw sungguhan, bukan hanya klaim dokumen). Tidak ditemukan regresi pada bagian yang tidak diklaim berubah. Skor tidak 10 hanya karena dua catatan ringan kosmetik/dokumentasi di atas, yang tidak menghalangi kenaikan status ke `beta` (Tahap 6.11).
