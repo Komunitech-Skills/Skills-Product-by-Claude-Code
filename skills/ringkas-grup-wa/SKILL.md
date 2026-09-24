@@ -32,7 +32,11 @@ utama: **setia pada isi asli**. Tidak ada isi yang ditambahkan; yang ambigu dibe
 | Nama saya di grup (untuk deteksi mention "perlu perhatian" & memisahkan pesan sendiri) | Tidak | Tanyakan sekali bila relevan; jika tidak dijawab, deteksi mention pakai `@` umum saja |
 | Samarkan nama anggota? | Tidak | Tidak disamarkan, kecuali pengguna eksplisit minta anonim/rahasia. **Bersifat upaya terbaik** — lihat langkah 2 & Batasan. |
 
-Jika file ekspor tidak ada, **minta pengguna mengekspor dulu** (panduan langkah di README.md) — jangan mencoba meringkas dari ingatan/tempelan sebagian chat yang tidak lengkap tanpa memberi tahu keterbatasannya.
+Jika file ekspor tidak ada, **minta pengguna mengekspor dulu** dengan langkah singkat ini (agent tidak selalu bisa membaca README pembeli):
+- **Android:** buka grup → ⋮ (kanan atas) → Lainnya → **Ekspor chat** → **Tanpa media** → kirim file ke chat bot/Telegram atau simpan ke folder.
+- **iPhone:** buka grup → ketuk nama grup → gulir ke bawah → **Ekspor Chat** → **Tanpa Media** → kirim/simpan file `.zip`.
+
+Tanpa file ekspor — jangan mencoba meringkas dari ingatan/tempelan sebagian chat yang tidak lengkap tanpa memberi tahu keterbatasannya.
 Jika info lain kurang, **jangan tanya lebih dari sekali**: proses dengan default di atas dan sebutkan asumsi di akhir.
 
 ## Langkah kerja

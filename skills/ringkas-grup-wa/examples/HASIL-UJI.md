@@ -147,3 +147,135 @@ HOME terisolasi): skill `ringkas-grup-wa` muncul di `eligible` (24/58 total skil
 3. Setelah revisi, `platform_teruji` untuk baris `catalog.csv` skill ini sebaiknya dicatat sebagai
    `openclaw (uji muat otomatis, simulasi agent)` — belum ada uji manusia sungguhan di platform
    manapun pada sesi ini.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-24)
+
+**Penguji:** agent penguji independen (simulasi, Claude Code) — sesi terpisah dari uji pertama,
+tetap tidak terlibat pembuatan skill. Skor sebelumnya: **5/10 (REVISI)**, disebabkan cacat berat
+`--samarkan` yang bocor nama di isi pesan/@mention/pesan sistem.
+
+### Klaim pembuat yang diuji
+1. `--samarkan` kini menyamarkan nama di isi pesan, @mention, pesan sistem, dan sapaan+nama pihak
+   luar (mis. "Pak Budi" → "Orang N"), dengan field `kemungkinan_nama_tersisa` sebagai jaring
+   pengaman transparan (best-effort, bukan jaminan mutlak).
+2. `kandidat_perlu_perhatian[]` sebagai checklist wajib berbasis pola (tanda tanya, mention,
+   uang, tenggat, kata keputusan/komplain) untuk mengurangi risiko item terlewat di grup padat.
+3. Peringatan tambahan saat tanggal hanya punya satu kombinasi d/m-m/d (kemungkinan besar 1 hari
+   yang sama meski terbaca ambigu).
+4. Dukungan encoding UTF-16 (BOM & tanpa BOM, LE/BE, dipilih via heuristik baris yang cocok pola
+   pesan).
+5. `--nama-saya` untuk menandai pesan sendiri (`dari_saya`) & mention langsung.
+6. Nomor telepon non-Indonesia (format `+<kode negara>...`) ikut disamarkan.
+7. 68 unit test (naik dari 46).
+
+### Metodologi uji ulang
+- **Regresi:** `python3 tests/uji_regresi.py` → **68/68 lulus**, sesuai klaim.
+- **Regresi statistik pada 3 fixture LAMA** (`renovasi-toko.txt`, zip reseller iOS, `alumni.txt`
+  dengan filter `--sejak`): dibandingkan field `statistik` & jumlah pesan per hari hasil v1.0.0
+  vs v1.0.1 — **identik 100%**, tidak ada regresi angka.
+- **Fixture BARU yang belum pernah dilihat pembuat** (dibuat setelah menerima instruksi uji
+  ulang, disimpan di `/tmp/uji-ringkas-grup-wa/input/kantor_baru.txt`, 92 pesan, Android, grup
+  kantor kecil fiktif) memuat sengaja:
+  - nama huruf kecil sebagai *pengirim* asli: `budi`, `kak rina` (bukan cuma di isi pesan)
+  - panggilan "Mas Andi" (yang juga jadi nama pengirim literal, bukan sekadar sapaan) dan
+    "kak rina" / "Bu Wati" / "Pak Herman" (pihak luar, disebut di isi pesan)
+  - nama = kata umum Indonesia: "Indah", "Bayu", "Restu", "Fajar"
+  - **ejaan ganda**: pengirim terdaftar "Muhammad Iqbal", tapi di pesan lain disapa "Ikbal"
+    (varian fonetik, sengaja TIDAK sama persis agar diuji apakah tertangkap)
+  - pesan sistem EN: `"Andi added Citra Lestari"`, `"Indah left"`, `"Fajar removed Bayu"`
+  - nomor +65 (Singapura) dan +1 (AS), plus nomor Indonesia biasa
+  - @mention (`@Restu`, `@Bayu`, `@Wati`, `@Andi`)
+  - Kunci jawaban leak dibuat manual sebelum menjalankan `--samarkan` (daftar 17 identitas asli
+    yang wajib hilang, lihat `/tmp/uji-ringkas-grup-wa/verifikasi_bocor_d.py`).
+- **Deteksi kebocoran dihitung independen** dengan skrip Python baru
+  (`verifikasi_bocor_d.py`) yang **tidak memanggil kode skill sama sekali** — mencocokkan daftar
+  nama asli & pola nomor telepon umum terhadap `teks`/`pengirim` di hasil `--samarkan`.
+- **Recall grup padat:** dihitung ulang untuk skenario b (reseller, 90 pesan) dengan memeriksa
+  apakah `kandidat_perlu_perhatian[]` memuat seluruh 11 item di `kunci/kunci-b.md`.
+
+### Hasil: kebocoran `--samarkan`
+| Fixture | Identitas asli diuji | Bocor (independen) | Ditandai di `kemungkinan_nama_tersisa`? |
+|---|---|---|---|
+| `renovasi-toko.txt` (fixture lama, pernah bocor 19x/16 pesan di v1.0.0) | Budi, Dimas, Sari, Fajar, Pak Nanda, Ridho | **0** | field muncul, isinya hanya kata umum/akronim (Jaya Makmur, MCB, PLN, PVC, RAB) — bukan nama asli |
+| `kantor_baru.txt` (fixture BARU) | 17 identitas (nama biasa, huruf kecil, panggilan, ejaan ganda, EN sistem, +65/+1) | **2** kemunculan — keduanya kata "Ikbal" (varian ejaan "Muhammad Iqbal" yang sengaja tidak identik) | **Ya** — "Ikbal" muncul persis di `kemungkinan_nama_tersisa` |
+| Nomor telepon (+62, +65, +1) di kedua fixture | — | **0** bocor | — |
+
+**Kesimpulan kebocoran:** cacat berat v1.0.0 **sudah diperbaiki**. Satu-satunya kebocoran yang
+ditemukan di fixture baru (varian ejaan fonetik "Ikbal") adalah kasus yang secara eksplisit
+**diberi tahu ke pengguna lewat `kemungkinan_nama_tersisa`** — bukan kebocoran diam-diam. Ini
+sesuai dengan cara SKILL.md sekarang mendeskripsikan `--samarkan` (baris ~141: "upaya terbaik,
+BUKAN jaminan mutlak... ejaan nama yang berbeda-beda... Selalu sampaikan isi
+`kemungkinan_nama_tersisa`"). Karena skill sudah jujur soal keterbatasan ini DAN memberi jaring
+pengaman yang benar-benar berfungsi (bukan janji kosong), ini **tidak lagi dihitung sebagai cacat
+berat** — diturunkan jadi catatan RINGAN (lihat di bawah), asalkan agent benar-benar
+menyampaikan isi `kemungkinan_nama_tersisa` ke pengguna seperti diinstruksikan (perlu diuji di
+uji platform asli/beta, tidak bisa dipastikan 100% dari sisi skrip saja).
+
+### Hasil: recall grup padat (skenario b, 90 pesan)
+`kandidat_perlu_perhatian[]` memuat **37 pesan kandidat**, dan **11/11 item di kunci jawaban
+`kunci/kunci-b.md` (termasuk item yang terlewat di uji v1.0.0: pertanyaan harga Toner Rose 14.00)
+tercakup semua** → **recall 100%** bila agent memakai checklist ini sesuai instruksi SKILL.md
+langkah 4 ("Setiap item di daftar ini harus dipertimbangkan"). Presisi checklist itu sendiri
+wajar (37 kandidat dari 90 pesan grup jualan yang memang padat tanya-jawab harga/tenggat) — bukan
+daftar Perlu Perhatian final (agent tetap harus menyaring), tapi jaring pengaman recall yang
+efektif.
+
+### Hasil: peringatan tanggal & UTF-16
+- Skenario b (semua tanggal "9/12/26", 1 kombinasi) sekarang memunculkan catatan tambahan:
+  *"PERINGATAN: hanya ada SATU kombinasi tanggal... besar kemungkinan semuanya terjadi dalam SATU
+  hari yang sama..."* — persis mengatasi cacat sedang #3 di uji v1.0.0.
+- File UTF-16 (dengan BOM maupun **tanpa BOM**, LE) yang sebelumnya gagal total dibaca kini
+  terbaca benar (`Wïndy`, `Böbby` terdeteksi sebagai pengirim) — diuji ulang dengan file baru
+  UTF-16-LE tanpa BOM, hasil benar. Cacat sedang #4 (UTF-16) **teratasi**.
+
+### Regresi data rusak/tepi (ulang semua kasus uji v1.0.0)
+File kosong, biner, ZIP tanpa .txt, tanggal tidak konsisten, nama berisi ":", pesan sistem EN,
+baris sangat panjang — semua tetap berperilaku sama (tidak crash, exit code benar, pesan error
+jelas). **Tidak ada regresi.**
+
+### Uji muat OpenClaw (regresi)
+`ringkas-grup-wa` tetap muncul di `eligible`/`modelVisible`/`commandVisible` OpenClaw 2026.9.5
+setelah update file skrip — **tidak ada regresi pemuatan**.
+
+### Tabel skor v1.0.1
+| Kriteria | Skor v1.0.0 | Skor v1.0.1 | Catatan |
+|---|---|---|---|
+| Pemicu | 8 | 8 | Tidak berubah. |
+| Kemudahan awam | 8 | 8 | Tidak berubah (cacat ringan S4 lama belum disentuh, di luar cakupan uji ulang ini). |
+| Kualitas output | 9 | 9 | Tidak berubah. |
+| Akurasi (angka/fakta) | 7 | 9 | `--samarkan` tidak lagi bocor diam-diam; checklist `kandidat_perlu_perhatian` menutup celah recall yang sebelumnya menurunkan skor. |
+| Penanganan input kurang | 9 | 9 | Tidak berubah. |
+| Penanganan di luar cakupan | 9 | 9 | Tidak berubah. |
+| Keamanan | 5 | 9 | Fitur privasi inti kini benar-benar berfungsi & jujur soal batasannya (bukan janji palsu). Tidak diberi 10 karena "upaya terbaik" tetap punya celah residual (ejaan ganda) — wajar selama selalu diberitahukan, tapi tetap berarti pengguna harus baca `kemungkinan_nama_tersisa`, bukan sepenuhnya "pasang lupa". |
+
+### SKOR AKHIR v1.0.1: **8 / 10 — LULUS**
+Cacat berat v1.0.0 sudah tuntas diperbaiki dan diverifikasi independen (bukan hanya membaca
+kode, tapi menjalankan fixture lama + fixture baru yang sengaja dirancang untuk mencari celah).
+Recall grup padat naik ke 100% lewat mekanisme checklist baru. Tidak ditemukan cacat berat baru.
+
+**Cacat SEDANG yang masih tersisa (bukan lagi berat):**
+1. `--samarkan` masih bisa melewatkan varian ejaan fonetik yang jauh dari nama terdaftar (mis.
+   "Ikbal" untuk "Iqbal") — **tapi selalu ditandai** di `kemungkinan_nama_tersisa`, jadi risikonya
+   bergeser dari "kebocoran diam-diam" (berat) menjadi "agent lalai menyampaikan peringatan ke
+   pengguna" (sedang, tergantung kepatuhan agent pada SKILL.md). **Saran:** karena ini kritikal
+   untuk kepercayaan pembeli, pertimbangkan menambahkan ke checklist SKILL.md ("Checklist sebelum
+   mengirim hasil") sebuah baris tegas: *"Jika `--samarkan` dipakai dan `kemungkinan_nama_tersisa`
+   tidak kosong, WAJIB tampilkan daftar itu ke pengguna di awal atau akhir ringkasan — jangan
+   hanya di catatan internal."* (SKILL.md sudah menyebutkan ini di beberapa tempat, tapi belum
+   ada di checklist final baris-per-baris yang paling mudah diikuti agent tergesa-gesa.)
+2. Cacat sedang lama #1 (skor "Kemudahan awam" S4 belum menyalin langkah ekspor ke SKILL.md
+   sendiri) belum disentuh pembuat — di luar cakupan klaim v1.0.1, tetap tercatat sebagai
+   perbaikan yang disarankan untuk revisi berikutnya.
+
+**Verifikasi angka independen: YA** (statistik regresi 3 fixture lama + kebocoran nama/nomor di
+fixture baru, keduanya dengan skrip terpisah dari kode skill).
+
+**Rekomendasi:** skill ini **LULUS** dan layak naik status dari `draft`/`uji` ke tahap berikutnya
+(uji platform asli oleh manusia sesuai `docs/uji-platform.md`, lalu program beta) — cacat berat
+yang menahan rilis sebelumnya sudah tuntas. Catatan sedang #1 di atas sebaiknya tetap
+ditindaklanjuti sebelum rilis penuh, tapi tidak menghalangi kelanjutan ke tahap uji platform.
+
+## Catatan koordinator — setelah uji ulang v1.0.1 (8/10 LULUS)
+Sedang #1: checklist akhir SKILL.md sudah memuat baris wajib menyampaikan `kemungkinan_nama_tersisa` bila tidak kosong (baris "Kalau `--samarkan` dipakai…") — tidak ada perubahan tambahan. Sedang #2 (S4): langkah ekspor chat Android & iPhone kini ditulis langsung di SKILL.md bagian Input.
