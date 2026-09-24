@@ -262,3 +262,72 @@ Agregat pada file serangan tetap benar: 160 total, hadir 53, tidak datang 96, ti
 ## SKOR AKHIR v1.0.2: **6 / 10 — REVISI**
 
 Kemajuan nyata: kasus B2 lama (catatan bebas panjang) tuntas, dan R9–R14 terbukti. Semua angka pada data sah cocok dengan verifikasi independen. Tetapi pada data dengan salah isi pendek atau kolom bergeser, data per-pasien masih bisa muncul di output (20 dari 29 string uji). Untuk skill kesehatan yang menjanjikan "tanpa data per-pasien", itu tetap cacat BERAT. Perbaikan yang diusulkan (ambang ≥3, pola `@`/inisial/ICD, deteksi baris bergeser, dan 2 tes) kecil dan terlokalisasi. Setelah itu dan uji serangan ulang singkat, perkiraan skor **8–9 (LULUS)**.
+
+---
+
+# Uji ulang v1.0.3 (2026-09-24), fokus kebocoran
+
+- **Penguji:** agent penguji independen (simulasi, Claude Code), bukan pembuat.
+- **Versi:** commit `0bc3624` (v1.0.3), diuji dari salinan di `/tmp`. Tidak ada file skill yang diubah.
+- **Tes bawaan:** 51 tes ✅ OK.
+
+## 1. File serangan milik penguji (dipakai PERSIS, bukan versi pembuat)
+
+| File | Hasil |
+|---|---|
+| `serangan.csv` (160 baris; 29 string sensitif: nama 1–2 kata, inisial, email, diagnosis, sapaan+nama, "nol delapan…", kolom `Catatan Dokter`/`Remarks`/`Ket.`) | ✅ **0 dari 29 bocor** (hitungan script penguji, regex tanpa membedakan huruf besar/kecil, atas output teks + JSON). Agregat tidak berubah dari v1.0.2 dan benar: 160 total / hadir 53 / tidak datang 96 / tidak dikenal 11. Nilai tersembunyi dilaporkan sebagai jumlah saja (status 11, poli 7, penjamin 5) |
+| `geser.csv` (120 baris, 12 baris `Nama, S.Pd` tanpa kutip) | ✅ Peringatan eksplisit dengan nomor baris. Baris bergeser dikeluarkan dari rincian, `S.Pd`/`Gigi`/`BPJS` tidak lagi muncul sebagai kategori. Angka dicek independen dari 108 baris sah: hadir 56 (51,9%), poli Umum 57 (52,8%) / Gigi 51 (47,2%), per hari 19/24/27/23/15 → **cocok semua** |
+
+## 2. Regresi data sah
+| File | Hasil |
+|---|---|
+| CSV 180 baris | ✅ 180 / hadir 144 / tidak datang 36; poli 88/60/32; penjamin 111/35/34; per hari cocok; 0 kebocoran |
+| CSV 200 baris campur | ✅ 52/83/46/19, % 26,0/41,5; 0 baris dianggap bergeser; semua 12 kategori status sah (termasuk `?`, `Rujuk`, `Reschedule`) tetap tampil karena ≥3 baris; 0 kebocoran |
+
+## 3. Serangan baru (belum dilihat pembuat): `serangan103.csv`, 150 baris, pemisah `;`, jam format `08.30`
+Isi: nama 1 kata yang **berulang** (pasien kontrol berulang/salah isi sistematis): `Aminah` ×4 dan `Ma'ruf` ×3 di status; `Nur-Aini` ×3 dan `Joko` ×3 di poli; `Siti` ×3 di penjamin. Diagnosis bahasa Inggris berulang di poli: `hypertension` ×4, `dengue fever` ×3. Ditambah `Tn. Ahmad` ×3 (sapaan) dan `Aminah` ×1 di poli (tunggal).
+
+- Pemisah `;` dan jam `08.30` terbaca dengan benar. Hadir 40 (26,7%), tidak datang 103 (68,7%), per hari, dan per poli **cocok** dengan hitungan independen.
+- **Tersaring:** `Tn. Ahmad` (sapaan) dan `Aminah` tunggal di poli (<3).
+- **Tampil (7 dari 10 string uji):** `Aminah`, `Ma'ruf`, `Nur-Aini`, `Joko`, `Siti` (nama, karena ≥3×) dan `hypertension`, `dengue fever` (diagnosis berulang).
+- **Kolom tambahan di ujung SEMUA baris** (`trailing_semua.csv`: setiap baris diakhiri `;`, header tidak): semua 150 baris dianggap "bergeser" dan dikeluarkan dari rincian. Hasilnya "Hadir: 0 (0.0%) — Tidak datang: 0 (0.0%)", per hari/poli/penjamin kosong. Ada peringatan jelas (150 baris tidak cocok), jadi tidak ada data yang bocor. Tapi rekap jadi tidak berguna, dan baris "Hadir: 0 (0.0%)" menyesatkan bila disalin tanpa peringatannya. Pemisah di ujung baris umum ditemui pada ekspor sistem/Excel tertentu.
+
+## 4. Penilaian risiko sisa (nilai ≥3×, diakui pembuat)
+- **Diagnosis berulang di kolom poli** (`hypertension` 4, `dengue fever` 3): yang tampil jumlah agregat per istilah, tanpa identitas. Sudah **dinyatakan jujur** di SKILL.md ("Batasan") dan README. Risiko **RINGAN, dapat diterima**.
+- **Nama yang salah isi berulang ≥3× di kolom kategori** (`Joko`, `Aminah`, `Siti`, `Nur-Aini`, `Ma'ruf`): ini memang tampil. Syaratnya kesalahan sistematis (nama yang sama diketik di kolom kategori minimal 3 kali dalam satu periode rekap), jauh lebih jarang daripada salah isi tunggal yang kini tersaring. Yang terbuka hanya nama panggilan + jumlah baris, tanpa NIK/HP/diagnosis. Pengamannya ada di checklist SKILL.md: "cek hasil tidak memuat nama sebelum dikirim". **Tingkat: RINGAN–SEDANG, dapat diterima untuk rilis beta**, dengan dua perbaikan murah di bawah. Pengungkapan di README/SKILL saat ini baru menyebut diagnosis berulang, belum nama berulang.
+- **Ambang frekuensi k=3** masuk akal untuk ekspor mingguan. Untuk klinik yang sangat kecil (rekap harian 5–10 pasien), kategori sah yang jarang (mis. `Rujuk` 1×) ikut tersembunyi. Ini aman dan sudah dijelaskan di komentar kode.
+
+## 5. Cacat v1.0.3
+
+### BERAT
+Tidak ada.
+
+### SEDANG
+- **S5. Pemisah di ujung baris membuat semua baris dianggap bergeser** (`_baris_bergeser`, `scripts/rekap_kunjungan.py` ±baris 488–499).
+  **Saran:**
+  - Anggap baris TIDAK bergeser bila kelebihan kolomnya (kunci `None`) seluruhnya string kosong. Idem untuk baris yang kekurangan kolom di ujung (nilai `None` hanya di kolom terakhir yang tidak dipakai).
+  - Bila > 50% baris "bergeser", beri pesan "struktur header dan baris tidak cocok (mis. pemisah di ujung baris)".
+  - Jangan cetak "Hadir: 0 (0.0%)" ketika `total_dapat_dibaca` = 0; cetak "(tidak ada baris yang bisa dibaca)".
+  - Tambah tes `trailing_semua.csv`.
+
+### RINGAN
+- **R15.** Nama salah isi berulang ≥3× tetap tampil. Saran murah:
+  - (a) Bila file punya kolom sensitif bertipe nama, script mencocokkan nilai kategori dengan kata-kata di kolom nama itu **hanya untuk penyaringan** (isi kolom nama tetap tidak pernah dicetak). Nilai kategori yang sama dengan salah satu kata nama disembunyikan. Pada serangan ini, cara ini menyaring `Aminah`, `Joko`, `Siti`, `Nur-Aini`, `Ma'ruf` bila nama-nama itu juga ada di kolom Nama. Perlu disesuaikan dengan klaim "kolom sensitif tidak dibaca" (ubah jadi "tidak pernah ditampilkan").
+  - (b) Tambahkan pengungkapan jujur di README/SKILL: "nama yang salah diketik di kolom kategori ≥3 kali tetap bisa tampil — cek hasil sebelum dikirim".
+- **R16.** `references/aturan-privasi-dan-iklan.md` Pasal 5 huruf d kini parafrase (✅), tapi masih bertuliskan "kata-kata persisnya belum dicek ulang". Naskah yang dibaca penguji (BN 2010 No. 673): "membandingkan mutu pelayanan kesehatan yang diberikan fasilitas pelayanan kesehatan tersebut dengan fasilitas pelayanan kesehatan lainnya, atau mencela mutu pelayanan kesehatan fasilitas pelayanan kesehatan lainnya". Boleh dikutip persis agar catatan itu bisa dihapus.
+
+## Skor uji ulang v1.0.3
+
+| Kriteria | v1.0.2 | v1.0.3 |
+|---|---|---|
+| Pemicu | 9 | 9 |
+| Kemudahan awam | 9 | 9 |
+| Kualitas output | 9 | 8 (rekap kosong pada file berpemisah di ujung baris) |
+| Akurasi (angka/fakta) | 8 | 9 (baris bergeser dikeluarkan, % dari baris terbaca, semua cocok independen) |
+| Penanganan input kurang | 9 | 9 |
+| Penanganan di luar cakupan | 9 | 9 |
+| Keamanan & privasi | 5 | 8 (0/29 pada serangan lama, 0 kebocoran data sah; sisa: nama berulang ≥3×) |
+
+## SKOR AKHIR v1.0.3: **8 / 10 — LULUS**
+
+B2 dan B2-sisa **tuntas** untuk semua pola salah isi tunggal/jarang, email, inisial, kode ICD, sapaan, dan kolom bergeser. Angka pada data sah maupun rusak cocok dengan verifikasi independen. Sisa risiko (nilai berulang ≥3×) kecil, sebagian sudah diungkap jujur, dan dijaga checklist. **Sebelum naik ke status beta,** sebaiknya perbaiki S5 (pemisah di ujung baris) dan R15(b) (pengungkapan nama berulang). R15(a) dan R16 opsional. Tidak perlu uji ulang penuh; cukup cek singkat `trailing_semua.csv` setelah S5 diperbaiki.
