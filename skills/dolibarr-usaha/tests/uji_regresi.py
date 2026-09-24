@@ -346,7 +346,7 @@ class UjiDolibarr(unittest.TestCase):
         p = self.jalan("stok", url="http://127.0.0.1:{}/dolibarr".format(port_bebas()))
         self.assertEqual(p.returncode, 3)
         self.assertIn("tidak bisa dihubungi", p.stderr)
-        self.assertIn("DoliWamp", p.stderr)
+        self.assertIn("Start DoliWamp server", p.stderr)
 
     def test_modul_api_belum_aktif(self):
         K.mode.add("api_mati")

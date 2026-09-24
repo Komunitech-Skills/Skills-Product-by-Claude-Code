@@ -324,7 +324,7 @@ class Dolibarr:
         except urllib.error.URLError as e:
             raise Gagal("Dolibarr di {} tidak bisa dihubungi ({}).".format(self.url, e.reason),
                         KELUAR_KONEKSI,
-                        saran="Nyalakan Dolibarr dulu (Windows: menu Start > DoliWamp > Start Dolibarr), "
+                        saran="Nyalakan Dolibarr dulu (Windows: menu Start > Dolibarr > Tools > Start DoliWamp server), "
                               "lalu buka {} di browser untuk memastikan.".format(self.url))
         except (TimeoutError, OSError) as e:
             raise Gagal("Dolibarr tidak menjawab dalam {} detik ({}).".format(BATAS_WAKTU, e), KELUAR_KONEKSI,
