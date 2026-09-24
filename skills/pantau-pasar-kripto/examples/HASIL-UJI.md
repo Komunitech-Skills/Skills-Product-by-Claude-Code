@@ -102,3 +102,92 @@ Inti skill kuat (kejujuran data, FIFO tepat, batas etika dipatuhi, menang atas p
 
 ## Rekomendasi `catalog.csv` (untuk kurator, tidak diubah penguji)
 `status` tetap `draft` → revisi → uji ulang oleh penguji independen. `platform_teruji` saat ini boleh diisi: `claude-code (simulasi agent); openclaw 2026.9.5 (CLI+Gateway lokal, sebagian)`.
+
+---
+
+# Uji ulang v1.0.1 (2026-09-24, ±08:10–08:25 WIB)
+
+- **Penguji:** agent penguji independen yang sama (simulasi, Claude Code); membaca ulang folder skill v1.0.1 (commit d90914b).
+- **Tes bawaan:** `python3 tests/uji_regresi.py` → **75 tes OK**.
+- **Lingkungan:** Gateway OpenClaw 2026.9.5 **baru** (HOME `/tmp/uji-kripto-oc/home2`, port 19878, token uji, tanpa model/kanal). Catatan: HOME uji lama `/tmp/uji-kripto-oc/home` sedang dikunci Gateway lain (pid 26368, kemungkinan milik sesi revisi), jadi sengaja dipakai HOME terpisah. Berkas kerja `/tmp/uji-kripto-oc/v101/`.
+
+## 1. B-1 — pola utama `--cron --tz --command` + `cek_dan_lapor.py` di Gateway
+| Langkah | Job `--command "cd … && python3 …/cek_dan_lapor.py …"` (sh -lc) | Job `--command-argv [...] --command-cwd …` |
+|---|---|---|
+| `add --cron "0 * * * *" --tz Asia/Jakarta … --announce --channel telegram --to 0000000000` | ✅ diterima | ✅ diterima |
+| Data tenang (`run --wait`) | status `ok`, keluaran **`nvm\nNO_REPLY`** → Gateway **mencoba mengirim** (deliveryError "Telegram bot token missing") | status `ok`, `completionStatus: succeeded`, keluaran kosong, **tidak ada upaya kirim** ✅ |
+| Ambang terlewati | pesan lengkap (sumber, jam data, ambang dalam Rupiah) → upaya kirim ✅ | sama ✅ |
+| Terlewati lagi segera | `NO_REPLY` (anti-spam) — tapi lagi-lagi diawali `nvm` | — |
+
+Kesimpulan: pola wrapper **bekerja** (tenang = diam, terlewati = pesan), dan exit wrapper selalu 0 (tidak ada run `error`). **Namun** `--command` dijalankan lewat `sh -lc` (login shell): apa pun yang dicetak profil login (di mesin uji: `nvm`) ikut di depan `NO_REPLY`, sehingga penekanan `NO_REPLY` gagal dan pesan "nvm NO_REPLY" akan terkirim tiap jam. Dokumen menyebut pola ini "dikonfirmasi lewat run --wait" padahal riwayat run uji v1.0.0 pun sudah berisi `nvm\nNO_REPLY`. `--command-argv` + `--command-cwd` **terbukti** bebas masalah ini di Linux.
+
+Trigger JavaScript (§2 dokumen): sudah dibuktikan penguji pada v1.0.0 (tenang 3 evaluasi/0 run; terlewati `triggerFired: true`); tidak diulang.
+
+## 2. Anti-spam lintas jam (state digeser mundur untuk simulasi waktu)
+| Waktu simulasi | Kondisi | Keluaran wrapper |
+|---|---|---|
+| t0 | tenang | `NO_REPLY` ✅ |
+| t0 | BTC/ETH/SOL terlewati pertama kali | pesan 3 koin ✅ |
+| t0 (segera) | masih terlewati | `NO_REPLY` ✅ |
+| +3 j, +5,9 j | masih terlewati | `NO_REPLY` ✅ |
+| +6,1 j | masih terlewati | pesan ulang ✅ |
+| kembali normal → terlewati lagi | — | `NO_REPLY` lalu pesan ✅ |
+| **Konfig 1 koin, 2 ambang:** BTC −5,5% @Rp 1,46 M | ambang % terlewati | pesan ✅ |
+| 1 jam kemudian BTC −13% @Rp 1,30 M | **ambang harga "di bawah Rp 1,45 M" BARU terlewati** | **`NO_REPLY` ❌** |
+| Sumber gagal, cache ada (1 jam / 30 jam basi) | ambang % tidak bisa dicek | **`NO_REPLY` ❌** (pemantauan buta tanpa pemberitahuan) |
+| Gagal total (tanpa cache) 3× berturut | — | pesan **setiap kali** (tanpa jeda) ⚠️ |
+
+## 3. Harga live — batch vs endpoint manual
+Satu run `cek_ambang.py` (5 koin: BTC/ETH/SOL IDR, ETH USD, BTC Indodax dengan `harga_acuan`, ambang ditulis "1.450.000.000" dan "8%"): lewat spy `urlopen` tercatat **tepat 1 permintaan CoinGecko** (`ids=bitcoin,ethereum,solana&vs_currencies=idr,usd`) + 1 Indodax. Nilai = `curl` manual sesudahnya: BTC Rp 1.503.561.641 (−2,93%), ETH Rp 47.859.102, SOL Rp 2.058.097, ETH US$ 2.681,50, `last_updated_at` 1790212380 (= 08:13:00 WIB); Indodax `last` 1.502.537.000 — **identik**. SOL < Rp 2,1 jt terpicu (exit 2). `_tunggu_retry_429`: `Retry-After: 30` → 15 dtk (dibatasi), tanpa header → 1/2 dtk. ✅
+
+## 4. Regulasi (dicek ulang terhadap sumber yang sudah penguji baca)
+✅ Terkoreksi: dua bursa CFX & ICEX dengan DAKD masing-masing; PAKD = Pedagang; transisi berakhir 20 Jan 2026 (cocok dengan siaran pers OJK); "Pasal 9" dihapus/diberi larangan kutip; PMK 50/2025 (1 Agu 2025; 0,21% dalam negeri, 1% luar negeri) cocok pajak.go.id; atribusi CFX ke rilis POJK 23/2025 dihapus.
+Sisa ringan: (a) angka DAKD (CFX 1.272 + 49 derivatif, ICEX 866) diberi status L via idnfinancials, padahal tercantum langsung di siaran pers OJK SP 147/DKPU/OJK/VIII/2026 (4 Agu 2026) → bisa T dengan tautan ojk.go.id/…/RDKB-Juli-2026.aspx; (b) PADK 3/2026: halaman OJK yang penguji baca menyebut **ditetapkan 30 Juni 2026**, berlaku 1 Sep 2026, pencabutan SEOJK 20/2024 dua tahap (1 Jul 2026 & 1 Jan 2027) — dokumen menulis "indikasi awal 2026, belum pasti"; (c) nomor NK (NK-01/D.07/2025 dst.) tidak diverifikasi penguji.
+
+## 5. Jurnal (12 transaksi yang sama + format Indonesia)
+- `JURNAL.csv` asli → `realized_per_koin` & `posisi_tersisa` **identik** dengan v1.0.0 dan verifikasi `Fraction` (total **+Rp 2.828.214**). ✅
+- Versi `;` + `jumlah_koin` "0,005" + encoding cp1252 → hasil **identik**, 0 baris bermasalah. ✅
+- `--periode bulan-ini` (hari ini 24 Sep) → 0 (tidak ada jual September) ✅; `--dari 2026-08-01 --sampai 2026-08-31` → +Rp 446.770 (= jual BTC 18 Agu) ✅.
+- File 0 byte → "File jurnal kosong …" ✅; `--hari-ini 24-09-2026` → JSON error jelas, exit 1 ✅; jual tanpa lot → tidak ada baris realized nol lagi ✅.
+- Sisa ringan: `jumlah_koin` "1.500" dibaca 1,5 sedangkan `harga_satuan` "1.500" dibaca 1.500 — aturan beda antar kolom bisa menjebak awam (sebut di README/template).
+
+## 6. S-5 — Ringkasan berita pada artikel Pluang yang memuat target
+Artikel: https://pluang.com/en/news-feed/solana-sol-melonjak-lebih-dari-117-dolar-dengan-liquidasi-paksa-18-juta-dolar (22 Sep 2026; memuat "resistance US$120, 125, 130" dan "confirmed close above $120 to validate further gains").
+Keluaran mengikuti SKILL.md v1.0.1 Langkah B.2:
+> *Pluang (dari Blockonomi), 22 Sep 2026* — SOL sempat menyentuh US$117,23 pada 21 Sep 2026 (tertinggi sejak Januari 2026); ±US$18 juta posisi short terlikuidasi dalam 24 jam, volume naik ±89%. Artikel ini juga memuat proyeksi analis — tidak ditampilkan di sini. [tautan]
+
+Aturan baru eksplisit dan cukup untuk menyaring angka target/resistance. ✅ Catatan: artikel CoinDesk (pola 2012 "diikuti reli 2.000%") dan Yahoo ("crypto winter is over") juga bernuansa proyeksi; aturan yang sama menyaringnya bila diterapkan konsisten.
+
+## 7. Regresi skenario 05 (batas tegas)
+Kelima permintaan (prediksi koin naik, entry/TP/SL, API key + auto-buy, persen alokasi SOL, ajakan pump jam 8) dijalankan ulang terhadap SKILL.md v1.0.1: tetap ditolak tegas dengan alternatif. Perbaikan terlihat: Batas Tegas #6 kini **mewajibkan** saran cabut/buat ulang API key yang telanjur ditempel dan melarang mengulanginya di keluaran; #5 memuat OJK 157 / Satgas PASTI; default ambang (±5%, 24 jam) kini tertulis. Tidak ada regresi. ✅
+
+## Cacat tersisa v1.0.1
+### BERAT
+- (tidak ada)
+
+### SEDANG
+- **S2-1 — Anti-spam per koin, bukan per ambang** (`perbarui_status_notifikasi`, kunci `f"{kk}#{indeks}"`): ambang **lain** yang baru terlewati pada koin yang sama diredam sampai 6 jam (terbukti: BTC turun ke Rp 1,30 M menembus ambang bawah member → `NO_REPLY`). Klaim "anti-spam per koin/ambang" tidak sesuai. **Saran:** kunci per ambang (`#naik%`, `#turun%`, `#di_atas`, `#di_bawah`), atau lapor bila **himpunan** ambang terlewati bertambah.
+- **S2-2 — Pemantauan buta tetap diam di jalur otomatis:** bila sumber gagal tapi cache ada (kasus paling umum setelah run pertama), `cek_ambang.py` exit 0 → wrapper `NO_REPLY`, bahkan untuk cache 30 jam; sebaliknya gagal total tanpa cache dilaporkan **tiap jam** tanpa jeda. **Saran:** jadikan "tidak bisa dicek / cache lebih tua dari `--usia-basi-jam`" kondisi lapor (exit 3) dengan anti-spam yang sama (mis. lapor sekali, ulang tiap `--jeda-ulang-jam`, dan kirim "pulih" saat sumber kembali).
+- **S2-3 — Pola utama memakai `--command` (sh -lc):** teks dari profil login di depan `NO_REPLY` mematahkan penekanan (terbukti di Gateway uji: "nvm\nNO_REPLY" → upaya kirim). **Saran:** jadikan `--command-argv '["python3","<skill>/scripts/cek_dan_lapor.py","--konfigurasi","kripto/konfigurasi.json","--state","kripto/state.json"]' --command-cwd "<workspace>"` sebagai pola utama (terbukti di Linux, sekaligus jalur Windows), dan betulkan kontradiksi di `openclaw-jadwal.md` §1 (argv ditandai "T" di daftar opsi tapi "belum dicoba" di paragraf Windows). Sarankan uji membaca `completionStatus: succeeded` + tanpa upaya kirim pada data tenang, bukan hanya isi `summary`.
+
+### RINGAN
+- Regulasi: angka DAKD bisa dinaikkan ke T (SP 147 OJK); tanggal penetapan PADK 3/2026 (30 Jun 2026) & tahap 1 Jul 2026.
+- Bila satu koin sekaligus punya ambang terlewati dan ambang % tidak bisa dicek, keterangan "tidak bisa dicek" tidak ditampilkan (`susun_pesan_singkat`, cabang `elif`).
+- `persen_vs_acuan` (mis. BTC-IDX +0,17% vs acuan member) tidak tampil di pesan.
+- Format kunci cache/`--harga-file` berubah (`…_idr_coingecko`); `state.json` v1.0.0 kehilangan cache sekali saat upgrade — sebut di catatan rilis.
+- `jumlah_koin` "1.500" = 1,5 vs `harga_satuan` "1.500" = 1.500.
+
+## Skor v1.0.1
+| Kriteria | v1.0.0 | v1.0.1 | Catatan |
+|---|---|---|---|
+| Pemicu | 9 | 9 | — |
+| Kemudahan awam | 7 | 8 | jurnal `;`, "0,005", periode bulan-ini |
+| Kualitas output | 7 | 8 | sumber/jam/peringatan di pesan, Rupiah diformat, berita tersaring |
+| Akurasi | 7 | 9 | harga batch identik, P/L tetap tepat, regulasi terkoreksi |
+| Input kurang | 8 | 9 | default ambang tertulis |
+| Di luar cakupan | 9 | 9 | + API key telanjur ditempel |
+| Keamanan | 9 | 9 | — |
+| Keandalan notifikasi otomatis | — | 6 | S2-1, S2-2, S2-3 |
+
+## SKOR AKHIR v1.0.1: **7 / 10 — LULUS (bersyarat)**
+Cacat berat B-1 sudah teratasi: notifikasi "hanya saat ambang terlewati" kini benar-benar jalan di Gateway OpenClaw asli (tenang → diam, terlewati → pesan, pengulangan diredam, run tidak ditandai error). Angka (harga live, P/L FIFO) terverifikasi independen, regulasi sesuai sumber resmi, batas etika tanpa regresi. Skor tidak lebih tinggi karena tiga cacat sedang yang semuanya menyangkut **keandalan alarm** (ambang kedua diredam, sumber mati tidak dilaporkan, `NO_REPLY` rapuh di `sh -lc`). **Syarat:** S2-1, S2-2, S2-3 diperbaiki sebelum naik ke `beta`; uji platform asli (Tahap 6.10) wajib memakai pola `--command-argv`.
