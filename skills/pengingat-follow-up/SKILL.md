@@ -123,7 +123,7 @@ S --teks timesheet --dari "1/9/2026" --sampai "30/9/2026"
 - Tanggal kerja: nama hari berarti hari itu yang **terakhir sudah lewat** (termasuk hari ini). Contoh:
   "Senin" diucapkan Jumat = Senin minggu ini. Tanggal kerja di masa depan (`besok`, `Senin depan`) **ditolak**.
 - Jam: `1:30`, `1,5`, `90m`, `2 jam`, `1j30m`. `1.30` (titik, 2 digit) ditolak sebagai ambigu: tanyakan "1 jam
-  30 menit atau 1,3 jam?". `1,30` dibaca desimal (78 menit) dengan `Catatan:`. Periode: `minggu-ini` (Senin–Minggu), `minggu-lalu`,
+  30 menit atau 1,3 jam?". Menit ≥ 60 (`1:60`, `1.60`) ditolak dengan saran yang valid (`2:00`). `1,30` dibaca desimal (78 menit) dengan `Catatan:`. Periode: `minggu-ini` (Senin–Minggu), `minggu-lalu`,
   `bulan-ini` (default), `bulan-lalu`, atau `--dari/--sampai`.
 - Rumus: nilai per klien = Σ(menit × tarif ÷ 60), dihitung persis lalu **dibulatkan sekali** ke rupiah
   terdekat (0,5 ke atas) per klien. Total = jumlah nilai per klien.
@@ -181,7 +181,11 @@ Selamat pagi Bu Rina, kami mengingatkan pembayaran INV-012 sebesar Rp 4.500.000 
   rusak **tetap disimpan apa adanya di posisinya** dan disebut di teks keluaran supaya pemilik memperbaikinya.
 - File Excel (`;` sebagai pemisah, BOM, atau ANSI/Windows-1252) bisa dibaca. Saat disimpan ulang, file menjadi CSV
   UTF-8 berpemisah koma. Teks yang diawali `=`, `+`, `@` diamankan agar tidak dibaca sebagai rumus.
-- CSV yang diedit manual dan berisi nomor HP/email/NIK → rekap memberi `Catatan:` untuk menghapusnya.
+- CSV yang diedit manual dan berisi nomor HP/email/NIK (termasuk format `(0812) 0000-1234`) → di rekap dan draf
+  nomor itu **disamarkan** (mis. `0812-****-1234`), dan ada `Catatan:` agar dihapus dari daftar.
+- File format lama (tanpa kolom `diingatkan`): kolom baru ditambahkan saat file disimpan, dengan `Catatan:`.
+  Jika masih ada baris berkolom berlebih, header lama **dipertahankan** sampai baris itu diperbaiki. Tujuannya agar
+  isi berlebih tidak jatuh ke kolom baru. Selama itu `terkirim` ditolak dengan pesan jelas.
 - Script tidak mengetahui apakah pelanggan sudah membayar. Status diubah hanya jika pemilik mengatakannya.
 - Jumlah tagihan yang sudah dikirim hanya diketahui dari `terkirim`. Draf tertinggi = "pemberitahuan tertulis".
   Somasi dan denda → `tagih-piutang` (bukan nasihat hukum).

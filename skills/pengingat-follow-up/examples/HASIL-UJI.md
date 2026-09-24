@@ -258,3 +258,6 @@ Kedelapan cacat berat/sedang terbukti diperbaiki dengan uji nyata dan tes regres
 kabur, Excel `;`/BOM, formula, maupun angka timesheet. Selisih Rp 675.000 vs Rp 1.162.500 bukan kesalahan script:
 kedua angka benar untuk datanya masing-masing, dan skenario 02 benar menghasilkan Rp 1.162.500. Sisa cacat hanya
 ringan (R1–R5) dan bisa ditangani di versi berikutnya. Uji platform asli (manusia) & beta tetap diperlukan sebelum rilis.
+
+## Catatan koordinator — v1.0.2
+Cacat ringan R1–R4 dari uji ulang v1.0.1 diperbaiki pembuat; 49/49 tes regresi lulus (dicek ulang koordinator). Keterbatasan "file yang sudah dimigrasi v1.0.1" tidak berdampak ke pembeli karena v1.0.1 belum pernah dirilis/dibagikan. Status tetap lulus (perbaikan ringan + tes regresi).

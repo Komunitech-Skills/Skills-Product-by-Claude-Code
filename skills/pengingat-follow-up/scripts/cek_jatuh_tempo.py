@@ -361,14 +361,19 @@ def parse_jam(teks):
     m = re.fullmatch(r"(\d{1,2}):(\d{1,2})(:00)?", s)
     if m:
         if int(m.group(2)) >= 60:
-            raise InputSalah(f"jam '{asli}' tidak valid (menit harus < 60)")
+            raise InputSalah(f"jam '{asli}' tidak valid (menit harus < 60). {_saran_jam(m.group(1), m.group(2))}")
         menit = int(m.group(1)) * 60 + int(m.group(2))
     else:
         m2 = re.search(r"(\d+)([.,])(\d{2})(?!\d)", s)
         if m2 and m2.group(2) == ".":
-            raise InputSalah(f"jam '{asli}' ambigu: {m2.group(1)} jam {m2.group(3)} menit, atau "
-                             f"{m2.group(1)},{m2.group(3)} jam? Tulis {m2.group(1)}:{m2.group(3)} untuk jam:menit, "
-                             f"atau pakai koma untuk desimal ({m2.group(1)},{m2.group(3)})")
+            j, mm = m2.group(1), m2.group(3)
+            desimal = bulat(Decimal(f"{j}.{mm}") * 60)
+            if int(mm) < 60:
+                pilihan = f"{j} jam {mm} menit (tulis {j}:{mm})"
+            else:
+                pilihan = _saran_jam(j, mm)
+            raise InputSalah(f"jam '{asli}' ambigu. Maksudnya {pilihan}, atau {j},{mm} jam desimal "
+                             f"(= {teks_durasi(desimal)}, tulis {j},{mm})?")
         if m2 and int(m2.group(3)) < 60:
             cat = (f"{asli} dibaca {m2.group(1)},{m2.group(3)} jam (desimal). Kalau maksudnya "
                    f"{m2.group(1)} jam {m2.group(3)} menit, tulis {m2.group(1)}:{m2.group(3)}.")
@@ -388,6 +393,12 @@ def parse_jam(teks):
     if menit > 24 * 60:
         raise InputSalah(f"jam '{asli}' lebih dari 24 jam dalam satu baris; pecah per tanggal")
     return menit, cat
+
+
+def _saran_jam(jam, menit):
+    """Saran penulisan yang valid bila menit >= 60, mis. 1:60 -> 2:00."""
+    total = int(jam) * 60 + int(menit)
+    return (f"{jam} jam {int(menit)} menit = {teks_durasi(total)} (tulis {total // 60}:{total % 60:02d})")
 
 
 def teks_durasi(menit):
@@ -413,12 +424,32 @@ POLA_KONTAK = [
 ]
 
 
+def _tanpa_kurung(teks):
+    return re.sub(r"[()]", "", teks or "")
+
+
 def cek_kontak(nilai_dict):
     for kolom, teks in nilai_dict.items():
         for pola, label in POLA_KONTAK:
-            if teks and pola.search(teks):
+            if teks and pola.search(_tanpa_kurung(teks)):
                 return kolom, label
     return None
+
+
+def _sensor_digit(cocok):
+    angka = re.sub(r"\D", "", cocok.group(0))
+    return f"{angka[:4]}-****-{angka[-4:]}" if len(angka) >= 8 else "****"
+
+
+def sensor_kontak(teks):
+    """Samarkan nomor HP/email/16 digit (mis. 0812-****-1234) sebelum teks dikirim ke kanal chat."""
+    if not teks or not cek_kontak({"x": teks}):
+        return teks
+    t = _tanpa_kurung(teks)
+    t = POLA_KONTAK[0][0].sub(_sensor_digit, t)
+    t = POLA_KONTAK[1][0].sub(lambda m: m.group(0)[:1] + "***@" + m.group(0).split("@", 1)[1], t)
+    t = POLA_KONTAK[2][0].sub(lambda m: m.group(0)[:4] + "********" + m.group(0)[-4:], t)
+    return t
 
 
 def aman_csv(teks):
@@ -495,9 +526,6 @@ def muat_daftar(path):
     header, isi, info = baca_csv(path, ["jenis", "nama", "tanggal"])
     if header is None:
         return list(KOLOM), [], [], info
-    for k in KOLOM:
-        if k not in header:
-            header.append(k)
     baris, rusak = [], []
     for no, b, alasan, sel in isi:
         if b is None:
@@ -506,6 +534,19 @@ def muat_daftar(path):
             continue
         b["_no"] = no
         baris.append(b)
+    # Migrasi skema: kolom baru (mis. 'diingatkan') hanya ditambahkan ke header bila TIDAK ada baris berkolom
+    # berlebih. Kalau ada, sel kelebihan baris rusak itu akan jatuh ke kolom baru dan diam-diam dianggap sah
+    # pada pembacaan berikutnya. Jadi header lama dipertahankan sampai baris rusak diperbaiki.
+    kurang = [k for k in KOLOM if k not in header]
+    if kurang:
+        berlebih = [r["baris"] for r in rusak]
+        if berlebih:
+            info.append(f"File memakai format lama (tanpa kolom {', '.join(kurang)}). Kolom baru BELUM ditambahkan "
+                        f"karena ada baris rusak (baris {', '.join(map(str, berlebih))}); perbaiki dulu baris itu.")
+        else:
+            header.extend(kurang)
+            info.append(f"File memakai format lama; kolom baru ({', '.join(kurang)}) ditambahkan ke header "
+                        "saat file disimpan. Isi lama tidak berubah.")
     return header, baris, rusak, info
 
 
@@ -703,6 +744,9 @@ def saran_item(it):
                     "skill tagih-piutang (bukan nasihat hukum).")
         return ("Setelah pesan dikirim, balas \"terkirim " + str(it["id"]) + "\" agar nada berikutnya menyesuaikan. "
                 "Denda (hanya jika tertulis di kontrak) atau surat resmi: skill tagih-piutang.")
+    if it["jenis"] == "prospek" and n >= 3:
+        return (f"Ini pesan pamit. Setelah dikirim, tandai selesai: \"selesai {it['id']}\". "
+                "Jangan dijadwalkan ulang kecuali prospek membalas.")
     if it["jenis"] == "prospek":
         return ("Setelah dikirim, balas \"terkirim " + str(it["id"]) + " lanjut 3 hari lagi\" untuk follow-up "
                 "berikutnya. Urutan lengkap: skill follow-up-prospek.")
@@ -732,7 +776,10 @@ def susun_rekap(path, acuan, maks_draf):
             peringatan.append(f"Item #{it['id']}: {p}")
         temu = cek_kontak({"nama": it["nama"], "perihal": it["perihal"], "catatan": it["catatan"]})
         if temu:
-            peringatan.append(f"Item #{it['id']}: kolom {temu[0]} berisi {temu[1]}; sebaiknya dihapus (data minimal).")
+            peringatan.append(f"Item #{it['id']}: kolom {temu[0]} berisi {temu[1]} (disamarkan di rekap ini); "
+                              "sebaiknya dihapus dari daftar (data minimal).")
+            for k in ("nama", "perihal", "catatan"):
+                it[k] = sensor_kontak(it[k])
         d = it["selisih_hari"]
         if d < 0:
             it["hari_terlambat"] = -d
@@ -1069,6 +1116,9 @@ def cmd_ubah_status(a, acuan, aksi):
             t["catatan"] = aman_csv(((t.get("catatan") or "") + f" | ditunda dari {lama}").strip(" |"))
             ringkas.append(f"#{t['id']} {t.get('nama', '')} ditunda ke {tgl_id(baru)}" + (f" ({cat})" if cat else ""))
     elif aksi == "terkirim":
+        if "diingatkan" not in header:
+            raise InputSalah("file masih format lama dan ada baris rusak; perbaiki baris yang disebut di "
+                             "'daftar' dulu, baru hitungan 'terkirim' bisa dicatat")
         baru, cat = parse_tanggal(a.berikutnya, acuan, arah="depan") if a.berikutnya else (None, None)
         for t in target:
             n = parse_diingatkan(t.get("diingatkan")) + 1

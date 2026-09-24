@@ -500,5 +500,80 @@ class TestRevisi101CLI(BasisCLI):
         self.assertIn("'@x", isi)
 
 
+class TestRevisi102(BasisCLI):
+    """Cacat ringan uji ulang v1.0.1 (R1-R4) -- regresi v1.0.2."""
+
+    HEADER_LAMA = "id,jenis,nama,tanggal,nominal,perihal,status,catatan,dibuat\n"
+
+    def tulis(self, isi):
+        os.makedirs(os.path.dirname(self.file), exist_ok=True)
+        with open(self.file, "w", encoding="utf-8") as f:
+            f.write(isi)
+
+    def test_r1_baris_berlebih_tidak_jatuh_ke_kolom_baru(self):
+        self.tulis(self.HEADER_LAMA + "1,piutang,Bu Rina,2026-10-01,1jt,,aktif,,\n"
+                   "2,piutang,Toko E,2026-10-01,1jt,,aktif,,,2\n")      # kelebihan berupa angka
+        for _ in range(3):                                           # tulis ulang berkali-kali
+            kode, d, err = self.run_cli("selesai", "--id", "1")
+            self.assertEqual(kode, 0, err)
+            kode, r, _ = self.run_cli("rekap")
+            self.assertEqual([x["baris"] for x in r["baris_ditolak"]], [3])
+            self.assertEqual(r["jatuh_tempo_hari_ini"], [])
+            self.assertTrue(any("format lama" in p for p in r["peringatan"]))
+        with open(self.file, encoding="utf-8") as f:
+            self.assertEqual(f.readline(), self.HEADER_LAMA)        # header lama dipertahankan
+        kode, _, err = self.run_cli("terkirim", "--id", "1")
+        self.assertEqual(kode, 1)
+        self.assertIn("format lama", err)
+
+    def test_r1_migrasi_eksplisit_tanpa_baris_rusak(self):
+        self.tulis(self.HEADER_LAMA + "1,piutang,Bu Rina,2026-10-01,1jt,INV-1,aktif,,\n")
+        kode, d, err = self.run_cli("terkirim", "--id", "1")
+        self.assertEqual(kode, 0, err)
+        with open(self.file, encoding="utf-8") as f:
+            baris = f.read().splitlines()
+        self.assertEqual(baris[0], self.HEADER_LAMA.strip() + ",diingatkan")
+        self.assertTrue(baris[1].endswith(",1"))
+        p = subprocess.run([sys.executable, SCRIPT, "--file", self.file, "--hari-ini", "2026-10-01", "--teks",
+                            "rekap"], capture_output=True, text=True, encoding="utf-8")
+        self.assertIn("sudah diingatkan 1x", p.stdout)
+
+    def test_r2_pesan_pamit_disarankan_selesai(self):
+        self.tambah("prospek", "Pak Budi", "hari ini", perihal="penawaran")
+        for _ in range(3):
+            self.run_cli("terkirim", "--id", "1")
+        _, d, _ = self.run_cli("draf", "--id", "1")
+        self.assertIn("pesan terakhir", d["draf"])
+        self.assertIn("selesai 1", d["saran"])
+        self.assertNotIn("lanjut", d["saran"])
+
+    def test_r3_kurung_dan_sensor_di_rekap(self):
+        for teks in ("(0812) 0000-1234", "+62 (812) 0000 1234", "wa (0812)0000 1234"):
+            self.assertIsNotNone(cj.cek_kontak({"perihal": teks}), teks)
+        kode, _, _ = self.run_cli("tambah", "--jenis", "piutang", "--nama", "Bu Rina", "--tanggal", "besok",
+                                  "--catatan", "(0812) 0000-1234")
+        self.assertEqual(kode, 2)
+        self.tulis("id,jenis,nama,tanggal,nominal,perihal,status,catatan,dibuat,diingatkan\n"
+                   "1,piutang,Bu Rina,2026-10-01,1jt,INV-1 (0812) 0000-1234,aktif,email rina@contoh.com,,\n")
+        _, r, _ = self.run_cli("rekap")
+        self.assertNotIn("0000-1234", r["teks"])
+        self.assertNotIn("rina@contoh.com", r["teks"])
+        self.assertIn("0812-****-1234", r["teks"])
+        self.assertNotIn("0000", r["jatuh_tempo_hari_ini"][0]["draf"])
+        self.assertTrue(any("disamarkan" in p for p in r["peringatan"]))
+
+    def test_r4_saran_jam_valid(self):
+        for teks in ("1.60", "1:60", "1:75", "2.75"):
+            with self.assertRaises(cj.InputSalah) as ctx:
+                cj.parse_jam(teks)
+            pesan = str(ctx.exception)
+            self.assertNotIn("tulis 1:60", pesan)
+            self.assertNotIn("tulis 1:75", pesan)
+            self.assertNotIn("tulis 2:75", pesan)
+        with self.assertRaises(cj.InputSalah) as ctx:
+            cj.parse_jam("1.60")
+        self.assertIn("2:00", str(ctx.exception))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
