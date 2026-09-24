@@ -57,7 +57,7 @@ menguji skill.
 | Kebutuhan | Keterangan |
 |---|---|
 | Komputer | Windows 10/11, macOS, atau Linux. RAM ≥ 4 GB, ruang kosong ≥ 1-2 GB |
-| Waktu | Jalur A: ±5 menit. Jalur B (Docker): ±15-20 menit bila Docker belum terpasang |
+| Waktu | Jalur A: ±5 menit. Jalur B (Docker): ±20-40 menit bila Docker Desktop belum terpasang (Windows sering perlu restart sekali untuk WSL2 - lihat bagian 3.1), ±5-10 menit bila sudah ada |
 | Python 3.8+ | Untuk skill `pdf-lokal` (gratis di python.org; saat memasang di Windows centang **Add Python to PATH**) |
 | Docker Desktop (hanya Jalur B) | Gratis untuk pemakaian pribadi/UMKM kecil, unduh di docker.com |
 
@@ -121,33 +121,78 @@ sudo dnf install ./linux-installer.rpm
 
 ## 3. Jalur B - Docker (disarankan bila butuh OCR)
 Ini jalur yang dipakai Komunitech untuk menguji skill `pdf-lokal` secara langsung,
-jadi paling terjamin cocok. Sedikit lebih teknis tapi hanya perlu disalin-tempel.
+jadi paling terjamin cocok. **Lebih teknis dari Jalur A** dan realistiknya memakan
+waktu **±20-40 menit** (bukan 15-20 menit) untuk pengguna awam di Windows, karena
+sering perlu me-restart komputer sekali (lihat 3.1). Kalau ini terasa merepotkan atau
+macet di salah satu langkah, **pakai jasa setup berbayar Komunitech** (lihat kotak di
+atas) - lebih cepat & pasti beres daripada mencoba sendiri berjam-jam.
 
 ### 3.1 Pasang Docker Desktop (lewati bila sudah ada)
-1. Unduh di https://www.docker.com/products/docker-desktop/ sesuai OS Anda, pasang
-   seperti aplikasi biasa, lalu buka Docker Desktop sekali agar mesinnya menyala.
-- ✅ **Cek berhasil:** ikon Docker Desktop menyala hijau/"Running" di system tray.
-- ❌ **Kalau gagal:** Windows minta aktifkan **WSL2** → ikuti tautan yang muncul di
-  installer Docker (proses otomatis, minta restart komputer sekali).
+Butuh hak **administrator** Windows/macOS untuk memasang.
+1. Unduh di https://www.docker.com/products/docker-desktop/ sesuai OS Anda (±5-10
+   menit tergantung kecepatan internet, filenya cukup besar).
+2. Jalankan installer. Di **Windows**, installer akan memeriksa **WSL2** (mesin Linux
+   ringan di dalam Windows yang dibutuhkan Docker):
+   - Kalau WSL2 belum ada, installer menawarkan memasangnya otomatis - klik setuju,
+     lalu **restart komputer saat diminta** (wajib, bukan opsional; ±3-5 menit).
+   - Setelah restart, buka Docker Desktop lagi secara manual (kadang tidak otomatis
+     terbuka setelah restart).
+   - Windows mungkin menampilkan **User Account Control** (jendela abu-abu minta izin
+     admin) beberapa kali selama proses ini - klik **Yes/Ya**, ini normal untuk
+     installer resmi.
+3. Buka Docker Desktop sekali agar mesinnya menyala (±1-2 menit pertama kali).
+- ✅ **Cek berhasil:** ikon Docker Desktop menyala hijau/"Running" di system tray/menu bar.
+- ❌ **Kalau gagal:**
+  - Windows minta aktifkan **fitur Virtual Machine Platform** secara manual → buka
+    "Turn Windows features on or off", centang **Virtual Machine Platform** &
+    **Windows Subsystem for Linux**, restart, lalu buka Docker Desktop lagi.
+  - Antivirus/firewall kantor memblokir → ini sering terjadi di laptop kantor yang
+    dikelola IT; kalau begitu, Jalur B mungkin tidak realistis untuk komputer itu -
+    pertimbangkan Jalur A saja atau jasa setup Komunitech untuk laptop pribadi.
+  - Proses macet lama tanpa pesan error → tutup total Docker Desktop lewat Task
+    Manager, buka lagi, tunggu ±2 menit.
 
 ### 3.2 Jalankan Stirling-PDF
-Buka Terminal (macOS/Linux) atau PowerShell (Windows), salin-tempel:
+Buka Terminal (macOS/Linux) atau PowerShell (Windows), salin-tempel **persis seperti
+ini** (perhatikan `-e SECURITY_ENABLELOGIN=false` - tanpa baris ini, Stirling-PDF akan
+menolak SEMUA perintah gabung/pisah/kompres/dst. dengan error 401, walau server
+terlihat "menyala normal" - lihat kotak Revisi Penting di atas):
 ```bash
 docker run -d --name stirling-pdf --restart unless-stopped \
   -p 8080:8080 \
+  -e SECURITY_ENABLELOGIN=false \
   -v stirling-data:/configs \
-  ghcr.io/stirling-tools/stirling-pdf:latest
+  ghcr.io/stirling-tools/stirling-pdf:3.0.0
 ```
+Catatan pilihan versi: perintah di atas memakai tag **`:3.0.0`** (dipin ke versi
+tetap, bukan `:latest`) - ini sengaja, supaya Stirling-PDF tidak diam-diam berganti
+versi mayor tanpa Anda sadari saat menyalakan ulang komputer (lihat bagian 7 -
+Pembaruan, cara naik versi dengan sadar). Skill `pdf-lokal` **sudah diuji berhasil**
+dengan tag ini maupun `:2.14.3` (versi lebih lama, juga masih didukung).
+
 `--restart unless-stopped` membuat Stirling-PDF otomatis menyala lagi setiap Docker
 Desktop dinyalakan (mis. setelah komputer di-restart) - tidak perlu ketik ulang.
 
-- ✅ **Cek berhasil:** buka `http://localhost:8080` di browser → tampil halaman
-  Stirling-PDF. Atau jalankan `python3 scripts/pdf.py cek` → tertulis versi & "UP".
+- ✅ **Cek berhasil (2 langkah, JANGAN lewati langkah kedua):**
+  1. Buka `http://localhost:8080` di browser → tampil halaman Stirling-PDF, dan/atau
+     `python3 scripts/pdf.py cek` → tertulis versi & "UP". Ini **baru membuktikan
+     server menyala**, BELUM membuktikan bisa dipakai.
+  2. `python3 scripts/pdf.py cek` (skill `pdf-lokal`) sekarang otomatis juga mencoba
+     1 operasi PDF sungguhan - kalau muncul baris **"Operasi PDF diizinkan. Siap
+     dipakai."**, berarti Jalur B benar-benar berhasil, bukan cuma "server hidup".
 - ❌ **Kalau gagal:**
   - "port is already allocated" → sesuatu sudah memakai port 8080. Ganti perintah
     jadi `-p 8090:8080`, lalu set `STIRLING_URL=http://localhost:8090` sebelum
     memakai skill.
   - "Cannot connect to the Docker daemon" → Docker Desktop belum menyala, buka dulu.
+  - `cek` berhasil tahap 1 tapi GAGAL di tahap 2 dengan pesan "menolak operasi PDF
+    sungguhan" → container lama terlanjur dibuat TANPA `-e SECURITY_ENABLELOGIN=false`
+    (mis. mengikuti panduan versi lama). Perbaiki dengan:
+    ```bash
+    docker rm -f stirling-pdf
+    ```
+    lalu ulangi perintah `docker run ...` di atas (dengan `-e SECURITY_ENABLELOGIN=false`
+    yang sudah benar) - data di `stirling-data` tidak hilang.
   - Unduhan macet/lambat → ulangi perintah `docker run ...`, Docker melanjutkan
     unduhan yang belum selesai.
 
@@ -169,24 +214,37 @@ opsi menyalakan login bila komputer dipakai bersama orang lain.
 ---
 
 ## 5. Keamanan (login, API key, hanya localhost)
-- **Bawaan (default):** tanpa login, mendengarkan hanya untuk komputer sendiri lewat
-  `localhost:8080`. Ini AMAN selama komputer Anda tidak dipakai bersama orang yang
-  tidak dipercaya dan port 8080 tidak sengaja dibuka ke internet/jaringan kantor
-  (jangan lakukan port forwarding router ke port ini).
+- **Jalur A (Desktop):** bawaan **tanpa login** untuk tool lokal (menurut dokumentasi
+  resmi), mendengarkan hanya untuk komputer sendiri.
+- **Jalur B (Docker), PENTING - koreksi dari panduan versi sebelumnya:** image Docker
+  resmi Stirling-PDF **MENYALAKAN login secara default** (diverifikasi langsung: tanpa
+  flag apa pun, semua operasi PDF dibalas "Authentication required"/401). **Ini
+  BUKAN "aman karena tanpa login"** seperti tertulis di versi panduan sebelumnya -
+  perintah `docker run` di bagian 3.2 **sudah menyertakan** `-e SECURITY_ENABLELOGIN=false`
+  justru untuk MEMATIKAN login itu (dipakai Komunitech untuk pemakaian pribadi
+  1 komputer). Keamanannya tetap terjaga karena `-p 8080:8080` hanya mendengarkan
+  untuk komputer sendiri (`localhost`) - **jangan** membukanya ke internet/jaringan
+  kantor lewat port forwarding router, terlepas dari status login.
 - **Kalau komputer dipakai bersama (mis. komputer kasir bersama)** dan ingin
-  menambah kunci: nyalakan login dengan menambah `-e SECURITY_ENABLELOGIN=true` di
-  perintah `docker run` (Jalur B), lalu buka `http://localhost:8080`, login pertama
-  kali dengan `admin`/`admin` (segera ganti sandinya di menu Account).
+  menambah kunci: di perintah `docker run` bagian 3.2, ubah
+  `-e SECURITY_ENABLELOGIN=false` menjadi `-e SECURITY_ENABLELOGIN=true`, jalankan
+  `docker rm -f stirling-pdf` lalu jalankan ulang perintahnya, buka
+  `http://localhost:8080`, login pertama kali dengan `admin`/`admin` (segera ganti
+  sandinya di menu Account).
   Ambil **API key** lewat ikon gerigi (⚙️) kanan atas → **Account Settings** → salin
   "API Key", lalu sebelum memakai skill jalankan (contoh Windows PowerShell):
   ```powershell
   $env:STIRLING_API_KEY="tempel-api-key-di-sini"
   ```
   (macOS/Linux: `export STIRLING_API_KEY="..."`)
-- ✅ **Cek berhasil (login aktif):** `python3 scripts/pdf.py cek` tetap berhasil
-  setelah `STIRLING_API_KEY` diisi.
-- ❌ **Kalau gagal:** pesan "butuh login/API key" → API key salah/belum di-set,
-  ulangi salin dari Account Settings (pastikan tidak ada spasi tambahan).
+- ✅ **Cek berhasil (login aktif):** `python3 scripts/pdf.py cek` mencetak
+  **"Operasi PDF diizinkan. Siap dipakai."** setelah `STIRLING_API_KEY` diisi dengan
+  benar - bukan cuma "Stirling-PDF HIDUP" (itu bisa muncul walau login masih menolak).
+- ❌ **Kalau gagal:** pesan "menolak permintaan ini (401/403 - butuh login/API key)"
+  → API key salah/belum di-set, ulangi salin dari Account Settings (pastikan tidak ada
+  spasi tambahan), atau pastikan `STIRLING_API_KEY` benar-benar di-set di sesi
+  terminal yang sama dengan yang menjalankan skill (mengetik `$env:STIRLING_API_KEY=...`
+  di jendela PowerShell lain tidak ikut terbawa).
 - **Jangan** mengubah `-p 8080:8080` menjadi alamat yang bisa diakses dari internet
   (mis. lewat penerus port router) - Stirling-PDF dirancang untuk dipakai di
   komputer/jaringan lokal sendiri, bukan server publik.
@@ -208,14 +266,24 @@ untuk tampilannya dan **Jalur B** untuk mesinnya, lalu sambungkan:
 ## 7. Pembaruan
 - **Jalur A:** aplikasi desktop biasanya memberi notifikasi update sendiri; atau
   unduh ulang installer terbaru dari tautan di bagian 2 dan pasang menimpa yang lama.
-- **Jalur B:** 
-  ```bash
-  docker pull ghcr.io/stirling-tools/stirling-pdf:latest
-  docker stop stirling-pdf && docker rm stirling-pdf
-  # lalu jalankan ulang perintah "docker run ..." di bagian 3.2
-  ```
-- Setelah update, jalankan `python3 scripts/pdf.py cek` untuk pastikan versi baru
-  terbaca dan skill tetap bisa terhubung.
+- **Jalur B:** perintah di bagian 3.2 **sengaja dipin ke tag versi tetap** (`:3.0.0`),
+  bukan `:latest` - supaya versi tidak berubah sendiri tanpa Anda sadari (tag `:latest`
+  di registry resmi pernah pindah dari v2.14.3 ke v3.0.0, versi mayor dengan perubahan
+  sistem akun/lisensi). Untuk naik versi **dengan sadar**:
+  1. Cek versi terbaru yang tersedia: https://github.com/Stirling-Tools/Stirling-PDF/releases
+  2. ```bash
+     docker pull ghcr.io/stirling-tools/stirling-pdf:X.Y.Z   # ganti X.Y.Z versi baru
+     docker rm -f stirling-pdf
+     # lalu jalankan ulang perintah "docker run ..." di bagian 3.2, ganti :3.0.0 -> :X.Y.Z
+     ```
+  3. **Jangan lupa** perintah barunya tetap menyertakan `-e SECURITY_ENABLELOGIN=false`
+     (mudah lupa saat mengganti versi) - lihat kotak "Revisi penting" di awal panduan.
+- Setelah update (Jalur A maupun B), jalankan `python3 scripts/pdf.py cek` dan pastikan
+  baris terakhirnya **"Operasi PDF diizinkan. Siap dipakai."** muncul - bukan cuma
+  versi & status "UP" (lihat bagian 5 kenapa itu belum cukup).
+- Skill `pdf-lokal` sudah diuji berhasil di v2.14.3 dan v3.0.0; kalau versi yang jauh
+  lebih baru mengubah nama parameter API, sebagian perintah bisa gagal dengan pesan
+  404 - laporkan ke Komunitech supaya diperbarui.
 
 ---
 
@@ -223,13 +291,15 @@ untuk tampilannya dan **Jalur B** untuk mesinnya, lalu sambungkan:
 | Gejala | Kemungkinan sebab | Solusi |
 |---|---|---|
 | `python3 scripts/pdf.py cek` bilang "Tidak bisa menghubungi" | Stirling-PDF belum dibuka/mati | Buka aplikasinya (Jalur A) atau `docker start stirling-pdf` (Jalur B) |
+| `cek` bilang "HIDUP" tapi lalu GAGAL dengan "menolak operasi PDF sungguhan" (401/403) | Login/keamanan aktif di server (default image Docker resmi, atau memang sengaja dinyalakan) - **ini yang menyebabkan SEMUA perintah lain (gabung/kompres/dll.) juga gagal** dengan pesan yang sama | Docker: pastikan `-e SECURITY_ENABLELOGIN=false` ada di perintah `docker run` (bagian 3.2), lalu `docker rm -f stirling-pdf` & jalankan ulang. Kalau login memang sengaja aktif: ambil & set `STIRLING_API_KEY` (bagian 5) |
 | Perintah `ocr` gagal terus (404) | Pakai aplikasi desktop mode Local-only (tidak ada OCR) | Pindah ke Jalur B (Docker), atau sambungkan desktop ke Docker (bagian 6) |
 | OCR jalan tapi hasil bahasa Indonesia kurang akurat | Paket bahasa `ind` belum terpasang di server (default hanya Inggris/Prancis/Jerman/dll.) | Di aplikasi/menu OCR Stirling-PDF, cari opsi unduh paket bahasa tambahan, pilih Indonesian/`ind` |
 | "port is already allocated" saat `docker run` | Port 8080 dipakai program lain | Pakai `-p 8090:8080` lalu set `STIRLING_URL=http://localhost:8090` |
-| Skill bilang butuh `STIRLING_API_KEY` | Login diaktifkan di server | Ikuti bagian 5 untuk ambil & set API key |
 | File PDF "terkunci"/gagal diproses padahal yakin filenya benar | File memang berpassword, atau rusak | Buka dulu dengan perintah `buka-kunci` (kalau tahu sandinya) bila memang berpassword; kalau bukan, coba buka file itu di pembaca PDF biasa dulu untuk pastikan tidak rusak |
 
-**Sumber resmi yang dirujuk panduan ini** (diakses 2026-09-24): docs.stirlingpdf.com
-(halaman Installation/Windows, Installation/Mac, Installation/Unix, Configuration/
-Security, FAQ), github.com/Stirling-Tools/Stirling-PDF, dan pengujian langsung
-Komunitech terhadap Stirling-PDF v2.14.3 lewat Docker.
+**Sumber resmi yang dirujuk panduan ini** (diakses 2026-09-24, diverifikasi ulang
+setelah revisi T1): docs.stirlingpdf.com (halaman Installation/Windows, Installation/Mac,
+Installation/Unix, Configuration/Security, FAQ), github.com/Stirling-Tools/Stirling-PDF,
+dan pengujian langsung Komunitech terhadap Stirling-PDF **v2.14.3 dan v3.0.0** lewat
+Docker (image resmi `ghcr.io/stirling-tools/stirling-pdf`, kedua tag ditarik & diuji
+ulang termasuk perilaku default `SECURITY_ENABLELOGIN`).

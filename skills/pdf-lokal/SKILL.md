@@ -27,7 +27,11 @@ watermark, kunci/buka sandi, dan menyusun beberapa resi marketplace jadi satu le
 ## Kapan TIDAK digunakan
 - **Membaca ISI nota/faktur untuk dicatat** (jumlah, tanggal, item) → pakai skill
   `ekstrak-nota-faktur`. pdf-lokal hanya mengolah BENTUK file PDF-nya, bukan
-  memahami isinya.
+  memahami isinya. **Kalau skill itu belum terpasang/dibeli**, jangan diam saja -
+  katakan dengan jelas: "Aku cuma bisa menggabung/merapikan file PDF-nya, belum bisa
+  membaca & menjumlah isinya secara otomatis - itu perlu skill `ekstrak-nota-faktur`
+  (belum terpasang)." Boleh tetap tawarkan bantuan sebatas kemampuan pdf-lokal (mis.
+  gabung dulu jadi 1 file) sambil menjelaskan batasan itu.
 - **Membuat slide/presentasi dari PDF** → pakai skill `presentasi-instan`.
 - **Mengedit ISI teks/tata letak PDF secara halus** (bukan sekadar gabung/pisah/putar)
   → Stirling-PDF punya editor teks terbatas, tapi skill ini tidak mengekspos fitur itu;
@@ -107,7 +111,11 @@ python3 scripts/pdf.py gabung nota-a.pdf nota-b.pdf nota-c.pdf
 **Langkah agent:** tanyakan sekali bila belum jelas ("mau 4 atau 2 resi per lembar?"),
 lalu jalankan `rapikan-resi resi1.pdf ... resi8.pdf --per-lembar 4`, dan ingatkan
 untuk cek Print Preview dulu sebelum cetak massal (ukuran lembar mengikuti PDF resi
-aslinya, bukan dipaksa persis A4/A6 - lihat Batasan).
+aslinya, bukan dipaksa persis A4/A6 - lihat Batasan). **Contoh konkret:** resi
+marketplace asli biasanya PDF kertas thermal kecil (**10×15 cm atau 10×20 cm**), BUKAN
+A4 - kalau sumbernya seperti itu, hasil `rapikan-resi` kemungkinan besar tetap
+berukuran kecil per halaman (bukan otomatis membesar jadi A4). Sarankan pengguna
+cetak 1 lembar percobaan dulu sebelum mencetak banyak.
 
 ## Cara manual tanpa script (Stirling-PDF belum terpasang / lagi tidak mau jalan)
 Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
@@ -115,9 +123,17 @@ Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
 2. Di halaman utama, klik kartu tool yang sesuai (mis. "Merge", "Compress", "OCR / Add
    Text Layer", "Add Password", "N-up / Multi Page Layout" untuk resi).
 3. Seret file ke kotak upload, atur opsi di layar, klik proses, lalu unduh hasilnya.
-4. Kalau pengguna tidak mau memasang apa pun, arahkan ke situs PDF online resmi milik
-   Stirling-PDF sendiri (bukan situs pihak ketiga sembarangan) sebagai alternatif
-   terakhir, dengan catatan file akan diunggah ke internet.
+4. **Dokumen BIASA** (nota, resi, katalog produk) dan pengguna tidak mau memasang apa
+   pun: boleh arahkan ke situs PDF online resmi milik Stirling-PDF sendiri (bukan situs
+   pihak ketiga sembarangan) sebagai alternatif terakhir, dengan catatan jelas bahwa
+   file akan diunggah ke internet.
+5. **Dokumen SENSITIF** (slip gaji, KTP/data pribadi karyawan, kontrak rahasia, data
+   keuangan usaha) → **JANGAN PERNAH** menawarkan opsi upload ke situs online mana pun,
+   sekalipun pengguna belum mau memasang Stirling-PDF dan sekalipun situsnya "resmi
+   milik Stirling-PDF sendiri". Jelaskan dengan jujur keterbatasannya ("untuk dokumen
+   sensitif seperti ini aku tidak akan sarankan upload ke internet; perlu Stirling-PDF
+   terpasang lokal dulu, atau proses manual lewat aplikasi PDF/Word biasa di
+   komputermu") - ini berlaku bahkan kalau pengguna sendiri yang memintanya diupload.
 
 ## Batasan & penanganan error
 - **Stirling-PDF mati/belum terpasang** → script memberi pesan jelas + arahan ke

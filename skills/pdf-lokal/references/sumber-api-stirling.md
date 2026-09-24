@@ -38,17 +38,37 @@ sendiri).
 Autentikasi (opsional, dipakai bila keamanan Stirling-PDF diaktifkan pengguna):
 header `X-API-KEY` (skema `apiKey` di Swagger, `in: header`).
 
-## Temuan penting saat verifikasi (2026-09-24, Docker, v2.14.3)
+## Temuan penting saat verifikasi (2026-09-24, Docker, v2.14.3 DAN v3.0.0)
 
 - **Image Docker Hub `stirlingtools/stirling-pdf` sempat kena rate-limit (429)** saat
   ditarik; berhasil lewat mirror resmi `ghcr.io/stirling-tools/stirling-pdf:latest`
   (disebutkan juga di README GitHub proyek).
-- **Login/keamanan AKTIF secara default di image Docker** (log: `active profile: security`,
-  ada user `admin` dibuat otomatis). Untuk pengujian lokal dipakai
-  `SECURITY_ENABLELOGIN=false`. **Belum diverifikasi** apakah aplikasi desktop
-  (.msi/.dmg, yang jadi target utama pembeli) berperilaku sama persis - lihat
-  `docs/panduan-stirling-pdf.md` bagian Keamanan, dan script ini menangani kasus 401
-  dengan pesan yang mengarahkan ke API key.
+- **Login/keamanan AKTIF secara default di image Docker, dikonfirmasi di v2.14.3
+  MAUPUN v3.0.0** (log: `active profile: security`, ada user `admin` dibuat otomatis;
+  tanpa env var apa pun, endpoint `/api/v1/info/status` tetap membalas 200 "UP" TAPI
+  semua operasi PDF nyata - `merge-pdfs`, `rotate-pdf`, dst. - dibalas 401
+  `{"error":"Authentication required"}`). Untuk pengujian & panduan pembeli dipakai
+  `-e SECURITY_ENABLELOGIN=false`.
+  **[REVISI 2026-09-24, setelah uji independen skor 5/10 - cacat T1]:** versi awal
+  `docs/panduan-stirling-pdf.md` **lupa menyertakan** flag ini di perintah `docker run`
+  yang disodorkan ke pembeli, padahal temuan di paragraf ini sudah dicatat sejak awal
+  di sini - kesalahan itu adalah env var yang sudah diketahui benar tidak sampai ke
+  dokumen yang dibaca pembeli, bukan salah paham soal APInya. Sudah diperbaiki di
+  `docs/panduan-stirling-pdf.md` §3.2 (tag dipin ke `:3.0.0`, flag disertakan,
+  ditandai jelas kenapa) DAN di `scripts/pdf.py`: perintah `cek` sekarang mencoba 1
+  operasi PDF nyata (`rotate-pdf` sudut 0 pada PDF kosong buatan sendiri) supaya tidak
+  melapor "siap pakai" hanya berdasarkan `/api/v1/info/status` yang memang tidak
+  butuh login. Diverifikasi ulang: `cek` terhadap server v3.0.0 TANPA
+  `SECURITY_ENABLELOGIN=false` sekarang **gagal dengan jelas** (bukan sukses palsu),
+  dan berhasil lagi setelah flag ditambahkan / API key benar diisi.
+  Belum diverifikasi apakah aplikasi desktop (.msi/.dmg) berperilaku sama persis
+  soal login - lihat `docs/panduan-stirling-pdf.md` bagian Keamanan §5.
+- **Endpoint & nama field yang dipakai skill ini IDENTIK di v2.14.3 dan v3.0.0** -
+  ke-12 perintah `scripts/pdf.py` dicoba ulang penuh terhadap kedua versi (image
+  `ghcr.io/stirling-tools/stirling-pdf:2.14.3` dan `:3.0.0`, digest dicatat di git
+  log sesi ini), semua berhasil tanpa perubahan kode. `:latest` di registry resmi
+  **berpindah dari v2.14.3 ke v3.0.0** selama masa pengembangan skill ini - inilah
+  alasan panduan memin ke tag versi tetap, bukan `:latest`.
 - **Bahasa OCR bawaan HANYA `eng, fra, deu, chi_sim, por`** (dicek lewat
   `docker exec ... find / -iname "*.traineddata"` dan endpoint `ui-data/ocr-pdf`).
   **Bahasa Indonesia (`ind`) TIDAK terpasang secara default** - harus diunduh manual
@@ -88,7 +108,8 @@ header `X-API-KEY` (skema `apiKey` di Swagger, `in: header`).
 
 ```
 docker run -d --name stirling -p 8080:8080 -e SECURITY_ENABLELOGIN=false \
-  ghcr.io/stirling-tools/stirling-pdf:latest
-curl http://localhost:8080/api/v1/info/status
+  ghcr.io/stirling-tools/stirling-pdf:3.0.0   # atau :2.14.3 - keduanya diuji, JANGAN :latest (bisa berpindah versi mayor)
+curl http://localhost:8080/api/v1/info/status   # ini TIDAK cukup - endpoint ini tidak butuh login
+curl -X POST http://localhost:8080/api/v1/general/rotate-pdf -F fileInput=@contoh.pdf -F angle=0   # ini baru bukti operasi nyata diizinkan
 curl http://localhost:8080/v1/api-docs   # dokumen OpenAPI lengkap versi yang jalan
 ```
