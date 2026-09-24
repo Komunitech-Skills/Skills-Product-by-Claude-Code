@@ -11,6 +11,8 @@ Subperintah
   tunda      Pindah tanggal:   tunda --id 3 --ke "Senin"
   ubah       Ubah kolom:       ubah --id 3 [--tanggal ..] [--nominal ..] [--nama ..] [--perihal ..] [--catatan ..] [--jenis ..] [--status aktif|selesai]
   hapus      Hapus baris:      hapus --id 3              (hapus permanen, untuk data minimal)
+  terkirim   Catat pesan sudah dikirim pemilik (nada draf berikutnya menyesuaikan):
+                               terkirim --id 3 [--berikutnya "3 hari lagi"]
   bersihkan  Hapus item selesai yang tanggalnya > N hari lalu:  bersihkan --lebih-dari 30
   rekap      Rekap harian:     rekap [--teks] [--maks-draf 10]
   draf       Draf satu item:   draf --id 3
@@ -65,7 +67,7 @@ NAMA_HARI = {"senin": 0, "selasa": 1, "rabu": 2, "kamis": 3, "jumat": 4, "jum'at
              "sabtu": 5, "minggu": 6, "ahad": 6}
 JENIS = ["piutang", "prospek", "timesheet", "janji", "lainnya"]
 STATUS = ["aktif", "selesai"]
-KOLOM = ["id", "jenis", "nama", "tanggal", "nominal", "perihal", "status", "catatan", "dibuat"]
+KOLOM = ["id", "jenis", "nama", "tanggal", "nominal", "perihal", "status", "catatan", "dibuat", "diingatkan"]
 KOLOM_TS = ["tanggal", "klien", "jam", "tarif_per_jam", "keterangan"]
 TZ_TETAP = {"asia/jakarta": 7, "asia/pontianak": 7, "wib": 7, "asia/makassar": 8, "wita": 8,
             "asia/jayapura": 9, "wit": 9}
@@ -119,6 +121,14 @@ def _pilih_tahun(hari, bulan, acuan, arah):
             return c, (f"Tahun tidak disebut; dipakai {tgl_id(c, True)} yang baru lewat {(acuan - c).days} hari "
                        "(item masuk TERLAMBAT). Kalau maksudnya tahun depan, tulis tahunnya.")
         c = min(x for x in kandidat if x >= acuan)
+    elif arah == "lalu":  # tanggal kerja/kejadian: kemunculan terakhir <= hari ini
+        dekat_depan = [x for x in kandidat if acuan < x <= acuan + timedelta(days=BATAS_BARU_LEWAT)]
+        if dekat_depan:  # mis. "3 Okt" diucapkan 2 Okt: jelas besok, biar pemanggil yang menolak
+            return min(dekat_depan), None
+        c = max(x for x in kandidat if x <= acuan)
+        if (acuan - c).days <= BATAS_BARU_LEWAT:
+            return c, None
+        return c, f"Tahun tidak disebut; dipakai {tgl_id(c, True)} (sudah {(acuan - c).days} hari lalu). Ubah bila maksudnya lain."
     else:
         c = min(kandidat, key=lambda x: (abs((x - acuan).days), x))
     ket = "terdekat ke depan" if arah == "depan" else "terdekat dari hari ini"
@@ -126,7 +136,11 @@ def _pilih_tahun(hari, bulan, acuan, arah):
 
 
 def parse_tanggal(teks, acuan, arah="depan"):
-    """Kembalikan (date, catatan|None). arah: 'depan' (item baru) atau 'terdekat' (data lama/periode)."""
+    """Kembalikan (date, catatan|None).
+
+    arah: 'depan' (jatuh tempo item baru), 'lalu' (tanggal jam kerja: kemunculan terakhir <= hari ini),
+    atau 'terdekat' (data lama di CSV / batas periode).
+    """
     if teks is None or str(teks).strip() == "":
         raise InputSalah("tanggal kosong")
     asli = str(teks).strip()
@@ -149,10 +163,17 @@ def parse_tanggal(teks, acuan, arah="depan"):
         return acuan + timedelta(days=7 * int(m.group(1))), None
     if s == "minggu depan":
         return acuan + timedelta(days=7), "\"minggu depan\" diartikan 7 hari dari hari ini."
-    # nama hari ("jumat", "hari jumat", "jumat depan", "senin ini")
-    m = re.fullmatch(r"(hari )?([a-z']+)( depan| ini)?", s)
+    # nama hari ("jumat", "hari jumat", "jumat depan", "senin ini", "senin lalu/kemarin")
+    m = re.fullmatch(r"(hari )?([a-z']+)( depan| ini| lalu| kemarin| kmrn)?", s)
     if m and m.group(2) in NAMA_HARI:
         target = NAMA_HARI[m.group(2)]
+        mundur = (acuan.weekday() - target) % 7
+        if m.group(3) in (" lalu", " kemarin", " kmrn"):
+            return acuan - timedelta(days=mundur or 7), None
+        if arah == "lalu" or (arah == "terdekat" and m.group(3) is None and mundur <= 3):
+            if m.group(3) == " depan":
+                raise InputSalah(f"'{asli}' ada di masa depan")
+            return acuan - timedelta(days=mundur), None
         selisih = (target - acuan.weekday()) % 7
         cat = None
         if selisih == 0:
@@ -215,12 +236,23 @@ def _parse_tanggal_inti(s, asli, acuan, arah):
         y, bln = acuan.year, acuan.month
         for _ in range(14):
             c = _coba_tanggal(y, bln, hari)
+            if arah == "lalu":
+                break
             if c and (c >= acuan or arah != "depan"):
                 return c, (f"Bulan tidak disebut; dipakai {tgl_id(c, True)} (tanggal {hari} terdekat"
                            f"{' ke depan' if arah == 'depan' else ''}). Ubah bila maksudnya lain.")
             bln += 1
             if bln > 12:
                 y, bln = y + 1, 1
+        if arah == "lalu":
+            y, bln = acuan.year, acuan.month
+            for _ in range(14):
+                c = _coba_tanggal(y, bln, hari)
+                if c and c <= acuan:
+                    return c, None
+                bln -= 1
+                if bln < 1:
+                    y, bln = y - 1, 12
         raise InputSalah(f"tanggal '{asli}' tidak bisa ditentukan")
     raise InputSalah(f"tanggal '{asli}' tidak dikenali. Contoh yang diterima: 2026-10-03, 3/10/2026, 3/10, 3 Okt, besok")
 
@@ -240,9 +272,21 @@ def bulat(x):
     return int(Decimal(x).quantize(Decimal(1), ROUND_HALF_UP))
 
 
+POLA_ANGKA_SAH = [
+    r"\d+",                          # 4500000
+    r"\d{1,3}(\.\d{3})+(,\d+)?",       # 4.500.000 / 4.500.000,50
+    r"\d{1,3}(,\d{3})+(\.\d+)?",       # 4,500,000 / 4,500,000.50
+    r"\d+,\d+",                      # 4,5
+    r"\d+\.\d+",                     # 4.5
+]
+
+
 def _angka_desimal(teks, asli):
-    """'4,5' / '4.5' / '4.500' / '4.500.000,50' / '4,500,000' -> Decimal."""
+    """'4,5' / '4.5' / '4.500' / '4.500.000,50' / '4,500,000' -> Decimal. Pola lain (mis. '4,5,6') ditolak."""
     s = teks
+    if not any(re.fullmatch(p, s) for p in POLA_ANGKA_SAH):
+        raise InputSalah(f"angka '{asli}' tidak jelas (pemisah titik/koma tidak wajar). "
+                         "Contoh yang benar: 4.500.000 | 4,5 jt | 750rb")
     if "," in s and "." in s:
         s = s.replace(".", "").replace(",", ".") if s.rfind(",") > s.rfind(".") else s.replace(",", "")
     elif "," in s:
@@ -257,7 +301,8 @@ def _angka_desimal(teks, asli):
 
 
 SATUAN = [("miliar", 10**9), ("milyar", 10**9), ("juta", 10**6), ("jt", 10**6), ("ribu", 10**3),
-          ("rb", 10**3), ("k", 10**3), ("m", 10**9)]
+          ("rb", 10**3), ("k", 10**3), ("M", 10**9)]
+BATAS_NOMINAL_BESAR = 10**9
 
 
 def parse_nominal(teks):
@@ -265,18 +310,24 @@ def parse_nominal(teks):
     if teks is None or str(teks).strip() in ("", "-"):
         return None, None
     asli = str(teks).strip()
-    s = asli.lower().replace("rp.", "").replace("rp", "").replace("idr", "").strip()
+    if re.search(r"\d\s*m(?![a-zA-Z])", asli):
+        raise InputSalah(f"nominal '{asli}' ambigu: 'm' kecil bisa berarti juta atau miliar. "
+                         "Tulis 'jt' untuk juta, atau 'M'/'miliar' untuk miliar")
+    # 'M' besar tunggal = miliar: tandai dulu, baru huruf lain dikecilkan
+    s = re.sub(r"(?<=[\d\s])M(?![a-zA-Z])", "\x00", asli).lower().replace("\x00", "M")
+    s = s.replace("rp.", "").replace("rp", "").replace("idr", "").strip()
     s = re.sub(r"[.,]-$", "", s).strip()
     if s.startswith("-"):
         raise InputSalah(f"nominal '{asli}' negatif")
-    pola = r"(\d+(?:[.,]\d+)*)\s*(miliar|milyar|juta|jt|ribu|rb|k|m)\b"
+    pola = r"(\d+(?:[.,]\d+)*)\s*(miliar|milyar|juta|jt|ribu|rb|k|M)(?![a-zA-Z])"
     potong = re.findall(pola, s)
     if potong and re.fullmatch(r"(?:\s*" + pola + r")+\s*", s):
         total = Decimal(0)
         for angka, satuan in potong:
-            if re.fullmatch(r"\d{1,3}(\.\d{3})+", angka):
-                raise InputSalah(f"nominal '{asli}' ambigu. Tulis mis. 1500rb atau 1,5 jt")
-            total += _angka_desimal(angka, asli) * dict(SATUAN)[satuan]
+            if not re.fullmatch(r"\d+([.,]\d+)?", angka) or re.fullmatch(r"\d{1,3}[.,]\d{3}", angka):
+                raise InputSalah(f"nominal '{asli}' ambigu (titik/koma sebelum satuan). "
+                                 "Tulis mis. 1500 jt, 1,5 jt, atau 1.500.000.000")
+            total += Decimal(angka.replace(",", ".")) * dict(SATUAN)[satuan]
         nilai = total
     else:
         s2 = s.replace(" ", "")
@@ -291,6 +342,8 @@ def parse_nominal(teks):
         raise InputSalah(f"nominal '{asli}' harus lebih dari 0")
     if n < 1000:
         cat = ((cat + " ") if cat else "") + f"Nominal {rupiah(n)} sangat kecil; cek lagi (maksudnya {asli} jt/rb?)."
+    if n >= BATAS_NOMINAL_BESAR:
+        cat = ((cat + " ") if cat else "") + f"Nominal {rupiah(n)} (>= Rp 1 miliar); pastikan angkanya benar."
     return n, cat
 
 
@@ -307,6 +360,14 @@ def parse_jam(teks):
             raise InputSalah(f"jam '{asli}' tidak valid (menit harus < 60)")
         menit = int(m.group(1)) * 60 + int(m.group(2))
     else:
+        m2 = re.search(r"(\d+)([.,])(\d{2})(?!\d)", s)
+        if m2 and m2.group(2) == ".":
+            raise InputSalah(f"jam '{asli}' ambigu: {m2.group(1)} jam {m2.group(3)} menit, atau "
+                             f"{m2.group(1)},{m2.group(3)} jam? Tulis {m2.group(1)}:{m2.group(3)} untuk jam:menit, "
+                             f"atau pakai koma untuk desimal ({m2.group(1)},{m2.group(3)})")
+        if m2 and int(m2.group(3)) < 60:
+            cat = (f"{asli} dibaca {m2.group(1)},{m2.group(3)} jam (desimal). Kalau maksudnya "
+                   f"{m2.group(1)} jam {m2.group(3)} menit, tulis {m2.group(1)}:{m2.group(3)}.")
         m = re.fullmatch(r"(?:(\d+(?:[.,]\d+)?)(?:jam|j|h))?(?:(\d+)(?:menit|mnt|min|m))?", s)
         if m and (m.group(1) or m.group(2)):
             jam = Decimal(m.group(1).replace(",", ".")) if m.group(1) else Decimal(0)
@@ -317,7 +378,7 @@ def parse_jam(teks):
             raise InputSalah(f"jam '{asli}' tidak dikenali. Contoh: 1:30 | 1,5 | 90m | 2 jam")
         menit = bulat(menit_d)
         if Decimal(menit) != menit_d:
-            cat = f"Durasi {asli} dibulatkan ke {menit} menit."
+            cat = ((cat + " ") if cat else "") + f"Durasi {asli} dibulatkan ke {menit} menit."
     if menit <= 0:
         raise InputSalah(f"jam '{asli}' harus lebih dari 0")
     if menit > 24 * 60:
@@ -342,7 +403,7 @@ def jam_desimal(menit):
 
 # ---------------------------------------------------------------- privasi
 POLA_KONTAK = [
-    (re.compile(r"(?<!\d)(\+?62|0)8\d[\d\s-]{6,13}\d(?!\d)"), "nomor HP"),
+    (re.compile(r"(?<!\d)(?:\+?62|0)[\s.-]?8\d(?:[\s.-]?\d){6,11}(?!\d)"), "nomor HP"),
     (re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+"), "alamat email"),
     (re.compile(r"(?<!\d)\d{16}(?!\d)"), "angka 16 digit (mirip NIK/No. KK)"),
 ]
@@ -366,12 +427,24 @@ def aman_csv(teks):
 
 # ---------------------------------------------------------------- file
 def baca_csv(path, wajib):
+    """Kembalikan (header, [(no_baris, dict|None, alasan|None, sel_mentah)], info). header None = file belum ada."""
+    info = []
     if not os.path.exists(path):
-        return None, []
-    with open(path, "r", encoding="utf-8-sig", newline="") as f:
-        isi = f.read()
+        return None, [], info
+    with open(path, "rb") as f:
+        mentah = f.read()
+    try:
+        isi = mentah.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        try:
+            isi = mentah.decode("cp1252")
+        except UnicodeDecodeError:
+            raise InputSalah(f"file {path} tidak bisa dibaca (encoding tidak dikenal). Buka di Excel lalu "
+                             "Simpan Sebagai 'CSV UTF-8 (dipisahkan koma)'")
+        info.append(f"File {os.path.basename(path)} berformat ANSI/Windows-1252 (dari Excel lama); dibaca "
+                    "dengan aman dan akan disimpan ulang sebagai UTF-8 saat ada perubahan.")
     if not isi.strip():
-        return [], []
+        return [], [], info
     baris_pertama = isi.splitlines()[0]
     pemisah = ";" if baris_pertama.count(";") > baris_pertama.count(",") else ","
     pembaca = csv.reader(io.StringIO(isi), delimiter=pemisah)
@@ -386,11 +459,11 @@ def baca_csv(path, wajib):
             continue
         if len(sel) > len(header):
             hasil.append((no, None, f"jumlah kolom ({len(sel)}) lebih banyak dari header ({len(header)}); "
-                                    "kemungkinan ada koma di dalam teks tanpa tanda kutip"))
+                                    "kemungkinan ada koma di dalam teks tanpa tanda kutip", sel))
             continue
-        sel = sel + [""] * (len(header) - len(sel))
-        hasil.append((no, {header[i]: sel[i].strip() for i in range(len(header))}, None))
-    return header, hasil
+        lengkap = sel + [""] * (len(header) - len(sel))
+        hasil.append((no, {header[i]: lengkap[i].strip() for i in range(len(header))}, None, sel))
+    return header, hasil, info
 
 
 def tulis_csv_atomik(path, header, baris):
@@ -402,7 +475,10 @@ def tulis_csv_atomik(path, header, baris):
             w = csv.writer(f)
             w.writerow(header)
             for b in baris:
-                w.writerow([b.get(k, "") for k in header])
+                if isinstance(b, list):  # baris rusak: ditulis ulang apa adanya (hanya diamankan dari rumus)
+                    w.writerow([aman_csv(x) for x in b])
+                else:
+                    w.writerow([aman_csv(str(b.get(k, "") or "")) for k in header])
         os.replace(tmp, path)
     except Exception:
         if os.path.exists(tmp):
@@ -411,24 +487,39 @@ def tulis_csv_atomik(path, header, baris):
 
 
 def muat_daftar(path):
-    header, isi = baca_csv(path, ["jenis", "nama", "tanggal"])
+    """Baris rusak TIDAK dibuang: disimpan sebagai {'_no', '_mentah'} di posisi aslinya agar ikut ditulis ulang."""
+    header, isi, info = baca_csv(path, ["jenis", "nama", "tanggal"])
     if header is None:
-        return list(KOLOM), [], []
+        return list(KOLOM), [], [], info
     for k in KOLOM:
         if k not in header:
             header.append(k)
     baris, rusak = [], []
-    for no, b, alasan in isi:
+    for no, b, alasan, sel in isi:
         if b is None:
             rusak.append({"baris": no, "alasan": alasan})
+            baris.append({"_no": no, "_mentah": sel})
             continue
         b["_no"] = no
         baris.append(b)
-    return header, baris, rusak
+    return header, baris, rusak, info
+
+
+def item_sah(baris):
+    return [b for b in baris if "_mentah" not in b]
 
 
 def simpan_daftar(path, header, baris):
-    tulis_csv_atomik(path, header, [{k: v for k, v in b.items() if not k.startswith("_")} for b in baris])
+    tulis_csv_atomik(path, header, [b["_mentah"] if "_mentah" in b else
+                                    {k: v for k, v in b.items() if not k.startswith("_")} for b in baris])
+
+
+def teks_rusak(rusak, info=()):
+    L = [f"Catatan: {i}" for i in info]
+    if rusak:
+        L.append(f"PERHATIAN: {len(rusak)} baris di daftar tidak terbaca (tetap disimpan apa adanya, tidak ikut "
+                 "direkap): " + "; ".join(f"baris {r['baris']}: {r['alasan']}" for r in rusak[:5]))
+    return ("\n" + "\n".join(L)) if L else ""
 
 
 def cari_id(baris, teks_id):
@@ -437,7 +528,7 @@ def cari_id(baris, teks_id):
         raise InputSalah("--id kosong")
     hasil = []
     for i in ids:
-        cocok = [b for b in baris if b.get("id", "").strip() == i]
+        cocok = [b for b in item_sah(baris) if (b.get("id") or "").strip() == i]
         if not cocok:
             raise InputSalah(f"item #{i} tidak ada di daftar. Jalankan 'daftar --semua' untuk melihat nomor item")
         if len(cocok) > 1:
@@ -448,20 +539,42 @@ def cari_id(baris, teks_id):
 
 
 def id_baru(baris):
-    angka = [int(b["id"]) for b in baris if b.get("id", "").strip().isdigit()]
+    angka = [int(b["id"]) for b in item_sah(baris) if (b.get("id") or "").strip().isdigit()]
     return str(max(angka) + 1 if angka else 1)
 
 
 # ---------------------------------------------------------------- item
 def normal_jenis(teks):
     s = (teks or "").strip().lower()
-    alias = {"tagihan": "piutang", "invoice": "piutang", "utang": "piutang", "calon": "prospek",
+    alias = {"tagihan": "piutang", "invoice": "piutang", "utang": "piutang", "hutang": "piutang", "bon": "piutang",
+             "kasbon": "piutang", "nota": "piutang", "tempo": "piutang", "calon": "prospek",
              "lead": "prospek", "klien": "prospek", "jam": "timesheet", "janjian": "janji",
              "meeting": "janji", "rapat": "janji", "lain": "lainnya", "": "lainnya"}
     s = alias.get(s, s)
     if s not in JENIS:
         raise InputSalah(f"jenis '{teks}' tidak dikenal. Pilih: {', '.join(JENIS)}")
     return s
+
+
+ALIAS_STATUS = {"aktif": "aktif", "belum": "aktif", "belum bayar": "aktif", "selesai": "selesai",
+                "lunas": "selesai", "sudah bayar": "selesai", "sudah dibayar": "selesai", "beres": "selesai",
+                "done": "selesai", "batal": "selesai", "": "aktif"}
+
+
+def normal_status(teks):
+    s = re.sub(r"\s+", " ", (teks or "").strip().lower())
+    if s not in ALIAS_STATUS:
+        raise InputSalah(f"status '{teks}' tidak dikenal (pakai aktif/selesai; 'lunas' juga diterima)")
+    return ALIAS_STATUS[s]
+
+
+def parse_diingatkan(teks):
+    t = (teks or "").strip()
+    if t == "":
+        return 0
+    if not t.isdigit():
+        raise InputSalah(f"kolom diingatkan '{teks}' harus angka (jumlah pengingat yang sudah dikirim)")
+    return int(t)
 
 
 def tafsir_item(b, acuan):
@@ -471,9 +584,8 @@ def tafsir_item(b, acuan):
     nama = (b.get("nama") or "").strip().lstrip("'")
     if not nama:
         raise InputSalah("kolom nama kosong")
-    status = (b.get("status") or "aktif").strip().lower()
-    if status not in STATUS:
-        raise InputSalah(f"status '{b.get('status')}' tidak dikenal (pakai aktif/selesai)")
+    status = normal_status(b.get("status"))
+    diingatkan = parse_diingatkan(b.get("diingatkan"))
     tgl, cat = parse_tanggal(b.get("tanggal"), acuan, arah="terdekat")
     if cat:
         catatan.append(cat)
@@ -484,12 +596,34 @@ def tafsir_item(b, acuan):
             "tanggal": tgl.isoformat(), "tanggal_teks": tgl_id(tgl, True), "nominal": nominal,
             "nominal_teks": rupiah(nominal) if nominal is not None else "",
             "perihal": (b.get("perihal") or "").strip().lstrip("'"),
-            "catatan": (b.get("catatan") or "").strip().lstrip("'"), "status": status,
+            "catatan": (b.get("catatan") or "").strip().lstrip("'"), "status": status, "diingatkan": diingatkan,
             "selisih_hari": (tgl - acuan).days, "_tgl": tgl, "_peringatan": catatan}
 
 
 def sapaan(nama):
     return "Bapak/Ibu" if re.search(r"\d", nama) or re.fullmatch(r"[A-Z0-9-]{2,}", nama) else nama
+
+
+def kapan_teks(selisih, tgl):
+    """Kata waktu yang jujur: 'besok' hanya untuk H-1."""
+    if selisih == 0:
+        return f"hari ini, {tgl}"
+    if selisih == 1:
+        return f"besok, {tgl}"
+    if selisih == 2:
+        return f"lusa, {tgl}"
+    return f"pada {tgl}"
+
+
+def tahap_piutang(hari, diingatkan):
+    """Tahap nada (selaras tagih-piutang). hari = hari terlambat (<0 = belum jatuh tempo)."""
+    if hari < 0:
+        return 1
+    if hari == 0:
+        return 2
+    tahap = 3 if hari <= 6 else 4 if hari <= 13 else 5 if hari <= 29 else 6
+    batas = (5 if hari >= 30 else 4) if diingatkan == 0 else 5 if diingatkan == 1 else 6
+    return min(tahap, batas)
 
 
 def draf_pesan(it, acuan):
@@ -499,62 +633,75 @@ def draf_pesan(it, acuan):
     per = it["perihal"]
     nom = it["nominal_teks"]
     tgl = it["tanggal_teks"]
+    n_ingat = it.get("diingatkan", 0)
     if it["jenis"] == "piutang":
         apa = f"pembayaran {per}" if per else "pembayaran tagihan"
         jumlah = f" sebesar {nom}" if nom else ""
-        if hari < 0:
-            return (f"Selamat pagi {s}, izin mengingatkan {apa}{jumlah} yang jatuh tempo besok, {tgl}. "
-                    "Pembayaran bisa melalui [rekening]. Abaikan pesan ini jika sudah membayar. Terima kasih.")
-        if hari == 0:
+        tahap = tahap_piutang(hari, n_ingat)
+        if tahap == 1:
+            return (f"Selamat pagi {s}, izin mengingatkan {apa}{jumlah} yang jatuh tempo "
+                    f"{kapan_teks(-hari, tgl)}. Pembayaran bisa melalui [rekening]. Abaikan pesan ini jika "
+                    "sudah membayar. Terima kasih.")
+        if tahap == 2:
             return (f"Selamat pagi {s}, kami mengingatkan {apa}{jumlah} jatuh tempo hari ini, {tgl}. "
                     "Jika sudah transfer, mohon kirimkan bukti transfernya agar bisa kami catat. "
                     "Abaikan pesan ini jika sudah membayar. Terima kasih.")
-        if hari <= 6:
+        if tahap == 3:
             return (f"Selamat pagi {s}, mohon maaf mengganggu. Menurut catatan kami, {apa}{jumlah} yang jatuh "
                     f"tempo {tgl} belum kami terima. Mungkin terlewat; jika sudah transfer, mohon kirimkan "
                     "bukti transfernya. Jika belum, pembayaran bisa melalui [rekening]. Terima kasih.")
-        # Tanpa riwayat pengingat, nada maksimal = tahap 4 (minta tanggal pasti) sampai 29 hari,
-        # pemberitahuan tertulis mulai 30 hari (selaras aturan tahap skill tagih-piutang).
-        batas = acuan + timedelta(days=3 if hari <= 29 else 7)
-        if hari <= 29:
+        if tahap == 4:
+            batas = acuan + timedelta(days=3)
             return (f"Selamat pagi {s}. Kami menindaklanjuti {apa}{jumlah} yang sudah lewat {hari} hari dari "
                     f"jatuh tempo ({tgl}). Mohon informasikan tanggal pasti pembayarannya, paling lambat "
                     f"{tgl_id(batas, True)}. Jika ada kendala, kami terbuka membicarakan jadwal pembayaran. "
                     "Terima kasih.")
+        batas = acuan + timedelta(days=7)
         return (f"Yth. {s}, bersama pesan ini kami sampaikan secara tertulis bahwa {apa}{jumlah} yang jatuh "
                 f"tempo {tgl} sudah lewat {hari} hari dan belum kami terima. Mohon pembayaran diselesaikan "
                 f"paling lambat {tgl_id(batas, True)} melalui [rekening], atau hubungi kami sebelum tanggal "
                 "tersebut bila ingin membahas jadwal cicilan secara tertulis. Terima kasih atas perhatiannya.")
     if it["jenis"] == "prospek":
         topik = per or "pembicaraan kita sebelumnya"
+        keluar = "Kalau belum jadi prioritas, cukup balas \"nanti\" saja, saya tidak akan mengganggu."
+        if n_ingat >= 3:
+            return (f"Halo {s}, ini pesan terakhir saya soal {topik} supaya tidak mengganggu. Kalau suatu saat "
+                    "dibutuhkan, saya siap membantu kapan saja. Terima kasih atas waktunya.")
+        if n_ingat == 2:
+            return (f"Halo {s}, supaya lebih mudah memutuskan soal {topik}: apakah lebih cocok kita jadwalkan "
+                    f"telepon singkat 10 menit, atau saya kirimkan pilihan yang lebih sederhana dulu? {keluar}")
+        if n_ingat == 1:
+            return (f"Halo {s}, menyambung {topik}: kalau ada pertanyaan yang belum terjawab (harga, waktu, "
+                    f"atau contoh hasil), saya siap kirimkan infonya. {keluar}")
         if hari > 0:
             return (f"Halo {s}, mohon maaf baru menyapa lagi. Terkait {topik}, apakah masih relevan untuk "
-                    f"{s} saat ini? Kalau ada yang ingin ditanyakan, saya siap bantu. Kalau belum jadi "
-                    "prioritas, cukup balas \"nanti\" saja, saya tidak akan mengganggu.")
+                    f"{s} saat ini? Kalau ada yang ingin ditanyakan, saya siap bantu. {keluar}")
         return (f"Halo {s}, semoga harinya lancar. Saya ingin menindaklanjuti {topik}. Apakah ada yang bisa "
-                "saya bantu jelaskan lagi? Kalau belum jadi prioritas, cukup balas \"nanti\" saja, "
-                "saya tidak akan mengganggu.")
+                f"saya bantu jelaskan lagi? {keluar}")
     if it["jenis"] == "timesheet":
         periode = per or "periode ini"
         return (f"Selamat sore {s}, berikut rekap jam kerja {periode}: total [TOTAL JAM], nilai [NILAI] "
                 "(rincian per tanggal di bawah). Mohon konfirmasinya sebelum kami terbitkan invoice. "
                 "Terima kasih.")
     if it["jenis"] == "janji" and hari <= 0:
-        kapan = "besok" if hari < 0 else "hari ini"
         topik = f" untuk {per}" if per else ""
-        return (f"Halo {s}, mengingatkan janji kita {kapan}, {tgl}{topik}. Apakah jadwalnya masih sesuai? "
-                "Terima kasih.")
+        return (f"Halo {s}, mengingatkan janji kita {kapan_teks(-hari, tgl)}{topik}. Apakah jadwalnya masih "
+                "sesuai? Terima kasih.")
     return None
 
 
 def saran_item(it):
     hari = -it["selisih_hari"]
+    n = it.get("diingatkan", 0)
     if it["jenis"] == "piutang" and hari >= 7:
-        return ("Sudah lewat >= 7 hari: bila sudah pernah diingatkan tanpa hasil, pakai skill tagih-piutang "
-                "untuk pemberitahuan resmi, denda (hanya jika tertulis di kontrak), atau surat teguran "
-                "(>= 30 hari dan sudah >= 2 kali diingatkan).")
+        if hari >= 30 and n >= 2:
+            return ("Sudah >= 30 hari dan >= 2 kali diingatkan: pertimbangkan surat teguran (somasi) lewat "
+                    "skill tagih-piutang (bukan nasihat hukum).")
+        return ("Setelah pesan dikirim, balas \"terkirim " + str(it["id"]) + "\" agar nada berikutnya menyesuaikan. "
+                "Denda (hanya jika tertulis di kontrak) atau surat resmi: skill tagih-piutang.")
     if it["jenis"] == "prospek":
-        return "Butuh urutan lengkap H+1/3/7/14? Pakai skill follow-up-prospek."
+        return ("Setelah dikirim, balas \"terkirim " + str(it["id"]) + " lanjut 3 hari lagi\" untuk follow-up "
+                "berikutnya. Urutan lengkap: skill follow-up-prospek.")
     if it["jenis"] == "timesheet":
         return f"Isi angka dengan perintah: timesheet --klien \"{it['nama']}\" --periode <periode>."
     if it["jenis"] in ("janji", "lainnya") and hari > 0:
@@ -564,11 +711,11 @@ def saran_item(it):
 
 # ---------------------------------------------------------------- rekap
 def susun_rekap(path, acuan, maks_draf):
-    header, baris, rusak = muat_daftar(path)
+    header, baris, rusak, info = muat_daftar(path)
     grup = {"terlambat": [], "hari_ini": [], "besok": []}
-    mendatang, peringatan = [], []
+    mendatang, peringatan = [], list(info)
     total_aktif = 0
-    for b in baris:
+    for b in item_sah(baris):
         try:
             it = tafsir_item(b, acuan)
         except InputSalah as e:
@@ -579,6 +726,9 @@ def susun_rekap(path, acuan, maks_draf):
         total_aktif += 1
         for p in it.pop("_peringatan"):
             peringatan.append(f"Item #{it['id']}: {p}")
+        temu = cek_kontak({"nama": it["nama"], "perihal": it["perihal"], "catatan": it["catatan"]})
+        if temu:
+            peringatan.append(f"Item #{it['id']}: kolom {temu[0]} berisi {temu[1]}; sebaiknya dihapus (data minimal).")
         d = it["selisih_hari"]
         if d < 0:
             it["hari_terlambat"] = -d
@@ -589,6 +739,7 @@ def susun_rekap(path, acuan, maks_draf):
             grup["besok"].append(it)
         elif d <= 7:
             mendatang.append(it)
+    rusak.sort(key=lambda r: r["baris"])
     grup["terlambat"].sort(key=lambda x: (x["_tgl"], x["jenis"] != "piutang"))
     for k in ("hari_ini", "besok"):
         grup[k].sort(key=lambda x: (x["jenis"] != "piutang", x["nama"].lower()))
@@ -607,16 +758,27 @@ def susun_rekap(path, acuan, maks_draf):
                 it["draf"] = None
             it["saran"] = saran_item(it)
 
+    def piutang(items):
+        return [i for i in items if i["jenis"] == "piutang" and i["nominal"] is not None]
+
     def jumlah(items):
-        return sum(i["nominal"] for i in items if i["jenis"] == "piutang" and i["nominal"] is not None)
+        return sum(i["nominal"] for i in piutang(items))
 
     ringkas = {
         "piutang_terlambat": jumlah(grup["terlambat"]),
         "piutang_hari_ini": jumlah(grup["hari_ini"]),
         "piutang_besok": jumlah(grup["besok"]),
+        "ada_piutang": bool(piutang(grup["terlambat"] + grup["hari_ini"] + grup["besok"])),
     }
     ringkas["total_tertunggak"] = ringkas["piutang_terlambat"] + ringkas["piutang_hari_ini"]
     ringkas["total_tertunggak_teks"] = rupiah(ringkas["total_tertunggak"])
+    umur = {"1-30": [0, 0], "31-60": [0, 0], ">60": [0, 0]}
+    for i in piutang(grup["terlambat"]):
+        k = "1-30" if i["hari_terlambat"] <= 30 else "31-60" if i["hari_terlambat"] <= 60 else ">60"
+        umur[k][0] += 1
+        umur[k][1] += i["nominal"]
+    ringkas["umur_piutang_terlambat"] = {k: {"jumlah_item": v[0], "nominal": v[1], "nominal_teks": rupiah(v[1])}
+                                         for k, v in umur.items()}
     for it in [*grup["terlambat"], *grup["hari_ini"], *grup["besok"], *mendatang]:
         it.pop("_tgl", None)
         it.pop("_peringatan", None)
@@ -638,6 +800,8 @@ def _baris_item(i, it, keterangan):
     if it["perihal"]:
         bagian.append(it["perihal"])
     bagian.append(keterangan)
+    if it.get("diingatkan"):
+        bagian.append(f"sudah diingatkan {it['diingatkan']}x")
     s = " | ".join(bagian)
     if it.get("catatan"):
         s += f"\n   Catatan: {it['catatan']}"
@@ -672,11 +836,17 @@ def teks_rekap(h):
                 L.append(_baris_item(n, it, f"besok, {it['tanggal_teks']}"))
             L.append("")
         r = h["ringkasan"]
-        L.append(f"Total piutang tertunggak (terlambat + hari ini): {r['total_tertunggak_teks']}")
-        if r["piutang_besok"]:
-            L.append(f"Piutang jatuh tempo besok: {rupiah(r['piutang_besok'])}")
+        if r["ada_piutang"]:
+            L.append(f"Total piutang tertunggak (terlambat + hari ini): {r['total_tertunggak_teks']}")
+            u = r["umur_piutang_terlambat"]
+            if any(v["jumlah_item"] for v in u.values()):
+                L.append("Umur piutang terlambat: " + " | ".join(
+                    f"{k} hari: {v['nominal_teks']} ({v['jumlah_item']})" for k, v in u.items() if v["jumlah_item"]))
+            if r["piutang_besok"]:
+                L.append(f"Piutang jatuh tempo besok: {rupiah(r['piutang_besok'])}")
         if h["tujuh_hari_ke_depan"]:
-            L.append(f"Menyusul 7 hari ke depan: {len(h['tujuh_hari_ke_depan'])} item")
+            L.append("Menyusul 7 hari ke depan: " + "; ".join(
+                f"#{i['id']} {i['nama']} ({i['tanggal_teks']})" for i in h["tujuh_hari_ke_depan"]))
         draf = [it for k in ("terlambat", "jatuh_tempo_hari_ini", "besok_h_1") for it in h[k]]
         ada_draf = [it for it in draf if it.get("draf")]
         if ada_draf:
@@ -689,14 +859,15 @@ def teks_rekap(h):
         if ditunda:
             L += ["", f"Draf untuk {', '.join(ditunda)} belum ditampilkan agar pesan tidak terlalu panjang. "
                       "Minta: \"draf <nomor>\"."]
-        L += ["", "Balas misalnya: \"selesai 3\", \"tunda 3 ke Senin\", \"hapus 3\"."]
+        L += ["", "Balas misalnya: \"selesai 3\", \"terkirim 3\", \"tunda 3 ke Senin\", \"hapus 3\"."]
     if h["baris_ditolak"]:
-        L += ["", f"PERHATIAN: {len(h['baris_ditolak'])} baris di daftar tidak terbaca dan TIDAK ikut direkap:"]
+        L += ["", f"PERHATIAN: {len(h['baris_ditolak'])} baris di daftar tidak terbaca dan TIDAK ikut direkap "
+                  "(baris tetap disimpan di file; perbaiki lalu rekap ulang):"]
         for r in h["baris_ditolak"][:5]:
             L.append(f"- baris {r['baris']}: {r['alasan']}")
     if h["peringatan"]:
         L += [""] + [f"Catatan: {p}" for p in h["peringatan"][:5]]
-    return "\n".join(L).rstrip()
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(L)).rstrip()
 
 
 # ---------------------------------------------------------------- timesheet
@@ -719,7 +890,7 @@ def rentang_periode(periode, acuan):
 
 
 def rekap_timesheet(path, acuan, dari, sampai, periode, klien, tarif_default):
-    header, isi = baca_csv(path, ["tanggal", "klien", "jam"])
+    header, isi, info = baca_csv(path, ["tanggal", "klien", "jam"])
     if header is None:
         raise InputSalah(f"file timesheet {path} belum ada. Catat jam dulu dengan 'catat-jam' atau buat CSV "
                          f"berkolom {','.join(KOLOM_TS)}")
@@ -731,15 +902,17 @@ def rekap_timesheet(path, acuan, dari, sampai, periode, klien, tarif_default):
     if awal > akhir:
         raise InputSalah("tanggal --dari lebih besar dari --sampai")
     tarif_def = parse_nominal(tarif_default)[0] if tarif_default else None
-    rusak, catatan, per_klien = [], [], {}
-    for no, b, alasan in isi:
+    rusak, catatan, per_klien = [], list(info), {}
+    for no, b, alasan, _sel in isi:
         if b is None:
             rusak.append({"baris": no, "alasan": alasan})
             continue
         try:
-            tgl, cat = parse_tanggal(b.get("tanggal"), acuan, "terdekat")
+            tgl, cat = parse_tanggal(b.get("tanggal"), acuan, "lalu")
             if cat:
                 catatan.append(f"baris {no}: {cat}")
+            if tgl > acuan:
+                catatan.append(f"baris {no}: tanggal kerja {tgl_id(tgl, True)} ada di masa depan; cek lagi.")
             nama = (b.get("klien") or "").strip().lstrip("'")
             if not nama:
                 raise InputSalah("kolom klien kosong")
@@ -834,7 +1007,7 @@ def publik(it):
 
 
 def cmd_tambah(a, acuan):
-    header, baris, rusak = muat_daftar(a.file)
+    header, baris, rusak, info = muat_daftar(a.file)
     jenis = normal_jenis(a.jenis)
     nama = (a.nama or "").strip()
     if not nama:
@@ -853,7 +1026,7 @@ def cmd_tambah(a, acuan):
         cat_nom = "Nominal piutang belum diisi; draf pesan akan tanpa angka."
     item = {"id": id_baru(baris), "jenis": jenis, "nama": aman_csv(nama), "tanggal": tgl.isoformat(),
             "nominal": str(nominal) if nominal is not None else "", "perihal": aman_csv(a.perihal),
-            "status": "aktif", "catatan": aman_csv(a.catatan), "dibuat": acuan.isoformat()}
+            "status": "aktif", "catatan": aman_csv(a.catatan), "dibuat": acuan.isoformat(), "diingatkan": ""}
     baris.append(item)
     simpan_daftar(a.file, header, baris)
     catatan = [c for c in (cat_tgl, cat_nom) if c]
@@ -862,13 +1035,13 @@ def cmd_tambah(a, acuan):
     teks = (f"Tersimpan #{item['id']}: {jenis} - {nama}, {tgl_id(tgl)}"
             + (f", {rupiah(nominal)}" if nominal is not None else "")
             + (f" ({a.perihal})" if a.perihal else "") + "."
-            + "".join(f"\nCatatan: {c}" for c in catatan))
+            + "".join(f"\nCatatan: {c}" for c in catatan) + teks_rusak(rusak, info))
     keluaran(a, {"ok": True, "aksi": "tambah", "item": {**item, "tanggal_teks": tgl_id(tgl)},
                  "catatan": catatan, "baris_ditolak": rusak, "teks": teks})
 
 
 def cmd_ubah_status(a, acuan, aksi):
-    header, baris, rusak = muat_daftar(a.file)
+    header, baris, rusak, info = muat_daftar(a.file)
     target = cari_id(baris, a.id)
     ringkas = []
     if aksi == "hapus":
@@ -891,12 +1064,24 @@ def cmd_ubah_status(a, acuan, aksi):
             t["status"] = "aktif"
             t["catatan"] = aman_csv(((t.get("catatan") or "") + f" | ditunda dari {lama}").strip(" |"))
             ringkas.append(f"#{t['id']} {t.get('nama', '')} ditunda ke {tgl_id(baru)}" + (f" ({cat})" if cat else ""))
+    elif aksi == "terkirim":
+        baru, cat = parse_tanggal(a.berikutnya, acuan, arah="depan") if a.berikutnya else (None, None)
+        for t in target:
+            n = parse_diingatkan(t.get("diingatkan")) + 1
+            t["diingatkan"] = str(n)
+            teks = f"#{t['id']} {t.get('nama', '')}: tercatat sudah diingatkan {n}x"
+            if baru:
+                t["tanggal"] = baru.isoformat()
+                t["status"] = "aktif"
+                teks += f"; follow-up berikutnya {tgl_id(baru)}" + (f" ({cat})" if cat else "")
+            ringkas.append(teks)
     simpan_daftar(a.file, header, baris)
-    keluaran(a, {"ok": True, "aksi": aksi, "hasil": ringkas, "baris_ditolak": rusak, "teks": "\n".join(ringkas)})
+    keluaran(a, {"ok": True, "aksi": aksi, "hasil": ringkas, "baris_ditolak": rusak,
+                 "teks": "\n".join(ringkas) + teks_rusak(rusak, info)})
 
 
 def cmd_ubah(a, acuan):
-    header, baris, rusak = muat_daftar(a.file)
+    header, baris, rusak, info = muat_daftar(a.file)
     target = cari_id(baris, a.id)
     if len(target) != 1:
         raise InputSalah("'ubah' hanya untuk satu item sekaligus")
@@ -914,49 +1099,53 @@ def cmd_ubah(a, acuan):
         n, _ = parse_nominal(a.nominal)
         t["nominal"] = str(n) if n is not None else ""
         berubah.append(f"nominal {rupiah(n) if n is not None else '(kosong)'}")
-    for kolom in ("nama", "perihal", "catatan"):
+    for kolom in ("nama", "perihal"):
         v = getattr(a, kolom)
         if v is not None:
             t[kolom] = aman_csv(v)
             berubah.append(f"{kolom} \"{v}\"")
+    if a.catatan is not None:  # catatan DITAMBAHKAN, bukan mengganti yang lama
+        t["catatan"] = aman_csv(((t.get("catatan") or "") + " | " + a.catatan).strip(" |"))
+        berubah.append(f"catatan ditambah \"{a.catatan}\"")
     if a.jenis:
         t["jenis"] = normal_jenis(a.jenis)
         berubah.append(f"jenis {t['jenis']}")
     if a.status:
-        if a.status not in STATUS:
-            raise InputSalah(f"status harus salah satu dari: {', '.join(STATUS)}")
-        t["status"] = a.status
-        berubah.append(f"status {a.status}")
+        t["status"] = normal_status(a.status)
+        berubah.append(f"status {t['status']}")
     if not berubah:
         raise InputSalah("tidak ada yang diubah; sebutkan mis. --tanggal, --nominal, --perihal")
     simpan_daftar(a.file, header, baris)
-    teks = f"#{t['id']} diubah: " + "; ".join(berubah)
+    teks = f"#{t['id']} diubah: " + "; ".join(berubah) + teks_rusak(rusak, info)
     keluaran(a, {"ok": True, "aksi": "ubah", "id": t["id"], "perubahan": berubah, "teks": teks})
 
 
 def cmd_bersihkan(a, acuan):
-    header, baris, rusak = muat_daftar(a.file)
+    header, baris, rusak, info = muat_daftar(a.file)
     batas = acuan - timedelta(days=a.lebih_dari)
     sisa, dibuang = [], []
     for b in baris:
         try:
+            if "_mentah" in b:
+                raise InputSalah("baris rusak")
             d = parse_tanggal(b.get("tanggal"), acuan, "terdekat")[0]
+            status = normal_status(b.get("status"))
         except InputSalah:
             sisa.append(b)
             continue
-        if (b.get("status") or "").strip().lower() == "selesai" and d < batas:
+        if status == "selesai" and d < batas:
             dibuang.append(b.get("id", ""))
         else:
             sisa.append(b)
     simpan_daftar(a.file, header, sisa)
-    teks = f"{len(dibuang)} item selesai yang tanggalnya sebelum {tgl_id(batas, True)} dihapus."
+    teks = f"{len(dibuang)} item selesai yang tanggalnya sebelum {tgl_id(batas, True)} dihapus." + teks_rusak(rusak, info)
     keluaran(a, {"ok": True, "aksi": "bersihkan", "dihapus_id": dibuang, "teks": teks})
 
 
 def cmd_daftar(a, acuan):
-    header, baris, rusak = muat_daftar(a.file)
+    header, baris, rusak, info = muat_daftar(a.file)
     items = []
-    for b in baris:
+    for b in item_sah(baris):
         try:
             it = tafsir_item(b, acuan)
         except InputSalah as e:
@@ -971,13 +1160,13 @@ def cmd_daftar(a, acuan):
                  + (f" | {it['nominal_teks']}" if it["nominal_teks"] else "")
                  + (f" | {it['perihal']}" if it["perihal"] else "")
                  + (" | SELESAI" if it["status"] == "selesai" else ""))
-    if rusak:
-        L.append(f"PERHATIAN: {len(rusak)} baris tidak terbaca: " + "; ".join(f"baris {r['baris']}: {r['alasan']}" for r in rusak[:5]))
-    keluaran(a, {"ok": True, "items": [publik(i) for i in items], "baris_ditolak": rusak, "teks": "\n".join(L)})
+    rusak.sort(key=lambda r: r["baris"])
+    teks = "\n".join(L) + teks_rusak(rusak, info)
+    keluaran(a, {"ok": True, "items": [publik(i) for i in items], "baris_ditolak": rusak, "teks": teks})
 
 
 def cmd_draf(a, acuan):
-    header, baris, rusak = muat_daftar(a.file)
+    header, baris, rusak, info = muat_daftar(a.file)
     t = cari_id(baris, a.id)[0]
     it = tafsir_item(t, acuan)
     pesan = draf_pesan(it, acuan)
@@ -994,23 +1183,26 @@ def cmd_catat_jam(a, acuan):
     if not klien:
         raise InputSalah("--klien wajib")
     menit, cat = parse_jam(a.jam)
-    tgl, cat_t = parse_tanggal(a.tanggal, acuan, "terdekat") if a.tanggal else (acuan, None)
+    tgl, cat_t = parse_tanggal(a.tanggal, acuan, "lalu") if a.tanggal else (acuan, None)
+    if tgl > acuan:
+        raise InputSalah(f"tanggal kerja {tgl_id(tgl)} ada di masa depan. Jam kerja hanya dicatat untuk hari ini "
+                         "atau hari yang sudah lewat (mis. 'Senin', 'kemarin', '28/9')")
     tarif = parse_nominal(a.tarif)[0] if a.tarif else None
-    header, isi = baca_csv(a.timesheet_file, ["tanggal", "klien", "jam"])
+    header, isi, info = baca_csv(a.timesheet_file, ["tanggal", "klien", "jam"])
     if header is None:
         header = list(KOLOM_TS)
     for k in KOLOM_TS:
         if k not in header:
             header.append(k)
     lama = []
-    for no, b, alasan in isi:
+    for no, b, alasan, _sel in isi:
         if b is None:
             raise InputSalah(f"file timesheet baris {no} rusak ({alasan}); perbaiki dulu sebelum menambah baris")
         lama.append(b)
     baru = {"tanggal": tgl.isoformat(), "klien": aman_csv(klien), "jam": f"{menit // 60}:{menit % 60:02d}",
             "tarif_per_jam": str(tarif) if tarif else "", "keterangan": aman_csv(a.keterangan)}
     tulis_csv_atomik(a.timesheet_file, header, lama + [baru])
-    catatan = [c for c in (cat, cat_t) if c]
+    catatan = [c for c in (cat, cat_t) if c] + list(info)
     teks = (f"Tercatat: {klien}, {tgl_id(tgl)}, {teks_durasi(menit)}" + (f", tarif {rupiah(tarif)}/jam" if tarif else "")
             + "." + "".join(f"\nCatatan: {c}" for c in catatan))
     keluaran(a, {"ok": True, "aksi": "catat-jam", "baris": baru, "catatan": catatan, "teks": teks})
@@ -1032,12 +1224,14 @@ def main(argv=None):
     p.add_argument("--perihal", default="")
     p.add_argument("--catatan", default="")
     p.add_argument("--simpan-kontak", action="store_true")
-    for nama in ("selesai", "hapus", "tunda"):
+    for nama in ("selesai", "hapus", "tunda", "terkirim"):
         p = sub.add_parser(nama)
         p.add_argument("--id", required=True)
         p.add_argument("--catatan", default="")
         if nama == "tunda":
             p.add_argument("--ke")
+        if nama == "terkirim":
+            p.add_argument("--berikutnya", help="Tanggal follow-up berikutnya, mis. '3 hari lagi'")
     p = sub.add_parser("ubah")
     p.add_argument("--id", required=True)
     for k in ("tanggal", "nominal", "nama", "perihal", "catatan", "jenis", "status"):
@@ -1079,7 +1273,7 @@ def main(argv=None):
         acuan = parse_tanggal(a.hari_ini, dasar, "terdekat")[0] if a.hari_ini else dasar
         if a.perintah == "tambah":
             cmd_tambah(a, acuan)
-        elif a.perintah in ("selesai", "hapus", "tunda"):
+        elif a.perintah in ("selesai", "hapus", "tunda", "terkirim"):
             cmd_ubah_status(a, acuan, a.perintah)
         elif a.perintah == "ubah":
             cmd_ubah(a, acuan)

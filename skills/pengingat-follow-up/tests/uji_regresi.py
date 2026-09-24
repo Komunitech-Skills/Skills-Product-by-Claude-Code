@@ -95,7 +95,9 @@ class TestAngka(unittest.TestCase):
                  "1 jam 30 menit": 90, "2": 120, "0:45": 45, "1,25": 75}
         for teks, harap in kasus.items():
             self.assertEqual(cj.parse_jam(teks)[0], harap, teks)
-        self.assertEqual(cj.parse_jam("1,33"), (80, "Durasi 1,33 dibulatkan ke 80 menit."))
+        menit, cat = cj.parse_jam("1,33")
+        self.assertEqual(menit, 80)
+        self.assertIn("dibulatkan ke 80 menit", cat)
 
     def test_jam_rusak(self):
         for teks in ("abc", "1:75", "0", "25 jam", "-1", ""):
@@ -109,7 +111,7 @@ class TestAngka(unittest.TestCase):
         self.assertEqual(cj.rupiah(1250000), "Rp 1.250.000")
 
 
-class TestCLI(unittest.TestCase):
+class BasisCLI(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp(prefix="uji-pengingat-")
         self.file = os.path.join(self.tmp, "pengingat", "DAFTAR.csv")
@@ -132,6 +134,8 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(kode, 0, err)
         return data
 
+
+class TestCLI(BasisCLI):
     def test_rekap_kelompok_dan_total_bulat(self):
         self.tambah("piutang", "Bu Rina", "3/10", "4,5 jt", "INV-012")          # 2 hari lagi
         self.tambah("piutang", "CV Maju", "2026-09-21", "Rp12.500.000")         # lewat 10 hari
@@ -159,7 +163,7 @@ class TestCLI(unittest.TestCase):
             f.write("3,piutang,Nominal Aneh,1/10/2026,abc,,aktif,,\n")
             f.write("4,,,,,,,,\n")
             f.write("5,piutang,Kebanyakan,1/10/2026,1,000,000,,aktif,,,,\n")
-            f.write("6,piutang,Status Aneh,1/10/2026,1jt,,lunas,,\n")
+            f.write("6,piutang,Status Aneh,1/10/2026,1jt,,entahlah,,\n")
         kode, r, err = self.run_cli("rekap")
         self.assertEqual(kode, 0, err)
         self.assertEqual(len(r["jatuh_tempo_hari_ini"]), 1)
@@ -298,6 +302,202 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(p.returncode, 0)
         self.assertTrue(p.stdout.startswith("PENGINGAT FOLLOW-UP - Kamis, 1 Oktober 2026"))
         self.assertIn("Rp 4.500.000", p.stdout)
+
+
+class TestRevisi101(unittest.TestCase):
+    """Kasus dari uji independen v1.0.0 (examples/HASIL-UJI.md) -- regresi v1.0.1."""
+
+    # BERAT 1
+    def test_nominal_koma_ganjil_ditolak(self):
+        for teks in ("4,5,6 jt", "1,500 jt", "1.500 jt", "1,250 rb", "4,5,6", "1.5.0", "1,2.3 jt"):
+            with self.assertRaises(cj.InputSalah, msg=teks):
+                cj.parse_nominal(teks)
+
+    def test_nominal_besar_diberi_peringatan(self):
+        n, cat = cj.parse_nominal("1,2 M")
+        self.assertEqual(n, 1200000000)
+        self.assertIn("1 miliar", cat)
+        self.assertEqual(cj.parse_nominal("1 Miliar")[0], 10**9)
+        self.assertIsNone(cj.parse_nominal("4,5 JT")[1])
+
+    # SEDANG 6
+    def test_m_kecil_ambigu_M_besar_miliar(self):
+        for teks in ("750m", "5m", "5 m"):
+            with self.assertRaises(cj.InputSalah, msg=teks):
+                cj.parse_nominal(teks)
+        self.assertEqual(cj.parse_nominal("2M")[0], 2 * 10**9)
+        self.assertEqual(cj.parse_jam("90m")[0], 90)  # di jam, m = menit
+
+    # BERAT 3
+    def test_nama_hari_timesheet_ke_belakang(self):
+        jumat = date(2026, 10, 2)
+        self.assertEqual(cj.parse_tanggal("Senin", jumat, "lalu")[0], date(2026, 9, 28))
+        self.assertEqual(cj.parse_tanggal("Kamis", jumat, "lalu")[0], date(2026, 10, 1))
+        self.assertEqual(cj.parse_tanggal("Jumat", jumat, "lalu")[0], jumat)
+        self.assertEqual(cj.parse_tanggal("Jumat lalu", jumat, "lalu")[0], date(2026, 9, 25))
+        self.assertEqual(cj.parse_tanggal("Senin kemarin", jumat, "depan")[0], date(2026, 9, 28))
+        self.assertEqual(cj.parse_tanggal("28/9", jumat, "lalu"), (date(2026, 9, 28), None))  # tanpa catatan tahun
+
+    # SEDANG 5
+    def test_jam_titik_dua_digit_ambigu(self):
+        for teks in ("1.30", "2.15", "2.15 jam"):
+            with self.assertRaises(cj.InputSalah, msg=teks):
+                cj.parse_jam(teks)
+        menit, cat = cj.parse_jam("1,30")
+        self.assertEqual(menit, 78)
+        self.assertIn("1:30", cat)
+
+    # SEDANG 8
+    def test_kontak_berbagai_format(self):
+        for teks in ("+62 812 0000 1234", "+62-812-0000-1234", "0812.0000.1234", "62 812 0000 1234",
+                     "0812 0000 1234", "081200001234"):
+            self.assertIsNotNone(cj.cek_kontak({"perihal": teks}), teks)
+        self.assertIsNone(cj.cek_kontak({"perihal": "INV-2026-0012 Rp 4.500.000"}))
+
+    def test_status_dan_jenis_alias(self):
+        self.assertEqual(cj.normal_status("LUNAS"), "selesai")
+        self.assertEqual(cj.normal_status("sudah bayar"), "selesai")
+        for j in ("hutang", "bon", "kasbon", "nota"):
+            self.assertEqual(cj.normal_jenis(j), "piutang")
+
+    def test_tahap_piutang_ikut_riwayat(self):
+        self.assertEqual(cj.tahap_piutang(20, 0), 4)
+        self.assertEqual(cj.tahap_piutang(20, 1), 5)
+        self.assertEqual(cj.tahap_piutang(35, 0), 5)
+        self.assertEqual(cj.tahap_piutang(35, 2), 6)
+        self.assertEqual(cj.tahap_piutang(-1, 0), 1)
+
+
+class TestRevisi101CLI(BasisCLI):
+    def test_baris_rusak_tetap_tersimpan_setelah_tulis_ulang(self):
+        self.tambah("piutang", "Bu Rina", "hari ini", "4,5 jt")
+        with open(self.file, "a", encoding="utf-8") as f:
+            f.write("2,piutang,Toko E,1/10/2026,1jt,kolom,ekstra,x,y,z,w\n")
+            f.write("3,piutang,Toko F,31/2/2026,1jt,,aktif,,\n")
+        with open(self.file, encoding="utf-8") as f:
+            sebelum = f.read().splitlines()
+        kode, d, err = self.run_cli("selesai", "--id", "1", "--teks")
+        self.assertEqual(kode, 0, err)
+        p = subprocess.run([sys.executable, SCRIPT, "--file", self.file, "--hari-ini", "2026-10-01", "selesai",
+                            "--id", "1", "--teks"], capture_output=True, text=True, encoding="utf-8")
+        self.assertIn("tetap disimpan", p.stdout)
+        with open(self.file, encoding="utf-8") as f:
+            sesudah = f.read().splitlines()
+        self.assertEqual(len(sesudah), len(sebelum))
+        self.assertEqual(sesudah[2], sebelum[2])  # posisi & isi baris rusak terjaga
+        self.assertTrue(sesudah[3].startswith(sebelum[3]))  # baris sah: isi sama (+ kolom baru 'diingatkan')
+        # tambah/ubah/hapus juga tidak menghilangkan baris rusak
+        self.tambah("prospek", "Pak Budi", "besok")
+        self.assertEqual(self.run_cli("ubah", "--id", "1", "--catatan", "cek")[0], 0)
+        self.assertEqual(self.run_cli("hapus", "--id", "4")[0], 0)
+        with open(self.file, encoding="utf-8") as f:
+            isi = f.read()
+        self.assertIn("Toko E", isi)
+        self.assertIn("Toko F", isi)
+
+    def test_catat_jam_nama_hari_dan_masa_depan(self):
+        kode, d, err = self.run_cli("catat-jam", "--klien", "Batik Laras", "--jam", "4:30", "--tanggal", "Senin",
+                                    "--tarif", "150rb", hari="2026-10-02")
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(d["baris"]["tanggal"], "2026-09-28")
+        for tgl in ("besok", "Senin depan", "3 Okt", "2026-10-05"):
+            kode, _, err = self.run_cli("catat-jam", "--klien", "X", "--jam", "1", "--tanggal", tgl, hari="2026-10-02")
+            self.assertEqual(kode, 1, tgl)
+            self.assertIn("masa depan", err)
+        kode, r, _ = self.run_cli("timesheet", "--periode", "minggu-ini", hari="2026-10-02")
+        self.assertEqual(r["per_klien"][0]["nilai"], 675000)
+
+    def test_draf_tidak_bilang_besok_untuk_item_jauh(self):
+        self.tambah("piutang", "Bu Rina", "2026-10-10", "4,5 jt")
+        self.tambah("janji", "Bu Dewi", "2026-10-03", perihal="meeting")
+        self.tambah("piutang", "Pak Joko", "besok", "1jt")
+        _, d1, _ = self.run_cli("draf", "--id", "1")
+        self.assertNotIn("besok", d1["draf"])
+        self.assertIn("pada 10 Okt 2026", d1["draf"])
+        _, d2, _ = self.run_cli("draf", "--id", "2")
+        self.assertIn("lusa", d2["draf"])
+        self.assertNotIn("besok", d2["draf"])
+        _, d3, _ = self.run_cli("draf", "--id", "3")
+        self.assertIn("besok", d3["draf"])
+
+    def test_csv_ansi_cp1252(self):
+        os.makedirs(os.path.dirname(self.file), exist_ok=True)
+        with open(self.file, "w", encoding="cp1252") as f:
+            f.write("id,jenis,nama,tanggal,nominal,perihal,status,catatan,dibuat\n"
+                    "1,piutang,Café Senja,2026-10-01,1500000,INV-1,aktif,,\n")
+        kode, r, err = self.run_cli("rekap")
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(r["jatuh_tempo_hari_ini"][0]["nama"], "Café Senja")
+        self.assertTrue(any("ANSI" in p for p in r["peringatan"]))
+        self.assertEqual(self.run_cli("selesai", "--id", "1")[0], 0)
+        with open(self.file, encoding="utf-8") as f:
+            self.assertIn("Café Senja", f.read())
+
+    def test_kontak_spasi_ditolak_saat_tambah_dan_diperingatkan_saat_rekap(self):
+        kode, _, err = self.run_cli("tambah", "--jenis", "piutang", "--nama", "Bu Rina", "--tanggal", "besok",
+                                    "--perihal", "+62 812 0000 1234")
+        self.assertEqual(kode, 2)
+        os.makedirs(os.path.dirname(self.file), exist_ok=True)
+        with open(self.file, "w", encoding="utf-8") as f:
+            f.write("id,jenis,nama,tanggal,nominal,perihal,status,catatan,dibuat\n"
+                    "1,piutang,Bu Rina,2026-10-01,1jt,,aktif,wa +62 812 0000 1234,\n")
+        _, r, _ = self.run_cli("rekap")
+        self.assertTrue(any("nomor HP" in p for p in r["peringatan"]))
+
+    def test_rekap_ringan(self):
+        self.tambah("prospek", "Pak Budi", "hari ini")
+        self.tambah("janji", "Bu Dewi", "2026-10-05")
+        _, r, _ = self.run_cli("rekap")
+        self.assertNotIn("Total piutang", r["teks"])          # tanpa piutang -> baris total disembunyikan
+        self.assertIn("#2 Bu Dewi", r["teks"])                  # nama item 7 hari ke depan
+        self.tambah("piutang", "A", "2026-09-20", "1jt")       # 11 hari
+        self.tambah("piutang", "B", "2026-08-10", "2jt")       # 52 hari
+        self.tambah("piutang", "C", "2026-07-01", "3jt")       # 92 hari
+        _, r, _ = self.run_cli("rekap")
+        u = r["ringkasan"]["umur_piutang_terlambat"]
+        self.assertEqual((u["1-30"]["nominal"], u["31-60"]["nominal"], u[">60"]["nominal"]), (1000000, 2000000, 3000000))
+        self.assertIn("Umur piutang terlambat", r["teks"])
+
+    def test_ubah_catatan_menambah_dan_status_lunas(self):
+        self.tambah("piutang", "Bu Rina", "hari ini", "4,5 jt")
+        self.run_cli("ubah", "--id", "1", "--catatan", "janji bayar Jumat")
+        self.run_cli("ubah", "--id", "1", "--catatan", "transfer sebagian")
+        _, d, _ = self.run_cli("daftar")
+        self.assertEqual(d["items"][0]["catatan"], "janji bayar Jumat | transfer sebagian")
+        kode, _, err = self.run_cli("ubah", "--id", "1", "--status", "lunas")
+        self.assertEqual(kode, 0, err)
+        _, d, _ = self.run_cli("daftar", "--semua")
+        self.assertEqual(d["items"][0]["status"], "selesai")
+
+    def test_terkirim_menaikkan_nada_dan_menjadwalkan_ulang(self):
+        self.tambah("piutang", "CV Maju", "2026-09-11", "5jt")   # 20 hari
+        _, d, _ = self.run_cli("draf", "--id", "1")
+        self.assertIn("tanggal pasti", d["draf"])
+        kode, t, err = self.run_cli("terkirim", "--id", "1")
+        self.assertEqual(kode, 0, err)
+        _, d, _ = self.run_cli("draf", "--id", "1")
+        self.assertIn("secara tertulis", d["draf"])
+        self.tambah("prospek", "Pak Budi", "hari ini", perihal="penawaran")
+        draf = []
+        for _ in range(4):
+            draf.append(self.run_cli("draf", "--id", "2")[1]["draf"])
+            kode, t, err = self.run_cli("terkirim", "--id", "2", "--berikutnya", "3 hari lagi")
+            self.assertEqual(kode, 0, err)
+        self.assertEqual(len(set(draf)), 4)                     # draf prospek berbeda tiap tahap
+        self.assertIn("pesan terakhir", draf[3])
+        _, dft, _ = self.run_cli("daftar")
+        self.assertEqual([i["tanggal"] for i in dft["items"] if i["id"] == "2"], ["2026-10-04"])
+
+    def test_rumus_excel_di_csv_lama_diamankan_saat_tulis_ulang(self):
+        os.makedirs(os.path.dirname(self.file), exist_ok=True)
+        with open(self.file, "w", encoding="utf-8") as f:
+            f.write("id,jenis,nama,tanggal,nominal,perihal,status,catatan,dibuat\n"
+                    "1,piutang,Bu Rina,2026-10-01,1jt,=HYPERLINK(1),aktif,@x,\n")
+        self.assertEqual(self.run_cli("selesai", "--id", "1")[0], 0)
+        with open(self.file, encoding="utf-8") as f:
+            isi = f.read()
+        self.assertIn("'=HYPERLINK", isi)
+        self.assertIn("'@x", isi)
 
 
 if __name__ == "__main__":
