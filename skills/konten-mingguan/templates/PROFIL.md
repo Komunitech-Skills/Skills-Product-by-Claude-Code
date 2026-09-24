@@ -20,7 +20,9 @@ yang berubah (produk baru, promo baru, larangan klaim baru).
 - **Nama panggilan pembeli** (mis. "Kak", "Bunda", "Sob"):
 
 ## Platform & kapasitas produksi
-- **Platform aktif** (IG/TikTok/FB/WA Status — boleh lebih dari satu; default: IG + TikTok + WA Status):
+- **Platform aktif** (IG/TikTok/FB/WA Status/LinkedIn/X (Twitter) — boleh lebih dari satu; default: IG +
+  TikTok + WA Status. LinkedIn cocok untuk jasa profesional/B2B — sebut bila usaha Anda konsultan,
+  kantor jasa, pelatihan, atau B2B):
 - **Sanggup bikin video berapa per minggu** (default: 2-3; sisanya foto/Story saja):
 - **Siapa yang eksekusi** (pemilik sendiri/admin/tim):
 

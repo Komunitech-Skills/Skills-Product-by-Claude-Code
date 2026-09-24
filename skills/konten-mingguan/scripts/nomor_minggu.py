@@ -4,8 +4,9 @@ tanggal tiap hari, dan penanda momen lokal (gajian, tanggal kembar, hari besar/n
 tetap) supaya AI agent tidak menghitung/mengarang tanggal sendiri.
 
 Momen yang tanggalnya berubah tiap tahun (Ramadan, Lebaran, Imlek, Idul Adha, cuti bersama, libur
-sekolah) TIDAK ditebak -- script menandainya "[cek SKB]" hanya jika diminta lewat --tandai-skb;
-kalau tidak, agent yang menanyakan/menandai berdasarkan info dari pengguna.
+sekolah) TIDAK ditebak dan TIDAK ada flag khusus untuk itu di script ini -- agent yang menanyakan ke
+pengguna, atau menandai sendiri di teks hasil sebagai "(perkiraan -- cek SKB 3 Menteri/kalender resmi
+tahun berjalan)" bila disebutkan tanpa kepastian (lihat SKILL.md).
 
 Hanya library standar Python 3.8+. Lintas OS (Windows: jalankan dengan `python` atau `py`).
 
