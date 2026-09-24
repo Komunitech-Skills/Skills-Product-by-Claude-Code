@@ -147,3 +147,14 @@ Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
   - hanya lewat image Docker resmi karena keterbatasan lingkungan pembuatan skill. Endpoint
   & parameter berasal dari dokumen Swagger resmi versi itu (lihat `references/`); versi
   Stirling-PDF yang jauh lebih baru/lama berpotensi mengubah nama parameter.
+- **PENTING - aplikasi desktop mode "lokal saja" TIDAK menyertakan OCR & konversi
+  dokumen** (menurut dokumentasi resmi docs.stirlingpdf.com, per 2026-09-24): backend
+  bawaan aplikasi desktop (Settings > Connection > Local-only, mode default) hanya
+  menjalankan tool dasar (gabung/pisah/putar/kompres/watermark/kunci). Untuk `ocr` dan
+  kemungkinan `foto-ke-pdf`, aplikasi akan minta login Stirling Cloud atau tersambung
+  ke server self-hosted - **bukan berarti fitur itu berbayar**, tapi engine OCR-nya
+  (Tesseract) memang tidak dibundel di mode itu. Solusi tetap gratis & 100% lokal:
+  pasang Stirling-PDF lewat **Docker** (lihat `docs/panduan-stirling-pdf.md` Jalur B)
+  seperti yang dipakai untuk menguji skill ini, lalu (opsional) sambungkan aplikasi
+  desktop ke situ lewat Settings > Connection > Self-hosted server. Script sudah
+  mendeteksi error 404 ini dan menjelaskannya ke pengguna.

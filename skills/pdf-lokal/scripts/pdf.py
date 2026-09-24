@@ -150,11 +150,21 @@ def panggil_stirling(base_url, api_key, path, field_biasa=None, field_file=None,
                 "pribadi (lihat docs/panduan-stirling-pdf.md bagian Keamanan)."
             ) from None
         if e.code == 404:
+            catatan_ocr = ""
+            if "ocr" in path or "convert" in path:
+                catatan_ocr = (
+                    " CATATAN KHUSUS: bila kamu memakai APLIKASI DESKTOP Stirling-PDF dalam mode "
+                    "'lokal saja' (Settings > Connection), OCR & konversi dokumen memang TIDAK "
+                    "disertakan di mode itu (perlu masuk akun Stirling Cloud atau menyambung ke "
+                    "server self-hosted). Solusi gratis & tetap lokal: jalankan Stirling-PDF lewat "
+                    "Docker (lihat docs/panduan-stirling-pdf.md Jalur B) lalu di aplikasi desktop "
+                    "pilih Settings > Connection > Self-hosted server > http://localhost:8080."
+                )
             raise Gagal(
                 f"Endpoint '{path}' tidak ditemukan di server Stirling-PDF ini (404). Kemungkinan "
                 "versi Stirling-PDF yang terpasang lebih lama dan belum punya fitur ini, atau "
-                "fitur ini masuk kelompok berbayar/proprietary yang tidak diaktifkan. Jalankan "
-                "'python3 pdf.py cek' untuk melihat versi, lalu perbarui Stirling-PDF bila perlu."
+                "fitur ini masuk kelompok berbayar/proprietary yang tidak diaktifkan." + catatan_ocr +
+                " Jalankan 'python3 pdf.py cek' untuk melihat versi, lalu perbarui Stirling-PDF bila perlu."
             ) from None
         if e.code == 400 and ("password" in pesan.lower() or "E004" in pesan):
             raise Gagal(
