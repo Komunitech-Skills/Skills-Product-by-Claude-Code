@@ -1,4 +1,16 @@
-# Perintah OpenClaw untuk automation pantau-pasar-kripto (v1.0.1)
+# Perintah OpenClaw untuk automation pantau-pasar-kripto (v1.0.2)
+
+**Koreksi v1.0.2 (S2-3, lihat `examples/HASIL-UJI.md` "Uji ulang v1.0.1"):** pola utama
+diganti dari `--command` (string) ke `--command-argv` (array argv). Alasan: `--command`
+dijalankan Gateway lewat `sh -lc <shell>` (login shell) -- di Gateway uji, profil login
+mesin (`nvm`) mencetak teks SEBELUM wrapper sempat jalan, sehingga keluaran menjadi
+`"nvm\nNO_REPLY"` alih-alih `"NO_REPLY"` murni, dan penekanan pengiriman gagal (Gateway
+tetap mencoba mengirim). `--command-argv` tidak lewat shell sama sekali (argv langsung ke
+proses `python3`), jadi kebal dari kontaminasi profil login apa pun -- **terbukti** bersih
+di Gateway uji Linux. Paragraf di bawah yang sebelumnya menandai `--command-argv` "belum
+dicoba" (khusus Windows) sudah diperbaiki: kombinasi lengkapnya (dengan `--command-cwd`,
+`--cron`+`--tz`, `--announce`) **terbukti T di Linux**; Windows tetap **S** (logikanya
+seharusnya sama karena tanpa shell, tapi belum diuji di mesin Windows sungguhan).
 
 Semua perintah di bawah **diuji sungguhan** (bukan hanya `--help`) terhadap Gateway lokal
 OpenClaw **2026.9.5 (ec9c1a1)** (`gateway run --dev --allow-unconfigured --bind loopback
