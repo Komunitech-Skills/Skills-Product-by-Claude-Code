@@ -108,3 +108,6 @@ Tidak ada.
 Alasan: inti kasir (hitung, pajak PPN, void/retur, tutup kasir, rekap, ekspor ke skill lain) terbukti **akurat 100%** lewat verifikasi independen, aman, dan jauh lebih baik daripada agent tanpa skill; tidak ada pesaing agent skill yang sebanding. Nilai tidak lebih tinggi karena (a) belum ada mode PBJT untuk segmen kuliner yang justru disasar, (b) parser satuan gagal pada kalimat lazim toko bangunan/grosir, (c) celah instruksi manipulasi omzet, dan (d) zona waktu. Perbaiki cacat SEDANG 1–4 sebelum beta untuk member F&B; setelah revisi, uji ulang oleh penguji independen (terutama mode PBJT bila ditambahkan).
 </content>
 </invoke>
+
+## Catatan koordinator — v1.1.0
+Mode PBJT (pajak daerah makanan/minuman restoran), satuan, larangan manipulasi nota, zona waktu, dan cacat ringan ditambahkan pembuat; 64/64 tes lulus (dicek ulang koordinator). Karena PBJT adalah perhitungan pajak BARU yang belum diuji independen, status diturunkan sementara ke `uji` sampai uji ulang independen v1.1.0 selesai.
