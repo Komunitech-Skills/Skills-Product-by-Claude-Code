@@ -9,6 +9,8 @@ import sys
 import unittest
 from contextlib import redirect_stdout, redirect_stderr
 
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', 'scripts'))
 import rekap_kunjungan as rk
 
 
