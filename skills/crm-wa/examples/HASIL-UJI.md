@@ -76,3 +76,42 @@ Alasan:
 - (−) Impor (fitur yang dijual "tidak perlu ketik ulang") gagal pada kolom "Nomor"/"Number" (S3) dan format Google Contacts baru (S4), serta membanjiri daftar harian (S6).
 - (−) S1 membuat daftar "TERLAMBAT" tercemar deal yang sudah menang — mengurangi kepercayaan pada fitur inti.
 - Perkiraan setelah T1 + S1–S4 + S6 diperbaiki dan diuji ulang independen: **8/10**.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-24)
+- **Penguji:** agent penguji independen (bukan pembuat atau perevisi). Simulasi Claude Code. Semua perintah dijalankan dari scratchpad dengan DB, `HOME` dan `KOMUNITECH_DATA` palsu. Data fiktif. Detail & reproduksi: `06-uji-ulang-v1.0.1.md`.
+- **Uji otomatis:** `tests/uji_regresi.py` 53 tes OK · `scripts/validate.py` lolos (57/57) · `scripts/uji_openclaw.sh` OpenClaw 2026.9.6 eligible/modelVisible/commandVisible 57/57.
+
+### Status klaim
+| Klaim | Status |
+|---|---|
+| T1 restore saat DB rusak | **Tuntas**: repro asli + 8 jenis kerusakan (0 byte, tengah, terpotong, acak, hot journal, journal sampah/asing) pulih. File rusak dipindah ke `rusak-crm-<waktu>.db`. DB aplikasi lain/terkunci tidak ditimpa. `init --mulai-baru` bekerja. Pesan error tidak lagi berputar. |
+| S1 deal → konfirmasi order | **Tuntas**: deal selalu di ORDER BERJALAN (+2 hari), 0 deal di TERLAMBAT (24/9, 30/9, 5/10), nilai prospek tanpa deal. |
+| S2 nama ambigu (termasuk batal) | **Tuntas** |
+| S3/S4 impor Nomor/Number/No, Google Contacts | **Tuntas** (kolom nomor-urut tidak terpakai, ` ::: ` & label dipecah, HP diutamakan, tanpa nomor → `--ya` ditolak) |
+| S5 draf hanya nama produk | **Sebagian**: kasus koma/kurung/" - "/Rp/harga beres. Titik & "sejuta" masih lolos (N1). |
+| S6 impor tanpa jadwal, batas baris | **Tuntas**: `--sebar 25` tepat 25/hari. `hari-ini` 300 kontak: 12,5 KB (sebelumnya 29 KB), `--semua` lengkap. |
+| S7 ekspor & jembatan | **Tuntas**: default `<data>/ekspor/`, path lengkap, peringatan repo git, `--file` di setiap perintah jembatan. |
+| R1–R5, R7 | **Tuntas** |
+| K1 | Sebagian (inisial sama, format telepon rumah) · R6 belum (sesuai pengakuan) |
+
+### Regresi
+Tidak ada. Tiga skenario baru mirip 01–03 (16 lead toko roti; renovasi WITA 37,5 jt–2,5 M; impor 300 reseller) dihitung ulang independen dari SQLite: **15 periode, 0 beda** (konversi, win rate, nilai per tahap, rata-rata, lama closing, sumber terbaik, terlambat/hari ini/besok/order). 128 tautan wa.me benar. 0 nilai/catatan di draf bawaan. `--samarkan` dan `rekap --json` tanpa nomor HP. 0 akses jaringan (audit hook). Definisi rekap setelah S1 konsisten dengan SKILL.md & `references/perintah.md` (pipeline terbuka tidak berubah, deal pindah ke `order_perlu_konfirmasi`, kunci JSON lama tetap).
+
+### Cacat tersisa
+| ID | Keparahan | Ringkas (reproduksi di `06-uji-ulang-v1.0.1.md` §4) |
+|---|---|---|
+| N1 | Rendah | `--kebutuhan "kue 450 ribu. orangnya pelit banget"` → draf "Soal kue . orangnya pelit banget". "sejuta" tidak dikenali. "1,5 juta" → "kue 1". Dimitigasi: aturan 5, peringatan `tambah`, manusia memeriksa. |
+| N2 | Rendah | Kutip tak tertutup di CSV menelan baris berikutnya ("Pak Oman") tanpa disebut. |
+| N3 | Rendah (lama) | Kontak impor tanpa `tgl masuk` dihitung "lead masuk" hari impor (s-C: 301 lead, konversi 0,0%) dan disapa "terima kasih sudah menghubungi". |
+| K2 | Kosmetik | Deal berjadwal besok ikut blok/hitungan BESOK. Pesan "jadwal prospek lama diganti" pada kontak baru. |
+| K1, R6 | Kosmetik / Rendah | Sisa yang sudah diakui pembuat. |
+
+### Skor kualitas: **8 / 10 — LULUS** (siap uji platform asli, Tahap 6 langkah 10)
+Alasan:
+- (+) Cacat tinggi T1 tuntas dan tahan terhadap berbagai jenis kerusakan, termasuk journal tertinggal. Pemulihan tidak pernah menghapus atau menimpa data.
+- (+) Semua cacat sedang (S1–S4, S6, S7) tuntas. Fitur inti harian kini bersih: deal tidak mencemari TERLAMBAT, dan impor dari WA/Google Contacts membaca nomor dengan benar.
+- (+) Angka 100% cocok di 15 periode, dan tidak ada regresi.
+- (−) S5 belum sepenuhnya: komentar setelah titik dan "sejuta" masih bisa masuk draf (N1). Risikonya rendah karena draf selalu diperiksa manusia.
+- (−) Sisa cacat rendah pada impor (N2, N3) dan kosmetik. Tidak ada yang menghalangi rilis. Saran: perbaiki N1–N3 di v1.0.2.
