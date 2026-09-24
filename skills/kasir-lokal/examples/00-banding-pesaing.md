@@ -66,5 +66,3 @@ Skill kita **tidak kalah** untuk target pasarnya (UMKM satu outlet yang ingin di
 - https://github.com/frappe/books (AGPL-3.0, ±5k bintang, Electron + SQLite, POS mode)
 - https://github.com/blair2004/NexoPOS (GPL-3.0, ±1,3k bintang, Laravel)
 - https://clawhub.ai/skills?q=pos ; https://github.com/VoltAgent/awesome-openclaw-skills ; https://github.com/VoltAgent/awesome-agent-skills ; https://github.com/fdocr/clawshier
-</content>
-</invoke>

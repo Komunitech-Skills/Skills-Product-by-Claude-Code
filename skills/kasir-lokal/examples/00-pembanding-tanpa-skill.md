@@ -52,5 +52,3 @@ Kurang Rp 3.000 — mohon tambahkan pembayaran.
 | Rekap siap kirim & jadwal | 4 | 9 |
 
 **Kesimpulan:** dengan skill **jelas jauh lebih baik**. Tanpa skill, agent hanya menjadi kalkulator chat tanpa memori permanen; hitungan satu nota bisa benar, tetapi tutup kasir, retur berdiskon nota, deteksi dobel, dan rekap lintas hari tidak dapat diandalkan. Skill menambah nilai yang tidak bisa diberikan AI biasa: database lokal, nomor nota, jejak koreksi, rekonsiliasi laci, struk ukuran printer, dan ekspor ke skill lain. Bahan "sebelum/sesudah" README valid.
-</content>
-</invoke>

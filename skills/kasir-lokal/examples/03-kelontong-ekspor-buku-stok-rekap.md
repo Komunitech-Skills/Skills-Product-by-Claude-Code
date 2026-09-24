@@ -107,5 +107,3 @@ Rata-rata/nota  : Rp 57.150
 - **Cacat (RINGAN–SEDANG):** di CSV penjualan, qty **pecahan negatif** ditulis `'-2,5` (baris void beras) — perlindungan formula injection ikut menempelkan tanda `'` pada angka, sehingga di Excel sel itu menjadi teks dan **SUM kolom Qty salah** (skill rekap-penjualan-csv kebetulan tetap membacanya benar). Saran: `sel_aman()` jangan diterapkan pada nilai hasil `qty_csv` (kembalikan Decimal/float atau tandai sebagai angka).
 - Ringan: "Rata-rata/nota" (57.150) ikut menghitung 2 nota yang di-void; untuk toko kelontong angka ini menyesatkan (tanpa void: 170.500/3 = 56.833).
 - Pengaman mode `stok kasir` + ekspor buku-stok berfungsi: script memberi "PERHATIAN: … stok terpotong DOBEL" (diuji di skenario data rusak).
-</content>
-</invoke>

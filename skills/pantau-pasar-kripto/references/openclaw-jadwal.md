@@ -1,95 +1,143 @@
-# Perintah OpenClaw untuk automation pantau-pasar-kripto
+# Perintah OpenClaw untuk automation pantau-pasar-kripto (v1.0.1)
 
-Semua opsi di bawah **diverifikasi lewat `openclaw automations add --help`** di OpenClaw
-**2026.9.5 (ec9c1a1)** (`source /tmp/oc/env.sh` lalu `node .../openclaw.mjs automations add
---help` dengan `HOME` sementara -- sama seperti metode `laporan-otomatis-terjadwal`).
-**Berbeda dari `laporan-otomatis-terjadwal`:** kombinasi `--command` + `--trigger-script`
-di bawah **belum berhasil dijalankan sungguhan terhadap Gateway uji** saat skill ini
-ditulis (percobaan `gateway run --dev` di sandbox penulisan skill ini gagal start dalam
-waktu terbatas) -- jadi tandanya **S** (didukung menurut `--help`, kombinasi persis belum
-dibuktikan), bukan **T**. **Uji dulu dengan `openclaw automations run <id> --wait` sebelum
-mengaktifkan jadwal**, dan kalau perilakunya beda dari dugaan di bawah, pakai Opsi B
-(job agent biasa) yang polanya sama persis dengan `laporan-otomatis-terjadwal`
-(skill itu **sudah** membuktikan pola ini jalan sungguhan di Gateway uji).
+Semua perintah di bawah **diuji sungguhan** (bukan hanya `--help`) terhadap Gateway lokal
+OpenClaw **2026.9.5 (ec9c1a1)** (`gateway run --dev --allow-unconfigured --bind loopback
+--token ...`, `automations add`/`automations run --wait`, HOME sementara, tanpa model AI &
+tanpa kanal login). Status **T** = terbukti jalan di Gateway uji. Status **S** = ada di
+`--help`/dokumentasi tapi kombinasi persisnya belum terbukti.
+
+**Koreksi dari draf v1.0.0 (ditemukan uji independen, lihat `examples/HASIL-UJI.md`):**
+opsi awal (`--every` + `--tz` + `--trigger-script <file>.sh`) **GAGAL** dua kali di CLI
+asli:
+- `--tz` **tidak boleh** dipasangkan dengan `--every` -- pesan CLI: *"--tz is only valid
+  with --cron or offset-less --at"*. Untuk jadwal berulang yang perlu zona waktu, pakai
+  `--cron`, bukan `--every`.
+- `--trigger-script` **bukan** shell script yang dibaca kode keluarnya. Menurut dokumentasi
+  bawaan OpenClaw (`docs/automation/cron-jobs/schedules.md` §Event triggers) dan dikonfirmasi
+  langsung oleh Gateway uji, trigger script adalah **kode JavaScript** (mode `exec`/`json`)
+  yang memanggil `await exec({ command: '...' })` lalu memanggil `json({ fire, message?,
+  state? })` -- bukan file `.sh` yang exit code-nya dibaca CLI. File `.sh` ditolak dengan
+  pesan *"cron trigger script has a syntax error: Unexpected character '!' ..."* (dibaca
+  sebagai JS, gagal parse shebang `#!`).
+- `openclaw automations run <id> --wait` **mengabaikan/memaksa lewati** trigger (menjalankan
+  job langsung) -- jadi TIDAK bisa dipakai untuk menguji apakah trigger akan menyala di
+  jadwal sungguhan. Cara uji yang benar ada di §3 di bawah.
 
 Nama subperintah resminya **`automations`** (alias `cron`, keduanya jalan sama).
 
-## Opsi A -- hemat token: skrip yang memutuskan, agent hanya dipanggil saat perlu (status S)
-Ide: `--command` menjalankan `cek_ambang.py` di Gateway secara berkala TANPA melibatkan
-model AI sama sekali (murah, cepat). `--trigger-script` (skrip kondisi terpisah, field
-`--help`: *"Condition script file, or - for stdin"*) diharapkan menentukan apakah job ini
-"menyala" (dan karenanya mengumumkan/memanggil agent) pada giliran itu -- **konvensi
-persis kode keluar yang dianggap "trigger" belum kami buktikan**, jadi tulis skrip
-kondisi ini supaya **exit 0 = ambang terlewati** (mengikuti konvensi Unix umum untuk
-"kondisi terpenuhi"), lalu **wajib diuji** dengan `automations run <id> --wait` -- kalau
-ternyata job tetap jalan setiap kali (bukan hanya saat ambang terlewati), berarti
-konvensinya terbalik atau berbeda; sesuaikan skrip kondisi atau pindah ke Opsi B.
+## 1. Pola UTAMA (T, TERBUKTI di Gateway uji Linux): `--command` + wrapper Python `NO_REPLY`
 
-Skrip kondisi contoh (simpan sebagai `kripto/trigger_ambang.sh` di workspace member,
-**bukan** bagian dari paket skill karena path-nya spesifik per member):
-```bash
-#!/bin/sh
-python3 "<folder-skill-ini-absolut>/scripts/cek_ambang.py" \
-  --konfigurasi kripto/konfigurasi.json --state kripto/state.json --keluaran json > /tmp/hasil-cek-kripto.json
-KODE=$?
-# cek_ambang.py: exit 2 = ADA ambang terlewati -> exit 0 di sini supaya trigger "menyala"
-[ "$KODE" -eq 2 ]
-```
-(Windows: sarankan menjalankan lewat WSL/Git Bash, atau pindah ke Opsi B yang tidak
-butuh shell script terpisah.)
+Paling sederhana, paling murah (job command tidak memanggil model AI sama sekali kecuali
+ada yang perlu dilaporkan). Bentuk berikut **terbukti jalan** di Gateway uji (macOS/Linux,
+lewat `sh -lc`, lihat `/tmp/uji-kripto-oc/kirim_jika_terlewati.sh` pada sesi uji independen):
 
 ```bash
-openclaw automations add --every 1h --trigger-script "<path-absolut>/kripto/trigger_ambang.sh" \
-  --command "cat /tmp/hasil-cek-kripto.json" \
-  --name "Cek ambang kripto" --tz "Asia/Jakarta" \
+openclaw automations add --cron "0 * * * *" --tz "Asia/Jakarta" \
+  --name "Cek ambang kripto (per jam)" --session isolated \
+  --command "cd '<folder-workspace-member>' && python3 '<folder-skill-ini-absolut>/scripts/cek_dan_lapor.py' --konfigurasi kripto/konfigurasi.json --state kripto/state.json" \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
-Opsi yang dipakai (semua ada di `--help`, tanda ✅ = sudah dicoba di skill sejenis
-`laporan-otomatis-terjadwal` walau bukan kombinasi persis ini):
-- `--every 1h` ✅ -- interval (alternatif: `--cron "0 * * * *"` untuk tiap jam tepat).
-- `--trigger-script <path>` -- **status S**, lihat catatan di atas.
-- `--command <shell>` -- job command (bukan job agent) yang isi keluarannya bisa
-  `--announce` ke kanal. Kalau member ingin pesan yang lebih rapi (bukan JSON mentah),
-  ganti `--command` dengan skrip lain yang memformat `pesan_singkat` dari hasil JSON
-  (`cek_ambang.py` sudah menyediakan field itu -- tinggal `python3 -c "import json;
-  print(json.load(open('/tmp/hasil-cek-kripto.json'))['pesan_singkat'])"`).
-- `--tz "Asia/Jakarta"` ✅ -- wajib eksplisit.
-- `--announce` ✅, `--channel telegram` ✅, `--to <chat-id>` ✅ -- sama seperti
-  `laporan-otomatis-terjadwal` §4, lihat kanal di bawah.
+`--command` dijalankan Gateway lewat `sh -lc` (dari dokumentasi flag & perilaku yang
+terlihat di Gateway uji) -- ini cocok untuk Gateway yang berjalan di **macOS/Linux**.
 
-## Opsi B -- job agent biasa, pola TERBUKTI (dipakai `laporan-otomatis-terjadwal`)
-Kalau Opsi A tidak berperilaku seperti diharapkan setelah diuji, pakai pola ini (agent
-dipanggil tiap giliran, sedikit lebih boros token, tapi **terbukti jalan** karena identik
-dengan yang sudah dijalankan sungguhan di Gateway uji untuk skill lain):
+**Windows (S, BELUM diuji sungguhan):** Gateway OpenClaw di Windows kemungkinan tidak
+punya `sh`, jadi `--command` mentah di atas berisiko tidak jalan. CLI juga menyediakan
+`--command-argv <json>` ("Command payload argv as JSON array of strings") yang seharusnya
+tidak bergantung shell, mis. `--command-argv '["python", "<path>/cek_dan_lapor.py",
+"--konfigurasi", "kripto/konfigurasi.json", "--state", "kripto/state.json"]'` plus
+`--command-cwd "<folder-workspace-member>"` -- tapi kombinasi ini **belum dicoba** di
+Gateway Windows sungguhan pada sesi uji manapun. Kalau member memakai Windows, jelaskan
+statusnya jujur, uji dulu dengan `automations run <id> --wait` (§3) sebelum mengaktifkan
+jadwal produksi, dan siapkan fallback perintah salin-tempel manual kalau gagal.
+
+**Cara kerja:** `cek_dan_lapor.py` (lihat isinya, sudah diuji offline di
+`tests/uji_regresi.py`) menjalankan `cek_ambang.py`. Kalau exit code-nya **2** (ambang baru
+terlewati) atau **3** (ada koin gagal total), wrapper mencetak `pesan_singkat` yang sudah
+jadi (siap diumumkan lewat `--announce`). Kalau tidak, wrapper mencetak literal `NO_REPLY`
+-- OpenClaw **tidak memposting apa pun** ke kanal kalau keluaran job persis `NO_REPLY`
+(dikonfirmasi lewat `automations run --wait`, lihat §3). Wrapper **SELALU** keluar dengan
+kode 0, supaya Gateway tidak salah mencatat giliran normal (ambang terlewati/koin gagal)
+sebagai job yang *error*.
+
+Opsi yang dipakai (T = dicoba sungguhan di Gateway uji untuk skill ini):
+- `--cron "0 * * * *"` (T) -- setiap jam tepat. `--tz "Asia/Jakarta"` (T) boleh dipasangkan
+  dengan `--cron` (berbeda dari `--every`, lihat catatan koreksi di atas).
+- `--command-argv` (T) -- payload command sebagai array argv (bukan string shell), lintas OS.
+- `--command-cwd` (T) -- direktori kerja saat wrapper dijalankan, supaya path relatif
+  `kripto/konfigurasi.json`/`kripto/state.json` merujuk ke workspace member yang benar.
+- `--session isolated`, `--announce`, `--channel telegram`, `--to <chat-id>` -- sama seperti
+  pola `laporan-otomatis-terjadwal` (T di skill itu, dipakai ulang di sini).
+
+## 2. Varian trigger JavaScript (S->T terbatas, lebih hemat lagi -- OPSIONAL)
+
+Kalau ingin job **tidak berjalan sama sekali** saat tenang (bukan berjalan lalu mencetak
+`NO_REPLY`), OpenClaw mendukung trigger dalam kode JavaScript. Bentuk berikut **terbukti
+menyala (`fire: true`) hanya saat ambang terlewati, dan tidak menyala saat data tenang**,
+diuji langsung terhadap Gateway uji (lihat `/tmp/uji-kripto-oc/trig2.js` &
+`/tmp/uji-kripto-oc/trig3.js` pada sesi uji independen):
+
+```js
+const res = await exec({
+  command: 'cd "<folder-workspace-member>" && python3 "<folder-skill-ini-absolut>/scripts/cek_ambang.py" --konfigurasi kripto/konfigurasi.json --state kripto/state.json --keluaran teks; echo KODE=$?'
+});
+const out = String(res?.aggregated ?? res?.stdout ?? JSON.stringify(res));
+json({ fire: out.includes('KODE=2') || out.includes('KODE=3'), message: out.slice(0, 1500), state: { n: (trigger.state?.n ?? 0) + 1 } });
+```
+Simpan sebagai file `.js` lokal lalu:
 ```bash
-openclaw automations add "0 * * * *" \
-  "Jalankan 'python3 <folder-skill-ini-absolut>/scripts/cek_ambang.py --konfigurasi kripto/konfigurasi.json --state kripto/state.json'. Kalau field ambang_terlewati bernilai true, kirim isi field pesan_singkat apa adanya. Kalau false, JANGAN kirim apa pun (diam saja, jangan announce)." \
-  --tz "Asia/Jakarta" --name "Cek ambang kripto (per jam)" --session isolated \
+openclaw automations add --every 30s --trigger-script "<path-ke-file>.js" \
+  --command "echo dipicu" --name "Cek ambang kripto (trigger JS)" \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
-Ini "Bentuk A" (jadwal & pesan sebagai posisi, TANPA `--cron` -- lihat aturan
-posisi-vs-`--name`/`--cron` di `laporan-otomatis-terjadwal/references/openclaw.md` §1,
-berlaku sama di sini). Catatan: `--announce` tetap mengirim SESUATU tiap giliran kalau
-agent menghasilkan teks akhir apa pun -- instruksi "jangan kirim apa pun kalau false" ada
-di prompt, tapi **belum diuji** apakah agent benar-benar bisa membuat `--announce` tidak
-mengirim apa-apa pada giliran itu (kemungkinan tetap mengirim teks kosong/konfirmasi
-"tidak ada ambang terlewati"). Uji sekali dengan `automations run <id> --wait` dan
-sampaikan hasil nyatanya ke member -- kalau ternyata tetap selalu mengirim pesan
-(walau isinya "tidak ada perubahan"), itu bukan bug skill, cukup beri tahu member.
+Catatan status: pola trigger JS ITU SENDIRI (`exec` + `json({fire,...})`) **T** -- terbukti
+`fire: true` pada data ambang terlewati dan `fire: false` pada data tenang di Gateway uji.
+Tapi kombinasi lengkap dengan `--cron`/`--tz` (bukan `--every` detik seperti contoh uji) dan
+dengan pengiriman `--announce` yang sesungguhnya **belum diuji ujung-ke-ujung** untuk skill
+ini -- tandai **S** untuk kombinasi itu, uji dulu dengan cara di §3 sebelum diandalkan penuh.
+Kalau ragu, pakai Pola 1 (`--command` + wrapper) yang sudah terbukti penuh.
 
-## Ringkasan pagi (harga + berita) -- job agent, SELALU mengumumkan
+## 3. Cara UJI YANG BENAR (koreksi dari v1.0.0)
+
+`automations run <id> --wait` **memaksa job jalan, mengabaikan trigger** -- jangan
+memakainya untuk menyimpulkan "trigger bekerja". Untuk memverifikasi perilaku trigger/
+wrapper sebelum mengaktifkan jadwal ke member:
+1. **Uji wrapper/`cek_dan_lapor.py` di luar OpenClaw dulu**, langsung dari terminal, dengan
+   data tenang lalu data ambang terlewati (`--harga-file` untuk simulasi, lihat
+   `SKILL.md`/`tests/uji_regresi.py`) -- pastikan keluarannya `NO_REPLY` vs pesan yang
+   benar, sebelum menyambungkannya ke automation.
+2. Untuk Pola 1 (`--command`): `automations run <id> --wait` **valid** dipakai di sini,
+   karena job-nya sendiri (bukan trigger) yang ingin diuji -- job SELALU jalan (tidak ada
+   trigger terpisah), yang membedakan tenang/terpicu adalah isi keluaran wrapper
+   (`NO_REPLY` vs pesan). Jalankan sekali dengan kondisi data tenang (harus `NO_REPLY`
+   masuk riwayat run, TANPA pengiriman ke kanal) dan sekali dengan kondisi ambang
+   terlewati (harus ada pesan terkirim), baru anggap terbukti.
+3. Untuk Pola 2 (trigger JS): **JANGAN** pakai `run --wait` untuk menguji apakah trigger
+   menyala. Biarkan jadwalnya berjalan dengan interval pendek sementara (mis. `--every
+   30s`) di lingkungan uji, amati `automations runs <id>` -- hitung berapa kali job benar-
+   benar dieksekusi ("run") dibanding berapa kali trigger dievaluasi. Baru setelah terbukti
+   perilakunya sesuai, ganti ke jadwal produksi (`--cron` + `--tz Asia/Jakarta`) dan hapus
+   job uji sementara.
+
+## 4. Ringkasan pagi (harga + berita) -- job agent, SELALU mengumumkan
+
+Beda dari cek ambang: ringkasan pagi memang harus mengumumkan SETIAP kali (bukan hanya saat
+ada kejadian), jadi cukup job agent biasa (S -- sintaksnya konsisten dengan pola
+`laporan-otomatis-terjadwal` yang **T**, tapi kombinasi persis untuk isi prompt ini belum
+diuji ulang di sesi uji independen skill ini, karena butuh model AI sungguhan):
 ```bash
 openclaw automations add "0 7 * * *" \
   "Jalankan 'python3 <folder-skill-ini-absolut>/scripts/cek_ambang.py --konfigurasi kripto/konfigurasi.json --state kripto/state.json' untuk data harga. Cari berita terbaru untuk kata kunci di kripto/PANTAU.md kalau ada akses pencarian web (sertakan tautan sumber tiap judul); kalau tidak ada akses, katakan jujur tidak bisa mencari berita. Susun ringkasan sesuai format Langkah B di SKILL.md skill pantau-pasar-kripto, sertakan disclaimer." \
   --tz "Asia/Jakarta" --name "Ringkasan pagi kripto" --session isolated \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
-Job ini **selalu** mengumumkan (bukan hanya saat ambang terlewati), jadi tidak butuh
-`--trigger-script`.
+Ini "Bentuk A" (jadwal & pesan sebagai posisi, TANPA `--cron`) -- lihat aturan posisi-vs-
+`--name`/`--cron` di `laporan-otomatis-terjadwal/references/openclaw.md` §1, berlaku sama
+di sini: jangan campur argumen posisi dengan `--cron`/`--at`/`--every` sekaligus.
 
-## Menguji, melihat, menjeda, menghapus (sama seperti `laporan-otomatis-terjadwal`)
+## 5. Menguji, melihat, menjeda, menghapus (T -- sama seperti `laporan-otomatis-terjadwal`)
 ```bash
-openclaw automations run <id> --wait      # uji sekali, tunjukkan hasilnya ke member
+openclaw automations run <id> --wait      # jalankan job sekali (utk Pola 1 di atas, ini uji sah)
+openclaw automations runs <id>            # riwayat run -- utk mengecek Pola 2 (trigger JS)
 openclaw automations list --all           # lihat semua jadwal
 openclaw automations show <id>            # detail satu jadwal (boleh nama persis)
 openclaw automations disable <id>         # jeda -- WAJIB id (bukan nama)
@@ -101,15 +149,19 @@ openclaw automations rm <id>              # hapus permanen -- WAJIB id
 `laporan-otomatis-terjadwal` (memakai nama menjawab "Automation not found"). Ambil `id`
 dari field `"id"` hasil `automations add`.
 
-## Kanal pengiriman
+## 6. Kanal pengiriman
 Sama persis aturan `laporan-otomatis-terjadwal` §4: **Telegram = default** (API resmi,
 tanpa risiko blokir). **WhatsApp hanya** dengan nomor terpisah dari nomor
 pribadi/usaha utama + persetujuan risiko tertulis member (WhatsApp Web tidak resmi,
 lihat `references/mesin-24-jam.md`-nya `laporan-otomatis-terjadwal` untuk teks lengkap
 risiko). Tidak pernah ke grup atau ke pelanggan -- notifikasi ini murni untuk pemilik
-sendiri.
+sendiri. Catatan dari uji: kalau kanal belum dikonfigurasi (`--channel`/`--to` kosong atau
+kanal belum ditambahkan lewat `openclaw channels add`), Gateway menampilkan
+`deliveryPreview` yang memperingatkan pengiriman akan gagal-tertutup ("fail-closed") --
+selalu isi `--channel`/`--to` eksplisit dan pastikan kanalnya sudah aktif SEBELUM
+mengaktifkan jadwal ke member.
 
-## Syarat "komputer harus menyala"
+## 7. Syarat "komputer harus menyala"
 Sama seperti semua automation OpenClaw: jadwal berjalan di dalam proses Gateway, kalau
 komputer mati/tidur saat jam jadwal, cek/ringkasan itu **tidak terjadi** (bukan gagal
 dengan pesan error). Jelaskan ini ke member sebelum jadwal dianggap aktif, tawarkan opsi

@@ -28,6 +28,14 @@ beli/jual/tahan**. Skill ini adalah alat informasi & pencatatan, bukan bot tradi
    (janji imbal hasil tetap, tekanan "buru-buru sebelum kehabisan", token baru tanpa audit/
    tim jelas, grup yang melarang bertanya kritis), sebutkan ini secara **netral & edukatif**
    di bagian riset -- bukan sebagai "sinyal jual", tapi sebagai fakta yang perlu diketahui.
+   Sebutkan juga bahwa dugaan penipuan/skema ilegal bisa dilaporkan ke **OJK (kontak 157)**
+   atau **Satgas PASTI** (satgas pemberantasan aktivitas keuangan ilegal) -- ini info kanal
+   resmi, bukan tuduhan atas proyek tertentu.
+6. **Kalau member sudah menempel/membagikan API key exchange ke chat ini** (disengaja atau
+   tidak), **jangan menyimpannya, jangan mengulanginya kembali di keluaran mana pun** (juga
+   jangan ditulis ke file skill ini), dan **segera sarankan member mencabut (revoke) key itu
+   di exchange lalu membuat yang baru** -- key yang pernah terlihat di riwayat chat/log
+   harus dianggap bocor, terlepas dari niat awal member.
 
 ## Kapan digunakan
 - "Pantau BTC dan ETH, kabari kalau turun lebih dari 5%."
@@ -72,8 +80,10 @@ Kalau member belum punya `kripto/PANTAU.md`, **tanyakan sekali** (bernomor, maks
 4. Kata kunci berita yang ingin dipantau? (boleh kosong = nama koin saja)
 5. Ringkasan pagi dikirim jam berapa & lewat kanal apa (Telegram/WhatsApp)?
 
-Kalau pengguna ingin cepat: pakai default (ambang 24 jam, jam 07:00 WIB, Telegram) dan
-sebutkan asumsinya.
+Kalau pengguna ingin cepat: pakai default **ambang ±5% (naik & turun) dari 24 jam
+terakhir, ringkasan jam 07:00 WIB, kanal Telegram**, dan sebutkan bahwa ini cuma titik
+awal yang masuk akal -- angka ambang sepenuhnya **diatur sendiri oleh member**, kapan pun
+bisa diubah dengan mengedit `kripto/PANTAU.md` lalu minta diterjemahkan ulang.
 
 ### 2. Jurnal trading (`kripto/JURNAL.csv`)
 Milik member, format di `templates/JURNAL.csv` (lihat juga docstring
@@ -101,14 +111,25 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    (Windows: `python`/`py`. Uji tanpa jaringan: tambahkan `--harga-file <file-harga-uji>`,
    lihat docstring script untuk formatnya.)
 3. Baca field `pesan_singkat` di hasil JSON -- itu sudah siap kirim apa adanya (sudah
-   memuat disclaimer). Untuk keluaran teks langsung tanpa JSON, tambahkan `--keluaran teks`.
-4. Kalau `ambang_terlewati: true`, itulah yang dikirim/ditunjukkan ke member sebagai
+   memuat sumber, jam data, peringatan data basi/tua, dan disclaimer per koin). Untuk
+   keluaran teks langsung tanpa JSON, tambahkan `--keluaran teks`.
+4. Kalau `perlu_lapor_sekarang: true`, itulah yang dikirim/ditunjukkan ke member sebagai
    notifikasi. Kalau `ada_koin_gagal_total: true`, beri tahu member koin mana yang gagal
-   diambil datanya (jangan diam-diam disembunyikan).
-5. Exit code script: `0` = tidak ada ambang terlewati, `2` = ADA yang terlewati (dipakai
-   automation untuk memutuskan kapan perlu memanggil agent/mengirim pesan -- lihat
-   `references/openclaw-jadwal.md`), `3` = sukses sebagian (ada koin gagal total), `1` =
-   error input/konfigurasi.
+   diambil datanya (jangan diam-diam disembunyikan) -- `pesan_singkat` sudah menyebutnya
+   secara eksplisit, jangan pernah menyimpulkan "tidak ada ambang terlewati" kalau
+   sebagian koin justru TIDAK BISA dicek sama sekali.
+5. **Anti-spam bawaan:** `cek_ambang.py` menyimpan status "sudah dilaporkan" per koin/
+   ambang di `kripto/state.json`. Selama ambang masih terlewati tapi belum berubah,
+   `perlu_lapor_sekarang` akan `false` pada giliran berikutnya (diredam) sampai jeda
+   `--jeda-ulang-jam` (default 6 jam) habis, atau sampai kondisinya pulih dulu lalu
+   terpicu lagi. Field `ambang_terlewati` (beda dari `perlu_lapor_sekarang`) selalu
+   menunjukkan fakta apa adanya, terlepas dari sudah dilaporkan atau belum.
+6. Exit code script: `0` = tidak ada yang PERLU dilaporkan sekarang, `2` = ADA yang perlu
+   dilaporkan (ambang baru terlewati, atau jeda lapor-ulang habis -- dipakai automation
+   untuk memutuskan kapan perlu memanggil agent/mengirim pesan, lihat
+   `references/openclaw-jadwal.md`), `3` = sukses sebagian (ada koin gagal total, tetap
+   perlu diberitahukan lewat wrapper `scripts/cek_dan_lapor.py`), `1` = error input/
+   konfigurasi.
 
 ### B. Ringkasan pagi
 1. Jalankan `cek_ambang.py` (Langkah A.2) untuk bagian harga & perubahan 24 jam.
@@ -145,7 +166,11 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    ```bash
    python3 <folder-skill-ini>/scripts/hitung_pl_jurnal.py --jurnal kripto/JURNAL.csv
    ```
-   (`--hari-ini YYYY-MM-DD` opsional, untuk mencocokkan pengingat pada tanggal tertentu.)
+   (`--hari-ini YYYY-MM-DD` opsional, untuk mencocokkan pengingat pada tanggal tertentu.
+   `--periode bulan-ini|tahun-ini` atau `--dari YYYY-MM-DD --sampai YYYY-MM-DD` opsional,
+   untuk membatasi transaksi JUAL yang dijumlahkan ke `realized_per_koin`/
+   `total_realized_pl` -- mis. saat member minta "untung/rugi bulan ini"; FIFO & cost
+   basis tetap dihitung dari SELURUH riwayat 'beli', filter hanya membatasi tampilan.)
 2. Tunjukkan `realized_per_koin` (untung/rugi transaksi yang sudah dijual, sudah
    memperhitungkan biaya) dan `posisi_tersisa` (rata-rata harga perolehan yang masih
    dipegang) apa adanya dari hasil JSON -- **jangan dihitung ulang manual**, angka
@@ -155,14 +180,27 @@ dengan opini sendiri**, hanya merapikan & menghitung.
 4. Kalau ada `tinjau_ulang_jatuh_tempo` (rencana yang member tulis sendiri dan sudah jatuh
    tempo), sampaikan **persis seperti yang member tulis** di `syarat` -- **jangan** ditambah
    opini baru soal apakah rencana itu masih relevan atau tidak.
+5. **Info pajak (bukan nasihat, sekadar info):** transaksi kripto di platform PAKD
+   (Pedagang Aset Keuangan Digital) berizin OJK dalam negeri dikenai PPh final 0,21% dari
+   nilai transaksi (biasanya sudah dipotong otomatis oleh exchange -- lihat
+   `references/regulasi.md`). Kalau member menanyakan ini, sebutkan info ini dan sarankan
+   memasukkan potongan pajak itu ke kolom `biaya` di `JURNAL.csv` supaya P/L yang dihitung
+   sudah bersih (setelah pajak), lalu tetap arahkan ke konsultan pajak/DJP untuk kepastian
+   kewajiban pajak individu member (skill ini tidak menghitung SPT/pelaporan pajak).
 
 ### E. Membuat jadwal otomatis (opsional, setelah A/B pertama kali berhasil manual)
 Lihat `references/openclaw-jadwal.md` untuk perintah `openclaw automations` yang
-terverifikasi, cara memicu agent HANYA saat ambang terlewati (hemat token), dan kanal
-pengiriman (Telegram default; WhatsApp hanya nomor terpisah + persetujuan risiko tertulis,
-sama seperti aturan skill `laporan-otomatis-terjadwal`). **Selalu minta konfirmasi
-eksplisit ("Lanjut? ya/tidak") sebelum menjalankan perintah pembuatan jadwal**, dan uji
-sekali (`automations run <id> --wait`) sebelum menyatakan jadwal aktif.
+**terbukti** jalan di Gateway uji (bukan cuma `--help`): pola utama memakai `--command`
+menjalankan `scripts/cek_dan_lapor.py` (wrapper Python lintas OS yang menerjemahkan exit
+code `cek_ambang.py` jadi pesan siap kirim atau `NO_REPLY`, dan SELALU keluar dengan kode
+0 supaya Gateway tidak salah mencatatnya sebagai job gagal), dan kanal pengiriman
+(Telegram default; WhatsApp hanya nomor terpisah + persetujuan risiko tertulis, sama
+seperti aturan skill `laporan-otomatis-terjadwal`). **Selalu minta konfirmasi eksplisit
+("Lanjut? ya/tidak") sebelum menjalankan perintah pembuatan jadwal.** Untuk menguji
+sebelum mengaktifkan, ikuti cara di `references/openclaw-jadwal.md` §3 -- **JANGAN**
+mengandalkan `automations run --wait` untuk menyimpulkan bahwa trigger otomatis bekerja
+(perintah itu memaksa job jalan, mengabaikan trigger); itu hanya valid untuk menguji pola
+`--command` (job SELALU jalan, wrapper yang membedakan tenang/terpicu).
 
 ## Format output
 Semua keluaran (ringkasan pagi, notifikasi ambang, hasil riset, hasil jurnal) diakhiri

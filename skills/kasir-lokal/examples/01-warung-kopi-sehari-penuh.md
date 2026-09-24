@@ -282,5 +282,3 @@ Render Chromium headless → PDF 57,8 × 84,0 mm, 1 halaman, tidak ada teks terp
 - **Bagus:** semua angka (12 nota, void, retur, tutup kasir, rekap per metode/jam/produk) cocok 100% dengan script verifikasi independen (`verif_a.py`, 0 beda terhadap DB). Pembayaran kurang, dobel ketik, produk ambigu ditolak dengan pesan jelas; tidak pernah menebak. Pratinjau → "ya" → simpan konsisten.
 - Angka kata ("dua", "tiga", "empat", "lima"), `x3`, `kopi hitam 2`, kode `KH` semua terbaca.
 - **Kurang:** (1) struk nota yang sudah diretur sebagian tidak memberi tanda "ada retur R-…"; (2) `struk --teks` (untuk chat) ikut menaikkan hitungan cetak, sehingga cetak kertas pertama berlabel "SALINAN"; (3) "Rata-rata/nota" ikut menghitung nota yang di-void (51.949 = 623.390 / 12; tanpa nota void: 568.390 / 11 = 51.672); (4) nama kasir sesi ("Rina") tidak otomatis tercetak di struk bila `--kasir` tidak disebut per nota; (5) usaha kedai kopi dengan meja-kursi bisa jadi wajib PBJT (pajak restoran daerah) — kasir tidak punya mode PBJT (lihat HASIL-UJI).
-</content>
-</invoke>

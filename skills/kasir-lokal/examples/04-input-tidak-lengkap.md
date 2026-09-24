@@ -45,5 +45,3 @@ Variasi input kurang yang diuji dengan script:
 - **Bagus:** satu pertanyaan bernomor, singkat, dengan contoh balasan; default (tunai uang pas) disebut sebagai asumsi; produk ambigu selalu ditanyakan, tidak ditebak.
 - **Kurang (ringan):** SKILL.md tidak menulis eksplisit "jangan kirim kalimat tanpa barang ke script" dan tidak menyebut perilaku bila nota dicatat **setelah** kasir ditutup (script menaruh nota tanpa sesi dan memberi peringatan "Kasir belum dibuka", yang membingungkan pengguna awam karena kasir *sudah* ditutup, bukan belum dibuka). Saran: bedakan pesan "kasir sudah ditutup jam …; nota ini tidak masuk tutup kasir hari ini".
 - Keterangan: di uji nyata, peringatan script berbunyi "Kasir belum dibuka (buka-kasir)…"; baris "kasir hari ini sudah ditutup" di atas adalah parafrase agent.
-</content>
-</invoke>

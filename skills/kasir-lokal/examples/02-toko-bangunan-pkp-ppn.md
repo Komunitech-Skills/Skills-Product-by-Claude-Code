@@ -126,5 +126,3 @@ python3 <folder-pph-final-umkm>/scripts/pph_final.py --jenis op --tahun 2026 --b
 - **Bagus:** PPN kedua mode cocok 100% dengan perhitungan independen dan dengan `skills/hitung-ppn/scripts/hitung_ppn.py` (48 nilai × 2 mode, 0 beda). DPP persis → dibulatkan ke bawah sekali; mode termasuk memberi DPP terbesar dengan DPP+PPN ≤ harga (sisa 0 di semua contoh). Diskon nota mengurangi DPP (benar). Koreksi PPN retur = PPN(sisa sebelum) − PPN(sisa sesudah). Disclaimer & dasar aturan tercetak. Mode PPN tanpa PKP ditolak.
 - **Kurang (SEDANG):** kata satuan milik produk tidak dikenali di pesanan: `2 sak semen`, `2 pail cat tembok`, `semen 2 sak` ditolak "tidak dikenal" (hanya "pcs/buah/porsi/…" dan satuan timbang yang dibuang). Retur tidak membuang satuan sama sekali (`0,75 kg kawat bendrat` ditolak). Pasir per **m3** tidak bisa dijual pecahan (`0,5 m3` ditolak: m3/m2 tidak ada di daftar satuan pecahan) — padahal lazim di toko bangunan.
 - **Ringan:** struk mode "belum termasuk" tidak mencetak DPP nilai lain (teks chat mencetaknya) — tidak salah, hanya tidak konsisten.
-</content>
-</invoke>
