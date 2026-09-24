@@ -111,3 +111,28 @@ ikut rekap ini. Mau dibuatkan invoice? Pakai skill `buat-invoice` dengan angka d
   "Jumat" diucapkan hari Jumat juga dipindah ke Jumat depan.
 - Ringan: catatan "Tahun tidak disebut" muncul di hampir setiap entri (bising). "1.30" (gaya titik untuk jam)
   dibaca 1,3 jam = 78 menit tanpa catatan (lihat HASIL-UJI).
+
+---
+## Uji ulang v1.0.1 (2026-09-24): input yang sama, output script apa adanya
+Cacat nama hari sudah diperbaiki. "Senin" diucapkan Jumat 2 Okt kini tercatat **Senin, 28 September 2026**.
+Catatan "Tahun tidak disebut" untuk tanggal kerja yang sudah lewat tidak muncul lagi.
+```
+Tercatat: Batik Laras, Senin, 28 September 2026, 3 jam, tarif Rp 225.000/jam.
+Tercatat: Batik Laras, Rabu, 30 September 2026, 1 jam 20 menit, tarif Rp 225.000/jam.
+Catatan: 1,33 dibaca 1,33 jam (desimal). Kalau maksudnya 1 jam 33 menit, tulis 1:33. Durasi 1,33 dibulatkan ke 80 menit.
+...
+REKAP TIMESHEET 28 Sep 2026 - 4 Okt 2026
+
+- Batik Laras: 5 jam 10 menit (≈ 5,17 jam) | 5 jam 10 menit x Rp 225.000/jam = Rp 1.162.500
+- Kopi Senja: 6 jam 10 menit (≈ 6,17 jam) | 6 jam 10 menit x Rp 175.000/jam = Rp 1.079.167
+
+Total semua klien: 11 jam 20 menit | Rp 2.241.667
+```
+Draf ke Batik Laras sama persis dengan draf "seharusnya" di atas (total 5 jam 10 menit, Rp 1.162.500).
+Tanggal kerja di masa depan kini ditolak: `--tanggal "besok"` / `"3 Okt"` saat Jumat 2 Okt menghasilkan
+`ERROR: tanggal kerja Sabtu, 3 Oktober 2026 ada di masa depan ...`, dan `"Senin depan"` juga ditolak.
+`"1.30"` ditolak sebagai ambigu dan ditanyakan ("1 jam 30 menit, atau 1,30 jam?").
+
+Selisih Rp 675.000 vs Rp 1.162.500: **Rp 1.162.500 benar** untuk data skenario ini (310 menit × 225.000 / 60).
+Rp 675.000 adalah angka dari tes regresi pembuat yang datanya berbeda (4:30 × Rp 150.000 = 270 menit → Rp 675.000).
+Kebetulan angkanya sama dengan porsi hari Senin yang dulu hilang (3 jam × Rp 225.000).

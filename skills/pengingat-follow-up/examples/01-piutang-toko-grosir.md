@@ -128,3 +128,18 @@ Yth. CV Maju, bersama pesan ini kami sampaikan secara tertulis bahwa pembayaran 
 - Kurang: "Menyusul 7 hari ke depan: 1 item" tidak menyebut siapa (Bu Rina). `ubah --catatan` **mengganti**
   catatan lama ("janji transfer sore" hilang), padahal SKILL.md bilang "tambahkan catatan". Untuk bayar sebagian,
   draf tetap berbunyi "pembayaran tagihan sebesar Rp 1.300.000" kecuali agent ingat mengisi `--perihal "sisa ..."`.
+
+---
+## Uji ulang v1.0.1 (2026-09-24)
+Input yang sama menghasilkan angka yang sama (tertunggak Rp 3.050.000, besok Rp 1.250.000). Tambahan di rekap:
+```
+Umur piutang terlambat: 1-30 hari: Rp 750.000 (1)
+Menyusul 7 hari ke depan: #1 Bu Rina (3 Okt 2026)
+...
+(Saran: Setelah pesan dikirim, balas "terkirim 2" agar nada berikutnya menyesuaikan. ...)
+Balas misalnya: "selesai 3", "terkirim 3", "tunda 3 ke Senin", "hapus 3".
+```
+- `ubah --id 4 --catatan ...` kini **menambahkan**: `janji transfer sore | bayar sebagian 1 jt tgl 2 Okt`.
+- `terkirim --id 2` menaikkan kolom `diingatkan`. Pada 5 Okt (lewat 15 hari, sudah 1x diingatkan) draf CV Maju naik ke
+  pemberitahuan tertulis ("paling lambat 12 Okt 2026"). Pada 25 Okt (35 hari, 2x) muncul saran somasi lewat `tagih-piutang`.
+- `draf --id 1` pada 1 Okt kini berbunyi "jatuh tempo **lusa**, 3 Okt 2026" (sebelumnya "besok").

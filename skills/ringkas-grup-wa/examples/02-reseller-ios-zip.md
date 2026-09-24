@@ -110,3 +110,14 @@ Tanggal file dibaca dengan asumsi format Indonesia (d/m) karena ambigu — lihat
   "9 Desember" padahal hari ini baru September.
 - **Akurasi:** seluruh nominal (Rp 45.000, 42.000, 39.500, 1.050.000, 525.000, 38.000, 68.000)
   dan nomor resi JX2209981123 dicek persis sama dengan sumber, tidak ada yang salah kutip.
+- **Cacat sedang (recall):** dibandingkan kunci jawaban (`kunci/kunci-b.md`), ringkasan di atas
+  **melewatkan 1 dari 11 item Perlu Perhatian**: [14.00] Yuni menanyakan "harga reseller utk
+  Toner Rose naik ga bulan depan? mau siapin modal" (dijawab 14.05: tidak naik, Rp 38.000/pcs).
+  Recall = 10/11 (91%). Ini pertanyaan harga langsung yang seharusnya masuk kriteria SKILL.md
+  ("pertanyaan langsung ke pengguna"), tapi terlewat saat agent menyisir 90 pesan satu per satu.
+  **Saran perbaikan konkret:** SKILL.md langkah 4 sebaiknya menambahkan instruksi eksplisit untuk
+  menyisir field `hari[].pesan` secara berurutan dan mencentang tiap `jenis: "obrolan"` satu per
+  satu (bukan membaca sekilas), atau menyarankan agent membuat daftar sementara berisi SEMUA
+  pesan berjenis pertanyaan (mengandung "?") sebelum menyaring — supaya risiko lolos di grup
+  ramai (>80 pesan) berkurang. Ini murni kelalaian langkah kerja agent, bukan bug script (JSON
+  hasil parser sudah memuat pesan ini dengan benar, dicek di `out/b.json`).

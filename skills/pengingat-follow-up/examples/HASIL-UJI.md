@@ -171,3 +171,90 @@ Kesimpulan: **aritmetika benar**. Semua kesalahan angka berasal dari **parsing i
 ## Status: **REVISI** (skor 6/10)
 Perbaiki cacat BERAT #1–#3 dan SEDANG #4–#8, tambah tes regresi untuk masing-masing, lalu uji ulang oleh penguji
 independen. Setelah itu skill ini berpotensi mendapat skor 8.
+
+---
+
+# Uji ulang v1.0.1
+
+- Tanggal: 2026-09-24 · Penguji: agent penguji independen (simulasi, Claude Code), bukan pembuat skill.
+- Versi: commit `962fd62` (SKILL.md 195 baris, script 1.311 baris). `tests/uji_regresi.py`: **44 tes, semua OK**.
+- Folder kerja: `/tmp/uji-pengingat-follow-up/v101/`. OpenClaw 2026.9.5 dan **2026.9.6 (eb377ac)**, HOME sementara.
+
+## Selisih Batik Laras: Rp 675.000 vs Rp 1.162.500
+Hasil penyelidikan independen dari data mentah skenario 02: minggu 28 Sep–4 Okt = Senin 28 Sep 3:00 + 30 Sep 1:20
+(1,33 jam) + 2 Okt 0:50 = **310 menit**. Entri 25 Sep berada di minggu lalu. 310 × 225.000 / 60 = **Rp 1.162.500**.
+Script v1.0.1 dengan input skenario 02 yang sama juga menghasilkan **Rp 1.162.500** (total 2 klien Rp 2.241.667).
+Angka Rp 675.000 berasal dari tes regresi pembuat (`test_catat_jam_nama_hari_dan_masa_depan`), yang datanya
+**berbeda**: 4:30 × Rp 150.000 = 270 menit → Rp 675.000. Angka itu benar untuk data tes tersebut. Kebetulan sama
+dengan porsi Senin yang dulu hilang (3 jam × Rp 225.000). **Kesimpulan: laporan penguji benar (Rp 1.162.500),
+script v1.0.1 juga benar. Tidak ada selisih pada script, hanya perbedaan data yang dibandingkan.**
+
+## Verifikasi klaim perbaikan
+| # | Cacat v1.0.0 | Klaim | Hasil uji ulang | Status |
+|---|---|---|---|---|
+| 1 | Nominal ambigu lolos | "4,5,6 jt", "1,500 jt", "1.500 jt" ditolak; ≥ Rp 1 M diberi catatan | Ketiganya ditolak "ambigu". "1,000 rb"/"1.000 rb" & "1.5.0" juga ditolak. "750 M", "1,2 M", "2 miliar", "Rp 1.000.000.000" diterima + "pastikan angkanya benar". Format sah (4,5 jt, 4.500.000, 4,500,000, 1.500.000,50, Rp. 1.500.000,-, 750k, 2,5 JT) tetap benar | ✔ |
+| 2 | Baris rusak terhapus | Dipertahankan mentah saat tulis ulang | Setelah `selesai`, `tambah` (ditolak kode 2), `hapus`: semua 12 baris tetap ada termasuk "Toko E ... extra", "4,5,6 jt", 31/02. Teks `selesai` menyebut "1 baris ... tetap disimpan apa adanya" | ✔ (lihat ringan R1) |
+| 3 | Nama hari timesheet ke depan | Terakhir lewat; masa depan ditolak | Jumat 2 Okt: Senin→28 Sep, Kamis→1 Okt, Jumat→2 Okt, "senin kemarin/lalu"→28 Sep; "besok", "3 Okt", "Senin depan" → ERROR masa depan | ✔ |
+| 4 | `draf --id` "besok" untuk item jauh | besok hanya H-1 | H-2: "lusa, 3 Okt 2026"; H-9: "pada 10 Okt 2026"; janji H-2: "janji kita lusa"; rekap H-1 tetap "besok" | ✔ |
+| 5 | "1.30" = 78 menit diam-diam | Ditanyakan | "1.30", "1.25", "2.15", "0.45", "10.30", "1.33" → ERROR ambigu + saran. "1,30" = 78 menit + catatan. "1.5"/"1,5" = 90 | ✔ |
+| 6 | "m" kecil = miliar | Ditolak | "5m", "750m" → ERROR ambigu (juta atau miliar?) | ✔ |
+| 7 | CSV ANSI gagal | cp1252 dibaca | `Café Mawar`, `Toko “Jaya”` (byte 0xE9, 0x93/0x94) terbaca, rekap normal | ✔ |
+| 8 | "+62 812 0000 1234" lolos | Regex diperbaiki | "+62 812 0000 1234", "+62-812-…", "62812-…", "0812 0000 1234", "+6281…" → kode 2. "INV 2026-0812" tidak salah deteksi. CSV manual berisi nomor → `Catatan: ... sebaiknya dihapus` di rekap | ✔ (lihat R3) |
+| R | 11 cacat ringan | Diperbaiki | "Menyusul 7 hari" kini menyebut `#id nama (tanggal)`; "Total Rp 0" disembunyikan tanpa piutang; `ubah --catatan` menambah; alias `LUNAS`→selesai, `bon/kasbon/hutang`→piutang; tabel Input "tanya dulu"; pola H+1/3/7 via `terkirim --berikutnya` dengan draf prospek bertahap; catatan tahun tidak lagi bising di timesheet; mode `--command` mencatat placeholder timesheet; `--tools exec,read`; uji 2026.9.6; `=rumus` di baris lama diamankan saat ditulis ulang (`'=cmd…`) | ✔ |
+| + | Fitur baru | `terkirim` + kolom `diingatkan`, umur piutang | `terkirim` menaikkan hitungan. 15 hari + 1x → pemberitahuan tertulis (batas 12 Okt), 35 hari + 2x → saran somasi via `tagih-piutang`. Umur: Toko G 60 hari masuk 31–60 (batas benar) | ✔ |
+
+## Regresi (dicek ulang)
+- Aturan tahun kabur: 59/60 hari → 2026 (terlambat), 61 → 2027. 20 Des @5 Jan 2027 → 2026; 5 Jan @20 Des → 2027;
+  31/12 @1 Jan → 2026; 1/1 @31 Des → 2027; 31/12 @1 Mar 2027 (60 hari) → 2026, @2 Mar → 2027. Tanggal mustahil
+  (31/2, 13/13, 2026-02-30) ditolak; 29/2 → 2028. **Tidak ada regresi.**
+- Excel `;` + BOM + CRLF + sel berkutip berisi `;`: terbaca. Rekap CSV rusak: 4 baris dilaporkan (nomor baris benar),
+  total tertunggak kini **Rp 5.500.001** (baris 456 jt ditolak), umur 1–30 Rp 1.500.001 & 31–60 Rp 1.000.000.
+- Formula: `tambah --nama '=HYPERLINK(...)' --perihal '+SUM(A1)' --catatan '@x'` → `'=`, `'+`, `'@` di file. ✔
+- Timesheet CSV rusak (ts.csv lama): Klien A Rp 450.000, B Rp 49.583, `--tarif 100rb` → Rp 461.667 / total Rp 511.250. Sama dengan v1.0.0. ✔
+- Kontak di `tambah` tetap ditolak kode 2.
+
+## OpenClaw 2026.9.6 (CLI asli, Gateway uji)
+- §1 harian `--tools exec,read`: `schedule {cron "0 8 * * *", Asia/Jakarta}`, `payload.toolsAllow ["exec","read"]`,
+  `announce -> telegram:<id> (explicit)`, next run 01:00 UTC = 08:00 WIB.
+- §3 `--at "2026-10-03T09:00" --tz Asia/Jakarta --tools exec,read --delete-after-run` → `2026-10-03T02:00:00Z`, `deleteAfterRun: true`.
+- §4 Jumat `"0 16 * * 5"` + `--tools exec,read` → terbentuk.
+- §2 `--command` + `automations run <id> --wait` → status ok, summary = rekap v1.0.1 (baris `nvm` masih muncul, sudah didokumentasikan).
+- `disable "<nama>"` tetap `Automation not found` (dokumentasi benar). Keputusan pemilik (Telegram default, WA nomor
+  terpisah, tanpa broadcast) tetap dipatuhi.
+- Belum teruji (dicatat jujur di referensi): pesan benar-benar tiba di Telegram; agent dengan model sungguhan cukup
+  dengan `exec,read`.
+
+## Verifikasi angka independen v1.0.1
+`/tmp/uji-pengingat-follow-up/verif/verif101.py` (tidak mengimpor script): **16/16 cocok**. Termasuk Batik Laras
+310 menit → Rp 1.162.500, tes pembuat 270 × 150.000/60 = Rp 675.000, total 2 klien Rp 2.241.667, tertunggak rusak
+Rp 5.500.001, umur 60 hari → 31–60, CV Maju 15 hari @5 Okt & batas 12 Okt, lusa/H-9, "1,30" = 78 menit.
+
+## Cacat tersisa (semua RINGAN)
+- R1. Baris lama berkolom berlebih: setelah header mendapat kolom baru `diingatkan`, nilai kelebihannya ("extra") jatuh
+  ke kolom itu. Baris tetap ditolak (alasan berubah menjadi "kolom diingatkan 'extra' harus angka"), jadi data aman.
+  Namun bila kelebihannya berupa angka (mis. "2"), baris itu diam-diam diterima dengan `diingatkan=2` dan nada draf naik.
+  *Saran:* saat menambah kolom baru ke header, tandai baris yang semula berkolom berlebih agar tetap ditolak.
+- R2. Draf prospek tahap ≥ 3x ("pesan terakhir saya") masih diikuti saran "balas 'terkirim 1 lanjut 3 hari lagi'".
+  *Saran:* pada tahap ini sarankan "tandai selesai".
+- R3. "(0812) 0000-1234" (kurung) tidak terdeteksi sebagai nomor HP. Nomor di CSV yang diedit manual diberi `Catatan:`
+  tetapi masih tampil di rekap (yang bisa terkirim ke Telegram). *Saran:* samarkan (`0812-****-1234`) di teks rekap.
+- R4. Pesan error "1.60" menyarankan "1:60" (tidak valid). "1.3" (satu digit) = 78 menit tanpa catatan (dapat diterima).
+- R5. `examples/01–04` masih memuat keluaran v1.0.0; penguji menambahkan bagian "Uji ulang v1.0.1" di tiap file.
+  Sebelum rilis, sebaiknya contoh utama diganti dengan keluaran v1.0.1 (mis. baris "Balas misalnya" kini memuat "terkirim 3").
+
+## Skor ulang (1–10)
+| Kriteria | v1.0.0 | v1.0.1 | Alasan |
+|---|---|---|---|
+| Pemicu (description) | 9 | 9 | Tidak berubah, tetap tepat |
+| Kemudahan awam | 8 | 8 | Perintah `terkirim` menambah satu langkah, tetapi diarahkan di rekap |
+| Kualitas output | 8 | 9 | Umur piutang, item 7 hari bernama, draf prospek bertahap, nada berbasis riwayat |
+| Akurasi | 5 | 9 | Semua cacat parsing tertutup, aritmetika tetap 100% cocok |
+| Penanganan input kurang | 8 | 9 | Ambigu ditanyakan (nominal, jam), piutang tanpa tanggal ditanya dulu |
+| Penanganan di luar cakupan | 9 | 9 | Tetap |
+| Keamanan & privasi | 7 | 8 | Tanpa kehilangan data, regex kontak lebih luas, `--tools exec,read`; sisa R1/R3 |
+
+## SKOR AKHIR v1.0.1: **8 / 10 — LULUS**
+Kedelapan cacat berat/sedang terbukti diperbaiki dengan uji nyata dan tes regresi. Tidak ada regresi pada aturan tahun
+kabur, Excel `;`/BOM, formula, maupun angka timesheet. Selisih Rp 675.000 vs Rp 1.162.500 bukan kesalahan script:
+kedua angka benar untuk datanya masing-masing, dan skenario 02 benar menghasilkan Rp 1.162.500. Sisa cacat hanya
+ringan (R1–R5) dan bisa ditangani di versi berikutnya. Uji platform asli (manusia) & beta tetap diperlukan sebelum rilis.

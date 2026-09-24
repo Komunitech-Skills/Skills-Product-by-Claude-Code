@@ -59,3 +59,8 @@ untuk selisih > 1 hari).
   langsung menyimpan tanpa bertanya. Sebaiknya tegaskan: untuk piutang tanpa tanggal, tanyakan dulu; default
   hanya bila pengguna minta cepat.
 - Cacat SEDANG: `draf --id` untuk item > 1 hari ke depan menulis "besok".
+
+---
+## Uji ulang v1.0.1 (2026-09-24)
+`draf --id 1` (Budi, jatuh tempo 10 Okt) pada 1 Okt kini: "... sebesar Rp 2.500.000 yang jatuh tempo **pada 10 Okt 2026**."
+Cacat "besok" sudah diperbaiki. SKILL.md tabel Input kini menegaskan: piutang tanpa tanggal → tanya dulu.

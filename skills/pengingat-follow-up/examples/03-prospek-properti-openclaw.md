@@ -111,3 +111,18 @@ Belum diuji sampai pesan benar-benar tiba di Telegram; kalau besok jam 8 tidak a
   bisa menaruh "(H+1)" di `perihal` sehingga bocor ke draf untuk prospek (terjadi di percobaan penguji pertama).
   Draf prospek H+1, H+3, H+7 kalimatnya identik; prospek menerima pesan yang sama 3 kali. Baris
   "Total piutang tertunggak: Rp 0" tidak relevan untuk pengguna tanpa piutang.
+
+---
+## Uji ulang v1.0.1 (2026-09-24)
+- `draf --id` janji Bu Sari pada 1 Okt: "mengingatkan janji kita **lusa**, 3 Okt 2026" (benar). Di rekap 2 Okt tetap "besok".
+- Baris "Total piutang tertunggak: Rp 0" tidak muncul lagi untuk pengguna tanpa piutang.
+- Pola H+1/3/7 kini didukung satu item + `terkirim --id 1 --berikutnya "2 hari lagi"` (lalu "4 hari lagi").
+  Draf prospek berubah per tahap:
+  1. (0x) "Saya ingin menindaklanjuti rumah tipe 45 Cluster Melati. Apakah ada yang bisa saya bantu jelaskan lagi? ..."
+  2. (1x) "menyambung rumah tipe 45 ...: kalau ada pertanyaan yang belum terjawab (harga, waktu, atau contoh hasil) ..."
+  3. (2x) "supaya lebih mudah memutuskan ...: telepon singkat 10 menit, atau saya kirimkan pilihan yang lebih sederhana dulu?"
+  4. (≥3x) "ini pesan terakhir saya soal rumah tipe 45 Cluster Melati supaya tidak mengganggu ..."
+  Catatan penguji: di tahap 4, baris saran masih berbunyi "balas 'terkirim 1 lanjut 3 hari lagi'", padahal
+  seharusnya menyarankan tandai `selesai` (ringan).
+- Semua perintah jadwal kini memakai `--tools exec,read`. Diuji ulang di OpenClaw **2026.9.6 (eb377ac)**: job harian,
+  `--at` dan Jumat terbentuk dengan `payload.toolsAllow: ["exec","read"]`; jadwal tetap 08.00/09.00/16.00 WIB.
