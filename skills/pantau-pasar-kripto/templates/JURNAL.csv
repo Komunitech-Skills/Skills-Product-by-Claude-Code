@@ -1,0 +1,5 @@
+tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya,alasan_rencana,tinjau_ulang_pada,tinjau_ulang_syarat
+2026-01-15,BTC,beli,0.01,850000000,8500,"DCA bulanan, rencana pegang 1 tahun",2026-07-15,"tinjau ulang di tengah tahun, cek apakah masih sesuai rencana awal"
+2026-03-15,BTC,beli,0.01,900000000,9000,DCA bulanan,,
+2026-06-01,ETH,beli,1,45000000,45000,"beli setelah baca whitepaper upgrade jaringan",2026-12-01,"cek progres upgrade jaringan sebelum akhir tahun"
+2026-08-10,BTC,jual,0.008,1450000000,11600,"ambil sebagian profit, sisanya dipegang sesuai rencana awal",,
