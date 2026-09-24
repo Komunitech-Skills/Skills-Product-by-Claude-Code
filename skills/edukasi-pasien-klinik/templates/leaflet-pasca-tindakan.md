@@ -32,3 +32,15 @@ Terima kasih sudah datang hari ini. Berikut panduan perawatan di rumah:
 Catatan: pesan ini bukan pengganti konsultasi. Kalau kondisi memburuk atau terasa darurat,
 segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 ```
+
+## Versi WA singkat (opsional, bila diminta atau leaflet di atas terlalu panjang untuk dikirim)
+Ringkas ke poin inti saja (≤ 8 baris) — tanda bahaya & obat tetap wajib masuk, jangan dipotong:
+```
+🏥 [Nama Klinik] — Setelah [Nama Tindakan]
+✅ [1-2 poin boleh/dianjurkan paling penting]
+🚫 [1-2 poin hindari paling penting]
+💊 [obat: nama - dosis - jadwal, jika ada]
+⚠️ Segera hubungi klinik/IGD bila: [tanda bahaya paling penting]
+📅 Kontrol: [tanggal/rentang dari klinik]
+📞 [kontak klinik]
+```

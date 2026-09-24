@@ -29,7 +29,7 @@ tanpa pernah membuat diagnosis, skrining, kalkulator medis, atau rekomendasi oba
 - Skrining medis apa pun (risiko penyakit, kuesioner skrining klinis).
 - Kalkulator medis (BMI untuk keputusan klinis, dosis obat, skor risiko).
 - Interpretasi hasil lab/rontgen/pemeriksaan penunjang.
-- Rekomendasi/rekomendasi dosis obat.
+- Rekomendasi dosis obat.
 - Triase kegawatdaruratan (menilai gawat-tidaknya kondisi pasien).
 - Menyimpan/memproses rekam medis lengkap atau data pasien individual di luar sistem klinik.
 
@@ -69,8 +69,11 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar perta
 
 ## Format output
 Leaflet/pengingat/FAQ/rekap: teks siap tempel WA (heading, bullet, emoji secukupnya), mengikuti
-struktur di `templates/`. Konten medsos: teks siap posting + baris "Sumber: ..." di akhir.
-Balasan chat: 1 paragraf pendek atau beberapa kalimat, sopan, tanpa jargon.
+struktur di `templates/`. Konten medsos: teks siap posting + baris "Sumber: ..." **dan** baris
+nama & alamat klinik + tanggal publikasi (wajib, Permenkes 1787/2010 Pasal 4 ayat (2)) di akhir.
+Rekap: total pendaftaran, hadir, tidak datang, persentase (dari script — lihat
+`templates/rekap-operasional.md`). Balasan chat: 1 paragraf pendek atau beberapa kalimat, sopan,
+tanpa jargon.
 
 ## Contoh
 **Input pengguna:** "Buatkan leaflet WA untuk pasien habis cabut gigi geraham. Dokter bilang:
@@ -119,10 +122,17 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 - [ ] Tidak ada nama/NIK/tanggal lahir/diagnosis pasien sungguhan di output (pakai contoh/anonim
       bila perlu ilustrasi).
 - [ ] Konten medsos mencantumkan sumber resmi + tanggal, angka tidak dikarang.
-- [ ] Tidak ada klaim menyembuhkan/testimoni/before-after tanpa izin tertulis pasien.
+- [ ] Konten medsos mencantumkan nama & alamat klinik + tanggal publikasi (Permenkes 1787/2010
+      Pasal 4 ayat (2)).
+- [ ] Tidak ada klaim menyembuhkan, testimoni pasien, foto before-after, promosi diskon
+      tindakan medis, superlatif ("terbaik"/"satu-satunya"), atau perbandingan/celaan faskes
+      lain di materi yang berbentuk iklan/publikasi (Permenkes 1787/2010 Pasal 5).
 - [ ] Bahasa awam, sopan, tidak menakut-nakuti (lihat `references/bahasa-awam-pasien.md`).
 - [ ] Untuk balasan chat: bila menyentuh gejala, pakai kalimat baku arahkan ke dokter (dan
       kalimat darurat bila relevan) — tidak menilai kegawatan.
+- [ ] Untuk rekap: cek hasil di atas tidak memuat nama pasien sebelum dikirim (perhatikan
+      peringatan "nilai mencurigakan"/"kolom terlalu beragam" dari script bila muncul), dan
+      status yang "tidak dikenal" sudah dicek manual, bukan diasumsikan hadir.
 
 ## Batasan & penanganan error
 - **Input medis kosong/tidak lengkap untuk leaflet/pengingat:** jangan mengarang instruksi.
@@ -133,12 +143,22 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
   cakupan, arahkan ke tenaga kesehatan/alat resmi yang berwenang.
 - **File CSV rekap tidak ada kolom tanggal, atau file kosong/rusak:** script akan menampilkan
   pesan error jelas (exit code 1) dan tidak menghasilkan rekap — minta file yang benar.
-- **File CSV berisi kolom sensitif (nama/NIK/diagnosis):** script otomatis mengabaikan isi kolom
-  tersebut dan hanya memberi tahu nama kolom yang diabaikan, demi privasi (UU PDP 27/2022).
-- **Dasar hukum (kerahasiaan medis UU 17/2023, aturan iklan layanan kesehatan):** sebagian
-  berstatus **PERLU DICEK** (belum diverifikasi dari naskah resmi) — lihat
-  `references/aturan-privasi-dan-iklan.md`. Jangan mengutip nomor pasal dari status ini di
-  materi resmi/kontrak sebelum verifikasi ulang.
+- **File CSV berisi kolom sensitif (nama/NIK/diagnosis dan variasinya seperti Dx/ICD-10/Keluhan
+  Utama/No. WA):** script otomatis mengabaikan isi kolom tersebut dan hanya memberi tahu nama
+  kolom yang diabaikan, demi privasi (UU PDP 27/2022; UU 17/2023 Ps. 301; PP 28/2024 Ps.
+  788-789).
+- **Status kehadiran di rekap tidak dikenali script (bukan "hadir" maupun "tidak datang"):**
+  dilaporkan terpisah sebagai "tidak dikenal" — **tidak** diam-diam dihitung hadir. Cek daftar
+  rincian status di hasil rekap dan tanyakan ke klinik bila perlu diklasifikasikan ulang.
+- **Format tanggal campur dalam satu file CSV** (sebagian gaya Indonesia hari/bulan, sebagian
+  gaya Amerika bulan/hari): script memberi peringatan eksplisit + nomor baris yang perlu dicek,
+  bukan diam-diam menebak.
+- **Dasar hukum:** UU PDP 27/2022, kerahasiaan medis UU 17/2023 & PP 28/2024, dan isi pasal
+  Permenkes 1787/2010 tentang iklan sudah diverifikasi dari naskah resmi (lihat
+  `references/aturan-privasi-dan-iklan.md`). Yang **masih PERLU DICEK**: status berlaku
+  Permenkes 1787/2010 saat ini (belum ditemukan pencabutannya, tapi belum dicek ulang di
+  jdih.kemkes.go.id) — jangan menjadikan itu satu-satunya dasar keputusan hukum tanpa verifikasi
+  ulang.
 - **Kondisi darurat disebut pengguna/pasien:** selalu sertakan kalimat baku arahkan ke IGD/119 —
   skill tidak menilai tingkat kegawatan (bukan triase).
 - **Di luar cakupan lain** (rekam medis terintegrasi, sistem antrian, audit kepatuhan penuh):
