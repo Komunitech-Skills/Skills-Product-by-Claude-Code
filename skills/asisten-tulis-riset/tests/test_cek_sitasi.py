@@ -4,11 +4,15 @@
 Hanya library standar (unittest).
 """
 import os
+import subprocess
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts"))
 import cek_sitasi as cs
+
+SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts", "cek_sitasi.py")
 
 
 DRAF_NORMAL = """# Judul Artikel
@@ -99,6 +103,25 @@ Sumber gabungan gaya koma [1, 2].
 
 DRAF_KOSONG = ""
 
+DRAF_PUSTAKA_MULTIBARIS = """# Judul
+
+Klaim tumbuh sesuai laporan [1].
+
+## Daftar Pustaka
+[1] Statistik E-Commerce 2025. Badan Pusat Statistik. 2025. https://www.bps.go.id/publikasi/xyz .
+    Diakses 24 September 2026.
+"""
+
+DRAF_PUSTAKA_MULTIBARIS_DUA_ENTRI = """# Judul
+
+Klaim satu [1]. Klaim dua [2].
+
+## Daftar Pustaka
+[1] Statistik E-Commerce 2025. Badan Pusat Statistik. 2025.
+    https://www.bps.go.id/publikasi/xyz . Diakses 24 September 2026.
+[2] Survei Literasi Keuangan. OJK. 2025. https://www.ojk.go.id/survei . Diakses 24 September 2026.
+"""
+
 
 class TesDrafNormal(unittest.TestCase):
     def test_lulus_tanpa_error(self):
@@ -186,6 +209,67 @@ class TesInputKosong(unittest.TestCase):
         self.assertFalse(hasil["lulus"])
         self.assertEqual(hasil["jumlah_kutipan_unik_di_teks"], 0)
         self.assertEqual(hasil["jumlah_entri_pustaka"], 0)
+
+
+class TesEntriPustakaMultiBaris(unittest.TestCase):
+    """Format yang dicontohkan sendiri di references/gaya-sitasi.md: entri boleh melebar ke
+    baris berikutnya. Sebelum perbaikan, URL di baris kedua tidak terbaca (SEDANG #2)."""
+
+    def test_url_di_baris_kedua_terbaca(self):
+        hasil = cs.periksa(DRAF_PUSTAKA_MULTIBARIS)
+        self.assertTrue(hasil["lulus"])
+        self.assertEqual(hasil["peringatan"], [])  # tidak ada "tidak punya URL yang terbaca"
+
+    def test_dua_entri_multibaris_tidak_tercampur(self):
+        hasil = cs.periksa(DRAF_PUSTAKA_MULTIBARIS_DUA_ENTRI)
+        self.assertTrue(hasil["lulus"])
+        self.assertEqual(hasil["jumlah_entri_pustaka"], 2)
+        self.assertEqual(hasil["peringatan"], [])
+
+    def test_isi_url_entri_benar(self):
+        baris_badan, baris_pustaka = cs.pisahkan_teks_dan_pustaka(DRAF_PUSTAKA_MULTIBARIS_DUA_ENTRI)
+        entri, _ = cs.ambil_entri_pustaka(baris_pustaka)
+        self.assertEqual(entri[1]["url"], "https://www.bps.go.id/publikasi/xyz")
+        self.assertEqual(entri[2]["url"], "https://www.ojk.go.id/survei")
+
+
+class TesEncoding(unittest.TestCase):
+    """SEDANG #1: file berencoding bukan UTF-8 tidak boleh crash dengan traceback mentah."""
+
+    def _tulis_dan_jalankan(self, bytes_isi, suffix=".md"):
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as f:
+            f.write(bytes_isi)
+            path = f.name
+        try:
+            p = subprocess.run([sys.executable, SCRIPT, path], capture_output=True, text=True)
+            return p
+        finally:
+            os.remove(path)
+
+    def test_utf8_biasa_tetap_lulus(self):
+        p = self._tulis_dan_jalankan(DRAF_NORMAL.encode("utf-8"))
+        self.assertEqual(p.returncode, 0)
+        self.assertIn("Tidak ada masalah", p.stdout)
+
+    def test_utf8_bom_terbaca(self):
+        p = self._tulis_dan_jalankan(DRAF_NORMAL.encode("utf-8-sig"))
+        self.assertEqual(p.returncode, 0)
+
+    def test_utf16_dengan_bom_terbaca(self):
+        p = self._tulis_dan_jalankan(DRAF_NORMAL.encode("utf-16"))
+        self.assertEqual(p.returncode, 0)
+
+    def test_cp1252_terbaca_tanpa_crash(self):
+        isi = "# Judul\n\nKlaim café [1].\n\n## Daftar Pustaka\n[1] Sumber. Lembaga. 2025. https://a.go.id . Diakses 24 September 2026.\n"
+        p = self._tulis_dan_jalankan(isi.encode("cp1252"))
+        self.assertEqual(p.returncode, 0)
+        self.assertNotIn("Traceback", p.stdout + p.stderr)
+
+    def test_byte_tak_terbaca_pesan_ramah_bukan_traceback(self):
+        p = self._tulis_dan_jalankan(bytes([0x81, 0x8D, 0x8F, 0x90, 0x9D]))
+        self.assertEqual(p.returncode, 2)
+        self.assertNotIn("Traceback", p.stdout + p.stderr)
+        self.assertIn("Tidak bisa membaca", p.stdout + p.stderr)
 
 
 if __name__ == "__main__":

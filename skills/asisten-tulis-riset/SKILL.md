@@ -34,7 +34,7 @@ laporan yang perlu terlihat kredibel dan berdasar data.
 | Jenis tulisan (artikel/blog SEO, whitepaper, newsletter, materi presentasi) | Tidak | Artikel blog |
 | Pembaca sasaran | Tidak | Pengusaha/profesional umum Indonesia, disebut sebagai asumsi |
 | Tujuan (edukasi, jualan halus, membangun otoritas, SEO) | Tidak | Edukasi + membangun otoritas |
-| Panjang | Tidak | 800–1200 kata (artikel), 3–5 halaman (whitepaper) |
+| Panjang | Tidak | Artikel blog/SEO: 800–1200 kata. Newsletter: 400–800 kata. Whitepaper singkat: ±3 halaman (≈900–1500 kata). Whitepaper lengkap: 5+ halaman (≈2000+ kata). Materi presentasi: 8–15 slide/poin utama |
 | Nada (formal/santai/akademik ringan) | Tidak | Profesional-santai |
 | Kata kunci SEO utama (jika untuk web) | Tidak | Disarankan dari topik, ditandai sebagai saran |
 | Sumber wajib dipakai (link/dokumen dari pengguna) | Tidak | Dipakai bila ada; tetap dicari tambahan |
@@ -96,8 +96,23 @@ ringkasannya ke pengguna sebelum lanjut, supaya arah tulisan disepakati dulu.
 - Jika agent punya web search/fetch: cari & **benar-benar buka** tiap sumber sebelum dikutip. Catat:
   judul, penulis/lembaga, URL, tanggal terbit, **tanggal akses hari ini**, dan 1–2 kalimat inti yang
   relevan.
-- Kumpulkan minimal 3–5 sumber untuk artikel pendek, 8–15 untuk whitepaper — sesuaikan realistis dengan
-  ketersediaan data topik.
+- **Ringkasan hasil mesin pencari BUKAN pengganti membuka URL.** Jawaban ringkasan alat pencarian web
+  sering sudah menyertakan angka dan daftar "Sources" yang terlihat meyakinkan — itu **belum berarti**
+  sumbernya sudah dibaca. Tetap buka setiap URL satu per satu dengan alat pengambil halaman (fetch) dan
+  cocokkan klaim/angkanya ke isi halaman asli sebelum diberi nomor kutipan `[n]`, karena ringkasan
+  pencarian bisa salah merangkum atau salah mengaitkan angka ke sumber yang keliru.
+- **Sumber yang menolak akses (mis. HTTP 403, butuh login, paywall penuh, halaman error) tidak boleh
+  dikutip seolah sudah dibaca.** Pilih salah satu: (a) cari sumber lain yang isinya benar-benar bisa
+  dibuka dan dibaca, atau (b) bila sumber itu sendiri hanya dikenal lewat kutipan sumber lain yang
+  **berhasil** dibuka (mis. media berita yang mengutip rilis BPS yang situsnya sedang menolak akses),
+  tulis terang di daftar pustaka bahwa itu dikutip melalui sumber sekunder, mis. "data BPS 2025,
+  dikutip melalui Katadata" — jangan cantumkan URL sumber asli yang tidak berhasil dibuka seolah-olah
+  itu yang dibaca.
+- Kumpulkan minimal sumber sesuai jenis tulisan (jumlah wajar, boleh lebih bila topik butuh): artikel
+  blog/SEO pendek **3–5 sumber**, newsletter **1–3 sumber** (tergantung panjang & jumlah topik yang
+  dibahas), whitepaper singkat **5–8 sumber**, whitepaper lengkap/materi presentasi data **8–15
+  sumber**. Sesuaikan realistis dengan ketersediaan data topik — jangan memaksakan jumlah dengan sumber
+  lemah/tidak relevan.
 - Jika pengguna melampirkan dokumen/link sendiri, baca dan perlakukan sebagai sumber utama (tetap
   diberi nomor kutipan seperti sumber lain).
 - Susun daftar sumber sementara pakai format di `templates/daftar-pustaka.md`.
@@ -163,7 +178,8 @@ pustaka satu per satu, cari angka tanpa kutipan.
 ```
 # <Judul artikel>
 
-*<Meta description, bila untuk web>*
+**Meta description:** <isi meta description, bila untuk web — beri label eksplisit ini, jangan hanya
+teks miring tanpa keterangan, supaya pembeli langsung tahu bagian mana yang ditempel ke field SEO>
 
 <Draf lengkap dengan sub-judul H2/H3 dan kutipan [1][2]...>
 
@@ -185,8 +201,8 @@ website konsultan bisnis saya, ada data resminya ya."
 ```
 # Tren Belanja Online UMKM Indonesia 2026: Apa yang Perlu Diketahui Pengusaha
 
-*Data terbaru menunjukkan pergeseran perilaku belanja UMKM Indonesia — simak tren, tantangan, dan
-langkah praktisnya.*
+**Meta description:** Data terbaru menunjukkan pergeseran perilaku belanja UMKM Indonesia — simak tren,
+tantangan, dan langkah praktisnya.
 
 ## Mengapa Tren Ini Penting bagi Pengusaha
 Menurut data [1], transaksi e-commerce di Indonesia terus tumbuh pada 2025, mendorong makin banyak UMKM

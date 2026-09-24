@@ -64,18 +64,32 @@ def ambil_kutipan_teks(baris_badan):
 
 
 def ambil_entri_pustaka(baris_pustaka):
-    """dict nomor -> {"teks": ..., "url": ... atau None, "baris": nomor baris relatif}."""
+    """dict nomor -> {"teks": ..., "url": ... atau None, "baris": nomor baris relatif}.
+
+    Entri boleh melebar ke baris berikutnya (format yang dicontohkan di
+    references/gaya-sitasi.md): baris lanjutan adalah baris tidak kosong yang TIDAK diawali
+    '[n]' — teks dan pencarian URL-nya digabungkan ke entri [n] terakhir sebelum baris itu."""
     entri = {}
     duplikat_nomor = []
+    urutan_nomor = []  # urutan kemunculan nomor, untuk tahu entri "terakhir" saat digabung
     for i, b in enumerate(baris_pustaka, start=1):
         m = POLA_ENTRI_PUSTAKA.match(b)
-        if not m:
+        if m:
+            n = int(m.group(1))
+            if n in entri:
+                duplikat_nomor.append(n)
+            entri[n] = {"teks": m.group(2).strip(), "baris": i}
+            urutan_nomor.append(n)
             continue
-        n = int(m.group(1))
-        url_m = POLA_URL.search(b)
-        if n in entri:
-            duplikat_nomor.append(n)
-        entri[n] = {"teks": m.group(2).strip(), "url": url_m.group(0) if url_m else None, "baris": i}
+        if not b.strip():
+            continue  # baris kosong tidak dianggap lanjutan
+        if urutan_nomor:
+            n_terakhir = urutan_nomor[-1]
+            entri[n_terakhir]["teks"] += " " + b.strip()
+
+    for e in entri.values():
+        url_m = POLA_URL.search(e["teks"])
+        e["url"] = url_m.group(0) if url_m else None
     return entri, duplikat_nomor
 
 
@@ -148,6 +162,42 @@ def periksa(isi):
     }
 
 
+# Dicoba berurutan sampai berhasil didekode. utf-8-sig menangani BOM UTF-8 (umum dari Word/
+# Notepad Windows); utf-16 hanya dicoba bila file punya BOM UTF-16 di awal (0xFF 0xFE / 0xFE 0xFF)
+# -- di luar itu 'utf-16' nyaris selalu "berhasil" mendekode byte apa pun jadi teks acak/rusak,
+# yang justru menyamarkan file cp1252/latin asli sebagai sukses. cp1252 dicoba PALING TERAKHIR
+# sebagai jaring pengaman untuk file lama Windows berkode karakter Eropa Barat -- hampir selalu
+# "berhasil" juga (byte apa pun valid di cp1252), jadi urutannya sengaja ditaruh belakang supaya
+# encoding yang lebih spesifik/tepat dicoba dulu.
+ENCODING_DICOBA = ["utf-8", "utf-8-sig"]
+BOM_UTF16 = (b"\xff\xfe", b"\xfe\xff")
+
+
+def baca_teks_file(path):
+    """Baca file draf, mencoba beberapa encoding umum. Kembalikan (isi, encoding_dipakai).
+    Raise ValueError dengan pesan ramah Bahasa Indonesia bila semua encoding gagal."""
+    with open(path, "rb") as f:
+        mentah = f.read()
+
+    urutan = list(ENCODING_DICOBA)
+    if mentah.startswith(BOM_UTF16):
+        urutan.append("utf-16")
+    urutan.append("cp1252")  # jaring terakhir; byte apa pun valid, jadi selalu dicoba paling akhir
+
+    for enc in urutan:
+        try:
+            return mentah.decode(enc), enc
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+    raise ValueError(
+        "Tidak bisa membaca isi file (encoding tidak dikenali; dicoba: "
+        + ", ".join(urutan)
+        + "). Ini biasa terjadi bila draf ditempel dari aplikasi lain (mis. Word) dan tersimpan "
+        "dengan karakter aneh. Perbaikan: buka file di editor teks biasa (Notepad/TextEdit/VS "
+        "Code), lalu 'Simpan Sebagai' dengan encoding UTF-8, dan jalankan lagi."
+    )
+
+
 def main():
     ap = argparse.ArgumentParser(description="Cek konsistensi sitasi [n] vs Daftar Pustaka")
     ap.add_argument("file", help="Path file draf (.md/.txt), atau '-' untuk baca dari stdin")
@@ -158,9 +208,8 @@ def main():
         if args.file == "-":
             isi = sys.stdin.read()
         else:
-            with open(args.file, "r", encoding="utf-8") as f:
-                isi = f.read()
-    except OSError as e:
+            isi, _ = baca_teks_file(args.file)
+    except (OSError, ValueError) as e:
         pesan = f"Tidak bisa membaca file: {e}"
         if args.json:
             print(json.dumps({"error": pesan}, ensure_ascii=False, indent=2), file=sys.stderr)
