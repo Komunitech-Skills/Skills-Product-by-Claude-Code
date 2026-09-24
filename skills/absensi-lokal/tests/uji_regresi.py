@@ -399,5 +399,124 @@ class UjiAbsensi(Dasar):
         self.assertEqual(self.ok("rekap", "--bulan", "lalu")["periode"]["dari"], "2026-08-01")
 
 
+# ---------------------------------------------------------------- perbaikan v1.0.1 (temuan uji independen)
+class UjiPerbaikan101(Dasar):
+    def teks(self, *argv):
+        """Jalankan tanpa --json, kembalikan (kode, stdout, stderr)."""
+        argv = list(argv) + ["--db", self.db, "--sekarang", KINI]
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            kode = A.main(argv)
+        return kode, out.getvalue(), err.getvalue()
+
+    def test_30_csv_tidak_bisa_ditulis_dan_init_gagal(self):
+        self.karyawan("A01", "Andi")
+        out = self.gagal("rekap", "--bulan", "2026-09", "--csv", self.dir)          # tujuan = folder
+        self.assertIn("tidak bisa ditulis", out["error"])
+        self.assertIn("Excel", out["error"])
+        berkas = self.file("bukan-folder.txt", "x")
+        kode, out = self.run_cli("rekap", "--bulan", "2026-09", "--csv-harian", os.path.join(berkas, "r.csv"))
+        self.assertEqual(kode, 1)
+        argv = ["init", "--ya", "--json", "--db", os.path.join(berkas, "sub", "a.db")]
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            self.assertEqual(A.main(argv), 1)
+        self.assertIn("tidak bisa dibuat", json.loads(buf.getvalue())["error"])
+
+    def test_31_database_terkunci_bukan_rusak(self):
+        import sqlite3
+        self.karyawan("A01", "Andi")
+        kunci = sqlite3.connect(self.db, isolation_level=None)
+        kunci.execute("BEGIN EXCLUSIVE")
+        lama, A.TIMEOUT_DB = A.TIMEOUT_DB, 0.2
+        try:
+            for argv in (("rekap", "--bulan", "2026-09"),
+                         ("catat", "--karyawan", "A01", "--tanggal", "2026-09-01", "--masuk", "08.00", "--ya")):
+                out = self.gagal(*argv)
+                self.assertIn("sedang dipakai program lain", out["error"])
+                self.assertNotIn("bukan database", out["error"])
+                self.assertIn("Jangan hapus", out["error"])
+        finally:
+            A.TIMEOUT_DB = lama
+            kunci.execute("ROLLBACK")
+            kunci.close()
+
+    def test_32_batas_18_jam_minggu_lintas_bulan(self):
+        # Minggu ISO 31/8 (Senin) - 6/9: 31/8 4 jam + 1-4/9 4 jam = 20 jam > 18 (Pasal 26 ayat (1))
+        self.karyawan("A01", "Andi", "--gaji-pokok", "3460000", "--mulai", "2026-08-01")
+        for tgl in ("2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03"):
+            self.ok("lembur", "--karyawan", "A01", "--tanggal", tgl, "--jam", "4", "--catatan", "x", "--ya")
+        pratinjau = self.ok("lembur", "--karyawan", "A01", "--tanggal", "2026-09-04", "--jam", "4", "--catatan", "x")
+        self.assertTrue(any("18 jam/minggu" in c for c in pratinjau["catatan"]))
+        self.ok("lembur", "--karyawan", "A01", "--tanggal", "2026-09-04", "--jam", "4", "--catatan", "x", "--ya")
+        for bulan in ("2026-08", "2026-09"):
+            _, out = self.rekap() if bulan == "2026-09" else (None, self.ok("rekap", "--bulan", bulan))
+            m = self.masalah(out, "lembur_lebih_18_jam_seminggu")
+            self.assertEqual(len(m), 1, bulan)
+            self.assertIn("20 jam", m[0]["pesan"])
+        # upah tetap hanya dari lembur dalam periode: September 4 hari x 7,5 x 20.000 = Rp 600.000
+        r, _ = self.rekap()
+        self.assertEqual(r["A01"]["upah_lembur"], 600000)
+
+    def test_33_rekap_tanpa_data_tidak_mendaftar_alpa(self):
+        self.karyawan("A01", "Andi")
+        kode, teks, _ = self.teks("rekap", "--bulan", "2026-09")
+        self.assertEqual(kode, 0)
+        self.assertIn("Belum ada data absen", teks)
+        self.assertNotIn("mohon dikonfirmasi", teks)
+        self.assertFalse(self.ok("rekap", "--bulan", "2026-09")["ada_data_absen"])
+
+    def test_34_pengingat_pasal_29_dan_dasar_75_persen(self):
+        # Dasar 75%: 3.000.000 + tidak tetap 2.000.000 -> 3.750.000 tampil di teks
+        self.karyawan("D01", "Dewi", "--gaji-pokok", "3000000", "--tunjangan-tidak-tetap", "2000000")
+        self.ok("lembur", "--karyawan", "D01", "--tanggal", "2026-09-01", "--jam", "4", "--catatan", "x", "--ya")
+        self.ok("lembur", "--karyawan", "D01", "--tanggal", "2026-09-02", "--jam", "3", "--catatan", "x", "--ya")
+        _, teks, _ = self.teks("rekap", "--bulan", "2026-09")
+        self.assertIn("Dasar upah lembur Rp 3.750.000", teks)
+        self.assertIn("Pasal 32 ayat (4)", teks)
+        self.assertEqual(teks.count("1.400 kkal"), 1)            # hanya lembur 4 jam, bukan 3 jam
+        out = self.ok("lembur", "--karyawan", "D01", "--tanggal", "2026-09-03", "--jam", "4", "--catatan", "x")
+        self.assertTrue(any("Pasal 29" in c for c in out["catatan"]))
+
+    def test_35_csv_gaji_terisi_dari_database(self):
+        # Upah harian 150.000 pola 6 -> gaji_pokok 150.000 x 25 = 3.750.000 (Pasal 33 ayat (1) huruf a)
+        self.karyawan("E01", "Eko", "--hari-kerja", "6", "--upah-harian", "150000")
+        self.karyawan("A01", "Andi", "--gaji-pokok", "5000000", "--tunjangan-tetap", "500000")
+        keluar = os.path.join(self.dir, "gaji.csv")
+        _, out = self.rekap("--csv-gaji", keluar)
+        with open(keluar, encoding="utf-8-sig") as f:
+            baris = {b.split(";")[0]: b.split(";") for b in f.read().splitlines()[1:]}
+        self.assertEqual(baris["Eko"][3], "3750000")
+        self.assertEqual(baris["Andi"][3:5], ["5000000", "500000"])
+        self.assertTrue(any("upah harian" in c and "Pasal 33" in c for c in out["catatan_ekspor_gaji"]))
+
+    def test_36_pulang_lewat_jadwal_tanpa_lembur_hanya_info(self):
+        self.karyawan("J01", "Joko", "--gaji-pokok", "4000000")
+        self.ok("catat", "--karyawan", "J01", "--tanggal", "2026-08-25", "--masuk", "08.00", "--pulang", "19.10", "--ya")
+        self.ok("catat", "--karyawan", "J01", "--tanggal", "2026-09-06", "--masuk", "08.00", "--pulang", "12.00", "--ya")
+        _, teks, _ = self.teks("rekap", "--bulan", "2026-08")
+        self.assertIn("2 jam 10 menit setelah jadwal", teks)
+        self.assertIn("TIDAK dihitung lembur", teks)
+        r, out = self.rekap()
+        self.assertEqual(r["J01"]["upah_lembur"], 0)
+        self.assertEqual(len(self.masalah(out, "masuk_libur_tanpa_lembur")), 1)
+
+    def test_37_utf16_tanpa_bom_dan_file_hanya_judul(self):
+        self.karyawan("A01", "Andi", "--id-mesin", "1")
+        p = os.path.join(self.dir, "u16.csv")
+        with open(p, "wb") as f:
+            f.write("User ID\tDate\tTime\n1\t2026-09-01\t08:00\n1\t2026-09-01\t17:00\n".encode("utf-16-le"))
+        self.assertEqual(self.ok("impor-absen", p)["tap_baru"], 2)
+        kosong = self.file("judul.csv", "User ID,Date,Time\n")
+        self.assertIn("tidak ada baris data", self.gagal("impor-absen", kosong)["error"])
+
+    def test_38_catatan_tap_mesin_hanya_jadwal_hari_itu(self):
+        self.karyawan("A01", "Andi", "--id-mesin", "1")
+        f = self.file("log.csv", "ID,Tanggal,Jam\n1,01/09/2026,08:00\n1,02/09/2026,08:00\n1,02/09/2026,17:00\n")
+        self.ok("impor-absen", f, "--ya")
+        out = self.ok("catat", "--karyawan", "A01", "--tanggal", "2026-09-01", "--pulang", "17.00")
+        self.assertTrue(any(c.startswith("Sudah ada 1 tap dari mesin") for c in out["catatan"]), out["catatan"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
