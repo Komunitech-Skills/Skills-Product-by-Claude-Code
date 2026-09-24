@@ -1,7 +1,7 @@
 # Jadwal otomatis di OpenClaw — pengingat follow-up
 
-**Status verifikasi.** Semua perintah di bawah diuji di OpenClaw **2026.9.5 (ec9c1a1)** dengan
-HOME sementara. Lingkungan uji: Gateway lokal `gateway run --dev --allow-unconfigured --bind loopback`,
+**Status verifikasi.** Semua perintah di bawah diuji di OpenClaw **2026.9.5 (ec9c1a1)** dan diuji ulang di
+**2026.9.6 (eb377ac)** (24 Sep 2026, hasil sama), dengan HOME sementara. Lingkungan uji: Gateway lokal `gateway run --dev --allow-unconfigured --bind loopback`,
 tanpa model AI sungguhan dan tanpa kanal yang login.
 - ✅ = **dijalankan sungguhan** di Gateway uji (job terbentuk, jadwal & zona waktu dicek dari hasil JSON).
 - 📖 = hanya dicek lewat `--help`.
@@ -33,9 +33,13 @@ Tanpa jadwal pun skill tetap berguna. Pengguna cukup mengetik "rekap pengingat" 
 ```bash
 openclaw automations add "0 8 * * *" \
   "Pakai skill pengingat-follow-up. Jalankan: python3 <folder-skill>/scripts/cek_jatuh_tempo.py --file <folder-kerja>/pengingat/DAFTAR.csv --timesheet-file <folder-kerja>/pengingat/timesheet.csv --teks rekap. Kirim teksnya apa adanya dalam Bahasa Indonesia. Untuk item timesheet, isi [TOTAL JAM]/[NILAI] dengan subperintah timesheet --klien. JANGAN mengubah angka, JANGAN mengirim apa pun ke pelanggan. Jika file belum ada atau script error, laporkan itu saja." \
-  --name "Pengingat follow-up harian" --tz "Asia/Jakarta" --session isolated \
+  --name "Pengingat follow-up harian" --tz "Asia/Jakarta" --session isolated --tools exec,read \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
+- `--tools exec,read` ✅: agent jadwal hanya diberi alat menjalankan script & membaca file (tanpa kirim pesan,
+  browser, tulis file, dll.). Tanpa opsi ini job tersimpan dengan `toolsAllow: ["*"]` (semua alat). Hasil uji:
+  `payload.toolsAllow: ["exec", "read"]`. ⚠️ Belum diuji dengan model sungguhan bahwa agent tetap bisa memuat
+  skill dengan dua alat ini. Jika run gagal karena alat kurang, tambahkan alat yang disebut di pesan error saja.
 - Hasil uji: job terbentuk dengan `schedule: {kind: cron, expr: "0 8 * * *", tz: "Asia/Jakarta"}`.
   `nextRunAtMs` = 01.00 UTC = **08.00 WIB**. `delivery: announce -> telegram:<id> (explicit)`.
 - Ini "Bentuk A": jadwal & pesan ditulis sebagai argumen posisi, **tanpa** `--cron`. Jangan dicampur
@@ -61,13 +65,16 @@ openclaw automations add --name "Rekap pengingat (tanpa AI)" --cron "0 8 * * *" 
 - Perintah dijalankan sebagai `sh -lc` di komputer Gateway. Opsi ini cocok untuk macOS/Linux/VPS.
   ⚠️ Belum diuji di Gateway Windows. Di Windows pakai Bentuk A (§1).
 - Baris tambahan dari profil shell (di mesin uji muncul kata `nvm`) bisa ikut terkirim. Jika mengganggu, pakai §1.
+- Mode ini mengirim teks script **apa adanya**: draf timesheet tetap berisi placeholder `[TOTAL JAM]`/`[NILAI]`
+  (tidak ada AI yang mengisinya), dan draf tidak diperhalus. Untuk timesheet, pakai §4 atau jalankan
+  `timesheet --klien` sendiri.
 
 ## 3. Pengingat sekali jalan untuk janji spesifik (`--at`) ✅
 "Bentuk B" (opsi penuh, tanpa argumen posisi):
 ```bash
 openclaw automations add --name "Telepon Bu Rina (#3)" --at "2026-10-03T09:00" --tz "Asia/Jakarta" \
   --message "Ingatkan pemilik: hari ini follow-up item #3 (Bu Rina). Tampilkan draf dengan skill pengingat-follow-up: cek_jatuh_tempo.py --file <folder-kerja>/pengingat/DAFTAR.csv --teks draf --id 3. Jangan kirim apa pun ke pelanggan." \
-  --session isolated --announce --channel telegram --to "<ID chat Telegram pemilik>" --delete-after-run
+  --session isolated --tools exec,read --announce --channel telegram --to "<ID chat Telegram pemilik>" --delete-after-run
 ```
 - Hasil uji: `--at "2026-10-03T09:00"` + `--tz Asia/Jakarta` tersimpan sebagai `2026-10-03T02:00:00Z`
   (09.00 WIB), dengan `deleteAfterRun: true`. `--at "20m"` (20 menit dari sekarang) juga diterima.
@@ -77,7 +84,7 @@ openclaw automations add --name "Telepon Bu Rina (#3)" --at "2026-10-03T09:00" -
 ```bash
 openclaw automations add "0 16 * * 5" \
   "Pakai skill pengingat-follow-up. Jalankan cek_jatuh_tempo.py --timesheet-file <folder-kerja>/pengingat/timesheet.csv --teks timesheet --periode minggu-ini, lalu untuk tiap klien jalankan lagi dengan --klien \"<nama>\" dan tampilkan draf pesan ke klien. Pemilik yang menyetujui & mengirim; JANGAN kirim ke klien." \
-  --name "Rekap timesheet Jumat" --tz "Asia/Jakarta" --session isolated \
+  --name "Rekap timesheet Jumat" --tz "Asia/Jakarta" --session isolated --tools exec,read \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
 

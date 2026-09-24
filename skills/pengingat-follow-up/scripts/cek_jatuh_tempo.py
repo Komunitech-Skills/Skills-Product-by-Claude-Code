@@ -28,12 +28,16 @@ Aturan
     Tahun tidak disebut -> dipilih tanggal terdekat KE DEPAN (>= hari ini) dan diberi catatan;
     kecuali tanggal itu baru lewat <= 60 hari (mis. "20 Sep" diucapkan 1 Okt) -> tahun ini, item TERLAMBAT.
     Tanggal lama tanpa tahun di dalam CSV (diedit manual) -> dipilih tanggal terdekat (maju/mundur).
+    Tanggal kerja (catat-jam/timesheet): nama hari = hari itu yang terakhir sudah lewat (termasuk hari ini);
+    tanggal kerja di masa depan ditolak.
   - Nominal: 4,5 jt | 4.500.000 | Rp4.500.000 | 750rb | 1,2 M | 4 jt 500 rb. Disimpan bilangan bulat rupiah.
+    Ditolak sebagai ambigu: 'm' kecil (juta/miliar?), '4,5,6 jt', '1,500 jt', '1.500 jt'. >= Rp 1 M diberi catatan.
   - Total nominal = penjumlahan bilangan bulat (tanpa float).
-  - Timesheet: jam 1:30 | 1,5 | 1.5 | 90m | 90 menit | 2 jam | 1j30m. Nilai per klien = sum(menit x tarif / 60)
+  - Timesheet: jam 1:30 | 1,5 | 1.5 | 90m | 90 menit | 2 jam | 1j30m ('1.30' ditolak: jam:menit atau desimal?). Nilai per klien = sum(menit x tarif / 60)
     dihitung pecahan persis, lalu dibulatkan SEKALI ke rupiah terdekat (0,5 ke atas) per klien.
     Total semua klien = jumlah nilai per klien yang sudah dibulatkan.
-  - Baris rusak tidak membuat script berhenti: dilaporkan di "baris_ditolak" dengan nomor baris & alasan.
+  - Baris rusak tidak membuat script berhenti: dilaporkan di "baris_ditolak" dengan nomor baris & alasan,
+    dan tetap ditulis ulang apa adanya di posisinya saat file disimpan. CSV UTF-8/BOM/ANSI(cp1252), ',' atau ';'.
 
 Kode keluar: 0 = berhasil; 1 = input/perintah salah (pesan "ERROR: ..." di stderr); 2 = ditolak karena
 berisi data kontak pribadi (pakai --simpan-kontak bila pemilik memang sengaja).
