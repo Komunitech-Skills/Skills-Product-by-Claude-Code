@@ -237,3 +237,27 @@ Mode PBJT benar: 900 nota + ±560 retur/void + 60 rekap, 0 beda. Mode ini juga s
 
 ## Catatan koordinator — v1.1.1
 B1 (regresi formula injection) diperbaiki koordinator: `sel_aman()` kembali mengamankan SEMUA teks diawali `= + - @ tab CR`; angka murni (mis. `-2,5`) tetap lolos sebagai angka lewat pengecekan regex sebelumnya. Tes regresi ditambah untuk `-1+1+cmd|' /C calc'!A0`, `-5 Diskon Palsu`, `-2,5`, `-2.5`; 64/64 tes lulus. Cacat ringan dari uji ulang v1.1.0 dicatat untuk versi berikutnya. Menunggu cek ulang singkat penguji.
+
+---
+
+# Cek ulang v1.1.1 — 2026-09-24 (perbaikan B1)
+
+Penguji: agent penguji independen (simulasi, Claude Code). Kode `VERSI = "1.1.1"`; `sel_aman()` baris 613 kini `s[0] in "=+-@\t\r"`, angka murni tetap diloloskan regex baris 611. `tests/uji_regresi.py` → OK.
+
+| Uji | Hasil |
+|---|---|
+| Bukti injeksi B1 diulang (DB `/tmp/uji-kasir-lokal/r`, ekspor penjualan `inj5.csv` & buku-stok `inj5-bs.csv`) | `'-1+1+cmd\|' /C calc'!A0`, `'-5 Diskon Palsu`, `'-2+3 Kopi`, `'=HYPERLINK(…)`, `'@SUM(1+1)`, `'+62 Kopi` — **semua diberi tanda `'`** di kedua format ✓ |
+| Angka minus tetap angka (ekspor penjualan skenario 03, pemisah `;`) | Qty `-2,5`, `-3`, `-1`; Diskon `-525`; Total `-9975`, `-38750` — tanpa `'` ✓. Pemisah `,`: `-2.5` tanpa `'` ✓ |
+| Ekspor penjualan skenario 03 vs v1.1.0 | identik (`diff` kosong); rekap-penjualan-csv total_omzet 160.525 ✓ |
+| Ekspor buku-stok skenario 03 vs v1.0.0/v1.1.0 | **identik byte-per-byte** ✓ |
+
+B1 **tertutup**. Tidak ada regresi pada perbaikan CSV angka minus v1.1.0. Cacat ringan v1.1.0 (butir 1–6) masih terbuka; tidak menghalangi rilis.
+
+## SKOR AKHIR v1.1.1: **9 / 10 — LULUS**
+Alasannya:
+- **Akurasi:** PPN dan PBJT terverifikasi independen (0 beda pada ribuan nota, retur, dan rekap).
+- **Kesesuaian aturan:** mengikuti UU 1/2022 Pasal 57–59 dan PMK 131/2024, dengan disclaimer yang jujur.
+- **Keamanan:** kembali utuh.
+- **Keunggulan:** jauh lebih baik daripada agent tanpa skill, dan tidak ada pesaing skill yang sebanding.
+
+Nilai tidak 10 karena masih ada cacat ringan dan pengiriman Telegram belum diuji dengan bot asli.
