@@ -45,7 +45,7 @@ def bersihkan_baris(baris):
 # Pembacaan file (.txt / .zip)
 # ---------------------------------------------------------------------------
 
-ENCODING_DICOBA = ["utf-8-sig", "utf-8", "cp1252", "latin-1"]
+ENCODING_DICOBA = ["utf-8-sig", "utf-8", "utf-16", "utf-16-le", "utf-16-be", "cp1252", "latin-1"]
 
 
 def _decode(raw_bytes, nama_untuk_pesan):
@@ -182,6 +182,15 @@ def deteksi_urutan_tanggal(triple_list):
         "Urutan tanggal ambigu (hari & bulan sama-sama ≤ 12 di semua pesan). "
         "Default dipakai: d/m (Indonesia). Cek tanggal bila hasil terasa janggal."
     )
+    pasangan_unik = {(a, b) for a, b, y in triple_list}
+    if len(pasangan_unik) == 1:
+        catatan.append(
+            "PERINGATAN: hanya ada SATU kombinasi tanggal di seluruh pesan yang diproses — "
+            "besar kemungkinan semuanya terjadi dalam SATU hari yang sama, terlepas dari "
+            "urutan d/m atau m/d yang dipakai. Jika tanggal yang tertulis di ringkasan terasa "
+            "jauh/keliru, ini murni soal cara membaca tanggal, bukan pesan yang tercampur dari "
+            "hari berbeda — sampaikan ini apa adanya ke pengguna, jangan diam-diam dianggap benar."
+        )
     return "d/m", catatan
 
 
@@ -267,7 +276,9 @@ def parse_pesan(teks):
     if not kecocokan:
         return [], None, None, [
             "Tidak ada baris pesan yang dikenali. File mungkin kosong, bukan ekspor "
-            "chat WhatsApp, atau formatnya di luar variasi yang didukung."
+            "chat WhatsApp, atau formatnya di luar variasi yang didukung. Jika file berasal "
+            "dari convert/edit/copy-paste manual (bukan langsung dari menu 'Ekspor chat' "
+            "WhatsApp), coba ekspor ulang atau simpan ulang file sebagai teks UTF-8."
         ]
 
     format_terdeteksi = "ios" if jumlah_ios >= jumlah_android else "android"
@@ -362,34 +373,235 @@ def filter_rentang(pesan, sejak, sampai):
 
 
 # ---------------------------------------------------------------------------
-# Penyamaran (anonimisasi)
+# Penyamaran (anonimisasi) — BERSIFAT UPAYA TERBAIK (best-effort), bukan jaminan mutlak.
+# Selalu periksa `kemungkinan_nama_tersisa` di output sebelum membagikan hasil.
 # ---------------------------------------------------------------------------
 
-POLA_NOMOR_TELEPON = re.compile(
+# Nomor Indonesia (awalan 62/0 + 8xx).
+POLA_NOMOR_TELEPON_ID = re.compile(
     r"(?:\+?62|0)[\s\-]?8[0-9]{2,3}(?:[\s\-]?[0-9]{3,4}){1,3}"
+)
+# Nomor internasional berformat "+<kode negara> ..." (mis. +1, +65, +44), minimal 8 digit total.
+POLA_NOMOR_TELEPON_INTL = re.compile(
+    r"\+[1-9][0-9]{0,2}[\s\-]?[0-9]{2,4}(?:[\s\-]?[0-9]{2,4}){1,4}"
 )
 
 
 def samarkan_nomor_dalam_teks(teks):
-    return POLA_NOMOR_TELEPON.sub("[nomor disamarkan]", teks)
+    teks = POLA_NOMOR_TELEPON_ID.sub("[nomor disamarkan]", teks)
+    teks = POLA_NOMOR_TELEPON_INTL.sub("[nomor disamarkan]", teks)
+    return teks
 
 
-def samarkan_pengirim(pesan):
-    """Ganti nama/nomor pengirim -> 'Anggota N' (urutan kemunculan pertama). Nomor di isi pesan juga disamarkan."""
-    pemetaan = {}
+# Kata yang TIDAK dianggap nama meski berhuruf kapital di awal (sapaan, kata umum, hari, bulan,
+# istilah dagang umum). Dipakai untuk (a) memilih alias nama depan yang aman disubstitusikan,
+# dan (b) menyaring kandidat nama sisa agar tidak penuh angka/kata umum yang salah tangkap.
+KATA_UMUM_STOP = {
+    "pak", "bu", "bapak", "ibu", "mas", "mbak", "kak", "kakak", "bang", "abang",
+    "adik", "adek", "dek", "om", "tante", "gan", "sis", "bro", "min", "admin",
+    "saya", "kamu", "anda", "dia", "kita", "kami", "mereka", "semua", "tim", "grup", "group",
+    "pagi", "siang", "sore", "malam", "hari", "ini", "itu", "nanti", "besok", "kemarin", "tadi",
+    "oke", "baik", "siap", "iya", "tidak", "boleh", "terima", "kasih", "selamat", "halo", "hai",
+    "media", "pesan", "chat", "toko", "invoice", "harga", "total", "promo", "stok", "order",
+    "ready", "anggota", "orang", "you", "your", "messages", "calls", "security", "missed",
+    "senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu",
+    "januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus",
+    "september", "oktober", "november", "desember",
+    "rp", "dp", "po", "pcs", "cod", "wa", "whatsapp", "group",
+}
+
+# 1-3 kata berturut-turut diawali huruf kapital (menangkap nama seperti "Sari", "Pak Nanda",
+# "Budi Santoso"). Dipakai untuk mendeteksi nama di pesan sistem & kandidat nama sisa.
+POLA_NAMA_TOKEN = r"[A-Z][A-Za-z''.\-]*(?:\s+[A-Z][A-Za-z''.\-]*){0,2}"
+
+POLA_AKSI_SISTEM_OBJEK = re.compile(
+    rf"\b(?:menambahkan|ditambahkan oleh|dihapus oleh|mengeluarkan|removed|added)\s+({POLA_NAMA_TOKEN})\b"
+)
+POLA_NAMA_AWAL_BARIS = re.compile(rf"^({POLA_NAMA_TOKEN})\b")
+
+POLA_HONORIFIK = re.compile(
+    r"\b(?:Pak|Bu|Bapak|Ibu|Mas|Mbak|Kak|Kakak|Bang|Abang|Om|Tante)\s+([A-Z][a-zA-Z]{2,})\b"
+)
+POLA_MENTION = re.compile(r"@([A-Z][a-zA-Z]{2,}(?:\s[A-Z][a-zA-Z]{2,})?)\b")
+
+
+def _bukan_kata_umum(token):
+    return token.lower() not in KATA_UMUM_STOP
+
+
+def ekstrak_nama_sistem(teks):
+    """Nama yang disebut di satu baris pesan sistem (pelaku di awal, objek setelah kata kerja aksi)."""
+    hasil = []
+    m = POLA_NAMA_AWAL_BARIS.match(teks)
+    if m and _bukan_kata_umum(m.group(1).split()[0]):
+        hasil.append(m.group(1))
+    m2 = POLA_AKSI_SISTEM_OBJEK.search(teks)
+    if m2 and _bukan_kata_umum(m2.group(1).split()[0]):
+        hasil.append(m2.group(1))
+    return hasil
+
+
+def kumpulkan_nama_anggota(pesan):
+    """Urutan nama unik (nama penuh) sesuai kemunculan pertama: dari `pengirim`, lalu dari nama
+    yang disebut di pesan sistem (mis. 'Sari menambahkan Ridho')."""
     urutan = []
     terlihat = set()
-    for p in pesan:
-        if p["pengirim"] and p["pengirim"] not in terlihat:
-            terlihat.add(p["pengirim"])
-            urutan.append(p["pengirim"])
-    for i, nama in enumerate(urutan, start=1):
-        pemetaan[nama] = f"Anggota {i}"
+
+    def tambah(nama):
+        if nama and nama not in terlihat:
+            terlihat.add(nama)
+            urutan.append(nama)
+
     for p in pesan:
         if p["pengirim"]:
-            p["pengirim"] = pemetaan[p["pengirim"]]
-        p["teks"] = samarkan_nomor_dalam_teks(p["teks"])
-    return pesan, pemetaan
+            tambah(p["pengirim"])
+    for p in pesan:
+        if p["jenis"] == "sistem":
+            for n in ekstrak_nama_sistem(p["teks"]):
+                tambah(n)
+    return urutan
+
+
+def _bangun_alias_token(nama_anggota):
+    """Kata depan/panggilan umum dari nama multi-kata (mis. 'Budi Santoso' -> juga 'Budi'),
+    HANYA bila kata itu unik milik satu anggota (tidak dipakai anggota lain) & bukan kata umum."""
+    pemilik_token = {}
+    token_ambigu = set()
+    for nama in nama_anggota:
+        for tok in nama.split():
+            tok_l = tok.lower()
+            if len(tok) < 3 or not _bukan_kata_umum(tok):
+                continue
+            if tok_l in pemilik_token and pemilik_token[tok_l] != nama:
+                token_ambigu.add(tok_l)
+            else:
+                pemilik_token[tok_l] = nama
+    return {t: n for t, n in pemilik_token.items() if t not in token_ambigu}
+
+
+def samarkan_pengirim(pesan, nama_saya=None):
+    """Samarkan (best-effort) seluruh identitas pihak ketiga: pengirim, nama yang disebut di ISI
+    pesan/@mention/pesan sistem, sapaan+nama ("Pak Nanda") yang bukan anggota terdaftar, dan
+    nomor telepon (Indonesia & internasional). Kembalikan (pesan, pemetaan_anggota,
+    daftar_kemungkinan_nama_tersisa)."""
+    nama_anggota = kumpulkan_nama_anggota(pesan)
+    pemetaan = {nama: f"Anggota {i}" for i, nama in enumerate(nama_anggota, start=1)}
+    nama_lower_ke_pemilik = {n.lower(): n for n in nama_anggota}
+    alias_token = _bangun_alias_token(nama_anggota)  # token_lower -> nama pemilik
+
+    kandidat = sorted(set(nama_anggota) | set(alias_token), key=len, reverse=True)
+    pola_anggota = None
+    if kandidat:
+        pola_anggota = re.compile(
+            r"\b(" + "|".join(re.escape(k) for k in kandidat) + r")\b", re.IGNORECASE
+        )
+
+    orang_map = {}  # kunci lower -> "Orang N"
+
+    def ganti_orang(kunci_lower):
+        if kunci_lower not in orang_map:
+            orang_map[kunci_lower] = f"Orang {len(orang_map) + 1}"
+        return orang_map[kunci_lower]
+
+    def ganti_anggota(m):
+        cocok = m.group(1)
+        cocok_l = cocok.lower()
+        pemilik = nama_lower_ke_pemilik.get(cocok_l) or alias_token.get(cocok_l)
+        return pemetaan[pemilik] if pemilik else cocok
+
+    def _label_sendiri(nama):
+        # Jangan samarkan ulang label "Anggota N"/"Orang N" yang sudah dihasilkan di atas
+        # (mis. mention regex menangkap "@Anggota" dari "@Anggota 5" hasil substitusi sebelumnya).
+        return nama.split()[0].lower() in ("anggota", "orang")
+
+    def ganti_honorifik(m):
+        if _label_sendiri(m.group(1)):
+            return m.group(0)
+        return ganti_orang(m.group(1).lower())
+
+    def ganti_mention(m):
+        if _label_sendiri(m.group(1)):
+            return m.group(0)
+        return ganti_orang(m.group(1).lower())
+
+    def proses_teks(teks):
+        if pola_anggota:
+            teks = pola_anggota.sub(ganti_anggota, teks)
+        # Sapaan + nama yang BUKAN anggota terdaftar (mis. "Pak Nanda" bila belum tertangkap
+        # di atas) -> "Orang N". Ganti seluruh frasa (sapaan+nama) agar tidak menyisakan nama.
+        teks = POLA_HONORIFIK.sub(ganti_honorifik, teks)
+        # @mention nama yang bukan anggota terdaftar -> "Orang N".
+        teks = POLA_MENTION.sub(ganti_mention, teks)
+        teks = samarkan_nomor_dalam_teks(teks)
+        return teks
+
+    for p in pesan:
+        if p["pengirim"]:
+            pemilik = nama_lower_ke_pemilik.get(p["pengirim"].lower())
+            p["pengirim"] = pemetaan.get(pemilik, pemetaan.get(p["pengirim"], p["pengirim"]))
+        p["teks"] = proses_teks(p["teks"])
+
+    # Verifikasi sisa: kandidat kata/frasa berhuruf kapital yang masih tersisa di teks setelah
+    # semua substitusi di atas — bukan jaminan nama, tapi wajib dicek manual sebelum dibagikan.
+    tersisa = set()
+    for p in pesan:
+        for m in re.finditer(POLA_NAMA_TOKEN, p["teks"]):
+            frasa = m.group(0)
+            kata_pertama = frasa.split()[0]
+            if kata_pertama in ("Anggota", "Orang"):
+                continue
+            if not _bukan_kata_umum(kata_pertama):
+                continue
+            tersisa.add(frasa)
+
+    return pesan, pemetaan, sorted(tersisa)
+
+
+# ---------------------------------------------------------------------------
+# Kandidat "Perlu Perhatian" — checklist berbasis pola, untuk memastikan agent tidak
+# melewatkan pesan penting di grup padat (recall tinggi, presisi ditentukan agent).
+# ---------------------------------------------------------------------------
+
+_KW_UANG = re.compile(r"\bRp\.?\s?\d|\b\d[\d.,]*\s?(rb|ribu|jt|juta|k)\b", re.IGNORECASE)
+_KW_TENGGAT = re.compile(
+    r"\b(besok|lusa|hari ini|minggu depan|bulan depan|tenggat|deadline|jatuh tempo|"
+    r"paling lambat|sebelum jam|senin|selasa|rabu|kamis|jumat|sabtu|minggu)\b|"
+    r"\bjam\s?\d{1,2}\b",
+    re.IGNORECASE,
+)
+_KW_KEPUTUSAN = re.compile(
+    r"\b(deal|fix|disepakati|diputuskan|oke fix|sepakat|komplain|kecewa|gagal|rusak|"
+    r"refund|batal|retur|urgent|penting|masalah|protes|tolong dibantu|approve|acc)\b",
+    re.IGNORECASE,
+)
+
+
+def tandai_kandidat_perhatian(pesan, nama_saya=None):
+    """Daftar pesan `jenis: obrolan` yang mengandung sinyal 'perlu perhatian'. WAJIB dipakai
+    sebagai checklist minimum oleh agent (lihat SKILL.md) — bukan pengganti penilaian akhir."""
+    hasil = []
+    for p in pesan:
+        if p["jenis"] != "obrolan":
+            continue
+        teks = p["teks"]
+        sinyal = []
+        if "?" in teks:
+            sinyal.append("tanda_tanya")
+        if nama_saya and re.search(rf"@?\b{re.escape(nama_saya)}\b", teks, re.IGNORECASE):
+            sinyal.append("mention_saya")
+        elif "@" in teks:
+            sinyal.append("mention_umum")
+        if _KW_UANG.search(teks):
+            sinyal.append("uang_nominal")
+        if _KW_TENGGAT.search(teks):
+            sinyal.append("tenggat_tanggal")
+        if _KW_KEPUTUSAN.search(teks):
+            sinyal.append("keputusan_komplain")
+        if sinyal:
+            hasil.append({
+                "waktu": p["waktu"], "pengirim": p["pengirim"], "teks": p["teks"], "sinyal": sinyal,
+            })
+    return hasil
 
 
 # ---------------------------------------------------------------------------
@@ -460,7 +672,8 @@ def main():
     ap.add_argument("--sampai", help="Hanya pesan sampai waktu ini. Format sama seperti --sejak.")
     ap.add_argument("--hari-terakhir", type=int, help="Hanya pesan dalam N hari terakhir (dihitung dari --sekarang atau waktu sekarang).")
     ap.add_argument("--sekarang", help="Override waktu 'sekarang' (ISO), untuk pengujian/hasil yang bisa diulang. Default: waktu saat script dijalankan.")
-    ap.add_argument("--samarkan", action="store_true", help="Samarkan nama/nomor pengirim jadi 'Anggota 1..n' dan nomor telepon di isi pesan.")
+    ap.add_argument("--samarkan", action="store_true", help="Samarkan (best-effort) pengirim, nama di isi pesan/@mention/pesan sistem, sapaan+nama non-anggota, dan nomor telepon. Selalu cek 'kemungkinan_nama_tersisa' di output sebelum membagikan hasil.")
+    ap.add_argument("--nama-saya", help="Nama Anda persis seperti di grup, untuk menandai pesan sendiri ('dari_saya') dan mendeteksi mention langsung ke Anda di 'kandidat_perlu_perhatian'.")
     ap.add_argument("--indent", type=int, default=2, help="Indentasi JSON output (default 2; pakai 0 untuk satu baris ringkas).")
     args = ap.parse_args()
 
@@ -488,6 +701,8 @@ def main():
             "filter": {"sejak": args.sejak, "sampai": args.sampai, "hari_terakhir": args.hari_terakhir},
             "disamarkan": bool(args.samarkan),
             "jumlah_anggota_disamarkan": 0 if args.samarkan else None,
+            "kemungkinan_nama_tersisa": [],
+            "kandidat_perlu_perhatian": [],
             "statistik": hitung_statistik([]),
             "hari": [],
         }
@@ -516,9 +731,27 @@ def main():
     if (sejak_dt or sampai_dt) and not pesan_terfilter and pesan:
         catatan.append("Tidak ada pesan pada rentang waktu yang diminta; rentang yang tersedia ada di 'rentang_pesan_asli'.")
 
+    if args.nama_saya:
+        for p in pesan_terfilter:
+            p["dari_saya"] = bool(p["pengirim"]) and p["pengirim"].strip().lower() == args.nama_saya.strip().lower()
+
+    # Checklist kandidat "perlu perhatian" dihitung SEBELUM penyamaran, dari teks asli,
+    # supaya deteksi kata kunci tidak terganggu oleh label "Anggota N"/"Orang N".
+    kandidat_perhatian = tandai_kandidat_perhatian(pesan_terfilter, args.nama_saya)
+
     pemetaan_samaran = None
+    nama_tersisa = []
     if args.samarkan:
-        pesan_terfilter, pemetaan_samaran = samarkan_pengirim(pesan_terfilter)
+        pesan_terfilter, pemetaan_samaran, nama_tersisa = samarkan_pengirim(pesan_terfilter, args.nama_saya)
+        # Samarkan juga kutipan di checklist kandidat_perhatian agar konsisten dengan pesan utama.
+        # Bila --nama-saya diberikan, cocokkan dengan label samaran-nya (nama asli sudah diganti).
+        nama_saya_untuk_kandidat = args.nama_saya
+        if args.nama_saya and pemetaan_samaran:
+            for asli, label in pemetaan_samaran.items():
+                if asli.lower() == args.nama_saya.strip().lower():
+                    nama_saya_untuk_kandidat = label
+                    break
+        kandidat_perhatian = tandai_kandidat_perhatian(pesan_terfilter, nama_saya_untuk_kandidat)
 
     rentang_asli = None
     if pesan:
@@ -538,6 +771,8 @@ def main():
         },
         "disamarkan": bool(args.samarkan),
         "jumlah_anggota_disamarkan": len(pemetaan_samaran) if pemetaan_samaran else None,
+        "kemungkinan_nama_tersisa": nama_tersisa,
+        "kandidat_perlu_perhatian": kandidat_perhatian,
         "statistik": hitung_statistik(pesan_terfilter),
         "hari": kelompokkan_per_hari(pesan_terfilter),
     }
