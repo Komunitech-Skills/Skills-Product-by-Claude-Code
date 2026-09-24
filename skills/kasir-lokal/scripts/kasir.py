@@ -43,7 +43,7 @@ from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
 APLIKASI = "kasir-lokal"
-VERSI = "1.1.0"
+VERSI = "1.1.1"
 
 
 def _timeout():
@@ -610,7 +610,7 @@ def sel_aman(v):
     s = str(v if v is not None else "")
     if re.fullmatch(r"-?\d+(?:[.,]\d+)?", s):          # angka biasa (termasuk minus pecahan '-2,5') tetap angka
         return s
-    if s and (s[0] in "=+@\t\r" or (s[0] == "-" and not (len(s) > 1 and s[1].isdigit()))):
+    if s and s[0] in "=+-@\t\r":                    # teks diawali '-' juga bisa dijalankan Excel sebagai rumus
         return "'" + s
     return s
 

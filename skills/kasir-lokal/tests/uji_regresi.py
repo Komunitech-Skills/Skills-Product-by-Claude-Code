@@ -161,6 +161,11 @@ class UjiInti(unittest.TestCase):
         self.assertEqual(K.sel_aman("=HYPERLINK(\"x\")"), "'=HYPERLINK(\"x\")")
         self.assertEqual(K.sel_aman("+62812"), "'+62812")
         self.assertEqual(K.sel_aman("@SUM(A1)"), "'@SUM(A1)")
+        # v1.1.1: teks diawali minus+angka tetap diamankan (payload DDE), angka murni tetap angka
+        self.assertEqual(K.sel_aman("-1+1+cmd|' /C calc'!A0"), "'-1+1+cmd|' /C calc'!A0")
+        self.assertEqual(K.sel_aman("-5 Diskon Palsu"), "'-5 Diskon Palsu")
+        self.assertEqual(K.sel_aman("-2,5"), "-2,5")
+        self.assertEqual(K.sel_aman("-2.5"), "-2.5")
         self.assertEqual(K.sel_aman(-5000), -5000)          # angka minus tetap angka
         self.assertEqual(K.sel_aman("Kopi"), "Kopi")
 

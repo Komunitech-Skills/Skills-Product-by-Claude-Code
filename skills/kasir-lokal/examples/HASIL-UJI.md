@@ -109,3 +109,131 @@ Alasan: inti kasir (hitung, pajak PPN, void/retur, tutup kasir, rekap, ekspor ke
 
 ## Catatan koordinator — v1.1.0
 Mode PBJT (pajak daerah makanan/minuman restoran), satuan, larangan manipulasi nota, zona waktu, dan cacat ringan ditambahkan pembuat; 64/64 tes lulus (dicek ulang koordinator). Karena PBJT adalah perhitungan pajak BARU yang belum diuji independen, status diturunkan sementara ke `uji` sampai uji ulang independen v1.1.0 selesai.
+
+---
+
+# Uji ulang v1.1.0 — 2026-09-24
+
+- **Penguji:** agent penguji independen (simulasi, Claude Code), bukan pembuat. Hanya membaca folder skill; DB uji di `/tmp/uji-kasir-lokal/{v11,kafe,reg,mig,tz}`.
+- **Tes bawaan:** `tests/uji_regresi.py` → 64 tes OK.
+- **OpenClaw 2026.9.5:** `skills install --global` + `skills check --json` → kasir-lokal **eligible, modelVisible, commandVisible**.
+
+## 1. Verifikasi angka PBJT (script penguji sendiri, hanya memanggil CLI; `verif/verif_pbjt.py`)
+Model independen (Fraction): baris & diskon seperti v1.0.0; service charge = rupiah terdekat dari SC% × total setelah diskon; `pbjt-belum`: dasar = total setelah diskon (+ SC bila `--sc-kena-pajak ya`), PBJT = ⌊tarif × dasar⌋, total = dasar + PBJT (+ SC bila tidak kena); `pbjt-termasuk`: dasar = rupiah bulat terbesar dengan dasar + ⌊tarif × dasar⌋ ≤ harga; retur/void = nilai(sisa sesudah) − nilai(sisa sebelum) untuk dasar, SC, PBJT, total.
+
+| Sapuan | Isi | Hasil |
+|---|---|---|
+| 20 konfigurasi × 3 seed | tarif 2,5% / 5% / 7,125% / 10% × {termasuk; belum tanpa SC; SC 5% kena; SC 5% tidak kena; SC 10% kena} | — |
+| 900 nota | 1–4 produk acak (harga ganjil 4.000–41.900, produk kg pecahan 0,25–10), diskon item %/bertingkat/nominal/7,5%, diskon nota %/nominal/bertingkat | **0 beda** (netto, SC, dasar, PBJT, total) |
+| ±560 retur sebagian & void | retur separuh baris (termasuk kg pecahan), lalu sebagian di-void sisanya; void penuh | **0 beda** (koreksi dasar, SC, PBJT, uang kembali). 4 "beda" = void atas nota yang sudah diretur penuh → script menolak dengan benar (artefak skrip uji) |
+| 60 rekap bulanan | Σ PBJT dipungut, uang diterima, omzet tanpa PBJT | **0 beda** |
+| Contoh di SKILL.md | 45.900 @10% → 4.590 → 50.490; termasuk 53.000 → dasar 48.182, PBJT 4.818 | benar |
+| Migrasi DB v1.0.0 | DB dibuat kode v1.0.0 (git `c8c079c`, mode PPN termasuk) → dibuka v1.1.0 → retur nota lama (PPN −2.029/−4.059, sama persis dgn v1.0.0) → `atur` ke PBJT 10% → nota baru PBJT 6.850; retur nota lama tetap memakai PPN (pengaturan per nota) → rekap: PPN 71.561, PBJT 6.850, omzet 719.064 | cocok hitungan manual |
+
+**Kesesuaian dengan UU 1/2022:** Pasal 57 ayat (1) dasar = jumlah yang dibayar konsumen → dipakai total setelah diskon, **tanpa** 11/12 ✓. Pasal 58 ayat (1)/(4) tarif ≤ 10% via Perda → tarif wajib diisi pengguna, 0/negatif/10,5/11 ditolak, desimal (2,5; 7,125) diterima ✓. Pasal 59 ayat (1) pokok = dasar × tarif ✓. Penggabungan PPN+PBJT ditolak dengan rujukan Pasal 4A ayat (2) huruf c UU PPN ✓.
+
+**Pembulatan & disclaimer — jujur:** UU tidak mengatur pembulatan per nota; pilihan ⌊…⌋ sekali (tidak pernah memungut melebihi tarif) konsisten dengan standar library, dinyatakan sebagai *keputusan desain* di `references/pajak.md`, dan disclaimer rekap/struk menyebut "Pembulatan belum dicocokkan dengan sistem pajak daerah/Bapenda … tanyakan Bapenda". Service charge tidak diputuskan skill (wajib `--sc-kena-pajak`) — konservatif dan jujur; saran: tambahkan catatan bahwa Pasal 57 memakai "jumlah yang dibayarkan konsumen", sehingga SC yang dibayar konsumen **lazim** ikut dasar — tetap ikuti Perda.
+
+## 2. Skenario kafe end-to-end (PBJT 10% + SC 5% kena pajak, WIB) — `/tmp/uji-kasir-lokal/kafe`
+**A.1 (pertanyaan agent sesuai SKILL.md):** "(1) nama, alamat, telp, kota (WIB/WITA/WIT); (2) daftar menu; (3) kafe dengan meja-kursi: sudah terdaftar PBJT/pajak restoran di Bapenda? tarif di Perda/SKPD? harga menu sudah termasuk pajak? ada service charge, dan menurut Bapenda ikut dikenai pajak? (4) stok; (5) printer 58/80." → Jawaban fiktif: terdaftar, 10%, belum termasuk, SC 5% ikut dikenai.
+`init --pajak pbjt-belum --tarif-pbjt 10 --service-charge 5 --sc-kena-pajak ya --zona WIB` → "Pajak: PBJT makanan/minuman 10% (harga menu belum termasuk PBJT) | Service charge 5% (kena pajak) | Zona: Asia/Jakarta (WIB)". Tanpa tarif → ditolak ("Tarif tidak diisi otomatis…"); SC tanpa `--sc-kena-pajak` → ditolak.
+
+| Jam | Pesan | Subtotal | SC 5% | Dasar | PBJT | Total | Bayar/kembalian |
+|---|---|---:|---:|---:|---:|---:|---|
+| 08:20 | dua kopi susu, satu roti bakar keju, catatan: meja 3, bayar tunai 100rb | 53.000 | 2.650 | 55.650 | 5.565 | 61.215 | T 100.000 / 38.785 |
+| 09:05 | 3 es teh manis diskon 10%+5%, 2 indomie, bayar qris | 42.390 | 2.120 | 44.510 | 4.451 | 48.961 | QRIS |
+| 11:30 | 1 americano, 2 cappuccino diskon 2rb, diskon 10%, bayar tunai 80rb | 55.800 | 2.790 | 58.590 | 5.859 | 64.449 | T 80.000 / 15.551 |
+| 12:45 | lima indomie, 5 es teh lemon, bayar qris 50rb, tunai 80rb | 107.500 | 5.375 | 112.875 | 11.287 | 124.162 | QRIS 50.000 + T 80.000 / 5.838 |
+| 15:10 | 2 kentang goreng, 1 coklat panas, bayar debit → **void 15:15** | 43.000 | 2.150 | 45.150 | 4.515 | 49.665 | Debit, dikembalikan Debit 49.665 |
+| 19:40 | kopi susu 3, pisang goreng 2, bayar tunai 150rb | 78.000 | 3.900 | 81.900 | 8.190 | 90.090 | T 150.000 / 59.910 |
+| 11:40 | retur 1 cappuccino (tumpah) dari nota 11:30 | −18.900 | −945 | −19.845 | −1.985 | −21.830 | Tunai |
+
+(Pesan 12:45 awalnya "bayar qris 50rb, tunai 50rb" → "Pembayaran KURANG Rp 24.162" — pembayar kurang tertangkap.)
+
+Struk 58 mm (Chromium → PDF 57,8 × 100,9 mm, 1 halaman, `scrollWidth = clientWidth`; `struk-58mm-kafe-pbjt.png`):
+```
+   KAFE TERAS SENJA (FIKTIF)
+   Jl. Contoh No. 7, Jakarta
+            Selatan
+         0812-0000-2222
+--------------------------------
+No                 N-260924-0001
+Tgl         24/09/2026 08:20 WIB
+Kasir                      Dimas
+--------------------------------
+Kopi Susu Gula Aren
+  2 cup x 18.000          36.000
+Roti Bakar Keju
+  1 porsi x 17.000        17.000
+--------------------------------
+Subtotal                  53.000
+Service 5%                 2.650
+Dasar PBJT                55.650
+PBJT 10%                   5.565
+TOTAL                  Rp 61.215
+Tunai                    100.000
+Kembalian                 38.785
+Catatan: meja 3
+--------------------------------
+ Struk ini bukan faktur pajak.
+          Terima kasih
+```
+Mode `pbjt-termasuk` (DB terpisah): 53.000 → "TOTAL Rp 53.000 (sudah termasuk PBJT 10%) | Dasar PBJT Rp 48.182 | PBJT Rp 4.818" ✓.
+
+**Tutup kasir:** kas awal 300.000 + tunai bersih 268.086 − kas keluar 30.000 = **538.086** (dihitung ulang manual: 61.215 + 64.449 + 74.162 + 90.090 − 21.830 = 268.086 ✓); fisik 537.500 → "SELISIH KURANG Rp 586"; non-tunai QRIS 98.961 ✓.
+
+**Rekap harian/bulanan:** kotor 390.500, diskon −10.810, retur/void −61.900, bersih 317.790, **Service charge 15.890, PBJT dipungut 33.367**, uang diterima 367.047, **omzet tanpa PBJT 333.680**, rata-rata 77.775 (tanpa nota void) — semua dicek manual ✓. Rekap bulanan menambah "PBJT yang dipungut … Rp 33.367: setor & laporkan ke Bapenda … (kasir tidak menyetor)" + disclaimer UU 1/2022 Pasal 50–58.
+**→ pph-final-umkm:** `rekap --tahun 2026` memberi `pph_final.py --jenis op --tahun 2026 --bulan-awal 9 --omzet 333680`; dijalankan sungguhan → Rp 0 (masih dalam Rp 500 juta bebas) ✓. Omzet PPh = uang diterima − PBJT (termasuk SC) — wajar sebagai peredaran bruto.
+
+## 3. Regresi skenario 01–03 (kode v1.1.0, input sama)
+| Skenario | Hasil |
+|---|---|
+| 01 warung kopi | 12 nota vs model independen: **0 beda**; tutup kasir 425.990 / kurang 990 **sama**; rekap kotor/diskon/bersih/metode/produk **sama**. Berubah (disengaja): rata-rata 51.949 → **51.672** (tanpa void, cocok hitungan uji v1.0.0); baris "11.00–11.59 1 nota Rp 55.000" (nota yang di-void) tidak lagi muncul di "Per jam" — konsisten dengan aturan tanpa void, tetapi **tidak disebut** di klaim pembuat (catat di changelog). |
+| 02 toko bangunan PKP | PPN kedua mode, retur, omzet & PPN bulanan: **0 beda** (1.600.795 / 176.086; 1.442.161 / 158.634). Retur `0,75 kg kawat bendrat` kini diterima. |
+| 03 kelontong | Ekspor buku-stok **identik byte-per-byte** dengan v1.0.0; rekap bersih 160.525 sama; rekap-penjualan-csv 160.525; rata-rata 57.150 → **56.833** (disengaja). CSV kini menulis `-2,5` sebagai angka ✓. |
+
+## 4. Uji perbaikan lain
+| Butir | Hasil |
+|---|---|
+| Satuan | `2 sak semen`, `semen 2 sak`, `semen sak 2`, `2 pail cat`, `0,5 m3 pasir`, `pasir 1,5 m3`, `setengah m3 pasir`, `3 batang besi`, `besi 3 batang`, `2 lembar triplek`, `12,5 m2 keramik`, `0,75 ton batu split`, `2 dus aqua`, `5 m kabel`, `2 semen 50 kg` (varian berisi "kg") ✓. Ditolak benar: `1,5 sak semen` (pecahan), `2 kg semen` & `2 meter semen` (satuan tak cocok), `2 lusin paku` (dengan petunjuk 1 lusin = 12). Penyempitan: `3 kg gula pasir` → produk kg, `1 karung gula pasir` → produk karung ✓. Retur `2,5 meter pipa pvc` ✓. |
+| Larangan manipulasi (aturan 7) | Ada, jelas, dengan alternatif sah; rujukan UU KUP Pasal 39 ayat (1) sesuai isi umum pasal (menyampaikan SPT/keterangan tidak benar, memperlihatkan pembukuan palsu) — teks pasal belum dibuka penguji. Checklist menambah butir ✓. |
+| Multi-cabang | Alternatif satu DB per cabang + gabung CSV → rekap-penjualan-csv tertulis di SKILL.md ✓. |
+| Zona waktu (komputer TZ=UTC, 01:06 UTC) | `--zona WITA` → nota "24/09/2026 09:06 WITA" sama untuk TZ=UTC/Asia/Jakarta/America/New_York ✓; tanpa tzdata (`PYTHONTZPATH=/nonexistent`) fallback offset tetap → 09:06 WITA ✓; `info` memperingatkan "Jam komputer UTC+0, toko WITA (UTC+8) … jadwal OpenClaw pakai --tz Asia/Makassar" ✓; zona luar Indonesia/`UTC+7` ditolak dengan pilihan jelas. Batas tengah malam dicek lewat kode (`sekarang()` memakai zona toko), tidak dengan jam palsu. |
+| Emoji | Emoji dibuang dari struk; nama panjang dibungkus; render `scrollWidth = clientWidth` (tidak terpotong) — `struk-58mm-emoji-v110.png` ✓ |
+| `struk --teks` | Tidak lagi menaikkan hitungan cetak: HTML pertama tanpa "SALINAN", kedua "SALINAN" ✓ |
+| Pesan setelah tutup kasir | Nota **setelah** jam tutup (22:30) → "Kasir sudah DITUTUP pukul … buka sesi baru" ✓. Nota susulan **di dalam** jam sesi yang sudah ditutup (21:30, sesi 08:00–22:00) masih "Kasir belum dibuka…" ✗ (ringan) |
+| CSV formula injection | **REGRESI:** lihat cacat B1 |
+
+## 5. Cacat v1.1.0
+
+### BERAT
+**B1. Perlindungan formula injection CSV bocor untuk teks berawalan `-angka` (regresi keamanan).** `sel_aman()` baris 613 mengecualikan semua teks yang diawali `-` + digit. Produk bernama `-1+1+cmd|' /C calc'!A0` (payload DDE klasik) dan `-5 Diskon Palsu` diekspor **tanpa** tanda `'` (bukti: `/tmp/uji-kasir-lokal/r/inj4.csv`: `…;INJ;-1+1+cmd|' /C calc'!A0;…`). Excel mengevaluasi sel berawalan `-` sebagai rumus (mis. `-1+HYPERLINK("http://…")`). v1.0.0 menandai semua `-`. Klaim SKILL.md "CSV hasil ekspor aman dari formula injection" menjadi tidak benar. Nama produk bisa berasal dari CSV pemasok yang diimpor. **Perbaikan (1 baris):** hapus pengecualian `(s[0] == "-" and not s[1].isdigit())` → cukup `s[0] in "=+-@\t\r"`, karena baris 611 sudah meloloskan angka murni (`-2,5`, `-9975`). Tambah tes regresi untuk `-1+1+cmd|…` dan `-5 abc`.
+
+### SEDANG
+Tidak ada.
+
+### RINGAN
+1. Rekap bulanan toko PBJT juga mencetak disclaimer PPN ("UU HPP & PMK 131/2024 (PPN 12% …)") — membingungkan untuk kafe yang tidak memungut PPN; pisahkan disclaimer PPh final dari PPN.
+2. `init --pajak tanpa --tarif-pbjt 10` diterima diam-diam (tarif diabaikan); beri peringatan.
+3. Pesan tarif 0/negatif berbunyi "…membatasi paling tinggi 10%" — kurang tepat; tulis "harus lebih dari 0 dan paling tinggi 10%".
+4. Nota susulan di dalam jam sesi yang sudah ditutup masih memberi pesan "Kasir belum dibuka" (lihat tabel 4).
+5. `2 gula pasir` bila ada produk per kg dan per karung dengan nama sama → otomatis memilih produk tanpa varian (per kg) tanpa catatan "dibaca sebagai"; tambahkan catatan agar pengguna sadar.
+6. Perubahan "Per jam tanpa nota void" belum tercatat di changelog/README.
+7. Saran (bukan cacat): catatan di `references/pajak.md` bahwa Pasal 57 memakai "jumlah yang dibayarkan konsumen", sehingga service charge yang dibayar konsumen lazim ikut dasar — tetap ikuti Perda.
+
+## 6. Skor v1.1.0
+| Kriteria | Skor |
+|---|:-:|
+| Pemicu | 9 |
+| Kemudahan awam | 9 |
+| Kualitas output | 9 |
+| Akurasi (angka/fakta) | 10 |
+| Penanganan input kurang | 9 |
+| Penanganan di luar cakupan | 9 |
+| Keamanan | **5** (regresi formula injection B1) |
+
+## SKOR AKHIR v1.1.0: **6 / 10 — REVISI**
+Mode PBJT benar: 900 nota + ±560 retur/void + 60 rekap, 0 beda. Mode ini juga sesuai UU 1/2022 Pasal 57–59, dan pembulatan serta disclaimernya jujur. Perbaikan satuan, larangan manipulasi, zona waktu, dan cacat ringan v1.0.0 terbukti. Regresi skenario 01–03 bersih, kecuali perubahan rata-rata dan per jam yang disengaja. Namun B1 adalah regresi keamanan pada perlindungan yang diklaim di SKILL.md, sehingga menurut aturan quality gate skor dibatasi ≤ 6. Perbaikannya satu baris + tes. Setelah B1 diperbaiki dan dicek ulang (cukup tes CSV injection + `tests/uji_regresi.py`), perkiraan skor **9/10 — LULUS**.
+
+## Catatan koordinator — v1.1.1
+B1 (regresi formula injection) diperbaiki koordinator: `sel_aman()` kembali mengamankan SEMUA teks diawali `= + - @ tab CR`; angka murni (mis. `-2,5`) tetap lolos sebagai angka lewat pengecekan regex sebelumnya. Tes regresi ditambah untuk `-1+1+cmd|' /C calc'!A0`, `-5 Diskon Palsu`, `-2,5`, `-2.5`; 64/64 tes lulus. Cacat ringan dari uji ulang v1.1.0 dicatat untuk versi berikutnya. Menunggu cek ulang singkat penguji.
