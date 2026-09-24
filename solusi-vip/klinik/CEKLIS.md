@@ -1,0 +1,53 @@
+# Ceklis Serah-Terima — Solusi VIP Klinik
+
+Satu halaman. **Jangan tulis nama pasien, nomor rekam medis, atau diagnosis di ceklis ini** —
+hanya status ya/tidak.
+
+## Prasyarat
+- [ ] OpenClaw terpasang & bisa diajak chat biasa.
+- [ ] Mesin Gateway sudah dipilih: ☐ komputer resepsionis jam praktik ☐ mini PC/laptop 24 jam
+      ☐ VPS klinik ☐ jasa setup Komunitech.
+- [ ] Dokter/tenaga kesehatan penanggung jawab materi edukasi sudah ditunjuk (nama tidak perlu
+      dicatat di sini, cukup dipastikan ada).
+
+## Pemasangan skill
+- [ ] 7 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`,
+      `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`.
+- [ ] `karyawan-ai-mulai` sudah dijalankan sekali, ada 1 hasil nyata.
+- [ ] `cek-privasi-openclaw` sudah dijalankan, termasuk ringkasan UU PDP data kesehatan.
+
+## Kanal
+- [ ] Bot Telegram tersambung, pairing disetujui, ID chat dicatat di catatan pribadi (bukan di
+      dokumen bersama tim/repo).
+- [ ] **Kalau memakai WhatsApp:**
+  - [ ] Nomor **terpisah** dari nomor pendaftaran/CS pasien.
+  - [ ] Persetujuan risiko **tertulis** diperoleh.
+  - [ ] `dmPolicy` = `allowlist` (BUKAN `pairing`/`open`), diset **sebelum** nomor dibagikan ke
+        siapa pun.
+  - [ ] `allowFrom` hanya berisi nomor pemilik/PIC.
+
+## Otomasi
+| Otomasi | Jadwal | Diuji sekali? | Sudah dicek TIDAK ada nama/diagnosis pasien? | Aktif? |
+|---|---|---|---|---|
+| Rekap CS harian (Copilot) | 20.00 WIB | ☐ | ☐ | ☐ |
+| Laporan operasional klinik | Mingguan/harian | ☐ | ☐ | ☐ |
+| Konten edukasi kesehatan | Jumat 16.00 WIB | ☐ | — (bukan data pasien) | ☐ |
+
+## Privasi & batasan medis (wajib dicentang semua)
+- [ ] Tidak ada skrining/diagnosis/kalkulator medis/dosis/interpretasi lab/triase dijalankan
+      lewat paket ini.
+- [ ] Semua instruksi medis di leaflet/pengingat berasal **persis** dari dokter — tidak ditebak
+      AI.
+- [ ] Laporan operasional **hanya** berisi angka agregat, tanpa nama/NIK/diagnosis.
+- [ ] Basis pengetahuan CS **tidak** berisi data pasien individual.
+- [ ] Log CS harian hanya berisi kategori pertanyaan, bukan isi chat/nama pasien lengkap.
+- [ ] Konten edukasi kesehatan sudah/akan ditinjau dokter sebelum diposting, mencantumkan sumber
+      resmi + nama & alamat klinik + tanggal (Permenkes 1787/2010).
+- [ ] Tidak ada klaim menyembuhkan/testimoni/before-after/superlatif di materi publikasi.
+- [ ] Agen CS mode Copilot: draf disiapkan AI, **staf yang mengirim** ke pasien. Tidak ada
+      auto-reply otomatis ke pasien lewat WA Web.
+- [ ] Tidak ada broadcast/promo massal dikirim lewat OpenClaw.
+- [ ] Pasien diberi tahu bila berbicara dengan asisten virtual, dan boleh minta bicara staf.
+
+## Tanda tangan/paraf serah-terima
+Tanggal: __________  PIC klinik: __________  Teknisi/pendamping (bila ada): __________
