@@ -33,21 +33,22 @@ menerima rekap berisi apa yang harus dikerjakan hari itu, **plus draf pesan siap
 ## Data & privasi (wajib)
 - File di folder kerja pengguna: `pengingat/DAFTAR.csv` dan `pengingat/timesheet.csv` (contoh:
   `templates/`). Folder kerja = workspace OpenClaw, atau folder proyek di Claude Code/Codex/Cursor.
-- Kolom `DAFTAR.csv`: `id,jenis,nama,tanggal,nominal,perihal,status,catatan,dibuat`.
+- Kolom `DAFTAR.csv`: `id,jenis,nama,tanggal,nominal,perihal,status,catatan,dibuat,diingatkan`.
   - `jenis`: `piutang` | `prospek` | `timesheet` | `janji` | `lainnya`
   - `nama`: **nama panggilan atau kode saja** ("Bu Rina", "PLG-07"). Jangan menyimpan nomor HP, email, alamat, atau NIK.
     Script menolak kolom yang berisi pola nomor HP, email, atau 16 digit (kode keluar 2).
   - `perihal`: masuk ke draf untuk pelanggan (mis. "INV-012", "penawaran katering").
   - `catatan`: **pribadi pemilik**. Tampil di rekap untuk pemilik, **tidak pernah** masuk ke draf.
-  - `status`: `aktif` | `selesai`. "Hapus" = baris dibuang permanen.
+  - `status`: `aktif` | `selesai` (`lunas`/`sudah bayar` dibaca sebagai selesai). "Hapus" = baris dibuang permanen.
+  - `diingatkan`: berapa kali pemilik **sudah mengirim** pesan untuk item ini. Menentukan nada draf berikutnya.
 - Sarankan `bersihkan --lebih-dari 30` sebulan sekali agar data pihak ketiga tidak menumpuk (UU PDP: data minimal).
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
 | Siapa (nama panggilan/kode) | Ya | — (tanyakan) |
-| Kapan (tanggal jatuh tempo / tanggal follow-up) | Ya | Hari ini, dan sebutkan asumsinya |
-| Jenis | Tidak | Ditebak dari kalimat: "bayar/tagih/invoice/nota" → piutang; "penawaran/tawarin/calon/prospek" → prospek; "jam kerja/timesheet" → timesheet; "ketemu/meeting/janji" → janji; selain itu → lainnya |
+| Kapan (tanggal jatuh tempo / tanggal follow-up) | Ya | Piutang tanpa tanggal → **tanya dulu**. Default "hari ini" hanya bila pengguna minta cepat; sebutkan asumsinya |
+| Jenis | Tidak | Ditebak dari kalimat: "bayar/tagih/invoice/nota/bon/kasbon" → piutang; "penawaran/tawarin/calon/prospek" → prospek; "jam kerja/timesheet" → timesheet; "ketemu/meeting/janji" → janji; selain itu → lainnya |
 | Nominal | Tidak (disarankan untuk piutang) | Kosong; draf tanpa angka |
 | Perihal (no. invoice/produk) | Tidak | Kosong ("pembayaran tagihan") |
 | Kanal & jam rekap otomatis | Tidak | Telegram, 08.00 WIB (Asia/Jakarta) |
@@ -69,22 +70,29 @@ S --teks tambah --jenis piutang --nama "Bu Rina" --tanggal "tgl 3" --nominal "4,
 - Tahun tidak disebut → script memilih tanggal terdekat ke depan. Jika tanggal itu baru lewat ≤ 60 hari
   (mis. "20 Sep" diucapkan 1 Okt), script memakai tahun ini dan item masuk TERLAMBAT.
   **Sampaikan `Catatan:` dari script ke pengguna apa adanya.**
-- Nominal: `4,5 jt`, `4.500.000`, `Rp4.500.000`, `750rb`, `1,2 M`, `4 jt 500 rb`.
+- Nominal: `4,5 jt`, `4.500.000`, `Rp4.500.000`, `750rb`, `1,2 M`, `4 jt 500 rb`. Ditolak sebagai ambigu
+  (tanyakan ulang): `m` kecil ("5m": juta atau miliar?), titik/koma ganjil ("4,5,6 jt", "1,500 jt", "1.500 jt").
+  Nominal ≥ Rp 1 miliar diterima dengan `Catatan:`. Minta pengguna memastikan angkanya.
 - Balas singkat dengan teks hasil script, mis. "Tersimpan #3: piutang - Bu Rina, Sabtu, 3 Oktober 2026, Rp 4.500.000."
 - "Kalau belum bayar" tidak perlu kolom khusus. Item tetap aktif sampai pemilik bilang sudah bayar.
 - Daftar banyak sekaligus (tabel, CSV, foto daftar piutang): baca, tunjukkan ringkasannya, minta "ya",
   lalu jalankan `tambah` per baris. Jangan menulis CSV langsung, karena validasi ada di script.
 
-### 2. Tandai selesai / tunda / ubah / hapus lewat chat
+### 2. Tandai selesai / terkirim / tunda / ubah / hapus lewat chat
 ```bash
 S --teks selesai --id 3            # "Bu Rina sudah bayar"
+S --teks terkirim --id 3           # "sudah kukirim ke Bu Rina" -> diingatkan +1, nada berikutnya naik
+S --teks terkirim --id 5 --berikutnya "3 hari lagi"   # prospek: catat terkirim + jadwalkan follow-up berikutnya
 S --teks tunda --id 5 --ke "Senin" # "tunda Pak Budi ke Senin"
 S --teks ubah --id 3 --nominal "3 jt" --perihal "sisa INV-012"
 S --teks hapus --id 7              # permanen: konfirmasi "ya" dulu
 S --teks daftar [--semua]          # cari nomor item dari nama
 ```
 Pengguna menyebut nama, bukan nomor → jalankan `daftar` dulu. Jika ada lebih dari satu yang cocok, tanyakan yang mana.
-Pembayaran sebagian → `ubah --nominal <sisa>` dan tambahkan catatan.
+Pembayaran sebagian → `ubah --nominal <sisa> --catatan "bayar 1 jt tgl 5"` (catatan **ditambahkan**, tidak menimpa).
+Setiap kali pemilik bilang pesan sudah dikirim → jalankan `terkirim`. Tanpa itu, script menganggap belum pernah diingatkan.
+Follow-up prospek bertahap (H+1/3/7): setelah tiap kiriman, `terkirim --id N --berikutnya "<2/4/7> hari lagi"`.
+Draf prospek berubah otomatis: pertama → info tambahan → pilihan mudah → pesan pamit (≥ 3 kali).
 
 ### 3. Rekap harian (manual atau terjadwal)
 ```bash
@@ -93,13 +101,14 @@ S rekap                   # JSON (terlambat, jatuh_tempo_hari_ini, besok_h_1, ri
 S --teks draf --id 3      # draf untuk satu item
 ```
 Rekap berisi: **TERLAMBAT** (lewat N hari, paling lama di atas), **HARI INI**, **BESOK / H-1**,
-total piutang tertunggak (bilangan bulat), jumlah item 7 hari ke depan, lalu **DRAF PESAN** per item
-(maks. 10, sisanya lewat `draf --id`).
+total piutang tertunggak (bilangan bulat, hanya jika ada piutang), umur piutang terlambat (1–30 / 31–60 / >60 hari),
+item 7 hari ke depan (nomor, nama, tanggal), lalu **DRAF PESAN** per item (maks. 10, sisanya lewat `draf --id`).
 - Tampilkan teks rekap **apa adanya**. Boleh memperhalus draf jika pemilik minta, tapi nominal,
   tanggal, dan jumlah hari **tidak boleh diubah**.
-- Nada draf piutang mengikuti tahap `tagih-piutang`: H-1 dan hari H ramah; lewat 1–6 hari "mungkin
-  terlewat"; 7–29 hari minta tanggal pasti; ≥ 30 hari pemberitahuan tertulis. Jika pemilik sudah
-  ≥ 2 kali mengingatkan tanpa hasil, atau minta denda/somasi → pakai `tagih-piutang`.
+- Nada draf piutang mengikuti tahap `tagih-piutang` **dan** kolom `diingatkan`: sebelum jatuh tempo & hari H
+  ramah ("besok" hanya untuk H-1, selebihnya "lusa"/"pada <tanggal>"); lewat 1–6 hari "mungkin terlewat";
+  7–13 hari minta tanggal pasti; 14–29 hari pemberitahuan tertulis **hanya jika sudah ≥ 1 kali diingatkan**;
+  ≥ 30 hari pemberitahuan tertulis. ≥ 30 hari dan ≥ 2 kali diingatkan → saran somasi lewat `tagih-piutang`.
 - Prospek: draf singkat yang tidak memaksa. Untuk urutan lengkap → `follow-up-prospek`.
 - Timesheet: draf memakai placeholder `[TOTAL JAM]`/`[NILAI]`. Isi dengan Langkah 4 sebelum ditampilkan.
 - Janji: draf konfirmasi jadwal. Lainnya: pengingat untuk pemilik saja (tanpa draf).
@@ -111,7 +120,10 @@ S --teks catat-jam --klien "PT Kreatif" --jam "1:30" --tanggal "hari ini" --tari
 S --teks timesheet --periode minggu-ini [--klien "PT Kreatif"] [--tarif "150rb"]
 S --teks timesheet --dari "1/9/2026" --sampai "30/9/2026"
 ```
-- Jam: `1:30`, `1,5`, `90m`, `2 jam`, `1j30m`. Periode: `minggu-ini` (Senin–Minggu), `minggu-lalu`,
+- Tanggal kerja: nama hari berarti hari itu yang **terakhir sudah lewat** (termasuk hari ini). Contoh:
+  "Senin" diucapkan Jumat = Senin minggu ini. Tanggal kerja di masa depan (`besok`, `Senin depan`) **ditolak**.
+- Jam: `1:30`, `1,5`, `90m`, `2 jam`, `1j30m`. `1.30` (titik, 2 digit) ditolak sebagai ambigu: tanyakan "1 jam
+  30 menit atau 1,3 jam?". `1,30` dibaca desimal (78 menit) dengan `Catatan:`. Periode: `minggu-ini` (Senin–Minggu), `minggu-lalu`,
   `bulan-ini` (default), `bulan-lalu`, atau `--dari/--sampai`.
 - Rumus: nilai per klien = Σ(menit × tarif ÷ 60), dihitung persis lalu **dibulatkan sekali** ke rupiah
   terdekat (0,5 ke atas) per klien. Total = jumlah nilai per klien.
@@ -130,7 +142,7 @@ Pengguna cukup mengetik "rekap pengingat" setiap pagi, atau memasang pengingat k
 ## Format output
 - Tambah/ubah/selesai/tunda/hapus: satu-dua baris konfirmasi dari script (+ `Catatan:` bila ada).
 - Rekap harian: teks `rekap --teks` (contoh di `references/template-pesan.md`), diakhiri
-  "Balas misalnya: selesai 3, tunda 3 ke Senin, hapus 3".
+  "Balas misalnya: selesai 3, terkirim 3, tunda 3 ke Senin, hapus 3".
 - Semua rupiah berformat `Rp 4.500.000`. Tanggal ditulis `Sabtu, 3 Oktober 2026` atau `3 Okt 2026`.
 
 ## Contoh
@@ -165,10 +177,13 @@ Selamat pagi Bu Rina, kami mengingatkan pembayaran INV-012 sebesar Rp 4.500.000 
 - Script keluar dengan `ERROR: ...` (kode 1): sampaikan pesannya dengan bahasa sederhana dan minta data yang benar.
   Jangan menebak. Kode 2 = kolom berisi data kontak. Minta nama panggilan saja.
 - Baris CSV rusak (tanggal 31/2, nominal "abc", kolom berlebih) **tidak** menghentikan rekap.
-  Baris itu dilaporkan di `baris_ditolak` dan tidak dihapus dari file.
-- File Excel (`;` sebagai pemisah, BOM) bisa dibaca. Saat disimpan ulang, pemisahnya menjadi koma.
+  Baris itu dilaporkan di `baris_ditolak`. Saat file ditulis ulang (tambah/selesai/tunda/ubah/hapus), baris
+  rusak **tetap disimpan apa adanya di posisinya** dan disebut di teks keluaran supaya pemilik memperbaikinya.
+- File Excel (`;` sebagai pemisah, BOM, atau ANSI/Windows-1252) bisa dibaca. Saat disimpan ulang, file menjadi CSV
+  UTF-8 berpemisah koma. Teks yang diawali `=`, `+`, `@` diamankan agar tidak dibaca sebagai rumus.
+- CSV yang diedit manual dan berisi nomor HP/email/NIK → rekap memberi `Catatan:` untuk menghapusnya.
 - Script tidak mengetahui apakah pelanggan sudah membayar. Status diubah hanya jika pemilik mengatakannya.
-- Script tidak tahu berapa kali pemilik sudah menagih, jadi nada draf dibatasi sampai "pemberitahuan tertulis".
+- Jumlah tagihan yang sudah dikirim hanya diketahui dari `terkirim`. Draf tertinggi = "pemberitahuan tertulis".
   Somasi dan denda → `tagih-piutang` (bukan nasihat hukum).
 - Zona waktu default Asia/Jakarta. Untuk WITA/WIT pakai `--tz Asia/Makassar` / `Asia/Jayapura`.
   Uji dengan `--hari-ini 2026-10-01`.
