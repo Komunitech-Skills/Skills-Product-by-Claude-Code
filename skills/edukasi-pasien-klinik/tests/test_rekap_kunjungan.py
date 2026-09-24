@@ -101,15 +101,18 @@ class TesPrivasi(unittest.TestCase):
         self.assertIn("disembunyikan", teks)
 
     def test_r2_lebih_dari_20_nilai_unik_disembunyikan_setelah_batas(self):
-        # Label huruf (bukan angka) supaya lolos saringan "tanpa digit" dan
-        # yang diuji murni batas MAKS_NILAI_UNIK_TAMPIL, bukan filter digit.
+        # Label huruf (bukan angka) supaya lolos saringan "tanpa digit"; tiap
+        # label diulang 3x supaya lolos ambang MIN_FREKUENSI_TAMPIL juga —
+        # yang diuji murni batas MAKS_NILAI_UNIK_TAMPIL.
         import string
         label = [f"Poli{c}" for c in string.ascii_uppercase[:25]]  # 25 label unik
-        baris_csv = "Tanggal,Poli\n" + "".join(f"2026-09-01,{lbl}\n" for lbl in label)
+        baris_csv = "Tanggal,Poli\n" + "".join(
+            f"2026-09-01,{lbl}\n" * rk.MIN_FREKUENSI_TAMPIL for lbl in label
+        )
         header, baris = rk.baca_csv(baris_csv, is_text=True)
         hasil = rk.rekap(header, baris)
-        # 20 nilai pertama (semuanya freq=1, urutan insertion) tetap tampil,
-        # 5 sisanya disembunyikan.
+        # 20 nilai pertama (semuanya freq sama, urutan insertion) tetap
+        # tampil, 5 sisanya disembunyikan.
         self.assertEqual(len(hasil["per_poli"]), rk.MAKS_NILAI_UNIK_TAMPIL)
         self.assertEqual(hasil["nilai_disembunyikan"]["poli"]["nilai_berbeda"], 5)
 
@@ -155,11 +158,17 @@ class TesStatusKehadiran(unittest.TestCase):
         self.assertEqual(hasil["hadir"], 2)
 
     def test_status_tidak_dikenal_terlihat_di_rincian_dan_tidak_masuk_hadir(self):
-        csv_text = "Tanggal,Status\n2026-09-01,Reschedule besok\n2026-09-01,Selesai\n"
+        # "Reschedule besok" diulang 3x supaya lolos ambang MIN_FREKUENSI_TAMPIL
+        # dan tetap terlihat individual di rincian (bukan hanya di agregat).
+        csv_text = (
+            "Tanggal,Status\n"
+            + "2026-09-01,Reschedule besok\n" * 3
+            + "2026-09-01,Selesai\n" * 3
+        )
         header, baris = rk.baca_csv(csv_text, is_text=True)
         hasil = rk.rekap(header, baris)
-        self.assertEqual(hasil["status_tidak_dikenal_jumlah"], 1)
-        self.assertEqual(hasil["hadir"], 1)
+        self.assertEqual(hasil["status_tidak_dikenal_jumlah"], 3)
+        self.assertEqual(hasil["hadir"], 3)
         kategori = {s["nilai"]: s["kategori"] for s in hasil["status_rincian"]}
         self.assertEqual(kategori["Reschedule besok"], "tidak_dikenal")
         teks = rk.format_teks(hasil)
@@ -297,13 +306,17 @@ class TesB2KebocoranStatus(unittest.TestCase):
         mengetik catatan bebas di sana, nilai itu tetap tidak boleh bocor —
         hanya digabung jadi agregat 'disembunyikan', dan tidak dihitung
         sebagai hadir maupun tidak datang (kategori 'tidak_dikenal')."""
+        # "Selesai"/"Tidak hadir" diulang 3x supaya lolos ambang frekuensi
+        # dan tetap tampil individual — mengisolasi konsep: nilai AMAN &
+        # SERING tetap tampil, nilai TIDAK AMAN (walau cuma sekali) tetap
+        # disembunyikan.
         csv_text = (
             "Tanggal,Status\n"
-            "2026-09-01,Selesai\n"
-            "2026-09-01,Tidak hadir\n"
-            "2026-09-01,FIKTIF Ani 0812-0000-9999 dx DBD rujuk RS\n"
-            "2026-09-01,batal - FIKTIF Budi abses gigi\n"
-            "2026-09-01,Bu Ani sudah pulang\n"
+            + "2026-09-01,Selesai\n" * 3
+            + "2026-09-01,Tidak hadir\n" * 3
+            + "2026-09-01,FIKTIF Ani 0812-0000-9999 dx DBD rujuk RS\n"
+            + "2026-09-01,batal - FIKTIF Budi abses gigi\n"
+            + "2026-09-01,Bu Ani sudah pulang\n"
         )
         header, baris = rk.baca_csv(csv_text, is_text=True)
         hasil = rk.rekap(header, baris)
@@ -312,12 +325,14 @@ class TesB2KebocoranStatus(unittest.TestCase):
         for terlarang in ["FIKTIF Ani", "FIKTIF Budi", "0812-0000-9999", "dx DBD", "abses gigi", "Bu Ani"]:
             self.assertNotIn(terlarang, teks)
             self.assertNotIn(terlarang, dump)
+        self.assertIn("Selesai", teks)
+        self.assertIn("Tidak hadir", teks)
         # Totalnya tetap benar walau nilainya disembunyikan dari tampilan.
         # ("batal - FIKTIF Budi abses gigi" mengandung kata kunci "batal"
         # sehingga dikategorikan tidak_datang; ini tidak membocorkan apa
         # pun karena nilainya sendiri tetap tidak pernah dicetak.)
-        self.assertEqual(hasil["hadir"], 1)
-        self.assertEqual(hasil["tidak_datang"], 2)
+        self.assertEqual(hasil["hadir"], 3)
+        self.assertEqual(hasil["tidak_datang"], 4)
         self.assertEqual(hasil["status_tidak_dikenal_jumlah"], 2)
         self.assertEqual(hasil["nilai_disembunyikan"]["status"], {"baris": 3, "nilai_berbeda": 3})
 
@@ -327,6 +342,81 @@ class TesB2KebocoranStatus(unittest.TestCase):
         self.assertTrue(rk._nilai_aman_ditampilkan("Selesai"))
         self.assertFalse(rk._nilai_aman_ditampilkan("0812xxxx"))
         self.assertFalse(rk._nilai_aman_ditampilkan("Satu dua tiga empat"))
+
+    def test_pola_baru_v103_email_inisial_icd(self):
+        """B2-sisa: pola tambahan '@', inisial ('S.A.'), kode ICD ('J06')."""
+        self.assertFalse(rk._nilai_aman_ditampilkan("ani.fiktif@mail.com"))
+        self.assertFalse(rk._nilai_aman_ditampilkan("joko@mail.co.id"))
+        self.assertFalse(rk._nilai_aman_ditampilkan("S.A."))
+        self.assertFalse(rk._nilai_aman_ditampilkan("A.B.C."))
+        self.assertFalse(rk._nilai_aman_ditampilkan("J06"))
+        self.assertFalse(rk._nilai_aman_ditampilkan("K02.1"))
+        # Kategori sah yang tidak boleh salah tersaring oleh pola baru:
+        self.assertTrue(rk._nilai_aman_ditampilkan("Rujuk"))
+        self.assertTrue(rk._nilai_aman_ditampilkan("Reschedule"))
+
+    def test_ambang_frekuensi_nilai_langka_disembunyikan_walau_pola_aman(self):
+        """B2-sisa butir 1 (k-anonim): nama pendek 'ani'/'Rina' lolos pola
+        (<=3 kata, tanpa digit/sapaan/@/inisial/ICD) tapi HARUS tetap
+        disembunyikan karena hanya muncul 1-2 kali — kemungkinan besar data
+        satu pasien, bukan kategori asli."""
+        csv_text = (
+            "Tanggal,Status\n"
+            + "2026-09-01,ani\n"
+            + "2026-09-01,Rina\n"
+            + "2026-09-01,Selesai\n" * 3
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        teks = rk.format_teks(hasil)
+        dump = json.dumps(hasil, ensure_ascii=False)
+        self.assertNotIn("ani", [s["nilai"] for s in hasil["status_rincian"]])
+        for terlarang in ["'ani'", "'Rina'"]:
+            self.assertNotIn(terlarang, teks)
+        self.assertNotIn('"Rina"', dump)
+
+    def test_serangan_gabungan_nol_kebocoran(self):
+        """Reproduksi skenario serangan penguji independen (2026-09-24,
+        v1.0.2): nama pendek, nama panjang, inisial, email, diagnosis
+        1-2 kata ditanam di kolom status/poli/penjamin — semua fiktif.
+        Nilai sah yang BERULANG (>=3x) tetap harus tampil."""
+        csv_text = (
+            "Tanggal,Status,Poli,Penjamin\n"
+            + "2026-09-01,Selesai,Gigi,BPJS\n" * 3
+            + "2026-09-01,Tidak hadir,Umum,Umum\n" * 3
+            + "2026-09-01,Reschedule,KIA,Asuransi\n" * 3
+            + "2026-09-01,Siti Aminah,abses,Pak Joko\n"
+            + "2026-09-01,ani,DBD,Aminah\n"
+            + "2026-09-01,S.A.,Siti,hipertensi\n"
+            + "2026-09-01,DBD,Budi Santoso,joko@mail.co.id\n"
+            + "2026-09-01,hipertensi,Hipertensi,KIS 0001\n"
+            + "2026-09-01,ani.fiktif@mail.com,diabetes melitus,\n"
+            + "2026-09-01,Bu Ani,ISPA,\n"
+            + "2026-09-01,Rina,,\n"
+            + "2026-09-01,abses gigi,,\n"
+            + "2026-09-01,sakit kepala,,\n"
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        teks = rk.format_teks(hasil)
+        dump = json.dumps(hasil, ensure_ascii=False)
+        sensitif = [
+            "Siti Aminah", "ani", "S.A.", "DBD", "hipertensi",
+            "ani.fiktif@mail.com", "Bu Ani", "Rina", "abses gigi",
+            "sakit kepala", "abses", "Siti", "Budi Santoso", "Hipertensi",
+            "diabetes melitus", "ISPA", "Pak Joko", "Aminah",
+            "joko@mail.co.id", "KIS 0001",
+        ]
+        bocor = [s for s in sensitif if f"'{s}'" in teks or f'"{s}"' in dump]
+        self.assertEqual(bocor, [], f"kebocoran ditemukan: {bocor}")
+        # Nilai sah berulang tetap tampil.
+        self.assertIn("Selesai", teks)
+        self.assertIn("Tidak hadir", teks)
+        self.assertIn("Reschedule", teks)
+        self.assertIn("Gigi", teks)
+        self.assertIn("Umum", teks)
+        self.assertIn("KIA", teks)
+        self.assertIn("BPJS", teks)
 
 
 class TesR9UTF16TanpaBOM(unittest.TestCase):
@@ -421,14 +511,106 @@ class TesR12FormatAmbigu(unittest.TestCase):
 
 class TesR13PersentaseKategori(unittest.TestCase):
     def test_persentase_muncul_di_teks_untuk_per_poli(self):
+        # 3x tiap nilai supaya lolos ambang MIN_FREKUENSI_TAMPIL dan tampil.
         header, baris = rk.baca_csv(
-            "Tanggal,Poli\n2026-09-01,Gigi\n2026-09-01,Gigi\n2026-09-01,Umum\n2026-09-01,Umum\n",
+            "Tanggal,Poli\n"
+            + "2026-09-01,Gigi\n" * 3
+            + "2026-09-01,Umum\n" * 3,
             is_text=True,
         )
         hasil = rk.rekap(header, baris)
         teks = rk.format_teks(hasil)
-        self.assertIn("Gigi: 2 (50.0%)", teks)
-        self.assertIn("Umum: 2 (50.0%)", teks)
+        self.assertIn("Gigi: 3 (50.0%)", teks)
+        self.assertIn("Umum: 3 (50.0%)", teks)
+
+
+class TesB2SisaFrekuensiDanPola(unittest.TestCase):
+    """B2-sisa (uji serangan v1.0.2, 2026-09-24): nama pendek, inisial,
+    email, dan kode diagnosis di kolom status/poli/penjamin. Lihat juga
+    `TesB2KebocoranStatus.test_serangan_gabungan_nol_kebocoran`."""
+
+    def test_diagnosis_kode_icd_di_poli_disembunyikan_walau_berulang(self):
+        # Kode ICD selalu disembunyikan oleh POLA_ICD (dan juga oleh aturan
+        # "tanpa digit"), terlepas dari frekuensinya.
+        csv_text = "Tanggal,Poli\n" + "2026-09-01,J06\n" * 5
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertNotIn("J06", hasil["per_poli"])
+        self.assertEqual(hasil["nilai_disembunyikan"]["poli"], {"baris": 5, "nilai_berbeda": 1})
+
+    def test_diagnosis_kata_berulang_di_poli_tetap_tampil_sebagai_agregat(self):
+        """R (ringan, diketahui & didokumentasikan jujur di README/SKILL):
+        bila klinik memasukkan nama diagnosis non-kode (bukan pola ICD,
+        <=3 kata, tanpa digit) ke kolom poli dan itu BERULANG, hasilnya
+        adalah jumlah AGREGAT per istilah — bukan identitas satu pasien.
+        Ini bukan kebocoran data per-pasien, hanya nilai agregat."""
+        csv_text = "Tanggal,Poli\n" + "2026-09-01,Hipertensi\n" * 5
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["per_poli"]["Hipertensi"], 5)
+
+
+class TesBarisBergeser(unittest.TestCase):
+    """B2-sisa butir 3: baris yang kolomnya bergeser (koma tanpa tanda
+    kutip) dikeluarkan dari rincian, tetap dihitung di total, dan diberi
+    peringatan eksplisit — tidak pernah ditebak."""
+
+    def test_baris_bergeser_dikeluarkan_dari_rincian_tapi_masuk_total(self):
+        csv_text = (
+            "Tanggal,Poli,Penjamin,Status\n"
+            + "2026-09-01,Gigi,BPJS,Selesai\n" * 5
+            # baris ini kepanjangan (nilai poli mengandung koma tanpa kutip)
+            + "2026-09-02,Siti, Aminah,BPJS,Selesai\n"
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        teks = rk.format_teks(hasil)
+        dump = json.dumps(hasil, ensure_ascii=False)
+        self.assertEqual(hasil["total_pendaftaran"], 6)
+        self.assertEqual(hasil["baris_bergeser_jumlah"], 1)
+        self.assertIsNotNone(hasil["peringatan_baris_bergeser"])
+        self.assertIn("7", hasil["peringatan_baris_bergeser"])  # nomor baris file
+        self.assertNotIn("Siti", teks)
+        self.assertNotIn("Aminah", teks)
+        self.assertNotIn("Siti", dump)
+        # Baris bergeser tidak ikut per_hari (2026-09-02 tidak muncul).
+        self.assertNotIn("2026-09-02", hasil["per_hari"])
+        self.assertEqual(hasil["per_poli"], {"Gigi": 5})
+
+    def test_persentase_dihitung_dari_baris_yang_terbaca_bukan_total(self):
+        csv_text = (
+            "Tanggal,Status\n"
+            + "2026-09-01,Selesai\n" * 3
+            + "2026-09-02,Siti, Aminah,Selesai\n"  # bergeser (kolom ekstra)
+        )
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["total_pendaftaran"], 4)
+        self.assertEqual(hasil["total_dapat_dibaca"], 3)
+        self.assertEqual(hasil["hadir"], 3)
+        self.assertEqual(hasil["persentase_hadir"], 100.0)
+
+    def test_10_persen_baris_bergeser_semua_peringatan_dan_bersih(self):
+        baik = "2026-09-01,Gigi,BPJS,Selesai\n" * 90
+        buruk = "2026-09-01,Siti, Aminah,BPJS,Selesai\n" * 10
+        csv_text = "Tanggal,Poli,Penjamin,Status\n" + baik + buruk
+        header, baris = rk.baca_csv(csv_text, is_text=True)
+        hasil = rk.rekap(header, baris)
+        teks = rk.format_teks(hasil)
+        dump = json.dumps(hasil, ensure_ascii=False)
+        self.assertEqual(hasil["total_pendaftaran"], 100)
+        self.assertEqual(hasil["baris_bergeser_jumlah"], 10)
+        self.assertIsNotNone(hasil["peringatan_baris_bergeser"])
+        self.assertEqual(hasil["per_poli"], {"Gigi": 90})
+        self.assertNotIn("Siti", teks)
+        self.assertNotIn("Siti", dump)
+
+    def test_tanpa_baris_bergeser_field_kosong(self):
+        header, baris = rk.baca_csv(CSV_NORMAL, is_text=True)
+        hasil = rk.rekap(header, baris)
+        self.assertEqual(hasil["baris_bergeser_jumlah"], 0)
+        self.assertIsNone(hasil["peringatan_baris_bergeser"])
+        self.assertEqual(hasil["total_dapat_dibaca"], hasil["total_pendaftaran"])
 
 
 class TesTotalDanPersentase(unittest.TestCase):

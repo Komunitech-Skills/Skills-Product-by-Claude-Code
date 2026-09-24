@@ -157,9 +157,22 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
   script tetap mengasumsikan format Indonesia tapi memberi peringatan bahwa itu asumsi — jalankan
   ulang dengan `--urutan-tanggal mdy` untuk membandingkan bila filenya diduga dari sumber Amerika.
 - **Nilai status/poli/penjamin yang berpotensi berisi nama/kontak/diagnosis** (banyak kata,
-  mengandung angka, atau pola sapaan+nama seperti "Bu Ani"): script **tidak pernah** mencetak
-  nilai itu apa adanya, hanya jumlah baris & jumlah nilai berbeda yang disembunyikan. Jangan buka
-  file CSV asli untuk "melengkapi" bagian yang disembunyikan ke dalam rekap.
+  mengandung angka/"@", pola inisial "S.A.", kode ICD "J06", atau pola sapaan+nama seperti
+  "Bu Ani"): script **tidak pernah** mencetak nilai itu apa adanya, hanya jumlah baris & jumlah
+  nilai berbeda yang disembunyikan. Nilai yang muncul di **bawah 3 baris** juga disembunyikan
+  meski polanya aman (k-anonimitas sederhana — nilai langka kemungkinan besar salah isi/data
+  satu pasien). Jangan buka file CSV asli untuk "melengkapi" bagian yang disembunyikan ke dalam
+  rekap.
+- **Kolom "poli/layanan" berisi nama diagnosis/penyakit, bukan nama layanan** (mis. klinik
+  memakai kolom itu untuk mencatat "Hipertensi", "ISPA"): jika istilah itu muncul berulang
+  (≥ 3 baris) dan bukan pola kode ICD, script tetap menampilkannya sebagai **jumlah agregat per
+  istilah** (bukan identitas pasien — hanya kolom "poli" bukan tempat yang tepat untuk
+  diagnosis). Sarankan klinik mengisi kolom poli dengan nama layanan saja (mis. "Gigi", "KIA").
+- **Baris CSV yang jumlah kolomnya tidak cocok dengan header** (mis. koma tanpa tanda kutip di
+  salah satu nilai menggeser semua kolom setelahnya): script mengeluarkan baris itu dari rincian
+  per hari/poli/penjamin/status (tidak menebak kolom mana yang benar), tetap menghitungnya di
+  total pendaftaran, dan memberi peringatan bernomor baris — minta klinik memperbaiki file
+  aslinya.
 - **Dasar hukum:** UU PDP 27/2022, kerahasiaan medis UU 17/2023 & PP 28/2024, dan isi pasal
   Permenkes 1787/2010 tentang iklan sudah diverifikasi dari naskah resmi (lihat
   `references/aturan-privasi-dan-iklan.md`). Yang **masih PERLU DICEK**: status berlaku
