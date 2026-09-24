@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Tes mandiri untuk nomor_minggu.py (tanpa dependensi luar). Jalankan:
-  python3 scripts/uji_nomor_minggu.py
+  python3 tests/uji_nomor_minggu.py
 Keluar dengan kode 0 bila semua lolos, 1 bila ada yang gagal.
 """
 import json
@@ -8,7 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SKRIP = Path(__file__).with_name("nomor_minggu.py")
+SKRIP = Path(__file__).resolve().parent.parent / "scripts" / "nomor_minggu.py"
 gagal = 0
 
 
