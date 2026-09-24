@@ -130,9 +130,10 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 - [ ] Bahasa awam, sopan, tidak menakut-nakuti (lihat `references/bahasa-awam-pasien.md`).
 - [ ] Untuk balasan chat: bila menyentuh gejala, pakai kalimat baku arahkan ke dokter (dan
       kalimat darurat bila relevan) — tidak menilai kegawatan.
-- [ ] Untuk rekap: cek hasil di atas tidak memuat nama pasien sebelum dikirim (perhatikan
-      peringatan "nilai mencurigakan"/"kolom terlalu beragam" dari script bila muncul), dan
-      status yang "tidak dikenal" sudah dicek manual, bukan diasumsikan hadir.
+- [ ] Untuk rekap: cek hasil di atas tidak memuat nama pasien sebelum dikirim; script sudah
+      menyembunyikan nilai status/poli/penjamin yang mencurigakan secara otomatis — **jangan**
+      membuka file CSV asli untuk melengkapi nilai yang disembunyikan itu ke dalam rekap. Status
+      yang "tidak dikenal" sudah dicek manual, bukan diasumsikan hadir.
 
 ## Batasan & penanganan error
 - **Input medis kosong/tidak lengkap untuk leaflet/pengingat:** jangan mengarang instruksi.
@@ -152,7 +153,13 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
   rincian status di hasil rekap dan tanyakan ke klinik bila perlu diklasifikasikan ulang.
 - **Format tanggal campur dalam satu file CSV** (sebagian gaya Indonesia hari/bulan, sebagian
   gaya Amerika bulan/hari): script memberi peringatan eksplisit + nomor baris yang perlu dicek,
-  bukan diam-diam menebak.
+  bukan diam-diam menebak. Bila file sama sekali tidak punya bukti (semua hari/bulan ≤ 12),
+  script tetap mengasumsikan format Indonesia tapi memberi peringatan bahwa itu asumsi — jalankan
+  ulang dengan `--urutan-tanggal mdy` untuk membandingkan bila filenya diduga dari sumber Amerika.
+- **Nilai status/poli/penjamin yang berpotensi berisi nama/kontak/diagnosis** (banyak kata,
+  mengandung angka, atau pola sapaan+nama seperti "Bu Ani"): script **tidak pernah** mencetak
+  nilai itu apa adanya, hanya jumlah baris & jumlah nilai berbeda yang disembunyikan. Jangan buka
+  file CSV asli untuk "melengkapi" bagian yang disembunyikan ke dalam rekap.
 - **Dasar hukum:** UU PDP 27/2022, kerahasiaan medis UU 17/2023 & PP 28/2024, dan isi pasal
   Permenkes 1787/2010 tentang iklan sudah diverifikasi dari naskah resmi (lihat
   `references/aturan-privasi-dan-iklan.md`). Yang **masih PERLU DICEK**: status berlaku

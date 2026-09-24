@@ -369,12 +369,21 @@ def _decode_bytes(mentah: bytes):
         except UnicodeDecodeError:
             pass
     # R9: UTF-16 TANPA BOM — banyak byte NUL (\x00) berselang-seling adalah
-    # ciri khas teks ASCII/Latin yang dikodekan UTF-16. Coba little-endian
-    # lalu big-endian sebelum jatuh ke pembacaan 8-bit biasa, supaya pesan
-    # error tidak menyesatkan ("kolom tanggal tidak ditemukan").
+    # ciri khas teks ASCII/Latin yang dikodekan UTF-16. Tentukan endian dari
+    # posisi byte NUL pada karakter pertama (LE: byte tinggi/NUL ada di
+    # posisi genap setelah karakter; BE: NUL di posisi ganjil sebelum
+    # karakter) alih-alih menebak — supaya tidak salah pilih LE/BE yang
+    # sama-sama "berhasil" didekode tapi hasilnya kacau, dan pesan error
+    # tidak menyesatkan ("kolom tanggal tidak ditemukan").
     contoh = mentah[:4096]
     if contoh and (contoh.count(b"\x00") / len(contoh)) > 0.2:
-        for enc in ("utf-16-le", "utf-16-be"):
+        if len(mentah) >= 2 and mentah[0] != 0 and mentah[1] == 0:
+            urutan_coba = ("utf-16-le", "utf-16-be")
+        elif len(mentah) >= 2 and mentah[0] == 0 and mentah[1] != 0:
+            urutan_coba = ("utf-16-be", "utf-16-le")
+        else:
+            urutan_coba = ("utf-16-le", "utf-16-be")
+        for enc in urutan_coba:
             try:
                 return mentah.decode(enc), enc
             except UnicodeDecodeError:

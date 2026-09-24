@@ -28,7 +28,9 @@ Per penjamin (pendaftaran):
 
 Jam paling ramai: [jam 1], [jam 2], [jam 3]
 
-[bila script memberi peringatan format tanggal/nilai mencurigakan, salin peringatannya di sini]
+[bila script memberi peringatan format tanggal, atau baris "(nilai lain disembunyikan demi
+privasi)" pada status/poli/penjamin, salin peringatannya apa adanya — JANGAN coba menampilkan
+nilai yang disembunyikan itu, cukup sebut jumlahnya]
 
 Catatan: rekap ini bersifat agregat (jumlah), tidak memuat nama/diagnosis pasien. Persentase
 dibulatkan 1 desimal (round half up).
@@ -44,8 +46,12 @@ python3 <folder-skill-ini>/scripts/rekap_kunjungan.py --file kunjungan.csv
 1. Baca bagian "Rincian nilai status" dari output script — pastikan setiap status yang tertulis
    "tidak dikenal" sudah dicek manual (tanyakan ke klinik itu status apa), jangan dihitung
    sebagai hadir begitu saja.
-2. Kalau script memberi peringatan format tanggal campur atau nilai kolom yang mencurigakan
-   (>4 kata, kemungkinan berisi nama), tangani dulu sebelum mengirim rekap — jangan diabaikan.
+2. Kalau script memberi peringatan format tanggal campur, tangani dulu sebelum mengirim rekap —
+   jangan diabaikan.
+3. Script sudah otomatis menyembunyikan nilai status/poli/penjamin yang berpotensi berisi nama,
+   nomor kontak, atau diagnosis (nilai panjang, mengandung angka, atau pola sapaan+nama) — hanya
+   menyisakan jumlah baris & jumlah nilai berbeda yang disembunyikan. **Jangan pernah** membuka
+   file CSV asli untuk "melengkapi" nilai yang disembunyikan itu ke dalam rekap.
 
 Jika Python tidak bisa dijalankan, hitung manual: kelompokkan baris data per hari/poli/penjamin
 dan status kehadiran dengan cara menghitung (tally) langsung di spreadsheet
