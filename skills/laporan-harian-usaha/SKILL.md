@@ -18,12 +18,12 @@ Pemilik usaha cukup membaca **satu pesan** tiap malam (dan satu tiap Senin pagi)
 - Data dari file CSV/Excel aplikasi lain (Moka, Majoo, marketplace) → `rekap-penjualan-csv`. Laporan terjadwal dari file seperti itu → `laporan-otomatis-terjadwal`.
 - Laba rugi/neraca → `laporan-keuangan-emkm`. Arus kas ke depan → `arus-kas-13minggu`.
 - **Mengubah data** (catat penjualan, stok, absen, tandai lunas) → skill alatnya masing-masing. Skill ini **hanya membaca**.
-- Kirim laporan ke pelanggan/grup/broadcast → **tolak**. Laporan hanya untuk pemilik (keputusan pemilik Komunitech).
+- Kirim laporan ke pelanggan/grup/broadcast → **tolak**. Laporan hanya untuk pemilik, atau penerima lain yang **pemilik tunjuk secara eksplisit** (chat pribadi masing-masing) — lihat Langkah C.
 
 ## Cara kerja (penting untuk dijelaskan bila ditanya)
 1. Script mencari alat yang terpasang dari lokasi data default masing-masing alat (ENV sama: `KOMUNITECH_KASIR_DB`, `KOMUNITECH_STOK_DB`, `KOMUNITECH_ABSENSI_DB`, `KOMUNITECH_DATA`) dan `pengingat/DAFTAR.csv` (folder kerja, workspace OpenClaw `~/.openclaw/workspace`, atau `~/KomunitechData`). Alat yang tidak ada **dilewati dengan catatan**, bukan error.
 2. Database dibuka **read-only** (`mode=ro`, batas tunggu 10 detik) lalu disalin ke folder sementara. File asli tidak pernah ditulis (diuji: sidik file sebelum = sesudah).
-3. Angka dihitung oleh **perintah laporan resmi** tiap alat (`kasir.py rekap`, `stok.py laporan ringkas`, `absensi.py harian/rekap`, `cek_jatuh_tempo.py rekap`) pada salinan itu. Karena memakai "pintu resmi" alat, laporan tetap benar walau struktur database alat berubah di versi baru. Hanya selisih kas (tabel `sesi` kasir) dan cek "nota kasir sudah diimpor ke buku-stok" (tabel `pesanan`) dibaca langsung, dengan cek kolom dulu; jika berubah, bagian itu dilewati dengan catatan.
+3. Angka dihitung oleh **perintah laporan resmi** tiap alat (`kasir.py rekap`, `stok.py laporan ringkas`, `absensi.py harian/rekap`, `cek_jatuh_tempo.py rekap`) pada salinan itu. Karena memakai "pintu resmi" alat, laporan tetap benar walau struktur database alat berubah di versi baru. Hanya 3 hal dibaca langsung dari salinan (dengan cek kolom dulu; jika berubah, bagian itu dilewati dengan catatan): selisih kas (tabel `sesi` kasir); nota kasir yang **sah** (bukan yang di-void) per tanggal dibandingkan satu per satu dengan nomor nota di tabel `pesanan` buku-stok, jadi impor **sebagian** pun terdeteksi; dan jam masuk paling awal (tabel `shift`+`karyawan` absensi) untuk menghindari alarm keliru sebelum jam kerja mulai.
 4. Script alat dicari di folder skills yang sama dengan skill ini (lalu `~/.openclaw/skills`, `~/.claude/skills`, `~/.agents/skills`, `~/.cursor/skills`). Jadi pasang skill alat di folder yang sama.
 
 ## Input
@@ -65,6 +65,8 @@ Ikuti `references/openclaw-jadwal.md` (perintah sudah diuji dengan CLI OpenClaw 
 
 Lalu tunjukkan perintahnya + "Lanjut? (ya/tidak)". Kanal default **Telegram (bot resmi)**. WhatsApp hanya dengan **nomor terpisah** milik pemilik + persetujuan risiko tertulis. **Tanpa broadcast**, tanpa grup, tanpa pelanggan.
 
+Penerima boleh lebih dari satu: **pemilik bersama atau pengelola yang pemilik tunjuk secara eksplisit** (mis. "kirim juga ke chat Bu Rina, dia rekan usaha saya") boleh menerima, masing-masing di **chat pribadinya sendiri** (bukan grup). Tanpa penunjukan eksplisit dari pemilik, jangan menambah penerima sendiri.
+
 ## Format output
 Teks script (contoh nyata dari data uji, dipotong):
 ```
@@ -101,7 +103,7 @@ Terlambat 1 | hari ini 0 | besok 0
 
 PERLU PERHATIAN
 1. Selisih kas saat tutup kasir 2026-09-24 20:00: KURANG Rp 11.000 (...)
-2. Penjualan kasir tanggal 2026-09-24 belum diimpor ke buku-stok (stok belum terpotong).
+2. 3 dari 5 nota kasir tanggal 2026-09-24 belum diimpor ke buku-stok (stok belum terpotong).
 ```
 JSON (`--json`): `periode`, `alat` (status `ada`/`tidak_ada`/`gagal`/`dilewati` + pesan), `penjualan`, `stok`, `kehadiran`, `tagihan`, `perhatian`, `rumus`, `teks`.
 
@@ -117,20 +119,21 @@ JSON (`--json`): `periode`, `alat` (status `ada`/`tidak_ada`/`gagal`/`dilewati` 
 ## Privasi
 - **Tidak ada nama/nomor pelanggan**: tagihan ditampilkan sebagai nomor item (`#2 piutang Rp ...`). Perihal, catatan pribadi, dan nama penyetuju lembur tidak ditampilkan.
 - Nama karyawan = nama panggilan yang sudah ada di absensi; `--samarkan` mengubahnya jadi inisial.
-- Laporan hanya dikirim ke pemilik. Tidak ada data yang dikirim ke internet oleh script (pengiriman Telegram dilakukan OpenClaw milik pengguna).
+- Laporan hanya dikirim ke pemilik, atau pemilik bersama/pengelola yang **pemilik tunjuk secara eksplisit** (chat pribadi masing-masing). Tanpa grup, tanpa pelanggan, tanpa broadcast. Tidak ada data yang dikirim ke internet oleh script (pengiriman Telegram dilakukan OpenClaw milik pengguna).
 
 ## Checklist sebelum mengirim
 - [ ] Teks laporan dari script, angka/persen/tanggal tidak diubah
 - [ ] Bagian "Belum ada data" tidak diisi perkiraan
 - [ ] Tidak ada nama pelanggan/nomor HP ditambahkan
 - [ ] Butir "PERLU PERHATIAN" disampaikan semua
-- [ ] Jadwal hanya dibuat setelah pemilik menjawab "ya", tujuan = chat pemilik sendiri
+- [ ] Jadwal hanya dibuat setelah pemilik menjawab "ya", tujuan = chat pemilik sendiri (atau chat pribadi penerima yang pemilik tunjuk eksplisit)
 
 ## Batasan & penanganan error
 - Hanya membaca alat Komunitech di komputer yang sama. Bukan dashboard web, bukan multi-cabang, tidak menarik data marketplace/bank.
 - "sedang dipakai program lain" → saat itu ada transaksi yang sedang disimpan; data aman, jalankan lagi sebentar kemudian. Alat lain tetap dilaporkan.
 - "script ... tidak ditemukan" → skill alatnya belum terpasang di folder skills yang sama; pasang, atau beri `--kasir-script PATH` dst.
-- "Jam komputer ini bukan Asia/Jakarta" → kasir & absensi mencatat jam komputer; sarankan menyamakan zona waktu komputer.
-- File rusak/bukan database → bagian itu "Belum ada data" + pesan di PERLU PERHATIAN; sarankan pulihkan dari folder backup alatnya (jangan dihapus).
+- "Jam komputer ini bukan Asia/Jakarta" → hanya **absensi-lokal** yang mencatat jam tap menurut jam komputer; sarankan menyamakan zona waktu komputer. kasir-lokal TIDAK terpengaruh jam komputer: ia mencatat nota menurut zona toko yang diatur di pengaturannya sendiri (`kasir.py info`). Bila zona toko itu beda dengan `--tz` laporan, muncul pesan terpisah "Toko diatur zona X tapi laporan memakai --tz Y"; samakan `--tz` dengan zona toko, bukan zona komputer.
+- `--tz` hanya menerima zona Indonesia: Asia/Jakarta (WIB), Asia/Makassar (WITA), Asia/Jayapura (WIT) (dan alias WIB/WITA/WIT/Asia/Pontianak). Zona lain ditolak (kode keluar 2).
+- File rusak/bukan database → bagian itu "Belum ada data" + pesan di PERLU PERHATIAN; sarankan pulihkan dari folder backup alatnya (jangan dihapus). Pesan error selalu menyebut path **file asli**, bukan salinan sementara yang dipakai script.
 - **Python tidak bisa dijalankan:** jalankan perintah laporan tiap alat satu per satu lewat skill masing-masing, gabungkan hasilnya secara manual dengan rumus di atas, dan beri label "disusun manual, mohon dicek".
 - Uji regresi: `python3 <folder-skill-ini>/tests/uji_regresi.py` (membutuhkan skill alat di folder yang sama).

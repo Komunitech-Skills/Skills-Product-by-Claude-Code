@@ -124,12 +124,10 @@ def zona(tz_nama):
     if k in TZ_TETAP:
         jam, label = TZ_TETAP[k]
         return timezone(timedelta(hours=jam)), label, NAMA_TZ[jam]
-    try:
-        from zoneinfo import ZoneInfo  # Python 3.9+
-        return ZoneInfo(tz_nama), tz_nama, tz_nama
-    except Exception:
-        raise ArgSalah("zona waktu '%s' tidak dikenal. Pakai Asia/Jakarta (WIB), Asia/Makassar (WITA), "
-                       "atau Asia/Jayapura (WIT)." % tz_nama)
+    # Sengaja dibatasi ke zona Indonesia saja (bukan zona IANA sembarang): kasir/absensi/laporan ini untuk
+    # usaha di Indonesia, dan zona di luar itu tidak berguna serta pernah lolos tanpa peringatan (cacat).
+    raise ArgSalah("zona waktu '%s' tidak dikenal atau di luar Indonesia. Pakai Asia/Jakarta (WIB), Asia/Makassar "
+                   "(WITA), atau Asia/Jayapura (WIT)." % tz_nama)
 
 
 def waktu_sekarang(args, tz):
@@ -356,6 +354,7 @@ def ambil_kasir(ctx):
                                   "selisih": (hasil["omzet"] - om) if om is not None else None,
                                   "persen": pr, "teks": teks}
     hasil["pengaturan_stok"] = (info.get("pengaturan") or {}).get("stok")
+    hasil["zona_toko"] = (info.get("pengaturan") or {}).get("zona")
     hasil["sesi_terbuka"] = None
     st = info.get("sesi_terbuka")
     if st:
@@ -424,24 +423,74 @@ def ambil_stok(ctx):
 
 
 def cek_impor_kasir_ke_stok(ctx, kasir):
-    """Bila kasir diatur 'stok dikelola buku-stok', nota kasir per hari harus sudah diimpor ke buku-stok."""
+    """Bila kasir diatur 'stok dikelola buku-stok', tiap nota jual kasir yang SAH (bukan yang di-void) pada hari
+    itu harus punya baris di tabel `pesanan` buku-stok (no_pesanan = nomor nota kasir, mis. N-260924-0001; lihat
+    kasir.py cmd_ekspor & stok.py cmd_impor_pesanan). Nota yang di-void sengaja TIDAK pernah masuk ke `pesanan`
+    (statusnya "Dibatalkan" -> kategori "batal" -> stok.py tidak membuat baris sama sekali), jadi nota itu tidak
+    dihitung sebagai "belum diimpor". Membandingkan per nomor nota (bukan sekadar "ada >=1 nota"), supaya impor
+    SEBAGIAN (sebagian nota sudah, sebagian belum) tetap terdeteksi.
+
+    Mengembalikan list [{"tanggal","kurang","total"}, ...] untuk hari yang punya nota belum diimpor, atau None
+    bila cek dilewati (struktur tabel berubah / alat tidak lengkap)."""
     if kasir.get("pengaturan_stok") != "buku-stok" or ctx["alat"]["stok"]["status"] != "ada":
         return None
     hari_ada = [h for h, v in (kasir.get("per_hari") or {}).items() if v]
     if not hari_ada:
         return None
-    con = sqlite3.connect(str(ctx["alat"]["stok"]["snap"]))
+    con_k = sqlite3.connect(str(ctx["alat"]["kasir"]["snap"]))
     try:
-        if not kolom_ada(con, "pesanan", ["no_pesanan"]):
+        if not kolom_ada(con_k, "nota", ["id", "no", "jenis", "waktu", "ref_nota_id"]):
+            ctx["catatan"].append("Cek impor kasir ke buku-stok dilewati: struktur tabel nota kasir berubah.")
+            return None
+        nota_per_hari = {}
+        for h in hari_ada:
+            baris = con_k.execute(
+                "SELECT no FROM nota WHERE jenis='jual' AND substr(waktu,1,10)=? AND id NOT IN "
+                "(SELECT ref_nota_id FROM nota WHERE jenis='void' AND ref_nota_id IS NOT NULL)", (h,)).fetchall()
+            nota_per_hari[h] = [r[0] for r in baris]
+    finally:
+        con_k.close()
+    con_s = sqlite3.connect(str(ctx["alat"]["stok"]["snap"]))
+    try:
+        if not kolom_ada(con_s, "pesanan", ["no_pesanan"]):
             ctx["catatan"].append("Cek impor kasir ke buku-stok dilewati: struktur tabel pesanan berubah.")
             return None
         belum = []
         for h in sorted(hari_ada):
-            pola = "N-%s-%%" % h.replace("-", "")[2:]
-            n = con.execute("SELECT COUNT(*) FROM pesanan WHERE no_pesanan LIKE ?", (pola,)).fetchone()[0]
-            if n == 0:
-                belum.append(h)
+            nomor = nota_per_hari.get(h) or []
+            if not nomor:
+                continue
+            ada = 0
+            for no in nomor:
+                if con_s.execute("SELECT 1 FROM pesanan WHERE no_pesanan=?", (no,)).fetchone():
+                    ada += 1
+            kurang = len(nomor) - ada
+            if kurang:
+                belum.append({"tanggal": h, "kurang": kurang, "total": len(nomor)})
         return belum
+    finally:
+        con_s.close()
+
+
+def jadwal_masuk_paling_awal(ctx):
+    """Jam masuk paling awal di antara shift yang dipakai karyawan aktif (absensi-lokal), format 'HH:MM'.
+
+    Dipakai untuk menghindari alarm palsu "belum ada data absen" sebelum toko/karyawan mulai kerja (bukan
+    perhitungan jadwal per-hari yang persis; hanya jam mulai paling awal yang ada di data shift). None bila
+    tidak terbaca (struktur tabel berubah, atau tidak ada karyawan/shift)."""
+    a = ctx["alat"]["absensi"]
+    if a.get("status") != "ada":
+        return None
+    con = sqlite3.connect(str(a["snap"]))
+    try:
+        if not kolom_ada(con, "karyawan", ["shift", "aktif"]) or not kolom_ada(con, "shift", ["kode", "masuk"]):
+            return None
+        r = con.execute("SELECT MIN(s.masuk) FROM shift s JOIN karyawan k ON k.shift = s.kode "
+                        "WHERE k.aktif = 1").fetchone()
+        nilai = r[0] if r else None
+        return nilai if nilai and re.fullmatch(r"\d{2}:\d{2}", nilai) else None
+    except sqlite3.Error:
+        return None
     finally:
         con.close()
 
@@ -607,8 +656,15 @@ def bagian(ctx, nama, fungsi):
     try:
         return fungsi(ctx)
     except GagalAlat as e:
-        ctx["alat"][nama]["status"] = "gagal"
-        ctx["alat"][nama]["pesan"] = str(e)
+        a = ctx["alat"][nama]
+        pesan = str(e)
+        snap, asli = a.get("snap"), a.get("data")
+        if snap and asli:
+            # Pesan dari alat (mis. "no such table: meta") bisa memuat path SALINAN sementara (--db yang
+            # kita berikan ke alat), bukan file asli. Ganti agar pengguna tidak bingung/mencari file yang salah.
+            pesan = pesan.replace(str(snap), asli)
+        a["status"] = "gagal"
+        a["pesan"] = pesan
         return None
 
 
@@ -618,7 +674,7 @@ def susun(args):
     hari_ini = now.date()
     per = tentukan_periode(args, hari_ini)
     ctx = {"periode": per, "hari_ini": hari_ini, "tz_nama": tz_nama, "timeout": args.timeout,
-           "samarkan": args.samarkan, "maks_produk": args.maks_produk, "catatan": [],
+           "samarkan": args.samarkan, "maks_produk": args.maks_produk, "catatan": [], "jadwal_awal": None,
            "dibuat": now.strftime("%Y-%m-%d %H:%M") + " " + label_tz,
            "sekarang_lokal": now.strftime("%Y-%m-%d %H:%M")}
     tmp = tempfile.mkdtemp(prefix="laporan-usaha-")
@@ -634,6 +690,7 @@ def susun(args):
             stok = bagian(ctx, "stok", ambil_stok)
         if A["absensi"]["status"] == "ada":
             hadir = bagian(ctx, "absensi", ambil_absensi)
+            ctx["jadwal_awal"] = jadwal_masuk_paling_awal(ctx)
         if A["pengingat"]["status"] == "ada":
             tagihan = bagian(ctx, "pengingat", ambil_pengingat)
         belum_impor = None
@@ -663,10 +720,17 @@ def susun_perhatian(ctx, pj, stok, hd, tg, belum_impor):
     p = []
     lokal = datetime.now().astimezone().utcoffset()
     target = datetime.now(timezone.utc).astimezone(zona(ctx["tz_nama"])[0]).utcoffset()
-    if any(ctx["alat"][n]["status"] == "ada" for n in ("kasir", "absensi")) and lokal != target:
-        p.append("Jam komputer ini bukan %s (selisih %s jam). Kasir & absensi mencatat jam komputer, jadi transaksi "
-                 "dekat tengah malam bisa masuk ke tanggal lain. Samakan zona waktu komputer."
+    if ctx["alat"]["absensi"]["status"] == "ada" and lokal != target:
+        p.append("Jam komputer ini bukan %s (selisih %s jam). absensi-lokal mencatat jam tap menurut jam komputer, "
+                 "jadi tap dekat tengah malam bisa masuk ke tanggal lain. Samakan zona waktu komputer."
                  % (ctx["tz_nama"], fq(Decimal((target - lokal).total_seconds()) / 3600)))
+    if pj and pj.get("sumber") == "kasir-lokal" and pj.get("zona_toko"):
+        toko = TZ_TETAP.get(pj["zona_toko"].lower())
+        lapor = TZ_TETAP.get(ctx["tz_nama"].lower())
+        if toko and lapor and toko[0] != lapor[0]:
+            p.append("Toko diatur zona %s (%s) tapi laporan memakai --tz %s (%s). kasir-lokal mencatat nota "
+                      "menurut zona toko (bukan jam komputer); pakai --tz %s agar tanggal penjualan cocok."
+                      % (pj["zona_toko"], toko[1], ctx["tz_nama"], lapor[1], pj["zona_toko"]))
     if pj and pj.get("sumber") == "kasir-lokal":
         for t in pj.get("tutup_kasir") or []:
             s = t.get("selisih")
@@ -680,9 +744,13 @@ def susun_perhatian(ctx, pj, stok, hd, tg, belum_impor):
                      str(pj["sesi_terbuka"].get("buka"))[:16])
         if pj.get("nota_void") or pj.get("nota_retur"):
             p.append("Ada %d void & %d retur (%s). Cek alasannya di kasir." % (
-                pj.get("nota_void", 0), pj.get("nota_retur", 0), rp(pj.get("retur_void_rp", 0))))
+                pj.get("nota_void", 0), pj.get("nota_retur", 0), rp(abs(pj.get("retur_void_rp", 0)))))
     if belum_impor:
-        p.append("Penjualan kasir tanggal %s belum diimpor ke buku-stok (stok belum terpotong)." % ", ".join(belum_impor))
+        total_kurang = sum(b["kurang"] for b in belum_impor)
+        total_semua = sum(b["total"] for b in belum_impor)
+        tanggal_str = ", ".join(b["tanggal"] for b in belum_impor)
+        p.append("%d dari %d nota kasir tanggal %s belum diimpor ke buku-stok (stok belum terpotong)."
+                 % (total_kurang, total_semua, tanggal_str))
     if stok:
         if stok["minus"]:
             p.append("Stok MINUS %d barang (%s). Lakukan stock opname." % (
@@ -691,11 +759,19 @@ def susun_perhatian(ctx, pj, stok, hd, tg, belum_impor):
             p.append("%d pesanan marketplace belum dikemas." % stok["pesanan_belum_dikemas"])
     if hd:
         if hd["jenis"] == "harian":
-            if hd["terjadwal"] and not hd["hadir"] and not hd["izin_sakit_cuti_dinas"] and not hd["alpa"] \
-                    and len(hd["tanpa_keterangan"]) >= hd["terjadwal"]:
+            kosong = (hd["terjadwal"] and not hd["hadir"] and not hd["izin_sakit_cuti_dinas"] and not hd["alpa"]
+                      and len(hd["tanpa_keterangan"]) >= hd["terjadwal"])
+            awal = ctx.get("jadwal_awal")
+            belum_waktunya = (kosong and hd.get("hari_ini") and awal
+                               and ctx["sekarang_lokal"][-5:] < awal)
+            if belum_waktunya:
+                p.append("Belum waktunya absen (jadwal mulai %s)." % awal.replace(":", "."))
+            elif kosong:
                 p.append("Belum ada satu pun data absen hari itu. File mesin absen mungkin belum diimpor.")
-            elif hd["tanpa_keterangan"] and not hd.get("hari_ini"):
-                p.append("%d karyawan tidak absen & tanpa keterangan. Tanyakan & catat izin/alpa." % len(hd["tanpa_keterangan"]))
+            elif hd["tanpa_keterangan"]:
+                label = "Belum absen tanpa keterangan" if hd.get("hari_ini") else "Tidak absen & tanpa keterangan"
+                p.append("%s (%d): %s. Tanyakan & catat izin/alpa." % (
+                    label, len(hd["tanpa_keterangan"]), ", ".join(hd["tanpa_keterangan"])))
         elif not hd.get("ada_data_absen", True):
             p.append("Tidak ada data absen minggu itu. File mesin absen mungkin belum diimpor.")
         elif hd.get("tanpa_keterangan"):
@@ -762,7 +838,8 @@ def teks_laporan(data, per, ctx):
             else:
                 t.append("%s: %s -> %s" % (label, rp(b["omzet"]), b["teks"]))
         if pj["sumber"] == "kasir-lokal" and pj["per_metode"]:
-            t.append("Per metode bayar:")
+            beda_pajak = pj["uang_diterima"] != pj["omzet"]
+            t.append("Per metode bayar%s:" % (" (termasuk pajak/service, omzet di atas belum termasuk)" if beda_pajak else ""))
             for m, v in sorted(pj["per_metode"].items(), key=lambda x: -x[1]):
                 t.append("- %s %s" % (m, rp(v)))
         if pj["sumber"] == "kasir-lokal" and pj["terlaris"]:
@@ -770,7 +847,7 @@ def teks_laporan(data, per, ctx):
             for i, p in enumerate(pj["terlaris"], 1):
                 t.append("%d. %s: %s terjual, %s" % (i, p["nama"], fq(p["qty"]), rp(p["netto"])))
         if pj["sumber"] == "kasir-lokal" and (pj["nota_retur"] or pj["nota_void"]):
-            t.append("Retur %d | void %d (%s)" % (pj["nota_retur"], pj["nota_void"], rp(pj["retur_void_rp"])))
+            t.append("Retur %d | void %d (%s)" % (pj["nota_retur"], pj["nota_void"], rp(abs(pj["retur_void_rp"]))))
 
     # Stok
     st = data["stok"]
