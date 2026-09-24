@@ -29,7 +29,7 @@
 
 ## Audit keamanan singkat
 `scripts/pdf.py` hanya memakai library standar Python (`urllib`, `json`, `mimetypes`,
-`zipfile`, dst.), tidak ada `subprocess`/`eval`/`curl|bash`, tidak ada kredensial
+`zipfile`, dst.), tidak ada `subprocess`/`eval`/curl-pipe-bash, tidak ada kredensial
 tertanam. Validasi alamat server menolak host non-localhost kecuali
 `STIRLING_ALLOW_REMOTE=1` diset sadar oleh pengguna — **diverifikasi bekerja** (lihat
 skenario 04-E). Tidak ditemukan pola pengiriman data ke luar selain ke `STIRLING_URL`

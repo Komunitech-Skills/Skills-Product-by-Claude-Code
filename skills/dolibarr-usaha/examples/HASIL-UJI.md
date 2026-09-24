@@ -63,3 +63,37 @@ Alasan:
 - (−) **S3**: jalur kebocoran kunci melanggar klaim keamanan; **S2**: klaim perlindungan hak user tidak akurat; **S4**: pelanggan ganda per nomor HP lolos.
 
 **Keputusan: TIDAK LULUS (< 7) — revisi.** Perbaikan kecil dan terarah: T1, S1, S3 wajib; S2 (teks panduan/README + catatan `cek`), S4, R1 disarankan. Setelah itu uji ulang oleh penguji independen (04-D kunci multi-baris, 03 modul Stok mati, 01 cek ganda telepon, isi ZIP build). Perkiraan setelah revisi: 8/10.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-24)
+- **Penguji:** agent penguji independen baru (Claude Code, simulasi agent), bukan pembuat skill/revisi. Rincian lengkap: `06-uji-ulang-v1.0.1.md`.
+- **Lingkungan:** **Dolibarr 24.0.1 asli** (instalasi penguji v1.0.0 dihidupkan ulang: MariaDB 10.11.14, PHP 8.4.19) + 6 server PHP zona lain ke database yang sama; build diuji di **salinan repo** di scratchpad.
+- **Otomatis:** `uji_regresi.py` 63 tes OK; `uji_openclaw.sh` OpenClaw 2026.9.6 57/57 eligible/modelVisible/commandVisible; `validate.py` gagal 1 masalah milik **pdf-lokal** (pola curl-pipe-sh di HASIL-UJI-nya, commit ff044ad), bukan dolibarr-usaha.
+- **Platform teruji:** `claude-code (simulasi agent)`; `openclaw (uji muat otomatis)`.
+
+### Status klaim
+| Klaim | Status |
+|---|---|
+| T1 panduan ikut ZIP | ✅ dolibarr-usaha +`docs/panduan-dolibarr.md`, pdf-lokal +`docs/panduan-stirling-pdf.md`; bundle/VIP lain tidak berubah (isi identik selain watermark & LISENSI); watermark & `LISENSI.txt` tetap |
+| S1 Stok mati tanpa HABIS palsu | ✅ alarm/saran beli palsu hilang (v1.0.0 masih "habis 7"). ⚠️ Admin/user ber-342 mendapat diagnosis **salah** "hak kurang" (N1); "Modul Stok belum aktif" tidak pernah muncul di 24.0.1 asli |
+| S2 dua user + risiko hak 12 | ✅ panduan/README/SKILL.md akurat (dicocokkan ke kode Dolibarr); peringatan `cek` hanya muncul bila hak 342 diberikan (N3) |
+| S3 kunci rusak | ✅ 16 variasi: ujung dibersihkan, tengah ditolak, 0 traceback, 0 kunci tercetak |
+| S4 ganda HP/email, cari ternormalisasi | ✅ |
+| R1 / R2 / R4 / R5 | ✅ |
+| R3 zona PHP ≠ `--tz` | ✅ dalam batas ≤ 12 jam barat / ≤ 11 jam timur (Makassar/Tokyo/Auckland kini benar); di luar batas (server AS) masih mundur 1 hari (N4) |
+
+### Regresi
+Tidak ada. Skenario 01–03 diulang: 4 draf baru (umum, mewah bersen, jasa tanpa PPN, umum desimal) + pratinjau 2,5 × 62.500,50 — DPP, DPP 11/12, PPN ke bawah sekali, diskon, total **0 beda** dengan kalkulator `Decimal` penguji; angka Dolibarr dilaporkan BEDA apa adanya dan cocok dengan DB. Piutang (8 → 10 invoice, 5 kelompok umur), laporan 24 & 25 Sep (termasuk % vs kemarin), stok 7 produk: **0 beda** dengan SQL. 0 POST tanpa `--ya`; redirect, proxy, URL publik, server rusak: aman.
+
+### Cacat tersisa
+- **N2 (sedang, sejak v1.0.0):** opsi umum yang ditulis **sebelum** subperintah (`--kunci-file`, `--tz`, `--json`, `--url`) diabaikan diam-diam. `dolibarr.py --kunci-file …-draf.txt simpan-kunci` menimpa **kunci baca default** dengan kunci draf, sehingga jadwal bisa berjalan dengan kunci yang mampu memvalidasi. Contoh resmi di panduan memakai posisi yang benar.
+- **N1 (sedang-rendah):** diagnosis modul Stok mati vs hak kurang salah untuk admin/342 (tanpa data palsu).
+- N3, N4, kosmetik (draf ganda kode 0, "bertanggal hari ini" di laporan lampau, panduan di luar folder skill setelah dipasang, invoice ditandai lunas tanpa pembayaran dihitung belum dibayar).
+
+### Skor kualitas: **8 / 10** — **LULUS** (≥ 7)
+Alasan:
+- (+) Semua cacat wajib v1.0.0 (T1, S1, S3) terbukti beres pada Dolibarr asli; S2 dan S4 serta R1–R5 juga beres. Repro asli v1.0.0 (kunci dua baris, "Ibu Rina Wati", `0812-3456-0002`, `62,500`, NaN/1e30, modul Stok mati, zona Makassar) kini benar.
+- (+) Angka tetap 0 beda di semua hitung ulang independen; keamanan inti tetap utuh; lolos uji muat OpenClaw.
+- (−) N2 dapat merusak pemisahan kunci baca/draf yang justru disarankan revisi S2 bila opsi diletakkan di depan; N1 memberi saran perbaikan yang keliru untuk admin/342.
+- Rekomendasi v1.0.2 (perbaikan kecil, tidak menghalangi status `lulus`): perbaiki N2 (`default=argparse.SUPPRESS` di subparser) dan N1 (cek `setup/modules`/tidak adanya `rights.stock` lebih dulu), sesuaikan kalimat panduan §6 soal 342, lalu uji platform asli oleh pemilik (DoliWamp Windows).
