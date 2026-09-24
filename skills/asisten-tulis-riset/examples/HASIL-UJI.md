@@ -202,3 +202,6 @@ OpenClaw.**
 `openclaw (otomatis, uji muat skills check); claude-code (simulasi agent, 5 skenario penuh + verifikasi
 sitasi manual)` — belum ada uji manusia langsung di platform (Codex/Cursor/OpenClaw interaktif); jangan
 klaim "teruji" di platform tersebut sampai Tahap 6.10 (uji platform asli oleh pemilik/tim) dilakukan.
+
+## Catatan koordinator — v1.0.1
+Tiga cacat SEDANG (encoding cek_sitasi, entri pustaka multi-baris, aturan "ringkasan mesin pencari bukan pengganti membuka URL") dan cacat RINGAN diperbaiki pembuat; 21/21 tes lulus (dicek ulang koordinator). Status tetap lulus.
