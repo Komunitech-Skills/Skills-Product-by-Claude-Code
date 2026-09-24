@@ -7,6 +7,7 @@ skills yang sama (../kasir-lokal, dst.); jika tidak ada, uji yang membutuhkannya
 
 Jalankan: python3 tests/uji_regresi.py   (Windows: python / py)
 """
+import csv
 import hashlib
 import json
 import os
@@ -424,6 +425,91 @@ class UjiGabungan(Dasar):
         self.assertIsNone(d["kehadiran"])
         self.assertIsNone(d["tagihan"])
         self.assertIsNotNone(d["penjualan"])
+
+    # ------------------------------------------------------------- S1: impor sebagian kasir -> buku-stok
+    def test_impor_sebagian_kasir_ke_stok_terdeteksi(self):
+        """S1: impor SEBAGIAN nota kasir tanggal 24/9 (hanya N-260924-0001 dari 2 nota sah) harus terdeteksi
+        dengan hitungan benar, dan peringatan hilang begitu semua nota diimpor."""
+        akar = self.salin("imporsebagian")
+        data = akar / "data"
+        penuh = akar / "j24-penuh.csv"
+        alat(KASIR, "ekspor", "--format", "buku-stok", "--tanggal", "2026-09-24", "--csv", penuh, "--json", data=data)
+        with open(penuh, encoding="utf-8-sig", newline="") as f:
+            baris = list(csv.reader(f, delimiter=";"))
+        header, isi = baris[0], baris[1:]
+        self.assertEqual({r[0] for r in isi}, {"N-260924-0001", "N-260924-0002", "N-260924-0003"})  # 0003 = di-void
+        sebagian = akar / "j24-sebagian.csv"
+        with open(sebagian, "w", encoding="utf-8-sig", newline="") as f:
+            w = csv.writer(f, delimiter=";")
+            w.writerow(header)
+            w.writerows(r for r in isi if r[0] == "N-260924-0001")
+        alat(STOK, "impor-pesanan", sebagian, "--platform", "lainnya", "--ya", "--json", data=data)
+        d = self.jalan(akar, "--json")
+        self.assertTrue(any("1 dari 2 nota kasir tanggal 2026-09-24 belum diimpor ke buku-stok (stok belum terpotong)."
+                             in s for s in d["perhatian"]), d["perhatian"])
+        # lengkapi impor (termasuk baris nota yang di-void, berstatus Dibatalkan) -> peringatan hilang
+        alat(STOK, "impor-pesanan", penuh, "--platform", "lainnya", "--ya", "--json", data=data)
+        d2 = self.jalan(akar, "--json")
+        self.assertFalse(any("belum diimpor ke buku-stok" in s for s in d2["perhatian"]), d2["perhatian"])
+
+    # ------------------------------------------------------------- R1: absen tanpa keterangan hari ini
+    def test_tanpa_keterangan_hari_ini_tampil_di_perhatian(self):
+        d = self.jalan(self.salin("r1"), "--json")  # SEKARANG = 21:00, setelah jam pulang shift REG (17:00)
+        self.assertTrue(any("Joko" in s and "tanpa keterangan" in s for s in d["perhatian"]), d["perhatian"])
+        teks = self.jalan(self.salin("r1samar"), "--samarkan")
+        self.assertNotIn("Joko", teks)
+        self.assertIn("tanpa keterangan", teks)
+
+    # ------------------------------------------------------------- R2: sebelum jadwal mulai, jangan alarm
+    def test_belum_waktunya_absen_tidak_memberi_alarm_palsu(self):
+        d = self.jalan(self.salin("r2"), "--json", "--sekarang", "2026-09-25T00:30+07:00")
+        self.assertTrue(any("Belum waktunya absen (jadwal mulai 08.00)." in s for s in d["perhatian"]), d["perhatian"])
+        self.assertFalse(any("Belum ada satu pun data absen" in s for s in d["perhatian"]))
+
+    # ------------------------------------------------------------- R3: zona toko kasir vs --tz laporan
+    def test_zona_toko_kasir_beda_dengan_tz_laporan(self):
+        akar = self.salin("zonatoko")
+        alat(KASIR, "atur", "--zona", "WITA", "--ya", "--json", data=akar / "data")
+        d = self.jalan(akar, "--json")  # --tz default Asia/Jakarta, toko WITA
+        self.assertTrue(any("Toko diatur zona Asia/Makassar" in s and "--tz Asia/Jakarta" in s
+                             for s in d["perhatian"]), d["perhatian"])
+        d2 = self.jalan(akar, "--json", "--tz", "Asia/Makassar")
+        self.assertFalse(any("Toko diatur zona" in s for s in d2["perhatian"]), d2["perhatian"])
+
+    # ------------------------------------------------------------- R4: pesan error DB rusak pakai path asli
+    def test_pesan_db_rusak_pakai_path_asli_bukan_salinan(self):
+        akar = self.salin("dbasli")
+        asli = akar / "data" / "absensi" / "absensi.db"
+        asli.write_bytes(b"")
+        d = self.jalan(akar, "--json")
+        pesan = d["alat"]["absensi"]["pesan"]
+        self.assertIn(str(asli), pesan)
+        self.assertNotIn("laporan-usaha-", pesan)  # bukan path folder sementara
+
+    # ------------------------------------------------------------- kosmetik: --tz di luar Indonesia ditolak
+    def test_tz_di_luar_indonesia_ditolak(self):
+        akar = self.kosong("tzasing")
+        out = self.jalan(akar, "--tz", "Asia/Tokyo", harap_kode=2)
+        self.assertIn("di luar Indonesia", out)
+
+    # ------------------------------------------------------------- kosmetik: tanpa minus ganda pada void/retur
+    def test_void_retur_tanpa_minus_ganda(self):
+        teks = self.jalan(self.salin("kosmetikminus"))  # master: 1 nota di-void (1 kopi hitam, Rp 12.000)
+        self.assertNotIn("(-Rp", teks)
+        self.assertIn("Retur 0 | void 1 (Rp 12.000)", teks)
+
+    # ------------------------------------------------------------- kosmetik: catatan pajak di per metode bayar
+    def test_per_metode_bayar_berlabel_termasuk_pajak(self):
+        akar = self.kosong("pajak")
+        data = akar / "data"
+        alat(KASIR, "init", "--nama-toko", "Toko Pajak", "--stok", "tidak", "--pajak", "ppn-belum", "--pkp", "ya",
+             "--ya", "--json", data=data)
+        alat(KASIR, "produk", "tambah", "--kode", "A", "--nama", "Barang A", "--harga", "100000", "--ya", "--json",
+             data=data)
+        alat(KASIR, "jual", "--pesan", "1 barang a, bayar tunai", "--waktu", "2026-09-24 10:00", "--ya", "--json",
+             data=data)
+        teks = self.jalan(akar, "--tanpa", "stok,absensi,pengingat")
+        self.assertIn("Per metode bayar (termasuk pajak/service, omzet di atas belum termasuk):", teks)
 
 
 def tearDownModule():
