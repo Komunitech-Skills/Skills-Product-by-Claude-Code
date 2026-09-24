@@ -8,7 +8,7 @@ medis dan BUKAN alat skrining/diagnosis — hanya rekap jumlah untuk laporan
 operasional (lihat CLAUDE.md Komunitech & keputusan pemilik jalur 3, bidang
 kesehatan: tanpa skrining/diagnosis/kalkulator medis).
 
-Prinsip keandalan & privasi (v1.0.3, setelah tiga ronde uji independen):
+Prinsip keandalan & privasi (v1.0.4, setelah empat ronde uji independen):
 - Status kehadiran diklasifikasikan dari daftar kata kunci "hadir" dan
   "tidak datang". Status yang TIDAK cocok dengan salah satu daftar
   DILAPORKAN sebagai "tidak dikenal" — tidak pernah diam-diam dihitung
@@ -31,16 +31,22 @@ Prinsip keandalan & privasi (v1.0.3, setelah tiga ronde uji independen):
   cuma muncul 1-2 kali kemungkinan besar salah isi/data satu pasien,
   bukan kategori asli), maksimal 3 kata, tanpa digit, tanpa "@", bukan
   pola inisial ("S.A."), bukan pola kode ICD ("J06"/"K02.1"), bukan pola
-  sapaan+nama ("Bu Ani"), dan kolom belum melewati `MAKS_NILAI_UNIK_TAMPIL`
-  nilai unik yang sudah ditampilkan. Ini mencegah kolom yang sebenarnya
-  berisi teks bebas (nama, no. HP, diagnosis, inisial, email) bocor lewat
-  bagian "rincian" walau nama kolomnya lolos deteksi kolom sensitif.
+  sapaan+nama ("Bu Ani"), tidak mengandung kata yang juga ada di kolom
+  Nama file ini (R15(a) — kolom Nama tetap tidak pernah ditampilkan,
+  hanya kata-katanya dipakai untuk menyaring), dan kolom belum melewati
+  `MAKS_NILAI_UNIK_TAMPIL` nilai unik yang sudah ditampilkan. Ini
+  mencegah kolom yang sebenarnya berisi teks bebas (nama, no. HP,
+  diagnosis, inisial, email) bocor lewat bagian "rincian" walau nama
+  kolomnya lolos deteksi kolom sensitif.
 - Baris yang jumlah kolomnya TIDAK COCOK dengan header (mis. ekspor CSV
   dengan koma tanpa tanda kutip yang menggeser semua nilai satu kolom)
   DIKELUARKAN dari rincian per hari/poli/penjamin/status (supaya angka
   tidak salah diam-diam), tapi tetap dihitung di total pendaftaran dengan
   peringatan eksplisit — script tidak pernah menebak kolom mana yang benar
-  untuk baris yang bergeser.
+  untuk baris yang bergeser. Baris yang sekadar punya pemisah kosong di
+  ujung (mis. ';' penutup tanpa isi di setiap baris) TIDAK dianggap
+  bergeser (S5); bila mayoritas baris (>50%) bergeser, peringatannya
+  mengarah ke masalah STRUKTUR file (pemisah salah), bukan daftar baris.
 
 Hanya memakai library standar Python (3.8+). Lintas OS (Windows/macOS/Linux).
 
@@ -65,12 +71,17 @@ from decimal import ROUND_HALF_UP, Decimal
 
 # Pola (regex, dicocokkan per KATA/token, bukan potongan huruf bebas) nama
 # kolom yang mengandung data pribadi/klinis spesifik — kalau nama kolom
-# mengandung salah satu token ini, ISI kolom itu SENGAJA tidak pernah dibaca
-# untuk ditampilkan (hanya nama kolomnya yang dilaporkan sebagai "diabaikan
-# demi privasi pasien"). Kolom yang benar-benar dipakai skill (tanggal, jam,
-# poli, penjamin, status) TIDAK PERNAH dilaporkan di sini meski pola cocok
-# (lihat `_kolom_sensitif_di_header`), supaya tidak ada pernyataan yang
-# saling bertentangan (mis. "Waktu" dipakai untuk jam tapi disebut sensitif).
+# mengandung salah satu token ini, ISI kolom itu SENGAJA TIDAK PERNAH
+# DITAMPILKAN di rekap (hanya nama kolomnya yang dilaporkan sebagai
+# "diabaikan demi privasi pasien"). Kolom bertipe "Nama" DIBACA secara
+# internal untuk satu tujuan saja: menyaring nilai kategori yang kebetulan
+# sama dengan sepotong nama pasien (R15(a), lihat
+# `_token_nama_dari_kolom_sensitif`) — hasil pencocokan itu hanya
+# True/False, isi kolom Nama sendiri tidak pernah masuk ke output apa pun.
+# Kolom yang benar-benar dipakai skill (tanggal, jam, poli, penjamin,
+# status) TIDAK PERNAH dilaporkan di sini meski pola cocok (lihat
+# `_kolom_sensitif_di_header`), supaya tidak ada pernyataan yang saling
+# bertentangan (mis. "Waktu" dipakai untuk jam tapi disebut sensitif).
 POLA_KOLOM_SENSITIF = [
     r"\bnama\b", r"\bnik\b", r"\bktp\b", r"\brm\b", r"\brekam medis\b",
     r"\bbpjs\b", r"\bdiagnos\w*\b", r"\bdx\b", r"\bicd[\w-]*\b",
@@ -711,13 +722,19 @@ def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict
     jam_ramai = per_jam.most_common(3)
 
     # B2: saring SEMUA nilai kategori lewat SATU fungsi sebelum ditampilkan.
-    poli_aman, poli_baris_sembunyi, poli_kategori_sembunyi = _pisah_aman_dan_sembunyikan(per_poli)
-    penjamin_aman, penjamin_baris_sembunyi, penjamin_kategori_sembunyi = _pisah_aman_dan_sembunyikan(per_penjamin)
+    poli_aman, poli_baris_sembunyi, poli_kategori_sembunyi = _pisah_aman_dan_sembunyikan(
+        per_poli, token_nama=token_nama
+    )
+    penjamin_aman, penjamin_baris_sembunyi, penjamin_kategori_sembunyi = _pisah_aman_dan_sembunyikan(
+        per_penjamin, token_nama=token_nama
+    )
 
     status_rincian = None
     status_baris_sembunyi = status_kategori_sembunyi = 0
     if kolom_status:
-        status_aman, status_baris_sembunyi, status_kategori_sembunyi = _pisah_aman_dan_sembunyikan(status_unik)
+        status_aman, status_baris_sembunyi, status_kategori_sembunyi = _pisah_aman_dan_sembunyikan(
+            status_unik, token_nama=token_nama
+        )
         status_rincian = [
             {"nilai": nilai, "jumlah": jumlah, "kategori": status_kategori[nilai]}
             for nilai, jumlah in status_aman
@@ -893,7 +910,7 @@ def format_teks(hasil: dict) -> str:
     if hasil["kolom_sensitif_diabaikan"]:
         baris.append("")
         baris.append(
-            "Catatan privasi: kolom berikut TIDAK dibaca isinya dan diabaikan demi "
+            "Catatan privasi: isi kolom berikut TIDAK PERNAH ditampilkan di rekap ini demi "
             "kerahasiaan data pasien (UU PDP 27/2022; UU 17/2023 Ps. 301; PP 28/2024 Ps. 788-789): "
             + ", ".join(hasil["kolom_sensitif_diabaikan"])
         )
