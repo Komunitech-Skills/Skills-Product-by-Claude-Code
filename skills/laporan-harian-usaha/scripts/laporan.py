@@ -336,11 +336,15 @@ def ambil_kasir(ctx):
              "nota": int(kini.get("nota_jual", 0)), "nota_retur": int(kini.get("nota_retur", 0)),
              "nota_void": int(kini.get("nota_void", 0)), "retur_void_rp": int(kini.get("retur_void", 0)),
              "diskon": int(kini.get("diskon", 0)),
-             "rata_rata_per_nota": int(kini.get("rata_rata_per_nota", 0)),
+
              "per_metode": {m: int(v) for m, v in (kini.get("per_metode") or {}).items()},
              "terlaris": [{"kode": p.get("kode"), "nama": p.get("nama"), "qty": p.get("qty"), "netto": int(p.get("netto", 0))}
                           for p in (kini.get("per_produk") or []) if int(p.get("netto", 0)) > 0][:ctx["maks_produk"]],
              "per_hari": kini.get("per_hari") or {}, "banding": {}}
+    # Rata-rata per nota = omzet bersih / (nota jual - nota void), dibulatkan ke rupiah terdekat (0,5 ke atas).
+    hasil["nota_sah"] = max(hasil["nota"] - hasil["nota_void"], 0)
+    hasil["rata_rata_per_nota"] = (int((Decimal(hasil["omzet"]) / hasil["nota_sah"]).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+                                   if hasil["nota_sah"] else None)
     for nama, dari, sampai in per["banding"]:
         try:
             b = rekap(dari, sampai)
@@ -650,7 +654,7 @@ def susun(args):
             "rumus": {"perubahan_persen": "(nilai periode ini - nilai pembanding) / nilai pembanding x 100, dibulatkan 1 "
                                           "desimal (0,05 ke atas). Pembanding Rp 0 atau minus: persen tidak dihitung.",
                       "omzet": "penjualan bersih kasir-lokal = setelah diskon, retur & void (angka dari kasir-lokal).",
-                      "rata_rata_per_nota": "dari kasir-lokal: total nota jual / jumlah nota jual, dibulatkan ke rupiah terdekat."}}
+                      "rata_rata_per_nota": "omzet bersih / (nota jual - nota void), dibulatkan ke rupiah terdekat (0,5 ke atas)."}}
     data["teks"] = teks_laporan(data, per, ctx)
     return data
 
@@ -743,7 +747,9 @@ def teks_laporan(data, per, ctx):
                 if pj["uang_diterima"] != pj["omzet"]:
                     t.append("Uang diterima: %s (selisih %s = pajak/service yang dicatat kasir)"
                              % (rp(pj["uang_diterima"]), rp(pj["uang_diterima"] - pj["omzet"])))
-                t.append("Nota: %d | rata-rata %s" % (pj["nota"], rp(pj["rata_rata_per_nota"])))
+                t.append("Nota: %d%s | rata-rata %s" % (
+                    pj["nota_sah"], (" (+%d dibatalkan)" % pj["nota_void"]) if pj["nota_void"] else "",
+                    rp(pj["rata_rata_per_nota"]) if pj["rata_rata_per_nota"] is not None else "-"))
         else:
             t.append("Omzet tercatat: %s (%s barang)" % (rp(pj["omzet"]), fq(pj["terjual_qty"])))
         for nama, dari, sampai in per["banding"]:

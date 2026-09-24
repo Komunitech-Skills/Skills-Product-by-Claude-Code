@@ -515,5 +515,207 @@ class UjiDataRusak(Dasar):
         self.assertEqual(len(self.ok("nota", "--tanggal", "2026-09-24")["nota"]), 1)
 
 
+class UjiPBJT(Dasar):
+    """PBJT makanan/minuman (UU 1/2022): dasar = jumlah dibayar setelah diskon (Ps 57(1)), pokok = dasar x tarif
+    Perda (Ps 59), dibulatkan ke bawah sekali; tanpa DPP 11/12."""
+
+    def atur(self, *extra):
+        return self.ok("atur", *extra, "--ya")
+
+    def test_45_pbjt_belum(self):
+        self.atur("--pajak", "pbjt-belum", "--tarif-pbjt", "10")
+        # 51.000 - diskon 10% (5.100) = 45.900 ; PBJT = floor(10% x 45.900) = 4.590 ; total 50.490
+        o = self.jual("2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb")
+        self.assertEqual((o["dpp"], o["pbjt"], o["ppn"], o["total"], o["kembalian"]), (45900, 4590, 0, 50490, 49510))
+        self.assertEqual(o["jenis_pajak"], "PBJT")
+
+    def test_46_pbjt_pembulatan_ke_bawah_tarif_pecahan(self):
+        self.atur("--pajak", "pbjt-belum", "--tarif-pbjt", "2,5")
+        # ETM 6.000 x 3 = 18.000 - 10%+5% (2.610) = 15.390 ; 2,5% x 15.390 = 384,75 -> 384 (ke bawah, bukan 385)
+        o = self.jual("3 es teh manis diskon 10%+5%, bayar pas")
+        self.assertEqual((o["pbjt"], o["total"]), (384, 15774))
+
+    def test_47_pbjt_termasuk(self):
+        self.atur("--pajak", "pbjt-termasuk", "--tarif-pbjt", "10")
+        # 53.000: dasar = 48.182 (48.182 + floor(4.818,2)=4.818 = 53.000; 48.183 + 4.818 = 53.001 > 53.000)
+        o = self.jual("2 kopi susu gula aren, 1 roti bakar keju, bayar qris")
+        self.assertEqual((o["dpp"], o["pbjt"], o["total"], o["selisih_pembulatan"]), (48182, 4818, 53000, 0))
+        # 100 termasuk 10%: dasar 91 -> 91 + 9 = 100 persis ; dasar 92 -> 92 + 9 = 101 > 100
+        self.assertEqual(K.hitung_pajak(100, "pbjt-termasuk", "10"), {"dpp": 91, "ppn": 9, "total": 100, "sisa": 0})
+        # 105 termasuk 10%: dasar 95 -> 95 + 9 = 104 ; dasar 96 -> 96 + 9 = 105 -> dasar 96, sisa 0
+        self.assertEqual(K.hitung_pajak(105, "pbjt-termasuk", "10")["dpp"], 96)
+        # retur 1 kopi: sisa 35.000 -> dasar 31.819 (31.819 + 3.181 = 35.000) ; koreksi = 3.181 - 4.818 = -1.637
+        r = self.ok("retur", "--nota", o["no"], "--item", "1 kopi susu", "--alasan", "x", "--waktu", "2026-09-24 10:05",
+                    "--ya")
+        self.assertEqual((r["pbjt"], r["dpp"], r["total"]), (-1637, -16363, -18000))
+
+    def test_48_pbjt_validasi(self):
+        self.assertIn("tarif", self.gagal("atur", "--pajak", "pbjt-belum", "--ya")["error"])
+        self.assertIn("10%", self.gagal("atur", "--pajak", "pbjt-belum", "--tarif-pbjt", "11", "--ya")["error"])
+        self.gagal("atur", "--pajak", "pbjt-belum", "--tarif-pbjt", "0", "--ya")
+        o = self.gagal("atur", "--pajak", "ppn-belum", "--pkp", "ya", "--tarif-pbjt", "10", "--ya")
+        self.assertIn("4A", o["error"])                              # PPN + PBJT ditolak
+
+    def test_49_service_charge(self):
+        self.gagal("atur", "--pajak", "pbjt-belum", "--tarif-pbjt", "10", "--service-charge", "5", "--ya")  # kena? wajib
+        self.atur("--pajak", "pbjt-belum", "--tarif-pbjt", "10", "--service-charge", "5", "--sc-kena-pajak", "ya")
+        # 36.000 ; SC 5% = 1.800 ; dasar 37.800 ; PBJT 3.780 ; total 41.580
+        o = self.jual("3 kopi hitam, bayar qris")
+        self.assertEqual((o["service"], o["dpp"], o["pbjt"], o["total"]), (1800, 37800, 3780, 41580))
+        self.atur("--sc-kena-pajak", "tidak")
+        # SC tidak kena: dasar 36.000 ; PBJT 3.600 ; total 36.000 + 1.800 + 3.600 = 41.400
+        o = self.jual("3 kopi hitam, bayar qris", "2026-09-24 11:00")
+        self.assertEqual((o["dpp"], o["pbjt"], o["total"]), (36000, 3600, 41400))
+        # retur 1 dari 3: sisa 24.000 ; SC 1.200 ; PBJT 2.400 ; total 27.600 -> koreksi 27.600 - 41.400 = -13.800
+        r = self.ok("retur", "--nota", o["no"], "--item", "1 kopi hitam", "--alasan", "x", "--waktu",
+                    "2026-09-24 11:05", "--ya")
+        self.assertEqual((r["service"], r["pbjt"], r["total"]), (-600, -1200, -13800))
+        self.assertIn("termasuk", self.gagal("atur", "--pajak", "pbjt-termasuk", "--ya")["error"])  # SC + termasuk
+
+    def test_50_rekap_dan_struk_pbjt(self):
+        self.atur("--pajak", "pbjt-belum", "--tarif-pbjt", "10")
+        o = self.jual("2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb")    # total 50.490, PBJT 4.590
+        r = self.ok("rekap", "--bulan", "2026-09")
+        # omzet tanpa PBJT = 50.490 - 4.590 = 45.900 (bahan pph-final-umkm)
+        self.assertEqual((r["pbjt"], r["ppn"], r["total_diterima"], r["omzet_tanpa_pajak"]), (4590, 0, 50490, 45900))
+        self.assertIn("PBJT dipungut", r["teks"])
+        self.assertIn("Bapenda", r["teks"])
+        s = self.ok("struk", "--nota", o["no"], "--teks")
+        self.assertIn("PBJT 10%", s["teks"])
+        self.assertIn("bukan faktur pajak", s["teks"])
+
+
+class UjiSatuan(Dasar):
+    def setUp(self):
+        super().setUp()
+        isi = ("Kode;Nama;Harga;Satuan\nSMN;Semen Tiga Roda 50 kg;65.000;sak\nCAT;Cat Tembok Putih;450.000;pail\n"
+               "PSR;Pasir Beton;300.000;m3\nKWT;Kawat Bendrat;25.000;kg\nAQ;Aqua Gelas;25.000;dus\n"
+               "KK;Kaos Kaki;5.000;pcs\nKRM;Keramik 40x40;60.000;m2\nBSI;Besi Beton;0,5;ton\n")
+        self.ok("produk", "impor", self.file("tb.csv", isi.replace("0,5;ton", "12.000.000;ton")), "--ya")
+
+    def test_51_satuan_depan_belakang(self):
+        # 2 sak x 65.000 = 130.000 ; 1 pail x 450.000 ; semen 2 sak (belakang) ; 2 dus aqua
+        o = self.jual("2 sak semen, 1 pail cat, 2 dus aqua")
+        self.assertEqual([b["bruto"] for b in o["baris"]], [130000, 450000, 50000])
+        self.assertEqual(self.jual("semen 3 sak", "2026-09-24 11:00")["total"], 195000)
+
+    def test_52_satuan_pecahan_m3_m2_ton(self):
+        # 0,5 m3 x 300.000 = 150.000 ; 12,5 m2 x 60.000 = 750.000 ; 0,25 ton x 12.000.000 = 3.000.000
+        o = self.jual("0,5 m3 pasir, keramik 12,5 m2, 0,25 ton besi beton")
+        self.assertEqual([b["bruto"] for b in o["baris"]], [150000, 750000, 3000000])
+        self.assertIn("pecahan", self.gagal("jual", "--pesan", "1,5 sak semen")["error"])
+
+    def test_53_satuan_berbeda_ditolak(self):
+        self.assertIn("lusin", self.gagal("jual", "--pesan", "2 lusin kaos kaki")["error"])
+        self.assertIn("'sak'", self.gagal("jual", "--pesan", "2 kg semen")["error"])
+        self.assertEqual(self.jual("2 buah semen")["total"], 130000)            # satuan hitung generik boleh
+
+    def test_54_retur_dengan_satuan(self):
+        o = self.jual("2 sak semen, 0,75 kg kawat bendrat")
+        # retur 0,25 kg dari 0,75 kg: nilai 18.750 -> sisa 18.750 - round(18.750 x 0,25/0,75 = 6.250) -> retur 6.250
+        r = self.ok("retur", "--nota", o["no"], "--item", "0,25 kg kawat bendrat", "--item", "semen 1 sak",
+                    "--alasan", "x", "--waktu", "2026-09-24 10:05", "--ya")
+        self.assertEqual(r["total"], -(6250 + 65000))
+
+
+class UjiV110Lain(Dasar):
+    def test_55_zona_waktu(self):
+        self.ok("atur", "--zona", "WITA", "--ya")
+        self.assertEqual(self.ok("info")["pengaturan"]["zona"], "Asia/Makassar")
+        self.gagal("atur", "--zona", "Eropa/Paris", "--ya")
+        # waktu 'sekarang' dihitung di zona toko, bukan zona komputer
+        waktu = K.sekarang(K.buat_parser().parse_args(["info"]))
+        utc = K.datetime.now(K.timezone.utc).replace(tzinfo=None)
+        self.assertLess(abs((waktu - utc).total_seconds() - 8 * 3600), 5)
+        o = self.jual("1 kopi hitam, bayar pas")
+        self.assertIn("WITA", self.ok("struk", "--nota", o["no"], "--teks")["teks"])
+
+    def test_56_zona_fallback_offset_tetap(self):
+        import builtins
+        asli = builtins.__import__
+
+        def palsu(nama, *a, **k):
+            if nama == "zoneinfo":
+                raise ImportError("tzdata tidak ada")
+            return asli(nama, *a, **k)
+        builtins.__import__ = palsu
+        try:
+            tz = K.tz_zona("Asia/Jayapura")
+        finally:
+            builtins.__import__ = asli
+        self.assertEqual(tz.utcoffset(None), K.timedelta(hours=9))
+
+    def test_57_info_peringatan_zona_komputer(self):
+        lama = K.offset_komputer
+        K.offset_komputer = lambda: K.timedelta(0)             # komputer/VPS memakai UTC
+        try:
+            o = self.ok("info")
+        finally:
+            K.offset_komputer = lama
+        self.assertTrue(any("UTC+0" in p and "WIB" in p for p in o["peringatan"]))
+
+    def test_58_csv_qty_minus_pecahan_tetap_angka(self):
+        self.assertEqual(K.sel_aman("-2,5"), "-2,5")
+        self.assertEqual(K.sel_aman("-5000"), "-5000")
+        self.assertEqual(K.sel_aman("-cmd|calc"), "'-cmd|calc")
+        o = self.jual("0,75 kg gula pasir, bayar pas")
+        self.ok("retur", "--nota", o["no"], "--item", "0,5 kg gula pasir", "--alasan", "x", "--waktu",
+                "2026-09-24 10:01", "--ya")
+        out = os.path.join(self.dir, "j.csv")
+        self.ok("ekspor", "--tanggal", "2026-09-24", "--csv", out)
+        self.assertIn(";-0,5;", isi_file(out, "utf-8-sig"))
+
+    def test_59_struk_emoji_dan_lebar(self):
+        self.ok("atur", "--nama-toko", "Kafe \U0001F60A Senja — Fiktif", "--ya")
+        self.ok("produk", "tambah", "--kode", "EM", "--nama", "Es Kopi \U0001F525\U0001F60A Spesial Panjang Sekali Nian",
+                "--harga", "20rb", "--ya")
+        self.ok("produk", "tambah", "--kode", "CJ", "--nama", "抹茶拿鐵", "--harga", "30rb", "--ya")
+        self.jual("1 EM, 1 CJ, bayar pas")
+        for kertas, lebar in (("58", 32), ("80", 48)):
+            s = self.ok("struk", "--kertas", kertas, "--keluar", os.path.join(self.dir, "e%s.html" % kertas))
+            self.assertTrue(all(K.lebar_tampil(b) <= lebar for b in s["baris"]), s["baris"])
+            self.assertFalse(any("\U0001F60A" in b for b in s["baris"]))
+        self.assertTrue(any("KAFE SENJA" in b for b in s["baris"]))
+
+    def test_60_struk_teks_tidak_menambah_cetakan(self):
+        o = self.jual("1 kopi hitam, bayar pas")
+        self.ok("struk", "--nota", o["no"], "--teks")
+        self.ok("struk", "--nota", o["no"], "--teks")
+        s = self.ok("struk", "--nota", o["no"], "--keluar", os.path.join(self.dir, "a.html"))
+        self.assertEqual(s["cetak_ke"], 1)
+        self.assertNotIn("SALINAN", s["baris"][0])
+
+    def test_61_pesan_setelah_tutup_kasir_dan_nama_kasir(self):
+        self.ok("buka-kasir", "--kas-awal", "100rb", "--kasir", "Rina", "--waktu", "2026-09-24 07:00", "--ya")
+        o = self.jual("1 kopi hitam, bayar pas", "2026-09-24 08:00")
+        self.assertIn("Rina", "\n".join(self.ok("struk", "--nota", o["no"], "--teks")["baris"]))
+        self.ok("tutup-kasir", "--kas-fisik", "112rb", "--waktu", "2026-09-24 20:00", "--ya")
+        o = self.ok("jual", "--pesan", "1 kopi hitam, bayar pas", "--waktu", "2026-09-24 20:30")
+        self.assertTrue(any("sudah DITUTUP" in p for p in o["peringatan"]))
+
+    def test_62_impor_semua_rusak_alasan_per_baris(self):
+        p = self.file("rusak.csv", "Kode;Nama;Harga\nA;Satu;0\nB;Dua;-5\n")
+        o = self.gagal("produk", "impor", p)
+        self.assertIn("baris 2", o["error"])
+        self.assertIn("baris 3", o["error"])
+
+    def test_63_struk_nota_asal_menyebut_retur(self):
+        o = self.jual("3 es teh manis, bayar pas")
+        self.ok("retur", "--nota", o["no"], "--item", "1 es teh", "--alasan", "x", "--waktu", "2026-09-24 10:01", "--ya")
+        s = self.ok("struk", "--nota", o["no"], "--teks")
+        self.assertIn("R-260924-0001", s["teks"])
+
+    def test_64_migrasi_database_v100(self):
+        con = sqlite3.connect(self.db)
+        con.execute("CREATE TABLE nota_lama AS SELECT * FROM nota")
+        kolom = [r[1] for r in con.execute("PRAGMA table_info(nota)") if r[1] not in
+                 ("tarif_pajak", "service", "service_persen", "service_kena", "zona")]
+        con.executescript("DROP TABLE nota; CREATE TABLE nota AS SELECT %s FROM nota_lama; DROP TABLE nota_lama;"
+                          % ",".join(kolom))
+        con.close()
+        o = self.jual("1 kopi hitam, bayar pas")                  # kolom baru ditambahkan otomatis
+        self.assertEqual(o["total"], 12000)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

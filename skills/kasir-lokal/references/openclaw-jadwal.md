@@ -3,7 +3,7 @@
 Semua perintah di bawah **diverifikasi 24 September 2026 dengan OpenClaw 2026.9.5** (CLI asli: `--help`, lalu dijalankan sungguhan pada Gateway lokal dengan HOME sementara). Yang diverifikasi: `skills install <folder> --global` + `skills check --json` (kasir-lokal eligible, terlihat model, bisa dipanggil), job diterima Gateway, jadwal & zona waktu tersimpan (21.00 WIB → `nextRunAt` 14.00 UTC), `automations run` menjalankan script dan menangkap teks rekap (status `ok`, exit code 0), `runs`, `list`, `disable`, `enable`, `rm`. Pengiriman ke Telegram **tidak** diuji karena butuh bot token asli; tanpa token, run tetap `ok` tetapi `deliveryStatus: not-delivered`.
 
 Syarat:
-- Gateway OpenClaw berjalan di komputer yang **sama dengan database kasir** dan **menyala saat jadwal** (komputer kasir yang tidak dimatikan malam hari, mini PC, atau VPS milik pemilik). Jam komputer harus WIB/WITA/WIT yang benar, karena "hari ini" dan "per jam" memakai jam komputer.
+- Gateway OpenClaw berjalan di komputer yang **sama dengan database kasir** dan **menyala saat jadwal** (komputer kasir yang tidak dimatikan malam hari, mini PC, atau VPS milik pemilik). Jam komputer harus benar (boleh UTC di VPS); "hari ini" dan "per jam" memakai zona toko yang diatur `--zona`.
 - Kanal **Telegram** sudah tersambung (bot resmi) dan chat id pemilik diketahui (lihat skill `laporan-otomatis-terjadwal`, `references/openclaw.md`). WhatsApp hanya dengan nomor terpisah + persetujuan risiko tertulis pemilik; bukan default.
 - Jadwal **hanya menjalankan laporan (baca)**: `rekap`, `info`. Tidak pernah `--ya`, `jual`, `void`, `tutup-kasir`.
 - Minta persetujuan pemilik sebelum membuat jadwal dan tunjukkan perintahnya.
@@ -30,7 +30,7 @@ Script dijalankan langsung oleh Gateway, teksnya dikirim apa adanya. Tidak memak
    ```
 - Toko tutup setelah tengah malam? Jadwalkan pagi berikutnya dengan `"--tanggal","kemarin"`.
 - Database bukan di lokasi default? Tambahkan `"--db","/path/kasir.db"` **setelah** `"rekap"` di dalam argv.
-- WITA: `--tz Asia/Makassar`; WIT: `--tz Asia/Jayapura`.
+- WITA: `--tz Asia/Makassar`; WIT: `--tz Asia/Jayapura`. Samakan dengan zona toko (`kasir.py info` menampilkan zona toko dan memperingatkan bila jam komputer/VPS berbeda). Sejak v1.1.0 "hari ini" dan pembagian per jam memakai zona toko, bukan jam komputer.
 - Payload perintah adalah fitur admin Gateway (pemilik Gateway). Contoh `python3` di atas untuk Mac/Linux/VPS; di Windows **belum diuji** — pakai Pilihan 2 (atau `"py"` sebagai ganti `"python3"`, belum diuji).
 
 ## Pilihan 2: pesan ke agent (model AI membaca skill)

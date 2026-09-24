@@ -7,14 +7,14 @@
 - ✅ **Cukup ketik seperti biasa.** "2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb" → nota bernomor, total, dan kembalian langsung jadi. Produk yang tidak jelas ditanyakan, bukan ditebak.
 - ✅ **Struk rapi 58 mm / 80 mm** siap dicetak ke printer thermal dari browser, atau dikirim sebagai teks ke WhatsApp pembeli.
 - ✅ **Uang laci jelas.** Buka kasir dengan modal, tutup kasir dengan hitungan uang fisik: kelihatan pas, lebih, atau kurang berapa, plus setoran ke pemilik. Salah catat dibatalkan dengan alasan, tidak dihapus diam-diam.
-- ✅ **Rekap siap kirim & siap pajak.** Omzet, diskon, retur, per metode bayar, produk terlaris, jam ramai; file CSV untuk Excel; omzet bulanan untuk PPh final 0,5%; opsi PPN 12% (DPP 11/12) untuk toko PKP.
+- ✅ **Rekap siap kirim & siap pajak.** Omzet, diskon, retur, per metode bayar, produk terlaris, jam ramai; file CSV untuk Excel; omzet bulanan untuk PPh final 0,5%; opsi **PBJT (pajak resto/kafe)** sesuai tarif Perda daerah Anda + service charge, atau PPN 12% (DPP 11/12) untuk toko PKP.
 
 ## Cocok untuk siapa
-- Warung, toko kelontong, kedai kopi, toko kue, kios, toko oleh-oleh, butik kecil — **satu outlet, satu komputer kasir**.
+- Warung, toko kelontong, kedai kopi, kafe, warung makan, toko kue, toko bangunan (sak, m3, meter), kios, butik kecil — **satu outlet, satu komputer kasir**.
 - Pemilik yang ingin laporan penjualan harian masuk ke Telegram tanpa buka aplikasi.
 - Toko yang sudah memakai skill **Buku Stok** dan ingin stoknya terpotong dari penjualan kasir.
 
-**Kurang cocok:** banyak cabang, banyak kasir di perangkat berbeda sekaligus, atau yang butuh aplikasi kasir di HP/tablet.
+**Kurang cocok:** banyak kasir di perangkat berbeda sekaligus, atau yang butuh aplikasi kasir di HP/tablet. Punya beberapa cabang? Bisa dengan satu database per cabang lalu laporan digabung manual (bukan sinkron otomatis).
 
 ## Contoh sebelum & sesudah
 **Sebelum:** penjualan dicatat di buku tulis, total dihitung kalkulator, malam hari uang laci selisih dan tidak tahu sebabnya. Rekap bulanan untuk pajak dikerjakan akhir bulan sambil membongkar nota.
@@ -61,7 +61,7 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 ## Yang perlu Anda tahu (jujur)
 - **Bukan mesin pembayaran.** Kasir hanya *mencatat* bahwa pembeli membayar tunai/QRIS/transfer/debit. Tidak membuat QRIS dinamis, tidak menarik kartu, tidak mengecek uang masuk. Cocokkan QRIS/transfer dengan mutasi bank Anda (angkanya ada di laporan tutup kasir).
 - **Satu outlet, satu komputer.** Jangan membuka file database yang sama dari dua komputer (mis. lewat Google Drive).
-- **Pajak:** PPN hanya untuk toko yang sudah **PKP**. Warung makan/kafe/restoran umumnya kena **pajak daerah (PBJT)**, bukan PPN — versi ini belum menghitung PBJT; tanyakan ke Bapenda setempat. PPh final 0,5% tidak dicetak di struk; kasir menyiapkan omzetnya dan skill **PPh Final UMKM** yang menghitung. Pembulatan PPN belum dicocokkan dengan Coretax. Ini alat bantu catat, bukan nasihat pajak.
+- **Pajak:** restoran/kafe/warung makan yang sudah terdaftar di Bapenda memungut **PBJT** (pajak daerah, UU 1/2022), bukan PPN — kasir bisa menghitung dan mencetaknya, tetapi **tarifnya Anda isi sendiri** sesuai Perda daerah (paling tinggi 10%), dan penyetoran/pelaporan tetap Anda lakukan ke Bapenda. PPN hanya untuk toko non-kuliner yang sudah **PKP**. Pembulatan PBJT belum dicocokkan dengan sistem Bapenda. PPh final 0,5% tidak dicetak di struk; kasir menyiapkan omzetnya dan skill **PPh Final UMKM** yang menghitung. Pembulatan PPN belum dicocokkan dengan Coretax. Ini alat bantu catat, bukan nasihat pajak.
 - Kecepatan: setiap transaksi dikonfirmasi dulu lewat chat, jadi cocok untuk toko dengan antrean santai, bukan kasir supermarket yang memindai barcode tiap detik.
 
 ## FAQ

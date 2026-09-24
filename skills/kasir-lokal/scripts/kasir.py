@@ -1250,6 +1250,12 @@ def cocokkan_item(conn, it, rows, unit):
         return p, cara, Decimal(1)
     satuan = it["satuan"]
     p, info = cari_produk(conn, it["nama"], rows)
+    if p is None and satuan and info.get("pilihan"):
+        # beberapa produk cocok -> satuan yang disebut boleh mempersempit ('0,5 m3 pasir' = Pasir Beton, bukan Gula Pasir)
+        sama = [r for r in rows if satuan_kanonik(r["satuan"]) == satuan_kanonik(satuan)]
+        p2, info2 = cari_produk(conn, it["nama"], sama) if sama else (None, None)
+        if p2 is not None:
+            p, info = p2, "sebagian"
     if p is None and satuan:
         p2, info2 = cari_produk(conn, satuan + " " + it["nama"], rows)   # produk yang namanya diawali kata satuan
         if p2 is not None:

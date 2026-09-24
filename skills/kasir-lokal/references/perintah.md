@@ -7,9 +7,9 @@ Waktu: `2026-09-24 10:15` atau `24/09/2026 10.15`. Tanggal: `hari-ini`, `kemarin
 
 | Perintah | Fungsi | Opsi penting |
 |---|---|---|
-| `init` (tulis) | Buat database. Jika sudah ada, tidak mengubah apa pun | `--nama-toko` (wajib) `--alamat --telp --footer --npwp --pajak tanpa\|ppn-belum\|ppn-termasuk --pkp ya\|tidak --stok tidak\|kasir\|buku-stok --kertas 58\|80` |
+| `init` (tulis) | Buat database. Jika sudah ada, tidak mengubah apa pun | `--nama-toko` (wajib) `--alamat --telp --footer --npwp --pajak tanpa\|ppn-belum\|ppn-termasuk\|pbjt-belum\|pbjt-termasuk --pkp ya\|tidak --tarif-pbjt N --service-charge N --sc-kena-pajak ya\|tidak --zona WIB\|WITA\|WIT --stok tidak\|kasir\|buku-stok --kertas 58\|80` |
 | `atur` (tulis) | Ubah pengaturan (berlaku untuk nota berikutnya) | sama seperti `init` |
-| `info` | Lokasi DB, pengaturan, jumlah produk/nota, sesi kasir, backup terakhir | — |
+| `info` | Lokasi DB, pengaturan, jumlah produk/nota, sesi kasir, backup terakhir; peringatan bila zona jam komputer ≠ zona toko | — |
 | `produk tambah` (tulis) | Tambah produk | `--kode --nama --harga` wajib; `--varian --satuan --stok` |
 | `produk ubah` (tulis) | Ubah produk | `--kode` + `--nama --varian --harga --satuan --stok --kode-baru --tanpa-stok --nonaktif --aktif` |
 | `produk cari [kata]` | Cari produk | `--semua` (termasuk nonaktif) |
@@ -30,7 +30,8 @@ Waktu: `2026-09-24 10:15` atau `24/09/2026 10.15`. Tanggal: `hari-ini`, `kemarin
 
 ## Bahasa pesanan (`jual --pesan`)
 Dipisah koma (bukan koma di dalam angka), titik koma, baris baru, "dan", "sama".
-- Item: `2 kopi susu` · `kopi susu x2` · `kopi susu 2` · `dua kopi hitam` · `setengah kg gula` · `1,5 kg gula pasir` · `KH=2`
+- Item: `2 kopi susu` · `kopi susu x2` · `kopi susu 2` · `dua kopi hitam` · `setengah kg gula` · `1,5 kg gula pasir` · `2kg gula` · `KH=2` · `2 sak semen` · `semen 2 sak` · `0,5 m3 pasir`
+- Satuan: semua satuan di tabel produk + satuan umum (sak, pail, dus, lusin, lembar, batang, rol, ikat, m, m2, m3, ton, liter, …) dikenali di depan atau belakang nama, di `jual` maupun `retur`. Satuan yang disebut harus sama dengan satuan produk (alias: kilo=kg, zak=sak, kubik=m3, …) atau satuan hitung generik (buah/pcs/biji/unit untuk produk yang tidak ditimbang); selain itu ditolak (mis. `2 lusin` untuk produk per pcs). Bila beberapa produk cocok, satuan dipakai untuk mempersempit (`0,5 m3 pasir` → Pasir Beton, disebut di pratinjau). Pecahan hanya untuk kg, gram, ons, liter, ml, cc, m, cm, m2, m3, ton, kwintal.
 - Diskon item: `3 es teh diskon 10%` · `diskon 2rb` · `diskon 10%+5%`
 - Diskon nota: segmen yang diawali `diskon`/`potongan`: `diskon 10%`, `diskon 5rb`, `diskon 10%+2rb`
 - Bayar: `bayar tunai 100rb` · `bayar pas` · `bayar qris` · `bayar qris 50rb, tunai 50rb` · `bayar transfer`. Metode: Tunai, QRIS, Transfer, Debit, Kartu kredit, E-wallet (OVO/GoPay/DANA/ShopeePay/LinkAja), Lainnya. Satu metode boleh tanpa jumlah (= sisa).
@@ -45,10 +46,13 @@ Pencocokan produk: kode persis → nama+varian persis → nama persis (satu prod
 ## Format CSV
 - **Penjualan** (`rekap --csv`, `ekspor --format penjualan`): `Tanggal;Jam;No. Nota;Jenis;Kode;Produk;Varian;Qty;Satuan;Harga Satuan;Diskon;Total;Status;Metode Bayar`. Retur/void = baris minus, Status tetap `Selesai`, sehingga jumlah kolom Total = penjualan bersih. Untuk `rekap-penjualan-csv`: `--kolom-tanggal "Tanggal" --kolom-produk "Produk" --kolom-qty "Qty" --kolom-total "Total" --kolom-status "Status"`. Total pada mode PPN belum termasuk = sebelum PPN.
 - **Buku-stok** (`ekspor --format buku-stok`): `Nomor Pesanan;Tanggal;SKU;Nama Produk;Varian;Jumlah;Harga Satuan;Status` (Status `Selesai` atau `Dibatalkan` bila di-void; harga satuan = setelah diskon). Diimpor dengan `stok.py impor-pesanan FILE --platform lainnya`. Retur sebagian tidak ikut (catat manual `masuk --jenis retur-pembeli`).
-- Semua CSV: UTF-8 dengan BOM, pemisah `;` (Excel Indonesia), qty pecahan ditulis `1,5`; teks diawali `= + - @` diberi `'` (anti formula injection).
+- Semua CSV: UTF-8 dengan BOM, pemisah `;` (Excel Indonesia), qty pecahan ditulis `1,5`; teks diawali `= + @` atau `-` yang bukan angka diberi `'` (anti formula injection); angka minus (`-2,5`) tetap angka.
+
+## Zona waktu
+Waktu nota = jam **zona toko** (`--zona`, default WIB/Asia/Jakarta; WITA = Asia/Makassar, WIT = Asia/Jayapura, juga Asia/Pontianak), bukan jam komputer — penting di VPS yang memakai UTC. Offset (+07:00/+08:00/+09:00) disimpan di setiap nota dan label WIB/WITA/WIT dicetak di struk. Memakai `zoneinfo` bila tersedia; tanpa tzdata (mis. Windows) dipakai offset tetap (Indonesia tidak memakai musim panas, jadi hasilnya sama).
 
 ## Kode keluar
 `0` berhasil (termasuk pratinjau), `1` gagal dengan pesan jelas (`error`), `2` perintah salah tulis.
 
 ## Struktur data (pengguna mahir)
-Satu file SQLite: `produk`, `nota` (jual/retur/void, angka rupiah bulat), `nota_item` (retur menunjuk baris asal lewat `ref_item_id`), `bayar` (jumlah per metode; minus = uang kembali), `sesi` (buka/tutup kasir), `kas`, `stok_mutasi`, `log`, `meta` (pengaturan). Bisa dibuka read-only dengan DB Browser for SQLite atau Datasette; jangan diedit manual.
+Satu file SQLite: `produk`, `nota` (jual/retur/void, angka rupiah bulat; kolom `ppn` = jumlah pajak PPN atau PBJT sesuai `pajak_mode`, `dpp` = dasar pengenaan, plus `tarif_pajak`, `service`, `service_persen`, `service_kena`, `zona`; database v1.0.0 diperbarui otomatis saat dibuka), `nota_item` (retur menunjuk baris asal lewat `ref_item_id`), `bayar` (jumlah per metode; minus = uang kembali), `sesi` (buka/tutup kasir), `kas`, `stok_mutasi`, `log`, `meta` (pengaturan). Bisa dibuka read-only dengan DB Browser for SQLite atau Datasette; jangan diedit manual.

@@ -1,6 +1,6 @@
 ---
 name: kasir-lokal
-description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite lokal, tanpa langganan/internet), dioperasikan lewat chat: catat penjualan dari kalimat biasa, diskon item/nota, bayar tunai/QRIS/transfer (hanya dicatat), kembalian, retur/void beralasan, struk 58/80 mm, buka/tutup kasir + selisih kas, rekap harian/bulanan ke Telegram + CSV, opsi PPN 12% DPP 11/12. Gunakan untuk "catat penjualan", "cetak struk", "tutup kasir", "rekap kasir", cashier, point of sale, receipt.
+description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite lokal, tanpa langganan/internet), dioperasikan lewat chat: catat penjualan dari kalimat biasa, diskon item/nota, bayar tunai/QRIS/transfer (hanya dicatat), kembalian, retur/void beralasan, struk 58/80 mm, buka/tutup kasir + selisih kas, rekap harian/bulanan ke Telegram + CSV, opsi PPN 12% DPP 11/12 atau PBJT resto/kafe. Gunakan untuk "catat penjualan", "cetak struk", "tutup kasir", "rekap kasir", cashier, point of sale, receipt.
 ---
 
 # Kasir Lokal (POS satu outlet)
@@ -18,7 +18,7 @@ Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua tr
 
 ## Kapan TIDAK digunakan
 - Menerima/memproses pembayaran (membuat QRIS dinamis, menarik kartu di EDC, cek uang masuk otomatis) → tidak bisa. Kasir hanya **mencatat** metode bayar; pembayaran tetap lewat QRIS statis/EDC/bank milik toko.
-- Banyak outlet/cabang, banyak kasir di perangkat berbeda secara bersamaan, atau aplikasi di HP kasir → di luar cakupan (satu database = satu outlet di satu komputer).
+- Banyak outlet/cabang, banyak kasir di perangkat berbeda secara bersamaan, atau aplikasi di HP kasir → bukan fitur (satu database = satu outlet di satu komputer). Alternatif yang boleh ditawarkan (jujur, bukan sinkron otomatis): **satu database per cabang** (`--db` berbeda di komputer tiap cabang), lalu tiap cabang `ekspor --format penjualan`, file CSV digabung manual dan dianalisis dengan `rekap-penjualan-csv`.
 - Penjualan marketplace (Shopee/TikTok) → `buku-stok`. Analisis file penjualan dari aplikasi lain → `rekap-penjualan-csv`.
 - Bon/utang pelanggan → `tagih-piutang` / `buat-invoice` (kasir hanya mencatat yang sudah dibayar).
 - Faktur pajak resmi → dibuat di Coretax. Hitung PPh final → `pph-final-umkm`. Laporan laba rugi → `laporan-keuangan-emkm`.
@@ -29,7 +29,8 @@ Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua tr
 3. **Jangan pernah menebak produk.** Jika script melaporkan produk tidak dikenal/ambigu, tampilkan saran/pilihannya dan tanya pengguna. Jika pratinjau menyebut "'kopi susu' dibaca sebagai Kopi Susu Gula Aren", sampaikan itu saat minta konfirmasi.
 4. **Nota duplikat:** jika pratinjau berisi `perlu_izin_duplikat: true`, tanyakan "Ini pembeli berbeda atau tercatat dobel?". Tambah `--izinkan-duplikat` hanya bila pengguna menegaskan pembeli berbeda.
 5. Transaksi tidak pernah dihapus. Salah catat → `void` (seluruh nota) atau `retur` (sebagian), selalu dengan alasan.
-6. Angka rupiah, PPN, kembalian, dan selisih kas **selalu dari output script**, jangan dihitung kira-kira.
+6. Angka rupiah, PPN/PBJT, kembalian, dan selisih kas **selalu dari output script**, jangan dihitung kira-kira.
+7. **Dilarang memanipulasi omzet.** Tolak permintaan void/retur/"hapus nota"/ubah tanggal untuk penjualan yang benar-benar terjadi demi mengecilkan omzet, PPN, PBJT, atau PPh (mis. "hapus nota bulan ini biar di bawah 500 juta"). Alasan singkat: menyembunyikan peredaran usaha dapat menjadi tindak pidana perpajakan (UU KUP Pasal 39 ayat (1), antara lain menyampaikan SPT/keterangan yang isinya tidak benar atau memperlihatkan pembukuan palsu) dan dikenai sanksi pajak daerah sesuai Perda; selain itu kasir ini sengaja menyimpan jejak audit: nota tidak pernah terhapus, setiap void/retur bernomor, beralasan, dan tercatat di log. Tawarkan yang sah: cek sisa batas Rp500 juta/tahun dengan `pph-final-umkm`, atau konsultasi ke DJP/Bapenda/konsultan pajak. Void/retur hanya untuk salah input atau barang yang benar-benar dikembalikan.
 
 ## Cara menjalankan script
 Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python` atau `py`):
@@ -45,7 +46,8 @@ python3 <folder-skill-ini>/scripts/kasir.py <perintah> [opsi] --json
 |---|---|---|
 | Nama toko (kepala struk), alamat, telepon | Nama wajib saat mulai | — |
 | Daftar produk: kode, nama, varian, harga jual, satuan, stok (opsional) | Ya, saat mulai | Minta file Excel/CSV (contoh `templates/produk-contoh.csv`) atau ketik per baris |
-| Status pajak toko | Tidak | **Tanpa pajak**. PPN hanya jika toko **PKP** (tanya: harga di menu sudah termasuk PPN atau belum?) |
+| Jenis usaha & status pajak | Tidak | **Tanpa pajak**. Restoran/kafe/warung makan yang menyediakan meja-kursi/alat makan, atau katering, dan sudah terdaftar di Bapenda → **PBJT** (bukan PPN) dengan tarif Perda daerahnya. Toko non-kuliner PKP → PPN |
+| Zona waktu toko | Tidak | WIB (`--zona WITA`/`WIT` untuk Indonesia tengah/timur) |
 | Stok dilacak? | Tidak | Tidak. Pilihan: dipotong kasir, atau dikelola skill `buku-stok` (jangan keduanya) |
 | Ukuran kertas struk | Tidak | 58 mm |
 | Cara bayar tiap transaksi | Tidak | Tunai uang pas (disebutkan sebagai asumsi di pratinjau) |
@@ -55,13 +57,14 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 ## Langkah kerja
 
 ### A. Mulai ("pakai kasir untuk toko saya")
-1. `info --json`. Jika database belum ada → satu pesan: (1) nama toko, alamat, telepon untuk struk; (2) kirim daftar produk (file atau ketik); (3) toko sudah PKP (memungut PPN)? Jika ya, harga di menu sudah termasuk PPN atau belum? (4) mau stok dipotong otomatis? Sudah pakai `buku-stok`? (5) printer struk 58 atau 80 mm?
-2. `init --nama-toko "..." [--alamat ..] [--telp ..] [--pajak tanpa|ppn-belum|ppn-termasuk --pkp ya] [--stok tidak|kasir|buku-stok] [--kertas 58|80]` → konfirmasi → `--ya`.
+1. `info --json`. Jika database belum ada → satu pesan: (1) nama toko, alamat, telepon, dan kota (WIB/WITA/WIT) untuk struk; (2) kirim daftar produk (file atau ketik); (3) jenis usaha & pajak: **restoran/kafe/warung makan dengan tempat makan atau katering** → sudah terdaftar pajak restoran/PBJT di Bapenda? berapa tarif di Perda/SKPD Anda, harga menu sudah termasuk pajak atau belum, ada service charge? — **toko lain** → sudah PKP (memungut PPN)? harga sudah termasuk PPN? (4) mau stok dipotong otomatis? Sudah pakai `buku-stok`? (5) printer struk 58 atau 80 mm?
+   - Makanan/minuman objek PBJT **bukan objek PPN**: jangan memakai mode PPN untuk "pajak resto 10%". Tarif PBJT **wajib dari pengguna** (Perda/SKPD); jangan mengarang atau mengasumsikan 10%. Belum terdaftar/omzet di bawah batas Perda → mode `tanpa`, sarankan tanya Bapenda.
+2. `init --nama-toko "..." [--alamat ..] [--telp ..] [--zona WIB|WITA|WIT] [--pajak tanpa | ppn-belum|ppn-termasuk --pkp ya | pbjt-belum|pbjt-termasuk --tarif-pbjt N] [--service-charge 5 --sc-kena-pajak ya|tidak] [--stok tidak|kasir|buku-stok] [--kertas 58|80]` → konfirmasi → `--ya`. Service charge hanya dengan harga *belum* termasuk pajak; apakah service charge ikut dasar pajak **ditentukan pengguna** sesuai Perda/arahan Bapenda (script menolak bila belum diisi).
 3. Produk: `produk impor produk.csv` (pratinjau menampilkan pemetaan kolom, produk baru, baris rusak — harga 0/negatif, kode ganda, angka ilmiah Excel) → setuju → `--ya`. Sedikit produk: `produk tambah --kode KH --nama "Kopi Hitam" --harga 12000 --satuan cup [--varian ..] [--stok ..]`. Barang gratis/bonus = harga normal + diskon 100%.
 
 ### B. Transaksi (inti)
 1. Teruskan kalimat pengguna apa adanya: `jual --pesan "2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb" --json`.
-   - Item: `2 kopi susu`, `kopi susu x2`, `dua kopi hitam`, `1,5 kg gula pasir`, `KH=2`. Diskon item: `3 es teh diskon 10%` / `diskon 2rb` / bertingkat `diskon 10%+5%`.
+   - Item: `2 kopi susu`, `kopi susu x2`, `dua kopi hitam`, `1,5 kg gula pasir`, `KH=2`, `2 sak semen`, `semen 2 sak`, `0,5 m3 pasir`. Satuan yang disebut harus sama dengan satuan produk (atau buah/pcs); `2 lusin kaos kaki` untuk produk per pcs ditolak — minta jumlah dalam pcs. Pecahan hanya untuk kg/gram/liter/meter/m2/m3/ton. Diskon item: `3 es teh diskon 10%` / `diskon 2rb` / bertingkat `diskon 10%+5%`.
    - Diskon nota: segmen `diskon 10%` / `diskon 5rb`. Bayar: `bayar tunai 100rb`, `bayar qris`, `bayar pas`, `bayar qris 50rb, tunai 50rb`.
    - Alternatif terstruktur: `--item "2 KSGA" --item "1 RB" --diskon 10% --bayar tunai=100rb`. Catatan: `--catatan "meja 4"`, kasir: `--kasir Rina`.
 2. Tampilkan pratinjau (format di bawah). Setuju → perintah sama + `--ya` (tambah `--struk 58` bila pengguna mau struk langsung).
@@ -83,7 +86,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### F. Rekap & ekspor
 - `rekap --tanggal hari-ini|kemarin|YYYY-MM-DD`, `rekap --bulan ini|lalu|2026-09`, `rekap --tahun 2026`, `rekap --dari .. --sampai ..`. Kirim `teks` apa adanya (siap Telegram/WA). Tambah `--csv file.csv` (per baris nota, bisa dibaca skill `rekap-penjualan-csv`) atau `--csv-produk`.
-- Bulanan/tahunan: script menampilkan **omzet tanpa PPN** + catatan PPh final. Untuk menghitung PPh, pakai skill `pph-final-umkm` (rekap tahunan memberi perintah siap pakai). Tanyakan dulu omzet usaha lain & jenis wajib pajak.
+- Bulanan/tahunan: script menampilkan **omzet tanpa PPN/PBJT** + catatan PPh final (dan pengingat setor PBJT ke Bapenda bila ada). Untuk menghitung PPh, pakai skill `pph-final-umkm` (rekap tahunan memberi perintah siap pakai). Tanyakan dulu omzet usaha lain & jenis wajib pajak.
 - Stok di `buku-stok`: `ekspor --format buku-stok --tanggal hari-ini --csv jual-kasir.csv` → di buku-stok: `impor-pesanan jual-kasir.csv --platform lainnya` (pratinjau dulu). Nota lama dilewati otomatis; nota void jadi "Dibatalkan" dan stoknya kembali. Retur sebagian dicatat manual di buku-stok (`masuk --jenis retur-pembeli`). Jangan pakai mode stok `kasir` bersamaan (stok terpotong dobel; script memperingatkan).
 
 ### G. Backup
@@ -125,21 +128,26 @@ Produk terlaris (penjualan bersih):
   - Harga belum termasuk PPN: DPP = total setelah diskon; bayar = DPP + PPN. Contoh 12.000 → PPN 1.320 → Rp 13.320.
   - Harga sudah termasuk PPN: DPP = rupiah bulat terbesar dengan DPP + PPN ≤ harga; sisa ditampilkan. Contoh 53.000 → DPP 47.748, PPN 5.252.
   - Hasil identik dengan skill `hitung-ppn` (diuji otomatis). Pembulatan belum dicocokkan dengan Coretax.
+- **PBJT makanan/minuman** (restoran/kafe/katering terdaftar; UU 1/2022 Pasal 57–59): dasar = jumlah yang dibayar pembeli setelah diskon (**tanpa** 11/12); PBJT = tarif Perda × dasar, **dibulatkan ke bawah sekali**. Contoh tarif 10%: 45.900 → PBJT 4.590 → Rp 50.490. Harga termasuk PBJT: dasar = rupiah bulat terbesar dengan dasar + PBJT ≤ harga (53.000 → dasar 48.182, PBJT 4.818). Pembulatan belum dicocokkan dengan sistem Bapenda.
+- Service charge (opsional) = rupiah terdekat dari persen × total setelah diskon; ikut dasar pajak hanya bila pengguna mengatur `--sc-kena-pajak ya`.
 - Retur: nilai = sisa baris sebelum − sesudah (proporsional); pajak retur = pajak(sisa sebelum) − pajak(sisa sesudah), sehingga retur penuh selalu kembali ke Rp 0.
 - Kas seharusnya = kas awal + tunai diterima − kembalian − uang kembali tunai + kas masuk − kas keluar. Selisih = uang fisik − seharusnya.
-- Omzet untuk PPh final = uang diterima − PPN (peredaran bruto). PPh final **tidak** dihitung atau dicetak di struk.
+- Omzet untuk PPh final = uang diterima − PPN/PBJT (peredaran bruto, termasuk service charge). PPh final **tidak** dihitung atau dicetak di struk.
+- Waktu nota dicatat menurut zona toko (default WIB), bukan jam komputer/VPS; `info` memperingatkan bila berbeda.
 
 ## Checklist sebelum menjawab
 - [ ] Perintah tulis sudah dipratinjau & disetujui sebelum `--ya`
 - [ ] Produk yang "dibaca sebagai" dan asumsi cara bayar disampaikan
 - [ ] Semua `peringatan` script disampaikan (kasir belum dibuka, duplikat, stok minus, dsb.)
 - [ ] Rupiah ditulis `Rp 1.250.000`, dari script
-- [ ] Bila ada PPN/rekap bulanan: disclaimer dan dasar aturan dari script ikut
+- [ ] Bila ada PPN/PBJT/rekap bulanan: disclaimer dan dasar aturan dari script ikut
+- [ ] Tidak ada void/retur yang tujuannya mengecilkan omzet atau pajak
 
 ## Batasan & penanganan error
 - Bukan mesin EDC/QRIS dinamis, bukan akuntansi penuh, bukan multi-outlet. Satu database dipakai satu komputer; jangan simpan di folder sinkron (Google Drive/Dropbox) yang dibuka dua komputer sekaligus.
 - Database terkunci (jadwal OpenClaw sedang membaca) → script menunggu 15 detik lalu memberi pesan jelas; ulangi perintah yang sama.
-- File CSV dari Excel (pemisah `;`, BOM, Windows-1252) dibaca otomatis; `.xlsx` diminta disimpan sebagai CSV. CSV hasil ekspor aman dari formula injection (teks diawali `=`,`+`,`-`,`@` diberi tanda `'`).
+- File CSV dari Excel (pemisah `;`, BOM, Windows-1252) dibaca otomatis; `.xlsx` diminta disimpan sebagai CSV. CSV hasil ekspor aman dari formula injection (teks diawali `=`,`+`,`@`, atau `-` yang bukan angka, diberi tanda `'`; angka minus seperti `-2,5` tetap angka).
 - Produk harga 0/negatif, qty 0, harga ber-sen ditolak. Harga di pesanan (`@15rb`) tidak dipakai; ubah lewat `produk ubah` (berlaku untuk nota berikutnya).
 - Jika Python tidak bisa dijalankan: kasir tidak bisa dioperasikan. Katakan terus terang, bantu pasang Python (python.org); sementara itu hitungan satu nota boleh dikerjakan manual dengan rumus di atas dan diberi label "dihitung manual, belum tersimpan".
-- Pajak: alat bantu catat, bukan nasihat pajak. Kasus khusus (barang mewah/PPnBM, fasilitas bebas PPN, restoran yang dikenai pajak daerah PBJT) → arahkan ke DJP/Bapenda/konsultan. Detail: `references/pajak.md`.
+- Emoji di nama toko/produk tidak dicetak di struk (printer thermal umumnya tidak bisa mencetaknya).
+- Pajak: alat bantu catat, bukan nasihat pajak. Kasus khusus (barang mewah/PPnBM, fasilitas bebas PPN, PBJT selain makanan/minuman, batas omzet PBJT di Perda, cara setor/lapor PBJT) → arahkan ke DJP/Bapenda/konsultan. Detail: `references/pajak.md`.
