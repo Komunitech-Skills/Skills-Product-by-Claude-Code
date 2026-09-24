@@ -102,3 +102,81 @@ sebelum uji ulang: perbaiki T1 di `docs/panduan-stirling-pdf.md` (tambahkan
 `-e SECURITY_ENABLELOGIN=false` ke perintah `docker run` bagian 3.2 dan luruskan klaim
 bagian 5, pertimbangkan pin versi Docker). S1 & R1-R3 disarankan diperbaiki sekalian
 sebelum uji ulang oleh penguji independen berikutnya.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-24)
+
+**Penguji:** agent penguji independen ke-2 (Claude Code, Sonnet 5), sesi terpisah dari
+sesi revisi v1.0.1 maupun sesi uji v1.0.0 di atas. Detail lengkap, log perintah, dan
+tabel verifikasi ada di `examples/06-uji-ulang-v1.0.1.md`. Ringkasan di bawah.
+
+**Stirling-PDF asli yang diuji:** Docker, image resmi
+`ghcr.io/stirling-tools/stirling-pdf`, dua tag **`:3.0.0`** (utama, sesuai panduan) dan
+**`:2.14.3`** (verifikasi silang klaim pembuat) — keduanya ditarik ulang & dijalankan
+langsung, container/volume dihapus di akhir sesi.
+
+### Status klaim revisi
+| Klaim | Status |
+|---|---|
+| T1 — `docker run` §3.2 benar (`SECURITY_ENABLELOGIN=false`, image dipin `:3.0.0`), §5 dikoreksi | **Terverifikasi benar** |
+| T1 — `pdf.py cek` menguji 1 operasi nyata (rotate 0°) sebelum bilang siap | **Terverifikasi benar** (tidak ada lagi positif palsu; diuji juga jalur negatif tanpa flag login → gagal jelas) |
+| T1 — 401/403 → pesan konsisten di semua perintah | **Terverifikasi benar** (pesan `cek` & `gabung` identik persis) |
+| T1 — diuji ke Stirling 2.14.3 & 3.0.0 asli | **Terverifikasi benar** untuk kedua versi |
+| S1 — estimasi Docker Windows ±20-40 menit + WSL2/restart/UAC/antivirus + jasa setup | Isi memadai & lengkap; waktu Windows spesifik tak terukur langsung di lingkungan Linux ini |
+| R1 — contoh ukuran resi konkret 10×15/10×20 cm | Contoh ada, tapi klaim arah spesifik hasil ("tetap kecil, bukan A4") **terbukti salah** — lihat **N1** baru |
+| R2 — fallback `ekstrak-nota-faktur` tak terpasang | **Sudah ada, benar** |
+| R3 — dokumen sensitif dilarang upload online | **Sudah ada, tegas** |
+
+### Regresi (skenario 01-03, data uji baru, server `:3.0.0` login mati)
+Tidak ada regresi pada mesin pengolahan PDF inti. Semua diverifikasi ulang independen:
+- 01 (gabung 3 foto nota ~5.4 MB/foto → kompres target 2MB): 3 halaman tetap (`pdfinfo`),
+  hasil 2 093 000 byte (`os.path.getsize`, di bawah target), sha256 foto asli identik.
+- 02 (8 resi thermal 10×15cm → 4/lembar): 2 halaman, urutan & isi benar (`pdftotext`),
+  sha256 resi asli identik — **tapi lihat N1**, ukuran kertas hasil ternyata A4, bukan
+  tetap kecil seperti diklaim teks baru.
+- 03 (kontrak 10 hal. → ambil 3-5 → watermark → kunci): isi 3 halaman identik
+  (`pdftotext`), watermark tampak jelas (diverifikasi visual via `pdftoppm`), enkripsi
+  benar (`qpdf` — sandi salah ditolak, sandi benar berhasil buka).
+
+### Input buruk
+6/6 sub-kasus (bukan PDF, 0 byte, terkunci tanpa buka-kunci, server mati, URL publik
+tanpa `STIRLING_ALLOW_REMOTE`, file tidak ada) gagal dengan pesan jelas bahasa awam,
+tidak crash, exit code 1 konsisten.
+
+### Cacat baru
+| ID | Keparahan | Temuan |
+|---|---|---|
+| **N1** | **Sedang** | `SKILL.md` klaim baru (bagian R1) "hasil `rapikan-resi` dari resi thermal 10×15/10×20 cm kemungkinan besar tetap berukuran kecil, bukan otomatis membesar jadi A4" **terbukti berlawanan dengan hasil nyata**: diuji dengan resi PDF asli 283×425 pt (10×15 cm) ke Stirling-PDF 3.0.0 asli lewat `rapikan-resi --per-lembar 4` dan `--per-lembar 2`, hasilnya **selalu A4 (595×842 pt)** di kedua kasus. Tidak fatal (kalimat setelahnya tetap menyarankan cek Print Preview dulu), tapi klaim arah spesifik ini perlu diperbaiki atau dihapus sebelum rilis — lihat detail reproduksi di `06-uji-ulang-v1.0.1.md` bagian 6. |
+
+### Uji pendukung (root repo)
+- `python3 skills/pdf-lokal/tests/uji_regresi.py` → **15/15 lulus** (naik dari 12/12;
+  pembuat menambah 3 skenario soal 401).
+- `python3 scripts/validate.py` → **57 skill valid, 57 baris katalog sesuai.**
+- `bash scripts/uji_openclaw.sh` → OpenClaw 2026.9.6: `eligible 57/57`,
+  `modelVisible 57/57`, `commandVisible 57/57`.
+
+### Skor kualitas: **8 / 10**
+Alasan:
+- (+) **T1, cacat Tinggi utama yang mengunci skor v1.0.0 di 5/10, selesai diperbaiki
+  tuntas dan diverifikasi independen** dengan Stirling-PDF ASLI di **dua versi**
+  (2.14.3 & 3.0.0), termasuk jalur negatif (tanpa flag login → `cek` gagal jelas,
+  tidak ada positif palsu) dan konsistensi pesan 401/403 di semua perintah.
+- (+) S1, R2, R3 juga selesai diperbaiki dan sesuai klaim.
+- (+) **Tidak ada regresi** pada mesin pengolahan PDF inti — seluruh angka/halaman/isi/
+  enkripsi/keutuhan file asli tetap 100% benar di verifikasi independen memakai alat
+  pihak ketiga (`pdfinfo`, `pdftotext`, `qpdf`, `sha256sum`, render visual).
+  Penanganan input buruk tetap sangat baik (6/6). Lulus 15/15 uji regresi bawaan,
+  `validate.py`, dan uji muat OpenClaw 57/57.
+- (−) **N1 (Sedang, baru ditemukan):** satu klaim spesifik yang baru ditambahkan di R1
+  (tentang ukuran kertas hasil `rapikan-resi`) ternyata salah arah dibanding perilaku
+  nyata Stirling-PDF — bukan cacat fatal (ada jaring pengaman "cek Print Preview"),
+  tapi tetap perlu revisi kecil sebelum rilis supaya tidak menyesatkan pembeli awam.
+- (−) S1 (estimasi waktu Windows) tidak bisa diukur ulang secara langsung di lingkungan
+  Linux penguji ini — dinilai dari kelengkapan isi, bukan pengukuran waktu nyata.
+
+**Keputusan: LULUS uji independen (skor ≥ 7).** Boleh lanjut ke tahap uji platform asli
+(Tahap 6.10) setelah **N1 diperbaiki** (revisi kecil, tidak perlu uji ulang penuh oleh
+penguji independen — cukup verifikasi teks diperbaiki, kecuali pemilik ingin uji ulang
+formal). Tidak ditemukan cacat keamanan, kebocoran data, atau kesalahan angka/uang pada
+uji ulang ini.

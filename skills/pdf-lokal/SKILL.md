@@ -110,12 +110,12 @@ python3 scripts/pdf.py gabung nota-a.pdf nota-b.pdf nota-c.pdf
 
 **Langkah agent:** tanyakan sekali bila belum jelas ("mau 4 atau 2 resi per lembar?"),
 lalu jalankan `rapikan-resi resi1.pdf ... resi8.pdf --per-lembar 4`, dan ingatkan
-untuk cek Print Preview dulu sebelum cetak massal (ukuran lembar mengikuti PDF resi
-aslinya, bukan dipaksa persis A4/A6 - lihat Batasan). **Contoh konkret:** resi
-marketplace asli biasanya PDF kertas thermal kecil (**10×15 cm atau 10×20 cm**), BUKAN
-A4 - kalau sumbernya seperti itu, hasil `rapikan-resi` kemungkinan besar tetap
-berukuran kecil per halaman (bukan otomatis membesar jadi A4). Sarankan pengguna
-cetak 1 lembar percobaan dulu sebelum mencetak banyak.
+untuk cek Print Preview dulu sebelum cetak massal. **Contoh konkret:** resi
+marketplace biasanya PDF kertas thermal kecil (**10×15 cm atau 10×20 cm**). Pada uji
+dengan Stirling-PDF 3.0.0 asli, hasil `rapikan-resi` (2 atau 4 per lembar) selalu
+berukuran **A4** (21×29,7 cm) — cocok untuk printer biasa, tetapi **bukan** untuk
+printer thermal 10×15. Pengguna printer thermal sebaiknya mencetak resi aslinya
+satu per satu. Sarankan cetak 1 lembar percobaan dulu sebelum mencetak banyak.
 
 ## Cara manual tanpa script (Stirling-PDF belum terpasang / lagi tidak mau jalan)
 Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
@@ -152,9 +152,9 @@ Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
   audit log) → **tidak dipanggil oleh skill ini sama sekali**. Kalau pengguna minta
   fitur itu, jelaskan bahwa itu bagian berbayar Stirling-PDF (lisensi terpisah, bukan
   bagian gratis/inti) dan di luar cakupan skill ini.
-- **Ukuran kertas hasil "rapikan-resi" tidak dijamin persis A4/A6** - Stirling-PDF
-  hanya mengatur jumlah kolom/baris per lembar, bukan ukuran kertas eksplisit. Selalu
-  sarankan cek Print Preview sebelum cetak banyak.
+- **Ukuran kertas hasil "rapikan-resi" diatur Stirling-PDF, bukan skill ini** - pada
+  Stirling 3.0.0 hasilnya A4; versi lain bisa berbeda. Selalu sarankan cek Print
+  Preview sebelum cetak banyak.
 - **Alamat server non-localhost ditolak** kecuali pengguna secara sadar mengaktifkan
   `STIRLING_ALLOW_REMOTE=1` (mis. server kantor di jaringan lokal) - untuk mencegah
   file tidak sengaja terkirim ke tempat lain.
