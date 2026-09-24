@@ -142,6 +142,9 @@ def _timeout():
         return 15.0
 
 
+SARAN_PULIH = ("Pulihkan: crm.py backup --daftar (lihat cadangan), lalu crm.py restore --dari <file cadangan> "
+               "(pratinjau, lalu --ya); file rusak otomatis dipindah ke folder backup-crm, tidak dihapus. Belum ada "
+               "cadangan? crm.py init --mulai-baru (pratinjau, lalu --ya) untuk database kosong baru.")
 PESAN_TERKUNCI = ("Database CRM sedang dipakai program lain (mis. jadwal OpenClaw atau jendela lain) dan tidak "
                   "selesai dalam %s detik. Data aman, tidak rusak. Tunggu sebentar lalu ulangi perintah yang sama. "
                   "Jangan hapus file database.")
@@ -614,14 +617,14 @@ PENGATURAN_DEFAULT = {"nama_usaha": "", "pengirim": "", "sapaan": "Kak", "zona":
 
 def path_db(args):
     if getattr(args, "db", None):
-        return Path(args.db).expanduser()
-    env = os.environ.get("KOMUNITECH_CRM_DB")
-    if env:
-        return Path(env).expanduser()
-    folder = os.environ.get("KOMUNITECH_DATA")
-    if folder:
-        return Path(folder).expanduser() / "crm" / "crm.db"
-    return Path.home() / "KomunitechData" / "crm" / "crm.db"
+        p = Path(args.db).expanduser()
+    elif os.environ.get("KOMUNITECH_CRM_DB"):
+        p = Path(os.environ["KOMUNITECH_CRM_DB"]).expanduser()
+    elif os.environ.get("KOMUNITECH_DATA"):
+        p = Path(os.environ["KOMUNITECH_DATA"]).expanduser() / "crm" / "crm.db"
+    else:
+        p = Path.home() / "KomunitechData" / "crm" / "crm.db"
+    return p.resolve()          # selalu path lengkap, supaya pesan menyebut lokasi yang jelas
 
 
 def folder_backup(db):
@@ -632,6 +635,8 @@ def buka(db, baca_saja=False):
     if not db.is_file():
         raise Gagal("Database CRM belum ada di %s. Jalankan dulu: crm.py init (lalu --ya setelah pengguna setuju)."
                     % db, db=str(db), belum_ada=True)
+    if db.stat().st_size == 0:
+        raise Gagal("File %s kosong (0 byte), bukan database yang bisa dibaca. %s" % (db, SARAN_PULIH), rusak=True)
     try:
         if baca_saja:
             conn = sqlite3.connect(db.resolve().as_uri() + "?mode=ro", uri=True, timeout=_timeout(),
@@ -651,8 +656,8 @@ def buka(db, baca_saja=False):
         raise Gagal("File %s bukan database crm-wa (%s). File itu tidak diubah; periksa --db." % (db, e))
     except sqlite3.DatabaseError:
         conn.close()
-        raise Gagal("File %s rusak atau bukan database crm-wa. Jangan hapus file itu. Pulihkan dari cadangan: "
-                    "crm.py backup --daftar, lalu crm.py restore --dari <file> (pratinjau dulu)." % db, rusak=True)
+        raise Gagal("File %s rusak atau bukan database crm-wa. Jangan hapus file itu. %s" % (db, SARAN_PULIH),
+                    rusak=True)
     if not r or r[0] != APLIKASI:
         conn.close()
         raise Gagal("File %s bukan database crm-wa. File itu tidak diubah; periksa --db." % db)
@@ -676,12 +681,7 @@ def buat_backup(db, label):
         return None
     fol = folder_backup(db)
     fol.mkdir(parents=True, exist_ok=True)
-    cap = kini().strftime("%Y%m%d-%H%M%S")
-    tujuan = fol / ("crm-%s-%s.db" % (cap, label))
-    n = 2
-    while tujuan.exists():
-        tujuan = fol / ("crm-%s-%s-%d.db" % (cap, label, n))
-        n += 1
+    tujuan = nama_unik(fol, "crm-%s-%s" % (kini().strftime("%Y%m%d-%H%M%S"), label))
     src = sqlite3.connect(str(db), timeout=_timeout())
     dst = sqlite3.connect(str(tujuan))
     try:
@@ -699,6 +699,67 @@ def buat_backup(db, label):
         dst.close()
         src.close()
     return str(tujuan)
+
+
+def nama_unik(folder, dasar, akhiran=".db"):
+    """folder/dasar.db, atau dasar-2.db, dasar-3.db ... bila sudah ada (tidak pernah menimpa)."""
+    tujuan = folder / (dasar + akhiran)
+    n = 2
+    while tujuan.exists():
+        tujuan = folder / ("%s-%d%s" % (dasar, n, akhiran))
+        n += 1
+    return tujuan
+
+
+def singkirkan(db, pola, pindah):
+    """Salin (pindah=False, database sehat) atau pindahkan (pindah=True, database rusak) ke backup-crm/ dengan nama
+    unik dari pola (mis. 'rusak-crm-{}'). Saat dipindah, journal lama (-journal/-wal/-shm) ikut dipindah agar tidak
+    diterapkan SQLite ke database pengganti. Tidak pernah menghapus apa pun."""
+    fol = folder_backup(db)
+    fol.mkdir(parents=True, exist_ok=True)
+    tujuan = nama_unik(fol, pola.format(kini().strftime("%Y%m%d-%H%M%S")))
+    if not pindah:
+        tujuan.write_bytes(db.read_bytes())
+        return tujuan
+    os.replace(str(db), str(tujuan))
+    for ek in ("-journal", "-wal", "-shm"):
+        j = Path(str(db) + ek)
+        if j.exists():
+            os.replace(str(j), str(tujuan) + ek)
+    return tujuan
+
+
+def pastikan_tidak_dipakai(db):
+    """Gagal dengan pesan 'sedang dipakai' bila ada program lain yang sedang menulis database sehat."""
+    c = sqlite3.connect(str(db), timeout=_timeout(), isolation_level=None)
+    try:
+        c.execute("BEGIN IMMEDIATE")
+        c.execute("ROLLBACK")
+    except sqlite3.OperationalError as e:
+        if _terkunci(e):
+            raise Gagal(PESAN_TERKUNCI % _detik())
+        raise
+    finally:
+        c.close()
+
+
+def status_db(db):
+    """'tidak_ada' | 'sehat' | 'rusak'. Database terkunci / milik aplikasi lain -> Gagal."""
+    if not db.exists():
+        return "tidak_ada"
+    try:
+        c = buka(db, baca_saja=True)
+    except Gagal as e:
+        if e.detail.get("rusak"):
+            return "rusak"
+        raise
+    try:
+        cek = c.execute("PRAGMA quick_check").fetchone()[0]
+    except sqlite3.DatabaseError:
+        cek = "rusak"
+    finally:
+        c.close()
+    return "sehat" if cek == "ok" else "rusak"
 
 
 def backup_harian(db):
@@ -810,27 +871,30 @@ def cari_kontak(conn, ref):
             raise Gagal("Tidak ada kontak dengan nomor %s." % tampil_wa(wa))
     k = s.lower()
     semua = conn.execute("SELECT * FROM kontak ORDER BY id").fetchall()
-    persis = [r for r in semua if r["nama"].lower() == k]
-    if len(persis) == 1:
-        return persis[0]
     kn = kunci_nama(s)
-    cocok = persis or [r for r in semua if kn and kunci_nama(r["nama"]) == kn]
+    # 1) nama sama persis / sama setelah sapaan dibuang (Bu Rina = Rina). 2) bila tidak ada: potongan nama.
+    # Lebih dari satu kandidat (termasuk yang batal) -> SELALU minta pilihan; tidak pernah memilih diam-diam.
+    cocok = [r for r in semua if r["nama"].lower() == k or (kn and kunci_nama(r["nama"]) == kn)]
     if not cocok:
         cocok = [r for r in semua if k in r["nama"].lower() or (kn and kn in kunci_nama(r["nama"]))]
-    aktif = [r for r in cocok if r["tahap"] != "batal"]
-    if len(cocok) > 1 and len(aktif) == 1:
-        return aktif[0]
     if len(cocok) == 1:
         return cocok[0]
     if not cocok:
         raise Gagal("Kontak '%s' tidak ditemukan. Cek ejaan atau lihat: crm.py daftar --tahap semua" % s)
-    raise Gagal("Ada %d kontak yang cocok dengan '%s'. Tanyakan yang mana (sebut kodenya)." % (len(cocok), s),
-                pilihan=[pilihan_json(r) for r in cocok[:10]])
+    daftar = "; ".join("%s %s (nomor akhiran %s, %s)" % (kode(r["id"]), r["nama"], akhir_wa(r["wa"]), r["tahap"])
+                       for r in cocok[:10])
+    raise Gagal("Ada %d kontak yang cocok dengan '%s': %s. Tanyakan ke pengguna yang mana, lalu ulangi dengan kodenya "
+                "(mis. --kontak %s)." % (len(cocok), s, daftar, kode(cocok[0]["id"])),
+                pilihan=[pilihan_json(r) for r in cocok[:10]], ambigu=True)
+
+
+def akhir_wa(wa):
+    return wa[-4:] if wa else "-"
 
 
 def pilihan_json(r):
     return {"kode": kode(r["id"]), "nama": r["nama"], "tahap": r["tahap"], "wa": samar_wa(r["wa"]),
-            "sumber": r["sumber"], "kebutuhan": r["kebutuhan"]}
+            "akhir_wa": akhir_wa(r["wa"]), "sumber": r["sumber"], "kebutuhan": r["kebutuhan"]}
 
 
 def kontak_json(r, samarkan=False):
@@ -857,6 +921,10 @@ def followup_default(tahap, acuan):
     if tahap in ("dihubungi", "ditawar"):
         d = acuan + timedelta(days=2)
         return d, "Follow-up belum disebut; dijadwalkan %s (2 hari lagi). Ubah bila perlu." % tgl_pendek(d)
+    if tahap == "deal":
+        d = acuan + timedelta(days=2)
+        return d, ("Jadwal konfirmasi order (pembayaran/pengiriman) dipasang %s (2 hari lagi); jadwal prospek lama "
+                   "diganti. Ubah dengan --followup, atau --tanpa-followup bila tidak perlu." % tgl_pendek(d))
     return None, None
 
 
@@ -875,7 +943,36 @@ def panggilan(k, cfg):
     return "%s %s" % (sap, nama)
 
 
-def susun_draf(k, cfg):
+POLA_UANG = re.compile(r"(?i)(\brp\.?\s*\d[\d.,]*(\s*(rb|ribu|k|jt|juta|m|miliar|milyar)\b)?"
+                       r"|\b\d[\d.,]*\s*(rb|rbu|ribu|k|jt|jeti|juta|miliar|milyar)\b|\b\d{1,3}(\.\d{3})+(,\d+)?\b"
+                       r"|\b\d{5,}\b)")
+
+
+def hal_untuk_draf(kebutuhan):
+    """Bagian kolom kebutuhan yang aman masuk draf: hanya nama produk/jasa.
+    Dipotong di koma/titik koma/kurung/' - ' (komentar sesudahnya dianggap catatan pribadi), nominal uang dibuang,
+    maksimal 8 kata. Kosong -> None (draf memakai kalimat umum)."""
+    t = bersih(kebutuhan, 200)
+    t = re.split(r"[,;:()\[\]\n]| - | -- | \| ", t)[0]
+    t = POLA_UANG.sub(" ", t)
+    t = re.sub(r"(?i)\b(harga|seharga|budget|budjet|bujet|nego|diskon|dp)\b.*$", " ", t)
+    t = re.sub(r"\s+", " ", t).strip(" .-/@")
+    kata = t.split()
+    return " ".join(kata[:8]) or None
+
+
+def saran_kebutuhan(kebutuhan):
+    """Peringatan bila isi kolom kebutuhan tidak akan masuk draf utuh."""
+    if not kebutuhan:
+        return None
+    h = hal_untuk_draf(kebutuhan) or ""
+    if h != bersih(kebutuhan, 120):
+        return ("Kolom kebutuhan sebaiknya nama produk saja; di draf pesan hanya dipakai \"%s\". Harga -> --nilai, "
+                "komentar -> --catatan/--isi." % (h or "(kalimat umum)"))
+    return None
+
+
+def susun_draf(k, cfg, acuan=None):
     """Kembalikan (jenis_draf, teks) atau (None, alasan) bila kontak tidak perlu dihubungi."""
     t, n = k["tahap"], int(k["fu_ke"] or 0)
     if t == "batal":
@@ -891,9 +988,18 @@ def susun_draf(k, cfg):
     else:
         diri = ""
     salam = ("Halo %s, %s. " % (p, diri)) if diri else ("Halo %s. " % p)
-    hal = bersih(k["kebutuhan"], 120)
+    hal = hal_untuk_draf(k["kebutuhan"])
+    acuan = acuan or hari_ini()
+    telat = (acuan - date.fromisoformat(k["tgl_masuk"])).days if k["tgl_masuk"] else 0
+    if t == "baru" and telat > 14:   # kontak lama (mis. hasil impor): jangan "terima kasih sudah menghubungi"
+        teks = salam + "Apa kabar? "
+        teks += ("Kalau masih membutuhkan %s, saya siap bantu jelaskan pilihan dan harganya." % hal) if hal else \
+            "Kalau ada yang sedang dibutuhkan, saya siap bantu."
+        return "sapaan-ulang", teks
     if t == "baru":
         teks = "Halo %s, terima kasih sudah menghubungi %s." % (p, usaha or "kami")
+        if telat >= 1:
+            teks += " Mohon maaf baru sempat membalas."
         if pengirim:
             teks += " Saya %s." % pengirim
         teks += (" Soal %s, boleh saya bantu jelaskan pilihan dan harganya?" % hal) if hal else \
@@ -936,11 +1042,11 @@ def susun_draf(k, cfg):
                             "nomor ini." % (hal or "kebutuhannya"))
 
 
-def draf_json(k, cfg, samarkan=False, pesan=None):
+def draf_json(k, cfg, samarkan=False, pesan=None, acuan=None):
     if pesan:
         jenis, teks = "pesan-sendiri", bersih(pesan, 2000)
     else:
-        jenis, teks = susun_draf(k, cfg)
+        jenis, teks = susun_draf(k, cfg, acuan)
     if jenis is None:
         return {"kode": kode(k["id"]), "nama": samar_nama(k["nama"]) if samarkan else k["nama"], "draf": None,
                 "alasan": teks}
@@ -1061,6 +1167,7 @@ def petakan_kolom(header):
 def cmd_init(args):
     db = path_db(args)
     zona = kode_zona(args.zona or "WIB")
+    rusak = False
     if db.exists():
         try:
             conn = buka(db, baca_saja=True)
@@ -1068,19 +1175,30 @@ def cmd_init(args):
             raise Gagal("Database CRM sudah ada di %s. Tidak dibuat ulang (data aman). Untuk mengubah nama usaha/"
                         "pengirim pakai: crm.py atur." % db, sudah_ada=True)
         except Gagal as e:
-            if e.detail.get("sudah_ada"):
+            if e.detail.get("sudah_ada") or "sedang dipakai" in e.pesan:
                 raise
-            raise Gagal("File %s sudah ada dan bukan database crm-wa; tidak ditimpa. Pakai --db lain." % db)
+            if not e.detail.get("rusak"):
+                raise Gagal("File %s sudah ada dan bukan database crm-wa; tidak ditimpa. Pakai --db lain." % db)
+            if not args.mulai_baru:
+                raise Gagal("Database %s rusak. Pulihkan dari cadangan dulu: crm.py backup --daftar lalu crm.py restore "
+                            "--dari <file>. Jika tidak ada cadangan: ulangi dengan --mulai-baru (file rusak dipindah ke "
+                            "folder backup-crm, tidak dihapus)." % db, rusak=True)
+            rusak = True
     cfg = {"nama_usaha": bersih(args.nama_usaha, 80), "pengirim": bersih(args.pengirim, 40),
            "sapaan": bersih(args.sapaan or "Kak", 20), "zona": zona}
     ringkas = ("Database CRM baru: %s\nNama usaha: %s | Pengirim draf: %s | Sapaan default: %s | Zona: %s\n"
                "Cadangan otomatis: %s" % (db, cfg["nama_usaha"] or "-", cfg["pengirim"] or "-", cfg["sapaan"],
                                           zona, folder_backup(db)))
+    if rusak:
+        ringkas += "\nFile rusak yang ada sekarang dipindah (tidak dihapus) ke %s/rusak-crm-<waktu>.db." % folder_backup(db)
     if not args.ya:
         t = "PRATINJAU (belum dibuat):\n" + ringkas + "\n\nBuat? Jalankan perintah yang sama + --ya setelah pengguna setuju."
         return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "db": str(db), "pengaturan": cfg,
                 "teks": t}, t
     db.parent.mkdir(parents=True, exist_ok=True)
+    if rusak:
+        pindahan = singkirkan(db, "rusak-crm-{}", pindah=True)
+        ringkas += "\nFile rusak dipindah ke: %s" % pindahan
     conn = sqlite3.connect(str(db), isolation_level=None)
     try:
         conn.executescript("BEGIN;" + SKEMA_SQL + "COMMIT;")
@@ -1174,6 +1292,8 @@ def cmd_tambah(args):
     sumber, sumber_baru = norm_sumber(args.sumber)
     if sumber_baru:
         peringatan.append("Sumber '%s' belum ada di daftar baku; disimpan apa adanya." % sumber)
+    if saran_kebutuhan(args.kebutuhan):
+        peringatan.append(saran_kebutuhan(args.kebutuhan))
     tahap = norm_tahap(args.tahap) if args.tahap else "baru"
     nilai = nilai_opsional(args.nilai) if args.nilai else None
     masuk, cat = baca_tanggal(args.masuk, acuan, "lalu") if args.masuk else (acuan, [])
@@ -1265,6 +1385,8 @@ def cmd_ubah(args):
             ubah["nilai"] = nilai_opsional(args.nilai)
         if args.kebutuhan is not None:
             ubah["kebutuhan"] = bersih(args.kebutuhan, 120)
+            if saran_kebutuhan(args.kebutuhan):
+                peringatan.append(saran_kebutuhan(args.kebutuhan))
         if args.sapaan is not None:
             ubah["sapaan"] = bersih(args.sapaan, 20) or None
         if args.masuk is not None:
@@ -1349,13 +1471,13 @@ def cmd_catat(args):
             if k["followup"]:
                 ubah["followup"] = None
                 bagian.append("jadwal follow-up dihapus")
-        elif "tahap" in ubah and tahap in TAHAP_TERBUKA:
+        elif "tahap" in ubah and tahap in TAHAP_PANTAU:
+            # Pindah tahap tanpa --followup: jadwal lama (milik tahap sebelumnya) SELALU diganti, supaya kontak deal
+            # tidak muncul "terlambat" karena jadwal prospek yang sudah lewat.
             fu, cat = followup_default(tahap, acuan)
             ubah["followup"] = fu.isoformat()
             peringatan.append(cat)
             bagian.append("follow-up %s" % tgl_panjang(fu))
-        elif "tahap" in ubah and tahap == "deal" and not k["followup"]:
-            peringatan.append("Mau dijadwalkan follow-up pembayaran/pengiriman? Isi --followup bila perlu.")
         if args.isi:
             ubah["kontak_terakhir"] = tgl.isoformat()
             riwayat(conn, kid, "catatan", args.isi, waktu=(tgl.isoformat() + " 00:00:00") if args.tanggal else None)
@@ -1408,6 +1530,11 @@ def cmd_terkirim(args):
         if k["tahap"] == "batal":
             raise Gagal("%s %s berstatus batal. Jika pelanggan dihubungi lagi, pindahkan tahapnya dulu: crm.py catat "
                         "--kontak %s --tahap dihubungi." % (kode(kid), k["nama"], kode(kid)))
+        if k["tahap"] in ("dihubungi", "ditawar") and int(k["fu_ke"] or 0) >= MAKS_FU:
+            raise Gagal("%s %s sudah dikirimi pesan pamit (%d pesan follow-up). Tidak dicatat lagi. Jika pelanggan "
+                        "membalas: crm.py catat --kontak %s --isi \"...\" --tahap <tahap baru>. Jika tetap diam: crm.py "
+                        "catat --kontak %s --tahap batal --alasan \"tidak ada respon\"." %
+                        (kode(k["id"]), k["nama"], int(k["fu_ke"]), kode(k["id"]), kode(k["id"])))
         jenis, _ = susun_draf(k, cfg)
         if k["tahap"] == "baru":
             ubah.update(tahap="dihubungi", tgl_tahap=acuan.isoformat(), fu_ke=0)
@@ -1581,15 +1708,17 @@ def cmd_draf(args):
 
 # --------------------------------------------------------------------------- hari-ini (pengingat harian)
 def kelompok_followup(rows, acuan):
-    """Terlambat / hari ini / besok: semua kontak non-batal yang punya jadwal (termasuk deal & selesai, mis. tawaran
-    ulang). Belum dijadwalkan: kontak di pipeline terbuka tanpa jadwal."""
-    terlambat, hari, besok, tanpa = [], [], [], []
+    """Kembalikan (terlambat, hari_ini, besok, belum_dijadwalkan, sudah_pamit).
+    Terlambat/hari ini/besok: semua kontak non-batal yang punya jadwal (termasuk deal = order berjalan, dan selesai
+    = tawaran ulang). Belum dijadwalkan: pipeline terbuka tanpa jadwal. Sudah pamit: pipeline terbuka yang sudah
+    dikirimi pesan pamit dan tidak dijadwalkan lagi (menunggu balasan / layak ditandai batal)."""
+    terlambat, hari, besok, tanpa, pamit = [], [], [], [], []
     for r in rows:
         if r["tahap"] == "batal":
             continue
         if not r["followup"]:
             if r["tahap"] in TAHAP_TERBUKA:
-                tanpa.append(r)
+                (pamit if int(r["fu_ke"] or 0) >= MAKS_FU else tanpa).append(r)
             continue
         d = date.fromisoformat(r["followup"])
         if d < acuan:
@@ -1599,9 +1728,13 @@ def kelompok_followup(rows, acuan):
         elif d == acuan + timedelta(days=1):
             besok.append(r)
     terlambat.sort(key=lambda r: (r["followup"], -(r["nilai"] or 0), r["id"]))
-    for x in (hari, besok, tanpa):
+    for x in (hari, besok, tanpa, pamit):
         x.sort(key=lambda r: (-(r["nilai"] or 0), r["id"]))
-    return terlambat, hari, besok, tanpa
+    return terlambat, hari, besok, tanpa, pamit
+
+
+MAKS_BARIS_UTAMA = 20   # per kelompok terlambat / hari ini (Telegram tetap ringkas); --semua untuk semuanya
+MAKS_BARIS_LAIN = 10    # besok / belum dijadwalkan
 
 
 def cmd_hari_ini(args):
@@ -1614,35 +1747,51 @@ def cmd_hari_ini(args):
     finally:
         conn.close()
     acuan = hari_ini()
-    terlambat, hari, besok, tanpa = kelompok_followup(rows, acuan)
+    terlambat, hari, besok, tanpa, pamit = kelompok_followup(rows, acuan)
     sam = args.samarkan
-    nilai_perlu = sum(r["nilai"] or 0 for r in terlambat + hari)
+    semua = args.semua
+    perlu = terlambat + hari
+    prospek = [r for r in perlu if r["tahap"] in TAHAP_TERBUKA]
+    order = [r for r in perlu if r["tahap"] == "deal"]
+    nilai_perlu = sum(r["nilai"] or 0 for r in prospek)
     t = ["FOLLOW-UP CRM - %s (%s)" % (tgl_panjang(acuan), _JAM["zona"]),
          "Terlambat: %d | Hari ini: %d | Besok: %d | Belum dijadwalkan: %d" % (len(terlambat), len(hari),
                                                                                len(besok), len(tanpa))]
-    if terlambat or hari:
-        t.append("Nilai prospek yang perlu disapa: %s" % rp(nilai_perlu))
+    if prospek:
+        t.append("Nilai prospek yang perlu disapa: %s (%d prospek)" % (rp(nilai_perlu), len(prospek)))
+    if order:
+        t.append("Order berjalan (deal) perlu dikonfirmasi: %d senilai %s" % (len(order),
+                                                                           rp(sum(r["nilai"] or 0 for r in order))))
+    terpotong = {}
 
-    def blok(judul, daftar, maks=None):
+    def blok(judul, nama, daftar, maks):
         if not daftar:
             return
+        tampil = daftar if semua else daftar[:maks]
+        if len(tampil) < len(daftar):
+            terpotong[nama] = len(daftar) - len(tampil)
         t.append("")
         t.append("%s (%d)" % (judul, len(daftar)))
-        for i, r in enumerate(daftar[:maks] if maks else daftar, 1):
+        for i, r in enumerate(tampil, 1):
             t.append("%d. %s" % (i, baris_kontak(r, sam, acuan)))
             a = akhir.get(r["id"])
             if a and not sam:
                 t.append("   Catatan terakhir %s: \"%s\"" % (tgl_pendek(a["waktu"][:10], False), bersih(a["isi"], 90)))
-        if maks and len(daftar) > maks:
-            t.append("... dan %d lainnya (crm.py daftar)." % (len(daftar) - maks))
-    blok("TERLAMBAT", terlambat)
-    blok("HARI INI", hari)
-    blok("BESOK", besok, 10)
-    blok("BELUM DIJADWALKAN", tanpa, 10)
+        if len(tampil) < len(daftar):
+            t.append("... dan %d lainnya (lihat semua: crm.py hari-ini --semua, atau crm.py daftar)." %
+                     (len(daftar) - len(tampil)))
+    blok("TERLAMBAT", "terlambat", terlambat, MAKS_BARIS_UTAMA)
+    blok("HARI INI", "hari_ini", hari, MAKS_BARIS_UTAMA)
+    blok("BESOK", "besok", besok, MAKS_BARIS_LAIN)
+    blok("BELUM DIJADWALKAN", "belum_dijadwalkan", tanpa, MAKS_BARIS_LAIN)
+    if pamit:
+        t.append("")
+        t.append("SUDAH DIKIRIMI PESAN PAMIT, belum ada kabar: %d kontak. Jika tetap diam, tandai batal "
+                 "(alasan \"tidak ada respon\"); jika membalas, catat perkembangannya." % len(pamit))
     draf = []
     if not args.tanpa_draf:
-        for r in (terlambat + hari)[:args.maks_draf]:
-            d = draf_json(r, cfg, samarkan=sam)
+        for r in perlu[:args.maks_draf]:
+            d = draf_json(r, cfg, samarkan=sam, acuan=acuan)
             if d.get("draf"):
                 draf.append(d)
         if draf:
@@ -1656,23 +1805,31 @@ def cmd_hari_ini(args):
                     t.append(d["tautan"])
                 elif sam:
                     t.append("(tautan disembunyikan karena mode samarkan)")
-            sisa = len([r for r in terlambat + hari]) - len(draf)
+            sisa = len(perlu) - len(draf)
             if sisa > 0:
                 t.append("")
                 t.append("%d draf lain: crm.py draf --kontak <kode>." % sisa)
-    if not (terlambat or hari or besok or tanpa):
+    if not (terlambat or hari or besok or tanpa or pamit):
         t.append("")
         t.append("Tidak ada follow-up hari ini. Mantap!")
-    t.append("")
-    t.append("Balas misalnya: \"terkirim K0001\", \"Bu Rina deal 4,2 jt\", \"tunda K0002 ke Senin\", "
-             "\"K0003 batal, kemahalan\".")
+    contoh = (perlu + besok + tanpa)[:2]
+    if contoh:
+        t.append("")
+        k1 = kode(contoh[0]["id"])
+        k2 = kode(contoh[-1]["id"])
+        t.append("Balas misalnya: \"terkirim %s\", \"%s deal 2 jt\", \"tunda %s ke Senin\", \"%s batal, kemahalan\"."
+                 % (k1, k1, k2, k2))
     teks = "\n".join(t)
-    kj = lambda xs: [kontak_json(r, sam) for r in xs]  # noqa: E731
+
+    def kj(xs, maks):
+        return [kontak_json(r, sam) for r in (xs if semua else xs[:maks])]
     return {"ok": True, "mode": "baca", "hari_ini": acuan.isoformat(), "zona": _JAM["zona"],
             "ringkasan": {"terlambat": len(terlambat), "hari_ini": len(hari), "besok": len(besok),
-                          "belum_dijadwalkan": len(tanpa), "nilai_perlu_disapa": nilai_perlu},
-            "terlambat": kj(terlambat), "hari_ini_daftar": kj(hari), "besok": kj(besok),
-            "belum_dijadwalkan": kj(tanpa), "draf": draf, "data_sensitif": not sam, "teks": teks}, teks
+                          "belum_dijadwalkan": len(tanpa), "sudah_pamit": len(pamit),
+                          "nilai_perlu_disapa": nilai_perlu, "order_perlu_konfirmasi": len(order)},
+            "terlambat": kj(terlambat, MAKS_BARIS_UTAMA), "hari_ini_daftar": kj(hari, MAKS_BARIS_UTAMA),
+            "besok": kj(besok, MAKS_BARIS_LAIN), "belum_dijadwalkan": kj(tanpa, MAKS_BARIS_LAIN),
+            "terpotong": terpotong, "draf": draf, "data_sensitif": not sam, "teks": teks}, teks
 
 
 # --------------------------------------------------------------------------- rekap
@@ -1794,7 +1951,7 @@ def hitung_rekap(rows, a, b, acuan):
     for r in batal_periode:
         alasan[r["alasan_batal"] or "tanpa alasan"] = alasan.get(r["alasan_batal"] or "tanpa alasan", 0) + 1
     alasan_l = [{"alasan": k, "jumlah": v} for k, v in sorted(alasan.items(), key=lambda x: (-x[1], x[0]))]
-    terlambat, hari, besok, tanpa = kelompok_followup(rows, acuan)
+    terlambat, hari, besok, tanpa, pamit = kelompok_followup(rows, acuan)
     return {
         "posisi": dict(posisi, pipeline_terbuka=terbuka, total_kontak=len(rows)),
         "periode_ini": {
@@ -1808,8 +1965,9 @@ def hitung_rekap(rows, a, b, acuan):
         },
         "sumber": sumber, "sumber_terbaik": terbaik, "alasan_batal": alasan_l,
         "followup": {"terlambat": len(terlambat), "hari_ini": len(hari), "besok": len(besok),
-                     "belum_dijadwalkan": len(tanpa),
-                     "nilai_terlambat_dan_hari_ini": sum(r["nilai"] or 0 for r in terlambat + hari)},
+                     "belum_dijadwalkan": len(tanpa), "sudah_pamit": len(pamit),
+                     "nilai_terlambat_dan_hari_ini": sum(r["nilai"] or 0 for r in terlambat + hari
+                                                         if r["tahap"] in TAHAP_TERBUKA)},
     }
 
 
@@ -2131,11 +2289,17 @@ def cmd_ekspor(args):
 # --------------------------------------------------------------------------- backup & restore
 def cmd_backup(args):
     db = path_db(args)
+    fol = folder_backup(db)
     if args.daftar:
-        fol = folder_backup(db)
         bks = sorted(fol.glob("crm-*.db")) if fol.is_dir() else []
-        t = "Cadangan di %s:\n%s" % (fol, "\n".join("- " + b.name for b in bks[-30:]) if bks else "(belum ada)")
-        return {"ok": True, "mode": "baca", "backup": [str(b) for b in bks], "teks": t}, t
+        if bks:
+            t = ("Cadangan di %s (terbaru paling bawah):\n%s\nPulihkan: crm.py restore --dari \"%s\" (pratinjau, lalu "
+                 "--ya)." % (fol, "\n".join("- " + str(b) for b in bks[-30:]), bks[-1]))
+        else:
+            t = ("Belum ada cadangan di %s. Jika database rusak dan tidak ada cadangan: crm.py init --mulai-baru "
+                 "(pratinjau, lalu --ya) membuat database kosong baru; file rusak dipindah ke %s, tidak dihapus. Data "
+                 "bisa diimpor ulang dari ekspor CSV terakhir bila ada." % (fol, fol))
+        return {"ok": True, "mode": "baca", "folder": str(fol), "backup": [str(b) for b in bks], "teks": t}, t
     conn = buka(db, baca_saja=True)
     conn.close()
     b = buat_backup(db, re.sub(r"[^\w-]", "", args.label or "manual") or "manual")
@@ -2144,40 +2308,78 @@ def cmd_backup(args):
 
 
 def cmd_restore(args):
+    """Pulihkan dari cadangan TANPA membuka database aktif lewat SQLite untuk ditulis (bisa saja rusak total).
+    Urutan: periksa cadangan -> salin/pindahkan database aktif (+journal) ke backup-crm -> tulis cadangan ke file
+    sementara di folder yang sama -> periksa -> os.replace ke lokasi database (atomik)."""
     db = path_db(args)
-    src = Path(args.dari).expanduser()
+    src = Path(args.dari).expanduser().resolve()
     if not src.is_file():
         raise Gagal("File cadangan %s tidak ada. Lihat daftar: crm.py backup --daftar" % src)
-    c = buka(src, baca_saja=True)
+    if src == db:
+        raise Gagal("File cadangan sama dengan database aktif. Pilih file dari crm.py backup --daftar.")
+    try:
+        c = buka(src, baca_saja=True)
+    except Gagal as e:
+        raise Gagal("File cadangan %s tidak bisa dipakai (%s). Pilih cadangan lain dari crm.py backup --daftar." %
+                    (src.name, e.pesan.split(". ")[0]))
     try:
         n = c.execute("SELECT COUNT(*) FROM kontak").fetchone()[0]
         cek = c.execute("PRAGMA quick_check").fetchone()[0]
     finally:
         c.close()
     if cek != "ok":
-        raise Gagal("File cadangan %s juga bermasalah (%s). Pilih cadangan lain." % (src.name, cek))
-    if not args.ya:
-        t = ("PRATINJAU (belum disimpan):\nDatabase %s akan diganti dengan cadangan %s (%d kontak). Database saat ini "
-             "disalin dulu apa adanya ke folder backup-crm.\n\nLanjut? Jalankan perintah yang sama + --ya setelah pengguna "
-             "setuju." % (db, src.name, n))
-        return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "teks": t}, t
-    bk = None
-    if db.is_file():
-        fol = folder_backup(db)
-        fol.mkdir(parents=True, exist_ok=True)
-        bk = fol / ("crm-%s-sebelum-restore.db" % kini().strftime("%Y%m%d-%H%M%S"))
-        bk.write_bytes(db.read_bytes())  # salin mentah: tetap bisa walau database rusak
-    db.parent.mkdir(parents=True, exist_ok=True)
-    s = sqlite3.connect(str(src))
-    d = sqlite3.connect(str(db), timeout=_timeout())
+        raise Gagal("File cadangan %s juga bermasalah (%s). Pilih cadangan lain dari crm.py backup --daftar." %
+                    (src.name, cek))
     try:
-        s.backup(d)
+        st = status_db(db)
+    except Gagal as e:
+        if "sedang dipakai" in e.pesan:
+            raise
+        raise Gagal("File %s bukan database crm-wa; restore dibatalkan agar file itu tidak tertimpa. Periksa --db." % db)
+    nasib = {"tidak_ada": "Database belum ada; cadangan akan dipasang di lokasi itu.",
+             "sehat": "Database saat ini disalin dulu apa adanya ke folder backup-crm.",
+             "rusak": "Database saat ini RUSAK; file itu dipindah (tidak dihapus) ke folder backup-crm dengan nama "
+                      "rusak-crm-<waktu>.db."}[st]
+    if not args.ya:
+        t = ("PRATINJAU (belum disimpan):\nDatabase %s akan diganti dengan cadangan %s (%d kontak). %s\n\nLanjut? "
+             "Jalankan perintah yang sama + --ya setelah pengguna setuju." % (db, src, n, nasib))
+        return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "status_db": st, "teks": t}, t
+    db.parent.mkdir(parents=True, exist_ok=True)
+    tmp = nama_unik(db.parent, ".crm-restore-%d" % os.getpid(), ".tmp")
+    try:
+        s_ = sqlite3.connect(str(src))
+        d_ = sqlite3.connect(str(tmp))
+        try:
+            s_.backup(d_)
+        finally:
+            d_.close()
+            s_.close()
+        c = sqlite3.connect(str(tmp))
+        try:
+            ok = c.execute("SELECT nilai FROM meta WHERE kunci='aplikasi'").fetchone()
+        finally:
+            c.close()
+        if not ok or ok[0] != APLIKASI:
+            raise Gagal("Salinan cadangan %s tidak valid; database aktif tidak diubah." % src.name)
+        simpanan = None
+        if st == "sehat":
+            pastikan_tidak_dipakai(db)
+            simpanan = singkirkan(db, "crm-{}-sebelum-restore", pindah=False)
+        elif st == "rusak":
+            simpanan = singkirkan(db, "rusak-crm-{}", pindah=True)
+        os.replace(str(tmp), str(db))
     finally:
-        d.close()
-        s.close()
-    t = "TERSIMPAN. Database dipulihkan dari %s (%d kontak).%s" % (src.name, n, (" Salinan database sebelumnya: %s"
-                                                                                % bk) if bk else "")
-    return {"ok": True, "mode": "tersimpan", "backup": str(bk) if bk else None, "teks": t}, t
+        if tmp.exists():
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
+    t = "TERSIMPAN. Database %s dipulihkan dari %s (%d kontak)." % (db, src, n)
+    if simpanan:
+        t += ("\nFile rusak dipindah (tidak dihapus) ke: %s" if st == "rusak" else
+              "\nSalinan database sebelumnya: %s") % simpanan
+    return {"ok": True, "mode": "tersimpan", "backup": str(simpanan) if simpanan else None, "status_db_lama": st,
+            "teks": t}, t
 
 
 # --------------------------------------------------------------------------- CLI
@@ -2208,6 +2410,8 @@ def buat_parser():
     s.add_argument("--pengirim", help="Nama yang dipakai di draf pesan (mis. Sari)")
     s.add_argument("--sapaan", help="Sapaan default (Kak/Bapak/Ibu/-). Default Kak")
     s.add_argument("--zona", help="WIB (default), WITA, WIT")
+    s.add_argument("--mulai-baru", action="store_true",
+                   help="Database rusak & tidak ada cadangan: pindahkan file rusak ke backup-crm lalu buat baru")
     s.set_defaults(fungsi=cmd_init)
     s = sub.add_parser("info", parents=[umum], help="Lokasi database, jumlah kontak, cadangan")
     s.set_defaults(fungsi=cmd_info)
@@ -2285,6 +2489,7 @@ def buat_parser():
     s = sub.add_parser("hari-ini", parents=[umum, sam], help="Pengingat follow-up harian + draf pesan")
     s.add_argument("--maks-draf", type=int, default=10)
     s.add_argument("--tanpa-draf", action="store_true")
+    s.add_argument("--semua", action="store_true", help="Tampilkan semua baris (default maks 20 per kelompok)")
     s.set_defaults(fungsi=cmd_hari_ini)
 
     s = sub.add_parser("rekap", parents=[umum, sam], help="Rekap pipeline, konversi, sumber lead")
@@ -2365,8 +2570,7 @@ def main(argv=None):
             "Kesalahan database: %s. Jangan hapus file database; ulangi, atau pulihkan dari cadangan." % e
         return cetak(args, {"ok": False, "error": pesan}, pesan, 1)
     except sqlite3.DatabaseError as e:
-        pesan = ("Database rusak (%s). Jangan hapus file itu. Pulihkan dari cadangan: crm.py backup --daftar, lalu "
-                 "crm.py restore --dari <file>." % e)
+        pesan = "Database rusak (%s). Jangan hapus file itu. %s" % (e, SARAN_PULIH)
         return cetak(args, {"ok": False, "error": pesan, "rusak": True}, pesan, 1)
     except OSError as e:
         pesan = "File tidak bisa ditulis/dibaca (%s). Periksa folder dan izin aksesnya." % e
