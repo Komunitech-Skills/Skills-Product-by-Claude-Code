@@ -1019,8 +1019,11 @@ def parse_item_segmen(seg):
                     "harga lewat 'produk ubah' atau beri diskon." % seg)
     qty = None
     low = s.lower()
+    m_kode = re.match(r"^([a-z0-9][a-z0-9._/-]*)\s*=\s*(\d+(?:[.,]\d+)?)$", low)
     m = re.match(r"^(\d+(?:[.,]\d+)?)\s*(?:x\s+|x(?=[a-z])|\s)(.+)$", low)
-    if m:
+    if m_kode:
+        nama, qty = m_kode.group(1), m_kode.group(2)
+    elif m:
         qty, nama = m.group(1), m.group(2)
     else:
         m = re.match(r"^(" + "|".join(ANGKA_KATA) + r")\s+(.+)$", low)
@@ -1061,7 +1064,7 @@ def parse_pesan(pesan):
     for seg in segmen:
         low = seg.strip().lower()
         if re.match(r"^(catatan|atas nama|an\.?|a/n|meja)\b", low):
-            catatan.append(seg.strip())
+            catatan.append(re.sub(r"^catatan\s*:?\s*", "", seg.strip(), flags=re.I))
             continue
         if re.match(r"^(diskon|disc|disk|potongan|pot)\b", low) and not mode_bayar:
             diskon_nota = (diskon_nota + "+" if diskon_nota else "") + re.sub(
