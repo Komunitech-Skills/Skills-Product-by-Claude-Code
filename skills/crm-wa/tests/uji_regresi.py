@@ -461,7 +461,10 @@ class UjiCSV(Dasar):
             isi = f.read()
         self.assertNotIn("0812", isi)
         self.assertNotIn("62812", isi)
-        self.assertEqual(out["perintah_pengingat"][0][:5], ["tambah", "--jenis", "prospek", "--nama", "Bu Rina"])
+        a = out["perintah_pengingat"][0]
+        self.assertEqual(a[:2], ["tambah", "--file"])
+        self.assertTrue(os.path.isabs(a[2]))                              # S7: selalu --file eksplisit & absolut
+        self.assertEqual(a[3:7], ["--jenis", "prospek", "--nama", "Bu Rina"])
 
 
 class UjiDatabase(Dasar):
@@ -525,6 +528,254 @@ class UjiDatabase(Dasar):
         self.assertEqual(len([f for f in os.listdir(fol) if "harian" in f]), 1)   # sekali sehari
         self.ok("tambah", "--nama", "C", hari="2026-09-25")
         self.assertEqual(len([f for f in os.listdir(fol) if "harian" in f]), 2)
+
+
+class UjiRevisi101(Dasar):
+    """Regresi untuk temuan uji independen v1.0.0 (examples/HASIL-UJI.md): T1, S1-S7, R1-R5, R7, K1."""
+
+    def rusakkan_header(self, p):
+        with open(p, "r+b") as f:
+            f.write(b"X" * 100)
+
+    def cadangan(self):
+        fol = os.path.join(self.dir, "backup-crm")
+        return sorted(os.path.join(fol, f) for f in os.listdir(fol) if f.startswith("crm-"))
+
+    # --- T1 -------------------------------------------------------------------------------------------------
+    def test_t1_restore_saat_header_rusak_total(self):
+        self.ok("tambah", "--nama", "A", "--wa", "081200000001")
+        self.ok("backup", "--label", "sehat")
+        self.ok("tambah", "--nama", "B", "--wa", "081200000002")
+        bk = [b for b in self.cadangan() if "sehat" in b][0]
+        self.rusakkan_header(self.db)
+        with open(self.db + "-journal", "wb") as f:                       # journal basi ikut tertinggal
+            f.write(b"journal lama")
+        h_rusak = self.sha(self.db)
+        g = self.gagal("hari-ini")
+        self.assertTrue(g["rusak"])
+        self.assertEqual(h_rusak, self.sha(self.db))                     # file rusak tidak diubah
+        self.assertIn("restore", g["error"])
+        self.assertIn("--mulai-baru", g["error"])
+        pra = self.ok("restore", "--dari", bk)
+        self.assertEqual(pra["status_db"], "rusak")
+        self.assertEqual(pra["mode"], "pratinjau")
+        out = self.ok("restore", "--dari", bk, "--ya")
+        self.assertIn("rusak-crm-", out["backup"])
+        self.assertTrue(os.path.isfile(out["backup"]))                    # file rusak dipindah, tidak dihapus
+        self.assertFalse(os.path.exists(self.db + "-journal"))           # journal basi tidak menempel ke DB baru
+        with open(out["backup"], "rb") as f:
+            self.assertEqual(f.read(100), b"X" * 100)
+        self.assertEqual(self.jumlah(), 1)                                # isi cadangan 'sehat'
+        self.ok("tambah", "--nama", "C", "--wa", "081200000003")          # database hasil pulih bisa ditulis
+        self.assertFalse([f for f in os.listdir(self.dir) if f.endswith(".tmp")])
+
+    def test_t1_restore_file_kosong_dan_db_sehat_nama_unik(self):
+        self.ok("tambah", "--nama", "A")
+        bk = self.cadangan()[0]
+        o1 = self.ok("restore", "--dari", bk, "--ya")
+        o2 = self.ok("restore", "--dari", bk, "--ya")                    # detik sama: R5 tidak saling menimpa
+        self.assertIn("sebelum-restore", o1["backup"])
+        self.assertNotEqual(o1["backup"], o2["backup"])
+        open(self.db, "wb").close()                                      # 0 byte
+        self.assertEqual(self.ok("restore", "--dari", bk, "--ya")["status_db_lama"], "rusak")
+
+    def test_t1_restore_tidak_menimpa_db_aplikasi_lain(self):
+        bk = self.ok("backup")["backup"]
+        lain = os.path.join(self.dir, "kasir.db")
+        c = sqlite3.connect(lain)
+        c.execute("CREATE TABLE meta(kunci TEXT PRIMARY KEY, nilai TEXT)")
+        c.execute("INSERT INTO meta VALUES ('aplikasi','kasir-lokal')")
+        c.commit()
+        c.close()
+        h = self.sha(lain)
+        self.gagal("restore", "--dari", bk, "--ya", db=lain)
+        self.assertEqual(h, self.sha(lain))
+
+    def test_t1_mulai_baru_tanpa_cadangan(self):
+        db2 = os.path.join(self.dir, "x", "crm.db")
+        self.ok("init", "--ya", db=db2)
+        self.rusakkan_header(db2)
+        daftar = self.ok("backup", "--daftar", db=db2)
+        self.assertIn("--mulai-baru", daftar["teks"])
+        g = self.gagal("init", "--ya", db=db2)
+        self.assertTrue(g.get("rusak"))
+        self.ok("init", "--mulai-baru", db=db2)                          # pratinjau
+        self.ok("init", "--mulai-baru", "--ya", db=db2)
+        self.ok("tambah", "--nama", "A", db=db2)
+        fol = os.path.join(self.dir, "x", "backup-crm")
+        self.assertTrue(any(f.startswith("rusak-crm-") for f in os.listdir(fol)))
+
+    # --- S1 -------------------------------------------------------------------------------------------------
+    def test_s1_deal_tidak_pernah_terlambat_sebagai_prospek(self):
+        self.ok("tambah", "--nama", "Pak Anton", "--wa", "081200000011", "--tahap", "ditawar", "--nilai", "1 jt",
+                "--followup", "11/9/2026", hari="2026-09-10")
+        o = self.ok("catat", "--kontak", "Anton", "--tahap", "deal", hari="2026-09-12")
+        self.assertEqual(o["kontak"]["followup"], "2026-09-14")          # jadwal pra-deal (11/9) diganti
+        h = self.ok("hari-ini", hari="2026-10-20")
+        self.assertEqual(h["ringkasan"]["terlambat"], 0)
+        self.assertEqual(h["ringkasan"]["order_perlu_konfirmasi"], 1)
+        self.assertEqual(h["ringkasan"]["nilai_perlu_disapa"], 0)
+        self.assertNotIn("telat", h["teks"])
+        self.assertIn("ORDER BERJALAN", h["teks"])
+        r = self.ok("rekap", hari="2026-10-20")
+        self.assertEqual(r["followup"]["terlambat"], 0)
+        self.assertEqual(r["followup"]["order_perlu_konfirmasi"], 1)
+        o = self.ok("catat", "--kontak", "Anton", "--tahap", "selesai", hari="2026-10-20")
+        self.assertIsNone(o["kontak"]["followup"])
+
+    # --- S2 -------------------------------------------------------------------------------------------------
+    def test_s2_nama_ambigu_termasuk_batal_minta_pilihan(self):
+        self.ok("tambah", "--nama", "Bu Sari", "--wa", "081200000021")
+        self.ok("tambah", "--nama", "Bu Sari", "--wa", "081200000022", "--tahap", "batal", "--alasan", "mahal",
+                "--izinkan-duplikat")
+        g = self.gagal("catat", "--kontak", "Bu Sari", "--tahap", "deal")
+        self.assertTrue(g["ambigu"])
+        self.assertEqual(sorted(x["akhir_wa"] for x in g["pilihan"]), ["0021", "0022"])
+        self.assertIn("0022", g["error"])
+        self.assertIn("batal", g["error"])
+        self.ok("tambah", "--nama", "Rina", "--wa", "081200000023")
+        self.ok("tambah", "--nama", "Bu Rina", "--wa", "081200000024")
+        self.gagal("catat", "--kontak", "Rina", "--isi", "x")            # "Rina" = "Bu Rina" setelah sapaan
+        self.ok("catat", "--kontak", "K0003", "--isi", "x")
+
+    # --- S3 / S4 --------------------------------------------------------------------------------------------
+    def test_s3_kolom_nomor_number_dan_no_urut(self):
+        p = self.file("wa.csv", "Name,Number,Label\n~ Budi,6281200003011,pelanggan\nSari,6281200003012,\n")
+        out = self.ok("impor", p, "--ya")
+        self.assertEqual([x["nama"] for x in out["baru"]], ["Budi", "Sari"])
+        self.assertEqual(self.ok("lihat", "--kontak", "Budi")["kontak"]["wa"], "6281200003011")
+        p = self.file("n.csv", "Nama;Nomor;Keterangan\nAyu;0812 0000 3021;teman\n")
+        self.assertEqual(self.ok("impor", p, "--ya")["baru"][0]["wa"], "0812-****-3021")
+        p = self.file("urut.csv", "No;Nama;Alamat\n1;Ani;Jl A\n2;Beni;Jl B\n")
+        pra = self.ok("impor", p)
+        self.assertTrue(pra["tanpa_kolom_nomor"])
+        self.assertIn("PERHATIAN", pra["teks"])
+        g = self.gagal("impor", p, "--ya")
+        self.assertTrue(g["tanpa_kolom_nomor"])
+        self.ok("impor", p, "--ya", "--tanpa-nomor")
+
+    def test_s4_google_contacts_format_baru(self):
+        p = self.file("g.csv",
+                      "First Name,Last Name,Labels,Phone 1 - Label,Phone 1 - Value,Phone 2 - Label,Phone 2 - Value\n"
+                      "Rina,Susanti,* myContacts ::: Reseller,Mobile,+62 812-0000-3001,,\n"
+                      "Wati,Lestari,* myContacts,Mobile,+62 812-0000-3003 ::: +62 813-0000-3004,,\n"
+                      "Bu Endang,,* myContacts ::: Reseller,Home,021-0000-3005,Mobile,0812-0000-3006\n")
+        out = self.ok("impor", p, "--ya")
+        self.assertEqual(len(out["baru"]), 3)
+        self.assertEqual(out["rusak"], [])
+        self.assertEqual(self.ok("lihat", "--kontak", "Wati")["kontak"]["wa"], "6281200003003")
+        e = self.ok("lihat", "--kontak", "Endang")
+        self.assertEqual(e["kontak"]["wa"], "6281200003006")               # HP diutamakan, bukan telepon rumah
+        self.assertTrue(any("021" in r["isi"] for r in e["riwayat"]))    # nomor lain dicatat
+        self.assertEqual(e["kontak"]["label"], ["reseller"])
+        self.assertEqual(self.ok("daftar", "--label", "reseller")["jumlah"], 2)
+
+    # --- S5 -------------------------------------------------------------------------------------------------
+    def test_s5_kebutuhan_disaring_dari_draf(self):
+        self.assertEqual(C.hal_untuk_draf("kue ultah 450rb, suaminya pelit"), "kue ultah")
+        self.assertEqual(C.hal_untuk_draf("katering 100 box"), "katering 100 box")
+        self.assertEqual(C.hal_untuk_draf("sofa Rp 4.500.000 (nego)"), "sofa")
+        self.assertEqual(C.hal_untuk_draf("hampers 30 paket harga 150rb"), "hampers 30 paket")
+        self.assertIsNone(C.hal_untuk_draf("450rb"))
+        o = self.ok("tambah", "--nama", "Bu Mira", "--wa", "081200000031",
+                    "--kebutuhan", "kue ultah 450rb, suaminya pelit")
+        self.assertTrue(any("nama produk saja" in x for x in o["peringatan"]))
+        for jenis_tahap in (None, "ditawar", "deal", "selesai"):
+            if jenis_tahap:
+                self.ok("catat", "--kontak", "Mira", "--tahap", jenis_tahap)
+            d = self.ok("draf", "--kontak", "Mira")["draf"]
+            self.assertIn("kue ultah", d)
+            self.assertNotIn("450", d)
+            self.assertNotIn("pelit", d)
+        s = self.ok("hari-ini", "--samarkan", hari="2026-09-26")
+        self.assertNotIn("pelit", json.dumps(s))
+
+    # --- S6 -------------------------------------------------------------------------------------------------
+    def test_s6_impor_besar_tidak_membanjiri_hari_ini(self):
+        isi = "nama;no wa\n" + "".join("Pelanggan %d;0813-0000-%04d\n" % (i, i) for i in range(300))
+        p = self.file("besar.csv", isi)
+        self.ok("impor", p, "--ya")
+        h = self.ok("hari-ini")
+        self.assertEqual(h["ringkasan"]["hari_ini"], 0)                   # impor tidak menjadwalkan hari ini
+        self.assertEqual(h["ringkasan"]["belum_dijadwalkan"], 300)
+        self.assertLess(len(h["teks"].splitlines()), 40)
+        db2 = os.path.join(self.dir, "b.db")
+        self.ok("init", "--ya", db=db2)
+        self.ok("impor", p, "--ya", "--sebar", "10", db=db2)
+        for i in range(10):
+            self.ok("tambah", "--nama", "Telat %d" % i, "--wa", "08140000%04d" % i, "--followup", "20/9/2026",
+                    db=db2)
+        h = self.ok("hari-ini", db=db2)
+        self.assertEqual(h["ringkasan"]["hari_ini"], 10)
+        h = self.ok("hari-ini", db=db2, hari="2026-10-24")                # semua 300 sudah lewat
+        self.assertEqual(h["ringkasan"]["terlambat"], 310)
+        self.assertEqual(len(h["terlambat"]), 20)
+        self.assertEqual(h["terpotong"]["terlambat"], 290)
+        self.assertIn("... dan 290 lainnya", h["teks"])
+        self.assertLess(len(h["teks"].encode()), 16000)
+        semua = self.ok("hari-ini", "--semua", "--tanpa-draf", db=db2, hari="2026-10-24")
+        self.assertEqual(len(semua["terlambat"]), 310)
+
+    # --- S7 -------------------------------------------------------------------------------------------------
+    def test_s7_ekspor_ke_folder_data_dan_path_lengkap(self):
+        self.ok("tambah", "--nama", "A", "--wa", "081200000041", "--followup", "besok")
+        lama = os.getcwd()
+        kerja = os.path.join(self.dir, "kerja")
+        os.makedirs(kerja)
+        os.chdir(kerja)
+        try:
+            o = self.ok("ekspor")
+            self.assertEqual(os.path.dirname(o["file"]), os.path.join(os.path.realpath(self.dir), "ekspor"))
+            self.assertIn(o["file"], o["teks"])
+            self.assertEqual(os.listdir(kerja), [])                        # tidak ada yang jatuh di folder kerja
+            o = self.ok("ekspor", "--ke", "relatif.csv")
+            self.assertTrue(os.path.isabs(o["file"]))
+            self.assertIn(o["file"], o["teks"])
+            os.makedirs(os.path.join(kerja, ".git"))
+            o = self.ok("ekspor", "--ke", "di-repo.csv")
+            self.assertTrue(any("git" in x for x in o["peringatan"]))
+            b = self.ok("ekspor", "--format", "pengingat", "--file-pengingat", "p/DAFTAR.csv")
+            self.assertEqual(b["perintah_pengingat"][0][2], os.path.join(os.path.realpath(kerja), "p", "DAFTAR.csv"))
+        finally:
+            os.chdir(lama)
+
+    # --- rendah & kosmetik ----------------------------------------------------------------------------------
+    def test_r1_r2_nomor_baris_fisik_dan_nama_bernomor(self):
+        p = self.file("r.csv", "nama;no wa\nAyu;081200000051\n\n\"Bu Eka;0812-0000-0052;kue\nBudi;081200000053\n")
+        out = self.ok("impor", p)
+        self.assertEqual([x["baris"] for x in out["rusak"]], [4])
+        self.assertIn("nomor telepon", out["rusak"][0]["alasan"])
+
+    def test_r3_terkirim_setelah_pamit_ditolak_dan_r4_samarkan(self):
+        self.ok("tambah", "--nama", "Bu Rina", "--wa", "081200000061", "--tahap", "dihubungi")
+        for _ in range(3):
+            self.ok("terkirim", "--kontak", "K0001")
+        self.gagal("terkirim", "--kontak", "K0001")
+        h = self.ok("hari-ini")
+        self.assertEqual(h["ringkasan"]["sudah_pamit"], 1)
+        self.assertEqual(h["ringkasan"]["belum_dijadwalkan"], 0)
+        self.ok("tambah", "--nama", "Bu Rina Kedua", "--wa", "081200000061", "--izinkan-duplikat")
+        c = self.ok("cek-duplikat", "--samarkan")
+        self.assertNotIn("Rina", json.dumps(c))
+
+    def test_r7_alasan_bebas_dan_k1_telepon_rumah(self):
+        self.ok("tambah", "--nama", "A", "--tahap", "batal", "--alasan", "suaminya Pak Joko melarang")
+        r = self.ok("rekap")
+        self.assertTrue(r["data_sensitif"])
+        rs = self.ok("rekap", "--samarkan")
+        self.assertFalse(rs["data_sensitif"])
+        self.assertEqual(rs["alasan_batal"], [{"alasan": "lainnya", "jumlah": 1}])
+        self.assertNotIn("Joko", rs["teks"])
+        self.assertEqual(C.tampil_wa("622100003005"), "02100003005")
+        self.assertEqual(C.tampil_wa("6281200001234"), "0812-0000-1234")
+
+    def test_k1_sapaan_lead_telat_dan_kontak_lama(self):
+        self.ok("tambah", "--nama", "Bu Tia", "--wa", "081200000071", "--masuk", "22/9/2026")
+        self.assertIn("Mohon maaf baru sempat membalas", self.ok("draf", "--kontak", "Tia")["draf"])
+        self.ok("tambah", "--nama", "Bu Lama", "--wa", "081200000072", "--masuk", "1/6/2026")
+        d = self.ok("draf", "--kontak", "Lama")
+        self.assertEqual(d["jenis"], "sapaan-ulang")
+        self.assertNotIn("terima kasih sudah menghubungi", d["draf"])
 
 
 class UjiKeamanan(unittest.TestCase):

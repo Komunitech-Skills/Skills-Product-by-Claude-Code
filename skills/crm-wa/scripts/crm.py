@@ -41,7 +41,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 APLIKASI = "crm-wa"
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 SKEMA = 1
 SKEMA_JSON_REKAP = 1
 
@@ -94,6 +94,7 @@ ALIAS_ALASAN = [
      "stok/layanan tidak tersedia"),
     (("iseng", "cuma tanya", "cuma nanya", "tanya saja", "cuma tanya harga"), "hanya bertanya"),
 ]
+ALASAN_BAKU = {b for _, b in ALIAS_ALASAN} | {"tidak dicatat (impor)", "tanpa alasan", "lainnya"}
 SAPAAN_DIKENAL = {"bu", "ibu", "pak", "bapak", "kak", "ka", "kakak", "mas", "mbak", "mba", "bang", "abang", "om",
                   "tante", "dik", "adik", "cik", "ci", "ko", "koh", "sdr", "sdri", "saudara", "saudari", "dr", "drg",
                   "hj", "haji", "teh", "aa", "uda", "uni", "cak", "bli", "mbok", "opung", "bunda", "ayah", "mama",
@@ -493,11 +494,11 @@ def normalisasi_wa(teks):
 def tampil_wa(wa):
     if not wa:
         return "-"
-    if wa.startswith("62"):
+    if wa.startswith("628"):
         lok = "0" + wa[2:]
-        if len(lok) >= 10:
-            return "%s-%s-%s" % (lok[:4], lok[4:-4], lok[-4:])
-        return lok
+        return "%s-%s-%s" % (lok[:4], lok[4:-4], lok[-4:]) if len(lok) >= 10 else lok
+    if wa.startswith("62"):
+        return "0" + wa[2:]         # telepon kantor/rumah: kode area beragam (021, 0274, ...), tanpa strip
     return "+" + wa
 
 
@@ -560,11 +561,15 @@ def norm_alasan(teks):
     return k
 
 
+LABEL_SISTEM = {"mycontacts", "my contacts", "starred", "friends", "family", "coworkers", "imported"}
+
+
 def norm_label(teks):
+    """Pisah di koma/titik koma/#/':::' (Google Contacts); label sistem Google ('* myContacts') dibuang."""
     hasil = []
-    for x in re.split(r"[,;#]", str(teks or "")):
-        x = re.sub(r"\s+", " ", x.strip().lower())
-        if x and x not in hasil:
+    for x in re.split(r":::|[,;#]", str(teks or "")):
+        x = re.sub(r"\s+", " ", x.strip().lower()).lstrip("* ").strip()
+        if x and x not in hasil and x not in LABEL_SISTEM and not x.startswith("imported on"):
             hasil.append(x[:30])
     return hasil
 
@@ -637,27 +642,43 @@ def buka(db, baca_saja=False):
                     % db, db=str(db), belum_ada=True)
     if db.stat().st_size == 0:
         raise Gagal("File %s kosong (0 byte), bukan database yang bisa dibaca. %s" % (db, SARAN_PULIH), rusak=True)
-    try:
-        if baca_saja:
-            conn = sqlite3.connect(db.resolve().as_uri() + "?mode=ro", uri=True, timeout=_timeout(),
-                                   isolation_level=None)
-        else:
-            conn = sqlite3.connect(str(db), timeout=_timeout(), isolation_level=None)
-    except sqlite3.OperationalError as e:
-        raise Gagal("Database %s tidak bisa dibuka (%s). Periksa folder dan izin aksesnya." % (db, e))
-    conn.row_factory = sqlite3.Row
-    try:
-        r = conn.execute("SELECT nilai FROM meta WHERE kunci='aplikasi'").fetchone()
-        sk = conn.execute("SELECT nilai FROM meta WHERE kunci='skema'").fetchone()
-    except sqlite3.OperationalError as e:
-        conn.close()
-        if _terkunci(e):
-            raise Gagal(PESAN_TERKUNCI % _detik())
-        raise Gagal("File %s bukan database crm-wa (%s). File itu tidak diubah; periksa --db." % (db, e))
-    except sqlite3.DatabaseError:
-        conn.close()
-        raise Gagal("File %s rusak atau bukan database crm-wa. Jangan hapus file itu. %s" % (db, SARAN_PULIH),
-                    rusak=True)
+    def sambung(ro):
+        try:
+            if ro:
+                c = sqlite3.connect(db.resolve().as_uri() + "?mode=ro", uri=True, timeout=_timeout(),
+                                    isolation_level=None)
+            else:
+                c = sqlite3.connect(str(db), timeout=_timeout(), isolation_level=None)
+        except sqlite3.OperationalError as e:
+            raise Gagal("Database %s tidak bisa dibuka (%s). Periksa folder dan izin aksesnya." % (db, e))
+        c.row_factory = sqlite3.Row
+        return c
+
+    ro = baca_saja
+    while True:
+        conn = sambung(ro)
+        try:
+            r = conn.execute("SELECT nilai FROM meta WHERE kunci='aplikasi'").fetchone()
+            sk = conn.execute("SELECT nilai FROM meta WHERE kunci='skema'").fetchone()
+            break
+        except sqlite3.OperationalError as e:
+            conn.close()
+            pesan = str(e).lower()
+            if _terkunci(e):
+                raise Gagal(PESAN_TERKUNCI % _detik())
+            if ro and "readonly" in pesan:
+                # Ada journal sisa program yang terhenti (hot journal): mode baca-saja tidak bisa memulihkannya.
+                # Buka sekali dalam mode biasa agar SQLite menjalankan pemulihan standarnya, lalu lanjut.
+                ro = False
+                continue
+            if "no such table" in pesan:
+                raise Gagal("File %s bukan database crm-wa (%s). File itu tidak diubah; periksa --db." % (db, e))
+            raise Gagal("Database %s tidak bisa dibaca (%s). Jangan hapus file itu. %s" % (db, e, SARAN_PULIH),
+                        rusak=True)
+        except sqlite3.DatabaseError:
+            conn.close()
+            raise Gagal("File %s rusak atau bukan database crm-wa. Jangan hapus file itu. %s" % (db, SARAN_PULIH),
+                        rusak=True)
     if not r or r[0] != APLIKASI:
         conn.close()
         raise Gagal("File %s bukan database crm-wa. File itu tidak diubah; periksa --db." % db)
@@ -902,7 +923,8 @@ def kontak_json(r, samarkan=False):
         "kode": kode(r["id"]), "nama": samar_nama(r["nama"]) if samarkan else r["nama"],
         "wa": samar_wa(r["wa"]) if samarkan else r["wa"], "wa_tampil": samar_wa(r["wa"]) if samarkan else
         tampil_wa(r["wa"]), "sumber": r["sumber"], "label": norm_label(r["label"]), "tahap": r["tahap"],
-        "nilai": r["nilai"], "kebutuhan": r["kebutuhan"], "followup": r["followup"], "fu_ke": r["fu_ke"],
+        "nilai": r["nilai"], "kebutuhan": (hal_untuk_draf(r["kebutuhan"]) or "") if samarkan else r["kebutuhan"],
+        "followup": r["followup"], "fu_ke": r["fu_ke"],
         "alasan_batal": r["alasan_batal"], "tgl_masuk": r["tgl_masuk"], "tgl_deal": r["tgl_deal"],
         "tgl_batal": r["tgl_batal"], "kontak_terakhir": r["kontak_terakhir"],
     }
@@ -1082,7 +1104,7 @@ def buang_pelindung(s):
 
 
 def tulis_csv(path, header, rows, timpa=False):
-    p = Path(path).expanduser()
+    p = Path(path).expanduser().resolve()
     if p.exists() and not timpa:
         raise Gagal("File %s sudah ada. Pakai nama lain atau tambahkan --timpa bila memang ingin ditimpa." % p)
     if p.suffix.lower() in (".db", ".sqlite"):
@@ -1106,6 +1128,8 @@ def baca_csv(path):
     raw = p.read_bytes()
     if len(raw) > 20 * 1024 * 1024:
         raise Gagal("File terlalu besar (> 20 MB). Pecah menjadi beberapa file.")
+    if b"\x00" in raw[:4096]:
+        raise Gagal("File %s bukan file teks CSV (isinya biner). Simpan ulang dari Excel/Sheets sebagai CSV." % p.name)
     peringatan = []
     try:
         teks = raw.decode("utf-8-sig")
@@ -1114,8 +1138,11 @@ def baca_csv(path):
         peringatan.append("File bukan UTF-8; dibaca sebagai Windows-1252 (ANSI). Periksa huruf khusus di nama.")
     baris1 = teks.split("\n", 1)[0]
     pemisah = max([";", ",", "\t"], key=lambda c: baris1.count(c))
-    rows = list(csv.reader(io.StringIO(teks), delimiter=pemisah))
-    rows = [r for r in rows if any(x.strip() for x in r)]
+    rows, pembaca, akhir = [], csv.reader(io.StringIO(teks), delimiter=pemisah), 0
+    for r in pembaca:
+        awal, akhir = akhir + 1, pembaca.line_num   # nomor baris FISIK di file (baris kosong tetap dihitung)
+        if any(x.strip() for x in r):
+            rows.append((awal, r))
     if not rows:
         raise Gagal("File %s kosong." % p.name)
     return rows, peringatan
@@ -1125,10 +1152,12 @@ KOLOM_IMPOR = {
     "nama": ("nama", "name", "nama kontak", "nama pelanggan", "nama customer", "customer", "pelanggan", "kontak",
              "full name", "nama lengkap", "display name"),
     "wa": ("wa", "no wa", "nomor wa", "no whatsapp", "nomor whatsapp", "whatsapp", "hp", "no hp", "nomor hp",
-           "handphone", "telepon", "telp", "no telp", "nomor telepon", "phone", "phone number", "mobile",
-           "phone 1 value", "phone 1   value", "no wa pelanggan"),
+           "handphone", "telepon", "telp", "no telp", "nomor telepon", "nomor telp", "phone", "phone number",
+           "mobile", "mobile phone", "mobile number", "cell", "cellphone", "telephone", "ponsel", "no ponsel",
+           "nomor ponsel", "no wa pelanggan", "kontak wa", "no kontak", "nomor kontak", "wa number",
+           "whatsapp number"),
     "sumber": ("sumber", "sumber lead", "source", "asal", "asal lead", "channel", "kanal", "dari"),
-    "label": ("label", "labels", "tag", "tags", "kategori"),
+    "label": ("label", "labels", "tag", "tags", "kategori", "group membership", "grup"),
     "tahap": ("tahap", "status", "stage", "tahapan", "pipeline"),
     "nilai": ("nilai", "nilai potensi", "potensi", "value", "nominal", "budget", "harga", "nilai deal", "omzet"),
     "kebutuhan": ("kebutuhan", "produk", "minat", "produk diminati", "keperluan", "layanan", "interest", "product"),
@@ -1139,7 +1168,8 @@ KOLOM_IMPOR = {
     "tgl_masuk": ("tgl masuk", "tanggal masuk", "tgl_masuk", "masuk", "tanggal", "tgl", "created", "tanggal lead"),
     "sapaan": ("sapaan", "panggilan"),
 }
-KOLOM_ABAIKAN = {"first name", "given name", "nama depan", "last name", "family name", "nama belakang", "kode", "link wa", "link_wa", "tautan", "no_wa_tampil", "tgl deal", "tgl_deal", "kontak terakhir",
+ALIAS_NOMOR_LEMAH = ("nomor", "number", "no", "no.")   # bisa berarti nomor urut: dipakai hanya bila isinya nomor HP
+KOLOM_ABAIKAN = {"organization name", "organization 1 name", "perusahaan", "company", "first name", "given name", "nama depan", "last name", "family name", "nama belakang", "kode", "link wa", "link_wa", "tautan", "no_wa_tampil", "tgl deal", "tgl_deal", "kontak terakhir",
                  "kontak_terakhir", "fu ke", "fu_ke", "tgl batal", "tgl_batal"}
 
 
@@ -1151,16 +1181,83 @@ def petakan_kolom(header):
     peta, abaikan = {}, []
     for i, h in enumerate(header):
         k = _kunci_kolom(h)
-        if k == "no wa" and "wa" in peta:
-            continue
+        if re.fullmatch(r"phone \d+ (value|label|type)", k):
+            continue            # kolom Google Contacts Phone N: ditangani kolom_nomor()
         for nama, alias in KOLOM_IMPOR.items():
             if k in {_kunci_kolom(a) for a in alias} and nama not in peta:
                 peta[nama] = i
                 break
         else:
-            if k and k not in {_kunci_kolom(x) for x in KOLOM_ABAIKAN}:
-                abaikan.append(h)
+            if k and k not in {_kunci_kolom(x) for x in KOLOM_ABAIKAN} and k not in ALIAS_NOMOR_LEMAH:
+                abaikan.append(bersih(h, 40))
     return peta, abaikan
+
+
+def _mirip_nomor(v):
+    for bag in str(v).split(":::"):
+        try:
+            normalisasi_wa(bag)
+            return True
+        except Gagal:
+            continue
+    return False
+
+
+def kolom_nomor(header, isi, peta):
+    """Daftar (indeks kolom nilai, indeks kolom label|None) yang berisi nomor, urut prioritas.
+    - Kolom bernama jelas (no wa, hp, telepon, phone, mobile, whatsapp, ...).
+    - Google Contacts: Phone 1 - Value (+ Phone 1 - Label/Type), Phone 2 - Value, ...
+    - Kolom 'Nomor'/'Number'/'No' hanya bila >= 50% isinya nomor telepon (bukan nomor urut 1, 2, 3)."""
+    kunci = [_kunci_kolom(h) for h in header]
+    hasil = []
+    if "wa" in peta:
+        hasil.append((peta["wa"], None))
+    for i, k in enumerate(kunci):
+        m = re.fullmatch(r"phone (\d+) value", k)
+        if m:
+            lab = next((j for j, k2 in enumerate(kunci) if k2 in ("phone %s label" % m.group(1),
+                                                                   "phone %s type" % m.group(1))), None)
+            hasil.append((i, lab))
+    if not hasil:
+        for i, k in enumerate(kunci):
+            if k in ALIAS_NOMOR_LEMAH:
+                nilai = [r[i] for _, r in isi if i < len(r) and r[i].strip()]
+                if nilai and sum(1 for v in nilai if _mirip_nomor(v)) * 2 >= len(nilai):
+                    hasil.append((i, None))
+    return hasil
+
+
+LABEL_PONSEL = ("mobile", "hp", "ponsel", "cell", "whatsapp", "wa", "handphone", "seluler")
+
+
+def pilih_nomor(r, kolom):
+    """Dari satu baris: kumpulkan semua nomor (nilai ganda Google 'a ::: b' dipecah), pilih satu nomor WA.
+    Prioritas: nomor HP (628...) berlabel ponsel -> nomor HP pertama -> nomor valid pertama.
+    Kembalikan (wa|None, [peringatan], [nomor lain]). Semua isi tidak valid -> Gagal (alasan nomor pertama)."""
+    calon, salah = [], None
+    for i, j in kolom:
+        if i >= len(r) or not buang_pelindung(r[i]).strip():
+            continue
+        label = (r[j] if j is not None and j < len(r) else "").lower()
+        for bag in buang_pelindung(r[i]).split(":::"):
+            if not bag.strip():
+                continue
+            try:
+                wa, pw = normalisasi_wa(bag)
+                calon.append((wa, pw, any(x in label for x in LABEL_PONSEL)))
+            except Gagal as e:
+                salah = salah or e
+    if not calon:
+        if salah:
+            raise salah
+        return None, [], []
+    urut = sorted(range(len(calon)), key=lambda n: (not calon[n][0].startswith("628"), not calon[n][2], n))
+    pilih = calon[urut[0]]
+    lain = []
+    for wa, _, _ in calon:
+        if wa != pilih[0] and wa not in lain:
+            lain.append(wa)
+    return pilih[0], pilih[1], lain
 
 
 # --------------------------------------------------------------------------- perintah: init / info / atur
@@ -1590,13 +1687,18 @@ def baris_kontak(r, samarkan=False, acuan=None):
     bag.append(LABEL_TAHAP[r["tahap"]] + ((" (%s)" % r["alasan_batal"]) if r["tahap"] == "batal" else ""))
     if r["nilai"] is not None:
         bag.append(rp(r["nilai"]))
-    if r["kebutuhan"]:
-        bag.append(r["kebutuhan"])
+    keb = hal_untuk_draf(r["kebutuhan"]) if samarkan else r["kebutuhan"]
+    if keb:
+        bag.append(keb)
     if r["followup"] and acuan is not None:
         d = date.fromisoformat(r["followup"])
         sel = (d - acuan).days
-        bag.append("FU %s%s" % (tgl_pendek(d, False), " (telat %d hari)" % -sel if sel < 0 else
-                                 " (hari ini)" if sel == 0 else ""))
+        if r["tahap"] == "deal":
+            bag.append("konfirmasi order %s%s" % (tgl_pendek(d, False), " (sejak %d hari lalu)" % -sel if sel < 0 else
+                                                  " (hari ini)" if sel == 0 else ""))
+        else:
+            bag.append("FU %s%s" % (tgl_pendek(d, False), " (telat %d hari)" % -sel if sel < 0 else
+                                     " (hari ini)" if sel == 0 else ""))
     bag.append(samar_wa(r["wa"]) if samarkan else tampil_wa(r["wa"]))
     return " | ".join(bag)
 
@@ -1708,13 +1810,17 @@ def cmd_draf(args):
 
 # --------------------------------------------------------------------------- hari-ini (pengingat harian)
 def kelompok_followup(rows, acuan):
-    """Kembalikan (terlambat, hari_ini, besok, belum_dijadwalkan, sudah_pamit).
-    Terlambat/hari ini/besok: semua kontak non-batal yang punya jadwal (termasuk deal = order berjalan, dan selesai
-    = tawaran ulang). Belum dijadwalkan: pipeline terbuka tanpa jadwal. Sudah pamit: pipeline terbuka yang sudah
-    dikirimi pesan pamit dan tidak dijadwalkan lagi (menunggu balasan / layak ditandai batal)."""
-    terlambat, hari, besok, tanpa, pamit = [], [], [], [], []
+    """Kembalikan (terlambat, hari_ini, besok, belum_dijadwalkan, sudah_pamit, order).
+    Terlambat/hari ini/besok: prospek (baru/dihubungi/ditawar) dan pelanggan selesai (tawaran ulang) yang punya jadwal.
+    Order: kontak DEAL yang jadwal konfirmasi order-nya hari ini atau sudah lewat; dipisah dan tidak pernah disebut
+    'terlambat' sebagai prospek. Belum dijadwalkan: pipeline terbuka tanpa jadwal. Sudah pamit: pipeline terbuka yang
+    sudah dikirimi pesan pamit dan tidak dijadwalkan lagi."""
+    terlambat, hari, besok, tanpa, pamit, order = [], [], [], [], [], []
     for r in rows:
         if r["tahap"] == "batal":
+            continue
+        if r["tahap"] == "deal" and r["followup"] and date.fromisoformat(r["followup"]) <= acuan:
+            order.append(r)
             continue
         if not r["followup"]:
             if r["tahap"] in TAHAP_TERBUKA:
@@ -1730,7 +1836,8 @@ def kelompok_followup(rows, acuan):
     terlambat.sort(key=lambda r: (r["followup"], -(r["nilai"] or 0), r["id"]))
     for x in (hari, besok, tanpa, pamit):
         x.sort(key=lambda r: (-(r["nilai"] or 0), r["id"]))
-    return terlambat, hari, besok, tanpa, pamit
+    order.sort(key=lambda r: (r["followup"], r["id"]))
+    return terlambat, hari, besok, tanpa, pamit, order
 
 
 MAKS_BARIS_UTAMA = 20   # per kelompok terlambat / hari ini (Telegram tetap ringkas); --semua untuk semuanya
@@ -1747,12 +1854,11 @@ def cmd_hari_ini(args):
     finally:
         conn.close()
     acuan = hari_ini()
-    terlambat, hari, besok, tanpa, pamit = kelompok_followup(rows, acuan)
+    terlambat, hari, besok, tanpa, pamit, order = kelompok_followup(rows, acuan)
     sam = args.samarkan
     semua = args.semua
-    perlu = terlambat + hari
-    prospek = [r for r in perlu if r["tahap"] in TAHAP_TERBUKA]
-    order = [r for r in perlu if r["tahap"] == "deal"]
+    perlu = terlambat + hari + order
+    prospek = [r for r in terlambat + hari if r["tahap"] in TAHAP_TERBUKA]
     nilai_perlu = sum(r["nilai"] or 0 for r in prospek)
     t = ["FOLLOW-UP CRM - %s (%s)" % (tgl_panjang(acuan), _JAM["zona"]),
          "Terlambat: %d | Hari ini: %d | Besok: %d | Belum dijadwalkan: %d" % (len(terlambat), len(hari),
@@ -1782,6 +1888,7 @@ def cmd_hari_ini(args):
                      (len(daftar) - len(tampil)))
     blok("TERLAMBAT", "terlambat", terlambat, MAKS_BARIS_UTAMA)
     blok("HARI INI", "hari_ini", hari, MAKS_BARIS_UTAMA)
+    blok("ORDER BERJALAN - konfirmasi pembayaran/pengiriman", "order", order, MAKS_BARIS_UTAMA)
     blok("BESOK", "besok", besok, MAKS_BARIS_LAIN)
     blok("BELUM DIJADWALKAN", "belum_dijadwalkan", tanpa, MAKS_BARIS_LAIN)
     if pamit:
@@ -1809,7 +1916,7 @@ def cmd_hari_ini(args):
             if sisa > 0:
                 t.append("")
                 t.append("%d draf lain: crm.py draf --kontak <kode>." % sisa)
-    if not (terlambat or hari or besok or tanpa or pamit):
+    if not (terlambat or hari or besok or tanpa or pamit or order):
         t.append("")
         t.append("Tidak ada follow-up hari ini. Mantap!")
     contoh = (perlu + besok + tanpa)[:2]
@@ -1828,6 +1935,7 @@ def cmd_hari_ini(args):
                           "belum_dijadwalkan": len(tanpa), "sudah_pamit": len(pamit),
                           "nilai_perlu_disapa": nilai_perlu, "order_perlu_konfirmasi": len(order)},
             "terlambat": kj(terlambat, MAKS_BARIS_UTAMA), "hari_ini_daftar": kj(hari, MAKS_BARIS_UTAMA),
+            "order": kj(order, MAKS_BARIS_UTAMA),
             "besok": kj(besok, MAKS_BARIS_LAIN), "belum_dijadwalkan": kj(tanpa, MAKS_BARIS_LAIN),
             "terpotong": terpotong, "draf": draf, "data_sensitif": not sam, "teks": teks}, teks
 
@@ -1903,7 +2011,7 @@ RUMUS = {
 }
 
 
-def hitung_rekap(rows, a, b, acuan):
+def hitung_rekap(rows, a, b, acuan, samarkan=False):
     def dalam(x):
         return x is not None and a.isoformat() <= x[:10] <= b.isoformat()
     posisi = {t: {"jumlah": 0, "nilai": 0} for t in TAHAP}
@@ -1950,8 +2058,14 @@ def hitung_rekap(rows, a, b, acuan):
     alasan = {}
     for r in batal_periode:
         alasan[r["alasan_batal"] or "tanpa alasan"] = alasan.get(r["alasan_batal"] or "tanpa alasan", 0) + 1
+    if samarkan:   # alasan yang diketik bebas bisa memuat nama/cerita pribadi -> digabung "lainnya"
+        gabung = {}
+        for k, v in alasan.items():
+            kk = k if k in ALASAN_BAKU else "lainnya"
+            gabung[kk] = gabung.get(kk, 0) + v
+        alasan = gabung
     alasan_l = [{"alasan": k, "jumlah": v} for k, v in sorted(alasan.items(), key=lambda x: (-x[1], x[0]))]
-    terlambat, hari, besok, tanpa, pamit = kelompok_followup(rows, acuan)
+    terlambat, hari, besok, tanpa, pamit, order = kelompok_followup(rows, acuan)
     return {
         "posisi": dict(posisi, pipeline_terbuka=terbuka, total_kontak=len(rows)),
         "periode_ini": {
@@ -1965,7 +2079,7 @@ def hitung_rekap(rows, a, b, acuan):
         },
         "sumber": sumber, "sumber_terbaik": terbaik, "alasan_batal": alasan_l,
         "followup": {"terlambat": len(terlambat), "hari_ini": len(hari), "besok": len(besok),
-                     "belum_dijadwalkan": len(tanpa), "sudah_pamit": len(pamit),
+                     "belum_dijadwalkan": len(tanpa), "sudah_pamit": len(pamit), "order_perlu_konfirmasi": len(order),
                      "nilai_terlambat_dan_hari_ini": sum(r["nilai"] or 0 for r in terlambat + hari
                                                          if r["tahap"] in TAHAP_TERBUKA)},
     }
@@ -1980,7 +2094,7 @@ def cmd_rekap(args):
         conn.close()
     acuan = hari_ini()
     nama_p, a, b = periode_dari_args(args, acuan)
-    h = hitung_rekap(rows, a, b, acuan)
+    h = hitung_rekap(rows, a, b, acuan, args.samarkan)
     pi, pos = h["periode_ini"], h["posisi"]
     rentang = "semua data" if nama_p == "semua waktu" else (
         tgl_pendek(a) if a == b else "%s - %s" % (tgl_pendek(a), tgl_pendek(b)))
@@ -2020,9 +2134,10 @@ def cmd_rekap(args):
     if h["alasan_batal"]:
         t += ["", "ALASAN BATAL: " + ", ".join("%s (%d)" % (x["alasan"], x["jumlah"]) for x in h["alasan_batal"])]
     f = h["followup"]
-    t += ["", "FOLLOW-UP SAAT INI: terlambat %d, hari ini %d, besok %d, belum dijadwalkan %d" %
-          (f["terlambat"], f["hari_ini"], f["besok"], f["belum_dijadwalkan"])]
-    if f["terlambat"] or f["hari_ini"]:
+    t += ["", "FOLLOW-UP SAAT INI: terlambat %d, hari ini %d, besok %d, belum dijadwalkan %d, order perlu "
+          "dikonfirmasi %d" % (f["terlambat"], f["hari_ini"], f["besok"], f["belum_dijadwalkan"],
+                               f["order_perlu_konfirmasi"])]
+    if f["terlambat"] or f["hari_ini"] or f["order_perlu_konfirmasi"]:
         t.append("Ketik \"follow-up hari ini\" untuk daftar & draf pesannya.")
     if pi["lead_masuk"] and ko["masih_berjalan"] and b >= acuan - timedelta(days=14):
         t.append("Catatan: periode ini masih baru; konversi akan naik bila lead yang masih berjalan jadi deal.")
@@ -2035,7 +2150,8 @@ def cmd_rekap(args):
            "zona": _JAM["zona"], "hari_ini": acuan.isoformat(),
            "periode": {"nama": nama_p, "dari": a.isoformat(), "sampai": b.isoformat()}}
     out.update(h)
-    out.update(rumus=RUMUS, teks=teks, data_sensitif=False)
+    bebas = [x for x in h["alasan_batal"] if x["alasan"] not in ALASAN_BAKU]
+    out.update(rumus=RUMUS, teks=teks, data_sensitif=bool(bebas))
     return out, teks
 
 
@@ -2057,26 +2173,35 @@ def cmd_cek_duplikat(args):
     sudah = {frozenset(r["id"] for r in g) for g in grup_wa}
     grup_nama = [g for g in per_nama.values() if len(g) > 1 and len({r["wa"] for r in g}) > 1
                  and frozenset(r["id"] for r in g) not in sudah]
+    def nm(r):
+        return samar_nama(r["nama"]) if args.samarkan else r["nama"]
+
+    def pj(r):
+        d = pilihan_json(r)
+        if args.samarkan:
+            d.update(nama=samar_nama(r["nama"]), kebutuhan="")
+        return d
     t = ["CEK DUPLIKAT: %d kontak diperiksa" % len(rows)]
     if grup_wa:
         t.append("")
         t.append("NOMOR SAMA (hampir pasti orang yang sama) - %d grup:" % len(grup_wa))
         for g in grup_wa:
             t.append("- %s: %s" % (samar_wa(g[0]["wa"]) if args.samarkan else tampil_wa(g[0]["wa"]),
-                                   "; ".join("%s %s (%s)" % (kode(r["id"]), r["nama"], r["tahap"]) for r in g)))
+                                   "; ".join("%s %s (%s)" % (kode(r["id"]), nm(r), r["tahap"]) for r in g)))
             t.append("  Gabungkan: crm.py gabung --dari %s --ke %s" % (kode(g[-1]["id"]), kode(g[0]["id"])))
     if grup_nama:
         t.append("")
         t.append("NAMA SAMA, NOMOR BERBEDA (periksa dulu, bisa jadi orang berbeda) - %d grup:" % len(grup_nama))
         for g in grup_nama:
-            t.append("- " + "; ".join("%s %s %s (%s)" % (kode(r["id"]), r["nama"], samar_wa(r["wa"]), r["tahap"])
+            t.append("- " + "; ".join("%s %s %s (%s)" % (kode(r["id"]), nm(r), samar_wa(r["wa"]), r["tahap"])
                                       for r in g))
     if not grup_wa and not grup_nama:
         t.append("Tidak ada duplikat.")
     teks = "\n".join(t)
     return {"ok": True, "mode": "baca",
-            "nomor_sama": [[pilihan_json(r) for r in g] for g in grup_wa],
-            "nama_sama": [[pilihan_json(r) for r in g] for g in grup_nama], "teks": teks}, teks
+            "nomor_sama": [[pj(r) for r in g] for g in grup_wa],
+            "nama_sama": [[pj(r) for r in g] for g in grup_nama], "data_sensitif": not args.samarkan,
+            "teks": teks}, teks
 
 
 def cmd_gabung(args):
@@ -2136,43 +2261,55 @@ def cmd_hapus(args):
 # --------------------------------------------------------------------------- impor / ekspor
 def cmd_impor(args):
     rows, peringatan_file = baca_csv(args.file)
-    header, isi = rows[0], rows[1:]
+    (_, header), isi = rows[0], rows[1:]
     peta, abaikan = petakan_kolom(header)
-    kunci_h = [_kunci_kolom(h) for h in header]
-    if "nama" not in peta and not {"first name", "given name", "nama depan"} & set(kunci_h):
-        raise Gagal("Kolom nama tidak ditemukan. Header file: %s. Beri judul kolom 'nama' (dan 'no wa', 'sumber', "
-                    "'tahap', 'nilai', 'kebutuhan', 'label' bila ada). Contoh: templates/kontak-contoh.csv." %
-                    ", ".join(header))
-    if len(isi) > 5000:
-        raise Gagal("File berisi %d baris; maksimal 5.000 per impor. Pecah menjadi beberapa file." % len(isi))
-    acuan = hari_ini()
-    sumber_def, _ = norm_sumber(args.sumber_default) if args.sumber_default else ("Tidak diketahui", False)
-    tahap_def = norm_tahap(args.tahap_default) if args.tahap_default else "baru"
-
     kunci = [_kunci_kolom(h) for h in header]
     i_depan = next((i for i, k in enumerate(kunci) if k in ("first name", "given name", "nama depan")), None)
     i_belakang = next((i for i, k in enumerate(kunci) if k in ("last name", "family name", "nama belakang")), None)
+    i_org = next((i for i, k in enumerate(kunci) if k in ("organization name", "organization 1 name", "perusahaan",
+                                                           "company")), None)
+    if "nama" not in peta and i_depan is None:
+        raise Gagal("Kolom nama tidak ditemukan. Judul kolom di file: %s. Beri judul kolom 'nama' (dan 'no wa', "
+                    "'sumber', 'tahap', 'nilai', 'kebutuhan', 'label' bila ada). Contoh: templates/kontak-contoh.csv."
+                    % ", ".join(bersih(h, 30) for h in header[:15]))
+    if len(isi) > 5000:
+        raise Gagal("File berisi %d baris; maksimal 5.000 per impor. Pecah menjadi beberapa file." % len(isi))
+    kol_nomor = kolom_nomor(header, isi, peta)
+    if not kol_nomor and args.ya and not args.tanpa_nomor:
+        raise Gagal("Kolom nomor WA tidak ditemukan, jadi semua kontak akan tersimpan TANPA nomor (tanpa tautan wa.me "
+                    "dan tanpa cek nomor dobel). Ganti judul kolom nomor menjadi 'no wa' lalu ulangi, atau tambahkan "
+                    "--tanpa-nomor bila memang sengaja.", tanpa_kolom_nomor=True)
+    acuan = hari_ini()
+    sumber_def, _ = norm_sumber(args.sumber_default) if args.sumber_default else ("Tidak diketahui", False)
+    tahap_def = norm_tahap(args.tahap_default) if args.tahap_default else "baru"
+    if args.sebar is not None and args.sebar < 1:
+        raise Gagal("--sebar harus minimal 1 (jumlah kontak yang dijadwalkan per hari).")
 
     def ambil_sel(r, kol):
         i = peta.get(kol)
         nilai = buang_pelindung(r[i]).strip() if i is not None and i < len(r) else ""
-        if kol == "nama" and not nilai:
-            nilai = " ".join(buang_pelindung(r[j]).strip() for j in (i_depan, i_belakang)
-                             if j is not None and j < len(r) and r[j].strip())
+        if kol == "nama":
+            nilai = nilai.lstrip("~").strip()       # pengekspor kontak WA menandai nama profil dengan "~"
+            if not nilai:
+                nilai = " ".join(buang_pelindung(r[j]).strip() for j in (i_depan, i_belakang)
+                                 if j is not None and j < len(r) and r[j].strip())
+            if not nilai and i_org is not None and i_org < len(r):
+                nilai = buang_pelindung(r[i_org]).strip()
         return nilai
 
     def kerja(conn, cfg):
         ada_wa = {r["wa"]: r for r in conn.execute("SELECT id, nama, wa, tahap FROM kontak WHERE wa IS NOT NULL")}
         di_file, masuk, dup, rusak, peringatan = {}, [], [], [], list(peringatan_file)
-        sumber_baru = set()
-        for no, r in enumerate(isi, start=2):
+        sumber_baru, n_jadwal, n_sebar, n_potong, n_tanpa = set(), 0, 0, 0, 0
+        for no, r in isi:
             try:
                 nama = bersih(ambil_sel(r, "nama"), 80)
                 if not nama:
                     raise Gagal("nama kosong")
-                if re.fullmatch(r"[\d\s+().-]{8,}", nama):
-                    raise Gagal("kolom nama berisi nomor")
-                wa, pw = (normalisasi_wa(ambil_sel(r, "wa")) if ambil_sel(r, "wa") else (None, []))
+                if re.search(r"\d{8,}|\d{3,4}[-\s.]\d{3,4}[-\s.]\d{3,4}", nama):
+                    raise Gagal("kolom nama berisi nomor telepon (mungkin pemisah kolom atau tanda kutip di baris ini "
+                                "salah)")
+                wa, pw, lain = pilih_nomor(r, kol_nomor)
                 sumber, baru = norm_sumber(ambil_sel(r, "sumber")) if ambil_sel(r, "sumber") else (sumber_def, False)
                 if baru:
                     sumber_baru.add(sumber)
@@ -2183,10 +2320,7 @@ def cmd_impor(args):
                 alasan = ambil_sel(r, "alasan_batal")
                 if tahap == "batal" and not alasan:
                     alasan = "tidak dicatat (impor)"
-                if ambil_sel(r, "followup"):
-                    fu = baca_tanggal(ambil_sel(r, "followup"), acuan, "bebas")[0]
-                else:
-                    fu = followup_default(tahap, acuan)[0]
+                fu = baca_tanggal(ambil_sel(r, "followup"), acuan, "bebas")[0] if ambil_sel(r, "followup") else None
             except Gagal as e:
                 rusak.append({"baris": no, "alasan": e.pesan.rstrip(".")})
                 continue
@@ -2199,13 +2333,25 @@ def cmd_impor(args):
                 continue
             if wa:
                 di_file[wa] = no
+            # S6: impor TIDAK otomatis menjadwalkan follow-up hari ini (daftar harian tidak banjir).
+            # Hanya dari kolom follow up, atau disebar --sebar N kontak per hari untuk pipeline terbuka.
+            if fu is None and args.sebar and tahap in TAHAP_TERBUKA:
+                fu = acuan + timedelta(days=n_sebar // args.sebar)
+                n_sebar += 1
+            if fu is not None and tahap in TAHAP_PANTAU:
+                n_jadwal += 1
+            elif fu is None and tahap in TAHAP_TERBUKA:
+                n_tanpa += 1
+            keb = bersih(ambil_sel(r, "kebutuhan"), 120)
+            if saran_kebutuhan(keb):
+                n_potong += 1
             now = stempel()
             cur = conn.execute(
                 "INSERT INTO kontak(nama, sapaan, wa, sumber, label, tahap, nilai, kebutuhan, followup, fu_ke, "
                 "alasan_batal, tgl_masuk, tgl_tahap, tgl_deal, tgl_batal, kontak_terakhir, dibuat, diubah) "
                 "VALUES (?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?,?)",
                 (nama, bersih(ambil_sel(r, "sapaan"), 20) or None, wa, sumber,
-                 ", ".join(norm_label(ambil_sel(r, "label"))), tahap, nilai, bersih(ambil_sel(r, "kebutuhan"), 120),
+                 ", ".join(norm_label(ambil_sel(r, "label"))), tahap, nilai, keb,
                  fu.isoformat() if fu and tahap in TAHAP_PANTAU else None,
                  norm_alasan(alasan) if tahap == "batal" else None, masuk_tgl.isoformat(), acuan.isoformat(),
                  masuk_tgl.isoformat() if tahap in TAHAP_MENANG else None,
@@ -2213,19 +2359,39 @@ def cmd_impor(args):
             riwayat(conn, cur.lastrowid, "masuk", "Diimpor dari %s baris %d" % (Path(args.file).name, no))
             if ambil_sel(r, "catatan"):
                 riwayat(conn, cur.lastrowid, "catatan", ambil_sel(r, "catatan"))
+            if lain:
+                riwayat(conn, cur.lastrowid, "catatan", "Nomor lain di file impor: " + ", ".join(tampil_wa(x)
+                                                                                                for x in lain))
+                peringatan.append("Baris %d: ada %d nomor; dipakai %s, nomor lain dicatat di riwayat." %
+                                  (no, len(lain) + 1, samar_wa(wa)))
             masuk.append({"baris": no, "kode": kode(cur.lastrowid), "nama": nama, "wa": samar_wa(wa),
                           "tahap": tahap, "sumber": sumber})
-            for p in pw:
-                peringatan.append("Baris %d: %s" % (no, p))
+            for p_ in pw:
+                peringatan.append("Baris %d: %s" % (no, p_))
         if sumber_baru:
             peringatan.append("Sumber di luar daftar baku disimpan apa adanya: %s." % ", ".join(sorted(sumber_baru)))
+        if n_potong:
+            peringatan.append("%d kontak: kolom kebutuhan berisi harga/komentar; di draf pesan hanya nama produknya "
+                              "yang dipakai." % n_potong)
         if abaikan:
             peringatan.append("Kolom diabaikan: %s%s." % (", ".join(abaikan[:8]), (" dan %d lainnya" % (len(abaikan) - 8))
                                                            if len(abaikan) > 8 else ""))
-        t = ["Impor %s: %d baris dibaca." % (Path(args.file).name, len(isi)),
-             "Kolom dikenali: %s" % ", ".join("%s <- '%s'" % (k, header[i]) for k, i in peta.items()),
-             "Kontak baru: %d | Duplikat dilewati: %d | Baris bermasalah dilewati: %d" % (len(masuk), len(dup),
-                                                                                        len(rusak))]
+        t = []
+        if not kol_nomor:
+            t.append("PERHATIAN: kolom nomor WA tidak ditemukan (judul kolom: %s). Semua kontak akan tersimpan TANPA "
+                     "nomor: tanpa tautan wa.me dan tanpa cek nomor dobel. Ganti judul kolom nomor menjadi 'no wa' "
+                     "lalu ulangi." % ", ".join(bersih(h, 30) for h in header[:15]))
+        t += ["Impor %s: %d baris data dibaca." % (Path(args.file).resolve(), len(isi)),
+              "Kolom dikenali: %s" % ", ".join(["%s <- '%s'" % (k, bersih(header[i], 30)) for k, i in peta.items()
+                                                if k != "wa"] +
+                                               ["nomor <- '%s'" % bersih(header[i], 30) for i, _ in kol_nomor]),
+              "Kontak baru: %d | Duplikat dilewati: %d | Baris bermasalah dilewati: %d" % (len(masuk), len(dup),
+                                                                                         len(rusak))]
+        t.append("Jadwal follow-up: %d kontak dari kolom follow up%s; %d kontak terbuka tanpa jadwal (tidak "
+                 "membanjiri daftar harian).%s" % (
+                     n_jadwal - n_sebar, (", %d disebar %d/hari" % (n_sebar, args.sebar)) if n_sebar else "", n_tanpa,
+                     " Jadwalkan bertahap: ulangi dengan --sebar 10 (10 kontak per hari mulai hari ini)."
+                     if n_tanpa else ""))
         for x in masuk[:10]:
             t.append("+ %s %s | %s | %s | %s" % (x["kode"] if args.ya else "(baru)", x["nama"], x["wa"], x["tahap"],
                                                  x["sumber"]))
@@ -2238,12 +2404,36 @@ def cmd_impor(args):
         if len(rusak) > 20:
             t.append("! ... dan %d baris bermasalah lainnya (lihat JSON)" % (len(rusak) - 20))
         return {"baru": masuk, "duplikat": dup, "rusak": rusak, "peringatan": peringatan,
+                "tanpa_kolom_nomor": not kol_nomor,
                 "ringkasan": {"file": Path(args.file).name, "baru": len(masuk), "duplikat": len(dup),
                               "rusak": len(rusak)}}, "\n".join(t)
     return jalankan_tulis(args, "impor", kerja, besar=True, label_backup="impor")
 
 
+def lokasi_pengingat(args):
+    """File DAFTAR.csv pengingat-follow-up untuk jembatan. Tidak pernah diam-diam memakai folder kerja saat ini:
+    --file-pengingat, lalu file yang SUDAH ADA di lokasi umum, lalu default folder data Komunitech."""
+    if args.file_pengingat:
+        return Path(args.file_pengingat).expanduser().resolve(), "dari --file-pengingat"
+    data = Path(os.environ["KOMUNITECH_DATA"]).expanduser() if os.environ.get("KOMUNITECH_DATA") else \
+        Path.home() / "KomunitechData"
+    calon = [Path.home() / ".openclaw" / "workspace" / "pengingat" / "DAFTAR.csv", data / "pengingat" / "DAFTAR.csv",
+             Path.cwd() / "pengingat" / "DAFTAR.csv"]
+    for c in calon:
+        if c.is_file():
+            return c.resolve(), "file yang sudah ada"
+    return (data / "pengingat" / "DAFTAR.csv").resolve(), "lokasi baru (belum ada file)"
+
+
+def di_repo_git(p):
+    for d in [p.parent] + list(p.parent.parents):
+        if (d / ".git").exists():
+            return d
+    return None
+
+
 def cmd_ekspor(args):
+    db = path_db(args)
     conn = _baca(args)
     try:
         rows = conn.execute("SELECT * FROM kontak ORDER BY id").fetchall()
@@ -2256,20 +2446,36 @@ def cmd_ekspor(args):
         tn = norm_tahap(t)
         rows = [r for r in rows if r["tahap"] == tn]
     sam = args.samarkan
+    if args.ke:
+        tujuan = Path(args.ke).expanduser().resolve()
+    else:   # default: folder data CRM, bukan folder kerja saat ini (file berisi data pribadi)
+        fol = db.parent / "ekspor"
+        fol.mkdir(parents=True, exist_ok=True)
+        tujuan = nama_unik(fol, "crm-%s-%s" % (args.format, kini().strftime("%Y%m%d-%H%M%S")), ".csv")
+    peringatan = []
+    repo = di_repo_git(tujuan)
+    if repo and not sam:
+        peringatan.append("Folder tujuan berada di dalam repositori git (%s). File berisi data pelanggan: jangan "
+                          "di-commit/diunggah." % repo)
     if args.format == "pengingat":
         rows = [r for r in rows if r["tahap"] in TAHAP_PANTAU and r["followup"]]
         data = [["prospek", re.sub(r"\d{6,}", "", r["nama"]).strip() or kode(r["id"]), r["followup"],
-                 r["nilai"] if r["nilai"] is not None else "", r["kebutuhan"] or "", kode(r["id"])] for r in rows]
-        p = tulis_csv(args.csv, ["jenis", "nama", "tanggal", "nominal", "perihal", "kode_crm"], data, args.timpa)
-        perintah = [["tambah", "--jenis", "prospek", "--nama", d[1], "--tanggal", d[2]] +
+                 r["nilai"] if r["nilai"] is not None else "", hal_untuk_draf(r["kebutuhan"]) or "", kode(r["id"])]
+                for r in rows]
+        p = tulis_csv(tujuan, ["jenis", "nama", "tanggal", "nominal", "perihal", "kode_crm"], data, args.timpa)
+        fp, asal = lokasi_pengingat(args)
+        perintah = [["tambah", "--file", str(fp), "--jenis", "prospek", "--nama", d[1], "--tanggal", d[2]] +
                     (["--nominal", str(d[3])] if d[3] != "" else []) + (["--perihal", d[4]] if d[4] else [])
                     for d in data]
-        teks = ("Ekspor %d prospek aktif ke %s (format pengingat-follow-up, TANPA nomor HP).\nDi skill "
-                "pengingat-follow-up, tambahkan per baris dengan perintah 'tambah' (lihat 'perintah_pengingat' di "
-                "JSON). Jangan jalankan jadwal kedua skill untuk prospek yang sama, nanti pengingatnya dobel." %
-                (len(data), p))
-        return {"ok": True, "mode": "baca", "file": p, "jumlah": len(data), "perintah_pengingat": perintah,
-                "teks": teks}, teks
+        teks = ("Ekspor %d prospek aktif ke file:\n%s\n(format pengingat-follow-up, TANPA nomor HP).\n"
+                "Perintah 'tambah' untuk skill pengingat-follow-up ada di JSON 'perintah_pengingat', semuanya memakai "
+                "--file %s (%s). Pastikan itu file daftar yang dipakai pengingat-follow-up; bila berbeda, ulangi dengan "
+                "--file-pengingat <path>. Jangan jalankan jadwal kedua skill untuk prospek yang sama (pengingat dobel)."
+                % (len(data), p, fp, asal))
+        if peringatan:
+            teks += "\n" + "\n".join("Catatan: " + x for x in peringatan)
+        return {"ok": True, "mode": "tersimpan", "file": p, "jumlah": len(data), "file_pengingat": str(fp),
+                "perintah_pengingat": perintah, "peringatan": peringatan, "teks": teks}, teks
     header = ["kode", "nama", "no_wa", "link_wa", "sumber", "label", "tahap", "nilai", "kebutuhan", "followup",
               "alasan_batal", "tgl_masuk", "tgl_deal", "kontak_terakhir"]
     data = []
@@ -2277,13 +2483,16 @@ def cmd_ekspor(args):
         data.append([kode(r["id"]), samar_nama(r["nama"]) if sam else r["nama"],
                      samar_wa(r["wa"]) if sam else tampil_wa(r["wa"]) if r["wa"] else "",
                      "" if sam or not r["wa"] else "https://wa.me/" + r["wa"], r["sumber"], r["label"], r["tahap"],
-                     r["nilai"] if r["nilai"] is not None else "", r["kebutuhan"], r["followup"] or "",
+                     r["nilai"] if r["nilai"] is not None else "", "" if sam else r["kebutuhan"], r["followup"] or "",
                      r["alasan_batal"] or "", r["tgl_masuk"], r["tgl_deal"] or "", r["kontak_terakhir"] or ""])
-    p = tulis_csv(args.csv, header, data, args.timpa)
-    teks = "Ekspor %d kontak ke %s (pemisah ';', UTF-8, aman dibuka di Excel)." % (len(data), p)
+    p = tulis_csv(tujuan, header, data, args.timpa)
+    teks = "Ekspor %d kontak ke file:\n%s\n(pemisah ';', UTF-8, aman dibuka di Excel)." % (len(data), p)
     if not sam:
         teks += "\nFile ini berisi nomor HP pelanggan (data pribadi). " + DISCLAIMER_PRIVASI
-    return {"ok": True, "mode": "baca", "file": p, "jumlah": len(data), "data_sensitif": not sam, "teks": teks}, teks
+    if peringatan:
+        teks += "\n" + "\n".join("Catatan: " + x for x in peringatan)
+    return {"ok": True, "mode": "tersimpan", "file": p, "jumlah": len(data), "data_sensitif": not sam,
+            "peringatan": peringatan, "teks": teks}, teks
 
 
 # --------------------------------------------------------------------------- backup & restore
@@ -2516,9 +2725,13 @@ def buat_parser():
     s.add_argument("file")
     s.add_argument("--sumber-default")
     s.add_argument("--tahap-default")
+    s.add_argument("--sebar", type=int, help="Jadwalkan kontak terbuka tanpa jadwal: N kontak per hari mulai hari ini")
+    s.add_argument("--tanpa-nomor", action="store_true", help="Izinkan impor walau kolom nomor WA tidak ditemukan")
     s.set_defaults(fungsi=cmd_impor)
     s = sub.add_parser("ekspor", parents=[umum, sam], help="Ekspor ke CSV")
-    s.add_argument("--csv", required=True)
+    s.add_argument("--ke", "--csv", dest="ke",
+                   help="File tujuan. Default: <folder database>/ekspor/crm-<format>-<waktu>.csv")
+    s.add_argument("--file-pengingat", help="Format pengingat: file DAFTAR.csv pengingat-follow-up")
     s.add_argument("--format", choices=["lengkap", "pengingat"], default="lengkap")
     s.add_argument("--tahap", help="semua (default), aktif, atau nama tahap")
     s.add_argument("--timpa", action="store_true")

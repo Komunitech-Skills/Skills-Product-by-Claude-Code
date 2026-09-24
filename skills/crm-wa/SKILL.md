@@ -19,20 +19,22 @@ Menjadi "CRM" pemilik usaha tanpa biaya bulanan: semua calon pembeli dan pelangg
 - "Kirim daftar follow-up ke Telegram saya tiap pagi jam 8" (OpenClaw).
 
 ## Kapan TIDAK digunakan
-- **Kirim pesan otomatis/massal/broadcast ke pelanggan** → **tolak**. Keputusan pemilik: OpenClaw memakai WhatsApp Web (tidak resmi), pesan otomatis bisa membuat nomor diblokir. Skill ini hanya menyiapkan draf + tautan; manusia yang mengirim satu per satu. Promo massal manual → `broadcast-wa`.
+- **Kirim pesan otomatis/massal/broadcast ke pelanggan** → **tolak**. Keputusan pemilik: OpenClaw memakai WhatsApp Web (tidak resmi), pesan otomatis bisa membuat nomor diblokir. Skill ini hanya menyiapkan draf + tautan; manusia yang mengirim satu per satu. Promo massal manual → `broadcast-wa` (catatan: file ekspor crm-wa belum langsung terbaca skill itu dan CRM tidak mencatat persetujuan promo; siapkan daftar penerima sesuai petunjuk `broadcast-wa`).
 - Menulis **urutan pesan lengkap** (H+1/3/7/14) yang dipersonalisasi untuk satu prospek besar → `follow-up-prospek` (lalu jadwalnya dicatat di sini dengan `catat --followup`).
 - Pengingat **tagihan/piutang/janji/timesheet** → `pengingat-follow-up`. Sudah memakai pengingat-follow-up untuk prospek? Jangan pantau prospek yang sama di dua tempat (pengingat dobel). Jembatan: `ekspor --format pengingat` (lihat Langkah F).
 - Membalas chat/komplain pelanggan yang masuk → `balas-chat-cs`. Membuat surat/penawaran harga resmi → `surat-penawaran-harga`. Menagih yang sudah deal tapi belum bayar → `tagih-piutang`. Mencatat penjualan kasir → `kasir-lokal`.
 - Mengambil data dari marketplace/IG dengan login browser (scraping) → tolak; minta pengguna mengekspor CSV sendiri.
+- Laporan laba rugi/keuangan → `laporan-keuangan-emkm` (CRM hanya mencatat nilai potensi & deal, bukan pembukuan).
 - Skill rujukan tidak terpasang: jelaskan singkat bedanya, lalu bantu sebisanya dengan draf bawaan skill ini.
 
 ## Aturan wajib
 1. **Tidak pernah mengirim pesan ke pelanggan.** Tampilkan draf + tautan wa.me; pemilik yang membuka, memeriksa, dan menekan Kirim. Setelah pemilik bilang sudah kirim → `terkirim`.
 2. **Angka dari script.** Nilai, total, konversi, jumlah hari, tanggal: salin dari output script. Jangan menghitung atau mengonversi tanggal sendiri; teruskan teks pengguna apa adanya (`--followup "Jumat"`).
-3. **Jangan menebak kontak.** Jika script menjawab ambigu (`pilihan`), tanyakan "Rina yang mana?" dengan daftar dari script. Jika nomor sudah terdaftar (`duplikat`), jangan menambah dobel; catat ke kontak yang ada.
+3. **Jangan menebak kontak.** Jika script menjawab ambigu (`pilihan`: kode, nama, 4 digit akhir nomor, tahap; termasuk kontak yang batal), tanyakan "Bu Sari yang mana?" dengan daftar itu, lalu ulangi dengan kodenya. Jika nomor sudah terdaftar (`duplikat`), jangan menambah dobel; catat ke kontak yang ada.
 4. **Perubahan besar** (`init`, `impor`, `hapus`, `gabung`, `restore`) dijalankan dulu tanpa `--ya` (pratinjau), tunjukkan ringkasannya, lalu ulangi **perintah yang sama + `--ya`** hanya setelah pengguna setuju. Perubahan kecil (`tambah`, `catat`, `tunda`, `terkirim`, `ubah`, `atur`) langsung tersimpan; sampaikan hasilnya agar bisa dikoreksi.
-5. **Privasi:** nomor HP pelanggan = data pribadi (UU 27/2022 PDP). Jangan menampilkan daftar kontak lengkap ke grup; untuk laporan yang dibagikan pakai `--samarkan`. Catatan obrolan (`--isi`) bersifat pribadi dan tidak pernah masuk draf. Pelanggan minta datanya dihapus → `hapus` (pratinjau → `--ya`).
-6. Sampaikan setiap `peringatan`/`Catatan:` dari script (tanggal yang ditebak, nomor bukan HP, nilai deal belum diisi, dsb.).
+5. **Kolom kebutuhan = nama produk/jasa saja** ("kue ulang tahun 2 tingkat"). Harga → `--nilai`; komentar/cerita → `--catatan`/`--isi`. Script hanya memasukkan nama produk ke draf (angka rupiah & teks setelah koma dibuang) dan memperingatkan bila kolom itu berisi hal lain.
+6. **Privasi:** nomor HP pelanggan = data pribadi (UU 27/2022 PDP). Jangan menampilkan daftar kontak lengkap ke grup; untuk laporan yang dibagikan pakai `--samarkan`. Catatan obrolan (`--isi`) bersifat pribadi dan tidak pernah masuk draf. Pelanggan minta datanya dihapus → `hapus` (pratinjau → `--ya`).
+7. Sampaikan setiap `peringatan`/`Catatan:` dari script (tanggal yang ditebak, nomor bukan HP, nilai deal belum diisi, dsb.).
 
 ## Cara menjalankan script
 Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python` atau `py`):
@@ -76,13 +78,13 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 ### C. Setelah ngobrol / ada perkembangan
 `catat --kontak "Pak Budi" [--isi "minta diskon 10%, diskusi istri"] [--tahap ditawar] [--nilai "4 jt"] [--followup Jumat] [--alasan ".."] [--tanggal kemarin]`
 - Tahap: `baru` → `dihubungi` → `ditawar` → `deal` → `selesai`, atau `batal` (+ `--alasan`, wajib). Kata sehari-hari dikenali: nego/tawar → ditawar; jadi/order/closing → deal; lunas/beres → selesai; gak jadi/cancel → batal.
-- Masuk tahap dihubungi/ditawar tanpa `--followup` → otomatis 2 hari lagi. Selesai/batal → jadwal dihapus. Deal → isi nilai deal (`--nilai`); tanyakan bila script memperingatkan nilainya kosong.
+- Pindah tahap tanpa `--followup` → jadwal lama **selalu diganti**: dihubungi/ditawar → 2 hari lagi; **deal → jadwal konfirmasi order (pembayaran/pengiriman) 2 hari lagi**; selesai/batal → jadwal dihapus. Pengguna menyebut tanggal kirim/ambil → pakai `--followup` itu. Deal → isi nilai deal (`--nilai`); tanyakan bila script memperingatkan nilainya kosong.
 - `--kontak` boleh nama, kode (`K0003`), atau nomor WA.
 - Mundur dari deal (batal order) → pakai `--tahap batal --alasan ...`; tanggal deal dihapus dari rekap otomatis.
 - Pindah jadwal saja: `tunda --kontak "Mbak Dewi" --ke Senin`. Ubah data: `ubah --kontak K0003 --wa ... / --nilai ... / --tambah-label vip`.
 
 ### D. Follow-up harian (inti)
-1. `hari-ini` → tampilkan teks apa adanya: TERLAMBAT, HARI INI, BESOK, BELUM DIJADWALKAN, lalu DRAF PESAN (maks. 10) dengan tautan wa.me.
+1. `hari-ini` → tampilkan teks apa adanya: TERLAMBAT, HARI INI (prospek), ORDER BERJALAN (deal yang perlu konfirmasi pembayaran/pengiriman; tidak pernah disebut terlambat), BESOK, BELUM DIJADWALKAN, jumlah kontak yang sudah dikirimi pesan pamit, lalu DRAF PESAN (maks. 10) dengan tautan wa.me. Tiap kelompok dibatasi 20 baris (besok/belum dijadwalkan 10) + "... dan N lainnya"; seluruhnya: `--semua`.
 2. Minta pemilik membuka tautan, **memeriksa**, dan menekan Kirim sendiri. Boleh memperhalus draf atas permintaan pemilik, lalu buat tautannya lewat script: `draf --kontak K0002 --pesan "<teks final>"` (jangan menyusun tautan wa.me sendiri). Harga/angka yang ditambahkan ke draf harus dari pemilik atau dari script.
 3. Pemilik bilang sudah kirim → `terkirim --kontak K0002 [--berikutnya "3 hari lagi"]`. Irama otomatis: sapaan awal (baru → dihubungi, lanjut 2 hari) → follow-up ke-1 (+3 hari) → "pilihan mudah" (+4 hari) → **pesan pamit** → berhenti + saran tandai batal "tidak ada respon". Deal: pengingat order tiap 2 hari. Selesai: ucapan terima kasih; `--berikutnya "30 hari lagi"` untuk tawaran ulang.
 4. Pelanggan membalas → kembali ke Langkah C.
@@ -93,16 +95,18 @@ Kirim `teks` apa adanya. Isinya: posisi semua kontak per tahap (jumlah & nilai),
 Skill `laporan-harian-usaha` (bila nanti mendukung CRM) membaca `rekap --json` (kontrak di `references/perintah.md`).
 
 ### F. Impor, ekspor, duplikat
-- `impor kontak.csv [--sumber-default ig] [--tahap-default baru]` → pratinjau (kolom dikenali, kontak baru, duplikat dilewati, baris bermasalah + alasannya) → setuju → `--ya` (cadangan dibuat dulu). Kolom dikenali otomatis: nama / no wa / sumber / tahap / nilai / kebutuhan / label / catatan / follow up / tgl masuk; ekspor Google Contacts (First/Last Name, Phone 1 - Value) juga bisa. `.xlsx` → minta disimpan sebagai CSV. Contoh: `templates/kontak-contoh.csv`.
-- `ekspor --csv kontak.csv [--tahap aktif] [--samarkan] [--timpa]` → CSV `;` UTF-8 untuk Excel, aman dari formula injection. Ingatkan: file berisi data pribadi.
+- `impor kontak.csv [--sumber-default ig] [--tahap-default baru] [--sebar 10]` → pratinjau (kolom dikenali, kontak baru, duplikat dilewati, baris bermasalah + nomor baris di file, jadwal) → setuju → `--ya` (cadangan dibuat dulu). Kolom dikenali otomatis: nama / no wa, hp, telepon, WhatsApp, Mobile, Number, Nomor / sumber / tahap / nilai / kebutuhan / label / catatan / follow up / tgl masuk; ekspor Google Contacts lama & baru (First/Last Name, Phone 1/2 - Value, nilai ganda `a ::: b`, Labels) dan pengekspor kontak WA (`Name,Number`). Beberapa nomor dalam satu baris → nomor HP (berlabel Mobile) dipakai, sisanya dicatat di riwayat. `.xlsx` → minta disimpan sebagai CSV. Contoh: `templates/kontak-contoh.csv`.
+  - Pratinjau diawali **PERHATIAN: kolom nomor WA tidak ditemukan** → sampaikan, minta judul kolom nomor diganti `no wa`. `--ya` ditolak kecuali `--tanpa-nomor`.
+  - Impor **tidak** menjadwalkan follow-up (kecuali ada kolom follow up), agar daftar harian tidak banjir. Mau disapa bertahap → `--sebar 10` (10 kontak per hari mulai hari ini).
+- `ekspor [--tahap aktif] [--samarkan] [--ke file.csv] [--timpa]` → CSV `;` UTF-8 untuk Excel, aman dari formula injection. Default disimpan di folder data CRM (`.../crm/ekspor/`), bukan folder kerja; sebutkan **path lengkap** dari script ke pengguna. Ingatkan: file berisi data pribadi (script memperingatkan bila tujuan ada di dalam repositori git).
 - `cek-duplikat` → nomor sama (hampir pasti orang sama) & nama sama nomor beda (periksa dulu). Gabungkan: `gabung --dari K0007 --ke K0001` (pratinjau → `--ya`).
-- Pindah ke `pengingat-follow-up`: `ekspor --csv prospek.csv --format pengingat` (tanpa nomor HP) → JSON `perintah_pengingat` berisi perintah `tambah` per prospek untuk skill itu.
+- Pindah ke `pengingat-follow-up`: `ekspor --format pengingat [--file-pengingat <DAFTAR.csv>]` (tanpa nomor HP) → JSON `perintah_pengingat` berisi perintah `tambah --file <path lengkap>` per prospek. Konfirmasikan path `file_pengingat` ke pengguna sebelum menjalankannya; jangan jalankan dari folder proyek/repo tanpa `--file`.
 
 ### G. Pengingat otomatis (OpenClaw)
-Ikuti `references/openclaw-jadwal.md`: `hari-ini` tiap pagi (default 08.00 WIB) ke **Telegram pemilik**. Jadwal hanya menjalankan perintah baca (`hari-ini`, `rekap`), tidak pernah menulis atau mengirim ke pelanggan. Tunjukkan ringkasan + "Lanjut? (ya/tidak)" sebelum membuat jadwal. WhatsApp hanya dengan nomor terpisah milik pemilik + persetujuan risiko tertulis. Claude Code/Codex/Cursor: pengguna cukup mengetik "follow-up hari ini" tiap pagi.
+Ikuti `references/openclaw-jadwal.md`: `hari-ini` tiap pagi (default 08.00 WIB) ke **Telegram pemilik**. Jadwal hanya menjalankan perintah baca (`hari-ini`, `rekap`), tidak pernah menulis atau mengirim ke pelanggan. Tunjukkan ringkasan + "Lanjut? (ya/tidak)" sebelum membuat jadwal. WhatsApp hanya dengan nomor terpisah milik pemilik + persetujuan risiko tertulis. Beri tahu pemilik bahwa teks `hari-ini` memuat nama, nomor, tautan, **catatan obrolan terakhir, dan nilai rupiah** yang akan tersimpan di chat Telegram-nya; bila keberatan (atau kontaknya banyak) pakai `hari-ini --samarkan` atau `--tanpa-draf`. Claude Code/Codex/Cursor: pengguna cukup mengetik "follow-up hari ini" tiap pagi.
 
 ### H. Cadangan & hapus data
-Cadangan otomatis sekali sehari saat ada perubahan (30 terakhir disimpan) dan sebelum impor/hapus/gabung/restore, di folder `backup-crm/` sebelah database. Manual: `backup`; daftar: `backup --daftar`; pulihkan: `restore --dari <file>` (pratinjau → `--ya`). `hapus` menghapus kontak + riwayatnya permanen; sampaikan bahwa cadangan lama masih memuat data itu.
+Cadangan otomatis sekali sehari saat ada perubahan (30 terakhir disimpan) dan sebelum impor/hapus/gabung/restore, di folder `backup-crm/` sebelah database. Manual: `backup`; daftar: `backup --daftar`; pulihkan: `restore --dari <file>` (pratinjau → `--ya`) — bisa walau database rusak total; file rusak dipindah ke `backup-crm/rusak-crm-<waktu>.db`, tidak dihapus. Rusak dan belum ada cadangan: `init --mulai-baru` (pratinjau → `--ya`), lalu impor ulang dari ekspor CSV terakhir bila ada. Cadangan harian dibuat **sebelum** perubahan pertama hari itu, jadi perubahan hari itu belum ikut. `hapus` menghapus kontak + riwayatnya permanen; sampaikan bahwa cadangan lama masih memuat data itu.
 
 ## Format output ke pengguna
 - Simpan/ubah: satu-dua baris dari script, mis. `Tersimpan K0001: Bu Rina | 0812-0000-1001 | Baru | sumber Instagram | nilai Rp 450.000 | follow-up Kamis, 24 September 2026` + `Catatan:` bila ada.
@@ -138,7 +142,7 @@ Contoh sesi lengkap: `examples/contoh-sesi-toko-kue.md`.
 ## Batasan & penanganan error
 - Bukan WhatsApp Business API, bukan inbox bersama, bukan alat broadcast. Tidak membaca chat WA otomatis; perkembangan dicatat dari cerita pemilik (atau chat yang ditempel pemilik).
 - Satu database dipakai satu komputer. Jangan buka file yang sama dari dua komputer lewat Google Drive/Dropbox.
-- Database terkunci (mis. jadwal sedang membaca) → script menunggu 15 detik lalu memberi pesan jelas; ulangi perintahnya. Database rusak → script menolak dengan petunjuk `backup --daftar` + `restore`; jangan hapus file database.
+- Database terkunci (mis. jadwal sedang membaca) → script menunggu 15 detik lalu memberi pesan jelas; ulangi perintahnya. Database rusak → script menolak dengan petunjuk `backup --daftar` + `restore` (atau `init --mulai-baru` bila tidak ada cadangan); jangan hapus atau menimpa file database sendiri.
 - Tanggal follow-up tanpa tahun yang baru saja lewat (mis. "20/9" diucapkan 24/9) ditolak: tanyakan maksudnya. Nilai ambigu (`5m`, `1.500 jt`, `4,5` tanpa satuan) ditolak: tanyakan ulang.
 - Tautan wa.me hanya membuka WhatsApp dengan teks terisi; pengiriman tetap oleh manusia. Nomor luar negeri diterima dengan peringatan.
 - Zona waktu mengikuti pengaturan (WIB default), bukan jam komputer/VPS. `info` memperingatkan bila berbeda.

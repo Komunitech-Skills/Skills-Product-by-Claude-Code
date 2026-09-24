@@ -14,9 +14,11 @@ Telegram belum diuji (butuh token bot asli). Jika sebuah opsi ditolak, jalankan 
 - **Tidak ada broadcast** dan tidak ada pesan otomatis ke pelanggan. Jadwal hanya menjalankan perintah **baca**
   (`hari-ini`, `rekap`); tidak pernah `--ya`, `tambah`, `catat`, `terkirim`, `impor`, `hapus`.
 - Tunjukkan perintahnya + "Lanjut? (ya/tidak)" sebelum membuat jadwal.
-- **Privasi:** teks `hari-ini` berisi nama, nomor, dan tautan wa.me pelanggan, dan akan tersimpan di riwayat chat
-  Telegram pemilik. Beri tahu pemilik. Jika keberatan, pakai `--samarkan` (nama jadi inisial, nomor disamarkan, tanpa
-  tautan); tautan tetap bisa diminta langsung ke agent di komputer ("bikinin pesan untuk K0002").
+- **Privasi:** teks `hari-ini` berisi nama, nomor, tautan wa.me, **catatan obrolan terakhir, dan nilai rupiah**
+  pelanggan, dan akan tersimpan di riwayat chat Telegram pemilik. Beri tahu pemilik. Jika keberatan, pakai `--samarkan`
+  (nama jadi inisial, nomor disamarkan, tanpa tautan, tanpa catatan, kebutuhan hanya nama produk); tautan tetap bisa
+  diminta langsung ke agent di komputer ("bikinin pesan untuk K0002"). Usaha dengan banyak kontak: tambahkan
+  `--tanpa-draf` agar pesan tetap pendek. Tiap kelompok dibatasi 20 baris (+ "... dan N lainnya").
 
 ## Syarat
 - Gateway OpenClaw berjalan di komputer yang **sama dengan database CRM** dan **menyala saat jadwal** (laptop/mini PC
@@ -37,7 +39,7 @@ Teks script dikirim apa adanya. Tidak memakai kuota model; hasil selalu sama.
      --command-argv '["python3","/home/NAMA/.openclaw/skills/crm-wa/scripts/crm.py","hari-ini"]' \
      --announce --channel telegram --to <chat-id-telegram-pemilik>
    ```
-   Versi disamarkan: tambahkan `"--samarkan"` setelah `"hari-ini"`.
+   Versi disamarkan: tambahkan `"--samarkan"` setelah `"hari-ini"` (bisa ditambah `"--tanpa-draf"`).
 3. Rekap mingguan tiap Senin 07.30 WIB:
    ```bash
    openclaw automations add --name "Rekap CRM mingguan" --cron "30 7 * * 1" --tz Asia/Jakarta \

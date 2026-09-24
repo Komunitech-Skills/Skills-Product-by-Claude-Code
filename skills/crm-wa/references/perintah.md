@@ -10,7 +10,7 @@ ENV `KOMUNITECH_CRM_TIMEOUT` (detik, default 15).
 
 | Perintah | Kegunaan | Opsi penting |
 |---|---|---|
-| `init` (besar) | Buat database | `--nama-usaha`, `--pengirim`, `--sapaan` (Kak/Bapak/Ibu/`-`), `--zona WIB|WITA|WIT` |
+| `init` (besar) | Buat database | `--nama-usaha`, `--pengirim`, `--sapaan` (Kak/Bapak/Ibu/`-`), `--zona WIB|WITA|WIT`, `--mulai-baru` (database rusak & tanpa cadangan: file rusak dipindah ke `backup-crm/rusak-crm-<waktu>.db`) |
 | `info` | Lokasi, jumlah per tahap, pemeriksaan database, cadangan, beda jam komputer | — |
 | `atur` (tulis) | Ubah pengaturan | `--nama-usaha`, `--pengirim`, `--sapaan`, `--zona` |
 | `tambah` (tulis) | Kontak/lead baru | `--nama` (wajib), `--wa`, `--sumber`, `--label "a, b"`, `--tahap`, `--nilai`, `--kebutuhan`, `--followup`, `--catatan`, `--masuk`, `--sapaan`, `--alasan` (bila batal), `--izinkan-duplikat` |
@@ -21,18 +21,21 @@ ENV `KOMUNITECH_CRM_TIMEOUT` (detik, default 15).
 | `daftar` | Daftar kontak | `--tahap aktif|terbuka|semua|<tahap>` (default aktif = baru s.d. deal), `--label`, `--sumber`, `--cari`, `--urut followup|nilai|nama|terbaru`, `--maks 50`, `--samarkan` |
 | `lihat` | Detail + riwayat + draf berikutnya | `--kontak`, `--maks 20` |
 | `draf` | Draf + tautan wa.me satu kontak | `--kontak`, `--pesan "<teks final>"` (tautan untuk teks yang sudah diperhalus) |
-| `hari-ini` | Pengingat harian + draf | `--maks-draf 10`, `--tanpa-draf`, `--samarkan` |
+| `hari-ini` | Pengingat harian + draf | `--maks-draf 10`, `--tanpa-draf`, `--samarkan`, `--semua` (default maks 20 baris per kelompok terlambat/hari ini/order, 10 untuk besok/belum dijadwalkan) |
 | `rekap` | Rekap pipeline | `--periode`, `--bulan YYYY-MM|ini|lalu`, `--tanggal`, `--dari/--sampai`, `--rumus` |
 | `cek-duplikat` | Nomor sama / nama sama | `--samarkan` |
 | `gabung` (besar) | Gabung dua kontak (riwayat dipindah, kolom kosong diisi) | `--dari`, `--ke` |
 | `hapus` (besar) | Hapus kontak + riwayat permanen | `--kontak` |
-| `impor <file.csv>` (besar) | Impor kontak | `--sumber-default`, `--tahap-default` |
-| `ekspor` | CSV untuk Excel / jembatan pengingat | `--csv` (wajib), `--format lengkap|pengingat`, `--tahap`, `--samarkan`, `--timpa` |
+| `impor <file.csv>` (besar) | Impor kontak | `--sumber-default`, `--tahap-default`, `--sebar N` (jadwalkan N kontak terbuka per hari), `--tanpa-nomor` (izinkan file tanpa kolom nomor) |
+| `ekspor` | CSV untuk Excel / jembatan pengingat | `--ke <file>` (alias `--csv`; default `<folder database>/ekspor/crm-<format>-<waktu>.csv`), `--format lengkap|pengingat`, `--file-pengingat`, `--tahap`, `--samarkan`, `--timpa` |
 | `backup` | Cadangan manual / daftar | `--daftar`, `--label` |
-| `restore` (besar) | Pulihkan dari cadangan | `--dari <file>` |
+| `restore` (besar) | Pulihkan dari cadangan (juga saat database rusak total) | `--dari <file>` |
 
 `--kontak` menerima kode (`K0003`, `3`), nomor WA (format apa pun), atau nama (tanpa huruf besar/kecil;
-"Rina" cocok dengan "Bu Rina"). Lebih dari satu yang cocok → gagal dengan daftar `pilihan`.
+"Rina" cocok dengan "Bu Rina"). Lebih dari satu yang cocok (termasuk kontak batal) → gagal dengan `ambigu: true` dan
+daftar `pilihan` (kode, nama, `akhir_wa` 4 digit, tahap); tidak pernah dipilih diam-diam.
+
+Semua file yang ditulis (database, cadangan, ekspor) disebut dengan **path lengkap** di keluaran.
 
 ## Aturan data
 - **Nomor WA** → `62…` (hanya angka). `08…`, `+62…`, `0062…`, `62 0812…` (0 dibuang), `812…`. 9–12 digit setelah 62.
@@ -58,11 +61,18 @@ ENV `KOMUNITECH_CRM_TIMEOUT` (detik, default 15).
 | baru | – | `sapaan-awal` | tahap → dihubungi, follow-up +2 hari |
 | dihubungi | 0 / 1 / 2 | `follow-up-1` / `pilihan-mudah` / `pamit` | +3 hari / +4 hari / berhenti + saran batal "tidak ada respon" |
 | ditawar | 0 / 1 / 2 | `follow-up-penawaran` / `pilihan-mudah` / `pamit` | sama seperti dihubungi |
-| deal | 0 / ≥1 | `konfirmasi-order` / `pengingat-order` | +2 hari (tidak pernah pamit) |
+| deal | 0 / ≥1 | `konfirmasi-order` / `pengingat-order` | +2 hari (tidak pernah pamit). Masuk deal tanpa `--followup` → jadwal lama diganti +2 hari; tampil di kelompok ORDER BERJALAN, bukan TERLAMBAT |
 | selesai | 0 / ≥1 | `terima-kasih` / `tawaran-ulang` | tanpa jadwal kecuali `--berikutnya` |
 | batal | – | tidak ada | `terkirim` ditolak |
+| (dihubungi/ditawar setelah pamit) | 3 | – | `terkirim` ditolak; tampil sebagai "sudah dikirimi pesan pamit" |
 
-Pindah tahap mengembalikan `fu_ke` ke 0. Draf tidak pernah memuat nilai/harga dan catatan pribadi; sapaan: nama
+Sapaan awal untuk lead yang baru dibalas 1–14 hari setelah masuk diberi "Mohon maaf baru sempat membalas"; kontak baru
+yang masuk > 14 hari lalu (mis. hasil impor) memakai `sapaan-ulang` ("Apa kabar? ..."), bukan "terima kasih sudah
+menghubungi".
+
+Pindah tahap mengembalikan `fu_ke` ke 0. Draf tidak pernah memuat nilai/harga dan catatan pribadi. Dari kolom
+kebutuhan hanya nama produk yang dipakai: teks dipotong di koma/titik koma/kurung/" - ", nominal (Rp…, 450rb, 4,5 jt,
+4.500.000) dan kata harga/nego/diskon/DP beserta sesudahnya dibuang, maks. 8 kata; sapaan: nama
 yang sudah diawali Bu/Pak/Kak/Mas/Mbak/dll. dipakai apa adanya, nama lembaga (PT/CV/Toko/...) → "Bapak/Ibu di …",
 selain itu sapaan default (`Kak`).
 
@@ -80,10 +90,10 @@ selain itu sapaan default (`Kak`).
   < 5 lead → `sampel_kecil: true`.
 
 ## Kontrak JSON `rekap --json` (untuk `laporan-harian-usaha` dan alat lain)
-Stabil selama `skema_json` = 1. Tidak memuat nomor HP atau nama kontak (`data_sensitif: false`).
+Stabil selama `skema_json` = 1. Tidak memuat nomor HP atau nama kontak (lihat catatan `data_sensitif` di bawah).
 ```json
 {
-  "ok": true, "mode": "baca", "aplikasi": "crm-wa", "versi": "1.0.0", "skema_json": 1,
+  "ok": true, "mode": "baca", "aplikasi": "crm-wa", "versi": "1.0.1", "skema_json": 1,
   "zona": "WIB", "hari_ini": "2026-09-24",
   "periode": {"nama": "bulan September 2026", "dari": "2026-09-01", "sampai": "2026-09-30"},
   "posisi": {"baru": {"jumlah": 0, "nilai": 0}, "dihubungi": {}, "ditawar": {}, "deal": {}, "selesai": {}, "batal": {},
@@ -97,19 +107,33 @@ Stabil selama `skema_json` = 1. Tidak memuat nomor HP atau nama kontak (`data_se
               "konversi_persen": 0.0, "konversi_teks": "0,0%"}],
   "sumber_terbaik": null,
   "alasan_batal": [{"alasan": "harga terlalu mahal", "jumlah": 1}],
-  "followup": {"terlambat": 0, "hari_ini": 0, "besok": 0, "belum_dijadwalkan": 0, "nilai_terlambat_dan_hari_ini": 0},
+  "followup": {"terlambat": 0, "hari_ini": 0, "besok": 0, "belum_dijadwalkan": 0, "sudah_pamit": 0,
+               "order_perlu_konfirmasi": 0, "nilai_terlambat_dan_hari_ini": 0},
   "rumus": {}, "teks": "REKAP CRM ...", "data_sensitif": false
 }
 ```
+Catatan v1.0.1: `followup.terlambat`/`hari_ini` hanya prospek & tawaran ulang; deal yang jadwal konfirmasinya tiba
+dihitung di `order_perlu_konfirmasi`. `nilai_terlambat_dan_hari_ini` = nilai prospek terbuka saja. Kunci baru
+(`sudah_pamit`, `order_perlu_konfirmasi`) hanya menambah; kunci lama tetap. `data_sensitif: true` bila ada alasan batal
+yang diketik bebas (bisa memuat nama/cerita); dengan `--samarkan` alasan di luar daftar baku digabung menjadi
+`lainnya` dan `data_sensitif: false`.
 Contoh pemakaian harian: `crm.py rekap --db <snapshot> --tanggal 2026-09-24 --json` (lead masuk & deal hari itu +
 posisi & follow-up saat ini). Mingguan: `--dari 2026-09-14 --sampai 2026-09-20`. Database tidak ada → kode keluar 1
 dengan `belum_ada: true`; rusak → `rusak: true`; terkunci → pesan "sedang dipakai program lain".
 
 ## Kolom CSV
 Impor (judul kolom bebas, dikenali otomatis; urutan bebas; pemisah `;` `,` atau tab; UTF-8/BOM/ANSI):
-`nama` (atau First Name + Last Name), `no wa`/`hp`/`telepon`/`phone`/`Phone 1 - Value`, `sumber`, `tahap`/`status`,
-`nilai`, `kebutuhan`/`produk`, `label`/`tag`, `catatan`, `follow up`, `tgl masuk`, `alasan batal`, `sapaan`.
-Baris bermasalah dan duplikat (terhadap database atau di dalam file) dilewati dan disebut nomor barisnya.
+`nama` (atau First Name + Last Name, lalu Organization Name; awalan `~` dari pengekspor kontak WA dibuang),
+nomor: `no wa`/`hp`/`telepon`/`whatsapp`/`phone`/`mobile`/`ponsel`/`Phone N - Value` (+ `Phone N - Label/Type`), atau
+`Nomor`/`Number`/`No` **hanya bila ≥ 50% isinya nomor telepon** (bukan nomor urut), `sumber`, `tahap`/`status`,
+`nilai`, `kebutuhan`/`produk`, `label`/`tag`/`Labels`/`Group Membership` (dipecah di `,` `;` `:::`; label sistem
+Google seperti `* myContacts` dibuang), `catatan`, `follow up`, `tgl masuk`, `alasan batal`, `sapaan`.
+Beberapa nomor per baris (nilai `a ::: b` atau Phone 1/2): dipakai nomor HP 628… berlabel Mobile/HP dulu, lalu HP
+pertama, lalu nomor valid pertama; nomor lain dicatat di riwayat kontak.
+Baris bermasalah dan duplikat (terhadap database atau di dalam file) dilewati dan disebut **nomor baris fisik** di file
+(baris kosong ikut dihitung). Nama yang berisi nomor telepon (tanda kutip/pemisah rusak) ditolak per baris.
+Tanpa kolom nomor: pratinjau diawali PERHATIAN, `--ya` ditolak kecuali `--tanpa-nomor`.
+Impor tidak menjadwalkan follow-up kecuali dari kolom `follow up` atau `--sebar N`.
 Tanda `'` pelindung dari ekspor dibuang saat impor ulang.
 
 Ekspor `lengkap`: `kode;nama;no_wa;link_wa;sumber;label;tahap;nilai;kebutuhan;followup;alasan_batal;tgl_masuk;tgl_deal;kontak_terakhir`
