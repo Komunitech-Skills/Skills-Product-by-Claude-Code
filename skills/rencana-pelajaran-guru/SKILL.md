@@ -50,7 +50,11 @@ bernomor, sekaligus tawarkan opsi cepat, misalnya:
 3. Berapa pertemuan (boleh dijawab "1 saja" atau "langsung buatkan default 1 pertemuan 2 JP")?
 
 Jika guru ingin cepat ("buatkan saja", "terserah", tidak menjawab detail), pakai default
-di atas dan sebutkan asumsinya di akhir hasil (lihat Format Output).
+di atas dan sebutkan asumsinya di akhir hasil (lihat Format Output). Default JP **selalu**
+2 JP per pertemuan untuk semua mapel & jenjang (jangan menebak alokasi per mapel).
+Jika guru hanya menjawab sebagian pertanyaan, **jangan bertanya lagi**: pakai jawabannya,
+isi sisanya dengan default, dan sebutkan asumsinya — kecuali jenjang/kelas masih kosong
+(itu wajib; tanyakan satu kali itu saja).
 
 ## Langkah kerja
 
@@ -122,15 +126,15 @@ tanpa embel-embel dokumen lain.
 **Output (ringkas — lihat contoh lengkap di `examples/01-modul-ajar-ipa-kelas7-ekosistem.md`):**
 ```
 MODUL AJAR — IPA
-A. Informasi Umum: Fase D, SMP kelas VII, 2 pertemuan × 3 JP (120 menit/pertemuan)...
+A. Informasi Umum: Fase D, SMP kelas VII, 2 pertemuan × 2 JP (80 menit/pertemuan)...
 B. Komponen Inti: CP (cek CP resmi — ringkasan: interaksi makhluk hidup & lingkungan)...
    Tujuan Pembelajaran: 1) Menjelaskan komponen biotik & abiotik ekosistem sawah...
-   Kegiatan: Pertemuan 1 (pembukaan 15’ + inti 90’ + penutup 15’ = 120’, status COCOK)...
+   Kegiatan: Pertemuan 1 (pembukaan 10’ + inti 60’ + penutup 10’ = 80’, status COCOK)...
    Asesmen: diagnostik (kuis lisan 3 pertanyaan), formatif (lembar pengamatan kelompok),
    sumatif (5 soal uraian, lihat lampiran)...
 C. Lampiran: LKPD "Ekosistem Sawah di Sekitar Kita", Soal + Kunci + Rubrik...
 
-Asumsi yang dipakai: 2 pertemuan × 3 JP (default SMP) karena JP tidak disebutkan guru.
+Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan guru — sesuaikan dengan jadwal sekolah.
 ```
 
 ## Checklist sebelum mengirim hasil

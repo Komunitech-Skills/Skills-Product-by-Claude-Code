@@ -3,6 +3,11 @@
 Dijalankan sendiri mengikuti `SKILL.md` (bukan uji independen — lihat `docs/program-beta.md`
 untuk uji lanjutan oleh penguji terpisah).
 
+> **Catatan v1.0.1:** contoh ini dibuat dengan v1.0.0, yang masih menebak 3 JP untuk IPA SMP.
+> Sejak v1.0.1 default selalu **2 JP per pertemuan** (80 menit di SMP) bila guru tidak
+> menyebut JP. Struktur & isi lain tetap berlaku; baca angka menit di bawah sebagai kasus
+> "guru menyebut 3 JP per pertemuan".
+
 ## Input pengguna
 > "buatkan modul ajar IPA kelas 7 tentang ekosistem 2 pertemuan"
 
