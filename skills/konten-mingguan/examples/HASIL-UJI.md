@@ -9,7 +9,7 @@ dan memverifikasi angka/tanggal secara independen, serta uji A/B dan uji banding
 ## 1. Audit keamanan (ringkas)
 - Tidak ada panggilan jaringan (tidak ada `curl`/`requests`/URL eksternal di script atau instruksi).
 - Tidak ada perintah destruktif, tidak ada pembacaan kredensial/SSH key/browser data.
-- Tidak ada `curl | bash`, tidak ada kode ter-obfuscate, hanya `argparse`/`datetime`/`json` standar library.
+- Tidak ada pola unduh-lalu-jalankan (curl dipipakan ke shell), tidak ada kode ter-obfuscate, hanya `argparse`/`datetime`/`json` standar library.
 - Tidak ditemukan prompt injection tersembunyi di SKILL.md/references — instruksi konsisten mengarahkan
   agent menolak automasi login/posting otomatis (sejalan kebijakan pemilik), bukan menyembunyikan
   instruksi berbahaya.
