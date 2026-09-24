@@ -143,8 +143,12 @@ def _timeout():
 
 
 PESAN_TERKUNCI = ("Database CRM sedang dipakai program lain (mis. jadwal OpenClaw atau jendela lain) dan tidak "
-                  "selesai dalam %d detik. Data aman, tidak rusak. Tunggu sebentar lalu ulangi perintah yang sama. "
+                  "selesai dalam %s detik. Data aman, tidak rusak. Tunggu sebentar lalu ulangi perintah yang sama. "
                   "Jangan hapus file database.")
+
+
+def _detik():
+    return ("%.1f" % _timeout()).rstrip("0").rstrip(".").replace(".", ",")
 
 
 def _terkunci(e):
@@ -408,7 +412,9 @@ def parse_nominal(teks):
         if not pisah:
             nilai = Decimal(angka)
         elif sat:
-            m = re.fullmatch(r"(\d+)[.,](\d{1,2})", angka)
+            # dengan satuan: koma = desimal (gaya Indonesia, 1-3 angka: '4,275 jt'); titik hanya 1-2 angka ('2.5jt').
+            # '1.500 jt' ambigu (1,5 juta atau 1.500 juta?) -> ditolak.
+            m = re.fullmatch(r"(\d+),(\d{1,3})", angka) or re.fullmatch(r"(\d+)\.(\d{1,2})", angka)
             if not m:
                 raise Gagal("Nilai '%s' ambigu (mis. '1.500 jt' = 1,5 juta atau 1.500 juta?). Tulis mis. '1,5 jt' "
                             "atau '1500000'." % asli)
@@ -641,7 +647,7 @@ def buka(db, baca_saja=False):
     except sqlite3.OperationalError as e:
         conn.close()
         if _terkunci(e):
-            raise Gagal(PESAN_TERKUNCI % _timeout())
+            raise Gagal(PESAN_TERKUNCI % _detik())
         raise Gagal("File %s bukan database crm-wa (%s). File itu tidak diubah; periksa --db." % (db, e))
     except sqlite3.DatabaseError:
         conn.close()
@@ -687,7 +693,7 @@ def buat_backup(db, label):
         except OSError:
             pass
         if _terkunci(e):
-            raise Gagal(PESAN_TERKUNCI % _timeout())
+            raise Gagal(PESAN_TERKUNCI % _detik())
         raise
     finally:
         dst.close()
@@ -728,7 +734,7 @@ def jalankan_tulis(args, perintah, kerja, besar=False, label_backup=None):
             conn.execute("BEGIN IMMEDIATE")
         except sqlite3.OperationalError as e:
             if _terkunci(e):
-                raise Gagal(PESAN_TERKUNCI % _timeout())
+                raise Gagal(PESAN_TERKUNCI % _detik())
             raise
         try:
             data, teks = kerja(conn, pengaturan(conn))
@@ -752,14 +758,14 @@ def jalankan_tulis(args, perintah, kerja, besar=False, label_backup=None):
     data["db"] = str(db)
     if backup:
         data["backup"] = backup
+    if data["peringatan"]:
+        teks += "\n" + "\n".join("Catatan: " + p for p in data["peringatan"])
     if simpan:
         if besar:
             teks = "TERSIMPAN.\n" + teks + (("\nCadangan sebelum perubahan: " + backup) if backup else "")
     else:
         teks = ("PRATINJAU (belum disimpan):\n" + teks +
                 "\n\nSimpan? Jalankan perintah yang sama + --ya setelah pengguna setuju.")
-    if data["peringatan"]:
-        teks += "\n" + "\n".join("Catatan: " + p for p in data["peringatan"])
     data["teks"] = teks
     return data, teks
 
@@ -922,6 +928,9 @@ def susun_draf(k, cfg):
         return "pengingat-order", (salam + "Mengingatkan kembali soal order %s: apakah detail pembayaran dan "
                                    "pengirimannya sudah bisa dikonfirmasi? Kalau ada kendala, kabari saja supaya "
                                    "kami bantu." % (hal or "kemarin"))
+    if n >= 1:
+        return "tawaran-ulang", (salam + "Semoga %s kemarin memuaskan. Kalau ada rencana pesan lagi, kabari saya ya, "
+                                 "nanti saya bantu siapkan." % (hal or "pesanan"))
     return "terima-kasih", (salam + "Terima kasih sudah mempercayakan %s kepada kami. Semoga cocok dan bermanfaat. "
                             "Kalau berkenan, boleh minta sedikit ulasan atau testimoni? Kalau butuh lagi, chat saja "
                             "nomor ini." % (hal or "kebutuhannya"))
@@ -1024,7 +1033,7 @@ KOLOM_IMPOR = {
     "tgl_masuk": ("tgl masuk", "tanggal masuk", "tgl_masuk", "masuk", "tanggal", "tgl", "created", "tanggal lead"),
     "sapaan": ("sapaan", "panggilan"),
 }
-KOLOM_ABAIKAN = {"kode", "link wa", "link_wa", "tautan", "no_wa_tampil", "tgl deal", "tgl_deal", "kontak terakhir",
+KOLOM_ABAIKAN = {"first name", "given name", "nama depan", "last name", "family name", "nama belakang", "kode", "link wa", "link_wa", "tautan", "no_wa_tampil", "tgl deal", "tgl_deal", "kontak terakhir",
                  "kontak_terakhir", "fu ke", "fu_ke", "tgl batal", "tgl_batal"}
 
 
@@ -1418,6 +1427,10 @@ def cmd_terkirim(args):
             fu = acuan + timedelta(days=2)
         elif k["tahap"] == "selesai":
             fu = None
+        elif k["tahap"] == "deal":
+            fu = acuan + timedelta(days=2)
+            if ke >= MAKS_FU:
+                peringatan.append("Sudah %d kali mengingatkan soal order ini. Pertimbangkan menelepon langsung." % ke)
         elif ke >= MAKS_FU:
             fu = None
             peringatan.append("Sudah %d pesan follow-up tanpa kemajuan (terakhir pesan pamit). Jadwal dihentikan. Jika "
@@ -1568,11 +1581,11 @@ def cmd_draf(args):
 
 # --------------------------------------------------------------------------- hari-ini (pengingat harian)
 def kelompok_followup(rows, acuan):
+    """Terlambat / hari ini / besok: semua kontak non-batal yang punya jadwal (termasuk deal & selesai, mis. tawaran
+    ulang). Belum dijadwalkan: kontak di pipeline terbuka tanpa jadwal."""
     terlambat, hari, besok, tanpa = [], [], [], []
     for r in rows:
-        if r["tahap"] not in TAHAP_PANTAU:
-            if r["followup"] and r["tahap"] == "selesai" and date.fromisoformat(r["followup"]) <= acuan:
-                (hari if date.fromisoformat(r["followup"]) == acuan else terlambat).append(r)
+        if r["tahap"] == "batal":
             continue
         if not r["followup"]:
             if r["tahap"] in TAHAP_TERBUKA:
@@ -1967,7 +1980,8 @@ def cmd_impor(args):
     rows, peringatan_file = baca_csv(args.file)
     header, isi = rows[0], rows[1:]
     peta, abaikan = petakan_kolom(header)
-    if "nama" not in peta:
+    kunci_h = [_kunci_kolom(h) for h in header]
+    if "nama" not in peta and not {"first name", "given name", "nama depan"} & set(kunci_h):
         raise Gagal("Kolom nama tidak ditemukan. Header file: %s. Beri judul kolom 'nama' (dan 'no wa', 'sumber', "
                     "'tahap', 'nilai', 'kebutuhan', 'label' bila ada). Contoh: templates/kontak-contoh.csv." %
                     ", ".join(header))
@@ -1977,9 +1991,17 @@ def cmd_impor(args):
     sumber_def, _ = norm_sumber(args.sumber_default) if args.sumber_default else ("Tidak diketahui", False)
     tahap_def = norm_tahap(args.tahap_default) if args.tahap_default else "baru"
 
+    kunci = [_kunci_kolom(h) for h in header]
+    i_depan = next((i for i, k in enumerate(kunci) if k in ("first name", "given name", "nama depan")), None)
+    i_belakang = next((i for i, k in enumerate(kunci) if k in ("last name", "family name", "nama belakang")), None)
+
     def ambil_sel(r, kol):
         i = peta.get(kol)
-        return buang_pelindung(r[i]).strip() if i is not None and i < len(r) else ""
+        nilai = buang_pelindung(r[i]).strip() if i is not None and i < len(r) else ""
+        if kol == "nama" and not nilai:
+            nilai = " ".join(buang_pelindung(r[j]).strip() for j in (i_depan, i_belakang)
+                             if j is not None and j < len(r) and r[j].strip())
+        return nilai
 
     def kerja(conn, cfg):
         ada_wa = {r["wa"]: r for r in conn.execute("SELECT id, nama, wa, tahap FROM kontak WHERE wa IS NOT NULL")}
@@ -2040,7 +2062,8 @@ def cmd_impor(args):
         if sumber_baru:
             peringatan.append("Sumber di luar daftar baku disimpan apa adanya: %s." % ", ".join(sorted(sumber_baru)))
         if abaikan:
-            peringatan.append("Kolom diabaikan: %s." % ", ".join(abaikan))
+            peringatan.append("Kolom diabaikan: %s%s." % (", ".join(abaikan[:8]), (" dan %d lainnya" % (len(abaikan) - 8))
+                                                           if len(abaikan) > 8 else ""))
         t = ["Impor %s: %d baris dibaca." % (Path(args.file).name, len(isi)),
              "Kolom dikenali: %s" % ", ".join("%s <- '%s'" % (k, header[i]) for k, i in peta.items()),
              "Kontak baru: %d | Duplikat dilewati: %d | Baris bermasalah dilewati: %d" % (len(masuk), len(dup),
@@ -2135,7 +2158,7 @@ def cmd_restore(args):
         raise Gagal("File cadangan %s juga bermasalah (%s). Pilih cadangan lain." % (src.name, cek))
     if not args.ya:
         t = ("PRATINJAU (belum disimpan):\nDatabase %s akan diganti dengan cadangan %s (%d kontak). Database saat ini "
-             "dicadangkan dulu bila masih bisa dibaca.\n\nLanjut? Jalankan perintah yang sama + --ya setelah pengguna "
+             "disalin dulu apa adanya ke folder backup-crm.\n\nLanjut? Jalankan perintah yang sama + --ya setelah pengguna "
              "setuju." % (db, src.name, n))
         return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "teks": t}, t
     bk = None
@@ -2338,7 +2361,7 @@ def main(argv=None):
         out.update(e.detail)
         return cetak(args, out, e.pesan, 1)
     except sqlite3.OperationalError as e:
-        pesan = (PESAN_TERKUNCI % _timeout()) if _terkunci(e) else \
+        pesan = (PESAN_TERKUNCI % _detik()) if _terkunci(e) else \
             "Kesalahan database: %s. Jangan hapus file database; ulangi, atau pulihkan dari cadangan." % e
         return cetak(args, {"ok": False, "error": pesan}, pesan, 1)
     except sqlite3.DatabaseError as e:
