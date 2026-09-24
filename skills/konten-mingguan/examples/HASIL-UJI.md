@@ -148,3 +148,6 @@ merombak skill, jadi tidak menurunkan skor ke bawah 7.
 **Ya** — semua perhitungan tanggal/ISO week/momen di `scripts/nomor_minggu.py` diverifikasi ulang
 manual memakai `datetime.isocalendar()` Python terpisah (lihat §2), termasuk kasus tepi tahun (ISO week
 53), tahun kabisat, dan berbagai input rusak/format alternatif. Tidak ditemukan selisih.
+
+## Catatan koordinator — v1.0.1
+Cacat SEDANG (LinkedIn/X, larangan before-after & testimoni pasien tanpa izin) dan RINGAN (jam Story, docstring --tandai-skb, field yang tidak boleh didefault, tolak follower/engagement palsu) diperbaiki pembuat; tes nomor_minggu lulus. Status tetap lulus.
