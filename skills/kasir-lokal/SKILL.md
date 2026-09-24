@@ -1,6 +1,6 @@
 ---
 name: kasir-lokal
-description: Aplikasi kasir (POS) UMKM satu outlet yang jalan di komputer pemilik (SQLite lokal, tanpa langganan, tanpa internet) dan dioperasikan agent lewat chat - catat penjualan dari kalimat biasa ("2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb"), diskon per item/nota, bayar tunai/QRIS/transfer/campuran (hanya dicatat), kembalian, retur/void beralasan, struk HTML 58/80 mm, buka/tutup kasir + selisih kas, rekap harian/bulanan siap Telegram + CSV, opsi PPN 12% DPP 11/12 dan omzet untuk PPh final. Gunakan saat pengguna minta "catat penjualan", "kasir toko saya", "cetak struk", "tutup kasir", "rekap kasir hari ini", atau cashier, point of sale, receipt. Pengganti fitur dasar Moka/Majoo/Olsera.
+description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite lokal, tanpa langganan/internet), dioperasikan lewat chat: catat penjualan dari kalimat biasa, diskon item/nota, bayar tunai/QRIS/transfer (hanya dicatat), kembalian, retur/void beralasan, struk 58/80 mm, buka/tutup kasir + selisih kas, rekap harian/bulanan ke Telegram + CSV, opsi PPN 12% DPP 11/12. Gunakan untuk "catat penjualan", "cetak struk", "tutup kasir", "rekap kasir", cashier, point of sale, receipt.
 ---
 
 # Kasir Lokal (POS satu outlet)

@@ -62,7 +62,13 @@ def parse_angka_id(teks):
         s = s.replace(".", "").replace(",", ".")
     elif "," in s:
         s = s.replace(",", ".")
-    # kalau cuma titik: biarkan apa adanya (dipakai sebagai desimal standar)
+    elif "." in s:
+        bagian = s.split(".")
+        # lebih dari satu titik (mis. "1.500.000"), atau satu titik dengan tepat 3 digit
+        # di belakangnya (mis. "1.500") -> pola pemisah ribuan gaya Indonesia, hapus semua titik.
+        # Titik dengan 1-2 digit di belakang (mis. "15.5") tetap dianggap desimal standar.
+        if len(bagian) > 2 or len(bagian[-1]) == 3:
+            s = s.replace(".", "")
     return float(s)
 
 
