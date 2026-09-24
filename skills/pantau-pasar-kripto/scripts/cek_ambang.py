@@ -639,6 +639,15 @@ def susun_pesan_singkat(daftar_hasil, sekarang, peringatan_global):
         for p in h["peringatan"]:
             baris.append(f"  ⚠️ {p}")
 
+        # R (ringan): kalau member mengisi harga_acuan sendiri, AMBANG dievaluasi terhadap
+        # persen_vs_acuan (bukan perubahan 24 jam) -- tampilkan juga angka ini secara
+        # eksplisit, supaya member tidak salah kira ambang dinilai dari 24 jam terakhir.
+        if h.get("persen_vs_acuan") is not None:
+            baris.append(
+                f"  (vs harga acuan Anda {formatter_untuk(h['mata_uang'])(h['harga_acuan'])}: "
+                f"{format_persen(h['persen_vs_acuan'])})"
+            )
+
         # S2-1: setiap jenis ambang yang SEDANG terlewati ditampilkan, dengan tanda
         # terpisah untuk yang BARU (perlu dilaporkan sekarang) vs yang masih diredam --
         # bukan cuma dibungkus jadi satu status per koin seperti sebelumnya.

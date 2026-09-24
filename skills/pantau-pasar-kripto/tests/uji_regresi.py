@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
-"""Uji regresi pantau-pasar-kripto v1.0.1 -- SEPENUHNYA OFFLINE (tanpa jaringan).
+"""Uji regresi pantau-pasar-kripto v1.0.2 -- SEPENUHNYA OFFLINE (tanpa jaringan sungguhan;
+kegagalan jaringan/timeout DIUJI lewat `unittest.mock` pada `urllib.request.urlopen`, tidak
+pernah menghubungi internet sungguhan).
 
 Jalankan: python3 tests/uji_regresi.py
 (atau: python3 -m unittest tests/uji_regresi.py -v)
 
-cek_ambang.py hanya diuji lewat mode --harga-file (tidak pernah memanggil fungsi yang
-melakukan permintaan jaringan sungguhan). hitung_pl_jurnal.py diuji lewat file CSV
-sementara. Mencakup temuan uji independen v1.0.0 (lihat examples/HASIL-UJI.md): B-1
-(wrapper cek_dan_lapor.py), S-1..S-6, R-1..R-6.
+cek_ambang.py hanya diuji lewat mode --harga-file atau mock urlopen (tidak pernah memanggil
+jaringan sungguhan). hitung_pl_jurnal.py diuji lewat file CSV sementara. Mencakup temuan uji
+independen v1.0.0 (lihat examples/HASIL-UJI.md): B-1 (wrapper cek_dan_lapor.py), S-1..S-6,
+R-1..R-6, dan uji ulang v1.0.1: S2-1, S2-2, S2-3.
 """
 
+import datetime as dt
 import json
 import os
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPTS_DIR = os.path.join(SKILL_DIR, "scripts")
@@ -282,11 +286,17 @@ class UjiProsesCekAmbangViaCLI(unittest.TestCase):
             "--konfigurasi", self.cfg_path, "--state", self.state_path, "--harga-file", self.harga_path,
             "--usia-basi-jam", "6",
         ])
-        self.assertEqual(kode, 0, err)
+        # S2-2 (dulu cacat sedang): cache basi (>6 jam) & ambang % tak bisa dicek dulu exit 0
+        # (didiamkan selamanya). Sekarang ini kondisi "pemantauan buta" yang PERLU dilaporkan
+        # (baru terjadi) -> exit 3, dengan anti-spam yang sama seperti ambang harga.
+        self.assertEqual(kode, 3, err)
         data = json.loads(out)
         self.assertEqual(data["koin"][0]["status"], "cache")
         self.assertTrue(any("DATA BASI" in p for p in data["koin"][0]["peringatan"]))
         self.assertTrue(any("lebih tua dari batas" in p for p in data["koin"][0]["peringatan"]))
+        self.assertTrue(data["koin"][0]["pemantauan_bermasalah"])
+        self.assertTrue(data["koin"][0]["perlu_lapor_pemantauan"])
+        self.assertTrue(data["ada_pemantauan_bermasalah"])
         # S-1: pesan_singkat wajib memuat sumber & jam data
         self.assertIn("sumber:", data["pesan_singkat"])
         self.assertIn("data jam", data["pesan_singkat"])
@@ -369,6 +379,10 @@ class UjiProsesCekAmbangViaCLI(unittest.TestCase):
         self.assertEqual(kode, 2, err)
         data = json.loads(out)
         self.assertAlmostEqual(data["koin"][0]["persen_vs_acuan"], -17.24137931034483, places=4)
+        # R (ringan, uji ulang v1.0.1): persen_vs_acuan (dasar ambang sesungguhnya) wajib
+        # tampil eksplisit di pesan_singkat, bukan cuma perubahan 24 jam yang beda angka.
+        self.assertIn("vs harga acuan Anda Rp 1.450.000.000", data["pesan_singkat"])
+        self.assertIn("-17,24%", data["pesan_singkat"])
 
     def test_41_mode_keluaran_teks_singkat(self):
         tulis_json(self.cfg_path, {"koin": [
@@ -787,6 +801,278 @@ class UjiJurnalPL(unittest.TestCase):
             "--jurnal", self.csv_path, "--dari", "2026-09-01", "--sampai", "2026-01-01",
         ])
         self.assertEqual(kode, 1)
+
+
+# ---------------------------------------------------------------------------
+# S2-1 (uji ulang v1.0.1): anti-spam PER JENIS AMBANG, bukan per koin -- ambang lain yang
+# baru terlewati di koin yang sama tidak boleh ikut diredam, dan yang sudah dilaporkan
+# tidak boleh dilaporkan ganda.
+# ---------------------------------------------------------------------------
+
+class UjiS2_1AntiSpamPerAmbang(unittest.TestCase):
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji_s2_1_")
+        self.cfg_path = os.path.join(self.tmp, "konfigurasi.json")
+        self.state_path = os.path.join(self.tmp, "state.json")
+        self.harga_path = os.path.join(self.tmp, "harga.json")
+        tulis_json(self.state_path, {})
+        tulis_json(self.cfg_path, {"koin": [
+            {"kode": "BTC", "coingecko_id": "bitcoin", "mata_uang": "idr",
+             "ambang_turun_persen": 5, "ambang_harga_di_bawah": 1450000000},
+        ]})
+
+    def _jalankan(self, harga, perubahan):
+        tulis_json(self.harga_path, {"bitcoin_idr_coingecko": {
+            "harga": harga, "perubahan_24jam_persen": perubahan,
+            "jam_data": "2026-09-24T07:00:00+07:00", "sumber": "coingecko"}})
+        return jalankan_cek_ambang([
+            "--konfigurasi", self.cfg_path, "--state", self.state_path, "--harga-file", self.harga_path,
+        ])
+
+    def _detail(self, data, penanda):
+        for d in data["koin"][0]["detail_pemicu"]:
+            if penanda in d["teks"]:
+                return d
+        self.fail(f"detail_pemicu tidak memuat '{penanda}': {data['koin'][0]['detail_pemicu']}")
+
+    def test_76_ambang_baru_di_koin_sama_tidak_ikut_diredam(self):
+        # Giliran 1: harga turun 5,5% (ambang_turun_persen terlewati), MASIH di atas ambang
+        # harga bawah (Rp 1.450.000.000) -> hanya 'turun' yang aktif & baru -> exit 2.
+        kode1, out1, err1 = self._jalankan(1512000000, -5.5)
+        self.assertEqual(kode1, 2, err1)
+        data1 = json.loads(out1)
+        self.assertTrue(self._detail(data1, "Turun")["perlu_lapor"])
+
+        # Giliran 2 (waktu sama/segera, MASIH dalam jeda 6 jam default): harga turun lagi ke
+        # Rp 1.392.000.000 -- 'turun' MASIH terlewati (harus diredam, sudah dilaporkan),
+        # TAPI ambang harga bawah (Rp 1.450.000.000) BARU terlewati sekarang -- reproduksi
+        # bug S2-1: dulu keduanya berbagi satu kunci notifikasi per KOIN, jadi ambang bawah
+        # ini ikut diredam (NO_REPLY) padahal baru terjadi.
+        kode2, out2, err2 = self._jalankan(1392000000, -13.0)
+        self.assertEqual(kode2, 2, err2)  # HARUS tetap melapor (ambang baru), bukan exit 0
+        data2 = json.loads(out2)
+        turun2 = self._detail(data2, "Turun")
+        bawah2 = self._detail(data2, "ambang bawah")
+        self.assertFalse(turun2["perlu_lapor"])  # sudah dilaporkan -- diredam (bukan ganda)
+        self.assertTrue(bawah2["perlu_lapor"])   # ambang BARU -- tetap lapor
+
+    def test_77_tidak_ada_notifikasi_ganda_saat_kondisi_tidak_berubah(self):
+        kode1, _, _ = self._jalankan(1512000000, -5.5)
+        self.assertEqual(kode1, 2)
+        kode2, out2, _ = self._jalankan(1392000000, -13.0)
+        self.assertEqual(kode2, 2)
+        # Giliran 3: kondisi identik dengan giliran 2 (tidak berubah) -- KEDUA ambang sudah
+        # pernah dilaporkan -> tidak boleh ada notifikasi ganda sama sekali -> exit 0.
+        kode3, out3, err3 = self._jalankan(1392000000, -13.0)
+        self.assertEqual(kode3, 0, err3)
+        data3 = json.loads(out3)
+        self.assertTrue(data3["koin"][0]["ambang_terlewati"])
+        self.assertFalse(data3["koin"][0]["perlu_lapor"])
+
+
+# ---------------------------------------------------------------------------
+# S2-2 (uji ulang v1.0.1): "pemantauan buta" (gagal total / cache basi / ambang % tak bisa
+# dicek) sekarang wajib dilaporkan (dengan anti-spam), bukan didiamkan selamanya (cache/tak
+# bisa dicek) ataupun dilaporkan tiap kali tanpa jeda (gagal total).
+# ---------------------------------------------------------------------------
+
+class UjiS2_2PemantauanButa(unittest.TestCase):
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji_s2_2_")
+        self.cfg_path = os.path.join(self.tmp, "konfigurasi.json")
+        self.state_path = os.path.join(self.tmp, "state.json")
+        self.harga_gagal = os.path.join(self.tmp, "gagal.json")
+        self.harga_hidup = os.path.join(self.tmp, "hidup.json")
+        tulis_json(self.state_path, {})
+        tulis_json(self.cfg_path, {"koin": [
+            {"kode": "SOL", "coingecko_id": "solana", "mata_uang": "usd", "ambang_turun_persen": 10},
+        ]})
+        tulis_json(self.harga_gagal, {})  # SOL tidak ada -> simulasi sumber gagal
+        tulis_json(self.harga_hidup, {"solana_usd_coingecko": {
+            "harga": 150.0, "perubahan_24jam_persen": -2.0,
+            "jam_data": "2026-09-24T07:00:00+07:00", "sumber": "coingecko"}})
+
+    def _cek(self, harga_file):
+        return jalankan_cek_ambang([
+            "--konfigurasi", self.cfg_path, "--state", self.state_path, "--harga-file", harga_file,
+        ])
+
+    def test_78_gagal_total_dilaporkan_sekali_lalu_diredam_bukan_tiap_kali(self):
+        # Giliran 1: gagal total, tanpa cache -- BARU terjadi -> exit 3.
+        kode1, out1, err1 = self._cek(self.harga_gagal)
+        self.assertEqual(kode1, 3, err1)
+        data1 = json.loads(out1)
+        self.assertTrue(data1["koin"][0]["perlu_lapor_pemantauan"])
+
+        # Giliran 2, MASIH gagal total, waktu sama/segera (dalam jeda) -- dulu (S2-2) SELALU
+        # dilaporkan lagi tanpa jeda ("dilaporkan setiap kali"). Sekarang harus diredam.
+        kode2, out2, err2 = self._cek(self.harga_gagal)
+        self.assertEqual(kode2, 0, err2)
+        data2 = json.loads(out2)
+        self.assertTrue(data2["koin"][0]["pemantauan_bermasalah"])   # fakta tetap true
+        self.assertFalse(data2["koin"][0]["perlu_lapor_pemantauan"])  # tapi diredam
+
+    def test_79_pulih_dari_gagal_total_dilaporkan_sekali(self):
+        kode1, _, _ = self._cek(self.harga_gagal)
+        self.assertEqual(kode1, 3)
+        # Sumber kembali normal -- dulu (S2-2) tidak ada notifikasi "pulih" sama sekali.
+        kode2, out2, err2 = self._cek(self.harga_hidup)
+        self.assertEqual(kode2, 3, err2)  # tetap dilaporkan (kabar pulih), bukan exit 0 diam-diam
+        data2 = json.loads(out2)
+        self.assertFalse(data2["koin"][0]["pemantauan_bermasalah"])
+        self.assertTrue(data2["koin"][0]["pemantauan_pulih"])
+        self.assertIn("PEMANTAUAN PULIH", data2["pesan_singkat"])
+
+    def test_80_cache_basi_tanpa_dasar_persen_dilaporkan_bukan_didiamkan(self):
+        # Isi cache dulu (giliran hidup), lalu simulasikan sumber gagal terus-menerus --
+        # cache dipakai, TANPA perubahan_24jam_persen (S2-2: ambang % jadi "tidak bisa
+        # dicek" setiap kali fallback ke cache) -- dulu ini exit 0 SELAMANYA (didiamkan).
+        kode0, _, _ = self._cek(self.harga_hidup)
+        self.assertEqual(kode0, 0)  # -2% tidak melewati ambang turun 10%, pemantauan sehat
+        kode1, out1, err1 = self._cek(self.harga_gagal)
+        self.assertEqual(kode1, 3, err1)  # BARU jadi buta (cache tanpa dasar %) -> lapor
+        data1 = json.loads(out1)
+        self.assertEqual(data1["koin"][0]["status"], "cache")
+        self.assertTrue(any("tidak ada dasar pembanding" in t
+                             for t in data1["koin"][0]["ambang_tidak_bisa_dicek"]))
+        self.assertTrue(data1["koin"][0]["perlu_lapor_pemantauan"])
+        # Giliran berikutnya, masih sama -- diredam (bukan didiamkan selamanya sejak awal,
+        # tapi juga bukan dilaporkan tiap kali).
+        kode2, _, _ = self._cek(self.harga_gagal)
+        self.assertEqual(kode2, 0)
+
+
+# ---------------------------------------------------------------------------
+# Jaringan gagal / timeout / respons API rusak -- lewat mock `urlopen`, TANPA jaringan
+# sungguhan (lihat larangan di docstring atas file ini).
+# ---------------------------------------------------------------------------
+
+class UjiJaringanDanResponsRusak(unittest.TestCase):
+
+    def test_81_ambil_url_json_timeout_mencoba_ulang_lalu_gagal(self):
+        panggilan = {"n": 0}
+
+        def urlopen_timeout(req, timeout=None):
+            panggilan["n"] += 1
+            raise TimeoutError("simulasi timeout jaringan")
+
+        with mock.patch("cek_ambang.urllib.request.urlopen", side_effect=urlopen_timeout), \
+             mock.patch("cek_ambang.time.sleep", return_value=None):
+            with self.assertRaises(RuntimeError):
+                cek_ambang._ambil_url_json("https://api.coingecko.com/x", timeout=1, percobaan=3)
+        self.assertEqual(panggilan["n"], 3)  # mencoba ulang sesuai --percobaan, bukan cuma 1x
+
+    def test_82_ambil_url_json_gagal_koneksi_lalu_berhasil_di_percobaan_kedua(self):
+        import urllib.error
+        panggilan = {"n": 0}
+
+        class RespPalsu:
+            def __enter__(self_inner):
+                return self_inner
+
+            def __exit__(self_inner, *a):
+                return False
+
+            def read(self_inner):
+                return b'{"ok": true}'
+
+        def urlopen_kadang_gagal(req, timeout=None):
+            panggilan["n"] += 1
+            if panggilan["n"] == 1:
+                raise urllib.error.URLError("simulasi jaringan putus")
+            return RespPalsu()
+
+        with mock.patch("cek_ambang.urllib.request.urlopen", side_effect=urlopen_kadang_gagal), \
+             mock.patch("cek_ambang.time.sleep", return_value=None):
+            hasil = cek_ambang._ambil_url_json("https://api.coingecko.com/x", timeout=1, percobaan=2)
+        self.assertEqual(hasil, {"ok": True})
+        self.assertEqual(panggilan["n"], 2)
+
+    def test_83_batch_coingecko_gagal_total_karena_timeout_S2_2(self):
+        with mock.patch("cek_ambang.urllib.request.urlopen", side_effect=TimeoutError("timeout")), \
+             mock.patch("cek_ambang.time.sleep", return_value=None):
+            with self.assertRaises(RuntimeError):
+                cek_ambang.ambil_batch_coingecko(["bitcoin"], ["idr"], timeout=1, percobaan=2)
+
+    def test_84_respons_coingecko_rusak_tanpa_field_mata_uang_diminta(self):
+        # Respons "berhasil" tapi tidak memuat mata uang yang diminta (mis. API berubah
+        # format/rusak sebagian) -- harus dianggap gagal, BUKAN dipakai apa adanya.
+        batch_rusak = {"bitcoin": {"usd": 90000}}  # 'idr' diminta, tapi tidak ada
+        with self.assertRaises(RuntimeError):
+            cek_ambang._bentuk_hasil_dari_batch_coingecko(batch_rusak, "bitcoin", "idr")
+
+    def test_85_respons_coingecko_rusak_koin_tidak_ada_sama_sekali(self):
+        batch_rusak = {"ethereum": {"idr": 47000000}}  # 'bitcoin' yang diminta tidak ada
+        with self.assertRaises(RuntimeError):
+            cek_ambang._bentuk_hasil_dari_batch_coingecko(batch_rusak, "bitcoin", "idr")
+
+    def test_86_respons_indodax_rusak_tanpa_ticker(self):
+        with mock.patch("cek_ambang._ambil_url_json", return_value={"bukan_ticker": {}}):
+            with self.assertRaises(RuntimeError):
+                cek_ambang.ambil_harga_indodax("btcidr", timeout=1, percobaan=1)
+
+
+# ---------------------------------------------------------------------------
+# Zona waktu (WIB tetap, konversi UTC<->WIB) -- dipakai di banyak tempat (jam_data,
+# usia_jam, anti-spam per jeda_ulang_jam) sehingga salah zona waktu bisa membuat data
+# dianggap basi/segar keliru atau anti-spam salah hitung jeda.
+# ---------------------------------------------------------------------------
+
+class UjiZonaWaktu(unittest.TestCase):
+
+    def test_87_jam_dari_unix_dikonversi_ke_wib_utc_plus_7(self):
+        ts = 1790209410  # unix timestamp sungguhan (lihat references/sumber-data.md)
+        hasil = cek_ambang._jam_dari_unix(ts)
+        parsed = cek_ambang.parse_waktu(hasil)
+        self.assertEqual(parsed.utcoffset(), dt.timedelta(hours=7))
+        utc_asli = dt.datetime.fromtimestamp(ts, tz=dt.timezone.utc)
+        self.assertEqual(parsed.astimezone(dt.timezone.utc), utc_asli)
+
+    def test_88_usia_jam_lintas_zona_waktu_utc_vs_wib_tidak_keliru(self):
+        # jam_data ditulis dalam UTC (+00:00, mis. dari sumber lain/upgrade format), sekarang
+        # dihitung dalam WIB (+07:00) -- usia_jam harus memakai selisih waktu absolut, bukan
+        # menganggap kedua angka jam dalam zona yang sama (yang akan keliru 7 jam).
+        sekarang = cek_ambang.datetime(2026, 9, 24, 14, 0, tzinfo=cek_ambang.WIB)  # = 07:00 UTC
+        jam_data_utc = "2026-09-24T05:00:00+00:00"  # = 12:00 WIB -> selisih sungguhan 2 jam
+        usia = cek_ambang.usia_jam(jam_data_utc, sekarang)
+        self.assertAlmostEqual(usia, 2.0, places=4)
+
+    def test_89_usia_jam_data_tanpa_zona_diasumsikan_wib(self):
+        sekarang = cek_ambang.datetime(2026, 9, 24, 10, 0, tzinfo=cek_ambang.WIB)
+        jam_data_naif = "2026-09-24T07:00:00"  # tanpa offset -- diasumsikan WIB (lihat usia_jam)
+        usia = cek_ambang.usia_jam(jam_data_naif, sekarang)
+        self.assertAlmostEqual(usia, 3.0, places=4)
+
+
+# ---------------------------------------------------------------------------
+# S2-3 (uji ulang v1.0.1): dokumentasi jadwal OpenClaw wajib memakai --command-argv sebagai
+# pola utama (bukan --command lewat sh -lc yang rawan kontaminasi profil login), dan tidak
+# boleh lagi memuat kontradiksi status T/S untuk --command-argv.
+# ---------------------------------------------------------------------------
+
+class UjiDokumentasiOpenclawJadwal(unittest.TestCase):
+
+    def setUp(self):
+        path = os.path.join(SKILL_DIR, "references", "openclaw-jadwal.md")
+        with open(path, encoding="utf-8") as f:
+            self.teks = f.read()
+        self.bagian_pola_1 = self.teks.split("## 1. Pola UTAMA")[1].split("\n## 2.")[0]
+
+    def test_90_pola_utama_pakai_command_argv_bukan_command_shell(self):
+        blok_pertama = self.bagian_pola_1.split("```bash")[1].split("```")[0]
+        self.assertIn("--command-argv", blok_pertama)
+        self.assertNotIn('--command "cd', blok_pertama)
+
+    def test_91_tidak_ada_lagi_klaim_kontradiktif_command_argv_belum_dicoba(self):
+        # Dulu (S2-3): satu paragraf menandai --command-argv "T" di daftar opsi, tapi
+        # paragraf lain bilang "belum dicoba" untuk kombinasi yang sama.
+        self.assertNotIn("belum dicoba", self.bagian_pola_1)
+
+    def test_92_menyebut_risiko_sh_lc_dan_kontaminasi_profil_login(self):
+        self.assertIn("sh -lc", self.teks)
+        self.assertTrue("nvm" in self.teks or "profil login" in self.teks)
 
 
 if __name__ == "__main__":
