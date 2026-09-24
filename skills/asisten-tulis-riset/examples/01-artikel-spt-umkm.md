@@ -1,3 +1,16 @@
+# Skenario 01 — Artikel blog SEO: cara UMKM lapor SPT tahunan (konsultan pajak)
+
+**Skenario:** artikel blog SEO ±1000 kata untuk website konsultan pajak, topik "cara UMKM lapor SPT
+tahunan 2026", wajib sumber resmi DJP.
+
+**Input pengguna (persis):** "Tulis artikel blog SEO buat website konsultan pajak saya, judulnya seputar
+cara UMKM lapor SPT tahunan 2026, sekitar 1000 kata, sumbernya harus resmi dari DJP."
+
+**Output (mengikuti SKILL.md — riset web sungguhan dilakukan, semua sumber dibuka & dicocokkan
+isinya; lihat verifikasi sitasi di `HASIL-UJI.md`):**
+
+---
+
 # Cara UMKM Lapor SPT Tahunan 2026 lewat Coretax: Panduan Praktis
 
 *Bingung lapor SPT Tahunan UMKM lewat Coretax DJP? Ini langkah-langkah resminya, batas waktu, dan sanksi
@@ -74,3 +87,14 @@ selalu cek pengumuman resmi di pajak.go.id sebelum bertindak.*
 [2] Pelaku UMKM Bisa Curi Start Lapor SPT, Simak Tata Caranya!. Direktorat Jenderal Pajak. 28 Januari 2026. https://www.pajak.go.id/en/node/119105 . Diakses 24 September 2026.
 [3] Mengapa Harus Lapor Pajak Walau Terlambat?. Direktorat Jenderal Pajak. 5 April 2024. https://www.pajak.go.id/en/node/106827 . Diakses 24 September 2026.
 </content>
+
+
+---
+
+**Catatan penguji:** Ketiga sumber ([1][2][3]) adalah halaman resmi pajak.go.id, semua **benar-benar
+dibuka lewat web fetch** dan isinya dicocokkan manual dengan klaim di draf (lihat tabel verifikasi di
+`HASIL-UJI.md`) — 100% akurat, tidak ada angka/klaim karangan. Draf mengikuti struktur SEO (judul,
+meta description, H2, ringkasan langkah) sesuai §6 SKILL.md. Kekurangan: draf tidak menyertakan meta
+description terpisah eksplisit berlabel "Meta description" (hanya italic pembuka) — sebaiknya diberi
+label jelas supaya pembeli awam langsung tahu mana yang harus ditempel ke field SEO. `cek_sitasi.py`
+lulus tanpa error (lihat `HASIL-UJI.md`).
