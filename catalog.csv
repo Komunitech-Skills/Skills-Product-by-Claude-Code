@@ -45,4 +45,4 @@ riset-calon-pelanggan,Sales,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulas
 pengingat-follow-up,Produktivitas,orisinal,,Proprietary Komunitech,6,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),uji,2026-09-24
 ringkas-grup-wa,Produktivitas,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.0,,draft,2026-09-24
 absensi-lokal,HR,orisinal,,Proprietary Komunitech,,ecer,149000,,,1.0.0,,draft,2026-09-24
-laporan-status-kantor,Produktivitas,kurasi,https://github.com/anthropics/skills/tree/main/skills/internal-comms,Apache-2.0,,ecer,49000,,,1.0.0,,draft,2026-09-24
+laporan-status-kantor,Produktivitas,kurasi,https://github.com/anthropics/skills/tree/main/skills/internal-comms,Apache-2.0,8,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24

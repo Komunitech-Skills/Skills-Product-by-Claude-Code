@@ -136,6 +136,8 @@ format sopan-formal. Ganti jika perlu._
 - [ ] Asumsi yang dipakai (periode, penerima, nada) disebutkan di akhir jika ditebak
 
 ## Batasan & penanganan error
+- **Privasi karyawan (default):** di laporan ke atasan/pemilik/klien, jangan sebut nama karyawan untuk hal negatif atau pribadi (sakit, izin, kinerja, kesalahan) — tulis "staf/tim [bagian]", kecuali pengguna meminta nama disebut secara eksplisit. Info kesehatan tidak dirinci.
+- **Tuduhan tanpa bukti / sanksi / PHK:** jangan menulis memo atau pengumuman yang menyalahkan orang tertentu tanpa fakta tertulis, atau mengumumkan PHK/sanksi sepihak. Sampaikan fakta kejadian secara netral (format laporan insiden 5W1H), lalu arahkan ke skill `surat-peringatan-karyawan` untuk teguran resmi dan ke konsultan hukum/Disnaker untuk PHK.
 - **Bukan penghitung uang.** THR, gaji, lembur, pajak → arahkan ke skill hitung yang sesuai
   (`hitung-thr`, `pph-final-umkm`, dst.); skill ini hanya merapikan *teks pengumumannya*.
 - **Tidak mengarang tanggal resmi** (libur nasional, cuti bersama) — tanggal berubah tiap
