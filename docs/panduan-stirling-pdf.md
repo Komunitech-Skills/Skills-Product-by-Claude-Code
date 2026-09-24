@@ -11,14 +11,25 @@ agar bisa dipakai skill **PDF Lokal** (`pdf-lokal`).
 > keamanan, dan penyalaan otomatis setiap komputer dihidupkan. Hubungi admin
 > komunitech.com.
 
-**Status panduan (24 September 2026):** Komunitech menjalankan langsung **Stirling-PDF
-v2.14.3 lewat Docker** (jalur "self-hosted" resmi, image `ghcr.io/stirling-tools/
-stirling-pdf`) untuk menguji seluruh perintah skill `pdf-lokal` - semua berhasil.
+**Status panduan (v1.0.1, direvisi 24 September 2026 setelah uji independen):** Komunitech
+menjalankan langsung **Stirling-PDF v2.14.3 DAN v3.0.0 lewat Docker** (jalur
+"self-hosted" resmi, image `ghcr.io/stirling-tools/stirling-pdf`, keduanya ditarik dari
+registry resmi) untuk menguji seluruh perintah skill `pdf-lokal` - **semua berhasil di
+kedua versi**, nama endpoint & parameter yang dipakai skill ini identik di keduanya.
 **Aplikasi desktop resmi (.exe/.dmg/.deb) BELUM dicoba klik langsung oleh Komunitech**
 (lingkungan pembuatan skill ini tidak bisa menjalankan aplikasi jendela/GUI); langkah
 di bawah untuk aplikasi desktop disusun dari dokumentasi resmi docs.stirlingpdf.com
 (diakses 2026-09-24). Bila tampilan di komputer Anda berbeda, ikuti tulisan di layar
 dan hubungi kami.
+
+> **Revisi penting (v1.0.1):** uji independen menemukan perintah Docker di versi
+> sebelumnya panduan ini **tidak menyalakan `SECURITY_ENABLELOGIN=false`**, sehingga
+> server berjalan (bisa dibuka di browser, `cek` versi berhasil) TAPI **menolak semua
+> operasi PDF sungguhan** (gabung, kompres, dst. → error 401). Perintah di bagian 3.2
+> di bawah **sudah diperbaiki & diuji ulang** sampai benar-benar berhasil menggabung/
+> mengompres file nyata, bukan cuma "server menyala". `pdf.py cek` juga sudah
+> diperbaiki: sekarang ia mencoba 1 operasi PDF nyata, bukan cuma menanyakan status,
+> supaya tidak melapor "siap pakai" secara keliru seperti temuan uji tsb.
 
 **Temuan penting dari dokumentasi resmi yang perlu Anda tahu SEBELUM memilih jalur
 pemasangan:** aplikasi desktop dalam mode bawaan ("Local-only") **tidak menyertakan
