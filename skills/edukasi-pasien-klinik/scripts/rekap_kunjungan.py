@@ -485,18 +485,35 @@ def _persen(bagian: int, total: int) -> float:
     return float(nilai.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
 
 
-def _baris_bergeser(row: dict) -> bool:
-    """True bila jumlah kolom baris ini TIDAK COCOK dengan header — mis.
-    ekspor CSV dengan koma tanpa tanda kutip yang menggeser semua nilai
-    satu kolom ke kanan/kiri. `csv.DictReader` menaruh nilai kolom lebih
-    di bawah kunci `None` (list) bila baris kepanjangan, dan mengisi
-    `None` untuk kolom yang hilang bila baris kependekan — dua kondisi
-    itulah yang dicek di sini. Baris begini TIDAK BOLEH ditebak kolomnya;
+def _baris_bergeser(row: dict, header: list) -> bool:
+    """True bila jumlah kolom baris ini TIDAK COCOK dengan header dengan
+    cara yang BERISI DATA (bukan sekadar pemisah kosong di ujung baris) —
+    mis. ekspor CSV dengan koma tanpa tanda kutip yang menggeser semua
+    nilai satu kolom ke kanan/kiri. `csv.DictReader` menaruh nilai kolom
+    lebih di bawah kunci `None` (list) bila baris kepanjangan, dan mengisi
+    `None` untuk kolom yang hilang bila baris kependekan.
+
+    Dua pengecualian (S5, ditemukan penguji independen di v1.0.3) supaya
+    file dengan pemisah di ujung SETIAP baris (mis. ';' penutup yang tidak
+    ada di header) tidak salah dianggap "bergeser" padahal datanya utuh:
+    - Kolom lebih (`None`): bila SEMUA nilai ekstra itu string kosong,
+      ini cuma pemisah penutup tanpa isi — bukan pergeseran.
+    - Kolom kurang: bila HANYA kolom TERAKHIR di header yang bernilai
+      `None` (satu kolom saja, di ujung), ini biasanya kolom kosong yang
+      pemisah penutupnya dihilangkan saat ekspor — bukan pergeseran.
+    Baris yang tetap dianggap bergeser TIDAK BOLEH ditebak kolomnya;
     dikeluarkan dari rincian per hari/poli/penjamin/status (lihat B2-sisa
     butir 3), hanya dihitung di total pendaftaran dengan peringatan."""
-    if None in row:
-        return True
-    return any(v is None for v in row.values())
+    kelebihan = row.get(None)
+    if kelebihan is not None:
+        if not all((v or "").strip() == "" for v in kelebihan):
+            return True
+    kolom_kurang = [k for k in header if row.get(k) is None]
+    if not kolom_kurang:
+        return False
+    if len(kolom_kurang) == 1 and header and kolom_kurang[0] == header[-1]:
+        return False
+    return True
 
 
 def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict:
@@ -528,23 +545,38 @@ def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict
     # dideteksi dulu, supaya baris itu (a) tidak ikut jadi bukti format
     # tanggal, dan (b) dikeluarkan dari rincian per hari/poli/penjamin/status.
     indeks_bergeser = [
-        i for i, row in enumerate(baris, start=2) if _baris_bergeser(row)
+        i for i, row in enumerate(baris, start=2) if _baris_bergeser(row, header)
     ]
     set_bergeser = set(indeks_bergeser)
     peringatan_bergeser = None
     if indeks_bergeser:
-        contoh_b = ", ".join(str(i) for i in indeks_bergeser[:8])
-        lebih_b = (
-            "" if len(indeks_bergeser) <= 8 else f" (+{len(indeks_bergeser) - 8} baris lain)"
-        )
-        peringatan_bergeser = (
-            f"{len(indeks_bergeser)} baris jumlah kolomnya tidak cocok dengan header "
-            "(kemungkinan ada koma tanpa tanda kutip di salah satu nilai, sehingga semua "
-            "nilai di baris itu bergeser kolom) — baris bernomor "
-            f"{contoh_b}{lebih_b}. Baris ini TETAP dihitung di total pendaftaran, tapi "
-            "DIKELUARKAN dari rincian per hari/poli/penjamin/status karena script tidak "
-            "bisa menebak kolom mana yang benar. Mohon cek & perbaiki file aslinya."
-        )
+        if len(indeks_bergeser) > 0.5 * len(baris):
+            # S5: mayoritas baris "bergeser" biasanya berarti masalah
+            # STRUKTUR (pemisah kolom salah, atau setiap baris punya
+            # pemisah tambahan di ujung) — bukan beberapa baris rusak
+            # satu-satu. Pesan diarahkan ke perbaikan struktur, bukan
+            # daftar nomor baris yang bisa mencapai ratusan.
+            peringatan_bergeser = (
+                "Struktur header dan baris tidak cocok — periksa pemisah kolom/ekspor CSV-nya "
+                f"({len(indeks_bergeser)} dari {len(baris)} baris tidak cocok header, jauh lebih "
+                "dari beberapa baris rusak). Kemungkinan pemisah kolomnya salah (mis. file ';' "
+                "dibaca sebagai ',', atau sebaliknya), atau setiap baris punya pemisah tambahan "
+                "di ujung yang tidak ada di baris header. Perbaiki file aslinya lalu jalankan "
+                "ulang — rekap ini TIDAK bisa diandalkan sampai itu diperbaiki."
+            )
+        else:
+            contoh_b = ", ".join(str(i) for i in indeks_bergeser[:8])
+            lebih_b = (
+                "" if len(indeks_bergeser) <= 8 else f" (+{len(indeks_bergeser) - 8} baris lain)"
+            )
+            peringatan_bergeser = (
+                f"{len(indeks_bergeser)} baris jumlah kolomnya tidak cocok dengan header "
+                "(kemungkinan ada koma tanpa tanda kutip di salah satu nilai, sehingga semua "
+                "nilai di baris itu bergeser kolom) — baris bernomor "
+                f"{contoh_b}{lebih_b}. Baris ini TETAP dihitung di total pendaftaran, tapi "
+                "DIKELUARKAN dari rincian per hari/poli/penjamin/status karena script tidak "
+                "bisa menebak kolom mana yang benar. Mohon cek & perbaiki file aslinya."
+            )
 
     # --- tentukan urutan tanggal SEKALI untuk seluruh file (B1b, R12) ---
     peringatan_tanggal = None
@@ -751,14 +783,25 @@ def format_teks(hasil: dict) -> str:
     if hasil.get("peringatan_format_tanggal"):
         baris.append(f"⚠️  {hasil['peringatan_format_tanggal']}")
 
+    tidak_ada_baris_terbaca = hasil.get("total_dapat_dibaca") == 0
+    if tidak_ada_baris_terbaca:
+        baris.append(
+            "⚠️  Tidak ada baris yang bisa dibaca dari file ini (semua baris bermasalah "
+            "strukturnya — lihat peringatan di atas). Rekap TIDAK berisi data yang bisa "
+            "diandalkan; perbaiki file aslinya dulu sebelum dipakai."
+        )
+
     nilai_disembunyikan = hasil.get("nilai_disembunyikan") or {}
 
     if hasil["hadir"] is not None:
         baris.append("")
-        baris.append(
-            f"Hadir: {hasil['hadir']} ({hasil['persentase_hadir']}%) — "
-            f"Tidak datang: {hasil['tidak_datang']} ({hasil['persentase_tidak_datang']}%)"
-        )
+        if tidak_ada_baris_terbaca:
+            baris.append("(tidak ada baris yang bisa dibaca untuk dihitung status kehadirannya)")
+        else:
+            baris.append(
+                f"Hadir: {hasil['hadir']} ({hasil['persentase_hadir']}%) — "
+                f"Tidak datang: {hasil['tidak_datang']} ({hasil['persentase_tidak_datang']}%)"
+            )
         if hasil["status_tidak_dikenal_jumlah"]:
             baris.append(
                 f"⚠️  Status TIDAK DIKENAL (bukan hadir, bukan tidak-datang — belum "

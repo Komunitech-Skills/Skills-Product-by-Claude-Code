@@ -30,13 +30,26 @@ formulir kosong.
 
 ## 5. Status legal di Indonesia
 Lihat `references/regulasi.md` untuk dasar hukum yang sudah diverifikasi (per tanggal di
-file itu). Poin yang perlu dicek per proyek:
-- Apakah koin ini ada di **Daftar Aset Keuangan Digital** yang ditetapkan Bursa (CFX) di
-  bawah pengawasan OJK (POJK 27/2024 Pasal 9)? Kalau tidak bisa dipastikan saat riset,
-  tulis "perlu dicek ke ojk.go.id / PAKD berizin", jangan menebak status legalnya.
+file itu, DIKOREKSI setelah uji independen menemukan beberapa kesalahan di draf pertama).
+Poin yang perlu dicek per proyek:
+- Ada **DUA** bursa aset keuangan digital di Indonesia, masing-masing dengan Daftar Aset
+  Keuangan Digital (DAKD) SENDIRI: **CFX (PT Central Finansial X)** dan **ICEX (PT Fortuna
+  Integritas Mandiri)**. Koin ini perlu dicek di **kedua** daftar itu, bukan cuma satu --
+  status "tidak ada di DAKD CFX" TIDAK berarti "tidak ada di DAKD manapun".
+- **PAKD = Pedagang Aset Keuangan Digital** (exchange berizin OJK yang menjual/
+  memfasilitasi jual-beli aset kripto) -- istilah ini BUKAN "Penyelenggara Perdagangan"
+  (istilah payung yang juga mencakup bursa, lembaga kliring, dan kustodian). Pakai istilah
+  yang tepat saat menulis hasil riset.
+- Cara cek konkret: buka daftar aset resmi di situs bursa (mis. cfx.co.id -> halaman
+  Daftar Aset Kripto) atau ICEX, atau tanya langsung ke PAKD berizin yang dipakai member.
+  Kalau tidak bisa diakses/dipastikan saat riset, tulis **"perlu dicek ke ojk.go.id / DAKD
+  bursa berizin"**, jangan menebak status legalnya. **Jangan mengutip nomor pasal spesifik**
+  kecuali sudah diverifikasi ulang dari teks resmi peraturan (lihat catatan di
+  `references/regulasi.md` §2).
 - Apakah proyek ini menawarkan skema investasi (mis. *staking* dengan imbal hasil tetap,
   program referral berjenjang) yang berpotensi masuk kategori investasi ilegal/skema
   Ponzi di luar cakupan aset kripto biasa? Ini butuh kehati-hatian ekstra (lihat §6).
+  Dugaan skema ilegal bisa dilaporkan member ke OJK (kontak 157) atau Satgas PASTI.
 
 ## 6. Perhatian (tanda skema penipuan/pump -- edukasi netral, BUKAN sinyal jual)
 Tandai kalau ditemukan (jelaskan sebagai fakta yang perlu diketahui, tanpa menyimpulkan

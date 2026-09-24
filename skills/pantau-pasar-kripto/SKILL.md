@@ -140,6 +140,13 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    web, katakan itu jujur: *"Ringkasan berita tidak bisa dibuat -- agent ini tidak punya
    akses pencarian web saat ini. Harga & ambang tetap di bawah."* -- jangan menulis
    ringkasan berita dari ingatan tanpa tautan.
+   **Jangan pernah meneruskan target harga, level support/resistance, prediksi angka, atau
+   rekomendasi analis dari isi artikel** (berita kripto sering memuat ini, mis. "resistance
+   US$120-130") -- itu sama saja memberi sinyal trading lewat jalur belakang, melanggar
+   Batas Tegas #1. Ringkas hanya **peristiwa yang sudah terjadi** (rilis, regulasi,
+   kemitraan, listing/delisting, dst.); kalau sebuah artikel memuat proyeksi/target harga,
+   cukup tulis **"artikel ini juga memuat proyeksi analis -- tidak ditampilkan di sini"**
+   tanpa mengutip angkanya.
 3. Kalender peristiwa (listing/delisting bursa lokal, jadwal rilis regulasi OJK, dst.)
    **hanya** ditulis kalau ditemukan lewat pencarian dengan sumber jelas. Kalau tidak
    ditemukan, jangan ditulis sama sekali (jangan mengarang "kemungkinan ada rilis X").

@@ -4,7 +4,9 @@
 
 ## Manfaat
 - ✅ **Notifikasi ambang otomatis** -- dikabari hanya kalau harga naik/turun sesuai batas
-  yang ANDA tentukan sendiri, bukan dipantau manual tiap saat.
+  yang ANDA tentukan sendiri, bukan dipantau manual tiap saat. Tidak spam: sekali sudah
+  dikabari, notifikasi yang sama diredam sampai beberapa jam atau sampai kondisinya
+  berubah dulu.
 - ✅ **Ringkasan pagi siap baca** -- harga, perubahan 24 jam, dan berita bertautan sumber,
   langsung ke Telegram/WhatsApp Anda.
 - ✅ **Checklist riset proyek (DYOR)** -- fakta bersumber (tim, tokenomics, audit, status
@@ -62,6 +64,13 @@ Karena itu bukan tugas skill informasi. Rekomendasi investasi butuh izin & tangg
 yang tidak bisa diberikan oleh AI generik, dan kesalahan sinyal = kerugian uang nyata.
 Skill ini fokus pada yang bisa dipastikan: data harga dengan sumber jelas, checklist fakta
 riset, dan hitungan P/L dari angka yang Anda catat sendiri.
+
+**Notifikasi otomatisnya jalan di semua komputer?**
+Sudah terbukti jalan di macOS/Linux (diuji langsung terhadap OpenClaw). Untuk Windows,
+langkah pembuatan jadwalnya sedikit berbeda dan belum diuji di komputer Windows
+sungguhan -- kalau Anda memakai Windows, agent akan menjelaskan status ini dan mengujinya
+bersama Anda dulu sebelum jadwal diaktifkan. Semua jadwal juga butuh komputer/server yang
+menyala saat jam jadwalnya (dijelaskan detail saat setup).
 
 **Sumber harganya dari mana, dan bagaimana kalau datanya gagal diambil?**
 CoinGecko (`simple/price`, publik tanpa API key) dan Indodax (`ticker`, publik tanpa API
