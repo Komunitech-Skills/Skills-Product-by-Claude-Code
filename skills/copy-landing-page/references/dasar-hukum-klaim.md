@@ -5,8 +5,8 @@
 ## 1. Larangan iklan/klaim menyesatkan — UU No. 8 Tahun 1999 tentang Perlindungan Konsumen
 
 - **Pasal 8, 9, 10** melarang pelaku usaha memproduksi/menawarkan barang-jasa dengan pernyataan yang tidak benar atau menyesatkan mengenai kondisi, manfaat, jaminan, harga, atau kemampuan produk.
-- **Pasal 17 ayat (1) huruf b** melarang iklan yang memuat informasi tidak benar, tidak tepat, atau tidak jujur tentang barang/jasa yang diiklankan.
-- **Pasal 17 ayat (1) huruf c** melarang iklan yang informasinya tentang risiko pemakaian tidak lengkap.
+- **Pasal 17 ayat (1) huruf c** melarang iklan yang memuat informasi yang keliru, salah, atau tidak tepat mengenai barang/jasa.
+- **Pasal 17 ayat (1) huruf d** melarang iklan yang tidak memuat informasi mengenai risiko pemakaian barang/jasa.
 - Sifat "menyesatkan" dinilai **objektif** — dari sudut pandang kesan yang ditimbulkan ke konsumen rata-rata, bukan dari niat penjual.
 
 **Dampak untuk skill ini:** jangan menulis klaim manfaat/harga/jaminan yang tidak bisa dibuktikan pengguna, dan jangan menyembunyikan syarat penting (mis. syarat garansi, area pengiriman yang terbatas).
@@ -16,7 +16,7 @@ Sumber: [peraturan.go.id — UU No. 8 Tahun 1999](https://peraturan.go.id/id/uu-
 ## 2. Klaim kesehatan, kosmetik, dan pangan olahan — BPOM
 
 - **Peraturan BPOM No. 18 Tahun 2024** tentang Penandaan, Promosi, dan Iklan Kosmetik (diundangkan 28 November 2024): kosmetik hanya boleh dipromosikan/diiklankan setelah memiliki **izin edar/notifikasi BPOM**, dan informasi pada promosi/iklan wajib objektif, lengkap, dan tidak menyesatkan.
-- **Peraturan BPOM No. 27 Tahun 2025** (berlaku 27 Mei 2026) mencakup obat, obat bahan alam–suplemen kesehatan–obat kuasi–kosmetik, serta pangan olahan — termasuk ketentuan izin edar dan **persetujuan iklan**.
+- **Peraturan BPOM No. 27 Tahun 2025** (sudah berlaku per 2026-09-24; tanggal mulai berlaku belum terkonfirmasi dari sumber primer — satu ringkasan BPOM menyebut 27 Mei 2026, sumber lain menyebut 3 Okt 2025; **perlu dicek ke jdih.pom.go.id sebelum rilis**) mencakup obat, obat bahan alam–suplemen kesehatan–obat kuasi–kosmetik, serta pangan olahan — termasuk ketentuan izin edar dan **persetujuan iklan**.
 - Produk yang belum punya izin edar/notifikasi BPOM tidak boleh diklaim punya khasiat kesehatan tertentu ("menyembuhkan", "menghilangkan penyakit", "aman untuk kondisi medis tertentu", dll.).
 
 **Dampak untuk skill ini:** untuk produk makanan/minuman/kosmetik/suplemen/obat, jangan menuliskan klaim kesehatan/khasiat spesifik kecuali pengguna memastikan sudah punya izin edar BPOM yang sesuai dengan klaim tersebut. Kalau ragu, ganti dengan manfaat umum yang tidak menyerempet klaim medis (mis. "renyah dan gurih", bukan "membantu menurunkan kolesterol").
