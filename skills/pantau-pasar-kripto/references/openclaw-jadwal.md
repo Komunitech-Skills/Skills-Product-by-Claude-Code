@@ -68,13 +68,22 @@ Opsi yang dipakai (T = dicoba sungguhan di Gateway uji untuk skill ini):
 - `--session isolated`, `--announce`, `--channel telegram`, `--to <chat-id>` -- sama seperti
   pola `laporan-otomatis-terjadwal` (T di skill itu, dipakai ulang di sini).
 
-## 2. Varian trigger JavaScript (S->T terbatas, lebih hemat lagi -- OPSIONAL)
+## 2. Varian trigger JavaScript (T -- diverifikasi ULANG sendiri, bukan cuma mengutip penguji)
 
 Kalau ingin job **tidak berjalan sama sekali** saat tenang (bukan berjalan lalu mencetak
 `NO_REPLY`), OpenClaw mendukung trigger dalam kode JavaScript. Bentuk berikut **terbukti
-menyala (`fire: true`) hanya saat ambang terlewati, dan tidak menyala saat data tenang**,
-diuji langsung terhadap Gateway uji (lihat `/tmp/uji-kripto-oc/trig2.js` &
-`/tmp/uji-kripto-oc/trig3.js` pada sesi uji independen):
+menyala (`fire: true`) hanya saat ambang terlewati, dan tidak menyala saat data tenang** --
+awalnya ditemukan penguji independen (`/tmp/uji-kripto-oc/trig2.js` & `trig3.js`), dan
+**diverifikasi ULANG secara independen** di sesi revisi ini (Gateway `--dev` sendiri, port
+terpisah, `--every 30s` selama >60 detik): job dengan data tenang tercatat **0 run**
+(`automations runs <id>` -> `"total": 0`), job dengan data ambang terlewati tercatat
+**1 run** dengan `"triggerFired": true`. Catatan dari verifikasi ulang: `completionStatus`
+run itu tercatat `"failed"` BUKAN karena trigger/command-nya gagal (command tetap
+`"exitCode": 0` & `triggerFired: true`), melainkan karena kanal pengiriman belum
+dikonfigurasi di lingkungan uji (`deliveryError: "Channel is required..."`) -- di lingkungan
+member yang kanalnya sudah aktif, ini semestinya tidak muncul; tetap perhatikan
+`deliveryStatus`/`deliveryError` di `automations runs` saat menguji bersama member, jangan
+cuma `triggerFired`.
 
 ```js
 const res = await exec({
