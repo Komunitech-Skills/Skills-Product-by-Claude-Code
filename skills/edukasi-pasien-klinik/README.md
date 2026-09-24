@@ -39,7 +39,12 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
   DICEK** karena belum diverifikasi dari naskah resmi — lihat
   `references/aturan-privasi-dan-iklan.md` sebelum dipakai untuk keperluan legal/kontrak.
 - Rekap kunjungan butuh file CSV berkolom tanggal (dan idealnya poli/penjamin/status); kolom
-  nama/NIK/diagnosis otomatis diabaikan, bukan dihapus dari file aslimu.
+  nama/NIK/diagnosis otomatis diabaikan, bukan dihapus dari file aslimu. Nilai kategori yang
+  jarang muncul (di bawah 3 baris) atau berpola nama/inisial/email/kode diagnosis tidak pernah
+  dicetak, hanya digabung jadi angka. **Isi kolom "poli/layanan" sebaiknya nama layanan saja**
+  (mis. "Gigi", "KIA") — bila klinik memasukkan nama diagnosis/penyakit ke kolom itu dan
+  diagnosis itu berulang di banyak baris, rekap akan menampilkan **jumlah per diagnosis**
+  (agregat, bukan identitas pasien), yang bisa jadi bukan yang kamu maksudkan.
 
 ## Instalasi singkat
 Salin folder `edukasi-pasien-klinik` ke folder skills AI agent kamu:

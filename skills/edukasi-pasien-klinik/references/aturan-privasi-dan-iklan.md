@@ -98,9 +98,10 @@ Kemenkes: https://kms.kemkes.go.id/contents/1715917225382-bukuperaturaniklanpubl
   kutipan pasal yang persis.
 - **Pasal 5** — iklan/publikasi TIDAK DIPERBOLEHKAN bila, antara lain (dikutip sedekat mungkin
   dengan rumusan naskah, bukan diperluas/dipersempit): (b) tidak benar atau menyesatkan; (c)
-  menciptakan pengharapan yang tidak tepat; (d) **"membandingkan mutu pelayanan fasilitas
-  pelayanan kesehatan lain"** (naskah hanya menyebut fasyankes lain, bukan tenaga kesehatan
-  lain); (e) memuji diri berlebihan (superlatif) atau mengklaim "satu-satunya"; (f)
+  menciptakan pengharapan yang tidak tepat; (d) parafrase (bukan kutipan persis naskah):
+  melarang membandingkan mutu pelayanan dengan fasilitas pelayanan kesehatan lain (naskah hanya
+  menyebut fasyankes lain, bukan tenaga kesehatan lain — kata-kata persisnya belum dicek ulang
+  di sesi ini); (e) memuji diri berlebihan (superlatif) atau mengklaim "satu-satunya"; (f)
   mempromosikan metode/obat yang belum terbukti secara ilmiah; (h) mengiklankan layanan tanpa
   izin resmi; (l) **"memberi informasi kepada masyarakat dengan cara yang bersifat mendorong
   penggunaan jasa tenaga kesehatan di fasilitas pelayanan kesehatan tersebut"** (naskah tidak

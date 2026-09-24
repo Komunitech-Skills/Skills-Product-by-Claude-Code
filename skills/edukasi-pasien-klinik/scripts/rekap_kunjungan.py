@@ -8,7 +8,7 @@ medis dan BUKAN alat skrining/diagnosis — hanya rekap jumlah untuk laporan
 operasional (lihat CLAUDE.md Komunitech & keputusan pemilik jalur 3, bidang
 kesehatan: tanpa skrining/diagnosis/kalkulator medis).
 
-Prinsip keandalan & privasi (v1.0.2, setelah dua ronde uji independen):
+Prinsip keandalan & privasi (v1.0.3, setelah tiga ronde uji independen):
 - Status kehadiran diklasifikasikan dari daftar kata kunci "hadir" dan
   "tidak datang". Status yang TIDAK cocok dengan salah satu daftar
   DILAPORKAN sebagai "tidak dikenal" — tidak pernah diam-diam dihitung
@@ -24,13 +24,23 @@ Prinsip keandalan & privasi (v1.0.2, setelah dua ronde uji independen):
   eksplisit oleh script ini, bukan ditebak oleh agent.
 - SATU fungsi penyaring (`_nilai_aman_ditampilkan`, dipakai lewat
   `_pisah_aman_dan_sembunyikan`) menentukan nilai kategori apa (status,
-  poli, penjamin) yang aman dicetak ulang. Nilai yang tidak lolos (banyak
-  kata, mengandung digit, pola sapaan+nama, atau kolom punya kelewat
-  banyak nilai unik) TIDAK PERNAH dicetak — hanya digabung jadi angka
-  agregat "N baris, K nilai berbeda disembunyikan". Ini mencegah kolom
-  yang sebenarnya berisi teks bebas (nama, no. HP, diagnosis) bocor lewat
-  bagian "rincian"/"nilai mencurigakan" walau nama kolomnya lolos deteksi
-  kolom sensitif.
+  poli, penjamin) yang aman dicetak ulang. Nilai yang tidak lolos TIDAK
+  PERNAH dicetak — hanya digabung jadi angka agregat "N baris, K nilai
+  berbeda disembunyikan". Syarat lolos (SEMUA harus benar): muncul di
+  ≥ `MIN_FREKUENSI_TAMPIL` baris (k-anonimitas sederhana — nilai yang
+  cuma muncul 1-2 kali kemungkinan besar salah isi/data satu pasien,
+  bukan kategori asli), maksimal 3 kata, tanpa digit, tanpa "@", bukan
+  pola inisial ("S.A."), bukan pola kode ICD ("J06"/"K02.1"), bukan pola
+  sapaan+nama ("Bu Ani"), dan kolom belum melewati `MAKS_NILAI_UNIK_TAMPIL`
+  nilai unik yang sudah ditampilkan. Ini mencegah kolom yang sebenarnya
+  berisi teks bebas (nama, no. HP, diagnosis, inisial, email) bocor lewat
+  bagian "rincian" walau nama kolomnya lolos deteksi kolom sensitif.
+- Baris yang jumlah kolomnya TIDAK COCOK dengan header (mis. ekspor CSV
+  dengan koma tanpa tanda kutip yang menggeser semua nilai satu kolom)
+  DIKELUARKAN dari rincian per hari/poli/penjamin/status (supaya angka
+  tidak salah diam-diam), tapi tetap dihitung di total pendaftaran dengan
+  peringatan eksplisit — script tidak pernah menebak kolom mana yang benar
+  untuk baris yang bergeser.
 
 Hanya memakai library standar Python (3.8+). Lintas OS (Windows/macOS/Linux).
 
@@ -114,9 +124,25 @@ POLA_SAPAAN_NAMA = re.compile(
     r"\b(bu|pak|ibu|bapak|sdr|sdri|tn|ny|nyonya|tuan|mr|mrs|ms)\.?\s+[a-z]+",
     re.IGNORECASE,
 )
+# Pola inisial (mis. "S.A.", "S. A.", "A.B.C.") — 1-4 huruf bertitik.
+POLA_INISIAL = re.compile(r"^([A-Za-z]\.\s?){1,4}$")
+# Pola kode diagnosis ICD-10 (mis. "J06", "K02.1") — huruf + 2 digit +
+# opsional titik-desimal. Sudah tertangkap juga oleh aturan "tanpa digit",
+# tapi dicek eksplisit sesuai permintaan uji, dan dijaga tetap benar bila
+# aturan digit lain berubah di masa depan.
+POLA_ICD = re.compile(r"^[A-Za-z]\d{2}(\.\d+)?$")
 # Jumlah maksimum nilai unik yang boleh dicetak individual per kolom
 # kategori (status/poli/penjamin) — sisanya digabung jadi agregat.
 MAKS_NILAI_UNIK_TAMPIL = 20
+# B2-sisa (k-anonimitas sederhana): nilai kategori hanya dicetak individual
+# bila muncul di sekurang-kurangnya sekian baris. Nilai yang muncul 1-2
+# kali kemungkinan besar salah isi atau data satu pasien saja (mis. nama,
+# inisial, email yang nyasar ke kolom status/poli/penjamin), bukan
+# kategori asli — kategori asli klinik (mis. "Reschedule", "Rujuk")
+# biasanya muncul berulang. Bisa diatur (mis. via impor modul untuk
+# klinik dengan volume data sangat kecil), tapi default aman untuk
+# ekspor harian/mingguan klinik.
+MIN_FREKUENSI_TAMPIL = 3
 
 BULAN = {
     "jan": 1, "januari": 1, "january": 1,
@@ -203,7 +229,7 @@ def _pisah_tanggal_jam(teks: str):
     return teks, None
 
 
-def deteksi_urutan(teks_tanggal_list):
+def deteksi_urutan(teks_tanggal_list, indeks_diabaikan=None):
     """Tentukan urutan tanggal angka ('dmy'/Indonesia atau 'mdy'/AS) untuk
     SATU FILE dari bukti tak ambigu (angka > 12 hanya mungkin di posisi
     hari). Mengembalikan (urutan_mayoritas, jumlah_bukti_dmy,
@@ -212,12 +238,17 @@ def deteksi_urutan(teks_tanggal_list):
     (ambigu maupun tidak), dipakai untuk mendeteksi file yang SAMA SEKALI
     tidak punya bukti (R12). `baris_bertentangan` berisi index (1-based,
     termasuk header) baris yang bukti lokalnya berlawanan dengan urutan
-    mayoritas.
+    mayoritas. `indeks_diabaikan` (opsional, set index 1-based termasuk
+    header) melewati baris yang bergeser kolomnya (lihat B2-sisa butir 3)
+    supaya tidak ikut jadi "bukti" format tanggal yang sebenarnya rusak.
     """
+    indeks_diabaikan = indeks_diabaikan or set()
     bukti_dmy = []   # list index baris
     bukti_mdy = []
     total_pola_angka = 0
     for i, teks in enumerate(teks_tanggal_list, start=2):  # baris data dimulai setelah header
+        if i in indeks_diabaikan:
+            continue
         bagian_tanggal, _ = _pisah_tanggal_jam((teks or "").strip())
         m = POLA_ANGKA_3.match(bagian_tanggal)
         if not m:
@@ -316,36 +347,54 @@ def klasifikasi_status(nilai_asli: str) -> str:
 
 def _nilai_aman_ditampilkan(nilai: str) -> bool:
     """True bila SATU nilai kategori (status/poli/penjamin) aman dicetak
-    ulang apa adanya: tanpa digit, maksimal 3 kata, dan tidak cocok pola
-    sapaan+nama ("Bu Ani", "Pak Budi", dst). Dipakai untuk SEMUA jalur
-    output lewat `_pisah_aman_dan_sembunyikan` — satu fungsi, satu aturan,
-    supaya tidak ada jalur yang lupa menyaring (lihat B2)."""
+    ulang apa adanya berdasarkan POLANYA SAJA (belum menghitung syarat
+    frekuensi — itu ada di `_pisah_aman_dan_sembunyikan`): tanpa digit,
+    tanpa "@", maksimal 3 kata, dan tidak cocok pola inisial ("S.A."),
+    kode ICD ("J06"), atau sapaan+nama ("Bu Ani", "Pak Budi"). Dipakai
+    untuk SEMUA jalur output lewat `_pisah_aman_dan_sembunyikan` — satu
+    fungsi, satu aturan, supaya tidak ada jalur yang lupa menyaring
+    (lihat B2)."""
     n = (nilai or "").strip()
     if not n:
         return True  # nilai kosong direpresentasikan terpisah ("(kosong)"/"(tidak diisi)"), aman
+    if "@" in n:
+        return False
     if re.search(r"\d", n):
         return False
     if len(n.split()) > 3:
+        return False
+    if POLA_INISIAL.match(n):
+        return False
+    if POLA_ICD.match(n):
         return False
     if POLA_SAPAAN_NAMA.search(n):
         return False
     return True
 
 
-def _pisah_aman_dan_sembunyikan(counter: Counter):
+def _pisah_aman_dan_sembunyikan(counter: Counter, ambang_frekuensi: int = MIN_FREKUENSI_TAMPIL):
     """Pisahkan isi sebuah Counter nilai->jumlah menjadi:
-    - daftar nilai AMAN (lolos `_nilai_aman_ditampilkan`, dibatasi
-      `MAKS_NILAI_UNIK_TAMPIL` nilai unik pertama berdasarkan frekuensi),
+    - daftar nilai AMAN (lolos `_nilai_aman_ditampilkan` DAN muncul di
+      sekurang-kurangnya `ambang_frekuensi` baris — k-anonimitas
+      sederhana, lihat B2-sisa — dibatasi `MAKS_NILAI_UNIK_TAMPIL` nilai
+      unik pertama berdasarkan frekuensi),
     - jumlah baris yang nilainya disembunyikan,
     - jumlah nilai unik berbeda yang disembunyikan.
     Nilai yang disembunyikan TIDAK PERNAH muncul di hasil apa pun (B2) —
-    hanya dua angka agregat di atas yang dilaporkan.
+    hanya dua angka agregat di atas yang dilaporkan. Nilai kosong ("")
+    selalu dianggap "aman secara pola" tapi TETAP tunduk pada ambang
+    frekuensi seperti nilai lain (representasinya, mis. "(tidak diisi)",
+    sudah bukan string kosong lagi saat masuk Counter ini).
     """
     aman = []
     baris_disembunyikan = 0
     kategori_disembunyikan = 0
     for nilai, jumlah in counter.most_common():
-        if len(aman) < MAKS_NILAI_UNIK_TAMPIL and _nilai_aman_ditampilkan(nilai):
+        if (
+            len(aman) < MAKS_NILAI_UNIK_TAMPIL
+            and jumlah >= ambang_frekuensi
+            and _nilai_aman_ditampilkan(nilai)
+        ):
             aman.append((nilai, jumlah))
         else:
             baris_disembunyikan += jumlah
@@ -436,6 +485,20 @@ def _persen(bagian: int, total: int) -> float:
     return float(nilai.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
 
 
+def _baris_bergeser(row: dict) -> bool:
+    """True bila jumlah kolom baris ini TIDAK COCOK dengan header — mis.
+    ekspor CSV dengan koma tanpa tanda kutip yang menggeser semua nilai
+    satu kolom ke kanan/kiri. `csv.DictReader` menaruh nilai kolom lebih
+    di bawah kunci `None` (list) bila baris kepanjangan, dan mengisi
+    `None` untuk kolom yang hilang bila baris kependekan — dua kondisi
+    itulah yang dicek di sini. Baris begini TIDAK BOLEH ditebak kolomnya;
+    dikeluarkan dari rincian per hari/poli/penjamin/status (lihat B2-sisa
+    butir 3), hanya dihitung di total pendaftaran dengan peringatan."""
+    if None in row:
+        return True
+    return any(v is None for v in row.values())
+
+
 def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict:
     if not baris:
         raise DataError(
@@ -461,6 +524,28 @@ def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict
     }
     kolom_sensitif_terpakai = _kolom_sensitif_di_header(header, kolom_dipakai)
 
+    # --- B2-sisa butir 3: baris yang jumlah kolomnya bergeser dari header ---
+    # dideteksi dulu, supaya baris itu (a) tidak ikut jadi bukti format
+    # tanggal, dan (b) dikeluarkan dari rincian per hari/poli/penjamin/status.
+    indeks_bergeser = [
+        i for i, row in enumerate(baris, start=2) if _baris_bergeser(row)
+    ]
+    set_bergeser = set(indeks_bergeser)
+    peringatan_bergeser = None
+    if indeks_bergeser:
+        contoh_b = ", ".join(str(i) for i in indeks_bergeser[:8])
+        lebih_b = (
+            "" if len(indeks_bergeser) <= 8 else f" (+{len(indeks_bergeser) - 8} baris lain)"
+        )
+        peringatan_bergeser = (
+            f"{len(indeks_bergeser)} baris jumlah kolomnya tidak cocok dengan header "
+            "(kemungkinan ada koma tanpa tanda kutip di salah satu nilai, sehingga semua "
+            "nilai di baris itu bergeser kolom) — baris bernomor "
+            f"{contoh_b}{lebih_b}. Baris ini TETAP dihitung di total pendaftaran, tapi "
+            "DIKELUARKAN dari rincian per hari/poli/penjamin/status karena script tidak "
+            "bisa menebak kolom mana yang benar. Mohon cek & perbaiki file aslinya."
+        )
+
     # --- tentukan urutan tanggal SEKALI untuk seluruh file (B1b, R12) ---
     peringatan_tanggal = None
     if urutan_tanggal_paksa in ("dmy", "mdy"):
@@ -471,7 +556,7 @@ def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict
         )
     else:
         urutan, n_dmy, n_mdy, total_pola_angka, baris_format_bertentangan = deteksi_urutan(
-            [row.get(kolom_tanggal, "") for row in baris]
+            [row.get(kolom_tanggal, "") for row in baris], indeks_diabaikan=set_bergeser
         )
         if n_dmy > 0 and n_mdy > 0:
             contoh = ", ".join(str(i) for i in baris_format_bertentangan[:8])
@@ -508,8 +593,13 @@ def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict
     total = 0
     ada_sumber_jam = bool(kolom_jam)
 
-    for row in baris:
+    for i, row in enumerate(baris, start=2):
         total += 1
+        if i in set_bergeser:
+            # Jangan menebak kolom mana yang benar — lewati sepenuhnya dari
+            # semua rincian (per hari/poli/penjamin/status/jam), tapi tetap
+            # terhitung di total_pendaftaran (sudah +1 di atas).
+            continue
         t, jam_dari_tanggal = parse_tanggal(row.get(kolom_tanggal, ""), urutan)
         if t is None:
             baris_tanggal_gagal += 1
@@ -562,9 +652,14 @@ def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict
             for nilai, jumlah in status_aman
         ]
 
+    total_dapat_dibaca = total - len(indeks_bergeser)
+
     hasil = {
         "total_pendaftaran": total,
         "total_baris": total,
+        "total_dapat_dibaca": total_dapat_dibaca,
+        "baris_bergeser_jumlah": len(indeks_bergeser),
+        "peringatan_baris_bergeser": peringatan_bergeser,
         "urutan_tanggal_dipakai": urutan,
         "peringatan_format_tanggal": peringatan_tanggal,
         "baris_tanggal_tidak_terbaca": baris_tanggal_gagal,
@@ -598,10 +693,16 @@ def rekap(header: list, baris: list, urutan_tanggal_paksa: str = "auto") -> dict
         hasil["tidak_datang"] = tidak_datang
         hasil["status_tidak_dikenal_jumlah"] = tidak_dikenal_n
         hasil["status_kosong_jumlah"] = kosong_n
-        hasil["persentase_hadir"] = _persen(hadir, total)
-        hasil["persentase_tidak_datang"] = _persen(tidak_datang, total)
-        hasil["persentase_tidak_dikenal"] = _persen(tidak_dikenal_n, total)
-        hasil["catatan_pembulatan"] = "Persentase dibulatkan 1 desimal (round half up)."
+        hasil["persentase_hadir"] = _persen(hadir, total_dapat_dibaca)
+        hasil["persentase_tidak_datang"] = _persen(tidak_datang, total_dapat_dibaca)
+        hasil["persentase_tidak_dikenal"] = _persen(tidak_dikenal_n, total_dapat_dibaca)
+        hasil["catatan_pembulatan"] = (
+            "Persentase dibulatkan 1 desimal (round half up), dihitung dari baris yang "
+            "kolomnya bisa dibaca" + (
+                f" ({total_dapat_dibaca} dari {total} baris, {len(indeks_bergeser)} baris "
+                "bergeser dikeluarkan)" if indeks_bergeser else ""
+            ) + "."
+        )
     else:
         hasil["status_rincian"] = None
         hasil["hadir"] = None
@@ -640,6 +741,8 @@ def format_teks(hasil: dict) -> str:
     baris = []
     baris.append("REKAP OPERASIONAL KUNJUNGAN (agregat, tanpa nama/diagnosis)")
     baris.append(f"Total pendaftaran tercatat: {hasil['total_pendaftaran']}")
+    if hasil.get("peringatan_baris_bergeser"):
+        baris.append(f"⚠️  {hasil['peringatan_baris_bergeser']}")
     if hasil["baris_tanggal_tidak_terbaca"]:
         baris.append(
             f"⚠️  {hasil['baris_tanggal_tidak_terbaca']} baris tanggalnya tidak terbaca "
@@ -687,13 +790,13 @@ def format_teks(hasil: dict) -> str:
     if hasil["per_poli"] is not None:
         baris.extend(_format_daftar_kategori(
             "Pendaftaran per poli/layanan:", hasil["per_poli"],
-            nilai_disembunyikan.get("poli"), hasil["total_pendaftaran"],
+            nilai_disembunyikan.get("poli"), hasil["total_dapat_dibaca"],
         ))
 
     if hasil["per_penjamin"] is not None:
         baris.extend(_format_daftar_kategori(
             "Pendaftaran per penjamin/cara bayar:", hasil["per_penjamin"],
-            nilai_disembunyikan.get("penjamin"), hasil["total_pendaftaran"],
+            nilai_disembunyikan.get("penjamin"), hasil["total_dapat_dibaca"],
         ))
 
     if hasil["jam_ramai"] is not None:
