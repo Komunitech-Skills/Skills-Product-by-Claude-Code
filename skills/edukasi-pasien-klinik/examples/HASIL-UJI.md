@@ -184,3 +184,81 @@ Tidak ada.
 ## SKOR AKHIR v1.0.1: **6 / 10 — REVISI**
 
 Semua cacat v1.0.0 (B1, S1–S4, R1–R8) **tuntas dan terverifikasi**. Angka rekap kini benar pada data campur yang belum pernah dilihat pembuat. Namun fitur baru "rincian status" membuka jalur kebocoran data pasien, dan untuk skill kesehatan itu cacat BERAT (skor dibatasi ≤ 6). Perbaikannya kecil (penyembunyian nilai + alias `keterangan` + satu tes). Setelah B2 diperbaiki dan dicek ulang singkat khusus kebocoran, perkiraan skor **8–9 (LULUS)**. R9–R14 boleh diperbaiki sekaligus.
+
+---
+
+# Uji ulang v1.0.2 (2026-09-24), fokus kebocoran (B2)
+
+- **Penguji:** agent penguji independen (simulasi, Claude Code), bukan pembuat.
+- **Versi:** commit `019e1af` (v1.0.2), diuji dari salinan di `/tmp`. Tidak ada file skill yang diubah.
+- **Tes bawaan:** 42 tes ✅ OK.
+
+## 1. Regresi & perbaikan R9–R14
+
+| Uji | Hasil |
+|---|---|
+| CSV 180 baris (uji pertama) | ✅ total/hadir/tidak datang/per hari/poli/penjamin cocok dengan verifikasi independen; % per poli (48,9/33,3/17,8) dan penjamin (61,7/19,4/18,9) sama dengan hitungan penguji; 0 kebocoran |
+| CSV 200 baris campur (header `Tgl Kunjungan`) | ✅ Header dikenali (**R11**). Status 52/83/46/19 dan % 26,0/41,5 sama dengan hitungan independen. Peringatan format campur tetap muncul. 5 header sensitif terdeteksi. 0 kebocoran |
+| UTF-16 LE & BE **tanpa BOM** | ✅ Hasil identik dengan UTF-8 (**R9**) |
+| Kolom `Waktu` | ✅ Dipakai untuk jam dan tidak lagi disebut "sensitif" (**R10**) |
+| File gaya AS yang seluruhnya ambigu | ✅ Kini ada peringatan eksplisit "BISA SALAH". `--urutan-tanggal mdy` menghasilkan 1/2/3 September dengan benar (**R12**) |
+| Persentase per poli/penjamin | ✅ (**R13**) |
+| Kutipan Permenkes 1787/2010 | ✅ Huruf l & o kini persis naskah, dan catatan Pasal 4 ayat (2) soal media sudah ada (**R14**). Sisa kecil: huruf d ditulis dalam tanda kutip ("membandingkan mutu pelayanan fasilitas pelayanan kesehatan lain") padahal bukan kalimat persis naskah. Ganti dengan parafrase tanpa tanda kutip, atau kutip utuh |
+| Kolom `Keterangan` berisi catatan bebas (kasus B2 lama) | ✅ Tidak lagi dipakai sebagai status; isinya tidak muncul |
+
+## 2. CSV serangan baru (160 baris, belum pernah dilihat pembuat)
+Isi: nilai sensitif pendek ditanam di kolom kategori, plus kolom aneh. Semua fiktif.
+- **Status:** `Siti Aminah`, `ani`, `S.A.`, `DBD`, `hipertensi`, `nol delapan satu dua`, `ani.fiktif@mail.com`, `Bu Ani`, `Rina`, `abses gigi`, `sakit kepala`
+- **Poli:** `abses`, `DBD`, `Siti`, `Budi Santoso`, `Hipertensi`, `diabetes melitus`, `ISPA`
+- **Penjamin:** `Pak Joko`, `Aminah`, `hipertensi`, `joko@mail.co.id`, `KIS 0001`
+- **Kolom tak dikenal:** `Catatan Dokter` (nama + dx), `Remarks` (no HP), `Ket.` (sapaan + nama + alergi)
+
+Pencarian otomatis (regex, tanpa membedakan huruf besar/kecil) atas seluruh output teks + JSON: **20 dari 29 string sensitif BOCOR.**
+
+| Sumber | Bocor | Tersaring |
+|---|---|---|
+| Status (11) | `Siti Aminah`, `ani`, `S.A.`, `DBD`, `hipertensi`, `ani.fiktif@mail.com`, `Rina`, `abses gigi`, `sakit kepala` (9) | `nol delapan satu dua` (>3 kata), `Bu Ani` (sapaan) |
+| Poli (7) | **semua 7**, termasuk nama `Siti`, `Budi Santoso` dan diagnosis `DBD`, `ISPA`, `diabetes melitus` | – |
+| Penjamin (5) | `Aminah`, `hipertensi`, `joko@mail.co.id` (3) | `Pak Joko`, `KIS 0001` |
+| Kolom `Catatan Dokter` / `Remarks` / `Ket.` | 0 | ✅ tidak pernah dibaca |
+
+Agregat pada file serangan tetap benar: 160 total, hadir 53, tidak datang 96, tidak dikenal 11 (nilai sensitif masuk "tidak dikenal", tidak dihitung hadir).
+
+**Kolom bergeser** (ekspor `Nama, Gelar` tanpa tanda kutip di 12 dari 120 baris): tanpa peringatan apa pun, gelar `S.Pd` muncul sebagai "poli" (12), `Gigi` sebagai penjamin (6), `BPJS`/`Umum` sebagai status. Artinya angka per poli/penjamin **salah diam-diam**. Pola yang sama dengan `Nama, Nama` (mis. `Siti, Aminah`) akan menaruh **nama** di kolom poli dengan frekuensi berulang.
+
+## 3. Penilaian risiko
+- **Nama 1–2 kata, inisial, dan email lolos penyaring** di semua kolom kategori. Penyaring "≤3 kata, tanpa digit, bukan sapaan" tidak bisa membedakan `Siti Aminah` dari `Rawat Jalan`. Salah isi kolom oleh staf dan kolom bergeser adalah kejadian nyata di ekspor klinik. Kelas masalahnya sama dengan B2 (data per-pasien tampil di output), jadi tingkatnya **tetap BERAT**, walau jauh lebih jarang dibanding v1.0.1.
+- **Diagnosis 1–2 kata di kolom poli** (`DBD`, `ISPA`): bila muncul **sekali**, itu data per-pasien (bisa dihubungkan dengan tanggal) dan ikut tertangani oleh perbaikan di bawah. Bila muncul **berulang** (mis. klinik memakai kolom "Layanan" berisi diagnosis), yang tampil adalah **jumlah agregat per diagnosis**, bukan identitas. Risikonya **RINGAN**, tapi bertentangan dengan janji "tanpa diagnosis". Saran: README/SKILL menyebut "bila kolom poli berisi diagnosis, rekap akan menampilkan jumlah per diagnosis (agregat)". Opsional: sembunyikan nilai berpola kode ICD (`^[A-Z]\d{2}`) atau yang ada di daftar kecil istilah diagnosis umum.
+- **Keputusan pembuat tidak memasang ambang ≥90% untuk kolom bernama "status": alasannya BENAR.** File 200 baris penguji sah dengan 135/200 = 67,5% cocok. Ambang 90% akan menolak data sah, dan nilai tak dikenal sudah dilaporkan terpisah, tidak dihitung hadir. Keamanan cukup dijaga di **lapisan tampilan**. Syaratnya penyaring tampilan diperkuat seperti di bawah, karena justru kolom status yang paling banyak membocorkan nilai sensitif di uji ini (9 dari 11).
+
+## 4. Cacat v1.0.2
+
+### BERAT
+**B2-sisa: nilai kategori pendek yang berisi nama/inisial/email/diagnosis tunggal masih dicetak** (`_nilai_aman_ditampilkan`, `_pisah_aman_dan_sembunyikan`). Saran konkret (cukup satu perubahan di penyaring tunggal):
+1. **Ambang frekuensi (k-anonim):** nilai ditampilkan individual hanya bila muncul **≥ 3 baris**; sisanya masuk "(nilai lain disembunyikan): N baris, K nilai". Ini menghapus hampir semua salah isi (nama/inisial/email muncul 1–2 kali), tetapi kategori nyata seperti `Reschedule` (15) atau `Rujuk` (15) tetap terlihat untuk dicek.
+2. Sembunyikan selalu nilai yang mengandung `@`, pola inisial (`^([A-Za-z]\.\s?){1,4}$`), dan kode ICD (`^[A-Z]\d{2}(\.\d+)?$`).
+3. **Deteksi kolom bergeser:** baris yang jumlah kolomnya ≠ header (DictReader memberi kunci `None` atau nilai `None`) dihitung, diberi peringatan "N baris kolomnya bergeser, dikeluarkan dari rincian poli/penjamin/status", dan tidak dimasukkan ke rincian kategori. Ini sekaligus memperbaiki angka yang salah diam-diam.
+4. Tambah tes: file serangan di atas (nama 1–2 kata, inisial, email, diagnosis tunggal) → 0 string muncul; file dengan 10% baris bergeser → ada peringatan, dan poli/penjamin tidak memuat nilai geseran.
+
+### SEDANG
+- Tercakup di B2-sisa butir 3 (angka per poli/penjamin/status salah diam-diam pada kolom bergeser).
+
+### RINGAN
+- Kutipan Permenkes Pasal 5 huruf d memakai tanda kutip untuk teks yang bukan kalimat persis (lihat tabel 1).
+- Diagnosis berulang di kolom poli tampil sebagai jumlah agregat; perlu dinyatakan jujur di README/SKILL (atau disaring opsional).
+
+## Skor uji ulang v1.0.2
+
+| Kriteria | v1.0.1 | v1.0.2 |
+|---|---|---|
+| Pemicu | 9 | 9 |
+| Kemudahan awam | 9 | 9 |
+| Kualitas output | 9 | 9 |
+| Akurasi (angka/fakta) | 9 | 8 (kolom bergeser → rincian kategori salah diam-diam) |
+| Penanganan input kurang | 9 | 9 |
+| Penanganan di luar cakupan | 9 | 9 |
+| Keamanan & privasi | 4 | 5 (free-text panjang & sapaan+nama kini tersaring; nama pendek/inisial/email masih lolos) |
+
+## SKOR AKHIR v1.0.2: **6 / 10 — REVISI**
+
+Kemajuan nyata: kasus B2 lama (catatan bebas panjang) tuntas, dan R9–R14 terbukti. Semua angka pada data sah cocok dengan verifikasi independen. Tetapi pada data dengan salah isi pendek atau kolom bergeser, data per-pasien masih bisa muncul di output (20 dari 29 string uji). Untuk skill kesehatan yang menjanjikan "tanpa data per-pasien", itu tetap cacat BERAT. Perbaikan yang diusulkan (ambang ≥3, pola `@`/inisial/ICD, deteksi baris bergeser, dan 2 tes) kecil dan terlokalisasi. Setelah itu dan uji serangan ulang singkat, perkiraan skor **8–9 (LULUS)**.
