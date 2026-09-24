@@ -11,9 +11,9 @@
 - ⚠️ Gateway Windows belum diuji untuk `--command-argv`; di Windows pakai Pilihan 2.
 
 ## 0. Aturan kanal (keputusan pemilik Komunitech, 2026-09-23)
-- **Telegram (bot resmi) = default.** `--to` selalu ID chat **pemilik**.
+- **Telegram (bot resmi) = default.** `--to` = ID chat **pemilik**. Penerima tambahan hanya **pemilik bersama/pengelola yang pemilik tunjuk secara eksplisit**, masing-masing lewat **jadwal terpisah** ke chat pribadinya sendiri (`--to` = ID chat orang itu), tidak pernah ke grup.
 - **WhatsApp** hanya jika: (1) **nomor terpisah** milik pemilik, bukan nomor toko/CS; (2) laporan hanya ke pemilik sendiri; (3) pemilik membalas "ya, saya mengerti risikonya" setelah membaca: *"OpenClaw memakai WhatsApp Web (tidak resmi, scan QR). Pesan otomatis bisa membuat nomor diblokir. Untuk laporan ke diri sendiri risikonya rendah, tapi tetap ada. Telegram tidak punya risiko ini."*
-- **Tidak ada broadcast**, tidak ke grup, tidak ke pelanggan/karyawan.
+- **Tidak ada broadcast**, tidak ke grup, tidak ke pelanggan/karyawan (kecuali pengelola yang ditunjuk eksplisit seperti di atas).
 - Tunjukkan perintah + "Lanjut? (ya/tidak)" sebelum membuat jadwal apa pun.
 
 ## 1. Siapkan (sekali)

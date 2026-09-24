@@ -61,3 +61,46 @@ Alasan:
 - (−) Bergantung pada 4 alat lain di folder yang sama; bila hanya satu alat, nilainya turun (jujur dijelaskan di README).
 
 **Keputusan: LULUS (≥ 7)**, boleh naik ke status `lulus`. Disarankan memperbaiki S1 (dan idealnya R1/R2/R4) sebelum `beta`, lalu uji ulang skenario 04-G oleh penguji independen.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-24)
+
+- **Penguji:** agent penguji independen (simulasi, Claude Code), bukan pembuat maupun yang merevisi. Rincian reproduksi: `06-uji-ulang-v1.0.1.md`.
+- **Lingkungan:** salinan skill + 4 alat di scratchpad, HOME palsu, `KOMUNITECH_DATA` sementara, `TZ=Asia/Jakarta`/`UTC`. Data dibuat ulang dengan script resmi alat (kafe 4 alat + toko hanya buku-stok) dan kasus tambahan di salinan. Data fiktif.
+- **Otomatis:** `tests/uji_regresi.py` 39 tes OK; `scripts/validate.py` 53 skill valid; `scripts/uji_openclaw.sh` OpenClaw 2026.9.6 semua skill siap.
+
+### Status klaim perbaikan
+| ID | Klaim | Status | Bukti singkat |
+|---|---|---|---|
+| S1 | Cek impor per nomor nota sah | **Terbukti** | Nol 6/6, sebagian 5/6, penuh 0, void tidak dihitung, retur penuh konsisten; struktur tabel berubah (6 variasi) → dilewati tanpa crash |
+| R1 | Tanpa keterangan masuk PERLU PERHATIAN | **Terbukti** | "Belum absen tanpa keterangan (1): Tari" (21.30), "Tidak absen & tanpa keterangan" (tanggal lampau), `--samarkan` → "T." |
+| R2 | Sebelum jam masuk → "Belum waktunya absen" | **Terbukti sebagian** | Benar 00.30/07.30/07.59 bila belum ada yang tap; salah bila ada yang datang lebih awal (N1) |
+| R3 | Pesan zona & peringatan zona toko | **Terbukti** | Toko WITA + `--tz` WIB → peringatan; `--tz Asia/Makassar` → hilang; pesan jam komputer hanya soal absensi |
+| R4 | Path file asli di pesan error | **Terbukti** | absensi/kasir/stok 0 byte → path asli; 0 path salinan |
+| R5 | Penerima tambahan | **Sebagian** | SKILL.md jelas; `references/openclaw-jadwal.md` §0 belum diselaraskan (N4) |
+| K | Minus ganda, label pajak, `--tz` non-Indonesia | **Terbukti** | "(Rp 30.000)"; label "termasuk pajak/service"; Asia/Tokyo/UTC → exit 2 |
+
+### Regresi
+Skenario 01, 02 (+ minggu berjalan, jadwal Senin), 03 diulang: omzet, uang diterima, nota sah, rata-rata, persen, per metode, terlaris, stok & restock, kehadiran, tagihan → **0 beda** dengan hitung ulang independen. `persen()` vs `Fraction` 30.011 kasus → 0 beda. sha256 data asli sebelum = sesudah; DB terkunci selesai 1,3 detik; 0 nama/nomor pelanggan bocor; tengah malam WIB benar di komputer UTC. Satu regresi perilaku kecil: N1.
+
+### Cacat tersisa
+| ID | Keparahan | Ringkas | Reproduksi |
+|---|---|---|---|
+| N1 | Rendah | Alarm "Belum absen tanpa keterangan … catat izin/alpa" sebelum jam masuk bila satu karyawan sudah tap lebih awal (efek samping R1; `laporan.py:762-774`) | `absensi.py catat --karyawan Dimas --tanggal 2026-09-25 --masuk 07.45` → `laporan.py --sekarang 2026-09-25T07:50+07:00` |
+| N2 | Rendah | Cek impor/selisih kas yang dilewati (struktur berubah) hanya dicatat di JSON `catatan`, tidak di teks Telegram | rename `pesanan.no_pesanan` di salinan stok.db → teks diam |
+| N3 | Rendah | Nota di-void setelah diimpor (stok buku-stok belum dikembalikan) tidak diingatkan | `kasir.py void --nota N-260923-0002` setelah impor 23/9 → laporan tanpa butir |
+| N4 | Rendah | `references/openclaw-jadwal.md:14-16` masih "`--to` selalu pemilik", "tidak ke karyawan"; tidak selaras dengan R5 | baca §0 vs SKILL.md Langkah C |
+| N5 | Kosmetik | `--samarkan` → "T.. Tanyakan" | skenario 01 + `--samarkan` |
+| N6 | Kosmetik (lama) | Void lintas hari: "Nota: 5 (+2 dibatalkan)" vs butir impor "6 dari 6 nota" di laporan yang sama | void N-260923-0002 pada 24/9 → laporan 24/9 |
+| K1 | Kosmetik (diketahui) | `--samarkan` bentrok nama berawalan sama | — |
+
+### Skor kualitas v1.0.1: **9 / 10**
+Alasan:
+- (+) Cacat sedang S1 hilang: impor sebagian kini terdeteksi dengan jumlah tepat, void dikecualikan, dan cek tahan perubahan struktur (tidak pernah crash).
+- (+) R1–R4 dan perbaikan kosmetik terbukti; 39 tes regresi lulus; semua angka skenario 01–03 tetap 0 beda dengan hitung ulang independen; hanya-baca, privasi, DB terkunci, dan tengah malam WIB tetap benar.
+- (−) N1: perbaikan R1 membuka alarm palsu baru pada laporan pagi (tidak memengaruhi jadwal 21.00).
+- (−) N2–N4: cek yang dilewati tidak terlihat di teks; void setelah impor tidak diingatkan; referensi OpenClaw belum diselaraskan dengan aturan penerima.
+- Tidak ada cacat tinggi/sedang; semua sisa berkeparahan rendah/kosmetik.
+
+**Keputusan: LULUS (≥ 7).** Layak naik ke uji platform asli lalu `beta`. Disarankan memperbaiki N1 dan N4 (kecil, murah) sebelum dibagikan ke beta tester; N2/N3 boleh dijadwalkan di versi berikutnya.
