@@ -7,7 +7,7 @@
 - ✅ **Daftar tindakan** siap tindak lanjut: siapa mengerjakan apa, kapan tenggatnya.
 - ✅ **Kutipan asli + jam** untuk tiap poin penting, jadi mudah dicek langsung di grup — tidak ada isi yang dikarang.
 - ✅ Grup ramai (ratusan pesan/hari)? Otomatis dipilah **per hari**.
-- ✅ Bisa **menyamarkan nama & nomor** anggota kalau isinya sensitif, sebelum diproses AI.
+- ✅ Bisa **menyamarkan nama & nomor** anggota kalau isinya sensitif, sebelum diproses AI (upaya terbaik — AI agent Anda akan menyebutkan bila ada kata yang perlu dicek manual sebelum dibagikan).
 - ✅ 100% dari fitur **ekspor chat resmi WhatsApp** — tidak ada nomor bot, tidak ada risiko blokir, tidak ada yang "mendengar" grup Anda diam-diam.
 
 ## Cocok untuk siapa

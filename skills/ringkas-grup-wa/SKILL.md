@@ -29,8 +29,8 @@ utama: **setia pada isi asli**. Tidak ada isi yang ditambahkan; yang ambigu dibe
 |---|---|---|
 | File ekspor chat (path `.txt` atau `.zip`) | Ya | — (minta ekspor dulu, lihat README untuk caranya) |
 | Rentang waktu (mis. "sejak kemarin 17.00", "3 hari terakhir", atau kosong = semua) | Tidak | Semua pesan dalam file |
-| Nama saya di grup (untuk deteksi mention "perlu perhatian") | Tidak | Tanyakan sekali bila relevan; jika tidak dijawab, deteksi mention pakai `@` umum saja |
-| Samarkan nama anggota? | Tidak | Tidak disamarkan, kecuali pengguna eksplisit minta anonim/rahasia |
+| Nama saya di grup (untuk deteksi mention "perlu perhatian" & memisahkan pesan sendiri) | Tidak | Tanyakan sekali bila relevan; jika tidak dijawab, deteksi mention pakai `@` umum saja |
+| Samarkan nama anggota? | Tidak | Tidak disamarkan, kecuali pengguna eksplisit minta anonim/rahasia. **Bersifat upaya terbaik** — lihat langkah 2 & Batasan. |
 
 Jika file ekspor tidak ada, **minta pengguna mengekspor dulu** (panduan langkah di README.md) — jangan mencoba meringkas dari ingatan/tempelan sebagian chat yang tidak lengkap tanpa memberi tahu keterbatasannya.
 Jika info lain kurang, **jangan tanya lebih dari sekali**: proses dengan default di atas dan sebutkan asumsi di akhir.
@@ -44,15 +44,17 @@ Jika info lain kurang, **jangan tanya lebih dari sekali**: proses dengan default
    Tambahkan sesuai kebutuhan:
    - `--sejak "kemarin 17:00"` atau `--sejak "2026-09-12 08:00"` — hanya pesan sejak waktu itu.
    - `--hari-terakhir 3` — hanya 3 hari terakhir.
-   - `--samarkan` — ganti nama pengirim jadi "Anggota 1..n" dan nomor telepon di isi pesan disamarkan, sebelum kamu proses lebih lanjut (dipakai bila pengguna minta anonim, atau grup berisi data sensitif pihak ketiga).
+   - `--nama-saya "<nama Anda di grup>"` — menandai pesan Anda sendiri (`dari_saya`) dan membuat deteksi mention langsung ke Anda lebih akurat di `kandidat_perlu_perhatian`. Tanyakan sekali di awal jika belum tahu; boleh dilewati.
+   - `--samarkan` — samarkan (**upaya terbaik, bukan jaminan mutlak**) pengirim, nama yang disebut di isi pesan/@mention/pesan sistem, sapaan+nama pihak yang bukan anggota terdaftar (mis. "Pak Budi" jadi "Orang N"), dan nomor telepon (Indonesia & internasional). **WAJIB**: setelah pakai `--samarkan`, periksa field `kemungkinan_nama_tersisa` di hasil JSON — itu daftar kata/frasa berhuruf kapital yang *mungkin* masih nama dan lolos dari penyamaran otomatis. Sebutkan isinya ke pengguna sebagai "perlu dicek manual sebelum dibagikan" bila tidak kosong; **jangan mengklaim hasil 100% anonim**.
    - Script punya uji regresi sendiri: `python3 <folder-skill-ini>/tests/uji_regresi.py` (untuk pengecekan, bukan langkah wajib tiap pemakaian).
-3. **Baca JSON hasil script.** Field penting: `format_terdeteksi`, `urutan_tanggal` (dan `catatan` bila ambigu — sebutkan catatan ini ke pengguna apa adanya, jangan disembunyikan), `statistik` (jumlah pesan per pengirim, jam paling ramai, jumlah media/dihapus), dan `hari[]` (pesan sudah dikelompokkan per tanggal).
-4. **Klasifikasikan tiap pesan `jenis: "obrolan"`** (lewati `jenis: "sistem"`, hanya dihitung) ke salah satu:
-   - **Perlu perhatian**: pertanyaan langsung ke pengguna atau mention nama/`@pengguna`, permintaan keputusan/persetujuan, tenggat/deadline, uang/pembayaran/tagihan, komplain/masalah.
+3. **Baca JSON hasil script.** Field penting: `format_terdeteksi`, `urutan_tanggal` (dan `catatan` bila ambigu — sebutkan catatan ini ke pengguna apa adanya, jangan disembunyikan, termasuk peringatan "hanya satu kombinasi tanggal" bila muncul), `statistik` (jumlah pesan per pengirim, jam paling ramai, jumlah media/dihapus), `kandidat_perlu_perhatian[]`, dan `hari[]` (pesan sudah dikelompokkan per tanggal).
+4. **Gunakan `kandidat_perlu_perhatian[]` sebagai checklist WAJIB, terutama untuk grup padat (>~50 pesan/hari).** Script menandai setiap pesan obrolan yang mengandung tanda tanya, mention, kata uang/nominal, tenggat/tanggal, atau kata keputusan/komplain. **Setiap item di daftar ini harus dipertimbangkan** (dimasukkan ke Perlu Perhatian, Info, atau sengaja dikeluarkan dengan alasan) — jangan menyisir ulang dari nol tanpa mencocokkan ke checklist ini, supaya tidak ada pertanyaan/tenggat/nominal yang terlewat. Lalu klasifikasikan tiap pesan `jenis: "obrolan"` (lewati `jenis: "sistem"`, hanya dihitung) ke salah satu:
+   - **Perlu perhatian**: pertanyaan langsung ke pengguna atau mention nama/`@pengguna`, permintaan keputusan/persetujuan, tenggat/deadline, uang/pembayaran/tagihan, komplain/masalah. Tandai `✅ sudah dijawab` bila jawabannya ada di pesan lain yang lebih baru pada topik yang sama, atau `❗ masih menunggu` bila belum ada jawaban sampai akhir rentang yang diringkas.
    - **Info**: pengumuman, update status, info tanpa perlu balasan.
    - **Obrolan**: salam, candaan, stiker/emoji saja, basa-basi. **Cukup dihitung jumlahnya**, jangan dikutip satu-satu.
    - Pesan `jenis: "media"` → catat sebagai info singkat ("Budi mengirim media (foto/video), 08.10") kecuali konteksnya jelas penting.
    - Pesan `jenis: "dihapus"` → sebutkan bahwa ada pesan yang dihapus pengirimnya, jam & siapa (jika tidak disamarkan), tanpa menebak isinya.
+   - Jika `--nama-saya` diberikan, pesan dengan `dari_saya: true` boleh dikecualikan dari "Perlu Perhatian ke Anda" (itu perkataan Anda sendiri), tapi tetap dihitung dalam statistik/daftar tindakan bila relevan (mis. Anda berjanji melakukan sesuatu).
 5. **Jangan mengarang.** Jika maksud pesan ambigu (mis. pertanyaan retoris vs. serius, sudah dijawab di pesan lain atau belum), masukkan ke Perlu Perhatian dengan tanda `⚠️` dan alasan singkat, daripada menghilangkannya atau memastikan tanpa dasar.
 6. **Susun daftar tindakan** (siapa – apa – tenggat) memakai format yang sama dengan `notulen-rapat`: PIC diambil dari pengirim tugas/yang diberi tugas jika jelas dari teks; tenggat mengikuti tulisan asli (jangan menghitung ulang tanggal relatif secara otomatis di sini — jika ingin dikonversi presisi, arahkan ke `notulen-rapat` yang punya `scripts/tanggal_relatif.py`). Tugas tanpa PIC/tenggat jelas → tandai `⚠️ belum jelas`.
 7. **Sertakan kutipan asli singkat + jam** untuk tiap butir Perlu Perhatian (maks ±15 kata kutipan, bukan parafrase, agar pengguna bisa mengecek langsung di grup).
@@ -126,18 +128,21 @@ Rentang: 12–13 Sep 2026 · 16 pesan (dari 4 orang)
 ## Checklist sebelum mengirim hasil
 - [ ] Tidak ada isi/keputusan/nominal yang tidak ada di kutipan asli.
 - [ ] Setiap butir Perlu Perhatian punya kutipan singkat + jam, bukan parafrase bebas.
-- [ ] Catatan `urutan_tanggal`/ambiguitas dari script disampaikan ke pengguna, tidak disembunyikan.
+- [ ] Setiap item di `kandidat_perlu_perhatian[]` sudah dipertimbangkan (masuk kategori, atau sengaja dikeluarkan).
+- [ ] Catatan `urutan_tanggal`/ambiguitas dari script disampaikan ke pengguna, tidak disembunyikan — termasuk peringatan "satu kombinasi tanggal" bila ada.
 - [ ] Daftar tindakan: setiap baris punya PIC & tenggat, atau ditandai ⚠️.
 - [ ] Grup ramai (>~150 pesan atau >1 hari) disajikan per hari.
-- [ ] Kalau `--samarkan` dipakai, tidak ada nama/nomor asli tersisa di output.
+- [ ] Kalau `--samarkan` dipakai: `kemungkinan_nama_tersisa` sudah dicek dan disampaikan ke pengguna bila tidak kosong; tidak diklaim "100% anonim".
 - [ ] Statistik (jumlah per pengirim, jam ramai, media/dihapus) disertakan.
 
 ## Batasan & penanganan error
 - **Tidak pernah memantau/menyadap diam-diam.** Skill ini hanya memproses ekspor yang pengguna buat sendiri secara sadar dari grup yang mereka ikuti. Permintaan meringkas chat/grup orang lain tanpa sepengetahuan mereka (mis. pasangan, karyawan) **ditolak** — jelaskan bahwa itu melanggar privasi dan berpotensi melanggar UU PDP, dan skill tidak dirancang untuk itu.
 - **Privasi anggota grup**: isi grup adalah data pribadi orang lain, dan akan diproses oleh penyedia model AI yang dipakai pengguna. Ingatkan ini terutama untuk grup yang bukan seluruhnya kolega kerja (mis. ada anggota keluarga/pelanggan/pasien) dan tawarkan `--samarkan`. Untuk grup yang sangat sensitif (keluarga, pasien, HR), sarankan tetap pakai Jalur 1 (ekspor manual) dan **jangan** menyarankan Jalur 2 (bot live di grup) — lihat `references/openclaw-grup.md` untuk alasannya.
+- **`--samarkan` bersifat upaya terbaik (best-effort), BUKAN jaminan mutlak.** Script mengganti pengirim, nama yang disebut di isi pesan/@mention/pesan sistem (termasuk kata depan/panggilan seperti "Budi" dari "Budi Santoso"), sapaan+nama pihak luar ("Pak Budi" → "Orang N"), dan nomor telepon Indonesia & internasional. Yang **tidak** selalu tertangkap: nama tanpa huruf kapital konsisten, singkatan/inisial, ejaan nama yang berbeda-beda, nama yang menyatu dengan kata lain tanpa spasi, atau nama yang kebetulan sama dengan kata umum. **Selalu** sampaikan isi `kemungkinan_nama_tersisa` ke pengguna sebagai daftar yang perlu dicek manual sebelum hasil dibagikan ke pihak lain — jangan pernah bilang hasilnya "pasti anonim".
 - **Tidak mengirim apa pun ke grup atau ke siapa pun.** Skill hanya menghasilkan teks ringkasan untuk pengguna; pengguna yang menyalin/meneruskan sendiri.
 - **Script gagal jalan (Python tidak tersedia):** jangan menebak-nebak isi ratusan pesan secara manual. Minta pengguna memastikan Python 3 terpasang, atau tempelkan langsung sepotong isi chat (bukan file penuh) untuk diringkas manual dengan disclaimer "tidak melalui parser terverifikasi, mohon dicek ulang jam & urutannya".
 - **Format ekspor tidak dikenali / 0 pesan terbaca**: sampaikan pesan `catatan` dari script apa adanya ke pengguna, dan minta contoh 2–3 baris asli dari file untuk dicek manual polanya. Jangan mengarang bahwa file "kosong" bila sebenarnya formatnya di luar dukungan.
 - **Urutan tanggal ambigu** (`urutan_tanggal` disertai catatan): sampaikan asumsi (default d/m Indonesia) ke pengguna dan minta koreksi bila hasilnya terasa janggal (mis. bulan yang tidak masuk akal).
 - **File sangat besar** (ekspor tahunan, puluhan ribu pesan): sarankan mempersempit dengan `--sejak`/`--hari-terakhir` dulu agar hasil tetap relevan dan tidak melebihi kapasitas model.
 - **Mode live di grup (bot ikut membaca semua chat)** bukan cakupan skill ini — lihat `references/openclaw-grup.md` untuk panduan konfigurasi OpenClaw beserta batasannya, dan sampaikan ke pengguna bahwa itu jalur terpisah dengan risiko & langkah setup berbeda (bukan sekadar mengetik satu perintah).
+- **Batasan yang diketahui, tidak diperbaiki (jarang terjadi di ekspor WA asli):** nama kontak yang secara tidak wajar mengandung karakter `:` hanya terbaca sebagian (dipotong di `:` pertama). WhatsApp tidak mengizinkan `:` di nama kontak, jadi ini praktis hanya muncul pada file yang sudah diedit manual.

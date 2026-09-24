@@ -48,16 +48,39 @@ def bersihkan_baris(baris):
 ENCODING_DICOBA = ["utf-8-sig", "utf-8", "utf-16", "utf-16-le", "utf-16-be", "cp1252", "latin-1"]
 
 
+def _hitung_baris_cocok_pesan(teks):
+    """Jumlah baris (dari 50 baris pertama) yang cocok pola pesan WhatsApp. Dipakai untuk
+    memilih kandidat decode UTF-16 yang benar saat tidak ada BOM (LE vs BE bisa sama-sama
+    'berhasil' didecode tanpa error, tapi hanya satu yang menghasilkan teks yang masuk akal)."""
+    n = 0
+    for baris in teks.splitlines()[:50]:
+        b = bersihkan_baris(baris)
+        if POLA_ANDROID.match(b) or POLA_IOS.match(b):
+            n += 1
+    return n
+
+
 def _decode(raw_bytes, nama_untuk_pesan):
+    kandidat = []
     for enc in ENCODING_DICOBA:
         try:
-            return raw_bytes.decode(enc)
+            kandidat.append((enc, raw_bytes.decode(enc)))
         except (UnicodeDecodeError, LookupError):
             continue
-    raise ValueError(
-        f"tidak bisa membaca '{nama_untuk_pesan}': encoding tidak dikenali "
-        f"(dicoba {', '.join(ENCODING_DICOBA)})"
+    if not kandidat:
+        raise ValueError(
+            f"tidak bisa membaca '{nama_untuk_pesan}': encoding tidak dikenali "
+            f"(dicoba {', '.join(ENCODING_DICOBA)})"
+        )
+    terbaik = max(
+        kandidat,
+        key=lambda kv: (_hitung_baris_cocok_pesan(kv[1]), -ENCODING_DICOBA.index(kv[0])),
     )
+    if _hitung_baris_cocok_pesan(terbaik[1]) > 0:
+        return terbaik[1]
+    # Tidak ada kandidat yang cocok pola pesan sama sekali -> pakai urutan prioritas awal
+    # (utf-8 dkk.) apa adanya; parse_pesan() yang akan melaporkan bila tetap tidak terbaca.
+    return kandidat[0][1]
 
 
 def baca_teks_ekspor(path):
@@ -420,7 +443,8 @@ POLA_AKSI_SISTEM_OBJEK = re.compile(
 POLA_NAMA_AWAL_BARIS = re.compile(rf"^({POLA_NAMA_TOKEN})\b")
 
 POLA_HONORIFIK = re.compile(
-    r"\b(?:Pak|Bu|Bapak|Ibu|Mas|Mbak|Kak|Kakak|Bang|Abang|Om|Tante)\s+([A-Z][a-zA-Z]{2,})\b"
+    r"\b(?:Pak|Bu|Bapak|Ibu|Mas|Mbak|Kak|Kakak|Bang|Abang|Om|Tante)\s+([A-Z][a-zA-Z]{2,})\b",
+    re.IGNORECASE,
 )
 POLA_MENTION = re.compile(r"@([A-Z][a-zA-Z]{2,}(?:\s[A-Z][a-zA-Z]{2,})?)\b")
 
@@ -546,13 +570,13 @@ def samarkan_pengirim(pesan, nama_saya=None):
     tersisa = set()
     for p in pesan:
         for m in re.finditer(POLA_NAMA_TOKEN, p["teks"]):
-            frasa = m.group(0)
-            kata_pertama = frasa.split()[0]
-            if kata_pertama in ("Anggota", "Orang"):
-                continue
-            if not _bukan_kata_umum(kata_pertama):
-                continue
-            tersisa.add(frasa)
+            kata = m.group(0).split()
+            # Buang kata umum/label di awal frasa satu per satu (mis. "Toko Jaya Makmur"
+            # -> "Jaya Makmur" tetap layak dicek meski "Toko" adalah kata umum).
+            while kata and (kata[0] in ("Anggota", "Orang") or not _bukan_kata_umum(kata[0])):
+                kata.pop(0)
+            if kata:
+                tersisa.add(" ".join(kata))
 
     return pesan, pemetaan, sorted(tersisa)
 

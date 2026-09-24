@@ -22,7 +22,7 @@ import parse_ekspor_wa as p  # noqa: E402
 def parse_teks(teks, **kwargs):
     pesan, fmt, urutan, catatan = p.parse_pesan(teks)
     if kwargs.get("samarkan"):
-        pesan, _peta = p.samarkan_pengirim(pesan)
+        pesan, _peta, _sisa = p.samarkan_pengirim(pesan)
     return pesan, fmt, urutan, catatan
 
 
@@ -224,7 +224,7 @@ class Samarkan(unittest.TestCase):
             "12/09/26, 08.02 - Sari: oke\n"
         )
         pesan, *_ = parse_teks(teks)
-        pesan, peta = p.samarkan_pengirim(pesan)
+        pesan, peta, _sisa = p.samarkan_pengirim(pesan)
         self.assertEqual(pesan[0]["pengirim"], "Anggota 1")
         self.assertEqual(pesan[1]["pengirim"], "Anggota 2")
         self.assertEqual(pesan[2]["pengirim"], "Anggota 1")
@@ -243,6 +243,242 @@ class Samarkan(unittest.TestCase):
         # Nomor rumah/kantor (021-...) bukan format HP 08xx, tidak seharusnya disamarkan
         hasil = p.samarkan_nomor_dalam_teks("telepon kantor 021-7654321")
         self.assertIn("021-7654321", hasil)
+
+    def test_nomor_internasional_disamarkan(self):
+        # RINGAN #: nomor non-Indonesia (+1, +65, dll.) ikut disamarkan
+        for teks in [
+            "hubungi saya di +1 415-555-0198 ya",
+            "WA saya +65 8123 4567",
+            "call +44 20 7946 0958 kalau perlu",
+        ]:
+            hasil = p.samarkan_nomor_dalam_teks(teks)
+            self.assertIn("[nomor disamarkan]", hasil)
+
+
+class SamarkanNamaDiIsiPesan(unittest.TestCase):
+    """Regresi untuk cacat BERAT hasil uji independen: --samarkan membocorkan nama di isi
+    pesan/@mention/pesan sistem (19 kemunculan di data uji). Uji ini memastikan tidak ada nama
+    anggota asli yang tersisa setelah --samarkan, termasuk di mention & pesan sistem."""
+
+    def test_nama_di_isi_pesan_ikut_disamarkan(self):
+        teks = (
+            "12/09/26, 08.00 - Budi: Siap bu\n"
+            "12/09/26, 08.05 - Sari: sabar ya Budi, nanti aku kabari\n"
+        )
+        pesan, *_ = parse_teks(teks)
+        pesan, peta, _sisa = p.samarkan_pengirim(pesan)
+        self.assertEqual(pesan[1]["teks"], "sabar ya Anggota 1, nanti aku kabari")
+        for pesan_item in pesan:
+            self.assertNotIn("Budi", pesan_item["teks"])
+            self.assertNotIn("Sari", pesan_item["teks"])
+
+    def test_mention_nama_anggota_ikut_disamarkan(self):
+        teks = (
+            "12/09/26, 08.00 - Sari: halo\n"
+            "12/09/26, 09.00 - Budi: @Pak Nanda kalau atap galvalum warna apa pak?\n"
+            "12/09/26, 10.00 - Pak Nanda: warna abu-abu aja Budi\n"
+        )
+        pesan, *_ = parse_teks(teks)
+        pesan, peta, sisa = p.samarkan_pengirim(pesan)
+        self.assertEqual(pesan[1]["teks"], "@Anggota 3 kalau atap galvalum warna apa pak?")
+        self.assertEqual(pesan[2]["teks"], "warna abu-abu aja Anggota 2")
+        gabungan = " ".join(x["teks"] for x in pesan)
+        self.assertNotIn("Nanda", gabungan)
+        self.assertNotIn("Budi", gabungan)
+        # Label "Anggota N" hasil substitusi sendiri tidak boleh masuk daftar nama tersisa
+        self.assertNotIn("Anggota", " ".join(sisa))
+
+    def test_pesan_sistem_menambahkan_ikut_disamarkan(self):
+        teks = (
+            "12/09/26, 08.00 - Sari: halo\n"
+            "12/09/26, 12.10 - Sari menambahkan Ridho\n"
+        )
+        pesan, *_ = parse_teks(teks)
+        pesan, peta, sisa = p.samarkan_pengirim(pesan)
+        pesan_sistem = [x for x in pesan if x["jenis"] == "sistem"][0]
+        self.assertEqual(pesan_sistem["teks"], "Anggota 1 menambahkan Anggota 2")
+        self.assertNotIn("Sari", pesan_sistem["teks"])
+        self.assertNotIn("Ridho", pesan_sistem["teks"])
+        self.assertEqual(peta.get("Ridho"), "Anggota 2")
+
+    def test_pesan_sistem_keluar_dan_left_en(self):
+        teks = (
+            "12/09/26, 08.00 - Budi: halo\n"
+            "12/09/26, 08.15 - Sari left\n"
+        )
+        pesan, *_ = parse_teks(teks)
+        pesan, peta, sisa = p.samarkan_pengirim(pesan)
+        pesan_sistem = [x for x in pesan if x["jenis"] == "sistem"][0]
+        self.assertNotIn("Sari", pesan_sistem["teks"])
+
+    def test_sapaan_nama_bukan_anggota_jadi_orang_n(self):
+        # "Pak Anton" tidak pernah jadi pengirim maupun disebut di pesan sistem -> "Orang N"
+        teks = (
+            "12/09/26, 08.00 - Sari: pak Anton kapan datang ya?\n"
+            "12/09/26, 08.05 - Budi: kata pak Anton nanti sore\n"
+        )
+        pesan, *_ = parse_teks(teks)
+        pesan, peta, sisa = p.samarkan_pengirim(pesan)
+        gabungan = " ".join(x["teks"] for x in pesan)
+        self.assertNotIn("Anton", gabungan)
+        self.assertIn("Orang 1", pesan[0]["teks"])
+        # Konsisten: sebutan kedua memakai label "Orang" yang sama
+        self.assertIn("Orang 1", pesan[1]["teks"])
+
+    def test_mention_nama_bukan_anggota_jadi_orang_n(self):
+        teks = "12/09/26, 08.00 - Sari: @Dedi tolong konfirmasi ya\n"
+        pesan, *_ = parse_teks(teks)
+        pesan, peta, sisa = p.samarkan_pengirim(pesan)
+        self.assertNotIn("Dedi", pesan[0]["teks"])
+        self.assertIn("Orang 1", pesan[0]["teks"])
+
+    def test_daftar_nama_tersisa_tidak_kosong_untuk_kata_kapital_lain(self):
+        # Kata benda lain berhuruf kapital (bukan sapaan/mention/anggota) TETAP muncul di
+        # daftar verifikasi sisa -- ini disengaja (best-effort, bukan filter sempurna).
+        teks = "12/09/26, 08.00 - Sari: barangnya dari Toko Jaya Makmur ya\n"
+        pesan, *_ = parse_teks(teks)
+        pesan, peta, sisa = p.samarkan_pengirim(pesan)
+        self.assertTrue(any("Jaya Makmur" in s or "Toko" in s for s in sisa))
+
+    def test_ekstrak_nama_sistem_tidak_menangkap_frasa_umum(self):
+        # Pesan sistem umum (tidak diawali nama) tidak boleh dianggap nama.
+        self.assertEqual(
+            p.ekstrak_nama_sistem(
+                "Messages and calls are end-to-end encrypted. No one outside of this chat, "
+                "not even WhatsApp, can read or listen to them."
+            ),
+            [],
+        )
+
+
+class KandidatPerluPerhatian(unittest.TestCase):
+    """SEDANG #1: checklist kandidat 'perlu perhatian' berbasis pola untuk recall tinggi."""
+
+    def test_tanda_tanya_terdeteksi(self):
+        teks = "12/09/26, 08.00 - Sari: kapan toko buka lagi?\n"
+        pesan, *_ = parse_teks(teks)
+        hasil = p.tandai_kandidat_perhatian(pesan)
+        self.assertEqual(len(hasil), 1)
+        self.assertIn("tanda_tanya", hasil[0]["sinyal"])
+
+    def test_uang_nominal_terdeteksi(self):
+        teks = "12/09/26, 08.00 - Budi: totalnya Rp 4.500.000 ya\n"
+        pesan, *_ = parse_teks(teks)
+        hasil = p.tandai_kandidat_perhatian(pesan)
+        self.assertIn("uang_nominal", hasil[0]["sinyal"])
+
+    def test_tenggat_terdeteksi(self):
+        teks = "12/09/26, 08.00 - Budi: tolong dibayar paling lambat besok ya\n"
+        pesan, *_ = parse_teks(teks)
+        hasil = p.tandai_kandidat_perhatian(pesan)
+        self.assertIn("tenggat_tanggal", hasil[0]["sinyal"])
+
+    def test_keputusan_komplain_terdeteksi(self):
+        teks = "12/09/26, 08.00 - Budi: barangnya rusak, saya komplain ya\n"
+        pesan, *_ = parse_teks(teks)
+        hasil = p.tandai_kandidat_perhatian(pesan)
+        self.assertIn("keputusan_komplain", hasil[0]["sinyal"])
+
+    def test_obrolan_biasa_tidak_masuk_kandidat(self):
+        teks = "12/09/26, 08.00 - Budi: wkwkwk santai aja\n"
+        pesan, *_ = parse_teks(teks)
+        hasil = p.tandai_kandidat_perhatian(pesan)
+        self.assertEqual(hasil, [])
+
+    def test_mention_saya_terdeteksi(self):
+        teks = "12/09/26, 08.00 - Budi: @Rina tolong konfirmasi dong\n"
+        pesan, *_ = parse_teks(teks)
+        hasil = p.tandai_kandidat_perhatian(pesan, nama_saya="Rina")
+        self.assertIn("mention_saya", hasil[0]["sinyal"])
+
+    def test_pesan_sistem_tidak_masuk_kandidat(self):
+        teks = "12/09/26, 08.00 - Sari bergabung menggunakan tautan undangan grup ini\n"
+        pesan, *_ = parse_teks(teks)
+        hasil = p.tandai_kandidat_perhatian(pesan)
+        self.assertEqual(hasil, [])
+
+
+class TanggalSatuKombinasi(unittest.TestCase):
+    """SEDANG #2: peringatan eksplisit saat hanya ada SATU kombinasi tanggal di seluruh file
+    (mis. grup padat yang semuanya di 1 hari, format ambigu)."""
+
+    def test_peringatan_satu_kombinasi_muncul(self):
+        teks = (
+            "9/12/26, 8:00 AM - A: halo\n"
+            "9/12/26, 9:00 AM - B: pagi\n"
+        )
+        pesan, fmt, urutan, catatan = parse_teks(teks)
+        self.assertTrue(any("SATU kombinasi tanggal" in c for c in catatan))
+
+    def test_tidak_ada_peringatan_kombinasi_bila_lebih_dari_satu(self):
+        teks = (
+            "1/2/26, 8:00 AM - A: halo\n"
+            "3/4/26, 9:00 AM - B: pagi\n"
+        )
+        pesan, fmt, urutan, catatan = parse_teks(teks)
+        self.assertFalse(any("SATU kombinasi tanggal" in c for c in catatan))
+
+
+class EncodingUTF16(unittest.TestCase):
+    """SEDANG #3: dukungan UTF-16 (BOM & tanpa BOM)."""
+
+    def test_utf16_dengan_bom_le(self):
+        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as f:
+            f.write("12/09/26, 08.00 - Sari: halo dari utf-16\n".encode("utf-16"))
+            path = f.name
+        try:
+            teks, _sumber = p.baca_teks_ekspor(path)
+            pesan, *_ = p.parse_pesan(teks)
+            self.assertEqual(len(pesan), 1)
+            self.assertEqual(pesan[0]["pengirim"], "Sari")
+        finally:
+            os.unlink(path)
+
+    def test_utf16_be_eksplisit(self):
+        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as f:
+            f.write("12/09/26, 08.00 - Budi: halo dari utf-16be\n".encode("utf-16-be"))
+            path = f.name
+        try:
+            teks, _sumber = p.baca_teks_ekspor(path)
+            pesan, *_ = p.parse_pesan(teks)
+            self.assertEqual(len(pesan), 1)
+        finally:
+            os.unlink(path)
+
+
+class NamaSayaDipisah(unittest.TestCase):
+    """RINGAN: pesan dari pengguna sendiri (--nama-saya) ditandai terpisah."""
+
+    def test_dari_saya_ditandai_lewat_cli(self):
+        import subprocess
+        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False, mode="w") as f:
+            f.write("12/09/26, 08.00 - Rina: halo tim\n12/09/26, 08.05 - Budi: siap bu\n")
+            path = f.name
+        try:
+            skrip = FOLDER_SKILL / "scripts" / "parse_ekspor_wa.py"
+            hasil = subprocess.run(
+                [sys.executable, str(skrip), path, "--nama-saya", "Rina", "--indent", "0"],
+                capture_output=True, text=True, check=True,
+            )
+            data = json.loads(hasil.stdout)
+            pesan = data["hari"][0]["pesan"]
+            self.assertTrue(pesan[0]["dari_saya"])
+            self.assertFalse(pesan[1]["dari_saya"])
+        finally:
+            os.unlink(path)
+
+
+class NamaPengirimDenganTitikDua(unittest.TestCase):
+    """RINGAN: nama pengirim berisi ':' — batasan yang diketahui (tidak diperbaiki, hanya
+    didokumentasikan): hanya sebagian sebelum ':' pertama yang tertangkap sebagai nama."""
+
+    def test_nama_dengan_titik_dua_terpotong(self):
+        teks = "12/09/26, 08.00 - Toko: Budi (Owner): halo semua ini pengumuman\n"
+        pesan, *_ = parse_teks(teks)
+        self.assertEqual(len(pesan), 1)
+        # Perilaku yang diketahui: "Toko" tertangkap sebagai pengirim, sisanya masuk ke teks.
+        self.assertEqual(pesan[0]["pengirim"], "Toko")
+        self.assertIn("Budi (Owner): halo semua ini pengumuman", pesan[0]["teks"])
 
 
 class StatistikDanPengelompokan(unittest.TestCase):
