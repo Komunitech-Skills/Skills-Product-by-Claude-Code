@@ -92,3 +92,6 @@ Tidak ada cacat berat: semua angka uang & jam benar, dasar hukum cocok dengan te
 - File `.xlsx` asli dari mesin merek tertentu (hanya CSV & jalur error XLSX yang diuji).
 
 `platform_teruji` yang jujur: `claude-code (simulasi agent)`.
+
+## Catatan koordinator — v1.0.1
+3 cacat SEDANG + semua cacat RINGAN diperbaiki pembuat; 38/38 tes regresi lulus (dicek ulang koordinator). Pengingat makan Pasal 29 memakai ambang teks pasal (lembur ≥ 4 jam). Status tetap lulus (perbaikan disertai tes regresi, tidak mengubah angka lembur yang sudah diverifikasi).
