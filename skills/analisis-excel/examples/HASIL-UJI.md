@@ -254,3 +254,61 @@ Tambahan ad hoc: `,,Total,…` dan `,,Grand Total,…` di kolom ke-3 → dilewat
 ### Skor kualitas uji ulang v1.0.4: **6 / 10** — **belum lulus ke `beta`**; revisi B10 (wajib) dan B11, lalu uji ulang independen
 - (+) Aturan jumlah kolom menutup B5/B7 (C4, C8, N9 GAGAL tegas dengan nomor & isi baris); B6/B8/B9 beres; semua fixture lama tetap benar; format bank/marketplace yang rapi (Mandiri, TikTok, Google Form, Excel `;` cp1252, subtotal berlabel) terbaca benar; 68 tes lulus.
 - (−) Target "0 salah diam-diam" belum tercapai: **baris SUM tanpa label / baris Rata-rata (N11) menggandakan total tanpa peringatan** — pola Excel yang sangat umum pada pengguna awam. Selain itu 4 dari 13 ekspor realistis (31%) ditolak, termasuk **setiap** mutasi BCA dan file dengan kolom catatan opsional; `--paksa` menyelamatkan totalnya, tetapi awam dipaksa melewati pesan yang menyalahkan file yang sebenarnya sehat.
+
+## Uji ulang v1.0.5 (penguji independen ke-6, cek, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad. Versi script `1.0.5`. Tes bawaan: **82 tes OK** (±23 dtk). Platform: `claude-code (simulasi agent)`.
+Fixture baru: `buat_fixture_uji_v105.py` (deterministik; `kunci-v105.json` dihitung dari data sumber, **tanpa membaca kode skill**). Fokus: data ASLI yang ikut terbuang karena dikira baris ringkasan/catatan.
+
+### Regresi semua fixture lama (v1.0.0–v1.0.4) — tidak ada regresi
+- 01 Q1 67.313.000/147, `--sheet semua` 233.556.000/499 (1900 & 1904) ✔; 02 lembur 745,5/383 ✔; 03 iuran 5.525.000/91 (+TOTAL dilewati, +3 duplikat) ✔; file rusak/kosong/korup/tanpa sheet → GAGAL kode 2 ✔.
+- Koperasi `--sheet semua` 332.635.000/172 ✔; marketplace 5.627.000/60 ✔; anggota 63.350.000 ✔; kutip rusak GAGAL ✔.
+- F1 6.738.100/40, F2 5.301.500/25, F4 & F4b 63.575.000/77, F5 1.055.000/10 ✔; F3/F3b/F3c GAGAL ✔.
+- C1–C4, C8 GAGAL ✔ (C8 `--paksa` 328.000 + PERINGATAN TEGAS); C5 1.061.250/30, C6 566.000, C7 556.000 ✔; X1–X5 ✔ (X3 `--sertakan` 6.615.000/33).
+- v1.0.4: **N1, N2, N4, N8 kini terbaca tanpa `--paksa`** dengan jumlah baris benar (20/15/16/20) + info catatan kaki/kolom opsional (B11 beres); **N11 kini 4.860.000/12** + SUM & Rata-rata disebut (B10 beres); **N12 kini 10 baris** + info catatan (B12 beres); N3, N5–N7, N10, N13 tetap ✔; N9 tetap GAGAL ✔.
+
+### File baru → hasil (a = benar, b = gagal/peringatan tegas + jalan keluar, b− = angka default SALAH tetapi baris yang dibuang disebut beserta isinya + `--pertahankan-total`, c = salah diam-diam, d = ditolak padahal wajar)
+| File | Pola | Kunci | Hasil script | Nilai |
+|---|---|---|---|---|
+| R1 `bernomor-baris3-jumlah` | kolom No/Qty/Harga/Total semua angka; baris 2 = baris 1, baris 3 = baris 1+2 di SEMUA kolom | 10, 725.000 | 725.000/10 ✔ | a |
+| R2 `satu-kolom-nominal` | satu kolom: 25rb, 25rb, 50rb, 100rb (= jumlah di atas) … | 8, 370.000 | 370.000/8 ✔ (+ info duplikat) | a |
+| R3 `kas-tanggal-sekali` | buku kas, tanggal/keterangan hanya di transaksi pertama per hari; baris 5 (70.000) kebetulan = jumlah di atas | 8, 396.000 | **326.000/7**; "baris 5: \| \| 70000 = jumlah kolom di atasnya … DOBEL" | **b−** |
+| R3c `kas-akhir-sama-jumlah` | transaksi lanjutan terakhir tanpa label = jumlah di atas | 4, 120.000 | **60.000/3** + peringatan berisi baris 5 | **b−** |
+| R4 `masuk-keluar-banyak-nol` | Masuk/Keluar banyak 0, baris tanpa label, Keluar = jumlah di atas tetapi Masuk tidak | Masuk 595.000, Keluar 680.000 | ✔ keduanya | a |
+| R5 `produk-bernama-total` | "Paket Total Care", "Jumlah Besar…", "Setoran Saldo Awal Bulan", "Grand Total Kids Toy", "Subtotal Snack Box", "Rata-rata Air…", + produk bertanggal bernama persis "TOTAL" & "Jumlah" | 10, 1.022.000 | nama mengandung kata → tetap data ✔; "TOTAL"/"Jumlah" bertanggal dibuang (950.000/8) + disebut isinya | b |
+| R6 `kategori-rata-rata` | penilaian kinerja "Rata-rata"/"Di atas rata-rata"/"Di bawah rata-rata", kolom Bonus | 8, 6.000.000; Rata-rata 4 baris 3.000.000 | **3.000.000/4 — 4 dari 8 pegawai dibuang** sebagai "baris Total/Jumlah" (isi baris disebut) | **b− (serius)** |
+| R6b `penilaian-kolom-1` | sama, kategori di kolom 1 | 4, 3.000.000 | **2.000.000/2** | **b− (serius)** |
+| R7 `kerusakan-total` | klaim asuransi, Jenis Kerusakan = Total/Sebagian | 5, 210.500.000 | **5.500.000/3 — 97% nilai hilang** (2 klaim "Total" dibuang, disebut isinya) | **b− (serius)** |
+| R8 `catatan-kaki-berangka` | 6 data + "Catatan: 2 pesanan retur senilai,,150000" + "Harga sudah termasuk PPN 11%" | 6, 715.000 | GAGAL "baris 10 hanya 1 dari 3 kolom"; `--paksa` → 865.000 (catatan 150.000 ikut) | **d** |
+| R8c `catatan-1-sel-berangka` | 2 catatan kaki 1 sel berisi angka ("Ongkir 15000…", "PPN 11%") | 6, 715.000 | GAGAL 2 baris (catatan teks tanpa angka di N1 diterima) | **d** |
+| R8d `catatan-berangka-3-sel` | hanya "Catatan: … senilai,,150000" di bawah tabel | 6, 715.000 | **865.000/7**; satu-satunya tanda: "Tanggal: 1 nilai tidak valid (baris 10: 'Catatan…')" — tidak disebut bahwa 150.000 ikut dijumlah | **c ✘** |
+| R9 `subtotal-berlabel-kelompok-1-baris` | "Subtotal Cabang A/B/C" + Grand Total; cabang B 1 baris | 6, 1.700.000 | 1.700.000/6 ✔, 4 baris disebut | a |
+| R10 `subtotal-tanpa-label` | subtotal per cabang TANPA label; cabang B 1 baris | 6, 1.700.000 | **2.100.000/7**: subtotal A (=jumlah di atas) & C (kebetulan "= rata-rata") dibuang, **subtotal B 400.000 ikut dijumlah tanpa pesan** | **c ✘** |
+| R11 `kas-sum-average.xlsx` | XLSX; baris 3 = baris 2 (tanpa label), baris 6 data = jumlah di atas (tanpa label), lalu SUM & AVERAGE (sel rumus) | 5, 10.700.000 | **18.190.000/6**: baris data 6 dibuang (disebut), **SUM 10.700.000 & AVERAGE 2.140.000 ikut dijumlah tanpa pesan**; sama persis pada versi CSV | **c ✘ (terberat)** |
+| R11b `sum-average-biasa.xlsx` | SUM & AVERAGE (rumus) tanpa baris kebetulan | 3, 3.850.000 | ✔ keduanya dibuang & disebut (pesan menulis "1283333.33333333") | a |
+| R12 / R12b `bulan-angka` | Tahun/Bulan sebagai angka (Bulan 3 = 1+2, Mar = Jan+Feb) | 12, 70.700.000 | ✔ | a |
+| R13 `waktu-pembeli-kosong` | pembeli anonim kosong, 15.000 berulang, "Bu Ani" 45.000 = jumlah di atas | 4, 90.000 | ✔ | a |
+| R14 `iuran-baris-belum-lengkap.xlsx` | baris tanpa tanggal/nama 75.000 = rata-rata di atas | 4, 275.000 | ✔ | a |
+| R16 `nilai-polos-sama-jumlah.xlsx` | XLSX, nilai **polos (bukan rumus)** tanpa label = jumlah di atas | 4, 2.400.000 | **1.350.000/3**, pesan menyebut "baris rumus SUM/AVERAGE" padahal sel tidak berumus | **b−** |
+| P1 `shopee-nilai-berulang` | Total Pembayaran berulang, satu = jumlah dua sebelumnya, produk "Paket Total Care" | 10, 1.115.000 | ✔ | a |
+| P2 `tokopedia-ringkasan-bawah` | judul di atas, "Rp150.000", Total Penjualan & Rata-rata per pesanan di bawah | 5, 825.000 | ✔ 2 baris ringkasan disebut | a |
+| P3 `bca-keterangan-saldo-total` | mutasi "1.000.000,00", kolom CR/DB tanpa judul, keterangan "…SALDO AWAL ARISAN", "…TOTAL BAYAR PESANAN", Saldo Awal/Mutasi/Saldo Akhir di bawah | 4, 1.520.000 | ✔ transaksi berketerangan SALDO/TOTAL tetap data; 4 baris saldo disebut | a |
+| P4 `google-form-donasi` | timestamp d/m/Y H:M:S, satu donasi = jumlah dua sebelumnya | 5, 500.000 | ✔ (+ info tanggal ambigu, wajar) | a |
+Tambahan ad hoc (tidak masuk skrip): kolom paling kanan "Diskon" (angka) sering kosong → 360.000 ✔ a; baris tanpa Barang tapi ada Diskon (angka bergeser) → GAGAL ✔ b; baris tanpa nilai Jumlah → GAGAL ✔ b; XLSX gaya sel gabung, baris 2 = baris 1 tanpa label → tetap data ✔ a.
+
+**Ringkas:** 25 file; **13 a, 1 b, 6 b−, 3 c (R8d, R10, R11), 2 d (R8, R8c)**. Setiap baris yang dibuang oleh aturan label/SUM **disebut beserta isinya** (syarat "pengguna bisa melihat" terpenuhi untuk b−), **kecuali** kasus c: angka yang *ikut* dijumlah (subtotal B, SUM/AVERAGE setelah baris kebetulan, catatan berangka) tidak disebut sama sekali.
+
+### Kinerja 50 ribu baris (5 kolom, + baris SUM tanpa label di akhir)
+CSV: `ringkas` 5,9 dtk, `pivot` 6,2 dtk; XLSX: 4,6 / 4,2 dtk. Total 12.498.522.152 ✔ (SUM akhir terdeteksi & disebut). Layak.
+
+### Bug baru
+| # | Prioritas | Temuan | Saran |
+|---|---|---|---|
+| B14 | **P1** | Label ringkasan dicocokkan pada sel **mana pun** tanpa cek angka: nilai kategori "Rata-rata" (R6/R6b, penilaian kinerja — umum di HR) dan "Total" (R7, jenis kerusakan) membuang setengah data / 97% nilai; baris bertanggal bernama produk "TOTAL" juga dibuang (R5). Pesan "baris Total/Jumlah dilewati agar tidak dobel" membuat agent & awam menerimanya. | Baris berlabel hanya dianggap ringkasan bila: label di sel teks pertama **dan** baris tanpa tanggal/ID; **atau** angkanya ≈ jumlah/rata-rata kelompok di atas. Nilai yang muncul ≥ 2× di satu kolom = kategori, bukan label. Selebihnya tetap data + info ringan. Tes regresi R5, R6, R6b, R7 + N13/P2/P3 tetap lulus. |
+| B15 | **P1** | Aturan "baris tanpa label = jumlah/rata-rata di atas" bersifat serakah dan berjalan dari atas: transaksi asli yang kebetulan sama dibuang (R3, R3c, R16), dan karena itu **baris SUM/AVERAGE asli sesudahnya tidak lagi cocok dan ikut dijumlah diam-diam** (R11: 18.190.000 vs 10.700.000). Pada XLSX, sel bernilai polos disebut "baris rumus SUM". | XLSX: pakai isi rumus (`SUM`/`AVERAGE`/`SUBTOTAL` atas rentang kolom yang sama) sebagai bukti; sel tanpa rumus **jangan** dibuang oleh aturan ini. CSV: evaluasi blok baris tanpa label di **ujung** tabel dari bawah (baris terakhir = jumlah semua data di atas), bukan di tengah; kandidat di tengah → pertahankan + peringatan "mungkin baris SUM, cek". Tes regresi R3, R3c, R11 (xlsx & csv), R16, N11. |
+| B16 | P2 | Subtotal per kelompok tanpa label (R10) hanya sebagian terdeteksi (satu karena kebetulan = rata-rata); subtotal kelompok 1 baris ikut dijumlah (+400.000 diam-diam). | Kenali pola: beberapa baris tanpa label yang masing-masing = jumlah baris sejak baris-tanpa-label sebelumnya → buang semua secara konsisten (termasuk kelompok 1 baris) + sebut; pola tidak konsisten → GAGAL/peringatan tegas. |
+| B17 | P2 | Catatan kaki berangka: 3 sel "Catatan: …,,150000" ikut dijumlah (R8d, hanya tanda tak langsung "tanggal tidak valid"); catatan 1 sel yang berisi angka ("Ongkir 15000…", "PPN 11%") ditolak GAGAL (R8, R8c) padahal catatan teks biasa diterima. | Baris sesudah baris data utuh terakhir yang diawali Catatan/Keterangan/Note/Ket/`*` → blok catatan (info + isi), walau berisi angka; angka di dalam teks tidak membatalkan status catatan. Nilai tidak valid di kolom tanggal pada baris yang angkanya ikut dijumlah → peringatan tegas. |
+| B18 | P3 | Pesan menampilkan rata-rata mentah "1283333.33333333" (R11b). | Format rupiah seperti tabel. |
+
+### Skor kualitas uji ulang v1.0.5: **6 / 10** — **belum lulus ke `beta`**; revisi B14 & B15 (wajib), B16–B17, lalu uji ulang independen
+- (+) B10–B12 dari v1.0.4 tuntas: SUM/Rata-rata di ujung, catatan kaki, mutasi BCA, kolom opsional di kanan kini terbaca benar tanpa `--paksa`; semua fixture lama tetap benar; nama produk yang *mengandung* Total/Jumlah/Saldo aman; ekspor Shopee/Tokopedia/BCA/Google Form realistis benar; setiap baris yang dibuang disebut dengan isinya; 82 tes lulus; 50 ribu baris < 7 dtk.
+- (−) Perbaikan menukar satu jenis salah diam-diam dengan jenis baru: **3 file salah diam-diam** (R11 terberat: total 70% terlalu besar karena baris SUM & AVERAGE ikut dijumlah setelah satu transaksi asli dibuang) dan **6 file dengan angka default salah** karena data asli dibuang (R6/R7: kategori "Rata-rata"/"Total" menghapus 50–97% nilai). Pesannya jujur, tetapi berbunyi seperti tindakan yang benar ("agar tidak dobel"), sehingga awam hampir pasti menerimanya. Aturan label & SUM perlu bukti tambahan (posisi, rumus XLSX, cek angka) sebelum membuang baris.
