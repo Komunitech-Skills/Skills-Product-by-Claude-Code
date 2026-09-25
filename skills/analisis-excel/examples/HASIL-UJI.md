@@ -159,3 +159,48 @@ Angka lama juga diulang: skenario 01 `--sheet semua` (499 baris, 496 terisi, Rp 
 - (−) B1 & B2: dua pola jebakan yang lebih jarang masih menghasilkan angka salah dengan peringatan terlalu lunak (tidak diam total — ada peringatan — sehingga tidak menurunkan di bawah 8).
 
 **Rekomendasi:** status `lulus`; B1/B2 diperbaiki di v1.0.3 (+ tes regresi F3b, F4b, F5 dari `buat_fixture_uji_v102.py`); B3/B4 boleh menyusul.
+
+## Uji ulang v1.0.3 (penguji independen ke-4, cek singkat, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad. Versi script `1.0.3`. Tes bawaan: **60 tes OK**. Platform: `claude-code (simulasi agent)`.
+Fixture baru: `buat_fixture_uji_v103.py` (deterministik; `kunci-v103.json` dihitung dari data sumber, tanpa membaca kode skill).
+
+### B1–B4 (fixture `buat_fixture_uji_v102.py`)
+| # | Bukti ulang | Status |
+|---|---|---|
+| B1 | F3b → `GAGAL: CSV kemungkinan rusak … baris 7 tampak seperti baris data utuh … kemungkinan 1 baris data HILANG`, kode 2; `--paksa` → Rp 205.000 + "PERINGATAN TEGAS … angka bisa KURANG"; F5 (sah) tetap Rp 1.055.000 | ✔ Beres |
+| B2 | F4b `--sheet semua` → Rp 63.575.000 (77 baris) ✔; "Sheet 'Rekap Kategori' TIDAK digabung … total DOBEL … --sertakan" | ✔ Beres |
+| B3 | F1 → "35 baris berisi sel multi-baris (41 sel …)" | ✔ Beres |
+| B4 | `--acuan Ringkasan` → "Kolom 'Jumlah' tidak ada" (tanpa kata ganda) | ✔ Beres |
+Regresi F1 (Rp 6.738.100/40), F2 (Rp 5.301.500/25), F4 (Rp 63.575.000/77) tetap cocok kunci.
+
+### File baru → hasil (a = benar, b = gagal/peringatan tegas, c = salah diam-diam)
+| File | Isi | Kunci | Hasil script | Nilai |
+|---|---|---|---|---|
+| C1 `kutip-awal` | kutip nyasar baris data pertama, "tertutup" tanda inci baris 3 | 20 baris, 375.000 | GAGAL kemungkinan rusak baris 2 s.d. 3, kode 2 | b ✔ |
+| C2 `kutip-tengah` | kutip nyasar baris 11, tertutup baris 13 (2 baris tertelan) | 20, 446.000 | GAGAL baris 11 s.d. 13, "2 baris data HILANG" | b ✔ |
+| C3 `kutip-akhir` | kutip nyasar di baris terakhir, tak tertutup | 20, 431.000 | GAGAL CSV rusak baris 21 (baris terakhir) | b ✔ |
+| C4 `alamat-sah-plus-nyasar` | 12 alamat 3 baris sah + `""`, SATU kutip nyasar di kolom Alamat (ditutup kutip pembuka alamat baris berikutnya) | 24 baris, 750.000 | **25 baris, 667.500 dari 22 nilai**; peringatan hanya "multi-baris … wajar bila disengaja", "2 tanggal tidak valid", "1 nilai Jumlah tidak dihitung" (padahal 2 nilai hilang: 40.000 + 42.500; baris 18–19 hanya 2–3 sel) | **c−** (ada peringatan, tapi tidak menyebut kemungkinan rusak & mengecilkan kerugian) |
+| C5 `sah-alamat-3-baris` | CSV SAH: alamat 3 baris berkoma/berangka + catatan multi-baris ("Bayar: transfer, 50%⏎sisa: COD") | 30, 1.061.250 | **GAGAL "kemungkinan rusak … 14 baris data HILANG … perbaiki tanda kutip"**; `--paksa` → Rp 1.061.250 ✔ + "PERINGATAN TEGAS angka bisa KURANG" | b (positif palsu; jalan keluar ada) |
+| C6 `sah-satu-catatan-mirip-data` | satu-satunya sel multi-baris, baris keduanya mirip data (`2026-09-09,Teh,retur,12000`) | 18, 566.000 | 566.000/18 ✔ + peringatan "cek baris 9, mungkin kutip nyasar" | a ✔ |
+| C7 `sah-catatan-baris-baru` | 2 catatan berbaris baru biasa | 15, 556.000 | 556.000/15 ✔ + peringatan lunak | a ✔ |
+| C8 `baris-kurang-sel` | tanpa kutip; baris 11 hanya 3 sel (kolom Barang terlewat, angka 18.000 jatuh ke Barang) | 20, 346.000 | **328.000 "dari 19 baris" (20 baris data), TANPA peringatan apa pun** | **c ✘** |
+| X1 `rekap-bernama-Sheet4` | Sep/Okt/Nov + "Sheet4" rekap per kategori, judul kolom sama | 45, 10.685.000; per kategori 4 nilai | 10.685.000/45 ✔, pivot 4/4 ✔; Sheet4 dilewati + peringatan DOBEL | a ✔ |
+| X2 `rekap-bernama-Okt` | Sheet1–3 data + "Okt" = rekap per bulan, judul sama | 43, 9.945.000 | 9.945.000/43 ✔; Okt dilewati + peringatan | a ✔ |
+| X3 `Rekap-berisi-data` | "Rekap Des" sebenarnya data Desember | tanpa: 21/3.535.000; dengan: 33/6.615.000 | default dilewati + saran `--sertakan`; `--sertakan "Rekap Des"` → 6.615.000/33 ✔ | a ✔ |
+| X4 `satu-bulan-kosong` | Jan/Feb/Mar/Apr, Feb judul saja | 28, 6.930.000; per bulan 3/3 | 6.930.000/28 ✔, tren 3/3 ✔; Feb "TIDAK digabung: tidak ada baris data" | a ✔ (catatan B9) |
+| X5 `rekap-tidak-persis` | seperti X1, rekap selisih Rp 5.000 dari jumlah sebenarnya | 45, 10.685.000 | 10.685.000/45 ✔; Sheet4 dilewati, tapi teks "= 10.690.000 = jumlah gabungan" (tidak sama) | a ✔ (catatan B8) |
+
+**Ringkas:** 13 file; 8 a, 4 b (satu positif palsu dengan jalan keluar), **1 c (C8) + 1 c− (C4)**. Tidak ada file sah yang ditolak tanpa jalan keluar.
+
+### Bug baru
+| # | Prioritas | Temuan | Saran |
+|---|---|---|---|
+| B5 | P1 | **Baris CSV dengan sel lebih SEDIKIT dari judul kolom tidak diperingatkan** (C8): angka jatuh ke kolom teks, total kurang 18.000 diam-diam. Baris dengan sel lebih BANYAK sudah diperingatkan — kasus kebalikannya belum. Ini juga akar C4 (baris 18–19 hanya 2–3 sel). | Hitung rekaman yang jumlah selnya < jumlah judul (abaikan baris kosong total); peringatan tegas "baris N hanya k dari m kolom — angka mungkin bergeser/tidak terhitung"; ≥1 baris kurang sel + sel multi-baris di sekitarnya → perlakukan sebagai "kemungkinan rusak" (GAGAL, `--paksa`). Tes regresi C4, C8. |
+| B6 | P2 | Positif palsu (C5): ekspor sah dengan alamat 3 baris berkoma + catatan "Bayar: transfer, 50%⏎sisa: COD" ditolak dan pesan menyuruh "perbaiki tanda kutip", "14 baris HILANG". Awam tidak bisa menilai; agent mengikuti SKILL.md akan menyalahkan file yang benar. | Baris lanjutan hanya dianggap "mirip data" bila jumlah bagiannya ≈ jumlah kolom **dan** tiap rekaman tetap punya jumlah sel = judul setelah dibaca normal (rekaman utuh = bukti file sah). Bila semua rekaman utuh dan jumlah baris konsisten, turunkan ke peringatan. Tes regresi C5 (harus terbaca tanpa `--paksa`). |
+| B7 | P3 | C4: peringatan "multi-baris … wajar bila disengaja" tetap lunak walau ada tanggal tidak valid di baris sesudah sel multi-baris. | Gabungkan dengan B5. |
+| B8 | P3 | X5: pesan "jumlah … = 10.690.000 = jumlah gabungan" padahal gabungan 10.685.000. | Tulis "≈ (selisih Rp 5.000)" bila tidak persis. |
+| B9 | P3 | X4: tren menulis "Penurunan terbesar: Feb 2026 (-100,0%)" untuk sheet kosong. | Kecualikan periode tanpa data dari "penurunan terbesar"; cukup "Feb 2026 tanpa data". |
+
+### Skor kualitas uji ulang v1.0.3: **7 / 10** — tetap `lulus`, perbaiki B5 sebelum `beta`
+- (+) B1–B4 tuntas; semua kutip nyasar murni (awal/tengah/akhir) GAGAL tegas; rekap bernama biasa ("Sheet4", "Okt", selisih kecil) terdeteksi; "Rekap" berisi data bisa dimasukkan dengan `--sertakan`; sheet kosong aman; 60 tes lulus.
+- (−) B5: satu jenis kesalahan ketik sederhana (baris kurang kolom) menghasilkan angka salah **tanpa peringatan** — pelanggaran langsung prinsip "reliable"; C4 bernasib sama sebagian. B6: file sah realistis ditolak dengan pesan yang menyalahkan pengguna (ada `--paksa`).
