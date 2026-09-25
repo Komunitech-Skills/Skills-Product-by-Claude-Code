@@ -83,3 +83,22 @@
 **Alasan:** Semua temuan uji pertama diperbaiki dan terbukti lewat uji ulang, termasuk bug TINGGI yang bisa membuat skor salah diam-diam. Script kini tahan terhadap format Excel Indonesia dan angka rupiah gaya lokal, angka cocok 100% dengan hitungan independen (termasuk 3.000 ide), dan alur tanya sudah "instan" (satu pesan / mode cepat tanpa tanya) sesuai CLAUDE.md §1 tanpa kehilangan gerbang persetujuan. Belum 9 karena masih ada dua celah kecil yang bisa memberi hasil tidak sesuai maksud tanpa error (kolom header kembar, salah ketik nama kolom default → bobot sama rata) serta beberapa pesan error kecil yang kurang tepat.
 
 **Rekomendasi:** **Lulus** (skor ≥ 7) — boleh naik ke status `lulus` menunggu uji platform asli. Perbaikan B-5 & B-2 disarankan pada revisi berikutnya (patch kecil + tes), tidak wajib uji ulang penuh.
+
+## Uji ulang v1.0.2
+
+- **Tanggal:** 2026-09-25.
+- **Penguji:** agent independen ketiga (bukan pembuat/perevisi/penguji sebelumnya), salinan di scratchpad `uji3-biu/`. Platform: `claude-code (simulasi agent)`.
+
+**Hasil:**
+- `python3 scripts/test_skor_ide.py` → **72 tes OK** (sebelumnya 60).
+- **B-1..B-8 semua beres**, diverifikasi dengan kasus baru: header kembar `nama_ide,a,a` → **ditolak** dengan pesan jelas (B-5); nama kolom default salah ketik/huruf besar (`Kesesuaian_Modal` dst.) → **dicocokkan via casefold** dan otomatis pakai bobot default resmi, bukan diam-diam sama rata lagi (B-2, kini lebih baik dari yang dilaporkan sebelumnya); baris kosong di tengah → nomor baris fisik benar (baris 4, bukan 3) (B-1); header `Nama_Ide` huruf besar diterima (B-3); koma ekor Excel (`nama_ide,a,b,`) dibuang otomatis (B-4); `--modal -5jt` → pesan Indonesia jelas "modal awal harus lebih besar dari 0" (B-6); gerbang persetujuan mode cepat kini eksplisit disebut di langkah B.5 & C.2 (B-7); `references/musim-dan-momentum.md` kini menulis "9.9, 10.10, 11.11 (kampanye diskon marketplace); 12.12 = Harbolnas nasional resmi" (B-8).
+- **Cek Harbolnas via web search:** dikonfirmasi — Harbolnas resmi digagas 2012 dan dirayakan 12.12 oleh asosiasi e-commerce Indonesia (IdeA); 9.9/10.10/11.11 adalah promo tanggal kembar marketplace bulanan yang meniru pola Harbolnas, bukan Harbolnas resmi itu sendiri. Teks skill sekarang akurat.
+- CSV Excel Indonesia baru (BOM + `;` + koma desimal + header UPPERCASE + baris kosong + koma ekor sekaligus): terbaca benar, skor 4,000 & 3,139 cocok dengan hitungan independen (`Fraction`).
+- **250 ide acak** (nilai bulat & `,5`) dibanding hitungan independen `Fraction`: **selisih 0** untuk semua skor.
+- Titik impas independen (`math.ceil` via `Fraction`) untuk 5 pasangan modal/margin dari contoh (125, 500, 143, 334, 27 unit): **semua cocok**. Data mentah contoh laundry (4,278…2,778) tidak disertakan sebagai CSV di repo sehingga tidak bisa dihitung ulang langsung dari file; formula (Σnilai×bobot/Σbobot) sudah diverifikasi identik lewat 250 kasus acak dan tidak berubah dari v1.0.1 yang sebelumnya mengonfirmasi angka itu.
+
+**Bug baru:** tidak ditemukan yang baru pada rentang uji ini.
+
+## Skor kualitas uji ulang v1.0.2: **9 / 10**
+
+Semua temuan B-1..B-8 dari uji ulang v1.0.1 terbukti diperbaiki dengan benar, termasuk B-2 yang kini malah lebih ketat dari perbaikan minimum yang disarankan (bukan cuma catat sumber, tapi mencocokkan nama kolom secara toleran dan tetap pakai bobot resmi). Angka skor & titik impas 100% cocok independen pada 250 kasus acak + kasus format Excel Indonesia gabungan. Klaim Harbolnas terverifikasi via web search. Tidak naik ke 10 karena data mentah contoh laundry pembuat tidak tersedia sebagai file untuk verifikasi ulang persis, dan cakupan uji ini tidak mengulang skenario percakapan penuh (01-05) atau uji platform asli.
