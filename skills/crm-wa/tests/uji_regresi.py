@@ -677,6 +677,23 @@ class UjiRevisi101(Dasar):
         self.assertEqual(C.hal_untuk_draf("sofa Rp 4.500.000 (nego)"), "sofa")
         self.assertEqual(C.hal_untuk_draf("hampers 30 paket harga 150rb"), "hampers 30 paket")
         self.assertIsNone(C.hal_untuk_draf("450rb"))
+        self.assertEqual(C.hal_untuk_draf("hampers (budget 2jt) - buat bos yang cerewet"), "hampers")
+
+    # --- N1 (uji ulang v1.0.1): titik/koma desimal/kata angka masih lolos ke draf ------------------------------
+    def test_n1_kebutuhan_titik_koma_desimal_dan_kata_angka(self):
+        # titik memotong ke kalimat baru (bukan cuma jadi kata "." nyasar di tengah draf)
+        self.assertEqual(C.hal_untuk_draf("kue 450 ribu. orangnya pelit banget"), "kue")
+        # "sejuta" (kata angka tanpa digit) dibuang seperti nominal lain
+        self.assertEqual(C.hal_untuk_draf("kue sejuta untuk mantan pacar"), "kue untuk mantan pacar")
+        # koma desimal di dalam angka ("1,5 juta") tidak lagi dianggap pemisah komentar
+        self.assertEqual(C.hal_untuk_draf("kue 1,5 juta untuk ultah mertua yang cerewet"),
+                         "kue untuk ultah mertua yang cerewet")
+        # "rupiah" berdiri sendiri ikut dibuang bersama nominalnya
+        self.assertEqual(C.hal_untuk_draf("brownies 4.500.000 rupiah dp 50% nanti"), "brownies")
+        for keb in ("kue 450 ribu. orangnya pelit banget", "kue sejuta untuk mantan pacar",
+                    "kue 1,5 juta untuk ultah mertua yang cerewet", "brownies 4.500.000 rupiah dp 50% nanti"):
+            self.assertNotIn(".", C.hal_untuk_draf(keb) or "")
+            self.assertNotIn(",", C.hal_untuk_draf(keb) or "")
         o = self.ok("tambah", "--nama", "Bu Mira", "--wa", "081200000031",
                     "--kebutuhan", "kue ultah 450rb, suaminya pelit")
         self.assertTrue(any("nama produk saja" in x for x in o["peringatan"]))
@@ -745,6 +762,46 @@ class UjiRevisi101(Dasar):
         out = self.ok("impor", p)
         self.assertEqual([x["baris"] for x in out["rusak"]], [4])
         self.assertIn("nomor telepon", out["rusak"][0]["alasan"])
+
+    # --- N2 (uji ulang v1.0.1): kutip tak tertutup menelan baris berikutnya tanpa disebut ------------------------
+    def test_n2_kutip_tak_tertutup_diberi_peringatan(self):
+        # baris 4 (kutip terbuka) menelan baris 5 ("Budi") ke dalam satu baris logis yang sama -> harus disebutkan
+        p = self.file("r2.csv", "nama;no wa\nAyu;081200000051\n\n\"Bu Eka;0812-0000-0052;kue\nBudi;081200000053\n")
+        out = self.ok("impor", p)
+        self.assertTrue(any("4-5" in x and "tanda kutip" in x for x in out["peringatan"]), out["peringatan"])
+        # "Budi" tidak muncul di kontak masuk maupun rusak sebagai baris terpisah (tertelan ke baris 4)
+        self.assertNotIn(5, [x["baris"] for x in out["rusak"]])
+        self.assertNotIn(5, [x["baris"] for x in out["baru"]])
+        # file tanpa kutip bermasalah -> tidak ada peringatan ini
+        p2 = self.file("bersih.csv", "nama;no wa\nAyu;081200000051\nBudi;081200000053\n")
+        out2 = self.ok("impor", p2)
+        self.assertFalse(any("tanda kutip" in x for x in out2["peringatan"]))
+
+    # --- N3 (uji ulang v1.0.1): kontak tanpa tgl masuk tidak disebut di pratinjau impor -------------------------
+    def test_n3_tanpa_tgl_masuk_diberi_peringatan(self):
+        p = self.file("tanpa-tgl.csv", "nama;no wa\nAyu;081200000081\nBudi;081200000082\n")
+        out = self.ok("impor", p)
+        self.assertTrue(any("tanpa kolom/tanggal masuk" in x and "2 kontak" in x for x in out["peringatan"]),
+                        out["peringatan"])
+        # ada kolom tgl masuk untuk sebagian -> hanya yang kosong yang dihitung
+        p2 = self.file("sebagian-tgl.csv", "nama;no wa;tgl masuk\nAyu;081200000083;20/9/2026\nBudi;081200000084;\n")
+        out2 = self.ok("impor", p2)
+        self.assertTrue(any("1 kontak" in x and "tanpa kolom/tanggal masuk" in x for x in out2["peringatan"]),
+                        out2["peringatan"])
+        # semua baris punya tgl masuk -> tidak ada peringatan ini
+        p3 = self.file("lengkap-tgl.csv", "nama;no wa;tgl masuk\nAyu;081200000085;20/9/2026\n")
+        out3 = self.ok("impor", p3)
+        self.assertFalse(any("tanpa kolom/tanggal masuk" in x for x in out3["peringatan"]))
+
+    # --- K2 (uji ulang v1.0.1): pesan "jadwal prospek lama diganti" pada kontak BARU -----------------------------
+    def test_k2_pesan_jadwal_tidak_menyebut_diganti_untuk_kontak_baru(self):
+        o = self.ok("tambah", "--nama", "Bu Sinta", "--wa", "081200000091", "--tahap", "deal", "--nilai", "2jt")
+        self.assertFalse(any("diganti" in x for x in o["peringatan"]), o["peringatan"])
+        self.assertTrue(any("Jadwal konfirmasi order" in x for x in o["peringatan"]), o["peringatan"])
+        # kontak yang SUDAH ADA dan pindah tahap ke deal: pesan "diganti" tetap ada (perilaku lama tidak berubah)
+        self.ok("tambah", "--nama", "Bu Dita", "--wa", "081200000092", "--followup", "besok")
+        o2 = self.ok("catat", "--kontak", "Dita", "--tahap", "deal", "--nilai", "3jt")
+        self.assertTrue(any("diganti" in x for x in o2["peringatan"]), o2["peringatan"])
 
     def test_r3_terkirim_setelah_pamit_ditolak_dan_r4_samarkan(self):
         self.ok("tambah", "--nama", "Bu Rina", "--wa", "081200000061", "--tahap", "dihubungi")

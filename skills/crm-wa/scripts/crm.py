@@ -937,7 +937,9 @@ def cek_duplikat_wa(conn, wa, kecuali=None):
             if r["id"] != kecuali]
 
 
-def followup_default(tahap, acuan):
+def followup_default(tahap, acuan, ganti=True):
+    """ganti=True: dipanggil saat memindahkan tahap kontak yang sudah ada (jadwal lama, bila ada, diganti).
+    ganti=False: dipanggil saat kontak baru dibuat langsung di tahap ini (tidak ada jadwal lama untuk diganti)."""
     if tahap == "baru":
         return acuan, "Follow-up belum disebut; dijadwalkan hari ini (lead baru sebaiknya dibalas hari yang sama)."
     if tahap in ("dihubungi", "ditawar"):
@@ -945,8 +947,9 @@ def followup_default(tahap, acuan):
         return d, "Follow-up belum disebut; dijadwalkan %s (2 hari lagi). Ubah bila perlu." % tgl_pendek(d)
     if tahap == "deal":
         d = acuan + timedelta(days=2)
-        return d, ("Jadwal konfirmasi order (pembayaran/pengiriman) dipasang %s (2 hari lagi); jadwal prospek lama "
-                   "diganti. Ubah dengan --followup, atau --tanpa-followup bila tidak perlu." % tgl_pendek(d))
+        keterangan = "; jadwal prospek lama diganti" if ganti else ""
+        return d, ("Jadwal konfirmasi order (pembayaran/pengiriman) dipasang %s (2 hari lagi)%s. Ubah dengan "
+                   "--followup, atau --tanpa-followup bila tidak perlu." % (tgl_pendek(d), keterangan))
     return None, None
 
 
@@ -967,15 +970,16 @@ def panggilan(k, cfg):
 
 POLA_UANG = re.compile(r"(?i)(\brp\.?\s*\d[\d.,]*(\s*(rb|ribu|k|jt|juta|m|miliar|milyar)\b)?"
                        r"|\b\d[\d.,]*\s*(rb|rbu|ribu|k|jt|jeti|juta|miliar|milyar)\b|\b\d{1,3}(\.\d{3})+(,\d+)?\b"
-                       r"|\b\d{5,}\b)")
+                       r"|\b\d{5,}\b|\bse(ribu|ratus\s*ribu|puluh\s*ribu|juta|ratus\s*juta)\b|\brupiah\b)")
 
 
 def hal_untuk_draf(kebutuhan):
     """Bagian kolom kebutuhan yang aman masuk draf: hanya nama produk/jasa.
-    Dipotong di koma/titik koma/kurung/' - ' (komentar sesudahnya dianggap catatan pribadi), nominal uang dibuang,
+    Dipotong di koma (bukan koma desimal di dalam angka)/titik ke kalimat baru/titik koma/kurung/' - ' (komentar
+    sesudahnya dianggap catatan pribadi), nominal uang (termasuk kata seperti 'sejuta'/'rupiah') dibuang,
     maksimal 8 kata. Kosong -> None (draf memakai kalimat umum)."""
     t = bersih(kebutuhan, 200)
-    t = re.split(r"[,;:()\[\]\n]| - | -- | \| ", t)[0]
+    t = re.split(r",(?!\d)|[;:()\[\]\n]|\.(?=\s|$)| - | -- | \| ", t)[0]
     t = POLA_UANG.sub(" ", t)
     t = re.sub(r"(?i)\b(harga|seharga|budget|budjet|bujet|nego|diskon|dp)\b.*$", " ", t)
     t = re.sub(r"\s+", " ", t).strip(" .-/@")
@@ -1138,13 +1142,21 @@ def baca_csv(path):
         peringatan.append("File bukan UTF-8; dibaca sebagai Windows-1252 (ANSI). Periksa huruf khusus di nama.")
     baris1 = teks.split("\n", 1)[0]
     pemisah = max([";", ",", "\t"], key=lambda c: baris1.count(c))
-    rows, pembaca, akhir = [], csv.reader(io.StringIO(teks), delimiter=pemisah), 0
+    rows, pembaca, akhir, rentang_ganjil = [], csv.reader(io.StringIO(teks), delimiter=pemisah), 0, []
     for r in pembaca:
         awal, akhir = akhir + 1, pembaca.line_num   # nomor baris FISIK di file (baris kosong tetap dihitung)
         if any(x.strip() for x in r):
             rows.append((awal, r))
+            if akhir > awal:   # tanda kutip (") yang tidak tertutup: baris berikutnya ikut tertelan ke baris ini
+                rentang_ganjil.append((awal, akhir))
     if not rows:
         raise Gagal("File %s kosong." % p.name)
+    if rentang_ganjil:
+        peringatan.append(
+            "%d baris di file dibaca menyatu dengan baris sesudahnya (%s): kemungkinan ada tanda kutip (\") yang "
+            "tidak tertutup. Baris yang ikut tertelan TIDAK diimpor terpisah -- periksa baris ini di file aslinya." %
+            (len(rentang_ganjil), ", ".join("%d-%d" % rg for rg in rentang_ganjil[:5]) +
+             (", ..." if len(rentang_ganjil) > 5 else "")))
     return rows, peringatan
 
 
@@ -1405,7 +1417,7 @@ def cmd_tambah(args):
         fu, cat = baca_tanggal(args.followup, acuan, "depan")
         peringatan += cat
     else:
-        fu, cat = followup_default(tahap, acuan)
+        fu, cat = followup_default(tahap, acuan, ganti=False)   # kontak baru: tidak ada jadwal lama untuk diganti
         if cat:
             peringatan.append(cat)
 
@@ -2300,7 +2312,7 @@ def cmd_impor(args):
     def kerja(conn, cfg):
         ada_wa = {r["wa"]: r for r in conn.execute("SELECT id, nama, wa, tahap FROM kontak WHERE wa IS NOT NULL")}
         di_file, masuk, dup, rusak, peringatan = {}, [], [], [], list(peringatan_file)
-        sumber_baru, n_jadwal, n_sebar, n_potong, n_tanpa = set(), 0, 0, 0, 0
+        sumber_baru, n_jadwal, n_sebar, n_potong, n_tanpa, n_tanpa_masuk = set(), 0, 0, 0, 0, 0
         for no, r in isi:
             try:
                 nama = bersih(ambil_sel(r, "nama"), 80)
@@ -2315,8 +2327,8 @@ def cmd_impor(args):
                     sumber_baru.add(sumber)
                 tahap = norm_tahap(ambil_sel(r, "tahap")) if ambil_sel(r, "tahap") else tahap_def
                 nilai = nilai_opsional(ambil_sel(r, "nilai")) if ambil_sel(r, "nilai") else None
-                masuk_tgl = baca_tanggal(ambil_sel(r, "tgl_masuk"), acuan, "lalu")[0] if ambil_sel(r, "tgl_masuk") \
-                    else acuan
+                ada_tgl_masuk = bool(ambil_sel(r, "tgl_masuk"))
+                masuk_tgl = baca_tanggal(ambil_sel(r, "tgl_masuk"), acuan, "lalu")[0] if ada_tgl_masuk else acuan
                 alasan = ambil_sel(r, "alasan_batal")
                 if tahap == "batal" and not alasan:
                     alasan = "tidak dicatat (impor)"
@@ -2345,6 +2357,8 @@ def cmd_impor(args):
             keb = bersih(ambil_sel(r, "kebutuhan"), 120)
             if saran_kebutuhan(keb):
                 n_potong += 1
+            if not ada_tgl_masuk:
+                n_tanpa_masuk += 1
             now = stempel()
             cur = conn.execute(
                 "INSERT INTO kontak(nama, sapaan, wa, sumber, label, tahap, nilai, kebutuhan, followup, fu_ke, "
@@ -2373,6 +2387,11 @@ def cmd_impor(args):
         if n_potong:
             peringatan.append("%d kontak: kolom kebutuhan berisi harga/komentar; di draf pesan hanya nama produknya "
                               "yang dipakai." % n_potong)
+        if n_tanpa_masuk:
+            peringatan.append(
+                "%d kontak tanpa kolom/tanggal masuk: dianggap masuk %s, jadi ikut terhitung sebagai lead baru bulan "
+                "ini di rekap. Isi kolom 'tgl masuk' di file bila tanggal aslinya berbeda." %
+                (n_tanpa_masuk, tgl_pendek(acuan)))
         if abaikan:
             peringatan.append("Kolom diabaikan: %s%s." % (", ".join(abaikan[:8]), (" dan %d lainnya" % (len(abaikan) - 8))
                                                            if len(abaikan) > 8 else ""))
