@@ -191,3 +191,36 @@ Alasan:
 - (+) Tidak ada regresi: 85 tes, angka B1 0 beda dengan `Decimal` penguji, B2 utuh, 0 kebocoran kunci.
 - (−) Galat 5xx dan jawaban terpotong saat menulis belum masuk jalur "mungkin tersimpan" (D1, D2). D3 bisa membingungkan pengguna awam. Belum diuji di Dolibarr asli.
 - **Kesimpulan:** v1.0.4 layak lanjut ke uji platform asli dan beta. D1–D3 disarankan diperbaiki di versi berikutnya, tetapi tidak menghalangi status `lulus`.
+
+## Uji ulang v1.0.5 (Akun B)
+- **Tanggal:** 2026-09-25
+- **Penguji:** agent penguji independen lintas akun (Akun B, Claude Code, simulasi agent). Bukan pembuat skill dan bukan pembuat perbaikan D1–D3. Rincian lengkap ada di `10-uji-ulang-v1.0.5.md`.
+- **Lingkungan:** salinan skill di scratchpad. Server Dolibarr **tiruan** (data rekaman 24.0.1) dengan **pengganggu buatan penguji**: putus, RST, lambat, 500/502/503/504 (HTML/JSON/kosong/terpotong), jawaban terpotong 0/1/n−1 bita, baris status rusak, serta kontrol tanpa diproses (5xx, 501, 503-blokir-IP). **Tidak** diuji di Dolibarr asli. Python 3.11.
+- **Otomatis:** `uji_regresi.py` **93 tes OK**. `validate.py --skill dolibarr-usaha` ✅ valid.
+- **Platform teruji:** `claude-code (simulasi agent)`.
+
+### Status klaim
+| Klaim | Status |
+|---|---|
+| D1: 5xx saat MENULIS → kode 8 "MUNGKIN SUDAH TERSIMPAN" | ✅ POST header, baris 1–3, `pelanggan tambah`, untuk 500/500json/502/503/504/504kosong/504terpotong. Baris yang tersimpan tidak lagi disebut "DITOLAK". Baca ulang menyimpulkan "SUDAH/BELUM masuk" dengan benar (kontrol tolak → BELUM) |
+| D1: 501 dan 503-blokir-IP tetap pasti gagal | ✅ POST: kode 4 / kode 5, tanpa "mungkin tersimpan". Baris: "DITOLAK … tidak masuk". Ulangan boleh membuat draf |
+| D1/D2: 5xx atau jawaban terpotong saat MEMBACA tetap galat biasa | ✅ 5 perintah baca × 6 gangguan: kode 6 (5xx) / kode 3 "terpotong/rusak", 0 "mungkin tersimpan" |
+| D2: jawaban terpotong → pesan jelas, bukan "Galat tak terduga" | ✅ IncompleteRead (0/1/n−1 bita) dan BadStatusLine saat menulis → kode 8. **0** "Galat tak terduga" di 580 keluaran |
+| D3: draf kosong dari perintah LAIN hanya CATATAN | ✅ A dibuat (kode 0) dengan CATATAN dan JSON `draf_kosong_lain`. B yang diulang tetap 7 dengan tindakan "Hapus draf kosong". Kalimat menyesatkan sudah hilang |
+| D3: perintah SAMA, atau draf kosong tanpa kode sah, tetap menahan | ✅ kode 7, 0 POST (termasuk kode palsu/huruf kecil) |
+| C1: banyak titik putus, ulang 3× | ✅ 80 skenario, 240 pengulangan → **0 draf ganda**. Setiap skenario berakhir dengan tepat 1 draf |
+| B1 regresi (DPP bersen, PPN floor sekali, `Decimal` penguji) | ✅ 6 pola, 0 beda, `[7,7,7]` |
+| B2 regresi (`--kunci-file` vs ENV, kunci tak tercetak) | ✅ 62/62 OK. 0 kunci di 580 keluaran |
+
+### Cacat tersisa
+- **D5 (info):** Dolibarr memakai 500 "Error creating invoice" juga untuk penolakan bisnis. Kasus ini kini berlabel "mungkin tersimpan". Tetap aman karena ada cek ulang dan ulangan tidak ditahan, tetapi bisa membingungkan bila terus berulang.
+- **D4' (info):** draf kosong sisa perintah yang sama tetapi bertanggal lain kini hanya menghasilkan CATATAN "perintah LAIN". Tidak ada risiko tagihan ganda.
+- Balasan 200 non-JSON saat menulis, balapan dua proses, dan kosmetik K-a s.d. K-d masih ada.
+
+### Skor kualitas: **9 / 10** (**LULUS**, ≥ 7)
+Alasan:
+- (+) D1, D2, dan D3 terbukti beres dengan gangguan buatan penguji sendiri. Cakupannya lebih luas dari tes pembuat: 503, 504 kosong/terpotong, BadStatusLine, dan terpotong 0/n−1 bita.
+- (+) Pembedaan tulis vs baca serta 501/503-IP berjalan sesuai dokumentasi. Pesan kode 8 jujur, dan kesimpulan "baris N SUDAH/BELUM masuk" benar di semua kontrol.
+- (+) Tidak ada regresi: 0 draf ganda di 80 titik × 3 ulangan, angka B1 0 beda, B2 utuh, 93 tes OK, dan 0 kebocoran kunci.
+- (−) Belum diuji di Dolibarr/DoliWamp asli. Masih ada D5/D4' (info) dan kosmetik lama.
+- **Kesimpulan:** v1.0.5 layak lanjut ke uji platform asli dan beta.
