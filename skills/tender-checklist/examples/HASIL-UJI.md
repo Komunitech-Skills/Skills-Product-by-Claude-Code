@@ -59,3 +59,39 @@ Rincian lengkap: `06-uji-ulang-v1.0.1.md`. Tes bawaan **38/38 OK**; `validate.py
 
 ## Skor uji ulang: **8 / 10 — LULUS** (layak naik ke `lulus`; perbaiki temuan 1–3 di v1.0.2 sebelum `rilis`)
 Alasan: keempat bug penyebab skor 6 sudah tertutup dan dilindungi tes regresi; perhitungan 100% benar di 16 kasus (3 lama + 13 baru); tidak ada konfirmasi palsu, jadi tidak ada risiko pengguna mengunggah angka salah karena "cocok". Belum 9 karena masih ada dua alarm palsu pada layout Excel PKP yang umum sejak 2025 (label "sebelum PPN" dan baris DPP nilai lain) yang bisa membingungkan pengguna awam, serta satu layout tabel barang yang umum di mana baris salah hitung tidak ditunjuk.
+
+---
+
+# Uji ulang v1.0.2 (penguji independen ketiga, 2026-09-25)
+
+Salinan uji: scratchpad `uji3-tender/` (CSV uji + `kunci.py` Decimal independen di sana, tidak disalin ke repo). Tes bawaan `tests/uji_regresi.py`: **46/46 OK**.
+
+## Temuan v1.0.1 → status
+| # | Temuan | Status v1.0.2 |
+|---|---|---|
+| 1 | "Total Harga Sebelum PPN" dianggap total sesudah PPN | ✅ Beres — dicocokkan ke sebelum PPN; "Total Harga Setelah PPN" ke sesudah PPN |
+| 2 | "DPP Nilai Lain (11/12)" alarm palsu | ✅ Beres — dibanding 11/12 × DPP (juga "DPP NL (11/12)") |
+| 3 | `Jumlah` + `Jumlah Harga`: baris salah tidak ditunjuk | ✅ Beres — Jumlah = volume, baris salah ditunjuk + Catatan |
+| 4 | "Harga Total" dilewati diam-diam | ✅ Beres — Info "TIDAK diperiksa otomatis" + perbandingan nilai, exit 1 |
+| 5 | "cocok" terhadap total sementara saat BELUM FINAL | ✅ Beres — "sama dengan ... SEMENTARA - belum bisa dinyatakan cocok" |
+| 6 | Exit 0 walau PERINGATAN | ✅ Beres — 0 bersih, 1 peringatan, 2 GALAT (file rusak/tidak ada), 3 BELUM FINAL. Catatan kecil: `--hps 0`/`-5` → exit 1 (peringatan), bukan 2 |
+
+## CSV baru (kunci Decimal independen: baris dibulatkan setengah-ke-atas, PPN = 11% × DPP bulat ke bawah, mode termasuk PPN = DPP bulat terbesar dengan DPP+PPN ≤ harga)
+| File | Isi | Kunci (DPP / PPN / Total) | Hasil script |
+|---|---|---|---|
+| n1 benar-bersih | `Qty`, `Harga Satuan (Rp)`, `Jumlah (Rp)`, vol 2,5; "Sub Total", "ppn 11%", "GRAND TOTAL" | 48.923.000 / 5.381.530 / 54.304.530; 90,51% | ✅ cocok semua, tanpa peringatan, exit 0 |
+| n2 benar | pemisah `,` bertanda kutip, `Vol`, vol 7.5; "Total Excl. PPN", "DPP NL (11/12)", "PPN 12% x DPP NL", "Total Incl. PPN" | 17.157.500 / 1.887.325 / 19.044.825; 90,69% | ✅ cocok semua, exit 0 |
+| n3 benar | **`Banyaknya` + `Jumlah Harga`**, harga desimal (3.333,33; 27.777,50; 1.234,56), pembulatan per baris | 793.081 / 87.238 / 880.319; 88,03% | ❌ **BUG BARU** (lihat bawah): total Rp12.013.332.039. Dengan judul `Kuantitas` → ✅ cocok semua, exit 0 |
+| n4 SALAH | 1 baris salah Rp100.000 + 1 baris salah Rp1, Sub Total/PPN/Grand Total salah, label "PPN 12% x DPP NL" | 30.230.999 / 3.325.409 / 33.556.408; 93,21% | ✅ kedua baris ditunjuk + selisih; Sub Total, PPN, Grand Total diberi PERINGATAN; exit 1 |
+| n5 SALAH | "Total Excl. PPN" benar, "ToTaL" = sebelum PPN (lupa PPN) | 8.750.000 / 962.500 / 9.712.500 | ✅ "BELUM TERMASUK PPN" + total benar; Excl. PPN cocok; exit 1 |
+| n6 benar-bersih | harga termasuk PPN, `Qty`, `Harga Satuan (Rp)` | harga 26.931.365 → DPP 24.262.491 / PPN 2.668.874 / sisa 0; 89,77% | ✅ cocok, exit 0 |
+| n7 SALAH halus | `Banyaknya`; baris 7 × 2.142,50 ditulis 14.997 (Excel ROUND = 14.998); Jumlah −Rp1; PPN +Rp1 (dibulatkan ke atas) | 114.997 / 12.649 / 127.646 | ❌ bug baru yang sama. Dengan `Kuantitas`: Jumlah & PPN selisih Rp1 ditunjuk; baris 14.997 **tidak** ditunjuk (toleransi < Rp1 dari hasil kali persis — disengaja) |
+Tidak ada alarm palsu pada file benar (n1, n2, n6, n3-Kuantitas); semua kesalahan pada n4/n5 tertunjuk; tidak ada regresi angka pada layout yang kolomnya dikenali. Skenario template (`contoh-rincian.csv`) tetap sama.
+
+## Bug baru
+1. **[TINGGI] Kolom uang dipakai sebagai VOLUME bila judul kolom banyaknya tidak dikenal.** `kenali_header()` + fallback di `baca_rincian` (`if "volume" not in peta and "jumlah" in peta: peta["volume"] = peta.pop("jumlah")`, ±baris 287). Judul **`Banyaknya`, `Jml`, `Qty.`, `Volume Pekerjaan`** tidak ada di sinonim `volume` (hanya `banyak`, `qty`, `vol.` ...), lalu kolom **`Jumlah Harga`/`Jumlah Harga (Rp.)`** diubah menjadi volume → volume 4.500.000 × Rp450.000 = **Rp2.025.000.000.000**. Tanpa baris total di file dan tanpa HPS, output hanya berisi Catatan kecil (tanpa PERINGATAN baris). **Perbaikan:** (a) tambah sinonim `banyaknya`, `jml`, `jml.`, `qty.`, `kuantitas`, `volume pekerjaan`, `jumlah satuan`; normalisasi titik di akhir judul; (b) fallback Jumlah→volume hanya untuk judul `jumlah`/`jml` polos, **jangan** untuk judul berisi harga/total/nilai/rp — jika begitu, GALAT exit 2 "kolom volume tidak ditemukan"; (c) tes regresi untuk tiap judul di atas.
+2. **[RENDAH]** Selisih baris < Rp1 terhadap hasil kali persis (mis. 7 × 2.142,50 = 14.997,5 ditulis 14.997) tidak ditunjuk, padahal ikut membuat baris Jumlah file selisih Rp1 → pengguna melihat subtotal beda Rp1 tanpa tahu barisnya. Pertimbangkan Info "baris X: pembulatan berbeda (Rp1)" saat subtotal file ≠ hitung.
+3. **[RENDAH]** `--hps 0`/negatif → exit 1 (peringatan) padahal SKILL.md menyebut 2 = input buruk; samakan.
+
+## Skor uji ulang v1.0.2: **7 / 10 — tetap `lulus`, JANGAN `rilis` sebelum bug baru 1 diperbaiki (v1.0.3 + uji ulang singkat)**
+Alasan: keenam temuan v1.0.1 beres dan dilindungi 46 tes; mesin hitung 100% cocok dengan kunci Decimal pada semua layout yang kolomnya dikenali (n1, n2, n4–n6, n3/n7 versi Kuantitas), tanpa alarm palsu dan tanpa konfirmasi palsu. Turun dari 8 karena ditemukan jalur kegagalan baru yang parah pada judul kolom yang sangat umum di tabel barang Indonesia (`Banyaknya`/`Jml` + `Jumlah Harga`): angka hasil salah kali lipat jutaan dan bisa tercetak hanya dengan catatan kecil — melanggar prinsip *reliable*. Perbaikannya kecil dan lokal (sinonim + pembatasan fallback); setelah itu perkiraan skor 9.
