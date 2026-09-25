@@ -124,3 +124,20 @@ Setelah revisi T-1/T-2/S-1..S-5 dan penambahan tes regresi untuk kasus di §2b�
 - pasal.id Ps. 56: https://pasal.id/peraturan/uu/uu-no-27-tahun-2022/pasal-56 · Ps. 9: https://pasal.id/peraturan/uu/uu-no-27-tahun-2022/pasal-9
 - Permenkes 24/2022 (Kemkes): https://keslan.kemkes.go.id/unduhan/fileunduhan_1662611251_882318.pdf
 - Pesaing: https://github.com/phuryn/pm-skills/blob/main/pm-toolkit/skills/privacy-policy/SKILL.md · https://github.com/PGScully/privacy-skill
+
+---
+
+## Uji ulang v1.0.1 (penguji independen kedua, 2026-09-25)
+- **Penguji:** agent terpisah (bukan pembuat/perevisi), salinan skill di scratchpad `.../uji2-pdp/`. Platform: `claude-code (simulasi agent)`. Rincian lengkap: `06-uji-ulang-v1.0.1.md`.
+- **Anti-overfitting:** set uji baru ditulis penguji sebelum membuka `tests/`. Tes bawaan: **LULUS 133 uji**. SKILL.md 149 baris.
+- **Akurasi set baru:** frasa **41/48 (85%)** — FP 1, FN 6; unsur **60/65 (92%)** — FP 3, FN 2 (22 kalimat + 3 dokumen utuh: lengkap-patuh 14/14 & 100/100 CUKUP LENGKAP; setengah jadi 12/14; template AS 14/15). Semua kalimat patuh bernegasi (termasuk negasi ganda & klausa majemuk) benar → T-1/T-2/S-5 beres dan tidak kambuh.
+- **Temuan lama:** T-1 ✅, T-2 ✅, S-1 ⚠ sebagian, S-2 ✅ (template kosong 84/100 BELUM SIAP), S-3 ⚠ sebagian besar, S-4 ✅ (template D & D-online: layanan = perjanjian + kewajiban hukum, persetujuan hanya tujuan tambahan & bisa ditolak, tanpa tanda tangan di GForm), S-5 ✅, R-1 ✅ (2 MB 1,97 dtk; > 5 MB GALAT), R-2 ✅ HTML, R-3 ✅ UTF-16 tanpa BOM, R-4..R-9 ✅. Skenario 03 diulang: ✅ lulus, skor 47 → 41 (FP cara ajukan hilang, diverifikasi manual).
+- **Klaim hukum:** Ps. 5/21 identitas, Ps. 68 (6 th/Rp6 M), Ps. 46 (3×24 jam ke subjek & lembaga), PP 33/2026 (16 Jul 2026 → berlaku 16 Jan 2027), lembaga belum terbentuk/Kemkomdigi — semua ✅ terverifikasi via web search.
+- **Bug baru:** SEDANG **B-1** berbagi data ke mitra iklan/pemasaran berbahasa Indonesia tidak terdeteksi (contoh majemuk "tidak menjual…, tetapi dapat membagikannya ke mitra iklan" lolos); SEDANG **B-2** "sell or rent aggregated and personal information" & "share … with advertisers" lolos di template luar. RENDAH: B-3 FP unsur (identitas "berlaku untuk layanan kami", kontak dari kata "WhatsApp", keamanan "is important"), B-4 status KURANG LENGKAP vs "BELUM SIAP" di SKILL.md, B-5 temuan ganda browse-wrap, B-6 FP/FN kecil, B-7 usia 13 (COPPA) tidak dikoreksi ke < 18, B-8 kunci `bukti` hilang di JSON hak_subjek.
+
+### Skor kualitas uji ulang: **8/10** — LULUS (rekomendasi: perbaiki B-1 & B-2 sebelum beta; tidak perlu uji ulang penuh, cukup tes regresi + cek set `06`)
+Alasan:
+- (+) Semua temuan TINGGI (T-1, T-2) dan S-2, S-4, S-5 serta seluruh RENDAH beres; perbaikan tidak overfit — negasi andal pada 17/17 kalimat patuh baru, unsur 92% pada set baru, dokumen patuh buatan sendiri 100/100 tanpa salah tanda.
+- (+) Template klinik kini konsisten dengan aturan persetujuan; klaim hukum inti terverifikasi; penanganan HTML/UTF-16/file besar baik.
+- (+) Keunggulan A/B & banding pesaing dari uji pertama tetap berlaku (keluaran mode SUSUN/PERSETUJUAN tidak memburuk).
+- (−) Mode CEK masih melewatkan pola "berbagi data untuk iklan" berbahasa Indonesia dan "sell/share" EN dengan kata sisipan — tepat di skenario salinan template luar. Risiko tertahan karena SKILL.md mewajibkan pembacaan manual checklist C, sehingga bukan penghalang lulus, tetapi pengguna yang menjalankan script sendiri bisa tidak diberi tahu.
