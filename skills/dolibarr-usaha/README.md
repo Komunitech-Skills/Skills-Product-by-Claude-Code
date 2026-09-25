@@ -61,7 +61,7 @@ Setelah terpasang dan terhubung, cukup ketik permintaan biasa:
 
 Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, atau paket tambahan.
 
-**Status uji jujur (versi 1.0.3):** diuji dengan Dolibarr asli **24.0.1 dan 22.0.4** (versi DoliWamp terbaru) di Linux, uji independen v1.0.0 s.d. v1.0.2 (lulus 8/10; dua temuan sisa, pencegah draf dobel untuk harga bersen dan urutan kunci, diperbaiki di 1.0.3 dan menunggu uji ulang independen), uji otomatis, dan jadwal OpenClaw 2026.9.6 (tanpa pengiriman Telegram sungguhan). **Belum** diuji di DoliWamp Windows sungguhan; versi Dolibarr lain akan diberi tanda "belum diuji".
+**Status uji jujur (versi 1.0.4):** diuji dengan Dolibarr asli **24.0.1 dan 22.0.4** (versi DoliWamp terbaru) di Linux, uji independen v1.0.0 s.d. v1.0.3 (lulus 8/10). Versi 1.0.4 menambah pengaman saat koneksi putus di tengah pembuatan draf (tidak membuat draf kedua, memberi tahu apa yang harus dicek di Dolibarr); perbaikan ini baru diuji pembuat di server tiruan dan menunggu uji ulang independen, uji otomatis, dan jadwal OpenClaw 2026.9.6 (tanpa pengiriman Telegram sungguhan). **Belum** diuji di DoliWamp Windows sungguhan; versi Dolibarr lain akan diberi tanda "belum diuji".
 
 ## FAQ
 **Apakah AI bisa salah mengirim atau menghapus invoice saya?**

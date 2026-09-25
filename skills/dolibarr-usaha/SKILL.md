@@ -8,7 +8,7 @@ description: Mengoperasikan Dolibarr ERP/CRM LOKAL milik pengguna (DoliWamp di k
 ## Tujuan
 Pemilik usaha yang memakai **Dolibarr di komputernya sendiri** (pengganti Jurnal/Accurate + Moka + CRM berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/dolibarr.py` untuk membaca atau menyiapkan data lewat **REST API resmi Dolibarr** (`/api/index.php`, header `DOLAPIKEY`). Data tetap di komputer pengguna. Python standar saja, tanpa instalasi paket.
 
-**Versi 1.0.3. Status uji:** diuji dengan **Dolibarr asli 24.0.1 dan 22.0.4** (PHP 8.4 + MariaDB 10.11 di Linux, kunci admin/terbatas; uji independen v1.0.0–v1.0.2 di 24.0.1; perbaikan v1.0.3 baru diuji pembuat) + uji regresi dengan server tiruan dari respons asli. **Belum** diuji di DoliWamp Windows sungguhan.
+**Versi 1.0.4. Status uji:** diuji dengan **Dolibarr asli 24.0.1 dan 22.0.4** (PHP 8.4 + MariaDB 10.11 di Linux, kunci admin/terbatas; uji independen v1.0.0–v1.0.2 di 24.0.1, v1.0.3 di server tiruan; perbaikan v1.0.4 (koneksi putus saat membuat draf) baru diuji pembuat di server tiruan) + uji regresi dengan server tiruan dari respons asli. **Belum** diuji di DoliWamp Windows sungguhan.
 
 ## Kapan digunakan
 - "Cek Dolibarr saya nyambung?", "kunci API saya aman?" → `cek`
@@ -60,6 +60,8 @@ python3 <folder-skill>/scripts/dolibarr.py invoice buat --pelanggan 2 \
 5. Script membuat invoice **DRAF**, menambah baris, membaca ulang dari Dolibarr, lalu **mencocokkan** DPP/PPN/total dengan hitungan sendiri. Sampaikan "COCOK" atau "BEDA" beserta sebabnya. Jangan mengubah draf untuk "menyamakan" angka; keputusan di pemilik.
 6. Tutup dengan: "Draf belum sah. Periksa di Dolibarr (menu Tagihan/Nota), lalu klik Validasi sendiri bila sudah benar."
 - "DRAF INVOICE TIDAK DIBUAT ... sudah ada draf ... jumlah sama" → kemungkinan dobel; tanya pengguna sebelum memakai `--tetap-buat`. "Jumlah sama" = DPP draf lama berselisih kurang dari Rp 1 (Dolibarr menyimpan sen, standar Komunitech membulatkan ke rupiah).
+- "DRAF INVOICE TIDAK DIBUAT (ada draf belum lengkap ...)" → pelanggan punya draf **kosong (Rp 0)** atau draf **sebagian** dari perintah yang sama (dikenali lewat "Kode perintah" di catatan privat draf), sisa percobaan yang terputus. Minta pengguna membuka draf itu di Dolibarr, lalu melengkapinya atau menghapusnya sebelum mengulang.
+- Kode **8** ("BELUM PASTI TERBUAT" / "TIDAK LENGKAP" / "BELUM BISA DIPERIKSA") → koneksi putus/timeout **saat menulis**. Sampaikan pesan script apa adanya (draf mana yang sudah ada, baris mana yang mungkin masuk) dan **jangan mengulang otomatis**; pengguna mengecek Dolibarr dulu.
 - Harga pengguna **sudah termasuk PPN** → versi ini belum mendukung; hitung DPP dengan skill `hitung-ppn` (mode harga termasuk PPN), tunjukkan, lalu pakai DPP per unit itu.
 
 ### D. Piutang
@@ -132,6 +134,8 @@ _Dasar PPN: UU HPP & PMK 131/2024 (tarif 12%, DPP nilai lain 11/12 untuk barang/
 | 3 "tidak bisa dihubungi" | Dolibarr/DoliWamp mati, atau alamat salah port | Minta nyalakan DoliWamp, buka alamat di browser |
 | 4 "Modul API ... belum aktif" / "BELUM AKTIF" | Modul REST/Invoice/dll. mati | Tunjukkan menu Pengaturan > Modul (panduan §4) |
 | 7 "TIDAK DIBUAT ... data ganda" | Pelanggan/draf serupa sudah ada | Tunjukkan yang sudah ada; `--tetap-buat` hanya bila pengguna menegaskan |
+| 7 "TIDAK DIBUAT (ada draf belum lengkap ...)" | Draf kosong/sebagian tertinggal dari percobaan terputus | Minta pengguna melengkapi atau menghapus draf itu di Dolibarr, lalu ulangi |
+| 8 "MUNGKIN SUDAH TERSIMPAN" / "BELUM PASTI TERBUAT" / "TIDAK LENGKAP" | Koneksi putus/timeout saat menulis; data mungkin (sebagian) sudah masuk | **Jangan ulangi otomatis.** Sampaikan apa yang harus dicek di Dolibarr; draf sebagian jangan disahkan |
 | 2 "File kunci ... sudah ada" | `simpan-kunci` akan menimpa kunci lama | Tanyakan: ganti kunci lama (`--ya`) atau simpan sebagai kunci kedua (`--kunci-file`) |
 | 5 "401" | Kunci salah/diganti/user nonaktif | Buat kunci baru, `simpan-kunci` lagi |
 | 5 "403" | Hak user API kurang **atau** modulnya mati | Jalankan `cek`, atur Izin user API (panduan §5–6) |
@@ -147,8 +151,8 @@ _Dasar PPN: UU HPP & PMK 131/2024 (tarif 12%, DPP nilai lain 11/12 untuk barang/
 | "belum diuji Komunitech" | Versi selain 22.0.4/24.0.1 | Tetap jalan; minta pengguna mengecek angka di layar Dolibarr |
 | Daftar kosong | Belum ada data | Sampaikan apa adanya; jangan mengarang |
 - Satu bagian laporan gagal (mis. modul Stok mati) → bagian itu "Tidak bisa dibaca", bagian lain tetap dikirim. **Semua** bagian gagal → kode keluar bukan 0 (jadwal OpenClaw tercatat gagal).
-- Invoice berbaris banyak gagal di tengah → draf tetap ada berisi baris sebelumnya; script **tidak menghapus**. Minta pengguna melengkapi/menghapus draf di Dolibarr.
-- Multi-mata-uang, multi-perusahaan (multicompany), harga termasuk PPN, dan uang masuk per tanggal bayar **belum didukung** v1.0.3. Laporan tanggal lampau memakai status bayar piutang **saat ini** (diberi label).
+- Invoice berbaris banyak gagal di tengah (ditolak Dolibarr atau koneksi putus) → kode 8; draf tetap ada dan script **tidak menghapus**. Script menyebut baris yang ditolak, baris yang *mungkin* sudah masuk, dan isi draf yang terbaca ulang. Minta pengguna melengkapi/menghapus draf di Dolibarr; pengulangan perintah yang sama ditahan selama draf itu ada.
+- Multi-mata-uang, multi-perusahaan (multicompany), harga termasuk PPN, dan uang masuk per tanggal bayar **belum didukung** v1.0.4. Laporan tanggal lampau memakai status bayar piutang **saat ini** (diberi label).
 - **Python tidak bisa dijalankan:** jangan memanggil API dengan cara lain. Pandu pengguna melihat data yang sama di layar Dolibarr (menu Tagihan > Nota belum dibayar; Produk > Stok) dan beri label "dibaca manual".
 - Uji regresi (`tests/`) hanya ada di repo pengembang Komunitech, tidak ikut paket pembeli.
 
