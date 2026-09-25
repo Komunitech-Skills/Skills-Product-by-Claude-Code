@@ -3,6 +3,9 @@ Template struktur laporan audit-seo-toko-online. Isi setiap bagian dengan
 hasil nyata dari cek_halaman.py (bagian teknis) dan ceklis manual (kecepatan,
 lokal/GMB) — jangan pernah mengarang skor atau angka.
 Skor per bagian: ✅ Baik | ⚠️ Perlu perbaikan | ❌ Bermasalah | — Tidak berlaku
+Kalau baris "Kecepatan di HP" bertanda "—", WAJIB tambahkan ajakan eksplisit
+di catatannya untuk mencoba https://pagespeed.web.dev/ sendiri (lihat
+references/kecepatan-mobile.md) — jangan biarkan diam begitu saja.
 -->
 
 # Laporan Audit SEO: [Nama Halaman/Usaha]

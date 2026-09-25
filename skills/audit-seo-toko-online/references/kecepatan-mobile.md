@@ -12,6 +12,8 @@ Mayoritas pembeli produk UMKM Indonesia mengakses lewat HP dengan jaringan selul
 4. **Cek apakah pakai hosting murah dengan performa lambat** — kalau pengguna tidak tahu, tanyakan kapan terakhir kali komplain "situs lambat" dari pelanggan; kalau sering, bisa jadi memang perlu upgrade hosting (di luar cakupan teknis skill ini, sarankan konsultasi ke penyedia hosting).
 5. **PageSpeed Insights (gratis, tanpa akun, tanpa API key):** https://pagespeed.web.dev/ — pengguna cukup tempel URL halamannya sendiri. Skill ini tidak menjalankan tool ini secara otomatis (perlu akses internet real-time ke tool pihak luar), tapi sangat disarankan sebagai langkah lanjutan pengguna sendiri, dan hasilnya bisa ditempel balik ke agent untuk dibantu diartikan.
 
+**Wajib ditindaklanjuti, bukan cuma disebut sekali:** kalau bagian "Kecepatan di HP" di laporan ditandai "—" (pengguna belum sempat mencoba poin 1-4 di atas), laporan HARUS secara eksplisit mengajak pengguna membuka https://pagespeed.web.dev/ dan mengirim balik hasilnya — jangan biarkan bagian ini berhenti di "tidak ada data" tanpa ajakan tindak lanjut yang jelas. Tetap **tanpa mengklaim angka apa pun** sebelum pengguna benar-benar mengirim hasilnya sendiri.
+
 ## Yang TIDAK boleh dijanjikan
 
 - Jangan mengarang angka skor kecepatan (mis. "skor PageSpeed kamu pasti di atas 80") — skill ini tidak mengukur kecepatan sungguhan sama sekali.

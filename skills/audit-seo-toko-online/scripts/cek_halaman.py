@@ -201,7 +201,90 @@ class EkstrakHalaman(HTMLParser):
 def ekstrak(html_teks):
     parser = EkstrakHalaman()
     parser.feed(html_teks)
+    # WAJIB dipanggil: html.parser (stdlib) menahan data yang belum pasti
+    # selesai sampai close() dipanggil (dianggap "mungkin masih ada input
+    # susulan"). Tanpa ini, dokumen yang berakhir di tengah tag/elemen raw
+    # text (lihat perbaiki_tag_rawtext_tidak_tertutup di bawah) tidak
+    # memicu callback SAMA SEKALI untuk sisa dokumen — bukan cuma diam-diam
+    # salah, tapi benar-benar tidak diproses.
+    parser.close()
     return parser
+
+
+# Elemen yang oleh html.parser stdlib dianggap "raw text": begitu tag ini
+# terbuka, SEMUA isi di dalamnya (termasuk tag HTML lain di dalamnya)
+# dianggap teks polos sampai ditemukan tag penutup yang PERSIS cocok.
+# (stdlib: HTMLParser.RCDATA_CONTENT_ELEMENTS = ("textarea", "title"),
+# HTMLParser.CDATA_CONTENT_ELEMENTS termasuk "script"/"style".)
+TAG_RAWTEXT = ("title", "textarea", "script", "style")
+_POLA_BUKA_RAWTEXT = re.compile(r"<(%s)\b[^>]*>" % "|".join(TAG_RAWTEXT), re.IGNORECASE)
+_POLA_TAG_LAIN = re.compile(r"<[a-zA-Z/]")
+
+
+def perbaiki_tag_rawtext_tidak_tertutup(html_teks):
+    """Deteksi & pulihkan tag <title>/<textarea>/<script>/<style> yang tidak
+    ditutup (</title>, dst. hilang).
+
+    Kalau tag ini tidak ditutup, html.parser stdlib diam-diam menelan SISA
+    SELURUH DOKUMEN sebagai "isi"-nya, tanpa peringatan apa pun — title, meta,
+    heading, gambar, dan JSON-LD sesudahnya ikut hilang total tanpa jejak.
+    Ini bisa terjadi kalau pengguna awam menyalin-tempel "Lihat Sumber
+    Halaman" secara terpotong, atau ada bug kecil di template situsnya.
+
+    Perbaikan yang dilakukan (bukan tebak-tebakan, cuma pemulihan wajar):
+    kalau ditemukan tag rawtext tanpa penutup yang cocok di sisa dokumen,
+    tag itu dianggap "seharusnya sudah ditutup" tepat SEBELUM markah HTML
+    (tag) berikutnya muncul — mis. <title>Judul Toko<meta ...> dianggap
+    sebagai <title>Judul Toko</title><meta ...> — supaya sisa dokumen bisa
+    diparse ulang secara normal. Kalau tidak ada markah lain sama sekali
+    sesudahnya, ditutup paksa di akhir dokumen (dokumen memang berhenti di
+    tengah elemen ini, bukan menelan struktur lain).
+
+    Mengembalikan (html_hasil_perbaikan, daftar_pesan_peringatan).
+    """
+    peringatan = []
+    potongan = []
+    posisi = 0
+    n = len(html_teks)
+
+    while posisi < n:
+        m_buka = _POLA_BUKA_RAWTEXT.search(html_teks, posisi)
+        if not m_buka:
+            potongan.append(html_teks[posisi:])
+            break
+
+        tag = m_buka.group(1).lower()
+        awal_isi = m_buka.end()
+        pola_tutup = re.compile(r"</\s*%s\s*>" % tag, re.IGNORECASE)
+        m_tutup = pola_tutup.search(html_teks, awal_isi)
+
+        if m_tutup:
+            # Ditutup dengan benar — salin apa adanya, tidak perlu diperbaiki.
+            potongan.append(html_teks[posisi:m_tutup.end()])
+            posisi = m_tutup.end()
+            continue
+
+        # Tidak ada tag penutup yang cocok di SISA DOKUMEN sama sekali.
+        m_tag_lain = _POLA_TAG_LAIN.search(html_teks, awal_isi)
+        if m_tag_lain:
+            titik_potong = m_tag_lain.start()
+            potongan.append(html_teks[posisi:titik_potong])
+            potongan.append(f"</{tag}>")
+            posisi = titik_potong
+        else:
+            potongan.append(html_teks[posisi:])
+            potongan.append(f"</{tag}>")
+            posisi = n
+
+        peringatan.append(
+            f"HTML rusak: tag <{tag}> tidak ditutup (</{tag}> hilang) — dianggap "
+            "ditutup otomatis sebelum markah berikutnya supaya sisa halaman tetap "
+            "terbaca, tapi hasil audit untuk bagian ini mungkin tidak lengkap. "
+            "Cek ulang cara pengambilan HTML-nya (mis. ambil ulang dengan "
+            "\"Simpan Halaman Sebagai... HTML lengkap\", bukan salin sebagian)."
+        )
+
+    return "".join(potongan), peringatan
 
 
 # ---------------------------------------------------------------------------
@@ -418,9 +501,11 @@ def ukuran_halaman(jumlah_bytes):
 
 def analisis_lengkap(path, kata_kunci=None, url=None):
     html_teks, jumlah_bytes, catatan_encoding = baca_html(path)
-    p = ekstrak(html_teks)
+    html_diperbaiki, peringatan_html_rusak = perbaiki_tag_rawtext_tidak_tertutup(html_teks)
+    p = ekstrak(html_diperbaiki)
     return {
         "catatan_encoding": catatan_encoding,
+        "peringatan_html_rusak": peringatan_html_rusak,
         "title": analisis_title(p.title),
         "meta_description": analisis_meta_description(p.meta_description),
         "heading": analisis_heading(p.headings),
@@ -443,6 +528,8 @@ def cetak_teks(hasil):
 
     if hasil["catatan_encoding"]:
         print(f"[PERINGATAN ENCODING] {hasil['catatan_encoding']}")
+    for p in hasil.get("peringatan_html_rusak") or []:
+        print(f"[PERINGATAN HTML RUSAK] {p}")
 
     judul("Judul (title)")
     t = hasil["title"]

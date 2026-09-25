@@ -26,6 +26,7 @@ from cek_halaman import (
     analisis_title,
     baca_html,
     ekstrak,
+    perbaiki_tag_rawtext_tidak_tertutup,
     ukuran_halaman,
 )
 
@@ -305,6 +306,71 @@ class TesBacaFile(unittest.TestCase):
         self.assertIsNotNone(catatan)
 
 
+class TesPerbaikanRawtextTidakTertutup(unittest.TestCase):
+    """Tes langsung untuk perbaiki_tag_rawtext_tidak_tertutup (regresi S1)."""
+
+    def test_title_tertutup_normal_tidak_berubah(self):
+        html = "<html><head><title>Judul OK</title></head><body></body></html>"
+        hasil, peringatan = perbaiki_tag_rawtext_tidak_tertutup(html)
+        self.assertEqual(hasil, html)
+        self.assertEqual(peringatan, [])
+
+    def test_title_tidak_tertutup_dipotong_sebelum_tag_berikutnya(self):
+        html = "<html><head><title>Judul Tanpa Tutup</head><body><h1>Judul Utama</h1></body></html>"
+        hasil, peringatan = perbaiki_tag_rawtext_tidak_tertutup(html)
+        self.assertIn("<title>Judul Tanpa Tutup</title>", hasil)
+        self.assertIn("<h1>Judul Utama</h1>", hasil)
+        self.assertEqual(len(peringatan), 1)
+        self.assertIn("<title>", peringatan[0])
+
+    def test_title_tidak_tertutup_sampai_akhir_dokumen(self):
+        html = "<html><head><title>Cuma teks polos tanpa tag lain sesudahnya"
+        hasil, peringatan = perbaiki_tag_rawtext_tidak_tertutup(html)
+        self.assertTrue(hasil.endswith("</title>"))
+        self.assertEqual(len(peringatan), 1)
+
+    def test_style_tidak_tertutup_dipotong_sebelum_tag_berikutnya(self):
+        html = '<head><style>body{color:red<meta name="x" content="y"></head>'
+        hasil, peringatan = perbaiki_tag_rawtext_tidak_tertutup(html)
+        self.assertIn("</style>", hasil)
+        self.assertIn('<meta name="x" content="y">', hasil)
+        self.assertEqual(len(peringatan), 1)
+        self.assertIn("<style>", peringatan[0])
+
+    def test_script_tidak_tertutup_dipotong_sebelum_tag_berikutnya(self):
+        html = "<head><script>var x=1;<h1>Judul</h1></head>"
+        hasil, peringatan = perbaiki_tag_rawtext_tidak_tertutup(html)
+        self.assertIn("</script>", hasil)
+        self.assertIn("<h1>Judul</h1>", hasil)
+        self.assertEqual(len(peringatan), 1)
+        self.assertIn("<script>", peringatan[0])
+
+    def test_textarea_tidak_tertutup_dipotong_sebelum_tag_berikutnya(self):
+        html = "<body><textarea>Contoh isi<h1>Judul</h1></body>"
+        hasil, peringatan = perbaiki_tag_rawtext_tidak_tertutup(html)
+        self.assertIn("</textarea>", hasil)
+        self.assertIn("<h1>Judul</h1>", hasil)
+        self.assertEqual(len(peringatan), 1)
+
+    def test_tanpa_elemen_rawtext_sama_sekali(self):
+        html = "<html><body><h1>Judul</h1><p>Teks biasa.</p></body></html>"
+        hasil, peringatan = perbaiki_tag_rawtext_tidak_tertutup(html)
+        self.assertEqual(hasil, html)
+        self.assertEqual(peringatan, [])
+
+    def test_dua_elemen_rawtext_tidak_tertutup_dua_peringatan(self):
+        html = (
+            "<head><title>Judul Toko"
+            '<style>body{color:blue'
+            '<meta name="description" content="Deskripsi toko"></head>'
+        )
+        hasil, peringatan = perbaiki_tag_rawtext_tidak_tertutup(html)
+        self.assertEqual(len(peringatan), 2)
+        self.assertIn("</title>", hasil)
+        self.assertIn("</style>", hasil)
+        self.assertIn('<meta name="description" content="Deskripsi toko">', hasil)
+
+
 class TesAnalisisLengkapIntegrasi(unittest.TestCase):
     def _tulis_dan_analisis(self, isi_teks, **kwargs):
         f = tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8")
@@ -326,18 +392,53 @@ class TesAnalisisLengkapIntegrasi(unittest.TestCase):
         # 2 tautan bermasalah: "#" dan javascript:void(0)
         self.assertEqual(len(hasil["tautan"]["bermasalah"]), 2)
 
-    def test_html_rusak_tidak_crash(self):
-        # HTMLParser bawaan Python cukup toleran terhadap tag tak tertutup
-        # dan heading yang salah bersarang (<h1>...<h2>...</h1> tanpa </h2>);
-        # yang WAJIB benar hanyalah skrip TIDAK CRASH dan tetap memberi hasil
-        # berbentuk dict yang lengkap (bukan mengharuskan ekstraksi sempurna
-        # dari markup yang memang rusak).
+    def test_html_rusak_tag_title_tidak_ditutup_tetap_diekstrak_dengan_peringatan(self):
+        # HTML_RUSAK sengaja punya <title> tanpa </title> (kesalahan umum
+        # kalau pengguna menyalin "Lihat Sumber Halaman" secara terpotong).
+        # Regresi S1 (temuan uji independen 2026-09-25): sebelum diperbaiki,
+        # html.parser stdlib diam-diam menelan SISA SELURUH DOKUMEN sebagai
+        # isi <title> tanpa peringatan apa pun, sehingga meta description,
+        # H1, gambar, dan JSON-LD ikut hilang total tanpa jejak. Sekarang
+        # WAJIB: (1) title/meta/heading/gambar tetap terbaca dengan benar,
+        # DAN (2) peringatan eksplisit "HTML rusak" muncul di hasil.
         hasil = self._tulis_dan_analisis(HTML_RUSAK)
-        for kunci in ("title", "meta_description", "heading", "gambar", "tautan",
-                      "canonical", "robots", "open_graph", "json_ld", "ukuran_halaman"):
-            self.assertIn(kunci, hasil)
-        self.assertIsInstance(hasil["title"]["ada"], bool)
-        self.assertIsInstance(hasil["heading"]["total"], int)
+        self.assertTrue(hasil["title"]["ada"])
+        self.assertEqual(hasil["title"]["teks"], "Toko Servis AC Bekasi")
+        self.assertTrue(hasil["meta_description"]["ada"])
+        self.assertIn("Servis AC", hasil["meta_description"]["teks"])
+        self.assertGreaterEqual(hasil["heading"]["total"], 1)
+        self.assertEqual(hasil["gambar"]["total"], 1)
+        self.assertTrue(any("title" in p and "tidak ditutup" in p
+                             for p in hasil["peringatan_html_rusak"]))
+
+    def test_html_style_tidak_ditutup_tetap_diekstrak_dengan_peringatan(self):
+        html = (
+            '<html><head><title>Toko OK</title><style>body{color:red\n'
+            '<meta name="description" content="Deskripsi toko yang seharusnya tetap terbaca meski style di atasnya rusak, cukup panjang.">'
+            "<h1>Judul Utama Toko</h1></body></html>"
+        )
+        hasil = self._tulis_dan_analisis(html)
+        self.assertEqual(hasil["title"]["teks"], "Toko OK")
+        self.assertTrue(hasil["meta_description"]["ada"])
+        self.assertEqual(hasil["heading"]["jumlah_h1"], 1)
+        self.assertTrue(any("style" in p and "tidak ditutup" in p
+                             for p in hasil["peringatan_html_rusak"]))
+
+    def test_html_script_tidak_ditutup_tetap_diekstrak_dengan_peringatan(self):
+        html = (
+            "<html><head><title>Toko Skrip</title>"
+            '<script>var x = 1;\n'
+            '<h1>Judul Sesudah Skrip Rusak</h1></body></html>'
+        )
+        hasil = self._tulis_dan_analisis(html)
+        self.assertEqual(hasil["title"]["teks"], "Toko Skrip")
+        self.assertEqual(hasil["heading"]["jumlah_h1"], 1)
+        self.assertTrue(any("script" in p and "tidak ditutup" in p
+                             for p in hasil["peringatan_html_rusak"]))
+
+    def test_html_normal_tidak_ada_peringatan_html_rusak(self):
+        hasil = self._tulis_dan_analisis(HTML_NORMAL)
+        self.assertEqual(hasil["peringatan_html_rusak"], [])
 
     def test_html_tanpa_seo_apapun(self):
         hasil = self._tulis_dan_analisis(HTML_TANPA_APAPUN)
