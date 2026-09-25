@@ -55,6 +55,9 @@ SINGKATAN_AMAN = {
     "FAQ", "ATM", "KUR", "UKM", "BUMN",
     # v1.0.2 (temuan N3 — zona waktu)
     "WIB", "WITA", "WIT",
+    # v1.0.3 (temuan N4 — istilah pendek lain yang lazim kapital & bisa
+    # muncul berdampingan, mis. "sistem ERP/CRM", "ajukan KPR ke BTN")
+    "KPR", "BTN", "RSUD", "POS", "ERP", "CRM", "HPP",
 }
 
 # Frasa/kata pemicu kesan spam atau berlebihan (huruf kecil, dicocokkan case-insensitive)
@@ -67,40 +70,58 @@ KATA_PEMICU_SPAM = [
     "tanpa modal", "kerja santai gaji besar", "wa admin sekarang juga",
 ]
 
-# Kata kunci yang menandai pesan MENYEBUT asal kontak (heuristik).
-# v1.0.1 (temuan B1): daftar ini diturunkan langsung dari SETIAP pola di
-# references/pola-pembuka.md (referral, pameran/expo/bazar, Google Maps/ulasan,
-# Instagram/IG/TikTok/postingan, grup/komunitas, website/situs resmi) supaya
-# script tidak lagi bertentangan dengan referensinya sendiri. "dari bapak"/
-# "dari ibu" SENGAJA tidak dipakai lagi sendirian (dulu memicu salah-positif
-# pada kalimat seperti "resep warisan dari ibu saya" yang bukan asal kontak).
-KATA_KUNCI_ASAL_KONTAK = [
-    # 1. Referral / rekomendasi orang lain
-    "dapat nomor", "dapat kontak", "dapat kontaknya", "dapat nomornya",
-    "nomor bapak/ibu saya dapat", "kontak ini saya dapat", "dari rekomendasi",
-    "direkomendasikan oleh", "rekomendasi dari", "referensi dari",
-    "dikasih tahu oleh", "menyarankan saya menghubungi", "dari teman",
-    "dari kenalan", "izin menghubungi", "kontak dari", "nomor dari",
-    "nomor bapak dari", "nomor ibu dari",
-    # 2. Pameran / bazar / acara networking
-    "di pameran", "dari pameran", "pameran umkm", "di bazar", "dari bazar",
-    "di expo", "dari expo", "acara networking", "di acara", "bertukar kontak",
-    "tukar kontak", "tukar kartu nama", "bertemu di", "ketemu di",
-    "sempat mengobrol", "mengobrol di",
-    # 3. Google Maps / listing bisnis publik
-    "google maps", "di maps", "ulasan google", "listing bisnis",
-    # 4. Instagram / media sosial usaha
-    "akun instagram", "di instagram", "dari instagram", "dari ig", "di ig",
-    "akun ig", "di tiktok", "dari tiktok", "lihat postingan", "melihat postingan",
-    "dari postingan", "unggahan", "dari facebook",
-    # 5. Grup komunitas / WhatsApp Group bisnis
-    "anggota grup", "sama-sama anggota", "di grup", "dari grup",
-    "grup whatsapp", "grup komunitas",
-    # Website / situs resmi (sumber sah lain yang disebut dasar-hukum-wa.md)
-    "di website", "dari website", "situs resmi", "website resmi", "di situs",
-    # Kontak lama yang dingin kembali & sumber umum lain
-    "sempat kontak", "kontak lama", "dari marketplace", "lihat dari",
-    "melihat profil", "melihat usaha bapak/ibu", "melihat usaha ibu/bapak",
+# Pola regex yang menandai pesan MENYEBUT asal kontak (heuristik).
+# v1.0.1 (temuan B1): daftar kata kunci polos pertama diturunkan dari SETIAP
+# pola di references/pola-pembuka.md (referral, pameran/expo/bazar, Google
+# Maps/ulasan, Instagram/IG/TikTok/postingan, grup/komunitas, website/situs
+# resmi). "dari bapak"/"dari ibu" SENGAJA tidak dipakai sendirian (memicu
+# salah-positif pada kalimat seperti "resep warisan dari ibu saya").
+#
+# v1.0.3 (temuan N2, examples/06-uji-ulang-v1.0.1.md): kata kunci polos di
+# atas masih longgar DUA ARAH — salah-negatif untuk frasa wajar ("bertemu
+# Ibu di ... Expo", "merekomendasikan", "kartu nama", "follow IG", "satu
+# grup", "LinkedIn/Tokopedia") dan salah-positif untuk frasa yang TIDAK
+# menyebut asal kontak ("dari teman-teman petani", "kontak dari kami",
+# "grup whatsapp khusus pelanggan", "ketemu di jalan"). Diganti dengan pola
+# regex berjangkar: kata kunci netral seperti "dari teman"/"kontak dari"/
+# "lihat dari"/"ketemu di"/"grup whatsapp" dibuang begitu saja (terlalu
+# umum), diganti pola yang mensyaratkan konteks nomor/kontak/lokasi acara
+# di sekitarnya.
+POLA_ASAL_KONTAK = [
+    # 1. "dapat/peroleh/terima" + "nomor/kontak" (urutan bebas) + "dari"
+    re.compile(r"\b(dapat|dapet|peroleh|terima|menerima)\b.{0,30}\b(nomor|kontak)(nya)?\b.{0,15}\bdari\b", re.I),
+    re.compile(r"\b(nomor|kontak)(nya)?\b.{0,30}\b(dapat|dapet|peroleh|terima|menerima)\b.{0,15}\bdari\b", re.I),
+    # 2. "nomor/kontak Bapak/Ibu/Kakak/Anda ... dari ..."
+    re.compile(r"\b(nomor|kontak)(nya)?\s+(bapak|ibu|kakak|anda|saya)\b.{0,40}\bdari\b", re.I),
+    # 3. Referral / rekomendasi orang lain
+    re.compile(r"\b(direkomendasikan|merekomendasikan|rekomendasi|referensi)\b", re.I),
+    re.compile(r"\bdikasih\s*tahu\b.{0,20}\b(oleh|dari)\b", re.I),
+    re.compile(r"\bmenyarankan\s+saya\s+menghubungi\b", re.I),
+    re.compile(r"\bizin\s+menghubungi\b", re.I),
+    # 4. Pameran / bazar / acara / seminar / festival networking
+    re.compile(
+        r"\b(bertemu|ketemu|kenalan|berkenalan|ngobrol|mengobrol)\b.{0,25}\bdi\b.{0,40}"
+        r"\b(pameran|expo|bazar|bazaar|acara|seminar|festival)\b", re.I,
+    ),
+    re.compile(r"\b(bertukar|tukar)\s+(kontak|kartu\s*nama)\b", re.I),
+    re.compile(r"\bkartu\s*nama\b", re.I),
+    # 5. Google Maps / listing bisnis publik
+    re.compile(r"\bgoogle\s*maps\b|\bdi\s*maps\b|\bulasan\s*google\b|\blisting\s*bisnis\b", re.I),
+    # 6. Media sosial / marketplace
+    re.compile(r"\binstagram\b|\blinkedin\b|\btokopedia\b|\bshopee\b|\bmarketplace\b", re.I),
+    re.compile(r"\bdi\s*ig\b|\bdari\s*ig\b|\bakun\s*ig\b|\bdi\s*tiktok\b|\bdari\s*tiktok\b", re.I),
+    re.compile(r"\bfollow\b.{0,15}\b(ig|instagram)\b", re.I),
+    re.compile(r"\b(lihat|melihat)\s+postingan\b|\bdari\s+postingan\b", re.I),
+    re.compile(r"\bdari\s+facebook\b", re.I),
+    # 7. Grup komunitas / WhatsApp Group bisnis
+    re.compile(r"\b(anggota|sama-?sama|satu|sesama)\s+grup\b", re.I),
+    re.compile(r"\b(di|dari)\s+grup\b|\bgrup\s+komunitas\b", re.I),
+    # 8. Website / situs resmi
+    re.compile(r"\b(di|dari)\s+website\b|\bsitus\s+resmi\b|\bwebsite\s+resmi\b|\bdi\s+situs\b", re.I),
+    # 9. Kontak lama yang dingin kembali & profil usaha
+    re.compile(r"\bsempat\s+kontak\b|\bkontak\s+lama\b", re.I),
+    re.compile(r"\bdari\s+marketplace\b", re.I),
+    re.compile(r"\bmelihat\s+(profil|usaha)\b", re.I),
 ]
 
 # Kata kunci yang menandai ada opsi keluar / berhenti yang sopan (heuristik)
@@ -136,7 +157,9 @@ def normalisasi_nomor_wa(nomor):
     """
     if nomor is None or not str(nomor).strip():
         raise InputSalah("nomor WhatsApp kosong")
-    bersih = re.sub(r"[\s\-().]", "", str(nomor).strip())
+    # v1.0.3 (temuan N6): buang juga en-dash/em-dash (hasil autocorrect
+    # Word/WhatsApp Desktop, mis. "0812–3456–7890") dan garis bawah.
+    bersih = re.sub(r"[\s\-–—_().]", "", str(nomor).strip())
     if bersih.startswith("+"):
         bersih = bersih[1:]
     if bersih.startswith("00") and len(bersih) > 2:
@@ -195,8 +218,8 @@ def hitung_kata(teks):
 
 # Rentang Unicode emoji/simbol piktograf yang umum dipakai di pesan WA.
 # (v1.0.1 B7 — bukan daftar lengkap seluruh emoji, tapi cukup untuk kasus wajar.)
-_POLA_EMOJI = re.compile(
-    "["
+# v1.0.3 (temuan N5): ditambah rentang U+2B00-2BFF (mis. bintang ⭐ U+2B50).
+_KELAS_EMOJI_DASAR = (
     "\U0001F300-\U0001F5FF"
     "\U0001F600-\U0001F64F"
     "\U0001F680-\U0001F6FF"
@@ -205,12 +228,26 @@ _POLA_EMOJI = re.compile(
     "\U0001FA00-\U0001FAFF"
     "\U00002600-\U000026FF"
     "\U00002700-\U000027BF"
-    "]"
+    "\U00002B00-\U00002BFF"
 )
+# Emoji dasar + modifier warna kulit opsional + rangkaian ZWJ (mis. emoji
+# keluarga 👨‍👩‍👧) dihitung sebagai SATU kecocokan, bukan satu per komponen.
+_POLA_EMOJI = re.compile(
+    "[" + _KELAS_EMOJI_DASAR + "]"
+    "[\U0001F3FB-\U0001F3FF]?"
+    "(?:‍[" + _KELAS_EMOJI_DASAR + "][\U0001F3FB-\U0001F3FF]?)*"
+)
+# Bendera negara = 2 regional-indicator berurutan (mis. 🇮🇩) = SATU emoji.
+_POLA_BENDERA = re.compile("[\U0001F1E6-\U0001F1FF]{2}")
 
 
 def hitung_emoji(teks):
-    return len(_POLA_EMOJI.findall(teks))
+    """v1.0.3 (temuan N5): dulu 👍🏽 dihitung 2 (modifier warna kulit dianggap
+    emoji terpisah), keluarga ZWJ 👨‍👩‍👧 dihitung 3, bendera 🇮🇩 dihitung 0,
+    dan ⭐ (U+2B50) tidak terdeteksi sama sekali. Sekarang modifier warna
+    kulit & rangkaian ZWJ dihitung SATU emoji, bendera (pasangan regional-
+    indicator) dihitung SATU, dan rentang U+2B00-2BFF ikut terdeteksi."""
+    return len(_POLA_EMOJI.findall(teks)) + len(_POLA_BENDERA.findall(teks))
 
 
 def cek_kalimat_panjang(teks):
@@ -224,10 +261,31 @@ def cek_kalimat_panjang(teks):
 
 
 def cek_kapital_berlebihan(teks):
+    """v1.0.3 (temuan N4): sebuah kata kapital hanya ditandai bila kata itu
+    sendiri >=5 huruf, ATAU muncul dalam RANGKAIAN >=2 kata kapital berturut-
+    turut. Singkatan umum 3-4 huruf di dunia bisnis Indonesia (KPR, BTN,
+    RSUD, POS, ERP, CRM, HPP, atau inisial perusahaan seperti "PT ABC")
+    sendirian tidak realistis untuk didaftar satu per satu di SINGKATAN_AMAN
+    — kata "teriak" yang sebenarnya (PROMO GILA, GRATIS, DISKON, dst.)
+    hampir selalu >=5 huruf atau tampil berderet."""
+    kata_kata = re.findall(r"[A-Za-z]+", teks)
+    kandidat = [
+        kata.isupper() and len(kata) >= 3 and kata.upper() not in SINGKATAN_AMAN
+        for kata in kata_kata
+    ]
     kata_kapital = []
-    for kata in re.findall(r"[A-Za-z]+", teks):
-        if len(kata) >= 3 and kata.isupper() and kata.upper() not in SINGKATAN_AMAN:
-            kata_kapital.append(kata)
+    i, n = 0, len(kata_kata)
+    while i < n:
+        if not kandidat[i]:
+            i += 1
+            continue
+        j = i
+        while j < n and kandidat[j]:
+            j += 1
+        rangkaian = kata_kata[i:j]
+        if len(rangkaian) >= 2 or len(rangkaian[0]) >= 5:
+            kata_kapital.extend(rangkaian)
+        i = j
     return kata_kapital
 
 
@@ -240,12 +298,22 @@ def cek_kata_pemicu_spam(teks):
 
 
 def hitung_link(teks):
-    return len(re.findall(r"https?://\S+|www\.\S+", teks, flags=re.IGNORECASE))
+    # v1.0.3 (temuan N6): link tanpa skema/"www" (mis. "bit.ly/xyz",
+    # "toko.id/katalog") yang lazim ditempel di pesan WA kini ikut dihitung.
+    return len(re.findall(
+        r"https?://\S+|www\.\S+|\b[\w-]+\.(?:id|com|co|ly|me)/\S+",
+        teks, flags=re.IGNORECASE,
+    ))
 
 
 def cek_kata_kunci(teks, daftar):
     rendah = teks.lower()
     return any(kunci in rendah for kunci in daftar)
+
+
+def cek_asal_kontak(teks):
+    """Deteksi apakah pesan menyebut asal kontak (v1.0.3, temuan N2)."""
+    return any(pola.search(teks) for pola in POLA_ASAL_KONTAK)
 
 
 def cek_jam_kirim(jam_teks):
@@ -268,7 +336,12 @@ def cek_jam_kirim(jam_teks):
             f"boleh juga 4 digit tanpa pemisah, mis. 1930), diberi {jam_teks!r}"
         )
     jam = int(cocok.group(1))
-    wajar = JAM_MULAI_WAJAR <= jam < JAM_SELESAI_WAJAR
+    menit = int(cocok.group(2))
+    # v1.0.3 (temuan N7): rentang wajar dibaca INKLUSIF kedua ujung — dulu jam
+    # tepat 20.00 dianggap "di luar rentang 08.00-20.00", padahal teks
+    # rentangnya sendiri menuliskan 20.00 sebagai batas akhir yang masih boleh.
+    total_menit = jam * 60 + menit
+    wajar = (JAM_MULAI_WAJAR * 60) <= total_menit <= (JAM_SELESAI_WAJAR * 60)
     return jam, wajar
 
 
@@ -293,7 +366,7 @@ def periksa_pesan(teks, jam_kirim=None, zona=None):
     kata_kapital = cek_kapital_berlebihan(teks)
     pemicu_spam = cek_kata_pemicu_spam(teks)
     jumlah_link = hitung_link(teks)
-    sebut_asal_kontak = cek_kata_kunci(teks, KATA_KUNCI_ASAL_KONTAK)
+    sebut_asal_kontak = cek_asal_kontak(teks)
     ada_opsi_keluar = cek_kata_kunci(teks, KATA_KUNCI_OPSI_KELUAR)
     info_jam = cek_jam_kirim(jam_kirim)
 

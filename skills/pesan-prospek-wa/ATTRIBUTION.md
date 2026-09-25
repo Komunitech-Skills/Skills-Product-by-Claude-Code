@@ -39,6 +39,17 @@ Penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian, dita
 
 ## Riwayat versi
 
+### v1.0.3 (2026-09-25) — perbaikan kecil dari uji ulang v1.0.1 (N2, N4–N9)
+- **N2:** `KATA_KUNCI_ASAL_KONTAK` (daftar substring polos) diganti `POLA_ASAL_KONTAK` (regex berjangkar, fungsi baru `cek_asal_kontak`) di `scripts/cek_pesan.py`. Memperbaiki salah-negatif ("bertemu Ibu di ... Expo", "ngobrol di ... acara", "merekomendasikan", "kartu nama", "follow IG", "satu/sesama grup", "nomor ... peroleh dari ...", LinkedIn/Tokopedia) dan salah-positif ("dari teman-teman petani", "kontak dari kami", "lihat dari kualitas", "unggahan bukti transfer", "grup whatsapp khusus pelanggan", "ketemu di jalan"). Daftar kalimat uji berlabel (22 positif, 17 negatif, `tests/uji_regresi.py` `TesRegresiN2AsalKontakLabelBerlaku`) diuji dengan ambang lulus >=90% per kelompok — keduanya tercapai 100% pada kalimat yang diuji.
+- **N4:** `cek_kapital_berlebihan` diganti: kata kapital hanya ditandai bila >=5 huruf ATAU muncul dalam rangkaian >=2 kata kapital berturut-turut (bukan lagi ambang tunggal 3 huruf). KPR, BTN, RSUD, POS, ERP, CRM, HPP ditambahkan ke `SINGKATAN_AMAN`; inisial perusahaan pendek (mis. "PT ABC") tidak lagi tertandai.
+- **N5:** `hitung_emoji` ditulis ulang: modifier warna kulit (U+1F3FB-1F3FF) & rangkaian ZWJ (emoji keluarga) dihitung SATU emoji, bendera negara (pasangan regional-indicator U+1F1E6-1F1FF) dihitung SATU, rentang U+2B00-2BFF (mis. ⭐) ditambahkan.
+- **N6:** `normalisasi_nomor_wa` membuang en-dash/em-dash/garis bawah selain spasi/strip/titik/kurung. `hitung_link` mengenali link tanpa skema/"www" berpola domain umum (`.id/.com/.co/.ly/.me` diikuti `/`), mis. "bit.ly/xyz", "toko.id/katalog".
+- **N7:** `cek_jam_kirim` membaca rentang wajar 08.00–20.00 sebagai INKLUSIF kedua ujung (dulu jam tepat 20.00 dianggap "di luar rentang", padahal teks sendiri menulis 20.00 sebagai batas akhir yang boleh).
+- **N8:** `tests/uji_regresi.py` menambah `TesRegresiN8PolaOtomatis` yang membaca SEMUA kutipan `> "..."` dari `references/pola-pembuka.md` secara otomatis (bukan disalin manual), sehingga pola #6 ("kontak lama", tidak dites di v1.0.1) ikut tercakup dan tes otomatis ikut berubah bila referensi diubah.
+- **N9:** `references/dasar-hukum-wa.md` diperbaiki: kutipan Pasal 65 UU PDP diubah dari "sehingga merugikan" menjadi "yang dapat mengakibatkan kerugian" (lebih dekat ke teks asli); rujukan hak subjek data diperjelas dari "Pasal 5–8 dst." menjadi "Pasal 5, 8, dan 9 dst." dengan hak menarik persetujuan disebut eksplisit ada di Pasal 9.
+- Tidak mengubah `examples/00-*`, `examples/01-05-*`, `examples/06-uji-ulang-v1.0.1.md`, atau `HASIL-UJI.md` (bukti uji dipertahankan apa adanya untuk audit berikutnya).
+- Tes regresi: 84 tes total (naik dari 66), semua lulus. `python3 scripts/validate.py --skill pesan-prospek-wa` lolos.
+
 ### v1.0.2 (2026-09-25) — perbaikan kecil dari uji ulang v1.0.1 (skor 9/10)
 - N1: `cek --file` membaca file UTF-8 ber-BOM dan cp1252 (Notepad lama) tanpa traceback; file biner → pesan ramah.
 - N3: WIB/WITA/WIT tidak lagi dianggap huruf kapital berlebihan; checklist emoji diselaraskan dengan batas script (maks 3).

@@ -3,6 +3,7 @@
     python3 tests/uji_regresi.py
 (Windows: python atau py). Tidak butuh pustaka luar (unittest bawaan Python).
 """
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -114,11 +115,11 @@ class TesLinkDanKataKunci(unittest.TestCase):
 
     def test_asal_kontak_terdeteksi(self):
         teks = "Perkenalkan, saya dapat nomor Bapak dari rekan di Google Maps."
-        self.assertTrue(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertTrue(cp.cek_asal_kontak(teks))
 
     def test_asal_kontak_tidak_ada(self):
         teks = "Selamat siang Pak, kami menjual jasa cleaning service."
-        self.assertFalse(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertFalse(cp.cek_asal_kontak(teks))
 
     def test_opsi_keluar_terdeteksi(self):
         teks = "Boleh diabaikan bila tidak relevan ya, Pak. Terima kasih."
@@ -139,9 +140,15 @@ class TesJamKirim(unittest.TestCase):
         jam, wajar = cp.cek_jam_kirim("08:00")
         self.assertTrue(wajar)
 
-    def test_jam_batas_akhir_tidak_wajar(self):
+    def test_jam_batas_akhir_wajar(self):
+        # v1.0.3 (temuan N7): rentang 08.00-20.00 dibaca INKLUSIF; 20:00 tepat
+        # masih wajar (dulu ditolak walau teks batasnya sendiri menulis 20.00).
         jam, wajar = cp.cek_jam_kirim("20:00")
-        self.assertFalse(wajar)  # 20:00 dianggap sudah di batas, bukan wajar lagi
+        self.assertTrue(wajar)
+
+    def test_jam_setelah_batas_akhir_tidak_wajar(self):
+        jam, wajar = cp.cek_jam_kirim("20:01")
+        self.assertFalse(wajar)
 
     def test_jam_malam_tidak_wajar(self):
         jam, wajar = cp.cek_jam_kirim("22:15")
@@ -206,44 +213,139 @@ class TesRegresiB1AsalKontak(unittest.TestCase):
         teks = ("Selamat siang, Bu Sari. Perkenalkan saya Andi dari Kopi Nusantara. "
                 "Saya dapat nomor Ibu dari Pak Joko, yang menyarankan saya menghubungi "
                 "langsung karena Ibu sedang cari supplier kopi baru.")
-        self.assertTrue(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertTrue(cp.cek_asal_kontak(teks))
 
     def test_pola_2_pameran(self):
         teks = ("Selamat siang, Pak Budi. Saya Rian dari Katering Berkah, kemarin sempat "
                 "bertukar kontak di Jakarta Food & Franchise Expo. Sesuai yang Bapak "
                 "ceritakan soal kebutuhan katering kantor, saya mau menindaklanjuti.")
-        self.assertTrue(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertTrue(cp.cek_asal_kontak(teks))
 
     def test_pola_3_google_maps(self):
         teks = ("Selamat pagi, Bu. Saya Sinta dari Kemasan Hijau. Saya melihat Kafe Roma "
                 "di Google Maps saat mencari kafe di area Bandung, dan tertarik menawarkan "
                 "kopi roastery kami.")
-        self.assertTrue(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertTrue(cp.cek_asal_kontak(teks))
 
     def test_pola_4_instagram(self):
         teks = ("Selamat siang, Kak. Saya Dewi dari Butik Cantik. Saya lihat akun Instagram "
                 "@tokobajukamu dan tertarik dengan koleksi terbaru, jadi ingin menawarkan "
                 "kerja sama reseller.")
-        self.assertTrue(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertTrue(cp.cek_asal_kontak(teks))
 
     def test_pola_5_grup_komunitas(self):
         teks = ("Selamat siang, Pak. Saya Rudi, sama-sama anggota grup Pengusaha UMKM "
                 "Bandung. Melihat Bapak pernah membahas soal kemasan produk di grup, "
                 "saya ingin menawarkan jasa desain kemasan.")
-        self.assertTrue(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertTrue(cp.cek_asal_kontak(teks))
 
     def test_pola_website(self):
         teks = ("Selamat siang, Pak. Saya Dodi dari Cetak Cepat. Saya lihat nomor Bapak "
                 "di website resmi perusahaan, ingin menawarkan jasa percetakan.")
-        self.assertTrue(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertTrue(cp.cek_asal_kontak(teks))
 
     def test_tidak_salah_positif_dari_ibu_saja(self):
         # "dari ibu"/"dari bapak" sendirian (tanpa konteks asal kontak) tidak boleh
         # dianggap menyebut asal kontak — mis. cerita resep, bukan sumber kontak.
         teks = "Kami masih pakai resep warisan dari ibu saya sejak tahun 1998."
-        self.assertFalse(cp.cek_kata_kunci(teks, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertFalse(cp.cek_asal_kontak(teks))
         teks2 = "Rumah ini dulu dari bapak saya, sudah 20 tahun."
-        self.assertFalse(cp.cek_kata_kunci(teks2, cp.KATA_KUNCI_ASAL_KONTAK))
+        self.assertFalse(cp.cek_asal_kontak(teks2))
+
+
+class TesRegresiN8PolaOtomatis(unittest.TestCase):
+    """v1.0.3 — N8: baca SEMUA kutipan pola `> "..."` dari
+    references/pola-pembuka.md secara OTOMATIS (bukan disalin manual ke
+    tes) supaya tes ikut berubah kalau pola-pembuka.md diubah, dan pola
+    #6 ("kontak lama") — yang di v1.0.1 tidak dites — ikut tercakup."""
+
+    def test_semua_pola_pembuka_terdeteksi_asal_kontak(self):
+        path = Path(__file__).resolve().parent.parent / "references" / "pola-pembuka.md"
+        teks_file = path.read_text(encoding="utf-8")
+        kutipan = re.findall(r'^>\s*"(.+)"\s*$', teks_file, flags=re.MULTILINE)
+        self.assertGreaterEqual(
+            len(kutipan), 6, "pola-pembuka.md seharusnya punya minimal 6 contoh kutipan"
+        )
+        for i, pola in enumerate(kutipan, start=1):
+            with self.subTest(pola=i):
+                self.assertTrue(
+                    cp.cek_asal_kontak(pola), f"pola #{i} tidak terdeteksi: {pola[:70]}..."
+                )
+
+
+class TesRegresiN2AsalKontakLabelBerlaku(unittest.TestCase):
+    """v1.0.3 — N2 (examples/06-uji-ulang-v1.0.1.md): daftar kalimat sehari-hari
+    berlabel untuk menguji `cek_asal_kontak` dua arah — POSITIF (menyebut asal
+    kontak, harus True) dan NEGATIF (tidak menyebut asal kontak walau memuat
+    kata yang mirip, harus False). Ambang lulus >=90% per kelompok, bukan
+    100%, karena ini heuristik kata kunci (bukan pemahaman makna)."""
+
+    POSITIF = [
+        "Saya dapat nomor Ibu dari Pak Joko yang menyarankan saya menghubungi.",
+        "Nomor Bapak saya peroleh dari Pak Budi, katanya Bapak sedang cari supplier baru.",
+        "Pak Andi dari toko sebelah merekomendasikan Ibu ke saya.",
+        "Saya kemarin bertemu Ibu di Jakarta Food & Franchise Expo.",
+        "Kita sempat ngobrol di acara Bazar UMKM Kemayoran bulan lalu.",
+        "Kita satu grup di HIPMI Jakarta Selatan, Pak.",
+        "Kartu nama Bapak saya terima saat seminar marketing kemarin.",
+        "Saya lihat profil usaha Ibu di LinkedIn, kelihatan berkembang pesat.",
+        "Toko Ibu saya temukan di Tokopedia saat cari supplier kemasan.",
+        "Saya follow IG Kakak dan suka sekali dengan produknya.",
+        "Kontak ini saya dapat dari grup WhatsApp komunitas reseller.",
+        "Saya melihat nomor Bapak di website resmi perusahaan.",
+        "Dulu kita sempat kontak sekitar setahun lalu soal kerja sama.",
+        "Saya lihat akun Instagram @tokoibu dan suka dengan produknya.",
+        "Saya dapat kontaknya dari rekan bisnis yang pernah bekerja sama dengan Bapak.",
+        "Kami bertukar kartu nama waktu pameran UMKM di JCC.",
+        "Direkomendasikan oleh Pak Hendra untuk menghubungi Bapak langsung.",
+        "Saya lihat postingan Ibu soal promo lebaran kemarin.",
+        "Saya sempat mengobrol dengan Ibu di bazar kuliner Senayan.",
+        "Nomor Ibu saya terima dari Bu Dewi, katanya Ibu butuh jasa desain.",
+        "Saya melihat usaha Bapak di Google Maps saat mencari catering di area Bekasi.",
+        "Sama-sama anggota grup Pengusaha Muda Bandung, Pak.",
+    ]
+
+    NEGATIF = [
+        "Kopi ini dari teman-teman petani di Gayo, jadi rasanya khas.",
+        "Semua proses roasting diproses di acara pameran kopi tahun lalu.",
+        "Ada kontak dari kami untuk info lebih lanjut, silakan hubungi customer service.",
+        "Harga kami tentukan dari kualitas biji kopi pilihan, bukan asal murah.",
+        "Ini unggahan bukti transfer supaya Bapak bisa cek pembayaran kami.",
+        "Kami punya grup whatsapp khusus pelanggan untuk info promo mingguan.",
+        "Kemarin saya ketemu di jalan yang macet sekali, jadi telat sampai toko.",
+        "Kami masih pakai resep warisan dari ibu saya sejak tahun 1998.",
+        "Rumah ini dulu dari bapak saya, sudah 20 tahun ditinggali.",
+        "Semua bahan baku kami ambil dari kebun sendiri, tanpa perantara.",
+        "Info produk lengkap ada di brosur yang kami lampirkan.",
+        "Kami baru buka cabang baru di dekat pasar.",
+        "Pesanan Bapak akan kami kirim besok pagi.",
+        "Silakan cek katalog kami untuk lihat semua varian produk terbaru.",
+        "Toko kami sudah berdiri sejak 2015 dan melayani banyak pelanggan setia.",
+        "Bulan depan kami ada promo diskon 20% untuk semua produk.",
+        "Kami menjual berbagai jenis kain untuk kebutuhan konveksi.",
+    ]
+
+    def test_jumlah_label_memenuhi_syarat(self):
+        self.assertGreaterEqual(len(self.POSITIF), 20)
+        self.assertGreaterEqual(len(self.NEGATIF), 15)
+
+    def test_akurasi_positif_minimal_90_persen(self):
+        benar = [t for t in self.POSITIF if cp.cek_asal_kontak(t)]
+        salah = [t for t in self.POSITIF if not cp.cek_asal_kontak(t)]
+        akurasi = len(benar) / len(self.POSITIF)
+        self.assertGreaterEqual(
+            akurasi, 0.90,
+            f"akurasi positif {akurasi:.0%} < 90%. Salah-negatif: {salah}",
+        )
+
+    def test_akurasi_negatif_minimal_90_persen(self):
+        benar = [t for t in self.NEGATIF if not cp.cek_asal_kontak(t)]
+        salah = [t for t in self.NEGATIF if cp.cek_asal_kontak(t)]
+        akurasi = len(benar) / len(self.NEGATIF)
+        self.assertGreaterEqual(
+            akurasi, 0.90,
+            f"akurasi negatif {akurasi:.0%} < 90%. Salah-positif: {salah}",
+        )
 
 
 class TesRegresiB2NormalisasiNomor(unittest.TestCase):
@@ -285,6 +387,48 @@ class TesRegresiB3SingkatanAman(unittest.TestCase):
         hasil = cp.cek_kapital_berlebihan(teks)
         self.assertIn("PROMO", hasil)
         self.assertIn("GRATIS", hasil)
+
+
+class TesRegresiN4SingkatanPendek(unittest.TestCase):
+    """v1.0.3 — N4: singkatan bisnis 3-4 huruf yang tidak realistis didaftar
+    satu per satu (KPR, BTN, RSUD, POS, ERP, CRM, HPP, inisial perusahaan
+    "PT ABC") tidak lagi dianggap teriak selama berdiri sendiri; rangkaian
+    >=2 kata kapital berturut-turut tetap terdeteksi (mis. "PROMO GILA")."""
+
+    def test_singkatan_pendek_berdiri_sendiri_tidak_terdeteksi(self):
+        teks = ("Bapak bisa ajukan KPR lewat BTN, kami juga sudah kerja sama dengan RSUD, "
+                "kirim POS, dan sistem ERP/CRM kami hitung HPP otomatis.")
+        self.assertEqual(cp.cek_kapital_berlebihan(teks), [])
+
+    def test_inisial_perusahaan_pendek_tidak_terdeteksi(self):
+        teks = "Kami baru saja mengirim penawaran ke PT ABC minggu lalu."
+        self.assertEqual(cp.cek_kapital_berlebihan(teks), [])
+
+    def test_rangkaian_dua_kata_kapital_tetap_terdeteksi(self):
+        # Rangkaian >=2 kata kapital berturut-turut tetap "teriak" walau
+        # masing-masing kata < 5 huruf.
+        teks = "AYO GAS buruan order sekarang sebelum kehabisan stok!"
+        hasil = cp.cek_kapital_berlebihan(teks)
+        self.assertIn("AYO", hasil)
+        self.assertIn("GAS", hasil)
+
+
+class TesRegresiN6NomorDanLink(unittest.TestCase):
+    """v1.0.3 — N6: en-dash/em-dash/underscore pada nomor (hasil autocorrect
+    Word/WA) diterima; link tanpa skema/"www" (mis. "bit.ly/xyz") dihitung."""
+
+    def test_nomor_en_dash_diterima(self):
+        self.assertEqual(cp.normalisasi_nomor_wa("0812–3456–7890"), "6281234567890")
+
+    def test_nomor_em_dash_diterima(self):
+        self.assertEqual(cp.normalisasi_nomor_wa("0812—3456—7890"), "6281234567890")
+
+    def test_nomor_garis_bawah_diterima(self):
+        self.assertEqual(cp.normalisasi_nomor_wa("0812_3456_7890"), "6281234567890")
+
+    def test_link_tanpa_skema_dihitung(self):
+        self.assertEqual(cp.hitung_link("Cek promo di bit.ly/promokami ya."), 1)
+        self.assertEqual(cp.hitung_link("Katalog lengkap ada di toko.id/katalog."), 1)
 
 
 class TesRegresiB4JamKirim(unittest.TestCase):
@@ -331,6 +475,26 @@ class TesRegresiB7Emoji(unittest.TestCase):
         hasil = cp.periksa_pesan(teks)
         self.assertGreater(hasil["jumlah_emoji"], 3)
         self.assertTrue(any("emoji" in p.lower() for p in hasil["peringatan"]))
+
+
+class TesRegresiN5HitungEmoji(unittest.TestCase):
+    """v1.0.3 — N5: modifier warna kulit & rangkaian ZWJ dihitung SATU emoji,
+    bendera (pasangan regional-indicator) dihitung SATU, rentang bintang
+    U+2B00-2BFF terdeteksi."""
+
+    def test_modifier_warna_kulit_dihitung_satu(self):
+        self.assertEqual(cp.hitung_emoji("Mantap \U0001F44D\U0001F3FD sekali!"), 1)  # 👍🏽
+
+    def test_keluarga_zwj_dihitung_satu(self):
+        # 👨‍👩‍👧 = pria + ZWJ + wanita + ZWJ + anak perempuan
+        emoji_keluarga = "\U0001F468‍\U0001F469‍\U0001F467"
+        self.assertEqual(cp.hitung_emoji(f"Untuk keluarga {emoji_keluarga} ya, Bu."), 1)
+
+    def test_bendera_dihitung_satu(self):
+        self.assertEqual(cp.hitung_emoji("Produk lokal \U0001F1EE\U0001F1E9 asli!"), 1)  # 🇮🇩
+
+    def test_bintang_terdeteksi(self):
+        self.assertEqual(cp.hitung_emoji("Produk kami rating ⭐ lima!"), 1)  # ⭐
 
 
 class TesRegresiB8PisahBarisBaru(unittest.TestCase):
