@@ -94,3 +94,26 @@ Alasan:
 - (+) Hukum benar per 25 Sep 2026, status MK 168/RUU jujur, UMK tidak dikarang, disclaimer konsisten, penolakan permintaan berisiko sopan dan bermanfaat.
 - (−) S1 (inkonsistensi pro-rata ganti rugi, selisih kecil tetapi nyata dalam uang), S2 (checklist jam kerja salah hitung), S3 (kasus periode pendek berturut-turut) → belum 9.
 - Rekomendasi: **lulus uji (≥ 7)**; perbaiki S1–S3 sebelum `beta` (perbaikan kecil, tidak perlu uji ulang penuh — cukup tes regresi tambahan + cek ulang skenario 03 varian). Jadwalkan tinjau ulang dasar hukum awal November 2026 (UU Ketenagakerjaan baru ditargetkan Oktober 2026).
+
+---
+
+## Uji ulang v1.0.1
+- **Penguji:** agent independen kedua (bukan pembuat, bukan perevisi), hanya membaca folder skill; salinan di scratchpad `uji2-pkwt/`. Tanggal: **25 September 2026**. Detail lengkap: `06-uji-ulang-v1.0.1.md`.
+- **Tes bawaan:** `python3 tests/uji_regresi.py` → **LULUS semua 130 cek**.
+- **Verifikasi angka independen** (implementasi Fraction ditulis dari rumus SKILL.md tanpa membaca script): **17.994 kasus acak** (periode tunggal, perpanjangan 2–3 periode, putus dini) → **0 selisih rupiah**; aditivitas dijalani + sisa = panjang periode → **0 pelanggaran** (v1.0.0: 52%). 19 kasus tepi (< 1 bulan, tepat 1 & 12 bulan, 12 bulan + 1 hari, 31 Jan → Feb, kabisat 29 Feb, perpanjangan, putus hari pertama / H-1 / hari pertama perpanjangan) cocok semua.
+- **Angka yang diubah perevisi terkonfirmasi:** 15 Feb → Rp4.392.857; "dini sisa hari" → Rp16.877.419; varian 03 (15 Mar 2027) → Rp17.580.645; skenario 01 tetap Rp4.150.000/orang; skenario 03 tetap Rp5.000.000 + Rp1.250.000 + Rp15.000.000.
+- **Temuan uji pertama:** S1 ✅, S2 ✅ (7 j/hari & 40 j/minggu untuk 6 hari; 8 j/hari & 40 j/minggu untuk 5 hari; 🔴 bila > 58 j/minggu), S3 ✅ (PERLU REVIEW dua tafsir, angka tafsir (b) dicek manual), R1–R5 ✅.
+- **Skenario 02 diulang:** ✅ lulus; jam kerja 66 j/minggu kini 🔴 dengan usulan yang aritmetis benar.
+- **Data rusak baru:** tanpa traceback; pesan jelas. Minor: "Rp. 5.000.000.-" ditolak, `--tunjangan-tetap -100rb` memunculkan usage argparse.
+- **SKILL.md** 139 baris; disclaimer & status MK 168/RUU ada.
+
+### Temuan baru (rendah, tidak menghalangi)
+- R-baru-1: label "Sisa kontrak ... = 1 bulan 16 hari" tidak sama dengan 1,4643 bulan yang dipakai (rumus tampil, angka akhir benar).
+- R-baru-2: sisa 0 menampilkan rentang terbalik ("1 Januari 2027 s.d. 31 Desember 2026").
+- R-baru-3: `--metode bulan-penuh` tidak aditif (kompensasi bulan penuh, ganti rugi pecahan) dan tidak dijelaskan di SKILL.md.
+- R-baru-4: saran PERIKSA UPAH untuk "4,5" menyebut Rp5.000 (maksud pengguna kemungkinan 4,5 juta).
+- R-baru-5: checklist B5 ambigu untuk draf yang sekadar tidak menyebut THR.
+
+### Skor uji ulang: **9/10**
+Alasan: seluruh temuan sedang (S1–S3) dan rendah (R1–R5) tuntas dan terverifikasi independen; angka 100% cocok di ±18.000 kasus dengan metode pecahan yang kini konsisten dan dinyatakan jelas (Rumus no. 2 & 4 + rumus di output); A/B dan banding pesaing tetap unggul. Belum 10 karena lima temuan rendah tampilan/kejelasan di atas dan ketergantungan pada status hukum yang berubah (UU Ketenagakerjaan baru ditargetkan Oktober 2026).
+**Rekomendasi: LULUS** — boleh naik ke `lulus` lalu uji platform asli. R-baru-1 & R-baru-2 sebaiknya dirapikan sebelum `beta` (tidak perlu uji ulang penuh). Jadwalkan tinjau dasar hukum awal November 2026.
