@@ -57,3 +57,29 @@
 **Alasan:** Alur inti kuat dan terbukti menang — A/B jelas lebih baik (30 vs 17), mengalahkan dua pesaing (30 vs 13 / 20), domain & konteks Indonesia sangat baik, penolakan kategori terlarang tepat, semua angka yang dihasilkan cocok dengan verifikasi independen. Dikurangi karena: (1) bug TINGGI script yang bisa menghasilkan skor salah **diam-diam** saat pengguna memakai koma desimal — bertentangan dengan janji "angka dihitung, bukan dikira"; (2) CSV gaya Excel Indonesia (BOM, `;`, koma desimal) tidak didukung; (3) gaya tanya satu-per-satu membuat skill lambat bagi pengguna awam, berlawanan dengan prinsip instan; (4) aturan jalur/bobot default/mode cepat masih harus ditafsirkan agent.
 
 **Rekomendasi:** perbaiki temuan #1–#3 (script + tes baru) dan #4–#7 (SKILL.md) sebelum naik status; setelah perbaikan, cukup uji ulang script dengan data rusak di atas + ulang skenario 03 & 04 oleh penguji independen. Target skor setelah revisi: 8–9.
+
+---
+
+## Uji ulang v1.0.1
+
+- **Tanggal:** 2026-09-25
+- **Penguji:** agent independen kedua (bukan pembuat, bukan perevisi), salinan di scratchpad `uji2-biu/`. Platform: `claude-code (simulasi agent)`.
+- **Rincian lengkap:** [`06-uji-ulang-v1.0.1.md`](06-uji-ulang-v1.0.1.md).
+
+**Ringkasan:**
+- Tes bawaan: **60 tes OK**.
+- Temuan lama #1–#14: **semua beres** (TINGGI #1 kini ditolak di baris mana pun dengan pesan jelas; CSV Excel ID ber-BOM/`;`/`3,5` terbaca benar; NaN/Infinity/true ditolak; cp1252, folder, `5.000.000`/`5jt`/`15rb`, margin < 1 ditangani dengan pesan Indonesia).
+- Verifikasi independen (`fractions.Fraction`): 3.000 ide acak → 0 selisih skor; 8 kasus titik impas → semua cocok; skor skenario 04 mode cepat (4,167 … 3,278) cocok.
+- Skenario 01 ulang: **1 giliran tanya** (sebelumnya 3). Skenario 04 ulang: 1 giliran tanya (sebelumnya 5); mode cepat jalan tanpa bertanya, bobot default resmi dipakai & disebut, gerbang persetujuan cukup satu balasan.
+- Regresi: dasar aturan kategori terlarang benar (UU 7/2014 Pasal 9, UU 8/1995, UU 4/2023 P2SK), tidak ada janji untung, SKILL.md 110 baris.
+
+**Bug baru (tidak ada yang tinggi):**
+- B-5 (sedang-rendah): header dengan nama kolom kembar diterima diam-diam (kolom terakhir menimpa).
+- B-2 (rendah-sedang): salah ketik/huruf besar di nama kolom default → diam-diam pindah ke bobot sama rata (sumber disebut di keluaran).
+- B-1 nomor baris salah setelah baris kosong; B-3 header `Nama_Ide` huruf besar ditolak; B-4 koma ekor Excel → pesan `['']`; B-6 `--modal -5jt` pesan argparse Inggris; B-7 aturan gerbang singkat mode cepat hanya eksplisit di Jalur C; B-8 9.9/10.10/11.11 disebut "Harbolnas nasional" (resmi hanya 12.12).
+
+## Skor kualitas uji ulang: **8 / 10**
+
+**Alasan:** Semua temuan uji pertama diperbaiki dan terbukti lewat uji ulang, termasuk bug TINGGI yang bisa membuat skor salah diam-diam. Script kini tahan terhadap format Excel Indonesia dan angka rupiah gaya lokal, angka cocok 100% dengan hitungan independen (termasuk 3.000 ide), dan alur tanya sudah "instan" (satu pesan / mode cepat tanpa tanya) sesuai CLAUDE.md §1 tanpa kehilangan gerbang persetujuan. Belum 9 karena masih ada dua celah kecil yang bisa memberi hasil tidak sesuai maksud tanpa error (kolom header kembar, salah ketik nama kolom default → bobot sama rata) serta beberapa pesan error kecil yang kurang tepat.
+
+**Rekomendasi:** **Lulus** (skor ≥ 7) — boleh naik ke status `lulus` menunggu uji platform asli. Perbaikan B-5 & B-2 disarankan pada revisi berikutnya (patch kecil + tes), tidak wajib uji ulang penuh.
