@@ -37,14 +37,14 @@ Membantu UMKM dan usaha Indonesia memenuhi kewajiban dasar UU 27/2022 tentang Pe
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar bernomor singkat, misalnya:
 1. Nama usaha dan nama pemilik/PT/CV-nya?
 2. Jualan/layanan lewat mana saja? (website, marketplace, WA Business, aplikasi, klinik/jasa tatap muka)
-3. Data pelanggan apa saja yang dicatat? (nama, no. WA, alamat, email, foto, data kesehatan, data anak, dll.)
+3. Data pelanggan apa saja yang dicatat? **Apakah ada data kesehatan, data anak (< 18 th), keuangan, atau biometrik?** (nama, no. WA, alamat, email, foto, dll.)
 4. Dipakai untuk apa saja? (kirim pesanan, CS, promo, pengingat, dll.)
 5. Data dibagikan ke siapa? (nama kurir, payment gateway, marketplace, Meta/Google/TikTok pixel, Google Drive/cloud, chatbot AI)
 6. Disimpan berapa lama? (kalau belum tahu, saya pakai saran umum)
 7. Email/WA untuk urusan data pribadi, dan alamat usaha?
 8. Perlu versi bahasa Inggris?
 
-Jika pengguna ingin cepat: buat draf dengan saran default, biarkan data yang tidak diketahui sebagai `[isi: ...]`, dan tulis daftar asumsi.
+Jika pengguna ingin cepat: katakan "cukup jawab no. 1–3 dulu", lalu buat draf dengan saran default, biarkan data yang tidak diketahui sebagai `[isi: ...]`, dan tulis daftar asumsi.
 
 ## Langkah kerja
 
@@ -52,7 +52,7 @@ Jika pengguna ingin cepat: buat draf dengan saran default, biarkan data yang tid
 1. **Saring cakupan** (lihat "Kapan TIDAK digunakan"). Bila ada data spesifik skala besar (mis. klinik dengan ribuan pasien, aplikasi kesehatan, layanan anak), tetap buat draf tetapi beri label **"DRAF — WAJIB DITINJAU KONSULTAN HUKUM"** dan ingatkan kemungkinan wajib DPO (Pasal 53 + Putusan MK 151/PUU-XXII/2024) dan penilaian dampak (Pasal 34).
 2. **Petakan data** dalam tabel: Data → Tujuan → Dasar pemrosesan (Pasal 20 ayat (2): persetujuan / pelaksanaan perjanjian / kewajiban hukum / kepentingan vital / tugas umum / kepentingan sah) → Penerima → Masa simpan. Aturan:
    - Pesanan & pengiriman = **pelaksanaan perjanjian** (bukan persetujuan).
-   - Promo/newsletter, testimoni, foto, data spesifik = **persetujuan** eksplisit terpisah.
+   - Promo/newsletter, testimoni, foto = **persetujuan** eksplisit terpisah. Data spesifik yang menjadi syarat layanan (mis. rekam medis klinik) = pelaksanaan perjanjian + kewajiban hukum, dengan akses terbatas; persetujuan eksplisit untuk pemakaian tambahannya.
    - Catatan transaksi = **kewajiban hukum** (pembukuan pajak 10 tahun, UU KUP Pasal 28 ayat (11)).
 3. **Transfer luar negeri:** bila pengguna memakai WhatsApp/Meta, Google (Drive/Form/Sheets), Shopify, cloud atau AI asing → pakai opsi 5(a) (Pasal 56). Jangan menulis "semua data di Indonesia" kecuali pengguna memastikannya.
 4. **Isi template** `templates/kebijakan-privasi.md` (dan `templates/kebijakan-privasi-en.md` bila diminta; versi Indonesia berlaku bila berbeda). Pilih isi per jenis usaha dari `references/pilihan-per-jenis-usaha.md`. Hapus blok PANDUAN AGENT dan bagian `{JIKA ...}` yang tidak berlaku. **Jangan mengarang** nama penyedia, alamat, email, masa simpan, atau langkah keamanan yang tidak dilakukan pengguna: pakai `[isi: ...]`.
@@ -60,14 +60,15 @@ Jika pengguna ingin cepat: buat draf dengan saran default, biarkan data yang tid
    ```bash
    python3 <folder-skill-ini>/scripts/cek_kebijakan.py draf-kebijakan.md
    ```
-   Target: skor 100, tanpa frasa berisiko. Status `PERLU DILENGKAPI` berarti masih ada `[isi: ...]`, jadi sebutkan daftarnya ke pengguna.
+   Target: skor struktur 100, tanpa frasa berisiko. Selama masih ada `[isi: ...]`, status = `BELUM SIAP` dan skor dibatasi maks. 84 (unsur yang isinya masih kosong ditandai `BELUM DIISI`); sebutkan daftar isian ke pengguna. Skor = **kelengkapan struktur**, bukan jaminan isi benar.
 6. **Sajikan** sesuai format output, lalu tawarkan: pemberitahuan singkat (mode 2) untuk formulir/WA, dan template tanggapan hak subjek (mode 4).
 
 ### Mode 2 — PEMBERITAHUAN & PERSETUJUAN
 Pakai `templates/pemberitahuan-persetujuan.md` (A website, B pesan salam WA, C Google Form, D klinik/data kesehatan, E English). Aturan wajib:
 - Persetujuan **aktif** (centang kosong / ketik SETUJU), **per tujuan**, bisa ditolak tanpa kehilangan layanan inti, dan **terekam** (Pasal 20 & 22). Dilarang kotak tercentang otomatis dan kalimat "dengan mengisi, Anda dianggap setuju".
 - Maksimal ±60 kata untuk pemberitahuan singkat, dan sertakan tautan kebijakan lengkap.
-- Data anak → tambahkan persetujuan orang tua/wali (Pasal 25). Data kesehatan → template D + saran konsultasi.
+- Persetujuan **bukan syarat layanan** untuk data yang memang diperlukan layanan: pakai dasar pelaksanaan perjanjian/kewajiban hukum + pemberitahuan; persetujuan hanya untuk tujuan tambahan.
+- Data anak → tambahkan persetujuan orang tua/wali (Pasal 25). Data kesehatan → template D (kertas/tablet) atau D-online (Google Form, tanpa tanda tangan, ada pilihan "isi langsung di klinik") + saran konsultasi.
 - Ingatkan menyimpan bukti persetujuan (screenshot chat, kolom timestamp Google Form).
 
 ### Mode 3 — CEK kebijakan yang sudah ada
@@ -78,7 +79,7 @@ Pakai `templates/pemberitahuan-persetujuan.md` (A website, B pesan salam WA, C G
 
 ### Mode 4 — TANGGAPI hak subjek data & kebocoran
 - **Permintaan pelanggan** (akses, koreksi, hapus, tarik persetujuan): pakai `templates/tanggapan-hak-subjek.md`. Hitung tenggat = waktu diterima + 72 jam, lalu tulis tanggal-jamnya. Jelaskan data yang wajib tetap disimpan (pajak/rekam medis) beserta alasannya. Ingatkan tempat data tersembunyi (kontak HP, label WA, Sheets, backup, memori AI agent).
-- **Kebocoran data**: pakai `templates/checklist-kebocoran.md`. Hitung tenggat 3×24 jam sejak insiden diketahui, pandu langkah jam 0–6 (amankan) dulu, lalu siapkan draf pemberitahuan ke pelanggan & lembaga (Pasal 46). Sampaikan bahwa lembaga pengawas PDP **belum terbentuk** per 25 Sep 2026 (sementara Kemkomdigi) dan kanal resmi perlu dicek. Untuk kebocoran data spesifik/berskala besar/pemerasan → sarankan segera konsultan hukum & polisi.
+- **Kebocoran data**: pakai `templates/checklist-kebocoran.md`. Hitung tenggat 3×24 jam sejak insiden diketahui, pandu langkah jam 0–6 (amankan) dulu, lalu siapkan draf pemberitahuan ke pelanggan & lembaga (Pasal 46). **Bila tenggat sudah lewat:** tetap kirim pemberitahuan secepatnya (jangan ditunda lagi), tulis jujur kapan insiden diketahui dan alasan keterlambatan, catat kronologinya, dan sarankan segera konsultan hukum. Sampaikan bahwa lembaga pengawas PDP **belum terbentuk** per 25 Sep 2026 (sementara Kemkomdigi) dan kanal resmi perlu dicek. Untuk kebocoran data spesifik/berskala besar/pemerasan → sarankan segera konsultan hukum & polisi.
 
 ### Fallback jika Python tidak bisa dijalankan
 Periksa manual dengan tabel unsur di `references/checklist-uu-pdp.md` (14 unsur + 2 bersyarat, bobot sama). Skor = bobot terpenuhi ÷ bobot berlaku × 100. Cari frasa berisiko di bagian B. Beri tahu pengguna bahwa pemeriksaan dilakukan manual.
@@ -87,7 +88,7 @@ Periksa manual dengan tabel unsur di `references/checklist-uu-pdp.md` (14 unsur 
 
 **Mode SUSUN:**
 ```
-⚠ Draf ini bukan nasihat hukum. Status: [SIAP DITINJAU / PERLU DILENGKAPI] · Skor cek: [n]/100
+⚠ Draf ini bukan nasihat hukum. Status: [SIAP DITINJAU / BELUM SIAP (n isian kosong)] · Skor cek: [n]/100 (struktur [m]/100)
 
 --- (Kebijakan Privasi lengkap, siap tempel) ---
 
@@ -106,6 +107,7 @@ _Disclaimer: Disusun otomatis dari informasi Anda, mengacu pada UU 27/2022 (dice
 **Mode CEK:**
 ```
 Skor kelengkapan: [n]/100 · Status: [..] · Frasa berisiko: [x TINGGI, y SEDANG]
+(Skor mengukur kelengkapan struktur berbasis kata kunci & polaritas kalimat, bukan kebenaran isi.)
 | Unsur | Status | Dasar |
 Frasa berisiko: [tingkat] "kutipan" → masalah → ganti dengan "..."
 Usulan teks perbaikan (siap tempel): ...
@@ -117,7 +119,7 @@ Disclaimer (sama seperti di atas)
 
 **Output (dipotong):**
 ```
-⚠ Draf ini bukan nasihat hukum. Status: PERLU DILENGKAPI · Skor cek: 100/100
+⚠ Draf ini bukan nasihat hukum. Status: BELUM SIAP (3 isian kosong) · Skor cek: 84/100 (struktur 100/100)
 # Kebijakan Privasi Dapur Bu Sari
 ...
 | Nama, no. WA, alamat | Memproses & mengirim pesanan | Pelaksanaan perjanjian | 10 tahun untuk catatan transaksi (pajak) |
@@ -140,8 +142,8 @@ Sebagian layanan yang kami gunakan (WhatsApp/Meta, Meta Pixel, [isi: layanan clo
 - [ ] Disclaimer + tanggal cek + status PP 33/2026 & lembaga pengawas tercantum.
 
 ## Batasan & penanganan error
-- Script keluar kode 2 dengan pesan `GALAT: ...` untuk file tidak ada, folder, file kosong, .docx/.pdf, atau file biner. Encoding UTF-8/BOM/UTF-16/cp1252 terbaca otomatis. Minta pengguna menempel teks bila file tidak bisa dibaca.
-- Script hanya **pemeriksa kata kunci**: kata kunci ada bukan berarti isinya benar. Penilaian akhir tetap oleh agent (checklist bagian C) dan, bila perlu, konsultan hukum.
+- Script keluar kode 2 dengan pesan `GALAT: ...` untuk file tidak ada, folder, file kosong, file > 5 MB, .docx/.pdf, atau file biner. Encoding UTF-8/BOM/cp1252 dan UTF-16 (dengan atau tanpa BOM) terbaca otomatis; HTML mentah (tag, `&nbsp;`) dibersihkan dulu. Minta pengguna menempel teks bila file tidak bisa dibaca.
+- Script hanya **pemeriksa kata kunci + polaritas kalimat** (kalimat yang disangkal, mis. "Data Anda tidak akan dijual", tidak ditandai; "kami tidak akan memberi tahu bila bocor" tidak dihitung sebagai unsur): kata kunci ada bukan berarti isinya benar. Penilaian akhir tetap oleh agent (checklist bagian C) dan, bila perlu, konsultan hukum.
 - Dasar hukum, status verifikasi pasal, dan item **PERLU REVIEW**: `references/dasar-hukum.md`. Jangan mengutip nomor pasal PP 33/2026 di dokumen pengguna sampai naskah resminya diverifikasi.
 - Uji regresi script: `python3 <folder-skill-ini>/tests/uji_regresi.py`.
 - Data pelanggan yang ditempel pengguna hanya dipakai untuk menyusun dokumen. Jangan disimpan atau dikirim ke tempat lain.

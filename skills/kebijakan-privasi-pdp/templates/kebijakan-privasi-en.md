@@ -21,7 +21,7 @@ This Privacy Policy explains what personal data we collect, why, who we share it
 - Data you give us: [fill: e.g. name, WhatsApp number, email, delivery address, chat messages, payment proof]
 - Data collected automatically {IF website/app}: [fill: e.g. IP address, device type, pages visited, cookies/ad pixels]
 - Data from others {IF any}: [fill: e.g. marketplace order data, payment gateway data]
-{IF specific data} Some data we process ([fill: e.g. health data / children's data / financial data]) is specific personal data under Article 4(2) of the PDP Law. We process it only with separate explicit consent and restricted access.
+{IF specific data} Some data we process ([fill: e.g. health data / children's data / financial data]) is specific personal data under Article 4(2) of the PDP Law. We process it on the basis of [fill: performance of the service contract & legal obligations (e.g. medical records) / separate explicit consent], with restricted access, and never for promotion without separate consent.
 {IF children} Data of children under [fill: 18] is processed only with the consent of a parent or guardian (Article 25).
 
 ## 3. Purposes, legal basis and retention

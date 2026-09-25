@@ -27,7 +27,7 @@ Dipakai agent untuk **menyarankan** isi yang lazim, lalu **dikonfirmasi** ke pen
 
 ## 5. Klinik / praktik kesehatan / jasa kecantikan / psikolog / apotek
 - **Data spesifik:** keluhan, diagnosis, riwayat alergi, hasil lab, foto sebelum/sesudah, resep → **data pribadi spesifik** (Ps. 4 ayat (2)).
-- Wajib: persetujuan eksplisit terpisah (template D), akses terbatas, tidak untuk promosi tanpa persetujuan terpisah, foto tanpa wajah bila untuk konten.
+- Dasar pemrosesan: pelayanan & rekam medis = **pelaksanaan perjanjian** (pelayanan yang diminta) + **kewajiban hukum** (rekam medis); **bukan** centang persetujuan sebagai syarat pelayanan. Persetujuan eksplisit terpisah hanya untuk tujuan tambahan yang boleh ditolak (pengingat WA, foto, promosi, riset) — template D (kertas) / D-online (Google Form). Wajib: akses terbatas, tidak untuk promosi tanpa persetujuan terpisah, foto tanpa wajah bila untuk konten. ⚠️ PERLU REVIEW: apakah PP 33/2026 mensyaratkan persetujuan eksplisit tersendiri untuk data kesehatan belum diverifikasi dari naskah resmi.
 - Masa simpan rekam medis mengikuti aturan kesehatan (Permenkes 24/2022 Ps. 39 menyebut ≥ 25 tahun untuk RME — cocokkan dengan aturan terbaru).
 - Pertimbangkan DPO bila pemrosesan skala besar (Ps. 53 + Putusan MK 151/PUU-XXII/2024) dan DPIA (Ps. 34). **Sarankan konsultan hukum kesehatan.**
 - Skill ini tidak membuat informed consent tindakan medis.

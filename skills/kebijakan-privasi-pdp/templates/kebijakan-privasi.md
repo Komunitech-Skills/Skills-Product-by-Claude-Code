@@ -33,7 +33,7 @@ Kebijakan Privasi ini menjelaskan data pribadi apa yang kami kumpulkan, untuk ap
 **Data dari pihak lain** {JIKA ada}:
 - [isi: mis. data pesanan dari marketplace, data pembayaran dari payment gateway]
 
-{JIKA data spesifik} **Data pribadi yang bersifat spesifik.** Kami juga memproses [isi: mis. data kesehatan/riwayat alergi pasien / data anak / data keuangan]. Data ini termasuk data pribadi yang bersifat spesifik (UU PDP Pasal 4 ayat (2)); kami memprosesnya hanya dengan persetujuan eksplisit yang terpisah, membatasi akses hanya untuk [isi: petugas/dokter/staf tertentu], dan tidak memakainya untuk promosi.
+{JIKA data spesifik} **Data pribadi yang bersifat spesifik.** Kami juga memproses [isi: mis. data kesehatan/riwayat alergi pasien / data anak / data keuangan]. Data ini termasuk data pribadi yang bersifat spesifik (UU PDP Pasal 4 ayat (2)); kami memprosesnya berdasarkan [isi: pelaksanaan perjanjian pelayanan & kewajiban hukum (mis. rekam medis) / persetujuan eksplisit yang terpisah], membatasi akses hanya untuk [isi: petugas/dokter/staf tertentu], dan tidak memakainya untuk promosi.
 
 {JIKA data anak} **Data anak.** Data anak di bawah [isi: 18] tahun hanya kami proses dengan persetujuan orang tua atau wali (UU PDP Pasal 25).
 

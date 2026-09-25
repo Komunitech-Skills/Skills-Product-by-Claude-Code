@@ -5,7 +5,7 @@
 ## Manfaat
 - ✅ **Kebijakan privasi lengkap** untuk website, toko online, aplikasi, WhatsApp Business, klinik, atau jasa. Bahasa Indonesia, dengan versi Inggris bila perlu.
 - ✅ **Kalimat persetujuan siap pakai** untuk formulir website, pesan salam WA, Google Form, dan formulir pasien. Persetujuan dibuat aktif (bukan "dianggap setuju").
-- ✅ **Cek kebijakan yang sudah ada**: dapat skor kelengkapan 0–100, daftar yang kurang, dan tanda untuk kalimat berbahaya seperti "kami tidak bertanggung jawab atas kebocoran" atau "data dapat dijual".
+- ✅ **Cek kebijakan yang sudah ada**: dapat skor kelengkapan 0–100, daftar yang kurang, dan tanda untuk kalimat berbahaya seperti "kami tidak bertanggung jawab atas kebocoran" atau "data dapat dijual". Pemeriksa memahami kalimat penyangkal, jadi kalimat patuh seperti "Data Anda tidak akan dijual" tidak ikut ditandai.
 - ✅ **Siap saat pelanggan minta datanya dihapus.** Ada template balasan akses, koreksi, hapus, dan berhenti promo, lengkap dengan tenggat 3×24 jam.
 - ✅ **Checklist darurat kebocoran data**: langkah per jam dan draf pemberitahuan ke pelanggan dan lembaga dalam 3×24 jam.
 
@@ -19,7 +19,7 @@
 **Sebelum:** Kebijakan privasi disalin dari website luar negeri. Isinya menyebut GDPR dan "California", ada kalimat "dengan menggunakan situs ini Anda dianggap setuju", dan tidak ada kontak atau masa simpan. Pelanggan tanya "data saya dipakai buat apa?", kamu bingung jawabnya.
 
 **Sesudah (cukup ketik):** "Bikinin kebijakan privasi toko kue online aku, jualan lewat website & WA, pakai kurir, payment gateway, dan Meta Pixel."
-→ Kebijakan privasi 12 bagian dengan tabel *data–tujuan–dasar–masa simpan*, bagian penyimpanan di luar negeri yang jujur (WhatsApp/Meta), hak pelanggan dan cara mengajukannya dalam 3×24 jam, pemberitahuan bila terjadi kebocoran, pesan salam WA dengan pilihan "SETUJU PROMO", dan daftar isian yang masih perlu kamu lengkapi. Skor cek: 100/100.
+→ Kebijakan privasi 12 bagian dengan tabel *data–tujuan–dasar–masa simpan*, bagian penyimpanan di luar negeri yang jujur (WhatsApp/Meta), hak pelanggan dan cara mengajukannya dalam 3×24 jam, pemberitahuan bila terjadi kebocoran, pesan salam WA dengan pilihan "SETUJU PROMO", dan daftar isian yang masih perlu kamu lengkapi. Skor struktur 100/100 (status "BELUM SIAP" sampai isian dilengkapi).
 
 ## Cara pakai
 Setelah skill terpasang, ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -53,3 +53,7 @@ Tidak ada dokumen yang bisa menjamin itu. Skill ini menyusun draf yang mengacu p
 
 **Data pelanggan saya aman kalau saya tempel ke AI?**
 Untuk menyusun kebijakan, kamu tidak perlu menempel data pelanggan asli. Cukup ceritakan *jenis* datanya. Skill ini juga diinstruksikan untuk tidak menyimpan atau mengirim data yang kamu tempel ke tempat lain.
+
+## Riwayat versi
+- **1.0.1 (25 Sep 2026)** — revisi dari temuan penguji independen: pemeriksa `cek_kebijakan.py` kini membaca polaritas kalimat (kalimat patuh "tidak akan dijual" tidak lagi ditandai; "tidak akan memberi tahu bila bocor" ditandai TINGGI dan tidak dihitung sebagai unsur), deteksi frasa jual/sewa/monetisasi data ID & EN diperluas, pola unsur diperluas (server Singapura, "simpan 2 tahun", "mencabut persetujuan", "di bawah 18 tahun"), isian kosong menurunkan skor (status BELUM SIAP), HTML mentah & UTF-16 tanpa BOM terbaca, kinerja linier. Template persetujuan klinik diperbaiki (persetujuan bukan syarat pelayanan) + varian Google Form. Rujukan pasal diperbaiki (Ps. 5 identitas; Ps. 68 denda Rp6 miliar). Tes regresi: 133 uji.
+- **1.0.0 (25 Sep 2026)** — rilis draf pertama.

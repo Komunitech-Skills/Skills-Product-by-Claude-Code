@@ -1,6 +1,6 @@
 # Dasar Hukum: Kebijakan Privasi & UU PDP
 
-**Tanggal cek:** 25 September 2026 (riset saat skill dibuat). Aturan bisa berubah. Cek ulang sumber resmi sebelum dipakai untuk keputusan penting.
+**Tanggal cek:** 25 September 2026 (riset saat skill dibuat; dicek ulang untuk v1.0.1 pada hari yang sama: Ps. 5, 31, 46, 68, PP 33/2026). Aturan bisa berubah. Cek ulang sumber resmi sebelum dipakai untuk keputusan penting.
 
 > Ringkasan untuk orang awam, **bukan nasihat hukum**. Untuk usaha yang memproses data spesifik (kesehatan, anak, keuangan, biometrik) dalam skala besar, atau yang mengalami kebocoran data, konsultasikan ke konsultan hukum / praktisi PDP.
 
@@ -15,6 +15,7 @@ Sumber resmi: https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022 · 
 |---|---|---|---|
 | Berlaku | Ps. 76, 74 | Diundangkan & berlaku 17 Oktober 2022; masa penyesuaian 2 tahun → **berlaku penuh 17 Oktober 2024** | ✅ |
 | Data spesifik | Ps. 4 ayat (2) | Kesehatan, biometrik, genetika, catatan kejahatan, data anak, data keuangan pribadi, data lain sesuai peraturan | ✅ |
+| Hak atas informasi | Ps. 5 | Berhak mendapat informasi tentang **kejelasan identitas**, dasar kepentingan hukum, tujuan permintaan & penggunaan data, dan akuntabilitas pihak yang meminta data → dasar unsur "identitas pengendali" & "kontak" di script | ✅ (pasal.id, Hukumonline; dicek 2026-09-25 v1.0.1) |
 | Hak subjek data | Ps. 5–13 | Informasi; akses & salinan; perbaikan/pembaruan; mengakhiri pemrosesan/menghapus/memusnahkan; menarik persetujuan; keberatan atas keputusan otomatis; menunda/membatasi; gugat ganti rugi; memperoleh & menggunakan data (portabilitas). Pemetaan per nomor pasal belum dicocokkan dengan naskah → di template dikutip sebagai "Pasal 5–13" | ✅ (rentang) / ⚠️ (per pasal) |
 | Prinsip pemrosesan | Ps. 16 ayat (2) | Terbatas & spesifik, sah, transparan; sesuai tujuan; menjamin hak; akurat; aman; diberitahukan tujuannya; dimusnahkan/dihapus setelah masa retensi | ⚠️ (dari ingatan + ringkasan sekunder) |
 | Dasar pemrosesan | Ps. 20 ayat (2) | a. persetujuan eksplisit untuk tujuan tertentu; b. kewajiban perjanjian; c. kewajiban hukum; d. kepentingan vital; e. tugas kepentingan umum/pelayanan publik/kewenangan; f. kepentingan sah lainnya | ✅ |
@@ -26,9 +27,10 @@ Sumber resmi: https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022 · 
 | Akses | Ps. 32 | Akses + rekam jejak pemrosesan, paling lambat **3×24 jam** | ✅ |
 | Penilaian dampak (DPIA) | Ps. 34 | Wajib bila pemrosesan berisiko tinggi (mis. data spesifik skala besar) | ⚠️ |
 | Keamanan | Ps. 35–39 | Menjaga keamanan & kerahasiaan, mencegah akses tidak sah | ⚠️ (rentang) |
+| Perekaman kegiatan pemrosesan | Ps. 31 | Pengendali wajib merekam seluruh kegiatan pemrosesan (ROPA). **Bukan** pasal identitas pengendali — rujukan "Ps. 21 & 31" untuk identitas di script v1.0.0 sudah diperbaiki di v1.0.1 | ✅ (Hukumonline, KlikLegal, Prolegal) |
 | Tarik persetujuan | Ps. 40 | Hentikan pemrosesan paling lambat **3×24 jam** | ✅ |
 | Penghapusan | Ps. 43 | Wajib hapus bila tak diperlukan, persetujuan ditarik, ada permintaan, atau diperoleh melawan hukum | ✅ |
-| **Kebocoran** | **Ps. 46** | Pemberitahuan **tertulis paling lambat 3×24 jam** kepada subjek data **dan** lembaga; memuat data yang terungkap, kapan & bagaimana, upaya penanganan & pemulihan; dalam hal tertentu juga ke masyarakat | ✅ |
+| **Kebocoran** | **Ps. 46** | Ayat (1): pemberitahuan **tertulis paling lambat 3×24 jam** kepada subjek data **dan** lembaga. Ayat (2): isinya data yang terungkap, kapan & bagaimana, upaya penanganan & pemulihan. Ayat (3): dalam hal tertentu juga ke masyarakat. **Narahubung** tidak disebut di Ps. 46 UU; disebut sebagai isi pemberitahuan dalam PP 33/2026 menurut sumber sekunder (nomor pasal belum diverifikasi) — rujukan "Ps. 46 ayat (2) (narahubung)" di script v1.0.0 sudah diperbaiki | ✅ (isi ayat: sumber sekunder) |
 | Prosesor | Ps. 51 | Prosesor memproses berdasarkan perintah pengendali | ⚠️ |
 | **Pejabat PDP (DPO)** | **Ps. 53 ayat (1)** | Wajib bila: a. pelayanan publik; b. kegiatan inti memerlukan pemantauan teratur & sistematis skala besar; c. kegiatan inti = pemrosesan skala besar data spesifik/tindak pidana. **Putusan MK No. 151/PUU-XXII/2024**: kata "dan" di huruf b dimaknai "dan/atau" → cukup satu syarat terpenuhi | ✅ |
 | Transfer ke luar negeri | Ps. 56 | Boleh bila negara tujuan setara/lebih tinggi pelindungannya; bila tidak, pelindungan memadai & mengikat; bila tidak juga, **persetujuan** subjek data | ✅ (isi) / ⚠️ (per ayat) |
@@ -36,7 +38,7 @@ Sumber resmi: https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022 · 
 | Lembaga pengawas | Ps. 58–61 | Ditetapkan oleh & bertanggung jawab kepada Presiden; diatur Perpres | ✅ |
 | Larangan | Ps. 65 | (1) memperoleh/mengumpulkan, (2) mengungkapkan, (3) menggunakan data pribadi bukan miliknya secara melawan hukum | ✅ |
 | Pidana | Ps. 67 | (1) 5 th / Rp5 M; (2) 4 th / Rp4 M; (3) 5 th / Rp5 M | ✅ |
-| Pidana pemalsuan | Ps. 68 | Maks. 6 tahun; denda: sumber sekunder berbeda (Rp5 M vs Rp6 M) | ⚠️ PERLU REVIEW |
+| Pidana pemalsuan | Ps. 68 | Membuat data pribadi palsu/memalsukan (Ps. 66): penjara maks. **6 tahun** dan/atau denda maks. **Rp6 miliar** | ✅ (Tempo, IDN Times, Hukumonline, Wikisumber naskah UU; dicek ulang 2026-09-25 v1.0.1) |
 | Korporasi | Ps. 70 | Hanya pidana denda, maks. 10× ancaman denda | ✅ |
 | Rentang pidana | Ps. 67–73 | Termasuk pidana tambahan & ketentuan korporasi | ✅ (rentang) |
 
@@ -46,11 +48,16 @@ Sumber pendukung (dicek via pencarian 2026-09-25):
 - Hukumonline, persetujuan tertulis/terekam: https://www.hukumonline.com/berita/a/persetujuan-pemrosesan-data-pribadi-dilakukan-melalui-persetujuan-tertulis-atau-terekam-lt6565d6fcdac34/
 - Komdigi, Mengenal Sanksi Pelanggar Data Pribadi: https://www.komdigi.go.id/berita/artikel/detail/mengenal-sanksi-pelanggar-data-pribadi
 - pasal.id Pasal 4, 20, 21, 25, 57: https://pasal.id/peraturan/uu/uu-no-27-tahun-2022
+- Tempo, Ps. 68 Rp6 M: https://www.tempo.co/hukum/uu-pdp-disahkan-pemalsu-data-pribadi-diancam-denda-hingga-rp6-miliar-271543 · Wikisumber naskah UU hlm. 30: https://id.wikisource.org/wiki/Halaman:UU_Nomor_27_Tahun_2022_Tentang_Perlindungan_Data_Pribadi.pdf/30
+- pasal.id Pasal 5: https://pasal.id/peraturan/uu/uu-no-27-tahun-2022/pasal-5 · Pasal 21: https://pasal.id/peraturan/uu/uu-no-27-tahun-2022/pasal-21
+- Pasal 31 (perekaman): https://www.hukumonline.com/berita/a/pengendali-data-pribadi-lt638468763be7d/ · https://kliklegal.com/menelaah-kewajiban-melakukan-perekaman-terhadap-kegiatan-pemrosesan-data-pribadi/
 - MKRI berita Pasal 20: https://www.mkri.id/berita/pemrosesan-data-pribadi-hanya-dapat-dilakukan-dengan-persetujuan-yang-sah-24702
 
 ## 2. Peraturan pelaksana: PP No. 33 Tahun 2026 — ✅ ADA (naskah resmi belum dibaca langsung)
 - Judul: Peraturan Pemerintah Nomor 33 Tahun 2026 tentang Peraturan Pelaksanaan UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi.
-- **Ditetapkan/diundangkan 16 Juli 2026**, LN RI Tahun 2026 No. 88; **berlaku 16 Januari 2027** (6 bulan setelah diundangkan). 12 bab, 225 pasal.
+- **Ditetapkan/diundangkan 16 Juli 2026**; **berlaku 16 Januari 2027** (6 bulan setelah diundangkan, Ps. 225); **225 pasal** ✅ (≥2 sumber sekunder).
+- ⚠️ **PERLU REVIEW — hanya sumber sekunder:** "LN RI Tahun 2026 No. 88 (TLN No. 7190)" dan "12 bab" muncul di ringkasan hasil pencarian (Justisio, depositobpr.id, karsa-siber, 2026-09-25) tetapi **belum dicocokkan dengan naskah resmi** (peraturan.go.id/JDIH terblokir di lingkungan kerja). Jangan dikutip di dokumen pengguna.
+- ℹ️ Data anak: menurut Katadata (2026), PP 33/2026 mengatur identifikasi anak, verifikasi persetujuan orang tua/wali, dan transisi saat anak dewasa. Pasal & rinciannya belum diverifikasi → untuk aplikasi/layanan yang menyasar anak, sarankan konsultan hukum.
 - Isi (menurut sumber sekunder): klasifikasi data umum/spesifik, dasar pemrosesan, tata cara hak subjek data (termasuk keberatan atas pemrosesan otomatis & ganti rugi), kewajiban pengendali/prosesor, perjanjian pengendali–prosesor, isi pemberitahuan kegagalan PDP (data yang terungkap, waktu & cara, penanganan & pemulihan, info PPDP/narahubung) dan pengumuman ke masyarakat bila berdampak serius, PPDP/DPO, penilaian dampak, transfer ke luar negeri, pengawasan, sanksi administratif, penyelesaian sengketa.
 - ⚠️ **PERLU REVIEW:** nomor pasal PP 33/2026 (mis. "Pasal 114" untuk kebocoran yang disebut sumber sekunder), ada/tidaknya keringanan untuk usaha mikro/kecil, dan rincian persetujuan per tujuan — **belum diverifikasi dari naskah resmi**. Jangan mengutip nomor pasal PP di dokumen pengguna.
 - Sikap skill: sampai 16 Januari 2027 acuan utama tetap UU 27/2022. Template sudah memuat unsur yang disebut sumber sekunder PP (isi pemberitahuan kebocoran, narahubung), sehingga tetap relevan setelah PP berlaku.
@@ -61,6 +68,8 @@ Sumber (dicek via pencarian 2026-09-25):
 - Veritask: https://veritask.ai/id/artikel/pengaturan-teknis-pelindungan-data-pribadi-dan-kewajiban-pengendali-serta-prosesor-akhirnya-terbit-lewat-pp-33-2026
 - Bisnis.com (29 Agt 2026), persetujuan konsumen lebih ketat: https://teknologi.bisnis.com/read/20260829/84/1999753/aturan-turunan-uu-pdp-persetujuan-data-konsumen-lebih-ketat
 - Meridian Hukum: https://meridianhukum.com/peraturan/pp-no-33-tahun-2026
+- Justisio (LN No. 88, 12 bab — sekunder): https://justisio.com/regulation/indonesia/dbwgcly3epltypka7sebq61yx · depositobpr.id: https://depositobpr.id/blog/pp-33-2026-aturan-turunan-uu-pelindungan-data-pribadi
+- Katadata (data anak): https://katadata.co.id/finansial/makro/6a9979b7c5745/pp-pelindungan-data-pribadi-berlaku-januari-2027-ini-aturan-baru-data-anak
 - Catatan riset internal sebelumnya: `research/sources/verifikasi-regulasi-2026-09-23.md` #31
 
 ## 3. Lembaga pengawas PDP (Perpres) — ⚠️ BELUM TERBENTUK per 25 September 2026
