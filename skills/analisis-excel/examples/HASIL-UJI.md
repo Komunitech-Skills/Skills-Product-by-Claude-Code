@@ -544,3 +544,36 @@ Fixture baru: `buat_fixture_uji_v109.py` (deterministik; `kunci-v109.json` dihit
 - (+) Tidak ada peringatan silang palsu pada 5 file berTotal benar, file tanpa Total, dan 3 kontrol.
 - (−) Saat Total di file yang salah (kasus nyata: angka diketik teks), pesan belum menyatakan bahwa hitungan script yang benar dan justru menawarkan angka file sebagai alternatif (B33) — berisiko membingungkan awam. Satu peringatan palsu lama pada nama produk "Total …" (B34).
 - Rekomendasi: naik ke **`beta`**; perbaiki B33 (+B34) sebelum `rilis`.
+
+## Uji ulang v1.0.10 (penguji independen ke-11, cek singkat, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad (`uji11-ax/`). Versi script `1.0.10`. Tes bawaan: **133 tes OK** (±58 dtk).
+Semua `examples/buat_fixture_uji*.py` (14 generator, 140+ file) dijalankan ulang tanpa galat. Platform: `claude-code (simulasi agent)`.
+Fixture baru: `buat_fixture_uji11_v1010.py` (deterministik; `kunci-uji11-v1010.json` dihitung dari data sumber, **tanpa membaca kode skill**).
+
+### File baru → hasil (a = benar, b = TEGAS + alternatif benar, c = salah diam-diam, d = ditolak padahal wajar)
+| File | Kunci (kalkulasi independen) | Hasil script v1.0.10 | Nilai |
+|---|---|---|---|
+| Y1 `total-file-salah-angka-teks.xlsx` — Total di FILE salah (2 sel angka-teks dilewati SUM Excel) | 7 baris, 5.890.000 (file: 3.240.000) | Hitungan = **5.890.000** ✔ (jumlah 7 baris data, BUKAN angka file); PERINGATAN "Angka Total di file BUKAN jawaban alternatif" + sebab tepat "sel Nominal baris 3, 6 … tersimpan sebagai teks" | **a** — pesan B33 persis sesuai maksud: tidak menawarkan angka file sebagai jawaban |
+| Y2 `total-file-tepat-2x-subtotal.csv` — Grand Total benar tapi subtotal cabang ikut terhitung 2× | 5 baris, 1.225.000 | Hitungan mentah 2.450.000; **TEGAS "Kemungkinan DOBEL HITUNG"**, alternatif = 1.225.000 = kunci ✔ | **b** ✔ |
+| Y3 `produk-total-care-tengah.csv` — "Total Care Shampoo" & "Jumlah Besar Deterjen" DI TENGAH tabel, terisi penuh, tanpa baris total | 6 baris, stok 85 | 6 baris ✔, stok 85 ✔, tidak ada baris dikeluarkan/peringatan | **a** ✔ (B34 tengah beres) |
+| **Y4** `produk-total-care-di-ekor.csv` — "Total Care Body Lotion" persis DI BARIS TERAKHIR, terisi penuh, tanpa baris total lain | 5 baris, stok 77 | **Baris 6 DIKELUARKAN** sebagai "baris ringkasan berlabel 'Total Care Body Lotion' di bawah tabel" → **stok 72 (SALAH, kurang 1 produk)**; ditambah **PERINGATAN TEGAS PENGAMAN SILANG palsu** yang membandingkan hitungan dengan baris yang salah dikeluarkan itu sendiri | **c** — bug baru B35 |
+| Y5 `kontrol-kas-kecil.csv` | 9 baris, 1.500.000, per kategori 4 nilai | ✔ semua cocok | a |
+| Y6 `kontrol-gudang.xlsx` | 5 baris, stok 203, nilai 12.210.000 | ✔ | a |
+
+**Ringkas:** 6 file baru; **5 a/b, 1 c.** B33 tervalidasi persis sesuai janji changelog (kasus salah *dan* kasus dobel-hitung, pesan tidak pernah menawarkan angka file yang salah sebagai jawaban). B34 beres untuk posisi **tengah** tabel, tetapi **belum** untuk posisi **baris terakhir (ekor)**.
+
+### Analisis akar masalah B35
+`_label_nama_data()` (baris ~1655 `scripts/analisis.py`) — perbaikan B34 — hanya dipanggil di loop klasifikasi baris utama. Tapi ada jalur **terpisah** yang berjalan **sebelum** loop itu: blok "**EKOR**" (baris ~1493–1514) yang memindai N baris terakhir tabel dan mengeluarkan setiap baris yang `_label_ringkasan()` kenali (baris berawalan `"total "`, `"grand total"`, dst — lihat `AWALAN_RINGKASAN`), **tanpa** mengecek apakah baris itu terisi penuh seperti data lain atau apakah ada kolom yang benar-benar = jumlah baris di atasnya. Jadi nama produk apa pun yang **diawali persis "Total "** ("Total Care …", "Total Approach …") dan kebetulan menjadi baris TERAKHIR tabel akan selalu dibuang — walau di tengah tabel (Y3) sudah aman. Efeknya berlipat ganda: baris yang salah dibuang lalu dipakai PENGAMAN SILANG (B31) sebagai "baris Total acuan", menghasilkan PERINGATAN TEGAS yang membandingkan hitungan dengan nilai baris yang seharusnya data — pesan meyakinkan tapi menyesatkan (kebalikan dari tujuan B33: di sini pengaman silang justru MENGUATKAN kesalahan, bukan mengoreksinya).
+
+Catatan: label "Jumlah Besar …" TIDAK memicu (hanya "jumlah total" ada di `AWALAN_RINGKASAN`, bukan "jumlah " sendirian) — jadi celah ini spesifik untuk label yang diawali kata "Total " (dan kemungkinan "Grand Total "/"Subtotal ") di baris terakhir.
+
+### Bug baru
+| # | Prioritas | Temuan | Saran |
+|---|---|---|---|
+| B35 | **P1** | Produk/baris data berawalan persis "Total " (atau awalan `AWALAN_RINGKASAN` lain) yang kebetulan jadi **baris TERAKHIR tabel**, terisi penuh seperti baris data lain, TANPA kolom angka yang = jumlah blok di atasnya → tetap dikeluarkan oleh blok EKOR (jalur terpisah dari `_label_nama_data`/B34) → total kurang 1 baris **diam-diam**, diperkuat PERINGATAN TEGAS PENGAMAN SILANG palsu yang memakai baris yang salah dibuang itu sebagai acuan. | Terapkan syarat `_label_nama_data` (baris terisi penuh seperti data lain + tidak ada kolom angka = jumlah blok di atasnya) juga di blok EKOR sebelum memasukkan baris berlabel ke `keluar`, bukan hanya di loop klasifikasi utama. Tes regresi: Y4 (harus jadi 5 baris, stok 77, tanpa PERINGATAN TEGAS palsu). |
+
+### Skor kualitas uji ulang v1.0.10: **7 / 10** — B33 selesai dengan baik; B35 (regresi arsitektural dari B34, P1) wajib diperbaiki sebelum `rilis`
+- (+) B33 tuntas dan tervalidasi presisi: pesan tidak pernah menawarkan angka Total-di-file yang salah sebagai jawaban (Y1), dan tetap menawarkan alternatif benar saat memang dobel-hitung (Y2). Tidak ada regresi di 133 tes bawaan maupun generator fixture lama.
+- (+) B34 beres untuk posisi tengah tabel (Y3) — perbaikan aslinya tervalidasi ulang.
+- (−) B35: B34 tidak menutup jalur "blok EKOR" yang terpisah dalam kode — nama produk berawalan "Total " di baris terakhir tabel masih menghasilkan **angka salah diam-diam** (melanggar prinsip Reliable) DAN peringatan silang yang salah arah (mengira baris data adalah baris Total acuan). Ini P1 karena silang menyesatkan, bukan sekadar kosmetik seperti B34 semula.
+- Rekomendasi: perbaiki B35 (satu baris syarat tambahan di blok EKOR), lalu cek singkat ulang Y4 + regresi fixture lama sebelum naik ke `rilis`.
