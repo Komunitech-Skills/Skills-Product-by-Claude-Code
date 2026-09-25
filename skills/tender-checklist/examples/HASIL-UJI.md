@@ -45,3 +45,17 @@ Disclaimer (bukan nasihat hukum, dokumen pemilihan mengikat, pembulatan belum di
 
 ## Skor: **6 / 10 — REVISI sebelum `lulus`**
 Alasan: inti perhitungan (PPN 11/12 bulat ke bawah, mode termasuk PPN, %HPS, 80%, terbilang, jadwal hari kerja) **100% benar** pada semua uji; A/B jelas unggul; unggul telak atas pesaing; etika & disclaimer baik. Namun fungsi utama "pemeriksa rincian" gagal pada dua pola kesalahan Excel yang paling sering (bug 1: **konfirmasi palsu** "cocok" untuk total tanpa PPN; bug 2: baris salah hitung tidak ditunjuk) dan bug 3 memberi alarm palsu pada layout umum. Ini melanggar prinsip *reliable* untuk skill ecer. Perbaiki bug 1–4 (+ tes regresi), koreksi Pasal 31, lalu uji ulang independen — perkiraan skor setelah revisi 8–9.
+
+---
+
+# Uji ulang v1.0.1 (penguji independen baru, 2026-09-25)
+
+Rincian lengkap: `06-uji-ulang-v1.0.1.md`. Tes bawaan **38/38 OK**; `validate.py` lolos; SKILL.md 100 baris.
+
+- **Bug 1–4 beres** (diulang dari skenario 01–03): total tanpa PPN kini PERINGATAN "BELUM TERMASUK PPN" + total yang benar; baris salah hitung ditunjuk dengan selisihnya; TOTAL di kolom lain dikenali (tak ada lagi BELUM FINAL palsu); HPS "2,4 M"/"Rp2,4 miliar"/"2.4M"/"2.400.000.000" terbaca. Temuan 5–8 dan koreksi Pasal 31 juga beres.
+- **13 CSV baru buatan penguji** (pemisah `;`/`,`/TAB, "Rp 1.250.000,-", volume desimal, pembulatan per baris, label di kolom lain, mode termasuk PPN, mewah, tanpa judul kolom, harga tak terbaca): **semua angka cocok dengan kunci Decimal independen**; tidak ada "cocok" palsu untuk total salah basis; salah hitung yang ada di kolom yang dikenali selalu ditunjuk.
+- **Temuan baru:** (1) [SEDANG] alarm palsu untuk "Total Harga Sebelum PPN" (dianggap total sesudah PPN); (2) [SEDANG] "DPP Nilai Lain (11/12)" dibandingkan dengan DPP → alarm palsu; (3) [SEDANG] layout `Jumlah` (banyaknya) + `Jumlah Harga`: kolom Jumlah Harga diabaikan → baris salah hitung tidak ditunjuk (total yang salah tetap ketahuan); (4–6) [RENDAH] label "Harga Total" dilewati diam-diam, "cocok" terhadap total sementara saat BELUM FINAL, exit 0 walau ada PERINGATAN.
+- **Aturan (web search):** Pasal 31 jaminan penawaran, Pasal 33 jaminan pelaksanaan (> Rp200 jt; 5% kontrak / 5% HPS bila < 80%), klarifikasi < 80% HPS, PPh final konstruksi PP 9/2022 — ✅ semua.
+
+## Skor uji ulang: **8 / 10 — LULUS** (layak naik ke `lulus`; perbaiki temuan 1–3 di v1.0.2 sebelum `rilis`)
+Alasan: keempat bug penyebab skor 6 sudah tertutup dan dilindungi tes regresi; perhitungan 100% benar di 16 kasus (3 lama + 13 baru); tidak ada konfirmasi palsu, jadi tidak ada risiko pengguna mengunggah angka salah karena "cocok". Belum 9 karena masih ada dua alarm palsu pada layout Excel PKP yang umum sejak 2025 (label "sebelum PPN" dan baris DPP nilai lain) yang bisa membingungkan pengguna awam, serta satu layout tabel barang yang umum di mana baris salah hitung tidak ditunjuk.
