@@ -34,7 +34,7 @@
 | 1 | | | | Ya / Tidak |
 
 ## 4. Rincian harga
-Isi `contoh-rincian.csv` (kolom: No; Uraian; Volume; Satuan; Harga Satuan) lalu jalankan:
+Isi `contoh-rincian.csv` (kolom: No; Uraian; Volume; Satuan; Harga Satuan; Jumlah — kolom Jumlah opsional, dicek per baris) lalu jalankan:
 `python3 scripts/cek_penawaran.py harga rincian.csv --ppn nonmewah --hps "Rp ..."`
 (Windows: `py scripts\cek_penawaran.py ...`). Tanpa script: pakai rumus di SKILL.md.
 

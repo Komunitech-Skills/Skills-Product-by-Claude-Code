@@ -49,5 +49,9 @@ Ringkasan aturan dicek per 25 September 2026 (Perpres 16/2018 jo. 12/2021 jo. 46
 **Bisa dipakai untuk "mengatur" pemenang atau pinjam bendera?**
 Tidak. Skill akan menolak permintaan persekongkolan, pinjam bendera, dokumen palsu, atau gratifikasi karena melanggar hukum (UU 5/1999, UU Tipikor) dan berujung daftar hitam. Skill akan menawarkan jalur yang sah.
 
+## Riwayat versi
+- **1.0.1 (2026-09-25)** — revisi temuan uji independen: total di file yang belum termasuk PPN kini diperingatkan (tidak lagi "cocok"); kolom Jumlah Anda dicek per baris dan baris salah hitung ditunjuk beserta selisihnya; baris TOTAL di kolom mana pun dikenali (tidak ada lagi alarm "belum final" palsu); HPS "2,4 M"/"Rp2,4 miliar" terbaca; info jaminan pelaksanaan hanya untuk kontrak > Rp200 juta; label jadwal acara yang sudah lewat diperjelas; pengingat PPh final konstruksi; rujukan jaminan penawaran dikoreksi ke Pasal 31.
+- **1.0.0 (2026-09-25)** — rilis draft pertama.
+
 ---
 *Bukan nasihat hukum/pajak. Pembulatan PPN belum dicocokkan dengan Coretax.*

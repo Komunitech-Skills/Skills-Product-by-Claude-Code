@@ -102,7 +102,9 @@ class UjiHarga(Dasar):
         h = C.hitung(self.tulis(self.CSV), "nonmewah", hps=60_000_000)
         self.assertEqual(h["persen_hps"], Decimal("73.57"))
         self.assertTrue(any("KEWAJARAN HARGA" in p for p in h["peringatan"]))
-        self.assertTrue(any("5% dari nilai HPS" in p for p in h["peringatan"]))
+        # v1.0.1 (temuan 5): kontrak Rp44 jt <= Rp200 jt -> jaminan pelaksanaan umumnya tidak diberlakukan
+        self.assertFalse(any("5% dari nilai HPS" in p for p in h["peringatan"]))
+        self.assertTrue(any("s.d. Rp200 juta" in p for p in h["peringatan"]))
 
     def test_tepat_80_persen_tidak_diperingatkan(self):
         # total 40.000.000 tanpa PPN, HPS 50.000.000 -> tepat 80,00%
@@ -214,6 +216,184 @@ class UjiHarga(Dasar):
         p = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nGedung;1;ls;10.500.000.000\n")
         h = C.hitung(p, hps=11_000_000_000)
         self.assertTrue(any("JAMINAN PENAWARAN" in x for x in h["info"]))
+
+
+BARIS_S03 = ("1;Kursi kerja staf jaring;120;unit;Rp1.185.000;Rp142.200.000\n"
+             "2;Meja kerja 120x60 cm;60;unit;Rp1.640.000;Rp98.400.000\n"
+             "3;Lemari arsip besi 4 laci;25;unit;Rp2.975.000;Rp47.375.000\n"
+             "4;Rak buku 5 susun;30;unit;Rp1.210.000;Rp36.300.000\n"
+             "5;Ongkos kirim & pasang;1;ls;Rp17.500.000;Rp17.500.000\n")
+HEADER_S03 = "No;Uraian;Volume;Satuan;Harga Satuan;Jumlah\n"
+
+
+class UjiPengunci(Dasar):
+    """Mengunci hitungan yang sudah benar di v1.0.0 (tidak boleh berubah). Angka dihitung manual."""
+
+    def test_skenario_03_angka_inti(self):
+        # 142.200.000 + 98.400.000 + 74.375.000 + 36.300.000 + 17.500.000 = 368.775.000
+        # PPN floor(368.775.000 x 11/100) = 40.565.250 ; total 409.340.250
+        # 409.340.250 / 538.000.000 = 76,0855% -> 76,09% ; 80% HPS = 430.400.000 ; 5% HPS = 26.900.000
+        h = C.hitung(self.tulis(HEADER_S03 + BARIS_S03), "nonmewah", hps=538_000_000)
+        self.assertEqual((h["subtotal"], h["ppn"], h["total"]), (368775000, 40565250, 409340250))
+        self.assertEqual(h["persen_hps"], Decimal("76.09"))
+        self.assertEqual(h["batas_80_hps"], 430400000)
+        self.assertEqual(h["terbilang"], "Empat Ratus Sembilan Juta Tiga Ratus Empat Puluh Ribu Dua Ratus Lima Puluh Rupiah")
+        self.assertTrue(any("Rp26.900.000" in p and "5% dari nilai HPS" in p for p in h["peringatan"]))
+
+    def test_skenario_01_angka_inti(self):
+        # dari uji independen skenario 01: subtotal 163.545.400 -> PPN floor(x0,11)=17.989.994 -> 181.535.394
+        # 181.535.394 / 185.000.000 = 98,127% -> 98,13%
+        p = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nPaket ATK;1;ls;163.545.400\n")
+        h = C.hitung(p, "nonmewah", hps=185_000_000)
+        self.assertEqual((h["ppn"], h["total"], h["persen_hps"]), (17989994, 181535394, Decimal("98.13")))
+        self.assertFalse(h["peringatan"])
+        # kontrak > Rp200 jt? tidak (181 jt) -> tidak ada info jaminan pelaksanaan
+        self.assertFalse(any("jaminan pelaksanaan" in x for x in h["info"]))
+
+    def test_termasuk_ppn_brute_force(self):
+        # DPP = bulat terbesar dengan DPP + floor(DPP x 11/100) <= harga (cek brute force)
+        for bruto in (1, 100, 111, 999, 1000, 12345, 1000000, 11100000, 7777777):
+            d = C.dpp_dari_bruto(bruto, C.TARIF["nonmewah"])
+            self.assertLessEqual(d + d * 11 // 100, bruto)
+            self.assertGreater(d + 1 + (d + 1) * 11 // 100, bruto)
+            dm = C.dpp_dari_bruto(bruto, C.TARIF["mewah"])
+            self.assertLessEqual(dm + dm * 12 // 100, bruto)
+            self.assertGreater(dm + 1 + (dm + 1) * 12 // 100, bruto)
+
+    def test_jadwal_skenario_02(self):
+        # batas Jumat 23/10/2026, libur Selasa 20/10, hari ini Kamis 15/10
+        j = C.jadwal(datetime(2026, 10, 23, 10, 0), date(2026, 10, 15), pengumuman=datetime(2026, 10, 5),
+                     penjelasan=datetime(2026, 10, 12), libur={date(2026, 10, 20)}, konstruksi=True)
+        t = {x["kode"]: x["tanggal"] for x in j["tugas"]}
+        self.assertEqual([t[k] for k in ("H-1", "H-2", "H-3", "H-5", "H-7", "Penjelasan+1")],
+                         [date(2026, 10, 22), date(2026, 10, 21), date(2026, 10, 19), date(2026, 10, 15),
+                          date(2026, 10, 13), date(2026, 10, 13)])
+        self.assertEqual(j["sisa_hari_kerja"], 5)
+
+
+class UjiRegresiV101(Dasar):
+    """Tes regresi temuan HASIL-UJI v1.0.0 (data repro penguji)."""
+
+    def test_bug1_total_tanpa_ppn_tidak_boleh_cocok(self):
+        # PKP, 1 x 5.000.000 -> PPN 550.000 -> total 5.550.000 ; file menulis Total 5.000.000 (lupa PPN)
+        p = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nJasa;1;ls;5.000.000\nTotal;;;5.000.000\n")
+        h = C.hitung(p, "nonmewah")
+        self.assertFalse(any("cocok" in x and "'Total'" in x for x in h["info"]))
+        w = [x for x in h["peringatan"] if "'Total'" in x]
+        self.assertEqual(len(w), 1)
+        self.assertIn("BELUM TERMASUK PPN", w[0])
+        self.assertIn("Rp5.550.000", w[0])   # sesudah PPN
+        self.assertIn("Rp5.000.000", w[0])   # sebelum PPN
+        for label in ("Grand Total", "Total Penawaran", "Jumlah Total"):
+            p2 = self.tulis(f"Uraian;Volume;Satuan;Harga Satuan\nJasa;1;ls;5.000.000\n{label};;;5.000.000\n", "g.csv")
+            h2 = C.hitung(p2, "nonmewah")
+            self.assertTrue(any("BELUM TERMASUK PPN" in x for x in h2["peringatan"]), label)
+
+    def test_bug1_label_dicocokkan_sesuai_basis(self):
+        csv_ = "Uraian;Volume;Satuan;Harga Satuan\nJasa;1;ls;5.000.000\n"
+        # Total benar (sesudah PPN) -> cocok ; PPN benar -> cocok ; Jumlah = sebelum PPN -> cocok
+        h = C.hitung(self.tulis(csv_ + "Jumlah;;;5.000.000\nPPN;;;550.000\nTotal;;;5.550.000\n"), "nonmewah")
+        self.assertFalse(h["peringatan"])
+        self.assertEqual(sum("cocok" in x for x in h["info"]), 3)
+        # PPN diisi angka subtotal -> TIDAK boleh cocok ; Jumlah diisi total sesudah PPN -> diperingatkan
+        h = C.hitung(self.tulis(csv_ + "Jumlah;;;5.550.000\nPPN;;;5.000.000\n", "b.csv"), "nonmewah")
+        self.assertFalse(any("cocok" in x for x in h["info"]))
+        self.assertTrue(any("'PPN'" in x and "Rp550.000" in x for x in h["peringatan"]))
+        self.assertTrue(any("'Jumlah'" in x and "SESUDAH PPN" in x for x in h["peringatan"]))
+        # bukan PKP: Total = 5.000.000 memang benar
+        h = C.hitung(self.tulis(csv_ + "Total;;;5.000.000\n", "c.csv"), "tidak")
+        self.assertTrue(any("cocok" in x for x in h["info"]))
+        # termasuk PPN: 'Jumlah' 5.000.000 = harga termasuk PPN -> cocok, disebut basisnya
+        h = C.hitung(self.tulis(csv_ + "Jumlah;;;5.000.000\n", "d.csv"), "nonmewah", termasuk_ppn=True)
+        self.assertTrue(any("SUDAH TERMASUK PPN" in x for x in h["info"]))
+
+    def test_bug2_baris_salah_hitung_ditunjuk(self):
+        h = C.hitung(self.tulis(HEADER_S03 + BARIS_S03), "nonmewah", hps=538_000_000)
+        self.assertEqual(len(h["selisih_baris"]), 1)
+        s = h["selisih_baris"][0]
+        self.assertEqual((s["item"], s["baris_file"], s["jumlah_file"], s["jumlah_hitung"], s["selisih"]),
+                         (3, 4, 47375000, 74375000, 27000000))
+        self.assertEqual(h["subtotal"], 368775000)   # script tetap memakai volume x harga
+        out = C.tampil_harga(h)
+        self.assertIn("Baris salah hitung", out)
+        self.assertIn("file Rp47.375.000 != hitung 25 x Rp2.975.000 = Rp74.375.000 (selisih Rp27.000.000)", out)
+
+    def test_bug2_pembulatan_bukan_salah_hitung_dan_sinonim(self):
+        # 3 x 333,33 = 999,99 ; file menulis 1.000 (atau 999,99) -> bukan salah hitung (< Rp1)
+        p = self.tulis("Uraian;Qty;Satuan;Harga Satuan;Total Harga\nA;3;m;333,33;1.000\nB;3;m;333,33;999,99\n"
+                       "C;2;m;1.000;Rp2.000,-\nD;1;m;1.000;abc\n")
+        h = C.hitung(p)
+        self.assertEqual(h["selisih_baris"], [])
+        self.assertTrue(any("tidak terbaca" in x for x in h["info"]))
+        self.assertEqual(h["total"], 1000 + 1000 + 2000 + 1000)
+
+    def test_bug2_judul_jumlah_berarti_banyaknya(self):
+        # tanpa kolom Volume, "Jumlah" = banyaknya barang: 10 x 5.000 = 50.000
+        p = self.tulis("Uraian;Jumlah;Satuan;Harga Satuan\nPulpen;10;buah;5.000\n")
+        h = C.hitung(p)
+        self.assertEqual(h["total"], 50000)
+        self.assertTrue(any("VOLUME" in x for x in h["catatan"]))
+
+    def test_bug3_total_di_kolom_lain(self):
+        # repro varian A: ';;;;TOTAL;Rp341.775.000' -> bukan 'uraian kosong', bukan TOTAL BELUM FINAL
+        p = self.tulis(HEADER_S03 + BARIS_S03 + ";;;;TOTAL;Rp341.775.000\n")
+        h = C.hitung(p, "nonmewah", hps=538_000_000)
+        self.assertFalse(h["baris_bermasalah"])
+        self.assertFalse(h["total_belum_final"])
+        self.assertFalse(any("BELUM FINAL" in x for x in h["peringatan"]))
+        self.assertTrue(any("'TOTAL'" in x for x in h["baris_dilewati"]))
+        self.assertTrue(any("'TOTAL'" in x and "Rp409.340.250" in x for x in h["peringatan"]))
+        self.assertEqual(h["total"], 409340250)
+        kode, out, _ = self.cli("harga", p, "--ppn", "nonmewah", "--hps", "Rp538.000.000")
+        self.assertEqual(kode, 0)
+
+    def test_bug3_label_di_kolom_no_dan_ppn_lengkap(self):
+        # repro varian C: label di kolom No -> label tidak boleh '' ; varian B: pesan PPN menampilkan PPN script
+        p = self.tulis("No;Uraian;Volume;Satuan;Harga Satuan\n1;Kursi;120;unit;Rp1.185.000\n"
+                       "Total (dari Excel);;;;Rp379.370.250\n")
+        h = C.hitung(p, "nonmewah")
+        self.assertTrue(any("'Total (dari Excel)'" in x for x in h["baris_dilewati"]))
+        self.assertFalse(any("''" in x for x in h["baris_dilewati"]))
+        p2 = self.tulis(HEADER_S03 + BARIS_S03 + ";Jumlah;;;;Rp341.775.000\n;PPN 11%;;;;Rp37.595.250\n"
+                        ";Total;;;;Rp379.370.250\n", "b.csv")
+        h2 = C.hitung(p2, "nonmewah", hps=538_000_000)
+        ppn = [x for x in h2["peringatan"] if "'PPN 11%'" in x][0]
+        self.assertIn("Rp40.565.250", ppn)
+        self.assertIn("selisih Rp2.970.000", ppn)
+        self.assertEqual(len(h2["selisih_baris"]), 1)
+
+    def test_bug4_hps_miliar(self):
+        for teks, harap in (("2,4 M", 2_400_000_000), ("Rp2,4 miliar", 2_400_000_000), ("2.4M", 2_400_000_000),
+                            ("2,4 milyar", 2_400_000_000), ("Rp 1,25 M", 1_250_000_000), ("185jt", 185_000_000),
+                            ("Rp538.000.000", 538_000_000)):
+            self.assertEqual(C.parse_angka(teks, "HPS", besar=True), Decimal(harap), teks)
+        with self.assertRaises(C.InputSalah):   # 'm' = meter pada volume/harga baris, bukan miliar
+            C.parse_angka("2,4 M")
+        p = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nGedung;1;ls;2.000.000.000\n")
+        kode, out, _ = self.cli("harga", p, "--hps", "2,4 M", "--pagu", "Rp2,5 miliar")
+        self.assertEqual(kode, 0)
+        self.assertIn("Rp2.400.000.000", out)
+        self.assertIn("83,33%", out)   # 2.000.000.000 / 2.400.000.000
+
+    def test_temuan5_jaminan_pelaksanaan_di_atas_200jt(self):
+        # total 250 jt, HPS 300 jt -> 83,33% (>= 80%) -> info 5% nilai kontrak = 12.500.000
+        p = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nMebel;1;ls;250.000.000\n")
+        h = C.hitung(p, hps=300_000_000)
+        self.assertTrue(any("Rp12.500.000" in x and "5% dari nilai kontrak" in x for x in h["info"]))
+
+    def test_temuan7_exit_code_belum_final(self):
+        p = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nA;1;u;1.000\nB;;u;2.000\n")
+        kode, out, _ = self.cli("harga", p)
+        self.assertEqual(kode, 3)
+        self.assertIn("TOTAL BELUM FINAL", out)
+
+    def test_temuan6_label_acara_lewat(self):
+        j = C.jadwal(datetime(2026, 10, 23, 10, 0), date(2026, 10, 15), pengumuman=datetime(2026, 10, 5),
+                     penjelasan=datetime(2026, 10, 12))
+        st = {x["kode"]: x["status"] for x in j["tugas"]}
+        self.assertTrue(st["Pengumuman"].startswith("SUDAH LEWAT"))
+        self.assertIn("Berita Acara", st["Penjelasan"])
+        self.assertTrue(st["H-7"].startswith("TERLEWAT"))
 
 
 class UjiJadwal(Dasar):

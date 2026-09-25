@@ -49,19 +49,24 @@ Info kurang → tanyakan **sekali** (maks. 5 pertanyaan bernomor). Ingin cepat �
 3. **Checklist dokumen** sesuai metode (bagian B & C `references/checklist-dokumen.md`). Tampilkan sebagai kotak centang, dikelompokkan Administrasi / Teknis / Harga. Jangan menambah syarat yang tidak ada di dokumen pemilihan pengguna — tandai "jika diminta".
 4. **Jadwal mundur.** Jalankan:
    `python3 scripts/cek_penawaran.py jadwal --batas "2026-10-15 14:00" --penjelasan 2026-10-06 --libur 2026-10-12 --hari-ini <hari ini>` (Windows: `py` atau `python`; tambah `--konstruksi`, `--jaminan`, `--sabtu-kerja` bila relevan).
-   Tanpa script: hitung mundur **hari kerja** (lewati Sabtu, Minggu, libur yang disebut): H-7 kumpulkan & cek masa berlaku dokumen (+ajukan jaminan penawaran), H-5 dokumen teknis & harga pemasok, H-3 finalisasi harga & tanda tangan, H-2 pemeriksaan silang, H-1 **unggah**, H hanya darurat. Tugas yang tanggalnya sudah lewat → "TERLEWAT – kerjakan segera".
-5. **Cek harga penawaran.** Simpan rincian ke CSV (kolom `Uraian;Volume;Satuan;Harga Satuan`, lihat `templates/contoh-rincian.csv`) lalu:
+   Tanpa script: hitung mundur **hari kerja** (lewati Sabtu, Minggu, libur yang disebut): H-7 kumpulkan & cek masa berlaku dokumen (+ajukan jaminan penawaran), H-5 dokumen teknis & harga pemasok, H-3 finalisasi harga & tanda tangan, H-2 pemeriksaan silang, H-1 **unggah**, H hanya darurat. Tugas persiapan yang tanggalnya sudah lewat → "TERLEWAT – kerjakan segera"; acara pengumuman/penjelasan yang sudah lewat → "SUDAH LEWAT – baca Berita Acara Penjelasan & adendum" (tidak bisa diulang).
+5. **Cek harga penawaran.** Simpan rincian ke CSV (kolom `Uraian;Volume;Satuan;Harga Satuan`, plus kolom **`Jumlah`** bila pengguna punya — lihat `templates/contoh-rincian.csv`) lalu:
    `python3 scripts/cek_penawaran.py harga rincian.csv --ppn nonmewah --hps "Rp 250.000.000" [--pagu ...] [--termasuk-ppn]`
-   `--ppn tidak` (default, bukan PKP) | `nonmewah` | `mewah`. Salin angka **persis** dari output. Script menerima "Rp1.250.000,00", volume "1,5", sel kosong, baris judul bagian, dan baris total yang ikut tertempel (dibandingkan, tidak dihitung ganda).
+   `--ppn tidak` (default, bukan PKP) | `nonmewah` | `mewah`. HPS/pagu boleh "185jt", "2,4 M", "Rp2,4 miliar". Salin angka **persis** dari output. Script menerima "Rp1.250.000,00", volume "1,5", sel kosong, baris judul bagian, dan baris total/PPN yang ikut tertempel (label boleh di kolom mana pun; dibandingkan, tidak dihitung ganda).
+   - **Kolom Jumlah pengguna** dicek per baris: bagian "Baris salah hitung" menunjuk baris yang volume × harga ≠ jumlah tertulis beserta selisihnya — sampaikan ke pengguna baris demi baris. Script selalu memakai volume × harga satuan.
+   - **Baris total di file** dicocokkan sesuai labelnya (Total → sesudah PPN; Jumlah/Subtotal/DPP → sebelum PPN; PPN → PPN). "Total di file BELUM TERMASUK PPN" = kesalahan gugur/rugi yang umum — tegaskan angka yang benar.
+   - Kode keluar 3 = hasil tercetak tetapi **TOTAL BELUM FINAL** (ada baris tak terbaca); 1 = GALAT input.
    **Rumus eksplisit (bila script tak bisa dijalankan):**
    - Jumlah baris = volume × harga satuan → bulatkan ke rupiah terdekat.
    - Subtotal = Σ jumlah baris = DPP (harga belum termasuk PPN).
    - PPN non-mewah = 12% × (11/12 × DPP) = **11% × DPP**, dihitung persis lalu **dibulatkan ke bawah**; mewah = 12% × DPP (bulat ke bawah). Bukan PKP → PPN 0.
    - Harga sudah termasuk PPN: DPP = rupiah bulat terbesar dengan DPP + PPN ≤ harga (≈ harga ÷ 1,11); tampilkan sisa.
    - Total = DPP + PPN. % HPS = total ÷ HPS × 100 (2 desimal). Batas 80% = 0,8 × HPS.
-   - Total > HPS → **gugur**. Total < 80% HPS → **klarifikasi kewajaran harga**; jika wajar & menang, jaminan pelaksanaan 5% dari **nilai HPS**. HPS > Rp10 miliar → umumnya wajib jaminan penawaran 1–3% HPS.
+   - Total > HPS → **gugur**. Total < 80% HPS → **klarifikasi kewajaran harga**; tidak wajar → gugur.
+   - Jaminan pelaksanaan (kontrak barang/konstruksi/jasa lainnya **> Rp200 juta**, bukan e-purchasing): penawaran 80–100% HPS → **5% nilai kontrak**; < 80% HPS → **5% nilai HPS**. Kontrak ≤ Rp200 juta umumnya tanpa jaminan pelaksanaan. Masukkan ke rencana kas.
+   - HPS > Rp10 miliar → umumnya wajib jaminan penawaran 1–3% HPS.
    - Terbilang ditulis penuh + "Rupiah", harus sama dengan angka.
-   Ingatkan: bendahara instansi memungut PPN (bila PKP) & PPh 22 1,5% (barang) saat bayar → uang diterima < total.
+   Ingatkan: bendahara instansi memungut PPN (bila PKP) & PPh 22 1,5% (barang) saat bayar → uang diterima < total. **Konstruksi:** penghasilan jasa konstruksi dikenai PPh final (PP 9/2022, tarif tergantung kualifikasi/SBU) — sebut satu kalimat & arahkan ke konsultan pajak; jangan hitung sendiri.
 6. **Kesalahan yang menggugurkan.** Tampilkan 5–8 butir paling relevan dari `references/kesalahan-gugur.md` untuk metode/jenis paket pengguna.
 7. **Penutup:** disclaimer + dasar aturan & tanggal (lihat bawah).
 
