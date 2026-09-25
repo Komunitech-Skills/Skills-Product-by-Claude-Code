@@ -8,7 +8,7 @@ Prinsip keamanan:
   menampilkan PRATINJAU kecuali diberi `--ya`.
 - Invoice selalu dibuat sebagai DRAF. Script ini tidak punya perintah validasi, kirim,
   bayar, atau hapus.
-- Kunci API dibaca dari ENV DOLIBARR_API_KEY atau file lokal berizin ketat; tidak pernah
+- Kunci API dibaca dari --kunci-file (selalu menang), ENV DOLIBARR_API_KEY, atau file lokal berizin ketat; tidak pernah
   dicetak (disamarkan) dan tidak pernah dikirim lewat proxy untuk alamat lokal.
 - Alamat selain komputer ini (localhost) ditolak kecuali `--izinkan-url-luar`.
 
@@ -39,7 +39,7 @@ import urllib.parse
 import urllib.request
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
-VERSI_SKRIP = "1.0.2"
+VERSI_SKRIP = "1.0.3"
 URL_DEFAULT = "http://localhost/dolibarr"
 VERSI_TERUJI = ("22.0.4", "24.0.1")
 BATAS_WAKTU = 20
@@ -245,10 +245,30 @@ def bersihkan_kunci(mentah, sumber):
 
 
 def baca_kunci(path_file=None):
-    k = bersihkan_kunci(os.environ.get("DOLIBARR_API_KEY", ""), "ENV DOLIBARR_API_KEY")
-    if k:
-        return k, "ENV DOLIBARR_API_KEY"
-    path = os.path.expanduser(path_file or os.environ.get("DOLIBARR_API_KEY_FILE") or lokasi_file_kunci())
+    """Urutan sumber kunci: --kunci-file (eksplisit, selalu menang) > ENV DOLIBARR_API_KEY >
+    ENV DOLIBARR_API_KEY_FILE > file default. Mengembalikan (kunci, sumber, peringatan)."""
+    peringatan = None
+    env_mentah = os.environ.get("DOLIBARR_API_KEY", "")
+    if path_file:
+        # Nilai eksplisit menang. ENV tetap didaftarkan sebagai rahasia (tidak pernah tercetak), tidak divalidasi.
+        if env_mentah.strip():
+            try:
+                bersihkan_kunci(env_mentah, "ENV DOLIBARR_API_KEY")
+            except Gagal:
+                pass
+            peringatan = ("PERINGATAN: ENV DOLIBARR_API_KEY juga terisi, tetapi DIABAIKAN karena --kunci-file "
+                          "diberikan. Kunci yang dipakai: file {}. Kosongkan ENV itu bila tidak diperlukan."
+                          .format(os.path.expanduser(path_file)))
+        path = os.path.expanduser(path_file)
+        if not os.path.isfile(path):
+            raise Gagal("File kunci {} (dari --kunci-file) tidak ditemukan.".format(path), KELUAR_AKSES,
+                        saran="Periksa ejaan path, atau simpan kunci ke file itu dulu dengan: "
+                              "python3 scripts/dolibarr.py simpan-kunci --kunci-file \"{}\"".format(path))
+    else:
+        k = bersihkan_kunci(env_mentah, "ENV DOLIBARR_API_KEY")
+        if k:
+            return k, "ENV DOLIBARR_API_KEY", None
+        path = os.path.expanduser(os.environ.get("DOLIBARR_API_KEY_FILE") or lokasi_file_kunci())
     if os.path.isfile(path):
         if not izin_file_aman(path):
             raise Gagal("File kunci {} bisa dibaca pengguna lain. Amankan dulu dengan: chmod 600 \"{}\""
@@ -260,7 +280,11 @@ def baca_kunci(path_file=None):
             raise Gagal("File kunci {} tidak bisa dibaca ({}).".format(path, type(e).__name__), KELUAR_AKSES)
         k = bersihkan_kunci(isi, "file " + path)
         if k:
-            return k, "file " + path
+            return k, "file " + path, peringatan
+        if path_file:
+            raise Gagal("File kunci {} (dari --kunci-file) kosong.".format(path), KELUAR_AKSES,
+                        saran="Isi lagi dengan: python3 scripts/dolibarr.py simpan-kunci --kunci-file \"{}\" --ya"
+                              .format(path))
     raise Gagal(
         "Kunci API Dolibarr belum diatur.",
         KELUAR_AKSES,
@@ -784,6 +808,26 @@ def hitung_invoice(items, jenis_ppn):
             if jenis_ppn == "umum" else None}
 
 
+def dpp_cara_dolibarr(items):
+    """DPP seperti yang disimpan Dolibarr (total baris dibulatkan ke 2 desimal, per baris).
+    Hanya untuk mengenali draf kembar; BUKAN angka hitungan Komunitech."""
+    return sum((it["qty"] * it["harga"] * (Decimal(100) - it["diskon"]) / Decimal(100))
+               .quantize(Decimal("0.01"), ROUND_HALF_UP) for it in items)
+
+
+def draf_kembar(draf, items, dpp):
+    """Draf dianggap kembar bila total_ht Dolibarr berselisih < Rp 1 dari DPP Komunitech (baris dibulatkan ke
+    rupiah) ATAU dari DPP cara Dolibarr (baris 2 desimal). Dolibarr menyimpan sen, jadi pembandingan persis
+    dengan DPP yang sudah dibulatkan meloloskan draf ganda (B1 v1.0.2)."""
+    acuan = (Decimal(dpp), dpp_cara_dolibarr(items))
+    hasil = []
+    for d in draf:
+        th = desimal(d.get("total_ht"), None)
+        if th is not None and any(abs(th - a) < 1 for a in acuan):
+            hasil.append(d)
+    return hasil
+
+
 def cmd_invoice_buat(api, args, offset):
     if not args.item:
         raise Gagal("Minimal satu --item. Contoh: --item \"Kopi 250g|3|85000\"", KELUAR_ARG)
@@ -848,10 +892,10 @@ def cmd_invoice_buat(api, args, offset):
         out["teks"] = "\n".join(b)
         return out
 
-    # Cegah dobel: draf untuk pelanggan yang sama dengan DPP sama
+    # Cegah dobel: draf untuk pelanggan yang sama dengan DPP sama (toleransi sen, lihat draf_kembar)
     draf = api.daftar_semua("invoices", {"status": "draft", "thirdparty_ids": pel["id"],
                                          "properties": "id,ref,total_ht,date"})
-    kembar = [d for d in draf if desimal(d.get("total_ht")) == hit["dpp"]]
+    kembar = draf_kembar(draf, items, hit["dpp"])
     if kembar and not args.tetap_buat:
         b[0] = "DRAF INVOICE TIDAK DIBUAT (kemungkinan dobel)"
         b += ["", "DIBATALKAN: sudah ada draf untuk pelanggan ini dengan jumlah sama: {}."
@@ -1295,7 +1339,8 @@ def buat_umum(awalan):
     u.add_argument("--url", dest=awalan + "url", default=d,
                    help="Alamat Dolibarr (default ENV DOLIBARR_URL atau {})".format(URL_DEFAULT))
     u.add_argument("--kunci-file", dest=awalan + "kunci_file", default=d,
-                   help="File kunci API (default ~/.komunitech/dolibarr-kunci.txt)")
+                   help="File kunci API; bila diisi, menang atas ENV DOLIBARR_API_KEY "
+                        "(default ~/.komunitech/dolibarr-kunci.txt)")
     u.add_argument("--izinkan-url-luar", dest=awalan + "izinkan_url_luar", action="store_const", const=True,
                    default=d, help="Izinkan Dolibarr di komputer lain (wajib https untuk internet)")
     u.add_argument("--tz", dest=awalan + "tz", default=d, help="WIB (default), WITA, atau WIT")
@@ -1387,7 +1432,9 @@ def main(argv=None):
                 raise Gagal("--jatuh-tempo harus 0 sampai {} hari.".format(BATAS_TEMPO), KELUAR_ARG)
             luar = args.izinkan_url_luar or os.environ.get("DOLIBARR_IZINKAN_URL_LUAR") == "1"
             url, lokal, catatan_url = cek_url(args.url or os.environ.get("DOLIBARR_URL") or URL_DEFAULT, luar)
-            kunci, sumber = baca_kunci(args.kunci_file)
+            kunci, sumber, peringatan_kunci = baca_kunci(args.kunci_file)
+            if peringatan_kunci:
+                cetak(peringatan_kunci, file=sys.stderr)
             api = Dolibarr(url, kunci, lokal)
             if args.perintah == "cek":
                 hasil = cmd_cek(api, args, catatan_url, sumber)
@@ -1403,6 +1450,8 @@ def main(argv=None):
                 hasil = cmd_laporan_harian(api, args, offset)
             if catatan_url and args.perintah != "cek":
                 hasil["teks"] = "\n".join(catatan_url) + "\n\n" + hasil["teks"]
+            if peringatan_kunci:
+                hasil["peringatan_kunci"] = peringatan_kunci
     except Gagal as e:
         if getattr(args, "json", False):
             cetak(json.dumps({"ok": False, "kode_keluar": e.kode, "galat": e.pesan, "saran": e.saran},
