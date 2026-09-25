@@ -92,3 +92,29 @@ Rincian lengkap: [`06-uji-ulang-v1.0.1.md`](06-uji-ulang-v1.0.1.md). Salinan di 
 **Alasan:** (+) Semua temuan prioritas (B1–B4, B6) tertutup dan terbukti lewat uji ulang, termasuk data rusak baru; skenario 02 & 03 kini mulus tanpa jalan memutar; hitungan & encoding benar secara independen; hukum presisi dengan disclaimer. (−) N1 masih bisa memunculkan traceback pada data rusak; N2 membuat pemeriksaan "asal kontak" (pemeriksaan keselamatan utama) belum sepenuhnya andal — tertolong oleh instruksi penilaian manual di Langkah 6; inkonsistensi kecil emoji (N3).
 
 **Rekomendasi:** **LULUS** (layak naik status `lulus` → lanjut uji platform asli). Perbaiki N1–N3 di v1.0.2 (kecil, tidak perlu uji ulang penuh — cukup tes regresi baru); N4–N9 opsional.
+
+---
+
+## Uji ulang v1.0.3 (2026-09-25, penguji independen ketiga)
+Salinan di scratchpad `uji3-ppw/` (tanpa `__pycache__`), Python 3.11. Fokus: N2 (deteksi asal kontak) via **set buta** ditulis sendiri sebelum membuka `scripts/`/`tests/`, plus verifikasi N4–N9.
+
+**Set buta deteksi asal kontak** (27 kalimat "menyebut asal", 20 "tidak menyebut", ditulis dari nol termasuk jebakan "dari teman-teman petani", "kami dari PT…", "kontak dari kami", "salam dari Bandung" — semua 20 jebakan/negatif lolos benar):
+- **Akurasi total: 38/47 = 80,9%.**
+- Positif (menyebut asal): **18/27 (66,7%) terdeteksi.** 9 salah-negatif: TikTok, website perusahaan, "toko sebelah warung", ngobrol di acara networking (tanpa kata pameran/expo/bazar/seminar), "nomor lama disimpan" dari kerja sama lama, "dengar dari tetangga toko", "lihat plang usaha", "kenalan lewat komunitas [nama]", "baca artikel tentang usaha". Pola berjangkar N2 masih sempit untuk sumber di luar daftar tetap (Maps/IG/TikTok/referral eksplisit/pameran/grup/website+kartu nama/LinkedIn-Tokopedia).
+- Negatif (tidak menyebut): **20/20 (100%) benar**, termasuk semua jebakan di atas — **tidak ada salah-positif baru** ditemukan (perbaikan nyata dari v1.0.1, yang justru lebih berbahaya karena lolos diam-diam).
+- Kalimat contoh dari perbaikan N2 sendiri diverifikasi lolos: "Nomor Bapak saya peroleh dari Bapak Andi kemarin" → Ya.
+
+**N4 (kapital):** "HRD PT ABC…KPR BTN…RSUD…SOP", "ERP dan CRM…HPP…POS", "HRD ABC dan APBN serta ATM" → tidak ada peringatan kapital. "PROMO GILA HARI INI SAJA…" tetap tertangkap. **Sesuai perbaikan.**
+
+**N5 (emoji):** `👍🏽👨‍👩‍👧🇮🇩⭐` (skin-tone + ZWJ keluarga + bendera + simbol U+2B50) → dihitung **4** (masing-masing 1), sesuai desain baru. **Sesuai perbaikan.**
+
+**N6 (en-dash & link):** `0812–3456–7890` dan `0812_3456_7890` → tautan wa.me `6281234567890` benar; `toko.id/katalog` terhitung 1 link. **Sesuai perbaikan.**
+
+**N7 (jam 20.00):** `--jam-kirim 20.00 --zona WIB` → "wajar (08.00–20.00) : Ya". **Sesuai perbaikan.**
+
+**Regresi & data rusak baru:** `python3 tests/uji_regresi.py` → **84 tes, semua OK**. Data rusak baru dicoba: nomor dengan underscore `0812_3456_7890` (diterima, benar), nomor huruf `abc` (ditolak dengan pesan jelas, bukan traceback).
+
+### Skor kualitas uji ulang v1.0.3: **8 / 10**
+**Alasan:** (+) N4, N5, N6, N7 semua terbukti benar via uji independen; tidak ada salah-positif baru pada set buta 20 kalimat (termasuk seluruh jebakan) — arah paling berbahaya sudah aman; 84 tes regresi hijau. (−) N2 baru menutup sekitar 2/3 salah-negatif; akurasi deteksi keseluruhan 80,9% pada set buta independen belum di angka tinggi — heuristik masih berbasis daftar sumber tetap, bukan pola umum "dari mana Anda tahu nomor/toko ini". Risiko tertolong oleh instruksi Langkah 6 (penilaian manual wajib), jadi dampak terbatas, bukan gerbang keselamatan yang berdiri sendiri.
+
+**Rekomendasi:** Tetap **LULUS**, boleh lanjut status saat ini. Untuk versi berikutnya (opsional, tidak menghalangi rilis): perluas `POLA_ASAL_KONTAK` dengan pola lebih generik untuk "sumber lokasi fisik" (tetangga toko, plang usaha, lihat langsung) dan "sumber online lain" (TikTok tanpa kata "profil/akun", website tanpa kata "kontak/di sana", artikel/media), atau ubah pendekatan dari daftar frasa tetap ke deteksi kata kerja pengenalan ("lihat/dengar/baca/kenal/temu/dapat" + penanda tempat/sumber apa pun) dengan uji salah-positif ulang.
