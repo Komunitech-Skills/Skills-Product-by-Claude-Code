@@ -16,7 +16,7 @@ Dengan --ketat: 1 bila status bukan "CUKUP LENGKAP".
 Ini pemeriksa BANTU berbasis kata kunci + polaritas kalimat (ID & EN), bukan penilaian hukum.
 Kata kunci yang ditemukan belum tentu berarti isinya benar/memadai.
 
-Cara kerja singkat (v1.0.1):
+Cara kerja singkat (v1.0.2):
 1. Teks dibersihkan: tag HTML & komentar dibuang, entitas (&nbsp;) diurai, markup markdown dihapus.
    Nomor baris tetap mengikuti file asli.
 2. Teks dipecah menjadi kalimat dan klausa (batas: . ! ? baris baru ; : "tetapi/namun/but/however",
@@ -30,7 +30,12 @@ Cara kerja singkat (v1.0.1):
    = negatif (tidak dihitung); "tidak akan mengubah ... tanpa pemberitahuan" = positif (negasi ganda).
 5. Isian kosong ([isi: ...], [fill: ...], {JIKA ...}) menurunkan skor: unsur yang buktinya hanya ada
    di kalimat berisian kosong (atau hanya di judul) dihitung setengah (status BELUM DIISI), skor dibatasi
-   maks. 84 selama masih ada isian, dan status dokumen = BELUM SIAP. "skor_struktur" = skor bila semua diisi.
+   maks. 84 selama masih ada isian. "skor_struktur" = skor bila semua diisi. Urutan status: lihat URUTAN_STATUS
+   (KURANG LENGKAP mengalahkan BELUM SIAP bila strukturnya pun < 60).
+6. (v1.0.2) Satu temuan per kalimat: bila beberapa pola cocok di kalimat yang sama, dipakai tingkat tertinggi dan
+   alasannya digabung ("cocok_lain"). Klausa setelah "tetapi/namun/kecuali/except" dinilai tersendiri, sehingga
+   "tidak menjual data, tetapi dapat membagikannya ke mitra iklan" tetap ditandai. Idiom "bukan tidak mungkin"
+   dibaca sebagai "mungkin". Semua unsur di JSON memakai kunci yang sama.
 """
 import argparse
 import bisect
@@ -41,7 +46,7 @@ import re
 import sys
 import unicodedata
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 BATAS_BYTE = 5 * 1024 * 1024        # file > 5 MB ditolak dengan pesan ramah
 MAKS_TEMUAN_PER_POLA = 20
 MAKS_TEMUAN_TOTAL = 60
@@ -54,10 +59,32 @@ V_JUAL_ID = r"(?:menjual|memperjualbelikan|menyewakan|memperdagangkan|menukar(?:
 V_JUAL_EN = r"(?:sell|rent|lease|trade|monetize|monetise)"
 SAMBUNG = r"(?:,| dan/atau| dan| atau| maupun| serta| and/or| and| or| &)+"
 OBJEK_ID = r"(?:data|informasi|database|basis data|kontak|daftar pelanggan)"
-OBJEK_EN = r"(?:data|information|info|details|database)"
-NEGARA = (r"(?:singapura|singapore|amerika( serikat)?|united states|\busa?\b|eropa|europe|uni eropa|jepang|japan|malaysia|"
+OBJEK_EN = r"(?:data|information|info|details|database|(?:customer|user|member|contact|mailing|email) (?:lists?|records|profiles|contacts))"
+NEGARA = (r"\b(?:singapura|singapore|amerika( serikat)?|united states|\busa\b|u\.s\.(?:a\.)?|eropa|europe|uni eropa|jepang|japan|malaysia|"
           r"australia|irlandia|ireland|india|hong ?kong|tiongkok|china|korea|taiwan|jerman|germany|belanda|netherlands|"
-          r"inggris|united kingdom|finlandia|finland|swedia|sweden|kanada|canada|brasil|brazil)")
+          r"inggris|united kingdom|finlandia|finland|swedia|sweden|kanada|canada|brasil|brazil)\b")
+V_BAGI_ID = (r"(?:(?:mem|di)?bagikan|berbagi|(?:mem|di)?berikan|(?:meng|di)?ungkapkan|(?:meny|dis|s)erahkan|(?:men|di)?teruskan|"
+             r"(?:meng|di)?alihkan|(?:meng|di)?kirimkan|(?:men|di)?transfer(?:kan)?|(?:mem|di)?pindahtangankan|(?:men|di)?tawarkan|"
+             r"(?:meny|dis|s)ediakan|(?:mem|di)?pasok(?:kan)?|menyalurkan|(?:di)?salurkan)(?:nya)?")
+V_BAGI_EN = (r"(?:share[sd]?|sharing|disclose[sd]?|disclosing|provide[sd]?|providing|transfer(?:s|red|ring)?|give|given|giving|"
+             r"sell|sold|rent(?:ed)?|lease[sd]?|licen[sc]e[sd]?|made available|make (?:it |them )?available)")
+IKLAN_ID = r"(?:iklan|periklanan|pemasaran|promosi|marketing|kampanye|penawaran|calon (?:pelanggan|pembeli|nasabah)|prospek|leads?)"
+# tujuan pemberian: "untuk keperluan promosi", "sebagai bagian dari program pemasaran", "dalam rangka kampanye iklan"
+TUJUAN_IKLAN_ID = (r"(?:untuk|demi|bagi|guna|sebagai|sebagai bagian dari|dalam rangka)(?: (?:keperluan|tujuan|kepentingan|program|kegiatan|materi|bahan))*"
+                   r" " + IKLAN_ID)
+# kalimat harus menyebut data/informasi orang (agar "memberikan diskon kepada pelanggan untuk promosi" tidak ditandai)
+OBJEK_ORANG = (r"\b(?:data|informasi|info|nomor|kontak|email|e-mail|alamat|profil|riwayat|identitas|ktp|database|daftar|nama|foto|lokasi)\b|"
+               r"\b[a-z]+nya\b|\b(?:information|details|contacts?|lists?|profiles?|records|personal|your|history|location|usage)\b|\b(?:it|them)\b")
+# penerima yang jelas-jelas untuk iklan/pemasaran
+SASARAN_IKLAN_ID = (r"(?:(?:mitra|rekanan|partner|agen(?:si)?|jaringan|platform|perusahaan|pihak)(?: [a-z]+){0,2} " + IKLAN_ID + r"|pengiklan|"
+                    r"(?:pihak ketiga|pihak lain|mitra|rekanan|afiliasi|partner)[^.;\n]{0,40}?(?:untuk|demi|bagi) (?:keperluan |tujuan |kepentingan )?"
+                    + IKLAN_ID + r")")
+SASARAN_IKLAN_EN = (r"(?:advertisers|advertising (?:partners|networks?|companies|agencies)|ad (?:networks?|partners|tech)|"
+                    r"marketing (?:partners|companies|agencies|affiliates)|marketers|data brokers|"
+                    r"(?:third[- ]part(?:y|ies)|partners|affiliates|others)[^.;\n]{0,40}?for (?:their (?:own )?)?(?:targeted )?(?:direct )?"
+                    r"(?:marketing|advertising|promotional)(?: purposes)?)")
+PERLU_IKLAN = r"iklan|pemasaran|promosi|marketing|kampanye|penawaran|calon|prospek|\blead|advertis|marketer|broker|\bad (?:networks?|partners|tech)"
+PERSETUJUAN = r"persetujuan|setuju|menyetujui|consent|opt-?in|opt in|memilih ikut"
 DURASI = r"\d+\]?\s*(?:hari|minggu|bulan|tahun|days?|weeks?|months?|years?)\b"
 BERITAHU_ID = (r"(?:beri ?tahu|memberi ?tahu|memberitahu(?:kan)?|pemberitahuan|umumkan|mengumumkan|informasikan|"
                r"menginformasikan|mengabari|mengabarkan|melaporkan|laporkan|menghubungi)")
@@ -72,7 +99,8 @@ UNSUR = [
         "label": "Identitas pengendali data (nama usaha/pemilik)",
         "bobot": 1,
         "pola": [r"pengendali data", r"data controller",
-                 r"(kebijakan|pemberitahuan)( privasi)?( ini)? (berlaku|dibuat|diterbitkan) (untuk|bagi|oleh)",
+                 r"(kebijakan|pemberitahuan)( privasi)?( ini)? (berlaku|dibuat|diterbitkan) (untuk|bagi|oleh) "
+                 r"(?!(semua|seluruh|setiap|para|pengguna|pelanggan|pengunjung|anda|siapa|kami)\b)(?![^.;\n]{0,60}\bkami\b)",
                  r"(policy|notice) (applies to|is issued by)",
                  r"(dikelola|dioperasikan|dimiliki) oleh", r"(operated|owned|managed|run) by", r"\bkami adalah\b", r"\bwe are\b",
                  r"\b(usaha|toko|bisnis|klinik|perusahaan|praktik|salon|situs|website|aplikasi)( [a-z0-9&'-]+){0,3} milik\b",
@@ -87,9 +115,11 @@ UNSUR = [
         "id": "kontak",
         "label": "Kontak yang bisa dihubungi (email/WA/alamat)",
         "bobot": 1,
-        "pola": [r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}", r"\bwhatsapp\b|\bwa\b", r"(telepon|telp|nomor hp|no\. hp)",
-                 r"(\+62|\b0)8\d{1,3}[- ]?\d{3,4}[- ]?\d{3,5}",
-                 r"hubungi kami", r"contact us", r"\bemail\b|\be-mail\b|\bsurel\b", r"alamat (kantor|usaha|toko|klinik)"],
+        "pola": [r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}", r"\bwa\.me/|\bwa\.link/|api\.whatsapp\.com",
+                 r"(\+62|\b0)[- ]?(8\d{1,3}|[1-9]\d{1,2})[- ]?\d{3,4}[- ]?\d{3,5}",
+                 r"(hubungi|kontak|contact|narahubung|reach|tanyakan|pertanyaan|keluhan|questions?)[^.;\n]{0,60}"
+                 r"(\bemail\b|\be-mail\b|\bsurel\b|\bwhatsapp\b|\bwa\b|telepon|\btelp\b|phone)",
+                 r"hubungi kami", r"contact us", r"alamat (kantor|usaha|toko|klinik)"],
         "dasar": "UU 27/2022 Pasal 5 & Pasal 21 ayat (1) huruf g (agar subjek data dapat memakai haknya); narahubung dalam pemberitahuan kebocoran disebut PP 33/2026 menurut sumber sekunder (nomor pasal belum diverifikasi)",
         "saran": "Cantumkan email dan/atau nomor WhatsApp khusus urusan data pribadi, plus alamat usaha.",
     },
@@ -112,7 +142,8 @@ UNSUR = [
         "pola": [r"tujuan (pemrosesan|pengumpulan|penggunaan)", r"\btujuan\b[ ,]+(dan )?dasar", r"\buntuk apa\b", r"(dipakai|dipergunakan) untuk",
                  r"(gunakan|menggunakan|memakai) (data|informasi)[^.\n]{0,40}untuk",
                  r"penggunaan (data|informasi)", r"bagaimana kami (menggunakan|memakai)", r"how we use",
-                 r"digunakan untuk", r"untuk keperluan", r"\bpurposes?\b", r"we use (your )?(personal )?(data|information)"],
+                 r"digunakan untuk", r"untuk keperluan",
+                 r"\b(gunakan|pakai|manfaatkan|proses|olah|dimanfaatkan|diolah|diproses) (hanya )?untuk", r"\bpurposes?\b", r"we use (your )?(personal )?(data|information)"],
         "dasar": "UU 27/2022 Pasal 16 ayat (2) huruf b & Pasal 21 ayat (1) huruf b",
         "saran": "Jelaskan untuk apa setiap data dipakai (proses pesanan, pengiriman, layanan pelanggan, promosi bila setuju).",
     },
@@ -144,7 +175,8 @@ UNSUR = [
         "pola": [r"luar negeri", r"luar wilayah (hukum )?(negara )?(republik )?indonesia", r"di luar indonesia", r"lintas (negara|batas)",
                  r"outside (of )?indonesia", r"cross[- ]border", r"\babroad\b", r"international transfer", r"transfer(red)? (to|outside)",
                  r"negara lain", r"other countries", r"server (asing|luar)",
-                 r"(server|pusat data|data center|disimpan|diproses|hosting|di-?hosting|stored|hosted|processed)[^.\n]{0,60}" + NEGARA,
+                 r"(server|pusat data|data center|disimpan|diproses|hosting|di-?hosting|berlokasi|berada|store[sd]?|storing|host(?:s|ed|ing)?|"
+                 r"process(?:es|ed|ing)?|located|kept|transferred)[^.\n]{0,60}" + NEGARA,
                  r"pasal 56"],
         "boleh_negatif": True,   # "tidak kami kirim ke luar negeri" juga informasi yang sah (opsi (b) template)
         "dasar": "UU 27/2022 Pasal 56",
@@ -196,9 +228,12 @@ UNSUR = [
         "id": "keamanan",
         "label": "Langkah keamanan data",
         "bobot": 1,
-        "pola": [r"keamanan (data|informasi)", r"mengamankan|melindungi data", r"enkripsi|terenkripsi|tersandi|kata sandi|autentikasi|verifikasi (dua|2) langkah",
-                 r"akses (terbatas|dibatasi)", r"membatasi akses|pembatasan akses", r"\bhttps\b|\bssl\b|\btls\b",
-                 r"\bsecurity\b|\bsecure\b|encrypt|safeguard", r"protect your"],
+        "pola": [r"enkripsi|terenkripsi|tersandi|kata sandi|\bsandi\b|autentikasi|otentikasi|verifikasi (dua|2) langkah|\b2fa\b",
+                 r"akses[^.;\n]{0,40}(terbatas|dibatasi)", r"membatasi akses|pembatasan akses|hak akses", r"\bhttps\b|\bssl\b|\btls\b",
+                 r"firewall|antivirus|anti-?malware|cadangan (data|berkala)|backup|perangkat (terkunci|dikunci)|dikunci",
+                 r"langkah(-langkah)? (keamanan|pengamanan|pelindungan) (teknis|organisasi|berikut|yang kami)",
+                 r"encrypt|password|two[- ]factor|multi[- ]factor|access controls?|restrict(ed|s)? access|limit(ed|s)? access|firewall",
+                 r"(implement|use|apply|maintain|employ)[^.;\n]{0,40}(security measures|safeguards)"],
         "dasar": "UU 27/2022 Pasal 35–39",
         "saran": "Jelaskan langkah keamanan secara jujur dan umum (akses dibatasi, kata sandi + verifikasi 2 langkah, perangkat terkunci, cadangan).",
     },
@@ -278,6 +313,15 @@ _BOCOR_ALASAN = ("Pengendali WAJIB memberi tahu subjek data dan lembaga secara t
 _BOCOR_SARAN = "Hapus. Tulis: \"Bila terjadi kegagalan pelindungan data, kami memberi tahu Anda secara tertulis paling lambat 3×24 jam.\""
 _DIANGGAP_ALASAN = ("Persetujuan harus eksplisit, tertulis/terekam, untuk tujuan tertentu (Pasal 20 ayat (2) huruf a & Pasal 22). "
                     "Persetujuan 'dianggap' tidak memenuhi.")
+_IKLAN_ALASAN = ("Memberikan data ke pihak lain untuk iklan/pemasaran memerlukan persetujuan eksplisit per tujuan (Pasal 20 ayat (2) huruf a "
+                 "& Pasal 22) dan penerima yang jelas (Pasal 16 ayat (2)). Kalimat \"tidak menjual, tetapi membagikan ke mitra iklan\" tetap berisiko.")
+_IKLAN_SARAN = ("Sebut penerima & tujuannya, dan lakukan hanya dengan persetujuan aktif terpisah yang bisa ditolak; atau tegaskan "
+                "\"Kami tidak membagikan data Anda kepada pengiklan.\"")
+_ANAK_ALASAN = ("Batas usia 13 tahun berasal dari aturan AS (COPPA). Di Indonesia, UU 27/2022 Pasal 25 mewajibkan persetujuan orang tua/wali "
+                "untuk data anak 'sesuai ketentuan peraturan perundang-undangan'; UU 35/2014 (Perlindungan Anak) Pasal 1 angka 1: anak = belum "
+                "berusia 18 tahun. UU PDP sendiri tidak memuat batas usia lain.")
+_ANAK_SARAN = ("Ganti batas usia menjadi \"di bawah 18 tahun\" dan tulis bahwa data anak hanya diproses dengan persetujuan orang tua/wali "
+               "(EN: \"under 18 ... with the consent of a parent or guardian\").")
 _UBAH_ALASAN = "Pengendali wajib memberi tahu subjek data SEBELUM informasi pemrosesan berubah (Pasal 21 ayat (2))."
 _UBAH_SARAN = "Ganti: \"Perubahan akan kami umumkan paling lambat [isi: 7] hari sebelum berlaku.\""
 
@@ -307,25 +351,41 @@ RISIKO = [
     dict(pola=r"(dapat|boleh|berhak|akan|bisa|mungkin) " + V_JUAL_ID + r"[^.;\n]{0,60}?\b" + OBJEK_ID,
          tingkat="TINGGI", alasan=_JUAL_ALASAN, saran=_JUAL_SARAN, cek_negasi=True),
     dict(pola=r"\b" + OBJEK_ID + r"\b[^.;\n]{0,40}?\b(dijual|disewakan|diperjualbelikan|diperdagangkan|dimonetisasi|dikomersialkan|ditukar(kan)?)\b"
-              r"|(dapat|akan|boleh|bisa) kami (jual|sewakan|perjualbelikan|perdagangkan|monetisasi|tukar)\b",
+              r"|(dapat|akan|boleh|bisa) kami (jual|sewakan|perjualbelikan|perdagangkan|monetisasi|tukar)\b"
+              r"|\b" + OBJEK_ID + r"\b[^.;\n]{0,60}?\bkami (jual|sewakan|perjualbelikan|perdagangkan|monetisasi)\b",
          tingkat="TINGGI", alasan=_JUAL_ALASAN, saran=_JUAL_SARAN, cek_negasi=True),
-    dict(pola=r"(mengalihkan|membagikan|memberikan|menyerahkan|mengungkapkan|meneruskan|mentransfer|menukar(kan)?)[^.;\n]{0,80}?"
-              r"(dengan|untuk|sebagai|demi) (imbalan|bayaran|kompensasi|uang|keuntungan)",
-         tingkat="TINGGI", alasan=_JUAL_ALASAN, saran=_JUAL_SARAN, cek_negasi=True),
+    dict(pola=r"(" + V_BAGI_ID + r"|menukar(kan)?|ditukar(kan)?)[^.;\n]{0,80}?"
+              r"(dengan|untuk|sebagai|demi|atas) (imbalan|bayaran|kompensasi|uang|keuntungan|komisi|biaya|fee|pembayaran)",
+         tingkat="TINGGI", alasan=_JUAL_ALASAN, saran=_JUAL_SARAN, cek_negasi=True,
+         perlu=r"imbalan|bayaran|kompensasi|uang|keuntungan|komisi|biaya|\bfee\b|pembayaran"),
     dict(pola=r"(?:(?:share|disclose|transfer|provide)" + SAMBUNG + r" )*\b" + V_JUAL_EN + r"\b(?:" + SAMBUNG + r" (?:" + V_JUAL_EN[3:-1] + r"|share|disclose))*"
-              r"(?: (?:your|the|all|any|such|our|customer|customers'|user|users'))*(?: personal)? " + OBJEK_EN,
+              r"(?: (?:your|the|all|any|such|our|customer|customers'|user|users'|some|certain|this|that|collected|contact|account|profile|usage|"
+              r"location|demographic|behaviou?ral|aggregated?|anonymi[sz]ed|de-identified|non-personal|identifiable|personal|and|or|&|,))* " + OBJEK_EN,
          tingkat="TINGGI", alasan=_JUAL_ALASAN, saran=_JUAL_SARAN, cek_negasi=True),
     dict(pola=r"\b" + OBJEK_EN + r"\b[^.;\n]{0,40}?\b(sold|rented|leased|traded|monetized|monetised)\b",
          tingkat="TINGGI", alasan=_JUAL_ALASAN, saran=_JUAL_SARAN, cek_negasi=True),
     dict(pola=r"(share|disclose|provide|transfer|give)[^.;\n]{0,80}?(for (payment|money|compensation|a fee|profit|monetary)|in exchange for|to data brokers)",
          tingkat="TINGGI", alasan=_JUAL_ALASAN, saran=_JUAL_SARAN, cek_negasi=True),
-    dict(pola=r"(share|disclose|provide|transfer)[^.;\n]{0,80}?(third[- ]part(y|ies)|partners|advertisers)[^.;\n]{0,60}?for (their )?(own )?(marketing|advertising|promotional)"
-              r"|(membagikan|mengungkapkan|memberikan|menyerahkan|meneruskan)[^.;\n]{0,80}?(pihak ketiga|mitra|pengiklan)[^.;\n]{0,60}?untuk (keperluan |tujuan |kepentingan )?(pemasaran|promosi|iklan)",
-         tingkat="SEDANG", alasan="Memberikan data ke pihak lain untuk pemasaran MEREKA memerlukan persetujuan eksplisit per tujuan (Pasal 20 ayat (2) huruf a & Pasal 22) dan penerima yang jelas (Pasal 16 ayat (2)).",
-         saran="Sebut penerima & tujuannya, dan lakukan hanya dengan persetujuan aktif yang bisa ditolak.", cek_negasi=True,
-         kecuali=r"persetujuan|setuju|consent|opt-?in"),
+    # --- berbagi data ke mitra iklan/pemasaran (B-1/B-2): polaritas dinilai per klausa ---
+    dict(pola=V_BAGI_ID + r"[^.;\n]{0,80}?(?:kepada|ke|dengan|untuk|bagi) " + SASARAN_IKLAN_ID
+              + r"|" + V_BAGI_ID + r" (?:kepada|ke|dengan) [^.;\n]{1,50}?" + TUJUAN_IKLAN_ID
+              + r"|" + SASARAN_IKLAN_ID + r"[^.;\n]{0,60}?\b" + V_BAGI_ID + r"\b"
+              + r"|\b" + V_BAGI_EN + r"\b[^.;\n]{0,80}?\b(?:with|to|among)\b[^.;\n]{0,60}?" + SASARAN_IKLAN_EN
+              + r"|\b" + V_BAGI_EN + r" (?:it|them|(?:[a-z']+ ){0,3}" + OBJEK_EN + r")\b[^.;\n]{0,60}?\bfor (?:targeted |direct |their (?:own )?)?(?:advertising|marketing|promotional)(?: purposes)?",
+         tingkat="SEDANG", alasan=_IKLAN_ALASAN, saran=_IKLAN_SARAN, cek_negasi=True, kecuali=PERSETUJUAN, perlu=PERLU_IKLAN,
+         syarat_kalimat=OBJEK_ORANG),
+    # "tidak membagikan ... kecuali kepada mitra iklan" = tetap berbagi ke mitra iklan
+    dict(pola=r"\b(?:kecuali|selain|except|other than|apart from)\b(?: (?:kepada|ke|untuk|dengan|bagi|to|with|for))? (?:para |our |the |kami )?"
+              r"(?:" + SASARAN_IKLAN_ID + r"|" + SASARAN_IKLAN_EN + r")",
+         tingkat="SEDANG", alasan=_IKLAN_ALASAN, saran=_IKLAN_SARAN, cek_negasi=True, kecuali=PERSETUJUAN, perlu=PERLU_IKLAN),
     # --- persetujuan dianggap / tidak bisa ditarik ---
-    dict(pola=r"persetujuan[^.;\n]{0,30}?dianggap (telah )?(diberikan|ada|sah)", tingkat="TINGGI", alasan=_DIANGGAP_ALASAN,
+    dict(pola=r"(diam(nya)?|tidak (membalas|menjawab|menolak|merespons|keberatan)|silence|inaction|failure to (respond|object|reply))[^.;\n]{0,80}?"
+              r"(dianggap|kami anggap|kami artikan|berarti|diartikan|deemed|treated as|considered|constitutes?)[^.;\n]{0,20}?(setuju|persetujuan|menyetujui|consent|agreement|acceptance)"
+              r"|kami (anggap|artikan|perlakukan) (sebagai )?(tanda )?(persetujuan|setuju|menyetujui)"
+              r"|(treat|consider|take|regard) (your )?(silence|inaction|continued use)[^.;\n]{0,20}? as (your )?(consent|agreement|acceptance)",
+         tingkat="TINGGI", alasan=_DIANGGAP_ALASAN,
+         saran="Ganti dengan kotak centang/balasan \"SETUJU\" yang aktif dari pelanggan, per tujuan. Diam bukan persetujuan.", cek_negasi=True),
+    dict(pola=r"persetujuan[^.;\n]{0,30}?(dianggap|kami anggap) (telah )?(diberikan|ada|sah)", tingkat="TINGGI", alasan=_DIANGGAP_ALASAN,
          saran="Ganti dengan kotak centang/balasan \"SETUJU\" yang aktif dari pelanggan, per tujuan.", cek_negasi=True),
     dict(pola=r"dianggap (telah )?(menyetujui|setuju|memberikan persetujuan|menerima)", tingkat="TINGGI",
          alasan="Persetujuan diam-diam/dianggap tidak memenuhi syarat persetujuan eksplisit (Pasal 20 & 22).",
@@ -352,24 +412,35 @@ RISIKO = [
     dict(pola=r"by (using|accessing|visiting|continuing)[^.\n]{0,80}(you )?(agree|consent|accept)", tingkat="SEDANG",
          alasan="Persetujuan 'dengan memakai situs, Anda setuju' (browse-wrap) bukan persetujuan eksplisit per tujuan (Pasal 20 & 22).",
          saran="Jadikan pemberitahuan saja; minta persetujuan aktif terpisah untuk promosi/data spesifik.", cek_negasi=True),
-    dict(pola=r"(mengubah|memperbarui|merevisi|diubah|diperbarui|berubah|perubahan)[^.;\n]{0,80}?tanpa (pemberitahuan|memberi ?tahu|diberitahukan)"
-              r"|(change|modify|update|amend)[^.;\n]{0,60}?without (prior |any )?(notice|notification|informing)",
+    dict(pola=r"(kebijakan|ketentuan|syarat|privasi|pemberitahuan ini)[^.;\n]{0,80}?\b((meng|di)?ubah|(mem|di)?perbarui|(me|di)?revisi|berubah|perubahan)(nya)?\b"
+              r"[^.;\n]{0,80}?tanpa (pemberitahuan|memberi ?tahu|diberitahukan)"
+              r"|(mengubah|memperbarui|merevisi|perubahan)( atas| terhadap)? (kebijakan|ketentuan|syarat)[^.;\n]{0,80}?tanpa (pemberitahuan|memberi ?tahu|diberitahukan)"
+              r"|(mengubah|memperbarui|merevisi)nya[^.;\n]{0,40}?tanpa (pemberitahuan|memberi ?tahu|diberitahukan)"
+              r"|(policy|policies|terms|privacy|notice)[^.;\n]{0,80}?(change|modif|update|amend|revis)[^.;\n]{0,60}?without (prior |any )?(notice|notification|informing)"
+              r"|(change|modify|update|amend|revise) (it|this|our|the|these|such|any)( privacy)? ?(policy|policies|terms|notice)?[^.;\n]{0,60}?without (prior |any )?(notice|notification|informing)",
          tingkat="SEDANG", alasan=_UBAH_ALASAN, saran=_UBAH_SARAN, cek_negasi=True),
     dict(pola=r"(kebijakan|ketentuan|syarat|policy|terms)[^.;\n]{0,60}?(diubah|diperbarui|berubah|direvisi|mengubah|memperbarui|merevisi|changed|modified|updated|amended|change|modify|update|amend)"
               r"[^.;\n]{0,40}?(sewaktu-? ?waktu|kapan saja|kapan pun|setiap saat|at any time|from time to time)"
-              r"|(mengubah|memperbarui|merevisi|change|modify|update|amend) (kebijakan|ketentuan|syarat|this policy|these terms|our policy)[^.;\n]{0,40}?"
+              r"|(kebijakan|ketentuan|syarat)[^.;\n]{0,40}?\b(ubah|perbarui|revisi)\b[^.;\n]{0,40}?(sewaktu-? ?waktu|kapan saja|kapan pun|setiap saat)"
+              r"|(mengubah|memperbarui|merevisi|change|modify|update|amend) (kebijakan|ketentuan|syarat|pemberitahuan privasi|this policy|these terms|our policy|this notice)[^.;\n]{0,40}?"
               r"(sewaktu-? ?waktu|kapan saja|kapan pun|setiap saat|at any time|from time to time)",
          tingkat="SEDANG", alasan=_UBAH_ALASAN, saran=_UBAH_SARAN, cek_negasi=True,
-         kecuali=BERITAHU_ID + "|" + BERITAHU_EN),
+         kecuali=r"\b(?:" + BERITAHU_ID + r")(?! privasi| ini\b)|\b(?:" + BERITAHU_EN + r")(?! (?:is|applies))"),
     dict(pola=r"(kepada|dengan) (siapa ?pun|pihak mana ?pun|semua pihak|pihak ketiga mana ?pun)|with any(one| third part(y|ies))",
          tingkat="SEDANG", alasan="Berbagi data tanpa batas penerima & tujuan tidak memenuhi prinsip terbatas dan spesifik (Pasal 16 ayat (2)).",
          saran="Sebutkan penerima secara spesifik (kategori + tujuan).", cek_negasi=True),
+    dict(pola=r"(untuk|demi|for) (tujuan|keperluan|kepentingan) (apa ?pun|lain ?nya|lain apa pun|apa saja)|for any (other )?purpose(s)? (whatsoever|we (deem|see fit))|for any purpose",
+         tingkat="SEDANG", alasan="Tujuan pemrosesan wajib spesifik dan terbatas (Pasal 16 ayat (2) huruf b); \"untuk tujuan apa pun\" tidak memenuhi.",
+         saran="Sebutkan tujuan secara spesifik (mis. memproses pesanan, pengiriman, layanan pelanggan).", cek_negasi=True),
     dict(pola=r"(semua|seluruh|segala) (data|informasi)[^.\n]{0,30}(di|pada) (perangkat|ponsel|hp|galeri|kontak) anda|all (data|information) on your device",
          tingkat="SEDANG", alasan="Mengumpulkan melebihi keperluan melanggar prinsip minimisasi (Pasal 16 ayat (2) huruf a).",
          saran="Batasi ke data yang benar-benar diperlukan.", cek_negasi=True),
     dict(pola=r"\bgdpr\b|\bccpa\b|california|general data protection regulation|european economic area|uni eropa",
          tingkat="SEDANG", alasan="Tampaknya disalin dari kebijakan luar negeri (GDPR/CCPA). Hak & kewajiban di Indonesia mengikuti UU 27/2022.",
          saran="Tulis ulang dengan rujukan UU 27/2022 (batas 3×24 jam, pemberitahuan kebocoran, dasar pemrosesan Pasal 20).", cek_negasi=False),
+    dict(pola=r"(under|below|younger than) (the age of |age )?1[0-6]\b|(under|below)[- ]1[0-6]s?\b|di bawah (usia |umur )?1[0-6] tahun|"
+              r"(usia|umur|berusia) (di bawah|kurang dari) 1[0-6] tahun|\bcoppa\b",
+         tingkat="SEDANG", alasan=_ANAK_ALASAN, saran=_ANAK_SARAN, cek_negasi=False),
     dict(pola=r"100 ?% aman|dijamin aman sepenuhnya|aman sepenuhnya|completely secure|100 ?% secure|fully secure|perfectly secure",
          tingkat="SEDANG", alasan="Klaim keamanan mutlak menyesatkan dan bertentangan dengan kewajiban menyiapkan penanganan kebocoran (Pasal 46).",
          saran="Ganti dengan langkah keamanan nyata yang dilakukan.", cek_negasi=True),
@@ -384,14 +455,25 @@ NEGASI = re.compile(
     r"(?:don|doesn|didn|won|wouldn|isn|aren|wasn|weren|can|couldn|shouldn|hasn|haven|hadn|mustn)'t)\b"
     r"(?!\s*(?:hanya|only|saja|lebih|melebihi|melewati|more|longer|later|limited|terbatas pada|sekadar)\b)"
     r"(?![.\d])(?!\s*(?:hp|wa|telp|telepon|rekening|rek|ktp|npwp|handphone|whatsapp|pesanan|resi|invoice|\d))")
+# Idiom yang bentuknya negatif tetapi maknanya "mungkin" (penyangkal di dalamnya diabaikan)
+IDIOM_MUNGKIN = re.compile(r"\b(?:bukan tidak mungkin|bukan mustahil|tidak mustahil|tak mustahil|tidak menutup kemungkinan|tak menutup kemungkinan|"
+                           r"tidak tertutup kemungkinan|tidak jarang|not impossible|not unlikely|not uncommon|cannot rule out|can't rule out)\b")
 TANPA = re.compile(r"\b(?:tanpa|without)\b")
 KLAUSA = re.compile(
-    r"[;:]|\s[-–—]\s|,?\s+(?:tetapi|tapi|namun|melainkan|sedangkan|padahal|but|however|whereas|although|meskipun|walaupun)\b"
+    r"[;:]|\s[-–—]\s|,?\s+(?:tetapi|tapi|namun|melainkan|sedangkan|padahal|kecuali|selain itu|but|however|whereas|although|except|meskipun|walaupun)\b"
     r"|,\s*(?:dan |and |serta |lalu |kemudian |then )?(?:kami|we|anda|you|data|informasi|information|mereka|they|pihak)\b"
     r"|\s(?:dan|and) (?:kami|we)\b")
 AKHIR_KALIMAT = re.compile(r"\n|\x1e|[.!?]+(?=\s|$)")
 SINGKATAN = {"jl", "no", "pt", "cv", "ud", "tbk", "dll", "dsb", "mis", "dr", "drg", "sdr", "bpk", "hlm", "tgl", "telp",
              "e.g", "i.e", "etc", "vs", "mr", "mrs", "ms", "ps", "ay", "ir", "prof", "kec", "kab", "kel", "rt", "rw"}
+URUTAN_STATUS = (
+    "1. KURANG LENGKAP — skor < 60: banyak bagian pokok belum ada. Ini mengalahkan BELUM SIAP: dokumen berisian kosong [isi: ...] "
+    "tetap KURANG LENGKAP bila skor strukturnya (seandainya semua isian dilengkapi) pun < 60 atau ada frasa TINGGI.",
+    "2. PERLU PERBAIKAN — ada frasa berisiko TINGGI.",
+    "3. BELUM SIAP — masih ada isian kosong [isi: ...], struktur sudah cukup.",
+    "4. PERLU PERBAIKAN — skor 60-84.",
+    "5. CUKUP LENGKAP — skor >= 85, tanpa frasa TINGGI, tanpa isian kosong.",
+)
 BATAS_SKOR_ISIAN = 84   # skor maksimum selama masih ada isian kosong (di bawah ambang CUKUP LENGKAP 85)
 JENDELA = 60   # karakter maksimum sebelum kecocokan yang diperiksa untuk penyangkal
 
@@ -473,16 +555,16 @@ class Pola:
             return iter(())
         return self.re.finditer(t)
 
-    def cari(self, t, terima):
+    def cari(self, t, terima, awal=0, akhir=None):
         """Seperti finditer, tetapi bila kecocokan ditolak (`terima(m)` False, mis. disangkal),
         pencarian diulang dari karakter berikutnya agar kecocokan lebih pendek di dalamnya tetap ditemukan
         ("Kami tidak menyimpan data kartu, dan data pesanan disimpan selamanya")."""
         if self.awalan is not None and not any(a in t for a in self.awalan):
             return
-        pos = 0
-        n = len(t)
+        pos = awal
+        n = len(t) if akhir is None else akhir
         while pos <= n:
-            m = self.re.search(t, pos)
+            m = self.re.search(t, pos, n)
             if not m:
                 return
             if terima(m):
@@ -505,6 +587,8 @@ for _u in UNSUR + UNSUR_BERSYARAT:
 for _r in RISIKO:
     _r["re"] = _c(_r["pola"])
     _r["kecuali_re"] = _c(_r["kecuali"]) if _r.get("kecuali") else None
+    _r["perlu_re"] = re.compile(_r["perlu"]) if _r.get("perlu") else None
+    _r["syarat_re"] = re.compile(_r["syarat_kalimat"]) if _r.get("syarat_kalimat") else None
 
 
 class GalatInput(Exception):
@@ -659,7 +743,9 @@ class Indeks:
         for m in KLAUSA.finditer(t):
             klausa.add(m.start())
         self.klausa = sorted(klausa)
-        self.neg = [m.start() for m in NEGASI.finditer(t)]
+        idiom = [(m.start(), m.end()) for m in IDIOM_MUNGKIN.finditer(t)]
+        self.neg = [m.start() for m in NEGASI.finditer(t)
+                    if not any(a <= m.start() < b for a, b in idiom[bisect.bisect_right(idiom, (m.start(), 10 ** 9)) - 1:][:1])]
         self.tanpa = [m.start() for m in TANPA.finditer(t)]
         # Kalimat yang memuat isian kosong ([isi: ...]) → bukti di kalimat ini hanya bernilai setengah
         self.kalimat_isian = set(self.awal_kalimat(m.start()) for m in PLACEHOLDER.finditer(t))
@@ -734,15 +820,27 @@ def _kutipan(bersih, idx, m):
 
 def cari_risiko(bersih, idx):
     temuan = []
-    sudah = set()
+    per_kalimat = {}      # awal kalimat -> temuan (B-5: satu temuan per kalimat, tingkat tertinggi, alasan digabung)
     terpotong = False
     for r in RISIKO:
         n_pola = 0
         terima = (lambda m: not idx.disangkal(m)) if r["cek_negasi"] else (lambda m: True)
-        for m in r["re"].cari(idx.t, terima):
+        if r["perlu_re"] is not None:
+            # hanya kalimat yang memuat kata wajib (cepat untuk teks besar)
+            rentang = []
+            for mp in r["perlu_re"].finditer(idx.t):
+                a = idx.awal_kalimat(mp.start())
+                if not rentang or rentang[-1][0] != a:
+                    rentang.append((a, idx.akhir_kalimat(mp.start())))
+            cocok = (m for a, b in rentang for m in r["re"].cari(idx.t, terima, a, b))
+        else:
+            cocok = r["re"].cari(idx.t, terima)
+        for m in cocok:
             ak = idx.awal_kalimat(m.start())
-            kunci = (ak, r["tingkat"])
-            if kunci in sudah:
+            if r["syarat_re"] is not None and not r["syarat_re"].search(idx.t, ak, idx.akhir_kalimat(m.start())):
+                continue
+            lama = per_kalimat.get(ak)
+            if lama is not None and r["alasan"] in lama["_alasan"] and (lama["tingkat"] == "TINGGI" or r["tingkat"] == "SEDANG"):
                 continue
             if r["kecuali_re"] is not None:
                 kal = idx.t[ak:idx.akhir_kalimat(m.start())]
@@ -756,15 +854,45 @@ def cari_risiko(bersih, idx):
                         break
                 if ok:
                     continue
-            sudah.add(kunci)
+            if lama is not None:
+                _gabung(lama, r, m.group(0))
+                continue
             n_pola += 1
             if n_pola > MAKS_TEMUAN_PER_POLA or len(temuan) >= MAKS_TEMUAN_TOTAL:
                 terpotong = True
                 break
-            temuan.append({"tingkat": r["tingkat"], "baris": idx.baris(m.start()), "kutipan": _kutipan(bersih, idx, m),
-                           "cocok": m.group(0), "alasan": r["alasan"], "saran": r["saran"]})
+            x = {"tingkat": r["tingkat"], "baris": idx.baris(m.start()), "kutipan": _kutipan(bersih, idx, m),
+                 "cocok": m.group(0), "alasan": r["alasan"], "saran": r["saran"], "cocok_lain": [],
+                 "_alasan": [r["alasan"]], "_saran": [r["saran"]]}
+            per_kalimat[ak] = x
+            temuan.append(x)
+    for x in temuan:
+        x["alasan"] = " Juga: ".join(x.pop("_alasan"))
+        x["saran"] = " Juga: ".join(x.pop("_saran"))
     temuan.sort(key=lambda x: (0 if x["tingkat"] == "TINGGI" else 1, x["baris"]))
     return temuan, terpotong
+
+
+def _gabung(x, r, cocok):
+    """Gabungkan temuan kedua di kalimat yang sama: tingkat tertinggi dipakai, alasan & saran digabung."""
+    if r["tingkat"] == "TINGGI" and x["tingkat"] != "TINGGI":
+        x["cocok_lain"].append(x["cocok"])
+        x["tingkat"], x["cocok"] = "TINGGI", cocok
+        x["_alasan"].insert(0, r["alasan"])
+        x["_saran"].insert(0, r["saran"])
+    else:
+        x["cocok_lain"].append(cocok)
+        if r["alasan"] not in x["_alasan"]:
+            x["_alasan"].append(r["alasan"])
+        if r["saran"] not in x["_saran"]:
+            x["_saran"].append(r["saran"])
+
+
+def _unsur_json(u, status, nilai, bukti, kurang=None, belum=None, pemicu="", saran=""):
+    """Semua unsur memakai kunci yang sama (B-8), agar konsumen JSON tidak terkena KeyError."""
+    return {"id": u["id"], "label": u["label"], "status": status, "nilai": nilai, "bobot": u["bobot"],
+            "bukti": bukti or "", "kurang": kurang or [], "belum_diisi": belum or [], "pemicu": pemicu or "",
+            "bersyarat": "pemicu" in u, "dasar": u["dasar"], "saran": saran}
 
 
 def periksa(teks):
@@ -777,9 +905,11 @@ def periksa(teks):
     for u in UNSUR:
         total += u["bobot"]
         if "sub" in u:
-            nilai_sub, kurang, belum = {}, [], []
+            nilai_sub, kurang, belum, bukti_sub = {}, [], [], []
             for k, pol in u["sub_re"].items():
                 bukti, di_isian = cari_bukti(pol, idx)
+                if bukti:
+                    bukti_sub.append(bukti)
                 nilai_sub[k] = 0.0 if not bukti else (0.5 if di_isian else 1.0)
                 if not bukti:
                     kurang.append(k)
@@ -794,16 +924,15 @@ def periksa(teks):
                 status = "BELUM DIISI"
             else:
                 status = "SEBAGIAN" if len(kurang) < n else "TIDAK ADA"
-            hasil.append({"id": u["id"], "label": u["label"], "status": status, "nilai": round(nilai, 2), "bobot": u["bobot"],
-                          "kurang": kurang, "belum_diisi": belum, "dasar": u["dasar"], "saran": u["saran"] if (kurang or belum) else ""})
+            hasil.append(_unsur_json(u, status, round(nilai, 2), "; ".join(bukti_sub), kurang=kurang, belum=belum,
+                                     saran=u["saran"] if (kurang or belum) else ""))
         else:
             bukti, di_isian = cari_bukti(u["pola_re"], idx, u.get("boleh_negatif", False))
             nilai = 0 if not bukti else (u["bobot"] * (0.5 if di_isian else 1))
             struktur = u["bobot"] if bukti else 0
             status = "TIDAK ADA" if not bukti else ("BELUM DIISI" if di_isian else "ADA")
             saran = u["saran"] if not bukti else ("Lengkapi isian kosong di bagian ini." if di_isian else "")
-            hasil.append({"id": u["id"], "label": u["label"], "status": status, "nilai": nilai, "bobot": u["bobot"],
-                          "bukti": bukti or "", "dasar": u["dasar"], "saran": saran})
+            hasil.append(_unsur_json(u, status, nilai, bukti, saran=saran))
         dapat += nilai
         dapat_struktur += struktur
     for u in UNSUR_BERSYARAT:
@@ -816,9 +945,8 @@ def periksa(teks):
         dapat += nilai
         dapat_struktur += u["bobot"] if bukti else 0
         status = "TIDAK ADA" if not bukti else ("BELUM DIISI" if di_isian else "ADA")
-        hasil.append({"id": u["id"], "label": u["label"], "status": status, "nilai": nilai, "bobot": u["bobot"],
-                      "bukti": bukti or "", "pemicu": pemicu, "dasar": u["dasar"],
-                      "saran": u["saran"] if not bukti else ("Lengkapi isian kosong di bagian ini." if di_isian else "")})
+        hasil.append(_unsur_json(u, status, nilai, bukti, pemicu=pemicu,
+                                 saran=u["saran"] if not bukti else ("Lengkapi isian kosong di bagian ini." if di_isian else "")))
 
     skor = int(round(100.0 * dapat / total)) if total else 0
     skor_struktur = int(round(100.0 * dapat_struktur / total)) if total else 0
@@ -829,15 +957,15 @@ def periksa(teks):
     n_tinggi = sum(1 for r in risiko if r["tingkat"] == "TINGGI")
     # Urutan status: KURANG LENGKAP > PERLU PERBAIKAN (frasa TINGGI) > BELUM SIAP (isian kosong) > PERLU PERBAIKAN > CUKUP LENGKAP
     if skor < 60 and not (isian and skor_struktur >= 60 and not n_tinggi):
-        status = "KURANG LENGKAP"
+        status, alasan_status = "KURANG LENGKAP", URUTAN_STATUS[0]
     elif n_tinggi:
-        status = "PERLU PERBAIKAN"
+        status, alasan_status = "PERLU PERBAIKAN", URUTAN_STATUS[1]
     elif isian:
-        status = "BELUM SIAP"
+        status, alasan_status = "BELUM SIAP", URUTAN_STATUS[2]
     elif skor < 85:
-        status = "PERLU PERBAIKAN"
+        status, alasan_status = "PERLU PERBAIKAN", URUTAN_STATUS[3]
     else:
-        status = "CUKUP LENGKAP"
+        status, alasan_status = "CUKUP LENGKAP", URUTAN_STATUS[4]
 
     catatan = []
     jumlah_kata = len(re.findall(r"\w+", t))
@@ -860,6 +988,7 @@ def periksa(teks):
         "skor": skor,
         "skor_struktur": skor_struktur,
         "status": status,
+        "alasan_status": alasan_status.split(" — ", 1)[1],
         "jumlah_kata": jumlah_kata,
         "isian_kosong": len(isian),
         "unsur": hasil,
@@ -876,6 +1005,7 @@ def cetak_teks(r, nama):
     if r["isian_kosong"]:
         kepala += " (struktur {}/100 bila {} isian kosong dilengkapi)".format(r["skor_struktur"], r["isian_kosong"])
     out.append("{}  |  Status: {}  |  {} kata".format(kepala, r["status"], r["jumlah_kata"]))
+    out.append("Arti status: " + r["alasan_status"])
     out.append("")
     out.append("UNSUR:")
     for h in r["unsur"]:
@@ -919,8 +1049,9 @@ def cetak_daftar():
     for u in UNSUR_BERSYARAT:
         out.append("  - {} ({}) — {}".format(u["label"], u["bobot"], u["dasar"]))
     out.append("Frasa berisiko yang dideteksi: {} pola (ID & EN), dengan cek negasi per klausa.".format(len(RISIKO)))
-    out.append("Status: CUKUP LENGKAP (skor >= 85, tanpa frasa TINGGI, tanpa isian kosong) · BELUM SIAP (ada [isi: ...]) · "
-               "PERLU PERBAIKAN (skor 60-84 atau ada frasa TINGGI) · KURANG LENGKAP (skor < 60).")
+    out.append("Status (diperiksa berurutan, yang pertama cocok dipakai):")
+    for s in URUTAN_STATUS:
+        out.append("  " + s)
     return "\n".join(out)
 
 

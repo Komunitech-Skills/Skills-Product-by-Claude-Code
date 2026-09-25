@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Uji regresi scripts/cek_kebijakan.py v1.0.1 (hanya library standar).
+"""Uji regresi scripts/cek_kebijakan.py v1.0.2 (hanya library standar).
 
-Termasuk tes untuk tiap temuan HASIL-UJI (T-1, T-2, S-1..S-5, R-1..R-4) dan tabel akurasi
-dari set kalimat berlabel (tests/data/kalimat-berlabel.json).
+Termasuk tes untuk tiap temuan HASIL-UJI (T-1, T-2, S-1..S-5, R-1..R-4), temuan uji ulang v1.0.1
+(B-1..B-8, examples/06-uji-ulang-v1.0.1.md), dan tabel akurasi dari set berlabel:
+tests/data/kalimat-berlabel.json (set uji pertama + kontrol v1.0.1), tests/data/set-penguji-v101.json
+(set uji ulang penguji: 48 frasa, 22 unsur, 3 dokumen), tests/data/set-kontrol-v102.json (kontrol perevisi v1.0.2).
 
 Jalankan dari mana saja:  python3 tests/uji_regresi.py   (Windows: python / py)
 Keluar 0 bila semua lulus.
@@ -293,6 +295,154 @@ def uji_v101(tmp):
     cek("S-4: template persetujuan tanpa frasa berisiko", r["risiko"] == [], r["risiko"])
 
     uji_akurasi()
+    uji_v102()
+
+
+def _baca_json(nama):
+    with open(os.path.join(DATA, nama), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _akurasi_frasa(daftar, harus_berisiko):
+    benar, fp, fn = 0, [], []
+    for k in daftar:
+        dapat = bool(risiko(k["kalimat"]))
+        if dapat == harus_berisiko(k):
+            benar += 1
+        else:
+            (fp if dapat else fn).append(k["kalimat"])
+    return benar, fp, fn
+
+
+def _akurasi_unsur(daftar):
+    benar, salah = 0, []
+    for k in daftar:
+        st = unsur(ck.periksa(k["kalimat"]), k["unsur"])["status"]
+        if (st in ("ADA", "SEBAGIAN")) == k["ada"]:
+            benar += 1
+        else:
+            salah.append((k["unsur"], st, k["kalimat"]))
+    return benar, salah
+
+
+def uji_v102():
+    """Tes regresi temuan uji ulang v1.0.1 (B-1..B-8) + akurasi set penguji & set kontrol v1.0.2."""
+    # B-1: berbagi ke mitra iklan/pemasaran (ID), termasuk klausa kedua setelah tetapi/namun/akan tetapi/kecuali
+    for k in ("Kami tidak menjual data, tetapi dapat membagikannya ke mitra iklan.",
+              "Kami tidak menjual data Anda; namun, data Anda dapat kami berikan kepada pengiklan.",
+              "Data Anda tidak kami perdagangkan, akan tetapi dapat kami serahkan kepada mitra pemasaran.",
+              "Kami tidak memberikan data kepada siapa pun kecuali kepada mitra pemasaran kami.",
+              "Kami bekerja sama dengan pihak ketiga untuk tujuan pemasaran dan dapat memberikan data Anda kepada mereka.",
+              "Informasi pribadi Anda bisa kami bagikan ke pihak ketiga untuk keperluan iklan tanpa persetujuan Anda.",
+              "Data Anda dapat dialihkan kepada pihak lain dengan imbalan."):
+        cek("B-1 terdeteksi: " + k, bool(risiko(k)), risiko(k))
+    for k in ("Kami tidak membagikan data Anda kepada mitra iklan tanpa persetujuan eksplisit Anda.",
+              "Dengan persetujuan Anda, kami dapat membagikan email Anda kepada mitra promosi.",
+              "Kami memberikan potongan harga kepada anggota untuk promosi hari jadi toko.",
+              "Tim pemasaran kami membagikan brosur ke sekolah."):
+        cek("B-1 tidak salah tanda: " + k, risiko(k) == [], risiko(k))
+    # B-2: EN dengan kata sisipan / advertisers / disclose for advertising
+    for k in ("We may sell or rent aggregated and personal information to third parties.",
+              "We may share your personal information with our affiliates, business partners and advertisers.",
+              "We may disclose your contact details for advertising purposes.",
+              "Customer lists may be licensed or sold to marketing affiliates."):
+        cek("B-2 terdeteksi: " + k, bool(risiko(k)), risiko(k))
+    for k in ("We will not share your data with advertisers unless you opt in.",
+              "We use your information to provide the service and for marketing our own products.",
+              "We sell handmade batik products online."):
+        cek("B-2 tidak salah tanda: " + k, risiko(k) == [], risiko(k))
+    # B-3: salah-positif unsur
+    for k, uid in (("Kebijakan ini berlaku untuk layanan laundry kiloan kami.", "identitas"),
+                   ("Kami menerima pesanan lewat WhatsApp.", "kontak"),
+                   ("Nama, nomor WhatsApp, dan alamat penjemputan cucian.", "kontak"),
+                   ("The security of your data is important to us.", "keamanan"),
+                   ("Kami sangat peduli pada keamanan data Anda.", "keamanan"),
+                   ("Silakan hubungi kami dalam bahasa Indonesia atau bahasa Inggris.", "transfer_ln"),
+                   ("Jam operasional toko dapat berubah tanpa pemberitahuan pada hari libur nasional.", None)):
+        if uid:
+            st = unsur(ck.periksa(k), uid)["status"]
+            cek("B-3 bukan unsur {}: {}".format(uid, k), st == "TIDAK ADA", st)
+        else:
+            cek("B-6 bukan frasa berisiko: " + k, risiko(k) == [], risiko(k))
+    for k, uid in (("Data tersebut kami gunakan untuk memproses pesanan.", "tujuan"),
+                   ("Some of our providers store data in the United States.", "transfer_ln"),
+                   ("Pertanyaan dapat dikirim ke WA 0812-3456-7890.", "kontak"),
+                   ("Akses ke data dibatasi hanya untuk admin.", "keamanan")):
+        st = unsur(ck.periksa(k), uid)["status"]
+        cek("B-6 unsur {} ADA: {}".format(uid, k), st == "ADA", st)
+    # B-4: status konsisten & dijelaskan
+    r = ck.periksa(open(os.path.join(DATA, "penguji-d2-setengah-jadi.md"), encoding="utf-8").read())
+    cek("B-4: D2 KURANG LENGKAP + alasan_status menyebut isian", r["status"] == "KURANG LENGKAP" and "[isi" in r["alasan_status"], (r["status"], r.get("alasan_status")))
+    p = jalan(["--daftar"], 0)
+    cek("B-4: --daftar menjelaskan urutan status", "diperiksa berurutan" in p.stdout and "mengalahkan BELUM SIAP" in p.stdout)
+    # B-5: satu temuan per kalimat (tingkat tertinggi, alasan digabung)
+    for k in ("By continuing to browse, you are deemed to have consented to this policy.",
+              "Dengan menggunakan situs ini, Anda dianggap telah menyetujui seluruh isi kebijakan ini."):
+        rr = risiko(k)
+        cek("B-5 satu temuan TINGGI: " + k, [x["tingkat"] for x in rr] == ["TINGGI"], rr)
+    rr = risiko("Kami dapat menjual data Anda dan menyimpannya selamanya.")
+    cek("B-5: dua masalah di satu kalimat digabung", len(rr) == 1 and "Juga:" in rr[0]["alasan"] and rr[0]["cocok_lain"], rr)
+    # B-6: negasi ganda & persetujuan diam
+    for k in ("Bukan tidak mungkin kami menjual data Anda kepada mitra.",
+              "Tidak menutup kemungkinan kami akan menjual data pelanggan.",
+              "Diamnya Anda setelah menerima pesan ini kami anggap sebagai persetujuan."):
+        cek("B-6 terdeteksi: " + k, any(x["tingkat"] == "TINGGI" for x in risiko(k)), risiko(k))
+    cek("B-6: 'tidak jarang' tidak membalik negasi lain", risiko("Kami tidak menjual data Anda.") == [])
+    # B-7: usia 13 (COPPA) ditandai, anak di bawah 18 tidak
+    for k in ("Our Service does not address anyone under the age of 13.", "Layanan ini tidak untuk anak di bawah 13 tahun."):
+        rr = risiko(k)
+        cek("B-7 ditandai: " + k, len(rr) == 1 and "18 tahun" in rr[0]["alasan"] and "35/2014" in rr[0]["alasan"], rr)
+    cek("B-7: 'di bawah 18 tahun' tidak ditandai", risiko("Anak di bawah 18 tahun hanya dapat mendaftar dengan persetujuan orang tua atau wali.") == [])
+    # B-8: kunci JSON seragam untuk semua unsur
+    r = json_dari(os.path.join(DATA, "penguji-d3-template-luar.md"))
+    kunci = [tuple(sorted(u.keys())) for u in r["unsur"]]
+    cek("B-8: semua unsur punya kunci sama (termasuk bukti)", len(set(kunci)) == 1 and "bukti" in kunci[0], set(kunci))
+    cek("B-8: bukti hak_subjek terisi", unsur(r, "hak_subjek")["bukti"] != "")
+    cek("B-8: risiko punya kunci sama", len(set(tuple(sorted(x.keys())) for x in r["risiko"])) == 1)
+
+    # Akurasi set penguji (examples/06) — semua harus benar
+    d = _baca_json("set-penguji-v101.json")
+    bf, fp, fn = _akurasi_frasa(d["frasa"], lambda k: k["label"] == "B")
+    for x in fp + fn:
+        print("   set penguji salah:", x)
+    cek("set penguji: frasa 48/48", bf == len(d["frasa"]) == 48, "{}/{}".format(bf, len(d["frasa"])))
+    bu, salah = _akurasi_unsur(d["unsur"])
+    for x in salah:
+        print("   set penguji unsur salah:", x)
+    cek("set penguji: unsur 22/22", bu == len(d["unsur"]) == 22, "{}/{}".format(bu, len(d["unsur"])))
+    bd = nd = 0
+    for nama, harap in d["dokumen"].items():
+        r = ck.periksa(open(os.path.join(DATA, nama), encoding="utf-8").read())
+        cek("dokumen {}: status {}".format(nama, harap["status"]), r["status"] == harap["status"], r["status"])
+        for uid, st in harap["unsur"].items():
+            dapat = (unsur(r, uid) or {}).get("status")
+            ok = (dapat != "ADA" and dapat is not None) if st == "BUKAN ADA" else dapat == st
+            nd += 1
+            bd += ok
+            cek("dokumen {}: unsur {} = {}".format(nama, uid, st), ok, dapat)
+        teks = " || ".join(x["cocok"] + " " + " ".join(x["cocok_lain"]) for x in r["risiko"]).lower()
+        cek("dokumen {}: jumlah risiko".format(nama), (len(r["risiko"]) == 0) == (not harap["risiko"]), r["risiko"])
+        for frasa in harap["risiko"]:
+            cek("dokumen {}: risiko '{}'".format(nama, frasa), frasa in teks, teks)
+    cek("set penguji: unsur dokumen 43/43", bd == nd == 43, "{}/{}".format(bd, nd))
+
+    # Akurasi set kontrol v1.0.2 (kalimat perevisi sendiri, anti-overfitting)
+    k = _baca_json("set-kontrol-v102.json")
+    b1, fp1, fn1 = _akurasi_frasa(k["kontrol_1_frasa"], lambda x: x["berisiko"])
+    b2, fp2, fn2 = _akurasi_frasa(k["kontrol_2_frasa"], lambda x: x["berisiko"])
+    bu1, sal1 = _akurasi_unsur(k["kontrol_1_unsur"])
+    for x in fp1 + fn1 + fp2 + fn2 + sal1:
+        print("   set kontrol salah:", x)
+    n1, n2, nu1 = len(k["kontrol_1_frasa"]), len(k["kontrol_2_frasa"]), len(k["kontrol_1_unsur"])
+    cek("set kontrol 1: frasa semua benar", b1 == n1, "{}/{}".format(b1, n1))
+    cek("set kontrol 2: frasa semua benar", b2 == n2, "{}/{}".format(b2, n2))
+    cek("set kontrol 1: unsur semua benar", bu1 == nu1, "{}/{}".format(bu1, nu1))
+    cek("set kontrol: tanpa salah-positif", not (fp1 or fp2))
+    print("TABEL AKURASI v1.0.2 (set baru):")
+    print("  | Set | Frasa benar | Salah-positif | Salah-negatif | Unsur benar |")
+    print("  | penguji v1.0.1 (06) | {}/{} | {} | {} | {}/{} kalimat + {}/{} unsur dokumen |".format(bf, len(d["frasa"]), len(fp), len(fn), bu, len(d["unsur"]), bd, nd))
+    print("  | kontrol v1.0.2 #1 | {}/{} | {} | {} | {}/{} |".format(b1, n1, len(fp1), len(fn1), bu1, nu1))
+    print("  | kontrol v1.0.2 #2 | {}/{} | {} | {} | - |".format(b2, n2, len(fp2), len(fn2)))
 
 
 def main():

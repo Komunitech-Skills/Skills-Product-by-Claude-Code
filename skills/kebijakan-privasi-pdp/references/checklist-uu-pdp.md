@@ -22,7 +22,9 @@ Dipakai untuk mode 3 (memeriksa kebijakan privasi yang sudah ada), bersama atau 
 | B1 | (bila ada data anak) persetujuan orang tua/wali | 1 | Ps. 25 | TINGGI |
 | B2 | (bila ada data spesifik) perlakuan khusus & persetujuan eksplisit | 1 | Ps. 4 ayat (2), 20, 34 | TINGGI |
 
-Skor = jumlah bobot terpenuhi ÷ bobot berlaku × 100. Status: ≥ 85 dan tanpa frasa TINGGI = **CUKUP LENGKAP**; 60–84 = **PERLU PERBAIKAN**; < 60 = **KURANG LENGKAP**. Frasa berisiko TINGGI selalu membuat status paling baik "PERLU PERBAIKAN". Selama masih ada isian `[isi: ...]`/`[fill: ...]`/`{JIKA ...}` (dan tidak ada frasa TINGGI), status = **BELUM SIAP**, skor dibatasi maks. 84, dan unsur yang buktinya hanya ada di kalimat berisian kosong (atau hanya di judul) dihitung setengah (**BELUM DIISI**). Script juga menampilkan *skor struktur* (skor bila semua isian dilengkapi).
+Skor = jumlah bobot terpenuhi ÷ bobot berlaku × 100. Status diperiksa **berurutan** (yang pertama cocok dipakai; sama dengan `--daftar` dan kunci JSON `alasan_status`): (1) skor < 60 = **KURANG LENGKAP** — ini mengalahkan BELUM SIAP, kecuali dokumen berisian kosong yang skor strukturnya ≥ 60 dan tanpa frasa TINGGI; (2) ada frasa TINGGI = **PERLU PERBAIKAN**; (3) masih ada isian `[isi: ...]`/`[fill: ...]`/`{JIKA ...}` = **BELUM SIAP**; (4) skor 60–84 = **PERLU PERBAIKAN**; (5) ≥ 85 = **CUKUP LENGKAP**. Selama ada isian, skor dibatasi maks. 84, dan unsur yang buktinya hanya ada di kalimat berisian kosong (atau hanya di judul) dihitung setengah (**BELUM DIISI**). Script juga menampilkan *skor struktur* (skor bila semua isian dilengkapi).
+
+**Satu temuan per kalimat (v1.0.2):** bila beberapa pola cocok di satu kalimat, script menampilkan satu temuan dengan tingkat tertinggi; alasan lain digabung ("Juga: ...") dan kecocokan lain ada di `cocok_lain`. Klausa setelah "tetapi/namun/akan tetapi/kecuali" dinilai tersendiri.
 
 **Polaritas (v1.0.1):** unsur hanya terpenuhi oleh kalimat positif ("kami **tidak akan** memberi tahu bila bocor" ≠ unsur kebocoran; "tidak akan mengubah … **tanpa** pemberitahuan" = positif). Pengecualian: pernyataan "data tidak dikirim ke luar negeri" tetap memenuhi unsur transfer LN (informasi yang sah). Frasa berisiko yang disangkal ("Data Anda tidak akan dijual") tidak ditandai.
 
@@ -33,6 +35,10 @@ Skor = jumlah bobot terpenuhi ÷ bobot berlaku × 100. Status: ≥ 85 dan tanpa 
 | "Kami dibebaskan dari tanggung jawab …" / "tidak bertanggung jawab jika data bocor" | TINGGI | Ps. 35, 46, 47 | Komitmen keamanan + pemberitahuan |
 | "Data dapat dialihkan/ditukar dengan imbalan", "memperdagangkan/memonetisasi data", "may sell or rent" | TINGGI | Ps. 65, 67 | "Kami tidak menjual data pribadi Anda" |
 | "Dibagikan ke pihak ketiga untuk pemasaran mereka" tanpa persetujuan | SEDANG | Ps. 16, 20, 22 | Persetujuan aktif per tujuan |
+| "Kami tidak menjual data, **tetapi** dapat membagikannya ke mitra iklan" · "data dapat kami berikan/serahkan/teruskan kepada pengiklan/agensi iklan/sponsor untuk promosi" · "tidak membagikan data **kecuali** kepada mitra pemasaran" · EN "share … with advertisers/ad networks", "disclose … for advertising" | SEDANG | Ps. 16, 20, 22 — klausa "tidak menjual" di depan tidak menghapus risiko klausa kedua | Hapus, atau hanya dengan persetujuan aktif terpisah + sebut penerimanya |
+| "Diam/tidak membalas kami anggap setuju" · "silence is deemed consent" | TINGGI | Ps. 20, 22 | Persetujuan aktif |
+| "Untuk tujuan apa pun" · "for any purpose" | SEDANG | Ps. 16 ayat (2) huruf b (tujuan spesifik) | Sebut tujuan spesifik |
+| "under the age of 13" / "di bawah 13 tahun" (batas usia ala COPPA AS) | SEDANG | Ps. 25 + UU 35/2014 Ps. 1 angka 1 (anak = belum 18 tahun) | "di bawah 18 tahun … dengan persetujuan orang tua/wali" |
 | "Kami tidak bertanggung jawab atas kebocoran data" | TINGGI | Kewajiban pengendali tidak bisa dilepas (Ps. 35, 46, 47) | Komitmen keamanan + pemberitahuan ≤ 3×24 jam |
 | "Data dapat dijual/dibagikan kepada mitra" | TINGGI | Ps. 65, 67; tak ada dasar sah | "Kami tidak menjual data pribadi Anda" + daftar penerima spesifik |
 | "Persetujuan dianggap diberikan" / "Anda dianggap setuju" | TINGGI | Persetujuan harus eksplisit & terekam (Ps. 20, 22) | Centang aktif / balas SETUJU |
@@ -48,5 +54,6 @@ Skor = jumlah bobot terpenuhi ÷ bobot berlaku × 100. Status: ≥ 85 dan tanpa 
 - Isi sesuai praktik nyata? (mis. mengaku "tidak ada transfer LN" padahal pakai Google Drive/WA).
 - Kebijakan hasil salinan dari usaha lain/luar negeri (menyebut GDPR, CCPA, "California", nama perusahaan lain, mata uang asing) → **SEDANG** (sama dengan script): tulis ulang sesuai UU PDP. Naikkan ke TINGGI hanya bila salinan itu memuat praktik terlarang (mis. menjual data) atau tidak sesuai praktik nyata.
 - Bahasa: ada versi Bahasa Indonesia? (UU 24/2009 Ps. 31 untuk dokumen perjanjian; praktik baik untuk kebijakan).
+- Batas usia anak dari template luar negeri (13 tahun, COPPA) → SEDANG (juga ditandai script): di Indonesia pakai **di bawah 18 tahun** + persetujuan orang tua/wali (lihat `dasar-hukum.md`, baris Data anak).
 - Klaim keamanan berlebihan ("100% aman", "tidak mungkin bocor") → SEDANG: ganti dengan langkah nyata. Kalimat jujur "tidak ada sistem yang 100% aman" **bukan** masalah.
 - Data spesifik dikumpulkan lewat Google Form/WA tanpa perlindungan tambahan → TINGGI.

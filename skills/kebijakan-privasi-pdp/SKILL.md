@@ -60,7 +60,7 @@ Jika pengguna ingin cepat: katakan "cukup jawab no. 1–3 dulu", lalu buat draf 
    ```bash
    python3 <folder-skill-ini>/scripts/cek_kebijakan.py draf-kebijakan.md
    ```
-   Target: skor struktur 100, tanpa frasa berisiko. Selama masih ada `[isi: ...]`, status = `BELUM SIAP` dan skor dibatasi maks. 84 (unsur yang isinya masih kosong ditandai `BELUM DIISI`); sebutkan daftar isian ke pengguna. Skor = **kelengkapan struktur**, bukan jaminan isi benar.
+   Target: skor struktur 100, tanpa frasa berisiko. Selama masih ada `[isi: ...]`, status = `BELUM SIAP` (kecuali strukturnya pun < 60 → `KURANG LENGKAP`; urutan status: `--daftar` / kunci JSON `alasan_status`) dan skor dibatasi maks. 84 (unsur yang isinya masih kosong ditandai `BELUM DIISI`); sebutkan daftar isian ke pengguna. Skor = **kelengkapan struktur**, bukan jaminan isi benar.
 6. **Sajikan** sesuai format output, lalu tawarkan: pemberitahuan singkat (mode 2) untuk formulir/WA, dan template tanggapan hak subjek (mode 4).
 
 ### Mode 2 — PEMBERITAHUAN & PERSETUJUAN
@@ -73,7 +73,7 @@ Pakai `templates/pemberitahuan-persetujuan.md` (A website, B pesan salam WA, C G
 
 ### Mode 3 — CEK kebijakan yang sudah ada
 1. Simpan teks pengguna ke file lalu jalankan `python3 <folder-skill-ini>/scripts/cek_kebijakan.py file.md` (atau `--format json`).
-2. **Baca juga isinya secara manual** dengan `references/checklist-uu-pdp.md` bagian C: kecocokan dengan praktik nyata, salinan GDPR/luar negeri, klaim "100% aman", data spesifik lewat Google Form/WA.
+2. **Baca juga isinya secara manual** dengan `references/checklist-uu-pdp.md` bagian C: kecocokan dengan praktik nyata, salinan GDPR/luar negeri, batas usia anak 13 tahun (COPPA; di Indonesia < 18 tahun), klaim "100% aman", data spesifik lewat Google Form/WA. Script mendeteksi pola umum saja; kalimat berbagi data yang tidak lazim tetap harus dibaca manual.
 3. Laporkan: skor + status, tabel unsur (ADA/SEBAGIAN/TIDAK ADA), frasa berisiko dengan tingkat (TINGGI/SEDANG) + kutipan + saran pengganti, lalu **usulan teks perbaikan siap tempel** untuk tiap kekurangan.
 4. Tawarkan versi lengkap yang sudah diperbaiki (mode 1 memakai isi lama).
 

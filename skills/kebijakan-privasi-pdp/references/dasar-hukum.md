@@ -22,7 +22,7 @@ Sumber resmi: https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022 · 
 | Informasi wajib | Ps. 21 ayat (1)–(2) | Legalitas, tujuan, jenis & relevansi data, jangka retensi, rincian informasi, jangka waktu pemrosesan, hak subjek data; beri tahu **sebelum** ada perubahan | ✅ |
 | Bentuk persetujuan | Ps. 22 | Tertulis atau terekam, elektronik/nonelektronik | ✅ (Hukumonline) |
 | Bukti persetujuan | Ps. 24 | Pengendali wajib dapat menunjukkan bukti persetujuan | ⚠️ |
-| Data anak | Ps. 25 | Diselenggarakan khusus; wajib persetujuan orang tua dan/atau wali | ✅ |
+| Data anak | Ps. 25 | Diselenggarakan khusus; wajib persetujuan orang tua dan/atau wali "sesuai dengan ketentuan peraturan perundang-undangan". UU PDP tidak memuat batas usia sendiri (menurut ringkasan yang ditemukan; naskah penjelasan belum dibaca langsung) → acuan umum **UU 35/2014 (Perubahan UU 23/2002 Perlindungan Anak) Ps. 1 angka 1: anak = belum berusia 18 tahun**. Batas 13 tahun (COPPA, AS) **tidak** berlaku di Indonesia. Aturan usia lain (mis. dewasa 21 th di KUHPerdata) & rincian PP 33/2026 soal anak = PERLU REVIEW untuk layanan yang menyasar anak | ✅ Ps. 25 / ✅ UU 35/2014 Ps. 1 angka 1 (dicek 25 Sep 2026) / ⚠️ penjelasan UU PDP |
 | Perbaikan data | Ps. 30 | Paling lambat **3×24 jam** sejak permintaan diterima | ✅ |
 | Akses | Ps. 32 | Akses + rekam jejak pemrosesan, paling lambat **3×24 jam** | ✅ |
 | Penilaian dampak (DPIA) | Ps. 34 | Wajib bila pemrosesan berisiko tinggi (mis. data spesifik skala besar) | ⚠️ |
@@ -69,6 +69,7 @@ Sumber (dicek via pencarian 2026-09-25):
 - Bisnis.com (29 Agt 2026), persetujuan konsumen lebih ketat: https://teknologi.bisnis.com/read/20260829/84/1999753/aturan-turunan-uu-pdp-persetujuan-data-konsumen-lebih-ketat
 - Meridian Hukum: https://meridianhukum.com/peraturan/pp-no-33-tahun-2026
 - Justisio (LN No. 88, 12 bab — sekunder): https://justisio.com/regulation/indonesia/dbwgcly3epltypka7sebq61yx · depositobpr.id: https://depositobpr.id/blog/pp-33-2026-aturan-turunan-uu-pelindungan-data-pribadi
+- UU 35/2014 Ps. 1 angka 1 (definisi anak): https://bphn.go.id/data/documents/14uu035.pdf · Kompas (Ps. 25 UU PDP): https://nasional.kompas.com/read/2022/09/20/13013871/uu-pdp-pemrosesan-data-anak-dan-penyandang-disabilitas-diatur-khusus (dicek 25 Sep 2026)
 - Katadata (data anak): https://katadata.co.id/finansial/makro/6a9979b7c5745/pp-pelindungan-data-pribadi-berlaku-januari-2027-ini-aturan-baru-data-anak
 - Catatan riset internal sebelumnya: `research/sources/verifikasi-regulasi-2026-09-23.md` #31
 

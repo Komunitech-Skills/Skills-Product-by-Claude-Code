@@ -1,0 +1,427 @@
+{
+ "_keterangan": "Set uji penguji independen kedua (examples/06-uji-ulang-v1.0.1.md, 2026-09-25), disalin apa adanya: 48 frasa, 22 kalimat unsur, 3 dokumen utuh (tests/data/penguji-d*.md). Label frasa: B = berisiko (harus ditandai), P = patuh, N = netral (keduanya tidak boleh ditandai). Label dokumen = label penguji; 'BUKAN ADA' = boleh TIDAK ADA atau BELUM DIISI (penguji menulis BELUM DIISI untuk bagian yang hanya berisi [isi: ...]).",
+ "frasa": [
+  {
+   "id": "f01",
+   "label": "B",
+   "kalimat": "Kami tidak menjual data, tetapi dapat membagikannya ke mitra iklan."
+  },
+  {
+   "id": "f02",
+   "label": "B",
+   "kalimat": "Data Anda dapat dialihkan kepada pihak lain dengan imbalan."
+  },
+  {
+   "id": "f03",
+   "label": "B",
+   "kalimat": "Data pelanggan dapat dimonetisasi untuk mendukung operasional kami."
+  },
+  {
+   "id": "f04",
+   "label": "B",
+   "kalimat": "Kami bekerja sama dengan pihak ketiga untuk tujuan pemasaran dan dapat memberikan data Anda kepada mereka."
+  },
+  {
+   "id": "f05",
+   "label": "B",
+   "kalimat": "Dengan menggunakan situs ini, Anda dianggap telah menyetujui seluruh isi kebijakan ini."
+  },
+  {
+   "id": "f06",
+   "label": "B",
+   "kalimat": "Data Anda akan kami simpan tanpa batas waktu."
+  },
+  {
+   "id": "f07",
+   "label": "B",
+   "kalimat": "Kami berhak mengubah kebijakan ini kapan saja tanpa pemberitahuan."
+  },
+  {
+   "id": "f08",
+   "label": "B",
+   "kalimat": "Kami tidak bertanggung jawab atas kebocoran data dalam bentuk apa pun."
+  },
+  {
+   "id": "f09",
+   "label": "B",
+   "kalimat": "Sistem kami dijamin 100% aman dari peretasan."
+  },
+  {
+   "id": "f10",
+   "label": "B",
+   "kalimat": "Database pelanggan kami dapat diperjualbelikan kepada perusahaan rekanan."
+  },
+  {
+   "id": "f11",
+   "label": "B",
+   "kalimat": "Kami boleh menyewakan daftar kontak pelanggan kepada pengiklan."
+  },
+  {
+   "id": "f12",
+   "label": "B",
+   "kalimat": "Bukan tidak mungkin kami menjual data Anda kepada mitra."
+  },
+  {
+   "id": "f13",
+   "label": "B",
+   "kalimat": "Informasi pribadi Anda bisa kami bagikan ke pihak ketiga untuk keperluan iklan tanpa persetujuan Anda."
+  },
+  {
+   "id": "f14",
+   "label": "B",
+   "kalimat": "Diamnya Anda setelah menerima pesan ini kami anggap sebagai persetujuan."
+  },
+  {
+   "id": "f15",
+   "label": "B",
+   "kalimat": "Data pribadi Anda disimpan selamanya di server kami."
+  },
+  {
+   "id": "f16",
+   "label": "B",
+   "kalimat": "We may sell, rent or lease your personal information to third parties."
+  },
+  {
+   "id": "f17",
+   "label": "B",
+   "kalimat": "We do not sell your data; however, we may share it with advertising partners for marketing purposes."
+  },
+  {
+   "id": "f18",
+   "label": "B",
+   "kalimat": "Your personal data may be transferred to third parties in exchange for compensation."
+  },
+  {
+   "id": "f19",
+   "label": "B",
+   "kalimat": "By continuing to browse, you are deemed to have consented to this policy."
+  },
+  {
+   "id": "f20",
+   "label": "B",
+   "kalimat": "We reserve the right to modify this policy at any time without notice."
+  },
+  {
+   "id": "f21",
+   "label": "B",
+   "kalimat": "We are not liable for any unauthorized access to your data."
+  },
+  {
+   "id": "f22",
+   "label": "B",
+   "kalimat": "We may monetize your data through our partners."
+  },
+  {
+   "id": "f23",
+   "label": "B",
+   "kalimat": "This policy is governed by the GDPR and California Consumer Privacy Act (CCPA)."
+  },
+  {
+   "id": "f24",
+   "label": "P",
+   "kalimat": "Kami tidak menjual, menyewakan, atau memperdagangkan data pribadi Anda."
+  },
+  {
+   "id": "f25",
+   "label": "P",
+   "kalimat": "Data Anda tidak akan pernah dijual kepada siapa pun."
+  },
+  {
+   "id": "f26",
+   "label": "P",
+   "kalimat": "Tidak ada data pelanggan yang kami jual kepada pihak ketiga."
+  },
+  {
+   "id": "f27",
+   "label": "P",
+   "kalimat": "Kami tidak membagikan data Anda kepada mitra iklan tanpa persetujuan eksplisit Anda."
+  },
+  {
+   "id": "f28",
+   "label": "P",
+   "kalimat": "Persetujuan tidak pernah kami anggap diberikan hanya karena Anda mengisi formulir."
+  },
+  {
+   "id": "f29",
+   "label": "P",
+   "kalimat": "Kami tidak akan mengubah kebijakan ini tanpa memberi tahu Anda terlebih dahulu melalui email."
+  },
+  {
+   "id": "f30",
+   "label": "P",
+   "kalimat": "Tidak ada sistem yang 100% aman, tetapi kami menerapkan enkripsi dan pembatasan akses."
+  },
+  {
+   "id": "f31",
+   "label": "P",
+   "kalimat": "Data tidak kami simpan tanpa batas waktu; data dihapus setelah 2 tahun."
+  },
+  {
+   "id": "f32",
+   "label": "P",
+   "kalimat": "Kami tidak pernah tidak meminta persetujuan Anda sebelum mengirim promo."
+  },
+  {
+   "id": "f33",
+   "label": "P",
+   "kalimat": "Bila terjadi kebocoran, kami tidak akan menyembunyikannya dan akan memberi tahu Anda paling lambat 3x24 jam."
+  },
+  {
+   "id": "f34",
+   "label": "P",
+   "kalimat": "Data Anda dapat diakses, diperbaiki, atau dihapus atas permintaan Anda."
+  },
+  {
+   "id": "f35",
+   "label": "P",
+   "kalimat": "Data Anda dapat dibagikan kepada kurir hanya untuk mengirim pesanan."
+  },
+  {
+   "id": "f36",
+   "label": "P",
+   "kalimat": "We never sell or rent your personal data."
+  },
+  {
+   "id": "f37",
+   "label": "P",
+   "kalimat": "Your information will not be sold, traded or rented to anyone."
+  },
+  {
+   "id": "f38",
+   "label": "P",
+   "kalimat": "We will not share your data with advertisers unless you opt in."
+  },
+  {
+   "id": "f39",
+   "label": "P",
+   "kalimat": "No method of transmission over the internet is 100% secure."
+  },
+  {
+   "id": "f40",
+   "label": "P",
+   "kalimat": "We will notify you before any material change to this policy takes effect."
+  },
+  {
+   "id": "f41",
+   "label": "N",
+   "kalimat": "Toko kami menjual kue kering dan roti."
+  },
+  {
+   "id": "f42",
+   "label": "N",
+   "kalimat": "Kami bekerja sama dengan JNE dan J&T untuk pengiriman."
+  },
+  {
+   "id": "f43",
+   "label": "N",
+   "kalimat": "We sell handmade batik products online."
+  },
+  {
+   "id": "f44",
+   "label": "N",
+   "kalimat": "Pembayaran diproses oleh payment gateway berlisensi Bank Indonesia."
+  },
+  {
+   "id": "f45",
+   "label": "N",
+   "kalimat": "Harga dapat berubah sewaktu-waktu mengikuti harga bahan baku."
+  },
+  {
+   "id": "f46",
+   "label": "N",
+   "kalimat": "Jam operasional toko dapat berubah tanpa pemberitahuan pada hari libur nasional."
+  },
+  {
+   "id": "f47",
+   "label": "N",
+   "kalimat": "Paket data internet tidak termasuk dalam harga layanan."
+  },
+  {
+   "id": "f48",
+   "label": "N",
+   "kalimat": "Pelanggan dapat menjual kembali produk kami sebagai reseller."
+  }
+ ],
+ "unsur": [
+  {
+   "unsur": "identitas",
+   "ada": true,
+   "kalimat": "Kebijakan ini dibuat oleh CV Sumber Rejeki, pemilik toko online Batik Laras."
+  },
+  {
+   "unsur": "identitas",
+   "ada": true,
+   "kalimat": "Pengelola data pribadi Anda adalah Bengkel Motor Jaya Abadi milik Bapak Hendra."
+  },
+  {
+   "unsur": "kontak",
+   "ada": true,
+   "kalimat": "Pertanyaan soal data pribadi dapat dikirim ke privasi@batiklaras.id atau WA 0812-3456-7890."
+  },
+  {
+   "unsur": "jenis_data",
+   "ada": true,
+   "kalimat": "Kami mencatat nama, nomor WhatsApp, alamat pengiriman, dan riwayat pembelian Anda."
+  },
+  {
+   "unsur": "tujuan",
+   "ada": true,
+   "kalimat": "Data tersebut kami gunakan untuk memproses pesanan dan mengirim barang."
+  },
+  {
+   "unsur": "dasar_pemrosesan",
+   "ada": true,
+   "kalimat": "Pengiriman pesanan kami lakukan berdasarkan pelaksanaan perjanjian jual beli dengan Anda."
+  },
+  {
+   "unsur": "penerima",
+   "ada": true,
+   "kalimat": "Nama dan alamat Anda kami serahkan kepada jasa ekspedisi SiCepat untuk pengiriman."
+  },
+  {
+   "unsur": "transfer_ln",
+   "ada": true,
+   "kalimat": "Data cadangan kami disimpan di server Google Cloud yang berlokasi di Singapura."
+  },
+  {
+   "unsur": "transfer_ln",
+   "ada": true,
+   "kalimat": "Some of our providers store data in the United States."
+  },
+  {
+   "unsur": "transfer_ln",
+   "ada": false,
+   "kalimat": "Seluruh data kami simpan di server yang berlokasi di Jakarta, Indonesia."
+  },
+  {
+   "unsur": "masa_simpan",
+   "ada": true,
+   "kalimat": "Riwayat chat kami hapus setelah 12 bulan sejak percakapan terakhir."
+  },
+  {
+   "unsur": "masa_simpan",
+   "ada": true,
+   "kalimat": "We keep order records for 10 years to meet tax obligations."
+  },
+  {
+   "unsur": "hak_subjek",
+   "ada": true,
+   "kalimat": "Anda berhak meminta salinan, memperbaiki, menghapus data, serta menarik kembali persetujuan kapan saja."
+  },
+  {
+   "unsur": "cara_ajukan",
+   "ada": true,
+   "kalimat": "Ajukan permintaan melalui email di atas; kami menanggapi paling lambat 3x24 jam."
+  },
+  {
+   "unsur": "cara_ajukan",
+   "ada": false,
+   "kalimat": "Hubungi kami di 0812-3456-7890 untuk pemesanan kue."
+  },
+  {
+   "unsur": "keamanan",
+   "ada": true,
+   "kalimat": "Akses ke data dibatasi hanya untuk admin, dan akun kami dilindungi verifikasi dua langkah."
+  },
+  {
+   "unsur": "kebocoran",
+   "ada": true,
+   "kalimat": "Jika terjadi kebocoran data, kami akan memberi tahu Anda secara tertulis paling lambat 3x24 jam."
+  },
+  {
+   "unsur": "kebocoran",
+   "ada": false,
+   "kalimat": "Kami tidak berkewajiban memberi tahu Anda apabila terjadi kebocoran data."
+  },
+  {
+   "unsur": "kebocoran",
+   "ada": false,
+   "kalimat": "We will not notify you in the event of a data breach."
+  },
+  {
+   "unsur": "tanggal",
+   "ada": true,
+   "kalimat": "Terakhir diperbarui: 1 September 2026."
+  },
+  {
+   "unsur": "perubahan",
+   "ada": true,
+   "kalimat": "Bila kebijakan ini berubah, kami akan mengumumkannya di website dan melalui WhatsApp."
+  },
+  {
+   "unsur": "perubahan",
+   "ada": false,
+   "kalimat": "Perubahan kebijakan ini tidak akan diberitahukan kepada Anda."
+  }
+ ],
+ "dokumen": {
+  "penguji-d1-lengkap-patuh.md": {
+   "status": "CUKUP LENGKAP",
+   "risiko": [],
+   "unsur": {
+    "identitas": "ADA",
+    "kontak": "ADA",
+    "jenis_data": "ADA",
+    "tujuan": "ADA",
+    "dasar_pemrosesan": "ADA",
+    "penerima": "ADA",
+    "transfer_ln": "ADA",
+    "masa_simpan": "ADA",
+    "hak_subjek": "ADA",
+    "cara_ajukan": "ADA",
+    "keamanan": "ADA",
+    "kebocoran": "ADA",
+    "tanggal": "ADA",
+    "perubahan": "ADA"
+   }
+  },
+  "penguji-d2-setengah-jadi.md": {
+   "status": "KURANG LENGKAP",
+   "risiko": [],
+   "unsur": {
+    "identitas": "BUKAN ADA",
+    "kontak": "BUKAN ADA",
+    "jenis_data": "ADA",
+    "tujuan": "ADA",
+    "dasar_pemrosesan": "TIDAK ADA",
+    "penerima": "BELUM DIISI",
+    "transfer_ln": "TIDAK ADA",
+    "masa_simpan": "BELUM DIISI",
+    "hak_subjek": "SEBAGIAN",
+    "cara_ajukan": "TIDAK ADA",
+    "keamanan": "TIDAK ADA",
+    "kebocoran": "TIDAK ADA",
+    "tanggal": "BELUM DIISI",
+    "perubahan": "TIDAK ADA"
+   }
+  },
+  "penguji-d3-template-luar.md": {
+   "status": "KURANG LENGKAP",
+   "risiko": [
+    "by using",
+    "sell or rent aggregated and personal information",
+    "advertisers",
+    "gdpr",
+    "ccpa",
+    "age of 13"
+   ],
+   "unsur": {
+    "identitas": "TIDAK ADA",
+    "kontak": "ADA",
+    "jenis_data": "ADA",
+    "tujuan": "ADA",
+    "dasar_pemrosesan": "TIDAK ADA",
+    "penerima": "ADA",
+    "transfer_ln": "TIDAK ADA",
+    "masa_simpan": "TIDAK ADA",
+    "hak_subjek": "SEBAGIAN",
+    "cara_ajukan": "TIDAK ADA",
+    "keamanan": "TIDAK ADA",
+    "kebocoran": "TIDAK ADA",
+    "tanggal": "ADA",
+    "perubahan": "TIDAK ADA",
+    "data_anak": "TIDAK ADA"
+   }
+  }
+ }
+}
