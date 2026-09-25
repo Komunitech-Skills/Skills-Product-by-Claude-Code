@@ -497,3 +497,50 @@ Diagnosis W8 (varian di scratchpad): pivot ringkas yang sama **tanpa kelompok 1-
 - (+) Tidak ada positif palsu pada kebetulan x+y=z di 2 kolom (W7, W7b dengan dua kebetulan beruntun): data rapi tetap a.
 - (+) Subtotal terisi penuh di 4 kolom & pivot tabular/ringkas tanpa kata kunci → b dengan alternatif benar.
 - (−) Satu (c) baru: pivot ringkas dengan kelompok beranak tunggal (B29) — pola umum; kemungkinan besar tertangkap agent lewat Total Keseluruhan yang dikeluarkan (½ dari hasil), tetapi script diam. Karena itu belum 9.
+
+## Uji ulang v1.0.9 (penguji independen ke-10, cek singkat, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad (`uji10-ax/`). Versi script `1.0.9`. Tes bawaan: **127 tes OK** (±55 dtk). Platform: `claude-code (simulasi agent)`.
+Fixture baru: `buat_fixture_uji_v109.py` (deterministik; `kunci-v109.json` dihitung dari data sumber, **tanpa membaca kode skill**).
+
+### 1. Regresi semua fixture (v1.0.0–v1.0.8, 125 file)
+`ringkas --json` dijalankan dengan script v1.0.8 (dari git `6fbe4c9`) **dan** v1.0.9, lalu dibandingkan otomatis (jumlah baris, tabel, kandidat, total alternatif, baris dikeluarkan): **122/125 identik**; 3 beda semuanya perbaikan yang dituju:
+| File | v1.0.8 | v1.0.9 | Keterangan |
+|---|---|---|---|
+| W8 `pivot-ringkas-id.xlsx` | c | **b** | TEGAS baris 2,5,7 (Bogor 1 anak ikut terdeteksi); TANPA = 6.140.000 / qty 51 = kunci; pengaman silang "cocok_tanpa" (B29 ✔) |
+| W5b `header-tahun-numerik.xlsx` | a (kosmetik) | a | judul "2023/2024/2025", bukan "2.023" (B30 ✔) |
+| W2 `tanpa-header-no-urut.csv` | a (kosmetik) | a | Kolom1 nomor urut tidak lagi dijumlah (B32 ✔) |
+
+**Tidak ada regresi (c)** di fixture mana pun. Pengaman silang pada fixture lama: 14 file "COCOK" (F4, N1, P2, R11b, S1, S1b/c, S2b, S10, S11, V2, V12 …) tanpa peringatan palsu; file berkandidat (V1, V3, V5, V6, W6, W9, S6, S12) → "= total TANPA kandidat" (menguatkan alternatif). Fixture 01 (4 sel "Rp …" teks, TOTAL = SUM Excel 66.633.000) → PERINGATAN (bukan TEGAS, karena Qty cocok); hitungan 67.313.000 = kunci.
+
+### 2. File baru → hasil (a = benar, b = TEGAS + alternatif benar / gagal-jelas, c = salah diam-diam, d = ditolak padahal wajar)
+| File | Pola | Kunci | Hasil script | Nilai | Catatan |
+|---|---|---|---|---|---|
+| X1 `gt-benar-rapi.csv` | rapi + "Grand Total" benar (Qty & Total) | 8 baris, 20 / 2.055.000 | GT dikeluarkan; "COCOK … Keyakinan hasil lebih tinggi" | a | — |
+| X2 `gt-salah-angka-teks.xlsx` | 2 sel "Rp 430.000"/"Rp 315.000" teks; TOTAL `=SUM` tersimpan 7.355.000 | 8.100.000 (file 7.355.000) | hitungan 8.100.000 ✔ + PERINGATAN TEGAS silang; **"Total alternatif = 7.355.000"** | a (angka) | pesan tidak menyimpulkan siapa benar (B33) |
+| X3 `subtotal-terpisah-gt.csv` | subtotal per cabang (label netral "(semua produk)") ditaruh di bawah data, lalu Grand Total | 7 baris, 779.000 | tanpa kandidat lain; TEGAS silang "tepat 2×", alternatif 779.000 = kunci; ikut muncul di `pivot` | b | — |
+| X4 `rekap-ganda-3x.xlsx` | rekap per cabang + per produk di bawah, "Total Keseluruhan" | 779.000 | TEGAS "tepat 3×", alternatif = kunci | b | — |
+| X5 `tanpa-gt.csv` (`;`) | rapi tanpa baris total | 6.185.000 | ✔; tidak ada pesan silang | a | — |
+| X6 `gt-kolom-c-en.xlsx` | EN; "Grand Total" di kolom C (A,B kosong); Units & Revenue | 43 / 14.480.000 | GT dikeluarkan; COCOK 2 kolom | a | — |
+| X7 `gt-satu-kolom-salah.csv` | 3 kolom angka; Total file salah ketik di Diskon (+10.000) | 28 / 3.110.000 / 134.500 | ✔; PERINGATAN (tanpa TEGAS) hanya kolom Diskon | a | — |
+| X8 `jumlah-rata-ekor.csv` | ekor "Jumlah" + "Rata-rata" | Σ 573 | keduanya dikeluarkan; COCOK; Rata-rata tidak memicu | a | — |
+| X9 `total-lupa-baris-akhir.csv` | TOTAL di file tidak mencakup baris terakhir (2.300.000) | 5.995.000 (file 3.695.000) | hitungan ✔ + TEGAS silang; alternatif = angka file (salah) | a (angka) | selisih = tepat 1 baris, tidak disebut (B33) |
+| X10 `jumlah-desimal.csv` | `;`, desimal koma, "JUMLAH" 54 | 54 | COCOK | a | — |
+| X11 `subtotal-bulan-bawah-2kolom.xlsx` | subtotal per bulan di bawah, 2 kolom angka, GT | 12.100.000 / 10 | TEGAS "tepat 2×" di 2 kolom; alternatif = kunci | b | — |
+| K1 `kontrol-kas.csv` | rapi | 775.000 / 495.000 | ✔ | a | — |
+| K2 `kontrol-produk-total-care.xlsx` | rapi; nama produk "Total Care Shampoo" | stok 106 | angka ✔, tetapi **PERINGATAN TEGAS palsu** baris 2,4 (sudah ada di v1.0.8, bukan regresi) | a | peringatan palsu (B34) |
+| K3 `kontrol-absen.tsv` | rapi | 105 | ✔ | a | — |
+
+**Ringkas:** 14 file baru; **11 a, 3 b, 0 c, 0 d.** Pengaman silang menangkap semua subtotal tersembunyi yang lolos detektor lain (2× dan 3×, 1–2 kolom), memberi "COCOK" pada 5 file dengan total benar (termasuk label EN di kolom C dan desimal koma), diam pada file tanpa total, dan membedakan beda sebagian kolom (PERINGATAN) dari beda total (TEGAS). Angka utama benar di semua file.
+
+### Bug baru
+| # | Prioritas | Temuan | Saran |
+|---|---|---|---|
+| B33 | P2 | Bila Total **di file** yang salah (X2: SUM Excel melewatkan 2 sel angka-teks; X9: rentang SUM tidak mencakup baris terakhir), pesan tetap TEGAS dengan "Total alternatif = angka di file" — agent/pengguna bisa memilih angka yang salah. Script sebenarnya tahu penyebabnya: selisih X2 = 745.000 = tepat jumlah 2 sel teks (baris 4, 7); selisih X9 = tepat baris 7. | Cocokkan selisih dengan (a) jumlah sel angka-yang-diketik-teks, (b) satu/dua baris data di tepi → pesan "Total di file kemungkinan SALAH: selisih = sel teks baris 4,7 yang dilewati SUM Excel; hitungan script sudah memasukkannya" dan jangan sebut angka file sebagai alternatif utama. |
+| B34 | P3 | Nama produk berawalan "Total" di baris data terisi lengkap (K2 "Total Care Shampoo") → PERINGATAN TEGAS palsu (sudah ada sebelum v1.0.9). | Jangan jadikan kandidat bila semua kolom terisi, tidak ada kolom yang = jumlah blok, dan label bukan persis kata ringkasan / "<X> Total". |
+
+### Skor kualitas uji ulang v1.0.9: **9 / 10** — **layak `beta`**; B33 disarankan sebelum `rilis`
+- (+) B29 selesai: W8 kini b dengan alternatif = kunci. B30, B32 selesai. 122/125 fixture lama identik dengan v1.0.8, 3 sisanya perbaikan yang dituju; 127 tes lulus.
+- (+) Pengaman silang (B31) bekerja sebagai lapis kedua: 3 tata letak subtotal baru yang tidak dikenali detektor lain tertangkap tepat 2×/3× dengan alternatif benar; 0 (c) di 14 file baru.
+- (+) Tidak ada peringatan silang palsu pada 5 file berTotal benar, file tanpa Total, dan 3 kontrol.
+- (−) Saat Total di file yang salah (kasus nyata: angka diketik teks), pesan belum menyatakan bahwa hitungan script yang benar dan justru menawarkan angka file sebagai alternatif (B33) — berisiko membingungkan awam. Satu peringatan palsu lama pada nama produk "Total …" (B34).
+- Rekomendasi: naik ke **`beta`**; perbaiki B33 (+B34) sebelum `rilis`.
