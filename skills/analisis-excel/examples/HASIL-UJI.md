@@ -577,3 +577,38 @@ Catatan: label "Jumlah Besar …" TIDAK memicu (hanya "jumlah total" ada di `AWA
 - (+) B34 beres untuk posisi tengah tabel (Y3) — perbaikan aslinya tervalidasi ulang.
 - (−) B35: B34 tidak menutup jalur "blok EKOR" yang terpisah dalam kode — nama produk berawalan "Total " di baris terakhir tabel masih menghasilkan **angka salah diam-diam** (melanggar prinsip Reliable) DAN peringatan silang yang salah arah (mengira baris data adalah baris Total acuan). Ini P1 karena silang menyesatkan, bukan sekadar kosmetik seperti B34 semula.
 - Rekomendasi: perbaiki B35 (satu baris syarat tambahan di blok EKOR), lalu cek singkat ulang Y4 + regresi fixture lama sebelum naik ke `rilis`.
+
+## Uji ulang v1.0.11 (penguji independen ke-12, cek singkat, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad (`uji12-ax/`). Versi script `1.0.11`. Tes bawaan: **136 tes OK** (±64 dtk).
+Semua `examples/buat_fixture_uji*.py` (12 generator) dijalankan ulang tanpa galat. Fixture baru: `buat_fixture_uji12_v1011.py`
+(deterministik; `kunci-uji12-v1011.json` dihitung dari data sumber, **tanpa membaca kode skill**), fokus regresi B35 (blok EKOR)
+di berbagai posisi + baris Total sungguhan yang wajib tetap terdeteksi.
+
+### File baru → hasil (a = benar, b = TEGAS + alternatif benar, c = salah diam-diam, d = ditolak padahal wajar)
+| File | Kunci | Hasil script v1.0.11 | Nilai |
+|---|---|---|---|
+| Z1 "Total Care Shampoo" **baris pertama**, terisi penuh, tanpa baris total | 4 baris, stok 57 | tidak dikeluarkan, tidak ada peringatan; stok 57 ✔ | **a** |
+| Z2 "Jumlah Besar Deterjen" **baris terakhir**, terisi penuh | 3 baris, stok 95 | tidak dikeluarkan; stok 95 ✔ | **a** |
+| Z3 "Grand Prix Helm" **setelah baris kosong** di tengah, terisi penuh | 4 baris, stok 75 | baris kosong dilewati, "Grand Prix Helm" tidak dikeluarkan; stok 75 ✔ | **a** |
+| Z4 "Subtotal Kit Sparepart" **di tengah**, terisi penuh | 3 baris, stok 65 | PERINGATAN TEGAS + alternatif (dengan=65=kunci, tanpa=40); tidak dibuang otomatis | **b** ✔ (soal disengaja, sesuai desain kandidat) |
+| Z5 **Grand Total sungguhan** di ekor (Stok & Nilai cocok persis) | 3 baris, stok 450, nilai 450.000 | baris 5 DIKELUARKAN; hitungan 450/450.000 = kunci; `cek_silang_total` "cocok" 2 kolom, tanpa peringatan silang | **a** ✔ |
+| Z6 **Total sungguhan**, label **"Total" berdiri sendiri** tapi semua kolom terisi penuh seperti data | 3 baris, stok 150, harga 36.000 | baris 5 DIKELUARKAN; hitungan 150/36.000 = kunci; `cek_silang_total` "cocok" | **a** ✔ |
+| Z7 kontrol kas harian (rapi) | 4 baris, 270.000 | ✔, tanpa peringatan | **a** |
+| Z8 kontrol gudang sparepart (rapi, `;`) | 4 baris, stok akhir 1.910 | ✔, tanpa peringatan | **a** |
+
+**Ringkas:** 8 file baru; **7 a, 1 b (disengaja), 0 c, 0 d.** B35 tervalidasi tuntas: nama data berawalan kata ringkasan
+("Total ", "Jumlah Besar", "Grand Prix", "Subtotal ") di **empat posisi berbeda** (awal, akhir, setelah baris kosong, tengah)
+tidak lagi dibuang secara diam-diam oleh blok EKOR — konsisten dengan Y3/Y4 uji v1.0.10. Baris Total/Grand Total **sungguhan**
+di ekor tetap dikeluarkan dengan benar, termasuk kasus tersulit (label "Total" tunggal + semua kolom lain terisi penuh
+seperti baris data), dan pengaman silang (B31) memberi "cocok" tanpa peringatan palsu di kedua kasus itu.
+
+### Bug baru
+Tidak ada. Regresi 136 tes bawaan OK; 12 generator fixture lama (v1.0.0–v1.0.10, 145+ file) berjalan tanpa galat.
+
+### Skor kualitas uji ulang v1.0.11: **9 / 10** — **layak `rilis`**
+- (+) B35 tuntas di semua posisi yang diuji (awal/akhir/setelah-kosong/tengah), termasuk kasus baru "Grand Prix Helm" yang
+  tidak dicoba penguji sebelumnya.
+- (+) Baris Total sungguhan dengan label berdiri sendiri + kolom lain terisi penuh (kasus yang mirip pola B34/B35 tapi
+  memang ringkasan) tetap benar dikeluarkan — detektor tidak jadi terlalu longgar akibat perbaikan B35.
+- (+) Tidak ada regresi di tes bawaan maupun generator fixture lama.
+- (−) Belum 10: cakupan cek singkat ini terbatas 8 file/1 sesi; disarankan uji platform asli (Tahap 6.10) sebelum dipaketkan ke pembeli.
