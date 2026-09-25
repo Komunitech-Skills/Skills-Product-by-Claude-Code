@@ -41,7 +41,7 @@ September naik berapa dari Agustus?"
 Jumlah Nominal: naik 73,5% (Rp 7.555.000 → Rp 13.110.000).
 Naik paling besar: Transport — naik 310,7% (Rp 1.595.000 → Rp 6.550.000).
 ⚠️ 1 sel berisi rumus tanpa nilai tersimpan (E16) sehingga dianggap kosong ...
-⚠️ 1 baris Total/Jumlah dilewati agar tidak terhitung dua kali (baris 18).
+⚠️ 1 baris Total/Jumlah dilewati agar tidak terhitung dua kali (baris 18: TOTAL | … ).
 ```
 (Contoh lengkap: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.)
 
@@ -88,7 +88,15 @@ Aturannya sederhana: setiap baris harus punya kolom sebanyak judul kolom. Bila s
 kurang (ada sel terlewat) atau lebih (ada koma di dalam teks tanpa tanda kutip), angkanya bisa masuk
 ke kolom yang salah dan totalnya keliru. Daripada memberi angka salah diam-diam, skill menyebut nomor
 baris dan isinya agar Anda bisa membetulkannya. Kolom kosong di ujung kanan dan alamat/catatan yang
-ditulis beberapa baris dalam satu sel tetap boleh.
+ditulis beberapa baris dalam satu sel tetap boleh, begitu juga kolom paling kanan yang sering
+dikosongkan (mis. "Catatan") walau komanya tidak diketik — selama isi baris tidak bergeser. Pesan
+galat menyebut kemungkinan penyebab (sel terlewat di tengah, koma tanpa tanda kutip, tanda kutip
+nyasar, catatan di tengah tabel) dan langkah memperbaikinya.
+
+**File ekspor Shopee/Tokopedia/mutasi bank saya ada baris Total, saldo, dan "Dicetak oleh…" di bawahnya. Aman?**
+Aman. Baris Total/Jumlah/Rata-rata/Saldo Awal/Saldo Akhir (juga baris rumus SUM tanpa label yang
+nilainya sama dengan jumlah kolom di atasnya) dan catatan di bawah tabel tidak dihitung sebagai data,
+sehingga total tidak dobel. Skill menyebutkan baris mana saja yang dilewati beserta isinya.
 
 **Apakah bisa memprediksi penjualan bulan depan atau analisis statistik rumit?**
 Tidak. Skill ini fokus menjawab pertanyaan dari data yang sudah terjadi (total, rata-rata, tren,
@@ -97,6 +105,7 @@ perbandingan). Untuk prediksi/statistik lanjut, gunakan jasa analis data.
 ## Riwayat versi
 | Versi | Tanggal | Perubahan |
 |---|---|---|
+| 1.0.5 | 2026-09-25 | Revisi uji ulang v1.0.4 (0 angka salah diam-diam, ekspor nyata terbaca tanpa `--paksa`): **B10** baris angka tanpa label yang isinya = jumlah/rata-rata kolom di atasnya (rumus SUM/AVERAGE; di tengah file = subtotal per kelompok, di ekor juga min/maks; toleransi Rp1) dilewati + peringatan "totalnya DOBEL"; label ringkasan dikenali di kolom mana pun (Rata-rata/Average/Saldo Awal/Saldo Akhir/Mutasi Kredit/Debet/Grand Total, "Jumlah pesanan:"; Min/Maks hanya bila satu-satunya teks). **B11/B12** blok catatan di bawah tabel ("Dicetak oleh…", "Sumber: …", catatan ber-padding) tidak dihitung sebagai data + info berisi isinya (jumlah baris, rentang tanggal, pivot bersih); kolom paling kanan yang opsional (mis. Catatan tanpa koma di ujung) boleh tidak ada bila isi baris tidak bergeser (tipe per kolom dicek) → N1, N2, N4 (mutasi BCA), N8 terbaca tanpa `--paksa`; sel terlewat di tengah (C8, N9) & kutip nyasar (C4) tetap GAGAL. Pesan GAGAL jumlah kolom berbahasa awam: sebut sel yang bergeser ("angka '18000' masuk kolom 'Barang'"), kemungkinan penyebab & langkah perbaikan. **B13** kolom berakhiran Code/ID/No/Ref = kode (tidak dijumlah); "Credit"/"Debet" dikenali sebagai uang. Tes regresi per file fixture v1.0.4 (+ varian XLSX SUM, subtotal tanpa label, kasus negatif). |
 | 1.0.4 | 2026-09-25 | Revisi uji ulang v1.0.3 — **aturan jumlah kolom** menggantikan tebakan "baris di dalam sel tampak seperti data": setiap baris data CSV wajib punya jumlah kolom = judul kolom (sel kosong berlebih di ujung kanan boleh); baris kurang/lebih kolom → GAGAL dengan nomor baris + isi ringkas, atau `--paksa` + PERINGATAN TEGAS "N baris … MUNGKIN SALAH" (menutup B5/C8 & C4: angka salah diam-diam). Heuristik lama dihapus; cek "baris tertelan kutip nyasar" kini hanya untuk kolom yang biasanya satu baris (F3b tetap GAGAL; C5 alamat 3 baris + "50%⏎sisa" terbaca tanpa `--paksa`, B6). Info sel multi-baris jadi catatan ringan. B8: "≈ … (selisih Rp X)" bila rekap tidak persis sama; B9: periode tanpa data tidak lagi disebut "penurunan -100%". Tes regresi per file untuk semua fixture penguji + pengunci angka lama. |
 | 1.0.3 | 2026-09-25 | Cegah angka salah diam-diam (uji ulang v1.0.2): kutip nyasar yang menelan satu baris data kini GAGAL dengan nomor baris — jumlah baris di Notepad dicocokkan dengan baris terbaca + baris lanjutan sel, dan baris lanjutan yang tampak seperti baris data utuh disebut sebagai "kemungkinan N baris data HILANG" (dengan `--paksa`: PERINGATAN TEGAS); sel multi-baris jarang di kolom yang biasanya satu baris diperingatkan "mungkin tanda kutip nyasar"; `--sheet semua` melewati sheet rekap/ringkasan (nama Ringkasan/Rekap/Total/Summary/Resume, isinya = jumlah sheet lain, atau sedikit baris berlabel bulan/triwulan) + opsi `--sertakan`; peringatan "kemungkinan DOBEL HITUNG" bila total gabungan ≈ 2 × total tanpa satu sheet; peringatan menyebut "N baris berisi sel multi-baris (M sel)"; "Kolom kolom" → "Kolom". Angka skenario 01–03 & file uji ulang v1.0.1/v1.0.2 yang benar tidak berubah (dikunci tes). |
 | 1.0.2 | 2026-09-25 | Revisi uji ulang: CSV sah berisi alamat multi-baris berkoma tidak lagi ditolak (deteksi "kemungkinan rusak" kini memakai parser CSV + cek baris-mirip-data & jumlah kolom; kutip tak tertutup tetap GAGAL) + opsi `--paksa` untuk membaca apa adanya; `--sheet semua` memilih acuan struktur dari sheet yang paling banyak cocok (sheet Ringkasan di depan dilewati) + opsi `--acuan`; peringatan sel multi-baris digabung jadi satu dengan nomor baris Notepad ↔ Excel; judul "Total kolom Jumlah" (bukan "Jumlah Jumlah"); email tersamar menyertakan 2 karakter akhir (`a•••01@…`); "Uang Lembur"/tunjangan/THR/bonus ditandai sensitif, "Simpanan"/iuran/setoran dikenali sebagai uang; saran nomor sheet untuk nama sheet berkoma; "baris 4 s.d. 4" → "baris 4". Angka skenario 01–03 & 3 file uji ulang tidak berubah (dikunci tes). |

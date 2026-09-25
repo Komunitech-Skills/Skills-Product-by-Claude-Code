@@ -38,7 +38,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -79,11 +79,25 @@ GALAT_EXCEL = {"#n/a", "#div/0!", "#value!", "#ref!", "#name?", "#num!", "#null!
 KATA_TOTAL = {"total", "grand total", "jumlah", "jumlah total", "subtotal", "sub total", "sub-total",
               "total keseluruhan", "total akhir", "ttl", "grandtotal", "totals"}
 
+# Label baris ringkasan/catatan (v1.0.5). KUAT: dikenali di kolom mana pun (isi sel persis). LEMAH: hanya bila
+# satu-satunya teks di baris tanpa tanggal (mis. "Min", "Maks" di bawah tabel).
+LABEL_RINGKASAN = KATA_TOTAL | {"rata-rata", "rata rata", "rata2", "rerata", "average", "avg", "mean",
+                                "saldo akhir", "saldo awal", "opening balance", "closing balance",
+                                "beginning balance", "ending balance", "mutasi kredit", "mutasi debet",
+                                "mutasi debit", "total kredit", "total debet", "total debit", "grand-total"}
+LABEL_LEMAH = {"min", "maks", "max", "minimum", "maksimum", "maximum", "median", "terkecil", "terbesar"}
+AWALAN_RINGKASAN = ("total ", "grand total", "jumlah total", "subtotal", "sub total", "rata-rata ",
+                    "saldo akhir", "saldo awal")
+AWALAN_LABEL_TITIK2 = ("total", "jumlah", "subtotal", "grand total", "saldo", "mutasi", "rata-rata", "rerata")
+POLA_CATATAN = re.compile(r"^(dicetak|dibuat|diunduh|diekspor|dihasilkan|catatan|keterangan|sumber|note|notes|"
+                          r"printed|generated|exported|downloaded|source|laporan|periode|halaman|page)\b|:", re.I)
+
 POLA_KODE = re.compile(r"^(no|nomor|nomer|id|kode|code|nik|npwp|nip|nis|nim|sku|telp|telepon|tlp|hp|"
                        r"wa|whatsapp|phone|rekening|norek|resi|kodepos|kode pos|zip)\b", re.I)
+POLA_KODE_AKHIR = re.compile(r"\b(code|kode|id|no|nomor|number|ref)\.?$", re.I)   # "Transaction Code", "Reference No."
 POLA_UANG = re.compile(r"(\brp\b|\bidr\b|harga|total|omzet|omset|biaya|nilai (transaksi|penjualan|pembelian|kontrak|faktur|invoice)|nominal|pendapatan|"
                        r"penjualan|gaji|bayar|tagihan|amount|price|revenue|sales|cost|diskon|ongkir|"
-                       r"laba|modal|saldo|debit|kredit|pengeluaran|pemasukan|belanja|upah|honor|"
+                       r"laba|modal|saldo|debit|debet|kredit|credit|pengeluaran|pemasukan|belanja|upah|honor|"
                        r"\buang\b|simpanan|iuran|setoran|tunjangan|\bthr\b|bonus|insentif|komisi)", re.I)
 POLA_BUKAN_UANG = re.compile(r"(qty|kuantitas|pcs|unit|jumlah barang|jumlah item|banyak|stok|stock|"
                              r"persen|%|rasio|rating|skor|nilai ujian|berat|kg|gram)", re.I)
@@ -1055,15 +1069,225 @@ def deteksi_header(grid):
     return 0
 
 
+def _norm_label(v):
+    return rapikan_teks(v).lower().strip().rstrip(":").strip()
+
+
 def _adalah_total(row):
+    """Baris ringkasan berlabel: Total/Jumlah/Subtotal/Grand Total/Rata-rata/Saldo Awal/Saldo Akhir/... .
+
+    - sel isi PERTAMA: label persis atau berawalan (mis. "Total Penjualan", "Rata-rata harian");
+    - sel mana pun: label persis (mis. ",,Rata-rata,405000"), atau label berakhiran ":" (mis. "Jumlah pesanan:");
+    - label lemah (Min/Maks/Median): hanya bila satu-satunya teks di baris tanpa tanggal.
+    """
+    norm = [(v, _norm_label(v)) for v in row if isinstance(v, str) and not adalah_kosong(v)]
+    if not norm:
+        return False
+    if not any(t in LABEL_RINGKASAN or t in LABEL_LEMAH or rapikan_teks(v).strip().endswith(":")
+               for v, t in norm) and not norm[0][1].startswith(AWALAN_RINGKASAN):
+        return False
+    pertama = True
+    teks = []
+    ada_tanggal = False
     for v in row:
         if adalah_kosong(v):
             continue
-        if isinstance(v, str):
-            t = rapikan_teks(v).lower().rstrip(":")
-            return t in KATA_TOTAL or t.startswith(("total ", "grand total", "jumlah total", "subtotal"))
+        if isinstance(v, date):
+            ada_tanggal = True
+        if not isinstance(v, str):
+            pertama = False
+            continue
+        t = _norm_label(v)
+        mentah = rapikan_teks(v).strip()
+        if pertama and (t in LABEL_RINGKASAN or t.startswith(AWALAN_RINGKASAN)):
+            return True
+        pertama = False
+        if t in LABEL_RINGKASAN:
+            return True
+        if mentah.endswith(":") and t.startswith(AWALAN_LABEL_TITIK2) and len(t) <= 40:
+            return True
+        if parse_angka(v) is None:
+            if parse_tanggal(mentah) is not None:
+                ada_tanggal = True
+            else:
+                teks.append(t)
+    return len(teks) == 1 and teks[0] in LABEL_LEMAH and not ada_tanggal
+
+
+def _jenis_sel(v, gaya=None):
+    """('angka', Decimal) / ('tanggal', date) / ('teks', str) / (None, None) untuk sel kosong/galat."""
+    if adalah_kosong(v) or adalah_galat_excel(v):
+        return None, None
+    if isinstance(v, bool):
+        return "teks", str(v)
+    if isinstance(v, Decimal):
+        return "angka", v
+    if isinstance(v, (int, float)):
+        return "angka", Decimal(str(v))
+    if isinstance(v, date):
+        return "tanggal", v
+    t = str(v).strip()
+    a = parse_angka(t, gaya)
+    if a is not None:
+        return "angka", a
+    d = parse_tanggal(t)
+    return ("tanggal", d) if d is not None else ("teks", t)
+
+
+def _matriks_jenis(rows, lebar):
+    """Urai setiap sel SEKALI: (gaya desimal per kolom, matriks [(jenis, nilai)] per baris)."""
+    gaya = []
+    for j in range(lebar):
+        contoh = [row[j] for row in rows if j < len(row) and isinstance(row[j], str)]
+        if len(contoh) > 3000:     # cukup sampel merata untuk menebak gaya desimal (file besar tetap cepat)
+            contoh = contoh[::len(contoh) // 3000 + 1]
+        bukti = Counter(bukti_gaya(v) for v in contoh)
+        bukti.pop(None, None)
+        gaya.append(bukti.most_common(1)[0][0] if bukti else None)
+    kosong = (None, None)
+    M = [[_jenis_sel(row[j], gaya[j]) if j < len(row) else kosong for j in range(lebar)] for row in rows]
+    return gaya, M
+
+
+def _profil_dari(M, gaya, lebar):
+    """Per kolom: tipe mayoritas ('angka'|'tanggal'|'teks'|'campur'|'kosong'), porsi terisi, gaya desimal.
+
+    "Porsi terisi" = maksimum dari porsi di semua baris dan porsi di baris yang punya teks/tanggal (baris data
+    berlabel), agar banyaknya baris jumlah tanpa label di tabel kecil tidak menurunkan porsinya."""
+    n = max(1, len(M))
+    berlabel = [mr for mr in M if any(jn in ("teks", "tanggal") for jn, _x in mr)] or M
+    nb = max(1, len(berlabel))
+    prof = []
+    for j in range(lebar):
+        c = Counter(mr[j][0] for mr in M)
+        c.pop(None, None)
+        isi = sum(c.values())
+        if not isi:
+            tipe = "kosong"
+        elif c["angka"] >= 0.8 * isi:
+            tipe = "angka"
+        elif c["tanggal"] >= 0.8 * isi:
+            tipe = "tanggal"
+        elif c["angka"] <= 0.1 * isi and c["tanggal"] <= 0.1 * isi:
+            tipe = "teks"
+        else:
+            tipe = "campur"
+        isi_b = sum(1 for mr in berlabel if mr[j][0] is not None)
+        prof.append({"tipe": tipe, "isi": max(isi / n, isi_b / nb), "gaya": gaya[j]})
+    return prof
+
+
+def _profil_kolom(rows, lebar):
+    gaya, M = _matriks_jenis(rows, lebar)
+    return _profil_dari(M, gaya, lebar)
+
+
+def _toleransi(x):
+    return Decimal(1) if abs(x) >= 100 else Decimal("0.01")
+
+
+def _ada_kolom_sering_kosong(mr, prof):
+    return any(p["isi"] >= 0.8 and mr[j][0] is None for j, p in enumerate(prof))
+
+
+def _baris_agregat(mr, prof, segmen, semua, ekor):
+    """Baris angka TANPA label yang nilainya = jumlah (atau rata-rata; di ekor juga min/maks) kolom di atasnya.
+
+    Syarat: semua sel berisi adalah angka di kolom bertipe angka (tanpa teks/tanggal), ada kolom yang biasanya
+    terisi (>= 80%) tetapi kosong di baris ini, dan setiap angka cocok dengan agregat kolomnya (toleransi Rp1).
+    Kembalikan nama agregat ('jumlah'/'rata-rata'/'min'/'maks') atau None.
+    """
+    isi = [(j, jn, x) for j, (jn, x) in enumerate(mr) if jn is not None]
+    if not isi or any(jn != "angka" or prof[j]["tipe"] != "angka" for j, jn, _x in isi):
+        return None
+    if not _ada_kolom_sering_kosong(mr, prof):
+        return None
+    jenis = None
+    for j, _jn, x in isi:
+        seg, sem = segmen.get(j, []), semua.get(j, [])
+        calon = []
+        if len(seg) >= 2:
+            calon.append(("jumlah", sum(seg)))
+            if len(seg) >= 3:
+                calon.append(("rata-rata", sum(seg) / len(seg)))
+        if len(sem) >= 2 and len(sem) != len(seg):
+            calon.append(("jumlah", sum(sem)))
+        if ekor and len(sem) >= 3:
+            calon += [("rata-rata", sum(sem) / len(sem)), ("min", min(sem)), ("maks", max(sem))]
+        cocok = [nm for nm, a in calon if abs(x - a) <= _toleransi(a)]
+        if not cocok:
+            return None
+        jenis = jenis or cocok[0]
+    return jenis
+
+
+def _baris_catatan(row, mr, prof):
+    """Baris catatan kaki: tanpa angka sama sekali, ada kolom yang biasanya terisi tetapi kosong, dan berisi
+    teks bergaya catatan ('Dicetak oleh…', 'Sumber: …', 'Laporan dibuat…', '…:') ATAU hanya satu sel teks
+    panjang (>= 25 huruf) pada tabel yang punya >= 3 kolom yang biasanya terisi."""
+    if any(jn == "angka" for jn, _x in mr):
         return False
-    return False
+    isi = [row[j] for j, (jn, _x) in enumerate(mr) if jn is not None]
+    if not isi or not _ada_kolom_sering_kosong(mr, prof):
+        return False
+    if any(jn == "teks" and POLA_CATATAN.search(rapikan_teks(row[j]).strip()) for j, (jn, _x) in enumerate(mr)):
+        return True
+    sering = sum(1 for p in prof if p["isi"] >= 0.8)
+    return len(isi) == 1 and isinstance(isi[0], str) and len(rapikan_teks(isi[0])) >= 25 and sering >= 3
+
+
+def _saring_ringkasan(baris_no, mentah, lebar, pertahankan_total):
+    """Keluarkan (a) baris agregat tanpa label di tengah/ekor tabel dan (b) blok catatan di ekor tabel.
+
+    Kembalikan (indeks_dipakai, agregat[(r, jenis, row)], catatan[(r, row)], profil kolom baris yang dipakai)."""
+    gaya, M = _matriks_jenis(mentah, lebar)
+    prof = _profil_dari(M, gaya, lebar)
+    kol_angka = [j for j, p in enumerate(prof) if p["tipe"] == "angka"]
+    buang, agregat = set(), []
+
+    def tambah(dct, mr):
+        for j in kol_angka:
+            if mr[j][0] == "angka":
+                dct.setdefault(j, []).append(mr[j][1])
+    if not pertahankan_total:
+        segmen, semua = {}, {}
+        for i, mr in enumerate(M):
+            jenis = _baris_agregat(mr, prof, segmen, semua, ekor=False)
+            if jenis:
+                buang.add(i)
+                agregat.append((baris_no[i], jenis, mentah[i]))
+                segmen = {}
+                continue
+            tambah(segmen, mr)
+            tambah(semua, mr)
+    # Blok ekor: dari baris terakhir ke atas, selama barisnya catatan atau agregat (min/maks/rata-rata juga).
+    catatan = []
+    i = len(M) - 1
+    while i >= 0:
+        if i in buang:
+            i -= 1
+            continue
+        if _baris_catatan(mentah[i], M[i], prof):
+            catatan.append((baris_no[i], mentah[i]))
+            buang.add(i)
+            i -= 1
+            continue
+        if pertahankan_total or not any(M[i][j][0] for j in kol_angka):
+            break
+        semua = {}
+        for k in range(i):
+            if k not in buang:
+                tambah(semua, M[k])
+        jenis = _baris_agregat(M[i], prof, {}, semua, ekor=True)
+        if not jenis:
+            break
+        buang.add(i)
+        agregat.append((baris_no[i], jenis, mentah[i]))
+        i -= 1
+    agregat.sort(key=lambda x: x[0])
+    catatan.reverse()
+    dipakai = [i for i in range(len(M)) if i not in buang]
+    return dipakai, agregat, catatan, _profil_dari([M[i] for i in dipakai], gaya, lebar)
 
 
 def _ringkas_sel(row, maks=60):
@@ -1071,25 +1295,85 @@ def _ringkas_sel(row, maks=60):
     return t if len(t) <= maks else t[:maks - 1] + "…"
 
 
-def _cek_jumlah_kolom(info, r_header, header, baris_no, data_rows, peringatan):
+def _cek_geser(row, k, prof, nama):
+    """Untuk baris yang kekurangan sel: kembalikan uraian sel yang tipenya tidak cocok dengan kolomnya
+    (tanda isi bergeser), atau None bila semua sel yang ada cocok tipe kolomnya."""
+    for j in range(min(k, len(row))):
+        v = row[j]
+        if j >= len(prof):
+            break
+        jn, _x = _jenis_sel(v, prof[j]["gaya"])
+        tp = prof[j]["tipe"]
+        if jn is None or tp in ("campur", "kosong"):
+            continue
+        if tp == "angka" and jn != "angka":
+            return "'{}' masuk kolom '{}' yang biasanya angka".format(rapikan_teks(v), nama[j])
+        if tp == "tanggal" and jn != "tanggal":
+            return "'{}' masuk kolom '{}' yang biasanya tanggal".format(rapikan_teks(v), nama[j])
+        if tp == "teks" and jn in ("angka", "tanggal"):
+            return "{} '{}' masuk kolom '{}' yang biasanya teks".format(
+                "angka" if jn == "angka" else "tanggal", rapikan_teks(v), nama[j])
+    return None
+
+
+def _cek_jumlah_kolom(info, r_header, header, baris_no, data_rows, peringatan, prof=None, nama=None,
+                      catatan=None):
     """INVARIAN CSV: setiap baris data wajib punya jumlah sel = jumlah judul kolom.
 
-    Toleransi satu-satunya: sel KOSONG berlebih di ujung kanan (padding Excel). Baris dengan sel KURANG, atau
-    dengan sel berisi di luar judul kolom, berarti ada angka yang bergeser kolom -> GAGAL (kecuali --paksa).
+    Toleransi (tidak ada angka yang bergeser):
+    - sel KOSONG berlebih di ujung kanan (padding Excel);
+    - (v1.0.5) baris yang kekurangan sel HANYA di kolom paling kanan, bila kolom-kolom yang hilang itu kosong di
+      >= 50% baris data (kolom opsional, mis. Catatan) DAN setiap sel yang ada cocok tipe kolomnya (angka di
+      kolom angka, tanggal di kolom tanggal, teks di kolom teks) -> sel yang hilang dianggap kosong + info.
+    Baris lain yang kekurangan sel, atau yang punya sel berisi di luar judul kolom -> GAGAL (kecuali --paksa).
     """
     n_sel, fisik = info["n_sel"], info.get("fisik", {})
     m = len(header)                                   # judul kolom sampai judul terakhir yang berisi
     batas_lebih = max(m, n_sel.get(r_header, m))      # judul boleh diikuti sel kosong (padding)
     dipakai = set(baris_no)
-    salah = []
-    for r, row in data_rows:
-        if r not in dipakai:
-            continue
+    prof = prof or []
+    nama = nama or [rapikan_teks(v) for v in header]
+    rows_dipakai = [(r, row) for r, row in data_rows if r in dipakai]
+    # Tipe kolom untuk baris yang punya k sel diukur dari baris yang LEBIH panjang (> k sel), agar baris pendek
+    # yang bergeser tidak ikut "mengajari" tipe kolom. Terlalu sedikit pembanding -> profil semua baris.
+    prof_per_k = {}
+
+    def prof_untuk(k):
+        if k not in prof_per_k:
+            lebih = [list(row) for r, row in rows_dipakai if n_sel.get(r, len(row)) > k]
+            prof_per_k[k] = _profil_kolom(lebih, len(prof)) if prof and len(lebih) >= 3 else prof
+        return prof_per_k[k]
+    n_data = max(1, len(rows_dipakai))
+    kosong_kol = Counter()
+    for r, row in rows_dipakai:
+        for j in range(m):
+            if j >= len(row) or adalah_kosong(row[j]) or j >= n_sel.get(r, m):
+                kosong_kol[j] += 1
+    salah, opsional = [], []
+    for r, row in rows_dipakai:
         k = n_sel.get(r, len(row))
         if k < m:
-            salah.append((r, "hanya {} dari {} kolom".format(k, m), row))
+            hilang = list(range(k, m))
+            geser = _cek_geser(row, k, prof_untuk(k), nama) if prof else "tipe kolom tidak diketahui"
+            wajib = [j for j in hilang if (kosong_kol[j] - 1) < 0.5 * (n_data - 1)]
+            if not geser and not wajib:
+                opsional.append((r, hilang))
+                continue
+            alasan = "hanya {} dari {} kolom".format(k, m)
+            if geser:
+                alasan += " ({})".format(geser)
+            elif wajib:
+                alasan += " (kolom '{}' tidak ada, padahal biasanya terisi)".format(
+                    "', '".join(nama[j] for j in wajib[:3]))
+            salah.append((r, alasan, row))
         elif len(row) > batas_lebih:
             salah.append((r, "{} kolom terisi, padahal judul kolom hanya {}".format(len(row), m), row))
+    if opsional and catatan is not None:
+        kol = sorted({j for _r, h in opsional for j in h})
+        catatan.append("Info: {} baris tidak punya sel untuk kolom paling kanan ({}) — kolom itu memang sering "
+                       "kosong, jadi dianggap kosong; angka tidak bergeser (mis. baris {}).".format(
+                           len(opsional), ", ".join("'{}'".format(nama[j]) for j in kol),
+                           ", ".join(str(r) for r, _h in opsional[:5])))
     if not salah:
         return
 
@@ -1102,12 +1386,15 @@ def _cek_jumlah_kolom(info, r_header, header, baris_no, data_rows, peringatan):
     n = len(salah)
     if not info.get("paksa"):
         raise InputError(
-            "Jumlah kolom tidak cocok di {} baris data. Aturannya: setiap baris harus punya {} kolom, sama "
-            "dengan judul kolom ({}). Baris bermasalah: {}. Akibatnya angka bisa masuk ke kolom yang salah "
-            "sehingga total/rata-rata SALAH. Penyebab umum: ada sel yang terlewat, koma/titik koma di dalam teks "
-            "tanpa tanda kutip, atau tanda kutip (\") nyasar. Buka file di Notepad/Excel, perbaiki baris itu, lalu "
-            "simpan ulang. Bila tetap ingin melihat hasil apa adanya, ulangi dengan --paksa.".format(
-                n, m, ", ".join(rapikan_teks(v) or "(kosong)" for v in header), rincian))
+            "Jumlah kolom tidak cocok di {} baris data, jadi file ini BELUM dihitung (kalau dipaksa, angka bisa "
+            "masuk ke kolom yang salah dan total/rata-rata jadi SALAH). Aturannya: setiap baris harus punya {} "
+            "kolom, sama dengan judul kolom ({}). Baris bermasalah: {}. Kemungkinan penyebab: (1) sel kosong/"
+            "terlewat di tengah baris sehingga isi sesudahnya bergeser ke kiri; (2) teks berisi koma atau titik "
+            "koma tanpa diapit tanda kutip; (3) tanda kutip (\") nyasar yang menggabungkan beberapa baris; "
+            "(4) catatan di tengah tabel. Cara memperbaiki: buka file di Excel, lihat baris di atas, isi sel yang "
+            "terlewat atau pindahkan isinya ke kolom yang benar (baris catatan boleh dihapus), simpan ulang, lalu "
+            "analisis lagi. Bila Anda yakin angkanya tidak bergeser, ulangi dengan --paksa (hasil diberi "
+            "peringatan).".format(n, m, ", ".join(rapikan_teks(v) or "(kosong)" for v in header), rincian))
     peringatan.insert(0,
         "PERINGATAN TEGAS (--paksa): {} baris data jumlah kolomnya tidak sama dengan judul kolom ({} kolom): {}. "
         "Angka di baris itu bisa bergeser ke kolom lain atau tidak terhitung — total/rata-rata di hasil ini "
@@ -1161,17 +1448,35 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False):
             continue
         baris_no.append(r)
         mentah.append(row)
+    # v1.0.5: baris jumlah/rata-rata TANPA label (tengah & ekor) dan blok catatan di bawah tabel
+    dipakai, agregat, cat_ekor, prof = _saring_ringkasan(baris_no, mentah, lebar, pertahankan_total)
+    baris_no = [baris_no[i] for i in dipakai]
+    mentah = [mentah[i] for i in dipakai]
     # buang kolom tanpa nama & tanpa isi
     pakai = [i for i in range(lebar)
              if not nama[i].startswith("Kolom ") or any(not adalah_kosong(row[i]) for row in mentah)]
     kolom = [nama[i] for i in pakai]
     mentah = [[row[i] for i in pakai] for row in mentah]
+    isi_baris = {r: row for r, row in data_rows}
     if baris_total:
-        peringatan.append("{} baris Total/Jumlah dilewati agar tidak terhitung dua kali (baris {}). "
+        contoh = "; ".join("{}: {}".format(r, _ringkas_sel(isi_baris.get(r, []), 45)) for r in baris_total[:4])
+        peringatan.append("{} baris Total/Jumlah dilewati agar tidak terhitung dua kali (baris {}{}). "
                           "Pakai --pertahankan-total bila itu data asli.".format(
-                              len(baris_total), ", ".join(map(str, baris_total[:8]))))
+                              len(baris_total), contoh, "; dll." if len(baris_total) > 4 else ""))
+    if agregat:
+        contoh = "; ".join("baris {}: {} = {} kolom di atasnya".format(r, _ringkas_sel(row, 40), jn)
+                           for r, jn, row in agregat[:4])
+        peringatan.append("{} baris angka TANPA label dilewati karena isinya sama dengan jumlah/rata-rata kolom "
+                          "di atasnya (baris rumus SUM/AVERAGE) — kalau ikut dihitung totalnya DOBEL ({}{}). "
+                          "Pakai --pertahankan-total bila itu data asli.".format(
+                              len(agregat), contoh, "; dll." if len(agregat) > 4 else ""))
+        baris_total = sorted(baris_total + [r for r, _j, _row in agregat])
+    if cat_ekor:
+        contoh = "; ".join("baris {}: '{}'".format(r, _ringkas_sel(row, 50)) for r, row in cat_ekor[:4])
+        catatan.append("Info: {} baris catatan di bawah tabel tidak dihitung sebagai data ({}{}). Angka tabel "
+                       "tidak terpengaruh.".format(len(cat_ekor), contoh, "; dll." if len(cat_ekor) > 4 else ""))
     if info.get("n_sel") is not None:
-        _cek_jumlah_kolom(info, r_header, header, baris_no, data_rows, peringatan)
+        _cek_jumlah_kolom(info, r_header, header, baris_no, data_rows, peringatan, prof, nama, catatan)
         lebih = []
     else:
         lebih = [r for r, row in zip(baris_no, mentah)
@@ -1270,7 +1575,7 @@ class Data:
         elif n_tgl >= 0.7 * n:
             tipe = "tanggal"
         elif n_angka >= 0.7 * n and (nol_depan + digit_panjang) < 0.3 * max(1, len(teks_str)) \
-                and not (POLA_KODE.search(nama) and angka_bulat):
+                and not ((POLA_KODE.search(nama) or POLA_KODE_AKHIR.search(nama.strip())) and angka_bulat):
             tipe = "angka"
         elif n_angka >= 0.7 * n:
             tipe = "kode"

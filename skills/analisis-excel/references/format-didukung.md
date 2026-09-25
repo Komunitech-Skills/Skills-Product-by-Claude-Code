@@ -60,19 +60,30 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
   peringatan). Paksa dengan `--encoding latin-1` dsb.
 - **Pemisah:** `,` `;` tab `|` dipilih dari konsistensi jumlah kolom; baris `sep=;` di awal file
   (ekspor Excel) dihormati. Paksa dengan `--pemisah ";"`.
-- **INVARIAN JUMLAH KOLOM (v1.0.4)** — pengaman utama angka CSV, sederhana & bisa dijelaskan:
+- **INVARIAN JUMLAH KOLOM (v1.0.4, dilonggarkan aman di v1.0.5)** — pengaman utama angka CSV, sederhana & bisa dijelaskan:
   setelah dibaca parser `csv` Python, **setiap baris data wajib punya jumlah kolom = jumlah judul
   kolom** (sampai judul terakhir yang berisi).
-  - Toleransi satu-satunya: sel **kosong** berlebih di ujung kanan (padding Excel `Ani,5000,,`), dan
-    judul yang juga diikuti sel kosong (`Nama;Nominal;;`).
+  - Toleransi: sel **kosong** berlebih di ujung kanan (padding Excel `Ani,5000,,`), dan judul yang juga
+    diikuti sel kosong (`Nama;Nominal;;`).
+  - **Kolom opsional di ujung kanan (v1.0.5):** baris yang kekurangan sel **hanya di kolom paling kanan**
+    diterima (sel hilang = kosong) + info "N baris tidak punya sel untuk kolom paling kanan ('Catatan')",
+    bila (a) kolom-kolom yang hilang itu kosong/tidak ada di ≥ 50% baris data lain, **dan** (b) setiap sel
+    yang ada cocok tipe kolomnya (angka di kolom angka, tanggal di kolom tanggal, teks di kolom teks; tipe
+    diukur dari baris yang lebih panjang). Contoh: kolom "Catatan" yang hanya diisi sebagian dan komanya
+    tidak diketik. Bila kolom yang hilang biasanya terisi ("kolom 'Jumlah' tidak ada, padahal biasanya
+    terisi") atau ada isi yang bergeser ("angka '18000' masuk kolom 'Barang' yang biasanya teks") → tetap
+    GAGAL.
   - Baris dengan kolom **kurang** ("hanya 3 dari 4 kolom") atau kolom **lebih yang berisi** ("3 kolom
     terisi, padahal judul kolom hanya 2") → `GAGAL: Jumlah kolom tidak cocok di N baris data …`
     dengan nomor baris Excel (+ baris Notepad bila bergeser karena sel multi-baris) dan isi ringkas.
   - `--paksa` → dibaca apa adanya + "PERINGATAN TEGAS (--paksa): N baris data jumlah kolomnya tidak
     sama … total/rata-rata MUNGKIN SALAH".
-  - Hanya baris data yang diperiksa: baris judul laporan di atas header, baris Total/Jumlah yang
-    dilewati, dan baris pengulang judul tidak diperiksa. Catatan kaki di bawah tabel ("Dicetak …")
-    ikut terhitung baris kurang kolom → hapus barisnya atau pakai `--paksa`.
+  - Hanya baris data yang diperiksa: baris judul laporan di atas header, baris ringkasan (Total/
+    Jumlah/Rata-rata/Saldo…, juga tanpa label), blok catatan di bawah tabel, dan baris pengulang judul
+    tidak diperiksa (lihat "Header & baris khusus"). Catatan di **tengah** tabel (ada baris data utuh
+    sesudahnya) tetap diperiksa → GAGAL bila kolomnya kurang.
+  - Pesan GAGAL menyebut kemungkinan penyebab dalam bahasa awam (sel kosong/terlewat di tengah baris,
+    koma di teks tanpa kutip, tanda kutip nyasar, catatan di tengah tabel) dan cara memperbaikinya.
   - Menangkap: sel terlewat (angka jatuh ke kolom teks), koma di teks/angka tanpa kutip, dan hampir
     semua kutip nyasar (rekaman gabungan punya jumlah sel berbeda, mis. alamat sah + satu kutip nyasar).
 - **Tanda kutip tak tertutup sampai akhir file** → selalu `GAGAL: CSV rusak: tanda kutip (") di baris
@@ -94,8 +105,26 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
 - **Header:** baris pertama (dari 30 teratas) yang cukup lebar (≥ 60% kolom terlebar) dan dominan
   teks; baris judul laporan/keterangan di atasnya dilewati dan diberitahukan. Paksa `--baris-header N`.
 - Nama kolom kosong → `Kolom C`; nama ganda → `Nama (2)`.
-- **Baris Total/Jumlah/Subtotal/Grand Total** (sel isi pertama) → dilewati + peringatan (nomor
-  baris). Nonaktifkan dengan `--pertahankan-total`.
+- **Baris ringkasan berlabel** → dilewati + peringatan berisi nomor & isi barisnya. Label: Total/
+  Jumlah/Subtotal/Grand Total/Rata-rata/Rerata/Average/Saldo Awal/Saldo Akhir/Mutasi Kredit/Mutasi
+  Debet (+ "Total …" di sel isi pertama, dan label berakhiran titik dua seperti "Jumlah pesanan:") di
+  **kolom mana pun** (v1.0.5; sebelumnya hanya sel isi pertama). "Min"/"Maks"/"Median" hanya bila
+  satu-satunya teks di baris tanpa tanggal. "Saldo" saja (baris saldo di buku kas) tetap data.
+  Berlaku di atas (baris "SALDO AWAL" mutasi bank), tengah (Subtotal per hari), dan bawah tabel.
+- **Baris jumlah TANPA label (v1.0.5)** — pola rumus `=SUM()` / `=AVERAGE()` di bawah kolom: baris yang
+  hanya berisi angka di kolom angka (tanpa teks/tanggal), dengan kolom yang biasanya terisi (≥ 80%)
+  kosong, dan setiap angkanya = **jumlah** kolom di atasnya (sejak baris ringkasan terakhir, atau
+  seluruhnya) atau **rata-rata**-nya (≥ 3 nilai), toleransi Rp1 → dilewati + peringatan "baris angka
+  TANPA label dilewati … totalnya DOBEL". Di tengah file (subtotal per kelompok) juga. Di ekor tabel
+  juga dikenali min/maks. Tabel satu kolom angka (tidak ada kolom lain yang kosong) tidak pernah kena.
+- **Blok catatan di bawah tabel (v1.0.5)** — dari baris terakhir ke atas, baris tanpa angka sama
+  sekali yang (a) berisi teks bergaya catatan ("Dicetak oleh…", "Sumber: …", "Laporan dibuat…",
+  "Catatan: …", teks berakhiran/berisi ":") atau (b) hanya satu sel teks panjang (≥ 25 huruf), dan ada
+  kolom yang biasanya terisi kosong → **tidak dihitung sebagai data** + info "N baris catatan di bawah
+  tabel tidak dihitung (baris 27: 'Dicetak oleh…')". Jumlah baris, rentang tanggal, dan pivot tidak
+  lagi tercemar catatan kaki (termasuk catatan ber-padding `Dicetak oleh: admin,,,`).
+- `--pertahankan-total` → baris ringkasan (berlabel & tanpa label) dihitung sebagai data; blok catatan
+  tetap tidak dihitung (tidak berisi angka).
 - Baris yang mengulang judul kolom (hasil salin-tempel) dan baris kosong → dilewati.
 
 ## Tipe kolom
@@ -112,7 +141,9 @@ Ditentukan dari isi (≥ 70% nilai terisi cocok):
   seribu dua ratus tiga puluh empat). Ditolak (tidak valid): `15.000.00`, `15000.500`, `1,5E+06`,
   mata uang lain (`US$ 5`).
 - **kode** — angka yang bukan untuk dijumlah: nol di depan (`0812…`), ≥ 11 digit (No HP/NIK), atau
-  nama kolom diawali No/Nomor/ID/Kode/NIK/NPWP/SKU/HP/Telp/Rekening/Resi dengan isi bilangan bulat.
+  nama kolom diawali No/Nomor/ID/Kode/NIK/NPWP/SKU/HP/Telp/Rekening/Resi — atau (v1.0.5) diakhiri
+  Code/Kode/ID/No/Nomor/Number/Ref ("Transaction Code", "Order ID", "Reference No.") — dengan isi
+  bilangan bulat.
 - **teks** — selain itu. Spasi dirapikan; beda huruf besar-kecil **dan spasi** (`4 A` = `4A` = `4a`)
   digabung ke penulisan yang paling sering muncul (dilaporkan: jumlah & contoh). `--filter` dan
   `banding --grup` memakai aturan yang sama.

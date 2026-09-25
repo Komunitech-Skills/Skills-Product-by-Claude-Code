@@ -1375,5 +1375,192 @@ class UjiInvarianV104(unittest.TestCase):
             self.assertIn("--paksa", err)
 
 
+FIXTURE_V104 = SINI / "examples" / "buat_fixture_uji_v104.py"
+
+
+class UjiEksporV105(unittest.TestCase):
+    """v1.0.5: BLOK RINGKASAN/CATATAN & BARIS KURANG KOLOM. Fixture penguji ke-5 (ekspor nyata Indonesia).
+    Hasil diharapkan per file: a = angka & jumlah baris cocok kunci penguji TANPA --paksa, b = GAGAL tegas.
+    Target: 0 salah diam-diam; semua file yang dinilai (d) 'wajar diharapkan terbaca' kini (a)."""
+
+    total = UjiInvarianV104.total
+    cek_a = UjiInvarianV104.cek_a
+    cek_b = UjiInvarianV104.cek_b
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.fx = Path(cls._tmp.name) / "u5"
+        r = subprocess.run([sys.executable, str(FIXTURE_V104), str(cls.fx)], capture_output=True, text=True)
+        if r.returncode != 0:
+            raise RuntimeError(r.stderr)
+        cls.k = json.loads((cls.fx / "kunci-v104.json").read_text(encoding="utf-8"))
+        cls.t = Path(cls._tmp.name)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def a(self, nama, kolom, total, baris, *extra):
+        d = self.cek_a(self.fx / nama, kolom, total, None, *extra)
+        self.assertEqual(d["jumlah_baris_data"], baris, nama)
+        return d
+
+    def teks(self, d):
+        return " ".join(d["peringatan"] + d["catatan"])
+
+    # -- (d) di v1.0.4 -> kini (a) -----------------------------------------------------------------------
+    def test_N1_shopee_total_dan_catatan_kaki(self):
+        k = self.k["N1"]
+        d = self.a("N1-shopee-judul-catatan-kaki.csv", "Total Pembayaran", k["total_pembayaran"], k["baris"])
+        self.cek_a(self.fx / "N1-shopee-judul-catatan-kaki.csv", "Jumlah", k["qty"])
+        t = self.teks(d)
+        self.assertIn("1 baris Total/Jumlah dilewati", t)
+        self.assertIn("1 baris catatan di bawah tabel tidak dihitung", t)
+        self.assertIn("Dicetak oleh", t)
+
+    def test_N2_tokopedia_dua_baris_catatan(self):
+        k = self.k["N2"]
+        d = self.a("N2-tokopedia-rp-catatan-2-baris.csv", "Total Penjualan", k["total"], k["baris"])
+        t = self.teks(d)
+        self.assertIn("Catatan: data diambil", t)
+        self.assertIn("Jumlah pesanan:", t)
+        self.assertNotIn("tidak bisa dibaca sebagai tanggal", t)      # '15' tidak lagi jadi tanggal tidak valid
+
+    def test_N4_bca_saldo_di_bawah(self):
+        k = self.k["N4"]
+        d = self.a("N4-bca-mutasi.csv", "Jumlah", k["jumlah_semua"], k["baris"])
+        t = self.teks(d)
+        for label in ("Saldo Awal", "Mutasi Kredit", "Mutasi Debet", "Saldo Akhir"):
+            self.assertIn(label, t)
+        d = jalankan_json(self, "pivot", self.fx / "N4-bca-mutasi.csv", "--grup", "Kolom E", "--nilai", "Jumlah")
+        m = {r[0]: angka(r[2]) for r in d["tabel"][0]["baris"]}
+        self.assertEqual(m, {"CR": D(k["kredit_CR"]), "DB": D(k["debet_DB"]), "TOTAL": D(k["jumlah_semua"])})
+
+    def test_N8_kolom_catatan_opsional(self):
+        k = self.k["N8"]
+        d = self.a("N8-kolom-catatan-opsional.csv", "Jumlah", k["total"], k["baris"])
+        self.assertIn("13 baris tidak punya sel untuk kolom paling kanan ('Catatan')", self.teks(d))
+
+    # -- (c) di v1.0.4 -> kini (a) -----------------------------------------------------------------------
+    def test_N11_sum_tanpa_label_dan_rata_rata(self):
+        k = self.k["N11"]
+        d = self.a("N11-excel-sum-tanpa-label.csv", "Jumlah", k["total"], k["baris"])
+        t = self.teks(d)
+        self.assertIn("1 baris angka TANPA label dilewati", t)
+        self.assertIn("Rata-rata", t)
+
+    def test_N11_varian_label_di_kolom_mana_pun(self):
+        f = self.t / "n11-varian.csv"
+        f.write_text("Tanggal,Kategori,Keterangan,Jumlah\n01/09/2026,ATK,a,100000\n02/09/2026,ATK,b,200000\n"
+                     "03/09/2026,Listrik,c,300000\n,,Total,600000\n,,Rata-rata,200000\n,,Min,100000\n"
+                     ",,Maks,300000\n,,Grand Total,600000\n", encoding="utf-8")
+        d = self.cek_a(f, "Jumlah", 600000, 3)
+        self.assertIn("5 baris Total/Jumlah dilewati", self.teks(d))
+
+    def test_subtotal_tanpa_label_di_tengah_dan_ekor(self):
+        f = self.t / "subtotal-tanpa-label.csv"
+        f.write_text("Tanggal,Kategori,Jumlah\n01/09/2026,ATK,100000\n02/09/2026,ATK,200000\n,,300000\n"
+                     "03/09/2026,Listrik,300000\n04/09/2026,Listrik,50000\n,,350000\n,,650000\n,,162500\n"
+                     ",,50000\n,,300000\n", encoding="utf-8")
+        d = self.cek_a(f, "Jumlah", 650000, 4)
+        self.assertEqual(d["jumlah_baris_data"], 4)
+        self.assertIn("6 baris angka TANPA label dilewati", self.teks(d))
+        # --pertahankan-total: semua baris dihitung apa adanya
+        t, _n, _d = self.total(f, "Jumlah", "--pertahankan-total")
+        self.assertEqual(t, D(100000 + 200000 + 300000 + 300000 + 50000 + 350000 + 650000 + 162500 + 50000 + 300000))
+
+    def test_sum_tanpa_label_xlsx(self):
+        f = self.t / "sum.xlsx"
+        nilai = [125000, 80000, 42500, 310000]
+        tot = sum(nilai)
+        baris = [["Tanggal", "Uraian", "Jumlah"]]
+        for i, v in enumerate(nilai):
+            baris.append([("tgl", serial_excel(date(2026, 9, i + 1))), "Nota {}".format(i + 1), v])
+        baris.append([None, None, ("f", "SUM(C2:C5)", tot)])
+        baris.append([None, "Rata-rata", ("f", "AVERAGE(C2:C5)", tot / 4)])
+        buat_xlsx(f, [{"nama": "Biaya", "baris": baris}])
+        d = self.cek_a(f, "Jumlah", tot, 4)
+        self.assertIn("TANPA label", self.teks(d))
+
+    def test_bukan_ringkasan_tetap_data(self):
+        # satu kolom angka saja: 1 + 2 = 3 BUKAN baris jumlah (tidak ada kolom lain yang kosong)
+        f = self.t / "satu-kolom.csv"
+        f.write_text("Nominal\n1\n2\n3\n", encoding="utf-8")
+        self.cek_a(f, "Nominal", 6, 3)
+        # baris data terakhir tanpa angka tetapi bukan catatan -> tetap dihitung sebagai baris
+        f = self.t / "akhir-tanpa-angka.csv"
+        f.write_text("Tanggal,Nama,Nominal\n01/09/2026,Ani,5000\n02/09/2026,Budi,7000\n03/09/2026,Cici,\n",
+                     encoding="utf-8")
+        d = jalankan_json(self, "ringkas", f)
+        self.assertEqual(d["jumlah_baris_data"], 3)
+        # baris 'Saldo' biasa (bukan 'Saldo Awal') tetap data
+        f = self.t / "saldo.csv"
+        f.write_text("Tanggal;Uraian;Masuk\n01/09/2026;Saldo;100.000\n02/09/2026;Jual;50.000\n", encoding="utf-8")
+        self.cek_a(f, "Masuk", 150000, 2)
+
+    def test_saldo_awal_di_atas_tabel(self):
+        f = self.t / "mutasi.csv"
+        f.write_text("Tanggal,Keterangan,Debit,Kredit,Saldo\n01/09/2026,SALDO AWAL,,,1000000\n"
+                     "02/09/2026,Transfer masuk,,250000,1250000\n03/09/2026,Tarik tunai,100000,,1150000\n"
+                     ",Saldo Akhir,,,1150000\n", encoding="utf-8")
+        d = jalankan_json(self, "ringkas", f)
+        self.assertEqual(d["jumlah_baris_data"], 2)
+        self.assertIn("2 baris Total/Jumlah dilewati", self.teks(d))
+
+    def test_N12_catatan_berpadding_tidak_jadi_data(self):
+        k = self.k["N12"]
+        d = self.a("N12-footer-berpadding.csv", "Penghasilan", k["total"], k["baris"])
+        d = jalankan_json(self, "ringkas", self.fx / "N12-footer-berpadding.csv")
+        self.assertIn("Data mencakup 3 Sep 2026 s.d. 21 Sep 2026", " ".join(d["temuan"]))   # bukan 30 Sep
+        d = jalankan_json(self, "pivot", self.fx / "N12-footer-berpadding.csv", "--grup", "Produk",
+                          "--nilai", "Penghasilan")
+        self.assertNotIn("(kosong)", [r[0] for r in d["tabel"][0]["baris"]])
+
+    # -- yang sudah (a)/(b) tetap -----------------------------------------------------------------------
+    def test_N3_N5_N6_N7_N10_N13_tetap_benar(self):
+        k = self.k
+        self.cek_a(self.fx / "N3-tiktok-baris-deskripsi.csv", "Order Amount", k["N3"]["total"])
+        self.cek_a(self.fx / "N3-tiktok-baris-deskripsi.csv", "Quantity", k["N3"]["qty"])
+        d = self.cek_a(self.fx / "N5-mandiri-kolom-ganda.csv", "Debit", k["N5"]["debit"])
+        self.cek_a(self.fx / "N5-mandiri-kolom-ganda.csv", "Credit", k["N5"]["credit"])
+        self.a("N6-google-form.csv", "Jumlah Transfer", k["N6"]["total_valid"], k["N6"]["baris"])
+        self.a("N7-excel-titikkoma-kolom-kosong.csv", "Total", k["N7"]["total"], k["N7"]["baris"])
+        self.cek_a(self.fx / "N7-excel-titikkoma-kolom-kosong.csv", "Qty", k["N7"]["qty"])
+        self.a("N10-kutip-inci-panggilan.csv", "Jumlah", k["N10"]["total"], k["N10"]["baris"])
+        d = self.a("N13-subtotal-per-hari.csv", "Nominal", k["N13"]["total"], k["N13"]["baris"])
+        self.assertIn("3 baris Total/Jumlah dilewati", self.teks(d))
+
+    def test_B13_kolom_kode_dan_rp(self):
+        d = jalankan_json(self, "profil", self.fx / "N5-mandiri-kolom-ganda.csv")
+        tipe = {r[0]: r[1] for r in d["tabel"][0]["baris"]}
+        self.assertNotEqual(tipe.get("Transaction Code"), "angka")
+        d = jalankan_json(self, "ringkas", self.fx / "N5-mandiri-kolom-ganda.csv")
+        nama = [r[0] for r in d["tabel"][0]["baris"]]
+        self.assertNotIn("Transaction Code", nama)
+        self.assertEqual(d["tabel"][0]["jenis_baris"], ["uang", "uang"])
+
+    def test_N9_C8_sel_terlewat_tetap_gagal(self):
+        err = self.cek_b(self.fx / "N9-sel-terlewat-tengah.csv", "baris 11: hanya 3 dari 4 kolom",
+                         "masuk kolom 'Barang' yang biasanya teks", "sel kosong/terlewat di tengah baris",
+                         "tanda kutip", "catatan di tengah tabel")
+        self.assertIn("--paksa", err)
+        # kolom paling kanan hilang tetapi kolom itu WAJIB (biasanya terisi) -> tetap GAGAL
+        f = self.t / "kanan-wajib.csv"
+        f.write_text("Tanggal,Nama,Jumlah\n01/09/2026,Ani,5000\n02/09/2026,Budi,6000\n03/09/2026,Cici\n"
+                     "04/09/2026,Dodi,7000\n", encoding="utf-8")
+        self.cek_b(f, "baris 4: hanya 2 dari 3 kolom", "kolom 'Jumlah' tidak ada, padahal biasanya terisi")
+        # kolom opsional di kanan, tetapi sel yang ada bergeser (angka masuk kolom teks) -> tetap GAGAL
+        f = self.t / "opsional-geser.csv"
+        f.write_text("Tanggal,Nama,Jumlah,Catatan\n01/09/2026,Ani,5000\n02/09/2026,Budi,6000,lunas\n"
+                     "03/09/2026,7000\n04/09/2026,Dodi,8000\n05/09/2026,Eka,9000\n", encoding="utf-8")
+        self.cek_b(f, "baris 4: hanya 2 dari 4 kolom", "masuk kolom 'Nama' yang biasanya teks")
+        # catatan kaki di TENGAH (ada baris data utuh sesudahnya) -> tetap GAGAL
+        f = self.t / "catatan-tengah.csv"
+        f.write_text("Tanggal,Nama,Jumlah\n01/09/2026,Ani,5000\nCatatan: sebagian belum lunas\n"
+                     "02/09/2026,Budi,6000\n", encoding="utf-8")
+        self.cek_b(f, "baris 3: hanya 1 dari 3 kolom")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

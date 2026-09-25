@@ -171,13 +171,20 @@ Rincian lengkap: `references/format-didukung.md`.
   terdekat, persen 1 desimal (0,5 menjauhi nol). CSV hasil menyimpan hingga 2 desimal.
 - **Keamanan CSV hasil:** teks yang diawali `=`, `+`, `-`, `@` diberi awalan `'` agar tidak
   dieksekusi sebagai rumus saat dibuka di Excel. File asli tidak pernah diubah.
-- **Aturan jumlah kolom CSV (v1.0.4):** setiap baris data wajib punya jumlah kolom yang **sama dengan
-  judul kolom** (kolom kosong berlebih di ujung kanan boleh). Baris yang kolomnya kurang/lebih →
-  `GAGAL: Jumlah kolom tidak cocok di N baris data …` + nomor baris & isinya. Jelaskan ke pengguna:
-  "baris itu kolomnya bergeser, jadi angkanya bisa masuk ke kolom yang salah" dan minta ia
-  memperbaiki baris itu (sel terlewat, koma di teks tanpa tanda kutip, kutip nyasar, atau catatan
-  di bawah tabel). `--paksa` hanya bila pengguna tetap ingin melihat hasil; "PERINGATAN TEGAS …
-  MUNGKIN SALAH" wajib disampaikan.
+- **Baris ringkasan & catatan (v1.0.5)** — dikeluarkan dari data otomatis, dilaporkan (bukan GAGAL):
+  baris berlabel Total/Jumlah/Subtotal/Grand Total/Rata-rata/Saldo Awal/Saldo Akhir/Mutasi… di kolom
+  mana pun (atas, tengah, bawah tabel); baris angka **tanpa label** yang isinya = jumlah/rata-rata
+  kolom di atasnya (rumus SUM/AVERAGE; toleransi Rp1); dan blok catatan di bawah tabel ("Dicetak
+  oleh…", "Sumber: …"). Sampaikan isi peringatan/info itu ke pengguna ("baris 14 = jumlah kolom,
+  tidak dihitung agar tidak dobel"). Bila baris itu ternyata data asli → `--pertahankan-total`.
+- **Aturan jumlah kolom CSV (v1.0.4–1.0.5):** setiap baris data wajib punya jumlah kolom yang **sama
+  dengan judul kolom**. Boleh: sel kosong berlebih di ujung kanan, dan baris yang kekurangan sel
+  **hanya di kolom paling kanan yang memang sering kosong** (mis. "Catatan") selama isi baris tidak
+  bergeser → dianggap kosong + info. Selain itu → `GAGAL: Jumlah kolom tidak cocok di N baris data …`
+  + nomor baris, isinya, dan kemungkinan penyebab (sel terlewat di tengah, koma di teks tanpa kutip,
+  kutip nyasar, catatan di tengah tabel). Sampaikan ke pengguna dengan bahasa awam dan minta ia
+  memperbaiki baris itu di Excel. `--paksa` hanya bila pengguna tetap ingin melihat hasil;
+  "PERINGATAN TEGAS … MUNGKIN SALAH" wajib disampaikan.
 - **CSV tanda kutip tak tertutup** sampai akhir file → selalu `GAGAL: CSV rusak ... baris N` (juga
   dengan `--paksa`). Kutip nyasar yang "tertutup" di baris lain dan kebetulan tetap cocok jumlah
   kolomnya → `GAGAL: CSV kemungkinan rusak … N baris data HILANG` (hanya pada kolom yang biasanya
