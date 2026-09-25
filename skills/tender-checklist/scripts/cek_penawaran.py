@@ -8,9 +8,17 @@ Hanya library standar Python 3.8+. Tanpa akses jaringan. Lintas OS
      python3 cek_penawaran.py harga rincian.csv --ppn nonmewah --hps "Rp 250.000.000"
    Kolom CSV (judul kolom boleh bervariasi): uraian, volume, satuan, harga satuan.
    Kolom opsional: no, harga satuan hps, jumlah (jumlah tertulis di file -> dicek per baris).
+   Baris total/pajak di file dicocokkan sesuai label: total/"setelah PPN", subtotal/"sebelum PPN"/DPP,
+   "DPP Nilai Lain (11/12)" (= 11/12 x DPP, toleransi Rp1), PPN.
    Pemisah ; , tab atau | dikenali otomatis. Format angka "Rp1.250.000,00", "1,5", "1.500" diterima.
    HPS/pagu boleh "185jt", "2,4 M", "Rp2,4 miliar".
-   Kode keluar: 0 = selesai; 1 = GALAT input; 3 = hasil tercetak tetapi TOTAL BELUM FINAL (ada baris tak terbaca).
+   Kolom "Jumlah" (banyaknya) + "Jumlah Harga" sekaligus: Jumlah = volume, Jumlah Harga = jumlah per baris.
+
+Kode keluar (harga & jadwal):
+   0 = bersih (tidak ada PERINGATAN)
+   1 = hasil tercetak, ada PERINGATAN (salah hitung, total tidak cocok, di atas HPS/di bawah 80%, dll.)
+   2 = input buruk (GALAT: file/angka/tanggal tidak terbaca, argumen salah) - tidak ada hasil
+   3 = hasil tercetak tetapi TOTAL BELUM FINAL (ada baris tak terbaca) - didahulukan dari 1
 
 2) Jadwal mundur dari batas akhir unggah penawaran (hari kerja):
      python3 cek_penawaran.py jadwal --batas "2026-10-15 14:00" \
@@ -38,12 +46,14 @@ BATAS_KEWAJARAN = Decimal("80")          # % HPS -> klarifikasi kewajaran harga
 BATAS_JAMINAN_PENAWARAN = 10_000_000_000  # HPS > Rp10 miliar -> jaminan penawaran (cek dokumen)
 BATAS_PAKET_UMK = 15_000_000_000          # pagu s.d. Rp15 miliar -> dicadangkan UMK & koperasi
 BATAS_JAMINAN_PELAKSANAAN = 200_000_000   # kontrak > Rp200 juta -> jaminan pelaksanaan (Pasal 33)
-KODE_BELUM_FINAL = 3                      # exit code: hasil tercetak, tetapi ada baris tak terbaca
+KODE_BERSIH, KODE_PERINGATAN, KODE_GALAT, KODE_BELUM_FINAL = 0, 1, 2, 3   # lihat docstring
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
          "September", "Oktober", "November", "Desember"]
 POLA_TOTAL = re.compile(r"^\s*(sub\s*-?\s*total|total|grand\s*total|jumlah(\s+total|\s+harga|\s+akhir)?|"
                         r"ppn|pajak|dpp|terbilang|dibulatkan|pembulatan)\b", re.I)
+# Label ringkasan yang TIDAK dikenali POLA_TOTAL tetapi tampak seperti total (dilaporkan, tidak dibandingkan)
+POLA_MIRIP_TOTAL = re.compile(r"\b(total|jumlah|nilai|harga\s+penawaran|keseluruhan|grand)\b", re.I)
 
 
 class InputSalah(Exception):
@@ -180,16 +190,28 @@ def _norm(s):
 
 
 def kenali_header(baris):
-    peta = {}
+    peta, kand_jumlah = {}, []
     for i, sel in enumerate(baris):
         n = _norm(sel)
         n2 = re.sub(r"\(.*?\)", "", n).strip()
+        if n in KUNCI_KOLOM["jumlah"] or n2 in KUNCI_KOLOM["jumlah"]:
+            kand_jumlah.append((i, n2))
         for kunci, sinonim in KUNCI_KOLOM.items():
             if kunci in peta:
                 continue
             if n in sinonim or n2 in sinonim:
                 peta[kunci] = i
                 break
+    if len(kand_jumlah) >= 2:
+        # Layout tabel barang umum: "Jumlah" (banyaknya) + "Jumlah Harga" (rupiah).
+        # Kolom ber-harga/total/nilai/rp = jumlah per baris; kolom "Jumlah" polos = volume (bila belum ada).
+        uang = [i for i, n in kand_jumlah if re.search(r"harga|total|nilai|amount|rp", n)]
+        polos = [i for i, n in kand_jumlah if i not in uang]
+        if uang:
+            peta["jumlah"] = uang[0]
+            if polos and "volume" not in peta:
+                peta["volume"] = polos[0]
+                peta["_jumlah_ganda"] = True
     if "uraian" in peta and ("volume" in peta or "harga" in peta):
         return peta
     return None
@@ -250,6 +272,9 @@ def baca_rincian(path):
             mulai = i + 1
             break
     catatan = []
+    if peta and peta.pop("_jumlah_ganda", False):
+        catatan.append("Ada kolom 'Jumlah' dan 'Jumlah Harga': 'Jumlah' dibaca sebagai VOLUME (banyaknya), "
+                       "'Jumlah Harga' sebagai jumlah rupiah per baris (dicek terhadap volume x harga satuan).")
     if not peta:
         # tanpa judul kolom: tebak urutan
         contoh = next((b for b in semua if any(x.strip() for x in b)), [])
@@ -288,38 +313,80 @@ def label_total(uraian, sel):
 
 POLA_JENIS_PPN = re.compile(r"^\s*(ppn|pajak)", re.I)
 POLA_JENIS_SUBTOTAL = re.compile(r"^\s*(sub\s*-?\s*total|dpp|jumlah(\s+harga)?(?!\s*[a-z]))", re.I)
+# Label yang MENYEBUT basisnya sendiri (layout Excel PKP sejak PMK 131/2024)
+POLA_NILAI_LAIN = re.compile(r"nilai\s+lain|11\s*/\s*12", re.I)
+POLA_SEBELUM_PPN = re.compile(r"sebelum\s+(ppn|pajak)|belum\s+(termasuk\s+)?(ppn|pajak)|tanpa\s+(ppn|pajak)|"
+                              r"\bexcl|\bdpp\b|dasar\s+pengenaan", re.I)
+POLA_SESUDAH_PPN = re.compile(r"(setelah|sesudah|termasuk|incl\w*|\+|plus|dengan)\s*(ppn|pajak)", re.I)
 
 
 def jenis_total(label):
-    """'ppn' | 'subtotal' | 'total' (total/grand total/jumlah total/jumlah akhir/dibulatkan)."""
+    """'ppn' | 'dpp_lain' (DPP nilai lain 11/12) | 'dpp' (label menyebut 'sebelum PPN'/DPP) |
+    'subtotal' (Jumlah/Subtotal, basis tidak disebut) | 'total' (total/grand total/sesudah PPN/dibulatkan)."""
     if POLA_JENIS_PPN.match(label):
         return "ppn"
+    if POLA_NILAI_LAIN.search(label):
+        return "dpp_lain"
+    if POLA_SEBELUM_PPN.search(label):
+        return "dpp"
+    if POLA_SESUDAH_PPN.search(label):
+        return "total"
     if POLA_JENIS_SUBTOTAL.match(label):
         return "subtotal"
     return "total"
 
 
-def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I):
+def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I, sementara=False, ppn_mode=None):
     """Cocokkan baris total/pajak di file dengan angka script SESUAI labelnya.
-    Tidak pernah menyatakan 'cocok' bila basisnya berbeda (sebelum vs sesudah PPN);
-    selalu menampilkan kedua angka (sebelum & sesudah PPN)."""
+    Tidak pernah menyatakan 'cocok' bila basisnya berbeda (sebelum vs sesudah PPN), dan tidak
+    menyatakan 'cocok' bila hitungan script masih SEMENTARA (TOTAL BELUM FINAL)."""
     jenis = jenis_total(label)
     ppn_aktif = nilai_ppn > 0
     kedua = (f"hitungan script: sebelum PPN {rupiah(dpp)}, PPN {rupiah(nilai_ppn)}, sesudah PPN {rupiah(total)}"
              if ppn_aktif else f"hitungan script: total {rupiah(total)}, tanpa PPN")
+
+    def cocok(apa):
+        if sementara:
+            I.append(f"Baris '{label}' di file ({rupiah(nilai)}) sama dengan {apa} SEMENTARA - belum bisa dinyatakan "
+                     f"cocok karena ada baris tak terbaca (TOTAL BELUM FINAL; {kedua}).")
+        else:
+            I.append(f"Baris '{label}' di file ({rupiah(nilai)}) cocok dengan {apa} ({kedua}).")
+
     if jenis == "ppn":
         if nilai == nilai_ppn:
-            I.append(f"Baris '{label}' di file ({rupiah(nilai)}) cocok dengan PPN hitungan script ({kedua}).")
+            cocok("PPN hitungan script")
         else:
             P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi PPN hitungan script {rupiah(nilai_ppn)} "
                      f"(selisih {rupiah(nilai_ppn - nilai)}; {kedua}). Cek rumus PPN/DPP di Excel.")
         return
+    if jenis == "dpp_lain":
+        # DPP nilai lain = 11/12 x DPP (PMK 131/2024). Excel bisa membulatkan ke atas/bawah -> toleransi Rp1.
+        persis = Fraction(dpp) * 11 / 12
+        acuan = bulat(persis)
+        teks_acuan = f"11/12 x {rupiah(dpp)} = {rupiah(acuan)}"
+        if ppn_mode == "mewah":
+            I.append(f"Baris '{label}': barang mewah memakai DPP penuh (12% x DPP), bukan DPP nilai lain 11/12.")
+        if abs(Fraction(nilai) - persis) <= 1:
+            cocok(f"DPP nilai lain ({teks_acuan})")
+        else:
+            P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi DPP nilai lain {teks_acuan} "
+                     f"(selisih {rupiah(acuan - nilai)}; {kedua}). Cek rumus DPP nilai lain di Excel.")
+        return
+    if jenis == "dpp":
+        if nilai == dpp:
+            cocok("jumlah SEBELUM PPN")
+        elif ppn_aktif and nilai == total:
+            P.append(f"Baris '{label}' di file ({rupiah(nilai)}) sama dengan total SESUDAH PPN, padahal labelnya "
+                     f"menyebut SEBELUM PPN/DPP ({kedua}). Perbaiki label atau rumusnya.")
+        else:
+            P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi jumlah SEBELUM PPN hitungan script "
+                     f"{rupiah(dpp)} (selisih {rupiah(dpp - nilai)}; {kedua}). Cek rumus di Excel.")
+        return
     if jenis == "subtotal":
         if nilai == dpp:
-            I.append(f"Baris '{label}' di file ({rupiah(nilai)}) cocok dengan jumlah SEBELUM PPN ({kedua}).")
+            cocok("jumlah SEBELUM PPN")
         elif nilai == total and termasuk_ppn:
-            I.append(f"Baris '{label}' di file ({rupiah(nilai)}) cocok dengan jumlah harga yang SUDAH TERMASUK PPN "
-                     f"({kedua}).")
+            cocok("jumlah harga yang SUDAH TERMASUK PPN")
         elif nilai == total:
             P.append(f"Baris '{label}' di file ({rupiah(nilai)}) sama dengan total SESUDAH PPN, padahal label ini "
                      f"biasanya berarti jumlah SEBELUM PPN ({kedua}). Pastikan label & rumusnya benar.")
@@ -329,8 +396,7 @@ def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I):
                      f"{kedua}). Cek rumus di Excel.")
         return
     if nilai == total:
-        I.append(f"Baris '{label}' di file ({rupiah(nilai)}) cocok dengan TOTAL"
-                 + (" sesudah PPN" if ppn_aktif else "") + f" hitungan script ({kedua}).")
+        cocok("TOTAL" + (" sesudah PPN" if ppn_aktif else "") + " hitungan script")
     elif ppn_aktif and nilai == dpp:
         P.append(f"Baris '{label}' di file ({rupiah(nilai)}) = jumlah SEBELUM PPN. Total di file BELUM TERMASUK PPN: "
                  f"total yang benar {rupiah(total)} (sebelum PPN {rupiah(dpp)} + PPN {rupiah(nilai_ppn)}). "
@@ -343,6 +409,7 @@ def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I):
 def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None):
     baris_data, peta, lebar, pemisah, catatan, offset = baca_rincian(path)
     item, dilewati, masalah, total_tertempel, selisih_baris, info_baris = [], [], [], [], [], []
+    mirip_total = []   # (no_file, label, nilai): baris berlabel mirip total yang tidak dikenali -> dilaporkan
     for no_file, sel in enumerate(baris_data, start=offset + 1):
         if not any(x.strip() for x in sel):
             continue
@@ -363,7 +430,16 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None):
             continue
         if not vol_t and not harga_t:
             if uraian:
-                dilewati.append(f"baris {no_file}: '{uraian}' tanpa volume & harga -> dianggap judul bagian")
+                nilai_t = jumlah_t if re.search(r"\d", jumlah_t) else ""
+                if nilai_t:
+                    try:
+                        mirip_total.append((no_file, uraian, bulat(parse_angka(nilai_t))))
+                    except InputSalah:
+                        mirip_total.append((no_file, uraian, None))
+                    dilewati.append(f"baris {no_file}: '{uraian}' berisi angka di kolom Jumlah tanpa volume & harga "
+                                    "-> tidak dihitung (lihat Info)")
+                else:
+                    dilewati.append(f"baris {no_file}: '{uraian}' tanpa volume & harga -> dianggap judul bagian")
             continue
         try:
             if not uraian:
@@ -432,11 +508,27 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None):
     for label, nilai in total_tertempel:
         if nilai is None:
             continue
-        bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I)
+        bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I, sementara=bool(masalah),
+                         ppn_mode=ppn)
         if (selisih_baris and nilai_ppn > 0 and jenis_total(label) == "total" and not termasuk_ppn
                 and all("jumlah_file" in i for i in item) and nilai == sum(i["jumlah_file"] for i in item)):
             P.append(f"Baris '{label}' di file ({rupiah(nilai)}) sama dengan jumlah kolom Jumlah di file = masih "
                      "SEBELUM PPN dan ikut salah hitung baris di atas.")
+    for no_file, label, nilai in mirip_total:
+        if nilai is None:
+            I.append(f"Baris {no_file} '{label}': angka di kolom Jumlah tidak terbaca -> tidak diperiksa.")
+            continue
+        jenis = "tampak seperti baris total" if POLA_MIRIP_TOTAL.search(label) else "mungkin subtotal bagian/total"
+        if nilai == dpp and nilai_ppn > 0:
+            banding = f"nilainya SAMA dengan jumlah SEBELUM PPN hitungan script ({rupiah(dpp)}; sesudah PPN {rupiah(total)})"
+        elif nilai == total:
+            banding = f"nilainya SAMA dengan total hitungan script ({rupiah(total)})"
+        else:
+            banding = (f"nilainya TIDAK sama dengan jumlah sebelum PPN ({rupiah(dpp)}) maupun total ({rupiah(total)}) "
+                       "hitungan script")
+        I.append(f"Baris {no_file} '{label}' ({rupiah(nilai)}) {jenis}, tetapi labelnya tidak dikenali -> TIDAK "
+                 f"diperiksa otomatis; {banding}. Bila ini total penawaran, pastikan angkanya benar"
+                 + (" (sementara: TOTAL BELUM FINAL)." if masalah else "."))
     for it in item:
         if "persen_hps" in it and it["persen_hps"] > 100:
             I.append(f"Item {it['no']} '{it['uraian']}': harga satuan {persen_id(it['persen_hps'])} dari HPS satuan "
@@ -715,7 +807,8 @@ def main(argv=None):
     try:
         a = ap.parse_args(argv)
     except SystemExit as e:
-        return e.code if isinstance(e.code, int) else 2
+        # --help -> 0 ; argumen salah (argparse) -> 2 = input buruk
+        return e.code if isinstance(e.code, int) else KODE_GALAT
     try:
         if a.perintah == "harga":
             hps = int(parse_angka(a.hps, "HPS", besar=True)) if a.hps else None
@@ -724,6 +817,8 @@ def main(argv=None):
             print(json.dumps(hasil, default=ke_json, ensure_ascii=False, indent=2) if a.json else tampil_harga(hasil))
             if hasil["total_belum_final"]:
                 return KODE_BELUM_FINAL   # hasil tetap tercetak; ada baris yang tidak ikut dihitung
+            if hasil["peringatan"]:
+                return KODE_PERINGATAN
         elif a.perintah == "jadwal":
             batas = parse_tanggal(a.batas, "batas unggah")
             hari_ini = parse_tanggal(a.hari_ini, "hari ini").date() if a.hari_ini else date.today()
@@ -732,13 +827,15 @@ def main(argv=None):
                            parse_tanggal(a.penjelasan, "tanggal penjelasan") if a.penjelasan else None,
                            baca_libur(a.libur), a.sabtu_kerja, a.konstruksi, a.jaminan)
             print(json.dumps(hasil, default=ke_json, ensure_ascii=False, indent=2) if a.json else tampil_jadwal(hasil))
+            if hasil["peringatan"]:
+                return KODE_PERINGATAN
         else:
             ap.print_help()
-            return 2
+            return KODE_GALAT
     except InputSalah as e:
         print(f"GALAT: {e}", file=sys.stderr)
-        return 1
-    return 0
+        return KODE_GALAT
+    return KODE_BERSIH
 
 
 if __name__ == "__main__":

@@ -54,8 +54,9 @@ Info kurang → tanyakan **sekali** (maks. 5 pertanyaan bernomor). Ingin cepat �
    `python3 scripts/cek_penawaran.py harga rincian.csv --ppn nonmewah --hps "Rp 250.000.000" [--pagu ...] [--termasuk-ppn]`
    `--ppn tidak` (default, bukan PKP) | `nonmewah` | `mewah`. HPS/pagu boleh "185jt", "2,4 M", "Rp2,4 miliar". Salin angka **persis** dari output. Script menerima "Rp1.250.000,00", volume "1,5", sel kosong, baris judul bagian, dan baris total/PPN yang ikut tertempel (label boleh di kolom mana pun; dibandingkan, tidak dihitung ganda).
    - **Kolom Jumlah pengguna** dicek per baris: bagian "Baris salah hitung" menunjuk baris yang volume × harga ≠ jumlah tertulis beserta selisihnya — sampaikan ke pengguna baris demi baris. Script selalu memakai volume × harga satuan.
-   - **Baris total di file** dicocokkan sesuai labelnya (Total → sesudah PPN; Jumlah/Subtotal/DPP → sebelum PPN; PPN → PPN). "Total di file BELUM TERMASUK PPN" = kesalahan gugur/rugi yang umum — tegaskan angka yang benar.
-   - Kode keluar 3 = hasil tercetak tetapi **TOTAL BELUM FINAL** (ada baris tak terbaca); 1 = GALAT input.
+   - Kolom `Jumlah` (banyaknya) **dan** `Jumlah Harga` sekaligus → Jumlah = volume, Jumlah Harga = jumlah per baris yang dicek.
+   - **Baris total di file** dicocokkan sesuai labelnya (Total/"setelah/termasuk PPN" → sesudah PPN; Jumlah/Subtotal/DPP/"sebelum PPN" → sebelum PPN; "DPP Nilai Lain (11/12)" → 11/12 × DPP, toleransi Rp1; PPN → PPN). "Total di file BELUM TERMASUK PPN" = kesalahan gugur/rugi yang umum — tegaskan angka yang benar. Label mirip total yang tidak dikenali (mis. "Harga Total") muncul di Info "TIDAK diperiksa" — sampaikan & minta pengguna memastikan. Saat TOTAL BELUM FINAL, baris total hanya "sama dengan angka SEMENTARA", jangan sebut cocok.
+   - Kode keluar: **0** bersih; **1** ada PERINGATAN (sampaikan semuanya); **2** input buruk/GALAT (tanpa hasil); **3** TOTAL BELUM FINAL (ada baris tak terbaca).
    **Rumus eksplisit (bila script tak bisa dijalankan):**
    - Jumlah baris = volume × harga satuan → bulatkan ke rupiah terdekat.
    - Subtotal = Σ jumlah baris = DPP (harga belum termasuk PPN).
