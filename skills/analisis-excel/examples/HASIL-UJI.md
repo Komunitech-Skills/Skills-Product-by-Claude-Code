@@ -108,3 +108,54 @@ top-N, banding periode/sheet → **0 ketidakcocokan** dengan kunci independen.
 `--izinkan-multibaris` + tes regresi) dan N2 (acuan = kelompok struktur terbesar + 1 kalimat di SKILL.md);
 setelah itu cukup cek singkat `alamat-sah.csv`, `pesanan-marketplace-sep.csv`, dan Koperasi `--sheet semua`
 → layak skor 8 dan status `lulus`. N3–N8 boleh menyusul.
+
+---
+
+## Uji ulang v1.0.2 (penguji independen ke-3, cek singkat, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad (bukan repo). Versi script `1.0.2`. Tes bawaan: **47 tes OK**.
+SKILL.md 174 baris. Platform: `claude-code (simulasi agent)`. Fixture baru: `buat_fixture_uji_v102.py`
+(deterministik; kunci `kunci-baru.json` dihitung dari data sumber, tanpa membaca kode skill).
+
+### Temuan lama → status
+| # | Temuan | Bukti ulang | Status |
+|---|---|---|---|
+| N1 | CSV sah alamat multi-baris berkoma ditolak | `alamat-sah.csv` → 3 baris, Rp 6.000 ✔; `pesanan-marketplace-sep.csv` → 60 baris, Rp 5.627.000, per kota 5/5 cocok kunci | ✔ Beres |
+| — | Kutip tak tertutup tetap GAGAL | `kutip-rusak.csv` (uji pertama, baris 2), `kutip-tengah.csv` (baris 7), `kutip-di-akhir.csv` (baris 4) → GAGAL kode 2, **juga dengan `--paksa`**; `kutip-tertutup-jauh.csv` → "kemungkinan rusak" + saran `--paksa` | ✔ |
+| — | `--paksa` terdokumentasi & memberi peringatan | SKILL.md (Batasan) + references; keluaran: "⚠️ --paksa: CSV dibaca apa adanya … Angka bisa salah …" | ✔ |
+| N2 | `--sheet semua` memakai Ringkasan sebagai acuan | Koperasi → gabungan TW1–TW4, 172 baris, Rp 332.635.000, per TW & per Jenis cocok kunci; catatan "Acuan: TW1 (cocok 4 sheet), bukan 'Ringkasan'"; SKILL.md menyebut `--acuan` & daftar sheet | ✔ Beres |
+| N3 | Peringatan multi-baris berulang / nomor fisik vs rekaman | Kini satu peringatan + peta "Baris 2 s.d. 4 di Notepad = baris 2 di Excel" (dicek manual benar) | ✔ (catatan kecil B3) |
+| N4 | "Jumlah Jumlah" | "Total kolom Jumlah per Sheet" | ✔ |
+| N5 | Email tersamar kembar | `a•••04@contoh.id`, `a•••12@…` — unik | ✔ |
+| N6 | Uang Lembur tidak sensitif; Simpanan tanpa Rp | "SENSITIF: NIK, Uang Lembur"; Simpanan Wajib tampil `Rp` | ✔ |
+| N7 | Nama sheet berkoma tanpa saran | GAGAL + "nama sheet 'Jan, Feb' = nomor 5 … pakai --sheet \"1,5\""; `--sheet "Jan, Feb"` utuh berhasil | ✔ |
+| N8 | "baris 4 s.d. 4" | "baris 4 (baris terakhir file)" | ✔ |
+
+Angka lama juga diulang: skenario 01 `--sheet semua` (499 baris, 496 terisi, Rp 233.556.000) dan anggota per golongan (Rp 63.350.000) → cocok kunci.
+
+### File baru (kunci independen)
+| File | Isi | Hasil script vs kunci |
+|---|---|---|
+| F1 `ekspor-marketplace.csv` | UTF-8 BOM, CRLF, 40 pesanan, alamat 3 baris tiap baris berkoma + angka (RT/RW, kode pos), `""` di produk & catatan, emoji, catatan multi-baris, 6 baris kosong | 40 baris ✔, Rp 6.738.100 ✔, qty 88 ✔, per kota 4/4 ✔, per produk 4/4 ✔ (termasuk `Gamis "Syar'i" 🌙`, `Kerudung Pashmina, Motif 💐`); tidak ditolak ✔ |
+| F2 `rekap-wa.csv` | pemisah `;`, `1.234.000,00` campur tanpa desimal, catatan multi-baris berisi `;` dan angka, `""` + emoji | 25 baris ✔, Rp 5.301.500 ✔, per pelanggan 4/4 ✔, banding Agu→Sep Rp 2.129.500 → Rp 3.172.000 ✔ |
+| F3 `rusak-tertutup-jauh.csv` | kutip dibuka baris 6, "ditutup" baris 10 | GAGAL "kemungkinan rusak baris 6 s.d. 10" kode 2 ✔ |
+| F3c `rusak-terbuka.csv` | kutip dibuka baris 11, tak pernah ditutup | GAGAL "CSV rusak baris 11" kode 2 ✔ |
+| F3b `rusak-satu-baris.csv` | kutip dibuka baris 6, ditutup baris 7 (1 baris tertelan, jumlah sel tetap 4) | **Terbaca 19 baris, Rp 205.000 (benar Rp 210.000)** + hanya peringatan lunak "sel multi-baris … wajar bila disengaja" ✘ (B1) |
+| F4 `biaya-4-bulan.xlsx` | Ringkasan (sheet pertama) + Jan/Feb/Mar/Apr (baris TOTAL) + Rekap Akhir (sheet terakhir, struktur pivot) | `--sheet semua`: 77 baris ✔, Rp 63.575.000 ✔, pivot Kategori × Sheet 16/16 sel ✔, tren per bulan 4/4 ✔; kedua sheet ringkasan dilewati + peringatan ✔. Tanpa `--sheet` → sheet 'Ringkasan' (sesuai dokumentasi, disebut di sumber) |
+| F4b `rekap-mirip.xlsx` | sama, tetapi sheet terakhir "Rekap Kategori" berjudul Tanggal/Kategori/Jumlah (2 dari 3 kolom sama) | **Digabung → Rp 127.150.000 (dobel; benar Rp 63.575.000)**; peringatan hanya "tidak ada kolom Keterangan … cek hasilnya" ✘ (B2) |
+| F5 `rincian-mirip-data.csv` | sel sah "Kaos, 2, 50000⏎Topi, 1, 30000⏎Ongkir, 1, 23000" (mirip baris data, 4 kolom) | 10 baris, Rp 1.055.000 ✔ — tidak ditolak (bagus) |
+
+**Ringkas:** 0 penolakan terhadap file sah (F1, F2, F4, F5, + 3 file uji ulang); semua kutip terbuka hingga akhir file GAGAL; 2 kasus angka salah dengan peringatan lemah (B1, B2).
+
+### Bug baru
+| # | Prioritas | Temuan | Saran |
+|---|---|---|---|
+| B1 | P2 | Kutip nyasar yang "tertutup" di baris berikutnya menelan tepat 1 baris data (jumlah sel rekaman tetap cocok, hanya 1 baris dalam sel mirip data) → total kurang Rp 5.000 tanpa GAGAL; peringatannya dibingkai "wajar bila disengaja". | Anggap curiga juga bila ada **1** baris dalam sel yang terpecah pemisah menjadi ≥ (jumlah kolom − 1) bagian dengan angka di posisi kolom angka, **dan** kolom sel itu biasanya satu baris (mayoritas rekaman lain tidak multi-baris). Minimal: bila hanya 1–2 sel multi-baris di kolom yang biasanya satu baris, ubah peringatan jadi "cek baris N, mungkin tanda kutip nyasar". F5 harus tetap lolos. |
+| B2 | P2 | `--sheet semua` menggabungkan sheet rekap di akhir yang judul kolomnya ≥ 50% sama → total dobel. | Lewati (+ peringatan tegas) sheet bernama Rekap/Ringkasan/Total/Summary, atau yang jumlahnya = jumlah sheet lain; minimal naikkan peringatan menjadi "sheet X mungkin rekap — total bisa DOBEL" dan beri 1 kalimat di SKILL.md agar agent memeriksa sheet yang kurang kolom. |
+| B3 | P3 | Peringatan menulis "35 sel teks berisi baris baru" padahal 41 sel di 35 baris (yang dihitung = rekaman). | Tulis "35 baris berisi sel multi-baris". |
+| B4 | P3 | Pesan "Kolom kolom 'Jumlah' tidak ada" (kata ganda) saat `--acuan Ringkasan`. | Perbaiki teks. |
+
+### Skor kualitas uji ulang v1.0.2: **8 / 10** — layak `lulus`
+- (+) N1–N8 semua tertutup dan diverifikasi ulang; file sah yang sulit (alamat 3 baris berangka, `""`, emoji, baris kosong, `;` + desimal koma, sel mirip data) terbaca benar; kutip rusak hingga akhir file selalu GAGAL walau `--paksa`; 47 tes lulus; semua angka file baru cocok kunci independen (kecuali 2 jebakan di bawah).
+- (−) B1 & B2: dua pola jebakan yang lebih jarang masih menghasilkan angka salah dengan peringatan terlalu lunak (tidak diam total — ada peringatan — sehingga tidak menurunkan di bawah 8).
+
+**Rekomendasi:** status `lulus`; B1/B2 diperbaiki di v1.0.3 (+ tes regresi F3b, F4b, F5 dari `buat_fixture_uji_v102.py`); B3/B4 boleh menyusul.
