@@ -36,6 +36,11 @@ Cara kerja singkat (v1.0.2):
    alasannya digabung ("cocok_lain"). Klausa setelah "tetapi/namun/kecuali/except" dinilai tersendiri, sehingga
    "tidak menjual data, tetapi dapat membagikannya ke mitra iklan" tetap ditandai. Idiom "bukan tidak mungkin"
    dibaca sebagai "mungkin". Semua unsur di JSON memakai kunci yang sama.
+7. (v1.0.3) Script ini PEMERIKSA KEDUA, bukan penyaring risiko. Pada uji buta independen, pola kata kunci hanya
+   menangkap sekitar 4 dari 10 kalimat berisiko yang ditulis dengan kata-kata lain (parafrasa/eufemisme). Karena itu,
+   bila tidak ada pola yang cocok, keluaran menyatakan dengan jujur bahwa itu BUKAN jaminan aman dan merujuk ke
+   pembacaan manual per kategori (references/kategori-risiko-cek.md). Pola "kepada pihak mana pun" kini memeriksa
+   penyangkal di seluruh klausa ("Kami tidak menjual ... kepada pihak mana pun" = patuh).
 """
 import argparse
 import bisect
@@ -46,7 +51,7 @@ import re
 import sys
 import unicodedata
 
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 BATAS_BYTE = 5 * 1024 * 1024        # file > 5 MB ditolak dengan pesan ramah
 MAKS_TEMUAN_PER_POLA = 20
 MAKS_TEMUAN_TOTAL = 60
@@ -428,7 +433,7 @@ RISIKO = [
          kecuali=r"\b(?:" + BERITAHU_ID + r")(?! privasi| ini\b)|\b(?:" + BERITAHU_EN + r")(?! (?:is|applies))"),
     dict(pola=r"(kepada|dengan) (siapa ?pun|pihak mana ?pun|semua pihak|pihak ketiga mana ?pun)|with any(one| third part(y|ies))",
          tingkat="SEDANG", alasan="Berbagi data tanpa batas penerima & tujuan tidak memenuhi prinsip terbatas dan spesifik (Pasal 16 ayat (2)).",
-         saran="Sebutkan penerima secara spesifik (kategori + tujuan).", cek_negasi=True),
+         saran="Sebutkan penerima secara spesifik (kategori + tujuan).", cek_negasi=True, negasi_klausa=True),
     dict(pola=r"(untuk|demi|for) (tujuan|keperluan|kepentingan) (apa ?pun|lain ?nya|lain apa pun|apa saja)|for any (other )?purpose(s)? (whatsoever|we (deem|see fit))|for any purpose",
          tingkat="SEDANG", alasan="Tujuan pemrosesan wajib spesifik dan terbatas (Pasal 16 ayat (2) huruf b); \"untuk tujuan apa pun\" tidak memenuhi.",
          saran="Sebutkan tujuan secara spesifik (mis. memproses pesanan, pengiriman, layanan pelanggan).", cek_negasi=True),
@@ -474,6 +479,14 @@ URUTAN_STATUS = (
     "4. PERLU PERBAIKAN — skor 60-84.",
     "5. CUKUP LENGKAP — skor >= 85, tanpa frasa TINGGI, tanpa isian kosong.",
 )
+PESAN_RISIKO_KOSONG = (
+    "Pola kata kunci tidak menemukan frasa berisiko. Ini BUKAN jaminan kebijakan aman: script hanya mengenali "
+    "kata-kata tertentu dan sering melewatkan kalimat berisiko yang ditulis dengan kata lain (mis. \"kami kolaborasikan "
+    "dengan mitra\", \"made available to partners\", \"at our sole discretion\"). Baca seluruh dokumen secara manual "
+    "per kategori di references/kategori-risiko-cek.md.")
+PESAN_RISIKO_ADA = (
+    "Daftar ini hanya penanda awal dari pola kata kunci dan TIDAK lengkap. Kalimat berisiko lain yang ditulis dengan "
+    "kata berbeda tetap harus dicari dengan membaca manual per kategori (references/kategori-risiko-cek.md).")
 BATAS_SKOR_ISIAN = 84   # skor maksimum selama masih ada isian kosong (di bawah ambang CUKUP LENGKAP 85)
 JENDELA = 60   # karakter maksimum sebelum kecocokan yang diperiksa untuk penyangkal
 
@@ -767,17 +780,19 @@ class Indeks:
         i = bisect.bisect_right(self.kalimat, pos)
         return self.kalimat[i] if i < len(self.kalimat) else len(self.t)
 
-    def jendela(self, m_awal):
+    def jendela(self, m_awal, seluruh_klausa=False):
         k = self.klausa[bisect.bisect_right(self.klausa, m_awal) - 1]
-        return max(k, m_awal - JENDELA)
+        return k if seluruh_klausa else max(k, m_awal - JENDELA)
 
     @staticmethod
     def _hitung(daftar, a, b):
         return bisect.bisect_left(daftar, b) - bisect.bisect_left(daftar, a)
 
-    def disangkal(self, m):
-        """True bila ada penyangkal di klausa sebelum/di dalam kecocokan."""
-        return self._hitung(self.neg, self.jendela(m.start()), m.end()) > 0
+    def disangkal(self, m, seluruh_klausa=False):
+        """True bila ada penyangkal di klausa sebelum/di dalam kecocokan.
+        seluruh_klausa=True: seluruh klausa diperiksa (tanpa batas JENDELA karakter), untuk pola ekor kalimat
+        seperti "kepada pihak mana pun" yang sering jauh dari kata "tidak" di awal kalimat."""
+        return self._hitung(self.neg, self.jendela(m.start(), seluruh_klausa), m.end()) > 0
 
     def positif(self, m):
         """True bila polaritas positif: jumlah penyangkal (+ tanpa/without) genap.
@@ -824,7 +839,12 @@ def cari_risiko(bersih, idx):
     terpotong = False
     for r in RISIKO:
         n_pola = 0
-        terima = (lambda m: not idx.disangkal(m)) if r["cek_negasi"] else (lambda m: True)
+        if not r["cek_negasi"]:
+            terima = (lambda m: True)
+        elif r.get("negasi_klausa"):
+            terima = (lambda m: not idx.disangkal(m, seluruh_klausa=True))
+        else:
+            terima = (lambda m: not idx.disangkal(m))
         if r["perlu_re"] is not None:
             # hanya kalimat yang memuat kata wajib (cepat untuk teks besar)
             rentang = []
@@ -993,8 +1013,12 @@ def periksa(teks):
         "isian_kosong": len(isian),
         "unsur": hasil,
         "risiko": risiko,
+        "pesan_risiko": PESAN_RISIKO_ADA if risiko else PESAN_RISIKO_KOSONG,
+        "risiko_kosong_bukan_jaminan_aman": True,
         "catatan": catatan,
-        "peringatan": "Pemeriksa bantu berbasis kata kunci & polaritas kalimat, bukan penilaian hukum. Kata kunci yang ditemukan belum tentu isinya memadai.",
+        "peringatan": ("Pemeriksa bantu berbasis kata kunci & polaritas kalimat, bukan pemeriksa hukum. Kata kunci yang ditemukan "
+                       "belum tentu isinya memadai, dan kata kunci yang tidak ditemukan belum tentu berarti aman. "
+                       "Penilaian risiko wajib lewat pembacaan manual (references/kategori-risiko-cek.md)."),
     }
 
 
@@ -1024,13 +1048,15 @@ def cetak_teks(r, nama):
             out.append("  {}. {} — {} [{}]".format(i, h["label"], h["saran"], h["dasar"]))
     out.append("")
     if r["risiko"]:
-        out.append("FRASA BERISIKO:")
+        out.append("FRASA BERISIKO (penanda awal dari pola kata kunci):")
         for x in r["risiko"]:
             out.append("  - [{}] baris {}: \"{}\"".format(x["tingkat"], x["baris"], x["kutipan"]))
             out.append("      Alasan: {}".format(x["alasan"]))
             out.append("      Saran : {}".format(x["saran"]))
+        out.append("  ! " + r["pesan_risiko"])
     else:
-        out.append("FRASA BERISIKO: tidak ditemukan.")
+        out.append("FRASA BERISIKO (pola kata kunci): tidak ada pola yang cocok.")
+        out.append("  ! " + r["pesan_risiko"])
     if r["catatan"]:
         out.append("")
         out.append("CATATAN:")

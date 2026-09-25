@@ -1,6 +1,6 @@
 # Checklist Pemeriksaan Kebijakan Privasi (mode "cek")
 
-Dipakai untuk mode 3 (memeriksa kebijakan privasi yang sudah ada), bersama atau tanpa `scripts/cek_kebijakan.py`. Script memeriksa kata kunci; agent **wajib membaca isinya** untuk menilai apakah memadai (mis. "masa simpan" disebut, tapi isinya "selamanya" = tetap bermasalah).
+Dipakai untuk mode 3 (memeriksa kebijakan privasi yang sudah ada), bersama atau tanpa `scripts/cek_kebijakan.py`. **Urutan (v1.0.3):** agent membaca seluruh dokumen lebih dulu dan menilai risiko per kategori di `kategori-risiko-cek.md` (K1–K16), baru menjalankan script sebagai pemeriksa kedua untuk unsur (bagian A) dan skor. Script memeriksa kata kunci; isinya tetap dinilai agent (mis. "masa simpan" disebut, tapi isinya "selamanya" = tetap bermasalah).
 
 ## A. Unsur pokok (bobot sama dengan script)
 | # | Unsur | Bobot | Dasar | Tingkat risiko bila tidak ada |
@@ -28,7 +28,9 @@ Skor = jumlah bobot terpenuhi ÷ bobot berlaku × 100. Status diperiksa **beruru
 
 **Polaritas (v1.0.1):** unsur hanya terpenuhi oleh kalimat positif ("kami **tidak akan** memberi tahu bila bocor" ≠ unsur kebocoran; "tidak akan mengubah … **tanpa** pemberitahuan" = positif). Pengecualian: pernyataan "data tidak dikirim ke luar negeri" tetap memenuhi unsur transfer LN (informasi yang sah). Frasa berisiko yang disangkal ("Data Anda tidak akan dijual") tidak ditandai.
 
-## B. Frasa berisiko (contoh)
+## B. Frasa berisiko (contoh kata kunci yang dikenali script)
+Tabel ini hanya contoh bentuk yang umum. Kalimat dengan makna sama tetapi kata berbeda **tidak** dikenali script; penilaian risiko memakai kategori di `kategori-risiko-cek.md`, bukan tabel ini.
+
 | Frasa | Tingkat | Masalah | Ganti dengan |
 |---|---|---|---|
 | "Kami tidak akan memberi tahu bila terjadi kebocoran" / "merahasiakan kebocoran" | TINGGI | Ps. 46 (wajib beri tahu ≤ 3×24 jam) | Komitmen pemberitahuan tertulis ≤ 3×24 jam |
@@ -51,6 +53,16 @@ Skor = jumlah bobot terpenuhi ÷ bobot berlaku × 100. Status diperiksa **beruru
 | "Mengakses semua data di perangkat Anda" | SEDANG | Minimisasi | Batasi izin |
 
 ## C. Hal yang tidak bisa dinilai script (agent periksa manual)
+Daftar lengkap per kategori, dengan contoh parafrasa ID/EN dan dasar pasal: `kategori-risiko-cek.md`. Yang paling sering lolos dari script pada uji buta v1.0.2:
+- Pembatasan hak: "dipertimbangkan sesuai diskresi kami", "tidak dapat dilayani", persetujuan "final/tidak dapat ditarik kembali", biaya atau syarat berlebihan (K9).
+- Anak mendaftar sendiri atau tanpa izin orang tua/wali (K10).
+- Opt-out ("kecuali Anda keberatan") untuk data spesifik, mis. foto pasien untuk testimoni (K3, K11).
+- Transfer LN tanpa jaminan pelindungan setara (K6); catat semua layanan asing yang disebut, termasuk Google Sheets/Drive.
+- Perubahan tujuan tanpa persetujuan ulang (K4).
+- Pelacakan lokasi yang tidak bisa dimatikan; data berlebih seperti swafoto + KTP (K12).
+- Eufemisme berbagi/monetisasi: "kolaborasikan", "salurkan ke rekan bisnis", "made available to partners", "monetisasi wawasan" (K1, K2).
+- Unsur yang salah dibaca script pada teks Inggris (identitas "X ("the Clinic")", "Purpose:", "Sharing") → koreksi status unsur.
+
 - Isi sesuai praktik nyata? (mis. mengaku "tidak ada transfer LN" padahal pakai Google Drive/WA).
 - Kebijakan hasil salinan dari usaha lain/luar negeri (menyebut GDPR, CCPA, "California", nama perusahaan lain, mata uang asing) → **SEDANG** (sama dengan script): tulis ulang sesuai UU PDP. Naikkan ke TINGGI hanya bila salinan itu memuat praktik terlarang (mis. menjual data) atau tidak sesuai praktik nyata.
 - Bahasa: ada versi Bahasa Indonesia? (UU 24/2009 Ps. 31 untuk dokumen perjanjian; praktik baik untuk kebijakan).

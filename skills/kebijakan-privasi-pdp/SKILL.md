@@ -56,7 +56,7 @@ Jika pengguna ingin cepat: katakan "cukup jawab no. 1–3 dulu", lalu buat draf 
    - Catatan transaksi = **kewajiban hukum** (pembukuan pajak 10 tahun, UU KUP Pasal 28 ayat (11)).
 3. **Transfer luar negeri:** bila pengguna memakai WhatsApp/Meta, Google (Drive/Form/Sheets), Shopify, cloud atau AI asing → pakai opsi 5(a) (Pasal 56). Jangan menulis "semua data di Indonesia" kecuali pengguna memastikannya.
 4. **Isi template** `templates/kebijakan-privasi.md` (dan `templates/kebijakan-privasi-en.md` bila diminta; versi Indonesia berlaku bila berbeda). Pilih isi per jenis usaha dari `references/pilihan-per-jenis-usaha.md`. Hapus blok PANDUAN AGENT dan bagian `{JIKA ...}` yang tidak berlaku. **Jangan mengarang** nama penyedia, alamat, email, masa simpan, atau langkah keamanan yang tidak dilakukan pengguna: pakai `[isi: ...]`.
-5. **Periksa dengan script** (path relatif terhadap folder SKILL.md ini; Windows: ganti `python3` dengan `python` atau `py`):
+5. **Periksa dengan script** sebagai pemeriksa kedua, setelah kamu membaca ulang draf per kategori di `references/kategori-risiko-cek.md` (path relatif terhadap folder SKILL.md ini; Windows: ganti `python3` dengan `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/cek_kebijakan.py draf-kebijakan.md
    ```
@@ -72,17 +72,20 @@ Pakai `templates/pemberitahuan-persetujuan.md` (A website, B pesan salam WA, C G
 - Ingatkan menyimpan bukti persetujuan (screenshot chat, kolom timestamp Google Form).
 
 ### Mode 3 — CEK kebijakan yang sudah ada
-1. Simpan teks pengguna ke file lalu jalankan `python3 <folder-skill-ini>/scripts/cek_kebijakan.py file.md` (atau `--format json`).
-2. **Baca juga isinya secara manual** dengan `references/checklist-uu-pdp.md` bagian C: kecocokan dengan praktik nyata, salinan GDPR/luar negeri, batas usia anak 13 tahun (COPPA; di Indonesia < 18 tahun), klaim "100% aman", data spesifik lewat Google Form/WA. Script mendeteksi pola umum saja; kalimat berbagi data yang tidak lazim tetap harus dibaca manual.
-3. Laporkan: skor + status, tabel unsur (ADA/SEBAGIAN/TIDAK ADA), frasa berisiko dengan tingkat (TINGGI/SEDANG) + kutipan + saran pengganti, lalu **usulan teks perbaikan siap tempel** untuk tiap kekurangan.
-4. Tawarkan versi lengkap yang sudah diperbaiki (mode 1 memakai isi lama).
+Urutan ini **wajib**. Pencocokan kata kunci script tidak mengenali kalimat berisiko yang ditulis dengan kata lain (pada uji buta hanya ±4 dari 10 tertangkap; satu kebijakan klinik 0 dari 5). Jadi penilaian risiko dilakukan agent sendiri **lebih dulu**, dan script hanya pemeriksa kedua.
+1. **Baca seluruh dokumen sendiri, kalimat demi kalimat, SEBELUM menjalankan script.** Nilai setiap kalimat terhadap kategori K1–K16 di `references/kategori-risiko-cek.md`: jual/sewa/monetisasi data · berbagi ke pihak lain untuk iklan/pemasaran/profiling · persetujuan tersirat/diam/dibundel · tujuan tak terbatas atau diubah tanpa persetujuan ulang · pengalihan saat merger · transfer LN tanpa jaminan · masa simpan tak terbatas · lepas tanggung jawab/tunda atau tiadakan pemberitahuan kebocoran · pembatasan hak (akses, hapus, tarik persetujuan) atau biaya/syarat berlebihan · anak tanpa izin orang tua/wali · data spesifik tanpa dasar & pengamanan · data berlebih/lokasi tak bisa dimatikan · perubahan sepihak · hukum asing menyingkirkan UU PDP · klaim "100% aman" · isi tidak sesuai praktik/salinan. Nilai **maknanya**, bukan kata kuncinya. Catat per temuan: kategori, kutipan persis, tingkat, risiko + pasal, perbaikan.
+2. **Baru jalankan script sebagai pemeriksa kedua:** simpan teks ke file lalu `python3 <folder-skill-ini>/scripts/cek_kebijakan.py file.md` (atau `--format json`). Pakai untuk cek silang unsur wajib (tabel ADA/SEBAGIAN/TIDAK ADA) dan skor kelengkapan.
+3. **Bandingkan dan jelaskan setiap selisih** (aturan di bagian akhir `references/kategori-risiko-cek.md`): temuanmu yang tidak ditandai script → tulis "tidak dikenali pola kata kunci"; temuan script yang kamu nilai bukan risiko → jelaskan alasannya; status unsur script yang keliru (sering pada teks Inggris) → koreksi di tabel dan tandai "(dikoreksi manual)", jangan usulkan menambah hal yang sudah ada.
+4. **Dilarang** menulis "tidak ada frasa berisiko", "aman", atau sejenisnya hanya karena script tidak menemukan pola. Kesimpulan risiko hanya boleh berasal dari pembacaanmu di langkah 1.
+5. Laporkan dengan format output Mode CEK, lalu **usulan teks perbaikan siap tempel** untuk tiap temuan dan kekurangan. Data kesehatan/anak/keuangan skala besar → tambahkan "WAJIB DITINJAU KONSULTAN HUKUM".
+6. Tawarkan versi lengkap yang sudah diperbaiki (mode 1 memakai isi lama).
 
 ### Mode 4 — TANGGAPI hak subjek data & kebocoran
 - **Permintaan pelanggan** (akses, koreksi, hapus, tarik persetujuan): pakai `templates/tanggapan-hak-subjek.md`. Hitung tenggat = waktu diterima + 72 jam, lalu tulis tanggal-jamnya. Jelaskan data yang wajib tetap disimpan (pajak/rekam medis) beserta alasannya. Ingatkan tempat data tersembunyi (kontak HP, label WA, Sheets, backup, memori AI agent).
 - **Kebocoran data**: pakai `templates/checklist-kebocoran.md`. Hitung tenggat 3×24 jam sejak insiden diketahui, pandu langkah jam 0–6 (amankan) dulu, lalu siapkan draf pemberitahuan ke pelanggan & lembaga (Pasal 46). **Bila tenggat sudah lewat:** tetap kirim pemberitahuan secepatnya (jangan ditunda lagi), tulis jujur kapan insiden diketahui dan alasan keterlambatan, catat kronologinya, dan sarankan segera konsultan hukum. Sampaikan bahwa lembaga pengawas PDP **belum terbentuk** per 25 Sep 2026 (sementara Kemkomdigi) dan kanal resmi perlu dicek. Untuk kebocoran data spesifik/berskala besar/pemerasan → sarankan segera konsultan hukum & polisi.
 
 ### Fallback jika Python tidak bisa dijalankan
-Periksa manual dengan tabel unsur di `references/checklist-uu-pdp.md` (14 unsur + 2 bersyarat, bobot sama). Skor = bobot terpenuhi ÷ bobot berlaku × 100. Cari frasa berisiko di bagian B. Beri tahu pengguna bahwa pemeriksaan dilakukan manual.
+Langkah 1 Mode 3 tetap sama (pembacaan per kategori). Ganti langkah 2 dengan tabel unsur di `references/checklist-uu-pdp.md` (14 unsur + 2 bersyarat, bobot sama): skor = bobot terpenuhi ÷ bobot berlaku × 100. Beri tahu pengguna bahwa skor dihitung manual.
 
 ## Format output
 
@@ -104,15 +107,24 @@ Periksa manual dengan tabel unsur di `references/checklist-uu-pdp.md` (14 unsur 
 _Disclaimer: Disusun otomatis dari informasi Anda, mengacu pada UU 27/2022 (dicek 25 September 2026). PP 33/2026 berlaku 16 Januari 2027; lembaga pengawas PDP belum terbentuk saat pengecekan. Bukan nasihat hukum. Usaha yang memproses data kesehatan, anak, atau keuangan dalam skala besar sebaiknya meminta peninjauan konsultan hukum._
 ```
 
-**Mode CEK:**
+**Mode CEK** (bagian 1 dari bacaan agent, bagian 2 dari script; jangan dibalik):
 ```
-Skor kelengkapan: [n]/100 · Status: [..] · Frasa berisiko: [x TINGGI, y SEDANG]
-(Skor mengukur kelengkapan struktur berbasis kata kunci & polaritas kalimat, bukan kebenaran isi.)
-| Unsur | Status | Dasar |
-Frasa berisiko: [tingkat] "kutipan" → masalah → ganti dengan "..."
-Usulan teks perbaikan (siap tempel): ...
+Ringkasan: [x TINGGI, y SEDANG] temuan dari pembacaan per kategori · Skor kelengkapan script: [n]/100 · Status: [..]
+
+1. Temuan pembacaan (per kategori)
+| Kategori | Kutipan kalimat | Tingkat | Risiko & dasar | Perbaikan siap tempel | Script? |
+| K2 Berbagi untuk pemasaran pihak lain | "…" | TINGGI | … (Ps. 16, 20, 22) | "…" | tidak dikenali pola |
+Kategori yang diperiksa tanpa temuan: K5, K13, … (sebutkan)
+
+2. Pemeriksa kedua (script)
+Skor [n]/100 (struktur [m]/100) · Status [..] — skor = kelengkapan struktur berbasis kata kunci, bukan kebenaran isi.
+| Unsur | Status | Dasar |   (koreksi manual ditandai "(dikoreksi manual)")
+Selisih dengan script: … (temuan yang tidak dikenali pola, tanda script yang tidak disetujui, unsur yang dikoreksi)
+
+Usulan teks perbaikan (siap tempel): …
 Disclaimer (sama seperti di atas)
 ```
+Bila pembacaanmu memang tidak menemukan risiko, tulis "Dari pembacaan per kategori K1–K16 tidak ditemukan kalimat berisiko" dan sebutkan kategori yang diperiksa; jangan menyandarkannya pada hasil script.
 
 ## Contoh
 **Input:** "Bikinin kebijakan privasi buat toko kue online aku, Dapur Bu Sari. Jualan lewat website sama WA, kirim pakai kurir, bayar lewat transfer bank & payment gateway, ada Meta Pixel."
@@ -138,12 +150,13 @@ Sebagian layanan yang kami gunakan (WhatsApp/Meta, Meta Pixel, [isi: layanan clo
 - [ ] Setiap data punya tujuan, dasar pemrosesan, dan masa simpan; promo & data spesifik memakai persetujuan terpisah.
 - [ ] Transfer luar negeri jujur sesuai layanan yang dipakai; ada kalimat "Kami tidak menjual data pribadi Anda."
 - [ ] Hak subjek data + cara mengajukan + 3×24 jam; pemberitahuan kebocoran 3×24 jam.
-- [ ] `cek_kebijakan.py` tanpa frasa berisiko; skor dan sisa isian disebutkan.
+- [ ] `cek_kebijakan.py` tanpa temuan pola **dan** draf sudah kamu baca ulang per kategori K1–K16; skor dan sisa isian disebutkan.
+- [ ] Mode CEK: temuan pembacaan agent ditulis lebih dulu, selisih dengan script dijelaskan, tidak ada klaim "aman" yang hanya bersandar pada script.
 - [ ] Disclaimer + tanggal cek + status PP 33/2026 & lembaga pengawas tercantum.
 
 ## Batasan & penanganan error
 - Script keluar kode 2 dengan pesan `GALAT: ...` untuk file tidak ada, folder, file kosong, file > 5 MB, .docx/.pdf, atau file biner. Encoding UTF-8/BOM/cp1252 dan UTF-16 (dengan atau tanpa BOM) terbaca otomatis; HTML mentah (tag, `&nbsp;`) dibersihkan dulu. Minta pengguna menempel teks bila file tidak bisa dibaca.
-- Script hanya **pemeriksa kata kunci + polaritas kalimat** (kalimat yang disangkal, mis. "Data Anda tidak akan dijual", tidak ditandai; "kami tidak akan memberi tahu bila bocor" tidak dihitung sebagai unsur): kata kunci ada bukan berarti isinya benar. Penilaian akhir tetap oleh agent (checklist bagian C) dan, bila perlu, konsultan hukum.
+- Script hanya **pemeriksa kata kunci + polaritas kalimat** (kalimat yang disangkal, mis. "Data Anda tidak akan dijual", tidak ditandai; "kami tidak akan memberi tahu bila bocor" tidak dihitung sebagai unsur): kata kunci ada bukan berarti isinya benar, dan kata kunci tidak ada bukan berarti aman. Bila tidak ada pola yang cocok, script sendiri mencetak peringatan "BUKAN jaminan kebijakan aman" (JSON: `pesan_risiko`). Jangan menambah pola untuk mengejar kalimat uji; risiko dinilai lewat `references/kategori-risiko-cek.md`, lalu konsultan hukum bila perlu.
 - Dasar hukum, status verifikasi pasal, dan item **PERLU REVIEW**: `references/dasar-hukum.md`. Jangan mengutip nomor pasal PP 33/2026 di dokumen pengguna sampai naskah resminya diverifikasi.
 - Uji regresi script: `python3 <folder-skill-ini>/tests/uji_regresi.py`.
 - Data pelanggan yang ditempel pengguna hanya dipakai untuk menyusun dokumen. Jangan disimpan atau dikirim ke tempat lain.

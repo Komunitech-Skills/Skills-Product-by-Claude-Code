@@ -5,7 +5,7 @@
 ## Manfaat
 - ✅ **Kebijakan privasi lengkap** untuk website, toko online, aplikasi, WhatsApp Business, klinik, atau jasa. Bahasa Indonesia, dengan versi Inggris bila perlu.
 - ✅ **Kalimat persetujuan siap pakai** untuk formulir website, pesan salam WA, Google Form, dan formulir pasien. Persetujuan dibuat aktif (bukan "dianggap setuju").
-- ✅ **Cek kebijakan yang sudah ada**: dapat skor kelengkapan 0–100, daftar yang kurang, dan tanda untuk kalimat berbahaya seperti "kami tidak bertanggung jawab atas kebocoran" atau "data dapat dijual". Pemeriksa memahami kalimat penyangkal, jadi kalimat patuh seperti "Data Anda tidak akan dijual" tidak ikut ditandai.
+- ✅ **Cek kebijakan yang sudah ada**: AI agent membaca seluruh kebijakanmu kalimat demi kalimat dan memeriksanya terhadap 16 kategori risiko, misalnya data dijual atau dibagikan ke mitra, "dianggap setuju", permintaan hapus data ditolak, atau data anak tanpa izin orang tua. Setiap temuan disertai kutipan kalimat, risikonya, dan kalimat pengganti. Setelah itu script menghitung skor kelengkapan 0–100 sebagai pemeriksa kedua.
 - ✅ **Siap saat pelanggan minta datanya dihapus.** Ada template balasan akses, koreksi, hapus, dan berhenti promo, lengkap dengan tenggat 3×24 jam.
 - ✅ **Checklist darurat kebocoran data**: langkah per jam dan draf pemberitahuan ke pelanggan dan lembaga dalam 3×24 jam.
 
@@ -32,6 +32,14 @@ Setelah skill terpasang, ketik permintaan biasa ke AI agent kamu, misalnya:
 Bisa juga dipakai tanpa AI: pemeriksa kebijakan bisa dijalankan langsung dengan
 `python3 scripts/cek_kebijakan.py kebijakan.md` (Windows: `python` atau `py`). Tidak perlu instal apa pun selain Python.
 
+### Keterbatasan pemeriksa otomatis (baca dulu)
+Script `cek_kebijakan.py` adalah **alat bantu**, bukan pemeriksa hukum. Ia hanya mencari kata dan pola tertentu, sehingga:
+- Kalimat berisiko yang ditulis dengan kata lain sering **tidak tertangkap**. Pada uji buta oleh penguji independen, script hanya menandai sekitar 4 dari 10 kalimat berisiko, dan pada satu kebijakan klinik berbahasa Inggris tidak menandai satu pun dari 5 risiko.
+- Jika script tidak menemukan apa pun, artinya hanya "tidak ada pola yang cocok", **bukan** "kebijakan aman". Script sendiri menampilkan peringatan ini.
+- Skor 0–100 mengukur **kelengkapan bagian** (ada/tidaknya kontak, masa simpan, hak pelanggan, dll.), bukan kebenaran isi. Pada teks bahasa Inggris, beberapa bagian bisa terbaca "tidak ada" padahal ada.
+
+Karena itu, di mode cek, AI agent **wajib membaca kebijakanmu sendiri lebih dulu** per kategori risiko, lalu memakai script hanya untuk cek silang. Setiap perbedaan antara keduanya dijelaskan di laporan. Jika kamu memakai script tanpa AI, bacalah kebijakanmu dengan daftar kategori di `references/kategori-risiko-cek.md`. Untuk data kesehatan, anak, atau keuangan dalam jumlah besar, tetap mintalah konsultan hukum meninjau.
+
 ## Instalasi singkat
 Salin folder `kebijakan-privasi-pdp` ke folder skills AI agent kamu:
 
@@ -55,6 +63,7 @@ Tidak ada dokumen yang bisa menjamin itu. Skill ini menyusun draf yang mengacu p
 Untuk menyusun kebijakan, kamu tidak perlu menempel data pelanggan asli. Cukup ceritakan *jenis* datanya. Skill ini juga diinstruksikan untuk tidak menyimpan atau mengirim data yang kamu tempel ke tempat lain.
 
 ## Riwayat versi
+- **1.0.3 (25 Sep 2026)** — revisi dari uji ulang independen ke-3 (`examples/07-uji-ulang-v1.0.2.md`, temuan U3-1): mode cek kini **dibaca agent lebih dulu** terhadap 16 kategori risiko berbasis makna (`references/kategori-risiko-cek.md`, contoh parafrasa ID & EN + dasar pasal), script menjadi pemeriksa kedua, dan setiap selisih dijelaskan. Format laporan: temuan agent per kategori dulu, ringkasan script sesudahnya; dilarang menyimpulkan "tidak ada frasa berisiko" dari script saja. Script tidak lagi mencetak "FRASA BERISIKO: tidak ditemukan", melainkan peringatan bahwa hasil kosong bukan jaminan aman (teks & JSON `pesan_risiko`). Salah-positif "tidak menjual … kepada pihak mana pun" diperbaiki. Pola kata kunci sengaja tidak ditambah. Tes regresi: 255 uji (angka akurasi di tes bawaan berasal dari set yang dipakai menyetel, bukan akurasi nyata).
 - **1.0.2 (25 Sep 2026)** — revisi dari uji ulang independen (`examples/06-uji-ulang-v1.0.1.md`, B-1..B-8): pemeriksa kini menandai berbagi data ke mitra iklan/pemasaran/pengiklan dalam Bahasa Indonesia, termasuk di klausa kedua ("tidak menjual data, **tetapi** dapat membagikannya ke mitra iklan", "kecuali kepada mitra pemasaran"); frasa Inggris dengan kata sisipan ("sell or rent aggregated and personal information", "share … with advertisers", "disclose … for advertising"); "bukan tidak mungkin kami menjual", "diam kami anggap setuju", "untuk tujuan apa pun"; batas usia 13 tahun (COPPA) ditandai (anak di Indonesia = di bawah 18 tahun). Salah-positif dikurangi (jam operasional berubah, kata "WhatsApp" tanpa nomor, "keamanan data penting bagi kami", "berlaku untuk layanan kami"). Satu temuan per kalimat, urutan status dijelaskan, kunci JSON seragam. Tes regresi: 239 uji (set penguji 48 frasa + 22 unsur + 3 dokumen, set kontrol baru 48 frasa + 10 unsur).
 - **1.0.1 (25 Sep 2026)** — revisi dari temuan penguji independen: pemeriksa `cek_kebijakan.py` kini membaca polaritas kalimat (kalimat patuh "tidak akan dijual" tidak lagi ditandai; "tidak akan memberi tahu bila bocor" ditandai TINGGI dan tidak dihitung sebagai unsur), deteksi frasa jual/sewa/monetisasi data ID & EN diperluas, pola unsur diperluas (server Singapura, "simpan 2 tahun", "mencabut persetujuan", "di bawah 18 tahun"), isian kosong menurunkan skor (status BELUM SIAP), HTML mentah & UTF-16 tanpa BOM terbaca, kinerja linier. Template persetujuan klinik diperbaiki (persetujuan bukan syarat pelayanan) + varian Google Form. Rujukan pasal diperbaiki (Ps. 5 identitas; Ps. 68 denda Rp6 miliar). Tes regresi: 133 uji.
 - **1.0.0 (25 Sep 2026)** — rilis draf pertama.

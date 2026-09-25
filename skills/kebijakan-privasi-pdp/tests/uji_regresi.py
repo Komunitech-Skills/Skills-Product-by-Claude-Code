@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Uji regresi scripts/cek_kebijakan.py v1.0.2 (hanya library standar).
+"""Uji regresi scripts/cek_kebijakan.py v1.0.3 (hanya library standar).
 
 Termasuk tes untuk tiap temuan HASIL-UJI (T-1, T-2, S-1..S-5, R-1..R-4), temuan uji ulang v1.0.1
-(B-1..B-8, examples/06-uji-ulang-v1.0.1.md), dan tabel akurasi dari set berlabel:
+(B-1..B-8, examples/06-uji-ulang-v1.0.1.md), temuan uji ulang v1.0.2 (U3-1 pesan jujur, U3-4 salah-positif
+"tidak menjual ... kepada pihak mana pun"), dan tabel akurasi dari set berlabel:
 tests/data/kalimat-berlabel.json (set uji pertama + kontrol v1.0.1), tests/data/set-penguji-v101.json
 (set uji ulang penguji: 48 frasa, 22 unsur, 3 dokumen), tests/data/set-kontrol-v102.json (kontrol perevisi v1.0.2).
 
@@ -445,6 +446,46 @@ def uji_v102():
     print("  | kontrol v1.0.2 #2 | {}/{} | {} | {} | - |".format(b2, n2, len(fp2), len(fn2)))
 
 
+def uji_v103(tmp):
+    """U3-1: keluaran jujur saat pola tidak menemukan risiko. U3-4: negasi di seluruh klausa untuk 'pihak mana pun'."""
+    # U3-1 — teks & JSON tanpa temuan pola
+    path = tulis(tmp, "v103_baik.md", BAIK)
+    r = json_dari(path)
+    cek("v103: tanpa temuan → risiko kosong", r["risiko"] == [], r["risiko"])
+    cek("v103: JSON pesan_risiko menyatakan BUKAN jaminan aman", "BUKAN jaminan" in r.get("pesan_risiko", ""), r.get("pesan_risiko"))
+    cek("v103: JSON pesan_risiko merujuk references/kategori-risiko-cek.md",
+        "references/kategori-risiko-cek.md" in r.get("pesan_risiko", ""))
+    cek("v103: JSON risiko_kosong_bukan_jaminan_aman", r.get("risiko_kosong_bukan_jaminan_aman") is True)
+    cek("v103: peringatan menyebut bukan pemeriksa hukum", "bukan pemeriksa hukum" in r["peringatan"], r["peringatan"])
+    p = jalan([path], 0)
+    cek("v103: teks tidak lagi 'FRASA BERISIKO: tidak ditemukan'", "FRASA BERISIKO: tidak ditemukan" not in p.stdout, p.stdout[-400:])
+    cek("v103: teks memuat pesan jujur", "BUKAN jaminan kebijakan aman" in p.stdout and "kategori-risiko-cek.md" in p.stdout, p.stdout[-400:])
+    # Dengan temuan: daftar diberi label penanda awal & tidak lengkap
+    path = tulis(tmp, "v103_buruk.md", BURUK)
+    r = json_dari(path)
+    cek("v103: ada temuan → pesan 'TIDAK lengkap'", r["risiko"] and "TIDAK lengkap" in r.get("pesan_risiko", ""), r.get("pesan_risiko"))
+    p = jalan([path], 0)
+    cek("v103: teks ada temuan → label penanda awal", "penanda awal" in p.stdout and "TIDAK lengkap" in p.stdout)
+    # Rujukan yang disebut pesan memang ada
+    cek("v103: references/kategori-risiko-cek.md ada",
+        os.path.isfile(os.path.join(AKAR, "references", "kategori-risiko-cek.md")))
+    # U3-4 — salah-positif "tidak menjual ... kepada pihak mana pun" (penyangkal jauh di awal kalimat)
+    patuh = [
+        "Kami tidak menjual, menyewakan, atau memperdagangkan data pribadi Anda kepada pihak mana pun.",
+        "Kami tidak akan pernah membagikan, menukar, atau memperjualbelikan data pelanggan toko kami kepada siapa pun.",
+        "Toko kami tidak pernah memberikan nomor WhatsApp, alamat, maupun riwayat belanja Anda kepada pihak ketiga mana pun.",
+    ]
+    for k in patuh:
+        cek("v103: patuh tidak ditandai: {}".format(k[:45]), risiko(k) == [], risiko(k))
+    berisiko = [
+        "Data dapat kami berikan kepada pihak mana pun.",
+        "Kami tidak menyimpan data kartu, dan data pesanan kami bagikan kepada siapa pun yang membutuhkan.",
+        "Kami tidak menjual data, tetapi dapat meneruskannya kepada pihak mana pun yang bekerja sama dengan kami.",
+    ]
+    for k in berisiko:
+        cek("v103: tetap ditandai: {}".format(k[:45]), len(risiko(k)) >= 1, risiko(k))
+
+
 def main():
     tmp = tempfile.mkdtemp(prefix="uji_pdp_")
     try:
@@ -542,6 +583,7 @@ def main():
             cek("template {}: ada unsur BELUM DIISI".format(nama), any(u["status"] == "BELUM DIISI" for u in r["unsur"]))
 
         uji_v101(tmp)
+        uji_v103(tmp)
     except AssertionError as e:
         gagal.append(str(e))
     finally:
