@@ -60,25 +60,35 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
   peringatan). Paksa dengan `--encoding latin-1` dsb.
 - **Pemisah:** `,` `;` tab `|` dipilih dari konsistensi jumlah kolom; baris `sep=;` di awal file
   (ekspor Excel) dihormati. Paksa dengan `--pemisah ";"`.
-- **Tanda kutip tak tertutup** (v1.0.1, diperbaiki v1.0.2): parser `csv` Python = sumber kebenaran.
-  - Kutip tak tertutup **sampai akhir file** → selalu `GAGAL: CSV rusak: tanda kutip (") di baris N
-    tidak ditutup …` (juga dengan `--paksa`).
-  - Sel multi-baris dianggap **curiga** hanya bila (a) ≥ 2 baris di dalam sel tampak seperti baris
-    data utuh — cukup banyak sel dan kolom yang biasanya berisi angka memang berisi angka — atau
-    (b) jumlah sel rekaman itu ≠ jumlah kolom tabel. Curiga → `GAGAL: CSV kemungkinan rusak …`
-    dengan nomor baris dan saran `--paksa`.
-  - (c, v1.0.3) **Baris tertelan:** tiap baris lanjutan sel multi-baris dibaca sendirian; bila jumlah
-    field-nya ≈ jumlah kolom header dan kolom angka/tanggal di posisinya berisi angka/tanggal, baris itu
-    dianggap baris data yang tertelan kutip nyasar → GAGAL dengan hitungan "File berisi X baris di
-    Notepad; terbaca Y baris + Z baris lanjutan … kemungkinan N baris data HILANG". Sel sah yang
-    isinya mirip data (rincian "Kaos, 2, 50000⏎Topi, 1, 30000") lolos karena tipe kolomnya tidak cocok.
-  - `--paksa` → dibaca apa adanya + "PERINGATAN TEGAS" yang menyebut berapa baris mungkin hilang.
-  - Kolom yang biasanya satu baris tetapi punya 1–2 sel multi-baris (≥ 10 baris data) → peringatan
-    "cek baris N, mungkin ada tanda kutip nyasar".
-  - Sel multi-baris sah (alamat "Jl. …, No. …⏎Kel. …, Kec. …", koma di beberapa baris) → terbaca +
-    **satu** peringatan gabungan yang memetakan nomor baris Notepad ke nomor baris Excel (nomor
-    baris di hasil = nomor baris Excel/rekaman).
-- Baris yang berisi lebih banyak sel daripada judul kolom (koma tak dikutip) → peringatan + nomor baris.
+- **INVARIAN JUMLAH KOLOM (v1.0.4)** — pengaman utama angka CSV, sederhana & bisa dijelaskan:
+  setelah dibaca parser `csv` Python, **setiap baris data wajib punya jumlah kolom = jumlah judul
+  kolom** (sampai judul terakhir yang berisi).
+  - Toleransi satu-satunya: sel **kosong** berlebih di ujung kanan (padding Excel `Ani,5000,,`), dan
+    judul yang juga diikuti sel kosong (`Nama;Nominal;;`).
+  - Baris dengan kolom **kurang** ("hanya 3 dari 4 kolom") atau kolom **lebih yang berisi** ("3 kolom
+    terisi, padahal judul kolom hanya 2") → `GAGAL: Jumlah kolom tidak cocok di N baris data …`
+    dengan nomor baris Excel (+ baris Notepad bila bergeser karena sel multi-baris) dan isi ringkas.
+  - `--paksa` → dibaca apa adanya + "PERINGATAN TEGAS (--paksa): N baris data jumlah kolomnya tidak
+    sama … total/rata-rata MUNGKIN SALAH".
+  - Hanya baris data yang diperiksa: baris judul laporan di atas header, baris Total/Jumlah yang
+    dilewati, dan baris pengulang judul tidak diperiksa. Catatan kaki di bawah tabel ("Dicetak …")
+    ikut terhitung baris kurang kolom → hapus barisnya atau pakai `--paksa`.
+  - Menangkap: sel terlewat (angka jatuh ke kolom teks), koma di teks/angka tanpa kutip, dan hampir
+    semua kutip nyasar (rekaman gabungan punya jumlah sel berbeda, mis. alamat sah + satu kutip nyasar).
+- **Tanda kutip tak tertutup sampai akhir file** → selalu `GAGAL: CSV rusak: tanda kutip (") di baris
+  N tidak ditutup …` (juga dengan `--paksa`).
+- **Kutip nyasar yang lolos invarian** (tertutup di baris lain dan jumlah sel kebetulan cocok): tiap
+  baris lanjutan sel multi-baris dibaca sendirian; bila jumlah field-nya ≈ jumlah kolom dan kolom
+  angka/tanggal di posisinya berisi angka/tanggal → `GAGAL: CSV kemungkinan rusak … kemungkinan N
+  baris data HILANG` (`--paksa` → PERINGATAN TEGAS). v1.0.4: cek ini **hanya** untuk kolom yang
+  biasanya satu baris (sel multi-baris di kolom itu ≤ 2 atau ≤ 10% baris). Kolom yang memang berisi
+  alamat/catatan berbaris-baris tidak dicurigai → tidak ada penolakan palsu. Heuristik lama "≥ 2 baris
+  di dalam sel tampak seperti data" dihapus (penyebab penolakan palsu C5).
+- Kolom yang biasanya satu baris tetapi punya 1–2 sel multi-baris (≥ 10 baris data) → peringatan lunak
+  "cek baris N, mungkin ada tanda kutip nyasar; bila memang catatan, abaikan".
+- Sel multi-baris sah → terbaca + **satu info** (bukan peringatan) yang memetakan nomor baris Notepad
+  ke nomor baris Excel (nomor baris di hasil = nomor baris Excel/rekaman).
+- XLSX tidak terkena invarian (tidak ada pemisah/kutip); sel di kolom tanpa judul → peringatan.
 
 ## Header & baris khusus
 - **Header:** baris pertama (dari 30 teratas) yang cukup lebar (≥ 60% kolom terlebar) dan dominan

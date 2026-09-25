@@ -699,7 +699,7 @@ class UjiTemuanV101(unittest.TestCase):
             f.write_text('Nama,Alamat,Nominal\nAni,"Jl. Merdeka 5,\nBogor",5000\nBudi,Depok,6000\n', encoding="utf-8")
             d = jalankan_json(self, "ringkas", f, "--kolom", "Nominal")
             self.assertEqual(angka(d["tabel"][0]["baris"][0][2]), Decimal(11000))
-            self.assertIn("Baris 2 s.d. 3", " ".join(d["peringatan"]))
+            self.assertIn("Baris 2 s.d. 3", " ".join(d["catatan"]))            # v1.0.4: info ringan
 
     # -- P2 -------------------------------------------------------------
     def test_p2_baris_vs_nilai_terisi(self):
@@ -799,8 +799,11 @@ class UjiTemuanV101(unittest.TestCase):
             self.assertIn("dll.", " ".join(d["peringatan"]))
             g = Path(t) / "lebih.csv"
             g.write_text("Nama,Nominal\nAni,5000\nBudi,Rp 6,000\n", encoding="utf-8")
-            d = jalankan_json(self, "profil", g)
-            self.assertIn("lebih banyak sel daripada judul kolom (mis. baris 3)", " ".join(d["peringatan"]))
+            code, _o, err = jalankan("profil", g)                            # v1.0.4: invarian jumlah kolom
+            self.assertEqual(code, 2)
+            self.assertIn("baris 3: 3 kolom terisi, padahal judul kolom hanya 2", err)
+            d = jalankan_json(self, "profil", g, "--paksa")
+            self.assertIn("PERINGATAN TEGAS (--paksa): 1 baris data", " ".join(d["peringatan"]))
         d = jalankan_json(self, "profil", self.fx / "semua-teks.csv")
         self.assertNotIn("Histogram", d["saran_grafik"])
 
@@ -868,8 +871,9 @@ class UjiTemuanV102(unittest.TestCase):
         d = jalankan_json(self, "ringkas", self.fx / "alamat-sah.csv", "--kolom", "Nominal")
         self.assertEqual(angka(d["tabel"][0]["baris"][0][2]), Decimal(6000))
         d = jalankan_json(self, "ringkas", self.mp, "--kolom", "Total Bayar")
-        teks = [p for p in d["peringatan"] if "sel multi-baris" in p]
-        self.assertEqual(len(teks), 1)                                   # N3: satu peringatan gabungan
+        self.assertFalse([p for p in d["peringatan"] if "sel multi-baris" in p])   # v1.0.4: bukan peringatan
+        teks = [p for p in d["catatan"] if "sel multi-baris" in p]
+        self.assertEqual(len(teks), 1)                                   # N3: satu info gabungan
         self.assertIn("15 baris berisi sel multi-baris (15 sel", teks[0])  # B3 (v1.0.3): hitung baris & sel
         self.assertIn("Baris 5 s.d. 7 di Notepad = baris 5 di Excel", teks[0])
         with tempfile.TemporaryDirectory() as t:
@@ -908,7 +912,7 @@ class UjiTemuanV102(unittest.TestCase):
                          encoding="utf-8")
             code, _o, err = jalankan("ringkas", f)
             self.assertEqual(code, 2)
-            self.assertIn("4 sel, padahal tabel punya 3 kolom", err)
+            self.assertIn("--paksa", err)
             code, _o, err = jalankan("ringkas", f, "--paksa")
             self.assertEqual(code, 0, err)
 
@@ -1159,7 +1163,7 @@ class UjiTemuanV103(unittest.TestCase):
     def test_b3_hitung_baris_dan_sel(self):
         k = self.kunci["F1"]
         d = jalankan_json(self, "ringkas", self.fx / "F1-ekspor-marketplace.csv", "--kolom", "Total Bayar")
-        w = [p for p in d["peringatan"] if "sel multi-baris" in p]
+        w = [p for p in d["catatan"] if "sel multi-baris" in p]
         self.assertEqual(len(w), 1)
         self.assertIn("35 baris berisi sel multi-baris ({} sel".format(k["sel_multibaris"]), w[0])
 
@@ -1172,6 +1176,203 @@ class UjiTemuanV103(unittest.TestCase):
         code, _o, err = jalankan("pivot", self.fx / "F5-rincian-mirip-data.csv", "--grup", "Pelanggan",
                                  "--kolom-pivot", "Kota")
         self.assertIn("Kolom pivot 'Kota' tidak ada", err)
+
+
+FIXTURE_V103 = SINI / "examples" / "buat_fixture_uji_v103.py"
+
+
+class UjiInvarianV104(unittest.TestCase):
+    """v1.0.4: INVARIAN JUMLAH KOLOM. Setiap file fixture SEMUA penguji (uji pertama, v1.0.1, v1.0.2, v1.0.3)
+    diberi hasil yang diharapkan: a = angka benar (cocok kunci penguji), b = GAGAL tegas (kode 2) dengan jalan
+    keluar yang jelas. Target: 0 angka salah diam-diam, 0 file sah ditolak."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        akar = Path(cls._tmp.name)
+        cls.fx, cls.kunci = {}, {}
+        for nama, gen, kunci in (("u1", FIXTURE, "kunci-jawaban.json"), ("u2", FIXTURE_ULANG, "kunci-ulang.json"),
+                                 ("u3", FIXTURE_V102, "kunci-baru.json"), ("u4", FIXTURE_V103, "kunci-v103.json")):
+            d = akar / nama
+            r = subprocess.run([sys.executable, str(gen), str(d)], capture_output=True, text=True)
+            if r.returncode != 0:
+                raise RuntimeError(r.stderr)
+            cls.fx[nama] = d
+            cls.kunci[nama] = json.loads((d / kunci).read_text(encoding="utf-8"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def total(self, f, kolom, *extra):
+        d = jalankan_json(self, "ringkas", f, "--kolom", kolom, *extra)
+        baris = d["tabel"][0]["baris"][0]
+        return angka(baris[2]), int(angka(baris[1])), d
+
+    def cek_a(self, f, kolom, total, terisi=None, *extra):
+        t, n, d = self.total(f, kolom, *extra)
+        self.assertEqual(t, D(total), f.name)
+        if terisi is not None:
+            self.assertEqual(n, terisi, f.name)
+        self.assertNotIn("PERINGATAN TEGAS", " ".join(d["peringatan"]), f.name)
+        return d
+
+    def cek_b(self, f, *potongan, paksa="ok"):
+        code, out, err = jalankan("ringkas", f)
+        self.assertEqual(code, 2, "{}: {}".format(f.name, out[:300]))
+        self.assertTrue(err.startswith("GAGAL:"), err)
+        self.assertNotIn("Traceback", err)
+        for p in potongan:
+            self.assertIn(p, err, f.name)
+        code, out, err2 = jalankan("ringkas", f, "--paksa", "--json")
+        if paksa == "ok":      # jalan keluar ada, dan hasilnya memuat peringatan tegas (angka mungkin salah)
+            self.assertEqual(code, 0, err2)
+            self.assertIn("PERINGATAN TEGAS (--paksa)", " ".join(json.loads(out)["peringatan"]))
+        else:                  # kutip tak tertutup sampai akhir file: tetap GAGAL
+            self.assertEqual(code, 2, f.name)
+        return err
+
+    # -- file per file: fixture uji ulang v1.0.3 ---------------------------------------------------------
+    def test_v103_C_csv(self):
+        fx, k = self.fx["u4"], self.kunci["u4"]
+        self.cek_b(fx / "C1-kutip-awal.csv", "baris 2 s.d. 3", "1 baris data HILANG")
+        self.cek_b(fx / "C2-kutip-tengah.csv", "baris 11 s.d. 13", "2 baris data HILANG")
+        self.cek_b(fx / "C3-kutip-akhir.csv", "baris 21 (baris terakhir file)", paksa="gagal")
+        # C4 (dulu c-): dua baris kurang kolom akibat kutip nyasar -> invarian jumlah kolom
+        err = self.cek_b(fx / "C4-alamat-sah-plus-nyasar.csv", "Jumlah kolom tidak cocok di 2 baris data",
+                         "baris 18 (Notepad: baris 35): hanya 2 dari 4 kolom", "baris 19 (Notepad: baris 36)")
+        self.assertIn("setiap baris harus punya 4 kolom", err)
+        # C5 (dulu ditolak palsu): SAH, alamat 3 baris + "50%⏎sisa" -> terbaca tanpa --paksa, hanya info ringan
+        d = self.cek_a(fx / "C5-sah-alamat-3-baris.csv", "Total", k["C5"]["total"], k["C5"]["baris"])
+        self.assertFalse([p for p in d["peringatan"] if "rusak" in p or "HILANG" in p])
+        self.assertIn("jumlah kolomnya sudah dicek cocok", " ".join(d["catatan"]))
+        self.cek_a(fx / "C6-sah-satu-catatan-mirip-data.csv", "Jumlah", k["C6"]["total"], k["C6"]["baris"])
+        self.cek_a(fx / "C7-sah-catatan-baris-baru.csv", "Jumlah", k["C7"]["total"], k["C7"]["baris"])
+        # C8 (dulu c = angka salah diam-diam): baris 11 hanya 3 dari 4 kolom
+        self.cek_b(fx / "C8-baris-kurang-sel.csv", "Jumlah kolom tidak cocok di 1 baris data",
+                   "baris 11: hanya 3 dari 4 kolom")
+        code, out, _e = jalankan("ringkas", fx / "C8-baris-kurang-sel.csv", "--paksa", "--json")
+        w = " ".join(json.loads(out)["peringatan"])
+        self.assertIn("1 baris data jumlah kolomnya tidak sama", w)
+        self.assertIn("MUNGKIN SALAH", w)
+
+    def test_v103_X_xlsx(self):
+        fx, k = self.fx["u4"], self.kunci["u4"]
+        s = ("--sheet", "semua")
+        self.cek_a(fx / "X1-rekap-bernama-Sheet4.xlsx", "Jumlah", k["X1"]["total"], k["X1"]["baris"], *s)
+        self.cek_a(fx / "X2-rekap-bernama-Okt.xlsx", "Jumlah", k["X2"]["total"], k["X2"]["baris"], *s)
+        x3 = k["X3"]
+        self.cek_a(fx / "X3-Rekap-berisi-data.xlsx", "Jumlah", x3["tanpa_sertakan"]["total"],
+                   x3["tanpa_sertakan"]["baris"], *s)
+        self.cek_a(fx / "X3-Rekap-berisi-data.xlsx", "Jumlah", x3["dengan_sertakan"]["total"],
+                   x3["dengan_sertakan"]["baris"], *s, "--sertakan", "Rekap Des")
+        self.cek_a(fx / "X4-satu-bulan-kosong.xlsx", "Jumlah", k["X4"]["total"], k["X4"]["baris"], *s)
+        d = self.cek_a(fx / "X5-rekap-tidak-persis.xlsx", "Jumlah", k["X5"]["total"], k["X5"]["baris"], *s)
+        w = " ".join(d["peringatan"])       # B8: tidak lagi "= 10.690.000 = jumlah gabungan"
+        self.assertIn("10.690.000 ≈ jumlah gabungan", w)
+        self.assertIn("(10.685.000), selisih 5.000", w)
+        d = jalankan_json(self, "ringkas", fx / "X1-rekap-bernama-Sheet4.xlsx", *s)
+        self.assertIn("10.685.000 = jumlah gabungan", " ".join(d["peringatan"]))
+
+    def test_b9_tren_bulan_kosong_bukan_penurunan(self):
+        f = self.fx["u4"] / "X4-satu-bulan-kosong.xlsx"
+        d = jalankan_json(self, "tren", f, "--sheet", "semua", "--nilai", "Jumlah")
+        rows = {r[0]: r for r in d["tabel"][0]["baris"]}
+        self.assertIn(rows["Feb 2026"][3], (None, ""))
+        self.assertIn(rows["Mar 2026"][3], (None, ""))
+        t = " ".join(d["temuan"])
+        self.assertNotIn("-100", t)
+        self.assertNotIn("Penurunan terbesar: Feb", t)
+        self.assertIn("Periode tanpa data (ditulis 0): Feb 2026", " ".join(d["catatan"]))
+
+    # -- fixture v1.0.2 ------------------------------------------------------------------------------------
+    def test_v102_F(self):
+        fx, k = self.fx["u3"], self.kunci["u3"]
+        self.cek_a(fx / "F1-ekspor-marketplace.csv", "Total Bayar", k["F1"]["total_bayar"], k["F1"]["baris"])
+        self.cek_a(fx / "F2-rekap-wa.csv", "Nominal", k["F2"]["total"], k["F2"]["baris"])
+        self.cek_b(fx / "F3-rusak-tertutup-jauh.csv", "baris 6 s.d. 10", "4 baris data HILANG")
+        self.cek_b(fx / "F3b-rusak-satu-baris.csv", "baris 6 s.d. 7", "1 baris data HILANG")   # lolos invarian
+        self.cek_b(fx / "F3c-rusak-terbuka.csv", "baris 11", paksa="gagal")
+        self.cek_a(fx / "F4-biaya-4-bulan.xlsx", "Jumlah", k["F4"]["total"], k["F4"]["baris"], "--sheet", "semua")
+        self.cek_a(fx / "F4b-rekap-mirip.xlsx", "Jumlah", k["F4"]["total"], k["F4"]["baris"], "--sheet", "semua")
+        self.cek_a(fx / "F5-rincian-mirip-data.csv", "Total", k["F5"]["total"], k["F5"]["baris"])
+
+    # -- fixture uji ulang v1.0.1 --------------------------------------------------------------------------
+    def test_v101_ulang(self):
+        fx, k = self.fx["u2"], self.kunci["u2"]
+        self.cek_a(fx / "alamat-sah.csv", "Nominal", 6000, 3)
+        self.cek_a(fx / "pesanan-marketplace-sep.csv", "Total Bayar", k["B"]["total"], k["B"]["baris"])
+        self.cek_a(fx / "anggota-koperasi.csv", "Simpanan Wajib", k["C"]["wajib_total_dengan_dup"])
+        self.cek_a(fx / "Koperasi Maju Bersama 2026.xlsx", "Jumlah", k["A"]["jumlah_semua"], None,
+                   "--sheet", "semua")
+        self.cek_b(fx / "kutip-tengah.csv", "baris 7", paksa="gagal")
+        self.cek_b(fx / "kutip-di-akhir.csv", "baris 4", paksa="gagal")
+        self.cek_b(fx / "kutip-tertutup-jauh.csv", "baris 3 s.d. 5", "2 baris data HILANG")
+
+    # -- fixture uji pertama -------------------------------------------------------------------------------
+    def test_uji_pertama(self):
+        fx, k = self.fx["u1"], self.kunci["u1"]
+        self.cek_a(fx / "Penjualan 2026.xlsx", "Total", k["01"]["semua"]["jumlah"], k["01"]["semua"]["nilai_terisi"],
+                   "--sheet", "semua")
+        self.cek_a(fx / "lembur-sep-2026.csv", "Jam Lembur", Decimal(k["02"]["total_semua"]))
+        self.cek_a(fx / "iuran-komite.csv", "Nominal", k["03"]["mentah"]["jumlah"], k["03"]["mentah"]["terisi"])
+        self.cek_b(fx / "kutip-rusak.csv", "CSV rusak", "baris 2", paksa="gagal")
+
+    # -- pengunci angka lama: pivot/tren yang dulu sudah cocok kunci tidak boleh berubah ---------------------
+    def test_pengunci_angka_lama(self):
+        k1, k2, k3 = self.kunci["u1"], self.kunci["u2"], self.kunci["u3"]
+
+        def peta(d):
+            return {r[0]: angka(r[2]) for r in d["tabel"][0]["baris"]}
+        d = jalankan_json(self, "pivot", self.fx["u1"] / "Penjualan 2026.xlsx", "--sheet", "semua",
+                          "--grup", "Kategori", "--nilai", "Total")
+        m = peta(d)
+        self.assertEqual(m.pop("TOTAL"), D(k1["01"]["semua"]["jumlah"]))
+        self.assertEqual(m, {a: D(b) for a, b in k1["01"]["semua"]["per_kategori"].items()})
+        d = jalankan_json(self, "pivot", self.fx["u1"] / "lembur-sep-2026.csv", "--grup", "Divisi",
+                          "--nilai", "Jam Lembur")
+        m = peta(d)
+        m.pop("TOTAL")
+        self.assertEqual(m, {a: Decimal(b) for a, b in k1["02"]["total_per_divisi"].items()})
+        d = jalankan_json(self, "pivot", self.fx["u2"] / "pesanan-marketplace-sep.csv", "--grup", "Kota",
+                          "--nilai", "Total Bayar")
+        m = peta(d)
+        m.pop("TOTAL")
+        self.assertEqual(m, {a: D(b) for a, b in k2["B"]["per_kota"].items()})
+        d = jalankan_json(self, "pivot", self.fx["u3"] / "F1-ekspor-marketplace.csv", "--grup", "Kota",
+                          "--nilai", "Total Bayar")
+        m = peta(d)
+        m.pop("TOTAL")
+        self.assertEqual(m, {a: D(b) for a, b in k3["F1"]["per_kota"].items()})
+        d = jalankan_json(self, "pivot", self.fx["u3"] / "F2-rekap-wa.csv", "--grup", "Pelanggan",
+                          "--nilai", "Nominal")
+        m = peta(d)
+        m.pop("TOTAL")
+        self.assertEqual(m, {a: D(b) for a, b in k3["F2"]["per_pelanggan"].items()})
+
+    # -- invarian: kasus kecil yang mudah dijelaskan ---------------------------------------------------------
+    def test_invarian_padding_dan_kolom_lebih(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = Path(t) / "padding.csv"    # sel kosong berlebih di ujung kanan (padding Excel) = boleh
+            f.write_text("Nama,Nominal\nAni,5000,,\nBudi,6000\nCici,,\n", encoding="utf-8")
+            self.cek_a(f, "Nominal", 11000)
+            f = Path(t) / "judul-berpadding.csv"   # judul ber-padding, data tanpa padding = boleh
+            f.write_text("Nama;Nominal;;\nAni;5000\nBudi;6000;;\n", encoding="utf-8")
+            self.cek_a(f, "Nominal", 11000)
+            f = Path(t) / "kosong-tengah.csv"      # sel kosong di tengah tetap dihitung sebagai kolom
+            f.write_text("Nama,Kota,Nominal\nAni,,5000\nBudi,Depok,6000\n", encoding="utf-8")
+            self.cek_a(f, "Nominal", 11000)
+            f = Path(t) / "lebih.csv"              # koma di dalam angka tanpa kutip -> 3 kolom terisi dari 2
+            f.write_text("Nama,Nominal\nAni,5000\nBudi,6,000\n", encoding="utf-8")
+            self.cek_b(f, "baris 3: 3 kolom terisi, padahal judul kolom hanya 2")
+            f = Path(t) / "judul-baris3.csv"       # judul di baris 3: baris judul di atasnya tidak diperiksa
+            f.write_text("LAPORAN KAS\nSeptember 2026\nTanggal;Uraian;Masuk\n01/09/2026;Saldo;100.000\n"
+                         "02/09/2026;Jual;50.000\n", encoding="utf-8")
+            self.cek_a(f, "Masuk", 150000)
+            f = Path(t) / "kurang.csv"
+            f.write_text("Tanggal;Uraian;Masuk\n01/09/2026;Saldo;100.000\n02/09/2026;50.000\n", encoding="utf-8")
+            err = self.cek_b(f, "baris 3: hanya 2 dari 3 kolom", "02/09/2026 | 50.000")
+            self.assertIn("--paksa", err)
 
 
 if __name__ == "__main__":

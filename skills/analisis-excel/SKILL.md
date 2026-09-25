@@ -171,11 +171,16 @@ Rincian lengkap: `references/format-didukung.md`.
   terdekat, persen 1 desimal (0,5 menjauhi nol). CSV hasil menyimpan hingga 2 desimal.
 - **Keamanan CSV hasil:** teks yang diawali `=`, `+`, `-`, `@` diberi awalan `'` agar tidak
   dieksekusi sebagai rumus saat dibuka di Excel. File asli tidak pernah diubah.
-- **CSV tanda kutip tak tertutup** → `GAGAL: CSV rusak ... baris N` (tidak diam-diam menelan
-  baris). Minta pengguna memperbaiki baris itu. Sel multi-baris yang sah (alamat "Jl. …, No. …⏎Kel. …,
-  Kec. …") tetap terbaca + satu peringatan. `GAGAL: CSV kemungkinan rusak` (juga bila satu saja baris
-  data tertelan kutip nyasar — v1.0.3 mencocokkan jumlah baris Notepad dengan baris terbaca dan
-  menyebut berapa baris mungkin HILANG) → sampaikan nomor barisnya dan minta pengguna memperbaiki.
-  `--paksa` hanya bila pengguna yakin file benar; "PERINGATAN TEGAS" di hasil wajib disampaikan
-  (angka bisa kurang).
+- **Aturan jumlah kolom CSV (v1.0.4):** setiap baris data wajib punya jumlah kolom yang **sama dengan
+  judul kolom** (kolom kosong berlebih di ujung kanan boleh). Baris yang kolomnya kurang/lebih →
+  `GAGAL: Jumlah kolom tidak cocok di N baris data …` + nomor baris & isinya. Jelaskan ke pengguna:
+  "baris itu kolomnya bergeser, jadi angkanya bisa masuk ke kolom yang salah" dan minta ia
+  memperbaiki baris itu (sel terlewat, koma di teks tanpa tanda kutip, kutip nyasar, atau catatan
+  di bawah tabel). `--paksa` hanya bila pengguna tetap ingin melihat hasil; "PERINGATAN TEGAS …
+  MUNGKIN SALAH" wajib disampaikan.
+- **CSV tanda kutip tak tertutup** sampai akhir file → selalu `GAGAL: CSV rusak ... baris N` (juga
+  dengan `--paksa`). Kutip nyasar yang "tertutup" di baris lain dan kebetulan tetap cocok jumlah
+  kolomnya → `GAGAL: CSV kemungkinan rusak … N baris data HILANG` (hanya pada kolom yang biasanya
+  satu baris). Sel multi-baris yang sah (alamat "Jl. …, No. …⏎Kel. …, Kec. …", catatan "50%⏎sisa")
+  terbaca biasa + info ringan; tidak perlu dipermasalahkan.
 - **Tanpa traceback:** semua masalah input keluar dengan kode 2 dan pesan `GAGAL: ...` berbahasa awam.
