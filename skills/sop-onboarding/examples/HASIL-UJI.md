@@ -122,3 +122,49 @@ oleh P1: evaluasi 90 hari yang dapat jatuh setelah batas masa percobaan tanpa pe
 SKILL.md/README yang menampilkan tanggal salah (termasuk menyebut 25 Des 2026 — Hari Natal — sebagai "akhir masa
 percobaan"). Keduanya mudah diperbaiki. Setelah P1 + P2-1..P2-3 beres dan tes regresi ditambah, skor realistis 8.
 Uji ulang oleh penguji independen setelah revisi.
+
+---
+
+## Uji ulang v1.0.1
+
+Tanggal: 25 September 2026 · Penguji independen baru (bukan pembuat, perevisi, atau penguji v1.0.0) · Script
+dijalankan dari salinan di scratchpad · Rincian lengkap: `06-uji-ulang-v1.0.1.md`.
+
+### Status temuan v1.0.0
+| Temuan | Status v1.0.1 |
+|---|---|
+| P1-1 evaluasi 90 hari lewat batas percobaan | ✅ Tuntas — baris "Batas hukum" + "Evaluasi keputusan" terpisah; evaluasi selalu ≤ batas & hari kerja (0 pelanggaran dari 1.460 tanggal mulai); ⚠️ checkpoint 90 muncul bila lewat batas |
+| P1-2 contoh SKILL.md/README salah | ✅ Tanggal cocok persis dengan script (26/27/19 Des 2026); ⚠️ kalimat "tidak ada libur di rentang ini" keliru (P3) |
+| P2-1 H1 di hari libur | ✅ Peringatan + saran tanggal, tidak digeser otomatis |
+| P2-2 libur nasional bawaan | ✅ CSV 2026 (25 tgl) & 2027 (26 tgl) cocok 100% dengan SKB 3 Menteri hasil web search penguji |
+| P2-3 aturan geser & definisi 3 bulan | ✅ Tertulis & identik dengan script |
+| P2-4 upah usaha mikro/kecil | ✅ Ada (Ps. 90B; PP 36/2021 Ps. 36 jo. PP 51/2023), bertanda PERLU REVIEW, isi cocok dengan sumber |
+| P2-5 formulir PKWT | ✅ Template terpisah tanpa "lulus masa percobaan" |
+| P3 buddy, check-in, target per jabatan, retrospektif | ✅ Ada |
+| P3 overflow 9999, tahun tak wajar, CSV titik-koma, contoh bengkel | ❌ Belum |
+
+### Verifikasi tanggal
+Penghitung mandiri (tanpa membaca kode script) vs script: 320 tanggal acak + 36 kasus khusus + 488 tanggal
+(tiap 3 hari 2026–2027), 5 & 6 hari kerja → **0 selisih** tanggal maupun peringatan. Kasus 14 Des 2026 (batas
+13 Mar 2027, evaluasi 1 Mar, melewati Nyepi+Lebaran), 28 Sep 2026, 31 Jan, 30 Nov, 29 Feb 2028, mulai hari
+Minggu/Natal/Lebaran — semua benar. Tes bawaan: **LULUS 136 cek**. SKILL.md 204 baris.
+
+### Skenario 02 diulang
+PKWT 1 tahun, 1 Des 2026, 6 hari: tanpa masa percobaan, dasar larangan disebut, formulir PKWT, libur dimuat
+otomatis, target tanpa angka karangan & tanpa ranah klinis. ✅
+
+### Temuan baru
+- **P2 B-1:** definisi "3 bulan" (wajar, tidak pernah melebihi 3 bulan) disajikan sebagai kepastian, belum
+  dinyatakan sebagai **tafsir** + saran ikuti tanggal di perjanjian kerja.
+- **P3:** B-2 kalimat contoh "tidak ada libur" keliru; B-3 frasa "5 hari kerja sebelum" ambigu untuk fallback
+  manual; B-4 cuti bersama bagi swasta mengikuti kebijakan perusahaan belum disebut; B-5 tahun tanpa data libur
+  (2028) hanya catatan kecil, bukan ⚠️; B-6 pengingat PKWT hanya untuk pekerjaan tidak tetap (Ps. 59); B-7/B-8
+  P3 lama; B-9 Ps. 62 belum ada di tabel referensi.
+
+### Skor
+**8 / 10 — LULUS quality gate.**
+Alasan: dua P1 dan kelima P2 v1.0.0 tuntas dan terbukti lewat verifikasi independen (0 selisih di 844
+perbandingan, 0 pelanggaran properti evaluasi ≤ batas), libur 2026/2027 terverifikasi, skenario PKWT kini tidak
+perlu improvisasi. Belum 9 karena B-1 (tafsir hukum disajikan sebagai kepastian), kalimat contoh yang keliru,
+dan sisa P3 ketahanan script. Perbaikan B-1–B-3 dianjurkan sebelum uji platform asli; tidak perlu uji ulang
+penuh.
