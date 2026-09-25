@@ -634,7 +634,9 @@ class UjiTemuanV101(unittest.TestCase):
             self.assertEqual(d["jumlah_baris_data"], harap["baris"])
         teks = " ".join(d["peringatan"])
         for q in ("Q1", "Q2", "Q3"):                              # baris TOTAL dibuang per sheet
-            self.assertIn("Sheet '{}': 1 baris Total/Jumlah dilewati".format(q), teks)
+            self.assertRegex(teks, r"baris {}:\d+ \(rumus agregat \(E\d+: =SUM\(".format(q))
+        self.assertEqual(len(d["baris_dikeluarkan"]), 3)
+        self.assertEqual(d["kemungkinan_ringkasan"], [])
         self.assertIn("rumus tanpa nilai", teks)
         self.assertIn("gabungan sheet Q1 + Q2 + Q3", d["sumber"])
         d = jalankan_json(self, "pivot", self.xlsx, "--sheet", "semua", "--grup", "Sheet", "--nilai", "Total")
@@ -1401,6 +1403,8 @@ class UjiEksporV105(unittest.TestCase):
     def tearDownClass(cls):
         cls._tmp.cleanup()
 
+    alt = None   # diisi setelah definisi kelas (cek_alt)
+
     def a(self, nama, kolom, total, baris, *extra):
         d = self.cek_a(self.fx / nama, kolom, total, None, *extra)
         self.assertEqual(d["jumlah_baris_data"], baris, nama)
@@ -1415,8 +1419,9 @@ class UjiEksporV105(unittest.TestCase):
         d = self.a("N1-shopee-judul-catatan-kaki.csv", "Total Pembayaran", k["total_pembayaran"], k["baris"])
         self.cek_a(self.fx / "N1-shopee-judul-catatan-kaki.csv", "Jumlah", k["qty"])
         t = self.teks(d)
-        self.assertIn("1 baris Total/Jumlah dilewati", t)
-        self.assertIn("1 baris catatan di bawah tabel tidak dihitung", t)
+        self.assertIn("BARIS DIKELUARKAN dari perhitungan (2 baris", t)
+        self.assertEqual([x["alasan"] for x in d["baris_dikeluarkan"]],
+                         ["baris ringkasan berlabel 'Total' di bawah tabel", "catatan di bawah tabel"])
         self.assertIn("Dicetak oleh", t)
 
     def test_N2_tokopedia_dua_baris_catatan(self):
@@ -1445,10 +1450,9 @@ class UjiEksporV105(unittest.TestCase):
     # -- (c) di v1.0.4 -> kini (a) -----------------------------------------------------------------------
     def test_N11_sum_tanpa_label_dan_rata_rata(self):
         k = self.k["N11"]
-        d = self.a("N11-excel-sum-tanpa-label.csv", "Jumlah", k["total"], k["baris"])
-        t = self.teks(d)
-        self.assertIn("1 baris angka TANPA label dilewati", t)
-        self.assertIn("Rata-rata", t)
+        # v1.0.6: SUM tanpa label di CSV (tanpa rumus) = AMBIGU -> tetap dihitung + peringatan tegas + total alternatif
+        d = self.alt(self.fx / "N11-excel-sum-tanpa-label.csv", "Jumlah", k["total"], k["baris"], [14])
+        self.assertIn("baris ringkasan berlabel 'Rata-rata' di bawah tabel", self.teks(d))
 
     def test_N11_varian_label_di_kolom_mana_pun(self):
         f = self.t / "n11-varian.csv"
@@ -1456,16 +1460,15 @@ class UjiEksporV105(unittest.TestCase):
                      "03/09/2026,Listrik,c,300000\n,,Total,600000\n,,Rata-rata,200000\n,,Min,100000\n"
                      ",,Maks,300000\n,,Grand Total,600000\n", encoding="utf-8")
         d = self.cek_a(f, "Jumlah", 600000, 3)
-        self.assertIn("5 baris Total/Jumlah dilewati", self.teks(d))
+        self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], [5, 6, 7, 8, 9])
 
     def test_subtotal_tanpa_label_di_tengah_dan_ekor(self):
         f = self.t / "subtotal-tanpa-label.csv"
         f.write_text("Tanggal,Kategori,Jumlah\n01/09/2026,ATK,100000\n02/09/2026,ATK,200000\n,,300000\n"
                      "03/09/2026,Listrik,300000\n04/09/2026,Listrik,50000\n,,350000\n,,650000\n,,162500\n"
                      ",,50000\n,,300000\n", encoding="utf-8")
-        d = self.cek_a(f, "Jumlah", 650000, 4)
-        self.assertEqual(d["jumlah_baris_data"], 4)
-        self.assertIn("6 baris angka TANPA label dilewati", self.teks(d))
+        # v1.0.6: tanpa label & tanpa rumus = ambigu -> 6 kandidat, total alternatif = 650.000
+        self.alt(f, "Jumlah", 650000, 4, [4, 7, 8, 9, 10, 11])
         # --pertahankan-total: semua baris dihitung apa adanya
         t, _n, _d = self.total(f, "Jumlah", "--pertahankan-total")
         self.assertEqual(t, D(100000 + 200000 + 300000 + 300000 + 50000 + 350000 + 650000 + 162500 + 50000 + 300000))
@@ -1481,7 +1484,8 @@ class UjiEksporV105(unittest.TestCase):
         baris.append([None, "Rata-rata", ("f", "AVERAGE(C2:C5)", tot / 4)])
         buat_xlsx(f, [{"nama": "Biaya", "baris": baris}])
         d = self.cek_a(f, "Jumlah", tot, 4)
-        self.assertIn("TANPA label", self.teks(d))
+        self.assertEqual([x["alasan"] for x in d["baris_dikeluarkan"]],
+                         ["rumus agregat (C6: =SUM(C2:C5))", "rumus agregat (C7: =AVERAGE(C2:C5))"])
 
     def test_bukan_ringkasan_tetap_data(self):
         # satu kolom angka saja: 1 + 2 = 3 BUKAN baris jumlah (tidak ada kolom lain yang kosong)
@@ -1506,7 +1510,8 @@ class UjiEksporV105(unittest.TestCase):
                      ",Saldo Akhir,,,1150000\n", encoding="utf-8")
         d = jalankan_json(self, "ringkas", f)
         self.assertEqual(d["jumlah_baris_data"], 2)
-        self.assertIn("2 baris Total/Jumlah dilewati", self.teks(d))
+        self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], [2, 5])
+        self.assertIn("di atas tabel", d["baris_dikeluarkan"][0]["alasan"])
 
     def test_N12_catatan_berpadding_tidak_jadi_data(self):
         k = self.k["N12"]
@@ -1528,8 +1533,9 @@ class UjiEksporV105(unittest.TestCase):
         self.a("N7-excel-titikkoma-kolom-kosong.csv", "Total", k["N7"]["total"], k["N7"]["baris"])
         self.cek_a(self.fx / "N7-excel-titikkoma-kolom-kosong.csv", "Qty", k["N7"]["qty"])
         self.a("N10-kutip-inci-panggilan.csv", "Jumlah", k["N10"]["total"], k["N10"]["baris"])
-        d = self.a("N13-subtotal-per-hari.csv", "Nominal", k["N13"]["total"], k["N13"]["baris"])
-        self.assertIn("3 baris Total/Jumlah dilewati", self.teks(d))
+        # v1.0.6: 'Subtotal' di tengah = ambigu -> peringatan tegas; ekor dikeluarkan; total alternatif = kunci
+        d = self.alt(self.fx / "N13-subtotal-per-hari.csv", "Nominal", k["N13"]["total"], k["N13"]["baris"], [6, 11])
+        self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], [16])
 
     def test_B13_kolom_kode_dan_rp(self):
         d = jalankan_json(self, "profil", self.fx / "N5-mandiri-kolom-ganda.csv")
@@ -1560,6 +1566,228 @@ class UjiEksporV105(unittest.TestCase):
         f.write_text("Tanggal,Nama,Jumlah\n01/09/2026,Ani,5000\nCatatan: sebagian belum lunas\n"
                      "02/09/2026,Budi,6000\n", encoding="utf-8")
         self.cek_b(f, "baris 3: hanya 1 dari 3 kolom")
+
+
+# ---------------------------------------------------------------------------
+# v1.0.6 — PRINSIP: buang otomatis HANYA bila tidak ambigu; selebihnya peringatan tegas + total alternatif
+# ---------------------------------------------------------------------------
+
+FIXTURE_V105 = SINI / "examples" / "buat_fixture_uji_v105.py"
+
+
+def cek_waspada(test, f, kolom, kunci, baris, calon, kunci_di="tanpa", *extra):
+    """Hasil (b) v1.0.6: baris kandidat TETAP dihitung, PERINGATAN TEGAS paling atas berisi nomor baris & saran
+    --buang-baris, total alternatif DENGAN/TANPA baris itu; kunci penguji = salah satunya (kunci_di), dan
+    --buang-baris <kandidat> memberi total TANPA."""
+    d = jalankan_json(test, "ringkas", f, "--kolom", kolom, *extra)
+    self_total = angka(d["tabel"][0]["baris"][0][2])
+    test.assertEqual([x["baris"] for x in d["kemungkinan_ringkasan"]], calon, f.name)
+    p0 = d["peringatan"][0]
+    test.assertTrue(p0.startswith("PERINGATAN TEGAS — Kemungkinan baris ringkasan ikut terhitung: baris"), p0)
+    daftar = ",".join(map(str, calon))
+    test.assertIn("Bila benar ringkasan, ulangi dengan --buang-baris {}.".format(daftar), p0)
+    alt = {a["kolom"]: a for a in d["total_alternatif"]}
+    test.assertIn(kolom, alt, f.name)
+    test.assertEqual(angka(alt[kolom]["dengan"]), self_total)
+    test.assertIn("DENGAN baris itu {} / TANPA baris itu {}".format(
+        modul.fmt_angka(D(alt[kolom]["dengan"])), modul.fmt_angka(D(alt[kolom]["tanpa"]))), p0)
+    test.assertEqual(angka(alt[kolom][kunci_di]), D(kunci), f.name)
+    # jalan keluar: --buang-baris
+    d2 = jalankan_json(test, "ringkas", f, "--kolom", kolom, "--buang-baris", daftar, *extra)
+    test.assertEqual(angka(d2["tabel"][0]["baris"][0][2]), angka(alt[kolom]["tanpa"]), f.name)
+    test.assertEqual(d2["kemungkinan_ringkasan"], [], f.name)
+    test.assertNotIn("PERINGATAN TEGAS", " ".join(d2["peringatan"]))
+    test.assertTrue(all(x["alasan"] == "diminta --buang-baris" for x in d2["baris_dikeluarkan"]
+                        if x["baris"] in calon))
+    if baris is not None:
+        test.assertEqual(d["jumlah_baris_data"] - (len(calon) if kunci_di == "tanpa" else 0), baris, f.name)
+    # Markdown: peringatan tegas tampil di ATAS tabel
+    code, out, _err = jalankan("ringkas", f, "--kolom", kolom, *extra)
+    test.assertEqual(code, 0)
+    test.assertLess(out.index("PERINGATAN TEGAS"), out.index("| Kolom"))
+    return d
+
+
+UjiEksporV105.alt = lambda self, f, kolom, kunci, baris, calon: cek_waspada(self, f, kolom, kunci, baris, calon)
+
+
+class UjiPrinsipV106(unittest.TestCase):
+    """Fixture penguji ke-6 (uji ulang v1.0.5). Hasil per file: a = angka & baris cocok kunci tanpa peringatan tegas;
+    b = kandidat tetap dihitung + PERINGATAN TEGAS + total alternatif (kunci = total DENGAN atau TANPA) + jalan keluar
+    --buang-baris. Target: tidak ada (c) — tidak ada angka yang ikut/terbuang diam-diam."""
+
+    total = UjiInvarianV104.total
+    cek_a = UjiInvarianV104.cek_a
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.t = Path(cls._tmp.name)
+        cls.fx = cls.t / "u6"
+        r = subprocess.run([sys.executable, str(FIXTURE_V105), str(cls.fx)], capture_output=True, text=True)
+        if r.returncode != 0:
+            raise RuntimeError(r.stderr)
+        cls.k = json.loads((cls.fx / "kunci-v105.json").read_text(encoding="utf-8"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def a(self, nama, kolom, total, baris=None, dikeluarkan=()):
+        d = self.cek_a(self.fx / nama, kolom, total)
+        self.assertEqual(d["kemungkinan_ringkasan"], [], nama)
+        if baris is not None:
+            self.assertEqual(d["jumlah_baris_data"], baris, nama)
+        self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], list(dikeluarkan), nama)
+        return d
+
+    def b(self, nama, kolom, kunci, baris, calon, kunci_di):
+        return cek_waspada(self, self.fx / nama, kolom, kunci, baris, calon, kunci_di)
+
+    # -- dulu (c) salah diam-diam -------------------------------------------------------------------------
+    def test_R11_xlsx_rumus_sum_average_dikeluarkan_baris_polos_diwaspadai(self):
+        k = self.k["R11"]
+        d = self.b("R11-kas-sum-average.xlsx", "Biaya", k["total"], k["baris"], [6], "dengan")
+        self.assertEqual([(x["baris"], x["alasan"]) for x in d["baris_dikeluarkan"]],
+                         [(7, "rumus agregat (C7: =SUM(C2:C6))"), (8, "rumus agregat (C8: =AVERAGE(C2:C6))")])
+        self.assertIn("2.140.000", " ".join(d["peringatan"]))              # B18: format rupiah, bukan 2140000.0000
+
+    def test_R11_versi_csv_tanpa_rumus_diwaspadai(self):
+        f = self.t / "r11.csv"
+        f.write_text("Tanggal,Keterangan,Biaya\n2026-09-01,Gaji kurir,1500000\n,,1500000\n2026-09-02,Sewa gudang,"
+                     "2000000\n2026-09-03,Bensin,350000\n,,5350000\n,,10700000\n,,2140000\n", encoding="utf-8")
+        d = cek_waspada(self, f, "Biaya", 5350000, None, [6, 7, 8])
+        alt = d["total_alternatif"][0]
+        self.assertEqual(angka(alt["dengan"]), D(1500000 * 2 + 2000000 + 350000 + 5350000 + 10700000 + 2140000))
+        # kunci penguji (10.700.000) = tanpa baris 7 & 8 saja
+        d = jalankan_json(self, "ringkas", f, "--kolom", "Biaya", "--buang-baris", "7,8")
+        self.assertEqual(angka(d["tabel"][0]["baris"][0][2]), D(10700000))
+        self.assertEqual([x["baris"] for x in d["kemungkinan_ringkasan"]], [6])
+
+    def test_R10_subtotal_tanpa_label_termasuk_kelompok_1_baris(self):
+        k = self.k["R10"]
+        d = self.b("R10-subtotal-tanpa-label.csv", "Omzet", k["total"], k["baris"], [5, 7, 10], "tanpa")
+        self.assertEqual(d["baris_dikeluarkan"], [])
+
+    def test_R8d_catatan_berangka_dikeluarkan_dan_disebut(self):
+        k = self.k["R8d"]
+        d = self.a("R8d-catatan-berangka-3-sel.csv", "Nominal", k["total"], k["baris"], [9])
+        self.assertEqual(d["baris_dikeluarkan"][0]["alasan"], "catatan di bawah tabel")
+        self.assertIn("150000", d["baris_dikeluarkan"][0]["isi"])
+        self.assertIn("--pertahankan-baris 9", d["peringatan"][0])
+        t, _n, _d = self.total(self.fx / "R8d-catatan-berangka-3-sel.csv", "Nominal", "--pertahankan-baris", "9")
+        self.assertEqual(t, D(k["total"] + 150000))
+
+    # -- dulu (b-) data asli terbuang -----------------------------------------------------------------------
+    def test_R6_R6b_R7_kategori_rata_rata_total(self):
+        k = self.k
+        self.a("R6-kategori-rata-rata.csv", "Bonus", k["R6"]["total"], k["R6"]["baris"])
+        d = jalankan_json(self, "pivot", self.fx / "R6-kategori-rata-rata.csv", "--grup", "Penilaian", "--nilai", "Bonus")
+        m = {r[0]: angka(r[2]) for r in d["tabel"][0]["baris"]}
+        self.assertEqual(m["Rata-rata"], D(k["R6"]["per_penilaian"]["Rata-rata"]))
+        self.a("R7-kerusakan-total.csv", "Nilai Klaim", k["R7"]["total"], k["R7"]["baris"])
+        # label di sel teks PERTAMA -> kandidat (tetap dihitung), bukan dibuang
+        self.b("R6b-penilaian-kolom-1.csv", "Bonus", k["R6b"]["total"], k["R6b"]["baris"], [3, 4], "dengan")
+
+    def test_R3_R3c_R16_R5_data_kebetulan_sama_tetap_dihitung(self):
+        k = self.k
+        self.b("R3-kas-tanggal-sekali.csv", "Keluar", k["R3"]["total"], k["R3"]["baris"], [5, 9], "dengan")
+        self.b("R3c-kas-akhir-sama-jumlah.csv", "Keluar", k["R3c"]["total"], k["R3c"]["baris"], [5], "dengan")
+        d = self.b("R16-nilai-polos-sama-jumlah.xlsx", "Nilai", k["R16"]["total"], k["R16"]["baris"], [4], "dengan")
+        self.assertNotIn("rumus", " ".join(x["alasan"] for x in d["kemungkinan_ringkasan"]))
+        d = self.b("R5-produk-bernama-total.csv", "Harga", k["R5"]["total"], k["R5"]["baris"], [8, 9], "dengan")
+        self.assertEqual(angka(d["total_alternatif"][0]["tanpa"]), D(k["R5"]["total_tanpa_baris_TOTAL_Jumlah"]))
+
+    def test_R9_subtotal_berlabel(self):
+        k = self.k["R9"]
+        d = self.b("R9-subtotal-berlabel-kelompok-1-baris.csv", "Omzet", k["total"], k["baris"], [5, 7], "tanpa")
+        self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], [10, 11])       # ekor: Subtotal C + Grand Total
+
+    # -- dulu (d) ditolak -----------------------------------------------------------------------------------
+    def test_R8_R8c_catatan_kaki_berangka_terbaca(self):
+        k = self.k
+        self.a("R8-catatan-kaki-berangka.csv", "Nominal", k["R8"]["total"], k["R8"]["baris"], [9, 10])
+        self.a("R8c-catatan-1-sel-berangka.csv", "Nominal", k["R8c"]["total"], k["R8c"]["baris"], [9, 10])
+
+    # -- yang sudah (a) tetap (a) ---------------------------------------------------------------------------
+    def test_a_tetap(self):
+        k = self.k
+        self.a("R1-bernomor-baris3-jumlah.csv", "Total", k["R1"]["total"], k["R1"]["baris"])
+        self.a("R2-satu-kolom-nominal.csv", "Nominal", k["R2"]["total"], k["R2"]["baris"])
+        self.a("R4-masuk-keluar-banyak-nol.csv", "Masuk", k["R4"]["masuk"], k["R4"]["baris"])
+        self.a("R4-masuk-keluar-banyak-nol.csv", "Keluar", k["R4"]["keluar"], k["R4"]["baris"])
+        self.a("R11b-sum-average-biasa.xlsx", "Biaya", k["R11b"]["total"], k["R11b"]["baris"], [5, 6])
+        self.a("R12-bulan-angka.csv", "Penjualan", k["R12"]["total"], k["R12"]["baris"])
+        self.a("R12b-bulan-angka-tanpa-tahun.csv", "Penjualan", k["R12b"]["total"], k["R12b"]["baris"])
+        self.a("R13-waktu-pembeli-kosong.csv", "Bayar", k["R13"]["total"], k["R13"]["baris"])
+        self.a("R14-iuran-baris-belum-lengkap.xlsx", "Iuran", k["R14"]["total"], k["R14"]["baris"])
+        self.a("P1-shopee-nilai-berulang.csv", "Total Pembayaran", k["P1"]["total"], k["P1"]["baris"])
+        self.a("P2-tokopedia-ringkasan-bawah.csv", "Total Penjualan", k["P2"]["total"], k["P2"]["baris"], [11, 12])
+        self.a("P3-bca-keterangan-saldo-total.csv", "Jumlah", k["P3"]["jumlah"], k["P3"]["baris"], [12, 13, 14, 15])
+        self.a("P4-google-form-donasi.csv", "Nominal Donasi", k["P4"]["total"], k["P4"]["baris"])
+
+    # -- rumus XLSX: hanya agregat atas baris LAIN -------------------------------------------------------------
+    def test_rumus_per_baris_dan_saldo_berjalan_bukan_ringkasan(self):
+        f = self.t / "rumus.xlsx"
+        baris = [["Tanggal", "Qty", "Harga", "Total", "Kumulatif"]]
+        for i, (q, h) in enumerate([(2, 1000), (3, 2000), (1, 5000)]):
+            r = i + 2
+            baris.append([("tgl", serial_excel(date(2026, 9, i + 1))), q, h, ("f", "SUM(B{0}*C{0})".format(r), q * h),
+                          ("f", "SUM($D$2:D{})".format(r), 0)])
+        baris.append([None, None, None, ("f", "SUBTOTAL(9,D2:D4)", 13000)])
+        buat_xlsx(f, [{"nama": "S", "baris": baris}])
+        d = self.cek_a(f, "Total", 13000, 3)
+        self.assertEqual([(x["baris"], x["alasan"]) for x in d["baris_dikeluarkan"]],
+                         [(5, "rumus agregat (D5: =SUBTOTAL(9,D2:D4))")])
+        self.assertTrue(modul._rumus_agregat_luar("_xlfn.AGGREGATE(9,6,C2:C9)", 10))
+        self.assertTrue(modul._rumus_agregat_luar("ROUND(AVERAGE(C2:C9),0)", 10))
+        self.assertFalse(modul._rumus_agregat_luar("SUMIF(A2:A9,\"x\",C2:C9)", 10))
+        self.assertFalse(modul._rumus_agregat_luar("B10*C10", 10))
+        # rumus bersama (shared): anak digeser dari induknya
+        import xml.etree.ElementTree as ET
+        bersama = {}
+        induk = ET.fromstring('<f t="shared" si="0" ref="C7:D7">SUM(C2:C6)</f>')
+        anak = ET.fromstring('<f t="shared" si="0"/>')
+        self.assertEqual(modul._teks_rumus(induk, 7, bersama), "SUM(C2:C6)")
+        self.assertEqual(modul._teks_rumus(anak, 8, bersama), "SUM(C3:C7)")
+
+    # -- opsi --buang-baris / --pertahankan-baris ------------------------------------------------------------
+    def test_opsi_baris(self):
+        f = self.fx / "R10-subtotal-tanpa-label.csv"
+        code, _o, err = jalankan("ringkas", f, "--buang-baris", "lima")
+        self.assertEqual(code, 2)
+        self.assertIn("GAGAL: --buang-baris berisi 'lima'", err)
+        d = jalankan_json(self, "ringkas", f, "--buang-baris", "5", "--buang-baris", "99")
+        self.assertEqual([x["baris"] for x in d["kemungkinan_ringkasan"]], [7, 10])
+        self.assertIn("Nomor baris 99", " ".join(d["peringatan"]))
+        d = jalankan_json(self, "ringkas", f, "--pertahankan-baris", "5,7,10")
+        self.assertEqual(d["kemungkinan_ringkasan"], [])
+        d = jalankan_json(self, "ringkas", self.fx / "P2-tokopedia-ringkasan-bawah.csv", "--pertahankan-baris", "12")
+        # baris 12 dinyatakan data -> 'Total Penjualan' (baris 11) kini di TENGAH: tidak dibuang, jadi kandidat
+        self.assertEqual(d["baris_dikeluarkan"], [])
+        self.assertEqual([x["baris"] for x in d["kemungkinan_ringkasan"]], [11])
+        self.assertEqual(d["jumlah_baris_data"], 7)
+
+    def test_gabungan_sheet_nomor_baris_bersheet(self):
+        f = self.t / "dua.xlsx"
+        sh = []
+        for nama, vals in (("A", [100, 200]), ("B", [300, 400])):
+            b = [["Tanggal", "Uraian", "Nilai"]]
+            for i, v in enumerate(vals):
+                b.append([("tgl", serial_excel(date(2026, 9, i + 1))), "x{}".format(i), v])
+            b.append([None, None, sum(vals)])
+            b.append([("tgl", serial_excel(date(2026, 9, 5))), "y", 50])
+            sh.append({"nama": nama, "baris": b})
+        buat_xlsx(f, sh)
+        d = jalankan_json(self, "ringkas", f, "--sheet", "semua", "--kolom", "Nilai")
+        self.assertEqual([x["baris"] for x in d["kemungkinan_ringkasan"]], ["A:4", "B:4"])
+        self.assertEqual(angka(d["total_alternatif"][0]["tanpa"]), D(1100))
+        self.assertIn("--buang-baris A:4,B:4", d["peringatan"][0])
+        d = jalankan_json(self, "ringkas", f, "--sheet", "semua", "--kolom", "Nilai", "--buang-baris", "A:4,B:4")
+        self.assertEqual(angka(d["tabel"][0]["baris"][0][2]), D(1100))
+        code, _o, err = jalankan("ringkas", f, "--sheet", "semua", "--buang-baris", "4")
+        self.assertEqual(code, 2)
+        self.assertIn("beserta sheetnya", err)
 
 
 if __name__ == "__main__":

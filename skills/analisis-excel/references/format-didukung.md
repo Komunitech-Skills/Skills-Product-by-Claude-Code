@@ -105,26 +105,35 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
 - **Header:** baris pertama (dari 30 teratas) yang cukup lebar (≥ 60% kolom terlebar) dan dominan
   teks; baris judul laporan/keterangan di atasnya dilewati dan diberitahukan. Paksa `--baris-header N`.
 - Nama kolom kosong → `Kolom C`; nama ganda → `Nama (2)`.
-- **Baris ringkasan berlabel** → dilewati + peringatan berisi nomor & isi barisnya. Label: Total/
-  Jumlah/Subtotal/Grand Total/Rata-rata/Rerata/Average/Saldo Awal/Saldo Akhir/Mutasi Kredit/Mutasi
-  Debet (+ "Total …" di sel isi pertama, dan label berakhiran titik dua seperti "Jumlah pesanan:") di
-  **kolom mana pun** (v1.0.5; sebelumnya hanya sel isi pertama). "Min"/"Maks"/"Median" hanya bila
-  satu-satunya teks di baris tanpa tanggal. "Saldo" saja (baris saldo di buku kas) tetap data.
-  Berlaku di atas (baris "SALDO AWAL" mutasi bank), tengah (Subtotal per hari), dan bawah tabel.
-- **Baris jumlah TANPA label (v1.0.5)** — pola rumus `=SUM()` / `=AVERAGE()` di bawah kolom: baris yang
-  hanya berisi angka di kolom angka (tanpa teks/tanggal), dengan kolom yang biasanya terisi (≥ 80%)
-  kosong, dan setiap angkanya = **jumlah** kolom di atasnya (sejak baris ringkasan terakhir, atau
-  seluruhnya) atau **rata-rata**-nya (≥ 3 nilai), toleransi Rp1 → dilewati + peringatan "baris angka
-  TANPA label dilewati … totalnya DOBEL". Di tengah file (subtotal per kelompok) juga. Di ekor tabel
-  juga dikenali min/maks. Tabel satu kolom angka (tidak ada kolom lain yang kosong) tidak pernah kena.
-- **Blok catatan di bawah tabel (v1.0.5)** — dari baris terakhir ke atas, baris tanpa angka sama
-  sekali yang (a) berisi teks bergaya catatan ("Dicetak oleh…", "Sumber: …", "Laporan dibuat…",
-  "Catatan: …", teks berakhiran/berisi ":") atau (b) hanya satu sel teks panjang (≥ 25 huruf), dan ada
-  kolom yang biasanya terisi kosong → **tidak dihitung sebagai data** + info "N baris catatan di bawah
-  tabel tidak dihitung (baris 27: 'Dicetak oleh…')". Jumlah baris, rentang tanggal, dan pivot tidak
-  lagi tercemar catatan kaki (termasuk catatan ber-padding `Dicetak oleh: admin,,,`).
-- `--pertahankan-total` → baris ringkasan (berlabel & tanpa label) dihitung sebagai data; blok catatan
-  tetap tidak dihitung (tidak berisi angka).
+- **Baris ringkasan & catatan (v1.0.6 — PRINSIP: keluarkan otomatis HANYA bila tidak ambigu).**
+  Versi 1.0.3–1.0.5 menebak dengan aturan label/angka dan ikut membuang data asli (kategori "Rata-rata",
+  transaksi yang kebetulan = jumlah di atasnya). Sejak 1.0.6:
+  1. **Dikeluarkan otomatis** (disebut di peringatan "BARIS DIKELUARKAN … (alasan): isi", paling atas):
+     - **XLSX, sel berumus agregat** `SUM/SUBTOTAL/AVERAGE/COUNT/MIN/MAX/AGGREGATE` atas rentang baris
+       LAIN (teks rumus dibaca dari `<f>`, termasuk rumus bersama). Rumus per baris (`=SUM(B5:D5)`) dan saldo
+       berjalan (`=SUM($C$2:C5)`, rentangnya memuat baris itu) bukan ringkasan. Nilai POLOS yang kebetulan
+       sama dengan jumlah **tidak** dianggap ringkasan.
+     - **Blok EKOR**: akhiran tabel yang tiap barisnya (i) berlabel ringkasan — label di **sel teks
+       pertama** baris: Total/Jumlah/Subtotal/Grand Total/Rata-rata/Saldo Akhir/Mutasi Kredit/Debet, "Total …"
+       di sel isi pertama, "Jumlah pesanan:"; Min/Maks/Median bila satu-satunya teks —, (ii) berawalan
+       Catatan/Keterangan/Ket/NB/Note/Sumber/Dicetak/`*` (walau berisi angka, mis. "Catatan: retur,,150000"),
+       atau (iii) teks saja yang bergaya catatan atau dipisah baris kosong dari data.
+     - **Blok KEPALA**: baris "Saldo Awal"/Opening balance tepat di bawah judul kolom (mutasi bank); judul
+       laporan di atas header dilewati oleh deteksi header.
+     - Baris yang diminta pengguna: `--buang-baris 5,9` (gabungan sheet: `"TW1:7"`).
+  2. **Kandidat — TETAP DIHITUNG**, dengan "PERINGATAN TEGAS — Kemungkinan baris ringkasan ikut terhitung:
+     baris N (isi — alasan) … Bila benar ringkasan, ulangi dengan --buang-baris N[,M]. Total alternatif:
+     kolom 'X': DENGAN baris itu … / TANPA baris itu …" (JSON: `kemungkinan_ringkasan`, `total_alternatif`):
+     - baris berlabel ringkasan di **tengah/atas** tabel (Subtotal per cabang/hari, produk bernama persis
+       "TOTAL", kategori "Rata-rata" di kolom pertama);
+     - baris angka **tanpa label** (hanya angka di kolom angka, ada kolom yang biasanya terisi ≥ 80% kosong)
+       yang setiap angkanya = jumlah baris di atasnya (sejak kandidat/baris dikeluarkan terakhir — kelompok 1
+       baris pun — atau seluruhnya) atau rata-ratanya (≥ 3 nilai); di ekor tabel juga min/maks dan agregat
+       yang menyertakan baris kandidat sebelumnya (SUM lalu AVERAGE). Toleransi Rp1.
+     Kategori di kolom kedua dst. ("Pegawai 02 | Rata-rata", "KLM-002 | Total") bukan label sama sekali.
+  3. `--pertahankan-baris N` → baris N dihitung sebagai data dan tidak dicurigai; `--pertahankan-total` →
+     tidak ada baris yang dikeluarkan/dicurigai (semua dihitung apa adanya).
+  "Saldo" saja (baris saldo di buku kas) tetap data.
 - Baris yang mengulang judul kolom (hasil salin-tempel) dan baris kosong → dilewati.
 
 ## Tipe kolom

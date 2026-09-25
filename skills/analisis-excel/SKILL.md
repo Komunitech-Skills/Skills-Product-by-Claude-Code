@@ -79,12 +79,21 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    python3 <...>/analisis.py bersihkan "<file>" --keluar "<file>-bersih.csv" [--excel-id] [--buang-duplikat]
    ```
    Opsi umum semua subperintah: `--sheet` (+ `--acuan`, `--sertakan`), `--baris-header N`, `--filter "Kolom=A|B"`,
+   `--buang-baris 5,9` / `--pertahankan-baris 12` (gabungan sheet: `"TW1:7"`; lihat langkah 3),
    `--dari 2026-07 --sampai 2026-09`, `--tipe "No HP=kode"`, `--urutan-tanggal mdy`,
    `--keluar hasil.csv` (simpan tabel hasil), `--excel-id` (CSV untuk Excel berbahasa Indonesia:
    pemisah `;` dan koma desimal), `--json` (keluaran mesin), `--tampilkan-pribadi` (lihat Aturan). Periode: `2026-09`, `Sep 2026`,
    `2026`, `Q3 2026`, `2026-09-01..2026-09-15`.
 3. **Baca keluaran** (Markdown siap tempel). Salin tabel **apa adanya**; jangan mengubah angka,
-   pembulatan, atau persen.
+   pembulatan, atau persen. **WAJIB** baca dua blok di paling atas keluaran (JSON:
+   `baris_dikeluarkan`, `kemungkinan_ringkasan`, `total_alternatif`):
+   - **"BARIS DIKELUARKAN"** → sebutkan ke pengguna baris mana yang tidak dihitung dan isinya
+     (rumus SUM/AVERAGE, Total/Grand Total di bawah tabel, catatan kaki, Saldo Awal).
+   - **"PERINGATAN TEGAS — Kemungkinan baris ringkasan ikut terhitung"** → baris itu MASIH dihitung.
+     **Jangan beri angka final** sebelum: tanya pengguna **sekali** ("Baris 14 berisi Jumlah=4.860.000
+     tanpa keterangan — itu baris total (rumus) atau transaksi?") **atau** tampilkan **kedua total**
+     (DENGAN dan TANPA baris itu, dari pesan script). Bila pengguna menjawab "itu total", ulangi perintah
+     dengan `--buang-baris N[,M]`; bila "itu data", pakai hasil awal (atau `--pertahankan-baris N`).
 4. **Tulis jawaban** dengan format di bawah. Narasi hanya boleh memakai angka yang ada di
    keluaran script (bagian "Temuan" sudah berisi fakta terhitung).
 5. **Tawarkan langkah lanjut** yang relevan (mis. setelah `pivot` → "mau saya lihat trennya per
@@ -108,7 +117,8 @@ Excel/Google Sheets yang setara), dan katakan hasil **belum diverifikasi script*
 
 **Saran grafik:** <dari script + 1 kalimat cara buatnya di Excel/Sheets>
 
-**Perlu dicek:** <SEMUA peringatan script yang relevan, diringkas bahasa awam>
+**Perlu dicek:** <baris yang DIKELUARKAN + isinya; kemungkinan baris ringkasan + total DENGAN/TANPA
+(bila belum dikonfirmasi pengguna); lalu peringatan script lain, diringkas bahasa awam>
 (Asumsi: <kolom/sheet/periode yang dipakai>) — File hasil: <nama CSV bila --keluar>
 ```
 Template lengkap: `templates/laporan-analisis.md`. Angka rupiah pakai titik ribuan (`Rp 1.250.000`),
@@ -171,12 +181,14 @@ Rincian lengkap: `references/format-didukung.md`.
   terdekat, persen 1 desimal (0,5 menjauhi nol). CSV hasil menyimpan hingga 2 desimal.
 - **Keamanan CSV hasil:** teks yang diawali `=`, `+`, `-`, `@` diberi awalan `'` agar tidak
   dieksekusi sebagai rumus saat dibuka di Excel. File asli tidak pernah diubah.
-- **Baris ringkasan & catatan (v1.0.5)** — dikeluarkan dari data otomatis, dilaporkan (bukan GAGAL):
-  baris berlabel Total/Jumlah/Subtotal/Grand Total/Rata-rata/Saldo Awal/Saldo Akhir/Mutasi… di kolom
-  mana pun (atas, tengah, bawah tabel); baris angka **tanpa label** yang isinya = jumlah/rata-rata
-  kolom di atasnya (rumus SUM/AVERAGE; toleransi Rp1); dan blok catatan di bawah tabel ("Dicetak
-  oleh…", "Sumber: …"). Sampaikan isi peringatan/info itu ke pengguna ("baris 14 = jumlah kolom,
-  tidak dihitung agar tidak dobel"). Bila baris itu ternyata data asli → `--pertahankan-total`.
+- **Baris ringkasan & catatan (v1.0.6) — dikeluarkan otomatis HANYA bila tidak ambigu:** (a) XLSX: sel
+  berisi rumus agregat (SUM/SUBTOTAL/AVERAGE/COUNT/MIN/MAX/AGGREGATE) atas baris lain; (b) blok **ekor**
+  tabel: baris berlabel Total/Jumlah/Grand Total/Rata-rata/Saldo Akhir… (label di sel teks pertama),
+  catatan kaki (Catatan/NB/Sumber/Dicetak…, walau berisi angka), teks saja yang dipisah baris kosong;
+  (c) **kepala**: judul laporan di atas header, "Saldo Awal" tepat di bawah header. Semua disebut dengan isinya.
+  **Selain itu TIDAK dibuang** (kategori "Total"/"Rata-rata" di tengah, Subtotal di tengah, angka tanpa label
+  yang = jumlah/rata-rata di atasnya, nilai polos tanpa rumus) → tetap dihitung + PERINGATAN TEGAS + total
+  alternatif; ikuti langkah 3. Rincian: `references/format-didukung.md`.
 - **Aturan jumlah kolom CSV (v1.0.4–1.0.5):** setiap baris data wajib punya jumlah kolom yang **sama
   dengan judul kolom**. Boleh: sel kosong berlebih di ujung kanan, dan baris yang kekurangan sel
   **hanya di kolom paling kanan yang memang sering kosong** (mis. "Catatan") selama isi baris tidak
