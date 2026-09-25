@@ -1,0 +1,154 @@
+---
+name: analisis-excel
+description: Menganalisis file spreadsheet milik pengguna (Excel .xlsx atau CSV, apa pun isinya - biaya, stok, pelanggan, nilai siswa, absensi, keuangan) untuk menjawab pertanyaan bisnis - profil data (kolom, kosong, duplikat, outlier), ringkasan jumlah/rata-rata/median/min/max, pivot/group-by per kategori atau bulan, tren bulanan, top-N/Pareto, perbandingan dua periode atau dua file (persen naik/turun), dan membersihkan data (angka "Rp 1.234.567,89", tanggal campur, spasi, huruf besar-kecil) - dengan tabel Markdown, CSV hasil, narasi temuan bahasa awam, dan saran grafik. Angka dihitung script, bukan dikira. Gunakan saat pengguna mengirim file Excel/CSV dan bertanya "analisis file ini", "total per kategori", "bulan mana paling tinggi", "bandingkan Agustus vs September", "rapikan data Excel", analyze spreadsheet, excel data analysis, pivot table, data cleaning, summary statistics. Bukan untuk rekap penjualan kasir/marketplace (rekap-penjualan-csv), laporan iklan (laporan-iklan-mingguan), statistik lanjut/prediksi/ML.
+---
+
+# Analisis Excel & CSV untuk Awam
+
+## Tujuan
+Pengguna awam cukup mengirim file Excel/CSV dan bertanya dengan bahasa sehari-hari; agent menjawab
+dengan **tabel siap tempel, angka yang dihitung script, narasi temuan, dan saran grafik**. Semua
+angka berasal dari `scripts/analisis.py` (Python standar, Decimal untuk uang, bisa baca `.xlsx`
+langsung tanpa openpyxl/pandas). Agent **hanya menjelaskan**, tidak menghitung sendiri.
+
+## Kapan digunakan
+- "Tolong analisis file Excel ini", "isinya apa saja, ada yang aneh?" → `profil`
+- "Total/rata-rata pengeluaran berapa?" → `ringkas`
+- "Total per kategori/cabang/divisi", "rata-rata nilai per kelas" → `pivot`
+- "Bulan mana paling tinggi?", "trennya naik atau turun?" → `tren`
+- "10 pelanggan/barang terbesar", "yang paling sedikit" → `top`
+- "Bandingkan Agustus vs September", "file bulan ini vs bulan lalu" → `banding`
+- "Rapikan data ini (angka Rp, tanggal campur, huruf besar-kecil)" → `bersihkan`
+
+## Kapan TIDAK digunakan
+- Rekap **penjualan** dari kasir/Shopee/Tokopedia (omzet, produk terlaris, status batal) →
+  `rekap-penjualan-csv` (lebih tepat: menangani status pesanan & qty × harga).
+- Laporan iklan Meta/TikTok/Shopee/Google Ads → `laporan-iklan-mingguan`.
+- Laporan laba rugi/neraca, pajak, gaji → skill keuangan/pajak yang sesuai.
+- Statistik lanjut (regresi, uji hipotesis, korelasi), prediksi/forecast, machine learning →
+  jelaskan skill ini hanya menganalisis data yang sudah terjadi; sarankan ahli data/statistik.
+- Membuat/mengedit file .xlsx (rumus, format, grafik di dalam file) → skill ini hanya **membaca**
+  dan menulis CSV hasil.
+- File > 50 MB atau > ±300 ribu baris → minta dipecah per bulan/sheet (lihat Batasan).
+
+## Input
+| Info | Wajib? | Default bila tidak disebut |
+|---|---|---|
+| File `.xlsx`/`.xlsm`/`.csv`/`.tsv`/`.txt` | Ya | — (minta dikirim) |
+| Pertanyaan/tujuan | Tidak | Jalankan `profil` lalu `ringkas`, beri 3 temuan utama |
+| Sheet (bila workbook > 1 sheet) | Tidak | Sheet pertama yang terlihat; sebutkan ke pengguna |
+| Kolom kategori / nilai / tanggal | Tidak | Tebak dari hasil `profil` (kolom teks / angka-uang / tanggal) dan **sebutkan asumsinya** |
+| Periode pembanding | Untuk `banding` | Tanyakan; bila pengguna mau cepat, bandingkan 2 bulan terakhir yang ada di data |
+
+Bila informasi kurang, tanyakan **sekali** dalam satu pesan singkat (mis. "Kolom mana yang berisi
+nilai uangnya: Nominal atau Harga? Mau dibandingkan bulan apa dengan apa?"). Bila pengguna bilang
+"langsung aja", pakai default di atas dan tulis asumsinya di awal jawaban.
+
+## Langkah kerja
+Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` dengan `python` atau `py`.
+
+1. **Kenali file dulu** (selalu, kecuali pengguna sudah jelas menyebut kolom):
+   ```bash
+   python3 <folder-skill-ini>/scripts/analisis.py profil "<file>" [--sheet "Nama Sheet"]
+   ```
+   Workbook banyak sheet: `daftar "<file>"` untuk melihat semua sheet. Dari hasil `profil` catat
+   nama kolom persis, tipe (tanggal/angka/teks/kode), kolom uang, dan peringatan.
+2. **Jalankan subperintah yang menjawab pertanyaan** (nama kolom tidak peka huruf besar-kecil,
+   boleh sebagian nama bila unik):
+   ```bash
+   python3 <...>/analisis.py ringkas  "<file>" [--kolom "Nominal"]
+   python3 <...>/analisis.py pivot    "<file>" --grup "Kategori" --nilai "Nominal" [--fungsi jumlah|rata|median|hitung|min|max] [--kolom-pivot "Divisi"]
+   python3 <...>/analisis.py pivot    "<file>" --grup "Tanggal" --per bulan --nilai "Nominal"
+   python3 <...>/analisis.py tren     "<file>" --nilai "Nominal" [--tanggal "Tanggal"] [--per bulan|minggu|hari|kuartal|tahun]
+   python3 <...>/analisis.py top      "<file>" --grup "Pelanggan" --nilai "Total" --n 10 [--terbawah]
+   python3 <...>/analisis.py banding  "<file>" --nilai "Nominal" --periode-a 2026-08 --periode-b 2026-09 [--grup "Kategori"]
+   python3 <...>/analisis.py banding  "<file-lama>" --file-b "<file-baru>" --nilai "Total" [--grup "Produk"]
+   python3 <...>/analisis.py bersihkan "<file>" --keluar "<file>-bersih.csv" [--excel-id] [--buang-duplikat]
+   ```
+   Opsi umum semua subperintah: `--sheet`, `--baris-header N`, `--filter "Kolom=A|B"`,
+   `--dari 2026-07 --sampai 2026-09`, `--tipe "No HP=kode"`, `--urutan-tanggal mdy`,
+   `--keluar hasil.csv` (simpan tabel hasil), `--excel-id` (CSV untuk Excel berbahasa Indonesia:
+   pemisah `;` dan koma desimal), `--json` (keluaran mesin). Periode: `2026-09`, `Sep 2026`,
+   `2026`, `Q3 2026`, `2026-09-01..2026-09-15`.
+3. **Baca keluaran** (Markdown siap tempel). Salin tabel **apa adanya**; jangan mengubah angka,
+   pembulatan, atau persen.
+4. **Tulis jawaban** dengan format di bawah. Narasi hanya boleh memakai angka yang ada di
+   keluaran script (bagian "Temuan" sudah berisi fakta terhitung).
+5. **Tawarkan langkah lanjut** yang relevan (mis. setelah `pivot` → "mau saya lihat trennya per
+   bulan?"), dan tawarkan `--keluar` bila pengguna ingin tabelnya dibuka di Excel.
+
+Bila script gagal (kode keluar 2) → baca pesan `GAGAL:` (sudah berbahasa awam), sampaikan ke
+pengguna, dan ikuti sarannya (mis. sebutkan kolom yang tersedia, minta simpan ulang file).
+Bila Python sama sekali tidak tersedia → ikuti `references/rumus-excel-manual.md` (langkah
+Excel/Google Sheets yang setara), dan katakan hasil **belum diverifikasi script**.
+
+## Format output
+```
+**Jawaban singkat:** <1–2 kalimat menjawab pertanyaan pengguna, dengan angka dari script>
+
+<tabel Markdown dari script, apa adanya>
+
+**Temuan:**
+1. <fakta terhitung + artinya dalam bahasa awam>
+2. ...
+3. ...
+
+**Saran grafik:** <dari script + 1 kalimat cara buatnya di Excel/Sheets>
+
+**Perlu dicek:** <SEMUA peringatan script yang relevan, diringkas bahasa awam>
+(Asumsi: <kolom/sheet/periode yang dipakai>) — File hasil: <nama CSV bila --keluar>
+```
+Template lengkap: `templates/laporan-analisis.md`. Angka rupiah pakai titik ribuan (`Rp 1.250.000`),
+persen 1 desimal dengan koma (`12,5%`).
+
+## Contoh
+**Pengguna:** "Ini file biaya operasional kantor (Excel). Pengeluaran paling besar di mana, dan
+September naik berapa dibanding Agustus?"
+
+**Agent:** `profil` → kolom `Tanggal` (tanggal), `Kategori` (teks), `Nominal` (angka, uang); lalu
+`pivot --grup Kategori --nilai Nominal` dan `banding --nilai Nominal --periode-a 2026-08
+--periode-b 2026-09 --grup Kategori`. Jawaban: "Pengeluaran terbesar adalah Sewa, Rp 13.500.000
+(48,9% dari total). September naik 73,5% dibanding Agustus (Rp 7.555.000 → Rp 13.110.000),
+terutama karena Transport naik Rp 4.955.000 (ada ganti ban Rp 5.400.000)..." + tabel + peringatan
+(1 sel rumus tanpa nilai tersimpan, baris TOTAL dilewati, "listrik & air"/"LISTRIK & AIR" digabung).
+Contoh lengkap nyata: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.
+
+## Aturan penting
+- **Jangan mengarang angka.** Setiap angka di jawaban harus ada di keluaran script. Bila perlu
+  angka yang belum ada, jalankan subperintah lagi (mis. `--filter`).
+- **Sampaikan semua peringatan** yang memengaruhi angka: nilai tidak valid yang tidak dihitung,
+  baris Total yang dilewati, rumus tanpa nilai, sel gabungan, tanggal ambigu, periode tidak penuh,
+  kategori yang digabung. Jangan disembunyikan.
+- **Periode tidak penuh** (mis. data September baru sampai tanggal 26) → jangan menyimpulkan
+  "turun" tanpa menyebutnya; tawarkan pembanding rata-rata per hari (sudah dihitung `banding`).
+- **Tanggal ambigu** (semua tanggal ≤ 12, mis. 01/02/2026) → tanya pengguna format hari/bulan
+  atau bulan/hari; bila bulan/hari, ulangi dengan `--urutan-tanggal mdy`.
+- **Kolom kode** (No HP, NIK, kode barang, nomor urut) tidak pernah dijumlah. Bila script salah
+  mengira, perbaiki dengan `--tipe "Kolom=kode"` atau `--tipe "Kolom=angka"`.
+- **Korelasi ≠ sebab.** Tulis "naik bersamaan", bukan "menyebabkan". Saran harus dari data
+  (hindari saran generik).
+- **Data pribadi:** bila script memperingatkan kolom sensitif (NIK, No HP, email, alamat, gaji,
+  diagnosis), ingatkan pengguna; tampilkan hanya agregat, jangan kutip isi baris per orang.
+- File pengguna diproses **lokal**; jangan mengunggah isinya ke layanan eksternal.
+
+## Batasan & penanganan error
+Rincian lengkap: `references/format-didukung.md`.
+- **Format:** `.xlsx`/`.xlsm` (dibaca langsung: teks bersama, angka, tanggal serial Excel sistem
+  1900 & 1904 — termasuk bug 29-Feb-1900 yang ditandai tidak valid —, beberapa sheet, sel kosong,
+  sel gabungan) dan CSV (UTF-8, UTF-8 BOM, UTF-16, cp1252/ANSI; pemisah `,` `;` tab `|`, baris
+  `sep=;`). `.xls` lama, `.ods`, file berkata sandi → pesan jelas agar disimpan ulang sebagai .xlsx/CSV.
+- **Header tidak di baris 1** (ada judul laporan di atas) → dideteksi otomatis dan diberitahukan;
+  koreksi dengan `--baris-header N`.
+- **Rumus tanpa nilai tersimpan** (file dari aplikasi lain) → dianggap kosong + peringatan
+  "buka di Excel lalu Simpan". **Galat Excel** (`#N/A`, `#DIV/0!`) → kosong + peringatan.
+- **Sel gabungan**: teks yang digabung ke bawah disalin ke tiap baris (agar bisa dikelompokkan);
+  angka gabungan tidak disalin (agar tidak dobel); gabungan mendatar (judul) diabaikan.
+- **Angka meragukan** (`15.000.00`, `15000.500`, notasi ilmiah `1,5E+06`) sengaja tidak ditebak →
+  dilaporkan "tidak valid" dengan nomor barisnya.
+- **Batas ukuran:** file ≤ 50 MB (lebih besar ditolak kecuali `--paksa`), nyaman hingga ±300 ribu
+  baris; pivot silang maks. 15 kolom. Tidak untuk data "big data".
+- **Pembulatan:** perhitungan memakai Decimal presisi penuh; tampilan rupiah dibulatkan ke rupiah
+  terdekat, persen 1 desimal (0,5 menjauhi nol). CSV hasil menyimpan hingga 2 desimal.
+- **Keamanan CSV hasil:** teks yang diawali `=`, `+`, `-`, `@` diberi awalan `'` agar tidak
+  dieksekusi sebagai rumus saat dibuka di Excel. File asli tidak pernah diubah.
+- **Tanpa traceback:** semua masalah input keluar dengan kode 2 dan pesan `GAGAL: ...` berbahasa awam.
