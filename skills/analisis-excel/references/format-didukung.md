@@ -112,7 +112,8 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
      - **XLSX, sel berumus agregat** `SUM/SUBTOTAL/AVERAGE/COUNT/MIN/MAX/AGGREGATE` atas rentang baris
        LAIN (teks rumus dibaca dari `<f>`, termasuk rumus bersama). Rumus per baris (`=SUM(B5:D5)`) dan saldo
        berjalan (`=SUM($C$2:C5)`, rentangnya memuat baris itu) bukan ringkasan. Nilai POLOS yang kebetulan
-       sama dengan jumlah **tidak** dianggap ringkasan.
+       sama dengan jumlah **tidak** dianggap ringkasan. (v1.0.7) Juga fungsi agregat atas **daftar sel**
+       baris lain (`=SUM(C5,C9,C12)`) dan penjumlahan sel saja dari ≥ 2 baris lain (`=C5+C9+C12`).
      - **Blok EKOR**: akhiran tabel yang tiap barisnya (i) berlabel ringkasan — label di **sel teks
        pertama** baris: Total/Jumlah/Subtotal/Grand Total/Rata-rata/Saldo Akhir/Mutasi Kredit/Debet, "Total …"
        di sel isi pertama, "Jumlah pesanan:"; Min/Maks/Median bila satu-satunya teks —, (ii) berawalan
@@ -130,11 +131,30 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
        yang setiap angkanya = jumlah baris di atasnya (sejak kandidat/baris dikeluarkan terakhir — kelompok 1
        baris pun — atau seluruhnya) atau rata-ratanya (≥ 3 nilai); di ekor tabel juga min/maks dan agregat
        yang menyertakan baris kandidat sebelumnya (SUM lalu AVERAGE). Toleransi Rp1.
-     Kategori di kolom kedua dst. ("Pegawai 02 | Rata-rata", "KLM-002 | Total") bukan label sama sekali.
+     - (v1.0.7, pengaman umum) hanya pada baris **jarang** (sel terisinya lebih sedikit daripada kebanyakan
+       baris — baris lengkap dianggap transaksi): (i) sel teks mana pun yang memuat kata utuh Total/Subtotal/
+       Jumlah/Grand/Rekap/Rata-rata/Saldo ("Jakarta Total", "Rekap Surabaya"); (ii) angka kolom angka utama
+       (paling sering terisi) = jumlah ≥ 2 baris tepat di atasnya sejak kandidat sebelumnya (kolom angka lain
+       yang terisi juga harus cocok);
+     - (v1.0.7) **rincian**: ≥ 2 baris jarang berurutan tepat di bawah/atas baris ringkasan (kandidat atau baris
+       dikeluarkan) yang jumlahnya = angka baris itu (Tunai/QRIS/Transfer di bawah "Total Penjualan").
+     "TANPA SEMUA baris itu" = total tanpa semua kandidat; per kandidat ditampilkan (maks. 5 di pesan, 20 di
+     JSON). Pesan menyebut maks. 8 kandidat dan 30 nomor baris; daftar lengkap di `--json`.
+     Kategori di kolom kedua dst. pada baris LENGKAP ("Pegawai 02 | Rata-rata", "KLM-002 | Total") tetap data.
   3. `--pertahankan-baris N` → baris N dihitung sebagai data dan tidak dicurigai; `--pertahankan-total` →
      tidak ada baris yang dikeluarkan/dicurigai (semua dihitung apa adanya).
   "Saldo" saja (baris saldo di buku kas) tetap data.
-- Baris yang mengulang judul kolom (hasil salin-tempel) dan baris kosong → dilewati.
+- Baris yang mengulang judul kolom (hasil salin-tempel, cetakan multi-halaman) dan baris kosong → dilewati +
+  info. (v1.0.7) "Mengulang" = ≥ 50% nama kolom (min. 2) muncul di posisi yang sama dan baris tanpa
+  angka/tanggal ("TANGGAL,KETERANGAN,JUMLAH," atau "tgl,Keterangan,Jumlah,Jenis"). Judul laporan di atas
+  header yang muncul lagi di tengah dan "Halaman 1 dari 2"/"Page 2 of 2"/"Hal. 3" → dilewati + info.
+- **Tabel kedua (v1.0.7):** baris semua-teks (≥ 2 sel, ≥ separuh jumlah judul kolom) di tengah data, dengan
+  baris berangka sebelum & sesudahnya, yang memuat nama judul kolom tabel pertama atau teksnya berada di
+  kolom angka/tanggal (≥ 2 sel, atau 1 sel bila didahului baris kosong/judul bagian) → `GAGAL: File ini
+  berisi LEBIH DARI SATU TABEL: tabel kedua mulai baris N …` + saran `--sampai-baris N-1` (tabel pertama) /
+  `--mulai-baris <judul kolom tabel kedua>`. `--paksa` = digabung + PERINGATAN TEGAS.
+- `--mulai-baris N` / `--sampai-baris N` → hanya baris N s.d. M yang dibaca (header dideteksi di dalamnya;
+  dengan `--sheet semua` berlaku untuk tiap sheet).
 
 ## Tipe kolom
 Ditentukan dari isi (≥ 70% nilai terisi cocok):

@@ -11,6 +11,12 @@ dengan **tabel siap tempel, angka yang dihitung script, narasi temuan, dan saran
 angka berasal dari `scripts/analisis.py` (Python standar, Decimal untuk uang, bisa baca `.xlsx`
 langsung tanpa openpyxl/pandas). Agent **hanya menjelaskan**, tidak menghitung sendiri.
 
+**Jujur soal batas:** skill ini **paling andal untuk tabel rapi** — satu baris judul kolom, lalu satu
+baris = satu transaksi/orang/barang. **Laporan berformat** (subtotal per kelompok, baris Total/rekap di
+tengah, rincian pembayaran di bawah total, beberapa tabel dalam satu sheet, cetakan multi-halaman)
+dikenali sebisanya dengan pengaman umum, tetapi tata letaknya tidak terbatas: untuk file seperti itu
+**angka selalu dikonfirmasi ke pengguna** sebelum dianggap final.
+
 ## Kapan digunakan
 - "Tolong analisis file Excel ini", "isinya apa saja, ada yang aneh?" → `profil`
 - "Total/rata-rata pengeluaran berapa?" → `ringkas`
@@ -48,12 +54,20 @@ nilai uangnya: Nominal atau Harga? Mau dibandingkan bulan apa dengan apa?"). Bil
 ## Langkah kerja
 Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` dengan `python` atau `py`.
 
-1. **Kenali file dulu** (selalu, kecuali pengguna sudah jelas menyebut kolom):
+1. **WAJIB: jalankan `profil` dulu sebelum menyebut angka apa pun** (juga bila pengguna sudah
+   menyebut kolom):
    ```bash
    python3 <folder-skill-ini>/scripts/analisis.py profil "<file>" [--sheet "Nama Sheet"]
    ```
    Workbook banyak sheet: `daftar "<file>"` untuk melihat semua sheet. Dari hasil `profil` catat
    nama kolom persis, tipe (tanggal/angka/teks/kode), kolom uang, dan peringatan.
+   **Cek sekilas (v1.0.7, wajib):** `profil` menampilkan **5 baris pertama & 5 baris terakhir yang
+   DIPAKAI**, tabel **baris DIKELUARKAN**, dan tabel **kemungkinan baris ringkasan**. Periksa dengan
+   mata: adakah baris yang jelas bukan transaksi tetapi ikut dipakai — label Total/Subtotal/Jumlah/
+   Rekap/Saldo, "<Nama> Total", rincian bayar (Tunai/QRIS/Transfer/Debit), judul bagian (mis.
+   "PENGELUARAN"), judul kolom kedua, "Halaman 1 dari 2"? Kalau ada dan script tidak menyebutnya,
+   **jangan beri angka final**: tanyakan sekali ke pengguna, lalu ulangi dengan `--buang-baris N`
+   atau `--sampai-baris N` / `--mulai-baris N`.
    **Satu sheet per bulan/kuartal/cabang** dan pertanyaannya mencakup beberapa sheet → pakai
    `--sheet semua` (semua sheet terlihat) atau `--sheet "Q1,Q2,Q3"` di subperintah mana pun.
    Script menggabungkan sheet yang judul kolomnya sama, membuang baris TOTAL tiap sheet, dan
@@ -80,6 +94,7 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    ```
    Opsi umum semua subperintah: `--sheet` (+ `--acuan`, `--sertakan`), `--baris-header N`, `--filter "Kolom=A|B"`,
    `--buang-baris 5,9` / `--pertahankan-baris 12` (gabungan sheet: `"TW1:7"`; lihat langkah 3),
+   `--mulai-baris N` / `--sampai-baris N` (hanya baca sebagian baris file, mis. satu tabel dari dua),
    `--dari 2026-07 --sampai 2026-09`, `--tipe "No HP=kode"`, `--urutan-tanggal mdy`,
    `--keluar hasil.csv` (simpan tabel hasil), `--excel-id` (CSV untuk Excel berbahasa Indonesia:
    pemisah `;` dan koma desimal), `--json` (keluaran mesin), `--tampilkan-pribadi` (lihat Aturan). Periode: `2026-09`, `Sep 2026`,
@@ -94,6 +109,14 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
      tanpa keterangan — itu baris total (rumus) atau transaksi?") **atau** tampilkan **kedua total**
      (DENGAN dan TANPA baris itu, dari pesan script). Bila pengguna menjawab "itu total", ulangi perintah
      dengan `--buang-baris N[,M]`; bila "itu data", pakai hasil awal (atau `--pertahankan-baris N`).
+     Alasan kandidat (v1.0.7): label ringkasan di mana pun pada baris yang kolom lainnya kosong
+     ("Jakarta Total" dari Excel *Data › Subtotal*), angka = jumlah blok baris tepat di atasnya, dan
+     **rincian** (baris Tunai/QRIS/Transfer yang jumlahnya = baris Total → bisa dobel). "TANPA SEMUA baris
+     itu" = total tanpa semua kandidat; per kandidat juga ditampilkan. Bila pengguna bilang hanya
+     sebagian yang ringkasan, buang baris itu saja.
+   - **`GAGAL: File ini berisi LEBIH DARI SATU TABEL`** → jelaskan ke pengguna; tanyakan tabel mana
+     yang dimaksud, lalu ulangi dengan `--sampai-baris N` (tabel pertama) atau `--mulai-baris N`
+     (tabel kedua) sesuai pesan. Jangan pakai `--paksa` untuk menggabungkan tabel berbeda.
 4. **Tulis jawaban** dengan format di bawah. Narasi hanya boleh memakai angka yang ada di
    keluaran script (bagian "Temuan" sudah berisi fakta terhitung).
 5. **Tawarkan langkah lanjut** yang relevan (mis. setelah `pivot` → "mau saya lihat trennya per
@@ -169,6 +192,9 @@ Rincian lengkap: `references/format-didukung.md`.
   `sep=;`). `.xls` lama, `.ods`, file berkata sandi → pesan jelas agar disimpan ulang sebagai .xlsx/CSV.
 - **Header tidak di baris 1** (ada judul laporan di atas) → dideteksi otomatis dan diberitahukan;
   koreksi dengan `--baris-header N`.
+- **Cetakan multi-halaman (v1.0.7):** judul kolom yang berulang (≥ 50% nama kolom sama di posisi yang
+  sama, tanpa angka), judul laporan yang berulang, dan "Halaman x dari y"/"Page x of y" dilewati + info.
+  **Judul kolom BERBEDA di tengah** (tabel kedua) → `GAGAL` + nomor baris awal tabel kedua (lihat langkah 3).
 - **Rumus tanpa nilai tersimpan** (file dari aplikasi lain) → dianggap kosong + peringatan
   "buka di Excel lalu Simpan". **Galat Excel** (`#N/A`, `#DIV/0!`) → kosong + peringatan.
 - **Sel gabungan**: teks yang digabung ke bawah disalin ke tiap baris (agar bisa dikelompokkan);
@@ -181,14 +207,17 @@ Rincian lengkap: `references/format-didukung.md`.
   terdekat, persen 1 desimal (0,5 menjauhi nol). CSV hasil menyimpan hingga 2 desimal.
 - **Keamanan CSV hasil:** teks yang diawali `=`, `+`, `-`, `@` diberi awalan `'` agar tidak
   dieksekusi sebagai rumus saat dibuka di Excel. File asli tidak pernah diubah.
-- **Baris ringkasan & catatan (v1.0.6) — dikeluarkan otomatis HANYA bila tidak ambigu:** (a) XLSX: sel
-  berisi rumus agregat (SUM/SUBTOTAL/AVERAGE/COUNT/MIN/MAX/AGGREGATE) atas baris lain; (b) blok **ekor**
+- **Baris ringkasan & catatan (v1.0.6–1.0.7) — dikeluarkan otomatis HANYA bila tidak ambigu:** (a) XLSX: sel
+  berisi rumus agregat (SUM/SUBTOTAL/AVERAGE/COUNT/MIN/MAX/AGGREGATE) atas baris lain, termasuk daftar sel
+  `=SUM(C5,C9,C12)` dan `=C5+C9+C12`; (b) blok **ekor**
   tabel: baris berlabel Total/Jumlah/Grand Total/Rata-rata/Saldo Akhir… (label di sel teks pertama),
   catatan kaki (Catatan/NB/Sumber/Dicetak…, walau berisi angka), teks saja yang dipisah baris kosong;
   (c) **kepala**: judul laporan di atas header, "Saldo Awal" tepat di bawah header. Semua disebut dengan isinya.
   **Selain itu TIDAK dibuang** (kategori "Total"/"Rata-rata" di tengah, Subtotal di tengah, angka tanpa label
-  yang = jumlah/rata-rata di atasnya, nilai polos tanpa rumus) → tetap dihitung + PERINGATAN TEGAS + total
-  alternatif; ikuti langkah 3. Rincian: `references/format-didukung.md`.
+  yang = jumlah/rata-rata di atasnya, nilai polos tanpa rumus, "<Nama> Total", rincian Tunai/QRIS di bawah
+  Total) → tetap dihitung + PERINGATAN TEGAS + total alternatif; ikuti langkah 3. Pengaman umum ini
+  **mengurangi**, bukan menghapus, risiko tata letak baru — karena itu cek sekilas di langkah 1 wajib.
+  Rincian: `references/format-didukung.md`.
 - **Aturan jumlah kolom CSV (v1.0.4–1.0.5):** setiap baris data wajib punya jumlah kolom yang **sama
   dengan judul kolom**. Boleh: sel kosong berlebih di ujung kanan, dan baris yang kekurangan sel
   **hanya di kolom paling kanan yang memang sering kosong** (mis. "Catatan") selama isi baris tidak
