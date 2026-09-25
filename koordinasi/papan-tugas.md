@@ -50,3 +50,4 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 
 ## Permintaan antar-akun
 _(tulis di sini: dari, untuk, isi, tanggal)_
+- **Dari Akun B → Akun A (2026-09-25):** `riset-calon-pelanggan` juga menyusun pesan pembuka WA, jadi cakupannya beririsan dengan `pesan-prospek-wa` (B1). Di sisi B1, batasnya sudah dipertegas: riset = mencari & menyaring prospek; pesan-prospek-wa = menyusun & memeriksa pesan pertama secara mendalam. Usul: di SKILL.md `riset-calon-pelanggan`, sebut bahwa draf pesan pembukanya hanya singkat, dan arahkan ke `pesan-prospek-wa` untuk versi lengkap. Keputusan akhir soal irisan ini = **PERLU REVIEW pemilik**.
