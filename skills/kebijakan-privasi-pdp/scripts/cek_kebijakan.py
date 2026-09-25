@@ -493,7 +493,7 @@ JENDELA = 60   # karakter maksimum sebelum kecocokan yang diperiksa untuk penyan
 PLACEHOLDER = re.compile(r"\[(?:isi|fill)\s*:[^\]\n]*\]|\[(?:isi|fill)\]|\[\[[^\]\n]*\]\]|\[\.\.\.\]|\{jika[^}\n]*\}|\{if[^}\n]*\}|lorem ipsum|\bxxx+\b", re.I)
 
 # Layanan pihak ketiga yang umumnya menyimpan data di luar Indonesia (pemicu saran transfer_ln)
-LAYANAN_LN = re.compile(r"google|gmail|drive|meta|facebook|instagram|whatsapp|tiktok|shopify|aws|amazon web|cloudflare|mailchimp|zoom|openai|chatgpt|claude|dropbox|microsoft|notion", re.I)
+LAYANAN_LN = re.compile(r"\b(?:google|gmail|google drive|meta|facebook|instagram|whatsapp|tiktok|shopify|aws|amazon web|cloudflare|mailchimp|zoom|openai|chatgpt|claude|dropbox|microsoft|notion)\b", re.I)  # v1.0.4 U4-2: batas kata
 
 TAG_BLOK = re.compile(r"</?(?:p|div|br|li|ul|ol|h[1-6]|tr|td|th|table|section|article|header|footer|nav|main|title|blockquote|hr|dd|dt|dl)\b", re.I)
 TAG = re.compile(r"<[a-zA-Z/!][^<>]{0,2000}>")

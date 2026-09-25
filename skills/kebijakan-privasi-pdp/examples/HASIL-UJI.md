@@ -169,3 +169,26 @@ Alasan:
 - (+) SKILL.md sudah menyebut script hanya pemeriksa kata kunci dan meminta baca manual, sehingga agent teliti tetap menghasilkan laporan lengkap.
 - (−) Recall buta 41% dan 0/5 pada kebijakan klinik berisi data kesehatan: pengguna yang hanya melihat "FRASA BERISIKO: tidak ditemukan" (dari script atau agent yang menyalinnya) mendapat rasa aman palsu — ini inti nilai jual mode CEK.
 - (−) Alur belum memaksa pembacaan manual lebih dulu/sejajar. Perbaikan U3-1 murah (teks SKILL.md + checklist C + 1 baris output). Setelah itu cukup uji ulang singkat mode CEK dengan set buta **baru** (bukan set 06/07) oleh penguji lain; target: laporan akhir agent menangkap ≥ 90% risiko berlabel. Menyetel pola script pada set 07 tidak dihitung sebagai perbaikan.
+
+## Uji ulang v1.0.3 (penguji independen ke-4, 2026-09-25)
+
+Rincian, dokumen buta, kunci, dan output lengkap: `08-uji-ulang-v1.0.3.md`. Tiga dokumen baru (ID santai UMKM, EN kaku klinik, campuran ID/EN salinan SaaS) berisi 21 risiko parafrasa + 9 kalimat patuh pengecoh, ditulis sebelum membuka `references/`, `scripts/`, `tests/`, `examples/`.
+
+- **Output akhir alur skill (Mode 3: baca K1–K16 → script → selisih):** 21/21 risiko tertangkap, 0/9 salah-positif, +3 kekurangan sah (transfer LN, hak tidak lengkap, kebocoran tidak disebut). Keterbatasan: penguji juga penulis kunci. Yang diukur objektif: ke-21 risiko tercakup kategori K1–K16 (14 punya parafrasa dekat di tabel).
+- **Script mentah:** 7/21 (33%; dok ID santai **0/7**), 0 salah-positif pada kalimat patuh, 1 salah kategori (CCPA "sold" → K1), 1 catatan palsu ("aws" dari "laws"). Recall rendah ini sudah ditangani dengan alur agent-dulu. Jangan setel pola ke set ini.
+- **Klaim "aman":** tidak ada. Pada dokumen tanpa pola cocok, script mencetak "Ini BUKAN jaminan kebijakan aman", dan format output mewajibkan temuan agent lebih dulu serta menyebut kategori yang diperiksa.
+- **Regresi:** `tests/uji_regresi.py` LULUS 255 uji; T-1, T-2, B-1, B-2 ✅; template kosong ID/EN 84/100 BELUM SIAP ✅. SKILL.md 162 baris ✅.
+- **Pasal:** Ps. 2, 47, 48 (⚠️) cocok dengan ≥2 sumber → bisa naik ke ✅.
+
+### Temuan
+- **SEDANG U4-1:** teks perbaikan K5 hanya "memberi tahu sebelum data dialihkan"; Ps. 48 mewajibkan **sebelum dan sesudah**, dan pembubaran juga wajib diberitahukan. Ubah teks di `references/kategori-risiko-cek.md`.
+- **RENDAH U4-2:** `LAYANAN_LN` tanpa `\b` → "laws"/"metadata"/"driver" memicu catatan transfer LN palsu. Tambah batas kata + tes.
+- **RENDAH U4-3/U4-4:** status unsur script keliru pada teks santai/EN (tujuan, hak, identitas "the Clinic"), dan CCPA "sold" dikategorikan jual data. Sudah tertangani oleh aturan "(dikoreksi manual)" dan penjelasan selisih.
+- **INFO U4-5:** naikkan Ps. 2, 47, 48 ke ✅ di `dasar-hukum.md`, lalu tambahkan Ps. 2 ayat (2) (pengecualian kegiatan pribadi/rumah tangga).
+
+### Skor kualitas uji ulang v1.0.3: **8/10** — LULUS (lanjut ke uji platform asli; perbaiki U4-1 & U4-2 sebelum beta, tanpa uji ulang penuh)
+Alasan:
+- (+) Temuan inti v1.0.2 (U3-1) teratasi di tingkat alur: SKILL.md mewajibkan pembacaan per kategori lebih dulu, format output menempatkan temuan agent di atas script, klaim aman berbasis script dilarang, dan selisih harus dijelaskan. Pada set buta baru, output akhir menangkap semua risiko, sedangkan script sendiri hanya 33%.
+- (+) Tabel K1–K16 luas, parafrasanya realistis (santai, EN kaku, template asing), dan tiap kategori memuat dasar pasal + perbaikan siap tempel. Tidak ada regresi, dan pesan jujur script bekerja.
+- (−) Keandalan kini bergantung pada ketelitian agent membaca. Angka 100% di sini belum diuji dengan dokumen yang ditulis pihak lain; uji platform asli sebaiknya memakai kebijakan nyata pengguna.
+- (−) Teks perbaikan K5 kurang lengkap menurut Ps. 48, ada bug kecil batas kata di script, dan belum ada teks perbaikan EN siap tempel untuk dokumen Inggris.

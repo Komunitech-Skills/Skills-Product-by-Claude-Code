@@ -121,6 +121,16 @@ def status_unsur(teks, uid):
     return u["status"] if u else None
 
 
+def uji_v104():
+    """v1.0.4 U4-2: nama layanan asing dicocokkan per kata utuh."""
+    for kata in ("laws", "metadata", "driver", "drawstring"):
+        cek("U4-2 tidak ada catatan LN palsu untuk '%s'" % kata, not ck.LAYANAN_LN.search("Kami tunduk pada %s setempat." % kata))
+    for kata in ("Google", "AWS", "WhatsApp", "Meta"):
+        cek("U4-2 layanan '%s' tetap dikenali" % kata, bool(ck.LAYANAN_LN.search("Kami memakai %s." % kata)))
+    teks = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "references", "kategori-risiko-cek.md"), encoding="utf-8").read()
+    cek("U4-1 perbaikan K5 menyebut sebelum dan sesudah", "sebelum dan sesudah data dialihkan" in teks)
+
+
 def uji_akurasi():
     """Tabel akurasi: set kalimat berlabel dari HASIL-UJI (§2b 45 frasa, §2c 13 unsur) + set kontrol."""
     with open(os.path.join(DATA, "kalimat-berlabel.json"), encoding="utf-8") as f:
@@ -296,6 +306,7 @@ def uji_v101(tmp):
     cek("S-4: template persetujuan tanpa frasa berisiko", r["risiko"] == [], r["risiko"])
 
     uji_akurasi()
+    uji_v104()
     uji_v102()
 
 

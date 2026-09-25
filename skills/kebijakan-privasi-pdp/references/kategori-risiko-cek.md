@@ -43,7 +43,7 @@ Tingkat: **TINGGI** = kemungkinan melanggar larangan/kewajiban tegas atau merugi
 - ID: "data pelanggan menjadi aset yang ikut dialihkan bila usaha dijual, tanpa pemberitahuan", "pembeli usaha berhak memakai data untuk keperluannya".
 - EN: "in a merger or acquisition your data may be transferred as a business asset without notice", "the acquirer may use data for any purpose".
 - Dasar: Ps. 48 (pengalihan pengendali wajib diberitahukan kepada subjek data — ⚠️ nomor pasal belum dicocokkan naskah, kutip sebagai "UU PDP tentang penggabungan/pemisahan/pengambilalihan"), Ps. 16, 21.
-- Perbaikan: "Bila usaha kami bergabung/diambil alih, kami memberi tahu Anda sebelum data dialihkan, dan pihak baru terikat pada kebijakan ini."
+- Perbaikan: "Bila usaha kami bergabung/diambil alih, kami memberi tahu Anda sebelum dan sesudah data dialihkan, dan pihak baru terikat pada kebijakan ini." (UU PDP Ps. 48: pemberitahuan sebelum dan sesudah pengalihan)
 
 ### K6 — Transfer ke luar negeri tanpa jaminan atau tanpa disebut · SEDANG (TINGGI untuk data spesifik)
 - ID: "data dapat dipindahkan ke server di negara mana pun", "dikelola mitra di luar negeri" tanpa penjelasan pelindungan, atau klaim "semua data di Indonesia" padahal memakai WhatsApp/Google Sheets/Drive/cloud asing.
