@@ -95,3 +95,39 @@ Tidak ada alarm palsu pada file benar (n1, n2, n6, n3-Kuantitas); semua kesalaha
 
 ## Skor uji ulang v1.0.2: **7 / 10 — tetap `lulus`, JANGAN `rilis` sebelum bug baru 1 diperbaiki (v1.0.3 + uji ulang singkat)**
 Alasan: keenam temuan v1.0.1 beres dan dilindungi 46 tes; mesin hitung 100% cocok dengan kunci Decimal pada semua layout yang kolomnya dikenali (n1, n2, n4–n6, n3/n7 versi Kuantitas), tanpa alarm palsu dan tanpa konfirmasi palsu. Turun dari 8 karena ditemukan jalur kegagalan baru yang parah pada judul kolom yang sangat umum di tabel barang Indonesia (`Banyaknya`/`Jml` + `Jumlah Harga`): angka hasil salah kali lipat jutaan dan bisa tercetak hanya dengan catatan kecil — melanggar prinsip *reliable*. Perbaikannya kecil dan lokal (sinonim + pembatasan fallback); setelah itu perkiraan skor 9.
+
+---
+
+# Uji ulang v1.0.3 (penguji independen keempat, 2026-09-25)
+
+Salinan uji: scratchpad `uji4-tender/` (script) + `uji4-csv/` (12 CSV baru, kunci Decimal dihitung terpisah di terminal, tidak disalin ke repo). Tes bawaan `tests/uji_regresi.py`: **49/49 OK**.
+
+## 12 CSV baru — judul kolom banyaknya bervariasi (fokus bug baru v1.0.2)
+| File | Judul banyaknya | Pemisah | Hasil |
+|---|---|---|---|
+| c1 | Banyaknya | `,` | ✅ subtotal 1.137.500 cocok kunci |
+| c2 | Jml (+ "Total Harga (Rp)") | `,` | ✅ subtotal 12.435.000 cocok |
+| c3 | Jml. (+ "Nilai (Rp)") | `,` | ✅ subtotal 3.130.000 cocok |
+| c4 | Qty. | `;` | ✅ subtotal 15.200.000 cocok |
+| c5 | QTY | `,` | ✅ subtotal 37.100.000 cocok |
+| c6 | Kuantitas | `;` | ✅ subtotal 17.360.000 cocok |
+| c7 | Vol | `,` | ✅ subtotal 10.086.000 cocok |
+| c8 | Volume Pekerjaan (vol desimal 45,5) | `,` | ✅ subtotal 109.675.000 cocok |
+| c9 | "Jumlah" polos, **tanpa** kolom Jumlah Harga | `,` | ✅ dibaca sebagai volume (fallback lama), subtotal 7.350.000 cocok |
+| c10 | Banyaknya (3 baris) | `;` | ✅ subtotal 28.060.000 cocok |
+| c11 | **tanpa kolom volume sama sekali** (hanya Jumlah Harga) | `,` | ✅ GALAT exit 2: "kolom volume/banyaknya tidak dikenali (kolom 'Jumlah Harga' berisi rupiah, bukan volume)" — tidak ada hasil salah tercetak |
+| c12 | Jml (2 baris sengaja salah hitung) | `,` | ✅ kedua baris ditunjuk + selisih benar (2.125.000/2.137.500 dan 1.625.000/1.622.500), exit 1 |
+
+Tidak ada satu pun subtotal yang memakai kolom rupiah sebagai volume (dulu bug v1.0.2 menghasilkan triliunan pada pola ini). Semua nilai `item.volume`/`item.harga_satuan`/`item.jumlah` di keluaran `--json` diverifikasi cocok dengan kunci Decimal independen (perkalian manual per baris + `ROUND_HALF_UP`).
+
+## Kode keluar HPS
+- `--hps 0` → **GALAT, exit 2** ✅ (sebelumnya v1.0.2: exit 1)
+- `--hps -5` → **GALAT, exit 2** ✅ (sebelumnya v1.0.2: exit 1)
+
+Kedua-duanya kini konsisten dengan SKILL.md (2 = input buruk) dan dengan c11 (kolom tak dikenali → GALAT exit 2), bukan lagi peringatan.
+
+## Bug baru
+Tidak ditemukan. Temuan v1.0.2 (bug baru #1 [TINGGI], #3 [RENDAH]) tertutup penuh. Temuan #2 v1.0.2 [RENDAH, selisih <Rp1 tak ditunjuk] belum diperbaiki (di luar cakupan perbaikan v1.0.3, tetap tercatat di riwayat v1.0.2 di atas untuk dipertimbangkan pemilik).
+
+## Skor uji ulang v1.0.3: **9 / 10 — LULUS, layak `rilis`**
+Alasan: bug TINGGI (kolom rupiah dipakai sebagai volume) tuntas pada seluruh variasi judul kolom banyaknya yang lazim di tabel barang Indonesia (Banyaknya/Jml/Jml./Qty./QTY/Kuantitas/Vol/Volume Pekerjaan), termasuk kasus tanpa kolom volume sama sekali (kini berhenti dengan pesan jelas, bukan angka salah) dan kasus "Jumlah" polos tanpa Jumlah Harga (tetap dibaca sebagai volume seperti sebelumnya, benar). `--hps 0/-5` kini konsisten exit 2. 49/49 tes regresi lulus. Tidak 10 karena temuan minor v1.0.2 (#2, selisih pembulatan <Rp1 tak ditunjuk per baris) masih terbuka — dampaknya kecil (selisih Rp1) dan tidak melanggar prinsip reliable secara material.

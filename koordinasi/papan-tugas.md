@@ -33,7 +33,7 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | B5 | Kreasi `kalender-pajak` (Pajak) | Backlog #28. Jatuh tempo setor/lapor 2026 (PMK terbaru, Coretax); Opus | lulus 8/10 v1.0.1 (Akun B, 2026-09-25) — P3 untuk v1.0.2 (Ps. 173 vs SPT Tahunan, unggah faktur saat libur, label file libur pengguna); PERLU REVIEW: aturan dari sumber sekunder (situs resmi terblokir) |
 | B6 | Kreasi `analisis-excel` (Data) | Backlog #27 — bedakan dari `rekap-penjualan-csv`; script Python standar | dikerjakan (Akun B, 2026-09-25) |
 | B7 | Kreasi `sop-onboarding` (HR) | Backlog #36 — bedakan dari `sop-writer` | lulus 8/10 v1.0.1 (Akun B, 2026-09-25) — v1.0.2 perbaikan kecil (tafsir batas 3 bulan, traceback tanggal 9999, CSV titik-koma); PERLU REVIEW: dasar hukum sumber sekunder, cek ulang Nov 2026 |
-| B8 | Kreasi `tender-checklist` (Sales) | Backlog #33 — LPSE/SPSE; verifikasi Perpres PBJ terbaru | lulus 8/10 v1.0.1 (Akun B, 2026-09-25) — v1.0.2 berjalan (alarm palsu label "Sebelum PPN"/"DPP Nilai Lain", kolom Jumlah Harga); PERLU REVIEW: pasal Perpres 46/2025 dari sumber sekunder |
+| B8 | Kreasi `tender-checklist` (Sales) | Backlog #33 — LPSE/SPSE; verifikasi Perpres PBJ terbaru | lulus 9/10 v1.0.3 (Akun B, 2026-09-25) — alarm palsu & kolom volume diperbaiki, dicek independen; PERLU REVIEW: pasal Perpres 46/2025 dari sumber sekunder |
 | B9 | `atur-keuangan-pribadi` (openaccountant, MIT) | **TUNGGU keputusan pemilik** (sinyal bukti tipis) | tertahan |
 | B10 | `spt-tahunan-op-helper` | Backlog #29 — musiman (Jan–Mar); kerjakan menjelang musim | nanti |
 
