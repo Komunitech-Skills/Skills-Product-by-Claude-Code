@@ -116,3 +116,24 @@ Rincian: `06-uji-ulang-v1.0.1.md`. Penguji bukan pembuat/perevisi; kode script t
 - Naik dari 7: celah kelengkapan PKP (P1) tertutup dengan dasar aturan terkonfirmasi, klaim kalender kini jujur dan ada solusi teknis yang valid (P2), semua P3 diperbaiki, tes regresi bertambah 33→50, ketepatan tanggal tetap sempurna.
 - Belum 9: seluruh verifikasi aturan masih dari sumber sekunder (naskah resmi PMK 81/2024 & PER-11/PJ/2025 belum dibaca langsung), tiga butir PERLU REVIEW (PPh 25 ayat, SPT Tahunan/Ps. 172, unggah faktur saat libur) belum diputus, dan beberapa P3 kecil.
 - Rekomendasi: status boleh naik ke `lulus` lalu uji platform asli; P3 dapat dikerjakan di v1.0.2 tanpa uji ulang penuh.
+
+---
+
+## Uji ulang v1.0.2 (penguji independen ketiga, cek singkat, 2026-09-25)
+Penguji bukan pembuat/perevisi/penguji sebelumnya; kode script tidak dibaca; dijalankan dari salinan scratchpad (`uji3-kp/`).
+
+| Temuan P3 v1.0.1 | Status v1.0.2 |
+|---|---|
+| SPT Tahunan di hari libur vs Ps. 173 | **Selesai** — mis. SPT Badan 30 Apr 2028 (Minggu): tanggal kalender tetap, "selesaikan paling lambat Jumat 28 Apr 2028; kemungkinan lain (PERLU REVIEW) ... mundur ke Senin 1 Mei 2028 — pakai tanggal yang lebih awal". Jujur, tidak dinyatakan pasti. |
+| Unggah faktur tgl 20 saat libur | **Selesai** — 20 Mei 2027 (Waisak) tetap tanggal batas resmi, label "TIDAK bergeser - selesaikan paling lambat hari kerja sebelumnya: Jumat, 14 Mei 2027" (benar: 15–16 akhir pekan, 17 Iduladha, 18–19 cuti). |
+| Label file libur pengguna | **Selesai** — baris "Data libur: ...; data libur dari pengguna, belum diverifikasi (file: ...)" + PERINGATAN tahun 2028 tetap tampil; keterangan berkoma dalam kutip terbaca utuh. |
+
+- **Ps. 172 PMK 81/2024 (web search sendiri):** hanya ditemukan kutipan Ps. 173(1) "…sebagaimana dimaksud dalam Pasal 171 dan Pasal 172 bertepatan dengan hari libur, pelaporan dapat dilakukan paling lambat pada hari kerja berikutnya" (ringkasan DDTC/Kring Pajak); isi Ps. 172 tidak ditemukan secara jelas (naskah BPK/JDIH tidak bisa dibuka). Tidak ada sumber tegas → tetap **PERLU REVIEW**; penanganan dua kemungkinan di skill sudah tepat.
+- **Libur SKB 2027 diverifikasi ulang** (web search: SKB ditandatangani 15 Sep 2026, 18 libur + 8 cuti; CNN Indonesia, RRI, Kemenag, Setneg, detik): 26 tanggal di `libur-nasional-2027.csv` cocok semua.
+- **Verifikasi tanggal independen** (penghitung sendiri, tanpa membaca kode, 9 profil, tenggat jatuh 1 Okt 2026–31 Des 2027): **202 tenggat, 0 selisih**. Tanggal lama tetap: 25 Mar 2026 (lapor PPh 21 masa Feb), 18 Mei 2026 (setor masa Apr), 2 Jun 2026 (PPN masa Apr).
+- **.ics** (parser sendiri, CRLF dijaga): 46 VEVENT (badan-pkp) & 321 VEVENT (`--acara-pengingat`, 107 tenggat + 214 pengingat); BEGIN/END seimbang, tidak ada baris >75 oktet, UID unik, UID/DTSTAMP/DTSTART/SUMMARY lengkap, DTEND = +1 hari, 2 VALARM per tenggat, tanggal .ics = tanggal CSV, offset H-3/H-1 benar 214/214.
+- **Tes regresi** `tests/uji_regresi.py`: **62 OK** (naik dari 50).
+- **Bug baru:** tidak ada yang memengaruhi tanggal 2026–2027. Catatan kosmetik (P3): untuk tahun tanpa data resmi (2028), "kemungkinan lain" SPT Badan menyebut Senin 1 Mei 2028 padahal 1 Mei selalu Hari Buruh (seharusnya 2 Mei) — sudah tertutup PERINGATAN data libur; dengan `--libur` berisi 1 Mei hasilnya benar (Selasa 2 Mei).
+
+### Skor uji ulang v1.0.2: **8 / 10 — LULUS**
+Ketiga P3 selesai dengan penjelasan jujur, ketepatan tanggal tetap sempurna, tes bertambah. Belum 9 karena naskah resmi Ps. 172 PMK 81/2024 & PER-11/PJ/2025 belum dibaca langsung (tiga butir PERLU REVIEW masih menunggu pemilik/konsultan).
