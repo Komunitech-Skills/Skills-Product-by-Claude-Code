@@ -129,3 +129,33 @@ Alasan:
 - (+) Angka tetap 0 beda di semua hitung ulang independen; keamanan inti utuh; 70 tes regresi; lolos uji muat OpenClaw.
 - (−) B1 membuat jaring pengaman "draf dobel" tidak bekerja pada kasus umum (diskon/harga bersen) — bertentangan dengan tabel galat SKILL.md; B2 bisa diam-diam memakai kunci lain dari yang diminta.
 - **Kesimpulan:** **siap uji platform asli** (pemilik/tim, DoliWamp Windows sesuai `docs/uji-platform.md`) lalu beta. Disarankan memperbaiki B1 (toleransi < Rp 1 atau bandingkan dengan total versi Dolibarr) dan B2 (utamakan `--kunci-file` atau beri CATATAN) di v1.0.3 sebelum/selama beta; keduanya tidak menghalangi status `lulus`.
+
+---
+
+## Uji ulang v1.0.3 (Akun B)
+- **Tanggal:** 2026-09-25
+- **Penguji:** agent penguji independen lintas akun (Akun B, Claude Code, simulasi agent), bukan pembuat skill/perbaikan. Rincian: `08-uji-ulang-v1.0.3.md`.
+- **Lingkungan:** salinan skill di scratchpad; **server Dolibarr tiruan** (turunan `tests/uji_regresi.py`, respons dari rekaman 24.0.1) + mode putus/timeout buatan penguji. **Tidak** diuji di Dolibarr asli pada versi ini. Python 3.11.15.
+- **Otomatis:** `uji_regresi.py` **77 tes OK** (1 dilewati, khusus repo); `validate.py --skill dolibarr-usaha` ✅ valid; `uji_openclaw.sh` tidak dijalankan di sini (oleh penguji pimpinan).
+- **Platform teruji:** `claude-code (simulasi agent)`.
+
+### Status klaim
+| Klaim | Status |
+|---|---|
+| B1 draf ganda saat DPP bersen | ✅ 6 pola (repro asli v1.0.2 diskon 4%/7,5% + ongkir, repro pembuat, harga 83.333,33 PPN mewah, 10 × 100,50, jasa tanpa PPN, qty desimal + diskon 33,33%): perintah identik diulang 3× → kode 7, **0 POST tambahan**; urutan item dibalik juga tertahan; jumlah beda ≥ ± Rp 1,5 tetap dibuat; invoice tervalidasi tidak menghalangi |
+| Angka (DPP, DPP 11/12, PPN floor sekali, total) | ✅ **0 beda** dengan kalkulator `Fraction`/`Decimal` penguji di 6 skenario; DPP cara Dolibarr = angka Dolibarr asli 1.280.157,50 (skenario A) |
+| B1 idempoten saat timeout/putus | ⚠️ baru diuji: timeout baca ulang akhir aman (kode 7); putus/timeout **setelah** draf dibuat atau saat menambah baris → draf kosong/sebagian tertinggal dan pengulangan membuat draf kedua (**C1**) |
+| B2 `--kunci-file` vs ENV | ✅ `--kunci-file` menang di depan/belakang, PERINGATAN di stderr (+`peringatan_kunci` di JSON sukses); file hilang/kosong/644/2 baris/biner/folder → kode 5, 0 permintaan ke Dolibarr; ENV diabaikan tidak pernah dikirim/tercetak; 0 kunci & 0 traceback di 72 keluaran |
+| Panduan §2.4 vs script | ✅ konsisten (lokal saja kecuali opt-in, https wajib untuk internet, kunci via `simpan-kunci` tanpa argumen/riwayat shell, file 600 di luar folder skill, izin minimum di §6) |
+
+### Cacat tersisa
+- **C1 (sedang-rendah, baru):** pembuatan draf belum idempoten terhadap timeout/koneksi putus: draf kosong Rp 0 yatim + saran "coba lagi" → draf kedua; draf sebagian berakhir kode 0 dengan teks "Validasi" dan penjelasan selisih sen yang tidak cocok. Saran di `08-…` §5.
+- Kosmetik: `--kunci-file ""` jatuh ke ENV tanpa peringatan; `peringatan_kunci` tidak ada di JSON galat; toleransi efektif ± Rp 1,49 (dokumen: < Rp 1); panduan §7 `api_komunitech` vs §6 `api_baca`/`api_draf`.
+
+### Skor kualitas: **8 / 10** — **LULUS** (≥ 7)
+Alasan:
+- (+) B1 dan B2 terbukti beres terhadap reproduksi aslinya dan variasi data rusak; tidak ada regresi (77 tes, angka 0 beda, 0 kebocoran kunci, 0 POST tanpa `--ya`).
+- (+) B2 menutup celah pemisahan kunci baca/draf yang dijanjikan panduan §6/§10; §2.4 jujur dan sesuai perilaku script.
+- (−) C1: jaring pengaman draf dobel masih bisa ditembus pada skenario timeout yang realistis di komputer toko yang lambat (pesan justru menyarankan mengulang). Draf tidak sah dan diperiksa manusia, jadi tidak menghalangi `lulus`.
+- (−) Tidak diuji ulang di Dolibarr asli pada versi ini (hanya tiruan + satu angka asli dari uji v1.0.2).
+- **Kesimpulan:** v1.0.3 layak lanjut ke uji platform asli/beta; perbaiki C1 (pesan galat koneksi pada perintah tulis + deteksi draf kosong/sebagian) di v1.0.4.
