@@ -312,3 +312,75 @@ CSV: `ringkas` 5,9 dtk, `pivot` 6,2 dtk; XLSX: 4,6 / 4,2 dtk. Total 12.498.522.1
 ### Skor kualitas uji ulang v1.0.5: **6 / 10** — **belum lulus ke `beta`**; revisi B14 & B15 (wajib), B16–B17, lalu uji ulang independen
 - (+) B10–B12 dari v1.0.4 tuntas: SUM/Rata-rata di ujung, catatan kaki, mutasi BCA, kolom opsional di kanan kini terbaca benar tanpa `--paksa`; semua fixture lama tetap benar; nama produk yang *mengandung* Total/Jumlah/Saldo aman; ekspor Shopee/Tokopedia/BCA/Google Form realistis benar; setiap baris yang dibuang disebut dengan isinya; 82 tes lulus; 50 ribu baris < 7 dtk.
 - (−) Perbaikan menukar satu jenis salah diam-diam dengan jenis baru: **3 file salah diam-diam** (R11 terberat: total 70% terlalu besar karena baris SUM & AVERAGE ikut dijumlah setelah satu transaksi asli dibuang) dan **6 file dengan angka default salah** karena data asli dibuang (R6/R7: kategori "Rata-rata"/"Total" menghapus 50–97% nilai). Pesannya jujur, tetapi berbunyi seperti tindakan yang benar ("agar tidak dobel"), sehingga awam hampir pasti menerimanya. Aturan label & SUM perlu bukti tambahan (posisi, rumus XLSX, cek angka) sebelum membuang baris.
+
+---
+
+## Uji ulang v1.0.6 (penguji independen ke-7, cek, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad. Versi script `1.0.6`. Tes bawaan: **94 tes OK** (±29 dtk). Platform: `claude-code (simulasi agent)`.
+Fixture baru: `buat_fixture_uji_v106.py` (deterministik; `kunci-v106.json` dihitung dari data sumber, **tanpa membaca kode skill**). XLSX ditulis tangan dengan sel `<f>` + nilai tersimpan.
+
+### 1. Regresi semua fixture lama (v1.0.0–v1.0.5) — tidak ada (c)
+- v1.0.0–v1.0.4: 01 Q1 67.313.000/147, `--sheet semua` 233.556.000/499 (1900 & 1904) ✔; lembur 745,5 ✔; iuran 5.525.000/91 ✔; koperasi 332.635.000 ✔; F1/F2/F4/F4b/F5, C5–C7, X1–X5 (X3 `--sertakan "Rekap Des"` 6.615.000/33) ✔; N1–N8, N10, N12 ✔; semua file rusak/kosong/C1–C4/C8/F3*/N9 tetap GAGAL ✔ (C8 `--paksa` + TEGAS).
+- **N11 & N13 berubah a → b**: baris SUM/subtotal tanpa label di tengah kini dihitung + PERINGATAN TEGAS; total alternatif TANPA = 4.860.000 / 1.020.000 = kunci ✔ (sesuai prinsip v1.0.6).
+- v1.0.5 (semua b−/c sebelumnya): **R6, R7 kini a** (kategori "Rata-rata"/"Total" tetap data: 6.000.000 / 210.500.000); **R8, R8c, R8d kini a** (catatan berangka dikeluarkan + disebut, 715.000); **R11 kini a** (5.350.000 polos tetap data + TEGAS, SUM & AVERAGE rumus dikeluarkan → 10.700.000); R3, R3c, R5, R6b, R16 → angka default = kunci + TEGAS (b); R9, R10 → TEGAS, alternatif 1.700.000 ✔ (b); sisanya a. **0 c, 0 d.**
+
+### 2. File baru → hasil (a = benar, b = peringatan tegas + total alternatif benar / gagal-jelas, c = salah diam-diam, d = ditolak padahal wajar)
+| File | Pola | Kunci | Hasil script (`ringkas`) | Nilai |
+|---|---|---|---|---|
+| S1 `subtotal-sum-berlabel.xlsx` | "Subtotal Cabang X" `=SUM(Cn:Cm)` di tengah + "GRAND TOTAL" `=C5+C9+C12` | 8, 6.425.000 | ✔ 4 baris dikeluarkan + disebut | a |
+| S1b `subtotal-sum-tanpa-label.xlsx` | subtotal `=SUM` tanpa label; grand total `=SUM(C5,C9,C12)` tanpa label | 8, 6.425.000 | 3 subtotal dikeluarkan ✔; grand total **tidak dikenali sebagai rumus agregat** → dihitung (12.850.000) + TEGAS, alternatif 6.425.000 ✔ | b |
+| S1c `grandtotal-plus-tanpa-label.xlsx` | grand total `=C5+C9+C12` tanpa label | 8, 6.425.000 | sama dengan S1b (TEGAS, alternatif ✔) | b |
+| S2 `sum-mendatar-per-baris.xlsx` | Total `=SUM(B2:D2)` per baris (mendatar) = DATA | 5, 1.765.000 | ✔ tidak ada yang dibuang | a |
+| S2b `rumus-kali-per-baris.xlsx` | `=B2*C2` per baris + TOTAL berlabel `=SUM` | 5, 3.830.000, qty 1.032 | ✔ | a |
+| S2c `average-mendatar-nilai-siswa.xlsx` | `=AVERAGE(B2:D2)` per siswa = DATA | 4, Σrata 315 | ✔ | a |
+| S3 `ekspor-kasir-tanpa-rumus.xlsx` | judul 2 baris; ekor: "Total Penjualan", "Tunai", "QRIS" (rincian bayar) | 6, 159.000, qty 10 | **477.000/9 (3× lipat)**; "Total Penjualan" disebut TEGAS "di tengah tabel", alternatif TANPA = **318.000 (juga salah)**; Tunai & QRIS **tidak disebut sama sekali** | **c ✘** |
+| S4 `mutasi-multi-halaman.csv` | 2 halaman: header berulang, "Halaman 1 dari 2", judul berulang | 7, 6.335.000 (CR 4.250.000, DB 2.085.000) | ✔ angka & pivot CR/DB; header berulang dilewati + info. Catatan: "Halaman 1 dari 2" & "MUTASI REKENING" terhitung sebagai 2 baris kosong (n=9, pivot "(kosong)" 2 baris) | a (−) |
+| S5 `dua-tabel.csv` | tabel Penjualan, baris kosong, "PENGELUARAN", tabel kedua (header beda) | tabel 1: 3 baris, 390.000 | tabel 2 **digabung** ke tabel 1: n=7, Qty = **535.006** (Nominal pengeluaran masuk ke Qty), "Sewa lapak" jadi Produk; hanya tanda tak langsung ("PENGELUARAN"/"Tanggal" bukan tanggal). Nominal 390.000 benar kebetulan | **c ✘** |
+| S6 `gaji-total-divisi.csv` | ",Total Divisi X" di tengah (kolom Nama) + GRAND TOTAL | 6, GP 27.000.000, Tunj 3.050.000 | ekor (Total Divisi Admin + GRAND TOTAL) dikeluarkan; baris 5 & 7 TEGAS, alternatif 27.000.000 / 3.050.000 ✔ | b |
+| S6b `gaji-total-divisi-kolom1` | "Total Divisi X" di kolom 1, tanpa grand total | sama | sama ✔ | b |
+| S7 `retur-negatif.csv` | `-350000`, `(75.000)`, `-Rp 50.000`, qty `-1` | 7, 1.675.000 | ✔ (kurung dibaca negatif) | a |
+| S8 `duplikat-sah.csv` | 2 pasang baris identik (pembelian ulang sah) | 8, 214.000 | ✔ dihitung + info duplikat | a |
+| S9 `total-di-atas-rumus.xlsx` | baris "Jumlah" `=SUM(B3:B6)` tepat di bawah header | 4, 1.560.000 | ✔ dikeluarkan + disebut | a |
+| S10 `kebetulan-lalu-total.csv` | 300.000 = 100rb+200rb (data), lalu "Total" | 3, 600.000 | ✔ | a |
+| S11 `excel-data-subtotal.xlsx` | gaya Excel *Data › Subtotal*: "Jakarta Total" `=SUBTOTAL(9,…)` + "Grand Total" | 6, 11.200.000 | ✔ 4 baris dikeluarkan | a |
+| S12 `data-subtotal-nilai-polos.csv` | S11 disimpan sebagai CSV (nilai polos): "Jakarta Total", "Bandung Total", "Surabaya Total" di tengah | 6, 11.200.000 | **22.400.000/9 (dobel)**, hanya "Grand Total" ekor dikeluarkan; **tidak ada TEGAS/peringatan apa pun**; "Jakarta Total" hanya tampak sebagai kategori | **c ✘ (terberat)** |
+
+**Ringkas:** 17 file baru; **10 a, 4 b, 3 c (S3, S5, S12), 0 d**. Jalan keluar manual bekerja: S3 `--buang-baris 12,13,14` → 159.000 ✔; S12 `--buang-baris 4,6,10` → 11.200.000 ✔ — tetapi agent tidak punya alasan menjalankannya karena script tidak memberi tanda.
+
+### 3. Uji alur agent (mengikuti SKILL.md persis)
+**AF1 — S6** "Ini rekap gaji September. Total gaji pokok & tunjangan per divisi berapa?" → `profil` (TEGAS + BARIS DIKELUARKAN + data SENSITIF), `pivot --grup Divisi`, lalu `--buang-baris 5,7` untuk versi alternatif. Jawaban agent:
+> **Jawaban singkat:** Sebelum angka final, satu hal perlu dipastikan: baris 5 ("Total Divisi Produksi") dan baris 7 ("Total Divisi Gudang") tampaknya baris **total**, bukan pegawai, tetapi saat ini masih ikut dihitung. **Bila keduanya baris total** (paling mungkin): gaji pokok **Rp 27.000.000**, tunjangan **Rp 3.050.000** (6 pegawai). **Bila dihitung sebagai data:** Rp 44.400.000 / Rp 5.100.000. Betul baris 5 & 7 itu total?
+> *(tabel pivot TANPA baris 5 & 7: Produksi Rp 13.500.000 · Admin Rp 9.600.000 · Gudang Rp 3.900.000 · TOTAL Rp 27.000.000)*
+> **Perlu dicek:** baris 10 (Total Divisi Admin) & 11 (GRAND TOTAL = Rp 27.000.000) sudah tidak dihitung; data gaji = data pribadi (UU PDP), bagikan hanya agregat per divisi.
+
+Kandidat disebut, kedua total ditampilkan, pertanyaan sekali ✔. GRAND TOTAL di file (27.000.000) menguatkan versi TANPA.
+
+**AF2 — S1b** "Total omzet semua cabang berapa?" → `ringkas` + `pivot --grup Cabang`. Jawaban agent:
+> **Jawaban singkat:** Total omzet **Rp 6.425.000** bila baris 13 (angka Rp 6.425.000 tanpa keterangan, persis = jumlah baris di atasnya) adalah baris grand total; **Rp 12.850.000** bila itu transaksi. Mohon konfirmasi baris 13. Per cabang: B Rp 2.475.000, A Rp 2.450.000, C Rp 1.500.000.
+> **Perlu dicek:** 3 baris subtotal rumus `=SUM` (baris 5, 9, 12) sudah tidak dihitung.
+
+Kandidat disebut, kedua total ✔; tabel pivot mentah memuat "(kosong) Rp 6.425.000 50%" — agent wajib menjelaskannya (SKILL.md sudah cukup: "baris itu MASIH dihitung").
+
+**Penilaian alur:** bila script memberi TEGAS, SKILL.md langkah 3 + format "Perlu dicek" membuat agent **tidak** memberi satu angka final ✔ (2/2). Kelemahan ada di hulu: S12 (tanpa tanda) → agent pasti menjawab satu angka salah (22.400.000); S3 → agent menampilkan "477.000 atau 318.000", keduanya salah, karena SKILL.md tidak menyuruh memeriksa baris ekor yang tidak disebut.
+
+### 4. Uji A/B ulang skenario 01 ("kategori paling laku, tren bulanan, Q2 vs Q3")
+| | TANPA skill (parser XLSX stdlib cepat, seperti biasa ditulis agent; pandas tidak tersedia) | DENGAN skill v1.0.6 | Kunci |
+|---|---|---|---|
+| Grand total | 465.064.000 (baris TOTAL ikut → dobel), 494 baris | 233.556.000 / 499 baris, 3 baris TOTAL `=SUM` disebut | 233.556.000 |
+| Semen | 83.532.000 (+ "SEMEN" & "semen " terpisah) | 105.444.000 | 105.444.000 |
+| Rumus tanpa nilai / teks "Rp" / retur | hilang tanpa pesan | disebut (Nilai terisi 496) | 3 / 4 / 1 |
+| Tren & Q2 vs Q3 | tidak dihitung | 9 bulan = kunci; Q3 −28,8% | ✔ |
+Kesimpulan: dengan skill **jelas lebih baik** (sama dengan uji sebelumnya).
+
+### Bug baru
+| # | Prioritas | Temuan | Saran |
+|---|---|---|---|
+| B19 | **P1** | Hasil *Data › Subtotal* Excel yang disimpan sebagai CSV/nilai polos ("Jakarta Total" — kata Total di **akhir** label, di kolom pertama, angka = jumlah kelompok di atasnya) **tidak dikenali sama sekali** → total dobel diam-diam (S12). Padahal "Total Divisi X" (Total di awal) di S6 sudah memicu TEGAS. | Label tengah berawalan **atau berakhiran** Total/Subtotal/Jumlah (mis. `^.+ Total$`) → TEGAS + alternatif, terutama bila angkanya = jumlah baris sejak baris berlabel sebelumnya. Tes regresi S12 (+ variasi "Total Jakarta", "Jakarta Jumlah"). |
+| B20 | **P1** | Ekor ekspor kasir: "Total Penjualan" diikuti rincian pembayaran tanpa kata kunci ("Tunai", "QRIS") → "Total Penjualan" dianggap *di tengah*, Tunai/QRIS dihitung diam-diam; total alternatif pun salah (318.000 vs 159.000) (S3). | Sesudah baris data utuh terakhir, baris ringkasan berlabel pertama memulai **blok ekor**: baris sesudahnya yang jarang terisi (tanpa ID/tanggal/qty) ikut blok itu → dikeluarkan + disebut, atau minimal masuk TEGAS dan alternatif "tanpa baris 12–14". Tambah kata kunci Tunai/QRIS/Debit/Kartu/Kembalian/Pembayaran di ekor. |
+| B21 | P2 | Dua tabel dalam satu file (S5) digabung diam-diam; kolom Qty berisi nominal pengeluaran (535.006), "Sewa lapak" jadi produk. Tanda hanya "nilai tanggal tidak valid". | Baris semua-teks di tengah yang berbeda dari header utama, sesudah baris kosong/judul → GAGAL/TEGAS "tabel kedua mulai baris N; analisis tabel 1 saja atau `--baris-header N`". |
+| B22 | P3 | `=SUM(C5,C9,C12)` (SUM daftar sel) tanpa label tidak dianggap rumus agregat (S1b) → TEGAS alih-alih dikeluarkan otomatis (alternatif benar, jadi aman). | Terima SUM/SUBTOTAL dengan daftar referensi sel baris lain sebagai rumus agregat. |
+| B23 | P3 | Baris "Halaman 1 dari 2"/judul berulang di tengah mutasi terhitung sebagai baris data kosong (n=9, pivot "(kosong)") (S4); total benar. | Perlakukan seperti header berulang: lewati + info. |
+
+### Skor kualitas uji ulang v1.0.6: **6 / 10** — **belum lulus ke `beta`**; perbaiki B19 & B20 (wajib), B21, lalu uji ulang independen singkat
+- (+) Prinsip v1.0.6 tepat dan terbukti: semua fixture lama tanpa (c)/(d) — R6/R7/R8*/R11 dari v1.0.5 kini benar; rumus XLSX dipakai sebagai bukti (SUM/SUBTOTAL/AVERAGE atas baris lain dikeluarkan, SUM/AVERAGE **mendatar** dan `=B*C` tetap data); kandidat ambigu selalu disertai total DENGAN/TANPA yang benar; alur agent AF1/AF2 menyebut kandidat dan tidak memberi satu angka final; negatif, kurung akuntansi, duplikat sah, header berulang ditangani; 94 tes lulus; A/B tetap unggul telak.
+- (−) Masih **3 dari 17 file baru salah diam-diam**, dua di antaranya format yang sangat umum bagi UMKM: CSV hasil *Data › Subtotal* Excel (S12, total dobel tanpa peringatan apa pun) dan ekspor kasir dengan rincian Tunai/QRIS di bawah total (S3, total 3× lipat, alternatif pun salah). Karena script tidak memberi tanda, SKILL.md tidak bisa mencegah agent menjawab angka salah. Keduanya perbaikan deteksi yang terlokalisasi (bukan desain ulang), jadi skor 7+ realistis setelah B19–B20.
