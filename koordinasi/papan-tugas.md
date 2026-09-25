@@ -42,7 +42,7 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | # | Tugas | Status |
 |---|---|---|
 | A1 | `laporan-iklan-mingguan` (celah paket VIP toko online) | dikerjakan (Akun A, 2026-09-25) |
-| A2 | Uji ulang `dolibarr-usaha` v1.0.2 | dikerjakan (Akun A, 2026-09-25) |
+| A2 | Uji ulang `dolibarr-usaha` v1.0.2 | selesai 8/10 — siap uji platform asli & beta; B1 (draf ganda saat DPP bersen) & B2 (ENV kunci mengalahkan --kunci-file tanpa peringatan) untuk v1.0.3 |
 | A3 | Masukkan `solusi-vip/` ke paket ZIP VIP (`build.py`) | tunggu keputusan pemilik |
 | A4 | Pengingat kontrol/vaksin per pasien (klinik) | tunggu keputusan pemilik (penyimpanan data pasien) |
 | A5 | Laporan status terjadwal ke klien (konsultan) | tunggu keputusan pemilik (kirim ke pihak luar) |

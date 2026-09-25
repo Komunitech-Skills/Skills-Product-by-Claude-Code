@@ -97,3 +97,35 @@ Alasan:
 - (+) Angka tetap 0 beda di semua hitung ulang independen; keamanan inti tetap utuh; lolos uji muat OpenClaw.
 - (−) N2 dapat merusak pemisahan kunci baca/draf yang justru disarankan revisi S2 bila opsi diletakkan di depan; N1 memberi saran perbaikan yang keliru untuk admin/342.
 - Rekomendasi v1.0.2 (perbaikan kecil, tidak menghalangi status `lulus`): perbaiki N2 (`default=argparse.SUPPRESS` di subparser) dan N1 (cek `setup/modules`/tidak adanya `rights.stock` lebih dulu), sesuaikan kalimat panduan §6 soal 342, lalu uji platform asli oleh pemilik (DoliWamp Windows).
+
+---
+
+## Uji ulang v1.0.2 (2026-09-25)
+- **Penguji:** agent penguji independen baru (Claude Code, simulasi agent), bukan pembuat skill/revisi. Rincian lengkap: `07-uji-ulang-v1.0.2.md`.
+- **Lingkungan:** **Dolibarr 24.0.1 asli** (instalasi penguji v1.0.0 dihidupkan ulang dengan salinan database: MariaDB 10.11.14, PHP 8.4.19) + server kedua di alamat LAN kontainer untuk `--izinkan-url-luar`; Python 3.11.15.
+- **Otomatis:** `uji_regresi.py` **70 tes OK**; `validate.py` di salinan bersih HEAD "59 skill valid" (di repo kerja gagal 1 masalah milik folder `laporan-iklan-mingguan` yang belum di-commit agent lain); `uji_openclaw.sh` OpenClaw 2026.9.6: dolibarr-usaha eligible/modelVisible/commandVisible (59/60, satu-satunya gagal folder yang sama).
+- **Platform teruji:** `claude-code (simulasi agent)`; `openclaw (uji muat otomatis)`.
+
+### Status klaim
+| Klaim | Status |
+|---|---|
+| N2 opsi umum depan/tengah/belakang | ✅ Repro asli (`--kunci-file …-draf.txt simpan-kunci`) kini menulis ke file draf, file default utuh. Matriks 7 subperintah × 5 opsi × semua posisi: **84/84 dihormati**; `--tz` terbukti mengubah tanggal di semua posisi; nilai beda di dua posisi → kode 2 |
+| N2 `simpan-kunci` path lengkap & tak menimpa tanpa `--ya` | ✅ termasuk `--ya` + kunci rusak/kosong → file lama tetap utuh |
+| N1 "Modul Stok belum aktif" | ✅ admin, user tanpa/dengan 342 → diagnosis benar (kode 4); modul aktif + hak kurang → "belum punya hak" (kode 5); Explorer dimatikan → admin tetap benar, non-admin pesan gabungan jujur; 0 HABIS palsu di 7 keadaan |
+| Kosmetik kode 7 / tanggal draf / lunas tanpa bayar | ✅ ketiganya (dengan catatan B1 di bawah) |
+| Panduan §6/§7, batas zona di SKILL.md | ✅ akurat terhadap perilaku yang diamati |
+
+### Regresi
+Tidak ada. Pelanggan baru → draf 3 baris (diskon 4% & 7,5%, ongkir bersen, PPN 12% × DPP 11/12) + draf 2 baris: DPP, DPP 11/12, PPN ke bawah sekali, total **0 beda** dengan kalkulator `Decimal` penguji; angka Dolibarr (per baris, 2 desimal) dilaporkan BEDA apa adanya dan cocok DB. Piutang (10 invoice, kelompok umur, terlambat), stok (4 perlu perhatian + saran beli), laporan 24 & 25 Sep (termasuk % vs kemarin): **0 beda** dengan SQL. 0 POST tanpa `--ya` (12 POST total, semuanya dari `--ya`); redirect, proxy, URL publik, server menggemakan kunci: aman; 0 kunci/potongan kunci di 352 baris keluaran; 0 traceback.
+
+### Cacat tersisa
+- **B1 (sedang-rendah, ada sejak v1.0.0):** penahan draf ganda gagal bila DPP Dolibarr bersen (mis. diskon menghasilkan ,50 atau harga produk Rp 83.333,33) karena membandingkan `total_ht` Dolibarr dengan DPP yang sudah dibulatkan (`dolibarr.py` baris 854). Repro: draf 3 baris di atas diulang `--ya` → draf kembar `(PROV21)` dibuat, kode 0. DPP bulat tetap tertahan (kode 7).
+- **B2 (rendah):** ENV `DOLIBARR_API_KEY` mengalahkan `--kunci-file` eksplisit tanpa peringatan (hanya `cek` menampilkan sumber kunci).
+- Kosmetik: opsi diulang di posisi yang sama → nilai terakhir; konflik membandingkan teks mentah (`~/x` vs path absolut, `wit` vs `WIT` ditolak); metavar `_T0_…` di `--help`; `cek` belum memakai deteksi modul Stok baru; `simpan-kunci` tidak membaca `DOLIBARR_API_KEY_FILE`; penyamaran berlebih kata dari masukan kunci rusak. N4 (server AS) tetap, sudah dicatat jujur.
+
+### Skor kualitas: **8 / 10** — **LULUS** (≥ 7)
+Alasan:
+- (+) Kedua cacat v1.0.1 (N2 sedang, N1 sedang-rendah) dan tiga kosmetik terbukti beres di Dolibarr asli, termasuk repro asli N2; tidak ada opsi umum yang diabaikan di posisi berbeda, kunci tidak pernah tertimpa/bocor.
+- (+) Angka tetap 0 beda di semua hitung ulang independen; keamanan inti utuh; 70 tes regresi; lolos uji muat OpenClaw.
+- (−) B1 membuat jaring pengaman "draf dobel" tidak bekerja pada kasus umum (diskon/harga bersen) — bertentangan dengan tabel galat SKILL.md; B2 bisa diam-diam memakai kunci lain dari yang diminta.
+- **Kesimpulan:** **siap uji platform asli** (pemilik/tim, DoliWamp Windows sesuai `docs/uji-platform.md`) lalu beta. Disarankan memperbaiki B1 (toleransi < Rp 1 atau bandingkan dengan total versi Dolibarr) dan B2 (utamakan `--kunci-file` atau beri CATATAN) di v1.0.3 sebelum/selama beta; keduanya tidak menghalangi status `lulus`.
