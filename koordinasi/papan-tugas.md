@@ -15,7 +15,7 @@ Branch Akun B: `claude/dreamy-archimedes-suxhgj`
 1. **Mulai dari kode terbaru.** Di awal giliran: `git fetch origin claude/determined-gates-rh7l38` lalu `git merge --ff-only origin/claude/determined-gates-rh7l38` (atau `git merge` biasa bila sudah pernah commit). Jangan rebase / force-push branch orang lain.
 2. **Ambil tugas hanya dari kolom jalurmu.** Ubah status jadi `dikerjakan (Akun X, tanggal)` lalu commit & push segera.
 3. **Satu skill = satu akun.** Jangan menyentuh folder `skills/<nama>` milik jalur lain. Perlu perubahan di sana → tulis di bagian "Permintaan antar-akun".
-4. **Semua aturan CLAUDE.md tetap berlaku** (uji independen, A/B, banding pesaing, validate.py, lisensi, tanpa data pribadi, maks 2 agent paralel per akun, hemat context).
+4. **Semua aturan CLAUDE.md tetap berlaku** (uji independen, A/B, banding pesaing, validate.py, lisensi, tanpa data pribadi, hemat context). Batas agent paralel (keputusan pemilik 2026-09-25): **Akun A maks 2**. **Akun B boleh memakai banyak sub-agent paralel** (kuota Akun B besar — izin pemilik ini mengesampingkan batas 4 di CLAUDE.md khusus untuk Akun B): pecah tugas B & U yang saling lepas ke agent berbeda (mis. satu agent per skill + agent penguji terpisah), tiap agent melapor balik ringkas (≤200 kata). Tetap: pembuat ≠ penguji, satu skill = satu agent pembuat. Tetap hentikan batch baru bila context sesi > 600 ribu token atau limit "rejected".
 5. **catalog.csv**: tambah/ubah hanya baris skill milikmu. Konflik saat merge diselesaikan Akun A.
 6. **Laporan**: `reports/YYYY-MM-DD.md` milik Akun A; Akun B menulis di `reports/YYYY-MM-DD-akun-b.md`.
 7. Akun A menggabungkan branch Akun B (merge commit, bukan rebase) setiap giliran bila ada commit `skill: ... (lulus)` baru.
@@ -47,6 +47,16 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | A4 | Pengingat kontrol/vaksin per pasien (klinik) | tunggu keputusan pemilik (penyimpanan data pasien) |
 | A5 | Laporan status terjadwal ke klien (konsultan) | tunggu keputusan pemilik (kirim ke pihak luar) |
 | A6 | Uji platform asli & program beta (skill lulus) | butuh pemilik/tim (`docs/uji-platform.md`, `docs/program-beta.md`) |
+
+## Uji untuk Akun A — dikerjakan Akun B (penguji lintas akun = lebih independen)
+
+Aturan: Akun B **hanya menulis ke `skills/<nama>/examples/`** skill milik Akun A (tidak mengubah kode, SKILL.md, catalog.csv). Ikuti CLAUDE.md Tahap 6 (5 skenario/uji ulang klaim, verifikasi angka independen, A/B & banding pesaing untuk uji pertama, `validate.py`, `scripts/uji_openclaw.sh`). Tambahkan bagian baru di akhir `examples/HASIL-UJI.md` (jangan hapus isi lama) + skor 1–10. Commit `uji: <nama> vX.Y.Z <skor>/10` di branch Akun B → Akun A yang merge & memperbarui catalog.csv. Ambil hanya item berstatus `siap diuji`.
+
+| # | Skill Akun A | Yang diuji | Status |
+|---|---|---|---|
+| U1 | `laporan-iklan-mingguan` v1.0.1 | Uji ulang setelah revisi 4 cacat tinggi (sel Results kosong, baris total varian, pemilihan kolom Google Ads, mata uang non-IDR) + cacat sedang; ulang repro di examples/HASIL-UJI.md; verifikasi angka Decimal. Model: Opus | menunggu revisi Akun A |
+| U2 | `dolibarr-usaha` v1.0.3 | Uji ulang B1 (draf ganda saat DPP bersen) & B2 (ENV kunci vs --kunci-file) setelah diperbaiki | belum dijadwalkan |
+| U3 | Uji OpenClaw dengan **model sungguhan + Telegram** (keputusan pemilik 2026-09-25: dikerjakan Akun B) | Prasyarat: pemilik menambahkan environment variable di environment Akun B — `OPENAI_API_KEY` atau `ANTHROPIC_API_KEY` (key uji ber-batas biaya, sesuai model OpenClaw), `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` (bot uji, bukan produksi); variabel baru hanya terbaca sesi BARU. Pasang OpenClaw via `bash scripts/uji_openclaw.sh`, konfigurasi model & kanal Telegram (jangan menebak flag — cek `--help`), lalu uji agent sungguhan memanggil skill: urutan prioritas `pantau-pasar-kripto`, `laporan-harian-usaha`, `crm-wa`, `dolibarr-usaha` (dgn server tiruan), `pdf-lokal`, lalu skill lulus lain. Per skill: 1 permintaan normal + 1 di luar cakupan + (bila ada) 1 jadwal `automations` sampai pesan tiba di Telegram. Jangan pernah mencetak key/token ke log/commit. Catat hasil di `skills/<nama>/examples/UJI-PLATFORM.md` (format `docs/uji-platform.md`) + ringkasan di `reports/YYYY-MM-DD-akun-b.md`; Akun A yang memperbarui kolom `platform_teruji` di catalog.csv saat merge | menunggu env var dari pemilik |
 
 ## Permintaan antar-akun
 _(tulis di sini: dari, untuk, isi, tanggal)_
