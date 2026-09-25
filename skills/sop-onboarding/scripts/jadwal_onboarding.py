@@ -2,29 +2,47 @@
 # -*- coding: utf-8 -*-
 """Hitung tanggal-tanggal kegiatan onboarding karyawan baru dari tanggal mulai kerja.
 
-Tahap yang dihitung: hari pertama (H1), akhir minggu 1, evaluasi 30/60/90 hari, dan
-(khusus PKWTT) akhir masa percobaan 3 bulan (UU 13/2003 Pasal 60 jo. UU 6/2023).
-PKWT (karyawan kontrak) TIDAK BOLEH ada masa percobaan (UU 13/2003 Pasal 58 jo. UU 6/2023;
-PP 35/2021 Pasal 12) -- lihat references/dasar-hukum-onboarding.md.
+Tahap yang dihitung: hari pertama (H1), akhir minggu 1, evaluasi checkpoint 30/60/90 hari, dan
+(khusus PKWTT) batas hukum + tanggal evaluasi keputusan akhir masa percobaan 3 bulan
+(UU 13/2003 Pasal 60 jo. UU 6/2023). PKWT (karyawan kontrak) TIDAK BOLEH ada masa percobaan
+(UU 13/2003 Pasal 58 jo. UU 6/2023; PP 35/2021 Pasal 12) -- lihat references/dasar-hukum-onboarding.md.
 
-Cara hitung tanggal:
-  - H1               = tanggal mulai kerja (tidak digeser).
-  - Akhir minggu 1    = mulai + 6 hari kalender (hari ke-7).
-  - Evaluasi 30/60/90 = mulai + 29/59/89 hari kalender (hari ke-30/60/90, inklusif).
-  - Akhir masa percobaan (PKWTT) = tanggal yang sama 3 bulan kemudian, dikurangi 1 hari
-    (metode sama dengan skill surat-peringatan-karyawan); TIDAK digeser, ini tanggal hukum.
-  - Semua tanggal checkpoint (bukan tanggal hukum) yang jatuh di hari libur (akhir pekan
-    sesuai --hari-kerja, atau tanggal di file --libur) DIGESER ke hari kerja BERIKUTNYA,
-    kecuali evaluasi akhir masa percobaan yang digeser ke hari kerja SEBELUMNYA (supaya
-    evaluasi selesai sebelum batas hukum berakhir).
+Cara hitung tanggal (identik dengan penjelasan manual di SKILL.md langkah 3 -- jaga keduanya tetap sama):
+  - H1                = tanggal mulai kerja (tidak digeser; diperingatkan bila jatuh di hari libur/akhir
+                        pekan, saran tanggal kerja berikutnya diberikan tapi TIDAK otomatis dipakai).
+  - Akhir minggu 1     = mulai + 6 hari kalender (hari ke-7); digeser MAJU ke hari kerja berikutnya.
+  - Checkpoint 30/60/90 = mulai + 29/59/89 hari kalender (hari ke-30/60/90, inklusif); digeser MAJU.
+    Checkpoint 90 hari HANYA pemantauan kinerja rutin -- untuk PKWTT ini BUKAN batas keputusan masa
+    percobaan (lihat baris "evaluasi_percobaan" terpisah); bila jatuh setelah batas hukum, script
+    menambahkan peringatan eksplisit di catatannya.
+  - Batas hukum akhir masa percobaan (PKWTT) = tanggal yang sama persis 3 bulan kalender kemudian; bila
+    bulan target tidak punya tanggal itu (mis. 31 Jan -> April cuma 30 hari), batas = hari TERAKHIR bulan
+    target (tanpa dikurangi 1 hari lagi); bila tanggal itu ADA di bulan target, batas = tanggal itu
+    dikurangi 1 hari. Contoh: mulai 14 Des 2026 -> 14 Mar 2027 - 1 hari = batas 13 Mar 2027. Tanggal batas
+    hukum ini TIDAK PERNAH digeser walau jatuh di hari libur -- itu tanggal hukum tetap.
+  - Evaluasi keputusan akhir masa percobaan (PKWTT) = 5 hari kerja SEBELUM batas hukum (mundur, dihitung
+    dari hari kerja terakhir yang <= batas hukum), supaya keputusan lanjut/tidak sempat diambil dan
+    diproses SEBELUM batas hukum berakhir. Baris ini SELALU <= batas hukum, tidak pernah melewatinya.
+  - Semua tanggal checkpoint (H1 dikecualikan, batas hukum dikecualikan) yang jatuh di hari libur (akhir
+    pekan sesuai --hari-kerja, hari libur nasional/cuti bersama bawaan 2026 & 2027 di
+    references/libur-nasional-*.csv yang dipakai OTOMATIS bila ditemukan, atau tanggal tambahan di
+    --libur) DIGESER ke hari kerja BERIKUTNYA (checkpoint) atau SEBELUMNYA (evaluasi akhir percobaan,
+    supaya evaluasi selesai sebelum batas hukum berakhir).
 
 Contoh:
   python3 jadwal_onboarding.py --mulai 2026-09-28
   python3 jadwal_onboarding.py --mulai "5 Oktober 2026" --hari-kerja 6 --jenis pkwt --format csv
-  python3 jadwal_onboarding.py --mulai 2026-10-01 --libur libur_nasional.csv --nama "Rina" --format json
+  python3 jadwal_onboarding.py --mulai 2026-10-01 --libur libur_tambahan.csv --nama "Rina" --format json
+  python3 jadwal_onboarding.py --mulai 2026-10-01 --tanpa-libur-bawaan   # matikan libur nasional bawaan
 
-File --libur: CSV dengan kolom "tanggal" (atau kolom pertama), satu tanggal libur per baris,
-format bebas seperti --mulai. Baris kosong/komentar (#) diabaikan.
+Libur nasional & cuti bersama bawaan: dimuat otomatis dari references/libur-nasional-2026.csv dan
+-2027.csv (folder sibling scripts/ di skill ini) bila file itu ada, sesuai tahun tanggal mulai s.d.
+tahun+1. Sumber: SKB 3 Menteri (sama seperti skill kalender-pajak), cek ulang tiap tahun. Tahun di luar
+2026-2027 tidak punya data bawaan -- script memberi peringatan dan pengguna perlu memakai --libur sendiri.
+
+File --libur / file libur bawaan: CSV dengan kolom "tanggal" (atau kolom pertama) di baris pertama sebagai
+data atau header, satu tanggal libur per baris, format bebas seperti --mulai. Baris kosong/komentar (#)
+diabaikan; kolom lain (mis. "jenis", "keterangan") diabaikan.
 
 Hanya library standar Python 3.8+. Tidak ada akses jaringan. Input salah -> pesan jelas, keluar kode 2.
 """
@@ -33,6 +51,7 @@ import calendar
 import csv
 import io
 import json
+import os
 import re
 import sys
 from datetime import date, timedelta
@@ -48,6 +67,13 @@ BULAN_ALIAS = {
     "nov": 11, "nop": 11, "nopember": 11, "november": 11, "des": 12, "dec": 12, "desember": 12, "december": 12,
 }
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+
+# Berapa hari kerja buffer antara evaluasi keputusan akhir masa percobaan dan batas hukum, supaya
+# keputusan lanjut/tidak sempat diambil & diproses sebelum batas berakhir.
+BUFFER_EVALUASI_PERCOBAAN_HARI_KERJA = 5
+
+SKRIP_DIR = os.path.dirname(os.path.abspath(__file__))
+REFERENCES_DIR = os.path.join(os.path.dirname(SKRIP_DIR), "references")
 
 
 class InputSalah(Exception):
@@ -120,6 +146,22 @@ def baca_libur(path):
     return hasil
 
 
+def libur_bawaan(tahun_dari, tahun_sampai):
+    """Muat references/libur-nasional-<tahun>.csv (bila ada) untuk tahun_dari..tahun_sampai inklusif.
+    Kembalikan (set(date) gabungan, list tahun yang filenya ditemukan, list tahun yang TIDAK ada filenya)."""
+    gabungan = set()
+    ditemukan = []
+    tidak_ada = []
+    for tahun in range(tahun_dari, tahun_sampai + 1):
+        path = os.path.join(REFERENCES_DIR, "libur-nasional-{}.csv".format(tahun))
+        if os.path.isfile(path):
+            gabungan |= baca_libur(path)
+            ditemukan.append(tahun)
+        else:
+            tidak_ada.append(tahun)
+    return gabungan, ditemukan, tidak_ada
+
+
 def hari_kerja_p(d, hari_kerja, libur):
     """True bila d adalah hari kerja: bukan akhir pekan (sesuai hari_kerja) dan bukan hari libur."""
     if d in libur:
@@ -151,7 +193,26 @@ def geser_mundur(d, hari_kerja, libur, maks=60):
     return d
 
 
-def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None):
+def mundur_n_hari_kerja(d, n, hari_kerja, libur, maks=90):
+    """Dari d (boleh bukan hari kerja), cari hari kerja ke-n mundur (n=1 -> hari kerja <= d yang
+    terakhir; n=BUFFER -> n hari kerja sebelum itu, dihitung mundur satu per satu)."""
+    hasil = geser_mundur(d, hari_kerja, libur, maks=maks)
+    for _ in range(n - 1):
+        hasil = geser_mundur(hasil - timedelta(days=1), hari_kerja, libur, maks=maks)
+    return hasil
+
+
+def hitung_batas_hukum_percobaan(mulai):
+    """Batas hukum akhir masa percobaan PKWTT: tanggal sama persis 3 bulan kalender kemudian; bila bulan
+    target tidak punya tanggal itu, pakai hari terakhir bulan itu (tanpa -1 hari lagi); bila ada,
+    dikurangi 1 hari. Lihat penjelasan lengkap di header modul ini & SKILL.md langkah 3."""
+    target = tambah_bulan(mulai, 3)
+    if target.day < mulai.day:
+        return target  # sudah diklip ke hari terakhir bulan target
+    return target - timedelta(days=1)
+
+
+def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None, libur_bawaan_info=None):
     if hari_kerja not in (5, 6):
         raise InputSalah("--hari-kerja harus 5 atau 6.")
     if jenis not in ("pkwt", "pkwtt"):
@@ -159,6 +220,7 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None):
     libur = libur or set()
 
     tahapan = []
+    peringatan = []
 
     def tambah(kode, nama, tanggal_target, pj, kegiatan, geser="maju", catatan=""):
         asli = tanggal_target
@@ -168,7 +230,7 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None):
             disesuaikan = geser_mundur(tanggal_target, hari_kerja, libur)
         else:
             disesuaikan = tanggal_target
-        tahapan.append({
+        entri = {
             "kode": kode,
             "tahap": nama,
             "tanggal_target": asli.isoformat(),
@@ -179,45 +241,82 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None):
             "penanggung_jawab": pj,
             "kegiatan_target": kegiatan,
             "catatan": catatan,
-        })
+        }
+        tahapan.append(entri)
+        return entri
 
-    tambah("h1", "Hari pertama (H1)", mulai, "Pemilik/Atasan langsung",
-           "Penyambutan, serah terima perangkat & akun, penjelasan buku saku karyawan",
-           geser="tidak")
+    # --- H1: tidak digeser, hanya diperingatkan bila jatuh di hari bukan kerja ---
+    h1_entri = tambah("h1", "Hari pertama (H1)", mulai, "Pemilik/Atasan langsung",
+                       "Penyambutan, serah terima perangkat & akun, penjelasan buku saku karyawan",
+                       geser="tidak")
+    if not hari_kerja_p(mulai, hari_kerja, libur):
+        saran = geser_maju(mulai, hari_kerja, libur)
+        pesan = ("⚠️ Tanggal mulai {} jatuh di hari libur/akhir pekan (bukan hari kerja). H1 TIDAK "
+                 "otomatis digeser -- konfirmasi ke pengguna, saran: geser ke hari kerja berikutnya, "
+                 "{}.".format(fmt_pendek(mulai), fmt_pendek(saran)))
+        h1_entri["catatan"] = pesan
+        peringatan.append(pesan)
+
     tambah("minggu1", "Akhir minggu 1", mulai + timedelta(days=6), "Buddy/rekan pendamping",
            "Cek pemahaman tugas dasar & SOP harian, tanya kendala")
-    tambah("hari30", "Evaluasi 30 hari", mulai + timedelta(days=29), "Atasan langsung",
+    tambah("hari30", "Checkpoint 30 hari", mulai + timedelta(days=29), "Atasan langsung",
            "Evaluasi checklist tugas dasar; beri umpan balik tertulis singkat")
-    tambah("hari60", "Evaluasi 60 hari", mulai + timedelta(days=59), "Atasan langsung",
+    tambah("hari60", "Checkpoint 60 hari", mulai + timedelta(days=59), "Atasan langsung",
            "Evaluasi kemandirian kerja & kepatuhan SOP")
-    tambah("hari90", "Evaluasi 90 hari / akhir orientasi", mulai + timedelta(days=89),
-           "Pemilik/Atasan", "Evaluasi akhir masa orientasi (isi formulir evaluasi)")
+    catatan_90 = ("Pemantauan kinerja rutin, BUKAN batas keputusan masa percobaan." if jenis == "pkwtt"
+                  else "Evaluasi akhir orientasi (isi formulir evaluasi kinerja).")
+    hari90_entri = tambah("hari90", "Checkpoint 90 hari", mulai + timedelta(days=89),
+                           "Pemilik/Atasan", "Evaluasi checkpoint orientasi", catatan=catatan_90)
 
     if jenis == "pkwtt":
-        akhir_target = tambah_bulan(mulai, 3)
-        if akhir_target.day < mulai.day:
-            akhir_hukum = akhir_target
-        else:
-            akhir_hukum = akhir_target - timedelta(days=1)
-        evaluasi_disarankan = geser_mundur(akhir_hukum, hari_kerja, libur)
+        akhir_hukum = hitung_batas_hukum_percobaan(mulai)
         tahapan.append({
-            "kode": "akhir_percobaan",
-            "tahap": "Akhir masa percobaan (batas hukum)",
+            "kode": "batas_percobaan",
+            "tahap": "Batas hukum akhir masa percobaan (PKWTT)",
             "tanggal_target": akhir_hukum.isoformat(),
             "tanggal_target_teks": fmt_pendek(akhir_hukum),
-            "tanggal_disesuaikan": evaluasi_disarankan.isoformat(),
-            "tanggal_disesuaikan_teks": fmt_pendek(evaluasi_disarankan),
-            "digeser": evaluasi_disarankan != akhir_hukum,
-            "penanggung_jawab": "Pemilik/Atasan",
-            "kegiatan_target": ("Keputusan lanjut sebagai karyawan tetap atau tidak (evaluasi disarankan "
-                                 "selesai paling lambat hari kerja ini, SEBELUM tanggal hukum berakhir)"),
-            "catatan": ("Masa percobaan maks. 3 bulan, upah selama percobaan tidak boleh di bawah upah "
-                        "minimum (UU 13/2003 Pasal 60 jo. UU 6/2023). Tanggal ini TIDAK digeser walau "
-                        "libur; hanya tanggal evaluasi yang disarankan dimajukan."),
+            "tanggal_disesuaikan": akhir_hukum.isoformat(),
+            "tanggal_disesuaikan_teks": fmt_pendek(akhir_hukum),
+            "digeser": False,
+            "penanggung_jawab": "-",
+            "kegiatan_target": "Tanggal hukum tetap (informasi, bukan tanggal kegiatan) -- TIDAK PERNAH "
+                                "digeser walau jatuh di hari libur.",
+            "catatan": ("Masa percobaan maksimal 3 bulan sejak {} (UU 13/2003 Pasal 60 jo. UU 6/2023). "
+                        "Definisi batas: tanggal sama persis 3 bulan kalender kemudian; bila bulan target "
+                        "tidak punya tanggal itu, pakai hari terakhir bulan itu; bila ada, dikurangi 1 "
+                        "hari.".format(fmt_pendek(mulai))),
         })
+        evaluasi_percobaan = mundur_n_hari_kerja(akhir_hukum, BUFFER_EVALUASI_PERCOBAAN_HARI_KERJA,
+                                                  hari_kerja, libur)
+        tahapan.append({
+            "kode": "evaluasi_percobaan",
+            "tahap": "Evaluasi keputusan akhir masa percobaan (PKWTT)",
+            "tanggal_target": evaluasi_percobaan.isoformat(),
+            "tanggal_target_teks": fmt_pendek(evaluasi_percobaan),
+            "tanggal_disesuaikan": evaluasi_percobaan.isoformat(),
+            "tanggal_disesuaikan_teks": fmt_pendek(evaluasi_percobaan),
+            "digeser": False,
+            "penanggung_jawab": "Pemilik/Atasan",
+            "kegiatan_target": ("Isi formulir evaluasi & putuskan lanjut sebagai karyawan tetap atau "
+                                 "tidak, SELALU sebelum/tepat batas hukum di atas ({} hari kerja lebih "
+                                 "awal, supaya keputusan sempat diproses).".format(
+                                     BUFFER_EVALUASI_PERCOBAAN_HARI_KERJA)),
+            "catatan": ("Terpisah dari checkpoint 90 hari di atas. Upah selama masa percobaan tidak boleh "
+                        "di bawah upah minimum (UU 13/2003 Pasal 60 jo. UU 6/2023), kecuali usaha mikro & "
+                        "kecil (⚠️ PERLU REVIEW: Pasal 90B jo. UU 6/2023 & PP 36/2021 Pasal 36 jo. PP "
+                        "51/2023 -- lihat references/dasar-hukum-onboarding.md)."),
+        })
+        if date.fromisoformat(hari90_entri["tanggal_disesuaikan"]) > akhir_hukum:
+            pesan = ("⚠️ Checkpoint 90 hari ({}) jatuh SETELAH batas hukum masa percobaan ({}). Jangan "
+                     "pakai checkpoint 90 hari untuk keputusan lanjut/tidak -- pakai baris \"Evaluasi "
+                     "keputusan akhir masa percobaan\" ({}).".format(
+                         hari90_entri["tanggal_disesuaikan_teks"], fmt_pendek(akhir_hukum),
+                         fmt_pendek(evaluasi_percobaan)))
+            hari90_entri["catatan"] = (hari90_entri["catatan"] + " " + pesan).strip()
+            peringatan.append(pesan)
     else:
         tahapan.append({
-            "kode": "akhir_percobaan",
+            "kode": "percobaan_pkwt",
             "tahap": "Masa percobaan",
             "tanggal_target": None,
             "tanggal_target_teks": "-",
@@ -227,9 +326,9 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None):
             "penanggung_jawab": "-",
             "kegiatan_target": "Tidak berlaku untuk PKWT",
             "catatan": ("PKWT (karyawan kontrak) DILARANG mensyaratkan masa percobaan; bila ada, batal "
-                        "demi hukum (UU 13/2003 Pasal 58 jo. UU 6/2023; PP 35/2021 Pasal 12). Evaluasi "
-                        "hari 30/60/90 di atas tetap dipakai sebagai pemantauan kinerja biasa, bukan syarat "
-                        "kelulusan percobaan."),
+                        "demi hukum (UU 13/2003 Pasal 58 jo. UU 6/2023; PP 35/2021 Pasal 12). Checkpoint "
+                        "30/60/90 di atas tetap dipakai sebagai pemantauan kinerja biasa (isi formulir "
+                        "evaluasi kinerja versi PKWT), bukan syarat kelulusan percobaan."),
         })
 
     return {
@@ -238,6 +337,9 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None):
         "hari_kerja_per_minggu": hari_kerja,
         "jenis_karyawan": jenis,
         "jumlah_hari_libur_dimuat": len(libur),
+        "libur_bawaan_ditemukan": (libur_bawaan_info or {}).get("ditemukan", []),
+        "libur_bawaan_tidak_ada": (libur_bawaan_info or {}).get("tidak_ada", []),
+        "peringatan": peringatan,
         "tahapan": tahapan,
     }
 
@@ -252,6 +354,12 @@ def ke_markdown(hasil, nama_karyawan=None):
         "Mulai kerja: **{}**  |  Hari kerja/minggu: **{}**  |  Jenis: **{}**".format(
             hasil["tanggal_mulai_teks"], hasil["hari_kerja_per_minggu"], hasil["jenis_karyawan"].upper()),
         "",
+    ]
+    if hasil.get("peringatan"):
+        for p in hasil["peringatan"]:
+            baris.append("> {}".format(p))
+        baris.append("")
+    baris += [
         "| Tahap | Tanggal target | Tanggal disesuaikan | Digeser? | Penanggung jawab | Kegiatan |",
         "|---|---|---|---|---|---|",
     ]
@@ -264,6 +372,9 @@ def ke_markdown(hasil, nama_karyawan=None):
     for t in hasil["tahapan"]:
         if t["catatan"]:
             baris.append("- **{}**: {}".format(t["tahap"], t["catatan"]))
+    if hasil.get("libur_bawaan_tidak_ada"):
+        baris.append("- Tidak ada data libur nasional bawaan untuk tahun {} -- tambahkan sendiri lewat "
+                      "`--libur`.".format(", ".join(str(y) for y in hasil["libur_bawaan_tidak_ada"])))
     return "\n".join(baris) + "\n"
 
 
@@ -287,14 +398,24 @@ def main():
     p.add_argument("--jenis", default="pkwtt", choices=["pkwt", "pkwtt"],
                    help="Jenis hubungan kerja: pkwt (kontrak, tanpa masa percobaan) atau pkwtt (tetap, "
                         "default)")
-    p.add_argument("--libur", help="Path file CSV tanggal libur nasional/perusahaan (opsional)")
+    p.add_argument("--libur", help="Path file CSV tanggal libur tambahan/perusahaan (opsional, "
+                                    "digabung dengan libur nasional bawaan)")
+    p.add_argument("--tanpa-libur-bawaan", action="store_true",
+                   help="Matikan pemuatan otomatis references/libur-nasional-*.csv")
     p.add_argument("--nama", help="Nama karyawan, untuk judul output saja (opsional)")
     p.add_argument("--format", choices=["markdown", "csv", "json"], default="markdown")
     a = p.parse_args()
     try:
         mulai = parse_tanggal(a.mulai, "--mulai")
-        libur = baca_libur(a.libur) if a.libur else set()
-        hasil = hitung_jadwal(mulai, hari_kerja=a.hari_kerja, jenis=a.jenis, libur=libur)
+        libur = set()
+        info_bawaan = {"ditemukan": [], "tidak_ada": []}
+        if not a.tanpa_libur_bawaan:
+            libur, ditemukan, tidak_ada = libur_bawaan(mulai.year, mulai.year + 1)
+            info_bawaan = {"ditemukan": ditemukan, "tidak_ada": tidak_ada}
+        if a.libur:
+            libur |= baca_libur(a.libur)
+        hasil = hitung_jadwal(mulai, hari_kerja=a.hari_kerja, jenis=a.jenis, libur=libur,
+                               libur_bawaan_info=info_bawaan)
     except InputSalah as e:
         print("ERROR: {}".format(e), file=sys.stderr)
         sys.exit(2)

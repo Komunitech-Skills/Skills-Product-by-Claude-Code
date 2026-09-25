@@ -56,3 +56,16 @@ relevan, hapus yang tidak berlaku, dan tandai `[isi: ...]` untuk hal yang khusus
   bila karyawan baru masuk di shift tertentu — buddy sebaiknya di shift yang sama minimal 2 minggu pertama.
 - Bila hari kerja 6 hari/minggu, pakai `--hari-kerja 6` di script `jadwal_onboarding.py` agar Sabtu
   dihitung hari kerja.
+
+## Target per jabatan (contoh, untuk `templates/panduan-buddy.md` bagian C)
+Contoh realistis, bukan patokan wajib — sesuaikan dengan kondisi usaha pengguna dan tanyakan bila target
+spesifik (angka omzet/unit) belum disebutkan; jangan mengarang angka.
+
+| Jabatan | Target 30 hari | Target 60 hari | Target 90 hari |
+|---|---|---|---|
+| Kasir/pramuniaga toko | Hafal SOP kasir & retur, transaksi tanpa dampingan | Rata-rata waktu layani sesuai standar toko, tidak ada selisih kas berulang | Bisa menangani shift sendiri tanpa supervisi langsung |
+| Barista/staf kafe | Hafal menu & SOP kebersihan, buat pesanan standar tanpa dampingan | Konsisten rasa/tampilan sesuai standar, tangani jam sibuk dengan bantuan | Bisa memimpin shift kecil/tanpa dampingan langsung |
+| Mekanik/teknisi bengkel | Paham SOP keselamatan dasar & alur servis, kerjakan servis ringan didampingi | Kerjakan servis ringan-menengah mandiri, sedikit revisi | Tangani antrian servis harian dengan supervisi minimal |
+| Admin/resepsionis klinik | Paham alur pendaftaran pasien & rekam medis dasar (non-diagnosis) | Layani pendaftaran & jadwal mandiri, minim kesalahan input | Bantu proses klaim/administrasi lanjutan dengan supervisi minimal |
+| Staf admin kantor jasa | Paham SOP dokumen & tools kerja tim, selesaikan tugas terstruktur dengan arahan | Selesaikan tugas rutin mandiri, komunikasi klien dasar terpantau | Pegang sebagian tugas/klien dengan supervisi ringan |
+| Staf gudang | Paham SOP terima/kirim barang & K3 dasar, kerja didampingi | Kerja mandiri untuk tugas rutin, minim selisih stok | Bisa menangani proses gudang harian tanpa dampingan langsung |

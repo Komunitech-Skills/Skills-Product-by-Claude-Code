@@ -57,27 +57,61 @@ data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
    python3 <folder-skill-ini>/scripts/jadwal_onboarding.py --mulai "<tanggal mulai>" \
      --hari-kerja <5|6> --jenis <pkwt|pkwtt> --nama "<nama karyawan>" --format markdown
    ```
-   Tambahkan `--libur <file.csv>` bila pengguna punya daftar libur nasional/perusahaan (kolom `tanggal`,
-   satu tanggal per baris, format bebas seperti `--mulai`). Salin tabel Markdown hasil script langsung ke
-   jawaban; jangan menghitung ulang tanggal secara manual.
-   **Fallback bila Python tidak bisa dijalankan:** hitung manual — minggu 1 = mulai + 6 hari kalender;
-   hari 30/60/90 = mulai + 29/59/89 hari kalender; akhir masa percobaan PKWTT = tanggal yang sama 3 bulan
-   kemudian dikurangi 1 hari. Beri tahu pengguna tanggal dihitung manual dan sarankan cek dengan script.
-   Untuk PKWT: **tidak ada** akhir masa percobaan — tulis dengan tegas bahwa PKWT dilarang mensyaratkan
-   masa percobaan (lihat `references/dasar-hukum-onboarding.md`).
+   Libur nasional & cuti bersama 2026/2027 (`references/libur-nasional-2026.csv` dan `-2027.csv`, sumber
+   sama dengan skill `kalender-pajak`, SKB 3 Menteri — cek ulang tiap tahun) **dimuat otomatis** oleh
+   script bila ada. Tambahkan `--libur <file.csv>` hanya untuk libur **tambahan** khusus perusahaan
+   (kolom `tanggal`, satu tanggal per baris, format bebas seperti `--mulai`) — file itu digabung dengan
+   libur bawaan, bukan menggantinya. Salin tabel Markdown hasil script (termasuk baris peringatan `>`
+   bila ada) langsung ke jawaban; jangan menghitung ulang tanggal secara manual, dan jangan hapus
+   peringatan yang muncul.
+
+   **Definisi tanggal (harus identik dengan script, lihat komentar header `scripts/jadwal_onboarding.py`):**
+   - Checkpoint 30/60/90 hari = mulai + 29/59/89 hari kalender. **Ini hanya pemantauan kinerja rutin**,
+     BUKAN batas keputusan masa percobaan untuk PKWTT (bisa jatuh setelah batas hukum, lihat di bawah).
+   - Batas hukum akhir masa percobaan (khusus PKWTT) = tanggal yang sama persis 3 bulan kalender
+     kemudian; **bila bulan target tidak punya tanggal itu, pakai hari terakhir bulan itu (tanpa dikurangi
+     1 hari lagi)**; bila tanggal itu ada, **dikurangi 1 hari**. Contoh: mulai 14 Des 2026 → 14 Mar 2027 −
+     1 hari = batas **13 Mar 2027**. Tanggal ini **tidak pernah digeser** walau jatuh di hari libur.
+   - Evaluasi keputusan akhir masa percobaan (khusus PKWTT) = **5 hari kerja sebelum** batas hukum
+     (dihitung mundur satu per satu dari hari kerja terakhir ≤ batas), supaya keputusan lanjut/tidak
+     sempat diambil dan diproses **sebelum** batas hukum berakhir. Baris ini terpisah dari checkpoint 90
+     hari dan **selalu** ≤ batas hukum.
+   - Aturan geser: H1 **tidak pernah** digeser sendiri (hanya diberi peringatan bila jatuh di hari
+     libur/akhir pekan, dengan saran tanggal kerja berikutnya — konfirmasi ke pengguna, jangan geser
+     otomatis). Minggu 1 & checkpoint 30/60/90 digeser **maju** ke hari kerja berikutnya bila jatuh di hari
+     libur. Evaluasi akhir masa percobaan digeser **mundur** (dihitung dari batas). Batas hukum sendiri
+     tidak pernah digeser.
+
+   **Fallback bila Python tidak bisa dijalankan:** hitung manual pakai rumus persis di atas (identik
+   dengan script) dan beri tahu pengguna tanggal dihitung manual, sarankan cek dengan script. Bila
+   checkpoint 90 hari (mulai+89) lebih lambat dari batas hukum, beri peringatan eksplisit dan jangan
+   pakai checkpoint itu untuk keputusan lanjut/tidak. Untuk PKWT: **tidak ada** akhir masa percobaan —
+   tulis dengan tegas bahwa PKWT dilarang mensyaratkan masa percobaan (lihat
+   `references/dasar-hukum-onboarding.md`).
 4. **Isi buku saku karyawan** dari `templates/buku-saku-karyawan.md`. **Jangan mengarang** jam kerja,
    jumlah cuti, atau aturan seragam — bila pengguna belum memberi tahu, tulis `[isi: ...]` dan sebutkan
    di catatan bahwa bagian ini perlu diisi sebelum dicetak. Rujuk SOP layanan pelanggan ke `sop-writer`
    bila pengguna sudah punya atau ingin dibuatkan.
 5. **Buat pesan sambutan** dari `templates/pesan-sambutan.md`: pilih versi WA santai atau email formal
    sesuai jenis usaha (`references/varian-jenis-usaha.md`), plus pengumuman ke tim.
-6. **Siapkan formulir evaluasi** dari `templates/formulir-evaluasi-orientasi.md`, isi target hari 30/60/90
-   dari jadwal langkah 3. Ingatkan: keputusan tidak lanjut/PHK **bukan otomatis** dan tetap perlu
-   konsultasi ahli hukum ketenagakerjaan/Disnaker, termasuk saat masih masa percobaan.
-7. **Sesuaikan dengan jenis usaha** memakai `references/varian-jenis-usaha.md` (dokumen tambahan, buku
-   saku, shift, buddy) — sebutkan penyesuaian yang dibuat.
-8. Periksa checklist mutu di bawah, lalu tawarkan bagian lain yang belum dibuat (mis. kontrak PKWT, SOP
-   terkait, slip gaji) dengan menyebut skill yang tepat.
+6. **Siapkan panduan buddy & check-in mingguan** dari `templates/panduan-buddy.md`: isi nama buddy, jadwal
+   check-in (harian minggu 1, mingguan bulan 1–3), dan target checkpoint 30/60/90 sesuai jabatan dari
+   `references/varian-jenis-usaha.md` (tabel "Target per jabatan"); bila jabatan tidak ada di tabel, buat
+   3 target realistis berdasarkan tugas utama yang disebut pengguna, jangan mengarang angka spesifik
+   (omzet, unit) tanpa data.
+7. **Siapkan formulir evaluasi** — untuk PKWTT pakai `templates/formulir-evaluasi-orientasi.md` (ada
+   opsi "lulus masa percobaan"); untuk PKWT pakai
+   `templates/formulir-evaluasi-orientasi-pkwt.md` (evaluasi kinerja biasa, **tanpa** istilah "lulus masa
+   percobaan" karena PKWT tidak boleh punya masa percobaan). Isi target hari 30/60/90 dari langkah 6.
+   Ingatkan: keputusan tidak lanjut/PHK **bukan otomatis** dan tetap perlu konsultasi ahli hukum
+   ketenagakerjaan/Disnaker, termasuk saat masih masa percobaan.
+8. **Siapkan retrospektif onboarding** dari `templates/retrospektif-onboarding.md` (diisi sekitar H90,
+   setelah checkpoint/evaluasi selesai) — untuk perbaikan proses onboarding berikutnya, tawarkan sebagai
+   bagian opsional, bukan wajib disertakan di paket awal.
+9. **Sesuaikan dengan jenis usaha** memakai `references/varian-jenis-usaha.md` (dokumen tambahan, buku
+   saku, shift, buddy, target per jabatan) — sebutkan penyesuaian yang dibuat.
+10. Periksa checklist mutu di bawah, lalu tawarkan bagian lain yang belum dibuat (mis. kontrak PKWT, SOP
+    terkait, slip gaji) dengan menyebut skill yang tepat.
 
 ## Format output
 Untuk permintaan paket lengkap, urutkan:
@@ -96,8 +130,15 @@ Untuk permintaan paket lengkap, urutkan:
 ## 4. Buku Saku Karyawan (ringkas)
 [isi dari templates/buku-saku-karyawan.md]
 
-## 5. Formulir Evaluasi Akhir Orientasi
-[isi dari templates/formulir-evaluasi-orientasi.md, tautan/salin saat mendekati H90]
+## 5. Panduan Buddy, Check-in Mingguan & Target per Jabatan
+[isi dari templates/panduan-buddy.md, target dari references/varian-jenis-usaha.md]
+
+## 6. Formulir Evaluasi Akhir Orientasi
+[isi dari templates/formulir-evaluasi-orientasi.md (PKWTT) atau -pkwt.md (PKWT), tautan/salin saat
+mendekati H90/evaluasi akhir masa percobaan]
+
+## 7. Retrospektif Onboarding (opsional, isi setelah H90)
+[tautan/salin templates/retrospektif-onboarding.md]
 
 Catatan penyesuaian jenis usaha: [ringkas]
 Data yang masih perlu dilengkapi: [daftar [isi: ...] yang tersisa]
@@ -109,24 +150,37 @@ Disclaimer: [lihat Batasan & penanganan error]
 di Sidoarjo, mulai kerja Senin 28 September 2026, kontraknya PKWTT langsung, buddy-nya Rina (kasir
 senior), kerja 6 hari seminggu."
 
-**Output (ringkas):**
+**Output (ringkas, hasil nyata `jadwal_onboarding.py --mulai "28 September 2026" --hari-kerja 6 --jenis
+pkwtt`, hari libur nasional dimuat otomatis — tidak ada yang jatuh di rentang ini):**
 ```
 ## 2. Jadwal Onboarding (H1 – 90 Hari)
 | Tahap | Tanggal target | Tanggal disesuaikan | Digeser? | Penanggung jawab | Kegiatan |
 |---|---|---|---|---|---|
 | Hari pertama (H1) | 28 September 2026 | 28 September 2026 | Tidak | Pemilik/Atasan langsung | ... |
 | Akhir minggu 1 | 4 Oktober 2026 | 5 Oktober 2026 | Ya | Buddy: Rina | ... |
-| Evaluasi 30 hari | 27 Oktober 2026 | 27 Oktober 2026 | Tidak | Atasan langsung | ... |
-| Evaluasi 60 hari | 26 November 2026 | 26 November 2026 | Tidak | Atasan langsung | ... |
-| Evaluasi 90 hari / akhir orientasi | 26 Desember 2026 | 28 Desember 2026 | Ya | Pemilik/Atasan | ... |
-| Akhir masa percobaan (batas hukum) | 27 Desember 2026 | 25 Desember 2026 | Ya | Pemilik/Atasan | ... |
+| Checkpoint 30 hari | 27 Oktober 2026 | 27 Oktober 2026 | Tidak | Atasan langsung | ... |
+| Checkpoint 60 hari | 26 November 2026 | 26 November 2026 | Tidak | Atasan langsung | ... |
+| Checkpoint 90 hari | 26 Desember 2026 | 26 Desember 2026 | Tidak | Pemilik/Atasan | Pemantauan rutin |
+| Batas hukum akhir masa percobaan (PKWTT) | 27 Desember 2026 | 27 Desember 2026 | Tidak | - | Tanggal hukum, tidak digeser |
+| Evaluasi keputusan akhir masa percobaan (PKWTT) | 19 Desember 2026 | 19 Desember 2026 | Tidak | Pemilik/Atasan | Keputusan lanjut/tidak |
 ```
-Contoh lengkap lain (varian bengkel, karyawan PKWT, input tidak lengkap) di `examples/`.
+Di sini checkpoint 90 hari (26 Des) masih sebelum batas hukum (27 Des), jadi tidak ada peringatan. Bila
+tanggal mulai membuat checkpoint 90 hari jatuh **setelah** batas hukum, script menambah baris peringatan
+`⚠️` di atas tabel — salin juga baris itu, dan pakai baris "Evaluasi keputusan akhir masa percobaan"
+(bukan checkpoint 90 hari) untuk keputusan lanjut/tidak.
+
+Contoh lengkap lain (varian bengkel, karyawan PKWT, input tidak lengkap, tanggal mulai di hari libur) di
+`examples/`.
 
 ## Checklist sebelum mengirim hasil
 - [ ] Tanggal jadwal berasal dari script (atau ditandai "dihitung manual").
-- [ ] Untuk PKWT: tidak ada tanggal/klausul masa percobaan; disebutkan dasar larangannya.
-- [ ] Untuk PKWTT: masa percobaan maks. 3 bulan, upah selama percobaan tidak boleh di bawah upah minimum.
+- [ ] Untuk PKWT: tidak ada tanggal/klausul masa percobaan; disebutkan dasar larangannya; formulir
+  evaluasi versi PKWT dipakai (tanpa istilah "lulus masa percobaan").
+- [ ] Untuk PKWTT: masa percobaan maks. 3 bulan, upah selama percobaan tidak boleh di bawah upah minimum
+  (kecuali usaha mikro/kecil — lihat `references/dasar-hukum-onboarding.md`); baris "evaluasi keputusan
+  akhir masa percobaan" (bukan checkpoint 90 hari) dipakai untuk keputusan lanjut/tidak.
+- [ ] Bila script memberi peringatan (H1 di hari libur, checkpoint 90 hari melewati batas hukum),
+  peringatan itu **disalin ke jawaban**, tidak dihilangkan.
 - [ ] Checklist dokumen meminta data **seperlunya** dan mengingatkan penyimpanan aman (PDP).
 - [ ] Kewajiban pendaftaran BPJS Ketenagakerjaan & Kesehatan disebutkan sebagai wajib.
 - [ ] Buku saku tidak berisi angka/aturan karangan; semua yang belum diisi pengguna diberi `[isi: ...]`.

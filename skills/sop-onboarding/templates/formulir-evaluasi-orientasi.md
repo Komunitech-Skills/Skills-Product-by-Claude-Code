@@ -1,7 +1,11 @@
-# Formulir Evaluasi Akhir Masa Orientasi
+# Formulir Evaluasi Akhir Masa Orientasi (Karyawan Tetap/PKWTT)
 
-Nama: [Nama karyawan] | Jabatan: [Jabatan] | Mulai kerja: [tanggal] | Tanggal evaluasi: [tanggal]
-Dievaluasi oleh: [nama, jabatan] | Jenis hubungan kerja: [PKWT / PKWTT (masa percobaan)]
+**Untuk karyawan kontrak (PKWT), pakai `formulir-evaluasi-orientasi-pkwt.md`** — PKWT dilarang punya
+masa percobaan, sehingga formulir ini (dengan opsi "lulus masa percobaan") tidak berlaku untuk PKWT.
+
+Nama: [Nama karyawan] | Jabatan: [Jabatan] | Mulai kerja: [tanggal] | Tanggal evaluasi (isi dari baris
+"Evaluasi keputusan akhir masa percobaan" jadwal onboarding, BUKAN checkpoint 90 hari): [tanggal]
+Dievaluasi oleh: [nama, jabatan] | Jenis hubungan kerja: PKWTT (masa percobaan)
 
 ## A. Penilaian kompetensi kerja
 | # | Aspek | Sangat kurang (1) | Kurang (2) | Cukup (3) | Baik (4) | Sangat baik (5) | Catatan |
