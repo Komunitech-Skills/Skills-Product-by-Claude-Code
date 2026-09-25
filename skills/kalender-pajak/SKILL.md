@@ -55,7 +55,7 @@ Kewajiban tunggal juga boleh dipakai langsung sebagai profil: `ppn`, `pph21`, `u
    - Mulai bulan tertentu: `--bulan-mulai 10` (atau `Okt`), panjang `--jumlah-bulan 1-24` (default 12).
    - Yang jatuh tempo dekat: `--hari-ini 2026-09-25` (atau `--hari-ini hari-ini`), `--rentang 14` (default).
    - Checklist per bulan: `--format checklist`. Kalender: `--format ics --keluar kalender-pajak.ics` (tambah `--acara-pengingat` untuk pengguna Google Calendar). Juga `csv`, `json`.
-   - Daftar profil: `--daftar-profil`. Libur tahun yang belum ada datanya: `--libur libur-2028.csv` (kolom `tanggal,jenis,keterangan`).
+   - Daftar profil: `--daftar-profil`. Libur tahun yang belum ada datanya: `--libur libur-2028.csv` (kolom `tanggal,jenis,keterangan`) — dilabeli "data libur dari pengguna" dan PERINGATAN tahun itu tetap tampil.
 3. Salin tabel/checklist dari script **apa adanya** (jangan ubah tanggal). Tambahkan 1–2 kalimat sederhana, mis. "Setor PPh 21 masa Juli bergeser ke Selasa 18 Agustus karena 15–17 Agustus libur."
 4. Untuk .ics: berikan file + cara impor (Google Calendar: Setelan → Impor & ekspor → Impor; Outlook: File → Buka → Impor). Sampaikan apa adanya (jangan janji lebih):
    - File memuat pengingat H-3 & H-1 pukul 09.00. **Apple Calendar & Outlook** biasanya memakainya; **Google Calendar sering mengabaikan pengingat dari file impor** dan memakai notifikasi default kalender. Untuk Google: sarankan atur notifikasi default kalender tujuan (mis. 3 hari & 1 hari sebelumnya), atau buat file dengan `--acara-pengingat` (menambah acara "Pengingat H-3/H-1" terpisah yang pasti terlihat di kalender).
@@ -79,8 +79,8 @@ Kewajiban tunggal juga boleh dipakai langsung sebagai profil: `ppn`, `pph21`, `u
 
 **Pergeseran:** tenggat setor dan lapor **bulanan** yang jatuh pada Sabtu, Minggu, libur nasional, hari libur pemilu, atau **cuti bersama** bergeser ke **hari kerja berikutnya** — setor: PMK 81/2024 **Ps. 100 ayat 1** (merujuk tenggat Ps. 94); lapor SPT Masa: **Ps. 173 ayat 1**. Geser berulang sampai ketemu hari kerja.
 **Tidak digeser (ditampilkan di tanggal aslinya, label "TIDAK bergeser"):**
-- **SPT Tahunan** — DJP menegaskan (2025, era PMK 81/2024) batasnya tidak mundur walau libur; mundurnya hanya lewat pengumuman khusus (mis. 11 Apr 2025, KEP-55/PJ/2026 → 30 Apr 2026). Naskah pasal belum dibaca langsung (PERLU REVIEW). Jelaskan ke pengguna: bila ternyata boleh bergeser, tanggal di kalender tetap aman karena lebih awal.
-- **Unggah faktur pajak keluaran tgl 20** — beberapa sumber sekunder: tidak mundur walau libur/cuti bersama (PERLU REVIEW). Sarankan unggah sebelum tanggal itu.
+- **SPT Tahunan** — DJP menegaskan (2025, era PMK 81/2024) batasnya tidak mundur walau libur; mundurnya hanya lewat pengumuman khusus (mis. 11 Apr 2025, KEP-55/PJ/2026 → 30 Apr 2026). Tetapi Ps. 173 ayat 1 merujuk "Pasal 171 **dan Pasal 172**" dan isi Ps. 172 belum terverifikasi (PERLU REVIEW). Bila SPT Tahunan jatuh di hari libur, keterangan script menyebut **kedua kemungkinan**: tanggal kalender (tidak bergeser) + hari kerja sebelumnya, dan "kemungkinan lain" tanggal bila ikut bergeser. Sampaikan keduanya; sarankan pakai tanggal yang lebih awal.
+- **Unggah faktur pajak keluaran tgl 20** — beberapa sumber sekunder: tidak mundur walau libur/cuti bersama (PERLU REVIEW). Bila tgl 20 hari libur, keterangan menyebut hari kerja sebelumnya sebagai saran (mis. 20 Mei 2027 Waisak → unggah paling aman **Jumat 14 Mei 2027**); tanggal batas resmi tetap tgl 20.
 - **Bukti potong BPA1** (PERLU REVIEW).
 Contoh terkonfirmasi: lapor SPT Masa PPh 21 masa Februari 2026: 20 Mar (cuti Idulfitri) → **25 Mar 2026**; setor PPh masa April 2026: 15 Mei (cuti bersama) → **18 Mei 2026**.
 Rincian, sumber, dan status verifikasi: `references/aturan-tenggat.md`.
@@ -90,9 +90,9 @@ Rincian, sumber, dan status verifikasi: `references/aturan-tenggat.md`.
 ## Kalender Pajak <rentang> - <profil>
 Kewajiban: ...
 Cakupan: tenggat yang JATUH pada <awal> s.d. <akhir> ... (masa terakhir & SPT tahun itu jatuh sesudahnya)
-Data libur: SKB 3 Menteri <tahun> (file ...)
+Data libur: SKB 3 Menteri <tahun> (file ...)[; data libur dari pengguna, belum diverifikasi (file ...)]
 > PERINGATAN (bila data libur tahun itu belum ada)
-| Tanggal | Kegiatan | Keterangan |          ← keterangan = alasan bergeser, mis. "21 Mar: Sabtu & Idulfitri 1447 H"
+| Tanggal | Kegiatan | Keterangan |          ← alasan bergeser (mis. "21 Mar: Sabtu & Idulfitri 1447 H") atau, untuk tenggat tidak bergeser di hari libur, "selesaikan paling lambat hari kerja sebelumnya: <tanggal>"
 **Catatan per kewajiban** ...
 **Aturan pergeseran** ...
 _Disclaimer_
@@ -131,7 +131,7 @@ Contoh lengkap: `examples/uji-pembuat-01-cv-pkp-okt-des.md`.
 
 ## Batasan & penanganan error
 - Script keluar kode 2 + `ERROR: ...` (tanpa traceback) untuk profil tidak dikenal, bulan di luar 1–12, tahun di luar 2025–2100, tanggal salah, format salah, file libur rusak. Jelaskan dengan bahasa sederhana dan tawarkan pilihan yang benar.
-- Data libur tersedia **2026 dan 2027** (SKB 3 Menteri). Tahun lain → script tetap jalan tetapi hanya menggeser Sabtu/Minggu dan menampilkan PERINGATAN; minta pengguna cek SKB tahun itu.
+- Data libur tersedia **2026 dan 2027** (SKB 3 Menteri). Tahun lain → script tetap jalan tetapi hanya menggeser Sabtu/Minggu dan menampilkan PERINGATAN; minta pengguna cek SKB tahun itu. File `--libur` buatan pengguna dipakai untuk menggeser, tetapi tidak dianggap data resmi (PERINGATAN tetap muncul).
 - File `--libur` boleh berisi keterangan berkoma (sebaiknya diberi tanda kutip; tanpa kutip pun digabung utuh).
 - Libur daerah/cuti bersama tambahan yang diumumkan belakangan, atau **perpanjangan tenggat khusus dari DJP** (mis. SPT Tahunan OP 2025 diundur ke 30 April 2026 lewat KEP-55/PJ/2026 — hanya diberi catatan, tanggal tidak diubah) tidak otomatis masuk → minta pengguna cek pengumuman DJP.
 - Tanggal yang ditampilkan adalah **batas terakhir**; sarankan setor/lapor 2–3 hari kerja sebelumnya karena Coretax dan bank bisa padat menjelang tenggat.

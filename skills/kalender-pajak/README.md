@@ -51,9 +51,10 @@ Tidak — skill ini khusus jadwal. Untuk besarannya gunakan skill "Hitung Pajak 
 Belum tentu. Apple Calendar dan Outlook biasanya memakai pengingat bawaan file, tetapi Google Calendar sering mengabaikannya dan memakai notifikasi default kalender. Solusinya: atur notifikasi default kalender Google Anda (mis. 3 hari & 1 hari sebelumnya), atau minta agent membuat file "dengan acara pengingat terpisah" — hasilnya muncul sebagai acara "Pengingat H-3/H-1" di kalender. Kalau file diimpor ulang, Google bisa membuat acara dobel; paling rapi impor ke kalender khusus "Pajak" supaya mudah dihapus dan diimpor lagi.
 
 **Bagaimana untuk tahun 2028?**
-Skill tetap membuat jadwal, tetapi menampilkan peringatan karena daftar libur 2028 belum terbit. Setelah SKB 3 Menteri terbit, cukup tambahkan daftar liburnya (atau tunggu pembaruan skill).
+Skill tetap membuat jadwal, tetapi menampilkan peringatan karena daftar libur 2028 belum terbit. Setelah SKB 3 Menteri terbit, cukup tambahkan daftar liburnya (atau tunggu pembaruan skill). Daftar libur yang Anda tambahkan sendiri ditandai "data libur dari pengguna" dan peringatan tetap tampil sampai data resmi masuk ke skill.
 
 ## Riwayat versi
+- **1.0.2** (25 Sep 2026) — perbaikan kecil dari uji ulang: batas unggah faktur (tgl 20) atau tenggat lain yang tidak bergeser dan jatuh di hari libur kini menyebut hari kerja sebelumnya (mis. 20 Mei 2027 → unggah paling aman Jumat 14 Mei 2027); SPT Tahunan yang jatuh di hari libur menampilkan dua kemungkinan tanggal (dasar Ps. 173 ayat 1 masih PERLU REVIEW); file libur buatan sendiri dilabeli "data libur dari pengguna" dan peringatan tahun tanpa data resmi tetap tampil. Tidak ada tanggal tenggat yang berubah.
 - **1.0.1** (25 Sep 2026) — revisi temuan uji independen: tambah batas unggah faktur pajak keluaran tgl 20 untuk PKP (PER-11/PJ/2025); klaim pengingat Google Calendar & impor ulang diluruskan + opsi acara pengingat terpisah; keterangan libur berkoma tidak terpotong; mode "N hari ke depan" menyebut tenggat berikutnya; label alasan geser lebih jelas; output menyebut cakupan periode & sumber data libur; dasar pasal pergeseran setor diperbaiki (Ps. 100 PMK 81/2024).
 - **1.0.0** (25 Sep 2026) — versi awal.
 
