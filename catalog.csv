@@ -54,7 +54,7 @@ pantau-pasar-kripto,Data & Analisis,orisinal,,Proprietary Komunitech,9,vip,14900
 laporan-harian-usaha,Data & Analisis,orisinal,,Proprietary Komunitech,8,vip,149000,,,1.1.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji CLI + gateway lokal: automations add/run),lulus,2026-09-25
 crm-wa,Sales,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations add/run),lulus,2026-09-24
 rencana-pelajaran-guru,Pendidikan,kurasi,https://github.com/anthropics/k12-teacher-skills,Apache-2.0,8,ecer,129000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-24
-dolibarr-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations run),uji,2026-09-25
+dolibarr-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations run),lulus,2026-09-25
 pdf-lokal,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-24
 copy-landing-page,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
 audit-seo-toko-online,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT,7,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
