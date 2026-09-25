@@ -44,7 +44,7 @@ import uuid
 import zipfile
 from pathlib import Path
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 APLIKASI = "pdf-lokal"
 LOKAL_DIIZINKAN = {"localhost", "127.0.0.1", "::1", "0.0.0.0"}
 

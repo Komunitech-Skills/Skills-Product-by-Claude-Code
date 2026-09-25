@@ -158,11 +158,12 @@ Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
 - **Alamat server non-localhost ditolak** kecuali pengguna secara sadar mengaktifkan
   `STIRLING_ALLOW_REMOTE=1` (mis. server kantor di jaringan lokal) - untuk mencegah
   file tidak sengaja terkirim ke tempat lain.
-- **Belum diuji dengan Stirling-PDF versi lain** selain v2.14.3 (Docker) yang dipakai
-  saat pembuatan skill ini, dan **belum diuji dengan aplikasi desktop resmi (.msi/.dmg)**
-  - hanya lewat image Docker resmi karena keterbatasan lingkungan pembuatan skill. Endpoint
-  & parameter berasal dari dokumen Swagger resmi versi itu (lihat `references/`); versi
-  Stirling-PDF yang jauh lebih baru/lama berpotensi mengubah nama parameter.
+- **Sudah diuji dengan Stirling-PDF v2.14.3 DAN v3.0.0** (keduanya via Docker, image
+  resmi `ghcr.io/stirling-tools/stirling-pdf`) - endpoint & nama field yang dipakai
+  skill ini identik di kedua versi (lihat `references/sumber-api-stirling.md`).
+  **Belum diuji dengan aplikasi desktop resmi (.msi/.dmg)** - hanya lewat image Docker
+  resmi karena keterbatasan lingkungan pembuatan skill. Versi Stirling-PDF yang jauh
+  lebih baru/lama dari kedua versi di atas berpotensi mengubah nama parameter.
 - **PENTING - aplikasi desktop mode "lokal saja" TIDAK menyertakan OCR & konversi
   dokumen** (menurut dokumentasi resmi docs.stirlingpdf.com, per 2026-09-24): backend
   bawaan aplikasi desktop (Settings > Connection > Local-only, mode default) hanya

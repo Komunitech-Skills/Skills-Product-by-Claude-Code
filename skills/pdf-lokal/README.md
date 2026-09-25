@@ -3,8 +3,10 @@
 **Gabung, kompres, OCR, kunci, dan rapikan PDF - lewat Stirling-PDF di laptopmu sendiri, bukan situs online.**
 
 ## Manfaat
-- ✅ **Privasi terjaga** - file PDF (kontrak, slip gaji, KTP) tidak pernah diunggah ke
-  situs "PDF online" pihak ketiga. Semua diproses di komputer sendiri.
+- ✅ **Privasi terjaga** - script ini hanya bicara ke Stirling-PDF di komputer sendiri
+  (`localhost`), tidak pernah mengunggah file ke situs "PDF online" mana pun. Untuk
+  dokumen sensitif (slip gaji, KTP, kontrak), skill ini tidak akan menyarankan upload
+  ke situs online mana pun sebagai jalan pintas, sekalipun Stirling-PDF belum terpasang.
 - ✅ **Tanpa langganan** - Stirling-PDF gratis (inti open-source), tidak seperti Adobe
   Acrobat Pro (±USD20/bulan) atau situs kompres PDF berlangganan.
 - ✅ **Cukup ngomong biasa** - "gabungin nota-nota ini" atau "kompres biar muat WA",
@@ -60,13 +62,16 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` dan
 `docs/panduan-stirling-pdf.md` (pasang Stirling-PDF-nya) di dalam paket.
 
 ## Status pengujian (jujur, biar tidak salah ekspektasi)
-- Script **sudah diuji nyala ke Stirling-PDF sungguhan versi 2.14.3** (lewat Docker,
-  karena lingkungan pembuatan skill ini tidak punya installer desktop) untuk SEMUA
-  perintah: cek, gabung, pisah-halaman, pisah-rentang, kompres, OCR, foto-ke-pdf,
+- Script **sudah diuji nyala ke Stirling-PDF sungguhan versi 2.14.3 DAN 3.0.0** (lewat
+  Docker, karena lingkungan pembuatan skill ini tidak punya installer desktop) untuk
+  SEMUA perintah: cek, gabung, pisah-halaman, pisah-rentang, kompres, OCR, foto-ke-pdf,
   putar, watermark, kunci, buka-kunci, rapikan-resi - semua berhasil memanggil API asli
-  dan menghasilkan file PDF nyata. Detail di `references/sumber-api-stirling.md`.
-- Selain itu ada rangkaian tes otomatis (`tests/uji_regresi.py`) yang memakai server
-  tiruan, supaya bisa dijalankan ulang kapan saja tanpa perlu memasang Stirling-PDF.
+  dan menghasilkan file PDF nyata, diverifikasi ulang oleh penguji independen memakai
+  alat pihak ketiga (`pdfinfo`, `pdftotext`, `qpdf`, `sha256sum`). Detail di
+  `references/sumber-api-stirling.md` dan `examples/HASIL-UJI.md`.
+- Selain itu ada rangkaian tes otomatis (`tests/uji_regresi.py`, 16/16 lulus) yang
+  memakai server tiruan, supaya bisa dijalankan ulang kapan saja tanpa perlu memasang
+  Stirling-PDF.
 - **Belum diuji oleh manusia di aplikasi desktop resmi Stirling-PDF (.msi Windows /
   .dmg macOS)**, dan belum diuji di OpenClaw/Codex/Cursor sungguhan - baru simulasi
   agent (Claude Code). Uji platform asli & beta tester menyusul sebelum status `rilis`.

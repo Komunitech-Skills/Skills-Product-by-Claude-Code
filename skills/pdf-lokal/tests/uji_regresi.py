@@ -12,6 +12,7 @@ Jalankan: python3 uji_regresi.py   (keluar 0 bila semua lulus)
 import http.server
 import json
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -235,6 +236,17 @@ def main():
         # --- Tambahan: rotate dengan sudut tidak valid ditolak di sisi client (tanpa panggil server) ---
         rc, out, err = jalankan(["putar", str(f1), "--derajat", "45"], base_env, cwd=str(tmp))
         cek("derajat-tidak-valid", rc != 0, f"rc={rc} err={err!r}")
+
+        # --- Tambahan (v1.0.2): konstanta VERSI di script harus semver X.Y.Z dan benar-benar
+        # tercetak di --help - supaya versi di scripts/pdf.py, catalog.csv, dan bantuan CLI
+        # tidak diam-diam menyimpang satu sama lain. ---
+        teks_skrip = SCRIPT.read_text(encoding="utf-8")
+        cocok_versi = re.search(r'^VERSI = "(\d+\.\d+\.\d+)"$', teks_skrip, re.MULTILINE)
+        versi_konstanta = cocok_versi.group(1) if cocok_versi else None
+        rc, out, err = jalankan(["--help"], base_env, cwd=str(tmp))
+        cek("versi-konsisten-di-bantuan",
+            rc == 0 and versi_konstanta is not None and f"pdf-lokal v{versi_konstanta}" in out,
+            f"rc={rc} out={out!r} versi_konstanta={versi_konstanta!r}")
 
         # --- Tambahan: foto ke PDF ---
         rc, out, err = jalankan(["foto-ke-pdf", str(foto), "--keluaran", str(tmp / "nota.pdf")], base_env,
