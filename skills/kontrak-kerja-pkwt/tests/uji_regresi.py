@@ -173,11 +173,13 @@ h = H(["1/1/2026 s.d. 31/12/2026"], upah="6jt", berhenti="30/6/2026", pihak="pek
 cek("dini arah pekerja", "pekerja membayar ke pengusaha" in h["ganti_rugi_pasal_62"]["arah"]
     and h["total_kompensasi"] == 3000000)
 
-# Sisa dengan hari: berhenti 15 Mar 2026, akhir 30 Jun 2026: sisa 16 Mar - 30 Jun = 3 bulan 15 hari
-# (16 Mar + 3 bln = 16 Jun; 16-30 Jun = 15 hari dari bulan berjalan 16 Jun - 15 Jul = 30 hari) -> 3,5 x 4,8jt
+# Sisa dengan hari (v1.0.1, temuan S1): periode 1 Jan - 30 Jun 2026 = 6 bulan; dijalani 1 Jan - 15 Mar
+# = 2 + 15/31 bulan; sisa = 6 - (2 + 15/31) = 3 + 16/31 = 3,5161 bulan -> 109/31 x 4.800.000 = 16.877.419,35
+# -> Rp16.877.419. (v1.0.0 memberi 3,5 bulan = Rp16.800.000 karena sisa dijangkar dari 16 Mar sehingga
+# dijalani + sisa = 5,9839 bulan, bukan 6; pekerja kurang dibayar Rp77.419.)
 h = H(["1/1/2025 s.d. 31/12/2025", "1/1/2026 s.d. 30/6/2026"], upah="Rp4.800.000", berhenti="15/03/2026",
       pihak="pengusaha")
-cek("dini sisa hari", h["ganti_rugi_pasal_62"]["nilai"] == 16800000, h["ganti_rugi_pasal_62"])
+cek("dini sisa hari", h["ganti_rugi_pasal_62"]["nilai"] == 16877419, h["ganti_rugi_pasal_62"])
 cek("dini kompensasi perpanjangan", [r["kompensasi"] for r in h["rincian_kompensasi"]] == [4800000, 993548])
 
 # Tanpa pihak -> peringatan
@@ -224,6 +226,130 @@ for pem in (" sampai ", " sampai dengan ", " s/d ", " sd ", " - ", " .. ", " –
         cek("pemisah '{}'".format(pem.strip()), h["total_kompensasi"] == 1200000)
     except hp.InputError as e:
         cek("pemisah '{}'".format(pem.strip()), False, str(e))
+
+# ============================================================ REGRESI TEMUAN UJI v1.0.1
+from fractions import Fraction  # noqa: E402
+import datetime  # noqa: E402
+import random  # noqa: E402
+
+# --- S1: kasus yang dilaporkan penguji. Kontrak 1 Jan - 31 Mar 2026 (3 bulan), upah 3 jt, pekerja berhenti
+# 15 Feb. Dijalani = 1 + 15/28; sisa = 3 - (1 + 15/28) = 1 + 13/28 = 41/28 bulan
+# -> 41/28 x 3.000.000 = 4.392.857,14 -> Rp4.392.857 (v1.0.0: Rp4.548.387, pekerja bayar Rp155.530 lebih).
+h = H(["1/1/2026 s.d. 31/3/2026"], upah="3jt", berhenti="15/2/2026", pihak="pekerja")
+cek("S1 kasus penguji 15 Feb", h["ganti_rugi_pasal_62"]["nilai"] == 4392857, h["ganti_rugi_pasal_62"]["nilai"])
+cek("S1 kasus penguji pecahan", h["ganti_rugi_pasal_62"]["bulan_pecahan"] == [41, 28])
+# Skenario 03 varian: periode 2 1 Jan - 30 Jun 2027, berhenti 15 Mar 2027, upah 5 jt.
+# sisa = 6 - (2 + 15/31) = 109/31 -> 17.580.645,16 -> Rp17.580.645 (v1.0.0: Rp17.500.000)
+h = H(["1/1/2026 s.d. 31/12/2026", "1/1/2027 s.d. 30/6/2027"], gaji_pokok="4,5jt", tunjangan_tetap="500rb",
+      berhenti="15/3/2027", pihak="pengusaha")
+cek("S1 skenario 03 varian", h["ganti_rugi_pasal_62"]["nilai"] == 17580645, h["ganti_rugi_pasal_62"]["nilai"])
+# Skenario 03 utama TIDAK berubah: 5.000.000 + 1.250.000, ganti rugi 3 bulan x 5 jt = 15.000.000
+h = H(["1/1/2026 s.d. 31/12/2026", "1/1/2027 s.d. 30/6/2027"], gaji_pokok="4,5jt", tunjangan_tetap="500rb",
+      berhenti="31/3/2027", pihak="pengusaha")
+cek("S1 skenario 03 tetap", [r["kompensasi"] for r in h["rincian_kompensasi"]] == [5000000, 1250000]
+    and h["ganti_rugi_pasal_62"]["nilai"] == 15000000, h["ganti_rugi_pasal_62"])
+# Skenario 01 TIDAK berubah: 12 bulan, 3,9 jt + 250 rb -> Rp4.150.000 per orang
+h = H(["1 Oktober 2026 s.d. 30 September 2027"], gaji_pokok="3,9jt", tunjangan_tetap="250rb")
+cek("S1 skenario 01 tetap", h["total_kompensasi"] == 4150000, h["total_kompensasi"])
+
+
+def _bln(a, b):
+    return hp.bulan_desimal(*hp.masa(a, b), metode="pecahan")
+
+
+# --- S1 tes properti: dijalani + sisa = panjang periode berjalan PERSIS (seed tetap, 3.000 kasus)
+acak = random.Random(20260925)
+salah = []
+awal = datetime.date(2024, 1, 1)
+for _ in range(3000):
+    m = awal + datetime.timedelta(days=acak.randrange(0, 365 * 5))
+    a = m + datetime.timedelta(days=acak.randrange(1, 800))
+    b = m + datetime.timedelta(days=acak.randrange(0, (a - m).days))  # berhenti < akhir
+    upah = acak.choice(["1000001", "3jt", "4.150.000", "7777777"])
+    h = H(["{} s.d. {}".format(m.strftime("%d/%m/%Y"), a.strftime("%d/%m/%Y"))], upah=upah,
+          berhenti=b.strftime("%d/%m/%Y"), pihak="pengusaha")
+    g = h["ganti_rugi_pasal_62"]
+    sisa = Fraction(*g["bulan_pecahan"])
+    if _bln(m, b) + sisa != _bln(m, a) or sisa <= 0:
+        salah.append((m, a, b))
+    # nilai rupiah = pembulatan (sisa x upah) persis
+    if g["nilai"] != hp.rupiah_bulat(sisa * h["upah_sebulan"]):
+        salah.append(("nilai", m, a, b))
+cek("S1 properti dijalani + sisa = total (3.000 kasus acak)", not salah, salah[:3])
+# Properti juga berlaku di periode perpanjangan (berhenti di periode ke-2)
+salah = []
+for _ in range(1000):
+    m1 = awal + datetime.timedelta(days=acak.randrange(0, 365 * 3))
+    a1 = m1 + datetime.timedelta(days=acak.randrange(30, 400))
+    m2 = a1 + datetime.timedelta(days=1)
+    a2 = m2 + datetime.timedelta(days=acak.randrange(1, 400))
+    b = m2 + datetime.timedelta(days=acak.randrange(0, (a2 - m2).days))
+    h = H(["{} s.d. {}".format(m1.isoformat(), a1.isoformat()), "{} s.d. {}".format(m2.isoformat(), a2.isoformat())],
+          upah="5jt", berhenti=b.isoformat(), pihak="pekerja")
+    if _bln(m2, b) + Fraction(*h["ganti_rugi_pasal_62"]["bulan_pecahan"]) != _bln(m2, a2):
+        salah.append((m2, a2, b))
+cek("S1 properti di periode perpanjangan (1.000 kasus)", not salah, salah[:3])
+
+# --- S3: dua periode 20 hari berurutan tanpa jeda -> Rp0 per periode + peringatan PERLU REVIEW
+# Gabungan 1 Jan - 9 Feb 2026 = 1 bulan 9 hari = 1 + 9/28 -> 37/28 / 12 x 5 jt = 550.595,24 -> Rp550.595
+h = H(["1/1/2026 s.d. 20/1/2026", "21/1/2026 s.d. 9/2/2026"], upah="5jt")
+cek("S3 tetap Rp0 per periode", h["total_kompensasi"] == 0)
+pr = [p for p in h["peringatan"] if "PERLU REVIEW" in p]
+cek("S3 peringatan ada", len(pr) == 1, h["peringatan"])
+cek("S3 peringatan isi", pr and "terus-menerus" in pr[0] and "Pasal 15" in pr[0] and "(a)" in pr[0]
+    and "(b)" in pr[0] and "Rp550.595" in pr[0], pr)
+# Dengan jeda 1 hari -> tidak ada peringatan gabungan (tidak terus-menerus)
+h = H(["1/1/2026 s.d. 20/1/2026", "22/1/2026 s.d. 10/2/2026"], upah="5jt")
+cek("S3 ada jeda tanpa peringatan gabungan", not any("PERLU REVIEW" in p for p in h["peringatan"]))
+# Gabungan tetap < 1 bulan -> tidak perlu peringatan
+h = H(["1/1/2026 s.d. 10/1/2026", "11/1/2026 s.d. 20/1/2026"], upah="5jt")
+cek("S3 gabungan < 1 bulan tanpa peringatan", not any("PERLU REVIEW" in p for p in h["peringatan"]))
+# Semua periode sudah berhak -> tidak perlu peringatan
+h = H(["1/1/2025 s.d. 31/12/2025", "1/1/2026 s.d. 30/6/2026"], upah="4,8jt")
+cek("S3 periode normal tanpa peringatan", not any("PERLU REVIEW" in p for p in h["peringatan"]))
+# Periode pendek di akhir rantai (12 bulan + 20 hari) -> peringatan
+h = H(["1/1/2025 s.d. 31/12/2025", "1/1/2026 s.d. 20/1/2026"], upah="4,8jt")
+cek("S3 periode pendek setelah periode panjang", any("PERLU REVIEW" in p for p in h["peringatan"]))
+
+# --- R1: penulisan rupiah umum & periode tanpa spasi
+cek("R1 rp koma strip", R("Rp 5.000.000,-") == 5000000)
+cek("R1 rp titik strip", R("Rp5.000.000.-") == 5000000)
+cek("R1 rp ,00", R("Rp5.000.000,00") == 5000000)
+cek("R1 rp spasi ,00", R("Rp 5.000.000,00") == 5000000)
+h = H(["1/1/2026-31/12/2026"], upah="Rp 5.000.000,-")
+cek("R1 periode tanpa spasi", h["total_kompensasi"] == 5000000)
+h = H(["2026-01-01-2026-12-31"], upah="5jt")
+cek("R1 periode iso tanpa spasi", h["total_kompensasi"] == 5000000)
+h = H(["1-1-2026-31-12-2026"], upah="5jt")
+cek("R1 periode d-m-y tanpa spasi", h["total_kompensasi"] == 5000000)
+harus_error("R1 teks tetap ditolak", lambda: R("lima juta,-"), "bukan angka")
+
+# --- R2: upah terlalu kecil -> peringatan (tidak diam)
+h = H(["1/1/2026 s.d. 31/12/2026"], upah="4.500")
+pr = [p for p in h["peringatan"] if "PERIKSA UPAH" in p]
+cek("R2 upah 4.500 diperingatkan", h["upah_sebulan"] == 4500 and pr and "Rp4.500.000" in pr[0], h["peringatan"])
+h = H(["1/1/2026 s.d. 31/12/2026"], upah="350rb")
+cek("R2 upah < 500rb diperingatkan", any("PERIKSA UPAH" in p for p in h["peringatan"]))
+h = H(["1/1/2026 s.d. 31/12/2026"], gaji_pokok="5.000")
+cek("R2 gaji pokok kecil diperingatkan", any("PERIKSA UPAH" in p for p in h["peringatan"]))
+h = H(["1/1/2026 s.d. 31/12/2026"], upah="2,1jt")
+cek("R2 upah wajar tanpa peringatan", not any("PERIKSA UPAH" in p for p in h["peringatan"]))
+
+# --- R5: melebihi 5 tahun -> kalimat ilustrasi
+h = H(["1/1/2022 s.d. 31/12/2026", "1/1/2027 s.d. 31/12/2027"], upah="3jt")
+cek("R5 ilustrasi setelah batas", any("hanya ilustrasi" in p for p in h["peringatan"]))
+h = H(["1/1/2026 s.d. 31/12/2026"], upah="3jt")
+cek("R5 tidak muncul bila OK", not any("hanya ilustrasi" in p for p in h["peringatan"]))
+
+# --- S2: checklist jam kerja tidak lagi menulis "7 jam x 6 hari"
+_ck = open(os.path.join(os.path.dirname(SINI), "references", "checklist-periksa.md"), encoding="utf-8").read()
+cek("S2 checklist tanpa 7 jam x 6 hari", "7 jam × 6 hari" not in _ck and "7 jam x 6 hari" not in _ck)
+cek("S2 checklist 40 jam/minggu 6 hari", "Pasal 21" in _ck and "40 jam/minggu" in _ck)
+
+# --- R3/R4: panduan di SKILL.md
+_sk = open(os.path.join(os.path.dirname(SINI), "SKILL.md"), encoding="utf-8").read()
+cek("R3 panduan beberapa pekerja", "Beberapa pekerja sekaligus" in _sk)
+cek("R4 panduan tanggal mulai tidak diketahui", "Tanggal mulai belum diketahui" in _sk)
 
 # ------------------------------------------------------------ CLI
 p = cli(["--periode", "1 Januari 2026 s.d. 31 Desember 2026", "--gaji-pokok", "5jt", "--tunjangan-tetap", "500rb",

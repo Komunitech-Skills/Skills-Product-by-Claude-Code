@@ -31,7 +31,7 @@ Dasar aturan: `references/dasar-hukum.md` (dicek 25 September 2026).
 | B4 | Tidak ada **uang kompensasi akhir PKWT**, atau "tidak berhak kompensasi bila mengundurkan diri" | 🔴 | Tambah pasal kompensasi (PP 35/2021 Pasal 15–17). Kompensasi tetap dihitung dari masa yang sudah dijalani. |
 | B5 | THR tidak disebut atau "THR hanya untuk karyawan tetap" | 🔴 | PKWT dengan masa kerja ≥ 1 bulan berhak THR. |
 | B6 | Lembur tanpa upah / "gaji sudah termasuk lembur" tanpa aturan jabatan | 🟠 | Upah lembur 1/173 × upah sebulan, dengan persetujuan pekerja. |
-| B7 | Jam kerja > 40 jam/minggu tanpa lembur | 🟠 | Sesuaikan 7 jam × 6 hari atau 8 jam × 5 hari. |
+| B7 | Jam kerja > 40 jam/minggu tanpa upah lembur. 🔴 bila melebihi 58 jam/minggu (40 jam + batas lembur 18 jam/minggu), mis. 11 jam × 6 hari = 66 jam | 🟠 (🔴 bila > 58 jam/minggu) | Waktu kerja PP 35/2021 Pasal 21 (UU 13/2003 Pasal 77 jo. UU 6/2023): **6 hari kerja = 7 jam/hari dan 40 jam/minggu** (mis. Senin–Jumat 7 jam + Sabtu 5 jam) atau **5 hari kerja = 8 jam/hari dan 40 jam/minggu**. Kelebihan jam = lembur (maks. 4 jam/hari & 18 jam/minggu, PP 35/2021 Pasal 26) dengan persetujuan pekerja dan upah lembur. |
 | B8 | Cuti tahunan < 12 hari setelah 12 bulan, atau "kontrak tidak dapat cuti" | 🟠 | Cuti tahunan min. 12 hari kerja setelah 12 bulan terus-menerus. |
 | B9 | Potongan upah tanpa dasar (denda telat berlebihan, potongan seragam penuh) | 🟠 | Potongan hanya yang diatur jelas & disepakati; dendanya wajar. |
 

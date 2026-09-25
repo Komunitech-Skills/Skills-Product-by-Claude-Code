@@ -17,6 +17,8 @@ Cara hitung "bulan" (asumsi skill, tidak diatur rinci dalam aturan):
     di "bulan berjalan" (dari tanggal ulang bulanan terakhir ke tanggal ulang berikutnya).
     Metode 'bulan-penuh': sisa hari diabaikan (angka minimal, sebutkan ke pengguna bila dipakai).
   - Rupiah dibulatkan ke rupiah terdekat (setengah ke atas) di langkah akhir.
+  - Sisa kontrak (ganti rugi Pasal 62) = panjang periode berjalan - masa dijalani di periode itu (v1.0.1),
+    sehingga dijalani + sisa = panjang periode persis.
 
 Contoh:
   python3 hitung_pkwt.py --periode "1 Januari 2026 s.d. 31 Desember 2026" --gaji-pokok 5jt --tunjangan-tetap 500rb
@@ -52,6 +54,9 @@ BULAN_ALIAS = {
 }
 PEMISAH_PERIODE = re.compile(r"\s+(?:s\.?\s?d\.?|s/d|sampai(?:\s+dengan)?|hingga|until|to)\s+|\s*\.\.\s*|\s+[-–—]\s+",
                              re.IGNORECASE)
+_TGL_ANGKA = r"(?:\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[/\-.]\d{1,2}[/\-.]\d{4})"
+PERIODE_RAPAT = re.compile(r"\s*(" + _TGL_ANGKA + r")\s*[-–—]\s*(" + _TGL_ANGKA + r")\s*")
+BATAS_UPAH_JANGGAL = 500000  # upah bulanan di bawah ini hampir pasti salah ketik
 
 
 class InputError(ValueError):
@@ -96,6 +101,7 @@ def parse_rupiah(teks, nama="upah"):
     if s.startswith("-") or s.startswith("rp-") or s.startswith("("):
         raise InputError("{}: nilai negatif '{}' tidak valid".format(nama, teks))
     s = s.replace("rp", "").replace("idr", "")
+    s = re.sub(r"[.,]?-+$", "", s)  # akhiran umum "Rp 5.000.000,-" / "5.000.000.-"
     kali = 1
     for akhiran, faktor in (("juta", 10 ** 6), ("jt", 10 ** 6), ("ribu", 10 ** 3), ("rb", 10 ** 3), ("k", 10 ** 3)):
         if s.endswith(akhiran):
@@ -124,6 +130,10 @@ def parse_rupiah(teks, nama="upah"):
 
 def parse_periode(teks, urutan):
     bagian = PEMISAH_PERIODE.split(str(teks).strip())
+    if len(bagian) != 2:
+        m = PERIODE_RAPAT.fullmatch(str(teks))  # "1/1/2026-31/12/2026" (tanpa spasi)
+        if m:
+            bagian = [m.group(1), m.group(2)]
     if len(bagian) != 2:
         raise InputError("periode ke-{} '{}': tulis 'TANGGAL_MULAI s.d. TANGGAL_AKHIR', "
                          "mis. '1 Januari 2026 s.d. 31 Desember 2026'".format(urutan, teks))
@@ -220,6 +230,11 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
             raise InputError("--tunjangan-tetap hanya dipakai bersama --gaji-pokok")
     if up <= 0:
         raise InputError("upah 1 bulan harus lebih dari Rp0")
+    if up < BATAS_UPAH_JANGGAL:
+        saran = " Mungkin maksudnya {}?".format(fmt_rp(up * 1000)) if up < 100000 else ""
+        peringatan.append("PERIKSA UPAH: upah 1 bulan tertulis {}, sangat kecil untuk upah bulanan; kemungkinan salah "
+                          "ketik.{} Jika memang upah harian/per satuan, isi --upah dengan rata-rata upah per BULAN. "
+                          "Angka di bawah dihitung dari {} apa adanya.".format(fmt_rp(up), saran, fmt_rp(up)))
     um = parse_rupiah(upah_minimum, "upah minimum")
     if um is not None and um > 0 and up < um:
         peringatan.append("Upah {} di bawah upah minimum yang Anda isi ({}). Dilarang membayar di bawah upah minimum "
@@ -254,6 +269,8 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
                           "Paling lambat berakhir {} (Putusan MK 168/PUU-XXI/2023; PP 35/2021 Pasal 8). "
                           "PKWT yang tidak memenuhi syarat berisiko demi hukum menjadi PKWTT (karyawan tetap)."
                           .format(fmt_masa(tb, ts), fmt_tgl(mulai_pertama), fmt_tgl(akhir_kontrak), fmt_tgl(batas_5th)))
+        peringatan.append("Angka kompensasi untuk masa setelah batas 5 tahun ({}) hanya ilustrasi hitungan, bukan "
+                          "pengakuan bahwa kontrak itu sah.".format(fmt_tgl(batas_5th)))
 
     # --- pengakhiran dini
     tgl_berhenti = None
@@ -305,6 +322,38 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
                         "bulan": fmt_frac(bln), "bulan_penuh": bp, "sisa_hari": sisa, "hari_bulan_berjalan": hb,
                         "berhak": berhak, "kompensasi": komp, "rumus": rumus})
 
+    # --- periode berurutan tanpa jeda yang masing-masing < 1 bulan (PERLU REVIEW)
+    rantai = []
+    for r in rincian:
+        if r["dijalani_sampai"] is None:
+            continue
+        m = datetime.date.fromisoformat(r["mulai"])
+        if rantai and m == datetime.date.fromisoformat(rantai[-1][-1]["dijalani_sampai"]) + datetime.timedelta(days=1):
+            rantai[-1].append(r)
+        else:
+            rantai.append([r])
+    for grup in rantai:
+        if len(grup) < 2 or all(r["berhak"] for r in grup):
+            continue
+        g_mulai = datetime.date.fromisoformat(grup[0]["mulai"])
+        g_akhir = datetime.date.fromisoformat(grup[-1]["dijalani_sampai"])
+        gbp, gsisa, ghb = masa(g_mulai, g_akhir)
+        if gbp < 1:
+            continue
+        gbln = bulan_desimal(gbp, gsisa, ghb, metode)
+        alt = rupiah_bulat(gbln * up / 12)
+        per_periode = sum(r["kompensasi"] for r in grup)
+        peringatan.append(
+            "PERLU REVIEW (kompensasi Rp0 pada periode pendek): periode ke-{} s.d. ke-{} ({} s.d. {}) berurutan TANPA "
+            "jeda. Ada periode yang masing-masing kurang dari 1 bulan sehingga script memberi Rp0 untuk periode itu, "
+            "padahal masa kerja terus-menerus gabungannya {}. Dasar: PP 35/2021 Pasal 15 ayat (3), kompensasi "
+            "diberikan kepada pekerja yang telah mempunyai masa kerja paling sedikit 1 bulan secara terus-menerus. "
+            "Dua kemungkinan tafsir (skill tidak memutuskan): (a) dihitung per periode seperti tabel = {}; "
+            "(b) periode berurutan tanpa jeda dijumlahkan sebagai satu masa kerja terus-menerus = {} / 12 x {} = {}. "
+            "Konfirmasi ke Disnaker/konsultan hukum sebelum membayar."
+            .format(grup[0]["periode"], grup[-1]["periode"], fmt_tgl(g_mulai), fmt_tgl(g_akhir), fmt_masa(gbp, gsisa),
+                    fmt_rp(per_periode), fmt_frac(gbln), fmt_rp(up), fmt_rp(alt)))
+
     # --- ganti rugi Pasal 62
     ganti_rugi = None
     if tgl_berhenti:
@@ -312,18 +361,26 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
         # sisa jangka waktu = sampai akhir periode yang sedang berjalan (perpanjangan yang belum dimulai
         # dicatat terpisah karena tafsirnya bisa berbeda)
         periode_jalan = [p for p in daftar if p[0] <= tgl_berhenti <= p[1]][0]
-        bp, sisa, hb = masa(mulai_sisa, periode_jalan[1])
-        bln = bulan_desimal(bp, sisa, hb, "pecahan")
+        bp, sisa, hb = masa(mulai_sisa, periode_jalan[1])  # hanya untuk tampilan "X bulan Y hari"
+        # Sisa (bulan) = panjang periode berjalan - masa yang sudah dijalani di periode itu, keduanya dengan
+        # metode pecahan yang sama, sehingga dijalani + sisa = panjang periode PERSIS (v1.0.1, temuan uji S1).
+        tot_bln = bulan_desimal(*masa(periode_jalan[0], periode_jalan[1]), metode="pecahan")
+        jln_bln = bulan_desimal(*masa(periode_jalan[0], tgl_berhenti), metode="pecahan")
+        bln = tot_bln - jln_bln
         nilai = rupiah_bulat(bln * up)
         arah = {"pengusaha": "pengusaha membayar ke pekerja", "pekerja": "pekerja membayar ke pengusaha"}.get(
             pihak, "pihak yang mengakhiri membayar ke pihak lain")
         ganti_rugi = {
             "sisa_dari": mulai_sisa.isoformat(), "sisa_sampai": periode_jalan[1].isoformat(),
             "sisa_masa": fmt_masa(bp, sisa), "bulan": fmt_frac(bln), "nilai": nilai, "arah": arah,
-            "rumus": "{} bulan x {} = {}".format(fmt_frac(bln), fmt_rp(up), fmt_rp(nilai)),
+            "bulan_periode": fmt_frac(tot_bln), "bulan_dijalani_periode": fmt_frac(jln_bln),
+            "bulan_pecahan": [bln.numerator, bln.denominator],
+            "rumus": "({} - {}) = {} bulan x {} = {}".format(fmt_frac(tot_bln), fmt_frac(jln_bln), fmt_frac(bln),
+                                                         fmt_rp(up), fmt_rp(nilai)),
             "catatan": ("Tidak berlaku bila berakhir karena pekerja meninggal, putusan pengadilan, selesainya "
                         "pekerjaan (PKWT berdasarkan selesainya pekerjaan), atau keadaan yang tercantum di PK/PP/PKB "
-                        "(UU 13/2003 Pasal 61 & 62). Sisa hari dihitung pecahan bulan."),
+                        "(UU 13/2003 Pasal 61 & 62). Sisa (bulan) = panjang periode berjalan - masa yang sudah "
+                        "dijalani di periode itu, sehingga dijalani + sisa = panjang kontrak persis."),
         }
         belum = [p for p in daftar if p[0] > tgl_berhenti]
         if belum:

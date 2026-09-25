@@ -50,3 +50,12 @@ Mahkamah Konstitusi memerintahkan UU Ketenagakerjaan baru paling lambat sekitar 
 
 **Bisa untuk karyawan tetap atau menghitung pesangon PHK?**
 Tidak. Skill ini khusus kontrak kerja waktu tertentu (PKWT), termasuk harian lepas. Untuk karyawan tetap, PHK, dan pesangon, skill akan menjelaskan bedanya lalu menyarankan kamu berkonsultasi ke Disnaker atau konsultan hukum. Untuk THR, slip gaji, dan surat peringatan, gunakan skill Komunitech `hitung-thr`, `slip-gaji-bpjs`, dan `surat-peringatan-karyawan`.
+
+## Riwayat versi
+- **1.0.1 (25 September 2026)** — revisi temuan uji independen:
+  - Ganti rugi pengakhiran dini (Pasal 62): sisa kontrak kini = panjang periode − masa yang sudah dijalani, sehingga keduanya selalu berjumlah tepat panjang kontrak (sebelumnya bisa selisih hingga ±2,8 hari upah). Contoh skenario utama (Rp4.150.000/orang; Rp5.000.000 + Rp1.250.000 + ganti rugi Rp15.000.000) tidak berubah.
+  - Checklist jam kerja diperbaiki: 6 hari kerja = 7 jam/hari dan 40 jam/minggu, 5 hari kerja = 8 jam/hari dan 40 jam/minggu (PP 35/2021 Pasal 21).
+  - Peringatan baru bila beberapa kontrak pendek (< 1 bulan) berurutan tanpa jeda sehingga kompensasi Rp0, lengkap dengan dua kemungkinan tafsir.
+  - Menerima penulisan "Rp 5.000.000,-" dan "Rp5.000.000,00", periode tanpa spasi "1/1/2026-31/12/2026"; peringatan bila upah terlalu kecil (kemungkinan salah ketik).
+  - Panduan untuk beberapa pekerja sekaligus dan untuk tanggal mulai yang belum diketahui.
+- **1.0.0 (25 September 2026)** — rilis draf pertama.

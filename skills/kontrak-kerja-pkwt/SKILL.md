@@ -44,13 +44,17 @@ Supaya kontraknya tepat, mohon isi yang Anda tahu (yang kosong akan saya beri ta
 ```
 Jika pengguna ingin cepat ("langsung buatin aja"), buat dengan data yang ada, isi sisanya `[isi: ...]`, dan sebutkan asumsinya. **Jangan pernah mengarang** nama, NIK, alamat, nomor BPJS, tanggal, atau angka UMK.
 
+- **Beberapa pekerja sekaligus:** PKWT dibuat **per orang**. Buat satu draf (bagian yang sama untuk semua) + tabel identitas per pekerja (nama, jabatan, upah, tanggal mulai). Jalankan script **satu kali per pekerja** bila upah/tanggalnya berbeda (sekali saja bila semuanya sama), lalu tampilkan tabel per orang dan total = jumlah per orang.
+- **Tanggal mulai belum diketahui:** tanyakan dulu. Bila pengguna tetap ingin draf sekarang, tulis `[isi: tanggal mulai]` / `[isi: tanggal akhir]`, jangan mengarang tanggal. Script butuh tanggal, jadi hitung kompensasi dengan rumus (12 bulan = 1 × upah; n bulan = n ÷ 12 × upah) dan beri label "dihitung manual, tanggal belum diisi". Batas 5 tahun ditulis sebagai "5 tahun sejak tanggal mulai kontrak pertama".
+
 ## Langkah kerja — mode Susun
 1. **Uji kelayakan PKWT dulu** (pertanyaan no. 4). Jika pekerjaannya jelas **bersifat tetap** (mis. kasir tetap toko, admin tetap, koki tetap) dan tidak ada alasan waktu tertentu: jelaskan dengan sopan bahwa PKWT untuk pekerjaan tetap berisiko **demi hukum menjadi karyawan tetap (PKWTT)**. Tawarkan: (a) tetap membuat PKWT bila memang ada alasan sementara yang jujur, dengan alasan itu ditulis di Pasal 1 ayat (3); atau (b) memakai PKWTT dengan masa percobaan maks. 3 bulan (di luar cakupan template ini; arahkan ke konsultan).
 2. **Tentukan varian jangka waktu** di `templates/kerangka-pkwt.md`: A (jangka waktu), B (selesainya pekerjaan), atau C (harian lepas, < 21 hari/bulan).
 3. **Hitung dengan script** (lihat bagian Hitung): total jangka waktu termasuk kontrak sebelumnya (≤ 5 tahun), tanggal akhir, dan perkiraan kompensasi. Jika melebihi 5 tahun → hentikan penyusunan PKWT baru, jelaskan risikonya, sarankan PKWTT.
 4. **Cek upah**: bandingkan dengan UMK yang diisi pengguna. Jika pengguna tidak tahu UMK: tulis `[isi: UMK {kota} {tahun} — cek situs Disnaker]` dan ingatkan. Jika di bawah UMK → tandai 🔴 (untuk usaha mikro/kecil, jelaskan ada pengecualian dengan batas bawah, dan sarankan cek Disnaker).
-5. **Isi template** pasal demi pasal. Angka rupiah selalu dengan terbilang. **Tidak ada masa percobaan**, denda, atau penahanan dokumen.
-6. Tambahkan **Catatan pengisian** (daftar `[isi: ...]` yang tersisa), **Checklist tanda tangan**, dan **disclaimer** (lihat Format Output).
+5. **Cek jam kerja** (PP 35/2021 Pasal 21): 6 hari kerja = 7 jam/hari dan 40 jam/minggu (mis. 5 × 7 jam + 1 × 5 jam), 5 hari kerja = 8 jam/hari dan 40 jam/minggu. Bila jam yang diminta lebih dari 40 jam/minggu, koreksi atau tulis kelebihannya sebagai lembur berbayar (maks. 18 jam/minggu).
+6. **Isi template** pasal demi pasal. Angka rupiah selalu dengan terbilang. **Tidak ada masa percobaan**, denda, atau penahanan dokumen.
+7. Tambahkan **Catatan pengisian** (daftar `[isi: ...]` yang tersisa), **Checklist tanda tangan**, dan **disclaimer** (lihat Format Output).
 
 ## Langkah kerja — mode Periksa
 1. Baca seluruh draf. Jika draf tidak ditempel/dilampirkan, minta sekali.
@@ -77,15 +81,17 @@ python3 <folder-skill-ini>/scripts/hitung_pkwt.py --periode "1 Januari 2026 s.d.
 - Perpanjangan/kontrak berturut-turut: ulangi `--periode` untuk setiap kontrak (urut dari yang pertama).
 - Diputus sebelum waktunya: tambah `--berhenti "<hari kerja terakhir>" --pihak-mengakhiri pengusaha|pekerja`.
 - Opsi: `--upah` (bila upah tidak dipisah, atau rata-rata upah harian lepas per bulan) · `--upah-minimum <UMK>` · `--harian` · `--metode bulan-penuh` · `--format json`.
-- Format tanggal yang diterima: `2026-01-01`, `01/01/2026` (hari/bulan/tahun), `1 Januari 2026`, `1 Jan 2026`. Upah: `Rp5.000.000`, `5jt`, `5,5 juta`, `500rb`.
+- Format tanggal yang diterima: `2026-01-01`, `01/01/2026` (hari/bulan/tahun), `1 Januari 2026`, `1 Jan 2026`. Upah: `Rp5.000.000`, `Rp 5.000.000,-`, `Rp5.000.000,00`, `5jt`, `5,5 juta`, `500rb`.
+- Bila muncul **PERIKSA UPAH** (upah bulanan < Rp500.000, mis. "4.500" terbaca Rp4.500): tanyakan ke pengguna apakah maksudnya Rp4.500.000, lalu jalankan ulang. Jangan diam-diam memakai angka kecil itu.
+- Bila muncul **PERLU REVIEW (kompensasi Rp0 pada periode pendek)**: sampaikan kedua tafsir (a) dan (b) beserta angkanya apa adanya, jangan memilih salah satunya; sarankan konfirmasi ke Disnaker/konsultan.
 - Salin tabel & peringatan dari output apa adanya. Jika script error, baca pesannya (mis. tanggal tertukar, tanggal tidak ada), perbaiki input, jalankan ulang.
 
 ## Rumus (untuk hitung manual bila Python tidak bisa dijalankan)
 1. **Upah 1 bulan** = gaji pokok + tunjangan tetap (bukan uang makan/transport harian yang tergantung kehadiran). Harian lepas/satuan hasil: rata-rata upah per bulan.
 2. **Masa kerja** (asumsi skill, aturan tidak merinci): tanggal mulai dan akhir **ikut dihitung**. Hitung **bulan penuh** dengan tanggal ulang bulanan (1 Jan → 1 Feb = 1 bulan; bila tanggal tidak ada, pakai akhir bulan), lalu **sisa hari**. Bulan desimal = bulan penuh + sisa hari ÷ jumlah hari "bulan berjalan" (dari tanggal ulang terakhir ke tanggal ulang berikutnya).
    Contoh: 1 Januari–15 Maret 2026 = 2 bulan 15 hari = 2 + 15/31 = 2,4839 bulan.
-3. **Kompensasi** (PP 35/2021 Pasal 15–16): masa kerja < 1 bulan → tidak berhak. 12 bulan → 1 × upah. Selain itu → **masa kerja (bulan) ÷ 12 × upah 1 bulan**. Dihitung **per periode kontrak** (kontrak awal dan tiap perpanjangan dibayar saat periodenya selesai).
-4. **Diputus lebih cepat**: kompensasi dihitung dari masa yang sudah dijalani (PP 35/2021 Pasal 17), **ditambah** ganti rugi Pasal 62 UU 13/2003 = **sisa masa kontrak (bulan) × upah 1 bulan**, dibayar oleh pihak yang mengakhiri kepada pihak lain. Tidak berlaku bila berakhir karena pekerja meninggal, putusan pengadilan, atau pekerjaan (varian B) sudah selesai.
+3. **Kompensasi** (PP 35/2021 Pasal 15–16): diberikan bila masa kerja **paling sedikit 1 bulan secara terus-menerus**; < 1 bulan → tidak berhak (bila beberapa periode pendek berurutan tanpa jeda, lihat peringatan PERLU REVIEW di atas). 12 bulan → 1 × upah. Selain itu → **masa kerja (bulan) ÷ 12 × upah 1 bulan**. Dihitung **per periode kontrak** (kontrak awal dan tiap perpanjangan dibayar saat periodenya selesai).
+4. **Diputus lebih cepat**: kompensasi dihitung dari masa yang sudah dijalani (PP 35/2021 Pasal 17), **ditambah** ganti rugi Pasal 62 UU 13/2003 = **sisa masa kontrak (bulan) × upah 1 bulan**, dibayar oleh pihak yang mengakhiri kepada pihak lain. **Sisa (bulan) = panjang periode berjalan (bulan) − masa yang sudah dijalani di periode itu (bulan)**, keduanya dihitung dengan cara no. 2, sehingga dijalani + sisa = panjang kontrak persis. Contoh: kontrak 1 Jan–31 Mar 2026 (3 bulan), berhenti 15 Feb → dijalani 1 + 15/28 = 1,5357; sisa 3 − 1,5357 = 1,4643 bulan. Tidak berlaku bila berakhir karena pekerja meninggal, putusan pengadilan, atau pekerjaan (varian B) sudah selesai.
 5. **Batas 5 tahun**: tanggal akhir terakhir ≤ (tanggal mulai kontrak pertama + 60 bulan − 1 hari).
 6. **Pembulatan**: hasil akhir dibulatkan ke rupiah terdekat (setengah ke atas).
 Tulis langkahnya dan beri label "dihitung manual".
