@@ -72,3 +72,39 @@ Alasan:
 **Rekomendasi:** perbaiki #1 dan #2 (dan idealnya #3–#5) sebelum status `lulus`, lalu uji ulang singkat
 oleh penguji independen (skenario 01 dengan `--sheet semua`, CSV kutip rusak, top NIK). Banding pesaing perlu
 diulang terhadap ClawHub `ivangdavila/data-analysis` dari lingkungan yang tidak memblokir clawhub.ai.
+
+---
+
+## Uji ulang v1.0.1 (penguji independen ke-2, 2026-09-25)
+Rincian lengkap: `06-uji-ulang-v1.0.1.md`. Fixture baru: `buat_fixture_uji_ulang.py` (deterministik).
+Tes bawaan: **37 tes OK**. SKILL.md 170 baris. Platform: `claude-code (simulasi agent)`.
+
+**Perbaikan terverifikasi:** #1 multi-sheet (`--sheet semua`/daftar; header sama, urutan/kapital beda,
+kolom kurang/lebih, sheet tersembunyi, sheet kosong, baris Jumlah/Total/Subtotal/"TOTAL TW4" per sheet) ✔ ·
+#2 kutip tak tertutup → GAGAL + nomor baris (4 varian) ✔ · #3 "Nilai terisi" ✔ · #4 penyamaran
+NIK/HP/email/rekening + `--tampilkan-pribadi` + peringatan gaji per orang ✔ · #5 "4 A"/"4A" ✔ ·
+#6 duplikat di semua subperintah ✔ · #7, #10, #11 ✔.
+
+**Angka:** 3 file baru (XLSX koperasi 6 sheet, CSV marketplace emoji + alamat multi-baris, CSV anggota
+NIK/HP `;`) + skenario 01 ulang — total per sheet & gabungan, pivot silang, tren bulanan/mingguan,
+top-N, banding periode/sheet → **0 ketidakcocokan** dengan kunci independen.
+
+**Temuan baru:**
+- **N1 (P1)** CSV sah ditolak: sel alamat multi-baris yang ≥ 2 barisnya berisi koma → `GAGAL: CSV
+  kemungkinan rusak`, tanpa opsi memaksa (alamat Indonesia "Jl. …, No. …⏎Kel. …, Kec. …" sangat umum).
+  Gagal aman (bukan angka salah), tetapi memblokir file wajar.
+- **N2 (P2)** `--sheet semua` memakai sheet terlihat pertama sebagai acuan; sheet `Ringkasan` di depan →
+  semua sheet detail dilewati (transparan lewat peringatan; SKILL.md belum menyuruh agent mengulang dengan daftar sheet).
+- N3–N8 (P3): peringatan multi-baris berulang & penomoran baris fisik vs rekaman; "Jumlah Jumlah";
+  email tersamar kembar; "Uang Lembur" tidak sensitif & "Simpanan" tanpa Rp; nama sheet berkoma tanpa saran; "baris 4 s.d. 4".
+
+### Skor kualitas uji ulang: **7 / 10** — lulus bersyarat (naik mutu, skor tetap karena N1)
+- (+) Kedua P1 lama tertutup; skenario utama (workbook per kuartal) kini dijawab murni lewat script,
+  semua angka cocok di 4 file; privasi & peringatan konsisten; 37 tes lulus.
+- (−) N1 regresi dari perbaikan #2: file CSV sah yang umum (daftar pelanggan/anggota berisi alamat) tidak bisa dianalisis sama sekali.
+- (−) N2 jebakan default `--sheet semua` pada workbook ber-sheet ringkasan.
+
+**Rekomendasi:** perbaiki N1 (heuristik "baris dalam sel tampak seperti rekaman utuh" + opsi
+`--izinkan-multibaris` + tes regresi) dan N2 (acuan = kelompok struktur terbesar + 1 kalimat di SKILL.md);
+setelah itu cukup cek singkat `alamat-sah.csv`, `pesanan-marketplace-sep.csv`, dan Koperasi `--sheet semua`
+→ layak skor 8 dan status `lulus`. N3–N8 boleh menyusul.
