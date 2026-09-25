@@ -2,7 +2,7 @@
 """Uji regresi laporan-harian-usaha.
 
 Data contoh DIBUAT dengan menjalankan script alat asli (kasir-lokal, buku-stok, absensi-lokal,
-pengingat-follow-up) di folder sementara, bukan meniru skema dengan tangan. Alat dicari di folder
+pengingat-follow-up, crm-wa) di folder sementara, bukan meniru skema dengan tangan. Alat dicari di folder
 skills yang sama (../kasir-lokal, dst.); jika tidak ada, uji yang membutuhkannya dilewati.
 
 Jalankan: python3 tests/uji_regresi.py   (Windows: python / py)
@@ -29,7 +29,8 @@ STOK = SKILLS / "buku-stok" / "scripts" / "stok.py"
 ABSENSI = SKILLS / "absensi-lokal" / "scripts" / "absensi.py"
 PENGINGAT = SKILLS / "pengingat-follow-up" / "scripts" / "cek_jatuh_tempo.py"
 DAFTAR_CONTOH = SKILLS / "pengingat-follow-up" / "templates" / "DAFTAR.csv"
-SEMUA_ALAT = all(p.is_file() for p in (KASIR, STOK, ABSENSI, PENGINGAT, DAFTAR_CONTOH))
+CRM = SKILLS / "crm-wa" / "scripts" / "crm.py"
+SEMUA_ALAT = all(p.is_file() for p in (KASIR, STOK, ABSENSI, PENGINGAT, DAFTAR_CONTOH, CRM))
 SEKARANG = "2026-09-24T21:00:00+07:00"
 
 sys.path.insert(0, str(SINI / "scripts"))
@@ -42,6 +43,7 @@ def alat(script, *argv, data=None):
     env.pop("KOMUNITECH_KASIR_DB", None)
     env.pop("KOMUNITECH_STOK_DB", None)
     env.pop("KOMUNITECH_ABSENSI_DB", None)
+    env.pop("KOMUNITECH_CRM_DB", None)
     p = subprocess.run([sys.executable, str(script)] + [str(a) for a in argv], stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE, env=env)
     if p.returncode != 0:
@@ -93,6 +95,24 @@ def buat_data(akar):
 
     (akar / "kerja" / "pengingat").mkdir(parents=True)
     shutil.copyfile(str(DAFTAR_CONTOH), str(akar / "kerja" / "pengingat" / "DAFTAR.csv"))
+
+    # crm-wa: 5 prospek dengan tanggal masuk/follow-up/deal berbeda, dipakai untuk verifikasi PROSPEK
+    # (angka dicocokkan dengan `crm.py rekap --json` langsung di uji, bukan ditebak).
+    HC = ["--json", "--hari-ini", "2026-09-24"]
+    C = lambda *a: alat(CRM, *(list(a) + HC), data=data)  # noqa: E731
+    C("init", "--nama-usaha", "Warung Uji", "--pengirim", "Sari", "--zona", "WIB", "--ya")
+    C("tambah", "--nama", "Bu Rina", "--wa", "0812-3000-0001", "--sumber", "ig", "--tahap", "dihubungi",
+      "--masuk", "2026-09-20", "--followup", "2026-09-22")                                  # terlambat 2 hari
+    C("tambah", "--nama", "Pak Budi", "--wa", "0812-3000-0002", "--sumber", "tiktok", "--tahap", "ditawar",
+      "--nilai", "4,5 jt", "--masuk", "2026-09-23", "--followup", "2026-09-24")              # follow-up hari ini
+    C("tambah", "--nama", "Bu Sari Toko", "--wa", "0812-3000-0003", "--sumber", "ig", "--tahap", "ditawar",
+      "--masuk", "2026-09-18")
+    C("catat", "--kontak", "Bu Sari Toko", "--tahap", "deal", "--nilai", "6 jt", "--tanggal", "2026-09-24")
+    C("tambah", "--nama", "Mbak Dewi", "--wa", "0812-3000-0005", "--sumber", "tokopedia", "--tahap", "baru",
+      "--masuk", "2026-09-24")                                                              # follow-up hari ini
+    C("tambah", "--nama", "Mas Andi", "--wa", "0812-3000-0006", "--sumber", "ig", "--tahap", "ditawar",
+      "--masuk", "2026-09-22")
+    C("catat", "--kontak", "Mas Andi", "--tahap", "deal", "--nilai", "2 jt", "--tanggal", "2026-09-23")
 
 
 def md5_folder(fol):
@@ -199,7 +219,8 @@ class UjiRumus(unittest.TestCase):
 
 
 # ------------------------------------------------------------------ uji dengan alat asli
-@unittest.skipUnless(SEMUA_ALAT, "alat kasir-lokal/buku-stok/absensi-lokal/pengingat-follow-up tidak ada di folder skills")
+@unittest.skipUnless(SEMUA_ALAT,
+                     "alat kasir-lokal/buku-stok/absensi-lokal/pengingat-follow-up/crm-wa tidak ada di folder skills")
 class UjiGabungan(Dasar):
     def test_semua_alat_harian_angka_dari_kasir(self):
         akar = self.salin("semua")
@@ -213,7 +234,7 @@ class UjiGabungan(Dasar):
         # verifikasi independen: 69.000 / 2 = 34.500
         self.assertEqual(pj["rata_rata_per_nota"], 34500)
         self.assertEqual(pj["terlaris"][0]["nama"], "Kopi Susu Gula Aren")
-        for n in ("kasir", "stok", "absensi", "pengingat"):
+        for n in ("kasir", "stok", "absensi", "pengingat", "crm"):
             self.assertEqual(d["alat"][n]["status"], "ada", d["alat"][n])
 
     def test_perbandingan_persen_kemarin_dan_minggu_lalu(self):
@@ -346,7 +367,7 @@ class UjiGabungan(Dasar):
     def test_tidak_ada_alat_sama_sekali(self):
         akar = self.kosong("nihil")
         teks = self.jalan(akar)
-        self.assertEqual(teks.count("Belum ada data ("), 4)
+        self.assertEqual(teks.count("Belum ada data ("), 5)  # + PROSPEK (crm-wa)
         self.assertIn("Belum ada data dari alat mana pun", teks)
 
     def test_script_alat_tidak_ditemukan(self):
@@ -510,6 +531,102 @@ class UjiGabungan(Dasar):
              data=data)
         teks = self.jalan(akar, "--tanpa", "stok,absensi,pengingat")
         self.assertIn("Per metode bayar (termasuk pajak/service, omzet di atas belum termasuk):", teks)
+
+    # ------------------------------------------------------------- PROSPEK (crm-wa), alat ke-5
+    def test_crm_prospek_cocok_dengan_rekap_langsung(self):
+        """Angka PROSPEK harus SAMA PERSIS dengan `crm.py rekap --json` langsung terhadap data yang sama
+        (tidak dihitung ulang dengan rumus lain di laporan.py)."""
+        akar = self.salin("crmharian")
+        d = self.jalan(akar, "--json")
+        kr = alat(CRM, "rekap", "--dari", "2026-09-24", "--sampai", "2026-09-24", "--hari-ini", "2026-09-24",
+                  "--json", data=akar / "data")
+        pr = d["prospek"]
+        self.assertEqual(d["alat"]["crm"]["status"], "ada")
+        self.assertEqual(pr["lead_masuk"], kr["periode_ini"]["lead_masuk"])
+        self.assertEqual(pr["deal"]["jumlah"], kr["periode_ini"]["deal_baru"]["jumlah"])
+        self.assertEqual(pr["deal"]["nilai"], kr["periode_ini"]["deal_baru"]["nilai"])
+        self.assertEqual(pr["konversi_teks"], kr["periode_ini"]["konversi_teks"])
+        self.assertEqual(pr["kohort"], kr["periode_ini"]["kohort"])
+        for f in ("terlambat", "hari_ini", "besok", "order_perlu_konfirmasi", "nilai_terlambat_dan_hari_ini"):
+            self.assertEqual(pr["followup"][f], kr["followup"][f], f)
+        self.assertEqual(pr["sumber_terbaik"], kr["sumber_terbaik"])
+        # verifikasi independen dari data uji (lihat buat_data): 24/9 hanya Mbak Dewi masuk; Bu Sari Toko deal
+        # (nilai Rp 6 jt) di tanggal 24/9; follow-up: Bu Rina terlambat, Pak Budi & Mbak Dewi hari ini.
+        self.assertEqual(pr["lead_masuk"], 1)
+        self.assertEqual(pr["deal"]["jumlah"], 1)
+        self.assertEqual(pr["deal"]["nilai"], 6000000)
+        self.assertEqual(pr["followup"]["terlambat"], 1)
+        self.assertEqual(pr["followup"]["hari_ini"], 2)
+        self.assertEqual(pr["followup"]["nilai_terlambat_dan_hari_ini"], 4500000)
+        self.assertIn("Prospek baru: 1", d["teks"])
+        self.assertIn("Follow-up terlambat 1 | hari ini 2 | besok 0 | order perlu konfirmasi 0", d["teks"])
+        self.assertIn("Deal periode ini: 1 senilai Rp 6.000.000", d["teks"])
+
+    def test_crm_mingguan_banding_minggu_sebelumnya(self):
+        akar = self.salin("crmmingguan")
+        d = self.jalan(akar, "--json", "--periode", "mingguan", "--tanggal", "2026-09-20")
+        kr = alat(CRM, "rekap", "--dari", "2026-09-14", "--sampai", "2026-09-20", "--hari-ini", "2026-09-24",
+                  "--json", data=akar / "data")
+        kr_lalu = alat(CRM, "rekap", "--dari", "2026-09-07", "--sampai", "2026-09-13", "--hari-ini", "2026-09-24",
+                       "--json", data=akar / "data")
+        pr = d["prospek"]
+        self.assertEqual(pr["lead_masuk"], kr["periode_ini"]["lead_masuk"])
+        self.assertEqual(pr["lead_masuk"], 2)  # Bu Rina (masuk 20/9) + Bu Sari Toko (masuk 18/9)
+        self.assertEqual(pr["sumber_terbaik"]["sumber"], "Instagram")
+        b = pr["banding"]["minggu_sebelumnya"]
+        self.assertEqual(b["lead_masuk"], kr_lalu["periode_ini"]["lead_masuk"])
+        self.assertEqual(b["lead_masuk"], 0)
+        self.assertIn("vs minggu sebelumnya", d["teks"])
+
+    def test_crm_tidak_terpasang_bukan_error(self):
+        akar = self.salin("crmtidakada")
+        shutil.rmtree(str(akar / "data" / "crm"))
+        d = self.jalan(akar, "--json")
+        self.assertEqual(d["alat"]["crm"]["status"], "tidak_ada")
+        self.assertIsNone(d["prospek"])
+        self.assertIn("Belum ada data (crm-wa belum dipakai", d["teks"])
+
+    def test_crm_db_rusak_dilewati_dengan_catatan(self):
+        akar = self.salin("crmrusak")
+        (akar / "data" / "crm" / "crm.db").write_bytes(b"bukan database crm" * 20)
+        d = self.jalan(akar, "--json")
+        self.assertEqual(d["alat"]["crm"]["status"], "gagal")
+        self.assertIsNone(d["prospek"])
+        self.assertIn("Belum ada data", d["teks"].split("PROSPEK")[1])
+        self.assertTrue(any("crm-wa tidak terbaca" in s for s in d["perhatian"]), d["perhatian"])
+
+    def test_crm_script_tidak_ditemukan(self):
+        akar = self.salin("crmtanpascript")
+        d = self.jalan(akar, "--json", "--crm-script", str(akar / "tidak-ada.py"))
+        self.assertEqual(d["alat"]["crm"]["status"], "gagal")
+        self.assertIn("script crm.py tidak ditemukan", d["alat"]["crm"]["pesan"])
+
+    def test_tanpa_crm(self):
+        d = self.jalan(self.salin("crmlewati"), "--json", "--tanpa", "crm")
+        self.assertEqual(d["alat"]["crm"]["status"], "dilewati")
+        self.assertIsNone(d["prospek"])
+
+    def test_crm_tanpa_nama_nomor_prospek(self):
+        """Privasi: teks & JSON tidak pernah memuat nama/nomor WA prospek (kontrak `rekap --json` crm-wa
+        sudah tanpa itu; ini menjaga laporan.py tidak menambahkannya sendiri)."""
+        akar = self.salin("crmprivasi")
+        teks = self.jalan(akar)
+        d = self.jalan(akar, "--json")
+        dump = json.dumps(d, ensure_ascii=False)
+        for rahasia in ("Bu Rina", "Pak Budi", "Bu Sari Toko", "Mbak Dewi", "Mas Andi",
+                        "0812-3000-0001", "0812-3000-0002", "0812-3000-0003", "0812-3000-0005", "0812-3000-0006",
+                        "62812", "K0001", "K0002", "K0003", "K0004", "K0005"):
+            self.assertNotIn(rahasia, teks)
+            self.assertNotIn(rahasia, dump)
+
+    def test_crm_db_asli_tidak_berubah(self):
+        """File DB crm-wa asli tidak pernah ditulis (dibuka hanya lewat salinan read-only), sama seperti alat lain."""
+        akar = self.salin("crmhash")
+        dbfile = akar / "data" / "crm" / "crm.db"
+        sebelum = hashlib.md5(dbfile.read_bytes()).hexdigest()
+        self.jalan(akar, "--json")
+        self.jalan(akar, "--json", "--periode", "mingguan")
+        self.assertEqual(hashlib.md5(dbfile.read_bytes()).hexdigest(), sebelum)
 
 
 def tearDownModule():

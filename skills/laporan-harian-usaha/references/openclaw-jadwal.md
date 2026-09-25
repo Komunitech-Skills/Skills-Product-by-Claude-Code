@@ -9,6 +9,7 @@
 - ✅ Pilihan 2 (agent) diterima Gateway: `payload.kind: agentTurn`, `toolsAllow: ["exec","read"]`. Isi jawabannya **tidak** diuji (butuh API key model).
 - ⚠️ **Pesan sampai di Telegram belum diuji** (butuh bot token asli). Tanpa token: `deliveryStatus: not-delivered`, `Telegram bot token missing`. Artinya job memang mencoba mengirim.
 - ⚠️ Gateway Windows belum diuji untuk `--command-argv`; di Windows pakai Pilihan 2.
+- ⚠️ **Bagian PROSPEK (crm-wa, ditambahkan versi 1.1.0) belum diuji ulang lewat `automations run` sungguhan** — verifikasi di atas dari versi sebelum crm-wa ditambahkan. Uji lagi bila alat crm-wa dipakai.
 
 ## 0. Aturan kanal (keputusan pemilik Komunitech, 2026-09-23)
 - **Telegram (bot resmi) = default.** `--to` = ID chat **pemilik**. Penerima tambahan hanya **pemilik bersama/pengelola yang pemilik tunjuk secara eksplisit**, masing-masing lewat **jadwal terpisah** ke chat pribadinya sendiri (`--to` = ID chat orang itu), tidak pernah ke grup.
@@ -18,14 +19,14 @@
 
 ## 1. Siapkan (sekali)
 1. Gateway OpenClaw berjalan di **komputer yang sama dengan database kasir/stok/absensi**, dan menyala saat jadwal (komputer toko yang tidak dimatikan, mini PC, atau VPS milik pemilik). Jika mati jam 21.00, laporan **tidak terkirim** dan tidak ada pesan error. Opsi: komputer selalu menyala, VPS sendiri, atau jasa setup Komunitech.
-2. Skill ini dan alat-alatnya terpasang di folder yang sama, mis. `openclaw skills install ./laporan-harian-usaha --global` (juga `kasir-lokal`, `buku-stok`, `absensi-lokal`, `pengingat-follow-up` yang dipakai).
+2. Skill ini dan alat-alatnya terpasang di folder yang sama, mis. `openclaw skills install ./laporan-harian-usaha --global` (juga `kasir-lokal`, `buku-stok`, `absensi-lokal`, `pengingat-follow-up`, `crm-wa` yang dipakai).
 3. Telegram: buat bot di @BotFather → `openclaw channels add --channel telegram --token <token>` → kirim "halo" ke bot dari akun pemilik → `openclaw pairing list telegram` lalu `openclaw pairing approve telegram <KODE>`. Cara mencari ID chat: skill `laporan-otomatis-terjadwal`, `references/openclaw.md`.
 4. Cari path lengkap (argv tidak mengenal `~`):
    ```bash
    python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/laporan-harian-usaha/scripts/laporan.py'))"
    python3 -c "import os; print(os.path.expanduser('~/.openclaw/workspace'))"
    ```
-5. Uji dulu dari terminal: `python3 <path laporan.py>` harus menampilkan laporan. Bagian "Belum ada data" padahal alatnya dipakai → lokasi data berbeda; tambahkan `--kasir-db`/`--stok-db`/`--absensi-db`/`--pengingat` ke argv.
+5. Uji dulu dari terminal: `python3 <path laporan.py>` harus menampilkan laporan. Bagian "Belum ada data" padahal alatnya dipakai → lokasi data berbeda; tambahkan `--kasir-db`/`--stok-db`/`--absensi-db`/`--pengingat`/`--crm-db` ke argv.
 
 ## 2. Pilihan 1 (disarankan): perintah langsung, tanpa AI
 Script dijalankan Gateway, teksnya dikirim apa adanya. Tidak memakai kuota model, hasil selalu sama, tidak ada AI yang bisa salah mengubah angka.

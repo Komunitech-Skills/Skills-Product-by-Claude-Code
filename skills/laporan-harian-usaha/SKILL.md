@@ -1,6 +1,6 @@
 ---
 name: laporan-harian-usaha
-description: Satu laporan harian/mingguan gabungan untuk pemilik usaha dari alat lokal Komunitech yang terpasang (kasir-lokal, buku-stok, absensi-lokal, pengingat-follow-up) - omzet & perbandingan % dengan kemarin/minggu lalu, stok menipis/habis, kehadiran & lembur, tagihan jatuh tempo, hal yang perlu perhatian - siap kirim ke Telegram pemilik lewat OpenClaw tiap malam/Senin pagi, hanya membaca data. Gunakan saat pengguna minta "laporan harian usaha", "ringkasan toko hari ini", "rekap semua", "dashboard usaha", daily business report, owner dashboard. Rekap satu alat saja pakai skill alat itu.
+description: Satu laporan harian/mingguan gabungan untuk pemilik usaha dari alat lokal Komunitech yang terpasang (kasir-lokal, buku-stok, absensi-lokal, pengingat-follow-up, crm-wa) - omzet & perbandingan % dengan kemarin/minggu lalu, stok menipis/habis, kehadiran & lembur, tagihan jatuh tempo, prospek/pipeline CRM & konversi, hal yang perlu perhatian - siap kirim ke Telegram pemilik lewat OpenClaw tiap malam/Senin pagi, hanya membaca data. Gunakan saat pengguna minta "laporan harian usaha", "ringkasan toko hari ini", "rekap semua", "dashboard usaha", daily business report, owner dashboard. Rekap satu alat saja pakai skill alat itu.
 ---
 
 # Laporan Harian Usaha (pengganti dashboard SaaS)
@@ -14,16 +14,16 @@ Pemilik usaha cukup membaca **satu pesan** tiap malam (dan satu tiap Senin pagi)
 - "Kirim laporan harian ke Telegram saya tiap jam 9 malam" / "tiap Senin pagi kirim laporan mingguan" (OpenClaw)
 
 ## Kapan TIDAK digunakan
-- Hanya butuh satu hal: struk/tutup kasir/rekap bulanan pajak → `kasir-lokal`; opname/picking → `buku-stok`; rekap gaji & upah lembur → `absensi-lokal`; draf tagihan & nama pelanggan → `pengingat-follow-up` ("rekap pengingat").
+- Hanya butuh satu hal: struk/tutup kasir/rekap bulanan pajak → `kasir-lokal`; opname/picking → `buku-stok`; rekap gaji & upah lembur → `absensi-lokal`; draf tagihan & nama pelanggan → `pengingat-follow-up` ("rekap pengingat"); nama/nomor prospek, draf follow-up, atau catat lead baru → `crm-wa` ("follow-up hari ini", "rekap CRM", "catat: ...").
 - Data dari file CSV/Excel aplikasi lain (Moka, Majoo, marketplace) → `rekap-penjualan-csv`. Laporan terjadwal dari file seperti itu → `laporan-otomatis-terjadwal`.
 - Laba rugi/neraca → `laporan-keuangan-emkm`. Arus kas ke depan → `arus-kas-13minggu`.
 - **Mengubah data** (catat penjualan, stok, absen, tandai lunas) → skill alatnya masing-masing. Skill ini **hanya membaca**.
 - Kirim laporan ke pelanggan/grup/broadcast → **tolak**. Laporan hanya untuk pemilik, atau penerima lain yang **pemilik tunjuk secara eksplisit** (chat pribadi masing-masing) — lihat Langkah C.
 
 ## Cara kerja (penting untuk dijelaskan bila ditanya)
-1. Script mencari alat yang terpasang dari lokasi data default masing-masing alat (ENV sama: `KOMUNITECH_KASIR_DB`, `KOMUNITECH_STOK_DB`, `KOMUNITECH_ABSENSI_DB`, `KOMUNITECH_DATA`) dan `pengingat/DAFTAR.csv` (folder kerja, workspace OpenClaw `~/.openclaw/workspace`, atau `~/KomunitechData`). Alat yang tidak ada **dilewati dengan catatan**, bukan error.
-2. Database dibuka **read-only** (`mode=ro`, batas tunggu 10 detik) lalu disalin ke folder sementara. File asli tidak pernah ditulis (diuji: sidik file sebelum = sesudah).
-3. Angka dihitung oleh **perintah laporan resmi** tiap alat (`kasir.py rekap`, `stok.py laporan ringkas`, `absensi.py harian/rekap`, `cek_jatuh_tempo.py rekap`) pada salinan itu. Karena memakai "pintu resmi" alat, laporan tetap benar walau struktur database alat berubah di versi baru. Hanya 3 hal dibaca langsung dari salinan (dengan cek kolom dulu; jika berubah, bagian itu dilewati dengan catatan): selisih kas (tabel `sesi` kasir); nota kasir yang **sah** (bukan yang di-void) per tanggal dibandingkan satu per satu dengan nomor nota di tabel `pesanan` buku-stok, jadi impor **sebagian** pun terdeteksi; dan jam masuk paling awal (tabel `shift`+`karyawan` absensi) untuk menghindari alarm keliru sebelum jam kerja mulai.
+1. Script mencari alat yang terpasang dari lokasi data default masing-masing alat (ENV sama: `KOMUNITECH_KASIR_DB`, `KOMUNITECH_STOK_DB`, `KOMUNITECH_ABSENSI_DB`, `KOMUNITECH_CRM_DB`, `KOMUNITECH_DATA`) dan `pengingat/DAFTAR.csv` (folder kerja, workspace OpenClaw `~/.openclaw/workspace`, atau `~/KomunitechData`). Alat yang tidak ada **dilewati dengan catatan**, bukan error.
+2. Database dibuka **read-only** (`mode=ro`, batas tunggu 10 detik) lalu disalin ke folder sementara. File asli tidak pernah ditulis (diuji: sidik file sebelum = sesudah) — berlaku juga untuk database crm-wa.
+3. Angka dihitung oleh **perintah laporan resmi** tiap alat (`kasir.py rekap`, `stok.py laporan ringkas`, `absensi.py harian/rekap`, `cek_jatuh_tempo.py rekap`, `crm.py rekap --json`) pada salinan itu. Karena memakai "pintu resmi" alat, laporan tetap benar walau struktur database alat berubah di versi baru. Hanya 3 hal dibaca langsung dari salinan (dengan cek kolom dulu; jika berubah, bagian itu dilewati dengan catatan): selisih kas (tabel `sesi` kasir); nota kasir yang **sah** (bukan yang di-void) per tanggal dibandingkan satu per satu dengan nomor nota di tabel `pesanan` buku-stok, jadi impor **sebagian** pun terdeteksi; dan jam masuk paling awal (tabel `shift`+`karyawan` absensi) untuk menghindari alarm keliru sebelum jam kerja mulai. Bagian PROSPEK memakai `crm.py rekap --json` (kontrak `skema_json` 1) apa adanya, tanpa baca tabel langsung.
 4. Script alat dicari di folder skills yang sama dengan skill ini (lalu `~/.openclaw/skills`, `~/.claude/skills`, `~/.agents/skills`, `~/.cursor/skills`). Jadi pasang skill alat di folder yang sama.
 
 ## Input
@@ -32,7 +32,7 @@ Pemilik usaha cukup membaca **satu pesan** tiap malam (dan satu tiap Senin pagi)
 | Periode | Tidak | Harian = hari ini (WIB). Mingguan = minggu lalu Senin–Minggu |
 | Tanggal | Tidak | `hari-ini`; bisa `kemarin`, `2026-09-24`, `24/09/2026` |
 | Zona waktu | Tidak | `Asia/Jakarta` (WIB). WITA `Asia/Makassar`, WIT `Asia/Jayapura` |
-| Lokasi data lain | Tidak | Lokasi default alat. Pakai `--kasir-db`, `--stok-db`, `--absensi-db`, `--pengingat` bila beda |
+| Lokasi data lain | Tidak | Lokasi default alat. Pakai `--kasir-db`, `--stok-db`, `--absensi-db`, `--pengingat`, `--crm-db` bila beda |
 | Samarkan nama karyawan | Tidak | Tidak. `--samarkan` = inisial (disarankan bila laporan dibaca orang lain) |
 
 Tidak perlu bertanya apa pun untuk laporan pertama: langsung jalankan. Bertanya hanya saat membuat jadwal (lihat Langkah C).
@@ -101,11 +101,21 @@ TAGIHAN & FOLLOW-UP
 Terlambat 1 | hari ini 0 | besok 0
 - #2 piutang Rp 12.500.000, lewat 3 hari
 
+PROSPEK
+Prospek baru: 1
+Follow-up terlambat 1 | hari ini 2 | besok 0 | order perlu konfirmasi 0
+Nilai potensi (terlambat + hari ini): Rp 4.500.000
+Deal periode ini: 1 senilai Rp 6.000.000
+Konversi: 0,0% (0 dari 1 lead)
+Sumber lead terbaik: belum ada deal dari lead periode ini.
+Nama & nomor prospek: ketik "follow-up hari ini" atau "rekap CRM".
+
 PERLU PERHATIAN
 1. Selisih kas saat tutup kasir 2026-09-24 20:00: KURANG Rp 11.000 (...)
 2. 3 dari 5 nota kasir tanggal 2026-09-24 belum diimpor ke buku-stok (stok belum terpotong).
+3. 1 follow-up prospek CRM terlambat. Ketik 'follow-up hari ini' untuk daftar & draf pesannya.
 ```
-JSON (`--json`): `periode`, `alat` (status `ada`/`tidak_ada`/`gagal`/`dilewati` + pesan), `penjualan`, `stok`, `kehadiran`, `tagihan`, `perhatian`, `rumus`, `teks`.
+JSON (`--json`): `periode`, `alat` (status `ada`/`tidak_ada`/`gagal`/`dilewati` + pesan), `penjualan`, `stok`, `kehadiran`, `tagihan`, `prospek`, `perhatian`, `rumus`, `teks`.
 
 ## Aturan hitung (eksplisit)
 - **Omzet bersih** = `penjualan_bersih` dari kasir-lokal (setelah diskon, retur & void). Uang diterima ditampilkan terpisah bila berbeda (pajak/service).
@@ -114,24 +124,26 @@ JSON (`--json`): `periode`, `alat` (status `ada`/`tidak_ada`/`gagal`/`dilewati` 
 - **Pembanding harian**: kemarin & hari yang sama minggu lalu. **Mingguan**: Senin–Minggu sebelumnya; minggu berjalan dipotong s.d. hari ini dan dibanding hari yang sama minggu sebelumnya.
 - **Perlu restock** = stok minimum − stok (dari buku-stok). Status minus/habis/menipis dari buku-stok, posisi saat laporan dibuat.
 - Tanpa kasir-lokal tetapi ada buku-stok → penjualan = `omzet_tercatat` buku-stok (dijumlah per hari).
+- **PROSPEK**: semua angka (prospek baru, follow-up terlambat/hari ini/besok, deal & nilainya, konversi, sumber terbaik) diambil **apa adanya** dari `crm.py rekap --json` (kontrak `skema_json` 1) — laporan-harian-usaha tidak menghitung ulang dengan rumus lain. `--dari`/`--sampai` mengikuti periode laporan (jadi "prospek baru" & "deal" adalah untuk hari/minggu itu); status follow-up (terlambat/hari ini/besok) selalu dihitung terhadap **hari ini** (bukan periode yang dilaporkan), sama seperti TAGIHAN & FOLLOW-UP. Perbandingan mingguan hanya untuk jumlah lead masuk (vs minggu sebelumnya, memakai jendela yang sama seperti pembanding PENJUALAN mingguan).
 - Tanggal "hari ini" dihitung di zona `--tz` (default WIB), bukan jam server. Jam 00.30 WIB = sudah tanggal baru.
 
 ## Privasi
 - **Tidak ada nama/nomor pelanggan**: tagihan ditampilkan sebagai nomor item (`#2 piutang Rp ...`). Perihal, catatan pribadi, dan nama penyetuju lembur tidak ditampilkan.
+- **Tidak ada nama/nomor prospek**: bagian PROSPEK hanya jumlah, nilai rupiah, dan nama sumber lead (Instagram, TikTok, dll.) — kontrak `rekap --json` crm-wa (`skema_json` 1) memang tidak memuat nama kontak atau nomor WA. Nama & draf pesan follow-up tetap lewat `crm-wa` sendiri ("follow-up hari ini", "rekap CRM").
 - Nama karyawan = nama panggilan yang sudah ada di absensi; `--samarkan` mengubahnya jadi inisial.
 - Laporan hanya dikirim ke pemilik, atau pemilik bersama/pengelola yang **pemilik tunjuk secara eksplisit** (chat pribadi masing-masing). Tanpa grup, tanpa pelanggan, tanpa broadcast. Tidak ada data yang dikirim ke internet oleh script (pengiriman Telegram dilakukan OpenClaw milik pengguna).
 
 ## Checklist sebelum mengirim
 - [ ] Teks laporan dari script, angka/persen/tanggal tidak diubah
 - [ ] Bagian "Belum ada data" tidak diisi perkiraan
-- [ ] Tidak ada nama pelanggan/nomor HP ditambahkan
+- [ ] Tidak ada nama pelanggan/nomor HP/nama & nomor prospek ditambahkan
 - [ ] Butir "PERLU PERHATIAN" disampaikan semua
 - [ ] Jadwal hanya dibuat setelah pemilik menjawab "ya", tujuan = chat pemilik sendiri (atau chat pribadi penerima yang pemilik tunjuk eksplisit)
 
 ## Batasan & penanganan error
 - Hanya membaca alat Komunitech di komputer yang sama. Bukan dashboard web, bukan multi-cabang, tidak menarik data marketplace/bank.
 - "sedang dipakai program lain" → saat itu ada transaksi yang sedang disimpan; data aman, jalankan lagi sebentar kemudian. Alat lain tetap dilaporkan.
-- "script ... tidak ditemukan" → skill alatnya belum terpasang di folder skills yang sama; pasang, atau beri `--kasir-script PATH` dst.
+- "script ... tidak ditemukan" → skill alatnya belum terpasang di folder skills yang sama; pasang, atau beri `--kasir-script PATH`/`--crm-script PATH` dst.
 - "Jam komputer ini bukan Asia/Jakarta" → hanya **absensi-lokal** yang mencatat jam tap menurut jam komputer; sarankan menyamakan zona waktu komputer. kasir-lokal TIDAK terpengaruh jam komputer: ia mencatat nota menurut zona toko yang diatur di pengaturannya sendiri (`kasir.py info`). Bila zona toko itu beda dengan `--tz` laporan, muncul pesan terpisah "Toko diatur zona X tapi laporan memakai --tz Y"; samakan `--tz` dengan zona toko, bukan zona komputer.
 - `--tz` hanya menerima zona Indonesia: Asia/Jakarta (WIB), Asia/Makassar (WITA), Asia/Jayapura (WIT) (dan alias WIB/WITA/WIT/Asia/Pontianak). Zona lain ditolak (kode keluar 2).
 - File rusak/bukan database → bagian itu "Belum ada data" + pesan di PERLU PERHATIAN; sarankan pulihkan dari folder backup alatnya (jangan dihapus). Pesan error selalu menyebut path **file asli**, bukan salinan sementara yang dipakai script.
