@@ -36,3 +36,18 @@ Sumber ditulis untuk **cold email B2B berbahasa Inggris** dengan asumsi tim SDR/
 - **Semua bagian lain** — `references/dasar-hukum-wa.md`, `references/checklist-anti-blokir.md`, `templates/`, `scripts/`, `tests/`, `examples/`, dan `README.md` — adalah karya orisinal Komunitech, tidak mengandung materi pihak ketiga, dan boleh diperlakukan sebagai proprietary Komunitech.
 
 Penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian, ditambah ketentuan MIT pada bagian yang disebut di atas.
+
+## Riwayat versi
+
+### v1.0.1 (2026-09-25) — revisi temuan penguji independen (`examples/HASIL-UJI.md`, skor 8/10)
+Perbaikan berikut TIDAK mengubah `examples/00-*`, `examples/01-05-*`, atau `HASIL-UJI.md` (bukti uji dipertahankan apa adanya untuk audit berikutnya):
+- **B1 (tinggi):** `KATA_KUNCI_ASAL_KONTAK` di `scripts/cek_pesan.py` ditulis ulang, diturunkan langsung dari setiap pola di `references/pola-pembuka.md` (referral, pameran/expo/bazar, Google Maps, Instagram/IG/TikTok, grup komunitas, website) sehingga tidak lagi bertentangan dengan referensinya sendiri; "dari bapak/ibu" sendirian dibuang karena memicu salah-positif.
+- **B2:** `normalisasi_nomor_wa` mengoreksi salah ketik "+62 0812…" dan membuang awalan internasional "00…"; hanya menerima digit ASCII (menolak digit Unicode full-width/Arab-Indik dengan pesan yang benar); memvalidasi pola & panjang nomor seluler Indonesia (62 + 9-12 digit diawali "8"), menolak nomor 14+ digit atau bukan pola 08xx dengan pesan jelas.
+- **B3:** `SINGKATAN_AMAN` diperluas dengan istilah B2B/UMKM Indonesia yang lazim kapital (HRD, PPN, PPh, SPT, BPJS, NPWP, PT, CV, UMKM, WA, IG, PDF, SOP, CEO, KTP, HIPMI, KADIN, APINDO, dll.).
+- **B4:** `--jam-kirim` menerima `HH:MM`, `HH.MM`, dan 4 digit (`1930`); ditambah `--zona` (WIB/WITA/WIT); SKILL.md & output script sekarang menegaskan jam = waktu SETEMPAT PENERIMA, bukan waktu pengirim, dengan panduan konversi WITA/WIT.
+- **B5:** SKILL.md mempertegas batas cakupan dengan `riset-calon-pelanggan` (riset = cari & saring daftar, pesan pembuka hanya bonus; skill ini = susun & periksa pesan pertama secara mendalam untuk satu prospek). `riset-calon-pelanggan` tidak diubah.
+- **B6:** `references/dasar-hukum-wa.md` diperbaiki: UU ITE ditulis "UU 11/2008 jo. UU 19/2016 jo. UU 1/2024"; UU Perlindungan Konsumen diganti ke Pasal 9-10 (bukan 8-9, diverifikasi via web search 2026-09-25); UU PDP dipisah jadi WAJIB menurut pasal (dasar pemrosesan Pasal 20, larangan Pasal 65 & sanksi Pasal 67) vs PRAKTIK BAIK (sebut asal kontak & opsi keluar, terkait hak subjek data Pasal 5-8 dst.).
+- **B7-B12 (rendah):** jumlah emoji dihitung & diperingatkan bila >3; pemisah kalimat memecah baris baru (daftar poin tanpa titik); template Varian 3 dirapikan target ≤500 karakter; label "Singkat" diselaraskan jadi "± 2-3 kalimat, ≤300 karakter"; aturan baru — detail layanan yang tidak diberikan pengguna ditandai `[isi: ...]` atau masuk Asumsi, tidak boleh dikarang; Varian 3 kini diarahkan menyebut akibat/masalah bagi penerima (dengan kata sendiri), bukan mendaftar fitur.
+- Tes regresi baru ditambahkan di `tests/uji_regresi.py` untuk setiap bug di atas (66 tes total, semua lulus).
+
+### v1.0.0 (2026-09-25) — rilis awal (status `draft`, hasil kurasi ATM dari `cold-email`, lihat bagian atas dokumen ini).
