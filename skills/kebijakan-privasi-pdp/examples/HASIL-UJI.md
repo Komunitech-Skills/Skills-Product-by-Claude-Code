@@ -141,3 +141,31 @@ Alasan:
 - (+) Template klinik kini konsisten dengan aturan persetujuan; klaim hukum inti terverifikasi; penanganan HTML/UTF-16/file besar baik.
 - (+) Keunggulan A/B & banding pesaing dari uji pertama tetap berlaku (keluaran mode SUSUN/PERSETUJUAN tidak memburuk).
 - (−) Mode CEK masih melewatkan pola "berbagi data untuk iklan" berbahasa Indonesia dan "sell/share" EN dengan kata sisipan — tepat di skenario salinan template luar. Risiko tertahan karena SKILL.md mewajibkan pembacaan manual checklist C, sehingga bukan penghalang lulus, tetapi pengguna yang menjalankan script sendiri bisa tidak diberi tahu.
+
+---
+
+## Uji ulang v1.0.2 (penguji independen ke-3, 2026-09-25)
+
+Rincian, set buta, dan teks dokumen: `07-uji-ulang-v1.0.2.md`. Set ditulis sebelum membuka `scripts/`, `tests/`, `examples/` dan SKILL.md.
+
+- **Akurasi buta script (44 kalimat, 22 berisiko):** akurasi 30/44 (68%), **recall 9/22 (41%)**, presisi 90%, FP 1 (P01 kalimat patuh "tidak menjual … kepada pihak mana pun" → SEDANG). **Dokumen utuh:** risiko 2/9 tertangkap (Dok A 2/4, Dok B klinik EN **0/5**, output "FRASA BERISIKO: tidak ditemukan"); unsur 24/30 (80%), Dok B EN salah TIDAK ADA untuk identitas, tujuan, penerima.
+- **Tes bawaan:** LULUS 239 uji. **Regresi:** T-1 ✅ (varian P01 kambuh), T-2 ✅, B-1 ✅, B-2 ✅, template kosong ID/EN 84/100 BELUM SIAP ✅, usia 13 ✅. Parafrasa dari B-1/B-2 lolos → pola disetel pada contoh yang dikenal.
+- **Alur skill (mode CEK):** SKILL.md memang menyuruh membaca manual (langkah 2), dan agent yang membaca bebas menangkap 9/9 risiko. Tetapi alur tidak **memastikan**: script dijalankan dulu, format output mengikuti daftar script, checklist C tidak memuat kategori yang terlewat, dan tidak ada perintah mengoreksi status unsur script yang salah.
+
+### Temuan
+- **TINGGI U3-1 — mode CEK bergantung pada script yang recall-nya 41%.** Usulan teks pengganti Mode 3 langkah 1–3 di SKILL.md:
+  > 1. **Baca seluruh dokumen sendiri lebih dulu, kalimat demi kalimat.** Tandai setiap kalimat tentang berbagi/pengalihan data, masa simpan, persetujuan, hak pengguna, anak, data spesifik, lokasi/perangkat, transfer luar negeri, tanggung jawab, dan perubahan kebijakan. Nilai maknanya, bukan kata kuncinya (eufemisme seperti "kolaborasikan", "salurkan ke rekan bisnis", "made available to partners", "at our sole discretion", "unless you object", "may register themselves", "arsipkan tanpa batas waktu" tetap berisiko).
+  > 2. Jalankan `scripts/cek_kebijakan.py` sebagai **alat bantu** (skor struktur + penanda awal). Gabungkan temuanmu dengan temuan script. **Hasil "tidak ditemukan" dari script tidak pernah berarti aman.** Bila script menandai unsur TIDAK ADA padahal ada (sering pada teks EN), koreksi dan sebutkan koreksinya.
+  > 3. Laporkan semua frasa berisiko — dari script **dan** dari bacaanmu — dengan kolom sumber (script/manual).
+  Tambahkan ke `references/checklist-uu-pdp.md` bagian C: pembatasan hak (diskresi, "tidak dapat dilayani"), anak mendaftar sendiri/tanpa izin wali, opt-out untuk data spesifik/foto pasien, transfer LN tanpa jaminan setara, perubahan tujuan tanpa persetujuan ulang, pelacakan lokasi yang tak bisa dimatikan, data berlebih (swafoto+KTP), eufemisme berbagi/monetisasi. Tambahkan di output script (bagian FRASA BERISIKO kosong): "Tidak ditemukan pola yang dikenal — bukan berarti bebas risiko; baca manual."
+- **SEDANG U3-2 — parafrasa dari frasa checklist B lolos** ("melepaskan segala hak untuk menuntut", "bersifat final dan tidak dapat ditarik kembali", "bear no liability whatsoever for … disclosure"). Longgarkan pola dengan sisipan kata (`[^.\n]{0,30}`), jangan menambah kalimat uji persis.
+- **SEDANG U3-3 — unsur teks EN:** identitas ("X ("the Clinic")"), "Purpose:", "Sharing"/"made available to" tidak terbaca → usulan perbaikan palsu ke pengguna.
+- **RENDAH U3-4 — FP P01** (negasi di awal kalimat tidak dipakai untuk "pihak mana pun"). U3-5 hak koreksi "diperbaiki" tidak terbaca; catatan transfer LN tidak menyebut Google Sheets.
+- **Catatan proses:** angka akurasi 100% di `tests/uji_regresi.py` berasal dari set yang sudah dipakai menyetel; jangan dikutip sebagai akurasi di README/materi jualan.
+
+### Skor kualitas uji ulang v1.0.2: **6/10** — REVISI sebelum beta
+Alasan:
+- (+) Mode SUSUN/PERSETUJUAN/TANGGAPI dan temuan lama tidak regresi; tes bawaan lulus; presisi script tinggi (90%) dan template kosong dinilai benar.
+- (+) SKILL.md sudah menyebut script hanya pemeriksa kata kunci dan meminta baca manual, sehingga agent teliti tetap menghasilkan laporan lengkap.
+- (−) Recall buta 41% dan 0/5 pada kebijakan klinik berisi data kesehatan: pengguna yang hanya melihat "FRASA BERISIKO: tidak ditemukan" (dari script atau agent yang menyalinnya) mendapat rasa aman palsu — ini inti nilai jual mode CEK.
+- (−) Alur belum memaksa pembacaan manual lebih dulu/sejajar. Perbaikan U3-1 murah (teks SKILL.md + checklist C + 1 baris output). Setelah itu cukup uji ulang singkat mode CEK dengan set buta **baru** (bukan set 06/07) oleh penguji lain; target: laporan akhir agent menangkap ≥ 90% risiko berlabel. Menyetel pola script pada set 07 tidak dihitung sebagai perbaikan.
