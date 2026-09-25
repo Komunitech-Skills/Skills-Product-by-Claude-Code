@@ -6,6 +6,9 @@ Jalankan: python3 tests/uji_regresi.py   (Windows: python / py)
 Tanggal patokan pergeseran yang DIKONFIRMASI sumber luar (dicek 2026-09-25):
 - SPT Masa PPh 21/Unifikasi masa Feb 2026: 20 Mar 2026 -> 25 Mar 2026 (libur & cuti Idulfitri) - DDTC/Kring Pajak.
 - Setor PPh masa Apr 2026: 15 Mei 2026 (cuti bersama) -> 18 Mei 2026 - DDTC.
+- PPN masa Apr 2026: 31 Mei 2026 (Minggu, Waisak) -> 1 Jun (Pancasila) -> 2 Jun 2026 - DDTC.
+- v1.0.1: batas unggah faktur pajak keluaran tgl 20 bulan berikutnya (PER-11/PJ/2025 Ps. 44 ayat 1),
+  tidak bergeser (sumber sekunder, PERLU REVIEW).
 """
 import csv
 import datetime as dt
@@ -85,7 +88,7 @@ class UjiPergeseran(unittest.TestCase):
         a = acara_json("--profil", "pemberi-kerja,pemotong,badan-pkp,op-umkm", "--tahun", "2026",
                        "--jumlah-bulan", "24")
         for e in a:
-            if e["jenis"] == "tahunan":
+            if e["jenis"] in ("tahunan", "unggah"):  # sengaja tidak digeser
                 continue
             t = dt.date.fromisoformat(e["tanggal"])
             self.assertLess(t.weekday(), 5, e)
@@ -303,6 +306,192 @@ class UjiCsvDanInputBuruk(unittest.TestCase):
         n27 = [t for t in libur if t.year == 2027]
         self.assertEqual(len(n26), 17 + 8)
         self.assertEqual(len(n27), 18 + 8)
+
+
+
+class UjiRevisi101(unittest.TestCase):
+    """Regresi temuan penguji (examples/HASIL-UJI.md) untuk v1.0.1."""
+
+    def test_tanggal_lama_tidak_berubah(self):
+        a = acara_json("--profil", "pemberi-kerja,pemotong,badan-pkp,op-umkm", "--tahun", "2026")
+        self.assertEqual(cari(a, "pph21", "lapor", "Feb 2026")["tanggal"], "2026-03-25")
+        self.assertEqual(cari(a, "unifikasi", "lapor", "Feb 2026")["tanggal"], "2026-03-25")
+        self.assertEqual(cari(a, "pph-final-umkm", "setor", "Apr 2026")["tanggal"], "2026-05-18")
+        self.assertEqual(cari(a, "ppn", "setor+lapor", "Apr 2026")["tanggal"], "2026-06-02")
+        self.assertEqual(cari(a, "ppn", "setor+lapor", "Sep 2026")["tanggal"], "2026-11-02")
+        self.assertEqual(cari(a, "spt-badan", "tahunan", "Tahun pajak 2025")["tanggal"], "2026-04-30")
+        self.assertEqual(cari(a, "spt-op", "tahunan", "Tahun pajak 2025")["tanggal"], "2026-03-31")
+
+    # P1 - batas unggah faktur pajak keluaran
+    def test_p1_unggah_faktur_tgl_20_semua_profil_pkp(self):
+        for prof in ("badan-pkp", "pkp", "ppn", "op-umkm,pkp"):
+            a = acara_json("--profil", prof, "--tahun", "2026", "--bulan-mulai", "10", "--jumlah-bulan", "1")
+            e = cari(a, "ppn", "unggah", "Sep 2026")
+            self.assertEqual(e["tanggal"], "2026-10-20", prof)
+            self.assertIn("faktur pajak keluaran", e["kegiatan"])
+
+    def test_p1_unggah_faktur_tidak_ada_di_profil_non_pkp(self):
+        a = acara_json("--profil", "op-umkm,pemberi-kerja,pemotong,badan-umum", "--tahun", "2026")
+        self.assertFalse([e for e in a if e["jenis"] == "unggah"])
+
+    def test_p1_unggah_faktur_tidak_bergeser_saat_libur(self):
+        a = acara_json("--profil", "badan-pkp", "--tahun", "2026", "--bulan-mulai", "3", "--jumlah-bulan", "1")
+        e = cari(a, "ppn", "unggah", "Feb 2026")  # 20 Mar 2026 cuti bersama Idulfitri
+        self.assertEqual(e["tanggal"], "2026-03-20")
+        self.assertEqual(e["bergeser_karena"], [])
+        self.assertIn("Idulfitri", e["libur_tidak_bergeser"])
+        self.assertIn("TIDAK bergeser", e["keterangan"])
+        # 20 Des 2026 Minggu -> tetap 20 Des, ditandai
+        a = acara_json("--profil", "pkp", "--tahun", "2026", "--bulan-mulai", "12", "--jumlah-bulan", "1")
+        e = cari(a, "ppn", "unggah", "Nov 2026")
+        self.assertEqual((e["tanggal"], e["libur_tidak_bergeser"]), ("2026-12-20", "Minggu"))
+
+    def test_p1_catatan_dasar_dan_perlu_review(self):
+        md = jalan("--profil", "badan-pkp", "--tahun", "2026", "--bulan-mulai", "10", "--jumlah-bulan", "1")
+        self.assertIn("UNGGAH faktur pajak keluaran bulan Sep 2026", md)
+        self.assertIn("PER-11/PJ/2025", md)
+        self.assertIn("PERLU REVIEW", md)
+
+    def test_p1_unggah_di_ics_dan_hari_ini(self):
+        md = jalan("--profil", "badan-pkp", "--hari-ini", "2026-10-15", "--rentang", "7")
+        self.assertIn("UNGGAH faktur", md)
+        ics = jalan("--profil", "pkp", "--tahun", "2026", "--bulan-mulai", "10", "--jumlah-bulan", "1",
+                    "--format", "ics")
+        self.assertIn("UNGGAH faktur", ics.replace("\r\n ", ""))
+
+    # P2 - klaim pengingat & impor ulang
+    def test_p2_catatan_google_calendar_saat_simpan_ics(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "p.ics"
+            out, _ = kp.jalankan(["--profil", "op-umkm", "--tahun", "2026", "--format", "ics", "--keluar", str(f)],
+                                 sekarang_utc=STAMP)
+            teks = out.decode("utf-8")
+            self.assertIn("Google Calendar", teks)
+            self.assertIn("--acara-pengingat", teks)
+            self.assertIn("duplikat", teks)
+        _, per = kp.jalankan(["--profil", "op-umkm", "--tahun", "2026", "--format", "ics"], sekarang_utc=STAMP)
+        self.assertIn("Google Calendar", per)
+
+    def urai(self, teks):
+        g = []
+        for l in teks.split("\r\n"):
+            if l.startswith(" ") and g:
+                g[-1] += l[1:]
+            elif l:
+                g.append(l)
+        return g
+
+    def test_p2_acara_pengingat_terpisah(self):
+        dasar = self.urai(jalan("--profil", "pph21", "--tahun", "2026", "--bulan-mulai", "10",
+                                "--jumlah-bulan", "1", "--format", "ics"))
+        g = self.urai(jalan("--profil", "pph21", "--tahun", "2026", "--bulan-mulai", "10", "--jumlah-bulan", "1",
+                            "--format", "ics", "--acara-pengingat"))
+        n0 = dasar.count("BEGIN:VEVENT")
+        self.assertEqual(g.count("BEGIN:VEVENT"), 3 * n0)
+        self.assertEqual(g.count("BEGIN:VALARM"), 2 * n0)  # VALARM tetap hanya di acara tenggat
+        uids = [x for x in g if x.startswith("UID:")]
+        self.assertEqual(len(uids), len(set(uids)))
+        # setor PPh 21 masa Sep 2026 = 15 Okt 2026 -> pengingat 12 Okt & 14 Okt
+        mulai = [x for x in g if x.startswith("DTSTART")]
+        self.assertIn("DTSTART;VALUE=DATE:20261012", mulai)
+        self.assertIn("DTSTART;VALUE=DATE:20261014", mulai)
+        self.assertTrue(any(x.startswith("SUMMARY:Pengingat H-3 pajak") for x in g))
+        self.assertTrue(any(x.startswith("SUMMARY:Pengingat H-1 pajak") for x in g))
+        for x in g:
+            if x.startswith("SUMMARY:"):
+                self.assertIsNone(re.search(r"(?<!\\)[,;]", x.split(":", 1)[1].replace("\\\\", "")), x)
+        # UID pengingat stabil antar-run
+        g2 = self.urai(jalan("--profil", "pph21", "--tahun", "2026", "--bulan-mulai", "10", "--jumlah-bulan", "1",
+                             "--format", "ics", "--acara-pengingat"))
+        self.assertEqual(uids, [x for x in g2 if x.startswith("UID:")])
+        for baris in jalan("--profil", "pph21", "--tahun", "2026", "--format", "ics",
+                           "--acara-pengingat").encode("utf-8").split(b"\r\n"):
+            self.assertLessEqual(len(baris), 75)
+
+    def test_p2_acara_pengingat_hanya_ics(self):
+        p = subprocess.run([sys.executable, str(SCRIPT), "--profil", "op-umkm", "--acara-pengingat"],
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.assertEqual(p.returncode, 2)
+        self.assertIn("ERROR:", p.stderr.decode("utf-8"))
+        self.assertNotIn("Traceback", p.stderr.decode("utf-8"))
+
+    def test_p2_prodid_versi(self):
+        ics = jalan("--profil", "op-umkm", "--tahun", "2026", "--format", "ics")
+        self.assertIn("PRODID:-//Komunitech//kalender-pajak 1.0.1//ID", ics)
+
+    # P3 - CSV libur berkoma
+    def test_p3_keterangan_berkoma_tanpa_kutip_tidak_terpotong(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "libur-2028.csv"
+            f.write_text("tanggal,jenis,keterangan\n2028-02-15,libur,Uji, dengan koma\n"
+                         '2028-03-15,libur,"Kutip, juga koma"\n', encoding="utf-8")
+            libur, tahun = kp.muat_libur([str(f)])
+            self.assertEqual(libur[dt.date(2028, 2, 15)], "Uji, dengan koma")
+            self.assertEqual(libur[dt.date(2028, 3, 15)], "Kutip, juga koma")
+            a = json.loads(jalan("--profil", "pph21", "--tahun", "2028", "--bulan-mulai", "2",
+                                 "--jumlah-bulan", "1", "--libur", str(f), "--format", "json"))
+            e = cari(a["acara"], "pph21", "setor", "Jan 2028")
+            self.assertEqual(e["tanggal"], "2028-02-16")
+            self.assertIn("Uji, dengan koma", e["bergeser_karena"][0])
+
+    # P3 - tenggat berikutnya di mode --hari-ini
+    def test_p3_hari_ini_kosong_sebut_tenggat_berikutnya(self):
+        md = jalan("--profil", "spt-op", "--hari-ini", "2026-09-25")
+        self.assertIn("Tidak ada tenggat", md)
+        self.assertIn("Tenggat berikutnya", md)
+        self.assertIn("Rabu, 31 Maret 2027", md)
+        self.assertIn("LAPOR SPT Tahunan PPh Orang Pribadi tahun pajak 2026", md)
+        d = json.loads(jalan("--profil", "pph21", "--hari-ini", "2026-10-21", "--rentang", "7", "--format", "json"))
+        self.assertEqual(d["acara"], [])
+        self.assertEqual(d["tenggat_berikutnya"][0]["tanggal"], "2026-11-16")
+
+    def test_p3_hari_ini_tenggat_berikutnya_bergeser(self):
+        md = jalan("--profil", "pph21", "--hari-ini", "2026-10-21", "--rentang", "7")
+        self.assertIn("Senin, 16 November 2026", md)
+        self.assertIn("26 hari lagi", md)
+
+    # P3 - label alasan geser menampilkan hari & libur
+    def test_p3_label_sabtu_dan_hari_raya(self):
+        a = acara_json("--profil", "pph21", "--tahun", "2026", "--bulan-mulai", "3", "--jumlah-bulan", "1")
+        e = cari(a, "pph21", "lapor", "Feb 2026")
+        self.assertEqual(e["tanggal"], "2026-03-25")
+        self.assertIn("21 Mar: Sabtu & Idulfitri 1447 H", e["bergeser_karena"])
+        self.assertIn("22 Mar: Minggu & Idulfitri 1447 H", e["bergeser_karena"])
+        self.assertIn("20 Mar: Cuti bersama Idulfitri 1447 H", e["bergeser_karena"])
+        a = acara_json("--profil", "ppn", "--tahun", "2026", "--bulan-mulai", "6", "--jumlah-bulan", "1")
+        e = cari(a, "ppn", "setor+lapor", "Apr 2026")
+        self.assertEqual(e["bergeser_karena"][0], "31 Mei: Minggu & Hari Raya Waisak 2570 BE")
+
+    # P3 - cakupan periode & sumber data libur
+    def test_p3_cakupan_dan_sumber_libur(self):
+        md = jalan("--profil", "badan-pkp,pemberi-kerja", "--tahun", "2027")
+        self.assertIn("Cakupan: tenggat yang **jatuh**", md)
+        self.assertIn("masa pajak Desember 2027", md)
+        self.assertIn("tahun pajak 2027", md)
+        self.assertIn("Data libur: SKB 3 Menteri", md)
+        self.assertIn("libur-nasional-2027.csv", md)
+        ck = jalan("--profil", "op-umkm", "--tahun", "2026", "--format", "checklist")
+        self.assertIn("Cakupan:", ck)
+        self.assertIn("Data libur:", ck)
+        hi = jalan("--profil", "op-umkm", "--hari-ini", "2026-10-01")
+        self.assertIn("Data libur:", hi)
+
+    def test_p3_catatan_perpanjangan_spt_2025(self):
+        a = acara_json("--profil", "spt-op", "--tahun", "2026")
+        e = cari(a, "spt-op", "tahunan", "Tahun pajak 2025")
+        self.assertEqual(e["tanggal"], "2026-03-31")
+        self.assertIn("KEP-55/PJ/2026", e["keterangan"])
+
+    # Aturan yang diverifikasi ulang
+    def test_aturan_pph25_dan_pasal(self):
+        md = jalan("--profil", "pph25", "--tahun", "2026", "--jumlah-bulan", "1")
+        self.assertIn("tgl 20", md)
+        self.assertIn("Ps. 171", md)
+        src = SCRIPT.read_text(encoding="utf-8")
+        self.assertNotIn("Ps. 94 dst.", src)
+        skill = (SINI / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("Ps. 100", skill)
+        self.assertNotIn("Ps. 94 dst.", skill)
 
 
 if __name__ == "__main__":

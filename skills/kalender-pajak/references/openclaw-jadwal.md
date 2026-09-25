@@ -35,7 +35,7 @@ openclaw automations add --name "Pajak: pengingat tgl 15 & 20" --cron "0 7 10 * 
   --command-argv '["python3","/home/NAMA/.openclaw/skills/kalender-pajak/scripts/kalender_pajak.py","--profil","badan-pkp,pemberi-kerja","--hari-ini","hari-ini","--rentang","16"]' \
   --announce --channel telegram --to <chat-id-telegram-pemilik>
 ```
-**c. Pengingat akhir bulan (PPN) — tanggal 24, 07.00:** hanya bila profil memuat `ppn`/`badan-pkp`/`pkp`.
+**c. Pengingat akhir bulan (PPN) — tanggal 24, 07.00:** hanya bila profil memuat `ppn`/`badan-pkp`/`pkp`. (Batas unggah faktur pajak keluaran tgl 20 sudah tertangkap jadwal (b) bila profil memuat PPN; tgl 20 itu **tidak** bergeser walau libur.)
 ```bash
 openclaw automations add --name "Pajak: pengingat PPN akhir bulan" --cron "0 7 24 * *" --tz Asia/Jakarta \
   --command-argv '["python3","/home/NAMA/.openclaw/skills/kalender-pajak/scripts/kalender_pajak.py","--profil","ppn","--hari-ini","hari-ini","--rentang","10"]' \
@@ -73,4 +73,4 @@ Ganti baris terakhir menjadi `--announce --channel whatsapp --to "+62<nomor pemi
 - Tanggal di pesan meleset sehari → zona waktu komputer Gateway salah.
 
 ## Alternatif tanpa OpenClaw
-Buat file kalender sekali setahun: `python3 scripts/kalender_pajak.py --profil <profil> --tahun 2027 --format ics --keluar pajak-2027.ics`, lalu impor ke Google Calendar/Outlook/Kalender HP. Pengingat H-3 dan H-1 pukul 09.00 ikut terpasang.
+Buat file kalender sekali setahun: `python3 scripts/kalender_pajak.py --profil <profil> --tahun 2027 --format ics --keluar pajak-2027.ics`, lalu impor ke Google Calendar/Outlook/Kalender HP. File memuat pengingat H-3 & H-1 pukul 09.00 yang biasanya dipakai Apple Calendar/Outlook; **Google Calendar sering mengabaikannya** — atur notifikasi default kalender, atau tambah `--acara-pengingat` agar dibuat acara "Pengingat H-3/H-1" terpisah. Impor ulang ke Google bisa membuat duplikat (impor ke kalender khusus "Pajak" agar mudah dihapus).

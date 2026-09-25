@@ -7,6 +7,7 @@ Contoh (Windows: ganti python3 dengan python atau py):
   python3 kalender_pajak.py --profil op-umkm,pemberi-kerja --tahun 2026
   python3 kalender_pajak.py --profil badan-pkp --tahun 2026 --bulan-mulai 10 --format ics --keluar pajak.ics
   python3 kalender_pajak.py --profil badan-pkp,pemberi-kerja,pemotong --hari-ini 2026-09-25
+  python3 kalender_pajak.py --profil op-umkm --tahun 2027 --format ics --acara-pengingat --keluar pajak.ics
   python3 kalender_pajak.py --daftar-profil
 
 Keluar kode 0 = sukses, 2 = input salah (pesan 'ERROR: ...', tanpa traceback).
@@ -25,6 +26,7 @@ from pathlib import Path
 SINI = Path(__file__).resolve().parent
 REF = SINI.parent / "references"
 TANGGAL_CEK = "2026-09-25"
+VERSI = "1.0.1"
 TAHUN_MIN, TAHUN_MAKS = 2025, 2100
 
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
@@ -35,7 +37,7 @@ HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 # ---------------------------------------------------------------------------
 # Aturan (sumber & status verifikasi: references/aturan-tenggat.md)
 # setor/lapor: 15 / 20 = tanggal itu bulan berikutnya; "akhir" = hari terakhir bulan berikutnya;
-# None = tidak ada acara terpisah.
+# None = tidak ada acara terpisah. "unggah" = batas unggah faktur (tidak bergeser, lihat catatan).
 # ---------------------------------------------------------------------------
 KEWAJIBAN_MASA = {
     "pph-final-umkm": {
@@ -58,13 +60,20 @@ KEWAJIBAN_MASA = {
     "ppn": {
         "pajak": "PPN (PKP)",
         "setor": "akhir", "lapor": "akhir", "nama_spt": "SPT Masa PPN",
+        "unggah": 20,
         "catatan": "Setor paling lambat akhir bulan berikutnya DAN sebelum SPT Masa PPN dikirim. "
-                   "PKP tetap lapor walau nihil. Besarannya: skill hitung-ppn.",
+                   "PKP tetap lapor walau nihil. Faktur pajak keluaran wajib diunggah & mendapat "
+                   "persetujuan DJP paling lambat tgl 20 bulan berikutnya setelah tanggal pembuatan faktur "
+                   "(PER-11/PJ/2025 Ps. 44 ayat 1); faktur yang tidak disetujui bukan faktur pajak sah. "
+                   "Menurut sumber sekunder batas unggah faktur TIDAK bergeser walau tgl 20 hari libur "
+                   "(PERLU REVIEW) - unggah sebelum tgl 20. Besarannya: skill hitung-ppn.",
     },
     "pph25": {
         "pajak": "PPh 25 (angsuran bulanan)",
         "setor": 15, "lapor": None,
-        "catatan": "Setor yang tervalidasi dianggap sudah lapor SPT Masa PPh 25 (PERLU REVIEW). "
+        "catatan": "Batas lapor SPT Masa PPh 25 tgl 20, tetapi setoran yang tervalidasi (ada NTPN) "
+                   "dianggap sudah lapor pada tanggal setor (PMK 81/2024 Ps. 171, menurut Kring Pajak; "
+                   "nomor ayat PERLU REVIEW) - jadi cukup setor paling lambat tgl 15. "
                    "Angsuran nihil tidak perlu setor.",
     },
 }
@@ -75,7 +84,8 @@ KEWAJIBAN_TAHUNAN = {
         "bulan_ke": 3,
         "judul": "LAPOR SPT Tahunan PPh Orang Pribadi",
         "catatan": "Paling lambat 3 bulan setelah akhir tahun pajak. Kurang bayar (PPh 29) dilunasi "
-                   "SEBELUM SPT dikirim. Tenggat SPT Tahunan TIDAK bergeser walau jatuh di hari libur.",
+                   "SEBELUM SPT dikirim. Tenggat SPT Tahunan tidak bergeser otomatis walau jatuh di hari libur "
+                   "(penegasan DJP 2025; DJP kadang memberi perpanjangan khusus lewat pengumuman).",
     },
     "spt-badan": {
         "pajak": "SPT Tahunan PPh Badan",
@@ -83,7 +93,7 @@ KEWAJIBAN_TAHUNAN = {
         "judul": "LAPOR SPT Tahunan PPh Badan",
         "catatan": "Paling lambat akhir bulan ke-4 setelah akhir tahun buku (dianggap tahun buku "
                    "Januari-Desember). Kurang bayar (PPh 29) dilunasi SEBELUM SPT dikirim. Tidak bergeser "
-                   "walau jatuh di hari libur.",
+                   "otomatis walau jatuh di hari libur (penegasan DJP 2025; PERLU REVIEW).",
     },
     "bukti-a1": {
         "pajak": "Bukti potong PPh 21 tahunan (BPA1, dulu 1721-A1)",
@@ -111,9 +121,14 @@ PROFIL = {
 
 SEMUA_KEWAJIBAN = list(KEWAJIBAN_MASA) + list(KEWAJIBAN_TAHUNAN)
 
+# Perpanjangan khusus DJP yang sudah diketahui (tanggal di kalender TIDAK diubah; hanya diberi catatan).
+PERPANJANGAN_KHUSUS = {
+    ("spt-op", 2025): "tahun pajak 2025 diperpanjang DJP sampai 30 Apr 2026 (KEP-55/PJ/2026)",
+}
+
 DISCLAIMER = (
     "Bukan nasihat pajak. Dasar: PMK 81/2024 (berlaku 1 Jan 2025), PP 55/2022 jo. PP 20/2026, "
-    "PER-2/PJ/2024, SKB 3 Menteri libur nasional & cuti bersama; dicek " + TANGGAL_CEK +
+    "PER-2/PJ/2024, PER-11/PJ/2025, SKB 3 Menteri libur nasional & cuti bersama; dicek " + TANGGAL_CEK +
     " dari sumber sekunder (naskah resmi belum dibaca langsung). DJP kadang memundurkan tenggat lewat "
     "pengumuman khusus - cek pengumuman DJP terbaru (pajak.go.id, Kring Pajak 1500200). "
     "Pembulatan/perhitungan pajak tidak dilakukan skill ini dan belum dicocokkan dengan Coretax. "
@@ -148,7 +163,11 @@ def muat_libur(ekstra=None):
                         raise InputSalah("file libur '%s' baris %d: tanggal '%s' bukan format "
                                          "YYYY-MM-DD" % (f.name, no, b.get("tanggal")))
                     jenis = (b.get("jenis") or "libur").strip()
-                    ket = (b.get("keterangan") or "").strip() or "hari libur"
+                    ket = (b.get("keterangan") or "").strip()
+                    sisa = [x.strip() for x in (b.get(None) or []) if x and x.strip()]
+                    if sisa:  # koma tanpa tanda kutip di keterangan -> gabungkan, jangan terpotong
+                        ket = ", ".join([ket] + sisa) if ket else ", ".join(sisa)
+                    ket = ket or "hari libur"
                     libur[t] = ("cuti bersama: " if jenis == "cuti" and not ket.lower().startswith("cuti")
                                 else "") + ket
                     tahun_ada.add(t.year)
@@ -158,11 +177,13 @@ def muat_libur(ekstra=None):
 
 
 def hari_libur(t, libur):
-    if t.weekday() == 5:
-        return "Sabtu"
-    if t.weekday() == 6:
-        return "Minggu"
-    return libur.get(t)
+    """Alasan tanggal ini bukan hari kerja (mis. 'Sabtu & Idulfitri 1447 H'), atau None."""
+    bagian = []
+    if t.weekday() >= 5:
+        bagian.append(HARI[t.weekday()])
+    if t in libur:
+        bagian.append(libur[t])
+    return " & ".join(bagian) or None
 
 
 def geser(t, libur, tahun_ada, kurang):
@@ -175,7 +196,7 @@ def geser(t, libur, tahun_ada, kurang):
         a = hari_libur(t, libur)
         if not a:
             return t, alasan
-        alasan.append("%s %s" % (fmt_pendek(t), a))
+        alasan.append("%s: %s" % (fmt_pendek(t), a))
         t += dt.timedelta(days=1)
 
 
@@ -267,6 +288,10 @@ def buat_acara(kewajiban, awal, akhir, libur, tahun_ada):
                 continue
             ts = tgl_aturan(nth, nbl, a["setor"])
             tl = tgl_aturan(nth, nbl, a["lapor"]) if a["lapor"] is not None else None
+            if a.get("unggah"):
+                tu = tgl_aturan(nth, nbl, a["unggah"])
+                tambah(k, "unggah", "UNGGAH faktur pajak keluaran bulan %s (batas persetujuan DJP)" % masa_label,
+                       "Faktur Pajak Keluaran (PKP)", masa_label, tu, False, a["catatan"])
             if tl is not None and tl == ts:
                 tambah(k, "setor+lapor", "SETOR & LAPOR %s masa %s" % (a["nama_spt"].replace("SPT Masa ", ""), masa_label),
                        a["pajak"], masa_label, ts, True, a["catatan"])
@@ -287,9 +312,11 @@ def buat_acara(kewajiban, awal, akhir, libur, tahun_ada):
             normal = tgl_aturan(yth, ybl, "akhir")
             tambah(k, "tahunan", "%s tahun pajak %d" % (a["judul"], tp), a["pajak"],
                    "Tahun pajak %d" % tp, normal, False, a["catatan"])
+            if acara and acara[-1]["kode"] == k and acara[-1]["masa"] == "Tahun pajak %d" % tp:
+                acara[-1]["perpanjangan"] = PERPANJANGAN_KHUSUS.get((k, tp))
 
     urut = {k: i for i, k in enumerate(SEMUA_KEWAJIBAN)}
-    jenis_urut = {"setor": 0, "setor+lapor": 1, "lapor": 2, "tahunan": 3}
+    jenis_urut = {"setor": 0, "setor+lapor": 1, "lapor": 2, "unggah": 3, "tahunan": 4}
     acara.sort(key=lambda e: (e["tanggal"], jenis_urut[e["jenis"]], urut[e["kode"]]))
     return acara, kurang
 
@@ -298,11 +325,15 @@ def buat_acara(kewajiban, awal, akhir, libur, tahun_ada):
 # Keluaran
 # ---------------------------------------------------------------------------
 def ket_geser(e):
+    teks = "-"
     if e.get("libur_tetap"):
-        return "jatuh pada hari libur (%s) dan TIDAK bergeser - selesaikan hari kerja sebelumnya" % e["libur_tetap"]
-    if not e["alasan_geser"]:
-        return "-"
-    return "bergeser dari %s (%s)" % (fmt_pendek(e["tanggal_normal"]), "; ".join(e["alasan_geser"]))
+        teks = ("jatuh pada hari libur (%s) dan TIDAK bergeser - selesaikan hari kerja sebelumnya"
+                % e["libur_tetap"])
+    elif e["alasan_geser"]:
+        teks = "bergeser dari %s (%s)" % (fmt_pendek(e["tanggal_normal"]), "; ".join(e["alasan_geser"]))
+    if e.get("perpanjangan"):
+        teks = e["perpanjangan"] if teks == "-" else teks + "; " + e["perpanjangan"]
+    return teks
 
 
 def pesan_kurang(kurang, tahun_ada):
@@ -315,11 +346,31 @@ def pesan_kurang(kurang, tahun_ada):
                                                ", ".join(str(t) for t in sorted(tahun_ada)) or "-"))
 
 
+CATATAN_ICS = (
+    "Catatan pengingat: file .ics memuat pengingat H-3 & H-1 pukul 09.00 (VALARM). Apple Calendar & "
+    "Outlook biasanya memakainya, tetapi Google Calendar sering MENGABAIKAN pengingat dari file impor dan "
+    "memakai notifikasi default kalender. Di Google Calendar: atur notifikasi default kalender tujuan "
+    "(mis. 3 hari & 1 hari sebelumnya) atau buat ulang file dengan --acara-pengingat (acara pengingat "
+    "terpisah H-3 & H-1). Impor ulang: UID tetap sama sehingga Apple/Outlook umumnya memperbarui acara, "
+    "tetapi Google Calendar bisa tetap membuat duplikat - hapus kalender lama/impor ke kalender baru bila "
+    "perlu."
+)
+
+
+def baris_info(info):
+    """Baris cakupan periode & sumber data libur (untuk md/checklist/hari-ini)."""
+    o = ["Cakupan: tenggat yang **jatuh** pada %s s.d. %s (termasuk tenggat masa pajak bulan sebelum "
+         "periode). %s" % (fmt_panjang(info["awal"]), fmt_panjang(info["akhir"]), info["cakupan_lanjut"]),
+         "Data libur: %s." % info["sumber_libur"]]
+    return o
+
+
 def keluaran_md(acara, info):
     o = []
     o.append("## Kalender Pajak %s - %s" % (info["judul_rentang"], info["label_profil"]))
     o.append("")
     o.append("Kewajiban: %s" % ", ".join(info["kewajiban_nama"]))
+    o += [""] + baris_info(info)
     if info["peringatan"]:
         o += ["", "> **%s**" % info["peringatan"]]
     o.append("")
@@ -336,13 +387,14 @@ def keluaran_md(acara, info):
         o.append("- %s: %s" % (a["pajak"], a["catatan"]))
     o += ["", "**Aturan pergeseran:** tenggat setor & lapor bulanan yang jatuh pada Sabtu, Minggu, "
               "libur nasional, atau cuti bersama bergeser ke hari kerja berikutnya (PMK 81/2024). "
-              "Tenggat SPT Tahunan tidak bergeser. Sebaiknya setor/lapor 2-3 hari sebelum tenggat.",
+              "SPT Tahunan dan batas unggah faktur pajak ditampilkan tanpa pergeseran (lebih aman bila "
+              "ternyata boleh bergeser). Sebaiknya setor/lapor 2-3 hari sebelum tenggat.",
           "", "_%s_" % DISCLAIMER]
     return "\n".join(o) + "\n"
 
 
 def keluaran_checklist(acara, info):
-    o = ["## Checklist Pajak Bulanan - %s" % info["label_profil"], ""]
+    o = ["## Checklist Pajak Bulanan - %s" % info["label_profil"], ""] + baris_info(info) + [""]
     if info["peringatan"]:
         o += ["> **%s**" % info["peringatan"], ""]
     bulan_ini = None
@@ -377,6 +429,12 @@ def keluaran_hari_ini(acara, info, hari_ini, rentang):
             sisa = (e["tanggal"] - hari_ini).days
             label = "HARI INI" if sisa == 0 else ("besok" if sisa == 1 else "%d hari lagi" % sisa)
             o.append("| %s | %s | %s | %s |" % (label, fmt_panjang(e["tanggal"]), e["judul"], ket_geser(e)))
+    berikut = info.get("berikutnya") or []
+    if berikut:
+        t = berikut[0]["tanggal"]
+        o += ["", "Tenggat berikutnya sesudah rentang ini: **%s** (%d hari lagi) - %s" % (
+            fmt_panjang(t), (t - hari_ini).days, "; ".join(e["judul"] for e in berikut))]
+    o += [""] + ["Data libur: %s." % info["sumber_libur"]]
     o += ["", "_%s_" % DISCLAIMER]
     return "\n".join(o) + "\n"
 
@@ -396,11 +454,15 @@ def keluaran_csv(acara):
 def keluaran_json(acara, info):
     return json.dumps({
         "profil": info["profil"], "kewajiban": info["kewajiban"], "rentang": info["rentang"],
-        "peringatan": info["peringatan"], "tanggal_cek_aturan": TANGGAL_CEK,
+        "peringatan": info["peringatan"], "tanggal_cek_aturan": TANGGAL_CEK, "versi": VERSI,
+        "sumber_libur": info["sumber_libur"],
+        "tenggat_berikutnya": [{"tanggal": e["tanggal"].isoformat(), "kegiatan": e["judul"]}
+                               for e in (info.get("berikutnya") or [])],
         "acara": [{
             "tanggal": e["tanggal"].isoformat(), "tanggal_normal": e["tanggal_normal"].isoformat(),
             "kegiatan": e["judul"], "jenis": e["jenis"], "kewajiban": e["kode"], "masa": e["masa"],
             "bergeser_karena": e["alasan_geser"], "libur_tidak_bergeser": e["libur_tetap"],
+            "keterangan": ket_geser(e),
             "catatan": e["catatan"], "uid": e["uid"],
         } for e in acara],
         "disclaimer": DISCLAIMER,
@@ -425,9 +487,9 @@ def ics_lipat(baris):
     return "\r\n".join(hasil)
 
 
-def keluaran_ics(acara, info, sekarang_utc):
+def keluaran_ics(acara, info, sekarang_utc, acara_pengingat=False):
     stamp = sekarang_utc.strftime("%Y%m%dT%H%M%SZ")
-    b = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Komunitech//kalender-pajak 1.0.0//ID",
+    b = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Komunitech//kalender-pajak " + VERSI + "//ID",
          "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:" + ics_escape("Kalender Pajak - " + info["label_profil"]),
          "X-WR-TIMEZONE:Asia/Jakarta"]
     for e in acara:
@@ -447,6 +509,18 @@ def keluaran_ics(acara, info, sekarang_utc):
             b += ["BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:" + trig,
                   "DESCRIPTION:" + ics_escape("%s: %s" % (label, e["judul"])), "END:VALARM"]
         b.append("END:VEVENT")
+        if acara_pengingat:
+            # Acara pengingat terpisah (untuk Google Calendar yang sering mengabaikan VALARM impor)
+            for hari, kode in ((3, "h3"), (1, "h1")):
+                t = e["tanggal"] - dt.timedelta(days=hari)
+                b += ["BEGIN:VEVENT", "UID:" + uid(e["kode"], e["jenis"], e["masa"], kode), "DTSTAMP:" + stamp,
+                      "DTSTART;VALUE=DATE:" + t.strftime("%Y%m%d"),
+                      "DTEND;VALUE=DATE:" + (t + dt.timedelta(days=1)).strftime("%Y%m%d"),
+                      "SUMMARY:" + ics_escape("Pengingat H-%d pajak: %s (tenggat %s)" % (
+                          hari, e["judul"], fmt_panjang(e["tanggal"]))),
+                      "DESCRIPTION:" + ics_escape("Tenggat: %s\n%s\n\n%s" % (
+                          fmt_panjang(e["tanggal"]), e["judul"], DISCLAIMER)),
+                      "CATEGORIES:" + ics_escape("Pajak"), "TRANSP:TRANSPARENT", "END:VEVENT"]
     b.append("END:VCALENDAR")
     return "\r\n".join(ics_lipat(x) for x in b) + "\r\n"
 
@@ -500,6 +574,8 @@ def jalankan(argv, sekarang_utc=None):
     p.add_argument("--format", default="md", help="md | checklist | csv | ics | json")
     p.add_argument("--keluar", help="simpan ke file ini (disarankan untuk ics)")
     p.add_argument("--libur", action="append", default=[], help="file CSV libur tambahan (kolom tanggal,jenis,keterangan)")
+    p.add_argument("--acara-pengingat", action="store_true",
+                   help="khusus --format ics: tambah acara pengingat terpisah H-3 & H-1 (untuk Google Calendar)")
     p.add_argument("--daftar-profil", action="store_true", help="tampilkan daftar profil lalu keluar")
     a = p.parse_args(argv)
 
@@ -509,6 +585,8 @@ def jalankan(argv, sekarang_utc=None):
     fmt = a.format.strip().lower()
     if fmt not in ("md", "checklist", "csv", "ics", "json"):
         raise InputSalah("format '%s' tidak dikenal; pilih md, checklist, csv, ics, atau json" % a.format)
+    if a.acara_pengingat and fmt != "ics":
+        raise InputSalah("--acara-pengingat hanya untuk --format ics")
     profil, kewajiban = urai_profil(a.profil)
     libur, tahun_ada = muat_libur(a.libur)
     sekarang_utc = sekarang_utc or dt.datetime.now(dt.timezone.utc)
@@ -537,6 +615,24 @@ def jalankan(argv, sekarang_utc=None):
             BULAN[bm - 1], tahun, BULAN[abl - 1], ath)
 
     acara, kurang = buat_acara(kewajiban, awal, akhir, libur, tahun_ada)
+    berikutnya = []
+    if a.hari_ini:
+        # tenggat terdekat sesudah rentang (cari sampai 400 hari; tanpa memengaruhi peringatan)
+        lanjut, _ = buat_acara(kewajiban, akhir + dt.timedelta(days=1), akhir + dt.timedelta(days=400),
+                               libur, tahun_ada)
+        if lanjut:
+            berikutnya = [e for e in lanjut if e["tanggal"] == lanjut[0]["tanggal"]]
+    lth, lbl = akhir.year, akhir.month
+    if akhir != tgl_aturan(lth, lbl, "akhir"):
+        lth, lbl = bulan_berikut(lth, lbl, -1)
+    cakupan_lanjut = "Tenggat masa pajak %s %d dan sesudahnya jatuh setelah periode ini" % (BULAN[lbl - 1], lth)
+    if any(k in kewajiban for k in ("spt-op", "spt-badan", "bukti-a1")):
+        cakupan_lanjut += "; begitu juga kewajiban tahunan untuk tahun pajak %d" % akhir.year
+    cakupan_lanjut += " - buat kalender periode berikutnya untuk melihatnya."
+    sumber_libur = ("SKB 3 Menteri libur nasional & cuti bersama " + ", ".join(
+        str(t) for t in sorted(tahun_ada)) if tahun_ada else "belum ada")
+    sumber_libur += " (file: %s)" % ", ".join(
+        [f.name for f in sorted(REF.glob("libur-nasional-*.csv"))] + [Path(x).name for x in a.libur])
     # tahun rentang yang tidak punya data juga diperingatkan walau tidak ada acara di sana
     for th in range(awal.year, akhir.year + 1):
         if th not in tahun_ada:
@@ -546,6 +642,8 @@ def jalankan(argv, sekarang_utc=None):
         "judul_rentang": judul, "label_profil": ", ".join(profil),
         "kewajiban_nama": [(KEWAJIBAN_MASA.get(k) or KEWAJIBAN_TAHUNAN[k])["pajak"] for k in kewajiban],
         "peringatan": pesan_kurang(kurang, tahun_ada),
+        "awal": awal, "akhir": akhir, "cakupan_lanjut": cakupan_lanjut, "sumber_libur": sumber_libur,
+        "berikutnya": berikutnya,
     }
     if a.hari_ini and fmt == "md":
         teks = keluaran_hari_ini(acara, info, awal, (akhir - awal).days)
@@ -558,7 +656,7 @@ def jalankan(argv, sekarang_utc=None):
     elif fmt == "json":
         teks = keluaran_json(acara, info)
     else:
-        teks = keluaran_ics(acara, info, sekarang_utc)
+        teks = keluaran_ics(acara, info, sekarang_utc, a.acara_pengingat)
     data = teks.encode("utf-8")
     if a.keluar:
         try:
@@ -566,10 +664,16 @@ def jalankan(argv, sekarang_utc=None):
         except OSError as e:
             raise InputSalah("tidak bisa menulis '%s': %s" % (a.keluar, e.strerror or e))
         pesan = "Tersimpan: %s (%d tenggat)" % (a.keluar, len(acara))
+        if fmt == "ics":
+            pesan += "\n" + (CATATAN_ICS if not a.acara_pengingat else
+                             "Berisi juga acara pengingat terpisah H-3 & H-1 per tenggat. " + CATATAN_ICS)
         if info["peringatan"]:
             pesan += "\n" + info["peringatan"]
         return (pesan + "\n").encode("utf-8"), None
-    return data, (info["peringatan"] if fmt in ("csv", "ics") else None)
+    peringatan = info["peringatan"] if fmt in ("csv", "ics") else None
+    if fmt == "ics":
+        peringatan = "\n".join(x for x in (peringatan, CATATAN_ICS) if x)
+    return data, peringatan
 
 
 def main(argv=None):

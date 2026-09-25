@@ -18,7 +18,10 @@
 ## Sebelum tanggal lapor (umumnya tgl 20, lihat kalender)
 - [ ] Kirim SPT Masa PPh 21/26 — tanggal: ______ — bukti penerimaan elektronik disimpan
 - [ ] Kirim SPT Masa PPh Unifikasi — tanggal: ______
-- [ ] (UMKM 0,5% / PPh 25) Tidak perlu SPT Masa terpisah bila setoran sudah tervalidasi — cek BPN
+- [ ] (UMKM 0,5% / PPh 25) Tidak perlu SPT Masa terpisah bila setoran sudah tervalidasi (NTPN) — cek BPN
+
+## Sebelum tanggal 20 (PKP) — batas unggah faktur pajak keluaran
+- [ ] Semua faktur pajak keluaran bulan lalu sudah diunggah & **disetujui DJP** di Coretax (PER-11/PJ/2025: paling lambat tgl 20; **tidak mundur** walau tgl 20 hari libur — unggah lebih awal) — tanggal: ______
 
 ## Sebelum akhir bulan (PKP)
 - [ ] Setor PPN kurang bayar — sebelum SPT dikirim — tanggal: ______
