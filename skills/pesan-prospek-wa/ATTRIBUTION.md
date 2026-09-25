@@ -39,6 +39,11 @@ Penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian, dita
 
 ## Riwayat versi
 
+### v1.0.2 (2026-09-25) — perbaikan kecil dari uji ulang v1.0.1 (skor 9/10)
+- N1: `cek --file` membaca file UTF-8 ber-BOM dan cp1252 (Notepad lama) tanpa traceback; file biner → pesan ramah.
+- N3: WIB/WITA/WIT tidak lagi dianggap huruf kapital berlebihan; checklist emoji diselaraskan dengan batas script (maks 3).
+- Sisa untuk versi berikut: deteksi asal kontak masih meleset untuk frasa "bertemu Ibu di … Expo"/"merekomendasikan" dan salah-positif "dari teman-teman …" (N2), serta temuan rendah N4–N9 di `examples/06-uji-ulang-v1.0.1.md`.
+
 ### v1.0.1 (2026-09-25) — revisi temuan penguji independen (`examples/HASIL-UJI.md`, skor 8/10)
 Perbaikan berikut TIDAK mengubah `examples/00-*`, `examples/01-05-*`, atau `HASIL-UJI.md` (bukti uji dipertahankan apa adanya untuk audit berikutnya):
 - **B1 (tinggi):** `KATA_KUNCI_ASAL_KONTAK` di `scripts/cek_pesan.py` ditulis ulang, diturunkan langsung dari setiap pola di `references/pola-pembuka.md` (referral, pameran/expo/bazar, Google Maps, Instagram/IG/TikTok, grup komunitas, website) sehingga tidak lagi bertentangan dengan referensinya sendiri; "dari bapak/ibu" sendirian dibuang karena memicu salah-positif.

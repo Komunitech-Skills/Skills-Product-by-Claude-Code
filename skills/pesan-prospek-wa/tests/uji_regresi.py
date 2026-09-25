@@ -363,6 +363,19 @@ class TesCLI(unittest.TestCase):
         kode = cp.main(["cek", "--pesan", "Halo", "--jam-kirim", "bukan-jam"])
         self.assertEqual(kode, 1)
 
+    def test_cek_file_cp1252_tanpa_traceback(self):  # v1.0.2 N1
+        import tempfile, os
+        with tempfile.NamedTemporaryFile("wb", suffix=".txt", delete=False) as f:
+            f.write("Halo Bu, caf\xe9 Ibu saya lihat di Google Maps.".encode("cp1252"))
+            nama = f.name
+        try:
+            self.assertEqual(cp.main(["cek", "--file", nama]), 0)
+        finally:
+            os.remove(nama)
+
+    def test_zona_waktu_bukan_teriak(self):  # v1.0.2 N3
+        self.assertNotIn("WITA", str(cp.periksa_pesan("Saya kirim jam 10 WITA ya Bu.")))
+
 
 if __name__ == "__main__":
     unittest.main()

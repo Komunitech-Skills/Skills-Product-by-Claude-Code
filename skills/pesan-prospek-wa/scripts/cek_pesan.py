@@ -53,6 +53,8 @@ SINGKATAN_AMAN = {
     "HIPMI", "KADIN", "APINDO", "JNE", "JNT", "PDF", "API", "SEO",
     "SDM", "OJK", "NIK", "SIUP", "TDP", "HAKI", "DP", "PO", "PIC",
     "FAQ", "ATM", "KUR", "UKM", "BUMN",
+    # v1.0.2 (temuan N3 — zona waktu)
+    "WIB", "WITA", "WIT",
 }
 
 # Frasa/kata pemicu kesan spam atau berlebihan (huruf kecil, dicocokkan case-insensitive)
@@ -421,11 +423,20 @@ def main(argv=None):
     try:
         if args.perintah == "cek":
             if args.file:
-                try:
-                    with open(args.file, "r", encoding="utf-8") as f:
-                        teks = f.read()
-                except OSError as e:
-                    raise InputSalah(f"tidak bisa membaca file {args.file!r}: {e}")
+                teks = None
+                for enc in ("utf-8-sig", "cp1252"):  # v1.0.2 N1: file dari Notepad lama/Excel
+                    try:
+                        with open(args.file, "r", encoding=enc) as f:
+                            teks = f.read()
+                        break
+                    except UnicodeDecodeError:
+                        continue
+                    except OSError as e:
+                        raise InputSalah(f"tidak bisa membaca file {args.file!r}: {e}")
+                if teks is None:
+                    raise InputSalah(
+                        f"file {args.file!r} tidak bisa dibaca sebagai teks. "
+                        "Simpan ulang sebagai teks biasa (UTF-8), atau tempel pesannya langsung.")
             else:
                 teks = args.pesan
             hasil = periksa_pesan(teks, jam_kirim=args.jam_kirim, zona=args.zona)

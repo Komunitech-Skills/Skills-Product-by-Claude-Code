@@ -13,7 +13,7 @@ Untuk pesan PERTAMA ke nomor yang belum pernah chat dengan kita. Tujuannya: diba
 - [ ] Maksimal 1 link (idealnya tanpa link di pesan pertama — link asing dari nomor tak dikenal sering dicurigai phishing).
 - [ ] Tidak ada huruf kapital berlebihan ("PROMO GILA", "GRATIS!!!").
 - [ ] Tidak ada klaim "gratis 100%", "dijamin", urgensi palsu ("stok terakhir", "harga naik besok") kecuali benar dan diberikan pengguna.
-- [ ] Maksimal 1 emoji, sewajarnya (emoji berlebihan + kapital = pola khas spam).
+- [ ] Emoji secukupnya: idealnya 0–1, maksimal 3 (script memberi peringatan bila lebih dari 3); emoji berlebihan + kapital = pola khas spam.
 - [ ] Panjang wajar untuk satu layar HP (lihat batas di `scripts/cek_pesan.py`) — pesan yang terlalu panjang di kontak pertama sering tidak dibaca sampai habis.
 
 ## Jam & pola kirim

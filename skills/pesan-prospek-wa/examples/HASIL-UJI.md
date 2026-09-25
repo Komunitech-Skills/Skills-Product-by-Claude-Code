@@ -77,3 +77,18 @@
 - (−) B6: beberapa rujukan pasal kurang presisi (tidak salah arah).
 
 **Rekomendasi:** layak naik ke status `lulus` setelah perbaikan **B1–B4 & B6** (perbaikan kecil, terukur, tambahkan tes regresi untuk setiap pola di `pola-pembuka.md`). B5 perlu keputusan pemilik/katalog. B7–B12 boleh di versi 1.1. Setelah revisi script, cukup ulang tes regresi + skenario 02 & 03 oleh penguji independen.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-25, penguji independen kedua)
+Rincian lengkap: [`06-uji-ulang-v1.0.1.md`](06-uji-ulang-v1.0.1.md). Salinan di scratchpad `uji2-ppw/`; verifikasi angka dengan `wc -m/-w`, wa.me di-decode dengan Perl & Node (bukan Python).
+
+- **Tes bawaan:** 66 tes OK. `validate.py` lolos. SKILL.md 100 baris.
+- **B1–B12:** semua ditangani. B1: 6/6 kutipan di `pola-pembuka.md` kini terdeteksi (diekstrak otomatis). B2: `+62 0…`, `00 62…`, 14 digit, telepon rumah 021, digit non-ASCII → benar/ditolak dengan pesan jelas. B3: HRD/PPN/SPT/BPJS lolos. B4: `19.30`/`19:30`/`1930` + `--zona` WIB/WITA/WIT, jam = waktu setempat penerima. B6: pasal diverifikasi web (UU PDP Pasal 20(2)f, 65, 67; UUPK Pasal 9–10; UU ITE jo. 1/2024), wajib vs praktik baik dipisah, disclaimer ada.
+- **Skenario 02 & 03 diulang:** pola #3 dipakai apa adanya tanpa ditulis ulang; format jam titik diterima; semua 6 varian [OK]; V3 = 445 & 434 karakter; tidak ada detail layanan dikarang; hitungan & tautan cocok secara independen.
+- **Temuan baru:** N1 (sedang) file non-UTF-8 → traceback `UnicodeDecodeError`. N2 (sedang) heuristik asal kontak masih longgar: salah-negatif pada frasa wajar ("bertemu Ibu di … Expo", "peroleh dari", "merekomendasikan") dan salah-positif ("dari teman-teman petani", "kontak dari kami", "di acara roasting"). N3–N9 rendah: ambang emoji 3 vs checklist "maks 1", WIB/WITA dianggap teriak, hitung emoji (skin tone/bendera/⭐), en-dash di nomor & link tanpa skema, jam tepat 20.00, tes pola tidak membaca referensi otomatis, presisi Pasal 9 hak menarik persetujuan.
+
+### Skor kualitas uji ulang: **9 / 10**
+**Alasan:** (+) Semua temuan prioritas (B1–B4, B6) tertutup dan terbukti lewat uji ulang, termasuk data rusak baru; skenario 02 & 03 kini mulus tanpa jalan memutar; hitungan & encoding benar secara independen; hukum presisi dengan disclaimer. (−) N1 masih bisa memunculkan traceback pada data rusak; N2 membuat pemeriksaan "asal kontak" (pemeriksaan keselamatan utama) belum sepenuhnya andal — tertolong oleh instruksi penilaian manual di Langkah 6; inkonsistensi kecil emoji (N3).
+
+**Rekomendasi:** **LULUS** (layak naik status `lulus` → lanjut uji platform asli). Perbaiki N1–N3 di v1.0.2 (kecil, tidak perlu uji ulang penuh — cukup tes regresi baru); N4–N9 opsional.
