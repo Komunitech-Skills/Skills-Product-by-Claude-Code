@@ -951,6 +951,114 @@ class UjiDolibarr(unittest.TestCase):
         p = self.jalan("laporan-harian", "--tanggal", "2026-09-20")
         self.assertIn("draf invoice bertanggal 2026-09-20", p.stdout)
 
+    # ---------------------------------------------------------- v1.0.3: B1 draf ganda saat DPP bersen
+    ITEM_BERSEN = ["--item", "Kain|3|10.333|7,5", "--item", "Ongkir|1|15000,50"]
+
+    def test_b1_draf_ganda_dpp_bersen_ditahan(self):
+        # Verifikasi independen: 3 x 10.333 x 92,5% = 28.674,075 (Dolibarr 28.674,08 | kita 28.674);
+        # ongkir 15.000,50 (Dolibarr 15.000,50 | kita 15.001). total_ht Dolibarr 43.674,58, DPP kita 43.675.
+        p = self.jalan("invoice", "buat", "--pelanggan", "1", *self.ITEM_BERSEN, "--ya", "--json")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        d = json.loads(p.stdout)
+        self.assertEqual(d["hitungan"]["dpp"], 43675)
+        self.assertEqual(d["dolibarr"]["dpp"], 43674.58)
+        n = len(self.tulis_dilakukan())
+        p = self.jalan("invoice", "buat", "--pelanggan", "1", *self.ITEM_BERSEN, "--ya")
+        self.assertEqual(p.returncode, 7, p.stdout + p.stderr)
+        self.assertIn("DIBATALKAN", p.stdout)
+        self.assertIn("(PROV101)", p.stdout)
+        self.assertEqual(len(self.tulis_dilakukan()), n, "draf kembar tidak boleh dibuat")
+        p = self.jalan("invoice", "buat", "--pelanggan", "1", *self.ITEM_BERSEN, "--ya", "--tetap-buat")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn("(PROV102)", p.stdout)
+
+    def test_b1_harga_produk_bersen_dan_diskon_setengah(self):
+        # Harga Rp 83.333,33 x 3 = 249.999,99 (Dolibarr) vs 250.000 (kita); 1 x 25.001 diskon 50% = 12.500,50
+        # (Dolibarr) vs 12.501 (kita). 10 baris x Rp 100,50: Dolibarr 1.005,00 vs kita 10 x 101 = 1.010
+        # (selisih Rp 5 > toleransi, hanya tertangkap lewat DPP cara Dolibarr). Draf ganda harus ditahan.
+        baut = []
+        for _ in range(10):
+            baut += ["--item", "Baut|1|100,50"]
+        for item in (["--item", "Paket|3|83333,33"], ["--item", "Sewa|1|25001|50"], baut):
+            K.reset()
+            self.assertEqual(self.jalan("invoice", "buat", "--pelanggan", "2", *item, "--ya").returncode, 0)
+            n = len(self.tulis_dilakukan())
+            p = self.jalan("invoice", "buat", "--pelanggan", "2", *item, "--ya")
+            self.assertEqual(p.returncode, 7, item[:2])
+            self.assertEqual(len(self.tulis_dilakukan()), n, item[:2])
+        self.assertEqual(Decimal(K.invoice[-1]["total_ht"]), Decimal("1005"))
+
+    def test_b1_jumlah_berbeda_tidak_dianggap_kembar(self):
+        # Draf lama pelanggan yang sama dengan DPP beda >= Rp 1 tidak boleh menghalangi.
+        self.assertEqual(self.jalan("invoice", "buat", "--pelanggan", "1", "--item", "A|1|43674,58",
+                                    "--ya").returncode, 0)
+        p = self.jalan("invoice", "buat", "--pelanggan", "1", "--item", "A|1|43676", "--ya")
+        self.assertEqual(p.returncode, 0, p.stdout)
+        self.assertIn("(PROV102)", p.stdout)
+        # Pelanggan lain dengan jumlah sama juga bukan kembar.
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM_BERSEN, "--ya")
+        self.assertEqual(p.returncode, 0, p.stdout)
+
+    # ---------------------------------------------------------- v1.0.3: B2 --kunci-file mengalahkan ENV
+    def _file_kunci(self, nama, isi):
+        path = os.path.join(self.tmp, nama)
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(isi)
+        return path
+
+    def test_b2_kunci_file_eksplisit_menang_atas_env(self):
+        path = self._file_kunci("kunci-baca-b2.txt", KUNCI_BACA + "\n")
+        for argv in (["cek", "--kunci-file", path], ["--kunci-file", path, "cek"]):
+            K.log.clear()
+            p = self.jalan(*argv)  # ENV DOLIBARR_API_KEY = KUNCI_TULIS
+            self.assertEqual(p.returncode, 0, p.stderr)
+            self.assertTrue(K.log and all(x["kunci"] == KUNCI_BACA for x in K.log), "harus memakai kunci file")
+            self.assertIn("dari file " + path, p.stdout)
+            self.assertIn("PERINGATAN: ENV DOLIBARR_API_KEY juga terisi, tetapi DIABAIKAN", p.stderr)
+        # Perintah tulis dengan kunci baca dari file: ditolak Dolibarr, bukan diam-diam memakai kunci tulis ENV.
+        K.log.clear()
+        p = self.jalan("invoice", "buat", "--pelanggan", "1", "--item", "A|1|1000", "--ya", "--kunci-file", path)
+        self.assertNotEqual(p.returncode, 0)
+        self.assertTrue(all(x["kunci"] == KUNCI_BACA for x in K.log))
+        os.remove(path)
+
+    def test_b2_json_memuat_peringatan_dan_stdout_tetap_json(self):
+        path = self._file_kunci("kunci-baca-b2j.txt", KUNCI_BACA)
+        p = self.jalan("piutang", "--json", "--kunci-file", path)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        d = json.loads(p.stdout)
+        self.assertIn("DIABAIKAN", d["peringatan_kunci"])
+        self.assertIn("PERINGATAN", p.stderr)
+        os.remove(path)
+
+    def test_b2_kunci_file_hilang_tidak_jatuh_ke_env(self):
+        K.log.clear()
+        p = self.jalan("cek", "--kunci-file", os.path.join(self.tmp, "tidak-ada.txt"))
+        self.assertEqual(p.returncode, 5)
+        self.assertIn("tidak ditemukan", p.stderr)
+        self.assertEqual(K.log, [], "tidak boleh menghubungi Dolibarr dengan kunci ENV")
+        path = self._file_kunci("kunci-kosong-b2.txt", "\n")
+        p = self.jalan("cek", "--kunci-file", path)
+        self.assertEqual(p.returncode, 5)
+        self.assertIn("kosong", p.stderr)
+        self.assertEqual(K.log, [])
+        os.remove(path)
+
+    def test_b2_tanpa_kunci_file_env_tetap_dipakai_tanpa_peringatan(self):
+        path = self._file_kunci("kunci-baca-b2e.txt", KUNCI_BACA)
+        K.log.clear()
+        p = self.jalan("cek", env_tambah={"DOLIBARR_API_KEY_FILE": path})
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn("dari ENV DOLIBARR_API_KEY", p.stdout)
+        self.assertNotIn("PERINGATAN: ENV", p.stderr)
+        self.assertTrue(all(x["kunci"] == KUNCI_TULIS for x in K.log))
+        # ENV rusak + --kunci-file eksplisit: file dipakai, isi ENV tidak pernah tercetak.
+        p = self.jalan("cek", "--kunci-file", path, env_tambah={"DOLIBARR_API_KEY": "rahasiaENV1 rahasiaENV2"})
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertNotIn("rahasiaENV", p.stdout + p.stderr)
+        os.remove(path)
+
     # ---------------------------------------------------------- statis
     def test_statis_tidak_ada_perintah_berbahaya(self):
         src = open(SKRIP, encoding="utf-8").read()

@@ -47,7 +47,7 @@ Setelah terpasang dan terhubung, cukup ketik permintaan biasa:
 - "Kirim laporan Dolibarr ke Telegram saya tiap jam 9 malam" (OpenClaw)
 
 ## Instalasi singkat
-1. **Dolibarr** sudah terpasang dan modul API aktif. Belum? Ikuti `docs/panduan-dolibarr.md` di paket (Windows lewat DoliWamp ±30–60 menit), atau pakai **jasa setup Komunitech**.
+1. **Dolibarr** sudah terpasang dan modul API aktif. Belum? Ikuti `docs/panduan-dolibarr.md` di paket (Windows lewat DoliWamp ±30–60 menit), **termasuk langkah pengamanan wajib 2.4** (ganti sandi database bawaan, pastikan hanya bisa dibuka dari komputer sendiri, jangan buka ke internet), atau pakai **jasa setup Komunitech**.
 2. Salin folder `dolibarr-usaha` ke folder skills AI agent:
 
 | Platform | Folder tujuan |
@@ -61,7 +61,7 @@ Setelah terpasang dan terhubung, cukup ketik permintaan biasa:
 
 Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, atau paket tambahan.
 
-**Status uji jujur (versi 1.0.2):** diuji dengan Dolibarr asli **24.0.1 dan 22.0.4** (versi DoliWamp terbaru) di Linux, uji independen v1.0.0 dan v1.0.1 (lulus 8/10; sisa temuan diperbaiki di 1.0.2), uji otomatis, dan jadwal OpenClaw 2026.9.6 (tanpa pengiriman Telegram sungguhan). **Belum** diuji di DoliWamp Windows sungguhan; versi Dolibarr lain akan diberi tanda "belum diuji".
+**Status uji jujur (versi 1.0.3):** diuji dengan Dolibarr asli **24.0.1 dan 22.0.4** (versi DoliWamp terbaru) di Linux, uji independen v1.0.0 s.d. v1.0.2 (lulus 8/10; dua temuan sisa, pencegah draf dobel untuk harga bersen dan urutan kunci, diperbaiki di 1.0.3 dan menunggu uji ulang independen), uji otomatis, dan jadwal OpenClaw 2026.9.6 (tanpa pengiriman Telegram sungguhan). **Belum** diuji di DoliWamp Windows sungguhan; versi Dolibarr lain akan diberi tanda "belum diuji".
 
 ## FAQ
 **Apakah AI bisa salah mengirim atau menghapus invoice saya?**
@@ -72,3 +72,6 @@ Dolibarr menghitung PPN per baris lalu membulatkan ke terdekat, sedangkan standa
 
 **Apakah data saya dikirim ke internet?**
 Tidak oleh skill ini. Script hanya berbicara dengan Dolibarr di komputer Anda (`localhost`) dan menolak alamat lain kecuali Anda menegaskannya (wajib HTTPS untuk alamat internet). Laporan Telegram dikirim oleh OpenClaw milik Anda, hanya ke chat Anda.
+
+---
+Komunitech tidak berafiliasi dengan proyek Dolibarr; Dolibarr adalah merek milik pemiliknya.

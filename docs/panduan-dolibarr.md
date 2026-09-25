@@ -4,11 +4,13 @@ Dolibarr adalah program **gratis dan open-source** (lisensi GPL-3.0) untuk pelan
 
 > **Tidak ingin repot?** Komunitech menyediakan **jasa setup berbayar**: pemasangan DoliWamp, pengaturan Indonesia (IDR, PPN), user API aman, cadangan otomatis, dan jadwal laporan ke Telegram. Hubungi admin komunitech.com.
 
-**Status panduan (24 September 2026):** langkah dan nama menu dicocokkan dengan sumber resmi (wiki.dolibarr.org, SourceForge, kode sumber Dolibarr 22.0.4 & 24.0.1). Pengaturan Indonesia (IDR, id_ID, tarif PPN), modul, user API berhak minimal, kunci API (termasuk kunci terenkripsi), serta cadangan & pemulihan database lewat mysqldump **dicoba langsung** pada Dolibarr asli 22.0.4 & 24.0.1 di Linux (lewat database/CLI, bukan klik di layar). Halaman Backup di layar Dolibarr dicocokkan dengan kode sumbernya, belum diklik langsung. **Installer DoliWamp di Windows belum dicoba Komunitech secara langsung**; bila tampilan Anda berbeda, ikuti tulisan di layar dan hubungi kami.
+> Komunitech tidak berafiliasi dengan proyek Dolibarr; Dolibarr adalah merek milik pemiliknya.
+
+**Status panduan (24 September 2026; bagian 2.4 ditambahkan 25 September 2026):** langkah dan nama menu dicocokkan dengan sumber resmi (wiki.dolibarr.org, SourceForge, kode sumber Dolibarr 22.0.4 & 24.0.1). Pengaturan Indonesia (IDR, id_ID, tarif PPN), modul, user API berhak minimal, kunci API (termasuk kunci terenkripsi), serta cadangan & pemulihan database lewat mysqldump **dicoba langsung** pada Dolibarr asli 22.0.4 & 24.0.1 di Linux (lewat database/CLI, bukan klik di layar). Halaman Backup di layar Dolibarr dicocokkan dengan kode sumbernya, belum diklik langsung. **Installer DoliWamp di Windows belum dicoba Komunitech secara langsung**; bila tampilan Anda berbeda, ikuti tulisan di layar dan hubungi kami.
 
 ## Daftar isi
 1. Sebelum mulai
-2. Pasang di Windows (DoliWamp) — **disarankan**
+2. Pasang di Windows (DoliWamp) — **disarankan** (termasuk **2.4 Pengamanan wajib**)
 3. Pasang di Linux / macOS (lebih sulit)
 4. Pengaturan awal Indonesia
 5. Aktifkan modul
@@ -64,6 +66,33 @@ Tingkat kesulitan: **mudah–sedang** (seperti memasang aplikasi biasa, lalu men
 - ✅ **Cek berhasil:** tampil halaman **Home/Beranda** Dolibarr.
 - ❌ **Kalau gagal:** "Access denied for user" → sandi database salah; ulangi dengan sandi dari 2.2.3. Halaman minta "install.lock" → instalasi sudah selesai, buka `http://localhost/dolibarr` biasa.
 
+### 2.4 Pengamanan wajib (±10 menit, sebelum mengisi data usaha)
+**Kenapa wajib?** DoliWamp memasang "server" kecil di komputer Anda. Dengan pengaturan bawaan, orang lain yang tersambung ke Wi-Fi yang sama (toko, kantor, kafe) bisa mencoba membuka Dolibarr Anda. Berisi data pelanggan dan uang, jadi kuncilah seperti brankas. Tiga langkah ini **tidak boleh dilewati**:
+
+**Langkah 1 — Ganti sandi database bawaan.**
+- Sandi bawaan DoliWamp (`changeme`) diketahui semua orang. Paling mudah diganti **saat memasang** (2.2 langkah 3).
+- Sandi yang kuat: minimal 12 karakter, campuran huruf dan angka, **bukan** nama toko atau tanggal lahir. Catat di brankas sandi atau kertas yang disimpan aman.
+- Sudah terlanjur memakai `changeme`?
+  - **Belum ada data penting:** cara paling aman adalah copot pasang DoliWamp lalu pasang ulang dengan sandi baru.
+  - **Sudah ada data:** jangan mencoba sendiri. Sandi harus diganti di database **dan** di file pengaturan Dolibarr sekaligus; bila hanya satu yang diganti, Dolibarr tidak bisa dibuka. Buat cadangan dulu (bagian 9), lalu minta teknisi atau **jasa setup Komunitech**.
+
+**Langkah 2 — Pastikan Dolibarr hanya bisa dibuka dari komputer ini.**
+- Selalu buka Dolibarr lewat `http://localhost/dolibarr`. *localhost* artinya "komputer ini sendiri".
+- Windows Firewall: jangan izinkan Apache (`httpd.exe`) dan MariaDB (`mysqld.exe`) (2.2 langkah 4). Terlanjur klik **Allow/Izinkan**? Buka **Start** → ketik **"Allow an app through Windows Firewall"** (Izinkan aplikasi melalui Windows Firewall) → **Change settings** (Ubah pengaturan) → cari baris bernama Apache/httpd dan MariaDB/mysqld → **hapus centang Private dan Public** → **OK**.
+- ✅ **Cek berhasil (uji dengan HP, 2 menit):**
+  1. Di komputer Dolibarr: **Start** → ketik `cmd` → Enter → ketik `ipconfig` → Enter → catat angka **IPv4 Address** (mis. `192.168.1.10`).
+  2. Sambungkan HP ke **Wi-Fi yang sama**, buka browser HP, ketik `http://192.168.1.10/dolibarr` (pakai angka Anda).
+  3. **Benar bila HP TIDAK bisa membuka** (lama berputar lalu gagal). Dolibarr di komputer tetap terbuka lewat `localhost`.
+- ❌ **Kalau HP bisa membuka halaman login Dolibarr:** komputer Anda masih terbuka ke jaringan. Ulangi pengaturan firewall di atas, lalu uji lagi. Masih terbuka? Hentikan dulu pemakaian di Wi-Fi umum dan minta bantuan teknisi/jasa setup.
+- Pengamanan yang lebih kuat (teknis): membatasi Apache dan MariaDB agar hanya melayani `127.0.0.1` (alamat "komputer ini"). Ini mengubah file pengaturan server, jadi serahkan ke teknisi atau jasa setup Komunitech.
+
+**Langkah 3 — Jangan buka Dolibarr ke internet.**
+- Jangan atur *port forwarding*, *virtual server*, atau *DMZ* di router.
+- Jangan pakai aplikasi "tunnel" (mis. ngrok, Cloudflare Tunnel) atau aplikasi remote untuk membuka Dolibarr dari luar.
+- Ingin membuka dari rumah/cabang? Itu butuh HTTPS dan pengamanan tambahan. Jangan dikerjakan sendiri; konsultasikan ke jasa setup Komunitech.
+
+Catatan jujur: langkah Windows di atas disusun dari dokumentasi Windows dan DoliWamp, **belum dicoba langsung** oleh Komunitech di Windows. Bila nama menu di komputer Anda berbeda, ikuti yang paling mirip atau minta bantuan. **Jasa setup berbayar Komunitech** dapat mengerjakan seluruh langkah pengamanan ini, termasuk uji dari HP, bersama Anda.
+
 ---
 
 ## 3. Pasang di Linux / macOS (lebih sulit)
@@ -76,6 +105,8 @@ Paket resmi **DoliDeb** tersedia di SourceForge (folder "Dolibarr installer for 
 3. Buka `http://localhost/dolibarr` dan ikuti wizard seperti 2.3 (buat database & user database saat diminta).
 - ✅ **Cek berhasil:** halaman login Dolibarr terbuka.
 - ❌ **Kalau gagal:** alamat berbeda (mis. `http://localhost/dolibarr/htdocs`) → pakai alamat yang terbuka, lalu atur `DOLIBARR_URL` sesuai alamat itu (bagian 7).
+
+**Linux & macOS juga wajib bagian 2.4:** sandi database kuat, Dolibarr dibuka lewat `localhost`, dan diuji dari HP di Wi-Fi yang sama (alamat IP komputer: Linux `hostname -I`, macOS System Settings → Wi-Fi → Details). Di Ubuntu, firewall bawaan diaktifkan dengan `sudo ufw enable` (menolak sambungan masuk). Bila komputer diatur jarak jauh oleh teknisi, minta teknisi yang melakukannya agar aksesnya tidak terputus.
 
 ### macOS — sulit
 Pilihan realistis: **Docker Desktop** + image resmi `dolibarr/dolibarr` (https://hub.docker.com/r/dolibarr/dolibarr), atau MAMP + paket zip Dolibarr (manual). Keduanya butuh pengetahuan teknis (volume data, port, pembaruan). Alamat biasanya `http://localhost:8080` (tanpa `/dolibarr`) → atur `DOLIBARR_URL=http://localhost:8080`. Paket DoliMamp lama sudah tidak dirawat.
@@ -222,8 +253,8 @@ Salin `C:\dolibarr\www\dolibarr\htdocs\conf\conf.php` ke tempat cadangan yang **
 
 ## 10. Keamanan
 1. **Jangan buka Dolibarr ke internet**: jangan port-forward di router, jangan pakai tunnel (ngrok dsb.), jangan pasang di hosting tanpa HTTPS. Skill menolak alamat selain komputer ini kecuali Anda menegaskannya.
-2. Konfigurasi bawaan DoliWamp membuat Apache mendengar di **semua jaringan**. Jadi di Windows Firewall, **jangan izinkan** `httpd.exe` dan `mysqld.exe` untuk jaringan Public. Bila ragu, minta teknisi/jasa setup untuk membatasi Apache ke `127.0.0.1`.
-3. Ganti sandi database bawaan `changeme` (2.2.3) dan pakai sandi admin Dolibarr yang kuat.
+2. Konfigurasi bawaan DoliWamp membuat Apache mendengar di **semua jaringan**. Jadi di Windows Firewall, **jangan izinkan** `httpd.exe` dan `mysqld.exe` untuk jaringan Private maupun Public, lalu buktikan dengan uji HP (2.4 langkah 2). Bila ragu, minta teknisi/jasa setup untuk membatasi Apache ke `127.0.0.1`.
+3. Ganti sandi database bawaan `changeme` (2.2.3 dan 2.4 langkah 1) dan pakai sandi admin Dolibarr yang kuat.
 4. AI memakai **user khusus API** berhak minimal (bagian 6), bukan admin. Jadwal otomatis memakai kunci **baca-saja**; kunci yang bisa membuat draf juga bisa memvalidasi/menandai lunas lewat API (6.2), jadi simpan terpisah.
 5. Perbarui DoliWamp bila ada versi baru (cadangkan dulu, bagian 9).
 6. Pasang antivirus, aktifkan Windows Update, dan kunci layar komputer toko.
@@ -243,4 +274,6 @@ Salin `C:\dolibarr\www\dolibarr\htdocs\conf\conf.php` ke tempat cadangan yang **
 | PPN beda Rp 1 dengan skill | Pembulatan per baris Dolibarr | Wajar; ikuti Coretax untuk faktur pajak |
 | Tampilan campur Inggris | Terjemahan id_ID belum lengkap | Normal |
 
-Butuh bantuan? **Jasa setup Komunitech** mengerjakan seluruh panduan ini bersama Anda (jarak jauh atau datang), termasuk jadwal laporan ke Telegram dan uji pemulihan cadangan.
+Butuh bantuan? **Jasa setup Komunitech** mengerjakan seluruh panduan ini bersama Anda (jarak jauh atau datang), termasuk pengamanan wajib 2.4, jadwal laporan ke Telegram, dan uji pemulihan cadangan.
+
+Komunitech tidak berafiliasi dengan proyek Dolibarr; Dolibarr adalah merek milik pemiliknya.
