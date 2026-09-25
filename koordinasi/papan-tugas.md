@@ -48,5 +48,14 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | A5 | Laporan status terjadwal ke klien (konsultan) | tunggu keputusan pemilik (kirim ke pihak luar) |
 | A6 | Uji platform asli & program beta (skill lulus) | butuh pemilik/tim (`docs/uji-platform.md`, `docs/program-beta.md`) |
 
+## Uji untuk Akun A — dikerjakan Akun B (penguji lintas akun = lebih independen)
+
+Aturan: Akun B **hanya menulis ke `skills/<nama>/examples/`** skill milik Akun A (tidak mengubah kode, SKILL.md, catalog.csv). Ikuti CLAUDE.md Tahap 6 (5 skenario/uji ulang klaim, verifikasi angka independen, A/B & banding pesaing untuk uji pertama, `validate.py`, `scripts/uji_openclaw.sh`). Tambahkan bagian baru di akhir `examples/HASIL-UJI.md` (jangan hapus isi lama) + skor 1–10. Commit `uji: <nama> vX.Y.Z <skor>/10` di branch Akun B → Akun A yang merge & memperbarui catalog.csv. Ambil hanya item berstatus `siap diuji`.
+
+| # | Skill Akun A | Yang diuji | Status |
+|---|---|---|---|
+| U1 | `laporan-iklan-mingguan` v1.0.1 | Uji ulang setelah revisi 4 cacat tinggi (sel Results kosong, baris total varian, pemilihan kolom Google Ads, mata uang non-IDR) + cacat sedang; ulang repro di examples/HASIL-UJI.md; verifikasi angka Decimal. Model: Opus | menunggu revisi Akun A |
+| U2 | `dolibarr-usaha` v1.0.3 | Uji ulang B1 (draf ganda saat DPP bersen) & B2 (ENV kunci vs --kunci-file) setelah diperbaiki | belum dijadwalkan |
+
 ## Permintaan antar-akun
 _(tulis di sini: dari, untuk, isi, tanggal)_
