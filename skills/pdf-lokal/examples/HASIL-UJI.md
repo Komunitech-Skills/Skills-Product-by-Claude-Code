@@ -180,3 +180,37 @@ Alasan:
 penguji independen — cukup verifikasi teks diperbaiki, kecuali pemilik ingin uji ulang
 formal). Tidak ditemukan cacat keamanan, kebocoran data, atau kesalahan angka/uang pada
 uji ulang ini.
+
+## Uji ulang v1.0.2 (Akun B) — 2026-09-25
+
+Penguji independen lintas akun terpisah dari pembuat (lihat
+`examples/uji-pembuat/UJI-PEMBUAT-v1.0.2.md` untuk catatan pembuat, bukan sumber
+keputusan resmi). Uji ringan sesuai sifat perubahan v1.0.2 (murni dokumentasi +
+1 baris versi script + 1 tes regresi baru, lihat `git show a536052`) — detail lengkap
+di `examples/07-uji-ulang-v1.0.2.md`.
+
+Ringkasan pemeriksaan:
+- Klaim baru "sudah diuji Stirling-PDF v3.0.0" di SKILL.md/README **didukung bukti
+  nyata** yang sudah tercatat di bagian "Uji ulang v1.0.1" di atas (baris 108-183) dan
+  `references/sumber-api-stirling.md` (verifikasi Docker `:3.0.0` & `:2.14.3` sungguhan,
+  cross-check `pdfinfo`/`pdftotext`/`qpdf`/`sha256sum`) — bukan klaim kompatibilitas
+  yang mengada-ada.
+- Klaim privasi README yang direvisi konsisten dengan pengecualian R3 di SKILL.md
+  (dokumen biasa boleh diarahkan ke situs resmi Stirling-PDF sebagai jalan terakhir
+  dengan peringatan; dokumen sensitif tidak pernah) dan tidak berlebihan.
+- Nomor versi konsisten: `scripts/pdf.py` (`VERSI="1.0.2"`) = `catalog.csv` (1.0.2).
+  README tidak punya bagian riwayat versi tersendiri.
+- `python3 skills/pdf-lokal/tests/uji_regresi.py` → **16/16 skenario lulus**
+  (naik dari 15/15; tes baru `versi-konsisten-di-bantuan` ikut lulus).
+- `python3 scripts/validate.py --skill pdf-lokal` → lulus, 68 baris katalog sesuai.
+
+Tidak ditemukan temuan baru (tidak ada klaim tak berdasar, tidak ada inkonsistensi
+versi, tidak ada regresi fungsional).
+
+**Skor: 9/10** (naik dari 8/10 di v1.0.1). Alasan: dua kelemahan dokumentasi yang
+mengganjal skor sebelumnya (klaim versi Stirling-PDF yang diremehkan, klaim privasi
+generik yang tidak selaras dengan pengecualian R3) sudah diperbaiki secara akurat dan
+berdasar bukti uji nyata yang sudah ada, tanpa menambah klaim baru yang tidak
+didukung dan tanpa regresi. Tidak dinaikkan ke 10/10 karena belum ada uji platform
+asli (OpenClaw/Codex/Cursor sungguhan oleh manusia) — status katalog tetap `uji`,
+kenaikan ke `lulus`/`beta`/`rilis` tetap keputusan pemilik.
