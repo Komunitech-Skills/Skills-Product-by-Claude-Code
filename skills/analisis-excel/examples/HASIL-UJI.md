@@ -204,3 +204,53 @@ Regresi F1 (Rp 6.738.100/40), F2 (Rp 5.301.500/25), F4 (Rp 63.575.000/77) tetap 
 ### Skor kualitas uji ulang v1.0.3: **7 / 10** — tetap `lulus`, perbaiki B5 sebelum `beta`
 - (+) B1–B4 tuntas; semua kutip nyasar murni (awal/tengah/akhir) GAGAL tegas; rekap bernama biasa ("Sheet4", "Okt", selisih kecil) terdeteksi; "Rekap" berisi data bisa dimasukkan dengan `--sertakan`; sheet kosong aman; 60 tes lulus.
 - (−) B5: satu jenis kesalahan ketik sederhana (baris kurang kolom) menghasilkan angka salah **tanpa peringatan** — pelanggaran langsung prinsip "reliable"; C4 bernasib sama sebagian. B6: file sah realistis ditolak dengan pesan yang menyalahkan pengguna (ada `--paksa`).
+
+## Uji ulang v1.0.4 (penguji independen ke-5, cek, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad. Versi script `1.0.4`. Tes bawaan: **68 tes OK**. Platform: `claude-code (simulasi agent)`.
+Fixture baru: `buat_fixture_uji_v104.py` (deterministik; `kunci-v104.json` dihitung dari data sumber, tanpa membaca kode skill).
+Bentuk file **meniru pola** ekspor nyata (bukan salinan file asli).
+
+### Regresi semua fixture lama (`buat_fixture_uji*.py`, v1.0.0–v1.0.3) — tidak ada salah diam-diam
+- Skenario 01 Q1 67.313.000/147, `--sheet semua` 233.556.000/499 (1900 & 1904) ✔; 02 lembur 745,5 jam/383 ✔; 03 iuran 5.525.000/91 (+3 duplikat diperingatkan) ✔.
+- Koperasi `--sheet semua` 332.635.000/172 (Ringkasan dilewati) ✔; pesanan marketplace 5.627.000/60 ✔; anggota koperasi 63.350.000 (+2 duplikat) ✔.
+- F1 6.738.100/40, F2 5.301.500/25, F4 & F4b 63.575.000/77, F5 1.055.000/10 ✔; F3/F3b/F3c GAGAL ✔ (F3b `--paksa` 205.000 + PERINGATAN TEGAS ✔).
+- C1–C3 GAGAL ✔; **C4 kini GAGAL** "baris 18–19 hanya 2/3 dari 4 kolom" ✔ (B5/B7 beres); **C5 kini terbaca tanpa `--paksa`** 1.061.250/30 ✔ (B6 beres); C6 566.000, C7 556.000 ✔; **C8 GAGAL baris 11** ✔, `--paksa` 328.000 + PERINGATAN TEGAS ✔.
+- X1 10.685.000/45, X2 9.945.000/43, X3 3.535.000 → `--sertakan` 6.615.000/33, X4 6.930.000/28, X5 10.685.000 dengan "10.690.000 ≈" ✔ (B8 beres).
+- File rusak (kosong, korup.xlsx, bukan-excel, tanpa-sheet, kutip tak tertutup) → GAGAL kode 2 tanpa traceback ✔.
+
+### File baru → hasil (a = benar, b = gagal/peringatan tegas + jalan keluar, c = salah diam-diam, d = ditolak padahal awam wajar berharap terbaca)
+| File | Pola ekspor | Kunci | Hasil script | Nilai |
+|---|---|---|---|---|
+| N1 `shopee-judul-catatan-kaki` | 3 baris judul laporan, baris Total, "Dicetak oleh: … pada …" 1 sel | 20 baris, 3.709.200 | GAGAL "baris 27: hanya 1 dari 7 kolom → Dicetak oleh…"; `--paksa` → 3.709.200 ✔ (Total dilewati) tapi "21 baris data" | **d** |
+| N2 `tokopedia-rp-catatan-2-baris` | judul 1 baris, "Rp1.250.000", 2 baris catatan kaki (1 & 2 sel) | 15, 2.280.000 | GAGAL 2 baris; `--paksa` → 2.280.000 ✔ + "tanggal tidak valid baris 20: '15'", "17 baris data" | **d** |
+| N3 `tiktok-baris-deskripsi` | baris ke-2 = deskripsi kolom, tanggal m/d/Y AM | 18, 2.050.000, qty 36 | 2.050.000 & 36 ✔; deskripsi → "1 nilai tidak valid (baris 2)" per kolom; format AS terdeteksi; "19 baris data" | a |
+| N4 `bca-mutasi` | metadata rekening di atas, kolom tanpa judul (CR/DB), Saldo Awal/Mutasi/Saldo Akhir di bawah (2–3 sel) | 16; CR 3.800.000; DB 11.060.000 | GAGAL 4 baris; `--paksa` → 14.860.000 ✔, pivot "Kolom E" CR 3.800.000 / DB 11.060.000 ✔ + "(kosong)" 4 baris | **d** |
+| N5 `mandiri-kolom-ganda` | 2 kolom "Description", angka "1,500,000.00" berkutip, koma di ujung | Debit 2.595.000; Credit 2.860.000 | ✔ keduanya; "Description (2)" ✔. Catatan: `Transaction Code` ikut dijumlah (121.161), Credit tanpa "Rp" sedangkan Debit ber-"Rp" | a (catatan B13) |
+| N6 `google-form` | timestamp d/m/Y H:M:S, kotak centang "Kopi, Teh", alamat 3 baris, catatan 2 baris, "55rb" | 22; 1.825.000 dari 20; 2 tidak valid | ✔ persis; "2 nilai tidak valid (baris 7 '55rb', 18 '25rb')" | a |
+| N7 `excel-titikkoma-kolom-kosong` | cp1252, `;`, kolom tanpa judul di tengah, "1.250.000", 3 baris `;;;;;` | 17; 9.842.500; qty 145 | ✔ persis | a |
+| N8 `kolom-catatan-opsional` | kolom terakhir "Catatan" hanya diisi sebagian, tanpa koma di ujung (13 baris 3 sel) | 20, 520.000 | **GAGAL 13 baris** "angka bisa masuk ke kolom yang salah"; `--paksa` → 520.000 ✔ | **d** (terberat: pesan menakutkan & salah — angka tidak bergeser) |
+| N9 `sel-terlewat-tengah` | sel Pelanggan terlewat di baris 11 | 20, 512.000 | GAGAL baris 11 ✔; `--paksa` 497.000 + PERINGATAN TEGAS | b ✔ |
+| N10 `kutip-inci-panggilan` | `Pipa PVC 3"` (kutip di tengah sel), `"Ucup" Warung` (kutip di awal sel) | 15, 827.500 | ✔; "Ucup Warung" kehilangan kutip (kosmetik) | a |
+| N11 `excel-sum-tanpa-label` | baris SUM **tanpa label** `,,,4860000` + baris `,,Rata-rata,405000` | 12, 4.860.000 | **10.125.000 "dari 14 baris", tanpa peringatan apa pun** (dobel + rata-rata ikut) | **c ✘** |
+| N12 `footer-berpadding` | catatan kaki dengan padding koma penuh ("Dicetak oleh: admin,,,") | 10, 835.000 | total 835.000 ✔, tetapi "12 baris data", tanggal akhir "30 Sep 2026" (dari catatan kaki), pivot "(kosong) 2 baris" — tanpa peringatan | a− (total benar; jumlah baris & rentang tanggal salah diam-diam) |
+| N13 `subtotal-per-hari` | baris "Subtotal" per hari (label di kolom 2), SKU 13 digit | 12, 1.020.000 | ✔ "3 baris Total/Jumlah dilewati (6, 11, 16)"; SKU = teks | a |
+Tambahan ad hoc: `,,Total,…` dan `,,Grand Total,…` di kolom ke-3 → dilewati ✔; `,,Total,…` + `,,Rata-rata,405000` → **Rata-rata ikut dijumlah** (5.265.000 vs 4.860.000) **c ✘**.
+
+**Ringkas:** 13 file; 7 a (1 a−), 1 b, **1 c (N11, + varian Rata-rata)**, **4 d (N1, N2, N4, N8 = 31%)**. Semua d punya jalan keluar `--paksa` yang menghasilkan total benar, tetapi jumlah baris membengkak.
+
+### Penilaian pesan untuk awam (d)
+- N1/N2/N4: pesan menampilkan isi baris ("Dicetak oleh…", "Saldo Akhir : | 5240000.00") sehingga agent bisa menebak itu catatan kaki; tetapi **teks pesan tidak pernah menyebut "catatan di bawah tabel"** (SKILL.md menyebutnya, pesan GAGAL tidak), dan alasan "angka bisa masuk ke kolom yang salah" tidak benar untuk catatan kaki. Menyuruh awam "buka di Notepad, perbaiki" file ekspor Shopee/BCA setiap bulan = gesekan tinggi; ekspor mutasi BCA **selalu** punya baris saldo di bawah → tiap pemakaian ditolak.
+- N8: 13 baris ditolak padahal hanya kolom opsional di ujung yang tidak diketik; saran "perbaiki 13 baris" tidak realistis. Aturan "sel kosong di ujung kanan boleh" hanya berlaku bila komanya ada — perbedaan yang tidak terlihat awam di Excel.
+- Saran: **baris pendek di ujung file (setelah baris data utuh terakhir)** → abaikan + info "N baris catatan di bawah tabel diabaikan: 'Dicetak oleh…', 'Saldo Akhir…'" (tetap GAGAL bila ada baris data utuh sesudahnya). **Baris pendek di tengah** yang sel-selnya cocok tipe kolomnya (tanggal di kolom tanggal, angka di kolom angka) dan hanya kolom teks/kosong di ujung yang hilang → terima + info; bila ada angka jatuh ke kolom teks (N9, C8) → tetap GAGAL.
+
+### Bug baru
+| # | Prioritas | Temuan | Saran |
+|---|---|---|---|
+| B10 | **P1** | N11: baris SUM tanpa label (`,,,4860000`, pola umum Excel: rumus =SUM di bawah kolom) ikut dijumlah → total **dobel diam-diam**; baris berlabel "Rata-rata" di bawah Total juga ikut dijumlah. | Baris yang tanpa teks/tanggal dan hanya berisi angka di kolom nilai, terutama di ujung tabel, dan nilainya = jumlah (atau rata-rata) baris di atasnya → lewati seperti baris Total + peringatan. Tambah label Rata-rata/Rerata/Average/Grand Total/Subtotal/Saldo ke daftar baris ringkasan. Uji juga di XLSX (belum diuji di sini). Tes regresi N11 + varian. |
+| B11 | P2 | N1/N2/N4/N8 (d): catatan kaki & kolom opsional di ujung ditolak; pesan tidak menyebut "catatan di bawah tabel" dan menakuti dengan "kolom yang salah". | Lihat saran di atas; minimal ubah pesan GAGAL: bila semua baris bermasalah ada di ujung file → "Tampaknya baris catatan di bawah tabel (…). Hapus baris itu, atau ulangi dengan --paksa (angka tabel tidak terpengaruh)". |
+| B12 | P3 | N12 (dan N1/N2/N4 dengan `--paksa`): baris catatan dihitung sebagai "baris data" (12 bukan 10), tanggal di catatan kaki memperpanjang rentang data, pivot memunculkan "(kosong)". | Baris tanpa nilai di kolom angka dan berlabel catatan (Dicetak/Catatan/Sumber/Saldo/Mutasi) di ujung → keluarkan dari hitungan + info. |
+| B13 | P3 | N5: `Transaction Code` (kode 4 digit) dijumlah; format "Rp" tidak konsisten antara Debit dan Credit. | Nama kolom berisi Code/Kode/No/ID → tipe kode. |
+
+### Skor kualitas uji ulang v1.0.4: **6 / 10** — **belum lulus ke `beta`**; revisi B10 (wajib) dan B11, lalu uji ulang independen
+- (+) Aturan jumlah kolom menutup B5/B7 (C4, C8, N9 GAGAL tegas dengan nomor & isi baris); B6/B8/B9 beres; semua fixture lama tetap benar; format bank/marketplace yang rapi (Mandiri, TikTok, Google Form, Excel `;` cp1252, subtotal berlabel) terbaca benar; 68 tes lulus.
+- (−) Target "0 salah diam-diam" belum tercapai: **baris SUM tanpa label / baris Rata-rata (N11) menggandakan total tanpa peringatan** — pola Excel yang sangat umum pada pengguna awam. Selain itu 4 dari 13 ekspor realistis (31%) ditolak, termasuk **setiap** mutasi BCA dan file dengan kolom catatan opsional; `--paksa` menyelamatkan totalnya, tetapi awam dipaksa melewati pesan yang menyalahkan file yang sebenarnya sehat.
