@@ -443,3 +443,57 @@ Akar masalah umum (c) V1/V4/V5/V6: detektor kandidat v1.0.7 hanya melihat baris 
 - (+) Pengaman lapis kedua nyata: `profil` wajib + cek sekilas menangkap 4 dari 6 (c) script (V1, V4, V5, V6); AF1 menghasilkan jawaban jujur dengan kedua total dan satu pertanyaan.
 - (−) Detektor umum masih bergantung pada "baris lebih jarang terisi": subtotal/total **terisi lengkap** berlabel jelas lolos di script (6 dari 13 file berformat salah di tingkat script) — perbaikan terlokalisasi (B24).
 - (−) 2 kasus berisiko lolos juga dari agent: tabel tanpa judul kolom (V13, kesalahan pengguna awam yang umum) dan pivot bentuk ringkas (V3). Karena itu belum 8.
+
+## Uji ulang v1.0.8 (penguji independen ke-9, cek singkat, 2026-09-25)
+Dijalankan dari salinan skill di scratchpad (`uji9-ax/`). Versi script `1.0.8`. Tes bawaan: **119 tes OK** (±42 dtk). Platform: `claude-code (simulasi agent)`.
+Fixture baru: `buat_fixture_uji_v108.py` (deterministik; `kunci-v108.json` dihitung dari data sumber, **tanpa membaca kode skill**; XLSX nilai polos tanpa rumus/gaya).
+
+### 1. Regresi semua fixture lama (v1.0.0–v1.0.7)
+Semua fixture di `examples/buat_fixture_uji*.py` dijalankan ulang (`ringkas --json`, 100+ file): angka, baris dikeluarkan, kandidat, dan pesan GAGAL **sama dengan uji v1.0.7** (01 Q1 67.313.000/147 untuk 1900 & 1904; lembur 745,5; iuran 5.525.000/91; N11/N13/R3/R3c/R5/R6b/R9/R10/R11/R16/S3/S6/S6b/S12 tetap b dengan alternatif = kunci; S1/S1b/S1c 6.425.000; S5, C1–C4, C8, N9, F3*, file rusak tetap GAGAL; K1–K3, V2, V8–V12 tetap a). **Tidak ada regresi.**
+Target B24–B26 (kunci v1.0.7):
+| File | v1.0.7 | v1.0.8 | Alternatif / hasil vs kunci |
+|---|---|---|---|
+| V1 stok subtotal lengkap | c | **b** | TEGAS baris 5,10,14 ("memuat judul kelompok … + kata ringkasan"); judul kategori SEMEN/CAT/BESI + TOTAL dikeluarkan; TANPA = stok 293, nilai 19.845.000 = kunci |
+| V3 pivot ringkas EN | c | **b** | TEGAS baris 2,5 ("jumlah 2 baris TEPAT DI BAWAHNYA"); TANPA = 7.500.000 = kunci; catatan "PivotTable disalin" |
+| V4 absensi Jumlah Hadir | c | **b** | TEGAS baris 7,13,19; TANPA = 93 jam = kunci |
+| V5 jurnal TOTAL lengkap | c | **b** | TEGAS baris 12; TANPA D = K = 80.750.000 = kunci |
+| V6 subtotal cabang lengkap | c | **b** | TEGAS baris 5,9,12,13; TANPA = 4.620.000 / qty 40 = kunci |
+| V13 tanpa header | c | **a** | PERINGATAN TEGAS tanpa judul kolom; 6 baris, 1.015.000 = kunci (Kolom1..N) |
+| V7 e-Faktur FK/OF | b | b | GAGAL khusus e-Faktur format lama (B28 ✔) |
+
+### 2. File baru → hasil (a = benar, b = TEGAS + alternatif benar / gagal-jelas, c = salah diam-diam di script, d = ditolak padahal wajar)
+| File | Pola | Kunci | Hasil script | Nilai | Agent |
+|---|---|---|---|---|---|
+| W1 `tanpa-header-teks-dulu.csv` | tanpa judul, baris 1 = "Budi Santoso, Jakarta, Kaos Polos, 3, 75000, 225000" | 7 baris, qty 18, 2.050.000 | TEGAS tanpa judul; 7 baris; 18 / 2.050.000; pivot per kota ✔; `--baris-header 1` tetap bisa (6 baris) | a | — |
+| W2 `tanpa-header-no-urut.csv` | `;`, baris 1 = "1;01/09/2026;Semen Gresik;10;55.000;550.000" | 6 baris, qty 62, 6.169.000 | TEGAS; 62 / 6.169.000 ✔ (catatan: nomor urut Kolom1 ikut dijumlah = 21, kosmetik) | a | — |
+| W3 `tanpa-header-tanggal.xlsx` | XLSX tanpa judul, tanggal serial + teks + angka | 6 baris, 2.090.000 | TEGAS; 2.090.000 ✔ (serial tanggal tanpa gaya dijumlah 277.644 — wajar karena file uji tanpa format tanggal) | a | — |
+| W4 `header-tahun.csv` | judul "Produk,2024,2025" | 2024 35.800.000; 2025 41.150.000 | tetap judul (tanpa peringatan palsu) ✔; `--tanpa-header` memaksa sesuai dokumen | a | — |
+| W5 `header-nomor-bulan.xlsx` | judul angka numerik 1..12, isi bilangan kecil (kunjungan) | per bulan (1=50 … 12=66), 659 | tetap judul, semua bulan = kunci | a | — |
+| W5b `header-tahun-numerik.xlsx` | judul angka numerik 2023/2024/2025, isi bilangan kecil | 77 / 84 / 91 | angka ✔; nama kolom tampil **"2.023", "2.024", "2.025"** (pemisah ribuan pada judul) | a | kosmetik (B30) |
+| W6 `subtotal-penuh-multikolom.csv` | "Total Barat/Timur/Tengah" + "Total Semua Wilayah" terisi penuh di 7 kolom | 8 baris; qty 45, omzet 7.960.000, HPP 4.840.000, laba 3.120.000 | TEGAS baris 5,8,12,13 ("angka di 4 kolom = jumlah blok"); TANPA semua 4 kolom = kunci; `--buang-baris` → pivot wilayah = kunci | b | — |
+| W7 `kebetulan-x-plus-y.csv` | rapi; baris 3 = baris 1 + 2 di Qty **dan** Total | 7 baris, 47 / 2.230.000 | tidak ada kandidat palsu, tidak dibuang ✔ | a | — |
+| W7b `kebetulan-jumlah-blok.xlsx` | rapi; baris 3 = 1+2 **dan** baris 4 = 1+2+3 di Qty & Nominal | 7 baris, 27 / 1.365.000 | tidak ada kandidat palsu ✔ | a | — |
+| W8 `pivot-ringkas-id.xlsx` | pivot ringkas ID ("Label Baris", 2 kolom "Jumlah dari"), kelompok Bogor **hanya 1 anak** | 6 daun, qty 51, 6.140.000 | "Total Keseluruhan" dikeluarkan ✔ + catatan pivot, tetapi **tidak ada kandidat** → **12.280.000 / 102 (2×)**; pivot per "Label Baris" mencampur Bekasi/Kopi | **c** | tertangkap kemungkinan besar (DIKELUARKAN menampilkan Total Keseluruhan 6.140.000 ≠ total 12.280.000; catatan "hanya baris paling rinci"; cek sekilas pivot) |
+| W9 `pivot-tabular.csv` | tabular: "Bekasi Total" (kolom 2 kosong) + Grand Total | 6.140.000; per cabang | TEGAS baris 4,6,10; Grand Total dikeluarkan; TANPA = 6.140.000 ✔ | b | — |
+| W10 `pivot-ringkas-tanpa-kata-kunci.csv` | judul "Wilayah / Produk", subtotal di atas, tanpa Grand Total | 7 daun, 21.200.000 | TEGAS baris 2,6,9; TANPA = 21.200.000 ✔ | b | — |
+| W11 `kontrol-uang-saku.csv` | rapi | 650.000; Makan 230.000 | ✔ | a | — |
+| W12 `kontrol-stok-atk.xlsx` | rapi | stok 382 | ✔ | a | — |
+| W13 `kontrol-nilai.csv` | rapi, `;`, `88,5` | Σ 407,25 | ✔ | a | — |
+
+**Ringkas:** 15 file baru; **11 a, 3 b, 1 c, 0 d.** Tanpa-header (teks/angka/tanggal pertama) semua benar + TEGAS; judul kolom tahun/nomor bulan tidak salah dikira data; kebetulan x+y=z **tidak** dibuang dan tidak memicu kandidat palsu.
+Diagnosis W8 (varian di scratchpad): pivot ringkas yang sama **tanpa kelompok 1-anak** → b (TEGAS baris 2,5, alternatif benar), baik 1 maupun 2 kolom nilai. Jadi satu kelompok beranak tunggal (baris kelompok = baris anak persis) **mematikan deteksi semua kelompok** di file itu.
+
+### Bug baru
+| # | Prioritas | Temuan | Saran |
+|---|---|---|---|
+| B29 | **P1** | Pivot bentuk ringkas dengan **satu kelompok beranak tunggal** (W8 "Bogor 9 / 1.350.000" lalu "Kopi 9 / 1.350.000") → tidak ada kandidat sama sekali, total 2× diam-diam (hanya catatan umum pivot). Pola sangat umum di PivotTable. | Izinkan blok 1 baris (baris kelompok = baris tepat di bawahnya) selama kelompok lain di file cocok; jangan batalkan seluruh deteksi karena satu blok. Tes regresi W8. |
+| B30 | P3 | Judul kolom numerik XLSX tampil dengan pemisah ribuan ("2.023"). | Judul kolom angka bulat → tampilkan apa adanya ("2023"). |
+| B31 | P2 | Pengaman silang belum ada: baris "Total Keseluruhan/Grand Total" yang **dikeluarkan** bernilai 6.140.000 sementara total hasil 12.280.000 (tepat 2×) tanpa peringatan. | Bila total ekor yang dikeluarkan ≠ total hitungan (terutama rasio bulat 2×/3×) → PERINGATAN TEGAS "total di file berbeda dengan hasil hitungan". Menangkap B29 dan tata letak baru lain. |
+| B32 | P3 | Tanpa-header: kolom nomor urut (Kolom1 = 1..6) ikut dijumlah di `ringkas` (W2). | Kolom bilangan bulat berurutan 1..n → kode/nomor urut. |
+
+### Skor kualitas uji ulang v1.0.8: **8 / 10** — **layak `beta`**; B29 (+ B31 disarankan) diperbaiki sebelum `rilis`
+- (+) Keenam (c) uji v1.0.7 hilang: V1/V3/V4/V5/V6 → b dengan alternatif = kunci; V13 → a. Tanpa regresi di 100+ fixture lama; 119 tes lulus.
+- (+) Fitur baru tanpa-header akurat di 3 bentuk (teks, nomor urut + tanggal ID, XLSX tanggal) dan **tidak** salah memicu pada judul tahun (CSV & XLSX numerik) atau nomor bulan 1..12.
+- (+) Tidak ada positif palsu pada kebetulan x+y=z di 2 kolom (W7, W7b dengan dua kebetulan beruntun): data rapi tetap a.
+- (+) Subtotal terisi penuh di 4 kolom & pivot tabular/ringkas tanpa kata kunci → b dengan alternatif benar.
+- (−) Satu (c) baru: pivot ringkas dengan kelompok beranak tunggal (B29) — pola umum; kemungkinan besar tertangkap agent lewat Total Keseluruhan yang dikeluarkan (½ dari hasil), tetapi script diam. Karena itu belum 9.
