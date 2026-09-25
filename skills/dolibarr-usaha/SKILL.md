@@ -8,7 +8,7 @@ description: Mengoperasikan Dolibarr ERP/CRM LOKAL milik pengguna (DoliWamp di k
 ## Tujuan
 Pemilik usaha yang memakai **Dolibarr di komputernya sendiri** (pengganti Jurnal/Accurate + Moka + CRM berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/dolibarr.py` untuk membaca atau menyiapkan data lewat **REST API resmi Dolibarr** (`/api/index.php`, header `DOLAPIKEY`). Data tetap di komputer pengguna. Python standar saja, tanpa instalasi paket.
 
-**Versi 1.0.1. Status uji:** diuji dengan **Dolibarr asli 24.0.1 dan 22.0.4** (PHP 8.4 + MariaDB 10.11 di Linux, kunci admin/terbatas; uji independen v1.0.0 di 24.0.1) + uji regresi dengan server tiruan dari respons asli. **Belum** diuji di DoliWamp Windows sungguhan.
+**Versi 1.0.2. Status uji:** diuji dengan **Dolibarr asli 24.0.1 dan 22.0.4** (PHP 8.4 + MariaDB 10.11 di Linux, kunci admin/terbatas; uji independen v1.0.0 & v1.0.1 di 24.0.1) + uji regresi dengan server tiruan dari respons asli. **Belum** diuji di DoliWamp Windows sungguhan.
 
 ## Kapan digunakan
 - "Cek Dolibarr saya nyambung?", "kunci API saya aman?" → `cek`
@@ -27,8 +27,9 @@ Pemilik usaha yang memakai **Dolibarr di komputernya sendiri** (pengganti Jurnal
 
 ## Persiapan (sekali, lakukan bersama pengguna)
 1. Jalankan `cek` (lihat Langkah A). Jika gagal, ikuti pesan `Saran:`; panduan lengkap bergambar-kata ada di `docs/panduan-dolibarr.md` (instal DoliWamp, modul, user API, kunci).
-2. **Kunci API**: minta pengguna menjalankan SENDIRI di terminalnya `python3 <folder-skill>/scripts/dolibarr.py simpan-kunci` lalu menempel kuncinya (tidak tampil). Kunci tersimpan di `~/.komunitech/dolibarr-kunci.txt` berizin 600. **Jangan pernah minta pengguna menempel kunci di chat**; jika terlanjur ditempel, jangan ulangi/menyalinnya ke file apa pun, dan sarankan membuat kunci baru di Dolibarr. Alternatif: ENV `DOLIBARR_API_KEY`.
+2. **Kunci API**: minta pengguna menjalankan SENDIRI di terminalnya `python3 <folder-skill>/scripts/dolibarr.py simpan-kunci` lalu menempel kuncinya (tidak tampil). Kunci tersimpan di `~/.komunitech/dolibarr-kunci.txt` berizin 600. **Jangan pernah minta pengguna menempel kunci di chat**; jika terlanjur ditempel, jangan ulangi/menyalinnya ke file apa pun, dan sarankan membuat kunci baru di Dolibarr. Alternatif: ENV `DOLIBARR_API_KEY`. Script menyebut path lengkap file yang ditulis dan tidak menimpa file kunci yang sudah ada tanpa `--ya`; kunci kedua (pembuat draf) → `simpan-kunci --kunci-file ~/.komunitech/dolibarr-kunci-draf.txt`.
 3. Alamat default `http://localhost/dolibarr` (DoliWamp). Beda? pakai ENV `DOLIBARR_URL` atau `--url`.
+4. Opsi umum (`--url`, `--kunci-file`, `--izinkan-url-luar`, `--tz`, `--json`) boleh ditulis sebelum atau sesudah perintah; bila ditulis dua kali dengan nilai berbeda, script menolak (kode 2).
 
 ## Langkah kerja
 Perintah (Windows: `python` atau `py` sebagai ganti `python3`). Tambah `--json` bila ingin membaca hasil terstruktur.
@@ -110,7 +111,7 @@ Contoh lain di `examples/`. `--json` berisi field yang sama + `teks`.
 - Tarif di Dolibarr: umum = **11**, mewah = **12**, tanpa = **0** (harus ada di kamus tarif PPN Indonesia; lihat panduan). Produk yang tarifnya beda dari pilihan invoice diberi catatan.
 - **Umur piutang** = tanggal hari ini (WIB) − tanggal jatuh tempo, dalam hari: belum jatuh tempo, 1–30, 31–60, 61–90, >90.
 - **Stok**: HABIS = stok ≤ 0 (MINUS bila < 0); MENIPIS = batas minimum > 0 dan stok **<** batas (sama dengan aturan Dolibarr). Saran beli (hanya untuk minus/habis/menipis) = stok ideal − stok (bila stok ideal diisi), selain itu batas minimum − stok. Jasa dan produk nonaktif (tidak dijual & tidak dibeli) tidak dihitung. Modul Stok mati atau hak baca stok kurang → **tidak dinilai sama sekali** (tidak ada "HABIS" palsu).
-- **Tanggal**: tanggal invoice/jatuh tempo dari Dolibarr dibulatkan ke tanggal terdekat di zona `--tz` (default WIB; `--tz WITA`/`WIT` untuk toko di zona itu), jadi tidak bergeser walau zona PHP server berbeda (DoliWamp = UTC).
+- **Tanggal**: tanggal invoice/jatuh tempo dari Dolibarr dibulatkan ke tanggal terdekat di zona `--tz` (default WIB; `--tz WITA`/`WIT` untuk toko di zona itu), jadi tidak bergeser walau zona PHP server berbeda (DoliWamp = UTC). Batas: server paling jauh 12 jam di barat / 11 jam di timur zona toko; server di Amerika untuk toko WIB/WIT bisa bergeser 1 hari (bukan pemakaian lokal).
 - **Penjualan harian** = invoice tervalidasi/lunas bertanggal itu (draf & batal tidak dihitung; nota kredit mengurangi). Persen vs kemarin 1 desimal, 0,05 menjauhi nol; kemarin Rp 0 → persen tidak dihitung.
 - Pembulatan belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax.
 
@@ -130,6 +131,8 @@ _Dasar PPN: UU HPP & PMK 131/2024 (tarif 12%, DPP nilai lain 11/12 untuk barang/
 |---|---|---|
 | 3 "tidak bisa dihubungi" | Dolibarr/DoliWamp mati, atau alamat salah port | Minta nyalakan DoliWamp, buka alamat di browser |
 | 4 "Modul API ... belum aktif" / "BELUM AKTIF" | Modul REST/Invoice/dll. mati | Tunjukkan menu Pengaturan > Modul (panduan §4) |
+| 7 "TIDAK DIBUAT ... data ganda" | Pelanggan/draf serupa sudah ada | Tunjukkan yang sudah ada; `--tetap-buat` hanya bila pengguna menegaskan |
+| 2 "File kunci ... sudah ada" | `simpan-kunci` akan menimpa kunci lama | Tanyakan: ganti kunci lama (`--ya`) atau simpan sebagai kunci kedua (`--kunci-file`) |
 | 5 "401" | Kunci salah/diganti/user nonaktif | Buat kunci baru, `simpan-kunci` lagi |
 | 5 "403" | Hak user API kurang **atau** modulnya mati | Jalankan `cek`, atur Izin user API (panduan §5–6) |
 | 4 "Modul Stok belum aktif" | Stok tidak dicatat di Dolibarr | Sampaikan; jangan menyebut barang habis. Aktifkan modul Stok bila perlu |
@@ -143,7 +146,7 @@ _Dasar PPN: UU HPP & PMK 131/2024 (tarif 12%, DPP nilai lain 11/12 untuk barang/
 | Daftar kosong | Belum ada data | Sampaikan apa adanya; jangan mengarang |
 - Satu bagian laporan gagal (mis. modul Stok mati) → bagian itu "Tidak bisa dibaca", bagian lain tetap dikirim. **Semua** bagian gagal → kode keluar bukan 0 (jadwal OpenClaw tercatat gagal).
 - Invoice berbaris banyak gagal di tengah → draf tetap ada berisi baris sebelumnya; script **tidak menghapus**. Minta pengguna melengkapi/menghapus draf di Dolibarr.
-- Multi-mata-uang, multi-perusahaan (multicompany), harga termasuk PPN, dan uang masuk per tanggal bayar **belum didukung** v1.0.1. Laporan tanggal lampau memakai status bayar piutang **saat ini** (diberi label).
+- Multi-mata-uang, multi-perusahaan (multicompany), harga termasuk PPN, dan uang masuk per tanggal bayar **belum didukung** v1.0.2. Laporan tanggal lampau memakai status bayar piutang **saat ini** (diberi label).
 - **Python tidak bisa dijalankan:** jangan memanggil API dengan cara lain. Pandu pengguna melihat data yang sama di layar Dolibarr (menu Tagihan > Nota belum dibayar; Produk > Stok) dan beri label "dibaca manual".
 - Uji regresi (`tests/`) hanya ada di repo pengembang Komunitech, tidak ikut paket pembeli.
 

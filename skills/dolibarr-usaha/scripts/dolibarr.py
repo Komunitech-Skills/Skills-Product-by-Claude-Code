@@ -23,7 +23,8 @@ Perintah:
   laporan-harian                   ringkasan penjualan harian untuk pemilik (jadwal OpenClaw)
 
 Kode keluar: 0 berhasil | 2 argumen/input salah | 3 Dolibarr tidak bisa dihubungi |
-4 modul/API belum aktif | 5 kunci salah/hak akses kurang | 6 galat lain dari Dolibarr.
+4 modul/API belum aktif | 5 kunci salah/hak akses kurang | 6 galat lain dari Dolibarr |
+7 tidak dibuat karena kemungkinan data ganda (pelanggan/draf sudah ada).
 """
 import argparse
 import datetime as dt
@@ -38,7 +39,7 @@ import urllib.parse
 import urllib.request
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
-VERSI_SKRIP = "1.0.1"
+VERSI_SKRIP = "1.0.2"
 URL_DEFAULT = "http://localhost/dolibarr"
 VERSI_TERUJI = ("22.0.4", "24.0.1")
 BATAS_WAKTU = 20
@@ -66,7 +67,7 @@ HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 BULAN = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
          "September", "Oktober", "November", "Desember"]
 
-KELUAR_ARG, KELUAR_KONEKSI, KELUAR_MODUL, KELUAR_AKSES, KELUAR_LAIN = 2, 3, 4, 5, 6
+KELUAR_ARG, KELUAR_KONEKSI, KELUAR_MODUL, KELUAR_AKSES, KELUAR_LAIN, KELUAR_DOBEL = 2, 3, 4, 5, 6, 7
 
 _RAHASIA = []  # nilai yang wajib disamarkan dari semua keluaran
 
@@ -539,7 +540,19 @@ def cmd_cek(api, args, catatan_url, sumber_kunci):
 # ------------------------------------------------------------------ perintah: simpan-kunci
 def cmd_simpan_kunci(args):
     import getpass
-    path = os.path.expanduser(args.kunci_file or lokasi_file_kunci())
+    path = os.path.abspath(os.path.expanduser(args.kunci_file or lokasi_file_kunci()))
+    if os.path.exists(path) and not args.ya:
+        lama = ""
+        try:
+            with open(path, encoding="utf-8") as f:
+                lama = bersihkan_kunci(f.read(4096), "file " + path)
+        except (Gagal, OSError, UnicodeDecodeError):
+            pass
+        raise Gagal("File kunci {} sudah ada{}. Tidak ditimpa.".format(
+            path, " (berisi kunci {})".format(samarkan_kunci(lama)) if lama else ""), KELUAR_ARG,
+            saran="Untuk kunci KEDUA (mis. pembuat draf) pakai file lain: simpan-kunci --kunci-file "
+                  "~/.komunitech/dolibarr-kunci-draf.txt . Untuk mengganti kunci ini, ulangi dengan --ya.")
+    cetak("Kunci akan disimpan di: {}".format(path), file=sys.stderr)
     if sys.stdin.isatty():
         k = getpass.getpass("Tempel kunci API Dolibarr (tidak akan tampil), lalu Enter: ").strip()
     else:
@@ -555,7 +568,8 @@ def cmd_simpan_kunci(args):
         f.write(k + "\n")
     if os.name != "nt":
         os.chmod(path, 0o600)
-    teks = "Kunci {} disimpan di {} (hanya bisa dibaca akun Anda).".format(samarkan_kunci(k), path)
+    teks = "Kunci {} disimpan di {} (hanya bisa dibaca akun Anda){}.".format(
+        samarkan_kunci(k), path, "" if args.kunci_file else " - file default, dipakai laporan terjadwal")
     return {"file": path, "kunci": samarkan_kunci(k), "teks": teks}
 
 
@@ -679,6 +693,8 @@ def cmd_pelanggan_tambah(api, args):
                      .replace("  ", " "))
         if not args.tetap_buat:
             b.append("Tidak dibuat untuk mencegah data ganda. Pakai ID di atas, atau ulangi dengan --tetap-buat.")
+            if args.ya:
+                out["kode_keluar"] = KELUAR_DOBEL
             out["teks"] = "\n".join(b)
             return out
     if not args.ya:
@@ -842,6 +858,7 @@ def cmd_invoice_buat(api, args, offset):
               .format(", ".join("{} (ID {})".format(d.get("ref"), d.get("id")) for d in kembar)),
               "Periksa di Dolibarr. Jika memang ingin draf baru, ulangi dengan --tetap-buat."]
         out["kembar"] = kembar
+        out["kode_keluar"] = KELUAR_DOBEL
         out["teks"] = "\n".join(b)
         return out
 
@@ -1008,39 +1025,54 @@ def pastikan_stok_aktif(api):
     """Pastikan modul Stok aktif & bisa dibaca. Tanpa ini Dolibarr tetap mengirim daftar produk tetapi TANPA
     jumlah stok, sehingga semua barang akan tampak 'habis' (alarm palsu).
 
-    Diamati pada Dolibarr 24.0.1: modul Stok mati -> GET /warehouses = 403 walau user punya hak 'stock lire'
-    (hak tetap tercantum di /users/info), dan produk dikirim tanpa field stock_reel."""
+    Diamati pada Dolibarr 24.0.1: modul Stok mati ATAU user tanpa hak stok -> GET /warehouses = 403 dan produk
+    tanpa stock_reel. Pembeda yang andal: daftar API di explorer/swagger.json hanya memuat /warehouses bila
+    modul Stok aktif (tidak bergantung hak user). Cadangan: setup/modules (khusus admin), lalu /users/info."""
     try:
         api.minta("GET", "warehouses", {"limit": 1}, daftar=True)
         return
     except Gagal as e:
         if e.kode != KELUAR_MODUL and e.http != 403:
             raise
-        mati = e.kode == KELUAR_MODUL
-    if not mati:
+        mati = True if e.kode == KELUAR_MODUL else None
+    if mati is None:
+        try:
+            sw = api.minta("GET", "explorer/swagger.json")
+            if isinstance(sw, dict) and isinstance(sw.get("paths"), dict) and len(sw["paths"]) > 5:
+                mati = not any(k.startswith("/warehouses") for k in sw["paths"])
+        except Gagal as e2:
+            if e2.kode == KELUAR_KONEKSI:
+                raise
+    if mati is None:
+        try:
+            mods = api.minta("GET", "setup/modules")
+            if isinstance(mods, list):
+                mati = "stock" not in [str(m).lower() for m in mods]
+        except Gagal as e2:
+            if e2.kode == KELUAR_KONEKSI:
+                raise
+    if mati is None:
         try:
             u = api.minta("GET", "users/info", {"includepermissions": 1})
-            mati = punya_hak((u or {}).get("rights") or {}, "stock", "lire", None)
-            if not mati:
-                raise Gagal("User API belum punya hak 'Baca gudang dan stok', jadi stok tidak dinilai.",
-                            KELUAR_AKSES, http=403,
-                            saran="Dolibarr > Pengguna & Grup > user API > Izin > Stok > Baca gudang dan stok. "
-                                  "Lihat docs/panduan-dolibarr.md bagian 6.")
+            if punya_hak((u or {}).get("rights") or {}, "stock", "lire", None):
+                mati = True  # hak ada tetapi tetap ditolak -> modul yang mati
         except Gagal as e2:
-            if e2.http != 403 or e2.kode == KELUAR_AKSES and "Baca gudang" in e2.pesan:
+            if e2.kode == KELUAR_KONEKSI:
                 raise
-            try:
-                mods = api.minta("GET", "setup/modules")
-                mati = isinstance(mods, list) and "stock" not in mods
-            except Gagal:
-                pass
     if mati:
         raise Gagal("Modul Stok belum aktif di Dolibarr, jadi jumlah stok tidak dicatat. Status habis/menipis "
                     "tidak dinilai.", KELUAR_MODUL,
                     saran="Jika ingin memantau stok: Pengaturan > Modul/Aplikasi > aktifkan 'Stok'.")
+    if mati is False:
+        raise Gagal("User API belum punya hak 'Baca gudang dan stok' (modul Stok aktif), jadi stok tidak dinilai.",
+                    KELUAR_AKSES, http=403,
+                    saran="Dolibarr > Pengguna & Grup > user API > Izin > Stok > Baca gudang dan stok. "
+                          "Lihat docs/panduan-dolibarr.md bagian 6.")
     raise Gagal("Stok tidak bisa dibaca: modul Stok belum aktif, atau user API tidak punya hak 'Baca gudang dan "
-                "stok'. Status habis/menipis tidak dinilai.", KELUAR_AKSES, http=403,
-                saran="Jalankan `cek`; periksa modul Stok dan izin user API (docs/panduan-dolibarr.md bagian 5-6).")
+                "stok' (Dolibarr tidak memberi tahu yang mana). Status habis/menipis tidak dinilai.",
+                KELUAR_AKSES, http=403,
+                saran="Periksa keduanya: Pengaturan > Modul/Aplikasi > Stok, dan Izin user API "
+                      "(docs/panduan-dolibarr.md bagian 5-6).")
 
 
 def ambil_produk(api, kata=None):
@@ -1124,7 +1156,7 @@ def penjualan_tanggal(api, tgl, offset):
     """Invoice tervalidasi/lunas/ditutup ber-tanggal `tgl` (tanggal invoice, bukan tanggal bayar)."""
     f = "(t.datef:=:'{}')".format(tgl.isoformat())
     data = api.daftar_semua("invoices", {"sqlfilters": f, "properties": "id,ref,type,statut,status,total_ht,"
-                                                                          "total_tva,total_ttc,remaintopay,date"})
+                                                                          "total_tva,total_ttc,remaintopay,paye,date"})
     r = {"nota": 0, "retur": 0, "dpp": Decimal(0), "ppn": Decimal(0), "total": Decimal(0),
          "belum_dibayar": Decimal(0), "draf": 0, "batal": 0}
     for inv in data:
@@ -1142,7 +1174,7 @@ def penjualan_tanggal(api, tgl, offset):
         r["dpp"] += desimal(inv.get("total_ht"))
         r["ppn"] += desimal(inv.get("total_tva"))
         r["total"] += desimal(inv.get("total_ttc"))
-        if str(inv.get("type")) != "2":
+        if str(inv.get("type")) != "2" and st != "2" and str(inv.get("paye", "0")) != "1":
             r["belum_dibayar"] += max(desimal(inv.get("remaintopay")), Decimal(0))
     return r
 
@@ -1186,8 +1218,9 @@ def cmd_laporan_harian(api, args, offset):
                 b.append("vs kemarin: {} -> {} {}%".format(format_rp(kem["total"]), arah,
                                                           str(abs(p)).replace(".", ",")))
         if hari["draf"]:
-            out["perhatian"].append("{} draf invoice bertanggal hari ini belum divalidasi (belum dihitung sebagai "
-                                    "penjualan).".format(hari["draf"]))
+            out["perhatian"].append("{} draf invoice bertanggal {} belum divalidasi (belum dihitung sebagai "
+                                    "penjualan).".format(hari["draf"], "hari ini" if tgl == sekarang_lokal(offset).date()
+                                                         else tgl.isoformat()))
     b.append("")
 
     pi = bagian("piutang", lambda: ambil_piutang(api, offset, tgl))
@@ -1249,26 +1282,56 @@ class ParserID(argparse.ArgumentParser):
         sys.exit(KELUAR_ARG)
 
 
+# Opsi umum boleh ditulis di depan ATAU di belakang subperintah. Tiap tingkat parser menyimpan ke dest
+# sendiri (default SUPPRESS) lalu digabung di gabung_opsi_umum(); nilai berbeda di dua posisi = ditolak.
+OPSI_UMUM = ("url", "kunci_file", "izinkan_url_luar", "tz", "json")
+BAWAAN_UMUM = {"url": None, "kunci_file": None, "izinkan_url_luar": False, "tz": "WIB", "json": False}
+TINGKAT = ("_t0_", "_t1_", "_t2_")
+
+
+def buat_umum(awalan):
+    u = argparse.ArgumentParser(add_help=False)
+    d = argparse.SUPPRESS
+    u.add_argument("--url", dest=awalan + "url", default=d,
+                   help="Alamat Dolibarr (default ENV DOLIBARR_URL atau {})".format(URL_DEFAULT))
+    u.add_argument("--kunci-file", dest=awalan + "kunci_file", default=d,
+                   help="File kunci API (default ~/.komunitech/dolibarr-kunci.txt)")
+    u.add_argument("--izinkan-url-luar", dest=awalan + "izinkan_url_luar", action="store_const", const=True,
+                   default=d, help="Izinkan Dolibarr di komputer lain (wajib https untuk internet)")
+    u.add_argument("--tz", dest=awalan + "tz", default=d, help="WIB (default), WITA, atau WIT")
+    u.add_argument("--json", dest=awalan + "json", action="store_const", const=True, default=d,
+                   help="Keluaran JSON untuk agent")
+    return u
+
+
+def gabung_opsi_umum(args):
+    for nama in OPSI_UMUM:
+        nilai = [getattr(args, t + nama) for t in TINGKAT if hasattr(args, t + nama)]
+        beda = sorted({str(v) for v in nilai})
+        if len(beda) > 1:
+            raise Gagal("Opsi --{} ditulis lebih dari sekali dengan nilai berbeda ({}). Tulis satu kali saja."
+                        .format(nama.replace("_", "-"), " / ".join(beda)), KELUAR_ARG)
+        setattr(args, nama, nilai[0] if nilai else BAWAAN_UMUM[nama])
+    return args
+
+
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
-    umum.add_argument("--url", help="Alamat Dolibarr (default ENV DOLIBARR_URL atau {})".format(URL_DEFAULT))
-    umum.add_argument("--kunci-file", help="File kunci API (default ~/.komunitech/dolibarr-kunci.txt)")
-    umum.add_argument("--izinkan-url-luar", action="store_true",
-                      help="Izinkan Dolibarr di komputer lain (wajib https untuk internet)")
-    umum.add_argument("--tz", default="WIB", help="WIB (default), WITA, atau WIT")
-    umum.add_argument("--json", action="store_true", help="Keluaran JSON untuk agent")
+    umum = buat_umum(TINGKAT[0])
+    umum1 = buat_umum(TINGKAT[1])
+    umum2 = buat_umum(TINGKAT[2])
 
     ap = ParserID(prog="dolibarr.py", description="Asisten Dolibarr lokal (Komunitech). Default hanya baca.",
                   parents=[umum])
     sub = ap.add_subparsers(dest="perintah", parser_class=ParserID)
-    sub.add_parser("cek", parents=[umum], help="Cek koneksi, versi, modul, hak akses")
-    sub.add_parser("simpan-kunci", parents=[umum], help="Simpan kunci API ke file lokal (izin 600)")
+    sub.add_parser("cek", parents=[umum1], help="Cek koneksi, versi, modul, hak akses")
+    sk = sub.add_parser("simpan-kunci", parents=[umum1], help="Simpan kunci API ke file lokal (izin 600)")
+    sk.add_argument("--ya", action="store_true", help="Izinkan menimpa file kunci yang sudah ada")
 
-    pel = sub.add_parser("pelanggan", parents=[umum], help="Cari/tambah pelanggan")
+    pel = sub.add_parser("pelanggan", parents=[umum1], help="Cari/tambah pelanggan")
     ps = pel.add_subparsers(dest="aksi", parser_class=ParserID)
-    c = ps.add_parser("cari", parents=[umum])
+    c = ps.add_parser("cari", parents=[umum2])
     c.add_argument("kata")
-    t = ps.add_parser("tambah", parents=[umum])
+    t = ps.add_parser("tambah", parents=[umum2])
     t.add_argument("--nama", required=True)
     t.add_argument("--telepon")
     t.add_argument("--email")
@@ -1278,9 +1341,9 @@ def buat_parser():
     t.add_argument("--ya", action="store_true", help="Benar-benar simpan (tanpa ini hanya pratinjau)")
     t.add_argument("--tetap-buat", action="store_true", help="Tetap buat walau ada nama mirip")
 
-    inv = sub.add_parser("invoice", parents=[umum], help="Buat draf invoice")
+    inv = sub.add_parser("invoice", parents=[umum1], help="Buat draf invoice")
     isub = inv.add_subparsers(dest="aksi", parser_class=ParserID)
-    ib = isub.add_parser("buat", parents=[umum])
+    ib = isub.add_parser("buat", parents=[umum2])
     ib.add_argument("--pelanggan", required=True, help="ID pelanggan (dari `pelanggan cari`)")
     ib.add_argument("--item", action="append", help="\"nama|jumlah|harga[|diskon%%]\" atau \"@KODE|jumlah[|harga]\"")
     ib.add_argument("--ppn", choices=sorted(PPN), default="umum",
@@ -1292,17 +1355,17 @@ def buat_parser():
     ib.add_argument("--ya", action="store_true", help="Benar-benar buat draf (tanpa ini hanya pratinjau)")
     ib.add_argument("--tetap-buat", action="store_true", help="Tetap buat walau ada draf kembar")
 
-    pi = sub.add_parser("piutang", parents=[umum], help="Invoice belum lunas + umur piutang")
+    pi = sub.add_parser("piutang", parents=[umum1], help="Invoice belum lunas + umur piutang")
     pi.add_argument("--per-tanggal", default="hari-ini")
     pi.add_argument("--samarkan", action="store_true", help="Nama pelanggan jadi inisial")
     pi.add_argument("--maks", type=int, default=30)
 
-    s = sub.add_parser("stok", parents=[umum], help="Cek stok produk")
+    s = sub.add_parser("stok", parents=[umum1], help="Cek stok produk")
     s.add_argument("kata", nargs="?")
     s.add_argument("--menipis", action="store_true", help="Hanya yang menipis/habis/minus")
     s.add_argument("--maks", type=int, default=50)
 
-    lh = sub.add_parser("laporan-harian", parents=[umum], help="Ringkasan harian untuk pemilik")
+    lh = sub.add_parser("laporan-harian", parents=[umum1], help="Ringkasan harian untuk pemilik")
     lh.add_argument("--tanggal", default="hari-ini")
     return ap
 
@@ -1310,10 +1373,12 @@ def buat_parser():
 def main(argv=None):
     ap = buat_parser()
     args = ap.parse_args(argv)
+    args.json = any(getattr(args, t + "json", False) for t in TINGKAT)
     if not args.perintah or (args.perintah in ("pelanggan", "invoice") and not getattr(args, "aksi", None)):
         ap.print_help()
         return KELUAR_ARG
     try:
+        gabung_opsi_umum(args)
         if args.perintah == "simpan-kunci":
             hasil = cmd_simpan_kunci(args)
         else:
@@ -1359,12 +1424,13 @@ def main(argv=None):
             cetak("Saran: jalankan `cek`; bila tetap gagal, kirim pesan ini (tanpa kunci) ke dukungan Komunitech.",
                   file=sys.stderr)
         return KELUAR_LAIN
+    kode = hasil.get("kode_keluar", 0)
     if args.json:
-        hasil["ok"] = True
+        hasil["ok"] = kode == 0
         cetak(json.dumps(hasil, default=ke_json, ensure_ascii=False, indent=2))
     else:
         cetak(hasil["teks"])
-    return 0
+    return kode
 
 
 if __name__ == "__main__":

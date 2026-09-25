@@ -208,6 +208,17 @@ class Tiruan(BaseHTTPRequestHandler):
                 if p["ref"] == ref:
                     return self.kirim(200, p)
             return self.kirim(404, FIX["error_404_product_ref_body"])
+        if jalur == "explorer/swagger.json" and metode == "GET":
+            if "explorer_mati" in K.mode:  # API_EXPLORER_DISABLED
+                return self.kirim(200, "Explorer API dinonaktifkan.<br><br>", "text/html")
+            paths = {"/{}".format(x): {} for x in ("status", "thirdparties", "invoices", "products", "users/info",
+                                                  "setup/modules", "documents")}
+            if "stok_mati" not in K.mode:
+                paths.update({"/warehouses": {}, "/warehouses/{id}": {}, "/stockmovements": {}})
+            return self.kirim(200, {"swagger": "2.0", "paths": paths})
+        if jalur == "setup/modules" and metode == "GET" and "admin_modules" in K.mode:
+            mods = ["api", "facture", "product", "societe", "user"] + ([] if "stok_mati" in K.mode else ["stock"])
+            return self.kirim(200, mods)
         if jalur == "warehouses" and metode == "GET":
             if K.mode & {"stok_mati", "stok_tanpa_hak"}:
                 return self.kirim(403, FIX["error_403_body"])  # asli 24.0.1: 403 walau modul yang mati
@@ -470,7 +481,7 @@ class UjiDolibarr(unittest.TestCase):
 
     def test_tambah_pelanggan_nama_mirip_ditahan(self):
         p = self.jalan("pelanggan", "tambah", "--nama", "Maju Jaya", "--ya")
-        self.assertEqual(p.returncode, 0)
+        self.assertEqual(p.returncode, 7)
         self.assertIn("nama mirip", p.stdout)
         self.assertEqual(self.tulis_dilakukan(), [])
 
@@ -536,6 +547,7 @@ class UjiDolibarr(unittest.TestCase):
         n = len(self.tulis_dilakukan())
         p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
         self.assertIn("DIBATALKAN", p.stdout)
+        self.assertEqual(p.returncode, 7)
         self.assertEqual(len(self.tulis_dilakukan()), n)
         p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya", "--tetap-buat")
         self.assertIn("(PROV102)", p.stdout)
@@ -703,10 +715,11 @@ class UjiDolibarr(unittest.TestCase):
         self.assertNotIn("HABIS", p.stdout + p.stderr)
 
     def test_s1_ambigu_tanpa_info_user(self):
-        K.mode.add("stok_mati")
+        K.mode.update({"stok_mati", "explorer_mati"})
         p = self.jalan("stok", kunci=KUNCI_BACA)
         self.assertEqual(p.returncode, 5)
         self.assertIn("modul Stok belum aktif, atau user API tidak punya hak", p.stderr)
+        self.assertIn("tidak memberi tahu yang mana", p.stderr)
 
     def test_s2_cek_peringatan_hak_invoice(self):
         p = self.jalan("cek")
@@ -835,6 +848,108 @@ class UjiDolibarr(unittest.TestCase):
         spec.loader.exec_module(mod)
         from pathlib import Path
         self.assertEqual(mod.docs_dirujuk(Path(SINI).parent), ["panduan-dolibarr.md"])
+
+    # ---------------------------------------------------------- revisi 1.0.2
+    def test_n1_modul_stok_mati_terdeteksi_semua_kunci(self):
+        K.mode.add("stok_mati")  # swagger tanpa /warehouses: berlaku untuk kunci apa pun
+        for kunci in (KUNCI_TULIS, KUNCI_BACA):
+            p = self.jalan("stok", kunci=kunci)
+            self.assertEqual(p.returncode, 4)
+            self.assertIn("Modul Stok belum aktif", p.stderr)
+        K.mode.update({"explorer_mati", "admin_modules"})  # cadangan: setup/modules (admin)
+        p = self.jalan("stok", kunci=KUNCI_BACA)
+        self.assertIn("Modul Stok belum aktif", p.stderr)
+
+    def test_n1_hak_kurang_modul_aktif(self):
+        K.mode.add("stok_tanpa_hak")
+        for kunci in (KUNCI_TULIS, KUNCI_BACA):
+            p = self.jalan("stok", kunci=kunci)
+            self.assertEqual(p.returncode, 5)
+            self.assertIn("belum punya hak 'Baca gudang dan stok' (modul Stok aktif)", p.stderr)
+
+    def test_n2_opsi_umum_di_depan_dan_belakang(self):
+        for argv in (["--json", "cek"], ["cek", "--json"], ["--json", "pelanggan", "cari", "maju"],
+                     ["pelanggan", "--json", "cari", "maju"], ["pelanggan", "cari", "maju", "--json"],
+                     ["--json", "invoice", "buat", "--pelanggan", "1", "--item", "A|1|1000"],
+                     ["invoice", "--json", "buat", "--pelanggan", "1", "--item", "A|1|1000"],
+                     ["--json", "stok"], ["--json", "piutang"], ["--json", "laporan-harian"]):
+            p = self.jalan(*argv)
+            self.assertEqual(p.returncode, 0, argv)
+            json.loads(p.stdout)
+        for argv in (["--tz", "WITA", "laporan-harian"], ["laporan-harian", "--tz", "WITA"]):
+            self.assertIn(" WITA\n", self.jalan(*argv).stdout)
+        mati = "http://127.0.0.1:{}/dolibarr".format(port_bebas())
+        for argv in (["--url", mati, "stok"], ["stok", "--url", mati], ["--url", mati, "pelanggan", "cari", "ab"]):
+            p = self.jalan(*argv)
+            self.assertEqual(p.returncode, 3, argv)
+            self.assertIn(mati, p.stderr)
+        lan = "http://192.168.255.254:9/dolibarr"
+        self.assertEqual(self.jalan("cek", url=lan).returncode, 2)
+        for argv in (["--izinkan-url-luar", "cek"], ["cek", "--izinkan-url-luar"]):
+            self.assertEqual(self.jalan(*argv, url=lan).returncode, 3, argv)
+
+    @unittest.skipIf(os.name == "nt", "izin file POSIX")
+    def test_n2_kunci_file_di_depan_dan_belakang(self):
+        path = os.path.join(self.tmp, "kunci-lain.txt")
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(KUNCI_BACA + "\n")
+        for argv in (["--kunci-file", path, "cek"], ["cek", "--kunci-file", path]):
+            K.log.clear()
+            p = self.jalan(*argv, kunci=None)
+            self.assertEqual(p.returncode, 0, p.stderr)
+            self.assertIn("dari file " + path, p.stdout)
+            self.assertTrue(all(x["kunci"] == KUNCI_BACA for x in K.log))
+        os.remove(path)
+
+    def test_n2_nilai_berbeda_ditolak(self):
+        for argv in (["--tz", "WITA", "laporan-harian", "--tz", "WIT"],
+                     ["--url", "http://localhost/a", "pelanggan", "--url", "http://localhost/b", "cari", "ab"],
+                     ["pelanggan", "--kunci-file", "a", "cari", "ab", "--kunci-file", "b"]):
+            p = self.jalan(*argv)
+            self.assertEqual(p.returncode, 2, argv)
+            self.assertIn("lebih dari sekali dengan nilai berbeda", p.stderr)
+        self.assertEqual(self.jalan("--tz", "WITA", "laporan-harian", "--tz", "WITA").returncode, 0)
+
+    @unittest.skipIf(os.name == "nt", "izin file POSIX")
+    def test_n2_simpan_kunci_path_dan_tidak_menimpa(self):
+        bawaan = os.path.join(self.tmp, ".komunitech", "dolibarr-kunci.txt")
+        draf = os.path.join(self.tmp, "kunci-draf.txt")
+        for f in (bawaan, draf):
+            if os.path.exists(f):
+                os.remove(f)
+        p = self.jalan("simpan-kunci", kunci=None, masukan=KUNCI_BACA + "\n")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn("Kunci akan disimpan di: " + bawaan, p.stderr)
+        for argv in (["--kunci-file", draf, "simpan-kunci"], ["simpan-kunci", "--kunci-file", draf]):
+            if os.path.exists(draf):
+                os.remove(draf)
+            p = self.jalan(*argv, kunci=None, masukan=KUNCI_TULIS + "\n")
+            self.assertEqual(p.returncode, 0, p.stderr)
+            self.assertIn(draf, p.stderr + p.stdout)
+            self.assertEqual(open(draf).read().strip(), KUNCI_TULIS)
+            self.assertEqual(open(bawaan).read().strip(), KUNCI_BACA, "kunci baca default tidak boleh tertimpa")
+        p = self.jalan("simpan-kunci", kunci=None, masukan=KUNCI_TULIS + "\n")
+        self.assertEqual(p.returncode, 2)
+        self.assertIn("sudah ada", p.stderr)
+        self.assertIn(bawaan, p.stderr)
+        self.assertEqual(open(bawaan).read().strip(), KUNCI_BACA)
+        p = self.jalan("simpan-kunci", "--ya", kunci=None, masukan=KUNCI_TULIS + "\n")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(open(bawaan).read().strip(), KUNCI_TULIS)
+        os.remove(bawaan)
+        os.remove(draf)
+
+    def test_k_lunas_tanpa_bayar_dan_draf_lampau(self):
+        K.invoice.append({"id": "93", "ref": "IN2609-0093", "socid": "1", "type": "0", "statut": "2", "paye": "1",
+                          "date": ts("2026-09-24"), "total_ht": "10000", "total_tva": "1100", "total_ttc": "11100",
+                          "remaintopay": "11100"})
+        K.invoice.append({"id": "94", "ref": "(PROV94)", "socid": "1", "type": "0", "statut": "0",
+                          "date": ts("2026-09-20"), "total_ht": "1", "total_tva": "0", "total_ttc": "1"})
+        d = json.loads(self.jalan("laporan-harian", "--tanggal", "2026-09-24", "--json").stdout)
+        self.assertEqual(d["bagian"]["penjualan"]["belum_dibayar"], 108225)
+        p = self.jalan("laporan-harian", "--tanggal", "2026-09-20")
+        self.assertIn("draf invoice bertanggal 2026-09-20", p.stdout)
 
     # ---------------------------------------------------------- statis
     def test_statis_tidak_ada_perintah_berbahaya(self):

@@ -145,10 +145,10 @@ Jangan memakai akun **admin** untuk AI. Buat akun terpisah dengan hak sekecil mu
    | Nota | Baca faktur pelanggan (dan pembayaran) (11) | ya |
    | Produk | Membaca Produk (31) | ya |
    | Stok | Baca gudang dan stok (1001) | ya, bila modul Stok dipakai |
-3. (Opsional) Hak **Buat/ubah pengguna sendiri (342)** membuat perintah `cek` bisa menampilkan daftar hak dan membedakan "modul Stok mati" dari "hak stok kurang". Tanpa hak ini `cek` tetap berjalan (menguji baca satu per satu).
+3. (Opsional) Hak **Buat/ubah pengguna sendiri (342)** membuat perintah `cek` bisa menampilkan daftar hak dan memberi peringatan hak berisiko. **Tanpa hak 342, `cek` tidak bisa melihat daftar hak**, jadi peringatan "hak invoice juga bisa memvalidasi" (6.2) tidak muncul; `cek` tetap berjalan (menguji baca satu per satu). "Modul Stok mati" vs "hak stok kurang" dibedakan lewat daftar API Dolibarr, tidak butuh 342 (kecuali Explorer API dimatikan).
 
 ### 6.2 User pembuat draf (opsional, setelah 1–2 minggu yakin)
-Buat user kedua `api_draf` dengan hak 6.1 **ditambah** **Buat/modifikasi pihak ketiga (122)** dan **Membuat/Merubah Nota Pelanggan (12)**. Simpan kuncinya ke file lain, mis. `python3 dolibarr.py simpan-kunci --kunci-file ~/.komunitech/dolibarr-kunci-draf.txt`, dan minta AI memakai `--kunci-file` itu hanya saat membuat pelanggan/draf.
+Buat user kedua `api_draf` dengan hak 6.1 **ditambah** **Buat/modifikasi pihak ketiga (122)** dan **Membuat/Merubah Nota Pelanggan (12)**. Simpan kuncinya ke file lain, mis. `python3 dolibarr.py simpan-kunci --kunci-file ~/.komunitech/dolibarr-kunci-draf.txt` (script menampilkan path lengkap file yang akan ditulis dan **menolak menimpa** file kunci yang sudah ada kecuali ditambah `--ya`), dan minta AI memakai `--kunci-file` itu hanya saat membuat pelanggan/draf.
 
 > ⚠️ **Jujur soal risiko (diuji di Dolibarr 24.0.1, 25 Sep 2026):** di Dolibarr, hak **"Membuat/Merubah Nota Pelanggan" (12)** lewat API **juga cukup untuk MEMVALIDASI invoice, mengembalikannya ke draf, dan MENANDAI LUNAS/BELUM LUNAS**, serta mengubah/menghapus baris invoice. Hak "Validasi faktur" (14) hanya berlaku di layar Dolibarr bila izin lanjutan aktif, **tidak** di API. Yang tetap ditolak untuk hak 12 saja: **mencatat pembayaran** (butuh hak 16) dan **menghapus invoice** (butuh hak 19). Hak 122 juga bisa **mengubah** data pelanggan yang sudah ada.
 > Skill Dolibarr Usaha **tidak punya** perintah validasi, tandai lunas, bayar, ubah, atau hapus, dan agent dilarang memanggil API di luar script. Tetapi siapa pun yang memegang kunci `api_draf` secara teknis **mampu** melakukannya. Karena itu: jangan pakai kunci `api_draf` untuk jadwal otomatis, jangan bagikan, dan buat kunci baru bila curiga bocor.
@@ -157,7 +157,7 @@ Buat user kedua `api_draf` dengan hak 6.1 **ditambah** **Buat/modifikasi pihak k
 ### 6.3 Jangan pernah berikan ke user API
 Terbitkan pembayaran (16), Hapus (faktur 19 / pihak ketiga 125 / produk 34), Buat/ubah produk (32), Pergerakan stok (1005), Pengguna & grup (251–256), dan jangan jadikan Administrator.
 
-- ✅ **Cek berhasil:** jalankan `cek` (bagian 7). Semua modul "aktif, bisa dibaca". Untuk `api_baca` tidak ada catatan "hak berisiko". Untuk `api_draf` muncul catatan bahwa hak invoice bisa memvalidasi/menandai lunas — itu pengingat risiko di atas, bukan galat.
+- ✅ **Cek berhasil:** jalankan `cek` (bagian 7). Semua modul "aktif, bisa dibaca". Untuk `api_baca` tidak ada catatan "hak berisiko". Untuk `api_draf` (bila diberi hak 342) muncul catatan bahwa hak invoice bisa memvalidasi/menandai lunas — itu pengingat risiko di atas, bukan galat.
 - ❌ **Kalau gagal:** "TIDAK BISA DIBACA" → hak baca modul itu belum diberikan (atau modulnya belum aktif). Daftar pelanggan kosong padahal ada → hak 262 belum diberikan. "Modul Stok belum aktif" → aktifkan Stok (bagian 5) atau abaikan bila tidak memakai stok.
 
 ---
@@ -168,7 +168,7 @@ Terbitkan pembayaran (16), Hapus (faktur 19 / pihak ketiga 125 / produk 34), Bua
    ```
    python %USERPROFILE%\.openclaw\skills\dolibarr-usaha\scripts\dolibarr.py simpan-kunci
    ```
-   (Mac/Linux: `python3 ~/.openclaw/skills/dolibarr-usaha/scripts/dolibarr.py simpan-kunci`). Tempel kunci (tidak terlihat) → Enter.
+   (Mac/Linux: `python3 ~/.openclaw/skills/dolibarr-usaha/scripts/dolibarr.py simpan-kunci`). Tempel kunci (tidak terlihat) → Enter. Script menulis dulu "Kunci akan disimpan di: <path lengkap>". Jika file itu sudah ada, script menolak menimpa; tambahkan `--ya` hanya bila memang ingin mengganti kunci lama.
 3. Alamat Dolibarr bukan `http://localhost/dolibarr`? Atur sekali: Windows `setx DOLIBARR_URL "http://localhost:8080/dolibarr"` (buka Terminal baru sesudahnya); Mac/Linux tambahkan `export DOLIBARR_URL=...` ke `~/.bashrc`/`~/.zshrc`.
 4. Uji: `python ...\dolibarr.py cek`
 - ✅ **Cek berhasil:** tampil "CEK DOLIBARR", versi, dan kunci tersamar `****abcd`.
