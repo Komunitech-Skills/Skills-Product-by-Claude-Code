@@ -128,9 +128,9 @@ cek("< 1 bulan tidak berhak", h["total_kompensasi"] == 0 and h["rincian_kompensa
 # = (77/31) x 6.200.000 / 12 = 1.283.333,33 -> 1.283.333
 h = H(["1 Januari 2026 s.d. 15 Maret 2026"], upah="6,2jt")
 cek("pecahan sisa hari", h["total_kompensasi"] == 1283333, h["total_kompensasi"])
-h = H(["1 Januari 2026 s.d. 15 Maret 2026"], upah="6,2jt", metode="bulan-penuh")
-cek("metode bulan penuh", h["total_kompensasi"] == 1033333, h["total_kompensasi"])  # 2/12 x 6.2jt
-cek("metode bulan penuh ada peringatan", any("bulan-penuh" in p for p in h["peringatan"]))
+# v1.0.2 (R-baru-3): metode bulan-penuh dihapus (tidak aditif) -> error ramah, bukan angka diam-diam
+harus_error("metode bulan-penuh dihapus", lambda: H(["1 Januari 2026 s.d. 15 Maret 2026"], upah="6,2jt",
+                                                     metode="bulan-penuh"), "dihapus")
 
 # Perpanjangan: kompensasi per periode
 h = H(["1/1/2025 s.d. 31/12/2025", "1/1/2026 s.d. 30/6/2026"], upah="4,8jt")
@@ -350,6 +350,42 @@ cek("S2 checklist 40 jam/minggu 6 hari", "Pasal 21" in _ck and "40 jam/minggu" i
 _sk = open(os.path.join(os.path.dirname(SINI), "SKILL.md"), encoding="utf-8").read()
 cek("R3 panduan beberapa pekerja", "Beberapa pekerja sekaligus" in _sk)
 cek("R4 panduan tanggal mulai tidak diketahui", "Tanggal mulai belum diketahui" in _sk)
+
+# --- v1.0.2 perbaikan kecil (uji ulang 06)
+# Angka pengunci metode default TIDAK berubah
+h = H(["1/1/2026 s.d. 31/3/2026"], upah="3jt", berhenti="15/2/2026", pihak="pekerja")
+g = h["ganti_rugi_pasal_62"]
+cek("v102 kunci 4.392.857", g["nilai"] == 4392857, g)
+# R-baru-1: label memakai pecahan yang dipakai (1,4643), bukan "1 bulan 16 hari"
+cek("R-baru-1 label pecahan", "1,4643 bulan" in g["sisa_masa"] and "1 bulan 16 hari" not in g["sisa_masa"]
+    and "1,5357" in g["sisa_masa"] and g["sisa_hari_kalender"] == 44, g["sisa_masa"])
+p = cli(["--periode", "1/1/2026 s.d. 31/3/2026", "--upah", "3jt", "--berhenti", "15/2/2026",
+         "--pihak-mengakhiri", "pekerja"])
+cek("R-baru-1 teks tanpa label hari-bulan", "1 bulan 16 hari" not in p.stdout and "(3 - 1,5357) = 1,4643 bulan" in p.stdout
+    and "hari hanya informasi" in p.stdout, p.stdout)
+# R-baru-2: sisa 0 -> tidak ada rentang terbalik
+h = H(["1/1/2026 s.d. 31/12/2026", "1/1/2027 s.d. 31/12/2027"], upah="5jt", berhenti="31/12/2026", pihak="pengusaha")
+g = h["ganti_rugi_pasal_62"]
+cek("R-baru-2 nilai 0 & tanpa rentang", g["nilai"] == 0 and g["sisa_dari"] is None and g["sisa_sampai"] is None, g)
+p = cli(["--periode", "1/1/2026 s.d. 31/12/2026", "--periode", "1/1/2027 s.d. 31/12/2027", "--upah", "5jt",
+         "--berhenti", "31/12/2026", "--pihak-mengakhiri", "pengusaha"])
+cek("R-baru-2 teks tidak terbalik", "1 Januari 2027 s.d. 31 Desember 2026" not in p.stdout
+    and "Tidak ada sisa di periode berjalan" in p.stdout, p.stdout)
+# R-baru-3: CLI --metode bulan-penuh -> pesan ramah, exit 2
+p = cli(["--periode", "1/1/2026 s.d. 15/3/2026", "--upah", "6,2jt", "--metode", "bulan-penuh"], kode=2)
+cek("R-baru-3 cli pesan dihapus", "dihapus" in p.stderr and "Traceback" not in p.stderr, p.stderr)
+# R-baru-4: "4,5" -> saran Rp4.500.000 (bukan Rp5.000)
+h = H(["1/1/2026 s.d. 31/12/2026"], upah="4,5")
+pr = [x for x in h["peringatan"] if "PERIKSA UPAH" in x]
+cek("R-baru-4 saran juta", pr and "Rp4.500.000" in pr[0] and "Rp5.000?" not in pr[0], pr)
+h = H(["1/1/2026 s.d. 31/12/2026"], upah="4.5")
+pr = [x for x in h["peringatan"] if "PERIKSA UPAH" in x]
+cek("R-baru-4 saran juta titik", pr and "Rp4.500.000" in pr[0], pr)
+# R-baru-5: checklist B5 membedakan "tidak disebut" (🟠) vs "dikecualikan" (🔴)
+_b5 = [b for b in _ck.splitlines() if b.startswith("| B5")]
+cek("R-baru-5 B5 jelas", _b5 and "tidak disebut sama sekali" in _b5[0] and "🟠" in _b5[0] and "🔴" in _b5[0], _b5)
+# SKILL.md tidak lagi menawarkan --metode bulan-penuh
+cek("R-baru-3 SKILL.md tanpa opsi bulan-penuh", "`--harian` · `--metode bulan-penuh`" not in _sk and "dihapus sejak v1.0.2" in _sk)
 
 # ------------------------------------------------------------ CLI
 p = cli(["--periode", "1 Januari 2026 s.d. 31 Desember 2026", "--gaji-pokok", "5jt", "--tunjangan-tetap", "500rb",

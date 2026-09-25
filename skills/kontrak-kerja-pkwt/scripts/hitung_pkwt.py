@@ -13,9 +13,9 @@ Dasar (dicek 2026-09-25, lihat references/dasar-hukum.md):
 Cara hitung "bulan" (asumsi skill, tidak diatur rinci dalam aturan):
   - Tanggal mulai DAN tanggal akhir sama-sama dihitung sebagai hari kerja (inklusif).
     1 Jan 2026 s.d. 31 Des 2026 = 12 bulan tepat.
-  - Masa kerja = bulan penuh + sisa hari. Metode 'pecahan' (default): sisa hari dibagi jumlah hari
-    di "bulan berjalan" (dari tanggal ulang bulanan terakhir ke tanggal ulang berikutnya).
-    Metode 'bulan-penuh': sisa hari diabaikan (angka minimal, sebutkan ke pengguna bila dipakai).
+  - Masa kerja = bulan penuh + sisa hari; sisa hari dibagi jumlah hari di "bulan berjalan"
+    (dari tanggal ulang bulanan terakhir ke tanggal ulang berikutnya). Satu-satunya metode sejak v1.0.2
+    (opsi lama '--metode bulan-penuh' dihapus karena membuat dijalani + sisa != panjang kontrak).
   - Rupiah dibulatkan ke rupiah terdekat (setengah ke atas) di langkah akhir.
   - Sisa kontrak (ganti rugi Pasal 62) = panjang periode berjalan - masa dijalani di periode itu (v1.0.1),
     sehingga dijalani + sisa = panjang periode persis.
@@ -172,8 +172,8 @@ def masa(mulai, akhir):
     return n, (batas - jangkar).days, (berikut - jangkar).days
 
 
-def bulan_desimal(bp, sisa, hari_bln, metode):
-    if metode == "bulan-penuh" or sisa == 0:
+def bulan_desimal(bp, sisa, hari_bln, metode="pecahan"):
+    if sisa == 0:
         return Fraction(bp)
     return Fraction(bp) + Fraction(sisa, hari_bln)
 
@@ -200,14 +200,31 @@ def fmt_frac(f):
     return "{:.4f}".format(float(f)).rstrip("0").rstrip(".").replace(".", ",")
 
 
+def _saran_upah(teks_asli, up):
+    """Saran untuk upah janggal. '4,5' / '4.5' (angka < 1.000 berdesimal) -> kemungkinan juta (Rp4.500.000);
+    '4.500' -> kemungkinan ribu (Rp4.500.000)."""
+    s = str(teks_asli or "").strip().lower().replace(" ", "").replace("rp", "").replace("idr", "")
+    m = re.fullmatch(r"(\d{1,3})(?:[.,](\d{1,2}))?", s)
+    if m and (m.group(2) or int(m.group(1)) < 1000) and up < 1000:
+        juta = Decimal(m.group(1) + "." + (m.group(2) or "0")) * 10 ** 6
+        return " Mungkin maksudnya {} ({} juta)?".format(fmt_rp(int(juta)), s.replace(".", ","))
+    if up < 100000:
+        return " Mungkin maksudnya {}?".format(fmt_rp(up * 1000))
+    return ""
+
+
 # ---------------------------------------------------------------- inti
 def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhenti=None, pihak=None,
            metode="pecahan", upah_minimum=None, harian=False):
     peringatan = []
     if not periode_teks:
         raise InputError("minimal satu --periode wajib diisi")
-    if metode not in ("pecahan", "bulan-penuh"):
-        raise InputError("metode harus 'pecahan' atau 'bulan-penuh'")
+    if metode == "bulan-penuh":
+        raise InputError("opsi '--metode bulan-penuh' dihapus sejak v1.0.2: membuang sisa hari membuat masa "
+                         "dijalani + sisa kontrak tidak sama dengan panjang kontrak. Jalankan tanpa --metode "
+                         "(metode pecahan: bulan penuh + sisa hari / hari bulan berjalan).")
+    if metode != "pecahan":
+        raise InputError("metode hanya 'pecahan' (bawaan); hapus opsi --metode")
 
     # --- upah
     up = parse_rupiah(upah, "upah")
@@ -231,7 +248,7 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
     if up <= 0:
         raise InputError("upah 1 bulan harus lebih dari Rp0")
     if up < BATAS_UPAH_JANGGAL:
-        saran = " Mungkin maksudnya {}?".format(fmt_rp(up * 1000)) if up < 100000 else ""
+        saran = _saran_upah(upah if upah is not None else gaji_pokok, up)
         peringatan.append("PERIKSA UPAH: upah 1 bulan tertulis {}, sangat kecil untuk upah bulanan; kemungkinan salah "
                           "ketik.{} Jika memang upah harian/per satuan, isi --upah dengan rata-rata upah per BULAN. "
                           "Angka di bawah dihitung dari {} apa adanya.".format(fmt_rp(up), saran, fmt_rp(up)))
@@ -361,7 +378,7 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
         # sisa jangka waktu = sampai akhir periode yang sedang berjalan (perpanjangan yang belum dimulai
         # dicatat terpisah karena tafsirnya bisa berbeda)
         periode_jalan = [p for p in daftar if p[0] <= tgl_berhenti <= p[1]][0]
-        bp, sisa, hb = masa(mulai_sisa, periode_jalan[1])  # hanya untuk tampilan "X bulan Y hari"
+        hari_kalender = (periode_jalan[1] - tgl_berhenti).days
         # Sisa (bulan) = panjang periode berjalan - masa yang sudah dijalani di periode itu, keduanya dengan
         # metode pecahan yang sama, sehingga dijalani + sisa = panjang periode PERSIS (v1.0.1, temuan uji S1).
         tot_bln = bulan_desimal(*masa(periode_jalan[0], periode_jalan[1]), metode="pecahan")
@@ -370,9 +387,20 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
         nilai = rupiah_bulat(bln * up)
         arah = {"pengusaha": "pengusaha membayar ke pekerja", "pekerja": "pekerja membayar ke pengusaha"}.get(
             pihak, "pihak yang mengakhiri membayar ke pihak lain")
+        # Label = pecahan yang BENAR-BENAR dipakai (v1.0.2), bukan "X bulan Y hari" dari tanggal sisa
+        # (yang bisa menghasilkan pecahan berbeda karena panjang bulan berjalan berbeda).
+        if hari_kalender == 0:
+            sisa_masa = "0 bulan (berhenti tepat di hari terakhir periode berjalan; tidak ada sisa)"
+        elif bln.denominator == 1:
+            sisa_masa = "{} bulan".format(fmt_frac(bln))
+        else:
+            sisa_masa = "{} bulan = panjang periode {} bulan - sudah dijalani {} bulan ({} hari kalender)".format(
+                fmt_frac(bln), fmt_frac(tot_bln), fmt_frac(jln_bln), hari_kalender)
         ganti_rugi = {
-            "sisa_dari": mulai_sisa.isoformat(), "sisa_sampai": periode_jalan[1].isoformat(),
-            "sisa_masa": fmt_masa(bp, sisa), "bulan": fmt_frac(bln), "nilai": nilai, "arah": arah,
+            "sisa_dari": mulai_sisa.isoformat() if hari_kalender else None,
+            "sisa_sampai": periode_jalan[1].isoformat() if hari_kalender else None,
+            "sisa_hari_kalender": hari_kalender,
+            "sisa_masa": sisa_masa, "bulan": fmt_frac(bln), "nilai": nilai, "arah": arah,
             "bulan_periode": fmt_frac(tot_bln), "bulan_dijalani_periode": fmt_frac(jln_bln),
             "bulan_pecahan": [bln.numerator, bln.denominator],
             "rumus": "({} - {}) = {} bulan x {} = {}".format(fmt_frac(tot_bln), fmt_frac(jln_bln), fmt_frac(bln),
@@ -386,10 +414,6 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
         if belum:
             peringatan.append("Ada {} periode perpanjangan yang belum dimulai saat berhenti; skill tidak memasukkannya "
                               "ke ganti rugi. Minta pendapat Disnaker/konsultan bila dipersoalkan.".format(len(belum)))
-
-    if metode == "bulan-penuh":
-        peringatan.append("Metode 'bulan-penuh': sisa hari diabaikan. Ini angka paling kecil; metode pecahan "
-                          "lebih menguntungkan pekerja dan lebih aman dari sengketa.")
 
     return {
         "upah_sebulan": up, "dasar_upah": dasar_upah, "metode_bulan": metode,
@@ -429,14 +453,19 @@ def teks(h):
     if g:
         b.append("")
         b.append("GANTI RUGI PENGAKHIRAN DINI (UU 13/2003 Pasal 62): {}".format(fmt_rp(g["nilai"])))
-        b.append("  Sisa kontrak {} s.d. {} = {} -> {}".format(
-            fmt_tgl(datetime.date.fromisoformat(g["sisa_dari"])), fmt_tgl(datetime.date.fromisoformat(g["sisa_sampai"])),
-            g["sisa_masa"], g["rumus"]))
+        if g["sisa_dari"]:
+            b.append("  Sisa kontrak {} s.d. {} ({} hari kalender; hari hanya informasi)".format(
+                fmt_tgl(datetime.date.fromisoformat(g["sisa_dari"])),
+                fmt_tgl(datetime.date.fromisoformat(g["sisa_sampai"])), g["sisa_hari_kalender"]))
+            b.append("  Sisa yang dipakai (panjang periode - sudah dijalani): {}".format(g["rumus"]))
+        else:
+            b.append("  Tidak ada sisa di periode berjalan: berhenti tepat di hari terakhir periode itu -> Rp0. "
+                     "Perpanjangan yang belum dimulai tidak dihitung (lihat peringatan).")
         b.append("  Arah: {}".format(g["arah"]))
         b.append("  Catatan: {}".format(g["catatan"]))
     b.append("")
     b.append("Cara hitung bulan: tanggal mulai & akhir ikut dihitung; masa kerja = bulan penuh + sisa hari "
-             "(metode {}). Rupiah dibulatkan ke rupiah terdekat.".format(h["metode_bulan"]))
+             "/ hari bulan berjalan (metode {}). Sisa kontrak = panjang periode - masa dijalani. Rupiah dibulatkan ke rupiah terdekat.".format(h["metode_bulan"]))
     if h["peringatan"]:
         b.append("")
         b.append("PERINGATAN:")
@@ -457,7 +486,7 @@ def buat_parser():
     p.add_argument("--upah", help="upah 1 bulan bila tidak dipisah (atau rata-rata upah untuk harian lepas)")
     p.add_argument("--berhenti", help="hari kerja terakhir bila kontrak diakhiri sebelum waktunya")
     p.add_argument("--pihak-mengakhiri", choices=["pengusaha", "pekerja"])
-    p.add_argument("--metode", default="pecahan", choices=["pecahan", "bulan-penuh"])
+    p.add_argument("--metode", default="pecahan", help=argparse.SUPPRESS)  # 'bulan-penuh' dihapus v1.0.2
     p.add_argument("--upah-minimum", help="UMK/UMP yang berlaku (opsional, untuk peringatan)")
     p.add_argument("--harian", action="store_true", help="PKWT harian lepas")
     p.add_argument("--format", default="teks", choices=["teks", "json"])

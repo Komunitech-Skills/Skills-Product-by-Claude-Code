@@ -52,6 +52,12 @@ Mahkamah Konstitusi memerintahkan UU Ketenagakerjaan baru paling lambat sekitar 
 Tidak. Skill ini khusus kontrak kerja waktu tertentu (PKWT), termasuk harian lepas. Untuk karyawan tetap, PHK, dan pesangon, skill akan menjelaskan bedanya lalu menyarankan kamu berkonsultasi ke Disnaker atau konsultan hukum. Untuk THR, slip gaji, dan surat peringatan, gunakan skill Komunitech `hitung-thr`, `slip-gaji-bpjs`, dan `surat-peringatan-karyawan`.
 
 ## Riwayat versi
+- **1.0.2 (25 September 2026)** — perbaikan kecil dari uji ulang independen (semua angka rupiah metode bawaan tidak berubah):
+  - Keterangan sisa kontrak kini menampilkan pecahan yang benar-benar dipakai, mis. "(3 − 1,5357) = 1,4643 bulan"; jumlah hari kalender hanya sebagai informasi (sebelumnya tertulis "1 bulan 16 hari" yang tidak cocok dengan 1,4643).
+  - Bila berhenti tepat di hari terakhir periode berjalan, tidak lagi tercetak rentang tanggal terbalik; ditulis "tidak ada sisa di periode berjalan" (Rp0).
+  - Opsi `--metode bulan-penuh` dihapus karena membuat masa dijalani + sisa kontrak tidak sama dengan panjang kontrak; kini hanya satu cara hitung yang konsisten.
+  - Upah tertulis "4,5" kini disarankan Rp4.500.000 (4,5 juta), bukan Rp5.000.
+  - Checklist THR diperjelas: THR dikecualikan = risiko tinggi 🔴; THR tidak disebut = risiko sedang 🟠.
 - **1.0.1 (25 September 2026)** — revisi temuan uji independen:
   - Ganti rugi pengakhiran dini (Pasal 62): sisa kontrak kini = panjang periode − masa yang sudah dijalani, sehingga keduanya selalu berjumlah tepat panjang kontrak (sebelumnya bisa selisih hingga ±2,8 hari upah). Contoh skenario utama (Rp4.150.000/orang; Rp5.000.000 + Rp1.250.000 + ganti rugi Rp15.000.000) tidak berubah.
   - Checklist jam kerja diperbaiki: 6 hari kerja = 7 jam/hari dan 40 jam/minggu, 5 hari kerja = 8 jam/hari dan 40 jam/minggu (PP 35/2021 Pasal 21).
