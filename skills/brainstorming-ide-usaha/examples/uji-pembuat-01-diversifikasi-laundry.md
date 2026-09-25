@@ -1,4 +1,4 @@
-# Uji Pembuat 01 — Diversifikasi Usaha Laundry (Jalur C)
+# Uji Pembuat 01 — Diversifikasi Usaha Laundry (Jalur B)
 
 Dibuat oleh pembuat skill sebagai contoh alur lengkap. **Bukan pengganti** pengujian independen Tahap 6 CLAUDE.md (agent/sesi terpisah, 5 skenario, uji A/B, uji banding pesaing).
 
@@ -8,11 +8,11 @@ Dibuat oleh pembuat skill sebagai contoh alur lengkap. **Bukan pengganti** pengu
 
 ## 1. Klasifikasi
 
-Agent: "Ini kedengarannya perubahan yang bisa memengaruhi cukup banyak hal (produk/jasa baru untuk usaha yang sudah jalan) — saya proses sebagai **Jalur C (Perlu Rencana)**: gali dulu konteks & batasan, munculkan beberapa ide, saring dengan skor, lalu susun rencana uji dan aksi 7 hari. Kalau menurutmu ini cukup ringan, bilang saja."
+Agent: "Ini kedengarannya produk/jasa tambahan untuk usaha yang sudah jalan, dengan modal & risiko kecil-menengah yang bisa dites minggu ini tanpa nambah karyawan/lokasi — saya proses sebagai **Jalur B (Perlu Diuji)**: gali dulu konteks & batasan, munculkan beberapa ide, saring dengan skor, lalu susun rencana uji dan aksi 7 hari. Kalau menurutmu ini ternyata lebih besar dari itu (mis. butuh modal jauh lebih besar atau lini usaha baru), bilang saja, saya naikkan ke Jalur C."
 
 Pengguna: "Oke lanjut."
 
-## 2. Gali konteks & batasan (ringkas, satu pertanyaan fokus per pesan pada sesi asli)
+## 2. Gali konteks & batasan (ringkas; pada sesi asli ditanyakan dalam satu pesan berisi beberapa pertanyaan singkat sekaligus, sesuai Langkah B.1 SKILL.md v1.0.1)
 
 - Usaha: laundry kiloan rumahan, jalan 1,5 tahun, area perumahan kelas menengah.
 - Masalah: omzet turun ~20% dalam 2 bulan terakhir, kompetitor baru buka di dekat lokasi.
@@ -89,7 +89,7 @@ Pengguna: "Oke, coba member langganan bulanan dulu."
 - **Cara uji:** tawarkan paket member bulanan (mis. 3x cuci-kering-lipat/bulan, harga tetap) via status WA + selebaran kecil di etalase depan ke pelanggan yang sudah pernah datang.
 - **Durasi:** 1 minggu.
 - **Target berhasil:** minimal 10 pelanggan mendaftar member dalam 1 minggu.
-- **Kapan lanjut/berhenti:** ≥10 pendaftar → lanjut & promosikan lebih luas; 6–9 → perbaiki harga/isi paket, uji ulang 1 minggu lagi; <3 → hentikan, coba ide #2 (laundry kilat 3 jam).
+- **Kapan lanjut/berhenti:** ≥10 pendaftar (100%) → lanjut & promosikan lebih luas; 3–9 (30–99%) → perbaiki harga/isi paket, uji ulang 1 minggu lagi; <3 (<30%) → hentikan, coba ide #2 (laundry kilat 3 jam).
 - **Biaya uji maksimal:** Rp300.000 (cetak selebaran kecil + pulsa promosi WA), jauh di bawah modal Rp3 juta yang disiapkan.
 
 ## 8. Rencana Aksi 7 Hari

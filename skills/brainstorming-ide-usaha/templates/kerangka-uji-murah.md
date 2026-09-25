@@ -17,9 +17,11 @@ Default kalau tidak disebutkan: **minimal 10 pelanggan/pesanan** dalam durasi uj
 
 ## 4. Kapan berhenti / kapan lanjut
 Tentukan sebelum mulai uji, bukan sesudah (supaya keputusan tidak bias karena "sudah terlanjur"):
-- **Lanjut/perbesar** jika: target ukuran berhasil tercapai DAN tidak ada keluhan besar berulang.
-- **Perbaiki dulu, uji ulang** jika: target hampir tercapai (mis. 6–9 dari target 10) atau ada 1–2 keluhan yang jelas bisa diperbaiki (harga, rasa, kemasan).
-- **Hentikan/ganti ide** jika: jauh di bawah target (mis. <30% dari target) atau keluhan mendasar yang sulit diperbaiki tanpa mengubah ide itu sendiri.
+- **Lanjut/perbesar** jika: target ukuran berhasil tercapai (100%) DAN tidak ada keluhan besar berulang.
+- **Perbaiki dulu, uji ulang** jika: hasil **30–99% dari target** (mis. 3–9 dari target 10) atau ada 1–2 keluhan yang jelas bisa diperbaiki (harga, rasa, kemasan) meski target tercapai.
+- **Hentikan/ganti ide** jika: hasil **di bawah 30% dari target** (mis. <3 dari target 10) atau keluhan mendasar yang sulit diperbaiki tanpa mengubah ide itu sendiri.
+
+(Ketiga ambang ini saling berurutan tanpa celah: 0–29% berhenti, 30–99% perbaiki, 100%+ lanjut — sesuaikan angka target sendiri dengan proporsi yang sama.)
 
 ## 5. Biaya uji (agar tidak rugi besar di tahap coba-coba)
 Sebutkan perkiraan biaya maksimal yang rela dikeluarkan untuk uji ini (bagian dari modal yang disebutkan di Input) — jangan biarkan uji coba menghabiskan seluruh modal yang sebenarnya disiapkan untuk produksi penuh.
