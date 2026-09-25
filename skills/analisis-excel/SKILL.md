@@ -130,8 +130,12 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
      kedua angka (hitungan & Grand Total di file) dan tanya pengguna / cek tata letak dengan `profil`.
      "PENGAMAN SILANG: … = total TANPA baris kandidat" → total TANPA kemungkinan besar benar (tetap
      konfirmasi). Catatan "Pengaman silang: … COCOK dengan baris 'Total' di file" → keyakinan naik;
-     sebutkan ke pengguna ("cocok dengan Grand Total di file Anda"). "PERINGATAN — PENGAMAN SILANG"
-     (tanpa TEGAS) = sebagian kolom beda, mis. angka diketik sebagai teks yang diabaikan SUM Excel.
+     sebutkan ke pengguna ("cocok dengan Grand Total di file Anda"). v1.0.10: angka Total di file hanya
+     jadi total alternatif bila ada "Kemungkinan DOBEL HITUNG" (tepat 2×/3×). Bila pesan berkata "Total di
+     file (Y) tidak sama dengan jumlah baris data (X) … BUKAN jawaban alternatif" → **jangan pakai Y sebagai
+     jawaban**; beri X, katakan Total di file perlu dicek, dan sebutkan penyebab dari pesan (mis. "baris 4, 7
+     berisi angka yang tersimpan sebagai teks — SUM Excel tidak menjumlahkannya"). "PERINGATAN" tanpa
+     TEGAS = penyebab ditemukan / sebagian kolom beda → X boleh diberikan sebagai hasil.
    - **`GAGAL: File ini berisi LEBIH DARI SATU TABEL`** → jelaskan ke pengguna; tanyakan tabel mana
      yang dimaksud, lalu ulangi dengan `--sampai-baris N` (tabel pertama) atau `--mulai-baris N`
      (tabel kedua) sesuai pesan. Jangan pakai `--paksa` untuk menggabungkan tabel berbeda.

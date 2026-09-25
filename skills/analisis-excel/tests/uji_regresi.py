@@ -2317,5 +2317,120 @@ class UjiSilangV109(unittest.TestCase):
         self.assertIn("COCOK", " ".join(d["catatan"]))
 
 
+FIXTURE_V109 = SINI / "examples" / "buat_fixture_uji_v109.py"
+
+
+class UjiTotalFileV1010(unittest.TestCase):
+    """v1.0.10 — fixture penguji ke-10 (uji ulang v1.0.9). B33: Total di FILE salah (angka-teks dilewati SUM Excel,
+    rentang rumus kurang) tidak lagi ditawarkan sebagai total alternatif; B34: nama produk berawalan 'Total'/'Jumlah'
+    di baris data terisi penuh bukan kandidat ringkasan. X*/K* lain tetap."""
+
+    total = UjiInvarianV104.total
+    cek_a = UjiInvarianV104.cek_a
+    a = UjiPrinsipV106.a
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.t = Path(cls._tmp.name)
+        cls.fx = cls.t / "u10"
+        r = subprocess.run([sys.executable, str(FIXTURE_V109), str(cls.fx)], capture_output=True, text=True)
+        if r.returncode != 0:
+            raise RuntimeError(r.stderr)
+        cls.k = json.loads((cls.fx / "kunci-v109.json").read_text(encoding="utf-8"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def tulis(self, nama, teks):
+        f = self.t / nama
+        f.write_text(teks, encoding="utf-8")
+        return f
+
+    def silang(self, d):
+        s = [p for p in d["peringatan"] if "PENGAMAN SILANG" in p]
+        self.assertEqual(len(s), 1, d["peringatan"])
+        return s[0]
+
+    # -- B33 -------------------------------------------------------------------------------------------------
+    def test_B33_X2_angka_teks_dilewati_sum_excel(self):
+        k = self.k["X2"]
+        d = self.cek_a(self.fx / "X2-gt-salah-angka-teks.xlsx", "Nominal", k["total"], k["baris"])
+        p = self.silang(d)
+        self.assertTrue(p.startswith("PERINGATAN — PENGAMAN SILANG"), p)
+        self.assertIn("Total di file (7.355.000) tidak sama dengan jumlah baris data (8.100.000)", p)
+        self.assertIn("baris 4, 7 berisi angka yang TERSIMPAN SEBAGAI TEKS", p)
+        self.assertIn("BUKAN jawaban alternatif", p)
+        self.assertNotIn("Total alternatif", p)
+        c = d["cek_silang_total"][0]["kolom"][0]
+        self.assertEqual((c["penjelasan"]["jenis"], c["penjelasan"]["baris"]), ("sel_teks", [4, 7]))
+
+    def test_B33_X9_rentang_total_kurang_baris_akhir(self):
+        k = self.k["X9"]
+        d = self.cek_a(self.fx / "X9-total-lupa-baris-akhir.csv", "Pengeluaran", k["total"], k["baris"])
+        p = self.silang(d)
+        self.assertIn("Total di file (3.695.000) tidak sama dengan jumlah baris data (5.995.000)", p)
+        self.assertIn("tepat angka baris 7 (di akhir tabel)", p)
+        self.assertNotIn("Total alternatif", p)
+
+    def test_B33_selisih_tak_terjelaskan_tetap_tegas_tanpa_alternatif(self):
+        f = self.tulis("beda.csv", "Tanggal,Nama,Nominal\n01/09/2026,Ani,100000\n02/09/2026,Budi,250000\n"
+                                   "03/09/2026,Cici,75000\nTotal,,500000\n")
+        d = jalankan_json(self, "ringkas", f)
+        p = d["peringatan"][0]
+        self.assertTrue(p.startswith("PERINGATAN TEGAS — PENGAMAN SILANG"), p)
+        self.assertIn("Periksa rumus Total di file Anda", p)
+        self.assertIn("BUKAN jawaban alternatif", p)
+        self.assertNotIn("Total alternatif", p)
+        # X7: satu kolom beda (tidak terjelaskan) -> PERINGATAN tanpa TEGAS, tanpa alternatif
+        k = self.k["X7"]
+        d = self.cek_a(self.fx / "X7-gt-satu-kolom-salah.csv", "Diskon", k["diskon"], k["baris"])
+        p = self.silang(d)
+        self.assertIn("Kolom 'Diskon': Total di file (144.500)", p)
+        self.assertNotIn("Total alternatif", p)
+
+    def test_B33_dobel_hitung_tetap_menawarkan_total_tanpa_subtotal(self):
+        k = self.k
+        for nama, kol, kunci, kali in (("X3-subtotal-terpisah-gt.csv", "Omzet", k["X3"]["total"], 2),
+                                       ("X4-rekap-ganda-3x.xlsx", "Omzet", k["X4"]["total"], 3),
+                                       ("X11-subtotal-bulan-bawah-2kolom.xlsx", "Biaya", k["X11"]["biaya"], 2)):
+            d = jalankan_json(self, "ringkas", self.fx / nama)
+            p = self.silang(d)
+            self.assertTrue(p.startswith("PERINGATAN TEGAS — PENGAMAN SILANG"), nama)
+            self.assertIn("tepat {}×".format(kali), p)
+            self.assertIn("Kemungkinan DOBEL HITUNG", p)
+            self.assertIn("total tanpa subtotal kemungkinan = kolom '{}' {}".format(
+                kol, modul.fmt_angka(D(kunci))), p)
+            self.assertNotIn("BUKAN jawaban alternatif", p)
+
+    # -- B34 -------------------------------------------------------------------------------------------------
+    def test_B34_nama_produk_total_bukan_ringkasan(self):
+        k = self.k["K2"]
+        d = self.cek_a(self.fx / "K2-kontrol-produk-total-care.xlsx", "Stok", k["stok"], 4)
+        self.assertEqual(d["kemungkinan_ringkasan"], [])
+        self.assertEqual(d["peringatan"], [])
+        f = self.tulis("jb.csv", "Produk,Stok,Harga\nSabun,40,5500\nTotal Care Shampoo,24,32000\nPasta,30,12000\n"
+                                 "Jumlah Besar Hemat,5,9000\n")
+        d = self.cek_a(f, "Harga", 58500, 4)
+        self.assertEqual(d["kemungkinan_ringkasan"], [])
+        # baris ringkasan sungguhan tetap terdeteksi: = jumlah baris di atasnya, label persis, berakhiran ':'
+        for teks, calon in (("Produk,Stok,Harga\nSabun,40,5500\nPasta,30,12000\nTotal Barang,70,17500\nKopi,3,9000\n", [4]),
+                            ("Produk,Stok,Harga\nSabun,40,5500\nTotal,70,17500\nKopi,3,9000\nTeh,2,4000\n", [3]),
+                            ("Produk,Stok,Harga\nSabun,40,5500\nTotal Gudang:,1,2\nKopi,3,9000\nTeh,2,4000\n", [3])):
+            d = jalankan_json(self, "ringkas", self.tulis("r.csv", teks))
+            self.assertEqual([x["baris"] for x in d["kemungkinan_ringkasan"]], calon, teks)
+
+    def test_X_K_lain_tetap(self):
+        k = self.k
+        d = self.cek_a(self.fx / "X1-gt-benar-rapi.csv", "Total", k["X1"]["total"], k["X1"]["baris"])
+        self.assertIn("COCOK", " ".join(d["catatan"]))
+        d = self.cek_a(self.fx / "X5-tanpa-gt.csv", "Jumlah (Rp)", k["X5"]["total"], k["X5"]["baris"])
+        self.assertNotIn("PENGAMAN SILANG", " ".join(d["peringatan"] + d["catatan"]))
+        self.cek_a(self.fx / "X6-gt-kolom-c-en.xlsx", "Revenue", k["X6"]["revenue"], k["X6"]["baris"])
+        self.cek_a(self.fx / "K1-kontrol-kas.csv", "Masuk", k["K1"]["masuk"])
+        self.cek_a(self.fx / "K3-kontrol-absen.tsv", "Hadir", k["K3"]["hadir"], 5)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

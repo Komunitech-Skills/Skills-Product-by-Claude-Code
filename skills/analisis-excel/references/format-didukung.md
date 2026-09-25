@@ -140,7 +140,10 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
      baris N (isi — alasan) … Bila benar ringkasan, ulangi dengan --buang-baris N[,M]. Total alternatif:
      kolom 'X': DENGAN baris itu … / TANPA baris itu …" (JSON: `kemungkinan_ringkasan`, `total_alternatif`):
      - baris berlabel ringkasan di **tengah/atas** tabel (Subtotal per cabang/hari, produk bernama persis
-       "TOTAL", kategori "Rata-rata" di kolom pertama);
+       "TOTAL", kategori "Rata-rata" di kolom pertama). (v1.0.10, B34) Label yang hanya BERAWALAN kata
+       ringkasan ("Total Care Shampoo", "Jumlah Besar Hemat") pada baris terisi penuh seperti baris lain, bukan
+       PivotTable, tanpa ":" / akhiran "Total", dan tanpa angka = jumlah ≥ 2 baris di atasnya = data (bukan
+       kandidat);
      - baris angka **tanpa label** (hanya angka di kolom angka, ada kolom yang biasanya terisi ≥ 80% kosong)
        yang setiap angkanya = jumlah baris di atasnya (sejak kandidat/baris dikeluarkan terakhir — kelompok 1
        baris pun — atau seluruhnya) atau rata-ratanya (≥ 3 nilai); di ekor tabel juga min/maks dan agregat
@@ -174,8 +177,15 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
      (bukan AVERAGE/COUNT/MIN/MAX), dan kandidat berlabel jumlah yang menjadi baris terakhir. Per kolom angka
      (bukan persen): cocok (= total hitungan) → catatan "COCOK dengan baris '…' di file"; = total TANPA
      kandidat → kalimat "PENGAMAN SILANG: … = total TANPA baris kandidat" di peringatan kandidat; beda →
-     "PERINGATAN TEGAS — PENGAMAN SILANG: Total hitungan ≠ '…' di file" di atas output (+ "tepat 2×/3×",
-     total alternatif = angka di file). Tidak dipakai untuk peringatan beda: subtotal kelompok terakhir
+     "PERINGATAN TEGAS — PENGAMAN SILANG: Total hitungan ≠ '…' di file" di atas output. (v1.0.10, B33) Dua
+     situasi dibedakan: (1) hitungan tepat 2×/3× angka file → "Kemungkinan DOBEL HITUNG … total tanpa
+     subtotal kemungkinan = …" (hanya di sini angka file ditawarkan sebagai total alternatif); (2) selisih lain
+     → "Total di file (Y) tidak sama dengan jumlah baris data (X) … Periksa rumus Total di file Anda" +
+     "Angka Total di file BUKAN jawaban alternatif". Penyebab dicari: sel angka bertipe TEKS di kolom yang
+     selain itu berisi angka asli (jumlahnya = selisih → "TERSIMPAN SEBAGAI TEKS", SUM Excel melewatkannya) atau
+     1–3 baris di awal/akhir tabel (rentang rumus kurang) → turun menjadi PERINGATAN (tanpa TEGAS; hitungan
+     script benar). Selisih = tepat satu baris di tengah hanya disebut sebagai kemungkinan (tetap TEGAS).
+     Field JSON `cek_silang_total[].kolom[].penjelasan` = {jenis: sel_teks|baris_tepi|satu_baris, baris}. Tidak dipakai untuk peringatan beda: subtotal kelompok terakhir
      ("Subtotal …"), kandidat (sudah diperingatkan), angka = rata-rata/min/maks kolom (kecuali rasio bulat).
      Sebagian kolom cocok & sisanya beda tanpa rasio, atau pengguna sudah memakai `--buang-baris` →
      "PERINGATAN" biasa. JSON: `cek_silang_total`.

@@ -39,7 +39,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.9"
+VERSI = "1.0.10"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -1652,6 +1652,26 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
                     return "angka di {} kolom = jumlah {}".format(len(cocok), jenis.format(a.n))
             return None
 
+        def _label_nama_data(i, mr):
+            """v1.0.10 (B34): label berAWALAN kata ringkasan yang sebenarnya NAMA ('Total Care Shampoo', 'Jumlah
+            Besar') pada baris TERISI PENUH seperti baris data lain = data, bukan kandidat. Syarat: label bukan
+            persis kata ringkasan / berakhiran ':' / '<X> Total', baris tidak jarang, bukan PivotTable, dan TIDAK ada
+            kolom angka yang = jumlah >= 2 baris di atasnya (blok atau semua)."""
+            t = _norm_label(label[i])
+            if pivot or i in jarang or t in LABEL_RINGKASAN or t in LABEL_LEMAH or \
+                    rapikan_teks(label[i]).strip().endswith(":") or \
+                    re.search(r"(?<![\w-])(total|jumlah|subtotal|sub total|grand total)$", t) or \
+                    re.match(r"(grand total|sub[\s-]?total|jumlah total|total keseluruhan|total semua)(?![\w-])", t):
+                return False
+            for j in kol_angka:
+                if mr[j][0] != "angka" or not mr[j][1]:
+                    continue
+                for agr in (seg, nonc):
+                    a = agr.get(j)
+                    if a is not None and a.n >= 2 and abs(mr[j][1] - a.s) <= _toleransi(a.s):
+                        return False
+            return True
+
         def tambah(dct, mr):
             for j in kol_angka:
                 if mr[j][0] == "angka":
@@ -1668,7 +1688,7 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
                         judul_sebelum.setdefault(judul[k], baris_no[k])
                         judul_kata.setdefault(" ".join(re.findall(r"[^\W_]+", judul[k])), (judul[k], baris_no[k]))
                     k -= 1
-            if i in label:
+            if i in label and not _label_nama_data(i, mr):
                 alasan = "berlabel '{}' di {} tabel".format(label[i], "tengah" if pos else "atas")
             elif i not in lindung:
                 isi = [(j, x) for j, (jn, x) in enumerate(mr) if jn is not None]
@@ -2307,6 +2327,8 @@ class Data:
             return None, None
         a = utama[-1]      # baris Total terakhir (Grand Total)
         beda = [c for c in a["kolom"] if c["status"] == "beda"]
+        ganda = [c for c in beda if c["rasio"]]
+        lain = [c for c in beda if not c["rasio"]]
         bagian = []
         for c in beda[:4]:
             t = "kolom '{}': total hitungan {} ≠ {} di file {}".format(
@@ -2314,15 +2336,82 @@ class Data:
             if c["rasio"]:
                 t += " (tepat {}× — kemungkinan subtotal/baris kelompok ikut terhitung)".format(c["rasio"])
             bagian.append(t)
+        # v1.0.10 (B33): hanya situasi DOBEL HITUNG (tepat k×) yang boleh menawarkan angka file sebagai alternatif.
+        # Selisih lain = Total di FILE yang patut dicek; cari penjelasannya (sel angka bertipe teks / baris tepi).
+        for c in lain:
+            c["penjelasan"] = self._jelaskan_selisih(c["kolom"], c["hitungan"] - c["di_file"])
+        jelas = bool(lain) and all(c["penjelasan"] and c["penjelasan"]["jenis"] in ("sel_teks", "baris_tepi")
+                                   for c in lain)
         # pengguna sudah memutuskan baris mana yang dibuang (--buang-baris) -> peringatan biasa, kecuali rasio bulat
-        tegas = any(c["rasio"] for c in beda) or (all(c["status"] == "beda" for c in a["kolom"])
-                                                   and not self._buang_pengguna)
-        teks = ("{} — PENGAMAN SILANG: Total hitungan ≠ '{}' di file (baris {}): {} — kemungkinan ada subtotal ikut "
-                "terhitung / baris hilang / angka yang diketik sebagai teks (SUM Excel mengabaikannya) / angka Total di file salah. Total alternatif = angka '{}' di file ({}). "
-                "Tampilkan kedua angka ke pengguna dan periksa tata letak tabel sebelum menyimpulkan.").format(
-                    "PERINGATAN TEGAS" if tegas else "PERINGATAN", a["label"], a["baris"], "; ".join(bagian),
-                    a["label"], "; ".join(ringkas(c) for c in beda[:4]))
+        tegas = bool(ganda) or (all(c["status"] == "beda" for c in a["kolom"]) and not self._buang_pengguna
+                                and not jelas)
+        teks = "{} — PENGAMAN SILANG: Total hitungan ≠ '{}' di file (baris {}): {}.".format(
+            "PERINGATAN TEGAS" if tegas else "PERINGATAN", a["label"], a["baris"], "; ".join(bagian))
+        if ganda:
+            teks += (" Kemungkinan DOBEL HITUNG (subtotal/baris kelompok ikut terhitung): total tanpa subtotal "
+                     "kemungkinan = {}. Total alternatif = angka '{}' di file ({}). Tampilkan kedua angka ke "
+                     "pengguna dan periksa tata letak tabel (profil) sebelum menyimpulkan.").format(
+                         "; ".join("kolom '{}' {}".format(c["kolom"], fmt_angka(c["hitungan"] / c["rasio"]))
+                                   for c in ganda[:4]),
+                         a["label"], "; ".join(ringkas(c) for c in ganda[:4]))
+        for c in lain[:4]:
+            teks += (" Kolom '{}': Total di file ({}) tidak sama dengan jumlah baris data ({}); selisih {} tidak "
+                     "dijelaskan oleh subtotal. Periksa rumus Total di file Anda (mis. angka yang tersimpan "
+                     "sebagai teks tidak ikut dijumlah Excel, atau rentang rumus tidak mencakup semua baris).").format(
+                         c["kolom"], fmt_angka(c["di_file"]), fmt_angka(c["hitungan"]),
+                         fmt_angka(abs(c["hitungan"] - c["di_file"])))
+            if c["tanpa_kandidat"] is not None:
+                teks += " (Total TANPA baris kandidat ringkasan = {} juga tidak sama.)".format(
+                    fmt_angka(c["tanpa_kandidat"]))
+            if c["penjelasan"]:
+                teks += " " + c["penjelasan"]["teks"]
+        if lain:
+            teks += (" Angka Total di file BUKAN jawaban alternatif — jangan dipakai sebagai total; {}").format(
+                "hitungan script sudah memasukkan semua baris data; sebutkan ke pengguna bahwa Total di file "
+                "kemungkinan salah." if jelas else
+                "tampilkan total hitungan, jelaskan bahwa Total di file berbeda, dan minta pengguna memeriksa "
+                "rumus/baris datanya sebelum menyimpulkan.")
         return ("tegas" if tegas else "lunak"), teks
+
+    def _jelaskan_selisih(self, nama, selisih):
+        """v1.0.10 (B33): cari penyebab selisih total hitungan − Total di file: (1) sel angka bertipe TEKS di
+        kolom yang selain itu berisi angka asli (SUM Excel melewatkannya); (2) 1–3 baris data di awal/akhir tabel
+        (rentang rumus kurang); (3) tepat satu baris data mana pun. None bila tidak ditemukan."""
+        if not selisih:
+            return None
+        k = self.kol[nama]
+        j = self.kolom.index(nama)
+        vals = k["nilai"]
+        tol = _toleransi(abs(selisih))
+        ada_asli = any(isinstance(row[j], Decimal) for row in self.mentah)
+        if selisih > 0 and ada_asli:
+            teks_i = [i for i, row in enumerate(self.mentah)
+                      if isinstance(row[j], str) and not adalah_kosong(row[j]) and vals[i] is not None]
+            if teks_i and abs(sum((vals[i] for i in teks_i), NOL) - selisih) <= tol:
+                no = [self.baris_no[i] for i in teks_i]
+                return {"jenis": "sel_teks", "baris": no, "teks":
+                        "Penyebab yang cocok: sel {} di baris {} berisi angka yang TERSIMPAN SEBAGAI TEKS (jumlahnya "
+                        "{} = tepat selisihnya) — rumus SUM Excel tidak menjumlahkannya, sedangkan hitungan script "
+                        "sudah memasukkannya. Total di file kemungkinan SALAH; perbaiki dengan mengubah sel itu "
+                        "menjadi angka.".format(nama, ", ".join(map(str, no[:10])), fmt_angka(selisih))}
+        isi = [i for i, v in enumerate(vals) if v is not None]
+        if selisih > 0 and len(isi) >= 3:
+            for m in (1, 2, 3):
+                for ujung, pilih in (("akhir", isi[-m:]), ("awal", isi[:m])):
+                    if m < len(isi) and abs(sum((vals[i] for i in pilih), NOL) - selisih) <= tol:
+                        no = [self.baris_no[i] for i in pilih]
+                        return {"jenis": "baris_tepi", "baris": no, "teks":
+                                "Penyebab yang cocok: selisihnya = tepat angka baris {} (di {} tabel) — kemungkinan "
+                                "rentang rumus Total di file tidak mencakup baris itu. Hitungan script sudah "
+                                "memasukkannya; Total di file kemungkinan SALAH.".format(
+                                    ", ".join(map(str, no)), ujung)}
+            satu = [i for i in isi if abs(vals[i] - selisih) <= tol]
+            if len(satu) == 1:
+                no = [self.baris_no[satu[0]]]
+                return {"jenis": "satu_baris", "baris": no, "teks":
+                        "Kemungkinan penyebab: selisihnya = tepat angka baris {} — cek apakah baris itu ikut "
+                        "dijumlah rumus Total di file.".format(no[0])}
+        return None
 
     def _pesan_ringkasan(self):
         def daftar(no):
