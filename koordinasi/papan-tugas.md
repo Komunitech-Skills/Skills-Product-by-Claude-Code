@@ -15,7 +15,7 @@ Branch Akun B: `(isi di commit pertama Akun B)`
 1. **Mulai dari kode terbaru.** Di awal giliran: `git fetch origin claude/determined-gates-rh7l38` lalu `git merge --ff-only origin/claude/determined-gates-rh7l38` (atau `git merge` biasa bila sudah pernah commit). Jangan rebase / force-push branch orang lain.
 2. **Ambil tugas hanya dari kolom jalurmu.** Ubah status jadi `dikerjakan (Akun X, tanggal)` lalu commit & push segera.
 3. **Satu skill = satu akun.** Jangan menyentuh folder `skills/<nama>` milik jalur lain. Perlu perubahan di sana → tulis di bagian "Permintaan antar-akun".
-4. **Semua aturan CLAUDE.md tetap berlaku** (uji independen, A/B, banding pesaing, validate.py, lisensi, tanpa data pribadi, maks 2 agent paralel per akun, hemat context).
+4. **Semua aturan CLAUDE.md tetap berlaku** (uji independen, A/B, banding pesaing, validate.py, lisensi, tanpa data pribadi, hemat context). Batas agent paralel (keputusan pemilik 2026-09-25): **Akun A maks 2**, **Akun B maks 4** (kuota Akun B lebih besar). Tetap hentikan batch baru bila context sesi > 600 ribu token atau limit "rejected".
 5. **catalog.csv**: tambah/ubah hanya baris skill milikmu. Konflik saat merge diselesaikan Akun A.
 6. **Laporan**: `reports/YYYY-MM-DD.md` milik Akun A; Akun B menulis di `reports/YYYY-MM-DD-akun-b.md`.
 7. Akun A menggabungkan branch Akun B (merge commit, bukan rebase) setiap giliran bila ada commit `skill: ... (lulus)` baru.
