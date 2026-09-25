@@ -60,10 +60,10 @@ data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
    Libur nasional & cuti bersama 2026/2027 (`references/libur-nasional-2026.csv` dan `-2027.csv`, sumber
    sama dengan skill `kalender-pajak`, SKB 3 Menteri — cek ulang tiap tahun) **dimuat otomatis** oleh
    script bila ada. Tambahkan `--libur <file.csv>` hanya untuk libur **tambahan** khusus perusahaan
-   (kolom `tanggal`, satu tanggal per baris, format bebas seperti `--mulai`) — file itu digabung dengan
-   libur bawaan, bukan menggantinya. Salin tabel Markdown hasil script (termasuk baris peringatan `>`
-   bila ada) langsung ke jawaban; jangan menghitung ulang tanggal secara manual, dan jangan hapus
-   peringatan yang muncul.
+   (kolom `tanggal`, satu tanggal per baris, format bebas seperti `--mulai`; pemisah koma atau titik-koma
+   sama-sama didukung) — file itu digabung dengan libur bawaan, bukan menggantinya. Salin tabel Markdown
+   hasil script (termasuk baris peringatan `>` bila ada) langsung ke jawaban; jangan menghitung ulang
+   tanggal secara manual, dan jangan hapus peringatan yang muncul.
 
    **Definisi tanggal (harus identik dengan script, lihat komentar header `scripts/jadwal_onboarding.py`):**
    - Checkpoint 30/60/90 hari = mulai + 29/59/89 hari kalender. **Ini hanya pemantauan kinerja rutin**,
@@ -72,15 +72,26 @@ data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
      kemudian; **bila bulan target tidak punya tanggal itu, pakai hari terakhir bulan itu (tanpa dikurangi
      1 hari lagi)**; bila tanggal itu ada, **dikurangi 1 hari**. Contoh: mulai 14 Des 2026 → 14 Mar 2027 −
      1 hari = batas **13 Mar 2027**. Tanggal ini **tidak pernah digeser** walau jatuh di hari libur.
-   - Evaluasi keputusan akhir masa percobaan (khusus PKWTT) = **5 hari kerja sebelum** batas hukum
-     (dihitung mundur satu per satu dari hari kerja terakhir ≤ batas), supaya keputusan lanjut/tidak
-     sempat diambil dan diproses **sebelum** batas hukum berakhir. Baris ini terpisah dari checkpoint 90
-     hari dan **selalu** ≤ batas hukum.
+     **Ini adalah TAFSIR yang dipakai skill ini, bukan kepastian hukum** — UU 13/2003 Pasal 60 hanya
+     menyebut "paling lama 3 (tiga) bulan" dan tidak merinci cara menghitung tanggal per hari. Ikuti
+     tanggal yang tertulis di perjanjian kerja/surat pengangkatan bila berbeda dengan hasil script, dan
+     sarankan pengguna konfirmasi ke Disnaker/konsultan HR bila ragu.
+   - Evaluasi keputusan akhir masa percobaan (khusus PKWTT) = **hari kerja ke-5 dihitung mundur** dari
+     batas hukum, dengan **hari kerja terakhir ≤ batas dihitung sebagai hari kerja ke-1** (jadi mundur 4
+     hari kerja lagi dari situ), supaya keputusan lanjut/tidak sempat diambil dan diproses **sebelum**
+     batas hukum berakhir. Baris ini terpisah dari checkpoint 90 hari dan **selalu** ≤ batas hukum.
    - Aturan geser: H1 **tidak pernah** digeser sendiri (hanya diberi peringatan bila jatuh di hari
      libur/akhir pekan, dengan saran tanggal kerja berikutnya — konfirmasi ke pengguna, jangan geser
      otomatis). Minggu 1 & checkpoint 30/60/90 digeser **maju** ke hari kerja berikutnya bila jatuh di hari
      libur. Evaluasi akhir masa percobaan digeser **mundur** (dihitung dari batas). Batas hukum sendiri
      tidak pernah digeser.
+   - **Cuti bersama** (SKB 3 Menteri): bagi pekerja **swasta**, cuti bersama bersifat **fakultatif**
+     (mengikuti kebijakan/perjanjian kerja masing-masing perusahaan), berbeda dari hari libur nasional yang
+     wajib. Secara default script tetap menghitung cuti bersama sebagai hari bukan-kerja (lebih aman, hasil
+     tidak pernah lebih lambat dari yang diperlukan). Bila usaha pengguna **tidak** meliburkan cuti
+     bersama, tambahkan `--cuti-bersama-hari-kerja` supaya tanggal itu dihitung sebagai hari kerja biasa.
+   - Tahun tanggal mulai di luar **1900–9900** ditolak script dengan pesan ramah (bukan galat mentah);
+     minta pengguna mengecek kembali tanggalnya.
 
    **Fallback bila Python tidak bisa dijalankan:** hitung manual pakai rumus persis di atas (identik
    dengan script) dan beri tahu pengguna tanggal dihitung manual, sarankan cek dengan script. Bila
@@ -151,7 +162,9 @@ di Sidoarjo, mulai kerja Senin 28 September 2026, kontraknya PKWTT langsung, bud
 senior), kerja 6 hari seminggu."
 
 **Output (ringkas, hasil nyata `jadwal_onboarding.py --mulai "28 September 2026" --hari-kerja 6 --jenis
-pkwtt`, hari libur nasional dimuat otomatis — tidak ada yang jatuh di rentang ini):**
+pkwtt`, hari libur nasional dimuat otomatis — libur Natal 24–25 Desember 2026 justru ADA di rentang
+evaluasi keputusan akhir masa percobaan dan memundurkannya dari 22 ke 19 Desember 2026, lihat baris
+terakhir tabel & catatan di bawahnya):**
 ```
 ## 2. Jadwal Onboarding (H1 – 90 Hari)
 | Tahap | Tanggal target | Tanggal disesuaikan | Digeser? | Penanggung jawab | Kegiatan |
@@ -169,8 +182,9 @@ tanggal mulai membuat checkpoint 90 hari jatuh **setelah** batas hukum, script m
 `⚠️` di atas tabel — salin juga baris itu, dan pakai baris "Evaluasi keputusan akhir masa percobaan"
 (bukan checkpoint 90 hari) untuk keputusan lanjut/tidak.
 
-Contoh lengkap lain (varian bengkel, karyawan PKWT, input tidak lengkap, tanggal mulai di hari libur) di
-`examples/`.
+Contoh lengkap lain (varian bengkel, karyawan PKWT, tanggal mulai jatuh di hari libur — H1 diberi
+peringatan, tidak digeser otomatis) ada di `references/varian-jenis-usaha.md` bagian "Contoh lengkap:
+bengkel". Contoh PKWT & input tidak lengkap lain ada di `examples/`.
 
 ## Checklist sebelum mengirim hasil
 - [ ] Tanggal jadwal berasal dari script (atau ditandai "dihitung manual").
@@ -178,7 +192,9 @@ Contoh lengkap lain (varian bengkel, karyawan PKWT, input tidak lengkap, tanggal
   evaluasi versi PKWT dipakai (tanpa istilah "lulus masa percobaan").
 - [ ] Untuk PKWTT: masa percobaan maks. 3 bulan, upah selama percobaan tidak boleh di bawah upah minimum
   (kecuali usaha mikro/kecil — lihat `references/dasar-hukum-onboarding.md`); baris "evaluasi keputusan
-  akhir masa percobaan" (bukan checkpoint 90 hari) dipakai untuk keputusan lanjut/tidak.
+  akhir masa percobaan" (bukan checkpoint 90 hari) dipakai untuk keputusan lanjut/tidak; bila pengguna
+  bertanya tentang tanggal batas 3 bulan persisnya, sebutkan itu **tafsir** (bukan kepastian hukum) dan
+  sarankan cek ke perjanjian kerja/Disnaker bila ragu.
 - [ ] Bila script memberi peringatan (H1 di hari libur, checkpoint 90 hari melewati batas hukum),
   peringatan itu **disalin ke jawaban**, tidak dihilangkan.
 - [ ] Checklist dokumen meminta data **seperlunya** dan mengingatkan penyimpanan aman (PDP).

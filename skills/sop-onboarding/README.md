@@ -56,5 +56,14 @@ Masa percobaan hanya berlaku untuk karyawan tetap (PKWTT) dan **maksimal** 3 bul
 Bisa. Sebutkan jumlah shift dan cabang saat meminta, jadwal dan buku saku akan disesuaikan; script jadwal juga mendukung 5 atau 6 hari kerja per minggu, libur nasional bawaan 2026/2027, dan file libur tambahan perusahaan.
 
 ## Riwayat versi
+- **1.0.2** (lulus) — Perbaikan kecil hasil uji ulang independen: batas 3 bulan akhir masa percobaan kini
+  dinyatakan tegas sebagai **tafsir** (bukan kepastian hukum), dengan saran konfirmasi ke Disnaker/konsultan
+  bila ragu (SKILL.md, script, `references/dasar-hukum-onboarding.md`); kalimat contoh di SKILL.md diperbaiki
+  (libur Natal 24–25 Des memundurkan evaluasi dari 22 ke 19 Desember, bukan "tidak ada libur di rentang ini");
+  definisi "5 hari kerja sebelum batas" diperjelas (hari kerja terakhir ≤ batas = hari kerja ke-1); cuti
+  bersama kini disebut eksplisit fakultatif bagi swasta, dengan opsi `--cuti-bersama-hari-kerja` untuk
+  menganggapnya hari kerja; tanggal tahun di luar 1900–9900 (termasuk 9999) kini memberi pesan ramah, bukan
+  Traceback; file `--libur` berpemisah titik-koma (ekspor Excel Indonesia) kini terbaca; tambahan contoh
+  lengkap varian bengkel (PKWT, tanggal mulai di hari libur) di `references/varian-jenis-usaha.md`.
 - **1.0.1** (draft) — Perbaikan hasil uji independen: batas hukum akhir masa percobaan PKWTT & tanggal evaluasi keputusannya kini dipisah dari checkpoint 90 hari (evaluasi selalu terjadwal sebelum batas hukum; peringatan eksplisit bila checkpoint 90 hari melewati batas); contoh di SKILL.md/README diperbaiki agar sama persis dengan hasil script; libur nasional & cuti bersama 2026/2027 dimuat otomatis; peringatan bila tanggal mulai jatuh di hari libur/Minggu; catatan pengecualian upah usaha mikro/kecil; formulir evaluasi versi PKWT; tambahan panduan buddy, jadwal check-in mingguan, target per jabatan, dan retrospektif onboarding.
 - **1.0.0** — Rilis awal (draft).

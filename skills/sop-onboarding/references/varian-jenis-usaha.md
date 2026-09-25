@@ -24,6 +24,33 @@ relevan, hapus yang tidak berlaku, dan tandai `[isi: ...]` untuk hal yang khusus
 - Shift: umumnya jam kerja tetap (bukan shift); penanggung jawab = kepala mekanik/pemilik.
 - Buddy: mekanik senior.
 
+### Contoh lengkap: bengkel
+**Input pengguna:** "Bengkel motor saya di Solo terima mekanik baru namanya Budi, kontrak PKWT 6 bulan,
+mulai kerja Jumat 25 Desember 2026, kerja 6 hari seminggu (jam kerja tetap, bukan shift)."
+
+Tanggal mulai (25 Desember 2026) kebetulan **Hari Natal** — jatuh di hari libur nasional bawaan.
+Hasil nyata `python3 scripts/jadwal_onboarding.py --mulai "25 Desember 2026" --hari-kerja 6 --jenis pkwt
+--nama "Budi, Mekanik"`:
+```
+> ⚠️ Tanggal mulai 25 Desember 2026 jatuh di hari libur/akhir pekan (bukan hari kerja). H1 TIDAK otomatis
+  digeser -- konfirmasi ke pengguna, saran: geser ke hari kerja berikutnya, 26 Desember 2026.
+
+| Tahap | Tanggal target | Tanggal disesuaikan | Digeser? | Penanggung jawab | Kegiatan |
+|---|---|---|---|---|---|
+| Hari pertama (H1) | 25 Desember 2026 | 25 Desember 2026 | Tidak | Pemilik/Atasan langsung | ... |
+| Akhir minggu 1 | 31 Desember 2026 | 31 Desember 2026 | Tidak | Buddy/rekan pendamping | ... |
+| Checkpoint 30 hari | 23 Januari 2027 | 23 Januari 2027 | Tidak | Atasan langsung | ... |
+| Checkpoint 60 hari | 22 Februari 2027 | 22 Februari 2027 | Tidak | Atasan langsung | ... |
+| Checkpoint 90 hari | 24 Maret 2027 | 24 Maret 2027 | Tidak | Pemilik/Atasan | Evaluasi akhir orientasi |
+| Masa percobaan | - | - | Tidak | - | Tidak berlaku untuk PKWT |
+```
+Karena **PKWT**, tidak ada baris batas hukum/evaluasi masa percobaan — PKWT dilarang mensyaratkan masa
+percobaan (UU 13/2003 Pasal 58 jo. UU 6/2023; PP 35/2021 Pasal 12), checkpoint 30/60/90 di atas hanya
+pemantauan kinerja biasa. Agent **tidak boleh menggeser H1 sendiri**: sampaikan peringatan apa adanya ke
+pengguna dan tanyakan apakah tetap 25 Desember (bengkel buka Natal) atau digeser ke 26 Desember. Varian
+bengkel: buku saku memuat SOP keselamatan kerja & prosedur klaim garansi; buddy = mekanik senior; formulir
+evaluasi pakai versi PKWT (`templates/formulir-evaluasi-orientasi-pkwt.md`).
+
 ## Klinik / layanan kesehatan
 - Dokumen tambahan: STR/SIP untuk tenaga medis (dokter, perawat, bidan — **wajib**, di luar cakupan skill
   ini, arahkan ke bagian legal/Dinkes), sertifikat vaksinasi/kesehatan staf non-medis.
@@ -56,6 +83,9 @@ relevan, hapus yang tidak berlaku, dan tandai `[isi: ...]` untuk hal yang khusus
   bila karyawan baru masuk di shift tertentu — buddy sebaiknya di shift yang sama minimal 2 minggu pertama.
 - Bila hari kerja 6 hari/minggu, pakai `--hari-kerja 6` di script `jadwal_onboarding.py` agar Sabtu
   dihitung hari kerja.
+- Cuti bersama (SKB 3 Menteri) bersifat **fakultatif** bagi pekerja swasta — bila usaha pengguna tetap
+  buka/kerja saat cuti bersama, tambahkan `--cuti-bersama-hari-kerja` supaya tanggal itu dihitung sebagai
+  hari kerja biasa; default-nya tetap dihitung libur (lihat SKILL.md langkah 3).
 
 ## Target per jabatan (contoh, untuk `templates/panduan-buddy.md` bagian C)
 Contoh realistis, bukan patokan wajib — sesuaikan dengan kondisi usaha pengguna dan tanyakan bila target

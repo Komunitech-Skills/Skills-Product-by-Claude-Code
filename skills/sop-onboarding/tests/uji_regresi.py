@@ -250,6 +250,77 @@ if p_tanpa.returncode == 0:
     j_tanpa = json.loads(p_tanpa.stdout)
     cek("cli --tanpa-libur-bawaan menonaktifkan", j_tanpa["jumlah_hari_libur_dimuat"] == 0)
 
+# ------------------------------------------------------------ v1.0.2: P3 tanggal tahun 9999 / di luar rentang
+harus_error("tahun 9999 tidak crash", lambda: T("9999-12-31"), "di luar rentang")
+harus_error("tahun 1800 di luar rentang bawah", lambda: T("1800-01-01"), "di luar rentang")
+cek("tahun batas bawah 1900 diterima", T("1900-01-01").isoformat() == "1900-01-01")
+cek("tahun batas atas 9900 diterima", T("9900-01-01").isoformat() == "9900-01-01")
+p_9999 = cli(["--mulai", "9999-12-31"], kode=2)
+cek("cli tahun 9999 pesan ramah, tanpa Traceback",
+    "ERROR" in p_9999.stderr and "Traceback" not in p_9999.stderr and "di luar rentang" in p_9999.stderr,
+    p_9999.stderr)
+p_1800 = cli(["--mulai", "1800-01-01"], kode=2)
+cek("cli tahun 1800 pesan ramah, tanpa Traceback",
+    "ERROR" in p_1800.stderr and "Traceback" not in p_1800.stderr, p_1800.stderr)
+
+# ------------------------------------------------------------ v1.0.2: P3 CSV libur berpemisah titik-koma
+with tempfile.TemporaryDirectory() as td:
+    path_titik_koma = os.path.join(td, "libur_titik_koma.csv")
+    with open(path_titik_koma, "w", encoding="utf-8", newline="") as f:
+        f.write("tanggal;keterangan\n25/12/2026;Natal\n1/1/2027;Tahun Baru\n")
+    libur_tk = jo.baca_libur(path_titik_koma)
+    cek("csv titik-koma terbaca 2 tanggal", libur_tk == {date(2026, 12, 25), date(2027, 1, 1)}, libur_tk)
+
+    # Delimiter koma tetap berfungsi seperti sebelumnya (tidak boleh berubah)
+    path_koma = os.path.join(td, "libur_koma.csv")
+    with open(path_koma, "w", encoding="utf-8", newline="") as f:
+        f.write("tanggal,keterangan\n25/12/2026,Natal\n")
+    cek("csv koma tetap terbaca", jo.baca_libur(path_koma) == {date(2026, 12, 25)})
+
+# ------------------------------------------------------------ v1.0.2: P2 cuti bersama fakultatif (swasta)
+with tempfile.TemporaryDirectory() as td:
+    path_campuran = os.path.join(td, "libur_campuran.csv")
+    with open(path_campuran, "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["tanggal", "jenis", "keterangan"])
+        w.writerow(["2026-12-24", "cuti", "Cuti bersama Natal"])
+        w.writerow(["2026-12-25", "libur", "Hari Natal"])
+    libur_default = jo.baca_libur(path_campuran)
+    cek("default: cuti bersama tetap dihitung libur",
+        libur_default == {date(2026, 12, 24), date(2026, 12, 25)}, libur_default)
+    libur_dikecualikan = jo.baca_libur(path_campuran, kecualikan_cuti_bersama=True)
+    cek("--cuti-bersama-hari-kerja: baris 'cuti' dikecualikan, 'libur' tetap ada",
+        libur_dikecualikan == {date(2026, 12, 25)}, libur_dikecualikan)
+
+# CLI: libur bawaan 2026 berkurang saat cuti bersama dianggap hari kerja
+p_cb_default = cli(["--mulai", "2026-02-10", "--jenis", "pkwtt", "--format", "json"])
+p_cb_flag = cli(["--mulai", "2026-02-10", "--jenis", "pkwtt", "--cuti-bersama-hari-kerja", "--format", "json"])
+if p_cb_default.returncode == 0 and p_cb_flag.returncode == 0:
+    j_cb_default = json.loads(p_cb_default.stdout)
+    j_cb_flag = json.loads(p_cb_flag.stdout)
+    cek("cli --cuti-bersama-hari-kerja mengurangi jumlah hari libur dimuat",
+        j_cb_flag["jumlah_hari_libur_dimuat"] < j_cb_default["jumlah_hari_libur_dimuat"],
+        (j_cb_default["jumlah_hari_libur_dimuat"], j_cb_flag["jumlah_hari_libur_dimuat"]))
+    cek("cli metadata cuti_bersama_dianggap_hari_kerja",
+        j_cb_flag["cuti_bersama_dianggap_hari_kerja"] is True
+        and j_cb_default["cuti_bersama_dianggap_hari_kerja"] is False)
+
+# ------------------------------------------------------------ v1.0.2: P3 B-3 kejelasan "hari kerja ke-5 mundur"
+# Verifikasi independen definisi: hari kerja terakhir <= batas hukum dihitung sebagai hari kerja KE-1
+# (bukan ke-0), lalu mundur satu per satu sampai hari kerja ke-5. Batas 2026-12-27 (Minggu, hk=5, tanpa
+# libur tambahan): ke-1=25 Des (Jum), ke-2=24 Des (Kam), ke-3=23 Des (Rab), ke-4=22 Des (Sel), ke-5=21 Des
+# (Sen).
+cek("mundur_n_hari_kerja: hari kerja ke-1 = hari kerja terakhir <= batas",
+    jo.mundur_n_hari_kerja(date(2026, 12, 27), 1, 5, set()) == date(2026, 12, 25))
+cek("mundur_n_hari_kerja: hari kerja ke-5 mundur dari batas",
+    jo.mundur_n_hari_kerja(date(2026, 12, 27), 5, 5, set()) == date(2026, 12, 21))
+# hitung_jadwal (kasus dasar mulai 28 Sep 2026, hk=5, pkwtt, tanpa libur) harus memakai definisi yang sama:
+# batas hukum = 27 Des 2026, evaluasi = hari kerja ke-5 mundur = 21 Des 2026 (sudah diuji di atas juga).
+h_b3 = H(date(2026, 9, 28), hari_kerja=5, jenis="pkwtt")
+evaluasi_b3 = cari(h_b3, "evaluasi_percobaan")
+cek("evaluasi_percobaan hitung_jadwal cocok dengan mundur_n_hari_kerja",
+    evaluasi_b3["tanggal_disesuaikan"] == "2026-12-21", evaluasi_b3)
+
 # ------------------------------------------------------------ hasil
 if GAGAL:
     print("GAGAL {} dari {} cek:".format(len(GAGAL), JUMLAH[0]))

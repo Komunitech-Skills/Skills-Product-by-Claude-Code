@@ -20,14 +20,26 @@ Cara hitung tanggal (identik dengan penjelasan manual di SKILL.md langkah 3 -- j
     target (tanpa dikurangi 1 hari lagi); bila tanggal itu ADA di bulan target, batas = tanggal itu
     dikurangi 1 hari. Contoh: mulai 14 Des 2026 -> 14 Mar 2027 - 1 hari = batas 13 Mar 2027. Tanggal batas
     hukum ini TIDAK PERNAH digeser walau jatuh di hari libur -- itu tanggal hukum tetap.
-  - Evaluasi keputusan akhir masa percobaan (PKWTT) = 5 hari kerja SEBELUM batas hukum (mundur, dihitung
-    dari hari kerja terakhir yang <= batas hukum), supaya keputusan lanjut/tidak sempat diambil dan
-    diproses SEBELUM batas hukum berakhir. Baris ini SELALU <= batas hukum, tidak pernah melewatinya.
+    CATATAN: cara menghitung tanggal PERSIS ini (termasuk klip akhir bulan) adalah TAFSIR umum yang
+    dipakai skill ini -- UU 13/2003 Pasal 60 hanya menyebut "paling lama 3 (tiga) bulan" dan tidak
+    merinci metode hitung tanggal per hari, ini BUKAN kepastian hukum. Ikuti tanggal yang tertulis di
+    perjanjian kerja/surat pengangkatan bila berbeda, dan konsultasikan ke Disnaker/konsultan HR bila
+    ragu -- lihat references/dasar-hukum-onboarding.md.
+  - Evaluasi keputusan akhir masa percobaan (PKWTT) = hari kerja ke-5 dihitung MUNDUR dari batas hukum,
+    dengan hari kerja terakhir yang <= batas hukum dihitung sebagai hari kerja ke-1 (jadi mundur 4 hari
+    kerja lagi dari situ), supaya keputusan lanjut/tidak sempat diambil dan diproses SEBELUM batas hukum
+    berakhir. Baris ini SELALU <= batas hukum, tidak pernah melewatinya.
   - Semua tanggal checkpoint (H1 dikecualikan, batas hukum dikecualikan) yang jatuh di hari libur (akhir
     pekan sesuai --hari-kerja, hari libur nasional/cuti bersama bawaan 2026 & 2027 di
     references/libur-nasional-*.csv yang dipakai OTOMATIS bila ditemukan, atau tanggal tambahan di
     --libur) DIGESER ke hari kerja BERIKUTNYA (checkpoint) atau SEBELUMNYA (evaluasi akhir percobaan,
     supaya evaluasi selesai sebelum batas hukum berakhir).
+  - Cuti bersama (kolom "jenis"="cuti" di CSV libur bawaan): bagi pekerja SWASTA, cuti bersama pemerintah
+    bersifat FAKULTATIF (mengikuti kebijakan/perjanjian kerja masing-masing perusahaan, sesuai SKB 3
+    Menteri), bukan hari libur wajib seperti hari libur nasional. Secara DEFAULT skill ini tetap
+    memperlakukan cuti bersama sebagai hari bukan-kerja (lebih aman: jadwal & evaluasi jadi lebih awal,
+    tidak pernah lebih lambat dari seharusnya). Pakai --cuti-bersama-hari-kerja bila perusahaan pengguna
+    TIDAK meliburkan cuti bersama, supaya tanggal-tanggal itu dihitung sebagai hari kerja biasa.
 
 Contoh:
   python3 jadwal_onboarding.py --mulai 2026-09-28
@@ -68,6 +80,12 @@ BULAN_ALIAS = {
 }
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 
+# Rentang tahun tanggal mulai yang didukung. Dibatasi jauh di bawah batas maksimum date() Python (9999)
+# supaya perhitungan +3 bulan / +90 hari / geser hari kerja tidak pernah meluap (OverflowError) -- lihat
+# temuan P3 "tanggal tahun 9999 atau di luar rentang -> Traceback".
+TAHUN_MIN = 1900
+TAHUN_MAKS = 9900
+
 # Berapa hari kerja buffer antara evaluasi keputusan akhir masa percobaan dan batas hukum, supaya
 # keputusan lanjut/tidak sempat diambil & diproses sebelum batas berakhir.
 BUFFER_EVALUASI_PERCOBAAN_HARI_KERJA = 5
@@ -80,6 +98,15 @@ class InputSalah(Exception):
     pass
 
 
+def _cek_rentang_tahun(d, label, s):
+    """Tolak tahun di luar TAHUN_MIN..TAHUN_MAKS dengan pesan ramah, supaya perhitungan +3 bulan/+90 hari
+    di bawah tidak pernah meluap (OverflowError -> Traceback), dan tahun tidak wajar ditolak lebih awal."""
+    if d.year < TAHUN_MIN or d.year > TAHUN_MAKS:
+        raise InputSalah("{}: tahun {} pada '{}' di luar rentang yang didukung ({}-{}). Cek kembali "
+                          "tanggalnya.".format(label, d.year, s, TAHUN_MIN, TAHUN_MAKS))
+    return d
+
+
 def parse_tanggal(teks, label="tanggal"):
     """Terima 2026-09-28, 28-09-2026, 28/09/2026, 28.09.2026, '28 September 2026', '28 Sep 2026'."""
     s = (teks or "").strip()
@@ -88,17 +115,17 @@ def parse_tanggal(teks, label="tanggal"):
     try:
         m = re.fullmatch(r"(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})", s)
         if m:
-            return date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            return _cek_rentang_tahun(date(int(m.group(1)), int(m.group(2)), int(m.group(3))), label, s)
         m = re.fullmatch(r"(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})", s)
         if m:
-            return date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+            return _cek_rentang_tahun(date(int(m.group(3)), int(m.group(2)), int(m.group(1))), label, s)
         m = re.fullmatch(r"(?:[A-Za-z]+,\s*)?(\d{1,2})\s+([A-Za-z]+)\.?\s+(\d{4})", s)
         if m:
             b = BULAN_ALIAS.get(m.group(2).lower())
             if b is None:
                 raise InputSalah("{}: nama bulan '{}' tidak dikenali.".format(label, m.group(2)))
-            return date(int(m.group(3)), b, int(m.group(1)))
-    except ValueError:
+            return _cek_rentang_tahun(date(int(m.group(3)), b, int(m.group(1))), label, s)
+    except (ValueError, OverflowError):
         raise InputSalah("{}: tanggal '{}' tidak ada di kalender (cek hari/bulan).".format(label, s))
     raise InputSalah("{}: format '{}' tidak dikenali. Pakai 28-09-2026, 2026-09-28, atau 28 September 2026."
                       .format(label, s))
@@ -120,15 +147,32 @@ def tambah_bulan(d, n):
     return date(tahun, bulan, hari)
 
 
-def baca_libur(path):
-    """Baca file CSV berisi tanggal libur nasional/perusahaan. Kembalikan set(date)."""
+def _pisah_csv(isi):
+    """Tebak pemisah kolom CSV: koma (default/bawaan) atau titik-koma (ekspor Excel lokal Indonesia,
+    mis. 'tanggal;keterangan'). Dilihat dari baris data/header pertama yang bukan kosong/komentar."""
+    for baris in isi.splitlines():
+        s = baris.strip()
+        if not s or s.startswith("#"):
+            continue
+        return ";" if s.count(";") > s.count(",") else ","
+    return ","
+
+
+def baca_libur(path, kecualikan_cuti_bersama=False):
+    """Baca file CSV berisi tanggal libur nasional/perusahaan. Kolom pertama = tanggal (wajib); kolom
+    kedua opsional = jenis ("libur" atau "cuti" -- cuti bersama). Pemisah koma atau titik-koma (ekspor
+    Excel ID) sama-sama didukung. Kembalikan set(date).
+
+    Cuti bersama bagi pekerja SWASTA bersifat FAKULTATIF (ikut kebijakan perusahaan, SKB 3 Menteri),
+    bukan hari libur wajib. Bila kecualikan_cuti_bersama=True, baris berjenis "cuti" TIDAK dimasukkan ke
+    hasil (dianggap hari kerja biasa) -- lihat --cuti-bersama-hari-kerja."""
     hasil = set()
     try:
         with open(path, "r", encoding="utf-8-sig", newline="") as f:
             isi = f.read()
     except OSError as e:
         raise InputSalah("--libur: tidak bisa membaca file '{}' ({}).".format(path, e))
-    r = csv.reader(io.StringIO(isi))
+    r = csv.reader(io.StringIO(isi), delimiter=_pisah_csv(isi))
     baris_ke = 0
     for row in r:
         baris_ke += 1
@@ -139,6 +183,9 @@ def baca_libur(path):
             continue
         if baris_ke == 1 and sel.lower() in ("tanggal", "date", "libur"):
             continue  # header kolom pertama
+        jenis = row[1].strip().lower() if len(row) > 1 else ""
+        if kecualikan_cuti_bersama and jenis == "cuti":
+            continue  # cuti bersama fakultatif utk swasta -- dianggap hari kerja bila flag aktif
         try:
             hasil.add(parse_tanggal(sel, "--libur baris {}".format(baris_ke)))
         except InputSalah as e:
@@ -146,7 +193,7 @@ def baca_libur(path):
     return hasil
 
 
-def libur_bawaan(tahun_dari, tahun_sampai):
+def libur_bawaan(tahun_dari, tahun_sampai, kecualikan_cuti_bersama=False):
     """Muat references/libur-nasional-<tahun>.csv (bila ada) untuk tahun_dari..tahun_sampai inklusif.
     Kembalikan (set(date) gabungan, list tahun yang filenya ditemukan, list tahun yang TIDAK ada filenya)."""
     gabungan = set()
@@ -155,7 +202,7 @@ def libur_bawaan(tahun_dari, tahun_sampai):
     for tahun in range(tahun_dari, tahun_sampai + 1):
         path = os.path.join(REFERENCES_DIR, "libur-nasional-{}.csv".format(tahun))
         if os.path.isfile(path):
-            gabungan |= baca_libur(path)
+            gabungan |= baca_libur(path, kecualikan_cuti_bersama=kecualikan_cuti_bersama)
             ditemukan.append(tahun)
         else:
             tidak_ada.append(tahun)
@@ -212,7 +259,8 @@ def hitung_batas_hukum_percobaan(mulai):
     return target - timedelta(days=1)
 
 
-def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None, libur_bawaan_info=None):
+def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None, libur_bawaan_info=None,
+                   cuti_bersama_hari_kerja=False):
     if hari_kerja not in (5, 6):
         raise InputSalah("--hari-kerja harus 5 atau 6.")
     if jenis not in ("pkwt", "pkwtt"):
@@ -282,9 +330,11 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None, libur_bawaan_i
             "kegiatan_target": "Tanggal hukum tetap (informasi, bukan tanggal kegiatan) -- TIDAK PERNAH "
                                 "digeser walau jatuh di hari libur.",
             "catatan": ("Masa percobaan maksimal 3 bulan sejak {} (UU 13/2003 Pasal 60 jo. UU 6/2023). "
-                        "Definisi batas: tanggal sama persis 3 bulan kalender kemudian; bila bulan target "
-                        "tidak punya tanggal itu, pakai hari terakhir bulan itu; bila ada, dikurangi 1 "
-                        "hari.".format(fmt_pendek(mulai))),
+                        "Definisi batas (TAFSIR skill ini, bukan kepastian hukum -- UU tidak merinci cara "
+                        "hitung tanggal per hari): tanggal sama persis 3 bulan kalender kemudian; bila "
+                        "bulan target tidak punya tanggal itu, pakai hari terakhir bulan itu; bila ada, "
+                        "dikurangi 1 hari. Ikuti tanggal di perjanjian kerja bila berbeda; konsultasikan "
+                        "ke Disnaker/konsultan HR bila ragu.".format(fmt_pendek(mulai))),
         })
         evaluasi_percobaan = mundur_n_hari_kerja(akhir_hukum, BUFFER_EVALUASI_PERCOBAAN_HARI_KERJA,
                                                   hari_kerja, libur)
@@ -339,6 +389,7 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None, libur_bawaan_i
         "jumlah_hari_libur_dimuat": len(libur),
         "libur_bawaan_ditemukan": (libur_bawaan_info or {}).get("ditemukan", []),
         "libur_bawaan_tidak_ada": (libur_bawaan_info or {}).get("tidak_ada", []),
+        "cuti_bersama_dianggap_hari_kerja": cuti_bersama_hari_kerja,
         "peringatan": peringatan,
         "tahapan": tahapan,
     }
@@ -375,6 +426,10 @@ def ke_markdown(hasil, nama_karyawan=None):
     if hasil.get("libur_bawaan_tidak_ada"):
         baris.append("- Tidak ada data libur nasional bawaan untuk tahun {} -- tambahkan sendiri lewat "
                       "`--libur`.".format(", ".join(str(y) for y in hasil["libur_bawaan_tidak_ada"])))
+    if hasil.get("cuti_bersama_dianggap_hari_kerja"):
+        baris.append("- `--cuti-bersama-hari-kerja` aktif: tanggal cuti bersama dihitung sebagai hari "
+                      "kerja biasa (hanya hari libur nasional yang meliburkan jadwal), karena cuti "
+                      "bersama bersifat fakultatif bagi pekerja swasta.")
     return "\n".join(baris) + "\n"
 
 
@@ -402,6 +457,10 @@ def main():
                                     "digabung dengan libur nasional bawaan)")
     p.add_argument("--tanpa-libur-bawaan", action="store_true",
                    help="Matikan pemuatan otomatis references/libur-nasional-*.csv")
+    p.add_argument("--cuti-bersama-hari-kerja", action="store_true",
+                   help="Anggap tanggal cuti bersama (jenis=cuti di CSV libur) sebagai hari kerja biasa -- "
+                        "pakai bila perusahaan pengguna TIDAK meliburkan cuti bersama (fakultatif bagi "
+                        "swasta, SKB 3 Menteri). Default: cuti bersama tetap dihitung sebagai libur.")
     p.add_argument("--nama", help="Nama karyawan, untuk judul output saja (opsional)")
     p.add_argument("--format", choices=["markdown", "csv", "json"], default="markdown")
     a = p.parse_args()
@@ -410,14 +469,19 @@ def main():
         libur = set()
         info_bawaan = {"ditemukan": [], "tidak_ada": []}
         if not a.tanpa_libur_bawaan:
-            libur, ditemukan, tidak_ada = libur_bawaan(mulai.year, mulai.year + 1)
+            libur, ditemukan, tidak_ada = libur_bawaan(
+                mulai.year, mulai.year + 1, kecualikan_cuti_bersama=a.cuti_bersama_hari_kerja)
             info_bawaan = {"ditemukan": ditemukan, "tidak_ada": tidak_ada}
         if a.libur:
-            libur |= baca_libur(a.libur)
+            libur |= baca_libur(a.libur, kecualikan_cuti_bersama=a.cuti_bersama_hari_kerja)
         hasil = hitung_jadwal(mulai, hari_kerja=a.hari_kerja, jenis=a.jenis, libur=libur,
-                               libur_bawaan_info=info_bawaan)
-    except InputSalah as e:
-        print("ERROR: {}".format(e), file=sys.stderr)
+                               libur_bawaan_info=info_bawaan,
+                               cuti_bersama_hari_kerja=a.cuti_bersama_hari_kerja)
+    except (InputSalah, OverflowError) as e:
+        pesan = e if isinstance(e, InputSalah) else (
+            "Tanggal di luar rentang yang bisa dihitung (terlalu ekstrem). Gunakan tahun antara {} dan "
+            "{}.".format(TAHUN_MIN, TAHUN_MAKS))
+        print("ERROR: {}".format(pesan), file=sys.stderr)
         sys.exit(2)
 
     if a.format == "json":
