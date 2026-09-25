@@ -94,3 +94,25 @@ Disclaimer: ada di SKILL.md, README, setiap output script, dan setiap DESCRIPTIO
 - Alasan naik: ketepatan tanggal sempurna (0 selisih dari 108 tenggat Okt 2026–Des 2027, semua kasus khusus benar), penanganan input rusak sangat baik, .ics valid RFC 5545, 33 tes regresi lulus, A/B jauh lebih baik, unggul atas kalender publik untuk personalisasi & 2027, butir tidak pasti ditandai PERLU REVIEW secara jujur.
 - Alasan tertahan: untuk profil PKP satu kewajiban bulanan bersanksi (unggah faktur tgl 20) hilang padahal skill menjanjikan "semua tenggat" (P1); klaim pengingat Google Calendar kemungkinan berlebihan (P2).
 - Rekomendasi: perbaiki P1 & P2 sebelum `uji` platform asli; setelah itu diperkirakan 8–9. Uji ulang oleh penguji independen setelah revisi (fokus profil PKP).
+
+---
+
+## Uji ulang v1.0.1 (penguji independen kedua, 2026-09-25)
+Rincian: `06-uji-ulang-v1.0.1.md`. Penguji bukan pembuat/perevisi; kode script tidak dibaca; uji di salinan scratchpad.
+
+| Temuan v1.0.0 | Status v1.0.1 |
+|---|---|
+| P1 unggah faktur keluaran tgl 20 | **Selesai** — acara "UNGGAH faktur..." untuk `ppn`/`pkp`/`badan-pkp`, tidak digeser + label hari libur, di SKILL.md/references/checklist/README; dasar PER-11/PJ/2025 Ps. 44(1) terkonfirmasi web search |
+| P2 klaim Google Calendar & impor ulang | **Selesai** — klaim dilunakkan secara jujur; `--acara-pengingat` menghasilkan VEVENT H-3/H-1 terpisah yang valid RFC 5545 (321 VEVENT, 214/214 offset benar, UID stabil) |
+| P3 (koma libur, tenggat berikutnya, label Sabtu & hari raya, cakupan, sumber data, profil tunggal, Ps. 100) | **Selesai** semua |
+
+- Tes bawaan: **50 OK**. SKILL.md 140 baris; disclaimer ada.
+- Verifikasi tanggal independen: **0 selisih** dari 123 tenggat Okt 2026–Des 2027 (semua kewajiban) dan 9 profil; tanggal lama tetap (25 Mar 2026, 18 Mei 2026, 2 Jun 2026).
+- Data rusak baru (BOM, titik koma, tanggal mustahil, kutip tak tertutup, keluaran ke folder, dll.): tanpa traceback, ERROR kode 2 bila perlu.
+- Klaim aturan: Ps. 100(1) terkonfirmasi; Ps. 171 PPh 25 & "SPT Tahunan/unggah faktur tidak bergeser" tetap PERLU REVIEW dan **dijelaskan ke pengguna**, bukan disembunyikan. Catatan baru: Ps. 173(1) merujuk Ps. 171 **dan 172** — perlu dicek pemilik/konsultan (tidak berdampak pada tanggal Okt 2026–Des 2027).
+- Temuan baru: hanya P3 (tanggal hari kerja sebelum unggah faktur yang jatuh libur, mis. 20 Mei 2027 → praktis Jumat 14 Mei; label file libur pengguna; kosmetik catatan .ics).
+
+### Skor uji ulang: **8 / 10 — LULUS**
+- Naik dari 7: celah kelengkapan PKP (P1) tertutup dengan dasar aturan terkonfirmasi, klaim kalender kini jujur dan ada solusi teknis yang valid (P2), semua P3 diperbaiki, tes regresi bertambah 33→50, ketepatan tanggal tetap sempurna.
+- Belum 9: seluruh verifikasi aturan masih dari sumber sekunder (naskah resmi PMK 81/2024 & PER-11/PJ/2025 belum dibaca langsung), tiga butir PERLU REVIEW (PPh 25 ayat, SPT Tahunan/Ps. 172, unggah faktur saat libur) belum diputus, dan beberapa P3 kecil.
+- Rekomendasi: status boleh naik ke `lulus` lalu uji platform asli; P3 dapat dikerjakan di v1.0.2 tanpa uji ulang penuh.
