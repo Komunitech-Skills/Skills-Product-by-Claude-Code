@@ -159,3 +159,35 @@ Alasan:
 - (−) C1: jaring pengaman draf dobel masih bisa ditembus pada skenario timeout yang realistis di komputer toko yang lambat (pesan justru menyarankan mengulang). Draf tidak sah dan diperiksa manusia, jadi tidak menghalangi `lulus`.
 - (−) Tidak diuji ulang di Dolibarr asli pada versi ini (hanya tiruan + satu angka asli dari uji v1.0.2).
 - **Kesimpulan:** v1.0.3 layak lanjut ke uji platform asli/beta; perbaiki C1 (pesan galat koneksi pada perintah tulis + deteksi draf kosong/sebagian) di v1.0.4.
+
+---
+
+## Uji ulang v1.0.4 (Akun B)
+- **Tanggal:** 2026-09-25
+- **Penguji:** agent penguji independen lintas akun (Akun B, Claude Code, simulasi agent). Bukan pembuat skill maupun pembuat perbaikan C1. Rincian lengkap ada di `09-uji-ulang-v1.0.4.md`.
+- **Lingkungan:** salinan skill di scratchpad. Server Dolibarr **tiruan** (data dari rekaman 24.0.1) dengan **pengganggu buatan penguji**: putus, RST, timeout, 500/502/504, dan jawaban terpotong. Semua gangguan terjadi **setelah** data diproses. **Tidak** diuji di Dolibarr asli. Python 3.11.15.
+- **Otomatis:** `uji_regresi.py` **85 tes OK** (1 dilewati di salinan, khusus repo). `validate.py --skill dolibarr-usaha` ✅ valid.
+- **Platform teruji:** `claude-code (simulasi agent)`.
+
+### Status klaim
+| Klaim | Status |
+|---|---|
+| C1: putus/timeout saat menulis → kode 8 "mungkin sudah tersimpan", bukan "coba lagi" | ✅ Terbukti untuk putus, RST, dan timeout di POST header, baris 1/2/3, dan baca ulang akhir. ⚠️ Balasan 5xx atau jawaban terpotong menghasilkan kode 6 atau teks "DITOLAK", tanpa draf ganda (D1, D2) |
+| C1: draf kosong/sebagian menahan perintah yang sama (kode 7) | ✅ 31 skenario × ulang 3×: **0 draf ganda**, 0 POST pada ulangan. Setiap skenario berakhir dengan tepat 1 draf |
+| C1: sidik perintah di catatan privat | ✅ Ada di semua draf. Draf sebagian dikenali lewat sidik |
+| Perintah berbeda untuk pelanggan sama tidak salah diblokir | ✅ Dengan draf **sebagian**: 23/23 dibuat. ⚠️ Dengan draf **kosong** milik perintah lain: tertahan, dan teks mengarahkan ke item yang keliru (D3, rendah, bisa `--tetap-buat`) |
+| B1 regresi (DPP bersen, PPN floor sekali, `Decimal` penguji) | ✅ 6 pola, **0 beda**, ulang 3× → `[7,7,7]`, 0 POST |
+| B2 regresi (`--kunci-file` vs ENV, kunci tak tercetak) | ✅ 0 kunci dan 0 traceback di 243 keluaran |
+
+### Cacat tersisa
+- **D1 (rendah):** 502/504/500 pada permintaan tulis diperlakukan sebagai pasti gagal. Akibatnya muncul kode 6 atau "baris ini tidak masuk", padahal data mungkin tersimpan. Pengulangan tetap tertahan.
+- **D2 (rendah):** `IncompleteRead` (jawaban terpotong) menghasilkan "Galat tak terduga", kode 6, tanpa panduan cek draf.
+- **D3 (rendah):** draf kosong bersidik perintah lain tetap menahan perintah berbeda, dan saran "lengkapi sesuai pratinjau" menyesatkan.
+- D4 (info): pengulangan draf sebagian pada tanggal lain tidak dikenali. Balapan dua proses tidak dicegah. Kosmetik K-a s.d. K-d masih ada.
+
+### Skor kualitas: **8 / 10** (**LULUS**, ≥ 7)
+Alasan:
+- (+) C1 beres untuk semua gangguan yang disebut dalam temuan: tidak ada draf ganda di 31 titik putus × 3 pengulangan. Pesan kode 8 jujur dan melarang mengulang. Draf sebagian tidak lagi berakhir dengan "COCOK" atau "Validasi". Perintah lain tidak terhalang oleh draf sebagian.
+- (+) Tidak ada regresi: 85 tes, angka B1 0 beda dengan `Decimal` penguji, B2 utuh, 0 kebocoran kunci.
+- (−) Galat 5xx dan jawaban terpotong saat menulis belum masuk jalur "mungkin tersimpan" (D1, D2). D3 bisa membingungkan pengguna awam. Belum diuji di Dolibarr asli.
+- **Kesimpulan:** v1.0.4 layak lanjut ke uji platform asli dan beta. D1–D3 disarankan diperbaiki di versi berikutnya, tetapi tidak menghalangi status `lulus`.
