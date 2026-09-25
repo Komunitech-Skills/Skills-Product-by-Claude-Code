@@ -117,3 +117,22 @@ Alasan:
 ### Skor uji ulang: **9/10**
 Alasan: seluruh temuan sedang (S1–S3) dan rendah (R1–R5) tuntas dan terverifikasi independen; angka 100% cocok di ±18.000 kasus dengan metode pecahan yang kini konsisten dan dinyatakan jelas (Rumus no. 2 & 4 + rumus di output); A/B dan banding pesaing tetap unggul. Belum 10 karena lima temuan rendah tampilan/kejelasan di atas dan ketergantungan pada status hukum yang berubah (UU Ketenagakerjaan baru ditargetkan Oktober 2026).
 **Rekomendasi: LULUS** — boleh naik ke `lulus` lalu uji platform asli. R-baru-1 & R-baru-2 sebaiknya dirapikan sebelum `beta` (tidak perlu uji ulang penuh). Jadwalkan tinjau dasar hukum awal November 2026.
+
+---
+
+## Uji ulang v1.0.2
+- **Penguji:** agent independen ketiga (bukan pembuat, perevisi, atau penguji sebelumnya); salinan di scratchpad `uji3-pkwt/`. Tanggal: **25 September 2026**.
+- **Lima temuan rendah uji ulang v1.0.1:**
+  - R-baru-1 ✅ label kini "Sisa kontrak 16 Februari 2026 s.d. 31 Maret 2026 (44 hari kalender; hari hanya informasi)" + "(3 - 1,5357) = 1,4643 bulan"; tidak ada lagi label "1 bulan 16 hari" yang bertentangan.
+  - R-baru-2 ✅ berhenti di hari terakhir periode awal → "Tidak ada sisa di periode berjalan ... Rp0" + peringatan perpanjangan belum dimulai; rentang terbalik hilang.
+  - R-baru-3 ✅ `--metode bulan-penuh` dihapus: pesan ERROR ramah, exit 2; SKILL.md & README (catatan versi 1.0.2) menjelaskannya.
+  - R-baru-4 ✅ "4,5" → PERIKSA UPAH "Mungkin maksudnya Rp4.500.000 (4,5 juta)?"; "4.500" → "Rp4.500.000?".
+  - R-baru-5 ✅ checklist B5 kini tegas: dikecualikan/dibatasi → 🔴, tidak disebut → 🟠; SKILL.md mode Periksa sejalan.
+- **Verifikasi angka independen** (implementasi Fraction sendiri dari Rumus no. 2–4 & 6 SKILL.md, tanpa membaca script; dibandingkan dengan output `--format json`): **2.100 kasus** (15 kasus tepi: < 1 bulan, tepat 1/12 bulan, 12 bulan + 1 hari, 31 Jan → Feb, 29 Feb kabisat, Feb 28/29 hari, berhenti hari pertama / H-1 / hari pertama perpanjangan / akhir periode awal; + acak 1–3 periode, 60% putus dini) → **0 selisih rupiah** untuk kompensasi & ganti rugi Pasal 62. 12 kasus berbeda bentuk saja: berhenti = tanggal akhir kontrak terakhir → script memperlakukan sebagai berakhir normal (tanpa blok ganti rugi + peringatan), implementasi penguji memberi Rp0 — setara. Aditivitas dijalani + sisa = panjang periode (pecahan eksak) → **0 pelanggaran**.
+- **Angka pengunci:** Rp4.150.000 ✅; Rp5.000.000 + Rp1.250.000 + Rp15.000.000 ✅; Rp4.392.857 ✅; Rp16.877.419 ✅; Rp17.580.645 ✅ (cocok dari script dan dari implementasi independen).
+- **Tes bawaan:** `python3 tests/uji_regresi.py` → **LULUS semua 142 cek**.
+- **Data rusak tambahan:** berhenti setelah akhir kontrak → ERROR jelas, tanpa traceback.
+- **Bug baru:** tidak ada.
+
+### Skor uji ulang v1.0.2: **9/10**
+Alasan: kelima temuan rendah tuntas; angka 100% cocok dengan implementasi independen; tes regresi bertambah & lulus. Belum 10 karena ketergantungan pada status hukum yang berubah (UU Ketenagakerjaan baru ditargetkan Oktober 2026) dan metode pecahan bulan tetap asumsi skill (aturan tidak merinci). **Rekomendasi: LULUS**, siap uji platform asli; tinjau dasar hukum awal November 2026.
