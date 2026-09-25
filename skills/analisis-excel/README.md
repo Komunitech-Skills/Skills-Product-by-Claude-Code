@@ -80,8 +80,15 @@ data pribadi (NIK, No HP, gaji), skill akan mengingatkan dan hanya menampilkan r
 
 **Bisa membaca file Excel dengan banyak sheet?**
 Bisa. Skill menyebutkan sheet apa saja yang ada dan sheet mana yang dianalisis; Anda tinggal
-bilang "pakai sheet Rekap".
+bilang "pakai sheet Rekap". Bila datanya dipecah satu sheet per bulan/kuartal, bilang saja
+"gabungkan semua sheet" — total Januari–September dihitung sekaligus, baris TOTAL tiap sheet dibuang.
 
 **Apakah bisa memprediksi penjualan bulan depan atau analisis statistik rumit?**
 Tidak. Skill ini fokus menjawab pertanyaan dari data yang sudah terjadi (total, rata-rata, tren,
 perbandingan). Untuk prediksi/statistik lanjut, gunakan jasa analis data.
+
+## Riwayat versi
+| Versi | Tanggal | Perubahan |
+|---|---|---|
+| 1.0.1 | 2026-09-25 | Revisi hasil uji independen: gabung beberapa sheet (`--sheet semua` / `"Q1,Q2,Q3"`, kolom `Sheet`, TOTAL per sheet dibuang, beda kolom diperingatkan); CSV bertanda kutip tak tertutup kini GAGAL dengan nomor baris (sebelumnya diam-diam menelan baris); kolom "Nilai terisi" + peringatan sel kosong di `pivot`/`top`; NIK/No HP/email/rekening disamarkan di tabel (opsi `--tampilkan-pribadi`) + peringatan gaji per orang; kategori "4 A" = "4A" digabung & dilaporkan; peringatan duplikat di semua subperintah; nama bulan diurut kronologis; label `banding` dua sheet = nama sheet; pesan-pesan kecil diperhalus. Angka skenario uji 01–03 tidak berubah (dikunci tes). |
+| 1.0.0 | 2026-09-25 | Rilis draft pertama. |

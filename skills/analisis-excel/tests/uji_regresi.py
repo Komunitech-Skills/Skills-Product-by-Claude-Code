@@ -552,5 +552,258 @@ class UjiParseAngka(unittest.TestCase):
         self.assertEqual(modul.indeks_kolom("AB12"), (27, 12))
 
 
+# ---------------------------------------------------------------------------
+# v1.0.1 — regresi temuan uji independen (examples/HASIL-UJI.md) memakai fixture penguji
+# ---------------------------------------------------------------------------
+
+FIXTURE = SINI / "examples" / "buat_fixture_uji.py"
+
+
+def angka(x):
+    return None if x in (None, "") else Decimal(str(x))
+
+
+class UjiTemuanV101(unittest.TestCase):
+    """Fixture dari penguji independen (deterministik) + kunci jawaban yang dihitung tanpa script skill."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.fx = Path(cls.tmp.name)
+        r = subprocess.run([sys.executable, str(FIXTURE), str(cls.fx)], capture_output=True, text=True)
+        assert r.returncode == 0, r.stderr
+        cls.kunci = json.loads((cls.fx / "kunci-jawaban.json").read_text(encoding="utf-8"))
+        cls.xlsx = cls.fx / "Penjualan 2026.xlsx"
+        cls.lembur = cls.fx / "lembur-sep-2026.csv"
+        cls.iuran = cls.fx / "iuran-komite.csv"
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def pivot_map(self, d, kol_nilai=2):
+        return {r[0]: angka(r[kol_nilai]) for r in d["tabel"][0]["baris"]}
+
+    # -- pengunci angka skenario 01–03 (tidak boleh berubah) -------------
+    def test_kunci_01_per_sheet_dan_banding(self):
+        for q in ("Q2", "Q3"):
+            d = jalankan_json(self, "pivot", self.xlsx, "--sheet", q, "--grup", "Kategori", "--nilai", "Total")
+            m = self.pivot_map(d)
+            harap = self.kunci["01"][q]
+            self.assertEqual(m.pop("TOTAL"), D(harap["jumlah"]))
+            self.assertEqual(m, {k: D(v) for k, v in harap["per_kategori"].items()})
+        d = jalankan_json(self, "banding", self.xlsx, "--sheet", "Q2", "--file-b", self.xlsx, "--sheet-b", "Q3",
+                          "--nilai", "Total")
+        tot = d["tabel"][0]["baris"][-1]
+        self.assertEqual(angka(tot[1]), D(self.kunci["01"]["Q2"]["jumlah"]))
+        self.assertEqual(angka(tot[2]), D(self.kunci["01"]["Q3"]["jumlah"]))
+        self.assertEqual(modul.fmt_persen(angka(tot[4])), "-28,8%")
+        # temuan P3 #7: dua sheet dari file yang sama -> label = nama sheet
+        self.assertEqual(d["tabel"][0]["kolom"][1:3], ["Q2", "Q3"])
+
+    def test_kunci_02_lembur(self):
+        k = self.kunci["02"]
+        d = jalankan_json(self, "pivot", self.lembur, "--grup", "Divisi", "--nilai", "Jam Lembur")
+        m = self.pivot_map(d)
+        self.assertEqual(m.pop("TOTAL"), D(k["total_semua"]))
+        self.assertEqual(m, {dv: D(v) for dv, v in k["total_per_divisi"].items()})
+        d = jalankan_json(self, "pivot", self.lembur, "--grup", "Divisi", "--nilai", "Jam Lembur", "--fungsi", "rata")
+        for dv, v in k["rata_per_baris_divisi"].items():
+            self.assertEqual(round(self.pivot_map(d)[dv], 12), round(Decimal(v), 12), dv)
+        d = jalankan_json(self, "top", self.lembur, "--grup", "Nama", "--nilai", "Jam Lembur", "--n", "5")
+        got = [(r[1], angka(r[3])) for r in d["tabel"][0]["baris"][:5]]
+        self.assertEqual(got, [(n, D(v)) for n, v in k["top5_total_karyawan"][:5]])
+
+    def test_kunci_03_iuran(self):
+        d = jalankan_json(self, "ringkas", self.iuran, "--kolom", "Nominal")
+        row = d["tabel"][0]["baris"][0]
+        self.assertEqual((angka(row[1]), angka(row[2])), (Decimal(89), D(self.kunci["03"]["mentah"]["jumlah"])))
+        d = jalankan_json(self, "pivot", self.iuran, "--grup", "Bulan", "--nilai", "Nominal")
+        m = self.pivot_map(d)
+        self.assertEqual(m.pop("TOTAL"), D(self.kunci["03"]["mentah"]["jumlah"]))
+        self.assertEqual(m, {b: D(v) for b, v in self.kunci["03"]["mentah"]["per_bulan"].items()})
+
+    # -- P1-1: gabung beberapa sheet ------------------------------------
+    def test_p1_sheet_semua_pivot_tren_ringkas(self):
+        harap = self.kunci["01"]["semua"]
+        for spec in ("semua", "Q1,Q2,Q3", "q1, Q2 ,Q3"):
+            d = jalankan_json(self, "pivot", self.xlsx, "--sheet", spec, "--grup", "Kategori", "--nilai", "Total")
+            m = self.pivot_map(d)
+            self.assertEqual(m.pop("TOTAL"), D(harap["jumlah"]), spec)
+            self.assertEqual(m, {k: D(v) for k, v in harap["per_kategori"].items()}, spec)
+            self.assertEqual(d["jumlah_baris_data"], harap["baris"])
+        teks = " ".join(d["peringatan"])
+        for q in ("Q1", "Q2", "Q3"):                              # baris TOTAL dibuang per sheet
+            self.assertIn("Sheet '{}': 1 baris Total/Jumlah dilewati".format(q), teks)
+        self.assertIn("rumus tanpa nilai", teks)
+        self.assertIn("gabungan sheet Q1 + Q2 + Q3", d["sumber"])
+        d = jalankan_json(self, "pivot", self.xlsx, "--sheet", "semua", "--grup", "Sheet", "--nilai", "Total")
+        m = self.pivot_map(d)
+        for q in ("Q1", "Q2", "Q3"):
+            self.assertEqual(m[q], D(self.kunci["01"][q]["jumlah"]))
+        self.assertIn("Master Barang", " ".join(d["catatan"]))   # sheet tersembunyi tidak ikut
+        for f in ("Penjualan 2026.xlsx", "Penjualan 2026 (1904).xlsx"):
+            d = jalankan_json(self, "tren", self.fx / f, "--sheet", "semua", "--nilai", "Total")
+            got = [angka(r[2]) for r in d["tabel"][0]["baris"]]
+            self.assertEqual(got, [D(v) for v in harap["per_bulan"].values()], f)
+        d = jalankan_json(self, "ringkas", self.xlsx, "--sheet", "semua", "--kolom", "Total")
+        row = d["tabel"][0]["baris"][0]
+        self.assertEqual([angka(x) for x in row[1:3]], [Decimal(harap["nilai_terisi"]), D(harap["jumlah"])])
+        self.assertEqual(angka(row[4]), D(harap["median"]))
+        self.assertEqual((angka(row[5]), angka(row[6])), (D(harap["min"]), D(harap["max"])))
+        d = jalankan_json(self, "top", self.xlsx, "--sheet", "semua", "--nilai", "Total", "--n", "1")
+        self.assertRegex(d["tabel"][0]["baris"][0][1], r"^Q[123]:\d+$")   # nomor baris Sheet:baris
+
+    def test_p1_sheet_beda_kolom(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = Path(t) / "cabang.xlsx"
+            buat_xlsx(f, [
+                {"nama": "Bogor", "baris": [["Tanggal", "Produk", "Total"],
+                                            [("tgl", serial_excel(date(2026, 9, 1))), "Kopi", 10000],
+                                            [("tgl", serial_excel(date(2026, 9, 2))), "Teh", 5000],
+                                            ["TOTAL", None, 15000]]},
+                {"nama": "Depok", "baris": [["Produk", "Tanggal", "Total", "Catatan"],
+                                            ["kopi", ("tgl", serial_excel(date(2026, 9, 3))), 7000, "x"],
+                                            ["Jumlah", None, 7000, None]]},
+                {"nama": "Stok", "baris": [["Barang", "Gudang", "Sisa"], ["Kopi", "A", 3]]},
+            ])
+            d = jalankan_json(self, "pivot", f, "--sheet", "semua", "--grup", "Produk", "--nilai", "Total")
+            m = self.pivot_map(d)
+            self.assertEqual(m, {"Kopi": Decimal(17000), "Teh": Decimal(5000), "TOTAL": Decimal(22000)})
+            teks = " ".join(d["peringatan"])
+            self.assertIn("Sheet 'Stok' TIDAK digabung", teks)
+            self.assertIn("kolom tambahan Catatan diabaikan", teks)
+            code, _o, err = jalankan("pivot", f, "--sheet", "Bogor,Tidak Ada", "--grup", "Produk")
+            self.assertEqual(code, 2)
+            self.assertIn("Sheet 'Tidak Ada' tidak ada", err)
+
+    # -- P1-2: CSV tanda kutip tak tertutup ------------------------------
+    def test_p1_csv_kutip_tidak_tertutup(self):
+        code, out, err = jalankan("ringkas", self.fx / "kutip-rusak.csv")
+        self.assertEqual(code, 2)
+        self.assertIn("GAGAL: CSV rusak", err)
+        self.assertIn("baris 2", err)
+        self.assertNotIn("Traceback", err)
+        with tempfile.TemporaryDirectory() as t:
+            f = Path(t) / "tengah.csv"      # kutip dibuka di baris 3 dan baru "tertutup" di baris 5
+            f.write_text('Nama,Nominal\nAni,5000\n"Budi,6000\nCici,7000\nDedi",8000\nEka,9000\n', encoding="utf-8")
+            code, _o, err = jalankan("ringkas", f)
+            self.assertEqual(code, 2)
+            self.assertIn("baris 3 s.d. 5", err)
+            f = Path(t) / "akhir.csv"       # kasus di HASIL-UJI: sisa file tertelan sampai akhir
+            f.write_text('Nama,Nominal\nAni,5000\n"Budi,6000\nCici,7000\nDedi,8000\n', encoding="utf-8")
+            code, _o, err = jalankan("ringkas", f)
+            self.assertEqual(code, 2)
+            self.assertIn("tanda kutip (\") di baris 3 tidak ditutup", err)
+            f = Path(t) / "alamat.csv"      # teks multi-baris yang sah tetap terbaca (dengan peringatan)
+            f.write_text('Nama,Alamat,Nominal\nAni,"Jl. Merdeka 5,\nBogor",5000\nBudi,Depok,6000\n', encoding="utf-8")
+            d = jalankan_json(self, "ringkas", f, "--kolom", "Nominal")
+            self.assertEqual(angka(d["tabel"][0]["baris"][0][2]), Decimal(11000))
+            self.assertIn("Baris 2 s.d. 3", " ".join(d["peringatan"]))
+
+    # -- P2 -------------------------------------------------------------
+    def test_p2_baris_vs_nilai_terisi(self):
+        k = self.kunci["02"]
+        d = jalankan_json(self, "pivot", self.lembur, "--grup", "Divisi", "--nilai", "Jam Lembur", "--fungsi", "rata")
+        t = d["tabel"][0]
+        self.assertEqual(t["kolom"][-1], "Nilai terisi")
+        terisi = {r[0]: int(angka(r[-1])) for r in t["baris"]}
+        self.assertEqual(terisi.pop("TOTAL"), k["baris"] - k["kosong"])
+        self.assertEqual(terisi, k["baris_divisi"])
+        self.assertEqual(sum(int(angka(r[1])) for r in t["baris"][:-1]), k["baris"])
+        self.assertIn("3 baris tanpa nilai", " ".join(d["peringatan"]))
+        d = jalankan_json(self, "pivot", self.xlsx, "--sheet", "Q2", "--grup", "Kategori", "--nilai", "Total")
+        self.assertEqual(angka(d["tabel"][0]["baris"][-1][-1]), Decimal(self.kunci["01"]["Q2"]["nilai_terisi"]))
+        d = jalankan_json(self, "top", self.lembur, "--grup", "Divisi", "--nilai", "Jam Lembur", "--n", "2")
+        self.assertEqual(d["tabel"][0]["kolom"][-1], "Nilai terisi")
+        # data tanpa sel kosong: tabel tidak berubah bentuk
+        d = jalankan_json(self, "pivot", self.xlsx, "--sheet", "Q1", "--grup", "Kategori", "--nilai", "Total")
+        self.assertNotIn("Nilai terisi", d["tabel"][0]["kolom"])
+
+    def test_p2_privasi_disamarkan(self):
+        code, out, _e = jalankan("top", self.lembur, "--grup", "NIK", "--nilai", "Jam Lembur", "--n", "3")
+        self.assertEqual(code, 0)
+        self.assertNotRegex(out, r"\d{16}")
+        self.assertIn("3201•", out)
+        self.assertIn("DISAMARKAN", out)
+        code, out, _e = jalankan("top", self.lembur, "--grup", "NIK", "--nilai", "Jam Lembur", "--n", "3",
+                                 "--tampilkan-pribadi")
+        self.assertRegex(out, r"\d{16}")
+        self.assertIn("--tampilkan-pribadi aktif", out)
+        # pivot NIK: pengelompokan tetap per NIK lengkap (38 karyawan), hanya label yang disamarkan
+        d = jalankan_json(self, "pivot", self.lembur, "--grup", "NIK", "--nilai", "Jam Lembur")
+        self.assertEqual(len(d["tabel"][0]["baris"]) - 1, 38)
+        self.assertEqual(angka(d["tabel"][0]["baris"][-1][2]), D(self.kunci["02"]["total_semua"]))
+        with tempfile.TemporaryDirectory() as t:
+            f = Path(t) / "karyawan.csv"
+            f.write_text("Nama,Kontak,Surel,Gaji Pokok\nAni,081234567890,ani@contoh.id,5000000\n"
+                         "Budi,0857-1111-2222,budi@contoh.id,6500000\nCici,+6281399998888,cici@contoh.id,4000000\n",
+                         encoding="utf-8")
+            code, out, _e = jalankan("top", f, "--grup", "Kontak", "--nilai", "Gaji Pokok")
+            self.assertNotIn("081234567890", out)
+            self.assertIn("0812•", out)
+            code, out, _e = jalankan("pivot", f, "--grup", "Surel", "--nilai", "Gaji Pokok")
+            self.assertNotIn("ani@contoh.id", out)
+            self.assertIn("a•••@contoh.id", out)
+            code, out, _e = jalankan("top", f, "--grup", "Nama", "--nilai", "Gaji Pokok")
+            self.assertIn("data SENSITIF", out)
+            code, out, _e = jalankan("top", f, "--nilai", "Gaji Pokok")
+            self.assertIn("data SENSITIF", out)
+            self.assertNotIn("081234567890", out)
+        self.assertEqual(modul.samarkan("3201005625752408"), "3201•••••••••408")
+
+    def test_p2_kategori_spasi_dan_urutan_bulan(self):
+        with tempfile.TemporaryDirectory() as t:
+            bersih = Path(t) / "iuran-bersih.csv"
+            code, _o, err = jalankan("bersihkan", self.iuran, "--buang-duplikat", "--keluar", bersih)
+            self.assertEqual(code, 0, err)
+            d = jalankan_json(self, "pivot", bersih, "--grup", "Kelas", "--nilai", "Nominal", "--kolom-pivot", "Bulan")
+        t = d["tabel"][0]
+        self.assertEqual(t["kolom"][1:4], ["Juli", "Agustus", "September"])   # kronologis, bukan abjad
+        m = {r[0]: angka(r[-1]) for r in t["baris"]}
+        harap = self.kunci["03"]["tanpa_duplikat_persis"]
+        self.assertEqual(set(m), {"4A", "4B", "5A", "5B", "(kosong)", "TOTAL"})   # "4 A"/"4a" tidak memecah
+        self.assertEqual(m["TOTAL"], D(harap["jumlah"]))
+        # 1 baris kelas kosong (siswa 4B, Rp 50.000) dilaporkan terpisah sebagai (kosong)
+        self.assertEqual(m["4B"] + m["(kosong)"], D(harap["per_kelas_asli"]["4B"]))
+        for kls in ("4A", "5A", "5B"):
+            self.assertEqual(m[kls], D(harap["per_kelas_asli"][kls]), kls)
+        d = jalankan_json(self, "pivot", self.iuran, "--grup", "Kelas", "--nilai", "Nominal")
+        teks = " ".join(d["peringatan"])
+        self.assertIn("'4 A'", teks)
+        self.assertIn("digabung", teks)
+        d = jalankan_json(self, "ringkas", self.iuran, "--filter", "Kelas=4 A", "--kolom", "Nominal")
+        self.assertIn("4 A", " ".join(d["catatan"]))
+        self.assertGreater(angka(d["tabel"][0]["baris"][0][1]), 10)       # semua baris 4A ikut, bukan hanya "4 A"
+
+    def test_p2_duplikat_di_pivot_dan_top(self):
+        for argv in (("pivot", self.iuran, "--grup", "Kelas", "--nilai", "Nominal"),
+                     ("top", self.iuran, "--grup", "Kelas", "--nilai", "Nominal"),
+                     ("ringkas", self.iuran), ("tren", self.iuran, "--nilai", "Nominal")):
+            d = jalankan_json(self, *argv)
+            self.assertIn("3 baris persis sama", " ".join(d["peringatan"]), argv[0])
+        d = jalankan_json(self, "pivot", self.lembur, "--grup", "Divisi", "--nilai", "Jam Lembur")
+        self.assertIn("1 baris persis sama", " ".join(d["peringatan"]))
+
+    def test_p3_persen_negatif_dan_dll(self):
+        d = jalankan_json(self, "pivot", self.xlsx, "--sheet", "semua", "--grup", "Kategori", "--nilai", "Total")
+        self.assertIn("ada nilai negatif", " ".join(d["catatan"]))
+        with tempfile.TemporaryDirectory() as t:
+            f = Path(t) / "x.csv"
+            f.write_text("Nama,Nominal\n" + "".join("N{},{}\n".format(i, v) for i, v in enumerate(
+                ["1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9000", "10000", "11000",
+                 "12000", "13000", "14000", "15000", "16000", "17000", "18000", "19000",
+                 "\"1,5jt\"", "2 juta", "abc", "x1", "y2"])), encoding="utf-8")
+            d = jalankan_json(self, "ringkas", f, "--tipe", "Nominal=angka")
+            self.assertIn("5 nilai tidak bisa dibaca", " ".join(d["peringatan"]))
+            self.assertIn("dll.", " ".join(d["peringatan"]))
+            g = Path(t) / "lebih.csv"
+            g.write_text("Nama,Nominal\nAni,5000\nBudi,Rp 6,000\n", encoding="utf-8")
+            d = jalankan_json(self, "profil", g)
+            self.assertIn("lebih banyak sel daripada judul kolom (mis. baris 3)", " ".join(d["peringatan"]))
+        d = jalankan_json(self, "profil", self.fx / "semua-teks.csv")
+        self.assertNotIn("Histogram", d["saran_grafik"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

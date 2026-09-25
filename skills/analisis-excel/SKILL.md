@@ -21,8 +21,9 @@ langsung tanpa openpyxl/pandas). Agent **hanya menjelaskan**, tidak menghitung s
 - "Rapikan data ini (angka Rp, tanggal campur, huruf besar-kecil)" → `bersihkan`
 
 ## Kapan TIDAK digunakan
-- Rekap **penjualan** dari kasir/Shopee/Tokopedia (omzet, produk terlaris, status batal) →
-  `rekap-penjualan-csv` (lebih tepat: menangani status pesanan & qty × harga).
+- Rekap **penjualan** dari ekspor kasir/Shopee/Tokopedia berstatus pesanan (omzet, produk terlaris,
+  status batal) → `rekap-penjualan-csv`. Data penjualan **buatan sendiri di Excel** (.xlsx) tetap
+  memakai skill ini.
 - Laporan iklan Meta/TikTok/Shopee/Google Ads → `laporan-iklan-mingguan`.
 - Laporan laba rugi/neraca, pajak, gaji → skill keuangan/pajak yang sesuai.
 - Statistik lanjut (regresi, uji hipotesis, korelasi), prediksi/forecast, machine learning →
@@ -36,7 +37,7 @@ langsung tanpa openpyxl/pandas). Agent **hanya menjelaskan**, tidak menghitung s
 |---|---|---|
 | File `.xlsx`/`.xlsm`/`.csv`/`.tsv`/`.txt` | Ya | — (minta dikirim) |
 | Pertanyaan/tujuan | Tidak | Jalankan `profil` lalu `ringkas`, beri 3 temuan utama |
-| Sheet (bila workbook > 1 sheet) | Tidak | Sheet pertama yang terlihat; sebutkan ke pengguna |
+| Sheet (bila workbook > 1 sheet) | Tidak | Sheet pertama yang terlihat; sebutkan ke pengguna. Pertanyaan lintas sheet (mis. "Jan–Sep" di sheet per bulan/kuartal) → `--sheet semua` |
 | Kolom kategori / nilai / tanggal | Tidak | Tebak dari hasil `profil` (kolom teks / angka-uang / tanggal) dan **sebutkan asumsinya** |
 | Periode pembanding | Untuk `banding` | Tanyakan; bila pengguna mau cepat, bandingkan 2 bulan terakhir yang ada di data |
 
@@ -53,6 +54,11 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    ```
    Workbook banyak sheet: `daftar "<file>"` untuk melihat semua sheet. Dari hasil `profil` catat
    nama kolom persis, tipe (tanggal/angka/teks/kode), kolom uang, dan peringatan.
+   **Satu sheet per bulan/kuartal/cabang** dan pertanyaannya mencakup beberapa sheet → pakai
+   `--sheet semua` (semua sheet terlihat) atau `--sheet "Q1,Q2,Q3"` di subperintah mana pun.
+   Script menggabungkan sheet yang judul kolomnya sama, membuang baris TOTAL tiap sheet, dan
+   menambah kolom `Sheet` (bisa dipakai `--grup Sheet`). **Jangan** menjumlah hasil per sheet
+   sendiri. Sheet berbeda struktur dilewati dengan peringatan — sampaikan ke pengguna.
 2. **Jalankan subperintah yang menjawab pertanyaan** (nama kolom tidak peka huruf besar-kecil,
    boleh sebagian nama bila unik):
    ```bash
@@ -60,6 +66,7 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    python3 <...>/analisis.py pivot    "<file>" --grup "Kategori" --nilai "Nominal" [--fungsi jumlah|rata|median|hitung|min|max] [--kolom-pivot "Divisi"]
    python3 <...>/analisis.py pivot    "<file>" --grup "Tanggal" --per bulan --nilai "Nominal"
    python3 <...>/analisis.py tren     "<file>" --nilai "Nominal" [--tanggal "Tanggal"] [--per bulan|minggu|hari|kuartal|tahun]
+   python3 <...>/analisis.py tren     "<file.xlsx>" --sheet semua --nilai "Total"      # gabung sheet Q1+Q2+Q3
    python3 <...>/analisis.py top      "<file>" --grup "Pelanggan" --nilai "Total" --n 10 [--terbawah]
    python3 <...>/analisis.py banding  "<file>" --nilai "Nominal" --periode-a 2026-08 --periode-b 2026-09 [--grup "Kategori"]
    python3 <...>/analisis.py banding  "<file-lama>" --file-b "<file-baru>" --nilai "Total" [--grup "Produk"]
@@ -68,7 +75,7 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    Opsi umum semua subperintah: `--sheet`, `--baris-header N`, `--filter "Kolom=A|B"`,
    `--dari 2026-07 --sampai 2026-09`, `--tipe "No HP=kode"`, `--urutan-tanggal mdy`,
    `--keluar hasil.csv` (simpan tabel hasil), `--excel-id` (CSV untuk Excel berbahasa Indonesia:
-   pemisah `;` dan koma desimal), `--json` (keluaran mesin). Periode: `2026-09`, `Sep 2026`,
+   pemisah `;` dan koma desimal), `--json` (keluaran mesin), `--tampilkan-pribadi` (lihat Aturan). Periode: `2026-09`, `Sep 2026`,
    `2026`, `Q3 2026`, `2026-09-01..2026-09-15`.
 3. **Baca keluaran** (Markdown siap tempel). Salin tabel **apa adanya**; jangan mengubah angka,
    pembulatan, atau persen.
@@ -123,19 +130,26 @@ Contoh lengkap nyata: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.
   "turun" tanpa menyebutnya; tawarkan pembanding rata-rata per hari (sudah dihitung `banding`).
 - **Tanggal ambigu** (semua tanggal ≤ 12, mis. 01/02/2026) → tanya pengguna format hari/bulan
   atau bulan/hari; bila bulan/hari, ulangi dengan `--urutan-tanggal mdy`.
+- **"Rata-rata" ambigu** (mis. rata-rata jam lembur per catatan atau per karyawan?) → tanyakan
+  sekali; `pivot --fungsi rata` = rata-rata per baris yang terisi (kolom "Nilai terisi" = pembaginya).
+- **Kolom "Baris" vs "Nilai terisi"**: Baris = semua baris di kelompok; Nilai terisi = yang angkanya
+  dihitung. Bila berbeda, sebutkan sel kosong yang tidak dihitung.
 - **Kolom kode** (No HP, NIK, kode barang, nomor urut) tidak pernah dijumlah. Bila script salah
   mengira, perbaiki dengan `--tipe "Kolom=kode"` atau `--tipe "Kolom=angka"`.
 - **Korelasi ≠ sebab.** Tulis "naik bersamaan", bukan "menyebabkan". Saran harus dari data
   (hindari saran generik).
-- **Data pribadi:** bila script memperingatkan kolom sensitif (NIK, No HP, email, alamat, gaji,
-  diagnosis), ingatkan pengguna; tampilkan hanya agregat, jangan kutip isi baris per orang.
+- **Data pribadi (UU PDP):** script menyamarkan NIK/No HP/email/rekening di tabel (`3201•••…408`).
+  Salin apa adanya; **jangan** menambah `--tampilkan-pribadi` kecuali pengguna pemilik data sendiri
+  memintanya secara tegas, dan ingatkan agar hasilnya tidak dibagikan. Bila script memperingatkan
+  "data SENSITIF" (mis. gaji per orang), sampaikan peringatannya dan tawarkan agregat per
+  divisi/jabatan. Jangan kutip isi baris per orang di narasi.
 - File pengguna diproses **lokal**; jangan mengunggah isinya ke layanan eksternal.
 
 ## Batasan & penanganan error
 Rincian lengkap: `references/format-didukung.md`.
 - **Format:** `.xlsx`/`.xlsm` (dibaca langsung: teks bersama, angka, tanggal serial Excel sistem
-  1900 & 1904 — termasuk bug 29-Feb-1900 yang ditandai tidak valid —, beberapa sheet, sel kosong,
-  sel gabungan) dan CSV (UTF-8, UTF-8 BOM, UTF-16, cp1252/ANSI; pemisah `,` `;` tab `|`, baris
+  1900 & 1904 — termasuk bug 29-Feb-1900 yang ditandai tidak valid —, beberapa sheet termasuk
+  gabungan `--sheet semua`, sel kosong, sel gabungan) dan CSV (UTF-8, UTF-8 BOM, UTF-16, cp1252/ANSI; pemisah `,` `;` tab `|`, baris
   `sep=;`). `.xls` lama, `.ods`, file berkata sandi → pesan jelas agar disimpan ulang sebagai .xlsx/CSV.
 - **Header tidak di baris 1** (ada judul laporan di atas) → dideteksi otomatis dan diberitahukan;
   koreksi dengan `--baris-header N`.
@@ -151,4 +165,6 @@ Rincian lengkap: `references/format-didukung.md`.
   terdekat, persen 1 desimal (0,5 menjauhi nol). CSV hasil menyimpan hingga 2 desimal.
 - **Keamanan CSV hasil:** teks yang diawali `=`, `+`, `-`, `@` diberi awalan `'` agar tidak
   dieksekusi sebagai rumus saat dibuka di Excel. File asli tidak pernah diubah.
+- **CSV tanda kutip tak tertutup** → `GAGAL: CSV rusak ... baris N s.d. M` (tidak diam-diam
+  menelan baris). Minta pengguna memperbaiki baris itu.
 - **Tanpa traceback:** semua masalah input keluar dengan kode 2 dan pesan `GAGAL: ...` berbahasa awam.

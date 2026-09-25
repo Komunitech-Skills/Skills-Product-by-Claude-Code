@@ -17,6 +17,14 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
 ## XLSX
 - **Sheet:** default sheet pertama yang terlihat; `--sheet "Nama"` atau `--sheet 2`. Sheet
   tersembunyi ditandai. Sheet tidak ada → daftar sheet yang tersedia.
+- **Gabung beberapa sheet (v1.0.1):** `--sheet semua` (semua sheet terlihat; sheet tersembunyi
+  dilewati + dicatat) atau `--sheet "Q1,Q2,Q3"` (nama/nomor, boleh sheet tersembunyi). Tiap sheet
+  dideteksi header & baris Total-nya sendiri (Total dibuang per sheet), lalu digabung dengan kolom
+  tambahan **`Sheet`** (asal sheet). Judul kolom dicocokkan per nama (tidak peka huruf besar-kecil,
+  urutan boleh beda). Sheet yang kurang/lebih kolom tetap digabung bila ≥ 50% kolomnya sama
+  (kolom hilang = kosong, kolom tambahan diabaikan) + peringatan; bila < 50% → sheet **tidak**
+  digabung + peringatan. Nomor baris ditulis `Sheet:baris` (mis. `Q2:68`). Peringatan per sheet
+  diberi awalan `Sheet 'Q2': …`. Nama sheet yang memang mengandung koma tetap bisa dipilih utuh.
 - **Teks:** shared strings (termasuk rich text per-karakter; teks fonetik `rPh` diabaikan), inline
   string, hasil rumus teks.
 - **Angka:** dibaca sebagai Decimal dari teks tersimpan, dibulatkan ke 15 digit signifikan seperti
@@ -38,7 +46,12 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
   peringatan). Paksa dengan `--encoding latin-1` dsb.
 - **Pemisah:** `,` `;` tab `|` dipilih dari konsistensi jumlah kolom; baris `sep=;` di awal file
   (ekspor Excel) dihormati. Paksa dengan `--pemisah ";"`.
-- Tanda kutip tak tertutup → pesan "CSV rusak".
+- **Tanda kutip tak tertutup** (v1.0.1): parser CSV biasa diam-diam menelan semua baris berikutnya ke
+  satu sel. Script mendeteksinya → `GAGAL: CSV rusak: tanda kutip (") di baris N tidak ditutup,
+  sehingga baris N s.d. M terbaca sebagai SATU sel`. Sel yang "tertutup" tetapi membungkus ≥ 2
+  baris berisi pemisah juga GAGAL (nomor baris disebut). Satu sel teks multi-baris yang sah (mis.
+  alamat) tetap terbaca dengan peringatan.
+- Baris yang berisi lebih banyak sel daripada judul kolom (koma tak dikutip) → peringatan + nomor baris.
 
 ## Header & baris khusus
 - **Header:** baris pertama (dari 30 teratas) yang cukup lebar (≥ 60% kolom terlebar) dan dominan
@@ -63,16 +76,33 @@ Ditentukan dari isi (≥ 70% nilai terisi cocok):
   mata uang lain (`US$ 5`).
 - **kode** — angka yang bukan untuk dijumlah: nol di depan (`0812…`), ≥ 11 digit (No HP/NIK), atau
   nama kolom diawali No/Nomor/ID/Kode/NIK/NPWP/SKU/HP/Telp/Rekening/Resi dengan isi bilangan bulat.
-- **teks** — selain itu. Spasi dirapikan; beda huruf besar-kecil digabung ke penulisan yang paling
-  sering muncul (dilaporkan).
+- **teks** — selain itu. Spasi dirapikan; beda huruf besar-kecil **dan spasi** (`4 A` = `4A` = `4a`)
+  digabung ke penulisan yang paling sering muncul (dilaporkan: jumlah & contoh). `--filter` dan
+  `banding --grup` memakai aturan yang sama.
 - **uang** (label tampilan `Rp`) — kolom angka yang namanya mengandung harga/total/biaya/nominal/
   omzet/gaji/nilai transaksi/… (bukan qty/pcs/stok/%), atau ≥ 30% isinya bertulisan Rp/IDR.
 - Paksa tipe: `--tipe "Kolom=angka|tanggal|teks|kode"`.
 
 ## Data sensitif
 Kolom bernama NIK/KTP/NPWP/No HP/Telepon/WA/Email/Alamat/Rekening/Gaji/Diagnosis/Agama/Tanggal
-lahir/Password/PIN, atau isinya mayoritas email/16 digit → peringatan UU PDP (No. 27/2022), contoh
-isi disembunyikan di `profil`, tidak ditampilkan sebagai label di `top` per baris.
+lahir/Password/PIN, atau isinya mayoritas email/16 digit/No HP (`08…`, `+628…`) → peringatan UU PDP
+(No. 27/2022), contoh isi disembunyikan di `profil`, tidak ditampilkan sebagai label di `top` per baris.
+
+Sejak v1.0.1 isi kolom pribadi bertipe teks/kode yang muncul sebagai **label** di `pivot`, `top`,
+`banding --grup`, dan `--kolom-pivot` **disamarkan**: NIK `3201•••••••••408`, HP `0812•••••890`,
+email `a•••@contoh.id`, lainnya 3 huruf pertama + `•••`. Pengelompokan tetap memakai nilai lengkap
+(dua NIK berbeda tetap dua baris). `--tampilkan-pribadi` menampilkan nilai lengkap + peringatan
+tegas. Bila kolom **nilai** sensitif (gaji/upah) ditampilkan per orang/baris → peringatan
+"data SENSITIF". `bersihkan` tetap menulis data lengkap ke file milik pengguna sendiri.
+
+## Hitungan baris & peringatan di semua subperintah (v1.0.1)
+- `pivot`/`top`: kolom **Baris** = semua baris di kelompok. Bila ada sel nilai kosong/tidak terbaca,
+  ditambahkan kolom **Nilai terisi** (di ujung kanan) = baris yang angkanya dihitung (pembagi
+  rata-rata) + peringatan dengan nomor baris sel kosong.
+- Baris duplikat persis kini diperingatkan juga di `ringkas`, `pivot`, `tren`, `top`, `banding`
+  (tetap ikut dihitung; sarannya `bersihkan --buang-duplikat`).
+- Kolom teks berisi nama bulan (Juli, Agustus, …) diurut kronologis, bukan abjad.
+- `pivot` jumlah dengan nilai negatif (retur) → catatan mengapa kolom "% dari total" tidak ada.
 
 ## Batas
 | Hal | Batas |
