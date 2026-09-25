@@ -684,5 +684,24 @@ class UjiV102(Dasar):
         self.assertEqual(self.cli("jadwal", "--batas", "2026-10-15", "--hari-ini", "2026-10-20")[0], 1)
 
 
+    def test_v103_header_volume_sinonim(self):
+        # uji ulang v1.0.2: kolom banyaknya bernama lain + "Jumlah Harga" -> volume tidak boleh diambil dari kolom uang
+        for judul in ("Banyaknya", "Jml", "Qty.", "Volume Pekerjaan"):
+            f = self.tulis("No;Uraian;%s;Satuan;Harga Satuan;Jumlah Harga\n1;Kertas A4;10;rim;Rp50.000;Rp500.000\n"
+                           "2;Tinta;4;botol;Rp125.000;Rp500.000\n" % judul, "v%s.csv" % len(judul))
+            k, out = self.cli("harga", f)[:2]
+            self.assertEqual(k, 0, judul + out)
+            self.assertIn("1.000.000", out, judul)
+
+    def test_v103_jumlah_harga_bukan_volume(self):
+        f = self.tulis("Uraian;Harga Satuan;Jumlah Harga\nKertas;Rp50.000;Rp500.000\n", "vx.csv")
+        self.assertEqual(self.cli("harga", f)[0], 2)
+
+    def test_v103_hps_nol_input_buruk(self):
+        f = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nKertas;10;rim;Rp50.000\n", "h0.csv")
+        self.assertEqual(self.cli("harga", f, "--hps", "0")[0], 2)
+        self.assertEqual(self.cli("harga", f, "--hps", "-5")[0], 2)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -176,7 +176,9 @@ KUNCI_KOLOM = {
     "no": ("no", "no.", "nomor", "#"),
     "uraian": ("uraian", "uraian pekerjaan", "uraian barang", "nama barang", "nama", "item",
                "barang", "jenis barang", "pekerjaan", "deskripsi", "spesifikasi", "description"),
-    "volume": ("volume", "vol", "vol.", "qty", "kuantitas", "jumlah barang", "banyak", "kuantum"),
+    "volume": ("volume", "vol", "vol.", "qty", "qty.", "quantity", "kuantitas", "jumlah barang", "banyak",
+               "banyaknya", "kuantum", "jml", "jml.", "jml barang", "jumlah unit", "volume pekerjaan",
+               "vol pekerjaan", "vol. pekerjaan"),
     "satuan": ("satuan", "sat", "sat.", "unit", "uom"),
     "harga": ("harga satuan", "harga", "harga satuan (rp)", "harga (rp)", "unit price", "harga penawaran"),
     "hps": ("harga satuan hps", "hps satuan", "hps", "harga hps"),
@@ -284,6 +286,12 @@ def baca_rincian(path):
             peta = {"uraian": 0, "volume": 1, "satuan": 2, "harga": 3}
         catatan.append("Judul kolom tidak ditemukan; dianggap urutan: " +
                        ", ".join(k for k, _ in sorted(peta.items(), key=lambda x: x[1])) + ".")
+    judul_jumlah = _norm(semua[mulai - 1][peta["jumlah"]]) if (mulai and "jumlah" in peta
+                     and peta["jumlah"] < len(semua[mulai - 1])) else ""
+    if "volume" not in peta and "jumlah" in peta and re.search(r"harga|total|nilai|amount|rp", judul_jumlah):
+        # v1.0.3: kolom uang (mis. "Jumlah Harga") TIDAK boleh dipakai sebagai volume
+        raise InputSalah(f"kolom volume/banyaknya tidak dikenali (kolom '{semua[mulai - 1][peta['jumlah']].strip()}' "
+                         "berisi rupiah, bukan volume). Ubah judul kolom banyaknya menjadi 'Volume' atau 'Qty'.")
     if "volume" not in peta and "jumlah" in peta:
         # judul "Jumlah" dipakai untuk banyaknya barang (tanpa kolom Volume) -> perlakukan sebagai volume
         peta["volume"] = peta.pop("jumlah")
@@ -536,7 +544,7 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None):
     if hps is not None:
         hps = int(hps)
         if hps <= 0:
-            P.append("Nilai HPS harus lebih dari 0; perbandingan HPS dilewati.")
+            raise InputSalah("nilai HPS harus lebih dari 0 (contoh: --hps \"Rp2,4 M\" atau --hps 2400000000)")
         else:
             persen = (Decimal(total) / Decimal(hps) * 100).quantize(Decimal("0.01"), ROUND_HALF_UP)
             batas80 = int((Decimal(hps) * BATAS_KEWAJARAN / 100).to_integral_value(ROUND_FLOOR))
