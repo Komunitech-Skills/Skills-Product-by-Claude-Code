@@ -24,7 +24,12 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
   urutan boleh beda). Sheet yang kurang/lebih kolom tetap digabung bila ≥ 50% kolomnya sama
   (kolom hilang = kosong, kolom tambahan diabaikan) + peringatan; bila < 50% → sheet **tidak**
   digabung + peringatan. Nomor baris ditulis `Sheet:baris` (mis. `Q2:68`). Peringatan per sheet
-  diberi awalan `Sheet 'Q2': …`. Nama sheet yang memang mengandung koma tetap bisa dipilih utuh.
+  diberi awalan `Sheet 'Q2': …`. Nama sheet yang memang mengandung koma tetap bisa dipilih utuh;
+  di dalam daftar pakai nomornya (`--sheet "1,5"`) — pesan GAGAL menyarankannya (v1.0.2).
+- **Acuan struktur (v1.0.2):** sheet yang judul kolomnya cocok dengan sheet terbanyak (seri: yang
+  paling depan), bukan otomatis sheet pertama — sheet `Ringkasan`/`Rekap`/`Cover` berstruktur beda
+  dilewati + peringatan, dan catatan menyebut acuan yang dipakai. Paksa dengan `--acuan "<nama sheet>"`
+  (harus salah satu sheet yang digabung).
 - **Teks:** shared strings (termasuk rich text per-karakter; teks fonetik `rPh` diabaikan), inline
   string, hasil rumus teks.
 - **Angka:** dibaca sebagai Decimal dari teks tersimpan, dibulatkan ke 15 digit signifikan seperti
@@ -46,11 +51,17 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
   peringatan). Paksa dengan `--encoding latin-1` dsb.
 - **Pemisah:** `,` `;` tab `|` dipilih dari konsistensi jumlah kolom; baris `sep=;` di awal file
   (ekspor Excel) dihormati. Paksa dengan `--pemisah ";"`.
-- **Tanda kutip tak tertutup** (v1.0.1): parser CSV biasa diam-diam menelan semua baris berikutnya ke
-  satu sel. Script mendeteksinya → `GAGAL: CSV rusak: tanda kutip (") di baris N tidak ditutup,
-  sehingga baris N s.d. M terbaca sebagai SATU sel`. Sel yang "tertutup" tetapi membungkus ≥ 2
-  baris berisi pemisah juga GAGAL (nomor baris disebut). Satu sel teks multi-baris yang sah (mis.
-  alamat) tetap terbaca dengan peringatan.
+- **Tanda kutip tak tertutup** (v1.0.1, diperbaiki v1.0.2): parser `csv` Python = sumber kebenaran.
+  - Kutip tak tertutup **sampai akhir file** → selalu `GAGAL: CSV rusak: tanda kutip (") di baris N
+    tidak ditutup …` (juga dengan `--paksa`).
+  - Sel multi-baris dianggap **curiga** hanya bila (a) ≥ 2 baris di dalam sel tampak seperti baris
+    data utuh — cukup banyak sel dan kolom yang biasanya berisi angka memang berisi angka — atau
+    (b) jumlah sel rekaman itu ≠ jumlah kolom tabel. Curiga → `GAGAL: CSV kemungkinan rusak …`
+    dengan nomor baris dan saran `--paksa`.
+  - `--paksa` → dibaca apa adanya + peringatan (angka bisa salah bila kutip memang rusak).
+  - Sel multi-baris sah (alamat "Jl. …, No. …⏎Kel. …, Kec. …", koma di beberapa baris) → terbaca +
+    **satu** peringatan gabungan yang memetakan nomor baris Notepad ke nomor baris Excel (nomor
+    baris di hasil = nomor baris Excel/rekaman).
 - Baris yang berisi lebih banyak sel daripada judul kolom (koma tak dikutip) → peringatan + nomor baris.
 
 ## Header & baris khusus

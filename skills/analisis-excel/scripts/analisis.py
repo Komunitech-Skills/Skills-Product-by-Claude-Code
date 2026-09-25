@@ -38,7 +38,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -83,11 +83,13 @@ POLA_KODE = re.compile(r"^(no|nomor|nomer|id|kode|code|nik|npwp|nip|nis|nim|sku|
                        r"wa|whatsapp|phone|rekening|norek|resi|kodepos|kode pos|zip)\b", re.I)
 POLA_UANG = re.compile(r"(\brp\b|\bidr\b|harga|total|omzet|omset|biaya|nilai (transaksi|penjualan|pembelian|kontrak|faktur|invoice)|nominal|pendapatan|"
                        r"penjualan|gaji|bayar|tagihan|amount|price|revenue|sales|cost|diskon|ongkir|"
-                       r"laba|modal|saldo|debit|kredit|pengeluaran|pemasukan|belanja|upah|honor)", re.I)
+                       r"laba|modal|saldo|debit|kredit|pengeluaran|pemasukan|belanja|upah|honor|"
+                       r"\buang\b|simpanan|iuran|setoran|tunjangan|\bthr\b|bonus|insentif|komisi)", re.I)
 POLA_BUKAN_UANG = re.compile(r"(qty|kuantitas|pcs|unit|jumlah barang|jumlah item|banyak|stok|stock|"
                              r"persen|%|rasio|rating|skor|nilai ujian|berat|kg|gram)", re.I)
 POLA_SENSITIF = re.compile(r"(\bnik\b|ktp|npwp|no\.?\s*hp|\bhp\b|telepon|telp|phone|whatsapp|\bwa\b|"
-                           r"e-?mail|alamat|address|rekening|norek|gaji|salary|upah|diagnos|penyakit|"
+                           r"e-?mail|alamat|address|rekening|norek|gaji|salary|upah|uang lembur|tunjangan|\bthr\b|"
+                           r"bonus|insentif|komisi|diagnos|penyakit|"
                            r"rekam medis|agama|tanggal lahir|tgl lahir|tempat lahir|password|sandi|"
                            r"\bpin\b|ibu kandung|kartu kredit|no\.?\s*kartu)", re.I)
 POLA_EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[a-z]{2,}$", re.I)
@@ -125,7 +127,10 @@ def samarkan(v):
     t = rapikan_teks(v)
     if "@" in t:
         nama, _, dom = t.partition("@")
-        return (nama[:1] + "•••@" + dom) if nama else "•••@" + dom
+        if not nama:
+            return "•••@" + dom
+        # 2 karakter akhir ikut tampil bila bagian nama cukup panjang, agar anggota01 & anggota04 tidak kembar
+        return nama[:1] + "•••" + (nama[-2:] if len(nama) >= 6 else "") + "@" + dom
     rapat = re.sub(r"[\s.\-]", "", t)
     if rapat.lstrip("+").isdigit() and len(rapat) >= 7:
         return rapat[:4] + "•" * max(3, len(rapat) - 7) + rapat[-3:]
@@ -770,7 +775,40 @@ def _deteksi_pemisah(teks):
 NAMA_PEMISAH = {",": "koma", ";": "titik koma", "\t": "tab", "|": "garis tegak"}
 
 
-def baca_csv(path, pemisah=None, encoding=None):
+def _kolom_angka_csv(rekaman, ncol, pemisah):
+    """Kolom yang isinya (hampir) selalu angka, dari rekaman normal (tanpa sel multi-baris, rekaman 1 dilewati)."""
+    hit = [[0, 0] for _ in range(ncol)]
+    for no, _a, _b, row in rekaman[1:]:
+        if len(row) != ncol or any("\n" in c or "\r" in c for c in row):
+            continue
+        for j, c in enumerate(row):
+            if c.strip():
+                hit[j][1] += 1
+                if parse_angka(c) is not None:
+                    hit[j][0] += 1
+    return {j for j, (n, t) in enumerate(hit) if n and n >= 0.6 * t}
+
+
+def _tampak_rekaman(bagian, mulai, ncol, kol_angka):
+    """True bila satu baris di dalam sel tampak seperti rekaman data utuh (tanda kutip tak tertutup).
+
+    bagian: sel-sel hasil memecah baris itu dengan pemisah; mulai: indeks kolom sel pertamanya.
+    """
+    n = len(bagian)
+    if n < 2 or n < (ncol - mulai) - 1:
+        return False
+    tercakup = [j for j in range(mulai, min(mulai + n, ncol)) if j in kol_angka]
+    if kol_angka:
+        isi = [bagian[j - mulai] for j in tercakup if bagian[j - mulai].strip()]
+        return bool(isi) and all(parse_angka(x) is not None for x in isi)
+    return n >= ncol - mulai
+
+
+def _rentang(a, b):
+    return "baris {}".format(a) if a == b else "baris {} s.d. {}".format(a, b)
+
+
+def baca_csv(path, pemisah=None, encoding=None, paksa=False):
     try:
         with open(path, "rb") as f:
             data = f.read()
@@ -805,51 +843,85 @@ def baca_csv(path, pemisah=None, encoding=None):
     if not pemisah:
         pemisah = _deteksi_pemisah(teks)
     info["pemisah"] = NAMA_PEMISAH.get(pemisah, pemisah)
-    hasil = []
-    curiga = []   # (baris_fisik_awal, baris_fisik_akhir, jumlah_baris_mirip_data)
+    # Parser csv = sumber kebenaran. rekaman: (nomor_rekaman, baris_fisik_awal, baris_fisik_akhir, sel mentah)
+    rekaman = []
+    awal = 1
     try:
         rd = csv.reader(io.StringIO(teks, newline=""), delimiter=pemisah)
-        awal = mulai_terakhir = 1
         for i, row in enumerate(rd, start=1):
             akhir = rd.line_num
-            mulai_terakhir = awal
-            for c in row:
-                if c and ("\n" in c or "\r" in c):
-                    mirip = sum(1 for b in c.splitlines() if pemisah in b)
-                    if mirip:
-                        curiga.append((awal + geser, akhir + geser, mirip))
+            rekaman.append((i, awal + geser, akhir + geser, row))
             awal = akhir + 1
-            row = [None if (c is None or not c.strip()) else c for c in row]
-            while row and row[-1] is None:
-                row.pop()
-            if row:
-                hasil.append((i, row))
     except csv.Error as e:
         raise InputError("CSV rusak di sekitar baris {}: {}. Buka file di Excel/Notepad, perbaiki baris itu, "
                          "lalu simpan ulang.".format(awal + geser, e))
-    # Tanda kutip tak tertutup: parser biasa diam-diam menelan semua baris sesudahnya ke satu sel.
+    # 1) Tanda kutip tak tertutup sampai akhir file: parser biasa diam-diam menelan sisa file ke satu sel.
+    #    Ini PASTI rusak -> selalu GAGAL (juga dengan --paksa).
     try:
         for _row in csv.reader(io.StringIO(teks, newline=""), delimiter=pemisah, strict=True):
             pass
     except csv.Error as e:
         if "unexpected end of data" in str(e):
-            a, b, _m = curiga[-1] if curiga else (mulai_terakhir + geser, None, 0)
-            if b is None:
-                b = len(teks.splitlines()) + geser
+            _no, a, b, _r = rekaman[-1] if rekaman else (0, 1 + geser, 1 + geser, [])
+            b = max(b, len(teks.splitlines()) + geser)
+            ekor = ("baris {} (baris terakhir file)".format(a) if a == b
+                    else "baris {} s.d. {} (akhir file)".format(a, b))
             raise InputError(
-                "CSV rusak: tanda kutip (\") di baris {} tidak ditutup, sehingga baris {} s.d. {} terbaca "
+                "CSV rusak: tanda kutip (\") di baris {} tidak ditutup, sehingga {} terbaca "
                 "sebagai SATU sel dan angkanya akan salah. Buka file di Notepad/Excel, perbaiki tanda kutip "
-                "di baris {} (hapus, atau tutup dengan \" di akhir teksnya), lalu simpan ulang.".format(a, a, b, a))
-    for a, b, mirip in curiga:
+                "di baris {} (hapus, atau tutup dengan \" di akhir teksnya), lalu simpan ulang.".format(a, ekor, a))
+    # 2) Sel multi-baris: sah (mis. alamat "Jl. ..., No. ..⏎Kel. .., Kec. .."), KECUALI baris di dalamnya
+    #    tampak seperti rekaman data utuh, atau jumlah sel rekamannya tidak sama dengan jumlah kolom tabel.
+    ncol = Counter(len(r) for _n, _a, _b, r in rekaman if r).most_common(1)[0][0] if rekaman else 0
+    kol_angka = _kolom_angka_csv(rekaman, ncol, pemisah)
+    multi, curiga = [], []
+    for no, a, b, row in rekaman:
+        sel_multi = [(j, c) for j, c in enumerate(row) if c and ("\n" in c or "\r" in c)]
+        if not sel_multi:
+            continue
+        multi.append((no, a, b))
+        alasan = None
+        mirip = 0
+        for j, c in sel_multi:
+            for k, bar in enumerate(c.splitlines()):
+                bagian = next(csv.reader([bar], delimiter=pemisah), [])
+                if _tampak_rekaman(bagian, j if k == 0 else 0, ncol, kol_angka):
+                    mirip += 1
         if mirip >= 2:
+            alasan = "{} baris di dalam sel itu tampak seperti baris data utuh".format(mirip)
+        elif ncol >= 2 and len(row) != ncol:
+            alasan = "rekaman itu punya {} sel, padahal tabel punya {} kolom".format(len(row), ncol)
+        if alasan:
+            curiga.append((no, a, b, alasan))
+    if curiga:
+        rincian = "; ".join("{} ({})".format(_rentang(a, b), al) for _n, a, b, al in curiga[:3])
+        if len(curiga) > 3:
+            rincian += "; dan {} lainnya".format(len(curiga) - 3)
+        if not paksa:
+            no, a, b, _al = curiga[0]
             raise InputError(
-                "CSV kemungkinan rusak: baris {} s.d. {} terbaca sebagai SATU sel (ada tanda kutip \" yang "
-                "membungkus {} baris berisi pemisah). Biasanya karena tanda kutip tidak tertutup di baris {}. "
-                "Perbaiki tanda kutip itu lalu simpan ulang; bila sel itu memang teks panjang berisi "
-                "baris baru, hapus baris barunya.".format(a, b, mirip, a))
+                "CSV kemungkinan rusak: {} terbaca sebagai SATU sel. Rincian: {}. Biasanya karena tanda kutip "
+                "(\") tidak tertutup di baris {}. Perbaiki tanda kutip itu lalu simpan ulang. Bila Anda yakin "
+                "file benar (sel memang berisi teks panjang berbaris-baris), ulangi dengan --paksa untuk membaca "
+                "apa adanya.".format(_rentang(a, b), rincian, a))
         info["peringatan"].append(
-            "Baris {} s.d. {} berisi satu sel teks dengan baris baru dan pemisah di dalamnya. Bila itu "
-            "bukan disengaja (mis. tanda kutip tidak tertutup), angka bisa salah — cek baris {}.".format(a, b, a))
+            "--paksa: CSV dibaca apa adanya walau {} tampak janggal ({}). Angka bisa salah bila memang ada "
+            "tanda kutip yang tidak tertutup — cek baris itu di Notepad.".format(
+                "sel" if len(curiga) == 1 else "{} sel".format(len(curiga)), rincian))
+    if multi:
+        contoh = ", ".join("{} di Notepad = baris {} di Excel".format(_rentang(a, b).capitalize(), no)
+                           for no, a, b in multi[:3])
+        info["peringatan"].append(
+            "{} sel teks berisi baris baru (mis. alamat multi-baris) dan terbaca sebagai satu sel — wajar bila "
+            "memang disengaja. Nomor baris di hasil ini = nomor baris di Excel; di Notepad bergeser: {}{}.".format(
+                len(multi), contoh, ", dll" if len(multi) > 3 else ""))
+    hasil = []
+    for no, _a, _b, row in rekaman:
+        row = [None if (c is None or not c.strip()) else c for c in row]
+        while row and row[-1] is None:
+            row.pop()
+        if row:
+            hasil.append((no, row))
     return hasil, info
 
 
@@ -892,7 +964,7 @@ def baca_grid(path, sheet=None, pemisah=None, encoding=None, paksa=False):
                          "nama). Buka di Excel lalu simpan ulang.")
     if sheet is not None:
         info.setdefault("peringatan", []).append("--sheet diabaikan karena file ini CSV (hanya 1 tabel).")
-    grid, info_csv = baca_csv(path, pemisah, encoding)
+    grid, info_csv = baca_csv(path, pemisah, encoding, paksa)
     info["format"] = "csv"
     info["encoding"] = info_csv["encoding"]
     info["pemisah"] = info_csv["pemisah"]
@@ -1354,6 +1426,15 @@ NAMA_FUNGSI = {"jumlah": "Jumlah", "rata": "Rata-rata", "median": "Median", "hit
                "min": "Minimum", "max": "Maksimum"}
 
 
+def buat_judul_nilai(fungsi, nilai):
+    """"Jumlah Total"; bila nama kolom = nama fungsi, hindari "Jumlah Jumlah" -> "Total kolom Jumlah"."""
+    if not nilai:
+        return NAMA_FUNGSI[fungsi]
+    if kunci_kategori(nilai) == kunci_kategori(NAMA_FUNGSI[fungsi]):
+        return "{} kolom {}".format("Total" if fungsi == "jumlah" else NAMA_FUNGSI[fungsi], nilai)
+    return "{} {}".format(NAMA_FUNGSI[fungsi], nilai)
+
+
 def outlier(vals_baris):
     """vals_baris: list (nilai, nomor_baris). Metode IQR 1,5x (QUARTILE.INC)."""
     vals = [v for v, _r in vals_baris]
@@ -1715,7 +1796,7 @@ def cmd_pivot(args, data):
     per = args.per or "bulan"
     kolom2 = data.cari(args.kolom_pivot, peran="kolom pivot") if args.kolom_pivot else None
     jenis = _jenis_hasil(data, nilai, fungsi)
-    judul_nilai = "{} {}".format(NAMA_FUNGSI[fungsi], nilai) if nilai else NAMA_FUNGSI[fungsi]
+    judul_nilai = buat_judul_nilai(fungsi, nilai)
     h = hasil_dasar(data, "pivot", "{} per {}".format(judul_nilai, grup +
                                                      (" ({})".format(per) if data.kol[grup]["tipe"] == "tanggal" else "")))
     h["catatan"] = list(data.catatan)
@@ -1820,7 +1901,7 @@ def cmd_tren(args, data):
     nilai, fungsi = _siapkan_nilai(data, args)
     per = args.per or "bulan"
     jenis = _jenis_hasil(data, nilai, fungsi)
-    judul_nilai = "{} {}".format(NAMA_FUNGSI[fungsi], nilai) if nilai else NAMA_FUNGSI[fungsi]
+    judul_nilai = buat_judul_nilai(fungsi, nilai)
     h = hasil_dasar(data, "tren", "Tren {} per {}".format(judul_nilai, per))
     h["catatan"] = list(data.catatan)
     tg = data.kol[kt]["nilai"]
@@ -1900,7 +1981,7 @@ def cmd_top(args, data):
     arah = "Terbawah" if args.terbawah else "Teratas"
     if args.grup:
         grup = data.cari(args.grup, peran="grup")
-        judul_nilai = "{} {}".format(NAMA_FUNGSI[fungsi], nilai) if nilai else NAMA_FUNGSI[fungsi]
+        judul_nilai = buat_judul_nilai(fungsi, nilai)
         h = hasil_dasar(data, "top", "{} {} {} menurut {}".format(n, arah.lower(), grup, judul_nilai))
         h["catatan"] = list(data.catatan)
         kel = OrderedDict()
@@ -2025,7 +2106,7 @@ def cmd_banding(args, _data=None):
     nilai_a, fungsi = _siapkan_nilai(da, args)
     nilai_b = db.cari(args.nilai, ("angka",), "nilai (file B)") if (args.nilai and db is not da) else nilai_a
     jenis = _jenis_hasil(da, nilai_a, fungsi)
-    judul_nilai = "{} {}".format(NAMA_FUNGSI[fungsi], nilai_a) if nilai_a else NAMA_FUNGSI[fungsi]
+    judul_nilai = buat_judul_nilai(fungsi, nilai_a)
     h = hasil_dasar(da, "banding", "Perbandingan {}: {} vs {}".format(judul_nilai, la, lb))
     h["catatan"] = list(da.catatan) + ([c for c in db.catatan if c not in da.catatan] if db is not da else [])
     if db is not da:
@@ -2303,7 +2384,27 @@ def _minta_banyak_sheet(path, sheet):
     return not any(s["nama"] == t for s in buku.sheets)   # nama sheet yang memang mengandung koma
 
 
-def gabung_sheet(path, spec, baris_header=None, pertahankan_total=False):
+def _cocok_struktur(ref_cf, cf):
+    """Sheet berkolom cf boleh digabung ke acuan ref_cf bila minimal separuh kolom acuan ada."""
+    sama = [k for k in ref_cf if k in cf]
+    return bool(sama) and len(sama) * 2 >= len(ref_cf)
+
+
+def _pilih_sheet_daftar(buku, nama):
+    try:
+        return buku.pilih_sheet(nama)
+    except InputError as e:
+        berkoma = [s["nama"] for s in buku.sheets if "," in s["nama"]]
+        if berkoma:
+            nomor = ", ".join("'{}' = nomor {}".format(n, [s["nama"] for s in buku.sheets].index(n) + 1)
+                              for n in berkoma)
+            raise InputError("{} Catatan: nama sheet {} mengandung koma, jadi tidak bisa ditulis di daftar "
+                             "--sheet. Pakai nomor sheet, mis. --sheet \"1,{}\".".format(
+                                 e, nomor, [s["nama"] for s in buku.sheets].index(berkoma[0]) + 1))
+        raise
+
+
+def gabung_sheet(path, spec, baris_header=None, pertahankan_total=False, acuan=None):
     """Baca beberapa sheet berstruktur sama lalu gabungkan. Kembalikan (potongan, info)."""
     buku = BukuXlsx(path)
     catatan, peringatan = [], []
@@ -2316,7 +2417,7 @@ def gabung_sheet(path, spec, baris_header=None, pertahankan_total=False):
     else:
         pilih = []
         for nama in [x.strip() for x in str(spec).split(",") if x.strip()]:
-            sh = buku.pilih_sheet(nama)
+            sh = _pilih_sheet_daftar(buku, nama)
             if sh not in pilih:
                 pilih.append(sh)
     if not pilih:
@@ -2338,7 +2439,27 @@ def gabung_sheet(path, spec, baris_header=None, pertahankan_total=False):
         bagian.append((sh["nama"], p))
     if not bagian:
         raise InputError("Tidak ada sheet berisi tabel yang bisa digabung. " + " ".join(peringatan))
-    ref_nama, ref = bagian[0]
+    # Acuan struktur = sheet yang paling banyak cocok dengan sheet lain (bukan otomatis sheet pertama,
+    # karena sheet pertama sering "Ringkasan"/"Rekap"/"Cover" berstruktur beda).
+    if acuan:
+        sh_acuan = buku.pilih_sheet(acuan)
+        cocok_nama = [i for i, (n, _p) in enumerate(bagian) if n == sh_acuan["nama"]]
+        if not cocok_nama:
+            raise InputError("--acuan '{}' harus salah satu sheet yang digabung dan berisi tabel ({}).".format(
+                acuan, ", ".join(n for n, _p in bagian)))
+        i_ref = cocok_nama[0]
+    else:
+        skor = []
+        for i, (_n, p) in enumerate(bagian):
+            rcf = [k.casefold() for k in p["kolom"]]
+            n_cocok = sum(1 for _m, q in bagian if _cocok_struktur(rcf, [k.casefold() for k in q["kolom"]]))
+            skor.append((n_cocok, -i))
+        i_ref = -max(skor)[1]
+        if i_ref != 0:
+            catatan.append("Acuan struktur kolom: sheet '{}' (cocok dengan {} sheet), bukan sheet pertama '{}'. "
+                           "Ganti dengan --acuan \"<nama sheet>\" bila perlu.".format(
+                               bagian[i_ref][0], max(skor)[0], bagian[0][0]))
+    ref_nama, ref = bagian[i_ref]
     ref_kol = ref["kolom"]
     ref_cf = [k.casefold() for k in ref_kol]
     kol_sheet = "Sheet"
@@ -2350,10 +2471,10 @@ def gabung_sheet(path, spec, baris_header=None, pertahankan_total=False):
         sama = [k for k in ref_cf if k in cf]
         kurang = [ref_kol[j] for j, k in enumerate(ref_cf) if k not in cf]
         lebih = [p["kolom"][j] for j, k in enumerate(cf) if k not in ref_cf]
-        if len(sama) * 2 < len(ref_cf) or not sama:
+        if not _cocok_struktur(ref_cf, cf):
             peringatan.append("Sheet '{}' TIDAK digabung karena judul kolomnya berbeda dari sheet '{}' "
-                              "(kolom sheet ini: {}). Analisis sheet itu terpisah dengan --sheet \"{}\".".format(
-                                  nama, ref_nama, ", ".join(p["kolom"]), nama))
+                              "(kolom sheet ini: {}; mungkin sheet ringkasan/rekap). Analisis sheet itu terpisah "
+                              "dengan --sheet \"{}\".".format(nama, ref_nama, ", ".join(p["kolom"]), nama))
             continue
         if kurang or lebih:
             peringatan.append("Sheet '{}' judul kolomnya TIDAK persis sama dengan sheet '{}': {}{}. Kolom yang "
@@ -2372,15 +2493,17 @@ def gabung_sheet(path, spec, baris_header=None, pertahankan_total=False):
         header_ulang += ["{}:{}".format(nama, r) for r in p["header_ulang"]]
         dipakai.append((nama, len(p["baris_no"]), p["baris_header"]))
     if len(dipakai) < 2 and len(pilih) > 1:
-        peringatan.append("Hanya 1 sheet yang bisa dipakai; hasil BUKAN gabungan beberapa sheet.")
+        peringatan.append("Hanya 1 sheet yang bisa dipakai; hasil BUKAN gabungan beberapa sheet. Bila sheet "
+                          "yang Anda maksud dilewati, sebutkan daftarnya, mis. --sheet \"TW1,TW2,TW3\", atau "
+                          "pilih acuan dengan --acuan \"<nama sheet>\".")
     hdr = {h for _n, _c, h in dipakai}
     potongan = {"baris_header": dipakai[0][2] if len(hdr) == 1 else "beragam per sheet",
                 "kolom": [kol_sheet] + list(ref_kol), "baris_no": baris_no, "mentah": mentah,
                 "baris_total": baris_total, "header_ulang": header_ulang, "peringatan": peringatan,
                 "catatan": ["Gabungan {} sheet: {}. Kolom '{}' berisi asal sheet; nomor baris ditulis "
-                            "'Sheet:baris' (mis. {}:{}).".format(
+                            "'Sheet:baris' (mis. {}).".format(
                                 len(dipakai), ", ".join("{} ({} baris)".format(n, c) for n, c, _h in dipakai),
-                                kol_sheet, dipakai[0][0], ref["baris_no"][0])] + catatan}
+                                kol_sheet, baris_no[0] if baris_no else dipakai[0][0] + ":1")] + catatan}
     info = {"file": os.path.basename(path), "format": "xlsx", "gabungan": True,
             "sheet": " + ".join(n for n, _c, _h in dipakai), "semua_sheet": [s["nama"] for s in buku.sheets],
             "peringatan": ["Workbook memakai sistem tanggal 1904 (Mac lama); sudah diperhitungkan."]
@@ -2391,7 +2514,8 @@ def gabung_sheet(path, spec, baris_header=None, pertahankan_total=False):
 def muat(args, path, sheet):
     pribadi = getattr(args, "tampilkan_pribadi", False)
     if _minta_banyak_sheet(path, sheet):
-        potongan, info = gabung_sheet(path, sheet, args.baris_header, args.pertahankan_total)
+        potongan, info = gabung_sheet(path, sheet, args.baris_header, args.pertahankan_total,
+                                      getattr(args, "acuan", None))
         return Data(None, info, urutan=args.urutan_tanggal, tipe_paksa=parse_tipe(args.tipe),
                     potongan=potongan, tampilkan_pribadi=pribadi)
     grid, info = baca_grid(path, sheet, args.pemisah, args.encoding, args.paksa)
@@ -2404,6 +2528,8 @@ def buat_parser():
     umum.add_argument("file", help="File .csv / .xlsx")
     umum.add_argument("--sheet", help="Nama atau nomor sheet (XLSX). \"semua\" = gabung semua sheet terlihat "
                       "berstruktur sama; \"Q1,Q2,Q3\" = gabung sheet tertentu. Default: sheet pertama yang terlihat")
+    umum.add_argument("--acuan", help="Dengan --sheet semua/daftar: sheet acuan struktur kolom (default: sheet "
+                      "yang paling banyak cocok dengan sheet lain)")
     umum.add_argument("--baris-header", type=int, help="Nomor baris judul kolom (default: deteksi otomatis)")
     umum.add_argument("--pemisah", help="Pemisah CSV: , ; tab | (default: deteksi otomatis)")
     umum.add_argument("--encoding", help="Encoding CSV (default: deteksi UTF-8/BOM/cp1252)")
@@ -2418,7 +2544,9 @@ def buat_parser():
     umum.add_argument("--keluar", help="Simpan tabel hasil utama ke file CSV ini")
     umum.add_argument("--excel-id", action="store_true",
                       help="CSV keluaran untuk Excel berbahasa Indonesia (pemisah ; dan koma desimal)")
-    umum.add_argument("--paksa", action="store_true", help="Tetap proses file > {} MB".format(BATAS_MB))
+    umum.add_argument("--paksa", action="store_true",
+                      help="Tetap proses file > {} MB, dan baca CSV yang tampak janggal (sel multi-baris "
+                      "mirip beberapa baris data) apa adanya dengan peringatan".format(BATAS_MB))
     umum.add_argument("--tampilkan-pribadi", action="store_true",
                       help="Tampilkan NIK/HP/email/rekening lengkap (default disamarkan; UU PDP)")
 
