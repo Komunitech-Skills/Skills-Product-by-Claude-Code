@@ -9,7 +9,7 @@ Dibuat 2026-09-25 atas permintaan pemilik. Dibaca oleh **kedua** sesi di awal se
 | **Akun A** (sesi utama, routine tiap 3 jam) | Jalur 2 — produk lokal pengganti SaaS; Jalur 3 — solusi member VIP (OpenClaw); uji ulang & perawatan skill yang sudah ada | `claude/determined-gates-rh7l38` |
 | **Akun B** (akun kedua) | Jalur 1 — kurasi (ATM) & kreasi skill baru | branch sesi Akun B sendiri — **tulis namanya di bawah** |
 
-Branch Akun B: `(isi di commit pertama Akun B)`
+Branch Akun B: `claude/dreamy-archimedes-suxhgj`
 
 ## Aturan main
 1. **Mulai dari kode terbaru.** Di awal giliran: `git fetch origin claude/determined-gates-rh7l38` lalu `git merge --ff-only origin/claude/determined-gates-rh7l38` (atau `git merge` biasa bila sudah pernah commit). Jangan rebase / force-push branch orang lain.
@@ -26,11 +26,11 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 
 | # | Tugas | Sumber / catatan | Status |
 |---|---|---|---|
-| B1 | ATM `pesan-prospek-wa` — pesan perkenalan/penawaran pertama via WA ke calon pelanggan | coreyhaines31/marketingskills `cold-email` (MIT). Bedakan tegas dari `follow-up-prospek` (itu urutan susulan). Tanpa blast; dikirim manusia | belum |
-| B2 | ATM `brainstorming-ide-usaha` — sesi curah gagasan terstruktur untuk ide produk/promo/usaha | obra/superpowers `brainstorming` (MIT) — tulis ulang ±90%, konteks UMKM | belum |
-| B3 | Kreasi `kontrak-kerja-pkwt` (HR) | Backlog #15. Verifikasi aturan PKWT terbaru (PP 35/2021 + perubahan UU Cipta Kerja/putusan MK) dari sumber resmi; disclaimer; model Opus | belum |
-| B4 | Kreasi `kebijakan-privasi-pdp` (Legal) | Backlog #26. UU 27/2022 PDP + peraturan pelaksana terbaru (verifikasi); disclaimer; Opus | belum |
-| B5 | Kreasi `kalender-pajak` (Pajak) | Backlog #28. Jatuh tempo setor/lapor 2026 (PMK terbaru, Coretax); Opus | belum |
+| B1 | ATM `pesan-prospek-wa` — pesan perkenalan/penawaran pertama via WA ke calon pelanggan | coreyhaines31/marketingskills `cold-email` (MIT). Bedakan tegas dari `follow-up-prospek` (itu urutan susulan). Tanpa blast; dikirim manusia | lulus 9/10 v1.0.2 (Akun B, 2026-09-25) — sisa N2 deteksi asal kontak untuk v1.0.3 |
+| B2 | ATM `brainstorming-ide-usaha` — sesi curah gagasan terstruktur untuk ide produk/promo/usaha | obra/superpowers `brainstorming` (MIT) — tulis ulang ±90%, konteks UMKM | lulus 8/10 (Akun B, 2026-09-25) — sisa temuan rendah untuk v1.0.2 (header kembar, salah ketik nama kolom default) |
+| B3 | Kreasi `kontrak-kerja-pkwt` (HR) | Backlog #15. Verifikasi aturan PKWT terbaru (PP 35/2021 + perubahan UU Cipta Kerja/putusan MK) dari sumber resmi; disclaimer; model Opus | lulus 9/10 v1.0.1 (Akun B, 2026-09-25) — temuan rendah untuk v1.0.2 (label "1 bulan 16 hari" vs pecahan, rentang terbalik saat sisa 0, --metode bulan-penuh); PERLU REVIEW: nomor ayat PP 35/2021 (situs resmi terblokir), tafsir periode <1 bulan berurutan, cek ulang UU Ketenagakerjaan baru awal Nov 2026 |
+| B4 | Kreasi `kebijakan-privasi-pdp` (Legal) | Backlog #26. UU 27/2022 PDP + peraturan pelaksana terbaru (verifikasi); disclaimer; Opus | dikerjakan (Akun B, 2026-09-25) |
+| B5 | Kreasi `kalender-pajak` (Pajak) | Backlog #28. Jatuh tempo setor/lapor 2026 (PMK terbaru, Coretax); Opus | dikerjakan (Akun B, 2026-09-25) |
 | B6 | Kreasi `analisis-excel` (Data) | Backlog #27 — bedakan dari `rekap-penjualan-csv`; script Python standar | belum |
 | B7 | Kreasi `sop-onboarding` (HR) | Backlog #36 — bedakan dari `sop-writer` | belum |
 | B8 | Kreasi `tender-checklist` (Sales) | Backlog #33 — LPSE/SPSE; verifikasi Perpres PBJ terbaru | belum |
@@ -60,3 +60,4 @@ Aturan: Akun B **hanya menulis ke `skills/<nama>/examples/`** skill milik Akun A
 
 ## Permintaan antar-akun
 _(tulis di sini: dari, untuk, isi, tanggal)_
+- **Dari Akun B → Akun A (2026-09-25):** `riset-calon-pelanggan` juga menyusun pesan pembuka WA, jadi cakupannya beririsan dengan `pesan-prospek-wa` (B1). Di sisi B1, batasnya sudah dipertegas: riset = mencari & menyaring prospek; pesan-prospek-wa = menyusun & memeriksa pesan pertama secara mendalam. Usul: di SKILL.md `riset-calon-pelanggan`, sebut bahwa draf pesan pembukanya hanya singkat, dan arahkan ke `pesan-prospek-wa` untuk versi lengkap. Keputusan akhir soal irisan ini = **PERLU REVIEW pemilik**.
