@@ -245,12 +245,18 @@ PERAN_UTAMA = [
 # Peran cadangan untuk "tayangan" bila kolom Impressions/Dilihat memang tidak ada di file
 PERAN_TAYANGAN_CADANGAN = (["reach", "jangkauan"], ["cost", "biaya", "per", "%"])
 
+# Penanda platform: (nama, [(substring, bobot), ...]). Substring khas satu platform (jarang
+# dipakai platform lain) diberi bobot 2 supaya cukup sendirian; substring umum diberi bobot 1
+# dan butuh ditemani penanda lain. Cocok bila total bobot >= AMBANG_FINGERPRINT.
+AMBANG_FINGERPRINT = 2
 FINGERPRINT_PLATFORM = [
-    ("Meta Ads (Facebook/Instagram)", ["ad set name", "reach", "link clicks", "amount spent"]),
-    ("TikTok Shop Ads", ["gmv", "pendapatan kotor", "pesanan"]),
-    ("Shopee Ads", ["dilihat", "konversi langsung", "acos", "rasio konversi"]),
-    ("TikTok Ads Manager", ["clicks (destination)", "cpc (destination)", "cost per conversion"]),
-    ("Google Ads", ["impr.", "avg. cpc", "cost / conv.", "conv. value"]),
+    ("Meta Ads (Facebook/Instagram)", [("ad set name", 2), ("reach", 1), ("link clicks", 1),
+                                        ("amount spent", 1)]),
+    ("TikTok Shop Ads", [("gmv", 2), ("pendapatan kotor", 2), ("pesanan", 1)]),
+    ("Shopee Ads", [("dilihat", 1), ("konversi (langsung)", 1), ("acos", 2), ("rasio konversi", 1)]),
+    ("TikTok Ads Manager", [("clicks (destination)", 2), ("cpc (destination)", 2),
+                            ("cost per conversion", 1)]),
+    ("Google Ads", [("impr.", 2), ("avg. cpc", 1), ("cost / conv.", 1), ("conv. value", 1)]),
 ]
 
 MATA_UANG_DIKENAL = {"IDR", "USD", "SGD", "MYR", "PHP", "THB", "VND", "EUR", "GBP", "AUD", "JPY", "CNY"}
@@ -317,8 +323,8 @@ def deteksi_platform(header):
     norm = " | ".join(_norm(h) for h in header)
     cocok = []
     for nama, penanda in FINGERPRINT_PLATFORM:
-        skor = sum(1 for p in penanda if p in norm)
-        if skor >= 2:
+        skor = sum(bobot for substr, bobot in penanda if substr in norm)
+        if skor >= AMBANG_FINGERPRINT:
             cocok.append((skor, nama))
     if not cocok:
         return None
@@ -649,7 +655,8 @@ def gabung(daftar_json, omzet=None):
         if t.get("nilai_hasil"):
             ada_nilai_hasil = True
         per_platform.append({"platform": h["platform_terdeteksi"], "biaya": t["biaya"],
-                              "hasil": t["hasil"], "biaya_per_hasil": t["biaya_per_hasil"]})
+                              "hasil": t["hasil"], "biaya_per_hasil": t["biaya_per_hasil"],
+                              "nama_hasil": h["nama_hasil"]})
         saran_semua.extend(f"[{h['platform_terdeteksi']}] {s}" for s in h["saran"])
         peringatan_semua.extend(h.get("peringatan", []))
         nama_hasil = nama_hasil or h["nama_hasil"]
@@ -657,6 +664,15 @@ def gabung(daftar_json, omzet=None):
     biaya_total = total["biaya"]
     for p in per_platform:
         p["persen_biaya"] = bulat_satu_desimal(p["biaya"] / biaya_total * 100) if biaya_total else None
+
+    nama_hasil_beda = len({p["nama_hasil"] for p in per_platform}) > 1
+    if nama_hasil_beda:
+        peringatan_semua.append(
+            "Platform-platform ini mengukur 'hasil' dengan nama/definisi berbeda ("
+            + ", ".join(sorted({p['nama_hasil'] for p in per_platform}))
+            + ") — total hasil, biaya-per-hasil, dan ROAS gabungan di bawah ini hanya perkiraan kasar "
+              "lintas platform, bukan angka yang benar-benar setara. Baca rincian per platform di bawah "
+              "untuk angka yang lebih akurat per jenis hasil.")
 
     t_cpc = bagi(total["biaya"], total["klik"])
     t_cpm = bagi(total["biaya"], total["tayangan"])
@@ -685,7 +701,7 @@ def susun_teks_gabung(g, omzet=None):
     L.append(f"Total belanja iklan (semua platform): {fmt_rp(t['biaya'])}")
     for p in g["per_platform"]:
         L.append(f"- {p['platform']}: {fmt_rp(p['biaya'])} ({fmt_persen(p['persen_biaya'])} dari total), "
-                 f"biaya per {g['nama_hasil']}: {fmt_rp(p['biaya_per_hasil'])}")
+                 f"biaya per {p['nama_hasil']}: {fmt_rp(p['biaya_per_hasil'])}")
     L.append(f"Tayangan: {fmt_angka(t['tayangan'])} | Klik: {fmt_angka(t['klik'])} "
               f"| {g['nama_hasil'].capitalize()}: {fmt_angka(t['hasil'])}")
     L.append(f"CPC: {fmt_rp(t['cpc'])} | CPM: {fmt_rp(t['cpm'])} | CTR: {fmt_persen(t['ctr_persen'])}")
@@ -807,6 +823,13 @@ def jalankan_analisis(args):
             keluar_error(f"Gagal membaca file minggu sebelumnya: {e}")
             return
         pembanding = bandingkan(hasil, hasil_lalu)
+        if hasil["nama_hasil"] != hasil_lalu["nama_hasil"] or \
+                hasil["platform_terdeteksi"] != hasil_lalu["platform_terdeteksi"]:
+            hasil["peringatan"].append(
+                f"File minggu ini ('{hasil['platform_terdeteksi']}', hasil='{hasil['nama_hasil']}') dan "
+                f"minggu lalu ('{hasil_lalu['platform_terdeteksi']}', hasil='{hasil_lalu['nama_hasil']}') "
+                "tampak berbeda platform/jenis hasil — perbandingan % di bawah ini mungkin tidak "
+                "membandingkan hal yang sama. Pastikan kedua file dari platform yang sama.")
 
     omzet = None
     if args.omzet:
