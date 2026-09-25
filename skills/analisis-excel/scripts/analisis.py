@@ -39,7 +39,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.10"
+VERSI = "1.0.11"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -1210,6 +1210,50 @@ def _label_saldo_awal(label):
     return t.startswith(("saldo awal", "saldo sebelumnya", "saldo lalu", "opening balance", "beginning balance"))
 
 
+POLA_LABEL_TEGAS_AKHIR = re.compile(r"(?<![\w-])(total|jumlah|subtotal|sub total|grand total)$")
+POLA_LABEL_TEGAS_AWAL = re.compile(r"(grand total|sub[\s-]?total|jumlah total|total keseluruhan|total semua)(?![\w-])")
+
+
+def _bentuk_data(mr, prof, modus):
+    """Baris berpola SAMA dengan baris data lain: banyak sel terisi >= modus tabel, tidak ada kolom yang biasanya
+    terisi dibiarkan kosong, dan jenis tiap sel terisi (angka/tanggal/teks) = jenis mayoritas kolomnya."""
+    isi = [(j, jn) for j, (jn, _x) in enumerate(mr) if jn is not None]
+    if len(isi) < modus or _ada_kolom_sering_kosong(mr, prof):
+        return False
+    return all(prof[j]["tipe"] in (jn, "campur") for j, jn in isi)
+
+
+def _baris_ringkasan(label, mr, prof, modus, blok=None, atas=None, pivot=False):
+    """v1.0.11 (B35): SATU-SATUNYA penentu apakah baris berlabel ringkasan (hasil _label_ringkasan) memang baris
+    RINGKASAN. Dipakai semua jalur: klasifikasi utama, blok EKOR, blok KEPALA, dan pengaman silang.
+
+    Ringkasan bila: label TEGAS (persis kata ringkasan, berakhiran ':', '<X> Total', 'Grand Total/Subtotal/Jumlah
+    Total/Total Keseluruhan …'), atau PivotTable, atau baris TIDAK berpola data (_bentuk_data), atau ada kolom angka
+    = jumlah >= 2 baris di atasnya (blok sejak batas terakhir / semua baris data di atasnya), atau SEMUA kolom
+    angkanya > nilai terbesar baris di atasnya DAN >= separuh jumlahnya (pola Total yang angkanya salah). Selain itu label hanya
+    AWALAN nama ('Total Care Body Lotion', 'Jumlah Besar Deterjen') pada baris data biasa = DATA, di posisi mana pun
+    (atas, tengah, baris terakhir, sesudah baris kosong)."""
+    if not label:
+        return False
+    t = _norm_label(label)
+    if pivot or t in LABEL_RINGKASAN or t in LABEL_LEMAH or rapikan_teks(label).strip().endswith(":") or \
+            POLA_LABEL_TEGAS_AKHIR.search(t) or POLA_LABEL_TEGAS_AWAL.match(t):
+        return True
+    if not _bentuk_data(mr, prof, modus):
+        return True
+    angka = [(j, x) for j, (jn, x) in enumerate(mr) if jn == "angka" and prof[j]["tipe"] == "angka"]
+    for j, x in angka:
+        if not x:
+            continue
+        for agr in (blok, atas):
+            a = agr.get(j) if agr else None
+            if a is not None and a.n >= 2 and abs(x - a.s) <= _toleransi(a.s):
+                return True
+    atas = atas or {}
+    return bool(angka) and all(atas.get(j) is not None and atas[j].n >= 2 and x > atas[j].hi and 2 * x >= atas[j].s
+                               for j, x in angka)
+
+
 def _jenis_sel(v, gaya=None):
     """('angka', Decimal) / ('tanggal', date) / ('teks', str) / (None, None) untuk sel kosong/galat."""
     if adalah_kosong(v) or adalah_galat_excel(v):
@@ -1333,6 +1377,12 @@ class _Agr:
 
     def salin(self):
         return _Agr(self.s, self.n, self.lo, self.hi)
+
+
+def _tambah_agr(dct, mr, kol_angka):
+    for j in kol_angka:
+        if mr[j][0] == "angka":
+            dct.setdefault(j, _Agr()).tambah(mr[j][1])
 
 
 def _calon_agregat(a, min_jumlah, ekor):
@@ -1466,6 +1516,7 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
             keluar[i] = "diminta --buang-baris"
     lindung = {i for i, r in enumerate(baris_no) if r in pertahankan and i not in keluar}
     label = {}
+    label_putusan = {}      # i -> label ringkasan, atau None bila label ternyata awalan NAMA data
     if not pertahankan_total:
         for i, row in enumerate(mentah):
             if i in keluar or i in lindung:
@@ -1476,6 +1527,26 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
             lb = _label_ringkasan(row)
             if lb:
                 label[i] = lb
+        # v1.0.11 (B35): SATU keputusan per baris berlabel, dari _baris_ringkasan, dipakai SEMUA jalur di bawah
+        # (ekor, kepala, klasifikasi utama) dan dikembalikan untuk pengaman silang. Agregat pembanding dihitung
+        # dari atas ke bawah; baris dikeluarkan/ringkasan = batas blok dan tidak ikut dijumlah.
+        n_isi0 = [sum(1 for jn, _x in mr if jn is not None) for mr in M]
+        sisa = [n_isi0[i] for i in range(n) if i not in keluar]
+        modus0 = Counter(sisa).most_common(1)[0][0] if sisa else 0
+        blok, atas = {}, {}
+        for i in range(n):
+            if i in keluar:
+                blok = {}
+                continue
+            if i in label:
+                if _baris_ringkasan(label[i], M[i], prof, modus0, blok, atas, pivot):
+                    label_putusan[i] = label[i]
+                    blok = {}
+                    continue
+                label_putusan[i] = None
+                del label[i]
+            _tambah_agr(blok, M[i], kol_angka)
+            _tambah_agr(atas, M[i], kol_angka)
         # blok EKOR: akhiran tabel yang tiap barisnya berlabel ringkasan, berawalan Catatan/NB/*, atau teks saja.
         # Baris teks saja hanya ikut bila bergaya catatan atau blok itu dipisah baris kosong dari data.
         def celah(k):
@@ -1652,30 +1723,8 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
                     return "angka di {} kolom = jumlah {}".format(len(cocok), jenis.format(a.n))
             return None
 
-        def _label_nama_data(i, mr):
-            """v1.0.10 (B34): label berAWALAN kata ringkasan yang sebenarnya NAMA ('Total Care Shampoo', 'Jumlah
-            Besar') pada baris TERISI PENUH seperti baris data lain = data, bukan kandidat. Syarat: label bukan
-            persis kata ringkasan / berakhiran ':' / '<X> Total', baris tidak jarang, bukan PivotTable, dan TIDAK ada
-            kolom angka yang = jumlah >= 2 baris di atasnya (blok atau semua)."""
-            t = _norm_label(label[i])
-            if pivot or i in jarang or t in LABEL_RINGKASAN or t in LABEL_LEMAH or \
-                    rapikan_teks(label[i]).strip().endswith(":") or \
-                    re.search(r"(?<![\w-])(total|jumlah|subtotal|sub total|grand total)$", t) or \
-                    re.match(r"(grand total|sub[\s-]?total|jumlah total|total keseluruhan|total semua)(?![\w-])", t):
-                return False
-            for j in kol_angka:
-                if mr[j][0] != "angka" or not mr[j][1]:
-                    continue
-                for agr in (seg, nonc):
-                    a = agr.get(j)
-                    if a is not None and a.n >= 2 and abs(mr[j][1] - a.s) <= _toleransi(a.s):
-                        return False
-            return True
-
         def tambah(dct, mr):
-            for j in kol_angka:
-                if mr[j][0] == "angka":
-                    dct.setdefault(j, _Agr()).tambah(mr[j][1])
+            _tambah_agr(dct, mr, kol_angka)
         for pos, i in enumerate(urut):
             mr = M[i]
             alasan = None
@@ -1688,7 +1737,7 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
                         judul_sebelum.setdefault(judul[k], baris_no[k])
                         judul_kata.setdefault(" ".join(re.findall(r"[^\W_]+", judul[k])), (judul[k], baris_no[k]))
                     k -= 1
-            if i in label and not _label_nama_data(i, mr):
+            if i in label:
                 alasan = "berlabel '{}' di {} tabel".format(label[i], "tengah" if pos else "atas")
             elif i not in lindung:
                 isi = [(j, x) for j, (jn, x) in enumerate(mr) if jn is not None]
@@ -1734,7 +1783,7 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
         kandidat.sort()
     dikeluarkan = sorted(keluar.items())
     dipakai = urut
-    return dipakai, dikeluarkan, kandidat, _profil_dari([M[i] for i in dipakai], gaya, lebar)
+    return dipakai, dikeluarkan, kandidat, _profil_dari([M[i] for i in dipakai], gaya, lebar), label_putusan
 
 
 POLA_KATA_RINGKASAN = re.compile(r"(?<![\w-])(total|sub[\s-]?total|jumlah|grand|rekap|rata-rata|rata2|rerata|"
@@ -2124,7 +2173,7 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
         catatan.append("Tabel ini tampaknya PivotTable yang disalin sebagai nilai (judul 'Row Labels'/'Label Baris'/"
                        "'Sum of'/'Jumlah dari'). Hanya baris paling rinci yang boleh dijumlah; baris kelompok, "
                        "'Total …' dan 'Grand Total' adalah ringkasan.")
-    dipakai, keluar, calon, prof = _klasifikasi_baris(baris_no, mentah, lebar, info.get("rumus_agregat"),
+    dipakai, keluar, calon, prof, putusan = _klasifikasi_baris(baris_no, mentah, lebar, info.get("rumus_agregat"),
                                                       pertahankan_total, buang, pertahankan, nama, pivot)
     dikeluarkan = [(baris_no[i], al, _isi_bernama(mentah[i], nama)) for i, al in keluar]
     kandidat = [(baris_no[i], al, _isi_bernama(mentah[i], nama)) for i, al in calon]
@@ -2138,15 +2187,15 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
     for i, al in keluar:
         if i <= akhir:
             continue
-        m = re.match(r"baris ringkasan berlabel '(.*)' di bawah tabel$", al)
-        if m and _label_jumlah(m.group(1)):
-            acuan.append((baris_no[i], m.group(1), i, False))
+        # v1.0.11 (B35): acuan = baris yang DIPUTUSKAN ringkasan oleh _baris_ringkasan (bukan tebakan dari teks)
+        if putusan.get(i) and _label_jumlah(putusan[i]):
+            acuan.append((baris_no[i], rapikan_teks(putusan[i]).strip(), i, False))
         elif al.startswith("rumus agregat") and not re.search(r"(AVERAGE|COUNT|MIN|MAX|MEDIAN)", al, re.I):
             lb = next((rapikan_teks(v).strip() for v in mentah[i] if isinstance(v, str) and not adalah_kosong(v)
                        and parse_angka(v) is None), None)
             if lb is None or _label_jumlah(lb):
                 acuan.append((baris_no[i], lb or "baris rumus jumlah", i, False))
-    if dipakai and any(i == dipakai[-1] for i, _a in calon):
+    if dipakai and any(i == dipakai[-1] for i, _a in calon) and putusan.get(dipakai[-1], "") is not None:
         lb = next((rapikan_teks(v).strip() for v in mentah[dipakai[-1]] if isinstance(v, str)
                    and not adalah_kosong(v) and parse_angka(v) is None and _label_jumlah(v)), None)
         if lb:      # kandidat (sudah diperingatkan): hanya penguat, bukan dasar peringatan beda

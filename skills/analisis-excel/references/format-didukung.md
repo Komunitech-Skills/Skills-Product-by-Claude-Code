@@ -143,7 +143,10 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
        "TOTAL", kategori "Rata-rata" di kolom pertama). (v1.0.10, B34) Label yang hanya BERAWALAN kata
        ringkasan ("Total Care Shampoo", "Jumlah Besar Hemat") pada baris terisi penuh seperti baris lain, bukan
        PivotTable, tanpa ":" / akhiran "Total", dan tanpa angka = jumlah ≥ 2 baris di atasnya = data (bukan
-       kandidat);
+       kandidat). (v1.0.11, B35) Keputusan ini dibuat SATU kali per baris oleh satu fungsi yang sama untuk
+       semua posisi — atas, tengah, baris TERAKHIR, sesudah baris kosong — dan dipakai juga oleh pengaman
+       silang; baris juga tetap dianggap Total bila semua angkanya > nilai terbesar baris di atasnya dan
+       ≥ separuh jumlahnya (Total yang angkanya salah);
      - baris angka **tanpa label** (hanya angka di kolom angka, ada kolom yang biasanya terisi ≥ 80% kosong)
        yang setiap angkanya = jumlah baris di atasnya (sejak kandidat/baris dikeluarkan terakhir — kelompok 1
        baris pun — atau seluruhnya) atau rata-ratanya (≥ 3 nilai); di ekor tabel juga min/maks dan agregat

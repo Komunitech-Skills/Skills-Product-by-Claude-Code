@@ -2432,5 +2432,74 @@ class UjiTotalFileV1010(unittest.TestCase):
         self.cek_a(self.fx / "K3-kontrol-absen.tsv", "Hadir", k["K3"]["hadir"], 5)
 
 
+class UjiSatuLogikaRingkasanV1011(unittest.TestCase):
+    """v1.0.11 (B35): SATU penentu baris ringkasan (_baris_ringkasan) dipakai klasifikasi utama, blok EKOR, blok
+    KEPALA, dan pengaman silang. Nama produk berawalan 'Total'/'Jumlah'/'Grand' pada baris data biasa tetap data di
+    baris terakhir, pertama, dan sesudah baris kosong; baris Total sungguhan tetap dikeluarkan."""
+
+    DATA = [("Sabun Cair", 12, 18000), ("Sikat Gigi", 25, 6000), ("Pasta Gigi", 15, 12000), ("Sabun Batang", 20, 4000)]
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.t = Path(cls._tmp.name)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def tulis(self, nama, baris):
+        f = self.t / nama
+        f.write_text("\n".join(baris) + "\n", encoding="utf-8")
+        return f
+
+    def ringkas(self, nama, baris):
+        return jalankan_json(self, "ringkas", self.tulis(nama, baris))
+
+    def stok(self, d):
+        t = next(t for t in d["tabel"] if any(r[0] == "Stok" for r in t["baris"]))
+        return next(r for r in t["baris"] if r[0] == "Stok")
+
+    def test_Y4_dan_variasi_nama_produk_tetap_data(self):
+        data = ["{},{},{}".format(*x) for x in self.DATA]
+        stok0 = sum(x[1] for x in self.DATA)
+        for nm in ("Total Care Body Lotion", "Jumlah Besar Deterjen", "Grand Prix Helm", "Total Approach Serum",
+                   "Grand Totalindo Snack", "Rata-rata Kopi Susu"):
+            p = "{},5,45000".format(nm)
+            for pos, baris in (("akhir", data + [p]), ("awal", [p] + data), ("sesudah-kosong", data + ["", p]),
+                               ("akhir-stok-terbesar", data + ["{},30,45000".format(nm)])):
+                d = self.ringkas("v.csv", ["Produk,Stok,Harga"] + baris)
+                pesan = "{} / {}".format(nm, pos)
+                self.assertEqual(d["jumlah_baris_data"], 5, pesan)
+                self.assertEqual(d["baris_dikeluarkan"], [], pesan)
+                self.assertEqual(d["kemungkinan_ringkasan"], [], pesan)
+                self.assertEqual(d["peringatan"], [], pesan)
+                self.assertEqual(D(self.stok(d)[2]), D(stok0 + (30 if pos == "akhir-stok-terbesar" else 5)), pesan)
+
+    def test_baris_total_sungguhan_tetap_dikeluarkan(self):
+        data = ["{},{},{}".format(*x) for x in self.DATA]
+        s1, s2 = sum(x[1] for x in self.DATA), sum(x[2] for x in self.DATA)
+        for akhir, tegas in (("Total,{},{}".format(s1, s2), False), ("Grand Total,{},{}".format(s1, s2), False),
+                             ("Jumlah,{},{}".format(s1, s2), False), ("Total,,{}".format(s2), False),
+                             ("Total Stok,{},{}".format(s1, s2), False), ("Total,70,39000", True),
+                             ("Total Barang,90,55000", True), ("Jumlah Total,1,2", True)):
+            d = self.ringkas("t.csv", ["Produk,Stok,Harga"] + data + [akhir])
+            self.assertEqual(d["jumlah_baris_data"], 4, akhir)
+            self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], [6], akhir)
+            self.assertEqual("PENGAMAN SILANG" in " ".join(d["peringatan"]), tegas, akhir)
+        # tabel 2 kolom: Total berlabel awalan dengan angka salah tetap dikeluarkan + diperingatkan silang
+        d = self.ringkas("k2.csv", ["Keterangan,Nominal", "Beban 1,100000", "Beban 2,250000", "Beban 3,300000",
+                                    "Total Beban,500000"])
+        self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], [5])
+        self.assertIn("PENGAMAN SILANG", " ".join(d["peringatan"]))
+
+    def test_satu_penentu_modul(self):
+        mr = [("teks", "Total Care"), ("angka", D(5)), ("angka", D(45000))]
+        prof = [{"tipe": "teks", "isi": 1}, {"tipe": "angka", "isi": 1}, {"tipe": "angka", "isi": 1}]
+        self.assertFalse(modul._baris_ringkasan("Total Care", mr, prof, 3))
+        self.assertTrue(modul._baris_ringkasan("Total", mr, prof, 3))
+        self.assertTrue(modul._baris_ringkasan("Total Care", mr[:2] + [(None, None)], prof, 3))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
