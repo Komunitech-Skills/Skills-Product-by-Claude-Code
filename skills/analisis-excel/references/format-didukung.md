@@ -103,7 +103,21 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
 
 ## Header & baris khusus
 - **Header:** baris pertama (dari 30 teratas) yang cukup lebar (≥ 60% kolom terlebar) dan dominan
-  teks; baris judul laporan/keterangan di atasnya dilewati dan diberitahukan. Paksa `--baris-header N`.
+  teks; baris judul laporan/keterangan di atasnya dilewati dan diberitahukan. Paksa `--baris-header N`
+  (alias `--header-baris N`).
+- **Tanpa judul kolom (v1.0.8):** bila header terpilih punya sel tanggal/angka yang jenisnya SAMA dengan isi
+  kolom di bawahnya (300 baris pertama) → tabel dianggap tanpa judul kolom: baris itu ikut sebagai data, kolom
+  dinamai `Kolom1..N`, PERINGATAN TEGAS "TIDAK punya baris judul kolom … --baris-header N". Dikecualikan:
+  judul berupa tahun 1900–2100 dan nomor urut 1, 2, 3 … (≤ 100) — lazim sebagai judul kolom; tanggal di
+  atas kolom angka (absensi melebar) juga judul. Paksa: `--tanpa-header` (= `--baris-header 0`); `--baris-header
+  N` ≥ 1 mematikan deteksi ini; angka negatif ditolak.
+- **Judul kelompok satu sel (v1.0.8):** ≥ 2 baris berisi tepat satu sel teks (kolom yang sama, teks unik, bukan
+  catatan) di tengah tabel ≥ 3 kolom (2 kolom bila judulnya khas PivotTable), masing-masing langsung diikuti
+  baris berangka ("SEMEN", "CAT", "BESI") → dikeluarkan + disebut, dan menjadi batas kelompok.
+- **PivotTable disalin sebagai nilai (v1.0.8):** judul "Row Labels"/"Label Baris"/"Sum of …"/"Jumlah dari …"
+  → info "hanya baris paling rinci yang boleh dijumlah".
+- **CSV e-Faktur lama (v1.0.8):** judul kolom pertama `FK` dan kolom pertama tiap baris FK/LT/OF → `GAGAL`
+  khusus (kolom tiap jenis rekaman berbeda); total faktur: `--paksa --filter "FK=FK"`.
 - Nama kolom kosong → `Kolom C`; nama ganda → `Nama (2)`.
 - **Baris ringkasan & catatan (v1.0.6 — PRINSIP: keluarkan otomatis HANYA bila tidak ambigu).**
   Versi 1.0.3–1.0.5 menebak dengan aturan label/angka dan ikut membuang data asli (kategori "Rata-rata",
@@ -138,6 +152,21 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
        yang terisi juga harus cocok);
      - (v1.0.7) **rincian**: ≥ 2 baris jarang berurutan tepat di bawah/atas baris ringkasan (kandidat atau baris
        dikeluarkan) yang jumlahnya = angka baris itu (Tunai/QRIS/Transfer di bawah "Total Penjualan").
+     - (v1.0.8) baris **terisi lengkap** (tanpa syarat jarang):
+       (i) sel teks berkata ringkasan (Total/Jumlah/Subtotal/Rekap…) di kolom yang ≥ 60% isinya angka/tanggal
+       ("Budi | Jumlah Hadir | 4 | 31" di kolom Tanggal);
+       (ii) label = judul kelompok satu sel sebelumnya, atau memuatnya sebagai kata utuh + kata ringkasan
+       ("SEMEN" … "Subtotal Semen"; "Jawa" … "Jawa Total");
+       (iii) angka kolom utama DAN ≥ 1 kolom angka lain (≥ separuh kolom angka yang terisi) = jumlah blok ≥ 2
+       baris tepat di atasnya sejak batas kelompok/kandidat sebelumnya, atau = jumlah SEMUA baris data di
+       atasnya (grand total). Pengaman kebetulan: kolom No/ID/Kode, nomor urut, dan kolom kembar (isi identik,
+       mis. "Harga Awal" = "Total Pembayaran") tidak dihitung ganda; harus ada ≥ 2 kolom cocok bernilai > 100
+       (qty 1 + 2 = 3 terlalu mudah kebetulan) ATAU kata ringkasan di sel teks yang UNIK di kolomnya
+       ("Subtotal Cabang Bekasi", bukan nama produk berulang "Jumlah Besar Hemat"); blok 2 baris di awal tabel
+       wajib cocok di semua kolom.
+     - (v1.0.8) **subtotal DI ATAS anak-anaknya** (pivot bentuk ringkas): hanya bila SELURUH tabel terbagi
+       habis menjadi [baris kelompok, ≥ 2 anak] dengan angka kelompok = jumlah anaknya (semua kolom angka
+       terisi), ≥ 2 kelompok (1 bila judul kolom khas PivotTable).
      "TANPA SEMUA baris itu" = total tanpa semua kandidat; per kandidat ditampilkan (maks. 5 di pesan, 20 di
      JSON). Pesan menyebut maks. 8 kandidat dan 30 nomor baris; daftar lengkap di `--json`.
      Kategori di kolom kedua dst. pada baris LENGKAP ("Pegawai 02 | Rata-rata", "KLM-002 | Total") tetap data.
@@ -172,7 +201,8 @@ Ditentukan dari isi (≥ 70% nilai terisi cocok):
 - **kode** — angka yang bukan untuk dijumlah: nol di depan (`0812…`), ≥ 11 digit (No HP/NIK), atau
   nama kolom diawali No/Nomor/ID/Kode/NIK/NPWP/SKU/HP/Telp/Rekening/Resi — atau (v1.0.5) diakhiri
   Code/Kode/ID/No/Nomor/Number/Ref ("Transaction Code", "Order ID", "Reference No.") — dengan isi
-  bilangan bulat.
+  bilangan bulat. (v1.0.8) Juga kolom periode bernama persis Tahun/Tahun Pajak/Masa/Masa Pajak/Bulan/
+  Periode/Triwulan/Kuartal/Semester/Year/Month berisi bilangan bulat (tidak dijumlah; urut 1, 2, …, 10).
 - **teks** — selain itu. Spasi dirapikan; beda huruf besar-kecil **dan spasi** (`4 A` = `4A` = `4a`)
   digabung ke penulisan yang paling sering muncul (dilaporkan: jumlah & contoh). `--filter` dan
   `banding --grup` memakai aturan yang sama.

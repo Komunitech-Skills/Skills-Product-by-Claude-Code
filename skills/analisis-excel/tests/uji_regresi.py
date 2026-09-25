@@ -1982,5 +1982,181 @@ class UjiPengamanV107(unittest.TestCase):
         self.assertIn("### Cek sekilas: baris data yang DIPAKAI", out)
 
 
+FIXTURE_V107 = SINI / "examples" / "buat_fixture_uji_v107.py"
+
+
+class UjiLengkapV108(unittest.TestCase):
+    """v1.0.8 — fixture penguji ke-8 (uji ulang v1.0.7). Target: tidak ada (c) pada V1, V3, V4, V5, V6, V13
+    (subtotal/total TERISI LENGKAP, pivot ringkas, tabel tanpa judul kolom); kontrol & ekspor rapi tetap (a)."""
+
+    total = UjiInvarianV104.total
+    cek_a = UjiInvarianV104.cek_a
+    a = UjiPrinsipV106.a
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.t = Path(cls._tmp.name)
+        cls.fx = cls.t / "u8"
+        r = subprocess.run([sys.executable, str(FIXTURE_V107), str(cls.fx)], capture_output=True, text=True)
+        if r.returncode != 0:
+            raise RuntimeError(r.stderr)
+        cls.k = json.loads((cls.fx / "kunci-v107.json").read_text(encoding="utf-8"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def tulis(self, nama, teks):
+        f = self.t / nama
+        f.write_text(teks, encoding="utf-8")
+        return f
+
+    # -- B24: subtotal/total terisi lengkap -> kandidat + total alternatif = kunci -------------------------
+    def test_V1_judul_kategori_dan_subtotal_lengkap(self):
+        k = self.k["V1"]
+        f = self.fx / "V1-stok-kategori-subtotal-lengkap.xlsx"
+        d = cek_waspada(self, f, "Nilai Stok", k["nilai"], k["baris"], [5, 10, 14], "tanpa")
+        cek_waspada(self, f, "Stok", k["stok"], k["baris"], [5, 10, 14], "tanpa")
+        kel = {x["baris"]: x["alasan"] for x in d["baris_dikeluarkan"]}
+        self.assertEqual(sorted(kel), [2, 6, 11, 15])                     # 3 judul kategori (B28) + TOTAL ekor
+        self.assertIn("judul kelompok 'SEMEN'", kel[2])
+        d = jalankan_json(self, "pivot", f, "--grup", "Satuan", "--nilai", "Nilai Stok", "--buang-baris", "5,10,14")
+        self.assertNotIn("(kosong)", [r[0] for r in d["tabel"][0]["baris"]])
+
+    def test_V4_jumlah_hadir_di_kolom_tanggal(self):
+        k = self.k["V4"]
+        d = cek_waspada(self, self.fx / "V4-absensi-jumlah-hadir.csv", "Jam Kerja", k["jam"], k["baris"],
+                        [7, 13, 19], "tanpa")
+        self.assertIn("Jumlah Hadir", d["kemungkinan_ringkasan"][0]["alasan"])
+
+    def test_V5_total_jurnal_lengkap_di_ekor(self):
+        k = self.k["V5"]
+        f = self.fx / "V5-jurnal-umum-total-lengkap.csv"
+        cek_waspada(self, f, "Debit", k["debit"], k["baris"], [12], "tanpa")
+        cek_waspada(self, f, "Kredit", k["kredit"], k["baris"], [12], "tanpa")
+
+    def test_V6_subtotal_cabang_dan_grand_total_lengkap(self):
+        k = self.k["V6"]
+        f = self.fx / "V6-cabang-subtotal-lengkap.csv"
+        cek_waspada(self, f, "Omzet", k["omzet"], k["baris"], [5, 9, 12, 13], "tanpa")
+        cek_waspada(self, f, "Qty", k["qty"], k["baris"], [5, 9, 12, 13], "tanpa")
+        d = jalankan_json(self, "pivot", f, "--grup", "Cabang", "--nilai", "Omzet", "--buang-baris", "5,9,12,13")
+        m = {r[0]: angka(r[2]) for r in d["tabel"][0]["baris"]}
+        self.assertEqual(m.pop("TOTAL"), D(k["omzet"]))
+        self.assertEqual(m, {c: D(v) for c, v in k["per_cabang"].items()})
+
+    def test_B24_subtotal_tanpa_kata_dua_kolom(self):
+        t = "Tanggal,Cabang,Produk,Qty,Omzet\n"
+        blok = {"Bekasi": [(5, 750000), (6, 540000), (3, 270000)], "Bogor": [(4, 600000), (2, 180000), (7, 630000)]}
+        calon, kunci = [], 0
+        n = 1
+        for c, it in blok.items():
+            for q, o in it:
+                t += "2026-09-0{},{},Kopi,{},{}\n".format(n % 9 + 1, c, q, o)
+                n += 1
+                kunci += o
+            t += "2026-09-30,{},,{},{}\n".format(c, sum(q for q, _o in it), sum(o for _q, o in it))
+            n += 1
+            calon.append(n)
+        t += "2026-09-04,Depok,Kopi,8,1200000\n"
+        kunci += 1200000
+        cek_waspada(self, self.tulis("b24.csv", t), "Omzet", kunci, None, calon, "tanpa")
+
+    def test_B24_kebetulan_tetap_data(self):
+        # baris lengkap yang kebetulan = jumlah 2 baris di atasnya: qty kecil (1 + 2 = 3) & kolom kembar tidak cukup
+        self.a(self.tulis("k1.csv", "Tanggal,Produk,Qty,Total\n2026-09-01,A,10,100000\n2026-09-02,B,20,200000\n"
+                                    "2026-09-03,C,30,300000\n2026-09-04,D,5,50000\n"), "Total", 650000, 4)
+        self.a(self.tulis("k2.csv", "No Pesanan,Produk,Jumlah,Harga,Bayar\nA1,Jumlah Hemat,1,89000,89000\n"
+                                    "A2,Jumlah Hemat,2,45000,45000\nA3,Jumlah Hemat,3,134000,134000\n"
+                                    "A4,Kopi,1,20000,20000\n"), "Bayar", 288000, 4)
+        # nama produk/kategori berkata Total/Jumlah di baris lengkap = data
+        self.a(self.tulis("k3.csv", "Tanggal,Produk,Kategori,Harga\n2026-09-01,Paket Total Care,Rata-rata,150000\n"
+                                    "2026-09-02,Saldo Kartu,Grand,50000\n2026-09-03,Kopi,Jumlah Besar,200000\n"),
+               "Harga", 400000, 3)
+
+    # -- B26: pivot bentuk ringkas ------------------------------------------------------------------------
+    def test_V3_pivot_ringkas_subtotal_di_atas(self):
+        k = self.k["V3"]
+        d = cek_waspada(self, self.fx / "V3-pivot-ringkas-en.csv", "Sum of Amount", k["total"], k["baris_daun"],
+                        [2, 5], "tanpa")
+        self.assertIn("PivotTable", " ".join(d["catatan"]))
+        f = self.tulis("piv2.csv", "Row Labels,Sum of Qty,Sum of Amount\nJawa,50,5000000\nKopi,30,3000000\n"
+                                   "Teh,20,2000000\nSumatra,25,2500000\nKopi,15,1500000\nTeh,10,1000000\n"
+                                   "Grand Total,75,7500000\n")
+        cek_waspada(self, f, "Sum of Amount", 7500000, 4, [2, 5], "tanpa")
+        cek_waspada(self, f, "Sum of Qty", 75, 4, [2, 5], "tanpa")
+
+    def test_B26_pivot_ringkas_total_di_bawah(self):
+        f = self.tulis("piv3.csv", "Row Labels,Sum of Amount\nJawa,\nKopi,3000000\nTeh,2000000\nJawa Total,5000000\n"
+                                   "Sumatra,\nKopi,1500000\nTeh,1000000\nSumatra Total,2500000\n"
+                                   "Grand Total,7500000\n")
+        d = cek_waspada(self, f, "Sum of Amount", 7500000, 4, [5, 9], "tanpa")
+        self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], [2, 6, 10])
+
+    def test_B26_tabel_biasa_tidak_dianggap_pivot(self):
+        # tabel 1 kolom angka yang kebetulan sebagian bisa dijumlah tetapi TIDAK terbagi habis -> (a)
+        self.a(self.tulis("bukan.csv", "Nama,Nominal\nAni,50000\nBudi,20000\nCici,30000\nDodi,10000\n"),
+               "Nominal", 110000, 4)
+
+    # -- B25: tabel tanpa judul kolom ---------------------------------------------------------------------
+    def test_V13_tanpa_header(self):
+        k = self.k["V13"]
+        f = self.fx / "V13-tanpa-header.csv"
+        t, n, d = self.total(f, "Kolom5")
+        self.assertEqual((t, d["jumlah_baris_data"], d["baris_header"]), (D(k["total"]), k["baris"], 0))
+        p = " ".join(d["peringatan"])
+        self.assertIn("PERINGATAN TEGAS — Tabel ini tampaknya TIDAK punya baris judul kolom", p)
+        self.assertIn("--baris-header 1", p)
+        # pengguna menyatakan baris 1 = judul -> perilaku lama, tanpa peringatan
+        t, n, d = self.total(f, "150000", "--baris-header", "1")
+        self.assertEqual(n, k["baris"] - 1)
+        self.assertNotIn("TIDAK punya baris judul", " ".join(d["peringatan"]))
+        for opsi in (["--tanpa-header"], ["--baris-header", "0"], ["--header-baris", "0"]):
+            t, n, d = self.total(f, "Kolom5", *opsi)
+            self.assertEqual(t, D(k["total"]))
+        code, _o, err = jalankan("ringkas", f, "--baris-header", "-1")
+        self.assertEqual(code, 2)
+        self.assertIn("--baris-header harus 0", err)
+        d = jalankan_json(self, "profil", f)
+        self.assertIn("TANPA baris judul kolom", " ".join(d["temuan"]))
+
+    def test_B25_tanpa_header_tanpa_tanggal_dan_judul_angka_sah(self):
+        f = self.tulis("nh.csv", "Bu Ani,Kue Lapis,2,150000\nPak Dedi,Bolu,1,85000\nBu Rina,Kue Lapis,3,225000\n")
+        t, n, d = self.total(f, "Kolom4")
+        self.assertEqual((t, n), (D(460000), 3))
+        # judul kolom berupa tahun atau nomor soal = judul sah, bukan data
+        self.a(self.tulis("th.csv", "Produk,2024,2025,2026\nBeras,1000,1200,1300\nGula,500,600,700\n"),
+               "2025", 1800, 2)
+        self.a(self.tulis("soal.csv", "Nama,1,2,3\nAyu,80,90,70\nBima,75,60,88\nCici,95,85,80\n"), "2", 235, 3)
+        # judul tanggal di atas kolom angka (absensi melebar) = judul sah
+        self.a(self.tulis("tgl.csv", "Nama,01/09/2026,02/09/2026\nAyu,8,7\nBima,6,8\n"), "01/09/2026", 14, 2)
+
+    # -- yang sudah (a) tetap (a); P3 -----------------------------------------------------------------------
+    def test_a_tetap_dan_p3(self):
+        k = self.k
+        self.a("V2-pivot-nilai-id.xlsx", "Sep", k["V2"]["sep"], k["V2"]["baris"], [6])
+        self.a("V9-gobiz-transaksi.csv", "Pendapatan Bersih", k["V9"]["bersih"], k["V9"]["baris"])
+        self.a("V10-grabmerchant-angka-inggris.csv", "Gross Sales (IDR)", k["V10"]["gross"], k["V10"]["baris"])
+        self.a("V11-eropa-koma-desimal.csv", "Betrag", k["V11"]["betrag"], k["V11"]["baris"])
+        self.a("V12-bulan-melebar.xlsx", "Des", k["V12"]["per_bulan"]["Des"], k["V12"]["baris"], [6])
+        self.a("K1-kontrol-biaya.csv", "Nominal", k["K1"]["total"], k["K1"]["baris"])
+        self.a("K2-kontrol-stok.xlsx", "Stok", k["K2"]["stok"], k["K2"]["baris"])
+        self.a("K3-kontrol-nilai-siswa.csv", "Nilai", k["K3"]["jumlah"], k["K3"]["baris"])
+        # V8: Masa Pajak / Tahun = periode (tidak dijumlah); PPN = kunci
+        d = self.a("V8-coretax-faktur-keluaran.csv", "PPN", k["V8"]["ppn"], k["V8"]["baris"])
+        d = jalankan_json(self, "ringkas", self.fx / "V8-coretax-faktur-keluaran.csv")
+        kol = [r[0] for r in d["tabel"][0]["baris"]]
+        self.assertNotIn("Masa Pajak", kol)
+        self.assertNotIn("Tahun", kol)
+        # V7: e-Faktur FK/LT/OF -> GAGAL dengan pesan khusus + jalan keluar yang benar
+        f = self.fx / "V7-efaktur-fk-of.csv"
+        code, _o, err = jalankan("ringkas", f)
+        self.assertEqual(code, 2)
+        self.assertIn("e-Faktur format lama", err)
+        t, _n, _d = self.total(f, "JUMLAH_DPP", "--paksa", "--filter", "FK=FK")
+        self.assertEqual(t, D(k["V7"]["dpp"]))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

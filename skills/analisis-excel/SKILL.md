@@ -65,7 +65,10 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    DIPAKAI**, tabel **baris DIKELUARKAN**, dan tabel **kemungkinan baris ringkasan**. Periksa dengan
    mata: adakah baris yang jelas bukan transaksi tetapi ikut dipakai — label Total/Subtotal/Jumlah/
    Rekap/Saldo, "<Nama> Total", rincian bayar (Tunai/QRIS/Transfer/Debit), judul bagian (mis.
-   "PENGELUARAN"), judul kolom kedua, "Halaman 1 dari 2"? Kalau ada dan script tidak menyebutnya,
+   "PENGELUARAN"), judul kolom kedua, "Halaman 1 dari 2", baris kelompok yang angkanya = jumlah
+   baris-baris di bawahnya (pivot yang disalin)? **Judul kolom** juga dicek (v1.0.8): nama kolom
+   berupa tanggal/angka (mis. "2026-09-01", "150000") berarti tabel tanpa judul kolom — script
+   memberi PERINGATAN TEGAS dan memakai Kolom1..N; tanyakan nama kolomnya ke pengguna. Kalau ada masalah dan script tidak menyebutnya,
    **jangan beri angka final**: tanyakan sekali ke pengguna, lalu ulangi dengan `--buang-baris N`
    atau `--sampai-baris N` / `--mulai-baris N`.
    **Satu sheet per bulan/kuartal/cabang** dan pertanyaannya mencakup beberapa sheet → pakai
@@ -92,7 +95,8 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    python3 <...>/analisis.py banding  "<file-lama>" --file-b "<file-baru>" --nilai "Total" [--grup "Produk"]
    python3 <...>/analisis.py bersihkan "<file>" --keluar "<file>-bersih.csv" [--excel-id] [--buang-duplikat]
    ```
-   Opsi umum semua subperintah: `--sheet` (+ `--acuan`, `--sertakan`), `--baris-header N`, `--filter "Kolom=A|B"`,
+   Opsi umum semua subperintah: `--sheet` (+ `--acuan`, `--sertakan`), `--baris-header N` (alias `--header-baris`),
+   `--tanpa-header` (tabel tanpa baris judul kolom; = `--baris-header 0`), `--filter "Kolom=A|B"`,
    `--buang-baris 5,9` / `--pertahankan-baris 12` (gabungan sheet: `"TW1:7"`; lihat langkah 3),
    `--mulai-baris N` / `--sampai-baris N` (hanya baca sebagian baris file, mis. satu tabel dari dua),
    `--dari 2026-07 --sampai 2026-09`, `--tipe "No HP=kode"`, `--urutan-tanggal mdy`,
@@ -111,7 +115,11 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
      dengan `--buang-baris N[,M]`; bila "itu data", pakai hasil awal (atau `--pertahankan-baris N`).
      Alasan kandidat (v1.0.7): label ringkasan di mana pun pada baris yang kolom lainnya kosong
      ("Jakarta Total" dari Excel *Data › Subtotal*), angka = jumlah blok baris tepat di atasnya, dan
-     **rincian** (baris Tunai/QRIS/Transfer yang jumlahnya = baris Total → bisa dobel). "TANPA SEMUA baris
+     **rincian** (baris Tunai/QRIS/Transfer yang jumlahnya = baris Total → bisa dobel). v1.0.8: juga baris
+     **terisi lengkap** — angka di ≥ 2 kolom = jumlah blok di atasnya ("Subtotal Cabang X", "Grand Total",
+     "TOTAL" jurnal), "Jumlah Hadir"/"Total" di kolom tanggal/angka, label = judul kelompok sebelumnya
+     ("SEMEN" … "Subtotal Semen", "Jawa" … "Jawa Total"), dan **subtotal di atas anak-anaknya** (pivot
+     bentuk ringkas: "Jawa 5.000.000" lalu "Kopi", "Teh"). "TANPA SEMUA baris
      itu" = total tanpa semua kandidat; per kandidat juga ditampilkan. Bila pengguna bilang hanya
      sebagian yang ringkasan, buang baris itu saja.
    - **`GAGAL: File ini berisi LEBIH DARI SATU TABEL`** → jelaskan ke pengguna; tanyakan tabel mana
@@ -192,6 +200,14 @@ Rincian lengkap: `references/format-didukung.md`.
   `sep=;`). `.xls` lama, `.ods`, file berkata sandi → pesan jelas agar disimpan ulang sebagai .xlsx/CSV.
 - **Header tidak di baris 1** (ada judul laporan di atas) → dideteksi otomatis dan diberitahukan;
   koreksi dengan `--baris-header N`.
+- **Tabel tanpa judul kolom (v1.0.8):** bila "judul kolom" terpilih berisi tanggal/angka yang jenisnya
+  sama dengan isi kolom di bawahnya → baris itu DIHITUNG sebagai data, kolom dinamai Kolom1..N, dan
+  PERINGATAN TEGAS. Tahun (2024, 2025) dan nomor urut (1, 2, 3) sebagai judul kolom tetap dianggap judul.
+  Bila baris 1 ternyata memang judul, ulangi dengan `--baris-header 1`.
+- **Judul kelompok satu sel** (mis. "SEMEN", "CAT" di atas barang-barangnya; ≥ 2 baris seperti itu) →
+  dilewati + disebut di "BARIS DIKELUARKAN" (v1.0.8). **CSV e-Faktur lama (FK/LT/OF)** → `GAGAL` khusus
+  + jalan keluar `--paksa --filter "FK=FK"`. Kolom Tahun/Masa Pajak/Bulan berisi bilangan bulat = periode
+  (tidak dijumlah).
 - **Cetakan multi-halaman (v1.0.7):** judul kolom yang berulang (≥ 50% nama kolom sama di posisi yang
   sama, tanpa angka), judul laporan yang berulang, dan "Halaman x dari y"/"Page x of y" dilewati + info.
   **Judul kolom BERBEDA di tengah** (tabel kedua) → `GAGAL` + nomor baris awal tabel kedua (lihat langkah 3).
@@ -215,7 +231,8 @@ Rincian lengkap: `references/format-didukung.md`.
   (c) **kepala**: judul laporan di atas header, "Saldo Awal" tepat di bawah header. Semua disebut dengan isinya.
   **Selain itu TIDAK dibuang** (kategori "Total"/"Rata-rata" di tengah, Subtotal di tengah, angka tanpa label
   yang = jumlah/rata-rata di atasnya, nilai polos tanpa rumus, "<Nama> Total", rincian Tunai/QRIS di bawah
-  Total) → tetap dihitung + PERINGATAN TEGAS + total alternatif; ikuti langkah 3. Pengaman umum ini
+  Total, subtotal/total terisi lengkap, subtotal pivot di atas kelompok) → tetap dihitung + PERINGATAN
+  TEGAS + total alternatif; ikuti langkah 3. Pengaman umum ini
   **mengurangi**, bukan menghapus, risiko tata letak baru — karena itu cek sekilas di langkah 1 wajib.
   Rincian: `references/format-didukung.md`.
 - **Aturan jumlah kolom CSV (v1.0.4–1.0.5):** setiap baris data wajib punya jumlah kolom yang **sama

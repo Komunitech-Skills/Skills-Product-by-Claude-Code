@@ -24,6 +24,7 @@ Contoh:
 Kode keluar: 0 = berhasil, 2 = masalah input (pesan jelas di stderr), 3 = kesalahan tak terduga.
 """
 import argparse
+import bisect
 import csv
 import io
 import json
@@ -38,7 +39,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.7"
+VERSI = "1.0.8"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -95,6 +96,9 @@ POLA_CATATAN = re.compile(r"^(dicetak|dibuat|diunduh|diekspor|dihasilkan|catatan
 
 POLA_KODE = re.compile(r"^(no|nomor|nomer|id|kode|code|nik|npwp|nip|nis|nim|sku|telp|telepon|tlp|hp|"
                        r"wa|whatsapp|phone|rekening|norek|resi|kodepos|kode pos|zip)\b", re.I)
+# v1.0.8: kolom periode berisi bilangan bulat (Tahun 2026, Masa Pajak 9, Bulan 1..12) = kode/periode, tidak dijumlah
+POLA_KOLOM_PERIODE = re.compile(r"^(tahun|tahun pajak|masa|masa pajak|bulan|periode|year|month|tax period|"
+                                r"triwulan|kuartal|quarter|semester)$", re.I)
 POLA_KODE_AKHIR = re.compile(r"\b(code|kode|id|no|nomor|number|ref)\.?$", re.I)   # "Transaction Code", "Reference No."
 POLA_UANG = re.compile(r"(\brp\b|\bidr\b|harga|total|omzet|omset|biaya|nilai (transaksi|penjualan|pembelian|kontrak|faktur|invoice)|nominal|pendapatan|"
                        r"penjualan|gaji|bayar|tagihan|amount|price|revenue|sales|cost|diskon|ongkir|"
@@ -123,6 +127,8 @@ def rapikan_teks(s):
     """Buang spasi berlebih (termasuk non-breaking space) di awal, akhir, dan tengah."""
     if s is None:
         return ""
+    if type(s) is str and s.isprintable() and "  " not in s and s[:1] != " " and s[-1:] != " ":
+        return s        # jalur cepat (hasil identik): tanpa spasi ganda/tepi, tab, baris baru, NBSP, zero-width
     s = str(s).replace("\xa0", " ").replace("\u202f", " ").replace("\u200b", "")
     return " ".join(s.split())
 
@@ -182,6 +188,12 @@ def dec_dari_xlsx(v):
     return _rapikan_desimal(d)
 
 
+_RE_RP_AWAL = re.compile(r"(rp\.?|idr)")
+_RE_RP_AKHIR = re.compile(r"(rp|idr)$")
+_RE_STRIP_AKHIR = re.compile(r"[.,]-$")
+_RE_INTI = re.compile(r"\d[\d.,]*\d|\d")
+
+
 def _inti_angka(teks):
     """Pisahkan tanda, 'Rp', persen, spasi. Kembalikan (inti_digit, negatif, persen) atau None."""
     s = str(teks).strip().lower()
@@ -201,14 +213,14 @@ def _inti_angka(teks):
         elif s.startswith("(") and s.endswith(")"):
             neg, s, ubah = not neg, s[1:-1], True
         else:
-            m = re.match(r"(rp\.?|idr)", s)
+            m = _RE_RP_AWAL.match(s)
             if m:
                 s, ubah = s[m.end():], True
-    s = re.sub(r"(rp|idr)$", "", s)
-    s = re.sub(r"[.,]-$", "", s)                    # 15.000,-
+    s = _RE_RP_AKHIR.sub("", s)
+    s = _RE_STRIP_AKHIR.sub("", s)                  # 15.000,-
     if s.endswith("-") and len(s) > 1:              # 5.000- (format akuntansi)
         neg, s = not neg, s[:-1]
-    if not re.fullmatch(r"\d[\d.,]*\d|\d", s):
+    if not _RE_INTI.fullmatch(s):
         return None
     return s, neg, persen
 
@@ -1330,7 +1342,92 @@ def _calon_agregat(a, min_jumlah, ekor):
     return c
 
 
-def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=False, buang=None, pertahankan=None):
+def _kolom_nomor_urut(M, j):
+    """Kolom angka berisi nomor urut (1, 2, 3, …): >= 80% pasangan berurutan naik tepat 1."""
+    v = [mr[j][1] for mr in M if mr[j][0] == "angka"]
+    if len(v) < 3:
+        return False
+    naik = sum(1 for a, b in zip(v, v[1:]) if b - a == 1)
+    return naik >= 0.8 * (len(v) - 1)
+
+
+def _judul_kelompok(M, mentah, keluar, label, lebar, pivot=False):
+    """v1.0.8 (B28): baris JUDUL KELOMPOK = tepat satu sel teks (mis. 'SEMEN', 'Jawa') di tengah tabel >= 3 kolom,
+    langsung diikuti baris berangka. Hanya bila ada >= 2 baris seperti itu di kolom yang sama dan teksnya unik
+    (bukan nilai yang juga muncul di baris data); tabel 2 kolom hanya bila judul kolomnya khas PivotTable.
+    Kembalikan {indeks: teks}."""
+    if lebar < (2 if pivot else 3):
+        return {}
+    calon = {}
+    n = len(M)
+    for i, mr in enumerate(M):
+        if i in keluar or i in label:
+            continue
+        isi = [(j, jn) for j, (jn, _x) in enumerate(mr) if jn is not None]
+        if len(isi) != 1 or isi[0][1] != "teks":
+            continue
+        t = rapikan_teks(mentah[i][isi[0][0]]).strip()
+        if not t or POLA_CATATAN_AWAL.match(t) or POLA_CATATAN.search(t) or len(t) > 40:
+            continue
+        k = i + 1
+        while k < n and k in keluar:
+            k += 1
+        if k >= n or not any(jn == "angka" for jn, _x in M[k]):
+            continue
+        calon[i] = (isi[0][0], t)
+    if len(calon) < 2 or len({j for j, _t in calon.values()}) != 1:
+        return {}
+    j0 = next(iter(calon.values()))[0]
+    teks_c = Counter(_norm_label(t) for _j, t in calon.values())
+    if any(v > 1 for v in teks_c.values()):
+        return {}
+    lain = {_norm_label(mentah[i][j0]) for i in range(n) if i not in calon and M[i][j0][0] == "teks"}
+    if any(t in lain for t in teks_c):
+        return {}
+    return {i: t for i, (_j, t) in calon.items()}
+
+
+POLA_PIVOT = re.compile(r"^(row labels|column labels|label baris|label kolom|sum of |count of |average of |"
+                        r"jumlah dari |hitungan dari |rata-rata dari |grand total$|total keseluruhan$)", re.I)
+
+
+def _subtotal_di_atas(urut, sudah, M, utama, kol_sum, pivot):
+    """v1.0.8 (B26): pivot bentuk ringkas — baris kelompok berisi subtotal DI ATAS anak-anaknya ('Jawa 5.000.000',
+    lalu 'Kopi 3.000.000', 'Teh 2.000.000'). Kandidat hanya bila SELURUH tabel terbagi habis menjadi kelompok
+    [baris kelompok, >= 2 anak] dengan angka kelompok = jumlah anak-anaknya (kolom utama & kolom angka lain yang
+    terisi), minimal 2 kelompok (atau 1 bila judul kolom khas PivotTable)."""
+    L = [i for i in urut if i not in sudah]
+    if utama is None or len(L) < 3:
+        return []
+    for i in L:
+        if M[i][utama][0] != "angka":
+            return []
+    grup, p = [], 0
+    while p < len(L):
+        v = {j: M[L[p]][j][1] for j in kol_sum if M[L[p]][j][0] == "angka"}
+        if not v.get(utama):
+            return []
+        s = {j: NOL for j in v}
+        ok = None
+        for q in range(p + 1, len(L)):
+            for j in v:
+                if M[L[q]][j][0] == "angka":
+                    s[j] += M[L[q]][j][1]
+            if q - p >= 2 and all(abs(s[j] - v[j]) <= _toleransi(v[j]) for j in v):
+                ok = q
+                break
+        if ok is None:
+            return []
+        grup.append((L[p], ok - p))
+        p = ok + 1
+    if len(grup) < 2 and not (pivot and grup):
+        return []
+    return [(i, "angka baris = jumlah {} baris TEPAT DI BAWAHNYA (subtotal kelompok di atas anak-anaknya, gaya "
+                "PivotTable ringkas) — bisa terhitung dobel".format(k)) for i, k in grup]
+
+
+def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=False, buang=None, pertahankan=None,
+                       nama=None, pivot=False):
     """v1.0.6 — PRINSIP: baris hanya DIKELUARKAN otomatis bila statusnya TIDAK AMBIGU; kasus lain yang MUNGKIN
     ringkasan tetap DIHITUNG dan dilaporkan sebagai kandidat (peringatan tegas + total alternatif).
 
@@ -1417,6 +1514,13 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
                 keluar[i] = "baris '{}' di atas tabel (bukan transaksi)".format(label.pop(i))
                 continue
             break
+    # v1.0.8 (B28): baris judul kelompok satu sel ('SEMEN', 'Jawa') = bukan data; dilewati + disebut
+    judul = {}
+    if not pertahankan_total:
+        for i, t in _judul_kelompok(M, mentah, keluar, label, lebar, pivot).items():
+            if i not in lindung:
+                keluar[i] = "judul kelompok '{}' (satu sel teks, bukan data)".format(t)
+                judul[i] = _norm_label(t)
     kandidat = []
     urut = [i for i in range(n) if i not in keluar]
     if not pertahankan_total:
@@ -1458,6 +1562,86 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
                         return None
             return "angka = jumlah {} baris tepat di atasnya".format(a.n)
 
+        # v1.0.8 (B24) — baris ringkasan TERISI LENGKAP (tidak jarang). Kolom penjumlah = kolom angka selain kode/
+        # nomor urut. Kolom "bertipe" = kolom yang >= 60% isinya angka/tanggal (teks ringkasan di situ = janggal).
+        kol_sum = [j for j in kol_angka
+                   if not (nama and j < len(nama) and (POLA_KODE.match(nama[j]) or POLA_KODE_AKHIR.search(nama[j])))
+                   and not _kolom_nomor_urut(M, j)]
+        kol_bertipe = set()
+        for j in range(lebar):
+            c = Counter(mr[j][0] for mr in M)
+            isi_j = c["angka"] + c["tanggal"] + c["teks"]
+            if isi_j and c["angka"] + c["tanggal"] >= 0.6 * isi_j and c["teks"]:
+                kol_bertipe.add(j)
+        judul_sebelum, judul_kata = {}, {}
+        # kolom angka KEMBAR (isi identik di semua baris, mis. 'Harga Awal' = 'Total Pembayaran') = satu bukti saja
+        wakil, sidik = {}, {}
+        for j in kol_sum:
+            wakil[j] = sidik.setdefault(tuple(mr[j][1] for mr in M), j)
+        hitung_teks = {}
+
+        def _kata_unik(row, mr):
+            for j, (jn, _v) in enumerate(mr):
+                if jn != "teks" or not POLA_KATA_RINGKASAN.search(rapikan_teks(row[j])):
+                    continue
+                if j not in hitung_teks:
+                    hitung_teks[j] = Counter(_norm_label(r[j]) for r, m in zip(mentah, M) if m[j][0] == "teks")
+                if hitung_teks[j][_norm_label(row[j])] == 1:
+                    return True
+            return False
+
+        def _cek_lengkap(i, row, mr, blok):  # blok = agregat sejak batas kelompok/kandidat terakhir
+            """(1) kata ringkasan ('Jumlah Hadir', 'Total') di sel teks pada kolom yang biasanya angka/tanggal;
+            (2) label kelompok: sel teks = judul kelompok sebelumnya ('SEMEN'), atau memuatnya + kata ringkasan
+            ('Subtotal Semen', 'Jawa Total'), pada baris berangka; (3) angka baris = jumlah blok >= 2 baris
+            berurutan tepat di atasnya (sejak batas kelompok/kandidat sebelumnya) — atau jumlah SEMUA baris data
+            di atasnya (grand total) — pada kolom utama DAN >= 1 kolom angka lain sekaligus (kebetulan x + y = z
+            pada dua kolom sekaligus sangat jarang)."""
+            ada_angka = any(jn == "angka" for jn, _x in mr)
+            if not ada_angka:
+                return None
+            for j in kol_bertipe:
+                if mr[j][0] == "teks" and POLA_KATA_RINGKASAN.search(rapikan_teks(row[j])):
+                    return "memuat '{}' di kolom yang biasanya angka/tanggal".format(rapikan_teks(row[j]).strip())
+            if judul_sebelum:
+                for j, (jn, _v) in enumerate(mr):
+                    if jn != "teks":
+                        continue
+                    t = _norm_label(row[j])
+                    if t in judul_sebelum:
+                        return "label '{}' = judul kelompok di baris {} (kemungkinan subtotal kelompok)".format(
+                            rapikan_teks(row[j]).strip(), judul_sebelum[t])
+                    if POLA_KATA_RINGKASAN.search(t):
+                        kata = re.findall(r"[^\W_]+", t)       # cari judul sebagai rangkaian kata utuh (n-gram)
+                        for a in range(len(kata)):
+                            for b in range(a + 1, min(len(kata), a + 6) + 1):
+                                jt = " ".join(kata[a:b])
+                                if jt in judul_kata:
+                                    return "label '{}' memuat judul kelompok '{}' (baris {}) + kata ringkasan".format(
+                                        rapikan_teks(row[j]).strip(), judul_kata[jt][0], judul_kata[jt][1])
+            if utama is None or utama not in kol_sum or mr[utama][0] != "angka" or not mr[utama][1]:
+                return None
+            cols = [j for j in kol_sum if mr[j][0] == "angka" and wakil[j] == j]
+            if len(cols) < 2:
+                return None
+            for jenis, agr in (("{} baris tepat di atasnya", blok), ("SEMUA {} baris data di atasnya", nonc)):
+                a = agr.get(utama)
+                if a is None or a.n < 2 or abs(mr[utama][1] - a.s) > _toleransi(a.s):
+                    continue
+                cocok = [j for j in cols if mr[j][1] and agr.get(j) is not None and agr[j].n >= 2
+                         and abs(mr[j][1] - agr[j].s) <= _toleransi(agr[j].s)]
+                # blok 2 baris di awal tabel (belum ada batas kelompok) = paling rawan kebetulan: semua kolom wajib cocok
+                lemah = a.n < 3 and not batas_calon
+                if len(cocok) < 2 or 2 * len(cocok) < len(cols) or (lemah and len(cocok) < len(cols)):
+                    continue
+                # bukti tambahan: kata ringkasan di sel teks yang UNIK di kolomnya ('Subtotal Cabang Bekasi', bukan
+                # nama produk berulang 'Jumlah Besar Hemat'), ATAU >= 2 kolom cocok yang bukan bilangan kecil
+                # (qty 1 + 2 = 3 terlalu mudah kebetulan)
+                besar = [j for j in cocok if abs(mr[j][1]) > 100 or mr[j][1] != mr[j][1].to_integral_value()]
+                if len(besar) >= 2 or _kata_unik(row, mr):
+                    return "angka di {} kolom = jumlah {}".format(len(cocok), jenis.format(a.n))
+            return None
+
         def tambah(dct, mr):
             for j in kol_angka:
                 if mr[j][0] == "angka":
@@ -1468,6 +1652,12 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
             if i > 0 and i - 1 in keluar:      # baris yang dikeluarkan (rumus/--buang-baris) = batas kelompok
                 seg = {}
                 batas_calon = True
+                k = i - 1
+                while k >= 0 and k in keluar:
+                    if k in judul:
+                        judul_sebelum.setdefault(judul[k], baris_no[k])
+                        judul_kata.setdefault(" ".join(re.findall(r"[^\W_]+", judul[k])), (judul[k], baris_no[k]))
+                    k -= 1
             if i in label:
                 alasan = "berlabel '{}' di {} tabel".format(label[i], "tengah" if pos else "atas")
             elif i not in lindung:
@@ -1495,6 +1685,8 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
                         alasan = "angka tanpa label = {} baris di atasnya".format(nama_cocok)
             if not alasan and i not in lindung and utama is not None:
                 alasan = _cek_umum(i, mentah[i], mr, seg)
+            if not alasan and i not in lindung:
+                alasan = _cek_lengkap(i, mentah[i], mr, seg)
             if alasan:
                 kandidat.append((i, alasan))
                 seg = {}
@@ -1507,6 +1699,8 @@ def _klasifikasi_baris(baris_no, mentah, lebar, rumus=None, pertahankan_total=Fa
             if pos >= t0 - 1:
                 potret.append({j: a.salin() for j, a in semua.items()})
         kandidat += _cari_rincian(urut, kandidat, keluar, M, utama, jarang, lindung, buang, baris_no)
+        if not lindung:
+            kandidat += _subtotal_di_atas(urut, {i for i, _a in kandidat}, M, utama, kol_sum, pivot)
         kandidat.sort()
     dikeluarkan = sorted(keluar.items())
     dipakai = urut
@@ -1537,7 +1731,11 @@ def _cari_rincian(urut, kandidat, keluar, M, utama, jarang, lindung, buang, bari
         if not v:
             continue
         # posisi awal di urutan baris dipakai: sesudah / sebelum c
-        p_sesudah = next((p for p, i in enumerate(urut) if i > c), None) if c in keluar else pos[c] + 1
+        if c in keluar:     # urut terurut naik: posisi baris dipakai pertama sesudah c (bisect, bukan pindai O(n))
+            p_sesudah = bisect.bisect_right(urut, c)
+            p_sesudah = p_sesudah if p_sesudah < len(urut) else None
+        else:
+            p_sesudah = pos[c] + 1
         p_sebelum = (p_sesudah - 1 if p_sesudah is not None else len(urut) - 1) if c in keluar else pos[c] - 1
         for arah, p in ((1, p_sesudah), (-1, p_sebelum)):
             if p is None:
@@ -1760,6 +1958,37 @@ def _cari_tabel_kedua(baris_no, mentah, lebar, set_header, n_header):
     return None
 
 
+def _header_tampak_data(grid, idx):
+    """v1.0.8 (B25): baris 'judul kolom' yang sebenarnya DATA — ada sel angka/tanggal yang jenisnya sama dengan isi
+    kolom di bawahnya. Angka yang lazim jadi judul kolom (tahun 1900–2100, nomor urut 1, 2, 3 …) diabaikan.
+    Kembalikan uraian bukti (teks) atau None."""
+    _r, header = grid[idx]
+    bawah = [row for _r2, row in grid[idx + 1: idx + 301]]
+    if len(bawah) < 2:
+        return None
+    lebar = max([len(header)] + [len(row) for row in bawah])
+    prof = _profil_kolom(bawah, lebar)
+    angka_h = []
+    bukti = []
+    for j, v in enumerate(header):
+        jn, x = _jenis_sel(v, prof[j]["gaya"])
+        if jn == "angka":
+            angka_h.append((j, x))
+        elif jn == "tanggal" and prof[j]["tipe"] == "tanggal":
+            bukti.append((j, v))
+    bulat = [x for _j, x in angka_h if x == x.to_integral_value()]
+    urut = len(bulat) >= 2 and len(bulat) == len(angka_h) and \
+        sorted(bulat) == [min(bulat) + k for k in range(len(bulat))] and max(bulat) <= 100
+    for j, x in angka_h:
+        if urut or prof[j]["tipe"] != "angka" or (x == x.to_integral_value() and 1900 <= x <= 2100):
+            continue
+        bukti.append((j, header[j]))
+    if not bukti:
+        return None
+    return ", ".join("'{}'".format(rapikan_teks(v) if isinstance(v, str) else
+                                   (fmt_tanggal(v) if isinstance(v, date) else fmt_angka(v))) for _j, v in bukti[:4])
+
+
 def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=None, pertahankan=None):
     """Pisahkan header, baris Total, dan baris data dari grid satu sheet/CSV."""
     catatan, peringatan = [], []
@@ -1772,17 +2001,39 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
     if not grid:
         raise InputError("Tidak ada data di {}.".format(
             "sheet '{}'".format(info["sheet"]) if info.get("sheet") else "file"))
+    if baris_header is not None and baris_header < 0:
+        raise InputError("--baris-header harus 0 (tanpa judul kolom) atau nomor baris >= 1.")
+    tanpa_header = baris_header == 0
     if baris_header:
         idx = next((i for i, (r, _row) in enumerate(grid) if r >= baris_header), None)
         if idx is None or grid[idx][0] != baris_header:
             raise InputError("Baris header {} kosong atau di luar data.".format(baris_header))
     else:
         idx = deteksi_header(grid)
-    r_header, header = grid[idx]
-    if r_header != 1:
+        if not tanpa_header:
+            bukti = _header_tampak_data(grid, idx)
+            if bukti:
+                tanpa_header = True
+                peringatan.append(
+                    "PERINGATAN TEGAS — Tabel ini tampaknya TIDAK punya baris judul kolom: baris {} berisi data "
+                    "({}), jenisnya sama dengan isi kolom di bawahnya. Baris {} DIHITUNG sebagai data dan kolom "
+                    "diberi nama Kolom1, Kolom2, …. Sebutkan ke pengguna nama kolom sebenarnya; bila baris {} "
+                    "ternyata memang judul kolom, ulangi dengan --baris-header {}.".format(
+                        grid[idx][0], bukti, grid[idx][0], grid[idx][0], grid[idx][0]))
+    if tanpa_header:
+        r_header = None
+        lebar0 = max(len(row) for _r, row in grid[idx:])
+        header = ["Kolom{}".format(j + 1) for j in range(lebar0)]
+        data_rows = grid[idx:]
+        if baris_header == 0:
+            catatan.append("Dibaca TANPA judul kolom (--tanpa-header): semua baris mulai baris {} = data; kolom "
+                           "dinamai Kolom1..Kolom{}.".format(grid[idx][0], lebar0))
+    else:
+        r_header, header = grid[idx]
+        data_rows = grid[idx + 1:]
+    if r_header is not None and r_header != 1:
         catatan.append("Judul kolom (header) terdeteksi di baris {} (baris di atasnya dianggap "
                        "judul/keterangan). Bila salah, pakai --baris-header N.".format(r_header))
-    data_rows = grid[idx + 1:]
     lebar = max([len(header)] + [len(row) for _r, row in data_rows]) if data_rows else len(header)
     nama = []
     for i in range(lebar):
@@ -1800,8 +2051,8 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
         if seen[n.casefold()] > 1:
             nama[i] = "{} ({})".format(n, seen[n.casefold()])
     kunci_header = [x.casefold() for x in nama]
-    nama_asli = {j: rapikan_teks(header[j]).casefold() for j in range(min(len(header), lebar))
-                 if isinstance(header[j], str) and not adalah_kosong(header[j])}
+    nama_asli = {} if tanpa_header else {j: rapikan_teks(header[j]).casefold() for j in range(min(len(header), lebar))
+                                         if isinstance(header[j], str) and not adalah_kosong(header[j])}
     set_header = set(nama_asli.values())
     # v1.0.7 (B23): baris judul di atas header yang berulang di tengah (mis. "MUTASI REKENING" tiap halaman)
     judul_atas = set()
@@ -1837,8 +2088,14 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
             raise InputError(pesan)
         peringatan.insert(0, "PERINGATAN TEGAS (--paksa): " + pesan)
     # v1.0.6: keluarkan otomatis HANYA yang tidak ambigu; yang mungkin ringkasan = kandidat (tetap dihitung)
+    pivot = any(POLA_PIVOT.match(rapikan_teks(v).strip()) for _r, row in grid[:idx + 1] for v in row
+                if isinstance(v, str))
+    if pivot:
+        catatan.append("Tabel ini tampaknya PivotTable yang disalin sebagai nilai (judul 'Row Labels'/'Label Baris'/"
+                       "'Sum of'/'Jumlah dari'). Hanya baris paling rinci yang boleh dijumlah; baris kelompok, "
+                       "'Total …' dan 'Grand Total' adalah ringkasan.")
     dipakai, keluar, calon, prof = _klasifikasi_baris(baris_no, mentah, lebar, info.get("rumus_agregat"),
-                                                      pertahankan_total, buang, pertahankan)
+                                                      pertahankan_total, buang, pertahankan, nama, pivot)
     dikeluarkan = [(baris_no[i], al, _isi_bernama(mentah[i], nama)) for i, al in keluar]
     kandidat = [(baris_no[i], al, _isi_bernama(mentah[i], nama)) for i, al in calon]
     semua_no = set(baris_no)
@@ -1854,6 +2111,15 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
     if tidak_ada:
         peringatan.append("Nomor baris {} di --buang-baris/--pertahankan-baris bukan baris data tabel ini (judul, "
                           "kosong, atau di luar tabel) — diabaikan.".format(", ".join(map(str, tidak_ada))))
+    if info.get("n_sel") is not None and not info.get("paksa") and not tanpa_header and \
+            rapikan_teks(header[0] if header else "").strip().upper() == "FK" and \
+            {rapikan_teks(row[0]).strip().upper() for _r, row in data_rows if row} <= {"FK", "LT", "OF"}:
+        raise InputError(
+            "File ini tampaknya CSV e-Faktur format lama (baris FK = faktur, LT = lawan transaksi, OF = objek/"
+            "barang faktur). Ketiga jenis baris punya kolom berbeda, jadi TIDAK bisa dijumlah sebagai satu tabel "
+            "(DPP faktur dan DPP barang akan terhitung dobel). Untuk total per faktur, hitung baris FK saja: "
+            "ulangi dengan --paksa --filter \"FK=FK\" (kolom JUMLAH_DPP / JUMLAH_PPN). Untuk rincian barang, "
+            "salin baris OF ke sheet terpisah dengan judul kolom OF.")
     if info.get("n_sel") is not None:
         _cek_jumlah_kolom(info, r_header, header, baris_no, data_rows, peringatan, prof, nama, catatan)
         lebih = []
@@ -1876,7 +2142,8 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
     if not mentah:
         raise InputError("Judul kolom ditemukan di baris {} tetapi tidak ada baris data di bawahnya."
                          .format(r_header))
-    return {"baris_header": r_header, "kolom": kolom, "baris_no": baris_no, "mentah": mentah,
+    return {"baris_header": r_header if r_header is not None else 0, "kolom": kolom, "baris_no": baris_no,
+            "mentah": mentah,
             "baris_total": baris_total, "header_ulang": header_ulang + halaman, "catatan": catatan,
             "peringatan": peringatan, "dikeluarkan": dikeluarkan, "kandidat": kandidat}
 
@@ -2020,7 +2287,8 @@ class Data:
         elif n_tgl >= 0.7 * n:
             tipe = "tanggal"
         elif n_angka >= 0.7 * n and (nol_depan + digit_panjang) < 0.3 * max(1, len(teks_str)) \
-                and not ((POLA_KODE.search(nama) or POLA_KODE_AKHIR.search(nama.strip())) and angka_bulat):
+                and not ((POLA_KODE.search(nama) or POLA_KODE_AKHIR.search(nama.strip())
+                          or POLA_KOLOM_PERIODE.match(rapikan_teks(nama).strip())) and angka_bulat):
             tipe = "angka"
         elif n_angka >= 0.7 * n:
             tipe = "kode"
@@ -2436,7 +2704,8 @@ def cmd_daftar(args):
                  buang=_baris_untuk_sheet(parse_daftar_baris(args.buang_baris, "--buang-baris"), None, False),
                  pertahankan=_baris_untuk_sheet(parse_daftar_baris(args.pertahankan_baris, "--pertahankan-baris"),
                                                 None, False))
-        h["temuan"].append("Judul kolom di baris {}: {}.".format(d.baris_header, ", ".join(d.kolom)))
+        h["temuan"].append("Judul kolom di baris {}: {}.".format(d.baris_header, ", ".join(d.kolom)) if d.baris_header
+                           else "Tanpa baris judul kolom; nama kolom: {}.".format(", ".join(d.kolom)))
         h["catatan"] += d.catatan
     except InputError as e:
         h["peringatan"].append(str(e))
@@ -2536,8 +2805,9 @@ def cmd_profil(args, data):
     # dan kandidat ringkasan, agar baris total/rekap/tabel lain yang terlewat deteksi terlihat sekilas.
     h["tabel"] += _tabel_cek_baris(data)
     t = h["temuan"]
-    t.append("{} baris data × {} kolom (judul kolom di baris {}).".format(
-        fmt_angka(Decimal(len(data.mentah))), len(data.kolom), data.baris_header))
+    t.append("{} baris data × {} kolom ({}).".format(
+        fmt_angka(Decimal(len(data.mentah))), len(data.kolom), "judul kolom di baris {}".format(data.baris_header)
+        if data.baris_header else "TANPA baris judul kolom — nama kolom Kolom1, Kolom2, … dibuat script"))
     tipe = Counter(k["tipe"] for k in data.kol.values())
     t.append("Tipe kolom: " + ", ".join("{} {}".format(v, k) for k, v in tipe.most_common()) + ".")
     if dup_baris:
@@ -2656,6 +2926,8 @@ def _kunci_urut_teks(keys):
     isi = [k for k in keys if k is not None]
     if isi and all(isinstance(k, str) and rapikan_teks(k).casefold().rstrip(".") in BULAN for k in isi):
         return lambda x: (x is None, BULAN[rapikan_teks(x).casefold().rstrip(".")] if x is not None else 0, "")
+    if isi and all(isinstance(k, str) and rapikan_teks(k).isdigit() for k in isi):   # kode/periode 1, 2, …, 10
+        return lambda x: (x is None, int(rapikan_teks(x)) if x is not None else 0, "")
     return lambda x: (x is None, 0, str(x).casefold() if not isinstance(x, (date, Decimal)) else x)
 
 
@@ -3635,7 +3907,10 @@ def buat_parser():
                       "yang paling banyak cocok dengan sheet lain)")
     umum.add_argument("--sertakan", help="Dengan --sheet semua: tetap gabungkan sheet ini walau tampak sheet "
                       "rekap/ringkasan (default dilewati agar total tidak dobel). Beberapa: \"Rekap,Total\"")
-    umum.add_argument("--baris-header", type=int, help="Nomor baris judul kolom (default: deteksi otomatis)")
+    umum.add_argument("--baris-header", "--header-baris", dest="baris_header", type=int,
+                      help="Nomor baris judul kolom (default: deteksi otomatis). 0 = tabel tanpa judul kolom")
+    umum.add_argument("--tanpa-header", action="store_const", const=0, dest="baris_header",
+                      help="Tabel TANPA baris judul kolom: baris pertama ikut dihitung, kolom dinamai Kolom1..N")
     umum.add_argument("--mulai-baris", type=int,
                       help="Abaikan baris sebelum nomor ini (mis. untuk tabel kedua di file yang sama)")
     umum.add_argument("--sampai-baris", type=int,
