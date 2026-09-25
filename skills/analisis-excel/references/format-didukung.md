@@ -166,7 +166,19 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
        wajib cocok di semua kolom.
      - (v1.0.8) **subtotal DI ATAS anak-anaknya** (pivot bentuk ringkas): hanya bila SELURUH tabel terbagi
        habis menjadi [baris kelompok, ≥ 2 anak] dengan angka kelompok = jumlah anaknya (semua kolom angka
-       terisi), ≥ 2 kelompok (1 bila judul kolom khas PivotTable).
+       terisi), ≥ 2 kelompok (1 bila judul kolom khas PivotTable). (v1.0.9, B29) kelompok beranak TUNGGAL
+       (baris kelompok = baris tepat di bawahnya) sah dan tidak membatalkan kelompok lain; syarat bukti: ≥ 1
+       kelompok beranak ≥ 2 (pivot) atau ≥ 2 (bukan pivot).
+  2b. **PENGAMAN SILANG Grand Total (v1.0.9, B31)** — lapis kedua untuk tata letak yang belum dikenal. Acuan:
+     baris berlabel Total/Grand Total/Jumlah/Subtotal di ekor yang dikeluarkan, baris rumus jumlah di ekor
+     (bukan AVERAGE/COUNT/MIN/MAX), dan kandidat berlabel jumlah yang menjadi baris terakhir. Per kolom angka
+     (bukan persen): cocok (= total hitungan) → catatan "COCOK dengan baris '…' di file"; = total TANPA
+     kandidat → kalimat "PENGAMAN SILANG: … = total TANPA baris kandidat" di peringatan kandidat; beda →
+     "PERINGATAN TEGAS — PENGAMAN SILANG: Total hitungan ≠ '…' di file" di atas output (+ "tepat 2×/3×",
+     total alternatif = angka di file). Tidak dipakai untuk peringatan beda: subtotal kelompok terakhir
+     ("Subtotal …"), kandidat (sudah diperingatkan), angka = rata-rata/min/maks kolom (kecuali rasio bulat).
+     Sebagian kolom cocok & sisanya beda tanpa rasio, atau pengguna sudah memakai `--buang-baris` →
+     "PERINGATAN" biasa. JSON: `cek_silang_total`.
      "TANPA SEMUA baris itu" = total tanpa semua kandidat; per kandidat ditampilkan (maks. 5 di pesan, 20 di
      JSON). Pesan menyebut maks. 8 kandidat dan 30 nomor baris; daftar lengkap di `--json`.
      Kategori di kolom kedua dst. pada baris LENGKAP ("Pegawai 02 | Rata-rata", "KLM-002 | Total") tetap data.

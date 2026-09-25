@@ -121,7 +121,17 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
      ("SEMEN" … "Subtotal Semen", "Jawa" … "Jawa Total"), dan **subtotal di atas anak-anaknya** (pivot
      bentuk ringkas: "Jawa 5.000.000" lalu "Kopi", "Teh"). "TANPA SEMUA baris
      itu" = total tanpa semua kandidat; per kandidat juga ditampilkan. Bila pengguna bilang hanya
-     sebagian yang ringkasan, buang baris itu saja.
+     sebagian yang ringkasan, buang baris itu saja. v1.0.9: kelompok pivot beranak **satu** ("Bogor 9"
+     lalu "Kopi 9") tidak lagi membatalkan deteksi kelompok lain.
+   - **PENGAMAN SILANG Grand Total (v1.0.9, lapis kedua untuk tata letak yang belum dikenal):** angka baris
+     Total/Grand Total/Jumlah di file (yang dikeluarkan, atau kandidat di baris terakhir) dibandingkan
+     dengan total hitungan script per kolom. **"PERINGATAN TEGAS — PENGAMAN SILANG: Total hitungan ≠ …"**
+     (mis. "tepat 2×" = subtotal/baris kelompok ikut terhitung) → **jangan beri angka final**; tampilkan
+     kedua angka (hitungan & Grand Total di file) dan tanya pengguna / cek tata letak dengan `profil`.
+     "PENGAMAN SILANG: … = total TANPA baris kandidat" → total TANPA kemungkinan besar benar (tetap
+     konfirmasi). Catatan "Pengaman silang: … COCOK dengan baris 'Total' di file" → keyakinan naik;
+     sebutkan ke pengguna ("cocok dengan Grand Total di file Anda"). "PERINGATAN — PENGAMAN SILANG"
+     (tanpa TEGAS) = sebagian kolom beda, mis. angka diketik sebagai teks yang diabaikan SUM Excel.
    - **`GAGAL: File ini berisi LEBIH DARI SATU TABEL`** → jelaskan ke pengguna; tanyakan tabel mana
      yang dimaksud, lalu ulangi dengan `--sampai-baris N` (tabel pertama) atau `--mulai-baris N`
      (tabel kedua) sesuai pesan. Jangan pakai `--paksa` untuk menggabungkan tabel berbeda.
@@ -207,7 +217,8 @@ Rincian lengkap: `references/format-didukung.md`.
 - **Judul kelompok satu sel** (mis. "SEMEN", "CAT" di atas barang-barangnya; ≥ 2 baris seperti itu) →
   dilewati + disebut di "BARIS DIKELUARKAN" (v1.0.8). **CSV e-Faktur lama (FK/LT/OF)** → `GAGAL` khusus
   + jalan keluar `--paksa --filter "FK=FK"`. Kolom Tahun/Masa Pajak/Bulan berisi bilangan bulat = periode
-  (tidak dijumlah).
+  (tidak dijumlah). Kolom **nomor urut** (judul No/No./Nomor/#, atau Kolom1 tabel tanpa judul berisi 1, 2,
+  3, … n) tidak dijumlah; judul kolom tahun tampil "2023", bukan "2.023" (v1.0.9).
 - **Cetakan multi-halaman (v1.0.7):** judul kolom yang berulang (≥ 50% nama kolom sama di posisi yang
   sama, tanpa angka), judul laporan yang berulang, dan "Halaman x dari y"/"Page x of y" dilewati + info.
   **Judul kolom BERBEDA di tengah** (tabel kedua) → `GAGAL` + nomor baris awal tabel kedua (lihat langkah 3).

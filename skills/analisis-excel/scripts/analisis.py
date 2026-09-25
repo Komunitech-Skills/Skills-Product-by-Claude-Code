@@ -39,7 +39,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.8"
+VERSI = "1.0.9"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -1194,6 +1194,13 @@ def _label_ringkasan(row):
     return None
 
 
+def _label_jumlah(label):
+    """v1.0.9: label ringkasan yang berarti JUMLAH (Total/Grand Total/Jumlah/Subtotal), bukan rata-rata/saldo."""
+    t = _norm_label(label)
+    return bool(re.search(r"(?<![\w-])(total|totals|jumlah|grand|grandtotal|subtotal|sub total|keseluruhan|ttl)(?![\w-])",
+                          t)) and not re.search(r"rata|saldo|average|avg|mean|mutasi|balance|min|maks|max", t)
+
+
 def _adalah_total(row):
     return _label_ringkasan(row) is not None
 
@@ -1413,14 +1420,17 @@ def _subtotal_di_atas(urut, sudah, M, utama, kol_sum, pivot):
             for j in v:
                 if M[L[q]][j][0] == "angka":
                     s[j] += M[L[q]][j][1]
-            if q - p >= 2 and all(abs(s[j] - v[j]) <= _toleransi(v[j]) for j in v):
+            # v1.0.9 (B29): kelompok beranak TUNGGAL (baris kelompok = baris tepat di bawahnya, mis. 'Bogor 9' lalu
+            # 'Kopi 9') sah sebagai satu kelompok — tidak lagi membatalkan deteksi kelompok lain di file itu.
+            if all(abs(s[j] - v[j]) <= _toleransi(v[j]) for j in v):
                 ok = q
                 break
         if ok is None:
             return []
         grup.append((L[p], ok - p))
         p = ok + 1
-    if len(grup) < 2 and not (pivot and grup):
+    # minimal kelompok beranak >= 2 (bukti kuat): 1 bila judul kolom khas PivotTable, 2 bila bukan
+    if sum(1 for _i, k in grup if k >= 2) < (1 if pivot else 2) or len(grup) < 2 and not pivot:
         return []
     return [(i, "angka baris = jumlah {} baris TEPAT DI BAWAHNYA (subtotal kelompok di atas anak-anaknya, gaya "
                 "PivotTable ringkas) — bisa terhitung dobel".format(k)) for i, k in grup]
@@ -2040,8 +2050,8 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
         v = header[i] if i < len(header) else None
         if isinstance(v, date):
             n = fmt_tanggal(v)
-        elif isinstance(v, Decimal):
-            n = fmt_angka(v)
+        elif isinstance(v, Decimal):   # v1.0.9 (B30): judul angka bulat (tahun 2023) tampil apa adanya
+            n = str(int(v)) if v == v.to_integral_value() else fmt_angka(v)
         else:
             n = rapikan_teks(v)
         nama.append(n or "Kolom {}".format(huruf_kolom(i)))
@@ -2101,12 +2111,34 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
     semua_no = set(baris_no)
     tidak_ada = sorted(r for r in (buang or set()) | (pertahankan or set()) if r not in semua_no)
     baris_total = [r for r, _a, _i in dikeluarkan]
+    # v1.0.9 (B31): baris Total/Grand Total/Jumlah di EKOR (dikeluarkan, atau kandidat yang jadi baris terakhir)
+    # disimpan sebagai ACUAN pengaman silang: angkanya dibandingkan dengan total hasil hitungan script.
+    acuan = []
+    akhir = max(dipakai) if dipakai else -1
+    for i, al in keluar:
+        if i <= akhir:
+            continue
+        m = re.match(r"baris ringkasan berlabel '(.*)' di bawah tabel$", al)
+        if m and _label_jumlah(m.group(1)):
+            acuan.append((baris_no[i], m.group(1), i, False))
+        elif al.startswith("rumus agregat") and not re.search(r"(AVERAGE|COUNT|MIN|MAX|MEDIAN)", al, re.I):
+            lb = next((rapikan_teks(v).strip() for v in mentah[i] if isinstance(v, str) and not adalah_kosong(v)
+                       and parse_angka(v) is None), None)
+            if lb is None or _label_jumlah(lb):
+                acuan.append((baris_no[i], lb or "baris rumus jumlah", i, False))
+    if dipakai and any(i == dipakai[-1] for i, _a in calon):
+        lb = next((rapikan_teks(v).strip() for v in mentah[dipakai[-1]] if isinstance(v, str)
+                   and not adalah_kosong(v) and parse_angka(v) is None and _label_jumlah(v)), None)
+        if lb:      # kandidat (sudah diperingatkan): hanya penguat, bukan dasar peringatan beda
+            acuan.append((baris_no[dipakai[-1]], lb, dipakai[-1], True))
+    baris_no_asli, mentah_asli = baris_no, mentah
     baris_no = [baris_no[i] for i in dipakai]
     mentah = [mentah[i] for i in dipakai]
     # buang kolom tanpa nama & tanpa isi
     pakai = [i for i in range(lebar)
              if not nama[i].startswith("Kolom ") or any(not adalah_kosong(row[i]) for row in mentah)]
     kolom = [nama[i] for i in pakai]
+    acuan = [(baris_no_asli[i], lb, [mentah_asli[i][j] for j in pakai], pn) for _r, lb, i, pn in acuan]
     mentah = [[row[i] for i in pakai] for row in mentah]
     if tidak_ada:
         peringatan.append("Nomor baris {} di --buang-baris/--pertahankan-baris bukan baris data tabel ini (judul, "
@@ -2145,7 +2177,7 @@ def _potong_tabel(grid, info, baris_header=None, pertahankan_total=False, buang=
     return {"baris_header": r_header if r_header is not None else 0, "kolom": kolom, "baris_no": baris_no,
             "mentah": mentah,
             "baris_total": baris_total, "header_ulang": header_ulang + halaman, "catatan": catatan,
-            "peringatan": peringatan, "dikeluarkan": dikeluarkan, "kandidat": kandidat}
+            "peringatan": peringatan, "dikeluarkan": dikeluarkan, "kandidat": kandidat, "acuan_total": acuan}
 
 
 class Data:
@@ -2159,6 +2191,7 @@ class Data:
         self.tampilkan_pribadi = tampilkan_pribadi
         self.disamarkan = []
         self._dup = None
+        self._buang_pengguna = bool(buang)
         p = potongan or _potong_tabel(grid, info, baris_header, pertahankan_total, buang, pertahankan)
         self.dikeluarkan = p.get("dikeluarkan", [])
         self.kandidat = p.get("kandidat", [])
@@ -2176,6 +2209,7 @@ class Data:
         for i, n in enumerate(self.kolom):
             self.kol[n] = self._ketik(n, [row[i] for row in self.mentah])
         self.total_alternatif = self._total_alternatif()
+        self.cek_silang = self._cek_silang(p.get("acuan_total", []))
         self._pesan_ringkasan()
         sens = [n for n, k in self.kol.items() if k["sensitif"]]
         if sens:
@@ -2205,6 +2239,90 @@ class Data:
                           "tanpa_per_baris": [{"baris": r, "total": dengan - v} for r, v in per[:MAKS_KANDIDAT_TAMPIL]]})
         hasil.sort(key=lambda a: not a["uang"])
         return hasil
+
+    def _cek_silang(self, acuan):
+        """v1.0.9 (B31) — PENGAMAN SILANG: angka baris Total/Grand Total di file (acuan) dibandingkan dengan total
+        hasil hitungan script per kolom angka. Status per kolom: 'cocok' (= total hitungan), 'cocok_tanpa'
+        (= total TANPA baris kandidat), 'beda' (+ rasio 2x/3x bila bulat). Kolom yang angkanya di baris itu =
+        rata-rata/min/maks (bukan jumlah) dilewati."""
+        alt = {a["kolom"]: a for a in self.total_alternatif}
+        hasil = []
+        # subtotal kelompok terakhir ('Subtotal', 'Subtotal Cabang C') boleh menguatkan (cocok) tetapi tidak dipakai
+        # untuk peringatan beda — angkanya memang hanya sebagian tabel.
+        for r, label, row, penguat in acuan:
+            kol = []
+            for j, n in enumerate(self.kolom):
+                k = self.kol[n]
+                if k["tipe"] != "angka" or k.get("persen") or j >= len(row) or adalah_kosong(row[j]):
+                    continue
+                v = row[j]
+                x = v if isinstance(v, Decimal) else (parse_angka(v, k["gaya"]) if isinstance(v, str) else None)
+                vals = [a for a in k["nilai"] if a is not None]
+                if not x or not vals:
+                    continue
+                total = sum(vals, NOL)
+                tanpa = alt[n]["tanpa"] if n in alt else None
+                rasio = None
+                if abs(x - total) <= _toleransi(x):
+                    st = "cocok"
+                elif tanpa is not None and abs(x - tanpa) <= _toleransi(x):
+                    st = "cocok_tanpa"
+                else:
+                    st = "beda"
+                    rasio = next((m for m in (2, 3) if abs(total - m * x) <= _toleransi(total)), None)
+                    # angka baris itu = rata-rata/min/maks kolom (bukan jumlah) -> bukan pembanding, kecuali rasio bulat
+                    if not rasio and any(abs(x - y) <= _toleransi(x)
+                                         for y in (total / len(vals), min(vals), max(vals))):
+                        continue
+                kol.append({"kolom": n, "di_file": x, "hitungan": total, "tanpa_kandidat": tanpa, "status": st,
+                            "rasio": rasio, "uang": k["uang"]})
+            if kol:
+                kol.sort(key=lambda c: not c["uang"])
+                hasil.append({"baris": r, "label": label, "kolom": kol,
+                              "subtotal": penguat or bool(re.search(r"\bsub[\s-]?total", label, re.I))})
+        return hasil
+
+    def _pesan_silang(self):
+        """(jenis, teks): jenis 'cocok' -> catatan; 'tanpa' -> ditambahkan ke peringatan kandidat; 'tegas'/'lunak'
+        -> peringatan tersendiri."""
+        if not self.cek_silang:
+            return None, None
+
+        def ringkas(c, kunci="di_file"):
+            return "kolom '{}' {}".format(c["kolom"], fmt_angka(c[kunci]))
+        for a in self.cek_silang:
+            if all(c["status"] == "cocok" for c in a["kolom"]):
+                return "cocok", ("Pengaman silang: total hasil hitungan COCOK dengan baris '{}' di file (baris {}): "
+                                 "{}.{} Keyakinan hasil lebih tinggi.".format(
+                                     a["label"], a["baris"], "; ".join(ringkas(c) for c in a["kolom"][:4]),
+                                     " Cocok DENGAN baris kandidat ikut dihitung — kemungkinan baris kandidat "
+                                     "memang data." if self.kandidat else ""))
+        for a in self.cek_silang:
+            if all(c["status"] in ("cocok", "cocok_tanpa") for c in a["kolom"]):
+                return "tanpa", ("PENGAMAN SILANG: baris '{}' di file (baris {}) = total TANPA baris kandidat ({}) — "
+                                 "kemungkinan besar total yang benar adalah total TANPA baris kandidat.".format(
+                                     a["label"], a["baris"], "; ".join(ringkas(c) for c in a["kolom"][:4])))
+        utama = [x for x in self.cek_silang if not x["subtotal"]]
+        if not utama:
+            return None, None
+        a = utama[-1]      # baris Total terakhir (Grand Total)
+        beda = [c for c in a["kolom"] if c["status"] == "beda"]
+        bagian = []
+        for c in beda[:4]:
+            t = "kolom '{}': total hitungan {} ≠ {} di file {}".format(
+                c["kolom"], fmt_angka(c["hitungan"]), a["label"], fmt_angka(c["di_file"]))
+            if c["rasio"]:
+                t += " (tepat {}× — kemungkinan subtotal/baris kelompok ikut terhitung)".format(c["rasio"])
+            bagian.append(t)
+        # pengguna sudah memutuskan baris mana yang dibuang (--buang-baris) -> peringatan biasa, kecuali rasio bulat
+        tegas = any(c["rasio"] for c in beda) or (all(c["status"] == "beda" for c in a["kolom"])
+                                                   and not self._buang_pengguna)
+        teks = ("{} — PENGAMAN SILANG: Total hitungan ≠ '{}' di file (baris {}): {} — kemungkinan ada subtotal ikut "
+                "terhitung / baris hilang / angka yang diketik sebagai teks (SUM Excel mengabaikannya) / angka Total di file salah. Total alternatif = angka '{}' di file ({}). "
+                "Tampilkan kedua angka ke pengguna dan periksa tata letak tabel sebelum menyimpulkan.").format(
+                    "PERINGATAN TEGAS" if tegas else "PERINGATAN", a["label"], a["baris"], "; ".join(bagian),
+                    a["label"], "; ".join(ringkas(c) for c in beda[:4]))
+        return ("tegas" if tegas else "lunak"), teks
 
     def _pesan_ringkasan(self):
         def daftar(no):
@@ -2242,6 +2360,13 @@ class Data:
                 "DIHITUNG di hasil ini. Bila benar ringkasan, ulangi dengan --buang-baris {}. Total alternatif: {}. "
                 "Tanyakan ke pengguna (atau tampilkan kedua total) sebelum menyimpulkan.".format(
                     n_k, isi, saran, "; ".join(alt) if alt else "(baris itu tidak berisi angka di kolom angka)"))
+        jenis, teks = self._pesan_silang()
+        if jenis == "cocok":
+            self.catatan.insert(0, teks)
+        elif jenis == "tanpa" and self.kandidat:
+            self.peringatan[0] += " " + teks
+        elif jenis:
+            self.peringatan.insert(1 if self.kandidat else 0, teks)
 
     # -- tipe kolom --------------------------------------------------------
     def _ketik(self, nama, mentah):
@@ -2294,6 +2419,17 @@ class Data:
             tipe = "kode"
         else:
             tipe = "teks"
+        # v1.0.9 (B32): kolom NOMOR URUT berisi 1, 2, 3, … n berurutan dengan judul '#'/'No urut'/'Urutan', atau
+        # kolom paling kiri tabel TANPA judul (Kolom1) = nomor baris, bukan besaran -> tidak dijumlah. (Judul
+        # No/No./Nomor sudah dianggap kode oleh POLA_KODE.)
+        if tipe == "angka" and not paksa and angka_bulat and n_angka == n >= 3:
+            urut_ok = all(a is not None and a == angka[0] + t for t, a in enumerate(angka)) and angka[0] in (0, 1)
+            if urut_ok and (rapikan_teks(nama).strip() in ("#", "No", "No.") or
+                            re.match(r"^(no\.?\s*urut|urutan|nomor urut)$", rapikan_teks(nama).strip(), re.I)
+                            or (self.kolom.index(nama) == 0 and len(self.kolom) >= 3
+                                and re.match(r"^Kolom ?(\d+|[A-Z]{1,3})$", nama))):
+                tipe = "kode"
+                k["nomor_urut"] = True
         k["tipe"] = tipe
         nilai = [None] * len(mentah)
         if tipe == "tanggal":
@@ -2669,7 +2805,7 @@ def hasil_dasar(data, perintah, judul):
             "catatan": list(data.catatan),
             "baris_dikeluarkan": [{"baris": r, "alasan": a, "isi": t} for r, a, t in data.dikeluarkan],
             "kemungkinan_ringkasan": [{"baris": r, "alasan": a, "isi": t} for r, a, t in data.kandidat],
-            "total_alternatif": data.total_alternatif}
+            "total_alternatif": data.total_alternatif, "cek_silang_total": data.cek_silang}
 
 
 def tabel(judul, kolom, jenis, baris):

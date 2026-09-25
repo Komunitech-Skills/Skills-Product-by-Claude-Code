@@ -12,6 +12,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 import zipfile
 from datetime import date
@@ -2156,6 +2157,164 @@ class UjiLengkapV108(unittest.TestCase):
         self.assertIn("e-Faktur format lama", err)
         t, _n, _d = self.total(f, "JUMLAH_DPP", "--paksa", "--filter", "FK=FK")
         self.assertEqual(t, D(k["V7"]["dpp"]))
+
+
+FIXTURE_V108 = SINI / "examples" / "buat_fixture_uji_v108.py"
+
+
+class UjiSilangV109(unittest.TestCase):
+    """v1.0.9 — fixture penguji ke-9 (uji ulang v1.0.8). B29 pivot ringkas dengan kelompok beranak tunggal,
+    B31 pengaman silang Grand Total, B30 judul kolom tahun, B32 kolom nomor urut; W* lain tetap (a)/(b)."""
+
+    total = UjiInvarianV104.total
+    cek_a = UjiInvarianV104.cek_a
+    a = UjiPrinsipV106.a
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.t = Path(cls._tmp.name)
+        cls.fx = cls.t / "u9"
+        r = subprocess.run([sys.executable, str(FIXTURE_V108), str(cls.fx)], capture_output=True, text=True)
+        if r.returncode != 0:
+            raise RuntimeError(r.stderr)
+        cls.k = json.loads((cls.fx / "kunci-v108.json").read_text(encoding="utf-8"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def tulis(self, nama, teks):
+        f = self.t / nama
+        f.write_text(teks, encoding="utf-8")
+        return f
+
+    # -- B29 + B31: W8 pivot ringkas, kelompok Bogor hanya 1 anak ------------------------------------------
+    def test_W8_pivot_ringkas_kelompok_beranak_tunggal(self):
+        k = self.k["W8"]
+        f = self.fx / "W8-pivot-ringkas-id.xlsx"
+        d = cek_waspada(self, f, "Jumlah dari Omzet", k["omzet"], None, [2, 5, 7], "tanpa")
+        cek_waspada(self, f, "Jumlah dari Qty", k["qty"], None, [2, 5, 7], "tanpa")
+        self.assertEqual([x["baris"] for x in d["baris_dikeluarkan"]], [11])
+        p0 = d["peringatan"][0]
+        self.assertIn("PENGAMAN SILANG: baris 'Total Keseluruhan' di file (baris 11) = total TANPA baris kandidat", p0)
+        self.assertIn("6.140.000", p0)
+        cs = d["cek_silang_total"][0]
+        self.assertEqual(cs["baris"], 11)
+        self.assertEqual({c["status"] for c in cs["kolom"]}, {"cocok_tanpa"})
+        # daun (produk) menurut --buang-baris = kunci; pivot tidak lagi mencampur
+        d2 = jalankan_json(self, "ringkas", f, "--kolom", "Jumlah dari Omzet", "--buang-baris", "2,5,7")
+        self.assertEqual(angka(d2["tabel"][0]["baris"][0][2]), D(k["omzet"]))
+        self.assertIn("COCOK dengan baris 'Total Keseluruhan'", " ".join(d2["catatan"]))
+
+    def test_B31_pengaman_silang_bila_deteksi_gagal(self):
+        # deteksi dimatikan pengguna (--pertahankan-baris) -> total 2x Grand Total -> PERINGATAN TEGAS paling atas
+        f = self.fx / "W8-pivot-ringkas-id.xlsx"
+        d = jalankan_json(self, "ringkas", f, "--pertahankan-baris", "2,5,7")
+        self.assertEqual(d["kemungkinan_ringkasan"], [])
+        p0 = d["peringatan"][0]
+        self.assertTrue(p0.startswith("PERINGATAN TEGAS — PENGAMAN SILANG: Total hitungan ≠ 'Total Keseluruhan'"), p0)
+        self.assertIn("total hitungan 12.280.000 ≠ Total Keseluruhan di file 6.140.000 (tepat 2×", p0)
+        self.assertIn("Total alternatif = angka 'Total Keseluruhan' di file", p0)
+        # tata letak baru yang tidak dikenali: kelompok semua beranak tunggal + Grand Total
+        f = self.tulis("tunggal.csv", "Row Labels,Sum of Omzet\nBekasi,500000\nKopi,500000\nBogor,300000\n"
+                                      "Teh,300000\nGrand Total,800000\n")
+        d = jalankan_json(self, "ringkas", f)
+        self.assertIn("PERINGATAN TEGAS — PENGAMAN SILANG", d["peringatan"][0])
+        self.assertIn("tepat 2×", d["peringatan"][0])
+        # 3x (subtotal kelompok + subtotal wilayah ikut terhitung)
+        f = self.tulis("tiga.csv", "Tanggal,Nama,Nominal\n01/09/2026,Ani,100\n02/09/2026,Budi,200\n,,300\n"
+                                   ",,300\nTotal,,300\n")
+        d = jalankan_json(self, "ringkas", f, "--pertahankan-baris", "4,5")
+        self.assertIn("tepat 3×", " ".join(d["peringatan"]))
+        # Total di file tidak sama (baris hilang) tanpa rasio bulat -> tetap TEGAS
+        f = self.tulis("beda.csv", "Tanggal,Nama,Nominal\n01/09/2026,Ani,100000\n02/09/2026,Budi,250000\n"
+                                   "03/09/2026,Cici,75000\nTotal,,500000\n")
+        d = jalankan_json(self, "ringkas", f)
+        self.assertIn("PERINGATAN TEGAS — PENGAMAN SILANG: Total hitungan ≠ 'Total' di file (baris 5): kolom "
+                      "'Nominal': total hitungan 425.000 ≠ Total di file 500.000", d["peringatan"][0])
+
+    def test_B31_cocok_menaikkan_keyakinan(self):
+        f = self.tulis("cocok.csv", "Tanggal,Nama,Qty,Nominal\n01/09/2026,Ani,2,100000\n02/09/2026,Budi,3,250000\n"
+                                    "03/09/2026,Cici,1,75000\nTotal,,6,425000\nRata-rata,,2,141667\n")
+        d = self.cek_a(f, "Nominal", 425000, 3)
+        c = " ".join(d["catatan"])
+        self.assertIn("Pengaman silang: total hasil hitungan COCOK dengan baris 'Total' di file (baris 5)", c)
+        self.assertNotIn("PENGAMAN SILANG", " ".join(d["peringatan"]))
+        # invoice: Subtotal cocok, Grand Total = + PPN -> tidak ada peringatan palsu
+        f = self.tulis("inv.csv", "Barang,Qty,Jumlah\nSemen,2,110000\nPasir,1,350000\nSubtotal,,460000\n"
+                                  "Grand Total,,510600\n")
+        d = jalankan_json(self, "ringkas", f)
+        self.assertNotIn("PENGAMAN SILANG", " ".join(d["peringatan"]))
+
+    def test_W6_W9_W10_subtotal_tetap_b_dengan_pengaman(self):
+        k = self.k
+        f = self.fx / "W6-subtotal-penuh-multikolom.csv"
+        for kol, kunci in (("Qty", k["W6"]["qty"]), ("Omzet", k["W6"]["omzet"]), ("Laba", k["W6"]["laba"])):
+            d = cek_waspada(self, f, kol, kunci, None, [5, 8, 12, 13], "tanpa")
+        alt = {x["kolom"]: x for x in d["total_alternatif"]}
+        self.assertEqual(angka(alt["HPP"]["tanpa"]), D(k["W6"]["hpp"]))
+        self.assertIn("PENGAMAN SILANG: baris 'Total Semua Wilayah' di file (baris 13) = total TANPA", d["peringatan"][0])
+        d = cek_waspada(self, self.fx / "W9-pivot-tabular.csv", "Sum of Omzet", k["W9"]["omzet"], None, [4, 6, 10],
+                        "tanpa")
+        self.assertIn("PENGAMAN SILANG: baris 'Grand Total' di file (baris 11) = total TANPA", d["peringatan"][0])
+        cek_waspada(self, self.fx / "W10-pivot-ringkas-tanpa-kata-kunci.csv", "Penjualan", k["W10"]["total"], None,
+                    [2, 6, 9], "tanpa")
+
+    # -- B30, B32 ----------------------------------------------------------------------------------------
+    def test_B30_judul_tahun_tanpa_pemisah_ribuan(self):
+        k = self.k["W5b"]
+        d = jalankan_json(self, "ringkas", self.fx / "W5b-header-tahun-numerik.xlsx")
+        self.assertEqual([r[0] for r in d["tabel"][0]["baris"]], ["2023", "2024", "2025"])
+        for th in ("2023", "2024", "2025"):
+            self.a("W5b-header-tahun-numerik.xlsx", th, k[th], k["baris"])
+
+    def test_B32_nomor_urut_tidak_dijumlah(self):
+        k = self.k["W2"]
+        d = jalankan_json(self, "ringkas", self.fx / "W2-tanpa-header-no-urut.csv")
+        kol = [r[0] for r in d["tabel"][0]["baris"]]
+        self.assertNotIn("Kolom1", kol)
+        t, _n, _d = self.total(self.fx / "W2-tanpa-header-no-urut.csv", "Kolom6")
+        self.assertEqual(t, D(k["total"]))
+        t, _n, _d = self.total(self.fx / "W2-tanpa-header-no-urut.csv", "Kolom4")
+        self.assertEqual(t, D(k["qty"]))
+        f = self.tulis("pagar.csv", "#,Barang,Qty,Nominal\n1,Semen,2,110000\n2,Pasir,1,350000\n3,Besi,4,312000\n")
+        d = jalankan_json(self, "ringkas", f)
+        self.assertEqual([r[0] for r in d["tabel"][0]["baris"]], ["Qty", "Nominal"])
+        # satu kolom 1,2,3 berjudul biasa tetap dijumlah
+        self.cek_a(self.tulis("satu.csv", "Nominal\n1\n2\n3\n"), "Nominal", 6, 3)
+
+    # -- W lain: (a) --------------------------------------------------------------------------------------
+    def test_W_lain_tetap_a(self):
+        k = self.k
+        for nama, kol, kunci, baris in (
+                ("W1-tanpa-header-teks-dulu.csv", "Kolom6", k["W1"]["total"], k["W1"]["baris"]),
+                ("W3-tanpa-header-tanggal.xlsx", "Kolom3", k["W3"]["total"], k["W3"]["baris"])):
+            t, n, d = self.total(self.fx / nama, kol)
+            self.assertEqual((t, d["jumlah_baris_data"]), (D(kunci), baris), nama)
+            self.assertIn("TIDAK punya baris judul kolom", d["peringatan"][0])
+        self.a("W4-header-tahun.csv", "2024", k["W4"]["2024"], k["W4"]["baris"])
+        self.a("W4-header-tahun.csv", "2025", k["W4"]["2025"], k["W4"]["baris"])
+        for b in ("1", "7", "12"):
+            self.a("W5-header-nomor-bulan.xlsx", b, k["W5"]["per_bulan"][b], k["W5"]["baris"])
+        self.a("W7-kebetulan-x-plus-y.csv", "Total", k["W7"]["total"], k["W7"]["baris"])
+        self.a("W7-kebetulan-x-plus-y.csv", "Qty", k["W7"]["qty"], k["W7"]["baris"])
+        self.a("W7b-kebetulan-jumlah-blok.xlsx", "Nominal", k["W7b"]["nominal"], k["W7b"]["baris"])
+        self.a("W11-kontrol-uang-saku.csv", "Jumlah", k["W11"]["total"], k["W11"]["baris"])
+        self.a("W12-kontrol-stok-atk.xlsx", "Stok", k["W12"]["stok"], k["W12"]["baris"])
+        self.a("W13-kontrol-nilai.csv", "Nilai Akhir", k["W13"]["total"], k["W13"]["baris"])
+
+    def test_kinerja_50rb_baris(self):
+        f = self.t / "besar.csv"
+        with f.open("w", encoding="utf-8") as h:
+            h.write("Tanggal,Nota,Kategori,Qty,Nominal\n")
+            for i in range(50000):
+                h.write("{:02d}/09/2026,NT-{:05d},K{},{},{}\n".format(i % 28 + 1, i, i % 7, i % 9 + 1, 1000 * (i % 97 + 1)))
+            h.write("Total,,,,{}\n".format(sum(1000 * (i % 97 + 1) for i in range(50000))))
+        t0 = time.perf_counter()
+        d = self.cek_a(f, "Nominal", sum(1000 * (i % 97 + 1) for i in range(50000)), 50000)
+        self.assertLess(time.perf_counter() - t0, 10)
+        self.assertIn("COCOK", " ".join(d["catatan"]))
 
 
 if __name__ == "__main__":
