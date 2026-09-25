@@ -115,3 +115,33 @@ Alasan:
 - (+) Angka 100% cocok di 15 periode, dan tidak ada regresi.
 - (−) S5 belum sepenuhnya: komentar setelah titik dan "sejuta" masih bisa masuk draf (N1). Risikonya rendah karena draf selalu diperiksa manusia.
 - (−) Sisa cacat rendah pada impor (N2, N3) dan kosmetik. Tidak ada yang menghalangi rilis. Saran: perbaiki N1–N3 di v1.0.2.
+
+---
+
+## Uji ulang v1.0.2 (Akun B, 2026-09-25)
+- **Penguji:** agent penguji independen lintas akun (Akun B), bukan pembuat/perevisi. Simulasi Claude Code.
+  Dijalankan dari skill hasil salinan di scratchpad terpisah, `HOME`/`KOMUNITECH_DATA` palsu, data fiktif.
+  Detail & reproduksi: `07-uji-ulang-v1.0.2.md`.
+- **Uji otomatis:** `tests/uji_regresi.py` 57 tes OK · `scripts/validate.py --skill crm-wa` lolos (1 skill
+  valid, 68 baris katalog sesuai).
+
+### Status klaim perbaikan v1.0.2
+| Klaim | Status |
+|---|---|
+| N1 titik/koma desimal & nominal kata di draf | **Tuntas**: 5 kasus baru (titik ribuan bertingkat, koma desimal 2 digit, "2.5jt", koma-komentar) benar; satuan non-uang ("2,5 kg") sengaja tidak terbuang |
+| N2 kutip CSV tak tertutup → peringatan | **Tuntas**: kutip di baris pertama & di tengah file, keduanya memicu peringatan rentang baris yang benar sebelum `--ya`; tidak ada baris hilang diam-diam |
+| N3 impor tanpa `tgl masuk` disebut di pratinjau | **Tuntas**: tanpa kolom sama sekali & kolom sebagian kosong, keduanya dihitung & disebut benar (1 dari 2 pada kasus sebagian) |
+| K2 (sebagian) pesan "jadwal lama diganti" pada kontak baru | **Tuntas untuk kasus ini**: kontak baru langsung tahap deal (dengan/tanpa `--nilai`) tidak lagi menyebut "diganti"; kontak lama pindah tahap tetap menyebutnya (tanpa regresi) |
+
+### Regresi
+Tidak ada. Angka pipeline (jumlah & nilai per tahap) dihitung ulang independen dari kontak yang dibuat selama
+sesi uji dan cocok 100% dengan `rekap --json` (5 "baru", 3 "deal" dengan total nilai Rp 5.000.000).
+
+### Cacat tersisa (sudah diakui pembuat, tidak menghalangi rilis)
+K2 sisa (deal berjadwal besok ikut blok BESOK), K1 (inisial ganda, format telepon rumah), R6 (jalur
+broadcast-wa belum mulus).
+
+### Skor kualitas: **9 / 10 — LULUS**
+Perbaikan N1–N3 dan K2-sebagian di v1.0.2 diverifikasi tuntas dengan kasus uji baru (bukan sekadar mengulang
+test milik pembuat), tanpa regresi pada 57 tes otomatis maupun angka pipeline. Sisa cacat kosmetik/rendah yang
+sudah diketahui tidak menghalangi rilis.
