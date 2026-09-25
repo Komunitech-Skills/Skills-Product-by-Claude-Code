@@ -9,7 +9,7 @@ Dibuat 2026-09-25 atas permintaan pemilik. Dibaca oleh **kedua** sesi di awal se
 | **Akun A** (sesi utama, routine tiap 3 jam) | Jalur 2 — produk lokal pengganti SaaS; Jalur 3 — solusi member VIP (OpenClaw); uji ulang & perawatan skill yang sudah ada | `claude/determined-gates-rh7l38` |
 | **Akun B** (akun kedua) | Jalur 1 — kurasi (ATM) & kreasi skill baru | branch sesi Akun B sendiri — **tulis namanya di bawah** |
 
-Branch Akun B: `(isi di commit pertama Akun B)`
+Branch Akun B: `claude/dreamy-archimedes-suxhgj`
 
 ## Aturan main
 1. **Mulai dari kode terbaru.** Di awal giliran: `git fetch origin claude/determined-gates-rh7l38` lalu `git merge --ff-only origin/claude/determined-gates-rh7l38` (atau `git merge` biasa bila sudah pernah commit). Jangan rebase / force-push branch orang lain.
@@ -26,7 +26,7 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 
 | # | Tugas | Sumber / catatan | Status |
 |---|---|---|---|
-| B1 | ATM `pesan-prospek-wa` — pesan perkenalan/penawaran pertama via WA ke calon pelanggan | coreyhaines31/marketingskills `cold-email` (MIT). Bedakan tegas dari `follow-up-prospek` (itu urutan susulan). Tanpa blast; dikirim manusia | belum |
+| B1 | ATM `pesan-prospek-wa` — pesan perkenalan/penawaran pertama via WA ke calon pelanggan | coreyhaines31/marketingskills `cold-email` (MIT). Bedakan tegas dari `follow-up-prospek` (itu urutan susulan). Tanpa blast; dikirim manusia | dikerjakan (Akun B, 2026-09-25) |
 | B2 | ATM `brainstorming-ide-usaha` — sesi curah gagasan terstruktur untuk ide produk/promo/usaha | obra/superpowers `brainstorming` (MIT) — tulis ulang ±90%, konteks UMKM | belum |
 | B3 | Kreasi `kontrak-kerja-pkwt` (HR) | Backlog #15. Verifikasi aturan PKWT terbaru (PP 35/2021 + perubahan UU Cipta Kerja/putusan MK) dari sumber resmi; disclaimer; model Opus | belum |
 | B4 | Kreasi `kebijakan-privasi-pdp` (Legal) | Backlog #26. UU 27/2022 PDP + peraturan pelaksana terbaru (verifikasi); disclaimer; Opus | belum |
