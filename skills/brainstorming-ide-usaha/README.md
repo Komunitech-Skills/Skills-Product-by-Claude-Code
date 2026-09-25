@@ -55,6 +55,14 @@ Tidak. SCAMPER, skor tertimbang, titik impas — semuanya dijelaskan dengan baha
 
 ## Riwayat versi
 
+- **1.0.2** (2026-09-25) — Perbaikan kecil hasil uji ulang independen Tahap 6 (lihat `examples/06-uji-ulang-v1.0.1.md`), 60 → 72 tes:
+  - **Header kolom kembar** (mis. `nama_ide,a,a`) kini **ditolak** dengan galat jelas — sebelumnya diterima diam-diam dan nilai kolom terakhir menimpa yang lain sehingga skor salah tanpa peringatan.
+  - **Nama kolom dicocokkan tanpa peduli huruf besar/kecil, spasi, atau garis bawah** (termasuk kolom `nama_ide` sendiri, mis. header `Nama_Ide`/`NAMA IDE` kini diterima). Kalau kolom kriteria memang tidak cocok dengan bobot default resmi sama sekali, `scripts/skor_ide.py` kini mencetak **PERINGATAN eksplisit di bagian ATAS keluaran** — sebelumnya diam-diam jatuh ke bobot sama rata dan sumbernya mudah terlewat di baris terakhir.
+  - **Nomor baris di pesan galat kini mengikuti baris fisik file** (sebelumnya bergeser kalau ada baris kosong di tengah file).
+  - Kolom tanpa nama di ujung akibat koma ekor gaya Excel kini dibuang otomatis kalau kosong (atau ditolak dengan pesan jelas kalau ternyata berisi data) — sebelumnya memunculkan pesan membingungkan `['']`.
+  - `--modal -5jt`/`--margin -1000` (angka negatif lewat CLI) kini menampilkan pesan Bahasa Indonesia yang jelas, bukan pesan argparse bawaan Bahasa Inggris.
+  - `SKILL.md` Jalur B.5: aturan gerbang persetujuan singkat di mode cepat kini disebut eksplisit (sebelumnya hanya ada di Jalur C.2).
+  - `references/musim-dan-momentum.md`: label "Harbolnas nasional" kini hanya untuk 12.12 sesuai fakta; 9.9/10.10/11.11 dilabel "kampanye diskon marketplace".
 - **1.0.1** (2026-09-25) — Revisi hasil uji independen Tahap 6 (skor 7/10, lihat `examples/HASIL-UJI.md`):
   - **Bug TINGGI diperbaiki:** `scripts/skor_ide.py` sekarang menolak baris CSV yang jumlah kolomnya tidak sama dengan header (mis. koma desimal tanpa kutip seperti `Ide Y,3,5,4`) dengan pesan jelas — sebelumnya kolom bisa bergeser diam-diam dan menghasilkan skor salah tanpa peringatan.
   - CSV gaya Excel Indonesia kini didukung: file ber-BOM ("CSV UTF-8"), pemisah `;` terdeteksi otomatis, dan nilai desimal berkutip seperti `"3,5"` diterima sebagai 3,5.

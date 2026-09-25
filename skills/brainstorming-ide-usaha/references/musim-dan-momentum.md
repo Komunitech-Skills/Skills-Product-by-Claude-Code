@@ -18,7 +18,7 @@ Dipakai saat menggali Input (SKILL.md) dan saat memunculkan ide (Langkah B.3/C.4
 |---|---|---|
 | **Gajian / tanggal muda** | Tanggal 1 dan/atau 25 tiap bulan (hari gajian umum) hingga beberapa hari sesudahnya | Produk non-esensial, cicilan/booking, paket agak lebih mahal |
 | **Tanggal tua** | Tanggal 20–24 (hari-hari terakhir sebelum gajian, tidak tumpang tindih dengan tanggal muda) | Promo hemat, paket kecil/eceran, produk kebutuhan pokok |
-| **Harbolnas / tanggal kembar** | 9.9, 10.10, 11.11, 12.12 (Harbolnas nasional, biasanya diskon terbesar) | Diskon besar, bundling, ide produk "edisi kembar tanggal" |
+| **Tanggal kembar / Harbolnas** | 9.9, 10.10, 11.11 (kampanye diskon marketplace); 12.12 = **Harbolnas nasional** resmi, biasanya diskon terbesar | Diskon besar, bundling, ide produk "edisi kembar tanggal" |
 | **Ramadan–Lebaran** | Bulan puasa s/d H+7 Lebaran (tanggal berubah tiap tahun, ikuti kalender Hijriah) | Takjil, parsel/hampers, baju baru, mudik (jasa titip, oleh-oleh), THR (daya beli naik menjelang Lebaran) |
 | **Tahun ajaran baru** | Pertengahan Juni–Juli | Perlengkapan sekolah, seragam, les/bimbel, jasa antar-jemput anak |
 | **Musim hujan/kemarau** | Menyesuaikan wilayah | Produk terkait cuaca (jas hujan, payung, minuman hangat/dingin), jasa yang terdampak (laundry lebih lama kering saat hujan → ide layanan kilat) |

@@ -79,6 +79,12 @@ def _baca_file_teks(path, label):
     )
 
 
+def _normalisasi_nama_kolom(nama):
+    """Untuk pencocokan nama kolom yang tidak peduli huruf besar/kecil, spasi,
+    atau garis bawah (mis. 'Nama_Ide', 'NAMA IDE', 'nama_ide' dianggap sama)."""
+    return re.sub(r"[\s_]+", "", nama.strip().casefold())
+
+
 def _deteksi_pemisah(baris_pertama):
     try:
         dialect = csv.Sniffer().sniff(baris_pertama, delimiters=",;")
@@ -95,22 +101,73 @@ def _parse_csv_ide(path):
         raise DataTidakValid("file ide kosong")
     pemisah = _deteksi_pemisah(baris_teks[0])
     baris_mentah = list(csv.reader(baris_teks, delimiter=pemisah))
-    baris_mentah = [b for b in baris_mentah if b]  # buang baris benar-benar kosong
-    if not baris_mentah:
+    # Simpan nomor baris FISIK (posisi asli di file) sebelum baris kosong
+    # dibuang, supaya pesan error selalu menunjuk baris yang benar di file
+    # aslinya (bukan nomor setelah baris kosong ikut dihitung/dibuang).
+    baris_bernomor = [[i + 1, b] for i, b in enumerate(baris_mentah) if b]
+    if not baris_bernomor:
         raise DataTidakValid("file ide kosong")
 
-    header = [h.strip() for h in baris_mentah[0]]
+    no_header, header_mentah = baris_bernomor[0]
+    header = [h.strip() for h in header_mentah]
     if not header or header == [""]:
         raise DataTidakValid("file ide tidak punya baris header")
-    if "nama_ide" not in header:
+
+    data_rows = baris_bernomor[1:]
+    if not data_rows:
+        raise DataTidakValid("file ide kosong atau tidak punya baris data")
+
+    # Kolom tanpa nama di ujung (koma ekor gaya Excel, mis. header
+    # "nama_ide,a,b,") dibuang otomatis kalau memang kosong di semua baris
+    # data. Kalau ada isinya, itu kesalahan nyata dan dilaporkan jelas.
+    while header and header[-1] == "":
+        posisi = len(header)
+        isi_ada = any(
+            len(baris) >= posisi and baris[posisi - 1].strip()
+            for _, baris in data_rows
+        )
+        if isi_ada:
+            raise DataTidakValid(
+                f"baris {no_header}: kolom ke-{posisi} tidak punya nama (header kosong), tapi "
+                "sebagian baris data mengisi nilai di kolom itu. Beri nama kolom, atau hapus "
+                "isinya kalau memang tidak dipakai."
+            )
+        header = header[:-1]
+        for baris_info in data_rows:
+            if len(baris_info[1]) >= posisi:
+                baris_info[1] = baris_info[1][: posisi - 1] + baris_info[1][posisi:]
+
+    if not header or header == [""]:
+        raise DataTidakValid("file ide tidak punya baris header")
+
+    # Cocokkan nama kolom tanpa peduli huruf besar/kecil, spasi, atau garis
+    # bawah. Header dengan dua kolom yang jadi sama setelah dinormalisasi
+    # (mis. "nama_ide,a,a") ditolak, karena sebelumnya nilai kolom terakhir
+    # diam-diam menimpa nilai kolom pertama tanpa peringatan.
+    ternormalisasi = [_normalisasi_nama_kolom(h) for h in header]
+    kelompok = {}
+    for pos, (asli, norm) in enumerate(zip(header, ternormalisasi), start=1):
+        kelompok.setdefault(norm, []).append((pos, asli))
+    ganda = {norm: v for norm, v in kelompok.items() if len(v) > 1}
+    if ganda:
+        detail = "; ".join(
+            ", ".join(f"{asli!r} (kolom ke-{pos})" for pos, asli in v)
+            for v in ganda.values()
+        )
+        raise DataTidakValid(
+            f"baris {no_header}: header punya nama kolom kembar (dianggap sama kalau huruf "
+            f"besar/kecil, spasi, dan garis bawah diabaikan): {detail}. Ganti salah satu nama "
+            "kolom supaya unik."
+        )
+
+    idx_nama_ide = next((i for i, n in enumerate(ternormalisasi) if n == "namaide"), None)
+    if idx_nama_ide is None:
         raise DataTidakValid(
             "file ide wajib punya kolom 'nama_ide' "
             f"(header terbaca: {header}; pemisah kolom terdeteksi: {pemisah!r})"
         )
+    header[idx_nama_ide] = "nama_ide"  # kanonis, meski aslinya mis. 'Nama_Ide'/'NAMA IDE'
 
-    data_rows = baris_mentah[1:]
-    if not data_rows:
-        raise DataTidakValid("file ide kosong atau tidak punya baris data")
     return header, data_rows, pemisah
 
 
@@ -173,8 +230,9 @@ def baca_ide(path, kriteria):
 
     ide = []
     nama_terpakai = {}  # bentuk dinormalisasi (huruf kecil, spasi dirapikan) -> nomor baris
-    for offset, baris in enumerate(data_rows, start=1):
-        no = offset + 1  # baris 1 = header
+    for no, baris in data_rows:
+        # `no` adalah nomor baris FISIK di file (dihitung sebelum baris kosong
+        # dibuang), jadi tetap benar meski ada baris kosong di tengah file.
 
         # Bug utama yang diperbaiki di v1.0.1: baris dengan koma desimal tanpa
         # kutip (mis. "Ide Y,3,5,4" dengan pemisah ',') menghasilkan jumlah
@@ -272,7 +330,21 @@ def cetak_tabel_skor(hasil, bobot, sumber_bobot):
         print(f"   - {k}: {v:g}")
 
 
+def _cocokkan_bobot_default(kolom):
+    """Cocokkan nama kolom kriteria di file ide dengan BOBOT_DEFAULT, tanpa
+    peduli huruf besar/kecil, spasi, atau garis bawah (mis. 'Kesesuaian_Modal'
+    dianggap sama dengan 'kesesuaian_modal'). Mengembalikan dict bobot dengan
+    KEY memakai nama kolom ASLI di file (bukan nama default), atau None kalau
+    kumpulan kolomnya tidak cocok dengan bobot default sama sekali."""
+    norm_default = {_normalisasi_nama_kolom(k): v for k, v in BOBOT_DEFAULT.items()}
+    norm_kolom = {_normalisasi_nama_kolom(k): k for k in kolom}
+    if set(norm_kolom) != set(norm_default):
+        return None
+    return {norm_kolom[norm]: nilai for norm, nilai in norm_default.items()}
+
+
 def cmd_skor(args):
+    peringatan_bobot = None
     try:
         if args.bobot:
             bobot = baca_bobot(args.bobot)
@@ -281,19 +353,35 @@ def cmd_skor(args):
             kolom = kolom_kriteria_dari_file(args.ide)
             if not kolom:
                 raise DataTidakValid("file ide tidak punya kolom kriteria selain 'nama_ide'")
-            if set(kolom) == set(BOBOT_DEFAULT):
-                bobot = dict(BOBOT_DEFAULT)
+            bobot_cocok = _cocokkan_bobot_default(kolom)
+            if bobot_cocok is not None:
+                bobot = bobot_cocok
                 sumber_bobot = "default resmi skill (--bobot tidak diberikan; lihat templates/format-data-skor.md)"
             else:
                 bobot = {k: 1.0 for k in kolom}
                 sumber_bobot = (
                     "sama rata/semua kriteria bobot 1 (--bobot tidak diberikan dan nama kolom "
-                    "tidak cocok persis dengan bobot default resmi)"
+                    "tidak cocok dengan bobot default resmi)"
+                )
+                # Sebelumnya jatuh ke sama rata secara diam-diam (sumber cuma
+                # disebut di baris terakhir keluaran, mudah terlewat). Kini
+                # dicetak sebagai PERINGATAN eksplisit di ATAS keluaran.
+                peringatan_bobot = (
+                    "PERINGATAN: nama kolom kriteria di file ide (" + ", ".join(kolom) + ") "
+                    "tidak cocok dengan bobot default resmi skill ini (" +
+                    ", ".join(BOBOT_DEFAULT) + "). Semua kriteria dipakai dengan bobot SAMA "
+                    "RATA — kalau ini bukan yang dimaksud, beri file --bobot, atau perbaiki "
+                    "nama kolom di file ide (huruf besar/kecil, spasi, garis bawah diabaikan "
+                    "saat mencocokkan)."
                 )
         ide = baca_ide(args.ide, list(bobot.keys()))
     except DataTidakValid as e:
         print(f"Data tidak valid: {e}", file=sys.stderr)
         return 1
+
+    if peringatan_bobot:
+        print(peringatan_bobot)
+        print()
 
     hasil = hitung_skor(ide, bobot)
     cetak_tabel_skor(hasil, bobot, sumber_bobot)
@@ -446,7 +534,37 @@ def buat_parser():
     return p
 
 
+_OPSI_RUPIAH = ("--modal", "--margin")
+
+
+def _gabungkan_opsi_negatif(argv):
+    """argparse memperlakukan mis. '--modal -5jt' sebagai kekurangan argumen,
+    karena nilainya diawali '-' dan bukan angka murni. Gabungkan jadi
+    '--modal=-5jt' supaya nilainya tetap diproses lewat parse_rupiah dan
+    pengguna dapat pesan error Bahasa Indonesia yang jelas (bukan pesan
+    argparse bawaan dalam Bahasa Inggris)."""
+    hasil = []
+    i = 0
+    while i < len(argv):
+        tok = argv[i]
+        if (
+            tok in _OPSI_RUPIAH
+            and i + 1 < len(argv)
+            and argv[i + 1].startswith("-")
+            and not argv[i + 1].startswith("--")
+        ):
+            hasil.append(f"{tok}={argv[i + 1]}")
+            i += 2
+            continue
+        hasil.append(tok)
+        i += 1
+    return hasil
+
+
 def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+    argv = _gabungkan_opsi_negatif(argv)
     parser = buat_parser()
     args = parser.parse_args(argv)
     return args.func(args)

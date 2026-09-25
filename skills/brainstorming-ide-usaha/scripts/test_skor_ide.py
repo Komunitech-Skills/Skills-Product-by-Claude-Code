@@ -449,5 +449,144 @@ class TesDuplikatNamaFleksibel(unittest.TestCase):
             self.assertIn("duplikat", str(cm.exception))
 
 
+class TesHeaderKolomKembar(unittest.TestCase):
+    """Regresi temuan uji ulang v1.0.1 B-5: header kolom kembar diterima
+    diam-diam (nilai kolom terakhir menimpa) -> harus ditolak dengan galat
+    jelas."""
+
+    def test_header_kolom_kembar_ditolak(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(p, "nama_ide,a,a\nIde X,1,5\n")
+            with self.assertRaises(modul.DataTidakValid) as cm:
+                modul.baca_ide(p, ["a"])
+            pesan = str(cm.exception)
+            self.assertIn("kembar", pesan)
+            self.assertIn("baris 1", pesan)
+
+    def test_header_kolom_kembar_beda_huruf_besar_ditolak(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(p, "nama_ide,Skor_A,skor a\nIde X,1,5\n")
+            with self.assertRaises(modul.DataTidakValid) as cm:
+                modul.baca_ide(p, ["a"])
+            self.assertIn("kembar", str(cm.exception))
+
+
+class TesCocokkanBobotDefaultFleksibel(unittest.TestCase):
+    """Regresi temuan uji ulang v1.0.1 B-2: nama kolom default salah huruf
+    besar/spasi/garis bawah harus tetap dikenali sebagai bobot default (tanpa
+    diam-diam jatuh ke sama rata), dan kalau memang tidak cocok sama sekali
+    harus muncul PERINGATAN eksplisit, bukan diam-diam."""
+
+    def test_kolom_default_beda_huruf_besar_dan_spasi_tetap_dipakai(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(
+                p,
+                "nama_ide,Kesesuaian_Modal,Potensi Permintaan,kemudahan_eksekusi,"
+                "kecocokan_keahlian,potensi_margin\n"
+                "Ide 1,5,4,3,2,4\n"
+                "Ide 2,3,3,3,3,3\n",
+            )
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                kode = modul.main(["skor", "--ide", str(p)])
+            keluaran = buf.getvalue()
+            self.assertEqual(kode, 0)
+            self.assertIn("default resmi", keluaran)
+            self.assertNotIn("PERINGATAN", keluaran)
+            # Skor harus sama persis dengan bobot default asli: nilai Ide 1
+            # (5,4,3,2,4) x bobot (5,4,3,2,4) / 18 = (25+16+9+4+16)/18 = 3,889
+            self.assertIn("3.889", keluaran)
+
+    def test_kolom_tidak_cocok_bobot_default_dapat_peringatan_eksplisit(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(p, "nama_ide,x,y\nIde 1,5,3\nIde 2,2,4\n")
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                kode = modul.main(["skor", "--ide", str(p)])
+            keluaran = buf.getvalue()
+            self.assertEqual(kode, 0)
+            self.assertTrue(keluaran.startswith("PERINGATAN"))
+            self.assertIn("SAMA RATA", keluaran)
+
+
+class TesNomorBarisFisik(unittest.TestCase):
+    """Regresi temuan uji ulang v1.0.1 B-1: nomor baris di pesan error salah
+    setelah ada baris kosong di tengah file (baris kosong dibuang sebelum
+    penomoran)."""
+
+    def test_nomor_baris_benar_setelah_baris_kosong(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(p, "nama_ide,a,b\n\n\nIde Y,3,9\n")  # baris data di baris fisik ke-4
+            with self.assertRaises(modul.DataTidakValid) as cm:
+                modul.baca_ide(p, ["a", "b"])
+            self.assertIn("baris 4", str(cm.exception))
+
+
+class TesHeaderNamaIdeHurufBesar(unittest.TestCase):
+    """Regresi temuan uji ulang v1.0.1 B-3: header 'Nama_Ide'/'NAMA IDE'
+    ditolak padahal maksudnya sama dengan 'nama_ide'."""
+
+    def test_header_nama_ide_huruf_besar_diterima(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(p, "Nama_Ide,a\nIde 1,3\n")
+            hasil = modul.baca_ide(p, ["a"])
+            self.assertEqual(hasil[0]["nama_ide"], "Ide 1")
+
+    def test_header_nama_ide_spasi_diterima(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(p, "NAMA IDE,a\nIde 1,3\n")
+            hasil = modul.baca_ide(p, ["a"])
+            self.assertEqual(hasil[0]["nama_ide"], "Ide 1")
+
+
+class TesKolomTanpaNamaDiUjung(unittest.TestCase):
+    """Regresi temuan uji ulang v1.0.1 B-4: koma di ujung tiap baris (kolom
+    kosong ekor ala Excel) memberi pesan membingungkan ("tidak ada di file
+    bobot: ['']")."""
+
+    def test_koma_ekor_kosong_dibuang_otomatis(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(p, "nama_ide,a,b,\nIde 1,3,4,\nIde 2,1,2,\n")
+            hasil = modul.baca_ide(p, ["a", "b"])
+            self.assertEqual(len(hasil), 2)
+            self.assertEqual(hasil[0]["skor_kriteria"], {"a": 3.0, "b": 4.0})
+
+    def test_koma_ekor_berisi_data_ditolak_jelas(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "ide.csv"
+            tulis(p, "nama_ide,a,b,\nIde 1,3,4,oops\n")
+            with self.assertRaises(modul.DataTidakValid) as cm:
+                modul.baca_ide(p, ["a", "b"])
+            pesan = str(cm.exception)
+            self.assertIn("tidak punya nama", pesan)
+            self.assertIn("baris 1", pesan)
+
+
+class TesModalMarginNegatifCli(unittest.TestCase):
+    """Regresi temuan uji ulang v1.0.1 B-6: '--modal -5jt' menampilkan pesan
+    argparse bawaan Bahasa Inggris ("expected one argument"), bukan pesan
+    Bahasa Indonesia yang jelas."""
+
+    def test_modal_negatif_singkatan_pesan_indonesia(self):
+        kode_keluar = modul.main(["impas", "--modal", "-5jt", "--margin", "5000"])
+        self.assertEqual(kode_keluar, 1)
+
+    def test_margin_negatif_singkatan_pesan_indonesia(self):
+        kode_keluar = modul.main(["impas", "--modal", "5jt", "--margin", "-1000"])
+        self.assertEqual(kode_keluar, 1)
+
+    def test_modal_negatif_dengan_sama_dengan_tetap_jalan(self):
+        kode_keluar = modul.main(["impas", "--modal=-5jt", "--margin", "5000"])
+        self.assertEqual(kode_keluar, 1)
+
+
 if __name__ == "__main__":
     unittest.main()
