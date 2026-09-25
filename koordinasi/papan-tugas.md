@@ -31,9 +31,9 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | B3 | Kreasi `kontrak-kerja-pkwt` (HR) | Backlog #15. Verifikasi aturan PKWT terbaru (PP 35/2021 + perubahan UU Cipta Kerja/putusan MK) dari sumber resmi; disclaimer; model Opus | lulus 9/10 v1.0.1 (Akun B, 2026-09-25) — temuan rendah untuk v1.0.2 (label "1 bulan 16 hari" vs pecahan, rentang terbalik saat sisa 0, --metode bulan-penuh); PERLU REVIEW: nomor ayat PP 35/2021 (situs resmi terblokir), tafsir periode <1 bulan berurutan, cek ulang UU Ketenagakerjaan baru awal Nov 2026 |
 | B4 | Kreasi `kebijakan-privasi-pdp` (Legal) | Backlog #26. UU 27/2022 PDP + peraturan pelaksana terbaru (verifikasi); disclaimer; Opus | dikerjakan (Akun B, 2026-09-25) |
 | B5 | Kreasi `kalender-pajak` (Pajak) | Backlog #28. Jatuh tempo setor/lapor 2026 (PMK terbaru, Coretax); Opus | dikerjakan (Akun B, 2026-09-25) |
-| B6 | Kreasi `analisis-excel` (Data) | Backlog #27 — bedakan dari `rekap-penjualan-csv`; script Python standar | belum |
-| B7 | Kreasi `sop-onboarding` (HR) | Backlog #36 — bedakan dari `sop-writer` | belum |
-| B8 | Kreasi `tender-checklist` (Sales) | Backlog #33 — LPSE/SPSE; verifikasi Perpres PBJ terbaru | belum |
+| B6 | Kreasi `analisis-excel` (Data) | Backlog #27 — bedakan dari `rekap-penjualan-csv`; script Python standar | dikerjakan (Akun B, 2026-09-25) |
+| B7 | Kreasi `sop-onboarding` (HR) | Backlog #36 — bedakan dari `sop-writer` | dikerjakan (Akun B, 2026-09-25) |
+| B8 | Kreasi `tender-checklist` (Sales) | Backlog #33 — LPSE/SPSE; verifikasi Perpres PBJ terbaru | dikerjakan (Akun B, 2026-09-25) |
 | B9 | `atur-keuangan-pribadi` (openaccountant, MIT) | **TUNGGU keputusan pemilik** (sinyal bukti tipis) | tertahan |
 | B10 | `spt-tahunan-op-helper` | Backlog #29 — musiman (Jan–Mar); kerjakan menjelang musim | nanti |
 
