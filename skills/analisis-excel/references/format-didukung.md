@@ -30,6 +30,15 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
   paling depan), bukan otomatis sheet pertama — sheet `Ringkasan`/`Rekap`/`Cover` berstruktur beda
   dilewati + peringatan, dan catatan menyebut acuan yang dipakai. Paksa dengan `--acuan "<nama sheet>"`
   (harus salah satu sheet yang digabung).
+- **Sheet rekap/ringkasan (v1.0.3):** dengan `--sheet semua`, sheet dilewati + peringatan "TIDAK
+  digabung: tampak sheet REKAP/RINGKASAN (alasan)" bila (a) namanya mengandung Ringkasan/Rangkuman/
+  Rekap/Recap/Total/Summary/Ikhtisar/Resume/Pivot/Dashboard, (b) jumlah salah satu kolom angkanya (atau
+  semua kolom angkanya) = jumlah gabungan sheet lain (selisih ≤ 0,5%, minimal 2 sheet lain, barisnya
+  lebih sedikit), atau (c) 2–16 baris yang tiap barisnya berlabel bulan/triwulan berbeda sementara sheet
+  lain ≥ 2× lebih panjang. `--sertakan "Nama"` (atau `--acuan`) memaksa ikut + peringatan. Pada daftar
+  eksplisit (`--sheet "A,B,C"`) sheet tidak dilewati, hanya diperingatkan.
+- **Cek dobel hitung umum (v1.0.3):** ≥ 3 sheet digabung dan di satu kolom angka total gabungan ≈ 2 ×
+  total tanpa satu sheet → "PERINGATAN kemungkinan DOBEL HITUNG" + total tanpa sheet itu.
 - **Teks:** shared strings (termasuk rich text per-karakter; teks fonetik `rPh` diabaikan), inline
   string, hasil rumus teks.
 - **Angka:** dibaca sebagai Decimal dari teks tersimpan, dibulatkan ke 15 digit signifikan seperti
@@ -58,7 +67,14 @@ yang isinya bukan Excel ditolak dengan pesan jelas).
     data utuh — cukup banyak sel dan kolom yang biasanya berisi angka memang berisi angka — atau
     (b) jumlah sel rekaman itu ≠ jumlah kolom tabel. Curiga → `GAGAL: CSV kemungkinan rusak …`
     dengan nomor baris dan saran `--paksa`.
-  - `--paksa` → dibaca apa adanya + peringatan (angka bisa salah bila kutip memang rusak).
+  - (c, v1.0.3) **Baris tertelan:** tiap baris lanjutan sel multi-baris dibaca sendirian; bila jumlah
+    field-nya ≈ jumlah kolom header dan kolom angka/tanggal di posisinya berisi angka/tanggal, baris itu
+    dianggap baris data yang tertelan kutip nyasar → GAGAL dengan hitungan "File berisi X baris di
+    Notepad; terbaca Y baris + Z baris lanjutan … kemungkinan N baris data HILANG". Sel sah yang
+    isinya mirip data (rincian "Kaos, 2, 50000⏎Topi, 1, 30000") lolos karena tipe kolomnya tidak cocok.
+  - `--paksa` → dibaca apa adanya + "PERINGATAN TEGAS" yang menyebut berapa baris mungkin hilang.
+  - Kolom yang biasanya satu baris tetapi punya 1–2 sel multi-baris (≥ 10 baris data) → peringatan
+    "cek baris N, mungkin ada tanda kutip nyasar".
   - Sel multi-baris sah (alamat "Jl. …, No. …⏎Kel. …, Kec. …", koma di beberapa baris) → terbaca +
     **satu** peringatan gabungan yang memetakan nomor baris Notepad ke nomor baris Excel (nomor
     baris di hasil = nomor baris Excel/rekaman).

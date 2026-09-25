@@ -58,9 +58,13 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    `--sheet semua` (semua sheet terlihat) atau `--sheet "Q1,Q2,Q3"` di subperintah mana pun.
    Script menggabungkan sheet yang judul kolomnya sama, membuang baris TOTAL tiap sheet, dan
    menambah kolom `Sheet` (bisa dipakai `--grup Sheet`). **Jangan** menjumlah hasil per sheet
-   sendiri. Acuan struktur = sheet yang paling banyak cocok (sheet `Ringkasan`/`Rekap` di depan
-   dilewati + peringatan; ganti acuan dengan `--acuan "TW1"`). Bila ada peringatan "TIDAK digabung"
-   untuk sheet yang dibutuhkan, ulangi dengan daftar sheet, mis. `--sheet "TW1,TW2,TW3,TW4"`.
+   sendiri. **Sheet rekap/ringkasan dilewati** (v1.0.3) agar total tidak DOBEL: nama berisi
+   Ringkasan/Rekap/Total/Summary/Resume, isinya = jumlah sheet lain, atau sedikit baris berlabel
+   bulan/triwulan → peringatan "TIDAK digabung: tampak sheet REKAP"; paksa ikut dengan
+   `--sertakan "<nama>"` hanya bila pengguna memastikan sheet itu data. Peringatan
+   "kemungkinan DOBEL HITUNG" → sampaikan ke pengguna dan pakai total tanpa sheet itu. Acuan
+   struktur = sheet yang paling banyak cocok (ganti dengan `--acuan "TW1"`). Bila ada peringatan
+   "TIDAK digabung" untuk sheet yang dibutuhkan, ulangi dengan daftar sheet, mis. `--sheet "TW1,TW2,TW3,TW4"`.
 2. **Jalankan subperintah yang menjawab pertanyaan** (nama kolom tidak peka huruf besar-kecil,
    boleh sebagian nama bila unik):
    ```bash
@@ -74,7 +78,7 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    python3 <...>/analisis.py banding  "<file-lama>" --file-b "<file-baru>" --nilai "Total" [--grup "Produk"]
    python3 <...>/analisis.py bersihkan "<file>" --keluar "<file>-bersih.csv" [--excel-id] [--buang-duplikat]
    ```
-   Opsi umum semua subperintah: `--sheet` (+ `--acuan`), `--baris-header N`, `--filter "Kolom=A|B"`,
+   Opsi umum semua subperintah: `--sheet` (+ `--acuan`, `--sertakan`), `--baris-header N`, `--filter "Kolom=A|B"`,
    `--dari 2026-07 --sampai 2026-09`, `--tipe "No HP=kode"`, `--urutan-tanggal mdy`,
    `--keluar hasil.csv` (simpan tabel hasil), `--excel-id` (CSV untuk Excel berbahasa Indonesia:
    pemisah `;` dan koma desimal), `--json` (keluaran mesin), `--tampilkan-pribadi` (lihat Aturan). Periode: `2026-09`, `Sep 2026`,
@@ -169,6 +173,9 @@ Rincian lengkap: `references/format-didukung.md`.
   dieksekusi sebagai rumus saat dibuka di Excel. File asli tidak pernah diubah.
 - **CSV tanda kutip tak tertutup** → `GAGAL: CSV rusak ... baris N` (tidak diam-diam menelan
   baris). Minta pengguna memperbaiki baris itu. Sel multi-baris yang sah (alamat "Jl. …, No. …⏎Kel. …,
-  Kec. …") tetap terbaca + satu peringatan. `GAGAL: CSV kemungkinan rusak` → tanyakan pengguna; bila
-  ia yakin file benar, ulangi dengan `--paksa` (dibaca apa adanya + peringatan).
+  Kec. …") tetap terbaca + satu peringatan. `GAGAL: CSV kemungkinan rusak` (juga bila satu saja baris
+  data tertelan kutip nyasar — v1.0.3 mencocokkan jumlah baris Notepad dengan baris terbaca dan
+  menyebut berapa baris mungkin HILANG) → sampaikan nomor barisnya dan minta pengguna memperbaiki.
+  `--paksa` hanya bila pengguna yakin file benar; "PERINGATAN TEGAS" di hasil wajib disampaikan
+  (angka bisa kurang).
 - **Tanpa traceback:** semua masalah input keluar dengan kode 2 dan pesan `GAGAL: ...` berbahasa awam.
