@@ -27,7 +27,7 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | # | Tugas | Sumber / catatan | Status |
 |---|---|---|---|
 | B1 | ATM `pesan-prospek-wa` — pesan perkenalan/penawaran pertama via WA ke calon pelanggan | coreyhaines31/marketingskills `cold-email` (MIT). Bedakan tegas dari `follow-up-prospek` (itu urutan susulan). Tanpa blast; dikirim manusia | dikerjakan (Akun B, 2026-09-25) |
-| B2 | ATM `brainstorming-ide-usaha` — sesi curah gagasan terstruktur untuk ide produk/promo/usaha | obra/superpowers `brainstorming` (MIT) — tulis ulang ±90%, konteks UMKM | belum |
+| B2 | ATM `brainstorming-ide-usaha` — sesi curah gagasan terstruktur untuk ide produk/promo/usaha | obra/superpowers `brainstorming` (MIT) — tulis ulang ±90%, konteks UMKM | dikerjakan (Akun B, 2026-09-25) |
 | B3 | Kreasi `kontrak-kerja-pkwt` (HR) | Backlog #15. Verifikasi aturan PKWT terbaru (PP 35/2021 + perubahan UU Cipta Kerja/putusan MK) dari sumber resmi; disclaimer; model Opus | belum |
 | B4 | Kreasi `kebijakan-privasi-pdp` (Legal) | Backlog #26. UU 27/2022 PDP + peraturan pelaksana terbaru (verifikasi); disclaimer; Opus | belum |
 | B5 | Kreasi `kalender-pajak` (Pajak) | Backlog #28. Jatuh tempo setor/lapor 2026 (PMK terbaru, Coretax); Opus | belum |
