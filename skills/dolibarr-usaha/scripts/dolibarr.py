@@ -25,12 +25,14 @@ Perintah:
 Kode keluar: 0 berhasil | 2 argumen/input salah | 3 Dolibarr tidak bisa dihubungi |
 4 modul/API belum aktif | 5 kunci salah/hak akses kurang | 6 galat lain dari Dolibarr |
 7 tidak dibuat karena kemungkinan data ganda (pelanggan/draf sudah ada, atau draf kosong/belum
-lengkap tertinggal dari percobaan yang terputus) | 8 koneksi putus/timeout SAAT MENULIS: data mungkin
-sudah (sebagian) tersimpan, atau draf tersimpan tetapi tidak lengkap - cek Dolibarr, JANGAN langsung mengulang.
+lengkap tertinggal dari percobaan yang terputus) | 8 SAAT MENULIS: koneksi putus/timeout, jawaban terpotong,
+atau galat server 5xx (500/502/503/504): data mungkin sudah (sebagian) tersimpan, atau draf tersimpan tetapi
+tidak lengkap - cek Dolibarr, JANGAN langsung mengulang.
 """
 import argparse
 import datetime as dt
 import hashlib
+import http.client
 import ipaddress
 import json
 import os
@@ -43,7 +45,7 @@ import urllib.parse
 import urllib.request
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
-VERSI_SKRIP = "1.0.4"
+VERSI_SKRIP = "1.0.5"
 URL_DEFAULT = "http://localhost/dolibarr"
 VERSI_TERUJI = ("22.0.4", "24.0.1")
 BATAS_WAKTU = 20
@@ -349,6 +351,12 @@ class _TolakRedirect(urllib.request.HTTPRedirectHandler):
                     saran="Periksa alamat DOLIBARR_URL (mungkin harus https:// atau ada '/' berbeda).")
 
 
+def _teks_polos(teks, maks=200):
+    """Isi jawaban non-JSON (mis. halaman galat proxy) jadi satu baris pendek; judul <head> dibuang (tidak dobel)."""
+    t = re.sub(r"(?is)<(head|script|style)\b.*?</\1>", " ", teks or "")
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t)).strip()[:maks]
+
+
 def _pesan_error_json(body):
     try:
         d = json.loads(body)
@@ -384,38 +392,69 @@ class Dolibarr:
             with self.opener.open(req, timeout=BATAS_WAKTU) as r:
                 kode, teks = r.status, r.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as e:
-            kode, teks = e.code, e.read().decode("utf-8", "replace")
+            kode = e.code
+            try:
+                teks = e.read().decode("utf-8", "replace")
+            except (http.client.HTTPException, OSError):
+                teks = ""  # isi halaman galat ikut terpotong; kode HTTP tetap dipakai
         except Gagal:
             raise
         except urllib.error.URLError as e:
             # Koneksi ditolak / nama tidak dikenal = permintaan pasti belum terkirim. Selain itu (timeout,
             # putus saat mengirim) permintaan tulis mungkin sudah sampai.
             if metode != "GET" and not isinstance(e.reason, (ConnectionRefusedError, socket.gaierror)):
-                raise self._gagal_tulis(e.reason)
+                raise self._gagal_tulis(e.reason, "Dolibarr tidak menjawab")
             raise Gagal("Dolibarr di {} tidak bisa dihubungi ({}).".format(self.url, e.reason),
                         KELUAR_KONEKSI,
                         saran="Nyalakan Dolibarr dulu (Windows: menu Start > Dolibarr > Tools > Start DoliWamp server), "
                               "lalu buka {} di browser untuk memastikan.".format(self.url))
         except (TimeoutError, OSError) as e:
             if metode != "GET":
-                raise self._gagal_tulis(e)
+                raise self._gagal_tulis(e, "Dolibarr tidak menjawab")
             raise Gagal("Dolibarr tidak menjawab dalam {} detik ({}).".format(BATAS_WAKTU, e), KELUAR_KONEKSI,
                         saran="Komputer mungkin sibuk atau Dolibarr macet; coba lagi, atau mulai ulang DoliWamp.")
+        except http.client.HTTPException as e:
+            # Jawaban terpotong/rusak (IncompleteRead, BadStatusLine) setelah permintaan terkirim (D2 v1.0.4).
+            # Sesudah OSError: RemoteDisconnected (putus tanpa jawaban) adalah OSError dan tetap ditangani di atas.
+            if metode != "GET":
+                raise self._gagal_tulis(type(e).__name__, "jawaban Dolibarr terpotong/rusak")
+            raise Gagal("Jawaban Dolibarr terpotong/rusak ({}).".format(type(e).__name__), KELUAR_KONEKSI,
+                        saran="Koneksi ke Dolibarr tidak stabil; coba lagi, atau mulai ulang DoliWamp.")
+        if metode != "GET" and self._5xx_tidak_pasti(kode, teks):
+            # 500/502/503/504 saat MENULIS: proxy/PHP bisa gagal SETELAH Dolibarr menyimpan data (D1 v1.0.4).
+            # 4xx (ditolak jelas), 501 (modul mati) dan 503 blokir IP tetap diperlakukan sebagai pasti gagal.
+            rinci = _pesan_error_json(teks) or _teks_polos(teks, 120) or "tanpa keterangan"
+            raise self._gagal_tulis("galat {}: {}".format(kode, rinci), "Dolibarr membalas galat {}".format(kode),
+                                    kode_http=kode)
         return self._olah(kode, teks, daftar)
 
     @staticmethod
-    def _gagal_tulis(sebab):
-        """Timeout/putus pada permintaan TULIS: jangan sarankan 'coba lagi' (bisa dobel) - minta cek dulu (C1)."""
-        return Gagal("Koneksi ke Dolibarr putus atau tidak dijawab dalam {} detik SAAT MENGIRIM data ({}). "
-                     "Data ini MUNGKIN SUDAH TERSIMPAN di Dolibarr.".format(BATAS_WAKTU, sebab), KELUAR_TIDAK_PASTI,
-                     saran="JANGAN langsung mengulang perintah. Buka Dolibarr di browser dan periksa dulu apakah "
-                           "datanya sudah masuk (pelanggan: menu Pihak Ketiga; invoice: menu Tagihan/Nota, status "
-                           "Draf). Ulangi hanya bila memang belum ada.",
-                     mungkin_terkirim=True)
+    def _5xx_tidak_pasti(kode, teks):
+        return 500 <= kode <= 599 and kode != 501 and not (kode == 503 and "not allowed from your IP" in (teks or ""))
+
+    @staticmethod
+    def _gagal_tulis(sebab, ringkas, kode_http=None):
+        """Permintaan TULIS yang hasilnya tidak pasti (putus, timeout, jawaban terpotong, galat 5xx): jangan sarankan
+        'coba lagi' (bisa dobel) - minta cek dulu (C1, D1, D2). `ringkas` dipakai di laporan per baris invoice."""
+        if ringkas == "Dolibarr tidak menjawab":
+            kalimat = "Koneksi ke Dolibarr putus atau tidak dijawab dalam {} detik SAAT MENGIRIM data ({}).".format(
+                BATAS_WAKTU, sebab)
+        elif kode_http:
+            kalimat = ("Dolibarr (atau server perantaranya) membalas {} SAAT MENGIRIM data. Galat server seperti ini "
+                       "bisa terjadi SETELAH data diproses.".format(sebab))
+        else:
+            kalimat = "Jawaban Dolibarr terpotong/rusak SAAT MENGIRIM data ({}).".format(sebab)
+        g = Gagal(kalimat + " Data ini MUNGKIN SUDAH TERSIMPAN di Dolibarr.", KELUAR_TIDAK_PASTI, http=kode_http,
+                  saran="JANGAN langsung mengulang perintah. Buka Dolibarr di browser dan periksa dulu apakah "
+                        "datanya sudah masuk (pelanggan: menu Pihak Ketiga; invoice: menu Tagihan/Nota, status "
+                        "Draf). Ulangi hanya bila memang belum ada.",
+                  mungkin_terkirim=True)
+        g.ringkas = ringkas
+        return g
 
     def _olah(self, kode, teks, daftar):
         pesan = _pesan_error_json(teks)
-        polos = re.sub(r"<[^>]+>", "", teks or "").strip()
+        polos = _teks_polos(teks)
         if kode == 200:
             try:
                 return json.loads(teks) if teks.strip() else None
@@ -923,7 +962,16 @@ def cmd_invoice_buat(api, args, offset):
                                          "properties": "id,ref,total_ht,date,note_private"})
     kembar = draf_kembar(draf, items, hit["dpp"])
     id_kembar = {d.get("id") for d in kembar}
-    tertinggal = [(d, k) for d, k in draf_tertinggal(draf, kode) if d.get("id") not in id_kembar]
+    semua_tertinggal = [(d, k) for d, k in draf_tertinggal(draf, kode) if d.get("id") not in id_kembar]
+    # D3 (v1.0.5): draf KOSONG bersidik perintah LAIN hanya diberi catatan, tidak menahan (lihat draf_tertinggal).
+    tertinggal = [(d, k) for d, k in semua_tertinggal if k != "kosong_lain"]
+    kosong_lain = [d for d, k in semua_tertinggal if k == "kosong_lain"]
+    if kosong_lain:
+        b += ["", "CATATAN: pelanggan ini juga punya draf KOSONG (Rp 0) sisa perintah LAIN yang terputus: {}. "
+              "Draf itu tidak menahan perintah ini karena isinya berbeda. Jika tidak dipakai, hapus di Dolibarr "
+              "(menu Tagihan/Nota > Draf) agar tidak membingungkan.".format(
+                  ", ".join("{} (ID {})".format(d.get("ref"), d.get("id")) for d in kosong_lain))]
+        out["draf_kosong_lain"] = kosong_lain
     if (kembar or tertinggal) and not args.tetap_buat:
         b[0] = "DRAF INVOICE TIDAK DIBUAT ({})".format(
             "kemungkinan dobel" if kembar else "ada draf belum lengkap dari percobaan sebelumnya")
@@ -934,17 +982,30 @@ def cmd_invoice_buat(api, args, offset):
         if tertinggal:
             b.append("{} ini punya draf yang tampaknya tertinggal dari percobaan sebelumnya yang "
                      "terputus:".format("Selain itu, pelanggan" if kembar else "DIBATALKAN: pelanggan"))
+            def nama_draf(k_cari):
+                return ", ".join("{} (ID {})".format(d.get("ref"), d.get("id")) for d, k in tertinggal if k == k_cari)
             for d, k in tertinggal:
                 if k == "kosong":
-                    ket = "kosong, Rp 0 (belum ada barang)"
+                    ket = "draf kosong (Rp 0, belum ada barang) dari perintah yang SAMA ini, terputus sebelum " \
+                          "barangnya masuk"
+                elif k == "kosong_tanpa_kode":
+                    ket = "draf kosong (Rp 0, belum ada barang) tanpa kode perintah (dibuat versi lama skill ini " \
+                          "atau manual), jadi asalnya tidak bisa dipastikan"
                 else:
-                    ket = "dari perintah yang sama tetapi belum lengkap/berbeda (DPP di Dolibarr {}, seharusnya " \
+                    ket = "dari perintah yang SAMA ini tetapi belum lengkap (DPP di Dolibarr {}, seharusnya " \
                           "sekitar {})".format(format_rp(desimal(d.get("total_ht"))), format_rp(hit["dpp"]))
                 b.append("- {} (ID {}): {}".format(d.get("ref"), d.get("id"), ket))
-            b.append("Yang perlu dicek di Dolibarr (menu Tagihan/Nota, invoice pelanggan berstatus Draf): buka "
-                     "draf di atas, lalu lengkapi barisnya sesuai pratinjau di atas, ATAU hapus draf itu dan "
-                     "jalankan ulang perintah ini.")
-            b.append("Jika memang ingin draf baru tanpa mengurus draf itu, ulangi dengan --tetap-buat.")
+            b.append("Yang perlu dilakukan di Dolibarr (menu Tagihan/Nota, invoice pelanggan berstatus Draf):")
+            if nama_draf("kosong"):
+                b.append("- Hapus draf kosong {}, lalu jalankan ulang perintah ini.".format(nama_draf("kosong")))
+            if nama_draf("kosong_tanpa_kode"):
+                b.append("- Buka draf kosong {}. Jika memang tidak dipakai, hapus, lalu jalankan ulang perintah ini."
+                         .format(nama_draf("kosong_tanpa_kode")))
+            if nama_draf("sebagian"):
+                b.append("- Buka draf {}, cocokkan dengan pratinjau di atas lalu tambahkan baris yang kurang, ATAU "
+                         "hapus draf itu lalu jalankan ulang perintah ini.".format(nama_draf("sebagian")))
+            b.append("Jika draf itu memang dipakai untuk keperluan lain dan Anda tetap ingin draf baru, ulangi "
+                     "dengan --tetap-buat.")
         else:
             b.append("Periksa di Dolibarr. Jika memang ingin draf baru, ulangi dengan --tetap-buat.")
         out["kembar"] = kembar
@@ -981,7 +1042,7 @@ def cmd_invoice_buat(api, args, offset):
             api.minta("POST", "invoices/{}/lines".format(inv_id), data=baris)
         except Gagal as e:
             masalah = {"nomor": it["nomor"], "deskripsi": it["deskripsi"], "pesan": e.pesan,
-                       "mungkin_masuk": e.mungkin_terkirim}
+                       "mungkin_masuk": e.mungkin_terkirim, "ringkas": getattr(e, "ringkas", None)}
             break
     try:
         inv = api.minta("GET", "invoices/{}".format(inv_id))
@@ -1030,14 +1091,24 @@ def kode_perintah(socid, items, jenis_ppn, tgl, tempo, catatan):
 
 
 def draf_tertinggal(draf, kode):
-    """Draf pelanggan yang tampaknya sisa percobaan terputus: KOSONG (DPP 0; termasuk sisa versi lama tanpa kode
-    perintah) atau berkode perintah sama (bisa sebagian). Yang jumlahnya sudah sama ditangani draf_kembar."""
+    """Draf pelanggan yang tampaknya sisa percobaan terputus. Yang jumlahnya sudah sama ditangani draf_kembar.
+    Keadaan: 'kosong' (Rp 0, kode perintah SAMA) | 'kosong_tanpa_kode' (Rp 0, tanpa kode: sisa v1.0.3 atau dibuat
+    manual, asal tidak pasti) | 'sebagian' (kode SAMA, sudah ada baris) -> ketiganya MENAHAN draf baru.
+    'kosong_lain' (Rp 0, kode perintah LAIN) -> hanya catatan (D3 v1.0.5): draf kosong tidak bisa menagih apa pun
+    tanpa manusia mengisinya, dan perintah pemiliknya tetap ditahan olehnya, jadi tidak ada risiko tagihan ganda."""
     hasil = []
     for d in draf:
         th = desimal(d.get("total_ht"), None)
+        catatan = str(d.get("note_private") or "")
+        sama = "Kode perintah: " + kode in catatan
         if th == 0:
-            hasil.append((d, "kosong"))
-        elif "Kode perintah: " + kode in str(d.get("note_private") or ""):
+            if sama:
+                hasil.append((d, "kosong"))
+            elif re.search(r"Kode perintah: [0-9a-f]{10}\b", catatan):
+                hasil.append((d, "kosong_lain"))
+            else:
+                hasil.append((d, "kosong_tanpa_kode"))
+        elif sama:
             hasil.append((d, "sebagian"))
     return hasil
 
@@ -1057,8 +1128,8 @@ def _kepala_tidak_pasti(api, pel, kode, galat, b, out):
         b.append("Dicek ulang: draf {} SUDAH TERBUAT di Dolibarr, tetapi masih KOSONG (belum ada barang)."
                  .format(", ".join("{} (ID {})".format(d.get("ref"), d.get("id")) for d in temu)))
     elif dicek:
-        b.append("Dicek ulang: belum ada draf baru untuk pelanggan ini di Dolibarr. Bisa jadi Dolibarr masih "
-                 "memprosesnya, jadi tunggu 1-2 menit lalu periksa lagi.")
+        b.append("Dicek ulang: belum ada draf baru dari perintah ini di Dolibarr. Bisa jadi permintaan tadi memang "
+                 "tidak diproses, atau Dolibarr masih memprosesnya, jadi tunggu 1-2 menit lalu periksa lagi.")
     else:
         b.append("Dolibarr juga belum bisa dihubungi untuk dicek ulang, jadi belum pasti draf sudah terbuat atau belum.")
     b += ["JANGAN mengulang perintah ini sebelum mengecek Dolibarr.",
@@ -1085,8 +1156,8 @@ def _draf_tidak_lengkap(inv_id, inv, galat_baca, masalah, items, hit, b, out):
     b += ["", "Draf {} sudah ada di Dolibarr (status draf, belum sah).".format(nama)]
     if masalah:
         if masalah["mungkin_masuk"]:
-            b.append("Baris {} ({}): Dolibarr tidak menjawab. Baris ini MUNGKIN sudah masuk, mungkin juga belum."
-                     .format(masalah["nomor"], masalah["deskripsi"]))
+            b.append("Baris {} ({}): {}. Baris ini MUNGKIN sudah masuk, mungkin juga belum."
+                     .format(masalah["nomor"], masalah["deskripsi"], masalah["ringkas"] or "Dolibarr tidak menjawab"))
         else:
             b.append("Baris {} ({}) DITOLAK Dolibarr ({}); baris ini tidak masuk."
                      .format(masalah["nomor"], masalah["deskripsi"], masalah["pesan"]))
@@ -1104,6 +1175,14 @@ def _draf_tidak_lengkap(inv_id, inv, galat_baca, masalah, items, hit, b, out):
         dpp = desimal(inv.get("total_ht"))
         b.append("Isi draf di Dolibarr sekarang: {}DPP {} (seharusnya {} baris, DPP sekitar {})."
                  .format(jml, format_rp(dpp), n, format_rp(hit["dpp"])))
+        if masalah and masalah["mungkin_masuk"] and isinstance(baris, list):
+            # Draf ini baru dibuat script, jadi jumlah barisnya menunjukkan nasib baris yang tidak pasti.
+            if len(baris) == masalah["nomor"]:
+                b.append("Menurut isi draf yang dibaca ulang, baris {} SUDAH masuk.".format(masalah["nomor"]))
+                out["baris_masuk"] = True
+            elif len(baris) == masalah["nomor"] - 1:
+                b.append("Menurut isi draf yang dibaca ulang, baris {} BELUM masuk.".format(masalah["nomor"]))
+                out["baris_masuk"] = False
         out["ref"] = ref
         out["dolibarr"] = {"dpp": dpp, "ppn": desimal(inv.get("total_tva")), "total": desimal(inv.get("total_ttc"))}
     if masalah:

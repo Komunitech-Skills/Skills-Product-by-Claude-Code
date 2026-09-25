@@ -130,7 +130,37 @@ class Tiruan(BaseHTTPRequestHandler):
             return True
         if "lambat:" + titik in K.mode:
             time.sleep(TUNDA)
+        # v1.0.5 (D1): 'galat:<kode>:<titik>' = server SUDAH memproses lalu (perantara/PHP) membalas 5xx.
+        for x in K.mode:
+            if x.startswith("galat:") and x.endswith(":" + titik):
+                self.balas_5xx(int(x.split(":")[1]))
+                return True
+        # v1.0.5 (D2): 'sebagian:<titik>' = sudah diproses, Content-Length penuh tetapi isi terpotong (IncompleteRead).
+        if "sebagian:" + titik in K.mode:
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", "64")
+            self.end_headers()
+            self.wfile.write(b"12")
+            self.wfile.flush()
+            self.close_connection = True
+            return True
         return False
+
+    def tolak_awal(self, titik):
+        """Kontrol negatif D1: 'tolak:<kode>:<titik>' = balas 5xx TANPA memproses apa pun."""
+        for x in K.mode:
+            if x.startswith("tolak:") and x.endswith(":" + titik):
+                self.balas_5xx(int(x.split(":")[1]))
+                return True
+        return False
+
+    def balas_5xx(self, kode):
+        if kode == 500:  # galat PHP/Dolibarr: JSON RestException
+            return self.galat(500, "Internal Server Error: Error creating object")
+        judul = {502: "502 Bad Gateway", 503: "503 Service Unavailable", 504: "504 Gateway Time-out"}.get(kode, str(kode))
+        self.kirim(kode, "<html><head><title>{0}</title></head><body><h1>{0}</h1></body></html>".format(judul),
+                   "text/html")
 
     def handle_one(self, metode):
         try:
@@ -203,6 +233,8 @@ class Tiruan(BaseHTTPRequestHandler):
         if jalur == "thirdparties" and metode == "POST":
             if not tulis:
                 return self.kirim(403, FIX["error_403_body"])
+            if self.tolak_awal("post_pelanggan"):
+                return
             K.next_tp += 1
             t = {"id": str(K.next_tp), "name": body["name"], "name_alias": "", "status": "1", "client": "1",
                  "code_client": "CU2609-{:05d}".format(K.next_tp), "phone": body.get("phone"),
@@ -266,6 +298,8 @@ class Tiruan(BaseHTTPRequestHandler):
         if jalur == "invoices" and metode == "POST":
             if not tulis:
                 return self.kirim(403, FIX["error_403_body"])
+            if self.tolak_awal("post_invoice"):
+                return
             K.next_inv += 1
             K.invoice.append({"id": str(K.next_inv), "ref": "(PROV{})".format(K.next_inv), "socid": str(body["socid"]),
                               "type": "0", "statut": "0", "status": "0", "paye": "0", "date": body["date"],
@@ -281,6 +315,8 @@ class Tiruan(BaseHTTPRequestHandler):
                                                                     ["lines"]) == 1:
                 return self.galat(400, "Bad Request: Unable to insert the new line. Check your inputs.")
             inv = [i for i in K.invoice if i["id"] == m.group(1)][0]
+            if self.tolak_awal("baris{}".format(len(inv["lines"]) + 1)):
+                return
             # Cara hitung Dolibarr (price2num 'MT', 2 desimal, per baris, half-up)
             qty, pu, disk, tx = (Decimal(str(body[k])) for k in ("qty", "subprice", "remise_percent", "tva_tx"))
             ht = bulat2(qty * pu * (100 - disk) / 100)
@@ -1225,6 +1261,170 @@ class UjiDolibarr(unittest.TestCase):
         p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya",
                        url="http://127.0.0.1:{}/dolibarr".format(port_bebas()))
         self.assertEqual(p.returncode, 3, p.stdout + p.stderr)
+
+    # ---------------------------------------------------------- v1.0.5: D1-D3
+    ITEM_B = ["--item", "Paku 5cm|2|18000", "--item", "Kuas 2in|1|15000"]
+
+    def test_d1_5xx_saat_post_invoice_mungkin_tersimpan(self):
+        # D1: server SUDAH membuat draf lalu (proxy/PHP) membalas 5xx -> kode 8 "mungkin tersimpan", bukan kode 6.
+        for kode in (500, 502, 503, 504):
+            with self.subTest(kode=kode):
+                K.reset()
+                K.mode.add("galat:{}:post_invoice".format(kode))
+                p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+                self.assertEqual(p.returncode, 8, p.stdout + p.stderr)
+                self.assertIn("galat {}".format(kode), p.stdout)
+                self.assertIn("MUNGKIN SUDAH TERSIMPAN", p.stdout)
+                self.assertIn("draf (PROV101) (ID 101) SUDAH TERBUAT", p.stdout)
+                self.assertIn("JANGAN mengulang", p.stdout)
+                self._cek_bukan_penutup_sukses(p.stdout + p.stderr)
+                K.mode.clear()
+                n = len(self.tulis_dilakukan())
+                p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+                self.assertEqual(p.returncode, 7, p.stdout + p.stderr)
+                self.assertEqual(len(self.tulis_dilakukan()), n)
+                self.assertEqual(self._jumlah_draf("2"), 1)
+
+    def test_d1_5xx_saat_baris_tidak_disebut_ditolak(self):
+        # Baris 2 sudah masuk lalu 504: jangan "DITOLAK ... tidak masuk"; baca ulang memastikan baris SUDAH masuk.
+        K.mode.add("galat:504:baris2")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya", "--json")
+        self.assertEqual(p.returncode, 8, p.stdout + p.stderr)
+        d = json.loads(p.stdout)
+        self.assertTrue(d["baris_mungkin_masuk"])
+        self.assertTrue(d["baris_masuk"])
+        self.assertNotIn("DITOLAK", d["teks"])
+        self.assertNotIn("tidak masuk", d["teks"])
+        self.assertIn("Baris 2 (Gula Aren 1kg): Dolibarr membalas galat 504", d["teks"])
+        self.assertIn("MUNGKIN sudah masuk", d["teks"])
+        self.assertIn("baris 2 SUDAH masuk", d["teks"])
+        self._cek_bukan_penutup_sukses(d["teks"])
+        # Kontrol negatif: 504 TANPA memproses -> tetap "mungkin", tetapi baca ulang menyatakan BELUM masuk.
+        K.reset()
+        K.mode.add("tolak:504:baris2")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertEqual(p.returncode, 8, p.stdout + p.stderr)
+        self.assertIn("baris 2 BELUM masuk", p.stdout)
+        self.assertIn("1 baris", p.stdout)
+        # Ulangan tetap ditahan (draf sebagian perintah yang sama).
+        K.mode.clear()
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertEqual(p.returncode, 7, p.stdout + p.stderr)
+        self.assertEqual(self._jumlah_draf("2"), 1)
+
+    def test_d1_5xx_kontrol_negatif_tidak_tersimpan(self):
+        # 500 tanpa memproses: kode 8 jujur ("belum ada draf baru"), ulangan boleh membuat (tidak ada yang tertinggal).
+        K.mode.add("tolak:500:post_invoice")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertEqual(p.returncode, 8, p.stdout + p.stderr)
+        self.assertIn("belum ada draf baru dari perintah ini", p.stdout)
+        self.assertEqual(self._jumlah_draf("2"), 0)
+        K.mode.clear()
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertEqual(self._jumlah_draf("2"), 1)
+
+    def test_d1_4xx_dan_bukan_tulis_tidak_berubah(self):
+        # Batas D1: hanya 5xx pada TULIS yang "tidak pasti". 4xx, 501 (modul mati) dan 503 blokir IP = pasti gagal.
+        sys.path.insert(0, os.path.dirname(SKRIP))
+        import dolibarr
+        f = dolibarr.Dolibarr._5xx_tidak_pasti
+        for kode in (500, 502, 503, 504, 599):
+            self.assertTrue(f(kode, "<html>galat</html>"), kode)
+        for kode in (200, 400, 401, 403, 404, 422, 501):
+            self.assertFalse(f(kode, ""), kode)
+        self.assertFalse(f(503, '{"error":{"message":"API not allowed from your IP 1.2.3.4"}}'))
+        # 403 pada tulis tetap kode 5 (bukan 8).
+        K.mode.add("403:invoices")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertEqual(p.returncode, 5, p.stdout + p.stderr)
+        # 5xx pada BACA tetap galat biasa (kode 6), tidak "mungkin tersimpan".
+        K.reset()
+        K.mode.add("galat:502:get_invoice")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertEqual(p.returncode, 8, p.stdout + p.stderr)   # draf sudah dibuat, hanya baca ulang yang gagal
+        self.assertIn("Semua 3 baris sudah diterima Dolibarr", p.stdout)
+        self.assertNotIn("MUNGKIN SUDAH TERSIMPAN", p.stdout)
+
+    def test_d1_pelanggan_tambah_504(self):
+        K.mode.add("galat:504:post_pelanggan")
+        p = self.jalan("pelanggan", "tambah", "--nama", "Bengkel Pak Harjo", "--telepon", "081299887766", "--ya")
+        self.assertEqual(p.returncode, 8, p.stdout + p.stderr)
+        self.assertIn("MUNGKIN SUDAH TERSIMPAN", p.stderr)
+        self.assertIn("galat 504: 504 Gateway Time-out SAAT", p.stderr)   # judul halaman tidak dobel
+        self.assertNotIn("coba lagi", (p.stdout + p.stderr).lower())
+        K.mode.clear()
+        p = self.jalan("pelanggan", "tambah", "--nama", "Bengkel Pak Harjo", "--telepon", "081299887766", "--ya")
+        self.assertEqual(p.returncode, 7, p.stdout + p.stderr)
+
+    def test_d2_jawaban_terpotong_saat_menulis(self):
+        # D2: IncompleteRead bukan lagi "Galat tak terduga" kode 6.
+        for titik, perintah in (("post_invoice", ("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")),
+                                ("baris2", ("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")),
+                                ("post_pelanggan", ("pelanggan", "tambah", "--nama", "Bengkel Pak Harjo", "--ya"))):
+            with self.subTest(titik=titik):
+                K.reset()
+                K.mode.add("sebagian:" + titik)
+                p = self.jalan(*perintah)
+                semua = p.stdout + p.stderr
+                self.assertEqual(p.returncode, 8, semua)
+                self.assertNotIn("Galat tak terduga", semua)
+                self.assertNotIn("Traceback", semua)
+                self.assertNotIn("coba lagi", semua.lower())
+                if titik == "baris2":
+                    self.assertIn("jawaban Dolibarr terpotong/rusak. Baris ini MUNGKIN sudah masuk", p.stdout)
+                    self.assertIn("baris 2 SUDAH masuk", p.stdout)
+                else:
+                    self.assertIn("terpotong/rusak SAAT MENGIRIM data (IncompleteRead)", semua)
+                    self.assertIn("MUNGKIN SUDAH TERSIMPAN", semua)
+        # Jawaban terpotong saat MEMBACA: galat koneksi biasa (kode 3), bukan "Galat tak terduga".
+        K.reset()
+        K.mode.add("sebagian:get_invoice")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertEqual(p.returncode, 8, p.stdout + p.stderr)
+        self.assertIn("Jawaban Dolibarr terpotong/rusak (IncompleteRead)", p.stdout)
+        self.assertNotIn("Galat tak terduga", p.stdout + p.stderr)
+        # Putus tanpa jawaban tetap dilaporkan sebagai putus (RemoteDisconnected bukan "terpotong").
+        K.reset()
+        K.mode.add("putus:post_invoice")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertIn("Koneksi ke Dolibarr putus", p.stdout)
+
+    def test_d3_draf_kosong_perintah_lain_hanya_catatan(self):
+        # Perintah B terputus -> draf kosong bersidik B. Perintah A (berbeda) tidak ditahan, cukup CATATAN.
+        K.mode.add("putus:post_invoice")
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM_B, "--ya")
+        self.assertEqual(p.returncode, 8, p.stdout + p.stderr)
+        K.mode.clear()
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya", "--json")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        d = json.loads(p.stdout)
+        self.assertEqual([x["ref"] for x in d["draf_kosong_lain"]], ["(PROV101)"])
+        self.assertIn("CATATAN: pelanggan ini juga punya draf KOSONG (Rp 0) sisa perintah LAIN", d["teks"])
+        self.assertIn("(PROV101) (ID 101)", d["teks"])
+        self.assertEqual(d["ref"], "(PROV102)")
+        # Perintah B diulang: tetap DITAHAN oleh draf kosong miliknya, dengan instruksi yang menyebut draf itu.
+        n = len(self.tulis_dilakukan())
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM_B, "--ya")
+        self.assertEqual(p.returncode, 7, p.stdout + p.stderr)
+        self.assertEqual(len(self.tulis_dilakukan()), n)
+        self.assertIn("draf kosong (Rp 0, belum ada barang) dari perintah yang SAMA ini", p.stdout)
+        self.assertIn("- Hapus draf kosong (PROV101) (ID 101), lalu jalankan ulang perintah ini.", p.stdout)
+        self.assertNotIn("lengkapi barisnya sesuai pratinjau", p.stdout)
+        self.assertNotIn("(PROV102)", p.stdout.split("DIBATALKAN")[1])
+
+    def test_d3_draf_kosong_tanpa_kode_tetap_menahan_dengan_pesan_jelas(self):
+        # Asal tidak pasti (sisa v1.0.3/manual) -> tetap ditahan (paling aman), pesannya menyebut draf itu.
+        K.invoice.append({"id": "95", "ref": "(PROV95)", "socid": "2", "type": "0", "statut": "0",
+                          "date": ts("2026-09-24"), "total_ht": s8(0), "total_tva": s8(0), "total_ttc": s8(0),
+                          "note_private": "Draf dibuat oleh skill dolibarr-usaha (Komunitech). Periksa sebelum validasi.",
+                          "lines": []})
+        p = self.jalan("invoice", "buat", "--pelanggan", "2", *self.ITEM, "--ya")
+        self.assertEqual(p.returncode, 7, p.stdout + p.stderr)
+        self.assertIn("(PROV95) (ID 95): draf kosong (Rp 0, belum ada barang) tanpa kode perintah", p.stdout)
+        self.assertIn("- Buka draf kosong (PROV95) (ID 95). Jika memang tidak dipakai, hapus", p.stdout)
+        self.assertNotIn("lengkapi barisnya sesuai pratinjau", p.stdout)
+        self.assertEqual(self.tulis_dilakukan(), [])
 
     # ---------------------------------------------------------- statis
     def test_statis_tidak_ada_perintah_berbahaya(self):
