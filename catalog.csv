@@ -51,7 +51,7 @@ edukasi-pasien-klinik,Customer Service,orisinal,,Proprietary Komunitech,8,ecer,1
 asisten-tulis-riset,Marketing & Konten,orisinal,,Proprietary Komunitech,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
 kasir-lokal,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Komunitech,9,ecer,199000,,,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
 pantau-pasar-kripto,Data & Analisis,orisinal,,Proprietary Komunitech,9,vip,149000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji CLI + gateway lokal),lulus,2026-09-25
-laporan-harian-usaha,Data & Analisis,orisinal,,Proprietary Komunitech,9,vip,149000,,,1.1.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),uji,2026-09-25
+laporan-harian-usaha,Data & Analisis,orisinal,,Proprietary Komunitech,8,vip,149000,,,1.1.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji CLI + gateway lokal: automations add/run),lulus,2026-09-25
 crm-wa,Sales,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations add/run),lulus,2026-09-24
 rencana-pelajaran-guru,Pendidikan,kurasi,https://github.com/anthropics/k12-teacher-skills,Apache-2.0,8,ecer,129000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-24
 dolibarr-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations run),lulus,2026-09-24

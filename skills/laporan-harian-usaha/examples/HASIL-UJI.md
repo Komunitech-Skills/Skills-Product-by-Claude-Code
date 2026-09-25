@@ -104,3 +104,48 @@ Alasan:
 - Tidak ada cacat tinggi/sedang; semua sisa berkeparahan rendah/kosmetik.
 
 **Keputusan: LULUS (≥ 7).** Layak naik ke uji platform asli lalu `beta`. Disarankan memperbaiki N1 dan N4 (kecil, murah) sebelum dibagikan ke beta tester; N2/N3 boleh dijadwalkan di versi berikutnya.
+
+---
+
+## Uji v1.1.0 (2026-09-25)
+
+- **Penguji:** agent penguji independen (simulasi, Claude Code), bukan pembuat skill maupun yang menambahkan alat ke-5. Rincian & reproduksi lengkap: `07-uji-v1.1.0-prospek.md`.
+- **Perubahan yang diuji:** alat ke-5 `crm-wa` → bagian teks PROSPEK baru, JSON `prospek`, butir "follow-up prospek CRM terlambat" di `PERLU PERHATIAN`, opsi `--crm-db`/`--crm-script`/`--tanpa crm`.
+- **Lingkungan:** skill + `crm-wa` + `kasir-lokal` (minimal) disalin ke scratchpad terpisah dari pembuat, `HOME`/`KOMUNITECH_DATA` sementara. Data CRM dibuat sendiri dengan script resmi `crm.py` (11 kontak, sumber Instagram/TikTok/Referensi, 2026-09-07 s.d. 2026-09-24, termasuk deal dari lead lama, follow-up terlambat, order lewat jadwal, dan 2 batal). Semua data fiktif.
+- **Otomatis:** `tests/uji_regresi.py` → **47 tes OK** (termasuk 8 tes crm-wa milik pembuat, dijalankan ulang, bukan dasar penilaian tunggal). `python3 scripts/validate.py` (dari `/home/user/Skills`) → 58 skill valid. `bash scripts/uji_openclaw.sh` (dari `/home/user/Skills`) → OpenClaw 2026.9.6, 58/58 siap.
+- **Uji jadwal OpenClaw sungguhan (bukan simulasi):** gateway `--dev` nyata (OpenClaw 2026.9.6) di `HOME=/tmp/uji-openclaw/home` → `automations add` (harian 21:00 WIB & mingguan Senin 07:00 WIB, `nextRunAtMs` benar) + `automations run <id> --wait` → `summary` memuat teks PROSPEK lengkap lewat Gateway asli (bukan hanya panggilan langsung). Ini menutup catatan pembuat sendiri di `references/openclaw-jadwal.md` ("PROSPEK belum diuji ulang lewat `automations run` sungguhan").
+
+### Verifikasi angka PROSPEK (independen)
+Tiga sumber dibandingkan untuk tiap angka: `laporan.py --json`, `crm.py rekap --json` langsung, dan hitung ulang Python dari query SQLite `mode=ro` mentah (tanpa memanggil kode `crm.py`/`laporan.py`).
+
+| Diuji | Hasil |
+|---|---|
+| Harian 24/9: lead_masuk, deal (jumlah/nilai), kohort, konversi_teks, followup (terlambat/hari ini/besok/order), nilai potensi, sumber_terbaik | **0 beda** di 3 sumber |
+| Mingguan 14–20/9 (+ banding 7–13/9): lead_masuk, deal, kohort, konversi_teks, sumber_terbaik, banding lead | **0 beda** di 3 sumber |
+| Privasi: nama/nomor/kode 11 kontak fiktif di teks + JSON (harian, mingguan, `--samarkan`) | **0 bocor** |
+| DB CRM asli (sha256) sebelum vs sesudah seluruh skenario (harian, mingguan, `--samarkan`, alat tak ada/rusak/terkunci, `--crm-db`/`--crm-script` lain) | **sama** |
+| crm-wa tidak terpasang / DB rusak / DB terkunci (`BEGIN EXCLUSIVE` + timeout) | dilewati dengan catatan jelas di `alat.crm` & `PERLU PERHATIAN`; **tidak crash, tidak macet** |
+| Regresi PENJUALAN saat kasir-lokal + crm-wa berjalan bersamaan | sama dengan uji crm-wa sendirian; tidak ada interferensi antar alat |
+
+### Kejelasan label "Deal periode ini" vs "Konversi" — cacat ditemukan
+Direproduksi persis contoh pembuat ("Deal periode ini: 1 senilai Rp X" + "Konversi: 0,0% (0 dari 1 lead)") dengan data independen, **dan** ditemukan kasus lebih ekstrem/berlawanan arah pada skenario mingguan: **"Deal periode ini: 0 senilai Rp 0"** langsung diikuti **"Konversi: 100,0% (3 dari 3 lead)"** — bisa terbaca kontradiktif oleh pemilik awam. Akar sebab: "Deal periode ini" dihitung dari tanggal **closing** (`tgl_deal` dalam periode), "Konversi" dari tanggal **lead masuk** (`tgl_masuk` dalam periode, status *saat ini*) — dua populasi kontak yang bisa berbeda, tidak dijelaskan di teks PROSPEK maupun di "Aturan hitung" `SKILL.md`. Catatan peredam yang kadang muncul di `crm.py rekap` sendiri ("periode ini masih baru...") tidak diteruskan `laporan.py`, dan tidak muncul sama sekali bila lead kohort sudah semuanya diputuskan (`masih_berjalan = 0`, persis kasus mingguan di atas). **Dinilai sebagai cacat (S2, Sedang)**, bukan hanya gaya penulisan, karena berpotensi menyesatkan (dibaca kontradiktif) bagi audiens awam yang jadi target utama produk ini.
+
+### Cacat baru v1.1.0
+| ID | Keparahan | Ringkas | Reproduksi |
+|---|---|---|---|
+| **S2** | **Sedang** | "Deal periode ini" (basis `tgl_deal`) dan "Konversi (Y dari Z lead)" (basis `tgl_masuk`/kohort) bisa berasal dari populasi kontak berbeda & terbaca kontradiktif; tidak dijelaskan di teks maupun `SKILL.md` | Data `07-uji-v1.1.0-prospek.md` bagian 1 → mingguan 14–20/9 → teks PROSPEK: "Deal periode ini: 0 senilai Rp 0" + "Konversi: 100,0% (3 dari 3 lead)" |
+| N-baru | Rendah | `ambil_crm()` tidak meneruskan `--samarkan` ke `crm.py rekap`; tidak berdampak untuk kontrak `rekap --json` crm-wa 1.0.1 saat ini (tidak memuat nama/teks bebas), tapi rawan bila kontrak berubah | `laporan.py:ambil_crm()` — bandingkan argv `jalankan()` dengan/tanpa `args.samarkan` |
+| Kosmetik | Kosmetik | Order (deal) lewat jadwal konfirmasi tidak memicu butir tersendiri di `PERLU PERHATIAN` (hanya dihitung di ringkasan angka PROSPEK) | K0007 (Bu Yuli) pada data uji, `order_perlu_konfirmasi=1` tidak muncul sebagai butir perhatian |
+
+Tidak ada angka salah, tidak ada penulisan ke database CRM asli, tidak ada kebocoran nama/nomor prospek, tidak ada crash/hang, dan jadwal OpenClaw (harian & mingguan) benar termasuk lewat `automations run` sungguhan. Regresi bagian PENJUALAN/STOK/KEHADIRAN/TAGIHAN: **47/47** tes bawaan tetap OK dan uji gabungan kasir+crm manual tidak menunjukkan perbedaan.
+
+### Skor kualitas v1.1.0: **8 / 10**
+Alasan:
+- (+) Klaim "angka PROSPEK apa adanya dari `crm.py rekap --json`" **terbukti**: 0 beda di seluruh angka harian & mingguan terhadap 2 sumber independen (rekap langsung + hitung ulang SQLite mentah).
+- (+) Aman & tahan gagal: DB asli tidak pernah berubah (sha256 sama), tahan alat tidak ada/DB rusak/DB terkunci tanpa crash/macet, tanpa nama/nomor prospek di teks & JSON, `--crm-db`/`--crm-script`/`--tanpa crm` semua bekerja.
+- (+) Tidak ada regresi pada 4 alat sebelumnya (47/47 tes bawaan OK, plus uji gabungan manual).
+- (+) Jadwal OpenClaw diuji lewat Gateway sungguhan (bukan hanya simulasi) untuk pertama kalinya sejak crm-wa ditambahkan, menutup catatan terbuka pembuat sendiri di referensi jadwal; harian 21:00 WIB & mingguan Senin 07:00 WIB benar, teks PROSPEK muncul di `summary`.
+- (−) **S2**: pasangan baris "Deal periode ini" / "Konversi" bisa terbaca kontradiktif (deal 0 tapi konversi 100%, atau sebaliknya) tanpa penjelasan apa pun di teks Telegram atau di `SKILL.md`, untuk audiens yang eksplisit "awam teknologi" — ini yang menahan skor dari 9.
+- (−) N-baru & catatan kosmetik: dampak rendah, tidak menahan kelulusan tapi sebaiknya dijadwalkan.
+
+**Keputusan: LULUS (≥ 7).** Boleh lanjut ke uji platform asli untuk paket v1.1.0. Disarankan memperbaiki **S2** (murah: satu baris penjelas tetap atau ganti label agar basis tanggal tersirat, tidak mengubah angka apa pun) sebelum `beta`, supaya bagian PROSPEK tidak berisiko dibaca sebagai laporan yang salah/kontradiktif oleh pemilik UMKM awam. N-baru dan catatan "order perlu konfirmasi" boleh dijadwalkan di versi berikutnya bersama N2–N4 dari v1.0.1 yang belum diperbaiki.

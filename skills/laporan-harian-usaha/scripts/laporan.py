@@ -1002,10 +1002,11 @@ def teks_laporan(data, per, ctx):
         if f["nilai_terlambat_dan_hari_ini"]:
             t.append("Nilai potensi (terlambat + hari ini): %s" % rp(f["nilai_terlambat_dan_hari_ini"]))
         dl = pr["deal"]
-        t.append("Deal periode ini: %d senilai %s%s" % (
+        t.append("Deal periode ini: %d senilai %s%s (termasuk dari prospek lama)" % (
             dl["jumlah"], rp(dl["nilai"]), (" (%d belum diisi nilainya)" % dl["tanpa_nilai"]) if dl["tanpa_nilai"] else ""))
         ko = pr["kohort"]
-        t.append("Konversi: %s (%d dari %d lead)" % (pr["konversi_teks"], ko["deal_atau_selesai"], ko["lead"]))
+        t.append("Konversi prospek baru periode ini: %s (%d dari %d prospek baru sudah deal)" % (
+            pr["konversi_teks"], ko["deal_atau_selesai"], ko["lead"]))
         sb = pr["sumber_terbaik"]
         if sb:
             t.append("Sumber lead terbaik: %s (%d lead, %d deal%s)" % (

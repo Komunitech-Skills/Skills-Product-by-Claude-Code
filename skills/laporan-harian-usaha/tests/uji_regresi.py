@@ -560,7 +560,7 @@ class UjiGabungan(Dasar):
         self.assertEqual(pr["followup"]["nilai_terlambat_dan_hari_ini"], 4500000)
         self.assertIn("Prospek baru: 1", d["teks"])
         self.assertIn("Follow-up terlambat 1 | hari ini 2 | besok 0 | order perlu konfirmasi 0", d["teks"])
-        self.assertIn("Deal periode ini: 1 senilai Rp 6.000.000", d["teks"])
+        self.assertIn("Deal periode ini: 1 senilai Rp 6.000.000 (termasuk dari prospek lama)", d["teks"])
 
     def test_crm_mingguan_banding_minggu_sebelumnya(self):
         akar = self.salin("crmmingguan")

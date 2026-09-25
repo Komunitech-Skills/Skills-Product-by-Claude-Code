@@ -105,8 +105,8 @@ PROSPEK
 Prospek baru: 1
 Follow-up terlambat 1 | hari ini 2 | besok 0 | order perlu konfirmasi 0
 Nilai potensi (terlambat + hari ini): Rp 4.500.000
-Deal periode ini: 1 senilai Rp 6.000.000
-Konversi: 0,0% (0 dari 1 lead)
+Deal periode ini: 1 senilai Rp 6.000.000 (termasuk dari prospek lama)
+Konversi prospek baru periode ini: 0,0% (0 dari 1 prospek baru sudah deal)
 Sumber lead terbaik: belum ada deal dari lead periode ini.
 Nama & nomor prospek: ketik "follow-up hari ini" atau "rekap CRM".
 
@@ -119,6 +119,7 @@ JSON (`--json`): `periode`, `alat` (status `ada`/`tidak_ada`/`gagal`/`dilewati` 
 
 ## Aturan hitung (eksplisit)
 - **Omzet bersih** = `penjualan_bersih` dari kasir-lokal (setelah diskon, retur & void). Uang diterima ditampilkan terpisah bila berbeda (pajak/service).
+- **Prospek (crm-wa)**: "Deal periode ini" menghitung semua deal yang *terjadi* di periode (bisa dari prospek lama); "Konversi prospek baru" = prospek yang *masuk* di periode dan sudah deal ÷ prospek masuk periode itu. Keduanya bisa terlihat berbeda (mis. deal 1 tapi konversi 0%) — itu wajar; jelaskan bila pemilik bertanya.
 - **Rata-rata per nota** = omzet bersih ÷ (nota jual − nota void), dibulatkan ke rupiah terdekat (0,5 ke atas). Tanpa nota sah → "-".
 - **Perubahan %** = (nilai sekarang − pembanding) ÷ pembanding × 100, dibulatkan **1 desimal**, 0,05 ke atas (menjauhi nol). Pembanding Rp 0 → "naik dari Rp 0 (persen tidak dihitung)"; keduanya 0 → "sama-sama Rp 0"; pembanding minus → tidak dihitung. Contoh: 69.000 vs 36.000 → 33.000 ÷ 36.000 × 100 = 91,666… → **91,7%**.
 - **Pembanding harian**: kemarin & hari yang sama minggu lalu. **Mingguan**: Senin–Minggu sebelumnya; minggu berjalan dipotong s.d. hari ini dan dibanding hari yang sama minggu sebelumnya.
