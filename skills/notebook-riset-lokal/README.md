@@ -17,7 +17,7 @@
 - Pemilik usaha yang mengumpulkan katalog banyak supplier dan ingin bandingkan cepat tanpa buka satu-satu.
 - Siapa pun yang sering menerima notulen rapat/artikel panjang dan ingin ringkasan siap pakai.
 
-**Kurang cocok:** belum siap memasang Docker (lihat instalasi — satu lapis teknis tambahan, atau pakai jasa setup Komunitech); butuh mengunggah banyak file PDF langsung lewat AI chat (v1.0.0 mengarahkan Anda seret-lepas file ke tampilan web Open Notebook, bukan lewat skill); komputer dengan RAM terbatas dan ingin memakai model AI lokal gratis (Ollama butuh RAM cukup besar — API berbayar jadi alternatif).
+**Kurang cocok:** belum siap memasang Docker (lihat instalasi — satu lapis teknis tambahan, atau pakai jasa setup Komunitech); butuh mengunggah banyak file PDF langsung lewat AI chat (v1.0.1 mengarahkan Anda seret-lepas file ke tampilan web Open Notebook, bukan lewat skill); komputer dengan RAM terbatas dan ingin memakai model AI lokal gratis (Ollama butuh RAM cukup besar — API berbayar jadi alternatif).
 
 ## Contoh sebelum & sesudah
 **Sebelum:** buka folder berisi belasan PDF PP/PMK pajak UMKM satu-satu, `Ctrl+F` di tiap file, catat manual angka yang cocok, masih tidak yakin sudah baca semua yang relevan.
