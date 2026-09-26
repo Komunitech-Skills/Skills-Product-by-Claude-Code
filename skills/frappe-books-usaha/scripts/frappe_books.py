@@ -752,6 +752,14 @@ def cmd_laba_rugi(args):
     out.append(f"Total beban: {rp(tb)}")
     lb = tp - th - tb
     out.append(f"{'LABA' if lb >= 0 else 'RUGI'} BERSIH: {rp(lb)}")
+    if "Item" in tabel and "expenseAccount" in kolom_tabel(con, "Item"):
+        salah = [r["name"] for r in q(con, "SELECT name, expenseAccount FROM Item WHERE trackItem = 1")
+                 if akun.get(r["expenseAccount"], ("", ""))[1] == "Cost of Goods Sold"]
+        if salah:
+            out.append(f"PERINGATAN: {len(salah)} barang berstok memakai akun pembelian HPP ({', '.join(salah[:5])}"
+                       f"{', ...' if len(salah) > 5 else ''}). Pembelian lalu pengiriman barang itu mencatat HPP dua kali, "
+                       "sehingga laba tampak lebih kecil. Perbaiki di Frappe Books: buka barangnya > Purchase Acc. = akun "
+                       "'Stock Received But Not Billed' (lihat Inventory Settings), lalu cek ulang invoice pembelian terkait.")
     if retur_dikoreksi:
         lb0 = mentah["pend"] - mentah["hpp"] - mentah["beban"]
         out.append(f"Catatan retur: {len(retur_dikoreksi)} invoice retur di periode ini ({', '.join(sorted(retur_dikoreksi))}). "
@@ -1152,6 +1160,8 @@ ATURAN_AKUN = {
     "utang": {"tipe": "Payable", "nama": ("hutang dagang dalam negeri", "utang dagang dalam negeri", "hutang usaha",
                                          "utang usaha", "creditors"), "satu_tipe": True},
 }
+ATURAN_AKUN["srbnb"] = {"tipe": "Stock Received But Not Billed", "satu_tipe": True,
+                        "nama": ("stock received but not billed", "stock diterima tapi tidak ditagih")}
 SERI_BAWAAN = {"SalesInvoice": "SINV-", "PurchaseInvoice": "PINV-"}
 
 
@@ -1173,13 +1183,33 @@ def pilih_seri(con, tabel, skema, diminta):
                 "Tanyakan ke pengguna seri mana yang dipakai, lalu jalankan ulang dengan --seri \"<nama seri>\".")
 
 
+def pilih_akun_stok(con, tabel, diminta, peringatan):
+    if diminta:
+        return pilih_akun(con, tabel, diminta, ATURAN_AKUN["srbnb"], "pembelian barang berstok", "--akun-pembelian-stok")
+    if con is None:
+        raise Gagal("Akun pembelian untuk barang yang dilacak stoknya belum ditentukan.",
+                    "Tambahkan --db \"<file .books.db>\" (diambil dari Inventory Settings > Stock Received But Not Billed), "
+                    "atau --akun-pembelian-stok \"<nama akun persis>\". Jangan pakai akun HPP: HPP akan terhitung dua kali.")
+    akun = {r["name"]: r for r in q(con, "SELECT name, accountType, isGroup FROM Account")}
+    v = single(con, "InventorySettings", "stockReceivedButNotBilled")
+    for f, label in (("stockInHand", "Stock In Hand"), ("costOfGoodsSold", "Cost Of Goods Sold")):
+        if not single(con, "InventorySettings", f):
+            peringatan.append(f"Inventory Settings '{label}' belum diisi di Frappe Books; isi dulu (Setup > Settings > "
+                              "Inventory) sebelum menerima/mengirim barang berstok")
+    if v and v in akun and not akun[v]["isGroup"]:
+        return v
+    hasil = pilih_akun(con, tabel, None, ATURAN_AKUN["srbnb"], "pembelian barang berstok (Stock Received But Not Billed)",
+                       "--akun-pembelian-stok")
+    peringatan.append(f"Inventory Settings 'Stock Received But Not Billed' belum diisi; dipakai akun bertipe itu: {hasil}")
+    return hasil
+
+
 def cmd_csv_barang(args):
     periksa_keluar(args.keluar, args.db)
     kepala, data = baca_csv_awam(args.masuk)
     peta = peta_kolom(kepala, ["nama", "kode", "satuan", "harga", "jenis", "lacak", "barcode", "keterangan"], ["nama"])
     con, tabel = db_opsional(args.db)
     akun_jual = pilih_akun(con, tabel, args.akun_penjualan, ATURAN_AKUN["penjualan"], "penjualan", "--akun-penjualan")
-    akun_beli = pilih_akun(con, tabel, args.akun_pembelian, ATURAN_AKUN["hpp"], "pembelian/HPP", "--akun-pembelian")
     akun_jasa, jasa_cadangan = akun_jual, False
     if args.akun_jasa:
         akun_jasa = pilih_akun(con, tabel, args.akun_jasa, ATURAN_AKUN["jasa"], "jasa", "--akun-jasa")
@@ -1235,7 +1265,18 @@ def cmd_csv_barang(args):
             peringatan.append(f"baris {no}: jasa tidak bisa dilacak stoknya -> lacak stok dimatikan")
             lacak = "0"
         hasil.append([nama, ambil(b, peta, "kode"), "Both", jenis, satuan, harga, ambil(b, peta, "keterangan"),
-                      akun_jasa if jenis == "Service" else akun_jual, akun_beli, ambil(b, peta, "barcode"), lacak])
+                      akun_jasa if jenis == "Service" else akun_jual, None, ambil(b, peta, "barcode"), lacak])
+    # Akun pembelian mengikuti formula bawaan Frappe Books v0.36.0 (models/baseModels/Item/Item.ts, expenseAccount):
+    # barang dilacak stok -> InventorySettings.stockReceivedButNotBilled; lainnya -> akun bertipe Cost of Goods Sold.
+    # Barang berstok dengan akun HPP membuat HPP terhitung dua kali (saat pembelian dan saat pengiriman/Shipment).
+    akun_beli = akun_stok = None
+    if any(h[10] == "0" for h in hasil):
+        akun_beli = pilih_akun(con, tabel, args.akun_pembelian, ATURAN_AKUN["hpp"], "pembelian/HPP (barang tanpa stok & jasa)",
+                               "--akun-pembelian")
+    if any(h[10] == "1" for h in hasil):
+        akun_stok = pilih_akun_stok(con, tabel, args.akun_pembelian_stok, peringatan)
+    for h in hasil:
+        h[8] = akun_stok if h[10] == "1" else akun_beli
     if jasa_cadangan and any(h[3] == "Service" for h in hasil):
         peringatan.append(f"jasa memakai akun penjualan '{akun_jual}' (akun pendapatan jasa tidak ditemukan pasti); "
                           "bila salah, jalankan ulang dengan --akun-jasa \"<nama akun>\"")
@@ -1256,7 +1297,9 @@ def cmd_csv_barang(args):
         p = tulis_template(args.keluar, kolom, hasil)
         ok = [f"LOLOS: {len(hasil)} barang/jasa siap diimpor -> {p}",
               f"Akun penjualan: {akun_jual}" + (f" (jasa: {akun_jasa})" if akun_jasa != akun_jual else "")
-              + f" | akun pembelian: {akun_beli}"] + [s.format(skema="Item") for s in LANGKAH_IMPOR]
+              + (f" | akun pembelian (tanpa stok/jasa): {akun_beli}" if akun_beli else "")
+              + (f" | akun pembelian barang berstok: {akun_stok} (bawaan Frappe: Stock Received But Not Billed)"
+                 if akun_stok else "")] + [s.format(skema="Item") for s in LANGKAH_IMPOR]
         if con is None:
             ok.append("Nama akun belum dicek ke database (tanpa --db); pastikan persis sama dengan di Frappe Books.")
     laporan_validasi("VALIDASI CSV BARANG (Frappe Books: Item)", galat, peringatan, ok)
@@ -1458,6 +1501,7 @@ def buat_parser():
     p = sub.add_parser("csv-barang"); p.add_argument("--db")
     p.add_argument("--masuk", required=True); p.add_argument("--keluar", required=True)
     p.add_argument("--akun-penjualan"); p.add_argument("--akun-pembelian"); p.add_argument("--akun-jasa")
+    p.add_argument("--akun-pembelian-stok", help="akun pembelian barang berstok (bawaan: Inventory Settings)")
     p.add_argument("--lacak-stok", action="store_true", help="barang (bukan jasa) tanpa kolom lacak stok -> dilacak")
     p.set_defaults(fungsi=cmd_csv_barang)
     p = sub.add_parser("csv-transaksi"); p.add_argument("--db")

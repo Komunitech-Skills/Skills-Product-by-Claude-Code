@@ -81,7 +81,7 @@ Meringkas seluruh sumber dalam satu notebook (memakai model AI, sama seperti `ta
 ```bash
 python3 <folder-skill>/scripts/notebook.py cari --kueri "force majeure" --notebook "Kontrak Supplier"
 ```
-Pencarian kata/frasa langsung ke database (bukan tanya-jawab AI) — cocok untuk mencari cepat tanpa menunggu model AI. `--notebook` opsional (kosongkan untuk cari di semua notebook), `--batas` mengatur jumlah hasil (default 20).
+Pencarian kata/frasa langsung ke database (bukan tanya-jawab AI) — cocok untuk mencari cepat tanpa menunggu model AI. `--notebook` opsional (kosongkan untuk cari di semua notebook), `--batas` mengatur jumlah hasil (default 20). Hasil berisi **judul, id dokumen, dan skor relevansi** saja — API pencarian Open Notebook (dikonfirmasi terhadap server 1.14.0 asli) **tidak menyediakan cuplikan kalimat yang cocok**; untuk melihat isinya, buka dokumen lewat `daftar-sumber` atau tampilan web.
 
 ### H. Podcast (opsional, bila didukung)
 ```bash
