@@ -9,7 +9,7 @@
 - ✅ Pilihan 2 (agent) diterima Gateway: `payload.kind: agentTurn`, `toolsAllow: ["exec","read"]`. Isi jawabannya **tidak** diuji (butuh API key model).
 - ⚠️ **Pesan sampai di Telegram belum diuji** (butuh bot token asli). Tanpa token: `deliveryStatus: not-delivered`, `Telegram bot token missing`. Artinya job memang mencoba mengirim.
 - ⚠️ Gateway Windows belum diuji untuk `--command-argv`; di Windows pakai Pilihan 2.
-- ⚠️ **Bagian PROSPEK (crm-wa, ditambahkan versi 1.1.0) belum diuji ulang lewat `automations run` sungguhan** — verifikasi di atas dari versi sebelum crm-wa ditambahkan. Uji lagi bila alat crm-wa dipakai.
+- ✅ **Bagian PROSPEK (crm-wa, ditambahkan versi 1.1.0)** diuji ulang oleh penguji independen 25 September 2026 (OpenClaw 2026.9.6, Gateway `--dev` lokal): `automations add` harian 21.00 & Senin 07.00 WIB + `automations run <id> --wait` → `summary` memuat teks PROSPEK lengkap (lihat `examples/HASIL-UJI.md`, bagian Uji v1.1.0).
 
 ## 0. Aturan kanal (keputusan pemilik Komunitech, 2026-09-23)
 - **Telegram (bot resmi) = default.** `--to` = ID chat **pemilik**. Penerima tambahan hanya **pemilik bersama/pengelola yang pemilik tunjuk secara eksplisit**, masing-masing lewat **jadwal terpisah** ke chat pribadinya sendiri (`--to` = ID chat orang itu), tidak pernah ke grup.

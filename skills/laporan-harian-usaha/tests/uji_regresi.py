@@ -628,6 +628,95 @@ class UjiGabungan(Dasar):
         self.jalan(akar, "--json", "--periode", "mingguan")
         self.assertEqual(hashlib.md5(dbfile.read_bytes()).hexdigest(), sebelum)
 
+    # ------------------------------------------------------------- v1.1.1: perbaikan temuan sisa
+    def test_n1_sebagian_tap_sebelum_jam_masuk_tanpa_alarm(self):
+        """N1: satu karyawan tap 07.45 (shift 08.00), laporan 07.50 -> tidak ada alarm "belum absen tanpa
+        keterangan". Setelah jam masuk (09.00) alarm tetap muncul (perilaku R1 tidak hilang)."""
+        akar = self.salin("n1")
+        alat(ABSENSI, "catat", "--karyawan", "Sari", "--tanggal", "2026-09-25", "--masuk", "07.45", "--json",
+             "--sekarang", "2026-09-25T07:46", "--ya", data=akar / "data")
+        d = self.jalan(akar, "--json", "--sekarang", "2026-09-25T07:50+07:00")
+        self.assertFalse(any("tanpa keterangan" in s or "Belum ada satu pun" in s or "Belum waktunya" in s
+                             for s in d["perhatian"]), d["perhatian"])
+        self.assertIn("Belum absen (4)", d["teks"])  # daftar di KEHADIRAN tetap ada, hanya bukan alarm
+        d2 = self.jalan(akar, "--json", "--sekarang", "2026-09-25T09:00+07:00")
+        self.assertTrue(any("Belum absen tanpa keterangan (4)" in s for s in d2["perhatian"]), d2["perhatian"])
+
+    def test_n2_cek_dilewati_tampil_di_teks(self):
+        """N2: cek impor yang dilewati karena struktur tabel berubah juga tampil di teks (sekali), bukan hanya
+        di JSON catatan."""
+        akar = self.salin("n2")
+        con = sqlite3.connect(str(akar / "data" / "stok.db"))
+        con.execute("ALTER TABLE pesanan RENAME COLUMN no_pesanan TO no_psn")
+        con.commit()
+        con.close()
+        d = self.jalan(akar, "--json")
+        pesan = "Cek impor kasir ke buku-stok dilewati: struktur tabel pesanan berubah."
+        self.assertEqual(d["catatan"], [pesan])
+        self.assertEqual(d["teks"].count(pesan), 1, d["teks"])
+        self.assertIn(pesan, d["perhatian"])
+
+    def test_n3_void_setelah_impor_diingatkan(self):
+        """N3: nota 23/9 sudah diimpor ke buku-stok lalu di-void 24/9 -> diingatkan dengan nomor notanya.
+        Nota yang di-void SEBELUM diimpor (N-260924-0003 di data master) tidak diingatkan. Setelah ekspor ulang
+        23/9 + impor lagi (stok dikembalikan buku-stok), peringatan hilang."""
+        akar = self.salin("n3")
+        data = akar / "data"
+        d0 = self.jalan(akar, "--json")
+        self.assertFalse(any("di-void setelah diimpor" in s for s in d0["perhatian"]), d0["perhatian"])
+        alat(KASIR, "void", "--nota", "N-260923-0001", "--alasan", "uji", "--waktu", "2026-09-24 14:00", "--json",
+             "--hari-ini", "2026-09-24T21:00", "--ya", data=data)
+        d = self.jalan(akar, "--json")
+        self.assertIn("1 nota kasir di-void setelah diimpor ke buku-stok, stoknya belum dikembalikan (N-260923-0001). "
+                      "Ekspor ulang tanggal nota itu dari kasir lalu impor lagi ke buku-stok.", d["perhatian"])
+        self.assertEqual(d["penjualan"]["omzet"], d0["penjualan"]["omzet"] - 36000)  # angka kasir tidak diubah laporan
+        ulang = akar / "j23-ulang.csv"
+        alat(KASIR, "ekspor", "--format", "buku-stok", "--tanggal", "2026-09-23", "--csv", ulang, "--json", data=data)
+        alat(STOK, "impor-pesanan", ulang, "--platform", "lainnya", "--ya", "--json", data=data)
+        d2 = self.jalan(akar, "--json")
+        self.assertFalse(any("di-void setelah diimpor" in s for s in d2["perhatian"]), d2["perhatian"])
+
+    def test_n5_samarkan_tanpa_titik_ganda(self):
+        teks = self.jalan(self.salin("n5"), "--samarkan")
+        self.assertNotIn("..", teks.split("PERLU PERHATIAN")[1])
+        self.assertIn("Belum absen tanpa keterangan (1): J. Tanyakan & catat izin/alpa.", teks)
+        teks2 = self.jalan(self.salin("n5b"))
+        self.assertIn("Belum absen tanpa keterangan (1): Joko. Tanyakan & catat izin/alpa.", teks2)
+
+    def test_crm_samarkan_diteruskan_angka_sama(self):
+        """N-baru: --samarkan diteruskan ke `crm.py rekap`; angka PROSPEK tetap identik."""
+        akar = self.salin("crmsamar")
+        biasa = self.jalan(akar, "--json")["prospek"]
+        samar = self.jalan(akar, "--json", "--samarkan")["prospek"]
+        self.assertEqual(biasa, samar)
+        dipanggil = []
+        asli = laporan.jalankan
+        laporan.jalankan = lambda script, argv, timeout: dipanggil.append(argv) or {}
+        try:
+            per = laporan.tentukan_periode(type("A", (), {"periode": "harian", "tanggal": None})(),
+                                           laporan.date(2026, 9, 24))
+            for sam in (False, True):
+                ctx = {"alat": {"crm": {"script_path": CRM, "snap": "x.db"}}, "periode": per,
+                       "hari_ini": laporan.date(2026, 9, 24), "timeout": 1, "samarkan": sam}
+                laporan.ambil_crm(ctx)
+        finally:
+            laporan.jalankan = asli
+        self.assertNotIn("--samarkan", dipanggil[0])
+        self.assertIn("--samarkan", dipanggil[1])
+
+    def test_order_perlu_konfirmasi_di_perhatian(self):
+        """Kosmetik v1.1.0: order (deal) yang jadwal konfirmasinya hari ini/lewat juga jadi butir PERLU PERHATIAN."""
+        akar = self.salin("crmorder")
+        d0 = self.jalan(akar, "--json")
+        self.assertEqual(d0["prospek"]["followup"]["order_perlu_konfirmasi"], 0)
+        self.assertFalse(any("order (deal)" in s for s in d0["perhatian"]))
+        alat(CRM, "catat", "--kontak", "Mas Andi", "--followup", "2026-09-24", "--json", "--hari-ini", "2026-09-24",
+             data=akar / "data")
+        d = self.jalan(akar, "--json")
+        self.assertEqual(d["prospek"]["followup"]["order_perlu_konfirmasi"], 1)
+        self.assertIn("1 order (deal) sudah waktunya dikonfirmasi ke pelanggan. Ketik 'follow-up hari ini' untuk "
+                      "daftar & draf pesannya.", d["perhatian"])
+
 
 def tearDownModule():
     if Dasar.master is not None:

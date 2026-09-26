@@ -101,6 +101,33 @@ openclaw automations rm <id>                         # hapus permanen (hanya id,
 `run`/`disable`/`enable`/`edit`/`rm` **wajib** pakai `id` (UUID dari hasil `add`) — memakai nama
 di perintah-perintah ini ditolak dengan `Automation not found: <nama>`.
 
+## 7. Follow-up CRM harian (crm-wa) — opsional, 08.00 WIB 📖
+Kalau Anda memakai `crm-wa` untuk mencatat calon pembeli (`PANDUAN.md` §5g), jadwal ini mengirim
+daftar follow-up hari ini ke Telegram pemilik setiap pagi. Pola perintah (`--command-argv`,
+`--cron`, `--tz`, `--announce --channel telegram`) sama dengan yang **dijalankan sungguhan** ✅
+untuk `kasir-lokal`/`pengingat-follow-up`; kombinasi khusus dengan `crm.py` **belum diuji** di
+Gateway oleh tim kurasi (lihat `skills/crm-wa/references/openclaw-jadwal.md`).
+
+1. Cari path lengkap script (ganti `NAMA` dengan nama pengguna komputer Anda; argv tidak mengenal
+   `~`):
+   ```bash
+   python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/crm-wa/scripts/crm.py'))"
+   ```
+2. Buat jadwal (tanpa memakai kuota model, hasil selalu sama):
+   ```bash
+   openclaw automations add --name "Follow-up CRM harian" --cron "0 8 * * *" --tz Asia/Jakarta \
+     --command-argv '["python3","/home/NAMA/.openclaw/skills/crm-wa/scripts/crm.py","hari-ini"]' \
+     --announce --channel telegram --to "<ID chat Telegram pemilik>"
+   ```
+   Versi disamarkan (nama jadi inisial, tanpa catatan obrolan/nilai rupiah) — tambahkan
+   `"--samarkan"` setelah `"hari-ini"` di dalam argv.
+3. Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
+
+**Privasi:** teks `hari-ini` memuat nama, nomor WA, tautan wa.me, catatan obrolan terakhir, dan
+nilai rupiah calon pembeli — akan tersimpan di riwayat chat Telegram Anda. Kalau keberatan atau
+kontaknya banyak, pakai `--samarkan` (dan/atau `--tanpa-draf` di dalam argv). Detail lengkap &
+pilihan lain (termasuk lewat agent AI): `skills/crm-wa/references/openclaw-jadwal.md`.
+
 ## WhatsApp (hanya bila syarat berikut semua terpenuhi)
 1. **Nomor terpisah** — bukan nomor toko/CS yang dikenal pelanggan.
 2. Hanya mengirim ke **pemilik sendiri**.
@@ -125,3 +152,5 @@ Ganti baris terakhir tiap perintah `add` di atas menjadi
   asli — hanya struktur job yang diverifikasi).
 - Perilaku agent AI sungguhan menjalankan skill di dalam job terjadwal (uji internal tidak
   memakai API key model).
+- Jadwal follow-up CRM (§7, `crm-wa`) di atas — pola cron & `--command-argv` sudah terbukti untuk
+  skill lain, tapi kombinasi persis dengan `crm.py` belum dicoba di Gateway oleh tim kurasi.

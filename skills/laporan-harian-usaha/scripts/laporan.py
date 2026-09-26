@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Laporan harian/mingguan gabungan untuk pemilik usaha (laporan-harian-usaha 1.1.0).
+"""Laporan harian/mingguan gabungan untuk pemilik usaha (laporan-harian-usaha 1.1.1).
 
 Menggabungkan data dari alat lokal Komunitech yang terpasang di komputer yang sama:
   kasir-lokal (penjualan), buku-stok (stok), absensi-lokal (kehadiran),
@@ -42,7 +42,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
-VERSI = "1.1.0"
+VERSI = "1.1.1"
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 BULAN = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
          "Oktober", "November", "Desember"]
@@ -477,6 +477,42 @@ def cek_impor_kasir_ke_stok(ctx, kasir):
         con_s.close()
 
 
+def cek_void_setelah_impor(ctx, kasir):
+    """Nota jual kasir yang di-VOID di periode laporan, padahal nota itu SUDAH diimpor ke buku-stok dan barisnya
+    di tabel `pesanan` belum dibatalkan (`dibatalkan` = 0) -> stoknya belum dikembalikan. buku-stok baru
+    mengembalikan stok bila ekspor kasir tanggal nota itu (nota void berstatus "Dibatalkan") diimpor ulang
+    (lihat stok.py cmd_impor_pesanan: pesanan lama + kategori batal -> stok masuk lagi, dibatalkan=1).
+
+    Mengembalikan list nomor nota (bisa kosong), atau None bila cek dilewati (alat tidak lengkap / struktur tabel
+    berubah; catatannya ditambahkan ke ctx["catatan"])."""
+    if kasir.get("pengaturan_stok") != "buku-stok" or ctx["alat"]["stok"]["status"] != "ada":
+        return None
+    per = ctx["periode"]
+    con_k = sqlite3.connect(str(ctx["alat"]["kasir"]["snap"]))
+    try:
+        if not kolom_ada(con_k, "nota", ["id", "no", "jenis", "waktu", "ref_nota_id"]):
+            return None  # catatan struktur nota sudah ditulis cek_impor_kasir_ke_stok
+        nomor = [r[0] for r in con_k.execute(
+            "SELECT DISTINCT j.no FROM nota v JOIN nota j ON j.id = v.ref_nota_id WHERE v.jenis='void' "
+            "AND j.jenis='jual' AND substr(v.waktu,1,10) BETWEEN ? AND ? ORDER BY j.no",
+            (per["dari"].isoformat(), per["sampai"].isoformat()))]
+    finally:
+        con_k.close()
+    if not nomor:
+        return []
+    con_s = sqlite3.connect(str(ctx["alat"]["stok"]["snap"]))
+    try:
+        if not kolom_ada(con_s, "pesanan", ["no_pesanan", "dibatalkan"]):
+            c = "Cek impor kasir ke buku-stok dilewati: struktur tabel pesanan berubah."  # sama dgn cek impor
+            if c not in ctx["catatan"]:
+                ctx["catatan"].append(c)
+            return None
+        return [no for no in nomor if con_s.execute(
+            "SELECT 1 FROM pesanan WHERE no_pesanan=? AND COALESCE(dibatalkan,0)=0", (no,)).fetchone()]
+    finally:
+        con_s.close()
+
+
 def jadwal_masuk_paling_awal(ctx):
     """Jam masuk paling awal di antara shift yang dipakai karyawan aktif (absensi-lokal), format 'HH:MM'.
 
@@ -620,9 +656,13 @@ def ambil_crm(ctx):
     per = ctx["periode"]
 
     def rekap(dari, sampai):
-        return jalankan(k["script_path"], ["rekap", "--db", str(k["snap"]), "--dari", dari.isoformat(), "--sampai",
-                                           sampai.isoformat(), "--hari-ini", ctx["hari_ini"].isoformat(), "--json"],
-                        ctx["timeout"])
+        argv = ["rekap", "--db", str(k["snap"]), "--dari", dari.isoformat(), "--sampai", sampai.isoformat(),
+                "--hari-ini", ctx["hari_ini"].isoformat(), "--json"]
+        if ctx["samarkan"]:
+            # Kontrak rekap --json saat ini tanpa nama/nomor; --samarkan (ada sejak crm-wa 1.0.0, hanya
+            # memengaruhi alasan batal yang tidak dipakai di sini) menjaga privasi bila kontraknya berubah.
+            argv.append("--samarkan")
+        return jalankan(k["script_path"], argv, ctx["timeout"])
 
     kini = rekap(per["dari"], per["sampai"])
     pi = kini.get("periode_ini") or {}
@@ -748,13 +788,14 @@ def susun(args):
             tagihan = bagian(ctx, "pengingat", ambil_pengingat)
         if A["crm"]["status"] == "ada":
             prospek = bagian(ctx, "crm", ambil_crm)
-        belum_impor = None
+        belum_impor = void_diimpor = None
         if penjualan and penjualan.get("sumber") == "kasir-lokal" and stok is not None:
             belum_impor = cek_impor_kasir_ke_stok(ctx, penjualan)
+            void_diimpor = cek_void_setelah_impor(ctx, penjualan)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
-    perhatian = susun_perhatian(ctx, penjualan, stok, hadir, tagihan, prospek, belum_impor)
+    perhatian = susun_perhatian(ctx, penjualan, stok, hadir, tagihan, prospek, belum_impor, void_diimpor)
     alat_publik = {n: {k: v for k, v in a.items() if k in ("skill", "status", "pesan", "data", "script")}
                    for n, a in ctx["alat"].items()}
     data = {"ok": True, "versi": VERSI,
@@ -774,7 +815,7 @@ def susun(args):
     return data
 
 
-def susun_perhatian(ctx, pj, stok, hd, tg, pr, belum_impor):
+def susun_perhatian(ctx, pj, stok, hd, tg, pr, belum_impor, void_diimpor=None):
     p = []
     lokal = datetime.now().astimezone().utcoffset()
     target = datetime.now(timezone.utc).astimezone(zona(ctx["tz_nama"])[0]).utcoffset()
@@ -809,6 +850,10 @@ def susun_perhatian(ctx, pj, stok, hd, tg, pr, belum_impor):
         tanggal_str = ", ".join(b["tanggal"] for b in belum_impor)
         p.append("%d dari %d nota kasir tanggal %s belum diimpor ke buku-stok (stok belum terpotong)."
                  % (total_kurang, total_semua, tanggal_str))
+    if void_diimpor:
+        p.append("%d nota kasir di-void setelah diimpor ke buku-stok, stoknya belum dikembalikan (%s). Ekspor ulang "
+                 "tanggal nota itu dari kasir lalu impor lagi ke buku-stok."
+                 % (len(void_diimpor), ", ".join(void_diimpor[:5]) + (", ..." if len(void_diimpor) > 5 else "")))
     if stok:
         if stok["minus"]:
             p.append("Stok MINUS %d barang (%s). Lakukan stock opname." % (
@@ -820,16 +865,18 @@ def susun_perhatian(ctx, pj, stok, hd, tg, pr, belum_impor):
             kosong = (hd["terjadwal"] and not hd["hadir"] and not hd["izin_sakit_cuti_dinas"] and not hd["alpa"]
                       and len(hd["tanpa_keterangan"]) >= hd["terjadwal"])
             awal = ctx.get("jadwal_awal")
-            belum_waktunya = (kosong and hd.get("hari_ini") and awal
-                               and ctx["sekarang_lokal"][-5:] < awal)
-            if belum_waktunya:
+            # Sebelum jam masuk paling awal: belum ada yang wajib absen, jadi "belum absen" bukan alarm
+            # (juga bila sebagian karyawan sudah tap lebih awal).
+            sebelum_mulai = bool(hd.get("hari_ini") and awal and ctx["sekarang_lokal"][-5:] < awal)
+            if kosong and sebelum_mulai:
                 p.append("Belum waktunya absen (jadwal mulai %s)." % awal.replace(":", "."))
             elif kosong:
                 p.append("Belum ada satu pun data absen hari itu. File mesin absen mungkin belum diimpor.")
-            elif hd["tanpa_keterangan"]:
+            elif hd["tanpa_keterangan"] and not sebelum_mulai:
                 label = "Belum absen tanpa keterangan" if hd.get("hari_ini") else "Tidak absen & tanpa keterangan"
+                # rstrip: nama yang disamarkan berakhiran titik ("J.") -> hindari "J.. Tanyakan"
                 p.append("%s (%d): %s. Tanyakan & catat izin/alpa." % (
-                    label, len(hd["tanpa_keterangan"]), ", ".join(hd["tanpa_keterangan"])))
+                    label, len(hd["tanpa_keterangan"]), ", ".join(hd["tanpa_keterangan"]).rstrip(".")))
         elif not hd.get("ada_data_absen", True):
             p.append("Tidak ada data absen minggu itu. File mesin absen mungkin belum diimpor.")
         elif hd.get("tanpa_keterangan"):
@@ -850,6 +897,9 @@ def susun_perhatian(ctx, pj, stok, hd, tg, pr, belum_impor):
     if pr and pr["followup"]["terlambat"]:
         p.append("%d follow-up prospek CRM terlambat. Ketik 'follow-up hari ini' untuk daftar & draf pesannya."
                  % pr["followup"]["terlambat"])
+    if pr and pr["followup"]["order_perlu_konfirmasi"]:
+        p.append("%d order (deal) sudah waktunya dikonfirmasi ke pelanggan. Ketik 'follow-up hari ini' untuk daftar "
+                 "& draf pesannya." % pr["followup"]["order_perlu_konfirmasi"])
     if not any(a["status"] in ("ada", "gagal") for a in ctx["alat"].values()):
         p.append("Belum ada data dari alat mana pun (kasir-lokal, buku-stok, absensi-lokal, pengingat-follow-up, "
                  "crm-wa). Jika alatnya sudah dipakai di lokasi lain, beri tahu lokasinya (opsi --kasir-db, "
@@ -857,6 +907,11 @@ def susun_perhatian(ctx, pj, stok, hd, tg, pr, belum_impor):
     for n, a in ctx["alat"].items():
         if a["status"] == "gagal":
             p.append("%s tidak terbaca: %s" % (a["skill"], a["pesan"]))
+    # Cek yang dilewati karena struktur tabel alat berubah: tampilkan juga di teks, bukan hanya di JSON "catatan",
+    # supaya pemilik tahu pemeriksaan itu tidak dilakukan (bukan "aman").
+    for c in ctx["catatan"]:
+        if c not in p:
+            p.append(c)
     return p
 
 

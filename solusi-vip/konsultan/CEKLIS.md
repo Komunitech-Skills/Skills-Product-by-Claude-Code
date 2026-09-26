@@ -10,9 +10,10 @@ Satu halaman. **Jangan tulis nama/nomor klien di ceklis ini** — hanya status y
       terkirim** hari itu.
 
 ## Pemasangan skill
-- [ ] 10 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `proposal-kerjasama`,
+- [ ] 14 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `proposal-kerjasama`,
       `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`,
-      `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`.
+      `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`, `tender-checklist`,
+      `kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `kalender-pajak`.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, termasuk ringkasan UU PDP untuk data klien.
 
@@ -33,6 +34,7 @@ Satu halaman. **Jangan tulis nama/nomor klien di ceklis ini** — hanya status y
 | Rekap follow-up & piutang harian | 08.00 WIB | ☐ | ☐ |
 | Rekap timesheet klien | Jumat 16.00 WIB | ☐ | ☐ |
 | Pengingat sekali jalan (janji spesifik) | sesuai kebutuhan | ☐ | — |
+| Pengingat jadwal pajak bulanan (kalender-pajak, opsional) | Tgl 1 & 10, 07.00 WIB | ☐ | ☐ |
 
 ## Privasi (wajib dicentang semua)
 - [ ] Tidak ada pesan penagihan/follow-up yang dikirim **otomatis** ke klien — semua draf
@@ -42,6 +44,13 @@ Satu halaman. **Jangan tulis nama/nomor klien di ceklis ini** — hanya status y
       memakai model lokal.
 - [ ] Member tahu cara menjalankan `cek-privasi-openclaw` kapan saja dan akan mengulanginya bila
       menambah kanal baru.
+
+## Dokumen tambahan (dipicu manual, isi bila sudah dipakai)
+- [ ] Kontrak kerja staf/asisten kontrak (bila ada) dibuat dengan `kontrak-kerja-pkwt` dan
+      ditinjau sebelum ditandatangani.
+- [ ] Kebijakan privasi layanan/website (bila ada) dibuat/ditinjau dengan `kebijakan-privasi-pdp`.
+- [ ] Checklist tender (`tender-checklist`) dipakai sebelum ikut pengadaan pemerintah, termasuk
+      cek kelayakan usaha kecil & rincian harga.
 
 ## Tanda tangan/paraf serah-terima
 Tanggal: __________  Member: __________  Teknisi/pendamping (bila ada): __________

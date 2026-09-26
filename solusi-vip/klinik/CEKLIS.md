@@ -11,8 +11,9 @@ hanya status ya/tidak.
       dicatat di sini, cukup dipastikan ada).
 
 ## Pemasangan skill
-- [ ] 7 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`,
-      `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`.
+- [ ] 10 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`,
+      `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`,
+      `kebijakan-privasi-pdp`, `sop-onboarding`, `kontrak-kerja-pkwt`.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, termasuk ringkasan UU PDP data kesehatan.
 
@@ -48,6 +49,13 @@ hanya status ya/tidak.
       auto-reply otomatis ke pasien lewat WA Web.
 - [ ] Tidak ada broadcast/promo massal dikirim lewat OpenClaw.
 - [ ] Pasien diberi tahu bila berbicara dengan asisten virtual, dan boleh minta bicara staf.
+
+## Dokumen tambahan (dipicu manual, isi bila sudah dipakai)
+- [ ] Kebijakan privasi klinik (`kebijakan-privasi-pdp`) sudah dibuat/ditinjau, mencakup data
+      kesehatan pasien, berlabel "bukan nasihat hukum".
+- [ ] Kontrak kerja staf kontrak non-medis (bila ada) dibuat dengan `kontrak-kerja-pkwt` dan
+      ditinjau sebelum ditandatangani.
+- [ ] Paket onboarding staf baru (`sop-onboarding`) sudah dipakai bila ada staf baru mulai kerja.
 
 ## Tanda tangan/paraf serah-terima
 Tanggal: __________  PIC klinik: __________  Teknisi/pendamping (bila ada): __________
