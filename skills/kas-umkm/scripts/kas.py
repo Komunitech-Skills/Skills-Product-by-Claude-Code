@@ -743,7 +743,13 @@ def jalankan_tulis(args, perintah, kerja, label_backup=None):
             raise
         try:
             data = kerja(conn, pengaturan(conn))
-            blokir = data.pop("blokir", [])
+            blokir = []
+            for b in data.pop("blokir", []):
+                if getattr(args, b["opsi"].lstrip("-").replace("-", "_"), False):
+                    data.setdefault("peringatan", []).append("Diizinkan pengguna (%s): %s" %
+                                                             (b["opsi"], b["pesan"].split(". ")[0]))
+                else:
+                    blokir.append(b)
             if simpan and blokir:
                 conn.execute("ROLLBACK")
                 raise Gagal("BELUM DISIMPAN. Perlu keputusan pengguna dulu:\n" +
@@ -1338,7 +1344,7 @@ def cmd_pindah(args):
             biaya = parse_nominal(args.biaya)
             e = {"tanggal": tanggal, "arah": "keluar", "jumlah": biaya, "kategori": "lain-lain",
                  "metode": METODE_DEFAULT_AKUN[dari["jenis"]], "akun": dari,
-                 "catatan": "biaya admin transfer %s -> %s" % (dari["nama"], ke["nama"])}
+                 "catatan": "biaya transfer bank (%s -> %s)" % (dari["nama"], ke["nama"])}
             ids.append(simpan_entri(conn, e, grup=grup))
             t += "\nBiaya admin %s dicatat sebagai pengeluaran lain-lain dari %s." % (rp(biaya), dari["nama"])
         hi = hari_ini()
@@ -1963,6 +1969,7 @@ def cmd_impor(args):
         dibulatkan = 0
         hi = hari_ini()
         kemunculan = {}
+        tanpa_jenis = [False]
         for no, isi, alasan in mentah:
             if isi is None:
                 dilewati.append({"baris": no, "alasan": alasan})
@@ -2022,29 +2029,30 @@ def cmd_impor(args):
                     vj = nominal_file(ambil("jumlah"))
                     if vj:
                         jenis = normal(ambil("jenis")) if "jenis" in peta else ""
-                        tanda = vj[2] or {"cr": "CR", "kredit": "CR", "k": "CR", "masuk": "MASUK", "in": "MASUK",
-                                          "db": "DB", "debit": "DB", "debet": "DB", "d": "DB", "keluar": "KELUAR",
-                                          "out": "KELUAR"}.get(jenis)
-                        if tanda in ("CR", "DB") and not vj[2] and args.jenis_file != "mutasi-bank" and jenis in (
-                                "kredit", "debit", "debet", "k", "d"):
+                        if vj[2]:                                   # akhiran CR/DB di nominal = istilah bank
+                            arah = "masuk" if vj[2] == "CR" else "keluar"
+                        elif jenis in ("masuk", "in", "pemasukan", "terima", "cr"):
+                            arah = "masuk"                          # CR/DB = singkatan khas mutasi bank
+                        elif jenis in ("keluar", "out", "pengeluaran", "bayar", "db"):
+                            arah = "keluar"
+                        elif jenis in ("kredit", "k", "debit", "debet", "d"):
                             if not args.jenis_file:
-                                raise Gagal("Kolom jenis berisi Debit/Kredit yang artinya bisa terbalik. Ulangi dengan "
+                                raise Gagal("Kolom jenis berisi Debit/Kredit yang artinya bisa terbalik (mutasi bank: "
+                                            "debit = uang keluar; buku kas: debit = uang masuk). Ulangi dengan "
                                             "--jenis-file mutasi-bank atau --jenis-file buku-kas.",
                                             perlu_jenis_file=True)
-                            tanda = "DB" if tanda == "CR" else "CR"   # buku kas: debit = masuk
-                        if tanda in ("CR", "MASUK"):
-                            arah = "masuk"
-                        elif tanda in ("DB", "KELUAR"):
-                            arah = "keluar"
+                            debit = jenis in ("debit", "debet", "d")
+                            bank = args.jenis_file == "mutasi-bank"
+                            arah = "keluar" if debit == bank else "masuk"
+                        elif jenis:
+                            raise ValueError("jenis '%s' tidak dikenal (pakai masuk/keluar, CR/DB)" % ambil("jenis"))
                         elif vj[0] < 0:
                             arah = "keluar"
-                        elif "jenis" in peta and jenis:
-                            raise ValueError("jenis '%s' tidak dikenal (pakai masuk/keluar, CR/DB)" % ambil("jenis"))
                         else:
                             arah = "masuk"
-                            if not any(c["alasan"].startswith("arah") for c in cek):
-                                peringatan.append("File tanpa kolom jenis: nominal positif dibaca MASUK, minus dibaca "
-                                                  "KELUAR.")
+                            tanpa_jenis[0] = True
+                        if vj[0] < 0 and arah == "masuk":
+                            raise ValueError("nominal minus tetapi jenisnya masuk; pastikan artinya")
                         jumlah, bul = abs(vj[0]), vj[1]
                 if arah is None:
                     raise ValueError("nominal kosong")
@@ -2160,6 +2168,9 @@ def cmd_impor(args):
             blokir += blokir_minus(cari_minus(conn, akun_ids, min(h["tanggal"] for h in baru)))
         if dibulatkan:
             peringatan.append("%d nominal bersen dibulatkan ke rupiah terdekat (0,5 ke atas)." % dibulatkan)
+        if tanpa_jenis[0]:
+            peringatan.append("Sebagian baris hanya punya kolom Jumlah tanpa jenis: nominal positif dibaca MASUK, "
+                              "minus dibaca KELUAR. Pastikan benar.")
         if any(h["kategori"] == "prive" for h in baru):
             _, _, pr = ringkas_prive(conn, cfg, max(h["tanggal"] for h in baru if h["kategori"] == "prive"))
             peringatan += pr
@@ -2405,8 +2416,12 @@ def ekspor_arus_kas(conn, cfg, args):
                                                                                                tersedia))
         n_minggu = tersedia
     dari = akhir - timedelta(days=7 * n_minggu - 1)
+    # pos bulanan (sewa, listrik, cicilan...) dilihat dari 62 hari terakhir s.d. hari ini, agar tidak hilang bila
+    # jatuh di luar jendela mingguan
+    dari_bulanan = min(dari, hi - timedelta(days=62))
     rows = conn.execute("SELECT * FROM transaksi WHERE status='aktif' AND kategori NOT IN ('pindah','selisih-kas') "
-                        "AND tanggal BETWEEN ? AND ? ORDER BY tanggal, id", (dari.isoformat(), akhir.isoformat())).fetchall()
+                        "AND tanggal BETWEEN ? AND ? ORDER BY tanggal, id",
+                        (dari_bulanan.isoformat(), hi.isoformat())).fetchall()
     grup = OrderedDict()
     for r in rows:
         grup.setdefault((r["kategori"], r["arah"]), []).append(r)
@@ -2416,22 +2431,26 @@ def ekspor_arus_kas(conn, cfg, args):
         if kunci not in grup:
             continue
         kat, arah = kunci
-        isi = grup[kunci]
+        semua = grup[kunci]
+        isi = [r for r in semua if dari.isoformat() <= r["tanggal"] <= akhir.isoformat()]
         total = sum(r["jumlah"] for r in isi)
         if kunci in (("modal", "masuk"), ("pinjaman", "masuk")):
-            lewat.append("%s %s (sekali waktu, tidak diproyeksikan)" % (label_kat(kat, arah), rp(total)))
+            if total:
+                lewat.append("%s %s (sekali waktu, tidak diproyeksikan)" % (label_kat(kat, arah), rp(total)))
             continue
         minggu_ada = {(date.fromisoformat(r["tanggal"]) - dari).days // 7 for r in isi}
         label = ARUS_LABEL.get(kunci, label_kat(kat, arah))
         kritis = ARUS_KRITIS.get(kat, "")
         if kat in ARUS_BULANAN and len(minggu_ada) < max(2, (n_minggu + 1) // 2):
-            terakhir = date.fromisoformat(isi[-1]["tanggal"])
-            bulan_ini = [r for r in isi if r["tanggal"][:7] == isi[-1]["tanggal"][:7]]
+            terakhir = date.fromisoformat(semua[-1]["tanggal"])
+            bulan_ini = [r for r in semua if r["tanggal"][:7] == semua[-1]["tanggal"][:7]]
             nominal = sum(r["jumlah"] for r in bulan_ini)
-            ket = "riwayat kas-umkm: %dx dalam %d minggu, terakhir %s" % (len(isi), n_minggu, tgl_id(terakhir))
-            if len(isi) == 1:
+            ket = "riwayat kas-umkm: %dx dalam 62 hari terakhir, terakhir %s" % (len(semua), tgl_id(terakhir))
+            if len(semua) == 1:
                 ket += "; hanya sekali - pastikan memang bulanan"
             data.append(["tgl:%d" % terakhir.day, arah, label, nominal, ket, kritis])
+        elif not isi:
+            continue
         else:
             nominal = bulat(Decimal(total) / n_minggu)
             data.append(["semua", arah, label, nominal, "rata-rata %d minggu (%s - %s) dari kas-umkm" %
