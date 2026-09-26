@@ -109,3 +109,4 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | H13 | Alat kecil jalur 2: `arsip-nota` (folder nota + indeks SQLite lokal, pakai `ekstrak-nota-faktur`) | dikerjakan (Akun B, 2026-09-26) |
 
 Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A sudah **dijeda**. **Akun B: buat routine sendiri mengikuti `koordinasi/rutin.md`** (prompt siap salin di sana).
+- **Keputusan pemilik 2026-09-26 (Akun B mencatat):** (1) `ekstrak-nota-faktur` & `atur-keuangan-pribadi` jalur → `orisinal` (sumber lemah hanya inspirasi); (2) sumber yang lisensinya tidak mengizinkan dijual tetap diambil & di-ATM lewat **Tulis ulang bersih** (CLAUDE.md Tahap 2 diperbarui); (3) kurasi baru: sumber **kuat** dulu, sumber lemah (termasuk yang terlanjur lolos) paling akhir.
