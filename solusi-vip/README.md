@@ -17,9 +17,9 @@ harga atau status jual.
 
 | Paket | Untuk siapa | Isi (skill) |
 |---|---|---|
-| `toko-online/` | Seller marketplace & toko online (offline + online) | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-toko-online.txt`): `listing-marketplace`, `harga-jual-marketplace`, `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`, `naskah-live-jualan`, `buku-stok`, `agen-cs-toko`, `foto-produk-brief`. Otomasi tambahan (akses penuh VIP): `laporan-otomatis-terjadwal` + `rekap-penjualan-csv` (laporan harian 21.00), `konten-mingguan` (paket konten mingguan), `pesan-prospek-wa` + `crm-wa` (catat prospek & follow-up harian), `analisis-excel`, `brainstorming-ide-usaha` — lihat `toko-online/PANDUAN.md`. Juga tersedia untuk VIP (belum ada di `PANDUAN.md`/jadwal, ditambahkan sesi 2026-09-26): `kas-umkm` (buku kas harian, kalau catatan kas terpisah dari kasir), `buku-piutang` (bon/tempo pelanggan reseller), `laporan-iklan-mingguan` (rekap mingguan Meta/TikTok/Shopee/Google Ads — menutup celah yang dulu tercatat di bawah) |
+| `toko-online/` | Seller marketplace & toko online (offline + online) | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-toko-online.txt`): `listing-marketplace`, `harga-jual-marketplace`, `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`, `naskah-live-jualan`, `buku-stok`, `agen-cs-toko`, `foto-produk-brief`. Otomasi tambahan (akses penuh VIP), lihat `toko-online/PANDUAN.md` §5: `laporan-otomatis-terjadwal` + `rekap-penjualan-csv` (laporan harian 21.00), `konten-mingguan` (paket konten mingguan), `pesan-prospek-wa` + `crm-wa` (catat prospek & follow-up harian), `analisis-excel`, `brainstorming-ide-usaha`, `kas-umkm` (buku kas harian, kalau catatan kas terpisah dari kasir, 21.00), `buku-piutang` (bon/tempo pelanggan reseller, 07.45), `laporan-iklan-mingguan` (rekap mingguan Meta/TikTok/Shopee/Google Ads, Senin 08.00) |
 | `klinik/` | Klinik pratama/gigi/kecantikan/fisioterapi, praktik dokter/bidan mandiri | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-klinik.txt`): `edukasi-pasien-klinik`, `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor` |
-| `konsultan/` | Konsultan, agensi, freelancer B2B | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-konsultan-freelancer.txt`): `proposal-kerjasama`, `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`, `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`. Juga tersedia untuk VIP (belum ada di `PANDUAN.md`/jadwal, ditambahkan sesi 2026-09-26): `hledger-usaha` (pembukuan berpasangan freelancer/agensi tanpa aplikasi berbayar), `gaji-umkm` (bila agensi punya staf tetap), `buku-piutang` (invoice retainer/termin yang belum lunas) |
+| `konsultan/` | Konsultan, agensi, freelancer B2B | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-konsultan-freelancer.txt`): `proposal-kerjasama`, `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`, `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`. Otomasi tambahan (akses penuh VIP), lihat `konsultan/PANDUAN.md` §5: `hledger-usaha` (pembukuan berpasangan freelancer/agensi tanpa aplikasi berbayar, bulanan tgl 1), `buku-piutang` (invoice retainer/termin yang belum lunas, harian 07.45), `gaji-umkm` (opsional, bila agensi punya staf tetap, pengingat harian 07.00), `laporan-klien-konsultan` (draf laporan progres mingguan ke klien, Jumat 16.00 — draf saja, dikirim manual) |
 | `usaha-offline/` | Kafe/resto/warung makan, warung/toko kelontong, bengkel, laundry — usaha tatap muka | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Paket lengkap (lihat `usaha-offline/PANDUAN.md`): `kasir-lokal`, `buku-stok`, `kas-umkm`, `absensi-lokal`, `gaji-umkm`, `laporan-harian-usaha`, `buku-piutang`, `tagih-piutang`, `hitung-hpp`, `pph-final-umkm`, `agen-cs-toko`, `balas-chat-cs`, `caption-sosmed-umkm`, `promo-kalender`, `laporan-otomatis-terjadwal` |
 
 Kenapa lebih banyak dari isi bundle ecer di masing-masing `.txt`: member **VIP** (beda dari
@@ -82,10 +82,9 @@ ada di `references/openclaw*.md` skill terkait.
 ## Celah (skill yang dibutuhkan tapi belum ada di repo)
 
 1. ~~Laporan iklan mingguan (Meta/TikTok Ads)~~ — **selesai** (sesi 2026-09-26): skill
-   `laporan-iklan-mingguan` sudah `lulus`. Baru terdaftar di tabel "Empat paket" di atas untuk
-   `toko-online/`; **belum** ditulis ke `toko-online/PANDUAN.md`/`jadwal-openclaw.md` (skill ini
-   hanya baca file CSV ekspor Ads Manager, tidak ada jadwal `automations` tersendiri untuk
-   dikonfirmasi ulang — perlu sesi berikutnya untuk menulis langkahnya di sana).
+   `laporan-iklan-mingguan` sudah `lulus` dan langkahnya sudah ditulis penuh di
+   `toko-online/PANDUAN.md` §5l dan `toko-online/jadwal-openclaw.md` §10 (jadwal Senin 08.00
+   WIB, perintah disalin dari `skills/laporan-iklan-mingguan/references/openclaw-jadwal.md`).
 2. **Pengingat kontrol/vaksin pasien terjadwal (klinik)** — `edukasi-pasien-klinik` bisa
    *menyusun teks* pengingat kontrol, tapi tidak ada skill/pola otomasi terjadwal per-pasien
    seperti `pengingat-follow-up` untuk klinik (menyimpan tanggal per pasien di CSV lokal berisiko
@@ -93,11 +92,12 @@ ada di `references/openclaw*.md` skill terkait.
    `pengingat-kontrol-klinik` yang hanya menyimpan **kode/inisial + tanggal + jenis kontrol**
    (bukan nama lengkap/diagnosis), dengan persetujuan tertulis pasien untuk diingatkan — perlu
    keputusan pemilik & tinjauan hukum (UU PDP, data kesehatan = data pribadi spesifik).
-3. **Laporan status ke klien (konsultan)** — `pengingat-follow-up` sudah menjadwalkan rekap
-   follow-up/piutang/timesheet ke **pemilik**, tapi belum ada pola siap-pakai untuk laporan
-   status proyek **ke klien** secara terjadwal (mis. mingguan). Sampai ada, `jadwal-openclaw.md`
-   konsultan hanya menjadwalkan rekap ke pemilik; laporan ke klien tetap disusun manual dengan
-   `laporan-status-kantor`/`proposal-kerjasama` lalu dikirim manual oleh pemilik.
+3. ~~Laporan status ke klien (konsultan)~~ — **selesai** (sesi 2026-09-26): skill
+   `laporan-klien-konsultan` (sudah `lulus`) dirangkai penuh di `konsultan/PANDUAN.md` §5n dan
+   `konsultan/jadwal-openclaw.md` §8e (draf mingguan Jumat 16.00 WIB, per klien, perintah
+   disalin dari `skills/laporan-klien-konsultan/references/openclaw-jadwal.md`). Tetap sesuai
+   keputusan pemilik: hanya **draf** yang dikirim ke konsultan sendiri, **konsultan yang mengirim
+   manual** ke klien — tidak pernah otomatis.
 4. **Integrasi WABA resmi (Level 3 CS)** disebut di riset sebagai "jasa setup", bukan skill —
    tidak ada celah skill di sini, hanya dicatat sebagai batas cakupan paket ini.
 

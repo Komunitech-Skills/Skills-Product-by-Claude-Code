@@ -169,3 +169,34 @@ inti yang dijanjikan SKILL.md sendiri untuk 2 dari target pasar utamanya (klinik
 hewan). Temuan #2 dan #3 bisa disertakan dalam perbaikan yang sama sebelum `beta`. Skor 7/10 —
 di ambang batas revisi (Tahap 6.7: "di bawah 7 → revisi"); disarankan tetap direvisi meski pas di
 angka 7, mengingat dampaknya langsung ke dua segmen pengguna yang disebut eksplisit di SKILL.md.
+
+## Revisi v1.0.1 (2026-09-27) — perbaikan temuan Akun B
+
+Perbaikan oleh agent pembuat (H8), untuk ketiga temuan di atas:
+1. **TINGGI (#1)** — `KATA_JUGA_VAKSIN` + `POLA_PEMICU_VAKSIN` ditambahkan di
+   `scripts/pengingat_pasien.py`: nama penyakit yang juga nama vaksin (campak, rabies, difteri,
+   dll) diizinkan bila berdekatan dengan kata "vaksin/imunisasi/vaksinasi/booster/suntik" dan
+   TIDAK ada kata bernada diagnosis (`KATA_PENANDA_DIAGNOSIS`: riwayat, positif, didiagnosis,
+   menderita, kena, sakit, dll) di kalimat yang sama. "imunisasi campak", "vaksin rabies", "vaksin
+   MR", "imunisasi difteri (DPT)" kini diterima; "riwayat campak", "positif rabies", "didiagnosis
+   difteri" tetap ditolak.
+2. **SEDANG (#2)** — `KATA_DIAGNOSIS` diperluas (batu ginjal, asma, maag, usus buntu, katarak,
+   glaukoma, varises, wasir, amandel, sinusitis, vertigo, anemia, leukemia, polip, migrain,
+   bronkitis, pneumonia, infeksi saluran kemih, hernia, tifoid, disentri, gondok, tiroid, lupus,
+   rematik, asam urat, dan vaksin-preventable disease umum lain). Tetap bukan daftar medis
+   lengkap (jaring pengaman, bukan validasi klinis) — kepatuhan agent ke checklist SKILL.md tetap
+   mitigasi utama. Pesan penolakan kini menyarankan jenis kunjungan netral ("kontrol lanjutan").
+3. **SEDANG (#3)** — bug tahun kabisat pada "N bulan lagi" diperbaiki: kode tidak lagi
+   hard-code `min(hari, 28)` untuk Februari, cukup coba tanggal asli lalu turun satu-satu bila
+   bulan tujuan lebih pendek (`_coba_tanggal` sudah tahu kabisat lewat `datetime.date`).
+   29 Jan 2028 + 1 bulan sekarang -> 29 Feb 2028 (2028 kabisat), bukan 28 Feb.
+
+6 tes regresi baru ditambahkan (28 tes lama tidak diubah, semua tetap lulus tanpa modifikasi):
+`test_bulan_lagi_tahun_kabisat`, `test_nama_vaksin_lolos_berkonteks_vaksin`,
+`test_nama_vaksin_tetap_ditolak_bila_bernada_diagnosis`,
+`test_diagnosis_umum_diluar_daftar_lama_ditolak`, `test_jenis_imunisasi_campak_diterima`,
+`test_jenis_vaksin_rabies_diterima`. `python3 tests/uji_regresi.py`: **34/34 lulus**.
+`python3 scripts/validate.py --skill pengingat-pasien-klinik`: **lulus** ("1 skill valid, 80 baris
+katalog sesuai"). `scripts/uji_openclaw.sh` tidak dijalankan (di luar tugas sesi ini).
+Skor kualitas belum dinilai ulang oleh penguji independen — perlu uji independen baru sebelum naik
+status ke `beta`, sesuai Tahap 6.7 SKILL Factory.
