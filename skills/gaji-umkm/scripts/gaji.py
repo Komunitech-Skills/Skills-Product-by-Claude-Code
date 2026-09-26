@@ -1728,11 +1728,29 @@ def cmd_transfer(args):
             raise Gagal("Daftar transfer hanya dibuat untuk periode FINAL (agar tidak membayar angka draf). Kunci dulu: "
                         "gaji.py final --bulan %s" % kode)
         fol = folder_keluaran(args, kode)
-        nama = fol / ("transfer-gaji-%s%s.csv" % (kode, "-rev%d" % per["revisi"] if per["revisi"] else ""))
         pr, rows, total, tanpa = [], [], NOL, []
+        selisih = per["revisi"] > 0 and not args.penuh
+        lama = {}
+        if selisih:
+            hl = muat_hasil(conn, per, per["revisi"] - 1)
+            lama = {x["kode"]: D(x["payroll"]["take_home_pay"]) for x in hl["hasil"]} if hl else {}
+            pr.append("Periode ini revisi ke-%d: file hanya berisi SELISIH gaji bersih dibanding versi final sebelumnya "
+                      "(dianggap sudah dibayar). Bila versi lama belum pernah dibayar, buat ulang dengan --penuh."
+                      % per["revisi"])
+        nama = fol / ("transfer-%s-%s%s.csv" % ("selisih" if selisih else "gaji", kode,
+                                                "-rev%d" % per["revisi"] if per["revisi"] else ""))
         for x in h["hasil"]:
             kr = conn.execute("SELECT * FROM karyawan WHERE kode=?", (x["kode"],)).fetchone()
             thp = D(x["payroll"]["take_home_pay"])
+            if selisih:
+                beda = thp - lama.get(x["kode"], NOL)
+                if beda < 0:
+                    pr.append("%s: gaji bersih turun %s dibanding versi lama (kelebihan bayar). Tidak ditransfer; "
+                              "selesaikan sesuai kesepakatan dengan karyawan." % (x["nama"], rp(-beda)))
+                    continue
+                if beda == 0:
+                    continue
+                thp = beda
             if thp <= 0:
                 pr.append("%s: gaji bersih %s (tidak ditransfer)." % (x["nama"], rp(thp)))
                 continue
@@ -1741,7 +1759,8 @@ def cmd_transfer(args):
                 continue
             rek = kr["rekening"] if args.rekening_lengkap else samarkan(kr["rekening"])
             rows.append([len(rows) + 1, x["kode"], kr["atas_nama"] or x["nama"], kr["bank"], rek, teks_angka(thp),
-                         "Gaji %s" % nama_periode(kode)])
+                         ("Kekurangan gaji %s (revisi %d)" if selisih else "Gaji %s") % (
+                             (nama_periode(kode), per["revisi"]) if selisih else nama_periode(kode))])
             total += thp
         with open(nama, "w", encoding="utf-8-sig", newline="") as f:
             w = csv.writer(f, delimiter=args.pemisah)
@@ -2293,6 +2312,7 @@ def buat_parser():
     s = sub.add_parser("transfer", parents=[umum, kel], help="Daftar transfer CSV (periode final)")
     s.add_argument("--bulan", required=True)
     s.add_argument("--pemisah", choices=[";", ","], default=";")
+    s.add_argument("--penuh", action="store_true", help="Periode revisi: tulis gaji bersih penuh, bukan selisih")
     s.add_argument("--rekening-lengkap", action="store_true",
                    help="Tulis nomor rekening lengkap HANYA di file CSV (tidak pernah ditampilkan)")
     s = sub.add_parser("thr", parents=[umum, tulis], help="Hitung THR (mesin hitung-thr) dan masukkan ke periode")
