@@ -145,3 +145,25 @@ Alasan:
 - (−) Bentuk ekspor asli kelima platform tetap **belum diverifikasi** dengan file nyata (PERLU REVIEW).
 
 **Keputusan: LULUS.** Disarankan memperbaiki M1 (dengan tes regresi) sebelum beta; cukup uji ulang singkat P5/P2/P8b. Uji platform asli tetap membutuhkan satu ekspor asli per platform dari pemilik.
+
+## Uji ulang independen v1.0.3 (Akun B, 2026-09-26)
+
+- **Versi:** v1.0.3 (commit `e63c127`). **Penguji:** agent independen lintas akun (Akun B, simulasi Claude Code), bukan pembuat. Skill dijalankan dari salinan di scratchpad.
+- **Rincian:** `08-uji-ulang-v103-akun-b.md`.
+- **Regresi:** `tests/uji_regresi.py` menjalankan 78 tes, semuanya OK. `validate.py --skill laporan-iklan-mingguan` menghasilkan ✅ 1 skill valid, 80 baris katalog sesuai.
+
+| ID | Status | Bukti |
+|---|---|---|
+| M1 | ✅ Beres | `Total 12.12 Flash Sale`, `Jumlah 2 Pcs Bundling`, `Total 12.12`, `TOTAL SALE` (juga saat dominan) dihitung. Setiap baris total/subtotal yang dikecualikan diberi ⚠️ nama + biaya |
+| M2 | ✅ Sesuai SKILL.md | Selisih +3% → dihitung + ⚠️ "TERHITUNG DUA KALI" |
+| M3 | ✅ Sesuai SKILL.md | `Subtotal Kamp A` cocok → dibuang + ⚠️. Yang tidak cocok → dihitung + ⚠️ |
+
+**Uji baru.** Ada 9 CSV (Meta EN/ID, Google `--` + judul + `Total:` berlapis, Shopee angka Indonesia + `Total` di atas, TikTok harian + subtotal, TikTok Shop `Jumlah`) dengan kunci `Decimal` independen. Hasilnya **7/9 cocok tanpa selisih** pada biaya, CPC, dan ROAS.
+
+| ID | Keparahan | Temuan |
+|---|---|---|
+| **N3** | Sedang | Subtotal buatan lembar kerja di kolom nama yang memuat nama kampanye (`Subtotal: Retarget Video`, `Retarget Video Total`) → dihitung 2× **tanpa ⚠️** untuk barisnya. Repro: Rp 294.240, padahal seharusnya Rp 202.120. Di file TikTok harian: Rp 1.102.543, padahal seharusnya Rp 597.331. Bukan regresi (v1.0.2 sama) dan tidak terjadi pada ekspor platform asli. |
+| R-e | Rendah | ⚠️ M2 positif palsu untuk kampanye sah yang dominan (+4,7%). Kalimat "TERHITUNG DUA KALI" perlu dilunakkan. |
+| R-f | Rendah | (d) Label murni `Overall` (nama produk baju overall), `Overall - Video`, `Total Produk`, dan `Total Store` dibuang. ⚠️ nama + biaya selalu ada, jadi tidak diam-diam. Nama persis "Total/Totals/Total 4 kampanye" tidak realistis sebagai kampanye, jadi keputusan pembuat wajar. |
+
+**Skor: 8 / 10. Keputusan: LULUS.** Perbaiki N3 (+ tes regresi) sebelum beta bila memungkinkan.
