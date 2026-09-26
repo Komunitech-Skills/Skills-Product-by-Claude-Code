@@ -74,3 +74,22 @@ Uji A/B: `00-pembanding-tanpa-skill.md`. Uji banding pesaing: `00-banding-pesain
 - **WAJIB sebelum status naik ke `lulus`:** perbaiki `cmd_tambah_sumber` (kirim multipart/form-data), perbaiki `tests/uji_regresi.py` agar mock server menuntut form-data (supaya regresi ini terdeteksi otomatis ke depannya), lalu uji ulang oleh penguji independen terhadap server Open Notebook asli (bukan hanya server tiruan) — sesuai Tahap 6.7.
 - **Disarankan:** perbaiki `cmd_cari` agar sesuai field asli (`id`/`parent_id`/`relevance`/`title`), atau dokumentasikan keterbatasan "tanpa cuplikan" bila memang tidak tersedia dari API.
 - **Catatan kecil, tidak menghalangi:** verifikasi checksum SurrealDB di sesi ini hanya sebagian (lihat bagian 1) karena API GitHub diblokir kebijakan sesi — untuk rilis produksi, verifikasi checksum sebaiknya diulang di lingkungan dengan akses penuh, atau dicatat sebagai keterbatasan bawaan proyek upstream (SurrealDB sendiri tidak menerbitkan checksum resmi per rilis).
+
+---
+
+## Uji ulang independen v1.0.1 (Akun B, 2026-09-26)
+
+Penguji independen kedua (bukan pembuat, bukan penguji v1.0.0). Lingkungan disiapkan dari nol di scratchpad terpisah (`rt-notebook2/`): clone `lfnovo/open-notebook` commit `3127f14` (versi `1.14.0`, sesuai klaim), SurrealDB v2.0.0 binary resmi, `uv sync`, API + worker latar belakang, semua hanya di `127.0.0.1`. Detail penuh: `08-uji-ulang-v101-akun-b.md`.
+
+**Bug #1 (tambah-sumber 422) — DIPERBAIKI, TERVERIFIKASI.** `tambah-sumber --tipe link` dan `--tipe teks` (termasuk teks panjang 16.800 karakter dan teks berisi karakter Indonesia + emoji) berhasil `200`/`ditambahkan: true` terhadap server 1.14.0 asli, dan diproses sampai `status: completed`. Total 7 sumber ditambahkan lintas 3 skenario nyata (klinik, konsultan, toko) tanpa satu pun galat `422`.
+
+**Bug #2 (cari kehilangan info) — DIPERBAIKI, TERVERIFIKASI.** `cari` mengembalikan `judul`/`id_dokumen`/`relevansi` yang benar dan akurat terhadap isi sumber; keterbatasan "tanpa cuplikan kalimat" didokumentasikan jujur lewat field `catatan`, sesuai API asli.
+
+**Perintah lain dikonfirmasi ulang benar terhadap server asli:** `cek`, `buat-notebook`, `daftar-notebook`, `daftar-sumber`, `tanya`/`ringkasan` (pesan "model AI belum diatur" jelas, exit 8), tipe `file` ditolak (exit 8), tipe tak dikenal ditolak argparse (exit 2), URL non-localhost ditolak tanpa hubungi server (exit 2), server mati (exit 4), timeout (exit 4), **password salah → 401 Unauthorized (exit 5) baru diverifikasi kali ini** (uji v1.0.0 belum sempat menguji auth aktif), password benar → berhasil dengan sandi tersamar, peringatan `chmod 600` pada file kunci longgar. `podcast-mulai` dengan profil belum dibuat → galat 500 generik yang tetap tertangani (exit 4, tidak crash) tapi kurang informatif — dicatat sebagai perbaikan kecil, bukan penghalang kelulusan.
+
+**Tidak ada data terhapus:** tidak ada subperintah hapus di skill; 3 notebook & 7 sumber yang dibuat sesi ini tetap utuh sampai akhir. Semua server dimatikan di akhir sesi; port `5055` dan `8000` dikonfirmasi bebas (`curl` gagal konek, kode `000`).
+
+**Tes bawaan:** `python3 tests/uji_regresi.py` → 40/40 LULUS. `python3 scripts/validate.py --skill notebook-riset-lokal` → LULUS.
+
+### Skor kualitas: **9/10 — LULUS**
+Kedua bug yang menahan skor v1.0.0 di 3/10 terbukti diperbaiki dan diverifikasi ulang terhadap server Open Notebook 1.14.0 **asli** (bukan server tiruan), lintas 3 skenario nyata sekaligus uji auth (401) yang belum tercakup di uji sebelumnya. Tidak ada bug baru ditemukan pada permukaan yang diuji. Satu poin ditahan karena: (a) pesan galat `podcast-mulai` untuk profil belum dibuat masih generik ("500 internal"), (b) belum ada uji platform asli (OpenClaw/Codex/Cursor) — sesuai catatan `SKILL.md` sendiri, dan (c) verifikasi checksum SurrealDB tetap hanya sebagian (keterbatasan bawaan upstream, bukan skill). Direkomendasikan lanjut ke Tahap 6.10 (uji platform asli) sebelum naik ke `rilis`.
