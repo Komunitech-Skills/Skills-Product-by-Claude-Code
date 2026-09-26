@@ -6,6 +6,9 @@ Dasar (dicek 2026-09-25, lihat references/dasar-hukum.md):
   - PP 35/2021 Pasal 15-17 : kompensasi bila masa kerja >= 1 bulan terus-menerus;
                              12 bulan = 1 x upah; kurang/lebih dari 12 bulan = masa kerja / 12 x upah.
                              Diakhiri lebih cepat: kompensasi dihitung dari jangka waktu yang sudah dijalani.
+  - PP 35/2021 Pasal 16 ayat (6): besaran kompensasi bagi pekerja pada USAHA MIKRO DAN USAHA KECIL diberikan
+                             berdasarkan KESEPAKATAN pengusaha dan pekerja. Opsi --usaha-mikro-kecil menampilkan
+                             rumus umum sebagai ACUAN (batas bawah praktik baik), bukan kewajiban (sejak v1.0.3).
   - UU 13/2003 Pasal 62    : pihak yang mengakhiri PKWT sebelum waktunya membayar ganti rugi sebesar
                              upah sampai batas waktu berakhirnya jangka waktu perjanjian kerja.
   - Putusan MK 168/PUU-XXI/2023: total PKWT termasuk perpanjangan paling lama 5 tahun.
@@ -22,6 +25,7 @@ Cara hitung "bulan" (asumsi skill, tidak diatur rinci dalam aturan):
 
 Contoh:
   python3 hitung_pkwt.py --periode "1 Januari 2026 s.d. 31 Desember 2026" --gaji-pokok 5jt --tunjangan-tetap 500rb
+  python3 hitung_pkwt.py --periode "1/1/2026 s.d. 30/6/2026" --upah 3jt --usaha-mikro-kecil
   python3 hitung_pkwt.py --periode "01/01/2025 s.d. 31/12/2025" --periode "01/01/2026 s.d. 30/06/2026" \
       --upah "Rp4.800.000" --berhenti "15/03/2026" --pihak-mengakhiri pengusaha --format json
 Windows: ganti `python3` dengan `python` atau `py`.
@@ -57,6 +61,13 @@ PEMISAH_PERIODE = re.compile(r"\s+(?:s\.?\s?d\.?|s/d|sampai(?:\s+dengan)?|hingga
 _TGL_ANGKA = r"(?:\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[/\-.]\d{1,2}[/\-.]\d{4})"
 PERIODE_RAPAT = re.compile(r"\s*(" + _TGL_ANGKA + r")\s*[-–—]\s*(" + _TGL_ANGKA + r")\s*")
 BATAS_UPAH_JANGGAL = 500000  # upah bulanan di bawah ini hampir pasti salah ketik
+CATATAN_UMK = ("USAHA MIKRO/KECIL: menurut PP 35/2021 Pasal 16 ayat (6), besaran uang kompensasi bagi pekerja pada "
+               "usaha mikro dan usaha kecil diberikan berdasarkan KESEPAKATAN antara pengusaha dan pekerja. Angka "
+               "kompensasi di tabel memakai rumus umum Pasal 16 ayat (1) dan hanya ACUAN (batas bawah praktik baik), "
+               "BUKAN jumlah yang diwajibkan. Tuliskan besaran yang disepakati di kontrak. Hak atas kompensasi tetap "
+               "ada; yang disepakati adalah besarannya. Ganti rugi Pasal 62 UU 13/2003 tidak terpengaruh. "
+               "Pastikan usaha memang tergolong usaha mikro/kecil (kriteria PP 7/2021; cek ke Dinas Koperasi & UKM "
+               "atau konsultan).")
 
 
 class InputError(ValueError):
@@ -215,8 +226,10 @@ def _saran_upah(teks_asli, up):
 
 # ---------------------------------------------------------------- inti
 def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhenti=None, pihak=None,
-           metode="pecahan", upah_minimum=None, harian=False):
+           metode="pecahan", upah_minimum=None, harian=False, usaha_mikro_kecil=False):
     peringatan = []
+    if usaha_mikro_kecil:
+        peringatan.append(CATATAN_UMK)
     if not periode_teks:
         raise InputError("minimal satu --periode wajib diisi")
     if metode == "bulan-penuh":
@@ -255,7 +268,8 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
     um = parse_rupiah(upah_minimum, "upah minimum")
     if um is not None and um > 0 and up < um:
         peringatan.append("Upah {} di bawah upah minimum yang Anda isi ({}). Dilarang membayar di bawah upah minimum "
-                          "(kecuali usaha mikro/kecil dengan ketentuan khusus, lihat references/dasar-hukum.md)."
+                          "(kecuali usaha mikro/kecil: upah berdasarkan kesepakatan dengan batas bawah, "
+                          "UU 13/2003 Pasal 90B jo. UU 6/2023 & PP 36/2021 Pasal 36; lihat references/dasar-hukum.md)."
                           .format(fmt_rp(up), fmt_rp(um)))
     if harian:
         peringatan.append("PKWT harian lepas: dasar kompensasi memakai rata-rata upah per bulan (isi --upah dengan "
@@ -417,6 +431,9 @@ def hitung(periode_teks, upah=None, gaji_pokok=None, tunjangan_tetap=None, berhe
 
     return {
         "upah_sebulan": up, "dasar_upah": dasar_upah, "metode_bulan": metode,
+        "usaha_mikro_kecil": bool(usaha_mikro_kecil),
+        "status_kompensasi": ("acuan (besaran sesuai kesepakatan, PP 35/2021 Pasal 16 ayat (6))"
+                              if usaha_mikro_kecil else "rumus PP 35/2021 Pasal 16 ayat (1)"),
         "total_pkwt": {"mulai": mulai_pertama.isoformat(), "akhir": akhir_kontrak.isoformat(),
                        "masa": fmt_masa(tb, ts), "batas_akhir_5_tahun": batas_5th.isoformat(),
                        "melebihi_5_tahun": melebihi_5th},
@@ -448,7 +465,11 @@ def teks(h):
             r["periode"], kontrak, dijalani, r["masa_kerja"], r["bulan"], r.get("rumus", r.get("catatan", "")),
             fmt_rp(r["kompensasi"])))
     b.append("")
-    b.append("TOTAL KOMPENSASI (dibayar pengusaha ke pekerja): {}".format(fmt_rp(h["total_kompensasi"])))
+    if h.get("usaha_mikro_kecil"):
+        b.append("ACUAN KOMPENSASI (rumus umum; usaha mikro/kecil = besaran sesuai KESEPAKATAN, PP 35/2021 "
+                 "Pasal 16 ayat (6)): {}".format(fmt_rp(h["total_kompensasi"])))
+    else:
+        b.append("TOTAL KOMPENSASI (dibayar pengusaha ke pekerja): {}".format(fmt_rp(h["total_kompensasi"])))
     g = h["ganti_rugi_pasal_62"]
     if g:
         b.append("")
@@ -474,6 +495,9 @@ def teks(h):
     b.append("")
     b.append("Bukan nasihat hukum. Dasar: PP 35/2021 Pasal 15-17, UU 13/2003 Pasal 62 jo. UU 6/2023, Putusan MK "
              "168/PUU-XXI/2023 (dicek 25 September 2026). Konfirmasi ke Disnaker/konsultan hukum.")
+    if not h.get("usaha_mikro_kecil"):
+        b.append("Usaha mikro/kecil? Besaran kompensasi ditentukan kesepakatan (PP 35/2021 Pasal 16 ayat (6)); "
+                 "jalankan ulang dengan --usaha-mikro-kecil.")
     return "\n".join(b)
 
 
@@ -489,6 +513,9 @@ def buat_parser():
     p.add_argument("--metode", default="pecahan", help=argparse.SUPPRESS)  # 'bulan-penuh' dihapus v1.0.2
     p.add_argument("--upah-minimum", help="UMK/UMP yang berlaku (opsional, untuk peringatan)")
     p.add_argument("--harian", action="store_true", help="PKWT harian lepas")
+    p.add_argument("--usaha-mikro-kecil", action="store_true",
+                   help="pemberi kerja usaha mikro/kecil: kompensasi = kesepakatan (PP 35/2021 Pasal 16 ayat (6)); "
+                        "rumus umum ditampilkan sebagai acuan")
     p.add_argument("--format", default="teks", choices=["teks", "json"])
     return p
 
@@ -498,7 +525,8 @@ def main(argv=None):
     try:
         h = hitung(args.periode, upah=args.upah, gaji_pokok=args.gaji_pokok, tunjangan_tetap=args.tunjangan_tetap,
                    berhenti=args.berhenti, pihak=args.pihak_mengakhiri, metode=args.metode,
-                   upah_minimum=args.upah_minimum, harian=args.harian)
+                   upah_minimum=args.upah_minimum, harian=args.harian,
+                   usaha_mikro_kecil=args.usaha_mikro_kecil)
     except InputError as e:
         print("ERROR: {}".format(e), file=sys.stderr)
         return 2

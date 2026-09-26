@@ -7,6 +7,7 @@
 - ✅ **Cek kontrak lama dalam sekali tempel**: menemukan pasal yang sering bikin usaha kalah di Disnaker, misalnya masa percobaan di kontrak, pekerjaan tetap dikontrak, lebih dari 5 tahun, gaji di bawah UMK, tanpa BPJS, atau denda berlebihan. Setiap temuan diberi tingkat risiko (🔴/🟠/🟢) dan kalimat pengganti yang siap tempel.
 - ✅ **Kompensasi & ganti rugi dihitung script**, bukan dikira-kira: kompensasi per periode kontrak, cek batas 5 tahun termasuk perpanjangan, dan ganti rugi sisa kontrak kalau diputus lebih cepat.
 - ✅ **Paham input sehari-hari**: tanggal "1 Januari 2026" atau "01/01/2026", gaji "Rp5.000.000" atau "5jt". Kalau ada yang salah (tanggal terbalik, angka negatif), kamu diberi tahu dengan bahasa jelas.
+- ✅ **Paham usaha mikro/kecil**: untuk warung, kedai, dan usaha kecil, besaran kompensasi boleh sesuai kesepakatan (PP 35/2021 Pasal 16 ayat (6)); skill menampilkan hitungan rumus umum sebagai acuan dan menyiapkan klausul kesepakatannya.
 - ✅ **Jujur soal aturan yang sedang berubah**: dasar hukum dan tanggal cek selalu disebut, termasuk status Putusan MK 168/2023 dan UU Ketenagakerjaan baru yang sedang dibahas.
 
 ## Cocok untuk siapa
@@ -52,6 +53,9 @@ Mahkamah Konstitusi memerintahkan UU Ketenagakerjaan baru paling lambat sekitar 
 Tidak. Skill ini khusus kontrak kerja waktu tertentu (PKWT), termasuk harian lepas. Untuk karyawan tetap, PHK, dan pesangon, skill akan menjelaskan bedanya lalu menyarankan kamu berkonsultasi ke Disnaker atau konsultan hukum. Untuk THR, slip gaji, dan surat peringatan, gunakan skill Komunitech `hitung-thr`, `slip-gaji-bpjs`, dan `surat-peringatan-karyawan`.
 
 ## Riwayat versi
+- **1.0.3 (26 September 2026)** — disesuaikan dengan naskah resmi PP 35/2021 (semua angka rupiah metode bawaan tidak berubah):
+  - **Usaha mikro & kecil:** sesuai PP 35/2021 Pasal 16 ayat (6), besaran uang kompensasi bagi pekerja di usaha mikro/kecil ditentukan **kesepakatan** pengusaha dan pekerja. Skill kini menanyakan apakah usahamu usaha mikro/kecil; script punya opsi `--usaha-mikro-kecil` yang menampilkan rumus umum sebagai **acuan** (bukan kewajiban); template punya klausul kompensasi versi kesepakatan; checklist periksa tidak lagi menandai kompensasi kesepakatan UMK sebagai pelanggaran.
+  - Rujukan pasal dirapikan: upah lembur sejam 1/173 = PP 35/2021 Pasal 32 ayat (2); aturan "rata-rata 12 bulan terakhir" adalah Pasal 33 ayat (2) dan hanya untuk upah lembur, bukan kompensasi PKWT.
 - **1.0.2 (25 September 2026)** — perbaikan kecil dari uji ulang independen (semua angka rupiah metode bawaan tidak berubah):
   - Keterangan sisa kontrak kini menampilkan pecahan yang benar-benar dipakai, mis. "(3 − 1,5357) = 1,4643 bulan"; jumlah hari kalender hanya sebagai informasi (sebelumnya tertulis "1 bulan 16 hari" yang tidak cocok dengan 1,4643).
   - Bila berhenti tepat di hari terakhir periode berjalan, tidak lagi tercetak rentang tanggal terbalik; ditulis "tidak ada sisa di periode berjalan" (Rp0).
