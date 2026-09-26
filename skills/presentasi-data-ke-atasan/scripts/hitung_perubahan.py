@@ -55,14 +55,23 @@ def proses_pasangan(spek: str):
         raise ValueError(f"angka tidak valid di {spek!r} (jangan pakai 'Rp'/titik ribuan)")
     selisih = baru - lama
     p = persen(lama, baru)
+    if p is None:
+        catatan = "nilai lama = 0, persen tidak didefinisikan"
+    elif lama < 0:
+        catatan = ("nilai lama negatif — persen perubahan dari basis negatif tidak "
+                   "intuitif (bisa berlawanan arah dengan tanda 'naik/turun'); "
+                   "sampaikan ke pengguna arah dan selisih Rupiah saja, jangan tampilkan "
+                   "persennya mentah-mentah")
+    else:
+        catatan = None
     return {
         "label": label.strip(),
-        "nilai_lama": rupiah(lama),
-        "nilai_baru": rupiah(baru),
-        "selisih": rupiah(selisih),
+        "nilai_lama": format_angka(lama),
+        "nilai_baru": format_angka(baru),
+        "selisih": format_angka(selisih),
         "arah": "naik" if selisih > 0 else ("turun" if selisih < 0 else "tetap"),
         "persen_perubahan": p,
-        "catatan": None if p is not None else "nilai lama = 0, persen tidak didefinisikan",
+        "catatan": catatan,
     }
 
 
@@ -86,10 +95,10 @@ def proses_daftar(nama_spek: str):
     return {
         "label": label.strip(),
         "jumlah_data": len(angka),
-        "total": rupiah(total),
-        "rata_rata": rupiah(rata),
-        "min": rupiah(min(angka)),
-        "max": rupiah(max(angka)),
+        "total": format_angka(total),
+        "rata_rata": format_angka(rata),
+        "min": format_angka(min(angka)),
+        "max": format_angka(max(angka)),
     }
 
 
