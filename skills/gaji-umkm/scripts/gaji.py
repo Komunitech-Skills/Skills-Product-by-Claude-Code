@@ -47,6 +47,7 @@ SKEMA = 1
 FOLDER = Path(__file__).resolve().parent
 MESIN = FOLDER / "mesin"
 sys.path.insert(0, str(MESIN))
+sys.dont_write_bytecode = True          # jangan menulis __pycache__ ke folder mesin/
 import ter_core as tc  # noqa: E402  (salinan persis; hanya dipakai untuk baca angka & format rupiah)
 
 SIMPAN_BACKUP_HARIAN = 30
@@ -503,6 +504,7 @@ def jalankan_mesin(script, argv):
     cek_mesin()
     env = dict(os.environ)
     env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
     try:
         p = subprocess.run([sys.executable, str(MESIN / script)] + argv, capture_output=True, env=env,
                            timeout=180)
@@ -1538,7 +1540,8 @@ def cmd_revisi(args):
             pr.append("Periode %s sudah final. Bila ada karyawan keluar/Desember di periode itu, PPh 21-nya memakai "
                       "angka bulan ini - periksa setelah revisi selesai." % ", ".join(nanti))
         pr.append("Slip & daftar transfer %s yang sudah dibagikan/diunggah menjadi versi lama. Setelah final lagi, "
-                  "buat slip baru dan transfer hanya SELISIHNYA secara manual." % nama_periode(kode))
+                  "buat slip baru; perintah transfer akan berisi SELISIH-nya saja (--penuh bila versi lama belum "
+                  "dibayar)." % nama_periode(kode))
         return {"periode": kode, "revisi": baru, "peringatan": pr,
                 "ringkasan": {"periode": kode, "revisi": baru, "alasan": alasan}}, t
     return jalankan_tulis(args, "revisi", kerja, besar=True, label_backup="revisi")

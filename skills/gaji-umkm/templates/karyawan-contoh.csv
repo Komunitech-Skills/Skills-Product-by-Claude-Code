@@ -1,0 +1,4 @@
+kode;nama;jabatan;jenis;ptkp;gaji_pokok;tunjangan_tetap;tunjangan_tidak_tetap;bpjs;jkk;hari_kerja;masuk;nik;bank;rekening;atas_nama;kode_absensi
+K001;Contoh Andi;Kepala Gudang;tetap;K/1;6.000.000;750.000;400.000;kes,tk,jp;;6;2019-03-01;;BCA;0000000001;;A01
+K002;Contoh Sari;Kasir;tetap;TK/0;4.000.000;;300.000;kes,tk,jp;;6;2024-02-01;;;;;A02
+K003;Contoh Joko;Sopir;kontrak;K/2;3.800.000;200.000;500.000;kes,tk;0,89;6;2026-01-05;;;;;A03
