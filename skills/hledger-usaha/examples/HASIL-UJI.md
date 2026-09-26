@@ -91,3 +91,21 @@ Ekspor EMKM skenario 01 → `laporan_emkm.py`: laba Rp 914.749 (EMKM bulat), tot
 - Jadwal OpenClaw (`references/openclaw-jadwal.md`) di Gateway sungguhan dan pengiriman Telegram.
 - File jurnal buatan tangan pengguna yang memakai fitur hledger lanjutan (hanya diuji: pembaca bawaan menolak dengan pesan jelas; mesin hledger membaca).
 - Mutasi bank asli dari bank lain selain format uji (BRI, BNI, bank digital).
+
+---
+
+## Uji ulang v1.0.1 (Akun B)
+- **Tanggal:** 2026-09-26 · **Penguji:** agent independen Akun B (bukan pembuat) · rincian: `examples/06-uji-ulang-v1.0.1-akun-b.md`
+- **Lingkungan:** salinan skill di scratchpad, Linux, Python 3.11, data fiktif; **hledger 1.52.4 resmi** (SHA-256 `f76a2e40…9643a` dihitung ulang = tabel panduan & digest rilis yang dicatat sebelumnya), tidak dipasang ke sistem.
+
+| Temuan lama | Status v1.0.1 |
+|---|---|
+| 1 larangan pembukuan ganda | **Tertutup** (instruksi): baris tabel + jawaban baku (UU KUP Ps. 28 (3), Ps. 39 (1) d & f), termasuk `--jurnal` kedua & memundurkan tanggal; 3 kalimat penggelapan ditolak, permintaan sah tidak. |
+| 2 pola PPh 23 | **Tertutup.** `--diterima 9,8jt` atas piutang 10 jt → hledger asli: BCA +9.800.000, `Aset:Pajak Dibayar Dimuka:PPh 23` +200.000, piutang −10.000.000; pendapatan tetap bruto; neraca 22.000.000 seimbang; hitung sendiri cocok. `--pph23 2%`, PERHATIAN tarif ≠ 2%/4%, bentrok `--diterima`, potongan tak masuk akal — semua benar; pengingat bukti potong tampil. |
+| 3 pengingat penjualan tunai | **Sebagian.** "INGAT …" selalu tampil saat impor ✅; tetapi CATATAN di laba rugi **tidak muncul** bila mutasi berisi TARIKAN ATM/Setor Tunai (posting `Aset:Kas` dianggap transaksi kas) — terbukti pada data impor Agustus dan jurnal skenario 03 lama (asal temuan). |
+
+Temuan baru: **[SEDANG]** `cek_tunai` tertipu baris tarik/setor tunai dari mutasi (lihat atas; saran: abaikan transaksi `sumber:mutasi-bank` saat mencari transaksi kas + tes). **[RENDAH]** `--pph23` diterima pada `--jenis jual` (barang) tanpa peringatan.
+Tanpa regresi: 36/36 OK dengan hledger, 36 OK (5 dilewati) tanpa hledger; angka kunci v1.0.0 (914.749,50 / 18.740.500; 19.880.000 / 47.380.000; −6.832.354,67 / 21.167.645,33) sama persis; `validate.py --skill hledger-usaha` ✅.
+
+### Skor: **8/10**
+Alasan: PPh 23 dan larangan pembukuan ganda dikerjakan dengan baik dan angkanya cocok dengan hledger asli; tidak ada regresi. Turun dari 9 karena perbaikan temuan 3 tidak bekerja pada kasus yang justru memicu temuan itu (mutasi dengan tarik tunai ATM), sehingga laporan laba rugi dari impor bank masih bisa disajikan tanpa peringatan. Setelah `cek_tunai` diperbaiki + dites → layak 9.

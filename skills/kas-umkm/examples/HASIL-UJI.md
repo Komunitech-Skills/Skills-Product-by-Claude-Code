@@ -46,3 +46,24 @@ Semua cocok ke rupiah:
 Alasan: inti buku kas (saldo multi-akun, pindah dana, opname, prive, rekap) benar ke rupiah di semua uji independen; rantai integrasi kasir-lokal → kas-umkm → laporan-keuangan-emkm / arus-kas-13minggu berjalan tanpa modifikasi dan angkanya konsisten; penanganan input buruk sangat baik (nominal/tanggal ambigu, CSV rusak, DB rusak, formula injection, duplikat, minus). Unggul jelas atas A/B dan pesaing. Dikurangi karena celah pengaman `perlu_dicek` di impor dan belum adanya larangan eksplisit catatan ganda untuk pajak (keduanya perbaikan kecil). Setelah temuan 1–2 diperbaiki dan diuji ulang, layak 9.
 
 Rekomendasi status: **lulus** (skor ≥ 7), dengan perbaikan temuan 1–2 sebelum uji platform asli/beta.
+
+---
+
+## Uji ulang v1.0.1 (Akun B)
+- **Tanggal:** 2026-09-26 · **Penguji:** agent independen Akun B (bukan pembuat) · rincian: `examples/06-uji-ulang-v1.0.1-akun-b.md`
+- **Lingkungan:** salinan skill + `laporan-keuangan-emkm` di scratchpad, Linux, Python 3.11, data fiktif; simulasi agent `claude-code`.
+
+| Temuan lama | Status v1.0.1 |
+|---|---|
+| 1 impor `perlu_dicek` jadi lain-lain | **Tertutup.** 3 baris tak jelas disimpan "Perlu dicek": ikut saldo, tidak ikut hasil usaha (2.092.500), `ekspor --format emkm` ditolak (`perlu_dicek: [11,12,13]`) sampai `golongkan` → 4.942.500. Tarik tunai ATM / setor tunai / top up GoPay otomatis pindah dana; pindah buku tanpa nama akun → Perlu dicek; `catat` "tarik tunai" diarahkan ke `pindah`. Decimal independen: Laci 600.000 / BRI 9.042.500 (= saldo file) / GoPay 400.000, pindah dana 0 terhadap hasil usaha — cocok semua. |
+| 2 larangan pembukuan ganda | **Tertutup** (instruksi): Kapan TIDAK + Aturan 7 (UU KUP Ps. 28 (3), Ps. 39 (1) d & f) + checklist; 4 kalimat penggelapan ditolak, 1 permintaan sah (batal salah ketik) tidak ditolak. |
+| 6 ResourceWarning | Tertutup (0 peringatan). |
+
+Temuan baru:
+1. **[SEDANG]** Ekspor emkm mengosongkan kategori lain-lain; `laporan_emkm.py` membaca "BIAYA TARIK TUNAI ATM BERSAMA" sebagai pindah dana → laba emkm 4.950.000 vs hasil usaha 4.942.500, neraca **TIDAK SEIMBANG −7.500** dengan `--kas-akhir-aktual`. Isi kode `beban_lain` eksplisit + tes rantai.
+2. **[RENDAH]** "Per minggu" mencampur 'Perlu dicek' di masuk/keluar tetapi tidak di hasil usaha.
+3. **[RENDAH]** `golongkan` penjualan→modal tanpa peringatan (bergantung Aturan 7).
+Tanpa regresi: 65 tes OK; DB v1.0.0 → Agustus 8.245.000, ekspor emkm Agustus identik byte-per-byte; bangun ulang laundry = angka lama; `validate.py --skill kas-umkm` ✅.
+
+### Skor: **8/10**
+Alasan: kedua temuan SEDANG lama tertutup dan angka inti benar ke rupiah; tetapi perbaikan pindah dana memunculkan ketidakcocokan baru di rantai kas-umkm → laporan-keuangan-emkm (laba & neraca meleset untuk baris biaya tarik tunai) — kecil nominalnya, tetapi merusak kepercayaan laporan untuk bank/KUR. Setelah temuan baru 1 diperbaiki + dites → layak 9.
