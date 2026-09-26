@@ -73,3 +73,6 @@ Bilang saja "batalkan nota N-… karena salah input" atau "retur 1 es teh dari n
 
 **Printer saya thermal 80 mm / hanya punya printer biasa, bisa?**
 Bisa. Pilih struk 80 mm untuk printer 80 mm. Untuk printer biasa (A4), struk tetap bisa dicetak, atau kirim struk sebagai teks/foto ke WhatsApp pembeli. Yang penting printer terpasang di komputer dan bisa mencetak dari browser.
+
+**Ada pembeli yang belum bayar (ngutang/bon)?**
+Kasir ini sengaja hanya mencatat penjualan yang sudah dibayar. Kalau ada pelanggan bon, catat di skill **Buku Piutang** — nanti kelihatan siapa berutang berapa, kapan jatuh temponya, dan ada draf pesan tagihan siap kirim. Belum pasang Buku Piutang? Cara lama masih bisa: buat tagihannya dengan skill **Buat Invoice**, lalu kalau sudah lewat jatuh tempo, susun pesan penagihannya dengan skill **Tagih Piutang**.

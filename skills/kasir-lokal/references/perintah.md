@@ -36,7 +36,7 @@ Dipisah koma (bukan koma di dalam angka), titik koma, baris baru, "dan", "sama".
 - Diskon nota: segmen yang diawali `diskon`/`potongan`: `diskon 10%`, `diskon 5rb`, `diskon 10%+2rb`
 - Bayar: `bayar tunai 100rb` · `bayar pas` · `bayar qris` · `bayar qris 50rb, tunai 50rb` · `bayar transfer`. Metode: Tunai, QRIS, Transfer, Debit, Kartu kredit, E-wallet (OVO/GoPay/DANA/ShopeePay/LinkAja), Lainnya. Satu metode boleh tanpa jumlah (= sisa).
 - Catatan: `catatan: meja 4`, `atas nama Budi`.
-- Ditolak: `bon`, `utang`, `bayar nanti`, `tempo`; harga di pesanan (`@15rb`).
+- Ditolak: `bon`, `utang`, `bayar nanti`, `tempo`; harga di pesanan (`@15rb`). Bon/utang dicatat di skill `buku-piutang` (kasir hanya mencatat yang sudah dibayar); belum terpasang → cara lama `buat-invoice`.
 
 Pencocokan produk: kode persis → nama+varian persis → nama persis (satu produk) → semua kata ada di tepat satu produk (disebut di pratinjau "dibaca sebagai"). Selain itu **ditolak** dengan saran produk mirip; tidak pernah ditebak.
 
