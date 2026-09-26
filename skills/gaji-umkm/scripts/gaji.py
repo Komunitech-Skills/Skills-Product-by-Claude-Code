@@ -41,7 +41,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 APLIKASI = "gaji-umkm"
 SKEMA = 1
 FOLDER = Path(__file__).resolve().parent
@@ -466,6 +466,12 @@ def jalankan_tulis(args, perintah, kerja, besar=False, label_backup=None):
         teks += "\n\n" + "\n".join("Catatan: " + p for p in data["peringatan"])
     if simpan and besar:
         teks = "TERSIMPAN.\n" + teks + (("\nCadangan sebelum perubahan: " + backup) if backup else "")
+    elif not simpan and data.get("perlu_persetujuan_khusus"):
+        teks = ("PRATINJAU (belum disimpan):\n" + teks +
+                "\n\nBELUM BISA DISIMPAN DENGAN --ya SAJA: data ini butuh persetujuan khusus pemilik (lihat PERLU "
+                "PERSETUJUAN KHUSUS di atas). Sarankan memperbaiki datanya. Hanya bila pemilik sendiri sudah membaca "
+                "peringatan dan menyetujuinya, jalankan perintah yang sama + --ya " + FLAG_PAHAM +
+                " --alasan-khusus \"...\" (dicatat di log). Jangan menambahkan " + FLAG_PAHAM + " atas inisiatif sendiri.")
     elif not simpan:
         teks = ("PRATINJAU (belum disimpan):\n" + teks +
                 "\n\nSimpan? Jalankan perintah yang sama + --ya setelah pengguna setuju.")
@@ -780,9 +786,10 @@ def masalah_kepatuhan(o, cfg):
     return m
 
 
-def pagar_kepatuhan(args, baru):
+def pagar_kepatuhan(args, baru, langsung_simpan=False):
     """baru: {kode_masalah: pesan} yang MUNCUL karena perintah ini. Tanpa --ya-saya-paham: pratinjau diberi
-    peringatan; penyimpanan (--ya) ditolak. Dengan flag: disimpan dan dicatat di log (audit)."""
+    peringatan; penyimpanan (--ya) ditolak. Dengan flag: disimpan dan dicatat di log (audit).
+    langsung_simpan=True untuk perintah yang menyimpan tanpa --ya (mis. `isi`): tanpa flag selalu ditolak."""
     if not baru:
         return [], None
     pesan = list(baru.values())
@@ -793,7 +800,7 @@ def pagar_kepatuhan(args, baru):
                 "kerja, hari tua).\nBila ada alasan sah (mis. iuran sudah dibayar lewat sistem lain, atau sudah "
                 "dikonfirmasi ke BPJS), pemilik harus membaca peringatan ini lalu menjalankan perintah yang sama + "
                 "--ya " + FLAG_PAHAM + " [--alasan-khusus \"...\"]. Persetujuan ini dicatat di log aplikasi.")
-        if getattr(args, "ya", False):
+        if getattr(args, "ya", False) or langsung_simpan:
             raise Gagal("Belum disimpan. " + teks, masalah_kepatuhan=sorted(baru))
         return [teks], None
     catat = {"masalah": sorted(baru), "pesan": pesan, "alasan": bersih(getattr(args, "alasan_khusus", "") or "", 200),
@@ -801,6 +808,33 @@ def pagar_kepatuhan(args, baru):
     return ["DISIMPAN DENGAN PERSETUJUAN KHUSUS PEMILIK (%s%s), tercatat di log aplikasi:\n- %s\nRisiko tetap "
             "ditanggung pemberi kerja (%s)." % (FLAG_PAHAM, "; alasan: " + catat["alasan"] if catat["alasan"] else "",
                                                 "\n- ".join(pesan), DASAR_KEPATUHAN)], catat
+
+
+def bulan_penuh(k, kode):
+    """True bila karyawan bekerja sebulan penuh di periode ini (tidak masuk/keluar di tengah bulan)."""
+    awal, akhir = rentang_periode(kode)
+    masuk_tengah = awal.isoformat() < k["tanggal_masuk"] <= akhir.isoformat()
+    keluar_tengah = bool(k["tanggal_keluar"]) and awal.isoformat() <= k["tanggal_keluar"] < akhir.isoformat()
+    return not masuk_tengah and not keluar_tengah
+
+
+def masalah_dasar_turun(k, isi, kode):
+    """v1.0.2: gaji pokok/tunjangan tetap 'dibayar' yang menurunkan dasar iuran BPJS di bulan PENUH (bukan bulan
+    masuk/keluar). Dasar BPJS = gaji pokok + tunjangan tetap; menurunkannya tanpa dasar sah = melaporkan upah lebih
+    kecil. Kembalikan {kode_masalah: pesan} (kosong bila tidak ada masalah)."""
+    if not bulan_penuh(k, kode) or not ("gaji_pokok" in isi or "tunjangan_tetap" in isi):
+        return {}
+    penuh = D(k["gaji_pokok"]) + D(k["tunjangan_tetap"])
+    dibayar = D(isi.get("gaji_pokok", k["gaji_pokok"])) + D(isi.get("tunjangan_tetap", k["tunjangan_tetap"]))
+    if dibayar >= penuh:
+        return {}
+    return {"dasar_bpjs_turun_bulan_penuh": (
+        "%s: gaji pokok + tunjangan tetap %s diisi %s, lebih kecil dari data karyawan %s, padahal %s bekerja sebulan "
+        "penuh (bukan bulan masuk/keluar). Dasar iuran BPJS Kesehatan & Ketenagakerjaan bulan ini ikut turun. Bila "
+        "gaji memang dipotong karena alasan sah (mis. cuti di luar tanggungan menurut perjanjian kerja), jelaskan di "
+        "--alasan-khusus; bila tujuannya menghemat iuran (mis. bonus dinaikkan, gaji pokok diturunkan), itu tidak "
+        "dibenarkan - pakai data gaji penuh." % (k["nama"], nama_periode(kode), rp(dibayar), rp(penuh),
+                                                 k["nama"]))}
 
 
 def cmd_karyawan_tambah(args):
@@ -1085,10 +1119,17 @@ def cmd_isi(args):
         isi = isian_karyawan(conn, per, k)
         if "lembur_rp" in isi and ("lembur_hari_kerja" in isi or "lembur_hari_libur" in isi):
             raise Gagal("Isi jam lembur ATAU lembur_rp, jangan keduanya (hapus yang satu dengan nilai '-').")
+        pr_k, catat = [], None
+        if "gaji_pokok" in nilai or "tunjangan_tetap" in nilai:
+            pr_k, catat = pagar_kepatuhan(args, masalah_dasar_turun(k, isi, kode), langsung_simpan=True)
         t = "Tersimpan untuk %s, %s (belum dihitung): %s\nLanjut: gaji.py hitung --bulan %s" % (
             k["nama"], nama_periode(kode), teks_isian(isi), kode)
-        return {"karyawan": k["kode"], "periode": kode, "isian": isi, "peringatan": pr,
-                "ringkasan": {"periode": kode, "karyawan": k["kode"], "kolom": sorted(nilai)}}, t
+        ringkasan = {"periode": kode, "karyawan": k["kode"], "kolom": sorted(nilai)}
+        if catat:
+            ringkasan["konfirmasi_kepatuhan"] = catat
+        return {"karyawan": k["kode"], "periode": kode, "isian": isi, "peringatan": pr_k + pr,
+                "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
+                "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "isi", kerja)
 
 
@@ -1101,23 +1142,33 @@ def cmd_isi_file(args, kode):
         if not ({"kode", "nama"} & set(kepala)) or not kolom:
             raise Gagal("File wajib punya kolom kode atau nama, dan minimal satu komponen (%s)." %
                         ", ".join(sorted(ISIAN)))
-        galat, ok = [], []
+        galat, ok, masalah = [], [], {}
         aktif = {k["id"] for k in karyawan_periode(conn, kode)}
         for r in rows:
             try:
                 k = cari_karyawan(conn, r.get("kode") or r.get("nama"))
                 if k["id"] not in aktif:
                     raise Gagal("%s tidak aktif di %s" % (k["nama"], nama_periode(kode)))
-                for c in kolom:
-                    if r.get(c, "") != "":
-                        set_isian(conn, per, k, "potongan_lain" if c == "kasbon" else c, r[c])
-                ok.append((k, isian_karyawan(conn, per, k)))
+                diisi = [c for c in kolom if r.get(c, "") != ""]
+                for c in diisi:
+                    set_isian(conn, per, k, "potongan_lain" if c == "kasbon" else c, r[c])
+                isi_k = isian_karyawan(conn, per, k)
+                if {"gaji_pokok", "tunjangan_tetap"} & set(diisi):
+                    for kd, ps in masalah_dasar_turun(k, isi_k, kode).items():
+                        masalah["%s:%s" % (kd, k["kode"])] = ps
+                ok.append((k, isi_k))
             except Gagal as e:
                 galat.append("baris %d: %s" % (r["_baris"], e.pesan))
         if galat:
             raise Gagal("Tidak ada yang disimpan; perbaiki dulu:\n- " + "\n- ".join(galat), galat=galat)
+        pr_k, catat = pagar_kepatuhan(args, masalah)
         t = "Komponen %s:\n%s" % (nama_periode(kode), "\n".join("- %s: %s" % (k["nama"], teks_isian(i)) for k, i in ok))
-        return {"periode": kode, "jumlah": len(ok), "ringkasan": {"periode": kode, "jumlah": len(ok)}}, t
+        ringkasan = {"periode": kode, "jumlah": len(ok)}
+        if catat:
+            ringkasan["konfirmasi_kepatuhan"] = catat
+        return {"periode": kode, "jumlah": len(ok), "peringatan": pr_k,
+                "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
+                "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "isi --file", kerja, besar=True, label_backup="isian")
 
 
@@ -1315,6 +1366,9 @@ def susun_masukan(conn, per, cfg):
             catatan.append(ps + " Wajib menurut " + DASAR_KEPATUHAN.split(";")[0] + ". Bila iuran sudah dibayar "
                            "lewat sistem lain, pastikan tercatat; bila belum, daftarkan/perbaiki (gaji.py karyawan "
                            "ubah --karyawan %s --bpjs kes,tk,jp / --dasar-bpjs-kesehatan -)." % k["kode"])
+        for ps in masalah_dasar_turun(k, isi, kode).values():
+            catatan.append(ps + " (Diisi lewat gaji.py isi; bila sudah disetujui pemilik dengan alasan sah, "
+                           "tercatat di log.)")
         mt = None
         if keluar or int(kode[5:7]) == 12:
             try:
@@ -2416,7 +2470,7 @@ def buat_parser():
     a = ks.add_parser("impor", parents=[umum, tulis, paham], help="Impor dari CSV")
     a.add_argument("file")
 
-    s = sub.add_parser("isi", parents=[umum, tulis], help="Isi komponen tidak tetap/penyesuaian satu periode")
+    s = sub.add_parser("isi", parents=[umum, tulis, paham], help="Isi komponen tidak tetap/penyesuaian satu periode")
     s.add_argument("--bulan", required=True)
     s.add_argument("--karyawan")
     s.add_argument("--file", help="CSV banyak karyawan (kolom kode/nama + komponen)")

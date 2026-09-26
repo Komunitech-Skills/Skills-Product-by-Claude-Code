@@ -8,7 +8,7 @@ description: Mengoperasikan Vikunja (manajer tugas/proyek open-source, self-host
 ## Tujuan
 Pemilik/admin usaha kecil yang memakai **Vikunja di server/komputer sendiri** (pengganti Trello/ClickUp/Asana berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/vikunja.py` untuk membaca atau menyiapkan tugas lewat **REST API resmi Vikunja** (`/api/v1`, header `Authorization: Bearer tk_...`). Data tetap di komputer/server pengguna. Python standar saja, tanpa instalasi paket.
 
-**Versi 1.0.0 (draft).** Diuji pembuat dengan **Vikunja 2.6.0 ASLI** (binary resmi linux-amd64, checksum SHA-256 dicocokkan, dijalankan sungguhan terikat ke 127.0.0.1) untuk `cek`, `daftar-proyek`, `hari-ini`, `terlambat`, `tambah`, `selesai`, `ringkasan`, `cari`, penugasan (`--ke`), dan `tambah --batch`; plus uji regresi otomatis dengan server tiruan (62 skenario, termasuk 401/404/500/timeout) dan lulus uji muat OpenClaw 2026.9.6 (`scripts/uji_openclaw.sh`). **Belum** diuji penguji independen, belum di Windows/Mac sungguhan, belum uji Docker.
+**Versi 1.0.1.** Diuji pembuat dengan **Vikunja 2.6.0 ASLI** (binary resmi linux-amd64, checksum SHA-256 dicocokkan, dijalankan sungguhan terikat ke 127.0.0.1) untuk `cek`, `daftar-proyek`, `hari-ini`, `terlambat`, `tambah`, `selesai`, `ringkasan`, `cari`, penugasan (`--ke`), dan `tambah --batch`; plus uji regresi otomatis dengan server tiruan (64 skenario, termasuk 401/404/500/timeout) dan lulus uji muat OpenClaw 2026.9.6 (`scripts/uji_openclaw.sh`). **Diuji penguji independen** (Akun B, 2026-09-26): menemukan bahwa penugasan (`--ke`) lewat token API mentah bisa GAGAL dengan pesan "401 token tidak valid" bila token belum dicentang kelompok izin terpisah "Tasks Assignees" (bukan bug skrip — begitu perilaku Vikunja sendiri, lihat `docs/panduan-vikunja.md` bagian 6). Direproduksi ulang lewat REST API v2.6.0 sungguhan (bukan lewat UI): `--ke` **berhasil** saat kelompok itu dicentang, dan pesan galat sekarang menyebut penyebab paling mungkin secara eksplisit. Belum di Windows/Mac sungguhan, belum uji Docker.
 
 ## Kapan digunakan
 - "Cek Vikunja saya nyambung?" → `cek`
@@ -56,7 +56,7 @@ python3 <folder-skill>/scripts/vikunja.py terlambat
 python3 <folder-skill>/scripts/vikunja.py minggu-ini
 python3 <folder-skill>/scripts/vikunja.py cari "semen"
 ```
-Tanpa `--proyek`: lintas semua proyek yang token bisa lihat. "Hari ini"/"minggu ini" dihitung dari tanggal **lokal** (`--tz`, default WIB), bukan zona server. Tugas tanpa tanggal jatuh tempo tidak pernah muncul di tiga laporan ini (bukan berarti tidak ada tugas — cek `daftar-proyek` + buka Vikunja untuk tugas tanpa tenggat).
+Tanpa `--proyek`: lintas semua proyek yang token bisa lihat. "Hari ini"/"minggu ini" dihitung dari tanggal **lokal** (`--tz`, default WIB), bukan zona server. Tugas tanpa tanggal jatuh tempo tidak pernah muncul di tiga laporan ini (bukan berarti tidak ada tugas — cek `daftar-proyek` + buka Vikunja untuk tugas tanpa tenggat). **Tugas yang jatuh tempo hari ini tapi jamnya sudah lewat muncul di `hari-ini` MAUPUN `terlambat` sekaligus** (disengaja, bukan bug — dua sudut pandang berbeda); jangan menjumlahkan kedua daftar sebagai jumlah tugas unik tanpa mengecek id yang sama. Perintahnya sendiri menampilkan catatan ini setiap kali dipanggil.
 
 ### D. Tambah tugas
 1. Tentukan proyek (id atau nama, dicari dengan `daftar-proyek` bila perlu), judul, dan opsional tenggat/prioritas/PIC.
@@ -117,7 +117,8 @@ Contoh lain (tambah, ringkasan, dari-teks, batch, error) di `examples/`. `--json
 | 8 "MUNGKIN sudah masuk sebagian" / timeout saat menulis | Koneksi putus/timeout/galat 5xx **saat** menambah tugas atau menugaskan | **Jangan ulangi otomatis.** Sampaikan tugas mana yang sudah pasti tersimpan (dari respons sebelumnya), minta pengguna cek Vikunja dulu |
 | 2 "Tenggat tidak dikenali" | Format tanggal tidak cocok pola yang didukung | Tunjukkan format yang didukung (lihat bagian D), tanyakan ulang |
 | 2 "Proyek ... tidak ditemukan" / "cocok lebih dari satu" | Nama proyek salah/ambigu | Tunjukkan daftar dari `daftar-proyek`, tanyakan yang mana |
-| 2 "Anggota ... tidak ditemukan" | Username salah, atau orang itu belum di proyek, atau token kurang izin `projects: projectusers` | Sampaikan; tugas tetap tersimpan tanpa PIC, biarkan pengguna menugaskan manual di Vikunja |
+| 2 "Anggota ... tidak ditemukan" | Username salah, atau orang itu belum di proyek, atau token kurang izin kotak "Projectusers" (di dalam kelompok "Projects") | Sampaikan; tugas tetap tersimpan tanpa PIC, biarkan pengguna menugaskan manual di Vikunja |
+| "GAGAL menugaskan ke '...': 401 ..." (setelah `tambah --ke`) | Hampir selalu: token belum dicentang kelompok izin **"Tasks Assignees"** (terpisah dari "Tasks") — Vikunja melaporkannya sebagai "token tidak valid", bukan "kurang izin" | Tugas TETAP tersimpan tanpa PIC. Arahkan ke panduan §6, minta buat ulang token dengan kelompok "Tasks Assignees" (Create, Read All) dicentang |
 | 3 "File kunci ... tidak ditemukan" | Token belum disimpan | Jalankan `simpan-kunci` |
 | 3 "File kunci ... sudah ada" | `simpan-kunci` akan menimpa token lama | Tanyakan: ganti (`--ya`) atau simpan sebagai token kedua (`--kunci-file`) |
 | 2 "Alamat ... bukan komputer ini" / "wajib HTTPS" | URL bukan 127.0.0.1 tanpa `--izinkan-jarak-jauh`, atau publik tanpa HTTPS | Tolak; jelaskan risiko (panduan §4). Hanya lanjut bila pengguna menegaskan itu server miliknya sendiri |

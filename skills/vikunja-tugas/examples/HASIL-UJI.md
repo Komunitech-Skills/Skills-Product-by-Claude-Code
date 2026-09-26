@@ -83,3 +83,40 @@ Tidak ditemukan perintah destruktif, pengiriman data ke server luar di luar Viku
 kredensial/SSH/browser data, unduh-lalu-jalankan-shell, kode ter-obfuscate, atau dependensi mencurigakan
 (`import` hanya modul stdlib Python). Tidak ada API key/token tertanam di kode. Instruksi SKILL.md
 tidak mengandung prompt injection tersembunyi.
+
+## Tindak lanjut Temuan #1 & #2 (v1.0.1, 2026-09-26)
+Diagnosis ulang dengan Vikunja 2.6.0 ASLI (binary linux-amd64 baru diunduh dari `dl.vikunja.io`,
+checksum SHA-256 di dalam zip dicocokkan OK, dijalankan sungguhan terikat `127.0.0.1`, dimatikan
+setelah selesai) plus kode sumber frontend `go-vikunja/vikunja` tag `v2.6.0`
+(`frontend/src/components/token/ApiTokenForm.vue`):
+
+- **`--ke` DIDUKUNG token API.** Memanggil `PUT /api/v1/tokens` lewat sesi JWT pemilik dengan
+  kelompok izin `tasks_assignees: [create, read_all]` (nama kelompok persis seperti yang dipakai
+  server sendiri di `/api/v1/routes`) lalu memakai token itu untuk `PUT /api/v1/tasks/{id}/assignees`
+  **berhasil** (dites 2x, task baru & task lama). Tanpa kelompok `tasks_assignees` sama sekali,
+  panggilan yang sama gagal persis seperti temuan Akun B: `{"code":11,"message":"missing, malformed,
+  expired or otherwise invalid token provided"}` (HTTP 401) — bukan 403. Kesimpulan: bukan skrip yang
+  salah dan bukan fitur tak didukung; akar masalahnya kemungkinan besar Akun B tidak pernah mencoba
+  ejaan kelompok yang benar (`tasks_assignees`, jamak+garis bawah) di antara >12 kombinasi yang
+  dicoba (semua varian yang disebut di Temuan #1 pakai `task_assignees` tunggal atau tanpa garis
+  bawah).
+- **Nama di panduan §6 sudah benar untuk label yang tampil di layar** ("Tasks Assignees") —
+  dikonfirmasi dari kode sumber `ApiTokenForm.vue`: nama kelompok/izin ditulis dengan garis bawah
+  (`tasks_assignees`, `projectusers`, dst.) lalu tampilan menggantinya jadi spasi + huruf kapital tiap
+  kata lewat CSS. **Yang SALAH** di §6 lama: baris "Projects: Project Users" — kotak yang sebenarnya
+  dibutuhkan bernama **"Projectusers"** (satu kata, tanpa spasi, di DALAM kelompok "Projects"),
+  BUKAN kelompok terpisah "Projects Users" (yang mengatur keanggotaan proyek, bukan lookup nama).
+  §6 sudah diperbaiki dengan nama persis + penjelasan bahwa "Tasks Assignees" adalah kelompok
+  TERPISAH yang mudah terlewat, dan pesan galat skrip (`cmd_tambah`) sekarang menyebut kemungkinan
+  penyebab ini secara eksplisit saat 401 terjadi tepat di langkah penugasan.
+- **Temuan #2 (tumpang tindih `hari-ini`/`terlambat`)**: dikonfirmasi sebagai perilaku disengaja.
+  Ditambahkan catatan otomatis di output kedua perintah (`CATATAN_TUMPANG_TINDIH`) + penjelasan di
+  `SKILL.md` bagian C.
+- Dua uji regresi baru ditambahkan (total 64): (1) token tanpa `tasks_assignees` menghasilkan pesan
+  galat yang menyebut kelompok "Tasks Assignees" secara eksplisit; (2) output `hari-ini`/`terlambat`
+  memuat catatan tumpang tindih. 64/64 lulus, `scripts/validate.py --skill vikunja-tugas` lulus.
+- Klaim "diuji ... penugasan (--ke) ... dengan Vikunja 2.6.0 ASLI" di `SKILL.md`/`README.md`
+  **dipertahankan** (bukan dihapus) karena kini direproduksi ulang secara independen lewat REST API
+  mentah terhadap server v2.6.0 sungguhan — lihat langkah di atas — bukan sekadar klaim pembuat asli.
+  Server uji & token dibuat di scratchpad sekali pakai lalu dimatikan/dibuang setelah sesi ini,
+  sesuai aturan keamanan pengujian (tidak ada token nyata yang bocor ke repo).

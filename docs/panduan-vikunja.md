@@ -6,7 +6,7 @@ Vikunja adalah program **gratis dan open-source** (lisensi AGPL-3.0) untuk menga
 
 > Komunitech **tidak berafiliasi** dengan proyek Vikunja; Vikunja adalah merek milik pemiliknya (organisasi go-vikunja).
 
-**Status panduan (26 September 2026).** Langkah dan nama menu dicocokkan dengan sumber resmi (vikunja.io/docs, kode sumber go-vikunja/vikunja v2.6.0). Unduhan, pengikatan ke `127.0.0.1`, pendaftaran user, dan pembuatan token API berskop **dicoba langsung** dengan binary Linux resmi v2.6.0 (checksum SHA-256 dicocokkan dengan file resmi). **Belum dicoba langsung** oleh Komunitech: instalasi di Windows/macOS sungguhan dan Docker. Bila tampilan di komputer Anda berbeda, ikuti tulisan di layar atau hubungi kami.
+**Status panduan (26 September 2026, diperbarui setelah uji penguji independen).** Langkah dan nama menu dicocokkan dengan sumber resmi (vikunja.io/docs, kode sumber go-vikunja/vikunja v2.6.0). Unduhan, pengikatan ke `127.0.0.1`, pendaftaran user, dan pembuatan token API berskop **dicoba langsung** dengan binary Linux resmi v2.6.0 (checksum SHA-256 dicocokkan dengan file resmi). Bagian 6 (izin token, termasuk `--ke`/penugasan) diuji ulang lewat REST API mentah langsung ke server v2.6.0 sungguhan (bukan lewat klik di layar) untuk memastikan nama kelompok izin di tabel cocok persis dengan yang dipakai server; penugasan (`--ke`) **berhasil** saat kelompok "Tasks Assignees" dicentang, **gagal dengan pesan "401"/token tidak valid** (bukan "kurang izin") saat kelompok itu tidak dicentang — lihat catatan di bagian 6. **Belum dicoba langsung** oleh Komunitech: instalasi di Windows/macOS sungguhan dan Docker. Bila tampilan di komputer Anda berbeda, ikuti tulisan di layar atau hubungi kami.
 
 ## Daftar isi
 1. Sebelum mulai

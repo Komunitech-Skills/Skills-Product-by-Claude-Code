@@ -427,6 +427,11 @@ class Keadaan:
             "tk_tulisrahasia12345": {"projects": ["read_all", "read_one", "projectusers"],
                                      "tasks": ["read_all", "read_one", "create", "update"],
                                      "tasks_assignees": ["create", "read_all"]},
+            # Temuan Akun B (2026-09-26): token dengan Tasks lengkap TAPI TANPA kelompok
+            # 'tasks_assignees' -> penugasan (--ke) harus gagal dengan pesan yang menyebut
+            # kelompok itu secara eksplisit, bukan pesan 401 generik.
+            "tk_tanpaassignees1234": {"projects": ["read_all", "read_one", "projectusers"],
+                                       "tasks": ["read_all", "read_one", "create", "update"]},
         }
 
 
@@ -514,6 +519,30 @@ class TesUjungKeUjung(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("GAGAL menugaskan", r.stderr)
         self.assertTrue(any(t["title"] == "Tugas x" for t in self.srv.keadaan.tugas))
+
+    def test_tambah_ke_tanpa_izin_tasks_assignees_pesan_jelas(self):
+        # Regresi Temuan #1 Akun B: token punya Tasks lengkap tapi tidak dicentang kelompok
+        # terpisah 'Tasks Assignees' -> Vikunja balas 401 ("token tidak valid", bukan 403).
+        # Tugas tetap tersimpan; pesan galat harus menyebut 'Tasks Assignees' secara eksplisit
+        # supaya pengguna tidak salah kira token/username-nya yang salah.
+        r = self.jalankan(["tambah", "--proyek", "2", "--judul", "Tugas tanpa izin assign", "--ke", "budi", "--ya"],
+                           token="tk_tanpaassignees1234")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("GAGAL menugaskan", r.stderr)
+        self.assertIn("Tasks Assignees", r.stderr)
+        self.assertTrue(any(t["title"] == "Tugas tanpa izin assign" for t in self.srv.keadaan.tugas))
+        self.assertFalse(any(t["assignees"] for t in self.srv.keadaan.tugas
+                              if t["title"] == "Tugas tanpa izin assign"))
+
+    def test_hari_ini_dan_terlambat_menyebut_catatan_tumpang_tindih(self):
+        # Regresi Temuan #2 Akun B: dokumentasikan (bukan sembunyikan) bahwa tugas due hari ini
+        # yang jamnya sudah lewat bisa muncul di hari-ini MAUPUN terlambat sekaligus.
+        r1 = self.jalankan(["hari-ini"])
+        self.assertEqual(r1.returncode, 0, r1.stderr)
+        self.assertIn("MAUPUN", r1.stdout)
+        r2 = self.jalankan(["terlambat"])
+        self.assertEqual(r2.returncode, 0, r2.stderr)
+        self.assertIn("MAUPUN", r2.stdout)
 
     def test_selesai_menandai(self):
         r = self.jalankan(["selesai", "--id", "1", "--ya"])
