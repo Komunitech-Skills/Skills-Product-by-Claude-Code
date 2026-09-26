@@ -137,3 +137,17 @@ Penguji bukan pembuat/perevisi/penguji sebelumnya; kode script tidak dibaca; dij
 
 ### Skor uji ulang v1.0.2: **8 / 10 — LULUS**
 Ketiga P3 selesai dengan penjelasan jujur, ketepatan tanggal tetap sempurna, tes bertambah. Belum 9 karena naskah resmi Ps. 172 PMK 81/2024 & PER-11/PJ/2025 belum dibaca langsung (tiga butir PERLU REVIEW masih menunggu pemilik/konsultan).
+
+---
+
+## Uji ulang v1.0.3 (penguji independen keempat, cek singkat, 2026-09-26)
+Penguji bukan pembuat/perevisi/penguji sebelumnya; kode script tidak dibaca sebelum uji; dijalankan dari salinan scratchpad (`uji4-kp/`).
+
+- **Verifikasi naskah resmi PMK 81/2024 (Ps. 169/171/172/173):** dicoba WebFetch ke `pajak.go.id` — **diblokir egress proxy** sesi ini (`EGRESS_BLOCKED`), sehingga tidak bisa membaca naskah langsung secara independen. Tinjauan dilakukan atas konsistensi internal `references/aturan-tenggat.md`: klaim "Ps. 173 ayat (1) hanya menggeser Ps. 171 & 172, tidak mencakup Ps. 169 (SPT Tahunan)" masuk akal dan sejalan dengan bukti sekunder yang sudah ada sejak v1.0.2 (DDTC: SPT Tahunan tak diundur meski libur/Lebaran) — tidak ada temuan yang bertentangan, tapi **status pembacaan naskah resmi tetap klaim sepihak dari sesi sebelumnya, belum diverifikasi ulang secara independen** di sesi ini.
+- **Tahun dengan 31 Mar/30 Apr di akhir pekan (2029, 2030):** dijalankan `--profil op-karyawan`/`badan-pkp`. 2029: SPT OP 31 Mar (Sabtu) → satu tanggal `2029-03-31`, `libur_tidak_bergeser: Sabtu`, saran hari kerja sebelumnya Jumat 30 Mar 2029; tidak ada field `kemungkinan_tanggal_bergeser`. 2030: SPT OP 31 Mar (Minggu) → sama, saran Jumat 29 Mar 2030. SPT Badan 30 Apr jatuh Senin (2029)/Selasa (2030), tidak libur di kedua tahun itu — perilaku hari-kerja-biasa terverifikasi lewat kasus lain di uji_regresi.py. Benar sesuai klaim "satu tanggal, tanpa geser".
+- **Tanggal lama tidak berubah (regresi manual):** dicek langsung dari output `--format json` profil bulanan 2026 — 20→**25 Mar 2026** (lapor PPh 21/unifikasi masa Feb), 15→**18 Mei 2026** (setor masa Apr), PPN 31 Mei→**2 Jun 2026** (masa Apr). Semua cocok, tidak berubah.
+- **`tests/uji_regresi.py`:** **62/62 OK**, termasuk kasus baru `test_1_spt_op_hari_libur_satu_tanggal`, `test_1_tidak_ada_kemungkinan_geser_sama_sekali`, `test_1_spt_hari_kerja_tanpa_catatan`.
+- **Bug baru:** tidak ditemukan. Grep memastikan tidak ada sisa field/istilah `kemungkinan_tanggal_bergeser` di kode maupun SKILL.md — penghapusan klaim Ps. 172/173 untuk SPT Tahunan bersih, tidak setengah jalan.
+
+### Skor uji ulang v1.0.3: **8 / 10 — LULUS**
+Perubahan konsisten, tes tambah 3 kasus baru dan semua lulus, tanggal lama tak berubah, tahun edge-case (2029/2030) benar. Tetap 8 (bukan 9): verifikasi naskah resmi PMK 81/2024 Ps. 169/171/172/173 **tidak bisa dilakukan ulang secara independen** sesi ini karena `pajak.go.id` diblokir egress proxy — klaim "dicocokkan dengan naskah resmi 2026-09-26" masih bertumpu pada sesi sebelumnya, belum ada verifikasi kedua yang benar-benar independen membaca naskah aslinya.

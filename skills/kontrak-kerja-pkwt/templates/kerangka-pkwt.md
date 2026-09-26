@@ -6,6 +6,8 @@ KERANGKA PKWT — Komunitech. Aturan pengisian untuk agent:
 - Pasal bertanda (OPSIONAL) hapus bila tidak relevan, lalu nomori ulang pasal.
 - JANGAN menambah pasal masa percobaan dalam bentuk apa pun.
 - Angka rupiah selalu disertai terbilang. Hapus komentar ini sebelum dicetak.
+- Pasal 7 ayat (2) (PILIH): versi UMUM untuk usaha menengah/besar atau bila status usaha tidak diketahui;
+  versi USAHA MIKRO/KECIL bila pengguna usaha mikro/kecil (PP 35/2021 Pasal 16 ayat (6): besaran = kesepakatan).
 -->
 
 # PERJANJIAN KERJA WAKTU TERTENTU (PKWT)
@@ -49,7 +51,7 @@ PIHAK PERTAMA dan PIHAK KEDUA (bersama-sama disebut **Para Pihak**) sepakat memb
 
 ## Pasal 3 — Waktu Kerja dan Lembur
 1. Waktu kerja: {{7 jam sehari dan 40 jam seminggu untuk 6 hari kerja / 8 jam sehari dan 40 jam seminggu untuk 5 hari kerja}}, yaitu {{hari}} pukul {{jam mulai}}–{{jam selesai}} dengan istirahat {{durasi}}.
-2. Kerja lembur hanya dengan persetujuan PIHAK KEDUA, paling lama 4 jam sehari dan 18 jam seminggu, dan dibayar upah lembur sesuai peraturan (upah sejam = 1/173 × upah sebulan).
+2. Kerja lembur hanya dengan persetujuan PIHAK KEDUA, paling lama 4 jam sehari dan 18 jam seminggu, dan dibayar upah lembur sesuai peraturan (upah sejam = 1/173 × upah sebulan, PP 35/2021 Pasal 32 ayat (2)).
 
 ## Pasal 4 — Upah
 1. PIHAK KEDUA menerima upah per bulan sebesar:
@@ -72,7 +74,8 @@ PIHAK PERTAMA dan PIHAK KEDUA (bersama-sama disebut **Para Pihak**) sepakat memb
 
 ## Pasal 7 — Berakhirnya Perjanjian dan Uang Kompensasi
 1. Perjanjian ini berakhir apabila: jangka waktu berakhir/pekerjaan selesai; PIHAK KEDUA meninggal dunia; ada putusan pengadilan yang berkekuatan hukum tetap; atau terjadi keadaan tertentu berikut yang disepakati: {{isi bila ada, atau hapus}}.
-2. Saat perjanjian berakhir, PIHAK PERTAMA memberikan **uang kompensasi** kepada PIHAK KEDUA yang telah bekerja paling sedikit 1 (satu) bulan terus-menerus, sebesar **masa kerja (bulan) ÷ 12 × 1 bulan upah** (upah = gaji pokok + tunjangan tetap), atau 1 bulan upah untuk masa kerja 12 bulan. Perkiraan untuk perjanjian ini: **Rp{{kompensasi dari script}}** ({{terbilang}} rupiah).
+2. (PILIH) **Versi umum:** Saat perjanjian berakhir, PIHAK PERTAMA memberikan **uang kompensasi** kepada PIHAK KEDUA yang telah bekerja paling sedikit 1 (satu) bulan terus-menerus, sebesar **masa kerja (bulan) ÷ 12 × 1 bulan upah** (upah = gaji pokok + tunjangan tetap), atau 1 bulan upah untuk masa kerja 12 bulan. Perkiraan untuk perjanjian ini: **Rp{{kompensasi dari script}}** ({{terbilang}} rupiah).
+   **Versi usaha mikro/kecil:** Saat perjanjian berakhir, PIHAK PERTAMA memberikan **uang kompensasi** kepada PIHAK KEDUA yang telah bekerja paling sedikit 1 (satu) bulan terus-menerus, dengan besaran yang disepakati Para Pihak sesuai Pasal 16 ayat (6) Peraturan Pemerintah Nomor 35 Tahun 2021, yaitu **{{besaran yang disepakati, mis. Rp... (terbilang) untuk masa kerja 12 bulan, dan sebanding untuk masa kerja yang lebih pendek/panjang}}**. [Catatan agent, hapus sebelum dicetak: sebagai acuan praktik baik, rumus umum menghasilkan Rp{{acuan dari script --usaha-mikro-kecil}}.]
 3. Jika perjanjian diperpanjang, uang kompensasi untuk jangka waktu sebelum perpanjangan dibayar saat jangka waktu itu selesai.
 
 ## Pasal 8 — Pengakhiran Sebelum Waktunya

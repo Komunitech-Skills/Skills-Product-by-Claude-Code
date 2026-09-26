@@ -29,7 +29,7 @@ Membantu pemilik usaha kecil yang awam tender untuk: memutuskan **layak ikut ata
 | Info | Wajib? | Default jika tidak ada |
 |---|---|---|
 | Jenis bantuan: kelayakan / checklist / jadwal / cek harga / kesalahan gugur | Ya | Tebak dari kalimat; jika umum ("mau ikut tender") → jalankan alur lengkap 1–5 |
-| Metode (tender, seleksi, pengadaan langsung, e-purchasing, tender cepat) & jenis (barang, konstruksi, jasa lainnya, konsultansi) | Ya | Tender barang/jasa lainnya, pascakualifikasi |
+| Metode (tender, seleksi, pengadaan langsung, e-purchasing, tender cepat) & jenis (barang, konstruksi, jasa lainnya, konsultansi, pekerjaan terintegrasi) | Ya | Tender barang/jasa lainnya, pascakualifikasi (sebut sebagai Asumsi; jenis menentukan jaminan penawaran) |
 | Data usaha: bentuk (CV/PT/perorangan/koperasi), kualifikasi di NIB, KBLI, status PKP, SBU (konstruksi), pengalaman, paket berjalan | Untuk kelayakan | Tanyakan; tulis `[cek]` bila belum tahu |
 | Rincian harga (uraian, volume, satuan, harga satuan), HPS, pagu | Untuk cek harga | Tanpa HPS → hanya hitung total |
 | Harga sudah termasuk PPN? | Tidak | Belum termasuk; PPN hanya jika PKP |
@@ -40,19 +40,20 @@ Info kurang → tanyakan **sekali** (maks. 5 pertanyaan bernomor). Ingin cepat �
 ## Langkah Kerja
 1. **Pahami paket.** Minta (atau baca bila ditempel) ringkasan dari dokumen pemilihan: metode, jenis, kualifikasi usaha, KBLI/SBU, HPS, pagu, jadwal, jaminan penawaran, masa berlaku penawaran. Ingatkan: **dokumen pemilihan + adendum adalah acuan utama**.
 2. **Cek kelayakan** (tabel A di `references/checklist-dokumen.md`). Beri status per butir: ✅ memenuhi / ❌ tidak / ❓ perlu dicek. Aturan kunci:
-   - Paket barang/konstruksi/jasa lainnya **pagu s.d. Rp15 miliar** pada dasarnya untuk usaha mikro, kecil & koperasi (Pasal 65 Perpres 16/2018 jo. 46/2025), kecuali butuh kemampuan teknis khusus.
+   - Paket barang/konstruksi/jasa lainnya **pagu s.d. Rp15 miliar** pada dasarnya untuk usaha mikro, kecil & koperasi (Perpres 16/2018 jo. 46/2025 Pasal 65 ayat (3)), kecuali paket yang menuntut kemampuan teknis yang tidak dapat dipenuhi UMK (Pasal 65 ayat (4)).
    - KBLI di NIB (OSS RBA, PP 28/2025) harus cocok dengan KBLI yang diminta.
    - Konstruksi: SBU subklasifikasi & kualifikasi sesuai, SKK personel, **SKP = 5 − jumlah paket konstruksi yang sedang dikerjakan** (usaha kecil); SKP ≤ 0 → tidak memenuhi.
    - Usaha kecil berdiri < 3 tahun dapat dikecualikan dari syarat pengalaman untuk paket s.d. Rp2,5 miliar (cek LDK).
-   - Batas pengadaan langsung: konstruksi s.d. Rp400 jt, barang/jasa lainnya s.d. Rp200 jt, konsultansi s.d. Rp100 jt.
+   - Batas pengadaan langsung: konstruksi s.d. Rp400 jt, barang/jasa lainnya s.d. Rp200 jt, konsultansi s.d. Rp100 jt (Pasal 38 ayat (3), Pasal 41 ayat (3)).
+   - Syarat PDN (bila diminta): produk ber-**TKDN paling sedikit 25%** (artinya ≥ 25%; 25% tepat sudah memenuhi) bila ada produk dengan TKDN + BMP paling sedikit 40% (Pasal 66 ayat (2)–(4)).
    Tutup dengan **keputusan: IKUT / TIDAK / IKUT DENGAN SYARAT** + alasan.
 3. **Checklist dokumen** sesuai metode (bagian B & C `references/checklist-dokumen.md`). Tampilkan sebagai kotak centang, dikelompokkan Administrasi / Teknis / Harga. Jangan menambah syarat yang tidak ada di dokumen pemilihan pengguna — tandai "jika diminta".
 4. **Jadwal mundur.** Jalankan:
    `python3 scripts/cek_penawaran.py jadwal --batas "2026-10-15 14:00" --penjelasan 2026-10-06 --libur 2026-10-12 --hari-ini <hari ini>` (Windows: `py` atau `python`; tambah `--konstruksi`, `--jaminan`, `--sabtu-kerja` bila relevan).
-   Tanpa script: hitung mundur **hari kerja** (lewati Sabtu, Minggu, libur yang disebut): H-7 kumpulkan & cek masa berlaku dokumen (+ajukan jaminan penawaran), H-5 dokumen teknis & harga pemasok, H-3 finalisasi harga & tanda tangan, H-2 pemeriksaan silang, H-1 **unggah**, H hanya darurat. Tugas persiapan yang tanggalnya sudah lewat → "TERLEWAT – kerjakan segera"; acara pengumuman/penjelasan yang sudah lewat → "SUDAH LEWAT – baca Berita Acara Penjelasan & adendum" (tidak bisa diulang).
+   Tanpa script: hitung mundur **hari kerja** (lewati Sabtu, Minggu, libur yang disebut): H-7 kumpulkan & cek masa berlaku dokumen (+ajukan jaminan penawaran bila konstruksi/terintegrasi & diminta), H-5 dokumen teknis & harga pemasok, H-3 finalisasi harga & tanda tangan, H-2 pemeriksaan silang, H-1 **unggah**, H hanya darurat. Tugas persiapan yang tanggalnya sudah lewat → "TERLEWAT – kerjakan segera"; acara pengumuman/penjelasan yang sudah lewat → "SUDAH LEWAT – baca Berita Acara Penjelasan & adendum" (tidak bisa diulang).
 5. **Cek harga penawaran.** Simpan rincian ke CSV (kolom `Uraian;Volume;Satuan;Harga Satuan`, plus kolom **`Jumlah`** bila pengguna punya — lihat `templates/contoh-rincian.csv`) lalu:
-   `python3 scripts/cek_penawaran.py harga rincian.csv --ppn nonmewah --hps "Rp 250.000.000" [--pagu ...] [--termasuk-ppn]`
-   `--ppn tidak` (default, bukan PKP) | `nonmewah` | `mewah`. HPS/pagu boleh "185jt", "2,4 M", "Rp2,4 miliar". Salin angka **persis** dari output. Script menerima "Rp1.250.000,00", volume "1,5", sel kosong, baris judul bagian, dan baris total/PPN yang ikut tertempel (label boleh di kolom mana pun; dibandingkan, tidak dihitung ganda).
+   `python3 scripts/cek_penawaran.py harga rincian.csv --ppn nonmewah --hps "Rp 250.000.000" --jenis barang [--pagu ...] [--termasuk-ppn]`
+   `--ppn tidak` (default, bukan PKP) | `nonmewah` | `mewah`. `--jenis konstruksi|barang|jasa-lainnya|konsultansi|terintegrasi` (tanpa ini script menyebut asumsi; tanyakan jenis bila HPS > Rp10 M). Angka hitungan tidak dipengaruhi `--jenis`, hanya pesan jaminan. Untuk `--jenis terintegrasi`, isi juga `--pagu`: jaminan penawaran (1–3%) dan jaminan pelaksanaan (ambang 80% & 5%) dihitung dari pagu; tanpa `--pagu` angka dari HPS hanya gambaran. HPS/pagu boleh "185jt", "2,4 M", "Rp2,4 miliar". Salin angka **persis** dari output. Script menerima "Rp1.250.000,00", volume "1,5", sel kosong, baris judul bagian, dan baris total/PPN yang ikut tertempel (label boleh di kolom mana pun; dibandingkan, tidak dihitung ganda).
    - **Kolom Jumlah pengguna** dicek per baris: bagian "Baris salah hitung" menunjuk baris yang volume × harga ≠ jumlah tertulis beserta selisihnya — sampaikan ke pengguna baris demi baris. Script selalu memakai volume × harga satuan.
    - Kolom `Jumlah` (banyaknya) **dan** `Jumlah Harga` sekaligus → Jumlah = volume, Jumlah Harga = jumlah per baris yang dicek.
    - **Baris total di file** dicocokkan sesuai labelnya (Total/"setelah/termasuk PPN" → sesudah PPN; Jumlah/Subtotal/DPP/"sebelum PPN" → sebelum PPN; "DPP Nilai Lain (11/12)" → 11/12 × DPP, toleransi Rp1; PPN → PPN). "Total di file BELUM TERMASUK PPN" = kesalahan gugur/rugi yang umum — tegaskan angka yang benar. Label mirip total yang tidak dikenali (mis. "Harga Total") muncul di Info "TIDAK diperiksa" — sampaikan & minta pengguna memastikan. Saat TOTAL BELUM FINAL, baris total hanya "sama dengan angka SEMENTARA", jangan sebut cocok.
@@ -64,8 +65,8 @@ Info kurang → tanyakan **sekali** (maks. 5 pertanyaan bernomor). Ingin cepat �
    - Harga sudah termasuk PPN: DPP = rupiah bulat terbesar dengan DPP + PPN ≤ harga (≈ harga ÷ 1,11); tampilkan sisa.
    - Total = DPP + PPN. % HPS = total ÷ HPS × 100 (2 desimal). Batas 80% = 0,8 × HPS.
    - Total > HPS → **gugur**. Total < 80% HPS → **klarifikasi kewajaran harga**; tidak wajar → gugur.
-   - Jaminan pelaksanaan (kontrak barang/konstruksi/jasa lainnya **> Rp200 juta**, bukan e-purchasing): penawaran 80–100% HPS → **5% nilai kontrak**; < 80% HPS → **5% nilai HPS**. Kontrak ≤ Rp200 juta umumnya tanpa jaminan pelaksanaan. Masukkan ke rencana kas.
-   - HPS > Rp10 miliar → umumnya wajib jaminan penawaran 1–3% HPS.
+   - Jaminan pelaksanaan (kontrak barang/konstruksi/jasa lainnya **paling sedikit di atas Rp200 juta**, termasuk e-purchasing — pengecualian e-purchasing sudah dihapus Perpres 46/2025; tidak diperlukan hanya untuk jasa lainnya yang aset penyedia dikuasai pengguna): penawaran 80–100% HPS → **5% nilai kontrak**; < 80% HPS → **5% nilai HPS** (terintegrasi: 80–100% pagu → 5% kontrak; < 80% pagu → 5% pagu, Pasal 33 ayat (4)) — Pasal 33. Kontrak ≤ Rp200 juta umumnya tanpa jaminan pelaksanaan. Masukkan ke rencana kas.
+   - Jaminan penawaran **hanya untuk pekerjaan konstruksi & pekerjaan terintegrasi** (Pasal 30 ayat (2), diubah Perpres 46/2025) dengan HPS **paling sedikit di atas Rp10 miliar**: 1–3% HPS (terintegrasi: 1–3% pagu) — Pasal 31. Barang/jasa lainnya/konsultansi: tidak lagi disyaratkan Perpres (tetap ikuti dokumen pemilihan).
    - Terbilang ditulis penuh + "Rupiah", harus sama dengan angka.
    Ingatkan: bendahara instansi memungut PPN (bila PKP) & PPh 22 1,5% (barang) saat bayar → uang diterima < total. **Konstruksi:** penghasilan jasa konstruksi dikenai PPh final (PP 9/2022, tarif tergantung kualifikasi/SBU) — sebut satu kalimat & arahkan ke konsultan pajak; jangan hitung sendiri.
 6. **Kesalahan yang menggugurkan.** Tampilkan 5–8 butir paling relevan dari `references/kesalahan-gugur.md` untuk metode/jenis paket pengguna.
@@ -80,7 +81,7 @@ Info kurang → tanyakan **sekali** (maks. 5 pertanyaan bernomor). Ingin cepat �
 ## 4. Cek harga  (tabel rincian, subtotal, PPN, total, terbilang, % HPS, peringatan)
 ## 5. Awas gugur  (5–8 butir)
 Asumsi: ...
-Dasar aturan (dicek 2026-09-25): Perpres 16/2018 jo. 12/2021 jo. 46/2025; Peraturan LKPP 12/2021 jo. 4/2024; Peraturan LKPP 2/2026 (katalog elektronik); PMK 131/2024 (PPN). Pembulatan PPN belum dicocokkan dengan Coretax. Ringkasan ini bukan nasihat hukum; yang mengikat adalah dokumen pemilihan & adendum di SPSE. Untuk keraguan, tanyakan saat pemberian penjelasan atau ke konsultan PBJ.
+Dasar aturan (dicek 2026-09-25; pasal Perpres dicocokkan dengan naskah konsolidasi resmi LKPP 2026-09-26): Perpres 16/2018 jo. 12/2021 jo. 46/2025; Peraturan LKPP 12/2021 jo. 4/2024; Peraturan LKPP 2/2026 (katalog elektronik); PMK 131/2024 (PPN). Pembulatan PPN belum dicocokkan dengan Coretax. Ringkasan ini bukan nasihat hukum; yang mengikat adalah dokumen pemilihan & adendum di SPSE. Untuk keraguan, tanyakan saat pemberian penjelasan atau ke konsultan PBJ.
 ```
 Tampilkan hanya bagian yang diminta; alur lengkap bila pengguna "mau ikut tender" tanpa rincian.
 
@@ -93,7 +94,7 @@ Tampilkan hanya bagian yang diminta; alur lengkap bila pengguna "mau ikut tender
 Contoh lengkap: `examples/uji-pembuat-01-atk-usaha-kecil.md`.
 
 ## Batasan & Penanganan Error
-- Aturan PBJ sering berubah; angka di skill dicek **2026-09-25** (`references/dasar-aturan.md`). Butir bertanda PERLU REVIEW harus dicocokkan dengan dokumen pemilihan/naskah resmi.
+- Aturan PBJ sering berubah; angka di skill dicek **2026-09-25**, pasal Perpres dicocokkan dengan naskah konsolidasi resmi LKPP (https://jdih.lkpp.go.id/regulation/download/konsolidasi-nomor-46-tahun-2025/1) pada **2026-09-26** (`references/dasar-aturan.md`). Butir yang masih bertanda PERLU REVIEW (mis. klarifikasi < 80% HPS & pengecualian pengalaman dari Peraturan LKPP 12/2021, SKP) harus dicocokkan dengan dokumen pemilihan.
 - Script tidak mengakses SPSE/OSS/Coretax; tidak memverifikasi keaslian dokumen atau status daftar hitam — hanya mengingatkan cara cek.
 - Output script "GALAT: ..." → jelaskan dengan bahasa awam & minta data yang benar. "TOTAL BELUM FINAL" → sebutkan baris bermasalah, jangan sajikan total sebagai final.
 - Baris total yang tertempel di CSV tidak ikut dijumlah; bila nilainya tidak cocok → tunjukkan selisihnya (kemungkinan rumus Excel salah).

@@ -131,3 +131,45 @@ Tidak ditemukan. Temuan v1.0.2 (bug baru #1 [TINGGI], #3 [RENDAH]) tertutup penu
 
 ## Skor uji ulang v1.0.3: **9 / 10 — LULUS, layak `rilis`**
 Alasan: bug TINGGI (kolom rupiah dipakai sebagai volume) tuntas pada seluruh variasi judul kolom banyaknya yang lazim di tabel barang Indonesia (Banyaknya/Jml/Jml./Qty./QTY/Kuantitas/Vol/Volume Pekerjaan), termasuk kasus tanpa kolom volume sama sekali (kini berhenti dengan pesan jelas, bukan angka salah) dan kasus "Jumlah" polos tanpa Jumlah Harga (tetap dibaca sebagai volume seperti sebelumnya, benar). `--hps 0/-5` kini konsisten exit 2. 49/49 tes regresi lulus. Tidak 10 karena temuan minor v1.0.2 (#2, selisih pembulatan <Rp1 tak ditunjuk per baris) masih terbuka — dampaknya kecil (selisih Rp1) dan tidak melanggar prinsip reliable secara material.
+
+---
+
+## Uji ulang v1.0.4 (sesuai naskah resmi Perpres 46/2025)
+
+- **Penguji:** agent independen (bukan pembuat, perevisi, atau penguji sebelumnya); salinan di scratchpad `uji-resmi/tender-checklist/`. Tanggal: **26 September 2026**.
+- **Pencocokan naskah** (konsolidasi LKPP https://jdih.lkpp.go.id/regulation/download/konsolidasi-nomor-46-tahun-2025/1, HTTP 200 PDF, teks diekstrak dengan Python standar):
+  - Pasal 30 ayat (2) (*) ✅ "Jaminan penawaran … untuk pengadaan Pekerjaan Konstruksi dan pekerjaan terintegrasi"; ayat (2a) jaminan sanggah banding; Pasal 31 ✅ HPS paling sedikit di atas Rp10 M, 1%–3% HPS, terintegrasi 1%–3% pagu.
+  - Pasal 33 ayat (2) ✅ huruf a (jasa lainnya, aset penyedia dikuasai pengguna) tetap; **huruf b "Dihapus" (\*\*\*)** → pengecualian e-purchasing hilang. Ayat (1) > Rp200 jt, ayat (3) 5% kontrak / 5% HPS, ayat (4) terintegrasi acuan pagu, ayat (5) masa berlaku ✅.
+  - Pasal 66 ✅ "TKDN paling sedikit 25%" bila ada PDN TKDN+BMP paling sedikit 40% (≥ 25%, bukan > 25%).
+  - Pasal 65 ✅ ayat (3) pagu s.d. Rp15 M untuk UMK & koperasi; ayat (4) pengecualian kemampuan teknis.
+- **Pesan jaminan per `--jenis`** (CSV sendiri: `t2` 2 baris laptop/printer, total Rp2.601.307.200, HPS Rp11 M dan Rp3 M; `t1` 4 baris konstruksi, total Rp5.590.345.725, HPS Rp12 M dan Rp6,5 M; PPN non-mewah; plus `--pagu 14M`):
+  - konstruksi → "WAJIB JAMINAN PENAWARAN 1%-3% dari HPS = Rp110.000.000 s.d. Rp330.000.000" ✅
+  - terintegrasi → wajib, "dari pagu anggaran" ✅ (lihat bug 1)
+  - barang / jasa-lainnya / konsultansi → "umumnya TIDAK diperlukan … sejak Perpres 46/2025" ✅
+  - tanpa `--jenis` → "ASUMSI: jenis tidak disebut (tambahkan --jenis) … hanya wajib bila KONSTRUKSI atau TERINTEGRASI" ✅ (v1.0.3 lama: "barang/konstruksi/jasa lainnya umumnya mensyaratkan" — salah, kini benar)
+  - Jaminan pelaksanaan kontrak > Rp200 jt: barang/konstruksi/jasa-lainnya/terintegrasi → 5% kontrak "berlaku juga untuk e-purchasing" ✅; tanpa jenis → + asumsi "bukan konsultansi" ✅; konsultansi → "tidak diatur Pasal 33, ikuti dokumen pemilihan" ✅; < 80% HPS → 5% HPS + Pasal 33 ayat (3) huruf b ✅.
+  - Cadangan UMK Pasal 65 ayat (3)/(4) muncul untuk tanpa jenis/barang/konstruksi/jasa-lainnya, tidak untuk konsultansi/terintegrasi ✅.
+- **Angka tidak berubah:** subtotal/DPP/PPN/total/%HPS identik antara script v1.0.4 dan versi sebelum commit `c608c3a` untuk keempat kombinasi; diverifikasi ulang dengan Decimal independen: t1 5.036.347.500 / 553.998.225 / 5.590.345.725 / 46,59% & 86,01% / batas 80% Rp9,6 M; t2 2.343.520.000 / 257.787.200 / 2.601.307.200 / 23,65% & 86,71% / Rp8,8 M; 5% kontrak Rp279.517.286 & Rp130.065.360; 5% HPS Rp600.000.000 & Rp550.000.000 ✅.
+- **Konsistensi dokumen:** SKILL.md, README, checklist-dokumen, kesalahan-gugur, lembar-kerja-tender tidak lagi menyebut jaminan penawaran untuk barang/jasa lainnya maupun pengecualian e-purchasing ✅.
+- **Tes bawaan:** `python3 tests/uji_regresi.py` → **53 tes OK**.
+- **Bug baru:**
+  1. [RENDAH] `--jenis terintegrasi` + `--pagu` diisi: rentang 1%–3% jaminan penawaran dan 5% jaminan pelaksanaan (< 80%) tetap dihitung dari **HPS**, bukan pagu (Pasal 31 ayat (3), Pasal 33 ayat (4)); ambang 80% juga masih terhadap HPS. Sudah diberi keterangan "acuan pagu", tetapi bila pagu tersedia sebaiknya dihitung dari pagu. Kalimatnya juga janggal ("di atas dihitung dari HPS" padahal angkanya muncul sesudahnya).
+  2. [KOSMETIK] Teks memakai slug "pengadaan jasa-lainnya" (tanda hubung).
+
+### Skor uji ulang v1.0.4: **9/10**
+Alasan: keempat koreksi hukum cocok dengan naskah konsolidasi resmi; pesan jaminan benar untuk keenam varian jenis; angka hitungan tidak berubah dan cocok dengan Decimal independen; 53 tes lulus. Belum 10 karena bug rendah #1 (terintegrasi memakai HPS walau pagu ada). **Rekomendasi: LULUS.**
+
+## Uji ulang v1.0.5 (penguji independen, cek singkat, 26 Sep 2026)
+Disalin ke scratchpad `uji-kecil/`, dijalankan dari sana. Tes bawaan: **60/60 lulus**.
+
+**Verifikasi naskah resmi** (naskah konsolidasi LKPP Perpres 16/2018 jo. 12/2021 jo. 46/2025, PDF jdih.lkpp.go.id, salinan teks di scratchpad):
+- Pasal 31 ayat (3): "Pengadaan Barang/Jasa yang dilakukan secara terintegrasi, Jaminan Penawaran … 1% hingga 3% dari nilai **Pagu Anggaran**" → perubahan **didukung**.
+- Pasal 33 ayat (4): terintegrasi — penawaran 80%–100% **Pagu Anggaran** → 5% nilai Kontrak; di bawah 80% Pagu Anggaran → 5% nilai **Pagu Anggaran** → perubahan **didukung**. Ambang HPS > Rp10 M (Ps. 31 ayat (1)) tetap dari HPS — script benar.
+- Tidak ada TEMUAN TINGGI.
+
+**Skenario (terintegrasi, penawaran Rp12 M):** HPS 15 M + pagu 16 M → penawaran 160–480 jt (1–3% pagu), < 80% pagu (12,8 M) → jaminan pelaksanaan Rp800 jt (5% pagu) ✓. Tepat 80% pagu (12,8 M) → 5% kontrak Rp640 jt ✓ (batas inklusif sesuai "antara 80% sampai dengan 100%"). Tanpa `--pagu` → dari HPS "sebagai gambaran" ✓. Subtotal/total/%HPS (80,00%)/batas 80% HPS tidak berubah ✓. `jasa lainnya` tanpa tanda hubung ✓. `--pagu 0` / `-5` → GALAT kode 2: **wajar** (pagu 0 tidak bermakna dan akan membuat ambang 80% = 0).
+
+**Bug baru (RENDAH):**
+1. Pagu < HPS atau total > pagu (mis. HPS 15 M, pagu 10 M, total 12 M): selain "melebihi pagu", muncul "5% dari nilai kontrak … (penawaran 80%-100% pagu anggaran)" padahal 120% pagu — teks keliru, angka tidak dipakai (penawaran di atas pagu tidak bisa menang). Sarankan pesan jaminan pelaksanaan dilewati bila total > pagu, dan peringatan bila pagu < HPS.
+
+### Skor uji ulang v1.0.5: **9/10** — perubahan sesuai naskah resmi; satu temuan teks rendah.

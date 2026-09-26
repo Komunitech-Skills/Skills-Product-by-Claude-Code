@@ -136,3 +136,34 @@ Alasan: seluruh temuan sedang (S1–S3) dan rendah (R1–R5) tuntas dan terverif
 
 ### Skor uji ulang v1.0.2: **9/10**
 Alasan: kelima temuan rendah tuntas; angka 100% cocok dengan implementasi independen; tes regresi bertambah & lulus. Belum 10 karena ketergantungan pada status hukum yang berubah (UU Ketenagakerjaan baru ditargetkan Oktober 2026) dan metode pecahan bulan tetap asumsi skill (aturan tidak merinci). **Rekomendasi: LULUS**, siap uji platform asli; tinjau dasar hukum awal November 2026.
+
+---
+
+## Uji ulang v1.0.3 (sesuai naskah resmi PP 35/2021)
+
+- **Penguji:** agent independen (bukan pembuat, perevisi, atau penguji sebelumnya); salinan di scratchpad `uji-resmi/kontrak-kerja-pkwt/`. Tanggal: **26 September 2026**.
+- **Pencocokan naskah resmi** (PP 35/2021, https://jdih.kemnaker.go.id/asset/data_puu/PP352021.pdf, diunduh HTTP 200, 56 hlm., teks diekstrak dengan Python standar):
+  - Pasal 16 ayat (6) ✅ bunyi persis: "Besaran uang kompensasi untuk Pekerja/Buruh pada usaha mikro dan usaha kecil diberikan berdasarkan kesepakatan antara Pengusaha dan Pekerja/Buruh." (hlm. 12). Ayat (1)–(5) juga cocok dengan references/dasar-hukum.md (termasuk ayat (4): upah pokok bila tunjangan tidak tetap).
+  - Pasal 32 ayat (2) ✅ "Cara menghitung Upah sejam yaitu 1/173 kali Upah sebulan" (ayat (1): dasar lembur = upah bulanan). Rujukan di template Pasal 3 ayat (2) & checklist B6 benar.
+  - Pasal 33 ayat (2) ✅ satuan hasil → upah sebulan = rata-rata 12 bulan terakhir; ayat (3) menegaskan konteksnya dasar **upah kerja lembur**. Koreksi di dasar-hukum.md (bukan dasar kompensasi) dan PERLU REVIEW untuk kompensasi satuan hasil tepat.
+- **Opsi `--usaha-mikro-kecil`:** angka **tidak berubah** (diuji 5 kasus pengunci dengan & tanpa opsi, identik); label berubah menjadi "ACUAN KOMPENSASI (… besaran sesuai KESEPAKATAN, PP 35/2021 Pasal 16 ayat (6))", JSON `usaha_mikro_kecil: true` + `status_kompensasi: acuan …`, catatan UMK muncul di PERINGATAN (hak tetap ada, Pasal 62 tidak terpengaruh, cek kriteria PP 7/2021). Tanpa opsi: label "TOTAL KOMPENSASI", status "rumus … Pasal 16 ayat (1)", dan footer menawarkan opsi UMK. Dengan `--upah-minimum` di atas upah: pesan pengecualian UMK merujuk UU 13/2003 Pasal 90B & PP 36/2021 Pasal 36 ✅.
+- **Angka pengunci (dengan & tanpa `--usaha-mikro-kecil`):** Rp4.150.000 ✅; Rp5.000.000 + Rp1.250.000 + ganti rugi Rp15.000.000 ✅; Rp4.392.857 ✅; Rp16.877.419 (+ kompensasi [4.800.000, 993.548]) ✅; Rp17.580.645 ✅.
+- **Template & checklist:** template Pasal 7 ayat (2) punya versi umum & versi usaha mikro/kecil (hak ≥ 1 bulan tetap disebut, besaran kesepakatan tertulis, catatan acuan dihapus sebelum cetak) — masuk akal. Checklist B4 (kompensasi dihapus tetap 🔴 juga untuk UMK) dan B4a (di bawah rumus: 🟠 non-UMK, 🟢 UMK bila tertulis jelas, tanyakan bila status tak diketahui) konsisten dengan SKILL.md mode Periksa.
+- **Tes bawaan:** `python3 tests/uji_regresi.py` → **LULUS semua 159 cek**.
+- **Bug baru (semua RENDAH, tidak memblokir):**
+  1. Istilah "ACUAN (batas bawah praktik baik)" di script/SKILL sedikit bertentangan dengan B4a yang menilai besaran kesepakatan di bawah rumus sebagai 🟢; sarankan "acuan praktik baik" saja (tanpa "batas bawah").
+  2. Mode UMK: judul kolom tabel masih "Kompensasi" (label ACUAN hanya di baris total) — kosmetik.
+  3. Footer script masih "dicek 25 September 2026", padahal pencocokan naskah resmi 26 September 2026 — kosmetik.
+
+### Skor uji ulang v1.0.3: **9/10**
+Alasan: ketiga pasal cocok dengan naskah resmi; opsi UMK benar secara hukum (label + catatan, angka tak berubah); semua angka pengunci tetap; 159 cek lulus. Belum 10 karena tiga temuan rendah di atas dan ketergantungan pada UU Ketenagakerjaan baru. **Rekomendasi: LULUS.**
+
+## Uji ulang v1.0.4 (penguji independen, cek singkat, 26 Sep 2026)
+Disalin ke scratchpad `uji-kecil/`, dijalankan dari sana. Tes bawaan: **167/167 cek lulus**.
+- Konsistensi teks acuan vs B4a: SKILL.md (bagian UMK), README, catatan script kini "acuan praktik baik, bukan batas bawah wajib; besaran di bawah acuan sah bila disepakati" — sejalan dengan B4a (🟢 bila UMK & kesepakatan tertulis). Sisa frasa "batas bawah" hanya di B1/cek upah (upah minimum usaha mikro/kecil) — topik berbeda, benar.
+- Mode `--usaha-mikro-kecil`: kolom "Kompensasi (acuan)" ✓; non-UMK tetap "Kompensasi" ✓; footer "dicek 26 September 2026" ✓.
+- Angka pengunci tetap (dicek lewat tes + CLI): 4.150.000 (skenario 01, dijalankan manual) · 5.000.000 + 1.250.000 + ganti rugi 15.000.000 · 4.392.857 · 16.877.419 · 17.580.645.
+
+**Bug baru:** tidak ada. Kosmetik: catatan UMK "BUKAN jumlah yang diwajibkan dan BUKAN batas bawah wajib" sedikit berulang.
+
+### Skor uji ulang v1.0.4: **9/10**

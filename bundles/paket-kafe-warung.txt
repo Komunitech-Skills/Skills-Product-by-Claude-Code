@@ -5,3 +5,5 @@ caption-sosmed-umkm
 konten-mingguan
 balas-ulasan-pelanggan
 promo-kalender
+kas-umkm
+dasbor-lokal

@@ -20,7 +20,7 @@ Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua tr
 - Menerima/memproses pembayaran (membuat QRIS dinamis, menarik kartu di EDC, cek uang masuk otomatis) → tidak bisa. Kasir hanya **mencatat** metode bayar; pembayaran tetap lewat QRIS statis/EDC/bank milik toko.
 - Banyak outlet/cabang, banyak kasir di perangkat berbeda secara bersamaan, atau aplikasi di HP kasir → bukan fitur (satu database = satu outlet di satu komputer). Alternatif yang boleh ditawarkan (jujur, bukan sinkron otomatis): **satu database per cabang** (`--db` berbeda di komputer tiap cabang), lalu tiap cabang `ekspor --format penjualan`, file CSV digabung manual dan dianalisis dengan `rekap-penjualan-csv`.
 - Penjualan marketplace (Shopee/TikTok) → `buku-stok`. Analisis file penjualan dari aplikasi lain → `rekap-penjualan-csv`.
-- Bon/utang pelanggan → `tagih-piutang` / `buat-invoice` (kasir hanya mencatat yang sudah dibayar).
+- Bon/utang pelanggan (belum dibayar) → **catat di `buku-piutang`**, bukan di sini (kasir hanya mencatat yang sudah dibayar tunai/QRIS/transfer). Kalau `buku-piutang` belum terpasang, boleh pakai cara lama: buat tagihannya dengan `buat-invoice`. Sudah punya catatan piutangnya dan mau bikin pesan/surat penagihan → `tagih-piutang` (skill itu menyusun pesan tagihan, bukan mencatat siapa berutang berapa).
 - Faktur pajak resmi → dibuat di Coretax. Hitung PPh final → `pph-final-umkm`. Laporan laba rugi → `laporan-keuangan-emkm`.
 
 ## Aturan keamanan data (WAJIB)
@@ -68,7 +68,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - Diskon nota: segmen `diskon 10%` / `diskon 5rb`. Bayar: `bayar tunai 100rb`, `bayar qris`, `bayar pas`, `bayar qris 50rb, tunai 50rb`.
    - Alternatif terstruktur: `--item "2 KSGA" --item "1 RB" --diskon 10% --bayar tunai=100rb`. Catatan: `--catatan "meja 4"`, kasir: `--kasir Rina`.
 2. Tampilkan pratinjau (format di bawah). Setuju → perintah sama + `--ya` (tambah `--struk 58` bila pengguna mau struk langsung).
-3. Script **menolak** dan kamu sampaikan dengan sopan: produk tak dikenal/ambigu (beri saran), jumlah pecahan untuk satuan non-timbang (mis. 1,5 cup), harga 0, diskon lebih besar dari harga, **pembayaran kurang** (sebut kurangnya), non-tunai melebihi total (kembalian hanya dari tunai), bon/utang.
+3. Script **menolak** dan kamu sampaikan dengan sopan: produk tak dikenal/ambigu (beri saran), jumlah pecahan untuk satuan non-timbang (mis. 1,5 cup), harga 0, diskon lebih besar dari harga, **pembayaran kurang** (sebut kurangnya), non-tunai melebihi total (kembalian hanya dari tunai), bon/utang. Untuk bon/utang: jelaskan bahwa kasir hanya mencatat yang sudah dibayar, lalu tawarkan mencatatnya di skill `buku-piutang` (kalau belum terpasang, boleh dibuatkan tagihan dengan `buat-invoice` sebagai cara lama).
 4. Transaksi terlewat: `--waktu "2026-09-24 10:15"`.
 
 ### C. Struk

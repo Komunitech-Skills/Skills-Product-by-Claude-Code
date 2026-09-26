@@ -7,7 +7,7 @@ Disusun dari pola evaluasi dokumen pemilihan PBJ (Perpres 16/2018 jo. 12/2021 jo
 |---|---|---|
 | 1 | Surat penawaran **tidak ditandatangani**, atau ditandatangani orang yang tidak berwenang (tanpa kuasa sah / tidak tercantum di akta) | Cek akta & surat kuasa; tanda tangan direktur |
 | 2 | **Masa berlaku penawaran** kurang dari yang diminta dokumen | Salin angka hari dari LDP; hitung sampai tanggal |
-| 3 | **Jaminan penawaran** (bila diwajibkan) tidak ada, nilai kurang, masa berlaku kurang, nama paket/pokja salah, bersyarat (tidak bisa dicairkan), atau penerbit tidak dapat dikonfirmasi | Ajukan H-7; periksa ulang redaksi; minta konfirmasi keabsahan dari penerbit |
+| 3 | **Jaminan penawaran** (bila diwajibkan — sejak Perpres 46/2025 hanya pekerjaan konstruksi & terintegrasi, HPS > Rp10 M, Pasal 30 ayat (2) & 31) tidak ada, nilai kurang, masa berlaku kurang, nama paket/pokja salah, bersyarat (tidak bisa dicairkan), atau penerbit tidak dapat dikonfirmasi | Ajukan H-7; periksa ulang redaksi; minta konfirmasi keabsahan dari penerbit |
 | 4 | Dokumen/izin **kedaluwarsa** (SBU, SKK, sertifikat, surat dukungan) | Cek tanggal berlaku di H-7 |
 | 5 | KBLI/SBU tidak sesuai paket; kualifikasi usaha tidak sesuai (kecil vs non-kecil) | Cek kelayakan (A1–A5) sebelum ikut |
 | 6 | Isian kualifikasi di SPSE **tidak konsisten** dengan dokumen asli saat pembuktian | Isi dari dokumen asli; siapkan asli untuk verifikasi |
@@ -20,12 +20,13 @@ Disusun dari pola evaluasi dokumen pemilihan PBJ (Perpres 16/2018 jo. 12/2021 jo
 | 9 | Jangka waktu pelaksanaan **lebih lama** dari yang ditetapkan | Salin dari LDP |
 | 10 | Personel/peralatan wajib tidak lengkap, SKK tidak sesuai | Cocokkan satu per satu dengan LDP |
 | 11 | Salah satu dokumen teknis wajib tidak diunggah | Checklist B1 bagian Teknis |
+| 11a | Bukti TKDN/PDN tidak sesuai syarat (mis. TKDN di bawah "paling sedikit 25%" yang diminta; Pasal 66) | Cek sertifikat TKDN di SIINas sebelum menawar |
 
 ## Harga
 | # | Kesalahan | Pencegahan |
 |---|---|---|
 | 12 | Total penawaran **melebihi HPS** | `cek_penawaran.py --hps` |
-| 13 | Penawaran < 80% HPS lalu **tidak bisa membuktikan kewajaran** saat klarifikasi, atau menolak menaikkan jaminan pelaksanaan | Siapkan bukti harga pemasok/upah/alat |
+| 13 | Penawaran < 80% HPS lalu **tidak bisa membuktikan kewajaran** saat klarifikasi (pedoman Peraturan LKPP 12/2021 — PERLU REVIEW), atau tidak sanggup menyerahkan jaminan pelaksanaan 5% dari HPS (Pasal 33 ayat (3) huruf b) | Siapkan bukti harga pemasok/upah/alat |
 | 14 | Salah hitung volume × harga / volume diubah dari dokumen (untuk kontrak harga satuan bisa dikoreksi aritmatik, tapi berisiko melewati HPS) | Hitung dengan script; jangan ubah volume |
 | 15 | Angka dan **terbilang** berbeda | Salin terbilang dari script |
 | 16 | Mencantumkan PPN padahal **bukan PKP** (atau sebaliknya lupa PPN padahal PKP) | Cek status PKP di Coretax |

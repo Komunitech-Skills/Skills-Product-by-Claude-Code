@@ -1,0 +1,75 @@
+title: Dasbor Lokal Komunitech
+description: Laporan siap pakai dari alat lokal Komunitech (buku-stok, kasir-lokal, crm-wa, absensi-lokal, buku-piutang, kas-umkm). Data dibaca read-only, tidak diubah.
+databases:
+  stok:
+    queries:
+      stok_menipis:
+        title: Stok menipis atau habis
+        sql: |
+          SELECT sku, nama, varian, satuan, stok, stok_min, lokasi
+          FROM produk
+          WHERE aktif = 1 AND stok <= stok_min
+          ORDER BY (stok - stok_min) ASC
+  kasir:
+    queries:
+      penjualan_per_hari:
+        title: Penjualan per hari (30 hari terakhir)
+        sql: |
+          SELECT date(waktu) AS tanggal,
+                 COUNT(*) AS jumlah_nota,
+                 SUM(total) AS total_penjualan
+          FROM nota
+          WHERE jenis = 'jual'
+            AND id NOT IN (SELECT ref_nota_id FROM nota WHERE jenis = 'void' AND ref_nota_id IS NOT NULL)
+            AND date(waktu) >= date('now', '-30 days')
+          GROUP BY date(waktu)
+          ORDER BY tanggal DESC
+  piutang:
+    queries:
+      piutang_jatuh_tempo:
+        title: Piutang jatuh tempo / terlewat
+        sql: |
+          SELECT * FROM (
+            SELECT p.nama AS pelanggan, n.no_nota, n.tanggal, n.jatuh_tempo,
+                   n.nominal
+                     - COALESCE((SELECT SUM(jumlah) FROM alokasi WHERE nota_id = n.id), 0)
+                     - COALESCE((SELECT SUM(jumlah) FROM potongan WHERE nota_id = n.id), 0) AS sisa
+            FROM nota n
+            JOIN pelanggan p ON p.id = n.pelanggan_id
+            WHERE n.status = 'aktif'
+          )
+          WHERE sisa > 0 AND date(jatuh_tempo) <= date('now')
+          ORDER BY jatuh_tempo ASC
+  absensi:
+    queries:
+      kehadiran_harian:
+        title: Kehadiran hari ini (jam masuk/pulang per karyawan)
+        sql: |
+          SELECT k.kode, k.nama, t.tanggal_kerja,
+                 MIN(CASE WHEN t.jenis = 'masuk' THEN t.waktu END) AS jam_masuk,
+                 MAX(CASE WHEN t.jenis = 'pulang' THEN t.waktu END) AS jam_pulang
+          FROM tap t
+          JOIN karyawan k ON k.kode = t.kode
+          WHERE t.tanggal_kerja = date('now')
+          GROUP BY k.kode
+          ORDER BY k.nama
+  crm:
+    queries:
+      prospek_per_tahap:
+        title: Jumlah & nilai prospek per tahap pipeline
+        sql: |
+          SELECT tahap, COUNT(*) AS jumlah, SUM(nilai) AS total_nilai_potensi
+          FROM kontak
+          GROUP BY tahap
+          ORDER BY jumlah DESC
+  kas:
+    queries:
+      saldo_per_akun:
+        title: Saldo kas per akun
+        sql: |
+          SELECT a.nama AS akun, a.jenis,
+                 a.saldo_awal
+                   + COALESCE((SELECT SUM(jumlah) FROM transaksi WHERE akun_id = a.id AND arah = 'masuk' AND status = 'aktif'), 0)
+                   - COALESCE((SELECT SUM(jumlah) FROM transaksi WHERE akun_id = a.id AND arah = 'keluar' AND status = 'aktif'), 0) AS saldo
+          FROM akun a
+          ORDER BY a.nama

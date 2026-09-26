@@ -1,0 +1,19 @@
+{
+  "_catatan": "Contoh BENTUK respons (bukan kode) direkam dari kernel SiYuan resmi v3.8.5 (biner Linux resmi GitHub Releases) yang dijalankan Komunitech di sandbox terisolasi pada 2026-09-26, dengan data uji fiktif. Token asli TIDAK disertakan (diganti placeholder). Dipakai sebagai referensi bentuk data saat menulis tests/test_siyuan.py, bukan dijalankan otomatis oleh script.",
+  "sumber": "kernel resmi https://github.com/siyuan-note/siyuan rilis v3.8.5, 2026-09-26",
+  "lsNotebooks_kosong": {"code": 0, "msg": "", "data": {"notebooks": [], "boxDocEnabled": false}},
+  "lsNotebooks_terisi": {"code": 0, "msg": "", "data": {"notebooks": [
+    {"id": "20260926094130-jbmh7xg", "name": "UjiTanpaToken", "icon": "", "sort": 0, "sortMode": 15,
+     "closed": false, "subFileCount": 0, "newFlashcardCount": 0, "dueFlashcardCount": 0,
+     "flashcardCount": 0, "encrypted": false, "unlocked": false}
+  ], "boxDocEnabled": false}},
+  "createDocWithMd_hasil": {"code": 0, "msg": "", "data": "20260926094209-dh3d6mb"},
+  "exportMdContent_hasil": {"code": 0, "msg": "", "data": {
+    "hPath": "/FAQ/Jam Buka 🕐",
+    "content": "---\ntitle: Jam Buka 🕐\ndate: 2026-09-26T09:42:09Z\nlastmod: 2026-09-26T09:42:09Z\n---\n\n# Jam Buka 🕐\n\nToko buka jam 09.00-21.00 setiap hari, termasuk Minggu 😊.\n\n## Kontak\n\nWA: 0812xxxx\n"
+  }},
+  "auth_gagal_token_salah": {"code": -1, "msg": "Invalid Auth"},
+  "auth_gagal_origin_asing": {"code": -1, "msg": "Auth failed: for security reasons, please set [Lock screen password] when using non-127.0.0.1 access\n\n为安全起见，使用非 127.0.0.1 访问时请设置 [锁屏密码]"},
+  "query_sql_hasil": {"code": 0, "msg": "", "data": [{"n": 0}], "limit": 64, "truncated": false},
+  "catatan_temuan": "Permintaan TANPA header Authorization sama sekali (bukan token kosong) berhasil diproses kernel untuk semua endpoint di atas termasuk yang menulis (createNotebook), berbeda dari permintaan dengan token yang SALAH (ditolak, lihat auth_gagal_token_salah). Mengatur accessAuthCode di conf.json tidak mengubah ini untuk permintaan tanpa header Origin; permintaan dengan header Origin asing barulah ditolak (auth_gagal_origin_asing). Lihat research/sources/siyuan-2026-09-26.md bagian D6 untuk detail dan implikasi keamanannya."
+}
