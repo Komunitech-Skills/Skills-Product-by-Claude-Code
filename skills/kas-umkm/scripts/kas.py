@@ -41,7 +41,7 @@ import sqlite3
 import sys
 from collections import OrderedDict
 from datetime import date, datetime, timedelta, timezone
-from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 APLIKASI = "kas-umkm"
@@ -1966,7 +1966,6 @@ def cmd_impor(args):
         urutan_md = fmt == "bulan-hari" or bool(bukti_md)
         # --- olah baris
         hasil, bermasalah, dilewati, cek = [], [], [], []
-        dibulatkan = 0
         hi = hari_ini()
         kemunculan = {}
         tanpa_jenis = [False]
@@ -2063,7 +2062,6 @@ def cmd_impor(args):
             except ValueError as e:
                 bermasalah.append({"baris": no, "alasan": str(e)})
                 continue
-            dibulatkan += 1 if bul else 0
             # akun & metode
             try:
                 akun = cari_akun(conn, ambil("akun")) if "akun" in peta and ambil("akun") else None
@@ -2132,7 +2130,8 @@ def cmd_impor(args):
             sidik = hashlib.sha1(("%s|%d" % (sidik_dasar, kemunculan[sidik_dasar])).encode()).hexdigest()[:20]
             hasil.append({"baris": no, "tanggal": tanggal, "arah": arah, "jumlah": jumlah, "kategori": kat,
                           "sumber_kategori": sumber_kat, "metode": metode, "akun": akun, "ke_akun": ke_akun,
-                          "catatan": bersih(ket or label_kat(kat, arah) if kat != "pindah" else ket, 200), "sidik": sidik})
+                          "catatan": bersih(ket or label_kat(kat, arah) if kat != "pindah" else ket, 200), "sidik": sidik,
+                          "dibulatkan": bul})
         if not hasil and not dilewati:
             raise Gagal("Tidak ada baris yang bisa diimpor. Masalah: %s" % "; ".join(
                 "baris %d: %s" % (b["baris"], b["alasan"]) for b in bermasalah[:5]))
@@ -2150,6 +2149,8 @@ def cmd_impor(args):
                               "arah": h["arah"]})
                 continue
             baru.append(h)
+        nomor_baru = {h["baris"] for h in baru}
+        cek = [c for c in cek if c["baris"] in nomor_baru]
         sumber = "impor:" + Path(args.file).name[:60]
         ids = []
         for h in baru:
@@ -2166,6 +2167,7 @@ def cmd_impor(args):
         if baru:
             akun_ids = [h["akun"]["id"] for h in baru] + [h["ke_akun"]["id"] for h in baru if h["ke_akun"]]
             blokir += blokir_minus(cari_minus(conn, akun_ids, min(h["tanggal"] for h in baru)))
+        dibulatkan = sum(1 for h in baru if h["dibulatkan"])
         if dibulatkan:
             peringatan.append("%d nominal bersen dibulatkan ke rupiah terdekat (0,5 ke atas)." % dibulatkan)
         if tanpa_jenis[0]:
@@ -2180,8 +2182,9 @@ def cmd_impor(args):
         for h in baru:
             k = per_kat.setdefault(label_kat(h["kategori"], h["arah"]), 0)
             per_kat[label_kat(h["kategori"], h["arah"])] = k + h["jumlah"]
-        t = ["Impor %s: %d baris akan dicatat (masuk %s, keluar %s)." % (Path(args.file).name, len(baru), rp(masuk),
-                                                                         rp(keluar))]
+        t = ["Impor %s: %d baris %s (masuk %s, keluar %s)." % (Path(args.file).name, len(baru),
+                                                                "dicatat" if args.ya else "akan dicatat", rp(masuk),
+                                                                rp(keluar))]
         if baru:
             t.append("Tanggal %s - %s. Per kategori: %s." % (
                 tgl_id(min(h["tanggal"] for h in baru)), tgl_id(max(h["tanggal"] for h in baru)),
@@ -2298,6 +2301,16 @@ def cmd_impor_kasir(args):
                               "kategori pajak." % rp(pajak))
         if not entri:
             raise Gagal("Rekap kasir %s tidak berisi uang masuk (belum ada transaksi)." % tgl_id(tanggal))
+        lain = conn.execute("SELECT id, jumlah FROM transaksi WHERE status='aktif' AND tanggal=? AND kategori="
+                            "'penjualan' AND arah='masuk' AND sumber!='kasir'", (tanggal.isoformat(),)).fetchall()
+        if lain:
+            blokir.append({"opsi": "--izinkan-duplikat",
+                           "pesan": "Sudah ada catatan penjualan %s dari sumber lain (%s, total %s). Jika itu penjualan "
+                                    "yang sama dengan rekap kasir, impor ini membuat penjualan DOBEL: batalkan catatan "
+                                    "lama dulu (kas.py batal) atau jangan impor. Jika memang penjualan berbeda (mis. "
+                                    "pesanan di luar kasir), ulangi dengan --izinkan-duplikat." %
+                                    (tgl_id(tanggal), ", ".join("#%d" % r["id"] for r in lain[:10]),
+                                     rp(sum(r["jumlah"] for r in lain)))})
         ids = [simpan_entri(conn, e, jenis="kasir", sumber="kasir", sidik="kasir:%s:%s" % (tanggal.isoformat(),
                                                                                          e["metode"])) for e in entri]
         blokir += blokir_minus(cari_minus(conn, [e["akun"]["id"] for e in entri], tanggal))
@@ -2716,6 +2729,7 @@ def buat_parser():
     s.add_argument("file", help="Hasil: kasir.py rekap --tanggal <tgl> --json > rekap-kasir.json")
     s.add_argument("--akun-untuk", action="append", help="Metode=akun, mis. qris=BRI (bisa diulang)")
     s.add_argument("--ganti", action="store_true", help="Ganti impor tanggal yang sama (impor lama dibatalkan)")
+    s.add_argument("--izinkan-duplikat", action="store_true", help="Tetap impor walau ada penjualan manual tanggal itu")
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_impor_kasir)
 

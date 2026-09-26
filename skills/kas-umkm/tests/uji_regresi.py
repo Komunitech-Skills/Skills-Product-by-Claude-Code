@@ -405,8 +405,10 @@ class UjiImpor(Dasar):
         self.assertIn("--izinkan-minus", out["perlu_izin"])          # laci 500rb + 765rb - 1,55jt < 0
         self.ok("impor", f, "--tetapkan", "5=lain-lain", "--izinkan-minus", "--ya")
         self.assertEqual(self.saldo()["BRI"], 3177000)
-        self.assertEqual(self.ok("impor", f)["jumlah_baru"], 0)      # impor ulang dilewati
-        self.assertEqual(len(self.ok("impor", f)["sudah_diimpor"]), 4)
+        ulang = self.ok("impor", f)
+        self.assertEqual(ulang["jumlah_baru"], 0)                    # impor ulang dilewati
+        self.assertEqual(len(ulang["sudah_diimpor"]), 4)
+        self.assertEqual(ulang["perlu_dicek"], [])                   # yang sudah diimpor tidak ditanyakan lagi
 
     def test_mutasi_bank_cr_db_tanpa_tahun_pend(self):
         f = self.file("mutasi.csv", "Mutasi Rekening (fiktif)\nNo. rekening : 0000\n"
@@ -545,6 +547,16 @@ class UjiImporKasir(Dasar):
         self.assertEqual(len(out["diganti"]), 2)
         self.assertEqual(self.saldo()["Laci kas"], 530000)
         self.assertEqual(self.ok("rekap", "--tanggal", "25/09/2026")["masuk"], 45000)
+
+    def test_penjualan_manual_tanggal_sama_perlu_izin(self):
+        self.ok("catat", "--masuk", "900rb", "--kategori", "penjualan", "--tanggal", "25/09/2026", "--ya")
+        f = self.rekap_kasir()
+        out = self.ok("impor-kasir", f)
+        self.assertIn("--izinkan-duplikat", out["perlu_izin"])
+        self.assertIn("DOBEL", out["teks"])
+        self.gagal("impor-kasir", f, "--ya")
+        self.ok("impor-kasir", f, "--izinkan-duplikat", "--ya")
+        self.assertEqual(self.saldo()["Laci kas"], 500000 + 900000 + 24000)
 
     def test_metode_lain_refund_pajak_dan_selisih(self):
         f = self.rekap_kasir(per_metode={"Tunai": -10000, "Lainnya": 5000, "E-wallet": 20000, "Debit": 50000},
