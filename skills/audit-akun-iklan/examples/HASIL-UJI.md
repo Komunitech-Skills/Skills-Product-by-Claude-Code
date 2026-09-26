@@ -125,3 +125,48 @@ dibereskan sebelum `beta`.
 
 ## platform_teruji yang jujur
 `claude-code (simulasi agent)` — belum ada uji platform asli.
+
+---
+
+## Uji ulang independen v1.0.1 (Akun B, 2026-09-26)
+
+Penguji: independen (bukan pembuat v1.0.1, bukan penguji v1.0.0 di atas), sesi terpisah, hanya
+membaca folder skill ini + `references/sumber-fakta-platform.md` + laporan v1.0.0 di atas. Tidak
+mengubah kode/SKILL/README/catalog, tidak commit, `uji_openclaw.sh` tidak dijalankan. Detail lengkap:
+`examples/08-uji-ulang-v101-akun-b.md`.
+
+### Skor kualitas: **9/10**
+
+**(a) Retest 7 temuan v1.0.0 + 12 kombinasi baru (script `skor_audit.py`, verifikasi Decimal manual):**
+Semua **diperbaiki dan terbukti** — ROAS impas tidak lagi crash pada laba 0,4 (kini ditolak rapi
+dengan pesan jelas); 22 cek Meta ditandai `tidak_berlaku` tanpa syarat → jadi `tidak_tahu`, laporan
+menampilkan "Bukti belum cukup" (bukan 100/Sehat); cek kritis `tidak_berlaku` valid tetap membatasi
+label maksimal "Cukup" walau skor 100; M08/T08/G15/G16 sudah diperbarui di CSV; M22 (CAPI) & T18
+(Events API) ada dan berfungsi; prasyarat T08-setelah-T09 (juga S07/S06, TS05/TS04) bekerja benar
+termasuk saat kedua cek gagal bersamaan. Semua angka (skor kategori, cakupan, ROAS impas, rencana 7
+hari) cocok 100% dengan hitungan ulang manual. 38 tes bawaan (`tests/uji_skor_audit.py`, naik dari 29)
++ `validate.py` lulus.
+
+**(b) Verifikasi fakta platform ke sumber resmi:** 4 dari 5 fakta yang diubah (T08 10×CPA, G15/G16
+PMax negative keyword, M22 CAPI dedup, T18 Events API) **berhasil diverifikasi langsung** oleh sesi
+ini dengan mengambil halaman resmi TikTok Ads Help, Google Ads Help, dan Meta for Developers —
+kutipan cocok persis dengan klaim di `daftar_cek.csv`. 1 fakta (M08, lokasi Meta) **tetap tidak bisa
+diverifikasi langsung** (halaman Meta Business Help butuh render JS/login) — hanya sumber sekunder,
+sama seperti temuan v1.0.0; skill sudah jujur menandainya "PERLU cek manual di Ads Manager" di
+`references/sumber-fakta-platform.md`.
+
+**(c) Saran bertentangan:** Membaca seluruh 82 baris `daftar_cek.csv` + Langkah 5 SKILL.md — **tidak
+ditemukan** pasangan saran yang saling bertentangan. 3 pasangan prasyarat anggaran (T08/T09, S07/S06,
+TS05/TS04) konsisten di kode dan teks; M18 vs M08 (usaha lokal) konsisten.
+
+**(d) Skenario baru (toko frozen food, Meta + Shopee Ads):** ROAS impas 3,38 (verifikasi manual
+cocok), skor gabungan 67,6/100 Perlu perbaikan (porsi belanja Meta 69,2%/Shopee 30,8%), 2 kategori
+skor diverifikasi manual cocok persis, urutan prioritas & prasyarat anggaran benar, rencana 7 hari
+sesuai kapasitas. Tidak ada anomali.
+
+**Kenapa bukan 10/10:** M08 (fakta lokasi Meta) masih hanya bersumber sekunder — tidak ada blocker
+lain untuk `lulus`. Direkomendasikan: verifikasi M08 manual di Ads Manager oleh pemilik/tim sebagai
+bagian uji platform asli (Tahap 6.10) sebelum `beta`.
+
+**platform_teruji tetap jujur:** `claude-code (simulasi agent)` — pengujian ini simulasi agent,
+bukan uji platform asli manusia.
