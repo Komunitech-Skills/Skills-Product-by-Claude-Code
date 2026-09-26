@@ -102,7 +102,7 @@ class UjiBaca(Dasar):
         k, out, _ = jalan("penjualan", "--db", self.db, "--tanggal", "2026-08-31")
         self.assertIn("Belum ada invoice", out)
         self.assertEqual(fb.tanggal_lokal("2026-08-31T17:00:00.000Z", fb.offset_zona("WIB")).isoformat(), "2026-09-01")
-        self.assertEqual(fb.tanggal_lokal("2026-08-31T15:59:00.000Z", fb.offset_zona("WIT")).isoformat(), "2026-08-31")
+        self.assertEqual(fb.tanggal_lokal("2026-08-31T14:59:00.000Z", fb.offset_zona("WIT")).isoformat(), "2026-08-31")
         self.assertEqual(fb.tanggal_lokal("2026-09-01", fb.offset_zona("WIB")).isoformat(), "2026-09-01")
 
     def test_06_penjualan_per_barang_dan_samarkan(self):
