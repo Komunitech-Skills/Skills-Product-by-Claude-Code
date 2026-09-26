@@ -190,3 +190,43 @@ Rincian: `09-uji-ulang-v102-akun-b.md`.
 Perbaiki A (+B, C), tambah tes regresi dari pola buku besar asli di atas, lalu uji ulang singkat: retur + Shipment retur →
 `laba-rugi` = Profit And Loss Frappe. Bila lulus, skor diperkirakan ≥ 8. `platform_teruji` tetap `claude-code (simulasi agent)`;
 aplikasi Frappe Books asli teruji, platform agen sungguhan belum.
+
+---
+
+## Uji ulang independen v1.0.3 (Akun B, 2026-09-26)
+
+### Skor: **9/10 — LULUS** (perbaiki temuan RENDAH A–C kapan saja; tidak menghalangi)
+
+**Alasan:** Diuji dengan Frappe Books v0.36.0 **asli** (AppImage diunduh sendiri, SHA-512 cocok `latest-linux.yml`), database baru milik
+penguji, dan semua CSV skill diterima Import Wizard asli (Party 5/5, Item 5/5, PINV 3/3, SINV 4/4, 0 gagal). Dua siklus berbeda —
+(1) beli→terima→jual→kirim→retur penjualan→barang retur masuk stok; (2) beli barang berstok + jasa, jual sebagian, retur pembelian ke
+pemasok, pembayaran sebagian — menghasilkan `laba-rugi`, `penjualan`, `pembelian`, `piutang`, `utang`, `stok`, `laporan-harian`, dan `ppn`
+yang **semuanya cocok** dengan Profit And Loss, General Ledger, Stock Balance, saldo pihak Frappe dan hitungan Decimal penguji. Temuan A
+v1.0.2 beres: laba Sep Rp 470.000 = P&L Frappe (aturan lama akan memberi 90.000). Satu poin dikurangi karena platform agen sungguhan belum
+diuji dan ada tiga temuan kecil teks/UX.
+Rincian: `10-uji-ulang-v103-akun-b.md`.
+
+### Hasil ringkas
+| Aspek | Hasil |
+|---|---|
+| Siklus 1 (Sep) `laba-rugi` | pendapatan 995.000, HPP 450.000 (Shipment retur −190.000), beban 75.000, **laba 470.000** = P&L Frappe = Decimal ✓ |
+| Siklus 2 (Okt) `laba-rugi` | 695.000 / 950.000 (termasuk jasa beli 500.000) / 100.000, **rugi −355.000** = P&L Frappe ✓; Sep–Nov 415.000 ✓ |
+| `penjualan` / `pembelian` | Sep 995.000 / 61.600 / 1.056.600, belum dibayar 771.600 ✓; Okt pembelian 1.420.000 / 88.000 / 1.508.000 (retur −66.600, 1 batal tidak dihitung) ✓ |
+| `piutang` / `utang` bersih | 771.600 → 1.443.050 = saldo pihak & GL ✓ / 1.609.500 → 1.617.500 = saldo pihak & GL ✓ (kredit retur didaftar) |
+| `stok` | Kopi 13→18, Gula 6, Susu 10 = Stock Balance ✓ |
+| `laporan-harian` | hari retur berlabel "Retur penjualan"; invoice 00:30/00:15 WIB masuk hari & bulan WIB yang benar ✓ |
+| PPN | floor sekali (9.024 vs Frappe 9.024,40, diperingatkan); harga termasuk sisa 1 pada Rp 100 ✓ |
+| Regresi | akun bernomor ✓; `--keluar` ke `.books.db`/`.db`/`.txt`/SQLite `.csv`/symlink ditolak kode 2, hash tetap ✓; NPWP diperingatkan ✓; tanggal WIB ✓; entri batal diabaikan ✓; `pajak = PPN` kini diterima bila tunggal ✓ |
+| Tes bawaan / validate | 46 tes OK / valid |
+
+### Temuan
+- **A. RENDAH (teks)** — `pembelian` dengan retur menulis "sama dengan PIUTANG BERSIH di perintah 'piutang'"; seharusnya UTANG BERSIH / 'utang'.
+- **B. RENDAH (UX)** — `csv-transaksi` hanya menyebut masalah pertama per baris (tanggal salah menutupi barang yang belum ada).
+- **C. RENDAH (dok)** — SKILL.md masih menulis v1.0.3 "belum diuji ulang oleh penguji independen".
+- **Catatan aplikasi v0.36.0 (dokumentasikan di `references/import-wizard.md`):** pengembalian barang dari invoice retur **pembelian** gagal
+  ("Not Found: SalesInvoice …") → pakai Return di Purchase Receipt; mengubah Quantity di retur pembelian mengganti Rate ke harga jual (cek
+  Rate sebelum Submit); retur Receipt tercatat 34.600 (bukan 60.000) di buku besar — hanya neraca; pengiriman retur dinilai harga jual.
+
+### Rekomendasi
+Perbaiki A–C (teks/dok, tanpa uji ulang penuh), tambahkan catatan aplikasi di atas ke referensi, lalu lanjut ke uji platform asli
+(`docs/uji-platform.md`). `platform_teruji` tetap `claude-code (simulasi agent)`; aplikasi Frappe Books asli teruji, platform agen sungguhan belum.

@@ -16,7 +16,7 @@ Semua lewat `scripts/frappe_books.py` (Python standar saja, tanpa instalasi pake
 20 Sep 2026). Diuji tiga kali oleh penguji independen dengan file `.books.db` **asli** v0.36.0: laporan baca cocok; semua CSV diterima
 Import Wizard asli; akun barang berstok & kredit retur (v1.0.2) beres. v1.0.3 menghitung `laba-rugi` persis seperti Profit And Loss
 Frappe (termasuk pengiriman retur); dibuktikan pembuat di aplikasi asli — angka skill = laporan P&L bawaan
-(`examples/uji-pembuat/UJI-PEMBUAT-v1.0.3.md`) — dan 46 uji regresi, **belum diuji ulang oleh penguji independen**.
+(`examples/uji-pembuat/UJI-PEMBUAT-v1.0.3.md`) — dan 46 uji regresi; **diuji ulang independen (v1.0.3) di aplikasi asli: 9/10, dua siklus cocok dengan P&L/General Ledger/Stock Balance Frappe**.
 Komunitech tidak berafiliasi dengan Frappe; Frappe Books tidak disertakan dalam paket.
 
 ## Kapan digunakan

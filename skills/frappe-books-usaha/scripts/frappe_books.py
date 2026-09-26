@@ -554,7 +554,8 @@ def ringkas_invoice(args, jenis, judul, kata_pihak):
                 out.append(f"  {n}. {nama} - {angka(jml)} - {rp(tot)}")
     if any(i["retur"] for i in final):
         out.append("Catatan: retur sudah mengurangi angka di atas. 'Belum dibayar' = sisa tagihan dikurangi kredit retur yang "
-                   "belum dikembalikan (sama dengan PIUTANG BERSIH di perintah 'piutang').")
+                   + ("belum dikembalikan (sama dengan PIUTANG BERSIH di perintah 'piutang')." if jenis == "SalesInvoice"
+                      else "belum dikembalikan (sama dengan UTANG BERSIH di perintah 'utang')."))
     if draf:
         out.append(f"Catatan: {len(draf)} draf belum di-Submit di Frappe Books; belum masuk angka di atas.")
     catatan = cek_mata_uang(info)
