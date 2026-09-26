@@ -10,9 +10,10 @@ Satu halaman. **Jangan tulis nama/nomor klien di ceklis ini** — hanya status y
       terkirim** hari itu.
 
 ## Pemasangan skill
-- [ ] 10 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `proposal-kerjasama`,
+- [ ] 14 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `proposal-kerjasama`,
       `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`,
-      `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`.
+      `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`, `tender-checklist`,
+      `kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `kalender-pajak`.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, termasuk ringkasan UU PDP untuk data klien.
 
@@ -33,6 +34,7 @@ Satu halaman. **Jangan tulis nama/nomor klien di ceklis ini** — hanya status y
 | Rekap follow-up & piutang harian | 08.00 WIB | ☐ | ☐ |
 | Rekap timesheet klien | Jumat 16.00 WIB | ☐ | ☐ |
 | Pengingat sekali jalan (janji spesifik) | sesuai kebutuhan | ☐ | — |
+| Pengingat jadwal pajak bulanan (kalender-pajak, opsional) | Tgl 1 & 10, 07.00 WIB | ☐ | ☐ |
 
 ## Privasi (wajib dicentang semua)
 - [ ] Tidak ada pesan penagihan/follow-up yang dikirim **otomatis** ke klien — semua draf

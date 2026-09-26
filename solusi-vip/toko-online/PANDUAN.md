@@ -46,7 +46,7 @@ Paket ini berisi (folder skill, dari member area/ZIP paket VIP Anda): `karyawan-
 `cek-privasi-openclaw`, `listing-marketplace`, `harga-jual-marketplace`,
 `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`, `naskah-live-jualan`, `buku-stok`,
 `agen-cs-toko`, `foto-produk-brief`, `laporan-otomatis-terjadwal`, `rekap-penjualan-csv`,
-`konten-mingguan`.
+`konten-mingguan`, `pesan-prospek-wa`, `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`.
 
 **Cara paling andal (disarankan untuk OpenClaw):**
 ```bash
@@ -64,6 +64,10 @@ openclaw skills install ./foto-produk-brief --global
 openclaw skills install ./laporan-otomatis-terjadwal --global
 openclaw skills install ./rekap-penjualan-csv --global
 openclaw skills install ./konten-mingguan --global
+openclaw skills install ./pesan-prospek-wa --global
+openclaw skills install ./crm-wa --global
+openclaw skills install ./analisis-excel --global
+openclaw skills install ./brainstorming-ide-usaha --global
 ```
 (Jalankan dari folder tempat Anda mengekstrak ZIP paket, sehingga `./nama-skill` adalah folder
 yang berisi `SKILL.md` langsung di dalamnya. Windows: kalau tidak lewat WSL, salin folder ke
@@ -74,7 +78,7 @@ Atau, kalau Gateway Anda punya halaman **Plugins → Skills** dengan tombol impo
 per satu (fitur ini tersedia di sebagian instalasi Gateway, bukan semua — kalau tidak ada
 tombolnya, pakai cara `openclaw skills install` di atas).
 
-- **Cara cek berhasil:** ketik `openclaw skills list` — semua 14 nama skill di atas muncul. Atau
+- **Cara cek berhasil:** ketik `openclaw skills list` — semua 18 nama skill di atas muncul. Atau
   ketik di chat: "skill apa saja yang saya punya?" (bila `exec` diizinkan agent akan menjalankan
   `openclaw skills list` untuk Anda).
 - **Kalau gagal:**
@@ -204,6 +208,47 @@ siapkan nomor terpisah), lalu ketik: *"Siapkan asisten CS toko saya"* (sekali, u
 basis pengetahuan) lalu selanjutnya cukup tempel chat pelanggan untuk minta draf balasan. **Anda
 selalu yang mengirim balasan ke pelanggan** — bot tidak pernah mengirim otomatis ke pelanggan di
 paket ini. Rekap harian pertanyaan pelanggan bisa dijadwalkan (lihat `jadwal-openclaw.md` §CS).
+
+### f. Pesan perkenalan ke calon pelanggan/reseller baru (manual, dipicu Anda)
+Dapat kontak baru dari pameran, Google Maps, IG, atau referral dan mau kirim chat pembuka? Ketik:
+*"Saya dapat kontak toko oleh-oleh ini dari pameran UMKM kemarin, mau nawarin jadi reseller,
+tolong bikinkan pesan perkenalannya."* `pesan-prospek-wa` menulis 3 varian pesan (singkat/
+sedang/dengan nilai), sudah dicek script (bukan spam, jam kirim wajar, ada opsi keluar) plus
+tautan wa.me. **Anda yang mengirim satu per satu** — bukan untuk banyak kontak sekaligus (kalau
+butuh kirim promo massal, itu `broadcast-wa`, bukan skill ini).
+- **Kalau gagal:** kalau Anda belum menyebutkan dari mana kontak itu didapat, skill akan
+  menanyakannya dulu — pesan tidak dibuat sebelum asal kontak jelas (wajib, aturan UU PDP).
+
+### g. Catat calon pembeli & follow-up harian (CRM lokal)
+Ketik: *"Catat: Bu Rina dari IG, 0812-xxxx, tanya kue ulang tahun, kira-kira 450 ribu."* atau
+*"Bu Rina jadi order 4,2 juta."* — `crm-wa` menyimpan semuanya di **database di komputer Anda
+sendiri** (bukan cloud/langganan bulanan). Anda bisa mengaktifkan pengiriman daftar "siapa yang
+harus di-follow-up hari ini" (lengkap dengan **draf pesan + tautan wa.me**) ke Telegram setiap
+pagi — lihat `jadwal-openclaw.md` §7.
+- **Cara cek berhasil:** ketik "hari ini saya harus follow-up siapa saja?" — daftar & draf pesan
+  muncul dari database, bukan karangan.
+- **Kalau gagal:** kalau baru mulai dan database belum ada, skill akan menanyakan nama usaha &
+  nama pengirim sekali di awal, lalu langsung siap dipakai.
+- **Bukan untuk kirim otomatis/broadcast.** Draf disiapkan, **Anda yang membuka tautan & menekan
+  Kirim** sendiri — sama seperti `pesan-prospek-wa`.
+
+### h. Analisis data Excel/CSV toko (manual, dipicu Anda)
+Kalau Anda punya file Excel/CSV sendiri (bukan ekspor kasir/marketplace — untuk itu pakai
+`rekap-penjualan-csv`), misalnya biaya operasional atau data stok manual, kirim filenya lalu
+ketik: *"Analisis file ini, pengeluaran terbesar di mana?"* atau *"Bandingkan Agustus vs
+September."* `analisis-excel` menjawab dengan tabel siap tempel dan angka yang **dihitung
+script**, bukan dikira-kira.
+- **Kalau gagal:** kalau file berformat tidak biasa (banyak tabel dalam satu sheet, baris Total
+  di tengah), skill akan menandai bagian yang meragukan dan bertanya dulu sebelum memberi angka
+  final — jangan minta "pokoknya langsung jawab" untuk file seperti itu.
+
+### i. Brainstorming ide usaha/promo baru (manual, dipicu Anda)
+Bingung mau jualan apa lagi, butuh ide promo, atau usaha sedang sepi? Ketik: *"Usaha laundry
+saya sepi, ada ide promo atau produk tambahan?"* `brainstorming-ide-usaha` menggali batasan nyata
+Anda (modal, waktu, SDM), memunculkan beberapa pendekatan, menyaringnya dengan skor (bukan
+feeling), lalu menutup dengan **rencana aksi 7 hari** yang bisa langsung dikerjakan.
+- **Cara cek berhasil:** Anda menerima 2–3 ide dengan untung-rugi masing-masing + rencana 7 hari,
+  bukan cuma daftar ide acak.
 
 ---
 

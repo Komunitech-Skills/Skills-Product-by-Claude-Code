@@ -27,7 +27,8 @@ langkah demi langkah.
 
 Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `proposal-kerjasama`,
 `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`,
-`riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`.
+`riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`, `tender-checklist`,
+`kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `kalender-pajak`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
@@ -40,11 +41,15 @@ openclaw skills install ./pengingat-follow-up --global
 openclaw skills install ./riset-calon-pelanggan --global
 openclaw skills install ./asisten-tulis-riset --global
 openclaw skills install ./presentasi-instan --global
+openclaw skills install ./tender-checklist --global
+openclaw skills install ./kontrak-kerja-pkwt --global
+openclaw skills install ./kebijakan-privasi-pdp --global
+openclaw skills install ./kalender-pajak --global
 ```
 (Jalankan dari folder hasil ekstrak ZIP paket. Windows tanpa WSL: salin folder skill lewat File
 Explorer ke `%USERPROFILE%\.openclaw\skills\`.)
 
-- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-10 nama skill di atas.
+- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-14 nama skill di atas.
 - **Kalau gagal:** sama seperti paket lain — "already exists" aman dilewati, skill tidak terbaca
   → buka sesi baru, `exec` ditolak → salin manual lewat File Explorer/Finder.
 
@@ -127,6 +132,34 @@ Ini bukan jadwal otomatis — dipakai kapan pun Anda butuh, satu per satu.
 `riset-calon-pelanggan` untuk menyusun profil pelanggan ideal & daftar calon klien dari sumber
 publik. `asisten-tulis-riset` untuk artikel/materi presentasi berbasis riset dengan sitasi.
 `presentasi-instan` untuk membuat slide HTML siap pakai dari materi yang sudah ada.
+
+### g. Ikut tender/pengadaan pemerintah (manual, dipicu Anda)
+Kalau Anda/agensi ingin ikut tender/lelang pemerintah (LPSE/SPSE, e-katalog), ketik: *"Saya mau
+ikut tender pengadaan jasa desain di LPSE kabupaten, apa saja yang harus disiapkan?"*
+`tender-checklist` membantu menilai **layak ikut atau tidak**, menyiapkan checklist dokumen,
+jadwal mundur dari batas unggah, dan **memeriksa rincian harga penawaran** (dihitung script,
+termasuk PPN) supaya tidak gugur karena hitungan salah.
+- **Kalau gagal:** kalau Anda belum tahu HPS/pagu paket, skill tetap membantu checklist &
+  kelayakan; hanya bagian cek harga yang menunggu data itu.
+
+### h. Kontrak kerja staf/asisten kontrak (manual, dipicu Anda)
+Merekrut asisten atau staf admin dengan status kontrak? Ketik: *"Buatkan kontrak kerja 6 bulan
+untuk asisten riset saya."* `kontrak-kerja-pkwt` menyusun draf PKWT sesuai aturan dan menghitung
+kompensasi akhir kontrak — bukan untuk kontrak kerja sama dengan klien (itu `proposal-kerjasama`/
+gunakan `perjanjian-sederhana` bila tersedia).
+
+### i. Kebijakan privasi untuk layanan/website Anda (manual, dipicu Anda)
+Kalau Anda mengumpulkan data klien lewat website/formulir/WA Business, ketik: *"Buatkan kebijakan
+privasi untuk jasa konsultan saya."* `kebijakan-privasi-pdp` juga bisa membuat kalimat persetujuan
+data untuk formulir/Google Form, atau mengecek kebijakan yang sudah ada.
+
+### j. Kalender pajak & pengingat jatuh tempo (terjadwal, opsional)
+Ketik: *"Ingatkan saya jadwal pajak bulanan lewat Telegram."* `kalender-pajak` menyusun tanggal
+pasti setor/lapor (PPh, PPN bila PKP) sesuai profil pajak Anda, sudah digeser bila jatuh di hari
+libur — **bukan** penghitung besaran pajak. Cara mengaktifkan pengingat otomatisnya:
+`jadwal-openclaw.md` §8.
+- **Cara cek berhasil:** jadwal diuji sekali dan hasilnya (tanggal-tanggal nyata, bukan contoh)
+  ditunjukkan sebelum dinyatakan aktif.
 
 ---
 

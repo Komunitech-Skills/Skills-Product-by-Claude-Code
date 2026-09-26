@@ -35,7 +35,8 @@ dari dokter/tenaga kesehatan — tidak pernah ditebak AI.
 ## 1. Pasang paket skill Klinik
 
 Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`, `agen-cs-toko`,
-`balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`.
+`balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`, `kebijakan-privasi-pdp`,
+`sop-onboarding`, `kontrak-kerja-pkwt`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
@@ -45,11 +46,14 @@ openclaw skills install ./agen-cs-toko --global
 openclaw skills install ./balas-ulasan-pelanggan --global
 openclaw skills install ./konten-mingguan --global
 openclaw skills install ./laporan-status-kantor --global
+openclaw skills install ./kebijakan-privasi-pdp --global
+openclaw skills install ./sop-onboarding --global
+openclaw skills install ./kontrak-kerja-pkwt --global
 ```
 (Jalankan dari folder hasil ekstrak ZIP paket. Windows tanpa WSL: salin folder skill lewat File
 Explorer ke `%USERPROFILE%\.openclaw\skills\` — lihat `docs/instalasi.md`.)
 
-- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-7 nama skill di atas.
+- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-10 nama skill di atas.
 - **Kalau gagal:** lihat bagian "Kalau gagal" yang sama di panduan toko-online (pesan "already
   exists" = aman; skill tidak terbaca = buka sesi baru; `exec` ditolak = salin manual).
 
@@ -144,6 +148,32 @@ sistem pendaftaran/kasir klinik, ditaruh di folder yang ditunjuk. Format laporan
 ### e. Balasan ulasan klinik (manual, dipicu Anda)
 Untuk ulasan Google Maps/media sosial klinik: tempel isi ulasan, ketik *"Balaskan ulasan ini."*
 `balas-ulasan-pelanggan` menyiapkan draf, Anda yang memposting.
+
+### f. Kebijakan privasi klinik & persetujuan data pasien (manual, dipicu Anda)
+Data pasien (termasuk keluhan/riwayat kesehatan) adalah **data pribadi spesifik** menurut UU PDP,
+jadi butuh perhatian ekstra. Ketik: *"Buatkan kebijakan privasi untuk klinik saya"* atau
+*"Buatkan kalimat persetujuan data untuk formulir pendaftaran pasien."* `kebijakan-privasi-pdp`
+juga bisa **mengecek** kebijakan yang sudah ada, dan menyiapkan **tanggapan** kalau ada pasien
+minta datanya dihapus atau (amit-amit) terjadi kebocoran data.
+- **Cara cek berhasil:** draf mencantumkan bagian data kesehatan/pasien secara khusus, dan bagian
+  yang belum Anda isi ditandai `[isi: ...]`, bukan dikarang.
+- **Ingat:** ini draf, **bukan nasihat hukum** — untuk klinik dengan banyak pasien, tetap minta
+  ditinjau konsultan hukum sebelum dipakai resmi.
+
+### g. Onboarding staf/admin baru (manual, dipicu Anda)
+Ada admin, kasir, atau asisten baru mulai kerja? Ketik: *"Buatkan paket onboarding untuk admin
+baru di klinik saya, mulai Senin depan."* `sop-onboarding` menyiapkan checklist dokumen, jadwal
+hari pertama–90 hari (dihitung, bukan dikira), pesan sambutan, buku saku, dan formulir evaluasi —
+ada varian khusus klinik. **Bukan untuk kompetensi/sertifikasi tenaga medis (STR/SIP)** — itu di
+luar cakupan, arahkan ke Dinkes/lembaga sertifikasi.
+
+### h. Kontrak kerja staf kontrak (manual, dipicu Anda)
+Untuk staf **non-medis** yang dikontrak (admin, kasir, office boy, dll.), ketik: *"Buatkan
+kontrak kerja 1 tahun untuk admin baru klinik saya."* `kontrak-kerja-pkwt` menyusun draf PKWT
+sesuai aturan, menghitung uang kompensasi akhir kontrak, dan bisa **memeriksa** draf kontrak yang
+sudah ada untuk klausul berbahaya (mis. tanpa BPJS, masa percobaan yang dilarang di PKWT).
+- **Batasan:** bukan untuk status kepegawaian tenaga medis (dokter/perawat dengan STR/SIP) yang
+  biasanya punya aturan tersendiri — untuk itu konsultasikan ke konsultan hukum ketenagakerjaan.
 
 ---
 

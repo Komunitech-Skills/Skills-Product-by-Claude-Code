@@ -94,15 +94,45 @@ Buat bot di @BotFather → `openclaw channels add --channel telegram --token <to
 `skills/laporan-otomatis-terjadwal/references/openclaw.md` §4 (via @userinfobot bila tak ada
 akses Control UI/log Gateway).
 
-## 8. Yang belum diverifikasi ⚠️
+## 8. Pengingat jadwal pajak bulanan (kalender-pajak), opsional 📖
+Sintaks (`--command-argv`, `--cron`, `--tz`, `--announce --channel telegram`) sama dengan pola
+yang **dijalankan sungguhan** ✅ di §1 untuk `pengingat-follow-up`; kombinasi khusus dengan
+`kalender_pajak.py` **belum diuji** di Gateway oleh tim kurasi (lihat
+`skills/kalender-pajak/references/openclaw-jadwal.md`, yang juga menandai bagian ini ⚠️ pada
+sumbernya). Cari path lengkap script dulu (ganti `NAMA` dengan nama pengguna komputer Anda):
+```bash
+python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/kalender-pajak/scripts/kalender_pajak.py'))"
+```
+**a. Ringkasan awal bulan — tanggal 1, 07.00 WIB** (semua tenggat 31 hari ke depan):
+```bash
+openclaw automations add --name "Pajak: ringkasan bulan ini" --cron "0 7 1 * *" --tz Asia/Jakarta \
+  --command-argv '["python3","/home/NAMA/.openclaw/skills/kalender-pajak/scripts/kalender_pajak.py","--profil","op-umkm","--hari-ini","hari-ini","--rentang","31"]' \
+  --announce --channel telegram --to "<ID chat Telegram pemilik>"
+```
+**b. Pengingat tgl 15/20 — tanggal 10, 07.00 WIB** (tenggat 16 hari ke depan, menangkap
+pergeseran akibat hari libur):
+```bash
+openclaw automations add --name "Pajak: pengingat tgl 15 & 20" --cron "0 7 10 * *" --tz Asia/Jakarta \
+  --command-argv '["python3","/home/NAMA/.openclaw/skills/kalender-pajak/scripts/kalender_pajak.py","--profil","op-umkm","--hari-ini","hari-ini","--rentang","16"]' \
+  --announce --channel telegram --to "<ID chat Telegram pemilik>"
+```
+Ganti `op-umkm` dengan profil pajak yang sesuai (mis. `badan-pkp,pemberi-kerja` untuk PT ber-PKP
+dengan karyawan) — lihat tabel pemetaan profil atau `--daftar-profil` di `SKILL.md`
+kalender-pajak, dan `PANDUAN.md` §5j. Uji dulu sebelum percaya jadwal aktif:
+`openclaw automations run <id> --wait`.
+
+## 9. Yang belum diverifikasi ⚠️
 - Membuat jadwal di atas langsung dari chat ("aktifkan pengingat jam 8"). Tool `cron` untuk agent
   memang ada dan hanya untuk owner, tapi kombinasi persisnya belum dicoba tim kami. Kalau
   gagal/aneh, jalankan perintah dari terminal/Control UI.
 - Balasan "selesai #3" dari Telegram langsung mengubah `DAFTAR.csv` — bergantung izin `exec`/file
   agent pengguna, belum diuji end-to-end.
 - Pesan benar-benar tiba di Telegram/WhatsApp (uji internal tidak memakai token/nomor asli).
+- Jadwal pengingat pajak (§8, `kalender-pajak`) di atas — pola cron & `--command-argv` sudah
+  terbukti untuk skill lain, tapi kombinasi persis dengan `kalender_pajak.py` belum dicoba di
+  Gateway oleh tim kurasi.
 
-## 9. Syarat komputer menyala
+## 10. Syarat komputer menyala
 Jadwal berjalan **di dalam proses Gateway**. Kalau laptop mati/tidur di jam 08.00, rekap **tidak
 terkirim** dan tidak ada pesan error. Tiga opsi (tanpa harga): laptop/mini PC yang selalu
 menyala, VPS milik pengguna sendiri, atau jasa setup Komunitech.

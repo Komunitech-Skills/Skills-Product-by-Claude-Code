@@ -57,7 +57,13 @@ openclaw automations add "0 16 * * 5" \
 diposting — skill tidak menggantikan tinjauan profesional, dan OpenClaw **tidak memposting
 otomatis** ke Instagram/TikTok/Facebook.
 
-## 4. Mengelola jadwal (✅, sama seperti paket lain)
+## 4. Skill baru tanpa jadwal (dokumen, dipicu manual)
+`kebijakan-privasi-pdp`, `sop-onboarding`, dan `kontrak-kerja-pkwt` (lihat `PANDUAN.md` §5f–h)
+adalah skill dokumen yang dipicu **manual** per kebutuhan (buat/cek kebijakan privasi, onboarding
+staf baru, buat/periksa kontrak) — sengaja **tidak** dijadwalkan otomatis karena kebutuhannya
+muncul sewaktu-waktu (staf baru masuk, kebijakan perlu diperbarui), bukan rutin di jam tetap.
+
+## 5. Mengelola jadwal (✅, sama seperti paket lain)
 ```bash
 openclaw automations list --all
 openclaw automations run <id> --wait
