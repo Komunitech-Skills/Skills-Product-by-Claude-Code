@@ -43,9 +43,13 @@ Hasil: CSV `Tanggal;Keterangan;Masuk;Keluar;Kategori` (UTF-8 BOM, tanggal DD/MM/
   `setoran_modal`, beli-stok → `pembelian_bahan`, gaji → `beban_gaji`, listrik-air → `beban_utilitas`, sewa →
   `beban_sewa`, prive → `prive`, pinjaman → `pinjaman_diterima`/`bayar_pinjaman`, selisih hitung laci →
   `pendapatan_lain`/`beban_lain`.
-- Kategori `pajak` dan `lain-lain` sengaja dikosongkan agar emkm mengklasifikasi dari keterangan (mis. "PPh final" →
-  beban PPh, "PBJT" → pajak daerah + pertanyaan, "biaya transfer" → beban keuangan). Keterangan pajak tanpa kata pajak
-  diberi awalan "Pajak: ".
+- Kategori `pajak` sengaja dikosongkan agar emkm mengklasifikasi dari keterangan (mis. "PPh final" → beban PPh,
+  "PBJT" → pajak daerah + pertanyaan). Keterangan pajak tanpa kata pajak diberi awalan "Pajak: ".
+- `lain-lain` (v1.0.2): pemasukan → `pendapatan_lain`; biaya bank (biaya tarik tunai/adm/transfer, atau biaya/adm di
+  akun bank/e-wallet selain admin marketplace) → `beban_keuangan`; pengeluaran yang keterangannya memuat kata pindah
+  dana/prive/modal/pinjaman (mis. "PINDAH BUKU" yang digolongkan lain-lain) → `beban_lain`; selain itu dikosongkan agar
+  emkm memilih pos beban yang lebih rinci. Tujuannya: laba emkm = hasil usaha kas-umkm (dulu "BIAYA TARIK TUNAI" dibaca
+  emkm sebagai pindah dana → laba lebih besar Rp 7.500 dan neraca tidak seimbang).
 - Pindah dana antar akun tidak ditulis (kas + rekening dihitung sebagai satu pos kas di emkm). Catatan yang dibatalkan
   tidak ikut.
 - Teks script memberi perintah emkm siap pakai, termasuk `--kas-akhir-aktual` = saldo akhir gabungan (cek silang).

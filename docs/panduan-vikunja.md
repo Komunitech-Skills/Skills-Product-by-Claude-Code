@@ -119,14 +119,29 @@ Jangan pernah memberi AI **sandi akun** Anda. Vikunja punya **token API** yang b
 
 1. Masuk ke Vikunja di browser → klik foto profil/avatar (pojok kanan) → **Settings** → **API Tokens**.
 2. Klik **Create a token**. Beri nama, mis. `Skill Baca` untuk laporan harian.
-3. **Pilih izin (permissions) SEKECIL MUNGKIN** sesuai kebutuhan:
+3. **Pilih izin (permissions) SEKECIL MUNGKIN** sesuai kebutuhan. Halaman pembuatan token menampilkan
+   izin sebagai **beberapa kelompok kotak centang terpisah**, masing-masing dengan judulnya sendiri
+   (mis. "Projects", "Tasks", "Tasks Assignees", "Projects Users", dst., berurutan dari atas ke
+   bawah) — bukan satu daftar gabungan. **Kelompok "Tasks Assignees" letaknya TERPISAH dan di BAWAH
+   kelompok "Tasks"**, jadi mudah terlewat kalau Anda hanya mencentang isi kelompok "Tasks" dan
+   langsung scroll ke tombol Create:
 
-   | Kebutuhan | Izin yang dicentang |
+   | Kebutuhan | Izin yang dicentang (nama kelompok — kotak di dalamnya) |
    |---|---|
-   | Laporan/lihat saja: `hari-ini`, `terlambat`, `minggu-ini`, `ringkasan`, `daftar-proyek`, `cek` | **Projects**: Read All, Read One · **Tasks**: Read All, Read One |
-   | + Menambah tugas (`tambah`) | tambahkan **Tasks**: Create |
-   | + Menandai selesai (`selesai`) | tambahkan **Tasks**: Update |
-   | + Menugaskan ke anggota (`tambah --ke <username>`) | tambahkan **Tasks Assignees**: Create, Read All · **Projects**: Project Users |
+   | Laporan/lihat saja: `hari-ini`, `terlambat`, `minggu-ini`, `ringkasan`, `daftar-proyek`, `cek` | **Projects** — Read All, Read One · **Tasks** — Read All, Read One |
+   | + Menambah tugas (`tambah`) | tambahkan **Tasks** — Create |
+   | + Menandai selesai (`selesai`) | tambahkan **Tasks** — Update |
+   | + Menugaskan ke anggota (`tambah --ke <username>`) | tambahkan **Tasks Assignees** — Create, Read All (kelompok TERPISAH, lihat catatan di atas) · dari kelompok **Projects** centang juga kotak **Projectusers** (satu kata, tanpa spasi — ini BUKAN kelompok "Projects Users" yang terpisah; kotak "Projectusers" ada DI DALAM kelompok "Projects", bersebelahan dengan "Read All"/"Read One") |
+
+   Nama di atas persis seperti tulisan di layar Vikunja 2.6.0 (dicoba langsung, lihat catatan status
+   di awal dokumen). Kalau tampilan versi Anda berbeda, cocokkan lewat kata kuncinya: kelompok yang
+   isinya "Create"/"Read All"/"Delete"/"Update bulk" untuk aksi menugaskan orang ke tugas adalah yang
+   dimaksud "Tasks Assignees" di sini, apa pun urutannya di layar.
+
+   **Kalau `--ke` (penugasan) tetap gagal dengan pesan "401"/token tidak valid** walau token sudah
+   berizin baca-tulis Tasks: 99% penyebabnya kelompok "Tasks Assignees" belum dicentang sama sekali
+   (Vikunja melaporkannya sebagai "token tidak valid", BUKAN "kurang izin" — membingungkan tapi
+   memang begitu perilakunya). Buat ulang token, kali ini pastikan kelompok itu ikut dicentang.
 
    **Disarankan (seperti skill Dolibarr kami): buat DUA token** — satu **hanya-baca** (dipakai jadwal laporan harian otomatis) dan satu **baca+tulis** (dipakai hanya saat Anda sendiri minta AI menambah/menyelesaikan/menugaskan tugas). Simpan di file berbeda (`simpan-kunci --kunci-file`).
 4. Isi **Expiration date** (tanggal kedaluwarsa) — jangan pilih "tanpa batas" bila tersedia; pilih 1 tahun dan perbarui nanti.

@@ -45,7 +45,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 APLIKASI = "kas-umkm"
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 SKEMA = 1
 BATAS_NOMINAL = 10 ** 12            # Rp 1 triliun: di atas ini pasti salah ketik
 NOMINAL_BESAR = 50 * 10 ** 6        # di atas ini diberi catatan "pastikan jumlah nolnya benar"
@@ -147,6 +147,40 @@ EMKM = {("penjualan", "masuk"): "pendapatan_usaha", ("penjualan", "keluar"): "re
         ("sewa", "keluar"): "beban_sewa", ("prive", "keluar"): "prive",
         ("pinjaman", "masuk"): "pinjaman_diterima", ("pinjaman", "keluar"): "bayar_pinjaman",
         ("selisih-kas", "masuk"): "pendapatan_lain", ("selisih-kas", "keluar"): "beban_lain"}
+# v1.0.2: kolom Kategori lain-lain yang DIISI eksplisit agar laporan-keuangan-emkm tidak salah membaca keterangan.
+# Biaya bank (biaya tarik tunai/adm/transfer) = beban bank, bukan pindah dana.
+POLA_BIAYA_BANK = re.compile(r"\b(biaya (tarik tunai|tarikan tunai|tarik|penarikan|atm|adm|administrasi|admin bank|"
+                             r"transfer|trf|antar bank|bi ?fast|rtgs|skn|kliring|kartu|sms|bulanan|bank|setor|"
+                             r"top ?up|pindah buku)|adm bank|admin bank|biaya adm|provisi|bunga pinjaman|bunga bank)\b")
+POLA_BIAYA_BANK_AKUN = re.compile(r"\b(biaya|adm|admin|provisi)\b")      # di akun bank/e-wallet
+POLA_BUKAN_BIAYA_BANK = re.compile(r"\b(shopee|tokopedia|tiktok|lazada|blibli|marketplace|gofood|grabfood|"
+                                   r"shopeefood|mdr|komisi|qris)\b")
+# kata yang oleh laporan-keuangan-emkm bisa dibaca sebagai BUKAN beban (pindah dana, prive, piutang, modal, pinjaman)
+POLA_RAWAN_EMKM = re.compile(r"\b(tarik|tarikan|setor|setoran|pindah|pindahbuku|antar rek\w*|mutasi|top ?up|"
+                             r"isi saldo|rekening|prive|privee|pribadi|rumah tangga|keluarga|ambil|kasbon|piutang|"
+                             r"pinjam\w*|modal|uang saku|jajan|sekolah|spp|liburan|ortu|orang tua|gaji (pemilik|owner|"
+                             r"sendiri|saya))\b")
+
+
+def kode_emkm(kategori, arah, ket, jenis_akun):
+    """Kode kategori laporan-keuangan-emkm untuk satu baris ekspor ("" = diklasifikasi emkm dari keterangan).
+    v1.0.2: lain-lain tidak lagi selalu dikosongkan. Pemasukan lain-lain -> pendapatan_lain; biaya bank ->
+    beban_keuangan; pengeluaran lain-lain yang keterangannya memuat kata pindah dana/prive/modal -> beban_lain.
+    Dengan begitu laba emkm = hasil usaha kas-umkm (catatan lain-lain selalu termasuk hasil usaha)."""
+    kode = EMKM.get((kategori, arah), "")
+    if kategori != "lain-lain":
+        return kode
+    if arah == "masuk":
+        return "pendapatan_lain"
+    n = " " + normal(ket) + " "
+    if POLA_BIAYA_BANK.search(n) or (jenis_akun in ("bank", "e-wallet") and POLA_BIAYA_BANK_AKUN.search(n)
+                                     and not POLA_BUKAN_BIAYA_BANK.search(n)):
+        return "beban_keuangan"
+    if POLA_RAWAN_EMKM.search(n):
+        return "beban_lain"
+    return ""
+
+
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
 ALIAS_ZONA = {"wib": "WIB", "asia/jakarta": "WIB", "asia/pontianak": "WIB", "wita": "WITA", "asia/makassar": "WITA",
               "wit": "WIT", "asia/jayapura": "WIT"}
@@ -1656,7 +1690,8 @@ def hitung_rekap(conn, dari, sampai):
         k["n"] += 1
         mt = r["per_metode"].setdefault(x["metode"], {"masuk": 0, "keluar": 0})
         mt[x["arah"]] += j
-        h = r["per_hari"].setdefault(x["tanggal"], {"masuk": 0, "keluar": 0, "hasil_usaha": 0})
+        h = r["per_hari"].setdefault(x["tanggal"], {"masuk": 0, "keluar": 0, "hasil_usaha": 0, "cek_masuk": 0,
+                                                     "cek_keluar": 0})
         h[x["arah"]] += j
         kel = kelompok(x["kategori"])
         if kel == "usaha":
@@ -1671,6 +1706,7 @@ def hitung_rekap(conn, dari, sampai):
         elif x["kategori"] == "perlu-dicek":
             r["perlu_dicek"][x["arah"]] += j
             r["perlu_dicek"]["id"].append(x["id"])
+            h["cek_" + x["arah"]] += j
         if x["arah"] == "keluar":
             r["terbesar"].append({"id": x["id"], "tanggal": x["tanggal"], "jumlah": j, "kategori": x["kategori"],
                                   "catatan": x["catatan"], "akun": x["akun_nama"]})
@@ -1702,6 +1738,15 @@ def judul_periode(dari, sampai, jenis):
     if jenis == "bulan":
         return "Rekap bulanan %s %d" % (BULAN[dari.month - 1], dari.year)
     return "Rekap %s - %s" % (tgl_id(dari), tgl_id(sampai))
+
+
+def teks_cek_baris(cek_masuk, cek_keluar):
+    """v1.0.2: penanda baris per hari/per minggu yang masuk/keluarnya memuat catatan 'Perlu dicek' (ikut masuk/keluar,
+    tidak ikut hasil usaha), agar angkanya tidak tampak tidak nyambung."""
+    if not cek_masuk and not cek_keluar:
+        return ""
+    bagian = (["masuk %s" % rp(cek_masuk)] if cek_masuk else []) + (["keluar %s" % rp(cek_keluar)] if cek_keluar else [])
+    return " [termasuk 'Perlu dicek' %s - belum dihitung di hasil usaha]" % ", ".join(bagian)
 
 
 def cmd_rekap(args):
@@ -1779,8 +1824,9 @@ def cmd_rekap(args):
             while d <= sampai:
                 h = r["per_hari"].get(d.isoformat())
                 if h:
-                    t.append("%s %s: masuk %s, keluar %s, hasil usaha %s" % (HR[d.weekday()], tgl_id(d)[:5], rp(h["masuk"]),
-                                                                            rp(h["keluar"]), rp(h["hasil_usaha"])))
+                    t.append("%s %s: masuk %s, keluar %s, hasil usaha %s%s" % (
+                        HR[d.weekday()], tgl_id(d)[:5], rp(h["masuk"]), rp(h["keluar"]), rp(h["hasil_usaha"]),
+                        teks_cek_baris(h["cek_masuk"], h["cek_keluar"])))
                 d += timedelta(days=1)
         if jenis in ("bulan", "rentang") and (sampai - dari).days > 13:
             t.append("")
@@ -1791,9 +1837,11 @@ def cmd_rekap(args):
                 ms = sum(v["masuk"] for k, v in r["per_hari"].items() if a_.isoformat() <= k <= b_.isoformat())
                 kl = sum(v["keluar"] for k, v in r["per_hari"].items() if a_.isoformat() <= k <= b_.isoformat())
                 hu = sum(v["hasil_usaha"] for k, v in r["per_hari"].items() if a_.isoformat() <= k <= b_.isoformat())
+                cm = sum(v["cek_masuk"] for k, v in r["per_hari"].items() if a_.isoformat() <= k <= b_.isoformat())
+                ck = sum(v["cek_keluar"] for k, v in r["per_hari"].items() if a_.isoformat() <= k <= b_.isoformat())
                 if ms or kl:
-                    t.append("%s-%s: masuk %s, keluar %s, hasil usaha %s" % (tgl_id(a_)[:5], tgl_id(b_)[:5], rp(ms),
-                                                                             rp(kl), rp(hu)))
+                    t.append("%s-%s: masuk %s, keluar %s, hasil usaha %s%s" % (tgl_id(a_)[:5], tgl_id(b_)[:5], rp(ms),
+                                                                               rp(kl), rp(hu), teks_cek_baris(cm, ck)))
                 w += timedelta(days=7)
         if jenis != "hari" and r["terbesar"]:
             t.append("")
@@ -1860,7 +1908,8 @@ def cmd_daftar(args):
     db, conn = baca_db(args)
     try:
         dari, sampai, jenis = ambil_periode(args)
-        q = ("SELECT t.*, a.nama AS akun_nama FROM transaksi t JOIN akun a ON a.id=t.akun_id WHERE t.tanggal BETWEEN ? "
+        q = ("SELECT t.*, a.nama AS akun_nama, a.jenis AS akun_jenis FROM transaksi t JOIN akun a ON a.id=t.akun_id "
+             "WHERE t.tanggal BETWEEN ? "
              "AND ?")
         p = [dari.isoformat(), sampai.isoformat()]
         if not args.semua:
@@ -2504,7 +2553,8 @@ def cmd_ekspor(args):
         sampai = min(sampai, hari_ini())
         if sampai < dari:
             raise Gagal("Periode ekspor di luar masa pencatatan buku kas (mulai %s)." % tgl_id(pertama))
-        q = ("SELECT t.*, a.nama AS akun_nama FROM transaksi t JOIN akun a ON a.id=t.akun_id WHERE t.tanggal BETWEEN ? "
+        q = ("SELECT t.*, a.nama AS akun_nama, a.jenis AS akun_jenis FROM transaksi t JOIN akun a ON a.id=t.akun_id "
+             "WHERE t.tanggal BETWEEN ? "
              "AND ?" + ("" if args.semua else " AND t.status='aktif'") + " ORDER BY t.tanggal, t.id")
         rows = conn.execute(q, (dari.isoformat(), sampai.isoformat())).fetchall()
         saldo_awal = sum(saldo_pembuka(conn, a, dari) for a in akun if date.fromisoformat(a["tanggal_awal"]) <= sampai)
@@ -2539,8 +2589,8 @@ def cmd_ekspor(args):
         if r["kategori"] == "pindah":
             n_pindah += 1
             continue
-        kode = EMKM.get((r["kategori"], r["arah"]), "")
         ket = r["catatan"] or label_kat(r["kategori"], r["arah"])
+        kode = kode_emkm(r["kategori"], r["arah"], ket, r["akun_jenis"])
         if r["kategori"] == "pajak" and not re.search(r"\b(pajak|pph|pbjt|pb1|ppn)\b", normal(ket)):
             ket = "Pajak: " + ket
         data.append([tgl_id(r["tanggal"]), ket, r["jumlah"] if r["arah"] == "masuk" else "",
@@ -2553,8 +2603,9 @@ def cmd_ekspor(args):
                 "--periode-awal %s --periode-akhir %s --kas-akhir-aktual %d" %
                 (path, cfg["nama_usaha"], dari.isoformat(), sampai.isoformat(), saldo_akhir))
     t = ("Ekspor untuk skill laporan-keuangan-emkm: %d baris %s - %s ke %s\n"
-         "Kolom: Tanggal;Keterangan;Masuk;Keluar;Kategori (kode kategori emkm; pajak & lain-lain dikosongkan agar emkm "
-         "mengklasifikasi dari keterangan). Pindah dana antar akun (%d baris) tidak ditulis karena kas + rekening "
+         "Kolom: Tanggal;Keterangan;Masuk;Keluar;Kategori (kode kategori emkm; pajak & sebagian lain-lain dikosongkan "
+         "agar emkm mengklasifikasi dari keterangan; biaya bank = beban_keuangan, pemasukan lain-lain = "
+         "pendapatan_lain). Pindah dana antar akun (%d baris) tidak ditulis karena kas + rekening "
          "dihitung sebagai satu. Saldo awal gabungan semua akun %s, saldo akhir %s.\n"
          "Jalankan (tanyakan dulu stok awal/akhir, piutang, utang, aset):\n%s" %
          (len(data), tgl_id(dari), tgl_id(sampai), path, n_pindah, rp(saldo_awal), rp(saldo_akhir), perintah))

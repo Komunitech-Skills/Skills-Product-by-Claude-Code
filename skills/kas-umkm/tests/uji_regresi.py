@@ -887,5 +887,100 @@ class UjiV101(Dasar):
         self.assertIn("UU KUP", isi)
 
 
+# --------------------------------------------------------------------------- v1.0.2: temuan uji ulang v1.0.1 (Akun B)
+class UjiV102(Dasar):
+    """Data uji ulang Akun B: Laci 1.000.000, BRI 5.000.000, GoPay 100.000; mutasi BRI 9 baris (saldo akhir 9.042.500)."""
+    MUTASI = ("Tanggal,Keterangan,Debet,Kredit\n"
+              "02/09/2026,TRSF QRIS SETTLEMENT MERCHANT,,1250000\n"
+              "03/09/2026,TARIK TUNAI ATM BRI JL MERDEKA,500000,\n"
+              "03/09/2026,BIAYA TARIK TUNAI ATM BERSAMA,7500,\n"
+              "04/09/2026,SETOR TUNAI CRM,,2000000\n"
+              "05/09/2026,TOPUP GOPAY 0812XXXX,300000,\n"
+              "06/09/2026,PINDAH BUKU KE REK 0987654,1000000,\n"
+              "07/09/2026,SUMBANGAN 17AN RT 05,150000,\n"
+              "08/09/2026,TRSF DR BUDI SANTOSO FIKTIF,,3000000\n"
+              "09/09/2026,PEMBAYARAN PLN PRABAYAR,250000,\n")
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.db = os.path.join(self.dir, "kas.db")
+        self.ok("init", "--nama-usaha", "Warung Uji Fiktif", "--kas-awal", "1jt", "--mulai", "01/09/2026", "--ya")
+        self.ok("akun", "tambah", "--nama", "BRI", "--jenis", "bank", "--saldo-awal", "5jt", "--tanggal-awal",
+                "01/09/2026", "--terima-qris", "--ya")
+        self.ok("akun", "tambah", "--nama", "GoPay", "--jenis", "e-wallet", "--saldo-awal", "100rb",
+                "--tanggal-awal", "01/09/2026", "--ya")
+        self.ok("catat", "--keluar", "400rb", "--kategori", "beli-stok", "--metode", "tunai", "--catatan", "kulakan",
+                "--tanggal", "02/09/2026", "--ya")
+        self.ok("catat", "--masuk", "1,5jt", "--kategori", "penjualan", "--metode", "tunai", "--catatan", "jualan",
+                "--tanggal", "03/09/2026", "--ya")
+        f = self.file("mutasi-bri.csv", self.MUTASI)
+        self.ok("impor", f, "--akun", "BRI", "--jenis-file", "mutasi-bank", "--format-tanggal", "hari-bulan", "--ya")
+
+    def golongkan_semua(self):
+        ids = self.ok("rekap", "--bulan", "09/2026")["perlu_dicek"]["id"]
+        self.assertEqual(len(ids), 3)                                # pindah buku, sumbangan, trsf Budi
+        for i, kat in zip(ids, ("prive", "lain-lain", "penjualan")):
+            self.ok("golongkan", "--id", str(i), "--kategori", kat, "--ya")
+
+    def test_biaya_tarik_tunai_jadi_beban_bank_dan_laba_emkm_sama(self):
+        from decimal import Decimal as D
+        self.golongkan_semua()
+        s = self.saldo()
+        # verifikasi Decimal independen dari data input
+        laci = D(1000000) - D(400000) + D(1500000) + D(500000) - D(2000000)
+        bri = D(5000000) + D(1250000) + D(2000000) + D(3000000) - (D(500000) + D(7500) + D(300000) + D(1000000) +
+                                                                     D(150000) + D(250000))
+        gopay = D(100000) + D(300000)
+        self.assertEqual((D(s["Laci kas"]), D(s["BRI"]), D(s["GoPay"])), (laci, bri, gopay))
+        self.assertEqual((laci, bri, gopay), (D(600000), D(9042500), D(400000)))
+        hasil = (D(1500000) + D(1250000) + D(3000000)) - (D(400000) + D(7500) + D(150000) + D(250000))
+        self.assertEqual(hasil, D(4942500))
+        self.assertEqual(D(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"]), hasil)
+        out = self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
+        with open(out["file"], encoding="utf-8-sig", newline="") as fh:
+            rows = list(csv.reader(fh, delimiter=";"))
+        kode = {r[1]: r[4] for r in rows[1:]}
+        self.assertEqual(kode["BIAYA TARIK TUNAI ATM BERSAMA"], "beban_keuangan")   # beban bank, bukan pindah dana
+        self.assertEqual(D(out["saldo_akhir"]), laci + bri + gopay)
+        emkm = os.path.join(SKILLS, "laporan-keuangan-emkm", "scripts", "laporan_emkm.py")
+        if not os.path.isfile(emkm):
+            self.skipTest("laporan-keuangan-emkm tidak ada di sebelah skill ini")
+        r = subprocess.run([sys.executable, emkm, out["file"], "--format", "json", "--periode-awal", "2026-09-01",
+                            "--periode-akhir", "2026-09-26", "--kas-akhir-aktual", str(out["saldo_akhir"])],
+                           capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        d = json.loads(r.stdout)
+        self.assertEqual(D(str(d["laba_rugi"]["laba_bersih"])), hasil)            # dulu 4.950.000 (selisih 7.500)
+        self.assertEqual(D(str(d["laba_rugi"]["beban_keuangan"])), D(7500))
+        neraca = d["posisi_keuangan"]
+        self.assertTrue(neraca["seimbang"], neraca)
+        self.assertEqual(D(str(neraca["selisih"])), D(0))
+
+    def test_kode_emkm_lain_lain(self):
+        k = K.kode_emkm
+        for ket in ("BIAYA TARIK TUNAI ATM BERSAMA", "BIAYA ADM", "BIAYA TRANSFER BI FAST", "Biaya adm bank"):
+            self.assertEqual(k("lain-lain", "keluar", ket, "bank"), "beban_keuangan", ket)
+            self.assertEqual(k("lain-lain", "keluar", ket, "tunai"), "beban_keuangan", ket)
+        self.assertEqual(k("lain-lain", "keluar", "BIAYA ADMIN", "bank"), "beban_keuangan")
+        self.assertEqual(k("lain-lain", "keluar", "biaya admin shopee", "bank"), "")   # biarkan emkm (admin marketplace)
+        self.assertEqual(k("lain-lain", "keluar", "PINDAH BUKU KE REK 0987654", "bank"), "beban_lain")
+        self.assertEqual(k("lain-lain", "keluar", "fotokopi", "tunai"), "")
+        self.assertEqual(k("lain-lain", "masuk", "BUNGA", "bank"), "pendapatan_lain")
+        self.assertEqual(k("penjualan", "masuk", "qris", "bank"), "pendapatan_usaha")
+        self.assertEqual(k("pajak", "keluar", "Pajak: setor", "bank"), "")
+
+    def test_per_minggu_menandai_perlu_dicek(self):
+        r = self.ok("rekap", "--bulan", "09/2026")
+        baris = [b for b in r["teks"].splitlines() if b.startswith("07/09-13/09")]
+        self.assertEqual(len(baris), 1, r["teks"])
+        # 07/09-13/09: masuk 3.000.000 (Perlu dicek), keluar 150.000 (Perlu dicek) + 250.000 PLN; hasil usaha -250.000
+        self.assertIn("masuk Rp 3.000.000, keluar Rp 400.000, hasil usaha -Rp 250.000", baris[0])
+        self.assertIn("[termasuk 'Perlu dicek' masuk Rp 3.000.000, keluar Rp 150.000 - belum dihitung di hasil usaha]",
+                      baris[0])
+        self.golongkan_semua()
+        r = self.ok("rekap", "--bulan", "09/2026")
+        self.assertNotIn("termasuk 'Perlu dicek'", r["teks"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

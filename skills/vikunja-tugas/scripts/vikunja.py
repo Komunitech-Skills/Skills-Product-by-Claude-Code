@@ -32,7 +32,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 VIKUNJA_TERUJI = ("2.6.0", "v2.6.0")
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
@@ -513,18 +513,26 @@ def _filter_dan_cetak(args, token, judul, filter_expr, proyek_arg, catatan=None)
     return 0
 
 
+CATATAN_TUMPANG_TINDIH = (
+    "Catatan: tugas yang jatuh tempo HARI INI tapi jamnya sudah lewat muncul di sini MAUPUN di "
+    "'terlambat' sekaligus (disengaja - 'hari-ini' = rentang tanggal, 'terlambat' = sudah lewat waktu "
+    "sekarang). Jangan jumlahkan kedua daftar sebagai tugas unik tanpa mengecek id yang sama."
+)
+
+
 def cmd_hari_ini(args, token):
     now = sekarang(args.tz)
     awal = ke_iso_utc(now.date(), 0, 0, args.tz)
     akhir = ke_iso_utc(now.date() + dt.timedelta(days=1), 0, 0, args.tz)
     f = f"due_date >= {awal} && due_date < {akhir} && done = false"
-    return _filter_dan_cetak(args, token, f"TUGAS HARI INI ({format_tanggal_panjang(now.date())})", f, args.proyek)
+    return _filter_dan_cetak(args, token, f"TUGAS HARI INI ({format_tanggal_panjang(now.date())})", f,
+                              args.proyek, catatan=CATATAN_TUMPANG_TINDIH)
 
 
 def cmd_terlambat(args, token):
     now = sekarang(args.tz)
     f = f"due_date < {ke_iso_utc(now.date(), now.hour, now.minute, args.tz)} && done = false"
-    return _filter_dan_cetak(args, token, "TUGAS TERLAMBAT", f, args.proyek)
+    return _filter_dan_cetak(args, token, "TUGAS TERLAMBAT", f, args.proyek, catatan=CATATAN_TUMPANG_TINDIH)
 
 
 def cmd_minggu_ini(args, token):
@@ -684,8 +692,17 @@ def cmd_tambah(args, token):
                         body={"user_id": uid}, tulis=True)
                 ringkasan.append("-> berhasil ditugaskan")
             except Gagal as e:
+                petunjuk = ""
+                if e.kode == K_AUTH:
+                    petunjuk = (
+                        " KEMUNGKINAN BESAR PENYEBAB: token belum dicentang izin grup 'Tasks Assignees' "
+                        "(Create + Read All) - ini GRUP TERPISAH dari grup 'Tasks', letaknya di bagian "
+                        "sendiri di layar buat token dan mudah terlewat. Buka Settings > API Tokens, "
+                        "edit/buat ulang token, cek grup 'Tasks Assignees' (bukan 'Tasks'), lihat "
+                        "docs/panduan-vikunja.md bagian 6."
+                    )
                 sys.stderr.write(
-                    f"CATATAN: tugas #{data['id']} tersimpan, tapi GAGAL menugaskan ke '{ke}': {e}\n"
+                    f"CATATAN: tugas #{data['id']} tersimpan, tapi GAGAL menugaskan ke '{ke}': {e}.{petunjuk}\n"
                 )
 
     teks = [f"TERSIMPAN {len(dibuat)} TUGAS DI VIKUNJA:"]
