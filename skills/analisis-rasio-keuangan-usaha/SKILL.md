@@ -26,7 +26,7 @@ Membaca laporan keuangan usaha kecil lalu menjawab pertanyaan pemilik dengan ang
 | Info | Wajib? | Default |
 |---|---|---|
 | Penjualan, laba bersih | Ya | — (tanyakan) |
-| Kas, piutang, persediaan, aset tetap (atau total aset) | Ya untuk likuiditas/ROA | Pos rincian yang kosong = Rp 0 (ditulis di Asumsi) |
+| Kas, piutang, persediaan, aset tetap (atau total aset) | Ya untuk likuiditas/ROA | **Kosong ≠ nol.** Kas, persediaan (kecuali usaha jasa), dan aset tetap yang tidak diisi membuat total aset & modal TIDAK dihitung (status DATA BELUM CUKUP). Tulis `0` bila memang nol. Piutang & aset lancar lain yang kosong dianggap Rp 0 (ditulis di Asumsi) |
 | Utang lancar (≤ 12 bulan) & utang jangka panjang, modal | Ya untuk solvabilitas | Modal = aset − utang bila tidak diisi |
 | HPP | Untuk margin kotor & umur stok | Tidak dihitung |
 | Jenis usaha: dagang / jasa / produksi (kuliner & katering termasuk produksi) | Tidak | `umum`. Sebaiknya agent memetakan sendiri lalu mengirim `--jenis dagang\|jasa\|manufaktur` |
@@ -47,7 +47,7 @@ Tawarkan `templates/isian-rasio.csv` bila pengguna lebih suka mengisi tabel. Jik
 ## Langkah kerja
 1. **Siapkan data** apa adanya (jangan mengetik ulang atau mengubah angka):
    - Output `laporan_emkm.py --format json` → langsung dipakai (bisa beberapa file = beberapa periode).
-   - Tabel dari chat/Excel → simpan ke `data.csv` atau `.md`. Kolom 1 = nama pos, kolom berikutnya = periode (lama → baru). Pemisah `;`, `,`, tab, atau tabel `|`. Bila pemisahnya koma, angka ribuan wajib dikutip (`Kas,"1,250,000"`) atau ditulis `Kas;1.250.000`. Tanpa itu script menolak dengan GALAT, tidak menebak angkanya.
+   - Tabel dari chat/Excel → simpan ke `data.csv` atau `.md`. Kolom 1 = nama pos, kolom berikutnya = periode (lama → baru). Pemisah `;`, `,`, tab, atau tabel `|`. Bila pemisahnya koma, angka ribuan wajib dikutip (`Kas,"1,250,000"`) atau ditulis `Kas;1.250.000`. Tanpa itu script menolak dengan GALAT, tidak menebak angkanya. Ini termasuk sel yang pecah menjadi 1–3 digit, mis. `Kas,250,000`.
    - Angka yang diketik → pakai opsi `--penjualan`, `--kas`, dst.
    - File .xlsx/PDF → minta disimpan sebagai CSV atau ditempel.
 2. **Jalankan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):

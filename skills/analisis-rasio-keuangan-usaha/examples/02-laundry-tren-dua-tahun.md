@@ -1,6 +1,6 @@
 # Contoh 02 — Laundry, tren dua tahun dari tabel tempel (CSV titik koma)
 
-> Contoh dari pembuat skill (output asli `scripts/rasio.py` v1.0.1, 2026-09-26). Termasuk baris yang tidak dikenal untuk menunjukkan penanganan input kotor.
+> Contoh dari pembuat skill (output asli `scripts/rasio.py` v1.0.2, 2026-09-26). Termasuk baris yang tidak dikenal untuk menunjukkan penanganan input kotor.
 
 **Permintaan pengguna:** "Ini angka laundry saya 2024 dan 2025. Omzet naik tapi kok uang terasa seret? Bandingkan dong."
 

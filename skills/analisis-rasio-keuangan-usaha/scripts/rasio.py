@@ -20,7 +20,7 @@ import sys
 from datetime import date
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 D0 = Decimal(0)
 D100 = Decimal(100)
 HARI_SETAHUN = Decimal(365)
@@ -378,9 +378,34 @@ def baca_tabel(teks, nama_file):
         raise Galat("Tabel di %s punya baris dengan kolom lebih banyak dari judulnya (%s). Angka TIDAK ditebak. "
                     "Samakan jumlah kolom dengan baris judul (kolom 1 = pos, lalu satu kolom per periode)."
                     % (nama_file, contoh))
+    # Koma ribuan yang pecah PAS sejumlah kolom (mis. "Kas,250,000" pada tabel 2 periode) tidak terlihat dari jumlah
+    # kolom. Tanda umumnya: sel rupiah berisi hanya 1–3 digit (250, 000). Rupiah < Rp 1.000 praktis mustahil
+    # untuk pos neraca/laba rugi, jadi tabel berpemisah koma dengan sel seperti itu DITOLAK, bukan ditebak.
+    kecil = []
+    for no, r in enumerate(rows[1:], 2):
+        if not r or not r[0].strip() or cari_kode(r[0]) in KODE_META:
+            continue
+        for c in r[1:lebar]:
+            if re.fullmatch(r"\d{1,3}", c.strip()) and c.strip() != "0":
+                kecil.append((no, r))
+                break
+    catatan = []
+    if kecil:
+        contoh = "; ".join("baris %d: %s" % (no, pemisah_teks(r)) for no, r in kecil[:3])
+        if pemisah_dipakai == ",":
+            raise Galat("Tabel di %s memakai koma sebagai pemisah kolom dan ada sel berisi hanya 1–3 digit (%s). "
+                        "Ini hampir pasti angka ribuan yang terpotong koma (mis. Kas,250,000 terbaca Rp 250 dan "
+                        "Rp 0). Angka TIDAK ditebak. Perbaiki: (a) pakai titik koma: Kas;250.000, (b) beri tanda "
+                        "kutip: Kas,\"250,000\", atau (c) tanpa pemisah ribuan: Kas,250000. Bila nilainya memang "
+                        "di bawah Rp 1.000, tulis dengan 'Rp' (mis. Rp 500)." % (nama_file, contoh))
+        catatan.append("Ada nilai sangat kecil (di bawah Rp 1.000) di %s — pastikan bukan salah ketik/terpotong: %s."
+                       % (nama_file, contoh))
+    for no, r in enumerate(rows[1:], 2):
+        if r and r[0].strip() and len(r) < lebar:
+            catatan.append("Baris %d '%s' hanya berisi %d dari %d periode — periode tanpa angka dianggap TIDAK DIISI "
+                           "(bukan nol)." % (no, r[0].strip(), max(len(r) - 1, 0), lebar - 1))
     label = [j.strip() or "Periode %d" % i for i, j in enumerate(judul[1:], 1)]
     periode = [{"label": l, "_sumber": nama_file} for l in label]
-    catatan = []
     for no, r in enumerate(rows[1:], 2):
         if not r or not r[0].strip():
             continue
@@ -508,13 +533,19 @@ def normalisasi_periode(p, catatan):
 def lengkapi(p, cfg):
     """Turunkan pos yang tidak diisi (aset lancar, total aset, utang, modal, panjang periode) & cek konsistensi."""
     A, W = p["asumsi"], p["peringatan"]
+    TL = p.setdefault("tak_lengkap", {})  # pos turunan yang TIDAK dihitung karena komponen wajib kosong
 
     def ada(k):
         return p.get(k) is not None
 
-    def jumlah(kode_total, komponen, label):
+    def jumlah(kode_total, komponen, label, wajib=()):
         isi = [k for k in komponen if ada(k)]
         if not isi:
+            return
+        kosong_wajib = [POS[k][0] for k in wajib if not ada(k)]
+        if kosong_wajib and not ada(kode_total):
+            # "tidak diisi" ≠ "nol": jangan anggap Rp 0 untuk pos yang menentukan hasil
+            TL[kode_total] = kosong_wajib
             return
         tot = sum((p[k] for k in isi), D0)
         if ada(kode_total):
@@ -557,7 +588,8 @@ def lengkapi(p, cfg):
             W.append("Laba kotor diisi %s, tetapi penjualan − HPP = %s. Dipakai penjualan − HPP."
                      % (rp(p["laba_kotor"]), rp(lk)))
         p["laba_kotor"] = lk
-    jumlah("aset_lancar", ["kas", "piutang", "persediaan", "aset_lancar_lain"], "Total aset lancar")
+    wajib_al = ["kas"] + ([] if cfg.get("jenis") == "jasa" else ["persediaan"])
+    jumlah("aset_lancar", ["kas", "piutang", "persediaan", "aset_lancar_lain"], "Total aset lancar", wajib_al)
     jumlah("utang_lancar", ["utang_usaha", "utang_lancar_lain"], "Total utang lancar")
     def tular(hasil, *sumber):
         if any(k in p["mustahil"] for k in sumber):
@@ -567,9 +599,11 @@ def lengkapi(p, cfg):
         p["total_aset"] = p["aset_lancar"] + p["aset_tetap"]
         tular("total_aset", "aset_lancar", "aset_tetap")
     elif not ada("total_aset") and ada("aset_lancar"):
-        p["total_aset"] = p["aset_lancar"]
-        tular("total_aset", "aset_lancar")
-        A.append("Aset tetap tidak diisi → total aset = aset lancar saja.")
+        TL["total_aset"] = [POS["aset_tetap"][0]]
+    elif not ada("total_aset") and "aset_lancar" in TL:
+        TL["total_aset"] = TL["aset_lancar"] + ([] if ada("aset_tetap") else [POS["aset_tetap"][0]])
+    if not ada("modal") and not ada("total_aset") and "total_aset" in TL:
+        TL["modal"] = TL["total_aset"]
     if not ada("total_utang") and (ada("utang_lancar") or ada("utang_jangka_panjang")):
         p["total_utang"] = p.get("utang_lancar", D0) + p.get("utang_jangka_panjang", D0)
         tular("total_utang", "utang_lancar", "utang_jangka_panjang")
@@ -702,7 +736,14 @@ def hitung_periode(p, jenis):
         bad = [POS[k][0] for k in kode if k in mus]
         return ("data mustahil: " + ", ".join(bad)) if bad else None
 
+    TL = p.get("tak_lengkap", {})
+
     def kurang(*kode):
+        tl = [k for k in kode if g(k) is None and k in TL]
+        if tl:
+            isi = sorted({x for k in tl for x in TL[k]})
+            return ("data belum lengkap: %s tidak dihitung karena %s tidak diisi (tulis 0 bila memang nol)"
+                    % (", ".join(POS[k][0] for k in tl), ", ".join(isi)))
         miss = [POS[k][0] for k in kode if g(k) is None]
         return ("data belum ada: " + ", ".join(miss)) if miss else None
 
@@ -717,7 +758,11 @@ def hitung_periode(p, jenis):
              "(aset lancar − persediaan) ÷ utang lancar", ("aset_lancar", "utang_lancar")),
             ("rasio_kas", g("kas"), "kas & bank ÷ utang lancar", ("kas", "utang_lancar"))):
         alasan = rusak(*komp, "persediaan") or kurang(*komp)
-        if alasan:
+        if ul == 0 and "utang_lancar" not in mus:
+            R.append(rasio(kode, None, rumus, jenis, status="info",
+                           alasan="tidak ada utang jangka pendek — tidak ada tagihan dekat yang harus dibayar "
+                                  "(kondisi aman)"))
+        elif alasan:
             R.append(rasio(kode, None, rumus, jenis, alasan=alasan))
         elif ul == 0:
             R.append(rasio(kode, None, rumus, jenis, status="info",
@@ -1050,6 +1095,7 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
                     "aset/utang/modal (lihat templates/isian-rasio.csv).")
     if len(periode) > 1 and all(p.get("_tanggal_akhir") for p in periode):
         periode.sort(key=lambda p: p["_tanggal_akhir"])
+    cfg = dict(cfg, jenis=jenis)
     hasil_periode = []
     for i, p in enumerate(periode):
         if i > 0:  # saldo akhir periode sebelumnya = saldo awal periode ini (untuk rata-rata)
@@ -1074,12 +1120,17 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
             asumsi.append("Pos tidak diisi (rasio yang memakainya tidak dihitung): %s." % ", ".join(kosong))
         hasil_periode.append({"label": p["label"], "data": data, "rasio": R, "rasio_tren": R_tren,
                               "asumsi": asumsi, "peringatan": p["peringatan"], "info": p.get("info", []),
-                              "pos_kosong": kosong, "selisih_neraca": p.get("selisih_neraca")})
+                              "pos_kosong": kosong, "tak_lengkap": p.get("tak_lengkap", {}),
+                              "selisih_neraca": p.get("selisih_neraca")})
     akhir = hasil_periode[-1]
     p_akhir = periode[-1]
     akhir["kesiapan_kredit"] = kesiapan_kredit(p_akhir, akhir["rasio"])
     dinilai = sum(1 for r in akhir["rasio"] if r["status"] in ("baik", "waspada", "bahaya"))
-    data_cukup = dinilai >= MIN_DINILAI
+    tl_kunci = [k for k in ("aset_lancar", "total_aset", "modal") if k in akhir["tak_lengkap"]]
+    data_cukup = dinilai >= MIN_DINILAI and not tl_kunci
+    if tl_kunci:
+        tambahan = sorted({x for k in tl_kunci for x in akhir["tak_lengkap"][k]})
+        akhir["pos_kosong"] = list(dict.fromkeys(tambahan + akhir["pos_kosong"]))
     if not data_cukup:
         akhir["kesiapan_kredit"]["kesimpulan"] = ("DATA BELUM CUKUP untuk menilai kesiapan — lengkapi: %s"
                                                   % (", ".join(akhir["pos_kosong"]) or "neraca & laba rugi"))

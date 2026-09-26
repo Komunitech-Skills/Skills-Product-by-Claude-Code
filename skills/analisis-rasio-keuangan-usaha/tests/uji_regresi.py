@@ -318,6 +318,45 @@ cek("G15 tebak jenis kata utuh: 'jasa fotokopi'→jasa, 'jasa katering'/'toko ku
     [rasio.tebak_jenis(x) for x in ("jasa fotokopi", "jasa katering", "toko kue", "warung kopi", "warung sembako")]
     == ["jasa", "manufaktur", "manufaktur", "manufaktur", "dagang"])
 
+# ---------------------------------------------------------------- kasus H: temuan uji ulang v1.0.1 (v1.0.2)
+# H1 koma ribuan pecah PAS jumlah kolom (tabel 2 periode, tanpa baris Modal) → ditolak, bukan Rp 250 diam-diam
+B14 = ("Pos,2024,2025\nPenjualan,100000000,120000000\nLaba bersih,5000000,6000000\nKas,250,000\n"
+       "Persediaan,10000000,12000000\nAset tetap,20000000,20000000\nUtang usaha,5000000,6000000\n")
+k, out, err = jalankan(tulis("b14.csv", B14))
+cek("H1 'Kas,250,000' pada tabel 2 periode → GALAT koma ribuan (tidak terbaca Rp 250)",
+    k == 2 and "1–3 digit" in err and "TIDAK ditebak" in err and "Traceback" not in err, err)
+k, h = json_run(tulis("b14-ok.csv", B14.replace("Kas,250,000", 'Kas,"250,000","300,000"')))
+cek("H2 versi dikutip terbaca Rp 250.000 & Rp 300.000", k == 0 and h["periode"][0]["data"]["kas"] == 250000
+    and h["periode"][1]["data"]["kas"] == 300000)
+k, h = json_run(tulis("bulan.csv", "Pos,2025\nPenjualan,100000000\nLaba bersih,5000000\nBulan,12\nHari,365\n"))
+cek("H3 baris Bulan/Hari (angka kecil yang sah) tidak ikut ditolak", k == 0)
+k, h = json_run(tulis("kecil-titikkoma.csv", "Pos;2025\nPenjualan;100.000.000\nLaba bersih;5.000.000\nKas;250\n"))
+cek("H4 tabel ';' dengan nilai < Rp 1.000 → catatan 'sangat kecil' & status SEMENTARA",
+    k == 0 and any("sangat kecil" in c for c in h["catatan_input"]) and h["status_data"] == "SEMENTARA")
+k, h = json_run(tulis("kurang-kolom.csv", "Pos;2024;2025\nPenjualan;100jt;120jt\nHPP;70jt\nLaba bersih;5jt;6jt\n"))
+cek("H5 baris dengan kolom kurang diberi catatan 'TIDAK DIISI (bukan nol)'",
+    any("hanya berisi 1 dari 2 periode" in c for c in h["catatan_input"]))
+# H6–H9 kosong ≠ nol (uji ulang c2): stok, aset tetap, modal tidak disebut → tidak boleh "modal habis"
+k, h = json_run("--jenis", "dagang", "--penjualan", "240jt", "--hpp", "200jt", "--laba-bersih", "12jt", "--kas", "5jt",
+                "--utang-usaha", "8jt")
+cek("H6 pos wajib kosong → status DATA BELUM CUKUP (bukan LENGKAP)", h["status_data"] == "DATA BELUM CUKUP")
+cek("H7 modal TIDAK dihitung (bukan −Rp 3.000.000), tidak ada saran 'Modal habis'",
+    "modal" not in h["periode"][0]["data"] and not any(x["rasio"].startswith("Modal") for x in h["saran"]))
+cek("H8 rasio lancar & ROA tidak dihitung dengan alasan 'tidak diisi (tulis 0 bila memang nol)'",
+    r_(h, "rasio_lancar")["nilai"] is None and "tulis 0 bila memang nol" in r_(h, "rasio_lancar")["alasan_tidak_dihitung"]
+    and r_(h, "roa")["nilai"] is None)
+kk = h["periode"][-1]["kesiapan_kredit"]
+cek("H9 KUR: DATA BELUM CUKUP menyebut Persediaan & Aset tetap",
+    kk["kesimpulan"].startswith("DATA BELUM CUKUP") and "Persediaan" in kk["kesimpulan"] and "Aset tetap" in kk["kesimpulan"])
+k, h = json_run("--jenis", "dagang", "--penjualan", "240jt", "--hpp", "200jt", "--laba-bersih", "12jt", "--kas", "5jt",
+                "--persediaan", "0", "--aset-tetap", "0", "--utang-usaha", "8jt")
+cek("H10 bila pengguna MENULIS 0 → dihitung: modal = 5 − 8 = −Rp 3.000.000 (modal habis)",
+    h["periode"][0]["data"]["modal"] == -3000000 and any(x["rasio"].startswith("Modal") for x in h["saran"]))
+k, h = json_run("--jenis", "jasa", "--penjualan", "100jt", "--hpp", "20jt", "--laba-bersih", "15jt", "--kas", "10jt",
+                "--piutang", "5jt", "--aset-tetap", "40jt", "--utang-lancar", "8jt", "--modal", "47jt")
+cek("H11 usaha jasa tanpa baris persediaan tetap dihitung lengkap (stok bukan pos wajib jasa)",
+    dekat(r_(h, "rasio_lancar")["nilai"], F(15, 8)) and h["status_data"] == "LENGKAP")
+
 shutil.rmtree(TMP, ignore_errors=True)
 print("\n%d uji, %d gagal." % (JUMLAH[0], len(GAGAL)))
 if GAGAL:

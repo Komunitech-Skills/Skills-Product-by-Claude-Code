@@ -25,7 +25,7 @@
 4. **Rasio khas usaha kecil:** umur stok (hari), lama piutang, lama bayar pemasok, **siklus kas**, modal kerja bersih, dan ROA/ROE **disetahunkan** dari periode bulanan/kuartalan. Bila saldo awal tersedia, dipakai **rata-rata saldo**.
 5. **Tren antarperiode** (membaik/memburuk menurut arah baik tiap rasio, pertumbuhan penjualan & laba dengan penanganan basis nol/rugi). Sumber hanya menyebut tren tanpa implementasi.
 6. **Kesiapan KUR/kredit** (laba positif, modal positif, DER, rasio lancar, neraca seimbang, rasio cicilan ÷ laba per bulan dengan ambang yang sama dengan `pengajuan-kur`) serta **saran tindakan konkret** yang diurutkan (rugi & modal negatif didahulukan).
-7. **Tes regresi `tests/uji_regresi.py`** (71 uji pada v1.0.1; angka harapan dihitung manual dan dicek dengan `Fraction`), contoh nyata di `examples/`, template isian, disclaimer keuangan, dan penolakan untuk memoles angka atau memberi nasihat investasi.
+7. **Tes regresi `tests/uji_regresi.py`** (82 uji pada v1.0.2; angka harapan dihitung manual dan dicek dengan `Fraction`), contoh nyata di `examples/`, template isian, disclaimer keuangan, dan penolakan untuk memoles angka atau memberi nasihat investasi.
 
 ## Pembagian lisensi bagian ini
 - **Metodologi yang diadaptasi** (pengelompokan rasio likuiditas/profitabilitas/leverage/efisiensi, rumus dasar rasio, gagasan tafsiran berjenjang per industri) di `SKILL.md` dan `references/ambang-wajar.md`: turunan dari materi MIT `anthropics/claude-cookbooks`. Bagian ini tunduk pada ketentuan MIT (lihat `LICENSE-MIT`) dan sudah ditulis ulang total dalam bahasa Indonesia.
@@ -34,6 +34,11 @@
 Penggunaan tunduk pada `LISENSI.txt` dalam paket pembelian, ditambah ketentuan MIT pada bagian yang disebut di atas.
 
 ## Riwayat versi
+### v1.0.2 (2026-09-26): revisi dari uji ulang v1.0.1 (skor 9)
+- Koma ribuan kini dideteksi secara umum. Pada tabel berpemisah koma, sel rupiah yang hanya berisi 1–3 digit (mis. `Kas,250,000` pada tabel 2 periode) ditolak dengan GALAT; sebelumnya terbaca Rp 250 + Rp 0 diam-diam. Baris Bulan/Hari dikecualikan. Pada tabel `;`/tab, nilai < Rp 1.000 diberi catatan dan status SEMENTARA. Baris yang kolomnya kurang dari judul diberi catatan "tidak diisi (bukan nol)".
+- Kosong ≠ nol. Kas, persediaan (kecuali jasa), dan aset tetap yang tidak diisi tidak lagi dianggap Rp 0 saat menghitung aset lancar, total aset, dan modal. Pos turunan itu tidak dihitung ("tulis 0 bila memang nol"), status menjadi DATA BELUM CUKUP, dan tidak ada lagi kesimpulan "modal habis" dari data kosong. Angka 0 yang ditulis pengguna tetap dihitung.
+- Tes regresi 71 → 82 (H1–H11), semua tes lama tetap lulus.
+
 ### v1.0.1 (2026-09-26): revisi dari HASIL-UJI (skor 8)
 - Tren antarperiode kini memakai basis yang sama (saldo akhir) untuk semua periode, dan basisnya ditulis di output. Sebelumnya periode terakhir memakai rata-rata saldo sedangkan periode pertama memakai saldo akhir, sehingga ROA warung tampil membaik padahal memburuk dan lama piutang konveksi tampil 61 hari padahal 75.
 - CSV berpemisah koma dengan angka ribuan tanpa tanda kutip (`Kas,1,250,000`) kini ditolak dengan GALAT yang jelas, tidak lagi terbaca Rp 1. Kolom kosong di ujung (ekspor Excel) tetap diterima.
