@@ -18,7 +18,7 @@ harga atau status jual.
 | Paket | Untuk siapa | Isi (skill) |
 |---|---|---|
 | `toko-online/` | Seller marketplace & toko online (offline + online) | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-toko-online.txt`): `listing-marketplace`, `harga-jual-marketplace`, `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`, `naskah-live-jualan`, `buku-stok`, `agen-cs-toko`, `foto-produk-brief`. Otomasi tambahan (akses penuh VIP), lihat `toko-online/PANDUAN.md` §5: `laporan-otomatis-terjadwal` + `rekap-penjualan-csv` (laporan harian 21.00), `konten-mingguan` (paket konten mingguan), `pesan-prospek-wa` + `crm-wa` (catat prospek & follow-up harian), `analisis-excel`, `brainstorming-ide-usaha`, `kas-umkm` (buku kas harian, kalau catatan kas terpisah dari kasir, 21.00), `buku-piutang` (bon/tempo pelanggan reseller, 07.45), `laporan-iklan-mingguan` (rekap mingguan Meta/TikTok/Shopee/Google Ads, Senin 08.00) |
-| `klinik/` | Klinik pratama/gigi/kecantikan/fisioterapi, praktik dokter/bidan mandiri | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-klinik.txt`): `edukasi-pasien-klinik`, `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor` |
+| `klinik/` | Klinik pratama/gigi/kecantikan/fisioterapi, praktik dokter/bidan mandiri | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-klinik.txt`): `edukasi-pasien-klinik`, `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`. Otomasi tambahan (akses penuh VIP), lihat `klinik/PANDUAN.md` §5i: `pengingat-pasien-klinik` (buku jadwal kontrol/vaksin lokal minimal, draf WA disalin staf, ringkasan terjadwal 07.30 WIB) |
 | `konsultan/` | Konsultan, agensi, freelancer B2B | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-konsultan-freelancer.txt`): `proposal-kerjasama`, `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`, `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`. Otomasi tambahan (akses penuh VIP), lihat `konsultan/PANDUAN.md` §5: `hledger-usaha` (pembukuan berpasangan freelancer/agensi tanpa aplikasi berbayar, bulanan tgl 1), `buku-piutang` (invoice retainer/termin yang belum lunas, harian 07.45), `gaji-umkm` (opsional, bila agensi punya staf tetap, pengingat harian 07.00), `laporan-klien-konsultan` (draf laporan progres mingguan ke klien, Jumat 16.00 — draf saja, dikirim manual) |
 | `usaha-offline/` | Kafe/resto/warung makan, warung/toko kelontong, bengkel, laundry — usaha tatap muka | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Paket lengkap (lihat `usaha-offline/PANDUAN.md`): `kasir-lokal`, `buku-stok`, `kas-umkm`, `absensi-lokal`, `gaji-umkm`, `laporan-harian-usaha`, `buku-piutang`, `tagih-piutang`, `hitung-hpp`, `pph-final-umkm`, `agen-cs-toko`, `balas-chat-cs`, `caption-sosmed-umkm`, `promo-kalender`, `laporan-otomatis-terjadwal` |
 
@@ -85,13 +85,12 @@ ada di `references/openclaw*.md` skill terkait.
    `laporan-iklan-mingguan` sudah `lulus` dan langkahnya sudah ditulis penuh di
    `toko-online/PANDUAN.md` §5l dan `toko-online/jadwal-openclaw.md` §10 (jadwal Senin 08.00
    WIB, perintah disalin dari `skills/laporan-iklan-mingguan/references/openclaw-jadwal.md`).
-2. **Pengingat kontrol/vaksin pasien terjadwal (klinik)** — `edukasi-pasien-klinik` bisa
-   *menyusun teks* pengingat kontrol, tapi tidak ada skill/pola otomasi terjadwal per-pasien
-   seperti `pengingat-follow-up` untuk klinik (menyimpan tanggal per pasien di CSV lokal berisiko
-   melanggar prinsip minimal data pasien tanpa dasar hukum jelas). **Usulan**: skill baru
-   `pengingat-kontrol-klinik` yang hanya menyimpan **kode/inisial + tanggal + jenis kontrol**
-   (bukan nama lengkap/diagnosis), dengan persetujuan tertulis pasien untuk diingatkan — perlu
-   keputusan pemilik & tinjauan hukum (UU PDP, data kesehatan = data pribadi spesifik).
+2. ~~Pengingat kontrol/vaksin pasien terjadwal (klinik)~~ — **selesai** (sesi 2026-09-26): skill
+   `pengingat-pasien-klinik` (sudah `lulus`, skor 9/10) dirangkai penuh di `klinik/PANDUAN.md` §5i
+   dan `klinik/jadwal-openclaw.md` §4 (ringkasan harian 07.30 WIB ke Telegram pemilik/PIC, tanpa
+   nomor WA). Sesuai keputusan pemilik: data lokal minimal (nama panggilan, nomor WA, jenis &
+   tanggal kunjungan berikutnya, tanpa diagnosis/rekam medis), persetujuan pasien wajib dicatat,
+   dan draf pengingat WA **hanya disalin & dikirim staf** — tidak pernah otomatis.
 3. ~~Laporan status ke klien (konsultan)~~ — **selesai** (sesi 2026-09-26): skill
    `laporan-klien-konsultan` (sudah `lulus`) dirangkai penuh di `konsultan/PANDUAN.md` §5n dan
    `konsultan/jadwal-openclaw.md` §8e (draf mingguan Jumat 16.00 WIB, per klien, perintah

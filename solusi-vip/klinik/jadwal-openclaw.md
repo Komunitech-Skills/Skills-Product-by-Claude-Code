@@ -93,7 +93,7 @@ adalah skill dokumen yang dipicu **manual** per kebutuhan (buat/cek kebijakan pr
 staf baru, buat/periksa kontrak) — sengaja **tidak** dijadwalkan otomatis karena kebutuhannya
 muncul sewaktu-waktu (staf baru masuk, kebijakan perlu diperbarui), bukan rutin di jam tetap.
 
-## 5. Mengelola jadwal (✅, sama seperti paket lain)
+## 6. Mengelola jadwal (✅, sama seperti paket lain)
 ```bash
 openclaw automations list --all
 openclaw automations run <id> --wait
@@ -121,5 +121,7 @@ openclaw automations rm <id>          # hanya id, permanen
 - Membuat jadwal di atas langsung lewat chat WhatsApp/Telegram.
 - Pesan benar-benar tiba di Telegram/WhatsApp pembeli (uji internal tidak memakai token/nomor
   asli).
-- **Pengingat kontrol/vaksin per pasien terjadwal** — sengaja **tidak** disediakan di sini, lihat
-  "Celah" di `solusi-vip/README.md`.
+- **Ringkasan pengingat pasien harian (§4)** — flag inti (`--command-argv`, `--announce`,
+  `--channel telegram`) sudah ✅ terbukti untuk skill lain, tapi kombinasi utuh dengan script
+  `pengingat_pasien.py` di Gateway OpenClaw sungguhan belum dicoba — uji sekali (`run --wait`)
+  sebelum mengaktifkan jadwal sungguhan.
