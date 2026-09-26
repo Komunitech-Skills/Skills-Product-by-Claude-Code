@@ -65,7 +65,7 @@ Cek: Aset = Utang + Modal (Rp 17.200.000). SEIMBANG.
 
 Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh akun, internet, atau paket tambahan.
 
-**Status uji jujur (versi 1.0.0, draft):** diuji oleh pembuat dengan hledger **1.52.4 asli** di Linux dan tanpa hledger; 32 uji otomatis lulus, termasuk pencocokan angka dengan `hledger is/bs/cf` dan dengan skill Laporan Keuangan EMKM. **Belum** diuji penguji independen, belum diuji di Windows/Mac, dan jadwal laporan OpenClaw belum dicoba di Gateway sungguhan.
+**Status uji jujur (versi 1.0.1):** diuji pembuat dan penguji independen dengan hledger **1.52.4 asli** di Linux dan tanpa hledger; 36 uji otomatis lulus, termasuk pencocokan angka dengan `hledger is/bs/cf` dan dengan skill Laporan Keuangan EMKM. Versi 1.0.1 menambah pencatatan pembayaran pelanggan yang dipotong PPh 23, pengingat penjualan tunai yang tidak ada di mutasi bank, dan penolakan tegas pembukuan ganda. **Belum** diuji di Windows/Mac, dan jadwal laporan OpenClaw belum dicoba di Gateway sungguhan.
 
 ## FAQ
 **Apakah saya harus paham akuntansi?**

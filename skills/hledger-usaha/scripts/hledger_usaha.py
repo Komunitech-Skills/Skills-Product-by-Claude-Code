@@ -33,9 +33,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 HLEDGER_TERUJI = ("1.52.4",)
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
@@ -47,6 +47,16 @@ K_INPUT, K_FILE, K_JURNAL, K_HLEDGER, K_TULIS, K_GANDA = 2, 3, 4, 5, 6, 7
 NOL = Decimal(0)
 SEN = Decimal("0.01")
 MAKS_NOMINAL = Decimal("1000000000000")  # Rp 1 triliun per baris
+AKUN_PPH23 = "Aset:Pajak Dibayar Dimuka:PPh 23"
+# Tarif PPh 23 atas jasa: 2% dari jumlah bruto; 100% lebih tinggi (4%) bila penerima tidak ber-NPWP
+# (UU PPh Pasal 23 ayat (1) huruf c & ayat (1a); jenis jasa lain: PMK 141/PMK.03/2015; pajak.go.id, dicek 26-09-2026).
+TARIF_PPH23 = (Decimal(2), Decimal(4))
+PENGINGAT_PPH23 = (
+    "Minta BUKTI POTONG PPh 23 dari {pihak} (di Coretax: Bukti Pemotongan/Pemungutan Unifikasi). Tanpa bukti "
+    "potong, potongan {pph} tidak bisa dikreditkan di SPT Tahunan. Tarif PPh 23 jasa: 2% dari bruto (4% bila tidak "
+    "punya NPWP) - UU PPh Pasal 23, PMK 141/PMK.03/2015. Bila usaha Anda memakai PPh Final UMKM 0,5% (PP 55/2022) "
+    "dan punya Surat Keterangan, perlakuannya berbeda: tunjukkan Surat Keterangan ke klien dan tanyakan konsultan "
+    "pajak. Pembulatan belum dicocokkan dengan Coretax; angka final mengikuti bukti potong.")
 
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
          "Oktober", "November", "Desember"]
@@ -862,6 +872,29 @@ def kaki(j):
     return b
 
 
+PENGINGAT_TUNAI = ("INGAT: mutasi bank hanya berisi uang yang lewat rekening. Penjualan dan biaya TUNAI yang tidak "
+                   "disetor ke bank (uang laci, belanja pakai uang kas) tidak ada di file ini - tanyakan ke pengguna "
+                   "dan catat dengan `catat --via kas` sebelum membuat laba rugi, agar laba tidak terlalu kecil/besar.")
+
+
+def cek_tunai(j, dari, sampai):
+    """Periode yang pendapatan/bebannya hanya berasal dari impor mutasi bank, tanpa satu pun transaksi kas tunai."""
+    ada_bank = ada_tunai = False
+    for t in j.txns:
+        if not dari <= t.tanggal <= sampai:
+            continue
+        if any(a.lower().startswith("aset:kas") for a, _ in t.postings):
+            ada_tunai = True
+        if t.tags.get("sumber") == "mutasi-bank" and any(j.gol(a) in ("pendapatan", "hpp", "beban")
+                                                          for a, _ in t.postings):
+            ada_bank = True
+    if ada_bank and not ada_tunai:
+        return ["", "CATATAN: pendapatan/biaya periode ini hanya dari impor mutasi bank; belum ada satu pun transaksi "
+                    "kas tunai. Bila ada penjualan/biaya tunai yang tidak lewat bank, catat dulu - laba ini belum "
+                    "lengkap."]
+    return []
+
+
 def perlu_dicek(j, dari, sampai):
     bd = belum_dikelompokkan(j, dari, sampai)
     if not bd:
@@ -895,6 +928,7 @@ def teks_laba_rugi(j, lr):
     b += ["", "{}: {}{}".format("LABA BERSIH" if lb >= 0 else "RUGI BERSIH", rp(abs(lb)),
                                 " ({} dari pendapatan)".format(teks_persen(mb)) if mb is not None else "")]
     b += perlu_dicek(j, d1, d2)
+    b += cek_tunai(j, d1, d2)
     return b
 
 
@@ -1125,8 +1159,52 @@ def tulis_jurnal(a, path, tambahan):
 class Rencana(object):
     """Satu transaksi yang akan dicatat."""
 
-    def __init__(self, tanggal, ket, postings, tags, arti):
+    def __init__(self, tanggal, ket, postings, tags, arti, catatan=None):
         self.tanggal, self.ket, self.postings, self.tags, self.arti = tanggal, ket, postings, tags, arti
+        self.catatan = list(catatan or [])
+
+
+def potongan_pph23(e, bruto):
+    """PPh 23 yang dipotong pelanggan dari --pph23 (nominal atau persen, mis. 200rb / 2%) dan/atau --diterima
+    (uang yang benar-benar masuk). Kembalikan (pph, catatan) atau (NOL, []) bila tidak ada potongan."""
+    teks_pph = str(e.get("pph23") or "").strip()
+    teks_terima = str(e.get("diterima") or "").strip()
+    if not teks_pph and not teks_terima:
+        return NOL, []
+    catatan = []
+    pph = None
+    if teks_pph:
+        m = re.fullmatch(r"(\d+(?:[.,]\d+)?)\s*%", teks_pph)
+        if m:
+            tarif = Decimal(m.group(1).replace(",", "."))
+            if tarif not in TARIF_PPH23:
+                raise Gagal("--pph23 {}: tarif PPh 23 jasa adalah 2% (atau 4% bila tanpa NPWP). Isi nominal dari "
+                            "bukti potong bila berbeda.".format(teks_pph))
+            pph = (bruto * tarif / 100).quantize(Decimal(1), rounding=ROUND_DOWN)
+            catatan.append("PPh 23 dihitung {}% x {} = {} (dibulatkan ke bawah ke rupiah); cocokkan dengan bukti "
+                           "potong.".format(teks_persen_polos(tarif), rp(bruto), rp(pph)))
+        else:
+            pph = parse_nominal(teks_pph, label="--pph23")
+    if teks_terima:
+        terima = parse_nominal(teks_terima, label="--diterima")
+        if pph is None:
+            pph = bruto - terima
+        elif bruto - pph != terima:
+            raise Gagal("--diterima {} tidak sama dengan nominal {} dikurangi PPh 23 {} (= {}). Periksa angkanya."
+                        .format(rp(terima), rp(bruto), rp(pph), rp(bruto - pph)))
+    if pph <= 0 or pph >= bruto:
+        raise Gagal("Potongan PPh 23 {} tidak masuk akal untuk tagihan {} (harus lebih dari 0 dan lebih kecil dari "
+                    "tagihan).".format(rp(pph), rp(bruto)))
+    wajar = [(bruto * t / 100).quantize(Decimal(1), rounding=ROUND_DOWN) for t in TARIF_PPH23]
+    if pph not in wajar and not any(abs(pph - w) <= 1 for w in wajar):
+        catatan.append("PERHATIAN: potongan {} bukan 2% ({}) atau 4% ({}) dari {}. Mungkin ada potongan lain (mis. "
+                       "biaya transfer) atau PPh 23 dihitung dari DPP tanpa PPN - samakan dengan bukti potong sebelum "
+                       "menyimpan.".format(rp(pph), rp(wajar[0]), rp(wajar[1]), rp(bruto)))
+    return pph, catatan
+
+
+def teks_persen_polos(d):
+    return format(d.normalize(), "f").replace(".", ",")
 
 
 def akun_bank(j, a_bank):
@@ -1166,6 +1244,10 @@ def rencana_dari(j, e, tahun=None):
     via = e.get("via")
     bank = e.get("bank")
     akun_arg = bersih_akun(e["akun"]) if e.get("akun") else None
+    catatan = []
+    if (e.get("pph23") or e.get("diterima")) and jenis not in ("jual", "penjualan", "jasa", "terima-piutang",
+                                                                "pelunasan-piutang"):
+        raise Gagal("--pph23/--diterima hanya untuk jenis jual, jasa, atau terima-piutang (pelanggan memotong PPh 23).")
     tags = {}
     if pihak:
         tags["pihak"] = bersih_segmen(pihak, "--pihak")
@@ -1182,11 +1264,20 @@ def rencana_dari(j, e, tahun=None):
         n = nom()
         ak_p = akun_arg or ("Pendapatan:Jasa" if jenis == "jasa" else "Pendapatan:Penjualan")
         lawan = akun_via(j, via, bank, "piutang", pihak)
-        ps = [(lawan, n), (ak_p, -n)]
+        pph, catatan = potongan_pph23(e, n)
+        if pph and "Piutang" in lawan:
+            raise Gagal("PPh 23 dicatat saat pelanggan MEMBAYAR. Catat tagihannya dulu tanpa --pph23 (--via tempo), "
+                        "lalu saat dibayar: --jenis terima-piutang --nominal <tagihan> --pph23 <potongan> "
+                        "(atau --diterima <uang masuk>).")
+        ps = [(lawan, n - pph), (AKUN_PPH23, pph), (ak_p, -n)] if pph else [(lawan, n), (ak_p, -n)]
         arti = "{} {}{}{}.".format("Pendapatan jasa" if jenis == "jasa" else "Penjualan", rp(n),
                                    " kepada " + tags["pihak"] if pihak else "",
                                          ", belum dibayar (piutang bertambah)" if "Piutang" in lawan else
-                                         ", uang masuk ke " + lawan)
+                                         ", uang masuk ke " + lawan + (" {} setelah dipotong PPh 23 {} (pajak dibayar "
+                                                                       "dimuka, bukan beban)".format(rp(n - pph), rp(pph))
+                                                                       if pph else ""))
+        if pph:
+            catatan.append(PENGINGAT_PPH23.format(pihak=tags.get("pihak") or "pelanggan", pph=rp(pph)))
         ket = ket or (("Pendapatan jasa" if jenis == "jasa" else "Penjualan") +
                       (" - " + tags["pihak"] if pihak else ""))
     elif jenis in ("beli", "pembelian", "belanja-stok", "kulakan"):
@@ -1210,8 +1301,17 @@ def rencana_dari(j, e, tahun=None):
     elif jenis in ("terima-piutang", "pelunasan-piutang"):
         n = nom()
         dasar = akun_arg or "Aset:Piutang Usaha" + (":" + tags["pihak"] if pihak else "")
-        ps = [(akun_via(j, via, bank, None, None), n), (dasar, -n)]
-        arti = "Pelanggan membayar piutang {} (piutang berkurang).".format(rp(n))
+        pph, catatan = potongan_pph23(e, n)
+        masuk_ke = akun_via(j, via, bank, None, None)
+        if pph:
+            ps = [(masuk_ke, n - pph), (AKUN_PPH23, pph), (dasar, -n)]
+            arti = ("Pelanggan melunasi piutang {} (piutang berkurang penuh): uang masuk {} ke {}, dipotong PPh 23 {} "
+                    "yang dicatat sebagai pajak dibayar dimuka (bukan beban, pendapatan tetap bruto).".format(
+                        rp(n), rp(n - pph), masuk_ke, rp(pph)))
+            catatan.append(PENGINGAT_PPH23.format(pihak=tags.get("pihak") or "pelanggan", pph=rp(pph)))
+        else:
+            ps = [(masuk_ke, n), (dasar, -n)]
+            arti = "Pelanggan membayar piutang {} (piutang berkurang).".format(rp(n))
         ket = ket or "Terima pelunasan" + (" - " + tags["pihak"] if pihak else "")
     elif jenis in ("bayar-utang", "pelunasan-utang"):
         n = nom()
@@ -1298,7 +1398,7 @@ def rencana_dari(j, e, tahun=None):
         raise Gagal("--jenis '{}' tidak dikenal. Pilih: jual, jasa, beli, beban, terima-piutang, bayar-utang, "
                     "modal, prive, pinjaman, angsuran, transfer, setor-tunai, tarik-tunai, aset, saldo-awal, "
                     "bebas.".format(e.get("jenis")))
-    return Rencana(tgl, ket, ps, tags, arti)
+    return Rencana(tgl, ket, ps, tags, arti, catatan)
 
 
 def periksa_akun(j, rencana, akun_baru_ok):
@@ -1314,7 +1414,7 @@ def periksa_akun(j, rencana, akun_baru_ok):
                 raise Gagal("Akun '{}' tidak berada di bawah akun utama yang ada ({}).".format(
                     ak, ", ".join(sorted({x.split(':')[0] for x in dikenal}))))
             induk_otomatis = any(ak.startswith(p + ":") for p in ("Aset:Piutang Usaha", "Utang:Usaha",
-                                                                    "Aset:Bank"))
+                                                                    "Aset:Bank")) or ak == AKUN_PPH23
             if not (akun_baru_ok or induk_otomatis):
                 mirip = difflib.get_close_matches(ak, sorted(dikenal), n=3, cutoff=0.6)
                 raise Gagal("Akun '{}' belum ada di jurnal.{} Bila memang akun baru, ulangi dengan --akun-baru."
@@ -1348,7 +1448,7 @@ def cmd_catat(a):
         entri = data
     else:
         entri = [{k: getattr(a, k) for k in ("jenis", "tanggal", "nominal", "via", "bank", "pihak", "ket", "akun",
-                                              "dari", "ke", "posting", "pokok", "bunga")}]
+                                              "dari", "ke", "posting", "pokok", "bunga", "pph23", "diterima")}]
     rencana = []
     for i, e in enumerate(entri, start=1):
         try:
@@ -1366,6 +1466,8 @@ def cmd_catat(a):
         teks_baru.append(tx)
         b.append(tx)
         b.append("Artinya: " + r.arti)
+        for c in r.catatan:
+            b.append("Catatan: " + c)
         if r.tanggal > hari_ini() + dt.timedelta(days=1):
             b.append("PERINGATAN: tanggal {} ada di masa depan.".format(r.tanggal.isoformat()))
         b.append("")
@@ -1864,6 +1966,7 @@ def cmd_impor_bank(a):
             else:
                 b.append("SELISIH {}: periksa transaksi bank sebelum periode ini yang belum/dobel dicatat.".format(
                     rp(sebelum - s_awal)))
+    b += ["", PENGINGAT_TUNAI]
     if not baru:
         b.append("Tidak ada transaksi baru untuk disimpan.")
         print("\n".join(b))
@@ -2031,6 +2134,11 @@ def cmd_ekspor_emkm(a):
     if kosong:
         b.append("{} baris tanpa Kategori (akun 'Belum Dikelompokkan'/tak dikenal): skill laporan-keuangan-emkm akan "
                  "menanyakannya.".format(kosong))
+    pajak_dm = total(lambda x: x == "Aset:Pajak Dibayar Dimuka" or x.startswith("Aset:Pajak Dibayar Dimuka:"), d2)
+    if pajak_dm:
+        b.append("PERHATIAN: saldo Pajak Dibayar Dimuka (mis. PPh 23 dipotong pelanggan) {} tidak ikut file buku kas "
+                 "(bukan uang kas). Di laporan SAK EMKM, pelunasan piutang terbaca sebesar uang yang diterima saja; "
+                 "sebutkan potongan ini ke pengguna/konsultan sebagai aset lain (kredit pajak).".format(rp(pajak_dm)))
     b += ["", "Saldo dari jurnal untuk dipakai laporan-keuangan-emkm:"]
     b += ["- {}: {}".format(k, rp(v)) for k, v in nilai.items()]
     b += ["", "Perintah (satu baris; jalankan dengan skill laporan-keuangan-emkm):", " ".join(x.strip() for x in perintah)]
@@ -2198,6 +2306,8 @@ def buat_parser():
     s.add_argument("--posting", action="append", help="Akun=nominal (jenis bebas/saldo-awal)")
     s.add_argument("--pokok")
     s.add_argument("--bunga")
+    s.add_argument("--pph23", help="PPh 23 yang dipotong pelanggan: nominal dari bukti potong (200rb) atau 2%%/4%%")
+    s.add_argument("--diterima", help="uang yang benar-benar diterima setelah dipotong PPh 23 (mis. 9,8jt)")
     s.add_argument("--batch", help="file JSON berisi daftar transaksi")
     s.add_argument("--akun-baru", action="store_true", help="izinkan membuat akun baru")
     s.add_argument("--tetap-catat", action="store_true", help="tetap simpan walau mirip catatan lama")

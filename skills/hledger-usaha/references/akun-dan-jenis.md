@@ -8,6 +8,7 @@
 | `Aset:Piutang Usaha[:<pihak>]` | A | Pelanggan belum bayar (sub-akun per pelanggan dibuat otomatis) |
 | `Aset:Persediaan` | A | Nilai stok barang/bahan (disesuaikan dengan `stok-akhir`) |
 | `Aset:Peralatan` | A | Mesin, etalase, laptop, motor usaha (aset tetap) |
+| `Aset:Pajak Dibayar Dimuka[:PPh 23]` | A | Pajak yang dipotong pihak lain dan bisa dikreditkan, mis. PPh 23 yang dipotong pelanggan (sub-akun `PPh 23` dibuat otomatis oleh `--pph23`/`--diterima`) |
 | `Utang:Usaha[:<pihak>]` | L | Utang ke pemasok (sub-akun per pemasok dibuat otomatis) |
 | `Utang:Bank` | L | Pinjaman bank/KUR/koperasi |
 | `Utang:Pajak` | L | Pajak yang sudah dipungut tapi belum disetor (mis. PB1) |
@@ -33,6 +34,8 @@ Akun baru boleh dibuat di bawah akun utama di atas (mis. `Beban:Kebersihan`) den
 | "Ambil susu 1,5 juta, bayar bulan depan" | `--jenis beli --nominal 1,5jt --via tempo --pihak "CV Susu"` |
 | "Bayar listrik 350rb tunai" | `--jenis beban --akun "Beban:Listrik Air Internet" --nominal 350rb --via kas` |
 | "Kantor Maju sudah lunas 750rb via BCA" | `--jenis terima-piutang --nominal 750rb --via bank --pihak "Kantor Maju"` |
+| "PT Nusantara bayar tagihan 10 juta, masuk 9,8 juta karena dipotong PPh 23" | `--jenis terima-piutang --nominal 10jt --diterima 9,8jt --via bank --pihak "PT Nusantara"` (atau `--pph23 200rb` / `--pph23 2%`) → Bank +9,8 jt, `Aset:Pajak Dibayar Dimuka:PPh 23` +200 rb, Piutang −10 jt. Ingatkan minta bukti potong |
+| "Jasa desain 5 juta langsung dibayar, dipotong PPh 23 2%" | `--jenis jasa --nominal 5jt --via bank --pph23 2%` (pendapatan tetap 5 jt bruto) |
 | "Lunasi utang CV Susu 1,5 juta" | `--jenis bayar-utang --nominal 1,5jt --via bank --pihak "CV Susu"` |
 | "Saya tambah modal 5 juta ke rekening" | `--jenis modal --nominal 5jt --via bank` |
 | "Ambil 500rb buat belanja rumah" | `--jenis prive --nominal 500rb --via kas` |

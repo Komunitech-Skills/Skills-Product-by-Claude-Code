@@ -504,5 +504,106 @@ class UjiHledgerAsli(Dasar):
         self.assertIn("hledger menolak", e)
 
 
+# ------------------------------------------------------------------ v1.0.1: temuan penguji Akun B
+
+class UjiV101(Dasar):
+    def buku_jasa(self):
+        self.run_("init", "--jurnal", self.j, "--nama", "Rangga Konsultan", "--bank", "BCA")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "saldo-awal", "--tanggal", "2026-08-31",
+                            "--posting", "Aset:Kas=500.000", "--posting", "Aset:Bank:BCA=12.000.000", "--ya")
+        self.assertEqual(k, 0, e)
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "jasa", "--nominal", "10jt", "--via", "tempo",
+                            "--pihak", "PT Nusantara", "--tanggal", "2026-09-02", "--ya")
+        self.assertEqual(k, 0, e)
+
+    def test_terima_piutang_dipotong_pph23(self):
+        self.buku_jasa()
+        arg = ["catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "10jt", "--via", "bank",
+               "--pihak", "PT Nusantara", "--diterima", "9,8jt", "--tanggal", "2026-09-12"]
+        sebelum = isi(self.j)
+        k, o, e = self.run_(*arg)
+        self.assertEqual(k, 0, e)
+        self.assertEqual(isi(self.j), sebelum)                       # pratinjau tidak menulis, akun otomatis
+        self.assertIn("Aset:Pajak Dibayar Dimuka:PPh 23", o)
+        self.assertIn("BUKTI POTONG PPh 23", o)
+        self.assertIn("PMK 141/PMK.03/2015", o)
+        self.assertNotIn("PERHATIAN", o)                             # 200rb = 2% dari 10jt
+        k, o, e = self.run_(*(arg + ["--ya"]))
+        self.assertEqual(k, 0, e)
+        j = hu.parse_jurnal(isi(self.j).decode())
+        t = j.txns[-1]
+        self.assertEqual(sorted(t.postings), sorted([("Aset:Bank:BCA", Decimal(9800000)),
+                                                     ("Aset:Pajak Dibayar Dimuka:PPh 23", Decimal(200000)),
+                                                     ("Aset:Piutang Usaha:PT Nusantara", Decimal(-10000000))]))
+        k, o, e = self.run_("saldo", "--jurnal", self.j, "Aset:Piutang Usaha", "--tanggal", "2026-09-30")
+        self.assertIn("Rp 0", o)                                     # piutang lunas penuh
+        k, o, e = self.run_("laba-rugi", "--jurnal", self.j, "--bulan", "2026-09", "--json")
+        self.assertEqual(Decimal(str(json.loads(o)["laba_rugi"]["total_pendapatan"])), Decimal(10000000))  # bruto
+        k, o, e = self.run_("neraca", "--jurnal", self.j, "--tanggal", "2026-09-30")
+        self.assertIn("SEIMBANG", o)
+        self.assertIn("Rp 200.000", o)
+        k, o, e = self.run_("ekspor-emkm", "--jurnal", self.j, "--bulan", "2026-09")
+        self.assertEqual(k, 0, e)
+        self.assertIn("Pajak Dibayar Dimuka", o)                     # potongan PPh 23 diingatkan di ekspor EMKM
+
+    def test_pph23_persen_dan_validasi(self):
+        self.buku_jasa()
+        base = ["catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "10.000.001", "--via", "bank",
+                "--pihak", "PT Nusantara", "--tanggal", "2026-09-12"]
+        k, o, e = self.run_(*(base + ["--pph23", "2%"]))
+        self.assertEqual(k, 0, e)
+        self.assertIn("Rp 200.000", o)                               # 200.000,02 dibulatkan ke bawah
+        self.assertIn("Rp 9.800.001", o)
+        self.assertEqual(self.run_(*(base + ["--pph23", "15%"]))[0], 2)          # bukan tarif PPh 23 jasa
+        k, o, e = self.run_(*(base + ["--pph23", "200rb", "--diterima", "9jt"]))
+        self.assertEqual(k, 2)                                       # tidak konsisten
+        k, o, e = self.run_(*(base + ["--pph23", "250rb"]))
+        self.assertEqual(k, 0, e)
+        self.assertIn("PERHATIAN", o)                                # bukan 2%/4%
+        self.assertEqual(self.run_(*(base + ["--pph23", "20jt"]))[0], 2)
+        # --pph23 hanya untuk jual/jasa/terima-piutang; tempo ditolak (dicatat saat dibayar)
+        self.assertEqual(self.run_("catat", "--jurnal", self.j, "--jenis", "beli", "--nominal", "1jt", "--via",
+                                   "bank", "--pph23", "2%")[0], 2)
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "jasa", "--nominal", "5jt", "--via", "tempo",
+                            "--pph23", "2%")
+        self.assertEqual(k, 2)
+        self.assertIn("terima-piutang", e)
+        # jasa dibayar langsung dengan potongan
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "jasa", "--nominal", "5jt", "--via", "bank",
+                            "--pph23", "4%", "--pihak", "CV Tanpa NPWP", "--tanggal", "2026-09-15")
+        self.assertEqual(k, 0, e)
+        self.assertIn("Rp 4.800.000", o)
+
+    def test_pengingat_tunai_saat_impor_bank_saja(self):
+        self.run_("init", "--jurnal", self.j, "--nama", "Kopi Sari", "--bank", "BCA")
+        m = os.path.join(DATA, "mutasi-bca-agustus.csv")
+        k, o, e = self.run_("impor-bank", "--jurnal", self.j, m, "--tahun", "2026")
+        self.assertIn("Penjualan dan biaya TUNAI yang tidak disetor ke bank", o)
+        self.run_("catat", "--jurnal", self.j, "--jenis", "saldo-awal", "--tanggal", "2026-07-31", "--posting",
+                  "Aset:Bank:BCA=8.600.000", "--ya")
+        k, o, e = self.run_("impor-bank", "--jurnal", self.j, m, "--tahun", "2026", "--ya")
+        self.assertEqual(k, 0, e)
+        k, o, e = self.run_("laba-rugi", "--jurnal", self.j, "--bulan", "2026-08")
+        self.assertEqual(k, 0, e)
+        # file uji punya tarik tunai (kas masuk) -> dianggap ada transaksi tunai; buat periode tanpa kas
+        j = hu.parse_jurnal(isi(self.j).decode())
+        hanya_bank = [t for t in j.txns if not any(a.startswith("Aset:Kas") for a, _ in t.postings)]
+        j.txns = hanya_bank
+        self.assertTrue(any("belum lengkap" in x for x in hu.cek_tunai(j, hu.parse_tanggal("2026-08-01"),
+                                                                        hu.parse_tanggal("2026-08-31"))))
+        # setelah ada transaksi tunai, catatan hilang
+        self.run_("catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "300rb", "--via", "kas",
+                  "--tanggal", "2026-08-20", "--ya")
+        k, o, e = self.run_("laba-rugi", "--jurnal", self.j, "--bulan", "2026-08")
+        self.assertNotIn("belum ada satu pun transaksi kas tunai", o)
+
+    def test_skill_md_menolak_pembukuan_ganda(self):
+        with open(os.path.join(SKILL, "SKILL.md"), encoding="utf-8") as f:
+            teks = f.read()
+        self.assertIn("pembukuan ganda", teks.lower())
+        self.assertIn("UU KUP Pasal 39", teks)
+        self.assertIn("--pph23", teks)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -8,7 +8,7 @@ description: Pembukuan usaha berpasangan (double-entry) di file teks hledger mil
 ## Tujuan
 Pemilik usaha punya **pembukuan berpasangan yang rapi tanpa aplikasi berbayar**: semua catatan disimpan di satu file teks (`~/Pembukuan/usaha.journal`) di komputernya sendiri, dibaca oleh **hledger** (program gratis, open-source). Pengguna cukup bercerita ("tadi jual 750rb ke Kantor Maju, bayarnya minggu depan"); agent menjalankan `scripts/hledger_usaha.py` untuk menulis entri yang **seimbang dan terperiksa**, lalu membuat laporan bulanan dalam Rupiah. Python standar saja.
 
-**Versi 1.0.0 (draft).** Diuji pembuat dengan **hledger 1.52.4 asli** (binary Linux resmi, checksum cocok) dan tanpa hledger (pembaca bawaan); belum diuji penguji independen, belum di Windows/Mac.
+**Versi 1.0.1.** Diuji pembuat dan penguji independen dengan **hledger 1.52.4 asli** (binary Linux resmi, checksum cocok) dan tanpa hledger (pembaca bawaan); belum di Windows/Mac sungguhan.
 
 ## Kapan digunakan
 - "Catat: jual kopi 1,25 juta tunai", "beli susu 1,5jt ke CV Susu Segar, bayar bulan depan", "bayar listrik 350rb" → `catat`
@@ -28,6 +28,7 @@ Pemilik usaha punya **pembukuan berpasangan yang rapi tanpa aplikasi berbayar**:
 | Mencocokkan transfer pelanggan dengan invoice | `rekonsiliasi-bank` |
 | Proyeksi kas ke depan | `arus-kas-13minggu` |
 | Hitung PPN/PPh, e-Faktur, SPT | `hitung-ppn`, `pph-final-umkm`; e-Faktur tetap di Coretax DJP |
+| **Dua versi pembukuan** (satu untuk pajak, satu "asli"), omzet dikecilkan, catatan dihapus/tanggal dimundurkan agar pajak kecil | **Tolak dengan sopan** — lihat "Keamanan & batasan" |
 Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (piutang/utang per pihak, neraca yang selalu seimbang, riwayat bertahun-tahun) tanpa server dan tanpa biaya bulanan.
 
 ## Persiapan (sekali)
@@ -54,7 +55,13 @@ Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (p
    ```
    Beberapa transaksi sekaligus: tulis file JSON (`[{"jenis":"jual","nominal":"1,25jt","via":"kas"}, ...]`, kunci sama dengan opsi) lalu `catat --batch file.json`. Satu entri salah → tidak ada yang disimpan.
 4. Tunjukkan entri + baris **"Artinya:"** apa adanya, tanya "Simpan? (ya/tidak)". Setelah "ya", ulangi perintah **yang sama** + `--ya`. Satu "ya" = satu perintah.
-5. Script menolak akun salah ketik (memberi saran), akun di luar Aset/Utang/Modal/Pendapatan/HPP/Beban, transaksi tidak seimbang, dan transaksi kembar (kode 7). Akun baru hanya dengan `--akun-baru` setelah pengguna setuju; piutang/utang per pihak dan rekening `Aset:Bank:<nama>` dibuat otomatis.
+5. **Pelanggan membayar dipotong PPh 23** (jasa/konsultan, mis. tagihan Rp 10.000.000, uang masuk Rp 9.800.000): catat pelunasan sebesar **tagihan penuh** + potongannya, jangan mencatat pendapatan neto:
+   ```bash
+   python3 <folder-skill>/scripts/hledger_usaha.py catat --jenis terima-piutang --nominal 10jt --diterima 9,8jt \
+     --via bank --pihak "PT Nusantara" --tanggal 2026-09-12      # atau --pph23 200rb / --pph23 2%
+   ```
+   Hasil: bank +9,8 jt, `Aset:Pajak Dibayar Dimuka:PPh 23` +200 rb (kredit pajak, bukan beban), piutang −10 jt. Jasa yang langsung dibayar: `--jenis jasa --nominal 10jt --via bank --pph23 2%`. Tagihan tempo dicatat tanpa potongan; potongan dicatat saat dibayar. Sampaikan catatan script: **minta bukti potong PPh 23** ke pelanggan; tarif jasa 2% dari bruto (4% bila tanpa NPWP; UU PPh Pasal 23, PMK 141/PMK.03/2015); pengguna PPh Final UMKM (PP 55/2022) yang punya Surat Keterangan → tanyakan konsultan. Angka potongan mengikuti bukti potong.
+6. Script menolak akun salah ketik (memberi saran), akun di luar Aset/Utang/Modal/Pendapatan/HPP/Beban, transaksi tidak seimbang, dan transaksi kembar (kode 7). Akun baru hanya dengan `--akun-baru` setelah pengguna setuju; piutang/utang per pihak dan rekening `Aset:Bank:<nama>` dibuat otomatis.
 
 ### B. Impor mutasi bank (CSV)
 1. Minta file CSV dari internet banking (Excel → simpan sebagai CSV; PDF tidak bisa).
@@ -63,6 +70,7 @@ Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (p
 4. Jalankan ulang dengan `--tetapkan "BARIS=Akun"` untuk jawaban pengguna, lalu `--ya` setelah disetujui. Transaksi yang sudah pernah diimpor dilewati otomatis (tag `ref:`).
 5. Tawarkan menyimpan kata kunci untuk bulan depan: `tambah-aturan --kata "ROASTERY GAYO" --akun HPP:Pembelian --arah keluar` (pratinjau, lalu `--ya`).
 6. "Saldo awal rekening belum dicatat" → catat saldo awal dengan perintah yang disarankan script. "SELISIH" → jangan dipaksa; minta pengguna mengecek mutasi bulan sebelumnya.
+7. **Mutasi bank bukan seluruh usaha.** Penjualan/biaya **tunai** yang tidak disetor ke bank tidak ada di mutasi. Setelah impor, tanyakan: "Ada penjualan atau belanja tunai bulan ini yang tidak lewat rekening?" lalu catat dengan `catat --via kas` sebelum membuat laba rugi. Laporan memberi CATATAN bila pendapatan/biaya periode itu hanya dari mutasi bank tanpa satu pun transaksi kas.
 
 ### C. Laporan bulanan
 ```bash
@@ -111,8 +119,10 @@ Contoh lengkap per skenario ada di `examples/`.
 - **Stok akhir**: selisih = nilai hitung fisik − saldo `Aset:Persediaan`; dicatat lawan `HPP:Penyesuaian Persediaan`.
 - Pembelian barang dagang/bahan dicatat ke `HPP:Pembelian` (metode periodik); nilai stok disesuaikan lewat `stok-akhir`.
 - Skill ini tidak menghitung pajak. Bila pengguna mencatat pembayaran pajak, pakai `Beban:Pajak Penghasilan` (PPh) atau `Beban:Pajak Lain`; perhitungan pajak → skill pajak terkait.
+- PPh 23 yang dipotong pelanggan = `Aset:Pajak Dibayar Dimuka:PPh 23` (dibuat otomatis): `--pph23` nominal dari bukti potong, atau `2%`/`4%` × nominal dibulatkan ke bawah ke rupiah, atau `--diterima` (potongan = nominal − diterima). Potongan bukan 2%/4% → PERHATIAN. Pembulatan belum dicocokkan dengan Coretax.
 
 ## Keamanan & batasan (wajib dipatuhi agent)
+- **Satu pembukuan yang benar — tolak pembukuan ganda.** Jawaban baku: "Maaf, saya tidak bisa membantu membuat pembukuan ganda (dua file jurnal/dua versi laporan: satu untuk pajak, satu 'asli'), mengecilkan omzet, memundurkan tanggal, atau menghapus/menyembunyikan transaksi supaya pajak lebih kecil. Pembukuan wajib mencerminkan keadaan usaha yang sebenarnya (UU KUP Pasal 28 ayat (3)), dan memperlihatkan pembukuan yang tidak menggambarkan keadaan sebenarnya atau menyampaikan SPT yang isinya tidak benar adalah tindak pidana perpajakan (UU KUP Pasal 39 ayat (1) huruf d & f, UU 28/2007). Yang bisa saya bantu: merapikan satu pembukuan yang benar, mencatat potongan PPh 23 sebagai kredit pajak, menghitung pajak yang memang terutang lewat `pph-final-umkm` (termasuk omzet sampai Rp 500 juta setahun yang tidak dikenai pajak untuk orang pribadi), dan menyiapkan laporan untuk konsultan pajak." Berlaku juga untuk permintaan `--jurnal` kedua sebagai "versi pajak". Jangan menyarankan cara lain yang tujuannya sama.
 - **Default hanya baca.** Menulis (catat, impor, stok-akhir, tambah-aturan) selalu pratinjau dulu; `--ya` hanya setelah pengguna menjawab ya di percakapan ini.
 - Sebelum menulis, script menyalin versi lama ke `usaha.journal.sebelum-ubah`, lalu memeriksa ulang file (pembaca bawaan + `hledger check`). Gagal → file **dikembalikan** (kode 6). Jurnal yang sudah rusak **tidak** ditulisi (kode 4).
 - Jangan mengedit file jurnal langsung (sed/editor) untuk "membetulkan" angka. Koreksi = transaksi pembalik lewat `catat --jenis bebas` setelah persetujuan, atau pengguna mengedit sendiri.
@@ -145,3 +155,5 @@ Uji regresi (`tests/`) hanya ada di repo pengembang Komunitech.
 - [ ] Menulis hanya setelah pratinjau + "ya" eksplisit
 - [ ] File jurnal yang dipakai sudah benar (baris "File:")
 - [ ] Laporan diberi keterangan: laporan manajemen, bukan audit/pajak
+- [ ] Setelah impor bank: sudah ditanyakan penjualan/biaya tunai; potongan PPh 23 dicatat bruto + diingatkan bukti potong
+- [ ] Permintaan pembukuan ganda/omzet dikecilkan ditolak

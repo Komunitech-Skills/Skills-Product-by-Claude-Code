@@ -17,6 +17,7 @@ account Aset:Bank                        ; type: C
 account Aset:Piutang Usaha
 account Aset:Persediaan
 account Aset:Peralatan
+account Aset:Pajak Dibayar Dimuka
 
 account Utang                            ; type: L
 account Utang:Usaha
