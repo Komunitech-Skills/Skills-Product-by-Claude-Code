@@ -36,7 +36,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 VERSI_DIUJI = "Frappe Books v0.36.0 (skema juga dicocokkan dengan cabang main 0.37.0, 20 Sep 2026)"
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
 NOL = Decimal(0)
@@ -425,7 +425,7 @@ def muat_invoice(con, jenis, tz):
             "no": r["name"], "pihak": r["party"] or "?", "tgl": tanggal_lokal(r["date"], tz),
             "dpp": uang(r["netTotal"]) * kurs, "total": uang(r["baseGrandTotal"]) if r["baseGrandTotal"] not in (None, "") else uang(r["grandTotal"]) * kurs,
             "sisa": uang(r["outstandingAmount"]), "final": bool(r["submitted"]), "batal": bool(r["cancelled"]),
-            "retur": bool(r["returnAgainst"]), "kurs": kurs,
+            "retur": bool(r["returnAgainst"]), "retur_atas": r["returnAgainst"] or "", "kurs": kurs,
         })
     return hasil
 
@@ -602,13 +602,18 @@ def umur(args, jenis, judul, kata):
     info = info_usaha(con)
     kini = hari_ini(args, tz)
     data = data_umur(con, jenis, tz, kini, args.tempo)
+    # Frappe Books: saldo pihak = jumlah outstandingAmount semua invoice final (Party._getTotalOutstandingAmount),
+    # termasuk invoice retur yang outstanding-nya NEGATIF (kredit/nota retur yang belum dikembalikan/dipotong).
+    kredit = sorted((i for i in muat_invoice(con, jenis, tz) if i["final"] and not i["batal"] and i["sisa"] < 0),
+                    key=lambda i: (i["pihak"], i["no"]))
     out = [f"{judul} - {info['nama']} (per {tgl_id(kini)})",
            f"Jatuh tempo dihitung = tanggal invoice + {args.tempo} hari (Frappe Books tidak menyimpan tanggal jatuh tempo)."]
-    if not data:
+    if not data and not kredit:
         out.append(f"Tidak ada invoice {kata} yang belum lunas. Semua beres.")
         print("\n".join(out))
         return
     total = sum((i["sisa"] for i in data), NOL)
+    total_kredit = sum((i["sisa"] for i in kredit), NOL)
     out.append(f"Belum lunas: {len(data)} invoice, total {rp(total)}")
     for kel in ("Telat >90 hari", "Telat 61-90 hari", "Telat 31-60 hari", "Telat 1-30 hari", "Belum jatuh tempo"):
         isi = [i for i in data if kelompok_umur(i["telat"]) == kel]
@@ -618,9 +623,21 @@ def umur(args, jenis, judul, kata):
         for i in isi[: args.batas]:
             nama = samarkan(i["pihak"]) if args.samarkan else i["pihak"]
             ket = f"telat {i['telat']} hari" if i["telat"] > 0 else f"jatuh tempo {tgl_id(i['jatuh_tempo'])}"
+            if i["tgl"] > kini:
+                ket += " | tanggal invoice setelah hari ini"
             out.append(f"  - {i['no']} | {nama} | tgl {tgl_id(i['tgl'])} | sisa {rp(i['sisa'])} | {ket}")
         if len(isi) > args.batas:
             out.append(f"  ... dan {len(isi) - args.batas} lainnya")
+    if kredit:
+        out.append(f"Kredit retur belum dikembalikan/dipotong: {len(kredit)} nota retur, total {rp(total_kredit)}")
+        for i in kredit[: args.batas]:
+            nama = samarkan(i["pihak"]) if args.samarkan else i["pihak"]
+            atas = f" atas {i['retur_atas']}" if i["retur_atas"] else ""
+            out.append(f"  - {i['no']}{atas} | {nama} | tgl {tgl_id(i['tgl'])} | kredit {rp(i['sisa'])}")
+        out.append(f"{'PIUTANG' if jenis == 'SalesInvoice' else 'UTANG'} BERSIH (setelah kredit retur, sama dengan saldo pihak "
+                   f"di Frappe Books): {rp(total + total_kredit)}")
+        out.append("Catatan: Frappe Books tidak otomatis memotong invoice asli saat retur; kredit ini dipakai saat pembayaran "
+                   "berikutnya atau dikembalikan. Tagihan per invoice di atas belum dikurangi kredit.")
     catatan = cek_mata_uang(info)
     if catatan:
         out.append(catatan)

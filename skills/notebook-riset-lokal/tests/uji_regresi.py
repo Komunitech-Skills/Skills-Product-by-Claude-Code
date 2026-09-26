@@ -92,6 +92,28 @@ class Handler(BaseHTTPRequestHandler):
                 bidang[nm.group(1).decode()] = nilai.decode("utf-8", errors="replace")
         return bidang
 
+    def _handle_create_source(self):
+        """Meniru POST /api/sources ASLI (Open Notebook 1.14.0): endpoint ini HANYA
+        menerima multipart/form-data (dependency FastAPI parse_source_form_data
+        memakai Form(...), bukan body JSON) — dibuktikan terhadap server sungguhan
+        di sesi k8b 2026-09-26. Permintaan JSON dibalas 422 persis seperti aslinya,
+        supaya bug #1 (skill sempat mengirim JSON) tertangkap otomatis oleh uji ini
+        ke depannya, bukan lolos diam-diam seperti versi mock sebelumnya."""
+        raw = self._baca_mentah()
+        content_type = self.headers.get("Content-Type", "")
+        if not content_type.startswith("multipart/form-data"):
+            Handler.permintaan_sources_terakhir = {"content_type": content_type, "bidang": None}
+            self._send(422, {"detail": [{"type": "missing", "loc": ["body", "type"], "msg": "Field required", "input": None}]})
+            return
+        bidang = self._urai_multipart(raw, content_type)
+        Handler.permintaan_sources_terakhir = {"content_type": content_type, "bidang": bidang}
+        tipe = bidang.get("type")
+        if not tipe:
+            self._send(422, {"detail": [{"type": "missing", "loc": ["body", "type"], "msg": "Field required", "input": None}]})
+            return
+        judul = bidang.get("title") or ("Processing..." if tipe == "link" else "Sumber baru")
+        self._send(200, {"id": "source:baru1", "title": judul, "status": "new"})
+
     def do_GET(self):
         if Handler.mode == "timeout":
             time.sleep(3)
@@ -237,10 +259,42 @@ def main():
     cek("10 tambah-sumber pratinjau tidak menulis", out and out.get("pratinjau") is True, out)
 
     # 11: tambah-sumber link dengan --ya
+    Handler.permintaan_sources_terakhir = None
     rc, out, o, e = jalankan_cli(["tambah-sumber", "--notebook", "notebook:abc123", "--tipe", "link", "--sumber-url", "https://contoh.go.id/pp55", "--ya"], url)
     cek("11 tambah-sumber --ya berhasil", rc == 0 and out.get("ditambahkan") is True, (rc, out, e))
 
-    # 12: tambah-sumber teks tanpa --teks -> error input
+    # 11b (regresi Bug #1 KRITIS): PEMBUKTIAN klien benar-benar mengirim multipart/form-data
+    # ke /api/sources, bukan JSON seperti versi v1.0.0 yang gagal 100% terhadap server asli
+    # (lihat HASIL-UJI.md). Mock sengaja membalas 422 untuk JSON persis seperti server asli,
+    # jadi bila kode ini pernah mundur ke body=JSON, tes 11 di atas SUDAH akan gagal (rc!=0);
+    # pengecekan di bawah ini memverifikasi ALASANNYA secara eksplisit (format & isi field).
+    req = Handler.permintaan_sources_terakhir
+    cek("11b tambah-sumber mengirim Content-Type multipart/form-data", req and req["content_type"].startswith("multipart/form-data"), req)
+    cek("11b tambah-sumber field 'type' terkirim = link", req and req["bidang"] and req["bidang"].get("type") == "link", req)
+    cek("11b tambah-sumber field 'url' terkirim sesuai --sumber-url", req and req["bidang"] and req["bidang"].get("url") == "https://contoh.go.id/pp55", req)
+    cek("11b tambah-sumber field 'notebooks' berisi JSON list id notebook", req and req["bidang"] and req["bidang"].get("notebooks") == json.dumps(["notebook:abc123"]), req)
+    cek("11b tambah-sumber field 'async_processing' = 'true' (string, bukan bool JSON)", req and req["bidang"] and req["bidang"].get("async_processing") == "true", req)
+
+    # 11c: tambah-sumber tipe teks + judul dengan --ya, cek field 'content'/'title' terkirim benar
+    Handler.permintaan_sources_terakhir = None
+    rc, out, o, e = jalankan_cli(["tambah-sumber", "--notebook", "notebook:abc123", "--tipe", "teks", "--teks", "isi SOP...", "--judul", "SOP Uji", "--ya"], url)
+    cek("11c tambah-sumber teks --ya berhasil", rc == 0 and out.get("ditambahkan") is True, (rc, out, e))
+    req = Handler.permintaan_sources_terakhir
+    cek("11c tambah-sumber teks field 'content'/'title' terkirim benar", req and req["bidang"] and req["bidang"].get("content") == "isi SOP..." and req["bidang"].get("title") == "SOP Uji", req)
+
+    # 11d (regresi langsung Bug #1): mock membalas 422 untuk /api/sources ber-Content-Type JSON,
+    # persis seperti perilaku server Open Notebook 1.14.0 ASLI yang membongkar bug ini.
+    import urllib.request as _ur
+    import urllib.error as _ue
+    try:
+        req_json = _ur.Request(url + "/api/sources", data=b'{"type":"text","content":"x"}',
+                                 headers={"Content-Type": "application/json"}, method="POST")
+        _ur.urlopen(req_json, timeout=5)
+        cek("11d mock menolak JSON ke /api/sources (422)", False, "tidak melempar HTTPError")
+    except _ue.HTTPError as he:
+        cek("11d mock menolak JSON ke /api/sources (422)", he.code == 422, he.code)
+
+    # 12: tambah-sumber teks tanpa --teks -> error input (ditolak sebelum menghubungi server)
     rc, out, o, e = jalankan_cli(["tambah-sumber", "--notebook", "notebook:abc123", "--tipe", "teks", "--ya"], url)
     cek("12 tambah-sumber teks tanpa isi -> galat", rc == 2 and "--teks" in pesan(out, e), pesan(out, e))
 
@@ -248,10 +302,12 @@ def main():
     rc, out, o, e = jalankan_cli(["tambah-sumber", "--notebook", "notebook:abc123", "--tipe", "file", "--ya"], url)
     cek("13 tipe file ditolak dengan pesan jelas", rc != 0 and "tampilan web" in pesan(out, e), pesan(out, e))
 
-    # 14-15: cari
+    # 14-15: cari (skema NYATA id/parent_id/relevance/title, sesuai regresi Bug #2)
     rc, out, o, e = jalankan_cli(["cari", "--kueri", "PPh final"], url)
     cek("14 cari rc=0", rc == 0, e)
-    cek("15 cari isi cuplikan", out and out["jumlah"] == 1 and "PPh Final" in out["hasil"][0]["cuplikan"], out)
+    cek("15 cari field sesuai skema asli (judul/id_dokumen/relevansi)", out and out["jumlah"] == 1 and out["hasil"][0]["judul"] == "PP 55/2022" and out["hasil"][0]["id_dokumen"] == "source:s1" and out["hasil"][0]["relevansi"] == 0.734, out)
+    cek("15b cari menyertakan catatan keterbatasan cuplikan", out and "tidak menyediakan cuplikan" in out.get("catatan", ""), out)
+    cek("15c cari tidak lagi memakai field 'tipe'/'cuplikan' yang tak ada di API asli", out and "tipe" not in out["hasil"][0] and "cuplikan" not in out["hasil"][0], out)
 
     # 16-17: tanya (pakai model default)
     rc, out, o, e = jalankan_cli(["tanya", "--notebook", "notebook:abc123", "--pertanyaan", "Berapa tarif PPh final UMKM?"], url)
