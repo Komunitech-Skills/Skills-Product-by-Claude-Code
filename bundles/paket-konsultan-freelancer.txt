@@ -7,3 +7,4 @@ riset-calon-pelanggan
 asisten-tulis-riset
 presentasi-instan
 laporan-klien-konsultan
+vikunja-tugas

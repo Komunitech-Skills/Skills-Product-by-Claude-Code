@@ -8,7 +8,7 @@ description: Mengoperasikan Vikunja (manajer tugas/proyek open-source, self-host
 ## Tujuan
 Pemilik/admin usaha kecil yang memakai **Vikunja di server/komputer sendiri** (pengganti Trello/ClickUp/Asana berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/vikunja.py` untuk membaca atau menyiapkan tugas lewat **REST API resmi Vikunja** (`/api/v1`, header `Authorization: Bearer tk_...`). Data tetap di komputer/server pengguna. Python standar saja, tanpa instalasi paket.
 
-**Versi 1.0.0 (draft).** Diuji pembuat dengan **Vikunja 2.6.0 ASLI** (binary resmi linux-amd64, checksum SHA-256 dicocokkan, dijalankan sungguhan terikat ke 127.0.0.1) untuk `cek`, `daftar-proyek`, `hari-ini`, `terlambat`, `tambah`, `selesai`, `ringkasan`, `cari`, penugasan (`--ke`), dan `tambah --batch`; plus uji regresi otomatis dengan server tiruan (62 skenario, termasuk 401/404/500/timeout). **Belum** diuji penguji independen, belum di Windows/Mac sungguhan, belum uji Docker.
+**Versi 1.0.0 (draft).** Diuji pembuat dengan **Vikunja 2.6.0 ASLI** (binary resmi linux-amd64, checksum SHA-256 dicocokkan, dijalankan sungguhan terikat ke 127.0.0.1) untuk `cek`, `daftar-proyek`, `hari-ini`, `terlambat`, `tambah`, `selesai`, `ringkasan`, `cari`, penugasan (`--ke`), dan `tambah --batch`; plus uji regresi otomatis dengan server tiruan (62 skenario, termasuk 401/404/500/timeout) dan lulus uji muat OpenClaw 2026.9.6 (`scripts/uji_openclaw.sh`). **Belum** diuji penguji independen, belum di Windows/Mac sungguhan, belum uji Docker.
 
 ## Kapan digunakan
 - "Cek Vikunja saya nyambung?" → `cek`
