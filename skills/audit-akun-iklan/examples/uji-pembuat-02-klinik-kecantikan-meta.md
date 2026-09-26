@@ -9,12 +9,12 @@
 ## Bukti yang diberikan (diringkas agent ke file jawaban)
 Screenshot Ads Manager (tujuan, pengiriman, hasil, frekuensi), Pengaturan Bisnis > Orang, Kualitas
 Akun, dan jawaban admin. Iklan hanya ke WhatsApp (tanpa website) sehingga M01 dan M17
-`tidak_berlaku`. Ringkasan: [`02-jawaban-klinik-kecantikan-meta.csv`](02-jawaban-klinik-kecantikan-meta.csv).
+`tidak_berlaku`. Ringkasan: [`uji-pembuat-02-jawaban-klinik-kecantikan-meta.csv`](uji-pembuat-02-jawaban-klinik-kecantikan-meta.csv).
 Tidak ada data pasien yang diminta atau disimpan.
 
 ## Perintah yang dijalankan
 ```bash
-python3 scripts/skor_audit.py hitung examples/02-jawaban-klinik-kecantikan-meta.csv --usaha "Klinik kecantikan (Bandung)" --mulai 2026-09-28
+python3 scripts/skor_audit.py hitung examples/uji-pembuat-02-jawaban-klinik-kecantikan-meta.csv --usaha "Klinik kecantikan (Bandung)" --mulai 2026-09-28
 ```
 
 ## Output script (disalin apa adanya)

@@ -88,8 +88,8 @@ Pengguna: "Tolong audit iklan Shopee toko gamis saya, anggaran 50rb/hari tapi RO
 → Tanya sekali (screenshot daftar iklan + target ROAS, laporan kata kunci 14 hari, harga/modal/biaya
 Shopee) → isi 14 cek S01–S14 → `roas-impas` (impas 2,92) → `hitung` → Skor 41,3/100 Kritis (bukti
 97,2%), prioritas #1 target ROAS 2 di bawah impas 2,92, #2 anggaran habis jam 14.00, #3 kata kunci
-"gamis murah" Rp212rb tanpa pesanan. Lengkap: `examples/01-toko-fashion-shopee.md`.
-Contoh lain: `examples/02-klinik-kecantikan-meta.md`, `examples/03-kursus-online-google.md`.
+"gamis murah" Rp212rb tanpa pesanan. Lengkap: `examples/uji-pembuat-01-toko-fashion-shopee.md`.
+Contoh lain: `examples/uji-pembuat-02-klinik-kecantikan-meta.md`, `examples/uji-pembuat-03-kursus-online-google.md`.
 
 ## Batasan & penanganan error
 - **Tanpa akses akun**: penilaian hanya sebaik bukti yang diberikan. Sebutkan cek yang `tidak_tahu`.

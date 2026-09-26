@@ -97,7 +97,7 @@ class UjiSkor(unittest.TestCase):
         return p
 
     def test_05_contoh_shopee_cocok_hitung_manual(self):
-        p = SINI / "examples" / "01-jawaban-toko-fashion-shopee.csv"
+        p = SINI / "examples" / "uji-pembuat-01-jawaban-toko-fashion-shopee.csv"
         jw, _, _ = m.baca_jawaban(p)
         h = m.hitung(jw)
         skor, cak = skor_manual("shopee", {k: v[0] for k, v in jw.items()})
@@ -106,8 +106,8 @@ class UjiSkor(unittest.TestCase):
         self.assertEqual(str(m.satu_desimal(h["platform"]["shopee"]["skor"])), "41.3")
 
     def test_06_contoh_meta_dan_google_cocok_manual(self):
-        for nama, plat in (("02-jawaban-klinik-kecantikan-meta.csv", "meta"),
-                           ("03-jawaban-kursus-online-google.csv", "google")):
+        for nama, plat in (("uji-pembuat-02-jawaban-klinik-kecantikan-meta.csv", "meta"),
+                           ("uji-pembuat-03-jawaban-kursus-online-google.csv", "google")):
             jw, _, _ = m.baca_jawaban(SINI / "examples" / nama)
             h = m.hitung(jw)
             skor, cak = skor_manual(plat, {k: v[0] for k, v in jw.items()})

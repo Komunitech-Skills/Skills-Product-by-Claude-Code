@@ -9,13 +9,13 @@
 ## Bukti yang diberikan (diringkas agent ke file jawaban)
 Agent bertanya sekali (screenshot daftar iklan + target ROAS, laporan kata kunci 14 hari, halaman
 produk, harga/modal/biaya Shopee). Jawaban pemilik diringkas di
-[`01-jawaban-toko-fashion-shopee.csv`](01-jawaban-toko-fashion-shopee.csv). Gamis andalan: harga
+[`uji-pembuat-01-jawaban-toko-fashion-shopee.csv`](uji-pembuat-01-jawaban-toko-fashion-shopee.csv). Gamis andalan: harga
 Rp149.000, modal Rp78.000, biaya Shopee 12% (dari rincian penghasilan pesanan), kemas Rp2.000.
 
 ## Perintah yang dijalankan
 ```bash
 python3 scripts/skor_audit.py roas-impas --harga 149rb --modal 78rb --biaya-persen 12 --biaya-lain 2000
-python3 scripts/skor_audit.py hitung examples/01-jawaban-toko-fashion-shopee.csv --usaha "Toko gamis (Shopee)" --mulai 2026-09-28
+python3 scripts/skor_audit.py hitung examples/uji-pembuat-01-jawaban-toko-fashion-shopee.csv --usaha "Toko gamis (Shopee)" --mulai 2026-09-28
 ```
 
 ## Output script (disalin apa adanya)

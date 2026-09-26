@@ -9,11 +9,11 @@
 ## Bukti yang diberikan (diringkas agent ke file jawaban)
 Screenshot Tujuan > Konversi, setelan kampanye (jaringan, lokasi), daftar kata kunci, laporan
 istilah penelusuran 30 hari, dan tab Aset. Kursus melayani seluruh Indonesia sehingga G08
-`tidak_berlaku`. Ringkasan: [`03-jawaban-kursus-online-google.csv`](03-jawaban-kursus-online-google.csv).
+`tidak_berlaku`. Ringkasan: [`uji-pembuat-03-jawaban-kursus-online-google.csv`](uji-pembuat-03-jawaban-kursus-online-google.csv).
 
 ## Perintah yang dijalankan
 ```bash
-python3 scripts/skor_audit.py hitung examples/03-jawaban-kursus-online-google.csv --usaha "Kursus Excel online" --mulai 2026-09-28
+python3 scripts/skor_audit.py hitung examples/uji-pembuat-03-jawaban-kursus-online-google.csv --usaha "Kursus Excel online" --mulai 2026-09-28
 ```
 
 ## Output script (disalin apa adanya)

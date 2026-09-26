@@ -473,17 +473,29 @@ def cmd_cek_cepat(args):
         with urllib.request.urlopen(req, timeout=args.timeout) as resp:
             kode = resp.status
         elapsed_ms = round((time.monotonic() - t0) * 1000, 1)
-        error_teks = None
     except urllib.error.HTTPError as e:
         kode = e.code
         elapsed_ms = round((time.monotonic() - t0) * 1000, 1)
-        error_teks = None
     except socket.timeout:
         raise Gagal(f"waktu tunggu habis ({args.timeout} detik) menghubungi {url_teks}. "
                      f"Situs mungkin sangat lambat atau tidak merespons.", kode=4)
     except urllib.error.URLError as e:
-        raise Gagal(f"tidak bisa menghubungi {url_teks}: {getattr(e, 'reason', e)}. "
-                     f"Cek ejaan alamat/domain, atau situsnya sedang benar-benar mati.", kode=4)
+        alasan = getattr(e, "reason", e)
+        if isinstance(alasan, ssl.SSLCertVerificationError) or "CERTIFICATE_VERIFY_FAILED" in str(alasan):
+            # Sertifikat tidak terpercaya: tetap coba ambil status HTTP (tanpa verifikasi) supaya
+            # laporan tetap berguna; bagian SSL di bawah akan menandai TIDAK VALID apa adanya.
+            try:
+                with urllib.request.urlopen(req, timeout=args.timeout,
+                                             context=ssl._create_unverified_context()) as resp:
+                    kode = resp.status
+            except urllib.error.HTTPError as e2:
+                kode = e2.code
+            except (urllib.error.URLError, socket.timeout) as e2:
+                raise Gagal(f"tidak bisa menghubungi {url_teks} sama sekali ({e2}).", kode=4)
+            elapsed_ms = round((time.monotonic() - t0) * 1000, 1)
+        else:
+            raise Gagal(f"tidak bisa menghubungi {url_teks}: {alasan}. "
+                         f"Cek ejaan alamat/domain, atau situsnya sedang benar-benar mati.", kode=4)
 
     kategori = "OK" if 200 <= kode < 300 else ("REDIRECT" if 300 <= kode < 400 else
                ("GALAT KLIEN (4xx)" if 400 <= kode < 500 else "GALAT SERVER (5xx)"))
