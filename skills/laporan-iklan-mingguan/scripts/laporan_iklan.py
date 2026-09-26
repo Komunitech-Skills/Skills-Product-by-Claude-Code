@@ -16,6 +16,14 @@ kembar dibedakan dengan induknya, dan catatan sel kosong memakai biaya BARIS itu
 Baris total dikenali dari kata kepala + kata cakupan ("Total of 2 campaigns", "Totals",
 "Total Akun"), dan ada pengaman silang angka: baris yang biayanya ≈ jumlah baris lain diberi ⚠️
 atau dibuang bila tayangan & kliknya juga cocok (N2).
+
+v1.0.3 (M1, examples/07-uji-ulang-v1.0.2.md): nama kampanye ASLI berawalan "Total"/"Jumlah" +
+angka + kata lain ("Total 12.12 Flash Sale", "Jumlah 2 Pcs Bundling") tidak lagi salah dibuang
+sebagai baris total (dulu dianggap "kuat" hanya karena diawali angka, walau kata sesudahnya
+bukan kata cakupan seperti "kampanye"/"iklan") - sekarang dihitung sebagai kampanye biasa kecuali
+pengaman silang N2 bilang lain. SETIAP baris yang tetap dibuang sebagai baris total (label
+"kuat" ATAU "sedang", bukan cuma yang angkanya tidak cocok) sekarang SELALU dapat ⚠️ menyebut
+nama & biayanya, supaya pengguna bisa memverifikasi sendiri.
 """
 import argparse
 import csv
@@ -644,18 +652,28 @@ TOLERANSI_TOTAL = Decimal("0.02")   # ±2%: batas "hampir sama" untuk cek angka 
 
 
 def jenis_label_total(teks):
-    """'kuat' | 'sedang' | 'lemah' | None untuk satu isi sel teks."""
+    """'kuat' | 'sedang' | 'lemah' | None untuk satu isi sel teks.
+
+    v1.0.3 (M1, examples/07-uji-ulang-v1.0.2.md): sebelumnya, sisa teks yang DIAWALI ANGKA
+    langsung dianggap "kuat" tanpa mengecek kata sesudahnya - jadi "Total 12.12 Flash Sale" atau
+    "Jumlah 2 Pcs Bundling" (nama kampanye ASLI yang kebetulan diawali angka setelah kata
+    "Total"/"Jumlah") ikut dibuang sebagai baris total, padahal "Flash Sale"/"Pcs Bundling" bukan
+    kata cakupan ringkasan. Sekarang, sisa yang diawali angka/tanda baca HANYA "kuat" kalau
+    SEMUA token sesudahnya kata cakupan/angka juga (mis. "Total 4 kampanye", "Total (5 iklan)") -
+    kalau ada kata lain yang bukan cakupan, turun jadi "lemah" (tetap dihitung sebagai kampanye,
+    kecuali pengaman silang angka di analisis_file bilang lain)."""
     s = " ".join(str(teks or "").split()).lower()
     m = POLA_KEPALA_TOTAL.match(s)
     if not m:
         return None
     sisa = m.group(1).strip()
-    if not sisa or sisa[0] in TANDA_BACA_TOTAL or sisa[0].isdigit():
+    if not sisa:
         return "kuat"
     token = re.findall(r"[^\W\d_]+|\d+", sisa)
-    if token and all(t.isdigit() or t in KATA_CAKUPAN or POLA_KATA_KEPALA.match(t) for t in token):
-        return "sedang"
-    return "lemah"
+    semua_cakupan = bool(token) and all(t.isdigit() or t in KATA_CAKUPAN or POLA_KATA_KEPALA.match(t) for t in token)
+    if sisa[0] in TANDA_BACA_TOTAL or sisa[0].isdigit():
+        return "kuat" if (semua_cakupan or not token) else "lemah"
+    return "sedang" if semua_cakupan else "lemah"
 
 
 def teks_total(r, header):
@@ -774,7 +792,11 @@ def analisis_file(path, override, args):
     kode_sel = set()
     kode_kolom = set()
     baris_tanpa_angka = 0
-    total_sedang = []                        # (label, biaya) label total jenis "sedang"
+    # (label, biaya_atau_None) untuk SETIAP baris yang dibuang sebagai total berlabel "kuat"/
+    # "sedang" - dipakai supaya SETIAP baris yang dibuang selalu dapat ⚠️ menyebut nama & biayanya
+    # (temuan M1), bukan cuma label "sedang" yang angkanya tidak cocok seperti versi sebelumnya.
+    baris_total_info = []
+    nama_kosong_berlabel = []                # (no_baris, label, biaya_mentah) untuk M3
 
     for r in data:
         sel = [s for s in r["__sel__"] if (s or "").strip()]
@@ -783,12 +805,12 @@ def analisis_file(path, override, args):
         label_total = teks_total(r, header)
         if label_total and label_total[1] in ("kuat", "sedang"):
             baris_total.append(label_total[0])
-            if label_total[1] == "sedang":
-                st_b, v_b, _ = baca_sel(r.get(kolom["biaya"]))
-                total_sedang.append((label_total[0], v_b if st_b == "ok" else None))
+            st_b, v_b, _ = baca_sel(r.get(kolom["biaya"]))
+            baris_total_info.append((label_total[0], v_b if st_b == "ok" else None))
             continue
 
         nama = " ".join((r.get(kolom["nama"]) or "").split()) if kolom.get("nama") else ""
+        nama_asli_kosong = not nama
         if not nama:
             nama = f"(tanpa nama, baris {r['__no_baris__']})"
 
@@ -811,6 +833,15 @@ def analisis_file(path, override, args):
             biaya = NOL
         if biaya < 0:
             biaya_negatif.append((nama, biaya))
+
+        # M3 (examples/07-uji-ulang-v1.0.2.md, Rendah): kolom nama kosong TAPI ada kolom lain di
+        # baris ini yang berbunyi mirip label total/ringkasan (mis. "Subtotal Kamp A" di kolom
+        # induk) - baris ini TETAP dihitung sebagai kampanye seperti biasa (aman, tidak ada
+        # deteksi otomatis nested-subtotal yang bisa dipercaya untuk kasus ini), tapi dicatat
+        # untuk diberi ⚠️ eksplisit (setelah kurs diketahui, di bawah) supaya pengguna bisa cek
+        # manual apakah ini sungguhan subtotal ganda.
+        if nama_asli_kosong and label_total:
+            nama_kosong_berlabel.append((r["__no_baris__"], label_total[0], biaya))
 
         nilai = {"nama": nama, "biaya": biaya,
                  "induk": tuple(" ".join((r.get(h) or "").split()) for h in kolom_induk),
@@ -909,10 +940,20 @@ def analisis_file(path, override, args):
     elif not kode_semua:
         catatan_mata_uang.append("Tidak ada label mata uang di file; diasumsikan IDR (Rupiah).")
 
+    # M3: emit peringatan baris tanpa nama yang punya label mirip total di kolom lain (dikumpulkan
+    # di loop atas, ditunda ke sini karena `kurs` baru diketahui sekarang).
+    for no_baris, label, biaya_mentah in nama_kosong_berlabel:
+        peringatan.append(
+            f"Baris {no_baris} tidak ada nama di kolom {level_rincian}, tapi kolom lain berbunyi "
+            f"'{label}' (mirip label total/ringkasan). Baris ini TETAP dihitung sebagai kampanye "
+            f"biasa (biaya {fmt_rp(biaya_mentah * kurs) if 'kurs' in dir() else fmt_rp(biaya_mentah)}) "
+            "- kalau ini sebenarnya baris subtotal, hapus baris itu dari file lalu jalankan ulang, "
+            "atau beri nama yang jelas.")
+
     # --- N2: pengaman silang angka baris total ---
     # Hanya baris berbiaya TERBESAR yang mungkin = jumlah semua baris lain (biaya >= 0).
-    def _dekat(a, b):
-        return abs(a - b) <= b * TOLERANSI_TOTAL
+    def _dekat(a, b, batas=TOLERANSI_TOTAL):
+        return abs(a - b) <= b * batas
 
     if len(rekaman) >= 3:
         jml = {k: sum((x[k] for x in rekaman), NOL) for k in ("biaya", "tayangan", "klik")}
@@ -922,7 +963,7 @@ def analisis_file(path, override, args):
         if x["biaya"] > 0 and lain_positif >= 2 and lain["biaya"] > 0:
             b_x, b_lain = fmt_rp(x["biaya"] * kurs), fmt_rp(lain["biaya"] * kurs)
             if all(x[k] == lain[k] for k in jml):
-                alasan_total = "angkanya persis sama dengan jumlah semua baris lain"
+                alasan_total = f"angkanya ({b_x}) persis sama dengan jumlah semua baris lain"
             elif all(_dekat(x[k], lain[k]) for k in jml):
                 alasan_total = (f"punya biaya ({b_x}), tayangan, dan klik yang hampir sama (selisih ≤ 2%) "
                                 f"dengan jumlah semua baris lain (biaya {b_lain})")
@@ -944,15 +985,27 @@ def analisis_file(path, override, args):
                     f"{fmt_rp((x['biaya'] + lain['biaya']) * kurs)}. Cek file; hapus baris itu lalu jalankan "
                     "ulang bila memang baris total.")
 
-    # Label total jenis "sedang" yang angkanya tidak cocok dengan jumlah baris lain -> ⚠️
-    if rekaman and total_sedang:
-        jml_biaya = sum((x["biaya"] for x in rekaman), NOL)
-        for lbl, b in total_sedang:
-            if b is not None and jml_biaya > 0 and not _dekat(b, jml_biaya):
+    # v1.0.3 (M1): SETIAP baris berlabel total "kuat"/"sedang" yang dibuang selalu dapat ⚠️
+    # menyebut nama & biayanya, supaya pengguna bisa cek sendiri - sebelumnya hanya label
+    # "sedang" yang angkanya tidak cocok yang diberi tahu; label "kuat" dibuang tanpa ⚠️ sama
+    # sekali walau biayanya jauh dari jumlah baris lain.
+    if baris_total_info:
+        jml_biaya = sum((x["biaya"] for x in rekaman), NOL) if rekaman else NOL
+        for lbl, b in baris_total_info:
+            if b is None:
+                peringatan.append(
+                    f"Baris '{lbl}' dianggap baris total/ringkasan dan tidak dihitung sebagai kampanye "
+                    "(biayanya tidak terbaca sebagai angka, jadi tidak bisa dicek silang). Cek dulu file "
+                    "asli kalau itu ternyata kampanye sungguhan.")
+            elif jml_biaya > 0 and not _dekat(b, jml_biaya):
                 peringatan.append(
                     f"Baris '{lbl}' dianggap baris total/ringkasan dan tidak dihitung, tetapi biayanya "
                     f"({fmt_rp(b * kurs)}) tidak sama dengan jumlah baris lain ({fmt_rp(jml_biaya * kurs)}). "
                     "Bila itu kampanye sungguhan, ganti namanya di file lalu jalankan ulang.")
+            else:
+                peringatan.append(
+                    f"Baris '{lbl}' dianggap baris total/ringkasan (biaya {fmt_rp(b * kurs)}) dan tidak "
+                    "dihitung sebagai kampanye. Cek dulu file asli kalau itu ternyata kampanye sungguhan.")
 
     tanggal_terlihat = [t for x in rekaman for t in x["tgl_ok"]]
     tanggal_tak_terbaca = [t for x in rekaman for t in x["tgl_rusak"]]

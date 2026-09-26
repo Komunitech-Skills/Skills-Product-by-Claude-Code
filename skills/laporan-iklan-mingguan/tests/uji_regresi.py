@@ -813,5 +813,92 @@ class UjiN2BarisTotal(_Dasar):
         self.assertEqual(d["peringatan"], [])
 
 
+class UjiM1LabelTotalAngkaBukanCakupan(unittest.TestCase):
+    """v1.0.3 (M1, examples/07-uji-ulang-v1.0.2.md P5/P7/P7b): nama kampanye ASLI berawalan
+    'Total'/'Jumlah' + angka + kata BUKAN cakupan (mis. '12.12 Flash Sale', '2 Pcs Bundling')
+    tidak boleh dibuang diam-diam sebagai baris total. Setiap baris yang TETAP dibuang sebagai
+    total (label kuat/sedang) sekarang HARUS selalu memberi ⚠️ menyebut nama & biayanya."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def tulis(self, nama, isi):
+        p = self.dir / nama
+        p.write_text(isi, encoding="utf-8")
+        return p
+
+    def json_ok(self, *args):
+        kode, keluar, galat = jalankan(*args, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, galat)
+        return json.loads(keluar)
+
+    def test_jenis_label_total_angka_diikuti_kata_bukan_cakupan_jadi_lemah(self):
+        # Root cause M1: dulu sisa yang DIAWALI ANGKA langsung "kuat" tanpa mengecek kata
+        # sesudahnya. "Total 4 kampanye" (angka + kata cakupan) tetap "kuat"; "Total 12.12 Flash
+        # Sale" / "Jumlah 2 Pcs Bundling" (angka + kata BUKAN cakupan) sekarang harus "lemah".
+        f = modul.jenis_label_total
+        self.assertEqual(f("Total 4 kampanye"), "kuat")
+        self.assertEqual(f("Total (5 iklan)"), "kuat")
+        self.assertEqual(f("Total 12.12 Flash Sale"), "lemah")
+        self.assertEqual(f("Jumlah 2 Pcs Bundling"), "lemah")
+        self.assertEqual(f("Total Look Hijab"), "lemah")   # regresi: tidak boleh berubah
+
+    def test_p5_dua_kampanye_asli_berawalan_total_jumlah_angka_tidak_dibuang(self):
+        # Persis skenario P5 di examples/07-uji-ulang-v1.0.2.md (tanpa baris total sungguhan).
+        p = self.tulis("p5.csv", KOLOM_SEDERHANA +
+                       "Total 12.12 Flash Sale,600000,40000,600,20\n"
+                       "Jumlah 2 Pcs Bundling,250000,15000,250,7\n"
+                       "Promo Reguler,150000,9000,150,4\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertEqual(d["total"]["biaya"], 1_000_000)   # BUKAN Rp 150.000 seperti bug v1.0.2
+        nama = {k["nama"] for k in d["per_kampanye"]}
+        self.assertIn("Total 12.12 Flash Sale", nama)
+        self.assertIn("Jumlah 2 Pcs Bundling", nama)
+        # Verifikasi independen pakai Decimal, bukan cuma percaya angka skill.
+        self.assertEqual(Decimal(600000) + Decimal(250000) + Decimal(150000), Decimal(d["total"]["biaya"]))
+
+    def test_p4_nama_look_hijab_dan_variasi_tidak_dibuang(self):
+        # P4: kampanye bernama "Total Look Hijab"/"Jumlah Terbatas - Khimar" dll (kata biasa
+        # sesudah Total/Jumlah, TANPA angka) - regresi, harus tetap seperti v1.0.2.
+        p = self.tulis("p4.csv", KOLOM_SEDERHANA +
+                       "Total Look Hijab,400000,20000,300,10\n"
+                       "Jumlah Terbatas Khimar,350000,18000,280,9\n"
+                       "Totalitas Gamis,150000,9000,150,4\n"
+                       "Total Diskon Bergo,100000,6000,90,3\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertEqual(d["total"]["biaya"], 1_000_000)
+
+    def test_label_kuat_dibuang_selalu_diberi_peringatan_cocok(self):
+        # "Total 4 kampanye" TETAP dibuang (label kuat, angka+kata cakupan) - tapi sekarang HARUS
+        # selalu ada ⚠️ menyebut namanya & biayanya, walau angkanya COCOK dengan jumlah baris lain
+        # (sebelum v1.0.3, label "kuat" yang cocok tidak pernah diberi ⚠️ sama sekali).
+        p = self.tulis("kuat_cocok.csv", KOLOM_SEDERHANA +
+                       "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                       "Total 4 kampanye,500000,36000,500,15\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.assertEqual(d["total"]["biaya"], 500000)
+        self.assertTrue(any("Total 4 kampanye" in x and "Rp 500.000" in x for x in d["peringatan"]))
+
+    def test_label_kuat_dibuang_selalu_diberi_peringatan_tidak_cocok(self):
+        # Label kuat ("Total") yang biayanya JAUH dari jumlah baris lain - sebelum v1.0.3 dibuang
+        # 100% diam-diam tanpa ⚠️ sama sekali (celah M1 untuk label kuat, beda dari sedang).
+        p = self.tulis("kuat_beda.csv", KOLOM_SEDERHANA +
+                       "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                       "Total,999999,80000,900,30\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.assertEqual(d["total"]["biaya"], 500000)
+        w = [x for x in d["peringatan"] if "Total" in x and "tidak sama dengan jumlah baris lain" in x]
+        self.assertEqual(len(w), 1)
+        self.assertIn("Rp 999.999", w[0])
+        self.assertIn("Rp 500.000", w[0])
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
