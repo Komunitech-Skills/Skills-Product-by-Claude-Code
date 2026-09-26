@@ -112,7 +112,7 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | K3 | Kurasi `presentasi-data-ke-atasan` ← nimrodfisher/data-analytics-skills (451★, MIT) | **lulus 9/10** (Akun B, 2026-09-26); v1.0.1 selesai (catatan basis negatif, tolak eksplisit "poles angka", 9 tes) |
 | K4 | Kurasi `laporan-insiden-usaha` ← mohitagw15856/pm-claude-skills (1,4k★, MIT) — verifikasi skill sumber dulu | **lulus 9/10** (Akun B, 2026-09-26): sumber diverifikasi (214 commit bertahap), A/B & banding pesaing menang jelas; batasan keluhan kesehatan ditegaskan di SKILL.md |
 | K5 | Kandidat hukum dari anthropics/claude-for-legal (kontrak vendor, PHK/klasifikasi karyawan, permintaan data pribadi) | **dihentikan** — keputusan pemilik 2026-09-26: skill hukum baru tidak dikerjakan |
-| K6 | Kurasi `tulisan-tanpa-kesan-ai` ← petergyang/no-ai-slop (11,3k★, MIT) — prioritas pemilik (dari Instagram) | dikerjakan (Akun B, 2026-09-26) |
+| K6 | Kurasi `tulisan-tanpa-kesan-ai` ← petergyang/no-ai-slop (11,3k★, MIT) — prioritas pemilik (dari Instagram) | **lulus 8/10** (Akun B, 2026-09-26): 15/15 pola AI tertangkap, 0 alarm palsu pada 15 teks manusia/campuran; batasan plagiarisme ditegaskan |
 | K7 | Kurasi `audit-akun-iklan` ← AgriciDaniel/claude-ads (9,6k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
 | K8 | Produk jalur 2 `notebook-riset-lokal` ← lfnovo/open-notebook (39,5k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
 | K9 | Produk jalur 2 `pantau-website-toko` ← louislam/uptime-kuma (91,8k★, MIT) | dikerjakan (Akun B, 2026-09-26) |

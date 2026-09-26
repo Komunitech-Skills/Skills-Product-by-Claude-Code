@@ -27,6 +27,7 @@ diubah jadi kaku dan formal.
   memeriksa/memperbaiki, bukan menyusun rencana/struktur konten
 - Mengklaim bisa "membuktikan" sebuah tulisan ditulis AI atau lolos AI-detector tertentu — **skill ini
   tidak melakukan itu** (lihat Batasan)
+- Menulis ulang karya orang lain agar lolos cek plagiarisme, atau mengelabui detektor AI untuk tugas sekolah/kuliah/ujian → **tolak dengan sopan**; tawarkan membantu memperbaiki tulisan milik pengguna sendiri.
 - Menerjemahkan dokumen resmi/legal/kontrak (nada formal memang dibutuhkan di sana — lihat Batasan)
 
 ## Input
