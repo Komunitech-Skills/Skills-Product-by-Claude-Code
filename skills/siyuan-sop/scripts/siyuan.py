@@ -428,9 +428,11 @@ def p_lama(url, token, lokal, hari, notebook):
 def _kosong(teks):
     """True bila isi dokumen kosong atau hanya berisi placeholder tak kasatmata (dokumen induk
     otomatis yang dibuat SiYuan untuk path bertingkat, mis. saat membuat '/FAQ/Jam Buka' otomatis
-    membuat dokumen kosong '/FAQ')."""
-    t = re.sub(r"[\s​‌‍﻿]", "", str(teks or ""))
-    t = re.sub(r"^---.*?---", "", t, flags=re.DOTALL)  # buang frontmatter YAML bila tersisa
+    membuat dokumen kosong '/FAQ' berisi frontmatter + judul otomatis + satu karakter tak kasatmata)."""
+    t = str(teks or "")
+    t = re.sub(r"^---.*?---", "", t, count=1, flags=re.DOTALL)  # buang frontmatter YAML di awal
+    t = re.sub(r"^\s*#+[^\n]*\n?", "", t, count=1)  # buang satu baris judul markdown di awal (mis. '# FAQ')
+    t = re.sub(r"[\s​‌‍﻿]", "", t)  # buang spasi & karakter tak kasatmata
     return t == ""
 
 

@@ -463,8 +463,11 @@ class UjiSiyuan(unittest.TestCase):
 
     # -------- mode --json
     def test_42_ekspor_basis_lewati_dokumen_induk_kosong(self):
-        K.docs["20260301000000-induk"] = {"box": "20260101000000-aaaaaaa", "hpath": "/FAQ",
-                                           "content": "‍", "updated": "20260901000000"}
+        K.docs["20260301000000-induk"] = {
+            "box": "20260101000000-aaaaaaa", "hpath": "/FAQ",
+            "content": "---\ntitle: FAQ\ndate: 2026-09-26T09:42:09Z\nlastmod: 2026-09-26T09:42:09Z\n---\n\n# FAQ\n\n‍",
+            "updated": "20260901000000",
+        }
         with tempfile.TemporaryDirectory() as d:
             tujuan = os.path.join(d, "g.md")
             kode, out = self.jalan(["ekspor-basis", "--notebook", "20260101000000-aaaaaaa", "--file", tujuan])

@@ -77,3 +77,4 @@ kas-umkm,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer
 grist-usaha,Data & Analisis,orisinal,,Proprietary Komunitech,7,ecer,99000,,,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),uji,2026-09-26
 hledger-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,149000,ecer,149000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 dasbor-lokal,Data & Analisis,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
+siyuan-sop,Produktivitas,kurasi,https://github.com/siyuan-note/siyuan,AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech,,ecer,99000,,,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),draft,2026-09-26

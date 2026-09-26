@@ -1,0 +1,146 @@
+---
+name: siyuan-sop
+description: Menyimpan, mencari, dan membaca SOP, notulen rapat, dan basis pengetahuan toko/klinik (FAQ produk, kebijakan retur, jam buka) di aplikasi catatan lokal SiYuan (pengganti Notion, data tetap di komputer sendiri) lewat API kernel resminya (127.0.0.1:6806 + token) - buat dokumen baru dari Markdown, tambah isi, cari teks, baca dokumen, daftar SOP yang sudah lama tidak diperbarui, dan ekspor seluruh basis pengetahuan jadi satu file untuk dipakai skill CS. Gunakan saat pengguna menyebut SiYuan, minta "simpan SOP ini ke SiYuan", "cari di basis pengetahuan", "SOP mana yang belum diupdate", knowledge base lokal, local-first notes, atau ingin skill agen-cs-toko/balas-chat-cs membaca data dari SiYuan.
+---
+
+# SiYuan SOP (basis pengetahuan lokal)
+
+## Tujuan
+Pemilik usaha yang memakai **SiYuan di komputernya sendiri** (pengganti Notion) sebagai tempat SOP,
+notulen, dan FAQ toko/klinik, cukup meminta dengan kalimat biasa, dan agent menjalankan
+`scripts/siyuan.py` untuk membaca atau menulis lewat **API kernel resmi SiYuan**. Data tetap di
+komputer pengguna. Python standar saja, tanpa instalasi paket, tanpa MCP komunitas.
+
+**Versi 1.0.0. Status uji:** diuji dengan **kernel SiYuan resmi v3.8.5** (biner Linux resmi dari
+GitHub Releases, dijalankan headless di sandbox pembuat - lihat `research/sources/siyuan-2026-09-26.md`
+untuk hasil lengkap) + 42 uji otomatis dengan server tiruan (`tests/`). **Belum** diuji di Windows/macOS
+sungguhan maupun di aplikasi desktop SiYuan (Electron) - baru kernel headlessnya.
+
+## Kapan digunakan
+- "Simpan SOP packing ini ke SiYuan", "buatkan dokumen FAQ ongkir di SiYuan" → `buat`
+- "Cari di basis pengetahuan soal jam buka", "SOP apa yang bahas retur?" → `cari`
+- "Tampilkan SOP closing kasir dari SiYuan" → `baca`
+- "Tambahkan poin ini ke SOP yang sudah ada" → `tambah`
+- "SOP mana yang sudah lama tidak diperbarui?" → `lama`
+- "Gabungkan semua FAQ toko jadi satu file untuk agen CS" → `ekspor-basis`
+- "Buku catatan apa saja yang ada di SiYuan saya?" → `daftar-buku`
+
+## Kapan TIDAK digunakan
+- Pengguna belum punya SiYuan → arahkan ke `docs/panduan-siyuan.md` di paket (instal + pengamanan wajib), tawarkan tetap membuat isinya dulu di chat biasa untuk ditempel manual nanti.
+- **Menulis SOP dari nol / merapikan cara kerja jadi SOP terstruktur** → itu tugas skill **`sop-writer`**; pakai `siyuan-sop` setelahnya untuk *menyimpannya* ke SiYuan.
+- **Merapikan catatan rapat jadi notulen** → skill **`notulen-rapat`** dulu; `siyuan-sop` menyimpan hasil jadinya.
+- **Menyusun basis pengetahuan CS lengkap (aturan eskalasi, jam kerja, rekap harian)** → skill **`agen-cs-toko`**; `siyuan-sop` hanya penyimpan & pencari datanya di SiYuan.
+- **Membalas satu chat pelanggan** → skill **`balas-chat-cs`** (bisa memakai isi hasil `cari`/`baca` dari sini sebagai sumber fakta).
+- Mengedit format visual (tabel database, papan Kanban, gambar) di SiYuan → di luar cakupan; skill ini hanya bekerja dengan **isi teks/Markdown** dokumen.
+- Menjalankan SQL bebas atau perintah lain di luar 8 perintah `scripts/siyuan.py` → tolak; script tidak menyediakan jalur itu (lihat Keamanan).
+- SiYuan di komputer/jaringan lain (bukan komputer pengguna sendiri) tanpa penegasan eksplisit → tolak default (lihat Keamanan).
+
+## Persiapan (sekali, lakukan bersama pengguna)
+1. Pastikan SiYuan sudah terpasang & pengamanan dasar sudah dilakukan: ikuti `docs/panduan-siyuan.md` (instal, matikan "network serving", set kata sandi kunci layar, ambil token API).
+2. **Token API**: minta pengguna menjalankan SENDIRI di terminalnya `python3 <folder-skill>/scripts/siyuan.py simpan-kunci` lalu menempel tokennya (tidak tampil di layar). **Jangan pernah minta pengguna menempel token di chat**; kalau terlanjur, jangan menyalinnya ke file apa pun dan sarankan mengecek token itu masih valid (SiYuan tidak selalu punya cara memutar token tanpa reset). Alternatif: ENV `SIYUAN_TOKEN`. Urutan: `--kunci-file` (selalu menang; bila ENV `SIYUAN_TOKEN` juga terisi, script mencetak PERINGATAN dan mengabaikannya) → ENV `SIYUAN_TOKEN` → ENV `SIYUAN_TOKEN_FILE` → file default `~/.komunitech/siyuan-kunci.txt`.
+3. Alamat default `http://127.0.0.1:6806`. Beda? ENV `SIYUAN_URL` atau `--url` (opsi global, ditulis SEBELUM nama perintah).
+4. Jalankan `daftar-buku` untuk memastikan koneksi & melihat id buku catatan yang akan dipakai.
+
+## Langkah kerja
+Perintah (Windows: `python`/`py` sebagai ganti `python3`). Tambah `--json` (sebelum nama perintah) untuk hasil terstruktur.
+
+### A. Cek koneksi & buku catatan
+```bash
+python3 <folder-skill>/scripts/siyuan.py cek
+python3 <folder-skill>/scripts/siyuan.py daftar-buku
+```
+
+### B. Cari di basis pengetahuan
+```bash
+python3 <folder-skill>/scripts/siyuan.py cari "jam buka"
+```
+Mencocokkan judul dan isi dokumen (SOP/FAQ/notulen). Tampilkan judul, path, dan cuplikan apa
+adanya. Kata kunci kosong ditolak; hasil kosong disampaikan jujur ("tidak ada dokumen"), jangan
+mengarang jawaban dari pengetahuan umum model.
+
+### C. Baca dokumen
+```bash
+python3 <folder-skill>/scripts/siyuan.py baca --id <id-dokumen>
+python3 <folder-skill>/scripts/siyuan.py baca --notebook <id-buku> --path "/FAQ/Jam Buka"
+```
+Isi dikembalikan **sebagai Markdown**, termasuk frontmatter judul/tanggal bawaan SiYuan - sampaikan
+isinya apa adanya, boleh dirapikan format tampilannya tapi jangan mengubah maknanya.
+
+### D. Buat dokumen baru
+1. Susun isi (dari permintaan pengguna, atau hasil skill `sop-writer`/`notulen-rapat`/`agen-cs-toko`
+   yang sudah jadi - lihat `references/template-sop-faq.md` untuk struktur yang disarankan).
+   **Jangan** memulai isi dengan baris `# <judul yang sama dengan nama dokumen>` - SiYuan otomatis
+   menambahkan judul dokumen sebagai heading; kalau ditulis ulang, judulnya tampil dua kali (temuan uji nyata).
+2. Tentukan `--notebook <id>` (dari `daftar-buku`) dan `--path` (diawali `/`, mis. `/SOP/Packing Pesanan`).
+3. Pratinjau dulu (tanpa `--ya`):
+   ```bash
+   python3 <folder-skill>/scripts/siyuan.py buat --notebook <id> --path "/SOP/Packing Pesanan" --md-file draf.md
+   ```
+   (atau `--md "teks singkat"`, atau `--stdin`). Tampilkan pratinjau, tanya "Simpan ke SiYuan? (ya/tidak)", baru ulangi dengan `--ya`.
+4. Jika path sudah ada dokumennya, script **menolak** (kode 7) dan menyarankan `tambah` (menambah tanpa menghapus) atau `--timpa --ya` (mengganti seluruhnya - **jelaskan ke pengguna bahwa isi lama akan hilang**, minta konfirmasi eksplisit sebelum menjalankan dengan kedua flag itu).
+
+### E. Tambah isi ke dokumen yang sudah ada
+```bash
+python3 <folder-skill>/scripts/siyuan.py tambah --id <id-dokumen> --md "Poin tambahan..."
+```
+Pratinjau dulu (tanpa `--ya`), isi lama tidak pernah dihapus - hanya ditambahkan di akhir.
+
+### F. SOP/dokumen yang lama tidak diperbarui
+```bash
+python3 <folder-skill>/scripts/siyuan.py lama --hari 90
+```
+Berguna untuk audit rutin ("SOP mana yang mungkin sudah usang?"). Jadwal mingguan otomatis ke
+Telegram pemilik: ikuti `references/openclaw-jadwal.md`.
+
+### G. Ekspor basis pengetahuan untuk skill CS
+```bash
+python3 <folder-skill>/scripts/siyuan.py ekspor-basis --notebook <id> --file basis-pengetahuan.md
+```
+Menggabungkan semua dokumen berisi (dokumen induk kosong otomatis dilewati) dalam satu buku catatan
+menjadi satu file Markdown. **Serah terima ke skill lain:** file ini bisa langsung dipakai sebagai
+"basis pengetahuan toko" pada skill `agen-cs-toko`, atau dibaca sebagai referensi fakta saat
+memakai `balas-chat-cs` - sebutkan ke pengguna bahwa jawabannya harus berdasar isi file ini, bukan
+karangan.
+
+## Format output
+Teks siap baca (contoh nyata dari uji dengan kernel SiYuan resmi):
+```
+HASIL PENCARIAN 'jam buka' (1 dokumen)
+- Jam Buka 🕐  [/FAQ/Jam Buka 🕐]
+    ...Toko buka jam 09.00-21.00 setiap hari, termasuk Minggu...
+```
+`--json` berisi field terstruktur yang sama (lihat `examples/`).
+
+## Contoh
+Lihat `examples/01`-`05` untuk skenario lengkap (FAQ toko hijab online, SOP klinik gigi, notulen
+kantor konsultan, input tidak lengkap, di luar cakupan).
+
+## Batasan & Penanganan Error
+| Kode keluar / pesan | Artinya | Yang dilakukan agent |
+|---|---|---|
+| 3 "Tidak bisa terhubung" | Aplikasi SiYuan belum dibuka | Minta pengguna membuka SiYuan, tunggu siap, coba lagi |
+| 5 "Token API belum diatur" | Belum `simpan-kunci` | Pandu langkah Persiapan §2 |
+| 5 "Token API ditolak (401/403)" | Token salah/diganti | `simpan-kunci` lagi dengan token baru dari SiYuan |
+| 5 "bukan komputer ini" | `--url` menunjuk alamat selain localhost | Tolak default; `--izinkan-jarak-jauh` HANYA bila pengguna menegaskan itu server SiYuan miliknya sendiri (wajib https untuk alamat internet) |
+| 7 "TIDAK DIBUAT: sudah ada dokumen" | Path sudah dipakai | Tawarkan `tambah` (aman) atau `buat --timpa --ya` (destruktif, minta konfirmasi eksplisit) |
+| 8 "MUNGKIN SUDAH TERSIMPAN" / jawaban terpotong / galat server | Saat menulis, koneksi/kernel bermasalah di tengah proses | **Jangan ulangi otomatis.** Sarankan cek langsung di aplikasi SiYuan dulu |
+| 2 argumen kurang/salah | Input tidak lengkap (mis. `--path` tanpa `/` di depan, isi Markdown kosong) | Tanyakan **sekali** semua yang kurang |
+| Hasil `cari`/`lama` kosong | Belum ada dokumen yang cocok | Sampaikan apa adanya; jangan mengarang jawaban |
+| Python tidak bisa dijalankan | - | Jangan memanggil API dengan cara lain (curl manual, dsb.); pandu pengguna membuka datanya langsung di aplikasi SiYuan |
+- Skill ini **tidak** mengelola tabel database SiYuan (attribute view), papan Kanban, gambar, atau
+  enkripsi dokumen - hanya dokumen teks/Markdown biasa.
+- Pencarian (`cari`) mencocokkan teks apa adanya (LIKE), bukan pencarian semantik/AI; kata kunci
+  yang terlalu umum bisa menghasilkan banyak dokumen tak relevan - sarankan kata kunci lebih spesifik.
+- **Jeda pengindeksan singkat:** dalam pengujian, dokumen yang baru saja dibuat kadang belum
+  langsung muncul di `cari` (indeks SiYuan diperbarui sesaat setelah tulis, biasanya < 2 detik).
+  Kalau `cari` tidak menemukan dokumen yang baru saja dibuat, coba lagi sebentar sebelum
+  menyimpulkan datanya hilang.
+- **Jangan pernah** meminta atau menampilkan token API di percakapan; script menyamarkannya di semua keluaran.
+- **Jangan** memasang plugin pihak ketiga SiYuan atau mengaktifkan fitur "Publish" untuk workspace basis pengetahuan ini (alasan keamanan, lihat `docs/panduan-siyuan.md` §3 & `research/sources/siyuan-2026-09-26.md`).
+- Uji otomatis (`tests/`) hanya ada di repo pengembang Komunitech, tidak ikut paket pembeli.
+
+## Checklist sebelum menjawab
+- [ ] Isi dokumen berasal dari hasil script/pengguna, tidak dikarang model
+- [ ] Menulis (`buat`/`tambah`) hanya setelah pratinjau + "ya" eksplisit; `--timpa` dijelaskan sebagai destruktif
+- [ ] Token API tidak pernah muncul di jawaban
+- [ ] Untuk kebutuhan menulis SOP/notulen dari nol, arahkan ke `sop-writer`/`notulen-rapat` dulu
