@@ -67,3 +67,28 @@ Semua kasus lain (batas 15%/8% tepat, nol, negatif, ditawari 0, preorder>ditawar
 5. **Disarankan (kejelasan proses, bukan bug):** tambah satu kalimat di SKILL.md Langkah 3 yang menegaskan agen harus menyampaikan **kedua** hasil (ambang default vs ambang harga-tinggi/impulsif) ke pengguna saat hasil berada di zona yang bisa berubah klasifikasi, bukan hanya melaporkan satu ambang.
 
 Setelah item 1–2 diperbaiki dan diuji ulang oleh penguji independen (sesuai CLAUDE.md Tahap 6 poin 7), skill ini layak lanjut ke uji platform asli.
+
+---
+
+## Uji ulang independen v1.0.1 (Akun B, 2026-09-26)
+
+**Penguji:** sesi Akun B baru (berbeda dari pembuat v1.0.1 dan dari penguji v1.0.0), hanya membaca folder skill ini.
+Detail lengkap: [`08-uji-ulang-v101-akun-b.md`](08-uji-ulang-v101-akun-b.md).
+
+**Cakupan:** (a) `parse_uang()` diuji 31 variasi format Rupiah (angka polos, titik ribuan, `Rp`/`IDR`, singkatan `rb`/`ribu`/`jt`/`juta`, desimal+singkatan, gaya Inggris, campur titik-koma, negatif, kosong, teks) — ekspektasi dihitung independen dengan `Decimal`; (b) regresi konversi/margin/balik modal & batas 8%/15% (LULUS pada 15,0%, LULUS BERSYARAT pada 8,0%, GAGAL pada 7,0% — sesuai dokumentasi "≥"); (c) template `pesan-uji-murah.md`; (d) panjang hash commit di `ATTRIBUTION.md`; (e) skenario ujung-ke-ujung es kopi literan harga "35.000".
+
+**Hasil temuan v1.0.0:**
+1. **Parsing "25.000" → sekarang benar 25000** (bukan 25). Diverifikasi di 31 kasus, termasuk nilai ambigu (`12,5`, `25,000` gaya Inggris, `25.5`, `1.234,56`, `1.00`) yang semuanya **ditolak eksplisit** dengan pesan error yang menyebut format benar — sesuai prinsip "Reliable" CLAUDE.md (tidak pernah menebak). **Diperbaiki, terkonfirmasi.**
+2. **Template pre-order (#1 WA, #4 listing PO) kini mencantumkan opsi batal/refund yang jujur dan jelas** (dana kembali 100%, tenggat konkret, hak batal tanpa syarat sebelum produksi mulai). **Diperbaiki, terkonfirmasi.**
+3. **Hash commit di `ATTRIBUTION.md` sekarang 40 karakter** (dihitung dengan `len()`, bukan dihitung manual). **Diperbaiki, terkonfirmasi.**
+
+**Regresi:** tidak ditemukan. Konversi, margin per unit, total margin, dan status balik modal pada skenario e2e (es kopi literan, harga "35.000", HPP "15rb", biaya uji 40000) cocok persis dengan perhitungan manual Decimal (konversi 20,0%; margin/unit Rp20.000; total margin Rp100.000; selisih Rp60.000, sudah balik modal). Ambang 8%/15% berperilaku sebagai "≥" pada kedua sisi, konsisten dengan SKILL.md.
+
+**Uji tambahan:** `tests/uji_regresi.py` bawaan lolos (23 kasus); `python3 scripts/validate.py --skill validasi-ide-produk-baru` → `✅ 1 skill valid, 87 baris katalog sesuai.` (`uji_openclaw.sh` sengaja tidak dijalankan sesuai instruksi tugas ini.)
+
+### Skor kualitas (uji ulang v1.0.1)
+**Skor: 9/10**
+
+**Alasan:** Ketiga temuan wajib v1.0.0 diperbaiki dan terverifikasi independen dengan bukti kuantitatif (31 kasus parsing, boundary 8%/15%, e2e). Tidak ada regresi. Skor tidak 10 karena: (a) rekomendasi "disarankan" #3 dari uji v1.0.0 (validasi `--ditawari`/`--preorder` sebagai bilangan bulat non-negatif, tolak desimal) dan #5 (penegasan pelaporan dua ambang di SKILL.md Langkah 3) belum terlihat ditindaklanjuti — keduanya minor, tidak memblokir rilis; (b) pengujian ini adalah pengujian ulang berfokus regresi terhadap temuan v1.0.0, bukan uji A/B, uji banding pesaing, atau uji platform asli baru (yang sudah tercatat lulus di `00-pembanding-tanpa-skill.md`, `00-banding-pesaing.md` pada siklus sebelumnya dan tidak diulang di sini karena tidak ada perubahan pada alur inti hipotesis→kriteria→uji→keputusan).
+
+**Rekomendasi:** skill v1.0.1 layak lanjut ke uji platform asli (Tahap 6 poin 10) dan program beta, dengan catatan minor #3 dan #5 dari uji v1.0.0 boleh ditangani kapan saja tanpa menahan rilis.
