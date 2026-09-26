@@ -61,6 +61,7 @@ Hitungannya pasti (diuji dengan verifikasi independen), tetapi hasilnya simulasi
 Ya. Sebutkan satuannya (per bulan/per tahun). Kalau satuannya tidak jelas, AI akan menanyakan dulu — karena 0,9% per bulan flat ternyata setara ±19,5% per tahun efektif, sedangkan 0,9% per tahun hanya ±1,7%.
 
 ## Riwayat versi
+- **v1.0.3 (2026-09-26)** — peringatan pos anggaran kecil tidak lagi berisik: pos yang wajar bernilai kecil (parkir, jajan, sampah, iuran, pulsa, dll.) hanya diperingatkan bila < Rp1.000; pos lain tetap diperingatkan bila < Rp10.000; jumlah yang ditulis dengan "Rp" atau satuan (5rb) dianggap disengaja. Angka hitungan tidak berubah.
 - **v1.0.2 (2026-09-26)** — perbaikan kecil (angka hitungan tidak berubah): satuan bunga bahasa sehari-hari diterima ("18% setahun", "1,5% sebulan", "1,5 persen per bulan"; kata "flat"/"efektif" dikenali); pos anggaran yang janggal kecil (< Rp10.000, mis. "Makan=1.500") kini diperingatkan; target: bila dana terkumpul sudah cukup untuk harga sekarang, pesan menyebutnya lebih dulu lalu menampilkan kebutuhan setelah inflasi (tidak lagi bertentangan); catatan "bila bunganya FLAT" tidak muncul untuk bunga bertanda efektif; label pos salah dan angka negatif (mis. `--saldo -500rb`) diberi pesan yang jelas dalam bahasa Indonesia.
 - **v1.0.1 (2026-09-26)** — satuan bunga wajib jelas (per bulan/per tahun) agar bunga flat KTA tidak salah baca; peringatan angka yang terlalu kecil (mis. "1.500"); target menampilkan "tercapai bulan ke berapa"; catatan menilai tawaran take over/refinancing.
 - **v1.0.0 (2026-09-26)** — rilis awal.

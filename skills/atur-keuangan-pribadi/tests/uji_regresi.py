@@ -649,10 +649,17 @@ class TesV102PerbaikanKecil(unittest.TestCase):
         self.assertIn("PERINGATAN INPUT", r.stdout)
         self.assertIn("Pos 'Makan'", r.stdout)
         self.assertIn("Rp1.500.000", r.stdout)
-        for pos in ("Sampah=5rb", "Makan=1,5jt", "Parkir=10.000", "Iuran=0"):
+        for pos in ("Sampah=5rb", "Makan=1,5jt", "Parkir=10.000", "Iuran=0",
+                    "Parkir=5000", "Parkir=5.000", "Jajan anak=8.000", "Sewa=Rp5.000"):  # v1.0.3: tidak berisik
             r = jalankan("anggaran", "--pemasukan", "Gaji=7jt", "--pos", pos)
             with self.subTest(pos=pos):
                 self.assertNotIn("PERINGATAN INPUT", r.stdout)
+
+    def test_v103_pos_wajar_kecil_tetap_diperingatkan_bila_sangat_kecil(self):
+        r = jalankan("anggaran", "--pemasukan", "Gaji=7jt", "--pos", "Parkir=500")
+        self.assertIn("PERINGATAN INPUT", r.stdout)
+        r = jalankan("anggaran", "--pemasukan", "Gaji=7jt", "--pos", "Sewa kos=1.200")
+        self.assertIn("PERINGATAN INPUT", r.stdout)
 
     def test_n3_target_cukup_harga_sekarang(self):
         r = jalankan("target", "--biaya-sekarang", "50jt", "--bulan", "24", "--terkumpul", "51jt", "--kemampuan", "0")

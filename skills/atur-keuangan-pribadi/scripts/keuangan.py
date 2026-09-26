@@ -375,7 +375,14 @@ def parse_pos(teks):
                          "atau tabungan (mis. \"{}={}:keinginan\"), atau hapus labelnya.".format(
                              teks, label, nama, jumlah.split(":", 1)[0].strip()))
     nilai = parse_rupiah(jumlah, "Pos '{}'".format(nama))
-    if not _bersatuan_ribu(jumlah):
+    # v1.0.3: pos yang wajar bernilai kecil (parkir 5.000, sampah 8.000) tidak diperingatkan kecuali < Rp1.000;
+    # pos lain < Rp10.000 tetap diperingatkan (mis. "Makan=1.500" hampir pasti 1,5 juta). Input ber-"Rp" = disengaja.
+    pos_wajar_kecil = re.search(r"parkir|jajan|sampah|iuran|ronda|kas rt|sumbangan|infak|infaq|sedekah|tip|"
+                                r"air galon|galon|gas|pulsa|kuota|tol|ojek|angkot|kopi|rokok|cemilan|camilan",
+                                nama.lower())
+    batas = Decimal(1000) if pos_wajar_kecil else BATAS_NOMINAL_KECIL
+    if (not _bersatuan_ribu(jumlah) and not jumlah.strip().lower().startswith("rp")
+            and nilai is not None and nilai < batas):
         cek_nominal_kecil(nilai, jumlah.strip(), "Pos '{}'".format(nama),
                           " Jika memang {}, abaikan peringatan ini (atau tulis {}rb).".format(
                               rp(nilai), format(nilai / 1000, "f").rstrip("0").rstrip(".").replace(".", ",")))
