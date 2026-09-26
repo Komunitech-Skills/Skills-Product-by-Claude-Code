@@ -210,6 +210,8 @@ def panggil(method, path, args, sandi=None, body=None, multipart=None, timeout=N
             raise Gagal(f"404: tidak ditemukan ({detail}). Cek id notebook/sumber dengan 'daftar-notebook'/'daftar-sumber'.", K_INPUT)
         if e.code == 400:
             raise Gagal(f"400: permintaan ditolak server ({detail}).", K_INPUT)
+        if e.code == 422:
+            raise Gagal(f"422: data yang dikirim tidak sesuai format yang diharapkan server ({detail}). Ini kemungkinan bug skill, bukan kesalahan Anda — laporkan ke Komunitech.", K_INPUT)
         if e.code >= 500:
             raise Gagal(f"{e.code}: server Open Notebook mengalami masalah internal ({detail}). Coba lagi sebentar lagi.", K_KONEKSI)
         raise Gagal(f"{e.code}: {detail}", K_INPUT)
@@ -309,22 +311,32 @@ def _cari_notebook_id(args, sandi, sebutan):
 
 
 def cmd_tambah_sumber(args):
+    # PENTING: POST /api/sources di Open Notebook 1.14.0 HANYA menerima
+    # multipart/form-data (dependency FastAPI `parse_source_form_data` mendeklarasikan
+    # semua field lewat Form(...), bukan model Pydantic biasa lewat body JSON).
+    # Dibuktikan lewat uji terhadap server asli (bukan tiruan): mengirim JSON selalu
+    # dibalas 422 "Field required", sedangkan multipart/form-data berhasil (200 OK).
+    # Lihat ATTRIBUTION.md & examples/03-... untuk bukti dan riwayat perbaikannya.
     sandi = ambil_kunci_aman(args)
     notebook_id = _cari_notebook_id(args, sandi, args.notebook)
     tipe = args.tipe
-    body = {"notebooks": [notebook_id], "async_processing": True}
+    bidang = {"notebooks": json.dumps([notebook_id]), "async_processing": "true"}
+    pratinjau_tampil = {"notebooks": [notebook_id]}
     if tipe == "link":
         if not args.sumber_url:
             raise Gagal("Tipe 'link' butuh --sumber-url.", K_INPUT)
-        body["type"] = "link"
-        body["url"] = args.sumber_url
+        bidang["type"] = "link"
+        bidang["url"] = args.sumber_url
+        pratinjau_tampil.update(type="link", url=args.sumber_url)
     elif tipe == "teks":
         if not args.teks:
             raise Gagal("Tipe 'teks' butuh --teks (atau --file - untuk baca dari input).", K_INPUT)
-        body["type"] = "text"
-        body["content"] = args.teks
+        bidang["type"] = "text"
+        bidang["content"] = args.teks
+        pratinjau_tampil.update(type="text", content=args.teks)
         if args.judul:
-            body["title"] = args.judul
+            bidang["title"] = args.judul
+            pratinjau_tampil["title"] = args.judul
     elif tipe == "file":
         raise Gagal(
             "Unggah file (PDF/Word/dll.) lewat perintah ini belum didukung skill ini — server "
@@ -337,16 +349,14 @@ def cmd_tambah_sumber(args):
         raise Gagal("--tipe harus 'link' atau 'teks'.", K_INPUT)
 
     if not args.ya:
-        pratinjau = dict(body)
-        pratinjau.pop("async_processing", None)
         return {
             "pratinjau": True,
             "aksi": "Akan menambah sumber ke notebook",
             "notebook_id": notebook_id,
-            "sumber": pratinjau,
+            "sumber": pratinjau_tampil,
             "catatan": "Tambahkan --ya untuk benar-benar menambah. Pemrosesan (baca isi, ringkas) berjalan di latar belakang; cek dengan 'daftar-sumber'.",
         }
-    hasil = panggil("POST", "/sources", args, sandi=sandi, body=body, timeout=getattr(args, "timeout", 30))
+    hasil = panggil("POST", "/sources", args, sandi=sandi, multipart=bidang, timeout=getattr(args, "timeout", 30))
     return {
         "ditambahkan": True,
         "id": hasil.get("id"),
@@ -423,15 +433,25 @@ def cmd_cari(args):
     if args.notebook:
         body["notebook_id"] = _cari_notebook_id(args, sandi, args.notebook)
     hasil = panggil("POST", "/search", args, sandi=sandi, body=body)
+    # PENTING: hasil POST /api/search (versi 1.14.0) hanya berisi field
+    # id/parent_id/relevance/title — TIDAK ada tipe sumber atau cuplikan kalimat
+    # yang cocok (dibuktikan terhadap server asli, lihat ATTRIBUTION.md &
+    # examples/04-...). Skill ini menampilkan apa adanya, tidak berpura-pura
+    # punya cuplikan yang sebenarnya tidak tersedia dari API.
     hasil_ringkas = [
         {
-            "judul": r.get("title") or r.get("name") or "(tanpa judul)",
-            "tipe": r.get("parent_type") or r.get("type") or "?",
-            "cuplikan": (r.get("matches") or [r.get("content", "")])[0][:300] if r.get("matches") or r.get("content") else "",
+            "judul": r.get("title") or "(tanpa judul)",
+            "id_dokumen": r.get("parent_id") or r.get("id"),
+            "relevansi": round(r["relevance"], 3) if isinstance(r.get("relevance"), (int, float)) else None,
         }
         for r in hasil.get("results", [])
     ]
-    return {"kueri": args.kueri, "jumlah": hasil.get("total_count", 0), "hasil": hasil_ringkas}
+    return {
+        "kueri": args.kueri,
+        "jumlah": hasil.get("total_count", 0),
+        "hasil": hasil_ringkas,
+        "catatan": "API pencarian Open Notebook tidak menyediakan cuplikan kalimat yang cocok — hanya judul & id dokumen. Buka dokumennya lewat 'daftar-sumber' atau http://127.0.0.1:8502 untuk melihat isinya.",
+    }
 
 
 def cmd_podcast_mulai(args):

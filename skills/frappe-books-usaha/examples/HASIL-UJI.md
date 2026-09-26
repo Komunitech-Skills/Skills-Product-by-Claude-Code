@@ -88,3 +88,53 @@ kredensial, subprocess, eval/exec, SQL tulis. Satu-satunya jalur merusak adalah 
 Perbaiki temuan 1–4 (+6, 7), perbarui fixture dari file asli (nama akun bernomor, centang `'1.0'`, retur bertanda terbalik, `Party` tanpa
 `taxId`), tambah tes regresi untuk tiap temuan, lalu uji ulang impor penuh (Party → Item → Sales/Purchase Invoice) di Import Wizard asli.
 `platform_teruji` tetap hanya uji simulasi agent; belum ada uji di OpenClaw/Codex/Claude Code/Cursor sungguhan.
+
+---
+
+## Uji ulang independen v1.0.1 (Akun B, 2026-09-26)
+
+### Skor: **6/10 — REVISI KECIL, jangan rilis dulu** (perbaiki temuan A–B, lalu uji ulang singkat)
+
+**Alasan:** Semua temuan tinggi v1.0.0 beres dan terbukti di aplikasi **asli**: keempat CSV hasil script (Party, Item, Sales Invoice,
+Purchase Invoice) **diterima Import Wizard Frappe Books v0.36.0 lewat tombol GUI** (Select File → Import Data → "Submit entries?" No),
+0 gagal, total draf = pratinjau skill; akun bernomor benar; `--keluar` ke database ditolak; Inventory `'1.0'` terbaca aktif; laba-rugi
+konsisten dengan retur; NPWP diperingatkan; PPN & tanggal WIB benar. Namun ditemukan kesalahan akuntansi baru yang masuk diam-diam
+lewat Import Wizard untuk pemakai stok (temuan A) — pada data uji mengubah laba Rp 167.345 menjadi rugi −Rp 2.332.655. Untuk produk
+berbayar kategori keuangan, ini mengunci skor di bawah 7. Perbaikannya kecil dan jelas.
+
+### Cara uji
+AppImage v0.36.0 diunduh ulang dari GitHub releases frappe/books; SHA-512 cocok dengan `latest-linux.yml`. Headless (Xvfb,
+`TZ=Asia/Jakarta`, mode produksi, jaringan keluar diblokir). Database asli dibuat sendiri lewat Setup Wizard (Indonesia, IDR, bagan akun
+Indonesia). Impor lewat komponen Import Wizard asli: tombol "Select File" → IPC → proses utama (hanya dialog OS yang diarahkan ke path CSV
+lewat inspector Electron) → `fs.readFile` → `importer.selectFile`; tombol "Import Data" → `importData()` asli. Transaksi lanjutan (submit,
+stok, pengiriman, bayar sebagian, retur 23:50 WIB, invoice 00:30 WIB, jurnal beban) lewat mesin aplikasi. Rincian: `08-uji-ulang-v101-akun-b.md`.
+
+### Hasil ringkas
+| Aspek | Hasil |
+|---|---|
+| Impor Party / Item / Sales Invoice / Purchase Invoice | 5/5, 4/4, 4/4, 2/2 sukses; `requiredNotSelected` kosong |
+| Akun | `Penjualan - 4110.000`, `Pendapatan Service - 4310.000`, `Piutang Dagang - 1131.0010`, `Hutang Dagang Dalam Negeri - 2111.001` ✓ |
+| `--keluar` ke `.books.db`, `.db`, SQLite bernama `.csv`, symlink | semua ditolak kode 2; hash file tetap |
+| Inventory | "aktif" (SingleValue `'1.0'`) ✓ |
+| Laba-rugi & retur | pendapatan dikoreksi Rp 887.345 = DPP `penjualan`; catatan buku besar Rp 1.057.345 cocok verifikasi penguji ✓ |
+| NPWP | 3 peringatan per NPWP; file asli tanpa kolom `taxId` ✓ |
+| PPN | 332.345 → 36.557 (floor sekali, Decimal); harga termasuk 1.665.000 → DPP 1.500.000 ✓ |
+| Tanggal WIB | CSV `2026-09-01` → `2026-08-31T17:00Z`; invoice `2026-09-30T17:30Z` masuk Oktober WIB ✓ |
+| Laporan baca (regresi) | penjualan, pembelian, piutang, utang, stok, laba-rugi, laporan-harian, cek: cocok verifikasi independen; file tidak berubah saat aplikasi terbuka |
+| Data rusak | byte 0x81 → kode 5 ramah; `~/Frappe Books` terdeteksi; pihak/barang belum ada → ditolak per baris |
+| Tes bawaan / validate | 39 tes OK / valid |
+
+### Temuan
+- **A. TINGGI** — `csv-barang` memberi `expenseAccount = HPP Pembelian` juga untuk barang `stok: ya`. Frappe Books v0.36.0 memakai
+  `Stock Received But Not Billed` (`Stock Diterima Tapi Tidak Ditagih - 2115.000`) untuk barang dilacak (`Item.ts`). Akibatnya pembelian
+  langsung jadi HPP **dan** pengiriman juga menambah HPP → HPP ganda (Rp 3.070.000 vs Rp 570.000). Pakai `InventorySettings.stockReceivedButNotBilled`
+  untuk `trackItem=1`; tambah tes regresi.
+- **B. SEDANG** — `piutang` tidak menyebut kredit retur (retur ber-outstanding −94.350); total Rp 1.203.803 vs bersih Rp 1.109.453.
+- **C. RENDAH** — `piutang` mendaftar invoice bertanggal setelah "hari ini" tanpa tanda.
+- **D. RENDAH/dok** — perbarui klaim "impor v1.0.1 belum diuji ulang" di SKILL.md; tambahkan catatan Enable Partial Payment dan Shipment
+  nota campuran barang+jasa (gagal di v0.36.0, bukan kesalahan skill) di `references/import-wizard.md`.
+
+### Rekomendasi
+Perbaiki A dan B (+C, D), tambah tes regresi, lalu uji ulang singkat: impor `csv-barang` dengan barang dilacak → Purchase Invoice →
+Purchase Receipt/Shipment → `laba-rugi` HPP = nilai persediaan keluar. Bila lulus, skor diperkirakan ≥ 8. `platform_teruji` tetap
+`claude-code (simulasi agent)`; aplikasi Frappe Books asli teruji, platform agen sungguhan belum.
