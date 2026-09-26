@@ -7,7 +7,7 @@ Routine hanya bisa dibuat **oleh sesi itu sendiri** (akun lain tidak bisa membua
 | Akun | Routine | Jadwal | Status |
 |---|---|---|---|
 | Akun A | "Lanjutkan iterasi Komunitech Skills (tiap 3 jam)" | `32 */3 * * *` (UTC) | **dijeda** 2026-09-26 (limit Akun A hampir habis; semua kerja diserahkan ke Akun B) |
-| Akun B | — | — | **belum dibuat** → buat dengan langkah di bawah |
+| Akun B | "Lanjutkan iterasi Komunitech Skills Akun B (tiap 3 jam)" | `25 */3 * * *` (UTC, disebar server dari `0 */3`) | **aktif** sejak 2026-09-26 (dibuat sesi Akun B) |
 
 ## Cara membuat (Akun B)
 Di sesi Akun B, minta Claude: *"Buat routine sesuai `koordinasi/rutin.md` bagian Akun B."* Claude memakai tool
