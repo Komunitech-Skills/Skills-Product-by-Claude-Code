@@ -32,8 +32,9 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
 KUNCI_DEFAULT = os.path.join(os.path.expanduser("~"), ".komunitech", "open-notebook-kunci.txt")
@@ -153,14 +154,38 @@ def periksa_url(url):
         )
 
 
-def panggil(method, path, args, sandi=None, body=None, timeout=None):
+def _kodekan_multipart(bidang):
+    """Bangun body multipart/form-data manual (Python standar, tanpa paket luar).
+
+    `bidang` adalah dict {nama: nilai}; nilai None dilewati (field opsional yang
+    tidak diisi). Semua nilai dikirim sebagai teks (skill ini tidak mengunggah
+    file lewat multipart — lihat 'tambah-sumber --tipe file' yang sengaja ditolak).
+    """
+    batas = "----KomunitechBatas" + uuid.uuid4().hex
+    potongan = []
+    for nama, nilai in bidang.items():
+        if nilai is None:
+            continue
+        potongan.append(f"--{batas}\r\n".encode("utf-8"))
+        potongan.append(f'Content-Disposition: form-data; name="{nama}"\r\n\r\n'.encode("utf-8"))
+        potongan.append(str(nilai).encode("utf-8"))
+        potongan.append(b"\r\n")
+    potongan.append(f"--{batas}--\r\n".encode("utf-8"))
+    return f"multipart/form-data; boundary={batas}", b"".join(potongan)
+
+
+def panggil(method, path, args, sandi=None, body=None, multipart=None, timeout=None):
     periksa_url(args.url)
     timeout = timeout if timeout is not None else getattr(args, "timeout", 30)
     url = args.url.rstrip("/") + "/api" + path
-    data = json.dumps(body).encode("utf-8") if body is not None else None
     headers = {"Accept": "application/json"}
-    if data is not None:
-        headers["Content-Type"] = "application/json"
+    if multipart is not None:
+        content_type, data = _kodekan_multipart(multipart)
+        headers["Content-Type"] = content_type
+    else:
+        data = json.dumps(body).encode("utf-8") if body is not None else None
+        if data is not None:
+            headers["Content-Type"] = "application/json"
     if sandi:
         headers["Authorization"] = f"Bearer {sandi}"
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
