@@ -64,3 +64,26 @@ karena **belum ada uji terhadap Grist sungguhan** (masih tiruan di kedua sisi, p
 Tahap 6 kini lengkap secara prosedural, skill ini layak naik ke `uji`/`lulus` (skor 7/10),
 menunggu giliran uji Grist sungguhan (Docker/Desktop) & uji platform asli sesuai rekomendasi
 pembuat di `examples/uji-pembuat/UJI-PEMBUAT-v1.0.0.md`.
+
+---
+
+## Uji ulang independen v1.0.2 (Akun B, 2026-09-26)
+
+**Skor: 8/10.** Rincian: `examples/06-angka-dan-skenario-uji-ulang-v102-akun-b.md`.
+
+- **Temuan U17 beres.** `_bersihkan_angka` menghasilkan `Decimal` persis untuk `1,25jt`, `2,5 rb`,
+  `Rp 1.250.000,-`, `10k`, `1,5M`, `miliar/milyar`, negatif, `3 jt 500 rb`; nilai ambigu
+  (`1.500rb`, `2m`, `3jt500`, `1.23.456`, `1kg`) → `None` + alasan; 20 digit tidak dibulatkan;
+  kolom sebagian gagal menyebut baris, nilai & alasan (layar + `--json`).
+- 68 variasi tulisan angka diuji dengan ekspektasi Decimal sendiri: 65 sesuai.
+- **[SEDANG] Nol di depan hilang diam-diam:** `081234567890` → `81234567890`, kode barang
+  `007` → `7`; kolom jadi Numeric tanpa peringatan. Bertentangan dengan
+  `references/pola-tabel-umkm.md` (Telepon wajib Text). Perbaiki sebelum `lulus`.
+- **[RENDAH]** `1,000`/`12,345` tanpa singkatan dibaca ribuan (terdokumentasi, tapi tidak
+  konsisten dengan prinsip "ambigu = tolak"). `(1.000)`, `+500rb`, `.5jt`, `15rb/pcs`,
+  `500 ribu rupiah` ditolak tanpa alasan (aman, kurang informatif).
+- 5 skenario Tahap 6 (3 normal, 1 input tidak lengkap, 1 luar cakupan): semua lulus; skenario 2
+  dengan catatan temuan SEDANG di atas. File `.grist` tidak berubah setelah dibaca (SHA-1 sama).
+- Tes bawaan 84/84 OK; `validate.py --skill grist-usaha` ✅.
+- **Rekomendasi:** perbaiki temuan SEDANG (v1.0.3) → uji ulang singkat → layak `lulus`. REST API
+  masih hanya teruji terhadap server tiruan.
