@@ -36,7 +36,7 @@ Tanyakan **sekali** dalam satu pesan, hanya yang relevan dengan permintaan:
 - **Utang:** per utang → nama, sisa saldo, bunga (sebut per tahun / per bulan / per hari, dan **flat atau efektif**), cicilan minimum; plus uang ekstra yang sanggup disisihkan.
 - **Target:** nama target, biaya bila dibeli hari ini, berapa tahun lagi, dana yang sudah ada, kemampuan menabung.
 
-Jika pengguna ingin cepat, pakai default dan **sebutkan asumsinya**: pola 50/30/20; inflasi 4%/tahun (pendidikan sering lebih tinggi, tawarkan 8–10% sebagai skenario); imbal hasil 0% (skenario tambahan hanya jika pengguna menyebut angkanya sendiri); pensiun 20 tahun; bunga tanpa keterangan dianggap **per tahun efektif** (tanyakan bila ragu — salah periode = hasil salah besar).
+Jika pengguna ingin cepat, pakai default dan **sebutkan asumsinya**: pola 50/30/20; inflasi 4%/tahun (pendidikan sering lebih tinggi, tawarkan 8–10% sebagai skenario); imbal hasil 0% (skenario tambahan hanya jika pengguna menyebut angkanya sendiri); pensiun 20 tahun; bunga tanpa satuan ≥ 3 dianggap **per tahun efektif**; di bawah 3 **wajib ditanyakan** (biasanya per bulan) — salah periode = hasil salah besar.
 
 ## Langkah kerja
 1. **Pastikan cakupan.** Pribadi/keluarga? Bukan keuangan usaha, bukan permintaan rekomendasi produk. Pisahkan uang usaha dan uang rumah tangga bila tercampur (anjurkan "gaji" tetap dari usaha untuk diri sendiri).
@@ -55,6 +55,8 @@ Jika pengguna ingin cepat, pakai default dan **sebutkan asumsinya**: pola 50/30/
    - Bunga **flat** (leasing motor/mobil, sebagian KTA) → konversi ke **efektif** dulu (`konversi-flat`). Jelaskan: flat dihitung dari pokok awal sepanjang tenor, sehingga bunga efektifnya hampir dua kali lipat.
    - Simulasikan **Avalanche** (bunga tertinggi dulu) dan **Snowball** (saldo terkecil dulu) dengan anggaran tetap; cicilan minimum utang yang lunas dialihkan ke utang berikutnya.
    - Laporkan: urutan, bulan lunas tiap utang, total bunga, selisih biaya, dan kapan "kemenangan pertama".
+   - **Satuan bunga wajib jelas** (%/th, %/bln, %/hari). Bunga flat KTA sering disebut per bulan ("0,9% per bulan") → tulis `--bunga-flat "0,9%/bln"`. Angka tanpa satuan di bawah 3: `konversi-flat` menampilkan dua tafsiran, `utang` menolak — **tanyakan ke pengguna**, jangan menebak (salah satuan = meleset ±11×). Salin bunga efektif 4 desimal dari `konversi-flat` ke `utang`.
+   - Ditawari **take over/refinancing/konsolidasi**? Bandingkan total bunga sisa lama vs total bunga baru + provisi/admin/penalti pelunasan (lihat `references/utang-dan-pinjol.md`). Tanpa rekomendasi produk.
    - **Wajib cek bahaya:** cicilan minimum ≤ bunga bulanan → utang tidak akan lunas; bunga > 0,1%/hari (±3%/bulan) → di atas batas pinjol konsumtif berizin OJK 2026, curigai pinjol ilegal; kartu kredit > 1,75%/bulan → di atas batas BI. Beri kontak resmi OJK (lihat `references/utang-dan-pinjol.md`).
 7. **Target keuangan:** biaya nanti = biaya hari ini × (1 + inflasi/12)^bulan. Tabungan/bulan = (biaya nanti − terkumpul × (1+r)^bulan) × r ÷ ((1+r)^bulan − 1), r = imbal/12; jika r = 0 dibagi jumlah bulan. Dibulatkan ke atas. Banding dengan kemampuan; bila kurang, tawarkan tiga tuas: perpanjang waktu, turunkan target, tambah pemasukan. Urutan prioritas umum: dana darurat awal → utang bunga tinggi → dana darurat penuh → target bertenggat (sekolah) → target fleksibel.
 8. **Tulis hasil** sesuai format di bawah, dengan bahasa sehari-hari yang tidak menghakimi.
@@ -65,12 +67,13 @@ Jalankan dari folder skill (`python3`; Windows: `python` atau `py`):
 python3 scripts/keuangan.py anggaran --pemasukan "Gaji=7,5jt" --musiman "THR=7,5jt" --pos "Kontrakan=1,8jt" --pos "Kiriman ortu=750rb" --pos "Nongkrong=400rb:keinginan"
 python3 scripts/keuangan.py dana-darurat --pengeluaran-pokok 4,5jt --status anak --saldo 6jt --setoran 750rb
 python3 scripts/keuangan.py utang --utang "Kartu kredit;12jt;1,75%/bln;600rb;kk" --utang "Paylater;3jt;2,5%/bln;200rb;paylater" --ekstra 1jt --metode banding [--jadwal]
-python3 scripts/keuangan.py konversi-flat --pokok 18jt --bunga-flat 12 --tenor 24 [--sudah-bayar 6]
+python3 scripts/keuangan.py konversi-flat --pokok 30jt --bunga-flat "0,9%/bln" --tenor 24 [--sudah-bayar 6]   # atau "12%/th"
 python3 scripts/keuangan.py target --nama "DP rumah" --biaya-sekarang 60jt --tahun 5 --inflasi 4 [--imbal 5] --terkumpul 10jt --kemampuan 700rb
 python3 scripts/keuangan.py target --jenis pensiun --pengeluaran-bulanan 6jt --tahun 25 --lama-pensiun 20
 ```
 - Pos anggaran: `nama=jumlah[:wajib|sosial|keinginan|tabungan]` (tanpa label → ditebak dari nama; tebakan ditandai).
-- Utang: `nama;saldo;bunga;cicilan_minimum[;jenis]`, bunga `24%/th`, `1,75%/bln`, `0,1%/hari`; jenis `kk|kta|paylater|pinjol|kpr|motor|mobil|keluarga|lain`.
+- Utang: `nama;saldo;bunga;cicilan_minimum[;jenis]`, bunga **dengan satuan** `24%/th`, `1,75%/bln`, `0,1%/hari` (atau `--per bulan|tahun` untuk angka tanpa satuan); jenis `kk|kta|paylater|pinjol|kpr|motor|mobil|keluarga|lain`.
+- Nominal gaji/saldo/pokok < Rp10.000 (mis. "1.500") → bagian PERINGATAN INPUT; konfirmasi ke pengguna. `target --kemampuan` juga menghitung bulan ke berapa target tercapai.
 - Input salah → pesan ramah tanpa traceback (kode keluar 2). Uji: `python3 tests/uji_regresi.py`.
 
 ## Format output
@@ -97,6 +100,7 @@ Gunakan tabel Markdown dan format Rupiah `Rp1.500.000`. Jangan menampilkan jadwa
 ## Batasan & penanganan error
 - **Bukan nasihat keuangan/investasi.** Tidak ada rekomendasi beli/jual instrumen atau produk bank/fintech tertentu; imbal hasil hanya asumsi yang disebut pengguna.
 - Aturan & batas bunga (OJK, BI) dicek **26 September 2026** dan bisa berubah — sebut tanggal ini dan sarankan cek ulang di situs resmi.
+- Minimum kartu kredit (5% tagihan) dimodelkan sebagai nominal tetap; dampaknya kecil bila anggaran pelunasan tetap.
 - Simulasi utang mengabaikan denda, biaya admin, perubahan bunga (KPR floating), dan belanja baru di kartu kredit; bunga harian dihitung 30 hari/bulan. Nilai pelunasan dipercepat resmi bisa berbeda — tanyakan ke kreditur.
 - Angka tidak masuk akal (bunga negatif, saldo negatif, bunga > 50%/bulan, anggaran < total cicilan minimum) → minta koreksi, jangan dilanjutkan diam-diam.
 - Pengguna tertekan karena penagihan utang (ancaman, penyebaran data) → tetap tenang dan empatik; tegaskan penagihan dengan ancaman/intimidasi dilarang, arahkan ke pengaduan OJK (157) dan, bila ada ancaman pidana, kepolisian. Jangan menyarankan kabur dari kewajiban utang yang sah.

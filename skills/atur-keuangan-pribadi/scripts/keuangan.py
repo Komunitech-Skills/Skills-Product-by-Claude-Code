@@ -17,7 +17,7 @@ Contoh cepat:
   python3 keuangan.py dana-darurat --pengeluaran-pokok 4,5jt --status anak --saldo 6jt --setoran 750rb
   python3 keuangan.py utang --utang "Kartu kredit;8jt;1,75%/bln;400rb;kk" \
       --utang "Paylater;2,5jt;3%/bln;300rb;paylater" --ekstra 500rb --metode banding
-  python3 keuangan.py konversi-flat --pokok 18jt --bunga-flat 12 --tenor 24
+  python3 keuangan.py konversi-flat --pokok 18jt --bunga-flat "12%/th" --tenor 24
   python3 keuangan.py target --nama "DP rumah" --biaya-sekarang 60jt --tahun 5 --inflasi 4
 
 Semua uang memakai Decimal. Bunga bulanan dibulatkan ke rupiah terdekat (setengah ke atas);
@@ -42,6 +42,25 @@ NOL = Decimal(0)
 
 class InputSalah(Exception):
     """Kesalahan input yang dijelaskan ke pengguna tanpa traceback."""
+
+
+# Peringatan input (bukan galat) yang dicetak di awal keluaran. Dikosongkan tiap main().
+PERINGATAN_INPUT = []
+BATAS_NOMINAL_KECIL = Decimal(10000)
+BATAS_BUNGA_TANPA_SATUAN = Decimal(3)   # angka < 3 tanpa satuan: kemungkinan besar per BULAN
+
+
+def cek_nominal_kecil(nilai, asli, nama):
+    """Nominal gaji/saldo/pokok < Rp10.000 hampir pasti salah ketik (mis. '1.500' maksudnya 1,5 juta)."""
+    if nilai is None or nilai <= 0 or nilai >= BATAS_NOMINAL_KECIL:
+        return nilai
+    saran = [rp(nilai * 1000)]
+    if nilai < 10:
+        saran.insert(0, rp(nilai * 1000000))
+    PERINGATAN_INPUT.append(
+        "{} '{}' dibaca {} - sangat kecil untuk kolom ini. Jika maksudnya {}, tulis lengkap dengan satuan "
+        "(mis. 1,5jt, 750rb, 1.500.000) lalu hitung ulang.".format(nama, asli, rp(nilai), " atau ".join(saran)))
+    return nilai
 
 
 # ---------------------------------------------------------------------------
@@ -202,6 +221,17 @@ def parse_bunga(teks, nama="bunga", periode_bawaan="th"):
         raise InputSalah(
             "{} '{}' tidak terbaca. Contoh: 24%/th, 1,75%/bln, 0,1%/hari.".format(nama, asli))
     pct = Decimal(s.replace(",", "."))
+    return buat_bunga(pct, periode, nama, asli, eksplisit=(periode != periode_bawaan or
+                                                          _ada_satuan_periode(asli)))
+
+
+def _ada_satuan_periode(teks):
+    s = str(teks).strip().lower().replace(" ", "")
+    return bool(re.search(r"(/|per|p\.?a\.?$|pa$|harian|bulanan|tahunan)", s))
+
+
+def buat_bunga(pct, periode, nama="bunga", asli=None, eksplisit=True):
+    """periode: 'th' | 'bln' | 'hari'. eksplisit=False bila pengguna tidak menyebut satuan."""
     if periode == "th":
         b = Bunga(pct, 1, 1200, "per tahun")
     elif periode == "bln":
@@ -210,8 +240,33 @@ def parse_bunga(teks, nama="bunga", periode_bawaan="th"):
         b = Bunga(pct, 30, 100, "per hari (dihitung 30 hari/bulan)")
     if b.per_bulan_persen() > 50:
         raise InputSalah("{} '{}' = {} per bulan, tidak wajar. Periksa lagi angkanya.".format(
-            nama, asli, persen(b.per_bulan_persen(), 2)))
+            nama, asli if asli is not None else _fmt_pct(pct), persen(b.per_bulan_persen(), 2)))
+    b.kode, b.eksplisit, b.asli = periode, eksplisit, asli
     return b
+
+
+_PER = {"bulan": "bln", "bln": "bln", "bulanan": "bln", "tahun": "th", "th": "th", "thn": "th",
+        "tahunan": "th", "hari": "hari", "harian": "hari"}
+
+
+def terapkan_per(b, per, nama):
+    """Pakai satuan dari opsi --per untuk bunga TANPA satuan; tolak bila bertentangan."""
+    if per is None:
+        return b
+    kode = _PER[per]
+    if b.eksplisit:
+        if b.kode != kode:
+            raise InputSalah("{} '{}' sudah bersatuan {}, tetapi --per {}. Pilih salah satu.".format(
+                nama, b.asli, b.periode, per))
+        return b
+    return buat_bunga(b.pct, kode, nama, b.asli, eksplisit=True)
+
+
+def pesan_bunga_ambigu(b, nama):
+    x = _fmt_pct(b.pct)
+    return ("{} '{}' tanpa satuan: {} per BULAN atau per TAHUN? Untuk kartu kredit/KTA/paylater/pinjol di "
+            "Indonesia, angka di bawah 3 biasanya per BULAN. Tulis jelas, mis. '{}/bln' atau '{}/th' "
+            "(atau pakai --per bulan / --per tahun).".format(nama, b.asli, x, x, x))
 
 
 def parse_persen_tahunan(teks, nama):
@@ -339,11 +394,13 @@ def cetak_anggaran(args):
     pemasukan = []
     for t in args.pemasukan or []:
         n, j = pisah_nama_jumlah(t, "Pemasukan")
-        pemasukan.append((n, parse_rupiah(j, "Pemasukan '{}'".format(n))))
+        pemasukan.append((n, cek_nominal_kecil(parse_rupiah(j, "Pemasukan '{}'".format(n)), j,
+                                               "Pemasukan '{}'".format(n))))
     musiman = []
     for t in args.musiman or []:
         n, j = pisah_nama_jumlah(t, "Pemasukan musiman")
-        musiman.append((n, parse_rupiah(j, "Pemasukan musiman '{}'".format(n))))
+        musiman.append((n, cek_nominal_kecil(parse_rupiah(j, "Pemasukan musiman '{}'".format(n)), j,
+                                             "Pemasukan musiman '{}'".format(n))))
     if not pemasukan and not musiman:
         raise InputSalah("Isi minimal satu --pemasukan (pemasukan bersih per bulan), mis. --pemasukan \"Gaji=6jt\".")
     pos = [parse_pos(t) for t in (args.pos or [])]
@@ -456,8 +513,9 @@ def hitung_dana_darurat(pokok, status, saldo, setoran):
 
 
 def cetak_dana_darurat(args):
-    pokok = parse_rupiah(args.pengeluaran_pokok, "Pengeluaran pokok per bulan", boleh_nol=False)
-    saldo = parse_rupiah(args.saldo, "Saldo dana darurat")
+    pokok = cek_nominal_kecil(parse_rupiah(args.pengeluaran_pokok, "Pengeluaran pokok per bulan", boleh_nol=False),
+                              args.pengeluaran_pokok, "Pengeluaran pokok per bulan")
+    saldo = cek_nominal_kecil(parse_rupiah(args.saldo, "Saldo dana darurat"), args.saldo, "Saldo dana darurat")
     setoran = parse_rupiah(args.setoran, "Setoran per bulan")
     ket, hasil = hitung_dana_darurat(pokok, args.status, saldo, setoran)
     out = ["# Dana Darurat", "", "- Status: {} -> target {} bulan pengeluaran pokok".format(
@@ -497,15 +555,20 @@ class Utang(object):
 JENIS_UTANG = ("kk", "kta", "paylater", "pinjol", "kpr", "motor", "mobil", "keluarga", "lain")
 
 
-def parse_utang(teks):
+def parse_utang(teks, per=None):
     bagian = [b.strip() for b in teks.split(";")]
     if len(bagian) not in (4, 5):
         raise InputSalah(
             "Utang '{}' harus berformat nama;saldo;bunga;cicilan_minimum[;jenis], "
             "mis. \"Kartu kredit;8jt;1,75%/bln;400rb;kk\".".format(teks))
     nama = bagian[0] or "Utang"
-    saldo = parse_rupiah(bagian[1], "Saldo utang '{}'".format(nama))
-    bunga = parse_bunga(bagian[2], "Bunga utang '{}'".format(nama))
+    saldo = cek_nominal_kecil(parse_rupiah(bagian[1], "Saldo utang '{}'".format(nama)), bagian[1],
+                              "Saldo utang '{}'".format(nama))
+    nb = "Bunga utang '{}'".format(nama)
+    bunga = terapkan_per(parse_bunga(bagian[2], nb), per, nb)
+    if not bunga.eksplisit and 0 < bunga.pct < BATAS_BUNGA_TANPA_SATUAN:
+        # angka kecil tanpa satuan: salah tafsir = hasil meleset belasan kali lipat -> tanya, jangan menebak
+        raise InputSalah(pesan_bunga_ambigu(bunga, nb))
     minimum = parse_rupiah(bagian[3], "Cicilan minimum '{}'".format(nama))
     jenis = (bagian[4].lower() if len(bagian) == 5 and bagian[4] else "lain")
     if jenis not in JENIS_UTANG:
@@ -586,6 +649,10 @@ def peringatan_utang(daftar, anggaran):
             p.append("'{}': bunga {}/bulan melebihi batas pinjol konsumtif berizin OJK (0,1%/hari ~ 3%/bulan, "
                      "berlaku 2026). Curigai PINJOL ILEGAL: cek legalitas di ojk.go.id, Kontak OJK 157, "
                      "atau WA 081-157-157-157.".format(u.nama, persen(pb, 2)))
+        if not getattr(u.bunga, "eksplisit", True) and u.bunga.pct > 0:
+            p.append("'{}': bunga '{}' tanpa satuan DIANGGAP {}/tahun. Jika maksudnya per bulan, tulis '{}/bln' "
+                     "(hasil akan sangat berbeda).".format(u.nama, u.bunga.asli, _fmt_pct(u.bunga.pct),
+                                                           _fmt_pct(u.bunga.pct)))
         if u.jenis in ("kta", "motor", "mobil"):
             p.append("'{}': bila bunganya FLAT, ubah dulu ke bunga efektif dengan subperintah konversi-flat; "
                      "simulasi ini menghitung bunga dari SISA saldo (efektif).".format(u.nama))
@@ -632,7 +699,7 @@ def cetak_jadwal(h):
 def cetak_utang(args):
     if not args.utang:
         raise InputSalah("Isi minimal satu --utang \"nama;saldo;bunga;cicilan_minimum[;jenis]\".")
-    daftar = [parse_utang(t) for t in args.utang]
+    daftar = [parse_utang(t, args.per) for t in args.utang]
     total_min = sum((u.minimum for u in daftar if u.saldo > 0), NOL)
     if args.anggaran is not None and args.ekstra is not None:
         raise InputSalah("Pakai salah satu: --anggaran (total bayar semua utang per bulan) ATAU --ekstra.")
@@ -679,7 +746,11 @@ def cetak_utang(args):
         for h in hasil:
             out += cetak_jadwal(h)
     out += ["", "Jangan menutup utang dengan utang baru (gali lubang tutup lubang). Kesulitan bayar? Hubungi "
-            "kreditur untuk restrukturisasi secara resmi; pengaduan: Kontak OJK 157."]
+            "kreditur untuk restrukturisasi secara resmi; pengaduan: Kontak OJK 157.",
+            "Ditawari take over/refinancing/konsolidasi? Bandingkan TOTAL bunga sisa utang lama (tabel di atas) "
+            "dengan total bunga pinjaman baru (bunga efektif + tenor baru) DITAMBAH biaya provisi/admin/asuransi "
+            "dan penalti pelunasan dipercepat utang lama. Tenor lebih panjang membuat cicilan ringan tetapi "
+            "total bunga bisa lebih besar."]
     return "\n".join(out)
 
 
@@ -707,8 +778,59 @@ def cari_bunga_efektif_bulanan(pokok, cicilan, n):
     return (lo + hi) / 2
 
 
+def parse_bunga_flat(teks, per):
+    """Bunga flat -> (Bunga, ambigu). Terima '10,8', '10,8%/thn', '0,9%/bln', '0,9% per bulan'."""
+    nama = "Bunga flat"
+    b = terapkan_per(parse_bunga(teks, nama), per, nama)
+    ambigu = (not b.eksplisit) and 0 < b.pct < BATAS_BUNGA_TANPA_SATUAN
+    return b, ambigu
+
+
+def _blok_flat(pokok, n, b, sudah_bayar, judul=None):
+    """Satu tafsiran bunga flat. b: Bunga (periode diketahui). Kembalikan (baris, r_bulanan)."""
+    flat_th = b.per_bulan_persen() * 12            # persen flat per tahun
+    bunga_bln = bulat(pokok * flat_th / 1200)
+    pokok_bln = pokok / n
+    cicilan = bulat(pokok_bln + pokok * flat_th / 1200)
+    out = []
+    if judul:
+        out += ["## " + judul, ""]
+    if b.kode == "th":
+        teks_bunga = "{}/tahun".format(_fmt_pct(b.pct))
+    elif b.kode == "bln":
+        teks_bunga = "{}/bulan (= {}/tahun)".format(_fmt_pct(b.pct), _fmt_pct(flat_th))
+    else:
+        teks_bunga = "{}/hari x 30 hari (= {}/tahun)".format(_fmt_pct(b.pct), _fmt_pct(flat_th))
+    out.append("- Pokok {}, bunga flat {}, tenor {} bulan".format(rp(pokok), teks_bunga, n))
+    out.append("- Rumus flat: cicilan = pokok/tenor + pokok x bunga_flat/12 = {} + {} = **{}**".format(
+        rp(pokok_bln), rp(bunga_bln), rp(cicilan)))
+    return out + _blok_efektif(pokok, n, cicilan, sudah_bayar)
+
+
+def _blok_efektif(pokok, n, cicilan, sudah_bayar):
+    total = cicilan * n
+    total_bunga = total - pokok
+    if total_bunga < 0:
+        raise InputSalah("Total cicilan {} lebih kecil dari pokok {}. Periksa angka.".format(rp(total), rp(pokok)))
+    r = cari_bunga_efektif_bulanan(pokok, cicilan, n)
+    out = ["- Total dibayar {} | total bunga {}".format(rp(total), rp(total_bunga)),
+           "- **Bunga efektif setara: {}/bulan = {}/tahun**".format(persen(r * 100, 3), persen(r * 1200, 2)),
+           "- Untuk subperintah utang (lebih presisi): {}/bln".format(persen(r * 100, 4)),
+           "", "Artinya: pinjaman ini sama mahalnya dengan pinjaman berbunga efektif {}/tahun (bunga dihitung "
+           "dari sisa pokok). Bandingkan penawaran selalu dengan bunga EFEKTIF, bukan flat.".format(
+               persen(r * 1200, 2))]
+    if sudah_bayar is not None:
+        sisa = bulat(nilai_kini_anuitas(cicilan, r, n - sudah_bayar))
+        out += ["", "- Setelah {} kali bayar, perkiraan sisa pokok (metode efektif): **{}** untuk {} cicilan "
+                "tersisa. Pakai angka ini + bunga efektif di subperintah utang. Nilai pelunasan dipercepat "
+                "resmi bisa berbeda (ada penalti/aturan kontrak) - tanyakan ke kreditur.".format(
+                    sudah_bayar, rp(sisa), n - sudah_bayar)]
+    return out
+
+
 def cetak_konversi_flat(args):
-    pokok = parse_rupiah(args.pokok, "Pokok pinjaman", boleh_nol=False)
+    pokok = cek_nominal_kecil(parse_rupiah(args.pokok, "Pokok pinjaman", boleh_nol=False), args.pokok,
+                              "Pokok pinjaman")
     try:
         n = int(args.tenor)
     except (TypeError, ValueError):
@@ -716,29 +838,9 @@ def cetak_konversi_flat(args):
     if n <= 0 or n > 600:
         raise InputSalah("Tenor harus 1-600 bulan.")
     if args.cicilan is None and args.bunga_flat is None:
-        raise InputSalah("Isi --bunga-flat (persen per tahun) atau --cicilan (cicilan per bulan dari kontrak).")
-    out = ["# Konversi Bunga Flat -> Efektif", ""]
-    if args.cicilan is not None:
-        cicilan = parse_rupiah(args.cicilan, "Cicilan per bulan", boleh_nol=False)
-        out.append("- Pokok {}, cicilan {}/bulan x {} bulan (dari kontrak)".format(rp(pokok), rp(cicilan), n))
-    else:
-        flat = parse_persen_tahunan(args.bunga_flat, "Bunga flat")
-        bunga_bln = bulat(pokok * flat / 1200)
-        pokok_bln = pokok / n
-        cicilan = bulat(pokok_bln + pokok * flat / 1200)
-        out.append("- Pokok {}, bunga flat {}/tahun, tenor {} bulan".format(rp(pokok), _fmt_pct(flat), n))
-        out.append("- Rumus flat: cicilan = pokok/tenor + pokok x bunga_flat/12 = {} + {} = **{}**".format(
-            rp(pokok_bln), rp(bunga_bln), rp(cicilan)))
-    total = cicilan * n
-    total_bunga = total - pokok
-    if total_bunga < 0:
-        raise InputSalah("Total cicilan {} lebih kecil dari pokok {}. Periksa angka.".format(rp(total), rp(pokok)))
-    r = cari_bunga_efektif_bulanan(pokok, cicilan, n)
-    out += ["- Total dibayar {} | total bunga {}".format(rp(total), rp(total_bunga)),
-            "- **Bunga efektif setara: {}/bulan = {}/tahun**".format(persen(r * 100, 3), persen(r * 1200, 2)),
-            "", "Artinya: pinjaman ini sama mahalnya dengan pinjaman berbunga efektif {}/tahun (bunga dihitung "
-            "dari sisa pokok). Bandingkan penawaran selalu dengan bunga EFEKTIF, bukan flat.".format(
-                persen(r * 1200, 2))]
+        raise InputSalah("Isi --bunga-flat dengan satuan jelas (mis. '10,8%/th' atau '0,9%/bln') atau "
+                         "--cicilan (cicilan per bulan dari kontrak).")
+    k = None
     if args.sudah_bayar is not None:
         try:
             k = int(args.sudah_bayar)
@@ -746,10 +848,29 @@ def cetak_konversi_flat(args):
             raise InputSalah("--sudah-bayar harus bilangan bulat.")
         if k < 0 or k >= n:
             raise InputSalah("--sudah-bayar harus 0 sampai {} (kurang dari tenor).".format(n - 1))
-        sisa = bulat(nilai_kini_anuitas(cicilan, r, n - k))
-        out += ["", "- Setelah {} kali bayar, perkiraan sisa pokok (metode efektif): **{}** untuk {} cicilan "
-                "tersisa. Pakai angka ini + bunga efektif di subperintah utang. Nilai pelunasan dipercepat "
-                "resmi bisa berbeda (ada penalti/aturan kontrak) - tanyakan ke kreditur.".format(k, rp(sisa), n - k)]
+    out = ["# Konversi Bunga Flat -> Efektif", ""]
+    if args.cicilan is not None:
+        cicilan = parse_rupiah(args.cicilan, "Cicilan per bulan", boleh_nol=False)
+        out.append("- Pokok {}, cicilan {}/bulan x {} bulan (dari kontrak)".format(rp(pokok), rp(cicilan), n))
+        return "\n".join(out + _blok_efektif(pokok, n, cicilan, k))
+    b, ambigu = parse_bunga_flat(args.bunga_flat, args.per)
+    if ambigu:
+        x = _fmt_pct(b.pct)
+        out += ["## PERINGATAN: satuan bunga tidak disebut", "",
+                "- '{}' bisa berarti {} per BULAN atau {} per TAHUN - hasilnya berbeda jauh. Untuk KTA/kredit "
+                "di Indonesia, angka di bawah 3 hampir selalu per BULAN. Kedua tafsiran ditampilkan di bawah; "
+                "PASTIKAN ke pengguna/kontrak, lalu ulangi dengan '{}/bln' atau '{}/th' (atau --per bulan / "
+                "--per tahun). Jangan memakai hasil sebelum satuan dipastikan.".format(args.bunga_flat, x, x, x, x),
+                ""]
+        out += _blok_flat(pokok, n, buat_bunga(b.pct, "bln", "Bunga flat", b.asli),
+                          k, "Tafsiran A: {} per BULAN (paling mungkin)".format(x))
+        out += [""] + _blok_flat(pokok, n, buat_bunga(b.pct, "th", "Bunga flat", b.asli),
+                                 k, "Tafsiran B: {} per TAHUN".format(x))
+        return "\n".join(out)
+    out += _blok_flat(pokok, n, b, k)
+    if not b.eksplisit and b.pct > 0:
+        out += ["", "Catatan: '{}' tanpa satuan DIANGGAP {}/tahun. Jika di kontrak tertulis per bulan, ulangi "
+                "dengan '{}/bln'.".format(args.bunga_flat, _fmt_pct(b.pct), _fmt_pct(b.pct))]
     return "\n".join(out)
 
 
@@ -772,11 +893,28 @@ def hitung_target(biaya_sekarang, bulan, inflasi, imbal, terkumpul):
     return biaya_nanti, bulat(tumbuh), bulat_atas(pmt)
 
 
+def bulan_sampai_target(biaya_sekarang, inflasi, imbal, terkumpul, setoran, batas=720):
+    """Bulan pertama m (setor akhir bulan) saat tabungan >= biaya ikut inflasi. None bila > batas."""
+    i_bln = inflasi / 1200
+    r = imbal / 1200
+    if terkumpul >= bulat(biaya_sekarang):
+        return 0, bulat(biaya_sekarang)
+    tab = terkumpul
+    for m in range(1, batas + 1):
+        tab = tab * (1 + r) + setoran
+        nanti = bulat(biaya_sekarang * (1 + i_bln) ** m)
+        if tab >= nanti:
+            return m, nanti
+    return None, None
+
+
 def cetak_target(args):
     if args.jenis == "pensiun":
         if args.pengeluaran_bulanan is None:
             raise InputSalah("Untuk pensiun isi --pengeluaran-bulanan (nilai uang SEKARANG) dan --lama-pensiun.")
-        belanja = parse_rupiah(args.pengeluaran_bulanan, "Pengeluaran bulanan saat pensiun", boleh_nol=False)
+        belanja = cek_nominal_kecil(
+            parse_rupiah(args.pengeluaran_bulanan, "Pengeluaran bulanan saat pensiun", boleh_nol=False),
+            args.pengeluaran_bulanan, "Pengeluaran bulanan saat pensiun")
         try:
             lama = int(args.lama_pensiun)
         except (TypeError, ValueError):
@@ -787,7 +925,8 @@ def cetak_target(args):
     else:
         if args.biaya_sekarang is None:
             raise InputSalah("Isi --biaya-sekarang (harga target bila dibeli hari ini).")
-        biaya = parse_rupiah(args.biaya_sekarang, "Biaya sekarang", boleh_nol=False)
+        biaya = cek_nominal_kecil(parse_rupiah(args.biaya_sekarang, "Biaya sekarang", boleh_nol=False),
+                                  args.biaya_sekarang, "Biaya sekarang")
     if args.bulan is not None and args.tahun is not None:
         raise InputSalah("Pakai salah satu: --tahun atau --bulan.")
     try:
@@ -801,7 +940,7 @@ def cetak_target(args):
         raise InputSalah("Jangka waktu harus 1 bulan sampai 60 tahun.")
     inflasi = parse_persen_tahunan(args.inflasi, "Inflasi")
     imbal = parse_persen_tahunan(args.imbal, "Imbal hasil") if args.imbal is not None else NOL
-    terkumpul = parse_rupiah(args.terkumpul, "Dana terkumpul")
+    terkumpul = cek_nominal_kecil(parse_rupiah(args.terkumpul, "Dana terkumpul"), args.terkumpul, "Dana terkumpul")
     nanti, tumbuh, pmt = hitung_target(biaya, bulan, inflasi, imbal, terkumpul)
     out = ["# Target: {}".format(args.nama), "",
            "| Asumsi | Nilai |", "|---|---:|",
@@ -827,6 +966,16 @@ def cetak_target(args):
                     "atau tambah pemasukan.".format(rp(pmt - mampu), rp(mampu))]
         else:
             out += ["", "Kemampuan {} per bulan cukup (sisa {}).".format(rp(mampu), rp(mampu - pmt))]
+        m, nanti_m = bulan_sampai_target(biaya, inflasi, imbal, terkumpul, mampu)
+        if m is None:
+            out.append("Dengan menabung {}/bulan, target TIDAK tercapai dalam 60 tahun (kenaikan biaya karena "
+                       "inflasi lebih cepat dari tabungan). Naikkan setoran atau turunkan target.".format(rp(mampu)))
+        elif m == 0:
+            out.append("Dana terkumpul sudah cukup untuk biaya hari ini.")
+        else:
+            out.append("**Dengan menabung {}/bulan, target tercapai di bulan ke-{} (~{} th {} bln)**, saat "
+                       "biayanya diperkirakan {} (asumsi inflasi & imbal hasil yang sama).".format(
+                           rp(mampu), m, m // 12, m % 12, rp(nanti_m)))
     out += ["", "Rumus: biaya_nanti = biaya x (1 + inflasi/12)^bulan; tabungan/bulan = (biaya_nanti - "
             "terkumpul x (1+r)^bulan) x r / ((1+r)^bulan - 1), r = imbal/12 (jika r = 0: dibagi jumlah bulan). "
             "Setoran di akhir bulan, dibulatkan ke atas. Angka inflasi & imbal hasil adalah ASUMSI, bukan janji; "
@@ -868,11 +1017,17 @@ def buat_parser():
     u.add_argument("--anggaran", default=None, help="ATAU total uang untuk semua utang per bulan")
     u.add_argument("--metode", default="banding", choices=["avalanche", "snowball", "banding"])
     u.add_argument("--jadwal", action="store_true", help="Tampilkan jadwal bulanan lengkap")
+    u.add_argument("--per", default=None, choices=["bulan", "tahun", "hari"],
+                   help="Satuan untuk bunga yang ditulis TANPA satuan (mis. '2' -> 2%%/bln bila --per bulan)")
 
     k = sub.add_parser("konversi-flat", help="Bunga flat -> efektif setara")
     k.add_argument("--pokok", required=True)
     k.add_argument("--tenor", required=True, help="Jumlah bulan")
-    k.add_argument("--bunga-flat", default=None, help="Persen per tahun, mis. 12")
+    k.add_argument("--bunga-flat", default=None,
+                   help="Bunga flat DENGAN satuan: '10,8%%/th' atau '0,9%%/bln' (tanpa satuan: >=3 dianggap per "
+                        "tahun; <3 ditampilkan dua tafsiran)")
+    k.add_argument("--per", default=None, choices=["bulan", "tahun", "hari"],
+                   help="Satuan --bunga-flat bila tidak ditulis di angkanya")
     k.add_argument("--cicilan", default=None, help="ATAU cicilan per bulan dari kontrak")
     k.add_argument("--sudah-bayar", default=None, help="Jumlah cicilan yang sudah dibayar (opsional)")
 
@@ -892,6 +1047,7 @@ def buat_parser():
 
 
 def main(argv=None):
+    del PERINGATAN_INPUT[:]
     args = buat_parser().parse_args(argv)
     fungsi = {"anggaran": cetak_anggaran, "dana-darurat": cetak_dana_darurat, "utang": cetak_utang,
               "konversi-flat": cetak_konversi_flat, "target": cetak_target}[args.perintah]
@@ -906,6 +1062,9 @@ def main(argv=None):
         sys.stderr.write("Terjadi kesalahan tak terduga ({}). Periksa format input atau hitung manual "
                          "dengan rumus di SKILL.md.\n".format(type(e).__name__))
         return 3
+    if PERINGATAN_INPUT:
+        teks = "\n".join(["## PERINGATAN INPUT (periksa dulu)", ""] + ["- " + x for x in PERINGATAN_INPUT]
+                         + [""]) + "\n" + teks
     try:
         sys.stdout.write(teks + "\n")
     except UnicodeEncodeError:

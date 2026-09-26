@@ -12,6 +12,6 @@ Isi semua utang, termasuk paylater dan pinjaman keluarga. Lalu salin tiap baris 
 Uang ekstra per bulan di atas semua cicilan minimum: Rp__________
 
 Catatan:
-- Bunga **flat** (leasing motor/mobil, sebagian KTA/koperasi) → ubah dulu ke efektif: `python3 scripts/keuangan.py konversi-flat --pokok ... --bunga-flat ... --tenor ...` (atau `--cicilan` dari kontrak).
+- Bunga **flat** (leasing motor/mobil, sebagian KTA/koperasi) → ubah dulu ke efektif: `python3 scripts/keuangan.py konversi-flat --pokok ... --bunga-flat "0,9%/bln" --tenor ...` (tulis satuan: `%/bln` atau `%/th`) (atau `--cicilan` dari kontrak).
 - Pinjol: cek legalitas di ojk.go.id, Kontak OJK 157, atau WA 081-157-157-157.
 - Sisa saldo kartu kredit = tagihan penuh terakhir (bukan pembayaran minimum).

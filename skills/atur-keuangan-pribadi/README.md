@@ -56,3 +56,10 @@ Tidak ke mana-mana oleh skill ini. Script berjalan di komputer kamu, tanpa inter
 
 **Apakah hasilnya pasti tepat?**
 Hitungannya pasti (diuji dengan verifikasi independen), tetapi hasilnya simulasi: bunga bisa berubah, ada denda/biaya admin, dan hidup tidak selalu sesuai rencana. Ini **bukan nasihat keuangan**; untuk kasus rumit, konsultasikan ke perencana keuangan bersertifikat. Aturan OJK/BI dicek 26 September 2026.
+
+**Bunga KTA saya "0,9% per bulan", apakah dihitung benar?**
+Ya. Sebutkan satuannya (per bulan/per tahun). Kalau satuannya tidak jelas, AI akan menanyakan dulu — karena 0,9% per bulan flat ternyata setara ±19,5% per tahun efektif, sedangkan 0,9% per tahun hanya ±1,7%.
+
+## Riwayat versi
+- **v1.0.1 (2026-09-26)** — satuan bunga wajib jelas (per bulan/per tahun) agar bunga flat KTA tidak salah baca; peringatan angka yang terlalu kecil (mis. "1.500"); target menampilkan "tercapai bulan ke berapa"; catatan menilai tawaran take over/refinancing.
+- **v1.0.0 (2026-09-26)** — rilis awal.

@@ -410,5 +410,184 @@ class TesStrukturSkill(unittest.TestCase):
         self.assertIn("081-157-157-157", ref)
 
 
+# ---------------------------------------------------------------------------
+# v1.0.1 — regresi per temuan HASIL-UJI (T-1 satuan bunga, T-2 nominal kecil, T-5, T-6)
+# ---------------------------------------------------------------------------
+
+def f_efektif_tahunan(pokok, cicilan, n):
+    """Bisection Fraction independen: r bulanan dgn PV anuitas = pokok; kembalikan persen/tahun (float)."""
+    lo, hi = F(0), F(1)
+    for _ in range(80):
+        mid = (lo + hi) / 2
+        pv = cicilan * (1 - (1 + mid) ** (-n)) / mid
+        if pv > pokok:
+            lo = mid
+        else:
+            hi = mid
+    return float((lo + hi) / 2 * 1200)
+
+
+class TesT1SatuanBungaFlat(unittest.TestCase):
+    def efektif(self, stdout):
+        import re
+        m = re.findall(r"= ([0-9]+,[0-9]{2})%/tahun\*\*", stdout)
+        return [x.replace(",", ".") for x in m]
+
+    def test_per_bulan_dengan_satuan(self):
+        # 30 jt flat 0,9%/bln 24 bln -> cicilan 1.520.000 -> efektif 19,53%/th (bukan 1,72%)
+        for bunga in ("0,9%/bln", "0,9%/bulan", "0,9% per bulan", "0.9%/bln"):
+            r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", bunga, "--tenor", "24")
+            with self.subTest(bunga=bunga):
+                self.assertEqual(r.returncode, 0, r.stderr)
+                self.assertIn("Rp1.520.000", r.stdout)
+                self.assertEqual(self.efektif(r.stdout), ["19.53"])
+                self.assertNotIn("PERINGATAN", r.stdout)
+        self.assertAlmostEqual(f_efektif_tahunan(F(30000000), F(1520000), 24), 19.53, places=2)
+
+    def test_opsi_per(self):
+        r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", "0,9", "--per", "bulan", "--tenor", "24")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(self.efektif(r.stdout), ["19.53"])
+        r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", "10,8%/thn", "--tenor", "24")
+        self.assertEqual(self.efektif(r.stdout), ["19.53"])
+
+    def test_tanpa_satuan_kecil_tampilkan_dua_tafsiran(self):
+        r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", "0,9", "--tenor", "24")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("PERINGATAN", r.stdout)
+        self.assertIn("per BULAN", r.stdout)
+        # tafsiran per bulan tampil PERTAMA, lalu per tahun
+        self.assertEqual(self.efektif(r.stdout), ["19.53", "1.72"])
+
+    def test_tanpa_satuan_besar_dianggap_tahunan_dan_diberi_catatan(self):
+        r = jalankan("konversi-flat", "--pokok", "18jt", "--bunga-flat", "12", "--tenor", "24")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("Rp930.000", r.stdout)
+        self.assertEqual(self.efektif(r.stdout), ["21.57"])
+        self.assertIn("DIANGGAP 12%/tahun", r.stdout)
+
+    def test_satuan_bertentangan_ditolak(self):
+        r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", "10,8%/th", "--per", "bulan",
+                     "--tenor", "24")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("Pilih salah satu", r.stderr)
+
+    def test_presisi_4_desimal_untuk_utang(self):
+        r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", "0,9%/bln", "--tenor", "24")
+        self.assertIn("1,6275%/bln", r.stdout)
+
+
+class TesT1SatuanBungaUtang(unittest.TestCase):
+    def test_tanpa_satuan_kecil_ditanya(self):
+        for bunga in ("1,75", "2%", "0,5"):
+            r = jalankan("utang", "--utang", "KK;12jt;{};600rb;kk".format(bunga))
+            with self.subTest(bunga=bunga):
+                self.assertEqual(r.returncode, 2)
+                self.assertIn("per BULAN atau per TAHUN", r.stderr)
+                self.assertNotIn("Traceback", r.stderr)
+
+    def test_opsi_per_sama_dengan_satuan_eksplisit(self):
+        a = jalankan("utang", "--utang", "KK;12jt;1,75;600rb;kk", "--per", "bulan", "--ekstra", "300rb")
+        b = jalankan("utang", "--utang", "KK;12jt;1,75%/bln;600rb;kk", "--ekstra", "300rb")
+        self.assertEqual(a.returncode, 0, a.stderr)
+        self.assertEqual(a.stdout, b.stdout)
+        u = k.parse_utang("KK;12jt;1,75;600rb;kk", "bulan")
+        self.assertEqual(u.bunga.per_bulan_persen(), Decimal("1.75"))
+
+    def test_tanpa_satuan_besar_diberi_peringatan(self):
+        r = jalankan("utang", "--utang", "KTA;20jt;11;700rb;kta")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("DIANGGAP 11%/tahun", r.stdout)
+        r = jalankan("utang", "--utang", "KTA;20jt;11%/th;700rb;kta")
+        self.assertNotIn("DIANGGAP", r.stdout)
+
+    def test_nol_tanpa_satuan_boleh(self):
+        r = jalankan("utang", "--utang", "Kakak;2jt;0;500rb;keluarga")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertNotIn("DIANGGAP", r.stdout)
+
+    def test_skenario_02_tidak_berubah(self):
+        r = jalankan("utang", "--utang", "Kartu kredit;12jt;1,75%/bln;600rb;kk",
+                     "--utang", "KTA;30jt;1,628%/bln;1.520.000;kta", "--utang", "Paylater;3jt;2,5%/bln;300rb;paylater",
+                     "--utang", "Pinjol legal;2jt;0,1%/hari;500rb;pinjol", "--ekstra", "2,5jt", "--metode", "banding")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(r.stdout.count("Semua lunas dalam 10 bulan (~0 th 10 bln). Total bunga Rp4.226.895."), 2)
+
+
+class TesT2NominalKecil(unittest.TestCase):
+    def test_peringatan_ribuan(self):
+        r = jalankan("anggaran", "--pemasukan", "Gaji=1.500", "--pos", "Makan=1jt")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("PERINGATAN INPUT", r.stdout)
+        self.assertIn("Rp1.500.000", r.stdout)
+        for argumen in (["dana-darurat", "--pengeluaran-pokok", "4.500", "--status", "lajang"],
+                        ["utang", "--utang", "KK;5.000;1,75%/bln;500;kk"],
+                        ["target", "--biaya-sekarang", "60", "--tahun", "5"]):
+            r = jalankan(*argumen)
+            with self.subTest(argumen=argumen):
+                self.assertEqual(r.returncode, 0, r.stderr)
+                self.assertIn("PERINGATAN INPUT", r.stdout)
+
+    def test_tanpa_peringatan_bila_wajar(self):
+        r = jalankan("anggaran", "--pemasukan", "Gaji=1,5jt", "--pos", "Sampah=5rb")
+        self.assertNotIn("PERINGATAN INPUT", r.stdout)
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "4,5jt", "--status", "lajang", "--saldo", "0")
+        self.assertNotIn("PERINGATAN INPUT", r.stdout)
+
+
+def f_bulan_sampai(biaya, inf, imb, terkumpul, setor, batas=720):
+    """Independen (Fraction): bulan pertama tabungan >= biaya ikut inflasi (setor akhir bulan)."""
+    i, r = F(inf) / 1200, F(imb) / 1200
+    if terkumpul >= biaya:
+        return 0
+    tab = terkumpul
+    for m in range(1, batas + 1):
+        tab = tab * (1 + r) + setor
+        if tab >= f_bulat(biaya * (1 + i) ** m):
+            return m
+    return None
+
+
+class TesT5BulanSampaiTarget(unittest.TestCase):
+    def test_banding_fraction_acak(self):
+        rnd = random.Random(101)
+        for _ in range(25):
+            biaya = rnd.randint(5, 300) * 1000000
+            inf, imb = rnd.choice([0, 3, 4, 6]), rnd.choice([0, 3, 5])
+            tk = rnd.randint(0, 20) * 1000000
+            setor = rnd.randint(1, 40) * 100000
+            m, _ = k.bulan_sampai_target(Decimal(biaya), Decimal(inf), Decimal(imb), Decimal(tk), Decimal(setor))
+            with self.subTest(biaya=biaya, inf=inf, imb=imb, tk=tk, setor=setor):
+                self.assertEqual(m, f_bulan_sampai(F(biaya), inf, imb, F(tk), F(setor)))
+
+    def test_konsisten_dengan_tabungan_per_bulan(self):
+        # menabung tepat sebesar kebutuhan/bulan untuk N bulan -> tercapai paling lambat bulan ke-N
+        for biaya, n, inf, imb, tk in [(60000000, 60, 4, 5, 10000000), (150000000, 48, 4, 0, 20000000),
+                                       (35000000, 36, 3, 0, 0)]:
+            _, _, pmt = k.hitung_target(Decimal(biaya), n, Decimal(inf), Decimal(imb), Decimal(tk))
+            m, _ = k.bulan_sampai_target(Decimal(biaya), Decimal(inf), Decimal(imb), Decimal(tk), pmt)
+            with self.subTest(biaya=biaya):
+                self.assertLessEqual(m, n)
+                self.assertGreaterEqual(m, n - 1)
+
+    def test_cli(self):
+        r = jalankan("target", "--nama", "DP rumah", "--biaya-sekarang", "60jt", "--tahun", "5", "--inflasi", "4",
+                     "--imbal", "5", "--terkumpul", "10jt", "--kemampuan", "700rb")
+        self.assertIn("tercapai di bulan ke-78", r.stdout)
+        self.assertIn("Rp888.542", r.stdout)   # angka lama tidak berubah
+        r = jalankan("target", "--biaya-sekarang", "150jt", "--tahun", "4", "--terkumpul", "20jt",
+                     "--inflasi", "5", "--kemampuan", "100rb")
+        self.assertIn("TIDAK tercapai", r.stdout)
+
+
+class TesT6TakeOver(unittest.TestCase):
+    def test_catatan_take_over_tanpa_produk(self):
+        r = jalankan("utang", "--utang", "KK;5jt;1,75%/bln;500rb;kk")
+        for kata in ("take over", "provisi", "penalti", "Tenor lebih panjang"):
+            self.assertIn(kata, r.stdout)
+        ref = (FOLDER / "references" / "utang-dan-pinjol.md").read_text(encoding="utf-8")
+        self.assertIn("Take over", ref)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -39,6 +39,14 @@ Yang disarankan skill ini:
 - **Flat:** bunga dihitung dari pokok awal sepanjang tenor. Umum di leasing motor/mobil dan sebagian KTA/koperasi.
 - **Efektif (anuitas/menurun):** bunga dihitung dari sisa pokok. Umum di KPR, kartu kredit, sebagian KTA bank.
 - Flat 12%/th tenor 24 bulan ≈ efektif **21,57%/th**; flat 10%/th tenor 12 bulan ≈ efektif **17,97%/th**. Selalu bandingkan penawaran dengan angka efektif (`python3 scripts/keuangan.py konversi-flat ...`).
+- **Satuan wajib jelas.** Bunga flat sering disebut **per bulan** ("0,9% per bulan") padahal rumus memakai per tahun (0,9 × 12 = 10,8%/th). Tulis `--bunga-flat "0,9%/bln"` atau `"10,8%/th"`. Angka tanpa satuan di bawah 3 hampir pasti per bulan: script menampilkan dua tafsiran dan agent **wajib menanyakan** satuannya sebelum memakai hasil (0,9%/bln → efektif 19,53%/th; 0,9%/th → hanya 1,72%/th).
+
+## Take over / refinancing / konsolidasi (catatan, bukan rekomendasi produk)
+Bank/fintech sering menawarkan "take over" KTA/kartu kredit atau menggabungkan beberapa utang jadi satu. Cara menilai (tanpa menyebut produk tertentu):
+1. **Biaya lama:** total bunga SISA utang lama sampai lunas (hasil subperintah `utang`, atau konversi-flat dengan `--sudah-bayar`).
+2. **Biaya baru:** ubah penawaran ke bunga **efektif** (konversi-flat bila flat), hitung total bunga sampai lunas dengan tenor baru, lalu **tambahkan** biaya provisi, administrasi, asuransi, materai, dan **penalti pelunasan dipercepat** utang lama.
+3. Pindah hanya bila total biaya baru jelas lebih kecil. Jebakan umum: tenor diperpanjang → cicilan terasa ringan tetapi total bunga lebih besar; limit kartu lama tetap aktif → dipakai belanja lagi.
+4. Jangan pernah "take over" ke pinjol atau pinjaman ilegal; itu gali lubang tutup lubang.
 
 ## Kartu kredit & paylater
 - Bayar **minimum** saja = sisa tagihan tetap berbunga; utang lama sekali lunasnya. Relaksasi BI sampai 31 Desember 2026: pembayaran minimum 5% dan denda maksimal Rp100.000 (cek ulang setelah tanggal itu).

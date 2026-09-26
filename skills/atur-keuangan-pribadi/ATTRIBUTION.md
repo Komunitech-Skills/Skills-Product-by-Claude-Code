@@ -37,5 +37,13 @@ Sumber ini **tidak memenuhi 3 sinyal bukti penuh**: ±75★/16 fork (di bawah am
 Penggunaan tunduk pada `LISENSI.txt` dalam paket pembelian, ditambah ketentuan MIT pada bagian yang disebut di atas.
 
 ## Riwayat versi
+### v1.0.1 (2026-09-26) — revisi dari HASIL-UJI (skor 8), status `draft`
+- T-1: satuan bunga wajib jelas. `konversi-flat --bunga-flat` menerima `0,9%/bln`, `10,8%/thn`, `0,9% per bulan` dan opsi `--per bulan|tahun`; angka tanpa satuan < 3 → dua tafsiran + PERINGATAN (tidak lagi diam-diam dibaca per tahun); ≥ 3 → dianggap per tahun dengan catatan. `utang` konsisten: bunga tanpa satuan < 3 ditolak dengan pertanyaan satuan, `--per` tersedia, ≥ 3 diberi peringatan. Efektif 4 desimal untuk disalin ke `utang`.
+- T-2: nominal gaji/saldo/pokok/biaya < Rp10.000 (mis. "1.500") → bagian PERINGATAN INPUT.
+- T-5: `target --kemampuan` menampilkan bulan ke berapa target tercapai (atau tidak tercapai dalam 60 tahun).
+- T-6: catatan take over/refinancing/konsolidasi (bandingkan total bunga sisa vs baru + provisi/admin/penalti) di keluaran `utang`, SKILL.md, dan references — tanpa rekomendasi produk.
+- T-8: asumsi minimum kartu kredit tetap disebut di Batasan.
+- Angka lama tidak berubah (skenario 02: 10 bulan, bunga Rp4.226.895). Tes regresi 33 → 50.
+
 ### v1.0.0 (2026-09-26) — rilis awal, status `draft`
 Belum diuji penguji independen (Tahap 6). Tes regresi pembuat: lihat `tests/uji_regresi.py`.
