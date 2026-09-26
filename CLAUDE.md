@@ -28,6 +28,14 @@ Dua jalur produksi:
 - **Kesehatan:** hanya edukasi pasien, balasan chat umum non-diagnosis, dan laporan operasional klinik. **Tanpa** skrining/diagnosis/kalkulator medis.
 - Ditolak: clone wajah/suara tanpa izin, posting otomatis yang diklaim padahal tidak didukung, scraping marketplace lewat login browser.
 
+**Keputusan pemilik 2026-09-26 (disetujui langsung oleh pemilik):**
+- **Harga & tier:** `tier_final`/`harga_final_idr` = usulan kurator untuk skill yang sudah `lulus`. Skill yang lulus berikutnya diisi sama dengan usulan dan dicatat di laporan sesi; pemilik boleh mengubah kapan saja.
+- **solusi-vip/** ikut di ZIP paket VIP (`build.py --vip`).
+- **Pengingat pasien (klinik):** data disimpan lokal di komputer klinik, minimal (nama panggilan, nomor WA, jenis & tanggal kunjungan berikutnya), tanpa diagnosis/rekam medis. Pengingat = draf yang dikirim staf, bukan kiriman otomatis.
+- **Laporan ke klien (konsultan):** AI menyiapkan draf terjadwal ke konsultan via Telegram; konsultan yang mengirim ke klien.
+- **Merek pihak ketiga di nama skill** (mis. Dolibarr): boleh sebagai penyebut produk, wajib keterangan "tidak berafiliasi".
+- **Default branch repo** diperbarui berkala lewat PR dari branch kerja Akun A.
+
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
 Bahasa: Bahasa Indonesia sebagai utama; bilingual ID/EN bila relevan.
@@ -120,6 +128,7 @@ Untuk SETIAP skill, catat di `research/sources/`: nama, URL, pembuat, tanggal up
 - **CC-BY** → boleh dengan atribusi. **CC-BY-NC / non-commercial** → DILARANG dijual.
 - **GPL** → turunan wajib tetap GPL dan terbuka; tandai "PERLU REVIEW" untuk pemilik.
 - **Tanpa lisensi / proprietary / berbayar milik pihak lain** → DILARANG disalin atau dijual ulang. Hanya boleh sebagai inspirasi, lalu tulis ulang dari nol.
+- **Tulis ulang bersih** (disetujui pemilik 2026-09-26) untuk sumber CC-BY-NC, CC-BY-SA, GPL/AGPL, Commons Clause, atau tanpa lisensi: jangan salin/modifikasi teks, contoh, atau template-nya. Agent 1 membaca sumber dan menulis **daftar ide/fitur saja** (tanpa kutipan) di `research/sources/`; agent 2 yang **tidak membaca sumber** menulis skill dari daftar itu + riset sendiri. Hasilnya karya baru Komunitech dan boleh dijual. Asal ide dicatat di `research/sources/`, tidak diklaim "berbasis" sumber itu di materi jualan.
 - Ragu → tandai "PERLU REVIEW", jangan masuk produk berbayar.
 
 **Nilai tambah wajib:** skill publik gratis (mis. dari ClawHub) bisa didapat siapa pun. Jangan jual apa adanya. Minimal lakukan: lokalisasi Indonesia, perbaikan kualitas, contoh kasus lokal, pengujian lintas platform, dan dokumentasi pembeli. Jika nilai tambah tidak signifikan, masukkan ke tier GRATIS saja.

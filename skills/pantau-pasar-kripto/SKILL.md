@@ -118,17 +118,30 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    diambil datanya (jangan diam-diam disembunyikan) -- `pesan_singkat` sudah menyebutnya
    secara eksplisit, jangan pernah menyimpulkan "tidak ada ambang terlewati" kalau
    sebagian koin justru TIDAK BISA dicek sama sekali.
-5. **Anti-spam bawaan:** `cek_ambang.py` menyimpan status "sudah dilaporkan" per koin/
-   ambang di `kripto/state.json`. Selama ambang masih terlewati tapi belum berubah,
-   `perlu_lapor_sekarang` akan `false` pada giliran berikutnya (diredam) sampai jeda
-   `--jeda-ulang-jam` (default 6 jam) habis, atau sampai kondisinya pulih dulu lalu
-   terpicu lagi. Field `ambang_terlewati` (beda dari `perlu_lapor_sekarang`) selalu
-   menunjukkan fakta apa adanya, terlepas dari sudah dilaporkan atau belum.
-6. Exit code script: `0` = tidak ada yang PERLU dilaporkan sekarang, `2` = ADA yang perlu
-   dilaporkan (ambang baru terlewati, atau jeda lapor-ulang habis -- dipakai automation
+5. **Anti-spam bawaan:** `cek_ambang.py` menyimpan status "sudah dilaporkan" **per JENIS
+   ambang** (naik/turun/di atas/di bawah, bukan digabung per koin) di `kripto/state.json`
+   -- ambang lain yang baru terlewati di koin yang sama TIDAK ikut diredam oleh ambang yang
+   sudah dilaporkan lebih dulu. Selama satu jenis ambang masih terlewati tapi belum
+   berubah, laporannya diredam sampai jeda `--jeda-ulang-jam` (default 6 jam) habis, atau
+   sampai kondisinya pulih dulu lalu terpicu lagi. Field `ambang_terlewati` (beda dari
+   `perlu_lapor`) selalu menunjukkan fakta apa adanya, terlepas dari sudah dilaporkan atau
+   belum. **"Pemantauan buta" juga punya anti-spam yang sama** (koin gagal total, cache
+   lebih tua dari `--usia-basi-jam`, atau ambang %/24 jam yang sedang tidak bisa dievaluasi
+   sama sekali): dilaporkan sekali saat terjadi, diredam sampai jeda habis, dan dilaporkan
+   lagi sekali saat PULIH (lihat field `pemantauan_bermasalah`/`perlu_lapor_pemantauan`/
+   `pemantauan_pulih` per koin) -- bukan didiamkan selamanya, dan bukan pula dilaporkan
+   setiap kali tanpa jeda. **Catatan upgrade dari v1.0.1 ke v1.0.2:** format kunci
+   notifikasi di `kripto/state.json` berubah (kini per jenis ambang, bukan per koin) --
+   riwayat "sudah dilaporkan" yang lama tidak terbaca lagi, jadi kondisi yang sedang
+   terlewati saat upgrade bisa dilaporkan ulang SEKALI di jalan pertama sesudah upgrade
+   (bukan bug, satu kali saja, lalu anti-spam berjalan normal lagi seperti biasa).
+6. Exit code script: `0` = tidak ada yang PERLU dilaporkan sekarang, `2` = ADA ambang HARGA
+   yang perlu dilaporkan (baru terlewati, atau jeda lapor-ulang habis -- dipakai automation
    untuk memutuskan kapan perlu memanggil agent/mengirim pesan, lihat
-   `references/openclaw-jadwal.md`), `3` = sukses sebagian (ada koin gagal total, tetap
-   perlu diberitahukan lewat wrapper `scripts/cek_dan_lapor.py`), `1` = error input/
+   `references/openclaw-jadwal.md`), `3` = ADA "pemantauan buta" yang perlu dilaporkan
+   sekarang (gagal total/cache basi/ambang tak bisa dicek, baru terjadi atau baru pulih --
+   tetap diberitahukan lewat wrapper `scripts/cek_dan_lapor.py`, dengan anti-spam yang sama
+   seperti ambang harga), `1` = error input/
    konfigurasi.
 
 ### B. Ringkasan pagi

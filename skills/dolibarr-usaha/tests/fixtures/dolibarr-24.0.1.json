@@ -1,0 +1,483 @@
+{
+ "status": {
+  "success": {
+   "code": 200,
+   "dolibarr_version": "24.0.1",
+   "access_locked": "0",
+   "environment": "non-production",
+   "timestamp_now_utc": 1790257617,
+   "timestamp_php_tz": "Asia/Jakarta",
+   "date_tz": "2026-09-24 20:46:57"
+  }
+ },
+ "users_info_tulis": {
+  "id": "3",
+  "login": "api_tulis",
+  "admin": "0",
+  "status": "1",
+  "statut": "1",
+  "rights": {
+   "user": {
+    "user": {},
+    "self": {
+     "creer": 1
+    },
+    "user_advance": {},
+    "self_advance": {},
+    "group_advance": {}
+   },
+   "facture": {
+    "lire": 1,
+    "creer": 1
+   },
+   "produit": {
+    "lire": 1
+   },
+   "societe": {
+    "lire": 1,
+    "creer": 1,
+    "client": {
+     "voir": 1
+    }
+   },
+   "stock": {
+    "lire": 1
+   }
+  }
+ },
+ "thirdparties": [
+  {
+   "id": "1",
+   "entity": "1",
+   "ref": "CV Maju Jaya",
+   "name": "CV Maju Jaya",
+   "name_alias": "",
+   "code_client": "CU2609-00001",
+   "client": "1",
+   "status": "1",
+   "phone": "081234567890",
+   "phone_mobile": null,
+   "email": "maju@contoh.id",
+   "town": "Bandung",
+   "address": "",
+   "country_id": null,
+   "country_code": "",
+   "date_creation": 1790216136
+  },
+  {
+   "id": "2",
+   "entity": "1",
+   "ref": "Toko Sinar Abadi",
+   "name": "Toko Sinar Abadi",
+   "name_alias": "",
+   "code_client": "CU2609-00002",
+   "client": "1",
+   "status": "1",
+   "phone": null,
+   "phone_mobile": null,
+   "email": null,
+   "town": null,
+   "address": "",
+   "country_id": null,
+   "country_code": "",
+   "date_creation": 1790216137
+  }
+ ],
+ "products_includestockdata": [
+  {
+   "id": "4",
+   "ref": "CUP-12",
+   "label": "Gelas Kertas 12oz (isi 50)",
+   "type": "0",
+   "status": "1",
+   "status_buy": "1",
+   "price": "27000.00000000",
+   "price_ttc": "29970.00000000",
+   "price_base_type": "HT",
+   "tva_tx": "11.0000",
+   "stock_reel": 0,
+   "stock_theorique": 0,
+   "seuil_stock_alerte": "20",
+   "desiredstock": "0",
+   "stock_warehouse": [],
+   "barcode": null
+  },
+  {
+   "id": "2",
+   "ref": "GLA-1KG",
+   "label": "Gula Aren 1kg",
+   "type": "0",
+   "status": "1",
+   "status_buy": "1",
+   "price": "32500.00000000",
+   "price_ttc": "36075.00000000",
+   "price_base_type": "HT",
+   "tva_tx": "11.0000",
+   "stock_reel": 40,
+   "stock_theorique": 40,
+   "seuil_stock_alerte": "5",
+   "desiredstock": "20",
+   "stock_warehouse": {
+    "1": {
+     "real": "40",
+     "id": "2"
+    }
+   },
+   "barcode": null
+  },
+  {
+   "id": "3",
+   "ref": "JSA-INST",
+   "label": "Jasa Instalasi Mesin Kopi",
+   "type": "1",
+   "status": "1",
+   "status_buy": "0",
+   "price": "750000.00000000",
+   "price_ttc": "832500.00000000",
+   "price_base_type": "HT",
+   "tva_tx": "11.0000",
+   "stock_reel": 0,
+   "stock_theorique": 0,
+   "seuil_stock_alerte": "0",
+   "desiredstock": "0",
+   "stock_warehouse": [],
+   "barcode": null
+  },
+  {
+   "id": "1",
+   "ref": "KPI-250",
+   "label": "Kopi Bubuk Arabika 250g",
+   "type": "0",
+   "status": "1",
+   "status_buy": "1",
+   "price": "85000.00000000",
+   "price_ttc": "94350.00000000",
+   "price_base_type": "HT",
+   "tva_tx": "11.0000",
+   "stock_reel": 7,
+   "stock_theorique": 7,
+   "seuil_stock_alerte": "10",
+   "desiredstock": "30",
+   "stock_warehouse": {
+    "1": {
+     "real": "7",
+     "id": "1"
+    }
+   },
+   "barcode": null
+  }
+ ],
+ "invoices_all": [
+  {
+   "id": "1",
+   "ref": "IN2609-0002",
+   "socid": "1",
+   "type": "0",
+   "statut": "1",
+   "status": "1",
+   "paye": "0",
+   "date": 1790182800,
+   "date_lim_reglement": 1790182800,
+   "total_ht": "332345.00000000",
+   "total_tva": "36557.95000000",
+   "total_ttc": "368902.95000000",
+   "remaintopay": "0",
+   "totalpaid": 368902.95,
+   "totalcreditnotes": null,
+   "totaldeposits": null,
+   "multicurrency_code": "IDR",
+   "note_private": "Draf dibuat oleh skill dolibarr-usaha",
+   "lines": [
+    {
+     "id": "2",
+     "desc": "Gula Aren 1kg",
+     "qty": "2",
+     "subprice": "32500.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "65000.00000000",
+     "total_tva": "7150.00000000",
+     "total_ttc": "72150.00000000",
+     "fk_product": "2",
+     "product_type": "0",
+     "rang": "2"
+    },
+    {
+     "id": "1",
+     "desc": "Kopi Bubuk Arabika 250g",
+     "qty": "3",
+     "subprice": "85000.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "255000.00000000",
+     "total_tva": "28050.00000000",
+     "total_ttc": "283050.00000000",
+     "fk_product": "1",
+     "product_type": "0",
+     "rang": "5"
+    },
+    {
+     "id": "3",
+     "desc": "Ongkos kirim",
+     "qty": "1",
+     "subprice": "12345.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "12345.00000000",
+     "total_tva": "1357.95000000",
+     "total_ttc": "13702.95000000",
+     "fk_product": null,
+     "product_type": "1",
+     "rang": "6"
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "ref": "IN2608-0001",
+   "socid": "2",
+   "type": "0",
+   "statut": "1",
+   "status": "1",
+   "paye": "0",
+   "date": 1787590800,
+   "date_lim_reglement": 1788195600,
+   "total_ht": "675000.00000000",
+   "total_tva": "74250.00000000",
+   "total_ttc": "749250.00000000",
+   "remaintopay": "749250",
+   "totalpaid": 0,
+   "totalcreditnotes": null,
+   "totaldeposits": null,
+   "multicurrency_code": "IDR",
+   "note_private": null,
+   "lines": [
+    {
+     "id": "4",
+     "desc": "Jasa Instalasi Mesin Kopi",
+     "qty": "1",
+     "subprice": "750000.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "10",
+     "total_ht": "675000.00000000",
+     "total_tva": "74250.00000000",
+     "total_ttc": "749250.00000000",
+     "fk_product": "3",
+     "product_type": "1",
+     "rang": "1"
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "ref": "IN2609-0005",
+   "socid": "1",
+   "type": "0",
+   "statut": "1",
+   "status": "1",
+   "paye": "0",
+   "date": 1789491600,
+   "date_lim_reglement": 1790096400,
+   "total_ht": "301000.00000000",
+   "total_tva": "33110.00000000",
+   "total_ttc": "334110.00000000",
+   "remaintopay": "334110",
+   "totalpaid": 0,
+   "totalcreditnotes": null,
+   "totaldeposits": null,
+   "multicurrency_code": "IDR",
+   "note_private": null,
+   "lines": [
+    {
+     "id": "6",
+     "desc": "Gula",
+     "qty": "4",
+     "subprice": "32500.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "130000.00000000",
+     "total_tva": "14300.00000000",
+     "total_ttc": "144300.00000000",
+     "fk_product": "2",
+     "product_type": "0",
+     "rang": "2"
+    },
+    {
+     "id": "5",
+     "desc": "Kopi A",
+     "qty": "2",
+     "subprice": "85000.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "170000.00000000",
+     "total_tva": "18700.00000000",
+     "total_ttc": "188700.00000000",
+     "fk_product": "1",
+     "product_type": "0",
+     "rang": "5"
+    },
+    {
+     "id": "7",
+     "desc": "Lain",
+     "qty": "1",
+     "subprice": "1000.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "1000.00000000",
+     "total_tva": "110.00000000",
+     "total_ttc": "1110.00000000",
+     "fk_product": null,
+     "product_type": "0",
+     "rang": "6"
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "ref": "(PROV4)",
+   "socid": "1",
+   "type": "0",
+   "statut": "0",
+   "status": "0",
+   "paye": "0",
+   "date": 1789491600,
+   "date_lim_reglement": 1790096400,
+   "total_ht": "301000.00000000",
+   "total_tva": "33110.00000000",
+   "total_ttc": "334110.00000000",
+   "remaintopay": "334110",
+   "totalpaid": 0,
+   "totalcreditnotes": null,
+   "totaldeposits": null,
+   "multicurrency_code": "IDR",
+   "note_private": null,
+   "lines": [
+    {
+     "id": "8",
+     "desc": "Kopi A",
+     "qty": "2",
+     "subprice": "85000.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "170000.00000000",
+     "total_tva": "18700.00000000",
+     "total_ttc": "188700.00000000",
+     "fk_product": "1",
+     "product_type": "0",
+     "rang": "1"
+    },
+    {
+     "id": "9",
+     "desc": "Gula",
+     "qty": "4",
+     "subprice": "32500.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "130000.00000000",
+     "total_tva": "14300.00000000",
+     "total_ttc": "144300.00000000",
+     "fk_product": "2",
+     "product_type": "0",
+     "rang": "2"
+    },
+    {
+     "id": "10",
+     "desc": "Lain",
+     "qty": "1",
+     "subprice": "1000.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "1000.00000000",
+     "total_tva": "110.00000000",
+     "total_ttc": "1110.00000000",
+     "fk_product": null,
+     "product_type": "0",
+     "rang": "3"
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "ref": "IN2606-0003",
+   "socid": "2",
+   "type": "0",
+   "statut": "1",
+   "status": "1",
+   "paye": "0",
+   "date": 1780246800,
+   "date_lim_reglement": 1782838800,
+   "total_ht": "1700000.00000000",
+   "total_tva": "187000.00000000",
+   "total_ttc": "1887000.00000000",
+   "remaintopay": "1387000",
+   "totalpaid": 500000,
+   "totalcreditnotes": null,
+   "totaldeposits": null,
+   "multicurrency_code": "IDR",
+   "note_private": null,
+   "lines": [
+    {
+     "id": "11",
+     "desc": "Kopi grosir",
+     "qty": "20",
+     "subprice": "85000.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "1700000.00000000",
+     "total_tva": "187000.00000000",
+     "total_ttc": "1887000.00000000",
+     "fk_product": "1",
+     "product_type": "0",
+     "rang": "1"
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "ref": "IN2609-0004",
+   "socid": "1",
+   "type": "0",
+   "statut": "1",
+   "status": "1",
+   "paye": "0",
+   "date": 1790182800,
+   "date_lim_reglement": 1791565200,
+   "total_ht": "97500.00000000",
+   "total_tva": "10725.00000000",
+   "total_ttc": "108225.00000000",
+   "remaintopay": "108225",
+   "totalpaid": 0,
+   "totalcreditnotes": null,
+   "totaldeposits": null,
+   "multicurrency_code": "IDR",
+   "note_private": null,
+   "lines": [
+    {
+     "id": "12",
+     "desc": "Gula",
+     "qty": "3",
+     "subprice": "32500.00000000",
+     "tva_tx": "11.0000",
+     "remise_percent": "0",
+     "total_ht": "97500.00000000",
+     "total_tva": "10725.00000000",
+     "total_ttc": "108225.00000000",
+     "fk_product": "2",
+     "product_type": "0",
+     "rang": "1"
+    }
+   ]
+  }
+ ],
+ "error_401_body": "{\n    \"error\": {\n        \"code\": 401,\n        \"message\": \"Unauthorized: Error user not valid (not found with api key or bad status or bad validity dates) (conf->entity=1)\"\n    },\n    \"debug\": {\n        \"source\": \"api_access.class.php:264 at authenticate stage\",\n        \"stages\": {\n            \"success\": [\n                \"get\",\n                \"route\",\n                \"negotiate\"\n            ],\n            \"failure\": [\n                \"authenticate\",\n                \"message\"\n            ]\n        }\n    }\n}",
+ "error_403_body": "Access refused to 127.0.0.1 by SQL or Script injection protection in main.inc.php:analyseVarsForSqlAndScriptsInjection type=0<br>\nTry to go back, fix data of your form and resubmit it. You can contact also your technical support.\n<!--\npage=/dolibarr/api/index.php/thirdparties paramtype=0 paramkey={&quot;name&quot;:&quot;x&quot;} paramvalue=\n-->",
+ "error_404_thirdparties_empty_body": "{\n    \"error\": {\n        \"code\": 404,\n        \"message\": \"Not Found: No third parties found\"\n    },\n    \"debug\": {\n        \"source\": \"api_thirdparties.class.php:274 at call stage\",\n        \"stages\": {\n            \"success\": [\n                \"get\",\n                \"route\",\n                \"negotiate\",\n                \"authenticate\",\n                \"validate\"\n            ],\n            \"failure\": [\n                \"call\",\n                \"message\"\n            ]\n        }\n    }\n}",
+ "error_404_product_ref_body": "{\n    \"error\": {\n        \"code\": 404,\n        \"message\": \"Not Found: Product not found\"\n    },\n    \"debug\": {\n        \"source\": \"api_products.class.php:2495 at call stage\",\n        \"stages\": {\n            \"success\": [\n                \"get\",\n                \"route\",\n                \"negotiate\",\n                \"authenticate\",\n                \"validate\"\n            ],\n            \"failure\": [\n                \"call\",\n                \"message\"\n            ]\n        }\n    }\n}",
+ "error_501_body": "API not found (failed to include API file)",
+ "_sumber": {
+  "dolibarr": "24.0.1",
+  "catatan": "Respons asli dari Dolibarr yang dijalankan di container uji Komunitech 2026-09-24 (PHP 8.4 + MariaDB 10.11), dipangkas ke field yang relevan. Data contoh fiktif. Draf yang dibuat saat uji script (ID 7-9) dibuang agar data dasar netral; draf (PROV4) dipertahankan sebagai contoh draf."
+ },
+ "api_module_disabled_body_en": "Module <b>Api</b> must be enabled.<br><br>To activate modules, go on setup Area (Home->Setup->Modules).",
+ "api_module_disabled_body_id": "Modul <b>Api</b> harus diaktifkan.<br><br>Untuk mengaktifkan modul, buka Area Pengaturan (Home-> Setup-> Modul)."
+}

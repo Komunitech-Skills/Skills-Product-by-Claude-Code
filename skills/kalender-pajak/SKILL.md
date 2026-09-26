@@ -1,0 +1,140 @@
+---
+name: kalender-pajak
+description: Menyusun kalender tenggat SETOR dan LAPOR pajak Indonesia per bulan/tahun sesuai profil wajib pajak (UMKM PPh final 0,5% PP 55, badan PKP/PPN + batas unggah faktur pajak keluaran, pemberi kerja PPh 21, pemotong PPh 23/4(2) unifikasi, PPh 25, SPT Tahunan) dengan pergeseran otomatis ke hari kerja bila jatuh di Sabtu/Minggu/libur nasional/cuti bersama (PMK 81/2024), plus checklist bulanan, "apa yang jatuh tempo 14 hari ke depan", file .ics untuk Google Calendar/Outlook, dan pengingat terjadwal OpenClaw ke Telegram. Gunakan saat pengguna tanya "kapan batas setor/lapor pajak", "jadwal pajak bulanan", "tenggat SPT", "pengingat pajak", tax calendar, tax deadline Indonesia, due date reminder. Bukan untuk menghitung besaran pajak (pakai pph-final-umkm, pph21-ter, hitung-ppn).
+---
+
+# Kalender Pajak (Tenggat Setor & Lapor)
+
+## Tujuan
+Memberi pemilik usaha, admin, dan orang pribadi **daftar tanggal pasti** kapan harus setor dan lapor pajak — sudah digeser bila jatuh di hari libur — dalam bentuk tabel, checklist bulanan, file kalender (.ics), atau pengingat otomatis. Skill ini hanya soal **jadwal**, bukan besaran pajak.
+
+## Kapan digunakan
+- "Kapan batas setor PPh 21 bulan ini?" / "Tanggal berapa lapor SPT Masa PPN?"
+- "Buatkan jadwal pajak setahun untuk PT saya yang PKP dan punya 5 karyawan."
+- "Apa saja pajak yang jatuh tempo 2 minggu ke depan?"
+- "Bikinin file kalender pengingat pajak buat Google Calendar."
+- "Ingatkan saya tiap bulan lewat Telegram."
+
+## Kapan TIDAK digunakan
+- Menghitung **berapa** pajaknya → `pph-final-umkm` (PPh 0,5%), `pph21-ter` (gaji), `hitung-ppn` (PPN). Skill ini boleh merujuk hasilnya.
+- Membuat kode billing, mengisi SPT, atau login Coretax atas nama pengguna → jelaskan langkah umum saja; skill tidak mengakses Coretax.
+- Sanksi/denda keterlambatan, pembetulan SPT, pemeriksaan, keberatan → arahkan ke konsultan pajak/AR.
+- Pajak daerah (PBB, BPHTB, pajak restoran/hotel, pajak kendaraan) → di luar cakupan; tenggatnya diatur Perda masing-masing.
+- Tahun buku badan yang tidak Januari–Desember → hanya bisa hitung manual (akhir bulan ke-4 setelah tahun buku berakhir); sebutkan keterbatasannya.
+
+## Input
+| Info | Wajib? | Default |
+|---|---|---|
+| Profil: orang pribadi/badan, UMKM 0,5% atau tarif umum, PKP atau bukan, punya karyawan, memotong PPh 23/4(2) | Ya | tanyakan; bila pengguna ingin cepat: `op-umkm` + sebut asumsi |
+| Tahun & bulan mulai | Tidak | tahun berjalan, Januari (12 bulan) |
+| Format: tabel / checklist / .ics / CSV / pengingat OpenClaw | Tidak | tabel |
+
+Info kurang → tanyakan **sekali** dalam satu pesan bernomor (maks. 4 pertanyaan), mis.: (1) orang pribadi atau badan (PT/CV/koperasi)? (2) pakai PPh final 0,5% atau pembukuan/tarif umum? (3) sudah PKP (memungut PPN)? (4) punya karyawan / membayar jasa atau sewa yang dipotong PPh 23/4(2)?
+
+**Pemetaan profil** (boleh digabung dengan koma):
+| Kondisi pengguna | Profil |
+|---|---|
+| Orang pribadi jualan/usaha, PPh 0,5% | `op-umkm` |
+| Karyawan saja | `op-karyawan` |
+| Orang pribadi usaha/pekerjaan bebas tarif umum | `op-pembukuan` |
+| PT perorangan/koperasi PPh 0,5% | `badan-umkm` |
+| Badan tarif umum, bukan PKP | `badan-umum` |
+| Badan PKP | `badan-pkp` |
+| Tambahan: sudah PKP (OP/badan UMKM) | `pkp` |
+| Tambahan: punya karyawan | `pemberi-kerja` |
+| Tambahan: memotong PPh 23/4(2)/15/22/26 | `pemotong` |
+
+Kewajiban tunggal juga boleh dipakai langsung sebagai profil: `ppn`, `pph21`, `unifikasi`, `pph25`, `pph-final-umkm`, `spt-op`, `spt-badan`, `bukti-a1` (mis. `--profil ppn` untuk pengingat PPN saja).
+
+## Langkah kerja
+1. Tentukan profil dari cerita pengguna (tabel di atas). Sebut asumsi yang dipakai.
+2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+   ```bash
+   python3 <folder-skill-ini>/scripts/kalender_pajak.py --profil badan-pkp,pemberi-kerja --tahun 2026
+   ```
+   - Mulai bulan tertentu: `--bulan-mulai 10` (atau `Okt`), panjang `--jumlah-bulan 1-24` (default 12).
+   - Yang jatuh tempo dekat: `--hari-ini 2026-09-25` (atau `--hari-ini hari-ini`), `--rentang 14` (default).
+   - Checklist per bulan: `--format checklist`. Kalender: `--format ics --keluar kalender-pajak.ics` (tambah `--acara-pengingat` untuk pengguna Google Calendar). Juga `csv`, `json`.
+   - Daftar profil: `--daftar-profil`. Libur tahun yang belum ada datanya: `--libur libur-2028.csv` (kolom `tanggal,jenis,keterangan`) — dilabeli "data libur dari pengguna" dan PERINGATAN tahun itu tetap tampil.
+3. Salin tabel/checklist dari script **apa adanya** (jangan ubah tanggal). Tambahkan 1–2 kalimat sederhana, mis. "Setor PPh 21 masa Juli bergeser ke Selasa 18 Agustus karena 15–17 Agustus libur."
+4. Untuk .ics: berikan file + cara impor (Google Calendar: Setelan → Impor & ekspor → Impor; Outlook: File → Buka → Impor). Sampaikan apa adanya (jangan janji lebih):
+   - File memuat pengingat H-3 & H-1 pukul 09.00. **Apple Calendar & Outlook** biasanya memakainya; **Google Calendar sering mengabaikan pengingat dari file impor** dan memakai notifikasi default kalender. Untuk Google: sarankan atur notifikasi default kalender tujuan (mis. 3 hari & 1 hari sebelumnya), atau buat file dengan `--acara-pengingat` (menambah acara "Pengingat H-3/H-1" terpisah yang pasti terlihat di kalender).
+   - Impor ulang: setiap acara punya UID tetap, sehingga Apple/Outlook umumnya memperbarui acara yang sama; **Google Calendar bisa tetap membuat duplikat**. Sarankan impor ke kalender khusus "Pajak" agar mudah dihapus lalu diimpor ulang.
+5. Untuk pengingat OpenClaw: ikuti `references/openclaw-jadwal.md` (Telegram default; tunjukkan perintah dan minta "Lanjut? (ya/tidak)").
+6. Selalu sertakan peringatan (bila ada) dan disclaimer dari output script.
+7. **Fallback tanpa Python:** susun manual dengan tabel aturan di bawah + daftar libur di `references/libur-nasional-2026.csv` / `-2027.csv`; beri tahu bahwa disusun manual dan periksa ulang tiap pergeseran.
+
+## Aturan tenggat (PMK 81/2024, berlaku 1 Jan 2025; dicek 2026-09-25)
+| Kewajiban | Setor paling lambat | Lapor paling lambat |
+|---|---|---|
+| PPh Final UMKM 0,5% (PP 55/2022 jo. PP 20/2026) | tgl 15 bulan berikutnya | dianggap lapor saat setoran tervalidasi |
+| PPh 21/26 (pemberi kerja) | tgl 15 bulan berikutnya | tgl 20 bulan berikutnya (SPT Masa PPh 21/26) |
+| PPh Unifikasi: 4(2), 15, 22, 23, 26 | tgl 15 bulan berikutnya | tgl 20 bulan berikutnya (SPT Masa PPh Unifikasi) |
+| PPh 25 angsuran | tgl 15 bulan berikutnya | tgl 20, tetapi setoran tervalidasi (NTPN) dianggap sudah lapor pada tanggal setor (Ps. 171; nomor ayat PERLU REVIEW) → tidak dibuat acara lapor terpisah |
+| PPN (PKP) | akhir bulan berikutnya **dan** sebelum SPT dikirim | akhir bulan berikutnya (walau nihil) |
+| Faktur pajak keluaran (PKP) | — | **unggah & dapat persetujuan DJP paling lambat tgl 20** bulan berikutnya setelah tanggal pembuatan faktur (PER-11/PJ/2025 Ps. 44 ayat 1, berlaku 22 Mei 2025); tidak disetujui = bukan faktur pajak sah |
+| SPT Tahunan OP | PPh 29 lunas sebelum SPT dikirim | 31 Maret (3 bulan setelah tahun pajak) |
+| SPT Tahunan Badan | PPh 29 lunas sebelum SPT dikirim | akhir bulan ke-4 (30 April bila tahun buku = kalender) |
+| Bukti potong BPA1 (1721-A1) ke karyawan | — | 1 bulan setelah masa pajak terakhir (31 Jan) |
+
+**Pergeseran:** tenggat setor dan lapor **bulanan** yang jatuh pada Sabtu, Minggu, libur nasional, hari libur pemilu, atau **cuti bersama** bergeser ke **hari kerja berikutnya** — setor: PMK 81/2024 **Ps. 100 ayat 1** (merujuk tenggat Ps. 94); lapor SPT Masa: **Ps. 173 ayat 1**. Geser berulang sampai ketemu hari kerja.
+**Tidak digeser (ditampilkan di tanggal aslinya, label "TIDAK bergeser"):**
+- **SPT Tahunan** — DJP menegaskan (2025, era PMK 81/2024) batasnya tidak mundur walau libur; mundurnya hanya lewat pengumuman khusus (mis. 11 Apr 2025, KEP-55/PJ/2026 → 30 Apr 2026). Tetapi Ps. 173 ayat 1 merujuk "Pasal 171 **dan Pasal 172**" dan isi Ps. 172 belum terverifikasi (PERLU REVIEW). Bila SPT Tahunan jatuh di hari libur, keterangan script menyebut **kedua kemungkinan**: tanggal kalender (tidak bergeser) + hari kerja sebelumnya, dan "kemungkinan lain" tanggal bila ikut bergeser. Sampaikan keduanya; sarankan pakai tanggal yang lebih awal.
+- **Unggah faktur pajak keluaran tgl 20** — beberapa sumber sekunder: tidak mundur walau libur/cuti bersama (PERLU REVIEW). Bila tgl 20 hari libur, keterangan menyebut hari kerja sebelumnya sebagai saran (mis. 20 Mei 2027 Waisak → unggah paling aman **Jumat 14 Mei 2027**); tanggal batas resmi tetap tgl 20.
+- **Bukti potong BPA1** (PERLU REVIEW).
+Contoh terkonfirmasi: lapor SPT Masa PPh 21 masa Februari 2026: 20 Mar (cuti Idulfitri) → **25 Mar 2026**; setor PPh masa April 2026: 15 Mei (cuti bersama) → **18 Mei 2026**.
+Rincian, sumber, dan status verifikasi: `references/aturan-tenggat.md`.
+
+## Format output
+```
+## Kalender Pajak <rentang> - <profil>
+Kewajiban: ...
+Cakupan: tenggat yang JATUH pada <awal> s.d. <akhir> ... (masa terakhir & SPT tahun itu jatuh sesudahnya)
+Data libur: SKB 3 Menteri <tahun> (file ...)[; data libur dari pengguna, belum diverifikasi (file ...)]
+> PERINGATAN (bila data libur tahun itu belum ada)
+| Tanggal | Kegiatan | Keterangan |          ← alasan bergeser (mis. "21 Mar: Sabtu & Idulfitri 1447 H") atau, untuk tenggat tidak bergeser di hari libur, "selesaikan paling lambat hari kerja sebelumnya: <tanggal>"
+**Catatan per kewajiban** ...
+**Aturan pergeseran** ...
+_Disclaimer_
+```
+Mode `--hari-ini`: tabel `| Sisa | Tanggal | Kegiatan | Keterangan |` dengan "HARI INI", "besok", "N hari lagi", lalu baris "Tenggat berikutnya sesudah rentang ini: <tanggal> (N hari lagi) - <kegiatan>" (juga bila rentang kosong).
+Sampaikan kalimat "Cakupan" ke pengguna bila ia minta "kalender tahun X" (tenggat masa Desember X dan SPT Tahunan tahun X jatuh di tahun berikutnya).
+
+## Contoh
+**Pengguna:** "Saya punya CV kecil, sudah PKP, karyawan 3 orang, sering bayar jasa yang dipotong PPh 23. Tolong jadwal pajak Oktober–Desember 2026."
+
+**Perintah:** `python3 <folder-skill-ini>/scripts/kalender_pajak.py --profil badan-pkp,pemberi-kerja,pemotong --tahun 2026 --bulan-mulai 10 --jumlah-bulan 3`
+
+**Output (dipersingkat):**
+```
+| Kamis, 15 Oktober 2026 | SETOR PPh 21/26 (pemberi kerja) masa Sep 2026 | - |
+| Kamis, 15 Oktober 2026 | SETOR PPh Unifikasi (PPh 4(2), 15, 22, 23, 26 non-pegawai) masa Sep 2026 | - |
+| Kamis, 15 Oktober 2026 | SETOR PPh 25 (angsuran bulanan) masa Sep 2026 | - |
+| Selasa, 20 Oktober 2026 | LAPOR SPT Masa PPh 21/26 masa Sep 2026 | - |
+| Selasa, 20 Oktober 2026 | LAPOR SPT Masa PPh Unifikasi masa Sep 2026 | - |
+| Selasa, 20 Oktober 2026 | UNGGAH faktur pajak keluaran bulan Sep 2026 (batas persetujuan DJP) | - |
+| Senin, 2 November 2026 | SETOR & LAPOR PPN masa Sep 2026 | bergeser dari 31 Okt (31 Okt: Sabtu; 1 Nov: Minggu) |
+| Senin, 16 November 2026 | SETOR PPh 21/26 (pemberi kerja) masa Okt 2026 | bergeser dari 15 Nov (15 Nov: Minggu) |
+```
+Lalu jelaskan: "PPN masa September boleh disetor & dilapor sampai Senin 2 November karena 31 Oktober hari Sabtu — tapi lebih aman selesaikan Jumat 30 Oktober."
+Contoh lengkap: `examples/uji-pembuat-01-cv-pkp-okt-des.md`.
+
+## Checklist sebelum mengirim hasil
+- [ ] Profil & asumsi disebut (OP/badan, 0,5%/tarif umum, PKP, karyawan, pemotong).
+- [ ] Tanggal disalin dari script tanpa diubah; pergeseran dijelaskan.
+- [ ] Peringatan "data libur belum ada" disampaikan bila muncul.
+- [ ] Tidak menyebut besaran pajak; rujuk skill hitung terkait bila ditanya.
+- [ ] Profil PKP: batas unggah faktur pajak keluaran (tgl 20) ikut disebut.
+- [ ] .ics: tidak menjanjikan pengingat pasti muncul di Google Calendar atau impor ulang pasti tanpa duplikat.
+- [ ] Butir PERLU REVIEW (nomor ayat PPh 25 lapor otomatis, BPA1, SPT Tahunan & unggah faktur tidak bergeser) tidak dinyatakan sebagai kepastian mutlak.
+- [ ] Disclaimer + dasar aturan + tanggal cek ada.
+
+## Batasan & penanganan error
+- Script keluar kode 2 + `ERROR: ...` (tanpa traceback) untuk profil tidak dikenal, bulan di luar 1–12, tahun di luar 2025–2100, tanggal salah, format salah, file libur rusak. Jelaskan dengan bahasa sederhana dan tawarkan pilihan yang benar.
+- Data libur tersedia **2026 dan 2027** (SKB 3 Menteri). Tahun lain → script tetap jalan tetapi hanya menggeser Sabtu/Minggu dan menampilkan PERINGATAN; minta pengguna cek SKB tahun itu. File `--libur` buatan pengguna dipakai untuk menggeser, tetapi tidak dianggap data resmi (PERINGATAN tetap muncul).
+- File `--libur` boleh berisi keterangan berkoma (sebaiknya diberi tanda kutip; tanpa kutip pun digabung utuh).
+- Libur daerah/cuti bersama tambahan yang diumumkan belakangan, atau **perpanjangan tenggat khusus dari DJP** (mis. SPT Tahunan OP 2025 diundur ke 30 April 2026 lewat KEP-55/PJ/2026 — hanya diberi catatan, tanggal tidak diubah) tidak otomatis masuk → minta pengguna cek pengumuman DJP.
+- Tanggal yang ditampilkan adalah **batas terakhir**; sarankan setor/lapor 2–3 hari kerja sebelumnya karena Coretax dan bank bisa padat menjelang tenggat.
+- Kode billing dibuat di Coretax (menu Pembayaran) atau lewat saldo **deposit pajak** (KAP 411618, KJS 100); skill tidak membuat kode billing.
+
+_Bukan nasihat pajak. Dasar: PMK 81/2024, PP 55/2022 jo. PP 20/2026, PER-2/PJ/2024, PER-11/PJ/2025, SKB 3 Menteri libur 2026 & 2027; dicek 2026-09-25 dari sumber sekunder. Skill ini tidak menghitung/membulatkan pajak; angka dari skill lain belum dicocokkan dengan Coretax. Cek pengumuman DJP terbaru dan konsultasikan dengan konsultan pajak atau AR._

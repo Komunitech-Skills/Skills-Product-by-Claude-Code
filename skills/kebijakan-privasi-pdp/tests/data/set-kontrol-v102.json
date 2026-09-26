@@ -1,0 +1,251 @@
+{
+ "_keterangan": "Set kontrol milik perevisi v1.0.2 (ditulis sendiri, tidak meniru kalimat penguji) untuk mencegah overfitting. 'kontrol_1' ditulis sebelum penyetelan pola tahap kedua; akurasi buta awalnya: frasa 22/28, unsur 10/10. 'kontrol_2' ditulis sebagai holdout sesudahnya; akurasi buta: frasa 14/20 (0 salah-positif). Keduanya lalu dipakai untuk memperbaiki pola secara umum (kosakata, bukan kalimat), jadi angka akhir 100% bukan lagi angka buta. Label berisiko: true = harus ditandai.",
+ "kontrol_1_frasa": [
+  {
+   "kalimat": "Nomor ponsel peserta seminar akan kami teruskan kepada sponsor acara untuk keperluan promosi produk mereka.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kontak pasien dapat diserahkan kepada perusahaan farmasi rekanan sebagai bagian dari program pemasaran.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami menghormati privasi Anda, namun alamat email Anda dapat kami berikan kepada agensi periklanan mitra kami.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Tidak ada biaya pendaftaran; sebagai gantinya, profil Anda kami tawarkan kepada pengiklan.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Riwayat belanja member dapat kami pindahtangankan ke grup usaha lain dengan kompensasi tertentu.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Selama Anda tidak mengirim surat keberatan dalam 14 hari, Anda kami anggap setuju dengan pemrosesan ini.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Customer lists may be licensed or sold to marketing affiliates.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "We may disclose usage and contact details to ad networks for targeted advertising.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak menyewakan data siswa; akan tetapi, data tersebut dapat kami bagikan kepada penerbit buku untuk promosi.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak memberikan data kepada siapa pun kecuali kepada mitra pemasaran kami.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Salinan KTP nasabah disimpan secara permanen di arsip kantor.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Isi kebijakan dapat kami revisi setiap saat tanpa memberi tahu pengguna.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Children under 13 may not use the app without a parent's permission.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Nomor ponsel peserta tidak akan diteruskan kepada sponsor acara dalam bentuk apa pun.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami hanya membagikan data pengiriman kepada ekspedisi yang Anda pilih saat checkout.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Alamat email Anda tidak kami serahkan kepada agensi periklanan mana pun.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami tidak menjual data siswa dan tidak membagikannya kepada penerbit untuk promosi.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Promo lewat WhatsApp hanya dikirim bila Anda memilih ikut, dan Anda dapat berhenti kapan saja.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "We do not disclose contact details to ad networks or data brokers.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "If we update this notice, we will email you at least 14 days in advance.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Rekaman CCTV toko dihapus otomatis setelah 30 hari.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Anak di bawah 18 tahun hanya dapat mendaftar dengan persetujuan orang tua atau wali.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Menu dan harga paket katering dapat berubah tanpa pemberitahuan sebelumnya.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami juga menjual voucher belanja dan kartu hadiah di kasir.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Tim pemasaran kami terdiri dari tiga orang dan berkantor di Surabaya.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Promosi akhir tahun berlaku sampai 31 Desember atau selama stok masih ada.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Our marketing team shares weekly tips on Instagram.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Stok barang dapat berubah sewaktu-waktu tanpa pemberitahuan.",
+   "berisiko": false
+  }
+ ],
+ "kontrol_1_unsur": [
+  {
+   "unsur": "keamanan",
+   "ada": false,
+   "kalimat": "Kami sangat peduli pada keamanan data Anda."
+  },
+  {
+   "unsur": "keamanan",
+   "ada": true,
+   "kalimat": "Laptop kasir dikunci dengan kata sandi dan hanya pemilik yang memegang akses admin."
+  },
+  {
+   "unsur": "kontak",
+   "ada": false,
+   "kalimat": "Pesanan dapat dilakukan melalui WhatsApp atau Instagram."
+  },
+  {
+   "unsur": "kontak",
+   "ada": true,
+   "kalimat": "Pertanyaan tentang data pribadi dapat dikirim lewat email ke halo@warungbu.id."
+  },
+  {
+   "unsur": "identitas",
+   "ada": false,
+   "kalimat": "Kebijakan ini berlaku untuk seluruh pengguna aplikasi."
+  },
+  {
+   "unsur": "identitas",
+   "ada": true,
+   "kalimat": "Aplikasi ini dikelola oleh PT Maju Bersama Digital, Jakarta."
+  },
+  {
+   "unsur": "tujuan",
+   "ada": true,
+   "kalimat": "Nomor rekening Anda kami pakai untuk mengembalikan dana bila pesanan dibatalkan."
+  },
+  {
+   "unsur": "transfer_ln",
+   "ada": true,
+   "kalimat": "Our servers are hosted in Germany by a third-party provider."
+  },
+  {
+   "unsur": "transfer_ln",
+   "ada": false,
+   "kalimat": "Silakan hubungi kami dalam bahasa Indonesia atau bahasa Inggris."
+  },
+  {
+   "unsur": "masa_simpan",
+   "ada": true,
+   "kalimat": "Formulir pendaftaran dimusnahkan 3 tahun setelah siswa lulus."
+  }
+ ],
+ "kontrol_2_frasa": [
+  {
+   "kalimat": "Data jamaah umrah dapat kami salurkan kepada biro wisata lain sebagai calon pelanggan mereka.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Foto dan nama pemenang lomba bisa diberikan kepada media partner untuk materi iklan tanpa izin tambahan.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Informasi kendaraan pelanggan bengkel kami jual ke perusahaan asuransi.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak memungut biaya aplikasi, tetapi data lokasi Anda kami bagikan kepada jaringan iklan.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Apabila Anda tidak membatalkan langganan, Anda dianggap menyetujui penggunaan data untuk promosi.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Your browsing history may be shared with our advertising partners.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "We retain uploaded documents indefinitely.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami dapat mengubah pemberitahuan privasi ini sewaktu-waktu.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Data nasabah boleh dipakai siapa saja di grup perusahaan untuk tujuan apa pun dan kami jual bila diperlukan.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Keamanan server kami dijamin 100% aman.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Data jamaah hanya digunakan untuk pengurusan visa dan tiket.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Foto pemenang lomba hanya dipublikasikan bila pemenang memberi izin tertulis.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami tidak pernah menyerahkan data lokasi Anda kepada jaringan iklan.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Your browsing history is never shared with advertisers.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Uploaded documents are deleted after 90 days.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Bengkel kami menjual suku cadang asli dan oli bergaransi.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami memberikan potongan harga kepada anggota untuk promosi hari jadi toko.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Jadwal kelas yoga bisa berubah sewaktu-waktu mengikuti ketersediaan instruktur.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Divisi promosi kami mengirim brosur ke sekolah-sekolah setiap semester.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami akan meminta persetujuan Anda sebelum membagikan testimoni untuk promosi.",
+   "berisiko": false
+  }
+ ]
+}

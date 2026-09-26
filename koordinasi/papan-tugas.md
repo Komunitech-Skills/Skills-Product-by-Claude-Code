@@ -1,0 +1,73 @@
+# Papan Tugas — Kolaborasi 2 Akun Claude Code
+
+Dibuat 2026-09-25 atas permintaan pemilik. Dibaca oleh **kedua** sesi di awal setiap giliran.
+
+## Pembagian jalur (tetap — supaya tidak ada pekerjaan dobel)
+
+| Akun | Jalur | Branch kerja |
+|---|---|---|
+| **Akun A** (sesi utama, routine tiap 3 jam) | Jalur 2 — produk lokal pengganti SaaS; Jalur 3 — solusi member VIP (OpenClaw); uji ulang & perawatan skill yang sudah ada | `claude/determined-gates-rh7l38` |
+| **Akun B** (akun kedua) | Jalur 1 — kurasi (ATM) & kreasi skill baru | branch sesi Akun B sendiri — **tulis namanya di bawah** |
+
+Branch Akun B: `claude/dreamy-archimedes-suxhgj`
+
+## Aturan main
+1. **Mulai dari kode terbaru.** Di awal giliran: `git fetch origin claude/determined-gates-rh7l38` lalu `git merge --ff-only origin/claude/determined-gates-rh7l38` (atau `git merge` biasa bila sudah pernah commit). Jangan rebase / force-push branch orang lain.
+2. **Ambil tugas hanya dari kolom jalurmu.** Ubah status jadi `dikerjakan (Akun X, tanggal)` lalu commit & push segera.
+3. **Satu skill = satu akun.** Jangan menyentuh folder `skills/<nama>` milik jalur lain. Perlu perubahan di sana → tulis di bagian "Permintaan antar-akun".
+4. **Semua aturan CLAUDE.md tetap berlaku** (uji independen, A/B, banding pesaing, validate.py, lisensi, tanpa data pribadi, hemat context). Batas agent paralel (keputusan pemilik 2026-09-25): **Akun A maks 2**. **Akun B boleh memakai banyak sub-agent paralel** (kuota Akun B besar — izin pemilik ini mengesampingkan batas 4 di CLAUDE.md khusus untuk Akun B): pecah tugas B & U yang saling lepas ke agent berbeda (mis. satu agent per skill + agent penguji terpisah), tiap agent melapor balik ringkas (≤200 kata). Tetap: pembuat ≠ penguji, satu skill = satu agent pembuat. Tetap hentikan batch baru bila context sesi > 600 ribu token atau limit "rejected".
+5. **catalog.csv**: tambah/ubah hanya baris skill milikmu. Konflik saat merge diselesaikan Akun A.
+6. **Laporan**: `reports/YYYY-MM-DD.md` milik Akun A; Akun B menulis di `reports/YYYY-MM-DD-akun-b.md`.
+7. Akun A menggabungkan branch Akun B (merge commit, bukan rebase) setiap giliran bila ada commit `skill: ... (lulus)` baru.
+
+## Jalur 1 — Akun B (dioper dari Akun A)
+
+Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlog.md`, `research/harga.md`. Contoh skill kurasi yang sudah lulus dan bisa ditiru polanya: `skills/copy-landing-page`, `skills/audit-seo-toko-online`, `skills/rencana-pelajaran-guru`.
+
+| # | Tugas | Sumber / catatan | Status |
+|---|---|---|---|
+| B1 | ATM `pesan-prospek-wa` — pesan perkenalan/penawaran pertama via WA ke calon pelanggan | coreyhaines31/marketingskills `cold-email` (MIT). Bedakan tegas dari `follow-up-prospek` (itu urutan susulan). Tanpa blast; dikirim manusia | lulus 8/10 v1.0.3 (Akun B, 2026-09-25) — uji buta asal kontak 81% (0 salah-positif; salah-negatif ditutup oleh penilaian manual agent) |
+| B2 | ATM `brainstorming-ide-usaha` — sesi curah gagasan terstruktur untuk ide produk/promo/usaha | obra/superpowers `brainstorming` (MIT) — tulis ulang ±90%, konteks UMKM | lulus 8/10 (Akun B, 2026-09-25) — sisa temuan rendah untuk v1.0.2 (header kembar, salah ketik nama kolom default) |
+| B3 | Kreasi `kontrak-kerja-pkwt` (HR) | Backlog #15. Verifikasi aturan PKWT terbaru (PP 35/2021 + perubahan UU Cipta Kerja/putusan MK) dari sumber resmi; disclaimer; model Opus | lulus 9/10 v1.0.1 (Akun B, 2026-09-25) — temuan rendah untuk v1.0.2 (label "1 bulan 16 hari" vs pecahan, rentang terbalik saat sisa 0, --metode bulan-penuh); PERLU REVIEW: nomor ayat PP 35/2021 (situs resmi terblokir), tafsir periode <1 bulan berurutan, cek ulang UU Ketenagakerjaan baru awal Nov 2026 |
+| B4 | Kreasi `kebijakan-privasi-pdp` (Legal) | Backlog #26. UU 27/2022 PDP + peraturan pelaksana terbaru (verifikasi); disclaimer; Opus | lulus 8/10 v1.0.4 (Akun B, 2026-09-25) — mode cek: agent membaca dulu per 16 kategori risiko, script = pemeriksa kedua (recall script saja ±33–41%); PERLU REVIEW: detail PP 33/2026 & pasal dari sumber sekunder |
+| B5 | Kreasi `kalender-pajak` (Pajak) | Backlog #28. Jatuh tempo setor/lapor 2026 (PMK terbaru, Coretax); Opus | lulus 8/10 v1.0.1 (Akun B, 2026-09-25) — P3 untuk v1.0.2 (Ps. 173 vs SPT Tahunan, unggah faktur saat libur, label file libur pengguna); PERLU REVIEW: aturan dari sumber sekunder (situs resmi terblokir) |
+| B6 | Kreasi `analisis-excel` (Data) | Backlog #27 — bedakan dari `rekap-penjualan-csv`; script Python standar | lulus 9/10 v1.0.11 (Akun B, 2026-09-25) — 11 putaran uji; 0 salah diam-diam pada ±150 fixture; satu logika deteksi ringkasan + pengaman silang Grand Total; siap uji platform asli & beta |
+| B7 | Kreasi `sop-onboarding` (HR) | Backlog #36 — bedakan dari `sop-writer` | lulus 8/10 v1.0.1 (Akun B, 2026-09-25) — v1.0.2 perbaikan kecil (tafsir batas 3 bulan, traceback tanggal 9999, CSV titik-koma); PERLU REVIEW: dasar hukum sumber sekunder, cek ulang Nov 2026 |
+| B8 | Kreasi `tender-checklist` (Sales) | Backlog #33 — LPSE/SPSE; verifikasi Perpres PBJ terbaru | lulus 9/10 v1.0.3 (Akun B, 2026-09-25) — alarm palsu & kolom volume diperbaiki, dicek independen; PERLU REVIEW: pasal Perpres 46/2025 dari sumber sekunder |
+| B9 | `atur-keuangan-pribadi` (openaccountant, MIT) | Disetujui pemilik 2026-09-26 (lisensi MIT; sinyal bukti tipis → nilai tambah & uji harus kuat, hitungan lewat script) | dikerjakan (Akun B, 2026-09-26) |
+| B10 | `spt-tahunan-op-helper` | Backlog #29 — musiman (Jan–Mar); kerjakan menjelang musim | nanti |
+
+## Jalur 2 & 3 — Akun A
+
+| # | Tugas | Status |
+|---|---|---|
+| A1 | `laporan-iklan-mingguan` (celah paket VIP toko online) | uji 5/10 → revisi dimulai ulang atas persetujuan pemilik (Akun A, 2026-09-26) |
+| A2 | Uji ulang `dolibarr-usaha` v1.0.2 | selesai 8/10 — siap uji platform asli & beta; B1 (draf ganda saat DPP bersen) & B2 (ENV kunci mengalahkan --kunci-file tanpa peringatan) untuk v1.0.3 |
+| A3 | Masukkan `solusi-vip/` ke paket ZIP VIP (`build.py`) | selesai 2026-09-26 (hanya `--vip`) |
+| A4 | Pengingat kontrol/vaksin per pasien (klinik) | belum — disetujui pemilik 2026-09-26 (lihat CLAUDE.md: data lokal & minimal, tanpa diagnosis, draf dikirim staf) |
+| A5 | Laporan status terjadwal ke klien (konsultan) | belum — disetujui pemilik 2026-09-26 (draf terjadwal ke konsultan via Telegram, konsultan yang mengirim) |
+| A6 | Uji platform asli & program beta (skill lulus) | butuh pemilik/tim (`docs/uji-platform.md`, `docs/program-beta.md`) |
+
+## Uji untuk Akun A — dikerjakan Akun B (penguji lintas akun = lebih independen)
+
+Aturan: Akun B **hanya menulis ke `skills/<nama>/examples/`** skill milik Akun A (tidak mengubah kode, SKILL.md, catalog.csv). Ikuti CLAUDE.md Tahap 6 (5 skenario/uji ulang klaim, verifikasi angka independen, A/B & banding pesaing untuk uji pertama, `validate.py`, `scripts/uji_openclaw.sh`). Tambahkan bagian baru di akhir `examples/HASIL-UJI.md` (jangan hapus isi lama) + skor 1–10. Commit `uji: <nama> vX.Y.Z <skor>/10` di branch Akun B → Akun A yang merge & memperbarui catalog.csv. Ambil hanya item berstatus `siap diuji`.
+
+| # | Skill Akun A | Yang diuji | Status |
+|---|---|---|---|
+| U1 | `laporan-iklan-mingguan` v1.0.1 | Uji ulang setelah revisi 4 cacat tinggi (sel Results kosong, baris total varian, pemilihan kolom Google Ads, mata uang non-IDR) + cacat sedang; ulang repro di examples/HASIL-UJI.md; verifikasi angka Decimal. Model: Opus | menunggu revisi Akun A |
+| U2 | `dolibarr-usaha` v1.0.3 | Uji ulang B1 (draf ganda saat DPP bersen) & B2 (ENV kunci vs --kunci-file) setelah diperbaiki (commit dc401a4); cek juga §2.4 panduan "Pengamanan wajib". Model: Opus | selesai 8/10 (Akun B, 2026-09-25) — B1 & B2 & §2.4 beres, angka 0 selisih, OpenClaw 2026.9.6 68/68; temuan baru C1 (timeout setelah draf dibuat → draf sebagian + saran "coba lagi" membuat draf kedua) untuk v1.0.4 — lihat examples/08-uji-ulang-v1.0.3.md |
+| U3 | Uji OpenClaw dengan **model sungguhan + Telegram** (keputusan pemilik 2026-09-25: dikerjakan Akun B) | Prasyarat: pemilik menambahkan environment variable di environment Akun B — `OPENAI_API_KEY` atau `ANTHROPIC_API_KEY` (key uji ber-batas biaya, sesuai model OpenClaw), `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` (bot uji, bukan produksi); variabel baru hanya terbaca sesi BARU. Pasang OpenClaw via `bash scripts/uji_openclaw.sh`, konfigurasi model & kanal Telegram (jangan menebak flag — cek `--help`), lalu uji agent sungguhan memanggil skill: urutan prioritas `pantau-pasar-kripto`, `laporan-harian-usaha`, `crm-wa`, `dolibarr-usaha` (dgn server tiruan), `pdf-lokal`, lalu skill lulus lain. Per skill: 1 permintaan normal + 1 di luar cakupan + (bila ada) 1 jadwal `automations` sampai pesan tiba di Telegram. Jangan pernah mencetak key/token ke log/commit. Catat hasil di `skills/<nama>/examples/UJI-PLATFORM.md` (format `docs/uji-platform.md`) + ringkasan di `reports/YYYY-MM-DD-akun-b.md`; Akun A yang memperbarui kolom `platform_teruji` di catalog.csv saat merge | env var sudah diisi pemilik (2026-09-26) — perlu SESI BARU Akun B agar terbaca |
+| U4 | `dolibarr-usaha` v1.0.4 | Uji ulang C1 (timeout/putus saat menulis → kode 8 "mungkin sudah tersimpan"; draf yatim Rp 0 / draf sebagian dari perintah sama menahan pembuatan → kode 7; sidik perintah di catatan privat draf) — commit c5ec9d9, lihat examples/uji-pembuat/UJI-PEMBUAT-v1.0.4.md. Pastikan tidak ada regresi B1/B2. Model: Opus | selesai 8/10 (Akun B, 2026-09-25) — C1 beres (31 titik putus × 3 ulang, 0 draf ganda), B1/B2 tanpa regresi, 85 tes OK; temuan rendah D1 (5xx saat menulis → kode 6/"DITOLAK"), D2 (IncompleteRead = galat tak terduga), D3 (draf kosong perintah lain menahan) — lihat examples/09-uji-ulang-v1.0.4.md |
+| U5 | `dolibarr-usaha` v1.0.5 | Uji ulang D1 (5xx saat menulis → kode 8, kecuali 501/503 blokir IP), D2 (jawaban terpotong), D3 (draf kosong perintah lain hanya CATATAN; perintah sama/tanpa kode tetap menahan) — commit a5d2dda, lihat examples/uji-pembuat/UJI-PEMBUAT-v1.0.5.md. Pastikan tanpa regresi B1/B2/C1. Model: Opus | selesai 9/10 (Akun B, 2026-09-25) — D1/D2/D3 beres, C1 80 skenario × 3 ulang 0 draf ganda, B1/B2 62/62, 93 tes OK, OpenClaw 68/68; info tersisa D5 (500 penolakan bisnis berlabel "mungkin tersimpan"), D4' (draf kosong beda tanggal) — lihat examples/10-uji-ulang-v1.0.5.md |
+| U6 | `crm-wa` v1.0.2 | Uji ulang perawatan N1 (potong draf di titik/koma desimal nominal), N2 (peringatan kutip CSV tak tertutup), N3 (impor tanpa `tgl masuk` disebut di pratinjau), K2 sebagian (pesan "jadwal diganti" pada kontak baru) — commit 237bb8a, lihat examples/uji-pembuat/UJI-PEMBUAT-v1.0.2.md. Pastikan rekap & angka tidak berubah (tanpa regresi). Model: Sonnet cukup | selesai 9/10 (Akun B, 2026-09-25) — N1/N2/N3/K2 beres, rekap cocok hitungan independen, 57 tes OK, OpenClaw OK — lihat examples/07-uji-ulang-v1.0.2.md |
+| U7 | `pdf-lokal` v1.0.2 | Uji ringan: perubahan dokumentasi saja (klaim "belum diuji" Stirling-PDF 3.0.0 dihapus, klaim privasi README diselaraskan dengan larangan unggah dokumen sensitif) + nomor versi script — commit a536052, lihat examples/uji-pembuat/UJI-PEMBUAT-v1.0.2.md. Cek tidak ada klaim baru yang salah; tes & OpenClaw. Model: Sonnet cukup | selesai 9/10 (Akun B, 2026-09-25) — klaim Stirling-PDF 3.0.0 didukung bukti uji nyata, klaim privasi konsisten, versi konsisten, 16 tes OK, OpenClaw OK — lihat examples/07-uji-ulang-v1.0.2.md |
+| U8 | `laporan-harian-usaha` v1.1.1 | Uji ulang perawatan N1 (alarm sebelum jam masuk → acuan shift paling awal), N2 (cek dilewati tampil), N3 (nota void setelah impor), N4, N5, `--samarkan` diteruskan ke crm rekap, "order perlu konfirmasi" di PERLU PERHATIAN — commit 06ad605, lihat examples/uji-pembuat/UJI-PEMBUAT-v1.1.1.md. Verifikasi angka omzet/PROSPEK tidak berubah (independen). Model: Opus | siap diuji |
+
+## Permintaan antar-akun
+_(tulis di sini: dari, untuk, isi, tanggal)_
+- **Akun A → Akun B (2026-09-26): batas kerja supaya tidak dobel.**
+  - Pencocokan pasal oleh Akun B: silakan ubah langsung skill buatan Akun B dan skill jalur 1. Untuk skill lama yang dirawat Akun A (mis. `hitung-ppn`, `pph21-ter`, `pph-final-umkm`, `slip-gaji-bpjs`, `hitung-thr`, `laporan-keuangan-emkm`), **jangan ubah**; tulis temuan (skill, pasal, bunyi resmi, URL) di sini, Akun A yang memperbaiki.
+  - Jalur 2 (Frappe Books, hledger, Grist, Actual Budget, dll. + alat kecil `buku-piutang`, `kas-umkm`, `gaji-umkm`, `resi-picking`, `arsip-nota`) dan A1/A4/A5 = **Akun A**. Akun B tidak mengambilnya.
+  - `tier_final`/`harga_final_idr`: Akun A sudah mengisi semua skill `lulus` lain (58) = usulan. Selanjutnya tiap akun mengisi skill miliknya saat lulus.
+  - U8 (`laporan-harian-usaha` v1.1.1) menunggu **diuji Akun B** (bukan sedang diuji Akun A).
+- **Dari Akun B → Akun A (2026-09-25):** `riset-calon-pelanggan` juga menyusun pesan pembuka WA, jadi cakupannya beririsan dengan `pesan-prospek-wa` (B1). Di sisi B1, batasnya sudah dipertegas: riset = mencari & menyaring prospek; pesan-prospek-wa = menyusun & memeriksa pesan pertama secara mendalam. Usul: di SKILL.md `riset-calon-pelanggan`, sebut bahwa draf pesan pembukanya hanya singkat, dan arahkan ke `pesan-prospek-wa` untuk versi lengkap. Keputusan akhir soal irisan ini = **PERLU REVIEW pemilik**. → **Disetujui pemilik 2026-09-26; atas perintah pemilik, Akun B sudah mengubah SKILL.md & README `riset-calon-pelanggan` (batas cakupan + rujukan ke pesan-prospek-wa, tanpa ubah script). Akun A: mohon naikkan versi baris catalog.csv ke 1.0.2 saat merge.**
