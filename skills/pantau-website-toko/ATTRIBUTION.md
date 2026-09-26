@@ -23,7 +23,7 @@ Lisensi: **Proprietary Komunitech** — penggunaan tunduk pada `LISENSI.txt` dal
 - File `tests/fixtures/uptime-kuma-2.5.5-status-page.json` dan `-heartbeat.json` berisi **contoh
   bentuk respons** API yang direkam apa adanya dari instance Uptime Kuma 2.5.5 sungguhan yang
   dijalankan Komunitech dengan data uji fiktif (bentuk data/antarmuka, bukan kode program).
-  `tests/fixtures/skenario2-*.json` adalah data buatan tangan Komunitech (ditandai jelas di
+  `tests/fixtures/skenario2-*.json` dan `skenario3-*.json` adalah data buatan tangan Komunitech (ditandai jelas di
   dalam filenya) untuk menguji jalur kode yang tidak muncul di rekaman aslinya.
 - "Uptime Kuma" adalah nama proyek/merek milik pembuatnya (Louis Lam). **Komunitech tidak
   berafiliasi** dengan proyek Uptime Kuma; nama dipakai hanya untuk menjelaskan kompatibilitas.

@@ -138,3 +138,55 @@ stok, pengiriman, bayar sebagian, retur 23:50 WIB, invoice 00:30 WIB, jurnal beb
 Perbaiki A dan B (+C, D), tambah tes regresi, lalu uji ulang singkat: impor `csv-barang` dengan barang dilacak → Purchase Invoice →
 Purchase Receipt/Shipment → `laba-rugi` HPP = nilai persediaan keluar. Bila lulus, skor diperkirakan ≥ 8. `platform_teruji` tetap
 `claude-code (simulasi agent)`; aplikasi Frappe Books asli teruji, platform agen sungguhan belum.
+
+---
+
+## Uji ulang independen v1.0.2 (Akun B, 2026-09-26)
+
+### Skor: **6/10 — REVISI KECIL, jangan rilis dulu** (perbaiki temuan A, lalu uji ulang singkat)
+
+**Alasan:** Kedua perbaikan v1.0.2 terbukti di aplikasi **asli** dengan database baru milik penguji: barang berstok memakai
+`Stock Diterima Tapi Tidak Ditagih - 2115.000`, HPP hanya tercatat sekali (saat Shipment), dan PIUTANG BERSIH = saldo pihak = saldo GL
+Frappe (607.010 / 657.010). Import Wizard asli menerima semua CSV (Party 5/5, Item 5/5, PINV 2/2, SINV 4/4, 0 gagal). Namun ditemukan
+kesalahan akuntansi baru pada alur umum pemakai stok: retur penjualan yang barangnya dikembalikan ke gudang (Shipment retur) membuat
+`laba-rugi` menaikkan HPP, bukan menurunkan — laba Rp 60.000 (P&L Frappe = hitungan penguji) dilaporkan **RUGI −Rp 84.000**. Klaim
+bahwa P&L Frappe menampilkan retur "menambah pendapatan" juga terbukti keliru (Frappe memakai nilai mutlak per kolom). Untuk produk
+berbayar kategori keuangan, ini mengunci skor di bawah 7. Perbaikannya kecil dan jelas.
+
+### Cara uji
+AppImage v0.36.0 diunduh sendiri dari GitHub releases frappe/books; SHA-512 cocok dengan `latest-linux.yml`. Headless (Xvfb,
+`TZ=Asia/Jakarta`, mode produksi, jaringan keluar diblokir). Database baru lewat Setup Wizard (Indonesia, IDR, bagan akun Indonesia).
+Impor lewat tombol "Select File"/"Import Data" Import Wizard asli (hanya dialog OS diarahkan ke path CSV). Siklus lanjutan lewat mesin
+aplikasi: submit, Purchase Receipt, Shipment, bayar sebagian/penuh, pembayaran dibatalkan, retur + pengiriman retur, jurnal beban, invoice
+00:30 WIB. Pembanding: laporan bawaan Profit And Loss, General Ledger, Stock Balance, saldo pihak (dijalankan di aplikasi) + Decimal penguji.
+Rincian: `09-uji-ulang-v102-akun-b.md`.
+
+### Hasil ringkas
+| Aspek | Hasil |
+|---|---|
+| Impor Party / Item / Purchase Invoice / Sales Invoice | 5/5, 5/5, 2/2, 4/4 sukses; barang stok/non-stok/jasa diberi akun benar |
+| HPP barang berstok | sekali (Shipment); PINV tidak menyentuh HPP ✓ |
+| `penjualan` / `pembelian` Sep | DPP 1.010.000, pajak 65.010, total 1.075.010 / DPP 2.885.000, total 3.122.600 ✓ |
+| `piutang` / `utang` | bersih 607.010 → 657.010 = saldo pihak & GL Frappe ✓ / 2.397.600 ✓ |
+| `stok` | 13 / 22 / 11 = Stock Balance Frappe ✓ |
+| `laba-rugi` Sep | pendapatan 1.010.000 ✓; **HPP 994.000 vs 850.000 ✗; rugi −84.000 vs laba 60.000 ✗** |
+| `laba-rugi` Okt (tanpa retur) | 127.000 / 64.000 / 63.000 = P&L Frappe ✓ |
+| Regresi | akun bernomor ✓; `--keluar` ke `.books.db`/`.db`/SQLite `.csv`/symlink ditolak kode 2, hash tetap ✓; NPWP diperingatkan ✓; PPN floor sekali & harga-termasuk (sisa 1 pada Rp 100) ✓; tanggal WIB ✓ |
+| Tes bawaan / validate | 42 tes OK / valid |
+
+### Temuan
+- **A. TINGGI** — `laba-rugi` hanya mengoreksi entri **invoice** retur; Shipment/Purchase Receipt retur (juga bertanda terbalik) tidak
+  dikoreksi → HPP bertambah 2× nilai retur. Frappe sendiri membaca `abs(debit)`/`abs(credit)` per kolom (`reports/LedgerReport.ts`),
+  sehingga P&L Frappe benar. Perbaiki: pakai aturan nilai mutlak untuk semua entri buku besar, ubah "Catatan retur" dan kalimat di SKILL.md
+  (P&L Frappe **tidak** menambah pendapatan saat retur), tambah tes regresi dengan Shipment retur.
+- **B. SEDANG/RENDAH** — `penjualan` "Belum dibayar / Terbayar (bersih)" belum memakai kredit retur (602.010 / 473.000 vs bersih
+  530.010 / kas masuk 545.000); samakan dengan `piutang`.
+- **C. RENDAH** — `laporan-harian` menyebut hari yang hanya berisi retur sebagai "Penjualan final: 1 invoice, -Rp 72.000"; beri label retur.
+- **D. RENDAH/UX** — `pajak: PPN` ditolak walau hanya ada satu template PPN (aman, pesan jelas); pertimbangkan awalan unik.
+- **Catatan aplikasi (dokumentasikan):** Purchase Receipt dinilai termasuk PPN; barang tanpa Track Inventory ikut Receipt/Shipment (HPP
+  kantong tercatat lagi); pengiriman retur dinilai harga jual; Shipment nota barang+jasa gagal.
+
+### Rekomendasi
+Perbaiki A (+B, C), tambah tes regresi dari pola buku besar asli di atas, lalu uji ulang singkat: retur + Shipment retur →
+`laba-rugi` = Profit And Loss Frappe. Bila lulus, skor diperkirakan ≥ 8. `platform_teruji` tetap `claude-code (simulasi agent)`;
+aplikasi Frappe Books asli teruji, platform agen sungguhan belum.

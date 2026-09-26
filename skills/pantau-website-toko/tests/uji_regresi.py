@@ -46,6 +46,8 @@ REKAM_STATUS = muat("uptime-kuma-2.5.5-status-page.json")
 REKAM_HEARTBEAT = muat("uptime-kuma-2.5.5-heartbeat.json")
 SK2_STATUS = muat("skenario2-status-page.json")
 SK2_HEARTBEAT = muat("skenario2-heartbeat.json")
+SK3_STATUS = muat("skenario3-ssl-tidak-terbaca-status-page.json")
+SK3_HEARTBEAT = muat("skenario3-ssl-tidak-terbaca-heartbeat.json")
 
 
 # ============================================================ server Uptime Kuma tiruan
@@ -250,6 +252,7 @@ class TesCmdRingkasan(unittest.TestCase):
         cls.srv = jalankan_server_tiruan({
             "toko-saya": (REKAM_STATUS, REKAM_HEARTBEAT),
             "toko-scenario2": (SK2_STATUS, SK2_HEARTBEAT),
+            "toko-scenario3": (SK3_STATUS, SK3_HEARTBEAT),
         })
         cls.base = f"http://127.0.0.1:{cls.srv.server_address[1]}"
 
@@ -263,6 +266,20 @@ class TesCmdRingkasan(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, ignore_errors=True)
+
+    def test_ssl_tidak_terbaca_dari_uptime_kuma_diberi_catatan_eksplisit(self):
+        kode, out, err = jalankan_pantau(["ringkasan", "--status-url", f"{self.base}/status/toko-scenario3",
+                                            "--log", self.log, "--json"])
+        self.assertEqual(kode, 0, err)
+        data = json.loads(out)
+        m = data["monitor"][0]
+        self.assertIsNone(m["sisa_hari_ssl"])
+        self.assertIsNotNone(m["catatan_ssl"])
+        self.assertIn("tidak terbaca", m["catatan_ssl"])
+        # mode teks juga harus menampilkan catatannya, bukan diam
+        kode2, out2, err2 = jalankan_pantau(["ringkasan", "--status-url", f"{self.base}/status/toko-scenario3",
+                                               "--log", self.log])
+        self.assertIn("tidak terbaca", out2)
 
     def test_rekam_asli_kedua_monitor_turun(self):
         kode, out, err = jalankan_pantau(["ringkasan", "--status-url", f"{self.base}/status/toko-saya",
@@ -406,6 +423,21 @@ class HandlerHTTPSederhana(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
             return
+        if self.path == "/redirect-301":
+            self.send_response(301)
+            self.send_header("Location", "/")
+            self.end_headers()
+            return
+        if self.path == "/redirect-rantai":
+            self.send_response(302)
+            self.send_header("Location", "/redirect-301")
+            self.end_headers()
+            return
+        if self.path == "/redirect-mati":
+            self.send_response(302)
+            self.send_header("Location", "http://127.0.0.1:1/tidak-ada-server")
+            self.end_headers()
+            return
         self.send_response(200)
         self.send_header("Content-Type", "text/plain")
         self.end_headers()
@@ -464,6 +496,27 @@ class TesCmdCekCepatHTTP(unittest.TestCase):
     def test_url_kosong_setelah_skema(self):
         kode, out, err = jalankan_pantau(["cek-cepat", "https://"])
         self.assertEqual(kode, 2)
+
+    def test_redirect_satu_hop_ditampilkan_bukan_disembunyikan(self):
+        kode, out, err = jalankan_pantau(["cek-cepat", f"http://127.0.0.1:{self.port}/redirect-301", "--json"])
+        self.assertEqual(kode, 0, err)
+        data = json.loads(out)
+        self.assertEqual(data["kode_http"], 200)  # status akhir tetap 200 (server tujuan hidup)
+        self.assertEqual(data["url_akhir"], f"http://127.0.0.1:{self.port}/")
+        self.assertEqual(len(data["rantai_redirect"]), 1)
+        self.assertEqual(data["rantai_redirect"][0]["kode"], 301)
+
+    def test_redirect_dua_hop_rantai_lengkap(self):
+        kode, out, err = jalankan_pantau(["cek-cepat", f"http://127.0.0.1:{self.port}/redirect-rantai", "--json"])
+        self.assertEqual(kode, 0, err)
+        data = json.loads(out)
+        self.assertEqual(data["kode_http"], 200)
+        self.assertEqual([r["kode"] for r in data["rantai_redirect"]], [302, 301])
+
+    def test_redirect_ke_tujuan_mati_pesan_jelas(self):
+        kode, out, err = jalankan_pantau(["cek-cepat", f"http://127.0.0.1:{self.port}/redirect-mati", "--timeout", "3"])
+        self.assertEqual(kode, 4)
+        self.assertIn("GALAT:", err)
 
 
 class TesCmdCekCepatSSL(unittest.TestCase):

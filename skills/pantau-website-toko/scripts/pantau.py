@@ -35,11 +35,12 @@ import sys
 import tempfile
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
 APLIKASI = "pantau-website-toko"
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 UA = f"{APLIKASI}/{VERSI} (+komunitech.com; baca status-page publik saja)"
 
 # Konstanta status Uptime Kuma (sama persis dengan src/util.ts versi resmi)
@@ -222,6 +223,7 @@ def cmd_ringkasan(args):
             kode=4,
         )
 
+    tampilkan_ssl = bool(cfg_data.get("config", {}).get("showCertificateExpiry"))
     sekarang = dt.datetime.now(dt.timezone.utc)
     hasil_monitor = []
     for m in monitors:
@@ -233,6 +235,18 @@ def cmd_ringkasan(args):
         menit_turun, mulai, akhir, jumlah_turun = hitung_downtime_jendela(beats_sorted, sekarang)
         cert_hari = m.get("certExpiryDaysRemaining")
         cert_hari = cert_hari if isinstance(cert_hari, int) else None
+        monitor_https = str(m.get("url") or "").lower().startswith("https://")
+        # Uptime Kuma sendiri HANYA mengisi certExpiryDaysRemaining saat sertifikat TEPERCAYA
+        # (tlsInfo.valid=true di kode sumbernya) - untuk https self-signed/tidak tepercaya,
+        # field ini kosong walau "Show Certificate Expiry" sudah aktif. Diam saja di sini akan
+        # terlihat seperti skill lupa mengecek SSL, padahal itu keterbatasan Uptime Kuma sendiri
+        # (temuan uji independen 2026-09-26) - beri catatan eksplisit, bukan diam.
+        catatan_ssl = None
+        if cert_hari is None and monitor_https and tampilkan_ssl:
+            catatan_ssl = ("SSL tidak terbaca dari Uptime Kuma (biasanya karena sertifikatnya "
+                            "tidak tepercaya/self-signed - Uptime Kuma hanya melaporkan sisa hari "
+                            "untuk sertifikat yang valid) - cek dengan 'cek-cepat' untuk melihat "
+                            "sisa harinya langsung.")
         hasil_monitor.append({
             "id": m["id"],
             "nama": m.get("name"),
@@ -248,6 +262,7 @@ def cmd_ringkasan(args):
             "jendela_akhir": akhir.isoformat() if akhir else None,
             "jendela_jumlah_titik": len(beats_sorted),
             "sisa_hari_ssl": cert_hari,
+            "catatan_ssl": catatan_ssl,
         })
 
     hasil = {"ok": True, "base": base, "slug": slug, "judul": cfg_data.get("config", {}).get("title"),
@@ -294,8 +309,8 @@ def cetak_ringkasan_teks(hasil):
         if m["sisa_hari_ssl"] is not None:
             peringatan = "  <-- SEGERA PERPANJANG" if m["sisa_hari_ssl"] <= 14 else ""
             print(f"     Sertifikat SSL  : {m['sisa_hari_ssl']} hari lagi{peringatan}")
-        elif m["tipe"] == "http" and str(m.get("nama", "")):
-            pass
+        elif m.get("catatan_ssl"):
+            print(f"     Sertifikat SSL  : {m['catatan_ssl']}")
         print()
     print("Catatan: 'Uptime 24 jam' & sertifikat SSL diambil apa adanya dari Uptime Kuma "
           "(sisa hari SSL hanya tampil bila 'Show Certificate Expiry' aktif di status page & "
@@ -497,60 +512,103 @@ def cek_ssl_langsung(host, port, timeout):
     return hasil
 
 
+class _TanpaIkutiRedirect(urllib.request.HTTPRedirectHandler):
+    """Menonaktifkan pengikutan redirect otomatis bawaan urllib, supaya tiap kode 3xx dan
+    tujuannya (header Location) bisa direkam sebagai 'rantai redirect', bukan hilang begitu
+    saja di balik status HTTP tujuan akhir (temuan uji independen 2026-09-26, v1.0.0)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def minta_dengan_rantai_redirect(url_awal, timeout, maks_hop=8):
+    """Kirim GET, ikuti redirect MANUAL (bukan otomatis) supaya tiap hop tercatat.
+    Kembalikan (kode_akhir, url_akhir, rantai) dengan rantai = [(url, kode, tujuan), ...].
+    Sertifikat tidak terpercaya di hop mana pun otomatis dicoba ulang tanpa verifikasi
+    (perilaku sama seperti v1.0.0), supaya laporan tetap berguna."""
+    opener_verifikasi = urllib.request.build_opener(_TanpaIkutiRedirect)
+    opener_bebas = urllib.request.build_opener(
+        _TanpaIkutiRedirect, urllib.request.HTTPSHandler(context=ssl._create_unverified_context())
+    )
+    rantai = []
+    url = url_awal
+    for _ in range(maks_hop + 1):
+        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        try:
+            with opener_verifikasi.open(req, timeout=timeout) as resp:
+                kode = resp.status
+        except urllib.error.HTTPError as e:
+            kode = e.code
+            if 300 <= kode < 400 and e.headers.get("Location"):
+                tujuan = urllib.parse.urljoin(url, e.headers.get("Location"))
+                rantai.append((url, kode, tujuan))
+                url = tujuan
+                continue
+            return kode, url, rantai
+        except urllib.error.URLError as e:
+            alasan = getattr(e, "reason", e)
+            if not (isinstance(alasan, ssl.SSLCertVerificationError) or "CERTIFICATE_VERIFY_FAILED" in str(alasan)):
+                raise
+            # Sertifikat tidak terpercaya: ulangi hop INI saja tanpa verifikasi (bagian SSL di
+            # bawah tetap menandai TIDAK VALID apa adanya lewat cek_ssl_langsung).
+            try:
+                with opener_bebas.open(req, timeout=timeout) as resp:
+                    kode = resp.status
+            except urllib.error.HTTPError as e2:
+                kode = e2.code
+                if 300 <= kode < 400 and e2.headers.get("Location"):
+                    tujuan = urllib.parse.urljoin(url, e2.headers.get("Location"))
+                    rantai.append((url, kode, tujuan))
+                    url = tujuan
+                    continue
+                return kode, url, rantai
+        return kode, url, rantai
+    raise Gagal(f"terlalu banyak redirect (>{maks_hop}) dimulai dari {url_awal}.", kode=4)
+
+
 def cmd_cek_cepat(args):
     url_teks, parsed = urai_url_target(args.url)
-    req = urllib.request.Request(url_teks, headers={"User-Agent": UA})
     t0 = time.monotonic()
     try:
-        with urllib.request.urlopen(req, timeout=args.timeout) as resp:
-            kode = resp.status
-        elapsed_ms = round((time.monotonic() - t0) * 1000, 1)
-    except urllib.error.HTTPError as e:
-        kode = e.code
+        kode, url_akhir, rantai = minta_dengan_rantai_redirect(url_teks, args.timeout)
         elapsed_ms = round((time.monotonic() - t0) * 1000, 1)
     except socket.timeout:
         raise Gagal(f"waktu tunggu habis ({args.timeout} detik) menghubungi {url_teks}. "
                      f"Situs mungkin sangat lambat atau tidak merespons.", kode=4)
     except urllib.error.URLError as e:
-        alasan = getattr(e, "reason", e)
-        if isinstance(alasan, ssl.SSLCertVerificationError) or "CERTIFICATE_VERIFY_FAILED" in str(alasan):
-            # Sertifikat tidak terpercaya: tetap coba ambil status HTTP (tanpa verifikasi) supaya
-            # laporan tetap berguna; bagian SSL di bawah akan menandai TIDAK VALID apa adanya.
-            try:
-                with urllib.request.urlopen(req, timeout=args.timeout,
-                                             context=ssl._create_unverified_context()) as resp:
-                    kode = resp.status
-            except urllib.error.HTTPError as e2:
-                kode = e2.code
-            except (urllib.error.URLError, socket.timeout) as e2:
-                raise Gagal(f"tidak bisa menghubungi {url_teks} sama sekali ({e2}).", kode=4)
-            elapsed_ms = round((time.monotonic() - t0) * 1000, 1)
-        else:
-            raise Gagal(f"tidak bisa menghubungi {url_teks}: {alasan}. "
-                         f"Cek ejaan alamat/domain, atau situsnya sedang benar-benar mati.", kode=4)
+        raise Gagal(f"tidak bisa menghubungi {url_teks}: {getattr(e, 'reason', e)}. "
+                     f"Cek ejaan alamat/domain, atau situsnya sedang benar-benar mati.", kode=4)
+
+    # Sertifikat SSL diperiksa untuk host TUJUAN AKHIR (setelah redirect, bila ada) - itu yang
+    # sesungguhnya dilihat pelanggan di browser mereka.
+    parsed_akhir = urllib.parse.urlparse(url_akhir)
 
     kategori = "OK" if 200 <= kode < 300 else ("REDIRECT" if 300 <= kode < 400 else
                ("GALAT KLIEN (4xx)" if 400 <= kode < 500 else "GALAT SERVER (5xx)"))
 
     ssl_info = None
-    if parsed.scheme == "https":
-        port = parsed.port or 443
+    if parsed_akhir.scheme == "https":
+        port = parsed_akhir.port or 443
         try:
-            ssl_info = cek_ssl_langsung(parsed.hostname, port, args.timeout)
+            ssl_info = cek_ssl_langsung(parsed_akhir.hostname, port, args.timeout)
         except Gagal as g:
             ssl_info = {"valid": None, "sisa_hari": None, "kedaluwarsa": None, "catatan": g.pesan}
 
+    rantai_out = [{"dari": a, "kode": b, "ke": c} for a, b, c in rantai]
     hasil = {
-        "ok": True, "url": url_teks, "kode_http": kode, "kategori": kategori,
-        "waktu_respons_ms": elapsed_ms, "ssl": ssl_info,
+        "ok": True, "url": url_teks, "url_akhir": url_akhir, "kode_http": kode, "kategori": kategori,
+        "waktu_respons_ms": elapsed_ms, "rantai_redirect": rantai_out, "ssl": ssl_info,
     }
     if args.json:
         cetak_json(hasil)
         return
 
     print(f"CEK CEPAT: {url_teks}")
+    if rantai_out:
+        langkah = " -> ".join([f"{r['kode']}" for r in rantai_out] + [str(kode)])
+        print(f"Redirect: {langkah}  (tujuan akhir: {url_akhir})")
     print(f"HTTP    : {kode} ({kategori})")
-    print(f"Respons : {elapsed_ms} ms")
+    print(f"Respons : {elapsed_ms} ms (total, termasuk redirect bila ada)" if rantai_out else f"Respons : {elapsed_ms} ms")
     if ssl_info is None:
         print("SSL     : - (alamat http://, bukan https://)")
     elif ssl_info["sisa_hari"] is not None:
