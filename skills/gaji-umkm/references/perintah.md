@@ -10,6 +10,7 @@ Perintah bertanda **(besar)** hanya pratinjau sampai ditambah `--ya` setelah pem
 | `atur` (kecil) | Pengaturan usaha | `--nama-usaha`, `--umk`, `--jkk` (persen), `--batas-jp`, `--tanggal-gajian 1-31/akhir`, `--potongan-per-hari-alpa` + `--dasar-potongan "<pasal PK/PP/PKB>"` (`-` = hapus) |
 | `karyawan tambah` (besar) | Karyawan baru | wajib `--nama --ptkp --gaji-pokok --masuk`; opsional `--kode`, `--jabatan`, `--jenis tetap/kontrak`, `--tunjangan-tetap`, `--tunjangan-tidak-tetap` (rutin tiap bulan), `--zakat`, `--bpjs kes,tk,jp/kes,tk/kes/tidak`, `--jkk`, `--hari-kerja 5/6`, `--dasar-bpjs-kesehatan`, `--dtp ya --bruto-tetap-januari`, `--nik`, `--bank`, `--rekening`, `--atas-nama`, `--kode-absensi` |
 | `karyawan ubah` (besar) | Ubah data | `--karyawan <kode/nama>` + opsi di atas; `--keluar YYYY-MM-DD` (`-` batal). Nilai `-` mengosongkan NIK/rekening/bank |
+| (pagar BPJS) | `tambah`/`ubah`/`impor` yang membuat karyawan tanpa BPJS Kesehatan/Ketenagakerjaan atau `--dasar-bpjs-kesehatan` di bawah upah (min. UMK, maks. 12 jt) | Pratinjau berlabel "PERLU PERSETUJUAN KHUSUS"; `--ya` saja ditolak (`masalah_kepatuhan` di JSON). Simpan hanya dengan `--ya --ya-saya-paham [--alasan-khusus "..."]` atas keputusan pemilik; dicatat di log |
 | `karyawan keluar` (besar) | Catat berhenti | `--karyawan`, `--tanggal` |
 | `karyawan daftar` | Daftar (NIK/rekening disamarkan) | `--semua` (termasuk yang keluar) |
 | `karyawan impor <file>` (besar) | Banyak dari CSV | kolom seperti `templates/karyawan-contoh.csv`; satu baris salah → tidak ada yang disimpan |
@@ -20,7 +21,7 @@ Perintah bertanda **(besar)** hanya pratinjau sampai ditambah `--ya` setelah pem
 | `final` (besar) | Kunci periode | `--bulan` |
 | `revisi` (besar) | Buka revisi tercatat | `--bulan --alasan "..."` |
 | `periode` | Daftar periode + riwayat revisi | — |
-| `rekap` | Rekap perusahaan | `--bulan` atau `--tahun` |
+| `rekap` | Rekap perusahaan | `--bulan` atau `--tahun`. JSON `total`: `pph21_dipotong`, `pengembalian_pph21`, `setor_pph21` (= perkiraan setor, dipotong − dikembalikan, min. 0), `lebih_bayar_pph21` |
 | `slip` | Slip Markdown per karyawan | `--bulan`, `--karyawan` (tampilkan satu), `--keluar <folder>` |
 | `transfer` | CSV transfer (periode final) | `--bulan`, `--pemisah ;/,`, `--penuh` (periode revisi: gaji penuh, bukan selisih), `--rekening-lengkap` (nomor lengkap hanya di file) |
 | `thr` (besar) | THR via mesin hitung-thr | `--bulan --hari-raya --nama-hari-raya [--tanggal-bayar] [--karyawan ...]` |

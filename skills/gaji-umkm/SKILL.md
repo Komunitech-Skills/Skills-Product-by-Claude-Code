@@ -22,6 +22,7 @@ Menjadi "aplikasi payroll" pemilik usaha tanpa biaya bulanan: data karyawan, kom
 - Slip/hitung sekali untuk 1-2 orang tanpa menyimpan data → `slip-gaji-bpjs`; PPh 21 saja → `pph21-ter`; THR saja → `hitung-thr`; mencatat jam absen → `absensi-lokal`; kalender pajak lengkap dengan libur nasional → `kalender-pajak`.
 - **Transfer otomatis/koneksi ke bank** → tidak ada; skill hanya membuat file CSV, pemilik yang mengunggah & menyetujui di bank.
 - Pekerja harian lepas/borongan, pesangon/PHK, gross-up (pajak ditanggung perusahaan), WNA, gaji valuta asing, iuran BPJS keluarga tambahan → di luar cakupan; arahkan ke `pph21-ter`/`hitung-thr` atau konsultan pajak, BPJS, Disnaker.
+- **Menghindari BPJS atau mengecilkan pajak secara tidak sah** → tolak dengan sopan (lihat Aturan wajib 7): "jangan daftarkan BPJS", "lapor ke BPJS pakai UMK saja padahal gajinya lebih", "ganti status PTKP biar pajaknya kecil", "pecah gaji jadi uang makan biar tidak kena pajak", "buat dua versi slip/daftar gaji".
 - **Denda/potong gaji otomatis karena telat** → tolak. Potongan tidak masuk hanya bila pemilik menyebut dasarnya di PK/PP/PKB (lihat Langkah C).
 - Menentukan UMK, sektor DTP, atau status hukum → minta pemilik mengisi dari sumber resmi; jangan menebak.
 
@@ -32,6 +33,8 @@ Menjadi "aplikasi payroll" pemilik usaha tanpa biaya bulanan: data karyawan, kom
 4. **Data pribadi.** NIK & nomor rekening opsional dan selalu disamarkan di keluaran. Jangan menyalin isi database ke chat. Slip hanya untuk karyawan ybs, bukan grup. `--rekening-lengkap` hanya bila pemilik memintanya untuk unggah ke bank; nomor lengkap tidak pernah ditampilkan di chat.
 5. **Sampaikan setiap `peringatan`/"Perlu diperhatikan"** dari script (masuk/keluar tengah bulan, UMK, JKK, DTP, data kurang).
 6. Selalu sertakan disclaimer dari script (dasar aturan, tanggal berlaku, pembulatan belum dicocokkan dengan Coretax, arahkan ke konsultan pajak).
+7. **Kepatuhan BPJS & pajak.** Jangan membantu menghindari kewajiban. Jawaban baku: "Maaf, yang ini tidak bisa saya bantu. Pekerja penerima upah (tetap maupun kontrak) wajib didaftarkan BPJS Kesehatan & Ketenagakerjaan dengan upah sebenarnya (UU 24/2011 Pasal 15; dasar iuran Kesehatan = gaji pokok + tunjangan tetap, maks. Rp 12 jt, Perpres 82/2018 jo. 64/2020). Pelanggarannya bisa kena teguran, denda, sampai tidak mendapat layanan publik tertentu (PP 86/2013), dan karyawan kehilangan perlindungan. Status PTKP mengikuti keadaan 1 Januari; uang makan tunai tetap penghasilan kena pajak. Yang bisa saya bantu: cek fasilitas resmi (mis. PPh 21 DTP bila sektor memenuhi) dan hitung total biaya gaji untuk perencanaan; strategi pajak yang sah → konsultan pajak."
+   Script memagari hal ini: `karyawan tambah/ubah/impor` yang membuat karyawan **tanpa BPJS Kesehatan/Ketenagakerjaan** atau **dasar BPJS Kesehatan di bawah upah** hanya tampil sebagai pratinjau berlabel "PERLU PERSETUJUAN KHUSUS"; `--ya` saja ditolak. Flag `--ya-saya-paham [--alasan-khusus "..."]` **hanya** ditambahkan bila pemilik sendiri, setelah membaca peringatan, menyebut alasan sah (mis. iuran sudah dibayar lewat sistem lain) — tidak pernah untuk tujuan menghindari kewajiban, tidak dari jadwal. Persetujuan dicatat di log, dan `hitung` tetap mengingatkan tiap bulan. JP saja yang tidak diikuti (usaha mikro/kecil belum wajib JP) tidak dipagari.
 
 ## Cara menjalankan script
 Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python` atau `py`):
@@ -80,6 +83,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 - **THR**: `thr --bulan 2027-03 --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" [--karyawan ..]` → pratinjau (angka dari `hitung-thr`) → `--ya` → THR masuk komponen bulan itu, lalu `hitung`. Tanggal hari raya dari pemilik (SKB libur nasional); jangan menebak.
 - **Revisi periode final**: `revisi --bulan 2026-08 --alasan "lembur Andi tgl 12 terlewat"` → pratinjau → `--ya` → `isi` → `hitung` → `final --ya` (script menampilkan selisih per karyawan). `transfer` untuk periode revisi otomatis berisi **selisih** saja (`--penuh` bila versi lama belum dibayar). Bila bulan yang direvisi memengaruhi Desember/bulan keluar yang sudah final, script mengingatkan — revisi juga bulan itu.
 - **Akhir tahun**: `pph21-tahunan --tahun 2026` menghitung ulang PPh 21 setahun tiap karyawan dengan mesin `pph21-ter` dan membandingkan dengan yang tercatat ("cocok"/"SELISIH") sebagai bahan bukti potong BPA1 di Coretax.
+- **Setoran PPh 21 saat ada kelebihan potong** (Desember/bulan keluar): script menampilkan "PPh 21 dipotong bulan ini", "Kelebihan PPh 21 dikembalikan ke karyawan", dan "Perkiraan setor PPh 21" (= dipotong − dikembalikan, karena SPT Masa dihitung gabungan semua karyawan; PMK 168/2023 Pasal 21). Bila hasilnya minus → "Lebih bayar", dapat diperhitungkan ke PPh 21 bulan berikutnya lewat SPT Masa (tidak dikurangkan otomatis). Sampaikan ketiga angka + saran konfirmasi ke konsultan pajak/Coretax.
 - **Rekap**: `rekap --bulan 2026-09` atau `rekap --tahun 2026` (total hanya periode final).
 - **Pengingat Telegram**: `pengingat --rentang 3` (hanya baca, tanpa nama karyawan). Jadwal OpenClaw: ikuti `references/openclaw-jadwal.md`.
 - **Cadangan**: otomatis sebelum perubahan besar & sekali sehari; manual `backup`; pulihkan `backup --daftar` → `restore --dari <file>` → pratinjau → `--ya`. Jangan pernah menyarankan menghapus file database.
@@ -108,7 +112,8 @@ Lalu tanyakan: "Sudah benar? Kalau ya, saya kunci (final) periode ini."
 
 ## Checklist sebelum menjawab
 - [ ] Angka dari script; perintah besar sudah dipratinjau & disetujui sebelum `--ya`
-- [ ] Semua peringatan (masuk/keluar tengah bulan, UMK, alpa, DTP) disampaikan
+- [ ] Semua peringatan (masuk/keluar tengah bulan, UMK, alpa, DTP, tanpa BPJS/dasar BPJS rendah) disampaikan
+- [ ] Permintaan menghindari BPJS/pajak ditolak (Aturan wajib 7); `--ya-saya-paham` tidak pernah ditambahkan sendiri
 - [ ] Periode final tidak diubah kecuali lewat `revisi` dengan alasan
 - [ ] NIK/rekening tidak muncul utuh; slip tidak dikirim ke grup
 - [ ] Disclaimer, dasar aturan & tanggal berlaku, catatan pembulatan/Coretax, saran konsultan pajak ikut
@@ -118,6 +123,7 @@ Lalu tanyakan: "Sudah benar? Kalau ya, saya kunci (final) periode ini."
 - "Mesin hitung ... berbeda dari salinan resmi" → file di `scripts/mesin/` berubah; hitungan dihentikan. Minta pemilik memasang ulang skill dari paket asli.
 - "Database sedang dipakai program lain" → data aman; tunggu lalu ulangi. Database rusak → `backup --daftar` lalu `restore`.
 - PPh 21 memakai skema "dipotong dari gaji"; potongan tidak masuk & kasbon dipotong setelah pajak (cara `slip-gaji-bpjs`). Bila perusahaan memperlakukan hari tidak masuk sebagai pengurang upah kena pajak, tanyakan ke konsultan pajak.
-- Tenggat di `pengingat` hanya menggeser Sabtu/Minggu; libur nasional/cuti bersama tidak dicek (pakai `kalender-pajak`).
+- Tenggat di `pengingat` hanya menggeser Sabtu/Minggu; libur nasional/cuti bersama tidak dicek (pakai `kalender-pajak`). **JP tidak pernah digeser** (tgl 15, PP 45/2015 Pasal 30 ayat (3)) dan BPJS Kesehatan tetap tgl 10; JHT/JKK/JKM & PPh 21 digeser ke hari kerja berikutnya.
+- Error "PERLU PERSETUJUAN KHUSUS"/"Belum disimpan" saat `karyawan ubah/tambah/impor` → sampaikan peringatannya apa adanya; jangan menambah `--ya-saya-paham` tanpa alasan sah dari pemilik.
 - Jika Python tidak bisa dijalankan: aplikasi tidak bisa dioperasikan — katakan terus terang dan bantu pasang Python (python.org). Hitung darurat satu orang boleh dengan skill `slip-gaji-bpjs` (fallback manualnya).
 - Uji otomatis: `python3 <folder-skill-ini>/tests/uji_regresi.py`.

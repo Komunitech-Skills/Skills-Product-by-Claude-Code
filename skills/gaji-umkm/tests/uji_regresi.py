@@ -168,6 +168,8 @@ class UjiPencocokan(Dasar):
                     "--zakat", str(s["zakat"])]
             if s["jkk"]:
                 opsi += ["--jkk", s["jkk"]]
+            if "kes" not in s["bpjs"] or "tk" not in s["bpjs"]:
+                opsi += ["--ya-saya-paham"]          # v1.0.1: tanpa BPJS butuh persetujuan khusus
             s["kode"] = self.tambah(s["nama"], *opsi)["kode"]
             isi = []
             for k in ("lembur_hari_kerja", "lembur_hari_libur", "bonus", "potongan_lain"):
@@ -677,6 +679,135 @@ class UjiBackup(Dasar):
         self.tambah("Andi", "--ptkp", "K/1", "--gaji-pokok", "6jt", "--masuk", "2022-01-01")
         self.gagal("init", "--ya")
         self.assertEqual(self.jumlah("SELECT COUNT(*) FROM karyawan"), 1)
+
+
+# --------------------------------------------------------------------------- v1.0.1: temuan penguji Akun B
+class UjiV101(Dasar):
+    def test_pagar_tanpa_bpjs_butuh_persetujuan_khusus(self):
+        e = self.tambah("Eka", "--ptkp", "TK/0", "--gaji-pokok", "15jt", "--masuk", "2022-01-01")["kode"]
+        # pratinjau: boleh, tapi diberi peringatan + tanda perlu persetujuan khusus
+        out = self.ok("karyawan", "ubah", "--karyawan", e, "--bpjs", "tidak")
+        self.assertTrue(out["perlu_persetujuan_khusus"])
+        self.assertIn("PERLU PERSETUJUAN KHUSUS", out["teks"])
+        self.assertIn("UU 24/2011 Pasal 15", out["teks"])
+        # --ya saja: ditolak, database tidak berubah
+        out = self.gagal("karyawan", "ubah", "--karyawan", e, "--bpjs", "tidak", "--ya")
+        self.assertIn("--ya-saya-paham", out["error"])
+        self.assertEqual(out["masalah_kepatuhan"], ["tanpa_bpjs_kesehatan", "tanpa_bpjs_ketenagakerjaan"])
+        self.assertEqual(self.jumlah("SELECT ikut_kes FROM karyawan WHERE kode='%s'" % e), 1)
+        # dengan persetujuan khusus: tersimpan + tercatat di log (audit)
+        out = self.ok("karyawan", "ubah", "--karyawan", e, "--bpjs", "tidak", "--ya", "--ya-saya-paham",
+                      "--alasan-khusus", "iuran dibayar induk perusahaan")
+        self.assertEqual(out["konfirmasi_kepatuhan"]["masalah"], ["tanpa_bpjs_kesehatan", "tanpa_bpjs_ketenagakerjaan"])
+        self.assertIn("PERSETUJUAN KHUSUS", out["teks"])
+        c = sqlite3.connect(self.db)
+        log = c.execute("SELECT ringkasan FROM log WHERE perintah='karyawan ubah' ORDER BY id DESC").fetchone()[0]
+        c.close()
+        self.assertIn("konfirmasi_kepatuhan", log)
+        self.assertIn("iuran dibayar induk perusahaan", log)
+        # tiap bulan hitung tetap mengingatkan
+        _, out = self.hasil("2026-09")
+        self.assertTrue(any("Eka: TIDAK didaftarkan BPJS Kesehatan" in p for p in out["peringatan_hitung"]))
+        # perubahan lain pada karyawan yang sudah disetujui tidak meminta persetujuan ulang
+        self.ok("karyawan", "ubah", "--karyawan", e, "--jabatan", "Kasir", "--ya")
+
+    def test_pagar_dasar_bpjs_kesehatan_di_bawah_upah(self):
+        self.ok("atur", "--umk", "5.396.761")
+        c = self.tambah("Citra", "--ptkp", "K/0", "--gaji-pokok", "9jt", "--tunjangan-tetap", "1jt",
+                        "--masuk", "2021-01-01")["kode"]
+        out = self.gagal("karyawan", "ubah", "--karyawan", c, "--dasar-bpjs-kesehatan", "5.396.761", "--ya")
+        self.assertIn("Rp 10.000.000", out["error"])
+        self.assertEqual(out["masalah_kepatuhan"], ["dasar_bpjs_kesehatan_rendah"])
+        # dasar = upah sebenarnya (atau di atas batas 12 jt) tidak perlu persetujuan
+        self.ok("karyawan", "ubah", "--karyawan", c, "--dasar-bpjs-kesehatan", "10jt", "--ya")
+        g = self.tambah("Gilang", "--ptkp", "TK/0", "--gaji-pokok", "20jt", "--dasar-bpjs-kesehatan", "12jt",
+                        "--masuk", "2021-01-01")["kode"]
+        self.gagal("karyawan", "ubah", "--karyawan", g, "--dasar-bpjs-kesehatan", "11jt", "--ya")
+        # tambah & impor baru juga dipagari
+        self.gagal("karyawan", "tambah", "--nama", "Hadi", "--ptkp", "TK/0", "--gaji-pokok", "8jt", "--masuk",
+                   "2024-01-01", "--jenis", "kontrak", "--bpjs", "tidak", "--ya")
+        f = self.file("k.csv", "nama;ptkp;gaji_pokok;masuk;bpjs\nIka;TK/0;6000000;2024-01-01;tidak\n"
+                               "Jaka;TK/0;6000000;2024-01-01;kes,tk,jp\n")
+        out = self.gagal("karyawan", "impor", f, "--ya")
+        self.assertIn("baris 2", out["error"])
+        self.assertEqual(self.jumlah("SELECT COUNT(*) FROM karyawan"), 2)
+        self.assertTrue(self.ok("karyawan", "impor", f)["perlu_persetujuan_khusus"])
+        self.assertEqual(self.ok("karyawan", "impor", f, "--ya", "--ya-saya-paham")["jumlah"], 2)
+        # JP saja tidak diikuti (usaha mikro/kecil belum wajib JP) -> tidak dipagari
+        self.ok("karyawan", "ubah", "--karyawan", "Jaka", "--bpjs", "kes,tk", "--ya")
+
+    def test_setor_pph21_dikurangi_kelebihan_dikembalikan(self):
+        # Lina: gaji besar Jan-Nov lalu turun drastis di Desember -> lebih potong di Masa Pajak Terakhir
+        l = self.tambah("Lina", "--ptkp", "TK/0", "--gaji-pokok", "30jt", "--masuk", "2020-01-01")["kode"]
+        m = self.tambah("Mira", "--ptkp", "TK/0", "--gaji-pokok", "8jt", "--masuk", "2020-01-01")["kode"]
+        for b in range(1, 12):
+            kode = "2026-%02d" % b
+            self.ok("isi", "--bulan", kode, "--karyawan", l, "--bonus", "40jt" if b == 3 else "-")
+            self.ok("hitung", "--bulan", kode)
+            self.ok("final", "--bulan", kode, "--ya")
+        self.ok("karyawan", "keluar", "--karyawan", l, "--tanggal", "2026-12-31", "--ya")
+        self.ok("isi", "--bulan", "2026-12", "--karyawan", l, "--gaji-pokok-dibayar", "1jt")
+        h, out = self.hasil("2026-12")
+        kembali = Decimal(str(h[l]["payroll"]["pendapatan"]["Pengembalian kelebihan PPh 21"]))
+        self.assertGreater(kembali, 0)
+        dipotong = sum(Decimal(str(x["payroll"]["pph_disetor"])) for x in h.values())
+        tot = out["total"]
+        self.assertEqual(Decimal(str(tot["pph21_dipotong"])), dipotong)
+        self.assertEqual(Decimal(str(tot["pengembalian_pph21"])), kembali)
+        self.assertEqual(Decimal(str(tot["setor_pph21"])), max(dipotong - kembali, Decimal(0)))
+        self.assertEqual(Decimal(str(tot["lebih_bayar_pph21"])), max(kembali - dipotong, Decimal(0)))
+        teks = out["teks"]
+        self.assertIn("PPh 21 dipotong bulan ini: %s" % G.rp(dipotong), teks)
+        self.assertIn("Kelebihan PPh 21 dikembalikan ke karyawan", teks)
+        self.assertIn("Perkiraan setor PPh 21: %s" % G.rp(max(dipotong - kembali, Decimal(0))), teks)
+        self.assertIn("konsultan", teks)
+        self.assertIn("Coretax", teks)
+        if kembali > dipotong:
+            self.assertIn("Lebih bayar PPh 21", teks)
+        # rekap tahun & pengingat memakai perkiraan setor yang sama
+        self.ok("final", "--bulan", "2026-12", "--ya")
+        rk = self.ok("rekap", "--bulan", "2026-12")["total"]
+        self.assertEqual(Decimal(str(rk["setor_pph21"])), max(dipotong - kembali, Decimal(0)))
+        self.assertIn("Perkiraan setor PPh 21", self.ok("rekap", "--tahun", "2026")["teks"])
+
+    def test_setor_pph21_tanpa_kelebihan_tetap_satu_baris(self):
+        self.tambah("Andi", "--ptkp", "K/1", "--gaji-pokok", "9jt", "--masuk", "2022-01-01")
+        _, out = self.hasil("2026-09")
+        self.assertEqual(out["total"]["setor_pph21"], out["total"]["pph21_dipotong"])
+        self.assertIn("- Setor PPh 21: ", out["teks"])
+        self.assertNotIn("Perkiraan setor", out["teks"])
+
+    def test_total_lama_v100_dilengkapi(self):
+        t = G.lengkapi_total({"setor_pph21": Decimal(4018864), "pengembalian_pph21": Decimal(931100)})
+        self.assertEqual(t["pph21_dipotong"], Decimal(4018864))
+        self.assertEqual(t["setor_pph21"], Decimal(3087764))           # angka neto temuan penguji (September)
+        t = G.lengkapi_total({"setor_pph21": Decimal(100), "pengembalian_pph21": Decimal(250)})
+        self.assertEqual((t["setor_pph21"], t["lebih_bayar_pph21"]), (Decimal(0), Decimal(150)))
+
+    def test_pengingat_jp_tidak_digeser_jht_digeser(self):
+        self.tambah("Andi", "--ptkp", "K/1", "--gaji-pokok", "6jt", "--masuk", "2022-01-01")
+        self.ok("hitung", "--bulan", "2026-10")
+        self.ok("final", "--bulan", "2026-10", "--ya")
+        teks = self.ok("pengingat", "--rentang", "14", hari_ini="2026-11-08")["teks"]   # 15/11/2026 = Minggu
+        self.assertIn("Min 15/11/2026: Batas setor iuran JP (Jaminan Pensiun) masa Oktober 2026", teks)
+        self.assertIn("PP 45/2015 Pasal 30 ayat (3)", teks)
+        self.assertIn("Sen 16/11/2026: Batas setor iuran JHT, JKK, JKM masa Oktober 2026", teks)
+        self.assertIn("PP 46/2015 Pasal 19", teks)
+        self.assertNotIn("Sen 16/11/2026: Batas setor iuran JP", teks)
+        # tanggal 15 hari kerja -> satu baris gabungan
+        self.ok("hitung", "--bulan", "2026-09")
+        teks = self.ok("pengingat", "--rentang", "20", hari_ini="2026-10-01")["teks"]   # 15/10/2026 = Kamis
+        self.assertIn("Kam 15/10/2026: Batas setor iuran BPJS Ketenagakerjaan masa September 2026 (JHT, JKK, JKM, JP",
+                      teks)
+
+    def test_peringatan_umk_prorata_dibedakan(self):
+        self.ok("atur", "--umk", "5.396.761")
+        k = self.tambah("Kiki", "--ptkp", "TK/0", "--gaji-pokok", "6jt", "--masuk", "2026-09-15")["kode"]
+        self.ok("isi", "--bulan", "2026-09", "--karyawan", k, "--gaji-pokok-dibayar", "3,2jt")
+        _, out = self.hasil("2026-09")
+        umk = [p for p in out["peringatan_hitung"] if "di bawah UMK" in p]
+        self.assertTrue(umk)
+        self.assertTrue(all("prorata" in p for p in umk))
 
 
 if __name__ == "__main__":

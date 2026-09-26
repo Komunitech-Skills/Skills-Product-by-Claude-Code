@@ -41,7 +41,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 APLIKASI = "gaji-umkm"
 SKEMA = 1
 FOLDER = Path(__file__).resolve().parent
@@ -744,15 +744,79 @@ def peringatan_karyawan(o, cfg):
     return p
 
 
+BATAS_ATAS_KES = Decimal(12000000)      # Perpres 64/2020 Pasal 32 (sama dengan mesin slip-gaji-bpjs)
+DASAR_KEPATUHAN = ("UU 24/2011 Pasal 15 ayat (1)-(2): pemberi kerja wajib mendaftarkan dirinya dan pekerjanya ke "
+                   "BPJS dan memberikan data yang lengkap dan benar; Perpres 82/2018 jo. 64/2020 Pasal 32: dasar iuran "
+                   "BPJS Kesehatan = gaji pokok + tunjangan tetap (maks. Rp 12.000.000, min. UMK); PP 86/2013: sanksi "
+                   "teguran, denda, sampai tidak mendapat layanan publik tertentu")
+FLAG_PAHAM = "--ya-saya-paham"
+
+
+def dasar_kes_wajib(o, cfg):
+    """Dasar iuran BPJS Kesehatan menurut aturan: min(max(gaji pokok + tunjangan tetap, UMK), 12 jt)."""
+    upah = D(o.get("gaji_pokok")) + D(o.get("tunjangan_tetap"))
+    if cfg.get("umk"):
+        upah = max(upah, D(cfg["umk"]))
+    return min(upah, BATAS_ATAS_KES)
+
+
+def masalah_kepatuhan(o, cfg):
+    """Kondisi data karyawan yang tidak sesuai kewajiban BPJS. Kembalikan {kode_masalah: pesan}."""
+    nama = o.get("nama") or "karyawan"
+    m = {}
+    if not int(o.get("ikut_kes") or 0):
+        m["tanpa_bpjs_kesehatan"] = ("%s: TIDAK didaftarkan BPJS Kesehatan. Pekerja penerima upah (tetap maupun "
+                                     "kontrak) wajib didaftarkan pemberi kerja." % nama)
+    if not int(o.get("ikut_tk") or 0):
+        m["tanpa_bpjs_ketenagakerjaan"] = ("%s: TIDAK didaftarkan BPJS Ketenagakerjaan (JKK, JKM, JHT). Pekerja "
+                                           "penerima upah wajib didaftarkan pemberi kerja." % nama)
+    if int(o.get("ikut_kes") or 0) and str(o.get("dasar_bpjs_kesehatan") or "").strip():
+        wajib = dasar_kes_wajib(o, cfg)
+        if D(o["dasar_bpjs_kesehatan"]) < wajib:
+            m["dasar_bpjs_kesehatan_rendah"] = (
+                "%s: dasar iuran BPJS Kesehatan diisi %s, lebih kecil dari dasar menurut aturan %s (gaji pokok + "
+                "tunjangan tetap, min. UMK bila diisi, maks. Rp 12.000.000). Melaporkan upah lebih kecil dari "
+                "sebenarnya tidak dibenarkan." % (nama, rp(D(o["dasar_bpjs_kesehatan"])), rp(wajib)))
+    return m
+
+
+def pagar_kepatuhan(args, baru):
+    """baru: {kode_masalah: pesan} yang MUNCUL karena perintah ini. Tanpa --ya-saya-paham: pratinjau diberi
+    peringatan; penyimpanan (--ya) ditolak. Dengan flag: disimpan dan dicatat di log (audit)."""
+    if not baru:
+        return [], None
+    pesan = list(baru.values())
+    paham = bool(getattr(args, "ya_saya_paham", False))
+    if not paham:
+        teks = ("PERLU PERSETUJUAN KHUSUS - data ini tidak sesuai kewajiban BPJS:\n- " + "\n- ".join(pesan) +
+                "\nDasar: " + DASAR_KEPATUHAN + ". Karyawan juga kehilangan perlindungan (berobat, kecelakaan "
+                "kerja, hari tua).\nBila ada alasan sah (mis. iuran sudah dibayar lewat sistem lain, atau sudah "
+                "dikonfirmasi ke BPJS), pemilik harus membaca peringatan ini lalu menjalankan perintah yang sama + "
+                "--ya " + FLAG_PAHAM + " [--alasan-khusus \"...\"]. Persetujuan ini dicatat di log aplikasi.")
+        if getattr(args, "ya", False):
+            raise Gagal("Belum disimpan. " + teks, masalah_kepatuhan=sorted(baru))
+        return [teks], None
+    catat = {"masalah": sorted(baru), "pesan": pesan, "alasan": bersih(getattr(args, "alasan_khusus", "") or "", 200),
+             "waktu": stempel()}
+    return ["DISIMPAN DENGAN PERSETUJUAN KHUSUS PEMILIK (%s%s), tercatat di log aplikasi:\n- %s\nRisiko tetap "
+            "ditanggung pemberi kerja (%s)." % (FLAG_PAHAM, "; alasan: " + catat["alasan"] if catat["alasan"] else "",
+                                                "\n- ".join(pesan), DASAR_KEPATUHAN)], catat
+
+
 def cmd_karyawan_tambah(args):
     def kerja(conn, cfg):
         o = normalisasi_karyawan(opsi_karyawan(args))
         if args.kode:
             o["kode"] = args.kode
         k = simpan_karyawan_baru(conn, o)
+        pr_k, catat = pagar_kepatuhan(args, masalah_kepatuhan(dict(k), cfg))
         t = "Karyawan baru:\n- " + teks_karyawan(k)
-        return {"karyawan": ringkas_karyawan(k), "peringatan": peringatan_karyawan(dict(k), cfg),
-                "ringkasan": {"kode": k["kode"]}}, t
+        ringkasan = {"kode": k["kode"]}
+        if catat:
+            ringkasan["konfirmasi_kepatuhan"] = catat
+        return {"karyawan": ringkas_karyawan(k), "peringatan": pr_k + peringatan_karyawan(dict(k), cfg),
+                "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
+                "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "karyawan tambah", kerja, besar=True, label_backup="karyawan")
 
 
@@ -775,11 +839,14 @@ def cmd_karyawan_ubah(args):
         conn.execute("UPDATE karyawan SET %s, diubah=? WHERE id=?" % ",".join("%s=?" % c for c in beda),
                      [o[c] for c in beda] + [stempel(), k["id"]])
         k2 = conn.execute("SELECT * FROM karyawan WHERE id=?", (k["id"],)).fetchone()
+        lama_m = masalah_kepatuhan(lama, cfg)
+        baru_m = {kd: ps for kd, ps in masalah_kepatuhan(dict(k2), cfg).items() if kd not in lama_m}
+        pr_k, catat = pagar_kepatuhan(args, baru_m)
         rahasia = {"nik", "rekening"}
         baris = ["- %s: %s -> %s" % (c, samarkan(lama[c]) if c in rahasia else (lama[c] or "(kosong)"),
                                      samarkan(o[c]) if c in rahasia else (o[c] or "(kosong)")) for c in beda]
         t = "Ubah data %s (%s):\n%s" % (k["nama"], k["kode"], "\n".join(baris))
-        pr = peringatan_karyawan(dict(k2), cfg) if ("dtp" in beda or "gaji_pokok" in beda) else []
+        pr = pr_k + (peringatan_karyawan(dict(k2), cfg) if ("dtp" in beda or "gaji_pokok" in beda) else [])
         draf = [r["kode"] for r in conn.execute("SELECT kode FROM periode WHERE status='draf' ORDER BY kode")]
         if draf:
             pr.append("Periode draf %s memakai data lama sampai dihitung ulang: jalankan gaji.py hitung --bulan <periode>."
@@ -794,8 +861,12 @@ def cmd_karyawan_ubah(args):
                       "periode sebelumnya tahun ini sudah final atau saldo awal). Gaji bulan itu tetap penuh kecuali "
                       "Anda mengisi gaji yang dibayar: gaji.py isi --bulan %s --karyawan %s --gaji-pokok-dibayar ..."
                       % (k["nama"], ftgl(date.fromisoformat(o["tanggal_keluar"])), kp, kp, k["kode"]))
+        ringkasan = {"kode": k["kode"], "kolom": beda}
+        if catat:
+            ringkasan["konfirmasi_kepatuhan"] = catat
         return {"karyawan": ringkas_karyawan(k2), "berubah": beda, "peringatan": pr,
-                "ringkasan": {"kode": k["kode"], "kolom": beda}}, t
+                "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
+                "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "karyawan ubah", kerja, besar=True, label_backup="karyawan")
 
 
@@ -861,7 +932,7 @@ def cmd_karyawan_impor(args):
         if not {"nama", "ptkp", "gaji_pokok", "masuk"} <= set(kepala):
             raise Gagal("File wajib punya kolom nama, ptkp, gaji_pokok, masuk (tanggal masuk). Contoh: "
                         "templates/karyawan-contoh.csv. Kolom ditemukan: %s" % ", ".join(kepala))
-        galat, baru, pr = [], [], []
+        galat, baru, pr, masalah = [], [], [], {}
         for r in rows:
             r = {ALIAS_IMPOR.get(k, k): v for k, v in r.items()}
             d = {k: r[k] for k in ("nama", "jabatan", "jenis", "ptkp", "gaji_pokok", "tunjangan_tetap",
@@ -881,13 +952,20 @@ def cmd_karyawan_impor(args):
                 k = simpan_karyawan_baru(conn, o)
                 baru.append(k)
                 pr += peringatan_karyawan(dict(k), cfg)
+                for kd, ps in masalah_kepatuhan(dict(k), cfg).items():
+                    masalah["%s:%s" % (k["kode"], kd)] = "baris %d, %s" % (r["_baris"], ps)
             except Gagal as e:
                 galat.append("baris %d: %s" % (r["_baris"], e.pesan))
         if galat:
             raise Gagal("Tidak ada yang disimpan; perbaiki dulu:\n- " + "\n- ".join(galat), galat=galat)
+        pr_k, catat = pagar_kepatuhan(args, masalah)
         t = "Impor %d karyawan:\n%s" % (len(baru), "\n".join("- " + teks_karyawan(k) for k in baru))
-        return {"jumlah": len(baru), "karyawan": [ringkas_karyawan(k) for k in baru], "peringatan": pr,
-                "ringkasan": {"jumlah": len(baru)}}, t
+        ringkasan = {"jumlah": len(baru)}
+        if catat:
+            ringkasan["konfirmasi_kepatuhan"] = catat
+        return {"jumlah": len(baru), "karyawan": [ringkas_karyawan(k) for k in baru], "peringatan": pr_k + pr,
+                "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
+                "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "karyawan impor", kerja, besar=True, label_backup="impor")
 
 
@@ -1233,6 +1311,10 @@ def susun_masukan(conn, per, cfg):
             "bruto_tetap_januari": k["bruto_tetap_januari"], "dasar_bpjs_kesehatan": k["dasar_bpjs_kesehatan"],
             "berhenti": "ya" if keluar else "tidak",
         }
+        for ps in masalah_kepatuhan(dict(k), cfg).values():
+            catatan.append(ps + " Wajib menurut " + DASAR_KEPATUHAN.split(";")[0] + ". Bila iuran sudah dibayar "
+                           "lewat sistem lain, pastikan tercatat; bila belum, daftarkan/perbaiki (gaji.py karyawan "
+                           "ubah --karyawan %s --bpjs kes,tk,jp / --dasar-bpjs-kesehatan -)." % k["kode"])
         mt = None
         if keluar or int(kode[5:7]) == 12:
             try:
@@ -1291,6 +1373,10 @@ def hitung_periode(conn, per, cfg, tmp):
             if bersih(re.sub(r"[;,\t\"]", " ", m["row"]["nama"])) != bersih(p["nama"]):
                 raise Gagal("Urutan hasil mesin tidak cocok (%s vs %s)." % (m["row"]["nama"], p["nama"]))
             p["peringatan"] = [x.replace(p["nama"] + ":", m["k"]["nama"] + ":", 1) for x in p["peringatan"]]
+            if "gaji_pokok" in m["isi"]:
+                p["peringatan"] = [x + (" (Catatan: bulan ini diisi gaji yang DIBAYAR/prorata. UMK berlaku untuk "
+                                        "gaji penuh sebulan; bandingkan dengan gaji pokok penuh di data karyawan.)"
+                                        if "di bawah UMK" in x else "") for x in p["peringatan"]]
             hasil.append({"kode": m["k"]["kode"], "karyawan_id": m["k"]["id"], "nama": m["k"]["nama"],
                           "jabatan": m["k"]["jabatan"], "ptkp": m["k"]["ptkp"], "hari_kerja": hk,
                           "tanggal_masuk": m["k"]["tanggal_masuk"], "tanggal_keluar": m["k"]["tanggal_keluar"],
@@ -1341,7 +1427,43 @@ def total_perusahaan(hasil):
     t["setor_bpjs_ketenagakerjaan"] = sum((t[c] for c in ("jht_perusahaan", "jht_karyawan", "jkk", "jkm",
                                                            "jp_perusahaan", "jp_karyawan")), NOL)
     t["jumlah_karyawan"] = len(hasil)
+    return lengkapi_total(t)
+
+
+def lengkapi_total(t):
+    """PPh 21 per masa di SPT Masa dihitung agregat seluruh karyawan: kelebihan potong Masa Pajak Terakhir yang
+    dikembalikan ke karyawan mengurangi PPh 21 yang disetor masa itu; bila hasilnya minus = lebih bayar yang dapat
+    diperhitungkan ke masa berikutnya (PMK 168/2023 Pasal 21 ayat (1) & (3); artikel DJP 12-03-2025).
+    - pph21_dipotong  : jumlah PPh 21 positif yang dipotong dari gaji bulan ini (jumlah pph_disetor mesin)
+    - pengembalian_pph21: kelebihan potong yang dikembalikan ke karyawan (sudah di gaji bersih)
+    - setor_pph21     : PERKIRAAN setor = max(0, dipotong - dikembalikan)
+    - lebih_bayar_pph21: max(0, dikembalikan - dipotong)
+    Total lama (v1.0.0) belum punya pph21_dipotong; saat itu setor_pph21 = jumlah dipotong."""
+    t = dict(t)
+    if "pph21_dipotong" not in t:
+        t["pph21_dipotong"] = t.get("setor_pph21", NOL)
+    dipotong, kembali = D(t["pph21_dipotong"]), D(t.get("pengembalian_pph21"))
+    t["setor_pph21"] = max(dipotong - kembali, NOL)
+    t["lebih_bayar_pph21"] = max(kembali - dipotong, NOL)
     return t
+
+
+def baris_setor_pph21(total):
+    dipotong, kembali = D(total["pph21_dipotong"]), D(total.get("pengembalian_pph21"))
+    if not kembali:
+        return ["- Setor PPh 21: %s" % rp(total["setor_pph21"])]
+    o = ["- PPh 21 dipotong bulan ini: %s" % rp(dipotong),
+         "- Kelebihan PPh 21 dikembalikan ke karyawan (Masa Pajak Terakhir, sudah di gaji bersih): %s" % rp(kembali),
+         "- Perkiraan setor PPh 21: %s (= dipotong - kelebihan dikembalikan; SPT Masa PPh 21 dihitung gabungan semua "
+         "karyawan, PMK 168/2023 Pasal 21)" % rp(total["setor_pph21"])]
+    if D(total.get("lebih_bayar_pph21")):
+        o.append("- Lebih bayar PPh 21 %s: tidak ada yang disetor masa ini; kelebihan dapat diperhitungkan dengan PPh 21 "
+                 "bulan berikutnya lewat SPT Masa (PMK 168/2023 Pasal 21 ayat (3)). Tidak dikurangkan otomatis dari "
+                 "bulan berikutnya - catat dan sampaikan ke konsultan pajak." % rp(total["lebih_bayar_pph21"]))
+    o.append("  Catatan: kelebihan wajib benar-benar dikembalikan ke karyawan paling lambat akhir bulan berikutnya "
+             "(PMK 168/2023 Pasal 21 ayat (1)); PPh 21 DTP tidak dikembalikan. Konfirmasi angka setor ke konsultan "
+             "pajak/Coretax sebelum membayar; pembulatan belum dicocokkan dengan Coretax.")
+    return o
 
 
 def ke_json(o):
@@ -1381,12 +1503,10 @@ def teks_rekap(kode, per_status, revisi, hasil, total, peringatan, cfg):
     o += ["", "Yang harus dibayar/disetor:",
           "- Transfer gaji bersih ke karyawan: %s" % rp(total["take_home_pay"]),
           "- Setor BPJS Kesehatan (4%% perusahaan + 1%% karyawan): %s" % rp(total["setor_bpjs_kesehatan"]),
-          "- Setor BPJS Ketenagakerjaan (JHT, JKK, JKM, JP): %s" % rp(total["setor_bpjs_ketenagakerjaan"]),
-          "- Setor PPh 21: %s" % rp(total["setor_pph21"])]
+          "- Setor BPJS Ketenagakerjaan (JHT, JKK, JKM, JP): %s" % rp(total["setor_bpjs_ketenagakerjaan"])]
+    o += baris_setor_pph21(total)
     if total["pph21_dtp_tunai"]:
         o.append("- PPh 21 DTP dibayar tunai ke karyawan (sudah di gaji bersih): %s" % rp(total["pph21_dtp_tunai"]))
-    if total["pengembalian_pph21"]:
-        o.append("- Kelebihan PPh 21 dikembalikan ke karyawan (sudah di gaji bersih): %s" % rp(total["pengembalian_pph21"]))
     o.append("- Total biaya gaji perusahaan: %s" % rp(total["biaya_perusahaan"]))
     if peringatan:
         o += ["", "Perlu diperhatikan:"] + ["- " + x for x in peringatan]
@@ -1402,7 +1522,8 @@ def muat_hasil(conn, per, revisi=None):
     rows = conn.execute("SELECT data FROM hasil WHERE periode_id=? AND revisi=? ORDER BY karyawan_id",
                         (per["id"], rev)).fetchall()
     hasil = sorted((json.loads(r["data"]) for r in rows), key=lambda h: h["kode"])
-    return {"hasil": hasil, "total": json.loads(hp["total"]), "peringatan": json.loads(hp["peringatan"]),
+    return {"hasil": hasil, "total": ke_json(lengkapi_total(json.loads(hp["total"]))),
+            "peringatan": json.loads(hp["peringatan"]),
             "dihitung": hp["dihitung"], "sidik": hp["sidik"], "revisi": rev}
 
 
@@ -1604,7 +1725,7 @@ def rekap_tahun(conn, cfg, th):
     if not rows:
         return {"tahun": th, "bulan": []}, "Belum ada periode gaji tahun %d." % th
     o = ["REKAP GAJI TAHUN %d - %s" % (th, cfg["nama_usaha"] or "(nama usaha)"), "",
-         "| Bulan | Status | Karyawan | Gaji bersih | BPJS Kes | BPJS TK | PPh 21 disetor | Biaya perusahaan |",
+         "| Bulan | Status | Karyawan | Gaji bersih | BPJS Kes | BPJS TK | Perkiraan setor PPh 21 | Biaya perusahaan |",
          "|---|---|---:|---:|---:|---:|---:|---:|"]
     jumlah = {k: NOL for k in ("take_home_pay", "setor_bpjs_kesehatan", "setor_bpjs_ketenagakerjaan", "setor_pph21",
                                "biaya_perusahaan")}
@@ -1971,12 +2092,30 @@ def cmd_pengingat(args):
                 acara.append((kes, "Batas setor iuran BPJS Kesehatan (tgl 10 setiap bulan, Perpres 82/2018 Pasal 39)%s"
                               % (": perkiraan %s dari %s" % (rp(tot["setor_bpjs_kesehatan"]), st) if tot else
                                  " (%s)" % st)))
-            tk = geser_akhir_pekan(date(berikut.year, berikut.month, 15))
-            if h0 <= tk <= h1:
+            # JP: tgl 15 bulan berikutnya TANPA pergeseran (PP 45/2015 Pasal 30 ayat (3)).
+            # JHT/JKK/JKM: tgl 15, bila hari libur -> hari kerja berikutnya (PP 46/2015 Pasal 19 ayat (2)-(3);
+            # PP 44/2015 Pasal 21 ayat (2)-(3)). Iuran ditagih bersama, jadi pengingat utama = tgl 15 persis.
+            tk15 = date(berikut.year, berikut.month, 15)
+            tk = geser_akhir_pekan(tk15)
+            if h0 <= tk15 <= h1 or h0 <= tk <= h1:
                 tot, st = info_periode(kp)
-                acara.append((tk, "Batas setor iuran BPJS Ketenagakerjaan masa %s (tgl 15 bulan berikutnya, PP 44/2015 "
-                              "Pasal 21)%s" % (nama_periode(kp), ": %s (%s)" % (rp(tot["setor_bpjs_ketenagakerjaan"]), st)
-                                               if tot else " (%s)" % st)))
+                jml = (": %s (%s)" % (rp(tot["setor_bpjs_ketenagakerjaan"]), st)) if tot else " (%s)" % st
+                ada_jp = (not tot) or D(tot.get("jp_perusahaan")) + D(tot.get("jp_karyawan")) > 0
+                if tk == tk15 or not ada_jp:
+                    if h0 <= tk <= h1:
+                        acara.append((tk, "Batas setor iuran BPJS Ketenagakerjaan masa %s (JHT, JKK, JKM%s: tgl 15 "
+                                      "bulan berikutnya; PP 44/2015 Pasal 21, PP 46/2015 Pasal 19, PP 45/2015 Pasal 30)%s"
+                                      % (nama_periode(kp), ", JP" if ada_jp else "", jml)))
+                else:
+                    if h0 <= tk15 <= h1:
+                        acara.append((tk15, "Batas setor iuran JP (Jaminan Pensiun) masa %s: tgl 15 bulan berikutnya, "
+                                      "TIDAK digeser walau hari libur (PP 45/2015 Pasal 30 ayat (3)). Iuran BPJS "
+                                      "Ketenagakerjaan ditagih bersama - paling aman bayar semuanya paling lambat "
+                                      "tanggal ini atau hari kerja sebelumnya%s" % (nama_periode(kp), jml)))
+                    if h0 <= tk <= h1:
+                        acara.append((tk, "Batas setor iuran JHT, JKK, JKM masa %s (tgl 15 jatuh hari libur -> hari kerja "
+                                      "berikutnya; PP 46/2015 Pasal 19, PP 44/2015 Pasal 21). JP sudah jatuh tempo "
+                                      "tgl 15." % nama_periode(kp)))
             pph = geser_akhir_pekan(date(berikut.year, berikut.month, 15))
             if h0 <= pph <= h1:
                 tot, st = info_periode(kp)
@@ -1993,7 +2132,8 @@ def cmd_pengingat(args):
         else:
             t = judul + "\n" + "\n".join("- %s %s: %s" % (["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"][d.weekday()],
                                                           ftgl(d), x) for d, x in acara)
-            t += ("\nTanggal yang jatuh di Sabtu/Minggu sudah digeser ke Senin (tidak berlaku untuk BPJS Kesehatan). "
+            t += ("\nTanggal yang jatuh di Sabtu/Minggu sudah digeser ke Senin (tidak berlaku untuk BPJS Kesehatan dan "
+                  "JP). "
                   "Libur nasional/cuti bersama TIDAK dicek - lihat skill kalender-pajak. Angka = total perusahaan, "
                   "tanpa data pribadi karyawan.")
         return {"acara": [{"tanggal": d.isoformat(), "teks": x} for d, x in acara]}, t
@@ -2259,17 +2399,21 @@ def buat_parser():
               "bpjs", "jkk", "hari-kerja", "dasar-bpjs-kesehatan", "dtp", "bruto-tetap-januari", "nik", "bank",
               "rekening", "atas-nama", "kode-absensi", "masuk"):
         opsi_k.add_argument("--" + o)
-    a = ks.add_parser("tambah", parents=[umum, tulis, opsi_k], help="Tambah karyawan")
+    paham = argparse.ArgumentParser(add_help=False)
+    paham.add_argument(FLAG_PAHAM, dest="ya_saya_paham", action="store_true",
+                       help="Persetujuan khusus pemilik untuk data yang tidak sesuai kewajiban BPJS (dicatat di log)")
+    paham.add_argument("--alasan-khusus", help="Alasan persetujuan khusus (dicatat di log)")
+    a = ks.add_parser("tambah", parents=[umum, tulis, opsi_k, paham], help="Tambah karyawan")
     a.add_argument("--kode")
-    a = ks.add_parser("ubah", parents=[umum, tulis, opsi_k], help="Ubah data karyawan / catat keluar")
+    a = ks.add_parser("ubah", parents=[umum, tulis, opsi_k, paham], help="Ubah data karyawan / catat keluar")
     a.add_argument("--karyawan", required=True)
     a.add_argument("--keluar", help="Tanggal keluar/berhenti (YYYY-MM-DD; '-' batal)")
-    a = ks.add_parser("keluar", parents=[umum, tulis], help="Catat karyawan berhenti")
+    a = ks.add_parser("keluar", parents=[umum, tulis, paham], help="Catat karyawan berhenti")
     a.add_argument("--karyawan", required=True)
     a.add_argument("--tanggal", required=True)
     a = ks.add_parser("daftar", parents=[umum], help="Daftar karyawan (NIK/rekening disamarkan)")
     a.add_argument("--semua", action="store_true", help="Termasuk yang sudah keluar")
-    a = ks.add_parser("impor", parents=[umum, tulis], help="Impor dari CSV")
+    a = ks.add_parser("impor", parents=[umum, tulis, paham], help="Impor dari CSV")
     a.add_argument("file")
 
     s = sub.add_parser("isi", parents=[umum, tulis], help="Isi komponen tidak tetap/penyesuaian satu periode")
