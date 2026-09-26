@@ -80,7 +80,7 @@ dasbor-lokal,Data & Analisis,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,
 siyuan-sop,Produktivitas,kurasi,https://github.com/siyuan-note/siyuan,AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech,8,ecer,99000,ecer,99000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 vikunja-tugas,Produktivitas,kurasi,https://github.com/go-vikunja/vikunja,"AGPL-3.0 (software, tidak didistribusikan); skill orisinal Komunitech",9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 arsip-nota,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
-frappe-books-usaha,Keuangan & Akuntansi,kurasi,https://github.com/frappe/books,"AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech",,ecer,149000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
+frappe-books-usaha,Keuangan & Akuntansi,kurasi,https://github.com/frappe/books,"AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech",5,ecer,149000,,,1.0.0,claude-code (simulasi agent),uji,2026-09-26
 actual-budget-usaha,Keuangan & Akuntansi,kurasi,https://github.com/actualbudget/actual,MIT (software tidak didistribusikan); skill orisinal Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
 laporan-insiden-usaha,Produktivitas,kurasi,https://github.com/mohitagw15856/pm-claude-skills,MIT,9,ecer,49000,ecer,49000,1.0.0,claude-code (simulasi agent),lulus,2026-09-26
 presentasi-data-ke-atasan,Data & Analisis,kurasi,https://github.com/nimrodfisher/data-analytics-skills,MIT,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
