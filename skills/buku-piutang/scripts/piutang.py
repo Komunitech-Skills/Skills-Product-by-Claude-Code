@@ -551,6 +551,10 @@ def panggilan(p, cfg):
     if awal in SAPAAN_DIKENAL:
         return nama
     if awal in AWALAN_LEMBAGA:
+        # "Warung Bu Tini" -> "Bu Tini"; "Toko Maju" -> "Bapak/Ibu di Toko Maju"
+        for i, k in enumerate(kata[1:3], 1):
+            if k.lower().rstrip(".") in SAPAAN_DIKENAL and len(kata) > i + 1:
+                return " ".join(kata[i:])
         return "Bapak/Ibu di " + nama
     return "Bapak/Ibu " + nama
 
@@ -1039,6 +1043,8 @@ def buat_pelanggan(conn, nama, wa=None, sapaan=None, catatan="", izinkan_dup=Fal
     nama = bersih(nama, 80)
     if not nama or not re.search(r"[^\W\d_]", nama):
         raise Gagal("Nama pelanggan '%s' tidak valid (harus ada huruf)." % nama)
+    if nama[0] in "=+@":
+        raise Gagal("Nama pelanggan '%s' diawali tanda rumus Excel (= + @); tulis nama biasa." % nama)
     if re.fullmatch(r"(?i)p\d{1,6}|b\d{1,6}", nama):
         raise Gagal("Nama pelanggan tidak boleh berupa kode (%s)." % nama)
     peringatan, w = [], None
@@ -1104,7 +1110,9 @@ def saldo_teks(buku, pid):
     k = buku.kredit_pel(pid)
     t = "Saldo piutang %s: %s (%d nota terbuka)" % (buku.pel[pid]["nama"], rp(p), n)
     if k:
-        t += " | kelebihan bayar/deposit: %s | saldo bersih: %s" % (rp(k), rp(p - k))
+        t += " | kelebihan bayar/deposit: %s" % rp(k)
+        t += (" | saldo bersih: %s" % rp(p - k)) if p >= k else \
+            (" | saldo bersih: DEPOSIT milik pelanggan %s (bukan utang pelanggan)" % rp(k - p))
     return t + "."
 
 
@@ -1387,6 +1395,9 @@ def cmd_catat(args):
         if telat > 0:
             per.append("Nota ini sudah lewat jatuh tempo %d hari; langsung masuk daftar terlewat." % telat)
         buku = Buku(conn)
+        if buku.kredit_pel(p["id"]) > 0:
+            per.append("%s punya deposit/kelebihan bayar %s. Tawarkan ke pengguna: pakai untuk nota ini "
+                       "(pakai-kredit --pelanggan %s)?" % (p["nama"], rp(buku.kredit_pel(p["id"])), kode_p(p["id"])))
         t = ("Tercatat nota %s untuk %s (%s%s): %s | tanggal %s | jatuh tempo %s (%d hari)\n%s" %
              (no, p["nama"], kode_p(p["id"]), ", pelanggan baru" if baru else "", rp(nominal), tgl_pendek(tanggal),
               tgl_panjang(jt), termin, saldo_teks(buku, p["id"])))
@@ -2251,3 +2262,778 @@ def cmd_terkirim(args):
         return {"kode_pelanggan": kode_p(pid), "nota": [n["no_nota"] for n in baru], "peringatan": per,
                 "ringkasan": {"terkirim": [n["no_nota"] for n in baru]}}, t
     return jalankan_tulis(args, "terkirim", kerja)
+
+
+# --------------------------------------------------------------------------- CSV
+def sel_aman(v):
+    """Cegah formula injection saat CSV dibuka di Excel/Sheets (teks diawali = + - @ tab CR diberi ')."""
+    if v is None:
+        return ""
+    if isinstance(v, (int, float)):
+        return v
+    s = str(v)
+    if re.fullmatch(r"-?\d+(?:[.,]\d+)?", s):
+        return s
+    if s and s[0] in "=+-@\t\r":
+        return "'" + s
+    return s
+
+
+def buang_pelindung(s):
+    s = str(s or "")
+    return s[1:] if len(s) > 1 and s[0] == "'" and s[1] in "=+-@\t\r" else s
+
+
+def tulis_csv(path, header, rows, timpa=False, pemisah=";"):
+    p = Path(path).expanduser().resolve()
+    if p.exists() and not timpa:
+        raise Gagal("File %s sudah ada. Pakai nama lain atau tambahkan --timpa bila memang ingin ditimpa." % p)
+    if p.suffix.lower() != ".csv":
+        raise Gagal("Nama file ekspor harus berakhiran .csv.")
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with open(str(p), "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f, delimiter=pemisah)
+        w.writerow(header)
+        for r in rows:
+            w.writerow([sel_aman(x) for x in r])
+    return str(p)
+
+
+def baca_csv(path):
+    p = Path(path).expanduser()
+    if not p.is_file():
+        raise Gagal("File %s tidak ditemukan." % path)
+    if p.suffix.lower() in (".xlsx", ".xls", ".ods", ".numbers", ".pdf"):
+        raise Gagal("File %s belum didukung langsung. Di Excel/Sheets: File > Save As/Download > CSV, lalu kirim file "
+                    "CSV-nya." % p.name)
+    raw = p.read_bytes()
+    if len(raw) > 20 * 1024 * 1024:
+        raise Gagal("File terlalu besar (> 20 MB). Pecah menjadi beberapa file.")
+    if b"\x00" in raw[:4096]:
+        raise Gagal("File %s bukan file teks CSV (isinya biner). Simpan ulang dari Excel/Sheets sebagai CSV." % p.name)
+    peringatan = []
+    try:
+        teks = raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        teks = raw.decode("cp1252", errors="replace")
+        peringatan.append("File bukan UTF-8; dibaca sebagai Windows-1252 (ANSI). Periksa huruf khusus di nama.")
+    baris1 = teks.split("\n", 1)[0]
+    pemisah = max([";", ",", "\t", "|"], key=lambda c: baris1.count(c))
+    rows, pembaca, akhir, ganjil = [], csv.reader(io.StringIO(teks), delimiter=pemisah), 0, []
+    for r in pembaca:
+        awal, akhir = akhir + 1, pembaca.line_num
+        if any(x.strip() for x in r):
+            rows.append((awal, r))
+            if akhir > awal:
+                ganjil.append((awal, akhir))
+    if not rows:
+        raise Gagal("File %s kosong." % p.name)
+    if ganjil:
+        peringatan.append("%d baris dibaca menyatu dengan baris sesudahnya (%s): kemungkinan ada tanda kutip (\") yang "
+                          "tidak tertutup. Periksa baris itu di file aslinya." %
+                          (len(ganjil), ", ".join("%d-%d" % g for g in ganjil[:5])))
+    return rows, peringatan
+
+
+KOLOM_IMPOR = {
+    "pelanggan": ("pelanggan", "nama pelanggan", "nama", "customer", "customer name", "nama customer", "pembeli",
+                  "nama pembeli", "konsumen", "client", "klien", "nama klien", "nama toko", "debitur", "bill to"),
+    "nota": ("no nota", "nomor nota", "nota", "no invoice", "nomor invoice", "invoice", "invoice no", "invoice number",
+             "no faktur", "nomor faktur", "faktur", "no transaksi", "nomor transaksi", "receipt number", "receipt no",
+             "order id", "no pesanan", "nomor pesanan", "id transaksi", "kode transaksi", "bill no", "no bon",
+             "nomor bon", "no struk", "nomor struk"),
+    "tanggal": ("tanggal", "tgl", "date", "tanggal nota", "tgl nota", "tanggal transaksi", "tgl transaksi",
+                "tanggal invoice", "invoice date", "tanggal faktur", "waktu", "created at", "transaction date",
+                "tanggal order", "tanggal pesanan", "tanggal bon"),
+    "jatuh_tempo": ("jatuh tempo", "tgl jatuh tempo", "tanggal jatuh tempo", "jt", "due date", "due", "tempo",
+                    "batas bayar", "batas pembayaran"),
+    "nominal": ("nominal", "total", "jumlah", "grand total", "total tagihan", "amount", "nilai", "total harga",
+                "tagihan", "total invoice", "total nota", "total bon", "nilai tagihan", "total belanja", "invoice total"),
+    "dibayar": ("dibayar", "terbayar", "sudah dibayar", "paid", "amount paid", "bayar", "dp", "uang muka",
+                "jumlah dibayar"),
+    "sisa": ("sisa", "sisa tagihan", "outstanding", "balance", "balance due", "kurang bayar", "sisa piutang",
+             "sisa bayar", "amount due"),
+    "wa": ("no wa", "wa", "whatsapp", "no hp", "hp", "telepon", "telp", "phone", "no telp", "nomor wa", "nomor hp",
+           "mobile", "no telepon", "phone number"),
+    "keterangan": ("keterangan", "catatan", "note", "notes", "deskripsi", "description", "item", "produk", "barang",
+                   "memo"),
+    "status": ("status", "status bayar", "payment status", "status pembayaran", "metode bayar", "payment method",
+               "metode pembayaran", "cara bayar", "payment type", "tipe pembayaran"),
+    "termin": ("termin", "term", "terms", "top", "lama tempo", "payment terms"),
+}
+STATUS_KARTU = ("kartu kredit", "credit card", "kartu debit", "debit card", "cc")
+STATUS_PIUTANG = ("belum lunas", "belum bayar", "belum dibayar", "unpaid", "tempo", "piutang", "bon", "hutang",
+                  "utang", "kasbon", "kredit", "credit", "partial", "partially paid", "sebagian", "dp", "open",
+                  "outstanding", "pending", "jatuh tempo", "overdue", "invoice", "nanti bayar", "bayar nanti")
+STATUS_BATAL = ("batal", "dibatalkan", "void", "voided", "cancel", "cancelled", "canceled", "refund", "refunded",
+                "retur", "returned")
+STATUS_LUNAS = ("lunas", "paid", "sudah bayar", "sudah dibayar", "selesai", "completed", "complete", "settled",
+                "tunai", "cash", "qris", "debit", "transfer", "e-wallet", "ewallet", "gopay", "ovo", "dana",
+                "shopeepay", "edc", "success", "sukses", "berhasil")
+
+
+def _norm_kolom(h):
+    h = str(h or "").replace("﻿", "").strip().lower()
+    h = re.sub(r"[_\s]+", " ", h).strip(" .:*#")
+    return h
+
+
+def petakan_kolom(header):
+    peta, dipakai = {}, set()
+    norm = [_norm_kolom(h) for h in header]
+    for kunci, alias in KOLOM_IMPOR.items():
+        for i, h in enumerate(norm):
+            if i not in dipakai and h in alias:
+                peta[kunci] = i
+                dipakai.add(i)
+                break
+    abaikan = [header[i] for i in range(len(header)) if i not in dipakai and str(header[i]).strip()]
+    return peta, abaikan
+
+
+def jenis_status(teks):
+    s = " %s " % re.sub(r"[^a-z0-9-]+", " ", str(teks or "").lower())
+    if not s.strip():
+        return None
+    for daftar, jenis in ((STATUS_KARTU, "lunas"), (STATUS_PIUTANG, "piutang"), (STATUS_BATAL, "batal"),
+                          (STATUS_LUNAS, "lunas")):
+        if any((" %s " % x) in s for x in daftar):
+            return jenis
+    return "tidak_dikenal"
+
+
+def deteksi_urutan(nilai):
+    """Hitung bukti format: hari/bulan (angka pertama > 12) vs bulan/hari (angka kedua > 12)."""
+    hb, bh = [], []
+    for no, v in nilai:
+        m = re.match(r"\s*(\d{1,2})[/.-](\d{1,2})[/.-]\d{2,4}", str(v or ""))
+        if m:
+            a, b = int(m.group(1)), int(m.group(2))
+            if a > 12 >= b:
+                hb.append((no, v))
+            elif b > 12 >= a:
+                bh.append((no, v))
+    return hb, bh
+
+
+def cmd_impor(args):
+    rows, per_file = baca_csv(args.file)
+    header_no, header = rows[0]
+    data = rows[1:]
+    peta, abaikan = petakan_kolom(header)
+    if "pelanggan" not in peta or not ("nominal" in peta or "sisa" in peta) or "tanggal" not in peta:
+        kurang = [k for k, ada in (("nama pelanggan", "pelanggan" in peta), ("tanggal", "tanggal" in peta),
+                                   ("nominal/total", "nominal" in peta or "sisa" in peta)) if not ada]
+        raise Gagal("Kolom wajib tidak ditemukan: %s. Judul kolom di file: %s. Ganti judul kolom (mis. 'pelanggan', "
+                    "'no nota', 'tanggal', 'jatuh tempo', 'nominal', 'dibayar', 'no wa') lalu ulangi. Contoh: "
+                    "templates/piutang-contoh.csv" % (", ".join(kurang), ", ".join(h for h in header if h) or "-"),
+                    kolom=header)
+    if not data:
+        raise Gagal("File hanya berisi judul kolom, belum ada data.")
+
+    def ambil(r, k):
+        i = peta.get(k)
+        return buang_pelindung(bersih(r[i], 200)) if i is not None and i < len(r) else ""
+
+    nilai_tgl = [(no, ambil(r, "tanggal")) for no, r in data] + [(no, ambil(r, "jatuh_tempo")) for no, r in data]
+    hb, bh = deteksi_urutan(nilai_tgl)
+    urutan = args.format_tanggal or "hari-bulan"
+    if not args.format_tanggal:
+        if bh and hb:
+            raise Gagal("Format tanggal di file ini CAMPUR: ada yang hari/bulan (baris %d '%s') dan bulan/hari (baris "
+                        "%d '%s'). Tanggal seperti 03/10/2026 tidak bisa dipastikan. Rapikan kolom tanggal dulu di "
+                        "Excel (format dd/mm/yyyy), lalu ulangi. Tidak ada yang diimpor." %
+                        (hb[0][0], hb[0][1], bh[0][0], bh[0][1]), format_tanggal="campur")
+        if bh:
+            raise Gagal("Kolom tanggal tampaknya berformat bulan/hari (gaya Amerika), mis. baris %d '%s'. Akibatnya "
+                        "tanggal seperti 03/10/2026 ambigu (3 Okt atau 10 Mar?). Pastikan di aplikasi asal file, lalu "
+                        "ulangi dengan --format-tanggal bulan-hari (atau ubah ke hari/bulan/tahun). Tidak ada yang "
+                        "diimpor." % bh[0], format_tanggal="bulan-hari")
+    elif urutan == "bulan-hari" and hb:
+        raise Gagal("--format-tanggal bulan-hari dipilih, tapi baris %d '%s' jelas hari/bulan. Periksa file. Tidak ada "
+                    "yang diimpor." % hb[0], format_tanggal="campur")
+    termin_arg = None
+    if args.termin is not None:
+        termin_arg = baca_termin(args.termin)
+        if termin_arg is None or termin_arg > MAKS_TERMIN:
+            raise Gagal("--termin harus jumlah hari 0-%d." % MAKS_TERMIN)
+
+    def kerja(conn, cfg):
+        hari = hari_ini()
+        termin_def = termin_arg if termin_arg is not None else int(cfg.get("termin") or TERMIN_DEFAULT)
+        masalah, lewati = [], {"sudah_ada": 0, "lunas": 0, "batal": 0}
+        catatan_baris = []
+        siap = []           # dict per nota
+        per_kunci = {}
+        for no, r in data:
+            try:
+                st = jenis_status(ambil(r, "status")) if "status" in peta else None
+                if st == "batal":
+                    lewati["batal"] += 1
+                    continue
+                if st == "lunas":
+                    lewati["lunas"] += 1
+                    continue
+                if st == "tidak_dikenal":
+                    raise Gagal("status '%s' tidak dikenal (lunas/belum lunas/batal?)" % ambil(r, "status"))
+                nama = ambil(r, "pelanggan")
+                if not nama or not re.search(r"[^\W\d_]", nama):
+                    raise Gagal("nama pelanggan kosong/tidak valid")
+                if nama[0] in "=+@":
+                    raise Gagal("nama pelanggan '%s' berisi rumus Excel" % nama[:40])
+                tgl, c = baca_tgl(ambil(r, "tanggal"), hari, "lalu", urutan=urutan, hari=hari)
+                catatan_baris += ["baris %d: %s" % (no, x) for x in c]
+                if tgl > hari:
+                    raise Gagal("tanggal %s di masa depan" % tgl_pendek(tgl))
+                if "nominal" in peta and ambil(r, "nominal"):
+                    nominal, c = parse_rupiah(ambil(r, "nominal"))
+                    catatan_baris += ["baris %d: %s" % (no, x) for x in c]
+                elif "sisa" in peta:
+                    nominal, c = parse_rupiah(ambil(r, "sisa"), "Sisa")
+                    catatan_baris += ["baris %d: %s" % (no, x) for x in c]
+                else:
+                    raise Gagal("nominal kosong")
+                dibayar = 0
+                if "dibayar" in peta and ambil(r, "dibayar") and re.sub(r"[\s0.,rpRP-]", "", ambil(r, "dibayar")):
+                    dibayar, c = parse_rupiah(ambil(r, "dibayar"), "Dibayar")
+                    catatan_baris += ["baris %d: %s" % (no, x) for x in c]
+                elif "sisa" in peta and "nominal" in peta and ambil(r, "sisa") != "":
+                    s_txt = ambil(r, "sisa")
+                    sisa_v = 0 if not re.sub(r"[\s0.,rpRP-]", "", s_txt) else parse_rupiah(s_txt, "Sisa")[0]
+                    dibayar = nominal - sisa_v
+                    if dibayar < 0:
+                        raise Gagal("sisa lebih besar dari nominal")
+                if dibayar > nominal:
+                    raise Gagal("dibayar %s melebihi nominal %s" % (rp(dibayar), rp(nominal)))
+                if dibayar == nominal:
+                    lewati["lunas"] += 1
+                    continue
+                jt_txt = ambil(r, "jatuh_tempo")
+                if jt_txt:
+                    t_hari = baca_termin(jt_txt)
+                    if t_hari is not None and not re.fullmatch(r"\d{1,3}", jt_txt):
+                        jt = tgl + timedelta(days=t_hari)
+                    else:
+                        jt, c = baca_tgl(jt_txt, tgl, "depan", urutan=urutan, hari=hari)
+                        catatan_baris += ["baris %d: %s" % (no, x) for x in c]
+                    asal_jt = "kolom"
+                elif "termin" in peta and baca_termin(ambil(r, "termin")) is not None:
+                    jt, asal_jt = tgl + timedelta(days=baca_termin(ambil(r, "termin"))), "kolom termin"
+                else:
+                    jt, asal_jt = tgl + timedelta(days=termin_def), "termin"
+                if jt < tgl:
+                    raise Gagal("jatuh tempo %s sebelum tanggal nota %s" % (tgl_pendek(jt), tgl_pendek(tgl)))
+                wa = None
+                if "wa" in peta and ambil(r, "wa"):
+                    try:
+                        wa, _ = normalisasi_wa(ambil(r, "wa"))
+                    except Gagal as e:
+                        catatan_baris.append("baris %d: nomor WA diabaikan (%s)" % (no, e.pesan))
+                no_nota = ambil(r, "nota")
+                item = {"baris": no, "nama": bersih(nama, 80), "tanggal": tgl, "jt": jt, "asal_jt": asal_jt,
+                        "nominal": nominal, "dibayar": dibayar, "wa": wa, "no_nota": bersih(no_nota, 40),
+                        "keterangan": ambil(r, "keterangan")}
+                k = kunci_nota(no_nota)
+                if k and k in per_kunci:
+                    lama = per_kunci[k]
+                    if not args.gabung_baris:
+                        raise Gagal("nomor nota %s sudah muncul di baris %d. Jika file ini per barang (satu nota "
+                                    "beberapa baris), ulangi dengan --gabung-baris" % (no_nota, lama["baris"]))
+                    if kunci_nama(lama["nama"]) != kunci_nama(item["nama"]) or lama["tanggal"] != tgl:
+                        raise Gagal("nota %s di baris %d berbeda pelanggan/tanggal; tidak bisa digabung" %
+                                    (no_nota, lama["baris"]))
+                    lama["nominal"] += nominal
+                    lama["dibayar"] += dibayar
+                    lama.setdefault("gabungan", [lama["baris"]]).append(no)
+                    continue
+                if k:
+                    per_kunci[k] = item
+                siap.append(item)
+            except Gagal as e:
+                masalah.append({"baris": no, "alasan": e.pesan})
+        # cocokkan dengan database & pelanggan
+        semua_pel = conn.execute("SELECT * FROM pelanggan").fetchall()
+        pel_baru, hasil, mungkin_sama = {}, [], []
+        tanda_file = {}
+        for it in siap:
+            if it["dibayar"] >= it["nominal"]:
+                lewati["lunas"] += 1
+                continue
+            k = kunci_nota(it["no_nota"])
+            if k:
+                ada = conn.execute("SELECT n.*, p.nama AS pnama FROM nota n JOIN pelanggan p ON p.id=n.pelanggan_id "
+                                   "WHERE n.kunci=?", (k,)).fetchone()
+                if ada:
+                    if kunci_nama(ada["pnama"]) == kunci_nama(it["nama"]) and ada["nominal"] == it["nominal"]:
+                        lewati["sudah_ada"] += 1
+                    else:
+                        masalah.append({"baris": it["baris"], "alasan": "nomor nota %s sudah dipakai di buku untuk %s "
+                                        "(%s); isi file berbeda" % (it["no_nota"], ada["pnama"], rp(ada["nominal"]))})
+                    continue
+            cocok = [p for p in semua_pel if kunci_nama(p["nama"]) == kunci_nama(it["nama"])]
+            if len(cocok) > 1:
+                masalah.append({"baris": it["baris"], "alasan": "nama '%s' cocok dengan %d pelanggan (%s); pakai nama "
+                                "yang lebih jelas" % (it["nama"], len(cocok), ", ".join(kode_p(p["id"])
+                                                                                         for p in cocok))})
+                continue
+            if not k:
+                tanda = (kunci_nama(it["nama"]), it["tanggal"].isoformat(), it["nominal"])
+                if cocok and conn.execute("SELECT 1 FROM nota WHERE pelanggan_id=? AND tanggal=? AND nominal=? AND "
+                                          "status='aktif'", (cocok[0]["id"], tanda[1], tanda[2])).fetchone():
+                    lewati["sudah_ada"] += 1
+                    continue
+                if tanda in tanda_file:
+                    masalah.append({"baris": it["baris"], "alasan": "sama persis dengan baris %d (pelanggan, tanggal, "
+                                    "nominal) dan tanpa nomor nota; kemungkinan dobel. Tambahkan kolom no nota bila "
+                                    "memang dua bon berbeda" % tanda_file[tanda]})
+                    continue
+                tanda_file[tanda] = it["baris"]
+            if cocok:
+                it["pid"] = cocok[0]["id"]
+            else:
+                kn = kunci_nama(it["nama"])
+                if kn not in pel_baru:
+                    pid, _ = buat_pelanggan(conn, it["nama"], it["wa"], izinkan_dup=True)
+                    pel_baru[kn] = pid
+                    mr = mirip(it["nama"], semua_pel)
+                    if mr:
+                        mungkin_sama.append("'%s' (baru, %s) mirip %s" % (it["nama"], kode_p(pid), ", ".join(
+                            "%s %s" % (kode_p(p["id"]), p["nama"]) for p in mr[:3])))
+                it["pid"] = pel_baru[kn]
+            hasil.append(it)
+        # tulis
+        for it in hasil:
+            no = it["no_nota"] or nomor_otomatis(conn, "IMP")
+            cur = conn.execute(
+                "INSERT INTO nota(pelanggan_id, no_nota, kunci, tanggal, jatuh_tempo, nominal, keterangan, sumber, "
+                "dibuat, diubah) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (it["pid"], no, kunci_nota(no), it["tanggal"].isoformat(), it["jt"].isoformat(), it["nominal"],
+                 bersih(it["keterangan"], 200), "impor:" + Path(args.file).name[:60], stempel(), stempel()))
+            it["no_final"] = no
+            if it["dibayar"]:
+                b = conn.execute("INSERT INTO pembayaran(pelanggan_id, tanggal, jumlah, metode, catatan, dibuat) VALUES "
+                                 "(?,?,?,?,?,?)", (it["pid"], it["tanggal"].isoformat(), it["dibayar"], "sebelum impor",
+                                                   "pembayaran tercatat di file impor", stempel()))
+                conn.execute("INSERT INTO alokasi(pembayaran_id, nota_id, tanggal, jumlah, dibuat) VALUES (?,?,?,?,?)",
+                             (b.lastrowid, cur.lastrowid, it["tanggal"].isoformat(), it["dibayar"], stempel()))
+        total = sum(it["nominal"] for it in hasil)
+        sisa = sum(it["nominal"] - it["dibayar"] for it in hasil)
+        pakai_termin = sum(1 for it in hasil if it["asal_jt"] == "termin")
+        t = ["IMPOR PIUTANG dari %s (format tanggal: %s)" % (Path(args.file).name,
+                                                            "hari/bulan/tahun" if urutan == "hari-bulan" else
+                                                            "bulan/hari/tahun (sesuai --format-tanggal)"),
+             "Kolom dikenali: " + ", ".join("%s='%s'" % (k, header[i]) for k, i in peta.items()),
+             "Kolom diabaikan: " + (", ".join(abaikan) or "-"),
+             "Akan dicatat: %d nota, total %s, sisa piutang %s, untuk %d pelanggan (%d pelanggan baru)" %
+             (len(hasil), rp(total), rp(sisa), len({it["pid"] for it in hasil}), len(pel_baru)),
+             "Dilewati: %d sudah ada di buku, %d sudah lunas, %d batal/void" %
+             (lewati["sudah_ada"], lewati["lunas"], lewati["batal"])]
+        if pakai_termin:
+            t.append("Jatuh tempo: %d nota tanpa kolom jatuh tempo diberi termin %d hari dari tanggal nota (asumsi; "
+                     "ubah dengan --termin)." % (pakai_termin, termin_def))
+        if hasil:
+            t.append("Contoh (maks. 10):")
+            t += ["- baris %s: %s | %s | %s | JT %s | %s%s" % (
+                it["baris"] if "gabungan" not in it else ",".join(map(str, it["gabungan"])), it["nama"],
+                it["no_nota"] or "(nomor otomatis)", tgl_pendek(it["tanggal"]), tgl_pendek(it["jt"]),
+                rp(it["nominal"]), (" (dibayar %s)" % rp(it["dibayar"])) if it["dibayar"] else "") for it in hasil[:10]]
+        if masalah:
+            t.append("BARIS BERMASALAH, TIDAK DIIMPOR (%d):" % len(masalah))
+            t += ["- baris %d: %s" % (m["baris"], m["alasan"]) for m in sorted(masalah, key=lambda m: m["baris"])[:30]]
+            if len(masalah) > 30:
+                t.append("... dan %d lainnya (lihat JSON 'masalah')." % (len(masalah) - 30))
+        per = list(per_file)
+        if mungkin_sama:
+            per.append("Nama pelanggan baru yang mirip pelanggan lama (periksa, mungkin orang yang sama): " +
+                       "; ".join(mungkin_sama[:10]))
+        per += catatan_baris[:20]
+        if len(catatan_baris) > 20:
+            per.append("... dan %d catatan baris lainnya." % (len(catatan_baris) - 20))
+        if masalah and len(masalah) * 2 > len(data):
+            per.append("Lebih dari separuh baris bermasalah; periksa dulu file dan judul kolomnya sebelum --ya.")
+        return {"jumlah_nota": len(hasil), "total": total, "sisa": sisa, "pelanggan_baru": len(pel_baru),
+                "dilewati": lewati, "masalah": sorted(masalah, key=lambda m: m["baris"]), "kolom": {
+                    k: header[i] for k, i in peta.items()}, "format_tanggal": urutan, "peringatan": per,
+                "ringkasan": {"impor": len(hasil), "total": total}}, "\n".join(t)
+    return jalankan_tulis(args, "impor", kerja, besar=True, label_backup="sebelum-impor")
+
+
+def di_repo_git(p):
+    for d in [p.parent] + list(p.parent.parents):
+        if (d / ".git").exists():
+            return d
+    return None
+
+
+def cmd_ekspor(args):
+    db = path_db(args)
+    conn = _baca(args)
+    try:
+        buku = Buku(conn)
+        sam = args.samarkan
+        if args.ke:
+            tujuan = Path(args.ke).expanduser().resolve()
+        else:
+            fol = db.parent / "ekspor"
+            fol.mkdir(parents=True, exist_ok=True)
+            tujuan = nama_unik(fol, "piutang-%s-%s" % (args.format, kini().strftime("%Y%m%d-%H%M%S")), ".csv")
+        per = []
+        repo = di_repo_git(tujuan)
+        if repo and not sam:
+            per.append("Folder tujuan berada di dalam repositori git (%s). File berisi data pelanggan: jangan di-commit/"
+                       "diunggah." % repo)
+        if args.format == "tagih-piutang":
+            rows = [[n["pelanggan"], n["no_nota"], n["nominal"] - n["dipotong"], n["jatuh_tempo"], n["dibayar"],
+                     n["diingatkan"]] for n in buku.terbuka]
+            p = tulis_csv(tujuan, ["pelanggan", "no_invoice", "nominal", "jatuh_tempo", "dibayar", "sudah_diingatkan"],
+                          rows, args.timpa, pemisah=",")
+            teks = ("Ekspor %d nota terbuka ke %s\nFormat skill tagih-piutang: python3 <folder-tagih-piutang>/scripts/"
+                    "hitung_telat.py --file \"%s\" (rekap umur + urutan prioritas penagihan). Kolom nominal = nominal "
+                    "nota dikurangi potongan." % (len(rows), p, p))
+            if any(v > 0 for v in buku.kredit.values()):
+                per.append("Ada pelanggan dengan kelebihan bayar/deposit yang belum dipakai; jalankan pakai-kredit dulu "
+                           "agar tagihan tidak terlalu besar.")
+        elif args.format == "pembayaran":
+            rows = []
+            for b in conn.execute("SELECT b.*, p.nama FROM pembayaran b JOIN pelanggan p ON p.id=b.pelanggan_id "
+                                  "ORDER BY b.tanggal, b.id"):
+                al = conn.execute("SELECT a.jumlah, n.no_nota FROM alokasi a JOIN nota n ON n.id=a.nota_id WHERE "
+                                  "a.pembayaran_id=?", (b["id"],)).fetchall()
+                rows.append([kode_b(b["id"]), b["tanggal"], kode_p(b["pelanggan_id"]),
+                             samar_nama(b["nama"]) if sam else b["nama"], b["jumlah"], b["metode"], b["status"],
+                             "; ".join("%s=%d" % (a["no_nota"], a["jumlah"]) for a in al)])
+            p = tulis_csv(tujuan, ["kode", "tanggal", "kode_pelanggan", "pelanggan", "jumlah", "metode", "status",
+                                   "alokasi"], rows, args.timpa)
+            teks = "Ekspor %d pembayaran ke %s (pemisah ';', UTF-8, aman dibuka di Excel)." % (len(rows), p)
+        else:
+            daftar = buku.nota if args.status == "semua" else buku.terbuka
+            rows = [[kode_p(n["pelanggan_id"]), samar_nama(n["pelanggan"]) if sam else n["pelanggan"],
+                     samar_wa(buku.pel[n["pelanggan_id"]]["wa"]) if sam else tampil_wa(buku.pel[n["pelanggan_id"]]["wa"]),
+                     n["no_nota"], n["tanggal"], n["jatuh_tempo"], n["nominal"], n["dibayar"], n["dipotong"], n["sisa"],
+                     max(0, n["telat"]), LABEL_UMUR[n["umur"]] if n["sisa"] else "lunas", n["diingatkan"],
+                     "" if sam else n["keterangan"]] for n in daftar]
+            p = tulis_csv(tujuan, ["kode_pelanggan", "pelanggan", "no_wa", "no_nota", "tanggal", "jatuh_tempo",
+                                   "nominal", "dibayar", "potongan", "sisa", "hari_lewat", "umur", "diingatkan",
+                                   "keterangan"], rows, args.timpa)
+            teks = "Ekspor %d nota ke %s (pemisah ';', UTF-8, aman dibuka di Excel)." % (len(rows), p)
+        if not sam:
+            teks += "\n" + DISCLAIMER_PRIVASI
+        if per:
+            teks += "\n" + "\n".join("Catatan: " + x for x in per)
+        return {"ok": True, "mode": "tersimpan", "file": p, "jumlah": len(rows), "format": args.format,
+                "data_sensitif": not sam, "peringatan": per, "teks": teks}, teks
+    finally:
+        conn.close()
+
+
+# --------------------------------------------------------------------------- backup & restore
+def cmd_backup(args):
+    db = path_db(args)
+    fol = folder_backup(db)
+    if args.daftar:
+        bks = sorted(fol.glob("piutang-*.db")) if fol.is_dir() else []
+        if bks:
+            t = ("Cadangan di %s (terbaru paling bawah):\n%s\nPulihkan: piutang.py restore --dari \"%s\" (pratinjau, "
+                 "lalu --ya)." % (fol, "\n".join("- " + str(b) for b in bks[-30:]), bks[-1]))
+        else:
+            t = ("Belum ada cadangan di %s. Jika database rusak dan tidak ada cadangan: piutang.py init --mulai-baru "
+                 "(pratinjau, lalu --ya); file rusak dipindah ke %s, tidak dihapus. Data bisa diimpor ulang dari "
+                 "ekspor CSV terakhir bila ada." % (fol, fol))
+        return {"ok": True, "mode": "baca", "folder": str(fol), "backup": [str(b) for b in bks], "teks": t}, t
+    conn = buka(db, baca_saja=True)
+    conn.close()
+    b = buat_backup(db, re.sub(r"[^\w-]", "", args.label or "manual") or "manual")
+    t = "Cadangan dibuat: %s" % b
+    return {"ok": True, "mode": "tersimpan", "backup": b, "teks": t}, t
+
+
+def cmd_restore(args):
+    """Pulihkan TANPA menulis ke database aktif lewat SQLite (bisa saja rusak total): periksa cadangan -> salin/
+    pindahkan database aktif (+journal) ke backup-piutang -> tulis cadangan ke file sementara -> periksa ->
+    os.replace (atomik)."""
+    db = path_db(args)
+    src = Path(args.dari).expanduser().resolve()
+    if not src.is_file():
+        raise Gagal("File cadangan %s tidak ada. Lihat daftar: piutang.py backup --daftar" % src)
+    if src == db:
+        raise Gagal("File cadangan sama dengan database aktif. Pilih file dari piutang.py backup --daftar.")
+    try:
+        c = buka(src, baca_saja=True)
+    except Gagal as e:
+        raise Gagal("File cadangan %s tidak bisa dipakai (%s). Pilih cadangan lain dari piutang.py backup --daftar." %
+                    (src.name, e.pesan.split(". ")[0]))
+    try:
+        n = c.execute("SELECT COUNT(*) FROM nota").fetchone()[0]
+        cek = c.execute("PRAGMA quick_check").fetchone()[0]
+        tabel = {r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    finally:
+        c.close()
+    if cek != "ok" or not set(TABEL_WAJIB) <= tabel:
+        raise Gagal("File cadangan %s juga bermasalah (%s). Pilih cadangan lain dari piutang.py backup --daftar." %
+                    (src.name, cek if cek != "ok" else "tabel tidak lengkap"))
+    try:
+        st = status_db(db)
+    except Gagal as e:
+        if "sedang dipakai" in e.pesan:
+            raise
+        raise Gagal("File %s bukan database buku-piutang; restore dibatalkan agar file itu tidak tertimpa. Periksa --db."
+                    % db)
+    nasib = {"tidak_ada": "Database belum ada; cadangan akan dipasang di lokasi itu.",
+             "sehat": "Database saat ini disalin dulu apa adanya ke folder backup-piutang.",
+             "rusak": "Database saat ini RUSAK; file itu dipindah (tidak dihapus) ke folder backup-piutang dengan nama "
+                      "rusak-piutang-<waktu>.db."}[st]
+    if not args.ya:
+        t = ("PRATINJAU (belum disimpan):\nDatabase %s akan diganti dengan cadangan %s (%d nota). %s\n\nLanjut? "
+             "Jalankan perintah yang sama + --ya setelah pengguna setuju." % (db, src, n, nasib))
+        return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "status_db": st, "teks": t}, t
+    db.parent.mkdir(parents=True, exist_ok=True)
+    tmp = nama_unik(db.parent, ".piutang-restore-%d" % os.getpid(), ".tmp")
+    simpanan = None
+    try:
+        s_ = sqlite3.connect(str(src))
+        d_ = sqlite3.connect(str(tmp))
+        try:
+            s_.backup(d_)
+        finally:
+            d_.close()
+            s_.close()
+        c = sqlite3.connect(str(tmp))
+        try:
+            ok = c.execute("SELECT nilai FROM meta WHERE kunci='aplikasi'").fetchone()
+            cek2 = c.execute("PRAGMA quick_check").fetchone()[0]
+        finally:
+            c.close()
+        if not ok or ok[0] != APLIKASI or cek2 != "ok":
+            raise Gagal("Salinan cadangan %s tidak valid; database aktif tidak diubah." % src.name)
+        if st == "sehat":
+            pastikan_tidak_dipakai(db)
+            simpanan = singkirkan(db, "piutang-{}-sebelum-restore", pindah=False)
+        elif st == "rusak":
+            simpanan = singkirkan(db, "rusak-piutang-{}", pindah=True)
+        os.replace(str(tmp), str(db))
+    finally:
+        if tmp.exists():
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
+    t = "TERSIMPAN. Database %s dipulihkan dari %s (%d nota)." % (db, src, n)
+    if simpanan:
+        t += ("\nFile rusak dipindah (tidak dihapus) ke: %s" if st == "rusak" else
+              "\nSalinan database sebelumnya: %s") % simpanan
+    return {"ok": True, "mode": "tersimpan", "backup": str(simpanan) if simpanan else None, "status_db_lama": st,
+            "teks": t}, t
+
+
+# --------------------------------------------------------------------------- CLI
+class ParserID(argparse.ArgumentParser):
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        print("GAGAL: perintah tidak lengkap/salah: %s. Lihat --help." % message, file=sys.stderr)
+        sys.exit(2)
+
+
+def buat_parser():
+    umum = argparse.ArgumentParser(add_help=False)
+    umum.add_argument("--db", help="File database (default ~/KomunitechData/piutang/piutang.db)")
+    umum.add_argument("--json", action="store_true", help="Output JSON (untuk agent/laporan)")
+    umum.add_argument("--hari-ini", help=argparse.SUPPRESS)
+    tulis = argparse.ArgumentParser(add_help=False)
+    tulis.add_argument("--ya", action="store_true", help="Simpan perubahan besar (tanpa ini hanya pratinjau)")
+    sam = argparse.ArgumentParser(add_help=False)
+    sam.add_argument("--samarkan", action="store_true", help="Nama jadi inisial, nomor WA disamarkan")
+
+    p = ParserID(prog="piutang.py", description="Buku piutang pelanggan lokal (buku-piutang %s)" % VERSI)
+    p.add_argument("--versi", action="version", version="buku-piutang " + VERSI)
+    sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
+    sub.required = True
+
+    s = sub.add_parser("init", parents=[umum, tulis], help="Buat buku piutang baru (besar: --ya)")
+    s.add_argument("--nama-usaha")
+    s.add_argument("--pengirim", help="Nama yang dipakai di draf pesan")
+    s.add_argument("--rekening", help="Rekening pembayaran untuk draf, mis. 'BCA 1234567890 a.n. Sari'")
+    s.add_argument("--termin", help="Termin default (hari), default 30")
+    s.add_argument("--zona", help="WIB (default), WITA, WIT")
+    s.add_argument("--mulai-baru", action="store_true", help="Database rusak & tanpa cadangan: buat baru")
+    s.set_defaults(fungsi=cmd_init)
+    s = sub.add_parser("info", parents=[umum], help="Lokasi database, jumlah data, cadangan")
+    s.set_defaults(fungsi=cmd_info)
+    s = sub.add_parser("atur", parents=[umum, tulis], help="Ubah pengaturan")
+    for o in ("--nama-usaha", "--pengirim", "--rekening", "--termin", "--zona"):
+        s.add_argument(o)
+    s.set_defaults(fungsi=cmd_atur)
+
+    s = sub.add_parser("tambah-pelanggan", parents=[umum, tulis], help="Tambah pelanggan")
+    s.add_argument("--nama", required=True)
+    s.add_argument("--wa")
+    s.add_argument("--sapaan", help="Bu/Pak/Kak/- (default: dari nama, atau 'Bapak/Ibu')")
+    s.add_argument("--catatan")
+    s.add_argument("--izinkan-duplikat", action="store_true")
+    s.set_defaults(fungsi=cmd_tambah_pelanggan)
+    s = sub.add_parser("ubah-pelanggan", parents=[umum, tulis], help="Ubah data pelanggan")
+    s.add_argument("--pelanggan", required=True)
+    for o in ("--nama", "--wa", "--sapaan", "--catatan"):
+        s.add_argument(o)
+    s.add_argument("--izinkan-duplikat", action="store_true")
+    s.set_defaults(fungsi=cmd_ubah_pelanggan)
+    s = sub.add_parser("hapus-pelanggan", parents=[umum, tulis], help="Hapus data pelanggan yang sudah lunas (besar)")
+    s.add_argument("--pelanggan", required=True)
+    s.set_defaults(fungsi=cmd_hapus_pelanggan)
+
+    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat piutang (nota belum dibayar)")
+    s.add_argument("--pelanggan", required=True, help="Nama, kode (P0001), atau nomor WA")
+    s.add_argument("--nota", help="Nomor nota/invoice (kosong = nomor otomatis PB-0001)")
+    s.add_argument("--tanggal", help="Tanggal nota, hari/bulan/tahun (default hari ini)")
+    s.add_argument("--jatuh-tempo", help="Tanggal jatuh tempo, atau '30 hari'")
+    s.add_argument("--termin", help="Jumlah hari dari tanggal nota (default pengaturan, 30)")
+    s.add_argument("--nominal", help="Total tagihan, mis. 2,5jt / 2.500.000")
+    s.add_argument("--dpp", help="DPP (belum termasuk PPN); pakai bersama --ppn")
+    s.add_argument("--ppn", help="11 (12%% x DPP nilai lain 11/12) atau 12 (barang mewah)")
+    s.add_argument("--keterangan")
+    s.add_argument("--wa", help="Nomor WA (untuk pelanggan baru)")
+    s.add_argument("--sapaan")
+    s.add_argument("--pelanggan-baru", action="store_true", help="Buat pelanggan baru walau ada nama mirip")
+    s.set_defaults(fungsi=cmd_catat)
+    s = sub.add_parser("ubah-nota", parents=[umum, tulis], help="Koreksi nota")
+    s.add_argument("--nota", required=True)
+    for o in ("--tanggal", "--jatuh-tempo", "--termin", "--nominal", "--keterangan", "--no-baru", "--pelanggan"):
+        s.add_argument(o)
+    s.set_defaults(fungsi=cmd_ubah_nota)
+
+    s = sub.add_parser("bayar", parents=[umum, tulis], help="Catat pembayaran (sebagian/lunas)")
+    s.add_argument("--pelanggan")
+    s.add_argument("--nota", help="Nomor nota (kosong = nota jatuh tempo paling awal dulu)")
+    s.add_argument("--jumlah", required=True, help="Nominal, atau 'lunas'")
+    s.add_argument("--tanggal", help="Tanggal bayar (default hari ini)")
+    s.add_argument("--metode", help="transfer/tunai/QRIS/...")
+    s.add_argument("--catatan")
+    s.add_argument("--kelebihan", choices=["kredit", "kembalikan", "nota-lain"],
+                   help="Jika bayar melebihi tagihan: simpan sebagai deposit, sudah dikembalikan, atau ke nota lain")
+    s.add_argument("--izinkan-dobel", action="store_true", help="Izinkan pembayaran dengan tanggal & jumlah sama")
+    s.set_defaults(fungsi=cmd_bayar)
+    s = sub.add_parser("pakai-kredit", parents=[umum, tulis], help="Pakai deposit/kelebihan bayar untuk nota terbuka")
+    s.add_argument("--pelanggan", required=True)
+    s.add_argument("--nota")
+    s.add_argument("--tanggal")
+    s.set_defaults(fungsi=cmd_pakai_kredit)
+    s = sub.add_parser("kembalikan", parents=[umum, tulis], help="Catat deposit/kelebihan bayar yang dikembalikan")
+    s.add_argument("--pelanggan", required=True)
+    s.add_argument("--jumlah", required=True, help="Nominal, atau 'semua'")
+    s.add_argument("--tanggal")
+    s.add_argument("--catatan")
+    s.set_defaults(fungsi=cmd_kembalikan)
+    s = sub.add_parser("potong", parents=[umum, tulis], help="Kurangi tagihan: retur/diskon/hapus (besar)")
+    s.add_argument("--nota", required=True)
+    s.add_argument("--jumlah", required=True, help="Nominal, atau 'sisa'")
+    s.add_argument("--alasan", required=True)
+    s.add_argument("--tanggal")
+    s.set_defaults(fungsi=cmd_potong)
+    s = sub.add_parser("batal-nota", parents=[umum, tulis], help="Batalkan nota salah catat/dobel (besar)")
+    s.add_argument("--nota", required=True)
+    s.add_argument("--alasan", required=True)
+    s.set_defaults(fungsi=cmd_batal_nota)
+    s = sub.add_parser("batal-bayar", parents=[umum, tulis], help="Batalkan pembayaran salah catat (besar)")
+    s.add_argument("--bayar", required=True, help="Kode pembayaran, mis. B0003")
+    s.add_argument("--alasan", required=True)
+    s.set_defaults(fungsi=cmd_batal_bayar)
+
+    s = sub.add_parser("saldo", parents=[umum, sam], help="Saldo per pelanggan / detail satu pelanggan")
+    s.add_argument("--pelanggan")
+    s.add_argument("--per", help="Posisi per tanggal (default hari ini)")
+    s.add_argument("--semua", action="store_true")
+    s.set_defaults(fungsi=cmd_saldo)
+    s = sub.add_parser("umur", parents=[umum, sam], help="Umur piutang (aging)")
+    s.add_argument("--per")
+    s.add_argument("--semua", action="store_true")
+    s.set_defaults(fungsi=cmd_umur)
+    s = sub.add_parser("jatuh-tempo", parents=[umum, sam], help="Terlewat, hari ini, 7 hari ke depan")
+    s.add_argument("--semua", action="store_true")
+    s.set_defaults(fungsi=cmd_jatuh_tempo)
+    s = sub.add_parser("ringkasan", parents=[umum, sam], help="Ringkasan harian (untuk Telegram pemilik)")
+    s.add_argument("--semua", action="store_true")
+    s.set_defaults(fungsi=cmd_ringkasan)
+    s = sub.add_parser("rekap", parents=[umum, sam], help="Rekap periode + JSON untuk laporan")
+    s.add_argument("--periode", help="hari-ini, kemarin, minggu-ini, minggu-lalu, bulan-ini (default), bulan-lalu, "
+                                     "tahun-ini, semua")
+    s.add_argument("--dari")
+    s.add_argument("--sampai")
+    s.add_argument("--rumus", action="store_true")
+    s.set_defaults(fungsi=cmd_rekap)
+    s = sub.add_parser("draf", parents=[umum], help="Draf pesan tagihan sopan (+ tautan wa.me)")
+    s.add_argument("--pelanggan")
+    s.add_argument("--nota")
+    s.add_argument("--pesan", help="Pakai teks ini (draf yang sudah diperhalus) untuk tautan wa.me")
+    s.set_defaults(fungsi=cmd_draf)
+    s = sub.add_parser("terkirim", parents=[umum, tulis], help="Catat bahwa pengingat sudah dikirim pemilik")
+    s.add_argument("--pelanggan")
+    s.add_argument("--nota")
+    s.set_defaults(fungsi=cmd_terkirim)
+
+    s = sub.add_parser("impor", parents=[umum, tulis], help="Impor piutang dari CSV nota/kasir (besar: --ya)")
+    s.add_argument("file")
+    s.add_argument("--format-tanggal", choices=["hari-bulan", "bulan-hari"])
+    s.add_argument("--termin", help="Termin (hari) untuk baris tanpa jatuh tempo")
+    s.add_argument("--gabung-baris", action="store_true", help="File per barang: jumlahkan baris dengan nomor nota sama")
+    s.set_defaults(fungsi=cmd_impor)
+    s = sub.add_parser("ekspor", parents=[umum, sam], help="Ekspor ke CSV")
+    s.add_argument("--format", choices=["lengkap", "tagih-piutang", "pembayaran"], default="lengkap")
+    s.add_argument("--status", choices=["terbuka", "semua"], default="terbuka")
+    s.add_argument("--ke", "--csv", dest="ke", help="File tujuan (default: <folder database>/ekspor/...)")
+    s.add_argument("--timpa", action="store_true")
+    s.set_defaults(fungsi=cmd_ekspor)
+
+    s = sub.add_parser("backup", parents=[umum], help="Buat cadangan / --daftar")
+    s.add_argument("--daftar", action="store_true")
+    s.add_argument("--label")
+    s.set_defaults(fungsi=cmd_backup)
+    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan (besar: --ya)")
+    s.add_argument("--dari", required=True)
+    s.set_defaults(fungsi=cmd_restore)
+    return p
+
+
+def cetak(args, data, teks, kode_keluar):
+    if getattr(args, "json", False):
+        print(json.dumps(data, ensure_ascii=False, indent=2, default=str))
+    elif kode_keluar:
+        print("GAGAL: " + teks, file=sys.stderr)
+    else:
+        print(teks)
+    return kode_keluar
+
+
+def main(argv=None):
+    try:
+        sys.stdout.reconfigure(errors="replace")
+        sys.stderr.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
+    args = buat_parser().parse_args(argv)
+    for k, v in (("ya", False), ("samarkan", False)):
+        if not hasattr(args, k):
+            setattr(args, k, v)
+    _JAM["kini"] = None
+    _JAM["zona"] = "WIB"
+    try:
+        if args.hari_ini:
+            _JAM["kini"] = parse_hari_ini(args.hari_ini)
+        data, teks = args.fungsi(args)
+    except Gagal as e:
+        out = {"ok": False, "error": e.pesan}
+        out.update(e.detail)
+        return cetak(args, out, e.pesan, 1)
+    except sqlite3.OperationalError as e:
+        pesan = (PESAN_TERKUNCI % _detik()) if _terkunci(e) else \
+            "Kesalahan database: %s. Jangan hapus file database; ulangi, atau pulihkan dari cadangan." % e
+        return cetak(args, {"ok": False, "error": pesan}, pesan, 1)
+    except sqlite3.DatabaseError as e:
+        pesan = "Database rusak (%s). Jangan hapus file itu. %s" % (e, SARAN_PULIH)
+        return cetak(args, {"ok": False, "error": pesan, "rusak": True}, pesan, 1)
+    except OSError as e:
+        pesan = "File tidak bisa ditulis/dibaca (%s). Periksa folder dan izin aksesnya." % e
+        return cetak(args, {"ok": False, "error": pesan}, pesan, 1)
+    return cetak(args, data, teks, 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
