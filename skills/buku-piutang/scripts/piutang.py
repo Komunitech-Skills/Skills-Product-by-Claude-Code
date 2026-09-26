@@ -1723,3 +1723,531 @@ def cmd_batal_bayar(args):
         return {"kode": kode_b(b["id"]), "jumlah": b["jumlah"], "saldo_pelanggan": buku.piutang_pel(p["id"]),
                 "ringkasan": {"batal_bayar": kode_b(b["id"])}}, t
     return jalankan_tulis(args, "batal-bayar", kerja, besar=True, label_backup="sebelum-batal-bayar")
+
+
+# --------------------------------------------------------------------------- perintah: laporan (hanya baca)
+def per_dari_args(args, hari):
+    if not getattr(args, "per", None):
+        return None
+    d, _ = baca_tgl(args.per, hari, "bebas", hari=hari)
+    return d
+
+
+def baris_nota(n, samarkan=False, dengan_nama=True):
+    s = "%s | %s" % (n["no_nota"], ("%s (%s) | " % (samar_nama(n["pelanggan"]) if samarkan else n["pelanggan"],
+                                                   kode_p(n["pelanggan_id"]))) if dengan_nama else "")
+    s = s.rstrip(" |") + " | "
+    s += "sisa %s" % rp(n["sisa"])
+    if n["dibayar"] or n["dipotong"]:
+        s += " dari %s" % rp(n["nominal"])
+    s += " | " + telat_teks(n["telat"], n["jatuh_tempo"])
+    if n["diingatkan"]:
+        s += " | diingatkan %dx%s" % (n["diingatkan"], (" (terakhir %s)" % tgl_pendek(n["terakhir_diingatkan"], False))
+                                      if n["terakhir_diingatkan"] else "")
+    return s
+
+
+def potong_daftar(daftar, semua, maks=MAKS_BARIS):
+    if semua or len(daftar) <= maks:
+        return daftar, 0
+    return daftar[:maks], len(daftar) - maks
+
+
+def cmd_saldo(args):
+    conn = _baca(args)
+    try:
+        hari = hari_ini()
+        per = per_dari_args(args, hari)
+        buku = Buku(conn, per)
+        sam = args.samarkan
+        judul_per = tgl_panjang(per or hari)
+        if args.pelanggan:
+            p = cari_pelanggan(conn, args.pelanggan)
+            pid = p["id"]
+            semua_nota = [n for n in buku.nota if n["pelanggan_id"] == pid]
+            terbuka = [n for n in semua_nota if n["sisa"] > 0]
+            lunas = [n for n in semua_nota if n["sisa"] == 0][-5:]
+            bayar = conn.execute("SELECT * FROM pembayaran WHERE pelanggan_id=? ORDER BY tanggal DESC, id DESC LIMIT 10",
+                                 (pid,)).fetchall()
+            kemb = conn.execute("SELECT * FROM pengembalian WHERE pelanggan_id=? ORDER BY tanggal DESC, id DESC "
+                                "LIMIT 5", (pid,)).fetchall()
+            piut, kred = buku.piutang_pel(pid), buku.kredit_pel(pid)
+            t = ["SALDO %s (%s) | WA %s | per %s" % (nama_tampil(p, sam), kode_p(pid),
+                                                     samar_wa(p["wa"]) if sam else tampil_wa(p["wa"]), judul_per),
+                 "Piutang: %s (%d nota terbuka) | Kelebihan bayar/deposit: %s | Saldo bersih: %s" %
+                 (rp(piut), len(terbuka), rp(kred), rp(piut - kred))]
+            t.append("\nNOTA TERBUKA (%d)" % len(terbuka))
+            for i, n in enumerate(terbuka, 1):
+                t.append("%d. %s | tgl %s | nominal %s | dibayar %s%s | sisa %s | %s%s" % (
+                    i, n["no_nota"], tgl_pendek(n["tanggal"]), rp(n["nominal"]), rp(n["dibayar"]),
+                    (" | potongan %s" % rp(n["dipotong"])) if n["dipotong"] else "", rp(n["sisa"]),
+                    telat_teks(n["telat"], n["jatuh_tempo"]),
+                    (" | diingatkan %dx" % n["diingatkan"]) if n["diingatkan"] else ""))
+            if lunas:
+                t.append("\nNOTA LUNAS (maks. 5 terakhir)")
+                t += ["- %s | tgl %s | %s" % (n["no_nota"], tgl_pendek(n["tanggal"]), rp(n["nominal"])) for n in lunas]
+            if bayar:
+                t.append("\nPEMBAYARAN (maks. 10 terakhir)")
+                for b in bayar:
+                    al = conn.execute("SELECT a.jumlah, n.no_nota, n.status FROM alokasi a JOIN nota n ON "
+                                      "n.id=a.nota_id WHERE a.pembayaran_id=?", (b["id"],)).fetchall()
+                    t.append("- %s | %s | %s%s%s -> %s" % (
+                        kode_b(b["id"]), tgl_pendek(b["tanggal"]), rp(b["jumlah"]),
+                        (" | " + b["metode"]) if b["metode"] else "",
+                        " | DIBATALKAN (%s)" % b["alasan_batal"] if b["status"] != "aktif" else "",
+                        ", ".join("%s %s%s" % (a["no_nota"], rp(a["jumlah"]), " (nota batal)" if a["status"] != "aktif"
+                                               else "") for a in al) or "deposit"))
+            if kemb:
+                t.append("\nPENGEMBALIAN KELEBIHAN BAYAR")
+                t += ["- %s | %s | %s" % (tgl_pendek(k["tanggal"]), rp(k["jumlah"]), k["catatan"] or "-") for k in kemb]
+            teks = "\n".join(t)
+            return {"ok": True, "mode": "baca", "per": (per or hari).isoformat(), "kode_pelanggan": kode_p(pid),
+                    "pelanggan": nama_tampil(p, sam), "piutang": piut, "kredit": kred, "saldo_bersih": piut - kred,
+                    "umur": buku.umur(pid), "nota_terbuka": [nota_json(n, sam) for n in terbuka],
+                    "data_sensitif": not sam, "teks": teks}, teks
+        rows = []
+        for pid, p in buku.pel.items():
+            piut, kred = buku.piutang_pel(pid), buku.kredit_pel(pid)
+            if not (piut or kred or args.semua):
+                continue
+            tb = buku.terbuka_pel(pid)
+            terlewat = sum(n["sisa"] for n in tb if n["telat"] > 0)
+            rows.append({"kode": kode_p(pid), "pelanggan": nama_tampil(p, sam), "piutang": piut, "kredit": kred,
+                         "saldo_bersih": piut - kred, "jumlah_nota": len(tb), "terlewat": terlewat,
+                         "telat_maks_hari": max([n["telat"] for n in tb] + [0])})
+        rows.sort(key=lambda r: (-r["piutang"], r["kode"]))
+        tampil, lebih = potong_daftar(rows, args.semua, 50)
+        t = ["SALDO PIUTANG PER PELANGGAN - per %s" % judul_per,
+             "Total piutang: %s (%d nota, %d pelanggan) | Kelebihan bayar pelanggan: %s" %
+             (rp(buku.total()), len(buku.terbuka), len([r for r in rows if r["piutang"]]),
+              rp(sum(r["kredit"] for r in rows)))]
+        if not rows:
+            t.append("Tidak ada piutang terbuka.")
+        for i, r in enumerate(tampil, 1):
+            s = "%d. %s (%s) | piutang %s (%d nota)" % (i, r["pelanggan"], r["kode"], rp(r["piutang"]),
+                                                       r["jumlah_nota"])
+            if r["terlewat"]:
+                s += " | terlewat %s, paling lama %d hari" % (rp(r["terlewat"]), r["telat_maks_hari"])
+            if r["kredit"]:
+                s += " | deposit %s | saldo bersih %s" % (rp(r["kredit"]), rp(r["saldo_bersih"]))
+            t.append(s)
+        if lebih:
+            t.append("... dan %d pelanggan lainnya (--semua untuk semuanya)." % lebih)
+        teks = "\n".join(t)
+        return {"ok": True, "mode": "baca", "per": (per or hari).isoformat(), "total_piutang": buku.total(),
+                "total_kredit": sum(r["kredit"] for r in rows), "pelanggan": rows, "data_sensitif": not sam,
+                "teks": teks}, teks
+    finally:
+        conn.close()
+
+
+def teks_umur(um, total):
+    return " | ".join("%s %s (%s)" % (LABEL_UMUR[k], rp(um[k]["nominal"]), persen(um[k]["nominal"], total)[1])
+                      for k, _ in UMUR)
+
+
+def cmd_umur(args):
+    conn = _baca(args)
+    try:
+        hari = hari_ini()
+        per = per_dari_args(args, hari)
+        buku = Buku(conn, per)
+        sam = args.samarkan
+        total = buku.total()
+        um = buku.umur()
+        rows = []
+        for pid, p in buku.pel.items():
+            if not buku.piutang_pel(pid):
+                continue
+            u = buku.umur(pid)
+            rows.append({"kode": kode_p(pid), "pelanggan": nama_tampil(p, sam), "total": buku.piutang_pel(pid),
+                         "umur": {k: u[k]["nominal"] for k, _ in UMUR}})
+        rows.sort(key=lambda r: (-sum(r["umur"][k] for k in ("lebih_90", "61_90", "31_60")), -r["total"]))
+        tampil, lebih = potong_daftar(rows, args.semua)
+        t = ["UMUR PIUTANG - per %s" % tgl_panjang(per or hari),
+             "Total piutang: %s (%d nota)" % (rp(total), len(buku.terbuka))]
+        if total:
+            t.append(teks_umur(um, total))
+            t.append("")
+            for i, r in enumerate(tampil, 1):
+                bag = " + ".join("%s %s" % (LABEL_UMUR[k], rp(r["umur"][k])) for k, _ in UMUR if r["umur"][k])
+                t.append("%d. %s (%s): %s = %s" % (i, r["pelanggan"], r["kode"], rp(r["total"]), bag))
+            if lebih:
+                t.append("... dan %d pelanggan lainnya (--semua)." % lebih)
+        else:
+            t.append("Tidak ada piutang terbuka.")
+        teks = "\n".join(t)
+        return {"ok": True, "mode": "baca", "per": (per or hari).isoformat(), "total_piutang": total,
+                "umur": um, "pelanggan": rows, "data_sensitif": not sam, "teks": teks}, teks
+    finally:
+        conn.close()
+
+
+def kelompok_jatuh_tempo(buku):
+    terlewat = sorted([n for n in buku.terbuka if n["telat"] > 0], key=lambda n: (-n["telat"], -n["sisa"]))
+    hari_ini_ = [n for n in buku.terbuka if n["telat"] == 0]
+    minggu = sorted([n for n in buku.terbuka if -7 <= n["telat"] < 0], key=lambda n: -n["telat"])
+    return terlewat, hari_ini_, minggu
+
+
+def ringkas_kelompok(daftar):
+    return {"jumlah_nota": len(daftar), "nominal": sum(n["sisa"] for n in daftar),
+            "jumlah_pelanggan": len({n["pelanggan_id"] for n in daftar})}
+
+
+def teks_kelompok(judul, daftar, sam, semua, maks=MAKS_BARIS):
+    if not daftar:
+        return []
+    tampil, lebih = potong_daftar(daftar, semua, maks)
+    t = ["", "%s (%d nota, %s)" % (judul, len(daftar), rp(sum(n["sisa"] for n in daftar)))]
+    t += ["%d. %s" % (i, baris_nota(n, sam)) for i, n in enumerate(tampil, 1)]
+    if lebih:
+        t.append("... dan %d nota lainnya (--semua)." % lebih)
+    return t
+
+
+def cmd_jatuh_tempo(args):
+    conn = _baca(args)
+    try:
+        hari = hari_ini()
+        buku = Buku(conn)
+        sam = args.samarkan
+        a, b, c = kelompok_jatuh_tempo(buku)
+        t = ["JATUH TEMPO PIUTANG - %s (%s)" % (tgl_panjang(hari), _JAM["zona"]),
+             "Terlewat: %s (%d nota) | Hari ini: %s (%d) | 7 hari ke depan: %s (%d)" %
+             (rp(sum(n["sisa"] for n in a)), len(a), rp(sum(n["sisa"] for n in b)), len(b),
+              rp(sum(n["sisa"] for n in c)), len(c))]
+        t += teks_kelompok("TERLEWAT", a, sam, args.semua)
+        t += teks_kelompok("JATUH TEMPO HARI INI", b, sam, args.semua)
+        t += teks_kelompok("MINGGU INI (besok s.d. %s)" % tgl_pendek(hari + timedelta(days=7)), c, sam, args.semua)
+        if not (a or b or c):
+            t.append("Tidak ada tagihan yang terlewat atau jatuh tempo dalam 7 hari.")
+        else:
+            t.append("\nDraf pesan tagihan: minta \"bikinin pesan tagihan untuk <pelanggan>\". Pesan dikirim sendiri, "
+                     "satu per satu.")
+        teks = "\n".join(t)
+        return {"ok": True, "mode": "baca", "tanggal": hari.isoformat(),
+                "terlewat": [nota_json(n, sam) for n in a], "hari_ini": [nota_json(n, sam) for n in b],
+                "minggu_ini": [nota_json(n, sam) for n in c],
+                "ringkasan": {"terlewat": ringkas_kelompok(a), "hari_ini": ringkas_kelompok(b),
+                              "minggu_ini": ringkas_kelompok(c)}, "data_sensitif": not sam, "teks": teks}, teks
+    finally:
+        conn.close()
+
+
+def masuk_tanggal(conn, d):
+    r = conn.execute("SELECT COUNT(*), IFNULL(SUM(jumlah),0) FROM pembayaran WHERE status='aktif' AND tanggal=?",
+                     (d.isoformat(),)).fetchone()
+    return r[0], r[1]
+
+
+def cmd_ringkasan(args):
+    """Ringkasan harian untuk pemilik (jadwal OpenClaw -> Telegram). Hanya membaca."""
+    conn = _baca(args)
+    try:
+        hari = hari_ini()
+        cfg = pengaturan(conn)
+        buku = Buku(conn)
+        sam = args.samarkan
+        a, b, c = kelompok_jatuh_tempo(buku)
+        total = buku.total()
+        n_kem, j_kem = masuk_tanggal(conn, hari - timedelta(days=1))
+        n_hi, j_hi = masuk_tanggal(conn, hari)
+        kredit = sum(v for v in buku.kredit.values() if v > 0)
+        t = ["RINGKASAN PIUTANG%s - %s (%s)" % ((" " + cfg["nama_usaha"]) if cfg["nama_usaha"] else "",
+                                                tgl_panjang(hari), _JAM["zona"]),
+             "Total piutang: %s (%d nota, %d pelanggan)" % (rp(total), len(buku.terbuka),
+                                                           len({n["pelanggan_id"] for n in buku.terbuka})),
+             "Terlewat: %s (%d nota) | Hari ini: %s (%d) | 7 hari ke depan: %s (%d)" %
+             (rp(sum(n["sisa"] for n in a)), len(a), rp(sum(n["sisa"] for n in b)), len(b),
+              rp(sum(n["sisa"] for n in c)), len(c)),
+             "Pembayaran masuk kemarin: %s (%d) | hari ini: %s (%d)" % (rp(j_kem), n_kem, rp(j_hi), n_hi)]
+        if total:
+            t.append("Umur: " + teks_umur(buku.umur(), total))
+        if kredit:
+            t.append("Kelebihan bayar pelanggan (deposit) belum dipakai: %s" % rp(kredit))
+        maks = 10
+        t += teks_kelompok("TERLEWAT", a, sam, args.semua, maks)
+        t += teks_kelompok("JATUH TEMPO HARI INI", b, sam, args.semua, maks)
+        t += teks_kelompok("MINGGU INI", c, sam, args.semua, maks)
+        if a or b:
+            t.append("\nMinta draf pesan tagihan ke agent di komputer Anda (mis. \"pesan tagihan untuk %s\"). Pesan "
+                     "dikirim sendiri, satu per satu." % kode_p((a or b)[0]["pelanggan_id"]))
+        teks = "\n".join(t)
+        return {"ok": True, "mode": "baca", "tanggal": hari.isoformat(), "total_piutang": total,
+                "terlewat": ringkas_kelompok(a), "hari_ini": ringkas_kelompok(b), "minggu_ini": ringkas_kelompok(c),
+                "pembayaran_kemarin": {"jumlah": n_kem, "nominal": j_kem},
+                "pembayaran_hari_ini": {"jumlah": n_hi, "nominal": j_hi}, "kredit_pelanggan": kredit,
+                "umur": buku.umur(), "data_sensitif": not sam, "teks": teks}, teks
+    finally:
+        conn.close()
+
+
+def periode_nama(p, acuan):
+    p = (p or "bulan-ini").lower()
+    if p in ("hari-ini", "harian"):
+        return "hari ini", acuan, acuan
+    if p == "kemarin":
+        d = acuan - timedelta(days=1)
+        return "kemarin", d, d
+    if p == "minggu-ini":
+        a = acuan - timedelta(days=acuan.weekday())
+        return "minggu ini", a, a + timedelta(days=6)
+    if p == "minggu-lalu":
+        a = acuan - timedelta(days=acuan.weekday() + 7)
+        return "minggu lalu", a, a + timedelta(days=6)
+    if p == "bulan-ini":
+        a = acuan.replace(day=1)
+        return "bulan %s %d" % (BULAN[a.month - 1], a.year), a, _tambah_bulan(a, 1) - timedelta(days=1)
+    if p == "bulan-lalu":
+        a = _tambah_bulan(acuan.replace(day=1), -1)
+        return "bulan %s %d" % (BULAN[a.month - 1], a.year), a, acuan.replace(day=1) - timedelta(days=1)
+    if p == "tahun-ini":
+        return "tahun %d" % acuan.year, date(acuan.year, 1, 1), date(acuan.year, 12, 31)
+    if p == "semua":
+        return "semua waktu", date(2000, 1, 1), date(2100, 12, 31)
+    raise Gagal("Periode '%s' tidak dikenal. Pilihan: hari-ini, kemarin, minggu-ini, minggu-lalu, bulan-ini, "
+                "bulan-lalu, tahun-ini, semua (atau --dari/--sampai)." % p)
+
+
+def periode_dari_args(args, acuan):
+    if args.dari or args.sampai:
+        if not (args.dari and args.sampai):
+            raise Gagal("--dari dan --sampai harus diisi keduanya.")
+        a, _ = baca_tgl(args.dari, acuan, "lalu", hari=acuan)
+        b, _ = baca_tgl(args.sampai, acuan, "bebas", hari=acuan)
+        if b < a:
+            raise Gagal("--sampai lebih awal dari --dari.")
+        return "%s - %s" % (tgl_pendek(a), tgl_pendek(b)), a, b
+    return periode_nama(args.periode, acuan)
+
+
+RUMUS = {
+    "sisa_nota": "Sisa nota = nominal - pembayaran yang dialokasikan ke nota itu - potongan (retur/diskon/hapus).",
+    "total_piutang": "Total piutang = jumlah sisa semua nota aktif yang belum lunas (nota batal tidak dihitung).",
+    "kredit": "Kelebihan bayar/deposit pelanggan = pembayaran - bagian yang sudah dipakai untuk nota - pengembalian.",
+    "umur": "Umur = tanggal posisi - jatuh tempo (hari kalender). 0 atau minus = belum jatuh tempo; 1-30, 31-60, "
+            "61-90, >90 hari. Persen = nominal kelompok / total piutang, 1 desimal (0,05 ke atas).",
+    "alokasi": "Pembayaran tanpa nomor nota dipakai untuk nota dengan jatuh tempo paling awal lebih dulu.",
+    "periode": "Nota baru = nota bertanggal di periode; pembayaran = pembayaran aktif bertanggal di periode; posisi "
+               "dihitung per akhir periode (atau hari ini bila periode belum selesai).",
+}
+
+
+def cmd_rekap(args):
+    conn = _baca(args)
+    try:
+        hari = hari_ini()
+        nama, a, b = periode_dari_args(args, hari)
+        per = min(b, hari)
+        sam = args.samarkan
+        buku_per = Buku(conn, per)
+        buku_kini = Buku(conn)
+        rng = (a.isoformat(), b.isoformat())
+
+        def satu(sql):
+            r = conn.execute(sql, rng).fetchone()
+            return {"jumlah": r[0], "nominal": r[1]}
+
+        nota_baru = satu("SELECT COUNT(*), IFNULL(SUM(nominal),0) FROM nota WHERE status='aktif' AND tanggal BETWEEN ? "
+                         "AND ?")
+        bayar = satu("SELECT COUNT(*), IFNULL(SUM(jumlah),0) FROM pembayaran WHERE status='aktif' AND tanggal BETWEEN "
+                     "? AND ?")
+        potong = satu("SELECT COUNT(*), IFNULL(SUM(p.jumlah),0) FROM potongan p JOIN nota n ON n.id=p.nota_id WHERE "
+                      "n.status='aktif' AND p.tanggal BETWEEN ? AND ?")
+        kembali = satu("SELECT COUNT(*), IFNULL(SUM(jumlah),0) FROM pengembalian WHERE tanggal BETWEEN ? AND ?")
+        batal = satu("SELECT COUNT(*), IFNULL(SUM(nominal),0) FROM nota WHERE status='batal' AND tgl_batal BETWEEN ? "
+                     "AND ?")
+        total_per = buku_per.total()
+        um = buku_per.umur()
+        ja, jb, jc = kelompok_jatuh_tempo(buku_kini)
+        per_pel = {}
+        for n in ja:
+            d = per_pel.setdefault(n["pelanggan_id"], {"sisa_terlewat": 0, "telat_maks_hari": 0})
+            d["sisa_terlewat"] += n["sisa"]
+            d["telat_maks_hari"] = max(d["telat_maks_hari"], n["telat"])
+        teratas = sorted(per_pel.items(), key=lambda kv: -kv[1]["sisa_terlewat"])[:5]
+        teratas = [dict(v, kode=kode_p(pid), pelanggan=nama_tampil(buku_kini.pel[pid], sam)) for pid, v in teratas]
+        kredit = sum(v for v in buku_per.kredit.values() if v > 0)
+        posisi = {"per": per.isoformat(), "total_piutang": total_per, "jumlah_nota_terbuka": len(buku_per.terbuka),
+                  "jumlah_pelanggan_berpiutang": len({n["pelanggan_id"] for n in buku_per.terbuka}),
+                  "kredit_pelanggan": kredit, "umur": um,
+                  "persen_terlewat": persen(total_per - um["belum_jatuh_tempo"]["nominal"], total_per)[0]}
+        t = ["REKAP PIUTANG - %s (%s s.d. %s)" % (nama, tgl_pendek(a), tgl_pendek(b)),
+             "Nota piutang baru: %d nota, %s" % (nota_baru["jumlah"], rp(nota_baru["nominal"])),
+             "Pembayaran diterima: %d kali, %s" % (bayar["jumlah"], rp(bayar["nominal"])),
+             "Potongan (retur/diskon/hapus): %s | Nota dibatalkan: %d (%s) | Kelebihan bayar dikembalikan: %s" %
+             (rp(potong["nominal"]), batal["jumlah"], rp(batal["nominal"]), rp(kembali["nominal"])),
+             "Posisi per %s: piutang %s (%d nota, %d pelanggan)%s" %
+             (tgl_pendek(per), rp(total_per), posisi["jumlah_nota_terbuka"], posisi["jumlah_pelanggan_berpiutang"],
+              (" | deposit pelanggan %s" % rp(kredit)) if kredit else "")]
+        if total_per:
+            t.append("Umur: " + teks_umur(um, total_per))
+        t.append("Status hari ini (%s): terlewat %s (%d nota) | jatuh tempo hari ini %s (%d) | 7 hari ke depan %s (%d)"
+                 % (tgl_pendek(hari), rp(sum(n["sisa"] for n in ja)), len(ja), rp(sum(n["sisa"] for n in jb)),
+                    len(jb), rp(sum(n["sisa"] for n in jc)), len(jc)))
+        if teratas:
+            t.append("Terlewat terbesar: " + "; ".join("%d. %s (%s) %s, paling lama %d hari" % (
+                i, r["pelanggan"], r["kode"], rp(r["sisa_terlewat"]), r["telat_maks_hari"])
+                for i, r in enumerate(teratas, 1)))
+        if args.rumus:
+            t.append("\nRUMUS")
+            t += ["- " + v for v in RUMUS.values()]
+        teks = "\n".join(t)
+        return {"ok": True, "mode": "baca", "skema_json": SKEMA_JSON_REKAP, "aplikasi": APLIKASI, "versi": VERSI,
+                "hari_ini": hari.isoformat(), "zona": _JAM["zona"],
+                "periode": {"nama": nama, "dari": a.isoformat(), "sampai": b.isoformat()},
+                "arus_periode": {"nota_baru": nota_baru, "pembayaran_masuk": bayar, "potongan": potong,
+                                 "nota_dibatalkan": batal, "kelebihan_dikembalikan": kembali},
+                "posisi": posisi,
+                "jatuh_tempo": {"terlewat": ringkas_kelompok(ja), "hari_ini": ringkas_kelompok(jb),
+                                "tujuh_hari": ringkas_kelompok(jc)},
+                "teratas_terlewat": teratas, "data_sensitif": not sam, "rumus": RUMUS, "teks": teks}, teks
+    finally:
+        conn.close()
+
+
+# --------------------------------------------------------------------------- draf pesan tagihan
+def pilih_nota_tagih(buku, pid, nota=None):
+    terbuka = buku.terbuka_pel(pid)
+    if nota is not None:
+        sel = [n for n in terbuka if n["id"] == nota["id"]]
+        if not sel:
+            raise Gagal("Nota %s sudah lunas; tidak perlu ditagih." % nota["no_nota"])
+        return sel, None
+    if not terbuka:
+        raise Gagal("%s tidak punya tagihan terbuka; tidak perlu ditagih." % buku.pel[pid]["nama"], lunas=True)
+    sel = [n for n in terbuka if n["telat"] >= -7]
+    if not sel:
+        return terbuka, "Belum ada nota %s yang jatuh tempo dalam 7 hari; draf berupa pengingat awal." % \
+            buku.pel[pid]["nama"]
+    return sel, None
+
+
+def susun_draf(p, notas, cfg):
+    sapa = panggilan(p, cfg)
+    usaha, pengirim, rek = bersih(cfg.get("nama_usaha")), bersih(cfg.get("pengirim")), bersih(cfg.get("rekening"))
+    if pengirim and usaha:
+        diri = " Saya %s dari %s." % (pengirim, usaha)
+    elif pengirim:
+        diri = " Saya %s." % pengirim
+    elif usaha:
+        diri = " Kami dari %s." % usaha
+    else:
+        diri = ""
+    maks = max(n["telat"] for n in notas)
+    if maks < 0:
+        jenis, buka_ = "pengingat-awal", "Izin mengingatkan tagihan yang akan jatuh tempo:"
+    elif maks == 0:
+        jenis, buka_ = "hari-jatuh-tempo", "Izin mengingatkan, tagihan berikut jatuh tempo hari ini:"
+    elif maks <= 6:
+        jenis, buka_ = "terlewat-ringan", ("Sepertinya tagihan berikut terlewat, karena pembayarannya belum kami "
+                                           "terima:")
+    elif maks <= 29:
+        jenis, buka_ = "terlewat", "Kami ingin menanyakan tagihan berikut yang sudah melewati jatuh tempo:"
+    else:
+        jenis, buka_ = "terlewat-lama", ("Kami ingin menanyakan kembali tagihan berikut yang sudah cukup lama melewati "
+                                         "jatuh tempo:")
+    baris = []
+    for n in notas:
+        s = "- Nota %s (%s): %s%s, jatuh tempo %s" % (n["no_nota"], tgl_pendek(n["tanggal"]),
+                                                      "sisa " if (n["dibayar"] or n["dipotong"]) else "",
+                                                      rp(n["sisa"]), tgl_pendek(n["jatuh_tempo"]))
+        if n["telat"] == 0:
+            s += " (hari ini)"
+        baris.append(s)
+    t = ["Halo %s, semoga sehat selalu.%s" % (sapa, diri), "", buka_] + baris
+    if len(notas) > 1:
+        t.append("Total: %s" % rp(sum(n["sisa"] for n in notas)))
+    t.append("")
+    t.append(("Pembayaran bisa ditransfer ke %s." % rek) if rek else "Pembayaran bisa melalui cara yang biasa.")
+    if jenis in ("pengingat-awal", "hari-jatuh-tempo", "terlewat-ringan"):
+        t.append("Kalau sudah membayar, mohon kirimkan bukti transfernya dan abaikan pesan ini ya.")
+    else:
+        t.append("Mohon dibantu informasikan kapan rencana pembayarannya, supaya bisa kami catat. Kalau sudah "
+                 "membayar, mohon kirimkan bukti transfernya.")
+    if jenis == "terlewat-lama":
+        t.append("Kalau ada kendala, kami terbuka membicarakan jadwal pembayaran bertahap.")
+    t.append("Terima kasih atas perhatiannya.")
+    return jenis, "\n".join(t)
+
+
+def cmd_draf(args):
+    conn = _baca(args)
+    try:
+        cfg = pengaturan(conn)
+        buku = Buku(conn)
+        nota = cari_nota(conn, args.nota) if args.nota else None
+        if nota and args.pelanggan:
+            p = cari_pelanggan(conn, args.pelanggan)
+            if p["id"] != nota["pelanggan_id"]:
+                raise Gagal("Nota %s bukan milik %s." % (nota["no_nota"], p["nama"]))
+        elif nota:
+            p = conn.execute("SELECT * FROM pelanggan WHERE id=?", (nota["pelanggan_id"],)).fetchone()
+        else:
+            p = cari_pelanggan(conn, args.pelanggan)
+        p = dict(p)
+        notas, cat = pilih_nota_tagih(buku, p["id"], nota)
+        per = [cat] if cat else []
+        jenis, draf = susun_draf(p, notas, cfg)
+        if args.pesan:
+            draf = str(args.pesan).strip()
+            jenis = "pesan-sendiri"
+        kredit = buku.kredit_pel(p["id"])
+        if kredit > 0:
+            per.append("%s punya kelebihan bayar/deposit %s yang belum dipakai. Sebaiknya jalankan pakai-kredit dulu "
+                       "sebelum menagih." % (p["nama"], rp(kredit)))
+        if not cfg.get("rekening"):
+            per.append("Rekening belum diatur; draf menulis 'cara yang biasa'. Atur: piutang.py atur --rekening "
+                       "\"BCA 123... a.n. ...\".")
+        maks = max(n["telat"] for n in notas)
+        ingat = max(n["diingatkan"] for n in notas)
+        saran = []
+        if maks >= 14 or ingat >= 2:
+            saran.append("Tagihan ini sudah lewat %d hari / diingatkan %dx. Untuk pemberitahuan resmi bertahap atau "
+                         "surat teguran, pakai skill tagih-piutang (data: piutang.py ekspor --format tagih-piutang)."
+                         % (maks, ingat))
+        tautan = link_wa(p["wa"], draf)
+        t = "DRAF PESAN TAGIHAN untuk %s (%s) [%s] - periksa dulu, lalu kirim sendiri:\n\n%s" % (
+            p["nama"], kode_p(p["id"]), jenis, draf)
+        if tautan:
+            t += "\n\nBuka di WhatsApp (teks sudah terisi, tekan Kirim sendiri):\n" + tautan
+        else:
+            t += "\n\n(Nomor WA pelanggan belum ada; salin teks di atas. Tambah nomor: ubah-pelanggan --wa ...)"
+        t += "\nSetelah terkirim: piutang.py terkirim --pelanggan %s" % kode_p(p["id"])
+        if saran:
+            t += "\n" + "\n".join("Saran: " + s for s in saran)
+        if per:
+            t += "\n" + "\n".join("Catatan: " + x for x in per)
+        return {"ok": True, "mode": "baca", "kode_pelanggan": kode_p(p["id"]), "pelanggan": p["nama"],
+                "jenis": jenis, "draf": draf, "tautan_wa": tautan, "nota": [nota_json(n) for n in notas],
+                "total": sum(n["sisa"] for n in notas), "saran": saran, "peringatan": per, "teks": t}, t
+    finally:
+        conn.close()
+
+
+def cmd_terkirim(args):
+    def kerja(conn, cfg):
+        hari = hari_ini()
+        buku = Buku(conn)
+        nota = cari_nota(conn, args.nota) if args.nota else None
+        if nota:
+            pid = nota["pelanggan_id"]
+        else:
+            pid = cari_pelanggan(conn, args.pelanggan)["id"]
+        notas, _ = pilih_nota_tagih(buku, pid, nota)
+        sudah = [n for n in notas if n["terakhir_diingatkan"] == hari.isoformat()]
+        baru = [n for n in notas if n not in sudah]
+        if not baru:
+            raise Gagal("Pengingat untuk nota %s sudah dicatat hari ini; tidak dihitung dobel." %
+                        ", ".join(n["no_nota"] for n in sudah))
+        for n in baru:
+            conn.execute("UPDATE nota SET diingatkan=diingatkan+1, terakhir_diingatkan=?, diubah=? WHERE id=?",
+                         (hari.isoformat(), stempel(), n["id"]))
+        t = "Dicatat: pengingat sudah dikirim untuk %s (%s): %s." % (
+            buku.pel[pid]["nama"], kode_p(pid), ", ".join("%s (ke-%d)" % (n["no_nota"], n["diingatkan"] + 1)
+                                                          for n in baru))
+        per = ["Nota %s sudah dicatat hari ini; dilewati." % ", ".join(n["no_nota"] for n in sudah)] if sudah else []
+        return {"kode_pelanggan": kode_p(pid), "nota": [n["no_nota"] for n in baru], "peringatan": per,
+                "ringkasan": {"terkirim": [n["no_nota"] for n in baru]}}, t
+    return jalankan_tulis(args, "terkirim", kerja)
