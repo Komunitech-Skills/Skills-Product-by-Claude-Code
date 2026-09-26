@@ -45,6 +45,50 @@ Tanggal tinjau: 2026-09-26 · Peninjau: agent kurator (sesi terpisah) · Status:
 
 ---
 
+## 4. ATM dilakukan — `presentasi-data-ke-atasan` (kandidat #7, 2026-09-26)
+
+**Sumber dibaca via `git clone --depth 1` di scratchpad** (bukan `api.github.com` yang
+diblokir): https://github.com/nimrodfisher/data-analytics-skills — repo publik, MIT
+(LICENSE terverifikasi langsung dari file, Copyright (c) 2026 Nimrod Fisher).
+
+**Bagian yang dipakai:** `04-data-storytelling-visualization/executive-summary-generator`
+(struktur piramida "so what" dulu, blok keputusan/rekomendasi) dan
+`04-data-storytelling-visualization/visualization-builder` (pohon keputusan pilih jenis
+grafik berdasarkan pesan, bukan berdasarkan data yang tersedia).
+
+**Audit keamanan (Tahap 3):** kode tidak dijalankan. Dibaca seluruh `SKILL.md`,
+`references/*.md`, dan di-`grep` seluruh repo untuk pola berbahaya (`curl|bash`,
+`eval`/`exec`, `subprocess`, `os.system`, pengiriman ke server luar, kredensial/token,
+placeholder prompt-injection seperti "ignore previous/disregard instructions"). **Tidak
+ditemukan** satu pun pola berbahaya atau instruksi tersembunyi. `visualization-builder`
+punya `scripts/chart_builder.py` (matplotlib/seaborn) — dibaca, tidak berbahaya, tapi
+**tidak diambil** karena butuh instalasi paket pihak ketiga (bertentangan dengan prinsip
+"tanpa setup" library ini); skill baru hanya mengambil *logika pemilihan* jenis grafik,
+bukan script pembuat gambarnya.
+
+**Keputusan:** salin-edit (MIT, sesuai aturan lisensi). Nilai tambah besar ditambahkan:
+bahasa Indonesia penuh, 4 format output baru (WA/email/1 halaman/skrip bicara — sumber
+hanya punya 1 jenis dokumen generik), script `hitung_perubahan.py` (Decimal, angka wajib
+dihitung bukan dikira), gaya komunikasi kantor Indonesia, panduan pilih grafik yang
+disederhanakan untuk awam, dan 2 contoh kasus lokal (omzet turun bulan puasa, stok
+menumpuk). Detail lengkap di `skills/presentasi-data-ke-atasan/ATTRIBUTION.md`.
+
+**Status:** `draft` di `catalog.csv` (belum diuji — Tahap 6 belum dijalankan: uji 5
+skenario, uji A/B tanpa-vs-dengan-skill, uji banding pesaing, `uji_openclaw.sh`, skor
+kualitas). `tier_usulan`/`harga_usulan_idr` diisi `ecer`/`49000` mengikuti usulan awal
+tabel kandidat #7 (skill pelengkap, bukan andalan — konsisten dengan harga skill ecer
+sejenis seperti `arsip-nota`, `laporan-insiden-usaha`); **PERLU REVIEW** harga final oleh
+pemilik setelah lulus uji.
+
+**Tumpang tindih dicek:** tidak tumpang tindih dengan `analisis-excel` (mengolah data
+mentah, bukan mengomunikasikan hasil), `rekap-penjualan-csv` (rekap penjualan spesifik),
+`presentasi-instan` (slide/deck banyak halaman), `laporan-status-kantor` (laporan status
+rutin 3P, bukan satu pesan inti berbasis angka) — skill ini mengisi celah "ubah hasil
+analisis jadi pesan satu-inti siap kirim ke atasan/investor/bank" yang belum ada di
+keempatnya, saling melengkapi sebagai langkah berikutnya setelah data diolah.
+
+---
+
 ## 4. Verifikasi lanjutan & keputusan — `laporan-insiden-usaha` (2026-09-26, K4)
 
 **Metode:** `git clone --depth 1` ke scratchpad session terpisah (kode **tidak dijalankan**,
