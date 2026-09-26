@@ -100,4 +100,4 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | H5 | Uji U18–U21 (dasbor-lokal, uji ulang gaji/kas/hledger v1.0.1, siyuan-sop, vikunja-tugas) + uji ulang H1–H3 setelah revisi | siap diuji |
 | H6 | Setelah skill lulus: isi `status`/`skor`/`platform_teruji` + `tier_final`/`harga_final_idr` = usulan di catalog.csv; perbarui laporan harian; PR pembaruan default branch (`claude/claude-code-cli-differences-btizz5`) bila perlu | berkala |
 
-Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A (trig_01T4xCmWhVqL1vzows1h9Pve) masih aktif — pemilik bisa menonaktifkannya bila Akun A tidak dipakai.
+Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A sudah **dijeda**. **Akun B: buat routine sendiri mengikuti `koordinasi/rutin.md`** (prompt siap salin di sana).
