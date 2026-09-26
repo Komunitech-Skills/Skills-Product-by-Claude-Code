@@ -650,7 +650,8 @@ def cmd_bersihkan_csv(args):
     for h_asli, h_baru, angka in zip(header_asli, header_baru, kolom_angka):
         print(f"  - {h_asli!r} -> {h_baru}  ({'Numeric' if angka else 'Text'})")
     print("Angka Rupiah/desimal dirapikan jadi angka polos (mis. 'Rp 1.234.567,89' -> 1234567.89;")
-    print("singkatan 'ribu'/'rb'/'k', 'juta'/'jt', 'miliar'/'M' juga didukung, mis. 'Rp 1,25jt' -> 1250000).")
+    print("singkatan 'ribu'/'rb'/'k', 'juta'/'jt', 'miliar'/'M' & gabungan '3 jt 500 rb' juga didukung;")
+    print("nilai ambigu seperti '1.500rb' atau '2m' TIDAK ditebak - disebut baris & alasannya di bawah).")
     if peringatan_kolom_gagal:
         print("\nPERINGATAN - kolom sebagian angka tapi dibiarkan Text (perbaiki sel di bawah lalu ulangi):")
         for p in peringatan_kolom_gagal:

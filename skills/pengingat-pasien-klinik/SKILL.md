@@ -27,6 +27,11 @@ broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 - **Diagnosis, rekam medis, hasil lab, atau instruksi medis** apa pun → **tolak**, arahkan ke
   tenaga kesehatan. Skill ini hanya mencatat *jenis kunjungan umum* (kontrol, vaksin, cabut
   jahitan, cek gigi, vaksin hewan, groom, sunat, medical check up, dll), **bukan** nama penyakit.
+  Pengecualian: **nama vaksin/imunisasi boleh disebut apa adanya** (mis. "imunisasi campak",
+  "vaksin rabies", "vaksin MR", "imunisasi difteri (DPT)") karena itu jenis kunjungan, bukan
+  diagnosis pasien — yang tetap ditolak adalah kalimat bernada hasil pemeriksaan, mis. "riwayat
+  campak", "positif rabies", "didiagnosis difteri". Kalau ditolak dan bukan diagnosis, tulis jenis
+  kunjungan netral, mis. "kontrol lanjutan".
 - Leaflet edukasi pasien, FAQ klinik, balasan chat umum, atau rekap kunjungan agregat →
   `edukasi-pasien-klinik`.
 - **Kirim pesan otomatis/broadcast ke pasien** → **tolak**. Keputusan pemilik: OpenClaw memakai
@@ -83,8 +88,10 @@ Database default `pasien/DAFTAR.csv` di folder kerja; ganti dengan `--file PATH`
 - **Tanyakan persetujuan secara eksplisit** ("Bu Sari setuju diingatkan lewat WA untuk jadwal
   kontrolnya?") sebelum mengisi `--persetujuan`. Jangan menebak "ya".
 - `jenis` hanya kategori umum (kontrol, vaksin, cabut jahitan, cek gigi, vaksin hewan, groom,
-  sunat, medical check up, dll). Kalau pengguna menyebut nama penyakit/diagnosis, script menolak
-  (kode keluar 1) — minta pengguna menyebut jenis kunjungan saja, bukan diagnosisnya.
+  sunat, medical check up, imunisasi/vaksin apa pun namanya — mis. "imunisasi campak", "vaksin
+  rabies", dll). Kalau pengguna menyebut nama penyakit/diagnosis dengan nada hasil pemeriksaan
+  (riwayat, positif, didiagnosis, dll — bukan sekadar nama vaksin), script menolak (kode keluar 1)
+  — minta pengguna menyebut jenis kunjungan yang netral, mis. "kontrol lanjutan".
 - Nomor WA diterima format apa pun (0812…, +62812…, 62812…) dan disimpan sebagai `62…`.
 - Klinik hewan: nama pasien = nama hewan (mis. "Kucing Mimi"), nomor WA = nomor pemilik.
 

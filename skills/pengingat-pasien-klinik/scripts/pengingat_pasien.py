@@ -195,7 +195,10 @@ def parse_tanggal(teks, acuan):
         y, bln = acuan.year, acuan.month + n
         y += (bln - 1) // 12
         bln = (bln - 1) % 12 + 1
-        hari = min(acuan.day, 28) if bln == 2 else acuan.day
+        # Jangan hard-code 28 untuk Februari: _coba_tanggal() sudah tahu tahun kabisat
+        # (mis. 29 Jan 2028 + 1 bulan -> 29 Feb 2028, bukan 28), jadi cukup coba tanggal
+        # asli lalu turunkan satu-satu bila bulan tujuan lebih pendek.
+        hari = acuan.day
         d = _coba_tanggal(y, bln, hari)
         while d is None:
             hari -= 1

@@ -8,7 +8,7 @@ description: Pembukuan usaha berpasangan (double-entry) di file teks hledger mil
 ## Tujuan
 Pemilik usaha punya **pembukuan berpasangan yang rapi tanpa aplikasi berbayar**: semua catatan disimpan di satu file teks (`~/Pembukuan/usaha.journal`) di komputernya sendiri, dibaca oleh **hledger** (program gratis, open-source). Pengguna cukup bercerita ("tadi jual 750rb ke Kantor Maju, bayarnya minggu depan"); agent menjalankan `scripts/hledger_usaha.py` untuk menulis entri yang **seimbang dan terperiksa**, lalu membuat laporan bulanan dalam Rupiah. Python standar saja.
 
-**Versi 1.0.1.** Diuji pembuat dan penguji independen dengan **hledger 1.52.4 asli** (binary Linux resmi, checksum cocok) dan tanpa hledger (pembaca bawaan); belum di Windows/Mac sungguhan.
+**Versi 1.0.2.** Diuji pembuat dan penguji independen dengan **hledger 1.52.4 asli** (binary Linux resmi, checksum cocok) dan tanpa hledger (pembaca bawaan); belum di Windows/Mac sungguhan.
 
 ## Kapan digunakan
 - "Catat: jual kopi 1,25 juta tunai", "beli susu 1,5jt ke CV Susu Segar, bayar bulan depan", "bayar listrik 350rb" → `catat`
@@ -60,7 +60,7 @@ Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (p
    python3 <folder-skill>/scripts/hledger_usaha.py catat --jenis terima-piutang --nominal 10jt --diterima 9,8jt \
      --via bank --pihak "PT Nusantara" --tanggal 2026-09-12      # atau --pph23 200rb / --pph23 2%
    ```
-   Hasil: bank +9,8 jt, `Aset:Pajak Dibayar Dimuka:PPh 23` +200 rb (kredit pajak, bukan beban), piutang −10 jt. Jasa yang langsung dibayar: `--jenis jasa --nominal 10jt --via bank --pph23 2%`. Tagihan tempo dicatat tanpa potongan; potongan dicatat saat dibayar. Sampaikan catatan script: **minta bukti potong PPh 23** ke pelanggan; tarif jasa 2% dari bruto (4% bila tanpa NPWP; UU PPh Pasal 23, PMK 141/PMK.03/2015); pengguna PPh Final UMKM (PP 55/2022) yang punya Surat Keterangan → tanyakan konsultan. Angka potongan mengikuti bukti potong.
+   Hasil: bank +9,8 jt, `Aset:Pajak Dibayar Dimuka:PPh 23` +200 rb (kredit pajak, bukan beban), piutang −10 jt. Jasa yang langsung dibayar: `--jenis jasa --nominal 10jt --via bank --pph23 2%`. Penjualan **barang** (`--jenis jual`) tidak dipotong PPh 23 (PPh 23 untuk jasa/sewa/royalti) — script menolak `--pph23`/`--diterima` di sana; bila yang dijual sebenarnya jasa/sewa pakai `--jenis jasa`. Tagihan tempo dicatat tanpa potongan; potongan dicatat saat dibayar. Sampaikan catatan script: **minta bukti potong PPh 23** ke pelanggan; tarif jasa 2% dari bruto (4% bila tanpa NPWP; UU PPh Pasal 23, PMK 141/PMK.03/2015); pengguna PPh Final UMKM (PP 55/2022) yang punya Surat Keterangan → tanyakan konsultan. Angka potongan mengikuti bukti potong.
 6. Script menolak akun salah ketik (memberi saran), akun di luar Aset/Utang/Modal/Pendapatan/HPP/Beban, transaksi tidak seimbang, dan transaksi kembar (kode 7). Akun baru hanya dengan `--akun-baru` setelah pengguna setuju; piutang/utang per pihak dan rekening `Aset:Bank:<nama>` dibuat otomatis.
 
 ### B. Impor mutasi bank (CSV)
@@ -70,7 +70,7 @@ Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (p
 4. Jalankan ulang dengan `--tetapkan "BARIS=Akun"` untuk jawaban pengguna, lalu `--ya` setelah disetujui. Transaksi yang sudah pernah diimpor dilewati otomatis (tag `ref:`).
 5. Tawarkan menyimpan kata kunci untuk bulan depan: `tambah-aturan --kata "ROASTERY GAYO" --akun HPP:Pembelian --arah keluar` (pratinjau, lalu `--ya`).
 6. "Saldo awal rekening belum dicatat" → catat saldo awal dengan perintah yang disarankan script. "SELISIH" → jangan dipaksa; minta pengguna mengecek mutasi bulan sebelumnya.
-7. **Mutasi bank bukan seluruh usaha.** Penjualan/biaya **tunai** yang tidak disetor ke bank tidak ada di mutasi. Setelah impor, tanyakan: "Ada penjualan atau belanja tunai bulan ini yang tidak lewat rekening?" lalu catat dengan `catat --via kas` sebelum membuat laba rugi. Laporan memberi CATATAN bila pendapatan/biaya periode itu hanya dari mutasi bank tanpa satu pun transaksi kas.
+7. **Mutasi bank bukan seluruh usaha.** Penjualan/biaya **tunai** yang tidak disetor ke bank tidak ada di mutasi. Setelah impor, tanyakan: "Ada penjualan atau belanja tunai bulan ini yang tidak lewat rekening?" lalu catat dengan `catat --via kas` sebelum membuat laba rugi. Laporan memberi CATATAN bila pendapatan/biaya periode itu hanya dari mutasi bank tanpa satu pun penjualan/biaya tunai (tarik tunai ATM/setor tunai = pindah dana, tidak dihitung).
 
 ### C. Laporan bulanan
 ```bash

@@ -12,7 +12,7 @@ permintaan biasa, dan agent membantu: merancang struktur tabel, menuliskan rumus
 membersihkan & mengimpor data CSV, serta membaca file `.grist` (SQLite) untuk membuat ringkasan/
 laporan. Semua lewat `scripts/grist.py`, Python standar saja, tanpa instalasi paket.
 
-**Versi 1.0.0. Status uji:** dibuat & diuji dengan **file `.grist` (SQLite) TIRUAN** (skemanya
+**Versi 1.0.2. Status uji:** dibuat & diuji dengan **file `.grist` (SQLite) TIRUAN** (skemanya
 disusun sama persis dengan kode sumber resmi `grist-core` v1.7.19, dibaca langsung dari GitHub —
 lihat `research/sources/grist-2026-09-26.md`) dan **server REST API TIRUAN** yang meniru bentuk
 respons resmi. **Belum diuji** terhadap Grist Desktop atau `grist-core`/Docker yang sungguhan
@@ -116,9 +116,11 @@ mengetesnya di kotak formula Grist yang akan langsung menunjukkan bila ada galat
 python3 <folder-skill>/scripts/grist.py bersihkan-csv data-mentah.csv
 ```
 Merapikan nama kolom (jadi sah untuk Grist: huruf/angka, tanpa spasi) dan angka Rupiah/desimal
-format apa pun (`Rp 1.234.567,89`, `1.234.567`, `12,5`, dan singkatan besaran umum UMKM: `500rb`/
-`500 ribu`, `Rp 1,25jt`/`1,25 juta`, `1,2 miliar`/`1,2M` — lihat catatan ambiguitas huruf `m` kecil
-di `references/singkatan-besaran.md`) jadi angka polos. **Tunjukkan** hasilnya (kolom mana jadi
+format umum (`Rp 1.234.567,89`, `Rp 1.250.000,-`, `1.234.567`, `12,5`, singkatan besaran UMKM
+`500rb`/`2,5 rb`/`10k`, `Rp 1,25jt`/`1,25 juta`, `1,2 miliar`/`1,5M`, gabungan `3 jt 500 rb`) jadi
+angka polos (dihitung dengan `Decimal`, persis). Nilai **ambigu** (mis. `1.500rb`, `2m` kecil,
+`3jt500`, `1.250,5jt`) **tidak ditebak**: ditolak dengan alasan — aturan lengkap di
+`references/singkatan-besaran.md`. **Tunjukkan** hasilnya (kolom mana jadi
 Text/Numeric) ke pengguna sebelum lanjut. Kalau ada kolom yang SEBAGIAN selnya angka tapi tetap
 jadi Text (satu sel gagal parse membatalkan seluruh kolom, demi keamanan), output SELALU menyebut
 baris & nilai penyebabnya (peringatan di layar + `kolom_gagal_sebagian` pada `--json`) — **teruskan

@@ -46,11 +46,17 @@ openclaw skills install ./tender-checklist --global
 openclaw skills install ./kontrak-kerja-pkwt --global
 openclaw skills install ./kebijakan-privasi-pdp --global
 openclaw skills install ./kalender-pajak --global
+openclaw skills install ./hledger-usaha --global
+openclaw skills install ./buku-piutang --global
+openclaw skills install ./laporan-klien-konsultan --global
+openclaw skills install ./gaji-umkm --global
 ```
 (Jalankan dari folder hasil ekstrak ZIP paket. Windows tanpa WSL: salin folder skill lewat File
-Explorer ke `%USERPROFILE%\.openclaw\skills\`.)
+Explorer ke `%USERPROFILE%\.openclaw\skills\`. Lewati baris `gaji-umkm` kalau Anda tidak punya
+staf tetap yang digaji bulanan.)
 
-- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-14 nama skill di atas.
+- **Cara cek berhasil:** `openclaw skills list` menampilkan 17 nama skill di atas (atau 18 kalau
+  memasang `gaji-umkm`).
 - **Kalau gagal:** sama seperti paket lain — "already exists" aman dilewati, skill tidak terbaca
   → buka sesi baru, `exec` ditolak → salin manual lewat File Explorer/Finder.
 
@@ -161,6 +167,43 @@ libur — **bukan** penghitung besaran pajak. Cara mengaktifkan pengingat otomat
 `jadwal-openclaw.md` §8.
 - **Cara cek berhasil:** jadwal diuji sekali dan hasilnya (tanggal-tanggal nyata, bukan contoh)
   ditunjukkan sebelum dinyatakan aktif.
+
+### k. Laporan pembukuan bulanan (hledger-usaha, terjadwal, tanggal 1 jam 07.50 WIB)
+Untuk pembukuan berpasangan (debit/kredit) tanpa aplikasi berbayar — cocok kalau Anda/agensi
+ingin laporan laba rugi & neraca yang benar secara akuntansi, bukan sekadar catatan kas. Ketik:
+*"Aktifkan laporan bulanan pembukuan tiap tanggal 1 jam 7.50 pagi."*
+- **Cara cek berhasil:** jadwal diuji sekali, hasilnya (laba rugi bulan lalu) ditunjukkan sebelum
+  aktif.
+- **Kalau gagal:** jurnal belum ada/neraca tidak seimbang → skill akan bilang jujur (kode keluar
+  sengaja gagal) — perbaiki dulu pencatatan sebelum percaya laporannya.
+
+### l. Ringkasan piutang retainer/termin (buku-piutang, terjadwal, 07.45 WIB)
+Punya klien retainer/termin yang belum lunas? Ketik: *"Aktifkan ringkasan piutang klien jam 7.45
+pagi."* Sama seperti paket lain, nama klien **disamarkan jadi inisial secara default**.
+- **Cara cek berhasil:** jadwal diuji sekali, hasilnya ditunjukkan sebelum aktif.
+- **Kalau gagal:** database piutang belum ada → catat piutang pertama dulu.
+
+### m. Pengingat gaji & setoran staf tetap (gaji-umkm, opsional, terjadwal 07.00 WIB)
+**Hanya kalau agensi/kantor Anda punya staf tetap yang digaji bulanan** (bukan honor per proyek —
+untuk itu tetap pakai `buat-invoice`/kesepakatan proyek). Ketik: *"Aktifkan pengingat gaji &
+setoran BPJS/PPh 21 tiap pagi jam 7."* Anda menerima pengingat tenggat (tanggal gajian, BPJS,
+PPh 21) berisi **total perusahaan saja**, tanpa nama/NIK/rekening karyawan.
+- **Cara cek berhasil:** jadwal diuji sekali, hasilnya ditunjukkan sebelum aktif.
+- **Kalau tidak punya staf tetap:** lewati langkah ini, tidak perlu memasang skillnya.
+
+### n. Draf laporan progres ke klien (laporan-klien-konsultan, terjadwal, Jumat 16.00 WIB)
+Ini mengisi celah "laporan status ke klien" yang sebelumnya belum ada polanya. Cocok kalau Anda
+mencatat pekerjaan harian per klien (jam, status, kendala) dan ingin draf laporan progres
+mingguan/bulanan disiapkan otomatis — **bukan** dikirim otomatis ke klien. Ketik: *"Catat: hari
+ini saya kerjakan rekonsiliasi bank untuk PT Maju, 2,5 jam, selesai"* setiap kali selesai
+mengerjakan sesuatu, lalu: *"Aktifkan draf laporan mingguan untuk PT Maju tiap Jumat jam 4
+sore."*
+- **Cara cek berhasil:** jadwal diuji sekali, draf laporan (versi email, WA, dan markdown)
+  ditunjukkan sebelum dinyatakan aktif.
+- **Satu klien = satu jadwal.** Untuk beberapa klien, ulangi dengan jam berbeda-beda (mis.
+  16.00, 16.10, 16.20) agar tidak menumpuk.
+- **Draf ini hanya terkirim ke Anda.** Anda yang meninjau lalu menyalin ke email/WA klien —
+  tidak pernah otomatis ke klien.
 
 ---
 

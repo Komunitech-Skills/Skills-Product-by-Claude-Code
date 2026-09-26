@@ -25,6 +25,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from decimal import Decimal
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -50,7 +51,8 @@ class TestBersihkanAngka(unittest.TestCase):
         if harap is None:
             self.assertIsNone(hasil, f"{teks!r} seharusnya BUKAN angka")
         else:
-            self.assertAlmostEqual(hasil, harap, msg=f"{teks!r}")
+            self.assertIsInstance(hasil, Decimal, f"{teks!r} harus Decimal (uang), bukan float")
+            self.assertEqual(hasil, Decimal(str(harap)), f"{teks!r}")
 
     def test_format_rupiah_ribuan_titik_desimal_koma(self):
         self.cek("Rp 1.234.567,89", 1234567.89)
@@ -90,7 +92,8 @@ class TestSingkatanBesaranUang(unittest.TestCase):
         if harap is None:
             self.assertIsNone(hasil, f"{teks!r} seharusnya None (bukan angka/ambigu)")
         else:
-            self.assertAlmostEqual(hasil, harap, msg=f"{teks!r}")
+            self.assertIsInstance(hasil, Decimal, f"{teks!r} harus Decimal (uang), bukan float")
+            self.assertEqual(hasil, Decimal(str(harap)), f"{teks!r}")
 
     def test_klaim_readme_rp_1_25jt(self):
         # Kasus PERSIS yang diklaim README/SKILL dan gagal di v1.0.0 - harus lulus di v1.0.1.
@@ -155,6 +158,140 @@ class TestSingkatanBesaranUang(unittest.TestCase):
         hasil, alasan = grist._bersihkan_angka("Minyak Goreng 1L")
         self.assertIsNone(hasil)
         self.assertIsNone(alasan)
+
+
+class TestAngkaIndonesiaV102(unittest.TestCase):
+    """v1.0.2 (tugas H2): kasus wajib + jebakan. Nilai ambigu -> None + alasan, BUKAN tebakan."""
+
+    def nilai(self, teks):
+        hasil, alasan = grist._bersihkan_angka(teks)
+        return hasil, alasan
+
+    def sama(self, teks, harap):
+        hasil, alasan = self.nilai(teks)
+        self.assertIsNone(alasan, f"{teks!r}: {alasan}")
+        self.assertIsInstance(hasil, Decimal)
+        self.assertEqual(hasil, Decimal(harap), f"{teks!r}")
+
+    def ditolak(self, teks, kata=None):
+        hasil, alasan = self.nilai(teks)
+        self.assertIsNone(hasil, f"{teks!r} seharusnya ditolak, dapat {hasil}")
+        self.assertTrue(alasan, f"{teks!r} ditolak tapi TANPA alasan")
+        if kata:
+            self.assertIn(kata, alasan.lower())
+
+    # --- kasus wajib dari tugas ---
+    def test_juta_koma_desimal(self):
+        self.sama("1,25jt", "1250000")
+
+    def test_ribu_dengan_spasi(self):
+        self.sama("2,5 rb", "2500")
+
+    def test_ribuan_titik_polos(self):
+        self.sama("1.250.000", "1250000")
+
+    def test_rupiah_ekor_koma_strip(self):
+        self.sama("Rp 1.250.000,-", "1250000")
+        self.sama("Rp. 75.000,-", "75000")
+
+    def test_miliar_kata_dan_m_besar(self):
+        self.sama("1,5 miliar", "1500000000")
+        self.sama("2 Milyar", "2000000000")
+        self.sama("1,5M", "1500000000")
+
+    # --- jebakan ---
+    def test_jebakan_titik_vs_koma_satu_angka(self):
+        # '1.5' dan '1,5' sama-sama 1,5 (satu angka di belakang pemisah = desimal).
+        self.sama("1.5", "1.5")
+        self.sama("1,5", "1.5")
+        self.sama("1.5jt", "1500000")
+        self.sama("1,5jt", "1500000")
+
+    def test_jebakan_titik_tiga_angka_adalah_ribuan(self):
+        # Gaya Indonesia: titik + tepat 3 angka = pemisah ribuan.
+        self.sama("1.500", "1500")
+
+    def test_jebakan_10k(self):
+        self.sama("10k", "10000")
+        self.sama("10K", "10000")
+
+    def test_gabungan_jt_rb_didukung(self):
+        self.sama("3 jt 500 rb", "3500000")
+        self.sama("3jt500rb", "3500000")
+        self.sama("Rp 1 miliar 250 jt", "1250000000")
+
+    def test_gabungan_salah_ditolak_jelas(self):
+        self.ditolak("3jt500", "ambigu")          # ekor tanpa singkatan
+        self.ditolak("500 rb 3 jt", "urutan")      # urutan naik
+        self.ditolak("3 jt 1500 rb", "melebihi")   # bagian bawah >= satuan di atasnya
+        self.ditolak("1,5jt 200rb", "bulat")       # desimal di bentuk gabungan
+
+    def test_singkatan_dengan_tiga_angka_di_belakang_pemisah_ambigu(self):
+        # '1.500rb' bisa 1,5 ribu atau 1.500 ribu -> tolak, jangan tebak.
+        self.ditolak("1.500rb", "ambigu")
+        self.ditolak("1,250jt", "ambigu")
+
+    def test_pengelompokan_ribuan_rusak_ditolak(self):
+        self.ditolak("1.23.456", "ambigu")
+        self.ditolak("12,5.5", "ambigu")
+
+    def test_satuan_bukan_uang_diberi_alasan(self):
+        self.ditolak("1kg", "kg")
+
+    def test_negatif(self):
+        self.sama("-Rp 18.500", "-18500")
+        self.sama("Rp -500rb", "-500000")
+
+    def test_presisi_decimal_angka_besar(self):
+        # Float/'%.10g' v1.0.1 membulatkan angka > 10 digit; Decimal wajib persis.
+        self.sama("Rp 12.345.678.901,55", "12345678901.55")
+        self.assertEqual(grist._teks_angka(Decimal("12345678901.55")), "12345678901.55")
+        self.assertEqual(grist._teks_angka(Decimal("1.25") * Decimal(1_000_000)), "1250000")
+        self.assertEqual(grist._teks_angka(Decimal("100.00")), "100")
+
+    def test_teks_biasa_tetap_none_tanpa_alasan(self):
+        for t in ("Kopi Robusta", "08123456789 (WA)", "-", "Rp", "belum diisi"):
+            hasil, alasan = self.nilai(t)
+            self.assertIsNone(hasil, t)
+            self.assertIsNone(alasan, t)
+
+
+class TestBersihkanCsvV102(unittest.TestCase):
+    """CLI: nilai ambigu disebut baris & alasannya; angka besar ditulis persis."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_ambigu_disebut_baris_nilai_alasan(self):
+        f = self.dir / "omzet.csv"
+        f.write_text("Bulan,Omzet\nJan,\"Rp 1.250.000,-\"\nFeb,1.500rb\nMar,3 jt 500 rb\n",
+                     encoding="utf-8")
+        p = subprocess.run([sys.executable, SKRIP, "bersihkan-csv", str(f), "--json"],
+                           capture_output=True, text=True, cwd=self.dir)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertIn("'Omzet' -> Omzet  (Text)", p.stdout)
+        self.assertIn("baris 3: '1.500rb'", p.stdout)
+        self.assertIn("ambigu", p.stdout)
+        data = json.loads([l for l in p.stdout.splitlines() if l.startswith("{")][0])
+        g = data["kolom_gagal_sebagian"][0]
+        self.assertEqual(g["kolom"], "Omzet")
+        self.assertEqual(g["gagal"][0]["baris"], 3)
+        self.assertTrue(g["gagal"][0]["alasan"])
+
+    def test_angka_besar_ditulis_persis(self):
+        f = self.dir / "aset.csv"
+        f.write_text("Item,Nilai\nGedung,\"Rp 12.345.678.901,55\"\nMobil,\"1 miliar 250 jt\"\n",
+                     encoding="utf-8")
+        p = subprocess.run([sys.executable, SKRIP, "bersihkan-csv", str(f)],
+                           capture_output=True, text=True, cwd=self.dir)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        isi = (self.dir / "aset-bersih.csv").read_text(encoding="utf-8")
+        self.assertIn("12345678901.55", isi)
+        self.assertIn("1250000000", isi)
 
 
 class TestBersihkanHeader(unittest.TestCase):

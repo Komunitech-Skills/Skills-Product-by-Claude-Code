@@ -49,6 +49,19 @@ class TestTanggal(unittest.TestCase):
         self.assertEqual(d, date(2026, 2, 28))
         self.assertIsNotNone(cat)
 
+    def test_bulan_lagi_tahun_kabisat(self):
+        # 29 Jan 2028 + 1 bulan -> 2028 kabisat, Februari PUNYA tanggal 29 -> tidak boleh turun ke 28.
+        d, cat = pp.parse_tanggal("1 bulan lagi", date(2028, 1, 29))
+        self.assertEqual(d, date(2028, 2, 29))
+        self.assertIsNone(cat)  # tanggal asli tetap terpakai, tidak ada penyesuaian
+        # Tahun BUKAN kabisat: tetap turun ke 28 seperti sebelumnya.
+        d2, cat2 = pp.parse_tanggal("1 bulan lagi", date(2029, 1, 29))
+        self.assertEqual(d2, date(2029, 2, 28))
+        self.assertIsNotNone(cat2)
+        # 30 Apr + 10 bulan -> Februari 2027 (bukan kabisat): turun ke 28.
+        d3, _ = pp.parse_tanggal("10 bulan lagi", date(2026, 4, 30))
+        self.assertEqual(d3, date(2027, 2, 28))
+
     def test_nama_hari(self):
         # ACUAN = Sabtu 26 Sep 2026
         self.assertEqual(self.t("Senin"), date(2026, 9, 28))
@@ -89,6 +102,27 @@ class TestValidasiIsi(unittest.TestCase):
     def test_jenis_umum_lolos(self):
         for kata in ("kontrol", "vaksin", "cabut jahitan", "cek gigi", "vaksin hewan", "groom", "sunat"):
             self.assertTrue(pp.rapikan_jenis(kata))
+
+    def test_nama_vaksin_lolos_berkonteks_vaksin(self):
+        # Temuan TINGGI uji Akun B 2026-09-26: nama vaksin/imunisasi harus tetap boleh dicatat.
+        for kata in ("imunisasi campak", "vaksin rabies", "vaksin MR", "imunisasi difteri (DPT)",
+                     "vaksinasi tetanus", "booster covid", "suntik rabies", "vaksin hepatitis B",
+                     "imunisasi polio"):
+            self.assertTrue(pp.rapikan_jenis(kata), kata)
+
+    def test_nama_vaksin_tetap_ditolak_bila_bernada_diagnosis(self):
+        for kata in ("riwayat campak", "kena difteri", "positif rabies", "didiagnosis tbc",
+                      "hasil lab campak", "menderita hepatitis", "sakit campak"):
+            with self.assertRaises(pp.Gagal, msg=kata):
+                pp.rapikan_jenis(kata)
+
+    def test_diagnosis_umum_diluar_daftar_lama_ditolak(self):
+        # Temuan SEDANG uji Akun B 2026-09-26: celah blocklist untuk penyakit umum sehari-hari.
+        for kata in ("kontrol batu ginjal", "cek asma", "kontrol maag", "pasca usus buntu",
+                     "kontrol vertigo", "kontrol katarak", "cek amandel", "kontrol wasir",
+                     "cek anemia", "kontrol migrain", "kontrol hernia", "cek tiroid"):
+            with self.assertRaises(pp.Gagal, msg=kata):
+                pp.rapikan_jenis(kata)
 
     def test_data_pribadi_ditolak(self):
         with self.assertRaises(pp.DataPribadi):
