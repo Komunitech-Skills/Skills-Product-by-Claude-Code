@@ -113,3 +113,35 @@ Alasan:
 - (−) Bentuk ekspor asli dari kelima platform tetap **belum diverifikasi** dengan file nyata (PERLU REVIEW, diakui pembuat).
 
 **Keputusan: LULUS (≥ 7), dengan syarat.** N1 dan N2 sebaiknya diperbaiki (keduanya kecil) dan ditambah tes regresi sebelum uji platform asli/beta. Minta pemilik menyediakan satu ekspor asli per platform. Setelah N1/N2 diperbaiki, uji ulang singkat cukup untuk K2, K12, dan matriks label total.
+
+## Uji ulang v1.0.2 (Akun B)
+
+- **Tanggal:** 2026-09-26. **Versi:** v1.0.2 (commit `b2a286c`). **Penguji:** agent independen lintas akun (Akun B, simulasi Claude Code), bukan pembuat. Skill dijalankan dari salinan scratchpad.
+- **Rincian lengkap:** `07-uji-ulang-v1.0.2.md`.
+- **Uji bawaan:** `tests/uji_regresi.py` menghasilkan 63 tes OK. `python3 scripts/validate.py --skill laporan-iklan-mingguan` menghasilkan ✅ 1 skill valid, 77 baris katalog sesuai.
+
+### Status temuan v1.0.1
+| ID | Status v1.0.2 | Bukti |
+|---|---|---|
+| N1 ekspor bertingkat | ✅ Beres | K2: Advantage+ Catalog jadi PERLU PERHATIAN no. 1 dan saran no. 1, Catatan menulis Rp 1.080.735. K12 dibedakan per ad set. P1/P2/P3/P9/P10 baru (Meta/TikTok 3 level, Google grup iklan, Meta ID 2 level, `Ad name` kosong) juga benar |
+| N2 label total | ✅ Beres untuk label di matriks | 16 label × 2 posisi = 32/32 → Rp 500.000. K3 varian ×3 → Rp 3.199.700. `Totals` +1,5%, `Total Akun` +Rp 3, label huruf campur atas/bawah, `Grand Total` di atas + `Subtotal:` di tengah semuanya benar. Label asing ±1% dibuang + ⚠️. Kampanye asli dominan tetap dihitung + ⚠️ |
+| "Total Look Hijab" dsb. | ✅ | "Total Look Hijab", "Jumlah Terbatas - Khimar", "Totalitas Gamis", "Total Diskon 50% Bergo", dan induk "Jumlah Promo Ramadan" tetap dihitung |
+| T1–T4, S1–S4, R1/R3/R4/K1, R-b | ✅ Tetap beres | Repro asli diulang, angka sama dengan v1.0.1 |
+| R-a, R-c, R-d | Belum (rendah) | K8 `Nilai konv.` masih tanpa ROAS |
+
+### Uji baru (14 CSV, kunci `Decimal` independen, kode tidak dibaca)
+11/14 kasus 0 beda, dengan **322 nilai cocok**. Tiga kasus gagal:
+| ID | Keparahan | Temuan |
+|---|---|---|
+| **M1** | Sedang | Kampanye bernama **"Total 12.12 Flash Sale"** / **"Jumlah 2 Pcs Bundling"** (kata kepala + angka) dibuang sebagai baris total, **tanpa ⚠️** walau biayanya jauh dari jumlah baris lain. Hasilnya Rp 150.000, padahal seharusnya Rp 1.000.000. Hanya Catatan yang menyebutnya. Perbaikan kecil: ⚠️ selisih untuk semua label yang dibuang, bukan hanya label "sedang", dan "angka + kata lain" diperlakukan sebagai nama |
+| M2 | Rendah | Label tak dikenal dengan ketiga metrik selisih 3% (di atas batas 2%) → dihitung 2× tanpa ⚠️. Sesuai rancangan |
+| M3 | Rendah | `Subtotal Kamp A` (tanpa titik dua) di kolom induk dengan kolom nama kosong → dihitung sebagai data, sehingga total 2×. Hanya pada lembar buatan admin |
+
+### Skor kualitas: **8 / 10**
+Alasan:
+- (+) N1 dan N2 terbukti beres dengan repro asli dan 14 file baru: ekspor 2/3 level dirinci ke iklan, iklan tanpa hasil muncul di PERLU PERHATIAN/SARAN, Catatan memakai biaya baris, label umum di posisi mana pun dikenali, dan pengaman ±2% bekerja ke dua arah (buang + ⚠️, atau hitung + ⚠️).
+- (+) Tidak ada regresi pada T1–T4/S1–S4/R. 322 nilai baru cocok dengan kunci independen. Uji bawaan bertambah menjadi 63 tes.
+- (−) M1: masih ada satu jalur angka salah tanpa ⚠️ untuk nama kampanye yang wajar di pasar Indonesia ("Total 12.12 …"), meski syaratnya sempit dan Catatan menyebut barisnya.
+- (−) Bentuk ekspor asli kelima platform tetap **belum diverifikasi** dengan file nyata (PERLU REVIEW).
+
+**Keputusan: LULUS.** Disarankan memperbaiki M1 (dengan tes regresi) sebelum beta; cukup uji ulang singkat P5/P2/P8b. Uji platform asli tetap membutuhkan satu ekspor asli per platform dari pemilik.
