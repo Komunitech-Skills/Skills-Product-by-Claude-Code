@@ -2,6 +2,8 @@
 
 **Nota & struk yang berantakan di HP jadi arsip rapi di komputer sendiri - cukup ngobrol.**
 
+_Versi 1.0.1._
+
 ## Manfaat
 - ✅ File foto/PDF nota diberi nama baku (`2026-09-20_Toko-Sembako-Bu-Yati_150000.jpg`) dan tersusun otomatis per folder tahun/bulan - tidak perlu klik-klik Explorer/Finder satu-satu.
 - ✅ Semua nota tercatat di satu indeks lokal: cari nota vendor tertentu atau rentang tanggal dalam hitungan detik, tanpa scroll ratusan foto.

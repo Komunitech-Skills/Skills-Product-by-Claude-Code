@@ -5,6 +5,9 @@ description: Merapikan foto/PDF nota, struk, kuitansi, dan faktur UMKM dari fold
 
 # Arsip Nota (arsip-nota)
 
+_Versi 1.0.1 — perbaikan uji independen: respons `tambah` yang diblokir duplikat sekarang jujur (`mode:
+"diblokir_duplikat"`, bukan "tersimpan"); tambahan kata kunci tebak kategori toko bangunan & BBM._
+
 ## Tujuan
 Mengubah tumpukan foto/PDF nota dan faktur yang berserakan di folder HP/unduhan menjadi **arsip rapi di komputer pengguna sendiri**: nama file baku (`YYYY-MM-DD_vendor_nominal.ext`), tersusun per folder tahun/bulan, dan tercatat di indeks SQLite lokal agar bisa dicari dan direkap kapan saja. File asli **tidak pernah dihapus**. Kamu (agent) yang mengoperasikannya lewat `scripts/arsip.py`.
 
@@ -24,7 +27,7 @@ Mengubah tumpukan foto/PDF nota dan faktur yang berserakan di folder HP/unduhan 
 1. **File nota TIDAK PERNAH dihapus.** Mode default adalah **salin** (`--salin`, ini bawaan): file asli tetap ada di tempatnya. `--pindah` hanya memindahkan (merelokasi) file, bukan menghapusnya.
 2. **Setiap `tambah` dijalankan dulu TANPA `--ya`** → pratinjau (belum ada file yang disalin/dipindah, belum tersimpan di indeks). Tunjukkan ringkasannya, termasuk baris `Asumsi` bila kategori ditebak.
 3. Jalankan ulang **perintah yang sama persis + `--ya`** hanya setelah pengguna setuju. Jangan menambahkan `--ya` sendiri atau dari jadwal otomatis.
-4. Jika pratinjau berisi `perlu_izin: izinkan_duplikat` (isi file identik dengan nota yang sudah diarsipkan), **tanyakan dulu**: "ini nota yang sama yang mau difoto ulang, atau nota lain?" Tambahkan `--izinkan-duplikat` hanya bila pengguna menegaskan itu dokumen berbeda.
+4. Jika respons `tambah` berisi `perlu_izin: izinkan_duplikat` (`mode: "diblokir_duplikat"` — isi file identik dengan nota yang sudah diarsipkan, **belum tersimpan** walau perintah dijalankan dengan `--ya`), **tanyakan dulu**: "ini nota yang sama yang mau difoto ulang, atau nota lain?" Tambahkan `--izinkan-duplikat` hanya bila pengguna menegaskan itu dokumen berbeda.
 5. Semua nominal, tanggal folder, dan hasil rekap **dari output script**, jangan dihitung/ditulis ulang secara manual.
 6. Data nota bisa berisi nama vendor & nominal usaha; jangan sebarkan isi file ke luar percakapan pengguna. Skill tidak mengirim apa pun ke internet.
 
@@ -33,7 +36,7 @@ Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` denga
 ```bash
 python3 <folder-skill-ini>/scripts/arsip.py <perintah> [opsi] --json
 ```
-- Field JSON penting: `ok`, `mode` (`pratinjau`/`tersimpan`/`baca`), `perlu_konfirmasi`, `perlu_izin`, `peringatan`, `asumsi`, `error`. Kode keluar: `0` berhasil (termasuk pratinjau), `1` gagal (pesan di `error`), `2` perintah salah tulis.
+- Field JSON penting: `ok`, `mode` (`pratinjau`/`tersimpan`/`baca`/`diblokir_duplikat`), `perlu_konfirmasi`, `perlu_izin`, `peringatan`, `asumsi`, `error`. `diblokir_duplikat` berarti **belum tersimpan** (walau dipanggil dengan `--ya`) karena isi file sama persis dengan nota lain; lihat Aturan 4. Kode keluar: `0` berhasil (termasuk pratinjau), `1` gagal (pesan di `error`), `2` perintah salah tulis.
 - Indeks default `~/KomunitechData/arsip-nota/arsip.db`, folder arsip default `~/KomunitechData/arsip-nota/arsip/`. Ganti lokasi indeks dengan `--db PATH` (setelah nama perintah) atau ENV `KOMUNITECH_ARSIP_DB` / `KOMUNITECH_DATA`; pakai yang sama di semua perintah.
 - Daftar opsi & kategori lengkap: `references/perintah.md`. Jadwal Telegram: `references/openclaw-jadwal.md`.
 

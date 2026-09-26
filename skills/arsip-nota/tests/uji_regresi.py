@@ -87,6 +87,19 @@ k, h = jalankan("tambah", "--file", foto1, "--tanggal", "20/09/2026", "--vendor"
 cek("14. duplikat persis terdeteksi (perlu_izin)", h.get("perlu_izin") == ["izinkan_duplikat"])
 cek("15. duplikat: id nota lama disebut", h.get("duplikat", {}).get("id") == 1)
 
+# 15b. BUG (v1.0.1): --ya TANPA --izinkan-duplikat dulu tidak boleh mengaku "tersimpan" - file itu
+# sebenarnya tidak disalin dan tidak ada baris baru di indeks.
+target_salah = os.path.join(WORK, "data", "arsip", "2026", "09", "2026-09-20_Toko-Lain_150000.jpg")
+k, h = jalankan("tambah", "--file", foto1, "--tanggal", "20/09/2026", "--vendor", "Toko Lain",
+                "--nominal", "150000", "--ya")
+cek("15b. --ya tanpa --izinkan-duplikat: mode jujur 'diblokir_duplikat', BUKAN 'tersimpan'",
+    h.get("mode") == "diblokir_duplikat")
+cek("15c. --ya tanpa --izinkan-duplikat: tetap minta izin (perlu_izin)",
+    h.get("perlu_izin") == ["izinkan_duplikat"])
+cek("15d. --ya tanpa --izinkan-duplikat: file TIDAK ikut disalin", not os.path.exists(target_salah))
+k, h = jalankan("info")
+cek("15e. --ya tanpa --izinkan-duplikat: jumlah_nota TIDAK bertambah (masih 1)", h.get("jumlah_nota") == 1)
+
 # 16. dengan --izinkan-duplikat --ya tetap bisa disimpan sebagai nota baru
 k, h = jalankan("tambah", "--file", foto1, "--tanggal", "20/09/2026", "--vendor", "Toko Lain",
                 "--nominal", "150000", "--izinkan-duplikat", "--ya")
@@ -194,9 +207,41 @@ cek("43. cari di indeks yang belum ada -> pesan jelas 'belum ada', bukan traceba
     p.returncode == 1 and "belum ada" in h3.get("error", ""))
 shutil.rmtree(WORK2, ignore_errors=True)
 
+# ------------------------------------------------------------------ tebak kategori (v1.0.1: toko bangunan & BBM)
+k, h = jalankan("tambah", "--file", buat_file("in/nota-bangunan.jpg", "BANGUNAN"), "--tanggal", "25/09/2026",
+                "--vendor", "Toko Bangunan Sumber Rejeki", "--catatan", "beli semen 5 sak dan pasir",
+                "--nominal", "450000", "--ya")
+cek("45. kategori 'semen'/'pasir' ditebak sebagai Bahan baku (toko bangunan)", k == 0 and
+    h.get("kategori") == "bahan-baku")
+
+k, h = jalankan("tambah", "--file", buat_file("in/nota-bbm.jpg", "BBM"), "--tanggal", "25/09/2026",
+                "--vendor", "SPBU Pertamina 34.123", "--nominal", "100000", "--ya")
+cek("46. vendor 'SPBU Pertamina' ditebak sebagai Transportasi (BBM)", k == 0 and
+    h.get("kategori") == "transportasi")
+
+k, h = jalankan("tambah", "--file", buat_file("in/nota-pertalite.jpg", "PERTALITE"), "--tanggal", "25/09/2026",
+                "--vendor", "Toko Kelontong Barokah", "--catatan", "isi Pertalite motor",
+                "--nominal", "25000", "--ya")
+cek("47. kata 'Pertalite' di catatan ditebak sebagai Transportasi (BBM)", k == 0 and
+    h.get("kategori") == "transportasi")
+
+# batas kata: 'cat' pada 'catatan'/'kecap' TIDAK boleh salah kena bahan-baku (regresi word-boundary)
+k, h = jalankan("tambah", "--file", buat_file("in/nota-kecap.jpg", "KECAP"), "--tanggal", "25/09/2026",
+                "--vendor", "Warung Kecap Manis Ibu Catur", "--catatan", "catatan bulanan warung",
+                "--nominal", "30000", "--ya")
+cek("48. 'cat' di dalam kata lain ('kecap'/'catatan') TIDAK salah tertebak Bahan baku",
+    k == 0 and h.get("kategori") != "bahan-baku")
+cek("49. tanpa kata kunci cocok -> jatuh ke Lain-lain", h.get("kategori") == "lain-lain")
+
+# BP (merek SPBU) hanya cocok sebagai kata utuh, bukan substring acak
+k, h = jalankan("tambah", "--file", buat_file("in/nota-atap.jpg", "ATAP"), "--tanggal", "25/09/2026",
+                "--vendor", "Toko Atap Seng Makmur", "--nominal", "60000", "--ya")
+cek("50. 'bp' di dalam kata 'atap' TIDAK salah tertebak Transportasi (BBM)",
+    k == 0 and h.get("kategori") != "transportasi")
+
 # ------------------------------------------------------------------ info akhir
 k, h = jalankan("info")
-cek("44. info akhir: jumlah_nota sesuai jumlah yang tersimpan (6)", h.get("jumlah_nota") == 6)
+cek("51. info akhir: jumlah_nota sesuai jumlah yang tersimpan (11)", h.get("jumlah_nota") == 11)
 
 shutil.rmtree(WORK, ignore_errors=True)
 

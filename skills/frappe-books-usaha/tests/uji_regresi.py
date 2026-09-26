@@ -27,8 +27,14 @@ import buat_db_contoh  # noqa: E402
 import frappe_books as fb  # noqa: E402
 
 
-def jalan(*arg):
-    r = subprocess.run([sys.executable, SKRIP] + list(arg), capture_output=True, text=True, encoding="utf-8")
+RUMAH_KOSONG = tempfile.mkdtemp(prefix="uji-rumah-")  # HOME tanpa Documents/Frappe Books
+
+
+def jalan(*arg, rumah=None):
+    env = dict(os.environ)
+    env.pop("FRAPPE_BOOKS_DB", None)
+    env["HOME"] = env["USERPROFILE"] = rumah or RUMAH_KOSONG
+    r = subprocess.run([sys.executable, SKRIP] + list(arg), capture_output=True, text=True, encoding="utf-8", env=env)
     return r.returncode, r.stdout, r.stderr
 
 
@@ -240,6 +246,28 @@ class UjiGalat(Dasar):
         self.assertIn("TOTAL", out)
 
 
+class UjiCariOtomatis(Dasar):
+    def test_29_cari_db_otomatis_di_documents(self):
+        rumah = os.path.join(self.tmp, "rumah")
+        folder = os.path.join(rumah, "Documents", "Frappe Books")
+        os.makedirs(folder)
+        shutil.copy(self.db, os.path.join(folder, "Toko Kopi.books.db"))
+        k, out, err = jalan("cek", rumah=rumah)
+        self.assertEqual(k, 0, err)
+        self.assertIn("Toko Kopi Nusantara", out)
+        masuk = self.tulis("auto.csv", "nama,hp\nPelanggan Baru,0811111111\n")
+        k, out, _ = jalan("csv-pelanggan", "--masuk", masuk, "--keluar", os.path.join(self.tmp, "auto-out.csv"), rumah=rumah)
+        self.assertEqual(k, 0)
+        self.assertIn("Memakai database Frappe Books", out)
+        shutil.copy(self.db, os.path.join(folder, "Usaha Kedua.books.db"))
+        k, _, err = jalan("stok", rumah=rumah)
+        self.assertEqual(k, 2)
+        self.assertIn("beberapa file", err)
+        k, _, err = jalan("stok")
+        self.assertEqual(k, 2)
+        self.assertIn("belum diketahui", err)
+
+
 class UjiPpn(unittest.TestCase):
     def test_19_ppn_standar_komunitech(self):
         self.assertEqual(fb.ppn_dari_dpp(Decimal(332345))[2], Decimal(36557))   # 36.557,95 -> ke bawah
@@ -390,4 +418,7 @@ class UjiCsv(Dasar):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    try:
+        unittest.main(verbosity=2)
+    finally:
+        shutil.rmtree(RUMAH_KOSONG, ignore_errors=True)

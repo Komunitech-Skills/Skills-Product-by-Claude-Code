@@ -890,8 +890,15 @@ def laporan_validasi(judul, galat, peringatan, ok_teks):
 
 
 def db_opsional(path):
+    """CSV bisa dibuat tanpa database, tapi dengan database nama-nama bisa dicek. Cari otomatis bila --db kosong."""
     if not path:
-        return None, set()
+        try:
+            path = cari_db_bawaan()
+        except Gagal as g:
+            if "beberapa" in g.pesan:
+                raise
+            return None, set()
+        print(f"(Memakai database Frappe Books: {path})")
     return buka_db(path)
 
 

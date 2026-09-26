@@ -25,13 +25,17 @@ from pathlib import Path
 
 APLIKASI = "komunitech-arsip-nota"
 SKEMA = 1
+VERSI = "1.0.1"
 
 KATEGORI = OrderedDict([
-    ("bahan-baku", ("Bahan baku", ["bahan", "baku", "sembako", "grosir", "supplier", "pemasok"])),
+    ("bahan-baku", ("Bahan baku", ["bahan", "baku", "sembako", "grosir", "supplier", "pemasok",
+                                   "semen", "cat", "pasir", "besi", "bata", "keramik", "paku", "toko bangunan"])),
     ("operasional", ("Operasional", ["operasional", "atk", "kebersihan", "kantor"])),
     ("peralatan", ("Peralatan", ["peralatan", "alat", "mesin", "elektronik", "komputer", "printer"])),
     ("jasa", ("Jasa", ["jasa", "service", "servis", "konsultan", "desain", "iklan"])),
-    ("transportasi", ("Transportasi", ["ongkir", "kirim", "bensin", "bbm", "tol", "parkir", "grab", "gojek", "gocar"])),
+    ("transportasi", ("Transportasi", ["ongkir", "kirim", "bensin", "bbm", "tol", "parkir", "grab", "gojek", "gocar",
+                                       "spbu", "pertamina", "shell", "bp", "vivo", "pertalite", "pertamax",
+                                       "solar"])),
     ("listrik-air", ("Listrik/air/internet", ["listrik", "pln", "air", "pdam", "internet", "wifi", "pulsa", "telepon"])),
     ("sewa", ("Sewa", ["sewa", "kontrak", "rental"])),
     ("pajak", ("Pajak/retribusi", ["pajak", "pbb", "retribusi", "pph", "ppn"])),
@@ -271,10 +275,12 @@ def parse_nominal(teks):
 
 
 def tebak_kategori(*teks_list):
+    """Kata kunci dicocokkan per kata utuh (batas kata), bukan sekadar substring, supaya kata pendek seperti
+    'bp' atau 'cat' tidak salah kena pada 'catatan'/'lembap'."""
     gabungan = " ".join(str(t or "") for t in teks_list).lower()
     for kode, (_label, kata_kunci) in KATEGORI.items():
         for kk in kata_kunci:
-            if kk in gabungan:
+            if re.search(r"(?<![a-z0-9])%s(?![a-z0-9])" % re.escape(kk), gabungan):
                 return kode, True
     return "lain-lain", False
 
@@ -630,11 +636,13 @@ def cmd_tambah(args):
         (Path(folder_arsip_teks) if folder_arsip_teks else folder_arsip_default(db))
 
     if duplikat_persis and not args.izinkan_duplikat:
-        data = {"ok": True, "mode": "pratinjau" if not args.ya else "tersimpan", "perlu_izin": ["izinkan_duplikat"],
+        # Tidak pernah "tersimpan" di sini, walau dipanggil dengan --ya: perlu_izin belum dijawab, jadi
+        # TIDAK ADA file disalin/dipindah dan TIDAK ADA baris ditulis ke indeks.
+        data = {"ok": True, "mode": "diblokir_duplikat", "perlu_izin": ["izinkan_duplikat"],
                 "duplikat": duplikat_persis, "hash_sha256": hash_sumber}
-        teks = ("File ini isinya SAMA PERSIS dengan nota yang sudah diarsipkan (ID %s, %s, %s, %s).\n"
-                "Kalau ini memang dokumen berbeda (mis. difoto ulang), tambahkan --izinkan-duplikat. Kalau memang "
-                "sama, tidak perlu diarsipkan lagi." %
+        teks = ("BELUM DIARSIPKAN. File ini isinya SAMA PERSIS dengan nota yang sudah diarsipkan (ID %s, %s, %s, "
+                "%s).\nKalau ini memang dokumen berbeda (mis. difoto ulang), tambahkan --izinkan-duplikat. Kalau "
+                "memang sama, tidak perlu diarsipkan lagi." %
                 (duplikat_persis["id"], tgl_id(datetime.strptime(duplikat_persis["tanggal"], "%Y-%m-%d").date()),
                  duplikat_persis["vendor"], rp(duplikat_persis["nominal"])))
         return data, teks

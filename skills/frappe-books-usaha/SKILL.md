@@ -13,7 +13,7 @@ cukup mengetik permintaan biasa, dan agent: (1) membaca file datanya **tanpa men
 Semua lewat `scripts/frappe_books.py` (Python standar saja, tanpa instalasi paket, tanpa internet).
 
 **Versi 1.0.0. Status uji:** skema dicocokkan dengan kode sumber resmi Frappe Books **v0.36.0** (dan cabang `main` 0.37.0,
-20 Sep 2026). Diuji dengan database **tiruan** berskema v0.36.0 berisi data fiktif (28 uji regresi). **Belum** diuji dengan
+20 Sep 2026). Diuji dengan database **tiruan** berskema v0.36.0 berisi data fiktif (29 uji regresi). **Belum** diuji dengan
 file buatan aplikasi Frappe Books sungguhan maupun Import Wizard sungguhan — lihat `references/sumber-resmi.md`.
 Komunitech tidak berafiliasi dengan Frappe; Frappe Books tidak disertakan dalam paket.
 
