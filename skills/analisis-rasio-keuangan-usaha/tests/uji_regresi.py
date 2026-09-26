@@ -227,6 +227,97 @@ k, out, err = jalankan(*TOKO)
 cek("F16 keluaran teks memuat disclaimer & bagian KUR",
     k == 0 and "Bukan nasihat investasi" in out and "Kesiapan pengajuan KUR" in out and "Rp 33.000.000" in out)
 
+# ---------------------------------------------------------------- kasus G: temuan uji independen v1.0.0 (v1.0.1)
+# G1–G3 tren basis sama (uji 03 warung): basis saldo akhir kedua periode.
+# 2024: aset 8+2+35+20 = 65 → ROA 14,4/65 = 22,154%; 2025: aset 6,5+4,2+48+18 = 76,7 → 16,8/76,7 = 21,904% (turun)
+WARUNG = """Pos;2024;2025
+Omzet;Rp 360.000.000;Rp 420.000.000
+HPP;306.000.000;361.200.000
+Laba bersih;14.400.000;16.800.000
+Kas;8.000.000;6.500.000
+Piutang;2.000.000;4.200.000
+Stok barang;35.000.000;48.000.000
+Peralatan;20.000.000;18.000.000
+Utang supplier;15.000.000;26.000.000
+Utang lain;2.000.000;3.000.000
+Utang jangka panjang;0;0
+Modal;48.000.000;47.700.000
+Bulan;12;12
+"""
+k, h = json_run(tulis("warung.csv", WARUNG), "--jenis", "warung sembako")
+tr = {t["kode"]: t for t in h["tren"]}
+cek("G1 tren ROA basis saldo akhir: 22,15% → 21,90% = memburuk",
+    dekat(tr["roa"]["nilai"][0], F(1440, 65)) and dekat(tr["roa"]["nilai"][1], F(1680, 767))
+    and tr["roa"]["arah"].startswith("memburuk"), tr["roa"])
+cek("G2 tren umur stok basis akhir 2025 = 48×365/361,2 = 48,50 hari (memburuk)",
+    dekat(tr["hari_persediaan"]["nilai"][1], F(48 * 365 * 10, 3612)) and tr["hari_persediaan"]["arah"].startswith("memburuk"))
+cek("G3 tabel utama 2025 tetap rata-rata aset (65+76,7)/2 → 23,71%; basis tren ditulis",
+    dekat(r_(h, "roa")["nilai"], F(1680, F(1417, 20)), F(1, 1000)) and "saldo AKHIR" in (h["basis_tren"] or ""))
+# G4 hari piutang konveksi: basis akhir 2025 (bukan rata-rata)
+KONV = """Pos;Sem1;Sem2
+Penjualan;150jt;160jt
+Penjualan tempo;100jt;110jt
+HPP;105jt;112jt
+Laba bersih;12jt;11jt
+Kas;5jt;4jt
+Piutang;30jt;45jt
+Persediaan;40jt;50jt
+Aset tetap;60jt;58jt
+Utang lancar;35jt;52jt
+Utang jangka panjang;20jt;20jt
+Modal;80jt;85jt
+Bulan;6;6
+"""
+k, h = json_run(tulis("konv.csv", KONV), "--jenis", "konveksi")
+tr = {t["kode"]: t for t in h["tren"]}
+cek("G4 tren lama piutang Sem2 = 45×182,5/110 = 74,66 hari (basis akhir), tabel utama rata-rata 62,2",
+    dekat(tr["hari_piutang"]["nilai"][1], F(45) * F(3650, 20) / 110)
+    and dekat(r_(h, "hari_piutang")["nilai"], F(75, 2) * F(3650, 20) / 110))
+# G5–G7 CSV koma tanpa kutip → ditolak jelas, tidak ditebak
+k, out, err = jalankan(tulis("koma.csv", "Pos,2025\nKas,1,250,000\nPenjualan,100000000\n"))
+cek("G5 'Kas,1,250,000' tanpa kutip → GALAT (bukan kas Rp 1 diam-diam)",
+    k == 2 and "pemisah ribuan" in err and "TIDAK ditebak" in err and "Traceback" not in err, err)
+k, h = json_run(tulis("koma-kutip.csv", 'Pos,2025\nKas,"1,250,000"\nPenjualan,100000000\nLaba bersih,5000000\n'))
+cek("G6 dengan tanda kutip → kas Rp 1.250.000", k == 0 and h["periode"][0]["data"]["kas"] == 1250000)
+k, h = json_run(tulis("koma-ekor.csv", "Pos,2025,,\nKas,1250000,,\nLaba bersih,5000000,,\n"))
+cek("G7 kolom kosong di ujung (ekspor Excel) tidak dianggap rusak", k == 0 and h["periode"][0]["data"]["kas"] == 1250000)
+# G8–G10 data minim
+k, h = json_run("--penjualan", "20jt", "--laba-bersih", "2jt", "--bulan", "1")
+cek("G8 data minim → status DATA BELUM CUKUP, ringkasan tidak 'pertahankan'",
+    h["status_data"] == "DATA BELUM CUKUP" and "DATA BELUM CUKUP" in h["ringkasan_awam"]
+    and "pertahankan" not in h["ringkasan_awam"].lower(), h["ringkasan_awam"])
+cek("G9 saran pertama 'Lengkapi data' menyebut pos kosong; tidak ada saran 'Pertahankan'",
+    h["saran"][0]["rasio"] == "Lengkapi data" and "Modal" in h["saran"][0]["saran"]
+    and not any("Pertahankan" in x["saran"] for x in h["saran"]))
+kk = h["periode"][-1]["kesiapan_kredit"]
+cek("G10 kesiapan KUR 'DATA BELUM CUKUP' + pos kosong di Asumsi",
+    kk["kesimpulan"].startswith("DATA BELUM CUKUP") and any("Pos tidak diisi" in a for a in h["periode"][0]["asumsi"]))
+# G11–G12 saran kontekstual (uji 04 laundry: stok 1,2 jt dari aset lancar 9,8 jt, utang lancar 23,4 jt)
+LAUNDRY_B = ["--jenis", "laundry", "--penjualan", "186jt", "--hpp", "41jt", "--laba-bersih", "19,2jt",
+             "--laba-usaha", "26,4jt", "--beban-bunga", "7,2jt", "--kas", "5,5jt", "--piutang", "3,1jt",
+             "--persediaan", "1,2jt", "--aset-tetap", "118jt", "--utang-usaha", "2,4jt",
+             "--utang-lancar-lain", "21jt", "--utang-jangka-panjang", "64jt", "--modal", "40,4jt", "--bulan", "12"]
+k, h = json_run(*LAUNDRY_B)
+sr = next(x for x in h["saran"] if x["rasio"].startswith("Rasio cepat"))
+cek("G11 laundry stok kecil: saran rasio cepat fokus utang/kas, bukan 'kurangi stok'",
+    "stok bukan penyebabnya" in sr["saran"] and "Kurangi belanja stok" not in sr["saran"])
+k, h = json_run("--jenis", "dagang", "--penjualan", "300jt", "--hpp", "270jt", "--laba-bersih", "6jt", "--kas", "1jt",
+                "--piutang", "1jt", "--persediaan", "30jt", "--aset-tetap", "5jt", "--utang-lancar", "20jt",
+                "--modal", "17jt")
+sr = next(x for x in h["saran"] if x["rasio"].startswith("Rasio cepat"))
+cek("G12 toko stok besar (30 dari 32 jt aset lancar): saran rasio cepat tetap soal stok",
+    "tertahan di stok" in sr["saran"])
+# G13–G15 temuan ringan
+k, h = json_run(path_emkm := tulis("emkm2.json", json.dumps(EMKM)), "--bagian-lancar-utang-bank", "999jt")
+cek("G13 bagian lancar > utang bank → peringatan, bukan dipotong diam-diam",
+    any("lebih besar dari utang bank" in w for w in h["periode"][0]["peringatan"]))
+k, h = json_run(*(TOKO[:-2] + ["--bulan", "1"]))
+cek("G14 periode 1 bulan: catatan musiman tidak membuat status SEMENTARA",
+    h["status_data"] == "LENGKAP" and any("Periode pendek" in x for x in h["periode"][0]["info"]))
+cek("G15 tebak jenis kata utuh: 'jasa fotokopi'→jasa, 'jasa katering'/'toko kue'/'warung kopi'→manufaktur",
+    [rasio.tebak_jenis(x) for x in ("jasa fotokopi", "jasa katering", "toko kue", "warung kopi", "warung sembako")]
+    == ["jasa", "manufaktur", "manufaktur", "manufaktur", "dagang"])
+
 shutil.rmtree(TMP, ignore_errors=True)
 print("\n%d uji, %d gagal." % (JUMLAH[0], len(GAGAL)))
 if GAGAL:

@@ -163,7 +163,7 @@ class UjiBaca(Dasar):
         k, out, _ = jalan("laba-rugi", "--db", self.db, "--bulan", "2026-09")
         self.assertEqual(k, 0)
         self.assertIn("Total pendapatan: Rp 905.000", out)
-        self.assertIn("HPP Pembelian: Rp 250.000", out)
+        self.assertIn("HPP Pembelian - 4210.000: Rp 250.000", out)
         self.assertIn("LABA KOTOR: Rp 655.000", out)
         self.assertIn("Total beban: Rp 1.250.000", out)
         self.assertIn("RUGI BERSIH: -Rp 595.000", out)
@@ -179,8 +179,8 @@ class UjiBaca(Dasar):
 
     def test_14_akun_dan_peringatan_pajak_12(self):
         k, out, _ = jalan("akun", "--db", self.db)
-        self.assertIn("PPN 11% (12% x 11/12): 11% ke akun Hutang Pajak", out)
-        self.assertIn("SATUAN (UOM): Gram, Hari, Jam, Kg, Meter, Unit", out)
+        self.assertIn("PPN 11% (12% x 11/12): 11% ke akun Hutang Pajak - 2141.000", out)
+        self.assertIn("SATUAN (UOM): Day, Gram, Hour, Kg, Meter, Unit", out)
         salin = os.path.join(self.tmp, "pajak12.books.db")
         shutil.copy(self.db, salin)
         c = sqlite3.connect(salin)
@@ -343,9 +343,9 @@ class UjiCsv(Dasar):
         b1 = dict(zip(kol, rows[3]))
         b2 = dict(zip(kol, rows[4]))
         self.assertEqual((b1["Item.rate"], b1["Item.incomeAccount"], b1["Item.expenseAccount"], b1["Item.trackItem"]),
-                         ("95000", "Penjualan", "HPP Pembelian", "1"))
+                         ("95000", "Penjualan - 4110.000", "HPP Pembelian - 4210.000", "1"))
         self.assertEqual((b2["Item.itemType"], b2["Item.rate"], b2["Item.unit"], b2["Item.incomeAccount"], b2["Item.trackItem"]),
-                         ("Service", "1500000", "Jam", "Pendapatan Service", "0"))
+                         ("Service", "1500000", "Hour", "Pendapatan Service - 4310.000", "0"))
         self.assertEqual(len(rows), 5)  # Kopi Arabika sudah ada
         salah = self.tulis("brg2.csv", "nama,satuan\nSusu,Liter\n")
         k, out, _ = jalan("csv-barang", "--db", self.db, "--masuk", salah, "--keluar", keluar + "2")
@@ -363,15 +363,16 @@ class UjiCsv(Dasar):
         self.assertEqual(k, 0, out + err)
         self.assertIn("N-01 | 27 Sep 2026 | Toko Sinar Abadi | DPP Rp 332.345 | PPN (standar Komunitech) Rp 36.557 | total Rp 368.902", out)
         rows = self.baca_csv(keluar)
-        self.assertEqual(rows[2][:4], ["SalesInvoice.name", "SalesInvoice.party", "SalesInvoice.account", "SalesInvoice.date"])
+        self.assertEqual(rows[2][:5], ["SalesInvoice.name", "SalesInvoice.numberSeries", "SalesInvoice.party", "SalesInvoice.account", "SalesInvoice.date"])
         d = [dict(zip(rows[2], r)) for r in rows[3:]]
         self.assertEqual(len(d), 4)
         self.assertEqual(d[0]["SalesInvoice.name"], "IMPOR-N-01")
         self.assertEqual(d[1]["SalesInvoice.party"], "Toko Sinar Abadi")  # huruf disamakan dengan data
-        self.assertEqual(d[2]["SalesInvoiceItem.account"], "Pendapatan Service")  # akun dari data barang
+        self.assertEqual(d[2]["SalesInvoiceItem.account"], "Pendapatan Service - 4310.000")  # akun dari data barang
         self.assertEqual(d[3]["SalesInvoice.date"], "2026-09-28")
         self.assertEqual(d[3]["SalesInvoiceItem.rate"], "150000")
-        self.assertEqual(d[0]["SalesInvoice.account"], "Piutang Dagang")
+        self.assertEqual(d[0]["SalesInvoice.account"], "Piutang Dagang - 1131.0010")
+        self.assertEqual(d[0]["SalesInvoice.numberSeries"], "SINV-")
 
     def test_26_csv_transaksi_buruk(self):
         masuk = self.tulis("buruk.csv", "No Nota;Tanggal;Pelanggan;Barang;Jumlah;Harga\n"
@@ -412,7 +413,7 @@ class UjiCsv(Dasar):
         self.assertEqual(k, 0)
         self.assertIn("belum dicek", out)
         k, _, err = jalan("csv-barang", "--db", self.db, "--masuk", masuk, "--keluar", os.path.join(self.tmp, "n2.csv"),
-                          "--akun-penjualan", "Pendapatan")
+                          "--akun-penjualan", "Penjualan - 4000.000")
         self.assertEqual(k, 2)
         self.assertIn("akun grup", err)
 

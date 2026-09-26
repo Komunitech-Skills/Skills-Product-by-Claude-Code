@@ -116,6 +116,7 @@ ALIAS_JENIS = {
              "kursus", "fotografi", "agensi", "percetakan jasa"],
     "manufaktur": ["manufaktur", "produksi", "pabrik", "konveksi", "kuliner", "warung makan", "rumah makan",
                    "resto", "restoran", "katering", "catering", "makanan", "minuman", "kue", "bakery", "kerajinan",
+                   "kopi", "kedai", "angkringan", "roti", "sablon", "jahit",
                    "mebel", "furnitur", "industri"],
     "umum": ["umum", "campuran", "lainnya", "lain"],
 }
@@ -184,8 +185,10 @@ SARAN_KONTEKS = {
 }
 
 SARAN_KHUSUS = {
-    "cicilan": "Cicilan melebihi 30% laba bersih per bulan. Kecilkan plafon, pilih tenor lebih panjang, atau "
-               "pinjam bertahap; hitung plafon yang aman dengan skill pengajuan-kur sebelum ke bank.",
+    "cicilan": "Cicilan melebihi 30% laba bersih per bulan. Bila ini RENCANA pinjaman: kecilkan plafon, pilih "
+               "tenor lebih panjang, atau pinjam bertahap (hitung plafon aman dengan skill pengajuan-kur). Bila "
+               "cicilan SEDANG BERJALAN: jangan tambah pinjaman, dan bicarakan penjadwalan ulang dengan bank "
+               "resmi sebelum menunggak.",
     "rugi": "Usaha sedang RUGI — hentikan kebocoran dulu: pisahkan uang pribadi dari uang usaha, daftar semua "
             "biaya bulanan dan potong yang tidak menambah penjualan, cek harga jual vs HPP per produk (skill "
             "hitung-hpp), dan jangan menambah pinjaman untuk menutup rugi.",
@@ -1064,7 +1067,8 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
             p_tren[k_awal] = None
         R_tren = hitung_periode(p_tren, jenis)
         data = {k: p.get(k) for k in POS if p.get(k) is not None}
-        kosong = [POS[k][0] for k in POS_KUNCI if p.get(k) is None]
+        kosong = [POS[k][0] for k in POS_KUNCI
+                  if p.get(k) is None and not (jenis == "jasa" and k == "persediaan")]
         asumsi = list(p["asumsi"])
         if kosong:
             asumsi.append("Pos tidak diisi (rasio yang memakainya tidak dihitung): %s." % ", ".join(kosong))
@@ -1109,10 +1113,10 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
     if not saran:
         saran = [{"rasio": "—", "status": "baik", "saran": "Pertahankan: hitung ulang rasio ini tiap bulan/kuartal "
                   "dan bandingkan trennya; sisihkan sebagian laba sebagai dana cadangan."}]
-    if not data_cukup:
+    if any(ph["peringatan"] for ph in hasil_periode) or catatan:
+        status_data = "SEMENTARA"  # ada angka bermasalah: selesaikan dulu
+    elif not data_cukup:
         status_data = "DATA BELUM CUKUP"
-    elif any(ph["peringatan"] for ph in hasil_periode) or catatan:
-        status_data = "SEMENTARA"
     else:
         status_data = "LENGKAP"
     return {
@@ -1216,8 +1220,9 @@ def tebak_jenis(teks):
     for j, alias in ALIAS_JENIS.items():
         if s in alias:
             return j
-    for j, alias in ALIAS_JENIS.items():
-        if any(a in s for a in alias):
+    # cocokkan kata utuh; alias produksi/kuliner didahulukan ("jasa katering", "toko kue", "warung kopi")
+    for j in ("manufaktur", "jasa", "dagang", "umum"):
+        if any(re.search(r"(?<![a-z])" + re.escape(x) + r"(?![a-z])", s) for x in ALIAS_JENIS[j]):
             return j
     raise Galat("Jenis usaha '%s' tidak dikenal. Pilih: dagang, jasa, manufaktur, atau umum." % teks)
 

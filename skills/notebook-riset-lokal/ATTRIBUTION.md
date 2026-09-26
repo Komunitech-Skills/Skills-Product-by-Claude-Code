@@ -1,0 +1,12 @@
+# Atribusi
+
+Skill ini adalah karya **orisinal** Komunitech (komunitech.com), ditulis dari nol.
+Lisensi: **Proprietary Komunitech** — penggunaan tunduk pada `LISENSI.txt` dalam paket pembelian.
+
+## Tentang Open Notebook
+- Skill ini **memanggil REST API resmi** Open Notebook milik pengguna (`/api/...`, header `Authorization: Bearer <kata sandi>` bila server diatur memakai kata sandi). Skill ini adalah program terpisah yang berkomunikasi lewat HTTP; **tidak** menyalin, memodifikasi, atau menyertakan kode Open Notebook.
+- **Open Notebook** (https://github.com/lfnovo/open-notebook) berlisensi **MIT** (file `LICENSE` di repo resminya, dicek langsung: "MIT License, Copyright (c) 2024 Luis Novo"). Open Notebook **TIDAK didistribusikan** dalam paket ini; pembeli memasangnya sendiri lewat Docker dari image resmi (`lfnovo/open_notebook`) sesuai `docs/panduan-open-notebook.md`.
+- Nama-nama endpoint, format field (`SourceCreate`, `AskRequest`, `PodcastGenerationRequest`, dll.), port bawaan (8502 tampilan web, 5055 API), dan skema autentikasi (`OPEN_NOTEBOOK_PASSWORD` → header `Authorization: Bearer`) diverifikasi dengan **membaca kode sumber resmi** Open Notebook (`git clone --depth 1`, commit `3127f14ea9dbb519f0e4ddc64a0742ca644ba6ef`, tanggal commit 2026-09-13, versi `pyproject.toml` `1.14.0`) di sandbox Komunitech pada 2026-09-26 — folder `api/routers/*.py`, `api/models.py`, `api/podcast_service.py`, `api/auth.py`, `docker-compose.yml`, dan `README.md` resminya. **Tidak ada baris kode Open Notebook yang disalin** ke `scripts/notebook.py`.
+- ⚠️ **Belum diverifikasi**: menjalankan Open Notebook sungguhan (server asli, lewat Docker) — Docker daemon tidak tersedia di sandbox riset ini. Semua nama field/endpoint di atas berasal dari pembacaan kode sumber, bukan dari uji terhadap server yang benar-benar berjalan. `tests/uji_regresi.py` memakai **server tiruan** (Python `http.server` polos, bukan Open Notebook asli) yang meniru bentuk respons sesuai kode sumber tersebut.
+- `docs/panduan-open-notebook.md` mengubah contoh `docker-compose.yml` resmi (yang membuka port `8502`/`5055` ke semua jaringan) menjadi dibatasi `127.0.0.1:` saja, mengikuti prinsip keamanan Komunitech — perubahan ini disebutkan secara eksplisit di panduan tersebut.
+- "Open Notebook" adalah nama proyek open-source milik pembuatnya (Luis Novo/lfnovo). Komunitech tidak berafiliasi dengan proyek Open Notebook; nama dipakai hanya untuk menjelaskan kompatibilitas.

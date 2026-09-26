@@ -1260,6 +1260,8 @@ def cmd_csv_transaksi(args):
                             "piutang" if jual else "utang", "--akun-piutang" if jual else "--akun-utang")
     seri = pilih_seri(con, tabel, skema, args.seri)
     pihak_ada = nama_ada(con, tabel, "Party")
+    peran_pihak = {r["name"]: r["role"] for r in q(con, "SELECT name, role FROM Party")} if pihak_ada is not None else {}
+    peran_salah = set()
     barang_db = {}
     if con is not None and "Item" in tabel:
         for r in q(con, "SELECT name, incomeAccount, expenseAccount, unit FROM Item"):
@@ -1298,6 +1300,10 @@ def cmd_csv_transaksi(args):
                 galat.append(f"baris {no}: '{pihak}' belum ada di Frappe Books -> impor dulu lewat csv-pelanggan")
                 continue
             pihak = pihak_ada[pihak.lower()]
+            if peran_pihak.get(pihak) == ("Supplier" if jual else "Customer") and pihak not in peran_salah:
+                peran_salah.add(pihak)
+                peringatan.append(f"baris {no}: '{pihak}' terdaftar sebagai {'pemasok' if jual else 'pelanggan'} saja; "
+                                  f"ubah perannya ke Both di Frappe Books bila memang juga {'pelanggan' if jual else 'pemasok'}")
         if con is not None:
             if barang.lower() not in barang_db:
                 galat.append(f"baris {no}: barang '{barang}' belum ada di Frappe Books -> impor dulu lewat csv-barang")
