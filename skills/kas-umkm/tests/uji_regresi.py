@@ -400,7 +400,8 @@ class UjiImpor(Dasar):
         out = self.ok("impor", f)
         self.assertEqual(h, self.sha())
         self.assertEqual(out["jumlah_baru"], 4)
-        self.assertEqual([b["kategori"] for b in out["baris"]], ["penjualan", "penjualan", "beli-stok", "lain-lain"])
+        # v1.0.1: baris belum jelas disimpan sebagai 'perlu-dicek' (bukan lain-lain) sampai digolongkan
+        self.assertEqual([b["kategori"] for b in out["baris"]], ["penjualan", "penjualan", "beli-stok", "perlu-dicek"])
         self.assertEqual(len(out["perlu_dicek"]), 1)                 # 'Sumbangan 17an' belum jelas
         self.assertIn("--izinkan-minus", out["perlu_izin"])          # laci 500rb + 765rb - 1,55jt < 0
         self.ok("impor", f, "--tetapkan", "5=lain-lain", "--izinkan-minus", "--ya")
@@ -423,7 +424,10 @@ class UjiImpor(Dasar):
         self.assertEqual(len(out["bermasalah"]), 4)                  # tanpa tahun
         out = self.ok("impor", f, "--akun", "BRI", "--tahun", "2026")
         self.assertEqual(out["jumlah_baru"], 4)
-        self.assertEqual(out["perlu_dicek"][0]["baris"], 5)          # tarikan ATM: mungkin pindah dana
+        # v1.0.1: tarikan ATM dikenali otomatis sebagai pindah dana ke satu-satunya akun tunai (bukan beban)
+        self.assertEqual(out["perlu_dicek"], [])
+        self.assertEqual([(c["baris"], c["pasangan"]) for c in out["pindah_dikenali"]], [(5, "Laci kas")])
+        self.assertEqual(out["baris"][1]["kategori"], "pindah")
         self.assertEqual([b["jumlah"] for b in out["baris"]], [750000, 500000, 12500, 1235])   # 1.234,56 -> 1.235
         self.assertTrue(any("dibulatkan" in p for p in out["peringatan"]))
         self.assertEqual(len(out["dilewati"]), 1)                    # PEND
@@ -596,7 +600,8 @@ class UjiImporKasir(Dasar):
         k("jual", "--pesan", "2 kopi hitam, bayar tunai 50rb", "--ya")
         k("jual", "--pesan", "1 kopi hitam, bayar qris", "--ya")
         f = self.file("asli.json", k("rekap", "--tanggal", "hari-ini", "--json"))
-        tgl = json.load(open(f, encoding="utf-8"))["periode"]["dari"]
+        with open(f, encoding="utf-8") as fh:
+            tgl = json.load(fh)["periode"]["dari"]
         out = self.ok("impor-kasir", f, hari=tgl)
         self.assertEqual(sorted((e["metode"], e["jumlah"]) for e in out["entri"]), [("qris", 12000), ("tunai", 24000)])
 
@@ -790,6 +795,96 @@ class UjiPlatform(unittest.TestCase):
             teks = f.read()
         fm = teks.split("---")[1].strip().splitlines()
         self.assertEqual([b.split(":")[0] for b in fm], ["name", "description"])
+
+
+# --------------------------------------------------------------------------- v1.0.1: temuan penguji Akun B
+class UjiV101(Dasar):
+    MUTASI = ("Tanggal,Keterangan,Jumlah\n"
+              "21/09/2026,TRSF CR PESANAN BU RINA,\"750,000.00 CR\"\n"
+              "22/09/2026,TARIK TUNAI ATM 22/09,\"500,000.00 DB\"\n"
+              "23/09/2026,SETOR TUNAI CRM,\"300,000.00 CR\"\n"
+              "23/09/2026,TOPUP GOPAY 0812xxxx,\"100,000.00 DB\"\n"
+              "24/09/2026,PINDAH BUKU KE REK SENDIRI,\"200,000.00 DB\"\n"
+              "24/09/2026,TRSF DB SUMBANGAN MASJID,\"50,000.00 DB\"\n"
+              "25/09/2026,BIAYA TARIK TUNAI ATM BERSAMA,\"7,500.00 DB\"\n")
+
+    def test_impor_tarik_setor_topup_jadi_pindah_dana(self):
+        f = self.file("mutasi.csv", self.MUTASI)
+        out = self.ok("impor", f, "--akun", "BRI")
+        kat = {b["baris"]: b["kategori"] for b in out["baris"]}
+        self.assertEqual(kat, {2: "penjualan", 3: "pindah", 4: "pindah", 5: "pindah", 6: "perlu-dicek",
+                               7: "perlu-dicek", 8: "lain-lain"})
+        pasangan = {c["baris"]: (c["pola"], c["pasangan"]) for c in out["pindah_dikenali"]}
+        self.assertEqual(pasangan, {3: ("tarik tunai", "Laci kas"), 4: ("setor tunai", "Laci kas"),
+                                    5: ("antar rekening sendiri", "GoPay")})
+        self.assertEqual(sorted(c["baris"] for c in out["perlu_dicek"]), [6, 7])   # pindah buku tanpa nama akun; sumbangan
+        self.assertIn("DIKENALI SEBAGAI PINDAH DANA", out["teks"])
+        self.ok("impor", f, "--akun", "BRI", "--ya")
+        s = self.saldo()
+        self.assertEqual(s["BRI"], 3000000 + 750000 - 500000 + 300000 - 100000 - 200000 - 50000 - 7500)
+        self.assertEqual(s["Laci kas"], 500000 + 500000 - 300000)
+        self.assertEqual(s["GoPay"], 150000 + 100000)
+        r = self.ok("rekap", "--bulan", "09/2026")
+        # hasil usaha hanya penjualan 750rb - biaya 7,5rb; tarik/setor/top up/perlu dicek TIDAK ikut
+        self.assertEqual(r["hasil_usaha"], 742500)
+        self.assertEqual(r["perlu_dicek"]["keluar"], 250000)
+        self.assertTrue(any("BELUM DIGOLONGKAN" in p for p in r["peringatan"]))
+        # ekspor emkm ditolak sampai digolongkan
+        e = self.gagal("ekspor", "--format", "emkm", "--bulan", "09/2026")
+        self.assertEqual(len(e["perlu_dicek"]), 2)
+        ids = e["perlu_dicek"]
+        # golongkan: pindah buku ke GoPay, sumbangan = lain-lain
+        self.ok("golongkan", "--id", str(ids[0]), "--kategori", "pindah:GoPay", "--ya")
+        self.ok("golongkan", "--id", "#%d" % ids[1], "--kategori", "lain-lain", "--ya")
+        s = self.saldo()
+        self.assertEqual(s["GoPay"], 150000 + 100000 + 200000)
+        r = self.ok("rekap", "--bulan", "09/2026")
+        self.assertEqual(r["hasil_usaha"], 742500 - 50000)
+        self.assertEqual(r["perlu_dicek"]["id"], [])
+        self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
+        # catatan yang sudah pindah tidak bisa digolongkan ulang
+        self.gagal("golongkan", "--id", str(ids[0]), "--kategori", "prive", "--ya")
+
+    def test_tetapkan_mengalahkan_aturan_pindah(self):
+        f = self.file("mutasi.csv", self.MUTASI)
+        out = self.ok("impor", f, "--akun", "BRI", "--tetapkan", "3=prive", "--tetapkan", "6=pindah:GoPay")
+        kat = {b["baris"]: b["kategori"] for b in out["baris"]}
+        self.assertEqual((kat[3], kat[6]), ("prive", "pindah"))
+
+    def test_tarik_tunai_akun_tunai_ganda_perlu_dicek(self):
+        self.ok("akun", "tambah", "--nama", "Brankas", "--jenis", "tunai", "--saldo-awal", "0", "--tanggal-awal",
+                "01/09/2026", "--ya")
+        f = self.file("m.csv", "Tanggal,Keterangan,Jumlah\n22/09/2026,TARIK TUNAI ATM,\"500,000.00 DB\"\n"
+                               "23/09/2026,TARIK TUNAI ATM KE BRANKAS,\"400,000.00 DB\"\n")
+        out = self.ok("impor", f, "--akun", "BRI")
+        self.assertEqual([b["kategori"] for b in out["baris"]], ["perlu-dicek", "pindah"])
+        self.assertEqual(out["pindah_dikenali"][0]["pasangan"], "Brankas")
+
+    def test_tanpa_kategori_default_tidak_masuk_laba_rugi(self):
+        f = self.file("kas.csv", "Tanggal;Keterangan;Masuk;Keluar\n20/09/2026;Jualan tunai;500.000;\n"
+                                 "21/09/2026;Titipan Pak RT;;100.000\n")
+        self.ok("impor", f, "--akun", "laci", "--ya")
+        r = self.ok("rekap", "--bulan", "09/2026")
+        self.assertEqual(r["hasil_usaha"], 500000)                   # titipan belum jelas tidak jadi beban
+        self.assertEqual(self.saldo()["Laci kas"], 900000)           # tapi saldo laci tetap benar
+        # --kategori-default = pilihan eksplisit pengguna
+        f2 = self.file("kas2.csv", "Tanggal;Keterangan;Masuk;Keluar\n22/09/2026;Titipan Bu RW;;40.000\n")
+        self.ok("impor", f2, "--akun", "laci", "--kategori-default", "lain-lain", "--ya")
+        self.assertEqual(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"], 460000)
+        self.assertEqual(len(self.ok("daftar", "--bulan", "09/2026", "--kategori", "perlu dicek")["transaksi"]), 1)
+
+    def test_catat_manual_tarik_tunai_diarahkan_ke_pindah(self):
+        out = self.gagal("catat", "--keluar", "500rb", "--catatan", "tarik tunai ATM BRI", "--akun", "BRI")
+        self.assertTrue(out.get("mungkin_pindah"))
+        self.assertIn("kas.py pindah", out["error"])
+        out = self.ok("catat", "--keluar", "500rb", "--kategori", "lain-lain", "--catatan", "setor tunai ke BRI")
+        self.assertTrue(any("pindah dana" in p for p in out["peringatan"]))
+
+    def test_skill_md_menolak_pembukuan_ganda(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as f:
+            isi = f.read()
+        self.assertIn("pembukuan ganda", isi.lower())
+        self.assertIn("UU KUP", isi)
 
 
 if __name__ == "__main__":

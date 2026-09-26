@@ -19,6 +19,7 @@ Semua perintah tulis hanya **pratinjau** sampai diberi `--ya`.
 | `saldo` | Saldo per akun per tanggal | `--tanggal` |
 | `daftar` | Catatan beserta ID | periode, `--kategori`, `--akun`, `--cari`, `--semua` (termasuk batal), `--maks` |
 | `impor` | CSV buku kas / mutasi bank | `FILE`, `--akun`, `--jenis-file mutasi-bank\|buku-kas`, `--format-tanggal hari-bulan\|bulan-hari`, `--tahun`, `--kategori-default`, `--tetapkan N=kategori\|pindah:akun\|lewati`, `--sertakan-mirip` |
+| `golongkan` (v1.0.1) | Tetapkan kategori catatan "Perlu dicek" (atau catatan biasa lain) | `--id 12` / `--id 12,15`, `--kategori prive\|lain-lain\|...\|pindah:<akun>` (pindah: sisi pasangan dicatat di akun itu), `--izinkan-minus` |
 | `impor-kasir` | Rekap harian kasir-lokal (JSON) | `FILE`, `--akun-untuk qris=BRI`, `--ganti` |
 | `ekspor` | CSV | `--format lengkap\|emkm\|arus-kas`, `--csv FILE`, periode, `--minggu-riwayat 8`, `--semua`, `--pemisah` |
 | `backup` | Cadangan manual / daftar | `--daftar`, `--label` |
@@ -39,6 +40,8 @@ Dari file bank juga diterima format Inggris `1,500,000.00`, akhiran `CR`/`DB`, `
 
 ## Tanggal
 Ketik: `hari ini`, `kemarin`, `3 hari lalu`, `26/09/2026`, `26-09-2026`, `2026-09-26`, `26 Sep 2026`. **Ditolak**: tanpa tahun (`26/09`), tahun 2 angka (`26/09/26`), urutan bulan/hari (`09/26/2026`), tanggal masa depan, nomor seri Excel.
+Kategori impor (v1.0.1): (1) `--tetapkan` pengguna; (2) kolom kategori di file; (3) **aturan pindah dana**: tarik tunai ATM (rekening keluar → akun tunai), setor tunai (akun tunai → rekening), pindah buku/antar rekening sendiri/top up yang menyebut nama akun pasangan → `pindah` (`pindah_dikenali`); baris berawalan biaya tetap pengeluaran; (4) tebakan dari keterangan; (5) `--kategori-default`; (6) selain itu **`perlu-dicek`**: ikut saldo, tidak ikut hasil usaha, ditampilkan "BELUM DIGOLONGKAN" di `rekap`, `ekspor --format emkm` ditolak (`perlu_dicek`: daftar ID) sampai `golongkan`; `ekspor --format arus-kas` melewatinya dengan catatan. `daftar --kategori "perlu dicek"` menampilkan semuanya.
+
 File impor: urutan hari/bulan diperiksa untuk **seluruh file**. Jika ada baris yang jelas hari/bulan (mis. 26/09), semua dibaca hari/bulan. Jika semua tanggal bisa dibaca dua arah, script meminta `--format-tanggal`. Campuran jelas hari/bulan dan jelas bulan/hari → file ditolak.
 
 ## Kolom CSV yang dikenali (impor)

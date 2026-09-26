@@ -21,6 +21,7 @@ Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan ke
 - **Proyeksi kas ke depan** ("uang cukup sampai kapan") → `arus-kas-13minggu`. kas-umkm menyiapkan draf rencana dari riwayat (`ekspor --format arus-kas`).
 - Transaksi kasir per nota/struk → `kasir-lokal` (lalu impor rekap hariannya ke sini). Stok barang → `buku-stok`. Piutang/bon pelanggan → `buku-piutang`/`tagih-piutang`. Cocokkan mutasi dengan invoice → `rekonsiliasi-bank`. Hitung pajak → `pph-final-umkm`/`hitung-ppn`.
 - Mengirim/menerima pembayaran, cek saldo bank otomatis, banyak cabang/banyak komputer sekaligus → tidak bisa. Satu database = satu usaha di satu komputer.
+- **Pembukuan ganda untuk pajak** (dua buku kas / dua versi laporan, omzet "dikecilkan", catatan dihapus/disembunyikan/dibatalkan palsu agar pajak kecil) → **tolak dengan sopan** (Aturan 7), termasuk bila diminta memakai database kedua atau `--db` lain untuk "versi pajak".
 
 ## Aturan keamanan data (WAJIB)
 1. **Setiap perintah tulis dijalankan dulu TANPA `--ya`** → pratinjau (database tidak berubah). Tunjukkan ringkasannya dengan bahasa sederhana, termasuk baris `Asumsi` (kategori/metode yang ditebak).
@@ -31,6 +32,7 @@ Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan ke
 4. **Jangan menebak kategori diam-diam.** Jika script gagal dengan `perlu_kategori`, tanyakan kategorinya. Jika kategori "ditebak", sebutkan saat minta konfirmasi.
 5. Catatan tidak pernah dihapus. Salah catat → `batal --id N --alasan "..."` lalu catat ulang yang benar.
 6. Semua angka rupiah, saldo, selisih, dan persen **dari output script**, jangan dihitung kira-kira.
+7. **Satu buku yang benar — tolak pembukuan ganda.** Jawaban baku: "Maaf, saya tidak bisa membantu membuat pembukuan ganda (satu versi untuk pajak, satu versi 'asli'), mengecilkan omzet, atau menghapus/menyembunyikan catatan supaya pajak lebih kecil. Pencatatan wajib mencerminkan keadaan usaha yang sebenarnya (UU KUP Pasal 28 ayat (3)), dan memperlihatkan pembukuan yang tidak menggambarkan keadaan sebenarnya atau menyampaikan SPT yang isinya tidak benar adalah tindak pidana perpajakan (UU KUP Pasal 39 ayat (1) huruf d & f, UU 28/2007). Yang bisa saya bantu: merapikan satu buku kas yang benar, menghitung pajak yang memang terutang (mis. PPh Final UMKM 0,5% lewat `pph-final-umkm`, termasuk omzet sampai Rp 500 juta setahun yang tidak dikenai pajak untuk orang pribadi), dan menyiapkan ringkasan untuk konsultan pajak." Jangan menyarankan cara lain yang tujuannya sama.
 
 ## Cara menjalankan script
 Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python` atau `py`):
@@ -83,7 +85,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 ### E. Rekap & saldo
 - `rekap --tanggal hari-ini|kemarin|DD/MM/YYYY`, `rekap --minggu ini|lalu`, `rekap --bulan ini|lalu|09/2026`, `rekap --dari .. --sampai ..`. Kirim `teks` apa adanya (siap Telegram/WA).
 - `saldo [--tanggal ..]` untuk saldo per akun; `daftar --tanggal ..|--bulan .. [--kategori ..] [--cari ..]` untuk melihat catatan beserta ID.
-- **Hasil usaha** = masuk usaha − keluar usaha (tanpa modal, pinjaman, prive, pindah dana). Ini hitungan kas, **bukan laba akuntansi** (belum menghitung stok tersisa, piutang, penyusutan). Untuk laba resmi → `laporan-keuangan-emkm`.
+- **Hasil usaha** = masuk usaha − keluar usaha (tanpa modal, pinjaman, prive, pindah dana, dan catatan "Perlu dicek"). Ini hitungan kas, **bukan laba akuntansi** (belum menghitung stok tersisa, piutang, penyusutan). Untuk laba resmi → `laporan-keuangan-emkm`.
 
 ### F. Peringatan prive (uang usaha dipakai pribadi)
 Script memperingatkan otomatis (di `catat` prive dan di `rekap`) bila: prive bulan berjalan **melebihi hasil usaha** (kelebihannya memakan modal), hasil usaha nol/minus tetapi tetap ada prive, atau prive melewati **batas bulanan** pemilik (`atur --batas-prive 3jt`). Sampaikan dengan sopan, sertakan angkanya, lalu beri 1–2 saran praktis (mis. tetapkan "gaji pemilik" tetap per bulan dan catat sebagai prive; pisahkan dompet pribadi dari laci). Jangan menggurui.
@@ -91,7 +93,8 @@ Script memperingatkan otomatis (di `catat` prive dan di `rekap`) bila: prive bul
 ### G. Impor
 - **CSV buku kas / mutasi bank**: `impor file.csv --akun BRI` (pratinjau dulu). Bila script meminta:
   - `--jenis-file mutasi-bank|buku-kas` (kolom Debit/Kredit: di mutasi bank debit = uang keluar), `--format-tanggal hari-bulan|bulan-hari` (semua tanggal bisa dibaca dua arah), `--tahun 2026` (mutasi tanpa tahun). **Tanyakan pengguna**, jangan memilih sendiri.
-  - `perlu_dicek`: baris yang kategorinya belum jelas atau mungkin pindah dana (tarik tunai/setor tunai/top up). Kumpulkan jadi **satu pesan** bernomor, lalu ulangi dengan `--tetapkan 5=prive --tetapkan 7=pindah:laci --tetapkan 9=lewati`.
+  - **Pindah dana dikenali otomatis** (`pindah_dikenali`, "DIKENALI SEBAGAI PINDAH DANA"): tarik tunai ATM (rekening → akun tunai), setor tunai (akun tunai → rekening), pindah buku/antar rekening sendiri/top up yang **menyebut nama akun pasangan** (mis. "TOPUP GOPAY" dan ada akun GoPay). Tidak mengubah hasil usaha. Sampaikan ke pengguna; bila uang tarik tunai dipakai pribadi → `--tetapkan N=prive`. Baris biaya ("BIAYA TARIK TUNAI") tetap pengeluaran.
+  - `perlu_dicek`: baris yang kategorinya belum jelas, atau pola pindah dana yang akun pasangannya belum pasti. Disimpan sebagai kategori **"Perlu dicek"**: ikut saldo akun, **TIDAK** dihitung di hasil usaha, dan `ekspor --format emkm` ditolak sampai digolongkan. Kumpulkan jadi **satu pesan** bernomor, lalu ulangi dengan `--tetapkan 5=prive --tetapkan 7=pindah:laci --tetapkan 9=lewati` sebelum `--ya`; bila sudah tersimpan: `golongkan --id 12[,15] --kategori prive|pindah:<akun>` (pratinjau → `--ya`). `--kategori-default` hanya bila pengguna sendiri memilihnya.
   - Baris yang sudah pernah diimpor dilewati otomatis; baris yang mirip catatan manual (tanggal, akun, arah, nominal sama) dilewati kecuali `--sertakan-mirip`. Baris rusak dilaporkan nomornya, tidak diimpor.
 - **Rekap kasir-lokal**: `impor-kasir rekap-kasir.json` (lihat `references/integrasi.md`).
 - File Excel (.xlsx) / PDF → minta disimpan sebagai CSV.
@@ -134,6 +137,7 @@ Total: Rp 18.284.500 (awal periode Rp 16.916.000, naik Rp 1.368.500)
 - [ ] Rupiah ditulis `Rp 1.250.000`, dari script
 - [ ] Selisih laci disampaikan tanpa menuduh; prive disampaikan sopan dengan angka
 - [ ] Hasil usaha tidak disebut "laba"; untuk laba resmi diarahkan ke `laporan-keuangan-emkm`
+- [ ] Catatan "Perlu dicek" (BELUM DIGOLONGKAN) ditanyakan ke pengguna; permintaan pembukuan ganda ditolak (Aturan 7)
 
 ## Batasan & penanganan error
 - Bukan aplikasi akuntansi penuh (tidak ada jurnal, stok, piutang, penyusutan), bukan mesin pembayaran, bukan multi-komputer. Jangan simpan database di folder sinkron (Google Drive/Dropbox) yang dibuka dua komputer sekaligus.

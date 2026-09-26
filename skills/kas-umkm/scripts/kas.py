@@ -45,7 +45,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 APLIKASI = "kas-umkm"
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 SKEMA = 1
 BATAS_NOMINAL = 10 ** 12            # Rp 1 triliun: di atas ini pasti salah ketik
 NOMINAL_BESAR = 50 * 10 ** 6        # di atas ini diberi catatan "pastikan jumlah nolnya benar"
@@ -65,7 +65,9 @@ KATEGORI = OrderedDict([
     ("lain-lain", ("Lain-lain", ("masuk", "keluar"), "usaha")),
 ])
 KATEGORI_SISTEM = {"selisih-kas": ("Selisih hitung laci", ("masuk", "keluar"), "usaha"),
-                   "pindah": ("Pindah dana", ("masuk", "keluar"), "pindah")}
+                   "pindah": ("Pindah dana", ("masuk", "keluar"), "pindah"),
+                   # v1.0.1: baris impor yang belum jelas golongannya. Ikut saldo akun, TIDAK ikut hasil usaha.
+                   "perlu-dicek": ("Perlu dicek (belum digolongkan)", ("masuk", "keluar"), "perlu-dicek")}
 SEMUA_KATEGORI = OrderedDict(list(KATEGORI.items()) + list(KATEGORI_SISTEM.items()))
 LABEL_KHUSUS = {("penjualan", "keluar"): "Retur/refund penjualan", ("pinjaman", "masuk"): "Pinjaman diterima",
                 ("pinjaman", "keluar"): "Cicilan pinjaman", ("lain-lain", "masuk"): "Pemasukan lain-lain",
@@ -106,11 +108,21 @@ TEBAK = [
                            r"pelanggan|qris)\b"),
     ("penjualan", "keluar", r"\b(retur|refund|pengembalian uang|kembalikan uang)\b"),
     ("lain-lain", None, r"\b(biaya adm|biaya admin|adm bank|biaya administrasi|biaya transfer|biaya materai|"
-                        r"bunga)\b"),
+                        r"biaya tarik tunai|biaya tarik|biaya atm|biaya transaksi|biaya bulanan|biaya kartu|biaya sms|"
+                        r"biaya layanan|bunga)\b"),
 ]
 POLA_PRIBADI = re.compile(TEBAK[0][2])
-POLA_MUNGKIN_PINDAH = re.compile(r"\b(tarik tunai|tarikan atm|tarikan tunai|tarik atm|setor tunai|setoran tunai|"
-                                 r"top ?up|pindah buku|pindahbuku|overbooking|pindah dana)\b")
+# v1.0.1: aturan pindah dana (uang berpindah antar akun milik usaha sendiri; bukan pendapatan/beban)
+POLA_TARIK_TUNAI = re.compile(r"\b(tarik tunai|tarikan tunai|tarikan atm|tarik atm|tarik tunai atm|penarikan tunai|"
+                              r"penarikan atm|cash withdrawal|atm withdrawal|tartun)\b")
+POLA_SETOR_TUNAI = re.compile(r"\b(setor tunai|setoran tunai|setor tunai atm|cash deposit|setor ke bank|"
+                              r"setor ke rekening|setor uang laci|setor laci)\b")
+POLA_ANTAR_REKENING = re.compile(r"\b(pindah buku|pindahbuku|pemindahbukuan|overbooking|over booking|pindah dana|"
+                                 r"antar rekening|antar rek|rekening sendiri|rek sendiri|tabungan sendiri|top ?up|"
+                                 r"isi saldo)\b")
+POLA_BIAYA = re.compile(r"\b(biaya|adm|admin|fee|provisi|denda)\b")
+POLA_MUNGKIN_PINDAH = re.compile("|".join(x.pattern for x in (POLA_TARIK_TUNAI, POLA_SETOR_TUNAI,
+                                                                   POLA_ANTAR_REKENING)))
 METODE = OrderedDict([
     ("tunai", ("Tunai", ["tunai", "cash", "kontan", "cas", "uang tunai", "laci"])),
     ("transfer", ("Transfer", ["transfer", "tf", "trf", "bank", "m banking", "mbanking", "rekening"])),
@@ -503,6 +515,36 @@ def tebak_kategori(teks, arah):
         if m:
             return kode, m.group(0).strip()
     return None, None
+
+
+def kenali_pindah(conn, akun, arah, ket):
+    """Aturan pindah dana v1.0.1. Kembalikan None (bukan pola pindah), ("pindah", akun_pasangan, jenis_pola), atau
+    ("cek", None, alasan) bila polanya pindah dana tetapi akun pasangannya tidak bisa dipastikan.
+    - tarik tunai ATM: rekening/e-wallet KELUAR -> akun tunai MASUK
+    - setor tunai: akun tunai KELUAR -> rekening MASUK
+    - pindah buku/antar rekening sendiri/top up: akun pasangan harus disebut namanya di keterangan
+    Baris biaya (mis. 'BIAYA TARIK TUNAI') bukan pindah dana."""
+    n = " " + normal(ket) + " "
+    if not POLA_MUNGKIN_PINDAH.search(n) or POLA_BIAYA.search(n):
+        return None
+    lain = [a for a in semua_akun(conn) if a["id"] != akun["id"]]
+    disebut = [a for a in lain if normal(a["nama"]) and (" " + normal(a["nama"]) + " ") in n]
+    if POLA_TARIK_TUNAI.search(n) or POLA_SETOR_TUNAI.search(n):
+        pola = "tarik tunai" if POLA_TARIK_TUNAI.search(n) else "setor tunai"
+        if akun["jenis"] == "tunai":
+            calon = [a for a in disebut if a["jenis"] != "tunai"]
+            arah_benar = "masuk" if pola == "tarik tunai" else "keluar"
+        else:
+            calon = [a for a in disebut if a["jenis"] == "tunai"] or [a for a in lain if a["jenis"] == "tunai"]
+            arah_benar = "keluar" if pola == "tarik tunai" else "masuk"
+        if arah != arah_benar:
+            return ("cek", None, "%s tetapi arahnya uang %s; pastikan artinya" % (pola, arah))
+        if len(calon) == 1:
+            return ("pindah", calon[0], pola)
+        return ("cek", None, "%s (pindah dana), akun pasangannya belum pasti" % pola)
+    if len(disebut) == 1:
+        return ("pindah", disebut[0], "antar rekening sendiri")
+    return ("cek", None, "mungkin pindah antar rekening sendiri/top up, akun pasangannya belum pasti")
 
 
 def kode_metode(teks):
@@ -926,6 +968,12 @@ def siapkan_entri(conn, arah, jumlah_teks, kategori_teks, metode_teks, catatan, 
         if not kat:
             raise Gagal("Kategori '%s' tidak dikenal. Pilih: %s." % (kategori_teks, ", ".join(KATEGORI)))
     else:
+        n_cat = " " + normal(catatan) + " "
+        if POLA_MUNGKIN_PINDAH.search(n_cat) and not POLA_BIAYA.search(n_cat):
+            raise Gagal("'%s' tampaknya PINDAH DANA antar akun usaha sendiri (tarik/setor tunai, pindah buku, top up), "
+                        "bukan pendapatan/beban. Catat dengan: kas.py pindah --dari <akun> --ke <akun> --jumlah %s. "
+                        "Bila uangnya dipakai untuk keperluan pribadi, kategorinya prive." % (catatan, rp(jumlah)),
+                        mungkin_pindah=True)
         kat, kata = tebak_kategori(catatan, arah)
         if not kat:
             raise Gagal("Kategori untuk '%s' (%s %s) belum jelas. Tanyakan ke pengguna, pilih salah satu: %s." %
@@ -940,6 +988,12 @@ def siapkan_entri(conn, arah, jumlah_teks, kategori_teks, metode_teks, catatan, 
                         "modal.")
         raise Gagal("Kategori %s hanya untuk uang %s. Untuk uang %s pilih kategori lain (mis. lain-lain)." %
                     (kat, "/".join(KATEGORI[kat][1]).upper(), arah.upper()))
+    n_cat = " " + normal(catatan) + " "
+    if kategori_teks and kat not in ("prive", "modal") and POLA_MUNGKIN_PINDAH.search(n_cat) and \
+            not POLA_BIAYA.search(n_cat):
+        peringatan.append("Catatan '%s' tampaknya pindah dana antar akun sendiri (tarik/setor tunai, pindah buku, "
+                          "top up). Pindah dana BUKAN %s; bila benar, batalkan catatan ini dan pakai kas.py pindah."
+                          % (catatan, label_kat(kat, arah)))
     if kat != "prive" and arah == "keluar":
         m = POLA_PRIBADI.search(" " + normal(catatan) + " ")
         if m:
@@ -1389,6 +1443,76 @@ def cmd_batal(args):
     return jalankan_tulis(args, "batal", kerja)
 
 
+def cmd_golongkan(args):
+    """v1.0.1: tetapkan golongan catatan biasa (terutama 'Perlu dicek' dari impor). pindah:<akun> mengubahnya menjadi
+    pindah dana (pasangan dicatat di akun itu). Riwayat tetap ada di log."""
+    def kerja(conn, cfg):
+        ids = []
+        for bag in re.split(r"[,\s]+", str(args.id).strip()):
+            if not bag:
+                continue
+            m = re.fullmatch(r"#?(\d+)", bag)
+            if not m:
+                raise Gagal("ID '%s' tidak valid. Lihat ID di kas.py daftar --kategori \"perlu dicek\"." % bag)
+            ids.append(int(m.group(1)))
+        if not ids:
+            raise Gagal("Sebut ID catatan, mis. --id 12 atau --id 12,15.")
+        tv = str(args.kategori or "").strip()
+        ke = None
+        if normal(tv).startswith("pindah"):
+            tujuan = tv.split(":", 1)[1] if ":" in tv else ""
+            if not tujuan:
+                raise Gagal("--kategori pindah butuh akun pasangan, mis. --kategori pindah:laci.")
+            ke = cari_akun(conn, tujuan)
+            kat = "pindah"
+        else:
+            kat = kode_kategori(tv)
+            if not kat:
+                raise Gagal("Kategori '%s' tidak dikenal. Pilih: %s, pindah:<akun>." % (tv, ", ".join(KATEGORI)))
+        baris, akun_ids, tmin = [], set(), None
+        for i in ids:
+            r = conn.execute("SELECT t.*, a.nama AS akun_nama FROM transaksi t JOIN akun a ON a.id=t.akun_id "
+                             "WHERE t.id=?", (i,)).fetchone()
+            if not r:
+                raise Gagal("Catatan #%d tidak ditemukan." % i)
+            if r["status"] != "aktif":
+                raise Gagal("Catatan #%d sudah dibatalkan." % i)
+            if r["jenis"] != "biasa" or r["kategori"] in ("pindah", "selisih-kas"):
+                raise Gagal("Catatan #%d (%s) tidak bisa digolongkan ulang; batalkan lalu catat ulang bila salah." %
+                            (i, label_kat(r["kategori"], r["arah"])))
+            lama = label_kat(r["kategori"], r["arah"])
+            if kat == "pindah":
+                if ke["id"] == r["akun_id"]:
+                    raise Gagal("#%d: akun pasangan sama dengan akun catatan itu (%s)." % (i, r["akun_nama"]))
+                tg = date.fromisoformat(r["tanggal"])
+                if date.fromisoformat(ke["tanggal_awal"]) > tg:
+                    raise Gagal("#%d: tanggal %s sebelum saldo awal akun %s." % (i, tgl_id(tg), ke["nama"]))
+                grup = "P-golong-%d" % i
+                conn.execute("UPDATE transaksi SET kategori='pindah', metode='pindah', jenis='pindah', grup=? WHERE id=?",
+                             (grup, i))
+                simpan_entri(conn, {"tanggal": tg, "arah": "masuk" if r["arah"] == "keluar" else "keluar",
+                                    "jumlah": r["jumlah"], "kategori": "pindah", "metode": "pindah", "akun": ke,
+                                    "catatan": "Pindah dana: " + (r["catatan"] or "")}, jenis="pindah", grup=grup,
+                             sumber="golongkan")
+                akun_ids.update([r["akun_id"], ke["id"]])
+                tmin = min(tmin or tg, tg)
+                baru = "Pindah dana %s %s" % ("ke" if r["arah"] == "keluar" else "dari", ke["nama"])
+            else:
+                if r["arah"] not in SEMUA_KATEGORI[kat][1]:
+                    raise Gagal("#%d: kategori %s tidak boleh untuk uang %s." % (i, kat, r["arah"]))
+                conn.execute("UPDATE transaksi SET kategori=? WHERE id=?", (kat, i))
+                baru = label_kat(kat, r["arah"])
+            baris.append("#%d %s %s %s | %s | %s -> %s" % (i, tgl_id(r["tanggal"]), r["arah"], rp(r["jumlah"]),
+                                                          r["catatan"][:50], lama, baru))
+        blokir = blokir_minus(cari_minus(conn, list(akun_ids), tmin)) if akun_ids else []
+        pr = []
+        if kat == "prive":
+            _, _, pr = ringkas_prive(conn, cfg, hari_ini())
+        return {"ringkasan": {"golongkan": ids, "kategori": tv}, "diubah": ids, "peringatan": pr, "blokir": blokir,
+                "teks": "Golongkan %d catatan:\n%s" % (len(ids), "\n".join(baris))}
+    return jalankan_tulis(args, "golongkan", kerja)
+
+
 # --------------------------------------------------------------------------- perintah: opname (hitung laci)
 def urai_pecahan(teks):
     """'100rb x5, 50rb x3, 2rb x10, koin 3.500' -> (total, rincian, peringatan)."""
@@ -1515,7 +1639,8 @@ def hitung_rekap(conn, dari, sampai):
                         (dari.isoformat(), sampai.isoformat())).fetchall()
     r = {"masuk": 0, "keluar": 0, "usaha_masuk": 0, "usaha_keluar": 0, "hasil_usaha": 0, "prive": 0, "modal": 0,
          "pinjaman_masuk": 0, "pinjaman_keluar": 0, "per_kategori": OrderedDict(), "per_metode": OrderedDict(),
-         "per_hari": OrderedDict(), "pindah": [], "terbesar": [], "jumlah_transaksi": 0}
+         "per_hari": OrderedDict(), "pindah": [], "terbesar": [], "jumlah_transaksi": 0,
+         "perlu_dicek": {"masuk": 0, "keluar": 0, "id": []}}
     grup_pindah = OrderedDict()
     for x in rows:
         if x["kategori"] == "pindah":
@@ -1543,6 +1668,9 @@ def hitung_rekap(conn, dari, sampai):
             r["modal"] += j
         elif x["kategori"] == "pinjaman":
             r["pinjaman_" + x["arah"]] += j
+        elif x["kategori"] == "perlu-dicek":
+            r["perlu_dicek"][x["arah"]] += j
+            r["perlu_dicek"]["id"].append(x["id"])
         if x["arah"] == "keluar":
             r["terbesar"].append({"id": x["id"], "tanggal": x["tanggal"], "jumlah": j, "kategori": x["kategori"],
                                   "catatan": x["catatan"], "akun": x["akun_nama"]})
@@ -1601,6 +1729,12 @@ def cmd_rekap(args):
                 acuan = min(sampai, hari_ini())
                 _, _, pr = ringkas_prive(conn, cfg, acuan)
                 peringatan += pr
+        pdk = r["perlu_dicek"]
+        if pdk["id"]:
+            peringatan.append("BELUM DIGOLONGKAN: %d catatan 'Perlu dicek' (masuk %s, keluar %s; ID %s) belum dihitung "
+                              "di hasil usaha. Tanyakan ke pengguna lalu: kas.py golongkan --id <ID> --kategori "
+                              "<kategori|pindah:akun>." % (len(pdk["id"]), rp(pdk["masuk"]), rp(pdk["keluar"]),
+                                                         ", ".join("#%d" % i for i in pdk["id"][:15])))
         for m in minus:
             peringatan.append("SALDO MINUS: %s %s pada akhir %s. Ada uang masuk yang belum dicatat atau salah catat." %
                               (m["akun"], rp(m["saldo"]), tgl_id(m["tanggal"])))
@@ -1628,7 +1762,8 @@ def cmd_rekap(args):
                 t.append("- %s: %s" % (label_kat(k, "keluar"), rp(v["keluar"])))
         t.append("")
         t.append("HASIL USAHA (masuk usaha - keluar usaha): %s" % rp(r["hasil_usaha"]))
-        t.append("  (tidak termasuk modal, pinjaman, prive, dan pindah dana; ini hitungan kas, bukan laba akuntansi)")
+        t.append("  (tidak termasuk modal, pinjaman, prive, pindah dana, dan catatan 'Perlu dicek'; ini hitungan kas, "
+                 "bukan laba akuntansi)")
         if r["prive"]:
             t.append("Prive (ambil pribadi): %s%s" % (rp(r["prive"]), (" = %s dari hasil usaha" % persen(r["prive"], r["hasil_usaha"]))
                                                      if r["hasil_usaha"] > 0 else ""))
@@ -1689,7 +1824,8 @@ def cmd_rekap(args):
             "usaha_masuk": r["usaha_masuk"], "usaha_keluar": r["usaha_keluar"], "prive": r["prive"], "modal": r["modal"],
             "pinjaman_masuk": r["pinjaman_masuk"], "pinjaman_keluar": r["pinjaman_keluar"],
             "per_kategori": r["per_kategori"], "per_metode": r["per_metode"], "per_hari": r["per_hari"],
-            "pindah": r["pindah"], "pengeluaran_terbesar": r["terbesar"], "saldo": saldo, "saldo_per": batas.isoformat(),
+            "pindah": r["pindah"], "perlu_dicek": r["perlu_dicek"], "pengeluaran_terbesar": r["terbesar"],
+            "saldo": saldo, "saldo_per": batas.isoformat(),
             "total_saldo_awal": total_awal, "total_saldo_akhir": total_akhir, "cek_saldo_cocok": cek,
             "opname": [{"tanggal": o["tanggal"], "akun": o["akun_nama"], "saldo_buku": o["saldo_buku"], "fisik": o["fisik"],
                         "selisih": o["selisih"], "ditandai": o["selisih"] != 0, "disesuaikan": bool(o["disesuaikan"])}
@@ -1730,7 +1866,8 @@ def cmd_daftar(args):
         if not args.semua:
             q += " AND t.status='aktif'"
         if args.kategori:
-            k = kode_kategori(args.kategori) or ("pindah" if normal(args.kategori) == "pindah" else None)
+            k = kode_kategori(args.kategori) or {"pindah": "pindah", "perlu dicek": "perlu-dicek"}.get(
+                normal(args.kategori))
             if not k:
                 raise Gagal("Kategori '%s' tidak dikenal." % args.kategori)
             q += " AND t.kategori=?"
@@ -1965,7 +2102,7 @@ def cmd_impor(args):
                         "--format-tanggal bulan-hari.", perlu_format_tanggal=True)
         urutan_md = fmt == "bulan-hari" or bool(bukti_md)
         # --- olah baris
-        hasil, bermasalah, dilewati, cek = [], [], [], []
+        hasil, bermasalah, dilewati, cek, dikenali = [], [], [], [], []
         hi = hari_ini()
         kemunculan = {}
         tanpa_jenis = [False]
@@ -2106,20 +2243,30 @@ def cmd_impor(args):
                     kat, _ = tebak_kategori(ambil("kategori") + " " + ket, arah)
                     sumber_kat = "ditebak dari kolom kategori"
             else:
-                kat, _ = tebak_kategori(ket, arah)
-                sumber_kat = "ditebak dari keterangan"
+                kat = None
+                kp = kenali_pindah(conn, akun, arah, ket)
+                if kp and kp[0] == "pindah" and date.fromisoformat(kp[1]["tanggal_awal"]) > tanggal:
+                    kp = ("cek", None, "%s ke/dari %s, tetapi tanggalnya sebelum saldo awal akun itu" % (
+                        kp[2], kp[1]["nama"]))
+                if kp and kp[0] == "pindah":
+                    kat, ke_akun, sumber_kat = "pindah", kp[1], "aturan pindah dana: %s" % kp[2]
+                    dikenali.append({"baris": no, "pola": kp[2], "arah": arah, "jumlah": jumlah, "keterangan": ket,
+                                     "akun": akun["nama"], "pasangan": kp[1]["nama"]})
+                elif kp:
+                    cek.append({"baris": no, "alasan": kp[2], "keterangan": ket, "jumlah": jumlah, "arah": arah,
+                                "saran": "--tetapkan %d=pindah:<akun pasangan> (uang pindah antar akun usaha) atau "
+                                         "%d=prive (dipakai pribadi) / %d=modal" % (no, no, no)})
+                    kat, sumber_kat = "perlu-dicek", "belum jelas"
+                else:
+                    kat, _ = tebak_kategori(ket, arah)
+                    sumber_kat = "ditebak dari keterangan"
             if kat != "pindah":
-                if not kat and POLA_MUNGKIN_PINDAH.search(" " + normal(ket) + " "):
-                    cek.append({"baris": no, "alasan": "mungkin pindah dana (tarik/setor tunai/top up)", "keterangan": ket,
-                                "jumlah": jumlah, "arah": arah, "saran": "--tetapkan %d=pindah:<akun pasangan> atau "
-                                                                        "%d=prive / %d=modal" % (no, no, no)})
-                    kat, sumber_kat = "lain-lain", "belum jelas"
-                elif not kat:
+                if not kat:
                     kat = kode_kategori(args.kategori_default) if args.kategori_default else None
                     if kat:
                         sumber_kat = "kategori default"
                     else:
-                        kat, sumber_kat = "lain-lain", "belum jelas"
+                        kat, sumber_kat = "perlu-dicek", "belum jelas"
                         cek.append({"baris": no, "alasan": "kategori belum jelas", "keterangan": ket, "jumlah": jumlah,
                                     "arah": arah, "saran": "--tetapkan %d=<kategori>" % no})
                 if arah not in SEMUA_KATEGORI[kat][1]:
@@ -2151,6 +2298,7 @@ def cmd_impor(args):
             baru.append(h)
         nomor_baru = {h["baris"] for h in baru}
         cek = [c for c in cek if c["baris"] in nomor_baru]
+        dikenali = [c for c in dikenali if c["baris"] in nomor_baru]
         sumber = "impor:" + Path(args.file).name[:60]
         ids = []
         for h in baru:
@@ -2178,6 +2326,11 @@ def cmd_impor(args):
             peringatan += pr
         masuk = sum(h["jumlah"] for h in baru if h["arah"] == "masuk" and h["kategori"] != "pindah")
         keluar = sum(h["jumlah"] for h in baru if h["arah"] == "keluar" and h["kategori"] != "pindah")
+        if cek:
+            peringatan.append("%d baris disimpan sebagai 'Perlu dicek': ikut saldo akun tetapi TIDAK dihitung di hasil "
+                              "usaha sampai digolongkan. Tanyakan ke pengguna, lalu pakai --tetapkan sebelum --ya, "
+                              "atau setelah tersimpan: kas.py golongkan --id <ID> --kategori <kategori|pindah:akun>."
+                              % len(cek))
         per_kat = OrderedDict()
         for h in baru:
             k = per_kat.setdefault(label_kat(h["kategori"], h["arah"]), 0)
@@ -2198,8 +2351,16 @@ def cmd_impor(args):
                                                               ("kolom kategori",) else ""))
             if len(baru) > 8:
                 t.append("- ... dan %d baris lain (lihat field 'baris' di --json)" % (len(baru) - 8))
+        if dikenali:
+            t.append("DIKENALI SEBAGAI PINDAH DANA (bukan pendapatan/beban, hasil usaha tidak berubah; %d baris):"
+                     % len(dikenali))
+            for c in dikenali[:20]:
+                t.append("- baris %d: %s %s '%s' -> %s %s %s. Bila uangnya dipakai pribadi: --tetapkan %d=prive" % (
+                    c["baris"], c["arah"], rp(c["jumlah"]), c["keterangan"][:50], c["pola"],
+                    "ke" if c["arah"] == "keluar" else "dari", c["pasangan"], c["baris"]))
         if cek:
-            t.append("PERLU DICEK KE PENGGUNA (%d baris, sementara dicatat lain-lain):" % len(cek))
+            t.append("PERLU DICEK KE PENGGUNA (%d baris; disimpan sebagai 'Perlu dicek', TIDAK dihitung di hasil usaha "
+                     "sampai digolongkan):" % len(cek))
             for c in cek[:20]:
                 t.append("- baris %d: %s %s '%s' -> %s. Saran: %s" % (c["baris"], c["arah"], rp(c["jumlah"]),
                                                                       c["keterangan"][:50], c["alasan"], c["saran"]))
@@ -2221,6 +2382,7 @@ def cmd_impor(args):
                            "ke_akun": h["ke_akun"]["nama"] if h["ke_akun"] else None, "catatan": h["catatan"]}
                           for h in baru],
                 "jumlah_baru": len(baru), "masuk": masuk, "keluar": keluar, "perlu_dicek": cek,
+                "pindah_dikenali": dikenali,
                 "sudah_diimpor": sudah, "mirip_manual": mirip, "dilewati": dilewati, "bermasalah": bermasalah,
                 "peringatan": peringatan, "blokir": blokir, "teks": "\n".join(t)}
     return jalankan_tulis(args, "impor", kerja, label_backup="sebelum-impor" if args.ya else None)
@@ -2361,6 +2523,11 @@ def cmd_ekspor(args):
         t = "Ekspor %d baris %s - %s ke %s (buka di Excel/Google Sheets)." % (len(data), tgl_id(dari), tgl_id(sampai), path)
         return {"ok": True, "mode": "baca", "file": path, "baris": len(data), "teks": t}, t
     # emkm
+    belum = [r["id"] for r in rows if r["kategori"] == "perlu-dicek" and r["status"] == "aktif"]
+    if belum:
+        raise Gagal("Ada %d catatan 'Perlu dicek' yang belum digolongkan di periode ini (ID %s). Golongkan dulu agar "
+                    "laporan keuangan tidak salah: kas.py golongkan --id <ID> --kategori <kategori|pindah:akun>." %
+                    (len(belum), ", ".join("#%d" % i for i in belum[:15])), perlu_dicek=belum)
     path = args.csv or str(db.parent / "ekspor" / ("kas-emkm-%s.csv" % kini().strftime("%Y%m%d-%H%M%S")))
     data = []
     if saldo_awal >= 0:
@@ -2432,13 +2599,19 @@ def ekspor_arus_kas(conn, cfg, args):
     # pos bulanan (sewa, listrik, cicilan...) dilihat dari 62 hari terakhir s.d. hari ini, agar tidak hilang bila
     # jatuh di luar jendela mingguan
     dari_bulanan = min(dari, hi - timedelta(days=62))
-    rows = conn.execute("SELECT * FROM transaksi WHERE status='aktif' AND kategori NOT IN ('pindah','selisih-kas') "
+    rows = conn.execute("SELECT * FROM transaksi WHERE status='aktif' AND kategori NOT IN ('pindah','selisih-kas',"
+                        "'perlu-dicek') "
                         "AND tanggal BETWEEN ? AND ? ORDER BY tanggal, id",
                         (dari_bulanan.isoformat(), hi.isoformat())).fetchall()
     grup = OrderedDict()
     for r in rows:
         grup.setdefault((r["kategori"], r["arah"]), []).append(r)
     data, lewat = [], []
+    n_cek = conn.execute("SELECT COUNT(*) FROM transaksi WHERE status='aktif' AND kategori='perlu-dicek' AND tanggal "
+                         "BETWEEN ? AND ?", (dari_bulanan.isoformat(), hi.isoformat())).fetchone()[0]
+    if n_cek:
+        pr.append("%d catatan 'Perlu dicek' tidak dipakai untuk rencana; golongkan dulu (kas.py golongkan) agar "
+                  "rencana lengkap." % n_cek)
     urut = [k for k in ARUS_LABEL] + [k for k in grup if k not in ARUS_LABEL]
     for kunci in urut:
         if kunci not in grup:
@@ -2686,6 +2859,13 @@ def buat_parser():
     s.add_argument("--alasan", required=True)
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_batal)
+
+    s = sub.add_parser("golongkan", parents=[umum, tulis],
+                       help="Tetapkan kategori catatan 'Perlu dicek' (atau ubah jadi pindah:<akun>)")
+    s.add_argument("--id", required=True, help="ID catatan, mis. 12 atau 12,15")
+    s.add_argument("--kategori", required=True, help="Kategori, atau pindah:<akun pasangan>")
+    s.add_argument("--izinkan-minus", action="store_true")
+    s.set_defaults(fungsi=cmd_golongkan)
 
     s = sub.add_parser("opname", parents=[umum, tulis], help="Hitung uang fisik laci/brankas vs buku")
     s.add_argument("--akun", help="Default: satu-satunya akun tunai")
