@@ -56,7 +56,7 @@ import urllib.request
 from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 APLIKASI = "grist-usaha"
 LOKAL_DIIZINKAN = {"localhost", "127.0.0.1", "::1"}
 FILE_KUNCI_DEFAULT = Path.home() / ".komunitech" / "grist-kunci.txt"
@@ -392,7 +392,7 @@ def cmd_buat_tabel(args):
 # Bersihkan & impor CSV
 # ---------------------------------------------------------------------------
 
-# --- Pembaca angka uang (v1.0.2) ---------------------------------------------------------------
+# --- Pembaca angka uang (v1.0.2, v1.0.3) --------------------------------------------------------------
 # Aturan lengkap + alasan setiap keputusan ambiguitas: references/singkatan-besaran.md.
 # Prinsip: nilai yang bisa dibaca DUA cara -> (None, alasan), TIDAK PERNAH ditebak.
 # Semua nilai uang memakai Decimal (bukan float) supaya tidak ada galat pembulatan biner.
@@ -451,7 +451,8 @@ def _urai_singkatan(isi, teks_asli):
         if re.fullmatch(r"(?:\s*\d[\d.,]*\s*[A-Za-z]+)+\s*\d[\d.,]*\s*", isi):
             return None, (f"'{teks_asli}' ada angka tanpa singkatan di bagian akhir - ambigu "
                           "(ribu? rupiah?). Tulis lengkap, mis. '3 jt 500 rb' atau '3.500.000'.")
-        return None, None
+        return None, (f"'{teks_asli}' berisi teks/simbol tambahan selain angka & singkatan uang "
+                      "(mis. '/pcs', 'rupiah') - dibiarkan teks. Tulis angkanya saja, mis. '15rb'.")
     suku = _POLA_SUKU.findall(isi)
     total = Decimal(0)
     pengali_sebelumnya = None
@@ -507,6 +508,9 @@ def _urai_angka_polos(isi, teks_asli):
             return Decimal(f"{kelompok[0]}.{kelompok[1]}"), None
         pecahan = ""
     # Sisanya: pemisah ribuan -> semua kelompok setelah yang pertama WAJIB tepat 3 angka.
+    if kelompok[0] == "0":
+        return None, (f"'{teks_asli}' ambigu: '0' diikuti pemisah ribuan (0,5 atau 500?). "
+                      "Tulis '0,5' atau '500'.")
     if not (1 <= len(kelompok[0]) <= 3) or any(len(k) != 3 for k in kelompok[1:]):
         return None, (f"'{teks_asli}' ambigu: pengelompokan ribuan tidak konsisten "
                       "(harus per 3 angka, mis. '1.250.000').")
@@ -520,22 +524,44 @@ def _bersihkan_angka(teks):
     Contoh: 'Rp 1.250.000,-' -> 1250000; '1,25jt' -> 1250000; '2,5 rb' -> 2500; '10k' -> 10000;
     '3 jt 500 rb' -> 3500000; '1,5M' -> 1500000000; '1.5' dan '1,5' -> 1.5; '1.500' -> 1500
     (titik + 3 angka = ribuan, gaya Indonesia). Ditolak (ambigu): '2m' (m kecil), '1.500rb',
-    '1.250,5jt', '3jt500', '1.23.456'. Rincian: references/singkatan-besaran.md.
+    '1.250,5jt', '3jt500', '1.23.456', '+500rb'. v1.0.3: '(1.000)' -> -1000 (akuntansi);
+    '0812...'/'007' -> None + alasan (telepon/kode, nol depan dijaga). '1,000' tanpa singkatan
+    SENGAJA dibaca 1000 (lihat references). Rincian: references/singkatan-besaran.md.
     """
     t = teks.strip()
     if not t:
         return None, None
     isi = t
     negatif = False
+    # v1.0.3: tanda '+' di depan -> teks (bisa nomor telepon '+62...'), ditolak dengan alasan.
+    if isi.startswith("+"):
+        return None, (f"'{t}' diawali tanda '+' - dibiarkan teks (bisa nomor telepon '+62...'). "
+                      "Kalau ini nominal, hapus tanda '+'.")
+    # v1.0.3: kurung = negatif gaya akuntansi, hanya bila isinya utuh angka: '(1.000)', '(Rp 1.000)'.
+    if isi.startswith("(") and isi.endswith(")"):
+        negatif, isi = True, isi[1:-1].strip()
+        if isi.startswith(("-", "(", "+")):
+            return None, f"'{t}' tanda negatif ganda/tidak lazim - ambigu."
     if isi.startswith("-"):
         negatif, isi = True, isi[1:].lstrip()
     isi = re.sub(r"^(?:Rp\.?|IDR)\s*", "", isi, flags=re.IGNORECASE)
+    if isi.startswith("(") and isi.endswith(")") and not negatif:
+        negatif, isi = True, isi[1:-1].strip()   # 'Rp (1.000)'
     if not negatif and isi.startswith("-"):
         negatif, isi = True, isi[1:].lstrip()
-    # Ekor ",-" / ".-" / ",00-" gaya kuitansi: "Rp 1.250.000,-"
+    # Ekor ",-" / ".-" gaya kuitansi: "Rp 1.250.000,-"
     isi = re.sub(r"[.,]-$", "", isi).strip()
+    if re.match(r"[.,]\d", isi):
+        return None, f"'{t}' diawali koma/titik - tulis 0 di depannya, mis. '0,5jt'."
     if not isi or not isi[0].isdigit():
+        if isi.startswith("(") or (negatif and t.startswith("(") and re.search(r"\d", isi)):
+            return None, f"'{t}' tanda kurung/negatif tidak lazim - ambigu, dibiarkan teks."
         return None, None
+    # v1.0.3: berawalan 0 lalu angka lagi ('0812...', '007') = nomor telepon/kode, BUKAN nominal.
+    # Dikecualikan: '0', '0,5', '0.5', 'Rp 0', '0,5jt' (nol diikuti pemisah/huruf/akhir teks).
+    if re.match(r"0\d", isi):
+        return None, (f"'{t}' diawali angka 0 - dianggap nomor telepon/kode (nol di depan harus "
+                      "tetap ada), dibiarkan teks.")
     if re.search(r"[A-Za-z]", isi):
         nilai, alasan = _urai_singkatan(isi, t)
     else:
@@ -543,6 +569,11 @@ def _bersihkan_angka(teks):
     if nilai is None:
         return None, alasan
     return (-nilai if negatif else nilai), None
+
+
+def _berawalan_nol(teks):
+    """True bila teks tampak nomor telepon/kode berawalan 0 ('0812...', '007', 'Rp 007')."""
+    return bool(re.match(r"\s*(?:Rp\.?\s*)?0\d", teks, re.IGNORECASE))
 
 
 def _teks_angka(nilai):
@@ -598,6 +629,8 @@ def cmd_bersihkan_csv(args):
     # (temuan SEDANG Akun B, examples/03-rekap-operasional-csv.md). Baris diberi nomor gaya file
     # CSV 1-indeks (baris 1 = header), sama seperti pesan error skill lain di repo ini.
     kolom_gagal = [[] for _ in range(n_kolom)]
+    # v1.0.3: sel berawalan 0 (telepon/kode) per kolom -> kolom dipaksa Text + catatan jelas.
+    kolom_nol = [[] for _ in range(n_kolom)]
     baris_bersih = []
     for no_baris, baris_asli in enumerate(baris[1:], start=2):
         baris_asli = list(baris_asli) + [""] * (n_kolom - len(baris_asli))
@@ -609,6 +642,8 @@ def cmd_bersihkan_csv(args):
                 if angka is None:
                     kolom_angka[i] = False
                     kolom_gagal[i].append((no_baris, sel, alasan))
+                    if _berawalan_nol(sel):
+                        kolom_nol[i].append((no_baris, sel))
                 else:
                     kolom_ada_sukses[i] = True
             baru.append(sel)
@@ -644,6 +679,17 @@ def cmd_bersihkan_csv(args):
             "dibiarkan apa adanya) - benarkan dulu sel di atas lalu jalankan ulang, atau abaikan "
             "kalau memang mau kolom ini tetap Text.")
 
+    catatan_kolom_nol = []
+    for i, h_asli in enumerate(header_asli):
+        if not kolom_nol[i]:
+            continue
+        contoh = ", ".join(f"baris {n}: {v!r}" for n, v in kolom_nol[i][:3])
+        lebih = "" if len(kolom_nol[i]) <= 3 else f", +{len(kolom_nol[i]) - 3} baris lain"
+        catatan_kolom_nol.append(
+            f"Kolom {h_asli!r} dibiarkan Text karena berisi nilai berawalan 0 ({contoh}{lebih}) - "
+            "dianggap nomor telepon/kode, nol di depan DIJAGA (tidak diubah jadi angka). Di Grist, "
+            "jadikan kolom ini Text. Kalau ternyata nominal uang, hapus nol di depan lalu ulangi.")
+
     print(f"SELESAI membersihkan '{src.name}' -> '{keluaran}'")
     print(f"Baris data: {len(baris_bersih)}")
     print("Kolom (nama asli -> nama Grist, jenis):")
@@ -656,6 +702,10 @@ def cmd_bersihkan_csv(args):
         print("\nPERINGATAN - kolom sebagian angka tapi dibiarkan Text (perbaiki sel di bawah lalu ulangi):")
         for p in peringatan_kolom_gagal:
             print(f"  - {p}")
+    if catatan_kolom_nol:
+        print("\nPERINGATAN - kolom nomor telepon/kode (nol di depan dijaga, tetap Text):")
+        for p in catatan_kolom_nol:
+            print(f"  - {p}")
     print("\nPeriksa dulu file hasil sebelum diimpor. Lanjut: 'impor-csv' (perlu REST API) atau")
     print("seret file ini ke Grist lewat menu Import (selalu tersedia, tanpa API).")
     if args.json:
@@ -665,6 +715,10 @@ def cmd_bersihkan_csv(args):
                 {"kolom": header_asli[i], "gagal": [
                     {"baris": n, "nilai": v, "alasan": a} for n, v, a in kolom_gagal[i]]}
                 for i in range(n_kolom) if not kolom_angka[i] and kolom_ada_sukses[i] and kolom_gagal[i]
+            ],
+            "kolom_nol_depan": [
+                {"kolom": header_asli[i], "baris": [{"baris": n, "nilai": v} for n, v in kolom_nol[i]]}
+                for i in range(n_kolom) if kolom_nol[i]
             ],
         }, ensure_ascii=False))
     return 0

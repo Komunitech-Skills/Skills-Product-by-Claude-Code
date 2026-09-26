@@ -24,7 +24,8 @@ tinggal minta lewat kalimat biasa.
 3. **Data berantakan jadi rapi otomatis** — angka Rupiah gaya sehari-hari ("Rp 1.250.000,-",
    "1,25jt", "2,5 rb", "10k", "3 jt 500 rb", "1,5M") dirapikan sebelum masuk ke Grist. Yang
    ragu-ragu (mis. "1.500rb" — 1,5 ribu atau 1,5 juta?) tidak ditebak: baris & nilainya disebut
-   supaya Anda betulkan sendiri.
+   supaya Anda betulkan sendiri. Nomor WA & kode barang berawalan 0 ("0812…", "007") tetap utuh
+   sebagai teks, tidak berubah jadi angka.
 4. **Laporan tanpa buka Grist** — tanya "stok apa yang menipis?" dan langsung dapat jawabannya,
    dibaca langsung dari file `.grist` Anda (bahkan saat Grist tidak menyala).
 5. **Aman by design** — kunci API tersimpan lokal & tidak pernah tercetak, semua tindakan

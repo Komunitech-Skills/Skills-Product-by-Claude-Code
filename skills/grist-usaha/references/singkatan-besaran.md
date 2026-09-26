@@ -1,4 +1,4 @@
-# Singkatan besaran uang yang didukung `bersihkan-csv` (sejak v1.0.1, diperketat v1.0.2)
+# Singkatan besaran uang yang didukung `bersihkan-csv` (sejak v1.0.1, diperketat v1.0.2 & v1.0.3)
 
 Ditambahkan menindaklanjuti temuan TINGGI Akun B (`examples/HASIL-UJI.md`,
 `examples/03-rekap-operasional-csv.md` temuan #1): README/SKILL v1.0.0 mengklaim contoh
@@ -38,6 +38,24 @@ Sama seperti v1.0.0 (`Rp 1.234.567,89`, `1234567.89`, `1.234.567`, `12,5`, `1,23
 pengelompokan ribuan yang rusak (`1.23.456`, `12,5.5`) sekarang **ditolak dengan alasan**, bukan
 dibaca asal-asalan. Satuan non-uang (`1kg`) juga ditolak dengan alasan. Teks biasa (nama barang,
 "belum diisi") tetap `None` tanpa alasan — itu memang kolom teks.
+
+## Tambahan v1.0.3 (uji ulang Akun B, `examples/06-angka-dan-skenario-uji-ulang-v102-akun-b.md`)
+- **Berawalan 0** (`081234567890`, `007`, `0123`, `Rp 007`) → `None` + alasan "nomor
+  telepon/kode": nol di depan **dijaga**, tidak diubah jadi angka. Di `bersihkan-csv`, kolom yang
+  berisi nilai seperti itu **tetap Text** dan diberi peringatan (baris & nilai; `--json`:
+  `kolom_nol_depan`) — sesuai `references/pola-tabel-umkm.md` (telepon = Text).
+  Pengecualian (tetap angka): `0`, `0,5`, `0.5`, `Rp 0`, `0,5jt`. `0.500`/`0,500` → ditolak
+  (0,5 atau 500?).
+- **Kurung** = negatif gaya akuntansi: `(1.000)`, `(Rp 1.250.000)`, `Rp (1.000)`, `(500rb)` →
+  negatif. `-(1.000)` (tanda ganda) → ditolak dengan alasan.
+- **Tanda `+`** (`+500rb`, `+62812…`) → ditolak dengan alasan (bisa nomor telepon).
+- `.5jt` → ditolak, minta tulis `0,5jt`. Teks tambahan (`15rb/pcs`, `500 ribu rupiah`) →
+  ditolak dengan alasan, minta tulis angkanya saja.
+- **Keputusan sengaja: `1,000` / `12,345` / `1,000,000` TANPA singkatan = ribuan** (1000,
+  12345, 1000000). Alasan: ini format ekspor spreadsheet/marketplace gaya Inggris yang umum,
+  sedangkan pecahan rupiah 3 angka di belakang koma praktis tidak ada, jadi bacaan desimal
+  (1,000 = satu rupiah) hampir pasti salah. DENGAN singkatan (`1,250jt`, `1.500rb`) tetap
+  **ditolak**, karena di sana kedua bacaan sama-sama masuk akal dan selisihnya 1000×.
 
 ## Keputusan ambiguitas huruf `m` kecil (penting, baca sebelum mengubah)
 Keputusan yang diambil (huruf `M` sendirian berisiko ambigu):

@@ -250,10 +250,91 @@ class TestAngkaIndonesiaV102(unittest.TestCase):
         self.assertEqual(grist._teks_angka(Decimal("100.00")), "100")
 
     def test_teks_biasa_tetap_none_tanpa_alasan(self):
-        for t in ("Kopi Robusta", "08123456789 (WA)", "-", "Rp", "belum diisi"):
+        # ('08123456789 (WA)' pindah ke TestAngkaV103: sejak v1.0.3 diberi alasan telepon/kode.)
+        for t in ("Kopi Robusta", "-", "Rp", "belum diisi", "(kosong)"):
             hasil, alasan = self.nilai(t)
             self.assertIsNone(hasil, t)
             self.assertIsNone(alasan, t)
+
+
+class TestAngkaV103(unittest.TestCase):
+    """v1.0.3 (uji ulang Akun B, examples/06-...): nol di depan dijaga; '(1.000)' akuntansi;
+    '+', '.5jt', teks tambahan -> alasan; '1,000' tanpa singkatan = 1000 (sengaja, terdokumentasi)."""
+
+    def sama(self, teks, harap):
+        hasil, alasan = grist._bersihkan_angka(teks)
+        self.assertIsNone(alasan, f"{teks!r}: {alasan}")
+        self.assertEqual(hasil, Decimal(harap), f"{teks!r}")
+
+    def ditolak(self, teks, kata):
+        hasil, alasan = grist._bersihkan_angka(teks)
+        self.assertIsNone(hasil, f"{teks!r} seharusnya ditolak, dapat {hasil}")
+        self.assertTrue(alasan, f"{teks!r} ditolak tanpa alasan")
+        self.assertIn(kata, alasan.lower())
+
+    def test_nol_depan_telepon_dan_kode_jadi_teks(self):
+        for t in ("081234567890", "007", "0123", "Rp 007", "08123456789 (WA)", "00"):
+            self.ditolak(t, "telepon/kode")
+
+    def test_nol_yang_sah_tetap_angka(self):
+        self.sama("0", "0")
+        self.sama("0,5", "0.5")
+        self.sama("0.5", "0.5")
+        self.sama("Rp 0", "0")
+        self.sama("0,5jt", "500000")
+
+    def test_nol_diikuti_ribuan_ambigu(self):
+        self.ditolak("0.500", "ambigu")
+        self.ditolak("0,500", "ambigu")
+
+    def test_kurung_negatif_akuntansi(self):
+        self.sama("(1.000)", "-1000")
+        self.sama("(Rp 1.250.000)", "-1250000")
+        self.sama("Rp (1.000)", "-1000")
+        self.sama("(500rb)", "-500000")
+        self.ditolak("-(1.000)", "ambigu")
+
+    def test_tanda_plus_ditolak_dengan_alasan(self):
+        self.ditolak("+500rb", "+")
+        self.ditolak("+6281234567890", "telepon")
+
+    def test_titik_di_depan_dan_teks_tambahan_diberi_alasan(self):
+        self.ditolak(".5jt", "0 di depan")
+        self.ditolak("15rb/pcs", "tambahan")
+        self.ditolak("500 ribu rupiah", "tambahan")
+
+    def test_koma_tiga_angka_tanpa_singkatan_sengaja_ribuan(self):
+        # Keputusan terdokumentasi (references/singkatan-besaran.md): tanpa singkatan, '1,000'
+        # dibaca 1000 (ekspor spreadsheet gaya Inggris); desimal 3 angka untuk rupiah tidak lazim.
+        # DENGAN singkatan ('1,250jt') tetap ditolak karena selisihnya 1000x.
+        self.sama("1,000", "1000")
+        self.sama("12,345", "12345")
+        self.sama("1,000,000", "1000000")
+        hasil, alasan = grist._bersihkan_angka("1,250jt")
+        self.assertIsNone(hasil)
+
+    def test_csv_kolom_telepon_dan_kode_tetap_text_dengan_peringatan(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            f = d / "pelanggan.csv"
+            f.write_text("Nama,No WA,Kode Barang,Total\nBu Sari,081234567890,007,\"Rp 1.250.000,-\"\n"
+                         "Pak Budi,085712345678,0123,500rb\n", encoding="utf-8")
+            p = subprocess.run([sys.executable, SKRIP, "bersihkan-csv", str(f), "--json"],
+                               capture_output=True, text=True, cwd=d)
+            self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("'No WA' -> NoWa  (Text)", p.stdout)
+            self.assertIn("'Kode Barang' -> KodeBarang  (Text)", p.stdout)
+            self.assertIn("'Total' -> Total  (Numeric)", p.stdout)
+            self.assertIn("nomor telepon/kode", p.stdout)
+            self.assertIn("baris 2: '081234567890'", p.stdout)
+            isi = (d / "pelanggan-bersih.csv").read_text(encoding="utf-8")
+            self.assertIn("081234567890", isi)
+            self.assertIn(",007,", isi)
+            self.assertIn("1250000", isi)
+            data = json.loads([l for l in p.stdout.splitlines() if l.startswith("{")][0])
+            nol = {k["kolom"]: k["baris"] for k in data["kolom_nol_depan"]}
+            self.assertEqual(set(nol), {"No WA", "Kode Barang"})
+            self.assertEqual(nol["Kode Barang"][1], {"baris": 3, "nilai": "0123"})
 
 
 class TestBersihkanCsvV102(unittest.TestCase):
