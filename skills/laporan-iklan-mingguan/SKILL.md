@@ -25,9 +25,12 @@ ROAS. Semua angka dihitung `scripts/laporan_iklan.py`, bukan diperkirakan.
   `references/openclaw-jadwal.md`). Skill ini sendiri **tidak** membuat jadwal.
 - Laporan gabungan semua alat usaha (bukan cuma iklan) → `laporan-harian-usaha`.
 - File Excel `.xlsx` asli → minta pengguna *Save As → CSV* dulu (bukan sekadar ganti nama file).
-- Menarik data otomatis dari Ads Manager (login/scraping) → **tidak didukung dan tidak akan
-  dibuat** (keputusan pemilik Komunitech). Ekspor **selalu manual** oleh pemilik/admin iklan,
-  1-2 menit per platform per minggu.
+- Menarik data otomatis dari Ads Manager (login/scraping, atau API resmi dengan token akses) →
+  **tidak didukung dan tidak akan dibuat** (keputusan pemilik Komunitech). Ekspor **selalu
+  manual** oleh pemilik/admin iklan, 1-2 menit per platform per minggu.
+- Pengguna **menempelkan password/kode OTP/token** akun iklan di chat → jangan diulang, disimpan,
+  atau dipakai. Minta ia segera mengganti password dan menyalakan verifikasi 2 langkah, lalu
+  lanjutkan dengan file ekspor saja.
 - Iklan crypto/kesehatan dengan klaim menyembuhkan/untung pasti → skill ini hanya menghitung
   angka biaya-hasil, tidak menilai/menyetujui isi materi iklan.
 
@@ -37,7 +40,7 @@ ROAS. Semua angka dihitung `scripts/laporan_iklan.py`, bukan diperkirakan.
 | File CSV ekspor minggu ini (1 per platform) | Ya | — (minta pengguna ekspor & kirim) |
 | File CSV minggu lalu (platform sama) | Tidak | Tanpa perbandingan; sebutkan itu ke pengguna |
 | Nama/label hasil (mis. "pesan WA", "pembelian", "leads") | Tidak | Nama kolom hasil apa adanya (mis. "Results", "Konversi") |
-| Omzet penjualan periode ini (dari `rekap-penjualan-csv`/kasir) | Tidak | Tidak dihitung % terhadap omzet |
+| Omzet penjualan periode ini (angka penuh atau "20 juta"/"20jt"/"750 rb") | Tidak | Tidak dihitung % terhadap omzet |
 | Pemetaan kolom manual (bila deteksi otomatis gagal) | Tidak | Deteksi otomatis dari nama kolom |
 
 Jika hanya 1 file dikirim tanpa disebut platformnya, jalankan saja — platform terdeteksi otomatis
@@ -64,10 +67,15 @@ python3 <folder-skill-ini>/scripts/laporan_iklan.py analisis "<ekspor-minggu-ini
   daftar kolom yang ada di file. Tanyakan ke pengguna kolom mana yang dimaksud, lalu jalankan
   ulang dengan `--kolom-biaya`, `--kolom-tayangan`, `--kolom-klik`, `--kolom-hasil`,
   `--kolom-nilai-hasil`, `--kolom-nama` sesuai nama kolom **persis** di file (lihat pesan error).
-- **Mata uang bukan Rupiah?** Script menolak diam-diam. Ikuti pesan errornya: tanyakan ke
-  pengguna kurs yang mau dipakai lalu tambahkan `--kurs <angka>` (boleh `--kurs-sumber`/
-  `--kurs-tanggal` untuk dicatat), atau `--mata-uang IDR` bila label file memang keliru dan
-  angkanya sudah Rupiah.
+- **Mata uang bukan Rupiah?** Script berhenti (kode 2), tidak pernah menghitungnya sebagai Rupiah.
+  Mata uang dikenali dari label kolom (`Amount spent (USD)`), kolom `Currency`/`Currency code`/
+  `Mata uang`, dan simbol di sel (`$`, `US$`, `RM`, `€`, kode `USD`...). Tanyakan kurs ke pengguna
+  lalu tambahkan `--kurs <angka>` (boleh `--kurs-sumber`/`--kurs-tanggal`), atau `--mata-uang IDR`
+  bila angkanya memang sudah Rupiah. File yang mencampur dua mata uang selalu ditolak.
+- **Tidak perlu merapikan file dulu.** Script sendiri menangani: baris judul/info toko di atas
+  tabel (dicari dalam 15 baris pertama), CSV UTF-16 bertab ("Excel CSV" Google Ads), sel kosong/
+  `-`/`--`/`—` (dihitung 0 + dicatat), dan baris "Total"/"Total: Account"/"Jumlah Total"/"Grand
+  Total" di kolom teks mana pun (dilewati + dicatat). File `.xlsx` ditolak dengan petunjuk Save As CSV.
 - Simpan hasil `--json` ke file sementara bila akan dipakai Langkah 2 (gabung) atau dipakai lagi
   minggu depan sebagai `--sebelumnya` (opsional).
 
@@ -78,21 +86,28 @@ file JSON, lalu:
 python3 <folder-skill-ini>/scripts/laporan_iklan.py gabung meta.json tiktokads.json shopee.json \
   --omzet 20000000
 ```
-Bila platform yang digabung mengukur "hasil" secara berbeda (mis. Meta "Results" vs Shopee
-"Konversi Langsung"), script tetap menjumlahkan tapi **wajib** menampilkan peringatan bahwa
-biaya-per-hasil/ROAS gabungan hanya perkiraan kasar — sampaikan peringatan itu ke pengguna, jangan
-disembunyikan, dan tunjukkan juga rincian per platform (selalu ada di keluaran).
+Aturan mode gabung (v1.0.1):
+- **Jenis hasil berbeda** (mis. Meta "pesan WA" vs Shopee "pesanan") → jumlah hasil & biaya per
+  hasil gabungan **tidak dihitung**; hanya angka per platform. Samakan label dengan `--nama-hasil`
+  hanya bila hasilnya memang sejenis.
+- **Nama hasil sama tapi beda platform** (mis. TikTok & Google sama-sama "Conversions") → tetap
+  dijumlah, dengan peringatan bahwa atribusi tiap platform berbeda (perkiraan kasar).
+- **ROAS gabungan** hanya dari platform yang punya kolom nilai penjualan, dan disebut platformnya.
+- JSON yang sama dua kali → ditolak. Catatan kurs tiap platform ikut tampil. Saran diambil
+  bergiliran per platform (maks. 6).
+Sampaikan semua peringatan ke pengguna; jangan disembunyikan.
 
 ### 3. Ekspor rincian per kampanye (opsional)
 Tambahkan `--csv-keluaran "<nama-file>.csv"` pada Langkah 1 untuk file CSV rincian per kampanye
-yang aman dibuka di Excel (nama kampanye yang diawali `=`/`+`/`-`/`@` otomatis diberi tanda kutip
-agar tidak dieksekusi sebagai formula).
+(nama kampanye yang diawali `=`/`+`/`-`/`@` otomatis diberi tanda kutip agar tidak dieksekusi
+sebagai formula). Angka ditulis mentah: tanpa pemisah ribuan, desimal titik (`1245600`, `1.6`).
+Nama file keluaran tidak boleh sama dengan file ekspor asli (ditolak agar tidak tertimpa).
 
 ### 4. Tulis laporan ke pengguna
-Kirim field `teks` (dari `--json`) atau keluaran teks langsung **apa adanya** — boleh menambah
-1-2 kalimat pembuka, tapi **jangan mengubah angka/persen**. Sebutkan semua `peringatan` dan
-`catatan_mata_uang` dari hasil, termasuk baris "Total/Jumlah" yang dilewati agar tidak dihitung
-dua kali.
+Kirim field `teks` (dari `--json`) atau keluaran teks langsung **apa adanya**: boleh menambah
+1-2 kalimat pembuka, tapi **jangan mengubah angka/persen**. Blok `⚠️ PERLU DICEK SEBELUM DIPAKAI`
+(di atas) dan `Catatan` (di bawah, termasuk sel kosong yang dihitung 0, baris total yang
+dilewati, dan kolom yang dibaca) wajib ikut terkirim. Bila ada ⚠️, sebutkan di kalimat pembuka.
 
 ### 5. (Lanjutan, opsional) Jadwalkan otomatis
 Setelah pengguna puas dengan hasil laporan manual di atas selama minimal 1 minggu, tawarkan
@@ -102,9 +117,10 @@ menarik data dari Meta/TikTok/Shopee/Google secara otomatis (keputusan pemilik K
 `references/openclaw-jadwal.md`).
 
 ## Rumus (dipakai script, untuk hitung manual bila Python tak tersedia)
-Per baris kampanye setelah baris "Total/Jumlah" dibuang: `biaya`, `tayangan`, `klik`, `hasil`,
+Per baris kampanye setelah baris total dibuang: `biaya`, `tayangan`, `klik`, `hasil`,
 `nilai_hasil` (opsional, untuk ROAS) dijumlah per nama kampanye (menangani ekspor dengan baris
-harian per kampanye), lalu:
+harian per kampanye). Sel metrik kosong/`-`/`--` = 0 (dicatat); baris yang **biayanya** tidak
+terbaca tidak dihitung dan disebut namanya di ⚠️. Lalu:
 ```
 CPC              = biaya ÷ klik                (klik = 0 → "-")
 CPM              = biaya ÷ tayangan × 1000      (tayangan = 0 → "-")
@@ -112,9 +128,14 @@ CTR              = klik ÷ tayangan × 100%       (tayangan = 0 → "-")
 Biaya per hasil  = biaya ÷ hasil                (hasil = 0 → "-", ditandai "tanpa hasil")
 ROAS             = nilai_hasil ÷ biaya          (hanya bila kolom nilai/omzet iklan ada)
 Biaya vs omzet   = total biaya ÷ omzet × 100%   (hanya bila --omzet diisi)
+Rata-rata saran  = total biaya ÷ total hasil    (= "Biaya per hasil" di laporan)
 ```
-**Pembulatan (sama untuk seluruh library, lihat `CLAUDE.md`):** nominal Rupiah dibulatkan ke
-rupiah terdekat, 0,5 menjauhi nol (mis. Rp100,5 → Rp101). Persen & ROAS dibulatkan 1 desimal,
+Semua hitungan memakai `Decimal` (tanpa float). Kampanye berbiaya Rp 0 (dijeda) tidak dinilai.
+TERBAIK = biaya per hasil termurah; PERLU PERHATIAN = tanpa hasil (biaya terbesar dulu) lalu
+biaya per hasil termahal; keduanya **tidak pernah beririsan**. Saran "matikan" = biaya per hasil
+> 2× rata-rata; "naikkan" = ≤ ½ rata-rata; di bawah 5 hasil diberi catatan "sampel kecil".
+**Pembulatan (sama untuk seluruh library, lihat `CLAUDE.md`):** skill ini tidak menghitung PPN;
+nominal Rupiah dibulatkan ke rupiah terdekat, 0,5 menjauhi nol (mis. Rp100,5 → Rp101). Persen & ROAS dibulatkan 1 desimal,
 0,05 menjauhi nol (mis. 91,65% → 91,7%). Perbandingan minggu lalu memakai rumus yang sama seperti
 `laporan-harian-usaha`: `(sekarang − lalu) ÷ lalu × 100`; pembanding Rp0 → "naik dari Rp 0 (persen
 tidak dihitung)"; keduanya Rp0 → "sama-sama Rp 0". *Pembulatan di sini belum dicocokkan dengan
@@ -123,7 +144,10 @@ Coretax (tidak relevan untuk laporan iklan, tapi mengikuti standar pembulatan li
 ## Format output
 ```
 LAPORAN IKLAN MINGGUAN — <Platform>
-Periode: <awal> s.d. <akhir>
+Periode: <awal> s.d. <akhir>             (dari kolom tanggal/Reporting starts-ends/baris judul)
+
+⚠️ PERLU DICEK SEBELUM DIPAKAI:          (hanya bila ada)
+- ...
 
 Total belanja iklan: Rp ...
 Tayangan: ... | Klik: ... | <Hasil>: ...
@@ -133,23 +157,22 @@ ROAS: ...x                              (bila ada data nilai/omzet iklan)
 Biaya iklan vs omzet: ...%  dari omzet Rp ...   (bila --omzet diisi)
 
 VS MINGGU LALU                           (bila --sebelumnya diisi)
-Biaya iklan: Rp ... (naik/turun ...% dari minggu lalu)
-Hasil: ... (naik/turun ...%)
-Biaya per hasil: Rp ... (naik/turun ...%)
+Biaya iklan: Rp ... (naik/turun ...% dari minggu lalu Rp ...)
+Hasil: ... (naik/turun ...% dari minggu lalu ...)
+Biaya per hasil: Rp ... (naik/turun ...% dari minggu lalu Rp ...)
 
-3 TERBAIK (biaya per hasil termurah)
-1. <nama>: Rp .../hasil (... hasil, Rp ... terpakai)
-...
+TERBAIK (biaya per hasil termurah)        (maks. 3)
+1. <nama>: Rp .../hasil (... hasil, Rp ...)
 
-3 PERLU PERHATIAN (biaya per hasil termahal / tanpa hasil)
+PERLU PERHATIAN (tanpa hasil / biaya per hasil termahal)   (maks. 3, tanpa irisan)
 1. <nama>: Rp ... terpakai, 0 hasil
-...
 
 SARAN
 1. ...
 (Saran berdasarkan angka minggu ini, bukan jaminan hasil. Keputusan tetap di tangan Anda.)
 
-Catatan: ...      ⚠️ ...
+Catatan:
+- ... (mata uang/kurs, sel kosong = 0, baris total dilewati, PPN bila --omzet, kolom dibaca)
 ```
 
 ## Contoh
@@ -158,17 +181,29 @@ Omzet toko minggu ini 20 juta."
 
 **Alur:** jalankan `analisis meta_minggu_ini.csv --sebelumnya meta_minggu_lalu.csv --omzet
 20000000` → platform terdeteksi "Meta Ads (Facebook/Instagram)", 1 baris "Total" dilewati → kirim
-`teks` apa adanya. Contoh lengkap hasil nyata: `examples/uji-pembuat-01-meta-mingguan-vs-lalu.md`.
+`teks` apa adanya. Contoh lengkap hasil nyata: `examples/uji-pembuat-01-meta-mingguan-vs-lalu.md`
+dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md`.
 
 ## Batasan & penanganan error
-- **Nama kolom bisa berbeda** menurut bahasa/versi UI Ads Manager (lihat sumber &
-  keterbatasannya di `references/sumber-kolom.md`). Deteksi gagal → script memberi daftar kolom
-  yang ada + cara mengisi manual (`--kolom-...`); jangan menebak sendiri kolom mana yang dipakai.
-- **Baris "Total"/"Jumlah"** di ekspor otomatis dilewati (dicocokkan lewat nama baris, bukan
-  dijumlah dua kali) — jumlahnya dilaporkan di `catatan`.
+- **Nama kolom bisa berbeda** menurut bahasa/versi UI Ads Manager. **Belum semua nama kolom
+  terverifikasi dari ekspor asli**: nama kolom Meta Ads dan perilaku sel `Results` kosong,
+  bentuk ekspor Google Ads (baris judul, `Total: Account`), dan beberapa kolom TikTok bersandar
+  pada ringkasan/sumber pihak ketiga (status per platform di `references/sumber-kolom.md`).
+  Karena itu laporan selalu mencetak "Kolom dibaca: ..." di Catatan: cocokkan sekali dengan file
+  pengguna. Deteksi gagal → script memberi daftar kolom + cara mengisi manual (`--kolom-...`);
+  jangan menebak sendiri.
+- **Baris total** ("Total", "Total:", "Total (5 iklan)", "Total: Account", "Jumlah Total", "Grand
+  Total", "Subtotal"...) di kolom teks mana pun dilewati; baris tanpa label yang angkanya persis =
+  jumlah semua baris lain juga dianggap total (dengan ⚠️). Nama kampanye seperti "Total Look
+  Hijab" tetap dihitung.
+- **Cek kewajaran:** CPC < Rp 10 atau ROAS > 50x → ⚠️ "tidak wajar" (tanda kolom/mata uang salah).
+- **Rentang data > 7 hari**, tanggal tak terbaca, atau file minggu lalu = file minggu ini → ⚠️.
 - **Pembagi nol** (0 klik/0 tayangan/0 hasil) → ditampilkan `-`, bukan error atau angka mengada-ada.
-- **Mata uang bukan IDR** → ditolak sampai pengguna memberi `--kurs` (dicatat sumber & tanggal
-  kursnya) atau menegaskan `--mata-uang IDR`. Tidak pernah dikonversi diam-diam.
+- **Mata uang bukan IDR** (label kolom, kolom Currency, atau simbol di sel) → ditolak sampai
+  pengguna memberi `--kurs` > 0 (dicatat sumber & tanggal kursnya) atau menegaskan `--mata-uang
+  IDR`. Tidak pernah dikonversi diam-diam.
+- **PPN:** biaya di file ekspor biasanya belum termasuk PPN yang ditagihkan platform ke akun
+  Indonesia; bila `--omzet` diisi, laporan mengingatkan untuk cek invoice platform.
 - **Minggu tanpa data pembanding** → laporan tetap dibuat tanpa bagian "VS MINGGU LALU"; jangan
   mengarang angka minggu lalu.
 - **Bandingkan platform/jenis hasil yang beda** (mis. minggu ini Meta, minggu lalu Google Ads) →
@@ -180,8 +215,9 @@ Omzet toko minggu ini 20 juta."
   diawali `=`/`+`/`-`/`@` otomatis diberi awalan kutip tunggal agar tidak dieksekusi sebagai
   formula (diuji di `tests/uji_regresi.py`).
 - **Saran bukan jaminan hasil.** Semua saran dihasilkan dari ambang angka sederhana (biaya tanpa
-  hasil, biaya-per-hasil 2× rata-rata, ROAS < 1x) berdasarkan data minggu itu saja — bukan
+  hasil, biaya-per-hasil 2× rata-rata, ROAS < 1x) berdasarkan data minggu itu saja: bukan
   prediksi, bukan audit strategi iklan penuh, dan tidak menilai kualitas materi/target iklan.
+  Hasil < 5 diberi catatan "sampel kecil".
 - **Python tidak bisa dijalankan:** hitung manual dengan rumus di atas per kampanye, jumlahkan
   baris (kecuali baris Total), dan beri tahu pengguna hasil belum diverifikasi script.
 - **Privasi:** hanya angka performa iklan (biaya, tayangan, klik, hasil, nilai). Tidak ada data

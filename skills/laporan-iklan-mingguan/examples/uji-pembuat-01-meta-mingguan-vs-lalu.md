@@ -36,10 +36,10 @@ python3 scripts/laporan_iklan.py analisis meta_minggu_ini.csv \
   --sebelumnya meta_minggu_lalu.csv --omzet 20000000
 ```
 
-## Output (apa adanya dari script)
+## Output (apa adanya dari script, v1.0.1)
 ```
 LAPORAN IKLAN MINGGUAN — Meta Ads (Facebook/Instagram)
-Periode: (sesuai rentang tanggal file yang diunggah)
+Periode: (tidak ada kolom tanggal di file; sebutkan periodenya)
 
 Total belanja iklan: Rp 2.900.000
 Tayangan: 150.000 | Klik: 1.400 | Results: 50
@@ -49,25 +49,26 @@ ROAS: 1,9x
 Biaya iklan vs omzet: 14,5% dari omzet Rp 20.000.000
 
 VS MINGGU LALU
-Biaya iklan: Rp 2.900.000 (naik 18,4% dari minggu lalu)
-Hasil: 50 (naik 8,7% dari minggu lalu)
-Biaya per hasil: Rp 58.000 (naik 8,9% dari minggu lalu)
+Biaya iklan: Rp 2.900.000 (naik 18,4% dari minggu lalu Rp 2.450.000)
+Hasil: 50 (naik 8,7% dari minggu lalu 46)
+Biaya per hasil: Rp 58.000 (naik 8,9% dari minggu lalu Rp 53.261)
 
-3 TERBAIK (biaya per Results termurah)
+TERBAIK (biaya per Results termurah)
 1. Promo Lebaran - Kaos: Rp 33.333/Results (45 Results, Rp 1.500.000)
-2. Prospek Baru - Tas: Rp 120.000/Results (5 Results, Rp 600.000)
 
-3 PERLU PERHATIAN (biaya per hasil termahal / tanpa hasil)
+PERLU PERHATIAN (tanpa hasil / biaya per hasil termahal)
 1. Retargeting - Semua Produk: Rp 800.000 terpakai, 0 Results
 2. Prospek Baru - Tas: Rp 120.000/Results (5 Results, Rp 600.000)
-3. Promo Lebaran - Kaos: Rp 33.333/Results (45 Results, Rp 1.500.000)
 
 SARAN
 1. Tinjau/hentikan iklan 'Retargeting - Semua Produk': sudah menghabiskan Rp 800.000 tanpa Results sama sekali.
-2. Tinjau/matikan iklan 'Prospek Baru - Tas': biaya per Results Rp 120.000, 2,9x rata-rata (Rp 42.000).
+2. Tinjau/matikan iklan 'Prospek Baru - Tas': biaya per Results Rp 120.000, 2,1x rata-rata semua iklan (Rp 58.000).
 (Saran berdasarkan angka minggu ini, bukan jaminan hasil. Keputusan tetap di tangan Anda.)
 
-Catatan: 1 baris 'Total/Jumlah' di file diabaikan agar tidak dihitung dua kali.
+Catatan:
+- 1 baris total/ringkasan ('Total') diabaikan agar tidak dihitung dua kali.
+- Biaya iklan diambil dari file ekspor. Tagihan platform ke akun Indonesia bisa ditambah PPN (cek invoice/faktur platform), jadi persentase terhadap omzet bisa sedikit lebih tinggi.
+- Kolom dibaca: nama='Campaign name', biaya='Amount spent (IDR)', tayangan='Impressions', klik='Link clicks', hasil='Results', nilai='Purchase conversion value'.
 ```
 
 ## Verifikasi angka manual (independen dari script)
@@ -83,9 +84,14 @@ Catatan: 1 baris 'Total/Jumlah' di file diabaikan agar tidak dihitung dua kali.
 - Hasil minggu lalu = 40 + 2 + 4 = 46. Kenaikan hasil = (50 − 46) ÷ 46 × 100 = 8,695...% →
   **8,7%** ✓.
 - Biaya iklan vs omzet = 2.900.000 ÷ 20.000.000 × 100 = **14,5%** ✓.
-- Saran #2: rata-rata biaya-per-hasil kampanye ber-hasil (Promo + Prospek) = (1.500.000 + 600.000)
-  ÷ (45 + 5) = 2.100.000 ÷ 50 = 42.000. Prospek Baru (120.000) = 120.000 ÷ 42.000 = 2,857... →
-  **2,9× rata-rata** ✓.
+- Biaya per hasil minggu lalu = 2.450.000 ÷ 46 = 53.260,87 → **Rp 53.261**; kenaikan
+  (58.000 − 53.260,87) ÷ 53.260,87 × 100 = 8,898...% → **8,9%** ✓.
+- Saran #2 (v1.0.1): pembanding = biaya per hasil **semua iklan** (angka yang sama dengan baris
+  "Biaya per Results" di atas) = 58.000. Prospek Baru 120.000 ÷ 58.000 = 2,068... → **2,1×
+  rata-rata** ✓. (v1.0.0 memakai rata-rata iklan ber-hasil saja, Rp 42.000, yang berbeda dari
+  angka di atasnya dan membingungkan; lihat R5 di `HASIL-UJI.md`.)
+- Daftar TERBAIK hanya berisi Promo Lebaran; v1.0.1 tidak lagi menaruh iklan yang sama di TERBAIK
+  dan PERLU PERHATIAN sekaligus (S2).
 
 Semua angka di atas dihitung ulang manual dan cocok dengan keluaran script — tidak ada angka yang
 diperkirakan/dikarang.
@@ -96,5 +102,5 @@ diperkirakan/dikarang.
   bila filenya punya kolom tanggal (harian per kampanye), script mengelompokkan otomatis per
   kampanye dan mendeteksi rentang tanggalnya (lihat `SKILL.md`).
 - Uji lebih lengkap (per platform lain, format angka campur, mata uang asing, file rusak, gabung
-  lintas platform, formula injection) ada di `tests/uji_regresi.py` — 19 skenario, semua lulus
-  (`python3 tests/uji_regresi.py`).
+  lintas platform, formula injection, serta regresi semua temuan uji independen v1.0.0) ada di
+  `tests/uji_regresi.py`: 49 tes, semua lulus (`python3 tests/uji_regresi.py`).

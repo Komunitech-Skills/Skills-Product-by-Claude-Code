@@ -1,64 +1,64 @@
 nama,kategori,jalur,sumber_url,lisensi,skor_kualitas,tier_usulan,harga_usulan_idr,tier_final,harga_final_idr,versi,platform_teruji,status,tanggal_update
-caption-sosmed-umkm,Marketing & Konten,orisinal,,,7,gratis,0,,,1.1.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-rekap-penjualan-csv,Data & Analisis,orisinal,,,8,ecer,99000,,,1.2.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-lowongan-kerja,HR,orisinal,,,8,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-surat-peringatan-karyawan,HR,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-surat-resmi,Legal & Dokumen,orisinal,,,8,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-notulen-rapat,Produktivitas,orisinal,,,8,gratis,0,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-sop-writer,Produktivitas,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-surat-penawaran-harga,Sales,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-proposal-kerjasama,Sales,orisinal,,,8,ecer,99000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-follow-up-prospek,Sales,orisinal,,,8,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-balas-chat-cs,Customer Service,orisinal,,,8,gratis,0,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-tagih-piutang,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-listing-marketplace,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-naskah-live-jualan,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-kalender-konten-30hari,Marketing & Konten,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-broadcast-wa,Marketing & Konten,orisinal,,,8,ecer,149000,,,1.0.4,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-balas-ulasan-pelanggan,Customer Service,orisinal,,,8,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-hitung-hpp,Keuangan & Akuntansi,orisinal,,,9,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-harga-jual-marketplace,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-hitung-ppn,Keuangan & Akuntansi,orisinal,,,8,gratis,0,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-pph-final-umkm,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-buat-invoice,Keuangan & Akuntansi,orisinal,,,8,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-laporan-keuangan-emkm,Keuangan & Akuntansi,orisinal,,,8,vip,149000,,,1.3.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-perjanjian-sederhana,Legal & Dokumen,orisinal,,,8,vip,149000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-arus-kas-13minggu,Keuangan & Akuntansi,orisinal,,,7,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-rekonsiliasi-bank,Keuangan & Akuntansi,orisinal,,,7,ecer,149000,,,1.2.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-pengajuan-kur,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,,,1.2.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-ekstrak-nota-faktur,Keuangan & Akuntansi,kurasi,https://github.com/manairalabs/bicara-skills,MIT,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-analisis-ulasan,E-commerce/Marketplace Indonesia,orisinal,,,7,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-promo-kalender,Marketing & Konten,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-katalog-reseller,Sales,orisinal,,,8,ecer,149000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-foto-produk-brief,Marketing & Konten,orisinal,,,8,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-pph21-ter,Keuangan & Akuntansi,orisinal,,,9,ecer,149000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-slip-gaji-bpjs,HR,orisinal,,,9,ecer,149000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-hitung-thr,HR,orisinal,,,9,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-karyawan-ai-mulai,Produktivitas,orisinal,,,8,gratis,0,,,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + perintah nyata),lulus,2026-09-23
-cek-privasi-openclaw,Produktivitas,orisinal,,,8,gratis,0,,,1.1.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + perintah nyata),lulus,2026-09-23
-laporan-otomatis-terjadwal,Produktivitas,orisinal,,,8,ecer,149000,,,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + gateway lokal),lulus,2026-09-23
-buku-stok,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,149000,,,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + gateway lokal),lulus,2026-09-23
-agen-cs-toko,Customer Service,orisinal,,,8,ecer,149000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-presentasi-instan,Produktivitas,kurasi,https://github.com/zarazhangrui/frontend-slides,MIT,8,ecer,99000,,,1.1.2,claude-code (simulasi agent),lulus,2026-09-23
-cv-lamaran-ats,HR,orisinal,,,8,ecer,49000,,,1.0.1,claude-code (simulasi agent),lulus,2026-09-23
-riset-calon-pelanggan,Sales,orisinal,,,8,ecer,99000,,,1.0.1,claude-code (simulasi agent),lulus,2026-09-23
-pengingat-follow-up,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,99000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 & 2026.9.6 (uji CLI + gateway lokal),lulus,2026-09-24
-ringkas-grup-wa,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
-absensi-lokal,HR,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
-laporan-status-kantor,Produktivitas,kurasi,https://github.com/anthropics/skills/tree/main/skills/internal-comms,Apache-2.0,8,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
-konten-mingguan,Marketing & Konten,orisinal,,Proprietary Komunitech,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
-edukasi-pasien-klinik,Customer Service,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.4,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
-asisten-tulis-riset,Marketing & Konten,orisinal,,Proprietary Komunitech,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
-kasir-lokal,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Komunitech,9,ecer,199000,,,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
-pantau-pasar-kripto,Data & Analisis,orisinal,,Proprietary Komunitech,9,vip,149000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji CLI + gateway lokal),lulus,2026-09-25
+caption-sosmed-umkm,Marketing & Konten,orisinal,,,7,gratis,0,gratis,0,1.1.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+rekap-penjualan-csv,Data & Analisis,orisinal,,,8,ecer,99000,ecer,99000,1.2.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+lowongan-kerja,HR,orisinal,,,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+surat-peringatan-karyawan,HR,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+surat-resmi,Legal & Dokumen,orisinal,,,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+notulen-rapat,Produktivitas,orisinal,,,8,gratis,0,gratis,0,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+sop-writer,Produktivitas,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+surat-penawaran-harga,Sales,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+proposal-kerjasama,Sales,orisinal,,,8,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+follow-up-prospek,Sales,orisinal,,,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+balas-chat-cs,Customer Service,orisinal,,,8,gratis,0,gratis,0,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+tagih-piutang,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+listing-marketplace,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+naskah-live-jualan,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+kalender-konten-30hari,Marketing & Konten,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+broadcast-wa,Marketing & Konten,orisinal,,,8,ecer,149000,ecer,149000,1.0.4,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+balas-ulasan-pelanggan,Customer Service,orisinal,,,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+hitung-hpp,Keuangan & Akuntansi,orisinal,,,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+harga-jual-marketplace,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+hitung-ppn,Keuangan & Akuntansi,orisinal,,,8,gratis,0,gratis,0,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+pph-final-umkm,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+buat-invoice,Keuangan & Akuntansi,orisinal,,,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+laporan-keuangan-emkm,Keuangan & Akuntansi,orisinal,,,8,vip,149000,vip,149000,1.3.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+perjanjian-sederhana,Legal & Dokumen,orisinal,,,8,vip,149000,vip,149000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+arus-kas-13minggu,Keuangan & Akuntansi,orisinal,,,7,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+rekonsiliasi-bank,Keuangan & Akuntansi,orisinal,,,7,ecer,149000,ecer,149000,1.2.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+pengajuan-kur,Keuangan & Akuntansi,orisinal,,,8,ecer,99000,ecer,99000,1.2.0,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+ekstrak-nota-faktur,Keuangan & Akuntansi,kurasi,https://github.com/manairalabs/bicara-skills,MIT,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+analisis-ulasan,E-commerce/Marketplace Indonesia,orisinal,,,7,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+promo-kalender,Marketing & Konten,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+katalog-reseller,Sales,orisinal,,,8,ecer,149000,ecer,149000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+foto-produk-brief,Marketing & Konten,orisinal,,,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+pph21-ter,Keuangan & Akuntansi,orisinal,,,9,ecer,149000,ecer,149000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+slip-gaji-bpjs,HR,orisinal,,,9,ecer,149000,ecer,149000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+hitung-thr,HR,orisinal,,,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+karyawan-ai-mulai,Produktivitas,orisinal,,,8,gratis,0,gratis,0,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + perintah nyata),lulus,2026-09-23
+cek-privasi-openclaw,Produktivitas,orisinal,,,8,gratis,0,gratis,0,1.1.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + perintah nyata),lulus,2026-09-23
+laporan-otomatis-terjadwal,Produktivitas,orisinal,,,8,ecer,149000,ecer,149000,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + gateway lokal),lulus,2026-09-23
+buku-stok,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,149000,ecer,149000,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + gateway lokal),lulus,2026-09-23
+agen-cs-toko,Customer Service,orisinal,,,8,ecer,149000,ecer,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
+presentasi-instan,Produktivitas,kurasi,https://github.com/zarazhangrui/frontend-slides,MIT,8,ecer,99000,ecer,99000,1.1.2,claude-code (simulasi agent),lulus,2026-09-23
+cv-lamaran-ats,HR,orisinal,,,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent),lulus,2026-09-23
+riset-calon-pelanggan,Sales,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent),lulus,2026-09-23
+pengingat-follow-up,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 & 2026.9.6 (uji CLI + gateway lokal),lulus,2026-09-24
+ringkas-grup-wa,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
+absensi-lokal,HR,orisinal,,Proprietary Komunitech,8,ecer,149000,ecer,149000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
+laporan-status-kantor,Produktivitas,kurasi,https://github.com/anthropics/skills/tree/main/skills/internal-comms,Apache-2.0,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
+konten-mingguan,Marketing & Konten,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
+edukasi-pasien-klinik,Customer Service,orisinal,,Proprietary Komunitech,8,ecer,149000,ecer,149000,1.0.4,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
+asisten-tulis-riset,Marketing & Konten,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
+kasir-lokal,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Komunitech,9,ecer,199000,ecer,199000,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
+pantau-pasar-kripto,Data & Analisis,orisinal,,Proprietary Komunitech,9,vip,149000,vip,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji CLI + gateway lokal),lulus,2026-09-25
 laporan-harian-usaha,Data & Analisis,orisinal,,Proprietary Komunitech,8,vip,149000,,,1.1.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji CLI + gateway lokal: automations add/run),uji,2026-09-26
-crm-wa,Sales,orisinal,,Proprietary Komunitech,9,ecer,149000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations add/run),lulus,2026-09-25
-rencana-pelajaran-guru,Pendidikan,kurasi,https://github.com/anthropics/k12-teacher-skills,Apache-2.0,8,ecer,129000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-24
-dolibarr-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,149000,,,1.0.5,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations run),lulus,2026-09-25
-pdf-lokal,Produktivitas,orisinal,,Proprietary Komunitech,9,ecer,99000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
-copy-landing-page,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT,8,ecer,99000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
-audit-seo-toko-online,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT,7,ecer,49000,,,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
-laporan-iklan-mingguan,Marketing & Konten,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.0,,uji,2026-09-25
+crm-wa,Sales,orisinal,,Proprietary Komunitech,9,ecer,149000,ecer,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations add/run),lulus,2026-09-25
+rencana-pelajaran-guru,Pendidikan,kurasi,https://github.com/anthropics/k12-teacher-skills,Apache-2.0,8,ecer,129000,ecer,129000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-24
+dolibarr-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,149000,ecer,149000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI + automations run),lulus,2026-09-25
+pdf-lokal,Produktivitas,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
+copy-landing-page,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
+audit-seo-toko-online,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT,7,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
+laporan-iklan-mingguan,Marketing & Konten,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.1,,uji,2026-09-26
 pesan-prospek-wa,Sales,kurasi,https://github.com/coreyhaines31/marketingskills,MIT,8,ecer,49000,ecer,49000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
 brainstorming-ide-usaha,Produktivitas,kurasi,https://github.com/obra/superpowers,MIT,9,ecer,49000,ecer,49000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
 kontrak-kerja-pkwt,HR,orisinal,,,9,ecer,99000,ecer,99000,1.0.4,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
@@ -68,3 +68,6 @@ sop-onboarding,HR,orisinal,,,8,ecer,49000,ecer,49000,1.0.2,claude-code (simulasi
 tender-checklist,Sales,orisinal,,,9,ecer,149000,ecer,149000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 analisis-excel,Data & Analisis,orisinal,,,9,ecer,99000,ecer,99000,1.0.11,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
 atur-keuangan-pribadi,Kehidupan Pribadi,kurasi,https://github.com/openaccountant/skills,MIT,9,ecer,49000,ecer,49000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+laporan-klien-konsultan,Produktivitas,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
+pengingat-pasien-klinik,Customer Service,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
+buku-piutang,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,,ecer,149000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
