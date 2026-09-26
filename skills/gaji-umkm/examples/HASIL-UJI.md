@@ -70,3 +70,19 @@ Tanpa regresi: 36 tes OK (1 dilewati), angka kunci Sep/Des v1.0.0 sama persis, `
 
 ### Skor: **9/10**
 Alasan: kedua P1 tertutup dengan pagar script + aturan SKILL.md yang bersumber; semua angka (termasuk Desember & lebih bayar) cocok dengan hitungan independen; tidak ada regresi. Dikurangi 1 untuk celah `gaji-pokok-dibayar` dan teks penutup pratinjau yang bertentangan (perbaikan kecil). Belum diuji: DTP (ayat (2)) dengan data, Coretax, platform asli.
+
+## Uji ulang independen v1.0.2 (Akun B, 2026-09-26)
+- **Penguji:** agent independen Akun B (bukan pembuat) · rincian: `examples/07-uji-ulang-v1.0.2-akun-b.md`
+- **Lingkungan:** salinan skill di scratchpad, Linux, Python 3.11, data fiktif (11 karyawan baru); pembanding v1.0.1 dari `git archive 230da94`; simulasi agent `claude-code`.
+
+| Temuan uji ulang v1.0.1 | Status v1.0.2 |
+|---|---|
+| [SEDANG-RENDAH] `isi --gaji-pokok-dibayar` menurunkan dasar BPJS di bulan penuh | **Tertutup.** `isi --gaji-pokok-dibayar`/`--tunjangan-tetap-dibayar` yang menurunkan gaji pokok + tunjangan tetap di bulan penuh (termasuk karyawan masuk tanggal 1) ditolak tanpa `--ya-saya-paham` (exit 1, `masalah_kepatuhan: dasar_bpjs_turun_bulan_penuh`, DB identik); `isi --file` pratinjau → `--ya` ditolak; dengan `--ya-saya-paham --alasan-khusus` tersimpan dan tercatat di `log`; `hitung` mengingatkan (juga pada DB celah lama). Prorata masuk 13/10 dan keluar 20/10 **tidak terhalang**; penukaran gaji pokok↔tunjangan tetap dengan jumlah sama tidak dipagari. |
+| [RENDAH] teks penutup pratinjau | **Tertutup.** Pratinjau PERLU PERSETUJUAN KHUSUS kini ditutup "BELUM BISA DISIMPAN DENGAN --ya SAJA … + --ya --ya-saya-paham --alasan-khusus … Jangan menambahkan --ya-saya-paham atas inisiatif sendiri." |
+
+Angka: verifikasi Decimal independen **21 karyawan-bulan** (Oktober 11 termasuk prorata masuk/keluar, Masa Pajak Terakhir dengan pengembalian 667.692, batas Kes/JP, lembur; November 10) — **21/21 cocok** PPh 21, gaji bersih, 8 komponen iuran, dan total setor (Okt: Kes 3.947.174, TK 7.565.852, PPh 3.831.025; Nov: 4.075.000 / 8.450.178 / 4.732.780). v1.0.1 dan v1.0.2 atas DB yang sama → `payroll` & `total` **identik**; angka kunci uji v1.0.0/v1.0.1 (Sep 3.087.764, Des 2.596.347, biaya 111.295.747 / 127.959.820) sama persis.
+Temuan baru: **[RENDAH, desain]** `karyawan ubah --gaji-pokok` yang menurunkan gaji besar-besaran (15 jt → 5 jt) tanpa peringatan dasar BPJS (bisa sah; bergantung Aturan wajib 7). P3 lama (baris JP di `pengingat` menampilkan total BPJS TK) belum dikerjakan.
+Tanpa regresi: 40 tes OK; `validate.py --skill gaji-umkm` ✅.
+
+### Skor: **9/10**
+Alasan: celah dan teks pratinjau tertutup dengan pagar yang tepat sasaran (bulan penuh saja, prorata tetap lancar) serta tercatat di log; angka BPJS & PPh 21 tidak berubah dan cocok dengan hitungan independen. Belum 10: DTP, Coretax, dan platform asli belum diuji; catatan kecil `karyawan ubah` dan P3.

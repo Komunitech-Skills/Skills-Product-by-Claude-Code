@@ -60,6 +60,12 @@ def rp(nilai, tanda=True):
     return ("-" + teks) if (neg and tanda) else teks
 
 
+def rp_kata(nilai):
+    """Seperti rp(), tetapi negatif ditulis 'minus Rp ...' (lebih mudah dibaca awam)."""
+    v = Decimal(nilai)
+    return ("minus " + rp(-v)) if v < 0 else rp(v)
+
+
 def dari_sen(n):
     return Decimal(int(n or 0)) / SERATUS
 
@@ -716,10 +722,15 @@ def buka_db(path):
             raise Gagal("File '{}' bukan database SQLite (bukan file budget Actual).".format(p), K_DB)
     uri = p.as_uri() + "?mode=ro"
     try:
-        src = sqlite3.connect(uri, uri=True, timeout=5)
+        src = sqlite3.connect(uri, uri=True, timeout=5, isolation_level=None)
         mem = sqlite3.connect(":memory:")
         try:
+            # Ambil kunci baca (SHARED) dulu: bila Actual sedang menulis, ini gagal dengan 'locked'
+            # setelah 5 detik (backup() bawaan Python akan menunggu tanpa batas).
+            src.execute("BEGIN")
+            src.execute("SELECT count(*) FROM sqlite_master").fetchone()
             src.backup(mem)
+            src.execute("COMMIT")
         finally:
             src.close()
     except sqlite3.OperationalError as e:
@@ -1018,7 +1029,7 @@ def cmd_ringkasan(a):
         for x in sorted(jebol, key=lambda x: x["sisa"]):
             L.append("- {}: minus {} (anggaran {}, terpakai {}{})".format(
                 x["kategori"], rp(dari_sen(-x["sisa"])), rp(dari_sen(x["anggaran"])), rp(dari_sen(x["terpakai"])),
-                ", bawaan bulan lalu " + rp(dari_sen(x["bawaan"])) if x["bawaan"] else ""))
+                ", bawaan bulan lalu " + rp_kata(dari_sen(x["bawaan"])) if x["bawaan"] else ""))
         if h["jenis"] == "envelope":
             L.append("  Saran: tutup dari kategori yang masih bersisa, atau kurangi anggaran bulan depan.")
     else:
@@ -1034,7 +1045,7 @@ def cmd_ringkasan(a):
             tanda = " (JEBOL)" if x["sisa"] < 0 else ""
             sembunyi = " (disembunyikan)" if x["tersembunyi"] else ""
             L.append("- {}{}: sisa {}{} | anggaran {}, terpakai {}".format(
-                x["kategori"], sembunyi, rp(dari_sen(x["sisa"])), tanda, rp(dari_sen(x["anggaran"])),
+                x["kategori"], sembunyi, rp_kata(dari_sen(x["sisa"])), tanda, rp(dari_sen(x["anggaran"])),
                 rp(dari_sen(x["terpakai"]))))
     if not aktif:
         L.append("- (belum ada anggaran atau pengeluaran bulan ini)")

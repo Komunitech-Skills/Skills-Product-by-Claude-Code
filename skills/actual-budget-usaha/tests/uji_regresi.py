@@ -54,6 +54,16 @@ def loosely_parse_amount(s):
     return Decimal(ex(s[:m.start()]) + "." + ex(s[m.start() + 1:]))
 
 
+def baca_csv(path):
+    with open(path, encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def baca_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
 class TmpMixin:
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp(prefix="uji-actual-"))
@@ -116,7 +126,7 @@ class UjiKonversi(TmpMixin, unittest.TestCase):
         out = self.tmp / (nama + "-actual.csv")
         kode, teks, err = jalan("konversi", MUT / (nama + "-sep-2026.csv"), "--keluaran", out, "--json", *opsi)
         data = json.loads(teks) if kode == 0 else None
-        rows = list(csv.DictReader(open(out, encoding="utf-8"))) if kode == 0 else None
+        rows = baca_csv(out) if kode == 0 else None
         return kode, data, rows, err
 
     def test_07_bca_tanpa_tahun_minta_tahun(self):
@@ -244,7 +254,7 @@ class UjiKonversi(TmpMixin, unittest.TestCase):
         out = self.tmp / "o.csv"
         kode, teks, _ = jalan("konversi", p, "--tahun", "2027", "--keluaran", out, "--json")
         self.assertEqual(kode, 0)
-        rows = list(csv.DictReader(open(out, encoding="utf-8")))
+        rows = baca_csv(out)
         self.assertEqual([r["Date"] for r in rows], ["2026-12-30", "2027-01-02"])
 
     def test_21_teks_mutasi_hanya_data(self):
@@ -263,7 +273,7 @@ class UjiKonversi(TmpMixin, unittest.TestCase):
 
 class UjiRingkasan(TmpMixin, unittest.TestCase):
     def test_23_cocok_dengan_hitungan_actual_amplop(self):
-        acuan = json.load(open(RINA / "acuan-getBudgetMonth.json", encoding="utf-8"))["bulan"]
+        acuan = baca_json(RINA / "acuan-getBudgetMonth.json")["bulan"]
         con, _ = ab.buka_db(RINA)
         for bulan, a in acuan.items():
             if bulan == "2026-10":
@@ -281,7 +291,7 @@ class UjiRingkasan(TmpMixin, unittest.TestCase):
         con.close()
 
     def test_24_bulan_tanpa_transaksi_membawa_minus(self):
-        acuan = json.load(open(RINA / "acuan-getBudgetMonth.json", encoding="utf-8"))["bulan"]
+        acuan = baca_json(RINA / "acuan-getBudgetMonth.json")["bulan"]
         con, _ = ab.buka_db(RINA)
         h = ab.hitung_bulan(con, 202610)
         con.close()
@@ -289,7 +299,7 @@ class UjiRingkasan(TmpMixin, unittest.TestCase):
         self.assertFalse(h["ada_transaksi"])
 
     def test_25_cocok_dengan_hitungan_actual_tracking(self):
-        acuan = json.load(open(KUE / "acuan-getBudgetMonth.json", encoding="utf-8"))["bulan"]
+        acuan = baca_json(KUE / "acuan-getBudgetMonth.json")["bulan"]
         con, _ = ab.buka_db(KUE)
         for bulan, a in acuan.items():
             h = ab.hitung_bulan(con, int(bulan.replace("-", "")))

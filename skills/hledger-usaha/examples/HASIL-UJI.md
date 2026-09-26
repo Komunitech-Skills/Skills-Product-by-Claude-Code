@@ -109,3 +109,18 @@ Tanpa regresi: 36/36 OK dengan hledger, 36 OK (5 dilewati) tanpa hledger; angka 
 
 ### Skor: **8/10**
 Alasan: PPh 23 dan larangan pembukuan ganda dikerjakan dengan baik dan angkanya cocok dengan hledger asli; tidak ada regresi. Turun dari 9 karena perbaikan temuan 3 tidak bekerja pada kasus yang justru memicu temuan itu (mutasi dengan tarik tunai ATM), sehingga laporan laba rugi dari impor bank masih bisa disajikan tanpa peringatan. Setelah `cek_tunai` diperbaiki + dites → layak 9.
+
+## Uji ulang independen v1.0.2 (Akun B, 2026-09-26)
+- **Penguji:** agent independen Akun B (bukan pembuat) · rincian: `examples/07-uji-ulang-v1.0.2-akun-b.md`
+- **Lingkungan:** salinan skill di scratchpad, Linux, Python 3.11, data fiktif; **hledger 1.52.4 resmi diunduh ulang** dari halaman rilis GitHub, SHA-256 `f76a2e40…9643a` = tabel `docs/panduan-hledger.md` (digest API rilis tidak bisa dibaca dari sesi ini).
+
+| Temuan uji ulang v1.0.1 | Status v1.0.2 |
+|---|---|
+| [SEDANG] CATATAN tunai tertipu tarik/setor tunai | **Tertutup.** CATATAN kini muncul pada impor Agustus (TARIKAN ATM), jurnal skenario 03 lama (TARIKAN ATM + Setor Tunai; `laba-rugi` & `bulanan`) dan data baru (2× TARIKAN ATM, SETOR TUNAI, `catat tarik-tunai`/`setor-tunai`, prive tunai), dengan hledger maupun mesin bawaan; hilang setelah penjualan/biaya tunai dicatat. Angka laba/neraca data baru cocok dengan hitung Decimal penguji dan hledger asli (laba 1.235.000 → 6.243.333; aset 15.653.333 SEIMBANG). |
+| [RENDAH] `--pph23` pada `--jenis jual` | **Tertutup.** `--pph23 2%`/`--diterima`/nominal, alias `penjualan`, `--via tempo`, dan `--batch` ditolak (exit 2) dengan pesan jelas + arahan `--jenis jasa`; jurnal tidak berubah. Jasa (2% × 3.333.333 = 66.666, dibulatkan ke bawah) dan `terima-piutang --diterima` tetap benar. |
+
+Temuan baru: **[RENDAH]** `terima-piutang --diterima` atas piutang yang berasal dari `--jenis jual` (barang) tetap dicatat sebagai PPh 23 tanpa peringatan.
+Tanpa regresi: 38/38 OK dengan hledger, 38 OK (5 dilewati) tanpa hledger; angka kunci v1.0.0 (914.749,50; 19.880.000; −6.832.354,67 / 21.167.645,33 SEIMBANG) sama persis; `validate.py --skill hledger-usaha` ✅.
+
+### Skor: **9/10**
+Alasan: kedua temuan U19 tertutup dan terbukti pada kasus asal temuan maupun data baru, angka cocok dengan hledger asli dan hitungan independen, tanpa regresi. Belum 10: Windows/Mac dan jadwal OpenClaw belum diuji di platform asli; sisa celah PPh 23 lewat `terima-piutang` (kecil).

@@ -67,3 +67,19 @@ Tanpa regresi: 65 tes OK; DB v1.0.0 → Agustus 8.245.000, ekspor emkm Agustus i
 
 ### Skor: **8/10**
 Alasan: kedua temuan SEDANG lama tertutup dan angka inti benar ke rupiah; tetapi perbaikan pindah dana memunculkan ketidakcocokan baru di rantai kas-umkm → laporan-keuangan-emkm (laba & neraca meleset untuk baris biaya tarik tunai) — kecil nominalnya, tetapi merusak kepercayaan laporan untuk bank/KUR. Setelah temuan baru 1 diperbaiki + dites → layak 9.
+
+## Uji ulang independen v1.0.2 (Akun B, 2026-09-26)
+- **Penguji:** agent independen Akun B (bukan pembuat) · rincian: `examples/07-uji-ulang-v1.0.2-akun-b.md`
+- **Lingkungan:** salinan skill + `laporan-keuangan-emkm` 1.3.0 di scratchpad, Linux, Python 3.11, data fiktif; simulasi agent `claude-code`.
+
+| Temuan uji ulang v1.0.1 | Status v1.0.2 |
+|---|---|
+| 1 [SEDANG] biaya tarik tunai hilang dari laba emkm | **Tertutup.** Data uji 06 diulang: baris diekspor `beban_keuangan`; emkm laba **4.942.500 = hasil usaha**, neraca seimbang, selisih 0, selisih kas 0 (v1.0.1: 4.950.000, −7.500). Data baru penguji (Mandiri + OVO; biaya adm/tarik tunai/BI-FAST/adm OVO/tarik tunai agen, bunga, pajak bunga): laba **2.789.487 = hasil usaha**, seimbang, selisih 0 — ekspor v1.0.1 atas DB yang sama memberi laba 2.870.987 dan selisih −81.500. Saldo per akun cocok hitung Decimal penguji. |
+| 2 [RENDAH] per minggu mencampur 'Perlu dicek' | **Tertutup.** Baris per minggu & per hari yang memuat 'Perlu dicek' diberi penanda "[termasuk 'Perlu dicek' … - belum dihitung di hasil usaha]"; baris lain tanpa penanda; hilang setelah `golongkan`. |
+| 3 [RENDAH] `golongkan` penjualan → modal | Belum diubah (di luar cakupan v1.0.2). |
+
+Temuan baru: **[RENDAH-SEDANG]** catatan `lain-lain` keluar berketerangan "bayar utang…", "belanja rumah", "uang muka karyawan…", "cicilan…" diekspor dengan kategori kosong → emkm menggolongkannya prive/piutang lain/bayar pinjaman → laba emkm ≠ hasil usaha (uji: selisih 410.000) dan emkm melaporkan utang pinjaman negatif. Tidak diam-diam (catat memberi catatan prive; emkm bertanya), tetapi perluas `POLA_RAWAN_EMKM` + tes rantai. **[RENDAH]** "BIAYA TRF BI-FAST" saat impor jatuh ke 'Perlu dicek'.
+Tanpa regresi: 68 tes OK; `rekap` DB uji lama identik antara v1.0.1 dan v1.0.2 (0 baris beda), laundry Agustus 8.245.000, ekspor emkm Agustus identik byte-per-byte; `validate.py --skill kas-umkm` ✅.
+
+### Skor: **9/10**
+Alasan: temuan SEDANG tertutup dan terbukti pada data uji lama serta data baru (laba emkm = hasil usaha, neraca seimbang, selisih 0), penanda 'Perlu dicek' jelas, angka inti tepat ke rupiah, tanpa regresi. Dikurangi 1 karena golongan ketidakcocokan yang sama masih bisa muncul untuk kata non-beban lain di keterangan lain-lain (walau kini ditandai emkm) dan platform asli belum diuji.
