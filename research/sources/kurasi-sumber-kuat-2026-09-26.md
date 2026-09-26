@@ -42,3 +42,53 @@ Tanggal tinjau: 2026-09-26 · Peninjau: agent kurator (sesi terpisah) · Status:
 3. **`tanggapi-permintaan-data-pribadi`** — dari `anthropics/claude-for-legal` `privacy-legal/` (#3).
 4. **`validasi-ide-produk-baru`** — dari `product-on-purpose/pm-skills` (#6).
 5. Prioritas lebih rendah/cadangan: `laporan-insiden-usaha` (#5, verifikasi ulang dulu), `presentasi-data-ke-atasan` (#7).
+
+---
+
+## 4. Verifikasi lanjutan & keputusan — `laporan-insiden-usaha` (2026-09-26, K4)
+
+**Metode:** `git clone --depth 1` ke scratchpad session terpisah (kode **tidak dijalankan**,
+hanya dibaca), lalu `git fetch --depth 200` untuk melihat riwayat commit file spesifik.
+
+**Skill sumber ditemukan (3, dijadikan inspirasi bersama):**
+- `skills/incident-postmortem/` — blameless postmortem, timeline, root cause + contributing
+  factors, action items berpemilik/tenggat, referensi five-whys & worked example.
+- `skills/customer-incident-update/` — komunikasi status ke pelanggan saat insiden, jujur
+  tanpa over-promise, tense sesuai tahap insiden.
+- `plugins/pm-crisis/skills/apology-letter/` — struktur permintaan maaf efektif (akui
+  spesifik, tanggung jawab tanpa "tapi", empati, perbaikan konkret, tanpa janji berlebih).
+
+**Lisensi:** MIT, diverifikasi dari file `LICENSE` di root repo (Copyright (c) 2026 Mohit
+Aggarwal, teks MIT standar).
+
+**Riwayat commit (bukan dump):** `git log --oneline --follow -- skills/incident-postmortem/SKILL.md`
+menunjukkan commit bertahap dengan rilis versi berjenjang (mis. `29960fb6 feat(craft):
+upgrade the incident-response spine to flagship quality (v76.1)`, commit terbaru repo
+`f6ca7934 release: v80.0.0`). 214 commit terlihat dalam window `--depth 200`, tersebar —
+bukan pola "ratusan skill dalam satu hari" yang jadi tanda AI slop di CLAUDE.md.
+
+**Kualitas isi:** Spesifik dan teruji — bukan teks generik. `incident-postmortem` punya
+kerangka "Done when" per langkah, referensi five-whys lengkap dengan taksonomi
+contributing-factor, dan worked example. `customer-incident-update` punya Quality Checks
+dan Anti-Patterns eksplisit. `apology-letter` punya larangan non-apology ("sorry you feel
+that way") dengan contoh konkret. Ini pola instruksi yang teruji, bukan AI slop.
+
+**Audit keamanan (Tahap 3):** Tidak ada folder `scripts/` di ketiga skill sumber (murni
+markdown). `grep -rniE` untuk pola perintah destruktif, unduh-pipe-ke-shell, `eval`/`exec`,
+`base64 -d`, akses SSH/`/etc/passwd`, API key/token, dan pola prompt injection tersembunyi
+("ignore previous/above instructions", "do not tell", "without telling/asking", "silently",
+"bypass") — **nihil kecocokan berbahaya** (satu-satunya match kasar adalah frasa "token
+praise"/"not token" dalam konteks kualitas tulisan, diperiksa manual, aman). Tidak ada
+API key/kredensial/data pribadi tertanam.
+
+**Keputusan: LOLOS verifikasi, ATM dilanjutkan.** 4 sinyal bukti terpenuhi (popularitas di
+atas ambang repo satu-tema untuk skala 3 skill spesifik yang dinilai, umur & perawatan
+kuat lewat commit bertahap + versi berjenjang, kualitas isi tinggi, cara ambil sesuai
+lisensi MIT). Skill baru `laporan-insiden-usaha` dibuat sebagai **karya gabungan & tulis
+ulang** dari ketiga skill sumber, dilokalkan penuh untuk insiden operasional UMKM
+Indonesia (bukan insiden software/engineering) dengan tambahan: penanganan kebocoran data
+pelanggan (arahan umum UU PDP + rujuk `kebijakan-privasi-pdp`), larangan menyalahkan
+individu di akar masalah, penanda `[isi: ...]` anti-karang-angka, draf minta maaf +
+ringkasan WA siap tempel. Rincian lengkap perubahan & atribusi di
+`skills/laporan-insiden-usaha/ATTRIBUTION.md`. Status katalog: `draft` (belum diuji sesuai
+Tahap 6, belum diberi skor kualitas).
