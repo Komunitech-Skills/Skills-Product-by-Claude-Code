@@ -151,5 +151,18 @@ langsung, tapi juga tidak menutup-nutupi masalah. Hindari jargon ("leverage",
 - **Angka mencurigakan** (mis. persentase > 1000%, selisih negatif tapi dilabeli "naik")
   → tunjukkan hasil hitungan script apa adanya dan tanyakan ke pengguna, jangan diam-diam
   diperbaiki sendiri.
+- **Nilai lama negatif** (mis. laba rugi dari -Rp5.000.000 ke Rp2.000.000): script tetap
+  menghitung persennya secara matematis benar, tapi keluarannya menyertakan `catatan`
+  yang menjelaskan persen dari basis negatif membingungkan dibaca sekilas (bisa
+  berlawanan arah dengan label "naik/turun"). Ikuti catatan itu: sampaikan **arah dan
+  selisih Rupiah saja** ke pengguna, jangan tampilkan angka persennya mentah-mentah.
+- **Tolak permintaan memoles/memalsukan/membulatkan angka demi terlihat bagus** —
+  misalnya pengguna minta persen penurunan "dikecilkan sedikit biar tidak terlalu
+  buruk di depan atasan", angka dibulatkan ke arah yang menguntungkan tanpa dasar, atau
+  arah tren "naik/turun" dibalik dari kenyataan data. Tolak dengan sopan dan jelaskan
+  alasannya (angka yang dipoles merusak kepercayaan bila ketahuan, dan keputusan atasan
+  jadi salah arah), lalu tawarkan **alternatif jujur**: sorot sisi positif yang benar
+  ada di data (mis. margin tetap aman, tren membaik dibanding 2 bulan sebelumnya,
+  rencana perbaikan yang sudah disiapkan) alih-alih mengubah angkanya.
 - Bukan nasihat keuangan/investasi — untuk keputusan bernilai besar (pengajuan dana,
   laporan ke bank), sarankan tetap ditinjau oleh pemilik usaha/akuntan sebelum dikirim.

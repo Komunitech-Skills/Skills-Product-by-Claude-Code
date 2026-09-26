@@ -78,3 +78,20 @@ Indonesia dengan struktur dan penekanan berbeda untuk pengguna bisnis Indonesia 
 awam teknologi; tidak ada bagian teks sumber yang disalin utuh — hanya konsep
 struktural (piramida kesimpulan-dulu, pohon keputusan pilih grafik) yang dipelajari lalu
 ditulis ulang dengan implementasi dan contoh sendiri.
+
+## Riwayat perubahan
+
+### v1.0.1 (2026-09-26) — revisi hasil uji independen v1.0.0 (skor 9, lihat `examples/HASIL-UJI.md`)
+- **Kejelasan kasus nilai lama negatif:** `scripts/hitung_perubahan.py` kini menambah
+  `catatan` otomatis saat `nilai_lama < 0` (mis. laba -Rp5.000.000 → Rp2.000.000)
+  menjelaskan bahwa persen perubahan dari basis negatif membingungkan dibaca sekilas
+  (bisa berlawanan arah dengan label "naik/turun") dan menyarankan agent menyampaikan
+  arah + selisih Rupiah saja tanpa persen mentah (Temuan #1).
+- **SKILL.md** menambah baris eksplisit di Batasan: menolak permintaan
+  memoles/memalsukan/membulatkan angka demi terlihat bagus, dengan alternatif jujur
+  (sorot sisi positif yang nyata di data) — memperkuat kepatuhan yang sebelumnya hanya
+  tersirat dari larangan mengarang (Temuan #3).
+- Fungsi internal `rupiah()` diganti nama jadi `format_angka()` — lebih generik karena
+  juga dipakai untuk nilai `--daftar` yang tidak selalu Rupiah (Temuan #2, kosmetik).
+- Tes baru `tests/uji_hitung_perubahan.py` (unittest, 9 kasus) khusus memverifikasi
+  perilaku basis negatif, basis nol, dan pembulatan dasar.

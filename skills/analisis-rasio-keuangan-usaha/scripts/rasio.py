@@ -304,7 +304,7 @@ def fmt(nilai, satuan):
 
 def ke_json(o):
     if isinstance(o, Decimal):
-        return float(o)
+        return int(o) if o == o.to_integral_value() else float(o)
     if isinstance(o, date):
         return o.isoformat()
     raise TypeError(type(o))

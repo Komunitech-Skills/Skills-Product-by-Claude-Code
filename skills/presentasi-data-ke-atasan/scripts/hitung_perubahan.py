@@ -11,6 +11,10 @@ Pembulatan (sesuai standar library ini, CLAUDE.md Tahap 4):
 - Persen perubahan dibulatkan ke 1 angka desimal (ROUND_HALF_UP), bukan dipotong.
 - Bila nilai lama = 0, persen perubahan tidak didefinisikan → dilaporkan sebagai
   null dengan keterangan, bukan dipaksakan jadi angka.
+- Bila nilai lama negatif (mis. laba rugi -Rp5.000.000 → Rp2.000.000), persen
+  perubahan tetap dihitung matematis tapi disertai "catatan" yang mengingatkan agent
+  agar tidak menampilkan persen tersebut mentah-mentah ke pengguna (bisa berlawanan
+  arah dengan tanda naik/turun) — cukup sebut arah & selisih Rupiah.
 
 Pemakaian:
     python3 hitung_perubahan.py --pasangan "Omzet:32000000:24500000" \
