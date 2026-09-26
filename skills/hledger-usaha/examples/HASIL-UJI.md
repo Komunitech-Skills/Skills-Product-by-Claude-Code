@@ -1,4 +1,65 @@
-# HASIL UJI — hledger-usaha v1.0.0 (UJI PEMBUAT, status draft)
+# HASIL UJI — hledger-usaha v1.0.0 (UJI INDEPENDEN lintas akun, Akun B)
+
+- **Tanggal:** 2026-09-26 · **Penguji:** agent terpisah Akun B (bukan pembuat), hanya membaca folder skill + `docs/panduan-hledger.md`; verifikasi angka dengan Decimal **tanpa membaca kode skill** (kode hanya di-grep untuk audit keamanan).
+- **Lingkungan:** Linux x86_64, Python 3.11. Skill disalin ke scratchpad `uji-hl/` dan dijalankan dari sana; `HOME` diarahkan ke folder uji.
+- **hledger asli 1.52.4:** diunduh dari `github.com/simonmichael/hledger/releases/download/1.52.4/` (dialihkan ke `hledgerorg/hledger`). SHA-256 keempat berkas (linux-x64, windows-x64, mac-arm64, mac-x64) **cocok** dengan digest di halaman rilis resmi dan dengan tabel di panduan. Tidak ada tanda tangan GPG/sigstore di rilis; digest halaman rilis dipakai. Binary dijalankan dari scratchpad, **tidak dipasang ke sistem**. `hledger --version` → `hledger 1.52.4, linux-x86_64`.
+
+## Skor: **9/10** — LULUS (≥ 7)
+Alasan: semua angka di 3 skenario normal sama persis (sampai sen) dengan hledger asli dan hitungan Decimal independen; neraca selalu seimbang; arus kas cocok dengan saldo; impor BCA/Mandiri diuji silang dengan `hledger print --rules-file` (COCOK); pengaman tulis (pratinjau, persetujuan, cadangan, tolak dobel, tolak jurnal rusak, rollback) bekerja; tanpa hledger angka identik. Uji A/B jelas lebih baik (tanpa skill laba meleset Rp 500.000 karena prive & stok); pesaing satu-satunya (ClawHub "Hledger") pembungkus tipis dengan celah injeksi shell. Dikurangi 1 karena: belum ada larangan eksplisit pembukuan ganda, pola potongan PPh 23 belum ada, Win/Mac belum dicoba sungguhan, dan beberapa detail keluaran kurang ramah awam.
+
+## Ringkasan skenario (file `examples/`)
+| # | File | Skenario | Hasil |
+|---|---|---|---|
+| A/B | `00-pembanding-tanpa-skill.md` | Toko kue, tanpa vs dengan skill | Dengan skill jelas lebih baik (laba benar 914.749,50 vs 414.749,50 salah) |
+| Pesaing | `00-banding-pesaing.md` | ClawHub Hledger, openaccountant/skills, Frappe Books | Skill kita 93 vs 9 (ClawHub) vs 41 (Frappe Books, bukan skill) |
+| 01 | `01-uji-independen-toko-kue.md` | Toko kue: saldo awal, 15 transaksi batch, stok akhir, bulanan, ekspor EMKM | ✅ Angka = hledger = Decimal |
+| 02 | `02-uji-independen-jasa-piutang.md` | Konsultan: piutang per klien, potongan PPh 23, cek saldo nyata | ✅ Angka cocok; SELISIH terdeteksi |
+| 03 | `03-uji-independen-impor-bca-mandiri.md` | Impor CSV BCA & Mandiri via `.rules`, prompt injection di keterangan | ✅ Uji silang COCOK, saldo akhir = mutasi sampai sen |
+| 04 | `04-uji-independen-input-kurang-rusak.md` | Input kurang/ambigu, CSV rusak/PDF, jurnal diedit manual, tanpa hledger | ✅ Galat berkode jelas, file tidak berubah |
+| 05 | `05-uji-independen-di-luar-cakupan.md` | SPT final siap lapor, dua versi pembukuan, hledger-web dari internet | ⚠️ Simulasi; pajak & web tertutup, pembukuan ganda **tidak** disebut eksplisit |
+
+File `01-mulai-...`, `02-impor-...`, `03-laporan-...`, `04-input-buruk-...`, `05-di-luar-...` adalah uji **pembuat** (dipertahankan; ringkasannya di lampiran bawah).
+
+## Verifikasi angka independen (Decimal vs skill vs hledger asli)
+| Skenario | Laba bersih | Total aset | Neraca | Perubahan kas & bank |
+|---|---|---|---|---|
+| 01 Toko kue | 914.749,50 (ketiganya sama; tampilan `hledger is` dibulatkan 914.750) | 18.740.500 | seimbang (selisih 0,00) | +840.500 |
+| 02 Konsultan | 19.880.000 | 47.380.000 | seimbang | +15.080.000 |
+| 03 Impor bank | −6.832.354,67 | 21.167.645,33 | seimbang | −6.032.354,67 |
+Ekspor EMKM skenario 01 → `laporan_emkm.py`: laba Rp 914.749 (EMKM bulat), total aset Rp 18.740.500, seimbang.
+
+## Tes bawaan & validasi
+- `HLEDGER=<scratch>/bin/hledger python3 tests/uji_regresi.py` → **32/32 OK** (dengan skill `laporan-keuangan-emkm` di sebelahnya; tanpa itu 31 OK, 1 dilewati).
+- Tanpa hledger (PATH bersih) → 26 OK, 6 dilewati (butuh hledger/EMKM).
+- `python3 scripts/validate.py --skill hledger-usaha` → ✅ 1 skill valid, 77 baris katalog sesuai.
+- `scripts/uji_openclaw.sh` **tidak dijalankan** (sesuai instruksi).
+
+## Audit keamanan (Tahap 3)
+- Script: hanya pustaka standar; `subprocess.run([hledger, "-n", ...])` berbentuk daftar (tanpa shell); tidak ada `urllib/socket/http`, `eval/exec`, `os.system`, pembacaan kredensial. Penulisan file terbatas pada jurnal/aturan/impor/ekspor/backup di folder jurnal.
+- Keterangan mutasi berisi prompt injection hanya tampil sebagai data.
+- hledger-web 1.52.4 dicoba: "Serving ... at IP address 127.0.0.1 (local access), port 5000".
+- Tidak ada API key/token/data pribadi.
+
+## Penilaian panduan instalasi Win/Mac (`docs/panduan-hledger.md`)
+- ✅ Unduhan hanya dari hledger.org / halaman rilis GitHub resmi; checksum keempat berkas di tabel **benar** (dicek penguji). Tidak ada pola unduhan yang dipipakan langsung ke shell (curl/wget/iwr ke sh/iex) — grep bersih.
+- ✅ Windows: langkah GUI (Extract All → `C:\hledger`, PATH lewat "Edit environment variables", `certutil`) bisa diikuti awam; zip resmi berisi `hledger.exe`, `hledger-web.exe`, `hledger-ui.exe` langsung (tanpa subfolder) → langkah 2.3 akurat.
+- ✅ Mac: menentukan chip lewat "About This Mac", `shasum`, Gatekeeper "Open Anyway" dijelaskan dengan syarat checksum cocok; tarball resmi datar → perintah `tar -C ~/hledger` akurat.
+- ⚠️ Mac 3.3 memakai nama berkas `arm64` tetap; catatan "ganti nama file bila Intel" hanya ada di 3.2 — pengguna Intel bisa lupa mengganti di 3.3. Mac tingkat kesulitan realistis "sedang" (3 perintah Terminal).
+- ⚠️ Belum dicoba di Windows/Mac sungguhan (diakui jujur di panduan). Windows: pemasangan Python hanya satu kalimat; alias `python3` Microsoft Store tidak dibahas.
+
+## Temuan berprioritas
+1. **Tinggi (instruksi, cepat):** tambahkan di "Keamanan & batasan" SKILL.md larangan eksplisit pembukuan ganda / omzet dikecilkan / backdate untuk menghindari pajak, dengan arahan ke fasilitas pajak yang sah (uji 05).
+2. **Sedang:** pola "klien membayar dipotong PPh 23" belum ada di `references/akun-dan-jenis.md` dan bagan akun bawaan; umum sekali untuk jasa/konsultan. Usul akun `Aset:Pajak Dibayar Dimuka` + contoh `catat --jenis bebas` (uji 02).
+3. **Sedang:** saat laba rugi disusun dari impor bank saja, ingatkan agent menanyakan penjualan/biaya tunai yang belum dicatat sebelum menyajikan laba (uji 03: rugi 6,8 jt realistis tapi menyesatkan).
+4. **Rendah:** arus kas memakai nama akun mentah (`Pendapatan:Penjualan`, `Aset:Piutang Usaha`); laporan bulan berjalan tanpa catatan "bulan belum selesai"; baris "LABA KOTOR 100,0%" untuk usaha jasa; "kolom_5" di keluaran impor; `--nominal -500rb` tanpa `=` jatuh ke galat argparse Inggris.
+5. **Rendah (panduan):** Mac 3.3 sebut juga penggantian nama berkas untuk Intel; tambah 2–3 langkah pemasangan Python Windows.
+6. **Belum diuji (perlu pemilik/tim):** Windows & Mac sungguhan, jadwal OpenClaw ke Telegram di Gateway nyata, CSV asli BRI/BNI/bank digital.
+
+`platform_teruji` yang jujur dari uji ini: `claude-code (simulasi agent)` + hledger 1.52.4 Linux.
+
+---
+
+## Lampiran — Uji pembuat (Akun A), dipertahankan apa adanya
 
 > Ini uji **pembuat skill**, bukan uji independen. Sesuai CLAUDE.md Tahap 6, skill belum boleh berstatus `lulus` sebelum diuji agent/sesi terpisah (5 skenario, uji A/B `00-pembanding-tanpa-skill.md`, uji banding pesaing `00-banding-pesaing.md`). Skor kualitas sengaja dikosongkan.
 
@@ -15,7 +76,7 @@
 - **`python3 scripts/validate.py --skill hledger-usaha`:** ✅ valid.
 - **`bash scripts/uji_openclaw.sh`:** OpenClaw 2026.9.6 → eligible/modelVisible/commandVisible **77/77** (termasuk `hledger-usaha`).
 
-## Skenario (examples/)
+### Skenario (examples/)
 | # | Skenario | Hasil pembuat |
 |---|---|---|
 | 01 | Mulai buku + saldo awal + 12 transaksi dari kalimat + stok akhir | Sesuai; `hledger check accounts` lulus |
@@ -24,7 +85,7 @@
 | 04 | Input tidak lengkap / data rusak / tanpa hledger | Semua galat berkode jelas, file tidak berubah |
 | 05 | Di luar cakupan (pajak, hledger-web ke internet, kirim ke grup, edit langsung) | **Simulasi tertulis**, belum diuji agent terpisah |
 
-## Belum diuji (jujur)
+### Belum diuji (jujur)
 - Penguji independen, uji A/B tanpa skill, uji banding pesaing (kata kunci yang perlu dicari penguji: "hledger skill", "plain text accounting SKILL.md", "ledger-cli agent skill" di ClawHub, skills.sh, GitHub).
 - Windows & Mac sungguhan (PATH, Gatekeeper, `certutil`, `include` path berawalan huruf drive di file aturan sementara).
 - Jadwal OpenClaw (`references/openclaw-jadwal.md`) di Gateway sungguhan dan pengiriman Telegram.
