@@ -36,7 +36,7 @@ Invoice final: 4 (termasuk 1 retur) | draf belum final: 1 (tidak dihitung) | dib
 DPP / sebelum pajak : Rp 905.000
 Pajak               : Rp 28.050
 TOTAL               : Rp 933.050
-Sudah dibayar       : Rp 450.000 | Belum dibayar: Rp 483.050
+Terbayar (bersih)   : Rp 450.000 | Belum dibayar: Rp 483.050
 
 PIUTANG ... Telat 61-90 hari: 1 invoice, Rp 150.000
   - SINV-1007 | Warung Bu Sari | tgl 1 Jun 2026 | sisa Rp 150.000 | telat 87 hari
@@ -48,7 +48,7 @@ Setelah terpasang, cukup ketik permintaan biasa:
 - "Cek file Frappe Books saya"
 - "Penjualan bulan lalu per pelanggan", "barang apa yang paling laku bulan ini"
 - "Siapa yang belum bayar? Tempo pelanggan saya 14 hari"
-- "Stok apa yang mau habis di gudang Toko?"
+- "Stok apa yang mau habis di gudang Stores?"
 - "Untung rugi September"
 - "Ini daftar pelanggan dan barang dari Excel, siapkan untuk diimpor ke Frappe Books"
 - "Kirim laporan harian Frappe Books ke Telegram saya tiap jam 9 malam" (OpenClaw)
@@ -68,10 +68,10 @@ Setelah terpasang, cukup ketik permintaan biasa:
 Panduan lengkap (termasuk Windows): `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org).
 Tidak butuh internet, akun, kunci API, atau paket tambahan.
 
-**Status uji jujur (versi 1.0.0):** struktur data dicocokkan langsung dengan kode sumber resmi Frappe Books v0.36.0
-(dan versi pengembangan 0.37.0). Diuji dengan 29 uji otomatis pada file data **tiruan** berstruktur sama. **Belum** diuji dengan
-file buatan aplikasi Frappe Books sungguhan maupun impor sungguhan lewat Import Wizard, dan jadwal Telegram belum diuji di
-OpenClaw untuk skill ini. Catatan: per 20 Sep 2026 proyek Frappe Books mengumumkan pembaruan aplikasi sedang tertahan
+**Status uji jujur (versi 1.0.1):** laporan (penjualan, piutang, stok, laba rugi) sudah diuji penguji independen pada file
+**asli** buatan Frappe Books v0.36.0 dan angkanya cocok. Impor CSV versi sebelumnya ditolak Import Wizard asli; perbaikannya
+(kolom Number Series, pemilihan akun bernomor, pengaman file keluaran) sudah lolos 39 uji otomatis tetapi **belum diuji ulang di
+Import Wizard asli**. Jadwal Telegram belum diuji di OpenClaw untuk skill ini. Catatan: per 20 Sep 2026 proyek Frappe Books mengumumkan pembaruan aplikasi sedang tertahan
 (masalah sertifikat penanda tangan); versi yang sudah dirilis tetap bisa dipakai.
 
 ## FAQ

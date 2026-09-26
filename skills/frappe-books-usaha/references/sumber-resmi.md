@@ -31,12 +31,19 @@ dan format file; tidak ada kode Frappe Books yang disalin ke skill.
 | `utils/csvParser.ts` | CSV dipisah koma, baris CRLF. Pembacaan tanda kutip ganda di dalam nilai tidak andal → skill mengganti `"` dengan `'`. |
 | `models/baseModels/Invoice/Invoice.ts` (`getTaxItems`) | Pajak = jumlah baris × tarif/100, per baris, **tanpa pembulatan** (presisi internal). |
 | `models/baseModels/Item/Item.ts` | Akun penjualan otomatis hanya bila akun bernama `Sales`/`Service` ada → pada bagan akun Indonesia sering kosong; skill mengisi akun dari database. |
-| `fixtures/verified/id.json` | Bagan akun Indonesia bawaan: `Piutang Dagang` (Receivable), `Hutang Dagang Dalam Negeri` (Payable), `Penjualan`, `HPP Pembelian` (Cost of Goods Sold, di bawah akar pendapatan), `Hutang Pajak`. |
-| `utils/defaults.ts`, `translations/id.csv` | Satuan bawaan Unit, Kg, Gram, Meter, Hour→**Jam**, Day→**Hari**; lokasi bawaan Stores→**Toko** (bahasa Indonesia). |
+| `src/setup/createCOA.ts` (`getAccountName`) | Nama akun = `<nama> - <nomor akun>` bila bagan punya nomor → bagan Indonesia: `Penjualan - 4110.000`, `Piutang Dagang - 1131.0010`, `Hutang Dagang Dalam Negeri - 2111.001`, `HPP Pembelian - 4210.000`, `Hutang Pajak - 2141.000`. |
+| `models/Transactional/LedgerPosting.ts` (`timezoneDateTimeAdjuster`) | Tanggal entri buku besar = tengah malam UTC dari tanggal lokal dokumen. |
+| `models/baseModels/SalesInvoice/SalesInvoice.ts` & `PurchaseInvoice.ts` (`getPosting`) | Retur: sisi debit/kredit ditukar **dan** jumlahnya negatif → di buku besar retur menambah pendapatan/beban. Skill mengoreksi di `laba-rugi` dan menampilkan angka buku besar apa adanya. |
+| `fixtures/verified/id.json` | Bagan akun Indonesia bawaan (sebelum diberi nomor): `Piutang Dagang` (Receivable), `Hutang Dagang Dalam Negeri` (Payable), `Penjualan`, `HPP Pembelian` (Cost of Goods Sold, di bawah akar pendapatan), `Hutang Pajak`. |
+| `utils/defaults.ts`, `translations/id.csv` | Satuan bawaan Unit, Kg, Gram, Meter, Hour, Day; lokasi Stores (nama diterjemahkan saat dibuat; file asli uji berbahasa Inggris: `Hour`, `Day`, `Stores`; bila UI Indonesia bisa `Jam`, `Hari`, `Toko`). |
 | `main/registerIpcMainActionListeners.ts` | Lokasi file bawaan: `<Documents>/Frappe Books/<nama usaha>.books.db`. |
 
+## Temuan dari file ASLI (uji independen v1.0.0, 26 Sep 2026, Frappe Books v0.36.0 AppImage resmi)
+- Centang di `SingleValue` disimpan `'1.0'`/`'0.0'` (bukan `1`/`true`).
+- Tabel `Party` berkolom `gstin`/`gstType`, tanpa `taxId`.
+- Import Wizard mewajibkan kolom Number Series untuk invoice.
+- Semua kolom di `SKEMA_WAJIB` ada; laporan baca v1.0.0 cocok dengan hitungan independen.
+
 ## Yang BELUM diverifikasi
-- Belum diuji dengan file `.books.db` buatan aplikasi Frappe Books sungguhan (lingkungan pembuatan tanpa GUI).
-  Uji memakai database tiruan berskema v0.36.0 hasil pembangkitan dari `schemas/` resmi (lihat `tests/`).
-- Import Wizard belum dijalankan sungguhan dengan CSV keluaran skill; format mengikuti `src/importer.ts`.
-- Nilai `SystemSettings.version` di file asli belum dilihat langsung.
+- Perbaikan impor v1.0.1 (Number Series, akun bernomor, NPWP) belum dijalankan ulang di Import Wizard asli.
+- Fixture uji (`tests/data/buat_db_contoh.py`) meniru temuan file asli di atas, tetapi tetap database tiruan.

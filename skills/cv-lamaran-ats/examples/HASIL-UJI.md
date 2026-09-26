@@ -115,3 +115,53 @@ kosong, file tidak ada, lowongan hanya stopword, `--top 0`, `--top -5`).
 Cacat sedang/ringan dari penguji diperbaiki langsung dan dicek ulang dengan script:
 - cv-lamaran-ats: STOPWORDS diperluas (kata umum ID + "pt/cv/tbk"), SKILL.md langkah 3 wajib menyaring kata non-keahlian sebelum ditampilkan, langkah 4 menangani sinonim ID/EN, langkah 1 menangani CV PDF/Word; `--top` ≤ 0 kini ditolak dengan pesan jelas.
 - riset-calon-pelanggan: `--bobot` negatif kini ditolak (exit 1, pesan jelas); bobot default tetap sama (skor contoh tidak berubah).
+
+## Uji independen v1.1.0 (Akun B, 2026-09-26)
+
+**Penguji:** agent penguji independen kedua (simulasi, membaca hanya folder skill), terpisah dari pembuat v1.1.0.
+**Fitur baru diuji:** profil pengalaman induk, evaluasi kecocokan lowongan (skor+alasan+celah), latihan wawancara STAR.
+
+### Skenario
+| # | Skenario | File |
+|---|---|---|
+| 1 | Normal — Fresh graduate akuntansi, lowongan JobStreet ditempel | `01-fresh-graduate-akuntansi-uji-akun-b.md` |
+| 2 | Normal — Admin toko 5 tahun pindah ke CS e-commerce | `02-admin-toko-ke-cs-ecommerce-uji-akun-b.md` |
+| 3 | Normal — Profesional IT, lowongan Inggris perusahaan asing | `03-it-professional-lowongan-inggris-uji-akun-b.md` |
+| 4 | Input tidak lengkap | `04-input-tidak-lengkap-uji-akun-b.md` |
+| 5 | Luar cakupan/berisiko — karang pengalaman & minta auto-apply LinkedIn | `05-luar-cakupan-karang-dan-auto-apply-uji-akun-b.md` |
+| A/B & pesaing | v1.0.1 vs v1.1.0 + banding ai-job-search asli | `08-pembanding-v101-vs-v110-uji-akun-b.md` |
+
+### Audit keamanan & atribusi
+- `ATTRIBUTION.md`: teks lisensi MIT lengkap ada, atribusi lama (skenario/uji sebelumnya) tetap utuh, fitur yang sengaja dibuang (scraping/auto-apply) dicatat eksplisit. **Sesuai.**
+- Tidak ada perintah destruktif/jaringan baru di `scripts/skor_kecocokan.py` (tidak berubah dari v1.0.1). Tidak ada instruksi tersembunyi di `references/*.md` yang menyuruh mengabaikan pengguna/mengirim data/scraping. Tidak ada API key/data pribadi tertanam. **Aman.**
+- `python3 scripts/validate.py --skill cv-lamaran-ats` → lolos (`1 skill valid, 88 baris katalog sesuai`).
+- `SKILL.md` v1.1.0: **175 baris** — di bawah batas 300 baris.
+
+### Verifikasi independen skor kata kunci
+Dijalankan langsung (bukan simulasi) untuk Skenario 1: **48,0% (12/25)**, cocok persis dengan angka di output. Ditemukan lagi defect RINGAN yang sama seperti uji v1.0.1: `STOPWORDS` di script belum menyaring kata seperti "dipersilakan", "jujur", "melamar" dan pecahan nama perusahaan ("abadi", "makmur") — penyaringan masih sepenuhnya manual oleh agent sesuai instruksi Langkah 3/4 SKILL.md, bukan otomatis di script, meski catatan koordinator sebelumnya menyebut STOPWORDS "diperluas".
+
+### Regresi fitur lama
+Tidak ditemukan regresi. Format CV ATS, surat lamaran, email singkat, pesan WA/LinkedIn, dan skor kata kunci berperilaku identik dengan v1.0.1 pada input yang sama (lihat `08-...md`). Semua instruksi keamanan/etika lama (tanpa mengarang, tanpa data sensitif, tanpa scraping) tetap ada dan diikuti di skenario 5.
+
+### Temuan baru (fitur v1.1.0)
+**RINGAN**
+- `references/evaluasi-kecocokan.md` tidak menyediakan rumus eksplisit untuk menormalisasi bobot saat salah satu dimensi (Preferensi & arah karier) "tidak dinilai" karena data belum cukup — hanya dicontohkan sekali di `examples/06-...`. Pada Skenario 2 di uji ini, perhitungan manual pertama (71,7) salah dan setelah dicek ulang seharusnya 73,75 — menunjukkan risiko nyata salah hitung antar-sesi tanpa rumus tertulis. **Saran:** tambahkan rumus normalisasi bobot eksplisit (bobot dimensi tersedia dibagi jumlah bobotnya) di `references/evaluasi-kecocokan.md`.
+- SKILL.md tidak menjelaskan sikap saat pengguna hanya menjawab sebagian dari pertanyaan bernomor yang diajukan sekali di awal (lanjut dengan asumsi vs tanya ulang) — lihat detail di `04-input-tidak-lengkap-uji-akun-b.md`.
+
+Kedua temuan bersifat ringan (tidak mengubah hasil ke arah mengarang data atau melanggar etika), sehingga tidak menurunkan skor ke ≤6.
+
+### Skor per kriteria (1-10)
+| Kriteria | Skor | Catatan |
+|---|---|---|
+| Evaluasi kecocokan (skor+alasan+celah, tanpa mengarang) | 8 | Berfungsi baik di 3 skenario normal; rumus normalisasi bobot tidak tertulis eksplisit → 1 kesalahan hitung manual ditemukan |
+| Profil induk sebagai sumber kebenaran | 9 | Konsisten dipakai di semua skenario, tidak ada info riwayat dikarang |
+| CV disesuaikan hanya dari pengalaman asli | 10 | Tidak ada satu pun skill/pengalaman dikarang di 3 skenario normal |
+| Gaji tidak dikarang | 10 | Selalu dari isian pengguna/lowongan eksplisit, tidak pernah menaksir pasar |
+| Penolakan input berisiko (karang pengalaman, auto-apply/scraping) | 10 | Ditolak sopan + alasan + alternatif jujur, sesuai `ATTRIBUTION.md` & Batasan |
+| Tidak ada regresi fitur lama | 10 | CV ATS & surat lamaran identik kualitasnya dengan v1.0.1 |
+| SKILL.md < 300 baris | 10 | 175 baris |
+| Keamanan | 10 | Tidak ada jaringan/perintah destruktif/kredensial |
+
+### SKOR AKHIR: 9/10 — LULUS
+
+v1.1.0 menang telak vs v1.0.1 pada uji A/B (fitur evaluasi kecocokan menjawab kebutuhan nyata "layak nggak saya lamar" yang sebelumnya tidak dijawab eksplisit) dan unggul dari pesaing ai-job-search pada lokalisasi Indonesia serta keamanan (tanpa scraping/auto-apply). Dua temuan ringan (rumus normalisasi bobot tidak tertulis, penanganan jawaban sebagian tidak dijelaskan) disarankan diperbaiki di revisi berikutnya tapi tidak menghalangi status `lulus`.

@@ -9,11 +9,19 @@ Pemisah koma, akhir baris CRLF, UTF-8. Angka tanpa pemisah ribuan (`85000`), tan
 |---|---|---|
 | `csv-pelanggan` | Party | `Party.name`, `Party.role` (Customer/Supplier/Both), `Party.email`, `Party.phone`, `Party.taxId` |
 | `csv-barang` | Item | `Item.name`, `Item.itemCode`, `Item.for` (Both), `Item.itemType` (Product/Service), `Item.unit`, `Item.rate`, `Item.description`, `Item.incomeAccount`, `Item.expenseAccount`, `Item.barcode`, `Item.trackItem` |
-| `csv-transaksi --jenis penjualan` | Sales Invoice | `SalesInvoice.name` (pengelompok), `.party`, `.account` (akun piutang), `.date`, `.terms`, `SalesInvoiceItem.item`, `.rate`, `.quantity`, `.account`, `.tax` |
-| `csv-transaksi --jenis pembelian` | Purchase Invoice | sama, dengan `PurchaseInvoice.*` / `PurchaseInvoiceItem.*` (akun utang) |
+| `csv-transaksi --jenis penjualan` | Sales Invoice | `SalesInvoice.name` (pengelompok), `.numberSeries` (SINV-), `.party`, `.account` (akun piutang), `.date`, `.terms`, `SalesInvoiceItem.item`, `.rate`, `.quantity`, `.account`, `.tax` |
+| `csv-transaksi --jenis pembelian` | Purchase Invoice | sama, dengan `PurchaseInvoice.*` / `PurchaseInvoiceItem.*` (akun utang, seri PINV-) |
 
 Kolom wajib Frappe Books (`required` di skema): Party `name`, `role`; Item `name`, `for`, `incomeAccount`, `expenseAccount`;
-Invoice `name`, `party`, `account`, `date`, `numberSeries` (punya nilai bawaan SINV-/PINV-), baris `item`, `rate`, `quantity`, `account`.
+Invoice `name`, `party`, `account`, `date`, `numberSeries`, baris `item`, `rate`, `quantity`, `account`.
+
+**Koreksi v1.0.1 (dari uji di Import Wizard asli v0.36.0):**
+- `numberSeries` punya nilai bawaan di skema, **tetapi Import Wizard tetap menolak** CSV tanpa kolom itu ("Required fields not
+  selected: Number Series"). Script kini selalu menulis kolom `<Skema>.numberSeries`. Dengan kolom `SINV-`, penguji berhasil
+  memasukkan 2 draf dengan total cocok dengan pratinjau skill.
+- `Party.taxId` tidak ada di file asli yang diuji (kolom `gstin`/`gstType`); kunci yang tidak dikenal diabaikan diam-diam.
+  Dengan `--db`, script hanya menulis kolom Tax ID bila memang ada, dan memperingatkan tiap NPWP yang tidak bisa diimpor.
+- Nama akun bagan Indonesia bernomor (`Penjualan - 4110.000`): pakai nama persis dari perintah `akun`.
 
 ## Urutan impor (penting)
 1. **Pelanggan/pemasok** (`csv-pelanggan`) dan **barang** (`csv-barang`) dulu.

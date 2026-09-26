@@ -17,8 +17,11 @@ mendistribusikan Frappe Books** dan tidak berafiliasi dengan Frappe; pengguna me
 ## Di mana file datanya?
 - Bawaan: folder **Documents/Frappe Books/** dengan nama `<nama usaha>.books.db`
   (Windows: `C:\Users\<nama>\Documents\Frappe Books\`, macOS: `/Users/<nama>/Documents/Frappe Books/`, Linux: `~/Documents/Frappe Books/`).
+- Linux tanpa folder Documents: `~/Frappe Books/` (terbukti pada aplikasi asli). Windows dengan OneDrive: `OneDrive\Documents\Frappe Books\`.
 - Bila saat membuat usaha memilih lokasi lain, lihat di layar awal Frappe Books (daftar file) atau cari file berakhiran `.books.db`.
-- Script mencari otomatis di Documents/Frappe Books bila hanya ada satu file; bila lebih, sebutkan dengan `--db`.
+- Script mencari otomatis di lokasi-lokasi itu bila hanya ada satu file; bila lebih, sebutkan dengan `--db`.
+- Satuan & lokasi bawaan mengikuti bahasa aplikasi saat usaha dibuat: bahasa Inggris = `Unit, Kg, Gram, Meter, Hour, Day` dan
+  lokasi `Stores` (terlihat di file asli uji); bahasa Indonesia bisa `Jam`, `Hari`, `Toko`. Perintah `akun` menampilkan nama yang benar.
 
 ## Backup (wajib sebelum impor CSV)
 Tutup Frappe Books → salin file `.books.db` ke flashdisk/Google Drive/folder lain dengan nama bertanggal, mis.
