@@ -36,7 +36,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 VERSI_DIUJI = "Frappe Books v0.36.0 (skema juga dicocokkan dengan cabang main 0.37.0, 20 Sep 2026)"
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
 NOL = Decimal(0)
@@ -507,7 +507,9 @@ def ringkas_invoice(args, jenis, judul, kata_pihak):
     dpp = sum((i["dpp"] for i in final), NOL)
     tax = sum((pajak.get(i["no"], NOL) * i["kurs"] for i in final), NOL)
     total = sum((i["total"] for i in final), NOL)
-    sisa = sum((i["sisa"] for i in final if not i["retur"]), NOL)
+    # Sama dengan 'piutang': retur yang belum dikembalikan tersimpan sebagai sisa NEGATIF (kredit) dan ikut dihitung.
+    sisa = sum((i["sisa"] for i in final), NOL)
+    kredit_retur = sum((i["sisa"] for i in final if i["sisa"] < 0), NOL)
     selisih = dpp + tax - total
     out = [f"{judul} - {info['nama']}", f"Periode: {label}, zona {args.tz.upper()}",
            f"Invoice final: {len(final)}" + (f" (termasuk {sum(1 for i in final if i['retur'])} retur)" if any(i['retur'] for i in final) else "")
@@ -519,7 +521,8 @@ def ringkas_invoice(args, jenis, judul, kata_pihak):
         if rupiah_bulat(selisih) != 0:
             out.append(f"Diskon/penyesuaian  : {rp(-selisih)}")
         out += [f"TOTAL               : {rp(total)}",
-                f"Terbayar (bersih)   : {rp(total - sisa)} | Belum dibayar: {rp(sisa)}"]
+                f"Terbayar (bersih)   : {rp(total - sisa)} | Belum dibayar: {rp(sisa)}"
+                + (f" (sudah dikurangi kredit retur {rp(kredit_retur)})" if kredit_retur else "")]
         batas = args.batas
         if args.per == "pihak":
             grup = {}
@@ -550,8 +553,8 @@ def ringkas_invoice(args, jenis, judul, kata_pihak):
             for n, (nama, (jml, tot)) in enumerate(sorted(grup.items(), key=lambda x: -x[1][1])[:batas], 1):
                 out.append(f"  {n}. {nama} - {angka(jml)} - {rp(tot)}")
     if any(i["retur"] for i in final):
-        out.append("Catatan: retur sudah mengurangi angka di atas; 'Terbayar (bersih)' = total bersih - sisa tagihan, "
-                   "bukan uang yang benar-benar diterima bila ada retur yang belum dikembalikan.")
+        out.append("Catatan: retur sudah mengurangi angka di atas. 'Belum dibayar' = sisa tagihan dikurangi kredit retur yang "
+                   "belum dikembalikan (sama dengan PIUTANG BERSIH di perintah 'piutang').")
     if draf:
         out.append(f"Catatan: {len(draf)} draf belum di-Submit di Frappe Books; belum masuk angka di atas.")
     catatan = cek_mata_uang(info)
@@ -699,46 +702,37 @@ def cmd_stok(args):
 
 
 def cmd_laba_rugi(args):
+    """Laba rugi ringkas, dihitung PERSIS seperti Reports > Profit And Loss Frappe Books v0.36.0:
+    reports/LedgerReport.ts membaca tiap entri AccountingLedgerEntry (reverted = 0) sebagai
+    debit = |debit|, credit = |credit| (Math.abs per kolom); AccountReport mengelompokkan per rootType akun.
+    Retur (invoice retur & pengiriman/penerimaan retur) ditulis Frappe dengan nilai negatif di sisi yang ditukar;
+    nilai mutlak membuat retur MENGURANGI pendapatan dan HPP, sama dengan P&L Frappe."""
     tz = offset_zona(args.tz)
     con, tabel = buka_db(args.db)
     cek_skema(con, tabel, ["Account", "AccountingLedgerEntry", "SingleValue"])
     info = info_usaha(con)
     dari, sampai, label = periode(args, tz)
     akun = {r["name"]: (r["rootType"], r["accountType"] or "") for r in q(con, "SELECT name, rootType, accountType FROM Account")}
-    # Frappe Books v0.36.0 memposting invoice retur dengan jumlah NEGATIF di sisi yang sudah ditukar
-    # (SalesInvoice.getPosting: debit(item.account, amount<0)), sehingga di buku besar retur malah menambah pendapatan.
-    # Skill mengoreksi entri milik invoice retur (nilai mutlak) agar sejalan dengan perintah 'penjualan', dan
-    # menampilkan juga angka buku besar apa adanya (= Reports > Profit And Loss Frappe Books).
-    retur = set()
-    for t_ in ("SalesInvoice", "PurchaseInvoice"):
-        if t_ in tabel:
-            retur |= {r["name"] for r in q(con, f'SELECT name FROM "{t_}" WHERE returnAgainst IS NOT NULL '
-                                                 "AND returnAgainst != '' AND cancelled = 0")}
     ada_ref = "referenceName" in kolom_tabel(con, "AccountingLedgerEntry")
     sql = "SELECT date, account, debit, credit" + (", referenceName" if ada_ref else "") + \
           " FROM AccountingLedgerEntry WHERE reverted = 0"
     pend, hpp, beban = {}, {}, {}
-    mentah = {"pend": NOL, "hpp": NOL, "beban": NOL}
-    retur_dikoreksi = set()
+    ref_negatif = set()
     for r in q(con, sql):
         t = tanggal_lokal(r["date"], tz)
         if not t or not dari <= t <= sampai or r["account"] not in akun:
             continue
         root, tipe = akun[r["account"]]
         d0, c0 = uang(r["debit"]), uang(r["credit"])
-        d, c = d0, c0
-        if ada_ref and r["referenceName"] in retur and (d < 0 or c < 0):
-            d, c = abs(d), abs(c)
-            retur_dikoreksi.add(r["referenceName"])
+        if (d0 < 0 or c0 < 0) and ada_ref and root in ("Income", "Expense"):
+            ref_negatif.add(r["referenceName"] or "?")
+        d, c = abs(d0), abs(c0)
         if tipe == "Cost of Goods Sold":
             hpp[r["account"]] = hpp.get(r["account"], NOL) + d - c
-            mentah["hpp"] += d0 - c0
         elif root == "Income":
             pend[r["account"]] = pend.get(r["account"], NOL) + c - d
-            mentah["pend"] += c0 - d0
         elif root == "Expense":
             beban[r["account"]] = beban.get(r["account"], NOL) + d - c
-            mentah["beban"] += d0 - c0
     tp, th, tb = sum(pend.values(), NOL), sum(hpp.values(), NOL), sum(beban.values(), NOL)
     out = [f"LABA RUGI RINGKAS - {info['nama']}", f"Periode: {label}, zona {args.tz.upper()}", "Pendapatan:"]
     out += [f"  {n}: {rp(v)}" for n, v in sorted(pend.items(), key=lambda x: -x[1]) if rupiah_bulat(v) != 0] or ["  (tidak ada)"]
@@ -760,16 +754,12 @@ def cmd_laba_rugi(args):
                        f"{', ...' if len(salah) > 5 else ''}). Pembelian lalu pengiriman barang itu mencatat HPP dua kali, "
                        "sehingga laba tampak lebih kecil. Perbaiki di Frappe Books: buka barangnya > Purchase Acc. = akun "
                        "'Stock Received But Not Billed' (lihat Inventory Settings), lalu cek ulang invoice pembelian terkait.")
-    if retur_dikoreksi:
-        lb0 = mentah["pend"] - mentah["hpp"] - mentah["beban"]
-        out.append(f"Catatan retur: {len(retur_dikoreksi)} invoice retur di periode ini ({', '.join(sorted(retur_dikoreksi))}). "
-                   "Frappe Books v0.36.0 mencatat retur di buku besar dengan tanda terbalik, sehingga retur justru menambah "
-                   "angka di buku besar. Angka di atas SUDAH DIKOREKSI (retur mengurangi pendapatan/beban), sejalan dengan "
-                   f"perintah 'penjualan'. Menurut buku besar apa adanya (Reports > Profit And Loss Frappe Books): total "
-                   f"pendapatan {rp(mentah['pend'])}, HPP {rp(mentah['hpp'])}, beban {rp(mentah['beban'])}, "
-                   f"{'laba' if lb0 >= 0 else 'rugi'} {rp(lb0)}.")
-    out.append("Ringkasan dari buku besar Frappe Books (hanya transaksi final). Bukan laporan keuangan resmi; "
-               "untuk laporan lengkap buka Reports > Profit And Loss di Frappe Books.")
+    if ref_negatif:
+        out.append(f"Catatan retur: {len(ref_negatif)} dokumen retur di periode ini ({', '.join(sorted(ref_negatif)[:6])}"
+                   f"{', ...' if len(ref_negatif) > 6 else ''}) sudah MENGURANGI pendapatan/HPP, sama dengan cara Profit And Loss "
+                   "Frappe Books membacanya.")
+    out.append("Dihitung dari buku besar Frappe Books (hanya transaksi final) dengan cara yang sama seperti Reports > Profit And "
+               "Loss, jadi totalnya semestinya sama. Bukan laporan keuangan resmi.")
     catatan = cek_mata_uang(info)
     if catatan:
         out.append(catatan)
@@ -788,15 +778,23 @@ def cmd_laporan_harian(args):
 
     def jual(h):
         f = [i for i in inv if i["tgl"] == h and i["final"] and not i["batal"]]
-        return len(f), sum((i["total"] for i in f), NOL)
-    n1, t1 = jual(d)
-    n0, t0 = jual(d - timedelta(days=1))
+        biasa = [i for i in f if not i["retur"]]
+        retur = [i for i in f if i["retur"]]
+        return len(biasa), sum((i["total"] for i in f), NOL), len(retur), sum((i["total"] for i in retur), NOL)
+    n1, t1, r1, tr1 = jual(d)
+    n0, t0, _, _ = jual(d - timedelta(days=1))
     draf = sum(1 for i in inv if i["tgl"] == d and not i["final"] and not i["batal"])
     out = [f"LAPORAN HARIAN {info['nama']} - {tgl_id(d)}",
-           f"Penjualan final: {n1} invoice, {rp(t1)}" + (f" (draf belum final: {draf})" if draf else "")]
-    if t0 > 0:
+           f"Penjualan final: {n1} invoice, {rp(t1 - tr1)}" + (f" (draf belum final: {draf})" if draf else "")]
+    if r1:
+        out.append(f"Retur penjualan: {r1} nota, {rp(tr1)} -> penjualan bersih hari ini {rp(t1)}")
+    if t0 > 0 and t1 != t0:
         pers = ((t1 - t0) / t0 * 100).quantize(Decimal("0.1"), ROUND_HALF_UP)
-        out.append(f"Dibanding kemarin ({rp(t0)}): {'+' if pers >= 0 else ''}{angka(pers)}%")
+        out.append(f"Dibanding kemarin ({rp(t0)}{' bersih' if r1 else ''}): {'+' if pers >= 0 else ''}{angka(pers)}%")
+    elif t0 > 0:
+        out.append(f"Sama dengan kemarin ({rp(t0)}).")
+    elif t0 < 0:
+        out.append(f"Kemarin hanya ada retur ({rp(t0)}).")
     else:
         out.append("Kemarin: belum ada penjualan final.")
     telat = [i for i in data_umur(con, "SalesInvoice", tz, d, args.tempo) if i["telat"] > 0]
@@ -1382,6 +1380,11 @@ def cmd_csv_transaksi(args):
         pajak = ambil(b, peta, "pajak") or (args.pajak or "")
         tarif = None
         if pajak and pajak_db:
+            if pajak.lower() not in pajak_db:
+                awal = [k for k in pajak_db if k.startswith(pajak.lower())]
+                if len(awal) == 1:
+                    peringatan.append(f"baris {no}: pajak '{pajak}' dianggap '{pajak_db[awal[0]][0]}' (satu-satunya yang cocok)")
+                    pajak = pajak_db[awal[0]][0]
             if pajak.lower() not in pajak_db:
                 galat.append(f"baris {no}: pajak '{pajak}' belum ada di Frappe Books (yang ada: "
                              + ", ".join(v[0] for v in pajak_db.values()) + ")")

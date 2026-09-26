@@ -12,11 +12,11 @@ cukup mengetik permintaan biasa, dan agent: (1) membaca file datanya **tanpa men
 (3) menghitung PPN 12% dengan DPP 11/12, (4) menyiapkan laporan terjadwal ke Telegram lewat OpenClaw.
 Semua lewat `scripts/frappe_books.py` (Python standar saja, tanpa instalasi paket, tanpa internet).
 
-**Versi 1.0.2. Status uji:** skema dicocokkan dengan kode sumber resmi Frappe Books **v0.36.0** (dan cabang `main` 0.37.0,
-20 Sep 2026). Diuji penguji independen dengan file `.books.db` **asli** v0.36.0: laporan baca cocok; CSV v1.0.1 (pelanggan, barang,
-penjualan, pembelian) diterima Import Wizard asli. v1.0.2 memperbaiki akun pembelian barang berstok dan kredit retur di piutang;
-keduanya dibuktikan pembuat di aplikasi asli (`examples/uji-pembuat/UJI-PEMBUAT-v1.0.2.md`) dan 42 uji regresi, **belum diuji ulang
-oleh penguji independen** — lihat `examples/HASIL-UJI.md`.
+**Versi 1.0.3. Status uji:** skema dicocokkan dengan kode sumber resmi Frappe Books **v0.36.0** (dan cabang `main` 0.37.0,
+20 Sep 2026). Diuji tiga kali oleh penguji independen dengan file `.books.db` **asli** v0.36.0: laporan baca cocok; semua CSV diterima
+Import Wizard asli; akun barang berstok & kredit retur (v1.0.2) beres. v1.0.3 menghitung `laba-rugi` persis seperti Profit And Loss
+Frappe (termasuk pengiriman retur); dibuktikan pembuat di aplikasi asli — angka skill = laporan P&L bawaan
+(`examples/uji-pembuat/UJI-PEMBUAT-v1.0.3.md`) — dan 46 uji regresi, **belum diuji ulang oleh penguji independen**.
 Komunitech tidak berafiliasi dengan Frappe; Frappe Books tidak disertakan dalam paket.
 
 ## Kapan digunakan
@@ -120,11 +120,14 @@ Setelah angka dari script, agent boleh menambah maksimal 3 saran singkat yang je
   berkurang. `piutang`/`utang` mencetak daftar kredit ini dan **PIUTANG/UTANG BERSIH** (= saldo pihak di Frappe Books). Sampaikan
   angka bersih bila pengguna bertanya "total piutang"; tagihan per invoice tetap apa adanya.
 - `laba-rugi` memberi PERINGATAN bila ada barang berstok yang akun pembeliannya HPP (data lama) — arahkan pengguna memperbaikinya.
-- Laba rugi dari buku besar: pendapatan − HPP (akun bertipe Cost of Goods Sold) − beban; entri yang dibatalkan tidak dihitung.
-  Frappe Books v0.36.0 memposting retur dengan tanda terbalik (retur **menambah** pendapatan di buku besar & di Profit And Loss
-  Frappe Books). Script mengoreksi entri retur agar sejalan dengan `penjualan`, dan mencetak "Catatan retur" berisi angka buku
-  besar apa adanya. Bila pengguna membandingkan dengan Profit And Loss Frappe Books, jelaskan catatan itu.
-  Ringkasan, bukan laporan keuangan resmi — laporan lengkap di Reports > Profit And Loss Frappe Books.
+- Laba rugi dari buku besar dengan cara yang sama seperti Reports > Profit And Loss Frappe Books v0.36.0: setiap entri final
+  (`reverted = 0`) dibaca dengan nilai mutlak per kolom debit/kredit (`reports/LedgerReport.ts`), lalu pendapatan − HPP (akun bertipe
+  Cost of Goods Sold) − beban. Frappe menulis retur (invoice retur **dan** pengiriman/penerimaan retur) dengan angka negatif di sisi
+  yang ditukar; dengan nilai mutlak retur **mengurangi** pendapatan dan HPP, sama seperti di P&L Frappe. Totalnya semestinya sama
+  dengan P&L Frappe; bila beda, sampaikan apa adanya dan laporkan ke Komunitech. Bukan laporan keuangan resmi.
+- Catatan perilaku aplikasi (bukan skill): pengiriman retur dinilai dengan **harga jual**, bukan harga pokok, sehingga HPP turun
+  sebesar harga jual barang yang dikembalikan; Purchase Receipt dari invoice ber-PPN dinilai termasuk PPN. Skill mengikuti buku
+  besar apa adanya (= P&L Frappe); sebutkan bila pengguna heran dengan HPP setelah retur.
 - Stok hanya untuk barang yang dicentang Track Inventory.
 
 ## Contoh

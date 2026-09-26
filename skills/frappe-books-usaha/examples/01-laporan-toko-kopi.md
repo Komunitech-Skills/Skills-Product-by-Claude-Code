@@ -5,12 +5,12 @@ belum bayar, stok apa yang mau habis, dan untung rugi bulan ini?"*
 
 **Data:** database Frappe Books **tiruan** berskema v0.36.0 (dibangun `tests/data/buat_db_contoh.py`) di
 `~/Documents/Frappe Books/Toko Kopi Nusantara.books.db`, sehingga script menemukannya otomatis tanpa `--db`.
-Database tiruan v1.0.1 meniru temuan file asli (nama akun bernomor, centang `'1.0'`, retur bertanda terbalik di buku besar,
+Database tiruan v1.0.1 meniru temuan file asli (nama akun bernomor, centang `'1.0'`, retur & pengiriman retur bertanda negatif di buku besar,
 satuan `Hour/Day`, lokasi `Stores`). Isinya sengaja memuat kasus sulit: invoice tanggal 1 Sep pukul 00.00 WIB (tersimpan `2026-08-31T17:00:00.000Z`),
 1 draf, 1 invoice batal, 1 retur, barang stok minus/habis, entri beban 1 Okt 00.30 WIB (tidak boleh masuk September).
 Opsi `--hari-ini 2026-09-26` hanya dipakai agar contoh bisa diulang (dalam pemakaian nyata tidak perlu).
 
-Dijalankan ulang 26 September 2026 dengan `frappe_books.py` 1.0.1 (keluaran identik di 1.0.2, dicek dengan diff) (Python 3, Linux). Database tidak berubah (dicek SHA-256 di uji regresi).
+Dijalankan ulang 26 September 2026 dengan `frappe_books.py` 1.0.3 (Python 3, Linux). Database tidak berubah (dicek SHA-256 di uji regresi).
 
 ```text
 $ python3 scripts/frappe_books.py cek
@@ -36,7 +36,7 @@ Per pelanggan (terbesar dulu):
   1. Warung Bu Sari - 1 invoice - Rp 594.350
   2. Toko Sinar Abadi - 1 invoice - Rp 188.700
   3. CV Maju Jaya - 2 invoice - Rp 150.000
-Catatan: retur sudah mengurangi angka di atas; 'Terbayar (bersih)' = total bersih - sisa tagihan, bukan uang yang benar-benar diterima bila ada retur yang belum dikembalikan.
+Catatan: retur sudah mengurangi angka di atas. 'Belum dibayar' = sisa tagihan dikurangi kredit retur yang belum dikembalikan (sama dengan PIUTANG BERSIH di perintah 'piutang').
 Catatan: 1 draf belum di-Submit di Frappe Books; belum masuk angka di atas.
 Sumber: file Frappe Books (dibaca saja). Angka dibulatkan ke rupiah terdekat untuk tampilan.
 (kode keluar 0)
@@ -53,7 +53,7 @@ Per barang (nilai sebelum pajak & diskon nota, terbesar dulu):
   1. Jasa Seduh Event - 1 - Rp 500.000
   2. Kopi Arabika 250g - 3 - Rp 255.000
   3. Kopi Robusta 1kg - 1 - Rp 150.000
-Catatan: retur sudah mengurangi angka di atas; 'Terbayar (bersih)' = total bersih - sisa tagihan, bukan uang yang benar-benar diterima bila ada retur yang belum dikembalikan.
+Catatan: retur sudah mengurangi angka di atas. 'Belum dibayar' = sisa tagihan dikurangi kredit retur yang belum dikembalikan (sama dengan PIUTANG BERSIH di perintah 'piutang').
 Catatan: 1 draf belum di-Submit di Frappe Books; belum masuk angka di atas.
 Sumber: file Frappe Books (dibaca saja). Angka dibulatkan ke rupiah terdekat untuk tampilan.
 (kode keluar 0)
@@ -98,8 +98,8 @@ Beban:
   Biaya PLN Gudang & Kantor - 5130.001: Rp 250.000
 Total beban: Rp 1.250.000
 RUGI BERSIH: -Rp 595.000
-Catatan retur: 1 invoice retur di periode ini (SINV-1008). Frappe Books v0.36.0 mencatat retur di buku besar dengan tanda terbalik, sehingga retur justru menambah angka di buku besar. Angka di atas SUDAH DIKOREKSI (retur mengurangi pendapatan/beban), sejalan dengan perintah 'penjualan'. Menurut buku besar apa adanya (Reports > Profit And Loss Frappe Books): total pendapatan Rp 1.205.000, HPP Rp 250.000, beban Rp 1.250.000, rugi -Rp 295.000.
-Ringkasan dari buku besar Frappe Books (hanya transaksi final). Bukan laporan keuangan resmi; untuk laporan lengkap buka Reports > Profit And Loss di Frappe Books.
+Catatan retur: 2 dokumen retur di periode ini (SHPM-R1008, SINV-1008) sudah MENGURANGI pendapatan/HPP, sama dengan cara Profit And Loss Frappe Books membacanya.
+Dihitung dari buku besar Frappe Books (hanya transaksi final) dengan cara yang sama seperti Reports > Profit And Loss, jadi totalnya semestinya sama. Bukan laporan keuangan resmi.
 (kode keluar 0)
 
 $ python3 scripts/frappe_books.py laporan-harian --hari-ini 2026-09-26
@@ -119,13 +119,13 @@ Stok habis/menipis (<= 5): 4 barang: Filter Kertas (-1), Paper Cup 8oz (0), Kopi
 - Piutang SINV-1001: 10 Jul + 30 hari = 9 Agu → 26 Sep = **48 hari** telat ✔.
 - Stok Kopi Arabika: 10 − 3 + 20 − 1 − 2 = **24** ✔ (masuk "Aman").
 - Laba rugi Sep: pendapatan 905.000 − HPP 250.000 − beban 1.250.000 = **−595.000** ✔ (beban 999.999 tanggal 1 Okt WIB tidak ikut).
-  Buku besar apa adanya (retur SINV-1008 diposting −150.000 di sisi debit Penjualan, seperti Frappe Books v0.36.0): pendapatan
-  905.000 + 2 × 150.000 = **1.205.000**, rugi −295.000 — ditampilkan di "Catatan retur" ✔.
+  Retur SINV-1008 (Penjualan debit −150.000) dan pengiriman returnya SHPM-R1008 (HPP kredit −100.000) dibaca dengan nilai mutlak
+  per kolom seperti `reports/LedgerReport.ts` Frappe, sehingga keduanya mengurangi pendapatan/HPP — sama dengan Profit And Loss Frappe ✔.
 
 ## Jawaban agent ke pemilik (ringkas)
 > Penjualan September (final) **Rp 933.050**, terbayar (bersih) Rp 450.000, sisa Rp 483.050. Ada 1 draf yang belum di-Submit
 > sehingga belum dihitung. Dua invoice sudah telat (dengan asumsi tempo 30 hari): SINV-1007 Warung Bu Sari Rp 150.000 (87 hari)
 > dan SINV-1001 Toko Sinar Abadi Rp 355.200 (48 hari). Stok **Filter Kertas minus 1** (cek pencatatan), Paper Cup habis,
-> Robusta & Gula Aren menipis. September **rugi Rp 595.000** karena sewa Rp 1 juta masuk bulan ini. (Laporan Profit And Loss
-> di Frappe Books akan menampilkan rugi Rp 295.000 karena cara Frappe Books mencatat retur; angka saya sudah dikoreksi.)
+> Robusta & Gula Aren menipis. September **rugi Rp 595.000** karena sewa Rp 1 juta masuk bulan ini (angka ini dihitung dengan cara
+> yang sama seperti Profit And Loss di Frappe Books).
 > *Saran:* tagih dua invoice telat minggu ini; periksa kenapa Filter Kertas minus.

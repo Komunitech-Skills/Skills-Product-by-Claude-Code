@@ -68,10 +68,11 @@ Setelah terpasang, cukup ketik permintaan biasa:
 Panduan lengkap (termasuk Windows): `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org).
 Tidak butuh internet, akun, kunci API, atau paket tambahan.
 
-**Status uji jujur (versi 1.0.2):** laporan (penjualan, piutang, stok, laba rugi) sudah diuji penguji independen pada file
+**Status uji jujur (versi 1.0.3):** laporan (penjualan, piutang, stok, laba rugi) sudah diuji penguji independen pada file
 **asli** buatan Frappe Books v0.36.0 dan angkanya cocok; file CSV pelanggan, barang, penjualan, dan pembelian diterima Import Wizard
-asli. Versi 1.0.2 memperbaiki akun pembelian barang berstok (agar HPP tidak terhitung dua kali) dan menampilkan kredit retur di
-piutang; sudah dibuktikan pembuat di aplikasi asli dan lolos 42 uji otomatis, **menunggu uji ulang penguji independen**. Jadwal Telegram belum diuji di OpenClaw untuk skill ini. Catatan: per 20 Sep 2026 proyek Frappe Books mengumumkan pembaruan aplikasi sedang tertahan
+asli; akun barang berstok & kredit retur sudah beres. Versi 1.0.3 menghitung laba rugi dengan cara yang sama seperti laporan
+Profit And Loss Frappe Books (termasuk barang retur yang kembali ke gudang); di aplikasi asli angkanya sama persis dengan P&L
+bawaan dan lolos 46 uji otomatis, **menunggu uji ulang penguji independen**. Jadwal Telegram belum diuji di OpenClaw untuk skill ini. Catatan: per 20 Sep 2026 proyek Frappe Books mengumumkan pembaruan aplikasi sedang tertahan
 (masalah sertifikat penanda tangan); versi yang sudah dirilis tetap bisa dipakai.
 
 ## FAQ

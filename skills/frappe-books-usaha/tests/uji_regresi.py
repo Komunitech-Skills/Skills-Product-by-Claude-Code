@@ -528,8 +528,12 @@ class UjiRevisi101(Dasar):
         # Retur SINV-1008 diposting bertanda terbalik (seperti v0.36.0). Pendapatan koreksi = DPP penjualan (905.000).
         k, out, _ = jalan("laba-rugi", "--db", self.db, "--bulan", "2026-09")
         self.assertIn("Total pendapatan: Rp 905.000", out)
-        self.assertIn("Catatan retur: 1 invoice retur", out)
-        self.assertIn("total pendapatan Rp 1.205.000", out)  # buku besar apa adanya = P&L Frappe Books
+        # v1.0.3: P&L Frappe sendiri memakai nilai mutlak per kolom (LedgerReport.ts) -> retur mengurangi; tidak ada
+        # lagi "angka buku besar apa adanya" yang berbeda (klaim v1.0.1-1.0.2 keliru, dibuktikan di aplikasi asli).
+        self.assertIn("Catatan retur: 2 dokumen retur", out)
+        self.assertIn("SHPM-R1008, SINV-1008", out)
+        self.assertIn("HPP Pembelian - 4210.000: Rp 250.000", out)
+        self.assertNotIn("1.205.000", out)
         k, out2, _ = jalan("penjualan", "--db", self.db, "--bulan", "2026-09")
         self.assertIn("DPP / sebelum pajak : Rp 905.000", out2)
         self.assertIn("Terbayar (bersih)", out2)
@@ -711,6 +715,85 @@ class UjiRevisi102(Dasar):
         self.assertEqual(frappe, Decimal("903900"))
         k, out, _ = jalan("piutang", "--db", self.db, "--hari-ini", "2026-09-26")
         self.assertNotIn("Kredit retur", out)  # retur lama (outstanding 0) tidak memunculkan kredit
+
+
+class UjiRevisi103(Dasar):
+    """Regresi uji ulang v1.0.2 (Frappe v0.36.0 asli): laba-rugi = P&L Frappe termasuk pengiriman retur."""
+
+    def db_kosong_ledger(self, nama):
+        p = os.path.join(self.tmp, nama)
+        buat_db_contoh.buat(p)
+        c = sqlite3.connect(p)
+        c.execute("DELETE FROM AccountingLedgerEntry")
+        c.commit()
+        return p, c
+
+    def test_43_laba_rugi_sama_dengan_pl_frappe_skenario_grosir(self):
+        # Buku besar skenario penguji 09 (Grosir Uji v102). P&L Frappe asli: Penjualan 985.000, Service 25.000,
+        # HPP -850.000, beban 100.000, Total Profit 60.000.
+        p, c = self.db_kosong_ledger("grosir.books.db")
+        c.execute("INSERT INTO Account (name, rootType, accountType, isGroup, lft, rgt, createdBy, modifiedBy, created, modified) "
+                  "VALUES ('Biaya Sewa Gudang - 5110.015','Expense',NULL,0,95,96,'a','a','x','x')")
+        pj, sv, hpp, inv = ("Penjualan - 4110.000", "Pendapatan Service - 4310.000", "HPP Pembelian - 4210.000",
+                            "Persediaan Barang - 1141.000")
+        baris = [("2026-09-03", "PINV-1002", hpp, 50000, 0),
+                 ("2026-09-05", "SINV-1001", pj, 0, 591000), ("2026-09-10", "SINV-1002", pj, 0, 220000),
+                 ("2026-09-10", "SINV-1002", sv, 0, 25000), ("2026-09-15", "SINV-1003", pj, 0, 246000),
+                 ("2026-09-05", "SHPM-1001", hpp, 492000, 0), ("2026-09-15", "SHPM-1002", hpp, 200000, 0),
+                 ("2026-09-10", "SHPM-1004", hpp, 180000, 0),
+                 ("2026-09-30", "SINV-1005", pj, -72000, 0),                                  # retur invoice
+                 ("2026-09-30", "SHPM-1005", inv, -72000, 0), ("2026-09-30", "SHPM-1005", hpp, 0, -72000),  # retur kirim
+                 ("2026-09-25", "JV-1001", "Biaya Sewa Gudang - 5110.015", 100000, 0),
+                 ("2026-10-01", "SHPM-1003", hpp, 64000, 0), ("2026-10-01", "SINV-1004", pj, 0, 77000)]
+        for i, (tg, ref, ak, d, k) in enumerate(baris):
+            c.execute("INSERT INTO AccountingLedgerEntry (name, date, account, debit, credit, referenceType, referenceName, "
+                      "reverted, createdBy, modifiedBy, created, modified) VALUES (?,?,?,?,?,?,?,0,'a','a','x','x')",
+                      (f"G{i}", tg + "T00:00:00.000Z", ak, f"{d:.11f}", f"{k:.11f}", "X", ref))
+        c.commit()
+        c.close()
+        k, out, _ = jalan("laba-rugi", "--db", p, "--bulan", "2026-09")
+        self.assertEqual(k, 0)
+        self.assertIn("Penjualan - 4110.000: Rp 985.000", out)
+        self.assertIn("Pendapatan Service - 4310.000: Rp 25.000", out)
+        self.assertIn("HPP Pembelian - 4210.000: Rp 850.000", out)
+        self.assertIn("LABA BERSIH: Rp 60.000", out)
+        self.assertIn("SHPM-1005, SINV-1005", out)
+        k, out, _ = jalan("laba-rugi", "--db", p, "--dari", "2026-09-01", "--sampai", "2026-10-01")
+        self.assertIn("HPP Pembelian - 4210.000: Rp 914.000", out)
+        self.assertIn("LABA BERSIH: Rp 73.000", out)  # 985.000+77.000+25.000-914.000-100.000 (tanpa jasa SINV-1006)
+
+    def test_44_penjualan_belum_dibayar_memakai_kredit_retur(self):
+        p = os.path.join(self.tmp, "kredit44.books.db")
+        shutil.copy(self.db, p)
+        c = sqlite3.connect(p)
+        c.execute("UPDATE SalesInvoice SET outstandingAmount='-150000.00000000000' WHERE name='SINV-1008'")
+        c.commit()
+        c.close()
+        k, out, _ = jalan("penjualan", "--db", p, "--bulan", "2026-09")
+        self.assertIn("TOTAL               : Rp 933.050", out)
+        self.assertIn("Belum dibayar: Rp 333.050 (sudah dikurangi kredit retur -Rp 150.000)", out)
+        self.assertIn("Terbayar (bersih)   : Rp 600.000", out)  # = kas masuk 300.000 (SINV-1002) + 300.000 (SINV-1003)
+        k, out2, _ = jalan("penjualan", "--db", self.db, "--bulan", "2026-09")
+        self.assertIn("Belum dibayar: Rp 483.050", out2)
+        self.assertNotIn("kredit retur -Rp", out2)
+
+    def test_45_laporan_harian_hari_retur(self):
+        k, out, _ = jalan("laporan-harian", "--db", self.db, "--tanggal", "2026-09-05", "--hari-ini", "2026-09-26")
+        self.assertEqual(k, 0)
+        self.assertIn("Penjualan final: 0 invoice, Rp 0", out)
+        self.assertIn("Retur penjualan: 1 nota, -Rp 150.000 -> penjualan bersih hari ini -Rp 150.000", out)
+        k, out, _ = jalan("laporan-harian", "--db", self.db, "--tanggal", "2026-09-06", "--hari-ini", "2026-09-26")
+        self.assertIn("Kemarin hanya ada retur (-Rp 150.000).", out)
+
+    def test_46_pajak_awalan_tunggal(self):
+        masuk = self.tulis("pajak46.csv", "No Nota;Tanggal;Pelanggan;Barang;Jumlah;Harga;Pajak\n"
+                                          "N-1;27/09/2026;Toko Sinar Abadi;Kopi Arabika 250g;1;85000;PPN\n")
+        keluar = os.path.join(self.tmp, "pajak46-out.csv")
+        k, out, _ = jalan("csv-transaksi", "--db", self.db, "--masuk", masuk, "--keluar", keluar)
+        self.assertEqual(k, 0, out)
+        self.assertIn("pajak 'PPN' dianggap 'PPN 11% (12% x 11/12)'", out)
+        self.assertEqual(dict(zip(self.baca_csv(keluar)[2], self.baca_csv(keluar)[3]))["SalesInvoiceItem.tax"],
+                         "PPN 11% (12% x 11/12)")
 
 
 if __name__ == "__main__":

@@ -48,7 +48,12 @@ Langkah GUI ini disusun dari kode `src/pages/ImportWizard.vue` dan belum difoto 
 - Pembayaran sebagian perlu centang **Enable Partial Payment** di pengaturan.
 - Shipment dari invoice yang berisi barang **dan** jasa gagal di v0.36.0 ("Cannot read properties of undefined (reading 'Stores')");
   hapus baris jasa di Shipment dulu (bug aplikasi, bukan skill).
-- Retur membuat invoice retur bersisa negatif (kredit); invoice asli tidak berkurang otomatis.
+- Retur membuat invoice retur bersisa negatif (kredit); invoice asli tidak berkurang otomatis. Pengiriman retur (barang kembali ke
+  gudang) dibuat dari invoice retur dan dinilai dengan **harga jual**, bukan harga pokok.
+- Purchase Receipt dari invoice pembelian ber-PPN dinilai **termasuk PPN** (Persediaan lebih besar dari nilai di Stock Balance;
+  saldo Stock Received But Not Billed jadi minus sebesar PPN). HPP tidak terpengaruh.
+- Barang **tanpa** Track Inventory tetap ikut Purchase Receipt/Shipment bila tidak dihapus (HPP bisa tercatat dua kali untuk barang
+  itu). Hapus baris barang non-stok & jasa dari Receipt/Shipment sebelum disimpan.
 
 ## Tidak dikerjakan skill (arahkan manual)
 - Retur (jumlah negatif) → buat dari invoice asli dengan tombol **Return** di Frappe Books.
