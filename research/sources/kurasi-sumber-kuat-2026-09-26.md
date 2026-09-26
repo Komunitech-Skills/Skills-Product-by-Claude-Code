@@ -136,3 +136,14 @@ individu di akar masalah, penanda `[isi: ...]` anti-karang-angka, draf minta maa
 ringkasan WA siap tempel. Rincian lengkap perubahan & atribusi di
 `skills/laporan-insiden-usaha/ATTRIBUTION.md`. Status katalog: `draft` (belum diuji sesuai
 Tahap 6, belum diberi skor kualitas).
+
+---
+
+## 4. Hasil ATM — `validasi-ide-produk-baru` (2026-09-26)
+
+- **Sumber:** [product-on-purpose/pm-skills](https://github.com/product-on-purpose/pm-skills), commit `1cef1a9eae10017389863d51e289e0ae41e17fcb` (10 Sep 2026), lisensi **Apache-2.0** (LICENSE dicek langsung, tidak ada file NOTICE).
+- **Diambil via:** `git clone --depth 1` ke scratchpad, dibaca tidak dijalankan. Skill sumber dibaca: `define-hypothesis`, `tool-foundation-sprint-founding-hypothesis`, `tool-foundation-sprint-basics`, `tool-design-sprint-test-and-score`, `measure-experiment-design`, `discover-market-sizing`.
+- **Audit keamanan:** lolos — instruksi murni prosedural, tanpa script eksekusi berbahaya, tanpa kredensial/data pribadi tertanam, tanpa prompt injection tersembunyi. Tooling CI internal repo (`scripts/*.mjs`, `*.ps1`) tidak disentuh (di luar cakupan).
+- **Nilai tambah ATM:** domain diganti total (produk software tim PM → produk/menu/jasa UMKM), 5 metode uji murah ala Indonesia (pre-order WA/status, polling story IG, lapak PO marketplace, sampel pelanggan tetap, titip warung) yang tidak ada di sumber, kriteria lulus/gagal berbasis persentase konversi sederhana (bukan signifikansi statistik A/B test sumber), script `hitung_validasi.py` (konversi + margin + balik modal biaya uji, teruji data rusak), template pesan siap pakai per kanal, dan 3 contoh kasus lokal (kopi susu literan, laundry sepatu, kelas online Canva). Rincian lengkap di `skills/validasi-ide-produk-baru/ATTRIBUTION.md`.
+- **Cek tumpang tindih:** dibandingkan dengan `brainstorming-ide-usaha` (menggali ide dari nol — beda: skill ini menguji SATU ide yang sudah ada), `riset-calon-pelanggan` (mencari prospek baru — beda: skill ini menguji minat lewat kanal/audiens yang **sudah dimiliki**), `hitung-hpp` & `harga-jual-marketplace` (dirujuk sebagai langkah lanjutan setelah hasil LULUS, bukan tumpang tindih). Tidak ada duplikasi cakupan.
+- **Keputusan:** status `draft`, tier usulan `ecer` Rp49.000 (skill konsep + script + template, sebanding `brainstorming-ide-usaha`), kategori Produktivitas. Menunggu Tahap 6 (pengujian oleh sesi terpisah) sebelum naik ke `uji`/`lulus`.
