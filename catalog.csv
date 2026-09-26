@@ -89,3 +89,4 @@ analisis-rasio-keuangan-usaha,Keuangan & Akuntansi,kurasi,https://github.com/ant
 tulisan-tanpa-kesan-ai,Marketing & Konten,kurasi,https://github.com/petergyang/no-ai-slop,MIT,8,ecer,49000,ecer,49000,1.0.0,claude-code (simulasi agent),lulus,2026-09-26
 notebook-riset-lokal,Produktivitas,kurasi,https://github.com/lfnovo/open-notebook,MIT (software tidak didistribusikan); skill orisinal Komunitech,3,ecer,99000,,,1.0.0,claude-code (simulasi agent),uji,2026-09-26
 audit-akun-iklan,Marketing & Konten,kurasi,https://github.com/AgriciDaniel/claude-ads,MIT,,ecer,99000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
+pantau-website-toko,E-commerce/Marketplace Indonesia,kurasi,https://github.com/louislam/uptime-kuma,MIT (software tidak didistribusikan); skill orisinal Komunitech,,ecer,49000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
