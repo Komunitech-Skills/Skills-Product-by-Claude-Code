@@ -1,6 +1,6 @@
 # Contoh 01 — Toko sembako, satu tahun, cek kesiapan KUR (angka diketik)
 
-> Contoh dari pembuat skill (output asli `scripts/rasio.py` v1.0.0, dijalankan 2026-09-26). Bukan hasil uji penguji independen.
+> Contoh dari pembuat skill (output asli `scripts/rasio.py` v1.0.1, dijalankan 2026-09-26). Bukan hasil uji penguji independen.
 
 **Permintaan pengguna:** "Toko sembako saya setahun: omzet 480 juta, HPP 408 juta, laba bersih 24 juta. Kas 12 jt, piutang 6 jt, stok 40 jt, peralatan 42 jt. Utang supplier 20 jt, utang lain 5 jt, pinjaman bank jangka panjang 15 jt, modal 60 jt. Mau ambil KUR cicilan 500 ribu/bulan, aman?"
 

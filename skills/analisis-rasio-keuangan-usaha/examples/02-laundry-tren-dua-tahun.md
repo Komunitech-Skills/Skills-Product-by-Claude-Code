@@ -1,6 +1,6 @@
 # Contoh 02 — Laundry, tren dua tahun dari tabel tempel (CSV titik koma)
 
-> Contoh dari pembuat skill (output asli `scripts/rasio.py` v1.0.0, 2026-09-26). Termasuk baris yang tidak dikenal untuk menunjukkan penanganan input kotor.
+> Contoh dari pembuat skill (output asli `scripts/rasio.py` v1.0.1, 2026-09-26). Termasuk baris yang tidak dikenal untuk menunjukkan penanganan input kotor.
 
 **Permintaan pengguna:** "Ini angka laundry saya 2024 dan 2025. Omzet naik tapi kok uang terasa seret? Bandingkan dong."
 
@@ -28,7 +28,7 @@ Catatan kaki;x;y
 **Output script:**
 
 # Analisis Rasio Keuangan — Laundry Bersih
-Jenis usaha: Jasa (laundry, salon, bengkel, konsultan, jasa lain) · Periode dianalisis: 2024, 2025 · Status data: **LENGKAP**
+Jenis usaha: Jasa (laundry, salon, bengkel, konsultan, jasa lain) · Periode dianalisis: 2024, 2025 · Status data: **SEMENTARA**
 
 ## Ringkasan untuk pemilik
 Pada 2025, usaha UNTUNG Rp 23.760.000 (11,0% dari penjualan). Dari 10 rasio yang dinilai terhadap ambang usaha jasa: 4 baik, 5 waspada, 1 bahaya. Paling mendesak: Rasio lancar 0,89x.
@@ -67,6 +67,8 @@ Pada 2025, usaha UNTUNG Rp 23.760.000 (11,0% dari penjualan). Dari 10 rasio yang
 | Perputaran aset disetahunkan | 2,63x | penjualan ÷ total aset × (365 ÷ hari) | — | ⚪ Info | Tiap Rp 1 aset menghasilkan penjualan Rp 2,63 setahun. |
 
 ## Tren antarperiode
+_Tren memakai basis SAMA untuk semua periode: saldo AKHIR tiap periode (persediaan, piutang, aset, modal). Tabel rasio periode terakhir di atas memakai rata-rata saldo awal-akhir bila tersedia, jadi angkanya bisa sedikit berbeda dari kolom terakhir tabel tren._
+
 | Pos / rasio | 2024 | 2025 | Perubahan terakhir |
 |---|---|---|---|
 | Rasio lancar (current ratio) | 1,30x | 0,89x | memburuk (turun) |
@@ -75,17 +77,17 @@ Pada 2025, usaha UNTUNG Rp 23.760.000 (11,0% dari penjualan). Dari 10 rasio yang
 | Modal kerja bersih | Rp 3.000.000 | −Rp 2.000.000 | turun |
 | Margin laba kotor | 70,0% | 67,0% | memburuk (turun) |
 | Margin laba bersih | 15,0% | 11,0% | memburuk (turun) |
-| ROA disetahunkan (laba ÷ aset) | 37,0% | 29,0% | memburuk (turun) |
-| ROE disetahunkan (laba ÷ modal) | 62,8% | 58,7% | memburuk (turun) |
+| ROA disetahunkan (laba ÷ aset) | 37,0% | 26,1% | memburuk (turun) |
+| ROE disetahunkan (laba ÷ modal) | 62,8% | 62,5% | memburuk (turun) |
 | DER (utang ÷ modal) | 0,70x | 1,39x | memburuk (naik) |
 | DAR (utang ÷ aset) | 41,1% | 58,2% | memburuk (naik) |
-| Perputaran persediaan (per periode) | 27,00x | 28,51x | naik |
-| Umur stok (hari) | 13,5 hari | 12,8 hari | membaik (turun) |
-| Perputaran piutang (per periode) | 60,00x | 36,00x | turun |
-| Lama piutang tertagih (hari) | 6,1 hari | 10,1 hari | memburuk (naik) |
+| Perputaran persediaan (per periode) | 27,00x | 23,76x | turun |
+| Umur stok (hari) | 13,5 hari | 15,4 hari | memburuk (naik) |
+| Perputaran piutang (per periode) | 60,00x | 24,00x | turun |
+| Lama piutang tertagih (hari) | 6,1 hari | 15,2 hari | memburuk (naik) |
 | Lama bayar pemasok (hari) | 27,0 hari | 30,7 hari | naik |
-| Siklus kas (hari stok + hari piutang − hari utang) | -7,4 hari | -7,8 hari | turun |
-| Perputaran aset disetahunkan | 2,47x | 2,63x | naik |
+| Siklus kas (hari stok + hari piutang − hari utang) | -7,4 hari | -0,2 hari | naik |
+| Perputaran aset disetahunkan | 2,47x | 2,37x | turun |
 | Penjualan / pendapatan usaha bersih | Rp 180.000.000 | Rp 216.000.000 | membaik (naik) +20,0% |
 | Laba (rugi) bersih | Rp 27.000.000 | Rp 23.760.000 | memburuk (turun) -12,0% |
 
@@ -101,7 +103,7 @@ _Ini pembacaan angka, bukan keputusan kredit. Bank juga menilai karakter, riwaya
 
 ## Saran tindakan (urut prioritas)
 1. **Rasio lancar (current ratio)** — Utang jangka pendek hampir/melebihi aset lancar. Tunda pembelian aset & prive besar, negosiasikan tempo pemasok lebih panjang, tagih piutang lebih cepat, dan hindari menutup utang dengan utang baru.
-2. **Rasio cepat (quick ratio)** — Aset lancar terlalu banyak tertahan di stok. Kurangi belanja stok yang lambat laku, jual/promo barang lama, dan sisihkan kas cadangan minimal 1 bulan biaya tetap.
+2. **Rasio cepat (quick ratio)** — Kas + piutang tidak cukup menutup utang jangka pendek, dan stok bukan penyebabnya (stok kecil). Fokus ke utang & kas: minta tenor cicilan/tempo pemasok lebih panjang, tagih piutang, tahan prive & pembelian alat, dan sisihkan dana cadangan dari penjualan harian.
 3. **Rasio kas (cash ratio)** — Kas tunai tipis dibanding tagihan jangka pendek. Buat pos 'dana cadangan' terpisah, setor rutin (mis. 5% dari penjualan harian), dan jadwalkan pembayaran besar setelah hari ramai.
 4. **Margin laba bersih** — Laba bersih kecil dibanding penjualan. Urutkan biaya operasional dari yang terbesar, pangkas yang tidak menambah penjualan, dan cek apakah gaji/sewa sudah terlalu besar untuk omzet sekarang.
 5. **DER (utang ÷ modal)** — Utang besar dibanding modal sendiri. Jangan ambil pinjaman baru dulu, dahulukan melunasi utang berbunga tertinggi, dan tahan prive agar laba menambah modal.

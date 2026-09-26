@@ -29,7 +29,7 @@ Membaca laporan keuangan usaha kecil lalu menjawab pertanyaan pemilik dengan ang
 | Kas, piutang, persediaan, aset tetap (atau total aset) | Ya untuk likuiditas/ROA | Pos rincian yang kosong = Rp 0 (ditulis di Asumsi) |
 | Utang lancar (≤ 12 bulan) & utang jangka panjang, modal | Ya untuk solvabilitas | Modal = aset − utang bila tidak diisi |
 | HPP | Untuk margin kotor & umur stok | Tidak dihitung |
-| Jenis usaha: dagang / jasa / produksi (kuliner & katering termasuk produksi) | Tidak | `umum` |
+| Jenis usaha: dagang / jasa / produksi (kuliner & katering termasuk produksi) | Tidak | `umum`. Sebaiknya agent memetakan sendiri lalu mengirim `--jenis dagang\|jasa\|manufaktur` |
 | Panjang periode (bulan) | Tidak | 12 bulan. EMKM JSON: dari tanggal |
 | Laporan periode sebelumnya | Tidak | Tanpa tren |
 | Total cicilan pinjaman per bulan (lama + rencana) | Tidak | Kemampuan cicilan tidak dinilai |
@@ -47,7 +47,7 @@ Tawarkan `templates/isian-rasio.csv` bila pengguna lebih suka mengisi tabel. Jik
 ## Langkah kerja
 1. **Siapkan data** apa adanya (jangan mengetik ulang atau mengubah angka):
    - Output `laporan_emkm.py --format json` → langsung dipakai (bisa beberapa file = beberapa periode).
-   - Tabel dari chat/Excel → simpan ke `data.csv` atau `.md`. Kolom 1 = nama pos, kolom berikutnya = periode (lama → baru). Pemisah `;`, `,`, tab, atau tabel `|`.
+   - Tabel dari chat/Excel → simpan ke `data.csv` atau `.md`. Kolom 1 = nama pos, kolom berikutnya = periode (lama → baru). Pemisah `;`, `,`, tab, atau tabel `|`. Bila pemisahnya koma, angka ribuan wajib dikutip (`Kas,"1,250,000"`) atau ditulis `Kas;1.250.000`. Tanpa itu script menolak dengan GALAT, tidak menebak angkanya.
    - Angka yang diketik → pakai opsi `--penjualan`, `--kas`, dst.
    - File .xlsx/PDF → minta disimpan sebagai CSV atau ditempel.
 2. **Jalankan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
@@ -62,7 +62,7 @@ Tawarkan `templates/isian-rasio.csv` bila pengguna lebih suka mengisi tabel. Jik
    - Opsi lain: `--penjualan-kredit`, `--beban-bunga`, `--laba-usaha`, `--persediaan-awal`, `--piutang-awal`, `--total-aset`, `--total-utang`, `--utang-lancar`, `--hari`. Opsi yang diberikan bersama file berlaku untuk **periode terakhir**.
    - Dari EMKM, utang bank dianggap utang lancar seluruhnya (konservatif). Tanyakan pokok yang jatuh tempo 12 bulan ke depan lalu isi `--bagian-lancar-utang-bank`.
    - `--format json` untuk angka mentah. Default teks Markdown siap tempel.
-3. **Baca "Perlu dicek"** (angka tak terbaca, mustahil, neraca tidak seimbang, baris tak dikenal). Tanyakan dalam satu pesan, lalu jalankan ulang. Selama status data SEMENTARA, sebut hasilnya sementara.
+3. **Baca "Perlu dicek"** (angka tak terbaca, mustahil, neraca tidak seimbang, baris tak dikenal). Tanyakan dalam satu pesan, lalu jalankan ulang. Selama status data SEMENTARA, sebut hasilnya sementara. Bila status **DATA BELUM CUKUP** (kurang dari 5 rasio bisa dinilai), jangan menyimpulkan usaha "sehat". Sampaikan pos yang belum ada (saran "Lengkapi data") dan ajukan pertanyaan di bagian Input.
 4. **Sajikan hasil** dengan format di bawah. Semua angka, status, dan persen **dari output script**. Boleh menyederhanakan kalimat "Artinya", tetapi tidak boleh mengubah angka atau status.
 5. **Kesiapan KUR:** sampaikan kesimpulan + poin ✓/⚠/✗ apa adanya. Jika pengguna ingin lanjut mengajukan, arahkan ke `pengajuan-kur` (simulasi cicilan, checklist dokumen). Tegaskan: bank yang memutuskan.
 6. Periksa checklist, lalu kirim. Tawarkan: hitung ulang tiap bulan/kuartal, bandingkan dengan periode lalu, atau versi ringkas untuk dilampirkan ke proposal.
@@ -76,7 +76,7 @@ Beri tahu pengguna bahwa hasil dihitung manual (belum diverifikasi script). Ikut
 Jenis usaha · periode · status data LENGKAP/SEMENTARA
 ## Ringkasan untuk pemilik        ← 3–5 kalimat awam: untung/rugi, jumlah rasio baik/waspada/bahaya, yang paling mendesak
 ## Likuiditas / Profitabilitas / Solvabilitas / Aktivitas   ← tabel: Rasio | Nilai | Rumus | Wajar | Status 🟢🟡🔴 | Artinya
-## Tren antarperiode              ← bila > 1 periode: membaik/memburuk per rasio, pertumbuhan penjualan & laba
+## Tren antarperiode              ← bila > 1 periode: membaik/memburuk per rasio (basis SAMA: saldo akhir tiap periode), pertumbuhan penjualan & laba
 ## Kesiapan pengajuan KUR/kredit  ← kesimpulan + ✓/⚠/✗ + rasio cicilan (bila diisi)
 ## Saran tindakan (urut prioritas)← maks. 5, konkret
 ## Perlu dicek · Asumsi
@@ -109,6 +109,7 @@ usaha dagang: 10 baik, 1 waspada, 0 bahaya. Perlu diperhatikan: Umur stok 35,8 h
 - Uji regresi: `python3 <folder-skill-ini>/tests/uji_regresi.py` (harus "SEMUA UJI LULUS").
 - Script keluar kode 2 dengan pesan `GALAT: ...` untuk file kosong, tidak ada, Excel/PDF/biner, JSON rusak, jenis usaha tak dikenal, atau tidak ada angka yang terbaca. Sampaikan pesan itu beserta cara memperbaikinya.
 - Pembagi nol → "tidak dihitung" + alasan. Modal ≤ 0 → ROE/DER tidak bermakna (bahaya). Aset/utang negatif → mustahil, rasio terkait tidak dihitung. Baris tabel tak dikenal dilewati dan dilaporkan.
-- Rasio disetahunkan dari periode < 3 bulan diberi peringatan musiman. ROA/ROE > 100% diberi catatan (aset/modal tercatat kecil).
+- Tabel utama periode terakhir memakai rata-rata saldo awal-akhir bila tersedia. Tabel tren memakai saldo akhir untuk semua periode agar sebanding, dan basis ini ditulis di output. Jangan membandingkan angka tabel utama dengan kolom tren periode sebelumnya.
+- Rasio disetahunkan dari periode < 3 bulan diberi catatan musiman (informasi, tidak membuat status SEMENTARA). ROA/ROE > 100% diberi catatan (aset/modal tercatat kecil).
 - Kualitas hasil bergantung pada laporan sumber. Skill ini tidak memeriksa kebenaran transaksi dan tidak menggantikan akuntan.
 - Ambang wajar & sumbernya: `references/ambang-wajar.md` (dicek 2026-09-26). Data diproses lokal; jangan dikirim ke layanan lain.

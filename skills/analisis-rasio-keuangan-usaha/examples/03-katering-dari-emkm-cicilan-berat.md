@@ -62,7 +62,7 @@ Pada 1 Januari 2026 s.d. 31 Maret 2026, usaha UNTUNG Rp 5.000.000 (41,7% dari pe
 _Ini pembacaan angka, bukan keputusan kredit. Bank juga menilai karakter, riwayat SLIK OJK, agunan, legalitas, dan prospek usaha. Simulasi cicilan & dokumen KUR: skill pengajuan-kur._
 
 ## Saran tindakan (urut prioritas)
-1. **Rencana cicilan** — Cicilan melebihi 30% laba bersih per bulan. Kecilkan plafon, pilih tenor lebih panjang, atau pinjam bertahap; hitung plafon yang aman dengan skill pengajuan-kur sebelum ke bank.
+1. **Rencana cicilan** — Cicilan melebihi 30% laba bersih per bulan. Bila ini RENCANA pinjaman: kecilkan plafon, pilih tenor lebih panjang, atau pinjam bertahap (hitung plafon aman dengan skill pengajuan-kur). Bila cicilan SEDANG BERJALAN: jangan tambah pinjaman, dan bicarakan penjadwalan ulang dengan bank resmi sebelum menunggak.
 2. **DER (utang ÷ modal)** — Utang besar dibanding modal sendiri. Jangan ambil pinjaman baru dulu, dahulukan melunasi utang berbunga tertinggi, dan tahan prive agar laba menambah modal.
 3. **DAR (utang ÷ aset)** — Sebagian besar aset dibiayai utang. Kurangi ketergantungan pada pinjaman; tahan laba di usaha (prive secukupnya) agar porsi modal sendiri naik.
 
