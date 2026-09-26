@@ -25,8 +25,8 @@ from pathlib import Path
 
 SINI = Path(__file__).resolve().parent
 REF = SINI.parent / "references"
-TANGGAL_CEK = "2026-09-25"
-VERSI = "1.0.2"
+TANGGAL_CEK = "2026-09-26"
+VERSI = "1.0.3"
 TAHUN_MIN, TAHUN_MAKS = 2025, 2100
 
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
@@ -65,15 +65,14 @@ KEWAJIBAN_MASA = {
                    "PKP tetap lapor walau nihil. Faktur pajak keluaran wajib diunggah & mendapat "
                    "persetujuan DJP paling lambat tgl 20 bulan berikutnya setelah tanggal pembuatan faktur "
                    "(PER-11/PJ/2025 Ps. 44 ayat 1); faktur yang tidak disetujui bukan faktur pajak sah. "
-                   "Menurut sumber sekunder batas unggah faktur TIDAK bergeser walau tgl 20 hari libur "
-                   "(PERLU REVIEW) - unggah sebelum tgl 20. Besarannya: skill hitung-ppn.",
+                   "Batas unggah faktur TIDAK bergeser walau tgl 20 hari libur (PER-11/PJ/2025 tidak memuat "
+                   "ketentuan pergeseran; PERLU REVIEW) - unggah sebelum tgl 20. Besarannya: skill hitung-ppn.",
     },
     "pph25": {
         "pajak": "PPh 25 (angsuran bulanan)",
         "setor": 15, "lapor": None,
         "catatan": "Batas lapor SPT Masa PPh 25 tgl 20, tetapi setoran yang tervalidasi (ada NTPN) "
-                   "dianggap sudah lapor pada tanggal setor (PMK 81/2024 Ps. 171, menurut Kring Pajak; "
-                   "nomor ayat PERLU REVIEW) - jadi cukup setor paling lambat tgl 15. "
+                   "dianggap sudah lapor pada tanggal setor (PMK 81/2024 Ps. 171 ayat 10) - jadi cukup setor paling lambat tgl 15. "
                    "Angsuran nihil tidak perlu setor.",
     },
 }
@@ -84,8 +83,8 @@ KEWAJIBAN_TAHUNAN = {
         "bulan_ke": 3,
         "judul": "LAPOR SPT Tahunan PPh Orang Pribadi",
         "catatan": "Paling lambat 3 bulan setelah akhir tahun pajak. Kurang bayar (PPh 29) dilunasi "
-                   "SEBELUM SPT dikirim. Tenggat SPT Tahunan tidak bergeser otomatis walau jatuh di hari libur "
-                   "(penegasan DJP 2025; DJP kadang memberi perpanjangan khusus lewat pengumuman).",
+                   "SEBELUM SPT dikirim. Tidak bergeser meski hari libur (PMK 81/2024 Ps. 169); lapor lebih awal. "
+                   "DJP kadang memberi perpanjangan khusus lewat pengumuman.",
     },
     "spt-badan": {
         "pajak": "SPT Tahunan PPh Badan",
@@ -93,7 +92,7 @@ KEWAJIBAN_TAHUNAN = {
         "judul": "LAPOR SPT Tahunan PPh Badan",
         "catatan": "Paling lambat akhir bulan ke-4 setelah akhir tahun buku (dianggap tahun buku "
                    "Januari-Desember). Kurang bayar (PPh 29) dilunasi SEBELUM SPT dikirim. Tidak bergeser "
-                   "otomatis walau jatuh di hari libur (penegasan DJP 2025; PERLU REVIEW).",
+                   "meski hari libur (PMK 81/2024 Ps. 169); lapor lebih awal.",
     },
     "bukti-a1": {
         "pajak": "Bukti potong PPh 21 tahunan (BPA1, dulu 1721-A1)",
@@ -121,10 +120,10 @@ PROFIL = {
 
 SEMUA_KEWAJIBAN = list(KEWAJIBAN_MASA) + list(KEWAJIBAN_TAHUNAN)
 
-# SPT Tahunan: Ps. 173 ayat 1 PMK 81/2024 menggeser batas lapor yang dimaksud "Pasal 171 dan Pasal 172".
-# Isi Ps. 172 belum terverifikasi dari naskah resmi (sumber sekunder bertentangan) -> PERLU REVIEW.
-# Tanggal kalender tetap tanpa geser (aman); tanggal kemungkinan bergeser ditampilkan sebagai info.
-TAHUNAN_MUNGKIN_GESER = ("spt-op", "spt-badan")
+# SPT Tahunan: batasnya diatur PMK 81/2024 Ps. 169 dan TIDAK bergeser walau jatuh di hari libur
+# (Ps. 173 ayat 1 hanya menggeser pelaporan Ps. 171 & 172; Ps. 172 = PPN membangun sendiri & PPN
+# pemanfaatan dari luar Daerah Pabean oleh bukan-PKP). Dicocokkan dengan naskah resmi 2026-09-26.
+TAHUNAN_TIDAK_GESER = ("spt-op", "spt-badan")
 
 # Perpanjangan khusus DJP yang sudah diketahui (tanggal di kalender TIDAK diubah; hanya diberi catatan).
 PERPANJANGAN_KHUSUS = {
@@ -134,7 +133,8 @@ PERPANJANGAN_KHUSUS = {
 DISCLAIMER = (
     "Bukan nasihat pajak. Dasar: PMK 81/2024 (berlaku 1 Jan 2025), PP 55/2022 jo. PP 20/2026, "
     "PER-2/PJ/2024, PER-11/PJ/2025, SKB 3 Menteri libur nasional & cuti bersama; dicek " + TANGGAL_CEK +
-    " dari sumber sekunder (naskah resmi belum dibaca langsung). DJP kadang memundurkan tenggat lewat "
+    " (pasal tenggat PMK 81/2024 & PER-11/PJ/2025 dicocokkan dengan naskah resmi di pajak.go.id; "
+    "sebagian butir lain dari sumber sekunder). DJP kadang memundurkan tenggat lewat "
     "pengumuman khusus - cek pengumuman DJP terbaru (pajak.go.id, Kring Pajak 1500200). "
     "Pembulatan/perhitungan pajak tidak dilakukan skill ini dan belum dicocokkan dengan Coretax. "
     "Untuk kasus Anda, konsultasikan dengan konsultan pajak atau Account Representative (AR)."
@@ -279,7 +279,7 @@ def buat_acara(kewajiban, awal, akhir, libur, tahun_ada):
     acara, kurang = [], set()
 
     def tambah(kode, jenis, judul, pajak, masa_label, normal, bisa_geser, catatan):
-        cek, libur_tetap, saran, alt = set(), None, None, None
+        cek, libur_tetap, saran = set(), None, None
         if bisa_geser:
             final, alasan = geser(normal, libur, tahun_ada, cek)
         else:
@@ -289,8 +289,6 @@ def buat_acara(kewajiban, awal, akhir, libur, tahun_ada):
             libur_tetap = hari_libur(normal, libur)
             if libur_tetap:
                 saran = hari_kerja_sebelum(normal, libur)
-                if kode in TAHUNAN_MUNGKIN_GESER:
-                    alt, _ = geser(normal, libur, tahun_ada, set())
         if awal <= final <= akhir:
             kurang.update(cek)
             acara.append({
@@ -298,7 +296,7 @@ def buat_acara(kewajiban, awal, akhir, libur, tahun_ada):
                 "judul": judul, "pajak": pajak, "masa": masa_label, "alasan_geser": alasan,
                 "bisa_geser": bisa_geser, "catatan": catatan, "libur_tetap": libur_tetap,
                 "uid": uid(kode, jenis, masa_label),
-                "saran_sebelum": saran, "kemungkinan_geser": alt,
+                "saran_sebelum": saran,
             })
 
     # masa pajak yang mungkin tenggatnya jatuh di rentang (mundur 3 bulan cukup: geser maks. beberapa hari)
@@ -353,10 +351,8 @@ def ket_geser(e):
     if e.get("libur_tetap"):
         teks = ("jatuh pada hari libur (%s) dan TIDAK bergeser - selesaikan paling lambat hari kerja "
                 "sebelumnya: %s" % (e["libur_tetap"], fmt_panjang(e["saran_sebelum"])))
-        if e.get("kemungkinan_geser"):
-            teks += ("; kemungkinan lain (PERLU REVIEW): bila Ps. 173 ayat 1 PMK 81/2024 juga berlaku untuk "
-                     "SPT Tahunan, batasnya mundur ke %s - pakai tanggal kalender yang lebih awal agar aman"
-                     % fmt_panjang(e["kemungkinan_geser"]))
+        if e["kode"] in TAHUNAN_TIDAK_GESER:
+            teks += "; tidak bergeser meski hari libur (PMK 81/2024 Ps. 169); lapor lebih awal"
     elif e["alasan_geser"]:
         teks = "bergeser dari %s (%s)" % (fmt_pendek(e["tanggal_normal"]), "; ".join(e["alasan_geser"]))
     if e.get("perpanjangan"):
@@ -508,8 +504,6 @@ def keluaran_json(acara, info):
             "kegiatan": e["judul"], "jenis": e["jenis"], "kewajiban": e["kode"], "masa": e["masa"],
             "bergeser_karena": e["alasan_geser"], "libur_tidak_bergeser": e["libur_tetap"],
             "saran_hari_kerja_sebelumnya": e["saran_sebelum"].isoformat() if e.get("saran_sebelum") else None,
-            "kemungkinan_tanggal_bergeser": (e["kemungkinan_geser"].isoformat()
-                                             if e.get("kemungkinan_geser") else None),
             "keterangan": ket_geser(e),
             "catatan": e["catatan"], "uid": e["uid"],
         } for e in acara],

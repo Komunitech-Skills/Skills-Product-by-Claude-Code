@@ -9,9 +9,10 @@ Tanggal patokan pergeseran yang DIKONFIRMASI sumber luar (dicek 2026-09-25):
 - PPN masa Apr 2026: 31 Mei 2026 (Minggu, Waisak) -> 1 Jun (Pancasila) -> 2 Jun 2026 - DDTC.
 - v1.0.1: batas unggah faktur pajak keluaran tgl 20 bulan berikutnya (PER-11/PJ/2025 Ps. 44 ayat 1),
   tidak bergeser (sumber sekunder, PERLU REVIEW).
-- v1.0.2: tenggat tidak bergeser yang jatuh di hari libur menyebut hari kerja sebelumnya; SPT Tahunan di
-  hari libur menampilkan kemungkinan tanggal bergeser (Ps. 173(1) merujuk Ps. 171 & 172, PERLU REVIEW);
+- v1.0.2: tenggat tidak bergeser yang jatuh di hari libur menyebut hari kerja sebelumnya;
   file --libur pengguna dilabeli "data libur dari pengguna" dan tidak mematikan peringatan.
+- v1.0.3: SPT Tahunan (PMK 81/2024 Ps. 169) TIDAK bergeser meski hari libur - satu tanggal saja, tanpa
+  "kemungkinan tanggal bergeser" (Ps. 173(1) hanya untuk Ps. 171 & 172; dicocokkan naskah resmi 2026-09-26).
 """
 import csv
 import datetime as dt
@@ -422,7 +423,7 @@ class UjiRevisi101(unittest.TestCase):
 
     def test_p2_prodid_versi(self):
         ics = jalan("--profil", "op-umkm", "--tahun", "2026", "--format", "ics")
-        self.assertIn("PRODID:-//Komunitech//kalender-pajak 1.0.2//ID", ics)
+        self.assertIn("PRODID:-//Komunitech//kalender-pajak 1.0.3//ID", ics)
 
     # P3 - CSV libur berkoma
     def test_p3_keterangan_berkoma_tanpa_kutip_tidak_terpotong(self):
@@ -523,19 +524,20 @@ class UjiRevisi102(unittest.TestCase):
         self.assertEqual(cari(a, "spt-badan", "tahunan", "Tahun pajak 2026")["tanggal"], "2027-04-30")
         self.assertEqual(cari(a, "pph21", "setor", "Apr 2027")["tanggal"], "2027-05-21")
 
-    # (1) SPT Tahunan di hari libur: tanggal tetap, kemungkinan bergeser ditampilkan
-    def test_1_spt_op_hari_libur_dua_kemungkinan(self):
+    # (1) SPT Tahunan di hari libur: satu tanggal, tidak bergeser (Ps. 169), saran lapor lebih awal
+    def test_1_spt_op_hari_libur_satu_tanggal(self):
         f = self.berkas("libur-2029.csv", "tanggal,jenis,keterangan\n2029-03-30,libur,Wafat Yesus Kristus\n")
         a = json.loads(jalan("--profil", "spt-op", "--tahun", "2029", "--jumlah-bulan", "4", "--libur", f,
                              "--format", "json"))["acara"]
         e = cari(a, "spt-op", "tahunan", "Tahun pajak 2028")
         self.assertEqual(e["tanggal"], "2029-03-31")  # Sabtu, tidak digeser
         self.assertEqual(e["saran_hari_kerja_sebelumnya"], "2029-03-29")
-        self.assertEqual(e["kemungkinan_tanggal_bergeser"], "2029-04-02")
+        self.assertNotIn("kemungkinan_tanggal_bergeser", e)
         self.assertIn("TIDAK bergeser", e["keterangan"])
-        self.assertIn("Ps. 173 ayat 1", e["keterangan"])
-        self.assertIn("PERLU REVIEW", e["keterangan"])
-        self.assertIn("Senin, 2 April 2029", e["keterangan"])
+        self.assertIn("tidak bergeser meski hari libur (PMK 81/2024 Ps. 169); lapor lebih awal", e["keterangan"])
+        self.assertNotIn("Ps. 173", e["keterangan"])
+        self.assertNotIn("PERLU REVIEW", e["keterangan"])
+        self.assertNotIn("2 April 2029", e["keterangan"])
 
     def test_1_spt_badan_hari_libur_beruntun(self):
         f = self.berkas("libur-2028.csv", "tanggal,jenis,keterangan\n2028-05-01,libur,Hari Buruh\n")
@@ -543,20 +545,22 @@ class UjiRevisi102(unittest.TestCase):
         e = cari(a, "spt-badan", "tahunan", "Tahun pajak 2027")
         self.assertEqual(e["tanggal"], "2028-04-30")  # Minggu
         self.assertEqual(e["saran_hari_kerja_sebelumnya"], "2028-04-28")
-        self.assertEqual(e["kemungkinan_tanggal_bergeser"], "2028-05-02")
+        self.assertNotIn("kemungkinan_tanggal_bergeser", e)
+        self.assertIn("PMK 81/2024 Ps. 169", e["keterangan"])
+        self.assertNotIn("2 Mei 2028", e["keterangan"])
 
     def test_1_spt_hari_kerja_tanpa_catatan(self):
         a = acara_json("--profil", "spt-op,spt-badan", "--tahun", "2027")
         for e in a:
-            self.assertIsNone(e["kemungkinan_tanggal_bergeser"])
+            self.assertNotIn("kemungkinan_tanggal_bergeser", e)
             self.assertIsNone(e["saran_hari_kerja_sebelumnya"])
             self.assertEqual(e["keterangan"], "-")
 
-    def test_1_kemungkinan_geser_hanya_spt_tahunan(self):
+    def test_1_tidak_ada_kemungkinan_geser_sama_sekali(self):
         a = acara_json("--profil", "badan-pkp,pemberi-kerja", "--tahun", "2026", "--jumlah-bulan", "24")
         for e in a:
-            if e["kewajiban"] not in ("spt-op", "spt-badan"):
-                self.assertIsNone(e["kemungkinan_tanggal_bergeser"], e["kegiatan"])
+            self.assertNotIn("kemungkinan_tanggal_bergeser", e, e["kegiatan"])
+            self.assertNotIn("kemungkinan lain", e["keterangan"], e["kegiatan"])
 
     # (2) unggah faktur di hari libur: sebut hari kerja sebelumnya, tanggal resmi tetap
     def test_2_unggah_20_mei_2027_saran_14_mei(self):
@@ -566,7 +570,7 @@ class UjiRevisi102(unittest.TestCase):
         self.assertEqual(e["tanggal_normal"], "2027-05-20")
         self.assertEqual(e["saran_hari_kerja_sebelumnya"], "2027-05-14")
         self.assertIn("Jumat, 14 Mei 2027", e["keterangan"])
-        self.assertIsNone(e["kemungkinan_tanggal_bergeser"])
+        self.assertNotIn("kemungkinan_tanggal_bergeser", e)
         md = jalan("--profil", "pkp", "--tahun", "2027", "--bulan-mulai", "5", "--jumlah-bulan", "1")
         self.assertIn("Jumat, 14 Mei 2027", md)
 
