@@ -6,6 +6,7 @@ Tidak dijalankan otomatis oleh pembeli (tidak ikut paket dist/); ini alat pengem
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -39,6 +40,12 @@ FAILED = []
 class Handler(BaseHTTPRequestHandler):
     mode = "normal"  # normal | auth | rusak | timeout | error500
 
+    # Diisi oleh _handle_create_source() setiap kali POST /api/sources diterima,
+    # agar uji regresi bisa MEMBUKTIKAN klien benar-benar mengirim multipart/form-data
+    # (bukan cuma percaya mock membalas 200) — ini yang tadinya lolos diam-diam saat
+    # bug #1 (kirim JSON) karena mock lama menerima JSON. Lihat uji 11/11b di bawah.
+    permintaan_sources_terakhir = None  # {"content_type": str, "bidang": dict} | None
+
     def log_message(self, fmt, *args):
         pass
 
@@ -59,6 +66,31 @@ class Handler(BaseHTTPRequestHandler):
         n = int(self.headers.get("Content-Length", 0))
         raw = self.rfile.read(n) if n else b""
         return json.loads(raw) if raw else {}
+
+    def _baca_mentah(self):
+        n = int(self.headers.get("Content-Length", 0))
+        return self.rfile.read(n) if n else b""
+
+    def _urai_multipart(self, raw, content_type):
+        """Urai body multipart/form-data sederhana (field teks saja, tanpa file) —
+        meniru cara FastAPI Form(...) mem-parse permintaan Open Notebook asli."""
+        m = re.search(r"boundary=([^;]+)", content_type)
+        if not m:
+            return {}
+        boundary = m.group(1).strip('"').encode()
+        bidang = {}
+        for bagian in raw.split(b"--" + boundary):
+            bagian = bagian.strip(b"\r\n")
+            if not bagian or bagian == b"--":
+                continue
+            if b"\r\n\r\n" not in bagian:
+                continue
+            header_mentah, _, nilai = bagian.partition(b"\r\n\r\n")
+            nilai = nilai[:-2] if nilai.endswith(b"\r\n") else nilai  # buang \r\n penutup bila ada
+            nm = re.search(rb'name="([^"]+)"', header_mentah)
+            if nm:
+                bidang[nm.group(1).decode()] = nilai.decode("utf-8", errors="replace")
+        return bidang
 
     def do_GET(self):
         if Handler.mode == "timeout":
