@@ -198,6 +198,10 @@ openclaw automations add "0 16 * * 5" \
 - Jadwal pengingat pajak (§8, `kalender-pajak`) di atas — pola cron & `--command-argv` sudah
   terbukti untuk skill lain, tapi kombinasi persis dengan `kalender_pajak.py` belum dicoba di
   Gateway oleh tim kurasi.
+- Jadwal pembukuan bulanan, piutang harian, pengingat gaji, dan draf laporan klien (§8b-8e,
+  `hledger-usaha`, `buku-piutang`, `gaji-umkm`, `laporan-klien-konsultan`) — pola cron sudah
+  terbukti untuk skill lain, tapi kombinasi persis dengan script masing-masing skill belum
+  dicoba di Gateway oleh tim kurasi.
 
 ## 10. Syarat komputer menyala
 Jadwal berjalan **di dalam proses Gateway**. Kalau laptop mati/tidur di jam 08.00, rekap **tidak

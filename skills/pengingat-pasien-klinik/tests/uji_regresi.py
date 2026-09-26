@@ -186,6 +186,17 @@ class TestCLI(unittest.TestCase):
                         "--tanggal", "besok", "--persetujuan", "ya", cek=False)
         self.assertEqual(r.returncode, 1)
 
+    def test_jenis_imunisasi_campak_diterima(self):
+        # Regresi temuan TINGGI uji Akun B: "imunisasi campak" harus bisa dicatat lewat CLI.
+        d, _ = self.baca("tambah", "--nama", "Adik Rara", "--wa", "0812-3333-4444",
+                          "--jenis", "imunisasi campak", "--tanggal", "besok", "--persetujuan", "ya")
+        self.assertTrue(d["ok"])
+
+    def test_jenis_vaksin_rabies_diterima(self):
+        d, _ = self.baca("tambah", "--nama", "Kucing Mimi", "--wa", "0812-3333-4444",
+                          "--jenis", "vaksin rabies", "--tanggal", "besok", "--persetujuan", "ya")
+        self.assertTrue(d["ok"])
+
     def test_nomor_hp_di_nama_ditolak_exit_2(self):
         r = self.jalan("tambah", "--nama", "0812-9999-8888", "--wa", "0812-1111-2222", "--jenis", "kontrol",
                         "--tanggal", "besok", "--persetujuan", "ya", cek=False)
