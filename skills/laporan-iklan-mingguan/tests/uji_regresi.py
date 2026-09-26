@@ -9,11 +9,13 @@ tanpa data pembanding, dan formula injection saat ekspor CSV hasil.
 Jalankan: python3 tests/uji_regresi.py   (Windows: python / py)
 """
 import csv
+import io
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
+from decimal import Decimal
 from pathlib import Path
 
 SINI = Path(__file__).resolve().parent.parent
@@ -298,9 +300,10 @@ class UjiGabungLintasPlatform(unittest.TestCase):
         self.assertEqual(code, 0, err)
         g = json.loads(out)
         self.assertEqual(g["total"]["biaya"], 1500000)
-        self.assertEqual(g["total"]["hasil"], 35)
+        # v1.0.1: nama hasil beda (Results vs Conversion) -> hasil TIDAK dijumlah + peringatan
+        self.assertIsNone(g["total"]["hasil"])
+        self.assertIsNone(g["total"]["biaya_per_hasil"])
         self.assertAlmostEqual(g["omzet"]["biaya_sebagai_persen_omzet"], 15.0)
-        # nama hasil beda (Results vs Conversion) -> wajib ada peringatan
         self.assertTrue(any("berbeda" in p for p in g["peringatan"]))
 
     def test_gabung_file_bukan_json_valid_ditolak_rapi(self):
@@ -309,6 +312,358 @@ class UjiGabungLintasPlatform(unittest.TestCase):
         code, out, err = jalankan("gabung", str(bukan_json), cwd=self.dir)
         self.assertEqual(code, 2)
         self.assertNotIn("Traceback", err)
+
+
+# ======================================================================================
+# v1.0.1 — regresi untuk cacat uji independen v1.0.0 (examples/HASIL-UJI.md: T1-T4, S1-S4,
+# R1-R8, K1). File contoh meniru bentuk ekspor apa adanya (sel kosong, baris judul, baris
+# Total/"Total: Account", kolom Currency). Angka acuan dihitung ulang dengan Decimal/Fraction.
+# ======================================================================================
+
+META_INI = """Reporting starts,Reporting ends,Ad name,Ad delivery,Attribution setting,Results,Result indicator,Reach,Impressions,Cost per results,Amount spent (IDR),Link clicks,CPC (cost per link click) (IDR),CTR (link click-through rate),Ends
+2026-09-14,2026-09-20,Video Testimoni - Paket Harian,active,7-day click or 1-day view,62,actions:onsite_conversion.messaging_conversation_started_7d,41250,68420,20090.32,1245600,1083,1150.14,1.582870,Ongoing
+2026-09-14,2026-09-20,Carousel Menu Mingguan,active,7-day click or 1-day view,38,actions:onsite_conversion.messaging_conversation_started_7d,30110,52300,25959.21,986450,702,1405.20,1.342256,Ongoing
+2026-09-14,2026-09-20,Promo Gratis Ongkir - Story,active,7-day click or 1-day view,21,actions:onsite_conversion.messaging_conversation_started_7d,25400,47810,38680.95,812300,655,1240.15,1.370006,Ongoing
+2026-09-14,2026-09-20,Retargeting Pengunjung IG,active,7-day click or 1-day view,,actions:onsite_conversion.messaging_conversation_started_7d,9800,18760,,356900,212,1683.49,1.130064,Ongoing
+2026-09-14,2026-09-20,Foto Produk Nasi Box,active,7-day click or 1-day view,4,actions:onsite_conversion.messaging_conversation_started_7d,15300,22150,124687.50,498750,188,2652.93,0.848758,Ongoing
+2026-09-14,2026-09-20,Lookalike Pelanggan,active,7-day click or 1-day view,17,actions:onsite_conversion.messaging_conversation_started_7d,20040,31990,23657.65,402180,377,1066.79,1.178493,Ongoing
+"""
+META_LALU = """Reporting starts,Reporting ends,Ad name,Results,Impressions,Amount spent (IDR),Link clicks
+2026-09-07,2026-09-13,Video Testimoni - Paket Harian,55,61200,1150000,990
+2026-09-07,2026-09-13,Carousel Menu Mingguan,40,50100,900000,690
+2026-09-07,2026-09-13,Promo Gratis Ongkir - Story,18,45000,790000,600
+2026-09-07,2026-09-13,Retargeting Pengunjung IG,2,17000,300000,190
+2026-09-07,2026-09-13,Foto Produk Nasi Box,6,21000,450000,170
+2026-09-07,2026-09-13,Lookalike Pelanggan,12,29000,380000,330
+"""
+GOOGLE_MENTAH = """Campaign report
+"September 14, 2026 - September 20, 2026"
+Campaign status,Campaign,Budget,Budget type,Campaign type,Impr.,Interactions,Interaction rate,Avg. cost,Cost,Clicks,CTR,Avg. CPC,Conversions,Cost / conv.,Conv. value,Currency code
+Enabled,Search - Brand Skincare,"150,000.00",Daily,Search,"8,412",913,10.85%,409.64,"374,000.00",913,10.85%,409.64,48.00,"7,791.67","5,280,000.00",IDR
+Enabled,Search - Serum Jerawat,"200,000.00",Daily,Search,"21,775","1,204",5.53%,"1,097.87","1,321,835.00","1,204",5.53%,"1,097.87",36.50,"36,214.66","3,869,000.00",IDR
+Enabled,PMax - Semua Produk,"250,000.00",Daily,Performance Max,"96,340","1,702",1.77%,958.21,"1,630,880.00","1,702",1.77%,958.21,41.25,"39,536.48","4,950,000.00",IDR
+Paused,Display - Remarketing,"100,000.00",Daily,Display,0,0,--,--,0.00,0,--,--,0.00,--,0.00,IDR
+Paused,Search - Kompetitor,"100,000.00",Daily,Search,0,0,--,--,0.00,0,--,--,0.00,--,0.00,IDR
+Paused,Video - Tutorial,"100,000.00",Daily,Video,0,0,--,--,0.00,0,--,--,0.00,--,0.00,IDR
+Total: Account,--,--,--,--,"126,527","3,819",3.02%,873.16,"3,326,715.00","3,819",3.02%,871.09,125.75,"26,454.99","14,099,000.00",IDR
+Total: Search,--,--,--,--,"30,187","2,117",7.01%,801.07,"1,695,835.00","2,117",7.01%,801.06,84.50,"20,069.05","9,149,000.00",IDR
+Total: Performance Max,--,--,--,--,"96,340","1,702",1.77%,958.21,"1,630,880.00","1,702",1.77%,958.21,41.25,"39,536.48","4,950,000.00",IDR
+"""
+TIKTOK = """Campaign name,Primary status,Budget,Cost,CPC (destination),CPM,Impressions,Clicks (destination),CTR (destination),Conversions,Cost per conversion,Conversion rate (CVR),Currency
+Traffic Video UGC Skincare,Active,300000,1834250,412.19,9860.47,186020,4450,2.39%,57,32179.82,1.28%,IDR
+Konversi Serum Vit C,Active,250000,1520700,588.73,14110.61,107770,2583,2.40%,71,21418.31,2.75%,IDR
+Live Promo Payday,Inactive,500000,643810,1003.60,23480.12,27420,641,2.34%,0,0,0.00%,IDR
+Spark Ads Review Kreator,Active,150000,905440,487.85,10910.53,82988,1856,2.24%,19,47654.74,1.02%,IDR
+"""
+SHOPEE_HEADER = ["Urutan", "Nama Iklan", "Status", "Jenis Iklan", "Dilihat", "Jumlah Klik", "Persentase Klik",
+                 "Konversi", "Biaya per Konversi", "Omzet Penjualan", "Biaya", "ACOS"]
+SHOPEE_BARIS = [
+    ["1", "Hijab Voal Motif - Pencarian", "Berjalan", "Iklan Produk", "48.215", "1.206", "2,50%", "38", "Rp25.263", "Rp3.895.000", "Rp960.000", "24,65%"],
+    ["2", "Gamis Katun Premium", "Berjalan", "Iklan Produk", "22.930", "641", "2,80%", "12", "Rp62.500", "Rp2.868.000", "Rp750.000", "26,15%"],
+    ["3", "Toko - Iklan Toko", "Berjalan", "Iklan Toko", "15.404", "2", "0,01%", "0", "-", "Rp0", "Rp100.001", "-"],
+    ["4", "Pashmina Ceruty", "Berjalan", "Iklan Produk", "61.772", "1.877", "3,04%", "25", "Rp17.852", "Rp1.620.000", "Rp446.294,5", "27,55%"],
+    ["5", "Bundling Mukena Anak", "Dijeda", "Iklan Produk", "3.120", "58", "1,86%", "1", "Rp212.340", "Rp189.000", "Rp212.340", "112,35%"],
+]
+SHOPEE_ANGKA_TOTAL = ["151.441", "3.784", "2,50%", "76", "Rp32.482", "Rp8.572.000", "Rp2.468.635,5", "28,80%"]
+
+
+class _Dasar(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def tulis(self, nama, teks, encoding="utf-8"):
+        p = self.dir / nama
+        p.write_text(teks, encoding=encoding, newline="")
+        return p
+
+    def json_ok(self, *argv):
+        code, out, err = jalankan(*argv, "--json", cwd=self.dir)
+        self.assertEqual(code, 0, err)
+        return json.loads(out)
+
+
+class UjiT1SelKosong(_Dasar):
+    def test_meta_results_kosong_tidak_membuang_biaya_dan_arah_benar(self):
+        ini = self.tulis("meta_ini.csv", META_INI)
+        lalu = self.tulis("meta_lalu.csv", META_LALU)
+        d = self.json_ok("analisis", str(ini), "--sebelumnya", str(lalu), "--nama-hasil", "pesan WA")
+        self.assertEqual(d["total"]["biaya"], 4302180)
+        self.assertEqual(d["total"]["tayangan"], 241430)
+        self.assertEqual(d["total"]["klik"], 3217)
+        self.assertEqual(d["total"]["hasil"], 142)
+        self.assertEqual(modul.bulat_rupiah(d["total"]["biaya_per_hasil"]), 30297)
+        pb = d["pembanding_minggu_lalu"]
+        self.assertEqual(pb["biaya"]["persen"], 8.4)            # bukan "turun 0,6%"
+        self.assertEqual(pb["biaya_per_hasil"]["persen"], 1.5)  # bukan "turun 6,9%"
+        self.assertEqual(d["tiga_terburuk"][0]["nama"], "Retargeting Pengunjung IG")
+        self.assertIn("Retargeting Pengunjung IG", d["saran"][0])
+        self.assertTrue(any("kosong" in c and "Retargeting Pengunjung IG" in c and "Rp 356.900" in c
+                            for c in d["catatan"]))
+        self.assertEqual(d["periode"]["awal"], "2026-09-14")    # R1: Reporting starts/ends terbaca
+        self.assertEqual(d["periode"]["akhir"], "2026-09-20")
+        self.assertIn("Pesan WA: 142", d["teks"])              # K1: bukan "Pesan wa"
+
+    def test_sel_konversi_kosong_biaya_tetap_masuk(self):
+        p = self.tulis("k.csv", "Campaign name,Cost,Impressions,Clicks (destination),Conversions\n"
+                                "A,500000,40000,900,20\nB,120000,9000,150,\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 620000)
+        self.assertEqual(d["total"]["hasil"], 20)
+
+    def test_biaya_tidak_terbaca_baris_dibuang_dengan_nama_di_peringatan(self):
+        p = self.tulis("r.csv", "Campaign name,Cost,Impressions,Clicks,Conversions\n"
+                                "Iklan Rusak,lima ratus ribu,1000,10,1\nIklan Baik,300000,2000,20,2\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 300000)
+        self.assertTrue(any("Iklan Rusak" in x and "lima ratus ribu" in x for x in d["peringatan"]))
+        self.assertIn("PERLU DICEK", d["teks"])
+
+    def test_sampah_di_sel_angka_tidak_diterima_diam_diam(self):   # R3
+        self.assertEqual(modul.baca_sel("250.000,00;x")[0], "rusak")
+        self.assertEqual(modul.baca_sel("")[0], "kosong")
+        self.assertEqual(modul.baca_sel("--")[0], "kosong")
+        self.assertEqual(modul.baca_sel("—")[0], "kosong")
+        self.assertEqual(modul.baca_sel("Rp10.000,-")[1], Decimal(10000))
+
+
+class UjiT2BarisTotal(_Dasar):
+    def _shopee(self, baris_total):
+        p = self.dir / "shopee.csv"
+        tulis_csv(p, SHOPEE_HEADER, SHOPEE_BARIS + [baris_total])
+        return p
+
+    def test_total_di_kolom_pertama_nama_kosong(self):
+        d = self.json_ok("analisis", str(self._shopee(["Total", "", "", ""] + SHOPEE_ANGKA_TOTAL)))
+        self.assertEqual(d["total"]["biaya"], 2468635.5)
+        self.assertEqual(d["total"]["hasil"], 76)
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.assertFalse(any(k["nama"].startswith("(tanpa nama") for k in d["per_kampanye"]))
+
+    def test_variasi_label_total(self):
+        for label in ("Total", "TOTAL", "Total:", "Total (5 iklan)", "Total: Account", "Jumlah Total",
+                      "Grand Total", "Jumlah", "Subtotal"):
+            with self.subTest(label=label):
+                d = self.json_ok("analisis", str(self._shopee(["", label, "", ""] + SHOPEE_ANGKA_TOTAL)))
+                self.assertEqual(d["total"]["biaya"], 2468635.5, label)
+                self.assertEqual(d["baris_dilewati_baris_total"], 1, label)
+
+    def test_total_tanpa_label_dikenali_dari_angka(self):
+        d = self.json_ok("analisis", str(self._shopee(["", "", "", ""] + SHOPEE_ANGKA_TOTAL)))
+        self.assertEqual(d["total"]["biaya"], 2468635.5)
+        self.assertTrue(any("baris TOTAL" in x for x in d["peringatan"]))
+
+    def test_nama_kampanye_berawalan_total_bukan_baris_total(self):
+        p = self.tulis("n.csv", "Campaign name,Cost,Impressions,Clicks,Conversions\n"
+                                "Total Look Hijab,100000,1000,10,2\nPromo Lain,50000,500,5,1\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 150000)
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+
+
+class UjiT3KolomGoogle(_Dasar):
+    def test_google_ekspor_mentah_judul_status_avg_cost_dan_total(self):
+        d = self.json_ok("analisis", str(self.tulis("g.csv", GOOGLE_MENTAH)))
+        kd = d["kolom_dipakai"]
+        self.assertEqual(kd["nama"], "Campaign")
+        self.assertEqual(kd["biaya"], "Cost")
+        self.assertEqual(kd["tayangan"], "Impr.")
+        self.assertEqual(kd["klik"], "Clicks")
+        self.assertEqual(kd["hasil"], "Conversions")
+        self.assertEqual(kd["nilai_hasil"], "Conv. value")
+        self.assertEqual(d["total"]["biaya"], 3326715)
+        self.assertEqual(d["total"]["hasil"], 125.75)
+        self.assertEqual(d["baris_dilewati_baris_total"], 3)
+        self.assertEqual(float(modul.bulat1(d["total"]["roas"])), 4.2)
+        self.assertEqual(d["periode"]["awal"], "2026-09-14")   # dari baris judul
+        # S2: kampanye dijeda (Rp 0) tidak mengisi PERLU PERHATIAN
+        self.assertTrue(all(k["biaya"] > 0 for k in d["tiga_terburuk"]))
+        self.assertIn("PMax - Semua Produk", [k["nama"] for k in d["tiga_terburuk"]])
+
+    def test_google_tanpa_baris_judul(self):
+        teks = "\n".join(GOOGLE_MENTAH.splitlines()[2:]) + "\n"
+        d = self.json_ok("analisis", str(self.tulis("g2.csv", teks)))
+        self.assertEqual(d["kolom_dipakai"]["biaya"], "Cost")
+        self.assertEqual(d["total"]["biaya"], 3326715)
+
+    def test_cek_kewajaran_bila_kolom_biaya_salah(self):
+        d = self.json_ok("analisis", str(self.tulis("g3.csv", GOOGLE_MENTAH)), "--kolom-biaya", "Avg. cost")
+        self.assertTrue(any("tidak wajar" in x for x in d["peringatan"]))
+
+    def test_google_results_dan_results_value(self):   # R8
+        p = self.tulis("g4.csv", "Campaign,Cost,Impr.,Clicks,Results,Results value\n"
+                                 "A,100000,5000,100,4,500000\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["kolom_dipakai"]["hasil"], "Results")
+        self.assertEqual(d["kolom_dipakai"]["nilai_hasil"], "Results value")
+        self.assertEqual(d["total"]["roas"], 5)
+
+    def test_utf16_bertab_dan_xlsx(self):   # S3
+        teks = GOOGLE_MENTAH
+        rows = list(csv.reader(teks.splitlines()))
+        buf = io.StringIO()
+        csv.writer(buf, delimiter="\t", lineterminator="\r\n").writerows(rows)
+        p = self.dir / "g16.csv"
+        p.write_bytes(buf.getvalue().encode("utf-16"))
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 3326715)
+        x = self.dir / "palsu.csv"
+        x.write_bytes(b"PK\x03\x04isi-excel")
+        code, out, err = jalankan("analisis", str(x), cwd=self.dir)
+        self.assertEqual(code, 2)
+        self.assertIn("Excel", err)
+
+
+class UjiT4MataUang(_Dasar):
+    def test_kolom_currency_usd_ditolak(self):
+        p = self.tulis("u.csv", "Campaign name,Cost,Impressions,Clicks (destination),Conversions,Currency\n"
+                                "A,111.84,186020,4450,57,USD\n")
+        code, out, err = jalankan("analisis", str(p), cwd=self.dir)
+        self.assertEqual(code, 2)
+        self.assertIn("USD", err)
+        self.assertNotIn("Rp 112", out)
+
+    def test_simbol_dolar_di_sel_ditolak(self):
+        p = self.tulis("d.csv", 'Campaign name,Cost,Impressions,Clicks (destination),Conversions\n'
+                                'A,"$1,234.56",100000,1000,10\n')
+        code, out, err = jalankan("analisis", str(p), cwd=self.dir)
+        self.assertEqual(code, 2)
+        self.assertIn("USD", err)
+
+    def test_kurs_dari_kolom_currency_dihitung_decimal(self):
+        p = self.tulis("u.csv", "Campaign name,Cost,Impressions,Clicks (destination),Conversions,Currency\n"
+                                "A,111.84,186020,4450,57,USD\nB,0.33,100,1,0,USD\n")
+        d = self.json_ok("analisis", str(p), "--kurs", "16350.5")
+        # (111,84 + 0,33) × 16.350,5 = 1.834.058,09 (Decimal persis)
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), Decimal("112.17") * Decimal("16350.5"))
+        self.assertTrue(any("USD" in c for c in d["catatan_mata_uang"]))
+
+    def test_campur_mata_uang_ditolak(self):
+        p = self.tulis("c.csv", "Campaign name,Cost,Impressions,Clicks,Conversions,Currency\n"
+                                "A,100,1000,10,1,USD\nB,200000,1000,10,1,IDR\n")
+        code, out, err = jalankan("analisis", str(p), cwd=self.dir)
+        self.assertEqual(code, 2)
+        self.assertIn("lebih dari satu mata uang", err)
+
+    def test_rupiah_di_sel_dan_currency_idr_tetap_jalan(self):
+        d = self.json_ok("analisis", str(self.tulis("t.csv", TIKTOK)))
+        self.assertEqual(d["total"]["biaya"], 4904200)
+        self.assertEqual(d["mata_uang"], "IDR")
+
+    def test_kurs_nol_atau_negatif_ditolak(self):   # R3
+        p = self.tulis("u.csv", "Campaign name,Amount spent (USD),Impressions,Link clicks,Results\nX,100,10000,200,10\n")
+        for kurs in ("-16350", "0", "abc"):
+            code, out, err = jalankan("analisis", str(p), "--kurs", kurs, cwd=self.dir)
+            self.assertEqual(code, 2, kurs)
+            self.assertIn("kurs", err)
+
+
+class UjiS1Gabung(_Dasar):
+    def _json(self, nama, teks, *argv):
+        src = self.tulis(nama + ".csv", teks)
+        code, out, err = jalankan("analisis", str(src), "--json", *argv, cwd=self.dir)
+        self.assertEqual(code, 0, err)
+        j = self.dir / (nama + ".json")
+        j.write_text(out, encoding="utf-8")
+        return str(j)
+
+    def test_nama_hasil_sama_beda_platform_diberi_peringatan_dan_roas_hanya_platform_bernilai(self):
+        t = self._json("tiktok", TIKTOK)
+        g = self._json("google", GOOGLE_MENTAH)
+        d = self.json_ok("gabung", t, g, "--omzet", "60 juta")
+        self.assertEqual(d["total"]["biaya"], 8230915)
+        self.assertEqual(d["total"]["hasil"], 272.75)
+        self.assertTrue(any("atribusi" in x for x in d["peringatan"]))
+        # ROAS gabungan hanya dari platform yang punya nilai (Google 14.099.000 / 3.326.715)
+        self.assertEqual(float(modul.bulat1(d["total"]["roas"])), 4.2)
+        self.assertIn("hanya Google Ads", d["total"]["roas_keterangan"])
+        self.assertEqual(d["omzet"]["biaya_sebagai_persen_omzet"], 13.7)
+
+    def test_catatan_kurs_ikut_dan_file_ganda_ditolak(self):
+        u = self._json("usd", "Campaign name,Amount spent (USD),Impressions,Link clicks,Results\nX,100,10000,200,10\n",
+                       "--kurs", "16000")
+        code, out, err = jalankan("gabung", u, cwd=self.dir)
+        self.assertEqual(code, 0, err)
+        self.assertIn("kurs 1 USD", out)
+        code, out, err = jalankan("gabung", u, u, cwd=self.dir)
+        self.assertEqual(code, 2)
+        self.assertIn("lebih dari sekali", err)
+
+    def test_saran_platform_ketiga_tidak_terpotong(self):
+        a = self._json("a", "Campaign name,Amount spent (IDR),Impressions,Link clicks,Results\n"
+                            "A1,300000,1000,10,0\nA2,200000,1000,10,0\nA3,100000,1000,10,0\nA4,90000,1000,10,0\nA5,80000,1000,10,0\n")
+        b = self._json("b", "Campaign,Cost,Impr.,Clicks,Conversions\nB1,70000,1000,10,0\n")
+        c = self._json("c", TIKTOK)
+        d = self.json_ok("gabung", a, b, c)
+        self.assertTrue(any("Live Promo Payday" in s for s in d["saran"]), d["saran"])
+
+    def test_json_bukan_hasil_analisis_pesan_ramah(self):
+        x = self.tulis("x.json", '{"a": 1}')
+        code, out, err = jalankan("gabung", str(x), cwd=self.dir)
+        self.assertEqual(code, 2)
+        self.assertIn("bukan hasil 'analisis --json'", err)
+
+
+class UjiS2S4DanLainnya(_Dasar):
+    def test_terbaik_dan_perlu_perhatian_tanpa_irisan(self):
+        p = self.dir / "s.csv"
+        tulis_csv(p, SHOPEE_HEADER, SHOPEE_BARIS)
+        d = self.json_ok("analisis", str(p), "--nama-hasil", "pesanan")
+        terbaik = {k["nama"] for k in d["tiga_terbaik"]}
+        terburuk = {k["nama"] for k in d["tiga_terburuk"]}
+        self.assertFalse(terbaik & terburuk)
+        for nama in terbaik:
+            self.assertFalse(any(nama in s and "matikan" in s for s in d["saran"]))
+
+    def test_omzet_dengan_satuan(self):   # S4
+        for teks, nilai in (("20 juta", 20000000), ("20jt", 20000000), ("Rp20.000.000", 20000000),
+                            ("1,5 juta", 1500000), ("750 rb", 750000), ("1,2 miliar", 1200000000)):
+            self.assertEqual(modul.parse_omzet(teks), nilai, teks)
+        for teks in ("20M", "dua puluh juta", "20 bulan"):
+            with self.assertRaises(ValueError):
+                modul.parse_omzet(teks)
+
+    def test_persen_tepat_x_x5_dibulatkan_menjauhi_nol(self):   # R2
+        self.assertEqual(modul.bandingkan_persen(103000, 80000)[0], Decimal("28.8"))
+        self.assertEqual(modul.bandingkan_persen(80000, 103000)[0], Decimal("-22.3"))
+        self.assertEqual(modul.bandingkan_persen(5, 0, rupiah=False)[1], "naik dari 0 (persen tidak dihitung)")
+
+    def test_minggu_lalu_file_sama_diberi_peringatan(self):   # R1
+        p = self.tulis("m.csv", META_INI)
+        d = self.json_ok("analisis", str(p), "--sebelumnya", str(p))
+        self.assertTrue(any("SAMA PERSIS" in x for x in d["peringatan"]))
+
+    def test_rentang_lebih_dari_7_hari_diberi_peringatan(self):   # R1
+        p = self.tulis("t.csv", "Date,Campaign name,Cost,Impressions,Clicks,Conversions\n"
+                                "2026-08-20,A,100000,1000,10,1\n2026-09-18,A,100000,1000,10,1\nkemarin,A,1,1,1,0\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertTrue(any("30 hari" in x for x in d["peringatan"]))
+        self.assertTrue(any("kemarin" in x for x in d["peringatan"]))
+
+    def test_csv_keluaran_tidak_boleh_menimpa_input_dan_angka_konsisten(self):   # R4
+        p = self.tulis("m.csv", META_INI)
+        asli = p.read_bytes()
+        code, out, err = jalankan("analisis", str(p), "--csv-keluaran", str(p), cwd=self.dir)
+        self.assertEqual(code, 2)
+        self.assertEqual(p.read_bytes(), asli)
+        k = self.dir / "rincian.csv"
+        code, out, err = jalankan("analisis", str(p), "--nama-hasil", "=1+1", "--csv-keluaran", str(k), cwd=self.dir)
+        self.assertEqual(code, 0, err)
+        with open(k, encoding="utf-8-sig", newline="") as f:
+            baris = list(csv.reader(f))
+        self.assertFalse(any(h.startswith("=") for h in baris[0]))
+        video = next(b for b in baris if b[0].startswith("Video"))
+        self.assertEqual(video[1:4], ["1245600", "68420", "1083"])   # tanpa pemisah ribuan
+        self.assertEqual(video[8], "1.6")
+
+    def test_file_tidak_ada_pesan_indonesia(self):   # K1
+        code, out, err = jalankan("analisis", "tidak-ada.csv", cwd=self.dir)
+        self.assertEqual(code, 2)
+        self.assertIn("tidak ditemukan", err)
+        self.assertNotIn("Errno", err)
 
 
 if __name__ == "__main__":
