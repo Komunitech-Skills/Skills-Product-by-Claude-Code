@@ -87,3 +87,30 @@ pembuat di `examples/uji-pembuat/UJI-PEMBUAT-v1.0.0.md`.
 - Tes bawaan 84/84 OK; `validate.py --skill grist-usaha` ✅.
 - **Rekomendasi:** perbaiki temuan SEDANG (v1.0.3) → uji ulang singkat → layak `lulus`. REST API
   masih hanya teruji terhadap server tiruan.
+
+---
+
+## Uji ulang independen v1.0.3 (Akun B, 2026-09-26)
+
+**Skor: 8/10.** Penguji: sesi terpisah (bukan pembuat, bukan penguji v1.0.2). Rincian:
+`examples/07-uji-ulang-v103-akun-b.md`.
+
+- **Temuan SEDANG v1.0.2 beres.** `081234567890`, `007`, `0123`, `+62812…`, `08123456789 (WA)`
+  → teks utuh + alasan; di `bersihkan-csv` kolomnya tetap Text, file hasil memuat nol depan
+  persis, ada peringatan + `kolom_nol_depan`. `0`, `0,5`, `Rp 0`, `0,5jt` tetap angka; `0.500`
+  ditolak ambigu.
+- **Temuan RENDAH v1.0.2 beres.** `(1.000)`/`(Rp 1.250.000)` = negatif; `+500rb`, `15rb/pcs`,
+  `500 ribu rupiah`, `.5jt` ditolak **dengan alasan**.
+- Regresi 94 variasi (termasuk 68 kasus `06-*`) dengan ekspektasi Decimal penguji: **94/94**;
+  tanpa pembulatan untuk angka 11–25 digit.
+- Skenario normal ujung-ke-ujung (pelanggan + WA + omzet → `bersihkan-csv` → `impor-csv` ke
+  server tiruan penguji): angka cocok, nomor WA/kode terkirim utuh, tidak ada POST sebelum
+  `--ya`, kunci tidak tercetak. Luar cakupan (buka Grist ke internet via http): ditolak kode 2,
+  juga saat `GRIST_ALLOW_REMOTE=1`.
+- **[RENDAH–SEDANG, UX]** Kolom telepon/kode yang juga punya sel terbaca angka muncul di dua
+  peringatan yang bertentangan ("benarkan sel `0812…`" vs "nol depan dijaga") — bisa mendorong
+  pengguna menghapus nol depan. **[RENDAH]** kolom hanya `62…` jadi Numeric; kolom hanya `+62…`
+  Text tanpa info; sel kelebihan di luar header dibuang diam-diam.
+- Tes bawaan 92/92 OK; `validate.py --skill grist-usaha` ✅ (81 baris katalog).
+- **Rekomendasi:** layak `lulus` (skor ≥ 7). Rapikan peringatan ganda (#1) di v1.0.4 sebelum
+  `beta`/`rilis`; REST API & rumus masih perlu uji Grist sungguhan.

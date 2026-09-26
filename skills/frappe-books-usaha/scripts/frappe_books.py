@@ -482,7 +482,7 @@ def ringkas_invoice(args, jenis, judul, kata_pihak):
     total = sum((i["total"] for i in final), NOL)
     sisa = sum((i["sisa"] for i in final if not i["retur"]), NOL)
     selisih = dpp + tax - total
-    out = [f"{judul} - {info['nama']}", f"Periode: {label} ({args.tz.upper()})",
+    out = [f"{judul} - {info['nama']}", f"Periode: {label}, zona {args.tz.upper()}",
            f"Invoice final: {len(final)}" + (f" (termasuk {sum(1 for i in final if i['retur'])} retur)" if any(i['retur'] for i in final) else "")
            + f" | draf belum final: {len(draf)} (tidak dihitung) | dibatalkan: {len(batal)} (tidak dihitung)"]
     if not final:
@@ -672,7 +672,7 @@ def cmd_laba_rugi(args):
         elif root == "Expense":
             beban[r["account"]] = beban.get(r["account"], NOL) + d - c
     tp, th, tb = sum(pend.values(), NOL), sum(hpp.values(), NOL), sum(beban.values(), NOL)
-    out = [f"LABA RUGI RINGKAS - {info['nama']}", f"Periode: {label} ({args.tz.upper()})", "Pendapatan:"]
+    out = [f"LABA RUGI RINGKAS - {info['nama']}", f"Periode: {label}, zona {args.tz.upper()}", "Pendapatan:"]
     out += [f"  {n}: {rp(v)}" for n, v in sorted(pend.items(), key=lambda x: -x[1]) if rupiah_bulat(v) != 0] or ["  (tidak ada)"]
     out.append(f"Total pendapatan: {rp(tp)}")
     if hpp:
@@ -813,6 +813,12 @@ def baca_csv_awam(path):
     baris = [b for b in baris if any(x.strip() for x in b)]
     if len(baris) < 2:
         raise Gagal("CSV hanya berisi judul kolom, belum ada data.", "Tambahkan minimal satu baris data.", kode=5)
+    lebar = len(baris[0])
+    lebih = [str(i) for i, b in enumerate(baris[1:], start=2) if len(b) > lebar]
+    if lebih:
+        raise Gagal("Baris " + ", ".join(lebih[:10]) + " punya kolom lebih banyak dari judul (biasanya ada koma di dalam "
+                    "angka atau nama, mis. 1,5jt).", "Beri tanda kutip pada nilai itu, tulis angkanya tanpa koma "
+                    "(1500000), atau simpan CSV dengan pemisah titik koma (;).", kode=5)
     return [norm_kepala(k) for k in baris[0]], baris[1:]
 
 
@@ -996,6 +1002,13 @@ def cmd_csv_barang(args):
     akun_beli = pilih_akun(con, tabel, args.akun_pembelian,
                            [("Cost of Goods Sold", None, None), (None, "Expense", None)], "pembelian/HPP",
                            "--akun-pembelian")
+    akun_jasa = akun_jual
+    if con is not None and not args.akun_penjualan:
+        try:
+            akun_jasa = pilih_akun(con, tabel, None, [(None, "Income", ("Pendapatan Service", "Pendapatan Jasa", "Service"))],
+                                   "jasa", "--akun-penjualan")
+        except Gagal:
+            akun_jasa = akun_jual
     sudah = nama_ada(con, tabel, "Item") or {}
     satuan_ada = nama_ada(con, tabel, "UOM")
     galat, peringatan, hasil, lihat = [], [], [], {}
@@ -1037,7 +1050,7 @@ def cmd_csv_barang(args):
             peringatan.append(f"baris {no}: jasa tidak bisa dilacak stoknya -> lacak stok dimatikan")
             lacak = "0"
         hasil.append([nama, ambil(b, peta, "kode"), "Both", jenis, satuan, harga, ambil(b, peta, "keterangan"),
-                      akun_jual, akun_beli, ambil(b, peta, "barcode"), lacak])
+                      akun_jasa if jenis == "Service" else akun_jual, akun_beli, ambil(b, peta, "barcode"), lacak])
     if satuan_ada is None:
         peringatan.append("tanpa --db: nama satuan belum dicek. Satuan bawaan Frappe Books: Unit, Kg, Gram, Meter, Jam, Hari "
                           "(bisa berbeda). Satuan lain harus dibuat dulu.")
@@ -1054,7 +1067,8 @@ def cmd_csv_barang(args):
     if not galat:
         p = tulis_template(args.keluar, kolom, hasil)
         ok = [f"LOLOS: {len(hasil)} barang/jasa siap diimpor -> {p}",
-              f"Akun penjualan: {akun_jual} | akun pembelian: {akun_beli}"] + [s.format(skema="Item") for s in LANGKAH_IMPOR]
+              f"Akun penjualan: {akun_jual}" + (f" (jasa: {akun_jasa})" if akun_jasa != akun_jual else "")
+              + f" | akun pembelian: {akun_beli}"] + [s.format(skema="Item") for s in LANGKAH_IMPOR]
         if con is None:
             ok.append("Nama akun belum dicek ke database (tanpa --db); pastikan persis sama dengan di Frappe Books.")
     laporan_validasi("VALIDASI CSV BARANG (Frappe Books: Item)", galat, peringatan, ok)
