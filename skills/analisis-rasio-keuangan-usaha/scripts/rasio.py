@@ -20,7 +20,7 @@ import sys
 from datetime import date
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 D0 = Decimal(0)
 D100 = Decimal(100)
 HARI_SETAHUN = Decimal(365)
@@ -173,6 +173,14 @@ SARAN = {
                        "barang yang tidak laku 30 hari, beli lebih sering dalam jumlah kecil, dan promo barang lama.",
     "hari_piutang": "Pelanggan terlalu lama membayar. Tetapkan batas tempo tertulis, kirim pengingat sopan "
                     "sebelum jatuh tempo (skill tagih-piutang), dan batasi bon untuk pelanggan yang telat.",
+}
+
+SARAN_KONTEKS = {
+    "rasio_cepat": "Kas + piutang tidak cukup menutup utang jangka pendek, dan stok bukan penyebabnya (stok kecil). "
+                   "Fokus ke utang & kas: minta tenor cicilan/tempo pemasok lebih panjang, tagih piutang, tahan "
+                   "prive & pembelian alat, dan sisihkan dana cadangan dari penjualan harian.",
+    "roa": "Aset (terutama peralatan) belum menghasilkan laba sepadan. Naikkan pemakaian alat (jam buka, promosi, "
+           "paket langganan), sewakan/jual alat yang jarang dipakai, dan tunda beli alat baru sampai laba membaik.",
 }
 
 SARAN_KHUSUS = {
@@ -335,6 +343,7 @@ def baca_tabel(teks, nama_file):
     baris_mentah = [b for b in teks.splitlines() if b.strip()]
     if not baris_mentah:
         raise Galat("File %s kosong." % nama_file)
+    pemisah_dipakai = "|"
     if all(b.strip().startswith("|") for b in baris_mentah[:2]):
         rows = []
         for b in baris_mentah:
@@ -345,11 +354,27 @@ def baca_tabel(teks, nama_file):
     else:
         contoh = "\n".join(baris_mentah[:5])
         pemisah = "\t" if "\t" in contoh else (";" if contoh.count(";") >= contoh.count(",") else ",")
+        pemisah_dipakai = pemisah
         rows = [r for r in csv.reader(io.StringIO("\n".join(baris_mentah)), delimiter=pemisah)]
     if len(rows) < 2 or len(rows[0]) < 2:
         raise Galat("Tabel di %s tidak terbaca. Format: kolom pertama nama pos (Kas, Piutang, ...), "
                     "kolom berikutnya angka per periode, baris pertama judul periode." % nama_file)
+    while len(rows[0]) > 2 and not rows[0][-1].strip():
+        rows[0] = rows[0][:-1]  # kolom judul kosong di ujung (ekspor Excel)
     judul = rows[0]
+    lebar = len(judul)
+    berlebih = [(no, r) for no, r in enumerate(rows[1:], 2)
+                if len(r) > lebar and any(c.strip() for c in r[lebar:])]
+    if berlebih:
+        contoh = "; ".join("baris %d: %s" % (no, pemisah_teks(r)) for no, r in berlebih[:3])
+        if pemisah_dipakai == ",":
+            raise Galat("Tabel di %s memakai koma sebagai pemisah kolom, tetapi angkanya juga memakai koma sebagai "
+                        "pemisah ribuan tanpa tanda kutip, sehingga angka terpotong (%s). Angka TIDAK ditebak. "
+                        "Perbaiki salah satu: (a) pakai titik koma: Kas;1.250.000, (b) beri tanda kutip: "
+                        "Kas,\"1,250,000\", atau (c) tulis tanpa pemisah ribuan: Kas,1250000." % (nama_file, contoh))
+        raise Galat("Tabel di %s punya baris dengan kolom lebih banyak dari judulnya (%s). Angka TIDAK ditebak. "
+                    "Samakan jumlah kolom dengan baris judul (kolom 1 = pos, lalu satu kolom per periode)."
+                    % (nama_file, contoh))
     label = [j.strip() or "Periode %d" % i for i, j in enumerate(judul[1:], 1)]
     periode = [{"label": l, "_sumber": nama_file} for l in label]
     catatan = []
@@ -367,6 +392,10 @@ def baca_tabel(teks, nama_file):
                 continue
             p[kode] = sel
     return periode, catatan
+
+
+def pemisah_teks(r):
+    return " | ".join(c.strip() for c in r)
 
 
 def baca_emkm(d, nama_file):
@@ -503,6 +532,9 @@ def lengkapi(p, cfg):
         tp = Decimal(str(p.get("_titipan_pajak", 0)))
         if cfg.get("bagian_lancar_utang_bank") is not None:
             lancar_bank = min(cfg["bagian_lancar_utang_bank"], ub)
+            if cfg["bagian_lancar_utang_bank"] > ub:
+                W.append("--bagian-lancar-utang-bank %s lebih besar dari utang bank di laporan (%s) → dipakai %s. "
+                         "Cek lagi angkanya." % (rp(cfg["bagian_lancar_utang_bank"]), rp(ub), rp(ub)))
             A.append("Bagian utang bank yang jatuh tempo ≤ 12 bulan: %s (sisanya jangka panjang)." % rp(lancar_bank))
         else:
             lancar_bank = ub
@@ -568,7 +600,7 @@ def lengkapi(p, cfg):
         p["bulan"], p["hari"] = Decimal(12), HARI_SETAHUN
         A.append("Panjang periode tidak disebut → dianggap laporan 1 tahun (12 bulan, 365 hari).")
     if p["bulan"] < 3:
-        W.append("Periode pendek (%s bulan): angka yang disetahunkan (ROA, ROE, perputaran aset) bisa meleset "
+        p.setdefault("info", []).append("Periode pendek (%s bulan): angka yang disetahunkan (ROA, ROE, perputaran aset) bisa meleset "
                  "karena musim ramai/sepi." % angka_id(p["bulan"], 1))
 
 
@@ -908,6 +940,16 @@ def kesiapan_kredit(p, R):
     return hasil
 
 
+def saran_untuk(kode, p):
+    """Pilih saran sesuai konteks angka (mis. rasio cepat rendah tapi stok kecil → saran utang/kas)."""
+    al, ps, ta = p.get("aset_lancar"), p.get("persediaan"), p.get("total_aset")
+    if kode == "rasio_cepat" and al and al > 0 and (ps or D0) < al * Decimal("0.3"):
+        return SARAN_KONTEKS["rasio_cepat"]
+    if kode == "roa" and ta and ta > 0 and (ps or D0) < ta * Decimal("0.1"):
+        return SARAN_KONTEKS["roa"]
+    return SARAN[kode]
+
+
 def urut_masalah(R):
     bobot = {"bahaya": 0, "waspada": 1}
     return sorted([r for r in R if r["status"] in bobot and r["kode"] in SARAN],
@@ -1025,8 +1067,8 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
             (kk["cicilan_bulanan"] is not None and kk["status_cicilan"] and "⛔" in kk["status_cicilan"]):
         saran.append({"rasio": "Rencana cicilan", "status": "bahaya" if not kk["rasio_cicilan_persen"] or
                       kk["rasio_cicilan_persen"] > 50 else "waspada", "saran": SARAN_KHUSUS["cicilan"]})
-    saran += [{"rasio": r["nama"], "status": r["status"], "saran": SARAN[r["kode"]]} for r in masalah
-              if r["kode"] not in lewati]
+    saran += [{"rasio": r["nama"], "status": r["status"], "saran": saran_untuk(r["kode"], p_akhir)}
+              for r in masalah if r["kode"] not in lewati]
     sisa = len(saran) - 5
     saran = saran[:5]
     if sisa > 0:

@@ -519,7 +519,7 @@ def ringkas_invoice(args, jenis, judul, kata_pihak):
         if rupiah_bulat(selisih) != 0:
             out.append(f"Diskon/penyesuaian  : {rp(-selisih)}")
         out += [f"TOTAL               : {rp(total)}",
-                f"Sudah dibayar       : {rp(total - sisa)} | Belum dibayar: {rp(sisa)}"]
+                f"Terbayar (bersih)   : {rp(total - sisa)} | Belum dibayar: {rp(sisa)}"]
         batas = args.batas
         if args.per == "pihak":
             grup = {}
@@ -549,6 +549,9 @@ def ringkas_invoice(args, jenis, judul, kata_pihak):
             out.append("Per barang (nilai sebelum pajak & diskon nota, terbesar dulu):")
             for n, (nama, (jml, tot)) in enumerate(sorted(grup.items(), key=lambda x: -x[1][1])[:batas], 1):
                 out.append(f"  {n}. {nama} - {angka(jml)} - {rp(tot)}")
+    if any(i["retur"] for i in final):
+        out.append("Catatan: retur sudah mengurangi angka di atas; 'Terbayar (bersih)' = total bersih - sisa tagihan, "
+                   "bukan uang yang benar-benar diterima bila ada retur yang belum dikembalikan.")
     if draf:
         out.append(f"Catatan: {len(draf)} draf belum di-Submit di Frappe Books; belum masuk angka di atas.")
     catatan = cek_mata_uang(info)
@@ -685,19 +688,40 @@ def cmd_laba_rugi(args):
     info = info_usaha(con)
     dari, sampai, label = periode(args, tz)
     akun = {r["name"]: (r["rootType"], r["accountType"] or "") for r in q(con, "SELECT name, rootType, accountType FROM Account")}
+    # Frappe Books v0.36.0 memposting invoice retur dengan jumlah NEGATIF di sisi yang sudah ditukar
+    # (SalesInvoice.getPosting: debit(item.account, amount<0)), sehingga di buku besar retur malah menambah pendapatan.
+    # Skill mengoreksi entri milik invoice retur (nilai mutlak) agar sejalan dengan perintah 'penjualan', dan
+    # menampilkan juga angka buku besar apa adanya (= Reports > Profit And Loss Frappe Books).
+    retur = set()
+    for t_ in ("SalesInvoice", "PurchaseInvoice"):
+        if t_ in tabel:
+            retur |= {r["name"] for r in q(con, f'SELECT name FROM "{t_}" WHERE returnAgainst IS NOT NULL '
+                                                 "AND returnAgainst != '' AND cancelled = 0")}
+    ada_ref = "referenceName" in kolom_tabel(con, "AccountingLedgerEntry")
+    sql = "SELECT date, account, debit, credit" + (", referenceName" if ada_ref else "") + \
+          " FROM AccountingLedgerEntry WHERE reverted = 0"
     pend, hpp, beban = {}, {}, {}
-    for r in q(con, "SELECT date, account, debit, credit FROM AccountingLedgerEntry WHERE reverted = 0"):
+    mentah = {"pend": NOL, "hpp": NOL, "beban": NOL}
+    retur_dikoreksi = set()
+    for r in q(con, sql):
         t = tanggal_lokal(r["date"], tz)
         if not t or not dari <= t <= sampai or r["account"] not in akun:
             continue
         root, tipe = akun[r["account"]]
-        d, c = uang(r["debit"]), uang(r["credit"])
+        d0, c0 = uang(r["debit"]), uang(r["credit"])
+        d, c = d0, c0
+        if ada_ref and r["referenceName"] in retur and (d < 0 or c < 0):
+            d, c = abs(d), abs(c)
+            retur_dikoreksi.add(r["referenceName"])
         if tipe == "Cost of Goods Sold":
             hpp[r["account"]] = hpp.get(r["account"], NOL) + d - c
+            mentah["hpp"] += d0 - c0
         elif root == "Income":
             pend[r["account"]] = pend.get(r["account"], NOL) + c - d
+            mentah["pend"] += c0 - d0
         elif root == "Expense":
             beban[r["account"]] = beban.get(r["account"], NOL) + d - c
+            mentah["beban"] += d0 - c0
     tp, th, tb = sum(pend.values(), NOL), sum(hpp.values(), NOL), sum(beban.values(), NOL)
     out = [f"LABA RUGI RINGKAS - {info['nama']}", f"Periode: {label}, zona {args.tz.upper()}", "Pendapatan:"]
     out += [f"  {n}: {rp(v)}" for n, v in sorted(pend.items(), key=lambda x: -x[1]) if rupiah_bulat(v) != 0] or ["  (tidak ada)"]
@@ -711,6 +735,14 @@ def cmd_laba_rugi(args):
     out.append(f"Total beban: {rp(tb)}")
     lb = tp - th - tb
     out.append(f"{'LABA' if lb >= 0 else 'RUGI'} BERSIH: {rp(lb)}")
+    if retur_dikoreksi:
+        lb0 = mentah["pend"] - mentah["hpp"] - mentah["beban"]
+        out.append(f"Catatan retur: {len(retur_dikoreksi)} invoice retur di periode ini ({', '.join(sorted(retur_dikoreksi))}). "
+                   "Frappe Books v0.36.0 mencatat retur di buku besar dengan tanda terbalik, sehingga retur justru menambah "
+                   "angka di buku besar. Angka di atas SUDAH DIKOREKSI (retur mengurangi pendapatan/beban), sejalan dengan "
+                   f"perintah 'penjualan'. Menurut buku besar apa adanya (Reports > Profit And Loss Frappe Books): total "
+                   f"pendapatan {rp(mentah['pend'])}, HPP {rp(mentah['hpp'])}, beban {rp(mentah['beban'])}, "
+                   f"{'laba' if lb0 >= 0 else 'rugi'} {rp(lb0)}.")
     out.append("Ringkasan dari buku besar Frappe Books (hanya transaksi final). Bukan laporan keuangan resmi; "
                "untuk laporan lengkap buka Reports > Profit And Loss di Frappe Books.")
     catatan = cek_mata_uang(info)
@@ -979,10 +1011,12 @@ LANGKAH_IMPOR = [
 
 
 def cmd_csv_pelanggan(args):
+    periksa_keluar(args.keluar, args.db)
     kepala, data = baca_csv_awam(args.masuk)
     peta = peta_kolom(kepala, ["nama", "telepon", "email", "npwp", "peran"], ["nama"])
     con, tabel = db_opsional(args.db)
     sudah = nama_ada(con, tabel, "Party") or {}
+    punya_taxid = ("taxId" in kolom_tabel(con, "Party")) if con is not None and "Party" in tabel else None
     peran_bawaan = {"pelanggan": "Customer", "pemasok": "Supplier", "keduanya": "Both"}[args.peran]
     galat, peringatan, hasil, lihat = [], [], [], {}
     for no, b in enumerate(data, start=2):
@@ -1025,6 +1059,16 @@ def cmd_csv_pelanggan(args):
         hasil.append([nama, peran, email, tel_bersih, ambil(b, peta, "npwp")])
     kolom = [("Party", "Name", "Party.name"), ("Party", "Role", "Party.role"), ("Party", "Email", "Party.email"),
              ("Party", "Phone", "Party.phone"), ("Party", "Tax ID", "Party.taxId")]
+    ada_npwp = [(h[0], h[4]) for h in hasil if h[4]]
+    if punya_taxid is False:
+        kolom = kolom[:4]
+        hasil = [h[:4] for h in hasil]
+        for nama, npwp in ada_npwp:
+            peringatan.append(f"NPWP '{npwp}' milik '{nama}' TIDAK ikut diimpor: file Frappe Books ini tidak punya kolom "
+                              "Tax ID. Catat manual setelah impor (mis. di data pelanggan atau alamat).")
+    elif punya_taxid is None and ada_npwp:
+        peringatan.append(f"{len(ada_npwp)} NPWP ditaruh di kolom Tax ID. Tanpa --db belum dicek apakah Frappe Books Anda "
+                          "punya kolom itu; bila tidak ada, Import Wizard mengabaikannya diam-diam. Cek setelah impor.")
     if not galat and not hasil:
         galat.append("tidak ada baris baru untuk diimpor (semua sudah ada / kosong)")
     ok = []
@@ -1113,20 +1157,22 @@ def pilih_seri(con, tabel, skema, diminta):
 
 
 def cmd_csv_barang(args):
+    periksa_keluar(args.keluar, args.db)
     kepala, data = baca_csv_awam(args.masuk)
     peta = peta_kolom(kepala, ["nama", "kode", "satuan", "harga", "jenis", "lacak", "barcode", "keterangan"], ["nama"])
     con, tabel = db_opsional(args.db)
     akun_jual = pilih_akun(con, tabel, args.akun_penjualan, ATURAN_AKUN["penjualan"], "penjualan", "--akun-penjualan")
-    akun_beli = pilih_akun(con, tabel, args.akun_pembelian,
-                           [("Cost of Goods Sold", None, None), (None, "Expense", None)], "pembelian/HPP",
-                           "--akun-pembelian")
-    akun_jasa = akun_jual
-    if con is not None and not args.akun_penjualan:
+    akun_beli = pilih_akun(con, tabel, args.akun_pembelian, ATURAN_AKUN["hpp"], "pembelian/HPP", "--akun-pembelian")
+    akun_jasa, jasa_cadangan = akun_jual, False
+    if args.akun_jasa:
+        akun_jasa = pilih_akun(con, tabel, args.akun_jasa, ATURAN_AKUN["jasa"], "jasa", "--akun-jasa")
+    elif con is not None:
         try:
-            akun_jasa = pilih_akun(con, tabel, None, [(None, "Income", ("Pendapatan Service", "Pendapatan Jasa", "Service"))],
-                                   "jasa", "--akun-penjualan")
+            akun_jasa = pilih_akun(con, tabel, None, ATURAN_AKUN["jasa"], "jasa", "--akun-jasa")
         except Gagal:
-            akun_jasa = akun_jual
+            jasa_cadangan = True
+    else:
+        jasa_cadangan = True
     sudah = nama_ada(con, tabel, "Item") or {}
     satuan_ada = nama_ada(con, tabel, "UOM")
     galat, peringatan, hasil, lihat = [], [], [], {}
@@ -1154,7 +1200,11 @@ def cmd_csv_barang(args):
                 continue
         jenis_teks = ambil(b, peta, "jenis").lower()
         jenis = "Service" if any(k in jenis_teks for k in ("jasa", "service", "layanan")) else "Product"
-        satuan = ambil(b, peta, "satuan") or ("Jam" if jenis == "Service" and satuan_ada and "jam" in satuan_ada else "Unit")
+        satuan = ambil(b, peta, "satuan")
+        if not satuan:
+            satuan = "Unit"
+            if jenis == "Service" and satuan_ada:
+                satuan = next((satuan_ada[k] for k in ("hour", "jam") if k in satuan_ada), "Unit")
         if satuan_ada is not None:
             if satuan.lower() in satuan_ada:
                 satuan = satuan_ada[satuan.lower()]
@@ -1169,9 +1219,12 @@ def cmd_csv_barang(args):
             lacak = "0"
         hasil.append([nama, ambil(b, peta, "kode"), "Both", jenis, satuan, harga, ambil(b, peta, "keterangan"),
                       akun_jasa if jenis == "Service" else akun_jual, akun_beli, ambil(b, peta, "barcode"), lacak])
+    if jasa_cadangan and any(h[3] == "Service" for h in hasil):
+        peringatan.append(f"jasa memakai akun penjualan '{akun_jual}' (akun pendapatan jasa tidak ditemukan pasti); "
+                          "bila salah, jalankan ulang dengan --akun-jasa \"<nama akun>\"")
     if satuan_ada is None:
-        peringatan.append("tanpa --db: nama satuan belum dicek. Satuan bawaan Frappe Books: Unit, Kg, Gram, Meter, Jam, Hari "
-                          "(bisa berbeda). Satuan lain harus dibuat dulu.")
+        peringatan.append("tanpa --db: nama satuan belum dicek. Satuan bawaan Frappe Books: Unit, Kg, Gram, Meter, Hour, Day "
+                          "(Jam/Hari bila usaha dibuat dalam bahasa Indonesia). Satuan lain harus dibuat dulu.")
     if any(h[-1] == "1" for h in hasil) and con is not None and not info_usaha(con)["inventori"]:
         peringatan.append("fitur Inventory belum aktif; aktifkan di Setup > Settings > Features (Enable Inventory) agar 'Track Inventory' dipakai")
     kolom = [("Item", "Item Name", "Item.name"), ("Item", "Item Code", "Item.itemCode"), ("Item", "Purpose", "Item.for"),
@@ -1197,14 +1250,15 @@ def cmd_csv_transaksi(args):
     skema = "SalesInvoice" if jual else "PurchaseInvoice"
     skema_item = skema + "Item"
     label_skema = "Sales Invoice" if jual else "Purchase Invoice"
+    periksa_keluar(args.keluar, args.db)
     kepala, data = baca_csv_awam(args.masuk)
     peta = peta_kolom(kepala, ["no", "tanggal", "pihak", "barang_trx", "qty", "harga", "pajak", "keterangan"],
                       ["no", "tanggal", "pihak", "barang_trx", "qty", "harga"])
     con, tabel = db_opsional(args.db)
     akun_pihak = pilih_akun(con, tabel, args.akun_piutang if jual else args.akun_utang,
-                            [("Receivable" if jual else "Payable", None, ("Piutang Dagang", "Debtors", "Hutang Dagang Dalam Negeri", "Creditors")),
-                             ("Receivable" if jual else "Payable", None, None)],
+                            ATURAN_AKUN["piutang" if jual else "utang"],
                             "piutang" if jual else "utang", "--akun-piutang" if jual else "--akun-utang")
+    seri = pilih_seri(con, tabel, skema, args.seri)
     pihak_ada = nama_ada(con, tabel, "Party")
     barang_db = {}
     if con is not None and "Item" in tabel:
@@ -1285,9 +1339,9 @@ def cmd_csv_transaksi(args):
         kode_impor = f"{args.awalan}{kode}"
         ket = ambil(b, peta, "keterangan") if not n.get("ket_ditulis") else ""
         n["ket_ditulis"] = True
-        hasil.append([kode_impor, pihak, akun_pihak, tgl.isoformat(), ket,
+        hasil.append([kode_impor, seri, pihak, akun_pihak, tgl.isoformat(), ket,
                       barang, angka_csv(harga), angka_csv(qty), akun_baris, pajak])
-    kolom = [(label_skema, "Invoice No", f"{skema}.name"),
+    kolom = [(label_skema, "Invoice No", f"{skema}.name"), (label_skema, "Number Series", f"{skema}.numberSeries"),
              (label_skema, "Customer" if jual else "Supplier", f"{skema}.party"),
              (label_skema, "Account", f"{skema}.account"), (label_skema, "Date", f"{skema}.date"),
              (label_skema, "Notes", f"{skema}.terms"),
@@ -1312,8 +1366,9 @@ def cmd_csv_transaksi(args):
                     baris += " | ada pajak (lihat hitungan Frappe Books)"
             ok.append(baris)
         ok.append(f"Total DPP semua nota: {rp(tot_dpp)}")
+        ok.append(f"Akun {'piutang' if jual else 'utang'}: {akun_pihak} | Number Series: {seri}")
         ok.append(f"Kolom 'Invoice No' ({args.awalan}...) hanya pengelompok baris; nomor final diberi otomatis oleh "
-                  "Number Series Frappe Books.")
+                  f"Number Series {seri}.")
         ok += [s.format(skema=label_skema) for s in LANGKAH_IMPOR]
         ok.append("Setelah impor, cocokkan total tiap invoice di Frappe Books dengan pratinjau di atas. Pajak di Frappe Books "
                   "dihitung per baris tanpa pembulatan ke bawah, jadi bisa beda pecahan rupiah.")
@@ -1379,7 +1434,7 @@ def buat_parser():
     p.set_defaults(fungsi=cmd_csv_pelanggan)
     p = sub.add_parser("csv-barang"); p.add_argument("--db")
     p.add_argument("--masuk", required=True); p.add_argument("--keluar", required=True)
-    p.add_argument("--akun-penjualan"); p.add_argument("--akun-pembelian")
+    p.add_argument("--akun-penjualan"); p.add_argument("--akun-pembelian"); p.add_argument("--akun-jasa")
     p.add_argument("--lacak-stok", action="store_true", help="barang (bukan jasa) tanpa kolom lacak stok -> dilacak")
     p.set_defaults(fungsi=cmd_csv_barang)
     p = sub.add_parser("csv-transaksi"); p.add_argument("--db")
@@ -1388,6 +1443,7 @@ def buat_parser():
     p.add_argument("--akun-piutang"); p.add_argument("--akun-utang"); p.add_argument("--akun-barang")
     p.add_argument("--pajak", help="nama template Tax untuk semua baris tanpa kolom pajak")
     p.add_argument("--awalan", default="IMPOR-", help="awalan nomor pengelompok nota")
+    p.add_argument("--seri", help="Number Series, bawaan SINV- (penjualan) / PINV- (pembelian)")
     p.set_defaults(fungsi=cmd_csv_transaksi)
     return ap
 
