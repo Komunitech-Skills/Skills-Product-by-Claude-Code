@@ -136,16 +136,19 @@ class Handler(BaseHTTPRequestHandler):
             self._send(401, {"detail": "invalid token"})
             return
         path = self.path.split("?")[0]
+        if path == "/api/sources":
+            self._handle_create_source()
+            return
         body = self._body()
         if path == "/api/notebooks":
             self._send(200, {"id": "notebook:baru1", "name": body.get("name"), "description": body.get("description", "")})
             return
-        if path == "/api/sources":
-            self._send(200, {"id": "source:baru1", "title": body.get("title") or "Sumber baru", "status": "processing"})
-            return
         if path == "/api/search":
-            self._send(200, {"results": [{"title": "PP 55/2022", "parent_type": "source",
-                                           "matches": ["...UMKM dikenakan PPh Final 0,5%..."]}],
+            # Skema NYATA POST /api/search (Open Notebook 1.14.0, dicocokkan terhadap
+            # server asli di sesi k8b 2026-09-26): hanya id/parent_id/relevance/title —
+            # TIDAK ada parent_type/matches/content seperti versi mock lama.
+            self._send(200, {"results": [{"id": "source:s1", "parent_id": "source:s1",
+                                           "relevance": 0.734, "title": "PP 55/2022"}],
                               "total_count": 1, "search_type": "text"})
             return
         if path == "/api/search/ask/simple":
