@@ -1010,7 +1010,7 @@ def cmd_ringkasan(a):
             L.append("- Siap dianggarkan (To Budget): {}".format(rp(dari_sen(v))))
         else:
             L.append("- Siap dianggarkan (To Budget): MINUS {} (anggaran melebihi uang yang ada)".format(rp(dari_sen(-v))))
-    if h["overspent_lalu"]:
+    if h["overspent_lalu"] and h["jenis"] == "envelope":
         L.append("- Kelebihan belanja bulan lalu yang memotong bulan ini: {}".format(rp(dari_sen(-h["overspent_lalu"]))))
     L.append("")
     if jebol:
@@ -1049,13 +1049,15 @@ def cmd_ringkasan(a):
     tk = h["tanpa_kategori"]
     if tk["jumlah_baris"]:
         L.append("")
-        L.append("PERLU DICEK: {} transaksi belum berkategori (total {}). Beri kategori di Actual agar sisa "
-                 "anggaran akurat.".format(tk["jumlah_baris"], rp(dari_sen(tk["total"]))))
+        L.append("PERLU DICEK: {} transaksi belum berkategori (bersih {} {}). Beri kategori di Actual agar sisa "
+                 "anggaran akurat.".format(tk["jumlah_baris"], rp(dari_sen(abs(tk["total"]))),
+                                           "keluar" if tk["total"] < 0 else "masuk"))
     L.append("")
     L.append("Sumber: {} | Dihitung ulang dari db.sqlite dengan rumus Actual {}; bila beda dengan layar Actual, "
              "yang benar adalah layar Actual.".format(p.name, ACTUAL_DIUJI))
     if h["jenis"] == "tracking":
-        L.append("Catatan: mode pelacakan (tracking) belum diuji dengan budget Actual asli.")
+        L.append("Catatan: mode pelacakan (tracking) - sisa tidak dibawa ke bulan berikutnya kecuali opsi "
+                 "'rollover' kategori itu dinyalakan di Actual.")
     print("\n".join(L))
     return K_OK
 

@@ -120,3 +120,41 @@ setelah selesai) plus kode sumber frontend `go-vikunja/vikunja` tag `v2.6.0`
   mentah terhadap server v2.6.0 sungguhan — lihat langkah di atas — bukan sekadar klaim pembuat asli.
   Server uji & token dibuat di scratchpad sekali pakai lalu dimatikan/dibuang setelah sesi ini,
   sesuai aturan keamanan pengujian (tidak ada token nyata yang bocor ke repo).
+
+## Uji ulang independen v1.0.1 (Akun B, 2026-09-26)
+
+**Penguji:** Akun B lain (independen dari sesi revisi v1.0.1 di atas), membaca hanya folder skill
++ `docs/panduan-vikunja.md`. Detail lengkap: `examples/06-uji-ulang-v101-akun-b.md`.
+
+**Skor kualitas (revisi): 9/10.** Naik dari 8/10 karena Temuan #1 (TINGGI) dan #2 (SEDANG) dari
+uji v1.0.0 di atas **terverifikasi telah diperbaiki dan direproduksi ulang dari nol** dengan
+Vikunja 2.6.0 asli (binary baru diunduh, checksum SHA-256 dicocokkan OK, dijalankan terikat
+`127.0.0.1:3456`, dimatikan setelah selesai) — bukan hanya membaca laporan sesi revisi
+sebelumnya. Tidak 10/10 karena satu prasyarat tidak eksplisit di SKILL.md/README: `--ke` baru
+berhasil setelah target user ditambahkan sebagai kolaborator proyek (langkah manusia di Vikunja,
+konsisten dengan batasan skill "mengatur anggota tim dilakukan manusia", tapi tidak disebutkan
+sebagai prasyarat langsung di bagian D SKILL.md).
+
+**Temuan yang dikonfirmasi:**
+- Token dibuat lewat `PUT /api/v1/tokens` persis mengikuti tabel izin panduan §6
+  (`projects: read_all/read_one/projectusers`, `tasks: read_all/read_one/create/update`,
+  `tasks_assignees: create/read_all`) — **diterima**. Dikonfirmasi lewat `GET /api/v1/routes`
+  server sendiri bahwa nama kelompok persis `tasks_assignees` dan `projectusers` adalah kunci di
+  DALAM kelompok `projects` (bukan kelompok terpisah `projects_users`) — koreksi §6 v1.0.1 akurat.
+- `--ke budi2` **berhasil** menugaskan tugas baru setelah budi2 jadi kolaborator proyek; diverifikasi
+  lewat `GET /api/v1/tasks/{id}/assignees`.
+- Token API **tanpa** kelompok `tasks_assignees` → `--ke` gagal dengan pesan 401 yang **secara
+  eksplisit menyebut "Tasks Assignees"** sebagai kemungkinan penyebab — sesuai klaim revisi v1.0.1.
+- Tumpang tindih `hari-ini`/`terlambat`: direproduksi dengan tugas bertenggat "hari ini jam 06:00"
+  (lewat) — muncul di kedua laporan, catatan peringatan tampil di keduanya.
+- Regresi lain lulus: tanggal Indonesia (9 format dicek manual terhadap 26 Sep 2026, semua benar),
+  gerbang konfirmasi (tanpa `--ya` tidak menulis), penolakan URL non-localhost (IP LAN & domain
+  publik http, keduanya ditolak dengan pesan yang benar), mode `dari-teks` (PIC & tenggat terdeteksi
+  benar, baris non-bullet diabaikan & dihitung).
+- `tests/uji_regresi.py`: **64/64 lulus**. `scripts/validate.py --skill vikunja-tugas`: **lulus**
+  (81 baris katalog sesuai). `scripts/uji_openclaw.sh` tidak dijalankan (di luar cakupan uji ulang
+  ini).
+
+**Tidak ada temuan baru berprioritas TINGGI/SEDANG.** Satu saran RENDAH: sebutkan eksplisit di
+SKILL.md bagian D bahwa `--ke` mengasumsikan target sudah jadi anggota/kolaborator proyek di
+Vikunja (bukan sekadar user terdaftar di sistem), agar ekspektasi pembeli sesuai sejak awal.

@@ -1,0 +1,62 @@
+{
+ "header": [
+  "Date",
+  "Payee",
+  "Notes",
+  "Category",
+  "Amount"
+ ],
+ "rows": 13,
+ "added": 5,
+ "updated": 8,
+ "errors": [],
+ "amounts": [
+  825000000,
+  -1000000,
+  -50250000,
+  -150000000,
+  -38000000,
+  -100000000,
+  -45000000,
+  -320000000,
+  -70000000,
+  200000000,
+  -27500000,
+  1234567,
+  -246913
+ ],
+ "before": {
+  "Arsip Lama": 0,
+  "Iklan": -320000000,
+  "Transportasi": -54000000,
+  "Software & Langganan": -129000000,
+  "Internet & Pulsa": -38000000,
+  "Sewa Coworking": -150000000,
+  "Belanja Rumah": -165000050,
+  "Makan": -180000000,
+  "Dana Darurat": 0,
+  "Pajak": -60000000,
+  "Pendapatan Lain": 15000000,
+  "Pendapatan Proyek": 825000000,
+  "Income": 0,
+  "Starting Balances": 0
+ },
+ "after": {
+  "Arsip Lama": 0,
+  "Iklan": -320000000,
+  "Transportasi": -54000000,
+  "Software & Langganan": -129000000,
+  "Internet & Pulsa": -38000000,
+  "Sewa Coworking": -150000000,
+  "Belanja Rumah": -165000050,
+  "Makan": -180000000,
+  "Dana Darurat": 0,
+  "Pajak": -60246913,
+  "Pendapatan Lain": 16234567,
+  "Pendapatan Proyek": 1025000000,
+  "Income": 0,
+  "Starting Balances": 0
+ },
+ "toBudgetBefore": 101000000,
+ "toBudgetAfter": 302234567
+}

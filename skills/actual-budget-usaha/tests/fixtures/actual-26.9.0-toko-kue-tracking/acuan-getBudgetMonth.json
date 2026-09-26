@@ -1,0 +1,37 @@
+{
+ "sumber": "@actual-app/api 26.9.0 getBudgetMonth (tracking)",
+ "bulan": {
+  "2026-08": {
+   "kategori": {
+    "Kemasan": {
+     "budgeted": 50000000,
+     "spent": -30000000,
+     "balance": 20000000
+    },
+    "Bahan Kue": {
+     "budgeted": 300000000,
+     "spent": -340000000,
+     "balance": -40000000
+    }
+   },
+   "totalSpent": -370000000,
+   "totalBudgeted": 350000000
+  },
+  "2026-09": {
+   "kategori": {
+    "Kemasan": {
+     "budgeted": 50000000,
+     "spent": -65000000,
+     "balance": 5000000
+    },
+    "Bahan Kue": {
+     "budgeted": 300000000,
+     "spent": -280000000,
+     "balance": 20000000
+    }
+   },
+   "totalSpent": -345000000,
+   "totalBudgeted": 350000000
+  }
+ }
+}
