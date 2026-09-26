@@ -944,11 +944,10 @@ def analisis_file(path, override, args):
     # di loop atas, ditunda ke sini karena `kurs` baru diketahui sekarang).
     for no_baris, label, biaya_mentah in nama_kosong_berlabel:
         peringatan.append(
-            f"Baris {no_baris} tidak ada nama di kolom {level_rincian}, tapi kolom lain berbunyi "
+            f"Baris {no_baris} tidak ada nama di kolom {level_rincian or 'kampanye'}, tapi kolom lain berbunyi "
             f"'{label}' (mirip label total/ringkasan). Baris ini TETAP dihitung sebagai kampanye "
-            f"biasa (biaya {fmt_rp(biaya_mentah * kurs) if 'kurs' in dir() else fmt_rp(biaya_mentah)}) "
-            "- kalau ini sebenarnya baris subtotal, hapus baris itu dari file lalu jalankan ulang, "
-            "atau beri nama yang jelas.")
+            f"biasa (biaya {fmt_rp(biaya_mentah * kurs)}) - kalau ini sebenarnya baris subtotal, "
+            "hapus baris itu dari file lalu jalankan ulang, atau beri nama yang jelas.")
 
     # --- N2: pengaman silang angka baris total ---
     # Hanya baris berbiaya TERBESAR yang mungkin = jumlah semua baris lain (biaya >= 0).
