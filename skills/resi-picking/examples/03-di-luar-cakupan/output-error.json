@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "error": "Judul kolom pesanan tidak dikenali. Pastikan ini file ekspor PESANAN marketplace (bukan laporan lain), dan bukan hasil buka-tutup di Excel yang mengubah nomor pesanan. Kalau nama kolomnya memang tidak umum, sebutkan manual mis. --kolom-no-pesanan \"Nama Kolom\".",
+  "kolom_ada": [
+    "Tanggal",
+    "Total Omzet"
+  ]
+}
