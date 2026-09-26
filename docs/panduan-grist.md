@@ -76,8 +76,8 @@ hanya menambah kemampuan "buat tabel & impor CSV otomatis".
    - **Windows**: file `.exe` (installer) di bagian Assets.
    - **macOS**: file `.dmg`.
    - **Linux**: file `.AppImage` (jalan langsung, tanpa instalasi) atau `.deb` (Debian/Ubuntu:
-     `sudo apt install ./nama-file.deb` — bukan `curl | sh`, cukup perintah `apt install` biasa
-     untuk file yang sudah Anda unduh sendiri).
+     `sudo apt install ./nama-file.deb` — bukan skrip unduh-dan-eksekusi-langsung, cukup perintah
+     `apt install` biasa untuk file yang sudah Anda unduh sendiri).
 3. Jalankan aplikasinya. Grist Desktop tidak butuh akun online — semua tersimpan sebagai file
    `.grist` di komputer Anda (defaultnya folder Dokumen).
 - ✅ **Cek berhasil:** aplikasi terbuka, muncul layar "Create empty document" / "Buat dokumen kosong".
@@ -248,12 +248,12 @@ terjadwal, atau gunakan jasa setup Komunitech untuk mengatur ini sekali di awal.
 2. **Jangan** mengatur *port forwarding* di router, memakai *tunnel* (ngrok, Cloudflare Tunnel,
    dll.), atau memasang Grist di hosting/VPS tanpa HTTPS dan login yang benar. Grist di sini
    dirancang untuk **1 komputer/jaringan pribadi**, bukan server publik. Skill `grist-usaha`
-   menolak alamat selain `localhost`/`127.0.0.1` kecuali Anda menegaskan lewat pengaturan
-   `--izinkan-url-luar`.
-3. **Jangan pernah** menjalankan skrip yang bentuknya "unduh dan langsung jalankan"
-   (`curl ... | sh` atau semacamnya) untuk memasang Grist — semua langkah di panduan ini memakai
-   installer resmi yang Anda unduh dulu, atau perintah `docker run`/`apt install` biasa yang bisa
-   Anda baca isinya sebelum dijalankan.
+   menolak alamat selain `localhost`/`127.0.0.1` kecuali Anda menegaskan lewat environment
+   variable `GRIST_ALLOW_REMOTE=1`.
+3. **Jangan pernah** menjalankan skrip yang bentuknya "unduh dan langsung jalankan" (mis. `curl`
+   yang hasilnya disalurkan langsung ke shell tanpa dibaca) untuk memasang Grist — semua langkah
+   di panduan ini memakai installer resmi yang Anda unduh dulu, atau perintah
+   `docker run`/`apt install` biasa yang bisa Anda baca isinya sebelum dijalankan.
 4. Simpan kunci API (bagian 6) seperti kata sandi: tidak ditempel di chat, tidak dikirim lewat
    WA/email.
 5. Cadangan (bagian 7) disimpan **terpisah** dari komputer utama (kalau komputer kena
