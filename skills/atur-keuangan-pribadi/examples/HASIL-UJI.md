@@ -85,3 +85,81 @@ Alasan:
 - (−) Beberapa kekurangan kenyamanan (T-2–T-7) dan belum ada pembanding take over/konsolidasi.
 
 **Rekomendasi:** layak naik status ke `lulus` setelah **T-1 diperbaiki** (+ tes regresi); T-2–T-9 boleh menyusul. Isi `platform_teruji` = `claude-code (simulasi agent)`.
+
+---
+
+# Uji ulang v1.0.1 (penguji independen ke-2, 2026-09-26)
+
+> Penguji bukan pembuat/perevisi/penguji sebelumnya. Skill disalin ke folder sementara (`scratchpad/uji2-akp/`) dan dijalankan dari sana. Kode `scripts/keuangan.py` **tidak dibaca**; semua angka dicocokkan dengan simulator Fraction milik penguji (flat→efektif = bisection nilai kini anuitas 60 iterasi; utang = bulan demi bulan, bunga round-half-up, bayar minimum lalu sisa anggaran ke urutan prioritas; target = saldo tabungan bulan demi bulan vs biaya × (1+inflasi/12)^m).
+
+## 1. Verifikasi T-1 (satuan bunga flat) — **TERTUTUP**
+Pokok Rp30 jt, tenor 24 bulan.
+
+| Input `--bunga-flat` | Perilaku script | Efektif script | Efektif penguji | Cocok |
+|---|---|---|---|---|
+| `0,9` | PERINGATAN satuan + **dua tafsiran** (A per bulan "paling mungkin", B per tahun) + "Jangan memakai hasil sebelum satuan dipastikan" | A 1,628%/bln = 19,53%/th; B 0,143%/bln = 1,72%/th | 1,62753% / 0,14321% | ✓ |
+| `0,9%/bln`, `0,9 %/bulan`, `0.9%/bln`, `0,9%/bl` | per bulan (= 10,8%/th) | 1,6275%/bln (4 desimal) | 1,62753% | ✓ |
+| `10,8%/thn`, `10,8` | per tahun; `10,8` diberi catatan "DIANGGAP 10,8%/tahun, jika per bulan ulangi…" | 19,53%/th | 19,530% | ✓ |
+| `--bunga-flat 0,9 --per bulan` / `--per tahun` | sesuai satuan yang dipilih | 1,6275 / 0,1432 | ✓ | ✓ |
+| `0,9%/bln --per tahun` | Ditolak: "sudah bersatuan per bulan, tetapi --per tahun. Pilih salah satu" (kode 2) | — | — | ✓ |
+| `1,5% per bulan`, `1,5%perbulan`, `1,5%/bulan` | per bulan | 2,622%/bln = 31,46%/th | 2,62160% / 31,459% | ✓ |
+| `18% per tahun`, `18% pertahun`, `18 % p.a.`, `18%/tahun` | per tahun | 2,6216%/bln | 2,62160% | ✓ |
+| `0,03%/hari` | ×30 = 10,8%/th | 1,6275%/bln | ✓ | ✓ |
+| `2,9` | dua tafsiran (batas < 3) | A 4,7425%/bln | — | ✓ |
+| `3` | dianggap per tahun + catatan | — | — | sesuai aturan SKILL.md |
+| `18% setahun`, `1,5% sebulan`, `1,5 persen per bulan`, `0,9%/bln flat`, `0,9%/b` | **Ditolak** ramah (kode 2), tidak ditafsir diam-diam | — | — | aman (lihat N-1) |
+| 40 kasus acak `%/bln` & `%/th` (pokok 1–200 jt, tenor 6–60) | — | 4 desimal | — | **40/40** ±0,00006 poin |
+
+`utang`: `0,9` dan `2` tanpa satuan → **ditolak** dengan pertanyaan "per BULAN atau per TAHUN?"; `3`, `10,8`, `24` → dianggap per tahun + catatan di PERINGATAN; `2 --per bulan` = `24%/th` (Rp2.898.727, identik). `1,5% per bulan`/`18% per tahun` terbaca benar; `18% setahun`, `1,5% sebulan`, `0,9%/bln flat` ditolak.
+**Kesimpulan T-1:** tidak ada tafsir salah diam-diam; ambigu → dua tafsiran (konversi-flat) atau pertanyaan (utang); angka efektif benar. Presisi 4 desimal juga menutup T-3.
+
+## 2. Data rusak & minor
+| Input | Hasil |
+|---|---|
+| `--pengeluaran-pokok 1.500` | Rp1.500 + **PERINGATAN INPUT** "jika maksudnya Rp1.500.000, tulis lengkap…" ✓ |
+| `--saldo 1.500`, saldo utang `1.500`, `--pokok 1.500`, `--biaya-sekarang 1.500` | Peringatan yang sama ✓ |
+| Gaji `Rp4.500` / `4.500`, pengeluaran `Rp 4.500`, `9.999` | Peringatan ✓; `10.000` tanpa peringatan (batas sesuai SKILL.md) |
+| `Rp 750.000,-`, `Rp1.500.000,-`, `1,5jt`, `1,5 jt`, `1.500.000` | Terbaca benar ✓ |
+| Pos anggaran `Makan=1.500` | Rp1.500 **tanpa** peringatan (N-2) |
+| Pos `1jt:hiburan` | Galat masih menyalahkan angka, bukan label (T-7 tetap) |
+| `--pengeluaran-pokok -500rb` | "Input belum benar: argument … expected one argument" — sudah diawali kalimat Indonesia, inti pesan masih Inggris (T-7 sebagian) |
+| Traceback | Tidak ada di semua kasus ✓ |
+
+### `target --kemampuan` → bulan tercapai (T-5) — **TERTUTUP**
+| Kasus | Script | Penguji |
+|---|---|---|
+| DP 60 jt, 5 th, inflasi 4%, terkumpul 10 jt, 700rb/bln | bulan ke-109, biaya Rp86.234.789 | 109, Rp86.234.789 ✓ |
+| 60 jt, inflasi 4%, imbal 6%, terkumpul 10 jt, 2 jt/bln | bulan ke-26, Rp65.422.557 | ✓ |
+| 100 jt, inflasi 10%, 500rb/bln | "TIDAK tercapai dalam 60 tahun" | tidak pernah tercapai (kenaikan bulan-1 Rp833.333 > setoran) ✓ |
+| 40 kasus acak (5–500 jt, inflasi 0–10%, imbal 0–7,25%, terkumpul 0–50 jt, setoran 100rb–6 jt) | — | **43/43 identik** (bulan & biaya saat itu ±Rp1) |
+| Terkumpul 51 jt ≥ biaya hari ini 50 jt, kemampuan 0 | "Kurang Rp131.548 per bulan dari kemampuan Rp0" **dan** "Dana terkumpul sudah cukup untuk biaya hari ini." | angka benar (Rp54.157.148 − 51 jt)/24 = 131.547,8 → Rp131.548; pesan saling bertentangan (N-3) |
+
+## 3. Regresi
+| Uji | Hasil |
+|---|---|
+| Skenario 02 (Avalanche & Snowball) | **10 bulan, total bunga Rp4.226.895** — identik dengan simulator penguji ✓ |
+| Utang acak 1–5 utang (bunga %/th, %/bln, %/hari, 0%, tanpa satuan ≥3; saldo 0; ekstra 0–4 jt), mode banding — total bunga, total bulan, bulan lunas & bunga tiap utang, urutan serangan | **180 kasus (3 seed × 60) × 2 metode: 0 selisih** |
+| Take over (T-6) | Paragraf pembanding take over/refinancing/konsolidasi (total bunga lama vs baru + provisi/admin/penalti, jebakan tenor panjang) muncul di keluaran `utang`; tanpa rekomendasi produk ✓ |
+| `python3 tests/uji_regresi.py` | **50 tes OK** (naik dari 33) |
+| `python3 scripts/validate.py` (repo) | Lolos (69 skill) |
+
+Catatan penguji: selisih sementara di simulasi acak awal ternyata bug simulator penguji (format angka "30" terpotong jadi "3" dan anggaran menghitung minimum utang bersaldo 0); setelah diperbaiki 0 selisih. Konvensi script: minimum utang bersaldo Rp0 tidak dihitung dalam anggaran — wajar.
+
+## 4. Temuan baru
+| ID | Prioritas | Temuan | Usulan |
+|---|---|---|---|
+| N-1 | Rendah | Satuan bahasa sehari-hari `setahun`, `sebulan`, `persen`, dan akhiran `flat`/`efektif` ditolak (aman, tidak salah diam-diam), tetapi pengguna awam sering menulis begitu; contoh di pesan galat tidak menyebut kata flat/efektif harus dipisah. | Terima `setahun/sebulan/persen`; abaikan kata `flat/efektif` di `konversi-flat` atau beri pesan khusus. Agent tetap bisa menormalkan sendiri sesuai SKILL.md. |
+| N-2 | Rendah | Pos anggaran < Rp10.000 (mis. `Makan=1.500`) tidak diperingatkan, padahal pemasukan/saldo diperingatkan. | Terapkan peringatan yang sama untuk `--pos` (atau bila pos < 0,5% pemasukan). |
+| N-3 | Rendah | `target`: terkumpul ≥ biaya hari ini tetapi < biaya nanti → keluaran berisi "Kurang … per bulan" sekaligus "sudah cukup untuk biaya hari ini", tanpa baris bulan tercapai. Angka benar, pesan membingungkan. | Ubah jadi "Cukup bila dibeli sekarang; bila menunggu N bulan, kurang Rp…/bulan karena inflasi". |
+| T-7 | Rendah (sisa) | Label pos salah & angka negatif tanpa `=` masih memberi pesan kurang tepat. | Seperti usulan sebelumnya. |
+
+Tidak ditemukan bug perhitungan baru.
+
+## 5. Skor uji ulang: **9/10**
+- (+) T-1 (satu-satunya temuan Sedang) tertutup tuntas: tafsiran ganda/pertanyaan saat ambigu, satuan eksplisit & `--per` diterima, konflik ditolak, angka efektif tepat (47 kasus). T-2, T-3, T-5, T-6, T-8 tertutup; T-4 belum (lihat catatan*).
+- (+) 180 kasus utang acak × 2 metode, 43 kasus target, skenario 02: 0 selisih. 50 tes regresi OK, tanpa traceback.
+- (−) N-1–N-3 & sisa T-7: kenyamanan/pesan, bukan angka.
+
+\* T-4 tetap: peringatan "bila bunganya FLAT, ubah dulu…" masih muncul untuk setiap jenis `kta`, termasuk yang sudah dikonversi (`1,6275%/bln;kta`). Tidak memengaruhi angka; boleh dijadikan catatan ringan di v1.0.2.
+
+**Rekomendasi:** **LULUS** — naik status ke `lulus`; `platform_teruji` = `claude-code (simulasi agent)`. N-1–N-3 dapat diperbaiki di v1.0.2 tanpa uji ulang penuh (cukup tes regresi).
