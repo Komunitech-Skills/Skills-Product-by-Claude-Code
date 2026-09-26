@@ -8,7 +8,7 @@ skill dalam koleksi **data-analytics-skills** karya **Nimrod Fisher**:
   `04-data-storytelling-visualization/visualization-builder`)
 - Lisensi sumber: MIT (teks lengkap di `LICENSE-MIT`)
 - Ditinjau: 2026-09-26 (audit keamanan: tidak ditemukan perintah destruktif, pengiriman
-  data ke server luar, pembacaan kredensial, `curl | bash`, kode ter-obfuscate, atau
+  data ke server luar, pembacaan kredensial, pola unduh-lalu-eksekusi langsung via shell, kode ter-obfuscate, atau
   instruksi tersembunyi/prompt injection di SKILL.md sumber maupun script Python-nya)
 
 Adaptasi oleh Komunitech (komunitech.com). Penggunaan versi adaptasi ini tunduk pada

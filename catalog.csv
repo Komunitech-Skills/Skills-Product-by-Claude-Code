@@ -84,3 +84,4 @@ frappe-books-usaha,Keuangan & Akuntansi,kurasi,https://github.com/frappe/books,"
 actual-budget-usaha,Keuangan & Akuntansi,kurasi,https://github.com/actualbudget/actual,MIT (software tidak didistribusikan); skill orisinal Komunitech,,ecer,99000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
 laporan-insiden-usaha,Produktivitas,kurasi,https://github.com/mohitagw15856/pm-claude-skills,MIT,,ecer,49000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
 presentasi-data-ke-atasan,Data & Analisis,kurasi,https://github.com/nimrodfisher/data-analytics-skills,MIT,,ecer,49000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
+validasi-ide-produk-baru,Produktivitas,kurasi,https://github.com/product-on-purpose/pm-skills,Apache-2.0,,ecer,49000,,,1.0.0,claude-code (simulasi agent),draft,2026-09-26
