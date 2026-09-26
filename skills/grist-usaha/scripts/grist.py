@@ -53,9 +53,10 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 APLIKASI = "grist-usaha"
 LOKAL_DIIZINKAN = {"localhost", "127.0.0.1", "::1"}
 FILE_KUNCI_DEFAULT = Path.home() / ".komunitech" / "grist-kunci.txt"
@@ -393,12 +394,104 @@ def cmd_buat_tabel(args):
 
 ANGKA_RP = re.compile(r"^\s*(Rp\.?\s*)?-?[\d.,]+\s*$", re.IGNORECASE)
 
+# Singkatan besaran uang yang lazim dipakai UMKM Indonesia di WA/catatan tulisan tangan, dari yang
+# paling spesifik (dicek lebih dulu supaya "juta"/"jt" tidak kepotong jadi "ta"/"t" oleh sufiks lain).
+_SUFIKS_BESARAN = (
+    ("miliar", Decimal(1_000_000_000), "miliar"),
+    ("juta", Decimal(1_000_000), "juta"),
+    ("jt", Decimal(1_000_000), "juta"),
+    ("ribu", Decimal(1_000), "ribu"),
+    ("rb", Decimal(1_000), "ribu"),
+)
+_TIDAK_ADA_SINGKATAN = object()  # sentinel: teks tidak berakhiran singkatan besaran apa pun
+
+
+def _hitung_dengan_pengali(inti, pengali, label, negatif, teks_asli):
+    """inti = bagian angka SEBELUM sufiks singkatan dilepas (mis. '1,25' dari '1,25jt').
+    Return (nilai: float, None) bila valid, atau (None, alasan) bila ambigu/tidak valid."""
+    inti = inti.strip()
+    if not re.fullmatch(r"\d+(?:[.,]\d+)?", inti):
+        return None, (f"'{teks_asli}' tidak bisa dibaca sebagai angka + singkatan '{label}' "
+                      "(bagian sebelum singkatan harus angka, boleh 1 tanda desimal).")
+    if "," in inti and "." in inti:
+        return None, (f"'{teks_asli}' memakai koma DAN titik sekaligus sebelum singkatan "
+                      f"'{label}' - ambigu. Tulis salah satu saja sebagai pemisah desimal, "
+                      "mis. '1.25' atau '1,25' (bukan '1.250,5') sebelum singkatannya.")
+    try:
+        nilai = Decimal(inti.replace(",", ".")) * pengali
+    except InvalidOperation:
+        return None, f"'{teks_asli}' tidak bisa dibaca sebagai angka."
+    return float(-nilai if negatif else nilai), None
+
+
+def _urai_singkatan_besaran(teks_tanpa_rp):
+    """Cek akhiran singkatan besaran (ribu/rb/juta/jt/miliar, atau huruf besar tunggal 'M') pada
+    `teks_tanpa_rp` (awalan 'Rp'/'Rp.' sudah dilepas pemanggil). Kalau tidak ada akhiran seperti
+    itu SAMA SEKALI, kembalikan sentinel `_TIDAK_ADA_SINGKATAN` supaya pemanggil lanjut ke jalur
+    lama (format Rupiah/desimal biasa tanpa singkatan). Kalau akhiran ADA tapi bagian angkanya
+    tidak valid/ambigu, tetap dikembalikan sebagai (None, alasan) - BUKAN sentinel - supaya
+    pemanggil tahu ini "sudah mirip angka+singkatan tapi gagal", bukan "bukan angka sama sekali".
+
+    Catatan ambiguitas 'M'/'m' (keputusan pembuat, didokumentasikan di README/SKILL.md): huruf
+    besar tunggal 'M' di akhir (mis. '1,5M') DITERIMA sebagai miliar - konvensi umum di
+    percakapan bisnis Indonesia. huruf KECIL tunggal 'm' (mis. '2m') SENGAJA DITOLAK (ambigu,
+    bisa disangka satuan lain seperti meter) - beda dari kata penuh 'miliar' yang jelas.
+    """
+    t = teks_tanpa_rp.strip()
+    negatif = t.startswith("-")
+    inti_neg = t[1:] if negatif else t
+    lower = inti_neg.lower()
+
+    for sfx, pengali, label in _SUFIKS_BESARAN:
+        if lower.endswith(sfx) and len(inti_neg) > len(sfx):
+            return _hitung_dengan_pengali(inti_neg[:-len(sfx)], pengali, label, negatif, teks_tanpa_rp)
+
+    # Huruf besar tunggal 'M' -> miliar. Dicek case-SENSITIVE (bukan .lower()) supaya 'm' kecil
+    # tidak ikut kena jalur ini.
+    if inti_neg.endswith("M") and len(inti_neg) > 1:
+        return _hitung_dengan_pengali(inti_neg[:-1], Decimal(1_000_000_000), "miliar (M)",
+                                      negatif, teks_tanpa_rp)
+
+    # Huruf besar/kecil tunggal 'K'/'k' -> ribu (konvensi umum "50k"), hanya kalau sisanya
+    # digit murni (supaya kata biasa yang kebetulan berakhir huruf K, mis. nama produk, tidak
+    # ikut tertangkap - ditangani jalur lama & jadi None/None biasa, bukan alasan aneh).
+    if lower.endswith("k") and len(inti_neg) > 1 and re.fullmatch(r"[\d.,]+", inti_neg[:-1]):
+        return _hitung_dengan_pengali(inti_neg[:-1], Decimal(1_000), "ribu (k)", negatif, teks_tanpa_rp)
+
+    # Huruf KECIL tunggal 'm' setelah digit murni -> AMBIGU, sengaja ditolak (lihat docstring).
+    if inti_neg.endswith("m") and len(inti_neg) > 1 and re.fullmatch(r"[\d.,]+", inti_neg[:-1]):
+        return None, (
+            f"'{teks_tanpa_rp}' berakhiran 'm' (huruf kecil) - AMBIGU, bisa disangka satuan lain "
+            "(mis. meter), bukan otomatis dianggap 'miliar'. Kalau maksudnya miliar rupiah, tulis "
+            "kata penuh 'miliar' atau huruf BESAR 'M' (mis. '1.5M')."
+        )
+
+    return _TIDAK_ADA_SINGKATAN
+
 
 def _bersihkan_angka(teks):
-    """'Rp 1.234.567,89' / '1234567.89' / '1.234.567' -> float, atau None bila bukan angka."""
+    """'Rp 1.234.567,89' / '1234567.89' / '1.234.567' / 'Rp 1,25jt' -> (nilai: float, None), atau
+    (None, alasan) bila tidak bisa dibaca sebagai angka. `alasan` diisi HANYA kalau teksnya sudah
+    "mirip" angka (ada singkatan besaran atau format Rupiah yang gagal spesifik) - dipakai untuk
+    laporan baris gagal di `bersihkan-csv`; untuk teks yang jelas bukan angka sama sekali (mis.
+    nama produk), `alasan` tetap None seperti v1.0.0 (tidak berubah).
+
+    Mendukung sejak v1.0.1, memakai `Decimal` (bukan float) supaya perkalian singkatan besaran
+    presisi: singkatan ribu/rb (x1.000), juta/jt (x1.000.000), miliar (x1.000.000.000), dan huruf
+    besar tunggal 'M' (x1.000.000.000, LIHAT catatan ambiguitas 'm' kecil di `_urai_singkatan_besaran`
+    - sengaja DITOLAK, bukan ditebak). Contoh: 'Rp 1,25jt' -> 1250000.0; '1.5jt' -> 1500000.0.
+    """
     t = teks.strip()
-    if not t or not ANGKA_RP.match(t):
-        return None
+    if not t:
+        return None, None
+    tanpa_rp = re.sub(r"^[Rr][Pp]\.?\s*", "", t)
+    hasil = _urai_singkatan_besaran(tanpa_rp)
+    if hasil is not _TIDAK_ADA_SINGKATAN:
+        return hasil
+
+    # --- jalur lama (tanpa singkatan besaran) - PERSIS seperti v1.0.0, tidak diubah ---
+    if not ANGKA_RP.match(t):
+        return None, None
     t = re.sub(r"[Rr][Pp]\.?\s*", "", t)
     if "," in t and "." in t:
         if t.rfind(",") > t.rfind("."):
@@ -411,9 +504,9 @@ def _bersihkan_angka(teks):
     else:
         t = t.replace(".", "") if re.search(r"\.\d{3}(\D|$)", t) else t
     try:
-        return float(t)
+        return float(t), None
     except ValueError:
-        return None
+        return None, None
 
 
 def _bersihkan_header(nama):
@@ -453,23 +546,34 @@ def cmd_bersihkan_csv(args):
         pakai.add(b)
         header_baru.append(b)
 
-    kolom_angka = [True] * len(header_asli)
+    n_kolom = len(header_asli)
+    kolom_angka = [True] * n_kolom
+    kolom_ada_sukses = [False] * n_kolom  # kolom ini punya >=1 sel yang BERHASIL jadi angka
+    # (nomor_baris_file, nilai_asli, alasan_atau_None) untuk tiap sel yang gagal jadi angka,
+    # per kolom - dipakai buat laporan "baris mana yang menyebabkan kolom batal dikonversi"
+    # (temuan SEDANG Akun B, examples/03-rekap-operasional-csv.md). Baris diberi nomor gaya file
+    # CSV 1-indeks (baris 1 = header), sama seperti pesan error skill lain di repo ini.
+    kolom_gagal = [[] for _ in range(n_kolom)]
     baris_bersih = []
-    for baris_asli in baris[1:]:
-        baris_asli = list(baris_asli) + [""] * (len(header_asli) - len(baris_asli))
+    for no_baris, baris_asli in enumerate(baris[1:], start=2):
+        baris_asli = list(baris_asli) + [""] * (n_kolom - len(baris_asli))
         baru = []
-        for i, sel in enumerate(baris_asli[: len(header_asli)]):
+        for i, sel in enumerate(baris_asli[:n_kolom]):
             sel = sel.strip()
-            angka = _bersihkan_angka(sel) if sel else None
-            if sel and angka is None:
-                kolom_angka[i] = False
+            if sel:
+                angka, alasan = _bersihkan_angka(sel)
+                if angka is None:
+                    kolom_angka[i] = False
+                    kolom_gagal[i].append((no_baris, sel, alasan))
+                else:
+                    kolom_ada_sukses[i] = True
             baru.append(sel)
         baris_bersih.append(baru)
 
     for baris_asli in baris_bersih:
         for i, jadi_angka in enumerate(kolom_angka):
             if jadi_angka and baris_asli[i]:
-                angka = _bersihkan_angka(baris_asli[i])
+                angka, _alasan = _bersihkan_angka(baris_asli[i])
                 if angka is not None:
                     baris_asli[i] = f"{angka:.10g}"
 
@@ -479,17 +583,45 @@ def cmd_bersihkan_csv(args):
         w.writerow(header_baru)
         w.writerows(baris_bersih)
 
+    # Kolom yang batal jadi Numeric PADAHAL sebagian selnya berhasil dibaca sebagai angka -> ini
+    # yang perlu disebut baris penyebabnya (bukan kolom teks murni seperti "Nama Barang", yang
+    # memang tidak ada sel angkanya sama sekali - itu bukan "kegagalan", cuma memang kolom teks).
+    peringatan_kolom_gagal = []
+    for i, h_asli in enumerate(header_asli):
+        if kolom_angka[i] or not kolom_ada_sukses[i] or not kolom_gagal[i]:
+            continue
+        contoh = kolom_gagal[i][:5]
+        rincian = "; ".join(
+            f"baris {n}: {v!r}" + (f" ({a})" if a else "") for n, v, a in contoh)
+        lebih = "" if len(kolom_gagal[i]) <= 5 else f"; +{len(kolom_gagal[i]) - 5} baris lain"
+        peringatan_kolom_gagal.append(
+            f"Kolom {h_asli!r} SEBAGIAN selnya angka tapi TETAP jadi Text karena {rincian}{lebih}. "
+            "Kolom ini TIDAK dirapikan sama sekali (semua baris, termasuk yang tadinya berhasil, "
+            "dibiarkan apa adanya) - benarkan dulu sel di atas lalu jalankan ulang, atau abaikan "
+            "kalau memang mau kolom ini tetap Text.")
+
     print(f"SELESAI membersihkan '{src.name}' -> '{keluaran}'")
     print(f"Baris data: {len(baris_bersih)}")
     print("Kolom (nama asli -> nama Grist, jenis):")
     for h_asli, h_baru, angka in zip(header_asli, header_baru, kolom_angka):
         print(f"  - {h_asli!r} -> {h_baru}  ({'Numeric' if angka else 'Text'})")
-    print("Angka Rupiah/desimal dirapikan jadi angka polos (mis. 'Rp 1.234.567,89' -> 1234567.89).")
-    print("Periksa dulu file hasil sebelum diimpor. Lanjut: 'impor-csv' (perlu REST API) atau")
+    print("Angka Rupiah/desimal dirapikan jadi angka polos (mis. 'Rp 1.234.567,89' -> 1234567.89;")
+    print("singkatan 'ribu'/'rb'/'k', 'juta'/'jt', 'miliar'/'M' juga didukung, mis. 'Rp 1,25jt' -> 1250000).")
+    if peringatan_kolom_gagal:
+        print("\nPERINGATAN - kolom sebagian angka tapi dibiarkan Text (perbaiki sel di bawah lalu ulangi):")
+        for p in peringatan_kolom_gagal:
+            print(f"  - {p}")
+    print("\nPeriksa dulu file hasil sebelum diimpor. Lanjut: 'impor-csv' (perlu REST API) atau")
     print("seret file ini ke Grist lewat menu Import (selalu tersedia, tanpa API).")
     if args.json:
-        print(json.dumps({"keluaran": str(keluaran), "baris": len(baris_bersih),
-                          "kolom": header_baru}, ensure_ascii=False))
+        print(json.dumps({
+            "keluaran": str(keluaran), "baris": len(baris_bersih), "kolom": header_baru,
+            "kolom_gagal_sebagian": [
+                {"kolom": header_asli[i], "gagal": [
+                    {"baris": n, "nilai": v, "alasan": a} for n, v, a in kolom_gagal[i]]}
+                for i in range(n_kolom) if not kolom_angka[i] and kolom_ada_sukses[i] and kolom_gagal[i]
+            ],
+        }, ensure_ascii=False))
     return 0
 
 

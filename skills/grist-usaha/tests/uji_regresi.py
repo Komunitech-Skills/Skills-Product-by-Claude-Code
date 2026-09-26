@@ -46,7 +46,7 @@ KUNCI_UJI = "kunciuji-abcdef0123456789"
 
 class TestBersihkanAngka(unittest.TestCase):
     def cek(self, teks, harap):
-        hasil = grist._bersihkan_angka(teks)
+        hasil, _alasan = grist._bersihkan_angka(teks)
         if harap is None:
             self.assertIsNone(hasil, f"{teks!r} seharusnya BUKAN angka")
         else:
@@ -78,6 +78,83 @@ class TestBersihkanAngka(unittest.TestCase):
 
     def test_rp_dengan_spasi_dan_titik(self):
         self.cek("Rp. 50.000", 50000)
+
+
+class TestSingkatanBesaranUang(unittest.TestCase):
+    """v1.0.1: temuan TINGGI Akun B - README/SKILL mengklaim 'Rp 1,25jt' dirapikan otomatis,
+    padahal v1.0.0 mengembalikan None (lihat examples/HASIL-UJI.md &
+    examples/03-rekap-operasional-csv.md temuan #1). Uji >= 10 kasus singkatan + kasus ambigu."""
+
+    def cek(self, teks, harap):
+        hasil, _alasan = grist._bersihkan_angka(teks)
+        if harap is None:
+            self.assertIsNone(hasil, f"{teks!r} seharusnya None (bukan angka/ambigu)")
+        else:
+            self.assertAlmostEqual(hasil, harap, msg=f"{teks!r}")
+
+    def test_klaim_readme_rp_1_25jt(self):
+        # Kasus PERSIS yang diklaim README/SKILL dan gagal di v1.0.0 - harus lulus di v1.0.1.
+        self.cek("Rp 1,25jt", 1_250_000)
+
+    def test_juta_koma_desimal(self):
+        self.cek("1,25jt", 1_250_000)
+        self.cek("1,25 juta", 1_250_000)
+
+    def test_juta_titik_desimal(self):
+        self.cek("1.5jt", 1_500_000)
+        self.cek("1.5 juta", 1_500_000)
+
+    def test_juta_bulat(self):
+        self.cek("2jt", 2_000_000)
+        self.cek("Rp2juta", 2_000_000)
+
+    def test_ribu_rb_dan_kata_penuh(self):
+        self.cek("500rb", 500_000)
+        self.cek("500 ribu", 500_000)
+        self.cek("12,5rb", 12_500)
+
+    def test_ribu_huruf_k(self):
+        self.cek("50k", 50_000)
+        self.cek("1.5k", 1_500)
+
+    def test_miliar_kata_penuh(self):
+        self.cek("1,2 miliar", 1_200_000_000)
+        self.cek("Rp 2miliar", 2_000_000_000)
+
+    def test_miliar_huruf_besar_m(self):
+        # Huruf BESAR tunggal 'M' diterima sebagai miliar (konvensi umum, didokumentasikan).
+        self.cek("1.5M", 1_500_000_000)
+        self.cek("Rp 2M", 2_000_000_000)
+
+    def test_huruf_kecil_m_tunggal_ambigu_ditolak(self):
+        # Huruf KECIL tunggal 'm' SENGAJA ditolak (ambigu, beda dari 'M' besar/'miliar' penuh).
+        self.cek("2m", None)
+        self.cek("1.5m", None)
+        hasil, alasan = grist._bersihkan_angka("2m")
+        self.assertIsNone(hasil)
+        self.assertIsNotNone(alasan)
+        self.assertIn("ambigu", alasan.lower())
+
+    def test_koma_dan_titik_sekaligus_sebelum_singkatan_ambigu(self):
+        hasil, alasan = grist._bersihkan_angka("1.250,5jt")
+        self.assertIsNone(hasil)
+        self.assertIsNotNone(alasan)
+        self.assertIn("ambigu", alasan.lower())
+
+    def test_singkatan_negatif(self):
+        self.cek("-500rb", -500_000)
+
+    def test_bukan_singkatan_tetap_none_tanpa_alasan_aneh(self):
+        # Kata biasa yang TIDAK berakhiran singkatan sama sekali -> None, None (tidak berubah).
+        hasil, alasan = grist._bersihkan_angka("Gula Pasir 1kg")
+        self.assertIsNone(hasil)
+        self.assertIsNone(alasan)
+
+    def test_akhiran_k_pada_kata_biasa_tidak_ikut_kena(self):
+        # "1kg" bukan digit-murni + 'k' (ada 'g' sesudahnya) -> bukan singkatan, None/None biasa.
+        hasil, alasan = grist._bersihkan_angka("Minyak Goreng 1L")
+        self.assertIsNone(hasil)
+        self.assertIsNone(alasan)
 
 
 class TestBersihkanHeader(unittest.TestCase):
