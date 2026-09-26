@@ -101,7 +101,7 @@ Aturan aman: ubah anggaran paling banyak 20% per 2-3 hari dan jangan ubah banyak
    menghasilkan pasien. Beri label "Iklan" di WhatsApp Business dan hitung tiap Sabtu.
 
 ## Catatan pemeriksaan pembuat
-- Cakupan: berlaku 52 (M01 & M17 tidak berlaku), diketahui 50 (M07 & M19 tidak_tahu, masing-masing
+- Cakupan: berlaku 53 (M01 & M17 tidak berlaku), diketahui 51 (M07 & M19 tidak_tahu, masing-masing
   bobot 1) → 96,2%. Skor 33,5 cocok dengan hitung ulang independen di tests/uji_skor_audit.py (test_06).
 - Skill tidak menilai klaim medis; hanya menandai risiko kebijakan iklan (sesuai keputusan pemilik
   untuk domain kesehatan).

@@ -97,5 +97,5 @@ Aturan aman: ubah anggaran paling banyak 20% per 2-3 hari dan jangan ubah banyak
    angka jadi terlihat lebih bagus dari kenyataan. Ubah menjadi "Satu".
 
 ## Catatan pemeriksaan pembuat
-- G11 `tidak_tahu` (sedang... bukan kritis) sehingga tidak masuk CEK DULU; tercatat di cakupan 93,0%.
+- G11 `tidak_tahu` (keparahan tinggi, bukan kritis) sehingga tidak masuk CEK DULU. Cakupan: berlaku 45 (G08 tidak berlaku), diketahui 42 → 93,3%.
 - G09 berstatus gagal dengan kemudahan sedang → prioritas 3×2 = 6; urutan sesuai rumus.
