@@ -20,6 +20,7 @@ Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan ke
 - **Laporan laba rugi & neraca SAK EMKM** (untuk bank/KUR) → `laporan-keuangan-emkm`. kas-umkm hanya pencatatan harian; ekspornya dibaca skill itu (`ekspor --format emkm`).
 - **Proyeksi kas ke depan** ("uang cukup sampai kapan") → `arus-kas-13minggu`. kas-umkm menyiapkan draf rencana dari riwayat (`ekspor --format arus-kas`).
 - Transaksi kasir per nota/struk → `kasir-lokal` (lalu impor rekap hariannya ke sini). Stok barang → `buku-stok`. Piutang/bon pelanggan → `buku-piutang`/`tagih-piutang`. Cocokkan mutasi dengan invoice → `rekonsiliasi-bank`. Hitung pajak → `pph-final-umkm`/`hitung-ppn`.
+- Sudah memakai aplikasi **Actual Budget** dan butuh anggaran per kategori (sisa/jebol) → `actual-budget-usaha`.
 - Mengirim/menerima pembayaran, cek saldo bank otomatis, banyak cabang/banyak komputer sekaligus → tidak bisa. Satu database = satu usaha di satu komputer.
 - **Pembukuan ganda untuk pajak** (dua buku kas / dua versi laporan, omzet "dikecilkan", catatan dihapus/disembunyikan/dibatalkan palsu agar pajak kecil) → **tolak dengan sopan** (Aturan 7), termasuk bila diminta memakai database kedua atau `--db` lain untuk "versi pajak".
 
