@@ -36,7 +36,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 VERSI_DIUJI = "Frappe Books v0.36.0 (skema juga dicocokkan dengan cabang main 0.37.0, 20 Sep 2026)"
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
 NOL = Decimal(0)
@@ -281,14 +281,28 @@ def periode(args, tz, bawaan="bulan-ini"):
 
 
 # ---------------------------------------------------------------- database
+def lokasi_bawaan():
+    """Frappe Books: app.getPath('documents')/Frappe Books. Di Linux tanpa folder Documents (XDG) = folder rumah;
+    di Windows Documents sering dipindah ke OneDrive."""
+    rumah = Path.home()
+    akar = [rumah / "Documents" / "Frappe Books", rumah / "Dokumen" / "Frappe Books", rumah / "Frappe Books",
+            rumah / "OneDrive" / "Documents" / "Frappe Books", rumah / "OneDrive" / "Dokumen" / "Frappe Books"]
+    od = os.environ.get("OneDrive")
+    if od:
+        akar += [Path(od) / "Documents" / "Frappe Books", Path(od) / "Dokumen" / "Frappe Books"]
+    return akar
+
+
 def cari_db_bawaan():
     env = os.environ.get("FRAPPE_BOOKS_DB")
     if env:
         return env
     kandidat = []
-    for akar in (Path.home() / "Documents" / "Frappe Books", Path.home() / "Dokumen" / "Frappe Books"):
+    for akar in lokasi_bawaan():
         if akar.is_dir():
-            kandidat += sorted(akar.glob("*.books.db"))
+            for k in sorted(akar.glob("*.books.db")):
+                if k.resolve() not in [x.resolve() for x in kandidat]:
+                    kandidat.append(k)
     if len(kandidat) == 1:
         return str(kandidat[0])
     if len(kandidat) > 1:
@@ -296,8 +310,8 @@ def cari_db_bawaan():
         raise Gagal("Ada beberapa file Frappe Books:\n" + daftar,
                     "Sebutkan yang mana dengan --db \"<path lengkap>\".")
     raise Gagal("Lokasi file database Frappe Books belum diketahui.",
-                "Cari file berakhiran .books.db (bawaan: folder Documents/Frappe Books/<nama usaha>.books.db; "
-                "juga tampil di layar awal Frappe Books), lalu pakai --db \"<path lengkap>\".")
+                "Cari file berakhiran .books.db (bawaan: folder Documents/Frappe Books/, atau ~/Frappe Books/ di Linux, "
+                "atau OneDrive/Documents/Frappe Books/ di Windows; juga tampil di layar awal Frappe Books), lalu pakai --db \"<path lengkap>\".")
 
 
 def buka_db(path):
@@ -368,12 +382,25 @@ def single(con, parent, field):
     return r[0]["value"] if r else None
 
 
+def centang(v):
+    """Nilai Check di SingleValue: file asli v0.36.0 menyimpan '1.0'/'0.0'; terima juga 1, '1', 'true'."""
+    if v is None:
+        return False
+    t = str(v).strip().lower()
+    if t in ("true", "yes"):
+        return True
+    try:
+        return Decimal(t) != 0
+    except InvalidOperation:
+        return False
+
+
 def info_usaha(con):
     return {
         "nama": single(con, "AccountingSettings", "companyName") or "(nama usaha belum diisi)",
         "mata_uang": single(con, "SystemSettings", "currency") or "?",
         "versi": single(con, "SystemSettings", "version") or "?",
-        "inventori": str(single(con, "AccountingSettings", "enableInventory") or "0") in ("1", "true"),
+        "inventori": centang(single(con, "AccountingSettings", "enableInventory")),
     }
 
 
@@ -384,8 +411,8 @@ def cek_mata_uang(info):
 
 
 def samarkan(nama):
-    bagian = [b for b in re.split(r"\s+", nama or "") if b]
-    return " ".join(b[0].upper() + "." for b in bagian) or "?"
+    bagian = [re.sub(r"[\W_]+", "", b) for b in re.split(r"[\s(),./&-]+", nama or "")]
+    return " ".join(b[0].upper() + "." for b in bagian if b) or "?"
 
 
 def muat_invoice(con, jenis, tz):
@@ -798,13 +825,19 @@ def baca_csv_awam(path):
     p = Path(os.path.expanduser(path or ""))
     if not path or not p.is_file():
         raise Gagal(f"File '{path}' tidak ditemukan.", "Simpan data dari Excel sebagai CSV, lalu sebutkan lokasinya.", kode=2)
+    if p.suffix.lower() in (".xlsx", ".xls", ".ods", ".db"):
+        raise Gagal(f"'{p.name}' bukan file CSV.", "Di Excel: File > Save As > pilih 'CSV UTF-8 (Comma delimited)'.", kode=5)
     mentah = p.read_bytes()
+    teks = None
     for enc in ("utf-8-sig", "cp1252"):
         try:
             teks = mentah.decode(enc)
             break
         except UnicodeDecodeError:
             continue
+    if teks is None:
+        raise Gagal(f"Huruf di '{p.name}' tidak bisa dibaca (bukan teks UTF-8 maupun Windows).",
+                    "Buka di Excel lalu simpan ulang: File > Save As > 'CSV UTF-8 (Comma delimited)'.", kode=5)
     if not teks.strip():
         raise Gagal("File CSV kosong.", "Isi datanya dulu (baris pertama = judul kolom).", kode=5)
     contoh = teks[:4096]
@@ -851,11 +884,40 @@ def bersih_teks(s):
     return re.sub(r"\s+", " ", str(s or "").replace('"', "'")).strip()
 
 
+DB_DIPAKAI = []
+
+
+def periksa_keluar(path, db=None):
+    """Tolak --keluar yang bisa menimpa database (Frappe Books atau SQLite apa pun). Hanya boleh file .csv baru/CSV lama."""
+    p = Path(os.path.expanduser(path or ""))
+    saran = "Pakai nama file baru berakhiran .csv, mis. impor-pelanggan.csv, di folder lain dari file .books.db."
+    if not path:
+        raise Gagal("--keluar belum diisi.", saran)
+    if p.exists() and p.is_dir():
+        raise Gagal(f"'{path}' adalah folder.", saran)
+    if p.suffix.lower() != ".csv":
+        raise Gagal(f"--keluar '{p.name}' harus berakhiran .csv (file ini TIDAK ditulis).", saran)
+    lawan = [d for d in ([db] if db else []) + DB_DIPAKAI if d]
+    for d in lawan:
+        try:
+            if p.resolve() == Path(os.path.expanduser(d)).resolve():
+                raise Gagal("--keluar sama dengan file database Frappe Books. Ditolak agar database tidak tertimpa.", saran)
+        except OSError:
+            pass
+    if p.is_file():
+        try:
+            with p.open("rb") as f:
+                kepala = f.read(16)
+        except OSError:
+            kepala = b""
+        if kepala.startswith(b"SQLite format 3"):
+            raise Gagal(f"'{p.name}' adalah file database, bukan CSV. Ditolak agar tidak tertimpa.", saran)
+    return p
+
+
 def tulis_template(path, kolom, baris):
     """Format template resmi Import Wizard: 3 baris judul (nama skema, label, fieldKey), lalu data. CRLF, koma."""
-    p = Path(os.path.expanduser(path))
-    if p.exists() and p.is_dir():
-        raise Gagal(f"'{path}' adalah folder.", "Sebutkan nama file .csv, mis. impor-pelanggan.csv")
+    p = periksa_keluar(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     with p.open("w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, lineterminator="\r\n")
@@ -899,6 +961,7 @@ def db_opsional(path):
                 raise
             return None, set()
         print(f"(Memakai database Frappe Books: {path})")
+    DB_DIPAKAI.append(path)
     return buka_db(path)
 
 
@@ -971,41 +1034,89 @@ def cmd_csv_pelanggan(args):
     laporan_validasi("VALIDASI CSV PELANGGAN/PEMASOK (Frappe Books: Party)", galat, peringatan, ok)
 
 
-def pilih_akun(con, tabel, diminta, tipe_utama, label, opsi):
-    """Kembalikan nama akun yang sah. Tanpa --db: wajib diisi pengguna."""
+def nama_dasar(nama):
+    """Bagan akun Indonesia bawaan memberi nama '<nama> - <nomor>' (createCOA.ts), mis. 'Penjualan - 4110.000'."""
+    return re.sub(r"\s+-\s+[0-9][0-9.]*$", "", nama or "").strip().lower()
+
+
+def pilih_akun(con, tabel, diminta, aturan, label, opsi):
+    """Pilih akun dengan aturan eksplisit; bila tidak pasti -> Gagal berisi daftar pilihan (agent wajib bertanya).
+
+    aturan: tipe (accountType), root (rootType), nama (nama dasar yang diterima), kecuali (accountType yang dilarang),
+    satu_tipe (boleh ambil otomatis bila hanya ada SATU akun bertipe itu)."""
     if con is None:
         if not diminta:
             raise Gagal(f"Akun {label} belum ditentukan.",
-                        f"Tambahkan --db \"<file .books.db>\" agar dipilih otomatis, atau {opsi} \"<nama akun persis>\" "
+                        f"Tambahkan --db \"<file .books.db>\" agar dicocokkan dengan bagan akun, atau {opsi} \"<nama akun persis>\" "
                         "(lihat perintah 'akun').")
         return diminta
     rows = q(con, "SELECT name, rootType, accountType, isGroup FROM Account")
     ada = {r["name"]: r for r in rows}
     if diminta:
-        if diminta not in ada:
-            mirip = [n for n in ada if diminta.lower() in n.lower()][:5]
-            raise Gagal(f"Akun '{diminta}' tidak ada di Frappe Books.",
-                        "Nama harus persis. " + (f"Mungkin maksudnya: {', '.join(mirip)}." if mirip else "Jalankan perintah 'akun'."))
-        if ada[diminta]["isGroup"]:
-            raise Gagal(f"Akun '{diminta}' adalah akun grup (tidak bisa dipakai transaksi).", "Pilih akun di bawahnya (perintah 'akun').")
+        if diminta in ada:
+            nama = diminta
+        else:
+            cocok = [n for n in ada if nama_dasar(n) == nama_dasar(diminta) and not ada[n]["isGroup"]]
+            if len(cocok) != 1:
+                mirip = cocok or [n for n in ada if diminta.lower() in n.lower()][:8]
+                raise Gagal(f"Akun '{diminta}' tidak ada (atau tidak tunggal) di Frappe Books.",
+                            "Nama harus persis. " + (f"Pilihan: {'; '.join(mirip)}." if mirip else "Jalankan perintah 'akun'."))
+            nama = cocok[0]
+        if ada[nama]["isGroup"]:
+            raise Gagal(f"Akun '{nama}' adalah akun grup (tidak bisa dipakai transaksi).", "Pilih akun di bawahnya (perintah 'akun').")
+        return nama
+    calon = sorted(n for n, r in ada.items() if not r["isGroup"]
+                   and (not aturan.get("tipe") or r["accountType"] == aturan["tipe"])
+                   and (not aturan.get("root") or r["rootType"] == aturan["root"])
+                   and (r["accountType"] or "") not in aturan.get("kecuali", ()))
+    lewat_nama = [n for n in calon if nama_dasar(n) in aturan.get("nama", ())]
+    if len(lewat_nama) == 1:
+        return lewat_nama[0]
+    if not lewat_nama and aturan.get("satu_tipe") and len(calon) == 1:
+        return calon[0]
+    pilihan = lewat_nama or calon
+    raise Gagal(f"Akun {label} tidak bisa dipastikan otomatis"
+                + (f" (ada {len(lewat_nama)} yang cocok)" if len(lewat_nama) > 1 else "") + ". Pilihan: "
+                + ("; ".join(pilihan[:12]) if pilihan else "(tidak ada akun yang sesuai)") + ".",
+                f"Tanyakan ke pengguna akun mana yang benar, lalu jalankan ulang dengan {opsi} \"<nama akun persis>\".")
+
+
+ATURAN_AKUN = {
+    "penjualan": {"root": "Income", "kecuali": ("Cost of Goods Sold",), "nama": ("penjualan", "sales")},
+    "jasa": {"root": "Income", "kecuali": ("Cost of Goods Sold",),
+             "nama": ("pendapatan service", "pendapatan jasa", "service", "services")},
+    "hpp": {"tipe": "Cost of Goods Sold", "nama": ("hpp pembelian", "cost of goods sold", "harga pokok penjualan"),
+            "satu_tipe": True},
+    "piutang": {"tipe": "Receivable", "nama": ("piutang dagang", "piutang usaha", "debtors"), "satu_tipe": True},
+    "utang": {"tipe": "Payable", "nama": ("hutang dagang dalam negeri", "utang dagang dalam negeri", "hutang usaha",
+                                         "utang usaha", "creditors"), "satu_tipe": True},
+}
+SERI_BAWAAN = {"SalesInvoice": "SINV-", "PurchaseInvoice": "PINV-"}
+
+
+def pilih_seri(con, tabel, skema, diminta):
+    """Kolom Number Series WAJIB di Import Wizard v0.36.0 (requiredNotSelected)."""
+    bawaan = SERI_BAWAAN[skema]
+    if con is None or "NumberSeries" not in tabel:
+        return diminta or bawaan
+    ada = [r["name"] for r in q(con, "SELECT name FROM NumberSeries WHERE referenceType = ?", (skema,))]
+    if diminta:
+        if ada and diminta not in ada:
+            raise Gagal(f"Number Series '{diminta}' tidak ada untuk {skema}.", "Pilihan: " + ", ".join(ada))
         return diminta
-    for pref in tipe_utama:
-        cocok = sorted(n for n, r in ada.items() if not r["isGroup"] and (r["accountType"] == pref[0] if pref[0] else True)
-                       and (r["rootType"] == pref[1] if pref[1] else True) and (pref[2] is None or n in pref[2])
-                       and (r["accountType"] or "") not in (pref[3] if len(pref) > 3 else ()))
-        if cocok:
-            return cocok[0]
-    raise Gagal(f"Akun {label} tidak bisa dipilih otomatis.", f"Tentukan dengan {opsi} \"<nama akun>\" (lihat perintah 'akun').")
+    if not ada or bawaan in ada:
+        return bawaan
+    if len(ada) == 1:
+        return ada[0]
+    raise Gagal(f"Ada beberapa Number Series untuk {skema}: {', '.join(ada)}.",
+                "Tanyakan ke pengguna seri mana yang dipakai, lalu jalankan ulang dengan --seri \"<nama seri>\".")
 
 
 def cmd_csv_barang(args):
     kepala, data = baca_csv_awam(args.masuk)
     peta = peta_kolom(kepala, ["nama", "kode", "satuan", "harga", "jenis", "lacak", "barcode", "keterangan"], ["nama"])
     con, tabel = db_opsional(args.db)
-    akun_jual = pilih_akun(con, tabel, args.akun_penjualan,
-                           [(None, "Income", ("Penjualan", "Sales")), ("Income Account", None, None),
-                            ("", "Income", None, ("Cost of Goods Sold",))],
-                           "penjualan", "--akun-penjualan")
+    akun_jual = pilih_akun(con, tabel, args.akun_penjualan, ATURAN_AKUN["penjualan"], "penjualan", "--akun-penjualan")
     akun_beli = pilih_akun(con, tabel, args.akun_pembelian,
                            [("Cost of Goods Sold", None, None), (None, "Expense", None)], "pembelian/HPP",
                            "--akun-pembelian")

@@ -51,3 +51,17 @@ Repo #1, #2, dan #7 berasal dari akun yang memiliki **banyak repo dengan nama/de
 14. **#2 Agent Reach** — tolak (pola astroturf + scraping platform sosial tanpa API resmi).
 15. **#9 agentic-inbox** — tolak (butuh akun Cloudflare, bukan lokal).
 16. **#12 strix** — tolak (di luar audiens & berisiko disalahgunakan).
+
+## Tindak lanjut — #15 no-ai-slop: ATM selesai (2026-09-26)
+- Skill dibuat: `skills/tulisan-tanpa-kesan-ai` (status `draft`, jalur `kurasi`, lisensi MIT).
+- Kode sumber **tidak dijalankan**; SKILL.md dan eval.md dibaca penuh sebelum adaptasi (lihat
+  `skills/tulisan-tanpa-kesan-ai/ATTRIBUTION.md` untuk rincian audit lisensi & keamanan lengkap).
+- Struktur (2 mode periksa/perbaiki, prinsip jaga suara asli) dipelajari dan ditulis ulang; **daftar
+  17 pola tulisan AI khas Bahasa Indonesia** ditulis dari nol (bukan terjemahan daftar kata Inggris
+  di sumber, yang nyaris seluruhnya tidak relevan untuk Bahasa Indonesia).
+- Ditambahkan `references/panduan-gaya.md` agar bisa dirujuk skill konten lain (`konten-mingguan`,
+  `kalender-konten-30hari`, `copy-landing-page`, `pesan-prospek-wa`, `balas-chat-cs`) sebagai
+  pemeriksaan gaya bersama.
+- Script `scripts/cek_pola.py` (heuristik deteksi + skor) dengan 25 kasus uji regresi, semua lolos.
+- Catatan lisensi: LICENSE MIT sumber (Copyright (c) 2026 Peter Yang) disalin ke `LICENSE-MIT` dalam
+  skill, sesuai kewajiban atribusi MIT.
