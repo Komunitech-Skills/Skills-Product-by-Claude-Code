@@ -407,7 +407,7 @@ def cmd_mingguan(args):
         print(f"     Observasi        : {m['jumlah_observasi']}x")
         if m["rata_rata_uptime_24_jam_persen"] is not None:
             print(f"     Rata-rata uptime : {m['rata_rata_uptime_24_jam_persen']}% "
-                  f"(rata-rata dari {len(dipakai)} kali baca 'uptime 24 jam' Uptime Kuma, "
+                  f"(rata-rata dari {m['jumlah_observasi']} kali baca 'uptime 24 jam' Uptime Kuma, "
                   f"BUKAN uptime resmi 7 hari)")
         else:
             print("     Rata-rata uptime : tidak ada data uptime pada observasi ini")
