@@ -72,10 +72,10 @@ laporan-klien-konsultan,Produktivitas,orisinal,,Proprietary Komunitech,9,ecer,99
 pengingat-pasien-klinik,Customer Service,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 buku-piutang,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,149000,ecer,149000,1.0.0,claude-code (simulasi agent),lulus,2026-09-26
 resi-picking,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
-gaji-umkm,HR,orisinal,,Proprietary Komunitech,9,ecer,199000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),uji,2026-09-26
-kas-umkm,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,99000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),uji,2026-09-26
+gaji-umkm,HR,orisinal,,Proprietary Komunitech,9,ecer,199000,ecer,199000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+kas-umkm,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 grist-usaha,Data & Analisis,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
-hledger-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),uji,2026-09-26
+hledger-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,149000,ecer,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 dasbor-lokal,Data & Analisis,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 siyuan-sop,Produktivitas,kurasi,https://github.com/siyuan-note/siyuan,AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech,8,ecer,99000,ecer,99000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 vikunja-tugas,Produktivitas,kurasi,https://github.com/go-vikunja/vikunja,"AGPL-3.0 (software, tidak didistribusikan); skill orisinal Komunitech",9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
