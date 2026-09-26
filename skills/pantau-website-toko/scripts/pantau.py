@@ -420,11 +420,10 @@ def cmd_mingguan(args):
 # ============================================================================== perintah D: cek-cepat
 
 def urai_url_target(url_teks):
+    from urllib.parse import urlparse
     url_teks = url_teks.strip()
     if not re.match(r"^https?://", url_teks, re.IGNORECASE):
         url_teks = "https://" + url_teks
-    parsed = urllib.request.urlparse(url_teks) if hasattr(urllib.request, "urlparse") else None
-    from urllib.parse import urlparse
     parsed = urlparse(url_teks)
     if not parsed.hostname:
         raise Gagal(f"alamat tidak dikenali: {url_teks!r}", kode=2)
