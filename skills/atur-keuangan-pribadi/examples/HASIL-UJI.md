@@ -163,3 +163,15 @@ Tidak ditemukan bug perhitungan baru.
 \* T-4 tetap: peringatan "bila bunganya FLAT, ubah dulu…" masih muncul untuk setiap jenis `kta`, termasuk yang sudah dikonversi (`1,6275%/bln;kta`). Tidak memengaruhi angka; boleh dijadikan catatan ringan di v1.0.2.
 
 **Rekomendasi:** **LULUS** — naik status ke `lulus`; `platform_teruji` = `claude-code (simulasi agent)`. N-1–N-3 dapat diperbaiki di v1.0.2 tanpa uji ulang penuh (cukup tes regresi).
+
+## Uji ulang v1.0.2 (penguji independen, cek singkat, 26 Sep 2026)
+Disalin ke scratchpad `uji-kecil/`, dijalankan dari sana. Tes bawaan: **56/56 lulus**. Skenario 02 tetap: **10 bulan, total bunga Rp4.226.895** ✓ (juga dengan nama "KTA (flat 0,9%/bln -> efektif)" — kata "flat" di nama tidak memicu penolakan).
+
+- **N-1 ✓** `18% setahun`, `1,5% sebulan`, `1,5 persen per bulan`, `0,05% sehari` terbaca dan setara (semua bunga Rp916.227, 11 bln); `18 persen` → dianggap per tahun + peringatan; `2% per minggu` → pesan jelas. `…flat` ditolak dengan arahan konversi-flat; `…efektif` menghilangkan catatan FLAT untuk KTA ✓.
+- **N-2 (berfungsi, agak berisik):** `Parkir=5000`, `Iuran RT=9.000:sosial`, `Sedekah=2000:sosial`, bahkan `Rokok=Rp5.000` (sudah pakai "Rp") masing-masing memunculkan satu paragraf peringatan; `5rb`/`5k` tidak. Untuk awam, 3–4 paragraf untuk pos receh yang wajar terasa berlebihan. **Usul:** (a) jangan peringatkan bila ditulis dengan "Rp" atau diberi label kelompok; (b) gabungkan jadi **satu baris**: "Pos di bawah Rp10.000: Parkir Rp5.000, Sedekah Rp2.000 — benar per bulan?"; atau (c) ambang pos Rp1.000 (salah ketik ribuan seperti "1.500" untuk 1,5 jt tetap perlu diperiksa bersama saran (b)). Frasa "sangat kecil untuk kolom ini" kurang alami untuk pos anggaran.
+- **N-3 ✓** terkumpul ≥ harga sekarang → kalimat "sudah cukup untuk harga sekarang" + skenario menunggu (tambahan Rp34.643/bln untuk 10 jt, inflasi 4%, 24 bln — dicek manual: 831.430/24 = 34.642,9 ✓). Terkumpul 5 jt, 500 rb/bln → bulan ke-11 (dicek manual: bulan 10 dana 10,0 jt < biaya 10,34 jt; bulan 11 10,5 jt ≥ 10,37 jt ✓).
+- Label kelompok tak dikenal (`:zakat`) → pesan jelas ✓.
+
+**Bug baru:** tidak ada yang memengaruhi angka. Temuan RENDAH: kebisingan N-2 di atas.
+
+### Skor uji ulang v1.0.2: **9/10**

@@ -158,3 +158,18 @@ Alasan: bug TINGGI (kolom rupiah dipakai sebagai volume) tuntas pada seluruh var
 
 ### Skor uji ulang v1.0.4: **9/10**
 Alasan: keempat koreksi hukum cocok dengan naskah konsolidasi resmi; pesan jaminan benar untuk keenam varian jenis; angka hitungan tidak berubah dan cocok dengan Decimal independen; 53 tes lulus. Belum 10 karena bug rendah #1 (terintegrasi memakai HPS walau pagu ada). **Rekomendasi: LULUS.**
+
+## Uji ulang v1.0.5 (penguji independen, cek singkat, 26 Sep 2026)
+Disalin ke scratchpad `uji-kecil/`, dijalankan dari sana. Tes bawaan: **60/60 lulus**.
+
+**Verifikasi naskah resmi** (naskah konsolidasi LKPP Perpres 16/2018 jo. 12/2021 jo. 46/2025, PDF jdih.lkpp.go.id, salinan teks di scratchpad):
+- Pasal 31 ayat (3): "Pengadaan Barang/Jasa yang dilakukan secara terintegrasi, Jaminan Penawaran … 1% hingga 3% dari nilai **Pagu Anggaran**" → perubahan **didukung**.
+- Pasal 33 ayat (4): terintegrasi — penawaran 80%–100% **Pagu Anggaran** → 5% nilai Kontrak; di bawah 80% Pagu Anggaran → 5% nilai **Pagu Anggaran** → perubahan **didukung**. Ambang HPS > Rp10 M (Ps. 31 ayat (1)) tetap dari HPS — script benar.
+- Tidak ada TEMUAN TINGGI.
+
+**Skenario (terintegrasi, penawaran Rp12 M):** HPS 15 M + pagu 16 M → penawaran 160–480 jt (1–3% pagu), < 80% pagu (12,8 M) → jaminan pelaksanaan Rp800 jt (5% pagu) ✓. Tepat 80% pagu (12,8 M) → 5% kontrak Rp640 jt ✓ (batas inklusif sesuai "antara 80% sampai dengan 100%"). Tanpa `--pagu` → dari HPS "sebagai gambaran" ✓. Subtotal/total/%HPS (80,00%)/batas 80% HPS tidak berubah ✓. `jasa lainnya` tanpa tanda hubung ✓. `--pagu 0` / `-5` → GALAT kode 2: **wajar** (pagu 0 tidak bermakna dan akan membuat ambang 80% = 0).
+
+**Bug baru (RENDAH):**
+1. Pagu < HPS atau total > pagu (mis. HPS 15 M, pagu 10 M, total 12 M): selain "melebihi pagu", muncul "5% dari nilai kontrak … (penawaran 80%-100% pagu anggaran)" padahal 120% pagu — teks keliru, angka tidak dipakai (penawaran di atas pagu tidak bisa menang). Sarankan pesan jaminan pelaksanaan dilewati bila total > pagu, dan peringatan bila pagu < HPS.
+
+### Skor uji ulang v1.0.5: **9/10** — perubahan sesuai naskah resmi; satu temuan teks rendah.

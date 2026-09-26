@@ -157,3 +157,13 @@ Alasan: kelima temuan rendah tuntas; angka 100% cocok dengan implementasi indepe
 
 ### Skor uji ulang v1.0.3: **9/10**
 Alasan: ketiga pasal cocok dengan naskah resmi; opsi UMK benar secara hukum (label + catatan, angka tak berubah); semua angka pengunci tetap; 159 cek lulus. Belum 10 karena tiga temuan rendah di atas dan ketergantungan pada UU Ketenagakerjaan baru. **Rekomendasi: LULUS.**
+
+## Uji ulang v1.0.4 (penguji independen, cek singkat, 26 Sep 2026)
+Disalin ke scratchpad `uji-kecil/`, dijalankan dari sana. Tes bawaan: **167/167 cek lulus**.
+- Konsistensi teks acuan vs B4a: SKILL.md (bagian UMK), README, catatan script kini "acuan praktik baik, bukan batas bawah wajib; besaran di bawah acuan sah bila disepakati" — sejalan dengan B4a (🟢 bila UMK & kesepakatan tertulis). Sisa frasa "batas bawah" hanya di B1/cek upah (upah minimum usaha mikro/kecil) — topik berbeda, benar.
+- Mode `--usaha-mikro-kecil`: kolom "Kompensasi (acuan)" ✓; non-UMK tetap "Kompensasi" ✓; footer "dicek 26 September 2026" ✓.
+- Angka pengunci tetap (dicek lewat tes + CLI): 4.150.000 (skenario 01, dijalankan manual) · 5.000.000 + 1.250.000 + ganti rugi 15.000.000 · 4.392.857 · 16.877.419 · 17.580.645.
+
+**Bug baru:** tidak ada. Kosmetik: catatan UMK "BUKAN jumlah yang diwajibkan dan BUKAN batas bawah wajib" sedikit berulang.
+
+### Skor uji ulang v1.0.4: **9/10**
