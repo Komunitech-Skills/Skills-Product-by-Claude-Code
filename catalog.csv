@@ -39,9 +39,9 @@ cek-privasi-openclaw,Produktivitas,orisinal,,,8,gratis,0,gratis,0,1.1.2,claude-c
 laporan-otomatis-terjadwal,Produktivitas,orisinal,,,8,ecer,149000,ecer,149000,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + gateway lokal),lulus,2026-09-23
 buku-stok,E-commerce/Marketplace Indonesia,orisinal,,,8,ecer,149000,ecer,149000,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI + gateway lokal),lulus,2026-09-23
 agen-cs-toko,Customer Service,orisinal,,,8,ecer,149000,ecer,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-23
-presentasi-instan,Produktivitas,kurasi,https://github.com/zarazhangrui/frontend-slides,MIT,8,ecer,99000,ecer,99000,1.1.2,claude-code (simulasi agent),lulus,2026-09-23
-cv-lamaran-ats,HR,orisinal,,Proprietary Komunitech (atribusi sumber di ATTRIBUTION.md),9,ecer,49000,ecer,49000,1.1.0,claude-code (simulasi agent),lulus,2026-09-26
-riset-calon-pelanggan,Sales,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent),lulus,2026-09-23
+presentasi-instan,Produktivitas,kurasi,https://github.com/zarazhangrui/frontend-slides,MIT,8,ecer,99000,ecer,99000,1.1.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-23
+cv-lamaran-ats,HR,orisinal,,Proprietary Komunitech (atribusi sumber di ATTRIBUTION.md),9,ecer,49000,ecer,49000,1.1.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+riset-calon-pelanggan,Sales,orisinal,,,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-23
 pengingat-follow-up,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 & 2026.9.6 (uji CLI + gateway lokal),lulus,2026-09-24
 ringkas-grup-wa,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
 absensi-lokal,HR,orisinal,,Proprietary Komunitech,8,ecer,149000,ecer,149000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-24
@@ -68,9 +68,9 @@ sop-onboarding,HR,orisinal,,,8,ecer,49000,ecer,49000,1.0.2,claude-code (simulasi
 tender-checklist,Sales,orisinal,,,9,ecer,149000,ecer,149000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 analisis-excel,Data & Analisis,orisinal,,,9,ecer,99000,ecer,99000,1.0.11,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
 atur-keuangan-pribadi,Kehidupan Pribadi,orisinal,,Proprietary Komunitech (inspirasi sumber MIT; atribusi di ATTRIBUTION.md),9,ecer,49000,ecer,49000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
-laporan-klien-konsultan,Produktivitas,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.0,claude-code (simulasi agent),lulus,2026-09-26
+laporan-klien-konsultan,Produktivitas,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 pengingat-pasien-klinik,Customer Service,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
-buku-piutang,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,149000,ecer,149000,1.0.0,claude-code (simulasi agent),lulus,2026-09-26
+buku-piutang,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,149000,ecer,149000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 resi-picking,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 gaji-umkm,HR,orisinal,,Proprietary Komunitech,9,ecer,199000,ecer,199000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 kas-umkm,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
@@ -79,14 +79,14 @@ hledger-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,14900
 dasbor-lokal,Data & Analisis,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 siyuan-sop,Produktivitas,kurasi,https://github.com/siyuan-note/siyuan,AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech,8,ecer,99000,ecer,99000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 vikunja-tugas,Produktivitas,kurasi,https://github.com/go-vikunja/vikunja,"AGPL-3.0 (software, tidak didistribusikan); skill orisinal Komunitech",9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
-arsip-nota,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
-frappe-books-usaha,Keuangan & Akuntansi,kurasi,https://github.com/frappe/books,"AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech",9,ecer,149000,ecer,149000,1.0.3,claude-code (simulasi agent),lulus,2026-09-26
-actual-budget-usaha,Keuangan & Akuntansi,kurasi,https://github.com/actualbudget/actual,MIT (software tidak didistribusikan); skill orisinal Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
-laporan-insiden-usaha,Produktivitas,kurasi,https://github.com/mohitagw15856/pm-claude-skills,MIT,9,ecer,49000,ecer,49000,1.0.0,claude-code (simulasi agent),lulus,2026-09-26
-presentasi-data-ke-atasan,Data & Analisis,kurasi,https://github.com/nimrodfisher/data-analytics-skills,MIT,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
-validasi-ide-produk-baru,Produktivitas,kurasi,https://github.com/product-on-purpose/pm-skills,Apache-2.0,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
-analisis-rasio-keuangan-usaha,Keuangan & Akuntansi,kurasi,https://github.com/anthropics/claude-cookbooks,MIT,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent),lulus,2026-09-26
-tulisan-tanpa-kesan-ai,Marketing & Konten,kurasi,https://github.com/petergyang/no-ai-slop,MIT,8,ecer,49000,ecer,49000,1.0.0,claude-code (simulasi agent),lulus,2026-09-26
-notebook-riset-lokal,Produktivitas,kurasi,https://github.com/lfnovo/open-notebook,MIT (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
-audit-akun-iklan,Marketing & Konten,kurasi,https://github.com/AgriciDaniel/claude-ads,MIT,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
-pantau-website-toko,E-commerce/Marketplace Indonesia,kurasi,https://github.com/louislam/uptime-kuma,MIT (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent),lulus,2026-09-26
+arsip-nota,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+frappe-books-usaha,Keuangan & Akuntansi,kurasi,https://github.com/frappe/books,AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,149000,ecer,149000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+actual-budget-usaha,Keuangan & Akuntansi,kurasi,https://github.com/actualbudget/actual,MIT (software tidak didistribusikan); skill orisinal Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+laporan-insiden-usaha,Produktivitas,kurasi,https://github.com/mohitagw15856/pm-claude-skills,MIT,9,ecer,49000,ecer,49000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+presentasi-data-ke-atasan,Data & Analisis,kurasi,https://github.com/nimrodfisher/data-analytics-skills,MIT,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+validasi-ide-produk-baru,Produktivitas,kurasi,https://github.com/product-on-purpose/pm-skills,Apache-2.0,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+analisis-rasio-keuangan-usaha,Keuangan & Akuntansi,kurasi,https://github.com/anthropics/claude-cookbooks,MIT,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+tulisan-tanpa-kesan-ai,Marketing & Konten,kurasi,https://github.com/petergyang/no-ai-slop,MIT,8,ecer,49000,ecer,49000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+notebook-riset-lokal,Produktivitas,kurasi,https://github.com/lfnovo/open-notebook,MIT (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+audit-akun-iklan,Marketing & Konten,kurasi,https://github.com/AgriciDaniel/claude-ads,MIT,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+pantau-website-toko,E-commerce/Marketplace Indonesia,kurasi,https://github.com/louislam/uptime-kuma,MIT (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
