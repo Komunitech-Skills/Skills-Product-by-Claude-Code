@@ -343,7 +343,7 @@ class UjiCsv(Dasar):
         b1 = dict(zip(kol, rows[3]))
         b2 = dict(zip(kol, rows[4]))
         self.assertEqual((b1["Item.rate"], b1["Item.incomeAccount"], b1["Item.expenseAccount"], b1["Item.trackItem"]),
-                         ("95000", "Penjualan - 4110.000", "HPP Pembelian - 4210.000", "1"))
+                         ("95000", "Penjualan - 4110.000", "Stock Diterima Tapi Tidak Ditagih - 2115.000", "1"))  # v1.0.2: bawaan Frappe
         self.assertEqual((b2["Item.itemType"], b2["Item.rate"], b2["Item.unit"], b2["Item.incomeAccount"], b2["Item.trackItem"]),
                          ("Service", "1500000", "Hour", "Pendapatan Service - 4310.000", "0"))
         self.assertEqual(len(rows), 5)  # Kopi Arabika sudah ada
@@ -579,6 +579,138 @@ class UjiRevisi101(Dasar):
                           "--masuk", self.nota("n-peran.csv", "Toko Sinar Abadi"), "--keluar", os.path.join(self.tmp, "peran.csv"))
         self.assertEqual(k, 0)
         self.assertIn("terdaftar sebagai pelanggan saja", out)
+
+
+class UjiRevisi102(Dasar):
+    """Regresi uji ulang v1.0.1 di Frappe Books v0.36.0 asli: akun pembelian barang berstok & kredit retur di piutang."""
+
+    def salin_db(self, nama, *sql):
+        p = os.path.join(self.tmp, nama)
+        shutil.copy(self.db, p)
+        c = sqlite3.connect(p)
+        for x in sql:
+            c.execute(x)
+        c.commit()
+        c.close()
+        return p
+
+    def test_40_akun_pembelian_barang_berstok_dari_inventory_settings(self):
+        brg = self.tulis("stok102.csv", "nama,jenis,stok\nKopi Stok,barang,ya\nKopi Titip,barang,tidak\nKursus,jasa,\n")
+        keluar = os.path.join(self.tmp, "stok102-out.csv")
+        k, out, err = jalan("csv-barang", "--db", self.db, "--masuk", brg, "--keluar", keluar)
+        self.assertEqual(k, 0, out + err)
+        d = {r[0]: dict(zip(self.baca_csv(keluar)[2], r)) for r in self.baca_csv(keluar)[3:]}
+        self.assertEqual(d["Kopi Stok"]["Item.expenseAccount"], "Stock Diterima Tapi Tidak Ditagih - 2115.000")
+        self.assertEqual(d["Kopi Titip"]["Item.expenseAccount"], "HPP Pembelian - 4210.000")
+        self.assertEqual(d["Kursus"]["Item.expenseAccount"], "HPP Pembelian - 4210.000")
+        # nilai benar-benar dibaca dari InventorySettings (bukan tebakan nama)
+        lain = self.salin_db("srbnb-lain.books.db",
+                             "INSERT INTO Account (name, rootType, accountType, isGroup, lft, rgt, createdBy, modifiedBy, created, modified) "
+                             "VALUES ('Barang Diterima Belum Ditagih - 2116.000','Liability','Stock Received But Not Billed',0,90,91,'a','a','x','x')",
+                             "UPDATE SingleValue SET value='Barang Diterima Belum Ditagih - 2116.000' WHERE fieldname='stockReceivedButNotBilled'")
+        k, out, _ = jalan("csv-barang", "--db", lain, "--masuk", brg, "--keluar", keluar)
+        self.assertEqual(k, 0)
+        self.assertIn("akun pembelian barang berstok: Barang Diterima Belum Ditagih - 2116.000", out)
+        # Inventory Settings kosong & ada 2 akun bertipe SRBNB -> jangan menebak
+        dua = self.salin_db("srbnb-dua.books.db",
+                            "INSERT INTO Account (name, rootType, accountType, isGroup, lft, rgt, createdBy, modifiedBy, created, modified) "
+                            "VALUES ('Barang Diterima Belum Ditagih - 2116.000','Liability','Stock Received But Not Billed',0,90,91,'a','a','x','x')",
+                            "INSERT INTO Account (name, rootType, accountType, isGroup, lft, rgt, createdBy, modifiedBy, created, modified) "
+                            "VALUES ('Titipan Barang Masuk - 2117.000','Liability','Stock Received But Not Billed',0,92,93,'a','a','x','x')",
+                            "DELETE FROM Account WHERE name='Stock Diterima Tapi Tidak Ditagih - 2115.000'",
+                            "DELETE FROM SingleValue WHERE parent='InventorySettings'")
+        k, _, err = jalan("csv-barang", "--db", dua, "--masuk", brg, "--keluar", keluar)
+        self.assertEqual(k, 2)
+        self.assertIn("tidak bisa dipastikan", err)
+        self.assertIn("Titipan Barang Masuk - 2117.000", err)
+        # Inventory Settings kosong tapi akun bernama baku ada -> dipakai + diberi peringatan
+        kosong = self.salin_db("srbnb-kosong.books.db", "DELETE FROM SingleValue WHERE parent='InventorySettings'")
+        k, out, _ = jalan("csv-barang", "--db", kosong, "--masuk", brg, "--keluar", keluar)
+        self.assertEqual(k, 0)
+        self.assertIn("'Stock Received But Not Billed' belum diisi", out)
+        self.assertIn("'Stock In Hand' belum diisi", out)
+        # tanpa --db: wajib disebut, tidak diam-diam memakai HPP
+        k, _, err = jalan("csv-barang", "--masuk", brg, "--keluar", keluar, "--akun-penjualan", "Sales",
+                          "--akun-pembelian", "Cost of Goods Sold")
+        self.assertEqual(k, 2)
+        self.assertIn("--akun-pembelian-stok", err)
+
+    def laba_setelah_beli_jual(self, akun_beli_item, nama_db):
+        """Tiru posting Frappe v0.36.0 untuk 1 barang berstok: beli 10 x 50.000, terima barang, jual 4 x 85.000, kirim."""
+        p = os.path.join(self.tmp, nama_db)
+        buat_db_contoh.buat(p)
+        c = sqlite3.connect(p)
+        c.execute("DELETE FROM AccountingLedgerEntry")
+        c.execute("UPDATE Item SET expenseAccount=? WHERE name='Kopi Arabika 250g'", (akun_beli_item,))
+        n = [0]
+
+        def ale(tgl, akun, d, k, ref):
+            n[0] += 1
+            c.execute("INSERT INTO AccountingLedgerEntry (name, date, account, debit, credit, referenceType, referenceName, "
+                      "reverted, createdBy, modifiedBy, created, modified) VALUES (?,?,?,?,?,?,?,0,'a','a','x','x')",
+                      (f"T{n[0]}", tgl + "T00:00:00.000Z", akun, f"{d:.11f}", f"{k:.11f}", "X", ref))
+        inv = "Persediaan Barang - 1141.000"
+        srbnb = "Stock Diterima Tapi Tidak Ditagih - 2115.000"
+        hpp = "HPP Pembelian - 4210.000"
+        # PurchaseInvoice.getPosting: debit(item.account = expenseAccount barang), credit(akun utang)
+        ale("2026-09-02", akun_beli_item, 500000, 0, "PINV-9")
+        ale("2026-09-02", "Hutang Dagang Dalam Negeri - 2111.001", 0, 500000, "PINV-9")
+        # PurchaseReceipt (StockTransfer.getPosting): debit stockInHand, credit stockReceivedButNotBilled
+        ale("2026-09-02", inv, 500000, 0, "PREC-9")
+        ale("2026-09-02", srbnb, 0, 500000, "PREC-9")
+        # SalesInvoice: debit piutang, credit penjualan
+        ale("2026-09-10", "Piutang Dagang - 1131.0010", 340000, 0, "SINV-9")
+        ale("2026-09-10", "Penjualan - 4110.000", 0, 340000, "SINV-9")
+        # Shipment: debit costOfGoodsSold, credit stockInHand (4 x 50.000)
+        ale("2026-09-10", hpp, 200000, 0, "SHPM-9")
+        ale("2026-09-10", inv, 0, 200000, "SHPM-9")
+        c.commit()
+        c.close()
+        return jalan("laba-rugi", "--db", p, "--bulan", "2026-09")
+
+    def test_41_laba_rugi_barang_berstok_tidak_hpp_ganda(self):
+        # Akun dari csv-barang (v1.0.2) -> laba = 340.000 - 200.000 = 140.000
+        brg = self.tulis("stok41.csv", "nama,stok\nKopi Baru,ya\n")
+        keluar = os.path.join(self.tmp, "stok41-out.csv")
+        jalan("csv-barang", "--db", self.db, "--masuk", brg, "--keluar", keluar)
+        akun = dict(zip(self.baca_csv(keluar)[2], self.baca_csv(keluar)[3]))["Item.expenseAccount"]
+        k, out, _ = self.laba_setelah_beli_jual(akun, "beli-jual-benar.books.db")
+        self.assertEqual(k, 0)
+        self.assertIn("HPP Pembelian - 4210.000: Rp 200.000", out)
+        self.assertIn("LABA BERSIH: Rp 140.000", out)
+        self.assertNotIn("PERINGATAN", out)
+        # Perilaku v1.0.1 (akun HPP untuk barang berstok) -> HPP ganda 700.000, rugi; skill kini memperingatkan
+        k, out, _ = self.laba_setelah_beli_jual("HPP Pembelian - 4210.000", "beli-jual-salah.books.db")
+        self.assertIn("HPP Pembelian - 4210.000: Rp 700.000", out)
+        self.assertIn("RUGI BERSIH: -Rp 360.000", out)
+        self.assertIn("PERINGATAN: 1 barang berstok memakai akun pembelian HPP (Kopi Arabika 250g)", out)
+
+    def test_42_piutang_memperhitungkan_kredit_retur(self):
+        # Retur SINV-1009 atas SINV-1003 (1 x 85.000 + PPN 9.350) dengan outstanding -94.350 seperti file asli
+        p = self.salin_db("kredit.books.db",
+                          "INSERT INTO SalesInvoice (name, numberSeries, party, account, date, netTotal, grandTotal, baseGrandTotal, "
+                          "outstandingAmount, exchangeRate, submitted, cancelled, returnAgainst, createdBy, modifiedBy, created, modified) "
+                          "VALUES ('SINV-1009','SINV-','Warung Bu Sari','Piutang Dagang - 1131.0010','2026-09-26T03:00:00.000Z',"
+                          "'-85000.00000000000','-94350.00000000000','-94350.00000000000','-94350.00000000000',1,1,0,'SINV-1003',"
+                          "'a','a','x','x')",
+                          "INSERT INTO SalesInvoice (name, numberSeries, party, account, date, netTotal, grandTotal, baseGrandTotal, "
+                          "outstandingAmount, exchangeRate, submitted, cancelled, createdBy, modifiedBy, created, modified) "
+                          "VALUES ('SINV-1010','SINV-','CV Maju Jaya','Piutang Dagang - 1131.0010','2026-09-29T03:00:00.000Z',"
+                          "'10000.00000000000','10000.00000000000','10000.00000000000','10000.00000000000',1,1,0,'a','a','x','x')")
+        k, out, _ = jalan("piutang", "--db", p, "--hari-ini", "2026-09-26")
+        self.assertEqual(k, 0)
+        self.assertIn("Belum lunas: 5 invoice, total Rp 998.250", out)
+        self.assertIn("Kredit retur belum dikembalikan/dipotong: 1 nota retur, total -Rp 94.350", out)
+        self.assertIn("SINV-1009 atas SINV-1003 | Warung Bu Sari", out)
+        # sama dengan Party.outstandingAmount Frappe: jumlah outstanding semua invoice final
+        self.assertIn("PIUTANG BERSIH (setelah kredit retur, sama dengan saldo pihak di Frappe Books): Rp 903.900", out)
+        self.assertIn("SINV-1010 | CV Maju Jaya | tgl 29 Sep 2026 | sisa Rp 10.000 | jatuh tempo 29 Okt 2026 | tanggal invoice setelah hari ini", out)
+        c = sqlite3.connect(p)
+        frappe = sum(Decimal(r[0]) for r in c.execute("SELECT outstandingAmount FROM SalesInvoice WHERE submitted=1 AND cancelled=0"))
+        c.close()
+        self.assertEqual(frappe, Decimal("903900"))
+        k, out, _ = jalan("piutang", "--db", self.db, "--hari-ini", "2026-09-26")
+        self.assertNotIn("Kredit retur", out)  # retur lama (outstanding 0) tidak memunculkan kredit
 
 
 if __name__ == "__main__":

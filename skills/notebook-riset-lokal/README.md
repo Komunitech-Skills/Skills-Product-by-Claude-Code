@@ -30,7 +30,7 @@
   "catatan": "Jawaban disusun model AI dari sumber di notebook Anda. Selalu periksa ulang isi penting (regulasi, angka, kutipan) di sumber aslinya."
 }
 ```
-(Bentuk respons dicocokkan dengan kode sumber resmi Open Notebook 1.14.0; lihat `ATTRIBUTION.md` untuk status verifikasi — server asli belum sempat dijalankan Komunitech, lihat `examples/`.)
+(Bentuk respons diverifikasi lewat uji end-to-end terhadap Open Notebook 1.14.0 ASLI, termasuk perbaikan bug `tambah-sumber` yang sempat gagal total di versi awal — lihat `ATTRIBUTION.md` dan `examples/HASIL-UJI.md`.)
 
 ## Cara pakai
 Setelah Open Notebook terpasang dan tersambung, cukup ketik permintaan biasa:

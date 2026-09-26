@@ -2,7 +2,7 @@
 
 Konteks: konsultan pajak mengumpulkan PP/PMK terkait UMKM ke satu notebook, lalu bertanya langsung alih-alih membaca satu-satu.
 
-> ⚠️ **Status uji.** Output di bawah dihasilkan dengan menjalankan `scripts/notebook.py` sungguhan terhadap **server tiruan** (`tests/uji_regresi.py`, bentuk respons dicocokkan dari kode sumber Open Notebook — lihat `ATTRIBUTION.md`), **bukan** dari Open Notebook asli yang benar-benar berjalan (Docker tidak tersedia di sandbox riset Komunitech). Bentuk JSON dan alur pesan sudah pasti seperti ini; isi jawaban AI ("PPh final UMKM 0,5%...") adalah **contoh yang direkayasa untuk uji**, bukan jawaban model AI sungguhan.
+> ⚠️ **Status uji.** Output di bawah dihasilkan dengan menjalankan `scripts/notebook.py` v1.0.1 terhadap **server tiruan yang sudah diperbarui** (`tests/uji_regresi.py`, sekarang menuntut `multipart/form-data` & skema pencarian yang sama seperti server asli — lihat `ATTRIBUTION.md`), bukan langsung dari Open Notebook asli. Bentuk JSON dan alur pesan (termasuk perbaikan `tambah-sumber` & `cari`) **sudah dibuktikan sama persis terhadap Open Notebook 1.14.0 ASLI** oleh penguji independen — lihat `examples/HASIL-UJI.md` dan `examples/03-07-*-uji-akun-b.md` untuk log lengkap server sungguhan. Isi jawaban AI ("PPh final UMKM 0,5%...") tetap **contoh yang direkayasa untuk uji**, bukan jawaban model AI sungguhan (model AI di luar cakupan uji ini).
 
 ## 1. Cek koneksi
 ```
@@ -55,11 +55,12 @@ $ python3 scripts/notebook.py tambah-sumber --notebook "Regulasi Pajak UMKM" --t
 {
   "ditambahkan": true,
   "id": "source:baru1",
-  "judul": "Sumber baru",
-  "status": "processing",
+  "judul": "Processing...",
+  "status": "new",
   "catatan": "Sumber sedang diproses (dibaca & diindeks). Cek 'daftar-sumber' beberapa saat lagi bila judul/isi belum lengkap."
 }
 ```
+Permintaan ini dikirim sebagai `multipart/form-data` (bukan JSON — lihat `ATTRIBUTION.md` soal bug v1.0.0 yang diperbaiki). Judul awal untuk tipe `link` biasanya `"Processing..."` sampai worker Open Notebook selesai membaca halamannya; cek lagi dengan `daftar-sumber` beberapa saat kemudian untuk judul final.
 
 ## 4. Cek status pemrosesan sumber
 ```
@@ -98,7 +99,9 @@ $ python3 scripts/notebook.py cari --kueri "PPh final"
   "kueri": "PPh final",
   "jumlah": 1,
   "hasil": [
-    {"judul": "PP 55/2022", "tipe": "source", "cuplikan": "...UMKM dikenakan PPh Final 0,5%..."}
-  ]
+    {"judul": "PP 55/2022", "id_dokumen": "source:s1", "relevansi": 0.734}
+  ],
+  "catatan": "API pencarian Open Notebook tidak menyediakan cuplikan kalimat yang cocok — hanya judul & id dokumen. Buka dokumennya lewat 'daftar-sumber' atau http://127.0.0.1:8502 untuk melihat isinya."
 }
 ```
+API pencarian resmi Open Notebook **tidak** mengembalikan cuplikan kalimat yang cocok (dikonfirmasi terhadap server asli) — hasil hanya judul, id dokumen, dan skor relevansi. Agent menyampaikan keterbatasan ini apa adanya, tidak berpura-pura punya cuplikan.

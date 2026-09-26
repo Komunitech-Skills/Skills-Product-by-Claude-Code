@@ -1,6 +1,6 @@
 # Contoh 2 — Input tidak lengkap & di luar cakupan
 
-> ⚠️ Sama seperti `examples/01-...`, dijalankan terhadap **server tiruan**, bukan Open Notebook asli. Lihat `ATTRIBUTION.md`.
+> ⚠️ Sama seperti `examples/01-...`, dijalankan terhadap **server tiruan v1.0.1** (mock diperbarui menuntut `multipart/form-data`). Perilaku setara sudah dibuktikan terhadap Open Notebook 1.14.0 ASLI oleh penguji independen — lihat `ATTRIBUTION.md` dan `examples/HASIL-UJI.md`.
 
 ## A. Input tidak lengkap: tipe `teks` tanpa isi
 ```

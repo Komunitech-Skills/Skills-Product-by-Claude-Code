@@ -64,6 +64,10 @@ def buat(path, taxid=False):
         {"name": "sv2", "parent": "AccountingSettings", "fieldname": "enableInventory", "value": "1.0"},
         {"name": "sv3", "parent": "SystemSettings", "fieldname": "currency", "value": "IDR"},
         {"name": "sv4", "parent": "SystemSettings", "fieldname": "version", "value": "0.36.0"},
+        {"name": "sv5", "parent": "InventorySettings", "fieldname": "stockInHand", "value": "Persediaan Barang - 1141.000"},
+        {"name": "sv6", "parent": "InventorySettings", "fieldname": "stockReceivedButNotBilled",
+         "value": "Stock Diterima Tapi Tidak Ditagih - 2115.000"},
+        {"name": "sv7", "parent": "InventorySettings", "fieldname": "costOfGoodsSold", "value": "HPP Pembelian - 4210.000"},
     ])
     akun = [
         ("Aktiva - 1000.0000", "Asset", None, 1), ("Piutang Dagang - 1131.000", "Asset", None, 1),
@@ -108,7 +112,9 @@ def buat(path, taxid=False):
     ]
     isi(con, "Item", [{"name": n, "itemCode": k, "unit": u, "rate": m(r), "itemType": ty, "for": "Both",
                        "incomeAccount": "Pendapatan Service - 4310.000" if ty == "Service" else "Penjualan - 4110.000",
-                       "expenseAccount": "HPP Pembelian - 4210.000", "trackItem": tr} for n, k, u, r, ty, tr in brg])
+                       # bawaan Frappe (Item.ts): barang berstok -> Stock Received But Not Billed, lainnya -> HPP
+                       "expenseAccount": "Stock Diterima Tapi Tidak Ditagih - 2115.000" if tr else "HPP Pembelian - 4210.000",
+                       "trackItem": tr} for n, k, u, r, ty, tr in brg])
 
     # ---- invoice penjualan: (no, tgl WIB, pihak, [(barang, qty, harga, pajak?)], sisa, submitted, cancelled, returnAgainst)
     pajak = "PPN 11% (12% x 11/12)"
