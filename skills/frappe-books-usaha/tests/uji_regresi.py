@@ -314,7 +314,7 @@ class UjiCsv(Dasar):
         with open(keluar, "rb") as f:
             self.assertIn(b"\r\n", f.read())  # CRLF seperti generateCSV Frappe Books
         rows = self.baca_csv(keluar)
-        self.assertEqual(rows[2], ["Party.name", "Party.role", "Party.email", "Party.phone", "Party.taxId"])
+        self.assertEqual(rows[2], ["Party.name", "Party.role", "Party.email", "Party.phone"])  # file asli: tanpa taxId
         self.assertEqual(rows[3][:4], ["Kedai Kopi Senja", "Customer", "senja@contoh.id", "+6281234567890"])
         self.assertEqual(rows[4][0], "CV Berkah, Solo")
         self.assertEqual(rows[5][0], "Bu 'Rina'")  # kutip ganda diganti (parser Frappe Books)
@@ -348,7 +348,7 @@ class UjiCsv(Dasar):
                          ("Service", "1500000", "Hour", "Pendapatan Service - 4310.000", "0"))
         self.assertEqual(len(rows), 5)  # Kopi Arabika sudah ada
         salah = self.tulis("brg2.csv", "nama,satuan\nSusu,Liter\n")
-        k, out, _ = jalan("csv-barang", "--db", self.db, "--masuk", salah, "--keluar", keluar + "2")
+        k, out, _ = jalan("csv-barang", "--db", self.db, "--masuk", salah, "--keluar", os.path.join(self.tmp, "brg-out2.csv"))
         self.assertEqual(k, 5)
         self.assertIn("satuan 'Liter' belum ada", out)
 
@@ -416,6 +416,169 @@ class UjiCsv(Dasar):
                           "--akun-penjualan", "Penjualan - 4000.000")
         self.assertEqual(k, 2)
         self.assertIn("akun grup", err)
+
+
+class UjiRevisi101(Dasar):
+    """Regresi temuan uji independen v1.0.0 (file .books.db ASLI Frappe Books v0.36.0)."""
+
+    def nota(self, nama, pihak="Toko Sinar Abadi"):
+        return self.tulis(nama, "No Nota;Tanggal;Pelanggan;Barang;Jumlah;Harga\n"
+                                f"N-01;27/09/2026;{pihak};Kopi Arabika 250g;1;50000\n")
+
+    def salin_db(self, nama, *sql):
+        p = os.path.join(self.tmp, nama)
+        shutil.copy(self.db, p)
+        c = sqlite3.connect(p)
+        for x in sql:
+            c.execute(x)
+        c.commit()
+        c.close()
+        return p
+
+    def test_30_number_series_wajib_di_csv_invoice(self):
+        for jenis, skema, seri, pihak in (("penjualan", "SalesInvoice", "SINV-", "Toko Sinar Abadi"),
+                                         ("pembelian", "PurchaseInvoice", "PINV-", "PT Biji Kopi Gayo")):
+            keluar = os.path.join(self.tmp, f"seri-{jenis}.csv")
+            k, out, err = jalan("csv-transaksi", "--db", self.db, "--jenis", jenis, "--masuk", self.nota(f"n-{jenis}.csv", pihak),
+                                "--keluar", keluar)
+            self.assertEqual(k, 0, out + err)
+            rows = self.baca_csv(keluar)
+            self.assertEqual(rows[2][1], f"{skema}.numberSeries")
+            self.assertEqual(rows[1][1], "Number Series")
+            self.assertEqual(rows[3][1], seri)
+        k, _, err = jalan("csv-transaksi", "--db", self.db, "--masuk", self.nota("n-seri.csv"), "--keluar",
+                          os.path.join(self.tmp, "seri-x.csv"), "--seri", "INV-LAIN-")
+        self.assertEqual(k, 2)
+        self.assertIn("Number Series 'INV-LAIN-' tidak ada", err)
+        dua = self.salin_db("dua-seri.books.db", "DELETE FROM NumberSeries WHERE name='SINV-'",
+                            "INSERT INTO NumberSeries VALUES ('JUAL-',1001,4,'SalesInvoice',1001,'a','a','x','x')",
+                            "INSERT INTO NumberSeries VALUES ('POS-',1001,4,'SalesInvoice',1001,'a','a','x','x')")
+        k, _, err = jalan("csv-transaksi", "--db", dua, "--masuk", self.nota("n-dua.csv"), "--keluar", os.path.join(self.tmp, "s2.csv"))
+        self.assertEqual(k, 2)
+        self.assertIn("beberapa Number Series", err)
+
+    def test_31_akun_bernomor_tidak_menebak(self):
+        brg = self.tulis("akun-brg.csv", "nama,jenis\nKopi X,barang\nKursus Y,jasa\n")
+        keluar = os.path.join(self.tmp, "akun-brg-out.csv")
+        k, out, err = jalan("csv-barang", "--db", self.db, "--masuk", brg, "--keluar", keluar)
+        self.assertEqual(k, 0, out + err)
+        self.assertNotIn("Bunga Bank", out + open(keluar, encoding="utf-8").read())
+        d = [dict(zip(self.baca_csv(keluar)[2], r)) for r in self.baca_csv(keluar)[3:]]
+        self.assertEqual(d[0]["Item.incomeAccount"], "Penjualan - 4110.000")
+        self.assertEqual(d[1]["Item.incomeAccount"], "Pendapatan Service - 4310.000")
+        keluar = os.path.join(self.tmp, "akun-beli.csv")
+        k, out, err = jalan("csv-transaksi", "--db", self.db, "--jenis", "pembelian",
+                            "--masuk", self.nota("n-beli.csv", "PT Biji Kopi Gayo"), "--keluar", keluar)
+        self.assertEqual(k, 0, out + err)
+        self.assertEqual(dict(zip(self.baca_csv(keluar)[2], self.baca_csv(keluar)[3]))["PurchaseInvoice.account"],
+                         "Hutang Dagang Dalam Negeri - 2111.001")
+        # Akun utang dagang tidak ada -> jangan menebak (HUtang Dagang Biaya Kirim...), tanya pengguna
+        tanpa = self.salin_db("tanpa-utang.books.db",
+                              "DELETE FROM Account WHERE name='Hutang Dagang Dalam Negeri - 2111.001'")
+        k, _, err = jalan("csv-transaksi", "--db", tanpa, "--jenis", "pembelian",
+                          "--masuk", self.nota("n-beli2.csv", "PT Biji Kopi Gayo"), "--keluar", os.path.join(self.tmp, "u.csv"))
+        self.assertEqual(k, 2)
+        self.assertIn("tidak bisa dipastikan otomatis", err)
+        self.assertIn("HUtang Dagang Biaya Kirim Luar Negeri - 2111.004", err)
+        self.assertIn("Tanyakan ke pengguna", err)
+        tanpa2 = self.salin_db("tanpa-jual.books.db", "DELETE FROM Account WHERE name='Penjualan - 4110.000'")
+        k, _, err = jalan("csv-barang", "--db", tanpa2, "--masuk", brg, "--keluar", os.path.join(self.tmp, "j.csv"))
+        self.assertEqual(k, 2)
+        self.assertIn("Akun penjualan tidak bisa dipastikan", err)
+        # nama tanpa nomor dari pengguna dicocokkan ke nama bernomor yang tunggal
+        k, out, _ = jalan("csv-barang", "--db", self.db, "--masuk", brg, "--keluar", os.path.join(self.tmp, "j2.csv"),
+                          "--akun-penjualan", "Penjualan", "--akun-pembelian", "HPP Pembelian")
+        self.assertEqual(k, 0)
+        self.assertIn("Akun penjualan: Penjualan - 4110.000", out)
+
+    def test_32_keluar_tidak_boleh_menimpa_database(self):
+        brg = self.tulis("aman.csv", "nama\nKopi Z\n")
+        sebelum = sha(self.db)
+        salin = self.salin_db("korban.books.db")
+        sqlite_csv = os.path.join(self.tmp, "menyamar.csv")
+        shutil.copy(self.db, sqlite_csv)
+        for keluar in (self.db, salin, os.path.join(self.tmp, "apa.db"), sqlite_csv, os.path.join(self.tmp, "x.txt")):
+            for perintah in (["csv-barang"], ["csv-pelanggan"], ["csv-transaksi"]):
+                k, _, err = jalan(*perintah, "--db", self.db, "--masuk", brg, "--keluar", keluar)
+                self.assertEqual(k, 2, (perintah, keluar, err))
+                self.assertNotIn("Traceback", err)
+        self.assertEqual(sha(self.db), sebelum)
+        with open(sqlite_csv, "rb") as f:
+            self.assertTrue(f.read(16).startswith(b"SQLite format 3"))
+        # nama .csv tetapi sama dengan database yang dipakai (db ber-akhiran .csv)
+        db_csv = self.salin_db("db-bernama.csv")
+        k, _, err = jalan("csv-pelanggan", "--db", db_csv, "--masuk", brg, "--keluar", db_csv)
+        self.assertEqual(k, 2)
+
+    def test_33_centang_inventory_format_asli(self):
+        self.assertTrue(fb.centang("1.0"))
+        self.assertFalse(fb.centang("0.0"))
+        self.assertTrue(fb.centang("1"))
+        self.assertFalse(fb.centang(None))
+        k, out, _ = jalan("cek", "--db", self.db)  # fixture menyimpan '1.0' seperti file asli
+        self.assertIn("Fitur stok (Inventory): aktif", out)
+        mati = self.salin_db("inv-mati.books.db", "UPDATE SingleValue SET value='0.0' WHERE fieldname='enableInventory'")
+        k, out, _ = jalan("cek", "--db", mati)
+        self.assertIn("Fitur stok (Inventory): tidak aktif", out)
+        brg = self.tulis("lacak.csv", "nama,stok\nKopi Lacak,ya\n")
+        k, out, _ = jalan("csv-barang", "--db", self.db, "--masuk", brg, "--keluar", os.path.join(self.tmp, "lacak-out.csv"))
+        self.assertNotIn("fitur Inventory belum aktif", out)
+
+    def test_34_retur_laba_rugi_sejalan_dengan_penjualan(self):
+        # Retur SINV-1008 diposting bertanda terbalik (seperti v0.36.0). Pendapatan koreksi = DPP penjualan (905.000).
+        k, out, _ = jalan("laba-rugi", "--db", self.db, "--bulan", "2026-09")
+        self.assertIn("Total pendapatan: Rp 905.000", out)
+        self.assertIn("Catatan retur: 1 invoice retur", out)
+        self.assertIn("total pendapatan Rp 1.205.000", out)  # buku besar apa adanya = P&L Frappe Books
+        k, out2, _ = jalan("penjualan", "--db", self.db, "--bulan", "2026-09")
+        self.assertIn("DPP / sebelum pajak : Rp 905.000", out2)
+        self.assertIn("Terbayar (bersih)", out2)
+        k, out3, _ = jalan("laba-rugi", "--db", self.db, "--bulan", "2026-08")
+        self.assertNotIn("Catatan retur", out3)
+
+    def test_35_npwp_tidak_hilang_diam_diam(self):
+        pel = self.tulis("npwp.csv", "nama,npwp\nPT Pajak Taat,01.234.567.8-901.000\n")
+        keluar = os.path.join(self.tmp, "npwp-out.csv")
+        k, out, _ = jalan("csv-pelanggan", "--db", self.db, "--masuk", pel, "--keluar", keluar)
+        self.assertEqual(k, 0)
+        self.assertNotIn("Party.taxId", self.baca_csv(keluar)[2])
+        self.assertIn("NPWP '01.234.567.8-901.000' milik 'PT Pajak Taat' TIDAK ikut diimpor", out)
+        db_tax = os.path.join(self.tmp, "taxid.books.db")
+        buat_db_contoh.buat(db_tax, taxid=True)
+        k, out, _ = jalan("csv-pelanggan", "--db", db_tax, "--masuk", pel, "--keluar", keluar)
+        rows = self.baca_csv(keluar)
+        self.assertEqual(dict(zip(rows[2], rows[3]))["Party.taxId"], "01.234.567.8-901.000")
+        k, out, _ = jalan("csv-pelanggan", "--masuk", pel, "--keluar", keluar)
+        self.assertIn("belum dicek apakah Frappe Books Anda punya kolom itu", out)
+
+    def test_36_csv_byte_tidak_valid(self):
+        p = os.path.join(self.tmp, "rusak-byte.csv")
+        with open(p, "wb") as f:
+            f.write(b"nama\n\x81abc\n")
+        k, _, err = jalan("csv-pelanggan", "--masuk", p, "--keluar", os.path.join(self.tmp, "rb.csv"))
+        self.assertEqual(k, 5)
+        self.assertIn("simpan ulang", err)
+        self.assertNotIn("tak terduga", err)
+
+    def test_37_lokasi_rumah_linux_dan_onedrive(self):
+        for sub in (("Frappe Books",), ("OneDrive", "Documents", "Frappe Books")):
+            rumah = tempfile.mkdtemp(prefix="rumah-", dir=self.tmp)
+            folder = os.path.join(rumah, *sub)
+            os.makedirs(folder)
+            shutil.copy(self.db, os.path.join(folder, "Usaha.books.db"))
+            k, out, err = jalan("cek", rumah=rumah)
+            self.assertEqual(k, 0, (sub, err))
+
+    def test_38_samarkan_nama_berkurung(self):
+        self.assertEqual(fb.samarkan("Warung Pak Budi (Pasar Baru)"), "W. P. B. P. B.")
+        self.assertEqual(fb.samarkan("CV. Maju-Jaya"), "C. M. J.")
+        self.assertEqual(fb.samarkan("((  ))"), "?")
+
+    def test_39_peran_pihak_tidak_cocok(self):
+        k, out, _ = jalan("csv-transaksi", "--db", self.db, "--jenis", "pembelian",
+                          "--masuk", self.nota("n-peran.csv", "Toko Sinar Abadi"), "--keluar", os.path.join(self.tmp, "peran.csv"))
+        self.assertEqual(k, 0)
+        self.assertIn("terdaftar sebagai pelanggan saja", out)
 
 
 if __name__ == "__main__":
