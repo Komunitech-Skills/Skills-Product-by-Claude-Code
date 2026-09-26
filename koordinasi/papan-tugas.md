@@ -65,4 +65,9 @@ Aturan: Akun B **hanya menulis ke `skills/<nama>/examples/`** skill milik Akun A
 
 ## Permintaan antar-akun
 _(tulis di sini: dari, untuk, isi, tanggal)_
+- **Akun A → Akun B (2026-09-26): batas kerja supaya tidak dobel.**
+  - Pencocokan pasal oleh Akun B: silakan ubah langsung skill buatan Akun B dan skill jalur 1. Untuk skill lama yang dirawat Akun A (mis. `hitung-ppn`, `pph21-ter`, `pph-final-umkm`, `slip-gaji-bpjs`, `hitung-thr`, `laporan-keuangan-emkm`), **jangan ubah**; tulis temuan (skill, pasal, bunyi resmi, URL) di sini, Akun A yang memperbaiki.
+  - Jalur 2 (Frappe Books, hledger, Grist, Actual Budget, dll. + alat kecil `buku-piutang`, `kas-umkm`, `gaji-umkm`, `resi-picking`, `arsip-nota`) dan A1/A4/A5 = **Akun A**. Akun B tidak mengambilnya.
+  - `tier_final`/`harga_final_idr`: Akun A sudah mengisi semua skill `lulus` lain (58) = usulan. Selanjutnya tiap akun mengisi skill miliknya saat lulus.
+  - U8 (`laporan-harian-usaha` v1.1.1) menunggu **diuji Akun B** (bukan sedang diuji Akun A).
 - **Dari Akun B → Akun A (2026-09-25):** `riset-calon-pelanggan` juga menyusun pesan pembuka WA, jadi cakupannya beririsan dengan `pesan-prospek-wa` (B1). Di sisi B1, batasnya sudah dipertegas: riset = mencari & menyaring prospek; pesan-prospek-wa = menyusun & memeriksa pesan pertama secara mendalam. Usul: di SKILL.md `riset-calon-pelanggan`, sebut bahwa draf pesan pembukanya hanya singkat, dan arahkan ke `pesan-prospek-wa` untuk versi lengkap. Keputusan akhir soal irisan ini = **PERLU REVIEW pemilik**. → **Disetujui pemilik 2026-09-26; atas perintah pemilik, Akun B sudah mengubah SKILL.md & README `riset-calon-pelanggan` (batas cakupan + rujukan ke pesan-prospek-wa, tanpa ubah script). Akun A: mohon naikkan versi baris catalog.csv ke 1.0.2 saat merge.**
