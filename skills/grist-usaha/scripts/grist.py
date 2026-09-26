@@ -391,7 +391,7 @@ def cmd_buat_tabel(args):
 # Bersihkan & impor CSV
 # ---------------------------------------------------------------------------
 
-ANGKA_RP = re.compile(r"^\s*(Rp\s*)?-?[\d.,]+\s*$", re.IGNORECASE)
+ANGKA_RP = re.compile(r"^\s*(Rp\.?\s*)?-?[\d.,]+\s*$", re.IGNORECASE)
 
 
 def _bersihkan_angka(teks):
