@@ -50,7 +50,7 @@ BATAS_NOMINAL_KECIL = Decimal(10000)
 BATAS_BUNGA_TANPA_SATUAN = Decimal(3)   # angka < 3 tanpa satuan: kemungkinan besar per BULAN
 
 
-def cek_nominal_kecil(nilai, asli, nama):
+def cek_nominal_kecil(nilai, asli, nama, tambahan=""):
     """Nominal gaji/saldo/pokok < Rp10.000 hampir pasti salah ketik (mis. '1.500' maksudnya 1,5 juta)."""
     if nilai is None or nilai <= 0 or nilai >= BATAS_NOMINAL_KECIL:
         return nilai
@@ -59,8 +59,14 @@ def cek_nominal_kecil(nilai, asli, nama):
         saran.insert(0, rp(nilai * 1000000))
     PERINGATAN_INPUT.append(
         "{} '{}' dibaca {} - sangat kecil untuk kolom ini. Jika maksudnya {}, tulis lengkap dengan satuan "
-        "(mis. 1,5jt, 750rb, 1.500.000) lalu hitung ulang.".format(nama, asli, rp(nilai), " atau ".join(saran)))
+        "(mis. 1,5jt, 750rb, 1.500.000) lalu hitung ulang.{}".format(nama, asli, rp(nilai), " atau ".join(saran),
+                                                                    tambahan))
     return nilai
+
+
+def _bersatuan_ribu(teks):
+    """True bila jumlah ditulis dengan satuan kata (5rb, 5 ribu, 5k, 1jt): nominal kecil memang disengaja."""
+    return bool(re.search(r"(rb|ribu|k|jt|juta|miliar|milyar)\s*$", str(teks).strip().lower().replace(",-", "")))
 
 
 # ---------------------------------------------------------------------------
@@ -199,17 +205,27 @@ def parse_bunga(teks, nama="bunga", periode_bawaan="th"):
         raise InputSalah("{} belum diisi.".format(nama))
     asli = str(teks)
     s = asli.strip().lower().replace(" ", "")
+    # jenis bunga yang ikut ditulis ('0,9%/bln flat', '1,5%/bln efektif'): dicatat, lalu dibuang dari angka
+    tanda = None
+    for kata in ("efektif", "flat"):
+        if kata in s:
+            if tanda:
+                raise InputSalah("{} '{}' menyebut flat DAN efektif. Pilih salah satu.".format(nama, asli))
+            tanda = kata
+            s = s.replace(kata, "")
+    s = s.replace("persen", "%")          # '1,5 persen per bulan' -> '1,5%perbulan'
     periode = periode_bawaan
+    satuan_ditulis = False
     pola_periode = [
-        ("hari", ("/hari", "perhari", "/hr", "harian")),
-        ("bln", ("/bulan", "perbulan", "/bln", "bulanan", "/bl")),
-        ("th", ("/tahun", "pertahun", "/thn", "/th", "p.a.", "p.a", "pa", "tahunan", "/tahunan")),
+        ("hari", ("/hari", "perhari", "sehari", "/hr", "harian")),
+        ("bln", ("/bulan", "perbulan", "sebulan", "/bln", "bulanan", "/bl")),
+        ("th", ("/tahun", "pertahun", "setahun", "/thn", "/th", "p.a.", "p.a", "pa", "tahunan", "/tahunan")),
     ]
     for kode, akhiran in pola_periode:
         for a in akhiran:
             if s.endswith(a):
                 s = s[: -len(a)]
-                periode = kode
+                periode, satuan_ditulis = kode, True
                 break
         else:
             continue
@@ -219,15 +235,12 @@ def parse_bunga(teks, nama="bunga", periode_bawaan="th"):
         raise InputSalah("{} tidak boleh negatif: '{}'.".format(nama, asli))
     if not re.fullmatch(r"\d+([.,]\d+)?", s or ""):
         raise InputSalah(
-            "{} '{}' tidak terbaca. Contoh: 24%/th, 1,75%/bln, 0,1%/hari.".format(nama, asli))
+            "{} '{}' tidak terbaca. Contoh: 24%/th, 1,75%/bln, 18% setahun, 1,5 persen per bulan, "
+            "0,1%/hari.".format(nama, asli))
     pct = Decimal(s.replace(",", "."))
-    return buat_bunga(pct, periode, nama, asli, eksplisit=(periode != periode_bawaan or
-                                                          _ada_satuan_periode(asli)))
-
-
-def _ada_satuan_periode(teks):
-    s = str(teks).strip().lower().replace(" ", "")
-    return bool(re.search(r"(/|per|p\.?a\.?$|pa$|harian|bulanan|tahunan)", s))
+    b = buat_bunga(pct, periode, nama, asli, eksplisit=satuan_ditulis)
+    b.tanda = tanda
+    return b
 
 
 def buat_bunga(pct, periode, nama="bunga", asli=None, eksplisit=True):
@@ -242,6 +255,7 @@ def buat_bunga(pct, periode, nama="bunga", asli=None, eksplisit=True):
         raise InputSalah("{} '{}' = {} per bulan, tidak wajar. Periksa lagi angkanya.".format(
             nama, asli if asli is not None else _fmt_pct(pct), persen(b.per_bulan_persen(), 2)))
     b.kode, b.eksplisit, b.asli = periode, eksplisit, asli
+    b.tanda = None
     return b
 
 
@@ -259,7 +273,9 @@ def terapkan_per(b, per, nama):
             raise InputSalah("{} '{}' sudah bersatuan {}, tetapi --per {}. Pilih salah satu.".format(
                 nama, b.asli, b.periode, per))
         return b
-    return buat_bunga(b.pct, kode, nama, b.asli, eksplisit=True)
+    baru = buat_bunga(b.pct, kode, nama, b.asli, eksplisit=True)
+    baru.tanda = getattr(b, "tanda", None)
+    return baru
 
 
 def pesan_bunga_ambigu(b, nama):
@@ -272,7 +288,12 @@ def pesan_bunga_ambigu(b, nama):
 def parse_persen_tahunan(teks, nama):
     if teks is None:
         return None
-    s = str(teks).strip().replace(" ", "").rstrip("%").replace(",", ".")
+    s = str(teks).strip().lower().replace(" ", "")
+    for a in ("pertahun", "setahun", "/tahun", "/thn", "/th", "p.a.", "p.a"):
+        if s.endswith(a):
+            s = s[: -len(a)]
+            break
+    s = s.replace("persen", "%").rstrip("%").replace(",", ".")
     if s.startswith("-"):
         raise InputSalah("{} tidak boleh negatif: '{}'. Isi 0 jika tidak ada.".format(nama, teks))
     if not re.fullmatch(r"\d+(\.\d+)?", s):
@@ -348,7 +369,16 @@ def parse_pos(teks):
     nama = nama.strip()
     if not nama:
         raise InputSalah("Pos '{}' belum punya nama.".format(teks))
+    if ":" in jumlah:
+        label = jumlah.split(":", 1)[1].strip()
+        raise InputSalah("Pos '{}': label kelompok '{}' tidak dikenal. Label harus wajib, sosial, keinginan, "
+                         "atau tabungan (mis. \"{}={}:keinginan\"), atau hapus labelnya.".format(
+                             teks, label, nama, jumlah.split(":", 1)[0].strip()))
     nilai = parse_rupiah(jumlah, "Pos '{}'".format(nama))
+    if not _bersatuan_ribu(jumlah):
+        cek_nominal_kecil(nilai, jumlah.strip(), "Pos '{}'".format(nama),
+                          " Jika memang {}, abaikan peringatan ini (atau tulis {}rb).".format(
+                              rp(nilai), format(nilai / 1000, "f").rstrip("0").rstrip(".").replace(".", ",")))
     return nama, nilai, (kelompok or tebak_kelompok(nama)), kelompok is None
 
 
@@ -566,6 +596,9 @@ def parse_utang(teks, per=None):
                               "Saldo utang '{}'".format(nama))
     nb = "Bunga utang '{}'".format(nama)
     bunga = terapkan_per(parse_bunga(bagian[2], nb), per, nb)
+    if bunga.tanda == "flat":
+        raise InputSalah("{} '{}' adalah bunga FLAT. Ubah dulu ke bunga efektif dengan subperintah konversi-flat, "
+                         "lalu isi hasilnya (mis. '1,6275%/bln efektif').".format(nb, bagian[2]))
     if not bunga.eksplisit and 0 < bunga.pct < BATAS_BUNGA_TANPA_SATUAN:
         # angka kecil tanpa satuan: salah tafsir = hasil meleset belasan kali lipat -> tanya, jangan menebak
         raise InputSalah(pesan_bunga_ambigu(bunga, nb))
@@ -653,9 +686,10 @@ def peringatan_utang(daftar, anggaran):
             p.append("'{}': bunga '{}' tanpa satuan DIANGGAP {}/tahun. Jika maksudnya per bulan, tulis '{}/bln' "
                      "(hasil akan sangat berbeda).".format(u.nama, u.bunga.asli, _fmt_pct(u.bunga.pct),
                                                            _fmt_pct(u.bunga.pct)))
-        if u.jenis in ("kta", "motor", "mobil"):
+        if u.jenis in ("kta", "motor", "mobil") and getattr(u.bunga, "tanda", None) != "efektif":
             p.append("'{}': bila bunganya FLAT, ubah dulu ke bunga efektif dengan subperintah konversi-flat; "
-                     "simulasi ini menghitung bunga dari SISA saldo (efektif).".format(u.nama))
+                     "simulasi ini menghitung bunga dari SISA saldo (efektif). Bila sudah efektif, tandai dengan "
+                     "kata 'efektif' (mis. '1,6275%/bln efektif') agar catatan ini tidak muncul.".format(u.nama))
     total_b1 = sum((u.bunga.bunga_dari(u.saldo) for u in daftar), NOL)
     if anggaran <= total_b1:
         p.append("Anggaran pelunasan {} <= total bunga bulan pertama {}. Dengan anggaran ini utang tidak "
@@ -782,6 +816,9 @@ def parse_bunga_flat(teks, per):
     """Bunga flat -> (Bunga, ambigu). Terima '10,8', '10,8%/thn', '0,9%/bln', '0,9% per bulan'."""
     nama = "Bunga flat"
     b = terapkan_per(parse_bunga(teks, nama), per, nama)
+    if b.tanda == "efektif":
+        raise InputSalah("{} '{}' ditandai EFEKTIF. Subperintah ini mengubah bunga FLAT ke efektif; bunga efektif "
+                         "bisa langsung dipakai di subperintah utang.".format(nama, teks))
     ambigu = (not b.eksplisit) and 0 < b.pct < BATAS_BUNGA_TANPA_SATUAN
     return b, ambigu
 
@@ -959,19 +996,37 @@ def cetak_target(args):
         out.append("Pensiun: kebutuhan = pengeluaran bulanan x 12 x {} tahun (nilai hari ini), lalu dinaikkan "
                    "inflasi. Asumsi sederhana: selama pensiun imbal hasil sama dengan inflasi. Kurangi dengan "
                    "perkiraan JHT/JP BPJS atau pensiun kantor bila ada (isi di --terkumpul).".format(lama))
+    cukup_sekarang = terkumpul >= bulat(biaya)
+    if cukup_sekarang:
+        out += ["", "**Dana terkumpul {} sudah cukup untuk harga sekarang {}** (bila dibeli/dibayar sekarang).".format(
+            rp(terkumpul), rp(biaya))]
+        if pmt > 0:
+            out.append("Bila menunggu {} bulan, biaya diperkirakan naik menjadi {} karena inflasi, sedangkan dana "
+                       "menjadi {}: perlu tambahan tabungan {} per bulan.".format(bulan, rp(nanti), rp(tumbuh),
+                                                                                   rp(pmt)))
+        else:
+            out.append("Bila menunggu {} bulan pun dana diperkirakan tetap cukup ({} vs biaya {}).".format(
+                bulan, rp(tumbuh), rp(nanti)))
     if args.kemampuan is not None:
         mampu = parse_rupiah(args.kemampuan, "Kemampuan menabung per bulan")
-        if mampu < pmt:
+        if cukup_sekarang:
+            if pmt > 0 and mampu < pmt:
+                out.append("Bila menunggu, kemampuan {} per bulan kurang {} dari tambahan yang dibutuhkan.".format(
+                    rp(mampu), rp(pmt - mampu)))
+            elif pmt > 0:
+                out.append("Bila menunggu, kemampuan {} per bulan cukup (sisa {}).".format(rp(mampu),
+                                                                                     rp(mampu - pmt)))
+        elif mampu < pmt:
             out += ["", "**Kurang {} per bulan** dari kemampuan {}. Pilihan: perpanjang waktu, turunkan target, "
                     "atau tambah pemasukan.".format(rp(pmt - mampu), rp(mampu))]
         else:
             out += ["", "Kemampuan {} per bulan cukup (sisa {}).".format(rp(mampu), rp(mampu - pmt))]
-        m, nanti_m = bulan_sampai_target(biaya, inflasi, imbal, terkumpul, mampu)
-        if m is None:
+        m, nanti_m = (0, None) if cukup_sekarang else bulan_sampai_target(biaya, inflasi, imbal, terkumpul, mampu)
+        if m == 0:
+            pass    # sudah dijelaskan di atas (cukup untuk harga sekarang)
+        elif m is None:
             out.append("Dengan menabung {}/bulan, target TIDAK tercapai dalam 60 tahun (kenaikan biaya karena "
                        "inflasi lebih cepat dari tabungan). Naikkan setoran atau turunkan target.".format(rp(mampu)))
-        elif m == 0:
-            out.append("Dana terkumpul sudah cukup untuk biaya hari ini.")
         else:
             out.append("**Dengan menabung {}/bulan, target tercapai di bulan ke-{} (~{} th {} bln)**, saat "
                        "biayanya diperkirakan {} (asumsi inflasi & imbal hasil yang sama).".format(
@@ -1046,8 +1101,25 @@ def buat_parser():
     return ap
 
 
+def gabung_nilai_negatif(argv):
+    """'--saldo -500rb' -> '--saldo=-500rb' agar pesan galat berbahasa Indonesia ('tidak boleh negatif'),
+    bukan pesan argparse berbahasa Inggris."""
+    hasil, i = [], 0
+    while i < len(argv):
+        a = argv[i]
+        if (a.startswith("--") and "=" not in a and i + 1 < len(argv)
+                and re.match(r"^-(\d|rp|idr)", argv[i + 1].strip().lower())):
+            hasil.append(a + "=" + argv[i + 1])
+            i += 2
+            continue
+        hasil.append(a)
+        i += 1
+    return hasil
+
+
 def main(argv=None):
     del PERINGATAN_INPUT[:]
+    argv = gabung_nilai_negatif(list(sys.argv[1:] if argv is None else argv))
     args = buat_parser().parse_args(argv)
     fungsi = {"anggaran": cetak_anggaran, "dana-darurat": cetak_dana_darurat, "utang": cetak_utang,
               "konversi-flat": cetak_konversi_flat, "target": cetak_target}[args.perintah]

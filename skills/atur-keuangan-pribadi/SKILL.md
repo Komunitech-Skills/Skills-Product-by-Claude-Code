@@ -72,8 +72,8 @@ python3 scripts/keuangan.py target --nama "DP rumah" --biaya-sekarang 60jt --tah
 python3 scripts/keuangan.py target --jenis pensiun --pengeluaran-bulanan 6jt --tahun 25 --lama-pensiun 20
 ```
 - Pos anggaran: `nama=jumlah[:wajib|sosial|keinginan|tabungan]` (tanpa label → ditebak dari nama; tebakan ditandai).
-- Utang: `nama;saldo;bunga;cicilan_minimum[;jenis]`, bunga **dengan satuan** `24%/th`, `1,75%/bln`, `0,1%/hari` (atau `--per bulan|tahun` untuk angka tanpa satuan); jenis `kk|kta|paylater|pinjol|kpr|motor|mobil|keluarga|lain`.
-- Nominal gaji/saldo/pokok < Rp10.000 (mis. "1.500") → bagian PERINGATAN INPUT; konfirmasi ke pengguna. `target --kemampuan` juga menghitung bulan ke berapa target tercapai.
+- Utang: `nama;saldo;bunga;cicilan_minimum[;jenis]`, bunga **dengan satuan** `24%/th`, `1,75%/bln`, `0,1%/hari` (kata sehari-hari juga diterima: `18% setahun`, `1,5% sebulan`, `1,5 persen per bulan`; atau `--per bulan|tahun` untuk angka tanpa satuan). Bunga bertanda `flat` ditolak di `utang` (konversi dulu); tandai `efektif` (mis. `1,6275%/bln efektif`) agar catatan FLAT untuk KTA/motor/mobil tidak muncul; jenis `kk|kta|paylater|pinjol|kpr|motor|mobil|keluarga|lain`.
+- Nominal gaji/saldo/pokok/pos anggaran < Rp10.000 (mis. "1.500"; pos yang ditulis dengan satuan seperti `5rb` tidak diperingatkan) → bagian PERINGATAN INPUT; konfirmasi ke pengguna. `target --kemampuan` juga menghitung bulan ke berapa target tercapai.
 - Input salah → pesan ramah tanpa traceback (kode keluar 2). Uji: `python3 tests/uji_regresi.py`.
 
 ## Format output

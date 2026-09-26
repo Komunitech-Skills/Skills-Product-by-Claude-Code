@@ -589,5 +589,97 @@ class TesT6TakeOver(unittest.TestCase):
         self.assertIn("Take over", ref)
 
 
+
+class TesV102PerbaikanKecil(unittest.TestCase):
+    """v1.0.2: N-1, N-2, N-3, T-4, T-7 (pesan), angka tidak berubah."""
+
+    def efektif(self, stdout):
+        import re
+        return [x.replace(",", ".") for x in re.findall(r"= ([0-9]+,[0-9]{2})%/tahun\*\*", stdout)]
+
+    def test_n1_satuan_sehari_hari(self):
+        for bunga, ef in (("18% setahun", "31.46"), ("18 persen per tahun", "31.46"), ("1,5% sebulan", "31.46"),
+                          ("1,5 persen per bulan", "31.46"), ("1,5 persen perbulan", "31.46"),
+                          ("0,9%/bln flat", "19.53"), ("0,9% sebulan flat", "19.53")):
+            r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", bunga, "--tenor", "24")
+            with self.subTest(bunga=bunga):
+                self.assertEqual(r.returncode, 0, r.stderr)
+                self.assertEqual(self.efektif(r.stdout), [ef])
+                self.assertNotIn("PERINGATAN", r.stdout)
+        # 'persen' TANPA satuan waktu tetap dianggap ambigu (dua tafsiran), tidak ditafsir diam-diam
+        r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", "0,9 persen", "--tenor", "24")
+        self.assertEqual(self.efektif(r.stdout), ["19.53", "1.72"])
+        self.assertIn("PERINGATAN", r.stdout)
+        # utang: kata sehari-hari = satuan eksplisit; angka sama dengan %/bln
+        a = jalankan("utang", "--utang", "KK;12jt;1,75% sebulan;600rb;kk", "--ekstra", "300rb")
+        b = jalankan("utang", "--utang", "KK;12jt;1,75%/bln;600rb;kk", "--ekstra", "300rb")
+        self.assertEqual(a.returncode, 0, a.stderr)
+        self.assertEqual(a.stdout, b.stdout)
+        self.assertEqual(k.parse_bunga("24 persen setahun").per_bulan_persen(), Decimal(2))
+        self.assertEqual(k.parse_bunga("0,1 persen sehari").per_bulan_persen(), Decimal(3))
+        # inflasi 'per tahun' / 'persen'
+        a = jalankan("target", "--biaya-sekarang", "60jt", "--tahun", "5", "--inflasi", "4% per tahun")
+        b = jalankan("target", "--biaya-sekarang", "60jt", "--tahun", "5", "--inflasi", "4")
+        self.assertEqual(a.returncode, 0, a.stderr)
+        self.assertEqual(a.stdout, b.stdout)
+
+    def test_n1_flat_efektif(self):
+        r = jalankan("utang", "--utang", "KTA;30jt;0,9%/bln flat;1,52jt;kta")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("konversi-flat", r.stderr)
+        r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", "1,6%/bln efektif", "--tenor", "24")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("EFEKTIF", r.stderr)
+        r = jalankan("konversi-flat", "--pokok", "30jt", "--bunga-flat", "0,9%/bln flat efektif", "--tenor", "24")
+        self.assertEqual(r.returncode, 2)
+
+    def test_t4_catatan_flat_hilang_bila_efektif(self):
+        r = jalankan("utang", "--utang", "KTA;30jt;1,6275%/bln efektif;1,52jt;kta")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertNotIn("bila bunganya FLAT", r.stdout)
+        r2 = jalankan("utang", "--utang", "KTA;30jt;1,6275%/bln;1,52jt;kta")
+        self.assertIn("bila bunganya FLAT", r2.stdout)
+        # angka simulasi identik
+        import re
+        self.assertEqual(re.findall(r"Total bunga Rp[0-9.]+", r.stdout), re.findall(r"Total bunga Rp[0-9.]+", r2.stdout))
+
+    def test_n2_pos_kecil(self):
+        r = jalankan("anggaran", "--pemasukan", "Gaji=7jt", "--pos", "Makan=1.500")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("PERINGATAN INPUT", r.stdout)
+        self.assertIn("Pos 'Makan'", r.stdout)
+        self.assertIn("Rp1.500.000", r.stdout)
+        for pos in ("Sampah=5rb", "Makan=1,5jt", "Parkir=10.000", "Iuran=0"):
+            r = jalankan("anggaran", "--pemasukan", "Gaji=7jt", "--pos", pos)
+            with self.subTest(pos=pos):
+                self.assertNotIn("PERINGATAN INPUT", r.stdout)
+
+    def test_n3_target_cukup_harga_sekarang(self):
+        r = jalankan("target", "--biaya-sekarang", "50jt", "--bulan", "24", "--terkumpul", "51jt", "--kemampuan", "0")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("sudah cukup untuk harga sekarang Rp50.000.000", r.stdout)
+        self.assertIn("Rp54.157.148", r.stdout)     # biaya setelah inflasi (angka lama)
+        self.assertIn("Rp131.548", r.stdout)        # tambahan per bulan (angka lama)
+        self.assertNotIn("**Kurang", r.stdout)
+        self.assertLess(r.stdout.index("sudah cukup untuk harga sekarang"), r.stdout.index("Bila menunggu 24 bulan, biaya diperkirakan naik menjadi Rp54.157.148"))
+        r = jalankan("target", "--biaya-sekarang", "50jt", "--bulan", "24", "--terkumpul", "51jt", "--kemampuan", "200rb")
+        self.assertIn("cukup (sisa Rp68.452)", r.stdout)
+        r = jalankan("target", "--biaya-sekarang", "50jt", "--bulan", "12", "--terkumpul", "60jt")
+        self.assertIn("tetap cukup", r.stdout)
+        # kasus biasa tidak berubah
+        r = jalankan("target", "--nama", "DP rumah", "--biaya-sekarang", "60jt", "--tahun", "5", "--inflasi", "4",
+                     "--imbal", "5", "--terkumpul", "10jt", "--kemampuan", "700rb")
+        self.assertIn("tercapai di bulan ke-78", r.stdout)
+        self.assertNotIn("harga sekarang", r.stdout)
+
+    def test_t7_pesan(self):
+        r = jalankan("anggaran", "--pemasukan", "Gaji=7jt", "--pos", "Nongkrong=1jt:hiburan")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("label kelompok 'hiburan' tidak dikenal", r.stderr)
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "-500rb", "--status", "lajang")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("tidak boleh negatif", r.stderr)
+        self.assertNotIn("expected one argument", r.stderr)
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
