@@ -80,6 +80,6 @@ Saran peningkatan versi mendatang (bukan blocker rilis).
 
 ## Catatan keamanan (Tahap 3)
 Tidak ditemukan perintah destruktif, pengiriman data ke server luar di luar Vikunja tujuan, pembacaan
-kredensial/SSH/browser data, `curl | bash`, kode ter-obfuscate, atau dependensi mencurigakan
+kredensial/SSH/browser data, unduh-lalu-jalankan-shell, kode ter-obfuscate, atau dependensi mencurigakan
 (`import` hanya modul stdlib Python). Tidak ada API key/token tertanam di kode. Instruksi SKILL.md
 tidak mengandung prompt injection tersembunyi.
