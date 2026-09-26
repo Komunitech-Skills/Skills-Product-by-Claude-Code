@@ -776,5 +776,73 @@ class UjiV104NaskahResmi(Dasar):
         self.assertIn("Pasal 65 ayat (4)", t)
 
 
+
+class UjiV105Terintegrasi(Dasar):
+    """v1.0.5: pekerjaan terintegrasi + --pagu -> jaminan dihitung dari pagu (Pasal 31 ayat (3), Pasal 33 ayat (4))."""
+    GEDUNG = "Uraian;Volume;Satuan;Harga Satuan\nPaket;1;ls;10.500.000.000\n"
+
+    def h(self, **kw):
+        return C.hitung(self.tulis(self.GEDUNG), hps=11_000_000_000, **kw)
+
+    def test_penawaran_dari_pagu(self):
+        h = self.h(jenis="terintegrasi", pagu=14_000_000_000)
+        t = " | ".join(h["info"])
+        # 1% x 14 M = 140.000.000 ; 3% = 420.000.000
+        self.assertIn("WAJIB JAMINAN PENAWARAN 1%-3% dari pagu anggaran Rp14.000.000.000", t)
+        self.assertIn("Rp140.000.000 s.d. Rp420.000.000", t)
+        self.assertNotIn("Rp110.000.000 s.d. Rp330.000.000", t)
+        self.assertEqual(h["dasar_jaminan_penawaran"], "pagu")
+
+    def test_tanpa_pagu_tetap_gambaran_hps(self):
+        h = self.h(jenis="terintegrasi")
+        t = " | ".join(h["info"])
+        self.assertIn("Rp110.000.000 s.d. Rp330.000.000", t)
+        self.assertIn("isi --pagu", t)
+        self.assertNotIn("di atas dihitung dari HPS", t)
+        self.assertEqual(h["dasar_jaminan_penawaran"], "hps")
+
+    def test_pelaksanaan_di_bawah_80_pagu(self):
+        # 10,5 M < 80% x 14 M = 11,2 M -> 5% x pagu 14 M = 700.000.000
+        h = self.h(jenis="terintegrasi", pagu=14_000_000_000)
+        pr = " | ".join(h["peringatan"])
+        self.assertIn("di bawah 80% pagu anggaran (< Rp11.200.000.000)", pr)
+        self.assertIn("5% dari nilai total pagu = Rp700.000.000", pr)
+        self.assertIn("Pasal 33 ayat (4)", pr)
+        self.assertNotIn("Rp525.000.000", pr + " | ".join(h["info"]))
+
+    def test_pelaksanaan_80_100_pagu(self):
+        # 10,5 M >= 80% x 12 M = 9,6 M -> 5% x kontrak 10,5 M = 525.000.000
+        h = self.h(jenis="terintegrasi", pagu=12_000_000_000)
+        t = " | ".join(h["info"])
+        self.assertIn("5% dari nilai kontrak = Rp525.000.000", t)
+        self.assertIn("80%-100% pagu", t)
+        self.assertEqual(sum("jaminan pelaksanaan" in x for x in h["info"]), 1)
+
+    def test_klarifikasi_tetap_terhadap_hps(self):
+        # 10,5 M < 80% HPS 14 M: klarifikasi kewajaran tetap vs HPS; jaminan pelaksanaan dari pagu 15 M
+        h = C.hitung(self.tulis(self.GEDUNG), hps=14_000_000_000, pagu=15_000_000_000, jenis="terintegrasi")
+        pr = " | ".join(h["peringatan"])
+        self.assertIn("KLARIFIKASI KEWAJARAN HARGA", pr)
+        self.assertNotIn("5% dari nilai HPS", pr)
+        self.assertIn("Rp750.000.000", pr)
+
+    def test_angka_inti_dan_jenis_lain_tidak_berubah(self):
+        for j in [None] + C.JENIS:
+            h = self.h(jenis=j, pagu=14_000_000_000)
+            self.assertEqual((h["total"], h["persen_hps"], h["batas_80_hps"]),
+                             (10_500_000_000, Decimal("95.45"), 8_800_000_000))
+        t = " | ".join(self.h(jenis="konstruksi", pagu=14_000_000_000)["info"])
+        self.assertIn("Rp110.000.000 s.d. Rp330.000.000", t)
+        self.assertIn("Rp525.000.000", t)
+
+    def test_slug_jasa_lainnya_dan_pagu_nol(self):
+        t = " | ".join(self.h(jenis="jasa-lainnya")["info"])
+        self.assertIn("pengadaan jasa lainnya", t)
+        self.assertNotIn("pengadaan jasa-lainnya", t)
+        p = self.tulis(self.GEDUNG)
+        self.assertEqual(self.cli("harga", p, "--pagu", "0")[0], 2)
+        kode, out, _ = self.cli("harga", p, "--hps", "11 M", "--pagu", "14 M", "--jenis", "terintegrasi")
+        self.assertIn("Rp140.000.000 s.d. Rp420.000.000", out)
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

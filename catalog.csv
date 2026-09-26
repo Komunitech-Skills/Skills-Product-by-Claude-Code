@@ -65,6 +65,6 @@ kontrak-kerja-pkwt,HR,orisinal,,,9,ecer,99000,ecer,99000,1.0.4,claude-code (simu
 kebijakan-privasi-pdp,Legal & Dokumen,orisinal,,,8,ecer,99000,ecer,99000,1.0.4,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
 kalender-pajak,Keuangan & Akuntansi,orisinal,,,8,ecer,49000,ecer,49000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 sop-onboarding,HR,orisinal,,,8,ecer,49000,ecer,49000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
-tender-checklist,Sales,orisinal,,,9,ecer,149000,ecer,149000,1.0.4,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+tender-checklist,Sales,orisinal,,,9,ecer,149000,ecer,149000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 analisis-excel,Data & Analisis,orisinal,,,9,ecer,99000,ecer,99000,1.0.11,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-25
 atur-keuangan-pribadi,Kehidupan Pribadi,kurasi,https://github.com/openaccountant/skills,MIT,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26

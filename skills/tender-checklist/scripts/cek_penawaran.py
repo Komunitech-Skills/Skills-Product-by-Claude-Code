@@ -51,6 +51,7 @@ JENIS = ["konstruksi", "barang", "jasa-lainnya", "konsultansi", "terintegrasi"]
 JENIS_JAMINAN_PENAWARAN = {"konstruksi", "terintegrasi"}           # Pasal 30 ayat (2) jo. 46/2025
 JENIS_JAMINAN_PELAKSANAAN = {"barang", "konstruksi", "jasa-lainnya", "terintegrasi"}   # Pasal 33 ayat (1)
 JENIS_PAKET_UMK = {"barang", "konstruksi", "jasa-lainnya"}          # Pasal 65 ayat (3)
+NAMA_JENIS = {"jasa-lainnya": "jasa lainnya"}   # teks untuk manusia (tanpa tanda hubung)
 BATAS_PAKET_UMK = 15_000_000_000          # pagu s.d. Rp15 miliar -> dicadangkan UMK & koperasi
 BATAS_JAMINAN_PELAKSANAAN = 200_000_000   # kontrak > Rp200 juta -> jaminan pelaksanaan (Pasal 33)
 KODE_BERSIH, KODE_PERINGATAN, KODE_GALAT, KODE_BELUM_FINAL = 0, 1, 2, 3   # lihat docstring
@@ -421,9 +422,30 @@ def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I, se
                  f"{rupiah(total)} (selisih {rupiah(total - nilai)}; {kedua}). Cek rumus di Excel/dokumen.")
 
 
+def pesan_pelaksanaan_terintegrasi(total, pagu):
+    """Pekerjaan terintegrasi + pagu diisi: jaminan pelaksanaan mengacu pagu anggaran
+    (Perpres 16/2018 jo. 12/2021 jo. 46/2025 Pasal 33 ayat (4)). Mengembalikan (peringatan?, teks) atau None."""
+    if total <= BATAS_JAMINAN_PELAKSANAAN:
+        return None
+    batas80_pagu = int((Decimal(pagu) * BATAS_KEWAJARAN / 100).to_integral_value(ROUND_FLOOR))
+    if Decimal(total) < Decimal(pagu) * BATAS_KEWAJARAN / 100:
+        return (True, f"Pekerjaan terintegrasi: penawaran di bawah 80% pagu anggaran (< {rupiah(batas80_pagu)}). "
+                      f"Bila menang, jaminan pelaksanaan 5% dari nilai total pagu = {rupiah(bulat(Decimal(pagu) * 5 / 100))} "
+                      "(bukan 5% nilai kontrak; Perpres 16/2018 jo. 46/2025 Pasal 33 ayat (4)). Cek dokumen pemilihan.")
+    return (False, f"Pekerjaan terintegrasi, kontrak > Rp200 juta: bila menang, siapkan jaminan pelaksanaan 5% dari "
+                   f"nilai kontrak = {rupiah(bulat(Decimal(total) * 5 / 100))} (penawaran 80%-100% pagu anggaran; "
+                   "Perpres 16/2018 jo. 46/2025 Pasal 33 ayat (4)). Perhitungkan di arus kas.")
+
+
 def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None, jenis=None):
     if jenis is not None and jenis not in JENIS:
         raise InputSalah(f"jenis pengadaan '{jenis}' tidak dikenal; pilih: {', '.join(JENIS)}")
+    nama_jenis = NAMA_JENIS.get(jenis, jenis)
+    pagu = int(pagu) if pagu is not None else None
+    if pagu is not None and pagu <= 0:
+        raise InputSalah("nilai pagu harus lebih dari 0 (contoh: --pagu \"Rp14 M\" atau --pagu 14000000000)")
+    # pekerjaan terintegrasi + pagu diisi: jaminan dihitung dari pagu (Pasal 31 ayat (3), Pasal 33 ayat (4))
+    pakai_pagu = jenis == "terintegrasi" and pagu is not None
     baris_data, peta, lebar, pemisah, catatan, offset = baca_rincian(path)
     item, dilewati, masalah, total_tertempel, selisih_baris, info_baris = [], [], [], [], [], []
     mirip_total = []   # (no_file, label, nilai): baris berlabel mirip total yang tidak dikenali -> dilaporkan
@@ -569,17 +591,19 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None, jenis=Non
                 if jenis == "konsultansi":
                     teks += ("Jasa konsultansi: jaminan pelaksanaan tidak diatur Pasal 33 (hanya barang/konstruksi/"
                              "jasa lainnya); ikuti dokumen pemilihan.")
+                elif pakai_pagu:
+                    teks += "Jaminan pelaksanaan pekerjaan terintegrasi dihitung dari pagu anggaran (lihat di bawah)."
                 elif total > BATAS_JAMINAN_PELAKSANAAN:
                     teks += (f"Jika dinyatakan wajar dan menang, jaminan pelaksanaan menjadi 5% dari nilai HPS = "
                              f"{rupiah(bulat(Decimal(hps) * 5 / 100))} (bukan 5% nilai kontrak; Perpres 16/2018 jo. "
                              "46/2025 Pasal 33 ayat (3) huruf b"
-                             + ("; pekerjaan terintegrasi: acuan pagu anggaran, bukan HPS" if jenis == "terintegrasi"
-                                else "") + "; cek dokumen pemilihan).")
+                             + ("; pekerjaan terintegrasi: seharusnya dari pagu anggaran, isi --pagu untuk angka pasti"
+                                if jenis == "terintegrasi" else "") + "; cek dokumen pemilihan).")
                 else:
                     teks += ("Nilai kontrak s.d. Rp200 juta: jaminan pelaksanaan umumnya tidak diberlakukan "
                              "(berlaku untuk kontrak > Rp200 juta; cek dokumen pemilihan).")
                 P.append(teks)
-            elif total > BATAS_JAMINAN_PELAKSANAAN:
+            elif total > BATAS_JAMINAN_PELAKSANAAN and not pakai_pagu:
                 if jenis == "konsultansi":
                     I.append("Jasa konsultansi: jaminan pelaksanaan tidak diatur Pasal 33 Perpres 16/2018 jo. 46/2025 "
                              "(hanya barang/konstruksi/jasa lainnya); ikuti dokumen pemilihan.")
@@ -591,15 +615,22 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None, jenis=Non
                              + ("" if jenis else "; asumsi jenis barang/konstruksi/jasa lainnya, bukan konsultansi")
                              + "). Perhitungkan di arus kas.")
             if hps > BATAS_JAMINAN_PENAWARAN:
-                satu, tiga = bulat(Decimal(hps) / 100), bulat(Decimal(hps) * 3 / 100)
+                dasar = pagu if pakai_pagu else hps
+                satu, tiga = bulat(Decimal(dasar) / 100), bulat(Decimal(dasar) * 3 / 100)
                 if jenis in JENIS_JAMINAN_PENAWARAN:
-                    acuan = ("dari pagu anggaran (pekerjaan terintegrasi; di atas dihitung dari HPS sebagai gambaran)"
-                             if jenis == "terintegrasi" else "dari HPS")
-                    I.append(f"HPS > Rp10 miliar, pengadaan {jenis}: WAJIB JAMINAN PENAWARAN 1%-3% {acuan} = "
+                    if pakai_pagu:
+                        acuan = f"dari pagu anggaran {rupiah(pagu)} (pekerjaan terintegrasi, Pasal 31 ayat (3))"
+                    elif jenis == "terintegrasi":
+                        acuan = ("dari HPS sebagai gambaran (pekerjaan terintegrasi seharusnya dari pagu anggaran; "
+                                 "isi --pagu untuk angka pasti)")
+                    else:
+                        acuan = "dari HPS"
+                    hasil["dasar_jaminan_penawaran"] = "pagu" if pakai_pagu else "hps"
+                    I.append(f"HPS > Rp10 miliar, pengadaan {nama_jenis}: WAJIB JAMINAN PENAWARAN 1%-3% {acuan} = "
                              f"{rupiah(satu)} s.d. {rupiah(tiga)} (Perpres 16/2018 jo. 46/2025 Pasal 30 ayat (2) & "
                              "Pasal 31). Cek nilai pasti & masa berlakunya di dokumen pemilihan.")
                 elif jenis:
-                    I.append(f"HPS > Rp10 miliar, pengadaan {jenis}: sejak Perpres 46/2025, JAMINAN PENAWARAN hanya "
+                    I.append(f"HPS > Rp10 miliar, pengadaan {nama_jenis}: sejak Perpres 46/2025, JAMINAN PENAWARAN hanya "
                              "untuk pekerjaan konstruksi & pekerjaan terintegrasi (Pasal 30 ayat (2)) -> umumnya "
                              "TIDAK diperlukan untuk jenis ini. Tetap ikuti dokumen pemilihan bila memintanya.")
                 else:
@@ -609,10 +640,13 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None, jenis=Non
                              "TERINTEGRASI (terintegrasi: acuan pagu); untuk barang/jasa lainnya/konsultansi tidak "
                              "diperlukan sejak Perpres 46/2025 (Pasal 30 ayat (2) & Pasal 31). Cek dokumen pemilihan.")
     if pagu is not None:
-        pagu = int(pagu)
         hasil["pagu"] = pagu
         if total > pagu:
             P.append(f"Total penawaran melebihi pagu anggaran ({rupiah(pagu)}).")
+        if pakai_pagu:
+            r = pesan_pelaksanaan_terintegrasi(total, pagu)
+            if r:
+                (P if r[0] else I).append(r[1])
         if pagu <= BATAS_PAKET_UMK and jenis in (None, *JENIS_PAKET_UMK):
             I.append("Pagu s.d. Rp15 miliar: paket barang/konstruksi/jasa lainnya pada dasarnya dicadangkan untuk "
                      "usaha mikro, usaha kecil, dan koperasi (Perpres 16/2018 jo. 46/2025 Pasal 65 ayat (3)), "
