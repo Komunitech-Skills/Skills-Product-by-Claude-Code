@@ -252,6 +252,139 @@ class UjiKolomTertukarDanOverride(unittest.TestCase):
         self.assertEqual(data["jumlah_sku_unik"], 4)
 
 
+class UjiHeaderMarketplaceAsli(unittest.TestCase):
+    """v1.0.1: header rekaan (data fiktif) meniru pola nama kolom tiap marketplace, supaya
+    auto-deteksi kolom (SINONIM_PESANAN / deteksi_kolom) diuji dengan header realistis, bukan cuma
+    header rapi buatan sendiri. Lihat examples/HASIL-UJI.md temuan Akun B (deteksi 0/2 pada header
+    TikTok Shop & Tokopedia sebelum v1.0.1) dan references/sumber-kolom-marketplace.md untuk status
+    verifikasi tiap nama kolom (resmi vs best-effort)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_shopee_header_resmi_id(self):
+        isi = ("No. Pesanan,Nomor Referensi SKU,Nama Produk,Nama Variasi,Jumlah,Opsi Pengiriman,"
+              "No. Resi,Catatan dari Pembeli,Status Pesanan\n"
+              "SP001,SKU-SP-1,Sepatu Lari,42,2,JNE,JX700001,,Perlu Dikirim\n"
+              "SP002,SKU-SP-2,Sepatu Lari,43,1,J&T,JX700002,Tolong dibungkus,Perlu Dikirim\n")
+        f = tulis(self.dir, "shopee.csv", isi)
+        kode, data, _, err = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(data["jumlah_pesanan_aktif"], 2)
+        self.assertEqual(data["jumlah_sku_unik"], 2)
+        self.assertEqual(data["total_barang"], 3.0)
+        self.assertEqual(data["pemetaan_kolom"]["Kurir"], "Opsi Pengiriman")
+
+    def test_shopee_header_underscore_kapital_dan_diakritik(self):
+        # Underscore, HURUF BESAR semua, dan huruf beraksen (é) - harus tetap terdeteksi.
+        isi = ("NO_PESANAN;SKU;NAMA_PRODUK;JUMLAH;KURÍR\n"
+              "U1;SKU-U1;Barang Unik;4;JNE\n"
+              "U2;SKU-U2;Barang Unik 2;1;J&T\n")
+        f = tulis(self.dir, "underscore.csv", isi)
+        kode, data, _, err = jalankan(f, "--pemisah", ";", "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(data["pemetaan_kolom"]["No. pesanan"], "NO_PESANAN")
+        self.assertEqual(data["pemetaan_kolom"]["SKU"], "SKU")
+        self.assertEqual(data["pemetaan_kolom"]["Kurir"], "KURÍR")
+        self.assertEqual(data["total_barang"], 5.0)
+
+    def test_tiktok_shop_header_realistis(self):
+        # Header persis seperti temuan Akun B (examples/02-tiktok-tokopedia-gabung.md):
+        # "kurir"(5)/"sku"(3) tidak pernah cocok sebagian di v1.0.0 karena aturan lama >= 8 huruf.
+        isi = ("Order/adjustment ID;SKU Reference No.;Nama Produk;Nama Variasi;Quantity;"
+              "Shipping Provider Name;Tracking ID;Order Substatus;Buyer Message\n"
+              "TT-88001;SKU-A;Produk A;Merah;2;JNE;JX88001;Perlu Dikirim;\n"
+              "TT-88004;SKU-A;Produk A;Merah;1;JNE;JX88001;Perlu Dikirim;\n"
+              "TT-88004;SKU-B;Produk B;;1;JNE;JX88001;Perlu Dikirim;Tolong dibungkus rapi\n"
+              "TT-88005;SKU-C;Produk C;Biru;1;SPX Express;JX88002;Perlu Dikirim;\n"
+              "TT-88006;SKU-A;Produk A;Merah;2;J&T;JX88003;Dibatalkan;\n")
+        f = tulis(self.dir, "tiktok.csv", isi)
+        kode, data, _, err = jalankan(f, "--pemisah", ";", "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        # Semua 9 kolom wajib+opsional terdeteksi otomatis TANPA satupun --kolom-... override.
+        self.assertEqual(data["pemetaan_kolom"]["No. pesanan"], "Order/adjustment ID")
+        self.assertEqual(data["pemetaan_kolom"]["SKU"], "SKU Reference No.")
+        self.assertEqual(data["pemetaan_kolom"]["Kurir"], "Shipping Provider Name")
+        self.assertEqual(data["pemetaan_kolom"]["No. resi"], "Tracking ID")
+        self.assertEqual(data["pemetaan_kolom"]["Status pesanan"], "Order Substatus")
+        self.assertEqual(data["pemetaan_kolom"]["Catatan pembeli"], "Buyer Message")
+        self.assertEqual(data["jumlah_pesanan_total"], 4)
+        self.assertEqual(data["jumlah_pesanan_aktif"], 3)  # TT-88006 batal
+        per_sku = {a["sku"]: a["qty"] for a in data["daftar_ambil"]}
+        self.assertEqual(per_sku["SKU-A"], 3.0)  # TT-88001 (2) + TT-88004 (1)
+        self.assertEqual(per_sku["SKU-B"], 1.0)
+        self.assertEqual(per_sku["SKU-C"], 1.0)
+
+    def test_tokopedia_header_realistis(self):
+        # Header persis seperti temuan Akun B: "No. Invoice" & "Nama Kurir" tidak cocok di v1.0.0.
+        isi = ("No. Invoice,Kode SKU,Nama Barang,Varian,Jumlah Produk Dibeli,Nama Kurir,No Resi,"
+              "Status Terakhir,Catatan Pembeli\n"
+              "INV-001,SKU-X,Barang X,Hijau,3,SiCepat,SC001,Perlu Dikirim,\n"
+              "INV-002,SKU-Y,Barang Y,,1,JNE,JX9001,Perlu Dikirim,Cepat ya kak\n"
+              "INV-003,SKU-X,Barang X,Hijau,2,SiCepat,SC002,Retur,\n")
+        f = tulis(self.dir, "tokopedia.csv", isi)
+        kode, data, _, err = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(data["pemetaan_kolom"]["No. pesanan"], "No. Invoice")
+        self.assertEqual(data["pemetaan_kolom"]["Nama produk"], "Nama Barang")
+        self.assertEqual(data["pemetaan_kolom"]["Kurir"], "Nama Kurir")
+        self.assertEqual(data["pemetaan_kolom"]["Status pesanan"], "Status Terakhir")
+        self.assertEqual(data["jumlah_pesanan_total"], 3)
+        self.assertEqual(data["jumlah_pesanan_aktif"], 2)  # INV-003 retur
+        per_sku = {a["sku"]: a["qty"] for a in data["daftar_ambil"]}
+        self.assertEqual(per_sku["SKU-X"], 3.0)
+        self.assertEqual(per_sku["SKU-Y"], 1.0)
+
+    def test_lazada_header_best_effort(self):
+        # Nama kolom Lazada BELUM diverifikasi resmi (lihat references/sumber-kolom-marketplace.md)
+        # - dugaan masuk akal dari dokumentasi integrator pihak ketiga.
+        isi = ("Order Number,Seller SKU,Item Name,Quantity,Order Item Status,Shipping Provider,Tracking Number\n"
+              "LZD-01,SKU-L1,Kemeja Flanel,2,Ready to Ship,Ninja Van,NV0001\n"
+              "LZD-02,SKU-L2,Kemeja Flanel,1,Ready to Ship,J&T Express,JT0002\n")
+        f = tulis(self.dir, "lazada.csv", isi)
+        kode, data, _, err = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(data["pemetaan_kolom"]["No. pesanan"], "Order Number")
+        self.assertEqual(data["pemetaan_kolom"]["SKU"], "Seller SKU")
+        self.assertEqual(data["pemetaan_kolom"]["Nama produk"], "Item Name")
+        self.assertEqual(data["pemetaan_kolom"]["Kurir"], "Shipping Provider")
+        self.assertEqual(data["pemetaan_kolom"]["No. resi"], "Tracking Number")
+        self.assertEqual(data["jumlah_sku_unik"], 2)
+
+    def test_blibli_header_best_effort(self):
+        # Nama kolom Blibli BELUM diverifikasi resmi (fetch halaman bantuan tidak mengonfirmasi
+        # nama kolom persis) - "Logistik" dimasukkan sebagai dugaan best-effort, ditandai jelas.
+        isi = ("No Pesanan,Seller SKU,Nama Produk,Qty,Logistik,No Resi,Status Pesanan\n"
+              "BLI-01,SKU-B1,Blender Mini,2,Anteraja,ANT001,Perlu Dikirim\n")
+        f = tulis(self.dir, "blibli.csv", isi)
+        kode, data, _, err = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(data["pemetaan_kolom"]["Kurir"], "Logistik")
+        self.assertEqual(data["jumlah_pesanan_aktif"], 1)
+
+    def test_pesan_error_menyertakan_kolom_ditemukan_dan_flag_saran(self):
+        # Kolom qty tidak ada sama sekali -> pesan error harus menyebut kolom yang SUDAH
+        # terdeteksi otomatis dan flag --kolom-qty persis sebagai saran perbaikan.
+        isi = "No. Pesanan,SKU,Nama Produk\nX1,ABC,Barang\n"
+        f = tulis(self.dir, "tanpa-qty.csv", isi)
+        kode, data, _, _ = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 1)
+        self.assertIn("--kolom-qty", data["error"])
+        self.assertIn("No. pesanan=No. Pesanan", data["error"])
+
+    def test_pesan_error_header_tidak_dikenali_sebutkan_semua_flag(self):
+        isi = "KolomAneh1,KolomAneh2\nx,y\n"
+        f = tulis(self.dir, "aneh-total.csv", isi)
+        kode, data, _, _ = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 1)
+        self.assertIn("--kolom-no-pesanan", data["error"])
+        self.assertIn("KolomAneh1", data["error"])
+
+
 class UjiBarisRingkasan(unittest.TestCase):
     """Baris total/ringkasan di bagian bawah ekspor tidak boleh 'menempel' ke pesanan sebelumnya."""
 

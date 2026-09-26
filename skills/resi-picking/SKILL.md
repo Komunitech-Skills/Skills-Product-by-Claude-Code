@@ -69,8 +69,11 @@ pengguna cuma punya file pesanan, tetap jalankan tanpa lokasi/stok dan sebutkan 
      filenya untuk dicetak/dibagikan ke admin gudang.
 4. Kalau pengguna minta versi HTML (untuk dibuka di browser lalu diprint) atau CSV (untuk Excel),
    jalankan ulang dengan tambahan `--html` dan/atau `--csv`.
-5. Kalau gagal (`ok: false`), sampaikan `error` apa adanya ke pengguna dalam bahasa sederhana — jangan
-   membuat daftar dari data yang tidak lengkap.
+5. Kalau gagal (`ok: false`), pesan `error` SUDAH menyebutkan kolom yang ada di file (`kolom_ada`) dan
+   kolom yang sempat terdeteksi otomatis (`pemetaan_terdeteksi`, kalau ada) — jangan cuma melaporkan
+   "gagal" ke pengguna, langsung **tawarkan** perintah `--kolom-...` yang sesuai dari pesan error itu
+   (isi nilainya dengan nama kolom PERSIS dari `kolom_ada`) dan tanyakan konfirmasi kolom mana yang
+   dimaksud kalau ada dua yang mirip. Jangan membuat daftar dari data yang tidak lengkap.
 
 ## Format Output
 Dua dokumen Markdown (isinya juga cocok ditempel langsung ke chat/WA):
@@ -126,11 +129,16 @@ uji, termasuk peringatan SKU tak dikenal dan stok menipis).
 - "SKU tidak dikenal" dan "stok kemungkinan kurang" hanya muncul kalau `--stok` diberikan; tanpa itu,
   script tidak tahu SKU mana yang belum terdaftar.
 - **PERLU REVIEW:** nama kolom ekspor Seller Center berubah-ubah antar waktu dan negara. Kata kunci
-  deteksi di `scripts/resi.py` (variabel `SINONIM_PESANAN`) disusun dari panduan/forum seller dan dari
-  skill `buku-stok`, **belum semua dicocokkan satu-satu dengan file ekspor ASLI setiap marketplace**
-  (terutama TikTok Shop berbahasa Indonesia). Karena itu langkah 3 di atas WAJIB menunjukkan pemetaan
-  kolom ke pengguna sebelum daftar dipakai. Kalau pemetaan salah, gunakan `--kolom-...` untuk membetulkan
-  secara manual - tidak perlu menunggu pembaruan skill.
+  deteksi di `scripts/resi.py` (variabel `SINONIM_PESANAN`) disusun dari panduan/forum seller, dari
+  skill `buku-stok`, dan (untuk TikTok Shop) dari halaman bantuan resmi - rincian mana yang
+  **terverifikasi** vs **best-effort** (dugaan, belum dicocokkan ke ekspor asli) ada di
+  `references/sumber-kolom-marketplace.md`, termasuk URL sumber + tanggal cek. Karena itu langkah 3
+  di atas WAJIB menunjukkan pemetaan kolom ke pengguna sebelum daftar dipakai. Sejak v1.0.1, deteksi
+  memakai pencocokan **kata/token utuh** (bukan potongan huruf) yang tidak pandang huruf besar/kecil,
+  diakritik, underscore, atau spasi, sehingga sinonim pendek seperti "kurir"/"invoice"/"sku" ikut
+  terdeteksi di dalam nama kolom gabungan (mis. "Nama Kurir", "No. Invoice"). Kalau pemetaan tetap
+  salah/kurang, error dan hasil sukses SAMA-SAMA menyebutkan kolom yang ada di file dan flag
+  `--kolom-...` yang persis untuk membetulkan secara manual - tidak perlu menunggu pembaruan skill.
 - Tidak ada scraping, login browser, atau API resmi marketplace di skill ini. Input murni dari file
   yang diunduh pengguna sendiri.
 - Bukan alat inventori: tidak memotong stok, tidak mengingat "sudah dikemas" dari hari sebelumnya. Untuk

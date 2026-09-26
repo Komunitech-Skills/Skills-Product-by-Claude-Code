@@ -21,10 +21,11 @@ import io
 import json
 import re
 import sys
+import unicodedata
 from collections import OrderedDict
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 BATAS_UKURAN = 200 * 1024 * 1024
 
 
@@ -173,25 +174,30 @@ def baca_tabel(path, label="file"):
 # ---------------------------------------------------------------------------
 
 # CATATAN JUJUR - PERLU REVIEW: kata kunci di bawah disusun dari nama kolom umum yang beredar di
-# panduan/forum seller dan dari skill `buku-stok` (belum semua dicocokkan satu-satu dengan file
-# ekspor ASLI dari tiap marketplace, terutama TikTok Shop berbahasa Indonesia). Karena itu, langkah
-# kerja skill ini SELALU menunjukkan pemetaan kolom yang terdeteksi ke pengguna untuk dicek dulu
-# sebelum daftar dibuat. Kirim contoh file ekspor asli (data pembeli disamarkan) ke Komunitech agar
-# daftar ini bisa dipastikan.
+# panduan/forum seller, dari skill `buku-stok`, dan dari pengecekan langsung ke halaman bantuan
+# resmi (lihat `references/sumber-kolom-marketplace.md` untuk URL + tanggal cek). Entri yang
+# BELUM dipastikan lewat halaman resmi (mayoritas Shopee/Tokopedia/Lazada/Blibli) ditandai
+# "best-effort" di file referensi tsb - anggap sebagai dugaan masuk akal, bukan spesifikasi resmi.
+# Karena itu, langkah kerja skill ini SELALU menunjukkan pemetaan kolom yang terdeteksi ke
+# pengguna untuk dicek dulu sebelum daftar dibuat, dan pesan error selalu menyertakan daftar
+# kolom yang ada di file + flag --kolom-... yang persis untuk melengkapi/membetulkannya.
 SINONIM_PESANAN = OrderedDict([
     ("no_pesanan", ["no. pesanan", "no pesanan", "nomor pesanan", "order id", "order number",
-                     "nomor invoice", "invoice"]),
+                     "nomor invoice", "invoice", "invoice number", "no. invoice", "no invoice",
+                     "order/adjustment id", "order adjustment id"]),
     ("sku", ["nomor referensi sku", "seller sku", "sku penjual", "nomor sku", "kode sku",
-             "sku induk", "sku"]),
-    ("nama", ["nama produk", "product name"]),
+             "sku induk", "sku id", "sku reference no", "sku"]),
+    ("nama", ["nama produk", "product name", "nama barang", "item name", "nama item"]),
     ("varian", ["nama variasi", "variation", "varian"]),
     ("qty", ["jumlah produk dibeli", "jumlah", "quantity", "qty"]),
-    ("kurir", ["opsi pengiriman", "shipping provider name", "nama penyedia pengiriman",
-               "jasa kirim", "ekspedisi", "kurir"]),
+    ("kurir", ["opsi pengiriman", "shipping provider name", "shipping provider", "nama penyedia pengiriman",
+               "jasa kirim", "ekspedisi", "nama kurir", "kurir pengiriman", "logistik", "kurir"]),
     ("resi", ["no. resi", "nomor resi", "tracking id", "tracking number", "id pelacakan",
-              "kode booking", "awb", "no resi"]),
-    ("catatan", ["catatan dari pembeli", "buyer note", "pesan pembeli", "catatan pembeli", "catatan"]),
-    ("status", ["status pesanan", "order status", "status terakhir", "status"]),
+              "kode booking", "awb", "no resi", "nomor awb", "no. awb"]),
+    ("catatan", ["catatan dari pembeli", "buyer note", "buyer message", "buyer remark",
+                 "pesan pembeli", "catatan pembeli", "catatan"]),
+    ("status", ["status pesanan", "order status", "order substatus", "substatus",
+                "status terakhir", "status"]),
 ])
 
 LABEL_FIELD = {
@@ -213,29 +219,61 @@ SINONIM_STOK = OrderedDict([
 ])
 
 
-def deteksi_kolom(header, sinonim):
-    """header: list nama kolom. sinonim: {field: [kata...]} (urutan = prioritas).
+def _token(s):
+    """Pecah teks jadi tuple token kata: huruf/angka saja, tanpa pandang huruf besar/kecil,
+    diakritik (mis. 'é'->'e'), underscore, spasi, atau tanda baca ('.', '/', '-', dst)."""
+    s = str(s or "").replace("﻿", "")
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    s = re.sub(r"[^A-Za-z0-9]+", " ", s).strip().lower()
+    return tuple(s.split())
 
-    Cocok persis selalu menang atas cocok sebagian; cocok sebagian hanya untuk kata >= 8 huruf.
-    Satu kolom hanya dipakai untuk satu field (field diproses sesuai urutan dict).
+
+def _token_sublist(kecil, besar):
+    """True bila `kecil` (tuple token) muncul berurutan & utuh di dalam `besar`."""
+    n, m = len(kecil), len(besar)
+    if n == 0 or n > m:
+        return False
+    return any(besar[i:i + n] == kecil for i in range(m - n + 1))
+
+
+def deteksi_kolom(header, sinonim):
+    """header: list nama kolom. sinonim: {field: [kata...]} (urutan dalam list = prioritas).
+
+    Pencocokan berbasis TOKEN KATA (bukan potongan huruf), jadi tanpa pandang huruf besar/kecil,
+    diakritik, underscore, spasi, atau tanda baca:
+      1) cocok PERSIS (seluruh token kolom == seluruh token sinonim) selalu dicoba lebih dulu,
+         untuk semua sinonim tiap field secara berurutan.
+      2) kalau tidak ada yang cocok persis, cocok SEBAGIAN: token sinonim harus muncul utuh &
+         berurutan di dalam token kolom - mis. sinonim "kurir" cocok dengan kolom "Nama Kurir"
+         (token: nama, kurir), TAPI TIDAK cocok dengan kolom "Kurirnya" atau "Sekurir-kurirnya"
+         (token utuhnya "kurirnya"/"sekurir kurirnya", bukan "kurir" persis) - jadi tidak ada
+         cocokan sebagian kata (partial-word match), hanya kata utuh yang jadi salah satu token.
+      Ini menggantikan aturan lama "hanya kata sinonim >= 8 huruf yang boleh cocok sebagian", yang
+      membuat sinonim pendek seperti "kurir"/"invoice"/"sku" tidak pernah kedeteksi otomatis pada
+      header umum seperti "Nama Kurir" atau "No. Invoice".
+    Satu kolom hanya dipakai untuk satu field (field diproses sesuai urutan dict `sinonim`).
     """
-    hn = [norm(h) for h in header]
+    ht = [_token(h) for h in header]
     dipakai, hasil = set(), {}
     for field, kata in sinonim.items():
+        kata_tok = [_token(k) for k in kata]
         pilih = None
-        for k in kata:
-            for i, h in enumerate(hn):
-                if i not in dipakai and h and h == k:
+        for kt in kata_tok:
+            if not kt:
+                continue
+            for i, toks in enumerate(ht):
+                if i not in dipakai and toks == kt:
                     pilih = i
                     break
             if pilih is not None:
                 break
         if pilih is None:
-            for k in kata:
-                if len(k) < 8:
+            for kt in kata_tok:
+                if not kt:
                     continue
-                for i, h in enumerate(hn):
-                    if i not in dipakai and h and k in h:
+                for i, toks in enumerate(ht):
+                    if i not in dipakai and toks and _token_sublist(kt, toks):
                         pilih = i
                         break
                 if pilih is not None:
@@ -329,10 +367,14 @@ def proses(args):
         # --kolom-... -> anggap baris pertama sebagai judul kolom.
         hi = 0
     if hi is None:
+        kolom_ada = [c for c in (baris[0] if baris else [])][:40]
+        semua_flag = ", ".join('--kolom-%s "Nama Kolom"' % f.replace("_", "-") for f in SINONIM_PESANAN)
         raise Gagal("Judul kolom pesanan tidak dikenali. Pastikan ini file ekspor PESANAN marketplace "
                     "(bukan laporan lain), dan bukan hasil buka-tutup di Excel yang mengubah nomor pesanan. "
-                    "Kalau nama kolomnya memang tidak umum, sebutkan manual mis. --kolom-no-pesanan \"Nama Kolom\".",
-                    kolom_ada=[c for c in (baris[0] if baris else [])][:40])
+                    "Kolom yang ada di file: %s. Kalau nama kolomnya memang tidak umum, sebutkan manual "
+                    "salah satu atau lebih flag berikut (isi dengan nama kolom PERSIS seperti di file): %s."
+                    % (", ".join(kolom_ada) if kolom_ada else "(file tidak punya baris sama sekali)", semua_flag),
+                    kolom_ada=kolom_ada)
     header = baris[hi]
     kol = deteksi_kolom(header, SINONIM_PESANAN)
     header_norm = [norm(h) for h in header]
@@ -354,12 +396,19 @@ def proses(args):
         kol[field] = idx
 
     pemetaan = {LABEL_FIELD[f]: header[i] for f, i in sorted(kol.items(), key=lambda x: x[1])}
-    hilang = [LABEL_FIELD[f] for f in ("no_pesanan", "qty") if f not in kol]
+    field_hilang = [f for f in ("no_pesanan", "qty") if f not in kol]
     if "sku" not in kol and "nama" not in kol:
-        hilang.append("SKU atau Nama produk")
-    if hilang:
-        raise Gagal("Kolom wajib tidak ketemu: %s. Sebutkan manual, mis. --kolom-no-pesanan \"Nama Kolom\"."
-                    % ", ".join(hilang), kolom_ada=header, pemetaan_terdeteksi=pemetaan)
+        field_hilang.append("sku")  # SKU ATAU Nama; sarankan --kolom-sku dulu
+    if field_hilang:
+        label_hilang = [("SKU atau Nama produk" if f == "sku" and "nama" not in kol else LABEL_FIELD[f])
+                         for f in field_hilang]
+        saran_flag = " ".join('--kolom-%s "Nama Kolom Anda"' % f.replace("_", "-") for f in field_hilang)
+        pemetaan_teks = ", ".join("%s=%s" % (k, v) for k, v in pemetaan.items()) if pemetaan else "(tidak ada kolom terdeteksi otomatis)"
+        raise Gagal(
+            "Kolom wajib tidak ketemu: %s. Kolom yang SUDAH terdeteksi otomatis: %s. Kolom yang ada di "
+            "file ini: %s. Jalankan ulang sambil menambahkan, mis.: %s (isi dengan nama kolom PERSIS "
+            "seperti di file)." % (", ".join(label_hilang), pemetaan_teks, ", ".join(header), saran_flag),
+            kolom_ada=header, pemetaan_terdeteksi=pemetaan)
 
     abaikan = None
     if args.abaikan_status:
