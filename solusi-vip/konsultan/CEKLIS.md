@@ -45,5 +45,12 @@ Satu halaman. **Jangan tulis nama/nomor klien di ceklis ini** — hanya status y
 - [ ] Member tahu cara menjalankan `cek-privasi-openclaw` kapan saja dan akan mengulanginya bila
       menambah kanal baru.
 
+## Dokumen tambahan (dipicu manual, isi bila sudah dipakai)
+- [ ] Kontrak kerja staf/asisten kontrak (bila ada) dibuat dengan `kontrak-kerja-pkwt` dan
+      ditinjau sebelum ditandatangani.
+- [ ] Kebijakan privasi layanan/website (bila ada) dibuat/ditinjau dengan `kebijakan-privasi-pdp`.
+- [ ] Checklist tender (`tender-checklist`) dipakai sebelum ikut pengadaan pemerintah, termasuk
+      cek kelayakan usaha kecil & rincian harga.
+
 ## Tanda tangan/paraf serah-terima
 Tanggal: __________  Member: __________  Teknisi/pendamping (bila ada): __________
