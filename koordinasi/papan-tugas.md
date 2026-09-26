@@ -109,7 +109,7 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | H13 | Alat kecil jalur 2: `arsip-nota` (folder nota + indeks SQLite lokal, pakai `ekstrak-nota-faktur`) | **lulus 8/10 v1.0.0** (uji independen Akun B, 2026-09-26): 44 tes, ekspor terbukti masuk kas-umkm (Rp 2.422.500 cocok). Perbaikan v1.0.1 berjalan: `mode` "tersimpan" saat duplikat diblokir; kata kunci kategori (semen/cat, SPBU/Pertamina) |
 | K1 | Kurasi `analisis-rasio-keuangan-usaha` ← anthropics/claude-cookbooks (53k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
 | K2 | Kurasi `validasi-ide-produk-baru` ← product-on-purpose/pm-skills (699★, Apache-2.0) | dikerjakan (Akun B, 2026-09-26) |
-| K3 | Kurasi `presentasi-data-ke-atasan` ← nimrodfisher/data-analytics-skills (451★, MIT) | dikerjakan (Akun B, 2026-09-26) |
+| K3 | Kurasi `presentasi-data-ke-atasan` ← nimrodfisher/data-analytics-skills (451★, MIT) | **lulus 9/10** (Akun B, 2026-09-26); perbaikan kecil v1.0.1 berjalan (catatan basis negatif, tolak eksplisit "poles angka") |
 | K4 | Kurasi `laporan-insiden-usaha` ← mohitagw15856/pm-claude-skills (1,4k★, MIT) — verifikasi skill sumber dulu | **lulus 9/10** (Akun B, 2026-09-26): sumber diverifikasi (214 commit bertahap), A/B & banding pesaing menang jelas; batasan keluhan kesehatan ditegaskan di SKILL.md |
 | K5 | Kandidat hukum dari anthropics/claude-for-legal (kontrak vendor, PHK/klasifikasi karyawan, permintaan data pribadi) | **ditunda atas keputusan pemilik 2026-09-26** (tidak mengerjakan skill hukum Indonesia) |
 
