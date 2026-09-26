@@ -106,7 +106,7 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | H10 | `solusi-vip/klinik`: rangkai `pengingat-pasien-klinik` (lulus 9/10) + tutup celah #2 di `solusi-vip/README.md` | selesai (Akun B, 2026-09-26) — PANDUAN §5i, jadwal §4 (disalin dari references skill), CEKLIS privasi pasien; celah #2 ditutup |
 | H11 | Produk jalur 2 baru: `frappe-books-usaha` (Frappe Books, AGPL — skill orisinal, software tidak didistribusikan) | dikerjakan (Akun B, 2026-09-26) |
 | H12 | Produk jalur 2 baru: `actual-budget-usaha` (Actual Budget, MIT) | dikerjakan (Akun B, 2026-09-26) |
-| H13 | Alat kecil jalur 2: `arsip-nota` (folder nota + indeks SQLite lokal, pakai `ekstrak-nota-faktur`) | dikerjakan (Akun B, 2026-09-26) |
+| H13 | Alat kecil jalur 2: `arsip-nota` (folder nota + indeks SQLite lokal, pakai `ekstrak-nota-faktur`) | **lulus 8/10 v1.0.0** (uji independen Akun B, 2026-09-26): 44 tes, ekspor terbukti masuk kas-umkm (Rp 2.422.500 cocok). Perbaikan v1.0.1 berjalan: `mode` "tersimpan" saat duplikat diblokir; kata kunci kategori (semen/cat, SPBU/Pertamina) |
 
 Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A sudah **dijeda**. **Akun B: buat routine sendiri mengikuti `koordinasi/rutin.md`** (prompt siap salin di sana).
 - **Keputusan pemilik 2026-09-26 (Akun B mencatat):** (1) `ekstrak-nota-faktur` & `atur-keuangan-pribadi` jalur → `orisinal` (sumber lemah hanya inspirasi); (2) sumber yang lisensinya tidak mengizinkan dijual tetap diambil & di-ATM lewat **Tulis ulang bersih** (CLAUDE.md Tahap 2 diperbarui); (3) kurasi baru: sumber **kuat** dulu, sumber lemah (termasuk yang terlanjur lolos) paling akhir.
