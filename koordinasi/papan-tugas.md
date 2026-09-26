@@ -111,7 +111,7 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | K2 | Kurasi `validasi-ide-produk-baru` ← product-on-purpose/pm-skills (699★, Apache-2.0) | **lulus 9/10 v1.0.1** (uji ulang independen Akun B, 2026-09-26): 31 variasi harga cocok Decimal, batas 8%/15% benar, klausul batal/refund ada |
 | K3 | Kurasi `presentasi-data-ke-atasan` ← nimrodfisher/data-analytics-skills (451★, MIT) | **lulus 9/10** (Akun B, 2026-09-26); v1.0.1 selesai (catatan basis negatif, tolak eksplisit "poles angka", 9 tes) |
 | K4 | Kurasi `laporan-insiden-usaha` ← mohitagw15856/pm-claude-skills (1,4k★, MIT) — verifikasi skill sumber dulu | **lulus 9/10** (Akun B, 2026-09-26): sumber diverifikasi (214 commit bertahap), A/B & banding pesaing menang jelas; batasan keluhan kesehatan ditegaskan di SKILL.md |
-| K5 | Kandidat hukum dari anthropics/claude-for-legal (kontrak vendor, PHK/klasifikasi karyawan, permintaan data pribadi) | **ditunda atas keputusan pemilik 2026-09-26** (tidak mengerjakan skill hukum Indonesia) |
+| K5 | Kandidat hukum dari anthropics/claude-for-legal (kontrak vendor, PHK/klasifikasi karyawan, permintaan data pribadi) | **dihentikan** — keputusan pemilik 2026-09-26: skill hukum baru tidak dikerjakan |
 | K6 | Kurasi `tulisan-tanpa-kesan-ai` ← petergyang/no-ai-slop (11,3k★, MIT) — prioritas pemilik (dari Instagram) | dikerjakan (Akun B, 2026-09-26) |
 | K7 | Kurasi `audit-akun-iklan` ← AgriciDaniel/claude-ads (9,6k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
 | K8 | Produk jalur 2 `notebook-riset-lokal` ← lfnovo/open-notebook (39,5k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
@@ -120,3 +120,4 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 
 Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A sudah **dijeda**. **Akun B: buat routine sendiri mengikuti `koordinasi/rutin.md`** (prompt siap salin di sana).
 - **Keputusan pemilik 2026-09-26 (Akun B mencatat):** (1) `ekstrak-nota-faktur` & `atur-keuangan-pribadi` jalur → `orisinal` (sumber lemah hanya inspirasi); (2) sumber yang lisensinya tidak mengizinkan dijual tetap diambil & di-ATM lewat **Tulis ulang bersih** (CLAUDE.md Tahap 2 diperbarui); (3) kurasi baru: sumber **kuat** dulu, sumber lemah (termasuk yang terlanjur lolos) paling akhir.
+- **Keputusan pemilik 2026-09-26 (Akun B mencatat):** skill hukum yang sudah lulus (`kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `perjanjian-sederhana`, `surat-resmi`, `tender-checklist`, dll.) dipertahankan; skill hukum baru tidak dikerjakan (K5 dihentikan).
