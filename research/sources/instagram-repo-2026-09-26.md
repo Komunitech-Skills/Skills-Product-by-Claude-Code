@@ -21,6 +21,9 @@ Metode: data bintang/fork/lisensi diambil dari **halaman HTML GitHub** via WebFe
 | 14 | lfnovo/open-notebook | 39,5k / 4,6k | Aktif, 977 commit | MIT | 5/5: populer, dirawat aktif, banyak provider didukung | Ya: Docker lokal, **bisa 100% tanpa API key** pakai Ollama/LM Studio; opsional API key provider cloud | Tidak ada skill kami yang identik (dekat dgn `asisten-tulis-riset`/`notulen-rapat` tapi beda bentuk — ini platform riset multi-sumber + podcast) | Instalasi Docker (sedang, bukan 1-klik); podcast AI perlu TTS (opsional biaya) | **Produk jalur 2** (bukan skill tunggal): kandidat kuat "NotebookLM lokal" untuk riset/dokumen pribadi/profesional — instal awam dgn panduan + skill pendamping (ringkas & tanya-jawab dokumen). Prioritas riset lanjut |
 | 15 | petergyang/no-ai-slop | 11,3k / 775 | Aktif (bintang tinggi berbeda dari klaim 4,4k pemilik — repo tetap sah) | MIT | 4/5: cukup populer, instruksi spesifik & teruji (eval.md), dipakai lintas platform (ChatGPT/Claude/Codex) | Ya: murni SKILL.md + eval.md, **tanpa dependensi/API key sama sekali** — paling instan dari semua kandidat | Memperkuat SEMUA skill konten kami (`caption-sosmed-umkm`, `konten-mingguan`, `copy-landing-page`, dll) | Rendah — hanya aturan penulisan, tanpa akses data/eksekusi | **ATM prioritas tertinggi**: tulis ulang aturan (bukan salin) jadi modul "gaya tulisan alami Indonesia" (hindari pola AI-Inggris yang diterjemahkan kaku, bukan hanya pola AI-Inggris) → sisipkan sebagai `references/` bersama di skill-skill konten & marketing kami |
 
+| 16 | browser-use/browser-use | 116,4k / 12,8k | Aktif, 10.299 commit | MIT | 5/5: sangat populer, dirawat aktif, banyak turunan produk | Sebagian: Python lib lokal, tapi butuh API key LLM (dan opsional cloud browser berbayar) | Berpotensi tumpang tindih arah `resi-picking`/`arsip-nota` (isi form berulang) tapi belum ada skill kami setara | **Bisa mengoperasikan login akun (marketplace, dsb.) & isi CAPTCHA** — inilah persis kategori "scraping/otomasi marketplace lewat login browser" yang **sudah ditolak pemilik** (2026-09-23). OpenClaw sendiri belum terkonfirmasi punya kemampuan kendali browser bawaan setara ini (perlu verifikasi terpisah) | **Tolak untuk kasus login/marketplace pihak ketiga.** Boleh dipertimbangkan **sangat terbatas** untuk isi formulir berulang di **situs milik sendiri** (bukan akun pihak ketiga) — itu pun perlu keputusan pemilik krn berisiko tinggi bila disalahgunakan |
+| 17 | unclecode/crawl4ai | 84,3k / 8,7k | Aktif, 1.697 commit | Apache-2.0 | 5/5: sangat populer, dirawat aktif, dipakai luas komunitas AI/LLM | Ya: pip/Docker lokal, hasil Markdown bersih siap pakai LLM; mendukung sesi login tersimpan (fitur yang justru berisiko bila dipakai ke marketplace) | Relevan utk `riset-calon-pelanggan`, `harga-jual-marketplace`, `audit-seo-toko-online`, `analisis-ulasan` — sumber data publik | Fitur "sesi login tersimpan" bisa disalahgunakan utk scraping marketplace via akun — **wajib dibatasi hanya ke halaman publik tanpa login** sesuai kebijakan pemilik | **ATM terbatas**: pakai hanya mode crawl halaman publik (harga kompetitor, ulasan publik, artikel) tanpa fitur sesi-login; jadikan basis skill riset harga/kompetitor berbahasa Indonesia. Apache-2.0 boleh dimodifikasi dgn atribusi & NOTICE |
+
 ## Ringkasan sinyal AI-slop yang perlu diwaspadai
 Repo #1, #2, dan #7 berasal dari akun yang memiliki **banyak repo dengan nama/deskripsi sangat mirip dan bintang tinggi seragam** (AgriciDaniel: 6 repo "claude-*"; Agent Reach: puluhan fork/clone identik di akun berbeda dengan bintang 80k+ semua; Fincept: banyak clone nama identik). Ini pola yang CLAUDE.md tandai sebagai indikasi AI slop/astroturf pada bintang — bintang **tidak dianggap bukti tunggal**; keputusan di atas berpijak pada sinyal tambahan (umur, issue dari user nyata, pembuat/organisasi, kualitas isi).
 
@@ -31,18 +34,20 @@ Repo #1, #2, dan #7 berasal dari akun yang memiliki **banyak repo dengan nama/de
 - #11 ai-job-search: bagian scraping LinkedIn/portal kerja wajib dibuang sebelum ATM (risiko ToS, sejalan larangan scraping login browser).
 - #12 strix: di luar audiens produk kami — usul tolak permanen, bukan sekadar "belum".
 
-## Peringkat rekomendasi (15 repo, terkuat → terlemah)
+## Peringkat rekomendasi (17 repo, terkuat → terlemah)
 1. **#15 no-ai-slop** — ATM prioritas tertinggi (instan, tanpa dependensi, memperkuat banyak skill sekaligus).
 2. **#1 claude-ads** — ATM kuat untuk `laporan-iklan-mingguan` (MIT, komunitas nyata).
 3. **#14 open-notebook** — kandidat kuat produk jalur 2 (100% lokal tanpa API key).
-4. **#3 firefly-iii** & **#4 uptime-kuma** — produk jalur 2, sejalan riset software-pengganti-SaaS sebelumnya.
-5. **#11 ai-job-search** — ATM sebagian untuk `cv-lamaran-ats`, wajib buang modul scraping.
-6. **#13 open-seo** — pembanding saja (bergantung API berbayar, bertentangan prinsip "tanpa API key").
-7. **#5 chatwoot** — bukan kandidat lokal (dikonfirmasi ulang), tetap referensi fitur CS.
-8. **#7 FinceptTerminal** — pembanding riset pasar mode paper-trading saja, hindari arah live-trading.
-9. **#8 MoneyPrinterTurbo** — pembanding/tunda (terlalu banyak API key berbayar utk "instan tanpa setup").
-10. **#10 OpenMAIC** — ide skill baru kategori Pendidikan, tulis ulang lebih ringan.
-11. **#6 TradingAgents** — tolak apa adanya, perlu keputusan pemilik jika mau modul riset-saja.
-12. **#2 Agent Reach** — tolak (pola astroturf + scraping platform sosial tanpa API resmi).
-13. **#9 agentic-inbox** — tolak (butuh akun Cloudflare, bukan lokal).
-14. **#12 strix** — tolak (di luar audiens & berisiko disalahgunakan).
+4. **#17 crawl4ai** — ATM terbatas (halaman publik saja) utk riset harga/kompetitor; Apache-2.0.
+5. **#3 firefly-iii** & **#4 uptime-kuma** — produk jalur 2, sejalan riset software-pengganti-SaaS sebelumnya.
+6. **#11 ai-job-search** — ATM sebagian untuk `cv-lamaran-ats`, wajib buang modul scraping.
+7. **#13 open-seo** — pembanding saja (bergantung API berbayar, bertentangan prinsip "tanpa API key").
+8. **#5 chatwoot** — bukan kandidat lokal (dikonfirmasi ulang), tetap referensi fitur CS.
+9. **#7 FinceptTerminal** — pembanding riset pasar mode paper-trading saja, hindari arah live-trading.
+10. **#8 MoneyPrinterTurbo** — pembanding/tunda (terlalu banyak API key berbayar utk "instan tanpa setup").
+11. **#10 OpenMAIC** — ide skill baru kategori Pendidikan, tulis ulang lebih ringan.
+12. **#16 browser-use** — tolak untuk login/marketplace; pertimbangan sangat terbatas hanya utk situs milik sendiri, perlu keputusan pemilik.
+13. **#6 TradingAgents** — tolak apa adanya, perlu keputusan pemilik jika mau modul riset-saja.
+14. **#2 Agent Reach** — tolak (pola astroturf + scraping platform sosial tanpa API resmi).
+15. **#9 agentic-inbox** — tolak (butuh akun Cloudflare, bukan lokal).
+16. **#12 strix** — tolak (di luar audiens & berisiko disalahgunakan).
