@@ -200,3 +200,48 @@ Perbaikan oleh agent pembuat (H8), untuk ketiga temuan di atas:
 katalog sesuai"). `scripts/uji_openclaw.sh` tidak dijalankan (di luar tugas sesi ini).
 Skor kualitas belum dinilai ulang oleh penguji independen — perlu uji independen baru sebelum naik
 status ke `beta`, sesuai Tahap 6.7 SKILL Factory.
+
+---
+
+## Uji ulang independen v1.0.1 (Akun B, 2026-09-26)
+
+Penguji: Akun B (independen dari pembuat, sesi baru, terpisah dari kedua uji di atas). Skill
+dijalankan dari lokasinya di repo (kode tidak diubah, tidak dibaca ulang sebagai pembuat); data
+fiktif dibuat di scratchpad `/tmp/.../scratchpad/rt-klinik/`, tidak disimpan di repo. Tidak ada
+file kode/SKILL.md/README/catalog.csv yang diubah, tidak ada commit dibuat.
+
+### Skor kualitas: **9/10**
+
+**Alasan:** Kedua temuan dari uji v1.0.0 Akun B (blocklist vaksin memblokir kasus pakai inti;
+bug tahun kabisat "N bulan lagi") **terverifikasi sudah diperbaiki dengan benar** di v1.0.1.
+Detail lengkap & bukti ada di
+`examples/vaksin-diagnosis-tanggal-uji-ulang-v101-akun-b.md`:
+- Ke-6 jenis vaksin dari instruksi uji (imunisasi campak, vaksin rabies, vaksin MR, imunisasi
+  DPT, booster hepatitis B, suntik TT) **semua diterima**, tanpa workaround.
+- Ke-8 kalimat bernada diagnosis (riwayat campak, positif rabies, didiagnosis difteri, kena DBD,
+  sakit maag, asma kambuh, batu ginjal, vertigo) **semua tetap ditolak**.
+- 6 jenis kunjungan wajar non-vaksin (kontrol behel, fisioterapi sesi 3, scaling, cek gigi anak,
+  vaksin kucing, kontrol pasca operasi) **semua diterima**, tidak ada regresi over-blocking.
+- 30 variasi licik tambahan (huruf besar, spasi ganda, singkatan, angka mid-kalimat, alasan
+  vaksinasi seperti "digigit anjing") diuji: **tidak ditemukan** jenis vaksin sah yang salah
+  ditolak, dan **tidak ditemukan** kalimat diagnosis eksplisit yang lolos tersimpan. Dua catatan
+  kecil (bukan bug): (1) "cek up rutin campak" tanpa kata pemicu vaksin di dekatnya tetap ditolak
+  — desain fail-closed yang wajar; (2) kata tergabung tanpa spasi ("vaksinrabies") lolos dari
+  kedua pemeriksaan sekaligus karena `\b` regex butuh batas kata — bukan celah privasi (tidak ada
+  diagnosis yang bocor), hanya validasi yang tidak menyala untuk typo langka.
+- Perhitungan "N bulan lagi" diverifikasi independen dengan `datetime`/`calendar.monthrange` untuk
+  4 kasus (29 Jan 2028+1, 31 Jan 2026+1, 31 Mar 2026+1, 31 Des 2026+2): **semua cocok persis**,
+  termasuk kasus kabisat (29 Feb 2028) dan non-kabisat (28 Feb 2026/2027).
+- Tidak ada regresi pada H-3/H-1/hari-ini/terlambat, penyaringan `persetujuan=tidak`, `hapus`
+  (pratinjau→konfirmasi→terverifikasi via `info`), atau ringkasan Telegram tanpa nomor WA.
+
+Skor **naik dari 7/10 menjadi 9/10** (bukan 10 karena dua catatan minor di atas — tidak
+menghalangi rilis, hanya dicatat untuk kesadaran). `python3 tests/uji_regresi.py`: **34/34
+lulus** (tidak diubah). `python3 scripts/validate.py --skill pengingat-pasien-klinik`: **lulus**
+("1 skill valid, 80 baris katalog sesuai"). `scripts/uji_openclaw.sh` **tidak dijalankan** (di
+luar tugas sesi ini per instruksi).
+
+### Rekomendasi
+Temuan tingkat TINGGI dan SEDANG dari uji v1.0.0 Akun B sudah tertutup. Layak lanjut ke uji
+platform asli (Tahap 6.10) dan program beta tester (Tahap 6.11) tanpa revisi wajib lebih lanjut.
+Bukti lengkap: `examples/vaksin-diagnosis-tanggal-uji-ulang-v101-akun-b.md`.
