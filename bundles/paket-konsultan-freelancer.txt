@@ -6,3 +6,4 @@ pengingat-follow-up
 riset-calon-pelanggan
 asisten-tulis-riset
 presentasi-instan
+laporan-klien-konsultan

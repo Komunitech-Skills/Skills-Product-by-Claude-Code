@@ -29,7 +29,7 @@ Contoh:
       --pekerjaan "Susun draf SPT Masa PPN" --status berjalan \\
       --butuh-klien "Faktur pajak masukan Oktober belum dikirim"
   python3 laporan_klien.py laporan --klien "PT Maju Jaya" --periode mingguan \\
-      --rencana "Selesaikan draf SPT Masa;Jadwalkan review dengan klien" --json
+      --rencana "Selesaikan draf SPT Masa" --rencana "Jadwalkan review dengan klien" --json
 
 Kode keluar: 0 = normal. 1 = input/file tidak valid. 2 = argumen salah tulis.
 3 = draf berhasil dibuat TAPI ada pola mirip data pribadi/rahasia terdeteksi di salah satu
