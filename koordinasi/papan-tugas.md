@@ -104,4 +104,4 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | H8 | `pengingat-pasien-klinik` v1.0.1 (temuan TINGGI U22): "imunisasi campak"/"vaksin rabies" jangan ditolak; perketat celah blocklist diagnosis; "N bulan lagi" kabisat | dikerjakan (Akun B, 2026-09-26) |
 | H9 | Perbaikan temuan U19: `hledger-usaha` v1.0.2 (pengingat tunai di laba rugi), `kas-umkm` v1.0.2 (biaya tarik tunai = biaya, bukan pindah dana), `gaji-umkm` v1.0.2 (pagar `--gaji-pokok-dibayar`, teks pratinjau) | dikerjakan (Akun B, 2026-09-26) |
 
-Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A (trig_01T4xCmWhVqL1vzows1h9Pve) masih aktif — pemilik bisa menonaktifkannya bila Akun A tidak dipakai.
+Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A sudah **dijeda**. **Akun B: buat routine sendiri mengikuti `koordinasi/rutin.md`** (prompt siap salin di sana).
