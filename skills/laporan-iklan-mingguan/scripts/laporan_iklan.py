@@ -635,8 +635,9 @@ def baca_csv(path, override=None):
 #              "Total: Account", "Total 4 kampanye", "TOTAL - Semua").
 #   "sedang" : sisa HANYA berisi kata cakupan/angka ("Total of 2 campaigns", "Totals", "Total Akun",
 #              "Jumlah Keseluruhan", "Grand total all campaigns").
-#   "lemah"  : sisa berisi kata lain ("Total Look Hijab") -> tetap dihitung sebagai kampanye, kecuali
-#              angkanya ≈ jumlah baris lain (pengaman silang di analisis_file).
+#   "lemah"  : sisa berisi kata lain ("Total Look Hijab", "Total 12.12 Flash Sale") ATAU hanya angka
+#              ("Total 12.12", "Jumlah 2") -> tetap dihitung sebagai kampanye, kecuali angkanya
+#              ≈ jumlah baris lain (pengaman silang di analisis_file). (v1.0.3)
 KEPALA_TOTAL = r"(?:grand[\s-]*totals?|sub[\s-]*totals?|totals?|jumlah|summary|ringkasan|keseluruhan|" \
                r"overall|semua\s+kampanye|all\s+campaigns)"
 POLA_KEPALA_TOTAL = re.compile(r"^[^\w]*" + KEPALA_TOTAL + r"(?![a-z0-9])(.*)$", re.IGNORECASE | re.DOTALL)

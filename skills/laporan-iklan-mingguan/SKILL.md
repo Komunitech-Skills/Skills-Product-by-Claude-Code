@@ -75,7 +75,7 @@ python3 <folder-skill-ini>/scripts/laporan_iklan.py analisis "<ekspor-minggu-ini
 - **Tidak perlu merapikan file dulu.** Script sendiri menangani: baris judul/info toko di atas
   tabel (dicari dalam 15 baris pertama), CSV UTF-16 bertab ("Excel CSV" Google Ads), sel kosong/
   `-`/`--`/`—` (dihitung 0 + dicatat), dan baris "Total"/"Total: Account"/"Total of 3 campaigns"/
-  "Totals"/"Total Akun"/"Grand Total" di kolom teks mana pun (dilewati + dicatat). File `.xlsx`
+  "Totals"/"Total Akun"/"Grand Total" di kolom teks mana pun (dilewati + ⚠️ nama & biayanya). File `.xlsx`
   ditolak dengan petunjuk Save As CSV.
 - **Ekspor bertingkat** (mis. Meta `Campaign name` + `Ad set name` + `Ad name`, TikTok `Ad group
   name`, Google `Ad group`): script otomatis merinci per level **paling rinci** (iklan) agar iklan
@@ -197,16 +197,22 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v
   Karena itu laporan selalu mencetak "Kolom dibaca: ..." di Catatan: cocokkan sekali dengan file
   pengguna. Deteksi gagal → script memberi daftar kolom + cara mengisi manual (`--kolom-...`);
   jangan menebak sendiri.
-- **Baris total** dikenali dari kata kepala di awal sel ("Total", "Totals", "Jumlah", "Grand
-  Total", "Subtotal", "Summary", "Ringkasan", "Overall"...) yang diikuti tanda baca/angka ("Total:",
-  "Total (5 iklan)", "Total: Account") **atau** hanya kata cakupan ("Total of 3 campaigns", "Total
-  Akun", "Total Keseluruhan"), di kolom teks mana pun → dilewati + dicatat. Nama kampanye seperti
-  "Total Look Hijab" tetap dihitung.
+- **Baris total (v1.0.3)** dikenali dari kata kepala di awal sel ("Total", "Totals", "Jumlah",
+  "Grand Total", "Subtotal", "Summary", "Ringkasan", "Overall"...) yang sisanya **hanya** tanda
+  baca atau kata cakupan ("Total:", "Total (5 iklan)", "Total: Account", "Total 4 kampanye",
+  "Total of 3 campaigns", "Total Akun") → dilewati. Nama kampanye seperti "Total Look Hijab",
+  "Total 12.12 Flash Sale", "Jumlah 2 Pcs Bundling", atau "Total 12.12" (sisa hanya angka) **tetap
+  dihitung**. Label total di kolom lain sementara kolom nama berisi nama biasa juga tetap dihitung.
+- **Setiap baris yang dikecualikan sebagai total/subtotal selalu diberi ⚠️** berisi nama/label +
+  biayanya (plus jumlah baris lain bila angkanya tidak cocok). Sampaikan ⚠️ ini ke pengguna.
 - **Pengaman silang angka:** baris berbiaya terbesar dibandingkan dengan jumlah semua baris lain.
-  Biaya, tayangan, dan klik sama persis atau selisih ≤ 2% → dianggap total, dibuang, dan diberi ⚠️.
-  Hanya biayanya yang ≈ jumlah baris lain → **tetap dihitung** tapi diberi ⚠️ "TERHITUNG DUA KALI"
-  beserta total yang benar bila baris itu ternyata total. Label total yang angkanya tidak cocok
-  dengan jumlah baris lain juga diberi ⚠️. Sampaikan ⚠️ ini ke pengguna.
+  Biaya, tayangan, dan klik sama persis atau selisih ≤ 2% → dianggap total, dibuang, dan diberi ⚠️
+  (satu-satunya jalan nama seperti "Total 12.12 Flash Sale" dibuang). Hanya biayanya yang dalam
+  ±5% dari jumlah baris lain → **tetap dihitung** tapi diberi ⚠️ "TERHITUNG DUA KALI" beserta
+  total yang benar bila baris itu ternyata total.
+- **Subtotal buatan admin:** kolom nama kosong + kolom lain berbunyi mirip total ("Subtotal Kamp
+  A") → dibuang hanya bila biaya, tayangan & klik ≈ (±2%) jumlah baris-baris tepat di atas/
+  bawahnya; bila tidak cocok, tetap dihitung + ⚠️ agar pengguna mengecek.
 - **Cek kewajaran:** CPC < Rp 10 atau ROAS > 50x → ⚠️ "tidak wajar" (tanda kolom/mata uang salah).
 - **Rentang data > 7 hari**, tanggal tak terbaca, atau file minggu lalu = file minggu ini → ⚠️.
 - **Pembagi nol** (0 klik/0 tayangan/0 hasil) → ditampilkan `-`, bukan error atau angka mengada-ada.

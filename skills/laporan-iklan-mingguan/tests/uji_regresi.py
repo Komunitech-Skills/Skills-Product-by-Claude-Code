@@ -947,11 +947,11 @@ class UjiV103KasusM1M2M3(_Dasar):
     def test_nama_total_angka_yang_lolos_cek_silang_dibuang_dengan_peringatan(self):
         # Satu-satunya jalan nama "Total 12.12 ..." dibuang: angkanya ≈ jumlah baris lain (±2%).
         data = ("Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
-                "Total 12.12 Semua,505000,36300,505,15\n")
+                "Total 12.12 Flash Sale,505000,36300,505,15\n")
         d = self.json_ok("analisis", str(self.tulis("c.csv", KOLOM_SEDERHANA + data)))
         self.assertEqual(d["baris_dilewati_baris_total"], 1)
-        self.cek_total(d, data, kecuali=("Total 12.12 Semua",))
-        self.assertTrue(any("Total 12.12 Semua" in x and "Rp 505.000" in x and "baris TOTAL" in x
+        self.cek_total(d, data, kecuali=("Total 12.12 Flash Sale",))
+        self.assertTrue(any("Total 12.12 Flash Sale" in x and "Rp 505.000" in x and "baris TOTAL" in x
                             for x in d["peringatan"]))
 
     def test_label_total_di_kolom_lain_nama_terisi_tetap_dihitung(self):
