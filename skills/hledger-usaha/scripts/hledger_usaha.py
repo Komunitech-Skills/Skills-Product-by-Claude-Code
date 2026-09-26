@@ -383,13 +383,15 @@ def angka_jurnal(s, dm, no):
     return -v if neg else v
 
 
-def baca_file(path):
+def baca_file(path, jenis="jurnal"):
     try:
         with open(path, "rb") as f:
             mentah = f.read()
     except FileNotFoundError:
-        raise Gagal("File jurnal tidak ditemukan: {}\nBuat dulu dengan perintah `init`, atau sebutkan "
-                    "--jurnal <path>.".format(path), K_FILE)
+        if jenis == "jurnal":
+            raise Gagal("File jurnal tidak ditemukan: {}\nBuat dulu dengan perintah `init`, atau sebutkan "
+                        "--jurnal <path>.".format(path), K_FILE)
+        raise Gagal("File {} tidak ditemukan: {}".format(jenis, path), K_FILE)
     except OSError as e:
         raise Gagal("File {} tidak bisa dibuka: {}".format(path, e), K_FILE)
     if mentah[:4] == b"PK\x03\x04":
@@ -1181,10 +1183,12 @@ def rencana_dari(j, e, tahun=None):
         ak_p = akun_arg or ("Pendapatan:Jasa" if jenis == "jasa" else "Pendapatan:Penjualan")
         lawan = akun_via(j, via, bank, "piutang", pihak)
         ps = [(lawan, n), (ak_p, -n)]
-        arti = "Penjualan {}{}{}.".format(rp(n), " kepada " + tags["pihak"] if pihak else "",
+        arti = "{} {}{}{}.".format("Pendapatan jasa" if jenis == "jasa" else "Penjualan", rp(n),
+                                   " kepada " + tags["pihak"] if pihak else "",
                                          ", belum dibayar (piutang bertambah)" if "Piutang" in lawan else
                                          ", uang masuk ke " + lawan)
-        ket = ket or ("Penjualan" + (" - " + tags["pihak"] if pihak else ""))
+        ket = ket or (("Pendapatan jasa" if jenis == "jasa" else "Penjualan") +
+                      (" - " + tags["pihak"] if pihak else ""))
     elif jenis in ("beli", "pembelian", "belanja-stok", "kulakan"):
         n = nom()
         ak_b = akun_arg or "HPP:Pembelian"
@@ -1486,7 +1490,7 @@ def angka_bank(teks, desimal=None):
 
 
 def baca_mutasi(a, path):
-    teks = baca_file(path)
+    teks = baca_file(path, "mutasi")
     if not teks.strip():
         raise Gagal("File mutasi {} kosong.".format(path))
     baris = [x for x in teks.splitlines()[:60] if x.strip()]

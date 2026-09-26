@@ -88,7 +88,7 @@ Teks siap tempel ke Telegram/WA (baris "- Nama: Rp 1.500.000", tanpa tabel). Con
 ```
 LAPORAN LABA RUGI
 Kopi Sari
-Periode: 1 September 2026 s.d. 30 September 2026
+Periode: 1 Juli 2026 s.d. 31 Juli 2026
 PENDAPATAN
 - Penjualan: Rp 8.800.000
 HARGA POKOK PENJUALAN (HPP)

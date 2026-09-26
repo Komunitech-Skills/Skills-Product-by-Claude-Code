@@ -11,7 +11,6 @@ saat `hledger check` gagal diuji dengan pembungkus hledger palsu.
 import csv
 import json
 import os
-import re
 import shutil
 import stat
 import subprocess
@@ -66,16 +65,16 @@ class Dasar(unittest.TestCase):
             kw.setdefault("hledger", HLEDGER)
         return jalan(*arg, **kw)
 
-    def buku_september(self):
+    def buku_juli(self):
         k, o, e = self.run_("init", "--jurnal", self.j, "--nama", "Kopi Sari", "--bank", "BCA")
         self.assertEqual(k, 0, e)
-        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "saldo-awal", "--tanggal", "2026-08-31",
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "saldo-awal", "--tanggal", "2026-06-30",
                             "--posting", "Aset:Kas=2.000.000", "--posting", "Aset:Bank:BCA=10.000.000",
                             "--posting", "Aset:Persediaan=3.000.000", "--posting", "Utang:Bank=-5.000.000", "--ya")
         self.assertEqual(k, 0, e)
-        k, o, e = self.run_("catat", "--jurnal", self.j, "--batch", os.path.join(DATA, "batch-september.json"), "--ya")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--batch", os.path.join(DATA, "batch-juli.json"), "--ya")
         self.assertEqual(k, 0, e)
-        k, o, e = self.run_("stok-akhir", "--jurnal", self.j, "--tanggal", "2026-09-30", "--nilai", "2.700.000", "--ya")
+        k, o, e = self.run_("stok-akhir", "--jurnal", self.j, "--tanggal", "2026-07-31", "--nilai", "2.700.000", "--ya")
         self.assertEqual(k, 0, e)
 
 
@@ -188,7 +187,7 @@ class UjiAlurBawaan(Dasar):
         self.run_("init", "--jurnal", self.j)
         sebelum = isi(self.j)
         arg = ["catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "75rb", "--via", "kas",
-               "--tanggal", "2026-09-01", "--ket", "Jual kopi; 3 cup | meja 2"]
+               "--tanggal", "2026-07-01", "--ket", "Jual kopi; 3 cup | meja 2"]
         k, o, e = self.run_(*arg)
         self.assertEqual(k, 0, e)
         self.assertIn("BELUM disimpan", o)
@@ -196,7 +195,7 @@ class UjiAlurBawaan(Dasar):
         k, o, e = self.run_(*(arg + ["--ya"]))
         self.assertEqual(k, 0, e)
         teks = isi(self.j).decode()
-        self.assertIn("2026-09-01 Jual kopi, 3 cup / meja 2", teks)   # ; dan | dinetralkan
+        self.assertIn("2026-07-01 Jual kopi, 3 cup / meja 2", teks)   # ; dan | dinetralkan
         self.assertIn("Rp 75.000", teks)
         # dobel ditolak
         k, o, e = self.run_(*(arg + ["--ya"]))
@@ -268,9 +267,9 @@ class UjiAlurBawaan(Dasar):
         self.assertIn("tidak seimbang", e)
         self.assertEqual(isi(self.j), sebelum)
 
-    def test_laporan_september(self):
-        self.buku_september()
-        k, o, e = self.run_("bulanan", "--jurnal", self.j, "--bulan", "2026-09", "--json")
+    def test_laporan_juli(self):
+        self.buku_juli()
+        k, o, e = self.run_("bulanan", "--jurnal", self.j, "--bulan", "2026-07", "--json")
         self.assertEqual(k, 0, e)
         d = json.loads(o)
         lr, n, ak = d["laba_rugi"], d["neraca"], d["arus_kas"]
@@ -293,11 +292,11 @@ class UjiAlurBawaan(Dasar):
         self.assertNotIn("Aset:Kas", json.dumps(ak["operasi"]))
 
     def test_saldo_nyata(self):
-        self.buku_september()
-        k, o, e = self.run_("saldo", "--jurnal", self.j, "--tanggal", "2026-09-30", "--nyata", "Aset:Kas=1.400.000")
+        self.buku_juli()
+        k, o, e = self.run_("saldo", "--jurnal", self.j, "--tanggal", "2026-07-31", "--nyata", "Aset:Kas=1.400.000")
         self.assertEqual(k, 0, e)
         self.assertIn("COCOK", o)
-        k, o, e = self.run_("saldo", "--jurnal", self.j, "--tanggal", "2026-09-30", "--nyata", "Aset:Kas=1.350.000")
+        k, o, e = self.run_("saldo", "--jurnal", self.j, "--tanggal", "2026-07-31", "--nyata", "Aset:Kas=1.350.000")
         self.assertEqual(k, 1)
         self.assertIn("SELISIH Rp 50.000 (catatan lebih besar", o)
         k, o, e = self.run_("saldo", "--jurnal", self.j, "Aset:Kass")
@@ -305,14 +304,14 @@ class UjiAlurBawaan(Dasar):
         self.assertIn("Aset:Kas", e)
 
     def test_stok_akhir_sama(self):
-        self.buku_september()
-        k, o, e = self.run_("stok-akhir", "--jurnal", self.j, "--tanggal", "2026-09-30", "--nilai", "2.700.000")
+        self.buku_juli()
+        k, o, e = self.run_("stok-akhir", "--jurnal", self.j, "--tanggal", "2026-07-31", "--nilai", "2.700.000")
         self.assertEqual(k, 0)
         self.assertIn("Sudah sama", o)
 
     def test_impor_bank_bca(self):
-        self.buku_september()
-        m = os.path.join(DATA, "mutasi-bca-okt.csv")
+        self.buku_juli()
+        m = os.path.join(DATA, "mutasi-bca-agustus.csv")
         k, o, e = self.run_("impor-bank", "--jurnal", self.j, m)
         self.assertEqual(k, 2)
         self.assertIn("--tahun", e)
@@ -329,7 +328,7 @@ class UjiAlurBawaan(Dasar):
         k, o, e = self.run_("impor-bank", "--jurnal", self.j, m, "--tahun", "2026", "--tetapkan", "10=HPP:Pembelian",
                             "--ya")
         self.assertEqual(k, 0, e)
-        k, o, e = self.run_("saldo", "--jurnal", self.j, "--tanggal", "2026-10-31", "--nyata",
+        k, o, e = self.run_("saldo", "--jurnal", self.j, "--tanggal", "2026-08-31", "--nyata",
                             "Aset:Bank:BCA=3.691.234,56")
         self.assertEqual(k, 0, o + e)
         # impor ulang: semua dilewati
@@ -375,16 +374,16 @@ class UjiAlurBawaan(Dasar):
                   "--arah", "keluar", "--ya")
         self.assertIn("ROASTERY \\(GAYO\\)", isi(aturan).decode())
         blok = hu.baca_aturan(aturan)
-        r = {"tanggal": hu.parse_tanggal("2026-10-01"), "ket": "TRF ROASTERY (GAYO) OKT", "masuk": Decimal(0),
+        r = {"tanggal": hu.parse_tanggal("2026-07-01"), "ket": "TRF ROASTERY (GAYO) OKT", "masuk": Decimal(0),
              "keluar": Decimal(5), "saldo": None, "ref": "x"}
         self.assertEqual(hu.kelompokkan(blok, r), "HPP:Pembelian")
         r["masuk"], r["keluar"] = Decimal(5), Decimal(0)
         self.assertEqual(hu.kelompokkan(blok, r), "Pendapatan:Belum Dikelompokkan")
 
     def test_ekspor_emkm(self):
-        self.buku_september()
+        self.buku_juli()
         out = os.path.join(self.tmp, "kas.csv")
-        k, o, e = self.run_("ekspor-emkm", "--jurnal", self.j, "--bulan", "2026-09", "--keluar", out, "--json")
+        k, o, e = self.run_("ekspor-emkm", "--jurnal", self.j, "--bulan", "2026-07", "--keluar", out, "--json")
         self.assertEqual(k, 0, e)
         d = json.loads(o)
         with open(out, encoding="utf-8") as f:
@@ -397,11 +396,11 @@ class UjiAlurBawaan(Dasar):
         self.assertEqual(kode["Angsuran pinjaman (Bank)"], "bayar_pinjaman")
         self.assertEqual(d["saldo"]["persediaan-akhir"], 2700000)
         self.assertEqual(d["saldo"]["utang-usaha-akhir"], 1500000)
-        self.assertEqual(self.run_("ekspor-emkm", "--jurnal", self.j, "--bulan", "2026-09", "--keluar", out)[0], 2)
+        self.assertEqual(self.run_("ekspor-emkm", "--jurnal", self.j, "--bulan", "2026-07", "--keluar", out)[0], 2)
         if not os.path.isfile(EMKM):
             self.skipTest("skill laporan-keuangan-emkm tidak ada di sebelah skill ini")
-        arg = [sys.executable, EMKM, out, "--format", "json", "--periode-awal", "2026-09-01", "--periode-akhir",
-               "2026-09-30"]
+        arg = [sys.executable, EMKM, out, "--format", "json", "--periode-awal", "2026-07-01", "--periode-akhir",
+               "2026-07-31"]
         for kunci, v in d["saldo"].items():
             arg += ["--" + kunci, str(v)]
         r = subprocess.run(arg, capture_output=True, text=True, encoding="utf-8")
@@ -411,7 +410,7 @@ class UjiAlurBawaan(Dasar):
         self.assertIn("17200000", teks.replace(".", ""))  # total aset sama
 
     def test_backup(self):
-        self.buku_september()
+        self.buku_juli()
         k, o, e = self.run_("backup", "--jurnal", self.j)
         self.assertEqual(k, 0, e)
         salinan = [x for x in os.listdir(os.path.join(os.path.dirname(self.j), "backup"))]
@@ -450,40 +449,40 @@ class UjiHledgerAsli(Dasar):
         self.hl("check", "accounts")
 
     def test_laporan_sama_dengan_hledger(self):
-        self.buku_september()
+        self.buku_juli()
         self.hl("check", "accounts")
-        k, o, e = self.run_("bulanan", "--jurnal", self.j, "--bulan", "2026-09", "--json")
+        k, o, e = self.run_("bulanan", "--jurnal", self.j, "--bulan", "2026-07", "--json")
         self.assertEqual(k, 0, e)
         d = json.loads(o)
         self.assertIn("Uji silang pembaca bawaan: COCOK", d["catatan"])
         # laba rugi: bandingkan dengan `hledger is -O json` (verifikasi independen)
-        isj = json.loads(self.hl("is", "-p", "2026-09", "-O", "json"))
+        isj = json.loads(self.hl("is", "-p", "2026-07", "-O", "json"))
         laba_hl = self.angka_json(isj["cbrTotals"]["prrTotal"])
         self.assertEqual(Decimal(d["laba_rugi"]["laba_bersih"]), laba_hl)
         # total aset & utang: `hledger bs -O json`
-        bs = json.loads(self.hl("bs", "-e", "2026-10-01", "-O", "json"))
+        bs = json.loads(self.hl("bs", "-e", "2026-08-01", "-O", "json"))
         sub = {s[0]: self.angka_json(s[1]["prTotals"]["prrTotal"]) for s in bs["cbrSubreports"]}
         aset = [v for k2, v in sub.items() if "sset" in k2][0]
         utang = [v for k2, v in sub.items() if "iabil" in k2][0]
         self.assertEqual(Decimal(d["neraca"]["total_aset"]), aset)
         self.assertEqual(Decimal(d["neraca"]["total_utang"]), utang)
         # perubahan kas: `hledger cf`
-        cf = json.loads(self.hl("cf", "-p", "2026-09", "-O", "json"))
+        cf = json.loads(self.hl("cf", "-p", "2026-07", "-O", "json"))
         self.assertEqual(Decimal(d["arus_kas"]["perubahan_kas"]), self.angka_json(cf["cbrTotals"]["prrTotal"]))
 
     def test_impor_bank_uji_silang(self):
-        self.buku_september()
-        k, o, e = self.run_("impor-bank", "--jurnal", self.j, os.path.join(DATA, "mutasi-bca-okt.csv"), "--tahun",
+        self.buku_juli()
+        k, o, e = self.run_("impor-bank", "--jurnal", self.j, os.path.join(DATA, "mutasi-bca-agustus.csv"), "--tahun",
                             "2026", "--ya")
         self.assertEqual(k, 0, e)
         self.assertIn("Uji silang aturan dengan hledger: COCOK (12 baris)", o)
-        bal = self.hl("bal", "Aset:Bank:BCA", "-e", "2026-11-01", "-O", "json")
+        bal = self.hl("bal", "Aset:Bank:BCA", "-e", "2026-09-01", "-O", "json")
         self.assertEqual(self.angka_json(json.loads(bal)[1]), Decimal("3691234.56"))
         # file mutasi rapi + aturan bisa dibaca hledger langsung
         self.hl("check")
 
     def test_pulihkan_bila_hledger_check_gagal(self):
-        self.buku_september()
+        self.buku_juli()
         palsu = os.path.join(self.tmp, "hledger-palsu.py")
         with open(palsu, "w") as f:
             f.write("#!{}\nimport os, sys\nif 'check' in sys.argv:\n    sys.stderr.write('hledger: Error: uji\\n')\n"
