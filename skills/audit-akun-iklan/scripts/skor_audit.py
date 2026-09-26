@@ -504,7 +504,7 @@ def ke_json(h):
     for p, x in h["platform"].items():
         out["platform"][p] = {"nama": x["nama"], "skor": d(x["skor"]), "cakupan_bukti": d(x["cakupan"]),
                               "status": x["status"],
-                              "belanja": None if x["belanja"] is None else str(x["belanja"]),
+                              "belanja": None if x["belanja"] is None else str(x["belanja"].quantize(Decimal(1), rounding=ROUND_HALF_UP)),
                               "kategori": {k: {"skor": d(v["skor"]), "bobot": str(v["bobot"])}
                                            for k, v in x["kategori"].items()}}
     for c in h["prioritas"]:

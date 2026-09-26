@@ -116,7 +116,7 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | K7 | Kurasi `audit-akun-iklan` ← AgriciDaniel/claude-ads (9,6k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
 | K8 | Produk jalur 2 `notebook-riset-lokal` ← lfnovo/open-notebook (39,5k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
 | K9 | Produk jalur 2 `pantau-website-toko` ← louislam/uptime-kuma (91,8k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
-| K10 | Perkuat `cv-lamaran-ats` dengan ide dari MadsLorentzen/ai-job-search (44k★, MIT) — tanpa scraping LinkedIn | dikerjakan (Akun B, 2026-09-26) |
+| K10 | Perkuat `cv-lamaran-ats` dengan ide dari MadsLorentzen/ai-job-search (44k★, MIT) — tanpa scraping LinkedIn | **lulus 9/10 v1.1.0** (uji independen Akun B, 2026-09-26). Sisa rendah: STOPWORDS "dipersilakan/jujur/melamar"; rumus normalisasi bobot saat dimensi kosong belum eksplisit |
 
 Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A sudah **dijeda**. **Akun B: buat routine sendiri mengikuti `koordinasi/rutin.md`** (prompt siap salin di sana).
 - **Keputusan pemilik 2026-09-26 (Akun B mencatat):** (1) `ekstrak-nota-faktur` & `atur-keuangan-pribadi` jalur → `orisinal` (sumber lemah hanya inspirasi); (2) sumber yang lisensinya tidak mengizinkan dijual tetap diambil & di-ATM lewat **Tulis ulang bersih** (CLAUDE.md Tahap 2 diperbarui); (3) kurasi baru: sumber **kuat** dulu, sumber lemah (termasuk yang terlanjur lolos) paling akhir.
