@@ -6,7 +6,7 @@ Alat bantu hitung, bukan nasihat pajak. Kasus khusus (barang mewah, fasilitas, P
 atau konsultan pajak. Frappe Books **tidak** membuat e-Faktur; faktur resmi tetap lewat Coretax DJP.
 
 ## Pengaturan di Frappe Books
-Buat satu template **Tax** (menu Setup → Taxes), mis. nama `PPN 11% (12% x 11/12)`, baris detail: akun `Hutang Pajak`
+Buat satu template **Tax** (menu Setup → Tax Templates), mis. nama `PPN 11% (12% x 11/12)`, baris detail: akun `Hutang Pajak`
 (atau akun PPN keluaran Anda), **tarif 11**. Pasang template itu di barang (kolom Tax) atau per baris invoice.
 Jangan pakai tarif 12 dari harga penuh untuk barang/jasa non-mewah — PPN jadi terlalu besar. Perintah `akun` memberi
 peringatan bila menemukan template bertarif 12%.

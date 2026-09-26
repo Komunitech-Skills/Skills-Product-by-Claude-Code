@@ -296,8 +296,8 @@ def cari_db_bawaan():
         raise Gagal("Ada beberapa file Frappe Books:\n" + daftar,
                     "Sebutkan yang mana dengan --db \"<path lengkap>\".")
     raise Gagal("Lokasi file database Frappe Books belum diketahui.",
-                "Di Frappe Books buka menu Settings/Pengaturan > System > lihat lokasi file (biasanya "
-                "Documents/Frappe Books/<nama usaha>.books.db), lalu pakai --db \"<path lengkap>\".")
+                "Cari file berakhiran .books.db (bawaan: folder Documents/Frappe Books/<nama usaha>.books.db; "
+                "juga tampil di layar awal Frappe Books), lalu pakai --db \"<path lengkap>\".")
 
 
 def buka_db(path):
@@ -306,7 +306,7 @@ def buka_db(path):
     p = Path(os.path.expanduser(path))
     if not p.is_file():
         raise Gagal(f"File '{path}' tidak ditemukan.",
-                    "Periksa lokasi file .books.db (Frappe Books: Settings > System, atau folder Documents/Frappe Books).",
+                    "Periksa lokasi file .books.db (bawaan: folder Documents/Frappe Books; juga tampil di layar awal Frappe Books).",
                     kode=3)
     uri = p.resolve().as_uri() + "?mode=ro"
     try:
@@ -631,7 +631,7 @@ def cmd_stok(args):
     out = [f"STOK - {info['nama']}" + (f" (lokasi {args.lokasi})" if args.lokasi else " (semua lokasi)")]
     if not barang:
         out.append("Tidak ada barang yang dilacak stoknya. Di Frappe Books, stok hanya dihitung untuk barang "
-                   "dengan 'Track Inventory' dicentang dan fitur Inventory aktif (Settings > Features).")
+                   "dengan 'Track Inventory' dicentang dan fitur Inventory aktif (Setup > Settings > Features > Enable Inventory).")
         print("\n".join(out))
         return
     minus = [(n, q_) for n, q_ in jumlah.items() if q_ < 0]
@@ -685,7 +685,7 @@ def cmd_laba_rugi(args):
     lb = tp - th - tb
     out.append(f"{'LABA' if lb >= 0 else 'RUGI'} BERSIH: {rp(lb)}")
     out.append("Ringkasan dari buku besar Frappe Books (hanya transaksi final). Bukan laporan keuangan resmi; "
-               "untuk laporan lengkap buka Reports > Profit and Loss di Frappe Books.")
+               "untuk laporan lengkap buka Reports > Profit And Loss di Frappe Books.")
     catatan = cek_mata_uang(info)
     if catatan:
         out.append(catatan)
@@ -1055,7 +1055,7 @@ def cmd_csv_barang(args):
         peringatan.append("tanpa --db: nama satuan belum dicek. Satuan bawaan Frappe Books: Unit, Kg, Gram, Meter, Jam, Hari "
                           "(bisa berbeda). Satuan lain harus dibuat dulu.")
     if any(h[-1] == "1" for h in hasil) and con is not None and not info_usaha(con)["inventori"]:
-        peringatan.append("fitur Inventory belum aktif; aktifkan di Settings > Features agar 'Track Inventory' dipakai")
+        peringatan.append("fitur Inventory belum aktif; aktifkan di Setup > Settings > Features (Enable Inventory) agar 'Track Inventory' dipakai")
     kolom = [("Item", "Item Name", "Item.name"), ("Item", "Item Code", "Item.itemCode"), ("Item", "Purpose", "Item.for"),
              ("Item", "Type", "Item.itemType"), ("Item", "Unit Type", "Item.unit"), ("Item", "Rate", "Item.rate"),
              ("Item", "Description", "Item.description"), ("Item", "Sales Acc.", "Item.incomeAccount"),
