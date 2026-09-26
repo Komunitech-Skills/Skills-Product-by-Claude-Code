@@ -9,6 +9,24 @@ bergantung mutlak pada nama persis: bila deteksi otomatis gagal, pengguna/agent 
 kolom manual lewat `--kolom-biaya`, `--kolom-tayangan`, `--kolom-klik`, `--kolom-hasil`,
 `--kolom-nilai-hasil` (lihat SKILL.md).
 
+## Status verifikasi (v1.0.1, 26 September 2026)
+
+| Platform | Nama kolom | Bentuk ekspor (baris judul, baris total, sel kosong) | Status |
+|---|---|---|---|
+| Meta Ads | Ringkasan pencarian halaman resmi + 2 sumber pihak ketiga | Sel `Results` kosong untuk iklan tanpa hasil: dari pengalaman penguji, **belum dicocokkan dengan ekspor asli** | **BELUM TERVERIFIKASI dari ekspor asli (PERLU REVIEW)** |
+| Meta Ads (UI Bahasa Indonesia) | `Jumlah yang dibelanjakan`, `Klik tautan`, `Hasil`, `Impresi` ditambahkan sebagai sinonim | Tebakan terjemahan, belum dilihat di ekspor asli | **BELUM TERVERIFIKASI (PERLU REVIEW)** |
+| TikTok Ads Manager | Halaman resmi hanya menyebut CPM/CPC/CTR/CVR; `Clicks (destination)`, `Total onsite value`, `Currency` dari sumber pihak ketiga | Belum dilihat di ekspor asli | **Sebagian terverifikasi** |
+| Shopee Ads | Definisi metrik dari Pusat Edukasi Penjual (resmi) | Baris info toko di atas tabel & baris Total: dari pengalaman penguji | **Nama metrik resmi; bentuk file belum diverifikasi** |
+| TikTok Shop Ads | Halaman bantuan resmi (Bahasa Indonesia) | Belum dilihat di ekspor asli | **Nama metrik resmi; bentuk file belum diverifikasi** |
+| Google Ads | Google Ads Help (resmi), termasuk `Results`/`Results value` | Baris judul "Campaign report" + periode, `Campaign status`, `Avg. cost`, `Total: Account/Search/...`, `Currency code`, CSV UTF-16 bertab: dari pengetahuan penguji, **belum dicocokkan dengan unduhan asli** | **Nama kolom resmi; bentuk file belum diverifikasi** |
+
+Karena belum semua terverifikasi dari file asli, script v1.0.1 **tidak bergantung** pada satu
+bentuk saja: pencarian baris header dalam 15 baris pertama, baris total dikenali dari teks di
+kolom mana pun dan dari angka (= jumlah baris lain), sel kosong dihitung 0 dengan catatan, dan
+setiap laporan mencetak "Kolom dibaca: ..." agar kesalahan pemetaan langsung terlihat.
+**Rekomendasi untuk pemilik:** sediakan satu ekspor asli per platform (angka boleh disamarkan)
+untuk dijadikan tes regresi sebelum status `rilis`.
+
 ## Meta Ads Manager (Facebook/Instagram)
 
 Kolom ekspor umum (preset "Performance" / kolom yang bisa ditambah manual): `Campaign name`,
@@ -77,7 +95,10 @@ Kolom umum (kampanye Product/GMV Max & Shop Ads): `Biaya`/`Cost`, `Biaya bersih`
 
 Kolom tabel statistik (nama yang sering disingkat di UI, tetap sama di ekspor CSV): `Campaign`,
 `Cost`, `Impr.` (Impressions), `Clicks`, `CTR`, `Avg. CPC`, `Avg. CPM`, `Conversions`,
-`Cost / conv.`, `Conv. value`.
+`Cost / conv.`, `Conv. value`, dan kolom baru `Results` / `Results value` (dikenali sebagai hasil
+& nilai hasil sejak v1.0.1). Kolom yang **sengaja tidak dipakai** walau mengandung kata kunci:
+`Campaign status`/`Campaign type` (bukan nama), `Avg. cost`/`Cost / conv.`/`Budget` (bukan biaya
+total), `Search impr. share` (bukan tayangan), `Conv. value / cost` (bukan nilai).
 
 - Sumber: Google Ads Help, "About columns in your statistics table"
   (https://support.google.com/google-ads/answer/2454071) — daftar nama kolom persis termasuk
@@ -89,10 +110,13 @@ Kolom tabel statistik (nama yang sering disingkat di UI, tetap sama di ekspor CS
 
 ## Mata uang
 
-Semua platform di atas mencantumkan mata uang akun iklan pada kolom biaya/nilai konversi (mis.
-`Amount spent (IDR)`, `Amount spent (USD)`). Skill ini mendeteksi label ini lewat pola `(XXX)` pada
-nama kolom biaya/nilai-hasil dan **menolak memproses diam-diam** bila bukan `IDR` — lihat
-"Mata uang bukan Rupiah" di SKILL.md.
+Mata uang akun iklan bisa muncul di tiga tempat, dan v1.0.1 memeriksa ketiganya:
+1. Label di judul kolom biaya/nilai, mis. `Amount spent (IDR)`, `Amount spent (USD)` (Meta).
+2. Kolom terpisah `Currency` (TikTok, sumber pihak ketiga) / `Currency code` (Google Ads, dari
+   pengetahuan penguji) / `Mata uang`. **Belum diverifikasi dari ekspor asli.**
+3. Simbol/kode di sel angka: `Rp`, `$`, `US$`, `S$`, `RM`, `€`, `£`, `¥`, atau kode `USD`/`SGD`/...
+Bila salah satunya bukan IDR, script **berhenti** dan meminta `--kurs` atau `--mata-uang IDR`
+(lihat SKILL.md). File yang mencampur dua mata uang selalu ditolak.
 
 ## Keterbatasan yang jujur disebutkan
 

@@ -8,11 +8,15 @@ lengkap dengan iklan mana yang harus dimatikan.**
   dari kolom rata-rata bawaan file yang bisa salah kalau dijumlah langsung
 - ✅ Perbandingan % otomatis vs minggu lalu, dengan aturan pembulatan yang konsisten
 - ✅ 3 kampanye terbaik & 3 yang perlu perhatian (termasuk yang 0 hasil tapi tetap makan biaya)
-- ✅ 3–5 saran tindakan dengan angka jelas ("matikan iklan X: Rp45.000/pesan, 3× rata-rata") —
-  tanpa janji hasil, keputusan tetap di tangan Anda
+- ✅ Saran tindakan dengan angka jelas ("tinjau iklan X: Rp120.000/hasil, 2,1× rata-rata"),
+  dengan catatan "sampel kecil" bila hasilnya masih sedikit. Tanpa janji hasil, keputusan tetap
+  di tangan Anda
 - ✅ Baca CSV Meta Ads, TikTok Ads Manager, Shopee Ads, TikTok Shop Ads (dulu Tokopedia Ads), dan
   Google Ads — bahkan bisa digabung jadi satu laporan lintas platform
-- ✅ Menolak diam-diam kalau file ternyata mata uang asing, bukan Rupiah
+- ✅ Langsung dari file ekspor apa adanya: baris judul, baris "Total", sel kosong, dan kolom
+  rata-rata bawaan ditangani otomatis dan dicatat di laporan, bukan dihitung dua kali atau dibuang
+- ✅ Tidak pernah menghitung dolar sebagai Rupiah: kalau file ternyata mata uang asing, AI berhenti
+  dan menanyakan kurs dulu
 
 ## Cocok untuk siapa
 - Pemilik toko online/UMKM yang beriklan di 1 platform atau lebih dan lelah membuka Ads Manager
@@ -31,14 +35,14 @@ buatin laporannya."
 ```
 Total belanja iklan: Rp 2.900.000
 CPC: Rp 2.071 | CPM: Rp 19.333 | CTR: 0,9%
-Biaya per Results: Rp 58.000 (naik 8,9% dari minggu lalu)
+Biaya per Results: Rp 58.000 (naik 8,9% dari minggu lalu Rp 53.261)
 ROAS: 1,9x
 
 SARAN
 1. Tinjau/hentikan iklan 'Retargeting - Semua Produk': sudah menghabiskan Rp 800.000 tanpa
    Results sama sekali.
-2. Tinjau/matikan iklan 'Prospek Baru - Tas': biaya per Results Rp 120.000, 2,9x rata-rata
-   (Rp 42.000).
+2. Tinjau/matikan iklan 'Prospek Baru - Tas': biaya per Results Rp 120.000, 2,1x rata-rata
+   semua iklan (Rp 58.000).
 ```
 (Contoh lengkap dengan angka diverifikasi manual: `examples/uji-pembuat-01-meta-mingguan-vs-lalu.md`.)
 
@@ -49,6 +53,14 @@ demi keamanan akun Anda), lalu cukup ketik ke AI agent kamu, misalnya:
 - "Ini ekspor iklan minggu ini, buatin laporannya."
 - "Bandingkan biaya iklan minggu ini vs minggu lalu, ini dua filenya."
 - "Gabungkan laporan Meta Ads dan Shopee Ads minggu ini jadi satu, omzet toko 20 juta."
+
+## Yang perlu Anda ketahui (jujur)
+- Nama kolom Meta Ads dan bentuk ekspor Google Ads/TikTok di skill ini disusun dari dokumentasi
+  resmi dan sumber pihak ketiga, **belum dicocokkan dengan file ekspor asli dari setiap
+  platform**. Karena itu setiap laporan mencantumkan "Kolom dibaca: ..." di bagian Catatan. Cek
+  sekali di minggu pertama; bila ada yang keliru, AI bisa diberi tahu kolom yang benar.
+- Biaya di file ekspor biasanya belum termasuk PPN yang ditagihkan platform. Cek invoice platform
+  untuk angka tagihan sebenarnya.
 
 ## Syarat
 File berformat **CSV** (Excel `.xlsx` disimpan ulang sebagai CSV dulu: *File → Save As → CSV*).

@@ -39,6 +39,30 @@ resep siap pakai untuk iklan di skill itu, salin pola resep yang paling mirip la
   (`--maks-umur-hari 6` untuk mingguan) sebelum menjalankan analisis — jangan kirim laporan dari
   file ekspor yang sudah lama/lupa diganti.
 
+## 3a. Bentuk perintah langsung (DISARANKAN: angka tidak ditulis ulang oleh AI)
+Job `--command-argv` menjalankan script apa adanya, jadi teks laporan yang terkirim **persis**
+keluaran `laporan_iklan.py` (sesuai Langkah 4 SKILL.md: angka tidak diubah). Pola ini diuji penguji
+independen 25 September 2026 (OpenClaw 2026.9.6, Gateway `--dev`): `automations run --wait` →
+`status: ok`, `summary` = teks laporan lengkap, sama persis dengan uji terminal. Pengiriman
+Telegram sungguhan belum diuji (butuh token bot asli).
+
+Pakai **nama file tetap** supaya perintahnya tidak perlu diubah tiap minggu:
+- Tiap Senin pagi, sebelum jam jadwal: ganti nama `meta-minggu-ini.csv` yang lama menjadi
+  `meta-minggu-lalu.csv` (timpa yang lama), lalu simpan ekspor baru sebagai `meta-minggu-ini.csv`.
+- Script memberi ⚠️ bila kedua file ternyata sama persis atau periodenya sama (lupa ganti file).
+
+```bash
+openclaw automations add --name "Laporan iklan mingguan" --cron "50 7 * * 1" --tz Asia/Jakarta \
+  --command-argv '["python3","/home/NAMA/.openclaw/skills/laporan-iklan-mingguan/scripts/laporan_iklan.py","analisis","/home/NAMA/Laporan-AI/iklan/meta-minggu-ini.csv","--sebelumnya","/home/NAMA/Laporan-AI/iklan/meta-minggu-lalu.csv","--nama-hasil","pesan WA"]' \
+  --announce --channel telegram --to <chat-id-telegram-pemilik>
+```
+- Jam 07.50 memberi waktu ekspor pagi. Ganti path & `--nama-hasil` sesuai milik pengguna.
+- Nama file berisi tanggal (`meta-2026-09-21.csv`) **tidak** bisa dipakai di bentuk ini; pakai
+  nama tetap di atas, atau Bentuk A (agent) di bawah.
+- Lebih dari satu platform: bentuk ini hanya satu file per job. Buat satu job per platform, atau
+  pakai Bentuk A agar agent menjalankan `analisis --json` per platform lalu `gabung`.
+- Windows: bentuk `--command-argv` belum diuji di Gateway Windows; pakai Bentuk A.
+
 ## 3. Contoh jadwal (Bentuk A, sudah diuji untuk pola job serupa — lihat § 0)
 Senin pagi 07.00 WIB, satu platform (Meta), Telegram:
 ```bash
