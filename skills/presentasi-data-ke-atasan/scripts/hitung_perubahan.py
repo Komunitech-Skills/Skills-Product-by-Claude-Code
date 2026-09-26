@@ -30,7 +30,9 @@ import sys
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
 
-def rupiah(d: Decimal) -> int:
+def format_angka(d: Decimal) -> int:
+    """Bulatkan nilai bilangan bulat terdekat (dipakai untuk Rupiah maupun angka lain,
+    mis. total/rata-rata di --daftar yang belum tentu Rupiah)."""
     return int(d.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
