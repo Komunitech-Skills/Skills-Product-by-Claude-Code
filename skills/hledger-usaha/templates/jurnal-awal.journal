@@ -1,0 +1,56 @@
+; nama-usaha: {{NAMA_USAHA}}
+; Buku dibuat: {{TANGGAL}} oleh skill hledger-usaha (Komunitech).
+; File ini adalah pembukuan Anda dalam bentuk teks biasa, dibaca oleh program hledger.
+; Boleh dibuka dengan Notepad, tetapi JANGAN menghapus baris "account" di bawah.
+; Transaksi baru ditambahkan di bagian paling bawah.
+
+decimal-mark ,
+commodity Rp 1.000,
+
+; ---------------- DAFTAR AKUN ----------------
+; "type:" memberi tahu hledger golongan akun:
+; A = aset, C = kas/bank, L = utang, E = modal, R = pendapatan, X = beban/HPP
+
+account Aset                             ; type: A
+account Aset:Kas                         ; type: C
+account Aset:Bank                        ; type: C
+account Aset:Piutang Usaha
+account Aset:Persediaan
+account Aset:Peralatan
+
+account Utang                            ; type: L
+account Utang:Usaha
+account Utang:Bank
+account Utang:Pajak
+
+account Modal                            ; type: E
+account Modal:Saldo Awal
+account Modal:Setoran
+account Modal:Prive
+
+account Pendapatan                       ; type: R
+account Pendapatan:Penjualan
+account Pendapatan:Jasa
+account Pendapatan:Lain-lain
+account Pendapatan:Belum Dikelompokkan
+
+account HPP                              ; type: X
+account HPP:Pembelian
+account HPP:Penyesuaian Persediaan
+
+account Beban                            ; type: X
+account Beban:Gaji
+account Beban:Sewa
+account Beban:Listrik Air Internet
+account Beban:Transportasi
+account Beban:Pemasaran
+account Beban:Perlengkapan
+account Beban:Perawatan
+account Beban:Admin Bank
+account Beban:Bunga
+account Beban:Pajak Penghasilan
+account Beban:Pajak Lain
+account Beban:Lain-lain
+account Beban:Belum Dikelompokkan
+
+; ---------------- TRANSAKSI ----------------

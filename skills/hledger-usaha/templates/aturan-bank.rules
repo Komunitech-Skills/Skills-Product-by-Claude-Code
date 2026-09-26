@@ -1,0 +1,63 @@
+# Aturan pengelompokan mutasi bank untuk skill hledger-usaha (Komunitech).
+# Format: aturan CSV hledger (https://hledger.org/csv.html), versi sederhana.
+# Cara kerja:
+#   - Setiap blok "if" mencari kata di kolom keterangan mutasi (huruf besar/kecil sama saja).
+#   - Baris "& %keluar [1-9]" = hanya untuk uang keluar; "& %masuk [1-9]" = hanya uang masuk.
+#   - Bila beberapa blok cocok, blok yang paling BAWAH yang dipakai.
+#   - Tambahkan aturan Anda sendiri di bagian paling bawah (atau pakai perintah tambah-aturan).
+# Jangan menulis kata yang terlalu pendek (mis. "BI"), nanti cocok ke mana-mana.
+
+# ---- bawaan: belum dikelompokkan (akan ditanyakan) ----
+if %masuk [1-9]
+ account2 Pendapatan:Belum Dikelompokkan
+
+if %keluar [1-9]
+ account2 Beban:Belum Dikelompokkan
+
+# ---- uang masuk ----
+if %keterangan qris|shopeepay|shopee|tokopedia|tiktok|lazada|blibli|penjualan|merchant
+& %masuk [1-9]
+ account2 Pendapatan:Penjualan
+
+if %keterangan bunga|jasa giro|bonus|cashback
+& %masuk [1-9]
+ account2 Pendapatan:Lain-lain
+
+if %keterangan setor tunai|setoran tunai|setor kas
+& %masuk [1-9]
+ account2 Aset:Kas
+
+# ---- uang keluar ----
+if %keterangan tarik tunai|tarikan tunai|tarikan atm|tarik atm|penarikan tunai
+& %keluar [1-9]
+ account2 Aset:Kas
+
+if %keterangan pln|listrik|pdam|telkom|indihome|biznet|first media|myrepublic|internet|pulsa|telkomsel|indosat|xl axiata
+& %keluar [1-9]
+ account2 Beban:Listrik Air Internet
+
+if %keterangan gaji|payroll|upah
+& %keluar [1-9]
+ account2 Beban:Gaji
+
+if %keterangan sewa ruko|sewa toko|sewa kios|sewa tempat|bayar sewa
+& %keluar [1-9]
+ account2 Beban:Sewa
+
+if %keterangan gojek|gocar|gosend|grab|maxim|jne|j&t|sicepat|anteraja|ninja xpress|pos indonesia|spbu|pertamina
+& %keluar [1-9]
+ account2 Beban:Transportasi
+
+if %keterangan facebook|fb ads|meta ads|meta platforms|google ads|googleads|tiktok ads|iklan
+& %keluar [1-9]
+ account2 Beban:Pemasaran
+
+if %keterangan biaya adm|by adm|biaya admin|adm bulanan|biaya administrasi|biaya transfer|biaya trf|by trf|biaya kartu|materai
+& %keluar [1-9]
+ account2 Beban:Admin Bank
+
+if %keterangan bunga kredit|bunga pinjaman|bunga kur
+& %keluar [1-9]
+ account2 Beban:Bunga
+
+# ---- aturan Anda sendiri (tambahkan di bawah ini) ----
