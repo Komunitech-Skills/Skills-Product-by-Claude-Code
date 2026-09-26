@@ -247,7 +247,7 @@ Bulan;12;12
 k, h = json_run(tulis("warung.csv", WARUNG), "--jenis", "warung sembako")
 tr = {t["kode"]: t for t in h["tren"]}
 cek("G1 tren ROA basis saldo akhir: 22,15% → 21,90% = memburuk",
-    dekat(tr["roa"]["nilai"][0], F(1440, 65)) and dekat(tr["roa"]["nilai"][1], F(1680, 767))
+    dekat(tr["roa"]["nilai"][0], F(1440, 65)) and dekat(tr["roa"]["nilai"][1], F(16800, 767))
     and tr["roa"]["arah"].startswith("memburuk"), tr["roa"])
 cek("G2 tren umur stok basis akhir 2025 = 48×365/361,2 = 48,50 hari (memburuk)",
     dekat(tr["hari_persediaan"]["nilai"][1], F(48 * 365 * 10, 3612)) and tr["hari_persediaan"]["arah"].startswith("memburuk"))
