@@ -65,3 +65,17 @@ Repo #1, #2, dan #7 berasal dari akun yang memiliki **banyak repo dengan nama/de
 - Script `scripts/cek_pola.py` (heuristik deteksi + skor) dengan 25 kasus uji regresi, semua lolos.
 - Catatan lisensi: LICENSE MIT sumber (Copyright (c) 2026 Peter Yang) disalin ke `LICENSE-MIT` dalam
   skill, sesuai kewajiban atribusi MIT.
+
+## Audit K7 — claude-ads → skill `audit-akun-iklan` (2026-09-26)
+- **Sumber:** https://github.com/AgriciDaniel/claude-ads, commit `ac21644` (2026-09-11), clone `--depth 1` ke scratchpad; **tidak ada kode yang dijalankan**.
+- **Lisensi:** MIT (LICENSE dibaca langsung, "Copyright (c) 2026 agricidaniel"). Disertakan sebagai `LICENSE-MIT` + `ATTRIBUTION.md` di skill.
+- **Audit keamanan (Tahap 3) — LOLOS:**
+  - 354 file: 25 SKILL.md, 20 agent .md, `ads/references/*.md`, paket Python `claude_ads_core`, `scripts/*.py` (±13 rb baris), installer `install.sh`/`install.ps1`, schema JSON, tes pytest, CI.
+  - Tidak ada karakter tersembunyi (zero-width/bidi/tag Unicode) di seluruh file teks; komentar HTML di references hanya catatan katalog.
+  - Tidak ada instruksi prompt-injection (grep "ignore previous/without asking/send to" nihil). Instruksi justru defensif: input halaman/ekspor/screenshot diperlakukan sebagai data tak tepercaya, perubahan akun wajib lewat "mutation gate", kredensial di env/keychain, menolak instalasi pipa-unduhan-ke-shell.
+  - Jaringan: `fetch_page.py`/`capture_screenshot.py` (requests/Playwright, dengan penjaga SSRF di `url_utils.py`), `audit_ecosystem_live.py` (hanya api.github.com), `generate_image.py` (API gambar pihak ketiga, opsional & eksplisit). Tidak ada pengiriman data diam-diam, pembacaan SSH key/cookie/browser, atau kode ter-obfuscate (base64 hanya untuk verifikasi tanda tangan/gambar).
+  - Installer: `git clone` dari repo sendiri + `pip install --require-hashes` dari lock file; subprocess hanya git/pip/mmdc lokal.
+- **Penilaian kualitas nyata:** metodologi skor **spesifik & kuat** (status 4 nilai, bobot keparahan 5/3/1, normalisasi kategori, cakupan bukti 80/60, dedup akar masalah, bobot porsi belanja). **Tetapi** katalog cek versi terkini hanya berisi **nama cek** dengan kalimat disposisi generik yang sama di setiap baris; kriteria & ambang sengaja dihapus dan profil skor v1 dinonaktifkan ("disabled"). Tidak ada Shopee/Tokopedia/TikTok Shop. Repo sangat "berat birokrasi" (control-plane, ledger, schema) — bukan slop generik, tapi nilai praktis untuk UMKM awam rendah apa adanya.
+- **Keputusan:** ATM — ambil metode skor + tema cek (MIT); tulis ulang seluruh kriteria lulus/gagal, bukti awam, perbaikan, cek Shopee & TikTok Shop/Tokopedia, ROAS impas, prioritas dampak×kemudahan, rencana 7 hari, script Decimal + 29 tes. Tidak ada kode sumber disalin. Tidak tumpang tindih dengan `laporan-iklan-mingguan` (itu angka mingguan; ini pengaturan & struktur akun) — saling merujuk.
+- Catatan bintang (9,6k) tetap dianggap indikatif (pola multi-repo akun sama); keputusan berpijak pada isi yang dibaca langsung.
+- Status katalog: `draft` 1.0.0, usulan ecer Rp99.000. Menunggu uji independen (Tahap 6), uji A/B & banding pesaing (claude-ads `ads-audit` adalah pesaing alami).

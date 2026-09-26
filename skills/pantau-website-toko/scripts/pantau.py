@@ -27,10 +27,12 @@ SKILL.md bagian "Kapan TIDAK digunakan".
 import argparse
 import datetime as dt
 import json
+import os
 import re
 import socket
 import ssl
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -430,6 +432,32 @@ def urai_url_target(url_teks):
     return url_teks, parsed
 
 
+def _urai_notafter_dari_der(der_bytes):
+    """Baca 'notAfter' dari sertifikat DER mentah TANPA memverifikasinya (dipakai hanya untuk
+    tetap menampilkan sisa hari saat sertifikat tidak terpercaya). Memakai fungsi decoder
+    bawaan modul ssl (bagian dari Python standar, tanpa paket tambahan apa pun); bila fungsi
+    ini tidak tersedia di versi Python tertentu, sisa hari untuk sertifikat tidak terpercaya
+    cukup ditampilkan sebagai '-' (lihat pemanggilnya)."""
+    try:
+        decoder = ssl._ssl._test_decode_cert
+    except AttributeError:
+        return None
+    try:
+        pem = ssl.DER_cert_to_PEM_cert(der_bytes)
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".pem", delete=False) as f:
+            f.write(pem)
+            nama_file = f.name
+        try:
+            return decoder(nama_file)
+        finally:
+            try:
+                os.remove(nama_file)
+            except OSError:
+                pass
+    except (ssl.SSLError, OSError, ValueError):
+        return None
+
+
 def cek_ssl_langsung(host, port, timeout):
     hasil = {"valid": None, "sisa_hari": None, "kedaluwarsa": None, "catatan": None}
     ctx = ssl.create_default_context()
@@ -442,11 +470,15 @@ def cek_ssl_langsung(host, port, timeout):
     except ssl.SSLCertVerificationError as e:
         hasil["valid"] = False
         hasil["catatan"] = f"sertifikat TIDAK terpercaya/hostname tidak cocok ({e.verify_message if hasattr(e, 'verify_message') else e})"
+        # Dengan verify_mode=CERT_NONE, getpeercert() sengaja mengembalikan dict kosong (perilaku
+        # baku Python) walau sertifikatnya sendiri sudah diterima. Untuk tetap bisa menunjukkan
+        # sisa hari (dengan status TIDAK VALID yang jelas), baca tanggalnya dari data DER mentah.
         try:
             ctx_bebas = ssl._create_unverified_context()
             with socket.create_connection((host, port), timeout=timeout) as sock:
                 with ctx_bebas.wrap_socket(sock, server_hostname=host) as ssock:
-                    cert = ssock.getpeercert()
+                    der = ssock.getpeercert(binary_form=True)
+            cert = _urai_notafter_dari_der(der) if der else None
         except OSError:
             cert = None
     except socket.timeout:

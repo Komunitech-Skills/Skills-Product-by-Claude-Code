@@ -241,3 +241,43 @@ Rasio yang dicek: rasio lancar, cepat, kas; modal kerja; margin kotor/usaha/bers
 | perputaran_aset | 6.6667 | 6.6667 | cocok |
 
 TOTAL: 107/107 cocok
+
+---
+## Uji ulang independen v1.0.1 (Akun B, 2026-09-26)
+- **Penguji:** agent Akun B, bukan pembuat skill dan bukan penguji v1.0.0. Hanya membaca folder skill. Salinan di scratchpad (bukan `.claude/skills/`). Rincian lengkap: `examples/08-uji-ulang-v101-akun-b.md`.
+- **Tes bawaan:** `tests/uji_regresi.py` → **71 uji, 0 gagal, SEMUA UJI LULUS**.
+- **Validator:** `python3 scripts/validate.py --skill analisis-rasio-keuangan-usaha` → **✅ 1 skill valid, 89 baris katalog sesuai**.
+- **uji_openclaw.sh:** tidak dijalankan (sesuai instruksi tugas).
+- **Verifikasi Decimal independen** (`verif.py` tanpa impor `rasio.py`): warung, konveksi, dan skenario baru bengkel motor 2 tahun, mencakup tren saldo akhir, tabel utama rata-rata, dan rasio cicilan → **164/165 cocok**. Satu selisih 0,0001 hari (siklus kas dijumlah dari komponen 4 desimal), tampilan sama.
+
+### Status temuan v1.0.0
+| # | Temuan v1.0.0 | Status v1.0.1 | Bukti |
+|---|---|---|---|
+| 1 | Tren beda basis | ✔ Diperbaiki | Basis "saldo AKHIR" ditulis di output & JSON `basis_tren`. Warung ROA 22,2% → 21,9% **memburuk**; konveksi lama piutang 60,8 → **75,1 hari**, umur stok 75,3 hari. Tabel utama tetap rata-rata (ROA 23,71%, piutang 61,2 hari) |
+| 2 | `Kas,1,250,000` → Rp 1 | ✔ Diperbaiki | GALAT kode 2 + tiga cara perbaikan. Kolom berlebih pada `;` juga ditolak. Titik ribuan, spasi, "Rp", kurung negatif, koma dikutip, TAB+koma: benar |
+| 3 | Data minim → "pertahankan" | ✔ Diperbaiki | Status **DATA BELUM CUKUP** + daftar pos kosong di ringkasan, KUR, saran & asumsi |
+| 4 | Saran rasio cepat tak kontekstual | ✔ Diperbaiki | Laundry: "stok bukan penyebabnya … fokus ke utang & kas". Toko bangunan stok 160 hari: saran versi stok |
+| 5, 7 | Tebak jenis substring; periode pendek → SEMENTARA | ✔ Diperbaiki | Uji G15, G14; "bengkel motor" → jasa |
+| 8 | Ringkasan tanpa kalimat tren | ⏳ Belum | — |
+
+### Temuan baru
+**Sedang**
+1. **CSV koma, sel pecah tepat sejumlah kolom judul** (`Kas,250,000` di tabel 2 periode) → kas 2024 = Rp 250, 2025 = Rp 0. Bila modal tidak diisi (modal dihitung sehingga neraca selalu seimbang): status LENGKAP **tanpa peringatan**, dan "Rasio kas 0,00x" jadi masalah paling mendesak. Bila modal diisi, kesalahan tertangkap lewat "neraca tidak seimbang". Kasus tepi, tetapi tetap angka salah diam-diam. **Saran:** pada tabel berpemisah koma, beri peringatan untuk sel 3 digit yang mengikuti sel 1–3 digit, atau sel angka < 1.000 di tabel yang angka lainnya jutaan.
+2. **Modal dihitung dari pos yang di-nol-kan** (`--penjualan 240jt --hpp 200jt --kas 5jt --utang-usaha 8jt`, tanpa stok/aset) → modal −3 jt, "Modal habis/negatif", KUR ✗, status LENGKAP. Asumsi mencatatnya dan SKILL.md menyuruh agent bertanya dulu, jadi risiko hanya muncul pada mode "langsung saja". **Saran:** bila modal dihitung dan stok/aset tetap kosong → SEMENTARA + saran "lengkapi data", bukan "modal habis".
+
+**Ringan**
+3. Baris dengan sel kurang (HPP hanya 1 dari 2 periode) tidak dicatat di "Perlu dicek". Rasio terkait memang "tidak dihitung", jadi tidak ada angka salah.
+4. Label tren netral untuk siklus kas ("naik") dan margin usaha ("turun"), padahal arahnya jelas memburuk.
+5. Selisih neraca Rp 0,50 ditampilkan "Rp 1" dan membuat SEMENTARA.
+6. Data minim: judul bagian kosong tetap tercetak. Saran bisa 6 butir ("Lainnya") sementara SKILL.md menulis "maks. 5".
+
+### Skor v1.0.1
+| Kriteria | Skor | Catatan |
+|---|---:|---|
+| Kualitas output | 9 | Tren jujur & basis tertulis, saran kontekstual |
+| Akurasi angka | 9 | 164/165 Decimal. Minus: kasus tepi CSV b14 |
+| Penanganan input kurang | 8 | DATA BELUM CUKUP benar. Minus: modal turunan dari pos nol |
+| Penanganan luar cakupan, keamanan | 10 | Tidak berubah dari v1.0.0 (tanpa jaringan/subprocess) |
+| **SKOR AKHIR** | **9** | Naik dari 8. Keempat temuan sedang v1.0.0 tertutup; dua temuan sedang baru bersifat tepi dan tercakup langkah bertanya di SKILL.md |
+
+**Status: LULUS** (≥ 7). Rekomendasi untuk kurator (katalog tidak diubah penguji): `skor_kualitas` 9, status `lulus`, `platform_teruji` tetap `claude-code (simulasi agent)`. Perbaiki temuan baru #1–#2 sebelum `beta` bila memungkinkan.
