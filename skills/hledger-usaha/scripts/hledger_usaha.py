@@ -2029,12 +2029,12 @@ def cmd_ekspor_emkm(a):
                  "menanyakannya.".format(kosong))
     b += ["", "Saldo dari jurnal untuk dipakai laporan-keuangan-emkm:"]
     b += ["- {}: {}".format(k, rp(v)) for k, v in nilai.items()]
-    b += ["", "Perintah (jalankan dengan skill laporan-keuangan-emkm):"] + perintah
+    b += ["", "Perintah (satu baris; jalankan dengan skill laporan-keuangan-emkm):", " ".join(x.strip() for x in perintah)]
     b += ["", "Catatan: penjualan/pembelian tempo tercermin lewat saldo piutang/utang awal-akhir; aset tetap butuh "
           "--umur-aset-tahun bila ingin penyusutan."]
     b += kaki(j)
     cetak(a, b, {"file": keluar, "baris": len(baris), "tanpa_kategori": kosong, "saldo": nilai,
-                 "perintah": " \\\n".join(perintah)})
+                 "perintah": " ".join(x.strip() for x in perintah)})
     return 0
 
 
