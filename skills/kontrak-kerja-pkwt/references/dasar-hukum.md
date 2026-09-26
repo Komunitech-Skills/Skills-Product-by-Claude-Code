@@ -1,6 +1,6 @@
 # Dasar Hukum PKWT (Kontrak Kerja Waktu Tertentu)
 
-**Dicek: 25 September 2026; pasal dicocokkan dengan naskah resmi 26 September 2026.** Ringkasan untuk membantu administrasi, **bukan nasihat hukum**.
+**Dicek: 26 September 2026 (pertama 25 September 2026); pasal dicocokkan dengan naskah resmi 26 September 2026.** Ringkasan untuk membantu administrasi, **bukan nasihat hukum**.
 Status: ✅ = dicek dari ≥2 sumber (resmi atau sekunder tepercaya) · "✅ dicocokkan dengan naskah resmi …" = dibaca langsung dari naskah resmi (URL disebut) · ⚠️ PERLU REVIEW = belum dicocokkan kata per kata dengan naskah resmi, atau berpotensi berubah.
 
 > **Pencocokan naskah resmi (26 September 2026):** naskah berikut berhasil diunduh dan dibaca langsung: PP 35/2021 (https://jdih.kemnaker.go.id/asset/data_puu/PP352021.pdf), UU 13/2003 (https://jdih.kemnaker.go.id/asset/data_puu/2003uu013.pdf), UU 6/2023 Lampiran klaster ketenagakerjaan (https://jdih.kemnaker.go.id/asset/data_puu/2023UU06_Klaster%20Ketenagakerjaan.pdf), PP 36/2021 (pindaian, https://jdih.kemnaker.go.id/asset/data_puu/PP362021.pdf), PP 51/2023 (https://jdih.kemnaker.go.id/asset/data_puu/2023pp051.pdf), PP 49/2025 (https://jdih.kemnaker.go.id/asset/data_puu/2025pp0049.pdf) — semuanya di JDIH Kemnaker — dan Putusan MK 168/PUU-XXI/2023 (https://s.mkri.id/public/content/persidangan/putusan/putusan_mkri_11215_1730375514.pdf). peraturan.bpk.go.id, mkri.id (domain utama) dan dpr.go.id tetap **403** dari lingkungan ini; peraturan.go.id gagal tersambung (kode 000).
@@ -79,7 +79,7 @@ Sumber bagian 2: https://jdih.kemnaker.go.id/berita/detail/apa-saja-kompensasi-y
 ## 6. Teks disclaimer baku (tempel di akhir setiap output)
 ```
 Disclaimer: Draf/hasil ini bantuan administrasi, bukan nasihat hukum. Dasar: UU 13/2003 sebagaimana
-diubah UU 6/2023, PP 35/2021, dan Putusan MK 168/PUU-XXI/2023 (dicek 25 September 2026). MK memerintahkan
+diubah UU 6/2023, PP 35/2021, dan Putusan MK 168/PUU-XXI/2023 (dicek 26 September 2026). MK memerintahkan
 UU Ketenagakerjaan baru paling lambat Oktober 2026; per tanggal cek, RUU Pelindungan Ketenagakerjaan
 belum disahkan, sehingga aturan PKWT bisa berubah. Sebelum ditandatangani, konsultasikan ke Disnaker
 setempat atau konsultan hukum ketenagakerjaan.

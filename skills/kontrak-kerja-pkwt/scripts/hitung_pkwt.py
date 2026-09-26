@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 """Hitung uang kompensasi akhir PKWT & ganti rugi pengakhiran dini (hanya library standar Python).
 
-Dasar (dicek 2026-09-25, lihat references/dasar-hukum.md):
+Dasar (dicek 2026-09-26, lihat references/dasar-hukum.md):
   - PP 35/2021 Pasal 15-17 : kompensasi bila masa kerja >= 1 bulan terus-menerus;
                              12 bulan = 1 x upah; kurang/lebih dari 12 bulan = masa kerja / 12 x upah.
                              Diakhiri lebih cepat: kompensasi dihitung dari jangka waktu yang sudah dijalani.
   - PP 35/2021 Pasal 16 ayat (6): besaran kompensasi bagi pekerja pada USAHA MIKRO DAN USAHA KECIL diberikan
                              berdasarkan KESEPAKATAN pengusaha dan pekerja. Opsi --usaha-mikro-kecil menampilkan
-                             rumus umum sebagai ACUAN (batas bawah praktik baik), bukan kewajiban (sejak v1.0.3).
+                             rumus umum sebagai ACUAN praktik baik (bukan batas bawah wajib), bukan kewajiban (sejak v1.0.3).
   - UU 13/2003 Pasal 62    : pihak yang mengakhiri PKWT sebelum waktunya membayar ganti rugi sebesar
                              upah sampai batas waktu berakhirnya jangka waktu perjanjian kerja.
   - Putusan MK 168/PUU-XXI/2023: total PKWT termasuk perpanjangan paling lama 5 tahun.
@@ -63,8 +63,9 @@ PERIODE_RAPAT = re.compile(r"\s*(" + _TGL_ANGKA + r")\s*[-–—]\s*(" + _TGL_AN
 BATAS_UPAH_JANGGAL = 500000  # upah bulanan di bawah ini hampir pasti salah ketik
 CATATAN_UMK = ("USAHA MIKRO/KECIL: menurut PP 35/2021 Pasal 16 ayat (6), besaran uang kompensasi bagi pekerja pada "
                "usaha mikro dan usaha kecil diberikan berdasarkan KESEPAKATAN antara pengusaha dan pekerja. Angka "
-               "kompensasi di tabel memakai rumus umum Pasal 16 ayat (1) dan hanya ACUAN (batas bawah praktik baik), "
-               "BUKAN jumlah yang diwajibkan. Tuliskan besaran yang disepakati di kontrak. Hak atas kompensasi tetap "
+               "kompensasi di tabel memakai rumus umum Pasal 16 ayat (1) dan hanya ACUAN praktik baik, "
+               "BUKAN jumlah yang diwajibkan dan BUKAN batas bawah wajib; besaran di bawah acuan sah bila "
+               "disepakati dan ditulis jelas. Tuliskan besaran yang disepakati di kontrak. Hak atas kompensasi tetap "
                "ada; yang disepakati adalah besarannya. Ganti rugi Pasal 62 UU 13/2003 tidak terpengaruh. "
                "Pastikan usaha memang tergolong usaha mikro/kecil (kriteria PP 7/2021; cek ke Dinas Koperasi & UKM "
                "atau konsultan).")
@@ -455,7 +456,8 @@ def teks(h):
         fmt_tgl(datetime.date.fromisoformat(t["batas_akhir_5_tahun"])),
         "MELEBIHI" if t["melebihi_5_tahun"] else "OK"))
     b.append("")
-    b.append("| Periode | Kontrak | Dijalani | Masa kerja | Bulan | Rumus | Kompensasi |")
+    b.append("| Periode | Kontrak | Dijalani | Masa kerja | Bulan | Rumus | {} |".format(
+        "Kompensasi (acuan)" if h.get("usaha_mikro_kecil") else "Kompensasi"))
     b.append("|---|---|---|---|---|---|---|")
     for r in h["rincian_kompensasi"]:
         kontrak = "{} s.d. {}".format(fmt_tgl(datetime.date.fromisoformat(r["mulai"])),
@@ -494,7 +496,7 @@ def teks(h):
             b.append("- " + p)
     b.append("")
     b.append("Bukan nasihat hukum. Dasar: PP 35/2021 Pasal 15-17, UU 13/2003 Pasal 62 jo. UU 6/2023, Putusan MK "
-             "168/PUU-XXI/2023 (dicek 25 September 2026). Konfirmasi ke Disnaker/konsultan hukum.")
+             "168/PUU-XXI/2023 (dicek 26 September 2026). Konfirmasi ke Disnaker/konsultan hukum.")
     if not h.get("usaha_mikro_kecil"):
         b.append("Usaha mikro/kecil? Besaran kompensasi ditentukan kesepakatan (PP 35/2021 Pasal 16 ayat (6)); "
                  "jalankan ulang dengan --usaha-mikro-kecil.")

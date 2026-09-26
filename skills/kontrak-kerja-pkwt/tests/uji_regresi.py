@@ -424,6 +424,18 @@ _baris12 = [x for x in (_sk + _tp + _ck).splitlines() if "12 bulan terakhir" in 
 cek("v103 rata-rata 12 bulan = Pasal 33(2) lembur", all("Pasal 33 ayat (2)" in x and "lembur" in x for x in _baris12),
     _baris12)
 
+# --- v1.0.4: konsistensi istilah acuan UMK, judul kolom, tanggal dicek
+p = cli(["--periode", "1/1/2026 s.d. 30/6/2026", "--upah", "3jt", "--usaha-mikro-kecil"])
+cek("v104 umk kolom acuan", "| Kompensasi (acuan) |" in p.stdout and "Rp1.500.000" in p.stdout, p.stdout)
+cek("v104 umk tanpa batas bawah praktik", "batas bawah praktik" not in p.stdout
+    and "BUKAN batas bawah wajib" in p.stdout, p.stdout)
+cek("v104 footer dicek 26 Sep", "dicek 26 September 2026" in p.stdout and "25 September 2026" not in p.stdout)
+p = cli(["--periode", "1/1/2026 s.d. 30/6/2026", "--upah", "3jt"])
+cek("v104 non-umk kolom biasa", "| Kompensasi |" in p.stdout and "(acuan)" not in p.stdout, p.stdout)
+cek("v104 SKILL.md konsisten B4a", "batas bawah praktik" not in _sk and "bukan batas bawah wajib" in _sk)
+_scr = open(os.path.join(os.path.dirname(SINI), "scripts", "hitung_pkwt.py"), encoding="utf-8").read()
+cek("v104 script tanpa batas bawah praktik", "batas bawah praktik" not in _scr)
+
 # ------------------------------------------------------------ CLI
 p = cli(["--periode", "1 Januari 2026 s.d. 31 Desember 2026", "--gaji-pokok", "5jt", "--tunjangan-tetap", "500rb",
          "--format", "json"])

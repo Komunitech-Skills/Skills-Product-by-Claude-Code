@@ -5,7 +5,7 @@ Pakai di **mode Periksa**. Setiap temuan diberi tingkat risiko:
 - 🟠 **SEDANG** — tidak lengkap / berisiko sengketa / temuan pengawas. Sebaiknya diperbaiki.
 - 🟢 **RENDAH** — kerapian, kejelasan, praktik baik.
 
-Dasar aturan: `references/dasar-hukum.md` (dicek 25 September 2026).
+Dasar aturan: `references/dasar-hukum.md` (dicek 26 September 2026).
 
 ## A. Syarat pokok
 
