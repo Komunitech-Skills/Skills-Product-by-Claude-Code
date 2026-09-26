@@ -703,5 +703,146 @@ class UjiV102(Dasar):
         self.assertEqual(self.cli("harga", f, "--hps", "-5")[0], 2)
 
 
+
+class UjiV104NaskahResmi(Dasar):
+    """v1.0.4: perilaku sesuai naskah konsolidasi resmi Perpres 16/2018 jo. 12/2021 jo. 46/2025."""
+    GEDUNG = "Uraian;Volume;Satuan;Harga Satuan\nPaket;1;ls;10.500.000.000\n"
+
+    def info(self, **kw):
+        return " | ".join(C.hitung(self.tulis(self.GEDUNG), hps=11_000_000_000, **kw)["info"])
+
+    def test_a_jaminan_penawaran_hanya_konstruksi_terintegrasi(self):
+        # 1% x 11 M = 110.000.000 ; 3% = 330.000.000
+        for j in ("konstruksi", "terintegrasi"):
+            t = self.info(jenis=j)
+            self.assertIn("WAJIB JAMINAN PENAWARAN", t)
+            self.assertIn("Rp110.000.000 s.d. Rp330.000.000", t)
+            self.assertIn("Pasal 30 ayat (2)", t)
+        self.assertIn("pagu", self.info(jenis="terintegrasi"))
+        for j in ("barang", "jasa-lainnya", "konsultansi"):
+            t = self.info(jenis=j)
+            self.assertNotIn("WAJIB JAMINAN PENAWARAN", t)
+            self.assertIn("TIDAK diperlukan", t)
+        t = self.info()
+        self.assertIn("ASUMSI", t)
+        self.assertIn("KONSTRUKSI", t)
+        # angka inti tidak berubah oleh --jenis
+        for j in [None] + C.JENIS:
+            h = C.hitung(self.tulis(self.GEDUNG), hps=11_000_000_000, jenis=j)
+            self.assertEqual((h["total"], h["persen_hps"], h["batas_80_hps"]),
+                             (10_500_000_000, Decimal("95.45"), 8_800_000_000))
+
+    def test_a_cli_jenis(self):
+        p = self.tulis(self.GEDUNG)
+        kode, out, _ = self.cli("harga", p, "--hps", "11 M", "--jenis", "barang")
+        self.assertEqual(kode, 0)
+        self.assertNotIn("WAJIB JAMINAN PENAWARAN", out)
+        kode, out, _ = self.cli("harga", p, "--hps", "11 M", "--jenis", "konstruksi")
+        self.assertEqual(kode, 0)
+        self.assertIn("WAJIB JAMINAN PENAWARAN", out)
+        self.assertEqual(self.cli("harga", p, "--jenis", "sembako")[0], 2)
+
+    def test_b_jaminan_pelaksanaan_tanpa_pengecualian_epurchasing(self):
+        p = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nMebel;1;ls;250.000.000\n")
+        for j in (None, "barang", "konstruksi"):
+            t = " | ".join(C.hitung(p, hps=300_000_000, jenis=j)["info"])
+            self.assertIn("Rp12.500.000", t)
+            self.assertNotIn("kecuali e-purchasing", t)
+            self.assertIn("berlaku juga untuk e-purchasing", t)
+        t = " | ".join(C.hitung(p, hps=300_000_000, jenis="konsultansi")["info"])
+        self.assertNotIn("Rp12.500.000", t)
+        # < 80% HPS: 5% x HPS 400 jt = 20.000.000 (angka lama tetap)
+        pr = " | ".join(C.hitung(p, hps=400_000_000, jenis="barang")["peringatan"])
+        self.assertIn("Rp20.000.000", pr)
+        self.assertIn("Pasal 33 ayat (3) huruf b", pr)
+
+    def test_c_tkdn_dan_pasal65_di_dokumen(self):
+        teks = ""
+        for f in ("SKILL.md", "README.md", "references/checklist-dokumen.md",
+                  "references/kesalahan-gugur.md", "templates/lembar-kerja-tender.md"):
+            with open(os.path.join(AKAR, f), encoding="utf-8") as fh:
+                teks += fh.read()
+        self.assertNotIn("> 25%", teks)
+        self.assertNotIn("kecuali e-purchasing", teks)
+        self.assertNotIn("bukan e-purchasing", teks)
+        self.assertIn("paling sedikit 25%", teks)
+        self.assertIn("Pasal 65 ayat (4)", teks)
+        with open(os.path.join(AKAR, "scripts", "cek_penawaran.py"), encoding="utf-8") as fh:
+            src = fh.read()
+        self.assertNotIn("kecuali e-purchasing", src)
+        p = self.tulis("Uraian;Volume;Satuan;Harga Satuan\nA;1;u;1.000.000\n")
+        t = " | ".join(C.hitung(p, pagu=5_000_000)["info"])
+        self.assertIn("Pasal 65 ayat (3)", t)
+        self.assertIn("Pasal 65 ayat (4)", t)
+
+
+
+class UjiV105Terintegrasi(Dasar):
+    """v1.0.5: pekerjaan terintegrasi + --pagu -> jaminan dihitung dari pagu (Pasal 31 ayat (3), Pasal 33 ayat (4))."""
+    GEDUNG = "Uraian;Volume;Satuan;Harga Satuan\nPaket;1;ls;10.500.000.000\n"
+
+    def h(self, **kw):
+        return C.hitung(self.tulis(self.GEDUNG), hps=11_000_000_000, **kw)
+
+    def test_penawaran_dari_pagu(self):
+        h = self.h(jenis="terintegrasi", pagu=14_000_000_000)
+        t = " | ".join(h["info"])
+        # 1% x 14 M = 140.000.000 ; 3% = 420.000.000
+        self.assertIn("WAJIB JAMINAN PENAWARAN 1%-3% dari pagu anggaran Rp14.000.000.000", t)
+        self.assertIn("Rp140.000.000 s.d. Rp420.000.000", t)
+        self.assertNotIn("Rp110.000.000 s.d. Rp330.000.000", t)
+        self.assertEqual(h["dasar_jaminan_penawaran"], "pagu")
+
+    def test_tanpa_pagu_tetap_gambaran_hps(self):
+        h = self.h(jenis="terintegrasi")
+        t = " | ".join(h["info"])
+        self.assertIn("Rp110.000.000 s.d. Rp330.000.000", t)
+        self.assertIn("isi --pagu", t)
+        self.assertNotIn("di atas dihitung dari HPS", t)
+        self.assertEqual(h["dasar_jaminan_penawaran"], "hps")
+
+    def test_pelaksanaan_di_bawah_80_pagu(self):
+        # 10,5 M < 80% x 14 M = 11,2 M -> 5% x pagu 14 M = 700.000.000
+        h = self.h(jenis="terintegrasi", pagu=14_000_000_000)
+        pr = " | ".join(h["peringatan"])
+        self.assertIn("di bawah 80% pagu anggaran (< Rp11.200.000.000)", pr)
+        self.assertIn("5% dari nilai total pagu = Rp700.000.000", pr)
+        self.assertIn("Pasal 33 ayat (4)", pr)
+        self.assertNotIn("Rp525.000.000", pr + " | ".join(h["info"]))
+
+    def test_pelaksanaan_80_100_pagu(self):
+        # 10,5 M >= 80% x 12 M = 9,6 M -> 5% x kontrak 10,5 M = 525.000.000
+        h = self.h(jenis="terintegrasi", pagu=12_000_000_000)
+        t = " | ".join(h["info"])
+        self.assertIn("5% dari nilai kontrak = Rp525.000.000", t)
+        self.assertIn("80%-100% pagu", t)
+        self.assertEqual(sum("jaminan pelaksanaan" in x for x in h["info"]), 1)
+
+    def test_klarifikasi_tetap_terhadap_hps(self):
+        # 10,5 M < 80% HPS 14 M: klarifikasi kewajaran tetap vs HPS; jaminan pelaksanaan dari pagu 15 M
+        h = C.hitung(self.tulis(self.GEDUNG), hps=14_000_000_000, pagu=15_000_000_000, jenis="terintegrasi")
+        pr = " | ".join(h["peringatan"])
+        self.assertIn("KLARIFIKASI KEWAJARAN HARGA", pr)
+        self.assertNotIn("5% dari nilai HPS", pr)
+        self.assertIn("Rp750.000.000", pr)
+
+    def test_angka_inti_dan_jenis_lain_tidak_berubah(self):
+        for j in [None] + C.JENIS:
+            h = self.h(jenis=j, pagu=14_000_000_000)
+            self.assertEqual((h["total"], h["persen_hps"], h["batas_80_hps"]),
+                             (10_500_000_000, Decimal("95.45"), 8_800_000_000))
+        t = " | ".join(self.h(jenis="konstruksi", pagu=14_000_000_000)["info"])
+        self.assertIn("Rp110.000.000 s.d. Rp330.000.000", t)
+        self.assertIn("Rp525.000.000", t)
+
+    def test_slug_jasa_lainnya_dan_pagu_nol(self):
+        t = " | ".join(self.h(jenis="jasa-lainnya")["info"])
+        self.assertIn("pengadaan jasa lainnya", t)
+        self.assertNotIn("pengadaan jasa-lainnya", t)
+        p = self.tulis(self.GEDUNG)
+        self.assertEqual(self.cli("harga", p, "--pagu", "0")[0], 2)
+        kode, out, _ = self.cli("harga", p, "--hps", "11 M", "--pagu", "14 M", "--jenis", "terintegrasi")
+        self.assertIn("Rp140.000.000 s.d. Rp420.000.000", out)
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

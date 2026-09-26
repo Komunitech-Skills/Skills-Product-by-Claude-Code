@@ -387,6 +387,55 @@ cek("R-baru-5 B5 jelas", _b5 and "tidak disebut sama sekali" in _b5[0] and "🟠
 # SKILL.md tidak lagi menawarkan --metode bulan-penuh
 cek("R-baru-3 SKILL.md tanpa opsi bulan-penuh", "`--harian` · `--metode bulan-penuh`" not in _sk and "dihapus sejak v1.0.2" in _sk)
 
+# --- v1.0.3: usaha mikro/kecil (PP 35/2021 Pasal 16 ayat (6): besaran kompensasi = kesepakatan)
+# Angka rupiah metode default TIDAK berubah dengan/tanpa opsi; hanya label & catatan.
+for _umk in (False, True):
+    h = H(["1/10/2026 s.d. 30/9/2027"], gaji_pokok="3,8jt", tunjangan_tetap="300rb", usaha_mikro_kecil=_umk)
+    cek("v103 kunci 4.100.000 umk={}".format(_umk), h["total_kompensasi"] == 4100000, h["total_kompensasi"])
+    h = H(["1/1/2026 s.d. 31/3/2026"], upah="3jt", berhenti="15/2/2026", pihak="pekerja", usaha_mikro_kecil=_umk)
+    cek("v103 kunci 4.392.857 umk={}".format(_umk), h["ganti_rugi_pasal_62"]["nilai"] == 4392857)
+h = H(["1/1/2026 s.d. 31/12/2026"], upah="5jt")
+cek("v103 default bukan umk", h["usaha_mikro_kecil"] is False and "Pasal 16 ayat (1)" in h["status_kompensasi"]
+    and not any("USAHA MIKRO/KECIL" in x for x in h["peringatan"]))
+h = H(["1/1/2026 s.d. 31/12/2026"], upah="5jt", usaha_mikro_kecil=True)
+_pu = [x for x in h["peringatan"] if x.startswith("USAHA MIKRO/KECIL")]
+cek("v103 umk catatan kesepakatan", h["usaha_mikro_kecil"] is True and h["total_kompensasi"] == 5000000
+    and _pu and "Pasal 16 ayat (6)" in _pu[0] and "KESEPAKATAN" in _pu[0] and "ACUAN" in _pu[0]
+    and "BUKAN jumlah yang diwajibkan" in _pu[0] and "kesepakatan" in h["status_kompensasi"], h["peringatan"])
+p = cli(["--periode", "1/1/2026 s.d. 30/6/2026", "--upah", "3jt", "--usaha-mikro-kecil"])
+cek("v103 cli umk label acuan", "ACUAN KOMPENSASI" in p.stdout and "Rp1.500.000" in p.stdout
+    and "TOTAL KOMPENSASI (dibayar" not in p.stdout and "Pasal 16 ayat (6)" in p.stdout, p.stdout)
+p = cli(["--periode", "1/1/2026 s.d. 30/6/2026", "--upah", "3jt", "--usaha-mikro-kecil", "--format", "json"])
+if p.returncode == 0:
+    j = json.loads(p.stdout)
+    cek("v103 cli json umk", j["usaha_mikro_kecil"] is True and j["total_kompensasi"] == 1500000)
+p = cli(["--periode", "1/1/2026 s.d. 30/6/2026", "--upah", "3jt"])
+cek("v103 cli default tetap total + petunjuk umk", "TOTAL KOMPENSASI (dibayar pengusaha ke pekerja): Rp1.500.000"
+    in p.stdout and "--usaha-mikro-kecil" in p.stdout, p.stdout)
+# SKILL.md, checklist, template menyebut usaha mikro/kecil & Pasal 16 ayat (6)
+_tp = open(os.path.join(os.path.dirname(SINI), "templates", "kerangka-pkwt.md"), encoding="utf-8").read()
+cek("v103 SKILL.md umk", "--usaha-mikro-kecil" in _sk and _sk.count("Pasal 16 ayat (6)") >= 3)
+cek("v103 checklist umk", "Pasal 16 ayat (6)" in _ck and "usaha mikro" in _ck.lower())
+cek("v103 template klausul kesepakatan", "Pasal 16 ayat (6)" in _tp and "disepakati" in _tp)
+# Rujukan pasal sesuai naskah resmi: 1/173 = PP 35/2021 Pasal 32 ayat (2); tidak ada klaim "rata-rata 12 bulan"
+cek("v103 1/173 Pasal 32", "Pasal 32 ayat (2)" in _tp and "Pasal 32 ayat (2)" in _ck)
+# "rata-rata 12 bulan terakhir" hanya boleh muncul sebagai koreksi yang menunjuk Pasal 33 ayat (2) (upah lembur)
+_baris12 = [x for x in (_sk + _tp + _ck).splitlines() if "12 bulan terakhir" in x]
+cek("v103 rata-rata 12 bulan = Pasal 33(2) lembur", all("Pasal 33 ayat (2)" in x and "lembur" in x for x in _baris12),
+    _baris12)
+
+# --- v1.0.4: konsistensi istilah acuan UMK, judul kolom, tanggal dicek
+p = cli(["--periode", "1/1/2026 s.d. 30/6/2026", "--upah", "3jt", "--usaha-mikro-kecil"])
+cek("v104 umk kolom acuan", "| Kompensasi (acuan) |" in p.stdout and "Rp1.500.000" in p.stdout, p.stdout)
+cek("v104 umk tanpa batas bawah praktik", "batas bawah praktik" not in p.stdout
+    and "BUKAN batas bawah wajib" in p.stdout, p.stdout)
+cek("v104 footer dicek 26 Sep", "dicek 26 September 2026" in p.stdout and "25 September 2026" not in p.stdout)
+p = cli(["--periode", "1/1/2026 s.d. 30/6/2026", "--upah", "3jt"])
+cek("v104 non-umk kolom biasa", "| Kompensasi |" in p.stdout and "(acuan)" not in p.stdout, p.stdout)
+cek("v104 SKILL.md konsisten B4a", "batas bawah praktik" not in _sk and "bukan batas bawah wajib" in _sk)
+_scr = open(os.path.join(os.path.dirname(SINI), "scripts", "hitung_pkwt.py"), encoding="utf-8").read()
+cek("v104 script tanpa batas bawah praktik", "batas bawah praktik" not in _scr)
+
 # ------------------------------------------------------------ CLI
 p = cli(["--periode", "1 Januari 2026 s.d. 31 Desember 2026", "--gaji-pokok", "5jt", "--tunjangan-tetap", "500rb",
          "--format", "json"])

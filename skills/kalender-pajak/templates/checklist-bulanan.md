@@ -31,4 +31,4 @@
 - Tenggat yang bergeser karena libur: ______
 - Kendala / pertanyaan untuk konsultan atau AR: ______
 
-_Bukan nasihat pajak. Tenggat mengikuti PMK 81/2024 (dicek 2026-09-25). Cek pengumuman DJP terbaru._
+_Bukan nasihat pajak. Tenggat mengikuti PMK 81/2024 (dicocokkan dengan naskah resmi 2026-09-26). Cek pengumuman DJP terbaru._

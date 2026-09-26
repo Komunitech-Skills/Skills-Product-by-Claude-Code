@@ -42,7 +42,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Scrip
 
 ## FAQ
 **Apakah tanggalnya pasti benar?**
-Tanggal disusun dari aturan PMK 81/2024 dan daftar libur SKB 3 Menteri 2026 & 2027 (dicek 25 September 2026). DJP kadang mengumumkan perpanjangan khusus, jadi tetap pantau pengumuman DJP. Untuk kasus khusus, tanyakan ke konsultan pajak atau AR Anda.
+Tanggal disusun dari aturan PMK 81/2024 dan daftar libur SKB 3 Menteri 2026 & 2027 (pasal tenggat dicocokkan dengan naskah resmi PMK 81/2024 di pajak.go.id, 26 September 2026). Batas SPT Tahunan tidak bergeser walau jatuh di hari libur, jadi lapor lebih awal. DJP kadang mengumumkan perpanjangan khusus, jadi tetap pantau pengumuman DJP. Untuk kasus khusus, tanyakan ke konsultan pajak atau AR Anda.
 
 **Apakah skill ini menghitung berapa pajak saya?**
 Tidak — skill ini khusus jadwal. Untuk besarannya gunakan skill "Hitung Pajak UMKM 0,5%", "PPh 21 TER", atau "Hitung PPN".
@@ -54,6 +54,7 @@ Belum tentu. Apple Calendar dan Outlook biasanya memakai pengingat bawaan file, 
 Skill tetap membuat jadwal, tetapi menampilkan peringatan karena daftar libur 2028 belum terbit. Setelah SKB 3 Menteri terbit, cukup tambahkan daftar liburnya (atau tunggu pembaruan skill). Daftar libur yang Anda tambahkan sendiri ditandai "data libur dari pengguna" dan peringatan tetap tampil sampai data resmi masuk ke skill.
 
 ## Riwayat versi
+- **1.0.3** (26 Sep 2026) — SPT Tahunan disesuaikan dengan naskah resmi PMK 81/2024: batasnya diatur Ps. 169 dan tidak bergeser meski hari libur, jadi kini hanya satu tanggal yang ditampilkan (tampilan "dua kemungkinan tanggal" dihapus) dengan catatan "lapor lebih awal". Rujukan pasal diperbaiki (Ps. 172/173 bukan dasar SPT Tahunan); label PERLU REVIEW dihapus untuk butir yang kini terverifikasi (mis. PPh 25 dianggap lapor saat setor, Ps. 171 ayat 10). Tidak ada tanggal tenggat yang berubah.
 - **1.0.2** (25 Sep 2026) — perbaikan kecil dari uji ulang: batas unggah faktur (tgl 20) atau tenggat lain yang tidak bergeser dan jatuh di hari libur kini menyebut hari kerja sebelumnya (mis. 20 Mei 2027 → unggah paling aman Jumat 14 Mei 2027); SPT Tahunan yang jatuh di hari libur menampilkan dua kemungkinan tanggal (dasar Ps. 173 ayat 1 masih PERLU REVIEW); file libur buatan sendiri dilabeli "data libur dari pengguna" dan peringatan tahun tanpa data resmi tetap tampil. Tidak ada tanggal tenggat yang berubah.
 - **1.0.1** (25 Sep 2026) — revisi temuan uji independen: tambah batas unggah faktur pajak keluaran tgl 20 untuk PKP (PER-11/PJ/2025); klaim pengingat Google Calendar & impor ulang diluruskan + opsi acara pengingat terpisah; keterangan libur berkoma tidak terpotong; mode "N hari ke depan" menyebut tenggat berikutnya; label alasan geser lebih jelas; output menyebut cakupan periode & sumber data libur; dasar pasal pergeseran setor diperbaiki (Ps. 100 PMK 81/2024).
 - **1.0.0** (25 Sep 2026) — versi awal.

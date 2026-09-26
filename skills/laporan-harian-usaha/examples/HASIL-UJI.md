@@ -149,3 +149,35 @@ Alasan:
 - (−) N-baru & catatan kosmetik: dampak rendah, tidak menahan kelulusan tapi sebaiknya dijadwalkan.
 
 **Keputusan: LULUS (≥ 7).** Boleh lanjut ke uji platform asli untuk paket v1.1.0. Disarankan memperbaiki **S2** (murah: satu baris penjelas tetap atau ganti label agar basis tanggal tersirat, tidak mengubah angka apa pun) sebelum `beta`, supaya bagian PROSPEK tidak berisiko dibaca sebagai laporan yang salah/kontradiktif oleh pemilik UMKM awam. N-baru dan catatan "order perlu konfirmasi" boleh dijadwalkan di versi berikutnya bersama N2–N4 dari v1.0.1 yang belum diperbaiki.
+
+---
+
+## Uji ulang v1.1.1 (Akun B)
+
+- **Penguji:** agent penguji independen lintas akun (Akun B, simulasi Claude Code), bukan pembuat v1.1.1 (Akun A). Rincian & reproduksi: `08-uji-ulang-v1.1.1.md`. Catatan pembuat: `uji-pembuat/UJI-PEMBUAT-v1.1.1.md`.
+- **Lingkungan:** skill + 5 alat disalin ke scratchpad (identik dengan repo), v1.1.0 (`560836d~1`) dijalankan berdampingan. Data rekaan sendiri: kedai 2 shift (07.00 & 14.00), 4 karyawan, 7 nota (void lintas hari), 6 kontak CRM. Semua fiktif.
+- **Otomatis:** `tests/uji_regresi.py` → **53 tes OK**. `python3 scripts/validate.py --skill laporan-harian-usaha` → valid.
+
+| Temuan | Hasil uji ulang |
+|---|---|
+| N1 alarm sebelum jam masuk | Tertutup: 06.55 tanpa alarm (v1.1.0 alarm 3 nama); 07.00 ke atas alarm tetap muncul. Shift siang ikut alarm 07.00–13.59 (batas "per-shift" yang sudah diungkap pembuat) |
+| N2 cek dilewati | Tertutup: catatan struktur berubah tampil 1× di teks |
+| N3 void setelah impor | Tertutup: 2 nota disebut tepat; nota void sebelum impor tidak disebut; langkah perbaikan terbukti mengembalikan stok (qty tepat) dan butir hilang |
+| N4 referensi OpenClaw | Tertutup |
+| N5 titik ganda | Tertutup ("M. Tanyakan") |
+| N-baru `--samarkan` → crm rekap | Tertutup: argv dicatat lewat wrapper, `--samarkan` hanya saat diminta (harian & kedua panggilan mingguan); JSON `prospek` identik |
+| Order perlu konfirmasi | Tertutup: butir muncul bila deal jatuh tempo ≤ hari ini, tidak muncul bila besok |
+| Angka | 10 kasus × 7 bagian JSON: v1.1.0 = v1.1.1; omzet & PROSPEK = hitung mandiri SQLite mentah (0 beda) |
+| Hanya-baca | sha256 semua DB sama sebelum/sesudah |
+
+**Cacat baru:** N3b (Rendah) — pengingat void-setelah-impor hanya muncul di laporan **tanggal void**; laporan harian berikutnya diam walau stok buku-stok masih belum dikembalikan (baru tertangkap lagi di laporan mingguan). Batas ini tidak disebut di `SKILL.md`. Sisa terbuka: N1 per-shift (Rendah, diketahui), N6 & K1 (kosmetik, keputusan desain).
+
+### Skor kualitas v1.1.1: **9 / 10**
+Alasan:
+- (+) Ketujuh perbaikan yang diklaim terbukti dengan data independen dan dibandingkan langsung dengan v1.1.0 (tiap temuan direproduksi di v1.1.0 lalu hilang di v1.1.1).
+- (+) Tidak ada perubahan angka: 10/10 kasus JSON identik antar versi, omzet dan seluruh angka PROSPEK cocok dengan hitung mandiri dari SQLite mentah; 53 tes lulus; database tetap tidak tersentuh.
+- (+) S2 dari v1.1.0 sudah tertangani sejak v1.1.0 (label "termasuk dari prospek lama"/"Konversi prospek baru"), jadi tidak ada cacat Sedang tersisa.
+- (−) N3b: pengingat void-setelah-impor hanya muncul sehari; N1 per-shift masih memberi alarm palsu untuk shift siang di laporan pagi/siang.
+- (−) N6/K1 kosmetik menunggu keputusan pemilik.
+
+**Keputusan: LULUS (≥ 7).** Layak naik ke uji platform asli lalu `beta`. N3b disarankan ditangani murah (perluas jendela cek void beberapa hari ke belakang, atau sebut batasnya di SKILL.md) sebelum rilis.

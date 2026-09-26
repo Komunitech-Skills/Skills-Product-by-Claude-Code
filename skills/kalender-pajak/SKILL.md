@@ -64,23 +64,23 @@ Kewajiban tunggal juga boleh dipakai langsung sebagai profil: `ppn`, `pph21`, `u
 6. Selalu sertakan peringatan (bila ada) dan disclaimer dari output script.
 7. **Fallback tanpa Python:** susun manual dengan tabel aturan di bawah + daftar libur di `references/libur-nasional-2026.csv` / `-2027.csv`; beri tahu bahwa disusun manual dan periksa ulang tiap pergeseran.
 
-## Aturan tenggat (PMK 81/2024, berlaku 1 Jan 2025; dicek 2026-09-25)
+## Aturan tenggat (PMK 81/2024, berlaku 1 Jan 2025; dicocokkan dengan naskah resmi 2026-09-26)
 | Kewajiban | Setor paling lambat | Lapor paling lambat |
 |---|---|---|
 | PPh Final UMKM 0,5% (PP 55/2022 jo. PP 20/2026) | tgl 15 bulan berikutnya | dianggap lapor saat setoran tervalidasi |
 | PPh 21/26 (pemberi kerja) | tgl 15 bulan berikutnya | tgl 20 bulan berikutnya (SPT Masa PPh 21/26) |
 | PPh Unifikasi: 4(2), 15, 22, 23, 26 | tgl 15 bulan berikutnya | tgl 20 bulan berikutnya (SPT Masa PPh Unifikasi) |
-| PPh 25 angsuran | tgl 15 bulan berikutnya | tgl 20, tetapi setoran tervalidasi (NTPN) dianggap sudah lapor pada tanggal setor (Ps. 171; nomor ayat PERLU REVIEW) → tidak dibuat acara lapor terpisah |
+| PPh 25 angsuran | tgl 15 bulan berikutnya | tgl 20, tetapi setoran tervalidasi (NTPN) dianggap sudah lapor pada tanggal setor (Ps. 171 ayat 10) → tidak dibuat acara lapor terpisah |
 | PPN (PKP) | akhir bulan berikutnya **dan** sebelum SPT dikirim | akhir bulan berikutnya (walau nihil) |
 | Faktur pajak keluaran (PKP) | — | **unggah & dapat persetujuan DJP paling lambat tgl 20** bulan berikutnya setelah tanggal pembuatan faktur (PER-11/PJ/2025 Ps. 44 ayat 1, berlaku 22 Mei 2025); tidak disetujui = bukan faktur pajak sah |
-| SPT Tahunan OP | PPh 29 lunas sebelum SPT dikirim | 31 Maret (3 bulan setelah tahun pajak) |
-| SPT Tahunan Badan | PPh 29 lunas sebelum SPT dikirim | akhir bulan ke-4 (30 April bila tahun buku = kalender) |
+| SPT Tahunan OP | PPh 29 lunas sebelum SPT dikirim | 31 Maret (3 bulan setelah tahun pajak; Ps. 169 ayat 1) |
+| SPT Tahunan Badan | PPh 29 lunas sebelum SPT dikirim | akhir bulan ke-4 (30 April bila tahun buku = kalender; Ps. 169 ayat 2) |
 | Bukti potong BPA1 (1721-A1) ke karyawan | — | 1 bulan setelah masa pajak terakhir (31 Jan) |
 
-**Pergeseran:** tenggat setor dan lapor **bulanan** yang jatuh pada Sabtu, Minggu, libur nasional, hari libur pemilu, atau **cuti bersama** bergeser ke **hari kerja berikutnya** — setor: PMK 81/2024 **Ps. 100 ayat 1** (merujuk tenggat Ps. 94); lapor SPT Masa: **Ps. 173 ayat 1**. Geser berulang sampai ketemu hari kerja.
+**Pergeseran:** tenggat setor dan lapor **bulanan** yang jatuh pada Sabtu, Minggu, libur nasional, hari libur pemilu, atau **cuti bersama** bergeser ke **hari kerja berikutnya** — setor: PMK 81/2024 **Ps. 100 ayat 1** (merujuk tenggat Ps. 94); lapor SPT Masa: **Ps. 173 ayat 1** (hanya untuk pelaporan Ps. 171 & 172 — SPT Masa, serta PPN membangun sendiri/pemanfaatan dari luar Daerah Pabean oleh bukan-PKP). Geser berulang sampai ketemu hari kerja.
 **Tidak digeser (ditampilkan di tanggal aslinya, label "TIDAK bergeser"):**
-- **SPT Tahunan** — DJP menegaskan (2025, era PMK 81/2024) batasnya tidak mundur walau libur; mundurnya hanya lewat pengumuman khusus (mis. 11 Apr 2025, KEP-55/PJ/2026 → 30 Apr 2026). Tetapi Ps. 173 ayat 1 merujuk "Pasal 171 **dan Pasal 172**" dan isi Ps. 172 belum terverifikasi (PERLU REVIEW). Bila SPT Tahunan jatuh di hari libur, keterangan script menyebut **kedua kemungkinan**: tanggal kalender (tidak bergeser) + hari kerja sebelumnya, dan "kemungkinan lain" tanggal bila ikut bergeser. Sampaikan keduanya; sarankan pakai tanggal yang lebih awal.
-- **Unggah faktur pajak keluaran tgl 20** — beberapa sumber sekunder: tidak mundur walau libur/cuti bersama (PERLU REVIEW). Bila tgl 20 hari libur, keterangan menyebut hari kerja sebelumnya sebagai saran (mis. 20 Mei 2027 Waisak → unggah paling aman **Jumat 14 Mei 2027**); tanggal batas resmi tetap tgl 20.
+- **SPT Tahunan** — batasnya diatur **Ps. 169** dan **tidak bergeser meski hari libur** (Ps. 173 ayat 1 tidak mencakup Ps. 169; dicocokkan dengan naskah resmi). Tampilkan **satu tanggal** saja; bila jatuh di hari libur, keterangan script menyebut hari kerja sebelumnya + "tidak bergeser meski hari libur (PMK 81/2024 Ps. 169); lapor lebih awal". Mundur hanya lewat pengumuman khusus DJP (mis. 11 Apr 2025, KEP-55/PJ/2026 → 30 Apr 2026).
+- **Unggah faktur pajak keluaran tgl 20** — tidak mundur walau libur/cuti bersama: PER-11/PJ/2025 tidak memuat ketentuan pergeseran (kesimpulan dari ketiadaan ketentuan → PERLU REVIEW). Bila tgl 20 hari libur, keterangan menyebut hari kerja sebelumnya sebagai saran (mis. 20 Mei 2027 Waisak → unggah paling aman **Jumat 14 Mei 2027**); tanggal batas resmi tetap tgl 20.
 - **Bukti potong BPA1** (PERLU REVIEW).
 Contoh terkonfirmasi: lapor SPT Masa PPh 21 masa Februari 2026: 20 Mar (cuti Idulfitri) → **25 Mar 2026**; setor PPh masa April 2026: 15 Mei (cuti bersama) → **18 Mei 2026**.
 Rincian, sumber, dan status verifikasi: `references/aturan-tenggat.md`.
@@ -126,7 +126,7 @@ Contoh lengkap: `examples/uji-pembuat-01-cv-pkp-okt-des.md`.
 - [ ] Tidak menyebut besaran pajak; rujuk skill hitung terkait bila ditanya.
 - [ ] Profil PKP: batas unggah faktur pajak keluaran (tgl 20) ikut disebut.
 - [ ] .ics: tidak menjanjikan pengingat pasti muncul di Google Calendar atau impor ulang pasti tanpa duplikat.
-- [ ] Butir PERLU REVIEW (nomor ayat PPh 25 lapor otomatis, BPA1, SPT Tahunan & unggah faktur tidak bergeser) tidak dinyatakan sebagai kepastian mutlak.
+- [ ] Butir PERLU REVIEW (BPA1 tanpa geser, unggah faktur tidak bergeser) tidak dinyatakan sebagai kepastian mutlak.
 - [ ] Disclaimer + dasar aturan + tanggal cek ada.
 
 ## Batasan & penanganan error
@@ -137,4 +137,4 @@ Contoh lengkap: `examples/uji-pembuat-01-cv-pkp-okt-des.md`.
 - Tanggal yang ditampilkan adalah **batas terakhir**; sarankan setor/lapor 2–3 hari kerja sebelumnya karena Coretax dan bank bisa padat menjelang tenggat.
 - Kode billing dibuat di Coretax (menu Pembayaran) atau lewat saldo **deposit pajak** (KAP 411618, KJS 100); skill tidak membuat kode billing.
 
-_Bukan nasihat pajak. Dasar: PMK 81/2024, PP 55/2022 jo. PP 20/2026, PER-2/PJ/2024, PER-11/PJ/2025, SKB 3 Menteri libur 2026 & 2027; dicek 2026-09-25 dari sumber sekunder. Skill ini tidak menghitung/membulatkan pajak; angka dari skill lain belum dicocokkan dengan Coretax. Cek pengumuman DJP terbaru dan konsultasikan dengan konsultan pajak atau AR._
+_Bukan nasihat pajak. Dasar: PMK 81/2024, PP 55/2022 jo. PP 20/2026, PER-2/PJ/2024, PER-11/PJ/2025, SKB 3 Menteri libur 2026 & 2027; pasal tenggat dicocokkan dengan naskah resmi di pajak.go.id 2026-09-26, sebagian butir lain dari sumber sekunder. Skill ini tidak menghitung/membulatkan pajak; angka dari skill lain belum dicocokkan dengan Coretax. Cek pengumuman DJP terbaru dan konsultasikan dengan konsultan pajak atau AR._
