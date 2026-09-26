@@ -44,7 +44,7 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | A1 | `laporan-iklan-mingguan` (celah paket VIP toko online) | uji 5/10 → revisi dimulai ulang atas persetujuan pemilik (Akun A, 2026-09-26) |
 | A2 | Uji ulang `dolibarr-usaha` v1.0.2 | selesai 8/10 — siap uji platform asli & beta; B1 (draf ganda saat DPP bersen) & B2 (ENV kunci mengalahkan --kunci-file tanpa peringatan) untuk v1.0.3 |
 | A3 | Masukkan `solusi-vip/` ke paket ZIP VIP (`build.py`) | selesai 2026-09-26 (hanya `--vip`) |
-| A4 | Pengingat kontrol/vaksin per pasien (klinik) | belum — disetujui pemilik 2026-09-26 (lihat CLAUDE.md: data lokal & minimal, tanpa diagnosis, draf dikirim staf) |
+| A4 | Pengingat kontrol/vaksin per pasien (klinik) | draft selesai `pengingat-pasien-klinik` v1.0.0 (Akun A, 2026-09-26) — CSV lokal minimal (nama panggilan+WA+jenis+tanggal, tanpa diagnosis/rekam medis), persetujuan UU PDP + `hapus`, daftar H-3/H-1/hari-ini/terlambat + draf WA staf, ringkasan tanpa nomor WA ke Telegram; 28 uji regresi lolos, `validate.py` & `uji_openclaw.sh` lolos (eligible/modelVisible/commandVisible) — **siap diuji Akun B** (Tahap 6 penuh: 5 skenario + A/B + banding pesaing + verifikasi angka) |
 | A5 | Laporan status terjadwal ke klien (konsultan) | belum — disetujui pemilik 2026-09-26 (draf terjadwal ke konsultan via Telegram, konsultan yang mengirim) |
 | A6 | Uji platform asli & program beta (skill lulus) | butuh pemilik/tim (`docs/uji-platform.md`, `docs/program-beta.md`) |
 
