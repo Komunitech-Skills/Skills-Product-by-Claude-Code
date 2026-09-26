@@ -410,13 +410,13 @@ def _hitung_dengan_pengali(inti, pengali, label, negatif, teks_asli):
     """inti = bagian angka SEBELUM sufiks singkatan dilepas (mis. '1,25' dari '1,25jt').
     Return (nilai: float, None) bila valid, atau (None, alasan) bila ambigu/tidak valid."""
     inti = inti.strip()
-    if not re.fullmatch(r"\d+(?:[.,]\d+)?", inti):
-        return None, (f"'{teks_asli}' tidak bisa dibaca sebagai angka + singkatan '{label}' "
-                      "(bagian sebelum singkatan harus angka, boleh 1 tanda desimal).")
     if "," in inti and "." in inti:
         return None, (f"'{teks_asli}' memakai koma DAN titik sekaligus sebelum singkatan "
                       f"'{label}' - ambigu. Tulis salah satu saja sebagai pemisah desimal, "
                       "mis. '1.25' atau '1,25' (bukan '1.250,5') sebelum singkatannya.")
+    if not re.fullmatch(r"\d+(?:[.,]\d+)?", inti):
+        return None, (f"'{teks_asli}' tidak bisa dibaca sebagai angka + singkatan '{label}' "
+                      "(bagian sebelum singkatan harus angka, boleh 1 tanda desimal).")
     try:
         nilai = Decimal(inti.replace(",", ".")) * pengali
     except InvalidOperation:

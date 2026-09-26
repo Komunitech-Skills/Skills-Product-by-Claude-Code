@@ -116,8 +116,14 @@ mengetesnya di kotak formula Grist yang akan langsung menunjukkan bila ada galat
 python3 <folder-skill>/scripts/grist.py bersihkan-csv data-mentah.csv
 ```
 Merapikan nama kolom (jadi sah untuk Grist: huruf/angka, tanpa spasi) dan angka Rupiah/desimal
-format apa pun (`Rp 1.234.567,89`, `1.234.567`, `12,5`) jadi angka polos. **Tunjukkan** hasilnya
-(kolom mana jadi Text/Numeric) ke pengguna sebelum lanjut. Lalu, bila REST API tersedia dan
+format apa pun (`Rp 1.234.567,89`, `1.234.567`, `12,5`, dan singkatan besaran umum UMKM: `500rb`/
+`500 ribu`, `Rp 1,25jt`/`1,25 juta`, `1,2 miliar`/`1,2M` — lihat catatan ambiguitas huruf `m` kecil
+di `references/singkatan-besaran.md`) jadi angka polos. **Tunjukkan** hasilnya (kolom mana jadi
+Text/Numeric) ke pengguna sebelum lanjut. Kalau ada kolom yang SEBAGIAN selnya angka tapi tetap
+jadi Text (satu sel gagal parse membatalkan seluruh kolom, demi keamanan), output SELALU menyebut
+baris & nilai penyebabnya (peringatan di layar + `kolom_gagal_sebagian` pada `--json`) — **teruskan
+info itu ke pengguna** (baris berapa, nilai apa) supaya dia bisa membetulkan sel itu lalu
+menjalankan ulang; jangan cuma bilang "gagal". Lalu, bila REST API tersedia dan
 **tabel tujuannya sudah ada** (kolom CSV harus **persis sama** dengan kolom tabel — bukan dibuat
 otomatis oleh perintah ini):
 ```bash

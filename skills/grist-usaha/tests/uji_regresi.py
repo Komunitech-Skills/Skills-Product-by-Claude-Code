@@ -175,6 +175,76 @@ class TestBersihkanHeader(unittest.TestCase):
         self.assertEqual(grist._bersihkan_header("2025 Target"), "K2025Target")
 
 
+class TestBersihkanCsvLaporanBarisGagal(unittest.TestCase):
+    """v1.0.1: temuan SEDANG Akun B - satu sel gagal parse membatalkan konversi SATU KOLOM PENUH
+    tanpa menyebut baris mana (examples/03-rekap-operasional-csv.md temuan #2). Perilaku
+    all-or-nothing per kolom DIPERTAHANKAN (aman, tidak ada silent-wrong-number) tapi sekarang
+    baris & nilai penyebabnya WAJIB disebut di pesan & JSON."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def tulis(self, nama, isi):
+        p = self.dir / nama
+        p.write_text(isi, encoding="utf-8")
+        return p
+
+    def jalan(self, *args):
+        return subprocess.run([sys.executable, SKRIP, "bersihkan-csv", *args],
+                              capture_output=True, text=True, cwd=self.dir)
+
+    def test_kolom_sebagian_gagal_disebut_baris_dan_nilainya(self):
+        isi = ("Nama Barang,Harga Satuan,Total Penjualan\n"
+              "Minyak Goreng,\"Rp 18.500\",\"Rp1.250.000,00\"\n"
+              "Beras,\"62.500\",\"125000.50\"\n"
+              "Item Aneh,\"tiga puluh ribu\",\"belum diisi\"\n")
+        f = self.tulis("rekap.csv", isi)
+        p = self.jalan(str(f), "--json")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        # Kolom Harga Satuan & Total Penjualan tetap Text (perilaku lama dipertahankan)...
+        self.assertIn("'Harga Satuan' -> HargaSatuan  (Text)", p.stdout)
+        self.assertIn("'Total Penjualan' -> TotalPenjualan  (Text)", p.stdout)
+        # ...TAPI sekarang pesan menyebut baris & nilai penyebabnya secara eksplisit.
+        self.assertIn("PERINGATAN", p.stdout)
+        self.assertIn("baris 4", p.stdout)
+        self.assertIn("tiga puluh ribu", p.stdout)
+        self.assertIn("belum diisi", p.stdout)
+        baris_json = [l for l in p.stdout.splitlines() if l.startswith("{")][0]
+        data = json.loads(baris_json)
+        gagal = {g["kolom"]: g["gagal"] for g in data["kolom_gagal_sebagian"]}
+        self.assertEqual(len(gagal["Harga Satuan"]), 1)
+        self.assertEqual(gagal["Harga Satuan"][0]["baris"], 4)
+        self.assertEqual(gagal["Harga Satuan"][0]["nilai"], "tiga puluh ribu")
+        self.assertEqual(gagal["Total Penjualan"][0]["nilai"], "belum diisi")
+
+    def test_kolom_teks_murni_tidak_dilaporkan_sebagai_gagal(self):
+        # Kolom yang memang isinya teks semua (tidak pernah ada sel yang berhasil jadi angka)
+        # BUKAN "kegagalan" - tidak boleh muncul di peringatan/JSON kolom_gagal_sebagian.
+        isi = "Nama Barang,Harga\nMinyak Goreng,18500\nBeras,62500\n"
+        f = self.tulis("rekap2.csv", isi)
+        p = self.jalan(str(f), "--json")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertNotIn("PERINGATAN", p.stdout)
+        baris_json = [l for l in p.stdout.splitlines() if l.startswith("{")][0]
+        data = json.loads(baris_json)
+        self.assertEqual(data["kolom_gagal_sebagian"], [])
+
+    def test_singkatan_besaran_ikut_dirapikan_lewat_cli(self):
+        isi = "Nama Barang,Harga\nMinyak Goreng,\"Rp 1,25jt\"\nBeras,\"500rb\"\n"
+        f = self.tulis("rekap3.csv", isi)
+        p = self.jalan(str(f), "--json")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertIn("'Harga' -> Harga  (Numeric)", p.stdout)
+        keluaran = self.dir / "rekap3-bersih.csv"
+        isi_keluaran = keluaran.read_text(encoding="utf-8")
+        self.assertIn("1250000", isi_keluaran)
+        self.assertIn("500000", isi_keluaran)
+
+
 class TestMasker(unittest.TestCase):
     def test_hanya_4_terakhir_tampil(self):
         self.assertEqual(grist.masker("abcdefgh1234"), "********1234")
