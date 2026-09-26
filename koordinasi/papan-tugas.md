@@ -34,18 +34,18 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | B6 | Kreasi `analisis-excel` (Data) | Backlog #27 — bedakan dari `rekap-penjualan-csv`; script Python standar | lulus 9/10 v1.0.11 (Akun B, 2026-09-25) — 11 putaran uji; 0 salah diam-diam pada ±150 fixture; satu logika deteksi ringkasan + pengaman silang Grand Total; siap uji platform asli & beta |
 | B7 | Kreasi `sop-onboarding` (HR) | Backlog #36 — bedakan dari `sop-writer` | lulus 8/10 v1.0.1 (Akun B, 2026-09-25) — v1.0.2 perbaikan kecil (tafsir batas 3 bulan, traceback tanggal 9999, CSV titik-koma); PERLU REVIEW: dasar hukum sumber sekunder, cek ulang Nov 2026 |
 | B8 | Kreasi `tender-checklist` (Sales) | Backlog #33 — LPSE/SPSE; verifikasi Perpres PBJ terbaru | lulus 9/10 v1.0.3 (Akun B, 2026-09-25) — alarm palsu & kolom volume diperbaiki, dicek independen; PERLU REVIEW: pasal Perpres 46/2025 dari sumber sekunder |
-| B9 | `atur-keuangan-pribadi` (openaccountant, MIT) | **TUNGGU keputusan pemilik** (sinyal bukti tipis) | tertahan |
+| B9 | `atur-keuangan-pribadi` (openaccountant, MIT) | Disetujui pemilik 2026-09-26 (lisensi MIT; sinyal bukti tipis → nilai tambah & uji harus kuat, hitungan lewat script) | belum |
 | B10 | `spt-tahunan-op-helper` | Backlog #29 — musiman (Jan–Mar); kerjakan menjelang musim | nanti |
 
 ## Jalur 2 & 3 — Akun A
 
 | # | Tugas | Status |
 |---|---|---|
-| A1 | `laporan-iklan-mingguan` (celah paket VIP toko online) | uji 5/10 → revisi berjalan (Akun A, 2026-09-25) |
+| A1 | `laporan-iklan-mingguan` (celah paket VIP toko online) | uji 5/10 → revisi dimulai ulang atas persetujuan pemilik (Akun A, 2026-09-26) |
 | A2 | Uji ulang `dolibarr-usaha` v1.0.2 | selesai 8/10 — siap uji platform asli & beta; B1 (draf ganda saat DPP bersen) & B2 (ENV kunci mengalahkan --kunci-file tanpa peringatan) untuk v1.0.3 |
-| A3 | Masukkan `solusi-vip/` ke paket ZIP VIP (`build.py`) | tunggu keputusan pemilik |
-| A4 | Pengingat kontrol/vaksin per pasien (klinik) | tunggu keputusan pemilik (penyimpanan data pasien) |
-| A5 | Laporan status terjadwal ke klien (konsultan) | tunggu keputusan pemilik (kirim ke pihak luar) |
+| A3 | Masukkan `solusi-vip/` ke paket ZIP VIP (`build.py`) | selesai 2026-09-26 (hanya `--vip`) |
+| A4 | Pengingat kontrol/vaksin per pasien (klinik) | belum — disetujui pemilik 2026-09-26 (lihat CLAUDE.md: data lokal & minimal, tanpa diagnosis, draf dikirim staf) |
+| A5 | Laporan status terjadwal ke klien (konsultan) | belum — disetujui pemilik 2026-09-26 (draf terjadwal ke konsultan via Telegram, konsultan yang mengirim) |
 | A6 | Uji platform asli & program beta (skill lulus) | butuh pemilik/tim (`docs/uji-platform.md`, `docs/program-beta.md`) |
 
 ## Uji untuk Akun A — dikerjakan Akun B (penguji lintas akun = lebih independen)

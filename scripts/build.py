@@ -148,6 +148,10 @@ def main():
             z.write(instalasi, "CARA-INSTAL.md")
         for n in sorted(panduan):
             z.write(ROOT / "docs" / n, f"docs/{n}")
+        if a.vip:
+            # Panduan solusi per profesi (OpenClaw) khusus member VIP
+            for f in sorted((ROOT / "solusi-vip").rglob("*.md")):
+                z.write(f, f.relative_to(ROOT).as_posix())
         daftar = "\n".join(f"  - {b['nama']} v{b['versi']}" for b in pilihan)
         z.writestr("LISENSI.txt",
                    f"Kode lisensi : {kode}\nPemegang     : {a.pembeli}\nJenis        : {jenis}\n"
