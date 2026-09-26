@@ -74,8 +74,13 @@ python3 <folder-skill-ini>/scripts/laporan_iklan.py analisis "<ekspor-minggu-ini
   bila angkanya memang sudah Rupiah. File yang mencampur dua mata uang selalu ditolak.
 - **Tidak perlu merapikan file dulu.** Script sendiri menangani: baris judul/info toko di atas
   tabel (dicari dalam 15 baris pertama), CSV UTF-16 bertab ("Excel CSV" Google Ads), sel kosong/
-  `-`/`--`/`—` (dihitung 0 + dicatat), dan baris "Total"/"Total: Account"/"Jumlah Total"/"Grand
-  Total" di kolom teks mana pun (dilewati + dicatat). File `.xlsx` ditolak dengan petunjuk Save As CSV.
+  `-`/`--`/`—` (dihitung 0 + dicatat), dan baris "Total"/"Total: Account"/"Total of 3 campaigns"/
+  "Totals"/"Total Akun"/"Grand Total" di kolom teks mana pun (dilewati + dicatat). File `.xlsx`
+  ditolak dengan petunjuk Save As CSV.
+- **Ekspor bertingkat** (mis. Meta `Campaign name` + `Ad set name` + `Ad name`, TikTok `Ad group
+  name`, Google `Ad group`): script otomatis merinci per level **paling rinci** (iklan) agar iklan
+  boros tidak tersembunyi di total kampanye, dan menulis levelnya di Catatan. Pakai
+  `--kolom-nama "Campaign name"` **hanya** bila pengguna minta rincian per kampanye.
 - Simpan hasil `--json` ke file sementara bila akan dipakai Langkah 2 (gabung) atau dipakai lagi
   minggu depan sebagai `--sebelumnya` (opsional).
 
@@ -182,7 +187,7 @@ Omzet toko minggu ini 20 juta."
 **Alur:** jalankan `analisis meta_minggu_ini.csv --sebelumnya meta_minggu_lalu.csv --omzet
 20000000` → platform terdeteksi "Meta Ads (Facebook/Instagram)", 1 baris "Total" dilewati → kirim
 `teks` apa adanya. Contoh lengkap hasil nyata: `examples/uji-pembuat-01-meta-mingguan-vs-lalu.md`
-dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md`.
+dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v1.0.2.md`.
 
 ## Batasan & penanganan error
 - **Nama kolom bisa berbeda** menurut bahasa/versi UI Ads Manager. **Belum semua nama kolom
@@ -192,10 +197,16 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md`.
   Karena itu laporan selalu mencetak "Kolom dibaca: ..." di Catatan: cocokkan sekali dengan file
   pengguna. Deteksi gagal → script memberi daftar kolom + cara mengisi manual (`--kolom-...`);
   jangan menebak sendiri.
-- **Baris total** ("Total", "Total:", "Total (5 iklan)", "Total: Account", "Jumlah Total", "Grand
-  Total", "Subtotal"...) di kolom teks mana pun dilewati; baris tanpa label yang angkanya persis =
-  jumlah semua baris lain juga dianggap total (dengan ⚠️). Nama kampanye seperti "Total Look
-  Hijab" tetap dihitung.
+- **Baris total** dikenali dari kata kepala di awal sel ("Total", "Totals", "Jumlah", "Grand
+  Total", "Subtotal", "Summary", "Ringkasan", "Overall"...) yang diikuti tanda baca/angka ("Total:",
+  "Total (5 iklan)", "Total: Account") **atau** hanya kata cakupan ("Total of 3 campaigns", "Total
+  Akun", "Total Keseluruhan"), di kolom teks mana pun → dilewati + dicatat. Nama kampanye seperti
+  "Total Look Hijab" tetap dihitung.
+- **Pengaman silang angka:** baris berbiaya terbesar dibandingkan dengan jumlah semua baris lain.
+  Biaya, tayangan, dan klik sama persis atau selisih ≤ 2% → dianggap total, dibuang, dan diberi ⚠️.
+  Hanya biayanya yang ≈ jumlah baris lain → **tetap dihitung** tapi diberi ⚠️ "TERHITUNG DUA KALI"
+  beserta total yang benar bila baris itu ternyata total. Label total yang angkanya tidak cocok
+  dengan jumlah baris lain juga diberi ⚠️. Sampaikan ⚠️ ini ke pengguna.
 - **Cek kewajaran:** CPC < Rp 10 atau ROAS > 50x → ⚠️ "tidak wajar" (tanda kolom/mata uang salah).
 - **Rentang data > 7 hari**, tanggal tak terbaca, atau file minggu lalu = file minggu ini → ⚠️.
 - **Pembagi nol** (0 klik/0 tayangan/0 hasil) → ditampilkan `-`, bukan error atau angka mengada-ada.

@@ -666,5 +666,152 @@ class UjiS2S4DanLainnya(_Dasar):
         self.assertNotIn("Errno", err)
 
 
+# ======================================================================================
+# v1.0.2 — temuan uji ulang v1.0.1 (examples/06-uji-ulang-v1.0.1.md): N1 & N2
+# ======================================================================================
+
+META_3LEVEL = ("Campaign name,Ad set name,Ad name,Amount spent (IDR),Impressions,Link clicks,Results\n"
+               "Kamp,Set A,Video Testimoni,1850000,70000,1300,32\n"
+               "Kamp,Set A,Carousel Produk,1492267,55000,900,17\n"
+               "Kamp,Set B,Advantage+ Catalog,1080735,37000,600,\n")
+KOLOM_SEDERHANA = "Campaign name,Cost,Impressions,Clicks,Conversions\n"
+
+
+class UjiN1LevelRincian(_Dasar):
+    def test_meta_tiga_level_dirinci_per_iklan_dan_iklan_boros_muncul(self):
+        d = self.json_ok("analisis", str(self.tulis("m.csv", META_3LEVEL)))
+        self.assertEqual(d["kolom_dipakai"]["nama"], "Ad name")
+        self.assertEqual(d["level_rincian"], "iklan")
+        self.assertEqual(d["kolom_induk"], ["Ad set name", "Campaign name"])
+        self.assertEqual(d["total"]["biaya"], 4423002)          # total tidak berubah
+        self.assertEqual(d["jumlah_kampanye"], 3)
+        self.assertEqual(d["tiga_terburuk"][0]["nama"], "Advantage+ Catalog")
+        self.assertIn("Advantage+ Catalog", d["saran"][0])
+        cat = [c for c in d["catatan"] if "kosong" in c]
+        self.assertEqual(len(cat), 1)
+        self.assertIn("Rp 1.080.735", cat[0])                   # biaya BARIS, bukan kampanye
+        self.assertNotIn("Rp 4.423.002", cat[0])
+        self.assertTrue(any("dirinci per iklan" in c and "--kolom-nama" in c for c in d["catatan"]))
+
+    def test_nama_iklan_kembar_dibedakan_dengan_ad_set(self):
+        teks = ("Campaign name,Ad set name,Ad name,Amount spent (IDR),Impressions,Link clicks,Results\n"
+                "Kamp,Set0,Iklan Hijab,800000,40000,700,30\n"
+                "Kamp,Set1,Iklan Hijab,645600,30000,400,25\n"
+                "Kamp,Set2,Iklan Mukena,1000000,50000,780,30\n")
+        d = self.json_ok("analisis", str(self.tulis("k.csv", teks)))
+        nama = {k["nama"]: k["biaya"] for k in d["per_kampanye"]}
+        self.assertEqual(nama, {"Iklan Hijab (Set0)": 800000, "Iklan Hijab (Set1)": 645600,
+                                "Iklan Mukena": 1000000})
+        self.assertEqual(d["total"]["biaya"], 2445600)
+
+    def test_kolom_nama_manual_tetap_dihormati(self):
+        d = self.json_ok("analisis", str(self.tulis("m.csv", META_3LEVEL)), "--kolom-nama", "Campaign name")
+        self.assertEqual(d["jumlah_kampanye"], 1)
+        self.assertEqual(d["level_rincian"], "kampanye")
+        self.assertEqual(d["kolom_induk"], [])
+
+    def test_kolom_ad_name_kosong_semua_pakai_ad_set(self):
+        teks = ("Campaign name,Ad set name,Ad name,Amount spent (IDR),Impressions,Link clicks,Results\n"
+                "Kamp,Set A,,500000,20000,300,10\nKamp,Set B,,300000,15000,100,\n")
+        d = self.json_ok("analisis", str(self.tulis("s.csv", teks)))
+        self.assertEqual(d["kolom_dipakai"]["nama"], "Ad set name")
+        self.assertEqual(d["level_rincian"], "grup iklan")
+        self.assertEqual(d["tiga_terburuk"][0]["nama"], "Set B")
+
+    def test_satu_level_saja_perilaku_lama(self):
+        d = self.json_ok("analisis", str(self.tulis("s.csv", KOLOM_SEDERHANA + "A,100000,1000,10,2\n")))
+        self.assertEqual(d["kolom_dipakai"]["nama"], "Campaign name")
+        self.assertEqual(d["level_rincian"], "kampanye")
+
+    def test_sel_kosong_dihitung_per_baris_harian(self):   # R-b
+        baris = "".join(f"2026-09-{14 + i},Live,10000,1000,20,-\n2026-09-{14 + i},Katalog,20000,2000,40,3\n"
+                        for i in range(7))
+        d = self.json_ok("analisis", str(self.tulis("h.csv", "Date,Campaign name,Cost,Impressions,"
+                                                             "Clicks,Conversions\n" + baris)))
+        cat = next(c for c in d["catatan"] if "kosong" in c)
+        self.assertIn("kosong di 7 baris (Live)", cat)
+        self.assertIn("Rp 70.000", cat)
+
+
+class UjiN2BarisTotal(_Dasar):
+    def test_jenis_label_total(self):
+        f = modul.jenis_label_total
+        for s in ("Total", "TOTAL", "Total:", "Total (5 iklan)", "Total: Account", "Total 4 kampanye",
+                  "TOTAL - Semua", "Jumlah", "Subtotal", "Grand Total", "Summary", "Totals:"):
+            self.assertEqual(f(s), "kuat", s)
+        for s in ("Total of 2 campaigns", "Totals", "Total Akun", "Total Keseluruhan", "Jumlah Total",
+                  "Grand totals all campaigns", "Total for all ads", "Jumlah Semua Iklan", "Total Account",
+                  "Overall results", "Total Keseluruhan Akun"):
+            self.assertIn(f(s), ("kuat", "sedang"), s)
+        for s in ("Total Look Hijab", "Summary Sale Gamis", "Jumlah Terbatas Promo"):
+            self.assertEqual(f(s), "lemah", s)
+        for s in ("Totalan Promo", "Promo Total", "Hijab Instan", "", "Subtotalan"):
+            self.assertIsNone(f(s), s)
+
+    def test_label_total_tidak_biasa_tidak_dihitung_dua_kali(self):
+        for label in ("Total of 2 campaigns", "Totals", "Total Akun", "Total Account", "Total for all ads",
+                      "Grand Totals", "Jumlah Semua Iklan", "Overall"):
+            with self.subTest(label=label):
+                p = self.tulis("t.csv", KOLOM_SEDERHANA + "Promo A,300000,20000,300,10\n"
+                               f"Promo B,200000,16000,200,5\n{label},500001,36000,500,15\n")
+                d = self.json_ok("analisis", str(p))
+                self.assertEqual(d["total"]["biaya"], 500000, label)
+                self.assertEqual(d["baris_dilewati_baris_total"], 1, label)
+                self.assertNotIn(label, [k["nama"] for k in d["per_kampanye"]])
+
+    def test_total_harian_di_kolom_tanggal_selisih_sen(self):   # K3 varian
+        baris = []
+        for nama, b, im, kl, kv in (("Live Payday", 150000, 12000, 250, "-"), ("Katalog", 200000, 15000, 330, 5),
+                                    ("Video", 107100, 8000, 160, 2)):
+            baris += [f"2026-09-{14 + i},{nama},{b},{im},{kl},{kv}" for i in range(7)]
+        teks = ("By Day,Campaign name,Cost,Impressions,Clicks (destination),Conversions\n" + "\n".join(baris)
+                + "\nTotal of 3 campaigns,,3199700.01,245000,5180,49\n")
+        d = self.json_ok("analisis", str(self.tulis("tt.csv", teks)))
+        self.assertEqual(d["total"]["biaya"], 3199700)
+        self.assertEqual(d["total"]["hasil"], 49)
+        self.assertEqual(d["periode"]["label"], "2026-09-14 s.d. 2026-09-20")
+        self.assertFalse(any("tidak terbaca" in x for x in d["peringatan"]))
+
+    def test_pengaman_silang_label_asing_semua_angka_hampir_sama(self):
+        p = self.tulis("s.csv", KOLOM_SEDERHANA + "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                                "Promo C,150000,9000,120,3\nΣ semua,650001,45000,620,18\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 650000)
+        self.assertTrue(any("Σ semua" in x and "baris TOTAL" in x for x in d["peringatan"]))
+        self.assertIn("PERLU DICEK", d["teks"])
+
+    def test_pengaman_silang_hanya_biaya_sama_diberi_peringatan_tanpa_dibuang(self):
+        p = self.tulis("s.csv", KOLOM_SEDERHANA + "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                                "Rekap Mingguan,500000,90000,1400,15\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 1000000)          # tidak dibuang diam-diam
+        w = [x for x in d["peringatan"] if "TERHITUNG DUA KALI" in x]
+        self.assertEqual(len(w), 1)
+        self.assertIn("Rekap Mingguan", w[0])
+        self.assertIn("seharusnya Rp 500.000, bukan Rp 1.000.000", w[0])
+
+    def test_nama_berawalan_total_anggaran_bulat_tidak_dibuang(self):
+        p = self.tulis("s.csv", KOLOM_SEDERHANA + "Total Look Hijab,100000,9000,150,4\n"
+                                "Promo A,50000,3000,40,1\nPromo B,50000,2500,35,1\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 200000)
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertTrue(any("Total Look Hijab" in x and "TERHITUNG DUA KALI" in x for x in d["peringatan"]))
+
+    def test_label_sedang_angka_tidak_cocok_diberi_peringatan(self):
+        p = self.tulis("s.csv", KOLOM_SEDERHANA + "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                                "Total Produk,70000,5000,60,2\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 500000)
+        self.assertTrue(any("Total Produk" in x and "ganti namanya" in x for x in d["peringatan"]))
+
+    def test_kampanye_dominan_tidak_diberi_peringatan_palsu(self):
+        p = self.tulis("s.csv", KOLOM_SEDERHANA + "Utama,900000,60000,900,30\nPromo A,500000,20000,300,10\n"
+                                "Promo B,500000,16000,200,5\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["total"]["biaya"], 1900000)
+        self.assertEqual(d["peringatan"], [])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
