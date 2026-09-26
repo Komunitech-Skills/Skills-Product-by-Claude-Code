@@ -25,7 +25,7 @@ import unicodedata
 from collections import OrderedDict
 from pathlib import Path
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 BATAS_UKURAN = 200 * 1024 * 1024
 
 
@@ -284,6 +284,26 @@ def deteksi_kolom(header, sinonim):
     return hasil
 
 
+def kolom_ambigu(header, sinonim, kol):
+    """Field yang punya LEBIH DARI SATU kolom kandidat yang cocok sinonimnya (bukan cuma kolom yang
+    akhirnya dipilih `deteksi_kolom`). Contoh: file punya kolom "SKU Induk" DAN "Nomor SKU" -
+    keduanya cocok sinonim SKU, tapi hanya satu yang otomatis dipakai (urutan sinonim & posisi
+    kolom), bukan menebak mana yang benar-benar dimaksud. Dipakai di `proses()` untuk memberi
+    peringatan eksplisit ke pengguna + saran `--kolom-...`, hanya untuk field yang TIDAK dipetakan
+    manual lewat override (yang sudah pasti/disengaja)."""
+    ht = [_token(h) for h in header]
+    ambigu = {}
+    for field, kata in sinonim.items():
+        if field not in kol:
+            continue
+        kata_tok = [t for t in (_token(k) for k in kata) if t]
+        cocok = [i for i, toks in enumerate(ht) if toks and (
+            toks in kata_tok or any(_token_sublist(kt, toks) for kt in kata_tok))]
+        if len(cocok) > 1:
+            ambigu[field] = [header[i] for i in cocok]
+    return ambigu
+
+
 def cari_header(baris, sinonim, minimal=2, maks_scan=15):
     """Cari baris judul kolom: baris (dari `maks_scan` pertama) dengan paling banyak kolom dikenali."""
     terbaik, skor_terbaik = None, 0
@@ -394,6 +414,9 @@ def proses(args):
             if i2 == idx and f2 != field:
                 kol.pop(f2)
         kol[field] = idx
+
+    field_dioverride = {f for f in SINONIM_PESANAN if getattr(args, "kolom_" + f, None) is not None}
+    ambigu = {f: v for f, v in kolom_ambigu(header, SINONIM_PESANAN, kol).items() if f not in field_dioverride}
 
     pemetaan = {LABEL_FIELD[f]: header[i] for f, i in sorted(kol.items(), key=lambda x: x[1])}
     field_hilang = [f for f in ("no_pesanan", "qty") if f not in kol]
@@ -569,6 +592,12 @@ def proses(args):
     if "status" not in kol:
         peringatan.append("Kolom status tidak terdeteksi di file ini - SEMUA baris dianggap perlu dikemas. "
                           "Sebaiknya ekspor pesanan berstatus 'Perlu Dikirim/Siap Dikirim' saja dari Seller Center.")
+    for field, kandidat in ambigu.items():
+        peringatan.append(
+            "Kolom untuk %s ambigu: ada %d kolom mirip di file (%s), yang dipakai: '%s'. Kalau salah, "
+            "jalankan ulang dengan --kolom-%s \"Nama Kolom Persis\"." % (
+                LABEL_FIELD[field], len(kandidat), ", ".join("'%s'" % k for k in kandidat),
+                header[kol[field]], field.replace("_", "-")))
 
     daftar_ambil = sorted(
         ambil.values(),
@@ -598,6 +627,7 @@ def proses(args):
         "file_pesanan": str(Path(args.file).resolve()),
         "encoding": encoding,
         "pemetaan_kolom": pemetaan,
+        "kolom_ambigu": {LABEL_FIELD[f]: v for f, v in ambigu.items()},
         "pemetaan_lokasi": pemetaan_lokasi,
         "pemetaan_stok": pemetaan_stok,
         "jumlah_baris_dibaca": len(baris) - hi - 1,

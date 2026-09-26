@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Buku jadwal pengingat kontrol/vaksin pasien klinik, praktik mandiri, dan klinik hewan.
+"""Versi skill: 1.0.1
+
+Buku jadwal pengingat kontrol/vaksin pasien klinik, praktik mandiri, dan klinik hewan.
 
 Hanya library standar Python 3.8+. Tidak ada akses jaringan, tidak mengirim pesan apa pun.
 Data disimpan di satu file CSV lokal (default `pasien/DAFTAR.csv` di folder kerja pengguna).
@@ -79,6 +81,8 @@ BATAS_BARU_LEWAT = 60  # hari
 
 # Kata yang menandakan isian berisi diagnosis/nama penyakit, bukan jenis kunjungan umum.
 # Daftar ini BUKAN daftar medis lengkap -- sekadar jaring pengaman kata yang paling umum.
+# (Diperluas 2026-09-27 setelah uji independen Akun B menemukan celah: batu ginjal, asma,
+# maag, usus buntu, vertigo, dll lolos tersimpan.)
 KATA_DIAGNOSIS = {
     "kanker", "tumor", "kista", "hiv", "aids", "ims", "jantung", "stroke", "diabetes",
     "kencing manis", "hepatitis", "tbc", "tuberkulosis", "paru-paru basah", "gagal ginjal",
@@ -86,6 +90,35 @@ KATA_DIAGNOSIS = {
     "tumor jinak", "tumor ganas", "epilepsi", "ayan", "skizofrenia", "gangguan jiwa",
     "depresi", "bipolar", "gangguan mental", "keguguran", "aborsi", "kelamin", "rabies",
     "kusta", "campak", "difteri", "malaria", "demam berdarah", "dbd", "tifus", "tipes",
+    "batu ginjal", "batu empedu", "asma", "maag", "gerd", "usus buntu", "apendisitis",
+    "katarak", "glaukoma", "varises", "wasir", "ambeien", "amandel", "tonsilitis",
+    "sinusitis", "vertigo", "anemia", "leukemia", "polip", "migrain", "bronkitis",
+    "pneumonia", "infeksi saluran kemih", "isk", "hernia", "tifoid", "disentri",
+    "gondok", "tiroid", "lupus", "rematik", "asam urat", "pertusis", "batuk rejan",
+    "tetanus", "polio", "cacar", "cacar air", "gondongan", "rubella", "meningitis",
+    "pneumokokus", "hpv", "influenza", "flu burung", "flu babi", "tifoid perut",
+}
+
+# Nama penyakit di KATA_DIAGNOSIS yang JUGA merupakan nama vaksin/imunisasi rutin umum di
+# Indonesia (mis. "imunisasi campak", "vaksin rabies"). Kata-kata ini TIDAK ditolak bila
+# jelas berkonteks vaksin/imunisasi dan TIDAK ada penanda bernada diagnosis di kalimat.
+KATA_JUGA_VAKSIN = {
+    "campak", "rabies", "difteri", "hepatitis", "tbc", "tuberkulosis", "tifus", "tipes",
+    "tifoid", "covid", "malaria", "dbd", "demam berdarah", "pertusis", "batuk rejan",
+    "tetanus", "polio", "cacar", "cacar air", "gondongan", "rubella", "meningitis",
+    "pneumokokus", "hpv", "influenza",
+}
+
+# Kata di dekat nama penyakit yang menandakan itu SEBUTAN JENIS VAKSIN, bukan diagnosis.
+POLA_PEMICU_VAKSIN = re.compile(r"\b(vaksin(?:asi)?|imunisasi|booster|suntik(?:an)?)\b")
+
+# Kata yang menandakan kalimat bernada diagnosis/hasil pemeriksaan pasien (bukan sekadar
+# menyebut nama vaksin/penyakit lepas). Kalau salah satu muncul, TETAP ditolak walau ada
+# kata pemicu vaksin di dekatnya (mis. "riwayat campak", "positif rabies", "kena difteri").
+KATA_PENANDA_DIAGNOSIS = {
+    "positif", "reaktif", "negatif", "didiagnosis", "diagnosis", "hasil lab",
+    "hasil pemeriksaan", "hasil tes", "menderita", "riwayat", "kena", "terkena",
+    "tertular", "gejala", "sakit", "terinfeksi", "infeksi akut", "mengidap",
 }
 
 
@@ -309,14 +342,25 @@ def cek_data_pribadi(label, teks):
 
 def cek_diagnosis(label, teks):
     low = (teks or "").lower()
+    ada_penanda_diagnosis = any(
+        re.search(r"\b" + re.escape(p) + r"\b", low) for p in KATA_PENANDA_DIAGNOSIS
+    )
     for kata in KATA_DIAGNOSIS:
-        if re.search(r"\b" + re.escape(kata) + r"\b", low):
-            raise Gagal(
-                f"'{label}' berisi kata yang menyerupai diagnosis/nama penyakit ('{kata}'). "
-                "Skill ini HANYA menyimpan jenis kunjungan umum (kontrol, vaksin, cabut jahitan, "
-                "cek gigi, vaksin hewan, groom, sunat, medical check up, dll), TANPA diagnosis atau "
-                "rekam medis. Tulis ulang tanpa nama penyakit."
-            )
+        m = re.search(r"\b" + re.escape(kata) + r"\b", low)
+        if not m:
+            continue
+        if kata in KATA_JUGA_VAKSIN and not ada_penanda_diagnosis:
+            sekitar = low[max(0, m.start() - 30): m.end() + 30]
+            if POLA_PEMICU_VAKSIN.search(sekitar):
+                continue  # jelas berkonteks vaksin/imunisasi, bukan diagnosis -> izinkan
+        raise Gagal(
+            f"'{label}' berisi kata yang menyerupai diagnosis/nama penyakit ('{kata}'). "
+            "Skill ini HANYA menyimpan jenis kunjungan umum (kontrol, vaksin, imunisasi, cabut "
+            "jahitan, cek gigi, vaksin hewan, groom, sunat, medical check up, dll), TANPA diagnosis "
+            "atau rekam medis. Kalau ini sebutan jenis vaksin, tulis jelas mis. \"imunisasi campak\" "
+            "atau \"vaksin rabies\". Kalau ini soal riwayat/hasil pemeriksaan penyakit, jangan "
+            "dicatat di sini -- tulis jenis kunjungan yang netral, mis. \"kontrol lanjutan\"."
+        )
 
 
 def bersih(teks, maks=200):

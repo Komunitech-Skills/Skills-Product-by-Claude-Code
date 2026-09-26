@@ -53,10 +53,10 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 APLIKASI = "grist-usaha"
 LOKAL_DIIZINKAN = {"localhost", "127.0.0.1", "::1"}
 FILE_KUNCI_DEFAULT = Path.home() / ".komunitech" / "grist-kunci.txt"
@@ -392,121 +392,165 @@ def cmd_buat_tabel(args):
 # Bersihkan & impor CSV
 # ---------------------------------------------------------------------------
 
-ANGKA_RP = re.compile(r"^\s*(Rp\.?\s*)?-?[\d.,]+\s*$", re.IGNORECASE)
+# --- Pembaca angka uang (v1.0.2) ---------------------------------------------------------------
+# Aturan lengkap + alasan setiap keputusan ambiguitas: references/singkatan-besaran.md.
+# Prinsip: nilai yang bisa dibaca DUA cara -> (None, alasan), TIDAK PERNAH ditebak.
+# Semua nilai uang memakai Decimal (bukan float) supaya tidak ada galat pembulatan biner.
 
-# Singkatan besaran uang yang lazim dipakai UMKM Indonesia di WA/catatan tulisan tangan, dari yang
-# paling spesifik (dicek lebih dulu supaya "juta"/"jt" tidak kepotong jadi "ta"/"t" oleh sufiks lain).
-_SUFIKS_BESARAN = (
-    ("miliar", Decimal(1_000_000_000), "miliar"),
-    ("juta", Decimal(1_000_000), "juta"),
-    ("jt", Decimal(1_000_000), "juta"),
-    ("ribu", Decimal(1_000), "ribu"),
-    ("rb", Decimal(1_000), "ribu"),
-)
-_TIDAK_ADA_SINGKATAN = object()  # sentinel: teks tidak berakhiran singkatan besaran apa pun
+# Singkatan besaran (dibandingkan dalam huruf kecil). 'M' besar ditangani terpisah (case-sensitive).
+_SINGKATAN = {
+    "miliar": (Decimal(1_000_000_000), "miliar"),
+    "milyar": (Decimal(1_000_000_000), "miliar"),
+    "juta": (Decimal(1_000_000), "juta"),
+    "jt": (Decimal(1_000_000), "juta"),
+    "ribu": (Decimal(1_000), "ribu"),
+    "rb": (Decimal(1_000), "ribu"),
+    "k": (Decimal(1_000), "ribu"),
+}
+_POLA_SUKU = re.compile(r"(\d[\d.,]*)\s*([A-Za-z]+)")
+_POLA_SUKU_PENUH = re.compile(r"(?:\s*\d[\d.,]*\s*[A-Za-z]+)+\s*")
 
 
-def _hitung_dengan_pengali(inti, pengali, label, negatif, teks_asli):
-    """inti = bagian angka SEBELUM sufiks singkatan dilepas (mis. '1,25' dari '1,25jt').
-    Return (nilai: float, None) bila valid, atau (None, alasan) bila ambigu/tidak valid."""
-    inti = inti.strip()
+def _pengali(satuan):
+    """'jt' -> (1000000, 'juta'); 'M' -> miliar; 'm' kecil -> ('AMBIGU', ...); lainnya None."""
+    if satuan == "M":
+        return Decimal(1_000_000_000), "miliar"
+    if satuan == "m":
+        return "AMBIGU", None
+    return _SINGKATAN.get(satuan.lower(), (None, None))
+
+
+def _angka_sebelum_singkatan(inti, teks_asli):
+    """Bagian angka di depan singkatan: '2', '1,25', '1.5'. Return (Decimal, None) / (None, alasan)."""
     if "," in inti and "." in inti:
-        return None, (f"'{teks_asli}' memakai koma DAN titik sekaligus sebelum singkatan "
-                      f"'{label}' - ambigu. Tulis salah satu saja sebagai pemisah desimal, "
-                      "mis. '1.25' atau '1,25' (bukan '1.250,5') sebelum singkatannya.")
-    if not re.fullmatch(r"\d+(?:[.,]\d+)?", inti):
-        return None, (f"'{teks_asli}' tidak bisa dibaca sebagai angka + singkatan '{label}' "
-                      "(bagian sebelum singkatan harus angka, boleh 1 tanda desimal).")
-    try:
-        nilai = Decimal(inti.replace(",", ".")) * pengali
-    except InvalidOperation:
-        return None, f"'{teks_asli}' tidak bisa dibaca sebagai angka."
-    return float(-nilai if negatif else nilai), None
+        return None, (f"'{teks_asli}' memakai koma DAN titik sekaligus sebelum singkatan - ambigu. "
+                      "Tulis satu pemisah desimal saja, mis. '1,25jt'.")
+    pemisah = [c for c in inti if c in ",."]
+    if len(pemisah) > 1:
+        return None, (f"'{teks_asli}' punya lebih dari satu pemisah sebelum singkatan - ambigu. "
+                      "Tulis angka penuh tanpa singkatan (mis. '1.250.000') atau '1,25jt'.")
+    if pemisah:
+        kiri, kanan = re.split(r"[.,]", inti)
+        if not kiri or not kanan:
+            return None, f"'{teks_asli}' tidak lengkap (ada pemisah tanpa angka di salah satu sisi)."
+        if len(kanan) == 3:
+            return None, (f"'{teks_asli}' ambigu: '{inti}' bisa dibaca {kiri} koma {kanan} ATAU "
+                          f"{kiri}{kanan} (titik/koma ribuan). Tulis angka penuh, mis. "
+                          "'1.500.000', atau pakai 1-2 angka di belakang koma, mis. '1,5jt'.")
+        if len(kanan) > 3:
+            return None, f"'{teks_asli}' tidak bisa dibaca: terlalu banyak angka di belakang pemisah."
+        inti = f"{kiri}.{kanan}"
+    return Decimal(inti), None
 
 
-def _urai_singkatan_besaran(teks_tanpa_rp):
-    """Cek akhiran singkatan besaran (ribu/rb/juta/jt/miliar, atau huruf besar tunggal 'M') pada
-    `teks_tanpa_rp` (awalan 'Rp'/'Rp.' sudah dilepas pemanggil). Kalau tidak ada akhiran seperti
-    itu SAMA SEKALI, kembalikan sentinel `_TIDAK_ADA_SINGKATAN` supaya pemanggil lanjut ke jalur
-    lama (format Rupiah/desimal biasa tanpa singkatan). Kalau akhiran ADA tapi bagian angkanya
-    tidak valid/ambigu, tetap dikembalikan sebagai (None, alasan) - BUKAN sentinel - supaya
-    pemanggil tahu ini "sudah mirip angka+singkatan tapi gagal", bukan "bukan angka sama sekali".
+def _urai_singkatan(isi, teks_asli):
+    """isi = teks tanpa 'Rp' & tanda minus, berisi minimal satu huruf.
+    Return (Decimal, None), (None, alasan), atau (None, None) bila jelas bukan angka uang."""
+    if not _POLA_SUKU_PENUH.fullmatch(isi):
+        # Contoh: "Kopi Robusta", "08123 (WA)", "3jt500" (angka polos di ekor), "Gula 1kg".
+        if re.fullmatch(r"(?:\s*\d[\d.,]*\s*[A-Za-z]+)+\s*\d[\d.,]*\s*", isi):
+            return None, (f"'{teks_asli}' ada angka tanpa singkatan di bagian akhir - ambigu "
+                          "(ribu? rupiah?). Tulis lengkap, mis. '3 jt 500 rb' atau '3.500.000'.")
+        return None, None
+    suku = _POLA_SUKU.findall(isi)
+    total = Decimal(0)
+    pengali_sebelumnya = None
+    for inti, satuan in suku:
+        pengali, label = _pengali(satuan)
+        if pengali == "AMBIGU":
+            return None, (f"'{teks_asli}' berakhiran 'm' kecil - AMBIGU (bisa meter/menit, bukan "
+                          "pasti miliar). Tulis 'miliar' atau huruf BESAR 'M' (mis. '1,5M').")
+        if pengali is None:
+            if len(suku) == 1:
+                return None, (f"'{teks_asli}': satuan '{satuan}' bukan singkatan uang yang dikenali "
+                              "(yang dikenali: rb/ribu/k, jt/juta, miliar/M).")
+            return None, f"'{teks_asli}': satuan '{satuan}' tidak dikenali."
+        if pengali_sebelumnya is not None and pengali >= pengali_sebelumnya:
+            return None, (f"'{teks_asli}' urutan singkatannya tidak turun (mis. 'rb' sebelum 'jt' "
+                          "atau dobel) - ambigu. Contoh yang benar: '3 jt 500 rb'.")
+        if len(suku) > 1 and not inti.isdigit():
+            return None, (f"'{teks_asli}': di bentuk gabungan (mis. '3 jt 500 rb') tiap bagian harus "
+                          "angka bulat tanpa koma/titik.")
+        nilai, alasan = _angka_sebelum_singkatan(inti, teks_asli)
+        if nilai is None:
+            return None, alasan
+        if pengali_sebelumnya is not None and nilai * pengali >= pengali_sebelumnya:
+            return None, (f"'{teks_asli}': bagian '{inti} {satuan}' melebihi satuan di depannya - "
+                          "ambigu. Tulis angka penuh, mis. '3.500.000'.")
+        total += nilai * pengali
+        pengali_sebelumnya = pengali
+    return total, None
 
-    Catatan ambiguitas 'M'/'m' (keputusan pembuat, didokumentasikan di README/SKILL.md): huruf
-    besar tunggal 'M' di akhir (mis. '1,5M') DITERIMA sebagai miliar - konvensi umum di
-    percakapan bisnis Indonesia. huruf KECIL tunggal 'm' (mis. '2m') SENGAJA DITOLAK (ambigu,
-    bisa disangka satuan lain seperti meter) - beda dari kata penuh 'miliar' yang jelas.
-    """
-    t = teks_tanpa_rp.strip()
-    negatif = t.startswith("-")
-    inti_neg = t[1:] if negatif else t
-    lower = inti_neg.lower()
 
-    for sfx, pengali, label in _SUFIKS_BESARAN:
-        if lower.endswith(sfx) and len(inti_neg) > len(sfx):
-            return _hitung_dengan_pengali(inti_neg[:-len(sfx)], pengali, label, negatif, teks_tanpa_rp)
-
-    # Huruf besar tunggal 'M' -> miliar. Dicek case-SENSITIVE (bukan .lower()) supaya 'm' kecil
-    # tidak ikut kena jalur ini.
-    if inti_neg.endswith("M") and len(inti_neg) > 1:
-        return _hitung_dengan_pengali(inti_neg[:-1], Decimal(1_000_000_000), "miliar (M)",
-                                      negatif, teks_tanpa_rp)
-
-    # Huruf besar/kecil tunggal 'K'/'k' -> ribu (konvensi umum "50k"), hanya kalau sisanya
-    # digit murni (supaya kata biasa yang kebetulan berakhir huruf K, mis. nama produk, tidak
-    # ikut tertangkap - ditangani jalur lama & jadi None/None biasa, bukan alasan aneh).
-    if lower.endswith("k") and len(inti_neg) > 1 and re.fullmatch(r"[\d.,]+", inti_neg[:-1]):
-        return _hitung_dengan_pengali(inti_neg[:-1], Decimal(1_000), "ribu (k)", negatif, teks_tanpa_rp)
-
-    # Huruf KECIL tunggal 'm' setelah digit murni -> AMBIGU, sengaja ditolak (lihat docstring).
-    if inti_neg.endswith("m") and len(inti_neg) > 1 and re.fullmatch(r"[\d.,]+", inti_neg[:-1]):
-        return None, (
-            f"'{teks_tanpa_rp}' berakhiran 'm' (huruf kecil) - AMBIGU, bisa disangka satuan lain "
-            "(mis. meter), bukan otomatis dianggap 'miliar'. Kalau maksudnya miliar rupiah, tulis "
-            "kata penuh 'miliar' atau huruf BESAR 'M' (mis. '1.5M')."
-        )
-
-    return _TIDAK_ADA_SINGKATAN
+def _urai_angka_polos(isi, teks_asli):
+    """Angka tanpa singkatan: '1.234.567,89', '1234567.89', '1.250.000', '12,5', '1,234'."""
+    if not re.fullmatch(r"\d[\d.,]*", isi) or isi[-1] in ",.":
+        return None, (f"'{teks_asli}' tidak bisa dibaca sebagai angka." if re.search(r"\d", isi)
+                      else None)
+    if "," in isi and "." in isi:
+        desimal = "," if isi.rfind(",") > isi.rfind(".") else "."
+        ribuan = "." if desimal == "," else ","
+        if isi.count(desimal) > 1:
+            return None, f"'{teks_asli}' ambigu: pemisah desimal '{desimal}' muncul lebih dari sekali."
+        bulat, pecahan = isi.split(desimal)
+        kelompok = bulat.split(ribuan)
+    else:
+        sep = "," if "," in isi else ("." if "." in isi else None)
+        if sep is None:
+            return Decimal(isi), None
+        kelompok = isi.split(sep)
+        # Satu pemisah + 1-2 angka di belakang = desimal ('12,5', '100,00', '1.5').
+        if len(kelompok) == 2 and len(kelompok[1]) in (1, 2):
+            return Decimal(f"{kelompok[0]}.{kelompok[1]}"), None
+        # Satu pemisah + >3 angka di belakang ('1.2345') = desimal biasa (tidak mungkin ribuan).
+        if len(kelompok) == 2 and len(kelompok[1]) > 3:
+            return Decimal(f"{kelompok[0]}.{kelompok[1]}"), None
+        pecahan = ""
+    # Sisanya: pemisah ribuan -> semua kelompok setelah yang pertama WAJIB tepat 3 angka.
+    if not (1 <= len(kelompok[0]) <= 3) or any(len(k) != 3 for k in kelompok[1:]):
+        return None, (f"'{teks_asli}' ambigu: pengelompokan ribuan tidak konsisten "
+                      "(harus per 3 angka, mis. '1.250.000').")
+    return Decimal("".join(kelompok) + (f".{pecahan}" if pecahan else "")), None
 
 
 def _bersihkan_angka(teks):
-    """'Rp 1.234.567,89' / '1234567.89' / '1.234.567' / 'Rp 1,25jt' -> (nilai: float, None), atau
-    (None, alasan) bila tidak bisa dibaca sebagai angka. `alasan` diisi HANYA kalau teksnya sudah
-    "mirip" angka (ada singkatan besaran atau format Rupiah yang gagal spesifik) - dipakai untuk
-    laporan baris gagal di `bersihkan-csv`; untuk teks yang jelas bukan angka sama sekali (mis.
-    nama produk), `alasan` tetap None seperti v1.0.0 (tidak berubah).
+    """Baca teks uang/angka gaya Indonesia -> (Decimal, None), atau (None, alasan) bila teksnya
+    mirip angka tapi ambigu/tidak valid, atau (None, None) bila jelas bukan angka (mis. nama barang).
 
-    Mendukung sejak v1.0.1, memakai `Decimal` (bukan float) supaya perkalian singkatan besaran
-    presisi: singkatan ribu/rb (x1.000), juta/jt (x1.000.000), miliar (x1.000.000.000), dan huruf
-    besar tunggal 'M' (x1.000.000.000, LIHAT catatan ambiguitas 'm' kecil di `_urai_singkatan_besaran`
-    - sengaja DITOLAK, bukan ditebak). Contoh: 'Rp 1,25jt' -> 1250000.0; '1.5jt' -> 1500000.0.
+    Contoh: 'Rp 1.250.000,-' -> 1250000; '1,25jt' -> 1250000; '2,5 rb' -> 2500; '10k' -> 10000;
+    '3 jt 500 rb' -> 3500000; '1,5M' -> 1500000000; '1.5' dan '1,5' -> 1.5; '1.500' -> 1500
+    (titik + 3 angka = ribuan, gaya Indonesia). Ditolak (ambigu): '2m' (m kecil), '1.500rb',
+    '1.250,5jt', '3jt500', '1.23.456'. Rincian: references/singkatan-besaran.md.
     """
     t = teks.strip()
     if not t:
         return None, None
-    tanpa_rp = re.sub(r"^[Rr][Pp]\.?\s*", "", t)
-    hasil = _urai_singkatan_besaran(tanpa_rp)
-    if hasil is not _TIDAK_ADA_SINGKATAN:
-        return hasil
-
-    # --- jalur lama (tanpa singkatan besaran) - PERSIS seperti v1.0.0, tidak diubah ---
-    if not ANGKA_RP.match(t):
+    isi = t
+    negatif = False
+    if isi.startswith("-"):
+        negatif, isi = True, isi[1:].lstrip()
+    isi = re.sub(r"^(?:Rp\.?|IDR)\s*", "", isi, flags=re.IGNORECASE)
+    if not negatif and isi.startswith("-"):
+        negatif, isi = True, isi[1:].lstrip()
+    # Ekor ",-" / ".-" / ",00-" gaya kuitansi: "Rp 1.250.000,-"
+    isi = re.sub(r"[.,]-$", "", isi).strip()
+    if not isi or not isi[0].isdigit():
         return None, None
-    t = re.sub(r"[Rr][Pp]\.?\s*", "", t)
-    if "," in t and "." in t:
-        if t.rfind(",") > t.rfind("."):
-            t = t.replace(".", "").replace(",", ".")
-        else:
-            t = t.replace(",", "")
-    elif "," in t:
-        kanan = t.split(",")[-1]
-        t = t.replace(",", ".") if len(kanan) in (1, 2) else t.replace(",", "")
+    if re.search(r"[A-Za-z]", isi):
+        nilai, alasan = _urai_singkatan(isi, t)
     else:
-        t = t.replace(".", "") if re.search(r"\.\d{3}(\D|$)", t) else t
-    try:
-        return float(t), None
-    except ValueError:
-        return None, None
+        nilai, alasan = _urai_angka_polos(isi, t)
+    if nilai is None:
+        return None, alasan
+    return (-nilai if negatif else nilai), None
+
+
+def _teks_angka(nilai):
+    """Decimal -> teks polos tanpa notasi ilmiah & tanpa nol berlebih: 1250000, 1234567.89."""
+    teks = format(nilai, "f")
+    if "." in teks:
+        teks = teks.rstrip("0").rstrip(".")
+    return "0" if teks in ("-0", "") else teks
 
 
 def _bersihkan_header(nama):
@@ -575,7 +619,7 @@ def cmd_bersihkan_csv(args):
             if jadi_angka and baris_asli[i]:
                 angka, _alasan = _bersihkan_angka(baris_asli[i])
                 if angka is not None:
-                    baris_asli[i] = f"{angka:.10g}"
+                    baris_asli[i] = _teks_angka(angka)
 
     keluaran = Path(args.keluaran) if args.keluaran else src.with_name(src.stem + "-bersih.csv")
     with keluaran.open("w", newline="", encoding="utf-8") as f:

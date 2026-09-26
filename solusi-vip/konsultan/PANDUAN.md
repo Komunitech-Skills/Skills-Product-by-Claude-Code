@@ -28,7 +28,8 @@ langkah demi langkah.
 Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `proposal-kerjasama`,
 `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`,
 `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`, `tender-checklist`,
-`kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `kalender-pajak`.
+`kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `kalender-pajak`, `hledger-usaha`, `buku-piutang`,
+`laporan-klien-konsultan`, dan (opsional, hanya kalau agensi punya staf tetap) `gaji-umkm`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global

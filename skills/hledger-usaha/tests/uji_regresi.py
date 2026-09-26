@@ -585,17 +585,77 @@ class UjiV101(Dasar):
         self.assertEqual(k, 0, e)
         k, o, e = self.run_("laba-rugi", "--jurnal", self.j, "--bulan", "2026-08")
         self.assertEqual(k, 0, e)
-        # file uji punya tarik tunai (kas masuk) -> dianggap ada transaksi tunai; buat periode tanpa kas
+        # v1.0.2: file uji punya TARIKAN ATM (bank -> kas); itu pindah dana, bukan penjualan tunai -> CATATAN tetap muncul
         j = hu.parse_jurnal(isi(self.j).decode())
-        hanya_bank = [t for t in j.txns if not any(a.startswith("Aset:Kas") for a, _ in t.postings)]
-        j.txns = hanya_bank
-        self.assertTrue(any("belum lengkap" in x for x in hu.cek_tunai(j, hu.parse_tanggal("2026-08-01"),
-                                                                        hu.parse_tanggal("2026-08-31"))))
-        # setelah ada transaksi tunai, catatan hilang
+        self.assertTrue(any("TARIKAN ATM" in t.ket and any(a.startswith("Aset:Kas") for a, _ in t.postings)
+                            for t in j.txns))
+        self.assertIn("belum ada satu pun transaksi kas tunai", o)
+        # setelah ada penjualan tunai, catatan hilang
         self.run_("catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "300rb", "--via", "kas",
                   "--tanggal", "2026-08-20", "--ya")
         k, o, e = self.run_("laba-rugi", "--jurnal", self.j, "--bulan", "2026-08")
         self.assertNotIn("belum ada satu pun transaksi kas tunai", o)
+
+    def test_catatan_tunai_tidak_tertipu_tarik_setor_tunai(self):
+        """Temuan uji ulang v1.0.1 [SEDANG]: tarik/setor tunai (mutasi atau catat manual) bukan transaksi tunai."""
+        self.run_("init", "--jurnal", self.j, "--nama", "Warung Uji", "--bank", "BCA")
+        self.run_("catat", "--jurnal", self.j, "--jenis", "saldo-awal", "--tanggal", "2026-08-31", "--posting",
+                  "Aset:Kas=2.000.000", "--posting", "Aset:Bank:BCA=10.000.000", "--ya")
+        m = os.path.join(self.tmp, "mutasi-sept.csv")
+        with open(m, "w", encoding="utf-8", newline="") as f:
+            f.write("Tanggal Transaksi,Keterangan,Cabang,Jumlah,,Saldo\n"
+                    "'02/09,QRIS MERCHANT WARUNG 0209,'0000,\"2,500,000.00\",CR,\"12,500,000.00\"\n"
+                    "'05/09,TRSF E-BANKING DB 0509 SEWA KIOS,'0000,\"1,500,000.00\",DB,\"11,000,000.00\"\n"
+                    "'20/09,TARIKAN ATM 20/09,'0000,\"1,000,000.00\",DB,\"10,000,000.00\"\n"
+                    "'25/09,SETOR TUNAI DI ATM 2509,'0000,\"750,000.00\",CR,\"10,750,000.00\"\n")
+        k, o, e = self.run_("impor-bank", "--jurnal", self.j, m, "--tahun", "2026", "--ya")
+        self.assertEqual(k, 0, o + e)
+        # tarik tunai manual juga pindah dana
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "tarik-tunai", "--nominal", "200rb",
+                            "--tanggal", "2026-09-21", "--ya")
+        self.assertEqual(k, 0, e)
+        j = hu.parse_jurnal(isi(self.j).decode())
+        kas = [t for t in j.txns if t.tanggal.month == 9 and any(a.startswith("Aset:Kas") for a, _ in t.postings)]
+        self.assertEqual(len(kas), 3)                                  # ATM, setor, tarik manual
+        k, o, e = self.run_("laba-rugi", "--jurnal", self.j, "--bulan", "2026-09", "--json")
+        self.assertEqual(k, 0, e)
+        lr = json.loads(o)["laba_rugi"]
+        # verifikasi Decimal independen: jumlah posting pendapatan/beban dari jurnal
+        pend = sum((-v for t in j.txns if t.tanggal.month == 9 for a, v in t.postings
+                    if a.startswith("Pendapatan")), Decimal(0))
+        beban = sum((v for t in j.txns if t.tanggal.month == 9 for a, v in t.postings
+                     if a.startswith("Beban")), Decimal(0))
+        self.assertEqual(Decimal(str(lr["total_pendapatan"])), pend)
+        self.assertEqual(pend, Decimal("2500000"))
+        self.assertEqual(beban, Decimal("1500000"))
+        self.assertEqual(Decimal(str(lr["laba_bersih"])), Decimal("2500000") - Decimal("1500000"))
+        k, o, e = self.run_("laba-rugi", "--jurnal", self.j, "--bulan", "2026-09")
+        self.assertIn("CATATAN: pendapatan/biaya periode ini hanya dari impor mutasi bank", o)
+        # biaya tunai (bukan penjualan) juga menghapus catatan
+        self.run_("catat", "--jurnal", self.j, "--jenis", "beban", "--akun", "Beban:Lain-lain", "--nominal",
+                  "50rb", "--via", "kas", "--tanggal", "2026-09-22", "--ya")
+        k, o, e = self.run_("laba-rugi", "--jurnal", self.j, "--bulan", "2026-09")
+        self.assertNotIn("belum ada satu pun transaksi kas tunai", o)
+
+    def test_pph23_ditolak_untuk_penjualan_barang(self):
+        """Temuan uji ulang v1.0.1 [RENDAH]: PPh 23 untuk jasa/sewa/royalti, bukan jual barang."""
+        self.run_("init", "--jurnal", self.j, "--nama", "Toko Uji", "--bank", "BCA")
+        sebelum = isi(self.j)
+        for tambahan in (["--pph23", "2%"], ["--diterima", "980rb"]):
+            k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "1jt", "--via", "kas",
+                                "--tanggal", "2026-09-10", "--ya", *tambahan)
+            self.assertEqual(k, 2, o + e)
+            self.assertIn("penjualan BARANG", e)
+            self.assertIn("--jenis jasa", e)
+        self.assertEqual(isi(self.j), sebelum)                         # tidak ada yang tertulis
+        # jasa tetap boleh: 2% x 1.000.000 = 20.000 (Decimal, dibulatkan ke bawah)
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "jasa", "--nominal", "1jt", "--via", "kas",
+                            "--pph23", "2%", "--tanggal", "2026-09-10", "--ya")
+        self.assertEqual(k, 0, e)
+        t = hu.parse_jurnal(isi(self.j).decode()).txns[-1]
+        pph = (Decimal(1000000) * Decimal(2) / 100).quantize(Decimal(1), rounding="ROUND_DOWN")
+        self.assertEqual(dict(t.postings)["Aset:Pajak Dibayar Dimuka:PPh 23"], pph)
+        self.assertEqual(dict(t.postings)["Aset:Kas"], Decimal(1000000) - pph)
 
     def test_skill_md_menolak_pembukuan_ganda(self):
         with open(os.path.join(SKILL, "SKILL.md"), encoding="utf-8") as f:

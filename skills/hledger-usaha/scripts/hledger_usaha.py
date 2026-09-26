@@ -35,7 +35,7 @@ import sys
 import tempfile
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 HLEDGER_TERUJI = ("1.52.4",)
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
@@ -878,12 +878,18 @@ PENGINGAT_TUNAI = ("INGAT: mutasi bank hanya berisi uang yang lewat rekening. Pe
 
 
 def cek_tunai(j, dari, sampai):
-    """Periode yang pendapatan/bebannya hanya berasal dari impor mutasi bank, tanpa satu pun transaksi kas tunai."""
+    """Periode yang pendapatan/bebannya hanya berasal dari impor mutasi bank, tanpa satu pun transaksi kas tunai.
+
+    "Transaksi kas tunai" = transaksi yang menyentuh Aset:Kas BERSAMA akun pendapatan/HPP/beban (penjualan atau
+    biaya tunai). Pindah dana bank<->kas (TARIKAN ATM, Setor Tunai, catat --jenis tarik-tunai/setor-tunai) dan
+    saldo awal tidak dihitung, karena tidak mencatat penjualan/biaya tunai apa pun (temuan uji ulang v1.0.1)."""
     ada_bank = ada_tunai = False
     for t in j.txns:
         if not dari <= t.tanggal <= sampai:
             continue
-        if any(a.lower().startswith("aset:kas") for a, _ in t.postings):
+        gol = [j.gol(a) for a, _ in t.postings]
+        if (any(a.lower().startswith("aset:kas") for a, _ in t.postings)
+                and any(g in ("pendapatan", "hpp", "beban") for g in gol)):
             ada_tunai = True
         if t.tags.get("sumber") == "mutasi-bank" and any(j.gol(a) in ("pendapatan", "hpp", "beban")
                                                           for a, _ in t.postings):
@@ -1247,7 +1253,13 @@ def rencana_dari(j, e, tahun=None):
     catatan = []
     if (e.get("pph23") or e.get("diterima")) and jenis not in ("jual", "penjualan", "jasa", "terima-piutang",
                                                                 "pelunasan-piutang"):
-        raise Gagal("--pph23/--diterima hanya untuk jenis jual, jasa, atau terima-piutang (pelanggan memotong PPh 23).")
+        raise Gagal("--pph23/--diterima hanya untuk jenis jasa atau terima-piutang (pelanggan memotong PPh 23).")
+    if (e.get("pph23") or e.get("diterima")) and jenis in ("jual", "penjualan"):
+        raise Gagal("--pph23/--diterima tidak dipakai untuk --jenis jual (penjualan BARANG): PPh 23 dipotong atas jasa, "
+                    "sewa, dan royalti, bukan atas penjualan barang (UU PPh Pasal 23). Bila yang dijual sebenarnya "
+                    "jasa/sewa, pakai --jenis jasa (mis. --akun \"Pendapatan:Sewa\"). Bila pembeli memotong uang "
+                    "untuk hal lain (mis. PPh 22 oleh instansi pemerintah/BUMN, biaya transfer), catat penjualan "
+                    "penuh lalu tanyakan bukti potongnya ke konsultan pajak - jangan dicatat sebagai PPh 23.")
     tags = {}
     if pihak:
         tags["pihak"] = bersih_segmen(pihak, "--pihak")

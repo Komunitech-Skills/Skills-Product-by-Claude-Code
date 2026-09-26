@@ -63,7 +63,10 @@ pengguna cuma punya file pesanan, tetap jalankan tanpa lokasi/stok dan sebutkan 
      `--kolom-sku`, `--kolom-nama`, `--kolom-varian`, `--kolom-qty`, `--kolom-kurir`, `--kolom-resi`,
      `--kolom-catatan`, atau `--kolom-status` (isi `-` untuk sengaja mengabaikan kolom itu).
    - `peringatan` — sampaikan semuanya ke pengguna apa adanya (SKU tak dikenal, jumlah 0/negatif,
-     baris duplikat, resi kosong, pesanan dilewati karena batal/retur/belum bayar, dst.).
+     baris duplikat, resi kosong, pesanan dilewati karena batal/retur/belum bayar, kolom ambigu, dst.).
+   - `kolom_ambigu` — kalau tidak kosong, ada kolom yang punya lebih dari satu kandidat cocok (mis.
+     dua kolom yang sama-sama terlihat seperti SKU); tunjukkan ke pengguna kandidat mana saja dan
+     kolom mana yang dipakai, supaya bisa dikoreksi dengan `--kolom-...` kalau salah.
    - `file_keluaran` — path file `daftar-ambil.md` dan `urutan-resi.md` yang sudah ditulis ke disk;
      tempelkan isinya ke pesan balasan (Markdown-nya langsung terbaca rapi di chat) dan sebutkan lokasi
      filenya untuk dicetak/dibagikan ke admin gudang.
@@ -139,6 +142,10 @@ uji, termasuk peringatan SKU tak dikenal dan stok menipis).
   terdeteksi di dalam nama kolom gabungan (mis. "Nama Kurir", "No. Invoice"). Kalau pemetaan tetap
   salah/kurang, error dan hasil sukses SAMA-SAMA menyebutkan kolom yang ada di file dan flag
   `--kolom-...` yang persis untuk membetulkan secara manual - tidak perlu menunggu pembaruan skill.
+  Sejak v1.0.2, kalau ada **lebih dari satu** kolom yang sama-sama cocok untuk satu field (mis. file
+  punya kolom "SKU Induk" DAN "Nomor SKU" sekaligus), hasil `peringatan` dan field `kolom_ambigu`
+  menyebutkan semua kandidat + kolom mana yang akhirnya dipakai, supaya bisa dikoreksi lewat
+  `--kolom-...` kalau tebakannya salah - bukan diam-diam memilih tanpa memberi tahu.
 - Tidak ada scraping, login browser, atau API resmi marketplace di skill ini. Input murni dari file
   yang diunduh pengguna sendiri.
 - Bukan alat inventori: tidak memotong stok, tidak mengingat "sudah dikemas" dari hari sebelumnya. Untuk

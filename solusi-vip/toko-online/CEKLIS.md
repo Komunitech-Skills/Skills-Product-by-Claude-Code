@@ -12,12 +12,13 @@ pelanggan/nomor HP di repo Komunitech.
       error, memang tidak jalan).
 
 ## Pemasangan skill
-- [ ] 18 skill paket terpasang (`openclaw skills list` menampilkan semuanya):
+- [ ] 21 skill paket terpasang (`openclaw skills list` menampilkan semuanya):
       `karyawan-ai-mulai`, `cek-privasi-openclaw`, `listing-marketplace`,
       `harga-jual-marketplace`, `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`,
       `naskah-live-jualan`, `buku-stok`, `agen-cs-toko`, `foto-produk-brief`,
       `laporan-otomatis-terjadwal`, `rekap-penjualan-csv`, `konten-mingguan`, `pesan-prospek-wa`,
-      `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`.
+      `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`, `kas-umkm`, `buku-piutang`,
+      `laporan-iklan-mingguan`.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, member sudah punya 1 hasil nyata di tangan.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, laporan lampu lalu lintas sudah dibaca member, dan
       setiap perbaikan 🔴/🟡 yang disetujui sudah dijalankan **satu per satu**.
@@ -45,6 +46,9 @@ pelanggan/nomor HP di repo Komunitech.
 | Pengingat posting harian | 08.00 WIB | ☐ | ☐ |
 | Rekap CS harian (Copilot) | 20.00 WIB | ☐ | ☐ |
 | Follow-up CRM harian (crm-wa, opsional) | 08.00 WIB | ☐ | ☐ |
+| Ringkasan kas harian (kas-umkm, opsional) | 21.00 WIB | ☐ | ☐ |
+| Ringkasan piutang reseller (buku-piutang, opsional) | 07.45 WIB | ☐ | ☐ |
+| Laporan iklan mingguan (laporan-iklan-mingguan, opsional) | Senin 08.00 WIB | ☐ | ☐ |
 
 ## Privasi (wajib dicentang semua)
 - [ ] Tidak ada data pelanggan/pasien (nama, nomor HP, alamat) yang ditulis ke log/laporan yang
