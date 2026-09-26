@@ -20,6 +20,13 @@ rencana 7 hari, serta cek khusus Shopee/TikTok Shop/Tokopedia dan konteks Indone
 
 Cek yang tidak dijawab sama sekali = `tidak_tahu`. **Jangan pernah menebak `lulus`** tanpa bukti.
 
+Aturan `tidak_berlaku` (v1.0.1):
+- Hanya sah bila kolom `tidak_berlaku_jika` cek itu terisi. Cek tanpa syarat (mis. akses akun) yang
+  ditandai `tidak_berlaku` dihitung `tidak_tahu` + peringatan.
+- Cek **kritis** yang sah ditandai `tidak_berlaku` memicu peringatan dan membatasi label platform &
+  gabungan maksimal "Cukup, ada yang perlu dibenahi" (tidak pernah "Sehat").
+- Bila bobot cek yang berlaku < 50% dari seluruh bobot cek platform, status maksimal "sementara".
+
 ## 2. Bobot keparahan (dampak bila gagal)
 | Keparahan | Bobot | Contoh |
 |---|---:|---|
@@ -44,7 +51,7 @@ Cakupan bukti per platform:
 |---|---|---|
 | ≥ 80% | final | Skor boleh disampaikan sebagai nilai akun |
 | 60–79,99% | sementara | Wajib ditulis "sementara" |
-| < 60% | bukti kurang | Skor **tidak** disampaikan sebagai nilai akun; minta bukti dulu |
+| < 60% | bukti kurang | Skor & label mutu **tidak** ditampilkan ("BUKTI BELUM CUKUP"); minta bukti dulu |
 
 Skor gabungan beberapa platform = rata-rata tertimbang **porsi belanja** (bila belanja semua
 platform layak diketahui) atau rata-rata biasa (ditandai sementara). Platform berstatus bukti
@@ -77,6 +84,8 @@ Bobot ini adalah **keputusan produk Komunitech versi 1.0.0**, bukan standar resm
 Rentang 1–15. Urutan: prioritas tertinggi → kenaikan skor platform terbesar → keparahan → platform → ID.
 `naik` = skor platform bila cek itu menjadi `lulus` dikurangi skor sekarang (dihitung ulang penuh).
 Cek **kritis** berstatus `tidak_tahu` masuk daftar "CEK DULU" dan dikerjakan paling awal.
+Pengecualian urutan: cek anggaran T08, S07, TS05 selalu ditaruh **setelah** cek batas untungnya
+(T09, S06, TS04) bila keduanya bermasalah — anggaran tidak dinaikkan selama iklan masih rugi.
 
 ## 6. Rencana 7 hari
 - Hari 1–5: antrean (CEK DULU lalu prioritas) diisi berurutan, kapasitas 3 unit/hari
@@ -87,6 +96,7 @@ Cek **kritis** berstatus `tidak_tahu` masuk daftar "CEK DULU" dan dikerjakan pal
 ## 7. ROAS/ROI impas (`roas-impas`)
     biaya_platform = harga × persen / 100   (dibulatkan ke rupiah terdekat)
     laba_kotor     = harga − modal − biaya_platform − biaya_lain
+    laba_kotor dibulatkan KE BAWAH ke rupiah (konservatif); bila < Rp1 → ditolak dengan pesan jelas
     biaya iklan maks per pesanan (impas) = laba_kotor
     ROAS impas     = harga / laba_kotor     (dibulatkan KE ATAS 2 desimal, supaya target tidak di bawah impas)
 

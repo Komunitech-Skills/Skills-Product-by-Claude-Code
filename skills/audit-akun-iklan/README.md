@@ -5,9 +5,11 @@
 Untuk Meta (Facebook/Instagram) Ads, TikTok Ads, Google Ads, Shopee Ads, dan iklan TikTok Shop/Tokopedia.
 Tanpa memberi password, tanpa login, tanpa API: cukup screenshot, file ekspor, atau menjawab beberapa pertanyaan.
 
+Versi 1.0.1.
+
 ## Manfaat
 - ✅ **Skor kesehatan 0–100 yang bisa dipertanggungjawabkan** — dihitung script dengan bobot jelas, bukan "feeling" AI.
-- ✅ **79 titik cek khusus pasar Indonesia**: iklan klik-ke-WhatsApp, target ROAS Shopee vs titik impas, anggaran habis sebelum jam ramai malam, tanggal kembar, kata kunci "gratis/pdf" di Google.
+- ✅ **81 titik cek khusus pasar Indonesia**: iklan klik-ke-WhatsApp, target ROAS Shopee vs titik impas, anggaran habis sebelum jam ramai malam, tanggal kembar, kata kunci "gratis/pdf" di Google.
 - ✅ **Urutan perbaikan paling masuk akal** — dampak × kemudahan, lengkap dengan "skor naik berapa kalau ini beres".
 - ✅ **Rencana 7 hari siap jalan**, ±1–2 jam per hari, termasuk hari "jangan diutak-atik" agar iklan sempat belajar.
 - ✅ **Hitung ROAS impas per produk** — berapa biaya iklan maksimal per pesanan sebelum Anda rugi.

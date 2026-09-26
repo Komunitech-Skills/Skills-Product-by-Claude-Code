@@ -328,5 +328,121 @@ class UjiAngka(unittest.TestCase):
         self.assertEqual(m.status_cakupan(Decimal("59.9")), "bukti_kurang")
 
 
+class UjiRevisi101(unittest.TestCase):
+    """Regresi dari uji independen v1.0.0 (examples/HASIL-UJI.md)."""
+
+    def test_30_roas_laba_sangat_kecil_tidak_crash(self):
+        code, out, err = jalan("roas-impas", "--harga", "100000", "--modal", "99999,6")
+        self.assertEqual(code, 2)
+        self.assertNotIn("Traceback", err)
+        self.assertIn("kurang dari Rp1", err)
+
+    def test_31_roas_laba_dibulatkan_ke_bawah(self):
+        with self.assertRaises(m.InputSalah):   # laba 0,5 -> ke bawah 0 -> ditolak (dulu naik jadi 1)
+            m.roas_impas(Decimal(100000), Decimal(60000), Decimal("33.3333"), Decimal("6666.5"))
+        r = m.roas_impas(Decimal(100000), Decimal("50000.7"), Decimal(0), Decimal(0))
+        self.assertEqual(r["laba_kotor"], Decimal(49999))        # 49.999,3 -> 49.999
+        self.assertEqual(r["roas_impas"], Decimal("2.01"))       # 2,00004 -> ke atas
+
+    def test_32_tidak_berlaku_tanpa_syarat_jadi_tidak_tahu(self):
+        cek, _ = m.muat_cek()
+        jw = {i: ("lulus", "") for i, c in cek.items() if c["platform"] == "meta"}
+        jw["M04"] = ("tidak_berlaku", "")      # akses akun selalu berlaku
+        h = m.hitung(jw)
+        self.assertTrue(any("M04" in w and "selalu berlaku" in w for w in h["peringatan"]))
+        self.assertIn("M04", [c["id"] for c in h["cek_dulu"]])
+        self.assertLess(h["platform"]["meta"]["cakupan"], 100)
+
+    def test_33_kritis_tidak_berlaku_batasi_label(self):
+        cek, _ = m.muat_cek()
+        jw = {i: ("lulus", "") for i, c in cek.items() if c["platform"] == "meta"}
+        jw["M01"] = ("tidak_berlaku", "")      # kritis, syaratnya ada (iklan ke WA)
+        h = m.hitung(jw)
+        x = h["platform"]["meta"]
+        self.assertEqual(x["skor"], 100)
+        self.assertNotEqual(m.label_platform(x), "Sehat")
+        self.assertNotEqual(m.label_platform(h["gabungan"]), "Sehat")
+        self.assertTrue(any("KRITIS" in w and "M01" in w for w in h["peringatan"]))
+        code, out, _ = jalan_jawaban(jw)
+        self.assertNotIn("(Sehat)", out)
+
+    def test_34_banyak_tidak_berlaku_maksimal_sementara(self):
+        cek, _ = m.muat_cek()
+        jw = {i: (("tidak_berlaku" if c["tidak_berlaku_jika"] else "lulus"), "")
+              for i, c in cek.items() if c["platform"] == "meta"}
+        # Semua syarat tidak_berlaku Meta dipakai: sisa bobot berlaku 41/62 = 66% -> masih final
+        self.assertEqual(m.hitung(jw)["platform"]["meta"]["status"], "final")
+        lama = m.BATAS_RASIO_BERLAKU
+        try:
+            m.BATAS_RASIO_BERLAKU = Decimal("0.7")   # simulasikan rasio di bawah batas
+            h = m.hitung(jw)
+        finally:
+            m.BATAS_RASIO_BERLAKU = lama
+        self.assertEqual(h["platform"]["meta"]["status"], "sementara")
+        self.assertTrue(any("separuh" in w for w in h["peringatan"]))
+
+    def test_35_bukti_kurang_tanpa_label_mutu(self):
+        jw = {"S01": ("gagal", ""), "S02": ("lulus", "")}
+        h = m.hitung(jw)
+        x = h["platform"]["shopee"]
+        self.assertEqual(x["status"], "bukti_kurang")
+        self.assertEqual(m.label_platform(x), "Bukti belum cukup")
+        code, out, _ = jalan_jawaban(jw)
+        self.assertIn("BUKTI BELUM CUKUP", out)
+        for lab in ("(Sehat)", "(Kritis)", "(Perlu perbaikan)", "(Cukup"):
+            self.assertNotIn(lab, out)
+        code, out, _ = jalan_jawaban(jw, "--json")
+        d = json.loads(out)
+        self.assertIsNone(d["platform"]["shopee"]["skor"])
+        self.assertEqual(d["platform"]["shopee"]["label"], "Bukti belum cukup")
+        self.assertEqual(d["versi"], "1.0.1")
+
+    def test_36_anggaran_tidak_dinaikkan_sebelum_batas_untung(self):
+        cek, _ = m.muat_cek()
+        for plat, anak, induk in (("shopee", "S07", "S06"), ("tiktok", "T08", "T09"),
+                                  ("tiktokshop", "TS05", "TS04")):
+            jw = {i: ("lulus", "") for i, c in cek.items() if c["platform"] == plat}
+            jw[anak] = ("gagal", "")
+            jw[induk] = ("sebagian", "")
+            h = m.hitung(jw)
+            ids = [x["id"] for x in h["prioritas"]]
+            self.assertLess(ids.index(induk), ids.index(anak), plat)
+            self.assertTrue(any(anak in w and induk in w for w in h["peringatan"]))
+
+    def test_37_fakta_platform_diperbarui(self):
+        cek, _ = m.muat_cek()
+        for i in ("M22", "T18"):
+            self.assertEqual(cek[i]["kategori"], "pelacakan")
+            self.assertIn("event_id", cek[i]["lulus_jika"])
+            self.assertTrue(cek[i]["tidak_berlaku_jika"])
+        self.assertNotIn("pilih orang yang tinggal di lokasi", cek["M08"]["perbaikan"])
+        self.assertIn("baru-baru ini", cek["M08"]["perbaikan"])
+        for i in ("G15", "G16"):
+            self.assertIn("Performance Max", cek[i]["tidak_berlaku_jika"])
+            self.assertIn("Performance Max", cek[i]["lulus_jika"])
+        self.assertIn("10x", cek["T08"]["lulus_jika"])
+        self.assertIn("T09", cek["T08"]["perbaikan"])
+        self.assertIn("jangan perluas lokasi", cek["M18"]["perbaikan"])
+
+    def test_38_alias_gmvmax(self):
+        code, _, err = jalan("templat", "--platform", "gmvmax")
+        self.assertEqual(code, 2)
+        self.assertIn("shopee atau tiktokshop", err)
+        code, out, _ = jalan("templat", "--platform", "shopee-gmvmax")
+        self.assertEqual(code, 0)
+        self.assertIn("S01", out)
+
+
+def jalan_jawaban(jw, *extra):
+    with tempfile.TemporaryDirectory() as d:
+        p = Path(d) / "j.csv"
+        with p.open("w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["id", "status", "catatan"])
+            for k, (s, c) in jw.items():
+                w.writerow([k, s, c])
+        return jalan("hitung", str(p), *extra)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

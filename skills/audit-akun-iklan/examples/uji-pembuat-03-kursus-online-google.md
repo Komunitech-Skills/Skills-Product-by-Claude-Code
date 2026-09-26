@@ -1,6 +1,6 @@
 # Contoh 3 - Kursus Excel online, Google Ads
 
-> Contoh uji pembuat (simulasi agent, 2026-09-26). Data fiktif yang meniru kasus UMKM nyata;
+> Contoh uji pembuat (simulasi agent, 2026-09-26; output diperbarui ke v1.0.1). Data fiktif yang meniru kasus UMKM nyata;
 > bukan hasil uji independen (itu dilakukan penguji terpisah sesuai CLAUDE.md Tahap 6).
 
 ## Permintaan pengguna
@@ -37,7 +37,7 @@ PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
    Perbaikan: Ubah aksi yang tidak bernilai menjadi Sekunder
    Catatan audit: "Kunjungan halaman" ikut jadi konversi Utama
 2. [G15] Istilah penelusuran dicek dan kata kunci negatif dipasang - Google Ads; tinggi, mudah; prioritas 9; skor platform naik +11,3 bila beres
-   Perbaikan: Tambahkan istilah yang tidak relevan sebagai kata kunci negatif
+   Perbaikan: Tambahkan istilah yang tidak relevan sebagai kata kunci negatif di kampanye Penelusuran dan di Performance Max (berlaku untuk inventaris Penelusuran & Shopping)
    Catatan audit: Pencarian "kursus excel gratis pdf" menghabiskan 22% biaya
 3. [G03] Cara hitung konversi benar - Google Ads; tinggi, mudah; prioritas 9; skor platform naik +5,4 bila beres
    Perbaikan: Ubah pengaturan Hitungan pada aksi konversi
@@ -58,7 +58,7 @@ PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
    Perbaikan: Buat halaman khusus per produk/kelas; kompres gambar; taruh tombol WA di atas
    Catatan audit: Tombol WA ada tapi halaman lambat di HP
 9. [G16] Daftar negatif bersama - Google Ads; sedang, mudah; prioritas 3; skor platform naik +3,8 bila beres
-   Perbaikan: Buat satu daftar negatif umum dan terapkan ke semua kampanye
+   Perbaikan: Buat satu daftar negatif umum dan terapkan ke semua kampanye Penelusuran & Performance Max, atau pakai kata kunci negatif tingkat akun
 10. [G13] Aset tambahan terpasang - Google Ads; sedang, mudah; prioritas 3; skor platform naik +2,5 bila beres
    Perbaikan: Tambahkan sitelink (Jadwal, Harga, Testimoni, Kontak) dan callout (Sertifikat, Cicilan, dll.)
    Catatan audit: Belum ada sitelink
@@ -66,7 +66,7 @@ PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
 RENCANA 7 HARI (maks. kira-kira 1-2 jam kerja per hari)
 Hari 1 (Senin, 28 Sep 2026):
   - PERBAIKI [G02] Hanya aksi bernilai yang jadi konversi utama - Ubah aksi yang tidak bernilai menjadi Sekunder
-  - PERBAIKI [G15] Istilah penelusuran dicek dan kata kunci negatif dipasang - Tambahkan istilah yang tidak relevan sebagai kata kunci negatif
+  - PERBAIKI [G15] Istilah penelusuran dicek dan kata kunci negatif dipasang - Tambahkan istilah yang tidak relevan sebagai kata kunci negatif di kampanye Penelusuran dan di Performance Max (berlaku untuk inventaris Penelusuran & Shopping)
   - PERBAIKI [G03] Cara hitung konversi benar - Ubah pengaturan Hitungan pada aksi konversi
 Hari 2 (Selasa, 29 Sep 2026):
   - PERBAIKI [G07] Kampanye Penelusuran tidak ikut Jaringan Display - Hapus centang Jaringan Display di kampanye Penelusuran

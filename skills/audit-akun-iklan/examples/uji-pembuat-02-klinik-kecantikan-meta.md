@@ -1,6 +1,6 @@
 # Contoh 2 - Klinik kecantikan, Meta Ads klik-ke-WhatsApp
 
-> Contoh uji pembuat (simulasi agent, 2026-09-26). Data fiktif yang meniru kasus UMKM nyata;
+> Contoh uji pembuat (simulasi agent, 2026-09-26; output diperbarui ke v1.0.1). Data fiktif yang meniru kasus UMKM nyata;
 > bukan hasil uji independen (itu dilakukan penguji terpisah sesuai CLAUDE.md Tahap 6).
 
 ## Permintaan pengguna
@@ -45,7 +45,7 @@ PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
    Perbaikan: Samakan event dengan tujuan; perbaiki event yang dobel/tidak terkirim; untuk iklan WA pakai hasil Percakapan dimulai
    Catatan audit: Percakapan dimulai 180 vs chat nyata masuk 131 (selisih 37% > 30%)
 4. [M18] Frekuensi tidak berlebihan - Meta Ads; tinggi, mudah; prioritas 9; skor platform naik +10,0 bila beres
-   Perbaikan: Perluas audiens atau tambah materi baru; turunkan anggaran bila audiens kecil
+   Perbaikan: Tambah/rotasi materi baru dulu. Perluas audiens hanya bila area layanan (M08) memang lebih luas; untuk usaha lokal jangan perluas lokasi di luar area layanan, turunkan anggaran saja
    Catatan audit: Frekuensi 7 hari 4.6 di audiens baru
 5. [M03] Chat WA dari iklan dicatat sampai jadi order - Meta Ads; tinggi, mudah; prioritas 9; skor platform naik +7,5 bila beres
    Perbaikan: Beri label 'Iklan' di WhatsApp Business untuk chat dari iklan; tiap Sabtu hitung berapa yang jadi order
@@ -71,7 +71,7 @@ Hari 1 (Senin, 28 Sep 2026):
   - PERBAIKI [M15] Tidak ada iklan ditolak / akun dibatasi - Hapus klaim berlebihan dan foto sebelum-sesudah; ajukan peninjauan ulang hanya bila yakin iklan sudah sesuai kebijakan
 Hari 2 (Selasa, 29 Sep 2026):
   - PERBAIKI [M02] Hasil utama yang dioptimalkan benar-benar tercatat - Samakan event dengan tujuan; perbaiki event yang dobel/tidak terkirim; untuk iklan WA pakai hasil Percakapan dimulai
-  - PERBAIKI [M18] Frekuensi tidak berlebihan - Perluas audiens atau tambah materi baru; turunkan anggaran bila audiens kecil
+  - PERBAIKI [M18] Frekuensi tidak berlebihan - Tambah/rotasi materi baru dulu. Perluas audiens hanya bila area layanan (M08) memang lebih luas; untuk usaha lokal jangan perluas lokasi di luar area layanan, turunkan anggaran saja
 Hari 3 (Rabu, 30 Sep 2026):
   - PERBAIKI [M03] Chat WA dari iklan dicatat sampai jadi order - Beri label 'Iklan' di WhatsApp Business untuk chat dari iklan; tiap Sabtu hitung berapa yang jadi order
   - PERBAIKI [M05] Tujuan kampanye sesuai hasil yang dicari - Buat kampanye baru dengan tujuan yang benar (tujuan tidak bisa diganti di kampanye lama); matikan yang lama setelah yang baru berjalan 3-5 hari
@@ -85,6 +85,9 @@ Hari 6 (Sabtu, 3 Okt 2026):
 Hari 7 (Minggu, 4 Okt 2026):
   - Ekspor data iklan 7 hari lalu buat laporan dengan skill laporan-iklan-mingguan; audit ulang cek yang sudah diperbaiki dan bandingkan skornya.
 Antrean minggu berikutnya: [M13] Minimal 3 variasi materi per ad set; [M11] Batas belanja akun dipasang
+
+CATATAN
+- Meta Ads (Facebook/Instagram): cek KRITIS M01 ditandai tidak_berlaku -> pastikan syarat 'tidak berlaku jika' benar-benar terpenuhi; label maksimal 'Cukup'
 
 Aturan aman: ubah anggaran paling banyak 20% per 2-3 hari dan jangan ubah banyak hal sekaligus di satu kampanye. Skor ini alat bantu prioritas, bukan jaminan hasil iklan.
 ```
@@ -101,7 +104,7 @@ Aturan aman: ubah anggaran paling banyak 20% per 2-3 hari dan jangan ubah banyak
    menghasilkan pasien. Beri label "Iklan" di WhatsApp Business dan hitung tiap Sabtu.
 
 ## Catatan pemeriksaan pembuat
-- Cakupan: berlaku 53 (M01 & M17 tidak berlaku), diketahui 51 (M07 & M19 tidak_tahu, masing-masing
+- Cakupan (v1.0.1): berlaku 53 (M01, M17, M22 tidak berlaku), diketahui 51 (M07 & M19 tidak_tahu, masing-masing
   bobot 1) → 96,2%. Skor 33,5 cocok dengan hitung ulang independen di tests/uji_skor_audit.py (test_06).
 - Skill tidak menilai klaim medis; hanya menandai risiko kebijakan iklan (sesuai keputusan pemilik
   untuk domain kesehatan).

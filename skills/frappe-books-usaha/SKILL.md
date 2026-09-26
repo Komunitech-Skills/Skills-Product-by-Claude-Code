@@ -12,10 +12,11 @@ cukup mengetik permintaan biasa, dan agent: (1) membaca file datanya **tanpa men
 (3) menghitung PPN 12% dengan DPP 11/12, (4) menyiapkan laporan terjadwal ke Telegram lewat OpenClaw.
 Semua lewat `scripts/frappe_books.py` (Python standar saja, tanpa instalasi paket, tanpa internet).
 
-**Versi 1.0.1. Status uji:** skema dicocokkan dengan kode sumber resmi Frappe Books **v0.36.0** (dan cabang `main` 0.37.0,
-20 Sep 2026). v1.0.0 diuji penguji independen dengan file `.books.db` **asli** buatan Frappe Books v0.36.0: semua laporan baca
-cocok; impor CSV gagal (kolom Number Series, akun bernomor) → diperbaiki di v1.0.1 dan diuji dengan database tiruan yang meniru
-file asli (39 uji regresi). **Impor v1.0.1 belum diuji ulang di Import Wizard asli** — lihat `examples/HASIL-UJI.md`.
+**Versi 1.0.2. Status uji:** skema dicocokkan dengan kode sumber resmi Frappe Books **v0.36.0** (dan cabang `main` 0.37.0,
+20 Sep 2026). Diuji penguji independen dengan file `.books.db` **asli** v0.36.0: laporan baca cocok; CSV v1.0.1 (pelanggan, barang,
+penjualan, pembelian) diterima Import Wizard asli. v1.0.2 memperbaiki akun pembelian barang berstok dan kredit retur di piutang;
+keduanya dibuktikan pembuat di aplikasi asli (`examples/uji-pembuat/UJI-PEMBUAT-v1.0.2.md`) dan 42 uji regresi, **belum diuji ulang
+oleh penguji independen** — lihat `examples/HASIL-UJI.md`.
 Komunitech tidak berafiliasi dengan Frappe; Frappe Books tidak disertakan dalam paket.
 
 ## Kapan digunakan
@@ -80,6 +81,10 @@ Perintah (Windows: ganti `python3` dengan `python` atau `py`; path relatif terha
      database; bila ada beberapa seri, script bertanya lewat pesan galat → pakai `--seri`.
    - NPWP: bila file Frappe Books tidak punya kolom Tax ID (file asli uji: kolom `gstin`, tanpa `taxId`), NPWP tidak ikut CSV dan
      script menyebutkan tiap NPWP yang harus dicatat manual. Sampaikan peringatan ini, jangan dilewati.
+   - **Akun pembelian barang** mengikuti bawaan Frappe Books (`Item.ts`): barang yang dilacak stoknya → akun
+     `Stock Received But Not Billed` dari Inventory Settings (bagan Indonesia: `Stock Diterima Tapi Tidak Ditagih - 2115.000`);
+     jasa/barang tanpa stok → akun bertipe Cost of Goods Sold. Jangan pernah memakai HPP untuk barang berstok: HPP terhitung dua
+     kali (saat pembelian dan saat Shipment). Pastikan Inventory Settings (Stock In Hand, dst.) terisi; script memperingatkan bila kosong.
    - `--keluar` wajib berakhiran `.csv`; file database (termasuk `.books.db` atau SQLite yang dinamai .csv) ditolak.
    - Setelah LOLOS: sampaikan pratinjau per nota + langkah Import Wizard dari keluaran script (`references/import-wizard.md`),
      ingatkan **backup file .books.db dulu** dan memilih **tidak submit** agar transaksi masuk sebagai draf untuk dicek.
@@ -111,6 +116,10 @@ Setelah angka dari script, agent boleh menambah maksimal 3 saran singkat yang je
 - Retur mengurangi penjualan. Total memakai nilai mata uang usaha (`baseGrandTotal`). "Terbayar (bersih)" = total bersih −
   sisa tagihan (bukan uang diterima bila ada retur yang belum dikembalikan).
 - **Frappe Books tidak menyimpan tanggal jatuh tempo** → jatuh tempo = tanggal invoice + `--tempo` hari (bawaan 30). Selalu sebutkan asumsinya.
+- Retur yang belum dikembalikan tercatat sebagai invoice retur dengan sisa **negatif** (kredit pelanggan); invoice aslinya tidak
+  berkurang. `piutang`/`utang` mencetak daftar kredit ini dan **PIUTANG/UTANG BERSIH** (= saldo pihak di Frappe Books). Sampaikan
+  angka bersih bila pengguna bertanya "total piutang"; tagihan per invoice tetap apa adanya.
+- `laba-rugi` memberi PERINGATAN bila ada barang berstok yang akun pembeliannya HPP (data lama) — arahkan pengguna memperbaikinya.
 - Laba rugi dari buku besar: pendapatan − HPP (akun bertipe Cost of Goods Sold) − beban; entri yang dibatalkan tidak dihitung.
   Frappe Books v0.36.0 memposting retur dengan tanda terbalik (retur **menambah** pendapatan di buku besar & di Profit And Loss
   Frappe Books). Script mengoreksi entri retur agar sejalan dengan `penjualan`, dan mencetak "Catatan retur" berisi angka buku

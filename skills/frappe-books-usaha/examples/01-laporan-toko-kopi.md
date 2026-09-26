@@ -10,7 +10,7 @@ satuan `Hour/Day`, lokasi `Stores`). Isinya sengaja memuat kasus sulit: invoice 
 1 draf, 1 invoice batal, 1 retur, barang stok minus/habis, entri beban 1 Okt 00.30 WIB (tidak boleh masuk September).
 Opsi `--hari-ini 2026-09-26` hanya dipakai agar contoh bisa diulang (dalam pemakaian nyata tidak perlu).
 
-Dijalankan ulang 26 September 2026 dengan `frappe_books.py` 1.0.1 (Python 3, Linux). Database tidak berubah (dicek SHA-256 di uji regresi).
+Dijalankan ulang 26 September 2026 dengan `frappe_books.py` 1.0.1 (keluaran identik di 1.0.2, dicek dengan diff) (Python 3, Linux). Database tidak berubah (dicek SHA-256 di uji regresi).
 
 ```text
 $ python3 scripts/frappe_books.py cek

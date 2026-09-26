@@ -1,6 +1,6 @@
 # Contoh 1 - Toko gamis, Shopee Ads
 
-> Contoh uji pembuat (simulasi agent, 2026-09-26). Data fiktif yang meniru kasus UMKM nyata;
+> Contoh uji pembuat (simulasi agent, 2026-09-26; output diperbarui ke v1.0.1). Data fiktif yang meniru kasus UMKM nyata;
 > bukan hasil uji independen (itu dilakukan penguji terpisah sesuai CLAUDE.md Tahap 6).
 
 ## Permintaan pengguna
@@ -47,7 +47,7 @@ PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
    Perbaikan: Naikkan target ROAS ke minimal ROAS impas; turunkan bid kata kunci yang ROAS-nya di bawah impas
    Catatan audit: Target ROAS 2, padahal ROAS impas 2,92 (biaya Shopee 12% + kemas Rp2.000)
 2. [S07] Anggaran tidak habis sebelum jam ramai - Shopee Ads; tinggi, mudah; prioritas 9; skor platform naik +10,0 bila beres
-   Perbaikan: Naikkan anggaran harian iklan yang untung, atau kurangi jumlah iklan supaya anggaran cukup sampai malam
+   Perbaikan: Bila ROAS di bawah impas (S06 gagal), benahi S06 dulu dan JANGAN menaikkan anggaran; kurangi jumlah iklan supaya anggaran cukup sampai malam. Naikkan anggaran hanya untuk iklan yang ROAS-nya di atas impas
    Catatan audit: Anggaran Rp50rb/hari habis jam 14.00
 3. [S14] Kata kunci/iklan boros dihentikan - Shopee Ads; tinggi, mudah; prioritas 9; skor platform naik +10,0 bila beres
    Perbaikan: Nonaktifkan atau turunkan bid kata kunci/iklan tersebut
@@ -74,7 +74,7 @@ PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
 RENCANA 7 HARI (maks. kira-kira 1-2 jam kerja per hari)
 Hari 1 (Senin, 28 Sep 2026):
   - PERBAIKI [S06] Target ROAS/bid di atas ROAS impas - Naikkan target ROAS ke minimal ROAS impas; turunkan bid kata kunci yang ROAS-nya di bawah impas
-  - PERBAIKI [S07] Anggaran tidak habis sebelum jam ramai - Naikkan anggaran harian iklan yang untung, atau kurangi jumlah iklan supaya anggaran cukup sampai malam
+  - PERBAIKI [S07] Anggaran tidak habis sebelum jam ramai - Bila ROAS di bawah impas (S06 gagal), benahi S06 dulu dan JANGAN menaikkan anggaran; kurangi jumlah iklan supaya anggaran cukup sampai malam. Naikkan anggaran hanya untuk iklan yang ROAS-nya di atas impas
   - PERBAIKI [S14] Kata kunci/iklan boros dihentikan - Nonaktifkan atau turunkan bid kata kunci/iklan tersebut
 Hari 2 (Selasa, 29 Sep 2026):
   - PERBAIKI [S03] Hanya produk siap jual yang diiklankan - Hentikan iklan produk yang stoknya tipis atau ratingnya rendah; alihkan ke produk terlaris
@@ -91,6 +91,9 @@ Hari 6 (Sabtu, 3 Okt 2026):
   - Jangan ubah pengaturan besar; biarkan iklan belajar setelah perbaikan. Catat biaya & hasil harian.
 Hari 7 (Minggu, 4 Okt 2026):
   - Ekspor data iklan 7 hari lalu buat laporan dengan skill laporan-iklan-mingguan; audit ulang cek yang sudah diperbaiki dan bandingkan skornya.
+
+CATATAN
+- S07 dikerjakan setelah S06: jangan menaikkan anggaran selama biaya per hasil/ROAS masih di bawah batas untung (S06)
 
 Aturan aman: ubah anggaran paling banyak 20% per 2-3 hari dan jangan ubah banyak hal sekaligus di satu kampanye. Skor ini alat bantu prioritas, bukan jaminan hasil iklan.
 ```

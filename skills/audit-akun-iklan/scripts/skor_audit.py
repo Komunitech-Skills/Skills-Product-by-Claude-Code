@@ -22,7 +22,7 @@ import json
 import re
 import sys
 from datetime import date, timedelta
-from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP, InvalidOperation
+from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 
 SINI = Path(__file__).resolve().parent
@@ -42,7 +42,8 @@ ALIAS_PLATFORM = {
     "google": "google", "googleads": "google", "google-ads": "google",
     "shopee": "shopee", "shopeeads": "shopee", "marketplace": "shopee",
     "tiktokshop": "tiktokshop", "tiktok-shop": "tiktokshop", "tokopedia": "tiktokshop",
-    "topads": "tiktokshop", "gmvmax": "tiktokshop",
+    "topads": "tiktokshop", "tiktok-gmvmax": "tiktokshop", "tiktokshop-gmvmax": "tiktokshop",
+    "shopee-gmvmax": "shopee", "gmvmax-shopee": "shopee",
 }
 KATEGORI = {
     "pelacakan": "Pelacakan & konversi",
@@ -74,6 +75,10 @@ SINONIM_STATUS = {
 NAMA_HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 NAMA_BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 SATU_DESIMAL = Decimal("0.1")
+VERSI = "1.0.1"
+# Cek anggaran yang TIDAK boleh dikerjakan (menaikkan anggaran) sebelum cek batas-untungnya beres.
+PRASYARAT = {"T08": "T09", "S07": "S06", "TS05": "TS04"}
+BATAS_RASIO_BERLAKU = Decimal("0.5")   # bila < 50% bobot cek berlaku -> maksimal "sementara"
 
 
 class InputSalah(Exception):
@@ -177,6 +182,16 @@ def label_skor(skor):
     if skor >= 50:
         return "Perlu perbaikan"
     return "Kritis"
+
+
+def label_platform(x):
+    """Label mutu untuk hasil platform/gabungan; None bila bukti belum cukup."""
+    if x.get("status") == "bukti_kurang" or x.get("skor") is None:
+        return "Bukti belum cukup"
+    lab = label_skor(x["skor"])
+    if x.get("batas_label") and lab == "Sehat":
+        lab = "Cukup, ada yang perlu dibenahi (dibatasi: ada cek kritis ditandai tidak berlaku)"
+    return lab
 
 
 def status_cakupan(cak):
@@ -327,19 +342,42 @@ def hitung(jawaban, belanja=None, mulai=None, usaha=""):
         cek_p = [cek[i] for i in urutan if cek[i]["platform"] == p]
         statuses = {}
         belum = 0
+        na_tanpa_syarat, kritis_na = [], []
         for c in cek_p:
             if c["id"] in jawaban:
-                statuses[c["id"]] = jawaban[c["id"]][0]
+                st = jawaban[c["id"]][0]
+                if st == "tidak_berlaku" and not c["tidak_berlaku_jika"].strip():
+                    na_tanpa_syarat.append(c["id"])
+                    st = "tidak_tahu"
+                elif st == "tidak_berlaku" and c["keparahan"] == "kritis":
+                    kritis_na.append(c["id"])
+                statuses[c["id"]] = st
             else:
                 statuses[c["id"]] = "tidak_tahu"
                 belum += 1
         if belum:
             peringatan.append(f"{PLATFORM[p]}: {belum} cek belum dijawab -> dihitung 'tidak_tahu'")
+        if na_tanpa_syarat:
+            peringatan.append(f"{PLATFORM[p]}: {', '.join(na_tanpa_syarat)} ditandai tidak_berlaku padahal cek "
+                              "ini selalu berlaku -> dihitung 'tidak_tahu'; isi lulus/gagal/sebagian dengan bukti")
+        if kritis_na:
+            peringatan.append(f"{PLATFORM[p]}: cek KRITIS {', '.join(kritis_na)} ditandai tidak_berlaku -> "
+                              "pastikan syarat 'tidak berlaku jika' benar-benar terpenuhi; label maksimal 'Cukup'")
         s = skor_platform(statuses, cek_p, bobot[p])
         st_cak = status_cakupan(s["cakupan"]) if s["cakupan"] is not None else "tidak_berlaku"
         if s["skor"] is None and st_cak != "tidak_berlaku":
             st_cak = "bukti_kurang"
+        total_w = sum((BOBOT_KEPARAHAN[c["keparahan"]] for c in cek_p), Decimal(0))
+        berlaku_w = sum((BOBOT_KEPARAHAN[c["keparahan"]] for c in cek_p
+                         if statuses[c["id"]] != "tidak_berlaku"), Decimal(0))
+        if st_cak == "final" and berlaku_w / total_w < BATAS_RASIO_BERLAKU:
+            st_cak = "sementara"
+            peringatan.append(f"{PLATFORM[p]}: lebih dari separuh bobot cek ditandai tidak_berlaku -> "
+                              "status maksimal 'sementara'")
+        if belanja.get(p) == 0:
+            peringatan.append(f"belanja {PLATFORM[p]} = 0 -> platform ini tidak berbobot di skor gabungan")
         hasil_platform[p] = {"nama": PLATFORM[p], **s, "status": st_cak,
+                             "batas_label": bool(kritis_na),
                              "belanja": belanja.get(p), "jumlah_cek": len(cek_p)}
         for c in cek_p:
             st = statuses[c["id"]]
@@ -357,6 +395,15 @@ def hitung(jawaban, belanja=None, mulai=None, usaha=""):
     urut_p = {p: n for n, p in enumerate(PLATFORM)}
     prioritas.sort(key=lambda x: (-x["prioritas"], -x["naik"], -BOBOT_KEPARAHAN[x["keparahan"]],
                                   urut_p[x["platform"]], x["id"]))
+    # Jangan menaikkan anggaran sebelum batas untung beres: pindahkan cek anggaran ke belakang prasyaratnya.
+    for anak, induk in PRASYARAT.items():
+        ids = [x["id"] for x in prioritas]
+        if anak in ids and induk in ids:
+            peringatan.append(f"{anak} dikerjakan setelah {induk}: jangan menaikkan anggaran selama "
+                              f"biaya per hasil/ROAS masih di bawah batas untung ({induk})")
+            if ids.index(anak) < ids.index(induk):
+                item = prioritas.pop(ids.index(anak))
+                prioritas.insert([x["id"] for x in prioritas].index(induk) + 1, item)
 
     # gabungan: hanya platform yang skornya layak (bukan bukti_kurang)
     layak = [p for p, h in hasil_platform.items() if h["status"] in ("final", "sementara")]
@@ -377,6 +424,7 @@ def hitung(jawaban, belanja=None, mulai=None, usaha=""):
                      or gabungan["dikeluarkan"]
                      or (len(layak) > 1 and not pakai_belanja))
         gabungan["status"] = "sementara" if sementara else "final"
+        gabungan["batas_label"] = any(hasil_platform[p]["batas_label"] for p in layak)
 
     rencana = susun_rencana(cek_dulu, prioritas, mulai)
     return {"usaha": usaha, "platform": hasil_platform, "gabungan": gabungan,
@@ -430,7 +478,7 @@ def teks_laporan(h):
     o += [judul, "=" * len(judul)]
     g = h["gabungan"]
     if g["skor"] is not None:
-        o.append(f"Skor gabungan: {fmt(g['skor'])} / 100 ({label_skor(g['skor'])}) - "
+        o.append(f"Skor gabungan: {fmt(g['skor'])} / 100 ({label_platform(g)}) - "
                  f"{'FINAL' if g['status'] == 'final' else 'SEMENTARA'}; bobot: {g['cara_bobot']}")
     else:
         o.append("Skor gabungan: BELUM BISA DIBERIKAN - bukti kurang dari 60%. "
@@ -445,9 +493,13 @@ def teks_laporan(h):
             o.append(f"- {x['nama']}: belum ada skor (semua cek belum diketahui/tidak berlaku)")
             continue
         cak = fmt(x["cakupan"]) + "%" if x["cakupan"] is not None else "-"
+        if x["status"] == "bukti_kurang":
+            o.append(f"- {x['nama']}: BUKTI BELUM CUKUP (bukti {cak}, perlu minimal 60%) - skor & label "
+                     "tidak diberikan; lengkapi cek bertanda tidak_tahu dulu")
+            continue
         tanda = {"final": "final", "sementara": "sementara", "bukti_kurang": "BUKTI KURANG - jangan dijadikan nilai akun"}[x["status"]]
         bel = f"; belanja {rupiah(x['belanja'])}" if x["belanja"] is not None else ""
-        o.append(f"- {x['nama']}: {fmt(x['skor'])}/100 ({label_skor(x['skor'])}); bukti {cak} ({tanda}){bel}")
+        o.append(f"- {x['nama']}: {fmt(x['skor'])}/100 ({label_platform(x)}); bukti {cak} ({tanda}){bel}")
         for k in KATEGORI:
             if k in x["kategori"]:
                 kk = x["kategori"][k]
@@ -494,15 +546,19 @@ def teks_laporan(h):
 def ke_json(h):
     def d(x):
         return None if x is None else str(satu_desimal(x))
-    out = {"usaha": h["usaha"], "gabungan": {
+    out = {"versi": VERSI, "usaha": h["usaha"], "gabungan": {
         "skor": d(h["gabungan"]["skor"]), "status": h["gabungan"]["status"],
+        "label": label_platform(h["gabungan"]),
         "cara_bobot": h["gabungan"]["cara_bobot"], "dikeluarkan": h["gabungan"]["dikeluarkan"],
         "porsi": {p: str(v.quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP))
                   for p, v in h["gabungan"].get("porsi", {}).items()}},
         "platform": {}, "prioritas": [], "cek_dulu": [c["id"] for c in h["cek_dulu"]],
         "rencana": h["rencana"], "peringatan": h["peringatan"]}
     for p, x in h["platform"].items():
-        out["platform"][p] = {"nama": x["nama"], "skor": d(x["skor"]), "cakupan_bukti": d(x["cakupan"]),
+        kurang = x["status"] == "bukti_kurang"
+        out["platform"][p] = {"nama": x["nama"], "skor": None if kurang else d(x["skor"]),
+                              "skor_indikatif": d(x["skor"]) if kurang else None,
+                              "label": label_platform(x), "cakupan_bukti": d(x["cakupan"]),
                               "status": x["status"],
                               "belanja": None if x["belanja"] is None else str(x["belanja"].quantize(Decimal(1), rounding=ROUND_HALF_UP)),
                               "kategori": {k: {"skor": d(v["skor"]), "bobot": str(v["bobot"])}
@@ -521,11 +577,15 @@ def roas_impas(harga, modal, persen=Decimal(0), lain=Decimal(0)):
     if persen >= 100:
         raise InputSalah("persen biaya platform harus di bawah 100")
     biaya_platform = (harga * persen / 100).quantize(Decimal(1), rounding=ROUND_HALF_UP)
-    laba = harga - modal - biaya_platform - lain
-    if laba <= 0:
-        raise InputSalah(f"produk ini sudah rugi/impas sebelum iklan (laba kotor {rupiah(laba)} per pesanan); "
+    laba_mentah = harga - modal - biaya_platform - lain
+    if laba_mentah <= 0:
+        raise InputSalah(f"produk ini sudah rugi/impas sebelum iklan (laba kotor {rupiah(laba_mentah)} per pesanan); "
                          "jangan diiklankan sebelum harga/modal dibenahi")
-    laba = laba.quantize(Decimal(1), rounding=ROUND_HALF_UP)
+    # Dibulatkan KE BAWAH (konservatif): batas biaya iklan tidak boleh lebih besar dari laba sebenarnya.
+    laba = laba_mentah.quantize(Decimal(1), rounding=ROUND_FLOOR)
+    if laba < 1:
+        raise InputSalah(f"laba kotor per pesanan kurang dari Rp1 ({laba_mentah} rupiah); ROAS impas tidak masuk "
+                         "akal untuk iklan. Periksa angka harga/modal/biaya, atau benahi harga dulu")
     roas = (harga / laba).quantize(Decimal("0.01"), rounding=ROUND_CEILING)
     return {"harga": harga, "modal": modal, "biaya_platform": biaya_platform, "biaya_lain": lain,
             "laba_kotor": laba, "biaya_iklan_maks_per_pesanan": laba, "roas_impas": roas}
@@ -539,14 +599,16 @@ def pilih_platform(teks):
     for t in teks.split(","):
         k = ALIAS_PLATFORM.get(t.strip().lower())
         if not k:
-            raise InputSalah(f"platform tidak dikenal: {t!r}. Pilihan: {', '.join(PLATFORM)}")
+            petunjuk = (" GMV Max ada di Shopee dan TikTok Shop: tulis shopee atau tiktokshop."
+                        if "gmv" in t.lower() else "")
+            raise InputSalah(f"platform tidak dikenal: {t!r}. Pilihan: {', '.join(PLATFORM)}.{petunjuk}")
         if k not in hasil:
             hasil.append(k)
     return hasil
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Skor audit kesehatan akun iklan (Komunitech)")
+    ap = argparse.ArgumentParser(description=f"Skor audit kesehatan akun iklan (Komunitech) v{VERSI}")
     sub = ap.add_subparsers(dest="cmd", required=True)
     a = sub.add_parser("daftar", help="tampilkan daftar cek")
     a.add_argument("--platform")

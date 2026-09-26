@@ -3,12 +3,13 @@
 **Konteks:** pemilik mengirim tiga daftar dari Excel (disimpan sebagai CSV bertitik koma) dan berkata:
 *"Tolong masukkan pelanggan, barang, dan nota ini ke Frappe Books."* Semua nama **fiktif**.
 Database tiruan sama dengan contoh 01 (ditemukan otomatis di `~/Documents/Frappe Books/`).
-Dijalankan ulang 26 September 2026, `frappe_books.py` 1.0.1 (database tiruan meniru file asli: akun bernomor, Party tanpa kolom Tax ID).
+Dijalankan ulang 26 September 2026, `frappe_books.py` 1.0.2 (database tiruan meniru file asli: akun bernomor, Party tanpa kolom Tax ID).
 
 Yang ditunjukkan: judul kolom bahasa sehari-hari dikenali, `Rp 95.000`/`18rb`/`1,5jt` dibaca benar, nomor HP dirapikan ke +62,
 nama yang sudah ada dilewati, satuan yang belum ada ditolak, tanggal mustahil ditolak, huruf besar/kecil nama disamakan
 dengan data (`warung bu sari` → `Warung Bu Sari`), akun bernomor dipilih dengan aturan tetap (`Penjualan - 4110.000`, bukan
-`Pendapatan Bunga Bank`), kolom Number Series `SINV-` ditulis, NPWP yang tidak bisa diimpor disebutkan, `--keluar` ke file
+`Pendapatan Bunga Bank`), barang berstok memakai akun pembelian bawaan Frappe (`Stock Diterima Tapi Tidak Ditagih`,
+dari Inventory Settings; bukan HPP agar HPP tidak terhitung dua kali), kolom Number Series `SINV-` ditulis, NPWP yang tidak bisa diimpor disebutkan, `--keluar` ke file
 database ditolak, PPN pratinjau memakai standar Komunitech.
 
 ```text
@@ -81,7 +82,7 @@ $ python3 scripts/frappe_books.py csv-barang --masuk barang.csv --keluar impor-b
 (Memakai database Frappe Books: ~/Documents/Frappe Books/Toko Kopi Nusantara.books.db)
 VALIDASI CSV BARANG (Frappe Books: Item)
 LOLOS: 3 barang/jasa siap diimpor -> impor-barang.csv
-Akun penjualan: Penjualan - 4110.000 (jasa: Pendapatan Service - 4310.000) | akun pembelian: HPP Pembelian - 4210.000
+Akun penjualan: Penjualan - 4110.000 (jasa: Pendapatan Service - 4310.000) | akun pembelian (tanpa stok/jasa): HPP Pembelian - 4210.000 | akun pembelian barang berstok: Stock Diterima Tapi Tidak Ditagih - 2115.000 (bawaan Frappe: Stock Received But Not Billed)
 Langkah di Frappe Books: menu Import Wizard (Setup/Pengaturan) > pilih jenis 'Item' > Select File > pilih file ini >
 periksa pratinjau (kolom merah = salah) > Import Data. Saat ditanya 'submit after syncing', jawab TIDAK untuk transaksi
 agar masuk sebagai draf dan bisa dicek dulu. Backup file .books.db sebelum impor pertama.
@@ -99,8 +100,8 @@ Bu Rina (catering),Customer,,+6285711112222
 Item,Item,Item,Item,Item,Item,Item,Item,Item,Item,Item
 Item Name,Item Code,Purpose,Type,Unit Type,Rate,Description,Sales Acc.,Purchase Acc.,Barcode,Track Inventory
 Item.name,Item.itemCode,Item.for,Item.itemType,Item.unit,Item.rate,Item.description,Item.incomeAccount,Item.expenseAccount,Item.barcode,Item.trackItem
-Kopi Liberika 200g,KPL-200,Both,Product,Unit,95000,,Penjualan - 4110.000,HPP Pembelian - 4210.000,,1
-Susu UHT 1L,SUS-1,Both,Product,Unit,18000,,Penjualan - 4110.000,HPP Pembelian - 4210.000,,1
+Kopi Liberika 200g,KPL-200,Both,Product,Unit,95000,,Penjualan - 4110.000,Stock Diterima Tapi Tidak Ditagih - 2115.000,,1
+Susu UHT 1L,SUS-1,Both,Product,Unit,18000,,Penjualan - 4110.000,Stock Diterima Tapi Tidak Ditagih - 2115.000,,1
 Kelas Barista,,Both,Service,Hour,1500000,,Pendapatan Service - 4310.000,HPP Pembelian - 4210.000,,0
 
 $ python3 scripts/frappe_books.py csv-transaksi --masuk nota.csv --keluar impor-nota.csv
@@ -149,8 +150,8 @@ Saran: Pakai nama file baru berakhiran .csv, mis. impor-pelanggan.csv, di folder
 - PPN N-01 di Frappe Books akan tampil Rp 36.557,95 (pajak per baris tanpa pembulatan); standar Komunitech Rp 36.557
   (dibulatkan ke bawah). Pembulatan belum dicocokkan dengan Coretax.
 - File CSV hasil memakai 3 baris judul seperti template resmi Import Wizard (`references/import-wizard.md`).
-  v1.0.0 (tanpa Number Series) ditolak Import Wizard asli; penguji menambah kolom `SINV-` dan impor berhasil. CSV v1.0.1 di atas
-  sudah berisi kolom itu tetapi **belum diuji ulang** di Import Wizard asli.
+  CSV v1.0.1 (format yang sama) diterima Import Wizard asli Frappe Books v0.36.0 untuk keempat jenis data (uji ulang independen,
+  `08-uji-ulang-v101-akun-b.md`). Perbaikan akun barang berstok v1.0.2 dibuktikan pembuat di aplikasi asli: `uji-pembuat/UJI-PEMBUAT-v1.0.2.md`.
 
 ## Jawaban agent ke pemilik (ringkas)
 > Sudah saya siapkan 3 file. **Sebelum impor, salin dulu file `Toko Kopi Nusantara.books.db` ke folder lain (backup).**

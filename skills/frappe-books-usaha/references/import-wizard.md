@@ -39,6 +39,17 @@ Invoice `name`, `party`, `account`, `date`, `numberSeries`, baris `item`, `rate`
 Nama menu bisa sedikit berbeda bila bahasa aplikasi diubah ke Bahasa Indonesia; posisinya tetap di bagian Setup/Pengaturan.
 Langkah GUI ini disusun dari kode `src/pages/ImportWizard.vue` dan belum difoto dari aplikasi sungguhan.
 
+## Catatan dari uji di aplikasi asli (v0.36.0)
+- **Akun pembelian barang berstok** harus `Stock Received But Not Billed` (Inventory Settings), bukan HPP. Import Wizard tidak
+  memeriksa ini, jadi akun salah masuk diam-diam dan HPP terhitung dua kali (pembelian + Shipment). `csv-barang` v1.0.2 mengikuti
+  bawaan Frappe; data lama yang terlanjur salah diperingatkan oleh `laba-rugi`.
+- Bagan akun Indonesia bawaan tidak punya akun persediaan yang bukan grup: buat mis. `Persediaan Toko` (tipe Stock) di bawah
+  `Persediaan Barang - 1140.000`/`1141.000` lalu pasang di Inventory Settings > Stock In Hand sebelum menerima barang.
+- Pembayaran sebagian perlu centang **Enable Partial Payment** di pengaturan.
+- Shipment dari invoice yang berisi barang **dan** jasa gagal di v0.36.0 ("Cannot read properties of undefined (reading 'Stores')");
+  hapus baris jasa di Shipment dulu (bug aplikasi, bukan skill).
+- Retur membuat invoice retur bersisa negatif (kredit); invoice asli tidak berkurang otomatis.
+
 ## Tidak dikerjakan skill (arahkan manual)
 - Retur (jumlah negatif) → buat dari invoice asli dengan tombol **Return** di Frappe Books.
 - Pembayaran, jurnal umum, saldo awal, multi-mata uang → input manual di Frappe Books (atau Import Wizard dengan template bawaan aplikasi).

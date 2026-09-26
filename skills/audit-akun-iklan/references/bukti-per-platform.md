@@ -9,10 +9,10 @@ yang ia lihat, jangan memaksa nama menu.
 ## Paket bukti minimal (5–10 menit per platform)
 | Platform | Screenshot / file | Menjawab cek |
 |---|---|---|
-| Meta Ads | Ads Manager tab Kampanye (kolom Tujuan, Pengiriman, Hasil, Biaya per hasil, Frekuensi); Events Manager ringkasan; Pengaturan Bisnis > Orang; Kualitas Akun | M01–M21 |
-| TikTok Ads Manager | Daftar kampanye/ad group (Tujuan, Status, Anggaran, Biaya per hasil); Assets > Events; Business Center > Anggota; pratinjau 3 video | T01–T17 |
+| Meta Ads | Ads Manager tab Kampanye (kolom Tujuan, Pengiriman, Hasil, Biaya per hasil, Frekuensi); Events Manager ringkasan (metode koneksi Browser/Server) + Diagnostik; Pengaturan Bisnis > Orang; Kualitas Akun | M01–M22 |
+| TikTok Ads Manager | Daftar kampanye/ad group (Tujuan, Status, Anggaran, Biaya per hasil); Assets > Events (Pixel & Events API); Business Center > Anggota; pratinjau 3 video | T01–T18 |
 | Google Ads | Daftar kampanye (Jenis, Strategi bidding, Anggaran, Konversi, Biaya/konv.); Tujuan > Konversi; Setelan kampanye (Jaringan, Lokasi); Istilah penelusuran 30 hari; Aset | G01–G16 |
-| Shopee Ads | Iklan Shopee > daftar iklan (Biaya, Penjualan, ROAS, status anggaran); pengaturan target ROAS; laporan kata kunci 14 hari; halaman produk yang diiklankan; Performa Toko > Chat | S01–S14 |
+| Shopee Ads | Iklan Shopee > daftar iklan (Biaya, Penjualan, ROAS, status anggaran; jenis iklan mis. GMV Max Auto / GMV Max ROAS); pengaturan target ROAS; laporan kata kunci 14 hari; halaman produk yang diiklankan; Performa Toko > Chat | S01–S14 |
 | TikTok Shop / Tokopedia | Laporan iklan toko per produk & per video (GMV Max/Product ads); pengaturan target ROI; halaman produk; Kesehatan Akun/Performa Toko | TS01–TS11 |
 
 Tokopedia dan TikTok Shop kini satu grup dan menu iklannya bisa sudah pindah/berganti nama. Bila

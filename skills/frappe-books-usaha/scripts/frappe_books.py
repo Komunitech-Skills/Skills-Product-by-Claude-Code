@@ -692,7 +692,7 @@ def cmd_stok(args):
             out += [f"  - {n}: {angka(q_)} {barang[n]}".rstrip() for n, q_ in sorted(isi, key=lambda x: x[1])]
     if args.semua:
         out.append("AMAN:")
-        out += [f"  - {n}: {angka(q_)} {barang[n]}".rstrip() for n, q_ in sorted(aman)]
+        out += [f"  - {n}: {angka(q_)} {barang[n]}".rstrip() for n, q_ in sorted(aman)] or ["  (tidak ada)"]
     else:
         out.append(f"Aman: {len(aman)} barang (tambahkan --semua untuk melihat daftarnya).")
     print("\n".join(out))
