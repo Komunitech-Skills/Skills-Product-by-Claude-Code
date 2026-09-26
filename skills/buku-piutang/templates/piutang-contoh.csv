@@ -1,0 +1,6 @@
+no nota;pelanggan;tanggal;jatuh tempo;nominal;dibayar;no wa;keterangan;status
+B-0901;Warung Bu Tini;01/09/2026;15/09/2026;1.250.000;;0812-0000-2001;beras 2 karung;belum lunas
+B-0905;Kafe Senja;05/09/2026;12/09/2026;2.400.000;1.000.000;0812-0000-2002;gula 50 kg, minyak 2 dus;belum lunas
+INV-0910;CV Maju Jaya;10/09/2026;30 hari;11.100.000;;;termasuk PPN;tempo
+B-0920;Pak Joko;20/09/2026;27/09/2026;350.000;;0812-0000-2004;;bon
+B-0921;Kafe Senja;21/09/2026;28/09/2026;480.000;480.000;;;lunas

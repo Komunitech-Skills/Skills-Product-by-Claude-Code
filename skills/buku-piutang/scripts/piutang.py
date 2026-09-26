@@ -538,7 +538,8 @@ def kunci_nama(nama):
 
 
 def kunci_nota(no):
-    return re.sub(r"\s+", "", str(no or "").upper())
+    """'INV-001', 'inv 001', 'INV/001' -> 'INV001' (tanda baca & spasi diabaikan agar nota yang sama tidak dobel)."""
+    return re.sub(r"[\W_]+", "", str(no or "").upper())
 
 
 def panggilan(p, cfg):
@@ -1085,8 +1086,8 @@ def cari_nota(conn, ref, aktif=True):
 
 def nomor_otomatis(conn, awalan="PB"):
     n = 0
-    for r in conn.execute("SELECT kunci FROM nota WHERE kunci LIKE ?", (awalan + "-%",)):
-        m = re.fullmatch(awalan + r"-(\d+)", r["kunci"])
+    for r in conn.execute("SELECT kunci FROM nota WHERE kunci LIKE ?", (awalan + "%",)):
+        m = re.fullmatch(awalan + r"(\d+)", r["kunci"])
         if m:
             n = max(n, int(m.group(1)))
     return "%s-%04d" % (awalan, n + 1)
@@ -1534,6 +1535,10 @@ def cmd_bayar(args):
                             (rp(jumlah), p["nama"], tgl_pendek(tgl), ", ".join(kode_b(r[0]) for r in dobel)),
                             duplikat=True)
         lebih = jumlah - total_target
+        if total_target == 0 and args.kelebihan not in ("kredit", "kembalikan"):
+            raise Gagal("%s tidak punya tagihan terbuka, jadi pembayaran %s TIDAK dicatat. Kalau ini uang muka/deposit "
+                        "untuk pesanan berikutnya, ulangi dengan --kelebihan kredit. Kalau untuk pelanggan lain, periksa "
+                        "namanya." % (p["nama"], rp(jumlah)), kelebihan=jumlah, total_tagihan=0)
         if lebih > 0 and args.kelebihan not in ("kredit", "kembalikan"):
             opsi = ["--kelebihan kredit (disimpan sebagai deposit/kelebihan bayar pelanggan, bisa dipakai untuk nota "
                     "berikutnya)", "--kelebihan kembalikan (uang lebihnya sudah dikembalikan ke pelanggan)"]
@@ -3026,6 +3031,10 @@ def main(argv=None):
         pesan = (PESAN_TERKUNCI % _detik()) if _terkunci(e) else \
             "Kesalahan database: %s. Jangan hapus file database; ulangi, atau pulihkan dari cadangan." % e
         return cetak(args, {"ok": False, "error": pesan}, pesan, 1)
+    except sqlite3.IntegrityError as e:
+        pesan = ("Data bentrok dengan catatan yang sudah ada (%s). Tidak ada yang disimpan; database aman. Periksa "
+                 "nomor nota/pembayaran lalu ulangi." % e)
+        return cetak(args, {"ok": False, "error": pesan, "bentrok": True}, pesan, 1)
     except sqlite3.DatabaseError as e:
         pesan = "Database rusak (%s). Jangan hapus file itu. %s" % (e, SARAN_PULIH)
         return cetak(args, {"ok": False, "error": pesan, "rusak": True}, pesan, 1)
