@@ -34,7 +34,7 @@ Sumber riset: `research/sources/kurasi-terbukti-2026-09-24.md`, `research/backlo
 | B6 | Kreasi `analisis-excel` (Data) | Backlog #27 — bedakan dari `rekap-penjualan-csv`; script Python standar | lulus 9/10 v1.0.11 (Akun B, 2026-09-25) — 11 putaran uji; 0 salah diam-diam pada ±150 fixture; satu logika deteksi ringkasan + pengaman silang Grand Total; siap uji platform asli & beta |
 | B7 | Kreasi `sop-onboarding` (HR) | Backlog #36 — bedakan dari `sop-writer` | lulus 8/10 v1.0.1 (Akun B, 2026-09-25) — v1.0.2 perbaikan kecil (tafsir batas 3 bulan, traceback tanggal 9999, CSV titik-koma); PERLU REVIEW: dasar hukum sumber sekunder, cek ulang Nov 2026 |
 | B8 | Kreasi `tender-checklist` (Sales) | Backlog #33 — LPSE/SPSE; verifikasi Perpres PBJ terbaru | lulus 9/10 v1.0.3 (Akun B, 2026-09-25) — alarm palsu & kolom volume diperbaiki, dicek independen; PERLU REVIEW: pasal Perpres 46/2025 dari sumber sekunder |
-| B9 | `atur-keuangan-pribadi` (openaccountant, MIT) | **TUNGGU keputusan pemilik** (sinyal bukti tipis) | tertahan |
+| B9 | `atur-keuangan-pribadi` (openaccountant, MIT) | Disetujui pemilik 2026-09-26 ("lanjut") walau sinyal bukti tipis | dikerjakan (Akun B, 2026-09-26) |
 | B10 | `spt-tahunan-op-helper` | Backlog #29 — musiman (Jan–Mar); kerjakan menjelang musim | nanti |
 
 ## Jalur 2 & 3 — Akun A
