@@ -61,7 +61,7 @@ BERHASIL: 2 baris ditambahkan ke tabel 'Pelanggan'.
 > 2 pelanggan baru (Toko Sumber Rejeki, Bengkel Jaya Motor) sudah masuk ke tabel Pelanggan di
 > Grist. Kolom rumus **WA Rapi** otomatis terisi untuk baris baru ini juga.
 
-## Skenario angka Rupiah (uji terpisah, lihat juga `HASIL-UJI.md`)
+## Skenario angka Rupiah (uji terpisah, lihat juga `uji-pembuat/UJI-PEMBUAT-v1.0.0.md`)
 File dengan kolom harga campuran format:
 ```
 Tanggal Pesanan,Nama Pembeli,Barang,Qty,Harga Satuan (Rp),Diskon (%)

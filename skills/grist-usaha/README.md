@@ -82,7 +82,7 @@ tabel "Pilih skill yang mana?" di `SKILL.md`.
 ## Kejujuran soal status skill ini (penting)
 Skill ini berstatus **draft**, dibuat & diuji dalam satu sesi kerja Komunitech dengan file
 `.grist` **tiruan** (skemanya disusun dari kode sumber resmi Grist, bukan dari Grist sungguhan
-yang dijalankan) dan server REST API tiruan — lihat `examples/HASIL-UJI.md` untuk rincian lengkap
+yang dijalankan) dan server REST API tiruan — lihat `examples/uji-pembuat/UJI-PEMBUAT-v1.0.0.md` untuk rincian lengkap
 apa yang sudah & belum diuji. Sebelum rilis ke pembeli, skill ini akan diuji ulang terhadap Grist
 Desktop/Docker sungguhan oleh tim Komunitech.
 

@@ -1,4 +1,4 @@
-# Hasil uji — `grist-usaha` v1.0.0 (status: draft)
+# Catatan uji pembuat — `grist-usaha` v1.0.0 (bukan hasil uji independen)
 
 **Tanggal:** 2026-09-26
 **Penguji:** sesi ini (agent) — **bukan** penguji independen terpisah dari pembuat, karena

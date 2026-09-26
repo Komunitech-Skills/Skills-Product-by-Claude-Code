@@ -17,7 +17,7 @@ disusun sama persis dengan kode sumber resmi `grist-core` v1.7.19, dibaca langsu
 lihat `research/sources/grist-2026-09-26.md`) dan **server REST API TIRUAN** yang meniru bentuk
 respons resmi. **Belum diuji** terhadap Grist Desktop atau `grist-core`/Docker yang sungguhan
 menyala (lingkungan pembuatan skill ini tidak bisa menjalankan Docker/GUI) — lihat
-`examples/HASIL-UJI.md` untuk rincian kejujuran ini. Status katalog: **draft**.
+`examples/uji-pembuat/UJI-PEMBUAT-v1.0.0.md` untuk rincian kejujuran ini. Status katalog: **draft**.
 
 ## Pilih skill yang mana? (penting, sering tertukar)
 | Kebutuhan | Pakai |
@@ -157,7 +157,7 @@ Contoh 3 baris pertama:
 Lihat `examples/`: `01-ringkasan-stok-dari-file-grist.md` (baca read-only),
 `02-rancang-dan-buat-tabel-pelanggan.md` (rancang + buat tabel via API),
 `03-bersihkan-dan-impor-csv.md` (CSV → Grist), `04-input-tidak-lengkap.md`,
-`05-di-luar-cakupan.md`, dan ringkasan uji di `HASIL-UJI.md`.
+`05-di-luar-cakupan.md`, dan catatan uji pembuat di `uji-pembuat/UJI-PEMBUAT-v1.0.0.md`.
 
 ## Keamanan (wajib dipatuhi agent)
 - **Baca file `.grist` SELALU read-only** (`PRAGMA query_only`) — jangan pernah menyarankan atau

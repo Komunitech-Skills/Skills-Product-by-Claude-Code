@@ -28,6 +28,6 @@ Lisensi: **Proprietary Komunitech** — penggunaan tunduk pada `LISENSI.txt` dal
   metodologi verifikasi ada di `research/sources/grist-2026-09-26.md`.
 - File `tests/fixtures/buat_fixture.py` membuat file `.grist` **TIRUAN** untuk keperluan uji
   (bukan hasil ekspor Grist sungguhan) — lihat catatan kejujuran di dalam file itu dan di
-  `examples/HASIL-UJI.md`.
+  `examples/uji-pembuat/UJI-PEMBUAT-v1.0.0.md`.
 - "Grist" adalah merek milik pemiliknya. **Komunitech tidak berafiliasi** dengan Grist Labs Inc.
   atau proyek Grist; nama dipakai hanya untuk menjelaskan kompatibilitas.
