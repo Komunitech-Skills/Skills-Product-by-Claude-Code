@@ -6,12 +6,13 @@
 | Nama paket / kode tender | |
 | Instansi / LPSE | |
 | Metode (tender / seleksi / pengadaan langsung / e-purchasing / tender cepat) | |
-| Jenis (barang / konstruksi / jasa lainnya / konsultansi) | |
+| Jenis (barang / konstruksi / jasa lainnya / konsultansi / terintegrasi) → `--jenis` | |
 | Kualifikasi usaha (kecil / non-kecil) | |
 | KBLI / SBU yang diminta | |
-| Pagu | Rp |
+| Syarat TKDN (paling sedikit 25%?) | |
+| Pagu (s.d. Rp15 M → cadangan UMK, Pasal 65 ayat (3)–(4)) | Rp |
 | HPS | Rp |
-| Jaminan penawaran? (nilai, masa berlaku) | |
+| Jaminan penawaran? (hanya konstruksi/terintegrasi, HPS > Rp10 M: 1%–3%; nilai, masa berlaku) | |
 | Masa berlaku penawaran | ... hari kalender |
 | Jangka waktu pelaksanaan | ... hari kalender |
 | Jadwal: pengumuman / penjelasan / batas unggah / pembukaan | |
@@ -35,7 +36,7 @@
 
 ## 4. Rincian harga
 Isi `contoh-rincian.csv` (kolom: No; Uraian; Volume; Satuan; Harga Satuan; Jumlah — kolom Jumlah opsional, dicek per baris) lalu jalankan:
-`python3 scripts/cek_penawaran.py harga rincian.csv --ppn nonmewah --hps "Rp ..."`
+`python3 scripts/cek_penawaran.py harga rincian.csv --ppn nonmewah --hps "Rp ..." --jenis barang`
 (Windows: `py scripts\cek_penawaran.py ...`). Tanpa script: pakai rumus di SKILL.md.
 
 ## 5. Jadwal mundur

@@ -12,6 +12,9 @@ Hanya library standar Python 3.8+. Tanpa akses jaringan. Lintas OS
    "DPP Nilai Lain (11/12)" (= 11/12 x DPP, toleransi Rp1), PPN.
    Pemisah ; , tab atau | dikenali otomatis. Format angka "Rp1.250.000,00", "1,5", "1.500" diterima.
    HPS/pagu boleh "185jt", "2,4 M", "Rp2,4 miliar".
+   --jenis konstruksi|barang|jasa-lainnya|konsultansi|terintegrasi (jenis pengadaan): menentukan pesan
+   jaminan penawaran (Perpres 16/2018 jo. 46/2025 Pasal 30 ayat (2): hanya konstruksi & terintegrasi) dan
+   jaminan pelaksanaan (Pasal 33: barang/konstruksi/jasa lainnya). Tanpa --jenis: asumsi disebut di Info.
    Kolom "Jumlah" (banyaknya) + "Jumlah Harga" sekaligus: Jumlah = volume, Jumlah Harga = jumlah per baris.
 
 Kode keluar (harga & jadwal):
@@ -43,7 +46,11 @@ from fractions import Fraction
 
 TARIF = {"nonmewah": Fraction(11, 100), "mewah": Fraction(12, 100), "tidak": Fraction(0)}
 BATAS_KEWAJARAN = Decimal("80")          # % HPS -> klarifikasi kewajaran harga
-BATAS_JAMINAN_PENAWARAN = 10_000_000_000  # HPS > Rp10 miliar -> jaminan penawaran (cek dokumen)
+BATAS_JAMINAN_PENAWARAN = 10_000_000_000  # HPS > Rp10 miliar -> jaminan penawaran (Pasal 31; hanya konstruksi/terintegrasi)
+JENIS = ["konstruksi", "barang", "jasa-lainnya", "konsultansi", "terintegrasi"]
+JENIS_JAMINAN_PENAWARAN = {"konstruksi", "terintegrasi"}           # Pasal 30 ayat (2) jo. 46/2025
+JENIS_JAMINAN_PELAKSANAAN = {"barang", "konstruksi", "jasa-lainnya", "terintegrasi"}   # Pasal 33 ayat (1)
+JENIS_PAKET_UMK = {"barang", "konstruksi", "jasa-lainnya"}          # Pasal 65 ayat (3)
 BATAS_PAKET_UMK = 15_000_000_000          # pagu s.d. Rp15 miliar -> dicadangkan UMK & koperasi
 BATAS_JAMINAN_PELAKSANAAN = 200_000_000   # kontrak > Rp200 juta -> jaminan pelaksanaan (Pasal 33)
 KODE_BERSIH, KODE_PERINGATAN, KODE_GALAT, KODE_BELUM_FINAL = 0, 1, 2, 3   # lihat docstring
@@ -414,7 +421,9 @@ def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I, se
                  f"{rupiah(total)} (selisih {rupiah(total - nilai)}; {kedua}). Cek rumus di Excel/dokumen.")
 
 
-def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None):
+def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None, jenis=None):
+    if jenis is not None and jenis not in JENIS:
+        raise InputSalah(f"jenis pengadaan '{jenis}' tidak dikenal; pilih: {', '.join(JENIS)}")
     baris_data, peta, lebar, pemisah, catatan, offset = baca_rincian(path)
     item, dilewati, masalah, total_tertempel, selisih_baris, info_baris = [], [], [], [], [], []
     mirip_total = []   # (no_file, label, nilai): baris berlabel mirip total yang tidak dikenali -> dilaporkan
@@ -501,7 +510,7 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None):
              "sisa_pembulatan": sisa, "mode_ppn": ppn, "harga_termasuk_ppn": termasuk_ppn,
              "terbilang": terbilang(total), "baris_dilewati": dilewati, "baris_bermasalah": masalah,
              "catatan": catatan, "peringatan": [], "info": [], "selisih_baris": selisih_baris,
-             "total_belum_final": bool(masalah)}
+             "total_belum_final": bool(masalah), "jenis": jenis}
     P, I = hasil["peringatan"], hasil["info"]
     if masalah:
         P.append(f"{len(masalah)} baris tidak bisa dibaca dan TIDAK ikut dihitung -> TOTAL BELUM FINAL. Perbaiki dulu.")
@@ -557,29 +566,57 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None):
                 teks = (f"Total penawaran {persen_id(persen)} HPS (< 80% HPS = di bawah {rupiah(batas80)}). "
                         "Pokja/Pejabat Pengadaan akan melakukan KLARIFIKASI KEWAJARAN HARGA: siapkan rincian "
                         "harga dasar (bukti harga pemasok/upah/alat); tidak wajar -> gugur. ")
-                if total > BATAS_JAMINAN_PELAKSANAAN:
+                if jenis == "konsultansi":
+                    teks += ("Jasa konsultansi: jaminan pelaksanaan tidak diatur Pasal 33 (hanya barang/konstruksi/"
+                             "jasa lainnya); ikuti dokumen pemilihan.")
+                elif total > BATAS_JAMINAN_PELAKSANAAN:
                     teks += (f"Jika dinyatakan wajar dan menang, jaminan pelaksanaan menjadi 5% dari nilai HPS = "
-                             f"{rupiah(bulat(Decimal(hps) * 5 / 100))} (bukan 5% nilai kontrak; cek dokumen pemilihan).")
+                             f"{rupiah(bulat(Decimal(hps) * 5 / 100))} (bukan 5% nilai kontrak; Perpres 16/2018 jo. "
+                             "46/2025 Pasal 33 ayat (3) huruf b"
+                             + ("; pekerjaan terintegrasi: acuan pagu anggaran, bukan HPS" if jenis == "terintegrasi"
+                                else "") + "; cek dokumen pemilihan).")
                 else:
                     teks += ("Nilai kontrak s.d. Rp200 juta: jaminan pelaksanaan umumnya tidak diberlakukan "
                              "(berlaku untuk kontrak > Rp200 juta; cek dokumen pemilihan).")
                 P.append(teks)
             elif total > BATAS_JAMINAN_PELAKSANAAN:
-                I.append(f"Kontrak > Rp200 juta: bila menang, siapkan jaminan pelaksanaan 5% dari nilai kontrak = "
-                         f"{rupiah(bulat(Decimal(total) * 5 / 100))} (kecuali e-purchasing/ketentuan lain di dokumen "
-                         "pemilihan). Perhitungkan di arus kas.")
+                if jenis == "konsultansi":
+                    I.append("Jasa konsultansi: jaminan pelaksanaan tidak diatur Pasal 33 Perpres 16/2018 jo. 46/2025 "
+                             "(hanya barang/konstruksi/jasa lainnya); ikuti dokumen pemilihan.")
+                else:
+                    I.append(f"Kontrak > Rp200 juta: bila menang, siapkan jaminan pelaksanaan 5% dari nilai kontrak = "
+                             f"{rupiah(bulat(Decimal(total) * 5 / 100))} (Perpres 16/2018 jo. 46/2025 Pasal 33; "
+                             "berlaku juga untuk e-purchasing; tidak diperlukan hanya untuk jasa lainnya yang aset "
+                             "penyedianya dikuasai pengguna"
+                             + ("" if jenis else "; asumsi jenis barang/konstruksi/jasa lainnya, bukan konsultansi")
+                             + "). Perhitungkan di arus kas.")
             if hps > BATAS_JAMINAN_PENAWARAN:
-                I.append("HPS > Rp10 miliar: tender barang/konstruksi/jasa lainnya umumnya mensyaratkan JAMINAN PENAWARAN "
-                         "1%-3% dari HPS. Cek nilai & masa berlakunya di dokumen pemilihan.")
+                satu, tiga = bulat(Decimal(hps) / 100), bulat(Decimal(hps) * 3 / 100)
+                if jenis in JENIS_JAMINAN_PENAWARAN:
+                    acuan = ("dari pagu anggaran (pekerjaan terintegrasi; di atas dihitung dari HPS sebagai gambaran)"
+                             if jenis == "terintegrasi" else "dari HPS")
+                    I.append(f"HPS > Rp10 miliar, pengadaan {jenis}: WAJIB JAMINAN PENAWARAN 1%-3% {acuan} = "
+                             f"{rupiah(satu)} s.d. {rupiah(tiga)} (Perpres 16/2018 jo. 46/2025 Pasal 30 ayat (2) & "
+                             "Pasal 31). Cek nilai pasti & masa berlakunya di dokumen pemilihan.")
+                elif jenis:
+                    I.append(f"HPS > Rp10 miliar, pengadaan {jenis}: sejak Perpres 46/2025, JAMINAN PENAWARAN hanya "
+                             "untuk pekerjaan konstruksi & pekerjaan terintegrasi (Pasal 30 ayat (2)) -> umumnya "
+                             "TIDAK diperlukan untuk jenis ini. Tetap ikuti dokumen pemilihan bila memintanya.")
+                else:
+                    I.append("HPS > Rp10 miliar - ASUMSI: jenis pengadaan tidak disebut (tambahkan --jenis). "
+                             "JAMINAN PENAWARAN 1%-3% dari HPS "
+                             f"({rupiah(satu)} s.d. {rupiah(tiga)}) hanya wajib bila pekerjaan KONSTRUKSI atau "
+                             "TERINTEGRASI (terintegrasi: acuan pagu); untuk barang/jasa lainnya/konsultansi tidak "
+                             "diperlukan sejak Perpres 46/2025 (Pasal 30 ayat (2) & Pasal 31). Cek dokumen pemilihan.")
     if pagu is not None:
         pagu = int(pagu)
         hasil["pagu"] = pagu
         if total > pagu:
             P.append(f"Total penawaran melebihi pagu anggaran ({rupiah(pagu)}).")
-        if pagu <= BATAS_PAKET_UMK:
+        if pagu <= BATAS_PAKET_UMK and jenis in (None, *JENIS_PAKET_UMK):
             I.append("Pagu s.d. Rp15 miliar: paket barang/konstruksi/jasa lainnya pada dasarnya dicadangkan untuk "
-                     "usaha mikro, usaha kecil, dan koperasi (Perpres 16/2018 jo. 46/2025 Pasal 65), kecuali paket "
-                     "yang menuntut kemampuan teknis yang tidak dapat dipenuhi UMK.")
+                     "usaha mikro, usaha kecil, dan koperasi (Perpres 16/2018 jo. 46/2025 Pasal 65 ayat (3)), "
+                     "kecuali paket yang menuntut kemampuan teknis yang tidak dapat dipenuhi UMK (Pasal 65 ayat (4)).")
     if ppn == "tidak":
         I.append("Tanpa PPN (penyedia bukan PKP). Jika Anda PKP, jalankan ulang dengan --ppn nonmewah.")
     return hasil
@@ -801,6 +838,8 @@ def main(argv=None):
     h.add_argument("--termasuk-ppn", action="store_true", help="harga satuan di CSV sudah termasuk PPN")
     h.add_argument("--hps", help="nilai total HPS (sudah termasuk PPN), mis. 'Rp 250.000.000'")
     h.add_argument("--pagu", help="nilai pagu anggaran (opsional)")
+    h.add_argument("--jenis", choices=JENIS,
+                   help="jenis pengadaan (menentukan info jaminan penawaran/pelaksanaan); tanpa ini asumsi disebut")
     h.add_argument("--json", action="store_true")
     j = sub.add_parser("jadwal", help="jadwal mundur dari batas unggah penawaran")
     j.add_argument("--batas", required=True, help="batas akhir unggah, mis. '2026-10-15 14:00'")
@@ -810,7 +849,7 @@ def main(argv=None):
     j.add_argument("--libur", action="append", help="tanggal libur dipisah koma, atau path file berisi tanggal")
     j.add_argument("--sabtu-kerja", action="store_true", help="Sabtu dihitung hari kerja")
     j.add_argument("--konstruksi", action="store_true", help="tambahkan tugas SBU/SKK/SKP")
-    j.add_argument("--jaminan", action="store_true", help="tambahkan tugas jaminan penawaran")
+    j.add_argument("--jaminan", action="store_true", help="tambahkan tugas jaminan penawaran (hanya konstruksi/terintegrasi, HPS > Rp10 M)")
     j.add_argument("--json", action="store_true")
     try:
         a = ap.parse_args(argv)
@@ -821,7 +860,7 @@ def main(argv=None):
         if a.perintah == "harga":
             hps = int(parse_angka(a.hps, "HPS", besar=True)) if a.hps else None
             pagu = int(parse_angka(a.pagu, "pagu", besar=True)) if a.pagu else None
-            hasil = hitung(a.csv, a.ppn, a.termasuk_ppn, hps, pagu)
+            hasil = hitung(a.csv, a.ppn, a.termasuk_ppn, hps, pagu, a.jenis)
             print(json.dumps(hasil, default=ke_json, ensure_ascii=False, indent=2) if a.json else tampil_harga(hasil))
             if hasil["total_belum_final"]:
                 return KODE_BELUM_FINAL   # hasil tetap tercetak; ada baris yang tidak ikut dihitung
