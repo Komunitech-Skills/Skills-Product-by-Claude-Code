@@ -756,7 +756,8 @@ def hitung_neraca(j, per):
     return {
         "per": per.isoformat(),
         "aset": kelompok(aset, label2), "total_aset": ta,
-        "utang": kelompok(utang, label2), "total_utang": tu,
+        "utang": kelompok(utang, lambda x: ("Utang " if x.split(":")[0].lower() == "utang" else "") + label2(x)),
+        "total_utang": tu,
         "modal": kelompok(modal, label2), "laba_tahun_lalu": lr_lalu, "laba_tahun_ini": lr_ini,
         "total_modal": tm, "selisih": ta - tu - tm,
         "akun_tanpa_golongan": [(a, v) for a, v in lain],
@@ -1535,6 +1536,19 @@ def baca_mutasi(a, path):
         if terbaik is not None:
             peta[k] = terbaik
             terpakai.add(terbaik)
+    if "nominal" in peta and "dk" not in peta and not ("masuk" in peta and "keluar" in peta):
+        # kolom tanpa judul berisi CR/DB (mis. ekspor BCA: "Jumlah,,Saldo")
+        data_contoh = [r for r in semua[idx + 1:idx + 200] if any(c.strip() for c in r)]
+        for i in range(max(len(r) for r in data_contoh) if data_contoh else 0):
+            if i in terpakai:
+                continue
+            nilai = [r[i].strip().upper() for r in data_contoh if i < len(r) and r[i].strip()]
+            dasar = [r for r in data_contoh if peta["nominal"] < len(r) and angka_bank(r[peta["nominal"]])[0] is not None]
+            if nilai and sum(v in ("CR", "DB", "D", "K", "C", "DR", "KR") for v in nilai) >= 0.8 * max(len(dasar), 1):
+                peta["dk"] = i
+                if i >= len(judul):
+                    judul += ["kolom_{}".format(k + 1) for k in range(len(judul), i + 1)]
+                break
     if "tanggal" not in peta or "keterangan" not in peta:
         raise Gagal("Kolom tanggal/keterangan tidak terdeteksi. Kolom: {}. Pakai --kolom-tanggal dan "
                     "--kolom-keterangan.".format(", ".join(judul)))
