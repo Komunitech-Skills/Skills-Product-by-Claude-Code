@@ -1,6 +1,6 @@
 ---
 name: actual-budget-usaha
-description: Asisten Actual Budget (aplikasi anggaran amplop gratis, MIT, data lokal) untuk freelancer, profesional, dan usaha kecil Indonesia - ubah mutasi bank BCA/BRI/Mandiri/BNI (CSV, angka format Indonesia) jadi CSV impor Actual yang valid lengkap dengan kategori usulan dan daftar baris ragu (tarik tunai, top up e-wallet, marketplace, dobel), baca file budget db.sqlite secara read-only untuk ringkasan bulanan (sisa anggaran per kategori, kategori jebol, To Budget, pengeluaran terbesar, transaksi tanpa kategori), dan jadwalkan ringkasan ke Telegram pemilik lewat OpenClaw. Gunakan saat pengguna menyebut Actual/Actual Budget, anggaran amplop, "impor mutasi ke Actual", "sisa anggaran bulan ini", "kategori mana yang jebol", pengganti YNAB (envelope budgeting, zero-based budget, bank CSV import, budget summary, overspent categories). Bukan untuk pembukuan berpasangan/laba rugi (hledger-usaha), rencana keuangan pribadi tanpa aplikasi (atur-keuangan-pribadi), atau menulis langsung ke database Actual.
+description: Asisten Actual Budget (aplikasi anggaran amplop gratis, MIT, data lokal) untuk freelancer, profesional, dan usaha kecil Indonesia - ubah mutasi bank BCA/BRI/Mandiri/BNI (CSV, angka format Indonesia) jadi CSV impor Actual yang valid dengan kategori usulan & daftar baris ragu (tarik/setor tunai, e-wallet, marketplace, dobel), baca file budget db.sqlite secara read-only untuk ringkasan bulanan (sisa per kategori, kategori jebol, To Budget, dana ditahan, pengeluaran terbesar), dan jadwalkan ringkasan ke Telegram pemilik lewat OpenClaw. Gunakan saat pengguna menyebut Actual/Actual Budget, anggaran amplop, "impor mutasi ke Actual", "sisa anggaran bulan ini", "kategori mana yang jebol", pengganti YNAB (envelope budgeting, zero-based budget, bank CSV import, budget summary, overspent categories). Bukan untuk buku kas harian tanpa aplikasi anggaran (kas-umkm), pembukuan berpasangan/laba rugi (hledger-usaha), rencana keuangan pribadi tanpa aplikasi (atur-keuangan-pribadi), atau menulis langsung ke database Actual.
 ---
 
 # Actual Budget Usaha (anggaran amplop lokal)
@@ -14,7 +14,7 @@ menyerahkan file mutasi bank atau bertanya "anggaran saya bulan ini gimana?". Ag
    "To Budget", pengeluaran terbesar.
 3. **Ringkasan terjadwal ke Telegram** pemilik lewat OpenClaw.
 
-Versi 1.0.0, diuji dengan budget **Actual 26.9.0 asli** (dibuat lewat API resmi, data fiktif): angka ringkasan sama
+Versi 1.0.1, diuji dengan budget **Actual 26.9.0 asli** (dibuat lewat API resmi, data fiktif): angka ringkasan sama
 persis dengan hitungan Actual sendiri. Belum diuji di layar aplikasi desktop, Windows/macOS, atau mutasi asli bank.
 Tidak berafiliasi dengan proyek Actual Budget.
 
@@ -24,10 +24,14 @@ Tidak berafiliasi dengan proyek Actual Budget.
 | Sudah/ingin memakai **aplikasi Actual Budget**: anggaran per kategori (amplop), impor mutasi, cek sisa & jebol | **`actual-budget-usaha`** (skill ini) |
 | Pembukuan berpasangan, laba rugi, neraca, piutang/utang per pihak | `hledger-usaha` |
 | Rencana keuangan pribadi/keluarga di chat (50/30/20, dana darurat, lunasi utang), tanpa aplikasi | `atur-keuangan-pribadi` |
-| Buku kas sederhana uang masuk/keluar tanpa aplikasi | `kas-umkm` |
+| Buku kas harian warung/toko (catat masuk/keluar lewat chat, saldo laci, hitung uang laci, prive) tanpa aplikasi anggaran | `kas-umkm` |
 | Mencocokkan transfer pelanggan dengan invoice | `rekonsiliasi-bank` |
 | Proyeksi kas 13 minggu ke depan | `arus-kas-13minggu` |
 Actual = alat **mengatur pengeluaran** (uang diberi "tugas" per kategori), bukan laporan akuntansi resmi/pajak.
+Beda dengan `kas-umkm`: pilih skill ini bila pengguna **memakai aplikasi Actual** dan ingin anggaran per kategori
+(berapa jatah, berapa sisa, mana yang jebol). Bila pengguna hanya ingin mencatat uang masuk/keluar harian dan saldo
+laci tanpa memasang aplikasi, pakai `kas-umkm`. Keduanya bisa mengimpor mutasi bank; kalimat "impor mutasi ini"
+saja → tanyakan sekali: "Mau dimasukkan ke Actual Budget, atau ke buku kas harian?"
 
 ## Kapan TIDAK digunakan
 - Minta mengubah/menambah transaksi atau anggaran **langsung di database** → tolak; perubahan lewat aplikasi Actual
@@ -62,8 +66,12 @@ Actual = alat **mengatur pengeluaran** (uang diberi "tugas" per kategori), bukan
 3. Sampaikan dari keluaran script **apa adanya**: jumlah baris, total masuk/keluar, **cek saldo** (COCOK/TIDAK COCOK),
    ringkasan per kategori, daftar **PERLU DICEK**, dan daftar **DILEWATI** beserta alasannya.
 4. Tanyakan semua baris "perlu dicek" dalam **satu pesan** bernomor dengan pilihan kategori yang ada. Aturan penting:
-   - **Pindah dana milik sendiri** (tarik tunai, setor tunai, top up GoPay/OVO/DANA, bayar kartu kredit) = **transfer**
+   - **Pindah dana milik sendiri** (tarik tunai, top up GoPay/OVO/DANA, bayar kartu kredit) = **transfer**
      di Actual (Payee = akun tujuan), jangan diberi kategori pengeluaran.
+   - **Setor tunai**: tanyakan asalnya. Hasil jualan tunai yang belum tercatat = pemasukan; uang laci/dompet yang
+     sudah tercatat di akun Actual lain = transfer. "SETORAN PENJUALAN", QRIS, settlement merchant/EDC langsung
+     diusulkan pemasukan.
+   - Nominal di bawah Rp 100 ditandai: pastikan format angkanya benar (`12,5` dibaca Rp 12,50).
    - Pencairan pinjaman dan refund **bukan** pendapatan.
    - Uang masuk otomatis diusulkan "Pendapatan Usaha"; tanyakan bila ada yang sebenarnya uang pribadi/pinjaman.
 5. Jawaban pengguna yang berulang tiap bulan → tawarkan menyimpannya di file `--peta` (contoh di
@@ -83,6 +91,8 @@ python3 <folder-skill>/scripts/actual_budget.py ringkasan --db "<folder budget>"
 berbasis angka (mis. "Iklan jebol Rp 1,1 jt: tutup dari Makan yang masih sisa Rp 1,3 jt") **tanpa mengubah angka**.
 - **Jebol** = sisa minus. Mode amplop: sisa positif selalu terbawa ke bulan berikutnya; minus hanya terbawa bila
   "Rollover overspending" dinyalakan, jika tidak memotong "To Budget" bulan berikutnya (sama seperti Actual).
+- "Ditahan untuk bulan depan (Hold)" = uang yang sengaja disisihkan pengguna di Actual; sudah dikurangkan dari To
+  Budget bulan ini dan muncul lagi bulan depan. Jelaskan bila pengguna bingung To Budget kecil.
 - "PERLU DICEK: transaksi belum berkategori" → sisa belum akurat; sarankan memberi kategori di Actual.
 - Angka script beda dengan layar Actual → **layar Actual yang benar**; laporkan ke dukungan Komunitech.
 

@@ -39,6 +39,13 @@ KATEGORI JEBOL (2):
 - Iklan: minus Rp 1.100.000 (anggaran Rp 1.000.000, terpakai Rp 3.200.000, bawaan bulan lalu Rp 1.100.000)
 ```
 
+## Actual Budget Usaha atau Kas UMKM?
+- **Actual Budget Usaha** (skill ini): Anda memakai aplikasi Actual dan ingin **anggaran per kategori**: jatah iklan
+  berapa, sisa berapa, mana yang jebol, uang yang belum diberi tugas.
+- **Kas UMKM**: Anda cukup ingin **buku kas harian** lewat chat (uang masuk/keluar, saldo laci, hitung uang laci,
+  prive) tanpa memasang aplikasi apa pun.
+Keduanya bisa membaca mutasi bank. Bila ragu, agent akan bertanya sekali.
+
 ## Cara pakai
 Ketik kalimat biasa ke agent, misalnya:
 - "Ini mutasi BCA September, masukkan ke Actual."
@@ -63,7 +70,7 @@ Konversi mutasi ke CSV tetap bisa. Ringkasan otomatis butuh aplikasi desktop, at
 diekstrak, karena versi browser tidak menyimpan file budget di komputer.
 
 ## Status & kejujuran
-Versi 1.0.0, status **draft**. Diuji dengan budget **Actual 26.9.0 asli** yang dibuat lewat API resmi (data fiktif):
+Versi 1.0.1, status **draft**. Diuji dengan budget **Actual 26.9.0 asli** yang dibuat lewat API resmi (data fiktif):
 angka ringkasan sama persis dengan Actual. File CSV hasil sudah diurai parser CSV Actual dan diimpor lewat API.
 **Belum diuji:** klik manual di aplikasi desktop, Windows/macOS, ekspor mutasi asli terbaru dari tiap bank (contoh
 mutasi disusun dari pola umum), dan pengiriman nyata ke Telegram. Ringkasan adalah alat bantu mengatur uang, bukan

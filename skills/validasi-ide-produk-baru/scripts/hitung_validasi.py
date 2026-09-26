@@ -18,12 +18,22 @@ Rumus:
 
 Rupiah dibulatkan ke rupiah terdekat. Hanya library standar Python 3.8+.
 
+Field UANG (--harga, --hpp, --biaya-uji) menerima format Indonesia:
+  angka polos      : 25000
+  "Rp" + titik ribuan: Rp25.000, 150.000, 1.234.567
+  singkatan        : 25rb, 25ribu, 1jt, 1juta
+  desimal + singkatan: 1,5jt (artinya 1.500.000), 2,5rb (artinya 2500)
+Format yang TIDAK JELAS (mis. "25.5" atau "1.234,56" atau titik+koma campur
+tanpa pola baku) DITOLAK dengan pesan error, bukan ditebak — tulis ulang
+sebagai angka polos atau salah satu format di atas.
+
 Contoh:
-  python3 hitung_validasi.py --ditawari 20 --preorder 4 --harga 25000 --hpp 12000 --biaya-uji 50000
+  python3 hitung_validasi.py --ditawari 20 --preorder 4 --harga 25.000 --hpp 12rb --biaya-uji 50000
   python3 hitung_validasi.py --file data-uji.json
 """
 import argparse
 import json
+import re
 import sys
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
@@ -38,6 +48,87 @@ def ke_desimal(nilai, nama):
         return Decimal(str(nilai))
     except (InvalidOperation, TypeError, ValueError):
         raise SystemExit(f"Error: '{nama}' harus berupa angka, dapat: {nilai!r}")
+
+
+_SARAN_FORMAT_UANG = (
+    "tulis angka polos (mis. 25000), format Rupiah bertitik ribuan (mis. 25.000 "
+    "atau Rp25.000), atau singkatan (mis. 25rb, 1jt, 1,5jt) — jangan campur titik "
+    "& koma dan jangan tulis desimal ganjil seperti 25.5."
+)
+
+
+def parse_uang(nilai, nama):
+    """Parse field uang (harga/hpp/biaya-uji) dengan format Indonesia.
+
+    Angka int/float dari JSON diterima apa adanya (tidak ambigu). String
+    (dari CLI atau JSON) diparse: dukung prefiks 'Rp', titik sebagai
+    pemisah ribuan (kelompok 3 digit), koma sebagai desimal, dan singkatan
+    'rb'/'ribu' (x1.000) / 'jt'/'juta' (x1.000.000). Pola yang tidak jelas
+    ditolak dengan pesan error eksplisit, tidak pernah ditebak.
+    """
+    if isinstance(nilai, (int, float)) and not isinstance(nilai, bool):
+        return Decimal(str(nilai))
+    if not isinstance(nilai, str):
+        raise SystemExit(f"Error: '{nama}' harus berupa angka, dapat: {nilai!r}")
+
+    asli = nilai
+    s = nilai.strip()
+    if s == "":
+        raise SystemExit(f"Error: '{nama}' kosong. {_SARAN_FORMAT_UANG}")
+
+    # Prefiks "Rp"/"rp."/"IDR" (opsional, boleh diikuti spasi)
+    s = re.sub(r"(?i)^\s*(rp\.?|idr)\s*", "", s).strip()
+    if s == "":
+        raise SystemExit(f"Error: '{nama}' ({asli!r}) tidak berisi angka. {_SARAN_FORMAT_UANG}")
+
+    # Singkatan ribu/juta di akhir
+    pengali = Decimal(1)
+    m = re.search(r"(?i)\s*(ribu|rb|juta|jt)\s*$", s)
+    if m:
+        satuan = m.group(1).lower()
+        pengali = Decimal(1000) if satuan in ("ribu", "rb") else Decimal(1000000)
+        s = s[: m.start()].strip()
+    if s == "":
+        raise SystemExit(f"Error: '{nama}' ({asli!r}) tidak ada angka sebelum singkatan. {_SARAN_FORMAT_UANG}")
+
+    if "." in s and "," in s:
+        raise SystemExit(
+            f"Error: '{nama}' ({asli!r}) tidak jelas — mengandung titik DAN koma sekaligus. {_SARAN_FORMAT_UANG}"
+        )
+
+    if "," in s:
+        # Koma = pemisah desimal (dipakai bersama singkatan rb/jt, mis. "1,5jt")
+        if not re.fullmatch(r"\d+,\d{1,2}", s):
+            raise SystemExit(
+                f"Error: '{nama}' ({asli!r}) format koma tidak dikenali. {_SARAN_FORMAT_UANG}"
+            )
+        if pengali == Decimal(1):
+            raise SystemExit(
+                f"Error: '{nama}' ({asli!r}) memakai koma tanpa singkatan rb/jt — tidak jelas maksudnya "
+                f"desimal atau ribuan yang salah tulis. {_SARAN_FORMAT_UANG}"
+            )
+        angka = Decimal(s.replace(",", "."))
+    elif "." in s:
+        kelompok = s.split(".")
+        ribuan_valid = (
+            len(kelompok) >= 2
+            and kelompok[0].isdigit()
+            and 1 <= len(kelompok[0]) <= 3
+            and all(bagian.isdigit() and len(bagian) == 3 for bagian in kelompok[1:])
+        )
+        if ribuan_valid:
+            angka = Decimal("".join(kelompok))
+        else:
+            raise SystemExit(
+                f"Error: '{nama}' ({asli!r}) tidak jelas apakah titik ini pemisah ribuan atau desimal "
+                f"(mis. '25.5' bisa berarti 25,5 atau salah tulis format ribuan). {_SARAN_FORMAT_UANG}"
+            )
+    else:
+        if not s.isdigit():
+            raise SystemExit(f"Error: '{nama}' ({asli!r}) bukan angka yang dikenali. {_SARAN_FORMAT_UANG}")
+        angka = Decimal(s)
+
+    return angka * pengali
 
 
 def parse_args():
@@ -78,7 +169,7 @@ def main():
 
     ditawari = ke_desimal(ambil("ditawari", "ditawari"), "ditawari")
     preorder = ke_desimal(ambil("preorder", "preorder"), "preorder")
-    harga = ke_desimal(ambil("harga", "harga"), "harga")
+    harga = parse_uang(ambil("harga", "harga"), "harga")
     hpp_raw = ambil("hpp", "hpp", wajib=False)
     biaya_uji_raw = ambil("biaya_uji", "biaya_uji", wajib=False)
     ambang_lulus = ke_desimal(ambil("ambang_lulus", "ambang_lulus", wajib=False, default=args.ambang_lulus), "ambang-lulus")
@@ -99,7 +190,7 @@ def main():
 
     hpp = None
     if hpp_raw is not None:
-        hpp = ke_desimal(hpp_raw, "hpp")
+        hpp = parse_uang(hpp_raw, "hpp")
         if hpp < 0:
             raise SystemExit("Error: 'hpp' tidak boleh negatif.")
         if hpp >= harga:
@@ -107,7 +198,7 @@ def main():
 
     biaya_uji = None
     if biaya_uji_raw is not None:
-        biaya_uji = ke_desimal(biaya_uji_raw, "biaya-uji")
+        biaya_uji = parse_uang(biaya_uji_raw, "biaya-uji")
         if biaya_uji < 0:
             raise SystemExit("Error: 'biaya-uji' tidak boleh negatif.")
 

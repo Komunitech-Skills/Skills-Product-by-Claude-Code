@@ -2,6 +2,8 @@
 
 Isi bagian dalam kurung siku `[...]`, hapus kurungnya setelah diisi. Semua template sengaja singkat dan langsung ke inti (tidak berbelit) supaya calon pembeli mudah merespons cepat.
 
+**Wajib jujur soal batal/refund.** Karena ini pre-order untuk uji pasar (belum tentu jadi diproduksi), setiap template yang meminta orang memesan/membayar duluan (#1 dan #4) HARUS menyebutkan sejak awal apa yang terjadi kalau pesanannya batal — supaya calon pembeli tidak merasa ditipu. Jangan hapus baris "Kalau batal..." di bawah, isi saja bagian kurung sikunya.
+
 ## 1. Broadcast/status WA — pre-order
 ```
 Halo [nama panggilan]! 👋
@@ -13,6 +15,8 @@ Harga: Rp[harga] / [satuan]
 
 Kalau [jumlah] minat, aku mulai [bikin/produksi/buka] minggu ini.
 Mau pesan? Balas "MAU + jumlah" ke chat ini sebelum [tanggal, maks 7 hari dari sekarang] ya. 🙏
+
+Kalau minat yang masuk belum cukup dan jadinya tidak diproduksi, atau pesananmu batal karena alasan lain, uang kamu aku kembalikan 100% paling lambat [jumlah hari, mis. 2 hari] setelah [tanggal batas/keputusan]. Kamu juga boleh batal kapan saja sebelum [tanggal mulai produksi] tanpa alasan, uang kembali penuh.
 
 [Nama kamu/usaha]
 ```
@@ -48,6 +52,8 @@ Kalau ada, kamu bakal beli? [stiker polling: Ya, mau! / Nanti dulu]
 Catatan: produk ini sistem PO (dibuat setelah order masuk), jadi butuh waktu [X] hari sebelum dikirim. Kalau butuh cepat, chat dulu ya sebelum order.
 
 Kuota terbatas: hanya [jumlah] pembeli pertama untuk batch percobaan ini.
+
+Kebijakan batal: kalau batch ini ternyata tidak jadi diproduksi atau pesanan kamu batal, uang kembali 100% paling lambat [jumlah hari] hari kerja. Mau batal sebelum masuk produksi? Chat aja, tanpa syarat.
 ```
 
 ## 5. Pitch titip di warung/reseller

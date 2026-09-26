@@ -10,7 +10,7 @@ Tanyakan dulu apakah pengguna memisahkan rekening usaha & pribadi. Bila satu rek
 
 | Grup | Kategori | Kata kunci bawaan (tidak peka huruf besar/kecil) |
 |---|---|---|
-| Pemasukan (grup income) | Pendapatan Usaha | semua uang masuk yang tidak cocok aturan lain |
+| Pemasukan (grup income) | Pendapatan Usaha | SETORAN PENJUALAN/HASIL/OMZET, QRIS, SETTLEMENT, MERCHANT, EDC, dan semua uang masuk yang tidak cocok aturan lain |
 | | Pendapatan Lain | BUNGA, INTEREST, JASA GIRO |
 | Biaya Usaha | Sewa | SEWA, KONTRAKAN, KOS, COWORKING, RUKO |
 | | Listrik & Air | PLN, LISTRIK, TOKEN, PDAM, AIR |
@@ -27,7 +27,10 @@ Tanyakan dulu apakah pengguna memisahkan rekening usaha & pribadi. Bila satu rek
 | | Dana Darurat | (diisi anggaran, bukan dari mutasi) |
 
 ## Selalu masuk daftar "perlu dicek" (kategori dikosongkan)
-- **Pindah dana milik sendiri**: TARIK TUNAI/TARIKAN ATM, SETOR TUNAI, TOP UP/GOPAY/OVO/DANA/SHOPEEPAY/FLAZZ,
+- **Setor tunai** (SETOR TUNAI, CASH DEPOSIT): ditanyakan. Hasil jualan tunai yang belum tercatat → kategori
+  pemasukan; uang dari laci/dompet yang sudah tercatat di akun Actual lain → transfer. Setoran yang jelas hasil
+  usaha (SETORAN PENJUALAN/HASIL/OMZET, QRIS, SETTLEMENT/MERCHANT, EDC) langsung diusulkan "Pendapatan Usaha".
+- **Pindah dana milik sendiri**: TARIK TUNAI/TARIKAN ATM, TOP UP/GOPAY/OVO/DANA/SHOPEEPAY/FLAZZ,
   pembayaran KARTU KREDIT. Di Actual ini harus **transfer** (Payee = akun tujuan, misalnya akun "Kas Tunai" atau
   "GoPay"), bukan pengeluaran; kalau diberi kategori, pengeluaran terhitung dua kali.
 - **Marketplace** (Tokopedia, Shopee, Lazada, ...) dan **minimarket/supermarket**: bisa usaha atau pribadi.

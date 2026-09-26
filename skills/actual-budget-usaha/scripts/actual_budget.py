@@ -31,7 +31,7 @@ from collections import OrderedDict, defaultdict
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 ACTUAL_DIUJI = "26.9.0"
 NOL = Decimal(0)
 SERATUS = Decimal(100)
@@ -444,9 +444,14 @@ def cek_saldo(rows):
 # (pola regex, arah 'masuk'|'keluar'|None, kategori|None, alasan ragu|None)
 PINDAH = ("Sepertinya PINDAH DANA milik sendiri (tarik/setor tunai, top up e-wallet, bayar kartu kredit, "
           "antar rekening). Di Actual catat sebagai TRANSFER: pilih Payee = nama akun tujuan, tanpa kategori.")
+SETOR = ("Setor tunai: bila ini uang HASIL JUALAN tunai yang belum pernah dicatat, pilih kategori pemasukan "
+         "(mis. Pendapatan Usaha). Bila uang dari laci/dompet yang sudah tercatat di akun Actual lain, catat sebagai "
+         "TRANSFER dari akun itu (tanpa kategori) agar tidak terhitung dua kali.")
 ATURAN_BAWAAN = [
     (r"TARIK TUNAI|TARIKAN ATM|\bATM\b.*TARIK|PENARIKAN TUNAI|CASH WITHDRAWAL", "keluar", None, PINDAH),
-    (r"SETOR(AN)? TUNAI|CASH DEPOSIT|SETORAN", "masuk", None, PINDAH),
+    (r"SETOR(AN)? (PENJUALAN|HASIL|OMZET|JUALAN|DAGANGAN)|SETTLEMENT|MERCHANT|\bEDC\b|QRIS", "masuk",
+     "Pendapatan Usaha", None),
+    (r"SETOR(AN)? TUNAI|CASH DEPOSIT|SETOR TUNAI", "masuk", None, SETOR),
     (r"TOP ?UP|GOPAY|\bOVO\b|\bDANA\b|SHOPEEPAY|LINKAJA|FLAZZ|E-?MONEY|BRIZZI|TAPCASH", None, None, PINDAH),
     (r"KARTU KREDIT|CREDIT CARD|\bKK\b|PEMBAYARAN CC", "keluar", None, PINDAH),
     (r"PAJAK|\bDJP\b|\bMPN\b|BILLING ?PAJAK|\bPBB\b|SAMSAT|\bPKB\b", "keluar", "Pajak", None),
@@ -584,6 +589,10 @@ def cmd_konversi(a):
                 alasan = "Uang keluar diberi kategori PEMASUKAN '{}'. Periksa.".format(kat)
         if pola == "(bawaan uang masuk)":
             masuk_default += 1
+        if abs(r["jumlah"]) < 100:
+            kecil = ("Nominal sangat kecil ({}): pastikan format angka terbaca benar (mis. '12,5' dibaca "
+                     "Rp 12,50).".format(rp(abs(r["jumlah"]))))
+            alasan = (alasan + " " + kecil) if alasan else kecil
         if kembar[(r["tanggal"], r["jumlah"], r["ket"])] > 1:
             tambahan = "Baris sama persis muncul {}x di file: pastikan bukan dobel.".format(
                 kembar[(r["tanggal"], r["jumlah"], r["ket"])])
@@ -822,6 +831,11 @@ def muat_data(con):
         tujuan = akun.get(p["transfer_acct"]) if p and p["transfer_acct"] else None
         t["transfer_on_budget"] = bool(tujuan) and not tujuan["offbudget"]
         t["transfer"] = bool(p and p["transfer_acct"])
+        if p and p["transfer_acct"] and not (p["name"] or "").strip():
+            nama_akun = akun[p["transfer_acct"]]["name"] if p["transfer_acct"] in akun else "akun lain"
+            t["nama_payee"] = ("Transfer ke " if int(t["jumlah"] or 0) < 0 else "Transfer dari ") + nama_akun
+        if not (t["nama_payee"] or "").strip() and (t["catatan"] or "").strip():
+            t["nama_payee"] = nama_payee(t["catatan"])
         t["bulan"] = int(t["tanggal"]) // 100
     return akun, payee, trx
 
@@ -948,7 +962,7 @@ def hitung_bulan(con, target):
                      "total_pemasukan": masuk_bulan, "total_anggaran": total_ang,
                      "total_terpakai": sum(x["terpakai"] for x in baris),
                      "overspent_lalu": overspent_lalu, "siap_dianggarkan": to_budget if jenis == "envelope" else None,
-                     "ditahan": buffer_sel}
+                     "ditahan": buffer_sel, "ditahan_lalu": buffer_lalu}
         to_budget_lalu, buffer_lalu = to_budget, buffer_sel
         m = geser_bulan(m, 1)
 
@@ -1021,6 +1035,11 @@ def cmd_ringkasan(a):
             L.append("- Siap dianggarkan (To Budget): {}".format(rp(dari_sen(v))))
         else:
             L.append("- Siap dianggarkan (To Budget): MINUS {} (anggaran melebihi uang yang ada)".format(rp(dari_sen(-v))))
+    if h["ditahan"] and h["jenis"] == "envelope":
+        L.append("- Ditahan untuk bulan depan (Hold): {} (sudah dikurangkan dari To Budget di atas)".format(
+            rp(dari_sen(h["ditahan"]))))
+    if h.get("ditahan_lalu") and h["jenis"] == "envelope":
+        L.append("- Dana yang ditahan bulan lalu dan masuk ke bulan ini: {}".format(rp(dari_sen(h["ditahan_lalu"]))))
     if h["overspent_lalu"] and h["jenis"] == "envelope":
         L.append("- Kelebihan belanja bulan lalu yang memotong bulan ini: {}".format(rp(dari_sen(-h["overspent_lalu"]))))
     L.append("")

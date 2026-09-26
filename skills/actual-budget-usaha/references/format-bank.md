@@ -17,7 +17,11 @@ yang ada supaya pengguna/agent bisa memeriksa.
 - Gaya angka ditentukan **per file** dari semua angka (termasuk saldo): `1.500.000,00` = gaya Indonesia (`koma`),
   `1,500,000.00` = gaya Inggris (`titik`). File campur → berhenti dan minta `--desimal`.
 - Bila semua angka bulat tanpa desimal: `1.500` dan `1,500` dibaca **seribu lima ratus** (Rupiah hampir tidak pernah
-  memakai pecahan). Angka seperti `12,5` tanpa petunjuk lain → baris dilewati "angka tidak jelas".
+  memakai pecahan).
+- Koma diikuti 1–2 angka (mis. `12,5`) dianggap **koma desimal gaya Indonesia**, jadi file dibaca gaya `koma` dan
+  `12,5` = Rp 12,50. Setiap nominal di bawah Rp 100 masuk daftar "perlu dicek" supaya salah format ketahuan.
+  Angka yang tidak cocok dengan gaya file (mis. `1.50.000`, atau `10,123` di file gaya koma) → baris dilewati
+  "angka tidak jelas".
 - `Rp`, `IDR`, spasi, `,-` di akhir, kurung `(25.000)` dan minus di depan/belakang dikenali.
 - Lebih dari 2 angka desimal, atau di atas Rp 1 triliun per baris → dilewati dengan alasan.
 

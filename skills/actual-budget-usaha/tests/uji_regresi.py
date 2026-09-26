@@ -395,5 +395,84 @@ class UjiRingkasan(TmpMixin, unittest.TestCase):
         self.assertTrue([x for x in d if x["kategori"] == "Arsip Lama"][0]["disembunyikan"])
 
 
+
+class UjiV101(TmpMixin, unittest.TestCase):
+    """Perbaikan v1.0.1 dari uji independen (examples/HASIL-UJI.md temuan 1-4, 6)."""
+
+    def budget_dengan_hold(self):
+        salin = self.tmp / "budget"
+        shutil.copytree(RINA, salin)
+        c = sqlite3.connect(str(salin / "db.sqlite"))
+        c.execute("INSERT INTO zero_budget_months (id, buffered) VALUES ('2026-09', 100000000)")
+        c.commit()
+        c.close()
+        return salin
+
+    def test_33_dana_ditahan_tampil_di_teks(self):
+        b = self.budget_dengan_hold()
+        kode, teks, _ = jalan("ringkasan", "--db", b, "--bulan", "2026-09")
+        self.assertEqual(kode, 0)
+        self.assertIn("Siap dianggarkan (To Budget): Rp 10.000", teks)
+        self.assertIn("Ditahan untuk bulan depan (Hold): Rp 1.000.000", teks)
+        kode, teks, _ = jalan("ringkasan", "--db", b, "--bulan", "2026-10")
+        self.assertIn("ditahan bulan lalu dan masuk ke bulan ini: Rp 1.000.000", teks)
+        # tanpa hold: baris tidak muncul, To Budget tetap seperti Actual
+        kode, teks, _ = jalan("ringkasan", "--db", RINA, "--bulan", "2026-09")
+        self.assertNotIn("Ditahan", teks)
+
+    def test_34_hold_mengikuti_rumus_to_budget(self):
+        b = self.budget_dengan_hold()
+        con, _ = ab.buka_db(b)
+        sep, okt = ab.hitung_bulan(con, 202609), ab.hitung_bulan(con, 202610)
+        con.close()
+        self.assertEqual(sep["siap_dianggarkan"], 101000000 - 100000000)
+        self.assertEqual(okt["siap_dianggarkan"], -9000000)  # sama dengan tanpa hold (dana dipindah, tidak hilang)
+        self.assertEqual(sep["ditahan"], 100000000)
+
+    def tulis(self, isi):
+        p = self.tmp / "mutasi.csv"
+        p.write_text(isi, encoding="utf-8")
+        out = self.tmp / "hasil.csv"
+        kode, teks, err = jalan("konversi", p, "--keluaran", out, "--json", "--timpa")
+        self.assertEqual(kode, 0, err)
+        return json.loads(teks), baca_csv(out)
+
+    def test_35_setoran_penjualan_bukan_pindah_dana(self):
+        d, rows = self.tulis("Tanggal,Keterangan,Debet,Kredit,Saldo\n"
+                             "01/09/2026,SETORAN PENJUALAN QRIS,,\"850.000,00\",\"850.000,00\"\n"
+                             "02/09/2026,SETORAN TUNAI,,\"500.000,00\",\"1.350.000,00\"\n"
+                             "03/09/2026,TARIK TUNAI ATM,\"200.000,00\",,\"1.150.000,00\"\n")
+        kat = {r["Notes"]: r["Category"] for r in rows}
+        self.assertEqual(kat["SETORAN PENJUALAN QRIS"], "Pendapatan Usaha")
+        self.assertEqual(kat["SETORAN TUNAI"], "")
+        ragu = {x["keterangan"]: x["alasan"] for x in d["ragu"]}
+        self.assertNotIn("SETORAN PENJUALAN QRIS", ragu)
+        self.assertIn("HASIL JUALAN", ragu["SETORAN TUNAI"])
+        self.assertNotIn("PINDAH DANA", ragu["SETORAN TUNAI"])
+        self.assertIn("PINDAH DANA", ragu["TARIK TUNAI ATM"])
+
+    def test_36_payee_transfer_bernama(self):
+        kode, teks, _ = jalan("ringkasan", "--db", RINA, "--bulan", "2026-09", "--top", "12")
+        self.assertIn("Transfer ke Tabungan Pajak - Rp 600.000 (Pajak)", teks)
+        self.assertNotIn("(tanpa payee)", teks)
+
+    def test_37_koma_satu_digit_dibaca_desimal_indonesia_dan_ditandai(self):
+        d, rows = self.tulis("Tanggal,Keterangan,Debet,Kredit\n01/09/2026,BIAYA MATERAI,\"12,5\",\n"
+                             "02/09/2026,TRANSFER DARI ANI,,\"1.000.000\"\n")
+        self.assertEqual(d["deteksi"]["desimal"], "koma")
+        self.assertEqual(rows[0]["Amount"], "-12.50")
+        self.assertEqual(rows[1]["Amount"], "1000000")
+        self.assertTrue(any("sangat kecil" in x["alasan"] for x in d["ragu"]))
+
+    def test_38_rujukan_kas_umkm_dan_versi(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        readme = (SKILL / "README.md").read_text(encoding="utf-8")
+        self.assertIn("kas-umkm", skill.split("---")[1])   # di description
+        self.assertIn("Kas UMKM", readme)
+        self.assertEqual(ab.VERSI, "1.0.1")
+        fmt = (SKILL / "references" / "format-bank.md").read_text(encoding="utf-8")
+        self.assertIn("`12,5` = Rp 12,50", fmt)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

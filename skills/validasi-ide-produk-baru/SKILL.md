@@ -97,6 +97,8 @@ Isi `data-uji.json` contoh:
 
 Script menghitung: persentase konversi, klasifikasi LULUS/LULUS BERSYARAT/GAGAL (bisa override ambang dengan `--ambang-lulus` dan `--ambang-bersyarat`), margin per unit (jika `--hpp` diisi), total margin dari pre-order, dan selisih terhadap biaya uji (balik modal atau belum). Jika jumlah ditawari < 20, script menambahkan peringatan sampel kecil.
 
+Field uang (`--harga`, `--hpp`, `--biaya-uji`) menerima format Indonesia: angka polos (`25000`), titik ribuan (`25.000`, `Rp25.000`), atau singkatan (`25rb`, `1jt`, `1,5jt`). Format yang tidak jelas (mis. `25.5`, `1.234,56`) **ditolak** dengan pesan error, bukan ditebak — tulis ulang sesuai salah satu format di atas.
+
 Jika tidak ada Python yang bisa dijalankan, hitung manual: `konversi (%) = (jumlah pre-order ÷ jumlah ditawari) × 100`, bulatkan ke satu desimal; bandingkan ke ambang Langkah 3 secara manual — skill tetap berguna tanpa script.
 
 ### 6. Rekomendasikan keputusan
@@ -123,5 +125,6 @@ Lihat `examples/01-kopi-susu-literan.md` (kopi susu gula aren kemasan literan, p
 - **Bukan riset pasar ilmiah.** Ambang 15%/8% adalah heuristik praktis, bukan angka baku industri — sebutkan ini ke pengguna, terutama untuk keputusan bermodal besar (di atas puluhan juta Rupiah), sarankan tambah metode uji atau konsultasi profesional.
 - **Sampel kecil = hasil belum pasti.** Selalu tandai hasil dari <20 orang yang ditawari sebagai "indikasi awal", jangan disebut kesimpulan final.
 - **Bukan pengganti kalkulasi biaya rinci.** Kalau pengguna butuh HPP/BEP presisi sebelum memutuskan modal produksi besar, arahkan ke `hitung-hpp` setelah hasil validasi LULUS.
-- **Data uji tidak masuk akal** (mis. jumlah pre-order lebih besar dari jumlah ditawari, angka negatif, harga Rp0) → script menolak dan menjelaskan bagian mana yang salah; jangan memaksakan perhitungan.
+- **Data uji tidak masuk akal** (mis. jumlah pre-order lebih besar dari jumlah ditawari, angka negatif, harga Rp0, atau format harga ambigu seperti `25.5`/`1.234,56`) → script menolak dan menjelaskan bagian mana yang salah; jangan memaksakan perhitungan atau menebak angka.
+- **Pesan pre-order harus jujur soal batal/refund** — jangan pernah kirim template pre-order (#1/#4 di `templates/pesan-uji-murah.md`) tanpa mengisi bagian kebijakan batal/refund; ini wajib, bukan opsional.
 - **Tidak mendukung klaim medis/investasi/keuangan berizin khusus** — kalau ide produk menyentuh area ini (mis. suplemen kesehatan, produk investasi), ingatkan kebutuhan izin resmi (BPOM, OJK, dll.) di luar cakupan validasi pasar skill ini.

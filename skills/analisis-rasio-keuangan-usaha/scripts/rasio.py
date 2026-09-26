@@ -176,6 +176,8 @@ SARAN = {
 }
 
 SARAN_KHUSUS = {
+    "cicilan": "Cicilan melebihi 30% laba bersih per bulan. Kecilkan plafon, pilih tenor lebih panjang, atau "
+               "pinjam bertahap; hitung plafon yang aman dengan skill pengajuan-kur sebelum ke bank.",
     "rugi": "Usaha sedang RUGI — hentikan kebocoran dulu: pisahkan uang pribadi dari uang usaha, daftar semua "
             "biaya bulanan dan potong yang tidak menambah penjualan, cek harga jual vs HPP per produk (skill "
             "hitung-hpp), dan jangan menambah pinjaman untuk menutup rugi.",
@@ -1018,6 +1020,11 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
     if md_akhir is not None and md_akhir <= 0:
         saran.append({"rasio": "Modal habis/negatif", "status": "bahaya", "saran": SARAN_KHUSUS["modal_negatif"]})
         lewati.update({"roe", "der", "dar"})
+    kk = akhir["kesiapan_kredit"]
+    if (kk["rasio_cicilan_persen"] is not None and kk["rasio_cicilan_persen"] > 30) or \
+            (kk["cicilan_bulanan"] is not None and kk["status_cicilan"] and "⛔" in kk["status_cicilan"]):
+        saran.append({"rasio": "Rencana cicilan", "status": "bahaya" if not kk["rasio_cicilan_persen"] or
+                      kk["rasio_cicilan_persen"] > 50 else "waspada", "saran": SARAN_KHUSUS["cicilan"]})
     saran += [{"rasio": r["nama"], "status": r["status"], "saran": SARAN[r["kode"]]} for r in masalah
               if r["kode"] not in lewati]
     sisa = len(saran) - 5

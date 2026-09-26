@@ -98,6 +98,7 @@ k, h = json_run(*(TOKO + ["--cicilan-bulanan", "3jt"]))
 kk = h["periode"][-1]["kesiapan_kredit"]
 cek("B3 cicilan 3 jt = 150% → ⛔ & BELUM SIAP",
     kk["rasio_cicilan_persen"] == 150.0 and "⛔" in kk["status_cicilan"] and kk["kesimpulan"].startswith("BELUM"))
+cek("B3b saran pertama = 'Rencana cicilan' bila cicilan > 30% laba", h["saran"][0]["rasio"] == "Rencana cicilan")
 k, h = json_run(*(TOKO + ["--cicilan-bulanan", "800rb"]))
 cek("B4 cicilan 800rb = 40% → BERAT (🟡)", "BERAT" in h["periode"][-1]["kesiapan_kredit"]["status_cicilan"])
 
