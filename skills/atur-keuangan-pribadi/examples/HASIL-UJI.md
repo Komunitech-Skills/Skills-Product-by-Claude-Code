@@ -175,3 +175,40 @@ Disalin ke scratchpad `uji-kecil/`, dijalankan dari sana. Tes bawaan: **56/56 lu
 **Bug baru:** tidak ada yang memengaruhi angka. Temuan RENDAH: kebisingan N-2 di atas.
 
 ### Skor uji ulang v1.0.2: **9/10**
+
+## Uji ulang v1.0.3 (penguji independen, cek singkat, 26 Sep 2026)
+Disalin ke scratchpad `uji3-akp/`, dijalankan dari sana. `tests/uji_regresi.py`: **57/57 lulus**. Skenario 02 (4 utang, banding) dijalankan ulang persis: tetap **10 bulan, total bunga Rp4.226.895** ✓ — angka anggaran/utang tidak berubah.
+
+25 pos anggaran realistis (`--pemasukan Gaji=7jt`, satu `--pos` per uji):
+
+| Pos | Peringatan? | Tepat? |
+|---|---|---|
+| Makan=1.500 | Ya | ✓ (1,5jt biasanya ditulis 1.500rb/1,5jt, bukan "1.500") |
+| Sewa kos=1.200 | Ya | ✓ |
+| Parkir=5000 | Tidak | ✓ (parkir wajar receh) |
+| Jajan anak=8.000 | Tidak | ✓ |
+| Listrik=450 | Ya | ✓ (listrik jelas bukan Rp450) |
+| Pulsa=50rb | Tidak | ✓ (satuan eksplisit) |
+| Gas=22.000 | Tidak | ✓ (gas elpiji wajar segitu) |
+| Arisan=500 | Ya | ✓ (arisan jarang sekecil ini, kemungkinan 500rb) |
+| Zakat=Rp5.000 | Tidak | Meragukan — "Rp" dianggap disengaja, tapi zakat bukan pos wajar-receh; risiko salah ketik zakat 5jt lolos tanpa peringatan |
+| Sampah=8.000 | Tidak | ✓ |
+| Iuran RT=15.000 | Tidak | ✓ |
+| Kuota=100rb | Tidak | ✓ |
+| Tol=50.000 | Tidak | ✓ |
+| Ojek=25.000 | Tidak | ✓ |
+| Kopi=10.000 | Tidak | ✓ |
+| Rokok=30.000 | Tidak | ✓ |
+| Cemilan=5.000 | Tidak | ✓ |
+| Air galon=20.000 | Tidak | ✓ |
+| Infak=2.000 | Tidak | ✓ |
+| Parkir=500 | Ya | ✓ (di bawah ambang Rp1.000 utk pos wajar-receh) |
+| Sewa=Rp5.000 | Tidak | Meragukan — sama seperti Zakat di atas: "Rp" membebaskan pos non-receh dari peringatan |
+| Belanja bulanan=1.500.000 | Tidak | ✓ |
+| Cicilan motor=900rb | Tidak | ✓ |
+| Uang jajan sekolah=15.000 | Tidak | ✓ |
+| Tabungan darurat=0 | Tidak | ✓ (nol bukan salah ketik) |
+
+**Temuan:** perbaikan bekerja sesuai tujuan — pos receh wajar (parkir, jajan, gas, pulsa, dll.) tidak lagi berisik, sementara salah ketik jelas (Makan=1.500, Sewa kos=1.200, Listrik=450, Parkir=500) tetap tertangkap. Satu celah kecil (RENDAH, bukan regresi angka): aturan "ber-Rp = disengaja" membebaskan **pos non-receh** juga (mis. "Sewa=Rp5.000", "Zakat=Rp5.000") dari peringatan meski nilainya kemungkinan salah ketik — sebaiknya aturan "Rp" hanya membebaskan pos yang sudah masuk daftar wajar-kecil, bukan semua pos.
+
+### Skor uji ulang v1.0.3: **9/10** (fungsi utama tepat; satu catatan RENDAH di atas untuk revisi ringan berikutnya)
