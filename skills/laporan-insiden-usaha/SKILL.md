@@ -22,6 +22,7 @@ Mengubah kejadian buruk operasional (bukan bencana besar, bukan tuntutan hukum) 
 - Balasan chat komplain satuan/harian (bukan insiden besar) → `balas-chat-cs`
 - Laporan status kerja mingguan biasa → `laporan-status-kantor`
 - Surat peringatan ke karyawan tertentu → `surat-peringatan-karyawan` (skill ini sengaja **tidak menyalahkan individu** — lihat Batasan)
+- Keluhan kesehatan pelanggan/karyawan (mis. dugaan keracunan makanan): skill ini hanya menyusun kronologi, tindakan operasional (tarik/musnahkan stok terduga, catat pemasok & jam), dan komunikasi sopan. **Tidak memberi diagnosis atau saran medis, tidak menyimpulkan penyebab penyakit**; arahkan yang sakit ke fasilitas kesehatan.
 - Kejadian yang menyangkut **kebocoran data pribadi** dalam skala luas/sensitif, ancaman pidana, kecelakaan kerja, atau kebakaran/bencana: skill ini hanya bantu menyusun kronologi & komunikasi dasar. **Bukan nasihat hukum, bukan nasihat K3/keselamatan.** Untuk kewajiban pemberitahuan kebocoran data pribadi, rujuk ke `kebijakan-privasi-pdp` dan/atau konsultan hukum — lihat Batasan.
 
 ## Input

@@ -110,7 +110,7 @@ Akun A berhenti. Semua pekerjaan Akun A di bawah ini diambil alih Akun B (boleh 
 | K1 | Kurasi `analisis-rasio-keuangan-usaha` ← anthropics/claude-cookbooks (53k★, MIT) | dikerjakan (Akun B, 2026-09-26) |
 | K2 | Kurasi `validasi-ide-produk-baru` ← product-on-purpose/pm-skills (699★, Apache-2.0) | dikerjakan (Akun B, 2026-09-26) |
 | K3 | Kurasi `presentasi-data-ke-atasan` ← nimrodfisher/data-analytics-skills (451★, MIT) | dikerjakan (Akun B, 2026-09-26) |
-| K4 | Kurasi `laporan-insiden-usaha` ← mohitagw15856/pm-claude-skills (1,4k★, MIT) — verifikasi skill sumber dulu | dikerjakan (Akun B, 2026-09-26) |
+| K4 | Kurasi `laporan-insiden-usaha` ← mohitagw15856/pm-claude-skills (1,4k★, MIT) — verifikasi skill sumber dulu | **lulus 9/10** (Akun B, 2026-09-26): sumber diverifikasi (214 commit bertahap), A/B & banding pesaing menang jelas; batasan keluhan kesehatan ditegaskan di SKILL.md |
 | K5 | Kandidat hukum dari anthropics/claude-for-legal (kontrak vendor, PHK/klasifikasi karyawan, permintaan data pribadi) | **ditunda atas keputusan pemilik 2026-09-26** (tidak mengerjakan skill hukum Indonesia) |
 
 Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbeda (pembuat ≠ penguji). Routine 3 jam Akun A sudah **dijeda**. **Akun B: buat routine sendiri mengikuti `koordinasi/rutin.md`** (prompt siap salin di sana).
