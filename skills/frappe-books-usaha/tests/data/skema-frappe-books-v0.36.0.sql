@@ -304,3 +304,14 @@ CREATE TABLE `SingleValue` (
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL
 );
+CREATE TABLE `NumberSeries` (
+  `name` text PRIMARY KEY NOT NULL,
+  `start` integer DEFAULT 1001 NOT NULL,
+  `padZeros` integer DEFAULT 4 NOT NULL,
+  `referenceType` text DEFAULT '-' NOT NULL,
+  `current` integer NOT NULL,
+  `createdBy` text NOT NULL,
+  `modifiedBy` text NOT NULL,
+  `created` datetime NOT NULL,
+  `modified` datetime NOT NULL
+);

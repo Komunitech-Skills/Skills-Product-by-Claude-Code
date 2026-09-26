@@ -967,7 +967,7 @@ def tren(periode_hasil):
             if kode in ("penjualan", "laba_bersih"):
                 deret.append(ph["data"].get(kode))
             else:
-                r = next((x for x in ph["rasio"] if x["kode"] == kode), None)
+                r = next((x for x in ph["rasio_tren"] if x["kode"] == kode), None)
                 deret.append(r["nilai"] if r else None)
         if all(v is None for v in deret):
             continue
@@ -998,7 +998,7 @@ def tren(periode_hasil):
     return out
 
 
-def ringkasan(ph, jenis):
+def ringkasan(ph, jenis, data_cukup=True):
     R = ph["rasio"]
     d = ph["data"]
     kal = []
@@ -1010,7 +1010,10 @@ def ringkasan(ph, jenis):
     n = {s: [r for r in R if r["status"] == s] for s in ("baik", "waspada", "bahaya")}
     kal.append("Dari %d rasio yang dinilai terhadap ambang usaha %s: %d baik, %d waspada, %d bahaya." %
                (sum(len(v) for v in n.values()), jenis, len(n["baik"]), len(n["waspada"]), len(n["bahaya"])))
-    if n["bahaya"]:
+    if not data_cukup:
+        kal.append("DATA BELUM CUKUP untuk menyimpulkan kondisi usaha. Yang belum ada: %s." %
+                   (", ".join(ph["pos_kosong"]) or "neraca & laba rugi lengkap"))
+    elif n["bahaya"]:
         kal.append("Paling mendesak: " + "; ".join("%s %s" % (r["nama"].split(" (")[0],
                                                               fmt(r["nilai"], r["satuan"]) if r["nilai"] is not None
                                                               else "(%s)" % r["alasan_tidak_dihitung"])
@@ -1022,6 +1025,14 @@ def ringkasan(ph, jenis):
     else:
         kal.append("Semua rasio yang bisa dihitung berada di rentang wajar — pertahankan.")
     return " ".join(kal)
+
+
+POS_KUNCI = ["penjualan", "hpp", "laba_bersih", "kas", "persediaan", "total_aset", "utang_lancar", "total_utang",
+             "modal"]
+MIN_DINILAI = 5
+BASIS_TREN = ("Tren memakai basis SAMA untuk semua periode: saldo AKHIR tiap periode (persediaan, piutang, aset, "
+              "modal). Tabel rasio periode terakhir di atas memakai rata-rata saldo awal-akhir bila tersedia, "
+              "jadi angkanya bisa sedikit berbeda dari kolom terakhir tabel tren.")
 
 
 def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=None):
@@ -1046,12 +1057,28 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
                     p[k_awal] = prev[k]
         lengkapi(p, cfg)
         R = hitung_periode(p, jenis)
+        # Untuk tren: semua periode dihitung dengan basis SAMA (saldo akhir), karena periode pertama tidak
+        # punya saldo awal. Tabel utama tetap memakai rata-rata saldo bila saldo awal tersedia.
+        p_tren = dict(p)
+        for k_awal in ("persediaan_awal", "piutang_awal", "total_aset_awal", "modal_awal"):
+            p_tren[k_awal] = None
+        R_tren = hitung_periode(p_tren, jenis)
         data = {k: p.get(k) for k in POS if p.get(k) is not None}
-        hasil_periode.append({"label": p["label"], "data": data, "rasio": R, "asumsi": p["asumsi"],
-                              "peringatan": p["peringatan"], "selisih_neraca": p.get("selisih_neraca")})
+        kosong = [POS[k][0] for k in POS_KUNCI if p.get(k) is None]
+        asumsi = list(p["asumsi"])
+        if kosong:
+            asumsi.append("Pos tidak diisi (rasio yang memakainya tidak dihitung): %s." % ", ".join(kosong))
+        hasil_periode.append({"label": p["label"], "data": data, "rasio": R, "rasio_tren": R_tren,
+                              "asumsi": asumsi, "peringatan": p["peringatan"], "info": p.get("info", []),
+                              "pos_kosong": kosong, "selisih_neraca": p.get("selisih_neraca")})
     akhir = hasil_periode[-1]
     p_akhir = periode[-1]
     akhir["kesiapan_kredit"] = kesiapan_kredit(p_akhir, akhir["rasio"])
+    dinilai = sum(1 for r in akhir["rasio"] if r["status"] in ("baik", "waspada", "bahaya"))
+    data_cukup = dinilai >= MIN_DINILAI
+    if not data_cukup:
+        akhir["kesiapan_kredit"]["kesimpulan"] = ("DATA BELUM CUKUP untuk menilai kesiapan — lengkapi: %s"
+                                                  % (", ".join(akhir["pos_kosong"]) or "neraca & laba rugi"))
     masalah = urut_masalah(akhir["rasio"])
     saran = []
     lb_akhir, md_akhir = p_akhir.get("laba_bersih"), p_akhir.get("modal")
@@ -1074,15 +1101,26 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
     if sisa > 0:
         saran.append({"rasio": "Lainnya", "status": "info", "saran": "%d masalah lain ada di tabel (status 🟡/🔴). "
                       "Kerjakan 3 saran teratas dulu, lalu hitung ulang bulan depan." % sisa})
+    if not data_cukup:
+        saran.insert(0, {"rasio": "Lengkapi data", "status": "info",
+                         "saran": "Baru %d rasio yang bisa dinilai, belum cukup untuk menyimpulkan usaha sehat. "
+                                  "Lengkapi: %s. Lalu jalankan ulang analisis." %
+                                  (dinilai, ", ".join(akhir["pos_kosong"]) or "neraca & laba rugi")})
     if not saran:
         saran = [{"rasio": "—", "status": "baik", "saran": "Pertahankan: hitung ulang rasio ini tiap bulan/kuartal "
                   "dan bandingkan trennya; sisihkan sebagian laba sebagai dana cadangan."}]
-    status_data = "SEMENTARA" if any(ph["peringatan"] for ph in hasil_periode) else "LENGKAP"
+    if not data_cukup:
+        status_data = "DATA BELUM CUKUP"
+    elif any(ph["peringatan"] for ph in hasil_periode) or catatan:
+        status_data = "SEMENTARA"
+    else:
+        status_data = "LENGKAP"
     return {
         "versi_script": VERSI, "nama_usaha": nama_usaha or "[Nama Usaha]",
         "jenis_usaha": jenis, "jenis_usaha_teks": JENIS[jenis], "status_data": status_data,
         "periode": hasil_periode, "tren": tren(hasil_periode), "saran": saran,
-        "ringkasan_awam": ringkasan(akhir, jenis), "catatan_input": catatan,
+        "ringkasan_awam": ringkasan(akhir, jenis, data_cukup), "catatan_input": catatan,
+        "basis_tren": BASIS_TREN if len(hasil_periode) > 1 else None,
         "disclaimer": "Analisis angka untuk membantu pemilik usaha memahami kondisi keuangan. Bukan nasihat "
                       "investasi, bukan penilaian kredit, bukan laporan audit. Ambang wajar adalah pedoman praktis "
                       "(lihat references/ambang-wajar.md), bukan standar resmi OJK/bank. Untuk keputusan besar, "
@@ -1121,6 +1159,8 @@ def teks(h):
         o.append("")
     if h["tren"]:
         o.append("## Tren antarperiode")
+        o.append("_%s_" % h["basis_tren"])
+        o.append("")
         labels = [p["label"] for p in h["periode"]]
         o.append("| Pos / rasio | " + " | ".join(labels) + " | Perubahan terakhir |")
         o.append("|---|" + "---|" * len(labels) + "---|")
@@ -1159,7 +1199,7 @@ def teks(h):
         o.append("## Perlu dicek")
         o.extend("- " + x for x in perlu)
         o.append("")
-    asumsi = [("[%s] %s" % (p["label"], x)) for p in h["periode"] for x in p["asumsi"]]
+    asumsi = [("[%s] %s" % (p["label"], x)) for p in h["periode"] for x in p["asumsi"] + p["info"]]
     o.append("## Asumsi yang dipakai")
     o.extend("- " + x for x in (asumsi or ["Tidak ada — semua angka diisi pengguna."]))
     o.append("- Ambang 'wajar' = pedoman praktis untuk jenis usaha %s (references/ambang-wajar.md)." % h["jenis_usaha"])
