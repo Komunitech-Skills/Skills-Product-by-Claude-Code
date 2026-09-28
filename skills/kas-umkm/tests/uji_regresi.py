@@ -984,7 +984,8 @@ class UjiV102(Dasar):
 
 class UjiV103(Dasar):
     """Sisa rendah H9: lain-lain 'utang/cicilan', 'uang muka karyawan/kasbon', 'belanja rumah' bukan biaya usaha."""
-    LAIN = (("150rb", "bayar utang toko Pak Joko", "lain-lain"),   # v1.0.4: utang pemasok = belanja, bukan pinjaman ("100rb", "belanja rumah", "prive"),
+    # v1.0.4: utang pemasok = belanja (lain-lain, ekspor bayar_utang_usaha), bukan pinjaman
+    LAIN = (("150rb", "bayar utang toko Pak Joko", "lain-lain"), ("100rb", "belanja rumah", "prive"),
             ("60rb", "beli kursi plastik", "lain-lain"), ("80rb", "uang muka karyawan Andi", "kasbon"),
             ("80rb", "cicilan etalase", "pinjaman"), ("5rb", "bunga cicilan etalase", "lain-lain"))
 
@@ -1096,6 +1097,119 @@ class UjiV103(Dasar):
         self.ok("golongkan", "--id", str(j), "--kategori", "lain-lain", "--ya")
         self.assertEqual(self.kategori_db()["TRSF BELANJA RUMAH TANGGA"], "prive")
         self.assertEqual(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"], 1000000 - 50000)
+
+
+class UjiV104(Dasar):
+    """Uji ulang v1.0.3 (6,5/10): denda/biaya cicilan, utang pemasok, pelanggan bayar bon, 'X pinjam uang', denda pajak."""
+    LAIN_KELUAR = (("25rb", "denda telat cicilan", "lain-lain", "beban_keuangan"),
+                   ("30rb", "denda keterlambatan angsuran", "lain-lain", "beban_keuangan"),
+                   ("5rb", "biaya admin cicilan", "lain-lain", "beban_keuangan"),
+                   ("10rb", "bunga cicilan KUR", "lain-lain", "beban_keuangan"),
+                   ("750rb", "bayar utang toko bangunan", "lain-lain", "bayar_utang_usaha"),
+                   ("200rb", "Rudi pinjam uang", "kasbon", "piutang_lain"),
+                   ("500rb", "angsuran pokok KUR", "pinjaman", "bayar_pinjaman"),
+                   ("40rb", "ongkos pinjam troli", "lain-lain", "beban_lain"))
+
+    def kategori_db(self):
+        con = sqlite3.connect(self.db)
+        try:
+            return {c: k for c, k in con.execute("SELECT catatan, kategori FROM transaksi WHERE status='aktif'")}
+        finally:
+            con.close()
+
+    def test_jebakan_penguji_laba_emkm_sama_neraca_seimbang(self):
+        from decimal import Decimal as D
+        self.ok("catat", "--masuk", "3jt", "--kategori", "penjualan", "--metode", "tunai", "--catatan", "jualan",
+                "--tanggal", "02/09/2026", "--ya")
+        self.ok("catat", "--keluar", "1jt", "--kategori", "beli-stok", "--metode", "tunai", "--catatan", "kulakan",
+                "--tanggal", "03/09/2026", "--ya")
+        for jml, cat, _, _ in self.LAIN_KELUAR:
+            self.ok("catat", "--keluar", jml, "--kategori", "lain-lain", "--metode", "tunai", "--catatan", cat,
+                    "--tanggal", "05/09/2026", "--ya")
+        out = self.ok("catat", "--masuk", "150rb", "--kategori", "lain-lain", "--metode", "tunai", "--catatan",
+                      "Bu Ani bayar hutang belanja", "--tanggal", "06/09/2026", "--ya")
+        self.assertTrue(any("ke penjualan" in p for p in out["peringatan"]), out)
+        out = self.ok("catat", "--keluar", "100rb", "--kategori", "pajak", "--metode", "tunai", "--catatan",
+                      "denda pajak telat lapor", "--tanggal", "07/09/2026", "--ya")
+        self.assertTrue(any("Pasal 9 ayat (1) huruf k" in p for p in out["peringatan"]), out)
+        kat = self.kategori_db()
+        for _, cat, harap, _ in self.LAIN_KELUAR:
+            self.assertEqual(kat[cat], harap, cat)
+        self.assertEqual(kat["Bu Ani bayar hutang belanja"], "penjualan")
+        # verifikasi Decimal independen
+        biaya = D(1000000) + D(25000) + D(30000) + D(5000) + D(10000) + D(750000) + D(40000) + D(100000)
+        hasil = D(3000000) + D(150000) - biaya
+        self.assertEqual(hasil, D(1190000))
+        self.assertEqual(D(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"]), hasil)
+        out = self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
+        with open(out["file"], encoding="utf-8-sig", newline="") as fh:
+            kode = {r[1]: r[4] for r in list(csv.reader(fh, delimiter=";"))[1:]}
+        for _, cat, _, harap in self.LAIN_KELUAR:
+            self.assertEqual(kode[cat], harap, cat)
+        self.assertEqual(kode["denda pajak telat lapor"], "beban_lain")          # bukan beban PPh
+        self.assertEqual(kode["Bu Ani bayar hutang belanja"], "pendapatan_usaha")
+        emkm = os.path.join(SKILLS, "laporan-keuangan-emkm", "scripts", "laporan_emkm.py")
+        if not os.path.isfile(emkm):
+            self.skipTest("laporan-keuangan-emkm tidak ada di sebelah skill ini")
+        r = subprocess.run([sys.executable, emkm, out["file"], "--format", "json", "--periode-awal", "2026-09-01",
+                            "--periode-akhir", "2026-09-26", "--kas-akhir-aktual", str(out["saldo_akhir"]),
+                            "--utang-bank-awal", "500000"], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        d = json.loads(r.stdout)
+        self.assertEqual(D(str(d["laba_rugi"]["laba_bersih"])), hasil)            # dulu selisih 25.000
+        neraca = d["posisi_keuangan"]
+        self.assertTrue(neraca["seimbang"], neraca)
+        self.assertEqual(D(str(neraca["selisih"])), D(0))
+
+    def test_tebakan_tanpa_kategori(self):
+        kasus = (("keluar", "denda telat cicilan", "lain-lain"), ("keluar", "biaya admin angsuran", "lain-lain"),
+                 ("keluar", "Rudi pinjam uang", "kasbon"), ("masuk", "Bu Ani bayar hutang belanja", "penjualan"),
+                 ("masuk", "pinjaman dari saudara", "pinjaman"), ("keluar", "cicilan KUR", "pinjaman"))
+        for n, (arah, cat, harap) in enumerate(kasus, 1):
+            self.ok("catat", "--" + arah, str(10000 + n), "--metode", "tunai", "--catatan", cat, "--tanggal",
+                    "05/09/2026", "--ya")
+            self.assertEqual(self.kategori_db()[cat], harap, cat)
+        # utang pemasok tanpa kategori: ditanyakan dengan pilihan jelas, bukan ditebak pinjaman
+        for cat in ("bayar utang toko bangunan", "bayar hutang supplier", "lunasi bon grosir"):
+            g = self.gagal("catat", "--keluar", "750rb", "--metode", "tunai", "--catatan", cat)
+            self.assertTrue(g.get("perlu_kategori") and g.get("utang_pemasok"), g)
+            self.assertIn("beli-stok", g["error"])
+        # kategori pinjaman dipilih eksplisit untuk utang pemasok / pelanggan bayar bon -> diperingatkan
+        o = self.ok("catat", "--keluar", "750rb", "--kategori", "pinjaman", "--metode", "tunai", "--catatan",
+                    "bayar utang toko bangunan")
+        self.assertTrue(any("PEMASOK" in p for p in o["peringatan"]), o)
+        o = self.ok("catat", "--masuk", "150rb", "--kategori", "pinjaman", "--metode", "tunai", "--catatan",
+                    "Bu Ani bayar hutang belanja")
+        self.assertTrue(any("penjualan" in p for p in o["peringatan"]), o)
+
+    def test_impor_dan_golongkan(self):
+        f = self.file("m.csv", "Tanggal,Keterangan,Debet,Kredit\n"
+                               "04/09/2026,BAYAR HUTANG TOKO BANGUNAN,750000,\n"
+                               "05/09/2026,DENDA TELAT CICILAN,25000,\n"
+                               "06/09/2026,BU ANI BAYAR HUTANG BELANJA,,150000\n")
+        out = self.ok("impor", f, "--akun", "BRI", "--jenis-file", "mutasi-bank", "--format-tanggal", "hari-bulan",
+                      "--ya")
+        kat = self.kategori_db()
+        self.assertEqual(kat["BAYAR HUTANG TOKO BANGUNAN"], "perlu-dicek")
+        self.assertIn("pemasok", json.dumps(out, ensure_ascii=False))
+        self.assertEqual(kat["DENDA TELAT CICILAN"], "lain-lain")
+        self.assertEqual(kat["BU ANI BAYAR HUTANG BELANJA"], "penjualan")
+        con = sqlite3.connect(self.db)
+        (i,) = con.execute("SELECT id FROM transaksi WHERE catatan='BAYAR HUTANG TOKO BANGUNAN'").fetchone()
+        con.close()
+        o = self.ok("golongkan", "--id", str(i), "--kategori", "pinjaman")
+        self.assertTrue(any("PEMASOK" in p for p in o["peringatan"]), o)
+        self.ok("golongkan", "--id", str(i), "--kategori", "lain-lain", "--ya")
+        self.assertEqual(self.kategori_db()["BAYAR HUTANG TOKO BANGUNAN"], "lain-lain")
+        self.assertEqual(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"], 150000 - 750000 - 25000)
+
+    def test_kode_emkm_unit(self):
+        k = K.kode_emkm
+        self.assertEqual(k("lain-lain", "keluar", "denda keterlambatan angsuran", "tunai"), "beban_keuangan")
+        self.assertEqual(k("lain-lain", "keluar", "utang supplier", "bank"), "bayar_utang_usaha")
+        self.assertEqual(k("lain-lain", "keluar", "denda pajak", "tunai"), "beban_lain")
+        self.assertEqual(k("pajak", "keluar", "sanksi STP PPh", "tunai"), "beban_lain")
+        self.assertEqual(k("pajak", "keluar", "PPh final Agustus", "tunai"), "")
 
 
 if __name__ == "__main__":

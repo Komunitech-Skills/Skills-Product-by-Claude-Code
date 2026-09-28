@@ -45,7 +45,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 APLIKASI = "kas-umkm"
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 SKEMA = 1
 BATAS_NOMINAL = 10 ** 12            # Rp 1 triliun: di atas ini pasti salah ketik
 NOMINAL_BESAR = 50 * 10 ** 6        # di atas ini diberi catatan "pastikan jumlah nolnya benar"
@@ -141,7 +141,8 @@ POLA_KATA_PAJAK = re.compile(r"\b(pajak|pph|ppn|pbjt|pb1|spt|coretax|djp)\b")
 
 
 def utang_pemasok(n):
-    return bool(POLA_KATA_UTANG.search(n) and POLA_PEMASOK.search(n))
+    return bool(POLA_KATA_UTANG.search(n) and POLA_PEMASOK.search(n) and
+                not re.search(r"\b(kur|bank|koperasi|leasing|kredit|pinjaman|pinjam|bpr|pegadaian)\b", n))
 
 
 def pelanggan_bayar_bon(n):
@@ -266,7 +267,7 @@ def kode_emkm(kategori, arah, ket, jenis_akun):
     if denda_pajak(n):
         return "beban_lain"
     if POLA_BUNGA_BIAYA.search(n) and (POLA_UTANG.search(n) or POLA_KATA_UTANG.search(n) or
-                                       re.search(r"\b(pinjam\w*|kredit|leasing|koperasi)\b", n)):
+                                       re.search(r"\b(kredit|leasing|koperasi)\b", n)):
         return "beban_keuangan"                        # v1.0.4: bunga/denda/biaya cicilan = biaya, bukan pokok
     if utang_pemasok(n):
         return "bayar_utang_usaha"                     # v1.0.4: bon pemasok = belanja (pembelian kredit di emkm)

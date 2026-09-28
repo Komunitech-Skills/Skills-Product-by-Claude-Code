@@ -56,6 +56,10 @@ Hasil: CSV `Tanggal;Keterangan;Masuk;Keluar;Kategori` (UTF-8 BOM, tanggal DD/MM/
   membetulkannya. Bila ada cicilan/bayar utang, ekspor mengingatkan `--utang-bank-awal <sisa utang awal periode>`
   (tanpa ini sisa utang emkm minus dan neraca tidak seimbang); kasbon yang dikembalikan melebihi yang diberikan →
   `--piutang-lain-awal`.
+- v1.0.4: `lain-lain` keluar berketerangan bunga/denda/biaya + cicilan/angsuran/utang/pinjaman → `beban_keuangan`;
+  utang/bon ke pemasok/toko/grosir → `bayar_utang_usaha` (emkm menghitungnya sebagai pembelian kredit bila tidak ada
+  `--utang-usaha-awal`, jadi laba tetap = hasil usaha; isi `--utang-usaha-awal` hanya bila bon itu memang sudah
+  tercatat sebagai utang di awal periode); denda/sanksi pajak (kategori `pajak` maupun `lain-lain`) → `beban_lain`.
 - Pindah dana antar akun tidak ditulis (kas + rekening dihitung sebagai satu pos kas di emkm). Catatan yang dibatalkan
   tidak ikut.
 - Teks script memberi perintah emkm siap pakai, termasuk `--kas-akhir-aktual` = saldo akhir gabungan (cek silang).
