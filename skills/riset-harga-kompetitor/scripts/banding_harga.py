@@ -15,7 +15,11 @@ Aturan hitung (ditulis juga di hasil):
 - Margin = laba / harga jual (bukan markup).
 - Harga rentang "49.900-59.900" memakai harga terendah (bisa diubah dengan --rentang).
 - Ukuran berbeda disetarakan: harga setara = harga / isi pesaing x isi produk kita (satuan g, ml, atau pcs).
+- Ukuran seperti "1/2 kg", "setengah kilo", "250 g x 2", "isi 2 @250gr", "250 g + 250 g" dibaca lengkap.
+- Harga setara yang di bawah setengah atau di atas dua kali median (min. 3 pesaing) TIDAK ikut statistik
+  (tetap tampil di tabel), kecuali --pakai-semua.
 - Persentil memakai interpolasi linear (sama dengan PERCENTILE.INC di Excel/Google Sheets).
+- HPP kosong -> mode "pasar saja": hanya statistik harga pasar, tanpa batas harga & rekomendasi.
 
 Hanya library standar Python 3.8+. TIDAK ada akses jaringan: script ini tidak membuka link apa pun.
 
@@ -38,6 +42,7 @@ BATAS_ATAS = Decimal(10) ** 12
 MAKS_BARIS = 500
 HARI_DATA_LAMA = 30
 STRATEGI = ("murah", "tengah", "premium")
+KOLOM_LEBIH, KOLOM_KURANG, KOLOM_HEADER = "__kolom_lebih__", "__kolom_kurang__", "__kolom_header__"
 
 
 class InputError(ValueError):
@@ -87,6 +92,8 @@ def _parse(nilai, nama, izinkan_desimal):
     s = asli.strip().lower().replace(" ", "").replace(" ", "")
     s = re.sub(r"^(rp|idr)\.?", "", s)
     s = re.sub(r"([,.]-+|,00)$", "", s)
+    if s.startswith("-") and re.search(r"\d", s):
+        raise InputError("{}: '{}' tidak boleh negatif".format(nama, asli))
     if not s:
         raise InputError("{}: kosong".format(nama))
     pengali = 1
@@ -119,14 +126,30 @@ def _parse(nilai, nama, izinkan_desimal):
 _POLA_RENTANG = re.compile(r"\s*(?:–|—|~|\bs\.?/?d\.?(?=\s|\d|rp)|\bsampai\b|\bhingga\b|-)\s*", re.I)
 
 
+HARGA_MIN = Decimal(100)
+
+
+def cek_harga_wajar(v, nama, asli):
+    """Harga rupiah di bawah Rp 100 hampir pasti salah tulis (mis. 49,9 = 49.900?)."""
+    if v < HARGA_MIN:
+        raise InputError("{}: '{}' terlalu kecil untuk harga rupiah (di bawah Rp 100). Maksudnya ribuan? "
+                         "Tulis lengkap, mis. 49.900 atau 49,9rb".format(nama, asli))
+    return v
+
+
+def parse_harga(nilai, nama="harga"):
+    """parse_rupiah + tolak nilai di bawah Rp 100 (berlaku juga untuk angka JSON seperti 49.9)."""
+    return cek_harga_wajar(parse_rupiah(nilai, nama), nama, nilai)
+
+
 def parse_rentang(teks, nama="harga"):
-    """'Rp49.900 - Rp59.900' / '49-59rb' / '49.900 s/d 59.900' -> (terendah, tertinggi)."""
+    """'Rp49.900 - Rp59.900' / '49-59rb' / '49.900 s/d 59.900' -> (terendah, tertinggi). Harga < Rp 100 ditolak."""
     if isinstance(teks, (int, float, Decimal)) and not isinstance(teks, bool):
-        v = parse_rupiah(teks, nama)
+        v = parse_harga(teks, nama)
         return v, v
     t = str(teks or "").strip()
     t = re.sub(r"[,.]-+(?!\s*\d)", "", t)          # buang ',-' seperti 'Rp49.900,-'
-    if t.startswith("-"):
+    if re.match(r"(?:rp|idr)?\.?\s*-\s*\d", t, re.I):
         raise InputError("{}: '{}' tidak boleh negatif".format(nama, teks))
     bagian = [b for b in _POLA_RENTANG.split(t) if b and b.strip()]
     if not bagian:
@@ -142,9 +165,9 @@ def parse_rentang(teks, nama="harga"):
             if coba < 1000:
                 a = a.strip() + suf_b.group(1)          # '49-59rb' -> 49rb - 59rb
         lo, hi = sorted((parse_rupiah(a, nama), parse_rupiah(b, nama)))
-        return lo, hi
+        return cek_harga_wajar(lo, nama, teks), hi
     v = parse_rupiah(bagian[0], nama)
-    return v, v
+    return cek_harga_wajar(v, nama, teks), v
 
 
 def parse_terjual(teks):
@@ -182,10 +205,18 @@ _SATUAN = {
     "lusin": ("pcs", 12), "kodi": ("pcs", 20),
 }
 _SAT_RE = "|".join(sorted(_SATUAN, key=len, reverse=True))
+_SAT_NON_PCS = "|".join(sorted((k for k, v in _SATUAN.items() if v[0] != "pcs"), key=len, reverse=True))
+# kata kemasan yang boleh menempel pada pengali: "2 pcs @ 250 gr", "250 gr x 2 pcs", "isi 2 bungkus @250gr"
+_KEMASAN = ("pcs|pc|buah|bh|biji|bungkus|bks|pack|pak|pax|sachet|botol|btl|pouch|toples|jar|box|dus|kotak|"
+            "kaleng|cup|pasang|lembar|lbr|roll|tube")
 _NUM = r"\d+(?:[.,]\d+)?"
-_POLA_KALI = re.compile(r"(?<![\d.,])(%s)\s*[x×*]\s*(%s)\s*(%s)\b" % (_NUM, _NUM, _SAT_RE))
-_POLA_UKURAN = re.compile(r"(?<![\d.,])(%s)\s*(%s)\b" % (_NUM, _SAT_RE))
+# pecahan (1/2 kg, 1 1/2 kg) atau angka biasa (250 gr, 0,5 kg, 1.000 ml)
+_POLA_UKUR = re.compile(r"(?<![\d.,/])(?:(?:(\d+)\s+)?(\d+)\s*/\s*(\d+)|(%s))\s*(%s)\b" % (_NUM, _SAT_RE))
+_POLA_DEPAN = re.compile(r"(?<![\d.,/])(\d+)\s*(?:(?:%s)\s*)?(?:[x*]\s*@?|@)\s*$" % _KEMASAN)
+_POLA_BELAKANG = re.compile(r"\s*[x*]\s*(\d+)(?![\d.,/])(?!\s*(?:%s)\b)(?:\s*(?:%s)\b)?" % (_SAT_NON_PCS, _KEMASAN))
 _POLA_ISI = re.compile(r"\bisi\s*(\d+)\b(?!\s*(?:%s)\b)" % _SAT_RE)
+_KATA = [(r"\bsetengah\s*", "1/2 "), (r"\bseperempat\s*", "1/4 "), (r"\btiga\s+perempat\s*", "3/4 "),
+         ("½", " 1/2"), ("¼", " 1/4"), ("¾", " 3/4"), ("×", "x")]
 
 
 def _angka_ukuran(s):
@@ -194,23 +225,90 @@ def _angka_ukuran(s):
     return Decimal(s.replace(",", "."))               # 0,5 kg / 1.5 kg
 
 
-def parse_ukuran(teks):
-    """'250 gr' -> ('g', 250); '1 L' -> ('ml', 1000); '12 x 25 g' -> ('g', 300); 'isi 12' -> ('pcs', 12)."""
-    if teks is None:
-        return None
-    t = str(teks).lower().replace("×", "x")
-    m = _POLA_KALI.search(t)
-    if m:
-        dim, kali = _SATUAN[m.group(3)]
-        return dim, _angka_ukuran(m.group(1)) * _angka_ukuran(m.group(2)) * Decimal(kali)
-    m = _POLA_UKURAN.search(t)
-    if m:
-        dim, kali = _SATUAN[m.group(2)]
-        return dim, _angka_ukuran(m.group(1)) * Decimal(kali)
-    m = _POLA_ISI.search(t)
-    if m:
-        return "pcs", Decimal(m.group(1))
-    return None
+def _pecahan(utuh, pembilang, penyebut, asli):
+    pb, py = int(pembilang), int(penyebut)
+    sisa = py
+    for f in (2, 5):
+        while sisa and sisa % f == 0:
+            sisa //= f
+    if py == 0 or sisa != 1:
+        raise InputError("pecahan '{}' tidak bisa dipakai; tulis dalam gram/ml, mis. 500 gr".format(asli.strip()))
+    return Decimal(int(utuh or 0)) + Decimal(pb) / Decimal(py)
+
+
+def baca_ukuran(teks, dim_pilih=None):
+    """Baca ukuran dari teks bebas. Kembalikan ((dim, jumlah) atau None, [catatan]).
+
+    Dikenali: '250 gr', '1/2 kg', 'setengah kilo', '1 1/2 kg', '12 x 25 g', '250 g x 2', '250gr x 2 pcs',
+    'isi 2 @250gr', 'Paket 2 pcs @ 250 gr', '250 g + 250 g', 'isi 12'. Bila teks memuat beberapa ukuran
+    berbeda (mis. 'isi 10 pcs 250 gr'), dipilih yang satuannya sama dengan dim_pilih (satuan produk kita).
+    InputError bila ukuran jelas ada tetapi tidak bisa dibaca dengan aman (pecahan aneh, g + ml).
+    """
+    if teks is None or str(teks).strip() == "":
+        return None, []
+    t = str(teks).lower()
+    for pola, ganti in _KATA:
+        t = re.sub(pola, ganti, t)
+    grup, habis = [], 0
+    for m in _POLA_UKUR.finditer(t):
+        if m.start() < habis:
+            continue
+        dim, kali = _SATUAN[m.group(5)]
+        if m.group(4) is not None:
+            qty = _angka_ukuran(m.group(4))
+        else:
+            qty = _pecahan(m.group(1), m.group(2), m.group(3), m.group(0))
+        qty = qty * Decimal(kali)
+        mulai, akhir, jumlah_kemasan = m.start(), m.end(), None
+        d = _POLA_DEPAN.search(t, 0, m.start())
+        if d:
+            mulai, jumlah_kemasan = d.start(), int(d.group(1))
+            grup = [g for g in grup if g["akhir"] <= mulai]          # '2 pcs' di '2 pcs @ 250 gr' ikut terpakai
+        bl = _POLA_BELAKANG.match(t, m.end())
+        if bl:
+            akhir = bl.end()
+            jumlah_kemasan = (jumlah_kemasan or 1) * int(bl.group(1))
+        if jumlah_kemasan:
+            qty = qty * jumlah_kemasan
+        sek = [("pcs", Decimal(jumlah_kemasan))] if jumlah_kemasan and dim != "pcs" else []
+        # '250 g + 250 g': gabungkan dengan grup sebelumnya
+        if grup and re.fullmatch(r"\s*\+\s*", t[grup[-1]["akhir"]:mulai]):
+            sebelum = grup[-1]
+            if sebelum["dim"] != dim:
+                raise InputError("ukuran '{}' menjumlahkan satuan berbeda ({} + {})".format(
+                    str(teks).strip(), sebelum["dim"], dim))
+            sebelum["qty"] += qty
+            sebelum["akhir"] = akhir
+            sebelum["sek"] = []
+        else:
+            grup.append({"dim": dim, "qty": qty, "mulai": mulai, "akhir": akhir, "sek": sek})
+        habis = akhir
+    if not grup:
+        m = _POLA_ISI.search(t)
+        return (("pcs", Decimal(m.group(1))), []) if m else (None, [])
+    pilih, catatan = grup[0], []
+    if dim_pilih:
+        cocok = [g for g in grup if g["dim"] == dim_pilih]
+        if cocok:
+            pilih = cocok[0]
+        else:
+            sek = [s for g in grup for s in g["sek"] if s[0] == dim_pilih]
+            if sek:
+                catatan.append("dibaca sebagai {} kemasan".format(fmt_desimal(sek[0][1])))
+                return sek[0], catatan
+    beda = []
+    for g in grup:
+        if (g["dim"], g["qty"]) not in beda:
+            beda.append((g["dim"], g["qty"]))
+    if len(beda) > 1:
+        catatan.append("teks memuat beberapa ukuran ({}), dipakai {}".format(
+            ", ".join(teks_ukuran(*u) for u in beda), teks_ukuran(pilih["dim"], pilih["qty"])))
+    return (pilih["dim"], pilih["qty"]), catatan
+
+
+def parse_ukuran(teks, dim_pilih=None):
+    """'250 gr' -> ('g', 250); '1/2 kg' -> ('g', 500); '250 g x 2' -> ('g', 500); 'isi 12' -> ('pcs', 12)."""
+    return baca_ukuran(teks, dim_pilih)[0]
 
 
 def teks_ukuran(dim, qty):
@@ -295,13 +393,41 @@ def normalisasi_baris(d):
     return hasil
 
 
-def baca_file(path):
-    """Kembalikan (daftar baris pesaing, dict produk_kita dari file atau {})."""
+def _dekode(path, data):
+    """Kembalikan (teks, [info]). Coba UTF-8 (dengan/tanpa BOM), UTF-16 ber-BOM, lalu ANSI Windows (cp1252)."""
+    if data.startswith(b"PK\x03\x04") or data.startswith(b"\xd0\xcf\x11\xe0"):
+        raise InputError("file '{}' adalah file Excel, bukan CSV. Di Excel pilih File > Save As > "
+                         "'CSV UTF-8 (Comma delimited)', lalu kirim file CSV-nya.".format(path))
+    if data.startswith((b"\xff\xfe", b"\xfe\xff")):
+        try:
+            return data.decode("utf-16"), []
+        except UnicodeDecodeError:
+            pass
+    if b"\x00" in data:
+        raise InputError("file '{}' bukan file teks CSV/JSON (berisi data biner). Simpan ulang sebagai "
+                         "'CSV UTF-8' atau tempel datanya sebagai teks.".format(path))
     try:
-        with open(path, encoding="utf-8-sig") as f:
-            teks = f.read()
+        return data.decode("utf-8-sig"), []
+    except UnicodeDecodeError:
+        pass
+    try:
+        return data.decode("cp1252"), ["File dibaca sebagai ANSI/Windows-1252 (bukan UTF-8). Cek huruf khusus "
+                                       "di tabel; bila ada yang aneh, simpan ulang sebagai 'CSV UTF-8'."]
+    except UnicodeDecodeError:
+        raise InputError("file '{}' memakai encoding yang tidak dikenali. Simpan ulang sebagai 'CSV UTF-8' "
+                         "(Excel: File > Save As > CSV UTF-8).".format(path))
+
+
+def baca_file(path):
+    """Kembalikan (daftar baris pesaing, dict produk_kita dari file atau {}, [info untuk 'Perlu dicek'])."""
+    try:
+        with open(path, "rb") as f:
+            data = f.read()
     except OSError as e:
         raise InputError("file '{}' tidak bisa dibaca: {}".format(path, e))
+    teks, info = _dekode(path, data)
+    if teks.startswith("\ufeff"):
+        teks = teks[1:]
     if path.lower().endswith(".json") or teks.lstrip().startswith(("[", "{")):
         try:
             data = json.loads(teks)
@@ -313,14 +439,30 @@ def baca_file(path):
             data = data.get("pesaing", [])
         if not isinstance(data, list) or not all(isinstance(x, dict) for x in data):
             raise InputError("JSON harus berupa daftar objek atau {\"produk_kita\": {...}, \"pesaing\": [...]}")
-        return data, produk
+        return data, produk, info
     if not teks.strip():
         raise InputError("file kosong")
     try:
         dialek = csv.Sniffer().sniff(teks.splitlines()[0], delimiters=",;\t")
     except csv.Error:
         dialek = csv.excel
-    return list(csv.DictReader(io.StringIO(teks), dialect=dialek)), {}
+    baris = []
+    try:
+        pembaca = csv.DictReader(io.StringIO(teks), dialect=dialek)
+        n_kolom = len(pembaca.fieldnames or [])
+        for row in pembaca:
+            lebih = [x for x in (row.pop(None, None) or []) if str(x).strip()]
+            if lebih:
+                row[KOLOM_LEBIH] = n_kolom + len(lebih)
+            if any(v is None for v in row.values()):
+                row = {k: ("" if v is None else v) for k, v in row.items()}
+                if any(str(v).strip() for k, v in row.items() if k != KOLOM_LEBIH):
+                    row[KOLOM_KURANG] = True
+            row[KOLOM_HEADER] = n_kolom
+            baris.append(row)
+    except csv.Error as e:
+        raise InputError("CSV tidak bisa dibaca: {}".format(e))
+    return baris, {}, info
 
 
 def parse_tanggal(teks):
@@ -344,17 +486,30 @@ def kunci_duplikat(b):
 
 
 # ------------------------------------------------------------------ inti analisis
-def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=None):
+_PILIH_STRATEGI = {"murah": ("terendah", "p25", "p25"), "tengah": ("p25", "p75", "median"),
+                   "premium": ("p75", "p90", "p75")}
+_DASAR_STRATEGI = {"murah": "terendah - P25, titik P25", "tengah": "P25 - P75, titik median",
+                   "premium": "P75 - P90, titik P75"}
+
+
+def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=None, pakai_semua=False):
     hari_ini = hari_ini or date.today()
     if strategi not in STRATEGI:
         raise InputError("strategi harus salah satu dari: " + ", ".join(STRATEGI))
     if len(baris_mentah) > MAKS_BARIS:
         raise InputError("maksimal {} baris pesaing".format(MAKS_BARIS))
+    if not baris_mentah:
+        raise InputError("file tidak berisi data pesaing (hanya judul kolom atau daftar kosong). "
+                         "Isi minimal satu baris: toko, ukuran, harga.")
+    normal = [normalisasi_baris(m) for m in baris_mentah]
+    if not any("harga" in b for b in normal):
+        kolom = [str(k) for k in baris_mentah[0] if not str(k).startswith("__kolom_")]
+        raise InputError("kolom harga tidak ditemukan (kolom yang terbaca: {}). Beri judul kolom 'harga' "
+                         "pada kolom harga tayang.".format(", ".join(kolom) or "-"))
 
     # ---- produk kita
-    if produk.get("hpp") in (None, ""):
-        raise InputError("HPP/modal per barang belum diisi. Tanyakan ke pengguna (atau hitung dengan skill hitung-hpp).")
-    hpp = parse_rupiah(produk["hpp"], "HPP")
+    hpp_ada = produk.get("hpp") not in (None, "")
+    hpp = parse_rupiah(produk["hpp"], "HPP") if hpp_ada else None
     tetap = parse_angka(produk.get("biaya_tetap") or 0, "biaya tetap")
     if tetap < 0:
         raise InputError("biaya tetap tidak boleh negatif")
@@ -375,35 +530,61 @@ def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=N
         raise InputError("total biaya marketplace ({}%) + target margin ({}%) >= 100%: target mustahil"
                          .format(fmt_desimal(biaya_persen), fmt_desimal(margin)))
     f, m = biaya_persen / 100, margin / 100
-    ukuran_kita = parse_ukuran(produk.get("ukuran")) if produk.get("ukuran") else None
-    if produk.get("ukuran") and not ukuran_kita:
-        raise InputError("ukuran produk kita '{}' tidak dikenali (contoh: 250 gr, 1 kg, 500 ml, 12 pcs)"
-                         .format(produk.get("ukuran")))
-    harga_kita = parse_rupiah(produk["harga_kita"], "harga kita") if produk.get("harga_kita") not in (None, "") else None
+    ukuran_kita = None
+    if produk.get("ukuran"):
+        try:
+            ukuran_kita = parse_ukuran(produk.get("ukuran"))
+        except InputError as e:
+            raise InputError("ukuran produk kita: {}".format(e))
+        if not ukuran_kita:
+            raise InputError("ukuran produk kita '{}' tidak dikenali (contoh: 250 gr, 1 kg, 500 ml, 12 pcs; "
+                             "produk satuan: 1 pcs)".format(produk.get("ukuran")))
+    dim_kita = ukuran_kita[0] if ukuran_kita else None
+    harga_kita = parse_harga(produk["harga_kita"], "harga kita") if produk.get("harga_kita") not in (None, "") else None
 
-    balik_modal = ((hpp + tetap) / (1 - f)).quantize(Decimal(1), rounding=ROUND_CEILING)
-    minimum = ((hpp + tetap) / (1 - f - m)).quantize(Decimal(1), rounding=ROUND_CEILING)
+    if hpp_ada:
+        balik_modal = ((hpp + tetap) / (1 - f)).quantize(Decimal(1), rounding=ROUND_CEILING)
+        minimum = ((hpp + tetap) / (1 - f - m)).quantize(Decimal(1), rounding=ROUND_CEILING)
+    else:
+        balik_modal = minimum = None
 
     def laba(p):
+        if not hpp_ada:
+            return None, None
         l = p - p * f - hpp - tetap
         return l, (l / p)
 
     # ---- pesaing
     peringatan, dilewati, duplikat, pesaing = [], [], [], []
-    if biaya_persen == 0 and tetap == 0:
+    if not hpp_ada:
+        peringatan.append("HPP/modal per barang belum diisi: yang dihitung hanya harga pasar. Batas untung dan "
+                          "rekomendasi harga jual muncul setelah HPP diisi (tawarkan skill hitung-hpp).")
+    elif biaya_persen == 0 and tetap == 0:
         peringatan.append("Biaya marketplace dianggap 0 (jualan langsung). Kalau jualan di Shopee/Tokopedia/TikTok "
                           "Shop, isi persen biaya admin/layanan/PPh 22 agar harga minimum tidak terlalu rendah.")
     terlihat = {}
-    for no, mentah in enumerate(baris_mentah, start=1):
-        b = normalisasi_baris(mentah)
+    for no, (mentah, b) in enumerate(zip(baris_mentah, normal), start=1):
         label = b.get("toko") or b.get("nama") or "baris {}".format(no)
         if not any(str(v or "").strip() for v in b.values()):
             continue
-        k = kunci_duplikat(b)
-        if k in terlihat:
-            duplikat.append("baris {} ({}) sama dengan baris {}".format(no, label, terlihat[k]))
+        if mentah.get(KOLOM_LEBIH):
+            dilewati.append("baris {} ({}): jumlah kolom {} padahal judul kolom {}. Kemungkinan ada nilai berkoma "
+                            "tanpa tanda kutip (mis. 1,2RB terjual atau 4,9) sehingga kolom bergeser. Beri tanda "
+                            "kutip pada nilai itu (\"4,9\") atau pakai file JSON".format(
+                                no, label, mentah[KOLOM_LEBIH], mentah.get(KOLOM_HEADER, "?")))
             continue
-        terlihat[k] = no
+        if mentah.get(KOLOM_KURANG):
+            peringatan.append("Baris {} ({}): jumlah kolom lebih sedikit dari judul kolom; cek apakah isinya "
+                              "bergeser.".format(no, label))
+        k = kunci_duplikat(b)
+        harga_teks = re.sub(r"\s+", " ", str(b.get("harga") or "")).strip()
+        if k in terlihat:
+            no_awal, harga_awal = terlihat[k]
+            beda = "" if harga_teks == harga_awal else "; harga beda ({} vs {}), dipakai baris {} - pastikan mana " \
+                                                       "yang terbaru".format(harga_awal, harga_teks, no_awal)
+            duplikat.append("baris {} ({}) sama dengan baris {}{}".format(no, label, no_awal, beda))
+            continue
+        terlihat[k] = (no, harga_teks)
         try:
             lo, hi = parse_rentang(b.get("harga"), "harga")
         except InputError as e:
@@ -436,13 +617,27 @@ def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=N
                     ulasan = parse_terjual(b.get("ulasan"))
             except InputError:
                 catatan.append("{} tidak terbaca".format(fld))
-        ukuran, asal_ukuran = None, None
+        # ukuran: kolom ukuran dulu, lalu varian, lalu nama; utamakan satuan yang sama dengan produk kita
+        calon = []
         for fld in ("ukuran", "varian", "nama"):
             if b.get(fld):
-                ukuran = parse_ukuran(b[fld])
-                if ukuran:
-                    asal_ukuran = fld
-                    break
+                try:
+                    uk, cat = baca_ukuran(b[fld], dim_kita)
+                except InputError as e:
+                    calon.append((fld, None, ["ukuran tidak jelas: {}".format(e)]))
+                    continue
+                if uk:
+                    calon.append((fld, uk, cat))
+        ukuran, asal_ukuran = None, None
+        pilihan = [c for c in calon if c[1] and (not dim_kita or c[1][0] == dim_kita)] or \
+                  [c for c in calon if c[1]] or calon
+        if pilihan:
+            asal_ukuran, ukuran, cat = pilihan[0]
+            catatan += cat
+            catatan += [c for fld, uk, cc in calon if uk is None and fld != asal_ukuran for c in cc]
+            if ukuran and calon and calon[0][1] and calon[0][0] != asal_ukuran:
+                catatan.append("{} di kolom {} tidak sesatuan dengan produk kamu".format(
+                    teks_ukuran(*calon[0][1]), calon[0][0]))
         if ukuran and asal_ukuran != "ukuran":
             catatan.append("ukuran dibaca dari {}".format(asal_ukuran))
         tgl = parse_tanggal(b.get("tanggal"))
@@ -457,17 +652,19 @@ def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=N
             "promo": b.get("promo") or "", "rating": rating, "terjual": terjual, "ulasan": ulasan,
             "lokasi": b.get("lokasi") or "", "sumber": b.get("sumber") or "",
             "tanggal": tgl.isoformat() if tgl else (b.get("tanggal") or ""), "bundling": bundling,
-            "catatan": catatan,
+            "catatan": catatan, "dihitung": False,
         })
 
     # ---- penyetaraan ukuran
     ukuran_pesaing = {p["ukuran"] for p in pesaing if p["ukuran"]}
+    tanpa_ukuran = [p for p in pesaing if not p["ukuran"]]
     if ukuran_kita:
         dasar = "harga setara {} (ukuran produk kamu)".format(teks_ukuran(*ukuran_kita))
         for p in pesaing:
             if not p["ukuran"]:
                 p["setara"] = None
-                p["catatan"].append("ukuran tidak diketahui, tidak ikut dihitung")
+                p["catatan"].append("ukuran tidak diketahui, tidak ikut dihitung" +
+                                    (" (produk satuan? tulis 1 pcs)" if dim_kita == "pcs" else ""))
             elif p["ukuran"][0] != ukuran_kita[0]:
                 p["setara"] = None
                 p["catatan"].append("satuan beda ({} vs {}), tidak ikut dihitung".format(p["ukuran"][0], ukuran_kita[0]))
@@ -481,6 +678,12 @@ def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=N
             peringatan.append("Ukuran pesaing berbeda-beda ({}) tetapi ukuran produk kamu belum disebut, "
                               "jadi harga dibandingkan apa adanya dan bisa menyesatkan. Sebutkan ukuran produkmu."
                               .format(", ".join(sorted(teks_ukuran(*u) for u in ukuran_pesaing))))
+        elif ukuran_pesaing and tanpa_ukuran:
+            peringatan.append("{} pesaing mencantumkan ukuran/isi ({}) dan {} tidak. Bila produknya satuan, tulis "
+                              "ukuran '1 pcs' untuk produkmu dan pesaing; bila ada paket (mis. 2 pcs), sebutkan "
+                              "ukuran produkmu supaya harga disetarakan.".format(
+                                  len(pesaing) - len(tanpa_ukuran),
+                                  ", ".join(sorted(teks_ukuran(*u) for u in ukuran_pesaing)), len(tanpa_ukuran)))
     for p in pesaing:
         if p["ukuran"]:
             basis = Decimal(100) if p["ukuran"][0] in ("g", "ml") else Decimal(1)
@@ -493,12 +696,31 @@ def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=N
     if not dipakai:
         raise InputError("tidak ada harga pesaing yang bisa dipakai (semua baris kosong, rusak, atau ukurannya "
                          "tidak bisa disetarakan). Minta pengguna menempel harga + ukuran pesaing.")
+
+    # ---- pencilan: jauh dari median -> keluar dari statistik (tetap tampil di tabel)
+    pencilan = []
+    if len(dipakai) >= 3:
+        med0 = persentil(sorted(p["setara"] for p in dipakai), "0.5")
+        jauh = [p for p in dipakai if p["setara"] < med0 / 2 or p["setara"] > med0 * 2]
+        for p in jauh:
+            if pakai_semua:
+                p["catatan"].append("jauh dari median {}, tetap dihitung (--pakai-semua)".format(rp(med0)))
+            else:
+                p["catatan"].append("jauh dari median {}: TIDAK ikut statistik; cek varian/ukuran/keaslian"
+                                    .format(rp(med0)))
+        if jauh and not pakai_semua:
+            pencilan = jauh
+            dipakai = [p for p in dipakai if p not in jauh]
+            peringatan.append("{} pesaing jauh dari median awal {} (di bawah separuh atau di atas dua kali lipat) "
+                              "TIDAK ikut statistik: {}. Tanyakan ke pengguna apakah harga/ukurannya benar dan "
+                              "sebanding; bila benar, jalankan ulang dengan --pakai-semua.".format(
+                                  len(jauh), rp(med0), "; ".join("baris {} ({}, setara {})".format(
+                                      p["no"], p["toko"] or p["nama"] or "-", rp(p["setara"])) for p in jauh)))
+    for p in dipakai:
+        p["dihitung"] = True
     urut = sorted(p["setara"] for p in dipakai)
     stat = {"n": len(urut), "terendah": urut[0], "p25": persentil(urut, "0.25"), "median": persentil(urut, "0.5"),
-            "p75": persentil(urut, "0.75"), "tertinggi": urut[-1]}
-    for p in dipakai:
-        if p["setara"] < stat["median"] / 2 or p["setara"] > stat["median"] * 2:
-            p["catatan"].append("jauh dari median, cek varian/ukuran/keaslian")
+            "p75": persentil(urut, "0.75"), "p90": persentil(urut, "0.9"), "tertinggi": urut[-1]}
     if len(urut) < 3:
         peringatan.append("Hanya {} pesaing yang bisa dibandingkan: rekomendasi kurang andal, tambah data "
                           "(idealnya 5-20 pesaing).".format(len(urut)))
@@ -514,32 +736,33 @@ def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=N
         posisi = {"harga": harga_kita, "lebih_murah_dari": lebih_murah, "sama_dengan": sama,
                   "lebih_mahal_dari": lebih_mahal,
                   "persentil": (Decimal(lebih_mahal) + Decimal(sama) / 2) / len(urut) * 100,
-                  "laba": l, "margin": mg, "di_bawah_minimum": harga_kita < minimum}
+                  "laba": l, "margin": mg, "di_bawah_minimum": hpp_ada and harga_kita < minimum}
 
-    # ---- rekomendasi
-    pilih = {"murah": ("terendah", "p25", "p25"), "tengah": ("p25", "p75", "median"),
-             "premium": ("median", "p75", "p75")}[strategi]
+    # ---- rekomendasi (hanya bila HPP ada)
+    rekom = None
+    if hpp_ada:
+        pilih = _PILIH_STRATEGI[strategi]
 
-    def jaga(x):
-        return max(minimum, bulat(x))
+        def jaga(x):
+            return max(minimum, bulat(x))
 
-    r_lo, r_hi, r_titik = jaga(stat[pilih[0]]), jaga(stat[pilih[1]]), jaga(stat[pilih[2]])
-    r_hi = max(r_hi, r_lo)
-    cantik = harga_cantik(r_lo, r_hi, r_titik)
-    tanda = []
-    if stat["p75"] < minimum:
-        tanda.append("PASAR_DI_BAWAH_MINIMUM")
-    elif stat["median"] < minimum:
-        tanda.append("MEDIAN_DI_BAWAH_MINIMUM")
-    if posisi and posisi["di_bawah_minimum"]:
-        tanda.append("HARGA_KITA_DI_BAWAH_MINIMUM")
-    rekom = {"strategi": strategi, "rentang_bawah": r_lo, "rentang_atas": r_hi, "titik": r_titik,
-             "harga_cantik": cantik, "tanda": tanda}
-    rekom["laba_titik"], rekom["margin_titik"] = laba(r_titik)
-    if cantik:
-        rekom["laba_cantik"], rekom["margin_cantik"] = laba(cantik)
+        r_lo, r_hi, r_titik = jaga(stat[pilih[0]]), jaga(stat[pilih[1]]), jaga(stat[pilih[2]])
+        r_hi = max(r_hi, r_lo)
+        cantik = harga_cantik(r_lo, r_hi, r_titik)
+        tanda = []
+        if stat["p75"] < minimum:
+            tanda.append("PASAR_DI_BAWAH_MINIMUM")
+        elif stat["median"] < minimum:
+            tanda.append("MEDIAN_DI_BAWAH_MINIMUM")
+        if posisi and posisi["di_bawah_minimum"]:
+            tanda.append("HARGA_KITA_DI_BAWAH_MINIMUM")
+        rekom = {"strategi": strategi, "dasar": _DASAR_STRATEGI[strategi], "rentang_bawah": r_lo,
+                 "rentang_atas": r_hi, "titik": r_titik, "harga_cantik": cantik, "tanda": tanda}
+        rekom["laba_titik"], rekom["margin_titik"] = laba(r_titik)
+        if cantik:
+            rekom["laba_cantik"], rekom["margin_cantik"] = laba(cantik)
 
-    # ---- promo & bundling
+    # ---- promo & bundling (semua pesaing di tabel)
     diskon = [(p["harga_coret"] - p["harga"]) / p["harga_coret"] for p in pesaing if p["harga_coret"]]
     promo = {
         "harga_coret": len(diskon), "rata_diskon": (sum(diskon) / len(diskon)) if diskon else None,
@@ -550,13 +773,14 @@ def olah(baris_mentah, produk, strategi="tengah", mode_rentang="min", hari_ini=N
     terlaris = max((p for p in dipakai if p["terjual"] is not None), key=lambda p: p["terjual"], default=None)
 
     return {
+        "mode": "lengkap" if hpp_ada else "pasar_saja",
         "produk": {"nama": produk.get("nama") or "Produk kamu", "hpp": hpp, "biaya_tetap": tetap,
                    "biaya_persen": biaya_persen, "margin": margin, "margin_default": not margin_diberikan,
                    "ukuran": ukuran_kita, "harga_kita": harga_kita, "balik_modal": balik_modal, "minimum": minimum},
         "dasar": dasar, "pesaing": pesaing, "stat": stat, "posisi": posisi, "rekomendasi": rekom,
         "promo": promo, "terlaris": terlaris, "peringatan": peringatan, "dilewati": dilewati,
-        "duplikat": duplikat, "baris_total": len(baris_mentah), "mode_rentang": mode_rentang,
-        "tanggal": hari_ini.isoformat(),
+        "duplikat": duplikat, "pencilan": [p["no"] for p in pencilan], "baris_total": len(baris_mentah),
+        "mode_rentang": mode_rentang, "tanggal": hari_ini.isoformat(),
     }
 
 
@@ -578,8 +802,13 @@ def ke_markdown(h):
     pr, st, rk = h["produk"], h["stat"], h["rekomendasi"]
     ukuran = teks_ukuran(*pr["ukuran"]) if pr["ukuran"] else None
     o = ["## Riset Harga Pesaing: {}{}".format(pr["nama"], " ({})".format(ukuran) if ukuran else ""), ""]
+    if h["mode"] == "pasar_saja":
+        o += ["**Mode harga pasar saja** (HPP belum diisi: batas untung & rekomendasi harga belum dihitung).", ""]
     o.append("Tanggal analisis: {} | Pesaing dibandingkan: **{}** dari {} baris ({} duplikat dibuang, "
-             "{} baris dilewati)".format(h["tanggal"], st["n"], h["baris_total"], len(h["duplikat"]), len(h["dilewati"])))
+             "{} baris dilewati{})".format(h["tanggal"], st["n"], h["baris_total"], len(h["duplikat"]),
+                                           len(h["dilewati"]),
+                                           ", {} jauh dari median tidak dihitung".format(len(h["pencilan"]))
+                                           if h["pencilan"] else ""))
     o.append("Dasar banding: {}".format(h["dasar"]))
     o += ["", "| # | Toko / Produk | Varian / Ukuran | Harga tayang | Harga coret | Harga setara | Per satuan | "
               "Rating | Terjual | Lokasi | Catatan |", "|---|---|---|---|---|---|---|---|---|---|---|"]
@@ -600,49 +829,60 @@ def ke_markdown(h):
                                                   rp(st["p75"]), rp(st["tertinggi"])), ""]
     ps = h["posisi"]
     if ps:
-        o.append("- Harga kamu sekarang **{}**: lebih murah dari {} pesaing, sama dengan {}, lebih mahal dari {} "
-                 "(posisi sekitar persentil {}). Laba {} per barang (margin {}).".format(
-                     rp(ps["harga"]), ps["lebih_murah_dari"], ps["sama_dengan"], ps["lebih_mahal_dari"],
-                     fmt_desimal(bulat(ps["persentil"])), rp(ps["laba"]), persen(ps["margin"])))
+        kalimat = ("- Harga kamu sekarang **{}**: lebih murah dari {} pesaing, sama dengan {}, lebih mahal dari {} "
+                   "(posisi sekitar persentil {}).".format(
+                       rp(ps["harga"]), ps["lebih_murah_dari"], ps["sama_dengan"], ps["lebih_mahal_dari"],
+                       fmt_desimal(bulat(ps["persentil"]))))
+        if ps["laba"] is not None:
+            kalimat += " Laba {} per barang (margin {}).".format(rp(ps["laba"]), persen(ps["margin"]))
+        o.append(kalimat)
     if h["terlaris"]:
         t = h["terlaris"]
         o.append("- Pesaing paling laris: {} (sekitar {} terjual) di harga setara {}.".format(
             _sel(t["toko"] or t["nama"]), fmt_desimal(t["terjual"]), rp(t["setara"])))
-    o += ["", "### Batas harga kamu", "",
-          "| Komponen | Nilai |", "|---|---|",
-          "| HPP/modal per barang | {} |".format(rp(pr["hpp"])),
-          "| Biaya tetap per barang (mis. biaya proses pesanan) | {} |".format(rp(pr["biaya_tetap"])),
-          "| Total biaya marketplace (% dari harga jual) | {}% |".format(fmt_desimal(pr["biaya_persen"])),
-          "| Target margin (laba / harga jual) | {}%{} |".format(fmt_desimal(pr["margin"]),
-                                                                " (default)" if pr["margin_default"] else ""),
-          "| Harga balik modal (laba 0) | {} |".format(rp(pr["balik_modal"])),
-          "| **Harga minimum sesuai target margin** | **{}** |".format(rp(pr["minimum"])), ""]
-    nama_s = {"murah": "murah (bersaing harga)", "tengah": "tengah pasar", "premium": "premium"}[rk["strategi"]]
-    o += ["### Rekomendasi harga (strategi {})".format(nama_s), "",
-          "- **Rentang harga: {} - {}**".format(rp(rk["rentang_bawah"]), rp(rk["rentang_atas"])),
-          "- Titik rekomendasi: **{}** (laba {} per barang, margin {})".format(
-              rp(rk["titik"]), rp(rk["laba_titik"]), persen(rk["margin_titik"]))]
-    if rk["harga_cantik"]:
-        o.append("- Harga cantik terdekat (masih di dalam rentang): **{}** (laba {}, margin {})".format(
-            rp(rk["harga_cantik"]), rp(rk["laba_cantik"]), persen(rk["margin_cantik"])))
-    pesan = {
-        "PASAR_DI_BAWAH_MINIMUM": "PERHATIAN: sebagian besar pesaing (sampai kuartil atas) menjual di bawah harga "
-                                  "minimum kamu {}. Jangan ikut banting harga; pertimbangkan menekan HPP, bundling, "
-                                  "ukuran berbeda, atau menonjolkan keunggulan.".format(rp(pr["minimum"])),
-        "MEDIAN_DI_BAWAH_MINIMUM": "PERHATIAN: median pasar {} di bawah harga minimum kamu {}. Rekomendasi "
-                                   "dinaikkan ke batas minimum; kamu akan tampil lebih mahal dari separuh pesaing."
-                                   .format(rp(st["median"]), rp(pr["minimum"])),
-        "HARGA_KITA_DI_BAWAH_MINIMUM": "PERHATIAN: harga kamu sekarang di bawah harga minimum; margin target "
-                                       "tidak tercapai.",
-    }
-    for t in rk["tanda"]:
-        o.append("- " + pesan[t])
+    if rk is None:
+        o += ["", "### Batas harga & rekomendasi", "",
+              "- **Belum dihitung: HPP/modal per barang belum diisi.** Kirim modal per barang (bahan + kemasan), "
+              "persen biaya marketplace, dan target untung; lalu jalankan ulang dengan `--hpp`. Tanpa HPP, "
+              "harga pasar di atas belum menjamin untung."]
+    else:
+        o += ["", "### Batas harga kamu", "",
+              "| Komponen | Nilai |", "|---|---|",
+              "| HPP/modal per barang | {} |".format(rp(pr["hpp"])),
+              "| Biaya tetap per barang (mis. biaya proses pesanan) | {} |".format(rp(pr["biaya_tetap"])),
+              "| Total biaya marketplace (% dari harga jual) | {}% |".format(fmt_desimal(pr["biaya_persen"])),
+              "| Target margin (laba / harga jual) | {}%{} |".format(fmt_desimal(pr["margin"]),
+                                                                    " (default)" if pr["margin_default"] else ""),
+              "| Harga balik modal (laba 0) | {} |".format(rp(pr["balik_modal"])),
+              "| **Harga minimum sesuai target margin** | **{}** |".format(rp(pr["minimum"])), ""]
+        nama_s = {"murah": "murah (bersaing harga)", "tengah": "tengah pasar",
+                  "premium": "premium (di atas kuartil atas)"}[rk["strategi"]]
+        o += ["### Rekomendasi harga (strategi {})".format(nama_s), "",
+              "- **Rentang harga: {} - {}** (dasar: {} pasar)".format(
+                  rp(rk["rentang_bawah"]), rp(rk["rentang_atas"]), rk["dasar"]),
+              "- Titik rekomendasi: **{}** (laba {} per barang, margin {})".format(
+                  rp(rk["titik"]), rp(rk["laba_titik"]), persen(rk["margin_titik"]))]
+        if rk["harga_cantik"]:
+            o.append("- Harga cantik terdekat (masih di dalam rentang): **{}** (laba {}, margin {})".format(
+                rp(rk["harga_cantik"]), rp(rk["laba_cantik"]), persen(rk["margin_cantik"])))
+        pesan = {
+            "PASAR_DI_BAWAH_MINIMUM": "PERHATIAN: sebagian besar pesaing (sampai kuartil atas) menjual di bawah harga "
+                                      "minimum kamu {}. Jangan ikut banting harga; pertimbangkan menekan HPP, bundling, "
+                                      "ukuran berbeda, atau menonjolkan keunggulan.".format(rp(pr["minimum"])),
+            "MEDIAN_DI_BAWAH_MINIMUM": "PERHATIAN: median pasar {} di bawah harga minimum kamu {}. Rekomendasi "
+                                       "dinaikkan ke batas minimum; kamu akan tampil lebih mahal dari separuh pesaing."
+                                       .format(rp(st["median"]), rp(pr["minimum"])),
+            "HARGA_KITA_DI_BAWAH_MINIMUM": "PERHATIAN: harga kamu sekarang di bawah harga minimum; margin target "
+                                           "tidak tercapai.",
+        }
+        for t in rk["tanda"]:
+            o.append("- " + pesan[t])
     pm = h["promo"]
     o += ["", "### Promo & bundling pesaing", "",
-          "- {} dari {} pesaing memasang harga coret{}.".format(
+          "- {} dari {} pesaing di tabel memasang harga coret{}.".format(
               pm["harga_coret"], pm["total"],
               " (diskon rata-rata {})".format(persen(pm["rata_diskon"])) if pm["rata_diskon"] is not None else ""),
-          "- {} pesaing mencantumkan promo/gratis ongkir.".format(pm["promo_ongkir"])]
+          "- {} dari {} pesaing di tabel mencantumkan promo/gratis ongkir.".format(pm["promo_ongkir"], pm["total"])]
     if pm["bundling"]:
         o.append("- Terlihat bundling/paket/bonus: {}.".format(", ".join(_sel(x) for x in pm["bundling"])))
     if h["peringatan"] or h["dilewati"] or h["duplikat"]:
@@ -652,10 +892,13 @@ def ke_markdown(h):
           "- Harga pesaing = harga yang tampil saat dicek (setelah diskon toko), belum termasuk ongkir dan voucher "
           "platform; bisa berubah kapan saja.",
           "- Harga rentang memakai harga {}.".format({"min": "terendah", "maks": "tertinggi", "tengah": "nilai tengah"}[h["mode_rentang"]]),
-          "- Harga minimum = (HPP + biaya tetap) / (1 - biaya marketplace % - target margin %), dibulatkan ke atas "
-          "ke rupiah penuh. Nilai lain dibulatkan ke rupiah terdekat.",
-          "- Persentil: interpolasi linear (seperti PERCENTILE.INC di Excel).",
-          "- Rekomendasi tidak pernah di bawah harga minimum. Ini bahan keputusan, bukan jaminan laku."]
+          "- Statistik hanya memakai pesaing yang ukurannya bisa disetarakan dan tidak jauh dari median "
+          "(di bawah separuh / di atas dua kali lipat median dikeluarkan bila ada minimal 3 pesaing).",
+          "- Persentil: interpolasi linear (seperti PERCENTILE.INC di Excel)."]
+    if rk is not None:
+        o += ["- Harga minimum = (HPP + biaya tetap) / (1 - biaya marketplace % - target margin %), dibulatkan ke atas "
+              "ke rupiah penuh. Nilai lain dibulatkan ke rupiah terdekat.",
+              "- Rekomendasi tidak pernah di bawah harga minimum. Ini bahan keputusan, bukan jaminan laku."]
     return "\n".join(o)
 
 
@@ -676,7 +919,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="Bandingkan harga pesaing & hitung rekomendasi harga jual")
     ap.add_argument("file", help="CSV atau JSON daftar pesaing")
     ap.add_argument("--nama", help="nama produk kita")
-    ap.add_argument("--hpp", help="HPP/modal per barang, mis. 38.000")
+    ap.add_argument("--hpp", help="HPP/modal per barang, mis. 38.000 (kosong = mode harga pasar saja)")
     ap.add_argument("--ukuran", help="ukuran produk kita, mis. '250 gr', '1 L', '12 pcs'")
     ap.add_argument("--harga-kita", help="harga jual kita sekarang (opsional)")
     ap.add_argument("--margin", help="target margin %% dari harga jual (default 20)")
@@ -685,11 +928,13 @@ def main(argv=None):
     ap.add_argument("--strategi", default="tengah", choices=STRATEGI)
     ap.add_argument("--rentang", default="min", choices=("min", "tengah", "maks"),
                     help="harga yang dipakai untuk rentang '49.900-59.900' (default min)")
+    ap.add_argument("--pakai-semua", action="store_true",
+                    help="ikutkan pesaing yang jauh dari median ke statistik (setelah dikonfirmasi benar)")
     ap.add_argument("--tanggal", help="tanggal analisis YYYY-MM-DD (default hari ini)")
     ap.add_argument("--format", default="md", choices=("md", "json"))
     a = ap.parse_args(argv)
     try:
-        baris, produk = baca_file(a.file)
+        baris, produk, info = baca_file(a.file)
         produk = dict(produk)
         for kunci, nilai in (("nama", a.nama), ("hpp", a.hpp), ("ukuran", a.ukuran), ("harga_kita", a.harga_kita),
                              ("margin", a.margin), ("biaya_persen", a.biaya_persen), ("biaya_tetap", a.biaya_tetap)):
@@ -698,7 +943,8 @@ def main(argv=None):
         hari = parse_tanggal(a.tanggal) if a.tanggal else date.today()
         if a.tanggal and not hari:
             raise InputError("--tanggal harus YYYY-MM-DD")
-        hasil = olah(baris, produk, a.strategi, a.rentang, hari)
+        hasil = olah(baris, produk, a.strategi, a.rentang, hari, a.pakai_semua)
+        hasil["peringatan"] = info + hasil["peringatan"]
     except (InputError, InvalidOperation) as e:
         print("ERROR: {}".format(e), file=sys.stderr)
         return 2

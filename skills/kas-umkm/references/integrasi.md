@@ -60,6 +60,7 @@ Hasil: CSV `Tanggal;Keterangan;Masuk;Keluar;Kategori` (UTF-8 BOM, tanggal DD/MM/
   utang/bon ke pemasok/toko/grosir → `bayar_utang_usaha` (emkm menghitungnya sebagai pembelian kredit bila tidak ada
   `--utang-usaha-awal`, jadi laba tetap = hasil usaha; isi `--utang-usaha-awal` hanya bila bon itu memang sudah
   tercatat sebagai utang di awal periode); denda/sanksi pajak (kategori `pajak` maupun `lain-lain`) → `beban_lain`.
+- v1.0.5: "PAJAK BUNGA"/"PPh bunga" (PPh final atas bunga tabungan/jasa giro, kategori `pajak` atau `lain-lain`) → `beban_pajak_penghasilan`, bukan `beban_lain`. Catatan gabungan pokok + denda tidak bisa dibuat lagi (dipisah saat catat/impor), jadi pokok selalu `bayar_pinjaman` dan denda `beban_keuangan`.
 - Pindah dana antar akun tidak ditulis (kas + rekening dihitung sebagai satu pos kas di emkm). Catatan yang dibatalkan
   tidak ikut.
 - Teks script memberi perintah emkm siap pakai, termasuk `--kas-akhir-aktual` = saldo akhir gabungan (cek silang).

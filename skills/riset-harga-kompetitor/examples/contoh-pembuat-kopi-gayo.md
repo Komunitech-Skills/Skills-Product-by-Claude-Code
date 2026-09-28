@@ -15,7 +15,7 @@ python3 <folder-skill>/scripts/banding_harga.py contoh-pesaing-kopi.csv --nama "
   --biaya-tetap 1.250 --margin 20 --tanggal 2026-09-28
 ```
 
-## Output script (apa adanya)
+## Output script v1.0.1 (apa adanya)
 
 ## Riset Harga Pesaing: Kopi Arabika Gayo Bubuk (250 g)
 
@@ -54,14 +54,14 @@ Dasar banding: harga setara 250 g (ukuran produk kamu)
 
 ### Rekomendasi harga (strategi tengah pasar)
 
-- **Rentang harga: Rp 50.588 - Rp 57.188**
+- **Rentang harga: Rp 50.588 - Rp 57.188** (dasar: P25 - P75, titik median pasar)
 - Titik rekomendasi: **Rp 54.375** (laba Rp 14.328 per barang, margin 26,35%)
 - Harga cantik terdekat (masih di dalam rentang): **Rp 53.900** (laba Rp 13.913, margin 25,81%)
 
 ### Promo & bundling pesaing
 
-- 2 dari 7 pesaing memasang harga coret (diskon rata-rata 14,92%).
-- 2 pesaing mencantumkan promo/gratis ongkir.
+- 2 dari 7 pesaing di tabel memasang harga coret (diskon rata-rata 14,92%).
+- 2 dari 7 pesaing di tabel mencantumkan promo/gratis ongkir.
 - Terlihat bundling/paket/bonus: Kedai Bean.
 
 ### Perlu dicek
@@ -70,8 +70,9 @@ Dasar banding: harga setara 250 g (ukuran produk kamu)
 ### Catatan & asumsi
 - Harga pesaing = harga yang tampil saat dicek (setelah diskon toko), belum termasuk ongkir dan voucher platform; bisa berubah kapan saja.
 - Harga rentang memakai harga terendah.
-- Harga minimum = (HPP + biaya tetap) / (1 - biaya marketplace % - target margin %), dibulatkan ke atas ke rupiah penuh. Nilai lain dibulatkan ke rupiah terdekat.
+- Statistik hanya memakai pesaing yang ukurannya bisa disetarakan dan tidak jauh dari median (di bawah separuh / di atas dua kali lipat median dikeluarkan bila ada minimal 3 pesaing).
 - Persentil: interpolasi linear (seperti PERCENTILE.INC di Excel).
+- Harga minimum = (HPP + biaya tetap) / (1 - biaya marketplace % - target margin %), dibulatkan ke atas ke rupiah penuh. Nilai lain dibulatkan ke rupiah terdekat.
 - Rekomendasi tidak pernah di bawah harga minimum. Ini bahan keputusan, bukan jaminan laku.
 
 💡 Saran:

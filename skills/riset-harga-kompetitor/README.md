@@ -4,7 +4,7 @@
 
 ## Manfaat
 - ✅ Tabel pembanding rapi: harga, harga coret, promo, rating, terjual, lokasi tiap pesaing
-- ✅ Adil walau ukurannya beda: 200 gr, 500 gr, 1 kg disetarakan ke ukuran produkmu (plus harga per 100 g/ml/pcs)
+- ✅ Adil walau ukurannya beda: 200 gr, 1/2 kg, 1 kg, paket "2 x 250 gr" atau "isi 2 @250gr" disetarakan ke ukuran produkmu (plus harga per 100 g/ml/pcs); harga yang janggal (jauh dari pasaran) dipisahkan dan ditanyakan dulu, tidak merusak hitungan
 - ✅ Tahu posisi hargamu: termurah, tengah, atau termahal dibanding pasar (terendah, median, tertinggi)
 - ✅ Harga minimum dihitung dari modal + biaya marketplace + target untung, jadi rekomendasi **tidak pernah bikin rugi**
 - ✅ Peringatan jelas kalau harga pasaran sudah di bawah batas untungmu, plus ide promo & bundling dari pesaing
@@ -46,6 +46,9 @@ Kalau AI agent kamu punya fitur membuka halaman web, ia akan mencoba membuka lin
 
 **Kenapa harga rekomendasinya bisa lebih mahal dari pasaran?**
 Karena rekomendasi tidak pernah di bawah harga minimum (modal + biaya + target untung). Kalau pasaran memang lebih murah, kamu akan dapat PERHATIAN beserta pilihan: tekan modal, buat paket/bundling, ganti ukuran, atau tonjolkan keunggulan, daripada ikut perang harga lalu rugi.
+
+**Saya belum tahu modal saya, bisa tetap dipakai?**
+Bisa. Tanpa modal, kamu tetap dapat tabel pesaing dan harga pasaran (terendah, median, tertinggi). Rekomendasi harga jual baru muncul setelah modal diisi, supaya tidak menyarankan harga yang bikin rugi.
 
 **Biaya marketplace saya belum tahu, bagaimana?**
 Bisa dianggap 0% dulu (jualan langsung) dan AI akan menyebut asumsi itu. Untuk angka potongan Shopee/Tokopedia/TikTok Shop yang rinci, pakai skill `harga-jual-marketplace`; untuk menghitung modal, pakai skill `hitung-hpp`.
