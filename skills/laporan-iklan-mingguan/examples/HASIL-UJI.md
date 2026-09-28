@@ -167,3 +167,30 @@ Alasan:
 | R-f | Rendah | (d) Label murni `Overall` (nama produk baju overall), `Overall - Video`, `Total Produk`, dan `Total Store` dibuang. ⚠️ nama + biaya selalu ada, jadi tidak diam-diam. Nama persis "Total/Totals/Total 4 kampanye" tidak realistis sebagai kampanye, jadi keputusan pembuat wajar. |
 
 **Skor: 8 / 10. Keputusan: LULUS.** Perbaiki N3 (+ tes regresi) sebelum beta bila memungkinkan.
+
+## Uji ulang independen v1.0.4 (2026-09-28)
+
+- **Versi:** v1.0.4 (commit `95a6710`). **Penguji:** agent independen (simulasi Claude Code), bukan pembuat revisi. Skill dijalankan dari salinan di scratchpad, dan kode script tidak dibaca.
+- **Rincian:** `08-uji-ulang-v1.0.4.md`.
+- **Regresi:** `tests/uji_regresi.py` menjalankan 87 tes, semuanya OK. `validate.py --skill laporan-iklan-mingguan` menghasilkan ✅.
+
+| ID | Status | Bukti |
+|---|---|---|
+| N3 | ✅ Beres | Diuji dengan ejaan `Subtotal:`, `Sub total -`, `SUBTOTAL`, `Sub-total:`, `subtotal`, `Sub Total`, `Jumlah sementara`, `X Total`, `Total: X`, dan nama sama persis tanpa tanggal. Hasilnya cocok dengan kunci `Decimal`. v1.0.3 menghitung 2× pada 3 file |
+| R-e | ✅ Beres | Kalimat ⚠️ M2 sudah lunak ("mohon dicek … mungkin terjumlah dua kali") |
+| M1/M2/M3/N1/N2 | ✅ Tidak regresi | File 04, 09, 11, 12, 13b, dan 15, ditambah matriks label total |
+
+**Uji baru.** Ada 17 CSV (Meta/TikTok/TikTok Shop/Shopee/Google) dan 6 file buruk.
+- 13 file cocok 100% dengan kunci kebenaran. 161 nilai rincian cocok. Baris harian yang kebetulan sama dengan jumlah baris di atasnya tetap dihitung.
+- 4 file berbeda dari kunci kebenaran, tetapi sesuai desain SKILL.md dan selalu diberi ⚠️ di blok teratas: kampanye sungguhan `Subtotal Promo Gajian` dikecualikan, dan pada kebetulan 3 metrik = jumlah baris lain, cek silang membuang barisnya.
+- **Selisih diam-diam: 0.**
+- `Total 12.12 Flash Sale` sungguhan tetap dihitung.
+
+| ID | Keparahan | Temuan |
+|---|---|---|
+| P-1 | Rendah (sejak v1.0.2) | Cek silang tetap berjalan setelah baris total eksplisit dibuang, sehingga kampanye `B` = A + C (3 metrik persis) ikut dibuang. Ada ⚠️ |
+| P-2 | Rendah | ⚠️ untuk `Sub Total X` / `Total: Search campaigns` membandingkan biaya dengan jumlah semua baris, bukan dengan baris di sekitarnya, sehingga kalimat "tidak sama" menyesatkan. Angkanya benar |
+| P-3 | Rendah | PMax dengan `Ad group` kosong tampil sebagai "(tanpa nama, baris 7)", bukan nama kampanyenya |
+| P-4 | Rendah | ⚠️ `Subtotal …` yang tidak cocok tidak menyebut total alternatif |
+
+**Skor: 9 / 10. Keputusan: LULUS.** N3 ditutup. Ekspor asli per platform tetap PERLU REVIEW sebelum uji platform asli/beta.
