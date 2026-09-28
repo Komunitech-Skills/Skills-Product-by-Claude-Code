@@ -657,6 +657,59 @@ class UjiV101(Dasar):
         self.assertEqual(dict(t.postings)["Aset:Pajak Dibayar Dimuka:PPh 23"], pph)
         self.assertEqual(dict(t.postings)["Aset:Kas"], Decimal(1000000) - pph)
 
+    def test_terima_piutang_barang_menolak_pph23(self):
+        """Sisa rendah H9 (v1.0.3): terima-piutang atas PENJUALAN BARANG tidak boleh PPh 23."""
+        self.run_("init", "--jurnal", self.j, "--nama", "Toko Uji", "--bank", "BCA")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "5jt", "--via", "tempo",
+                            "--pihak", "PT Pembeli", "--tanggal", "2026-09-02", "--ya")
+        self.assertEqual(k, 0, e)
+        sebelum = isi(self.j)
+        base = ["catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "5jt", "--via", "bank",
+                "--pihak", "PT Pembeli", "--tanggal", "2026-09-12", "--ya"]
+        for tambahan in (["--pph23", "2%"], ["--diterima", "4,9jt"], ["--pph23", "100rb"]):
+            k, o, e = self.run_(*(base + tambahan))
+            self.assertEqual(k, 2, o + e)
+            self.assertIn("PENJUALAN BARANG", e)
+            self.assertIn("PPh 22", e)
+        self.assertEqual(isi(self.j), sebelum)                         # tidak ada yang tertulis
+        # pelunasan penuh tanpa potongan tetap boleh; piutang jadi 0
+        k, o, e = self.run_(*base)
+        self.assertEqual(k, 0, e)
+        t = hu.parse_jurnal(isi(self.j).decode()).txns[-1]
+        self.assertEqual(sorted(t.postings), sorted([("Aset:Bank:BCA", Decimal(5000000)),
+                                                     ("Aset:Piutang Usaha:PT Pembeli", Decimal(-5000000))]))
+
+    def test_terima_piutang_campuran_dan_saldo_awal_diberi_peringatan(self):
+        self.run_("init", "--jurnal", self.j, "--nama", "Toko Uji", "--bank", "BCA")
+        self.run_("catat", "--jurnal", self.j, "--jenis", "saldo-awal", "--tanggal", "2026-08-31", "--posting",
+                  "Aset:Piutang Usaha:CV Lama=2.000.000", "--posting", "Modal:Awal=-2.000.000", "--ya")
+        for jenis, nominal in (("jual", "3jt"), ("jasa", "1jt")):
+            k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", jenis, "--nominal", nominal, "--via",
+                                "tempo", "--pihak", "PT Campur", "--tanggal", "2026-09-03", "--ya")
+            self.assertEqual(k, 0, e)
+        # campuran barang + jasa: boleh, tapi diingatkan PPh 23 hanya atas bagian jasa (2% x 1jt = 20rb)
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "4jt", "--via",
+                            "bank", "--pihak", "PT Campur", "--pph23", "20rb", "--tanggal", "2026-09-20", "--ya")
+        self.assertEqual(k, 0, e)
+        self.assertIn("bercampur penjualan barang dan jasa", o)
+        t = hu.parse_jurnal(isi(self.j).decode()).txns[-1]
+        self.assertEqual(dict(t.postings)["Aset:Bank:BCA"], Decimal(4000000) - Decimal(20000))
+        # asal tidak diketahui (saldo awal): boleh, dengan peringatan
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "2jt", "--via",
+                            "bank", "--pihak", "CV Lama", "--pph23", "2%", "--tanggal", "2026-09-21")
+        self.assertEqual(k, 0, e)
+        self.assertIn("asal piutang", o)
+        # neraca tetap seimbang
+        k, o, e = self.run_("neraca", "--jurnal", self.j, "--tanggal", "2026-09-30")
+        self.assertIn("SEIMBANG", o)
+
+    def test_jenis_pendapatan(self):
+        self.assertEqual(hu.jenis_pendapatan("Pendapatan:Penjualan"), "barang")
+        self.assertEqual(hu.jenis_pendapatan("Pendapatan:Jasa"), "jasa")
+        self.assertEqual(hu.jenis_pendapatan("Pendapatan:Sewa Alat"), "jasa")
+        self.assertEqual(hu.jenis_pendapatan("Pendapatan:Penjualan Jasa"), "jasa")
+        self.assertEqual(hu.jenis_pendapatan("Pendapatan:Lain-lain"), "lain")
+
     def test_skill_md_menolak_pembukuan_ganda(self):
         with open(os.path.join(SKILL, "SKILL.md"), encoding="utf-8") as f:
             teks = f.read()

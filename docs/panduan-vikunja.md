@@ -114,6 +114,17 @@ Istilah: **Vikunja** = programnya (satu file "binary" yang sudah berisi tampilan
 
 ---
 
+## 5a. Tambahkan anggota tim ke proyek (wajib sebelum `--ke`/penugasan)
+Skill bisa menugaskan tugas ke seseorang (`tambah --ke <username>`) **hanya** kalau orang itu sudah jadi **kolaborator proyek** itu di Vikunja — cukup punya akun Vikunja **tidak** otomatis membuatnya bisa ditugaskan di semua proyek.
+1. Buka proyek yang dimaksud → klik ikon **Share/Bagikan** (ikon orang, biasanya di pojok kanan atas halaman proyek, di sebelah judul proyek).
+2. Pilih tab **Add User** (atau **Add Team** untuk menambah seluruh tim sekaligus, bila Anda sudah punya tim lewat menu Teams).
+3. Ketik username orang itu, pilih hak akses (**Read Write** untuk anggota biasa), lalu simpan.
+4. Ulangi untuk tiap proyek yang perlu — hak kolaborator per-proyek, bukan berlaku otomatis ke semua proyek.
+- ✅ **Cek berhasil:** nama orang itu muncul di daftar kolaborator proyek; `tambah --ke <username>` pada proyek itu berhasil.
+- ❌ **Kalau `--ke` tetap gagal** dengan "Anggota '...' tidak ditemukan di proyek ini": pastikan usernamenya persis sama (bukan nama tampilan/email), dan token Anda punya izin `projects: projectusers` (lihat bagian 6).
+
+---
+
 ## 6. Buat token API berskop minimal
 Jangan pernah memberi AI **sandi akun** Anda. Vikunja punya **token API** yang bisa dibatasi haknya (skop) — mirip kunci cadangan yang hanya bisa membuka sebagian ruangan.
 

@@ -35,7 +35,7 @@ import sys
 import tempfile
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
 
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 HLEDGER_TERUJI = ("1.52.4",)
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
@@ -1209,6 +1209,36 @@ def potongan_pph23(e, bruto):
     return pph, catatan
 
 
+RE_PENDAPATAN_JASA = re.compile(r"jasa|sewa|royalti|konsultan|honor|fee|komisi|servis|service|jaringan|instalasi",
+                                re.I)
+RE_PENDAPATAN_BARANG = re.compile(r"penjualan|barang|dagang|produk|jual", re.I)
+
+
+def jenis_pendapatan(akun):
+    """'jasa' (boleh PPh 23), 'barang' (penjualan barang, tidak ada PPh 23), atau 'lain'."""
+    if RE_PENDAPATAN_JASA.search(akun):
+        return "jasa"
+    if RE_PENDAPATAN_BARANG.search(akun):
+        return "barang"
+    return "lain"
+
+
+def asal_piutang(j, akun_piutang, sampai):
+    """Jenis pendapatan yang membentuk piutang ini (transaksi yang MENAMBAH akun piutang tsb./sub-akunnya
+    sampai tanggal pelunasan). Kembalikan set {'jasa','barang','lain'}; kosong bila tidak ketemu
+    (mis. piutang dari saldo awal)."""
+    hasil = set()
+    for t in j.txns:
+        if t.tanggal > sampai:
+            continue
+        if not any((a == akun_piutang or a.startswith(akun_piutang + ":")) and v > 0 for a, v in t.postings):
+            continue
+        for a, v in t.postings:
+            if v < 0 and j.gol(a) == "pendapatan":
+                hasil.add(jenis_pendapatan(a))
+    return hasil
+
+
 def teks_persen_polos(d):
     return format(d.normalize(), "f").replace(".", ",")
 
@@ -1316,6 +1346,24 @@ def rencana_dari(j, e, tahun=None):
         pph, catatan = potongan_pph23(e, n)
         masuk_ke = akun_via(j, via, bank, None, None)
         if pph:
+            asal = asal_piutang(j, dasar, tgl)
+            if asal == {"barang"}:
+                raise Gagal("--pph23/--diterima ditolak: piutang {} berasal dari PENJUALAN BARANG (dicatat dengan "
+                            "--jenis jual). PPh 23 dipotong atas jasa, sewa, dan royalti, bukan atas penjualan "
+                            "barang (UU PPh Pasal 23). Bila pembeli membayar kurang: (a) karena biaya transfer, catat "
+                            "pelunasan penuh lalu --jenis beban --akun \"Beban:Administrasi Bank\" untuk selisihnya; "
+                            "(b) karena pemotongan PPh 22 oleh instansi pemerintah/BUMN, catat pelunasan penuh dan "
+                            "tanyakan bukti potongnya ke konsultan pajak - jangan dicatat sebagai PPh 23. Bila yang "
+                            "ditagih sebenarnya jasa/sewa, perbaiki dulu catatan tagihannya menjadi --jenis jasa."
+                            .format(dasar))
+            if "barang" in asal:
+                catatan.append("PERHATIAN: piutang {} bercampur penjualan barang dan jasa. PPh 23 hanya boleh atas "
+                               "bagian jasa/sewa - pastikan potongan {} sesuai bukti potong dan bukan dihitung dari "
+                               "nilai barang.".format(dasar, rp(pph)))
+            elif not asal:
+                catatan.append("PERHATIAN: asal piutang {} tidak ditemukan di jurnal (mis. dari saldo awal). PPh 23 "
+                               "hanya untuk tagihan jasa/sewa/royalti, bukan penjualan barang - pastikan ada bukti "
+                               "potong.".format(dasar))
             ps = [(masuk_ke, n - pph), (AKUN_PPH23, pph), (dasar, -n)]
             arti = ("Pelanggan melunasi piutang {} (piutang berkurang penuh): uang masuk {} ke {}, dipotong PPh 23 {} "
                     "yang dicatat sebagai pajak dibayar dimuka (bukan beban, pendapatan tetap bruto).".format(

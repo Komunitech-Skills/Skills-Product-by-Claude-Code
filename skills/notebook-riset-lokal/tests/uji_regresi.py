@@ -177,6 +177,9 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, {"answer": "PPh final UMKM 0,5% dari omzet (PP 55/2022).", "question": body.get("question", "")})
             return
         if path == "/api/podcasts/generate":
+            if Handler.mode == "podcast_profil_hilang":
+                self._send(404, {"detail": "Episode profile 'Tidak Ada' not found"})
+                return
             self._send(200, {"job_id": "job:1", "status": "submitted", "message": "ok",
                               "episode_profile": body.get("episode_profile"), "episode_name": body.get("episode_name")})
             return
@@ -388,6 +391,16 @@ def main():
     rc, out, o, e = jalankan_cli(["buat-notebook", "--nama", "Riset Supplier", "--ya"], url6)
     cek("30 buat-notebook --ya", rc == 0 and out.get("dibuat") is True, (rc, out, e))
     srv6.shutdown()
+
+    # 31: podcast-mulai --ya dengan profil episode/pembicara belum dibuat di server -> pesan spesifik
+    srv7, port7 = jalankan_server("podcast_profil_hilang")
+    url7 = f"http://127.0.0.1:{port7}"
+    rc, out, o, e = jalankan_cli(
+        ["podcast-mulai", "--notebook", "notebook:abc123", "--profil", "Tidak Ada",
+         "--pembicara", "Dua Suara ID", "--nama-episode", "X", "--ya"], url7)
+    msg = pesan(out, e)
+    cek("31 podcast-mulai profil hilang -> pesan spesifik", rc != 0 and "belum dibuat" in msg and "Settings > Podcasts" in msg, msg)
+    srv7.shutdown()
 
     print(f"\nLULUS: {len(PASSED)}  GAGAL: {len(FAILED)}")
     for f in FAILED:

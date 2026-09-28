@@ -476,7 +476,21 @@ def cmd_podcast_mulai(args):
         "episode_name": args.nama_episode,
         "notebook_id": notebook_id,
     }
-    hasil = panggil("POST", "/podcasts/generate", args, sandi=sandi, body=body, timeout=getattr(args, "timeout", 30))
+    try:
+        hasil = panggil("POST", "/podcasts/generate", args, sandi=sandi, body=body, timeout=getattr(args, "timeout", 30))
+    except Gagal as e:
+        pesan = str(e)
+        if e.kode == K_INPUT and ("profile" in pesan.lower() or "404" in pesan or "422" in pesan):
+            raise Gagal(
+                f"Gagal mulai podcast: profil episode '{args.profil}' atau profil pembicara "
+                f"'{args.pembicara}' kemungkinan belum dibuat di server ini ({pesan}). Profil TIDAK "
+                "bisa dibuat lewat skill ini — buka http://127.0.0.1:8502 di browser, masuk ke "
+                "Settings > Podcasts, buat dulu 'Episode Profile' dan 'Speaker Profile' (beri nama "
+                "yang sama persis dengan yang Anda pakai di --profil/--pembicara), lalu ulangi perintah "
+                "ini. Cek nama profil yang sudah ada juga bisa lewat halaman itu.",
+                K_INPUT,
+            ) from e
+        raise
     return {
         "dimulai": True,
         "job_id": hasil.get("job_id"),

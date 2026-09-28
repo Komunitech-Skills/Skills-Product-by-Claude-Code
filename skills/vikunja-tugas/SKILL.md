@@ -8,6 +8,8 @@ description: Mengoperasikan Vikunja (manajer tugas/proyek open-source, self-host
 ## Tujuan
 Pemilik/admin usaha kecil yang memakai **Vikunja di server/komputer sendiri** (pengganti Trello/ClickUp/Asana berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/vikunja.py` untuk membaca atau menyiapkan tugas lewat **REST API resmi Vikunja** (`/api/v1`, header `Authorization: Bearer tk_...`). Data tetap di komputer/server pengguna. Python standar saja, tanpa instalasi paket.
 
+**Versi 1.0.2** (revisi rendah, belum diuji ulang server asli — hanya uji regresi & dokumentasi): (1) `--ke` sekarang didokumentasikan mensyaratkan target sudah jadi **kolaborator proyek** di Vikunja + cara menambahkannya (bagian D.4); (2) `dari-teks` kini mendeteksi label eksplisit `PIC: Nama` di mana pun dalam baris (dulu hanya `Nama: tugas` di awal baris; `PIC: Andi kirim penawaran` dulu tidak terbaca, sekarang `ke: "Andi"`). Uji regresi 67/67. Sebelumnya:
+
 **Versi 1.0.1.** Diuji pembuat dengan **Vikunja 2.6.0 ASLI** (binary resmi linux-amd64, checksum SHA-256 dicocokkan, dijalankan sungguhan terikat ke 127.0.0.1) untuk `cek`, `daftar-proyek`, `hari-ini`, `terlambat`, `tambah`, `selesai`, `ringkasan`, `cari`, penugasan (`--ke`), dan `tambah --batch`; plus uji regresi otomatis dengan server tiruan (64 skenario, termasuk 401/404/500/timeout) dan lulus uji muat OpenClaw 2026.9.6 (`scripts/uji_openclaw.sh`). **Diuji penguji independen** (Akun B, 2026-09-26): menemukan bahwa penugasan (`--ke`) lewat token API mentah bisa GAGAL dengan pesan "401 token tidak valid" bila token belum dicentang kelompok izin terpisah "Tasks Assignees" (bukan bug skrip — begitu perilaku Vikunja sendiri, lihat `docs/panduan-vikunja.md` bagian 6). Direproduksi ulang lewat REST API v2.6.0 sungguhan (bukan lewat UI): `--ke` **berhasil** saat kelompok itu dicentang, dan pesan galat sekarang menyebut penyebab paling mungkin secara eksplisit. Belum di Windows/Mac sungguhan, belum uji Docker.
 
 ## Kapan digunakan
@@ -67,7 +69,7 @@ Tanpa `--proyek`: lintas semua proyek yang token bisa lihat. "Hari ini"/"minggu 
    ```
    Tenggat menerima: `hari ini`, `besok`, `lusa`, `N hari lagi`, nama hari (`Jumat`, `Jumat depan`), `minggu depan`, `25/10`, `25/10/2026`, `25 Oktober 2026`, `2026-10-25` — boleh diakhiri `jam 14:00` (default jam **17:00** waktu `--tz` bila tidak disebut). Prioritas 0–5 (0=tanpa, 3=tinggi, 4=mendesak, 5=lakukan sekarang).
 3. Tunjukkan pratinjau **apa adanya**, tanya "Simpan ke Vikunja? (ya/tidak)", lalu ulangi dengan `--ya`.
-4. `--ke <username>` menugaskan ke anggota **setelah** tugas tersimpan; bila gagal (nama tidak ditemukan/izin kurang), tugas **tetap tersimpan**, hanya penugasannya yang gagal — sampaikan keduanya apa adanya.
+4. `--ke <username>` menugaskan ke anggota **setelah** tugas tersimpan; bila gagal (nama tidak ditemukan/izin kurang), tugas **tetap tersimpan**, hanya penugasannya yang gagal — sampaikan keduanya apa adanya. **Syarat:** orang itu harus sudah jadi **kolaborator proyek** itu di Vikunja (bukan cukup punya akun) — kalau belum, `--ke` gagal dengan pesan "Anggota '...' tidak ditemukan di proyek ini". Cara menambahkan: di Vikunja, buka proyeknya → tombol **Share/Bagikan** (ikon orang di pojok kanan atas halaman proyek) → **Add User** → masukkan username, pilih hak akses (Read/Write) → simpan. Detail & tangkapan layar terbaru: `docs/panduan-vikunja.md` bagian 6.
 5. Banyak tugas sekaligus: `dari-teks` (bagian F) atau buat sendiri file JSON list `[{"judul":...,"proyek":...,"tenggat":...,"prioritas":...,"ke":...,"catatan":...}, ...]`, lalu `tambah --batch file.json [--proyek <default>] --ya`. Proyek per baris menang atas `--proyek` default. Semua baris divalidasi (proyek ada, tanggal jelas) **sebelum** ada yang dikirim; bila satu baris gagal DI TENGAH pengiriman (jaringan putus/galat server), baris sebelumnya **tetap tersimpan** — script menyebut mana yang sudah dan mana yang belum, jangan mengulang seluruh batch begitu saja.
 
 ### E. Tandai selesai
@@ -90,7 +92,8 @@ python3 <folder-skill>/scripts/vikunja.py dari-teks --teks "- Budi: follow up su
 ```
 Atau `--file notulen.txt` / `--file -` (dari input). Aturan (pasti, bukan tebakan AI bebas):
 - Hanya baris berawalan `-`, `*`, `•`, atau `1.`/`1)` yang dianggap tugas; baris lain diabaikan (dihitung, ditampilkan jumlahnya).
-- `Nama: sisa kalimat` atau `Nama - sisa kalimat` di awal baris → `ke` (PIC) TERDETEKSI bila "Nama" 1–3 kata berawalan huruf besar (atau ada di `--anggota "Budi,Siti,..."`). Kata seperti "PIC"/"Catatan"/"Deadline" **tidak** dianggap nama.
+- `Nama: sisa kalimat` atau `Nama - sisa kalimat` di awal baris → `ke` (PIC) TERDETEKSI bila "Nama" 1–3 kata berawalan huruf besar (atau ada di `--anggota "Budi,Siti,..."`). Kata seperti "Catatan"/"Deadline" **tidak** dianggap nama.
+- Label eksplisit **`PIC: Nama`** (atau `PIC - Nama`) di mana pun dalam baris — awal, tengah, atau akhir — juga TERDETEKSI sebagai `ke`, mis. `- Follow up klien ABC PIC: Budi` → `ke: "Budi"`, judul jadi `Follow up klien ABC`. "Nama" dibatasi 1–3 kata berawalan huruf besar.
 - Tenggat dicari di sisa kalimat dengan kosakata yang sama seperti bagian D; kata "mendesak/urgent/penting/segera/asap" → prioritas 4.
 - Hasil ditulis ke file JSON (draf), **belum masuk Vikunja**. Tunjukkan pratinjau ke pengguna, **wajib** minta mereka memeriksa PIC/tenggat (hanya tebakan) dan mengisi proyek, baru jalankan `tambah --batch <file> --proyek <default> --ya`.
 

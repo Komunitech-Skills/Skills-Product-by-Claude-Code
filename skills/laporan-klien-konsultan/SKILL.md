@@ -72,6 +72,11 @@ python3 <folder-skill-ini>/scripts/laporan_klien.py catat \
   `progress`, `stuck`, dst.) -- lihat pesan error untuk daftar lengkap bila salah ketik.
 - `--jam` boleh pakai koma (`2,5`) atau titik (`2.5`); kosongkan bila tidak dihitung per jam
   (mis. retainer bulanan tetap) -- **jangan menebak jam**, biarkan kosong.
+- Script hanya menerima **angka desimal jam** (mis. `2.5`), bukan format "N menit" -- kalau
+  pengguna menyebut waktu dalam menit (mis. "90 menit", "45 menit tadi"), **agent yang mengonversi**
+  ke desimal jam sebelum memanggil `--jam`: menit ÷ 60, dibulatkan 2 desimal bila perlu (contoh:
+  90 menit → `--jam 1.5`; 45 menit → `--jam 0.75`; 100 menit → `--jam 1.67`). Sebutkan hasil
+  konversi ke pengguna sebelum menyimpan, supaya bisa dikoreksi bila salah dengar.
 - `--kendala "..."` untuk hambatan di pihak konsultan (mis. menunggu tools/izin internal).
 - `--butuh-klien "..."` untuk hal yang perlu klien berikan/putuskan (mis. dokumen, approval).
 - **Sebelum mengetik pekerjaan/kendala/kebutuhan**, lihat Batasan di bawah soal data pribadi/

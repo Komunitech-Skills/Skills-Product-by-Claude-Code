@@ -126,9 +126,25 @@ class TesDariTeks(unittest.TestCase):
         self.assertIsNone(draf[0]["ke"])
         self.assertEqual(draf[0]["judul"], "Beli semen 50 sak")
 
-    def test_kata_label_bukan_nama(self):
+    def test_kata_label_pic_di_awal_terdeteksi(self):
+        # v1.0.2: "PIC: Nama <tugas>" di awal baris sekarang dikenali via label eksplisit,
+        # bukan lagi dianggap "Nama: tugas" biasa (yang mengecualikan kata "pic").
         draf, _ = vikunja.urai_dari_teks("- PIC: Andi kirim penawaran", HARI_ACUAN)
-        # "PIC" ada di daftar bukan-nama -> tidak dianggap PIC (keterbatasan yang didokumentasikan)
+        self.assertEqual(draf[0]["ke"], "Andi")
+        self.assertEqual(draf[0]["judul"], "kirim penawaran")
+
+    def test_label_pic_di_akhir_baris_terdeteksi(self):
+        draf, _ = vikunja.urai_dari_teks("- Follow up klien ABC PIC: Budi", HARI_ACUAN)
+        self.assertEqual(draf[0]["ke"], "Budi")
+        self.assertEqual(draf[0]["judul"], "Follow up klien ABC")
+
+    def test_label_pic_dua_kata(self):
+        draf, _ = vikunja.urai_dari_teks("- Kirim invoice ke supplier PIC: Siti Aminah", HARI_ACUAN)
+        self.assertEqual(draf[0]["ke"], "Siti Aminah")
+        self.assertEqual(draf[0]["judul"], "Kirim invoice ke supplier")
+
+    def test_tanpa_label_pic_tetap_tanpa_ke(self):
+        draf, _ = vikunja.urai_dari_teks("- Beli semen 50 sak", HARI_ACUAN)
         self.assertIsNone(draf[0]["ke"])
 
     def test_baris_diabaikan_dihitung(self):

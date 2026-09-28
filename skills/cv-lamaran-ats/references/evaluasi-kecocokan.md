@@ -33,6 +33,8 @@ Nilai tiap dimensi 0–100, lalu hitung skor akhir dengan bobot berikut:
 | Kecocokan preferensi & arah karier | 20% | Apakah tugas sehari-hari di lowongan sejalan dengan "yang bikin semangat kerja" & "tujuan karier" di profil induk? |
 | Kelengkapan syarat administratif | 15% | Pendidikan minimal, sertifikasi, pengalaman minimal tahun — terpenuhi penuh/sebagian/tidak? |
 
+**Aturan normalisasi bobot bila satu dimensi tidak bisa dinilai** (mis. lowongan sama sekali tidak menyebut syarat administratif apa pun, atau teks lowongan terlalu singkat untuk menilai preferensi/arah karier): jangan beri dimensi itu skor 0 (itu akan menghukum pengguna atas ketidakjelasan lowongan, bukan atas kekurangannya). Sebaliknya, **keluarkan dimensi itu dari perhitungan** dan **bagikan ulang bobotnya secara proporsional** ke dimensi yang tersisa (bobot baru tiap dimensi = bobot asli ÷ total bobot dimensi yang tersisa). Contoh: syarat administratif (15%) tidak bisa dinilai → tiga dimensi lain memakai bobot 35/85, 30/85, 20/85 (dibulatkan) dari total 85%. Sebutkan di catatan tabel dimensi mana yang dikeluarkan dan alasannya ("tidak disebutkan di lowongan"), supaya pengguna tahu skor akhir dihitung dari dimensi yang tersedia saja, bukan menganggap dimensi itu bernilai 0.
+
 | Skor akhir | Label |
 |---|---|
 | 80–100 | Sangat cocok — layak dikejar serius |

@@ -8,6 +8,8 @@ description: Menyesuaikan CV dan surat lamaran dengan lowongan kerja tertentu â€
 ## Tujuan
 Menyesuaikan CV dan surat lamaran pengguna dengan lowongan kerja tertentu, memakai kata kunci dari lowongan itu â€” **tanpa mengarang** pengalaman, gelar, sertifikat, atau tanggung jawab yang tidak dimiliki pengguna. Semua proses merujuk ke **profil pengalaman induk** pengguna (satu sumber kebenaran riwayat asli) agar konsisten di setiap lamaran. Hasil akhir: evaluasi kecocokan lowongan (skor + alasan + celah), CV versi ATS siap tempel, surat lamaran, pesan singkat ke rekruter, skor kecocokan kata kunci, dan (bila diminta) latihan wawancara berbasis STAR.
 
+**Versi 1.1.1** (revisi rendah): `scripts/skor_kecocokan.py` menambah STOPWORDS kata pengisi lowongan yang lolos filter ("dipersilakan", "jujur", "melamar", "silakan", dan sejenisnya) agar tidak dihitung sebagai kata kunci; `references/evaluasi-kecocokan.md` sekarang menyebut eksplisit aturan normalisasi bobot saat satu dimensi skor tidak bisa dinilai (bobotnya dikeluarkan & dibagi proporsional ke dimensi lain, bukan dianggap 0). Uji regresi baru `tests/uji_regresi.py` (2 skenario).
+
 ## Kapan digunakan
 - "Tolong sesuaikan CV saya dengan lowongan ini: [tempel lowongan]"
 - "Bikinkan surat lamaran untuk posisi Admin di PT ABC"

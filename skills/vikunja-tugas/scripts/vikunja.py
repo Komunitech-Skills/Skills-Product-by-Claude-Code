@@ -734,6 +734,10 @@ def cmd_selesai(args, token):
 
 _POLA_BULLET = re.compile(r"^\s*(?:[-*•]|\d{1,2}[.)])\s+(.*\S)\s*$")
 _POLA_PIC = re.compile(r"^([A-Za-z][A-Za-z .]{1,29}?)\s*[:\-–]\s+(.+)$")
+# Label eksplisit "PIC: Nama" / "PIC - Nama" di mana pun dalam baris (awal, tengah, atau akhir),
+# terpisah dari _POLA_PIC yang hanya menangkap "Nama: sisa tugas" di AWAL baris. Nama dibatasi
+# 1-3 kata berawalan huruf besar (mis. "Siti Aminah") supaya tidak ikut menelan sisa kalimat tugas.
+_POLA_PIC_LABEL = re.compile(r"\bPIC\s*[:\-–]\s*([A-Z][A-Za-z]*(?:\s+[A-Z][A-Za-z]*){0,2})\b")
 _POLA_MENDESAK = re.compile(r"\b(mendesak|urgent|penting|segera|asap)\b", re.IGNORECASE)
 _BUKAN_NAMA = {"pic", "catatan", "note", "todo", "tugas", "deadline", "tenggat", "prioritas", "urgent"}
 
@@ -756,6 +760,11 @@ def urai_dari_teks(teks, acuan, anggota_dikenal=None):
             bukan_nama = kandidat.lower() in _BUKAN_NAMA
             if not bukan_nama and (cocok_dikenal or (1 <= len(kata) <= 3 and all(w[0:1].isupper() for w in kata))):
                 pic, isi = kandidat, sisa
+        if pic is None:
+            m3 = _POLA_PIC_LABEL.search(isi)
+            if m3:
+                pic = m3.group(1).strip()
+                isi = (isi[:m3.start()] + isi[m3.end():]).strip(" -–:,;")
         tenggat = cocok_tanggal_kata(isi, acuan)
         prioritas = 4 if _POLA_MENDESAK.search(isi) else None
         draf.append({

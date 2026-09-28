@@ -38,6 +38,8 @@ STOPWORDS = {
     "berpengalaman", "pengalaman", "bersedia", "usia", "pria", "wanita",
     "lulusan", "terbiasa", "menguasai", "memahami", "tinggi", "cepat",
     "besar", "baru", "lain", "hal", "tersebut", "yaitu", "seperti", "pt", "cv", "tbk",
+    "dipersilakan", "jujur", "melamar", "silakan", "menempuh", "langsung",
+    "aktif", "komunikatif", "berorientasi", "terbuka", "bertanggung",
     # Inggris
     "the", "and", "or", "of", "to", "in", "on", "for", "with", "a", "an",
     "is", "are", "be", "will", "we", "you", "our", "job", "role", "team",
