@@ -12,6 +12,11 @@ klien cukup **mencatat pekerjaan sekali jalan** saat selesai dikerjakan, lalu ti
 nol tiap minggu dan tanpa menghitung jam secara manual. Semua angka (total jam, jumlah pekerjaan)
 dihitung `scripts/laporan_klien.py`, bukan diperkirakan.
 
+**Versi 1.0.1** (revisi rendah): konversi "N menit" → desimal jam (mis. 90 menit → `--jam 1.5`)
+sekarang dijelaskan eksplisit di bagian 1 karena `--jam` hanya menerima desimal; file log CSV
+0-byte (bukan sekadar "belum ada catatan", tapi rusak/tanpa header sama sekali) sekarang ditolak
+dengan pesan jelas alih-alih diam-diam dianggap "tidak ada catatan". Uji regresi 28/28.
+
 ## Kapan digunakan
 - "Catat: hari ini saya kerjakan rekonsiliasi bank untuk PT Maju, 2,5 jam, selesai."
 - "Buatkan laporan mingguan untuk klien PT Maju Jaya."

@@ -11,6 +11,10 @@ Pemilik usaha yang memakai beberapa alat lokal Komunitech (kasir, stok, CRM, abs
 2. Perintah **Datasette** (perangkat lunak terpisah, Apache-2.0, https://datasette.io/) untuk membukanya di browser bila pengguna mau eksplorasi interaktif.
 3. Jalur cadangan Python murni (`scripts/dasbor.py query ...`) yang mencetak tabel ringkas walau Datasette tidak terpasang.
 
+**Versi 1.0.1** (revisi rendah): mode teks (`query ... ` tanpa `--json`) sekarang menampilkan angka
+bulat dari kolom REAL SQLite (mis. `stok`) sebagai `25`, bukan `25.0` — nilai pecahan asli (`25.5`)
+tetap tampil apa adanya, kolom Rupiah tidak berubah. Uji regresi 22/22.
+
 ## Kapan digunakan
 - "Buka dasbor toko saya", "lihat semua data di satu tempat", "saya mau eksplorasi data sendiri" → `datasette` (siapkan perintah) atau `query` (jawab langsung).
 - "Stok apa yang menipis?", "penjualan per hari bulan ini?", "siapa yang piutangnya lewat jatuh tempo?", "siapa yang belum absen?", "prospek per tahap berapa?", "saldo kas berapa?" → `query <alat> <nama-query>` langsung, tanpa perlu Datasette.

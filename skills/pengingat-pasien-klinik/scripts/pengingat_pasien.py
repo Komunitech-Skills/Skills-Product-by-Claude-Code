@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Versi skill: 1.0.1
+"""Versi skill: 1.0.2
 
 Buku jadwal pengingat kontrol/vaksin pasien klinik, praktik mandiri, dan klinik hewan.
 
@@ -34,15 +34,17 @@ Aturan
     "3 hari lagi", "3 bulan lagi", nama hari ("Senin"). Selalu tanggal ke DEPAN (kunjungan
     berikutnya). Tahun tidak disebut -> dipilih tanggal terdekat ke depan, dengan Catatan.
   - `jenis` HARUS umum (kontrol, vaksin, cabut jahitan, cek gigi, vaksin hewan, groom, sunat, dll),
-    BUKAN diagnosis/nama penyakit. Kata yang menyerupai diagnosis ditolak (kode keluar 2).
+    BUKAN diagnosis/nama penyakit. Kata yang menyerupai diagnosis ditolak (kode keluar 1, error input
+    biasa -- BUKAN kode 2, yang khusus untuk data pribadi pihak lain di bawah).
   - `nama_panggilan` dan `catatan` tidak boleh berisi nomor HP/email/NIK pihak lain (kode keluar 2).
   - Pasien dengan persetujuan "tidak" TIDAK PERNAH muncul di `daftar`/`draf`/`ringkasan`.
   - Tidak ada pengiriman pesan otomatis. Semua keluaran adalah DRAF untuk disalin & dikirim staf.
   - Baris CSV rusak tidak menghentikan program: dilaporkan di `baris_ditolak`, tetap disimpan
     apa adanya di posisinya. CSV aman dari suntikan rumus (=, +, @, -) ala Excel/Sheets.
 
-Kode keluar: 0 = berhasil; 1 = input/perintah salah ("ERROR: ..." di stderr);
-2 = ditolak karena berisi data pribadi pihak lain atau kata yang menyerupai diagnosis.
+Kode keluar: 0 = berhasil; 1 = input/perintah salah, TERMASUK kata yang menyerupai diagnosis
+("ERROR: ..." di stderr); 2 = ditolak khusus karena berisi data pribadi pihak lain (nomor HP/
+email/NIK di `nama_panggilan`/`catatan`) -- diagnosis BUKAN kode 2, lihat di atas.
 """
 import argparse
 import csv

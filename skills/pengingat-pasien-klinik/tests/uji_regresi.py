@@ -181,7 +181,9 @@ class TestCLI(unittest.TestCase):
         r = self.jalan("draf", "--id", "1", cek=False)
         self.assertEqual(r.returncode, 1)
 
-    def test_jenis_diagnosis_ditolak_exit_2(self):
+    def test_jenis_diagnosis_ditolak_exit_1(self):
+        # v1.0.2: nama uji & docstring script diperbaiki -- diagnosis pakai kode keluar 1
+        # (error input biasa via Gagal), BUKAN kode 2 (khusus data pribadi pihak lain/DataPribadi).
         r = self.jalan("tambah", "--nama", "Rina", "--wa", "0812-3333-4444", "--jenis", "kontrol tumor",
                         "--tanggal", "besok", "--persetujuan", "ya", cek=False)
         self.assertEqual(r.returncode, 1)

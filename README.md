@@ -1,74 +1,72 @@
 # Komunitech Skills
 
-Koleksi skill siap pakai untuk AI agent, dioptimalkan untuk **OpenClaw**, oleh [komunitech.com](https://komunitech.com).
+Library **agent skills** siap pakai untuk pengusaha & profesional Indonesia, oleh
+[komunitech.com](https://komunitech.com). Format terbuka **Agent Skills (SKILL.md)**, diuji untuk
+**OpenClaw, OpenAI Codex, Claude Code, dan Cursor**.
 
 > ⚠️ **Repo ini PRIVATE dan berisi produk berbayar.** Jangan ubah visibilitas repo menjadi publik
 > dan jangan bagikan isi repo di luar tim internal.
+
+## Isi library (per 2026-09-28)
+
+| Jalur | Isi |
+|---|---|
+| **1. Skill** | ± 90 skill lulus uji internal: keuangan & pajak, HR & gaji, marketing & konten, toko online/marketplace, sales, customer service, produktivitas, data |
+| **2. Produk siap pakai pengganti SaaS** | Software yang jalan di komputer pembeli (data lokal, tanpa biaya bulanan), dioperasikan AI agent: kasir, stok, absensi, piutang, CRM WA, dasbor, PDF, serta asisten untuk Frappe Books, Dolibarr, hledger, Actual Budget, Grist, Vikunja, SiYuan, Open Notebook, Uptime Kuma |
+| **3. Solusi member VIP** | Paket skill + konfigurasi OpenClaw (jadwal, Telegram) + panduan per profesi: toko online, klinik, konsultan, usaha offline — lihat [`solusi-vip/`](solusi-vip/) |
+
+Sumber kebenaran daftar skill, status, versi, tier, dan harga: [`catalog.csv`](catalog.csv).
+Status mengikuti alur `ide → draft → uji → lulus → beta → rilis`; hanya `rilis` yang dijual ke pembeli.
 
 ## Model distribusi
 
 | Kanal | Akses |
 |---|---|
-| **Member VIP** | Semua skill (termasuk yang `vip_eksklusif`) + update berkala |
-| **Pembelian ecer** | Per skill, hanya skill dengan `tersedia_ecer: true` di `catalog.json` |
+| **Member VIP** | Seluruh library + `solusi-vip/` + update berkala |
+| **Ecer / bundle** | Per skill atau per paket tematik di [`bundles/`](bundles/) |
+| **Gratis** | Beberapa skill sederhana sebagai pengenalan (tier `gratis`) |
 
-Setiap paket yang dikirim ke pembeli diberi **watermark lisensi** (nama/ID pembeli + kode lisensi unik)
-agar kebocoran bisa dilacak. Lihat bagian [Build paket](#build-paket).
+Setiap paket diberi **watermark lisensi** (nama/ID pembeli + kode lisensi unik) agar kebocoran bisa dilacak.
 
 ## Struktur repo
 
 ```
-skills/
-  <id-skill>/
-    SKILL.md          # instruksi utama + frontmatter (wajib)
-    scripts/          # script pendukung (opsional)
-    references/       # dokumen referensi tambahan (opsional)
-templates/
-  SKILL.template.md   # template untuk skill baru
-scripts/
-  validate.py         # cek format semua skill & katalog
-  build.py            # buat paket ZIP ber-watermark untuk pembeli
-catalog.json          # katalog produk: harga, versi, tier
-LICENSE               # lisensi komersial (DRAFT)
-CONTRIBUTING.md       # panduan membuat skill baru
+skills/<nama-skill>/     # SKILL.md, README.md (panduan pembeli), examples/, scripts/, tests/, LICENSE/ATTRIBUTION
+catalog.csv              # katalog master (status, versi, tier, harga, platform teruji)
+bundles/                 # definisi paket tematik (satu nama skill per baris)
+solusi-vip/              # paket solusi per profesi untuk member VIP (OpenClaw)
+docs/                    # instalasi per platform, panduan software lokal, uji platform, program beta
+research/                # backlog, riset harga, audit sumber & lisensi
+rejected/                # skill yang gagal audit + alasannya
+templates/               # template SKILL.md, README.md, ATTRIBUTION.md
+scripts/                 # validate.py, build.py, uji_openclaw.sh
+reports/                 # laporan per sesi kerja
+koordinasi/              # papan tugas & rutinitas tim kurator
+CLAUDE.md                # aturan kerja kurator (alur Tahap 1–8, lisensi, keamanan)
 ```
 
-## Daftar skill
+## Instalasi (untuk pembeli)
 
-Sumber kebenaran daftar skill adalah [`catalog.json`](catalog.json).
+Ekstrak ZIP, lalu salin folder skill ke lokasi skill platform yang dipakai (OpenClaw, Codex,
+Claude Code, Cursor). Rincian lokasi yang sudah diverifikasi ada di
+[`docs/instalasi.md`](docs/instalasi.md) (ikut di setiap paket).
 
-| ID | Kategori | Ecer | VIP eksklusif |
-|---|---|---|---|
-| `caption-sosmed-umkm` | Marketing | ✅ | – |
-| `rekap-penjualan-csv` | Bisnis & Data | ✅ | – |
-
-## Instalasi di OpenClaw (untuk pembeli)
-
-1. Ekstrak ZIP yang diterima.
-2. Salin folder skill ke direktori skills OpenClaw, misalnya `~/.openclaw/skills/<id-skill>/`
-   (atau folder `skills/` di workspace agent).
-3. Mulai sesi baru atau restart gateway agar skill terbaca.
-
-> Lokasi folder skill bisa berbeda antar versi OpenClaw. Cek dokumentasi OpenClaw terbaru.
-
-## Build paket
+## Validasi & build paket
 
 Butuh Python 3.9+ (tanpa dependensi tambahan).
 
 ```bash
-# Validasi semua skill & katalog
-python3 scripts/validate.py
+python3 scripts/validate.py          # cek format semua skill & katalog (wajib lolos sebelum commit)
+bash scripts/uji_openclaw.sh         # uji muat di OpenClaw (eligible/terlihat model/bisa dipanggil)
 
-# Paket ecer: satu skill untuk satu pembeli
-python3 scripts/build.py --pembeli "Budi Santoso <budi@contoh.com>" --skill caption-sosmed-umkm
-
-# Paket VIP: semua skill untuk satu member
-python3 scripts/build.py --pembeli "Member VIP #0123" --vip
+python3 scripts/build.py --pembeli "Nama Pembeli" --skill kasir-lokal       # paket ecer
+python3 scripts/build.py --pembeli "Nama Pembeli" --bundle paket-toko-online # paket bundle
+python3 scripts/build.py --pembeli "Member VIP #0123" --vip                  # paket VIP
+python3 scripts/build.py --pembeli "Beta #01" --vip --beta                   # paket beta tester
 ```
 
-Hasil ada di folder `dist/` (tidak ikut di-commit). Kode lisensi yang dicetak di terminal
-sebaiknya dicatat di sistem penjualan untuk pelacakan.
+Hasil ada di `dist/` (**tidak** ikut di-commit karena berisi data pembeli). Catat kode lisensi di sistem penjualan.
 
 ## Kontribusi
 
-Baca [CONTRIBUTING.md](CONTRIBUTING.md) sebelum menambah atau mengubah skill.
+Baca [CONTRIBUTING.md](CONTRIBUTING.md) dan [CLAUDE.md](CLAUDE.md) sebelum menambah atau mengubah skill.

@@ -251,6 +251,14 @@ class UjiLaporan(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("tidak ditemukan", err)
 
+    def test_file_0_byte_ditolak_dengan_pesan_jelas(self):
+        kosong = self.dir / "kosong-0-byte.csv"
+        kosong.write_bytes(b"")
+        code, _, err = jalankan("--file", str(kosong), "laporan", "--klien", "PT Maju", cwd=self.dir)
+        self.assertEqual(code, 1)
+        self.assertIn("0 byte", err)
+        self.assertIn("init", err)
+
 
 class UjiFungsiInternal(unittest.TestCase):
     def test_rentang_minggu_ini_senin_minggu(self):

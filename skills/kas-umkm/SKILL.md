@@ -1,6 +1,6 @@
 ---
 name: kas-umkm
-description: Buku kas harian lokal untuk warung, toko, dan UMKM (SQLite di komputer pemilik, tanpa langganan/internet), dioperasikan lewat chat. Catat uang masuk/keluar per kategori (penjualan, modal, beli stok, gaji, listrik/air, sewa, prive, pajak, pinjaman), saldo per akun (laci, rekening, e-wallet, QRIS), pindah dana antar akun, hitung uang laci + selisih, rekap harian/mingguan/bulanan, peringatan prive berlebihan, impor CSV/mutasi bank dan rekap kasir-lokal, ekspor ke laporan-keuangan-emkm & arus-kas-13minggu, ringkasan harian ke Telegram (OpenClaw). Gunakan untuk "catat pengeluaran", "uang masuk hari ini", "saldo kas", "hitung laci", "rekap kas", "ambil uang pribadi", cash book, petty cash, daily cash log.
+description: Buku kas harian lokal untuk warung, toko, dan UMKM (SQLite di komputer pemilik, tanpa langganan/internet), dioperasikan lewat chat. Catat uang masuk/keluar per kategori (penjualan, modal, beli stok, gaji, listrik/air, sewa, prive, pajak, pinjaman/cicilan utang, kasbon karyawan), saldo per akun (laci, rekening, e-wallet, QRIS), pindah dana antar akun, hitung uang laci + selisih, rekap harian/mingguan/bulanan, peringatan prive berlebihan, impor CSV/mutasi bank dan rekap kasir-lokal, ekspor ke laporan-keuangan-emkm & arus-kas-13minggu, ringkasan harian ke Telegram (OpenClaw). Gunakan untuk "catat pengeluaran", "uang masuk hari ini", "saldo kas", "hitung laci", "rekap kas", "ambil uang pribadi", cash book, petty cash, daily cash log.
 ---
 
 # Buku Kas UMKM (kas-umkm)
@@ -67,7 +67,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 1. Satu transaksi: `catat --keluar 25rb --kategori beli-stok --metode tunai --catatan "es batu"`.
    Beberapa sekaligus (mis. laporan akhir hari): `--baris "arah;jumlah;kategori;metode;catatan;akun;tanggal"` diulang, kolom setelah jumlah boleh kosong:
    `catat --baris "masuk;1,2jt;penjualan;tunai;jualan" --baris "masuk;350rb;penjualan;qris" --baris "keluar;100rb;prive;;jajan anak"`
-2. **Kategori**: `penjualan` (masuk; keluar = retur/refund), `modal` (masuk dari pemilik), `beli-stok`, `gaji`, `listrik-air`, `sewa`, `prive` (ambil pribadi), `pajak`, `pinjaman` (masuk = pinjaman cair, keluar = cicilan), `lain-lain`. Kosong → ditebak dari catatan (disebut "ditebak"); tidak jelas → script menolak, kamu bertanya.
+2. **Kategori**: `penjualan` (masuk; keluar = retur/refund), `modal` (masuk dari pemilik), `beli-stok`, `gaji`, `listrik-air`, `sewa`, `prive` (ambil pribadi), `pajak`, `pinjaman` (masuk = pinjaman/utang diterima, keluar = cicilan/bayar **pokok** utang), `kasbon` (keluar = kasbon/uang muka karyawan diberikan, masuk = dikembalikan/dipotong gaji; piutang, bukan biaya), `lain-lain`. Kosong → ditebak dari catatan (disebut "ditebak"); tidak jelas → script menolak, kamu bertanya.
+   **v1.0.3:** `lain-lain` yang catatannya jelas bukan biaya dipindah otomatis dengan peringatan "Kategori diubah dari lain-lain ke …" (juga di `impor --tetapkan N=lain-lain` dan `golongkan`): kasbon/uang muka karyawan → `kasbon`; keperluan pribadi (belanja rumah, SPP, jajan…) → `prive`; utang/cicilan/angsuran → `pinjaman` (bunga/denda/biaya admin tetap `lain-lain`). Sampaikan peringatannya; bila keliru, pengguna memilih kategori lain sebelum `--ya`. Cicilan untuk melunasi bon belanja stok yang belum pernah dicatat = `beli-stok`.
    - Uang usaha untuk keperluan pribadi (belanja rumah, SPP, jajan, "gaji saya") = **prive**, bukan beban. Uang pribadi masuk ke usaha = **modal**.
    - Setoran laci ke bank, tarik tunai, top up e-wallet = **pindah dana** (langkah C), bukan masuk/keluar.
 3. **Metode**: `tunai` (→ akun tunai), `transfer`/`kartu` (→ rekening bank), `qris` (→ akun penampung QRIS), `e-wallet`. Tidak disebut → tunai (disebut sebagai asumsi). Beberapa rekening bank → sebut `--akun`.
@@ -86,7 +87,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 ### E. Rekap & saldo
 - `rekap --tanggal hari-ini|kemarin|DD/MM/YYYY`, `rekap --minggu ini|lalu`, `rekap --bulan ini|lalu|09/2026`, `rekap --dari .. --sampai ..`. Kirim `teks` apa adanya (siap Telegram/WA).
 - `saldo [--tanggal ..]` untuk saldo per akun; `daftar --tanggal ..|--bulan .. [--kategori ..] [--cari ..]` untuk melihat catatan beserta ID.
-- **Hasil usaha** = masuk usaha − keluar usaha (tanpa modal, pinjaman, prive, pindah dana, dan catatan "Perlu dicek"). Ini hitungan kas, **bukan laba akuntansi** (belum menghitung stok tersisa, piutang, penyusutan). Untuk laba resmi → `laporan-keuangan-emkm`.
+- **Hasil usaha** = masuk usaha − keluar usaha (tanpa modal, pinjaman/cicilan pokok utang, kasbon karyawan, prive, pindah dana, dan catatan "Perlu dicek"). Ini hitungan kas, **bukan laba akuntansi** (belum menghitung stok tersisa, piutang, penyusutan). Untuk laba resmi → `laporan-keuangan-emkm`.
 
 ### F. Peringatan prive (uang usaha dipakai pribadi)
 Script memperingatkan otomatis (di `catat` prive dan di `rekap`) bila: prive bulan berjalan **melebihi hasil usaha** (kelebihannya memakan modal), hasil usaha nol/minus tetapi tetap ada prive, atau prive melewati **batas bulanan** pemilik (`atur --batas-prive 3jt`). Sampaikan dengan sopan, sertakan angkanya, lalu beri 1–2 saran praktis (mis. tetapkan "gaji pemilik" tetap per bulan dan catat sebagai prive; pisahkan dompet pribadi dari laci). Jangan menggurui.

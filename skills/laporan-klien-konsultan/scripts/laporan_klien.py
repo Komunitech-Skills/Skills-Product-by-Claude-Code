@@ -225,7 +225,13 @@ def baca_log(path):
         with path.open(newline="", encoding="utf-8-sig") as f:
             r = csv.DictReader(f)
             if r.fieldnames is None:
-                return []
+                raise Gagal(
+                    f"File log '{path}' kosong total (0 byte, tanpa baris header) -- ini beda dari "
+                    "\"belum ada catatan\": file yang benar selalu punya baris header pertama "
+                    f"({','.join(KOLOM)}) meski belum ada data. Kemungkinan file rusak/terhapus isinya "
+                    "tanpa sengaja. Jalankan `init --file <path>` untuk membuat ulang filenya (data lama "
+                    "tidak bisa dipulihkan otomatis -- cek backup bila ada), lalu `catat` ulang."
+                )
             hilang = [k for k in KOLOM if k not in r.fieldnames]
             if hilang:
                 raise Gagal(f"File log '{path}' tidak berkolom {hilang} -- pastikan header persis: "

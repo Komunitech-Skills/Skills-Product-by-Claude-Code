@@ -13,6 +13,11 @@ siapa yang harus diingatkan (H-3, H-1, hari ini, terlambat) beserta **draf pesan
 disalin**. **Staf yang menyalin dan mengirim sendiri.** Tidak ada pengiriman otomatis, tidak ada
 broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 
+**Versi 1.0.2** (revisi rendah): docstring script diperbaiki -- kata yang menyerupai diagnosis
+ditolak dengan kode keluar **1** (bukan 2; kode 2 khusus data pribadi pihak lain/DataPribadi),
+dokumentasi sebelumnya salah menyebut keduanya kode 2. Pembulatan tanggal "N bulan lagi" ke akhir
+bulan (mis. 31 Jan → 28/29 Feb) sekarang dijelaskan eksplisit di bagian Input. Uji regresi 34/34.
+
 ## Kapan digunakan
 - "Catat: Bu Sari, WA 0812-0000-1111, kontrol gigi tanggal 10 Oktober, setuju dihubungi."
 - "Ada pasien vaksin hewan (kucing Mimi) minggu depan, nomor pemiliknya 0812..., boleh diingatkan."
@@ -71,6 +76,13 @@ broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan),
 termasuk pertanyaan persetujuan. Jangan pernah mengasumsikan persetujuan "ya" tanpa pasien
 menyatakannya.
+
+**Pembulatan tanggal "N bulan lagi":** bila tanggal acuan tidak ada di bulan tujuan (mis. 31
+Januari + 1 bulan → Februari tidak punya tanggal 31), script **turun ke tanggal terakhir bulan
+itu** (28 Februari, atau 29 di tahun kabisat) — bukan meloncat ke bulan berikutnya atau menolak
+input. Script menambahkan Catatan yang menyebutkan penyesuaian ini apa adanya (mis. "Tanggal 31
+tidak ada di bulan itu; dipakai 28 Februari 2027"); tampilkan catatan itu ke pengguna, jangan
+menyembunyikannya.
 
 ## Cara menjalankan script
 Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python`/`py`):

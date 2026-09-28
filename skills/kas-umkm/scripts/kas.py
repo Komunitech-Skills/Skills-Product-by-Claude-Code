@@ -45,7 +45,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 APLIKASI = "kas-umkm"
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 SKEMA = 1
 BATAS_NOMINAL = 10 ** 12            # Rp 1 triliun: di atas ini pasti salah ketik
 NOMINAL_BESAR = 50 * 10 ** 6        # di atas ini diberi catatan "pastikan jumlah nolnya benar"
@@ -62,6 +62,8 @@ KATEGORI = OrderedDict([
     ("prive", ("Prive (ambil pribadi)", ("keluar",), "pemilik")),
     ("pajak", ("Pajak", ("keluar",), "usaha")),
     ("pinjaman", ("Pinjaman/cicilan", ("masuk", "keluar"), "pinjaman")),
+    # v1.0.3: kasbon/uang muka karyawan = piutang (uang usaha dipinjam karyawan), bukan beban/gaji
+    ("kasbon", ("Kasbon/uang muka karyawan", ("masuk", "keluar"), "piutang")),
     ("lain-lain", ("Lain-lain", ("masuk", "keluar"), "usaha")),
 ])
 KATEGORI_SISTEM = {"selisih-kas": ("Selisih hitung laci", ("masuk", "keluar"), "usaha"),
@@ -71,6 +73,7 @@ KATEGORI_SISTEM = {"selisih-kas": ("Selisih hitung laci", ("masuk", "keluar"), "
 SEMUA_KATEGORI = OrderedDict(list(KATEGORI.items()) + list(KATEGORI_SISTEM.items()))
 LABEL_KHUSUS = {("penjualan", "keluar"): "Retur/refund penjualan", ("pinjaman", "masuk"): "Pinjaman diterima",
                 ("pinjaman", "keluar"): "Cicilan pinjaman", ("lain-lain", "masuk"): "Pemasukan lain-lain",
+                ("kasbon", "keluar"): "Kasbon diberikan ke karyawan", ("kasbon", "masuk"): "Kasbon dikembalikan karyawan",
                 ("lain-lain", "keluar"): "Pengeluaran lain-lain", ("selisih-kas", "masuk"): "Selisih laci lebih",
                 ("selisih-kas", "keluar"): "Selisih laci kurang"}
 ALIAS_KATEGORI = {
@@ -88,7 +91,8 @@ ALIAS_KATEGORI = {
               "ambil pribadi prive"],
     "pajak": ["pajak", "pph", "pph final", "pbjt", "pb1", "ppn", "setor pajak"],
     "pinjaman": ["pinjaman", "cicilan", "angsuran", "kur", "utang bank", "pinjam", "cicilan pinjaman",
-                 "pinjaman cicilan"],
+                 "pinjaman cicilan", "utang", "hutang", "bayar utang", "bayar hutang", "cicilan utang"],
+    "kasbon": ["kasbon", "kas bon", "uang muka karyawan", "pinjaman karyawan", "piutang karyawan", "kasbon karyawan"],
     "lain-lain": ["lain lain", "lain", "lainnya", "dll", "lain2", "other"],
 }
 # Tebakan kategori dari catatan (dipakai bila --kategori kosong); urutan penting.
@@ -97,7 +101,10 @@ TEBAK = [
                         r"uang sekolah|sekolah anak|jajan|uang saku|arisan|kondangan|kirim (ortu|orang tua|ibu|bapak)|"
                         r"liburan|gaji (saya|pemilik|owner|sendiri))\b"),
     ("pajak", "keluar", r"\b(pajak|pph|pbjt|pb1|ppn)\b"),
-    ("pinjaman", None, r"\b(cicilan|angsuran|kur|pinjaman|pencairan kredit|pencairan pinjaman)\b"),
+    ("kasbon", None, r"\b(kasbon|kas bon|uang muka (karyawan|pegawai|gaji)|(pinjaman|pinjam) (karyawan|pegawai)|"
+                     r"piutang karyawan)\b"),
+    ("lain-lain", "keluar", r"\b(bunga|denda) (pinjaman|cicilan|angsuran|utang|hutang|kur|kredit|bank)\b"),
+    ("pinjaman", None, r"\b(cicilan|angsuran|kur|pinjaman|pencairan kredit|pencairan pinjaman|utang|hutang)\b"),
     ("gaji", "keluar", r"\b(gaji|upah|honor|lembur|thr|karyawan|pegawai)\b"),
     ("sewa", "keluar", r"\b(sewa|kontrakan)\b"),
     ("listrik-air", "keluar", r"\b(listrik|pln|token listrik|pdam|tagihan air|bayar air|rekening air)\b"),
@@ -112,6 +119,36 @@ TEBAK = [
                         r"biaya layanan|bunga)\b"),
 ]
 POLA_PRIBADI = re.compile(TEBAK[0][2])
+# v1.0.3: 'lain-lain' yang sebenarnya BUKAN pendapatan/beban (pergerakan neraca atau pengambilan pemilik)
+POLA_KASBON = re.compile(TEBAK[2][2])
+POLA_UTANG = re.compile(r"\b(utang|hutang|cicilan|cicil|nyicil|angsuran|angsur|pinjaman|pelunasan pinjaman|"
+                        r"bayar pinjaman|kur)\b")
+POLA_BUNGA_BIAYA = re.compile(r"\b(bunga|denda|biaya|adm|admin|administrasi|provisi|asuransi|materai|meterai)\b")
+
+
+def koreksi_lain_lain(kat, arah, ket):
+    """v1.0.3: 'lain-lain' dengan keterangan kasbon karyawan / keperluan pribadi / utang-cicilan dipindah ke
+    kategori yang benar agar hasil usaha tidak tergeser. Kembalikan (kategori, alasan atau None)."""
+    if kat != "lain-lain":
+        return kat, None
+    n = " " + normal(ket) + " "
+    m = POLA_KASBON.search(n)
+    if m:
+        return "kasbon", ("'%s' = kasbon/uang muka karyawan: uang usaha dipinjam karyawan (piutang), bukan biaya; "
+                          "saat dikembalikan/dipotong gaji dicatat kasbon masuk" % m.group(0).strip())
+    if arah == "keluar":
+        m = POLA_PRIBADI.search(n)
+        if m:
+            return "prive", ("'%s' = keperluan pribadi pemilik (prive): pengambilan pemilik, bukan biaya usaha"
+                             % m.group(0).strip())
+    m = POLA_UTANG.search(n)
+    if m and not POLA_BUNGA_BIAYA.search(n):
+        if arah == "keluar":
+            return "pinjaman", ("'%s' = bayar/cicil POKOK utang: mengurangi utang, bukan biaya. Bunga/denda/biaya "
+                                "admin dicatat terpisah sebagai lain-lain. Bila ini melunasi bon belanja stok yang "
+                                "BELUM pernah dicatat, kategorinya beli-stok" % m.group(0).strip())
+        return "pinjaman", ("'%s' = pinjaman/utang diterima: menambah utang, bukan pendapatan" % m.group(0).strip())
+    return kat, None
 # v1.0.1: aturan pindah dana (uang berpindah antar akun milik usaha sendiri; bukan pendapatan/beban)
 POLA_TARIK_TUNAI = re.compile(r"\b(tarik tunai|tarikan tunai|tarikan atm|tarik atm|tarik tunai atm|penarikan tunai|"
                               r"penarikan atm|cash withdrawal|atm withdrawal|tartun)\b")
@@ -146,7 +183,8 @@ EMKM = {("penjualan", "masuk"): "pendapatan_usaha", ("penjualan", "keluar"): "re
         ("gaji", "keluar"): "beban_gaji", ("listrik-air", "keluar"): "beban_utilitas",
         ("sewa", "keluar"): "beban_sewa", ("prive", "keluar"): "prive",
         ("pinjaman", "masuk"): "pinjaman_diterima", ("pinjaman", "keluar"): "bayar_pinjaman",
-        ("selisih-kas", "masuk"): "pendapatan_lain", ("selisih-kas", "keluar"): "beban_lain"}
+        ("selisih-kas", "masuk"): "pendapatan_lain", ("selisih-kas", "keluar"): "beban_lain",
+        ("kasbon", "keluar"): "piutang_lain", ("kasbon", "masuk"): "piutang_lain"}
 # v1.0.2: kolom Kategori lain-lain yang DIISI eksplisit agar laporan-keuangan-emkm tidak salah membaca keterangan.
 # Biaya bank (biaya tarik tunai/adm/transfer) = beban bank, bukan pindah dana.
 POLA_BIAYA_BANK = re.compile(r"\b(biaya (tarik tunai|tarikan tunai|tarik|penarikan|atm|adm|administrasi|admin bank|"
@@ -176,7 +214,9 @@ def kode_emkm(kategori, arah, ket, jenis_akun):
     if POLA_BIAYA_BANK.search(n) or (jenis_akun in ("bank", "e-wallet") and POLA_BIAYA_BANK_AKUN.search(n)
                                      and not POLA_BUKAN_BIAYA_BANK.search(n)):
         return "beban_keuangan"
-    if POLA_RAWAN_EMKM.search(n):
+    if POLA_RAWAN_EMKM.search(n) or koreksi_lain_lain("lain-lain", arah, ket)[1]:
+        # v1.0.3: catatan lama 'lain-lain' berketerangan utang/kasbon/pribadi tetap beban_lain (sama dengan hasil usaha
+        # kas-umkm); ekspor mengingatkan untuk menggolongkannya ulang.
         return "beban_lain"
     return ""
 
@@ -1013,6 +1053,10 @@ def siapkan_entri(conn, arah, jumlah_teks, kategori_teks, metode_teks, catatan, 
             raise Gagal("Kategori untuk '%s' (%s %s) belum jelas. Tanyakan ke pengguna, pilih salah satu: %s." %
                         (catatan or "tanpa catatan", arah, rp(jumlah), ", ".join(KATEGORI)), perlu_kategori=True)
         asumsi.append("kategori '%s' ditebak dari kata '%s'" % (kat, kata))
+    kat, alasan = koreksi_lain_lain(kat, arah, catatan)
+    if alasan:
+        peringatan.append("Kategori diubah dari lain-lain ke %s: %s. Bila keliru, pilih kategori yang sesuai (bukan "
+                          "lain-lain) sebelum --ya." % (kat, alasan))
     if arah not in KATEGORI[kat][1]:
         if kat == "modal":
             raise Gagal("Kategori modal hanya untuk uang MASUK dari pemilik. Uang usaha yang diambil untuk "
@@ -1534,8 +1578,9 @@ def cmd_golongkan(args):
             else:
                 if r["arah"] not in SEMUA_KATEGORI[kat][1]:
                     raise Gagal("#%d: kategori %s tidak boleh untuk uang %s." % (i, kat, r["arah"]))
-                conn.execute("UPDATE transaksi SET kategori=? WHERE id=?", (kat, i))
-                baru = label_kat(kat, r["arah"])
+                kat_i, alasan = koreksi_lain_lain(kat, r["arah"], r["catatan"])
+                conn.execute("UPDATE transaksi SET kategori=? WHERE id=?", (kat_i, i))
+                baru = label_kat(kat_i, r["arah"]) + (" (bukan lain-lain: %s)" % alasan if alasan else "")
             baris.append("#%d %s %s %s | %s | %s -> %s" % (i, tgl_id(r["tanggal"]), r["arah"], rp(r["jumlah"]),
                                                           r["catatan"][:50], lama, baru))
         blokir = blokir_minus(cari_minus(conn, list(akun_ids), tmin)) if akun_ids else []
@@ -1672,7 +1717,7 @@ def hitung_rekap(conn, dari, sampai):
                         "WHERE t.status='aktif' AND t.tanggal BETWEEN ? AND ? ORDER BY t.tanggal, t.id",
                         (dari.isoformat(), sampai.isoformat())).fetchall()
     r = {"masuk": 0, "keluar": 0, "usaha_masuk": 0, "usaha_keluar": 0, "hasil_usaha": 0, "prive": 0, "modal": 0,
-         "pinjaman_masuk": 0, "pinjaman_keluar": 0, "per_kategori": OrderedDict(), "per_metode": OrderedDict(),
+         "pinjaman_masuk": 0, "pinjaman_keluar": 0, "kasbon_masuk": 0, "kasbon_keluar": 0, "per_kategori": OrderedDict(), "per_metode": OrderedDict(),
          "per_hari": OrderedDict(), "pindah": [], "terbesar": [], "jumlah_transaksi": 0,
          "perlu_dicek": {"masuk": 0, "keluar": 0, "id": []}}
     grup_pindah = OrderedDict()
@@ -1703,6 +1748,8 @@ def hitung_rekap(conn, dari, sampai):
             r["modal"] += j
         elif x["kategori"] == "pinjaman":
             r["pinjaman_" + x["arah"]] += j
+        elif x["kategori"] == "kasbon":
+            r["kasbon_" + x["arah"]] += j
         elif x["kategori"] == "perlu-dicek":
             r["perlu_dicek"][x["arah"]] += j
             r["perlu_dicek"]["id"].append(x["id"])
@@ -1807,7 +1854,8 @@ def cmd_rekap(args):
                 t.append("- %s: %s" % (label_kat(k, "keluar"), rp(v["keluar"])))
         t.append("")
         t.append("HASIL USAHA (masuk usaha - keluar usaha): %s" % rp(r["hasil_usaha"]))
-        t.append("  (tidak termasuk modal, pinjaman, prive, pindah dana, dan catatan 'Perlu dicek'; ini hitungan kas, "
+        t.append("  (tidak termasuk modal, pinjaman/cicilan utang, kasbon karyawan, prive, pindah dana, dan catatan 'Perlu "
+                 "dicek'; ini hitungan kas, "
                  "bukan laba akuntansi)")
         if r["prive"]:
             t.append("Prive (ambil pribadi): %s%s" % (rp(r["prive"]), (" = %s dari hasil usaha" % persen(r["prive"], r["hasil_usaha"]))
@@ -2318,6 +2366,9 @@ def cmd_impor(args):
                         kat, sumber_kat = "perlu-dicek", "belum jelas"
                         cek.append({"baris": no, "alasan": "kategori belum jelas", "keterangan": ket, "jumlah": jumlah,
                                     "arah": arah, "saran": "--tetapkan %d=<kategori>" % no})
+                kat, alasan = koreksi_lain_lain(kat, arah, ket)
+                if alasan:
+                    sumber_kat += "; diubah dari lain-lain: " + alasan
                 if arah not in SEMUA_KATEGORI[kat][1]:
                     bermasalah.append({"baris": no, "alasan": "kategori %s tidak boleh untuk uang %s" % (kat, arah)})
                     continue
@@ -2585,10 +2636,18 @@ def cmd_ekspor(args):
     else:
         pr.append("Saldo awal gabungan minus (%s); tidak ditulis di file. Periksa saldo awal akun." % rp(saldo_awal))
     n_pindah = 0
+    salah_golong, gerak = [], {}
     for r in rows:
         if r["kategori"] == "pindah":
             n_pindah += 1
             continue
+        if r["status"] == "aktif":
+            if r["kategori"] in ("pinjaman", "kasbon"):
+                gerak[(r["kategori"], r["arah"])] = gerak.get((r["kategori"], r["arah"]), 0) + r["jumlah"]
+            elif r["kategori"] == "lain-lain":
+                kat_benar, _ = koreksi_lain_lain("lain-lain", r["arah"], r["catatan"])
+                if kat_benar != "lain-lain":
+                    salah_golong.append((r["id"], kat_benar, r["catatan"]))
         ket = r["catatan"] or label_kat(r["kategori"], r["arah"])
         kode = kode_emkm(r["kategori"], r["arah"], ket, r["akun_jenis"])
         if r["kategori"] == "pajak" and not re.search(r"\b(pajak|pph|pbjt|pb1|ppn)\b", normal(ket)):
@@ -2596,6 +2655,23 @@ def cmd_ekspor(args):
         data.append([tgl_id(r["tanggal"]), ket, r["jumlah"] if r["arah"] == "masuk" else "",
                      r["jumlah"] if r["arah"] == "keluar" else "", kode])
     path = tulis_csv(path, ["Tanggal", "Keterangan", "Masuk", "Keluar", "Kategori"], data, args.pemisah)
+    if salah_golong:
+        pr.append("%d catatan lama berkategori lain-lain tampaknya BUKAN biaya usaha (%s). Di file ini ditulis "
+                  "beban_lain agar laba sama dengan hasil usaha buku kas; golongkan ulang dulu agar laporan benar: "
+                  "%s, lalu ekspor lagi." % (len(salah_golong), "; ".join(
+                      "#%d '%s' -> %s" % (i, (c or "")[:40], k) for i, k, c in salah_golong[:10]),
+                      "; ".join("kas.py golongkan --id %d --kategori %s --ya" % (x[0], x[1]) for x in salah_golong[:10])))
+    bayar = gerak.get(("pinjaman", "keluar"), 0) - gerak.get(("pinjaman", "masuk"), 0)
+    if gerak.get(("pinjaman", "keluar")):
+        pr.append("Ada cicilan/bayar utang %s (pokok, bukan biaya) di periode ini. Tambahkan --utang-bank-awal <sisa "
+                  "utang/pinjaman di awal periode>%s ke perintah emkm agar sisa utang tidak minus dan neraca seimbang." %
+                  (rp(gerak[("pinjaman", "keluar")]), (" (minimal %s)" % rp(bayar)) if bayar > 0 else ""))
+    kembali = gerak.get(("kasbon", "masuk"), 0) - gerak.get(("kasbon", "keluar"), 0)
+    if gerak.get(("kasbon", "keluar")) or gerak.get(("kasbon", "masuk")):
+        pr.append("Kasbon karyawan: diberikan %s, dikembalikan %s (piutang, bukan biaya/pendapatan).%s" % (
+            rp(gerak.get(("kasbon", "keluar"), 0)), rp(gerak.get(("kasbon", "masuk"), 0)),
+            (" Tambahkan --piutang-lain-awal <sisa kasbon di awal periode> (minimal %s) ke perintah emkm." % rp(kembali))
+            if kembali > 0 else ""))
     if telat:
         pr.append("Akun %s baru dicatat setelah %s; saldo awalnya dianggap sudah ada sejak awal periode." %
                   (", ".join(telat), tgl_id(dari)))

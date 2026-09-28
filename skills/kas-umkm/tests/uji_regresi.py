@@ -982,5 +982,121 @@ class UjiV102(Dasar):
         self.assertNotIn("termasuk 'Perlu dicek'", r["teks"])
 
 
+class UjiV103(Dasar):
+    """Sisa rendah H9: lain-lain 'utang/cicilan', 'uang muka karyawan/kasbon', 'belanja rumah' bukan biaya usaha."""
+    LAIN = (("150rb", "bayar utang toko Pak Joko", "pinjaman"), ("100rb", "belanja rumah", "prive"),
+            ("60rb", "beli kursi plastik", "lain-lain"), ("80rb", "uang muka karyawan Andi", "kasbon"),
+            ("80rb", "cicilan etalase", "pinjaman"), ("5rb", "bunga cicilan etalase", "lain-lain"))
+
+    def kategori_db(self):
+        con = sqlite3.connect(self.db)
+        try:
+            return {c: k for c, k in con.execute("SELECT catatan, kategori FROM transaksi WHERE status='aktif'")}
+        finally:
+            con.close()
+
+    def isi_data(self):
+        self.ok("catat", "--masuk", "2jt", "--kategori", "penjualan", "--metode", "tunai", "--catatan", "jualan",
+                "--tanggal", "02/09/2026", "--ya")
+        self.ok("catat", "--keluar", "700rb", "--kategori", "beli-stok", "--metode", "tunai", "--catatan", "kulakan",
+                "--tanggal", "03/09/2026", "--ya")
+        for jml, cat, harap in self.LAIN:
+            out = self.ok("catat", "--keluar", jml, "--kategori", "lain-lain", "--metode", "tunai", "--catatan", cat,
+                          "--tanggal", "05/09/2026", "--ya")
+            if harap != "lain-lain":
+                self.assertTrue(any("diubah dari lain-lain ke %s" % harap in p for p in out["peringatan"]), out)
+        out = self.ok("catat", "--masuk", "30rb", "--kategori", "lain-lain", "--metode", "tunai", "--catatan",
+                      "Andi kembalikan kasbon", "--tanggal", "10/09/2026", "--ya")
+        self.assertTrue(any("kasbon" in p for p in out["peringatan"]))
+
+    def test_lain_lain_digolongkan_benar_dan_laba_emkm_sama(self):
+        from decimal import Decimal as D
+        self.isi_data()
+        kat = self.kategori_db()
+        for _, cat, harap in self.LAIN:
+            self.assertEqual(kat[cat], harap, cat)
+        self.assertEqual(kat["Andi kembalikan kasbon"], "kasbon")
+        # verifikasi Decimal independen: hasil usaha hanya penjualan - stok - kursi - bunga
+        hasil = D(2000000) - D(700000) - D(60000) - D(5000)
+        r = self.ok("rekap", "--bulan", "09/2026")
+        self.assertEqual(D(r["hasil_usaha"]), hasil)
+        self.assertIn("kasbon karyawan", r["teks"])
+        laci = D(500000) + D(2000000) - D(700000) - sum(D(K.parse_nominal(j)) for j, _, _ in self.LAIN) + D(30000)
+        self.assertEqual(D(self.saldo()["Laci kas"]), laci)
+        out = self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
+        with open(out["file"], encoding="utf-8-sig", newline="") as fh:
+            kode = {r[1]: r[4] for r in list(csv.reader(fh, delimiter=";"))[1:]}
+        self.assertEqual(kode["bayar utang toko Pak Joko"], "bayar_pinjaman")
+        self.assertEqual(kode["cicilan etalase"], "bayar_pinjaman")
+        self.assertEqual(kode["belanja rumah"], "prive")
+        self.assertEqual(kode["uang muka karyawan Andi"], "piutang_lain")
+        self.assertEqual(kode["Andi kembalikan kasbon"], "piutang_lain")
+        self.assertTrue(any("--utang-bank-awal" in p and "Rp 230.000" in p for p in out["peringatan"]), out)
+        emkm = os.path.join(SKILLS, "laporan-keuangan-emkm", "scripts", "laporan_emkm.py")
+        if not os.path.isfile(emkm):
+            self.skipTest("laporan-keuangan-emkm tidak ada di sebelah skill ini")
+        r = subprocess.run([sys.executable, emkm, out["file"], "--format", "json", "--periode-awal", "2026-09-01",
+                            "--periode-akhir", "2026-09-26", "--kas-akhir-aktual", str(out["saldo_akhir"]),
+                            "--utang-bank-awal", "230000"], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        d = json.loads(r.stdout)
+        self.assertEqual(D(str(d["laba_rugi"]["laba_bersih"])), hasil)            # dulu bergeser 410.000
+        neraca = d["posisi_keuangan"]
+        self.assertTrue(neraca["seimbang"], neraca)
+        self.assertEqual(D(str(neraca["selisih"])), D(0))
+
+    def test_tebakan_tanpa_kategori(self):
+        for n, (cat, harap) in enumerate((("uang muka karyawan Budi", "kasbon"), ("kasbon Siti", "kasbon"),
+                                          ("bayar hutang ke Bu Rini", "pinjaman"), ("bunga cicilan motor", "lain-lain"),
+                                          ("gaji karyawan", "gaji")), 1):
+            out = self.ok("catat", "--keluar", str(50000 + n), "--metode", "tunai", "--catatan", cat, "--tanggal",
+                          "05/09/2026", "--ya")
+            self.assertEqual(self.kategori_db()[cat], harap, (cat, out))
+
+    def test_koreksi_lain_lain_unit(self):
+        k = K.koreksi_lain_lain
+        self.assertEqual(k("lain-lain", "keluar", "biaya admin cicilan")[0], "lain-lain")   # biaya, bukan pokok
+        self.assertEqual(k("lain-lain", "keluar", "denda angsuran")[0], "lain-lain")
+        self.assertEqual(k("lain-lain", "masuk", "pinjaman dari saudara")[0], "pinjaman")
+        self.assertEqual(k("lain-lain", "keluar", "beli kurir box")[0], "lain-lain")        # 'kur' kata utuh
+        self.assertEqual(k("lain-lain", "keluar", "bayar piutang")[0], "lain-lain")         # 'utang' kata utuh
+        self.assertEqual(k("beli-stok", "keluar", "belanja rumah"), ("beli-stok", None))    # hanya lain-lain
+
+    def test_catatan_lama_dan_golongkan_impor(self):
+        # catatan lama (sebelum v1.0.3) yang tersimpan sebagai lain-lain: tetap beban_lain + saran golongkan
+        self.ok("catat", "--masuk", "1jt", "--kategori", "penjualan", "--metode", "tunai", "--catatan", "jualan",
+                "--tanggal", "02/09/2026", "--ya")
+        self.ok("catat", "--keluar", "40rb", "--kategori", "lain-lain", "--metode", "tunai", "--catatan", "fotokopi",
+                "--tanggal", "03/09/2026", "--ya")
+        con = sqlite3.connect(self.db)
+        con.execute("UPDATE transaksi SET catatan='cicilan etalase' WHERE catatan='fotokopi'")
+        con.commit()
+        (i,) = con.execute("SELECT id FROM transaksi WHERE catatan='cicilan etalase'").fetchone()
+        con.close()
+        out = self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
+        with open(out["file"], encoding="utf-8-sig", newline="") as fh:
+            kode = {r[1]: r[4] for r in list(csv.reader(fh, delimiter=";"))[1:]}
+        self.assertEqual(kode["cicilan etalase"], "beban_lain")
+        self.assertTrue(any("golongkan --id %d --kategori pinjaman" % i in p for p in out["peringatan"]), out)
+        self.ok("golongkan", "--id", str(i), "--kategori", "pinjaman", "--ya")
+        self.assertEqual(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"], 1000000)
+        # impor: --tetapkan N=lain-lain dan golongkan lain-lain ikut dikoreksi
+        f = self.file("m.csv", "Tanggal,Keterangan,Debet,Kredit\n"
+                               "04/09/2026,TRSF KASBON KARYAWAN DEDI,200000,\n"
+                               "05/09/2026,SUMBANGAN MASJID,50000,\n"
+                               "06/09/2026,TRSF BELANJA RUMAH TANGGA,300000,\n")
+        self.ok("impor", f, "--akun", "BRI", "--jenis-file", "mutasi-bank", "--format-tanggal", "hari-bulan",
+                "--tetapkan", "2=lain-lain", "--tetapkan", "3=lain-lain", "--ya")    # baris 1 = judul kolom
+        kat = self.kategori_db()
+        self.assertEqual(kat["TRSF KASBON KARYAWAN DEDI"], "kasbon")
+        self.assertEqual(kat["SUMBANGAN MASJID"], "lain-lain")
+        con = sqlite3.connect(self.db)
+        (j,) = con.execute("SELECT id FROM transaksi WHERE catatan='TRSF BELANJA RUMAH TANGGA'").fetchone()
+        con.close()
+        self.ok("golongkan", "--id", str(j), "--kategori", "lain-lain", "--ya")
+        self.assertEqual(self.kategori_db()["TRSF BELANJA RUMAH TANGGA"], "prive")
+        self.assertEqual(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"], 1000000 - 50000)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
