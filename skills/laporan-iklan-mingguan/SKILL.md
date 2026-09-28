@@ -208,11 +208,18 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v
 - **Pengaman silang angka:** baris berbiaya terbesar dibandingkan dengan jumlah semua baris lain.
   Biaya, tayangan, dan klik sama persis atau selisih ≤ 2% → dianggap total, dibuang, dan diberi ⚠️
   (satu-satunya jalan nama seperti "Total 12.12 Flash Sale" dibuang). Hanya biayanya yang dalam
-  ±5% dari jumlah baris lain → **tetap dihitung** tapi diberi ⚠️ "TERHITUNG DUA KALI" beserta
-  total yang benar bila baris itu ternyata total.
+  ±5% dari jumlah baris lain → **tetap dihitung** tapi diberi ⚠️ sopan ("mohon dicek… mungkin
+  terjumlah dua kali") beserta total yang benar bila baris itu ternyata total.
 - **Subtotal buatan admin:** kolom nama kosong + kolom lain berbunyi mirip total ("Subtotal Kamp
   A") → dibuang hanya bila biaya, tayangan & klik ≈ (±2%) jumlah baris-baris tepat di atas/
   bawahnya; bila tidak cocok, tetap dihitung + ⚠️ agar pengguna mengecek.
+- **Subtotal di kolom nama (v1.0.4):** baris berawalan "Subtotal"/"Sub total"/"Sub-total"/
+  "Jumlah sementara" ("Subtotal: Retarget Video") → selalu dikecualikan + ⚠️ nama & biaya (⚠️
+  menyebut apakah angkanya cocok dengan baris di sekitarnya). Nama = nama kampanye di atasnya +
+  kata total ("Retarget Video Total", "Total: Retarget Video") → dikecualikan bila biayanya ≈ (±2%)
+  jumlah baris kampanye itu tepat di atasnya; bila tidak cocok, **tetap dihitung** + ⚠️. Nama sama
+  persis → dikecualikan hanya bila baris itu tanpa tanggal (baris di atasnya bertanggal) dan biaya,
+  tayangan & klik semuanya ≈ jumlahnya. Kampanye sungguhan tidak pernah dibuang tanpa ⚠️.
 - **Cek kewajaran:** CPC < Rp 10 atau ROAS > 50x → ⚠️ "tidak wajar" (tanda kolom/mata uang salah).
 - **Rentang data > 7 hari**, tanggal tak terbaca, atau file minggu lalu = file minggu ini → ⚠️.
 - **Pembagi nol** (0 klik/0 tayangan/0 hasil) → ditampilkan `-`, bukan error atau angka mengada-ada.
@@ -239,3 +246,14 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v
   baris (kecuali baris Total), dan beri tahu pengguna hasil belum diverifikasi script.
 - **Privasi:** hanya angka performa iklan (biaya, tayangan, klik, hasil, nilai). Tidak ada data
   pelanggan/nomor kontak yang diproses atau dikirim ke layanan eksternal.
+
+## Riwayat versi
+- **1.0.4** (2026-09-28): subtotal buatan admin di kolom nama ("Subtotal: Retarget Video",
+  "Retarget Video Total", "Jumlah sementara") tidak lagi terhitung dua kali dan selalu diberi ⚠️
+  nama + biaya (N3); kalimat ⚠️ "biaya hampir sama dengan jumlah baris lain" dilunakkan. Tes regresi
+  bertambah jadi 87.
+- **1.0.3** (2026-09-26): nama kampanye berawalan "Total"/"Jumlah" tidak lagi dibuang; setiap baris
+  total yang dikecualikan diberi ⚠️; ⚠️ ±5% (M2); subtotal dengan kolom nama kosong (M3).
+- **1.0.2** (2026-09-26): ekspor bertingkat dirinci per iklan (N1); label total umum + cek silang (N2).
+- **1.0.1** (2026-09-26): sel kosong, baris total varian, pemilihan kolom Google Ads, mata uang non-IDR.
+- **1.0.0**: rilis draf pertama.
