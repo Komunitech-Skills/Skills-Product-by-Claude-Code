@@ -1135,7 +1135,7 @@ def siapkan_entri(conn, arah, jumlah_teks, kategori_teks, metode_teks, catatan, 
                           "laporan keuangan ditulis beban lain-lain.")
     kat, alasan = koreksi_lain_lain(kat, arah, catatan)
     if alasan and kat == kat_awal:
-        peringatan.append("Catatan: %s." % alasan)
+        peringatan.append(alasan[0].upper() + alasan[1:] + ".")
     elif alasan:
         peringatan.append("Kategori diubah dari lain-lain ke %s: %s. Bila keliru, pilih kategori yang sesuai (bukan "
                           "lain-lain) sebelum --ya." % (kat, alasan))

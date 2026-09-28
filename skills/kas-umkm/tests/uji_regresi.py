@@ -984,7 +984,7 @@ class UjiV102(Dasar):
 
 class UjiV103(Dasar):
     """Sisa rendah H9: lain-lain 'utang/cicilan', 'uang muka karyawan/kasbon', 'belanja rumah' bukan biaya usaha."""
-    LAIN = (("150rb", "bayar utang toko Pak Joko", "pinjaman"), ("100rb", "belanja rumah", "prive"),
+    LAIN = (("150rb", "bayar utang toko Pak Joko", "lain-lain"),   # v1.0.4: utang pemasok = belanja, bukan pinjaman ("100rb", "belanja rumah", "prive"),
             ("60rb", "beli kursi plastik", "lain-lain"), ("80rb", "uang muka karyawan Andi", "kasbon"),
             ("80rb", "cicilan etalase", "pinjaman"), ("5rb", "bunga cicilan etalase", "lain-lain"))
 
@@ -1017,7 +1017,7 @@ class UjiV103(Dasar):
             self.assertEqual(kat[cat], harap, cat)
         self.assertEqual(kat["Andi kembalikan kasbon"], "kasbon")
         # verifikasi Decimal independen: hasil usaha hanya penjualan - stok - kursi - bunga
-        hasil = D(2000000) - D(700000) - D(60000) - D(5000)
+        hasil = D(2000000) - D(700000) - D(150000) - D(60000) - D(5000)
         r = self.ok("rekap", "--bulan", "09/2026")
         self.assertEqual(D(r["hasil_usaha"]), hasil)
         self.assertIn("kasbon karyawan", r["teks"])
@@ -1026,18 +1026,18 @@ class UjiV103(Dasar):
         out = self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
         with open(out["file"], encoding="utf-8-sig", newline="") as fh:
             kode = {r[1]: r[4] for r in list(csv.reader(fh, delimiter=";"))[1:]}
-        self.assertEqual(kode["bayar utang toko Pak Joko"], "bayar_pinjaman")
+        self.assertEqual(kode["bayar utang toko Pak Joko"], "bayar_utang_usaha")
         self.assertEqual(kode["cicilan etalase"], "bayar_pinjaman")
         self.assertEqual(kode["belanja rumah"], "prive")
         self.assertEqual(kode["uang muka karyawan Andi"], "piutang_lain")
         self.assertEqual(kode["Andi kembalikan kasbon"], "piutang_lain")
-        self.assertTrue(any("--utang-bank-awal" in p and "Rp 230.000" in p for p in out["peringatan"]), out)
+        self.assertTrue(any("--utang-bank-awal" in p and "Rp 80.000" in p for p in out["peringatan"]), out)
         emkm = os.path.join(SKILLS, "laporan-keuangan-emkm", "scripts", "laporan_emkm.py")
         if not os.path.isfile(emkm):
             self.skipTest("laporan-keuangan-emkm tidak ada di sebelah skill ini")
         r = subprocess.run([sys.executable, emkm, out["file"], "--format", "json", "--periode-awal", "2026-09-01",
                             "--periode-akhir", "2026-09-26", "--kas-akhir-aktual", str(out["saldo_akhir"]),
-                            "--utang-bank-awal", "230000"], capture_output=True, text=True)
+                            "--utang-bank-awal", "80000"], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stderr)
         d = json.loads(r.stdout)
         self.assertEqual(D(str(d["laba_rugi"]["laba_bersih"])), hasil)            # dulu bergeser 410.000
