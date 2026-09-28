@@ -90,3 +90,4 @@ tulisan-tanpa-kesan-ai,Marketing & Konten,kurasi,https://github.com/petergyang/n
 notebook-riset-lokal,Produktivitas,kurasi,https://github.com/lfnovo/open-notebook,MIT (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-28
 audit-akun-iklan,Marketing & Konten,kurasi,https://github.com/AgriciDaniel/claude-ads,MIT,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 pantau-website-toko,E-commerce/Marketplace Indonesia,kurasi,https://github.com/louislam/uptime-kuma,MIT (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,49000,ecer,49000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
+riset-harga-kompetitor,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.0,,uji,2026-09-28

@@ -591,7 +591,7 @@ def ke_markdown(h):
         o.append("| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |".format(
             i, _sel(nama), _sel(var), rp(p["harga"]), rp(p["harga_coret"]),
             rp(p["setara"]) if p["setara"] is not None else "-", per,
-            fmt_desimal(p["rating"], 1) if p["rating"] is not None else "-", terj, _sel(p["lokasi"]),
+            "{:.1f}".format(p["rating"]).replace(".", ",") if p["rating"] is not None else "-", terj, _sel(p["lokasi"]),
             _sel("; ".join(p["catatan"]))))
     o += ["", "### Ringkasan harga pasar", "",
           "| Terendah | Kuartil bawah (P25) | Median (tengah) | Kuartil atas (P75) | Tertinggi |",

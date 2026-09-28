@@ -123,32 +123,79 @@ POLA_PRIBADI = re.compile(TEBAK[0][2])
 POLA_KASBON = re.compile(TEBAK[2][2])
 POLA_UTANG = re.compile(r"\b(utang|hutang|cicilan|cicil|nyicil|angsuran|angsur|pinjaman|pelunasan pinjaman|"
                         r"bayar pinjaman|kur)\b")
-POLA_BUNGA_BIAYA = re.compile(r"\b(bunga|denda|biaya|adm|admin|administrasi|provisi|asuransi|materai|meterai)\b")
+POLA_BUNGA_BIAYA = re.compile(r"\b(bunga|denda|biaya|adm|admin|administrasi|provisi|asuransi|materai|meterai|"
+                              r"sanksi|telat|terlambat|keterlambatan)\b")
+# v1.0.4: utang ke PEMASOK/toko (bon belanja) bukan pinjaman bank; pelanggan melunasi bon = uang penjualan;
+# "X pinjam uang" (uang usaha dipinjam orang) = kasbon/piutang; denda/sanksi pajak bukan PPh.
+POLA_KATA_UTANG = re.compile(r"\b(utang|hutang|bon|ngebon|ngutang|ngutang)\b")
+POLA_PEMASOK = re.compile(r"\b(toko|supplier|suplier|pemasok|grosir|agen|distributor|bangunan|material|dagang|"
+                          r"dagangan|usaha|bahan|kulakan|kulak|sales|pabrik|juragan)\b")
+POLA_BAYAR = re.compile(r"\b(bayar|membayar|dibayar|lunas|lunasi|melunasi|pelunasan|nyicil|cicil|mencicil|"
+                        r"setor|nyetor)\b")
+POLA_PELANGGAN_BON = re.compile(r"\b(belanja|pelanggan|langganan|warung|bon|ngebon|pembeli|tetangga)\b")
+POLA_PINJAMAN_RESMI = re.compile(r"\b(pinjam|pinjem|pinjaman|kur|bank|koperasi|kredit|leasing|pencairan|saudara|"
+                                 r"keluarga|investor)\b")
+POLA_PINJAM_UANG = re.compile(r"\b(pinjam|pinjem|minjam|minjem|dipinjam|dipinjami|meminjam) (uang|duit|dana)\b")
+POLA_DENDA_PAJAK = re.compile(r"\b(denda|sanksi|stp|bunga)\b")
+POLA_KATA_PAJAK = re.compile(r"\b(pajak|pph|ppn|pbjt|pb1|spt|coretax|djp)\b")
+
+
+def utang_pemasok(n):
+    return bool(POLA_KATA_UTANG.search(n) and POLA_PEMASOK.search(n))
+
+
+def pelanggan_bayar_bon(n):
+    return bool(POLA_KATA_UTANG.search(n) and POLA_BAYAR.search(n) and POLA_PELANGGAN_BON.search(n)
+                and not POLA_PINJAMAN_RESMI.search(n))
+
+
+def denda_pajak(n):
+    return bool(POLA_DENDA_PAJAK.search(n) and POLA_KATA_PAJAK.search(n))
+
+
+PESAN_PEMASOK = ("'%s' tampaknya bayar UTANG/BON ke PEMASOK atau toko, bukan cicilan pinjaman bank. Di buku kas, bon "
+                 "belanja biasanya belum pernah dicatat, jadi pembayarannya adalah belanja: bila barangnya stok/bahan "
+                 "dagangan pilih --kategori beli-stok; bila barang/jasa lain (mis. material renovasi, perlengkapan) "
+                 "pilih --kategori lain-lain (diekspor sebagai pembayaran utang ke pemasok). Jangan pilih pinjaman "
+                 "kecuali ini benar-benar cicilan uang pinjaman.")
 
 
 def koreksi_lain_lain(kat, arah, ket):
-    """v1.0.3: 'lain-lain' dengan keterangan kasbon karyawan / keperluan pribadi / utang-cicilan dipindah ke
-    kategori yang benar agar hasil usaha tidak tergeser. Kembalikan (kategori, alasan atau None)."""
+    """v1.0.3/1.0.4: 'lain-lain' dengan keterangan kasbon / keperluan pribadi / utang-cicilan dipindah ke kategori
+    yang benar agar hasil usaha tidak tergeser. Kata biaya/bunga/denda MENANG atas kata cicilan/pinjaman (tetap
+    biaya). Utang ke pemasok tetap lain-lain (belanja) dengan catatan; pelanggan melunasi bon -> penjualan.
+    Kembalikan (kategori, alasan atau None); kategori sama + alasan = tetap, dengan catatan."""
     if kat != "lain-lain":
         return kat, None
     n = " " + normal(ket) + " "
-    m = POLA_KASBON.search(n)
+    m = POLA_KASBON.search(n) or (arah == "keluar" and POLA_PINJAM_UANG.search(n))
     if m:
-        return "kasbon", ("'%s' = kasbon/uang muka karyawan: uang usaha dipinjam karyawan (piutang), bukan biaya; "
-                          "saat dikembalikan/dipotong gaji dicatat kasbon masuk" % m.group(0).strip())
+        return "kasbon", ("'%s' = kasbon/uang usaha dipinjam karyawan atau orang lain (piutang), bukan biaya; saat "
+                          "dikembalikan/dipotong gaji dicatat kasbon masuk" % m.group(0).strip())
     if arah == "keluar":
         m = POLA_PRIBADI.search(n)
         if m:
             return "prive", ("'%s' = keperluan pribadi pemilik (prive): pengambilan pemilik, bukan biaya usaha"
                              % m.group(0).strip())
+    if POLA_BUNGA_BIAYA.search(n):
+        return kat, None                                   # bunga/denda/biaya pinjaman = biaya, tetap lain-lain
+    if arah == "keluar" and utang_pemasok(n):
+        return kat, ("utang/bon ke pemasok atau toko: tetap dihitung belanja (bonnya belum pernah dicatat), diekspor "
+                     "sebagai pembayaran utang ke pemasok, BUKAN cicilan pinjaman bank. Bila barangnya stok/bahan, "
+                     "kategori yang lebih tepat beli-stok")
+    if arah == "masuk" and pelanggan_bayar_bon(n):
+        return "penjualan", ("'%s' = pelanggan melunasi bon/utang belanja: uang hasil penjualan (bon belum pernah "
+                             "dicatat), BUKAN pinjaman baru" % ket)
     m = POLA_UTANG.search(n)
-    if m and not POLA_BUNGA_BIAYA.search(n):
+    if m:
         if arah == "keluar":
             return "pinjaman", ("'%s' = bayar/cicil POKOK utang: mengurangi utang, bukan biaya. Bunga/denda/biaya "
-                                "admin dicatat terpisah sebagai lain-lain. Bila ini melunasi bon belanja stok yang "
-                                "BELUM pernah dicatat, kategorinya beli-stok" % m.group(0).strip())
+                                "admin dicatat terpisah sebagai lain-lain. Bila ini melunasi bon belanja yang BELUM "
+                                "pernah dicatat, kategorinya beli-stok/lain-lain" % m.group(0).strip())
         return "pinjaman", ("'%s' = pinjaman/utang diterima: menambah utang, bukan pendapatan" % m.group(0).strip())
     return kat, None
+
+
 # v1.0.1: aturan pindah dana (uang berpindah antar akun milik usaha sendiri; bukan pendapatan/beban)
 POLA_TARIK_TUNAI = re.compile(r"\b(tarik tunai|tarikan tunai|tarikan atm|tarik atm|tarik tunai atm|penarikan tunai|"
                               r"penarikan atm|cash withdrawal|atm withdrawal|tartun)\b")
@@ -196,7 +243,7 @@ POLA_BUKAN_BIAYA_BANK = re.compile(r"\b(shopee|tokopedia|tiktok|lazada|blibli|ma
 # kata yang oleh laporan-keuangan-emkm bisa dibaca sebagai BUKAN beban (pindah dana, prive, piutang, modal, pinjaman)
 POLA_RAWAN_EMKM = re.compile(r"\b(tarik|tarikan|setor|setoran|pindah|pindahbuku|antar rek\w*|mutasi|top ?up|"
                              r"isi saldo|rekening|prive|privee|pribadi|rumah tangga|keluarga|ambil|kasbon|piutang|"
-                             r"pinjam\w*|modal|uang saku|jajan|sekolah|spp|liburan|ortu|orang tua|gaji (pemilik|owner|"
+                             r"pinjam\w*|utang|hutang|cicil\w*|nyicil|angsur\w*|kredit|kur|bon|modal|uang saku|jajan|sekolah|spp|liburan|ortu|orang tua|gaji (pemilik|owner|"
                              r"sendiri|saya))\b")
 
 
@@ -206,14 +253,23 @@ def kode_emkm(kategori, arah, ket, jenis_akun):
     beban_keuangan; pengeluaran lain-lain yang keterangannya memuat kata pindah dana/prive/modal -> beban_lain.
     Dengan begitu laba emkm = hasil usaha kas-umkm (catatan lain-lain selalu termasuk hasil usaha)."""
     kode = EMKM.get((kategori, arah), "")
+    n = " " + normal(ket) + " "
+    if kategori == "pajak" and arah == "keluar" and denda_pajak(n):
+        return "beban_lain"                            # v1.0.4: denda/sanksi pajak bukan beban PPh
     if kategori != "lain-lain":
         return kode
     if arah == "masuk":
         return "pendapatan_lain"
-    n = " " + normal(ket) + " "
     if POLA_BIAYA_BANK.search(n) or (jenis_akun in ("bank", "e-wallet") and POLA_BIAYA_BANK_AKUN.search(n)
                                      and not POLA_BUKAN_BIAYA_BANK.search(n)):
         return "beban_keuangan"
+    if denda_pajak(n):
+        return "beban_lain"
+    if POLA_BUNGA_BIAYA.search(n) and (POLA_UTANG.search(n) or POLA_KATA_UTANG.search(n) or
+                                       re.search(r"\b(pinjam\w*|kredit|leasing|koperasi)\b", n)):
+        return "beban_keuangan"                        # v1.0.4: bunga/denda/biaya cicilan = biaya, bukan pokok
+    if utang_pemasok(n):
+        return "bayar_utang_usaha"                     # v1.0.4: bon pemasok = belanja (pembelian kredit di emkm)
     if POLA_RAWAN_EMKM.search(n) or koreksi_lain_lain("lain-lain", arah, ket)[1]:
         # v1.0.3: catatan lama 'lain-lain' berketerangan utang/kasbon/pribadi tetap beban_lain (sama dengan hasil usaha
         # kas-umkm); ekspor mengingatkan untuk menggolongkannya ulang.
@@ -582,11 +638,23 @@ def kode_kategori(teks):
 
 def tebak_kategori(teks, arah):
     n = " " + normal(teks) + " "
+    # v1.0.4: urutan khusus sebelum kamus
+    if arah == "keluar":
+        m = POLA_PINJAM_UANG.search(n)
+        if m and not POLA_PRIBADI.search(n):
+            return "kasbon", m.group(0).strip()
+        if utang_pemasok(n) and not POLA_BUNGA_BIAYA.search(n):
+            return None, None                              # utang pemasok: tanyakan (beli-stok / lain-lain)
+    elif pelanggan_bayar_bon(n):
+        return "penjualan", POLA_KATA_UTANG.search(n).group(0)
     for kode, a, pola in TEBAK:
         if a and a != arah:
             continue
         m = re.search(pola, n)
         if m:
+            if kode == "pinjaman" and POLA_BUNGA_BIAYA.search(n):
+                b = POLA_BUNGA_BIAYA.search(n).group(0)
+                return "lain-lain", b                      # bunga/denda/biaya cicilan = biaya, bukan pokok
             return kode, m.group(0).strip()
     return None, None
 
@@ -1049,12 +1117,26 @@ def siapkan_entri(conn, arah, jumlah_teks, kategori_teks, metode_teks, catatan, 
                         "Bila uangnya dipakai untuk keperluan pribadi, kategorinya prive." % (catatan, rp(jumlah)),
                         mungkin_pindah=True)
         kat, kata = tebak_kategori(catatan, arah)
+        if not kat and arah == "keluar" and utang_pemasok(n_cat):
+            raise Gagal(PESAN_PEMASOK % catatan + " Tanyakan ke pengguna.", perlu_kategori=True, utang_pemasok=True)
         if not kat:
             raise Gagal("Kategori untuk '%s' (%s %s) belum jelas. Tanyakan ke pengguna, pilih salah satu: %s." %
                         (catatan or "tanpa catatan", arah, rp(jumlah), ", ".join(KATEGORI)), perlu_kategori=True)
         asumsi.append("kategori '%s' ditebak dari kata '%s'" % (kat, kata))
+    kat_awal = kat
+    if kat == "pinjaman" and arah == "keluar" and utang_pemasok(" " + normal(catatan) + " "):
+        peringatan.append(PESAN_PEMASOK % catatan)
+    if kat == "pinjaman" and arah == "masuk" and pelanggan_bayar_bon(" " + normal(catatan) + " "):
+        peringatan.append("'%s' tampaknya pelanggan MELUNASI bon belanja: itu uang penjualan (--kategori penjualan), "
+                          "bukan pinjaman baru." % catatan)
+    if kat == "pajak" and denda_pajak(" " + normal(catatan) + " "):
+        peringatan.append("Denda/sanksi pajak dicatat sebagai pengeluaran, tetapi BUKAN pembayaran PPh dan tidak "
+                          "boleh dikurangkan saat menghitung pajak (UU PPh Pasal 9 ayat (1) huruf k). Di ekspor "
+                          "laporan keuangan ditulis beban lain-lain.")
     kat, alasan = koreksi_lain_lain(kat, arah, catatan)
-    if alasan:
+    if alasan and kat == kat_awal:
+        peringatan.append("Catatan: %s." % alasan)
+    elif alasan:
         peringatan.append("Kategori diubah dari lain-lain ke %s: %s. Bila keliru, pilih kategori yang sesuai (bukan "
                           "lain-lain) sebelum --ya." % (kat, alasan))
     if arah not in KATEGORI[kat][1]:
@@ -1547,7 +1629,7 @@ def cmd_golongkan(args):
             kat = kode_kategori(tv)
             if not kat:
                 raise Gagal("Kategori '%s' tidak dikenal. Pilih: %s, pindah:<akun>." % (tv, ", ".join(KATEGORI)))
-        baris, akun_ids, tmin = [], set(), None
+        baris, akun_ids, tmin, pr_golong = [], set(), None, []
         for i in ids:
             r = conn.execute("SELECT t.*, a.nama AS akun_nama FROM transaksi t JOIN akun a ON a.id=t.akun_id "
                              "WHERE t.id=?", (i,)).fetchone()
@@ -1580,13 +1662,18 @@ def cmd_golongkan(args):
                     raise Gagal("#%d: kategori %s tidak boleh untuk uang %s." % (i, kat, r["arah"]))
                 kat_i, alasan = koreksi_lain_lain(kat, r["arah"], r["catatan"])
                 conn.execute("UPDATE transaksi SET kategori=? WHERE id=?", (kat_i, i))
-                baru = label_kat(kat_i, r["arah"]) + (" (bukan lain-lain: %s)" % alasan if alasan else "")
+                baru = label_kat(kat_i, r["arah"]) + ((" (bukan lain-lain: %s)" if kat_i != kat else " (catatan: %s)")
+                                                      % alasan if alasan else "")
+                n_i = " " + normal(r["catatan"]) + " "
+                if kat_i == "pinjaman" and r["arah"] == "keluar" and utang_pemasok(n_i):
+                    pr_golong.append("#%d: %s" % (i, PESAN_PEMASOK % r["catatan"]))
             baris.append("#%d %s %s %s | %s | %s -> %s" % (i, tgl_id(r["tanggal"]), r["arah"], rp(r["jumlah"]),
                                                           r["catatan"][:50], lama, baru))
         blokir = blokir_minus(cari_minus(conn, list(akun_ids), tmin)) if akun_ids else []
         pr = []
         if kat == "prive":
             _, _, pr = ringkas_prive(conn, cfg, hari_ini())
+        pr = pr + pr_golong
         return {"ringkasan": {"golongkan": ids, "kategori": tv}, "diubah": ids, "peringatan": pr, "blokir": blokir,
                 "teks": "Golongkan %d catatan:\n%s" % (len(ids), "\n".join(baris))}
     return jalankan_tulis(args, "golongkan", kerja)
@@ -2364,11 +2451,16 @@ def cmd_impor(args):
                         sumber_kat = "kategori default"
                     else:
                         kat, sumber_kat = "perlu-dicek", "belum jelas"
-                        cek.append({"baris": no, "alasan": "kategori belum jelas", "keterangan": ket, "jumlah": jumlah,
-                                    "arah": arah, "saran": "--tetapkan %d=<kategori>" % no})
+                        pemasok = arah == "keluar" and utang_pemasok(" " + normal(ket) + " ")
+                        cek.append({"baris": no, "alasan": "utang/bon ke pemasok atau toko (bukan pinjaman bank): "
+                                    "beli-stok atau lain-lain?" if pemasok else "kategori belum jelas",
+                                    "keterangan": ket, "jumlah": jumlah, "arah": arah,
+                                    "saran": ("--tetapkan %d=beli-stok (stok/bahan) atau %d=lain-lain (barang/jasa "
+                                              "lain)" % (no, no)) if pemasok else "--tetapkan %d=<kategori>" % no})
+                kat_awal = kat
                 kat, alasan = koreksi_lain_lain(kat, arah, ket)
                 if alasan:
-                    sumber_kat += "; diubah dari lain-lain: " + alasan
+                    sumber_kat += ("; diubah dari lain-lain: " if kat != kat_awal else "; catatan: ") + alasan
                 if arah not in SEMUA_KATEGORI[kat][1]:
                     bermasalah.append({"baris": no, "alasan": "kategori %s tidak boleh untuk uang %s" % (kat, arah)})
                     continue
