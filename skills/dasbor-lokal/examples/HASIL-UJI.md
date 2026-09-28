@@ -71,3 +71,25 @@ tapi membatasi cakupan bukti lintas-OS.
 `01-normal-cari-dan-enam-query-uji-akun-b.md`, `02-normal-json-dan-db-override-uji-akun-b.md`,
 `03-normal-datasette-browser-uji-akun-b.md`, `04-input-tidak-lengkap-uji-akun-b.md`,
 `05-luar-cakupan-keamanan-uji-akun-b.md` (semua di folder ini).
+
+---
+
+## Uji ulang v1.0.1 (2026-09-28)
+
+Penguji independen, scratchpad terpisah, tidak mengubah `scripts/`/`SKILL.md`. DB SQLite tiruan
+dibuat manual (tabel `produk` gaya `buku-stok`) untuk menguji `fmt_nilai` secara terisolasi.
+
+- **Stok integer tampil tanpa `.0`**: kolom `stok` bernilai `25.0` (float REAL SQLite) tampil sebagai
+  `25` di mode teks (`query buku-stok stok-menipis`), dan kolom `stok` bernilai `5.5` tetap tampil
+  `5.5` apa adanya — dikonfirmasi lewat query nyata terhadap DB tiruan (tabel berisi 1 baris integer,
+  1 baris pecahan) dan lewat pemanggilan langsung `fmt_nilai("stok", 25.0)` → `"25"`,
+  `fmt_nilai("stok", 5.5)` → `"5.5"`. Menutup temuan RENDAH dari uji U18.
+- **Kolom Rupiah tidak terpengaruh**: `fmt_nilai("total_penjualan", 150000.0)` → `"Rp 150.000"` —
+  pengecekan `kolom in KOLOM_UANG` terjadi **sebelum** logika pembulatan tampilan integer, jadi
+  kolom uang bulat tidak pernah lolos ke jalur `str(int(nilai))` tanpa prefiks "Rp" dan pemisah ribuan.
+  Tidak ada regresi pada format Rupiah.
+- `tests/uji_regresi.py`: **22/22 lulus**, tanpa regresi.
+
+**Skor: 9/10.** Perbaikan tampilan stok integer di v1.0.1 terverifikasi benar, dan kolom Rupiah
+terbukti tidak terpengaruh (jalur kode terpisah). Tidak ada temuan baru. Skor dipertahankan sama
+seperti uji U18 sebelumnya (9/10) — satu-satunya temuan RENDAH dari sesi itu kini tertutup.

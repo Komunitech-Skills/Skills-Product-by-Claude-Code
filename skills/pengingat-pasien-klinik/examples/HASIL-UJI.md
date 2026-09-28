@@ -245,3 +245,23 @@ luar tugas sesi ini per instruksi).
 Temuan tingkat TINGGI dan SEDANG dari uji v1.0.0 Akun B sudah tertutup. Layak lanjut ke uji
 platform asli (Tahap 6.10) dan program beta tester (Tahap 6.11) tanpa revisi wajib lebih lanjut.
 Bukti lengkap: `examples/vaksin-diagnosis-tanggal-uji-ulang-v101-akun-b.md`.
+
+---
+
+## Uji ulang v1.0.2 (2026-09-28)
+
+Penguji independen, scratchpad terpisah, tidak mengubah `scripts/`/`SKILL.md`.
+
+- **Dokumentasi kode keluar vs perilaku**: diverifikasi lewat pembacaan kode (`sys.exit`) dan uji
+  langsung. `except DataPribadi` → `sys.exit(2)`; `except Gagal` (termasuk penolakan kata bernada
+  diagnosis) → `sys.exit(1)`; sukses → `sys.exit(0)`. Ini **cocok persis** dengan `SKILL.md` baris
+  16-17 ("kata yang menyerupai diagnosis ditolak dengan kode keluar 1 (bukan 2; kode 2 khusus data
+  pribadi pihak lain)") dan baris 54-55/105. Tidak ada selisih dokumentasi vs kode.
+- **31 Jan + 1 bulan (kabisat)**: diuji langsung fungsi `parse_tanggal("1 bulan lagi", ...)`:
+  - Acuan 31 Jan 2026 (non-kabisat) → hasil **28 Feb 2026**, dengan catatan "Tanggal 31 tidak ada
+    di bulan itu; dipakai 28 Feb 2026." — benar.
+  - Acuan 31 Jan 2028 (kabisat) → hasil **29 Feb 2028**, catatan serupa — benar, tidak hard-code 28.
+- `tests/uji_regresi.py`: **34/34 lulus**, tanpa regresi.
+
+**Skor: 9/10.** Dokumentasi kode keluar dan penanganan kabisat pada "N bulan lagi" terverifikasi
+benar dan konsisten. Tidak ada temuan baru. Skor dipertahankan sama seperti uji H8 sebelumnya (9/10).

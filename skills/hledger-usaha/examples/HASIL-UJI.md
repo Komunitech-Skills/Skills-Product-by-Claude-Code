@@ -124,3 +124,24 @@ Tanpa regresi: 38/38 OK dengan hledger, 38 OK (5 dilewati) tanpa hledger; angka 
 
 ### Skor: **9/10**
 Alasan: kedua temuan U19 tertutup dan terbukti pada kasus asal temuan maupun data baru, angka cocok dengan hledger asli dan hitungan independen, tanpa regresi. Belum 10: Windows/Mac dan jadwal OpenClaw belum diuji di platform asli; sisa celah PPh 23 lewat `terima-piutang` (kecil).
+
+## Uji ulang v1.0.3 (2026-09-28)
+- **Penguji:** agent independen (bukan pembuat); hanya membaca folder skill, menjalankan script di scratchpad `uji-keu-0928/hl`, data fiktif, Linux, Python 3.11, **hledger 1.52.4 asli** (`hledger bal`, `hledger check`).
+- **Tes regresi:** `tests/uji_regresi.py` **41/41 OK**.
+
+| Skenario `terima-piutang --pph23/--diterima` | Hasil |
+|---|---|
+| A. Piutang PT Maju hanya dari `--jenis jual` 10 jt; `--pph23 2%`, `--diterima 9,8jt`, lewat `--batch`, dan `--mesin bawaan` | **Ditolak** (exit 2) dengan pesan jelas + arahan (biaya transfer / PPh 22 / ubah jadi jasa); jurnal tidak berubah. ✅ |
+| F. Penjualan barang ke sub-akun pihak, pelunasan tanpa `--pihak` (akun induk) | Ditolak (sub-akun ikut dibaca). ✅ |
+| B. Piutang jasa 12.345.678, `--pph23 2%` | Diizinkan tanpa PERHATIAN asal. Bank 12.098.765, PPh 23 dibayar dimuka 246.913 (2% = 246.913,56 dibulatkan ke bawah), piutang 0 — cocok Decimal penguji & hledger. ✅ |
+| C. Campuran barang 5 jt + jasa 3 jt, `--pph23 60rb` | Diizinkan + PERHATIAN "bercampur" + PERHATIAN bukan 2%/4%. Bank 7.940.000, PPh 23 60.000, piutang 0 — cocok. ✅ |
+| D. Asal tidak ada di jurnal (saldo awal), 7.777.777 `--diterima 7.622.222` | Diizinkan + PERHATIAN "asal tidak ditemukan". Kas 7.622.222, PPh 23 155.555 (dalam toleransi 2%), piutang −7.777.777 — cocok. ✅ |
+
+Selisih angka vs hitung independen/hledger: **0**.
+
+Temuan (semua RENDAH):
+1. **[RENDAH]** Asal piutang dibaca dari **nama akun pendapatan**, bukan dari jenis catatan: `--jenis jual --akun "Pendapatan:Usaha"` (tanpa kata penjualan/barang) digolongkan "lain" → `--pph23` diterima **tanpa PERHATIAN**. Saran: tandai transaksi `jual` (mis. tag) atau beri PERHATIAN juga untuk golongan "lain".
+2. **[RENDAH]** Skenario D membuat saldo piutang negatif tanpa peringatan (saldo awal belum dicatat). Saran: ingatkan catat saldo awal piutang dulu.
+
+### Skor: **9/10**
+Alasan: penolakan PPh 23 atas piutang barang bekerja di semua jalur (CLI, batch, hledger & mesin bawaan, akun induk/sub-akun), kasus campuran/tidak diketahui diizinkan dengan PERHATIAN yang tepat, angka tepat ke rupiah di hledger asli, tanpa regresi. Belum 10: celah kecil via akun pendapatan bernama umum dan platform asli belum diuji.

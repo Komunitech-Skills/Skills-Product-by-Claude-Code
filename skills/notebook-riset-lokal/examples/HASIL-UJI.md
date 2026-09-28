@@ -93,3 +93,29 @@ Penguji independen kedua (bukan pembuat, bukan penguji v1.0.0). Lingkungan disia
 
 ### Skor kualitas: **9/10 — LULUS**
 Kedua bug yang menahan skor v1.0.0 di 3/10 terbukti diperbaiki dan diverifikasi ulang terhadap server Open Notebook 1.14.0 **asli** (bukan server tiruan), lintas 3 skenario nyata sekaligus uji auth (401) yang belum tercakup di uji sebelumnya. Tidak ada bug baru ditemukan pada permukaan yang diuji. Satu poin ditahan karena: (a) pesan galat `podcast-mulai` untuk profil belum dibuat masih generik ("500 internal"), (b) belum ada uji platform asli (OpenClaw/Codex/Cursor) — sesuai catatan `SKILL.md` sendiri, dan (c) verifikasi checksum SurrealDB tetap hanya sebagian (keterbatasan bawaan upstream, bukan skill). Direkomendasikan lanjut ke Tahap 6.10 (uji platform asli) sebelum naik ke `rilis`.
+
+---
+
+## Uji ulang v1.0.2 (2026-09-28)
+
+Penguji independen, scratchpad terpisah, tidak mengubah `scripts/`/`SKILL.md`. Server Open Notebook
+asli tidak dijalankan ulang kali ini; dipakai server HTTP tiruan minimal (Python `http.server` standar)
+yang membalas `404`/`422` persis pada `POST /api/podcasts/generate`, untuk menguji jalur pesan galat
+secara terisolasi dan berulang.
+
+- **404** (`{"detail": "Episode profile not found"}`): `podcast-mulai --ya` menghasilkan pesan galat
+  Indonesia spesifik — "Gagal mulai podcast: profil episode '...' atau profil pembicara '...'
+  kemungkinan belum dibuat di server ini (...) — buka http://127.0.0.1:8502 ... Settings > Podcasts,
+  buat dulu 'Episode Profile' dan 'Speaker Profile' ..." — **bukan lagi pesan 404 generik "cek id
+  notebook/sumber"** yang membingungkan pengguna. Exit kode 2 (K_INPUT), sesuai dokumentasi.
+- **422** (`detail` berisi list error validasi Pydantic): pesan yang sama muncul (jalur deteksi
+  `e.kode == K_INPUT and ("profile" in pesan.lower() or "404" in pesan or "422" in pesan)` cocok
+  lewat literal "422" di pesan). Sedikit catatan gaya bahasa (rendah): teks gabungan menyebut baik
+  "profil kemungkinan belum dibuat" maupun "ini kemungkinan bug skill, laporkan ke Komunitech" dalam
+  satu kalimat — sedikit membingungkan urutan sebab, tapi tidak salah secara faktual dan tetap
+  mengarahkan pengguna ke langkah yang benar (buat profil dulu).
+- `tests/uji_regresi.py`: **41/41 lulus**, tanpa regresi.
+
+**Skor: 9/10.** Perbaikan pesan galat `podcast-mulai` di v1.0.2 terverifikasi berfungsi untuk kedua
+kode status (404 & 422) yang dilaporkan sebagai generik di uji K8 sebelumnya. Satu poin ditahan untuk
+catatan gaya bahasa minor pada kasus 422 di atas — kosmetik, tidak menghalangi status `lulus`.

@@ -83,3 +83,24 @@ Tanpa regresi: 68 tes OK; `rekap` DB uji lama identik antara v1.0.1 dan v1.0.2 (
 
 ### Skor: **9/10**
 Alasan: temuan SEDANG tertutup dan terbukti pada data uji lama serta data baru (laba emkm = hasil usaha, neraca seimbang, selisih 0), penanda 'Perlu dicek' jelas, angka inti tepat ke rupiah, tanpa regresi. Dikurangi 1 karena golongan ketidakcocokan yang sama masih bisa muncul untuk kata non-beban lain di keterangan lain-lain (walau kini ditandai emkm) dan platform asli belum diuji.
+
+## Uji ulang v1.0.3 (2026-09-28)
+- **Penguji:** agent independen (bukan pembuat); hanya membaca folder skill, scratchpad `uji-keu-0928/kas`, data fiktif, Linux, Python 3.11; rantai ke `laporan-keuangan-emkm` (repo saat ini).
+- **Tes regresi:** `tests/uji_regresi.py` **72/72 OK**; `laporan-keuangan-emkm/scripts/uji_regresi.py` **SEMUA UJI LULUS**.
+- **Data:** warung fiktif Agustus 2026, **40 baris** (laci 3 jt + BRI 5 jt; penjualan, kulakan, gaji, sewa, listrik, PBJT, prive) dengan jebakan: bayar bunga pinjaman KUR, denda telat cicilan, belanja rumah, kasbon Andi (+ dikembalikan), kasbon Budi (+ potong gaji), bayar utang toko bangunan, ongkos pinjam troli, biaya parkir pinjam mobil, biaya provisi pinjaman, bunga pinjaman koperasi (tanpa kategori), uang saku anak (tanpa kategori), angsuran motor pribadi, pinjaman dari saudara, "Bu Ani bayar hutang belanja", "Rudi pinjam uang", denda pajak.
+
+Penggolongan ulang `lain-lain` (baru v1.0.3) — benar untuk: belanja rumah/angsuran motor pribadi → prive; kasbon Andi/Andi kembalikan kasbon → kasbon (keluar/masuk); pinjaman dari saudara → pinjaman masuk; bunga pinjaman KUR, denda telat cicilan, biaya provisi pinjaman, bunga pinjaman koperasi → tetap lain-lain (biaya); "pinjam troli"/"pinjam mobil" → tetap biaya (tidak salah tangkap). Jalur `impor` CSV juga menggolongkan ulang dengan alasan tertulis. ✅
+
+Angka (Decimal penguji): masuk 11.734.000, keluar 10.154.000, kas akhir 9.580.000, **hasil usaha 3.230.000**, prive 1.700.000, kasbon sisa 350.000 — semua cocok `rekap`. Ekspor emkm + `--utang-bank-awal 20jt`: neraca **seimbang** (aset 9.930.000), piutang lain 350.000 ✅, tetapi **laba emkm 3.255.000 ≠ hasil usaha 3.230.000 (selisih 25.000)** dan utang pinjaman 20.375.000 (seharusnya 20.400.000). **Mismatch: 1 baris / 2 angka.**
+
+Temuan:
+1. **[SEDANG] Invarian laba = hasil usaha pecah untuk denda/biaya cicilan.** `kode_emkm` mengekspor "denda telat cicilan" dengan kategori **kosong**; emkm membaca kata "cicilan" → `bayar_pinjaman`. Uji mini: "denda telat cicilan" 25rb, "denda keterlambatan angsuran" 30rb, "biaya admin cicilan" 5rb → ketiganya jadi pokok (60rb); hanya "bunga cicilan KUR" tetap beban. Saran: lain-lain keluar yang cocok `POLA_UTANG` + `POLA_BUNGA_BIAYA` diekspor eksplisit `beban_keuangan`; tambah tes rantai.
+2. **[SEDANG] "bayar utang toko bangunan" (utang pemasok) → pinjaman → `bayar_pinjaman`.** Di buku kas, belanja bon pemasok biasanya belum pernah dicatat, jadi pembayarannya adalah biaya/pembelian; di data uji hasil usaha terlalu tinggi 750.000 (23%) dan utang bank terbaca turun padahal utang ke bank tidak berubah. Ada mitigasi (catatan pratinjau menyebut "bila melunasi bon belanja stok … beli-stok"; ekspor mengingatkan `--utang-bank-awal`), tetapi bila kategori kosong dan ditebak dari "hutang" hanya muncul "Asumsi … ditebak", tanpa petunjuk itu. Saran: kata toko/agen/supplier/grosir/bon + utang → tanyakan (beli-stok vs pinjaman), atau ekspor `bayar_utang_usaha`.
+3. **[SEDANG-RENDAH] Uang masuk "Bu Ani bayar hutang belanja" → pinjaman diterima.** Pelanggan melunasi bon warung dibaca sebagai utang baru: pendapatan kurang 150.000, utang lebih 150.000. Saran: arah masuk + nama/pelanggan/bon → penjualan atau tanyakan.
+4. **[RENDAH]** "Rudi pinjam uang" (karyawan pinjam, urutan kata terbalik) tetap biaya lain-lain, bukan kasbon.
+5. **[RENDAH, emkm]** "denda pajak telat lapor" masuk "Beban pajak penghasilan" (sanksi, bukan PPh).
+
+Hasil usaha menurut penggolongan penguji (utang pemasok = biaya, Bu Ani = penjualan, Rudi = kasbon): 2.590.000 vs script 3.230.000.
+
+### Skor: **6,5/10** (revisi, uji ulang)
+Alasan: fitur kasbon & penggolongan ulang prive/kasbon/bunga bekerja, angka buku kas tepat ke rupiah, neraca emkm seimbang, tanpa regresi. Tetapi syarat utama rilis ini (laba emkm = hasil usaha) gagal pada jebakan yang disebut di brief ("denda telat cicilan"), dan kata "utang/hutang" masih membelokkan transaksi pemasok & pelanggan ke pinjaman bank sehingga laba warung bisa melenceng ratusan ribu. Perbaikan kecil dan terarah (pola ekspor + pertanyaan untuk utang pemasok/pelanggan).

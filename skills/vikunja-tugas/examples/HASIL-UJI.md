@@ -158,3 +158,39 @@ sebagai prasyarat langsung di bagian D SKILL.md).
 **Tidak ada temuan baru berprioritas TINGGI/SEDANG.** Satu saran RENDAH: sebutkan eksplisit di
 SKILL.md bagian D bahwa `--ke` mengasumsikan target sudah jadi anggota/kolaborator proyek di
 Vikunja (bukan sekadar user terdaftar di sistem), agar ekspektasi pembeli sesuai sejak awal.
+
+---
+
+## Uji ulang v1.0.2 (2026-09-28)
+
+Penguji independen, scratchpad terpisah (bukan `.claude/skills/`), tidak mengubah `scripts/`/`SKILL.md`.
+
+- **Dokumentasi `--ke` butuh kolaborator proyek**: dikonfirmasi ADA dan jelas di `SKILL.md` bagian D.4
+  ("**Syarat:** orang itu harus sudah jadi **kolaborator proyek** itu di Vikunja... kalau belum, `--ke`
+  gagal dengan pesan..."), lengkap dengan cara menambahkan lewat Share/Bagikan → Add User, dan rujukan
+  ke `docs/panduan-vikunja.md` §6. Ini menutup saran RENDAH dari uji sebelumnya.
+- **`dari-teks` label `PIC: Nama` di mana pun dalam baris** — diuji 6 baris gaya WA manual (di luar
+  `tests/uji_regresi.py`):
+  1. `PIC: Andi kirim penawaran ke klien besok` → `ke="Andi"` benar.
+  2. `Follow up vendor PIC: Budi Santoso sebelum Jumat` (label di tengah) → `ke="Budi Santoso"` benar.
+  3. Jebakan negatif: `Deadline: kirim laporan sebelum PIC berubah` (kata "PIC" tanpa titik dua
+     setelahnya) → tidak terdeteksi sebagai PIC (benar, tidak ada label eksplisit).
+  4. Jebakan huruf kecil: `pic: rina follow up supplier` → **tidak terdeteksi** (regex label hanya
+     cocok "PIC" huruf besar; pola umum `Nama:` juga menolak karena "pic" ada di daftar `_BUKAN_NAMA`).
+     Perilaku konsisten & aman (tidak salah tangkap), tapi berarti PIC gaya WA huruf kecil terlewat.
+  5. **TEMUAN (sedang, bukan regresi v1.0.2 — sudah ada sejak pola umum `Nama: tugas` dibuat):**
+     `TOPIC: bahas rencana marketing minggu depan` → pola umum `_POLA_PIC` (bukan `_POLA_PIC_LABEL`)
+     salah menangkap kata "TOPIC" sebagai **nama orang** (`ke="TOPIC"`) dan menghapusnya dari judul,
+     karena "TOPIC" tidak ada di set `_BUKAN_NAMA` (yang hanya berisi kata Indonesia seperti
+     "catatan"/"deadline") padahal berbentuk "Kata:" satu kata berhuruf besar di awal — persis pola
+     yang dipakai untuk mendeteksi PIC. Kata header umum WA/email lain yang berpotensi sama:
+     "INFO:", "UPDATE:", "STATUS:", "SUBJECT:". Saran perbaikan: tambahkan padanan Inggris umum ke
+     `_BUKAN_NAMA` atau wajibkan nama PIC minimal 2 kata untuk pola umum (label eksplisit `PIC:` tetap
+     boleh 1 kata).
+  6. `Siapkan invoice PIC: Maya` (label di akhir baris) → `ke="Maya"`, judul `"Siapkan invoice"` benar.
+- `tests/uji_regresi.py`: **67/67 lulus**, tanpa regresi.
+
+**Skor: 9/10.** Dokumentasi `--ke` dan deteksi label `PIC:` di v1.0.2 bekerja sesuai klaim changelog,
+tanpa regresi. Satu poin ditahan untuk temuan SEDANG di atas (pola umum `Nama:` bisa salah tangkap kata
+non-nama berbahasa Inggris seperti "TOPIC:" sebagai PIC) — tidak menghalangi status `lulus` saat ini,
+disarankan diperbaiki di revisi berikutnya.

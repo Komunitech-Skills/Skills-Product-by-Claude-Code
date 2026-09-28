@@ -165,3 +165,26 @@ Kedua temuan bersifat ringan (tidak mengubah hasil ke arah mengarang data atau m
 ### SKOR AKHIR: 9/10 — LULUS
 
 v1.1.0 menang telak vs v1.0.1 pada uji A/B (fitur evaluasi kecocokan menjawab kebutuhan nyata "layak nggak saya lamar" yang sebelumnya tidak dijawab eksplisit) dan unggul dari pesaing ai-job-search pada lokalisasi Indonesia serta keamanan (tanpa scraping/auto-apply). Dua temuan ringan (rumus normalisasi bobot tidak tertulis, penanganan jawaban sebagian tidak dijelaskan) disarankan diperbaiki di revisi berikutnya tapi tidak menghalangi status `lulus`.
+
+---
+
+## Uji ulang v1.1.1 (2026-09-28)
+
+Penguji independen, scratchpad terpisah, tidak mengubah `scripts/`/`SKILL.md`.
+
+- **STOPWORDS baru**: dikonfirmasi ada di `scripts/skor_kecocokan.py` — "dipersilakan", "jujur",
+  "melamar", "silakan" (dan kata sejenis) masuk set `STOPWORDS`. Diuji dengan contoh lowongan nyata
+  berisi kalimat "...jujur dan bertanggung jawab, dipersilakan melamar dengan segera... Silakan kirim
+  CV..." — keempat kata tersebut **tidak muncul** di daftar kata kunci hasil script (baik yang sudah
+  maupun belum ada di CV). Konsisten dengan klaim changelog v1.1.1.
+- **Aturan normalisasi bobot** di `references/evaluasi-kecocokan.md` (baris 36): dikonfirmasi sekarang
+  eksplisit — dimensi yang tidak bisa dinilai dikeluarkan dari perhitungan dan bobotnya dibagi
+  proporsional ke dimensi lain (bobot baru = bobot asli ÷ total bobot dimensi tersisa), dengan contoh
+  angka (85% dibagi antar 3 dimensi tersisa). Ini konsisten dengan cara skor dihitung manual — script
+  `skor_kecocokan.py` sendiri tidak menghitung skor kecocokan CV berbobot (hanya kata kunci), jadi
+  aturan ini murni panduan tekstual untuk agent — tidak ada logika kode yang bisa berselisih dengannya.
+- `tests/uji_regresi.py`: **2/2 lulus**, tanpa regresi.
+
+**Skor: 9/10.** Kedua perbaikan v1.1.1 (STOPWORDS & aturan normalisasi bobot) terverifikasi ada dan
+konsisten antara dokumentasi dan script. Tidak ada regresi. Skor dipertahankan sama seperti uji K10
+sebelumnya (9/10) karena tidak ditemukan temuan baru dan kedua "sisa rendah" tercatat sudah tertutup.
