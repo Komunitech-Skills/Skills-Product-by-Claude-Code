@@ -164,3 +164,30 @@ didokumentasikan di aturan-skor §9) dan terhitung benar.
   tidak langsung. Saran kalimat di SKILL/privasi-etika: gabungkan divisi 1 orang sebelum dikirim ke grup.
 
 **Rekomendasi:** layak status `lulus`, lalu lanjut ke uji platform asli dan beta. R-10 s/d R-13 bisa diperbaiki di 1.0.2.
+
+## Uji ulang (2026-09-29, akhir) — v1.1.0 (memuat 1.0.2)
+- **Penguji:** agent independen (bukan pembuat); salinan skill di scratchpad `uji-0929-akhir`, Linux, Python 3.11; **Datasette 0.65.5** di venv scratch terpisah; simulasi agent `claude-code`. Script/SKILL.md tidak diubah.
+- **Tes regresi:** `tests/uji_regresi.py` **45/45 OK**; `validate.py --skill kpi-tim` ✅.
+- **Data sendiri:** toko fiktif 5 orang, 3 divisi (Kasir 2, Gudang **1**, Online 2), 14 KPI, 2 periode (2026-08 lengkap; 2026-09 dengan 2 KPI kosong), + varian bobot pecahan (45,5/24,5) dan 2 KPI kosong untuk 1 orang.
+
+| Perbaikan | Hasil |
+|---|---|
+| R-10 "masing2" | ✅ "Wulan & Rudi void masing2 1" dan "Citra dan Dimas pesanan online masing-masing 300" → draf untuk **kedua** nama (tanda CEK); "Wulan & Rudi void 2" (tanpa masing-masing) → "tidak terbaca: masing-masing atau total bersama?" |
+| R-11 pembulatan konsisten | ✅ bobot 75,5%: baris orang "(dihitung dari 75,5% bobot)" = ⚠️ "75,5% bobot"; bobot bulat "70%" di keduanya |
+| R-12 mode nol → KPI terberat | ✅ Dimas tanpa Pesanan (45%) & Rating (25%) → "perlu perhatian: Pesanan online tanpa data (dihitung 0,0%) (+1 KPI lain tanpa data)" |
+| R-13 `--tanpa-nama` divisi 1 orang | ✅ 2026-08: "Gabungan: Gudang + Kasir: 88,4", Online 98,9, perusahaan 91,9; 2026-09 (tiap divisi hanya 1 orang dinilai) → "Gabungan: Gudang + Kasir + Online" = skor perusahaan. JSON tanpa nama/skor individu. **Upaya re-identifikasi gagal** dari laporan saja: dari perusahaan + divisi tampil hanya diperoleh rata-rata (G+K)/2, Bayu (Gudang) tidak terpisahkan. (Hanya bisa bila kedua kasir membuka skor pribadinya masing-masing — kolusi, di luar cakupan.) |
+| `ekspor-db` → `kpi.db` + `kpi-metadata.yml` | ✅ 2 periode, rencana 14, skor_kpi 28, skor_orang 10, skor_divisi 6, skor_perusahaan 2; `datasette -i … -m … --host 127.0.0.1` jalan; **5/5 canned query** berhasil; SQL tulis ditolak ("Statement must be a SELECT"). **Nilai = keluaran `skor --json`: 18 angka (perusahaan/divisi/orang × 2 periode) dibandingkan, 0 beda.** `kpi-merah` periode 2026-08 = 3 KPI merah persis sama dengan `skor`. Tanpa `--timpa` DB lama tidak ditimpa ✅. |
+| `--grist` | ✅ 5 CSV + petunjuk; jumlah baris tiap CSV = tabel DB; kunci tidak ikut ke folder grist |
+| `--anonim` (+`--anonim-divisi`) | ✅ nama → P01..P05 (urutan acak), divisi → D01..D03, nama tidak ada di `kpi.db`/metadata/grist; kunci di `kunci-kode-RAHASIA.csv` terpisah; **kode stabil** saat ekspor ulang `--timpa` (kunci identik). ⚠️ lihat temuan 1. |
+
+**Verifikasi angka independen (2026-09):** Wulan 105,833×0,5 + 120×0,2 + 120×0,3 = 112,92 ✓; Bayu 99,495×0,6 + 120×0,4 = 107,70 ✓; Citra 100,87 ✓; perusahaan (107,70+112,92+100,87)/3 = 107,16 ✓; mode nol Rudi 68,33, Dimas 73,52 ✓; bobot-ulang Dimas 73,996/75,5 = 98,01 ✓.
+
+**Konflik riwayat versi:** catalog.csv pernah berisi `1.0.2` (status `lulus`) tanpa uji ulang independen, lalu langsung `1.1.0`; README memuat baris 1.0.2 **dan** 1.1.0 bertanggal sama, dan baris 1.1.0 menulis "Belum diuji independen; perlu uji ulang sebelum rilis" sementara catalog sudah `lulus`. `VERSI` script = 1.1.0 = catalog ✅. Saran: tandai baris 1.0.2 "tidak dirilis terpisah (digabung ke 1.1.0)" dan ganti kalimat "belum diuji independen" setelah uji ini.
+
+Temuan:
+1. **[SEDANG] `--anonim --anonim-divisi` masih bisa ditebak**: tabel `rencana`/`skor_kpi` memuat nama KPI & target apa adanya, dan `skor_divisi.jumlah_orang` = 1. D02 berisi 1 orang dengan KPI "Akurasi stok/Salah kirim" → jelas Gudang → Bayu, skor pribadinya terbaca; P01 vs P03 dibedakan oleh target berbeda (250 vs 300). SKILL.md menyiratkan `--anonim-divisi` mengatasi divisi 1 orang. Saran: di mode anonim gabungkan/sembunyikan divisi 1 orang seperti `--tanpa-nama`, atau jujur tulis bahwa nama KPI/target dapat mengungkap peran; jangan sarankan layar bersama untuk tim kecil.
+2. **[RENDAH]** `skor --tanpa-nama --csv-keluar` tetap menulis nama & skor per orang ke CSV tanpa peringatan; `--tanpa-nama --orang X` menampilkan rincian pribadi (permintaan eksplisit, tetapi tanpa ⚠️).
+3. **[RENDAH]** Lokasi contoh `KPI/dasbor/kpi.db` berbeda dengan default `dasbor-lokal` (`KomunitechData/kpi/kpi.db`), sehingga `dasbor.py cari` tidak menemukannya tanpa `--db`/`KOMUNITECH_KPI_DB` (sudah disebut di `references/dasbor-kpi.md`).
+
+### Skor: **8/10** (lulus; perbaiki temuan 1 sebelum rilis/beta)
+Alasan: keempat perbaikan 1.0.2 terbukti; `ekspor-db` akurat (0 beda vs `skor`), read-only di Datasette asli, kode anonim stabil, Grist konsisten; 45 tes lulus. Turun dari 9 karena janji privasi mode anonim (`--anonim-divisi`) tidak terpenuhi pada tim kecil—fitur yang justru dirancang untuk layar bersama—dan catatan versi/status tidak konsisten.

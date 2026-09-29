@@ -135,3 +135,21 @@ grep kata rekomendasi (beli/jual/tahan/akumulasi/target harga/sinyal/undervalued
 di SKILL.md, README, references (termasuk jadwal-openclaw.md), templates, script: semua kemunculan berupa larangan, penolakan, atau kutipan
 permintaan pengguna. **Kebocoran: 0.** Disclaimer OJK (kontak 157) tetap ada di SKILL.md, README, dan kedua keluaran script; pesan jadwal
 mewajibkan disclaimer & "tanpa rekomendasi beli/jual".
+
+## Uji ulang (2026-09-29, akhir) — v1.0.2
+- **Penguji:** agent independen (bukan pembuat); scratchpad `uji-0929-akhir`; Python 3.11; simulasi agent `claude-code`. OpenClaw tidak terpasang di lingkungan uji (jadwal dinilai dari dokumen + script). Script/SKILL.md tidak diubah.
+- **Tes regresi:** `tests/uji_regresi.py` **46/46 OK** (termasuk tes J1/J2); `validate.py --skill riset-saham-berita` ✅.
+
+| Perbaikan | Hasil |
+|---|---|
+| J1 tanpa `NO_REPLY` | ✅ pesan jadwal di `references/jadwal-openclaw.md` tidak lagi menyuruh `NO_REPLY`; kemunculan tersisa hanya larangan + alasan ("belum terbukti", uji dulu dengan `automations run <id> --wait`). Kode 0 selalu mengirim pesan pendek (jadwal terbukti hidup). |
+| J2 pesan per kode 0/1/2/3 | ✅ didefinisikan di teks perintah **dan** tabel §3 + kasus "script tidak bisa dijalankan". |
+| Kode keluar script sesuai dokumen | ✅ diuji dengan 10 file: tidak tersentuh → **0**; satu menembus level atas → **2**; harga kosong + level terbalik (+1 tersentuh) → **3** dengan daftar baris gagal & "TIDAK berarti aman"; semua baris gagal / hanya header → **3**; kolom wajib hilang, file kosong, file tidak ada → **1** dengan pesan galat. Harga Jumat dicek Senin (≤7 hari) → 0 tanpa catatan. |
+
+Kepatuhan: kode 0 menyertakan "Bukan rekomendasi beli/jual."; keluaran script memuat disclaimer OJK (157) dan "level ditetapkan sendiri oleh Anda". Tanpa kata rekomendasi baru.
+
+Temuan:
+1. **[RENDAH]** Harga basi (mis. 28 hari) tetap kode **0**; catatan "harga lama (28 hari)" hanya ada di tabel, sedangkan pesan kode 0 berisi baris Ringkasan saja → pemilik bisa menerima "tidak ada level tersentuh" dari harga lama bila agent lupa mengosongkan harga. Saran: hitung harga lama di baris Ringkasan atau jadikan kode 3.
+
+### Skor: **9/10** (lulus)
+Alasan: J1 & J2 tertutup, pesan untuk tiap kode keluar jelas dan kode keluar script terbukti sesuai tabel; 46 tes lulus; kepatuhan tanpa rekomendasi terjaga. Penekanan pesan di Gateway OpenClaw asli belum diuji (ditulis jujur di dokumen).
