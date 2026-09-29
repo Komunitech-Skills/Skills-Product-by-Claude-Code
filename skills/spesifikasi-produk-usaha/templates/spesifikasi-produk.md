@@ -10,6 +10,11 @@
 - Masalah/keinginan: [kalimat pembeli sendiri]
 - Alasan beli produk ini, bukan yang lain: [1-2 hal]
 
+**Ukuran keberhasilan** (1-3 target yang bisa dihitung, dengan batas waktu):
+1. [mis. terjual 200 unit/bulan pada bulan ke-3]
+2. [mis. pembeli ulang >= 30%, atau retur/komplain < 2%]
+3. [mis. skor uji rasa/pakai >= 4 dari 5]
+
 ## 3. Produk
 ### F&B / kosmetik (resep)
 | Bahan | Takaran/batch | Catatan (merek/spesifikasi) |

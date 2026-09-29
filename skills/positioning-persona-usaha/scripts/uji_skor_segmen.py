@@ -90,6 +90,50 @@ nol = ",".join(f"{k}=0" for k in "ukuran daya_beli kebutuhan jangkauan_kanal kec
 r = jalan(HEAD + "A,3,3,3,3,3,3,3\n", "--bobot", nol)
 cek("bobot_nol", r.returncode == 2, r.stderr)
 
+# 7b. revisi v1.0.1
+# B1: koma di nama segmen tanpa tanda kutip -> GAGAL jelas, bukan traceback
+r = jalan(HEAD + "Ibu muda, pengajian,3,3,3,3,3,3,3\n")
+cek("koma_tanpa_kutip", r.returncode == 2 and "GAGAL" in r.stderr and "tanda kutip" in r.stderr
+    and "Traceback" not in r.stderr, r.stderr)
+r = jalan(HEAD + '"Ibu muda, pengajian",3,3,3,3,3,3,3\n', "--format", "json")
+cek("koma_berkutip", r.returncode == 0 and json.loads(r.stdout)["hasil"][0]["segmen"] == "Ibu muda, pengajian", r.stderr)
+# B2: bobot inf/nan ditolak
+for v in ("inf", "nan", "-inf", "1e999"):
+    r = jalan(HEAD + "A,3,3,3,3,3,3,3\n", "--bobot", f"ukuran={v}")
+    cek("bobot_" + v, r.returncode == 2 and "GAGAL" in r.stderr and "Traceback" not in r.stderr, r.stderr)
+# B3: judul kolom ganda ditolak
+r = jalan(HEAD.strip() + ",ukuran\nA,4,4,4,5,5,2,4,1\n")
+cek("judul_ganda", r.returncode == 2 and "ganda" in r.stderr and "ukuran" in r.stderr, r.stderr)
+# B4: bobot desimal titik diterima; koma memberi pesan yang menyebut titik
+r = jalan(HEAD + "X,4,4,4,5,5,2,4\n", "--bobot", "ukuran=15.0", "--format", "json")
+cek("bobot_titik", r.returncode == 0 and json.loads(r.stdout)["hasil"][0]["skor"] == 82.0, r.stderr)
+r = jalan(HEAD + "X,4,4,4,5,5,2,4\n", "--bobot", "ukuran=1,5")
+cek("bobot_koma", r.returncode == 2 and "titik" in r.stderr, r.stderr)
+# B5: nama panjang tidak dipotong
+nama = "Karyawan perantau & anak kos kerja di kawasan industri"
+r = jalan(HEAD + nama + ",3,3,3,3,3,3,3\n")
+cek("nama_utuh", nama in r.stdout, r.stdout)
+# B6: CSV tab
+r = jalan(HEAD.replace(",", "\t") + "X\t4\t4\t4\t5\t5\t2\t4\n", "--format", "json")
+cek("tab", r.returncode == 0 and json.loads(r.stdout)["hasil"][0]["skor"] == 82.0, r.stderr)
+# Aturan seri: 82 vs 79 (selisih 3) -> SETARA; 82 vs 77 (selisih 5 tepat) -> SETARA; 82 vs 76 (selisih 6) -> tidak
+# X: 410/100*20=82; Y 4,4,4,4,4,2,4 -> (60+80+80+60+60+20+20)=380 -> 76; Z 4,4,4,5,4,2,4 -> 395 -> 79; W 4,4,4,4,5,1,4 -> 385 -> 77
+r = jalan(HEAD + "X,4,4,4,5,5,2,4\nZ,4,4,4,5,4,2,4\n")
+cek("seri_3", "SETARA" in r.stdout and "3 poin" in r.stdout, r.stdout)
+r = jalan(HEAD + "X,4,4,4,5,5,2,4\nW,4,4,4,4,5,1,4\n", "--format", "json")
+cek("seri_5_tepat", json.loads(r.stdout)["seri"] is not None, r.stdout)
+r = jalan(HEAD + "X,4,4,4,5,5,2,4\nY,4,4,4,4,4,2,4\n")
+cek("tidak_seri_6", "SETARA" not in r.stdout, r.stdout)
+# Hitung karakter bio
+r = subprocess.run([sys.executable, SCRIPT, "--hitung", "Adem dipakai seharian."], capture_output=True, text=True)
+cek("hitung_polos", r.returncode == 0 and "Jumlah karakter: 22" in r.stdout and "MUAT" in r.stdout, r.stdout)
+r = subprocess.run([sys.executable, SCRIPT, "--hitung", "Pesan via WA \U0001F447"], capture_output=True, text=True)
+cek("hitung_emoji", "Jumlah karakter: 14" in r.stdout and "anggap panjangnya 15" in r.stdout, r.stdout)
+r = subprocess.run([sys.executable, SCRIPT, "--hitung", "a" * 151], capture_output=True, text=True)
+cek("hitung_panjang", "KEPANJANGAN" in r.stdout, r.stdout)
+r = subprocess.run([sys.executable, SCRIPT], capture_output=True, text=True)
+cek("tanpa_csv", r.returncode == 2 and "GAGAL" in r.stderr, r.stderr)
+
 # 8. templat bawaan dapat dijalankan
 r = subprocess.run([sys.executable, SCRIPT, os.path.join(SINI, "..", "templates", "segmen.csv")],
                    capture_output=True, text=True)

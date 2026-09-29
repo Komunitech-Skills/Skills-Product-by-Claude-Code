@@ -75,3 +75,20 @@ Rincian di [`05-uji-independen-5-skenario.md`](05-uji-independen-5-skenario.md).
 - (+) Angka inti benar dan teruji (Wilson, z, sampel), input rusak ditangani rapi, alur LANJUT/UBAH/STOP jelas, konteks UMKM Indonesia & etika pre-order kuat, menang A/B dan banding pesaing, lisensi/atribusi rapi.
 - (−) Janji "tidak overclaim pada sampel kecil" belum sepenuhnya ditepati (B1), panduan sampel dua varian terlalu optimis (B2), beberapa celah validasi kecil (B3-B5).
 - Rekomendasi: perbaiki **B1 dan B2 sebelum naik ke `beta`**; lalu uji ulang singkat oleh penguji independen.
+
+## Catatan revisi v1.0.1 (pembuat, 2026-09-29)
+Menindaklanjuti permintaan perbaikan B1-B8. Belum diuji ulang oleh penguji independen.
+
+| ID | Perbaikan |
+|---|---|
+| B1 | `fisher_tepat()` (uji Fisher tepat dua sisi, `math.comb`) dipakai otomatis bila ada sel harapan < 5 atau < 50 orang per varian. Pada sampel kecil script tidak pernah menyatakan pemenang; p < 0,05 menjadi "ada tanda ..., tapi sampel terlalu kecil untuk yakin". 0/10 vs 4/10 kini p Fisher 0,0867 -> "BELUM meyakinkan". Tes baru untuk 0/10 vs 4/10, 0/20 vs 5/20, 9/60 vs 15/60. |
+| B2 | `sampel --banding --a X --b Y` (power 80%, alfa 5% dua sisi, pendekatan normal). Angka "150-300" (SKILL) dan "100-150" (references) diganti tabel hasil hitung: 5 vs 10% = 435; 10 vs 20% = 199; 15 vs 25% = 250; 10 vs 15% = 686; 20 vs 25% = 1.094 per varian. Baris "SEBANYAK itu untuk TIAP varian" dihapus, diganti rujukan ke `--banding`. Contoh 02 memakai hitungan ini. |
+| B3 | `sampel` memperingatkan bila margin >= perkiraan (menyarankan margin separuh perkiraan) dan bila hasil < 30 orang. SKILL: margin ≈ separuh ambang untuk eksperimen berkonversi rendah; contoh perintah diganti `--margin 5`. |
+| B4 | Persen berpola ribuan (`1.250`, `2.500`, `1,250,000`) ditolak dengan pesan jelas; desimal koma (`1,25`) tetap diterima. |
+| B5 | `--batas-stop` tanpa `--target` kini memberi PERINGATAN (tidak diam-diam diabaikan). |
+| B6 | Label seragam "LANJUT BERTAHAP" di script, SKILL, references, README, contoh 00/01. n < 30 dengan batas bawah >= T -> "LANJUT BERTAHAP (sampel kecil)", bukan "kuat". |
+| B7 | Tafsir diubah: "dengan data ini, angka sebenarnya kemungkinan besar ada di antara ..." dan "selisih sebesar ini jarang muncul hanya karena kebetulan"; SKILL melarang menyebut p-value sebagai peluang benar. |
+| B8 | Langkah 6: "target pembeli ÷ konversi = orang yang perlu ditawari", dihitung dengan konversi tengah dan batas bawah, dengan contoh. |
+
+**Verifikasi angka independen** (scratchpad, tidak memakai kode skill): Fisher dengan pecahan & faktorial (0/10 v 4/10 = 0,0867; 0/20 v 5/20 = 0,0471; 9/60 v 15/60 = 0,2536); ukuran sampel dengan mencari n terkecil yang power normalnya >= 0,80 (`statistics.NormalDist`), power di n-1 < 0,80 untuk semua kasus tabel -> cocok 100%.
+Tes: `python3 tests/uji_hasil_eksperimen.py` -> "Semua uji lolos." Rekaman uji lama (`00-banding-pesaing.md`, `05-uji-independen-5-skenario.md`) sengaja tidak diubah.

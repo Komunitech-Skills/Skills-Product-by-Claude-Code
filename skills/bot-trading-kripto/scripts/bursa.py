@@ -13,6 +13,11 @@ KEAMANAN
 - Kunci tidak pernah dicetak/ditulis ke log (objek Kunci menyembunyikan isinya; log lewat Penyamar).
 - URL dasar tidak bisa diarahkan ke server lain kecuali localhost (untuk tes/mock) --
   supaya kunci tidak bisa "dibelokkan" ke server asing lewat konfigurasi.
+- Pengalihan (redirect HTTP 3xx) TIDAK diikuti untuk permintaan bertanda tangan (yang membawa
+  header Key/Sign/X-MBX-APIKEY): urllib bawaan akan menyalin header itu ke host tujuan. Permintaan
+  publik hanya boleh dialihkan ke host & skema yang sama. Selain itu -> gagal dengan pesan jelas.
+- Tidak ada pemanggilan metode keluarga withdraw/transfer sama sekali (termasuk yang baca-saja
+  seperti withdrawFee Indodax) -- keputusan kurator 2026-09-29.
 """
 
 import hashlib
@@ -28,6 +33,8 @@ import uuid
 from decimal import Decimal
 
 from inti import D, NOL, bulat_bawah, bulat_uang, bulat_pajak, simulasi_isi
+
+HEADER_RAHASIA = ("key", "sign", "x-mbx-apikey")
 
 BATAS_WAKTU = 15
 ENV_KUNCI, ENV_SECRET = "KOMUNITECH_BOT_API_KEY", "KOMUNITECH_BOT_API_SECRET"
@@ -126,13 +133,45 @@ def _periksa_url_uji(url):
     return url.rstrip("/")
 
 
+class _Dialihkan(Exception):
+    def __init__(self, kode, asal, tujuan):
+        super().__init__(kode, asal, tujuan)
+        self.kode, self.asal, self.tujuan = kode, asal, tujuan
+
+
+class _PenjagaRedirect(urllib.request.HTTPRedirectHandler):
+    """Bertanda tangan: redirect apa pun ditolak. Publik: hanya host & skema yang sama."""
+
+    def __init__(self, bertanda):
+        super().__init__()
+        self.bertanda = bertanda
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        asal = urllib.parse.urlparse(req.full_url)
+        tujuan = urllib.parse.urlparse(urllib.parse.urljoin(req.full_url, newurl))
+        if self.bertanda or (asal.scheme, asal.hostname, asal.port) != (tujuan.scheme, tujuan.hostname, tujuan.port):
+            raise _Dialihkan(code, asal.hostname, tujuan.hostname or "?")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def _http(metode, url, header=None, body=None, order=False):
     data = body.encode() if isinstance(body, str) else body
-    req = urllib.request.Request(url, data=data, method=metode, headers=header or {})
-    req.add_header("User-Agent", "komunitech-bot-trading-kripto/1.0")
+    header = header or {}
+    bertanda = any(k.lower() in HEADER_RAHASIA for k in header)
+    req = urllib.request.Request(url, data=data, method=metode, headers=header)
+    req.add_header("User-Agent", "komunitech-bot-trading-kripto/1.0.1")
+    pembuka = urllib.request.build_opener(_PenjagaRedirect(bertanda))
     try:
-        with urllib.request.urlopen(req, timeout=BATAS_WAKTU) as r:
+        with pembuka.open(req, timeout=BATAS_WAKTU) as r:
             isi = r.read().decode("utf-8", "replace")
+    except _Dialihkan as e:
+        pesan = (f"Bursa mengalihkan permintaan (HTTP {e.kode}) dari {e.asal} ke {e.tujuan}. Demi keamanan, "
+                 + ("permintaan bertanda tangan TIDAK diikuti dan kunci API TIDAK dikirim ke alamat lain. "
+                    if bertanda else "pengalihan ke host lain tidak diikuti. ")
+                 + "Kemungkinan situs sedang maintenance/butuh login atau alamat API berubah; cek pengumuman bursa.")
+        if order:
+            raise StatusTidakPasti(pesan + " Order tidak dikirim ulang; cek aplikasi bursa untuk memastikan.")
+        raise ErrorBursa(pesan)
     except urllib.error.HTTPError as e:
         isi = e.read().decode("utf-8", "replace")
         try:
@@ -157,6 +196,17 @@ def _http(metode, url, header=None, body=None, order=False):
         raise ErrorBursa("Jawaban bursa bukan JSON (mungkin halaman blokir/maintenance).")
 
 
+def harga_valid(nilai):
+    """Harga dari API wajib angka > 0 (harga 0/rusak -> tidak ada order)."""
+    try:
+        x = D(str(nilai))
+    except Exception:  # noqa: BLE001
+        raise ErrorBursa(f"Harga dari bursa tidak terbaca ({str(nilai)[:30]!r}). Tidak ada order.")
+    if not x.is_finite() or x <= 0:
+        raise ErrorBursa(f"Harga dari bursa tidak wajar ({str(nilai)[:30]}). Tidak ada order.")
+    return x
+
+
 # ---------------------------------------------------------------------------- binance
 
 class Binance:
@@ -174,7 +224,7 @@ class Binance:
 
     def harga(self):
         j = self._publik("/api/v3/ticker/price", {"symbol": self.cfg["pasangan"]})
-        return D(str(j["price"]))
+        return harga_valid(j["price"])
 
     def aturan_simbol(self):
         j = self._publik("/api/v3/exchangeInfo", {"symbol": self.cfg["pasangan"]})
@@ -232,7 +282,9 @@ class Binance:
         p = {"symbol": self.cfg["pasangan"], "type": "MARKET", "newOrderRespType": "FULL",
              "newClientOrderId": "kt-" + uuid.uuid4().hex[:20]}
         if sisi == "beli":
-            p.update(side="BUY", quoteOrderQty=format(bulat_bawah(nilai_kutipan, D("0.01")), "f"))
+            # kutipan kripto (USDT dll.) = swap -> PPh sisi beli; sisihkan supaya total <= nilai order
+            t = self.cfg["_d"].get("tarif_pph_beli", NOL)
+            p.update(side="BUY", quoteOrderQty=format(bulat_bawah(nilai_kutipan / (D("1") + t), D("0.01")), "f"))
         else:
             p.update(side="SELL", quantity=format(bulat_bawah(jumlah_koin, langkah).normalize(), "f"))
         j = self._bertanda("POST", "/api/v3/order", p, order=True)
@@ -255,8 +307,9 @@ class Binance:
                 kom_lain += c
         fee = bulat_uang(kom_kut + kom_koin * harga, kut)
         if sisi == "beli":
+            pajak = bulat_pajak(cq * self.cfg["_d"].get("tarif_pph_beli", NOL), kut)
             isi = {"sisi": "beli", "harga": harga, "jumlah": eq - kom_koin, "bruto": cq, "fee": fee,
-                   "pajak": NOL, "bersih": cq + kom_kut}
+                   "pajak": pajak, "bersih": cq + kom_kut + pajak}
         else:
             pajak = bulat_pajak(cq * self.cfg["_d"]["tarif_pph"], kut)
             isi = {"sisi": "jual", "harga": harga, "jumlah": eq, "bruto": cq, "fee": fee,
@@ -287,7 +340,7 @@ class Indodax:
 
     def harga(self):
         j = _http("GET", f"{self.url}/api/ticker/{self.id_pasangan}")
-        return D(str(j["ticker"]["last"]))
+        return harga_valid(j["ticker"]["last"])
 
     def aturan_simbol(self):
         daftar = _http("GET", f"{self.url}/api/pairs")
@@ -318,10 +371,14 @@ class Indodax:
 
     def cek_izin_kunci(self):
         self._tapi("getInfo")  # membuktikan kunci valid; TIDAK menampilkan izin
+        # Keputusan kurator 2026-09-29: TIDAK memanggil metode keluarga withdraw apa pun (termasuk
+        # withdrawFee yang baca-saja) walau bisa dipakai menebak izin. Izin dicek MANUAL oleh member
+        # lewat daftar periksa wajib + flag --saya-sudah-cek-tanpa-withdraw di siapkan_live.py.
         return {"lolos": None, "dicek_otomatis": False,
-                "catatan": ("Indodax tidak menyediakan cara membaca izin API key lewat API. Pastikan MANUAL "
-                            "di Indodax > Pengaturan API bahwa izin 'withdraw' TIDAK dicentang (lihat "
-                            "references/keamanan-kunci-api.md). Pernyataan Anda dicatat di KONFIRMASI-LIVE.json.")}
+                "catatan": ("Izin withdraw Indodax TIDAK diperiksa otomatis (skill sengaja tidak memanggil "
+                            "metode withdraw apa pun). Buka Indodax > Pengaturan API, pastikan izin 'withdraw' "
+                            "TIDAK dicentang, lalu selesaikan daftar periksa di siapkan_live.py "
+                            "(--saya-sudah-cek-tanpa-withdraw). Lihat references/keamanan-kunci-api.md.")}
 
     def jumlah_order_terbuka(self):
         r = self._tapi("openOrders", {"pair": self.cfg["pasangan"]})

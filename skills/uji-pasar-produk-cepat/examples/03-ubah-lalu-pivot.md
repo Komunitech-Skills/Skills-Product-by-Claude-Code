@@ -7,7 +7,7 @@
 $ python3 scripts/hasil_eksperimen.py hasil --ditawari 60 --aksi 5 --target 10
 Konversi: 5 dari 60 orang = 8,3%
 Rentang wajar 95% (Wilson): 3,6% sampai 18,1%
-Artinya: kalau uji diulang, hasil sebenarnya kemungkinan besar ada di antara 4% dan 18%.
+Artinya: dengan data ini, angka sebenarnya kemungkinan besar ada di antara 4% dan 18%.
 Kriteria (ditetapkan SEBELUM uji): lanjut jika >= 10,0%, stop jika < 5,0%.
 KEPUTUSAN: UBAH: di bawah target tapi belum sampai batas stop. Ubah SATU hal (harga, tawaran, kemasan, atau kelompok pembeli) lalu uji ulang. Lihat pilihan pivot di SKILL.md.
 ```

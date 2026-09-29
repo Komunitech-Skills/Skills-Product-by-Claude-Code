@@ -24,12 +24,24 @@ MODE = ("paper", "testnet", "live")
 BURSA = ("binance", "indodax")
 JENIS_STRATEGI = ("dca", "grid", "tp_sl", "rebalancing")
 
-# Tarif PPh Pasal 22 final atas penjualan aset kripto -- PMK 50/2025, berlaku 1 Agustus 2025.
-# Sumber: https://www.pajak.go.id/index.php/en/node/118105 (dibaca 2026-09-29).
+# Tarif PPh Pasal 22 final atas transaksi aset kripto -- PMK 50/2025, berlaku 1 Agustus 2025.
+# Teks resmi (JDIH Kemenkeu, dibaca 2026-09-29):
+# https://jdih.kemenkeu.go.id/api/download/66a7633b-9e1b-4a54-9046-5320aa96c7e1/2025pmkeuangan050.pdf
+# - Pasal 12 ayat (1): 0,21% dari nilai transaksi (PAKD dalam negeri); Pasal 20 ayat (1): 1% (PPMSE luar negeri).
+# - Pasal 11 ayat (2) huruf b + Pasal 12 ayat (5) huruf b: tukar-menukar aset kripto dengan aset kripto
+#   lain (swap) juga objek PPh; nilai transaksi = nilai MASING-MASING aset kripto yang diserahkan para pihak.
+#   Jadi pada pasangan kripto-kripto (mis. BTCUSDT; USDT = aset kripto), sisi BELI (menyerahkan USDT)
+#   juga dikenai PPh, bukan hanya sisi jual. Contoh resmi di Lampiran huruf B PMK 50/2025.
 TARIF_PPH = {"domestik": D("0.0021"), "luar_negeri": D("0.01"), "tidak_dihitung": NOL}
+# Kutipan yang dianggap mata uang FIAT (beli dengan fiat = pembeli tidak dikenai PPh ini).
+# Kutipan lain (USDT, USDC, FDUSD, BTC, ETH, BNB, ...) = aset kripto -> transaksi swap, PPh dua sisi.
+KUTIPAN_FIAT = frozenset({"IDR", "USD", "EUR", "GBP", "JPY", "AUD", "TRY", "BRL", "ARS", "MXN", "PLN", "RON",
+                          "UAH", "ZAR", "CZK", "COP", "NGN", "KZT"})
 SUMBER_PAJAK = ("PMK 50/2025 (berlaku 1 Agustus 2025): PPh 22 final 0,21% (PAKD dalam negeri) "
-                "/ 1% (platform luar negeri) dari nilai jual, dipungut dari penjual. "
-                "Dicek 2026-09-29 di pajak.go.id. Pembulatan belum dicocokkan dengan Coretax.")
+                "/ 1% (platform luar negeri) dari nilai transaksi. Pasangan rupiah: dipungut dari penjual. "
+                "Pasangan kripto-kripto (mis. BTCUSDT) = tukar-menukar (swap): PPh atas nilai MASING-MASING "
+                "aset yang diserahkan, jadi sisi beli juga kena (Pasal 11 ayat (2) huruf b, Pasal 12 ayat (5) "
+                "huruf b). Dicek 2026-09-29 di teks resmi JDIH Kemenkeu. Pembulatan belum dicocokkan dengan Coretax.")
 
 # Fee bawaan bila member tidak mengisi (asumsi, WAJIB disebut ke member):
 # Indodax btc_idr taker 0,2% (dari https://indodax.com/api/pairs, dibaca 2026-09-29);
@@ -48,21 +60,33 @@ class KonfigurasiTidakValid(Exception):
 
 # ---------------------------------------------------------------------------- angka
 
+BATAS_NILAI = D("1e15")   # angka konfigurasi di atas ini pasti salah ketik (mencegah crash/overflow)
+POLA_RIBUAN = re.compile(r"[1-9][0-9]{0,2}([.,][0-9]{3})+")
+
+
 def angka(nilai, nama, positif=True, boleh_nol=False):
     """Ubah ke Decimal. Terima str/int (float ditolak supaya tidak ada galat biner diam-diam
-    -- tulis angka sebagai teks di JSON, mis. "100000")."""
+    -- tulis angka sebagai teks di JSON, mis. "100000").
+    Pola ribuan gaya Indonesia ("500.000", "1.500.000", "2,500") DITOLAK: "500.000" bisa terbaca
+    Rp500 dan bot diam tanpa pesan. Minta member menulis tanpa pemisah ribuan."""
     if isinstance(nilai, bool) or nilai is None:
         raise KonfigurasiTidakValid(f"'{nama}' wajib diisi angka.")
     if isinstance(nilai, float):
         raise KonfigurasiTidakValid(
             f"'{nama}' tulis sebagai teks, mis. \"{nilai}\" (pakai tanda kutip) supaya presisi terjaga.")
     s = str(nilai).strip().replace("_", "")
+    if isinstance(nilai, str) and POLA_RIBUAN.fullmatch(s):
+        raise KonfigurasiTidakValid(
+            f"'{nama}' = {nilai!r} terlihat memakai pemisah ribuan. Tulis tanpa titik/koma ribuan, "
+            f"mis. \"{s.replace('.', '').replace(',', '')}\" (untuk desimal pakai titik tanpa nol di belakang, mis. \"1.25\").")
     try:
         x = D(s)
     except InvalidOperation:
         raise KonfigurasiTidakValid(f"'{nama}' = {nilai!r} bukan angka (pakai titik untuk desimal, tanpa pemisah ribuan).")
     if not x.is_finite():
         raise KonfigurasiTidakValid(f"'{nama}' harus angka biasa.")
+    if abs(x) > BATAS_NILAI:
+        raise KonfigurasiTidakValid(f"'{nama}' = {nilai!r} terlalu besar (maks 1.000.000.000.000.000). Periksa lagi.")
     if positif and (x < 0 or (x == 0 and not boleh_nol)):
         raise KonfigurasiTidakValid(f"'{nama}' harus lebih dari 0 (sekarang {nilai}).")
     return x
@@ -165,8 +189,8 @@ def normalisasi_konfigurasi(cfg):
     if jenis == "dca":
         ds["nominal"] = angka(_wajib(st, "nominal_per_beli", "strategi dca"), "strategi.nominal_per_beli")
         ij = angka(_wajib(st, "interval_jam", "strategi dca"), "strategi.interval_jam")
-        if ij < 1:
-            raise KonfigurasiTidakValid("strategi.interval_jam minimal 1.")
+        if ij < 1 or ij > 8784:
+            raise KonfigurasiTidakValid("strategi.interval_jam harus 1 sampai 8784 (maks satu tahun).")
         ds["interval_jam"] = ij
         if st.get("take_profit_persen") not in (None, ""):
             ds["tp"] = angka(st["take_profit_persen"], "strategi.take_profit_persen")
@@ -214,6 +238,8 @@ def normalisasi_konfigurasi(cfg):
     if mode == "live" and pajak == "tidak_dihitung":
         raise KonfigurasiTidakValid("Mode live: biaya.pajak tidak boleh 'tidak_dihitung'.")
     ds["tarif_pph"] = TARIF_PPH[pajak]
+    # PMK 50/2025 Pasal 12 ayat (5) huruf b: kutipan aset kripto -> swap -> PPh juga di sisi beli
+    ds["tarif_pph_beli"] = NOL if kutipan in KUTIPAN_FIAT else TARIF_PPH[pajak]
     ds["langkah_jumlah"] = angka(cfg.get("langkah_jumlah", "0.00000001"), "langkah_jumlah")
     ds["min_nilai_order"] = angka(cfg.get("min_nilai_order", "10000" if kutipan == "IDR" else "5"),
                                   "min_nilai_order", boleh_nol=True)
@@ -279,11 +305,14 @@ def state_awal(cfg):
         "hari": None,
         "ekuitas_awal_hari": None,
         "ekuitas_terakhir": None,
+        "waktu_terakhir": None,        # waktu putaran terbaru yang pernah dilihat (tidak pernah mundur)
+        "buku_rugi_harian": {},        # {"YYYY-MM-DD": ekuitas awal hari itu} -- tidak ditimpa bila jam mundur
         "berhenti": False,
         "alasan_berhenti": None,
         "notif_berhenti_terkirim": False,
         "jumlah_tick": 0,
         "tick_paper_per_sidik": {},
+        "paper_nyata_per_sidik": {},   # putaran paper dengan harga & jam asli (syarat gerbang live)
     }
 
 
@@ -356,23 +385,27 @@ def simulasi_isi(cfg, sisi, harga, nilai_kutipan=None, jumlah_koin=None):
     Beli: total bayar (harga*jumlah + fee) <= nilai_kutipan. Jual: jumlah_koin dijual.
     Kembalikan dict angka Decimal, atau None bila jumlah jadi 0 setelah pembulatan lot."""
     ds, kut = cfg["_d"], cfg["kutipan"]
+    if harga is None or not harga.is_finite() or harga <= 0:
+        raise ValueError("harga harus lebih dari 0")
     f = ds["fee_persen"] / D("100")
     if sisi == "beli":
-        jumlah = bulat_bawah((nilai_kutipan / (D("1") + f)) / harga, ds["langkah_jumlah"])
-        if jumlah <= 0:
-            return None
-        bruto = jumlah * harga
-        fee = bulat_uang(bruto * f, kut)
-        total = bulat_uang(bruto, kut) + fee
-        if total > nilai_kutipan:  # jaga-jaga efek pembulatan rupiah
-            jumlah = bulat_bawah(jumlah - ds["langkah_jumlah"], ds["langkah_jumlah"])
+        # PPh sisi beli hanya untuk kutipan aset kripto (swap), mis. USDT. Kutipan rupiah: 0.
+        t = ds.get("tarif_pph_beli", NOL)
+        jumlah = bulat_bawah((nilai_kutipan / (D("1") + f + t)) / harga, ds["langkah_jumlah"])
+        for _ in range(3):  # jaga-jaga efek pembulatan: total bayar tidak boleh melebihi nilai order
             if jumlah <= 0:
                 return None
-            bruto = jumlah * harga
-            fee = bulat_uang(bruto * f, kut)
-            total = bulat_uang(bruto, kut) + fee
-        return {"sisi": "beli", "harga": harga, "jumlah": jumlah, "bruto": bulat_uang(bruto, kut),
-                "fee": fee, "pajak": NOL, "bersih": total}
+            bruto = bulat_uang(jumlah * harga, kut)
+            fee = bulat_uang(jumlah * harga * f, kut)
+            pajak = bulat_pajak(bruto * t, kut)
+            total = bruto + fee + pajak
+            if total <= nilai_kutipan:
+                break
+            jumlah = bulat_bawah(jumlah - ds["langkah_jumlah"], ds["langkah_jumlah"])
+        else:
+            return None
+        return {"sisi": "beli", "harga": harga, "jumlah": jumlah, "bruto": bruto,
+                "fee": fee, "pajak": pajak, "bersih": total}
     jumlah = bulat_bawah(jumlah_koin, ds["langkah_jumlah"])
     if jumlah <= 0:
         return None
@@ -471,21 +504,88 @@ def rencanakan(cfg, state, harga, sekarang):
 
 # ---------------------------------------------------------------------------- risiko
 
-def cek_tombol_berhenti(folder_bot):
-    return os.path.exists(os.path.join(folder_bot, "STOP"))
+def folder_stop_global():
+    """Lokasi tombol berhenti GLOBAL yang stabil, tidak bergantung pada --folder-bot:
+    ~/.komunitech/bot-trading-kripto/ (Windows: C:\\Users\\<nama>\\.komunitech\\bot-trading-kripto\\)."""
+    return os.path.join(os.path.expanduser("~"), ".komunitech", "bot-trading-kripto")
+
+
+def id_konfigurasi(path_konfigurasi):
+    """ID stabil satu bot = hash path absolut file konfigurasinya."""
+    p = os.path.normcase(os.path.realpath(os.path.abspath(path_konfigurasi)))
+    return hashlib.sha256(p.encode("utf-8")).hexdigest()[:12]
+
+
+def daftar_file_stop(path_konfigurasi, folder_bot):
+    """Semua lokasi file STOP yang dihormati bot ini (cukup SATU yang ada -> berhenti):
+    1. <folder-bot>/STOP  2. <folder file konfigurasi>/STOP
+    3. ~/.komunitech/bot-trading-kripto/STOP-<id-konfigurasi>  (khusus bot ini)
+    4. ~/.komunitech/bot-trading-kripto/STOP-SEMUA             (semua bot di komputer ini)"""
+    g = folder_stop_global()
+    daftar = [os.path.join(os.path.abspath(folder_bot), "STOP"),
+              os.path.join(os.path.dirname(os.path.abspath(path_konfigurasi)), "STOP"),
+              os.path.join(g, "STOP-" + id_konfigurasi(path_konfigurasi)),
+              os.path.join(g, "STOP-SEMUA")]
+    unik = []
+    for p in daftar:
+        if p not in unik:
+            unik.append(p)
+    return unik
+
+
+def cek_tombol_berhenti(path_konfigurasi, folder_bot):
+    """Kembalikan daftar file STOP yang aktif (kosong = tidak ada)."""
+    return [p for p in daftar_file_stop(path_konfigurasi, folder_bot) if os.path.exists(p)]
+
+
+TOLERANSI_JAM_MUNDUR = timedelta(minutes=2)
+SIMPAN_HARI_BUKU = 14
+
+
+def hari_efektif(state, sekarang):
+    """Tanggal (WIB) untuk batas rugi harian yang TIDAK PERNAH MUNDUR.
+    Menyimpan waktu putaran terbaru (`waktu_terakhir`); bila jam komputer mundur (baterai RTC habis,
+    koreksi NTP, VPS salah jam), dipakai waktu terbaru yang pernah dilihat, sehingga rugi yang sudah
+    terjadi hari itu tidak "dimaafkan". Kembalikan (tanggal_iso, jam_mundur: bool)."""
+    t = sekarang.astimezone(WIB)
+    mundur = False
+    lalu = state.get("waktu_terakhir")
+    if lalu:
+        t_lalu = datetime.fromisoformat(lalu).astimezone(WIB)
+        if t < t_lalu:
+            mundur = (t_lalu - t) > TOLERANSI_JAM_MUNDUR
+            t = t_lalu
+    state["waktu_terakhir"] = t.isoformat(timespec="seconds")
+    hari = t.date().isoformat()
+    # pengaman kedua di tingkat tanggal (juga untuk state lama tanpa waktu_terakhir)
+    if state.get("hari") and state["hari"] > hari:
+        hari, mundur = state["hari"], True
+    return hari, mundur
 
 
 def cek_risiko_awal(cfg, state, harga, sekarang):
     """Dipanggil SEBELUM strategi. Kembalikan (alasan_berhenti|None, niat_paksa|None).
     - stop-loss global: harga <= rata-rata x (1 - SL%) -> jual semua lalu berhenti
-    - rugi harian: ekuitas turun > rugi_harian_maks sejak awal hari (WIB) -> berhenti"""
+    - rugi harian: ekuitas turun > rugi_harian_maks sejak awal hari (WIB) -> berhenti.
+      Patokan tiap tanggal disimpan di `buku_rugi_harian` dan TIDAK PERNAH ditimpa; tanggal tidak
+      pernah mundur walau jam komputer mundur (lihat hari_efektif)."""
     ds = cfg["_d"]
-    hari = sekarang.astimezone(WIB).date().isoformat()
+    hari, mundur = hari_efektif(state, sekarang)
+    state["jam_mundur_terdeteksi"] = mundur
     e_now = ekuitas(state, harga)
-    if state.get("hari") != hari or state.get("ekuitas_awal_hari") is None:
+    buku = state.get("buku_rugi_harian")
+    if not isinstance(buku, dict):
+        buku = {}
+    if not buku and state.get("hari") and state.get("ekuitas_awal_hari") is not None:
+        buku[state["hari"]] = state["ekuitas_awal_hari"]     # migrasi state versi lama
+    if hari not in buku:
         # patokan hari baru = nilai pada putaran terakhir sebelum pergantian hari (≈ pukul 00.00 WIB)
-        state["hari"] = hari
-        state["ekuitas_awal_hari"] = state.get("ekuitas_terakhir") or teks(e_now)
+        buku[hari] = state.get("ekuitas_terakhir") or teks(e_now)
+        for lama in sorted(buku)[:-SIMPAN_HARI_BUKU]:
+            del buku[lama]
+    state["buku_rugi_harian"] = buku
+    state["hari"] = hari
+    state["ekuitas_awal_hari"] = buku[hari]
     state["ekuitas_terakhir"] = teks(e_now)
     pos = D(state["posisi_koin"])
     rata = harga_rata(state)
