@@ -30,7 +30,7 @@ Jika pengguna ingin cepat: pakai default (1 orang = diri sendiri, wajah+suara, 8
 1. **Gerbang persetujuan (wajib, sebelum apa pun).** Jalankan checklist di `references/persetujuan-dan-verifikasi.md`. Pemilik wajah/suara = pengguna? Jika untuk orang lain, wajib `templates/formulir-persetujuan-klon.md` terisi dan ditandatangani; jika belum, berhenti dan tawarkan draf formulir. Untuk pihak yang tidak hadir/tidak setuju: tolak.
 2. **Pilih alat.** Baca `references/pilihan-alat.md` (harga bertanggal, kebijakan). Rekomendasi default untuk awam: SaaS berbayar, bukan open-source lokal (butuh GPU, instalasi rumit, sebagian bobot model non-komersial). Ringkasan jalur:
    - Suara saja: ElevenLabs (klon suara instan mulai paket Starter, klon profesional mulai Creator; dicek 2026-09-29).
-   - Wajah+suara, pemula: HeyGen, atau Synthesia paket Creator ke atas (avatar pribadi tidak ada di Starter; verifikasi persetujuan lebih ketat).
+   - Wajah+suara, pemula: HeyGen, atau Synthesia (cek dulu di halaman harga resmi apakah paketnya termasuk avatar pribadi; verifikasi persetujuan lebih ketat).
    - Edit + suara ringan dan bayar rupiah lewat app store: CapCut.
    Sebutkan harga **sebagai perkiraan bertanggal**, bukan janji, dan minta pengguna mengecek halaman resmi. Selalu tulis: skill ini tidak berafiliasi dengan merek yang disebut.
 3. **Hitung kecukupan paket.** Minta pengguna mengisi tabel paket (nama, harga, batas menit/kredit, kredit per menit, mata uang) dari halaman harga resmi, lalu jalankan:

@@ -16,7 +16,7 @@ Synthesia Creator          11.25     30.00    18.75  lewat-anggaran   Rp1.468.50
 Termurah yang mencukupi: HeyGen Creator (Rp478.500/bulan)
 Catatan: harga adalah input Anda, cek ulang di halaman resmi; belum termasuk pajak/biaya bank.
 ```
-**3. Rekomendasi:** HeyGen Creator (Rp478.500, di bawah anggaran) **dengan syarat** kredit per menit sesuai asumsi. Bila kredit per menit sebenarnya lebih dari ±53, kuota 600 kredit tidak cukup: kurangi jadi 8-10 video atau kurangi revisi. Cadangan: rekam sebagian video asli dan pakai avatar hanya untuk yang bicara panjang. **Tidak direkomendasikan:** Synthesia Starter (kuota kurang, dan menurut halaman resmi tidak menyertakan avatar pribadi jadi tidak bisa memakai wajah sendiri) dan Synthesia Creator (di atas anggaran). Harga perkiraan bertanggal, skill tidak berafiliasi dengan merek mana pun.
+**3. Rekomendasi:** HeyGen Creator (Rp478.500, di bawah anggaran) **dengan syarat** kredit per menit sesuai asumsi. Bila kredit per menit sebenarnya lebih dari ±53, kuota 600 kredit tidak cukup: kurangi jadi 8-10 video atau kurangi revisi. Cadangan: rekam sebagian video asli dan pakai avatar hanya untuk yang bicara panjang. **Tidak direkomendasikan:** Synthesia Starter (kuota menit kurang; ketersediaan avatar pribadi di paket ini perlu dicek ulang di halaman resmi) dan Synthesia Creator (di atas anggaran). Harga perkiraan bertanggal, skill tidak berafiliasi dengan merek mana pun.
 
 **4. Rekam sampel:** Sabtu pagi, ruang berkarpet, cahaya jendela, naskah latihan bagian 1-4 (`references/naskah-latihan-rekam.md`).
 
