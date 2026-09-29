@@ -1368,11 +1368,11 @@ def cmd_okr(a):
         v.update(progres=p, status=_status_okr(p, jalan))
         hasil.append(v)
     L = ["🎯 *OKR%s*%s" % (" — " + a.periode if a.periode else "",
-                          " (waktu berjalan %s)" % fmt_angka(bulat(jalan, 2), 2) if jalan is not None else "")]
+                          " (waktu berjalan %s)" % fmt_angka(bulat(jalan, 2), 2, True) if jalan is not None else "")]
     for v in hasil:
-        L.append("%s %s — %s: %s" % (IKON[v["status"]], v["pemilik"], v["objective"], fmt_angka(bulat(v["progres"], 2), 2)))
+        L.append("%s %s — %s: %s" % (IKON[v["status"]], v["pemilik"], v["objective"], fmt_angka(bulat(v["progres"], 2), 2, True)))
         for k in v["key_results"]:
-            L.append("   %s %s: %s" % (IKON[k["status"]], k["key_result"], fmt_angka(bulat(k["progres"], 2), 2)))
+            L.append("   %s %s: %s" % (IKON[k["status"]], k["key_result"], fmt_angka(bulat(k["progres"], 2), 2, True)))
     if cat:
         L += ["⚠️ " + c for c in cat]
     L.append("Progres 0-1,0. " + ("🟢 ≥ waktu berjalan, 🟡 ≥ 70% dari itu, 🔴 di bawahnya." if jalan is not None
