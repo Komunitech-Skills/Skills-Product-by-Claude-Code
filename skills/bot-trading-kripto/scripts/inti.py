@@ -278,6 +278,7 @@ def state_awal(cfg):
         "tp_sl_status": "menunggu_masuk",
         "hari": None,
         "ekuitas_awal_hari": None,
+        "ekuitas_terakhir": None,
         "berhenti": False,
         "alasan_berhenti": None,
         "notif_berhenti_terkirim": False,

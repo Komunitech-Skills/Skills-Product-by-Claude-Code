@@ -70,7 +70,7 @@ def main(argv=None):
         st = muat_state(p_state, cfg)
         alasan_lama = st.get("alasan_berhenti")
         st.update(berhenti=False, alasan_berhenti=None, notif_berhenti_terkirim=False,
-                  sidik_jari_strategi=sidik_jari_strategi(cfg), hari=None, ekuitas_awal_hari=None)
+                  sidik_jari_strategi=sidik_jari_strategi(cfg), hari=None, ekuitas_awal_hari=None, ekuitas_terakhir=None)
         simpan_json_atomik(p_state, st)
         if os.path.exists(p_stop):
             os.remove(p_stop)
