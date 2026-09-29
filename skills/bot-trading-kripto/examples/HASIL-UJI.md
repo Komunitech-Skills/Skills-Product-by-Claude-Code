@@ -128,3 +128,28 @@ independen: **8–9**.
 2. Keputusan pemilik untuk M4.
 3. Uji ulang independen; lalu uji platform asli (Tahap 6.10) dengan kunci **testnet** milik pemilik — order bertanda
    tangan belum pernah menyentuh bursa sungguhan.
+
+## Catatan revisi 1.0.1 (pembuat, 2026-09-29) — BELUM diuji ulang penguji independen
+Skor di atas tetap milik v1.0.0; status tetap `uji` sampai uji ulang independen. Uji regresi: **87 tes OK**
+(`python3 tests/uji_regresi.py`, 47 lama + 40 baru; tombol berhenti global diuji dengan home sementara, bukan
+home pengguna). `python3 scripts/validate.py --skill bot-trading-kripto` lolos.
+
+| Temuan | Perbaikan | Uji regresi |
+|---|---|---|
+| **H1** jam mundur me-reset rugi harian | `inti.hari_efektif`: simpan `waktu_terakhir` (waktu putaran terbaru); jam mundur → pakai waktu terbaru, tanggal tidak pernah mundur (juga pengaman tingkat tanggal untuk state lama). Patokan per tanggal di `buku_rugi_harian` (14 hari), tidak pernah ditimpa. Peringatan sekali per hari + audit `jam_mundur`. `--lanjutkan` mengosongkan buku (seperti 1.0.0) tetapi tidak me-reset `waktu_terakhir`, kecuali tercatat > 1 jam di masa depan (dengan catatan). | `H1JamMundur` (4+1 tes). Skenario penguji direproduksi persis lewat `jalankan_bot.py`: beli Rp1 jt, rugi Rp81.836 → jam mundur ke 30/9 → 1/10 rugi **Rp155.022** > Rp100.000 → **berhenti**. Kontrol: skenario sama pada kode 1.0.0 → tidak berhenti. |
+| **M1** kunci ikut redirect | `bursa._http` memakai opener dengan `_PenjagaRedirect`: permintaan bertanda tangan (header Key/Sign/X-MBX-APIKEY) **tidak pernah** mengikuti 3xx; publik hanya ke skema+host+port sama. Pesan jelas; order → StatusTidakPasti (bot berhenti). | `M1Redirect` (3 tes): server kedua (host `localhost`) menerima **0** permintaan; Indodax `/tapi` via bot: 0 order. |
+| **M2** PPh swap kripto-kripto | Diverifikasi ke teks resmi PMK 50/2025 (PDF JDIH Kemenkeu, diunduh & dibaca 2026-09-29): Pasal 11 ayat (2) huruf b, Pasal 12 ayat (5) huruf b & ayat (7), Pasal 20 ayat (1), contoh Lampiran huruf B (0,21% × 0,3 × Rp500 jt = Rp315.000 untuk **masing-masing** pihak). `tarif_pph_beli` = tarif untuk kutipan non-fiat (USDT dll.); simulasi & Binance live menyisihkan PPh sehingga total ≤ nominal (`quoteOrderQty` = nominal/(1+t)); rekap menjumlahkan PPh semua baris + kolom `pph_sisi_beli_idr`. | `M2PajakSwap` (4 tes) termasuk contoh resmi Lampiran B persis; tes testnet lama diperbarui (quoteOrderQty 99.00, PPh 0,99 USDT). |
+| **M3** STOP tergantung `--folder-bot` | `berhenti.py` menulis STOP di folder bot, folder konfigurasi, dan global `~/.komunitech/bot-trading-kripto/STOP-<id konfigurasi>`; bot memeriksa keempat lokasi (+ `STOP-SEMUA`). `--semua` / `--cabut-semua --saya-sudah-cek`. Didokumentasikan di SKILL.md G, references. | `M3TombolBerhentiGlobal` (4 tes): folder-bot beda → berhenti; hanya file global → berhenti; STOP-SEMUA. |
+| **M4** izin withdraw Indodax | Keputusan kurator: **tidak** memanggil metode withdraw apa pun (termasuk withdrawFee). Live wajib daftar periksa manual di layar bursa + `siapkan_live.py --saya-sudah-cek-tanpa-withdraw` (flag lama `--kunci-tanpa-withdraw` dihapus); `KONFIRMASI-LIVE.json` tanpa `daftar_periksa_withdraw_selesai` ditolak. Binance: cek otomatis `GET /sapi/v1/account/apiRestrictions` (baca-saja) dipertahankan + daftar periksa. | `M4WithdrawIndodax` (3 tes): alur live Indodax; 0 metode `withdraw*` di permintaan mock; pemindaian kode sumber. |
+| L1 | Pola ribuan ("500.000", "2,500") ditolak dengan saran penulisan. | ✔ |
+| L2 | Batas nilai 1e15, `interval_jam` 1–8784; `main` menangkap semua exception (tanpa traceback, `--openclaw` tetap exit 0); `siapkan_live --url-uji` non-localhost → pesan. | ✔ |
+| L3 | Harga API divalidasi > 0 (`harga_valid`), `simulasi_isi` menolak harga ≤ 0. | ✔ (0 POST) |
+| L4 | Live butuh ≥ 3 putaran paper **harga & jam asli** (bukan `--harga/--sekarang/--url-uji`) dalam ≥ 24 jam. Frasa tetap dicetak ke agent (batas bawaan desain chat; penegakan "diketik member" tetap lewat instruksi). | ✔ |
+| L5 | Kunci putaran `os.open(O_CREAT|O_EXCL)`; kunci basi > 10 menit diambil alih. | ✔ |
+| L6 | `--batalkan-order` memanggil `sinkron_waktu` dulu. | ✔ (urutan /time sebelum /openOrders) |
+| L7 | Catatan di pesan jual grid, ringkasan live, references & SKILL.md. | ✔ |
+| L8 | `regulasi-pajak.md`: PPN jasa platform dikenai (Pasal 2 ayat (2) huruf a, Pasal 5: 12% × 11/12 × komisi). | dok |
+
+Contoh keluaran 1.0.1 (server tiruan): `contoh-03-testnet-dan-live-server-tiruan.md` bagian D. Batasan yang tersisa:
+jam yang lompat jauh ke depan membuat tanggal patokan "tertahan" sampai `--lanjutkan` (sengaja lebih ketat);
+order bertanda tangan masih belum pernah menyentuh testnet/live sungguhan (Tahap 6.10).
