@@ -15,7 +15,10 @@ import sys
 WPM_DEFAULT = 150      # kata per menit, bicara santai Bahasa Indonesia
 JEDA_ADEGAN = 0.3      # detik jeda napas antar adegan
 JEDA_DEFAULT = 0.5     # detik untuk [jeda] tanpa angka
-POLA_JEDA = re.compile(r"\[\s*jeda(?:\s+(\d+(?:[.,]\d+)?))?\s*\]", re.IGNORECASE)
+POLA_JEDA = re.compile(r"\[\s*jeda(?:\s+([^\]]*?))?\s*\]", re.IGNORECASE)   # isi kurung diperiksa terpisah
+POLA_ANGKA = re.compile(r"\d+(?:[.,]\d+)?")
+WPM_WAJAR = (80, 220)      # di luar rentang ini: peringatan
+WPM_BATAS = (40, 400)      # di luar rentang ini: ditolak (kode 2)
 POLA_KATA = re.compile(r"[0-9A-Za-zÀ-ÿ]+(?:[-'’.,][0-9A-Za-zÀ-ÿ]+)*")
 
 
@@ -35,16 +38,30 @@ def urai(baris_list):
     return hasil
 
 
-def estimasi(adegan, wpm=WPM_DEFAULT, jeda_adegan=JEDA_ADEGAN):
+def estimasi(adegan, wpm=WPM_DEFAULT, jeda_adegan=JEDA_ADEGAN, peringatan=None):
+    """Kembalikan (rincian, total). Bila `peringatan` (list) diberikan, catatan masalah input ditambahkan ke sana."""
     if wpm <= 0:
         raise ValueError("wpm harus lebih dari 0")
+    if peringatan is None:
+        peringatan = []
     rincian, total = [], 0.0
     for i, (label, teks) in enumerate(adegan):
         jeda = 0.0
         for m in POLA_JEDA.finditer(teks):
-            jeda += float(m.group(1).replace(",", ".")) if m.group(1) else JEDA_DEFAULT
+            isi = (m.group(1) or "").strip()
+            if not isi:
+                jeda += JEDA_DEFAULT
+            elif POLA_ANGKA.fullmatch(isi):
+                jeda += float(isi.replace(",", "."))
+            else:                                   # "[jeda abc]": bukan angka -> pakai jeda bawaan + beri tahu
+                jeda += JEDA_DEFAULT
+                peringatan.append(f"Adegan '{label}': penanda '{m.group(0)}' bukan angka; dipakai jeda bawaan "
+                                  f"{JEDA_DEFAULT:g} dtk. Tulis [jeda 1.5] untuk 1,5 dtk.")
         bersih = POLA_JEDA.sub(" ", teks)
         kata = hitung_kata(bersih)
+        if kata == 0 and jeda == 0:
+            peringatan.append(f"Adegan '{label}' tidak punya kata yang bisa dihitung (kosong atau hanya emoji/"
+                              "simbol) dan dihitung 0 dtk. Bila ada suara di adegan ini, tulis teksnya.")
         detik = kata / wpm * 60 + jeda + (jeda_adegan if i < len(adegan) - 1 else 0)
         rincian.append({"label": label, "kata": kata, "jeda_dtk": round(jeda, 1), "detik": round(detik, 1)})
         total += detik
@@ -63,6 +80,10 @@ def main(argv=None):
 
     if a.wpm <= 0 or a.target <= 0:
         print("Error: --wpm dan --target harus lebih dari 0.", file=sys.stderr)
+        return 2
+    if not (WPM_BATAS[0] <= a.wpm <= WPM_BATAS[1]):
+        print(f"Error: --wpm {a.wpm:g} tidak masuk akal (batas {WPM_BATAS[0]}-{WPM_BATAS[1]} kata/menit; "
+              f"wajar {WPM_WAJAR[0]}-{WPM_WAJAR[1]}, bicara santai sekitar {WPM_DEFAULT}).", file=sys.stderr)
         return 2
     try:
         if a.teks:
@@ -84,21 +105,32 @@ def main(argv=None):
     if not adegan or all(not t for _, t in adegan):
         print("Error: naskah kosong. Tulis minimal satu adegan.", file=sys.stderr)
         return 2
-    rincian, total = estimasi(adegan, a.wpm)
+    peringatan = []
+    if not (WPM_WAJAR[0] <= a.wpm <= WPM_WAJAR[1]):
+        peringatan.append(f"--wpm {a.wpm:g} di luar kisaran wajar {WPM_WAJAR[0]}-{WPM_WAJAR[1]} kata/menit; "
+                          "hasil kurang bisa diandalkan.")
+    rincian, total = estimasi(adegan, a.wpm, peringatan=peringatan)
     lebih = round(total - a.target, 1)
     status = "MELEBIHI" if lebih > 0 else ("PAS" if lebih >= -5 else "KEPENDEKAN")
     if a.json:
         print(json.dumps({"wpm": a.wpm, "target": a.target, "total_dtk": total, "selisih_dtk": lebih,
-                          "status": status, "adegan": rincian}, ensure_ascii=False, indent=2))
+                          "status": status, "peringatan": peringatan, "adegan": rincian}, ensure_ascii=False, indent=2))
     else:
-        print(f"{'Adegan':<24}{'Kata':>5}{'Jeda':>6}{'Detik':>7}")
+        # lebar kolom mengikuti isi (angka besar tidak melebur) dan selalu dipisah dua spasi
+        wk = max([4] + [len(str(r["kata"])) for r in rincian])
+        wj = max([4] + [len(str(r["jeda_dtk"])) for r in rincian])
+        wd = max([5] + [len(str(r["detik"])) for r in rincian])
+        print(f"{'Adegan':<24}  {'Kata':>{wk}}  {'Jeda':>{wj}}  {'Detik':>{wd}}")
         for r in rincian:
-            print(f"{r['label'][:23]:<24}{r['kata']:>5}{r['jeda_dtk']:>6}{r['detik']:>7}")
+            print(f"{r['label'][:23]:<24}  {r['kata']:>{wk}}  {r['jeda_dtk']:>{wj}}  {r['detik']:>{wd}}")
         print(f"Total {total} dtk (target {a.target:g} dtk, {a.wpm:g} kata/menit) -> {status}")
         if lebih > 0:
             print(f"PERINGATAN: lebih {lebih} dtk (~{int(lebih / 60 * a.wpm) + 1} kata). Ringkas adegan terpanjang.")
         elif status == "KEPENDEKAN":
-            print(f"Catatan: kurang {-lebih} dtk dari target; boleh tambah isi atau biarkan lebih singkat.")
+            print(f"Catatan: suara hanya {total} dtk dari target {a.target:g} dtk (kurang {-lebih} dtk). Ini wajar "
+                  "bila ada bagian visual tanpa suara; tambah isi hanya bila memang perlu.")
+        for w in peringatan:
+            print(f"PERINGATAN: {w}")
         print("Ini perkiraan; ukur ulang dengan rekaman suara asli.")
     return 1 if (a.strict and lebih > 0) else 0
 

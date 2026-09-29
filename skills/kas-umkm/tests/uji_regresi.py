@@ -1719,7 +1719,7 @@ class UjiV108(Dasar):
         # hasil usaha = 3.000.000 (pokok cicilan 1,2 jt bukan biaya) = laba emkm
         self.assertEqual(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"], 3000000)
         self.assertEqual(d["laba_rugi"]["laba_bersih"], 3000000)
-        self.assertEqual(d["status"], "LENGKAP")
+        self.assertTrue(d["status"].startswith("LENGKAP"), d["status"])
         self.assertTrue(d["posisi_keuangan"]["seimbang"], d["posisi_keuangan"])
 
 

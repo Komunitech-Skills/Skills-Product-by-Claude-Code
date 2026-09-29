@@ -91,6 +91,57 @@ class Uji(unittest.TestCase):
         with self.assertRaises(ValueError):
             d.estimasi([("A", "halo")], wpm=0)
 
+    def test_v101_adegan_emoji_diperingatkan(self):
+        kode, out, _ = jalan("--teks", "Hook | \U0001F600\U0001F525;;CTA | Klik keranjang kuning")
+        self.assertEqual(kode, 0)
+        self.assertIn("PERINGATAN: Adegan 'Hook'", out)
+        self.assertNotIn("Adegan 'CTA' tidak punya", out)
+        kode, out, _ = jalan("--teks", "Hook | \U0001F600;;B | halo", "--json")
+        data = json.loads(out)
+        self.assertEqual(len(data["peringatan"]), 1)
+        self.assertEqual(data["adegan"][0]["kata"], 0)
+
+    def test_v101_jeda_saja_tidak_diperingatkan(self):
+        p = []
+        d.estimasi([("A", "[jeda 2]")], peringatan=p)
+        self.assertEqual(p, [])
+
+    def test_v101_wpm_ekstrem(self):
+        kode, _, err = jalan("--teks", "a b c", "--wpm", "5000")
+        self.assertEqual(kode, 2)
+        self.assertIn("tidak masuk akal", err)
+        kode, _, err = jalan("--teks", "a b c", "--wpm", "10")
+        self.assertEqual(kode, 2)
+        kode, out, _ = jalan("--teks", "a b c", "--wpm", "300")     # di luar wajar tapi masih diterima
+        self.assertEqual(kode, 0)
+        self.assertIn("di luar kisaran wajar", out)
+        kode, out, _ = jalan("--teks", "a b c", "--wpm", "150")
+        self.assertNotIn("di luar kisaran wajar", out)
+
+    def test_v101_jeda_bukan_angka(self):
+        p = []
+        r, total = d.estimasi([("A", "halo [jeda abc] dunia")], peringatan=p)
+        self.assertEqual(r[0]["kata"], 2)                # "jeda abc" tidak dihitung sebagai kata
+        self.assertEqual(r[0]["jeda_dtk"], 0.5)          # jeda bawaan
+        self.assertEqual(len(p), 1)
+        self.assertIn("[jeda abc]", p[0])
+        r, _ = d.estimasi([("A", "x [jeda 1,5] y [JEDA] z")])
+        self.assertEqual(r[0]["jeda_dtk"], 2.0)
+
+    def test_v101_tabel_angka_besar_tidak_melebur(self):
+        _, out, _ = jalan("--teks", "a [jeda 40000] b")
+        baris = [b for b in out.splitlines() if b.startswith("Adegan 1")][0]
+        self.assertEqual(baris.split()[-3:], ["2", "40000.0", "40000.8"])
+
+    def test_v101_pesan_kependekan_tidak_menakutkan(self):
+        _, out, _ = jalan("--teks", " ".join(["kata"] * 20), "--target", "45")
+        self.assertIn("KEPENDEKAN", out)
+        self.assertIn("wajar bila ada bagian visual tanpa suara", out)
+
+    def test_v101_json_punya_peringatan_kosong(self):
+        _, out, _ = jalan("--teks", " ".join(["kata"] * 10), "--json")
+        self.assertEqual(json.loads(out)["peringatan"], [])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
