@@ -108,4 +108,5 @@ Ringkasan 3 kalimat: posisi kita, ancaman terbesar, peluang terbesar.
 - Script gagal (CSV rusak, nilai di luar 1-5, sumbu tidak ada): tampilkan pesan GAGAL-nya, perbaiki barisnya bersama pengguna.
 - Data lebih dari 90 hari: tandai "mungkin usang".
 - Pesaing raksasa (jaringan nasional): fokus pada apa yang tidak bisa mereka tiru (dekat, personal, fleksibel), bukan adu harga/skala.
+- Usaha kesehatan (klinik, apotek, praktik): saran promosi wajib mematuhi etika iklan layanan kesehatan — tanpa janji kesembuhan, testimoni pasien, harga banting, atau klaim "terbaik/nomor 1"; sarankan cek ke organisasi profesi/dinas kesehatan setempat.
 - Pengguna minta klaim yang menjatuhkan atau ulasan palsu: tolak sopan, tawarkan versi jujur berbasis bukti.

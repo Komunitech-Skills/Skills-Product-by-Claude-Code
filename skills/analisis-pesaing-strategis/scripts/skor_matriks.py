@@ -27,6 +27,8 @@ def angka(teks, nama, baris):
         v = float(t)
     except ValueError:
         raise MatriksError(f"Baris {baris}: nilai '{teks}' pada '{nama}' bukan angka.")
+    if v != v or v in (float("inf"), float("-inf")):
+        raise MatriksError(f"Baris {baris}: nilai '{teks}' pada '{nama}' bukan angka yang wajar.")
     return v
 
 
