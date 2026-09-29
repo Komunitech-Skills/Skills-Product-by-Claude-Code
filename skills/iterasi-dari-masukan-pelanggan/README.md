@@ -17,7 +17,7 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Chat WA, ulasan, dan komentar tercecer. Yang diperbaiki hanya keluhan yang paling terakhir atau paling pedas.
 **Sesudah (cukup ketik):** "Ini chat WA pelanggan, ulasan Shopee, dan komentar IG bulan September. Apa yang harus kami benahi dulu?"
-→ Laporan: "Pengiriman telat: 11 dari 51 masukan (21,6%), muncul di 4 kanal", "3 laporan rambut/ulat = Segera", backlog dengan ukuran berhasil,
+→ Laporan: "Pengiriman telat: 9 dari 51 masukan (17,6%), muncul di 4 kanal", "3 laporan rambut/ulat = Segera", backlog dengan ukuran berhasil,
 draf balasan, dan kabar perbaikan. Bulan depan: tren menunjukkan perbaikan berhasil atau belum.
 
 ## Cara pakai
