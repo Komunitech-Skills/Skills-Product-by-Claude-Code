@@ -216,6 +216,11 @@ def satu_putaran(args):
                 audit("konfirmasi_live_batal", {"alasan": "ganti mode", "id": state["sesi_live"].get("id")})
             state["sesi_live"] = None                     # ganti mode membatalkan konfirmasi live
             state["mode"] = mode
+        sesi = state.get("sesi_live")
+        if sesi and sesi.get("hash_konfigurasi") != hash_konfigurasi(cfg):
+            # konfigurasi berubah (walau nanti dikembalikan) -> sesi live batal; konfirmasi sekali pakai
+            audit("konfirmasi_live_batal", {"alasan": "konfigurasi berubah", "id": sesi.get("id")})
+            state["sesi_live"] = None
         sj = sidik_jari_strategi(cfg)
         if state.get("sidik_jari_strategi") != sj:
             if D(state["posisi_koin"]) > 0:
