@@ -12,6 +12,9 @@ menyelesaikan DAFTAR PERIKSA izin withdraw di layar bursa):
   python3 siapkan_live.py --konfigurasi bot/konfigurasi.json \
      --frasa "LIVE <kode> SAYA TANGGUNG RISIKONYA" --saya-sudah-cek-tanpa-withdraw
 Setiap perubahan konfigurasi mengubah kode -> konfirmasi lama tidak berlaku.
+Konfirmasi SEKALI PAKAI: terikat ke hash konfigurasi persis + waktu pembuatan (segel), wajib dipakai
+dalam 24 jam, dan batal bila mode berganti (live -> paper -> live wajib konfirmasi baru). Buku live
+(posisi & modal terpakai) tetap tersimpan, jadi batas modal total tetap menghitung posisi lama.
 Indodax: izin withdraw TIDAK diperiksa lewat API (skill sengaja tidak memanggil metode withdraw apa
 pun, termasuk yang baca-saja) -> daftar periksa manual WAJIB. Binance live: selain daftar periksa,
 izin diperiksa otomatis lewat GET /sapi/v1/account/apiRestrictions (endpoint baca-saja).
@@ -25,8 +28,10 @@ from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from inti import (D, WIB, KonfigurasiTidakValid, muat_konfigurasi, muat_state, rp, sidik_jari_penuh,  # noqa: E402
-                  sidik_jari_strategi, simpan_json_atomik, teks, tulis_audit, SUMBER_PAJAK)
+from inti import (D, WIB, KonfigurasiTidakValid, hash_konfigurasi, muat_konfigurasi, muat_state, rp,  # noqa: E402
+                  segel_konfirmasi, sidik_jari_penuh, sidik_jari_strategi, simpan_json_atomik, teks,
+                  tulis_audit, SUMBER_PAJAK)
+import uuid  # noqa: E402
 from jalankan_bot import FRASA_LIVE, bukti_paper  # noqa: E402
 
 DAFTAR_PERIKSA = {
@@ -144,13 +149,20 @@ def main(argv=None):
         print(teks_daftar_periksa(cfg["bursa"]))
         return 2
     sekarang = datetime.now(WIB)
+    waktu = sekarang.isoformat(timespec="seconds")
+    idk = uuid.uuid4().hex
+    hash_cfg = hash_konfigurasi(cfg)
     simpan_json_atomik(os.path.join(folder, "KONFIRMASI-LIVE.json"), {
+        "id": idk, "hash_konfigurasi": hash_cfg, "segel": segel_konfirmasi(idk, hash_cfg, waktu),
+        "sekali_pakai": True,
         "kode": kode, "frasa": frasa_benar, "pernyataan_kunci_tanpa_withdraw": True,
         "daftar_periksa_withdraw_selesai": True, "daftar_periksa": DAFTAR_PERIKSA[cfg["bursa"]],
         "cek_izin_otomatis": cfg["bursa"] == "binance",
-        "waktu": sekarang.isoformat(timespec="seconds"), "ringkasan": ringkasan(cfg)})
-    tulis_audit(os.path.join(folder, "audit.jsonl"), "konfirmasi_live", {"kode": kode}, None, sekarang)
+        "waktu": waktu, "ringkasan": ringkasan(cfg)})
+    tulis_audit(os.path.join(folder, "audit.jsonl"), "konfirmasi_live", {"kode": kode, "id": idk}, None, sekarang)
     print(f"Konfirmasi live tersimpan (kode {kode}). Jadwal/perintah live wajib memakai --izinkan-live.")
+    print("Konfirmasi ini SEKALI PAKAI: berlaku untuk sesi live berikutnya (mulai dalam 24 jam) dan batal bila "
+          "mode atau konfigurasi diubah.")
     return 0
 
 

@@ -72,7 +72,7 @@ SLANG = {
     "gaada": "tidak ada", "gada": "tidak ada", "gaenak": "tidak enak", "gasesuai": "tidak sesuai",
     "cacad": "cacat", "nunggu": "tunggu", "ditunggu": "tunggu", "menunggu": "tunggu", "antri": "antre",
     "antrian": "antrean", "restok": "restock", "smua": "semua", "sma": "sama", "utk": "untuk", "buat": "untuk",
-    "kakk": "kak", "kaka": "kak", "ka": "kak", "abis": "habis", "gt": "begitu", "gitu": "begitu",
+    "kakk": "kak", "kaka": "kak", "ka": "kak", "gt": "begitu", "gitu": "begitu",
 }
 # Frasa -> satu token (diterapkan setelah slang, sebelum pecah klausa)
 FRASA = [
@@ -143,7 +143,7 @@ TEMA_BAWAAN = [
      r"tumpah|penyok|segel|wadah|botol|toples|lakban|kresek"),
     ("harga", "Harga / ongkir", 2, r"harga|mahal|murah|terjangkau|ongkir|diskon|promo|sepadan|biaya|tarif|hemat|pricey|kemahalan|harganaik"),
     ("pengiriman", "Pengiriman / ketepatan waktu", 3, r"kirim|pengiriman|kurir|ojol|ojek|gojek|grab|shopeefood|gofood|telat|terlambat|datang|"
-     r"sampai|antar|tepatwaktu|delivery|resi|ekspedisi|jne|jnt|sicepat|anteraja|nyasar|kilat|sudahlama|ngaret|molor|dijemput|jemput"),
+     r"sampai|antar|tepatwaktu|delivery|resi|ekspedisi|jne|jnt|sicepat|anteraja|nyasar|kilat|ngaret|molor|dijemput|jemput"),
     ("layanan", "Layanan / respons admin & staf", 3, r"admin|layanan|pelayanan|pelayan|respons|responscepat|responslambat|balas|chat|ramah|"
      r"sopan|judes|galak|cuek|staf|pegawai|karyawan|kasir|barista|waiter|waitress|teknisi|montir|mekanik|seller|penjual|ditanggapi|"
      r"tanggap|sabar|informatif|amanah|dilayani|melayani"),
@@ -1084,6 +1084,17 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
         else:
             d["prioritas"] = "-"
     daftar.sort(key=lambda d: (-d["skor"], -d["keluhan"], d["id"]))
+    # tema yang menghitung keluhan yang sama (mis. tema kustom "bau_apek" + bawaan "bau_aroma") -> peringatan dobel
+    peringatan = list(meta.get("peringatan", []))
+    set_k = {t["id"]: {n_ for n_, i in enumerate(hasil_item) if "keluhan" in i["tema"].get(t["id"], [])} for t in tema}
+    label = {t["id"]: t["label"] for t in tema}
+    ids = [d["id"] for d in daftar if d["keluhan"] >= 2]
+    for x in range(len(ids)):
+        for y in range(x + 1, len(ids)):
+            a_, b_ = set_k[ids[x]], set_k[ids[y]]
+            if len(a_ & b_) >= 2 and len(a_ & b_) >= 0.8 * len(a_ | b_):
+                peringatan.append("tema \"%s\" dan \"%s\" menghitung %d keluhan yang sama - kemungkinan dobel; hapus salah satu lewat "
+                                  "\"hapus_tema\" di tema.json atau sebut sekali di laporan." % (label[ids[x]], label[ids[y]], len(a_ & b_)))
     tanpa = [i for i in hasil_item if not i["tema"]]
     kata = Counter(w for i in tanpa for w in re.findall(r"[a-z]{4,}", normalkan(i["teks"])) if w not in STOP)
     nps = None
@@ -1099,7 +1110,7 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
         "versi_script": VERSI, "total_masukan": n, "dibuang": dibuang,
         "sumber": [{k: v for k, v in s.items() if k in ("berkas", "kanal", "jenis", "kolom_teks", "kolom_nilai", "skala_nilai",
                                                           "kolom_tanggal", "baris", "responden", "catatan")} for s in meta.get("sumber", [])],
-        "peringatan": meta.get("peringatan", []),
+        "peringatan": peringatan,
         "per_kanal": dict(kanal.most_common()), "sentimen": {k: sent.get(k, 0) for k in ("positif", "netral", "negatif")},
         "nps": nps,
         "per_bulan": bulan_n,
