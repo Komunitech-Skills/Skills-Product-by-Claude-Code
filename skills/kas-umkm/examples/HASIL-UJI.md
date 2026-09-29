@@ -218,3 +218,24 @@ Temuan (berprioritas):
 
 ### Skor: **8,5/10** (lulus)
 Alasan: ketiga perbaikan v1.0.7 bekerja pada frasa baru di catat, `--kategori`, dan ekspor; negasi palsu tetap ditolak; semua angka tepat ke rupiah (0 mismatch), neraca emkm seimbang, laba emkm = hasil usaha (selisih satu-satunya = kapitalisasi aset yang diperingatkan), 93 tes lulus, tanpa regresi. Tidak naik ke 9 karena tebakan bahan pangan baru menimbulkan salah tebak prive→beli-stok pada kalimat rumah tangga yang umum (temuan 1); platform asli belum diuji.
+
+## Uji ulang (2026-09-29, akhir) — v1.0.8
+- **Penguji:** agent independen (bukan pembuat); salinan skill + `laporan-keuangan-emkm` di scratchpad `uji-0929-akhir`, Linux, Python 3.11, data fiktif; simulasi agent `claude-code`. `SKILL.md`/script tidak diubah.
+- **Versi:** `VERSI = "1.0.8"` di `kas.py` = `versi` catalog.csv 1.0.8 = SKILL.md/README (riwayat 1.0.8) ✅.
+- **Tes regresi:** `tests/uji_regresi.py` **95/95 OK** (1 dilewati: kasir-lokal tidak di sebelahnya); `laporan-keuangan-emkm/scripts/uji_regresi.py` **SEMUA UJI LULUS**; `validate.py --skill kas-umkm` ✅.
+- **Data sendiri:** "Warung Mbak Yati" fiktif, September 2026, **30 frasa `catat`** (Laci 1 jt, BRI 5 jt QRIS). Tiap frasa dicatat dulu tanpa kategori (melihat tebakan), lalu dengan kategori "pengguna" + `--ya`. Ditambah 19 probe (tidak disimpan).
+
+| Perbaikan v1.0.8 | Hasil |
+|---|---|
+| (a) konteks rumah tangga → prive + peringatan | ✅ 7/7 frasa data: "beli gula buat di rumah", "beli telur untuk sarapan anak", "belanja sayur untuk rumah", "beli minyak goreng buat makan keluarga", "belanja telur buat masak di rumah", "beli beras 5 kg buat makan keluarga" → `prive` (ditebak) + peringatan "Belanja ini untuk rumah atau untuk usaha?". Probe: "bwt di rumah", "utk rumah", "buat anak anak", "konsumsi keluarga", "sarapan keluarga", "belanja buat keluarga", "sabun buat rumah" → prive + peringatan ✅. |
+| rumah makan / produksi di rumah tetap `beli-stok` | ✅ "beli beras buat rumah makan", "beli terigu untuk produksi di rumah", "beli ayam potong untuk rumah pelanggan katering", "beli sayur untuk dapur rumah makan", probe "stok rumah makan", "rumah produksi", "rumah pembeli", "pesanan katering yang dimasak di rumah", "anak magang" → `beli-stok` tanpa peringatan rumah ✅. Tepi: "rumah sakit"/"rumah kos" → beli-stok (wajar, jarang). |
+| (b) PERTANYAAN BUNGA sekali per periode + `--bunga` | ✅ ekspor emkm memuat satu catatan "PERTANYAAN BUNGA (tanyakan SEKALI …)" untuk 2 cicilan, `perintah_pokok_saja` = `--bunga 16=0 --bunga 25=0`, `baris_cicilan` [16, 25]. Nomor baris diverifikasi terhadap emkm: tanpa baris bunga di bulan itu emkm berstatus SEMENTARA dan bertanya **per baris** (baris 16 & 25 — sama persis); dengan `perintah_pokok_saja` status **LENGKAP**, tanpa pertanyaan. |
+
+**Angka (Decimal penguji):** masuk 8.600.000, keluar 5.018.000, saldo Laci 4.317.000 / BRI 5.265.000 = **9.582.000**, **hasil usaha 4.227.000**, prive 895.000 (21,2%) — **semua cocok** `saldo`/`rekap`/ekspor. Emkm (`--utang-bank-awal 20000000`): **laba bersih 4.227.000 = hasil usaha**, neraca **seimbang** (aset 9.632.000 = kas 9.582.000 + sisa kasbon 50.000; utang 18.300.000). Tebakan kategori: **0 salah** dari 27 frasa berharapan. **Mismatch angka: 0.** dasbor-lokal `saldo-per-akun` atas DB ini juga cocok.
+
+Temuan:
+1. **[RENDAH]** "pokok angsuran KUR … **bunga dicatat terpisah**" ditolak `gabungan_pokok_denda` (negasi bentuk baru; aman, bisa dilewati dengan mengubah keterangan).
+2. **[INFO]** Catatan PERTANYAAN BUNGA tetap muncul walau bulan itu sudah ada baris "bunga KUR …" (emkm sendiri tidak akan bertanya); tidak merugikan, hanya satu pertanyaan ekstra.
+
+### Skor: **9/10** (lulus)
+Alasan: kedua perbaikan v1.0.8 bekerja pada data baru dan probe; pengecualian rumah makan/produksi/pelanggan tepat; petunjuk `--bunga` benar nomor barisnya dan menghapus pertanyaan per baris di emkm; semua angka tepat ke rupiah; 95 tes + suite emkm lulus; versi konsisten. Sisa temuan hanya kenyamanan. Platform asli di luar cakupan uji ini.
