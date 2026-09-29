@@ -645,12 +645,21 @@ class H1JamMundur(Folder):
 
     def test_lanjutkan_tidak_mereset_pengaman_jam(self):
         self.tulis_cfg(CFG_H1)
-        self.tick_pada("1000000000", "2026-10-01T08:00:00+07:00")
+        lalu = (datetime.now(WIB) - timedelta(minutes=30)).replace(microsecond=0)
+        self.tick_pada("1000000000", lalu.isoformat())
         jalankan(berhenti.main, ["--konfigurasi", self.cfgp])
         jalankan(berhenti.main, ["--konfigurasi", self.cfgp, "--lanjutkan", "--saya-sudah-cek"])
         st = self.state()
-        self.assertEqual(st["waktu_terakhir"], "2026-10-01T08:00:00+07:00")
+        self.assertEqual(st["waktu_terakhir"], lalu.isoformat())
         self.assertEqual(st["buku_rugi_harian"], {})
+
+    def test_lanjutkan_memperbaiki_waktu_masa_depan(self):
+        self.tulis_cfg(CFG_H1)
+        self.tick_pada("1000000000", "2099-01-01T08:00:00+07:00")   # jam pernah lompat jauh ke depan
+        jalankan(berhenti.main, ["--konfigurasi", self.cfgp])
+        kode, out = jalankan(berhenti.main, ["--konfigurasi", self.cfgp, "--lanjutkan", "--saya-sudah-cek"])
+        self.assertIn("lebih maju dari jam komputer", out)
+        self.assertLess(self.state()["waktu_terakhir"], "2099")
 
 
 class M1Redirect(Folder):

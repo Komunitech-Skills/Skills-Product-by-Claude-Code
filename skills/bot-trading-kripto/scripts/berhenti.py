@@ -24,7 +24,7 @@ import argparse
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -108,7 +108,17 @@ def main(argv=None):
             return 1
         st = muat_state(p_state, cfg)
         alasan_lama = st.get("alasan_berhenti")
-        # Catatan: waktu_terakhir (pengaman jam mundur) TIDAK di-reset.
+        # Catatan: waktu_terakhir (pengaman jam mundur) TIDAK di-reset, KECUALI tercatat jauh di masa
+        # depan (jam komputer pernah lompat maju); itu hanya diperbaiki lewat --lanjutkan yang ditinjau member.
+        catatan_jam = ""
+        wt = st.get("waktu_terakhir")
+        try:
+            if wt and datetime.fromisoformat(wt) > sekarang + timedelta(hours=1):
+                catatan_jam = (f" Catatan: putaran terakhir tercatat {wt}, lebih maju dari jam komputer sekarang; "
+                               "patokan waktu diatur ulang ke sekarang. Pastikan jam/NTP mesin bot benar.")
+                st["waktu_terakhir"] = sekarang.isoformat(timespec="seconds")
+        except ValueError:
+            st["waktu_terakhir"] = sekarang.isoformat(timespec="seconds")
         st.update(berhenti=False, alasan_berhenti=None, notif_berhenti_terkirim=False,
                   sidik_jari_strategi=sidik_jari_strategi(cfg), hari=None, ekuitas_awal_hari=None,
                   ekuitas_terakhir=None, buku_rugi_harian={})
@@ -118,7 +128,7 @@ def main(argv=None):
                 os.remove(p)
         tulis_audit(p_audit, "dilanjutkan", {"alasan_berhenti_sebelumnya": alasan_lama}, None, sekarang)
         print(f"Bot dilanjutkan. Alasan berhenti sebelumnya: {(alasan_lama or '-').rstrip('.')}. "
-              "Batas rugi harian dihitung ulang dari sekarang.")
+              "Batas rugi harian dihitung ulang dari sekarang." + catatan_jam)
         return 0
 
     # tulis STOP di SEMUA lokasi milik bot ini (folder bot, folder konfigurasi, global di home),
