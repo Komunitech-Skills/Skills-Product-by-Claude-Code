@@ -34,6 +34,14 @@ Semua konten diberi label konten AI dan kalimat pengungkapan: "Video ini dibuat 
 Penerima menyimpan akses klon hanya di akun sendiri dengan 2FA aktif, tidak membagikannya, tidak memberikan sampel ke pihak lain, dan memberi tahu pemberi bila terjadi kebocoran atau penyalahgunaan.
 Data pribadi (sampel wajah/suara) dipakai hanya untuk tujuan di atas.
 
+## 5A. Pelindungan data pribadi (UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi)
+- Rekaman wajah dan suara yang dipakai membuat klon termasuk **data biometrik**, yaitu data pribadi yang bersifat spesifik menurut UU No. 27/2022. Pemrosesannya hanya atas **persetujuan eksplisit** pemberi, untuk tujuan di Bagian 3.
+- Pemberi berhak: mengetahui data apa yang diproses dan untuk apa, meminta salinan, memperbaiki, **menarik persetujuan**, serta meminta data dihapus/dimusnahkan (rincian dan pengecualian mengikuti UU; konsultasikan bila perlu).
+- **Retensi dan penghapusan:** sampel dan model disimpan paling lama [sampai berakhirnya masa Bagian 4 / [ ] bulan]. Setelah itu atau setelah persetujuan dicabut, penerima menghapus sampel, model klon, dan salinan dari alat serta perangkat, dan memberi konfirmasi tertulis (tanggal penghapusan: [ ]).
+- **Pemrosesan oleh pihak ketiga:** alat yang dipakai ([nama alat]) memproses data di server penyedia, kemungkinan di luar Indonesia. Pemberi sudah diberi tahu dan menerima hal ini. Penerima sudah membaca kebijakan privasi/syarat penggunaan alat dan menonaktifkan pemakaian sampel untuk melatih model umum bila ada opsinya.
+- Bila terjadi kebocoran/penyalahgunaan, penerima memberi tahu pemberi secepatnya dan mengambil langkah pemulihan; kewajiban pemberitahuan resmi mengikuti UU.
+- Untuk anak di bawah 18 tahun atau penyandang disabilitas: formulir ini tidak cukup; hubungi advokat.
+
 ## 6. Pernyataan
 Saya (pemberi) menyatakan bahwa wajah/suara dalam bahan sumber adalah milik saya, saya memahami isi formulir ini, dan setuju secara sukarela tanpa paksaan.
 

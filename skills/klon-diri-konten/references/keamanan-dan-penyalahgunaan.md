@@ -26,3 +26,6 @@ Klon orang lain tanpa izin; testimoni atau endorsement palsu; klaim kesehatan/ke
 - **UU Pelindungan Data Pribadi** (UU 27/2022): wajah dan suara yang mengidentifikasi orang adalah data pribadi; memprosesnya butuh dasar sah seperti persetujuan yang jelas. Karena itu formulir persetujuan tertulis dan pembatasan tujuan penting bagi usaha Anda sebagai pengendali data.
 - **Hak cipta/hak terkait** dan perlindungan konsumen (UU 8/1999) dapat berlaku pada konten dan klaim iklan.
 Skill ini tidak menentukan pasal atau ancaman pidana untuk kasus tertentu; itu tugas advokat/penegak hukum.
+
+## Catatan iklan sensitif (klinik, kosmetik, suplemen)
+Avatar mengucapkan apa pun yang ditulis. Hindari klaim khasiat/hasil pasti dan testimoni rekaan; produk kesehatan/kosmetik umumnya punya aturan iklan dan izin edar (BPOM/Kemenkes). Cek aturan terbaru atau tanya ahli sebelum tayang.

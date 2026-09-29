@@ -13,11 +13,11 @@ Pemilik UMKM, kreator, konsultan, dan profesional yang ingin tampil rutin di Tik
 
 ## Contoh sebelum/sesudah
 - Sebelum: "Harus dandan, cari cahaya, rekam 20 kali; akhirnya seminggu tidak posting."
-- Sesudah: satu sesi rekam sampel, lalu tulis naskah dan render per video, ditinjau, diberi label AI, diunggah manual. Contoh: `examples/01-toko-hijab-12-video.md`. (Perbandingan tanpa skill vs dengan skill akan ditambahkan setelah uji independen.)
+- Sesudah: satu sesi rekam sampel, lalu tulis naskah dan render per video, ditinjau, diberi label AI, diunggah manual. Contoh: `examples/01-toko-hijab-12-video.md`. Perbandingan tanpa skill vs dengan skill: `examples/00-pembanding-tanpa-skill.md`.
 
 ## Cara pakai
 Ketik: "Saya mau bikin avatar AI diri sendiri untuk [usaha], [jumlah] video/bulan, anggaran Rp[...]." Skill bertanya sekali bila info kurang.
-Hitung paket: `python3 scripts/rencana_konten_avatar.py --paket paket.json --video 12 --menit 0.75 --kurs 16500` (Windows: `python` atau `py`; format di `examples/contoh-paket.json`, angka paket isi dari halaman harga resmi). Uji: `python3 tests/uji_regresi.py`.
+Hitung paket: `python3 scripts/rencana_konten_avatar.py --paket paket.json --video 12 --menit 0.75 --kurs 16500 --anggaran 500000` (Windows: `python` atau `py`; format di `examples/contoh-paket.json`, angka paket isi dari halaman harga resmi). Uji: `python3 tests/uji_regresi.py`.
 
 ## Instalasi singkat
 Salin folder `klon-diri-konten` ke folder skill platform Anda (OpenClaw, Codex, Claude Code, Cursor). Lokasi per platform: `docs/instalasi.md` dalam paket. Tidak butuh API key. Pasangkan dengan skill `studio-video-pendek-ai` untuk naskah.

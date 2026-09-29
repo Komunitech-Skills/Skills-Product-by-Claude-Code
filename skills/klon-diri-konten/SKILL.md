@@ -29,13 +29,13 @@ Jika pengguna ingin cepat: pakai default (1 orang = diri sendiri, wajah+suara, 8
 ## Langkah Kerja
 1. **Gerbang persetujuan (wajib, sebelum apa pun).** Jalankan checklist di `references/persetujuan-dan-verifikasi.md`. Pemilik wajah/suara = pengguna? Jika untuk orang lain, wajib `templates/formulir-persetujuan-klon.md` terisi dan ditandatangani; jika belum, berhenti dan tawarkan draf formulir. Untuk pihak yang tidak hadir/tidak setuju: tolak.
 2. **Pilih alat.** Baca `references/pilihan-alat.md` (harga bertanggal, kebijakan). Rekomendasi default untuk awam: SaaS berbayar, bukan open-source lokal (butuh GPU, instalasi rumit, sebagian bobot model non-komersial). Ringkasan jalur:
-   - Suara saja: ElevenLabs (klon suara instan butuh paket berbayar tertentu; cek paket saat ini).
-   - Wajah+suara, pemula: HeyGen atau Synthesia (verifikasi identitas/persetujuan lebih ketat di Synthesia).
+   - Suara saja: ElevenLabs (klon suara instan mulai paket Starter, klon profesional mulai Creator; dicek 2026-09-29).
+   - Wajah+suara, pemula: HeyGen, atau Synthesia paket Creator ke atas (avatar pribadi tidak ada di Starter; verifikasi persetujuan lebih ketat).
    - Edit + suara ringan dan bayar rupiah lewat app store: CapCut.
    Sebutkan harga **sebagai perkiraan bertanggal**, bukan janji, dan minta pengguna mengecek halaman resmi. Selalu tulis: skill ini tidak berafiliasi dengan merek yang disebut.
 3. **Hitung kecukupan paket.** Minta pengguna mengisi tabel paket (nama, harga, batas menit/kredit, kredit per menit, mata uang) dari halaman harga resmi, lalu jalankan:
-   `python3 scripts/rencana_konten_avatar.py --paket paket.json --video 12 --menit 0.75 --revisi 25 --kurs 16500`
-   (Windows: `python` atau `py`; format: `examples/contoh-paket.json`). Jika script tidak bisa dijalankan, hitung manual: menit = video x menit x (1 + revisi%); kredit = menit x kredit per menit; bandingkan dengan batas paket; biaya Rupiah = harga x kurs. Selalu sisakan cadangan revisi minimal 25%.
+   `python3 scripts/rencana_konten_avatar.py --paket paket.json --video 12 --menit 0.75 --revisi 25 --kurs 16500 --anggaran 500000`
+   (Windows: `python` atau `py`; format: `examples/contoh-paket.json`, isi dengan angka halaman resmi). Jika script tidak bisa dijalankan, hitung manual: menit = video x menit x (1 + revisi%); kredit = menit x kredit per menit; bandingkan dengan batas paket; biaya Rupiah = harga x kurs. Selalu sisakan cadangan revisi minimal 25%. **Aturan rekomendasi:** jangan pernah merekomendasikan paket berstatus `kurang` atau `lewat-anggaran`, atau paket yang tidak menyediakan fitur yang dibutuhkan (mis. avatar pribadi). Bila tidak ada yang muat, katakan terus terang dan tawarkan opsi (kurangi video/durasi/revisi, naikkan anggaran, rekam sebagian asli). Jangan mengarang paket atau angka.
 4. **Panduan rekam sampel.** Ikuti `references/panduan-rekam-sampel.md` (cahaya, audio, latar, pengaturan HP) dan naskah latihan 2-5 menit Indonesia di `references/naskah-latihan-rekam.md`. Sarankan rekam ulang bila ada noise/gema/bayangan; kualitas sampel menentukan hasil.
 5. **Alur konten bulanan** (`references/alur-bulanan.md`): rencana tema -> naskah lewat skill `studio-video-pendek-ai` (hook-isi-CTA, sulih suara) -> render avatar/suara di alat -> tinjau (lafal, angka, harga, klaim) -> beri **label AI** + kalimat pengungkapan di caption (`references/label-ai.md`, tercatat 2026-09-29; cek halaman resmi platform) -> unggah **manual**. Jangan janjikan atau klaim posting otomatis.
 6. **Keamanan** (`references/keamanan-dan-penyalahgunaan.md`): 2FA, jangan bagikan akun, hapus sampel bila tak dipakai, cadangan formulir, dan langkah jika ditiru (lapor platform, bukti, UU ITE/PDP, arahkan ke ahli hukum).
@@ -59,6 +59,6 @@ Ringkas: gerbang persetujuan (diri sendiri: lolos, simpan catatan tanggal), reko
 - Harga, kuota, dan kebijakan alat berubah cepat: semua angka di `references/pilihan-alat.md` bertanggal **2026-09-29**; jangan menyajikannya sebagai harga pasti. Bila pengguna memberi angka terbaru, pakai angka pengguna.
 - Data paket rusak/tidak masuk akal (harga negatif, batas 0, USD tanpa kurs): script berhenti dengan pesan GALAT; minta pengguna memperbaiki. Jangan menebak.
 - Info kurang: bertanya sekali; jika tidak dijawab, pakai default dan sebut asumsinya.
-- Bukan nasihat hukum. UU ITE/UU PDP dijelaskan garis besar (tanggal cek 2026-09-29); arahkan ke advokat untuk kasus nyata.
+- Bukan nasihat hukum. Iklan kesehatan/kosmetik (mis. klinik): jangan klaim hasil pasti, cocokkan dengan izin edar/aturan iklan yang berlaku dan konsultasikan ke ahli. UU ITE/UU PDP dijelaskan garis besar (tanggal cek 2026-09-29); arahkan ke advokat untuk kasus nyata.
 - Kebijakan persetujuan HeyGen/CapCut belum terverifikasi lewat halaman resmi pada tanggal cek; minta pengguna membaca syarat penggunaan terbaru sebelum mengunggah wajah/suara.
 - Tidak menyimpan atau meminta foto, rekaman, atau data identitas ke dalam percakapan; sampel diunggah langsung ke alat oleh pemiliknya.

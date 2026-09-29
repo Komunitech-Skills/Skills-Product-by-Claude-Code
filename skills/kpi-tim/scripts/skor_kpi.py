@@ -1307,36 +1307,49 @@ MIN_ORANG_ANONIM = 2
 
 def anonim_divisi(h, a, umum):
     """v1.0.2 (--tanpa-nama): skor divisi yang hanya berisi 1 orang dinilai = skor pribadi orang itu. Divisi seperti
-    itu DIGABUNG menjadi "Gabungan divisi kecil" (bila gabungannya >= 2 orang) atau DISEMBUNYIKAN dengan catatan.
+    itu DIGABUNG dengan divisi kecil lain, atau (bila hanya satu) dengan divisi terkecil lainnya, menjadi satu baris
+    "Gabungan"; rata-ratanya memakai bobot yang sama dengan skor perusahaan sehingga skor pribadi tidak bisa
+    dihitung balik dari skor perusahaan. Bila tidak ada divisi lain, skornya disembunyikan dengan catatan.
     Skor perusahaan tidak diubah. Kembalikan salinan h dengan daftar divisi baru."""
     def n_dinilai(d):
         if d["dasar_skor"] == "rata-rata individu":
             return d["jumlah_orang"] - len(d["belum_lengkap"])
         return d["jumlah_orang"] if d["jumlah_orang"] else MIN_ORANG_ANONIM   # KPI divisi tanpa daftar orang
-    kecil = [d for d in h["divisi"] if d["skor"] is not None and n_dinilai(d) < MIN_ORANG_ANONIM]
+    ada = [d for d in h["divisi"] if d["skor"] is not None]
+    kecil = [d for d in ada if n_dinilai(d) < MIN_ORANG_ANONIM]
     if not kecil:
         return h
-    tampil = [d for d in h["divisi"] if not any(d is k for k in kecil)]
-    n_total = sum(max(n_dinilai(d), 1) for d in kecil)
-    nama = ", ".join(d["nama"] for d in kecil)
-    if len(kecil) >= 2 and n_total >= MIN_ORANG_ANONIM:
-        skor = sum(d["skor"] for d in kecil) / len(kecil)
-        tampil.append({"nama": "Gabungan divisi kecil (%s)" % nama, "jumlah_orang": n_total, "skor": skor,
-                       "status": status_skor(skor, a.hijau, a.kuning), "dasar_skor": "gabungan divisi kecil",
-                       "kpi": [], "kurang": [], "skor_sementara": None, "belum_lengkap": [], "sebagian": False})
-        umum.append("Divisi %s hanya berisi 1 orang yang dinilai, jadi skornya digabung (rata-rata divisi) agar skor "
-                    "pribadi tidak terlihat di laporan tanpa nama." % nama)
+    lain = [d for d in ada if not any(d is k for k in kecil)]
+    kelompok = list(kecil)
+    if len(kecil) == 1 and lain:
+        kelompok.append(min(lain, key=lambda d: (n_dinilai(d), norm(d["nama"]))))
+    tampil = [d for d in h["divisi"] if not any(d is k for k in kelompok)]
+    nama_kecil = ", ".join(d["nama"] for d in kecil)
+    if len(kelompok) >= 2:
+        bobot = a.bobot_divisi_map or {}
+        w = [bobot.get(norm(d["nama"]), D1) if bobot else D1 for d in kelompok]
+        skor = sum(wi * d["skor"] for wi, d in zip(w, kelompok)) / sum(w) if sum(w) > 0 else None
+        tampil.append({"nama": "Gabungan: " + " + ".join(d["nama"] for d in kelompok),
+                       "jumlah_orang": sum(d["jumlah_orang"] for d in kelompok), "skor": skor,
+                       "status": status_skor(skor, a.hijau, a.kuning), "dasar_skor": "gabungan (privasi)",
+                       "kpi": [], "kurang": [], "skor_sementara": None,
+                       "belum_lengkap": [x for d in kelompok for x in d["belum_lengkap"]],
+                       "sebagian": any(d["sebagian"] for d in kelompok)})
+        umum.append("Divisi %s hanya berisi 1 orang yang dinilai; skornya digabung dengan %s agar skor pribadi "
+                    "tidak terlihat di laporan tanpa nama (rata-rata %s)." % (
+                        nama_kecil, ", ".join(d["nama"] for d in kelompok if not any(d is k for k in kecil)) or
+                        "divisi kecil lain", "tertimbang --bobot-divisi" if a.bobot_divisi_map else "divisi, bobot sama"))
     else:
-        for d in kecil:
-            tampil.append({"nama": d["nama"], "jumlah_orang": d["jumlah_orang"], "skor": None, "status": "belum",
-                           "dasar_skor": "disembunyikan (1 orang dinilai)", "kpi": [], "kurang": [],
-                           "skor_sementara": None, "belum_lengkap": list(d["belum_lengkap"]),
-                           "sebagian": d["sebagian"], "disembunyikan": True})
-        umum.append("Skor divisi %s tidak ditampilkan: hanya 1 orang yang dinilai, sehingga skor divisi = skor "
-                    "pribadi. Skor perusahaan tetap menghitungnya; bila divisinya sedikit, pertimbangkan menggabungkan "
-                    "divisi kecil di rencana KPI sebelum dikirim ke grup." % nama)
+        d = kecil[0]
+        tampil.append({"nama": d["nama"], "jumlah_orang": d["jumlah_orang"], "skor": None, "status": "belum",
+                       "dasar_skor": "disembunyikan (1 orang dinilai)", "kpi": [], "kurang": [],
+                       "skor_sementara": None, "belum_lengkap": list(d["belum_lengkap"]),
+                       "sebagian": d["sebagian"], "disembunyikan": True})
+        umum.append("Skor divisi %s tidak ditampilkan: hanya 1 orang yang dinilai, sehingga skor divisi = skor pribadi. "
+                    "Karena tidak ada divisi lain untuk digabung, skor perusahaan pun sama dengan skor orang itu; "
+                    "laporan tanpa nama tidak bisa menyamarkannya." % nama_kecil)
     urut = {norm(d["nama"]): i for i, d in enumerate(h["divisi"])}
-    tampil.sort(key=lambda d: urut.get(norm(d["nama"]), len(urut)))
+    tampil.sort(key=lambda d: urut.get(norm(d["nama"].replace("Gabungan: ", "").split(" + ")[0]), len(urut)))
     h2 = dict(h)
     h2["divisi"] = tampil
     return h2
