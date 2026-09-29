@@ -22,3 +22,10 @@ pantau-pasar-kripto, laporan-harian-usaha) sengaja tidak dimasukkan.
 
 Semua bundle sudah diuji `build.py --izinkan-draft` (2026-09-24) dan berhasil.
 Penjualan nyata menunggu: status skill `rilis` + `tier_final`/`harga_final_idr` dari pemilik.
+
+Bundle baru (2026-09-29, harga bundle belum diusulkan — menunggu pemilik):
+- `paket-kantor-manajemen` (16 skill): pendamping `solusi-vip/kantor-manajemen/`. Sengaja tanpa
+  `laporan-harian-usaha` (tier vip) serta `frappe-books-usaha`/`dolibarr-usaha` (butuh aplikasi
+  terpasang; pembeli memilih salah satu).
+- `paket-kripto-keuangan` (5 skill): pendamping `solusi-vip/kripto-keuangan/`. Sengaja tanpa
+  `pantau-pasar-kripto` (tier vip); tanpa auto-trading dan tanpa rekomendasi beli/jual.
