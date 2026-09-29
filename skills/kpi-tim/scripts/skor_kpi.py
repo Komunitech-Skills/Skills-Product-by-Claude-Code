@@ -206,8 +206,8 @@ def bulat(d, n=1):
     return d.quantize(q, rounding=ROUND_HALF_UP)
 
 
-def fmt_angka(d, desimal=2):
-    """1234567.5 -> '1.234.567,5' (tanpa nol di belakang)."""
+def fmt_angka(d, desimal=2, tetap=False):
+    """1234567.5 -> '1.234.567,5' (tanpa nol di belakang, kecuali tetap=True)."""
     if d is None:
         return "-"
     d = bulat(d, desimal)
@@ -216,7 +216,7 @@ def fmt_angka(d, desimal=2):
     s = format(d, "f")
     if "." in s:
         bulat_, pecahan = s.split(".")
-        pecahan = pecahan.rstrip("0")
+        pecahan = pecahan if tetap else pecahan.rstrip("0")
     else:
         bulat_, pecahan = s, ""
     grup = []
@@ -242,11 +242,11 @@ def fmt_nilai(d, satuan):
 
 
 def fmt_pct(d):
-    return "-" if d is None else fmt_angka(bulat(d, 1), 1) + "%"
+    return "-" if d is None else fmt_angka(bulat(d, 1), 1, True) + "%"
 
 
 def fmt_skor(d):
-    return "-" if d is None else fmt_angka(bulat(d, 1), 1)
+    return "-" if d is None else fmt_angka(bulat(d, 1), 1, True)
 
 
 def fmt_tren(d):
@@ -254,10 +254,10 @@ def fmt_tren(d):
         return ""
     d = bulat(d, 1)
     if d > 0:
-        return "▲" + fmt_angka(d, 1)
+        return "▲" + fmt_angka(d, 1, True)
     if d < 0:
-        return "▼" + fmt_angka(-d, 1)
-    return "＝0"
+        return "▼" + fmt_angka(-d, 1, True)
+    return "＝0,0"
 
 
 def s_dec(d, n=4):
@@ -642,6 +642,10 @@ def baca_realisasi(path, periode_default, izinkan_minus):
         if not norm(r.get("kpi")) and not str(teks_real).strip():
             continue
         label = "Realisasi baris %d (%s / %s)" % (no, r.get("orang") or r.get("divisi") or "?", r.get("kpi") or "?")
+        if norm(r.get("status_draf")) == "perlu konfirmasi":
+            masalah.append("%s: masih DRAF dari teks (status_draf = PERLU KONFIRMASI) -> dilewati. Setelah "
+                           "pemilik/manajer memastikan angkanya, ubah status_draf menjadi 'dikonfirmasi'." % label)
+            continue
         try:
             t = str(teks_real).strip()
             m = re.fullmatch(r"\s*([\d.,]+)\s*/\s*([\d.,]+)\s*", t) if not isinstance(teks_real, Num) else None
@@ -1235,6 +1239,13 @@ def cmd_baca_teks(a):
             nums = ambil_angka(kl)
             if not nums:
                 continue
+            if all("target" in sb for _, _, sb in nums) and draf and draf[-1]["_kutipan"] == baris_asli.strip():
+                # "..., target 15" -> target yang disebut untuk klausa sebelumnya
+                sebelumnya = draf[-1]
+                if nums[0][0] != sebelumnya["_target"]:
+                    sebelumnya["cek"] = "; ".join(x for x in (sebelumnya["cek"], "target di chat %s berbeda dari rencana %s"
+                                                              % (fmt_angka(nums[0][0]), fmt_angka(sebelumnya["_target"]))) if x)
+                continue
             if kini is None:
                 gagal.append({"kutipan": baris_asli.strip(), "alasan": "nama orang tidak dikenali"})
                 continue
@@ -1263,13 +1274,16 @@ def cmd_baca_teks(a):
                 cat.append("target di chat %s berbeda dari rencana %s" % (fmt_angka(target_sebut[0]), fmt_angka(b["target"])))
             draf.append({"periode": a.periode, "divisi": b["divisi"], "orang": b["orang"], "kpi": b["kpi"],
                          "realisasi": s_dec(real[0]), "catatan": "dari teks: " + baris_asli.strip()[:120],
-                         "status_draf": "PERLU KONFIRMASI", "cek": "; ".join(cat)})
+                         "status_draf": "PERLU KONFIRMASI", "cek": "; ".join(cat),
+                         "_kutipan": baris_asli.strip(), "_target": b["target"]})
     if a.keluar:
         tulis_csv(a.keluar, ["periode", "divisi", "orang", "kpi", "realisasi", "catatan", "status_draf", "cek"], draf)
-    data = {"ok": True, "draf": draf, "tidak_terbaca": gagal, "file": a.keluar}
+    data = {"ok": True, "draf": ke_json(draf), "tidak_terbaca": gagal, "file": a.keluar}
+    satuan = {(norm(b["orang"]), norm(b["kpi"])): b["satuan"] for b in rp}
     L = ["DRAF realisasi dari teks — WAJIB dicek sebelum dipakai:"]
     for d in draf:
-        L.append("- %s | %s = %s%s" % (d["orang"], d["kpi"], d["realisasi"], " (cek: %s)" % d["cek"] if d["cek"] else ""))
+        nilai = fmt_nilai(Decimal(d["realisasi"]), satuan.get((norm(d["orang"]), norm(d["kpi"])), ""))
+        L.append("- %s | %s = %s%s" % (d["orang"], d["kpi"], nilai, " (cek: %s)" % d["cek"] if d["cek"] else ""))
     if gagal:
         L.append("Tidak terbaca (isi manual):")
         for g in gagal:
@@ -1352,7 +1366,7 @@ def cmd_okr(a):
             L.append("   %s %s: %s" % (IKON[k["status"]], k["key_result"], fmt_angka(bulat(k["progres"], 2), 2)))
     if cat:
         L += ["⚠️ " + c for c in cat]
-    L.append("Progres 0-1,0. " + ("🟢 ≥ waktu berjalan, 🟡 ≥ 70%% dari itu, 🔴 di bawahnya." if jalan is not None
+    L.append("Progres 0-1,0. " + ("🟢 ≥ waktu berjalan, 🟡 ≥ 70% dari itu, 🔴 di bawahnya." if jalan is not None
                                   else "🟢 ≥0,7 🟡 ≥0,4 🔴 <0,4 (akhir periode). OKR tidak untuk menilai gaji."))
     cetak(a, {"ok": True, "periode": a.periode, "waktu_berjalan": jalan, "objectives": hasil, "catatan": cat}, "\n".join(L))
     return 0
@@ -1438,11 +1452,15 @@ def main(argv=None):
         return 1
     try:
         return PERINTAH[a.cmd](a)
-    except Gagal as e:
+    except (Gagal, OSError) as e:
+        pesan = str(e)
+        if isinstance(e, OSError):
+            pesan = ("File/folder tidak bisa dibaca atau ditulis (%s). Jika file sedang dibuka di Excel, "
+                     "tutup dulu, atau pilih lokasi lain." % (getattr(e, "filename", None) or e))
         if getattr(a, "json", False):
-            print(json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False, indent=2))
+            print(json.dumps({"ok": False, "error": pesan}, ensure_ascii=False, indent=2))
         else:
-            print("❌ " + str(e))
+            print("❌ " + pesan)
         return 1
 
 

@@ -431,7 +431,7 @@ def susun_data(tabel, args, catatan):
         else:
             catatan.append(f"Kolom {h!r} campuran angka & teks ({terbaca} angka, {gagal} tidak terbaca), diabaikan -- rapikan dulu bila ingin dianalisis.")
     if not any("nilai" in k for k in kolom):
-        raise InputError("tidak ada kolom angka yang terbaca selain tanggal")
+        raise InputError("tidak ada kolom angka yang terbaca selain tanggal (log belum diisi, atau angkanya tertulis sebagai teks)")
 
     targets = {}
     for k in kolom:
@@ -535,6 +535,11 @@ def fmt_angka(x, uang=False, des=2):
     return tanda + s + ("," + pecahan if pecahan else "")
 
 
+def fmt_satu(x):
+    """Selalu 1 angka desimal dengan koma: 7 -> '7,0', 6.79 -> '6,8'."""
+    return str(D(x).quantize(D("0.1"), rounding=ROUND_HALF_UP)).replace(".", ",")
+
+
 def fmt_tgl(t, panjang=False):
     return f"{HARI_ID[t.weekday()]}, {t.day} {BULAN_ID[t.month - 1]}" + (f" {t.year}" if panjang else "")
 
@@ -626,9 +631,9 @@ def evaluasi_metrik(k, arah, target, tgl_lap, uang):
         if z is not None:
             zz = z * tanda
             if zz >= 3:
-                naikkan(3, f"{fmt_angka(abs(z), des=1)}σ {posisi} rata-rata {dasar['n']} hari sebelumnya ({fmt_angka(dasar['rata'], uang)}) -- lewat batas bahaya 3σ")
+                naikkan(3, f"{fmt_satu(abs(z))}σ {posisi} rata-rata {dasar['n']} hari sebelumnya ({fmt_angka(dasar['rata'], uang)}) -- lewat batas bahaya 3σ")
             elif zz >= 2:
-                naikkan(2, f"{fmt_angka(abs(z), des=1)}σ {posisi} rata-rata {dasar['n']} hari sebelumnya ({fmt_angka(dasar['rata'], uang)}) -- lewat batas waspada 2σ")
+                naikkan(2, f"{fmt_satu(abs(z))}σ {posisi} rata-rata {dasar['n']} hari sebelumnya ({fmt_angka(dasar['rata'], uang)}) -- lewat batas waspada 2σ")
             k7 = sisi_beruntun(titik, dasar["rata"], a)
             if k7 >= 7:
                 naikkan(2, f"{k7} hari tercatat berturut-turut {posisi} rata-rata -- pola bergeser, bukan kebetulan sehari")
