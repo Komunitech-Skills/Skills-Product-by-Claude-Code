@@ -46,7 +46,7 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-VERSI = "1.1.0"
+VERSI = "1.1.1"
 D0 = Decimal(0)
 D100 = Decimal(100)
 
@@ -1909,6 +1909,107 @@ def bangun_tabel_ekspor(rencana, per_periode, ok, dv):
     return T
 
 
+LABEL_LAINNYA = "Lainnya"
+
+
+def lindungi_k_anonim(rencana, hitung, k, a):
+    """v1.1.1 (ekspor-db --anonim): k-anonimitas untuk layar bersama / Grist.
+    1. Divisi dengan 1..k-1 orang di rencana digabung menjadi satu kelompok "Lainnya"; bila kelompok itu masih
+       < k orang, divisi terkecil lain ikut digabung sampai >= k. Skor kelompok = rata-rata skor divisi
+       anggotanya (bobot sama atau --bobot-divisi, sama seperti skor perusahaan), jadi skor pribadi tidak bisa
+       dihitung balik dari skor perusahaan. KPI tingkat divisi milik divisi yang digabung tidak diekspor.
+    2. Baris per orang (skor_orang, skor_kpi tingkat orang) hanya diekspor untuk orang yang "profil KPI"-nya
+       (himpunan nama KPI) sama dengan >= k orang lain di kelompok yang sama (termasuk dirinya). Orang lain
+       tetap dihitung di skor divisi & perusahaan, hanya baris pribadinya yang tidak diekspor.
+    3. Target, ambang, dan realisasi per orang dikosongkan (bisa membedakan orang); rencana per orang diganti
+       satu baris per profil KPI tanpa target.
+    Kembalikan (rencana_ekspor, hitung_baru, catatan)."""
+    per_div, nama_div = {}, {}
+    for b in rencana:
+        nama_div.setdefault(norm(b["divisi"]), b["divisi"])
+        if b["orang"]:
+            per_div.setdefault(norm(b["divisi"]), set()).add(norm(b["orang"]))
+    jumlah = {d: len(per_div.get(d, ())) for d in nama_div}
+    kecil = sorted(d for d, n in jumlah.items() if 0 < n < k)
+    gabung = list(kecil)
+    if gabung:
+        sisa = sorted((d for d in jumlah if d not in gabung and jumlah[d] > 0), key=lambda d: (jumlah[d], d))
+        while sum(jumlah[d] for d in gabung) < k and sisa:
+            gabung.append(sisa.pop(0))
+        if len(gabung) == 1:                       # satu divisi kecil sendirian: tetap disamarkan dengan divisi lain
+            if sisa:
+                gabung.append(sisa.pop(0))
+    label = {d: (LABEL_LAINNYA if d in gabung else nama_div[d]) for d in nama_div}
+    total_orang = sum(jumlah.values())
+    catatan = []
+    if gabung:
+        catatan.append("%d divisi dengan kurang dari %d orang digabung menjadi '%s'." % (len(kecil), k, LABEL_LAINNYA)
+                       if kecil else "")
+    # profil KPI per orang (semua periode rencana)
+    profil, div_orang, tampil_orang = {}, {}, {}
+    for b in rencana:
+        if b["orang"]:
+            n = norm(b["orang"])
+            profil.setdefault(n, set()).add(norm(b["kpi"]))
+            div_orang[n] = norm(b["divisi"])
+    kelompok = {}
+    for n, pr in profil.items():
+        kelompok.setdefault((label[div_orang[n]], frozenset(pr)), []).append(n)
+    terbit = {n for anggota in kelompok.values() if len(anggota) >= k and total_orang >= k for n in anggota}
+    disembunyikan = len(profil) - len(terbit)
+    if disembunyikan:
+        catatan.append("%d dari %d orang tidak diekspor per orang (profil KPI-nya dimiliki kurang dari %d orang); "
+                       "tetap dihitung di skor divisi & perusahaan." % (disembunyikan, len(profil), k))
+    catatan.append("Target, ambang, dan realisasi per orang dikosongkan di mode anonim.")
+    # rencana: KPI divisi dari divisi yang tidak digabung + satu baris per profil (tanpa target)
+    renc, sudah = [], set()
+    for b in rencana:
+        if b["orang"]:
+            if norm(b["orang"]) not in terbit:
+                continue
+            kunci = (b["periode"], label[norm(b["divisi"])], norm(b["kpi"]), b["satuan"], b["arah"], b["bobot"])
+            if kunci in sudah:
+                continue
+            sudah.add(kunci)
+            renc.append(dict(b, orang="", divisi=label[norm(b["divisi"])], target=None, ambang=None, sumber=""))
+        elif norm(b["divisi"]) not in gabung:
+            renc.append(b)
+    # skor per periode
+    bobot = a.bobot_divisi_map or {}
+    baru, skor_kel_lalu = {}, {}
+    for p, h in hitung.items():
+        orang = []
+        for o in h["orang"]:
+            if norm(o["nama"]) not in terbit:
+                continue
+            kpi = [dict(x, target=None, ambang=None, realisasi=None) for x in o["kpi"]]
+            orang.append(dict(o, divisi=label[norm(o["divisi"])], kpi=kpi))
+        divisi = [d for d in h["divisi"] if norm(d["nama"]) not in gabung]
+        anggota = [d for d in h["divisi"] if norm(d["nama"]) in gabung]
+        if anggota:
+            ada = [d for d in anggota if d["skor"] is not None]
+            w = [bobot.get(norm(d["nama"]), Decimal(1)) if bobot else Decimal(1) for d in ada]
+            skor = (sum(wi * d["skor"] for wi, d in zip(w, ada)) / sum(w)) if ada and sum(w) > 0 else None
+            divisi.append({"nama": LABEL_LAINNYA, "jumlah_orang": sum(d["jumlah_orang"] for d in anggota),
+                           "skor": skor, "status": status_skor(skor, a.hijau, a.kuning),
+                           "dasar_skor": "gabungan %d divisi (privasi)" % len(anggota), "kpi": [], "kurang": [],
+                           "skor_sementara": None, "rata_individu": None,
+                           "belum_lengkap": [x for d in anggota for x in d["belum_lengkap"]],
+                           "sebagian": len(ada) < len(anggota) or any(d["sebagian"] for d in anggota),
+                           "tren": None})
+        baru[p] = dict(h, orang=orang, divisi=divisi)
+    urut = sorted(baru)
+    for i, p in enumerate(urut):
+        lalu = baru[p].get("periode_lalu")
+        if not lalu or lalu not in baru:
+            continue
+        kini = next((d for d in baru[p]["divisi"] if d["nama"] == LABEL_LAINNYA), None)
+        dulu = next((d for d in baru[lalu]["divisi"] if d["nama"] == LABEL_LAINNYA), None)
+        if kini and dulu and kini["skor"] is not None and dulu["skor"] is not None:
+            kini["tren"] = kini["skor"] - dulu["skor"]
+    return renc, baru, [c for c in catatan if c]
+
+
 def cmd_ekspor_db(a):
     import sqlite3
     import shutil
@@ -1950,16 +2051,22 @@ def cmd_ekspor_db(a):
     ok, dv = (lambda x: x), (lambda x: x)
     kunci_path = folder / "kunci-kode-RAHASIA.csv"
     peta = None
+    rencana_ekspor, catatan_privasi = rencana, []
+    if a.k_anonim < 1:
+        raise Gagal("--k-anonim minimal 1 (default 3).")
+    if a.anonim and a.k_anonim >= 2:
+        rencana_ekspor, hitung, catatan_privasi = lindungi_k_anonim(rencana, hitung, a.k_anonim, a)
     if a.anonim:
         peta = _baca_kunci(kunci_path)
         semua_orang = sorted({b["orang"] for b in rencana if b["orang"]})
-        semua_divisi = sorted({b["divisi"] for b in rencana})
+        semua_divisi = sorted({b["divisi"] for b in rencana_ekspor} |
+                              {d["nama"] for h in hitung.values() for d in h["divisi"]})
         _buat_kode("orang", semua_orang, peta, "P", max(2, len(str(len(semua_orang) + len(peta["orang"])))))
         if a.anonim_divisi:
             _buat_kode("divisi", semua_divisi, peta, "D", 2)
         ok = lambda x: peta["orang"][norm(x)] if x else x
         dv = (lambda x: peta["divisi"][norm(x)]) if a.anonim_divisi else (lambda x: x)
-    T = bangun_tabel_ekspor(rencana, list(hitung.items()), ok, dv)
+    T = bangun_tabel_ekspor(rencana_ekspor, list(hitung.items()), ok, dv)
     if a.anonim:                          # urutan sisip tidak boleh membocorkan urutan abjad nama asli
         for t in T:
             T[t].sort(key=lambda r: tuple("" if v is None else str(v) for v in r))
@@ -1977,6 +2084,8 @@ def cmd_ekspor_db(a):
                 conn.executemany("INSERT INTO %s VALUES (%s)" % (t, ",".join("?" * len(baris[0]))), baris)
         meta = {"skema": "1", "dibuat_oleh": "kpi-tim %s" % VERSI, "anonim": "ya" if a.anonim else "tidak",
                 "divisi_anonim": "ya" if (a.anonim and a.anonim_divisi) else "tidak",
+                "k_anonim": str(a.k_anonim) if a.anonim else "-",
+                "catatan_privasi": " ".join(catatan_privasi),
                 "periode": ",".join(hitung), "hijau": s_dec(a.hijau), "kuning": s_dec(a.kuning),
                 "cap": s_dec(a.cap), "data_kosong": a.data_kosong, "peringatan_lokal": PERINGATAN_LOKAL,
                 "dibuat_pada": datetime.date.today().isoformat()}
@@ -1997,7 +2106,8 @@ def cmd_ekspor_db(a):
                     "divisi": {norm(b["divisi"]): b["divisi"] for b in rencana}}
             for jenis in ("orang", "divisi"):
                 for n, kode in sorted(peta[jenis].items(), key=lambda kv: kv[1]):
-                    w.writerow([jenis, kode, asli[jenis].get(n, n)])
+                    w.writerow([jenis, kode, asli[jenis].get(n, n) if n != norm(LABEL_LAINNYA) or n in asli[jenis]
+                                else "%s (gabungan divisi kecil)" % LABEL_LAINNYA])
         berkas.append(str(kunci_path))
     if a.grist:
         gd = folder / "grist"
@@ -2009,7 +2119,8 @@ def cmd_ekspor_db(a):
         berkas.append(str(gd / "PETUNJUK-IMPOR-GRIST.md"))
     perintah = 'datasette -i "%s" -m "%s" --host 127.0.0.1' % (file_db, folder / "kpi-metadata.yml")
     data = {"ok": True, "versi": VERSI, "db": str(file_db), "periode": list(hitung), "periode_dilewati": dilewati,
-            "anonim": bool(a.anonim), "jumlah_baris": {t: len(T[t]) for t in T}, "berkas": berkas,
+            "anonim": bool(a.anonim), "k_anonim": a.k_anonim if a.anonim else None,
+            "catatan_privasi": catatan_privasi, "jumlah_baris": {t: len(T[t]) for t in T}, "berkas": berkas,
             "peringatan_data_jumlah": len(peringatan), "perintah_datasette": perintah,
             "peringatan_lokal": PERINGATAN_LOKAL}
     L = ["✅ Database KPI ditulis: %s" % file_db,
@@ -2017,8 +2128,13 @@ def cmd_ekspor_db(a):
          "Baris: " + ", ".join("%s %d" % (t, len(T[t])) for t in T),
          "Mode: %s" % ("ANONIM (kode P01.., nama ada di kunci-kode-RAHASIA.csv; simpan terpisah, jangan dibagikan)"
                        if a.anonim else "dengan nama orang (data pribadi karyawan)")]
+    for c in catatan_privasi:
+        L.append("🔒 " + c)
+    if a.anonim and a.k_anonim < 2:
+        L.append("⚠️ --k-anonim 1: hanya nama yang diganti kode. Pada tim kecil, nama KPI, target, dan jumlah orang "
+                 "per divisi bisa mengungkap siapa orangnya. Jangan tampilkan di layar bersama.")
     kecil = []
-    if a.anonim and not a.anonim_divisi:
+    if a.anonim and not a.anonim_divisi and a.k_anonim < 2:
         per_div = {}
         for b in rencana:
             if b["orang"]:
@@ -2144,6 +2260,9 @@ def buat_parser():
     p.add_argument("--izinkan-minus", action="store_true")
     p.add_argument("--anonim", action="store_true", help="Ganti nama orang dengan kode P01.. (kunci di file terpisah)")
     p.add_argument("--anonim-divisi", action="store_true", help="Dengan --anonim: nama divisi juga jadi kode D01..")
+    p.add_argument("--k-anonim", type=int, default=3,
+                   help="Dengan --anonim: minimal orang per kelompok yang ditampilkan (default 3). Divisi lebih kecil "
+                        "digabung jadi 'Lainnya'; orang dengan profil KPI unik tidak diekspor per orang. 1 = hanya kode")
     p.add_argument("--grist", action="store_true", help="Tulis juga satu CSV per tabel + petunjuk impor Grist")
     p.add_argument("--timpa", action="store_true", help="Ganti kpi.db yang sudah ada")
     umum(p)

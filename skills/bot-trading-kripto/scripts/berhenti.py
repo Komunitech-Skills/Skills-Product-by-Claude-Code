@@ -75,7 +75,7 @@ def main(argv=None):
         if os.path.exists(p_stop):
             os.remove(p_stop)
         tulis_audit(p_audit, "dilanjutkan", {"alasan_berhenti_sebelumnya": alasan_lama}, None, sekarang)
-        print(f"Bot dilanjutkan. Alasan berhenti sebelumnya: {alasan_lama or '-'}. "
+        print(f"Bot dilanjutkan. Alasan berhenti sebelumnya: {(alasan_lama or '-').rstrip('.')}. "
               "Batas rugi harian dihitung ulang dari sekarang.")
         return 0
 

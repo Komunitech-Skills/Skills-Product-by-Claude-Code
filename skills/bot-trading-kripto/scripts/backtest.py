@@ -20,6 +20,7 @@ import json
 import os
 import sys
 from datetime import datetime, timezone
+from decimal import InvalidOperation
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -52,7 +53,10 @@ def parse_harga(s):
         s = s.replace(".", "").replace(",", ".")
     elif "," in s:
         s = s.replace(",", ".")
-    x = D(s)
+    try:
+        x = D(s)
+    except InvalidOperation:
+        raise ValueError(f"harga '{s}' bukan angka")
     if not x.is_finite() or x <= 0:
         raise ValueError("harga harus > 0")
     return x
@@ -167,7 +171,9 @@ def main(argv=None):
         cfg = muat_konfigurasi(a.konfigurasi)
         data, rusak = baca_csv(a.csv)
         if len(data) < 2:
-            raise KonfigurasiTidakValid(f"Data valid hanya {len(data)} baris; butuh minimal 2.")
+            raise KonfigurasiTidakValid(
+                f"Data valid hanya {len(data)} baris; butuh minimal 2. Baris rusak: "
+                + (", ".join(f"{r['baris']} ({r['alasan']})" for r in rusak[:10]) or "-"))
     except KonfigurasiTidakValid as e:
         print(json.dumps({"status": "error", "pesan": str(e)}, ensure_ascii=False) if a.keluaran == "json" else f"Error: {e}")
         return 1
