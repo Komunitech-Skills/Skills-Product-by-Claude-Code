@@ -124,7 +124,7 @@ Semua tindakan AI tercatat atas nama pemilik kunci di papan (mis. komentar "Pemi
 ## 7. Tag awal & pengaturan yang disarankan
 - Tag contoh: Pembayaran, Pengiriman, Tampilan, Harga, Produk baru, Layanan. Dibuat lewat Settings > Tags atau perintah skill `tag-buat` (butuh Administrator).
 - **Settings > Privacy**: pilih papan **publik** (siapa pun boleh melihat) atau **privat** (harus login). Bila papan publik, jangan menaruh data pribadi pelanggan di pos (bagian 9).
-- **Settings > Advanced**: bisa mengaktifkan moderasi pos baru dan tanda "wajib login untuk memberi suara" sesuai kebutuhan.
+- **Moderasi:** halaman Administration memiliki pengaturan *Content Moderation* (pos baru menunggu persetujuan Anda) bila Anda khawatir spam. Nama menu bisa sedikit berbeda antar versi.
 - Statusnya: **Terbuka** (baru), **Direncanakan**, **Sedang dikerjakan**, **Selesai**, **Ditolak**, **Duplikat**.
 
 ## 8. Dipakai pelanggan: HTTPS & alamat publik
