@@ -6,11 +6,12 @@ Hanya library standar Python. Tanpa internet, tanpa menyimpan data apa pun.
 Perintah (jalankan dari folder skill; Windows: ganti python3 dengan python atau py):
   python3 scripts/klinis.py map --sistolik 120 --diastolik 80
   python3 scripts/klinis.py faktor-preeklampsia                 # daftar kode faktor
-  python3 scripts/klinis.py preeklampsia --faktor nullipara,obesitas --sistolik 118 --diastolik 82
+  python3 scripts/klinis.py preeklampsia --faktor nullipara,obesitas --sistolik 118 --diastolik 82 [--gejala pandangan-kabur]
   python3 scripts/klinis.py kehamilan --hpht 2026-03-10 [--siklus 30] [--tanggal-periksa 2026-09-29]
                                       [--usg-tanggal 2026-05-02 --usg-minggu 7 --usg-hari 3]
   python3 scripts/klinis.py bb-hamil --tinggi 155 --bb-prahamil 62 [--bb-sekarang 68 --usia-minggu 24] [--kembar]
   python3 scripts/klinis.py imt --tinggi 165 --berat 72 [--lingkar-perut 92 --jk L]
+  python3 scripts/klinis.py imt-batch --file pasien.csv       # kolom: id,tinggi,berat[,lingkar_perut,jk]
   python3 scripts/klinis.py kognitif --instrumen moca --skor 24 --pendidikan-tahun 9
 
 Tambahkan --json untuk keluaran JSON. Kode keluar 1 = input tidak valid (pesan jelas di stderr).
@@ -24,19 +25,28 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from fractions import Fraction
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 PENAFIAN = ("Alat bantu untuk tenaga kesehatan, bukan pengganti penilaian klinis. "
             "Keputusan klinis tetap pada dokter/bidan yang memeriksa.")
 
 SUMBER = {
-    "kia": "Kemenkes RI, Buku Kesehatan Ibu dan Anak (Buku KIA) 2023 - lembar skrining "
+    "kia": "Kemenkes RI, Buku Kesehatan Ibu dan Anak (Buku KIA) edisi terbaru - cetakan Ditjen "
+           "Kesehatan Primer dan Komunitas 2025 (ISBN 978-623-301-149-5) - lembar skrining "
            "preeklampsia usia kehamilan < 20 minggu",
     "nice": "NICE NG133 Hypertension in pregnancy: diagnosis and management (2019, "
-            "diperbarui 2023) - bagian 1.1 faktor risiko preeklampsia",
-    "map": "Rumus MAP = (sistolik + 2 x diastolik) / 3; ambang MAP > 90 mmHg dari Buku KIA 2023",
+            "diperbarui 2023) - rekomendasi 1.1.2-1.1.3 faktor risiko preeklampsia",
+    "map": "Rumus MAP = (sistolik + 2 x diastolik) / 3; ambang MAP >= 90 mmHg dari Buku KIA "
+           "(cetakan 2025)",
+    "bahaya_td": "NICE NG133 (2019, diperbarui 2023) - definisi hipertensi dalam kehamilan "
+                 "(>= 140/90 mmHg) dan hipertensi berat (>= 160/110 mmHg); ACOG Practice "
+                 "Bulletin No. 222 Gestational Hypertension and Preeclampsia (2020) - "
+                 "rentang berat >= 160 sistolik atau >= 110 diastolik",
+    "bahaya_gejala": "Buku KIA (cetakan 2025) - tanda bahaya pada ibu hamil; NICE NG133 "
+                     "(2019, diperbarui 2023) - gejala preeklampsia berat",
     "naegele": "Aturan Naegele (HPHT + 7 hari - 3 bulan + 1 tahun); penyesuaian siklus = "
                "modifikasi umum (siklus - 28 hari)",
-    "acog": "ACOG Committee Opinion No. 700 Methods for Estimating the Due Date (2017)",
+    "acog": "ACOG Committee Opinion No. 700 Methods for Estimating the Due Date (2017, "
+            "reaffirmed 2025)",
     "iom": "Institute of Medicine & National Research Council, Weight Gain During Pregnancy: "
            "Reexamining the Guidelines (2009)",
     "ap": "WHO WPRO/IASO/IOTF, The Asia-Pacific Perspective: Redefining Obesity and its "
@@ -124,9 +134,9 @@ def berat_kg(teks, nama="berat"):
     return b
 
 
-# ---------------------------------------------------------------- MAP
+# ---------------------------------------------------------------- MAP & tanda bahaya
 
-def hitung_map(sistolik, diastolik):
+def baca_td(sistolik, diastolik):
     s, d = desimal(sistolik, "sistolik"), desimal(diastolik, "diastolik")
     if not (Decimal(50) <= s <= Decimal(300)):
         raise InputSalah(f"sistolik {sistolik}: di luar rentang wajar 50-300 mmHg")
@@ -134,21 +144,99 @@ def hitung_map(sistolik, diastolik):
         raise InputSalah(f"diastolik {diastolik}: di luar rentang wajar 20-200 mmHg")
     if d >= s:
         raise InputSalah("diastolik harus lebih kecil dari sistolik (mungkin tertukar?)")
+    return s, d
+
+
+# Tanda bahaya: diperiksa SEBELUM saran rutin apa pun. PERLU REVIEW tenaga medis.
+GEJALA_BAHAYA = {
+    "nyeri-kepala-hebat": "Nyeri kepala hebat / tidak hilang",
+    "pandangan-kabur": "Gangguan penglihatan / pandangan kabur",
+    "nyeri-ulu-hati": "Nyeri ulu hati / perut kanan atas",
+    "kejang": "Kejang",
+    "penurunan-kesadaran": "Penurunan kesadaran",
+    "sesak": "Sesak napas",
+    "bengkak-mendadak": "Bengkak mendadak pada wajah/tangan/kaki",
+    "perdarahan": "Perdarahan dari jalan lahir",
+    "ketuban-pecah": "Air ketuban keluar sebelum waktunya",
+    "gerak-janin-berkurang": "Gerakan janin berkurang / tidak terasa",
+    "demam-tinggi": "Demam tinggi",
+    "muntah-terus": "Muntah terus-menerus, tidak bisa makan/minum",
+}
+
+
+def baca_gejala(gejala):
+    kode, salah = [], []
+    for g in gejala or []:
+        g = g.strip().lower()
+        if not g:
+            continue
+        (kode if g in GEJALA_BAHAYA else salah).append(g)
+    if salah:
+        raise InputSalah("kode gejala tidak dikenal: " + ", ".join(salah) +
+                         " (lihat: python3 scripts/klinis.py faktor-preeklampsia)")
+    return sorted(set(kode))
+
+
+def cek_tanda_bahaya(s=None, d=None, gejala=()):
+    """Lapisan tanda bahaya generik. Mengembalikan None bila tidak ada tanda bahaya.
+
+    - TD >= 160 sistolik ATAU >= 110 diastolik, atau ada gejala bahaya -> SEGERA evaluasi/rujuk.
+    - TD >= 140 sistolik ATAU >= 90 diastolik -> evaluasi hipertensi & rujuk/konsultasi HARI INI.
+    Keduanya TIDAK PERNAH boleh berakhir dengan saran 'ANC rutin'.
+    """
+    alasan, sumber = [], []
+    berat = False
+    if s is not None:
+        if s >= 160 or d >= 110:
+            berat = True
+            alasan.append(f"TD {s}/{d} mmHg dalam rentang BERAT (>= 160 sistolik atau >= 110 "
+                          "diastolik)")
+            sumber.append(SUMBER["bahaya_td"])
+        elif s >= 140 or d >= 90:
+            alasan.append(f"TD {s}/{d} mmHg dalam rentang hipertensi (>= 140 sistolik atau >= 90 "
+                          "diastolik)")
+            sumber.append(SUMBER["bahaya_td"])
+    if gejala:
+        berat = True
+        alasan.append("Gejala bahaya: " + "; ".join(GEJALA_BAHAYA[g] for g in gejala))
+        sumber.append(SUMBER["bahaya_gejala"])
+    if not alasan:
+        return None
+    if berat:
+        kategori = "TANDA BAHAYA - SEGERA EVALUASI/RUJUK"
+        tindak = ("SEGERA evaluasi/rujuk sesuai protokol kegawatdaruratan fasilitas Anda "
+                  "(jangan menunggu kunjungan berikutnya).")
+    else:
+        kategori = "TD RENTANG HIPERTENSI - EVALUASI/RUJUK HARI INI"
+        tindak = ("Ukur ulang sesuai prosedur baku, lalu segera evaluasi/rujuk atau konsultasi "
+                  "dokter sesuai protokol fasilitas HARI INI: nilai hipertensi dalam kehamilan "
+                  "(kronik bila < 20 minggu; gestasional/preeklampsia bila >= 20 minggu - cek "
+                  "proteinuria & gejala). Tidak cukup ditangani sebagai kunjungan rutin.")
+    return {"kategori": kategori, "alasan": alasan, "tindak_lanjut": tindak, "sumber": sumber}
+
+
+def hitung_map(sistolik, diastolik, gejala=None):
+    s, d = baca_td(sistolik, diastolik)
     tepat = (Fraction(s) + 2 * Fraction(d)) / 3  # dibandingkan tanpa pembulatan
     tampil = bulat(Decimal(tepat.numerator) / Decimal(tepat.denominator))
-    return {
-        "perintah": "map", "sistolik": str(s), "diastolik": str(d),
-        "map_mmhg": str(tampil), "map_lebih_dari_90": tepat > 90,
-        "catatan": ["Dibandingkan dengan nilai tepat (tanpa pembulatan). Ukur ulang sesuai "
-                    "prosedur baku bila hasil di sekitar 90."],
-        "sumber": [SUMBER["map"]], "penafian": PENAFIAN,
-    }
+    hasil = {"perintah": "map", "tanda_bahaya": None, "sistolik": str(s), "diastolik": str(d),
+             "map_mmhg": str(tampil), "map_90_atau_lebih": tepat >= 90,
+             "catatan": ["Dibandingkan dengan nilai tepat (tanpa pembulatan) terhadap ambang "
+                         "Buku KIA MAP >= 90. Ukur ulang sesuai prosedur baku bila hasil di "
+                         "sekitar 90."],
+             "sumber": [SUMBER["map"]], "penafian": PENAFIAN}
+    bahaya = cek_tanda_bahaya(s, d, baca_gejala(gejala))
+    if bahaya:
+        hasil["tanda_bahaya"] = (bahaya["kategori"] + ": " + "; ".join(bahaya["alasan"]) +
+                                 ". Bila pasien hamil: " + bahaya["tindak_lanjut"])
+        hasil["sumber"] += bahaya["sumber"]
+    return hasil
 
 
 # ---------------------------------------------------------------- preeklampsia
 
 FAKTOR = {
-    # kode: (label, kategori Buku KIA 2023, kategori NICE NG133 atau None)
+    # kode: (label, kategori Buku KIA (cetakan 2025) atau None, kategori NICE NG133 atau None)
     "pasangan-baru": ("Multipara dengan kehamilan oleh pasangan baru", "sedang", None),
     "reproduksi-berbantu": ("Kehamilan dengan teknologi reproduksi berbantu (bayi tabung, "
                             "obat induksi ovulasi)", "sedang", None),
@@ -159,31 +247,47 @@ FAKTOR = {
     "riwayat-keluarga": ("Riwayat preeklampsia pada ibu atau saudara perempuan", "sedang", "sedang"),
     "obesitas": ("Obesitas sebelum hamil (IMT > 30 kg/m2)", "sedang", None),
     "imt-35": ("IMT >= 35 kg/m2 saat kunjungan pertama", "sedang", "sedang"),
-    "map-90": ("MAP > 90 mmHg", "sedang", None),
-    "riwayat-preeklampsia": ("Riwayat preeklampsia / penyakit hipertensi pada kehamilan "
-                             "sebelumnya", "tinggi", "tinggi"),
+    "map-90": ("MAP >= 90 mmHg", "sedang", None),
+    "proteinuria": ("Proteinuria (dipstik > +1 pada 2 kali periksa berjarak 6 jam, atau "
+                    "kuantitatif 300 mg/24 jam)", "sedang", None),
+    "riwayat-preeklampsia": ("Multipara dengan riwayat preeklampsia sebelumnya", "tinggi", "tinggi"),
+    "riwayat-hipertensi-kehamilan": ("Hipertensi pada kehamilan sebelumnya TANPA diagnosis "
+                                     "preeklampsia (mis. hipertensi gestasional)", None, "tinggi"),
     "kehamilan-multipel": ("Kehamilan multipel (kembar)", "tinggi", "sedang"),
-    "diabetes": ("Diabetes dalam kehamilan / diabetes tipe 1 atau 2", "tinggi", "tinggi"),
+    "diabetes-pregestasional": ("Diabetes melitus tipe 1 atau 2 (sudah ada sebelum hamil)",
+                                "tinggi", "tinggi"),
+    "diabetes-gestasional": ("Diabetes yang pertama kali muncul saat hamil (gestasional)",
+                             "tinggi", None),
+    "diabetes": ("Diabetes dalam kehamilan (jenis tidak disebut)", "tinggi", None),
     "hipertensi-kronik": ("Hipertensi kronik", "tinggi", "tinggi"),
     "penyakit-ginjal": ("Penyakit ginjal (kronik)", "tinggi", "tinggi"),
     "autoimun": ("Penyakit autoimun / SLE", "tinggi", "tinggi"),
     "antifosfolipid": ("Sindrom antifosfolipid (APS)", "tinggi", "tinggi"),
-    "proteinuria": ("Proteinuria (dipstik > +1 pada 2 kali periksa berjarak 6 jam, atau "
-                    "kuantitatif 300 mg/24 jam)", "tinggi", None),
 }
 # "usia-ibu-40" otomatis juga memenuhi "usia-ibu-35"; "imt-35" otomatis memenuhi "obesitas".
 TURUNAN = {"usia-ibu-40": "usia-ibu-35", "imt-35": "obesitas"}
+NAMA_PEDOMAN = {"kia": "Buku KIA (cetakan 2025)", "nice": "NICE NG133"}
+ATURAN = {
+    "kia": "Buku KIA (cetakan 2025): >= 2 faktor risiko sedang dan/atau >= 1 faktor risiko "
+           "tinggi -> ibu berisiko preeklampsia -> rujukan terencana.",
+    "nice": "NICE NG133 (rek. 1.1.2): >= 1 faktor risiko tinggi atau > 1 faktor risiko sedang.",
+}
 
 
 def daftar_faktor():
     return {"perintah": "faktor-preeklampsia",
-            "faktor": [{"kode": k, "label": v[0], "buku_kia_2023": v[1],
+            "faktor": [{"kode": k, "label": v[0], "buku_kia": v[1] or "tidak tercantum",
                         "nice_ng133": v[2] or "tidak tercantum"} for k, v in FAKTOR.items()],
+            "gejala_bahaya": [f"{k} = {v}" for k, v in GEJALA_BAHAYA.items()],
+            "catatan": ["Kode 'diabetes' hanya untuk pedoman KIA bila jenis tidak diketahui; "
+                        "untuk NICE pakai diabetes-pregestasional atau diabetes-gestasional.",
+                        "Gejala bahaya dipakai lewat --gejala; bila ada, hasil selalu "
+                        "'SEGERA EVALUASI/RUJUK'."],
             "sumber": [SUMBER["kia"], SUMBER["nice"]], "penafian": PENAFIAN}
 
 
 def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, imt=None,
-                          pedoman="kia"):
+                          pedoman="kia", gejala=None):
     if pedoman not in ("kia", "nice"):
         raise InputSalah("pedoman harus 'kia' atau 'nice'")
     kode = set()
@@ -199,13 +303,19 @@ def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, 
     if tidak_dikenal:
         raise InputSalah("kode faktor tidak dikenal: " + ", ".join(tidak_dikenal) +
                          " (lihat: python3 scripts/klinis.py faktor-preeklampsia)")
+    if pedoman == "nice" and "diabetes" in kode:
+        raise InputSalah("pedoman NICE membedakan jenis diabetes: pakai diabetes-pregestasional "
+                         "(DM tipe 1/2) atau diabetes-gestasional")
+    kode_gejala = baca_gejala(gejala)
     turunan_otomatis = []
     hasil_map = None
+    s = d = None
     if (sistolik is None) != (diastolik is None):
         raise InputSalah("isi sistolik DAN diastolik untuk menghitung MAP")
     if sistolik is not None:
-        hasil_map = hitung_map(sistolik, diastolik)
-        if hasil_map["map_lebih_dari_90"]:
+        s, d = baca_td(sistolik, diastolik)
+        hasil_map = hitung_map(s, d)
+        if hasil_map["map_90_atau_lebih"]:
             if "map-90" not in kode:
                 turunan_otomatis.append("map-90")
             kode.add("map-90")
@@ -231,52 +341,75 @@ def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, 
             kode.add(b)
             tersirat.add(b)
 
+    # 1) LAPISAN TANDA BAHAYA - diperiksa sebelum saran rutin apa pun.
+    bahaya = cek_tanda_bahaya(s, d, kode_gejala)
+
+    # 2) Klasifikasi faktor risiko menurut SATU pedoman terpilih (tidak dicampur).
     idx = 1 if pedoman == "kia" else 2
     tinggi = sorted(k for k in kode if FAKTOR[k][idx] == "tinggi")
     sedang = sorted(k for k in kode if FAKTOR[k][idx] == "sedang")
-    # hindari hitung ganda faktor yang saling mencakup
-    if pedoman == "kia":
+    if pedoman == "kia":  # hindari hitung ganda faktor yang saling mencakup
         sedang = [k for k in sedang if k not in ("usia-ibu-40", "imt-35")]
-    else:
-        sedang = [k for k in sedang if FAKTOR[k][2] is not None]
     tidak_dinilai = sorted(k for k in kode - tersirat if FAKTOR[k][idx] is None)
 
+    nama = NAMA_PEDOMAN[pedoman]
+    berisiko = bool(tinggi) or len(sedang) >= 2
     if tinggi:
-        kategori = "RISIKO TINGGI"
-        arti = ("Terdapat >= 1 faktor risiko tinggi. " +
-                ("Sesuai Buku KIA 2023: pertimbangkan rujukan/konsultasi dokter (SpOG) dan "
-                 "pemantauan sesuai PNPK/pedoman yang berlaku." if pedoman == "kia" else
-                 "NICE NG133 menggolongkan ibu ini berisiko tinggi; pertimbangkan tata laksana "
-                 "pencegahan sesuai pedoman - keputusan dokter."))
+        kategori_faktor = f"RISIKO TINGGI (>= 1 faktor tinggi) - {nama}"
     elif len(sedang) >= 2:
-        kategori = "RISIKO SEDANG (>= 2 faktor sedang)"
-        arti = ("Terdapat >= 2 faktor risiko sedang. " +
-                ("Sesuai Buku KIA 2023 memenuhi kriteria rujukan/konsultasi dokter; "
-                 "pertimbangkan tindak lanjut sesuai PNPK/pedoman." if pedoman == "kia" else
-                 "NICE NG133: > 1 faktor sedang termasuk kelompok yang dipertimbangkan untuk "
-                 "pencegahan sesuai pedoman - keputusan dokter."))
+        kategori_faktor = f"RISIKO SEDANG (>= 2 faktor sedang) - {nama}"
     elif len(sedang) == 1:
-        kategori = "1 FAKTOR RISIKO SEDANG"
-        arti = ("Belum memenuhi kriteria (>= 2 sedang atau >= 1 tinggi). Lanjutkan ANC rutin, "
-                "ukur tekanan darah tiap kunjungan, nilai ulang bila ada faktor baru.")
+        kategori_faktor = f"1 FAKTOR RISIKO SEDANG - {nama}"
     else:
-        kategori = "TIDAK DITEMUKAN FAKTOR RISIKO dari daftar yang diisi"
-        arti = ("Tidak berarti bebas risiko; skrining hanya sebaik data yang diisi. "
-                "Lanjutkan ANC rutin.")
+        kategori_faktor = "TIDAK DITEMUKAN FAKTOR RISIKO dari daftar yang diisi"
+    if berisiko:
+        arti_faktor = (
+            "Memenuhi kriteria ibu berisiko preeklampsia menurut Buku KIA. Buku KIA: pemeriksaan "
+            "kehamilan, proses melahirkan, dan pemeriksaan nifas dilaksanakan di Rumah Sakit; "
+            "lakukan rujukan terencana (tidak perlu menunggu inpartu). Pelaksanaan sesuai "
+            "protokol fasilitas & keputusan dokter." if pedoman == "kia" else
+            "Memenuhi kriteria risiko NICE NG133; pertimbangkan tata laksana pencegahan dan "
+            "rencana pemantauan sesuai pedoman - keputusan dokter.")
+    elif len(sedang) == 1:
+        arti_faktor = ("Belum memenuhi kriteria rujukan (" + ATURAN[pedoman] + ") Lanjutkan ANC "
+                       "rutin, ukur tekanan darah tiap kunjungan, nilai ulang bila ada faktor baru.")
+    else:
+        arti_faktor = ("Tidak berarti bebas risiko; skrining hanya sebaik data yang diisi. "
+                       "Lanjutkan ANC rutin.")
 
-    sumber = [SUMBER["kia"] if pedoman == "kia" else SUMBER["nice"]]
+    sumber = [SUMBER[pedoman]]
     if hasil_map:
         sumber.append(SUMBER["map"])
-    catatan = []
-    if tidak_dinilai:
-        catatan.append("Faktor tidak termasuk daftar pedoman terpilih (tidak dihitung): " +
-                       ", ".join(tidak_dinilai))
+    if bahaya:
+        kategori = bahaya["kategori"]
+        arti = (bahaya["tindak_lanjut"] + " Skrining faktor risiko di bawah hanya pelengkap, "
+                "bukan pengganti penanganan ini.")
+        if berisiko:
+            arti += " Faktor risiko: " + arti_faktor
+        tanda = "; ".join(bahaya["alasan"])
+        sumber += [x for x in bahaya["sumber"] if x not in sumber]
+    else:
+        kategori, arti, tanda = kategori_faktor, arti_faktor, None
+
+    catatan = ["Aturan kategori: " + ATURAN[pedoman] +
+               " Hanya faktor dari daftar pedoman ini yang dihitung (tidak dicampur)."]
+    if bahaya:
+        catatan.append("Tanda bahaya diperiksa lebih dulu (sumber ambang/gejala: lihat baris "
+                       "Sumber); saran kunjungan rutin tidak berlaku.")
+    for k in tidak_dinilai:
+        lain = "nice" if pedoman == "kia" else "kia"
+        kat_lain = FAKTOR[k][2 if lain == "nice" else 1]
+        catatan.append(f"'{FAKTOR[k][0]}' tidak tercantum di {nama} (tidak dihitung)" +
+                       (f"; di {NAMA_PEDOMAN[lain]} = faktor {kat_lain} - pertimbangkan klinis."
+                        if kat_lain else "."))
     if pedoman == "kia":
         catatan.append("Buku KIA: skrining dilakukan pada usia kehamilan < 20 minggu.")
     catatan.append("Keputusan terapi/obat pencegahan (termasuk dosis) BUKAN bagian alat ini - "
                    "ikuti PNPK/pedoman dan resep dokter.")
     return {
-        "perintah": "preeklampsia", "pedoman": pedoman, "kategori": kategori, "arti": arti,
+        "perintah": "preeklampsia", "pedoman": nama, "tanda_bahaya": tanda,
+        "kategori": kategori, "arti": arti,
+        "kategori_faktor_risiko": kategori_faktor if bahaya else None,
         "faktor_tinggi": [FAKTOR[k][0] for k in tinggi],
         "faktor_sedang": [FAKTOR[k][0] for k in sedang],
         "faktor_dari_angka": turunan_otomatis,
@@ -311,25 +444,36 @@ def kalkulator_kehamilan(hpht=None, siklus=28, tanggal_periksa=None, usg_tanggal
         siklus = int(str(siklus).strip())
     except ValueError:
         raise InputSalah(f"siklus '{siklus}' harus bilangan bulat (hari)")
-    if not 21 <= siklus <= 45:
-        raise InputSalah(f"siklus {siklus} hari di luar 21-45 hari: HPHT kurang andal, "
-                         "pakai penanggalan USG")
+    ada_usg = bool(usg_tanggal) and usg_minggu is not None
     ga_hpht = hpl_hpht = None
+    if hpht and not 21 <= siklus <= 45:
+        if not ada_usg:
+            raise InputSalah(f"siklus {siklus} hari di luar 21-45 hari: HPHT kurang andal, "
+                             "pakai penanggalan USG (isi tanggal USG & usia saat USG)")
+        catatan.append(f"Siklus {siklus} hari di luar 21-45 hari: HPHT TIDAK ANDAL, tidak "
+                       "dipakai; penanggalan memakai USG.")
+        hpht = None
     if hpht:
         h = tanggal(hpht, "HPHT")
         if h > periksa:
             raise InputSalah("HPHT tidak boleh setelah tanggal periksa")
         koreksi = siklus - 28
+        ga_cek = (periksa - h).days - koreksi
+        if ga_cek < 0:
+            raise InputSalah("dengan koreksi siklus, usia kehamilan negatif - cek HPHT/siklus")
+        if ga_cek > 44 * 7:
+            if not ada_usg:
+                raise InputSalah(f"usia kehamilan dari HPHT {minggu_hari(ga_cek)} (> 44 minggu) - "
+                                 "cek tahun HPHT/tanggal periksa")
+            catatan.append(f"Usia kehamilan dari HPHT {minggu_hari(ga_cek)} (> 44 minggu): HPHT "
+                           "TIDAK ANDAL (cek tahun HPHT), tidak dipakai; penanggalan memakai USG.")
+            hpht = None
+    if hpht:
         # Naegele: +7 hari, lalu +9 bulan (setara -3 bulan +1 tahun)
         naeg, disesuaikan = tambah_bulan(h + timedelta(days=7), 9)
         naeg = naeg + timedelta(days=koreksi)
         hpl_hpht = h + timedelta(days=280 + koreksi)
-        ga_hpht = (periksa - h).days - koreksi
-        if ga_hpht < 0:
-            raise InputSalah("dengan koreksi siklus, usia kehamilan negatif - cek HPHT/siklus")
-        if ga_hpht > 44 * 7:
-            raise InputSalah(f"usia kehamilan dari HPHT {minggu_hari(ga_hpht)} (> 44 minggu) - "
-                             "cek tahun HPHT/tanggal periksa")
+        ga_hpht = ga_cek
         hasil["hpht"] = fmt_tgl(h)
         hasil["siklus_hari"] = siklus
         hasil["hpl_naegele"] = fmt_tgl(naeg)
@@ -389,7 +533,8 @@ def kalkulator_kehamilan(hpht=None, siklus=28, tanggal_periksa=None, usg_tanggal
     hasil["usia_kehamilan"] = minggu_hari(final)
     hasil["trimester"] = trimester(final)
     hasil["catatan"] = catatan
-    hasil["sumber"] = [SUMBER["naegele"], SUMBER["acog"]]
+    hasil["sumber"] = ([SUMBER["naegele"]] if ga_hpht is not None else []) + (
+        [SUMBER["acog"]] if ga_usg is not None else [])
     hasil["penafian"] = PENAFIAN
     return hasil
 
@@ -442,13 +587,25 @@ def imt_dewasa(tinggi, berat, lingkar_perut=None, jk=None):
              "sumber": [SUMBER["ap"], SUMBER["kemenkes_imt"]], "penafian": PENAFIAN}
     hasil["catatan"].append("IMT dibulatkan 1 desimal (setengah ke atas) lalu dikategorikan. "
                             "Hanya untuk dewasa >= 18 tahun, tidak untuk ibu hamil/anak.")
+    def kelas(t):  # kurang / normal / lebih - untuk membandingkan dua sistem kategori
+        return ("kurang" if t.startswith(("Berat badan kurang", "Kurus")) else
+                "normal" if t.startswith("Normal") else "lebih")
+    if kelas(kategori_ap(i)) != kelas(kategori_kemenkes(i)):
+        hasil["catatan"].append(
+            "Kategori Asia-Pasifik dan Kemenkes berbeda untuk IMT ini. Asia-Pasifik (WPRO 2000) "
+            "lazim untuk risiko metabolik/klinis individu; ambang Kemenkes (Permenkes 41/2014) "
+            "lazim untuk laporan gizi/posbindu sesuai format dinas. Pakai yang diminta "
+            "fasilitas Anda dan sebutkan acuannya.")
     if lingkar_perut is not None:
         lp = desimal(lingkar_perut, "lingkar perut")
         if not Decimal(40) <= lp <= Decimal(250):
             raise InputSalah(f"lingkar perut {lingkar_perut}: di luar rentang wajar 40-250 cm")
         jk = (jk or "").strip().upper()[:1]
+        hasil["lingkar_perut_cm"] = str(lp)
         if jk not in ("L", "P"):
-            raise InputSalah("isi jenis kelamin L atau P untuk menilai lingkar perut")
+            hasil["lingkar_perut"] = ("tidak dinilai - isi jenis kelamin L atau P (batas "
+                                      "L >= 90 cm, P >= 80 cm)")
+            return hasil
         batas = Decimal(90) if jk == "L" else Decimal(80)
         hasil["lingkar_perut_cm"] = str(lp)
         hasil["lingkar_perut"] = (f"{'>=' if lp >= batas else '<'} {batas} cm -> " +
@@ -475,6 +632,9 @@ def bb_hamil(tinggi, bb_prahamil, bb_sekarang=None, usia_minggu=None, kembar=Fal
         hasil["rekomendasi_total_kg"] = f"{total[0]}-{total[1]} kg"
         hasil["laju_trimester_2_3_kg_per_minggu"] = f"{laju[0]}-{laju[1]}"
     hasil["catatan"].append("IOM memakai batas IMT WHO internasional (bukan Asia-Pasifik).")
+    hasil["catatan"].append("Keterbatasan: IOM 2009 menyatakan pedomannya tidak dimaksudkan untuk "
+                            "populasi yang jauh lebih pendek/kurus dari perempuan Amerika; untuk "
+                            "ibu Indonesia pakai sebagai acuan umum, bukan target mutlak.")
     if bb_sekarang is not None:
         sekarang = berat_kg(bb_sekarang, "BB sekarang")
         naik = sekarang - kg
@@ -484,16 +644,28 @@ def bb_hamil(tinggi, bb_prahamil, bb_sekarang=None, usia_minggu=None, kembar=Fal
             if not Decimal(0) <= u <= Decimal(44):
                 raise InputSalah("usia kehamilan harus 0-44 minggu")
             hasil["usia_kehamilan_minggu"] = str(u)
+            n = bulat(naik)  # posisi dibandingkan dengan angka yang DITAMPILKAN (1 desimal)
             if not kembar and u > 13:
-                lo = Decimal("0.5") + desimal(laju[0], "laju") * (u - 13)
-                hi = Decimal("2") + desimal(laju[1], "laju") * (u - 13)
-                hasil["perkiraan_rentang_saat_ini_kg"] = f"{bulat(lo)}-{bulat(hi)}"
-                posisi = ("di bawah" if naik < bulat(lo) else "di atas" if naik > bulat(hi)
-                          else "di dalam")
-                hasil["posisi"] = f"Kenaikan {bulat(naik)} kg {posisi} perkiraan rentang"
+                lo = bulat(Decimal("0.5") + desimal(laju[0], "laju") * (u - 13))
+                hi = bulat(Decimal("2") + desimal(laju[1], "laju") * (u - 13))
+                hasil["perkiraan_rentang_saat_ini_kg"] = f"{lo}-{hi}"
+                posisi = "di bawah" if n < lo else "di atas" if n > hi else "di dalam"
+                hasil["posisi"] = f"Kenaikan {n} kg {posisi} perkiraan rentang {lo}-{hi} kg"
                 hasil["catatan"].append(
                     "Perkiraan rentang saat ini = turunan: trimester 1 0,5-2 kg + laju IOM x "
                     "(minggu - 13). Bukan tabel resmi; pakai sebagai gambaran kasar.")
+            elif not kembar:
+                lo, hi = Decimal("0.5"), Decimal("2.0")
+                hasil["perkiraan_trimester_1_kg"] = f"{lo}-{hi}"
+                posisi = "di bawah" if n < lo else "di atas" if n > hi else "di dalam"
+                hasil["posisi"] = (f"Kenaikan {n} kg {posisi} asumsi IOM trimester 1 "
+                                   f"({lo}-{hi} kg)")
+                hasil["catatan"].append(
+                    "Usia <= 13 minggu: IOM tidak memberi laju mingguan; asumsi kenaikan total "
+                    "trimester 1 = 0,5-2 kg. Mual/muntah bisa membuat BB turun - nilai klinis.")
+            else:
+                hasil["catatan"].append("Kehamilan kembar: IOM hanya memberi rekomendasi total "
+                                        "(provisional), tanpa rentang per usia kehamilan.")
     return hasil
 
 
@@ -516,8 +688,12 @@ def kognitif(instrumen, skor, pendidikan_tahun=None):
         else:
             kat = "0-17: di bawah batas skrining (rentang berat) - pertimbangkan evaluasi lanjut"
         hasil.update(instrumen="MMSE", skor=s, interpretasi=kat, sumber=[SUMBER["mmse"]])
-        hasil["catatan"].append("Skor dipengaruhi pendidikan, bahasa, dan gangguan sensorik. "
-                                "MMSE berhak cipta (PAR Inc.) - skill ini tidak memuat butir tes.")
+        hasil["catatan"].append("Alat ini HANYA menafsirkan skor total yang dimasukkan nakes; "
+                                "tidak memuat/mereproduksi formulir atau butir MMSE. Formulir MMSE "
+                                "berhak cipta (PAR Inc.) - pemakaian formulir memerlukan "
+                                "lisensi/izin milik pengguna sendiri dari pemegang hak cipta.")
+        hasil["catatan"].append("Tidak ada koreksi pendidikan di alat ini: pada pendidikan rendah/"
+                                "buta huruf, skor bisa rendah tanpa gangguan - nilai klinis.")
     elif ins in ("moca", "mocaina"):
         if not 0 <= s <= 30:
             raise InputSalah("skor MoCA harus 0-30")
@@ -532,8 +708,11 @@ def kognitif(instrumen, skor, pendidikan_tahun=None):
                "di bawah batas skrining 26 - pertimbangkan evaluasi lanjut")
         hasil.update(instrumen="MoCA / MoCA-Ina", skor_mentah=s, koreksi_pendidikan=tambah,
                      skor_akhir=akhir, interpretasi=kat, sumber=[SUMBER["moca"]])
-        hasil["catatan"].append("MoCA mewajibkan pelatihan & sertifikasi pemeriksa (sejak 2019). "
-                                "Skill ini hanya menafsirkan skor total yang Anda masukkan.")
+        hasil["catatan"].append("Alat ini HANYA menafsirkan skor total yang dimasukkan nakes; "
+                                "tidak memuat/mereproduksi formulir, butir, atau instruksi MoCA. "
+                                "Pemakaian formulir MoCA memerlukan lisensi/izin dan pelatihan-"
+                                "sertifikasi milik pengguna sendiri dari pemegang hak cipta "
+                                "(MoCA Cognition; sertifikasi wajib sejak 2019).")
         hasil["catatan"].append("Batas 26 adalah versi asli; studi validasi MoCA-Ina 2010 belum "
                                 "menetapkan batas khusus Indonesia.")
         if p <= 12 and s == 30:
@@ -547,16 +726,55 @@ def kognitif(instrumen, skor, pendidikan_tahun=None):
                "0-3: gangguan ingatan berat pada skrining - pertimbangkan evaluasi lanjut")
         hasil.update(instrumen="AMT (Abbreviated Mental Test)", skor=s, interpretasi=kat,
                      sumber=[SUMBER["amt"]])
+        hasil["catatan"].append("Skor dipengaruhi pendidikan, bahasa, dan gangguan sensorik.")
     else:
         raise InputSalah("instrumen harus mmse, moca, atau amt")
+    hasil["catatan"].append("Singkirkan dulu delirium (onset mendadak, fluktuatif - perlu "
+                            "evaluasi segera), depresi, gangguan penglihatan/pendengaran, dan "
+                            "efek obat sebelum menafsirkan skor rendah.")
     hasil["catatan"].append("Hasil skrining bukan diagnosis demensia/gangguan kognitif.")
     return hasil
+
+
+# ---------------------------------------------------------------- IMT batch (CSV)
+
+def imt_batch(teks_csv):
+    """CSV berkolom: id,tinggi,berat[,lingkar_perut,jk]. Baris salah dilaporkan, tidak menghentikan."""
+    import csv
+    import io
+    baca = csv.DictReader(io.StringIO(teks_csv.lstrip("\ufeff")))
+    kolom = [c.strip().lower() for c in (baca.fieldnames or [])]
+    if not {"tinggi", "berat"} <= set(kolom):
+        raise InputSalah("CSV wajib berkolom minimal: id,tinggi,berat (opsional lingkar_perut,jk)")
+    baris, n_ok, n_salah = [], 0, 0
+    for no, r in enumerate(baca, start=2):
+        r = {(k or "").strip().lower(): (v or "").strip() for k, v in r.items()}
+        label = r.get("id") or f"baris {no}"
+        try:
+            h = imt_dewasa(r.get("tinggi"), r.get("berat"), r.get("lingkar_perut") or None,
+                           r.get("jk") or None)
+            lp = f" | LP {h['lingkar_perut_cm']}: {h['lingkar_perut']}" if "lingkar_perut" in h else ""
+            baris.append(f"{label} | IMT {h['imt']} | AP: {h['kategori_asia_pasifik']} | "
+                         f"Kemenkes: {h['kategori_kemenkes']}{lp}")
+            n_ok += 1
+        except InputSalah as e:
+            baris.append(f"{label} | TIDAK DIHITUNG: {e}")
+            n_salah += 1
+    if not baris:
+        raise InputSalah("CSV tidak berisi baris data")
+    return {"perintah": "imt-batch", "hasil_per_pasien": baris,
+            "ringkasan": f"{n_ok} dihitung, {n_salah} tidak dihitung (cek data)",
+            "catatan": ["IMT dibulatkan 1 desimal (setengah ke atas) lalu dikategorikan. Hanya "
+                        "dewasa >= 18 tahun, tidak untuk ibu hamil/anak. LP: L >= 90, P >= 80 cm."],
+            "sumber": [SUMBER["ap"], SUMBER["kemenkes_imt"]], "penafian": PENAFIAN}
 
 
 # ---------------------------------------------------------------- tampilan
 
 LABEL = {
-    "map_mmhg": "MAP (mmHg)", "map_lebih_dari_90": "MAP > 90", "kategori": "KATEGORI",
+    "tanda_bahaya": "!! TANDA BAHAYA", "map_mmhg": "MAP (mmHg)", "map_90_atau_lebih": "MAP >= 90",
+    "kategori": "KATEGORI", "kategori_faktor_risiko": "Kategori faktor risiko (pelengkap)",
+    "perkiraan_trimester_1_kg": "Asumsi IOM trimester 1 (kg)",
     "arti": "Arti", "faktor_tinggi": "Faktor risiko tinggi", "faktor_sedang": "Faktor risiko sedang",
     "faktor_dari_angka": "Faktor terisi otomatis dari angka", "hpl_naegele": "HPL (Naegele)",
     "hpl_280_hari": "HPL (HPHT + 280 hari)", "hpl_usg": "HPL (USG)",
@@ -586,8 +804,13 @@ def cetak(h):
         if isinstance(v, list):
             if k == "faktor":
                 for f in v:
-                    print(f"  {f['kode']:<22} KIA: {f['buku_kia_2023']:<7} NICE: "
+                    print(f"  {f['kode']:<29} KIA: {f['buku_kia']:<16} NICE: "
                           f"{f['nice_ng133']:<16} {f['label']}")
+                continue
+            if k in ("gejala_bahaya", "hasil_per_pasien"):
+                print(LABEL.get(k, k.replace('_', ' ').capitalize()) + ":")
+                for x in v:
+                    print(f"  {x}")
                 continue
             v = "; ".join(v) if v else "-"
         if v is None:
@@ -607,6 +830,7 @@ def main(argv=None):
     a = sub.add_parser("map")
     a.add_argument("--sistolik", required=True)
     a.add_argument("--diastolik", required=True)
+    a.add_argument("--gejala", default="")
     sub.add_parser("faktor-preeklampsia")
     a = sub.add_parser("preeklampsia")
     a.add_argument("--faktor", default="")
@@ -615,6 +839,7 @@ def main(argv=None):
     a.add_argument("--usia-ibu")
     a.add_argument("--imt")
     a.add_argument("--pedoman", default="kia", choices=["kia", "nice"])
+    a.add_argument("--gejala", default="", help="kode gejala bahaya, dipisah koma")
     a = sub.add_parser("kehamilan")
     a.add_argument("--hpht")
     a.add_argument("--siklus", default="28")
@@ -633,6 +858,8 @@ def main(argv=None):
     a.add_argument("--berat", required=True)
     a.add_argument("--lingkar-perut")
     a.add_argument("--jk")
+    a = sub.add_parser("imt-batch")
+    a.add_argument("--file", required=True, help="CSV: id,tinggi,berat[,lingkar_perut,jk]; '-' = stdin")
     a = sub.add_parser("kognitif")
     a.add_argument("--instrumen", required=True)
     a.add_argument("--skor", required=True)
@@ -640,12 +867,12 @@ def main(argv=None):
     ar = p.parse_args(argv)
     try:
         if ar.perintah == "map":
-            h = hitung_map(ar.sistolik, ar.diastolik)
+            h = hitung_map(ar.sistolik, ar.diastolik, ar.gejala.split(","))
         elif ar.perintah == "faktor-preeklampsia":
             h = daftar_faktor()
         elif ar.perintah == "preeklampsia":
             h = skrining_preeklampsia(ar.faktor.split(","), ar.sistolik, ar.diastolik,
-                                      ar.usia_ibu, ar.imt, ar.pedoman)
+                                      ar.usia_ibu, ar.imt, ar.pedoman, ar.gejala.split(","))
         elif ar.perintah == "kehamilan":
             h = kalkulator_kehamilan(ar.hpht, ar.siklus, ar.tanggal_periksa, ar.usg_tanggal,
                                      ar.usg_minggu, ar.usg_hari)
@@ -653,6 +880,16 @@ def main(argv=None):
             h = bb_hamil(ar.tinggi, ar.bb_prahamil, ar.bb_sekarang, ar.usia_minggu, ar.kembar)
         elif ar.perintah == "imt":
             h = imt_dewasa(ar.tinggi, ar.berat, ar.lingkar_perut, ar.jk)
+        elif ar.perintah == "imt-batch":
+            try:
+                if ar.file == "-":
+                    teks = sys.stdin.read()
+                else:
+                    with open(ar.file, encoding="utf-8-sig") as f:
+                        teks = f.read()
+            except OSError as e:
+                raise InputSalah(f"berkas CSV tidak bisa dibaca: {e.strerror}")
+            h = imt_batch(teks)
         else:
             pend = None
             if ar.pendidikan_tahun is not None:

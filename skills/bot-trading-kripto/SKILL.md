@@ -5,6 +5,8 @@ description: Menjalankan bot trading kripto berdasarkan ATURAN YANG DITETAPKAN M
 
 # Bot Trading Kripto (aturan milik member)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah aturan trading yang **member tulis sendiri** menjadi bot yang disiplin menjalankannya,
 dengan pengaman berlapis. Komunitech tidak memilih koin, tidak memberi sinyal, tidak menilai

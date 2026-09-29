@@ -5,6 +5,8 @@ description: Dasbor lokal read-only di atas SQLite untuk alat Komunitech (buku-s
 
 # Dasbor Lokal (jembatan baca-saja ke database alat Komunitech)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha yang memakai beberapa alat lokal Komunitech (kasir, stok, CRM, absensi, piutang, kas — semua SQLite di komputernya sendiri) ingin **melihat semuanya dari satu tempat**, seperti dasbor BI berbayar, tanpa mengirim data ke mana pun. Skill ini **tidak** membuat data baru: ia membaca (baca-saja, tidak pernah menulis) database yang sudah ada dan menyiapkan:
 1. Query SQL siap pakai ("canned query") untuk pertanyaan yang paling sering ditanyakan.

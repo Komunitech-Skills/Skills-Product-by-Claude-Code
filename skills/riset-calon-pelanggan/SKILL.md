@@ -5,6 +5,8 @@ description: Membantu UMKM/B2B menentukan profil pelanggan ideal (ICP), menyusun
 
 # Riset Calon Pelanggan (ICP & Prospecting)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha/tim sales menemukan calon pelanggan yang tepat: menentukan profil pelanggan ideal (ICP), menyusun daftar calon pelanggan dari sumber publik yang sah, mengurutkan prospek mana yang paling layak dihubungi dulu (skor kualifikasi lewat script), dan menyiapkan pesan pembuka yang sopan serta patuh UU PDP.
 

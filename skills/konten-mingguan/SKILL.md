@@ -5,6 +5,8 @@ description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/u
 
 # Konten Mingguan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Memberi pemilik usaha paket konten **satu minggu**, siap tempel per hari, tanpa harus memikirkan ide dari
 nol setiap minggu — memanfaatkan profil usaha yang sudah tersimpan dan momen minggu itu (gajian, tanggal

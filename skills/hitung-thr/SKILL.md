@@ -5,6 +5,8 @@ description: Menghitung THR Keagamaan per karyawan sesuai Permenaker 6/2016 dan 
 
 # Hitung THR Keagamaan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menghitung THR setiap karyawan dengan benar menurut aturan, termasuk karyawan baru, kontrak, dan harian lepas; menunjukkan batas bayar H-7 dan tambahan potongan PPh 21-nya; lalu menyiapkan pengumuman THR yang siap dikirim.
 
@@ -38,12 +40,13 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 1. Susun data karyawan (lihat `templates/karyawan-thr-contoh.csv`; pemisah `;` atau `,`). Kolom: `nama` (wajib), `jenis`, `ptkp`, `gaji_pokok`, `tunjangan_tetap`, `tanggal_mulai` atau `masa_kerja_bulan`, `upah_bulanan` (harian/satuan: upah tiap bulan urut dari terlama, dipisah `+`, mis. `3jt+3,2jt+2,8jt`), `bruto_bulan_bayar`, `thr_kebijakan`, `tanggal_berhenti`, `dtp` (ya/tidak; script menolak otomatis bila THR tidak dibayar di tahun 2026 atau `bruto_tetap_januari` > Rp 10 jt), `bruto_tetap_januari`, `jabatan`.
+   **Data gaji = data pribadi sensitif:** tulis CSV karyawan dan `--csv` rekap di **folder kerja yang disepakati dengan pengguna** (mis. folder kerja OpenClaw/agent atau folder yang ia sebut), **bukan `/tmp`** atau folder sementara lain; sebutkan path lengkapnya.
 2. Jalankan (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/thr.py --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" --perusahaan "CV Maju Jaya" --data karyawan.csv --csv rekap-thr.csv
    ```
    Satu karyawan: `--nama Budi --ptkp K/1 --gaji-pokok 5jt --tunjangan-tetap 500rb --mulai 2026-06-15`. Opsi: `--tanggal-bayar`, `--format json`.
-3. Tampilkan tabel rincian dari script, batas bayar H-7, catatan per karyawan, semua ⚠️ peringatan, lalu draf pengumuman. Rincian nominal per orang bersifat pribadi — jangan dimasukkan ke pengumuman grup.
+3. Tampilkan tabel rincian dari script, batas bayar H-7, catatan per karyawan, semua ⚠️ peringatan, lalu draf pengumuman. Rincian nominal per orang bersifat pribadi — jangan dimasukkan ke pengumuman grup. Sebutkan lokasi file rekap; bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah selesai (hapus hanya bila pengguna setuju). Jangan menawarkan kirim lewat WA/email bila kanal itu belum diatur pengguna.
 4. Bila THR dibayar di **Desember** (mis. Natal) atau bulan karyawan berhenti, PPh 21 dihitung ulang setahun — jelaskan dan sarankan skill `pph21-ter`/`slip-gaji-bpjs`.
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah (tabel TER di `references/tabel-ter.md`), tulis langkahnya, dan beri tahu pengguna bahwa hasil dihitung manual.
 

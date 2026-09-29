@@ -5,6 +5,8 @@ description: Menyusun rencana kampanye promo momen belanja Indonesia (gajian, 9.
 
 # Rencana Promo Momen Belanja
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membuat rencana promo yang **tetap untung**: mekanisme dipilih berdasarkan hitungan margin (bukan feeling), target dan anggaran jelas, linimasa bertanggal, dan syarat promo jujur sesuai UU Perlindungan Konsumen.
 

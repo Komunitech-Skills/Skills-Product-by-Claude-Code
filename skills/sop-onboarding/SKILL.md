@@ -5,6 +5,8 @@ description: Menyusun paket onboarding karyawan baru untuk UMKM dan kantor kecil
 
 # SOP Onboarding Karyawan Baru
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menyiapkan karyawan baru agar **siap kerja lebih cepat dan tidak merasa dilepas begitu saja**: dokumen
 & administrasi beres sebelum hari pertama, jadwal orientasi jelas dengan penanggung jawab, pesan

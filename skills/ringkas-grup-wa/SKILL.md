@@ -5,6 +5,8 @@ description: Meringkas ekspor chat grup WhatsApp (.txt/.zip "Tanpa Media") menja
 
 # Ringkas Grup WhatsApp
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Grup WA kerja/proyek/komunitas sering punya ratusan pesan yang tenggelam. Skill ini membaca
 **ekspor chat resmi WhatsApp** (fitur bawaan, bukan sadap/pantau diam-diam), mem-parsing pesan

@@ -5,6 +5,8 @@ description: CRM lokal untuk alur jualan lewat WhatsApp (chat WA → ditawar →
 
 # CRM WA (chat WA → ditawar → deal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi "CRM" pemilik usaha tanpa biaya bulanan: semua calon pembeli dan pelanggan ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/crm.py`. Hasil: tidak ada lead yang lupa dibalas, setiap pagi ada daftar siapa yang harus disapa beserta **draf pesan + tautan wa.me** (pemilik tinggal klik, periksa, tekan Kirim), dan rekap jelas: berapa yang deal, nilainya, konversi, dan sumber lead mana yang paling menghasilkan.
 

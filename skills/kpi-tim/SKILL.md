@@ -5,6 +5,8 @@ description: KPI & target tim untuk UMKM (data di Excel/Google Sheets, kertas, g
 
 # KPI Tim
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha/manajer yang awam teknologi punya **target yang jelas per orang & divisi**
 dan **skor pencapaian yang dihitung benar** tiap minggu/bulan, dari data yang sudah mereka
@@ -54,6 +56,10 @@ Semua perintah: `python3 scripts/skor_kpi.py <perintah>` dari folder skill ini (
   3–5 KPI per orang, bisa dikendalikan orangnya, seimbang jumlah & mutu.
 
 ### 2. Buat rencana KPI (G1)
+**Lokasi file:** semua file KPI (tim, rencana, realisasi, `kpi.db`) disimpan di **folder kerja agent yang
+disepakati pengguna** (mis. folder kerja OpenClaw `~/.openclaw/workspace/KPI/` atau folder yang ia sebut).
+Sebutkan path lengkapnya sebelum menulis; jangan membuat folder baru sendiri di HOME (mis. `~/workspace/<nama>`)
+atau di `/tmp`. Pakai folder yang sama setiap bulan agar rencana & realisasi mudah ditemukan.
 1. Tulis daftar tim ke CSV (`nama,divisi,peran`, contoh `templates/tim-contoh.csv`).
 2. `skor_kpi.py template --tim tim.csv --periode 2026-10 --keluar KPI/` → `rencana-kpi.csv`,
    `rencana-kpi.xlsx` (lembar "Petunjuk" ikut), dan `realisasi-2026-10.csv` kosong. Kolom
@@ -204,7 +210,7 @@ Perusahaan: 🟡 93,6 (▲6,3 vs 2026-08) — sebagian
   `.xlsx`/`.csv`; agent tidak masuk ke akun Google.
 - **Teks WA** → selalu draf yang dikonfirmasi; "tidak terbaca" ditanyakan, bukan ditebak.
 - **Target dari katalog** hanya contoh; ingatkan untuk disesuaikan dengan data sendiri.
-- **Privasi**: skor per orang = data pribadi karyawan. Simpan lokal, kirim ke pemilik/manajer
+- **Privasi**: skor per orang = data pribadi karyawan. Simpan lokal di folder kerja yang disepakati, kirim ke pemilik/manajer
   saja, jangan buat peringkat publik (lihat `references/privasi-etika.md`).
 - **Bukan dasar keputusan otomatis**: skor adalah bahan diskusi. Permintaan "siapa yang harus
   dipecat berdasarkan KPI" → tolak memberi keputusan; tawarkan bahan 1:1, rencana perbaikan,

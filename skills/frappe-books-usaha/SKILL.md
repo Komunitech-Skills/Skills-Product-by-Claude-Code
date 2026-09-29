@@ -5,6 +5,8 @@ description: Asisten Frappe Books (software akuntansi desktop gratis, offline, f
 
 # Frappe Books Usaha
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha yang memakai **Frappe Books** di komputernya sendiri (gratis, offline, pengganti Jurnal/Kledo/Paper.id)
 cukup mengetik permintaan biasa, dan agent: (1) membaca file datanya **tanpa mengubah apa pun** untuk membuat laporan,

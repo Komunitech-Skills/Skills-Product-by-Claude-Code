@@ -5,6 +5,8 @@ description: Panduan aman membuat konten talking-head dengan avatar/suara AI DIR
 
 # Klon Diri untuk Konten (avatar & suara sendiri)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha/kreator memakai wajah dan suara **dirinya sendiri** versi AI untuk video bicara ke kamera, tanpa shooting tiap kali. Skill ini menghasilkan: keputusan alat, formulir persetujuan, panduan rekam sampel, rencana bulanan, dan hitungan biaya. Skill **tidak** membuat klon, tidak memasang software, tidak butuh API key, dan tidak memposting apa pun.
 

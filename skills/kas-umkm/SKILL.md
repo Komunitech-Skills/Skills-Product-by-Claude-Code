@@ -5,6 +5,8 @@ description: Buku kas harian lokal untuk warung, toko, dan UMKM (SQLite di kompu
 
 # Buku Kas UMKM (kas-umkm)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan keluar tercatat per kategori dan per akun (laci, rekening, e-wallet), saldo selalu jelas, uang laci dicocokkan dengan hitungan fisik, dan pemilik tahu kapan **uang usaha terpakai untuk pribadi**. Semua data ada di satu file di komputer pemilik; kamu (agent) mengoperasikannya lewat `scripts/kas.py`.
 

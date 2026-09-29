@@ -5,6 +5,8 @@ description: Memantau status website toko online, halaman checkout, domain, sert
 
 # Pantau Website Toko
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik toko online/website/landing page/link bio ingin tahu **secepatnya** kalau website, halaman checkout, atau link WA/katalognya mati - sebelum pelanggan yang mengeluh duluan. Skill ini membantu memasang **Uptime Kuma** (https://github.com/louislam/uptime-kuma, MIT, gratis, jalan di komputer/mini PC/VPS milik pengguna sendiri) untuk pemantauan terus-menerus + notifikasi Telegram, lalu menjalankan `scripts/pantau.py` untuk mengubah datanya jadi ringkasan bahasa manusia (harian/mingguan). Untuk yang belum mau pasang apa pun, ada mode `cek-cepat`: satu kali cek langsung ke alamat website, tanpa Uptime Kuma sama sekali.
 

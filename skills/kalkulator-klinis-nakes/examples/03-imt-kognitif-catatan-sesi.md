@@ -12,7 +12,7 @@ bercerita foto keluarga lancar; ikut aktif."
 python3 scripts/klinis.py imt --tinggi 158 --berat 61 --lingkar-perut 84 --jk P
 python3 scripts/klinis.py kognitif --instrumen moca --skor 22 --pendidikan-tahun 6
 ```
-**Output script:**
+**Output script (v1.0.1):**
 ```
 Tinggi (cm): 158.0
 Berat (kg): 61
@@ -22,6 +22,7 @@ Kategori Kemenkes: Normal (18,5-25,0)
 Lingkar perut (cm): 84
 Lingkar perut: >= 80 cm -> obesitas sentral (batas Asia-Pasifik)
 Catatan: IMT dibulatkan 1 desimal (setengah ke atas) lalu dikategorikan. Hanya untuk dewasa >= 18 tahun, tidak untuk ibu hamil/anak.
+Catatan: Kategori Asia-Pasifik dan Kemenkes berbeda untuk IMT ini. Asia-Pasifik (WPRO 2000) lazim untuk risiko metabolik/klinis individu; ambang Kemenkes (Permenkes 41/2014) lazim untuk laporan gizi/posbindu sesuai format dinas. Pakai yang diminta fasilitas Anda dan sebutkan acuannya.
 Sumber: WHO WPRO/IASO/IOTF, The Asia-Pacific Perspective: Redefining Obesity and its Treatment (2000)
 Sumber: Kemenkes RI, Pedoman Gizi Seimbang (Permenkes No. 41 Tahun 2014) - batas ambang IMT Indonesia
 PENTING: Alat bantu untuk tenaga kesehatan, bukan pengganti penilaian klinis. Keputusan klinis tetap pada dokter/bidan yang memeriksa.
@@ -31,8 +32,9 @@ Skor mentah: 22
 Koreksi pendidikan: 1
 Skor akhir: 23
 Interpretasi: di bawah batas skrining 26 - pertimbangkan evaluasi lanjut
-Catatan: MoCA mewajibkan pelatihan & sertifikasi pemeriksa (sejak 2019). Skill ini hanya menafsirkan skor total yang Anda masukkan.
+Catatan: Alat ini HANYA menafsirkan skor total yang dimasukkan nakes; tidak memuat/mereproduksi formulir, butir, atau instruksi MoCA. Pemakaian formulir MoCA memerlukan lisensi/izin dan pelatihan-sertifikasi milik pengguna sendiri dari pemegang hak cipta (MoCA Cognition; sertifikasi wajib sejak 2019).
 Catatan: Batas 26 adalah versi asli; studi validasi MoCA-Ina 2010 belum menetapkan batas khusus Indonesia.
+Catatan: Singkirkan dulu delirium (onset mendadak, fluktuatif - perlu evaluasi segera), depresi, gangguan penglihatan/pendengaran, dan efek obat sebelum menafsirkan skor rendah.
 Catatan: Hasil skrining bukan diagnosis demensia/gangguan kognitif.
 Sumber: Nasreddine dkk. 2005 (J Am Geriatr Soc 53:695-699): >= 26 normal, +1 poin bila pendidikan <= 12 tahun; MoCA-Ina: Husein dkk. 2010 (Neurona 27(4)) - batas khusus Indonesia belum ditetapkan dalam studi validasi itu
 PENTING: Alat bantu untuk tenaga kesehatan, bukan pengganti penilaian klinis. Keputusan klinis tetap pada dokter/bidan yang memeriksa.

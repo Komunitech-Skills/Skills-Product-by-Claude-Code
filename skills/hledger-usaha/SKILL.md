@@ -5,6 +5,8 @@ description: Pembukuan usaha berpasangan (double-entry) di file teks hledger mil
 
 # hledger Usaha (pembukuan teks untuk UMKM)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha punya **pembukuan berpasangan yang rapi tanpa aplikasi berbayar**: semua catatan disimpan di satu file teks (`~/Pembukuan/usaha.journal`) di komputernya sendiri, dibaca oleh **hledger** (program gratis, open-source). Pengguna cukup bercerita ("tadi jual 750rb ke Kantor Maju, bayarnya minggu depan"); agent menjalankan `scripts/hledger_usaha.py` untuk menulis entri yang **seimbang dan terperiksa**, lalu membuat laporan bulanan dalam Rupiah. Python standar saja.
 

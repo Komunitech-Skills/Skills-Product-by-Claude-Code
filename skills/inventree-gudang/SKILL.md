@@ -5,6 +5,8 @@ description: Mengoperasikan InvenTree (sistem inventori/gudang open-source, self
 
 # InvenTree Gudang (asisten gudang lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik/admin gudang usaha manufaktur kecil, distributor, atau toko grosir yang memakai **InvenTree di komputer/server sendiri** (tanpa biaya bulanan) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/inventree.py` untuk membaca stok atau menyiapkan transaksi lewat **REST API resmi InvenTree** (`/api/`, header `Authorization: Token inv-...`). Data tetap di komputer pengguna. Python standar saja, tanpa instalasi paket.
 

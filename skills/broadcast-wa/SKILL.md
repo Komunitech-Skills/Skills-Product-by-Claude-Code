@@ -5,6 +5,8 @@ description: Membuat pesan broadcast WhatsApp promosi yang personal ({nama}, {sa
 
 # Broadcast WA
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha mengirim promo lewat WhatsApp yang terasa personal, tidak mengganggu, dan patuh
 aturan: hanya ke pelanggan yang setuju, selalu ada cara berhenti, dikirim bertahap supaya nomor aman.

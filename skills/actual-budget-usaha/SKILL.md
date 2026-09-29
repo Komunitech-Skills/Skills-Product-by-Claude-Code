@@ -5,6 +5,8 @@ description: Asisten Actual Budget (aplikasi anggaran amplop gratis, MIT, data l
 
 # Actual Budget Usaha (anggaran amplop lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pengguna **Actual Budget** (aplikasi anggaran amplop pengganti YNAB, gratis, data di komputer sendiri) cukup
 menyerahkan file mutasi bank atau bertanya "anggaran saya bulan ini gimana?". Agent menjalankan

@@ -1,0 +1,9 @@
+{
+  "ganti_tema": false,
+  "tema": [
+    {"id": "tekstur_nasi", "label": "Tekstur nasi", "kata": ["pera", "lembek", "keras", "kering"], "dampak": 3},
+    {"id": "parkir_lokasi", "label": "Parkir / lokasi", "kata": ["parkir", "lokasi", "tempat", "susah dicari"], "dampak": 2}
+  ],
+  "kata_positif": ["nendang", "juara"],
+  "kata_negatif": ["pera", "lembek", "sempit"]
+}

@@ -5,6 +5,8 @@ description: Memandu sesi curah gagasan terstruktur untuk ide usaha baru, ide pr
 
 # Brainstorming Ide Usaha
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 Mengubah "saya mau usaha X tapi bingung mulai dari mana" menjadi beberapa ide konkret yang sudah disaring, diuji murah, dan punya rencana aksi 7 hari — bukan sekadar daftar ide acak.
 
 ## Tujuan

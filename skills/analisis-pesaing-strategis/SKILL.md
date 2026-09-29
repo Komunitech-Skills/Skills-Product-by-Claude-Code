@@ -5,6 +5,8 @@ description: Analisis pesaing untuk usaha kecil-menengah Indonesia - memetakan p
 
 # Analisis Pesaing Strategis
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjawab: "Siapa saingan saya, mereka unggul di mana, saya bisa menang di mana, dan apa yang harus saya lakukan minggu ini?" Hasilnya dokumen siap pakai: peta pesaing, matriks, SWOT, kartu jawaban, dan 3-5 tindakan yang ada pemilik dan tenggat.
 

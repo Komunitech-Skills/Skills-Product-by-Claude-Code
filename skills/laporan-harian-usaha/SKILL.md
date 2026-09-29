@@ -5,6 +5,8 @@ description: Satu laporan harian/mingguan gabungan untuk pemilik usaha dari alat
 
 # Laporan Harian Usaha (pengganti dashboard SaaS)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha cukup membaca **satu pesan** tiap malam (dan satu tiap Senin pagi) untuk tahu kondisi usahanya: penjualan, stok, karyawan, tagihan, dan apa yang harus dibereskan besok. Semua angka diambil dari alat lokal Komunitech yang sudah ia pakai, dijalankan oleh `scripts/laporan.py`. Tanpa aplikasi dashboard berbayar, tanpa internet, data tetap di komputernya.
 

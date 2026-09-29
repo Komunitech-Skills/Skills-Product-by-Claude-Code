@@ -5,6 +5,8 @@ description: Mengoperasikan Vikunja (manajer tugas/proyek open-source, self-host
 
 # Vikunja Tugas (asisten Vikunja lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik/admin usaha kecil yang memakai **Vikunja di server/komputer sendiri** (pengganti Trello/ClickUp/Asana berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/vikunja.py` untuk membaca atau menyiapkan tugas lewat **REST API resmi Vikunja** (`/api/v1`, header `Authorization: Bearer tk_...`). Data tetap di komputer/server pengguna. Python standar saja, tanpa instalasi paket.
 

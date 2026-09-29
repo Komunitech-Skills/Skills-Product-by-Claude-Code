@@ -5,6 +5,8 @@ description: Aplikasi absensi karyawan lokal (SQLite di komputer pemilik) yang d
 
 # Absensi Lokal (pengganti aplikasi absensi bulanan)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi "aplikasi absensi" pemilik usaha tanpa langganan: data ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/absensi.py`. Hasil akhir: kehadiran tercatat rapi, rekap bulanan per karyawan, upah lembur yang benar menurut PP 35/2021, daftar data ganjil yang perlu dicek, dan file untuk skill `slip-gaji-bpjs`.
 

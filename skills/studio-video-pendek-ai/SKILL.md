@@ -5,6 +5,8 @@ description: Ubah produk atau topik jadi paket produksi video pendek vertikal 15
 
 # Studio Video Pendek AI
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Dari satu kalimat ("bikinin video 30 detik untuk kopi susu gula aren") menghasilkan **paket produksi siap pakai**: pemilik usaha tinggal merekam dengan HP atau menempel prompt ke alat video AI pilihannya, lalu unggah sendiri. Skill ini menulis rencana dan teks, **bukan** membuat file video, dan tidak memerlukan API key atau instalasi.
 
@@ -26,12 +28,12 @@ Bila info kurang: **tanya sekali** dalam satu pesan berisi daftar pendek (maks. 
 2. **Tentukan durasi & jumlah adegan** (tabel di bawah). Video 15 dtk: 3 adegan. 30 dtk: 5-6. 45-60 dtk: 7-9.
 3. **Tulis 3 pilihan hook** (3 detik pertama), masing-masing beda gaya: pertanyaan/masalah, pernyataan berani yang jujur, visual mengejutkan. Beri rekomendasi satu, sertakan alasannya satu kalimat. Lihat pola hook di bawah.
 4. **Tulis naskah per adegan** dengan struktur Hook - Masalah/Konteks - Solusi/Produk - Bukti - CTA. Tiap adegan: nomor, rentang waktu, sulih suara, teks di layar.
-5. **Hitung durasi.** Simpan sulih suara per adegan ke berkas teks format `Label | teks` dan jalankan `python3 scripts/durasi_naskah.py naskah.txt --target 30` (Windows: `python` atau `py`). Jika script tidak bisa dijalankan, hitung manual: **kata / 150 x 60 = detik** (jeda +0,5 dtk per tanda [jeda], +0,3 dtk antar adegan). Jika melebihi target, ringkas dulu; jangan menyuruh pengguna bicara lebih cepat dari ±170 kata/menit.
+5. **Hitung durasi.** Simpan sulih suara per adegan ke berkas teks format `Label | teks` dan jalankan `python3 <folder-skill-ini>/scripts/durasi_naskah.py naskah.txt --target 30` (Windows: `python` atau `py`). `<folder-skill-ini>` = folder tempat SKILL.md ini dibaca (mis. `~/.openclaw/skills/studio-video-pendek-ai`); jangan mencari script ke seluruh komputer (`find /` dsb.) dan jangan memakai salinan script dari folder lain. Jika script tidak bisa dijalankan, hitung manual: **kata / 150 x 60 = detik** (jeda +0,5 dtk per tanda [jeda], +0,3 dtk antar adegan). Jika melebihi target, ringkas dulu; jangan menyuruh pengguna bicara lebih cepat dari ±170 kata/menit.
 6. **Buat storyboard + shot list** dalam tabel (format di bawah). Untuk tiap adegan berikan **jalur A (rekam HP)** dan/atau **jalur B (prompt alat video AI)** sesuai pilihan pengguna. Bila belum memilih, berikan keduanya singkat.
 7. **Teks sulih suara final** dalam Bahasa Indonesia sehari-hari: kalimat pendek (maks. ±12 kata), tanda `[jeda]`, penekanan dengan HURUF BESAR seperlunya, angka ditulis cara diucapkan ("dua puluh dua ribu rupiah") supaya suara AI/pemilik tidak salah baca.
 8. **Caption + hashtag** (format di bawah).
 9. **Checklist label & etika** (bagian "Label Konten AI"). Selalu sertakan, sesuaikan dengan jalur produksi yang dipilih.
-10. **Cek akhir sebelum menyerahkan:** durasi dalam target; tidak ada klaim yang tak bisa dibuktikan; tidak ada wajah/suara orang lain; musik dari perpustakaan platform; harga/promo sama dengan input; teks di layar terbaca (maks. 7 kata per layar).
+10. **Cek akhir sebelum menyerahkan:** durasi dalam target; tidak ada klaim yang tak bisa dibuktikan atau keunggulan produk yang tidak disebut pengguna (mis. "wangi", "tercepat"); tidak ada wajah/suara orang lain; musik dari perpustakaan platform; harga/promo sama dengan input; teks di layar terbaca (maks. 7 kata per layar).
 
 ## Pola Hook (3 detik pertama)
 | Gaya | Contoh (kopi susu) |
@@ -121,5 +123,6 @@ Output (potongan): Asumsi: 30 dtk, jualan, rekam HP, santai. Hook rekomendasi: "
 - Info ini bukan nasihat hukum; aturan platform dan UU (mis. perlindungan data pribadi, hak cipta) bisa berubah.
 
 ## Riwayat versi
+- **1.0.2** (2026-09-29): path script `<folder-skill-ini>/scripts/durasi_naskah.py` (tanpa mencari ke seluruh komputer); tidak menambah keunggulan produk yang tidak disebut pengguna; aturan kerja standar (hasil uji OpenClaw 2026.9.6).
 - **1.0.1** (2026-09-29): script memperingatkan adegan tanpa kata/hanya emoji dan `[jeda abc]` (bukan angka), memperingatkan `--wpm` di luar 80-220 dan menolak di luar 40-400, kolom tabel tidak melebur untuk angka besar, pesan "KEPENDEKAN" lebih ramah; Mode Ringkas untuk video 15 dtk; `references/label-ai.md` dicocokkan ke halaman resmi (TikTok newsroom, YouTube Help, Meta) per 2026-09-29. Uji regresi 17.
 - **1.0.0** (2026-09-29): rilis awal.

@@ -1,7 +1,11 @@
 # Skrining kognitif — interpretasi skor total & stimulasi kognitif
 
-Alat ini **tidak memuat butir soal** MMSE/MoCA (berhak cipta; lihat `sumber-pedoman.md`).
-Pemeriksa memakai formulir resmi miliknya, lalu memasukkan **skor total**.
+Alat ini **hanya menafsirkan skor total yang dimasukkan nakes**. Alat ini tidak memuat,
+mereproduksi, menerjemahkan, atau memandu formulir, butir, instruksi, atau penskoran per butir
+MMSE/MoCA (berhak cipta; lihat `sumber-pedoman.md`). Pemakaian formulir **MoCA** memerlukan
+lisensi/izin dan pelatihan-sertifikasi milik pengguna sendiri dari MoCA Cognition; formulir
+**MMSE** memerlukan lisensi milik pengguna sendiri dari PAR Inc. Status: **PERLU REVIEW**
+(klinis & legal).
 
 | Instrumen | Rentang | Interpretasi di alat ini | Sumber |
 |---|---|---|---|
@@ -10,7 +14,11 @@ Pemeriksa memakai formulir resmi miliknya, lalu memasukkan **skor total**.
 | AMT | 0–10 | 8–10 normal; 4–7 gangguan ingatan sedang pada skrining; 0–3 berat pada skrining | Hodkinson 1972; formulir Permenkes 67/2015 (PERLU REVIEW) |
 
 Catatan penting untuk ditulis di output bila relevan:
-- Skor dipengaruhi pendidikan, bahasa, gangguan penglihatan/pendengaran, delirium, depresi.
+- Skor dipengaruhi pendidikan, bahasa, gangguan penglihatan/pendengaran, delirium, depresi,
+  efek obat (script menuliskan catatan ini). Delirium (onset mendadak, fluktuatif) perlu
+  evaluasi segera.
+- MMSE di alat ini tanpa koreksi pendidikan; pada pendidikan rendah/buta huruf skor bisa rendah
+  tanpa gangguan.
 - MoCA: pemeriksa wajib bersertifikat (sejak 2019). Batas 26 = versi asli; studi MoCA-Ina 2010
   belum menetapkan batas khusus Indonesia.
 - Kata yang dipakai: "di bawah batas skrining", "pertimbangkan evaluasi lanjut/rujukan".

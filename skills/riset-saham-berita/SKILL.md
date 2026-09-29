@@ -5,6 +5,8 @@ description: Riset saham BEI/IDX secara netral - merangkum berita, keterbukaan i
 
 # Riset Saham & Berita Emiten (BEI)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pengguna awam memahami **fakta** tentang saham yang ia sebut: apa yang terjadi
 (berita, pengumuman, aksi korporasi), bagaimana angka laporan keuangannya (rasio dihitung
@@ -185,6 +187,7 @@ Lengkap: `examples/contoh-pembuat-cnth.md`.
   mengirim portofolio pengguna ke mana pun selain penyedia model AI yang dipakai agent.
 
 ## Riwayat versi
+- **1.0.3** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
 - **1.0.2 (2026-09-29):** jadwal OpenClaw tidak lagi mengandalkan `NO_REPLY` (belum terbukti); kode 0
   mengirim satu baris pendek "tidak ada level tersentuh", dan isi pesan untuk kode 1/2/3 (serta bila
   script tidak bisa dijalankan) didefinisikan di `references/jadwal-openclaw.md`.

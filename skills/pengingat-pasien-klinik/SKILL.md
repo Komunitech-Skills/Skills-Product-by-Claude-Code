@@ -5,6 +5,8 @@ description: Buku jadwal lokal pengingat kontrol/vaksin pasien untuk klinik, pra
 
 # Pengingat Pasien Klinik (Kontrol & Vaksin)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Klinik, praktik dokter/bidan/dokter gigi, dan klinik hewan sering lupa mengingatkan pasien soal
 jadwal kontrol atau vaksin berikutnya. Skill ini menjadi **buku jadwal lokal minimal** — hanya

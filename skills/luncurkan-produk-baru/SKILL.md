@@ -5,6 +5,8 @@ description: Menyusun rencana peluncuran produk baru UMKM Indonesia (makanan, fa
 
 # Luncurkan Produk Baru
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah "saya mau launching produk" menjadi **rencana peluncuran satu paket yang siap dijalankan**: tujuan berangka, kanal terpilih, jadwal bertanggal (hari libur sudah diperhitungkan), teks siap tempel, stok yang dihitung, hari-H per jam, dan cara mengukur hasilnya.
 

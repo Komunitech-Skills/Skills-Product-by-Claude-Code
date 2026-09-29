@@ -5,6 +5,8 @@ description: Menyiapkan agen CS toko/klinik berbasis "basis pengetahuan" lokal (
 
 # Agen CS Toko
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik toko/klinik membangun "karyawan CS AI" yang **selalu tahu isi tokonya** (dari basis pengetahuan lokal, bukan karangan) dan **menyiapkan draf balasan** untuk chat pelanggan — pemilik/admin yang memutuskan dan mengirim. Skill ini merangkai basis pengetahuan + aturan eskalasi + jam kerja + rekap harian menjadi satu paket siap pakai, dan memakai `balas-chat-cs` untuk gaya bahasa draf.
 

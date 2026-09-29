@@ -30,19 +30,19 @@ class TesMAP(unittest.TestCase):
         # (120 + 2*80)/3 = 280/3 = 93,33 -> 93,3
         h = k.hitung_map(120, 80)
         self.assertEqual(h["map_mmhg"], "93.3")
-        self.assertTrue(h["map_lebih_dari_90"])
+        self.assertTrue(h["map_90_atau_lebih"])
 
-    def test_tepat_90_bukan_lebih_dari_90(self):
-        # (110 + 160)/3 = 90 tepat -> TIDAK > 90
+    def test_tepat_90_memenuhi_ambang_kia_2025(self):
+        # (110 + 160)/3 = 90 tepat -> Buku KIA cetakan 2025: MAP >= 90 -> YA
         h = k.hitung_map(110, 80)
         self.assertEqual(h["map_mmhg"], "90.0")
-        self.assertFalse(h["map_lebih_dari_90"])
+        self.assertTrue(h["map_90_atau_lebih"])
 
-    def test_sedikit_di_atas_90(self):
-        # (111 + 160)/3 = 90,333... -> > 90, tampil 90,3
-        h = k.hitung_map(111, 80)
-        self.assertEqual(h["map_mmhg"], "90.3")
-        self.assertTrue(h["map_lebih_dari_90"])
+    def test_sedikit_di_bawah_90(self):
+        # (109 + 160)/3 = 89,666... -> < 90, tampil 89,7 (tidak dibulatkan dulu ke 90)
+        h = k.hitung_map(109, 80)
+        self.assertEqual(h["map_mmhg"], "89.7")
+        self.assertFalse(h["map_90_atau_lebih"])
 
     def test_pembulatan_setengah_ke_atas(self):
         # (100 + 2*70.25)/3 = 240,5/3 = 80,1666 -> 80,2 ; (101+2*70)/3 = 80,333 -> 80,3
@@ -57,7 +57,9 @@ class TesMAP(unittest.TestCase):
 class TesPreeklampsia(unittest.TestCase):
     def test_satu_faktor_tinggi(self):
         h = k.skrining_preeklampsia(["hipertensi-kronik"])
-        self.assertEqual(h["kategori"], "RISIKO TINGGI")
+        self.assertTrue(h["kategori"].startswith("RISIKO TINGGI"))
+        self.assertIn("rujukan terencana", h["arti"])
+        self.assertIn("Rumah Sakit", h["arti"])
 
     def test_dua_sedang(self):
         h = k.skrining_preeklampsia(["nullipara", "riwayat-keluarga"])
@@ -65,7 +67,7 @@ class TesPreeklampsia(unittest.TestCase):
 
     def test_satu_sedang_saja(self):
         h = k.skrining_preeklampsia(["nullipara"])
-        self.assertEqual(h["kategori"], "1 FAKTOR RISIKO SEDANG")
+        self.assertTrue(h["kategori"].startswith("1 FAKTOR RISIKO SEDANG"))
 
     def test_kosong(self):
         h = k.skrining_preeklampsia([""])
@@ -77,28 +79,32 @@ class TesPreeklampsia(unittest.TestCase):
         self.assertIn("map-90", h["faktor_dari_angka"])
         self.assertTrue(h["kategori"].startswith("RISIKO SEDANG"))
 
-    def test_map_tepat_90_tidak_menambah(self):
+    def test_map_tepat_90_menambah_faktor(self):
+        # Buku KIA cetakan 2025: MAP >= 90 -> nullipara + MAP 90,0 = 2 sedang
         h = k.skrining_preeklampsia(["nullipara"], 110, 80)
-        self.assertEqual(h["kategori"], "1 FAKTOR RISIKO SEDANG")
+        self.assertIn("map-90", h["faktor_dari_angka"])
+        self.assertTrue(h["kategori"].startswith("RISIKO SEDANG"))
+        h = k.skrining_preeklampsia(["nullipara"], 109, 80)  # 89,67
+        self.assertTrue(h["kategori"].startswith("1 FAKTOR RISIKO SEDANG"))
 
     def test_usia_40_tidak_dihitung_ganda_di_kia(self):
         # usia 41 -> usia-ibu-35 (KIA) ; usia-ibu-40 tidak boleh jadi faktor sedang kedua
         h = k.skrining_preeklampsia([], usia_ibu=41)
-        self.assertEqual(h["kategori"], "1 FAKTOR RISIKO SEDANG")
+        self.assertTrue(h["kategori"].startswith("1 FAKTOR RISIKO SEDANG"))
 
     def test_imt_batas(self):
         # KIA: IMT > 30. 30,0 tidak ; 30,1 ya
         self.assertTrue(k.skrining_preeklampsia([], imt="30.0")["kategori"].startswith("TIDAK"))
-        self.assertEqual(k.skrining_preeklampsia([], imt="30,1")["kategori"],
-                         "1 FAKTOR RISIKO SEDANG")
+        self.assertTrue(k.skrining_preeklampsia([], imt="30,1")["kategori"].startswith(
+            "1 FAKTOR RISIKO SEDANG"))
 
     def test_nice_kembar_sedang_usia_35_tidak_dihitung(self):
         # NICE: kembar = sedang, usia 36 tidak termasuk (batas NICE 40)
         h = k.skrining_preeklampsia(["kehamilan-multipel"], usia_ibu=36, pedoman="nice")
-        self.assertEqual(h["kategori"], "1 FAKTOR RISIKO SEDANG")
+        self.assertTrue(h["kategori"].startswith("1 FAKTOR RISIKO SEDANG"))
         # Buku KIA: kembar = tinggi
         h2 = k.skrining_preeklampsia(["kehamilan-multipel"], usia_ibu=36, pedoman="kia")
-        self.assertEqual(h2["kategori"], "RISIKO TINGGI")
+        self.assertTrue(h2["kategori"].startswith("RISIKO TINGGI"))
 
     def test_kode_tidak_dikenal(self):
         with self.assertRaises(k.InputSalah):
@@ -110,7 +116,7 @@ class TesPreeklampsia(unittest.TestCase):
 
     def test_wajib_sumber_dan_penafian(self):
         h = k.skrining_preeklampsia(["nullipara"])
-        self.assertIn("2023", h["sumber"][0])
+        self.assertIn("2025", h["sumber"][0])
         self.assertIn("bukan pengganti penilaian klinis", h["penafian"])
         self.assertTrue(any("dosis" in c for c in h["catatan"]))
 
@@ -248,8 +254,29 @@ class TesIMT(unittest.TestCase):
         self.assertIn("obesitas sentral", k.imt_dewasa(155, 55, 80, "p")["lingkar_perut"])
         h = k.imt_dewasa(165, 72, 90, "L")
         self.assertTrue(any("Tepat 90" in c for c in h["catatan"]))
+        # R3: tanpa jenis kelamin -> IMT tetap keluar, LP tidak dinilai
+        h = k.imt_dewasa(165, 72, 90, None)
+        self.assertEqual(h["imt"], "26.4")
+        self.assertIn("tidak dinilai", h["lingkar_perut"])
+
+    def test_catatan_beda_kategori(self):
+        # R5: IMT 25,0 -> Obesitas I (AP) vs Normal (Kemenkes) -> ada catatan
+        self.assertTrue(any("berbeda" in c for c in k.imt_dewasa(200, 100)["catatan"]))
+        # 60/1,65^2 = 22,0 normal di keduanya; 40/1,7^2 = 13,8 kurang di keduanya -> tanpa catatan
+        self.assertFalse(any("berbeda" in c for c in k.imt_dewasa(165, 60)["catatan"]))
+        self.assertFalse(any("berbeda" in c for c in k.imt_dewasa(170, 40)["catatan"]))
+
+    def test_batch(self):
+        # R7: 72/1,65^2 = 26,4 ; 55/1,55^2 = 22,89 -> 22,9 ; baris rusak tidak menghentikan
+        h = k.imt_batch("id,tinggi,berat,lingkar_perut,jk\nA1,165,72,92,L\n"
+                        "A2,155,55,,\nA3,abc,60,,\n")
+        self.assertIn("A1 | IMT 26.4", h["hasil_per_pasien"][0])
+        self.assertIn("obesitas sentral", h["hasil_per_pasien"][0])
+        self.assertIn("A2 | IMT 22.9", h["hasil_per_pasien"][1])
+        self.assertIn("TIDAK DIHITUNG", h["hasil_per_pasien"][2])
+        self.assertEqual(h["ringkasan"], "2 dihitung, 1 tidak dihitung (cek data)")
         with self.assertRaises(k.InputSalah):
-            k.imt_dewasa(165, 72, 90, None)
+            k.imt_batch("nama,umur\nX,5\n")
 
     def test_nilai_ekstrem(self):
         for t, b in ((30, 60), (300, 60), (165, 10), (165, 500), ("seratus", 60)):
@@ -286,6 +313,20 @@ class TesBBHamil(unittest.TestCase):
         h = k.bb_hamil(160, 55, 56, 10)
         self.assertNotIn("perkiraan_rentang_saat_ini_kg", h)
         self.assertEqual(h["kenaikan_sejauh_ini_kg"], "1.0")
+        # R2: posisi terhadap asumsi IOM trimester 1 (0,5-2 kg)
+        self.assertEqual(h["perkiraan_trimester_1_kg"], "0.5-2.0")
+        self.assertIn("di dalam", h["posisi"])
+        self.assertIn("di bawah", k.bb_hamil(160, 55, "54.5", 10)["posisi"])
+
+    def test_posisi_konsisten_dengan_tampilan(self):
+        # R1: normal, 16 mgg: bawah 0,5+0,35*3 = 1,55 -> 1,6 ; atas 2+0,5*3 = 3,5.
+        # naik 3,54 -> tampil 3,5 -> harus "di dalam" (bukan "di atas 3,5")
+        h = k.bb_hamil(160, 55, "58.54", 16)
+        self.assertEqual(h["perkiraan_rentang_saat_ini_kg"], "1.6-3.5")
+        self.assertIn("Kenaikan 3.5 kg di dalam", h["posisi"])
+
+    def test_catatan_keterbatasan_iom(self):
+        self.assertTrue(any("lebih pendek" in c for c in k.bb_hamil(155, 50)["catatan"]))
 
     def test_bb_turun_dan_ekstrem(self):
         self.assertEqual(k.bb_hamil(160, 60, "58.5", 20)["kenaikan_sejauh_ini_kg"], "-1.5")
@@ -359,6 +400,119 @@ class TesCLI(unittest.TestCase):
         kode, _, err = jalankan("kognitif", "--instrumen", "moca", "--skor", "20",
                                 "--pendidikan-tahun", "sembilan")
         self.assertEqual(kode, 1)
+
+
+class TesRevisi101(unittest.TestCase):
+    """Temuan HASIL-UJI v1.0.0 (T1-T3, S1-S3, S6, R4, R6)."""
+
+    def json_teks(self, h):
+        return json.dumps(h, ensure_ascii=False)
+
+    def test_T2_proteinuria_tunggal_sedang_bukan_tinggi(self):
+        h = k.skrining_preeklampsia(["proteinuria"])
+        self.assertTrue(h["kategori"].startswith("1 FAKTOR RISIKO SEDANG"))
+        self.assertEqual(h["faktor_tinggi"], [])
+        h = k.skrining_preeklampsia(["proteinuria", "nullipara"])
+        self.assertTrue(h["kategori"].startswith("RISIKO SEDANG"))
+
+    def test_T3_td_berat_tidak_pernah_anc_rutin(self):
+        for s, d in ((170, 115), (160, 80), (150, 110), (200, 120)):
+            for f in ([], ["nullipara"], ["hipertensi-kronik"]):
+                for ped in ("kia", "nice"):
+                    h = k.skrining_preeklampsia(f, s, d, pedoman=ped)
+                    self.assertTrue(h["kategori"].startswith("TANDA BAHAYA"), (s, d, f, ped))
+                    self.assertNotIn("ANC rutin", self.json_teks(h))
+                    self.assertNotIn("Lanjutkan ANC rutin", h["arti"])
+                    self.assertIn("SEGERA", h["arti"])
+                    self.assertIn("protokol", h["arti"])
+                    self.assertTrue(any("160/110" in x for x in h["sumber"]))
+
+    def test_T3_td_hipertensi_150_95_evaluasi_hari_ini(self):
+        for s, d in ((150, 95), (140, 80), (130, 90), (159, 109)):
+            h = k.skrining_preeklampsia([], s, d)
+            self.assertTrue(h["kategori"].startswith("TD RENTANG HIPERTENSI"), (s, d))
+            self.assertNotIn("ANC rutin", self.json_teks(h))
+            self.assertIn("rujuk", h["arti"])
+
+    def test_T3_td_normal_tidak_ada_tanda_bahaya(self):
+        for s, d in ((139, 89), (120, 80)):
+            h = k.skrining_preeklampsia([], s, d)
+            self.assertIsNone(h["tanda_bahaya"])
+
+    def test_T3_gejala_bahaya(self):
+        for g in k.GEJALA_BAHAYA:
+            h = k.skrining_preeklampsia([], gejala=[g])
+            self.assertTrue(h["kategori"].startswith("TANDA BAHAYA"), g)
+            self.assertNotIn("ANC rutin", self.json_teks(h))
+        with self.assertRaises(k.InputSalah):
+            k.skrining_preeklampsia([], gejala=["pusing-dikit"])
+
+    def test_T3_perintah_map_juga_menandai(self):
+        self.assertIn("SEGERA", k.hitung_map(170, 115)["tanda_bahaya"])
+        self.assertIn("HARI INI", k.hitung_map(150, 95)["tanda_bahaya"])
+        self.assertIsNone(k.hitung_map(120, 80)["tanda_bahaya"])
+
+    def test_T3_cli_170_115(self):
+        kode, out, _ = jalankan("preeklampsia", "--sistolik", "170", "--diastolik", "115")
+        self.assertEqual(kode, 0)
+        self.assertIn("!! TANDA BAHAYA", out)
+        self.assertNotIn("Lanjutkan ANC rutin", out)
+        kode, out, _ = jalankan("preeklampsia", "--faktor", "nullipara", "--gejala", "kejang")
+        self.assertIn("SEGERA", out)
+
+    def test_S1_nice_hanya_dm_tipe_1_2(self):
+        h = k.skrining_preeklampsia(["diabetes-gestasional"], pedoman="nice")
+        self.assertTrue(h["kategori"].startswith("TIDAK DITEMUKAN"))
+        self.assertTrue(any("tidak tercantum di NICE" in c for c in h["catatan"]))
+        h = k.skrining_preeklampsia(["diabetes-pregestasional"], pedoman="nice")
+        self.assertTrue(h["kategori"].startswith("RISIKO TINGGI"))
+        with self.assertRaises(k.InputSalah):
+            k.skrining_preeklampsia(["diabetes"], pedoman="nice")
+        # Buku KIA: diabetes dalam kehamilan = tinggi (semua kode diabetes)
+        for f in ("diabetes", "diabetes-gestasional", "diabetes-pregestasional"):
+            self.assertTrue(k.skrining_preeklampsia([f])["kategori"].startswith("RISIKO TINGGI"))
+
+    def test_S2_riwayat_hipertensi_tanpa_pe(self):
+        h = k.skrining_preeklampsia(["riwayat-hipertensi-kehamilan"], pedoman="kia")
+        self.assertTrue(h["kategori"].startswith("TIDAK DITEMUKAN"))
+        self.assertTrue(any("NICE NG133 = faktor tinggi" in c for c in h["catatan"]))
+        h = k.skrining_preeklampsia(["riwayat-hipertensi-kehamilan"], pedoman="nice")
+        self.assertTrue(h["kategori"].startswith("RISIKO TINGGI"))
+
+    def test_sumber_aturan_disebut(self):
+        self.assertTrue(any("Buku KIA" in c for c in
+                            k.skrining_preeklampsia(["nullipara"])["catatan"]))
+        self.assertTrue(any("NICE NG133 (rek. 1.1.2)" in c for c in
+                            k.skrining_preeklampsia(["nullipara"], pedoman="nice")["catatan"]))
+
+    def test_S6_siklus_di_luar_rentang_tetap_pakai_usg(self):
+        # USG 2 Mei 2026 usia 7w3d (52 hr) + 150 hari ke 29 Sep = 202 = 28w6d
+        h = k.kalkulator_kehamilan("2026-03-10", siklus=60, tanggal_periksa="2026-09-29",
+                                   usg_tanggal="2026-05-02", usg_minggu=7, usg_hari=3)
+        self.assertEqual(h["penanggalan_dipakai"], "USG")
+        self.assertEqual(h["usia_kehamilan"], "28 minggu 6 hari")
+        self.assertNotIn("hpl_naegele", h)
+        self.assertTrue(any("TIDAK ANDAL" in c for c in h["catatan"]))
+        # HPHT > 44 minggu tapi ada USG -> tetap jalan dengan USG
+        h = k.kalkulator_kehamilan("2025-01-01", tanggal_periksa="2026-09-29",
+                                   usg_tanggal="2026-05-02", usg_minggu=7, usg_hari=3)
+        self.assertEqual(h["penanggalan_dipakai"], "USG")
+
+    def test_R4_sumber_acog(self):
+        h = k.kalkulator_kehamilan("2026-03-10", tanggal_periksa="2026-09-29")
+        self.assertFalse(any("ACOG" in x for x in h["sumber"]))
+        h = k.kalkulator_kehamilan(None, tanggal_periksa="2027-03-12", usg_tanggal="2027-03-12",
+                                   usg_minggu=12, usg_hari=0)
+        self.assertTrue(any("reaffirmed 2025" in x for x in h["sumber"]))
+
+    def test_R6_catatan_kognitif_dan_lisensi(self):
+        for ins in ("mmse", "moca", "amt"):
+            teks = self.json_teks(k.kognitif(ins, 5, 6))
+            self.assertIn("delirium", teks)
+        for ins in ("mmse", "moca"):
+            teks = self.json_teks(k.kognitif(ins, 20, 6))
+            self.assertIn("HANYA menafsirkan skor total", teks)
+            self.assertIn("lisensi/izin", teks)
 
 
 if __name__ == "__main__":

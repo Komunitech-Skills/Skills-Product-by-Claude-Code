@@ -5,6 +5,8 @@ description: Menyiapkan laporan rutin (harian/mingguan/bulanan) di OpenClaw yang
 
 # Laporan Otomatis Terjadwal
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membuat pengguna OpenClaw yang awam teknologi punya laporan rutin (penjualan, kas,
 stok, piutang, ringkasan bulanan) yang **otomatis terkirim** ke Telegram atau WhatsApp

@@ -11,12 +11,17 @@ dengan kutipan pedoman. Untuk dokter, bidan, dan perawat.**
 ## Manfaat
 - ✅ **HPL & usia kehamilan tanpa salah hitung** — Naegele dan HPHT+280 hari, tahun kabisat,
   siklus ≠ 28 hari, plus cek otomatis "perlu penanggalan ulang dengan USG?" (ACOG 2017).
-- ✅ **Skrining preeklampsia sesuai Buku KIA 2023** — isi faktor dengan bahasa biasa, MAP
-  dihitung tepat (110/80 = 90,0 → bukan > 90), keluar kategori risiko + sumber.
+- ✅ **Skrining preeklampsia sesuai Buku KIA terbaru (cetakan 2025)** — isi faktor dengan
+  bahasa biasa, MAP dihitung tepat tanpa dibulatkan dulu (110/80 = 90,0 → memenuhi ambang
+  MAP ≥ 90; 109/80 = 89,7 → belum), keluar kategori risiko + sumber. Opsi NICE NG133 dengan
+  aturan yang disebut sumbernya — tidak dicampur.
+- ✅ **Tanda bahaya diperiksa lebih dulu** — TD ≥ 160/110 atau gejala bahaya langsung
+  ditandai "SEGERA evaluasi/rujuk sesuai protokol fasilitas"; TD ≥ 140/90 "evaluasi/rujuk hari
+  ini". Tidak pernah keluar saran "ANC rutin" untuk kasus seperti ini.
 - ✅ **IMT & kenaikan BB hamil** — kategori Asia-Pasifik **dan** Kemenkes sekaligus, lingkar
-  perut, rekomendasi IOM 2009 (termasuk kembar).
-- ✅ **Tafsir skor MMSE / MoCA-Ina / AMT** dengan koreksi pendidikan — tanpa melanggar hak cipta
-  butir tes.
+  perut, rekomendasi IOM 2009 (termasuk kembar), plus mode banyak pasien dari CSV (posbindu).
+- ✅ **Tafsir skor total kognitif (MMSE / MoCA / AMT)** yang Anda masukkan — alat tidak memuat
+  formulir atau butir tes.
 - ✅ **Catatan sesi stimulasi kognitif** rapi, siap tempel ke rekam medis — tanpa label
   diagnosis.
 
@@ -33,9 +38,11 @@ dari ingatan; sumber tidak tercatat.
 
 **Sesudah (cukup ketik):** "Saya bidan. Bu R, G1, 36 th, hamil 14 minggu, TD 120/80, IMT 31,
 ibunya dulu preeklampsia. Skrining preeklampsia."
-→ MAP 93,3; **5 faktor sedang** (nullipara, usia ≥ 35, riwayat keluarga, IMT > 30, MAP > 90) →
-**RISIKO SEDANG, memenuhi kriteria rujukan Buku KIA 2023**; daftar faktor yang belum ditanyakan;
-sumber + penafian. Siap disalin ke rekam medis.
+→ MAP 93,3; **5 faktor sedang** (nullipara, usia ≥ 35, riwayat keluarga, IMT > 30, MAP ≥ 90) →
+**RISIKO SEDANG — Buku KIA: ANC/persalinan/nifas di RS, rujukan terencana**; daftar faktor yang
+belum ditanyakan; sumber + penafian. Siap disalin ke rekam medis.
+Bila TD 170/115: hasil diawali **‼️ TANDA BAHAYA — segera evaluasi/rujuk sesuai protokol
+fasilitas** (sumber NICE NG133/ACOG), bukan "ANC rutin".
 
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa, misalnya:
@@ -51,13 +58,17 @@ Tanpa Python, agent menghitung manual dengan rumus di `references/` dan memberi 
 "verifikasi ulang".
 
 ## Batasan yang jujur perlu kamu tahu
-- **Belum ditinjau dokter/bidan** (PERLU REVIEW). Beberapa ambang dikonfirmasi lewat sumber
-  sekunder, bukan naskah asli (Buku KIA 2023, rentang AMT Permenkes 67/2015, tabel IMT
-  Kemenkes) — rinciannya di `references/sumber-pedoman.md`.
+- **Belum ditinjau dokter/bidan** (PERLU REVIEW). Lembar preeklampsia Buku KIA cetakan 2025
+  sudah dicocokkan dengan naskah resmi; rentang AMT Permenkes 67/2015, tabel IMT Kemenkes, dan
+  WPRO 2000 baru dikonfirmasi lewat sumber sekunder — rinciannya di
+  `references/sumber-pedoman.md`. Cocokkan dengan cetakan Buku KIA yang dipakai fasilitas Anda.
 - **Tanpa dosis obat** apa pun, termasuk aspirin/kalsium pencegahan preeklampsia.
 - **Tanpa diagnosis** — hasil berupa kategori risiko/hasil skrining.
-- **Butir MMSE & MoCA tidak disertakan** (hak cipta PAR Inc. / MoCA Cognition; MoCA wajib
-  sertifikasi pemeriksa). Kamu memasukkan skor total dari formulir resmi milikmu.
+- **Alat ini hanya menafsirkan skor total MMSE/MoCA yang kamu masukkan** — tidak memuat,
+  mereproduksi, atau memandu formulir, butir, maupun instruksinya. Memakai formulir **MoCA**
+  memerlukan lisensi/izin dan pelatihan-sertifikasi milikmu sendiri dari MoCA Cognition;
+  formulir **MMSE** memerlukan lisensi milikmu sendiri dari PAR Inc. Nama instrumen hanya
+  penyebut; Komunitech tidak berafiliasi dengan pemegang hak cipta. (PERLU REVIEW legal.)
 - **MoCA-Ina:** studi validasi 2010 belum menetapkan titik potong khusus Indonesia; alat memakai
   batas asli 26 dan menyebutkannya.
 - **Skor risiko kardiovaskular tidak disertakan di v1** — agar tidak salah hitung; pakai WHO

@@ -5,6 +5,8 @@ description: Membaca foto/teks nota, struk, kuitansi, invoice, dan faktur pajak 
 
 # Ekstrak Nota & Faktur
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah tumpukan nota, struk, kuitansi, invoice, dan faktur pajak (foto atau teks) menjadi data rapi yang sudah dicek angkanya: tabel ringkas, CSV siap tempel ke Excel/Google Sheets, JSON, dan rekap pengeluaran. Kolom yang tidak terbaca ditandai, **tidak ditebak**.
 

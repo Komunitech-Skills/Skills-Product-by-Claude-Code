@@ -5,6 +5,8 @@ description: Mengubah catatan rapat kasar, transkrip Zoom/Google Meet, atau ring
 
 # Notulen Rapat
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Dalam satu langkah, catatan rapat yang berantakan menjadi notulen yang jelas: apa yang diputuskan, siapa mengerjakan apa, kapan tenggatnya. Hasilnya juga dilengkapi pesan singkat yang langsung bisa dikirim ke grup WA tim. Prinsip utama: **setia pada catatan**. Isi yang tidak ada di catatan tidak ditambahkan, dan isi yang tidak jelas diberi tanda.
 

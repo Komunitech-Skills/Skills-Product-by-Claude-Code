@@ -5,6 +5,8 @@ description: Membuat presentasi/pitch deck Indonesia sebagai satu file HTML mand
 
 # Presentasi Instan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 Mengubah poin-poin dari pengguna menjadi presentasi HTML siap pakai — satu file,
 tanpa instalasi, tanpa internet setelah file jadi, langsung bisa dibuka di browser
 laptop atau HP dan dicetak ke PDF.

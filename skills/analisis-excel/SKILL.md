@@ -5,6 +5,8 @@ description: Menganalisis file spreadsheet milik pengguna (Excel .xlsx atau CSV,
 
 # Analisis Excel & CSV untuk Awam
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pengguna awam cukup mengirim file Excel/CSV dan bertanya dengan bahasa sehari-hari; agent menjawab
 dengan **tabel siap tempel, angka yang dihitung script, narasi temuan, dan saran grafik**. Semua
@@ -143,6 +145,12 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    keluaran script (bagian "Temuan" sudah berisi fakta terhitung).
 5. **Tawarkan langkah lanjut** yang relevan (mis. setelah `pivot` → "mau saya lihat trennya per
    bulan?"), dan tawarkan `--keluar` bila pengguna ingin tabelnya dibuka di Excel.
+6. **File baru (`bersihkan`, `--keluar`) hanya setelah pengguna setuju:** sebutkan dulu path lengkap
+   file yang akan dibuat (mis. "Saya simpan versi bersih ke `<folder-kerja>/biaya-bersih.csv`, oke?"),
+   tulis setelah ia mengiyakan. File asli **tidak pernah** diubah/ditimpa; path `--keluar` tidak boleh
+   sama dengan file asli. Bila pengguna minta "langsung aja", tetap sebutkan path file yang dibuat.
+   Peringatan script seperti "rumus tanpa nilai tersimpan" disampaikan apa adanya beserta sarannya
+   (buka di Excel lalu Simpan); jangan menilai sendiri bahwa dampaknya "tidak signifikan".
 
 Bila script gagal (kode keluar 2) → baca pesan `GAGAL:` (sudah berbahasa awam), sampaikan ke
 pengguna, dan ikuti sarannya (mis. sebutkan kolom yang tersedia, minta simpan ulang file).

@@ -5,6 +5,8 @@ description: Menghitung dan menafsirkan rasio keuangan UMKM dari neraca + laba r
 
 # Analisis Rasio Keuangan Usaha
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membaca laporan keuangan usaha kecil lalu menjawab pertanyaan pemilik dengan angka pasti: **sanggup bayar tagihan? cukup untung? terlalu banyak utang? stok & piutang lambat?** Semua rasio dinilai terhadap ambang wajar sesuai jenis usahanya dan diberi saran tindakan konkret. Semua angka dihitung script (Decimal), bukan dikira-kira.
 

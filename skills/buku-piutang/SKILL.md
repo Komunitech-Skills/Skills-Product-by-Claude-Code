@@ -5,6 +5,8 @@ description: Buku piutang pelanggan lokal (SQLite di komputer pemilik, tanpa lan
 
 # Buku Piutang (bon & tagihan pelanggan)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menggantikan buku bon/Excel piutang dan fitur piutang aplikasi akuntansi berlangganan: semua tagihan yang belum dibayar pelanggan ada di **satu file database di komputer pemilik**, dan kamu (agent) mengoperasikannya lewat `scripts/piutang.py`. Hasilnya: tahu persis siapa berutang berapa, nota mana yang terlewat, umur piutang, uang masuk hari ini, dan setiap tagihan punya **draf pesan sopan + tautan wa.me** yang tinggal diperiksa dan dikirim sendiri oleh pemilik.
 

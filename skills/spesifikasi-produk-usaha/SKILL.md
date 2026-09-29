@@ -5,6 +5,8 @@ description: Menyusun spesifikasi produk ringan (PRD versi UMKM) siap pakai untu
 
 # Spesifikasi Produk Usaha (ringan)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah ide produk yang masih di kepala menjadi **satu dokumen spesifikasi 1-3 halaman** yang bisa langsung diberikan ke maklon, supplier, penjahit, desainer, atau tim - lengkap dengan prioritas (mana dikerjakan dulu, dihitung), urutan rilis, dan catatan versi supaya perubahan resep/spesifikasi tidak hilang jejak.
 

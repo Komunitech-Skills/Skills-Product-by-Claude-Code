@@ -5,6 +5,8 @@ description: Menulis artikel/blog/materi SEO/whitepaper/newsletter/materi presen
 
 # Asisten Tulis Riset
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu menulis artikel/blog/materi SEO/whitepaper/newsletter/materi presentasi yang **berbasis riset
 nyata** — bukan karangan — lengkap dengan kutipan bernomor `[1]`, `[2]`, dst. dan daftar pustaka yang bisa

@@ -5,6 +5,8 @@ description: Merapikan foto/PDF nota, struk, kuitansi, dan faktur UMKM dari fold
 
 # Arsip Nota (arsip-nota)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 _Versi 1.0.1 — perbaikan uji independen: respons `tambah` yang diblokir duplikat sekarang jujur (`mode:
 "diblokir_duplikat"`, bukan "tersimpan"); tambahan kata kunci tebak kategori toko bangunan & BBM._
 

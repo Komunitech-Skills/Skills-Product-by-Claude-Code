@@ -7,10 +7,11 @@
 | HPHT / siklus | [..] / [..] hari | — |
 | HPL (Naegele) / (HPHT + 280) | [..] / [..] | Aturan Naegele |
 | USG (tanggal, usia saat USG) | [..] | — |
-| Penanggalan dipakai | [HPHT/USG], selisih [..] hari (ambang > [..]) | ACOG CO 700 (2017) |
+| Penanggalan dipakai | [HPHT/USG], selisih [..] hari (ambang > [..]) | ACOG CO 700 (2017, reaffirmed 2025) |
 | Usia kehamilan / trimester | [..] / [..] | — |
-| TD / MAP | [..]/[..] mmHg / [..] | Rumus MAP; Buku KIA 2023 |
-| Skrining preeklampsia | [kategori]; tinggi: [..]; sedang: [..] | Buku KIA 2023 |
+| Tanda bahaya | [tidak ada / ‼️ alasan → segera evaluasi/rujuk] | NICE NG133; ACOG PB 222; Buku KIA (2025) |
+| TD / MAP | [..]/[..] mmHg / [..] (ambang ≥ 90) | Rumus MAP; Buku KIA (cetakan 2025) |
+| Skrining preeklampsia | [kategori]; tinggi: [..]; sedang: [..] | Buku KIA (cetakan 2025) [atau NICE NG133] |
 | IMT pra-hamil / kategori | [..] / [..] | IOM 2009 |
 | Rekomendasi kenaikan BB total | [..] kg; sejauh ini [..] kg | IOM 2009 |
 

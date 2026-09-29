@@ -5,6 +5,8 @@ description: Mengaudit SEO website/toko online sendiri (WordPress/WooCommerce, S
 
 # Audit SEO Toko Online
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 Mengecek dasar-dasar SEO website/toko online milik sendiri dan Google Business Profile/Maps, lalu memberi hasil yang bisa langsung dikerjakan — skor per bagian, daftar perbaikan urut prioritas, dan teks pengganti siap tempel. Bukan janji "langsung ranking #1", tapi perbaikan nyata yang bisa diverifikasi.
 
 ## Kapan digunakan

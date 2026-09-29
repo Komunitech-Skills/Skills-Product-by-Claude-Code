@@ -5,6 +5,8 @@ description: Menyusun rencana marketing kuartalan/tahunan untuk UMKM sampai usah
 
 # Rencana Marketing Usaha
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah "saya mau usaha saya lebih laku" menjadi **satu dokumen rencana 1-3 bulan (atau 12 bulan)** yang bisa langsung dijalankan: tujuan terukur, siapa yang dibidik, apa pesannya, kanal mana, kapan, berapa uangnya, dan angka apa yang dipantau. Semua angka anggaran, CAC, ROAS, dan corong **dihitung script**, bukan dikira.
 

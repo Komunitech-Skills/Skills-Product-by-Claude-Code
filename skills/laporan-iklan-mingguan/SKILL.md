@@ -5,6 +5,8 @@ description: Membuat SATU laporan mingguan bahasa awam dari ekspor CSV iklan Met
 
 # Laporan Iklan Mingguan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha yang beriklan (Meta/Instagram, TikTok, Shopee, Tokopedia/TikTok Shop, Google)
 cukup mengekspor CSV dari Ads Manager masing-masing lalu dapat **satu laporan mingguan** bahasa
@@ -249,6 +251,7 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v
   pelanggan/nomor kontak yang diproses atau dikirim ke layanan eksternal.
 
 ## Riwayat versi
+- **1.0.8** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
 - **1.0.7** (2026-09-29): pada file bertingkat (kampanye > grup iklan), baris yang kolom grup iklannya kosong padahal kampanye itu punya baris grup iklan bernama diperiksa: bila biaya, tayangan & kliknya sama dengan jumlah baris grup iklan (total kampanye tanpa label) baris itu tidak dihitung dua kali dan diberi ⚠️; bila tidak sama tetap dihitung dengan ⚠️ "mohon cek". Baris Performance Max tanpa saudara tidak terkena. Tes regresi 94.
 - **1.0.5** (2026-09-29): baris Google Performance Max tanpa grup iklan tidak lagi tampil
   "(tanpa nama, baris N)", melainkan memakai nama grup aset (bila ada kolom "Asset group") atau nama

@@ -5,6 +5,8 @@ description: Daftar pantauan follow-up lokal (piutang, prospek, timesheet klien,
 
 # Pengingat Follow-up
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha tidak lagi lupa menagih, menindaklanjuti calon pembeli, atau mengirim rekap jam
 kerja ke klien. Semua janji follow-up dicatat di **satu daftar lokal**, lalu setiap pagi pemilik

@@ -147,3 +147,44 @@ Revisi T1–T4 + S1–S3, tambahkan tes regresi untuk MAP = 90, proteinuria tung
 170/115, lalu uji ulang oleh penguji independen. Tetap tandai PERLU REVIEW tenaga medis; isi
 `platform_teruji` hanya `claude-code (simulasi agent)` (+ OpenClaw muat otomatis) sampai uji
 platform asli.
+
+---
+
+## Catatan revisi 1.0.1 (oleh pembuat, 2026-09-29 — skor & putusan penguji di atas tidak diubah)
+Menunggu uji ulang oleh penguji independen. Tetap **PERLU REVIEW tenaga medis** dan status `uji`.
+- **T1** Ambang MAP disamakan dengan Buku KIA cetakan 2025: **MAP ≥ 90** (110/80 = 90,0 kini
+  memenuhi). Kunci JSON `map_lebih_dari_90` → `map_90_atau_lebih`. README, references, tes diperbarui.
+- **T2** Proteinuria = faktor **sedang** (Buku KIA); tunggal → "1 FAKTOR RISIKO SEDANG".
+- **T3** Lapisan **tanda bahaya** generik di script (`map` & `preeklampsia`), diperiksa sebelum
+  saran rutin: TD ≥ 160/110 atau gejala bahaya (`--gejala`, 12 kode) → "TANDA BAHAYA - SEGERA
+  EVALUASI/RUJUK" sesuai protokol fasilitas; TD ≥ 140/90 → "EVALUASI/RUJUK HARI INI". Sumber:
+  NICE NG133, ACOG PB 222 (2020), Buku KIA. Output dengan tanda bahaya tidak pernah memuat
+  "ANC rutin" (tes + sapuan 312.000 kombinasi TD × faktor × pedoman: 0 pelanggaran).
+- **T4** MMSE/MoCA: SKILL.md, README, references, dan output script menyatakan alat **hanya
+  menafsirkan skor total yang dimasukkan nakes**; pemakaian formulir memerlukan lisensi/izin
+  (+ pelatihan-sertifikasi MoCA) milik pengguna sendiri dari pemegang hak cipta. Masuk daftar
+  PERLU REVIEW legal; opsi keputusan pemilik dicatat di `references/sumber-pedoman.md`.
+- **S1** Kode diabetes dipisah: `diabetes-pregestasional` (tinggi di KIA & NICE),
+  `diabetes-gestasional` (tinggi di KIA, tidak tercantum di NICE); `diabetes` tanpa jenis ditolak
+  pada mode NICE.
+- **S2** `riwayat-preeklampsia` = "Multipara dengan riwayat preeklampsia sebelumnya" (KIA);
+  kode baru `riwayat-hipertensi-kehamilan` (tidak di KIA, tinggi di NICE). Pemetaan "dulu hamil
+  darah tinggi" → tanyakan.
+- **S3** Kalimat tindak lanjut mengikuti Buku KIA (ANC, persalinan, nifas di RS; rujukan terencana).
+- Tidak mencampur pedoman: setiap output menyebut aturan + pedomannya; faktor yang hanya ada di
+  pedoman lain disebut di catatan beserta kategorinya di sana.
+- **S4** Sumber: "Buku KIA edisi terbaru — cetakan Ditjen Kesehatan Primer dan Komunitas 2025".
+- **S5** Catatan keterbatasan IOM untuk populasi lebih pendek/kurus. **S6** Siklus di luar
+  21–45 hari / UK HPHT > 44 mg + ada USG → tetap dihitung dengan USG, HPHT ditandai tidak andal.
+- **S7** Tetap: primer AMT/IMT Kemenkes/WPRO belum terbaca (dicatat PERLU REVIEW).
+- **S8** Kalimat awam: ibu hamil bergejala → periksa TD **hari ini** / IGD / 119.
+- **R1** Posisi kenaikan BB dibandingkan dengan angka yang ditampilkan. **R2** ≤ 13 minggu:
+  posisi terhadap asumsi IOM T1 0,5–2 kg. **R3** LP tanpa jenis kelamin → IMT tetap keluar.
+  **R4** "ACOG CO 700 (2017, reaffirmed 2025)", dikutip hanya bila USG dipakai. **R5** Catatan
+  bila kategori Asia-Pasifik ≠ Kemenkes. **R6** Catatan delirium/depresi/sensorik/obat di semua
+  instrumen; MMSE tanpa koreksi pendidikan disebut. **R7** Perintah baru `imt-batch` (CSV).
+- Daftar 13 butir tinjauan medis + legal kini ada di `references/sumber-pedoman.md`
+  ("Status verifikasi — daftar PERLU REVIEW (v1.0.1)").
+- Uji: `tests/uji_regresi.py` 67/67 lulus (50 lama disesuaikan + tes baru T1–T3, S1, S2, S6,
+  R1–R7); `scripts/validate.py --skill kalkulator-klinis-nakes` lulus. Contoh pembuat 01–03 & 05
+  diperbarui ke output v1.0.1; berkas uji penguji tidak diubah.

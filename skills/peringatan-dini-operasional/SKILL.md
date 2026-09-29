@@ -5,6 +5,8 @@ description: Membaca log harian operasional (CSV/Excel/tabel tempel - output pro
 
 # Peringatan Dini Operasional
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Manajer/pemilik usaha cukup mengisi log harian sederhana (tanggal + beberapa angka). Skill ini
 memberi tahu **apa yang mulai tidak normal sebelum jadi masalah besar**, **seberapa serius**
@@ -42,7 +44,7 @@ Kalau pengguna belum memberi data atau info kurang, tanyakan **sekali** dalam sa
    punya? berikan `templates/log-harian-template.csv` dan jelaskan cara mengisinya.
 2. Ada target? (mis. reject maks 50/hari, output min 2.000) — boleh dikosongkan.
 3. Untuk stok: berapa hari biasanya pemasok mengirim setelah dipesan? (default 2 hari)
-4. Nama usaha untuk judul laporan (opsional).
+4. Nama usaha untuk judul laporan (opsional; bila tidak disebut, judul tanpa nama usaha — **jangan dikarang**).
 
 Pengguna ingin cepat → jalankan langsung dengan default (tanpa target, lead time 2 hari, arah
 metrik ditebak dari nama kolom) dan sebutkan asumsinya di bawah laporan.
@@ -51,7 +53,7 @@ metrik ditebak dari nama kolom) dan sebutkan asumsinya di bawah laporan.
 
 ### 1. Siapkan file
 - File dari pengguna → pakai path-nya langsung.
-- Tabel ditempel di chat → simpan apa adanya ke file sementara `log.txt` (tabel ber-garis tegak
+- Tabel ditempel di chat → simpan apa adanya ke `log.txt` di folder kerja yang disepakati (sebutkan path-nya) (tabel ber-garis tegak
   `|` dan tab dari Excel/Sheets terbaca). Tabel berspasi biasa (dari WA) → ubah dulu menjadi CSV
   titik koma **tanpa mengubah angka satu pun**.
 - `.xls` lama/Google Sheets → minta simpan sebagai `.xlsx` atau CSV (File → Download → CSV).
@@ -91,6 +93,10 @@ Dari JSON, periksa sebelum melapor:
 - Kode keluar `2` / `galat` → tunjukkan pesannya, bantu perbaiki file, **jangan mengarang laporan**.
 
 ### 3. Sampaikan laporan
+- **Selalu sebutkan sumber data** di baris pertama jawaban (di luar pesan siap kirim): nama/path file log
+  yang dipakai dan periodenya dari JSON (mis. "Sumber: `log-produksi.csv`, data 1–29 Sep 2026, 29 hari").
+  Pakai hanya file yang diberikan/ditunjuk pengguna; bila ada beberapa kandidat, tanyakan — jangan memilih diam-diam.
+- `--nama-usaha` hanya diisi dengan nama yang **disebut pengguna**; jangan menebak dari nama file/folder.
 - Tampilkan `laporan_teks` (output mode teks) **apa adanya** — itu versi siap kirim Telegram
   (± 30 baris, tanpa tabel markdown supaya rapi di HP). Jangan mengubah angka, warna, atau alasan.
 - Di bawahnya (di luar pesan siap kirim), tambahkan maksimal 3 kalimat analisis dari agent:
@@ -173,6 +179,7 @@ Aturan warna & ambang lengkap: `references/cara-kerja-aturan.md`.
   catatan ditulis tanpa nama orang.
 
 ## Riwayat versi
+- **1.0.3** (2026-09-29): selalu menyebut file log & periode yang dipakai; nama usaha tidak pernah dikarang; tabel tempelan disimpan di folder kerja; aturan kerja standar (hasil uji OpenClaw 2026.9.6).
 - **1.0.1 (2026-09-29)** — revisi hasil uji independen (6/10): aturan warna diganti model peluang
   (normal/hitungan Poisson/kejadian/konstan) dengan syarat selisih minimal & bertahan (2σ satu
   hari = 🟡; 🟠 = 3σ, atau 2σ di 2 dari 3 hari; 🔴 = 4σ, atau 3σ + kemarin ≥ 2σ); banding hari yang

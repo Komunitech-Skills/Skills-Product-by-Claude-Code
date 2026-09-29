@@ -5,6 +5,8 @@ description: Menulis balasan publik untuk ulasan pelanggan di Shopee, Tokopedia,
 
 # Balas Ulasan Pelanggan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah ulasan — terutama bintang 1–2 — menjadi kesempatan menunjukkan ke calon pembeli bahwa toko
 bertanggung jawab, tanpa emosi, tanpa membocorkan data, dan dengan penyelesaian yang dipindah ke chat pribadi.

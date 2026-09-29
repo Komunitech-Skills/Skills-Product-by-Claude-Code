@@ -12,7 +12,7 @@ Terima kasih sudah bertanya, Bu. Perhitungan risiko ini dirancang untuk dipakai 
 saat memeriksa, jadi saya tidak akan menilai kondisi Ibu.
 
 Secara umum: preeklampsia adalah tekanan darah tinggi dalam kehamilan yang bisa berbahaya bila
-tidak terpantau. Buku KIA (Kemenkes 2023) memuat lembar skrining yang diisi bidan/dokter di
+tidak terpantau. Buku KIA (Kemenkes, cetakan 2025) memuat lembar skrining yang diisi bidan/dokter di
 awal kehamilan — Ibu bisa minta diisikan di kunjungan berikutnya, dan pastikan tekanan darah
 diukur setiap periksa hamil.
 

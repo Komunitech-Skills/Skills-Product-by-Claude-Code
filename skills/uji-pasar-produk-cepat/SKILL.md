@@ -5,6 +5,8 @@ description: Menjalankan uji pasar murah dan terukur untuk produk/menu/jasa yang
 
 # Uji Pasar Produk Cepat
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjalankan **eksekusi** uji pasar setelah ide sudah punya hipotesis: memilih asumsi yang paling berbahaya, memilih eksperimen murah, menetapkan angka lulus **sebelum** uji, mencatat, menghitung hasil dengan benar, lalu memutuskan **LANJUT / UBAH / STOP** (dan kalau ubah, ubah ke arah mana).
 

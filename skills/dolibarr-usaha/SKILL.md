@@ -5,6 +5,8 @@ description: Mengoperasikan Dolibarr ERP/CRM LOKAL milik pengguna (DoliWamp di k
 
 # Dolibarr Usaha (asisten Dolibarr lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha yang memakai **Dolibarr di komputernya sendiri** (pengganti Jurnal/Accurate + Moka + CRM berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/dolibarr.py` untuk membaca atau menyiapkan data lewat **REST API resmi Dolibarr** (`/api/index.php`, header `DOLAPIKEY`). Data tetap di komputer pengguna. Python standar saja, tanpa instalasi paket.
 

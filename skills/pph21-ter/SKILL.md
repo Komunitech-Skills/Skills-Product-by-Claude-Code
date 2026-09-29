@@ -5,6 +5,8 @@ description: Menghitung PPh 21 karyawan metode TER (PP 58/2023, PMK 168/2023) pe
 
 # PPh 21 Karyawan (Metode TER)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menghitung PPh 21 yang wajib dipotong pemberi kerja dari gaji karyawan dengan angka pasti dari tabel resmi PP 58/2023, lengkap dengan tabel per bulan, hitung ulang Desember (atau bulan berhenti kerja), dan ringkasan setahun yang siap ditempel ke laporan/chat.
 

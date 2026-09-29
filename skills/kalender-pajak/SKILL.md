@@ -5,6 +5,8 @@ description: Menyusun kalender tenggat SETOR dan LAPOR pajak Indonesia per bulan
 
 # Kalender Pajak (Tenggat Setor & Lapor)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Memberi pemilik usaha, admin, dan orang pribadi **daftar tanggal pasti** kapan harus setor dan lapor pajak — sudah digeser bila jatuh di hari libur — dalam bentuk tabel, checklist bulanan, file kalender (.ics), atau pengingat otomatis. Skill ini hanya soal **jadwal**, bukan besaran pajak.
 

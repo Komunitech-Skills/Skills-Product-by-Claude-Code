@@ -5,6 +5,8 @@ description: Menyusun persona pelanggan, segmentasi-targeting-positioning (STP),
 
 # Positioning & Persona Usaha
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah "jualan ke semua orang" menjadi pilihan yang jelas: **siapa** yang dilayani duluan, **kenapa** mereka beli di kamu, dan **kalimat apa** yang dipakai di bio, listing, caption, dan chat WhatsApp. Hasil langsung siap tempel, bukan teori.
 

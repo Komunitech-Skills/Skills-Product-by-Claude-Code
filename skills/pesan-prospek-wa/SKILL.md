@@ -5,6 +5,8 @@ description: Menyusun pesan PERTAMA (perkenalan/penawaran awal) via WhatsApp ke 
 
 # Pesan Prospek WA
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu penjual/pemilik usaha menulis pesan **pertama** yang dikirim ke calon pelanggan yang **belum pernah dihubungi** — hasil dari referral, pameran, Google Maps, Instagram, atau grup komunitas — supaya terasa personal dan jelas alasannya, bukan seperti spam/penipuan, dan tetap patuh aturan data pribadi. Pesan dikirim **satu per satu oleh manusia** (mode copilot: AI menyiapkan draf, pengguna yang mengirim), bukan otomatis.
 
