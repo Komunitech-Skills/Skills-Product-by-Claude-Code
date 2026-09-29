@@ -145,3 +145,26 @@ Temuan (semua RENDAH):
 
 ### Skor: **9/10**
 Alasan: penolakan PPh 23 atas piutang barang bekerja di semua jalur (CLI, batch, hledger & mesin bawaan, akun induk/sub-akun), kasus campuran/tidak diketahui diizinkan dengan PERHATIAN yang tepat, angka tepat ke rupiah di hledger asli, tanpa regresi. Belum 10: celah kecil via akun pendapatan bernama umum dan platform asli belum diuji.
+
+## Uji ulang v1.0.4 (2026-09-29)
+- **Penguji:** agent independen (bukan pembuat); hanya membaca folder skill; salinan skill di scratchpad `uji-0929-keu`, data fiktif "CV Cahaya Teknik", Linux, Python 3.11. `SKILL.md`/script tidak diubah.
+- **hledger asli:** `hledger-linux-x64.tar.gz` 1.52.4 diunduh dari https://github.com/hledgerorg/hledger/releases/download/1.52.4/ ke scratchpad (bukan dipasang sistem); SHA-256 `f76a2e40…9643a` **cocok** dengan tabel `docs/panduan-hledger.md` (API rilis GitHub tidak menampilkan digest saat dicek); `hledger --version` = 1.52.4 linux-x86_64.
+- **Tes regresi:** `tests/uji_regresi.py` tanpa hledger **45/45 OK (5 dilewati)**; dengan `HLEDGER=<hledger asli>` **45/45 OK, 0 dilewati** (uji silang impor, laporan = hledger, jurnal rusak dilaporkan, pemulihan bila `hledger check` gagal, template `check --strict`). `validate.py --skill hledger-usaha` ✅.
+
+| Perbaikan v1.0.4 | Hasil |
+|---|---|
+| Tag `jenis:jual`/`jenis:jasa` ditulis otomatis | ✅ `; pihak:…, jenis:jual` / `jenis:jasa` pada tagihan tempo (juga di batch); hledger asli membaca jurnal tanpa error. |
+| Cek asal PPh 23 via tag | ✅ `--jenis jual --akun "Pendapatan:Usaha"` (celah v1.0.3) → `terima-piutang --pph23 2%` **ditolak** (exit 2), juga `--diterima` + `--mesin bawaan`; pelunasan penuh tanpa potongan diterima. `--jenis jasa` dengan akun `Pendapatan:Usaha` maupun `Pendapatan:Penjualan` (sewa genset) → `--pph23` diizinkan (tag menang atas nama akun). |
+| Catatan lama tanpa tag | ✅ akun pendapatan umum (`Pendapatan:Usaha`) → diizinkan + PERHATIAN "jenisnya tidak jelas … dicatat sebelum v1.0.4"; akun `Pendapatan:Penjualan` tanpa tag → ditolak (tetap aman). |
+| Pelunasan > saldo piutang | ✅ pihak tanpa tagihan (Rp 0 → minus 2,5 jt) dan pihak bersaldo 3 jt dibayar 6 jt → PERHATIAN "piutang menjadi minus Rp …" + saran catat tagihan/saldo awal dulu. |
+| Batch melihat tagihan sebelumnya | ✅ batch [jual tempo 4,5 jt → terima-piutang `--pph23 2%`] ditolak di transaksi ke-2, tidak ada yang disimpan; batch jasa [tagihan → pelunasan `--diterima`] diterima; pelunasan ke-3 setelah lunas dalam batch yang sama → PERHATIAN minus (batch juga melihat pelunasan sebelumnya). |
+
+**Angka (Decimal penguji vs skill vs `hledger bal` asli):** Kas 4.940.000, Bank Mandiri 52.500.000, PPh 23 dibayar dimuka 559.999 (246.913 = ⌊2% × 12.345.678⌋; 100.000; 153.086; 60.000), piutang neto 2.000.000 (3 jt − 1 jt minus), pendapatan 38.999.999 (Usaha 25.345.678, Penjualan 6.000.000, Jasa 7.654.321), neraca **SEIMBANG** 59.999.999, "Uji silang pembaca bawaan: COCOK". **Mismatch: 0.**
+
+Temuan (berprioritas):
+1. **[RENDAH]** Konstanta `VERSI` di script masih `"1.0.3"` → `cek`/`--versi` mencetak "skill v1.0.3" padahal SKILL.md/katalog 1.0.4 (membingungkan dukungan pelanggan).
+2. **[RENDAH]** `ekspor-emkm` + emkm: bila ada PPh 23 dibayar dimuka, laba & total aset emkm lebih kecil sebesar potongan (uji: 38.440.000 vs 38.999.999; selisih 559.999). Script sudah memberi PERHATIAN di teks ekspor, tetapi kalimat SKILL.md "Diuji: laba bersih & total aset dari kedua skill sama" belum menyebut pengecualian ini. Piutang minus juga ikut dinettokan ke `--piutang-akhir`.
+3. **[INFO]** Entri lama yang ditambahkan manual tanpa deklarasi akun gagal `hledger check --strict` (bukan kesalahan skill; skill memakai `check` biasa).
+
+### Skor: **9/10** (lulus)
+Alasan: kelima perubahan v1.0.4 terbukti di CLI, `--mesin bawaan`, dan batch; celah v1.0.3 (akun pendapatan bernama umum) tertutup; peringatan piutang minus tepat; 45/45 tes lulus **dengan hledger 1.52.4 asli (0 dilewati)**; angka tepat ke rupiah dan sama dengan hledger. Belum 10: label versi script tertinggal, catatan kesetaraan emkm belum menyebut PPh 23, platform asli (Windows/Mac) belum diuji.

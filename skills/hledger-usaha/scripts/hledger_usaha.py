@@ -36,7 +36,7 @@ import sys
 import tempfile
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
 
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 HLEDGER_TERUJI = ("1.52.4",)
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
