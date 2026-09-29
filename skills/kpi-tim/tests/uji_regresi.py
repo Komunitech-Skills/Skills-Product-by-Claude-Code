@@ -536,7 +536,7 @@ class UjiV101(Dasar):
         t = self._teks("--periode", "2026-09", "--orang", "Joko Susilo")
         self.assertIn("(capaian ▼66,7 poin vs 2026-08)", t)
         # R-9: pipa ditutup tidak menghasilkan traceback (ditangani di __main__)
-        self.assertEqual(K.VERSI, "1.0.1")
+        self.assertRegex(K.VERSI, r"^\d+\.\d+\.\d+$")
 
 
 if __name__ == "__main__":

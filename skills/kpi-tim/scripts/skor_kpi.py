@@ -1529,7 +1529,7 @@ def cmd_baca_teks(a):
                 continue
             # v1.0.2: "Wulan & Rudi void masing2 1" -> nama tanpa angka di klausa sebelumnya ikut klausa ini
             untuk = []
-            for n_ in antre + ditemukan + [kini]:
+            for n_ in antre + (ditemukan if POLA_MASING.search(low) else []) + [kini]:
                 if n_ not in untuk:
                     untuk.append(n_)
             antre = []
