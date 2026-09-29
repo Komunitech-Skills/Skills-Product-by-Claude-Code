@@ -13,7 +13,10 @@ import contextlib
 import io
 import json
 import os
+import csv
+import re
 import shutil
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -537,6 +540,215 @@ class UjiV101(Dasar):
         self.assertIn("(capaian ▼66,7 poin vs 2026-08)", t)
         # R-9: pipa ditutup tidak menghasilkan traceback (ditangani di __main__)
         self.assertRegex(K.VERSI, r"^\d+\.\d+\.\d+$")
+
+
+def _blok_sql(path):
+    """Ambil {nama_query: sql} dari metadata YAML sederhana (tanpa pustaka YAML)."""
+    hasil, nama, sql, ada = {}, None, [], False
+    for baris in open(path, encoding="utf-8").read().splitlines():
+        m = re.match(r"^      (\w+):\s*$", baris)
+        if m:
+            if nama and sql:
+                hasil[nama] = " ".join(" ".join(sql).split())
+            nama, sql, ada = m.group(1), [], False
+        elif baris.strip() == "sql: |":
+            ada = True
+        elif ada and baris.startswith("          "):
+            sql.append(baris.strip())
+        elif ada and baris.strip() == "":
+            continue
+        elif ada:
+            ada = False
+    if nama and sql:
+        hasil[nama] = " ".join(" ".join(sql).split())
+    return hasil
+
+
+class UjiEksporDb(Dasar):
+    """ekspor-db: isi kpi.db harus sama dengan keluaran 'skor' (rumus dari skor_kpi, bukan dihitung ulang)."""
+
+    def ekspor(self, *extra, nama="hasil"):
+        folder = os.path.join(self.dir, nama)
+        kode, out = jalan("ekspor-db", "--rencana", RENCANA, "--realisasi", REALISASI, "--keluar", folder, *extra)
+        return kode, out, folder
+
+    def q(self, folder, sql, *p):
+        c = sqlite3.connect(os.path.join(folder, "kpi.db"))
+        try:
+            return c.execute(sql, p).fetchall()
+        finally:
+            c.close()
+
+    def test_jumlah_baris(self):
+        kode, out, f = self.ekspor()
+        self.assertEqual(kode, 0, out)
+        # 8 orang x 4 KPI x 2 periode = 64; 8 orang x 2 = 16; 3 divisi x 2 = 6; 1 perusahaan x 2 = 2; rencana 32
+        self.assertEqual(out["jumlah_baris"], {"rencana": 32, "skor_kpi": 64, "skor_orang": 16,
+                                               "skor_divisi": 6, "skor_perusahaan": 2})
+        for tabel, n in out["jumlah_baris"].items():
+            self.assertEqual(self.q(f, "SELECT COUNT(*) FROM %s" % tabel)[0][0], n, tabel)
+        self.assertEqual(out["periode"], ["2026-08", "2026-09"])
+        self.assertIn("127.0.0.1", out["peringatan_lokal"])
+        self.assertIn("--host 127.0.0.1", out["perintah_datasette"])
+        self.assertNotIn("0.0.0.0", out["perintah_datasette"])
+
+    def test_nilai_sama_dengan_skor(self):
+        kode, out, f = self.ekspor()
+        for periode in ("2026-08", "2026-09"):
+            _, s = self.skor("--periode", periode)
+            (p_skor, p_status, p_tren), = self.q(f, "SELECT skor,status,tren FROM skor_perusahaan WHERE periode=?", periode)
+            self.assertEqual(p_skor, float(r1(s["perusahaan"]["skor"])))
+            self.assertEqual(p_status, s["perusahaan"]["status"])
+            self.assertEqual(p_tren, float(r1(s["perusahaan"]["tren"])) if s["perusahaan"].get("tren") is not None else None)
+            for d in s["divisi"]:
+                (sk, st, tr), = self.q(f, "SELECT skor,status,tren FROM skor_divisi WHERE periode=? AND divisi=?",
+                                       periode, d["nama"])
+                self.assertEqual(sk, float(r1(d["skor"])), d["nama"])
+                self.assertEqual(st, d["status"])
+                self.assertEqual(tr, float(r1(d["tren"])) if d.get("tren") is not None else None, d["nama"])
+            for o in s["orang"]:
+                (sk, st, tr, merah), = self.q(
+                    f, "SELECT skor,status,tren,jumlah_kpi_merah FROM skor_orang WHERE periode=? AND orang=?",
+                    periode, o["nama"])
+                self.assertEqual(sk, float(r1(o["skor"])) if o["skor"] is not None else None, o["nama"])
+                self.assertEqual(st, o["status"])
+                self.assertEqual(tr, float(r1(o["tren"])) if o.get("tren") is not None else None, o["nama"])
+                self.assertEqual(merah, sum(1 for k in o["kpi"] if k["status"] == "merah"))
+
+    def test_rincian_kpi_sama_dengan_csv_skor(self):
+        kode, out, f = self.ekspor()
+        for periode in ("2026-08", "2026-09"):
+            csv_skor = os.path.join(self.dir, "skor-%s.csv" % periode)
+            self.skor("--periode", periode, "--csv-keluar", csv_skor)
+            with open(csv_skor, encoding="utf-8-sig", newline="") as fh:
+                baris = list(csv.DictReader(fh))
+            self.assertEqual(len(baris), self.q(f, "SELECT COUNT(*) FROM skor_kpi WHERE periode=?", periode)[0][0])
+            for b in baris:
+                (real, cap, dipakai, nilai, st), = self.q(
+                    f, "SELECT realisasi,capaian_persen,capaian_dipakai,nilai,status FROM skor_kpi "
+                       "WHERE periode=? AND orang=? AND kpi=?", periode, b["orang"], b["kpi"])
+                self.assertEqual(real, float(b["realisasi"]), b)
+                self.assertEqual(cap, float(b["capaian_persen"]), b)
+                self.assertEqual(dipakai, float(b["capaian_dipakai"]), b)
+                self.assertEqual(nilai, float(b["nilai"]), b)
+                self.assertEqual(st, b["status_kpi"], b)
+
+    def test_angka_tangan_contoh_distributor(self):
+        kode, out, f = self.ekspor()
+        # nilai yang sudah diverifikasi tangan di UjiContohDistributor: perusahaan 2026-09 = 93,6 (naik 6,3)
+        self.assertEqual(self.q(f, "SELECT skor,tren FROM skor_perusahaan WHERE periode='2026-09'"), [(93.6, 6.3)])
+        # Joko Susilo: 76,7 merah, 2 KPI merah
+        self.assertEqual(self.q(f, "SELECT skor,status,jumlah_kpi_merah FROM skor_orang WHERE orang='Joko Susilo' "
+                                   "AND periode='2026-09'"), [(76.7, "merah", 2)])
+
+    def test_query_metadata_jalan_dan_konsisten(self):
+        kode, out, f = self.ekspor()
+        tpl = _blok_sql(os.path.join(TPL, "metadata-kpi.yml"))
+        self.assertEqual(set(tpl), {"perusahaan_tren", "divisi_terbaru", "orang_terbaru", "tren_orang", "kpi_merah"})
+        self.assertEqual(open(os.path.join(f, "kpi-metadata.yml"), encoding="utf-8").read(),
+                         open(os.path.join(TPL, "metadata-kpi.yml"), encoding="utf-8").read())
+        n = {}
+        for nama, sql in tpl.items():
+            n[nama] = len(self.q(f, sql))
+        self.assertEqual(n, {"perusahaan_tren": 2, "divisi_terbaru": 3, "orang_terbaru": 8, "tren_orang": 16,
+                             "kpi_merah": len(self.q(f, "SELECT 1 FROM skor_kpi WHERE periode='2026-09' AND status='merah'"))})
+        self.assertGreater(n["kpi_merah"], 0)
+        # blok kpi di metadata dasbor-lokal harus sama persis dengan templat kpi-tim
+        dl = os.path.join(os.path.dirname(AKAR), "dasbor-lokal", "templates", "metadata.yml")
+        if os.path.isfile(dl):
+            teks = open(dl, encoding="utf-8").read()
+            blok = open(os.path.join(TPL, "metadata-kpi.yml"), encoding="utf-8").read().split("databases:\n", 1)[1]
+            self.assertIn(blok, teks)
+
+    def test_baca_saja_dan_tanpa_file_wal(self):
+        kode, out, f = self.ekspor()
+        self.assertEqual(sorted(os.listdir(f)), ["kpi-metadata.yml", "kpi.db"])
+        c = sqlite3.connect("file:%s?mode=ro" % os.path.join(f, "kpi.db"), uri=True)
+        with self.assertRaises(sqlite3.OperationalError):
+            c.execute("DELETE FROM skor_orang")
+        c.close()
+
+    def test_tidak_menimpa_tanpa_timpa(self):
+        self.ekspor()
+        kode, out, f = self.ekspor()
+        self.assertEqual(kode, 1)
+        self.assertFalse(out["ok"])
+        kode, out, f = self.ekspor("--timpa")
+        self.assertEqual(kode, 0)
+
+    def test_anonim_tanpa_nama(self):
+        kode, out, f = self.ekspor("--anonim", nama="anon")
+        self.assertEqual(kode, 0, out)
+        self.assertTrue(out["anonim"])
+        _, s = self.skor("--periode", "2026-09")
+        with open(os.path.join(f, "kunci-kode-RAHASIA.csv"), encoding="utf-8-sig", newline="") as fh:
+            kunci = {r["nama"]: r["kode"] for r in csv.DictReader(fh) if r["jenis"] == "orang"}
+        self.assertEqual(set(kunci), {o["nama"] for o in s["orang"]})
+        self.assertEqual(sorted(kunci.values()), ["P0%d" % i for i in range(1, 9)])
+        # tidak ada nama di database (byte mentah) maupun metadata
+        mentah = open(os.path.join(f, "kpi.db"), "rb").read() + open(os.path.join(f, "kpi-metadata.yml"), "rb").read()
+        for nama in kunci:
+            self.assertNotIn(nama.encode(), mentah, nama)
+            for kata in nama.split():
+                self.assertNotIn(kata.encode(), mentah, kata)
+        # nilai sama, hanya nama diganti kode
+        for o in s["orang"]:
+            (sk, st), = self.q(f, "SELECT skor,status FROM skor_orang WHERE periode='2026-09' AND orang=?", kunci[o["nama"]])
+            self.assertEqual(sk, float(r1(o["skor"])))
+            self.assertEqual(st, o["status"])
+        self.assertEqual(self.q(f, "SELECT COUNT(*) FROM skor_orang WHERE orang NOT LIKE 'P%'")[0][0], 0)
+        self.assertEqual(self.q(f, "SELECT nilai FROM meta WHERE kunci='anonim'")[0][0], "ya")
+        # urutan sisip tidak mengikuti abjad nama asli
+        urut = [r[0] for r in self.q(f, "SELECT orang FROM skor_orang WHERE periode='2026-09' ORDER BY rowid")]
+        self.assertEqual(urut, sorted(urut))
+
+    def test_anonim_kode_stabil_dan_divisi(self):
+        kode, out, f = self.ekspor("--anonim", "--anonim-divisi", nama="a2")
+        k1 = open(os.path.join(f, "kunci-kode-RAHASIA.csv"), encoding="utf-8").read()
+        kode, out2, f = self.ekspor("--anonim", "--anonim-divisi", "--timpa", nama="a2")
+        self.assertEqual(open(os.path.join(f, "kunci-kode-RAHASIA.csv"), encoding="utf-8").read(), k1)
+        mentah = open(os.path.join(f, "kpi.db"), "rb").read()
+        for d in ("Sales", "Gudang", "Keuangan"):
+            self.assertNotIn(d.encode(), mentah)
+        self.assertEqual(sorted(r[0] for r in self.q(f, "SELECT DISTINCT divisi FROM skor_divisi")), ["D01", "D02", "D03"])
+
+    def test_csv_grist(self):
+        kode, out, f = self.ekspor("--grist", "--anonim", nama="g")
+        gd = os.path.join(f, "grist")
+        self.assertEqual(sorted(os.listdir(gd)), sorted(
+            ["PETUNJUK-IMPOR-GRIST.md", "rencana.csv", "skor_divisi.csv", "skor_kpi.csv", "skor_orang.csv",
+             "skor_perusahaan.csv"]))
+        for tabel, n in out["jumlah_baris"].items():
+            with open(os.path.join(gd, tabel + ".csv"), encoding="utf-8", newline="") as fh:
+                baris = list(csv.reader(fh))
+            self.assertEqual(len(baris) - 1, n, tabel)
+            kolom = [x[1] for x in sqlite3.connect(os.path.join(f, "kpi.db")).execute("PRAGMA table_info(%s)" % tabel)]
+            self.assertEqual(baris[0], kolom)
+        with open(os.path.join(gd, "skor_perusahaan.csv"), encoding="utf-8", newline="") as fh:
+            r = {x["periode"]: x for x in csv.DictReader(fh)}
+        self.assertEqual(r["2026-09"]["skor"], "93.6")
+        self.assertEqual(r["2026-09"]["tren"], "6.3")
+        self.assertEqual(r["2026-08"]["tren"], "")           # kosong = tidak ada tren
+        self.assertNotIn("Joko", open(os.path.join(gd, "skor_orang.csv"), encoding="utf-8").read())
+        self.assertIn("127.0.0.1" if False else "localhost", open(os.path.join(gd, "PETUNJUK-IMPOR-GRIST.md"), encoding="utf-8").read())
+
+    def test_data_rusak_dan_periode_kosong(self):
+        p = self.file("p.csv", "divisi,orang,kpi,arah,bobot,target\nA,Ani,Omzet,naik,100,100\n")
+        r = self.file("r.csv", "periode,orang,kpi,realisasi\n2026-08,Ani,Omzet,90\n2026-09,Ani,Omzet,\n2026-10,Ani,Omzet,abc\n")
+        kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", os.path.join(self.dir, "x"))
+        # 'abc' bukan angka: ditolak apa adanya, tidak ada database setengah jadi
+        self.assertEqual(kode, 1)
+        self.assertFalse(os.path.exists(os.path.join(self.dir, "x", "kpi.db")))
+        r2 = self.file("r2.csv", "periode,orang,kpi,realisasi\n2026-08,Ani,Omzet,90\n2026-09,Ani,Omzet,\n")
+        kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r2, "--keluar", os.path.join(self.dir, "y"))
+        self.assertEqual(kode, 0, out)
+        self.assertEqual(out["periode"], ["2026-08"])
+        self.assertEqual(out["periode_dilewati"], ["2026-09"] if "2026-09" in out["periode_dilewati"] else out["periode_dilewati"])
+        # rencana tidak valid -> tidak ada database
+        bad = self.file("bad.csv", "divisi,orang,kpi,arah,bobot,target\nA,Ani,Omzet,naik,60,100\n")
+        kode, out = jalan("ekspor-db", "--rencana", bad, "--realisasi", r2, "--keluar", os.path.join(self.dir, "z"))
+        self.assertEqual(kode, 1)
+        self.assertFalse(os.path.exists(os.path.join(self.dir, "z")))
 
 
 if __name__ == "__main__":

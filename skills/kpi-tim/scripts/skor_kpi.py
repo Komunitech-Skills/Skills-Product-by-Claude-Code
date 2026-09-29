@@ -1327,7 +1327,7 @@ def anonim_divisi(h, a, umum):
     nama_kecil = ", ".join(d["nama"] for d in kecil)
     if len(kelompok) >= 2:
         bobot = a.bobot_divisi_map or {}
-        w = [bobot.get(norm(d["nama"]), D1) if bobot else D1 for d in kelompok]
+        w = [bobot.get(norm(d["nama"]), Decimal(1)) if bobot else Decimal(1) for d in kelompok]
         skor = sum(wi * d["skor"] for wi, d in zip(w, kelompok)) / sum(w) if sum(w) > 0 else None
         tampil.append({"nama": "Gabungan: " + " + ".join(d["nama"] for d in kelompok),
                        "jumlah_orang": sum(d["jumlah_orang"] for d in kelompok), "skor": skor,
