@@ -126,6 +126,11 @@ def main(argv=None):
     if a.frasa is None:
         print("=== PERSIAPAN MODE LIVE (UANG ASLI) ===")
         print(ringkasan(cfg))
+        bl = st if st.get("mode") == "live" else (st.get("buku_per_mode") or {}).get("live")
+        if bl and D(str(bl.get("biaya_perolehan") or "0")) > 0:
+            print(f"Posisi LIVE yang sudah tercatat: {teks(D(str(bl.get('posisi_koin') or '0')))} {cfg['koin']}, modal "
+                  f"terpakai {rp(D(str(bl['biaya_perolehan'])), cfg['kutipan'])} dari batas modal total "
+                  f"{rp(cfg['_d']['modal_maks_total'], cfg['kutipan'])} (tetap dihitung; tidak di-reset).")
         print(f"\nBukti simulasi aturan yang sama: {ket_paper}."
               + ("" if cukup_paper else " BELUM CUKUP -> biarkan jadwal paper berjalan dulu. Live belum bisa aktif."))
         print(f"\nDAFTAR PERIKSA WAJIB (dikerjakan MEMBER SENDIRI di layar {cfg['bursa']}, bukan oleh agent):")

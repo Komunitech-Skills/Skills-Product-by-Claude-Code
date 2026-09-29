@@ -121,7 +121,7 @@ def main(argv=None):
             st["waktu_terakhir"] = sekarang.isoformat(timespec="seconds")
         st.update(berhenti=False, alasan_berhenti=None, notif_berhenti_terkirim=False,
                   sidik_jari_strategi=sidik_jari_strategi(cfg), hari=None, ekuitas_awal_hari=None,
-                  ekuitas_terakhir=None, buku_rugi_harian={})
+                  ekuitas_terakhir=None, buku_rugi_harian={}, jejak_ekuitas=[])
         simpan_json_atomik(p_state, st)
         for p in stop_bot_ini:
             if os.path.exists(p):
