@@ -31,7 +31,7 @@ Menjadi "CRM" pemilik usaha tanpa biaya bulanan: semua calon pembeli dan pelangg
 1. **Tidak pernah mengirim pesan ke pelanggan.** Tampilkan draf + tautan wa.me; pemilik yang membuka, memeriksa, dan menekan Kirim. Setelah pemilik bilang sudah kirim → `terkirim`.
 2. **Angka dari script.** Nilai, total, konversi, jumlah hari, tanggal: salin dari output script. Jangan menghitung atau mengonversi tanggal sendiri; teruskan teks pengguna apa adanya (`--followup "Jumat"`).
 3. **Jangan menebak kontak.** Jika script menjawab ambigu (`pilihan`: kode, nama, 4 digit akhir nomor, tahap; termasuk kontak yang batal), tanyakan "Bu Sari yang mana?" dengan daftar itu, lalu ulangi dengan kodenya. Jika nomor sudah terdaftar (`duplikat`), jangan menambah dobel; catat ke kontak yang ada.
-4. **Perubahan besar** (`init`, `impor`, `hapus`, `gabung`, `restore`) dijalankan dulu tanpa `--ya` (pratinjau), tunjukkan ringkasannya, lalu ulangi **perintah yang sama + `--ya`** hanya setelah pengguna setuju. Perubahan kecil (`tambah`, `catat`, `tunda`, `terkirim`, `ubah`, `atur`) langsung tersimpan; sampaikan hasilnya agar bisa dikoreksi.
+4. **Perubahan besar** (`init`, `impor`, `hapus`, `gabung`, `restore`) dijalankan dulu tanpa `--ya` (pratinjau), tunjukkan ringkasannya (untuk `init`: **lokasi file database** yang akan dibuat), lalu **berhenti dan tunggu jawaban**. Ulangi **perintah yang sama + `--ya`** hanya setelah pengguna membalas setuju ("ya") di **pesan berikutnya** — permintaan awal ("pakai CRM buat usaha saya") **bukan** persetujuan, dan jangan pernah menjalankan pratinjau dan `--ya` dalam satu giliran. Tidak ada file/database yang boleh dibuat sebelum itu (script pun tidak membuatnya diam-diam: perintah lain menolak bila database belum ada). Perubahan kecil (`tambah`, `catat`, `tunda`, `terkirim`, `ubah`, `atur`) langsung tersimpan; sampaikan hasilnya agar bisa dikoreksi.
 5. **Kolom kebutuhan = nama produk/jasa saja** ("kue ulang tahun 2 tingkat"). Harga → `--nilai`; komentar/cerita → `--catatan`/`--isi`. Script hanya memasukkan nama produk ke draf (angka rupiah & teks setelah koma dibuang) dan memperingatkan bila kolom itu berisi hal lain.
 6. **Privasi:** nomor HP pelanggan = data pribadi (UU 27/2022 PDP). Jangan menampilkan daftar kontak lengkap ke grup; untuk laporan yang dibagikan pakai `--samarkan`. Catatan obrolan (`--isi`) bersifat pribadi dan tidak pernah masuk draf. Pelanggan minta datanya dihapus → `hapus` (pratinjau → `--ya`).
 7. Sampaikan setiap `peringatan`/`Catatan:` dari script (tanggal yang ditebak, nomor bukan HP, nilai deal belum diisi, dsb.).
@@ -65,7 +65,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### A. Mulai
 1. `info --json`. Belum ada database → tanyakan nama usaha, nama yang dipakai di pesan, sapaan default (Kak/Bapak/Ibu), dan zona (WIB/WITA/WIT).
-2. `init --nama-usaha "..." --pengirim "..." [--sapaan Kak] [--zona WIB]` → tunjukkan pratinjau → setuju → ulangi + `--ya`.
+2. `init --nama-usaha "..." --pengirim "..." [--sapaan Kak] [--zona WIB]` → tunjukkan pratinjau **beserta path file database** → tanya "Buat database di lokasi ini? (ya/tidak)" → **tunggu balasan** → hanya bila "ya": ulangi + `--ya`. Pengguna sekaligus minta mencatat kontak? Catat nanti, setelah database dibuat.
 3. Punya daftar kontak lama? Lanjut ke Langkah F (impor).
 
 ### B. Lead baru masuk
@@ -103,7 +103,7 @@ Skill `laporan-harian-usaha` (bila nanti mendukung CRM) membaca `rekap --json` (
 - Pindah ke `pengingat-follow-up`: `ekspor --format pengingat [--file-pengingat <DAFTAR.csv>]` (tanpa nomor HP) → JSON `perintah_pengingat` berisi perintah `tambah --file <path lengkap>` per prospek. Konfirmasikan path `file_pengingat` ke pengguna sebelum menjalankannya; jangan jalankan dari folder proyek/repo tanpa `--file`.
 
 ### G. Pengingat otomatis (OpenClaw)
-Ikuti `references/openclaw-jadwal.md`: `hari-ini` tiap pagi (default 08.00 WIB) ke **Telegram pemilik**. Jadwal hanya menjalankan perintah baca (`hari-ini`, `rekap`), tidak pernah menulis atau mengirim ke pelanggan. Tunjukkan ringkasan + "Lanjut? (ya/tidak)" sebelum membuat jadwal. WhatsApp hanya dengan nomor terpisah milik pemilik + persetujuan risiko tertulis. Beri tahu pemilik bahwa teks `hari-ini` memuat nama, nomor, tautan, **catatan obrolan terakhir, dan nilai rupiah** yang akan tersimpan di chat Telegram-nya; bila keberatan (atau kontaknya banyak) pakai `hari-ini --samarkan` atau `--tanpa-draf`. Claude Code/Codex/Cursor: pengguna cukup mengetik "follow-up hari ini" tiap pagi.
+Ikuti `references/openclaw-jadwal.md`: `hari-ini` tiap pagi (default 08.00 WIB) ke **Telegram pemilik**. Jadwal hanya menjalankan perintah baca (`hari-ini`, `rekap`), tidak pernah menulis atau mengirim ke pelanggan. Tunjukkan perintah persis + jam & zona + tujuan, tanya "Lanjut? (ya/tidak)", lalu **tunggu jawaban** sebelum membuat jadwal. **JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial** dari environment, file konfigurasi, atau riwayat; kanal Telegram diatur pengguna lewat pairing/konfigurasi OpenClaw. Kanal belum siap atau `automations add` ditolak → berhenti dan beri langkah persiapan dari referensi. WhatsApp hanya dengan nomor terpisah milik pemilik + persetujuan risiko tertulis. Beri tahu pemilik bahwa teks `hari-ini` memuat nama, nomor, tautan, **catatan obrolan terakhir, dan nilai rupiah** yang akan tersimpan di chat Telegram-nya; bila keberatan (atau kontaknya banyak) pakai `hari-ini --samarkan` atau `--tanpa-draf`. Claude Code/Codex/Cursor: pengguna cukup mengetik "follow-up hari ini" tiap pagi.
 
 ### H. Cadangan & hapus data
 Cadangan otomatis sekali sehari saat ada perubahan (30 terakhir disimpan) dan sebelum impor/hapus/gabung/restore, di folder `backup-crm/` sebelah database. Manual: `backup`; daftar: `backup --daftar`; pulihkan: `restore --dari <file>` (pratinjau → `--ya`) — bisa walau database rusak total; file rusak dipindah ke `backup-crm/rusak-crm-<waktu>.db`, tidak dihapus. Rusak dan belum ada cadangan: `init --mulai-baru` (pratinjau → `--ya`), lalu impor ulang dari ekspor CSV terakhir bila ada. Cadangan harian dibuat **sebelum** perubahan pertama hari itu, jadi perubahan hari itu belum ikut. `hapus` menghapus kontak + riwayatnya permanen; sampaikan bahwa cadangan lama masih memuat data itu.
@@ -136,7 +136,8 @@ Contoh sesi lengkap: `examples/contoh-sesi-toko-kue.md`.
 - [ ] Tidak ada pesan yang dikirim ke pelanggan oleh agent; draf ditandai "periksa lalu kirim sendiri".
 - [ ] Angka, tanggal, persen dari script; `peringatan` disampaikan.
 - [ ] Kontak ambigu/duplikat ditanyakan, bukan ditebak.
-- [ ] Perubahan besar sudah pratinjau + disetujui sebelum `--ya`.
+- [ ] Perubahan besar (termasuk `init`) sudah pratinjau + pengguna menjawab "ya" di pesan berikutnya sebelum `--ya`.
+- [ ] Tidak menampilkan sintaks perintah ke pengguna awam; tanyakan dengan bahasa biasa ("Nomor WA Bu Dewi berapa?").
 - [ ] Laporan untuk dibagikan memakai `--samarkan`; catatan pribadi tidak masuk draf.
 
 ## Batasan & penanganan error

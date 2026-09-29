@@ -55,3 +55,32 @@ padahal tren sudah jalan dengan 5 hari (daftar syarat generik, bisa membingungka
 File kosong / hanya judul / kolom salah → `GALAT` kode 2 dengan pesan jelas ✓. Log hari ini belum
 diisi → `⬜ LOG HARIAN BELUM DIISI` (tidak dibilang aman) ✓. Tanggal `31/02/2026` / `kemarin` →
 baris dilewati & dilaporkan ✓.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-29, penguji independen)
+```
+🚨 PERINGATAN DINI OPERASIONAL
+Bengkel Las Sinar (fiktif) — Sel, 29 Sep 2026
+Data 25 Sep–29 Sep (5 hari tercatat)
+Ringkas: 0 🔴 · 1 🟠 · 1 🟡 · 1 normal
+⚠️ Data baru 5 hari: batas kendali (σ) butuh ≥15 hari, banding hari yang sama ≥15 hari. Peringatan di bawah masih terbatas.
+
+🟠 Reject (pcs): 24 hari ini (kemarin 19)
+   melewati target maks 20 (+20%); naik 4 hari berturut-turut.
+🟡 % reject: 2,96 hari ini (kemarin 2,29)
+   naik 4 hari berturut-turut.
+✅ Normal: Output (pcs)
+
+❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
+Reject (pcs):
+ • Material: ada bahan baku batch/pemasok baru, atau bahan disimpan terlalu lama?
+ • Mesin: suhu/setting mesin (oven, mixer, sealer) berubah, baru diservis, atau sempat rusak?
+ • Manusia & metode: operator baru/ganti shift? resep, SOP, atau ukuran batch berubah?
+5 kenapa: Kenapa Reject (pcs) naik? → karena … → kenapa itu terjadi? → … (ulang sampai ketemu hal yang bisa diperbaiki).
+Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).
+
+Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.
+```
+Baris ⚠️ kini hanya menyebut syarat yang belum terpenuhi (tren sudah jalan → tidak disebut) ✓.
+Level sama dengan v1.0.0 (reject 🟠 dari target +20%, % reject 🟡). Verifikasi: **21 angka/level, 0 beda.**

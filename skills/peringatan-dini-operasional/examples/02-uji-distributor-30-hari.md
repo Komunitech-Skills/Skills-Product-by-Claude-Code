@@ -78,3 +78,58 @@ atas rata-rata (script sama); Selasa 4 minggu rata 7,00 → +228,6%; tren 1,929/
   garis dasar 28 hari — keterbatasan wajar, tetap 🔴 lewat target & aturan "pola bergeser".
 - Alasan ke-4/ke-5 (mis. "229% di atas rata-rata Selasa") terpotong karena laporan hanya
   menampilkan 3 alasan — sesuai desain.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-29, penguji independen)
+Output siap kirim v1.0.1 (29 Sep):
+```
+🚨 PERINGATAN DINI OPERASIONAL
+CV Lancar Kirim (fiktif) — Sel, 29 Sep 2026
+Data 31 Agu–29 Sep (30 hari tercatat)
+Ringkas: 1 🔴 · 0 🟠 · 0 🟡 · 3 normal
+
+🔴 Telat kirim: 23 hari ini (kemarin 23)
+   melewati target maks 15 (+53%); 5 dari 7 hari terakhir melewati target; biasanya ±9/hari (28 hari sebelumnya), hari ini 23 -- peluang kebetulan ±1 dari 320 hari (2 dari 3 hari terakhir); 7 hari tercatat berturut-turut di atas rata-rata -- pola bergeser, bukan kebetulan sehari.
+✅ Normal: Pengiriman, Retur, Keluhan
+
+❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
+Telat kirim:
+ • Kurir/armada: ada kendaraan rusak, kurir kurang, atau ganti ekspedisi?
+ • Pesanan menumpuk di jam tertentu? Jam potong (cut-off) masih dipatuhi?
+ • Barang siap tepat waktu dari produksi/gudang, atau sudah telat sejak packing?
+5 kenapa: Kenapa Telat kirim naik? → karena … → kenapa itu terjadi? → … (ulang sampai ketemu hal yang bisa diperbaiki).
+Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).
+
+Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.
+```
+Bila dijalankan 22 Sep:
+```
+🚨 PERINGATAN DINI OPERASIONAL
+CV Lancar Kirim (fiktif) — Sel, 22 Sep 2026
+Data 31 Agu–22 Sep (23 hari tercatat)
+Ringkas: 0 🔴 · 0 🟠 · 1 🟡 · 3 normal
+
+🟡 Telat kirim: 9 hari ini (kemarin 8)
+   naik 3 hari berturut-turut.
+✅ Normal: Pengiriman, Retur, Keluhan
+
+❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
+Telat kirim:
+ • Kurir/armada: ada kendaraan rusak, kurir kurang, atau ganti ekspedisi?
+ • Pesanan menumpuk di jam tertentu? Jam potong (cut-off) masih dipatuhi?
+ • Barang siap tepat waktu dari produksi/gudang, atau sudah telat sejak packing?
+5 kenapa: Kenapa Telat kirim naik? → karena … → kenapa itu terjadi? → … (ulang sampai ketemu hal yang bisa diperbaiki).
+Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).
+
+Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.
+```
+`telat_kirim` kini model **hitungan** (λ < 20, angka bulat). `pengiriman` kini ditebak `turun` ✓.
+Deret level: 21 Sep ✅ · **22 Sep 🟡** (naik 3 hari) · 23 Sep 🟡 (p 0,019, +117% vs Rabu, proyeksi ±2
+hari lewat target) · 24 Sep 🟡 · 25 Sep 🟠 (lewat target) · 26–29 Sep 🔴.
+Catatan penguji: 🟡 tetap muncul 3 hari sebelum target dilanggar, tetapi 🟠 baru muncul **bersamaan**
+dengan pelanggaran target (v1.0.0: 🟠 pada 22 Sep). Pada 24 Sep angka 13 (≈2× biasanya) dua hari
+berturut-turut hanya 🟡 karena angka 13 kemarin sudah masuk garis dasar (p hari ini 0,0249, tipis di
+atas P2 0,02275) sehingga aturan "2 dari 3 hari" tidak terpenuhi. Trade-off yang disengaja (alarm palsu
+turun drastis); dicatat RENDAH di HASIL-UJI.
+Verifikasi `verif2.py`: **36 angka/level, 0 beda.**

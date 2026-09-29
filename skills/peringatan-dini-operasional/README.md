@@ -51,3 +51,6 @@ Bisa, tapi terbatas: yang jalan baru banding target, naik/turun beruntun, dan si
 
 **Angka saya ditulis macam-macam (1.250, 1,2rb, Rp 9 jt) dan ada hari libur. Masalah?**
 Tidak. Format angka Indonesia dibaca otomatis; hari libur/kosong dilewati (tidak diisi tebakan), baris rusak dilaporkan. Hari luar biasa seperti Lebaran atau bazar bisa dikecualikan supaya tidak mengacaukan rata-rata.
+
+**Kenapa hampir tiap minggu ada tanda 🟡?**
+Wajar. 🟡 artinya "angka agak di luar kebiasaan, cukup dilirik" — pada data yang stabil pun sekitar 1 dari 4 hari akan ada satu metrik 🟡 (per metrik hanya ±2–8% hari). Yang perlu ditindaklanjuti adalah 🟠 dan 🔴; pada data stabil keduanya muncul di kurang dari 5% hari.

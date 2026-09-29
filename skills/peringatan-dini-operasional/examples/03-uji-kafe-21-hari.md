@@ -61,3 +61,32 @@ transaksi normal (akhir pekan memang lebih ramai).
   terakhir yang tertutup penuh; untuk sisa < 1 hari kalimat "perkiraan habis hari ini" membingungkan.
 - Sisa 0,9 hari dengan lead 3 hari → pesan "pesan HARI INI" tidak menyebut bahwa pesanan hari ini
   pun **sudah terlambat** ±2 hari (agent menambahkannya, script tidak).
+
+---
+
+## Uji ulang v1.0.1 (2026-09-29, penguji independen)
+Output siap kirim v1.0.1:
+```
+🚨 PERINGATAN DINI OPERASIONAL
+Kopi Senja (fiktif) — Sel, 29 Sep 2026
+Data 9 Sep–29 Sep (21 hari tercatat)
+Ringkas: 1 🔴 · 1 🟠 · 0 🟡 · 3 normal
+
+🔴 Stok kopi (gr): sisa 3.024 = ±0,9 hari pemakaian (rata-rata 3.229,71/hari) -> TIDAK cukup untuk besok -> habis besok (Rab, 30 Sep); pemasok butuh 3 hari -- pesan HARI INI; walau dipesan hari ini (datang ±Jum, 2 Okt), kemungkinan kosong ±2,1 hari
+🟠 Stok susu (liter): sisa 32 = ±1,7 hari pemakaian (rata-rata 18,14/hari) -> cukup sampai Rab, 30 Sep, mulai kurang Kam, 1 Okt; pemasok butuh 1 hari -- siapkan pesanan
+✅ Normal: Transaksi, Penjualan (Rp), Waste (porsi)
+
+❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
+Stok kopi (gr):
+ • Kapan terakhir pesan ke pemasok, dan berapa hari biasanya barang datang?
+ • Pemakaian naik karena produksi/reject naik, atau ada selisih (hilang/rusak)?
+ • Ada pemasok cadangan bila pemasok utama telat?
+5 kenapa: Kenapa Stok kopi (gr) memburuk? → karena … → kenapa itu terjadi? → … (ulang sampai ketemu hal yang bisa diperbaiki).
+Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).
+
+Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.
+```
+Temuan tanggal habis stok **teratasi**: kopi 0,9 hari → "TIDAK cukup untuk besok -> habis besok (Rab,
+30 Sep) ... walau dipesan hari ini (datang ±Jum, 2 Okt), kemungkinan kosong ±2,1 hari" (3 − 0,936 =
+2,06 → 2,1 ✓). Susu 1,76 hari → "cukup sampai Rab 30 Sep, mulai kurang Kam 1 Okt" ✓.
+Verifikasi `verif2.py`: **38 angka/level, 0 beda.**

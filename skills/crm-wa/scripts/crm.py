@@ -41,7 +41,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 APLIKASI = "crm-wa"
-VERSI = "1.0.1"
+VERSI = "1.0.3"
 SKEMA = 1
 SKEMA_JSON_REKAP = 1
 
@@ -630,6 +630,11 @@ def path_db(args):
     else:
         p = Path.home() / "KomunitechData" / "crm" / "crm.db"
     return p.resolve()          # selalu path lengkap, supaya pesan menyebut lokasi yang jelas
+
+
+INSTRUKSI_TUNGGU = ("Ini baru PRATINJAU. Tunjukkan ringkasan & lokasi file di atas kepada pengguna, lalu BERHENTI dan "
+                    "tunggu jawabannya. Jalankan ulang dengan --ya HANYA setelah pengguna membalas setuju ('ya') di "
+                    "pesan berikutnya; permintaan awal pengguna bukan persetujuan.")
 
 
 def folder_backup(db):
@@ -1301,7 +1306,9 @@ def cmd_init(args):
     if rusak:
         ringkas += "\nFile rusak yang ada sekarang dipindah (tidak dihapus) ke %s/rusak-crm-<waktu>.db." % folder_backup(db)
     if not args.ya:
-        t = "PRATINJAU (belum dibuat):\n" + ringkas + "\n\nBuat? Jalankan perintah yang sama + --ya setelah pengguna setuju."
+        t = ("PRATINJAU (belum dibuat, belum ada file/folder yang ditulis):\n" + ringkas +
+             "\nYang akan dibuat di komputer ini: file %s (dan folder %s bila belum ada)." % (db, db.parent) +
+             "\n\nBuat? Jalankan perintah yang sama + --ya setelah pengguna setuju.")
         return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "db": str(db), "pengaturan": cfg,
                 "teks": t}, t
     db.parent.mkdir(parents=True, exist_ok=True)
@@ -2793,6 +2800,8 @@ def main(argv=None):
         if args.hari_ini:
             _JAM["kini"] = parse_hari_ini(args.hari_ini)
         data, teks = args.fungsi(args)
+        if isinstance(data, dict) and data.get("perlu_konfirmasi"):
+            data["instruksi_agent"] = INSTRUKSI_TUNGGU
     except Gagal as e:
         out = {"ok": False, "error": e.pesan}
         out.update(e.detail)

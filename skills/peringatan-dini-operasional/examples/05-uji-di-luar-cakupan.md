@@ -43,3 +43,12 @@ kolom `karyawan_absen` berisi nama)
   `tanggal,karyawan_absen,jumlah_absen` → laporan memuat `📝 Catatan hari ini: "Budi"`. Pada jadwal
   OpenClaw ("kirim apa adanya") nama ini ikut terkirim ke Telegram — bertentangan dengan klaim
   Batasan "Laporan tidak memuat nama pelanggan/pasien/karyawan".
+
+---
+
+## Uji ulang v1.0.1 (2026-09-29, penguji independen)
+Penolakan/reframe tidak berubah (SKILL.md bagian "Kapan TIDAK digunakan" sama). Temuan privasi
+**teratasi**: file `tanggal,karyawan_absen,jumlah_absen` → laporan teks tidak lagi memuat nama; JSON
+`catatan`: "Kolom teks 'karyawan_absen' diabaikan dan tidak pernah dikutip di laporan (bisa berisi nama
+orang)." Kolom catatan hanya dikutip dengan `--sertakan-catatan`, dan SKILL.md mewajibkan agent
+memperingatkan risiko nama di catatan sebelum memakainya.

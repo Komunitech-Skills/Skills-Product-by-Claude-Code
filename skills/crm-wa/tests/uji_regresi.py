@@ -835,6 +835,58 @@ class UjiRevisi101(Dasar):
         self.assertNotIn("terima kasih sudah menghubungi", d["draf"])
 
 
+class UjiPersetujuanDatabase(unittest.TestCase):
+    """Regresi v1.0.3 (uji platform OpenClaw 2026-09-29): database tidak boleh dibuat sebelum pengguna setuju."""
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.fol = os.path.join(self.dir, "belum-ada", "crm")
+        self.db = os.path.join(self.fol, "crm.db")
+
+    def tearDown(self):
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    def run_cli(self, *argv):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            kode = C.main(list(argv) + ["--db", self.db, "--json", "--hari-ini", HARI])
+        return kode, json.loads(buf.getvalue())
+
+    def test_init_tanpa_ya_tidak_menulis_apa_pun(self):
+        kode, out = self.run_cli("init", "--nama-usaha", "Dapur Mama Tia", "--pengirim", "Tia")
+        self.assertEqual(kode, 0)
+        self.assertEqual(out["mode"], "pratinjau")
+        self.assertTrue(out["perlu_konfirmasi"])
+        self.assertIn(self.db, out["teks"])          # lokasi file ditunjukkan ke pengguna
+        self.assertIn("BERHENTI", out["instruksi_agent"])
+        self.assertFalse(os.path.exists(os.path.join(self.dir, "belum-ada")))
+
+    def test_perintah_lain_tidak_membuat_database_diam_diam(self):
+        perintah = [("info",), ("hari-ini",), ("rekap",), ("daftar",), ("cek-duplikat",), ("ekspor",), ("backup",),
+                    ("backup", "--daftar"), ("tambah", "--nama", "Bu Dewi", "--wa", "081200000091"),
+                    ("catat", "--kontak", "Dewi", "--isi", "tanya kue lapis"), ("atur", "--pengirim", "Tia"),
+                    ("tunda", "--kontak", "Dewi", "--ke", "besok"), ("terkirim", "--kontak", "Dewi"),
+                    ("draf", "--kontak", "Dewi"), ("hapus", "--kontak", "Dewi", "--ya")]
+        for p in perintah:
+            kode, out = self.run_cli(*p)
+            self.assertFalse(os.path.exists(os.path.join(self.dir, "belum-ada")), p)
+            if p[0] not in ("info", "backup"):
+                self.assertEqual(kode, 1, p)
+                self.assertIn("init", out["error"], p)
+
+    def test_init_dengan_ya_baru_membuat(self):
+        kode, out = self.run_cli("init", "--nama-usaha", "Dapur Mama Tia", "--ya")
+        self.assertEqual((kode, out["mode"]), (0, "tersimpan"))
+        self.assertNotIn("instruksi_agent", out)
+        self.assertTrue(os.path.isfile(self.db))
+
+    def test_skill_md_mewajibkan_menunggu_persetujuan(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as f:
+            isi = f.read()
+        self.assertIn("pesan berikutnya", isi)
+        self.assertIn("JANGAN pernah mencari, membaca, atau menampilkan token", isi)
+
+
 class UjiKeamanan(unittest.TestCase):
     def test_script_tanpa_akses_jaringan(self):
         with open(os.path.join(AKAR, "scripts", "crm.py"), encoding="utf-8") as f:

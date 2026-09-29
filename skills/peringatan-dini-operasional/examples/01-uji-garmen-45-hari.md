@@ -90,3 +90,48 @@ Peringatan 🟠 muncul **3 hari sebelum** reject melewati target — memang "din
 Benar & berguna. Catatan kecil: label `Stok kain m` (satuan `m` tidak dikenali), pertanyaan cek
 untuk downtime masih generik, dan tiga 🔴 (reject, % reject, downtime) bisa terasa berlebihan untuk
 satu masalah yang sama.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-29, penguji independen)
+Perintah sama. Output siap kirim v1.0.1:
+```
+🚨 PERINGATAN DINI OPERASIONAL
+Konveksi Maju Jaya (fiktif) — Sel, 29 Sep 2026
+Data 17 Agu–29 Sep (38 hari tercatat)
+Ringkas: 4 🔴 · 0 🟠 · 2 🟡 · 0 normal
+
+🔴 Downtime (menit): 95 hari ini (kemarin 23)
+   7,0σ di atas rata-rata 27 hari sebelumnya (25,89) -- lewat batas bahaya 3σ; 255% di atas rata-rata hari Selasa 4 minggu terakhir (26,75).
+🔴 Reject (pcs): 52 hari ini (kemarin 44)
+   6,4σ di atas rata-rata 27 hari sebelumnya (23,26) -- lewat batas bahaya 3σ (2 dari 3 hari terakhir); melewati target maks 40 (+30%); 2 dari 7 hari terakhir melewati target; naik 4 hari berturut-turut.
+🔴 % reject: 4,24 hari ini (kemarin 3,52)
+   4,6σ di atas rata-rata 27 hari sebelumnya (1,98) -- lewat batas bahaya 3σ (2 dari 3 hari terakhir); naik 4 hari berturut-turut.
+🔴 Stok kain (m): sisa 5.430 = ±2,8 hari pemakaian (rata-rata 1.920/hari) -> cukup sampai Kam, 1 Okt, mulai kurang Jum, 2 Okt; pemasok butuh 3 hari -- pesan HARI INI; walau dipesan hari ini (datang ±Jum, 2 Okt), kemungkinan kosong ±0,2 hari
+🟡 Absen: 3 hari ini (kemarin 2)
+   naik 3 hari berturut-turut.
+🟡 Output (pcs): 1.225 hari ini (kemarin 1.250)
+   3 dari 7 hari terakhir di bawah target min 1.200.
+🔗 Downtime (menit) dan Reject (pcs) memburuk bersamaan — cek apakah penyebabnya sama (belum tentu berkaitan).
+
+❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
+Downtime (menit):
+ • Mesin mana yang berhenti, berapa lama, dan apa gejalanya sebelum berhenti?
+ • Jadwal perawatan/servis terakhir kapan? Ada suku cadang yang aus?
+ • Berhentinya karena mesin, listrik/angin/air, atau menunggu bahan/operator?
+Reject (pcs):
+ • Material: ada bahan baku batch/pemasok baru, atau bahan disimpan terlalu lama?
+ • Mesin: suhu/setting mesin (oven, mixer, sealer) berubah, baru diservis, atau sempat rusak?
+ • Manusia & metode: operator baru/ganti shift? resep, SOP, atau ukuran batch berubah?
+5 kenapa: Kenapa Downtime (menit) naik? → karena … → kenapa itu terjadi? → … (ulang sampai ketemu hal yang bisa diperbaiki).
+Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).
+
+ℹ️ Data: 6 hari kosong (Min, 23 Agu, Min, 30 Agu, Min, 6 Sep…) tidak diisi tebakan; 4 angka ekstrem lama tidak dipakai di rata-rata.
+Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.
+```
+Verifikasi `verif2.py` (spesifikasi v1.0.1: model normal/hitungan, peluang ekor, aturan bertahan):
+**51 angka/level dibandingkan, 0 beda.** Level reject/downtime/% reject 🔴, stok 🔴 (2,8 ≤ lead 3,
+"kosong ±0,2 hari" = 3 − 2,828 ✓), absen 🟡 (model hitungan, beruntun 3), output 🟡 (3/7 di bawah target).
+Deret reject per tanggal: 23 Sep 🟡 · 24 Sep ✅ · 25 Sep 🟡 (2,0σ) · **26 Sep 🟠** (2,3σ, 2 dari 3 hari) ·
+28 Sep 🔴 — 🟠 masih 2 hari sebelum target 40 dilanggar (v1.0.0: 3 hari). Label `Stok kain (m)` ✓,
+pertanyaan cek downtime kini spesifik ✓, catatan hari ini tidak dikutip (tanpa `--sertakan-catatan`) ✓.
