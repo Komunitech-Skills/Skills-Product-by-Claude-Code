@@ -171,6 +171,27 @@ class TesDariTeks(unittest.TestCase):
         self.assertEqual(draf, [])
         self.assertEqual(diabaikan, 1)
 
+    def test_v103_kata_header_inggris_bukan_pic(self):
+        # temuan uji ulang v1.0.2: "TOPIC:" dulu terbaca PIC "TOPIC" dan terhapus dari judul
+        for kata in ("TOPIC", "INFO", "UPDATE", "STATUS", "NOTE", "AGENDA", "SUBJECT", "Next Step", "Action Items",
+                     "FYI", "Reminder", "Summary", "Topik", "Perihal", "Update", "RE"):
+            baris = "- %s: bahas rencana marketing minggu depan" % kata
+            draf, _ = vikunja.urai_dari_teks(baris, HARI_ACUAN)
+            self.assertIsNone(draf[0]["ke"], kata)
+            self.assertEqual(draf[0]["judul"], "%s: bahas rencana marketing minggu depan" % kata, kata)
+
+    def test_v103_nama_asli_tetap_terbaca(self):
+        for baris, nama in (("- Budi: follow up supplier", "Budi"), ("- Siti Aminah: kirim invoice", "Siti Aminah"),
+                            ("- ANDI: cek stok gudang", "ANDI"), ("- Status: cek laporan PIC: Rina", "Rina"),
+                            ("- UPDATE - kirim revisi desain PIC: Maya", "Maya")):
+            draf, _ = vikunja.urai_dari_teks(baris, HARI_ACUAN)
+            self.assertEqual(draf[0]["ke"], nama, baris)
+        # anggota yang dikenal menang atas daftar kata header (orang bernama "Tim")
+        draf, _ = vikunja.urai_dari_teks("- Tim: siapkan materi", HARI_ACUAN)
+        self.assertIsNone(draf[0]["ke"])
+        draf, _ = vikunja.urai_dari_teks("- Tim: siapkan materi", HARI_ACUAN, anggota_dikenal=["Tim"])
+        self.assertEqual(draf[0]["ke"], "Tim")
+
 
 # ============================================================ 3. validasi URL (keamanan)
 

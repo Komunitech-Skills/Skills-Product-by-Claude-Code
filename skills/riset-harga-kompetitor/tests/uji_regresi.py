@@ -480,5 +480,38 @@ class UjiRevisi101(unittest.TestCase):
         self.assertTrue(any("tulis 1 pcs" in c for c in h["pesaing"][0]["catatan"]))
 
 
+class UjiRevisi102(unittest.TestCase):
+    """U1 uji ulang v1.0.1: 'isi N' / 'N pack' tanpa x/@ di sekitar berat."""
+
+    def test_u1_isi_dan_pack_dikalikan(self):
+        for teks, harap in (("500 gr isi 2", 1000), ("250gr (isi 2)", 500), ("2 pack 500 gr", 1000),
+                            ("500 gr isi 2 pack", 1000), ("500gr, isi 2 bungkus", 1000), ("3 botol 250 ml", 750),
+                            ("Paket 2 pouch 250 gr", 500)):
+            (dim, qty), cat = B.baca_ukuran(teks, "ml" if "ml" in teks else "g")
+            self.assertEqual(qty, D(harap), teks)
+            self.assertTrue(any("kemasan x" in c and "cek" in c for c in cat), (teks, cat))
+
+    def test_u1_tidak_berubah(self):
+        # jumlah butir di dalam kemasan tidak dikalikan; pengali x/@ tetap tanpa catatan cek
+        for teks, dp, harap in (("isi 10 pcs 250 gr", "g", ("g", D(250))), ("250 gr isi 10 pcs", "g", ("g", D(250))),
+                                ("kopi 250 gr isi 20 sachet", "g", ("g", D(250))), ("1 pack 500 gr", "g", ("g", D(500))),
+                                ("isi 2 @250gr", "g", ("g", D(500))), ("250 g x 2", "g", ("g", D(500))),
+                                ("2 pcs @ 250 gr", "g", ("g", D(500))), ("isi 12", None, ("pcs", D(12)))):
+            u, cat = B.baca_ukuran(teks, dp)
+            self.assertEqual(u, harap, teks)
+            self.assertFalse(any("kemasan x" in c for c in cat), (teks, cat))
+        u, cat = B.baca_ukuran("isi 2 pack 500 gr", "g")       # ambigu: dibaca total, tetapi diberi tahu
+        self.assertEqual(u, ("g", D(500)))
+        self.assertTrue(any("dibaca total" in c and "2 x 500 g" in c for c in cat), cat)
+
+    def test_u1_harga_setara_di_analisis(self):
+        # produk kita 500 gr; pesaing '500 gr isi 2' Rp 90.000 -> setara 90.000 / 1000 x 500 = 45.000
+        h = B.olah([baris(90000, "500 gr isi 2"), baris(88000, "2 pack 500 gr"), baris(46000, "500 gr")],
+                   {"hpp": 20000, "ukuran": "500 gr"}, hari_ini=HARI)
+        self.assertEqual([p["setara"] for p in h["pesaing"]], [D(45000), D(44000), D(46000)])
+        self.assertTrue(any("cek" in c for c in h["pesaing"][0]["catatan"]), h["pesaing"][0]["catatan"])
+        self.assertEqual(h["stat"]["n"], 3)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

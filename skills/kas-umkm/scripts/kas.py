@@ -114,6 +114,11 @@ TEBAK = [
     # v1.0.6: bahan habis pakai usaha jasa (laundry, salon, bengkel cuci) & biaya operasional umum
     ("beli-stok", "keluar", r"\b(deterjen|detergen|sabun cuci|pewangi|pelembut|softener|parfum laundry|"
                             r"pemutih|plastik laundry|plastik packing|kantong plastik|plastik|kresek|hanger)\b"),
+    # v1.0.7: bahan pangan umum (toko roti, warung, katering) & bahan bakar masak usaha
+    ("beli-stok", "keluar", r"\b(tepung|terigu|maizena|tapioka|gula|mentega|margarin|butter|telur|telor|ragi|fermipan|"
+                            r"baking powder|pengembang|minyak goreng|minyak|santan|susu|keju|coklat|cokelat|meses|"
+                            r"vanili|beras|bumbu|cabe|cabai|bawang|daging|ayam|ikan|sayur|sayuran|buah|kopi|teh|"
+                            r"es batu|gas elpiji|elpiji|lpg|gas melon|tabung gas|isi gas|gas 3 ?kg|gas 12 ?kg)\b"),
     ("lain-lain", "keluar", r"\b(servis|service|perbaikan|reparasi|fotokopi|fotocopy|print|atk|alat tulis|cetak nota|"
                             r"ongkir|ongkos kirim|parkir|internet|wifi|materai|meterai)\b"),
     ("modal", "masuk", r"\b(modal|suntik dana|suntikan dana)\b"),
@@ -439,6 +444,22 @@ POLA_BUKAN_ASET = re.compile(r"\b(servis|service|perbaikan|reparasi|ganti oli|ol
                              r"maintenance|perawatan|betulin|benerin|sewa|cicilan|angsuran|bensin|bbm|parkir)\b")
 
 
+# v1.0.7: rincian beban untuk pengeluaran lain-lain (semua jenis beban usaha di laporan-keuangan-emkm)
+BEBAN_LAIN_EMKM = [(k, re.compile(p)) for k, p in (
+    ("beban_admin_penjualan", r"\b(shopee|tokopedia|tokped|tiktok|lazada|blibli|bukalapak|marketplace|gofood|"
+                              r"grabfood|shopeefood|mdr|komisi|biaya qris|fee marketplace)\b"),
+    ("beban_pemasaran", r"\b(iklan|ads|promosi|promo|endorse|brosur|spanduk|banner|baliho)\b"),
+    ("beban_pajak_lain", r"\b(materai|meterai|retribusi|pbb|stnk|samsat|perizinan|izin usaha)\b"),
+    ("beban_perawatan", r"\b(servis|service|perbaikan|reparasi|ganti oli|oli|tambal|sparepart|suku cadang|"
+                        r"maintenance|perawatan|betulin|benerin)\b"),
+    ("beban_transportasi", r"\b(bensin|bbm|pertalite|pertamax|solar|ongkir|ongkos kirim|ekspedisi|kurir|parkir|"
+                           r"tol|ojek|ojol|gosend|grab|gojek|transport)\b"),
+    ("beban_utilitas", r"\b(internet|wifi|indihome|pulsa|kuota|paket data|telepon|telpon|galon|gas|elpiji|lpg)\b"),
+    ("beban_perlengkapan", r"\b(kemasan|packaging|plastik|kresek|kardus|dus|lakban|stiker|label|atk|alat tulis|"
+                           r"kertas|tinta|sabun|pembersih|tisu|tissue|masker|sarung tangan)\b"),
+)]
+
+
 def kode_emkm(kategori, arah, ket, jenis_akun):
     """Kode kategori laporan-keuangan-emkm untuk satu baris ekspor ("" = diklasifikasi emkm dari keterangan).
     v1.0.2: lain-lain tidak lagi selalu dikosongkan. Pemasukan lain-lain -> pendapatan_lain; biaya bank ->
@@ -468,7 +489,14 @@ def kode_emkm(kategori, arah, ket, jenis_akun):
         # v1.0.3: catatan lama 'lain-lain' berketerangan utang/kasbon/pribadi tetap beban_lain (sama dengan hasil usaha
         # kas-umkm); ekspor mengingatkan untuk menggolongkannya ulang.
         return "beban_lain"
-    return ""
+    if POLA_ASET_EMKM.search(n) and not POLA_BUKAN_ASET.search(n):
+        return ""                                      # v1.0.6: biarkan emkm menilai aset tetap (diperingatkan)
+    # v1.0.7: lain-lain yang sudah dipilih/dikonfirmasi = biaya usaha; selalu diberi kode beban agar emkm tidak
+    # menaruhnya di BELUM TERKLASIFIKASI (laba tetap = hasil usaha; semua kode di bawah = beban usaha emkm).
+    for kode_b, pola in BEBAN_LAIN_EMKM:
+        if pola.search(n):
+            return kode_b
+    return "beban_lain"
 
 
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
@@ -820,7 +848,12 @@ POLA_NEGASI = re.compile(r"\b(tanpa|bebas|free|gratis|tidak ada|tidak kena|tidak
                          r"ga ada|enggak ada|ngga ada|no|non|nol|bukan) (denda|bunga|biaya|adm|admin|administrasi|"
                          r"provisi|sanksi)( (admin|adm|administrasi|provisi))?\b|"
                          r"\b(denda|bunga|biaya|adm|admin|administrasi|provisi)( (admin|adm))? (0|nol)( persen)?\b(?! \d)|"
-                         r"\b(0|nol) (persen )?(denda|bunga)\b")
+                         r"\b(0|nol) (persen )?(denda|bunga)\b|"
+                         # v1.0.7: "denda nihil", "dendanya dihapus", "bunga dibebaskan", "denda tidak dikenakan"
+                         r"\b(denda|bunga|biaya|adm|admin|administrasi|provisi|sanksi)( (admin|adm))? (nihil|kosong|"
+                         r"dihapus|dihapuskan|dihapusin|dibebaskan|dihilangkan|ditiadakan|diputihkan|diputihin|"
+                         r"digratiskan|tidak ada|tak ada|gak ada|ga ada|nggak ada|ngga ada|enggak ada|"
+                         r"tidak dikenakan|tidak dikenai|tidak kena|gak kena|ga kena|nggak kena)\b")
 
 
 def normal_ket(teks):
@@ -3106,9 +3139,9 @@ def cmd_ekspor(args):
                 "--periode-awal %s --periode-akhir %s --kas-akhir-aktual %d" %
                 (path, cfg["nama_usaha"], dari.isoformat(), sampai.isoformat(), saldo_akhir))
     t = ("Ekspor untuk skill laporan-keuangan-emkm: %d baris %s - %s ke %s\n"
-         "Kolom: Tanggal;Keterangan;Masuk;Keluar;Kategori (kode kategori emkm; pajak & sebagian lain-lain dikosongkan "
+         "Kolom: Tanggal;Keterangan;Masuk;Keluar;Kategori (kode kategori emkm; pajak & pembelian alat/aset dikosongkan "
          "agar emkm mengklasifikasi dari keterangan; biaya bank = beban_keuangan, pemasukan lain-lain = "
-         "pendapatan_lain). Pindah dana antar akun (%d baris) tidak ditulis karena kas + rekening "
+         "pendapatan_lain, pengeluaran lain-lain lain = kode beban usaha, paling umum beban_lain). Pindah dana antar akun (%d baris) tidak ditulis karena kas + rekening "
          "dihitung sebagai satu. Saldo awal gabungan semua akun %s, saldo akhir %s.\n"
          "Jalankan (tanyakan dulu stok awal/akhir, piutang, utang, aset):\n%s" %
          (len(data), tgl_id(dari), tgl_id(sampai), path, n_pindah, rp(saldo_awal), rp(saldo_akhir), perintah))

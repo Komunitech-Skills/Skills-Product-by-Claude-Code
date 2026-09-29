@@ -36,6 +36,7 @@ catalog.csv              # katalog master (status, versi, tier, harga, platform 
 bundles/                 # definisi paket tematik (satu nama skill per baris)
 solusi-vip/              # paket solusi per profesi untuk member VIP (OpenClaw)
 docs/                    # instalasi per platform, panduan software lokal, uji platform, program beta
+docs/jasa-setup/         # jasa setup berbayar: menu layanan (usulan harga), SOP teknisi, formulir persiapan member
 research/                # backlog, riset harga, audit sumber & lisensi
 rejected/                # skill yang gagal audit + alasannya
 templates/               # template SKILL.md, README.md, ATTRIBUTION.md
