@@ -22,7 +22,7 @@ Mengubah "saya mau launching produk" menjadi **rencana peluncuran satu paket yan
 - Butuh keputusan hukum/izin: skill ini hanya pengingat (lihat `references/legalitas-label.md`).
 
 ## Input (tanyakan SEKALI, dalam satu pesan)
-Wajib: (1) produk & harga normal, (2) tanggal peluncuran yang diinginkan (atau "secepatnya"), (3) jenis: makanan/minuman, kosmetik, atau lain, (4) kanal yang sudah dimiliki (jumlah kontak WA, pengikut IG/TikTok, toko marketplace), (5) anggaran promo+iklan.
+Wajib: (1) produk & harga normal, (2) tanggal peluncuran yang diinginkan (atau "secepatnya"), (3) jenis: makanan/minuman, kosmetik, jasa, atau lain, (4) kanal yang sudah dimiliki (jumlah kontak WA, pengikut IG/TikTok, toko marketplace), (5) anggaran promo+iklan.
 Opsional: stok awal & kapan barang tiba, foto/aset yang ada, target pesanan.
 Bila pengguna ingin cepat: pakai default (jenis "lain", anggaran Rp 0 = hanya kanal gratis, tanggal = 35 hari dari hari ini) dan **sebutkan asumsinya** di awal jawaban.
 
@@ -34,7 +34,7 @@ Cek tiga hal di `references/runbook-hari-h.md` bagian A: satu janji jelas, sudah
 ### 2. Tetapkan target dan angka dasar
 - Target pesanan minggu 1 dari **daftar tunggu x 15-25%** (patokan awal, tandai sebagai asumsi) atau dari hasil soft launch bila ada.
 - Harga & margin: hitung lewat `hitung-hpp` dan `harga-jual-marketplace` (biaya admin, ongkir, voucher). **Jangan menebak margin.**
-- Stok awal = perkiraan pesanan minggu 1 x 1,3; titik pesan ulang = waktu tunggu pemasok x penjualan harian (contoh di runbook bagian B). Hitung dengan angka, tampilkan rumusnya.
+- Stok awal = (pre-order soft launch + perkiraan pesanan minggu 1) x 1,3; titik pesan ulang = waktu tunggu pemasok x penjualan harian (contoh di runbook bagian B). Hitung dengan angka, tampilkan rumusnya.
 
 ### 3. Pilih 2-4 kanal
 Pakai tabel dan skor 0-3 di `references/kanal-checklist.md`. Susun menurut milik/sewa/pinjam; daftar tunggu WA/formulir selalu menjadi kanal "milik" utama. Tiap kanal diberi satu kode/tautan pelacak.
@@ -43,7 +43,7 @@ Pakai tabel dan skor 0-3 di `references/kanal-checklist.md`. Susun menurut milik
 | Fase | Kira-kira | Isi | Keluaran |
 |------|-----------|-----|----------|
 | Pra-peluncuran / teaser | T-30 s.d. T-15 | janji produk, aset foto/video, formulir daftar tunggu, teaser 1-2, pesan ke tim pertama | daftar tunggu berjalan |
-| Soft launch | T-14 s.d. T-7 | pre-order terbatas 30-50 unit untuk daftar tunggu; kumpulkan masukan 10 pembeli | perbaikan listing/label/kemasan |
+| Soft launch | T-14 s.d. T-5 | pre-order terbatas 30-50 unit dibuka T-14, dikirim T-10, **baru setelah barang/layanan diterima** (T-5) minta masukan 10 pembeli | perbaikan listing/label/kemasan |
 | Persiapan akhir | T-7 s.d. T-1 | promo diputuskan, stok fisik, uji kirim, listing terjadwal, Go/No-Go H-1 | keputusan Go/No-Go |
 | Grand launch | T0 | runbook per jam (bagian F) | angka hari-1 |
 | Pasca-peluncuran | T+1 s.d. T+30 | kirim cepat, ulasan, bukti sosial, restok, akhiri promo jujur, tinjauan 30 hari | pelajaran + keputusan lanjut |
@@ -53,9 +53,9 @@ Jalankan (Windows: `python` atau `py`):
 ```
 python3 scripts/jadwal_peluncuran.py --tanggal 2026-11-14 --produk "Nama Produk" --jenis pangan
 ```
-Pilihan: `--jenis pangan|kosmetik|lain`, `--hari-ini TTTT-BB-HH` (tandai tugas yang sudah lewat), `--libur-tambahan 2026-11-20,...`, `--format md|csv|json`. Script memakai Python standar, tanpa instalasi. Tugas pemasok/cetak/izin digeser ke hari kerja terdekat (mundur sebelum peluncuran, maju sesudahnya); konten tidak digeser tetapi diberi catatan bila jatuh di libur. Script juga memperingatkan: tanggal peluncuran di hari libur, dekat tanggal kembar (9.9/10.10/11.11/12.12), waktu tersisa <30 hari, dan tahun tanpa data libur (hanya 2026-2027 tersedia; libur di luar itu perlu dicek manual).
+Pilihan: `--jenis pangan|kosmetik|jasa|lain` (pangan dan kosmetik mendapat cek label T-28 dan cek foto listing T-3; `jasa` membuang tugas stok/pemasok/kemasan/uji kirim dan menambah tugas kapasitas layanan), `--hari-ini TTTT-BB-HH` (bawaan: hari ini, sehingga peringatan waktu pendek dan tanda LEWAT selalu aktif), `--libur-tambahan 2026-11-20,...`, `--format md|csv|json`. Script memakai Python standar, tanpa instalasi. Tugas pemasok/cetak/izin digeser ke hari kerja terdekat (mundur sebelum peluncuran, maju sesudahnya); konten tidak digeser tetapi diberi catatan bila jatuh di libur. Script juga memperingatkan: tanggal peluncuran di hari libur, dekat tanggal kembar (9.9/10.10/11.11/12.12), waktu tersisa <30 hari, tahun tanpa data libur di bagian mana pun rentang T-30..T+30 (hanya 2026-2027 tersedia; libur di luar itu perlu dicek manual), dan **peluncuran yang bersinggungan dengan Lebaran/cuti bersama Idulfitri** (pemasok/ekspedisi libur, musim mudik). Di keluaran md tiap tugas diberi label T sendiri, mis. **T-5**.
 Bila script tidak bisa dijalankan: buat jadwal manual dengan pola T-30, T-25, T-21, T-14, T-7, T-3, T-1, T0, T+1, T+3, T+7, T+14, T+30 dan geser tugas pemasok dari Sabtu/Minggu/libur. Katakan bahwa daftar libur belum diperiksa.
-Tanggal libur adalah SKB 3 Menteri 2026/2027 (data 2027 perlu ditinjau ulang terhadap lampiran resmi); selalu cocokkan pengumuman terbaru.
+Tanggal libur adalah SKB 3 Menteri 2026/2027 (data 2026 dan 2027 sudah dicocokkan 51/51 dengan lampiran resmi per 2026-09-29); selalu cocokkan pengumuman terbaru.
 
 ### 6. Teks siap tempel
 Buat langsung (bukan saran umum), bahasa santai sopan, sesuai kanal yang dipilih:
@@ -86,7 +86,7 @@ Untuk makanan/minuman/kosmetik selalu sisipkan pengingat NIB, PIRT/BPOM, halal, 
 
 ## Contoh
 Input: "Saya mau launching sambal botol baru tgl 14 Nov, stok 150 botol, kontak WA 120, IG 800 pengikut, anggaran promo 500 ribu."
-Ringkas: jenis pangan; kanal terpilih WA daftar tunggu + IG + marketplace; jadwal 42 tugas T-30 = 15 Okt; peringatan bila T-30 sudah lewat. Lengkap: `examples/01-jadwal-sambal-botol.md` (keluaran nyata script).
+Ringkas: jenis pangan; kanal terpilih WA daftar tunggu + IG + marketplace; jadwal 43 tugas T-30 = 15 Okt; peringatan bila T-30 sudah lewat. Lengkap: `examples/01-jadwal-sambal-botol.md` (keluaran nyata script).
 
 ## Batasan & penanganan error
 - Tanggal salah format / tidak ada: script keluar dengan pesan "Galat" dan kode 2; minta pengguna menulis ulang TTTT-BB-HH.

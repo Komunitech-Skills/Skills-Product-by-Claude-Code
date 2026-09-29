@@ -22,7 +22,7 @@
 |-------|-------------|-------------|-------------|---------------------|
 
 ## 4. Stok
-Perkiraan pesanan minggu 1: ....  Stok awal (x1,3): ....  Titik pesan ulang: ....  Tanggal barang tiba: ....
+Perkiraan pesanan minggu 1: ....  Pre-order soft launch: ....  Stok awal = (pre-order soft launch + minggu 1) x 1,3: ....  Titik pesan ulang: ....  Tanggal barang tiba: ....
 
 ## 5. Legalitas/label (centang setelah dicek di situs resmi)
 [ ] NIB [ ] PIRT/BPOM/notifikasi [ ] Halal (bila berlaku) [ ] Label sama dengan listing

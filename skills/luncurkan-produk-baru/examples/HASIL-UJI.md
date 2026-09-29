@@ -60,3 +60,6 @@ Alasan: menang telak di A/B dan banding pesaing; script aman, stdlib, teruji, da
 10. (Opsional, pelajaran dari pesaing, tulis ulang sendiri) bedakan skala peluncuran: produk baru vs varian/rasa baru, dengan versi jadwal ringkas untuk varian.
 
 Setelah perbaikan B1-B3, uji ulang oleh penguji independen.
+
+## Catatan revisi (v1.0.1, 2026-09-29)
+Perbaikan butir 1-9 dari bagian 6 sudah diterapkan: soft launch dikirim T-10 baru ditanya T-5 (contoh 02 diselaraskan); `--hari-ini` bawaan hari ini; kosmetik mendapat label T-28 dan foto listing T-3; peringatan tahun libur mencakup seluruh T-30..T+30; rumus stok = (pre-order soft launch + minggu 1) x 1,3; peringatan Lebaran/cuti bersama; label T per baris di md; `--jenis jasa`; label "PERLU REVIEW" 2027 dicabut. Tes regresi bertambah (19 tes OK). Butir 10 (opsional) belum. Belum diuji ulang oleh penguji independen.

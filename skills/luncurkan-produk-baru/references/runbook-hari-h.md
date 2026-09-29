@@ -10,10 +10,10 @@ Jika tidak: jangan tunda tanpa batas dan jangan menambah fitur terus. Pilih satu
 
 ## B. Kesiapan stok (dihitung, bukan dikira)
 1. Perkiraan pesanan minggu 1 = jumlah pendaftar daftar tunggu x 15-25% (patokan awal; ganti dengan angka nyatamu dari soft launch).
-2. Stok awal = perkiraan pesanan minggu 1 x 1,3 (cadangan 30% untuk lonjakan/retur/sampel KOL).
+2. Stok awal = (pre-order soft launch + perkiraan pesanan minggu 1) x 1,3 (cadangan 30% untuk lonjakan/retur/sampel KOL). Pre-order soft launch ikut dihitung karena diambil dari stok yang sama.
 3. Waktu tunggu pemasok (hari) x penjualan harian = titik pesan ulang. Pesan ulang saat sisa stok <= angka itu.
 4. Bila stok terbatas, umumkan jumlahnya ("hanya 120 botol") dan tutup pre-order saat habis; jangan menerima lebih dari yang bisa dikirim.
-Contoh: 80 pendaftar x 20% = 16 pesanan minggu 1 (patokan awal ini kecil; kalau soft launch menjual 40, pakai 40). Stok awal = 40 x 1,3 = 52 botol.
+Contoh: 80 pendaftar x 20% = 16 pesanan minggu 1; soft launch menjual 40 pre-order. Stok awal = (40 + 16) x 1,3 = 72,8 -> 73 botol. (Bila soft launch menunjukkan pesanan minggu 1 jauh lebih besar dari patokan 15-25%, ganti 16 dengan angka nyata.)
 
 ## C. Operasional
 - Kemasan uji kirim 2 paket (jarak jauh). Produk cair/pecah belah: tes jatuh 1 m.

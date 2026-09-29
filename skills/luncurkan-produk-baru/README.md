@@ -19,7 +19,7 @@ Tidak cocok: peluncuran aplikasi/startup teknologi, atau kebutuhan nasihat hukum
 **Sebelum:** "Aku mau launching sambal botol, bingung mulai dari mana. Posting dulu? Kapan pesan botol? Takut stok kurang."
 
 **Sesudah (cukup ketik):** "Bantu rencana peluncuran sambal botol 180 g, tanggal 14 November, stok 150, kontak WA 120, IG 800, anggaran promo 500 ribu."
--> asumsi, 42 tugas bertanggal (mulai 15 Okt; pesan kemasan dan cek label sebelum akhir pekan), pesan WA/IG siap tempel, stok awal dihitung, Go/No-Go H-1, dan pengingat halal/BPOM. Lihat `examples/`.
+-> asumsi, 43 tugas bertanggal (mulai 15 Okt; pesan kemasan dan cek label sebelum akhir pekan), pesan WA/IG siap tempel, stok awal dihitung, Go/No-Go H-1, dan pengingat halal/BPOM. Lihat `examples/`.
 
 ## Cara pakai
 Ketik permintaan biasa, misalnya:
@@ -51,6 +51,6 @@ Bisa. Tugas yang sudah lewat ditandai dan skill menyarankan cara memadatkan jadw
 Tidak. Ia hanya mengingatkan hal yang perlu dicek dan menautkan situs resmi (oss.go.id, halal.go.id, cekbpom.pom.go.id). Keputusan ada di instansi berwenang.
 
 **Apakah daftar libur selalu benar?**
-Berasal dari SKB 3 Menteri 2026 dan 2027 (data 2027 perlu ditinjau ulang terhadap lampiran resmi). Pemerintah dapat mengubahnya; cocokkan dengan pengumuman terbaru atau tambahkan lewat `--libur-tambahan`.
+Berasal dari SKB 3 Menteri 2026 dan 2027 (sudah dicocokkan dengan lampiran resmi per 2026-09-29). Pemerintah dapat mengubahnya; cocokkan dengan pengumuman terbaru atau tambahkan lewat `--libur-tambahan`.
 
 Kredit sumber terbuka dan lisensi: lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
