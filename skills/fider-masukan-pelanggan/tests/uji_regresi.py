@@ -237,12 +237,22 @@ class UjiTulis(Dasar):
         self.assertEqual(Tiruan.data["posts"][3]["votesCount"], 0)
         self.assertEqual(len(Tiruan.data["posts"]), 5)
 
-    def test_impor_lewati_duplikat(self):
+    def test_impor_tahan_mirip_dan_tetap_per_butir(self):
         p = self.tulis("Tolong tambah pembayaran QRIS\n\nBisa bayar pakai OVO\n")
         rc, out, _ = self.jalan("impor", p, "--ya")
-        self.assertIn("1 pos dibuat, 1 dilewati", out)
-        rc, out, _ = self.jalan("impor", self.tulis("Tolong tambah pembayaran QRIS\n", "b.txt"), "--ya", "--tetap")
-        self.assertIn("1 pos dibuat, 0 dilewati", out)
+        self.assertIn("1 pos dibuat, 1 ditahan", out)
+        rc, out, _ = self.jalan("impor", self.tulis("Tolong tambah pembayaran QRIS\n", "b.txt"), "--ya")
+        self.assertIn("0 pos dibuat, 1 ditahan", out)
+        rc, out, _ = self.jalan("impor", self.tulis("Tolong tambah pembayaran QRIS\n", "c.txt"), "--ya", "--tetap", "1")
+        self.assertIn("1 pos dibuat, 0 ditahan", out)
+        rc, out, _ = self.jalan("impor", self.tulis("Tolong tambah pembayaran QRIS\n", "d.txt"), "--ya", "--tetap", "9")
+        self.assertEqual(rc, fider.K_INPUT)
+
+    def test_impor_gopay_tidak_dianggap_duplikat_qris(self):
+        p = self.tulis("Tambah pembayaran GoPay\n\nTambah pembayaran ShopeePay\n")
+        rc, out, _ = self.jalan("impor", p)
+        self.assertEqual(out.count("[BUAT  ]"), 2, out)
+        self.assertNotIn("MIRIP", out)
 
     def test_impor_judul_panjang_dan_json(self):
         panjang = "kata " * 60
@@ -314,6 +324,94 @@ class UjiTulis(Dasar):
         self.assertEqual(c.exception.kode, fider.K_JARINGAN)
 
 
+class UjiKeamananTambahan(Dasar):
+    def test_singkatan_opsi_ditolak_dan_tidak_menulis(self):
+        for singkat in ("--y", "--ya-"):
+            with self.assertRaises(SystemExit) as c:
+                with contextlib.redirect_stderr(io.StringIO()):
+                    fider.main(["status", "1", "dikerjakan", singkat, "--url", self.url, "--kunci-file", self.kf])
+            self.assertEqual(c.exception.code, 2)
+        with self.assertRaises(SystemExit):
+            with contextlib.redirect_stderr(io.StringIO()):
+                fider.main(["gabung", "2", "1", "--yaa", "--url", self.url, "--kunci-file", self.kf])
+        with self.assertRaises(SystemExit):  # singkatan opsi lain juga ditolak
+            with contextlib.redirect_stderr(io.StringIO()):
+                fider.main(["cek", "--js", "--url", self.url, "--kunci-file", self.kf])
+        self.assertEqual(self.penulisan(), [])
+        self.assertEqual(Tiruan.data["posts"][0]["status"], "open")
+
+    def test_semua_parser_allow_abbrev_false(self):
+        ap = fider.buat_parser()
+        self.assertFalse(ap.allow_abbrev)
+        for sp in ap._subparsers._group_actions[0].choices.values():
+            self.assertFalse(sp.allow_abbrev)
+
+    def test_url_http_ke_nama_host_menyerupai_ip_ditolak(self):
+        for u in ("http://10.contoh.com", "http://192.168.evil.com"):
+            out, err = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                rc = fider.main(["cek", "--url", u, "--kunci-file", self.kf])
+            self.assertEqual(rc, fider.K_INPUT)
+            self.assertIn("HTTPS", err.getvalue())
+
+    def test_impor_berkas_kunci_ditolak_dan_tidak_tercetak(self):
+        rc, out, err = self.jalan("impor", self.kf)
+        self.assertEqual(rc, fider.K_FILE)
+        self.assertNotIn(KUNCI, out + err)
+        rc, out, err = self.jalan("impor", self.tulis("Usul baru\n\nkunci saya " + KUNCI + "\n"))
+        self.assertEqual(rc, fider.K_FILE)
+        self.assertNotIn(KUNCI, out + err)
+
+    def test_butir_kosong_dibuang_dan_uraian_dibatasi(self):
+        p = self.tulis("- \n- Bisa cetak label\n-\n")
+        rc, out, _ = self.jalan("impor", p)
+        self.assertEqual(rc, 0)
+        self.assertIn("1. [BUAT  ] Bisa cetak label", out)
+        self.assertEqual(self.jalan("impor", self.tulis("-\n\n*\n", "k.txt"))[0], fider.K_FILE)
+        besar = self.tulis("Judul wajar\n" + "x" * 6000, "besar.txt")
+        self.jalan("impor", besar, "--ya")
+        self.assertLessEqual(len(Tiruan.data["posts"][-1]["description"]), 5000)
+
+    def test_catatan_status_dan_gabung_disamarkan_dan_ditolak_wajib_alasan(self):
+        rc, _, err = self.jalan("status", "1", "ditolak", "--ya")
+        self.assertEqual(rc, fider.K_INPUT)
+        self.assertEqual(self.penulisan(), [])
+        rc, out, _ = self.jalan("status", "1", "ditolak", "--catatan", "Hubungi 08123456789 atau 021-5551234", "--ya")
+        self.assertEqual(rc, 0, out)
+        self.assertEqual(Tiruan.data["posts"][0]["response"]["text"], "Hubungi [nomor disembunyikan] atau [nomor disembunyikan]")
+
+    def test_gabung_pratinjau_memuat_peringatan(self):
+        rc, out, _ = self.jalan("gabung", "3", "1")
+        self.assertIn("PERIKSA", out)
+        self.assertIn("hampir tidak mirip", out)
+
+    def test_draf_menyesuaikan_status(self):
+        Tiruan.data["posts"][0]["status"] = "started"
+        Tiruan.data["posts"][0]["title"] = "Bayar QRIS minta 4 orang"
+        rc, out, _ = self.jalan("draf-balasan", "1")
+        self.assertNotIn("selesai kami", out)
+        self.assertNotIn("Selamat siang", out)
+        self.assertIn("sedang dalam pengerjaan", out)
+        rc, out, _ = self.jalan("draf-balasan", "1", "--topik", "pembayaran QRIS")
+        self.assertIn("\"pembayaran QRIS\"", out)
+        self.assertNotIn("4 orang", out)
+
+    def test_galat_fider_diterjemahkan(self):
+        Tiruan.data["posts"][0]["title"] = "x"
+
+        class E:
+            code = 400
+            def read(self):
+                return json.dumps({"errors": [{"message": "This has already been posted before"}]}).encode()
+        with self.assertRaises(fider.Gagal) as c:
+            fider.Klien(self.url, KUNCI)._galat_http(E(), "/x")
+        self.assertIn("sudah ada", str(c.exception))
+
+    def test_cek_tidak_menyebut_pasti_administrator(self):
+        rc, out, _ = self.jalan("cek")
+        self.assertIn("tidak dapat dipastikan", out)
+
+
 class UjiUnit(unittest.TestCase):
     def test_samarkan_pribadi(self):
         t, n = fider.samarkan_pribadi("hub +62 812-3456-7890 / 08123456789 / a.b@x.co.id")
@@ -328,10 +426,30 @@ class UjiUnit(unittest.TestCase):
 
     def test_periksa_url(self):
         fider.periksa_url("http://localhost:3000")
+        for lokal in ("http://127.0.0.1:3000", "http://127.5.6.7", "http://[::1]:3000", "http://10.1.2.3:3000",
+                      "http://192.168.1.20", "http://172.16.0.5", "http://172.31.255.1"):
+            fider.periksa_url(lokal)
         fider.periksa_url("https://saran.tokosaya.id")
-        for buruk in ("http://saran.tokosaya.id", "ftp://x", "https://user:pw@x.id", "localhost"):
+        for buruk in ("http://saran.tokosaya.id", "ftp://x", "https://user:pw@x.id", "localhost",
+                      "http://10.contoh.com", "http://192.168.evil.com", "http://172.16.evil.id", "http://127.evil.com",
+                      "http://8.8.8.8", "http://172.32.0.1", "http://192.169.1.1", "http://foo.local", "http://localhost.evil.com"):
             with self.assertRaises(fider.Gagal):
                 fider.periksa_url(buruk)
+
+    def test_kemiripan_sinonim_dan_beda_permintaan(self):
+        self.assertGreaterEqual(fider.kemiripan("Bayar QRIS", "Tambah pembayaran QRIS"), fider.AMBANG_MIRIP)
+        self.assertGreaterEqual(fider.kemiripan("Notif WA pesanan", "Notifikasi WhatsApp pesanan"), fider.AMBANG_MIRIP)
+        self.assertLess(fider.kemiripan("Tambah pembayaran GoPay", "Tambah pembayaran QRIS"), fider.AMBANG_MIRIP)
+        self.assertLess(fider.kemiripan("Tambah pembayaran ShopeePay", "Tambah pembayaran QRIS"), fider.AMBANG_MIRIP)
+        self.assertLess(fider.kemiripan("Notifikasi email", "Notifikasi WA"), fider.AMBANG_MIRIP)
+
+    def test_samarkan_telepon_rumah(self):
+        for t in ("telp 021-5551234", "kantor (0274) 555123 ya", "+62 21 5551234", "021 555 1234", "0274-512345", "+62-21-5551234"):
+            h, n = fider.samarkan_pribadi(t)
+            self.assertEqual(n, 1, t)
+            self.assertNotRegex(h, r"\d{5}", t)
+        for aman in ("harga Rp15.000 dan 3 pcs", "tanggal 2026-09-29", "Rp 1.021.555.000", "pesanan 12 buah 2 warna"):
+            self.assertEqual(fider.samarkan_pribadi(aman)[1], 0, aman)
 
     def test_samarkan_kunci(self):
         self.assertEqual(fider.samarkan("galat abc123 xyz", "abc123"), "galat *** xyz")

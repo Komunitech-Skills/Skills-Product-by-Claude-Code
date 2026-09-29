@@ -115,7 +115,10 @@ class H(BaseHTTPRequestHandler):
 def jalankan(*argv):
     out, err = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-        kode = lm.main(list(argv))
+        try:
+            kode = lm.main(list(argv))
+        except SystemExit as e:  # argparse: pemakaian salah -> kode 2
+            kode = e.code
     return kode, out.getvalue(), err.getvalue()
 
 
@@ -395,8 +398,10 @@ class Uji(unittest.TestCase):
     def test_uji_di_kampanye_lain_tidak_berlaku(self):
         jalankan("uji-kirim", "7", "--ke", "s@example.test")
         d = lm.muat_uji()
-        d[list(d)[0].replace("#7", "#8")] = d.pop(list(d)[0])
-        json.dump(d, open(lm.F_UJI, "w"))
+        kunci = list(d)[0]
+        d[kunci.replace("#7", "#8")] = d.pop(kunci)
+        with open(lm.F_UJI, "w") as f:
+            json.dump(d, f)
         self.assertEqual(jalankan("kirim", "7", "--ya", "--konfirmasi-penerima", "2")[0], 6)
 
     # -- P1.2 penerima uji-kirim

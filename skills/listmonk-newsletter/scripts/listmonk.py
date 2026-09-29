@@ -50,7 +50,7 @@ _TERLARANG = [
     r"databas", r"data ?base", r"bocor", r"leak", r"curi", r"stolen", r"bekas", r"hack",
     r"\b(grup|group|grub|gc|wag)\b", r"\bwa ?(grup|group|gc)\b", r"grup ?(wa|whatsapp|telegram|tele|fb|facebook)",
     r"teman", r"kenalan", r"kawan", r"sahabat", r"saudara", r"tetangga", r"rekan", r"kolega", r"friend",
-    r"dapat dari", r"dapet dari", r"dari orang", r"dikasih", r"dikirimi?n?", r"dititip", r"titip", r"tukar", r"barter",
+    r"dapat dari", r"dapet dari", r"dari orang", r"dikasih", r"dikirimin\b", r"dititip", r"titip", r"tukar", r"barter",
     r"marketplace", r"tokopedia", r"shopee", r"lazada", r"bukalapak", r"tiktok ?shop",
     r"instagram", r"\big\b", r"facebook", r"linkedin", r"medsos", r"media sosial", r"followers?", r"pengikut",
     r"google maps", r"direktori", r"directory", r"yellow ?pages", r"website orang", r"cari di", r"ambil dari",
