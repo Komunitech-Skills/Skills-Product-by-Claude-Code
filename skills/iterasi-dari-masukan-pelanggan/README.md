@@ -5,7 +5,8 @@
 ## Manfaat
 - ✅ Masukan dari WhatsApp, Shopee/Tokopedia/Google Maps, Instagram/TikTok, dan survei dibaca sekaligus, bukan satu-satu
 - ✅ Nama, nomor HP, email, alamat, dan nomor pesanan pelanggan disamarkan otomatis sebelum dianalisis
-- ✅ Angka dihitung script: isu teratas (rasa, kemasan, harga, pengiriman, layanan), sentimen, dan tren naik/turun tiap bulan
+- ✅ Angka dihitung script: isu teratas (rasa, kemasan, harga, pengiriman, layanan, tempat, antrean), sentimen, NPS survei 0-10, dan tren naik/turun tiap bulan
+- ✅ Langsung membaca ekspor Shopee/Tokopedia/TikTok Shop, Google Form, dan chat WA - kolom yang dipakai selalu disebut, file rusak diberi pesan jelas
 - ✅ Rencana perbaikan berurutan: bukti, tindakan, siapa, tenggat, dan ukuran berhasil
 - ✅ Draf balasan ke pelanggan dan "Kabar Perbaikan" siap dikirim, supaya pelanggan tahu masukannya didengar
 
@@ -33,7 +34,7 @@ Salin folder `iterasi-dari-masukan-pelanggan` ke lokasi skill platform Anda: Ope
 Lokasi terverifikasi ada di `docs/instalasi.md` dalam paket. Setelah itu mulai sesi baru.
 
 ## Isi paket
-`SKILL.md` (alur kerja), `scripts/olah_masukan.py` (+ `uji_olah_masukan.py`), `templates/` (tema, backlog, balasan, kabar perbaikan, cara ekspor WA),
+`SKILL.md` (alur kerja), `scripts/olah_masukan.py` (+ `uji_olah_masukan.py`), `templates/` (tema untuk katering, fashion, kafe, laundry/jasa; backlog, balasan, kabar perbaikan, cara ekspor WA),
 `references/` (prioritas, privasi, siklus bulanan), `examples/` (data fiktif katering harian), `ATTRIBUTION.md`.
 
 ## FAQ

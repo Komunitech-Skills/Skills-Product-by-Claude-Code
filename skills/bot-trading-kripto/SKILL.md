@@ -113,8 +113,13 @@ Indodax (demo-indodax.com). Ubah `"mode": "testnet"` + `"kunci"`; panduan membua
    `scripts/siapkan_live.py ... --frasa "<frasa member>" --saya-sudah-cek-tanpa-withdraw`.
    Agent **tidak boleh** mengetikkan frasa, mencentang daftar periksa atas nama member, atau
    menyingkat langkah ini.
-6. Perintah/jadwal live wajib memuat `--izinkan-live`. Setiap perubahan konfigurasi membatalkan
-   konfirmasi (kode berubah) → ulangi dari E.1.
+6. Perintah/jadwal live wajib memuat `--izinkan-live`. Konfirmasi **sekali pakai**: terikat ke hash
+   konfigurasi persis + waktu pembuatan, wajib mulai dipakai dalam 24 jam, dan **batal** setiap kali
+   konfigurasi berubah atau mode berganti (live → paper → live wajib konfirmasi baru) → ulangi dari E.1.
+   Buku live (posisi, modal terpakai, patokan rugi) disimpan terpisah dan **tidak pernah di-reset** oleh
+   ganti mode; sebelum setiap order beli live, modal terpakai dicocokkan juga dengan **saldo koin di
+   bursa** (saldo sekarang − saldo saat live pertama) dan yang terbesar dipakai untuk `modal_maks_total`.
+   Saldo tidak bisa dicek → tidak ada order beli putaran itu.
 7. Sarankan mulai dengan modal kecil. Binance global bukan PAKD berizin OJK → live di sana butuh
    pernyataan tambahan di konfigurasi; utamakan PAKD berizin (Indodax). Lihat `references/regulasi-pajak.md`.
 
@@ -144,7 +149,10 @@ atau perintah ditolak → berhenti dan beri langkah persiapan; jangan menyelidik
   aset yang diserahkan (Pasal 11 ayat (2) huruf b, Pasal 12 ayat (5) huruf b) → sisi **beli** (menyerahkan
   USDT) juga dipotong PPh; bot menyisihkannya sehingga total bayar tetap ≤ nominal order. Pasangan
   rupiah: beli tanpa PPh.
-- Rekap per bulan: `scripts/hitung_pajak_biaya.py --transaksi bot/transaksi.csv [--kurs-idr 16500]`.
+- Rekap per bulan: `scripts/hitung_pajak_biaya.py --transaksi bot/transaksi.csv [--kurs USDT=16500]`.
+  Rekap dipisah **per mata uang kutipan** (IDR, USDT, USDC, BTC, ...); mata uang berbeda tidak pernah
+  dijumlahkan. Angka rupiah untuk kutipan non-IDR hanya muncul bila member mengisi kurs sendiri
+  (`--kurs KUTIPAN=angka`, boleh berulang) dan ditandai **PERKIRAAN**.
   Satu transaksi: `--nilai-jual 15000000 --pajak domestik --fee-persen 0.2`.
 - Penyerahan aset kripto tidak dikenai PPN (Pasal 2 ayat (1)); jasa platform (fee) dikenai PPN
   (Pasal 2 ayat (2) huruf a) yang dipungut bursa dan sudah termasuk angka fee. Kepastian kewajiban
@@ -172,9 +180,11 @@ Contoh keluaran nyata: `examples/`.
 - **Data/bursa gagal:** tidak ada order; dilaporkan sekali, lalu saat pulih. Status order tidak
   pasti (koneksi putus saat order) → bot berhenti, minta member cek aplikasi bursa. Harga 0/rusak
   dari API → tidak ada order.
-- **Jam komputer mundur** (baterai RTC, koreksi NTP, VPS salah jam): batas rugi harian **tidak**
+- **Jam komputer mundur/lompat** (baterai RTC, koreksi NTP, VPS salah jam): batas rugi harian **tidak**
   di-reset; bot memakai waktu terbaru yang pernah dilihat, tetap menegakkan batas, dan memberi
-  peringatan sekali. Sarankan member memperbaiki jam/NTP.
+  peringatan sekali. Batas rugi juga dihitung sebagai **24 jam bergulir** (lebih ketat dari per
+  tanggal), dan selama jam tidak monoton patokan tertinggi yang dipakai, sehingga lompat maju lalu
+  kembali tidak memberi jatah rugi tambahan. Sarankan member memperbaiki jam/NTP.
 - **Pengalihan (redirect) dari bursa:** permintaan bertanda tangan tidak pernah diikuti ke alamat
   lain (kunci tidak ikut terkirim); bot melaporkan dan tidak berorder.
 - **Angka konfigurasi** ditulis tanpa pemisah ribuan ("500000", bukan "500.000"); script menolak

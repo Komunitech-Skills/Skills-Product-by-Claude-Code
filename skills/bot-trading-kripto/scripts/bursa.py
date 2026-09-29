@@ -163,7 +163,7 @@ def _http(metode, url, header=None, body=None, order=False):
     header = header or {}
     bertanda = any(k.lower() in HEADER_RAHASIA for k in header)
     req = urllib.request.Request(url, data=data, method=metode, headers=header)
-    req.add_header("User-Agent", "komunitech-bot-trading-kripto/1.0.2")
+    req.add_header("User-Agent", "komunitech-bot-trading-kripto/1.0.3")
     pembuka = urllib.request.build_opener(_PenjagaRedirect(bertanda))
     try:
         with pembuka.open(req, timeout=BATAS_WAKTU) as r:

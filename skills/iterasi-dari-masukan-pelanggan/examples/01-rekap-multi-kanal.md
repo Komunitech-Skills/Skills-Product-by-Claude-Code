@@ -99,8 +99,8 @@ Catatan: hasil ini SARINGAN PERTAMA dari kata kunci. Baca kutipan tiap tema & ko
 ## Verifikasi agent (contoh catatan metode) - SEMUA tema dibaca, bukan hanya angka
 - Baris "Sumber" dicek dulu: kolom teks Shopee = "Ulasan", survei = 2 kolom pertanyaan, tidak ada PERINGATAN. Aman dilanjutkan.
 - "Pengiriman" 9 keluhan: semua kutipan memang soal telat/kurir. "Pesanan salah kirim" kini masuk Ketepatan pesanan saja (tidak dobel).
-- "Rasa" 4 keluhan: 3 di antaranya "nasi dingin" karena datang telat -> akar masalahnya pengiriman; di laporan ditulis sebagai satu isu
-  "telat -> nasi dingin" (angka script tidak diubah, penjelasan ditulis di Catatan metode). Keluhan rasa murni = 1 ("hambar").
+- "Rasa" 4 keluhan: 2 di antaranya "nasi dingin" karena datang telat -> akar masalahnya pengiriman; di laporan ditulis sebagai satu isu
+  "telat -> nasi dingin" (angka script tidak diubah, penjelasan ditulis di Catatan metode). Keluhan rasa murni = 2 ("hambar").
 - "Kebersihan" 1 dan "Keamanan produk" 3 berasal dari laporan rambut/ulat yang sama -> dilaporkan sekali sebagai isu keamanan (Segera).
 - "Porsi" 3 keluhan sesuai kutipan (sambal kurang, nasi sedikit, porsi kurang banyak).
 - 2 masukan tanpa tema ("Mantap, terima kasih", "Sambal mantap") = pujian umum; tema "sambal" dibuat lewat `tambah_kata` bila bertambah.

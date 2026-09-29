@@ -27,6 +27,6 @@ sehari-hari (slang, negasi), penggabungan multi-kanal, tren bulanan, skor jumlah
 & kabar perbaikan, siklus bulanan, aturan privasi & etika Indonesia, contoh katering harian, dan uji otomatis.
 
 ## Ketentuan
-Ketiga lisensi di atas (MIT dan Apache-2.0) mengizinkan modifikasi dan penjualan dengan atribusi. Bagian orisinal Komunitech
+Kedua lisensi di atas (MIT dan Apache-2.0) mengizinkan modifikasi dan penjualan dengan atribusi. Bagian orisinal Komunitech
 tunduk pada `LISENSI.txt` dalam paket pembelian. Nama "pm-skills" dan pembuatnya tidak berafiliasi dengan Komunitech dan tidak
 mendukung produk ini.

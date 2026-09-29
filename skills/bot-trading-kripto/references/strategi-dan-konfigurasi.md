@@ -32,9 +32,9 @@ Opsional: `langkah_jumlah` & `min_nilai_order` (untuk paper; testnet/live diambi
 | Batas | Rumus | Akibat |
 |---|---|---|
 | Stop-loss global | harga ≤ rata-rata × (1 − SL%) | jual semua posisi bot → **berhenti** |
-| Rugi harian | nilai pada putaran terakhir sebelum 00.00 WIB − nilai sekarang > `rugi_harian_maks`. Patokan per tanggal disimpan di `state.json` (`buku_rugi_harian`) dan tidak pernah ditimpa; tanggal diambil dari waktu putaran **terbaru yang pernah dilihat** (`waktu_terakhir`), jadi jam komputer mundur tidak me-reset batas | **berhenti** |
+| Rugi harian | nilai pada putaran terakhir sebelum 00.00 WIB − nilai sekarang > `rugi_harian_maks`. Patokan per tanggal disimpan di `state.json` (`buku_rugi_harian`) dan tidak pernah ditimpa; tanggal diambil dari waktu putaran **terbaru yang pernah dilihat** (`waktu_terakhir`), jadi jam komputer mundur tidak me-reset batas. **Juga 24 jam bergulir:** nilai pada sampel tertua dalam 24 jam terakhir (jam komputer, sampel tiap 15 menit di `jejak_ekuitas`) − nilai sekarang > `rugi_harian_maks` → berhenti (lebih ketat dari per tanggal). Selama jam tidak monoton (jam < putaran terbaru), patokan = yang tertinggi dari tanggal jam komputer s.d. tanggal efektif | **berhenti** |
 | Modal per order | nilai beli > `modal_maks_per_order` | **berhenti** |
-| Modal total | modal terpakai (biaya perolehan posisi) + order > `modal_maks_total` | **berhenti** |
+| Modal total | modal terpakai (biaya perolehan posisi) + order > `modal_maks_total`. **Live:** modal terpakai = max(buku live, (saldo koin bursa − saldo awal live) × harga); buku live tidak di-reset oleh ganti mode | **berhenti** |
 | Order terbuka | jumlah order terbuka di bursa ≥ `order_terbuka_maks` | **berhenti** |
 | Tombol berhenti | salah satu ada: `<folder bot>/STOP`, `<folder konfigurasi>/STOP`, `~/.komunitech/bot-trading-kripto/STOP-<id konfigurasi>`, `~/.komunitech/bot-trading-kripto/STOP-SEMUA` | **berhenti** |
 Lain-lain yang menghentikan bot: status order tidak pasti, order ditolak bursa, kunci
@@ -59,4 +59,7 @@ Berhenti = tidak ada order baru; posisi tidak dijual (kecuali stop-loss).
 `konfigurasi.json` (member) · `state.json` (status bot) · `audit.jsonl` (log semua kejadian,
 append-only, kunci disamarkan) · `transaksi.csv` · `STOP` (tombol berhenti; juga ada salinan global di
 `~/.komunitech/bot-trading-kripto/`) ·
-`KONFIRMASI-LIVE.json` (bukti konfirmasi live).
+`KONFIRMASI-LIVE.json` (bukti konfirmasi live; **sekali pakai**, berisi `id`, `hash_konfigurasi`, `waktu`,
+`segel`, dan `dipakai` setelah dipakai). Di `state.json`, buku tiap mode yang sedang tidak aktif disimpan
+di `buku_per_mode` (buku live tidak pernah dibuang), konfirmasi yang sudah dipakai di
+`konfirmasi_live_dipakai`, dan sesi live aktif di `sesi_live`.

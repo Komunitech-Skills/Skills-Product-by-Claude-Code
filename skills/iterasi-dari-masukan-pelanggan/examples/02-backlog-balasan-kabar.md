@@ -4,7 +4,7 @@
 | Prioritas | Perbaikan | Bukti | Tindakan | Siapa | Tenggat | Ukuran keberhasilan |
 |---|---|---|---|---|---|---|
 | Segera | Rambut/ulat di makanan | 3 laporan (Shopee 2, WA 1), dampak 5 | Wajib hairnet & sarung tangan, periksa sayur 2 kali sebelum masak; catat di daftar periksa dapur | Ibu Rini | 3 Okt | 0 laporan benda asing bulan depan |
-| Segera | Pengiriman telat (+ nasi dingin akibat telat) | 9 dari 51 masukan (17,6%), 4 kanal; 3 keluhan "nasi dingin" ikut akar masalah ini | Kurir kedua untuk area kantor; jadwal berangkat 30 menit lebih awal | Pak Andi (staf) | 7 Okt | Keluhan telat < 10% masukan |
+| Segera | Pengiriman telat (+ nasi dingin akibat telat) | 9 dari 51 masukan (17,6%), 4 kanal; 2 keluhan "nasi dingin" ikut akar masalah ini | Kurir kedua untuk area kantor; jadwal berangkat 30 menit lebih awal | Pak Andi (staf) | 7 Okt | Keluhan telat < 10% masukan |
 | Bulan ini | Kemasan bocor | 6 (11,8%), naik 6,4 poin | Ganti wadah berpenutup kuah terpisah; uji goyang 30 detik | Pak Andi | 20 Okt | Keluhan bocor < 3% |
 | Bulan ini | Porsi nasi & sambal | 3 + 1 saran paket hemat | Timbang porsi standar; tawarkan "tambah nasi" Rp 3.000 | Ibu Rini | 20 Okt | Keluhan porsi = 0 |
 | Pantau | Harga naik | 3 | Jelaskan kenaikan di status; paket hemat kantor | Ibu Rini | 30 Okt | Keluhan harga tidak naik |

@@ -1,6 +1,8 @@
 # Privasi & etika data masukan
-- Yang disamarkan otomatis oleh script: nama pengirim chat, nomor HP, email, tautan, @akun, nomor pesanan/resi/kode panjang, alamat jalan,
-  sapaan+nama ("kak Budi"). Kolom nama/username/email di CSV tidak pernah dibaca.
+- Yang disamarkan otomatis oleh script: nama pengirim chat (tanpa ikut menyamarkan sapaan "kak"), nomor HP & telepon rumah, email, tautan,
+  @akun, nomor pesanan/resi/kode panjang, alamat jalan/gang/perumahan/blok/RT-RW, plat nomor, "a.n. Nama", "Saya/nama saya Nama",
+  sapaan+nama ("kak Budi", "mba Sari Lestari", "makasih kak rina"). Kolom nama/username/email/no. pesanan di CSV tidak pernah dicetak
+  atau disimpan; isinya hanya dipakai di memori untuk mengenali baris ganda.
 - Tidak sempurna: nama tanpa sapaan di tengah kalimat, nama tempat kerja, foto/gambar, tanda tangan bisa lolos. Agent WAJIB membaca
   ulang kutipan sebelum masuk laporan dan menyamarkan sisa yang ketemu.
 - Ekspor chat WhatsApp: minta izin bila chat grup berisi pelanggan lain; pakai hanya chat usaha (bukan chat pribadi).

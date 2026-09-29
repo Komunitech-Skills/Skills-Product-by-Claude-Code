@@ -27,14 +27,14 @@ https://www.pajak.go.id/index.php/en/node/118105 · https://www.pajak.go.id/en/n
 | PPh 22 final, jual lewat PPMSE/PAKD dalam negeri | 0,21% dari nilai transaksi (Pasal 12 ayat (1)–(4)), dipungut oleh bursa | `"pajak": "domestik"` (bawaan Indodax) |
 | PPh 22 final, platform luar negeri | 1% dari nilai transaksi (Pasal 20 ayat (1)); bila platform belum ditunjuk, penjual menyetor sendiri (Pasal 22) | `"pajak": "luar_negeri"` (bawaan Binance) |
 | Nilai transaksi, pasangan **rupiah** | nilai uang yang dibayar pembeli (Pasal 12 ayat (5) huruf a) | PPh hanya di sisi **jual**; beli tanpa PPh |
-| Nilai transaksi, **tukar-menukar kripto (swap)**, mis. BTC/USDT | nilai **masing-masing** aset kripto yang diserahkan para pihak (Pasal 11 ayat (2) huruf b, Pasal 12 ayat (5) huruf b & ayat (7)); contoh resmi Lampiran huruf B: kedua pihak masing-masing dipungut 0,21% | PPh di **kedua sisi**: beli (menyerahkan USDT) dan jual (menyerahkan BTC); dihitung dalam USDT, direkap ke rupiah dengan `--kurs-idr` |
+| Nilai transaksi, **tukar-menukar kripto (swap)**, mis. BTC/USDT | nilai **masing-masing** aset kripto yang diserahkan para pihak (Pasal 11 ayat (2) huruf b, Pasal 12 ayat (5) huruf b & ayat (7)); contoh resmi Lampiran huruf B: kedua pihak masing-masing dipungut 0,21% | PPh di **kedua sisi**: beli (menyerahkan USDT) dan jual (menyerahkan BTC); dihitung dalam USDT; rekap dipisah per mata uang kutipan, rupiah hanya perkiraan dengan `--kurs USDT=<angka>` dari member |
 | PPN atas penyerahan aset kripto | Tidak dikenai (Pasal 2 ayat (1): dipersamakan dengan surat berharga) | tidak dihitung |
 | PPN atas jasa platform (fee) | **Dikenai PPN** (Pasal 2 ayat (2) huruf a, Pasal 3): 12% × 11/12 × komisi (Pasal 5), dipungut oleh platform | fee diperlakukan sebagai angka total dari bursa (termasuk PPN bila bursa membebankannya) |
 
 **Pembulatan:** PPh = nilai jual × tarif, dibulatkan **ke bawah** ke rupiah (tidak pernah
 melebihi tarif). Fee dibulatkan ke rupiah terdekat. **Belum dicocokkan dengan Coretax** —
 bukti potong dari bursa yang berlaku. Untuk pasangan USDT, PPh dihitung dalam USDT (8 desimal);
-rekap Rupiah memakai `--kurs-idr` yang member isi sendiri. PMK meminta konversi kripto memakai nilai
+rekap dipisah per mata uang kutipan (IDR/USDT/USDC/BTC tidak pernah dijumlahkan); angka rupiah untuk kutipan non-IDR hanya perkiraan dengan `--kurs KUTIPAN=<angka>` yang member isi sendiri (`--kurs-idr` lama = kurs USDT). PMK meminta konversi kripto memakai nilai
 bursa/sistem platform (Pasal 12 ayat (7)); kurs dari member hanyalah perkiraan rekap — bukti potong
 dari bursa yang berlaku. Kutipan yang dianggap fiat (tanpa PPh sisi beli): IDR, USD, EUR, dan mata
 uang fiat lain di `KUTIPAN_FIAT` (`scripts/inti.py`); kutipan lain dianggap aset kripto.

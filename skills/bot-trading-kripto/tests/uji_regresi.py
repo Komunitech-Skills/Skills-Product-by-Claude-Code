@@ -427,6 +427,7 @@ class AlurMock(Folder):
         k = self.k
         k.withdraw_aktif, k.order_terbuka, k.putus_saat_order, k.tolak_order = False, 0, False, None
         k.alihkan_ke, k.harga_btcusdt = None, D("60000")
+        k.saldo_btc, k.gagal_saldo = D("0"), False
         k.permintaan.clear(); k.order.clear()
 
     def cfg_binance(self, mode, **ubah):
@@ -947,6 +948,275 @@ class LowRevisi(AlurMock):
         self.tick("--harga", "130", "--sekarang", T0.isoformat())
         kode, out = self.tick("--harga", "150", "--sekarang", (T0 + timedelta(hours=1)).isoformat())
         self.assertIn("harga rata-rata SEMUA koin", out)
+
+
+# =============================================================================== revisi 1.0.2
+class N1BukuLiveDanKonfirmasi(AlurMock):
+    """N1: ganti mode live -> paper -> live tidak boleh mengosongkan buku live atau memakai ulang konfirmasi.
+    Reproduksi penguji: DCA 100 USDT, modal_maks_total 200 -> dulu 3 order BELI = 297 USDT."""
+
+    BATAS = {"modal_maks_per_order": "100", "modal_maks_total": "200", "stop_loss_persen": "20",
+             "rugi_harian_maks": "100", "order_terbuka_maks": 2}
+
+    def cfg_n1(self, mode, **ubah):
+        c = self.cfg_binance(mode, batas_risiko=dict(self.BATAS))
+        if mode == "live":
+            c["saya_paham_binance_bukan_pakd_ojk"] = True
+        c.update(ubah)
+        return c
+
+    def konfirmasi(self):
+        kode = inti.sidik_jari_penuh(inti.muat_konfigurasi(self.cfgp))
+        k, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp, "--frasa",
+                                              f"LIVE {kode} SAYA TANGGUNG RISIKONYA", "--saya-sudah-cek-tanpa-withdraw"])
+        self.assertEqual(k, 0, out)
+
+    def tulis_state(self, st):
+        with open(os.path.join(self.bot, "state.json"), "w") as f:
+            json.dump(st, f)
+
+    def majukan_dca(self):
+        """Tiru 25 jam berlalu pada buku LIVE (mode live tidak menerima --sekarang)."""
+        st = self.state()
+        lalu = (datetime.now(WIB) - timedelta(hours=25)).isoformat()
+        buku = st if st.get("mode") == "live" else st["buku_per_mode"]["live"]
+        buku["terakhir_beli_dca"] = lalu
+        self.tulis_state(st)
+
+    def mulai_live(self):
+        self.tulis_cfg(self.cfg_n1("paper"))
+        self.tick("--url-uji", self.url)
+        self.suntik_bukti_paper()
+        self.tulis_cfg(self.cfg_n1("live"))
+        self.konfirmasi()
+
+    def beli(self):
+        return [o for o in self.k.order if o["side"] == "BUY"]
+
+    def live(self):
+        return self.tick("--url-uji", self.url, "--izinkan-live")
+
+    def lanjutkan(self):
+        jalankan(berhenti.main, ["--konfigurasi", self.cfgp, "--lanjutkan", "--saya-sudah-cek"])
+
+    def test_reproduksi_297_vs_200_ditolak(self):
+        self.mulai_live()
+        kode, out = self.live()
+        self.assertEqual(kode, 2, out); self.assertIn("BELI", out)
+        for putaran in range(2):
+            self.majukan_dca()
+            # live -> paper: buku live disimpan, bukan dibuang
+            self.tulis_cfg(self.cfg_n1("paper"))
+            kode, out = self.tick("--url-uji", self.url)
+            self.assertIn("TETAP", out)
+            st = self.state()
+            self.assertGreater(D(st["buku_per_mode"]["live"]["posisi_koin"]), 0)
+            self.assertIsNone(st["sesi_live"])
+            # paper -> live dengan KONFIRMASI LAMA -> ditolak (sekali pakai), tanpa order
+            self.tulis_cfg(self.cfg_n1("live"))
+            n = len(self.k.order)
+            kode, out = self.live()
+            self.assertEqual(kode, 3, out); self.assertIn("SUDAH DIPAKAI", out)
+            self.assertEqual(len(self.k.order), n)
+            # konfirmasi baru: buku live lama dipulihkan -> batas modal total tetap menghitung posisi lama
+            self.lanjutkan()
+            self.konfirmasi()
+            kode, out = self.live()
+            if putaran == 0:
+                self.assertEqual(kode, 2, out); self.assertIn("BELI", out)
+            else:
+                self.assertEqual(kode, 3, out); self.assertIn("BATAS MODAL TOTAL", out)
+        beli = self.beli()
+        self.assertEqual(len(beli), 2)                       # bukan 3 (297 USDT)
+        dibayar = sum(D(o["cummulativeQuoteQty"]) * D("1.01") for o in beli)   # + PPh 1% sisi beli
+        self.assertLessEqual(dibayar, D("200"))
+        st = self.state()
+        self.assertLessEqual(D(st["biaya_perolehan"]), D("200"))
+        self.assertEqual(D(st["posisi_koin"]), sum(D(o["executedQty"]) * D("0.999") for o in beli))
+
+    def test_konfirmasi_terikat_hash_dan_waktu(self):
+        self.mulai_live()
+        p = os.path.join(self.bot, "KONFIRMASI-LIVE.json")
+        with open(p) as f:
+            asli = json.load(f)
+        self.assertEqual(asli["hash_konfigurasi"], inti.hash_konfigurasi(inti.muat_konfigurasi(self.cfgp)))
+        # waktu disunting tanpa segel yang benar -> ditolak
+        with open(p, "w") as f:
+            json.dump(dict(asli, waktu=datetime.now(WIB).isoformat(timespec="seconds") + "x"), f)
+        kode, out = self.live()
+        self.assertEqual(kode, 3); self.assertIn("tidak terikat", out)
+        # konfirmasi lama (segel benar, tapi dibuat 25 jam lalu) -> kedaluwarsa
+        lalu = (datetime.now(WIB) - timedelta(hours=25)).isoformat(timespec="seconds")
+        with open(p, "w") as f:
+            json.dump(dict(asli, waktu=lalu, segel=inti.segel_konfirmasi(asli["id"], asli["hash_konfigurasi"], lalu)), f)
+        self.lanjutkan()
+        kode, out = self.live()
+        self.assertEqual(kode, 3); self.assertIn("kedaluwarsa", out)
+        self.assertEqual(self.k.order, [])
+        # konfirmasi asli -> dipakai (sesi live), putaran berikut tetap jalan dengan sesi yang sama
+        with open(p, "w") as f:
+            json.dump(asli, f)
+        self.lanjutkan()
+        kode, out = self.live()
+        self.assertEqual(kode, 2, out)
+        kode, out = self.live()
+        self.assertNotEqual(kode, 3, out)
+        with open(p) as f:
+            self.assertTrue(json.load(f)["dipakai"])
+        # konfigurasi diubah lalu DIKEMBALIKAN -> sesi batal, konfirmasi yang sama tidak berlaku lagi
+        self.tulis_cfg(self.cfg_n1("live", catatan_member="uji"))
+        kode, out = self.live()
+        self.assertEqual(kode, 3); self.assertIn("kode tidak cocok", out)
+        self.tulis_cfg(self.cfg_n1("live"))
+        self.lanjutkan()
+        kode, out = self.live()
+        self.assertEqual(kode, 3); self.assertIn("SUDAH DIPAKAI", out)
+        self.assertEqual(len(self.beli()), 1)
+
+    def test_rekonsiliasi_saldo_bursa(self):
+        self.k.saldo_btc = D("0.5")                  # koin milik member sebelum bot -> tidak dihitung
+        self.mulai_live()
+        kode, out = self.live()
+        self.assertEqual(kode, 2, out)
+        self.assertEqual(self.state()["saldo_koin_awal_bursa"], "0.5")
+        for _ in range(2):
+            # tiru buku live hilang/terhapus (akar N1): posisi & modal terpakai nol, jadwal DCA jatuh tempo
+            st = self.state()
+            st.update(posisi_koin="0", biaya_perolehan="0", kas="200", terakhir_beli_dca=None)
+            self.tulis_state(st)
+            kode, out = self.live()
+        self.assertEqual(kode, 3, out)
+        self.assertIn("saldo bursa", out); self.assertIn("BATAS MODAL TOTAL", out)
+        self.assertEqual(len(self.beli()), 2)       # saldo bursa 197,8 USDT + 100 > 200 -> ditolak
+
+    def test_saldo_bursa_gagal_tanpa_beli(self):
+        self.mulai_live()
+        self.k.gagal_saldo = True
+        kode, out = self.live()
+        self.assertIn("Saldo bursa tidak bisa dicek", out)
+        self.assertEqual(self.k.order, [])
+
+    def test_status_menampilkan_buku_live(self):
+        self.mulai_live()
+        self.assertEqual(self.live()[0], 2)
+        self.tulis_cfg(self.cfg_n1("paper"))
+        self.tick("--url-uji", self.url)
+        kode, out = jalankan(berhenti.main, ["--konfigurasi", self.cfgp, "--status"])
+        self.assertIn("Buku LIVE tersimpan", out)
+        self.tulis_cfg(self.cfg_n1("live"))
+        kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp])
+        self.assertIn("Posisi LIVE yang sudah tercatat", out)
+
+
+class LB1JamMaju(Folder):
+    """L-B1: jam lompat MAJU melewati tengah malam lalu kembali tidak boleh memberi jatah rugi tambahan."""
+
+    def cfg(self):
+        c = copy.deepcopy(CFG_H1)
+        c["strategi"]["interval_jam"] = "8784"      # satu beli saja, supaya angka jelas
+        return c
+
+    def t(self, harga, waktu):
+        return self.tick("--harga", harga, "--sekarang", waktu)
+
+    def test_lompat_maju_lalu_kembali_berhenti(self):
+        self.tulis_cfg(self.cfg())
+        self.assertIn("BELI", self.t("1000000000", "2026-10-01T08:00:00+07:00")[1])
+        self.assertNotEqual(self.t("920000000", "2026-10-01T10:00:00+07:00")[0], 3)
+        self.assertNotEqual(self.t("920000000", "2026-10-02T10:05:00+07:00")[0], 3)   # jam lompat maju
+        kode, out = self.t("846667335", "2026-10-01T10:10:00+07:00")                  # jam kembali
+        self.assertEqual(kode, 3, out)
+        self.assertIn("BATAS RUGI HARIAN: turun Rp155.022", out)
+
+    def test_patokan_tertinggi_saat_jam_tidak_monoton(self):
+        # tanpa jejak 24 jam pun (mis. state lama), patokan hari 'masa depan' digabung dengan hari asli
+        c = cfg_dari(batas_risiko=dict(DASAR["batas_risiko"], stop_loss_persen="90", rugi_harian_maks="100000"))
+        st = inti.state_awal(c)
+        st.update(posisi_koin="10", biaya_perolehan="1000000", kas="0", hari="2026-10-02",
+                  waktu_terakhir="2026-10-02T10:05:00+07:00", ekuitas_terakhir="900000",
+                  buku_rugi_harian={"2026-10-01": "1000000", "2026-10-02": "900000"}, jejak_ekuitas=[])
+        alasan, _ = inti.cek_risiko_awal(c, st, D("88000"), datetime(2026, 10, 1, 10, 10, tzinfo=WIB))
+        self.assertIn("RUGI HARIAN", alasan)                   # 1.000.000 - 880.000 = 120.000 > 100.000
+
+    def test_rugi_24_jam_bergulir_melewati_tengah_malam(self):
+        self.tulis_cfg(self.cfg())
+        self.t("1000000000", "2026-10-01T20:00:00+07:00")
+        self.assertNotEqual(self.t("940000000", "2026-10-01T23:50:00+07:00")[0], 3)   # rugi +-62 rb
+        kode, out = self.t("880000000", "2026-10-02T00:10:00+07:00")   # hari baru: +-60 rb; 24 jam: +-122 rb
+        self.assertEqual(kode, 3, out)
+        self.assertIn("24 jam terakhir", out)
+
+    def test_kontrol_jam_normal_tidak_berhenti(self):
+        self.tulis_cfg(self.cfg())
+        self.t("1000000000", "2026-10-01T08:00:00+07:00")
+        kode, out = self.t("920000000", "2026-10-01T10:00:00+07:00")
+        self.assertNotEqual(kode, 3, out)
+        kode, out = self.t("920000000", "2026-10-02T10:05:00+07:00")
+        self.assertNotEqual(kode, 3, out)
+
+
+class LB2RekapPajakPerMataUang(unittest.TestCase):
+    """L-B2: kutipan non-rupiah (USDC, BTC, USDT) tidak pernah dijumlahkan sebagai rupiah."""
+
+    def rekap(self, baris, *arg):
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=jalankan_bot.KOLOM_TRANSAKSI)
+            w.writeheader()
+            for b in baris:
+                w.writerow(b)
+        try:
+            return jalankan(hitung_pajak_biaya.main, ["--transaksi", f.name, *arg])
+        finally:
+            os.remove(f.name)
+
+    BARIS = [
+        {"waktu": "2026-09-01T08:00:00+07:00", "pasangan": "BTCUSDC", "sisi": "beli", "bruto": "99", "fee": "0",
+         "pajak_pph": "0.99"},
+        {"waktu": "2026-09-01T09:00:00+07:00", "pasangan": "ETHBTC", "sisi": "jual", "bruto": "0.05",
+         "fee": "0.00005", "pajak_pph": "0.0005"},
+        {"waktu": "2026-09-02T08:00:00+07:00", "pasangan": "BTCUSDT", "sisi": "jual", "bruto": "110", "fee": "0.11",
+         "pajak_pph": "1.1"},
+        {"waktu": "2026-09-03T08:00:00+07:00", "pasangan": "btc_idr", "sisi": "jual", "bruto": "15000000",
+         "fee": "30000", "pajak_pph": "31500"},
+    ]
+
+    def test_per_mata_uang_tanpa_kurs(self):
+        kode, out = self.rekap(self.BARIS)
+        j = json.loads(out)
+        b = j["per_bulan"]["2026-09"]
+        self.assertEqual(set(b), {"USDC", "BTC", "USDT", "IDR"})
+        self.assertEqual((b["USDC"]["pph"], b["BTC"]["pph"], b["USDT"]["pph"], b["IDR"]["pph"]),
+                         ("0.99", "0.0005", "1.1", 31500))
+        self.assertNotIn("perkiraan_rupiah", b["USDC"])       # dulu: 0,99 USDC -> "Rp1"
+        self.assertTrue(any("TIDAK dijumlahkan" in p for p in j["peringatan"]))
+
+    def test_konversi_hanya_dengan_kurs_pengguna(self):
+        kode, out = self.rekap(self.BARIS, "--kurs", "USDC=16000", "--kurs-idr", "16500")
+        b = json.loads(out)["per_bulan"]["2026-09"]
+        self.assertEqual(b["USDC"]["perkiraan_rupiah"]["pph_idr"], 15840)
+        self.assertEqual(b["USDT"]["perkiraan_rupiah"]["pph_idr"], 18150)   # --kurs-idr = kurs USDT
+        self.assertIn("PERKIRAAN", b["USDT"]["perkiraan_rupiah"]["label"])
+        self.assertNotIn("perkiraan_rupiah", b["BTC"])                        # BTC tanpa kurs
+
+    def test_kurs_rusak_ditolak(self):
+        kode, out = self.rekap(self.BARIS, "--kurs", "USDT16000")
+        self.assertEqual(kode, 1); self.assertIn("KUTIPAN=ANGKA", out)
+
+
+class LB4DisclaimerBacktest(unittest.TestCase):
+    def test_backtest_teks_dan_json_memuat_disclaimer(self):
+        d = tempfile.mkdtemp(prefix="uji-bt-")
+        try:
+            p = os.path.join(d, "k.json")
+            with open(p, "w") as f:
+                json.dump(DASAR, f)
+            csvp = os.path.join(SINI, "data", "btcidr-harian-2025-2026.csv")
+            kode, out = jalankan(backtest.main, ["--konfigurasi", p, "--csv", csvp, "--keluaran", "teks"])
+            self.assertEqual(kode, 0); self.assertIn(inti.DISCLAIMER, out)
+            kode, out = jalankan(backtest.main, ["--konfigurasi", p, "--csv", csvp])
+            self.assertEqual(json.loads(out)["disclaimer"], inti.DISCLAIMER)
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
 
 
 
