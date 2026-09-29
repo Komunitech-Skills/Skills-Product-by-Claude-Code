@@ -202,8 +202,12 @@ _SATUAN = {
     "pcs": ("pcs", 1), "pc": ("pcs", 1), "buah": ("pcs", 1), "bh": ("pcs", 1), "biji": ("pcs", 1),
     "lembar": ("pcs", 1), "lbr": ("pcs", 1), "sachet": ("pcs", 1), "butir": ("pcs", 1),
     "pasang": ("pcs", 1), "tablet": ("pcs", 1), "kapsul": ("pcs", 1), "roll": ("pcs", 1),
-    "lusin": ("pcs", 12), "kodi": ("pcs", 20),
+    "lusin": ("pcs", 12), "kodi": ("pcs", 20), "rim": ("pcs", 500),
 }
+# v1.0.3: satuan kemasan/jumlah yang mengalikan ukuran di sebelahnya: '10 sachet 25 gr' = 10 x 25 g,
+# '2 karung 1 kg' = 2 kg, '1 lusin 100 gr' = 12 x 100 g, '2 kodi 50 gr' = 40 x 50 g.
+_KALI_SATUAN = {"sachet": 1, "karung": 1, "lusin": 12, "kodi": 20}
+_KS_RE = "|".join(_KALI_SATUAN)
 _SAT_RE = "|".join(sorted(_SATUAN, key=len, reverse=True))
 _SAT_NON_PCS = "|".join(sorted((k for k, v in _SATUAN.items() if v[0] != "pcs"), key=len, reverse=True))
 # kata kemasan yang boleh menempel pada pengali: "2 pcs @ 250 gr", "250 gr x 2 pcs", "isi 2 bungkus @250gr"
@@ -226,6 +230,32 @@ _POLA_BELAKANG_ISI = re.compile(r"\s*[(\[,-]?\s*isi\s*(\d+)(?![\d.,/])(?!\s*(?:%
                                 (_SAT_RE, _KEMASAN_PENUH))
 _KATA = [(r"\bsetengah\s*", "1/2 "), (r"\bseperempat\s*", "1/4 "), (r"\btiga\s+perempat\s*", "3/4 "),
          ("½", " 1/2"), ("¼", " 1/4"), ("¾", " 3/4"), ("×", "x")]
+
+
+_POLA_KALI_DEPAN = re.compile(r"(?<![\d.,/])(?<!isi )(?<!isi)(\d+)\s*(%s)\b\s*(?:[x*@]\s*)?(?=%s\s*(?:%s)\b)" % (
+    _KS_RE, _NUM, _SAT_NON_PCS))
+_POLA_KALI_BELAKANG = re.compile(r"(%s\s*(?:%s))\s*[x*]\s*(\d+)\s*(lusin|kodi|karung)\b" % (_NUM, _SAT_NON_PCS))
+
+
+def _kali_satuan(t):
+    """Ubah '1 lusin 100 gr' -> '12 x 100 gr' (dan '100 gr x 2 lusin' -> '100 gr x 24'). Kembalikan (teks, catatan)."""
+    cat = []
+
+    def dep(m):
+        n = int(m.group(1)) * _KALI_SATUAN[m.group(2)]
+        if n > 1:
+            cat.append("'{}' dibaca {} kemasan x ukuran; cek: bila angka itu sudah total, tulis ulang "
+                       "ukurannya".format(m.group(0).strip(), n))
+        return "%d x " % n
+
+    def bel(m):
+        n = int(m.group(2)) * _KALI_SATUAN[m.group(3)]
+        cat.append("'{}' dibaca {} kemasan x ukuran; cek: bila angka itu sudah total, tulis ulang "
+                   "ukurannya".format(m.group(0).strip(), n))
+        return "%s x %d" % (m.group(1), n)
+    t = _POLA_KALI_DEPAN.sub(dep, t)
+    t = _POLA_KALI_BELAKANG.sub(bel, t)
+    return t, cat
 
 
 def _angka_ukuran(s):
@@ -258,7 +288,8 @@ def baca_ukuran(teks, dim_pilih=None):
     t = str(teks).lower()
     for pola, ganti in _KATA:
         t = re.sub(pola, ganti, t)
-    grup, habis, catatan_kali = [], 0, []
+    t, catatan_kali = _kali_satuan(t)
+    grup, habis = [], 0
     for m in _POLA_UKUR.finditer(t):
         if m.start() < habis:
             continue

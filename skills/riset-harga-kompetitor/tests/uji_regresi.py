@@ -512,6 +512,31 @@ class UjiRevisi102(unittest.TestCase):
         self.assertTrue(any("cek" in c for c in h["pesaing"][0]["catatan"]), h["pesaing"][0]["catatan"])
         self.assertEqual(h["stat"]["n"], 3)
 
+    def test_v103_satuan_kemasan_mengalikan(self):
+        # 1 lusin = 12 pcs; sachet/karung/lusin/kodi di depan ukuran mengalikan; rim = 500 lembar
+        kasus = (("10 sachet 25 gr", "g", 250), ("2 karung 1 kg", "g", 2000), ("1 lusin 100 gr", "g", 1200),
+                 ("2 kodi 50 gr", "g", 2000), ("3 lusin @ 100 gr", "g", 3600), ("100 gr x 2 lusin", "g", 2400),
+                 ("1 karung 25 kg", "g", 25000))
+        for teks, dp, harap in kasus:
+            (dim, qty), cat = B.baca_ukuran(teks, dp)
+            self.assertEqual(qty, D(harap), teks)
+        self.assertTrue(any("cek" in c for c in B.baca_ukuran("1 lusin 100 gr", "g")[1]))
+        for teks, harap in (("1 lusin", 12), ("2 lusin", 24), ("1 kodi", 20), ("1 rim", 500), ("2 rim", 1000),
+                            ("10 sachet", 10)):
+            self.assertEqual(B.parse_ukuran(teks), ("pcs", D(harap)), teks)
+
+    def test_v103_jumlah_di_dalam_tidak_dikalikan(self):
+        for teks in ("isi 10 sachet 25 gr", "25 gr isi 10 sachet", "kopi 250 gr isi 20 sachet"):
+            (dim, qty), _ = B.baca_ukuran(teks, "g")
+            self.assertLess(qty, 1000, teks)
+        self.assertEqual(B.baca_ukuran("kopi 250 gr isi 20 sachet", "g")[0], ("g", D(250)))
+
+    def test_v103_harga_setara_lusin_karung(self):
+        # produk kita 100 gr; pesaing '1 lusin 100 gr' Rp 120.000 -> per 100 g = 10.000
+        h = B.olah([baris(120000, "1 lusin 100 gr"), baris(20000, "2 karung 1 kg"), baris(10500, "100 gr")],
+                   {"hpp": 5000, "ukuran": "100 gr"}, hari_ini=HARI)
+        self.assertEqual([p["setara"] for p in h["pesaing"]], [D(10000), D(1000), D(10500)])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)
