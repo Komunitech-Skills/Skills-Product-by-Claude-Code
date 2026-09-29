@@ -1130,5 +1130,54 @@ class UjiV104SubtotalDiKolomNama(_Dasar):
         self.assertIn("Mohon", w[0])
 
 
+class UjiV105NamaPMaxDanTotalAlternatif(_Dasar):
+    """v1.0.5 (P-3, P-4 uji ulang v1.0.4): baris Google Performance Max tanpa grup iklan memakai nama
+    grup aset/kampanye; ⚠️ subtotal/total yang meragukan menyebut total alternatif (Decimal)."""
+
+    def test_p3_pmax_tanpa_ad_group_pakai_nama_kampanye(self):
+        teks = ("Campaign,Ad group,Cost,Impressions,Clicks,Conversions\n"
+                "Search Brand,Kata Kunci Merek,120000,8000,300,6\n"
+                "Search Brand,Kata Kunci Umum,80000,6000,150,2\n"
+                "PMax - Semua Produk,,250000,96340,1702,41\n"
+                "PMax - Semua Produk,,50000,20000,300,5\n")
+        d = self.json_ok("analisis", str(self.tulis("pmax.csv", teks)))
+        nama = [k["nama"] for k in d["per_kampanye"]]
+        self.assertFalse(any(n.startswith("(tanpa nama") for n in nama), nama)
+        self.assertIn("PMax - Semua Produk (tanpa grup iklan)", nama)
+        pm = next(k for k in d["per_kampanye"] if k["nama"].startswith("PMax"))
+        self.assertEqual(Decimal(str(pm["biaya"])), Decimal(300000))          # 2 baris digabung
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), Decimal(500000))
+        self.assertEqual(d["level_rincian"], "grup iklan")
+
+    def test_p3_pakai_kolom_asset_group_bila_ada(self):
+        teks = ("Campaign,Ad group,Asset group,Cost,Impressions,Clicks,Conversions\n"
+                "Search Brand,Kata Kunci Merek,,120000,8000,300,6\n"
+                "PMax Toko,,Grup Aset Hijab,90000,30000,500,9\n"
+                "PMax Toko,,Grup Aset Gamis,60000,25000,400,4\n")
+        d = self.json_ok("analisis", str(self.tulis("aset.csv", teks)))
+        nama = [k["nama"] for k in d["per_kampanye"]]
+        self.assertIn("Grup Aset Hijab", nama)
+        self.assertIn("Grup Aset Gamis", nama)
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), Decimal(270000))
+
+    def test_p4_subtotal_tidak_cocok_sebut_total_alternatif(self):
+        # dikecualikan: total 110.000; bila dihitung 110.000 + 12.345 = 122.345
+        data = "Promo A,60000,5000,70,2\nPromo B,50000,4000,50,1\nSubtotal: Promo Lama,12345,900,10,0\n"
+        d = self.json_ok("analisis", str(self.tulis("s.csv", KOLOM_SEDERHANA + data)))
+        w = next(x for x in d["peringatan"] if "'Subtotal: Promo Lama'" in x)
+        self.assertIn("sekarang Rp 110.000", w)
+        self.assertIn("totalnya menjadi Rp 122.345", w)
+
+    def test_p4_mirip_subtotal_tetap_dihitung_sebut_total_alternatif(self):
+        # dihitung: 50.000 + 42.120 + 30.000 + 60.000 = 182.120; tanpa baris itu 152.120
+        data = ("Retarget Video,50000,4000,60,2\nRetarget Video,42120,3500,55,1\n"
+                "Retarget Video Total,30000,2000,20,1\nPromo A,60000,5000,70,2\n")
+        d = self.json_ok("analisis", str(self.tulis("m.csv", KOLOM_SEDERHANA + data)))
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), Decimal(182120))
+        w = next(x for x in d["peringatan"] if "Retarget Video Total" in x and "TETAP dihitung" in x)
+        self.assertIn("sekarang Rp 182.120", w)
+        self.assertIn("totalnya menjadi Rp 152.120", w)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -493,7 +493,7 @@ def proses_rasio(mentah, hari_ini):
 
 def _jsonable(o):
     if isinstance(o, Decimal):
-        return str(o.quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP).normalize()) if o == o else None
+        return format(o.quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP).normalize(), "f")
     if isinstance(o, date):
         return o.isoformat()
     if isinstance(o, dict):
