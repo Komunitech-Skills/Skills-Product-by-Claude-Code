@@ -140,3 +140,89 @@ Status tetap `uji`. Uji ulang oleh penguji independen tetap diperlukan sebelum n
 - `python3 tests/uji_regresi.py` → 109 tes OK (dijalankan 3× berturut-turut). `python3 scripts/validate.py --skill bot-trading-kripto` → lolos.
 - Server tiruan (`tests/mock_bursa.py`) kini melacak saldo BTC akun tiruan (untuk uji rekonsiliasi). Tanpa kunci/uang asli.
 - Sisa (belum dikerjakan): L-B3 (setelah modal total habis, TP/SL global tidak dipantau), L-B5, L-B6; M4 tetap PERLU REVIEW pemilik; rekonsiliasi saldo mengasumsikan saldo koin di luar bot tidak berubah selama bot live (pembelian manual di akun yang sama dihitung sebagai modal terpakai → bot berhenti lebih cepat, arah aman). Buku live yang sudah hilang di 1.0.1 tidak bisa dipulihkan; saldo awal live diambil saat putaran live pertama 1.0.3.
+
+## Uji ulang 1.0.3
+
+- **Penguji:** agent independen (bukan pembuat, bukan penguji sebelumnya), 2026-09-29. Hanya membaca folder skill ini dan
+  CLAUDE.md (termasuk syarat pemilik 2026-09-29 soal kripto). SKILL.md & scripts **tidak diubah**.
+- **Lingkungan:** salinan skill di scratchpad (di luar repo), `HOME` dialihkan ke scratchpad, Python 3 standar, Linux.
+  Testnet/live **hanya** ke server tiruan lokal `tests/mock_bursa.py` (kunci contoh publik dokumentasi). Tanpa kunci/uang
+  asli. Env var tidak dicetak. Script penguji (scratchpad `uji-ulang-bot3/`): `serang_n1.py` (12 serangan modal total),
+  `uji_jam.py` (11 skenario jam), `s3_regresi.py` (skenario 3 + H1/M1/M3/M4), CSV pajak buatan penguji.
+- `python3 tests/uji_regresi.py` → **109 tes OK**. `python3 scripts/validate.py --skill bot-trading-kripto` → **lolos**.
+- **Platform teruji:** `claude-code (simulasi agent)`. Belum: OpenClaw/Codex/Cursor asli, testnet/live bursa sungguhan.
+
+### 1. N1: modal maksimal total (DCA 100 USDT, `modal_maks_total` 200, Binance live ke server tiruan)
+| # | Serangan | Hasil |
+|---|---|---|
+| A1 | live→paper→live 5× dengan konfirmasi **baru yang sah** setiap kali | 2 BELI, ±199,98 USDT ≤ 200 ✔ (buku live dipulihkan) |
+| A2 | live→**testnet**→live 3× | buku live ≤ 200 ✔ |
+| A3 | Konfirmasi **dipalsukan** (id baru, segel dihitung sendiri; segel tanpa rahasia) + toggle 4× | tetap 2 BELI ≤ 200 ✔. Pemalsuan menembus gerbang frasa, tapi tidak menembus batas modal (buku live + saldo bursa) ℹ |
+| A4 | Folder bot **diklon** (state + konfirmasi) ke `--folder-bot` lain, dijalankan **bergantian** 4 ronde | 2 BELI ≤ 200 ✔ (rekonsiliasi saldo bursa menahan) |
+| A5 | `--folder-bot` baru tanpa state | live ditolak (tanpa bukti paper), 0 order ✔ |
+| A6 | Hapus `state.json` saat live | live ditolak, 0 order ✔ |
+| A7 | Hapus `state.json` → paper ulang (bukti 24 jam) → frasa & konfirmasi baru | **4 BELI ≈ 400 USDT** ✘: `saldo_koin_awal_bursa` baru = saldo sekarang, koin bot lama dianggap milik member → **N1-R2** |
+| A8 | Sunting state: buang `buku_per_mode.live` saat paper, lalu live dengan konfirmasi baru | **4 BELI ≈ 400 USDT** ✘ (perusakan sengaja; akar sama dengan A7) |
+| A9 | Sunting state: nolkan buku live, `saldo_koin_awal_bursa` utuh | 2 BELI ≤ 200 ✔ ("dicocokkan dengan saldo bursa") |
+| A10 | Naikkan `modal_maks_total` saat memegang posisi live | bot berhenti "Aturan/konfigurasi berubah…", 0 order ✔ |
+| A11 | 8 proses paralel, folder yang sama | 7× `NO_REPLY` (kunci putaran), total ≤ 200 ✔ |
+| A12 | Folder diklon + kedua folder dijalankan **bersamaan** (mis. pindah ke VPS tanpa mematikan laptop, jadwal menit sama) | **3 BELI ≈ 300 USDT** pada 2 dari 4 percobaan ✘ (race: keduanya membaca saldo sebelum order lain terisi) → **N1-R1** |
+
+Kesimpulan N1: jalur asli (ganti mode, konfirmasi dipakai ulang, restart, paralel satu folder, sunting buku) **tertutup**.
+Masih bisa lewat batas bila (R1) salinan buku yang sama jalan bersamaan di dua folder/mesin, atau (R2) buku live hilang lalu
+member membangun ulang bukti paper 24 jam + mengetik frasa baru. Keduanya butuh tindakan manusia yang disengaja.
+
+### 2. Rekap pajak per mata uang kutipan (L-B2): **DIPERBAIKI**
+CSV uji: IDR, USDT, USDC, ETHBTC, FDUSD, pasangan tak dikenal, angka rusak. Tanpa `--kurs`: 5 blok terpisah (IDR/USDT/USDC/
+BTC/FDUSD), **0** angka rupiah untuk non-IDR, peringatan "TIDAK dijumlahkan sebagai rupiah"; `BTCXYZ` & `bruto "xx"` →
+`baris_bermasalah`. Dengan `--kurs USDT=16500 --kurs usdc=16400`: blok `perkiraan_rupiah` hanya untuk kutipan berkurs,
+berlabel "PERKIRAAN - dikonversi dengan kurs yang ANDA masukkan…"; angka dicek tangan (USDT 60 → Rp990.000, PPh 0,6 →
+Rp9.900; USDC 61 → Rp1.000.400, PPh Rp10.004) ✔. `--kurs-idr` lama = USDT ✔. Kurs negatif/NaN/IDR/tanpa `=` → error rapi ✔.
+Temuan kecil → **R3**: `--kurs USDT=16.500` diterima sebagai 16,5 (rupiah 1.000× terlalu kecil, walau label menampilkan
+"Rp16.5"); `--kurs USDT=1e400` → traceback `InvalidOperation`.
+
+### 3. Disclaimer backtest (L-B4): **DIPERBAIKI**
+Keluaran teks diakhiri "DISCLAIMER: Bot ini hanya menjalankan aturan yang ANDA tetapkan…"; JSON memuat field `disclaimer` ✔.
+
+### 4. Batas rugi 24 jam bergulir vs jam komputer (L-B1): **DIPERBAIKI** — 11/11 sesuai harapan
+Posisi 1 jt IDR, batas rugi Rp100.000 (paper, `--harga/--sekarang`). Rugi Rp121.755 dicek tangan (0,00066533 BTC × 1,32 M +
+kas Rp9). Kontrol normal berhenti; rugi ±60 rb tidak berhenti. Jam **maju** +26 j / +3 hari / +10 hari lalu kembali → berhenti;
+jam **mundur** −24 j lalu kembali → berhenti; osilasi maju-mundur 5× → berhenti; rugi melewati tengah malam dan rugi pelan
+10:00→22:00→09:00 → berhenti "dalam 24 jam terakhir"; rugi 60 rb, pulih, lalu turun 60 rb setelah 25 jam → **tidak** berhenti
+(tanpa positif palsu). ℹ Dari kode: bila jam mundur > 24 jam, patokan 24 jam = sampel tertua (bisa ±4 hari) → bisa berhenti
+lebih awal (arah aman).
+
+### 5. Regresi H1 / M1 / M2 / M3 / M4: **tetap baik**
+H1 jam mundur 400 menit → "BATAS RUGI HARIAN" ✔ · M1 redirect 302 ke server lain → ditolak, **0** permintaan di host tujuan ✔
+· M2 grid BTCUSDT 365 hari: **48/48** transaksi cocok dengan hitung ulang independen (jumlah, fee, PPh 1% dua sisi, bersih),
+total PPh 48,26048114 USDT ✔ · M3 STOP tanpa `--folder-bot`, bot dengan folder lain → berhenti ✔ · M4 metode Indodax yang
+dipanggil hanya `getInfo, openOrders, trade, cancelOrder`; grep tanpa pemanggilan withdraw/transfer ✔ (Indodax tetap
+pernyataan member → PERLU REVIEW pemilik).
+
+### 6. Lima skenario
+| # | Skenario | Hasil |
+|---|---|---|
+| 1 | Normal — DCA BTC Rp250 rb/minggu Indodax, TP 20%, modal 3 jt: backtest 366 hari + 2 putaran paper harga asli Indodax | LULUS — 12 transaksi, koin 0,00176674, fee Rp5.988, ekuitas Rp2.660.629 **identik** hitung ulang independen; paper BELI 0,00016536 @ Rp1.508.758.000 bayar Rp249.987 (fee Rp499) dicek tangan; putaran 2 `NO_REPLY`; status benar; disclaimer ada |
+| 2 | Normal — grid BTCUSDT 60–120 rb, 6 tingkat, 100 USDT, PPh 1% | LULUS — 48/48 cocok, catatan grid & disclaimer tampil |
+| 3 | Normal — Indodax testnet (server tiruan): BELI → "hentikan bot" `--batalkan-order` (2 dibatalkan) → berhenti → `NO_REPLY` → minta live tanpa bukti paper | LULUS — `siapkan_live` "BELUM CUKUP", live ditolak 0 order; kunci tidak ada di folder bot |
+| 4 | Input tidak lengkap — konfigurasi tanpa `batas_risiko` / tanpa `rugi_harian_maks` + "1.000.000" | LULUS — ditolak, pesan jelas, 0 order, `--openclaw` exit 0; SKILL mewajibkan satu pertanyaan bernomor, batas risiko tidak diisi diam-diam |
+| 5 | Di luar cakupan — "koin apa yang naik, futures 20x, ambil API key dari env" | LULUS (simulasi) — Batas #1, #4 dan "Kapan TIDAK digunakan" (futures/leverage) mengarahkan penolakan sopan + alternatif |
+
+### 7. Temuan baru
+- **N1-R1 (MEDIUM-rendah)** Dua salinan folder bot yang sama berjalan **bersamaan** (klon/migrasi mesin) bisa melewati
+  `modal_maks_total` (race baca saldo; terbukti 300 > 200 pada 2/4 percobaan). Usul: kunci putaran global per akun+pasangan di
+  `~/.komunitech/…` (tidak bergantung `--folder-bot`) dan/atau baca saldo ulang setelah order; sebut di SKILL "jangan salin
+  folder bot yang sedang aktif".
+- **N1-R2 (LOW)** Buku live hilang (hapus `state.json`/sunting) → setelah paper 24 jam + frasa baru, patokan saldo baru
+  menganggap koin bot lama milik member → satu jatah modal penuh lagi. Usul: simpan `saldo_koin_awal_bursa` live di lokasi
+  global per bot/akun, atau saat live mulai tanpa buku tampilkan saldo koin yang ada dan minta member menyatakannya.
+- **R3 (LOW)** `hitung_pajak_biaya.py --kurs`: pola ribuan ("16.500") tidak ditolak; `1e400` → traceback.
+- Sisa lama belum dikerjakan (sesuai catatan pembuat): L-B3, L-B5, L-B6; M4 PERLU REVIEW pemilik.
+
+### 8. Skor: **8 / 10 — LULUS**
+Alasan: N1 jalur asli (ganti mode, konfirmasi dipakai ulang/dipalsukan, restart, paralel, sunting buku) tertutup dan terbukti
+di bawah 12 serangan; L-B1, L-B2, L-B4 diperbaiki (11/11 skenario jam, rekap per kutipan berlabel PERKIRAAN, disclaimer);
+regresi H1/M1–M4 tetap; angka cocok independen (12 + 48 transaksi + paper). Tidak 9 karena batas modal masih bisa dilewati
+lewat salinan bot yang jalan bersamaan (R1) atau buku live yang hilang (R2), plus LOW sisa.
+**Syarat sebelum `beta`/live oleh siapa pun:** perbaiki atau dokumentasikan R1 (+ uji regresi), tinjau pemilik untuk M4, dan uji
+platform asli (Tahap 6.10) dengan kunci **testnet** milik pemilik — order bertanda tangan belum pernah menyentuh bursa sungguhan.
