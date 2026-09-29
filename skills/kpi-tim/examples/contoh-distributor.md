@@ -1,7 +1,7 @@
 # Contoh pembuat: distributor fiktif, 8 orang, 3 divisi
 
 > Contoh dari pembuat skill (bukan hasil uji independen). Semua nama & angka **fiktif**.
-> Output di bawah adalah hasil nyata `scripts/skor_kpi.py` versi 1.0.0 (dijalankan 2026-09-29)
+> Output di bawah adalah hasil nyata `scripts/skor_kpi.py` versi 1.0.1 (dijalankan 2026-09-29)
 > dengan file di `templates/`. Angka kunci diverifikasi tangan di `tests/uji_regresi.py`.
 
 **Usaha:** CV Sumber Makmur Distribusi (fiktif), distributor sembako ke toko kelontong di Sidoarjo.
@@ -40,6 +40,8 @@ Dibuat:
 - KPI/realisasi-2026-10.csv
 32 baris KPI.
 ```
+Kolom `periode` di rencana berisi `2026-10..` (berlaku mulai Oktober), jadi November dan
+seterusnya memakai rencana yang sama.
 Target lalu disesuaikan dengan data Pak Hendra (omzet Andi 150 jt, Rina 120 jt, ambang omzet,
 ambang akurasi stok 97%, dst.) → `templates/rencana-kpi-contoh.csv`.
 
@@ -76,7 +78,9 @@ DRAF realisasi dari teks — WAJIB dicek sebelum dipakai:
 - Eko Saputra | Jumlah pengiriman = 640 paket
 - Eko Saputra | Paket gagal kirim = 4%
 - Sari Indah | Hari tutup buku = 6 hari
+2 baris obrolan tanpa nama/KPI/angka diabaikan.
 ```
+(Dua baris yang diabaikan: "Rekap akhir bulan ya" dan "yang lain nyusul besok".)
 "Rina: omzet saya ..." dibaca sebagai Rina karena pengirimnya Rina. "target 15" dibandingkan
 dengan rencana (sama, jadi tidak ada catatan). Agent menunjukkan tabel ini, Pak Hendra membalas
 "ok", status draf diubah ke `dikonfirmasi`, lalu digabung ke `realisasi.csv` bersama angka
@@ -151,10 +155,10 @@ $ python3 scripts/skor_kpi.py skor ... --periode 2026-09 --orang "Joko Susilo"
 *Rincian KPI Joko Susilo (Gudang & Pengiriman) — 2026-09*
 Skor: 🔴 76,7 (▼15,1 vs 2026-08)
 
-🔴 Akurasi stok ↑: 96% dari target 99% → capaian 97,0%, bobot 35%, nilai 33,9 ▼1,5
-🟡 Pesanan dikemas hari yang sama ↑: 88% dari target 95% → capaian 92,6%, bobot 30%, nilai 27,8 ▼4,2
-🔴 Salah kirim ↓: 6 pesanan dari target 3 pesanan → capaian 0,0%, bobot 20%, nilai 0,0 ▼66,7
-🟢 Item stok habis ↓: 5 SKU dari target 5 SKU → capaian 100,0%, bobot 15%, nilai 15,0 ＝0,0
+🔴 Akurasi stok ↑: 96% dari target 99% → capaian 97,0%, bobot 35%, nilai 33,9 (capaian ▼1,5 poin vs 2026-08)
+🟡 Pesanan dikemas hari yang sama ↑: 88% dari target 95% → capaian 92,6%, bobot 30%, nilai 27,8 (capaian ▼4,2 poin vs 2026-08)
+🔴 Salah kirim ↓: 6 pesanan dari target 3 pesanan → capaian 0,0%, bobot 20%, nilai 0,0 (capaian ▼66,7 poin vs 2026-08)
+🟢 Item stok habis ↓: 5 SKU dari target 5 SKU → capaian 100,0%, bobot 15%, nilai 15,0 (capaian ＝0,0 poin vs 2026-08)
 ```
 Draf catatan (dari `templates/catatan-1on1.md`):
 - **Apresiasi:** stok habis tepat di target (5 SKU) walau pesanan ramai.

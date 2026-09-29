@@ -94,5 +94,5 @@ riset-harga-kompetitor,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Ko
 studio-video-pendek-ai,Marketing & Konten,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 riset-saham-berita,Data & Analisis,orisinal,,Proprietary Komunitech,9,vip,149000,vip,149000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 peringatan-dini-operasional,Data & Analisis,orisinal,,Proprietary Komunitech,6,ecer,149000,,,1.0.1,,uji,2026-09-29
-kpi-tim,HR,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.0,,uji,2026-09-29
+kpi-tim,HR,orisinal,,Proprietary Komunitech,8,ecer,149000,,,1.0.1,,uji,2026-09-29
 inventree-gudang,Produktivitas,kurasi,https://github.com/inventree/InvenTree,MIT (software tidak didistribusikan); skill orisinal Komunitech,,ecer,149000,,,1.0.0,openclaw 2026.9.6 (uji muat CLI),uji,2026-09-29

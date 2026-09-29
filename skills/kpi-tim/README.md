@@ -67,3 +67,9 @@ Di komputermu sendiri. Script tidak mengirim data ke mana pun. Laporan per orang
 
 **Tim saya belum punya target. Apakah target di template bisa langsung dipakai?**
 Target di katalog hanya contoh. Target yang adil berasal dari data 3 bulan terakhir usahamu, ditambah kenaikan wajar, dan dibicarakan dengan orangnya. Kalau belum ada data, pakai bulan pertama untuk mengukur saja, lalu pasang target di bulan berikutnya.
+
+## Riwayat versi
+| Versi | Tanggal | Perubahan |
+|---|---|---|
+| 1.0.1 | 2026-09-29 | Perbaikan dari uji independen v1.0.0 (8/10). **Privasi:** `--tanpa-nama` tidak lagi menyebut nama di mana pun (teks "(1 orang belum lengkap)", JSON tanpa daftar nama/rata-rata individu, peringatan per orang diganti hitungan). **Angka minus:** `Rp -5.000.000`, `-Rp5jt`, `(5.000.000)` dibaca minus; sufiks jt/rb/miliar. **Rencana lintas bulan:** template mengisi periode `2026-10..` (berlaku mulai), kolom periode menerima rentang `2026-10..2026-12`; ⚠️ bila tren tidak bisa dihitung atau periode sebelumnya tidak ada. **Teks WA:** `4,4x` → 4,4, `Rp12rb` → 12.000, target/rencana ke depan dan libur/izin/sakit masuk "tidak terbaca", tanda CEK untuk satuan beda/beberapa orang/angka minus, tidak ada baris bernama/ber-KPI yang dilewati diam-diam. Perbaikan kecil: tidak ada capaian persen minus di laporan, "perlu perhatian" menunjuk KPI kosong di mode `nol`, ⚠️ untuk orang yang tetap belum lengkap di `bobot-ulang`, ⚠️ komposisi divisi berbeda saat tren, ⚠️ capaian tidak wajar, hanya `status_draf` kosong/dikonfirmasi yang dihitung, label "capaian … poin" di rincian 1:1, tanpa traceback saat output dipotong. 29 tes regresi. |
+| 1.0.0 | 2026-09-29 | Rilis awal: katalog KPI 9 peran, template CSV/XLSX, baca-teks, rekap-log, skor tertimbang, OKR ringan, laporan Telegram & bahan 1:1. |

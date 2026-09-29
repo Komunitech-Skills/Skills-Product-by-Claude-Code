@@ -56,9 +56,12 @@ Semua perintah: `python3 scripts/skor_kpi.py <perintah>` dari folder skill ini (
 ### 2. Buat rencana KPI (G1)
 1. Tulis daftar tim ke CSV (`nama,divisi,peran`, contoh `templates/tim-contoh.csv`).
 2. `skor_kpi.py template --tim tim.csv --periode 2026-10 --keluar KPI/` → `rencana-kpi.csv`,
-   `rencana-kpi.xlsx` (lembar "Petunjuk" ikut), dan `realisasi-2026-10.csv` kosong.
+   `rencana-kpi.xlsx` (lembar "Petunjuk" ikut), dan `realisasi-2026-10.csv` kosong. Kolom
+   `periode` rencana diisi `2026-10..` = **berlaku mulai Oktober dan bulan-bulan berikutnya**
+   (rencana tidak perlu dibuat ulang tiap bulan).
 3. Sesuaikan target dengan data pengguna (target katalog hanya contoh). Kolom: `periode`
-   (kosong = semua periode), `divisi`, `orang` (kosong = KPI divisi), `kpi`, `satuan`, `arah`
+   (kosong = semua; `2026-10..` = mulai; `2026-10..2026-12` = rentang; `2026-11` = khusus bulan
+   itu, mengalahkan rentang), `divisi`, `orang` (kosong = KPI divisi), `kpi`, `satuan`, `arah`
    (`naik`/`turun`), `bobot` (total 100 per orang), `target`, `ambang` (opsional: batas minimal
    untuk naik / maksimal untuk turun), `maks_capai` (opsional, default 120), `kata_kunci`
    (untuk membaca teks WA), `sumber`.
@@ -75,8 +78,10 @@ Pilih sesuai sumber data:
   `85%`, atau `14/50` (dibaca 28%).
 - **Teks grup WA / ketikan**: `skor_kpi.py baca-teks --rencana ... --teks rekap.txt --periode
   2026-09 --keluar draf.csv` (atau `--teks -` dari stdin). Hasilnya **DRAF** (`status_draf =
-  PERLU KONFIRMASI`) + daftar "tidak terbaca". Tunjukkan tabel draf ke pengguna, minta
-  konfirmasi/koreksi, baru ubah `status_draf` menjadi `dikonfirmasi` dan gabungkan ke file
+  PERLU KONFIRMASI`) + daftar "tidak terbaca" (tanpa nama, tanpa angka, rencana/target ke
+  depan, libur/izin/sakit) + jumlah baris obrolan yang diabaikan. Baris draf bertanda **CEK**
+  (satuan beda, beberapa angka/orang, angka minus) wajib ditanyakan satu per satu, jangan cukup
+  "ok" massal. Tunjukkan tabel draf ke pengguna, minta konfirmasi/koreksi, baru ubah `status_draf` menjadi `dikonfirmasi` dan gabungkan ke file
   realisasi. Baris draf yang belum dikonfirmasi **selalu dilewati** saat menghitung skor.
   Untuk ekspor chat grup yang panjang, ringkas dulu dengan `ringkas-grup-wa` bila terpasang.
 - **Log harian** (komplain, respons CS, pengiriman, produksi): catat di format
@@ -100,7 +105,8 @@ python3 scripts/skor_kpi.py skor --rencana KPI/rencana-kpi.csv --realisasi KPI/r
   rata-rata divisi. `bobot-ulang` = hitung dari KPI yang ada bila bobotnya ≥ 50%. `nol` = kosong
   dihitung 0% (hanya bila disepakati). **Selalu sebutkan mode yang dipakai** ke pengguna.
 - Divisi = rata-rata orang lengkap (atau KPI divisi bila ada). Perusahaan = rata-rata divisi.
-- Tren otomatis vs periode sebelumnya di file (`--periode-lalu` untuk memilih).
+- Tren otomatis vs periode sebelumnya di file (`--periode-lalu` untuk memilih). Bila periode
+  sebelumnya tidak ada / rencana tidak berlaku, laporan memberi ⚠️ (tren tidak diam-diam hilang).
 - Error/peringatan (realisasi ganda, nama KPI salah ketik + saran, realisasi negatif, periode
   tanpa data) disampaikan apa adanya. **Jangan** mengarang angka yang hilang.
 - `--csv-keluar hasil.csv` menyimpan rincian untuk Excel/Sheets/`dasbor-lokal`.
@@ -108,7 +114,8 @@ python3 scripts/skor_kpi.py skor --rencana KPI/rencana-kpi.csv --realisasi KPI/r
 ### 5. Susun laporan (G8)
 - **Ringkasan pemilik** (default teks, siap Telegram): perusahaan → divisi → orang (urut divisi &
   nama, **bukan peringkat**), KPI paling perlu perhatian per orang, peringatan. Kirim apa adanya.
-- **Grup/papan kantor**: `--tanpa-nama` (hanya perusahaan & divisi), setelah pemilik setuju.
+- **Grup/papan kantor**: `--tanpa-nama` (hanya perusahaan & divisi; nama diganti hitungan
+  "1 orang belum lengkap", juga di JSON), setelah pemilik setuju.
 - **Bahan 1:1**: `skor --orang "Joko Susilo"` → rincian per KPI (realisasi, target, capaian,
   bobot, nilai, tren). Isi `templates/catatan-1on1.md`: angka disalin dari script, apresiasi
   dulu, pertanyaan terbuka, kemungkinan penyebab sebagai **hipotesis**, kolom kesepakatan kosong.

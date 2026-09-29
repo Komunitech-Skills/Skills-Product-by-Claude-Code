@@ -69,24 +69,44 @@ Periode pembanding = periode sebelumnya yang ada di file realisasi dengan pola s
 untuk `2026-09`, `2026-W39` untuk `2026-W40`, `2026-Q3` untuk `2026-Q4`), atau `--periode-lalu`.
 Tren = skor sekarang − skor lalu, dalam poin (▲ naik, ▼ turun). Tidak ada tren bila salah satu
 skor belum lengkap. Periode lalu dihitung dengan rencana yang berlaku di periode itu.
+Tren tidak pernah hilang diam-diam: ⚠️ bila file tidak berisi periode sebelumnya, bila periode
+tepat sebelumnya (mis. 2026-10 untuk 2026-11) tidak ada sehingga dipakai periode lebih lama, bila
+rencana tidak berlaku di periode lalu, dan bila jumlah orang yang dinilai di sebuah divisi
+berbeda antara dua periode. Di rincian 1:1, perubahan per KPI ditulis "(capaian ▼4,2 poin vs
+2026-08)" = selisih capaian, bukan selisih nilai.
 
-## 7. Rencana per periode
+## 7. Rencana per periode (masa berlaku)
 
-Kolom `periode` di rencana boleh kosong (berlaku untuk semua periode). Bila seseorang punya
-baris dengan `periode` = periode yang dinilai, **hanya** baris itu yang dipakai untuk orang
-tersebut (tidak dicampur dengan baris umum), supaya bobot tetap 100.
+Kolom `periode` di rencana:
+
+| Isi | Arti | Prioritas |
+|---|---|---|
+| kosong | berlaku semua periode | 1 |
+| `2026-10..` | berlaku mulai 2026-10 dan seterusnya (diisi otomatis oleh `template --periode 2026-10`) | 2 |
+| `2026-10..2026-12` atau `2026-10 s/d 2026-12` | rentang tertutup | 2 |
+| `2026-11` | hanya periode itu | 3 |
+
+Per orang/divisi dipakai **satu kelompok baris** dengan prioritas tertinggi yang berlaku (tidak
+dicampur), supaya bobot tetap 100. Dua rentang berbeda yang sama-sama berlaku → error "tumpang
+tindih". Format periode harus sama polanya dengan periode realisasi (`2026-10`, `2026-W40`,
+`2026-Q4`).
 
 ## 8. Realisasi ganda
 
 Dua baris realisasi untuk orang + KPI + periode yang sama → error (default `--duplikat tolak`).
 `--duplikat jumlah` menjumlahkan (tidak boleh untuk KPI bersatuan %); `--duplikat terakhir`
-memakai baris paling bawah. Baris dengan `status_draf` = `PERLU KONFIRMASI` (hasil `baca-teks`)
-selalu dilewati sampai diubah menjadi `dikonfirmasi`.
+memakai baris paling bawah. Kolom `status_draf` (hasil `baca-teks`): hanya baris **kosong**
+atau `dikonfirmasi` (juga `ok`/`benar`) yang dihitung; `PERLU KONFIRMASI`, `ditolak`, dan isi
+lain dilewati dengan ⚠️.
 
-## 9. Realisasi negatif
+## 9. Realisasi negatif & angka tidak wajar
 
 Dilewati dengan peringatan (kemungkinan salah ketik). Bila memang bisa minus (mis. laba),
-jalankan dengan `--izinkan-minus`; capaian tetap dibatasi minimal 0%.
+jalankan dengan `--izinkan-minus`; capaian tetap dibatasi minimal 0%. Tanda minus dikenali di
+semua bentuk: `-5.000.000`, `Rp -5.000.000`, `-Rp5jt`, `(5.000.000)`, `(Rp 5.000)`. Sufiks
+`jt`/`juta`, `rb`/`ribu`, `miliar` dikalikan. Capaian mentah di bawah 0 ditampilkan "0,0% (batas
+bawah; realisasi jauh dari target)", tidak pernah persen minus. Capaian arah naik < 1% atau
+> 1000% memberi ⚠️ "tidak wajar" (sering karena `1,250` dibaca 1,25).
 
 ## 10. OKR ringan (`okr`)
 

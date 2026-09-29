@@ -7,7 +7,8 @@ Pelindungan Data Pribadi). Pegangan skill ini:
 - Semua file (rencana, realisasi, hasil) disimpan **di komputer pengguna**. Script tidak
   mengirim data ke mana pun.
 - Laporan per orang hanya untuk **pemilik/manajer yang berwenang**. Jangan kirim ke grup kantor.
-  Untuk papan target/grup, pakai `--tanpa-nama` (perusahaan & divisi saja).
+  Untuk papan target/grup, pakai `--tanpa-nama` (perusahaan & divisi saja; di teks maupun JSON
+  tidak ada nama orang, hanya hitungan seperti "1 orang belum lengkap").
 - Setiap karyawan berhak melihat **rincian KPI miliknya sendiri** (`--orang "Nama"`), bukan
   milik rekan kerja.
 - Laporan per orang **diurutkan per divisi & nama, bukan peringkat**. Jangan membuat "papan
