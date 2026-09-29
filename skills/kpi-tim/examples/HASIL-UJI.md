@@ -104,3 +104,63 @@ file & isi ZIP, tidak ada kredensial tertanam. Tidak ada instruksi tersembunyi d
 ## Rekomendasi
 Boleh naik status `lulus`. Sebelum `beta`: perbaiki S-1 dan S-2 (kecil, berdampak pada privasi & kebenaran
 angka), S-3 (alur bulan kedua), dan perketat S-4; lalu uji ulang singkat oleh penguji independen.
+
+---
+
+# Uji ulang v1.0.1 (2026-09-29)
+
+- **Penguji:** agent independen yang sama (bukan pembuat). Salinan baru folder skill di scratchpad;
+  verifier Decimal penguji diperbarui untuk aturan masa berlaku rencana (`kosong` < `2026-10..`/rentang < periode persis).
+- **Regresi:** 29/29 tes pembuat lulus · `validate.py` ✅ · `uji_openclaw.sh` OpenClaw 2026.9.6 → 97/97 eligible/modelVisible/commandVisible ✅.
+
+## Skor kualitas: **9 / 10** — LULUS
+
+Keempat temuan sedang sudah diperbaiki dan terbukti. Tujuh temuan rendah diperbaiki; R-8 ternyata
+bukan masalah (`build.py` menyalin `docs/instalasi.md` sebagai `CARA-INSTAL.md`). Angka tetap 0 selisih.
+Sisa temuan hanya kosmetik/rendah (lihat bawah).
+
+## Verifikasi ulang angka (verifier independen)
+| Skenario | Run | Nilai | Selisih |
+|---|---|---|---|
+| 01 toko retail | Sep vs Agu (rencana periode kosong), Okt vs Sep & Des vs Okt (rencana `2026-09..`) | 270 | 0 |
+| 02 pabrik | tandai, bobot-ulang, nol, `--bobot-divisi`, `--cap 110`, Agustus mode nol | 1.028 | 0 |
+| 03 OKR | tengah kuartal | 3 objective | 0 |
+| **Total** | | **>1.300** | **0** |
+Hitung tangan tambahan: Dodi (`Rp 1,2 jt` kini terbaca 1.200.000 → 96%) 95,2 ✓; Fani (`1,250` → 0,1%, retur 120%) 59,5 ✓.
+
+## Perbaikan yang diuji ulang
+| Temuan | Hasil v1.0.1 |
+|---|---|
+| S-1 `--tanpa-nama` bocor nama | ✅ "(1 orang belum lengkap)"; nama 5 orang tidak muncul sama sekali di teks maupun JSON |
+| S-2 `Rp -5.000.000` jadi positif | ✅ `Rp -5.000.000`, `-Rp 5.000.000`, `(5.000.000)`, `(Rp 5.000)`, `-Rp5jt` semua negatif → dilewati tanpa `--izinkan-minus`, capaian 0 dengan flag |
+| S-3 rencana terkunci satu bulan | ✅ template menulis `2026-09..`; Okt & Des terhitung; ⚠️ "rencana tidak berlaku untuk 2026-08" dan ⚠️ "Periode 2026-11 tidak ada; tren dibandingkan dengan 2026-10" |
+| S-4 baca-teks | ✅ 10 baris jebakan lama: `4,4x`→4,4; `Rp12rb`→Rp 12.000; "target … bulan depan", "libur 1 hari", "belum kirim laporan" masuk "tidak terbaca" dengan alasan; "30 dus" ditandai CEK (satuan beda + dua orang). 6 baris jebakan baru: `Rp 13,5rb`, `1.250` leads, "sakit 2 hari" dipisah dari "chat 97%", angka minus ditandai CEK ✓ |
+| R-1 capaian minus | ✅ "0,0% (batas bawah; realisasi jauh dari target)" |
+| R-2 bobot-ulang tanpa ⚠️ | ✅ Mira: "bobot berdata 20% < --min-bobot 50%" |
+| R-3 mode nol | ✅ "perlu perhatian: … tanpa data (dihitung 0,0%)" |
+| R-4 tren divisi beda komposisi | ✅ ⚠️ "2026-08: 2 orang, 2026-09: 1 orang" |
+| R-5 `1,250` | ✅ ⚠️ "capaian 0,1% tidak wajar … '1,250' dibaca 1,25" |
+| R-6 `status_draf` lain | ✅ `ditolak` dilewati dengan ⚠️; `ok`/`dikonfirmasi`/kosong dihitung |
+| R-7 panah 1:1 | ✅ "(capaian ▼0,7 poin vs 2026-08)" |
+| R-8 `CARA-INSTAL.md` | bukan masalah (nama di paket build) |
+| R-9 BrokenPipe | ✅ output terpotong `| head` tanpa traceback |
+
+## XLSX (ulang)
+Template baru (s1 & s4): ZIP valid, XML well-formed, dibuka **openpyxl 3.1.5**, 21×12 dan 17×12 sel
+identik dengan CSV (0 selisih), angka bertipe angka. File yang disimpan ulang openpyxl dan file dengan
+`sharedStrings.xml` tetap terbaca ✓.
+
+## 5 skenario (ulang)
+01 ✅ · 02 ✅ · 03 ✅ · 04 ✅ (template + peran di luar katalog dilewati jujur, `cek` ✅) · 05 ✅
+(tidak ada perubahan perilaku etika; teks "Bahan diskusi, bukan dasar sanksi otomatis" tetap ada).
+Validasi input lama semua masih ditolak dengan pesan awam; `Rp 1,2 jt` kini **diterima** (sufiks jt
+didokumentasikan di aturan-skor §9) dan terhitung benar.
+
+## Sisa temuan (Rendah)
+- R-10 baca-teks: "Wulan & Rudi void masing2 1" → hanya draf Rudi; Wulan hilang tanpa masuk "tidak terbaca".
+- R-11 Laporan menulis "(dihitung dari 51% bobot)" sementara ⚠️ menulis 50,5% (pembulatan 0 desimal di baris orang).
+- R-12 Mode `nol`: "perlu perhatian" Mira menunjuk KPI kosong berbobot 30%, bukan yang berbobot 50%.
+- R-13 `--tanpa-nama`: divisi berisi 1 orang (mis. Gudang) tetap memperlihatkan skor orang itu secara
+  tidak langsung. Saran kalimat di SKILL/privasi-etika: gabungkan divisi 1 orang sebelum dikirim ke grup.
+
+**Rekomendasi:** layak status `lulus`, lalu lanjut ke uji platform asli dan beta. R-10 s/d R-13 bisa diperbaiki di 1.0.2.
