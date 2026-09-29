@@ -1312,9 +1312,13 @@ class UjiV105(Dasar):
             self.assertIn("Belum ada uang keluar", g["error"])
             self.assertIn("catat saat dibayar", g["error"])
             self.assertNotIn("bayar UTANG/BON", g["error"])      # dulu pesan pemasok yang keliru
-        g = self.gagal("catat", "--masuk", "150rb", "--kategori", "penjualan", "--metode", "tunai", "--catatan",
+        g = self.gagal("catat", "--masuk", "150rb", "--metode", "tunai", "--catatan",
                        "servis Pak Dedi ngebon, bayar minggu depan")
         self.assertIn("Belum ada uang masuk", g["error"])
+        # v1.0.6: uang MASUK dengan kategori eksplisit -> diterima dengan peringatan
+        o = self.ok("catat", "--masuk", "150rb", "--kategori", "penjualan", "--metode", "tunai", "--catatan",
+                    "servis Pak Dedi ngebon, bayar minggu depan")
+        self.assertTrue(any("BENAR-BENAR sudah diterima" in p for p in o["peringatan"]), o)
         # pembayaran nyata tetap diterima
         for n, (cat, kat) in enumerate((("lunasi bon oli Toko Sinar", "beli-stok"),
                                         ("bayar tagihan jatuh tempo", "lain-lain"),
@@ -1423,6 +1427,166 @@ class UjiV105(Dasar):
         neraca = d["posisi_keuangan"]
         self.assertTrue(neraca["seimbang"], neraca)
         self.assertEqual(D(str(neraca["selisih"])), D(0))
+
+
+class UjiV106(Dasar):
+    """Uji ulang v1.0.5 (7,5/10): frasa penguji laundry yang masih lolos / salah tolak."""
+
+    kategori_db = UjiV105.kategori_db
+    impor = UjiV105.impor
+
+    def test_akhiran_nya_dan_kata_pokok_utang_ditolak(self):
+        for cat in ("angsuran motor plus dendanya", "cicilan mesin cuci sama bunganya", "cicilan mesin pengering "
+                    "+ adminnya", "bayar KUR BRI termasuk bunga", "setoran KUR + bunga", "bayar pinjaman koperasi dan "
+                    "bunganya", "setoran kredit + bunga", "pembayaran pinjaman dan bunga", "bayar leasing plus dendanya",
+                    "bayar hutang bank sekalian bunganya"):
+            self.assertTrue(K.gabungan_pokok_denda(cat), cat)
+            for kat in ((), ("--kategori", "pinjaman"), ("--kategori", "lain-lain")):
+                g = self.gagal("catat", "--keluar", "1,1jt", "--metode", "tunai", "--catatan", cat, *kat)
+                self.assertTrue(g.get("gabungan_pokok_denda"), (cat, kat, g))
+                self.assertIn("Dari Rp 1.100.000", g["pertanyaan"])
+                self.assertNotIn("--", g["pertanyaan"])
+        g = self.gagal("catat", "--keluar", "1,1jt", "--metode", "tunai", "--catatan", "bayar KUR BRI termasuk bunga")
+        self.assertIn("berapa bunganya?", g["pertanyaan"])
+        g = self.gagal("catat", "--keluar", "840rb", "--metode", "tunai", "--catatan", "angsuran motor plus dendanya")
+        self.assertIn("berapa dendanya?", g["pertanyaan"])
+        # tetap BUKAN gabungan
+        for cat in ("bunga KUR", "biaya provisi KUR", "bunga pinjaman koperasi", "cicilan KUR bulan 3",
+                    "biaya admin dan bunga cicilan", "kartu kredit biaya tahunan", "denda keterlambatan angsuran "
+                    "leasing", "pencairan KUR dipotong biaya provisi", "bayar dendanya cicilan"):
+            self.assertFalse(K.gabungan_pokok_denda(cat), cat)
+        self.ok("catat", "--keluar", "40rb", "--metode", "tunai", "--catatan", "bayar dendanya cicilan", "--ya")
+        self.assertEqual(self.kategori_db()["bayar dendanya cicilan"], "lain-lain")
+        out = self.impor("04/09/2026,BYR KUR BRI TERMASUK BUNGA,1100000,\n"
+                         "05/09/2026,SETORAN KREDIT + BUNGA,900000,\n"
+                         "06/09/2026,PEMBAYARAN PINJAMAN DAN BUNGA,800000,\n"
+                         "07/09/2026,TRSF ANGSURAN LEASING PLUS DENDANYA,700000,\n"
+                         "08/09/2026,BUNGA KUR,50000,\n", "--izinkan-minus", "--ya")
+        kat = self.kategori_db()
+        for k in ("BYR KUR BRI TERMASUK BUNGA", "SETORAN KREDIT + BUNGA", "PEMBAYARAN PINJAMAN DAN BUNGA",
+                  "TRSF ANGSURAN LEASING PLUS DENDANYA"):
+            self.assertEqual(kat[k], "perlu-dicek", k)
+        self.assertEqual(kat["BUNGA KUR"], "lain-lain")
+        cek = {c["baris"]: c for c in out["perlu_dicek"]}
+        self.assertEqual(set(cek), {2, 3, 4, 5})
+        self.assertTrue(all("pisahkan" in c["alasan"] and "berapa" in c["pertanyaan"] for c in cek.values()), cek)
+        self.assertEqual(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"], -90000)   # 40rb + 50rb biaya
+
+    def test_uang_masuk_bayar_ngebon_tidak_ditolak(self):
+        for n, cat in enumerate(("Bu Ida bayar laundry yang kemarin ngebon", "pelanggan bayar laundry tempo minggu lalu",
+                                 "terima pembayaran laundry hotel (tempo 14 hari)",
+                                 "Pak Harun lunasi cucian yang ngebon"), 1):
+            o = self.ok("catat", "--masuk", str(70000 + n), "--metode", "tunai", "--catatan", cat, "--tanggal",
+                        "05/09/2026", "--ya")
+            self.assertEqual(self.kategori_db()[cat], "penjualan", (cat, o))
+            self.ok("catat", "--masuk", str(80000 + n), "--kategori", "penjualan", "--metode", "tunai", "--catatan",
+                    cat + " (2)", "--tanggal", "05/09/2026", "--ya")
+        # belum ada uang: tetap ditolak tanpa kategori; keluar tetap ditolak walau kategori dipilih
+        for arah, cat, kat in (("--masuk", "cucian hotel tempo 14 hari", ()),
+                               ("--masuk", "laundry Bu Ida ngebon, dibayar nanti", ()),
+                               ("--keluar", "ambil deterjen ngebon di toko kimia", ("--kategori", "beli-stok")),
+                               ("--keluar", "ambil deterjen ngebon di toko kimia", ())):
+            g = self.gagal("catat", arah, "90rb", "--metode", "tunai", "--catatan", cat, *kat)
+            self.assertTrue(g.get("belum_ada_uang"), (cat, g))
+            self.assertTrue(g.get("pertanyaan"), g)
+            self.assertNotIn("--", g["pertanyaan"])
+        o = self.ok("catat", "--keluar", "90rb", "--kategori", "beli-stok", "--metode", "tunai", "--catatan",
+                    "bayar deterjen yang kemarin ngebon")
+        self.assertFalse(any("BON/TEMPO" in p for p in o["peringatan"]), o)
+        out = self.impor("06/09/2026,TRSF DARI IDA BAYAR LAUNDRY YG NGEBON,,120000\n"
+                         "07/09/2026,TERIMA PEMBAYARAN LAUNDRY HOTEL TEMPO 14 HARI,,500000\n"
+                         "08/09/2026,BELI DETERJEN TEMPO 30 HARI,300000,\n", "--ya")
+        kat = self.kategori_db()
+        self.assertEqual(kat["TRSF DARI IDA BAYAR LAUNDRY YG NGEBON"], "penjualan")
+        self.assertEqual(kat["TERIMA PEMBAYARAN LAUNDRY HOTEL TEMPO 14 HARI"], "penjualan")
+        self.assertEqual(kat["BELI DETERJEN TEMPO 30 HARI"], "perlu-dicek")
+        self.assertEqual([c["baris"] for c in out["perlu_dicek"]], [4])
+
+    def test_negasi_bukan_gabungan(self):
+        for n, cat in enumerate(("cicilan ke-4 lunas tanpa denda", "angsuran mesin cuci bebas bunga 0%",
+                                 "cicilan kulkas bunga 0%", "angsuran leasing, tidak ada denda"), 1):
+            self.assertFalse(K.gabungan_pokok_denda(cat), cat)
+            o = self.ok("catat", "--keluar", str(30000 + n), "--kategori", "pinjaman", "--metode", "tunai",
+                        "--catatan", cat)
+            self.assertFalse(o["peringatan"], (cat, o))
+            self.ok("catat", "--keluar", str(30000 + n), "--metode", "tunai", "--catatan", cat, "--tanggal",
+                    "05/09/2026", "--ya")
+            self.assertEqual(self.kategori_db()[cat], "pinjaman", cat)
+        self.assertTrue(K.gabungan_pokok_denda("cicilan + bunga 0,5%"))    # 0,5% bukan nol
+
+    def test_pertanyaan_awam_dan_teks(self):
+        for argv, isi in ((("--keluar", "200rb", "--catatan", "bayar utang ke Koh Ahong"), "utang apa"),
+                          (("--masuk", "300rb", "--catatan", "Koh Ahong bayar hutang"), "dari mana"),
+                          (("--keluar", "150rb", "--catatan", "bayar hutang toko kimia"), "belanja apa"),
+                          (("--keluar", "25rb", "--catatan", "gas elpiji"), "untuk apa")):
+            g = self.gagal("catat", *argv, "--metode", "tunai")
+            self.assertIn(isi, g["pertanyaan"], g)
+            self.assertNotIn("--", g["pertanyaan"])
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(buf):
+            kode = K.main(["catat", "--keluar", "1,1jt", "--metode", "tunai", "--catatan", "bayar KUR BRI termasuk bunga",
+                           "--db", self.db, "--hari-ini", HARI])
+        self.assertEqual(kode, 1)
+        self.assertIn("Pertanyaan untuk pengguna: Dari Rp 1.100.000", buf.getvalue())
+        skill = open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8").read()
+        self.assertIn("`pertanyaan`", skill, "SKILL.md belum menyebut field pertanyaan")
+        self.assertIn("berapa bunganya?", skill, "SKILL.md belum memuat contoh kalimat tanya")
+
+    def test_kosakata_usaha_jasa_dan_belanja_dapur(self):
+        for cat, arah, harap in (("cuci kiloan", "masuk", "penjualan"), ("laundry express", "masuk", "penjualan"),
+                                 ("cuci setrika 5 kg", "masuk", "penjualan"), ("beli deterjen", "keluar", "beli-stok"),
+                                 ("beli pewangi", "keluar", "beli-stok"), ("beli plastik", "keluar", "beli-stok"),
+                                 ("service mesin cuci", "keluar", "lain-lain"), ("fotokopi nota", "keluar", "lain-lain"),
+                                 ("gas elpiji", "keluar", None), ("belanja dapur", "keluar", None)):
+            self.assertEqual(K.tebak_kategori(cat, arah)[0], harap, cat)
+        o = self.ok("catat", "--keluar", "120rb", "--kategori", "lain-lain", "--metode", "tunai", "--catatan",
+                    "belanja dapur")
+        self.assertTrue(any("rumah atau untuk usaha" in p for p in o["peringatan"]), o)
+        o = self.ok("catat", "--keluar", "120rb", "--kategori", "beli-stok", "--metode", "tunai", "--catatan",
+                    "belanja dapur katering")
+        self.assertFalse(o["peringatan"], o)
+
+    def test_laundry_aset_laba_emkm_neraca_seimbang(self):
+        from decimal import Decimal as D
+        c = lambda *a: self.ok("catat", *a, "--ya")
+        c("--masuk", "2,5jt", "--metode", "tunai", "--catatan", "cuci kiloan", "--tanggal", "02/09/2026")
+        c("--masuk", "400rb", "--metode", "qris", "--catatan", "laundry express", "--tanggal", "02/09/2026")
+        c("--masuk", "120rb", "--metode", "tunai", "--catatan", "Bu Ida bayar laundry yang kemarin ngebon",
+          "--tanggal", "03/09/2026")
+        c("--keluar", "350rb", "--metode", "tunai", "--catatan", "beli deterjen", "--tanggal", "03/09/2026")
+        c("--keluar", "150rb", "--metode", "tunai", "--catatan", "service mesin cuci", "--tanggal", "03/09/2026")
+        c("--baris", "keluar;1jt;pinjaman;transfer;pokok KUR BRI;BRI;04/09/2026",
+          "--baris", "keluar;100rb;lain-lain;transfer;bunga KUR BRI;BRI;04/09/2026")
+        c("--keluar", "600rb", "--kategori", "pinjaman", "--metode", "tunai", "--catatan",
+          "cicilan ke-4 lunas tanpa denda", "--tanggal", "04/09/2026")
+        c("--keluar", "300rb", "--kategori", "lain-lain", "--metode", "tunai", "--catatan",
+          "DP beli rak jemuran, sisanya tempo", "--tanggal", "05/09/2026")
+        c("--keluar", "200rb", "--kategori", "lain-lain", "--metode", "tunai", "--catatan", "belanja dapur rumah",
+          "--tanggal", "05/09/2026")
+        kat = self.kategori_db()
+        self.assertEqual(kat["Bu Ida bayar laundry yang kemarin ngebon"], "penjualan")
+        self.assertEqual(kat["cicilan ke-4 lunas tanpa denda"], "pinjaman")
+        self.assertEqual(kat["belanja dapur rumah"], "prive")
+        hasil = D(2500000) + D(400000) + D(120000) - D(350000) - D(150000) - D(100000) - D(300000)
+        self.assertEqual(hasil, D(2120000))
+        self.assertEqual(D(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"]), hasil)
+        out = self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
+        self.assertTrue(any("ASET TETAP" in p and "rak jemuran" in p and "Rp 300.000" in p for p in out["peringatan"]),
+                        out["peringatan"])
+        emkm = os.path.join(SKILLS, "laporan-keuangan-emkm", "scripts", "laporan_emkm.py")
+        if not os.path.isfile(emkm):
+            self.skipTest("laporan-keuangan-emkm tidak ada di sebelah skill ini")
+        r = subprocess.run([sys.executable, emkm, out["file"], "--format", "json", "--periode-awal", "2026-09-01",
+                            "--periode-akhir", "2026-09-26", "--kas-akhir-aktual", str(out["saldo_akhir"]),
+                            "--utang-bank-awal", "15000000"], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
+        d = json.loads(r.stdout)
+        neraca = d["posisi_keuangan"]
+        self.assertTrue(neraca["seimbang"], neraca)
+        self.assertEqual(D(str(neraca["selisih"])), D(0))
+        # invarian: laba emkm = hasil usaha + aset yang dikapitalisasi (dikurangi penyusutan, bila ada)
+        susut = D(str(d["laba_rugi"].get("beban_penyusutan", 0) or 0))
+        self.assertEqual(D(str(d["laba_rugi"]["laba_bersih"])), hasil + D(300000) - susut)
 
 
 if __name__ == "__main__":

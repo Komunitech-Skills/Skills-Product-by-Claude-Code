@@ -61,6 +61,7 @@ Hasil: CSV `Tanggal;Keterangan;Masuk;Keluar;Kategori` (UTF-8 BOM, tanggal DD/MM/
   `--utang-usaha-awal`, jadi laba tetap = hasil usaha; isi `--utang-usaha-awal` hanya bila bon itu memang sudah
   tercatat sebagai utang di awal periode); denda/sanksi pajak (kategori `pajak` maupun `lain-lain`) → `beban_lain`.
 - v1.0.5: "PAJAK BUNGA"/"PPh bunga" (PPh final atas bunga tabungan/jasa giro, kategori `pajak` atau `lain-lain`) → `beban_pajak_penghasilan`, bukan `beban_lain`. Catatan gabungan pokok + denda tidak bisa dibuat lagi (dipisah saat catat/impor), jadi pokok selalu `bayar_pinjaman` dan denda `beban_keuangan`.
+- v1.0.6: pengeluaran `lain-lain` berisi kata alat/aset (mesin, rak, etalase, kulkas, meja, renovasi…, bukan servis/perbaikan) tetap dikirim dengan kolom Kategori kosong; laporan-keuangan-emkm dapat menggolongkannya `aset_tetap` sehingga **laba emkm = hasil usaha + nilai aset tersebut (dikurangi penyusutan)**. Ekspor menuliskan catatan berisi daftar baris dan totalnya; bila pengguna ingin barang kecil dihitung beban, isi kolom Kategori baris itu dengan `beban_lain`.
 - Pindah dana antar akun tidak ditulis (kas + rekening dihitung sebagai satu pos kas di emkm). Catatan yang dibatalkan
   tidak ikut.
 - Teks script memberi perintah emkm siap pakai, termasuk `--kas-akhir-aktual` = saldo akhir gabungan (cek silang).
