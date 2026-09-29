@@ -681,7 +681,8 @@ class UjiEksporDb(Dasar):
         self.assertEqual(kode, 0)
 
     def test_anonim_tanpa_nama(self):
-        kode, out, f = self.ekspor("--anonim", nama="anon")
+        # --k-anonim 1 = hanya penggantian kode (perilaku v1.1.0); perlindungan k>=2 diuji di UjiKAnonim
+        kode, out, f = self.ekspor("--anonim", "--k-anonim", "1", nama="anon")
         self.assertEqual(kode, 0, out)
         self.assertTrue(out["anonim"])
         _, s = self.skor("--periode", "2026-09")
@@ -707,9 +708,9 @@ class UjiEksporDb(Dasar):
         self.assertEqual(urut, sorted(urut))      # urut menurut kode, bukan menurut abjad nama asli
 
     def test_anonim_kode_stabil_dan_divisi(self):
-        kode, out, f = self.ekspor("--anonim", "--anonim-divisi", nama="a2")
+        kode, out, f = self.ekspor("--anonim", "--anonim-divisi", "--k-anonim", "1", nama="a2")
         k1 = open(os.path.join(f, "kunci-kode-RAHASIA.csv"), encoding="utf-8").read()
-        kode, out2, f = self.ekspor("--anonim", "--anonim-divisi", "--timpa", nama="a2")
+        kode, out2, f = self.ekspor("--anonim", "--anonim-divisi", "--k-anonim", "1", "--timpa", nama="a2")
         self.assertEqual(open(os.path.join(f, "kunci-kode-RAHASIA.csv"), encoding="utf-8").read(), k1)
         mentah = open(os.path.join(f, "kpi.db"), "rb").read()
         for d in ("Sales", "Gudang", "Keuangan"):
@@ -720,12 +721,13 @@ class UjiEksporDb(Dasar):
         p = self.file("p1.csv", "divisi,orang,kpi,arah,bobot,target\nA,Ani,Omzet,naik,100,100\nB,Bo,Omzet,naik,100,100\n"
                                 "B,Cu,Omzet,naik,100,100\n")
         r = self.file("r1.csv", "periode,orang,kpi,realisasi\n2026-09,Ani,Omzet,90\n2026-09,Bo,Omzet,80\n2026-09,Cu,Omzet,70\n")
-        kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", os.path.join(self.dir, "s"), "--anonim")
+        kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", os.path.join(self.dir, "s"), "--anonim",
+                          "--k-anonim", "1")
         self.assertEqual(kode, 0, out)
         self.assertIn("A", out["peringatan_privasi"])
         self.assertNotIn("Ani", out["peringatan_privasi"])
         kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", os.path.join(self.dir, "s2"),
-                          "--anonim", "--anonim-divisi")
+                          "--anonim", "--anonim-divisi", "--k-anonim", "1")
         self.assertNotIn("peringatan_privasi", out)
 
     def test_csv_grist(self):
@@ -832,6 +834,109 @@ class UjiV102(Dasar):
         self.assertIn("Gudang", {d["nama"] for d in out["divisi"]})
 
     _teks = UjiV101._teks
+
+
+def _bytes(path):
+    with open(path, "rb") as fh:
+        return fh.read()
+
+
+class UjiKAnonim(Dasar):
+    """v1.1.1: ekspor-db --anonim --anonim-divisi tidak bisa dipakai menebak orang di tim kecil (k-anonimitas)."""
+    RENCANA_TOKO = ("divisi,orang,kpi,satuan,arah,bobot,target\n"
+                    "Kasir,Wulan,Transaksi per shift,transaksi,naik,50,250\nKasir,Wulan,Void,kali,turun,50,2\n"
+                    "Kasir,Rudi,Transaksi per shift,transaksi,naik,50,300\nKasir,Rudi,Void,kali,turun,50,2\n"
+                    "Gudang,Bayu,Akurasi stok,%,naik,60,99\nGudang,Bayu,Salah kirim,pesanan,turun,40,3\n"
+                    "Online,Citra,Pesanan online,pesanan,naik,70,300\nOnline,Citra,Rating,skala,naik,30,4.8\n"
+                    "Online,Dimas,Pesanan online,pesanan,naik,70,300\nOnline,Dimas,Rating,skala,naik,30,4.8\n"
+                    "Online,Eka,Pesanan online,pesanan,naik,70,280\nOnline,Eka,Rating,skala,naik,30,4.8\n")
+    REAL_TOKO = ("periode,orang,kpi,realisasi\n"
+                 "2026-09,Wulan,Transaksi per shift,260\n2026-09,Wulan,Void,1\n2026-09,Rudi,Transaksi per shift,270\n"
+                 "2026-09,Rudi,Void,3\n2026-09,Bayu,Akurasi stok,98.5\n2026-09,Bayu,Salah kirim,1\n"
+                 "2026-09,Citra,Pesanan online,310\n2026-09,Citra,Rating,4.7\n2026-09,Dimas,Pesanan online,250\n"
+                 "2026-09,Dimas,Rating,4.9\n2026-09,Eka,Pesanan online,290\n2026-09,Eka,Rating,4.6\n")
+
+    def ekspor(self, *extra, nama="k"):
+        p = self.file("p.csv", self.RENCANA_TOKO)
+        r = self.file("r.csv", self.REAL_TOKO)
+        f = os.path.join(self.dir, nama)
+        kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", f, "--anonim", "--anonim-divisi",
+                          "--grist", *extra)
+        self.assertEqual(kode, 0, out)
+        return out, f, sqlite3.connect(os.path.join(f, "kpi.db"))
+
+    def assert_k_anonim(self, c, k):
+        # (1) setiap divisi/kelompok yang tampil berisi >= k orang
+        for (dv, n) in c.execute("SELECT divisi, jumlah_orang FROM skor_divisi"):
+            self.assertGreaterEqual(n, k, dv)
+        # (2) setiap kode orang punya "profil" (kelompok + himpunan KPI) yang sama dengan >= k kode lain
+        profil = {}
+        for (dv, org, kpi) in c.execute("SELECT divisi, orang, kpi FROM skor_kpi WHERE tingkat='orang'"):
+            profil.setdefault((dv, org), set()).add(kpi)
+        kelompok = {}
+        for (dv, org), kp in profil.items():
+            kelompok.setdefault((dv, frozenset(kp)), set()).add(org)
+        for kunci, anggota in kelompok.items():
+            self.assertGreaterEqual(len(anggota), k, kunci)
+        # (3) tidak ada atribut per orang yang bisa membedakan (target/ambang/realisasi dikosongkan)
+        self.assertEqual(c.execute("SELECT COUNT(*) FROM skor_kpi WHERE tingkat='orang' AND "
+                                   "(target IS NOT NULL OR ambang IS NOT NULL OR realisasi IS NOT NULL)").fetchone()[0], 0)
+        self.assertEqual(c.execute("SELECT COUNT(*) FROM rencana WHERE orang IS NOT NULL").fetchone()[0], 0)
+
+    def test_divisi_satu_orang_tidak_bisa_ditebak_k3(self):
+        out, f, c = self.ekspor()
+        self.assertEqual(out["k_anonim"], 3)
+        self.assert_k_anonim(c, 3)
+        # Gudang (1 orang) + Kasir (2 orang) digabung jadi satu kelompok 3 orang; Online 3 orang tetap
+        divisi = {r[0]: r for r in c.execute("SELECT divisi, jumlah_orang, skor FROM skor_divisi")}
+        self.assertEqual(sorted(r[1] for r in divisi.values()), [3, 3])
+        # KPI khas Bayu tidak muncul di mana pun di database maupun CSV Grist -> tidak bisa ditebak dari nama KPI
+        mentah = _bytes(os.path.join(f, "kpi.db"))
+        grist = {g: _bytes(os.path.join(f, "grist", g)) for g in os.listdir(os.path.join(f, "grist")) if g.endswith(".csv")}
+        for kata in (b"Akurasi stok", b"Salah kirim", b"Gudang", b"Bayu", b"Kasir", b"Online"):
+            self.assertNotIn(kata, mentah)
+            for g, isi in grist.items():
+                self.assertNotIn(kata, isi, g)
+        # Online: 3 orang dengan profil sama -> baris per orang tetap diekspor (kode, tanpa target/realisasi)
+        self.assertEqual(c.execute("SELECT COUNT(DISTINCT orang) FROM skor_orang").fetchone()[0], 3)
+        # Upaya hitung balik: skor perusahaan = rata-rata (Kasir, Gudang, Online); yang tampil hanya
+        # Lainnya = (Kasir + Gudang)/2 dan Online -> skor Gudang (= skor pribadi Bayu) tidak bisa dipisahkan.
+        _, s = jalan("skor", "--rencana", self.file("p2.csv", self.RENCANA_TOKO), "--realisasi",
+                     self.file("r2.csv", self.REAL_TOKO), "--periode", "2026-09")
+        asli = {d["nama"]: D(d["skor"]) for d in s["divisi"]}
+        lainnya = [r for r in divisi.values() if r[1] == 3 and abs(r[2] - float(r1(asli["Online"]))) > 0.05]
+        self.assertEqual(len(lainnya), 1)
+        self.assertEqual(lainnya[0][2], float(r1((asli["Kasir"] + asli["Gudang"]) / 2)))
+        nilai_tampil = {r[2] for r in divisi.values()} | {r[0] for r in c.execute("SELECT skor FROM skor_orang")}
+        self.assertNotIn(float(r1(asli["Gudang"])), nilai_tampil)          # skor pribadi Bayu tidak terbaca
+        with open(os.path.join(f, "kunci-kode-RAHASIA.csv"), encoding="utf-8") as fh:
+            self.assertIn("Bayu", fh.read())                                # kunci tetap untuk pemilik
+
+    def test_k_bisa_diatur_dan_k1_memperingatkan(self):
+        out, f, c = self.ekspor("--k-anonim", "2", nama="k2")
+        self.assert_k_anonim(c, 2)
+        # k=2: Kasir (2, profil sama) boleh tampil per orang; Bayu tetap tidak (profil unik)
+        self.assertEqual(c.execute("SELECT COUNT(DISTINCT orang) FROM skor_orang").fetchone()[0], 5)
+        self.assertNotIn(b"Akurasi stok", _bytes(os.path.join(f, "kpi.db")))
+        out, f, c = self.ekspor("--k-anonim", "1", nama="k1")
+        self.assertIn(b"Akurasi stok", _bytes(os.path.join(f, "kpi.db")))
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            K.main(["ekspor-db", "--rencana", self.file("p3.csv", self.RENCANA_TOKO), "--realisasi",
+                    self.file("r3.csv", self.REAL_TOKO), "--keluar", os.path.join(self.dir, "k1t"), "--anonim",
+                    "--k-anonim", "1"])
+        self.assertIn("--k-anonim 1", buf.getvalue())
+
+    def test_contoh_distributor_k3(self):
+        kode, out = jalan("ekspor-db", "--rencana", RENCANA, "--realisasi", REALISASI, "--keluar",
+                          os.path.join(self.dir, "dist"), "--anonim", "--anonim-divisi")
+        c = sqlite3.connect(os.path.join(self.dir, "dist", "kpi.db"))
+        self.assert_k_anonim(c, 3)
+        # Keuangan & Admin (2 orang) digabung; Lainnya 2026-09 = (Gudang 91,7279 + Keuangan 93,0526)/2 = 92,39
+        skor = sorted(r[0] for r in c.execute("SELECT skor FROM skor_divisi WHERE periode='2026-09'"))
+        self.assertEqual(skor, [92.4, 96.1])
+        # skor perusahaan tidak berubah
+        self.assertEqual(c.execute("SELECT skor FROM skor_perusahaan WHERE periode='2026-09'").fetchone()[0], 93.6)
 
 
 if __name__ == "__main__":
