@@ -809,11 +809,13 @@ def analisis(tabel, args):
         target_manual[normalisasi(kol)] = parse_angka(val)
     lead_umum = 2
     for a in args.lead_time or []:
-        if "=" in a:
-            kol, _, val = a.partition("=")
+        kol, _, val = a.rpartition("=")
+        if not val.strip().isdigit():
+            raise InputError(f"--lead-time {a!r}: isi jumlah hari bulat, mis. 3 atau stok_tepung_kg=3")
+        if kol:
             lead_manual[normalisasi(kol)] = int(val)
         else:
-            lead_umum = int(a)
+            lead_umum = int(val)
     targets = dict(data["targets"])
     targets.update(target_manual)
 
