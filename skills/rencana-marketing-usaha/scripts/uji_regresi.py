@@ -84,5 +84,33 @@ cek(rc == 2, "format tahap salah ditolak")
 d = js("target", "--harga-jual", "Rp 1.500.000", "--hpp", "900.000,50")
 cek(d["hpp"] == 900001, "format angka Indonesia")
 
+# 9. regresi v1.0.1: --bulan tidak valid ditolak dengan GAGAL (bukan traceback)
+for bad in ("0,5", "1,5", "0", "-2", "abc"):
+    rc, out, err = jalan("alokasi", "--anggaran", "1000000", "--kanal", "A=100", "--bulan", bad)
+    cek(rc == 2 and "GAGAL" in err and "Traceback" not in err, f"--bulan {bad} ditolak dengan GAGAL")
+rc, out, err = jalan("alokasi", "--anggaran", "1000000", "--kanal", "A=100", "--bulan", "3")
+cek(rc == 0, "--bulan 3 tetap diterima")
+rc, out, err = jalan("alokasi", "--anggaran", "0,4", "--kanal", "A=100")
+cek(rc == 2, "anggaran < Rp 1 ditolak")
+rc, out, err = jalan("alokasi", "--anggaran", "1e40", "--kanal", "A=100")
+cek(rc == 2 and "Traceback" not in err, "angka ekstrem tidak crash")
+rc, out, err = jalan("funnel", "--target-pesanan", "10", "--tahap", ">Chat=10")
+cek(rc == 2, "nama tahap kosong ditolak")
+
+# 10. ambang margin satu set: <15 TERLALU TIPIS, 15-<25 TIPIS, >=25 AMAN
+for hpp, harapan in (("8600", "TERLALU TIPIS"), ("8500", "TIPIS"), ("7600", "TIPIS"), ("7500", "AMAN")):
+    d = js("target", "--harga-jual", "10000", "--hpp", hpp)
+    cek(d["status"] == harapan, f"margin {d['margin_persen']}% -> {harapan} (dapat {d['status']})")
+
+# 11. label keluaran teks = batas minimal/atas, bukan perkiraan
+rc, out, err = jalan("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
+                     "--laba-target-per-pesanan", "3000", "--anggaran-iklan", "1350000", "--target-omzet", "30000000")
+cek(rc == 0 and "Minimal pesanan agar balik modal iklan" in out and "Batas atas anggaran iklan" in out
+    and "BUKAN perkiraan" in out and "Pesanan dari iklan:" not in out, "label minimal/batas atas")
+# 12. contoh kedai kopi konsisten: margin 10.000 -> CAC impas 10.000, CAC target 7.000
+d = js("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
+       "--laba-target-per-pesanan", "3000")
+cek(d["cac_impas_pesanan_pertama"] == 10000 and d["cac_target"] == 7000, "contoh kedai kopi: CAC impas 10.000, target 7.000")
+
 print("SEMUA LULUS" if not gagal else f"{gagal} GAGAL")
 sys.exit(1 if gagal else 0)

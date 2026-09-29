@@ -9,7 +9,7 @@ Dipakai di langkah 6 SKILL.md. Pilih **maksimal 3 kanal utama**. Kolom "Modal" =
 | Instagram (feed, Reels, Story) | Visual: F&B, fashion, kecantikan, dekorasi, kerajinan | Rendah (waktu) | Bangun kepercayaan, katalog | Butuh konsisten; jangan beli followers |
 | TikTok (organik, TikTok Shop, live) | Produk murah-menengah, demo produk, fashion, F&B viral | Rendah-menengah | Jangkauan besar tanpa iklan | Hasil tidak pasti; live butuh naskah (`naskah-live-jualan`) |
 | Marketplace (Shopee, Tokopedia, Lazada) | Produk fisik standar, reseller | Menengah (biaya platform) | Pembeli sudah niat belanja; momen 9.9/11.11/12.12 | Margin tergerus biaya platform; hitung dulu (`harga-jual-marketplace`) |
-| Iklan berbayar (Meta/TikTok/Google/iklan marketplace) | Margin >= 25% dan halaman/produk sudah terbukti laku | Menengah-tinggi | Bisa diukur & diskalakan | Mulai kecil; cek CAC vs titik impas; audit dengan `audit-akun-iklan` |
+| Iklan berbayar (Meta/TikTok/Google/iklan marketplace) | Margin >= 25% (status AMAN; 15% - < 25% hanya iklan kecil; < 15% jangan) dan halaman/produk sudah terbukti laku | Menengah-tinggi | Bisa diukur & diskalakan | Mulai kecil; cek CAC vs titik impas; audit dengan `audit-akun-iklan` |
 | Facebook Group / komunitas / grup WA lokal | Produk lokal, jasa, sekolah/perumahan | Rendah | Kepercayaan tetangga/komunitas | Patuhi aturan grup; jangan spam |
 | Kolaborasi & titip jual (kafe, salon, toko lain), mikro-influencer | Semua usaha lokal | Rendah-menengah | Akses pelanggan baru dengan risiko kecil | Tulis kesepakatan; ukur dengan kode/kupon |
 | Brosur/spanduk/kartu nama/QR di lokasi | Usaha fisik | Rendah | Menjangkau sekitar lokasi | Selalu pasang QR/WA agar bisa diukur |

@@ -6,7 +6,7 @@ Subperintah:
             eksperimen (default 10% dari total). Jumlah Rp per kanal DIJAMIN sama dengan anggaran (sisa
             pembulatan dibagi dengan metode sisa terbesar).
   target  : harga jual + HPP + biaya platform -> margin per pesanan, CAC & ROAS titik impas, CAC & ROAS target
-            (untuk laba yang diinginkan), anggaran iklan maksimal dari target omzet, dan estimasi pesanan.
+            (untuk laba yang diinginkan), anggaran iklan maksimal dari target omzet, dan pesanan MINIMAL agar iklan balik modal (bukan perkiraan hasil).
   funnel  : target pesanan + tingkat konversi tiap tahap -> jumlah orang yang harus dijangkau di tiap tahap.
 
 Aturan pembulatan:
@@ -31,6 +31,10 @@ from decimal import Decimal, InvalidOperation, ROUND_CEILING, ROUND_FLOOR, ROUND
 
 D0 = Decimal(0)
 D100 = Decimal(100)
+# Satu set ambang margin untuk seluruh skill: < 15% TERLALU TIPIS (jangan iklan), 15-<25% TIPIS (iklan kecil,
+# hati-hati), >= 25% AMAN.
+BATAS_TERLALU_TIPIS = Decimal(15)
+BATAS_AMAN = Decimal(25)
 
 
 class Salah(Exception):
@@ -101,6 +105,8 @@ def bagi_pas(total, bobot):
 
 def hitung_alokasi(anggaran, kanal, bulan, cadangan_persen):
     total = bulat(anggaran)
+    if total < 1:
+        raise Salah("anggaran minimal Rp 1 setelah pembulatan")
     if not kanal:
         raise Salah("--kanal kosong: isi minimal satu kanal, contoh \"Meta Ads=40,WA=60\"")
     nama_lihat = set()
@@ -162,7 +168,13 @@ def hitung_target(a):
         h["status"] = "TIPIS"
         h["catatan"] = "Margin per pesanan terlalu kecil (CAC batas < Rp 1)."
         return h
-    h["status"] = "AMAN" if margin * D100 / harga >= 20 else "TIPIS"
+    mp = margin * D100 / harga
+    if mp < BATAS_TERLALU_TIPIS:
+        h["status"] = "TERLALU TIPIS"
+        h["catatan"] = (f"Margin di bawah {BATAS_TERLALU_TIPIS}%: jangan pasang iklan berbayar dulu; perbaiki harga/HPP, "
+                        "pakai kanal gratis/organik.")
+    else:
+        h["status"] = "AMAN" if mp >= BATAS_AMAN else "TIPIS"
     if a["anggaran_iklan"] is not None:
         pesanan = lantai(a["anggaran_iklan"] / cac_pakai)
         h["anggaran_iklan"] = bulat(a["anggaran_iklan"])
@@ -218,6 +230,8 @@ def parse_tahap(items):
             raise Salah(f"tahap '{t}': format harus Dari>Ke=persen, contoh Klik>Chat=20")
         rute, p = t.rsplit("=", 1)
         dari, ke = [x.strip() for x in rute.split(">", 1)]
+        if not dari or not ke:
+            raise Salah(f"tahap '{t}': nama tahap tidak boleh kosong")
         persen = angka(p, f"konversi {rute}", boleh_nol=False)
         if persen > D100:
             raise Salah(f"konversi {rute}: tidak boleh lebih dari 100%")
@@ -240,14 +254,16 @@ def cetak_target(h):
         print("!! " + h["catatan"])
     for k, lbl in [("cac_impas_pesanan_pertama", "CAC titik impas (pesanan pertama)"), ("roas_impas_pesanan_pertama", "ROAS titik impas"),
                    ("cac_impas_dengan_pembelian_ulang", "CAC impas termasuk pembelian ulang"), ("cac_target", "CAC target"),
-                   ("roas_target", "ROAS target"), ("pesanan_dari_iklan_bila_capai_cac", "Pesanan dari iklan"),
-                   ("omzet_dari_iklan", "Omzet dari iklan"), ("pesanan_dibutuhkan", "Pesanan dibutuhkan untuk target omzet"),
-                   ("anggaran_iklan_maks_impas", "Anggaran iklan maks (impas)"),
-                   ("anggaran_iklan_maks_sesuai_target", "Anggaran iklan maks (sesuai target laba)")]:
+                   ("roas_target", "ROAS target"), ("pesanan_dari_iklan_bila_capai_cac", "Minimal pesanan agar balik modal iklan (bukan perkiraan)"),
+                   ("omzet_dari_iklan", "Omzet minimal dari iklan (bukan perkiraan)"), ("pesanan_dibutuhkan", "Jumlah pesanan yang dibutuhkan untuk target omzet"),
+                   ("anggaran_iklan_maks_impas", "Batas atas anggaran iklan, impas (hanya bila SEMUA pesanan dari iklan; bukan saran belanja)"),
+                   ("anggaran_iklan_maks_sesuai_target", "Batas atas anggaran iklan, sesuai target laba (hanya bila SEMUA pesanan dari iklan; bukan saran belanja)")]:
         if k in h:
             v = h[k]
             uang = k not in ("roas_impas_pesanan_pertama", "roas_target", "pesanan_dari_iklan_bila_capai_cac", "pesanan_dibutuhkan")
             print(f"- {lbl}: {rp(v) if uang else v}")
+    if "pesanan_dari_iklan_bila_capai_cac" in h:
+        print("Cara baca: angka 'minimal' = syarat agar iklan tidak rugi, BUKAN perkiraan hasil iklan.")
     if "catatan_anggaran" in h:
         print(h["catatan_anggaran"])
 
@@ -283,7 +299,13 @@ def main(argv=None):
     args = ap.parse_args(argv)
     try:
         if args.cmd == "alokasi":
-            bulan = int(angka(args.bulan, "bulan", boleh_nol=False))
+            try:
+                bulan_d = angka(args.bulan, "bulan")
+            except Salah:
+                bulan_d = Decimal(0)
+            if bulan_d != bulan_d.to_integral_value() or bulan_d < 1:
+                raise Salah(f"GAGAL: bulan harus bilangan bulat minimal 1 (diterima '{args.bulan}'). Contoh: --bulan 3")
+            bulan = int(bulan_d)
             cad = angka(args.cadangan_eksperimen, "cadangan eksperimen")
             if cad > 50:
                 raise Salah("cadangan eksperimen maksimal 50%")
@@ -307,6 +329,9 @@ def main(argv=None):
             out = cetak_funnel
     except Salah as e:
         print("ERROR: " + str(e), file=sys.stderr)
+        return 2
+    except ArithmeticError:
+        print("ERROR: GAGAL: angka terlalu besar atau tidak wajar; periksa kembali input.", file=sys.stderr)
         return 2
     if args.format == "json":
         print(json.dumps(h, ensure_ascii=False, indent=2))

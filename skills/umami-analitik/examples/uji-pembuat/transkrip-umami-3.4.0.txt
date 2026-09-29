@@ -1,0 +1,227 @@
+# Transkrip uji pembuat - umami-analitik 1.0.0 terhadap Umami 3.4.0 ASLI
+# Image resmi ghcr.io/umami-software/umami:3.4.0 (sha256:85909afc45bd...) + postgres:15-alpine, port 127.0.0.1:3000
+# Kunci API akun 'agen-baca' (peran view-only, anggota tim 'Usaha Bu Sri' sebagai team-view-only)
+# Data: 23 kunjungan / 51 hit fiktif dari tests/isi_data_fiktif.py lewat /api/send + 3 klik nyata ke /q/wa-busri-bio
+# Dijalankan 2026-09-29T09:42Z; --sekarang dipatok agar periode tetap
+
+$ python3 scripts/umami.py cek
+CEK UMAMI
+Alamat: http://localhost:3000
+Server: menyala (heartbeat OK)
+Kunci: umami_JJ****LHYJ
+Akun: agen-baca - peran view-only (hanya lihat - disarankan); masuk lewat kunci API
+Website yang bisa dibaca: 1
+  - Keripik Bu Sri (landing) (keripikbusri.contoh.id) id 82bc6b1f-3021-4699-bd48-bd3acd2c86e9 [tim Usaha Bu Sri]
+Catatan: skill diuji dengan Umami 3.4.0. Versi lain: cocokkan angka penting dengan layar Umami.
+[kode keluar 0]
+
+$ python3 scripts/umami.py situs
+WEBSITE DI UMAMI (1)
+- Keripik Bu Sri (landing) | keripikbusri.contoh.id | id 82bc6b1f-3021-4699-bd48-bd3acd2c86e9
+[kode keluar 0]
+
+$ python3 scripts/umami.py ringkasan --periode minggu-lalu --sekarang 2026-09-29T16:00
+RINGKASAN WEBSITE: Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026
+Pembanding: 14 Sep 2026 - 20 Sep 2026
+- Pengunjung unik       : 11   (sebelumnya 4; naik 7 (+175%))
+- Kunjungan             : 12   (sebelumnya 4; naik 8 (+200%))
+- Tayangan halaman      : 23   (sebelumnya 6; naik 17 (+283%))
+- Bounce rate           : 25% (3 dari 12 kunjungan hanya 1 halaman tanpa klik)   (sebelumnya 50%)
+- Rata-rata lama        : 48 dtk per kunjungan   (sebelumnya 17 dtk)
+- Halaman per kunjungan : 1,9
+Catatan: pengunjung unik dihitung per perangkat+browser (tanpa cookie); satu orang dengan HP & laptop terhitung 2.
+[kode keluar 0]
+
+$ python3 scripts/umami.py halaman --periode minggu-lalu --sekarang 2026-09-29T16:00
+HALAMAN TERATAS: Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026
+  Halaman                             Tayangan  Pengunjung  % pengunjung
+  /                                         11          10           91%
+  /produk/keripik-balado                     5           5           45%
+  /cara-pesan                                3           3           27%
+  /produk/keripik-original                   2           2           18%
+  /terima-kasih                              2           2           18%
+Total: 23 tayangan dari 11 pengunjung unik.
+[kode keluar 0]
+
+$ python3 scripts/umami.py halaman --jenis keluar --periode minggu-lalu --sekarang 2026-09-29T16:00
+HALAMAN KELUAR (terakhir dibuka): Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026
+  Halaman                             Pengunjung
+  /                                            4
+  /produk/keripik-balado                       3
+  /cara-pesan                                  2
+  /terima-kasih                                2
+  /produk/keripik-original                     1
+[kode keluar 0]
+
+$ python3 scripts/umami.py sumber --periode minggu-lalu --sekarang 2026-09-29T16:00
+SUMBER TRAFIK: Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026
+Kanal (per kunjungan):
+  Kanal                                           Kunjungan    %  Pengunjung
+  Media sosial (organik)                                  6  50%           6
+  Langsung (termasuk WA/aplikasi tanpa UTM)               4  33%           4
+  Pencarian Google dll (organik)                          2  17%           2
+Situs perujuk (referrer):
+  Situs                               Pengunjung  Kunjungan
+  l.instagram.com                              3          3
+  google.com                                   2          2
+  tiktok.com                                   2          2
+  l.facebook.com                               1          1
+Catatan: klik dari WhatsApp, Telegram, aplikasi, atau QR biasanya TIDAK membawa alamat asal, jadi masuk 'Langsung'. Pakai tautan ber-UTM (perintah utm) agar terlihat jelas.
+[kode keluar 0]
+
+$ python3 scripts/umami.py utm --periode 30hari --sekarang 2026-09-29T16:00
+KAMPANYE UTM: Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: 30 hari terakhir, 31 Agu 2026 - 29 Sep 2026 (s.d. pukul 16.00)
+Kampanye (utm_campaign):
+  Nilai                               Pengunjung  Kunjungan  Tayangan
+  promo-gajian-sep                            10         12        12
+  reseller-okt                                 2          2         2
+Sumber (utm_source):
+  Nilai                               Pengunjung  Kunjungan  Tayangan
+  instagram                                    4          5         5
+  whatsapp                                     4          5         5
+  tiktok                                       3          4         4
+Medium (utm_medium):
+  Nilai                               Pengunjung  Kunjungan  Tayangan
+  social                                       4          5         5
+  video                                        3          4         4
+  status                                       3          3         3
+  grup                                         2          2         2
+Catatan: angka UTM dihitung dari halaman yang dibuka lewat tautan ber-UTM. Umami tidak menempelkan UTM ke event (klik WA/beli), jadi konversi per kampanye tidak dihitung di sini.
+[kode keluar 0]
+
+$ python3 scripts/umami.py pengunjung --periode minggu-lalu --sekarang 2026-09-29T16:00
+PROFIL PENGUNJUNG: Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026
+Perangkat:
+  Perangkat                           Pengunjung    %
+  HP                                           8  73%
+  Komputer (layar besar)                       2  18%
+  Tablet                                       1   9%
+Negara:
+  Negara                              Pengunjung    %
+  Indonesia                                   10  91%
+  Malaysia                                     1   9%
+Kota:
+  Kota                                Pengunjung    %
+  Jakarta, Indonesia                           2  18%
+  Surabaya, Indonesia                          2  18%
+  Bandung, Indonesia                           1   9%
+  Denpasar, Indonesia                          1   9%
+  Kuala Lumpur, Malaysia                       1   9%
+  Makassar, Indonesia                          1   9%
+  Medan, Indonesia                             1   9%
+  Semarang, Indonesia                          1   9%
+  Yogyakarta, Indonesia                        1   9%
+Total pengunjung unik: 11. Lokasi diperkirakan dari alamat IP (kota bisa meleset, mis. pengguna data seluler tercatat di kota lain).
+[kode keluar 0]
+
+$ python3 scripts/umami.py banding --sekarang 2026-09-29T16:00
+PERBANDINGAN: Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu ini, Senin 28 Sep 2026 s.d. Selasa, 29 September 2026 pukul 16.00
+Pembanding: 21 Sep 2026 - 22 Sep 2026 pukul 16.00 (sama panjang)
+  Ukuran                  Periode ini    Pembanding            Perubahan
+  Pengunjung unik                   7             2       naik 5 (+250%)
+  Kunjungan                         7             2       naik 5 (+250%)
+  Tayangan halaman                 13             5       naik 8 (+160%)
+  Bounce rate                   28,6%            0%       naik 28,6 poin
+  Rata-rata lama               44 dtk  1 mnt 37 dtk  turun 53 dtk (-55%)
+  Event 'klik-wa'                   2             1       naik 1 (+100%)
+  Event 'beli'                      1             0                 baru
+Catatan: periode berjalan dibandingkan dengan rentang yang SAMA PANJANG sampai jam yang sama (adil, bukan minggu penuh vs setengah minggu).
+[kode keluar 0]
+
+$ python3 scripts/umami.py konversi --periode minggu-lalu --sekarang 2026-09-29T16:00
+KONVERSI (EVENT): Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026
+Pembanding: 14 Sep 2026 - 20 Sep 2026
+  Event                     Jumlah  Pengunjung  Tingkat konversi  Sebelumnya
+  klik-wa                        3           3             27,3%           1
+  beli                           2           2             18,2%           0
+Tingkat konversi = pengunjung yang melakukan event / 11 pengunjung unik periode ini.
+- beli / nilai: total Rp47.000 dari 2 event (dari data tombol, BUKAN omzet resmi - cocokkan dengan catatan penjualan)
+- beli / produk: Keripik Balado 250 g (1); Keripik Original 250 g (1)
+- klik-wa / tombol: pesan-balado (2); hero (1)
+[kode keluar 0]
+
+$ python3 scripts/umami.py tautan --periode 7hari --sekarang 2026-09-29T17:00
+TAUTAN PELACAK (Umami Links)
+Periode: 7 hari terakhir, 23 Sep 2026 - 29 Sep 2026 (s.d. pukul 17.00)
+Pembanding: 16 Sep 2026 - 22 Sep 2026 pukul 17.00 (sama panjang)
+  Tautan                      Klik  Pengunjung  Sebelumnya    Asal klik teratas
+  WA order (bio IG)              3           3           0  l.instagram.com (3)
+Klik = berapa kali tautan dibuka (termasuk orang yang sama berulang). Tautan dibuka dari aplikasi WA/Telegram biasanya tanpa asal klik.
+[kode keluar 0]
+
+$ python3 scripts/umami.py laporan-mingguan --sekarang 2026-09-29T16:00
+Laporan web Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026
+Pembanding: 14 Sep 2026 - 20 Sep 2026
+
+- Pengunjung unik       : 11   (sebelumnya 4; naik 7 (+175%))
+- Kunjungan             : 12   (sebelumnya 4; naik 8 (+200%))
+- Tayangan halaman      : 23   (sebelumnya 6; naik 17 (+283%))
+- Bounce rate           : 25% (3 dari 12 kunjungan hanya 1 halaman tanpa klik)   (sebelumnya 50%)
+- Rata-rata lama        : 48 dtk per kunjungan   (sebelumnya 17 dtk)
+- Halaman per kunjungan : 1,9
+
+Konversi:
+- klik-wa: 3x oleh 3 pengunjung (27,3%); sebelumnya 1x
+- beli: 2x oleh 2 pengunjung (18,2%); sebelumnya 0x
+
+Halaman teratas:
+1. / - 11 tayangan, 10 pengunjung
+2. /produk/keripik-balado - 5 tayangan, 5 pengunjung
+3. /cara-pesan - 3 tayangan, 3 pengunjung
+4. /produk/keripik-original - 2 tayangan, 2 pengunjung
+5. /terima-kasih - 2 tayangan, 2 pengunjung
+
+Sumber:
+- Media sosial: 6 kunjungan (50%)
+- Langsung: 4 kunjungan (33%)
+- Pencarian Google dll: 2 kunjungan (17%)
+
+Kampanye UTM (pengunjung):
+- kampanye promo-gajian-sep: 7
+- sumber instagram: 3
+- sumber tiktok: 2
+- sumber whatsapp: 2
+
+Perangkat: HP 73%, Komputer (layar besar) 18%, Tablet 9%
+Kota teratas: Jakarta (2), Surabaya (2), Denpasar (1)
+
+Sumber data: Umami milik Anda (tanpa cookie). Pengunjung unik = perangkat+browser.
+[kode keluar 0]
+
+$ python3 scripts/umami.py ekspor-csv --periode minggu-lalu --sekarang 2026-09-29T16:00 --keluaran ./ekspor-minggu-lalu.csv
+CSV tersimpan: ./ekspor-minggu-lalu.csv
+Isi: 43 baris (ringkasan, halaman, kanal, referrer, UTM, event, perangkat, negara, kota, harian). Pemisah ';'.
+Catatan: kolom 'pengunjung' per halaman/sumber = pengunjung unik di baris itu (tidak bisa dijumlah antarbaris). Baris 'harian': pengunjung per hari.
+[kode keluar 0]
+
+# --- uji galat ---
+$ UMAMI_API_KEY=umami_salah... python3 scripts/umami.py ringkasan
+GALAT: 401 dari Umami: kunci API salah, sudah dihapus, atau sandi akun diganti. Buat kunci baru (Settings > API keys) lalu 'simpan-kunci --ya' (panduan bagian 7).
+[kode keluar 5]
+$ (kunci admin) python3 scripts/umami.py ringkasan
+GALAT: Ada 2 website: Keripik Bu Sri (landing) (keripikbusri.contoh.id); Toko Batik Laras (batiklaras.contoh.id). Sebutkan dengan --situs <nama/domain>.
+[kode keluar 7]
+$ python3 scripts/umami.py ringkasan --situs batik   (website bukan milik tim agen)
+GALAT: Website 'batik' tidak ditemukan. Yang bisa dibaca: Keripik Bu Sri (landing) (keripikbusri.contoh.id).
+[kode keluar 2]
+$ python3 scripts/umami.py ringkasan --url http://127.0.0.1:3998
+GALAT: Tidak bisa menghubungi Umami di http://127.0.0.1:3998 ([Errno 111] Connection refused). Pastikan Umami menyala dan alamatnya benar (ENV UMAMI_URL / simpan-alamat; panduan bagian 3).
+[kode keluar 4]
+$ python3 scripts/umami.py cek --url http://analitik.contoh.id
+GALAT: Alamat internet 'http://analitik.contoh.id' wajib HTTPS (kunci API ikut terkirim; http biasa tidak terenkripsi). Pasang HTTPS dulu (docs/panduan-umami.md bagian 4).
+[kode keluar 2]
+$ UMAMI_USERNAME=agen-baca UMAMI_PASSWORD=<sandi benar> (login sandi) ringkasan --periode minggu-lalu
+RINGKASAN WEBSITE: Keripik Bu Sri (landing) (keripikbusri.contoh.id)
+Periode: minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026
+Pembanding: 14 Sep 2026 - 20 Sep 2026
+- Pengunjung unik       : 11   (sebelumnya 4; naik 7 (+175%))
+[kode keluar 0]

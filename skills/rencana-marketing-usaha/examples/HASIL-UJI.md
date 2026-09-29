@@ -64,3 +64,10 @@ Input rusak (26 kasus): 22 ditolak dengan `ERROR:` jelas (persen ≠ 100, huruf,
 1. Perbaiki M1 & M2 (label + satu kalimat cara baca; samakan angka contoh), lalu L1 (validasi bulan & tangkap exception) — tidak perlu uji ulang penuh, cukup uji regresi + satu skenario tiket besar.
 2. `platform_teruji` boleh diisi `claude-code (simulasi agent)`; OpenClaw baru uji muat, belum uji perilaku.
 3. Harga usulan (ecer Rp 149.000) wajar mengingat kedalaman; keputusan tetap di pemilik.
+
+## Catatan revisi (v1.0.1, 2026-09-29)
+- M1: label keluaran script diganti "Minimal pesanan agar balik modal iklan" dan "Batas atas anggaran iklan", plus baris "Cara baca"; SKILL.md langkah 9 menjelaskan.
+- M2: contoh SKILL.md disamakan dengan contoh kedai kopi (CAC impas Rp 10.000).
+- L1: `--bulan` wajib bilangan bulat >= 1 (GAGAL bila tidak); anggaran < Rp 1, nama tahap kosong, dan angka ekstrem ditolak tanpa traceback.
+- L2: satu set ambang margin: < 15% TERLALU TIPIS, 15% - < 25% TIPIS, >= 25% AMAN (script, SKILL.md, references).
+- Tes regresi ditambah di `scripts/uji_regresi.py`. Belum diuji ulang oleh penguji independen.
