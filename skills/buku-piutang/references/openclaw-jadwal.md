@@ -1,5 +1,7 @@
 # Ringkasan piutang harian ke Telegram (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status verifikasi (jujur).** Bentuk perintah di bawah disalin dari pola yang sudah dijalankan sungguhan pada
 Gateway lokal OpenClaw untuk skill `crm-wa`, `kasir-lokal`, dan `pengingat-follow-up` (job diterima, jadwal & zona
 waktu tersimpan, `automations run` menjalankan script). Khusus buku-piutang, jadwal **belum** diuji di Gateway;

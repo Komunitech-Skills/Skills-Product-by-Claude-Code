@@ -170,6 +170,7 @@ naik? cek beban pokok & beban keuangan di catatan LK" → disclaimer.
 Lengkap: `examples/contoh-pembuat-cnth.md`.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Python tidak tersedia:** hitung manual dengan rumus di docstring script, tunjukkan langkahnya,
   dan tulis "belum diverifikasi script". Batasi ke rasio yang datanya lengkap.
 - **Angka ambigu** (mis. "1,234" atau satuan laporan tidak jelas): tanyakan dulu; script memberi

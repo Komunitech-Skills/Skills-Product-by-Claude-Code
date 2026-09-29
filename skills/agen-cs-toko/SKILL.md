@@ -129,6 +129,7 @@ Untuk COD, area Bintaro termasuk yang kami layani (radius 5km). Mau pesan berapa
 - [ ] Untuk klinik: tidak ada diagnosis/saran dosis/triase; sudah diarahkan ke tenaga kesehatan bila relevan.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Mode Copilot adalah satu-satunya mode untuk chat ke pelanggan lewat WA Web.** Skill ini **tidak akan** menyiapkan konfigurasi auto-reply otomatis ke nomor pelanggan tanpa manusia mengirim; jika pengguna memaksa, jelaskan risikonya (ToS WhatsApp melarang bulk/auto-messaging, nomor bisa diblokir, dan `dmPolicy: "pairing"` di WA membuat bot otomatis mengirim pesan ke pengirim baru) dan arahkan ke `references/eskalasi-dan-kanal.md` §1 & §5 (Level 2/3), yang mensyaratkan nomor terpisah + persetujuan risiko tertulis + jasa pendampingan, bukan swalayan.
 - Basis pengetahuan kosong/belum dibuat → tawarkan bikin dulu dari `templates/PENGETAHUAN.template.md`, jangan menjawab pelanggan dari asumsi.
 - Pertanyaan di luar cakupan toko (obrolan umum, topik sensitif tidak terkait) → balas singkat netral, tidak perlu eskalasi.

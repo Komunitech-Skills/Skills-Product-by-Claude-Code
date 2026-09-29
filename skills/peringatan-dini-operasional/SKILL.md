@@ -144,6 +144,7 @@ Aturan warna & ambang lengkap: `references/cara-kerja-aturan.md`.
 ```
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Bukan ramalan pasti.** Peringatan = "angka ini tidak biasa, layak dicek". Proyeksi hanya
   garis lurus 7 hari (ditulis "perkiraan kasar"). Jangan pernah menulis "pasti", "dijamin", atau
   menyebut penyebab sebagai fakta; penyebab dicari lewat pertanyaan cek & 5 kenapa.

@@ -1,5 +1,7 @@
 # Menjadwalkan laporan iklan mingguan lewat OpenClaw
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Skill ini **sendiri tidak membuat jadwal apa pun** — ia hanya menghitung laporan dari file yang
 sudah ada. Halaman ini menjelaskan cara menyerahkan resepnya ke skill `laporan-otomatis-terjadwal`
 (yang memang bertugas membuat jadwal `openclaw automations`) SETELAH laporan manual di atas

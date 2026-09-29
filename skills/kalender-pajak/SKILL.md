@@ -130,6 +130,7 @@ Contoh lengkap: `examples/uji-pembuat-01-cv-pkp-okt-des.md`.
 - [ ] Disclaimer + dasar aturan + tanggal cek ada.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Script keluar kode 2 + `ERROR: ...` (tanpa traceback) untuk profil tidak dikenal, bulan di luar 1–12, tahun di luar 2025–2100, tanggal salah, format salah, file libur rusak. Jelaskan dengan bahasa sederhana dan tawarkan pilihan yang benar.
 - Data libur tersedia **2026 dan 2027** (SKB 3 Menteri). Tahun lain → script tetap jalan tetapi hanya menggeser Sabtu/Minggu dan menampilkan PERINGATAN; minta pengguna cek SKB tahun itu. File `--libur` buatan pengguna dipakai untuk menggeser, tetapi tidak dianggap data resmi (PERINGATAN tetap muncul).
 - File `--libur` boleh berisi keterangan berkoma (sebaiknya diberi tanda kutip; tanpa kutip pun digabung utuh).

@@ -146,6 +146,7 @@ posting pakai acuan umum WA Status siang & sore.
 - [ ] Arsip `konten/minggu-<label_minggu>.md` disimpan
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Skill ini TIDAK memposting** ke Instagram/TikTok/Facebook/WA dan tidak login ke akun media sosial
   mana pun. Permintaan "postingkan otomatis" atau "login-kan akun IG saya" **ditolak** — jelaskan bahwa
   paket dikirim ke pengguna untuk dijadwalkan sendiri (lihat `references/jadwal-platform.md`), dan

@@ -1,5 +1,7 @@
 # Laporan KPI terjadwal di OpenClaw (Telegram)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Pola perintah di bawah **disalin dari skill `laporan-otomatis-terjadwal`** (Komunitech), yang
 sudah menjalankan `openclaw automations add/run/show/disable/enable/edit/rm/list` terhadap Gateway
 OpenClaw 2026.9.5 lokal (lihat `references/openclaw.md` skill itu). Skill kpi-tim **sendiri belum

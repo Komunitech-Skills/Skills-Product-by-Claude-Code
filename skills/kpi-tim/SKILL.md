@@ -159,6 +159,7 @@ Perusahaan: 🟡 93,6 (▲6,3 vs 2026-08) — sebagian
 ```
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Angka hanya dari script.** Python tidak bisa dijalankan → hitung manual dengan rumus di
   `references/aturan-skor.md` langkah demi langkah, tampilkan rumusnya, dan tulis "belum
   diverifikasi script".

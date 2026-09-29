@@ -190,6 +190,7 @@ Contoh sesi lengkap: `examples/`.
 - [ ] Tanggal & pengelompokan (terlambat/H-1/H-3) berasal dari script, bukan dihitung manual.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Bukan rekam medis elektronik dan bukan pengganti sistem antrean klinik. Tidak membaca chat WA
   atau riwayat pasien di sistem lain; semua data dimasukkan lewat perintah `tambah`/`impor`.
 - Script keluar `ERROR: ...` (kode 1) untuk input salah/ambigu (tanggal, jenis menyerupai

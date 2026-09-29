@@ -134,6 +134,7 @@ Contoh lengkap: `examples/01-konversi-mutasi-bca.md`, `examples/02-ringkasan-bul
   Kolom saldo (bila ada) dipakai untuk **cek saldo**.
 
 ## Keamanan & batasan (wajib dipatuhi agent)
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - `db.sqlite` **hanya dibaca** (mode read-only SQLite, disalin ke memori). Jangan pernah menjalankan SQL tulis,
   mengedit, memindahkan, atau menghapus file di folder budget Actual.
 - Script tidak memakai internet dan tidak butuh akun/API key. Jangan menyarankan membuka server Actual ke internet.

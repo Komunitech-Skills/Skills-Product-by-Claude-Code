@@ -1,5 +1,7 @@
 # Menjadwalkan peringatan dini harian di OpenClaw
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Pola perintah di bawah **disalin dari skill `laporan-otomatis-terjadwal`** (lihat
 `references/openclaw.md` di skill itu), yang sudah diverifikasi lewat `--help` dan dijalankan
 sungguhan terhadap Gateway uji OpenClaw **2026.9.5**. Skill ini tidak menambah perintah/flag baru.

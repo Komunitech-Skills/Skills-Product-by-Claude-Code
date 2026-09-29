@@ -1,5 +1,7 @@
 # Ringkasan bulanan arsip nota ke Telegram (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status verifikasi (jujur).** Bentuk perintah di bawah disalin dari pola `openclaw automations add` yang sudah
 dijalankan sungguhan di Gateway lokal OpenClaw **2026.9.5-2026.9.6** untuk skill lain (`kasir-lokal`, `crm-wa`,
 `buku-stok`). Khusus arsip-nota, jadwal ini **belum** diuji di Gateway sungguhan; ikuti `docs/uji-platform.md`

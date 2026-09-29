@@ -133,6 +133,7 @@ Contoh sesi lengkap: `examples/contoh-sesi-toko-sembako.md`.
 - [ ] Yang dibagikan/dijadwalkan memakai `--samarkan`; tidak ada ancaman atau denda di draf.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Bukan aplikasi akuntansi lengkap (tidak ada jurnal, hutang ke pemasok, laba rugi) dan bukan pengganti faktur pajak Coretax. Tidak membaca mutasi bank otomatis; pembayaran dicatat dari cerita/bukti yang ditempel pemilik (cocokkan mutasi → `rekonsiliasi-bank`).
 - Satu database dipakai satu komputer. Jangan buka file yang sama dari dua komputer lewat Google Drive/Dropbox.
 - Database terkunci (mis. jadwal sedang membaca) → script menunggu 15 detik lalu memberi pesan jelas; ulangi perintahnya. Database rusak → script menolak dengan petunjuk `backup --daftar` + `restore`; jangan hapus atau timpa file database sendiri.

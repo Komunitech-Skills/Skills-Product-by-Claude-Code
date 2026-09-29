@@ -190,6 +190,7 @@ Omzet toko minggu ini 20 juta."
 dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v1.0.2.md`.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Nama kolom bisa berbeda** menurut bahasa/versi UI Ads Manager. **Belum semua nama kolom
   terverifikasi dari ekspor asli**: nama kolom Meta Ads dan perilaku sel `Results` kosong,
   bentuk ekspor Google Ads (baris judul, `Total: Account`), dan beberapa kolom TikTok bersandar

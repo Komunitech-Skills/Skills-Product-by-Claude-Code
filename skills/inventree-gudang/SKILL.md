@@ -89,6 +89,8 @@ Belum disimpan. ...
 Contoh lain di `examples/`. `--json` memberi field yang sama secara terstruktur (angka sebagai teks desimal persis).
 
 ## Batasan & penanganan error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Kode / pesan | Artinya | Yang dilakukan agent |
 |---|---|---|
 | 4 "Tidak bisa menghubungi" | InvenTree mati atau alamat/port salah | Minta nyalakan InvenTree, buka alamat di browser (panduan §3/§7) |

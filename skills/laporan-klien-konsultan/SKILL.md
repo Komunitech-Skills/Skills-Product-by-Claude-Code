@@ -150,6 +150,7 @@ Jaya" --periode mingguan` → tampilkan ketiga versi + catatan bila ada.
 Contoh lengkap input/output nyata: `examples/uji-pembuat-01-konsultan-pajak.md`.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **UU PDP (UU 27/2022) -- catat seperlunya saja.** Kolom `pekerjaan`/`kendala`/
   `butuh_dari_klien` **tidak untuk** menyimpan data rahasia klien yang tidak perlu: nomor
   rekening, kredensial/password, dokumen internal rahasia klien, atau data pribadi karyawan

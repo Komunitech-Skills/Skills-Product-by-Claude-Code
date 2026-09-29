@@ -151,6 +151,7 @@ Total: Rp 18.284.500 (awal periode Rp 16.916.000, naik Rp 1.368.500)
 - [ ] Catatan "Perlu dicek" (BELUM DIGOLONGKAN) ditanyakan ke pengguna; permintaan pembukuan ganda ditolak (Aturan 7)
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Bukan aplikasi akuntansi penuh (tidak ada jurnal, stok, piutang, penyusutan), bukan mesin pembayaran, bukan multi-komputer. Jangan simpan database di folder sinkron (Google Drive/Dropbox) yang dibuka dua komputer sekaligus.
 - Semua nominal rupiah bulat (integer). Nominal bersen dari file bank dibulatkan ke rupiah terdekat (0,5 ke atas) dan diberitahukan. Rata-rata di ekspor arus kas dibulatkan ke rupiah terdekat.
 - Saldo akun dinilai **per akhir hari** (urutan catat dalam satu hari tidak membuat peringatan minus).

@@ -241,6 +241,7 @@ konfirmasi → buat 2 jadwal (ringkasan pagi harian, cek ambang tiap jam) mengik
 `references/openclaw-jadwal.md` → uji sekali → jelaskan cara jeda/hapus.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Tidak ada API key exchange, tidak ada eksekusi order.** Kalau pengguna bersikeras
   minta ini, jelaskan: (1) berita/web yang dipakai agent bisa disusupi instruksi
   tersembunyi (*prompt injection*) yang mencoba memicu transaksi, (2) kesalahan model AI

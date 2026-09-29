@@ -116,6 +116,8 @@ Lihat `examples/01`-`05` untuk skenario lengkap (FAQ toko hijab online, SOP klin
 kantor konsultan, input tidak lengkap, di luar cakupan).
 
 ## Batasan & Penanganan Error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Kode keluar / pesan | Artinya | Yang dilakukan agent |
 |---|---|---|
 | 3 "Tidak bisa terhubung" | Aplikasi SiYuan belum dibuka | Minta pengguna membuka SiYuan, tunggu siap, coba lagi |

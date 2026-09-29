@@ -1,5 +1,7 @@
 # Jadwal cek level harga di OpenClaw (opsional)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Ditulis 2026-09-29 (v1.0.1). **Status: belum diuji di Gateway OpenClaw untuk skill ini.** Bentuk
 perintah `automations add` di bawah mengikuti pola yang sudah terbukti jalan di Gateway uji
 OpenClaw 2026.9.5 untuk skill Komunitech lain (laporan terjadwal). Bila versi OpenClaw pengguna

@@ -130,6 +130,8 @@ _Dasar PPN: UU HPP & PMK 131/2024 (tarif 12%, DPP nilai lain 11/12 untuk barang/
 - Laporan terjadwal hanya ke chat **pemilik** (Telegram default); tanpa nama pelanggan; tanpa grup/broadcast.
 
 ## Batasan & penanganan error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Pesan / kode keluar | Artinya | Yang dilakukan agent |
 |---|---|---|
 | 3 "tidak bisa dihubungi" | Dolibarr/DoliWamp mati, atau alamat salah port | Minta nyalakan DoliWamp, buka alamat di browser |

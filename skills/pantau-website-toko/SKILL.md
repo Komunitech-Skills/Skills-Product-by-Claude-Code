@@ -86,6 +86,8 @@ Diperiksa: 2026-09-26T09:00:12+00:00 UTC
 `--json` berisi field yang sama secara terstruktur (`ok`, `monitor: [...]`, dst).
 
 ## Batasan & penanganan error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Pesan / kode keluar | Artinya | Yang dilakukan agent |
 |---|---|---|
 | kode 4 "tidak bisa dihubungi" | Uptime Kuma mati, alamat/port salah, atau firewall menghalangi | Minta pastikan Uptime Kuma menyala, buka alamatnya di browser dulu |

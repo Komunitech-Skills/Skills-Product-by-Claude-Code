@@ -1,5 +1,7 @@
 # Pengingat mingguan "SOP belum diperbarui" ke Telegram (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status verifikasi (jujur).** Bentuk perintah `openclaw automations add ... --command-argv ...` di
 bawah sama persis dengan pola yang sudah dijalankan sungguhan di Gateway OpenClaw untuk skill lain
 (`dolibarr-usaha`, `crm-wa` - lihat referensi masing-masing). **Khusus `siyuan-sop`, jadwal ini

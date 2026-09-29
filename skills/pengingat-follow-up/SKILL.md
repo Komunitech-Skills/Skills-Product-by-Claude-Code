@@ -174,6 +174,7 @@ Selamat pagi Bu Rina, kami mengingatkan pembayaran INV-012 sebesar Rp 4.500.000 
 - [ ] Jadwal otomatis hanya dibuat setelah pemilik menjawab "ya", dan tujuannya pemilik sendiri.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Script keluar dengan `ERROR: ...` (kode 1): sampaikan pesannya dengan bahasa sederhana dan minta data yang benar.
   Jangan menebak. Kode 2 = kolom berisi data kontak. Minta nama panggilan saja.
 - Baris CSV rusak (tanggal 31/2, nominal "abc", kolom berlebih) **tidak** menghentikan rekap.
