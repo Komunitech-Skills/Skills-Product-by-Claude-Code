@@ -828,7 +828,7 @@ def cmd_ubah_status(args, status, kata):
     if not args.ya:
         cetak(f"Kampanye #{k['id']} '{k['name']}' status {k['status']} akan {kata}.")
         raise Galat("Ulangi dengan --ya setelah pengguna setuju.", 6)
-    api(cfg, "PUT", f"/campaigns/{k['id']}/status", data={"status": status})
+XX
     cetak(f"Kampanye #{k['id']} {kata}.")
 
 
