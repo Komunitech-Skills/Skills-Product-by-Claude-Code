@@ -14,6 +14,8 @@ Perintah:
               DRAF baris realisasi yang WAJIB dikonfirmasi pengguna.
   skor        Hitung capaian, skor tertimbang per orang/divisi/perusahaan, status,
               dan tren dibanding periode sebelumnya.
+  rekap-log   Rekap log operasional harian (komplain, respons CS, pengiriman, produksi)
+              menjadi baris realisasi (jumlah / rata-rata / persen ya).
   okr         Hitung progres OKR ringan (objective + 2-4 key result, 0-1,0).
 
 Aturan hitung lengkap: references/aturan-skor.md. Ringkas:
@@ -28,6 +30,7 @@ Exit code: 0 = berhasil, 1 = input/validasi gagal (lihat pesan).
 """
 import argparse
 import csv
+import datetime
 import difflib
 import io
 import json
@@ -1372,6 +1375,100 @@ def cmd_okr(a):
     return 0
 
 
+def _tanggal(t):
+    t = str(t).strip()
+    m = re.fullmatch(r"(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T].*)?", t)
+    if m:
+        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    else:
+        m = re.fullmatch(r"(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})(?:\s.*)?", t)
+        if not m:
+            return None
+        d, mo, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        y = y + 2000 if y < 100 else y
+    try:
+        return datetime.date(y, mo, d)
+    except ValueError:
+        return None
+
+
+def cmd_rekap_log(a):
+    """Log operasional harian (komplain, respons CS, pengiriman, produksi) -> baris realisasi."""
+    _, rows = baca_tabel(a.log)
+    grup, err = {}, []
+    for r in rows:
+        if not norm(r.get("kpi")):
+            continue
+        label = "Log baris %d" % r["_baris"]
+        tg = _tanggal(r.get("tanggal", ""))
+        if tg is None:
+            err.append("%s: tanggal '%s' tidak terbaca (pakai 2026-09-30 atau 30/09/2026)." % (label, r.get("tanggal", "")))
+            continue
+        if a.per == "minggu":
+            iso = tg.isocalendar()
+            per = "%d-W%02d" % (iso[0], iso[1])
+        else:
+            per = "%d-%02d" % (tg.year, tg.month)
+        if a.periode and per != a.periode:
+            continue
+        cara = norm(r.get("cara")) or "jumlah"
+        cara = {"rata": "rata-rata", "rata2": "rata-rata", "average": "rata-rata", "sum": "jumlah",
+                "persen-ya": "persen", "%": "persen"}.get(cara, cara)
+        if cara not in ("jumlah", "rata-rata", "persen"):
+            err.append("%s: cara '%s' tidak dikenal (jumlah / rata-rata / persen)." % (label, r.get("cara")))
+            continue
+        nilai_t = norm(r.get("nilai"))
+        if cara == "persen":
+            if nilai_t in ("ya", "y", "1", "ok", "tepat", "selesai", "yes", "true"):
+                v = Decimal(1)
+            elif nilai_t in ("tidak", "t", "0", "no", "false", "gagal", "telat", "belum"):
+                v = D0
+            else:
+                err.append("%s: cara 'persen' butuh nilai ya/tidak (sekarang '%s')." % (label, r.get("nilai")))
+                continue
+        else:
+            try:
+                v = angka(r.get("nilai"), "nilai") if nilai_t else Decimal(1)
+            except Gagal as e:
+                err.append("%s: %s" % (label, e))
+                continue
+            if v < 0:
+                err.append("%s: nilai negatif." % label)
+                continue
+        orang = " ".join(str(r.get("orang", "")).split())
+        k = (per, " ".join(str(r.get("divisi", "")).split()), orang, " ".join(str(r.get("kpi")).split()))
+        g = grup.setdefault(k, {"cara": cara, "nilai": [], "baris": []})
+        if g["cara"] != cara:
+            err.append("%s: KPI '%s' untuk %s memakai cara berbeda (%s vs %s) di periode yang sama."
+                       % (label, k[3], orang or k[1], g["cara"], cara))
+            continue
+        g["nilai"].append(v)
+        g["baris"].append(r["_baris"])
+    if err:
+        raise Gagal("Log belum bisa direkap:\n- " + "\n- ".join(err[:20]))
+    if not grup:
+        raise Gagal("Tidak ada baris log%s." % (" untuk periode %s" % a.periode if a.periode else ""))
+    hasil = []
+    for (per, div, orang, kpi), g in sorted(grup.items()):
+        n = len(g["nilai"])
+        if g["cara"] == "jumlah":
+            v = sum(g["nilai"])
+        elif g["cara"] == "rata-rata":
+            v = sum(g["nilai"]) / n
+        else:
+            v = sum(g["nilai"]) / n * D100
+        hasil.append({"periode": per, "divisi": div, "orang": orang, "kpi": kpi, "realisasi": s_dec(bulat(v, 2), 2),
+                      "catatan": "dari log: %d catatan (%s)" % (n, g["cara"])})
+    kolom = ["periode", "divisi", "orang", "kpi", "realisasi", "catatan"]
+    if a.keluar:
+        tulis_csv(a.keluar, kolom, hasil)
+    L = ["Rekap log → realisasi%s:" % (" (disimpan ke %s)" % a.keluar if a.keluar else "")]
+    for h in hasil:
+        L.append("- %s | %s | %s = %s (%s)" % (h["periode"], h["orang"] or h["divisi"], h["kpi"], h["realisasi"], h["catatan"]))
+    cetak(a, {"ok": True, "realisasi": hasil, "file": a.keluar}, "\n".join(L))
+    return 0
+
+
 def _status_okr(p, jalan):
     if jalan is None:
         return "hijau" if p >= Decimal("0.7") else ("kuning" if p >= Decimal("0.4") else "merah")
@@ -1432,6 +1529,13 @@ def buat_parser():
     p.add_argument("--maks-peringatan", type=int, default=5)
     umum(p)
 
+    p = sub.add_parser("rekap-log", help="Log operasional harian -> baris realisasi")
+    p.add_argument("--log", required=True, help="CSV/XLSX: tanggal, divisi, orang, kpi, nilai, cara")
+    p.add_argument("--per", choices=["bulan", "minggu"], default="bulan")
+    p.add_argument("--periode", help="Hanya periode ini (mis. 2026-09 atau 2026-W40)")
+    p.add_argument("--keluar", help="Tulis hasil ke CSV (format realisasi)")
+    umum(p)
+
     p = sub.add_parser("okr", help="Progres OKR ringan")
     p.add_argument("--okr", required=True)
     p.add_argument("--periode")
@@ -1441,7 +1545,7 @@ def buat_parser():
 
 
 PERINTAH = {"katalog": cmd_katalog, "template": cmd_template, "cek": cmd_cek, "baca-teks": cmd_baca_teks,
-            "skor": cmd_skor, "okr": cmd_okr}
+            "skor": cmd_skor, "okr": cmd_okr, "rekap-log": cmd_rekap_log}
 
 
 def main(argv=None):

@@ -5,9 +5,9 @@ TIDAK ada akses jaringan. Script ini hanya menghitung angka yang sudah diberikan
 mengambil harga, tidak memberi rekomendasi beli/jual/tahan, dan tidak menghitung target harga.
 
 Perintah:
-  python3 rasio_saham.py rasio data.json [--format md|json] [--hari-ini YYYY-MM-DD]
-  python3 rasio_saham.py level watchlist.csv [--format md|json] [--hari-ini YYYY-MM-DD]
-  python3 rasio_saham.py angka "Rp1,2 T" [--satuan juta]      (cek cara sebuah angka dibaca)
+  python3 rasio_saham.py rasio data.json [--format md|json] [--hari-ini YYYY-MM-DD] [--arti-m miliar|juta]
+  python3 rasio_saham.py level watchlist.csv [--format md|json] [--hari-ini YYYY-MM-DD] [--arti-m miliar|juta]
+  python3 rasio_saham.py angka "Rp1,2 T" [--satuan juta] [--arti-m miliar|juta]   (cek cara angka dibaca)
 Windows: ganti python3 dengan python atau py.
 
 --- Perintah `rasio`: file JSON (semua angka boleh teks format Indonesia) ---
@@ -17,12 +17,18 @@ Windows: ganti python3 dengan python atau py.
   "tanggal_laporan": "2025-12-31",          # tanggal akhir periode laporan
   "sumber_laporan": "idx.co.id, LK tahunan audit, diakses 2026-09-28",
   "satuan_laporan": "juta",                 # angka laporan TANPA akhiran dikali satuan ini
+                                            # (boleh frasa: "dalam jutaan Rupiah", "in millions of Rupiah")
+  "arti_m": "miliar",                       # WAJIB bila ada angka berakhiran "M": "miliar" atau "juta"
   "pendapatan": "1.234.567", "pendapatan_lalu": "Rp1,1 T",
   "laba_bersih": "98.765", "laba_bersih_lalu": "(12.000)",
   "laba_bersih_entitas_induk": "...",       # opsional, diutamakan untuk ROE/EPS
   "laba_bersih_ttm": "...",                 # opsional, laba 12 bulan terakhir (untuk interim)
   "total_ekuitas": "...", "total_ekuitas_lalu": "...", "ekuitas_entitas_induk": "...",
-  "total_liabilitas": "...", "utang_berbunga": "...", "total_aset": "...",
+  "total_liabilitas": "...", "utang_berbunga": "...", "total_aset": "...", "ekuitas_entitas_induk_lalu": "...",
+  # Khusus BANK (sektor mengandung "bank"): pendapatan = pendapatan bunga BERSIH + pendapatan operasional lain.
+  # Bila "pendapatan" kosong, dihitung dari kolom berikut (juga versi *_lalu):
+  "pendapatan_bunga": "...", "beban_bunga": "...", "pendapatan_operasional_lain": "...",
+  "jenis_pendapatan": "pendapatan bunga bersih + pendapatan operasional lain",   # catatan pos yang dipakai
   "saham_beredar": "4,5 miliar",             # lembar
   "harga_saham": "Rp1.250", "tanggal_harga": "2026-09-26", "sumber_harga": "idx.co.id",
   "dividen_per_saham": "Rp50" | "total_dividen": "225 miliar", "tahun_buku_dividen": "2024"
@@ -32,14 +38,16 @@ Semua kolom opsional; rasio yang datanya kurang ditulis "tidak dihitung" beserta
 Cara baca angka (format Indonesia diutamakan):
 - "1.234.567" = 1234567 ; "1.250" = 1250 ; "1.234,5" = 1234,5 ; "1,2" = 1,2 ; "1.2" = 1,2
 - "1,234" dibaca 1,234 (koma = desimal) dan diberi catatan; "1,234,567" = 1234567 (format Inggris)
-- Akhiran: rb/ribu/k = 10^3 ; jt/juta/mn/million = 10^6 ; M/miliar/milyar/B/bn/billion = 10^9 ;
-  T/triliun/tn/trillion = 10^12.  "M" dibaca MILIAR (kebiasaan berita Indonesia, mis. "Rp5 M").
+- Akhiran: rb/ribu/k/thousand = 10^3 ; jt/juta/mn/mio/million = 10^6 ; miliar/milyar/B/bn/billion = 10^9 ;
+  T/triliun/tn/trillion = 10^12.
+- "M" saja AMBIGU (berita Indonesia: miliar; sumber Inggris: million) -> DITOLAK dengan pertanyaan,
+  kecuali --arti-m miliar|juta (atau "arti_m" di JSON) diberikan. "0.125" = 0,125 (bukan 125).
 - Negatif: "-1.000", "−1.000", atau "(1.000)" (gaya laporan keuangan).
 - "Rp", "IDR", "lembar", "saham" diabaikan.
 
 Rumus (semua Decimal, tanpa pembulatan di tengah; tampilan: 2 desimal, rupiah dibulatkan terdekat):
   pertumbuhan  = (sekarang - lalu) / abs(lalu) x 100%   (tidak bermakna bila lalu <= 0)
-  margin laba bersih = laba bersih / pendapatan x 100%
+  margin laba bersih = laba bersih / pendapatan x 100%   (bank/keuangan: diberi label "tidak sebanding lintas sektor")
   laba setahun = laba_bersih_ttm, atau laba (induk bila ada) x 12 / periode_bulan (disetahunkan sederhana)
   ROE          = laba setahun / ekuitas (induk bila ada; rata-rata awal-akhir bila ekuitas lalu ada) x 100%
   DER          = total liabilitas / total ekuitas (x) ; DER utang berbunga = utang berbunga / total ekuitas
@@ -51,8 +59,11 @@ Rumus (semua Decimal, tanpa pembulatan di tengah; tampilan: 2 desimal, rupiah di
 --- Perintah `level`: CSV dengan kolom ---
   kode,harga_sekarang,tanggal_harga,sumber_harga,level_atas,level_bawah,catatan
 level_atas / level_bawah = angka yang DITETAPKAN PENGGUNA SENDIRI (boleh salah satu kosong).
-Keluaran hanya menyatakan fakta "harga di atas/di bawah level Anda". Exit code: 0 = tidak ada
-level tersentuh, 2 = ada level tersentuh, 1 = input salah.
+Keluaran hanya menyatakan fakta "harga di atas/di bawah level Anda". Exit code:
+  0 = semua baris dicek & tidak ada level tersentuh ; 2 = ada level tersentuh, semua baris dicek ;
+  3 = ada baris GAGAL dicek (harga kosong/rusak, level kosong/terbalik, file tanpa baris) - selalu
+      laporkan, JANGAN dianggap "tidak ada kabar" (bisa sekaligus ada yang tersentuh; lihat ringkasan) ;
+  1 = input/file salah.
 
 Hanya library standar Python 3.8+.
 """
@@ -79,18 +90,23 @@ class InputError(ValueError):
 # ----------------------------------------------------------------------------- baca angka
 _AKHIRAN = [
     ("triliun", 12), ("trilyun", 12), ("trillion", 12), ("tn", 12), ("t", 12),
-    ("miliar", 9), ("milyar", 9), ("billion", 9), ("bn", 9), ("b", 9), ("m", 9),
+    ("miliar", 9), ("milyar", 9), ("billion", 9), ("bn", 9), ("b", 9),
     ("million", 6), ("juta", 6), ("mio", 6), ("jt", 6), ("mn", 6),
+    ("m", None),   # AMBIGU: miliar (berita Indonesia) atau million (sumber Inggris) -> wajib --arti-m
     ("ribu", 3), ("rb", 3), ("thousand", 3), ("k", 3),
 ]
-_SATUAN = {"": 0, "satuan": 0, "rupiah": 0, "ribu": 3, "ribuan": 3, "juta": 6, "jutaan": 6,
-           "miliar": 9, "miliaran": 9, "milyar": 9, "triliun": 12}
+_SATUAN = {"": 0, "satuan": 0, "penuh": 0, "ribu": 3, "ribuan": 3, "thousand": 3, "thousands": 3,
+           "juta": 6, "jutaan": 6, "million": 6, "millions": 6, "miliar": 9, "miliaran": 9, "milyar": 9,
+           "billion": 9, "billions": 9, "triliun": 12, "triliunan": 12}
+ARTI_M = {"miliar": 9, "juta": 6, "million": 6}
 _BUANG = re.compile(r"(rp\.?|idr|rupiah|lembar|saham)")
 _POLA = re.compile(r"^([0-9][0-9.,]*)(" + "|".join(a for a, _ in _AKHIRAN) + r")?$")
 
 
 def satuan_ke_pangkat(satuan):
-    s = (satuan or "").strip().lower()
+    # terima frasa salinan laporan: "dalam jutaan Rupiah", "in millions of Rupiah", "Rp juta"
+    s = re.sub(r"[()\[\].,]", " ", (satuan or "").lower())
+    s = " ".join(w for w in s.split() if w not in ("dalam", "in", "of", "rupiah", "rp", "idr", "ribu-an"))
     if s not in _SATUAN:
         raise InputError(f"satuan_laporan '{satuan}' tidak dikenal (pakai: satuan, ribu, juta, miliar, triliun)")
     return _SATUAN[s]
@@ -128,14 +144,26 @@ def _normal(num, catatan, asli):
             return "".join(grup)
         if not grup[0] or not grup[1]:
             raise InputError(f"'{asli}': titik di awal/akhir angka")
-        if len(grup[1]) == 3 and len(grup[0]) <= 3:
+        if len(grup[1]) == 3 and len(grup[0]) <= 3 and grup[0] != "0":
             return grup[0] + grup[1]          # 1.250 = seribu dua ratus lima puluh
         return grup[0] + "." + grup[1]        # 1.2 T / 12.5 = desimal
     return num
 
 
-def parse_angka(nilai, pangkat_default=0, catatan=None):
-    """Kembalikan Decimal, atau None bila kosong. Raise InputError bila tidak bisa dibaca."""
+def pangkat_arti_m(arti_m):
+    if arti_m in (None, ""):
+        return None
+    a = str(arti_m).strip().lower()
+    if a not in ARTI_M:
+        raise InputError(f"arti_m '{arti_m}' tidak dikenal (pakai: miliar atau juta)")
+    return ARTI_M[a]
+
+
+def parse_angka(nilai, pangkat_default=0, catatan=None, arti_m=None):
+    """Kembalikan Decimal, atau None bila kosong. Raise InputError bila tidak bisa dibaca.
+
+    arti_m: None (akhiran "M" ditolak dengan pertanyaan), "miliar", atau "juta".
+    """
     catatan = catatan if catatan is not None else []
     if nilai is None:
         return None
@@ -167,7 +195,16 @@ def parse_angka(nilai, pangkat_default=0, catatan=None):
         d = Decimal(_normal(num, catatan, asli))
     except InvalidOperation:
         raise InputError(f"'{asli}' tidak bisa dibaca sebagai angka")
-    pangkat = dict(_AKHIRAN)[akhiran] if akhiran else pangkat_default
+    if akhiran == "m":
+        pm = pangkat_arti_m(arti_m)
+        if pm is None:
+            raise InputError(f"'{asli}': akhiran \"M\" ambigu. M = miliar (kebiasaan berita Indonesia) atau "
+                             "million/juta (sumber berbahasa Inggris)? Tulis 'miliar' atau 'juta', atau "
+                             "jalankan dengan --arti-m miliar / --arti-m juta (di JSON: \"arti_m\").")
+        pangkat = pm
+        catatan.append(f"'{asli}' dibaca {'MILIAR' if pm == 9 else 'JUTA'} karena arti_m = {arti_m}")
+    else:
+        pangkat = dict(_AKHIRAN)[akhiran] if akhiran else pangkat_default
     d = d * (Decimal(10) ** pangkat)
     if abs(d) >= BATAS_ANGKA:
         raise InputError(f"'{asli}' terlalu besar, cek kembali satuannya")
@@ -229,26 +266,45 @@ def fmt_nilai(r):
 # ----------------------------------------------------------------------------- rasio
 KOLOM_LAPORAN = ["pendapatan", "pendapatan_lalu", "laba_bersih", "laba_bersih_lalu",
                  "laba_bersih_entitas_induk", "laba_bersih_ttm", "total_ekuitas", "total_ekuitas_lalu",
-                 "ekuitas_entitas_induk", "total_liabilitas", "utang_berbunga", "total_aset", "total_dividen"]
+                 "ekuitas_entitas_induk", "ekuitas_entitas_induk_lalu", "total_liabilitas", "utang_berbunga",
+                 "total_aset", "total_dividen", "pendapatan_bunga", "pendapatan_bunga_lalu", "beban_bunga",
+                 "beban_bunga_lalu", "pendapatan_operasional_lain", "pendapatan_operasional_lain_lalu"]
 KOLOM_LAIN = ["saham_beredar", "harga_saham", "dividen_per_saham"]
 LABEL = {
     "pendapatan": "Pendapatan", "pendapatan_lalu": "Pendapatan periode lalu",
     "laba_bersih": "Laba bersih", "laba_bersih_lalu": "Laba bersih periode lalu",
     "laba_bersih_entitas_induk": "Laba bersih entitas induk", "laba_bersih_ttm": "Laba bersih 12 bln terakhir",
     "total_ekuitas": "Total ekuitas", "total_ekuitas_lalu": "Total ekuitas periode lalu",
-    "ekuitas_entitas_induk": "Ekuitas entitas induk", "total_liabilitas": "Total liabilitas",
+    "ekuitas_entitas_induk": "Ekuitas entitas induk", "ekuitas_entitas_induk_lalu": "Ekuitas entitas induk periode lalu",
+    "total_liabilitas": "Total liabilitas",
+    "pendapatan_bunga": "Pendapatan bunga (bruto)", "pendapatan_bunga_lalu": "Pendapatan bunga periode lalu",
+    "beban_bunga": "Beban bunga", "beban_bunga_lalu": "Beban bunga periode lalu",
+    "pendapatan_operasional_lain": "Pendapatan operasional lain",
+    "pendapatan_operasional_lain_lalu": "Pendapatan operasional lain periode lalu",
     "utang_berbunga": "Utang berbunga", "total_aset": "Total aset", "total_dividen": "Total dividen",
     "saham_beredar": "Saham beredar (lembar)", "harga_saham": "Harga saham",
     "dividen_per_saham": "Dividen per saham",
 }
 KOLOM_DIKENAL = set(KOLOM_LAPORAN + KOLOM_LAIN) | {
     "emiten", "nama", "sektor", "periode", "periode_lalu", "periode_bulan", "tanggal_laporan",
-    "sumber_laporan", "satuan_laporan", "tanggal_harga", "sumber_harga", "tahun_buku_dividen", "catatan"}
+    "sumber_laporan", "satuan_laporan", "tanggal_harga", "sumber_harga", "tahun_buku_dividen", "catatan",
+    "arti_m", "jenis_pendapatan"}
 
 
-def baca_data(mentah):
+def jenis_sektor(sektor):
+    s = (sektor or "").lower()
+    if "bank" in s:
+        return "bank"
+    if any(k in s for k in ("asuransi", "pembiayaan", "multifinance", "keuangan", "financial", "sekuritas")):
+        return "keuangan"
+    return None
+
+
+def baca_data(mentah, arti_m=None):
     if not isinstance(mentah, dict):
         raise InputError("isi file harus objek JSON {...}")
+    arti_m = arti_m or mentah.get("arti_m")
+    pangkat_arti_m(arti_m)
     catatan = []
     asing = sorted(set(mentah) - KOLOM_DIKENAL)
     if asing:
@@ -256,9 +312,9 @@ def baca_data(mentah):
     pangkat = satuan_ke_pangkat(mentah.get("satuan_laporan"))
     angka = {}
     for k in KOLOM_LAPORAN:
-        angka[k] = parse_angka(mentah.get(k), pangkat, catatan)
+        angka[k] = parse_angka(mentah.get(k), pangkat, catatan, arti_m)
     for k in KOLOM_LAIN:
-        angka[k] = parse_angka(mentah.get(k), 0, catatan)
+        angka[k] = parse_angka(mentah.get(k), 0, catatan, arti_m)
     try:
         bulan = int(str(mentah.get("periode_bulan", 12)).strip() or 12)
     except ValueError:
@@ -269,12 +325,13 @@ def baca_data(mentah):
         raise InputError("saham_beredar harus lebih dari 0")
     if angka["harga_saham"] is not None and angka["harga_saham"] <= 0:
         raise InputError("harga_saham harus lebih dari 0")
-    for k in ("dividen_per_saham", "total_dividen", "total_liabilitas", "utang_berbunga", "total_aset"):
+    for k in ("dividen_per_saham", "total_dividen", "total_liabilitas", "utang_berbunga", "total_aset",
+              "pendapatan_bunga", "pendapatan_bunga_lalu", "beban_bunga", "beban_bunga_lalu"):
         if angka[k] is not None and angka[k] < 0:
             raise InputError(f"{LABEL[k]} tidak boleh negatif")
     info = {k: (str(mentah[k]).strip() if mentah.get(k) not in (None, "") else None)
             for k in ("emiten", "nama", "sektor", "periode", "periode_lalu", "sumber_laporan",
-                      "sumber_harga", "tahun_buku_dividen", "catatan")}
+                      "sumber_harga", "tahun_buku_dividen", "catatan", "jenis_pendapatan")}
     info["periode_bulan"] = bulan
     info["tanggal_laporan"] = parse_tanggal(mentah.get("tanggal_laporan"), "tanggal_laporan")
     info["tanggal_harga"] = parse_tanggal(mentah.get("tanggal_harga"), "tanggal_harga")
@@ -307,22 +364,57 @@ def _tumbuh(kode, nama, now, lalu, kolom):
     return _hasil(kode, nama, "%", rumus, (now - lalu) / abs(lalu) * 100)
 
 
+def _pendapatan_bank(a, fakta, sufiks):
+    """Bank: pendapatan = (pendapatan bunga - beban bunga) + pendapatan operasional lain."""
+    k = "pendapatan" + sufiks
+    pb, bb = a["pendapatan_bunga" + sufiks], a["beban_bunga" + sufiks]
+    pol = a["pendapatan_operasional_lain" + sufiks]
+    if a[k] is None and pb is not None and bb is not None:
+        a[k] = pb - bb + (pol or 0)
+        fakta.append(f"{LABEL[k]} bank dihitung = pendapatan bunga - beban bunga"
+                     + (" + pendapatan operasional lain" if pol is not None else
+                        " (pendapatan operasional lain tidak diisi, dianggap 0)")
+                     + f" = {fmt_ringkas(a[k])}.")
+    elif a[k] is not None and pb is not None and a[k] == pb:
+        fakta.append(f"PERINGATAN: {LABEL[k]} yang diisi SAMA dengan total pendapatan bunga (bruto). Untuk bank, "
+                     "pendapatan = pendapatan bunga BERSIH + pendapatan operasional lain; margin & pertumbuhan "
+                     "bisa menyesatkan. Isi beban_bunga & pendapatan_operasional_lain, atau perbaiki angka.")
+
+
 def hitung(info, a):
     r, fakta = [], []
+    a = dict(a)
     bulan = info["periode_bulan"]
+    sektor = jenis_sektor(info.get("sektor"))
+    if sektor == "bank":
+        _pendapatan_bank(a, fakta, "")
+        _pendapatan_bank(a, fakta, "_lalu")
+        jp = (info.get("jenis_pendapatan") or "").lower()
+        if "bunga" in jp and "bersih" not in jp:
+            fakta.append("PERINGATAN: jenis_pendapatan menyebut pendapatan bunga (bruto). Untuk bank, pakai pendapatan "
+                         "bunga BERSIH + pendapatan operasional lain agar margin tidak menyesatkan.")
+        elif a["pendapatan"] is not None and not jp and a["pendapatan_bunga"] is None:
+            fakta.append("Bank: pastikan 'pendapatan' = pendapatan bunga bersih + pendapatan operasional lain "
+                         "(bukan total pendapatan bunga). Isi jenis_pendapatan untuk mencatat pos yang dipakai.")
     r.append(_tumbuh("pertumbuhan_pendapatan", "Pertumbuhan pendapatan", a["pendapatan"], a["pendapatan_lalu"],
                      ["pendapatan", "pendapatan_lalu"]))
     r.append(_tumbuh("pertumbuhan_laba", "Pertumbuhan laba bersih", a["laba_bersih"], a["laba_bersih_lalu"],
                      ["laba_bersih", "laba_bersih_lalu"]))
 
     rumus = "laba bersih / pendapatan x 100%"
+    nama_margin = "Margin laba bersih"
+    if sektor == "bank":
+        nama_margin = "Margin laba bersih (bank; tidak sebanding lintas sektor)"
+        rumus = "laba bersih / (pendapatan bunga bersih + pendapatan operasional lain) x 100%"
+    elif sektor == "keuangan":
+        nama_margin = "Margin laba bersih (sektor keuangan; tidak sebanding lintas sektor)"
     if a["laba_bersih"] is None or a["pendapatan"] is None:
-        r.append(_kurang("margin_bersih", "Margin laba bersih", "%", rumus,
+        r.append(_kurang("margin_bersih", nama_margin, "%", rumus,
                          [LABEL[k] for k in ("laba_bersih", "pendapatan") if a[k] is None]))
     elif a["pendapatan"] <= 0:
-        r.append(_hasil("margin_bersih", "Margin laba bersih", "%", rumus, None, "tidak_bermakna", "pendapatan <= 0"))
+        r.append(_hasil("margin_bersih", nama_margin, "%", rumus, None, "tidak_bermakna", "pendapatan <= 0"))
     else:
-        r.append(_hasil("margin_bersih", "Margin laba bersih", "%", rumus, a["laba_bersih"] / a["pendapatan"] * 100))
+        r.append(_hasil("margin_bersih", nama_margin, "%", rumus, a["laba_bersih"] / a["pendapatan"] * 100))
 
     # laba & ekuitas dasar
     laba_induk = a["laba_bersih_entitas_induk"] if a["laba_bersih_entitas_induk"] is not None else a["laba_bersih"]
@@ -345,11 +437,15 @@ def hitung(info, a):
                          [x for x, v in (("Laba bersih", laba_th), ("Total ekuitas", ekuitas)) if v is None]))
     else:
         penyebut, ket = ekuitas, "akhir periode"
-        if a["total_ekuitas_lalu"] is not None and a["ekuitas_entitas_induk"] is None:
-            if a["total_ekuitas_lalu"] > 0:
-                penyebut, ket = (ekuitas + a["total_ekuitas_lalu"]) / 2, "rata-rata awal & akhir"
+        ek_lalu = a["ekuitas_entitas_induk_lalu"] if a["ekuitas_entitas_induk"] is not None else a["total_ekuitas_lalu"]
+        if ek_lalu is not None:
+            if ek_lalu > 0:
+                penyebut, ket = (ekuitas + ek_lalu) / 2, "rata-rata awal & akhir"
             else:
                 ket = "akhir periode; ekuitas awal negatif/nol sehingga rata-rata tidak dipakai"
+        if a["laba_bersih_entitas_induk"] is not None and a["ekuitas_entitas_induk"] is None:
+            fakta.append("ROE mencampur basis: laba entitas induk dibagi TOTAL ekuitas (ekuitas entitas induk "
+                         "tidak diisi). Isi ekuitas_entitas_induk agar sebanding.")
         if ekuitas <= 0 or penyebut <= 0:
             r.append(_hasil("roe", "ROE", "%", rumus, None, "tidak_bermakna", "ekuitas negatif/nol (defisiensi modal)"))
         else:
@@ -436,17 +532,27 @@ def hitung(info, a):
             and a["laba_bersih"] >= 0:
         fakta.append("Laba berbalik dari rugi (periode lalu) menjadi laba; cek apakah ada pos satu kali "
                      "(penjualan aset, selisih kurs, dll.) di catatan laporan keuangan.")
+    laba_ke_rugi = a["laba_bersih_lalu"] is not None and a["laba_bersih_lalu"] > 0 and \
+        a["laba_bersih"] is not None and a["laba_bersih"] < 0
+    if laba_ke_rugi:
+        fakta.append("Berbalik dari LABA (periode lalu) menjadi RUGI; persen pertumbuhan laba kurang bermakna, "
+                     "bandingkan nominalnya.")
     for kode, teks in (("pertumbuhan_pendapatan", "Pendapatan turun"), ("pertumbuhan_laba", "Laba bersih turun")):
         h = next(x for x in r if x["kode"] == kode)
+        if kode == "pertumbuhan_laba" and laba_ke_rugi:
+            continue
         if h["nilai"] is not None and h["nilai"] < 0:
             fakta.append(f"{teks} {_ribuan(-h['nilai'], 2)}% dibanding periode lalu.")
     if a["laba_bersih_entitas_induk"] is None and a["laba_bersih"] is not None:
         fakta.append("Laba entitas induk tidak diisi: ROE/EPS memakai laba bersih total (termasuk "
                      "kepentingan nonpengendali bila ada).")
-    sektor = (info.get("sektor") or "").lower()
-    if any(k in sektor for k in ("bank", "asuransi", "pembiayaan", "multifinance", "keuangan")):
+    if sektor:
         fakta.append("Sektor keuangan: DER lazim tinggi karena dana nasabah tercatat sebagai liabilitas; "
-                     "jangan dibandingkan dengan DER perusahaan non-keuangan.")
+                     "jangan dibandingkan dengan DER perusahaan non-keuangan. Margin laba bersih juga tidak "
+                     "sebanding lintas sektor.")
+    if sektor == "bank":
+        fakta.append("Bank: ROE hitungan ini bisa berbeda dari ROE yang dilaporkan bank (bank sering memakai "
+                     "rata-rata ekuitas bulanan atau laba sebelum pajak). Sebut keduanya bila ada, beserta sumbernya.")
     if a["total_aset"] is not None and a["total_liabilitas"] is not None and a["total_ekuitas"] is not None \
             and a["total_aset"] > 0:
         selisih = abs(a["total_aset"] - a["total_liabilitas"] - a["total_ekuitas"])
@@ -483,8 +589,8 @@ def cek_kesegaran(info, hari_ini, ada_harga):
     return out
 
 
-def proses_rasio(mentah, hari_ini):
-    info, angka, catatan = baca_data(mentah)
+def proses_rasio(mentah, hari_ini, arti_m=None):
+    info, angka, catatan = baca_data(mentah, arti_m)
     rasio, fakta = hitung(info, angka)
     kesegaran = cek_kesegaran(info, hari_ini, angka["harga_saham"] is not None)
     return {"info": info, "angka": angka, "rasio": rasio, "fakta": fakta,
@@ -545,7 +651,7 @@ def md_rasio(h):
 KOLOM_LEVEL = ["kode", "harga_sekarang", "tanggal_harga", "sumber_harga", "level_atas", "level_bawah", "catatan"]
 
 
-def proses_level(baris_csv, hari_ini):
+def proses_level(baris_csv, hari_ini, arti_m=None):
     hasil, masalah = [], []
     for no, b in enumerate(baris_csv, start=2):
         b = {(k or "").strip().lower(): (v or "").strip() for k, v in b.items() if k is not None}
@@ -555,9 +661,9 @@ def proses_level(baris_csv, hari_ini):
                 masalah.append(f"baris {no}: kode saham kosong")
             continue
         try:
-            harga = parse_angka(b.get("harga_sekarang"))
-            atas = parse_angka(b.get("level_atas"))
-            bawah = parse_angka(b.get("level_bawah"))
+            harga = parse_angka(b.get("harga_sekarang"), arti_m=arti_m)
+            atas = parse_angka(b.get("level_atas"), arti_m=arti_m)
+            bawah = parse_angka(b.get("level_bawah"), arti_m=arti_m)
             tgl = parse_tanggal(b.get("tanggal_harga"), "tanggal_harga")
         except InputError as e:
             masalah.append(f"baris {no} ({kode}): {e}")
@@ -577,11 +683,11 @@ def proses_level(baris_csv, hari_ini):
         status, jarak = [], []
         if atas is not None:
             if harga >= atas:
-                status.append(f"DI ATAS/SAMA DENGAN level atas Anda ({fmt_rp(atas)})")
+                status.append(f"DI ATAS/SAMA DENGAN level atas Anda ({_rp_level(atas)})")
             jarak.append(f"{_ribuan((atas - harga) / harga * 100, 2)}% ke level atas")
         if bawah is not None:
             if harga <= bawah:
-                status.append(f"DI BAWAH/SAMA DENGAN level bawah Anda ({fmt_rp(bawah)})")
+                status.append(f"DI BAWAH/SAMA DENGAN level bawah Anda ({_rp_level(bawah)})")
             jarak.append(f"{_ribuan((harga - bawah) / harga * 100, 2)}% ke level bawah")
         peringatan = []
         if tgl is None:
@@ -593,23 +699,35 @@ def proses_level(baris_csv, hari_ini):
         hasil.append({"kode": kode, "harga": harga, "tanggal_harga": tgl, "sumber": b.get("sumber_harga") or None,
                       "level_atas": atas, "level_bawah": bawah, "tersentuh": bool(status),
                       "status": status, "jarak": jarak, "peringatan": peringatan, "catatan": b.get("catatan") or None})
-    return {"hasil": hasil, "masalah": masalah, "hari_ini": hari_ini,
-            "ada_tersentuh": any(x["tersentuh"] for x in hasil)}
+    if not hasil and not masalah:
+        masalah.append("tidak ada baris saham di file")
+    ringkasan = {"dicek": len(hasil), "tersentuh": sum(1 for x in hasil if x["tersentuh"]),
+                 "gagal_dicek": len(masalah)}
+    return {"hasil": hasil, "masalah": masalah, "hari_ini": hari_ini, "ringkasan": ringkasan,
+            "ada_tersentuh": ringkasan["tersentuh"] > 0, "ada_gagal": bool(masalah)}
 
 
 def _sel(teks):
     return str(teks).replace("|", "/").replace("\n", " ")
 
 
+def _rp_level(d):
+    return fmt_rp(d, 0 if d is None or d == d.to_integral_value() else 2)
+
+
 def md_level(h):
+    rk = h["ringkasan"]
     b = [f"## Cek Level Harga Pantauan ({h['hari_ini']})", "",
+         f"Ringkasan: {rk['dicek']} saham dicek, {rk['tersentuh']} menyentuh level Anda, "
+         f"{rk['gagal_dicek']} baris GAGAL dicek" + (" (lihat daftar di bawah; hasil ini TIDAK berarti aman)."
+                                                     if rk["gagal_dicek"] else "."), "",
          "| Kode | Harga | Per tanggal | Level bawah | Level atas | Status | Catatan data |", "|---|---|---|---|---|---|---|"]
     for x in h["hasil"]:
         st = "; ".join(x["status"]) if x["status"] else "di antara level Anda (" + ", ".join(x["jarak"]) + ")"
-        b.append(f"| {_sel(x['kode'])} | {fmt_rp(x['harga'])} | {x['tanggal_harga'] or '-'} | {fmt_rp(x['level_bawah'])} | "
-                 f"{fmt_rp(x['level_atas'])} | {st} | {_sel(', '.join(x['peringatan']) or (x['sumber'] or '-'))} |")
+        b.append(f"| {_sel(x['kode'])} | {_rp_level(x['harga'])} | {x['tanggal_harga'] or '-'} | "
+                 f"{_rp_level(x['level_bawah'])} | {_rp_level(x['level_atas'])} | {st} | {_sel(', '.join(x['peringatan']) or (x['sumber'] or '-'))} |")
     if h["masalah"]:
-        b += ["", "### Baris yang tidak dicek"] + [f"- {m}" for m in h["masalah"]]
+        b += ["", "### Baris yang GAGAL dicek (perbaiki lalu jalankan ulang)"] + [f"- {m}" for m in h["masalah"]]
     b += ["", "Level di atas ditetapkan sendiri oleh Anda; notifikasi ini hanya fakta posisi harga, bukan sinyal.",
           "", f"_{DISCLAIMER}_"]
     return "\n".join(b)
@@ -624,14 +742,16 @@ def main(argv=None):
         p.add_argument("file")
         p.add_argument("--format", choices=("md", "json"), default="md")
         p.add_argument("--hari-ini", help="YYYY-MM-DD (default: tanggal komputer)")
+        p.add_argument("--arti-m", choices=("miliar", "juta"), help='arti akhiran "M" (wajib bila ada angka ber-"M")')
     p = sub.add_parser("angka")
     p.add_argument("teks")
     p.add_argument("--satuan", default="")
+    p.add_argument("--arti-m", choices=("miliar", "juta"))
     args = ap.parse_args(argv)
     try:
         if args.perintah == "angka":
             cat = []
-            v = parse_angka(args.teks, satuan_ke_pangkat(args.satuan), cat)
+            v = parse_angka(args.teks, satuan_ke_pangkat(args.satuan), cat, args.arti_m)
             print("kosong" if v is None else f"{_ribuan(v, 4).rstrip('0').rstrip(',')}  ({fmt_ringkas(v)})")
             for c in cat:
                 print("catatan:", c)
@@ -643,7 +763,7 @@ def main(argv=None):
                     mentah = json.load(f)
                 except json.JSONDecodeError as e:
                     raise InputError(f"file JSON rusak (baris {e.lineno}): {e.msg}")
-            h = proses_rasio(mentah, hari_ini)
+            h = proses_rasio(mentah, hari_ini, args.arti_m)
             print(json.dumps(_jsonable(h), ensure_ascii=False, indent=2) if args.format == "json" else md_rasio(h))
             return 0
         with open(args.file, encoding="utf-8-sig", newline="") as f:
@@ -653,8 +773,10 @@ def main(argv=None):
         kolom = [(k or "").strip().lower() for k in (pembaca.fieldnames or [])]
         if "kode" not in kolom or "harga_sekarang" not in kolom:
             raise InputError("CSV level wajib punya kolom: " + ",".join(KOLOM_LEVEL))
-        h = proses_level(list(pembaca), hari_ini)
+        h = proses_level(list(pembaca), hari_ini, args.arti_m)
         print(json.dumps(_jsonable(h), ensure_ascii=False, indent=2) if args.format == "json" else md_level(h))
+        if h["ada_gagal"]:
+            return 3
         return 2 if h["ada_tersentuh"] else 0
     except InputError as e:
         print(f"ERROR: {e}", file=sys.stderr)

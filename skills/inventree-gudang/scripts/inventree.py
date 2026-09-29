@@ -105,6 +105,13 @@ def baca_angka_pengguna(teks):
         raise ValueError(f"bukan angka: {teks!r}")
 
 
+def dec(nilai):
+    """Decimal -> string angka mesin tanpa nol berlebih ('90', '12.5') untuk --json. None tetap None."""
+    if nilai is None:
+        return None
+    return f"{ke_desimal(nilai).normalize():f}"
+
+
 def fmt(nilai):
     """Decimal -> '1.200' / '12,5' / '0,05' (gaya Indonesia, tanpa nol di belakang)."""
     d = ke_desimal(nilai)
@@ -433,7 +440,7 @@ def cmd_cari(args, token):
         teks.append(f"- {ringkas_barang(p)} | {p.get('category_name') or '-'} | stok {fmt(stok)}{satuan(p)}"
                     f"{f' (min {fmt(mn)})' if mn > 0 else ''}{tanda}")
         data.append({"id": p["pk"], "kode": p.get("IPN"), "nama": p["name"], "kategori": p.get("category_name"),
-                     "stok": str(stok), "minimum": str(mn), "satuan": p.get("units") or ""})
+                     "stok": dec(stok), "minimum": dec(mn), "satuan": p.get("units") or ""})
     if len(hasil) > args.maks:
         teks.append(f"(+{len(hasil) - args.maks} lagi; persempit kata kunci atau --maks)")
     if not hasil:
@@ -485,8 +492,8 @@ def cmd_stok(args, token):
     if not items:
         teks.append("(tidak ada stok tercatat)")
     cetak({"teks": "\n".join(teks), "barang": {"id": p["pk"], "kode": p.get("IPN"), "nama": p["name"]},
-           "total": str(total), "item": [{"id": i["pk"], "lokasi": nama_lokasi(i), "batch": i.get("batch"),
-                                          "jumlah": str(ke_desimal(i["quantity"]))} for i in items]}, args)
+           "total": dec(total), "item": [{"id": i["pk"], "lokasi": nama_lokasi(i), "batch": i.get("batch"),
+                                          "jumlah": dec(ke_desimal(i["quantity"]))} for i in items]}, args)
     return 0
 
 
@@ -565,7 +572,7 @@ def cmd_stok_menipis(args, token):
     teks.append("\nCatatan: hanya barang yang diberi 'Minimum Stock' di InvenTree yang diperiksa. 'Perlu dipesan' = "
                 "minimum - stok - sedang dipesan - sedang diproduksi (kebutuhan produksi/penjualan terbuka ditampilkan terpisah, tidak ditambahkan).")
     cetak({"teks": "\n".join(teks), "jumlah": len(hasil),
-           "barang": [{k: (str(v) if isinstance(v, Decimal) else v) for k, v in r.items()} for r in hasil]}, args)
+           "barang": [{k: (dec(v) if isinstance(v, Decimal) else v) for k, v in r.items()} for r in hasil]}, args)
     return 0
 
 
@@ -599,7 +606,7 @@ def cmd_po_terbuka(args, token):
             pd = ln.get("part_detail") or {}
             teks.append(f"  - {pd.get('name', ln.get('internal_part_name', '?'))} [{pd.get('IPN') or '-'}]: dipesan {fmt(pesan)},"
                         f" diterima {fmt(terima)}, sisa {fmt(sisa)}{satuan(pd)}")
-            sisa_list.append({"baris": ln["pk"], "kode": pd.get("IPN"), "sisa": str(sisa)})
+            sisa_list.append({"baris": ln["pk"], "kode": pd.get("IPN"), "sisa": dec(sisa)})
         data.append({"id": o["pk"], "nomor": o["reference"], "pemasok": o.get("supplier_name"),
                      "status": o.get("status"), "target": o.get("target_date"), "terlambat": bool(o.get("overdue")),
                      "total": o.get("total_price"), "sisa": sisa_list})
@@ -659,9 +666,9 @@ def cmd_bom(args, token):
     else:
         teks.append(f"\nMaksimal bisa diproduksi dari stok sekarang: {fmt(maks)} unit"
                     " (dibatasi bahan dengan angka 'cukup untuk' terkecil; stok yang sudah dialokasikan tidak dihitung)")
-    cetak({"teks": "\n".join(teks), "maks_produksi": str(maks),
-           "bom": [{"kode": r["komponen"].get("IPN"), "nama": r["komponen"].get("name"), "per_unit": str(r["per_unit"]),
-                    "tersedia": str(r["tersedia"]), "cukup_untuk": None if r["bisa"] is None else str(r["bisa"])}
+    cetak({"teks": "\n".join(teks), "maks_produksi": dec(maks),
+           "bom": [{"kode": r["komponen"].get("IPN"), "nama": r["komponen"].get("name"), "per_unit": dec(r["per_unit"]),
+                    "tersedia": dec(r["tersedia"]), "cukup_untuk": None if r["bisa"] is None else dec(r["bisa"])}
                    for r in baris]}, args)
     return 0
 
@@ -703,9 +710,9 @@ def cmd_produksi_ringkas(args, token):
                     f"Maksimal dari stok sekarang: {fmt(maks)} unit.")
         teks.append("Hitungan: butuh = per unit x jumlah (+ setup, + susut % bila diisi di BOM); tersedia = stok bebas "
                     "(belum dialokasikan) termasuk pengganti.")
-        cetak({"teks": "\n".join(teks), "cukup": not kurang_ada, "maks_produksi": str(maks),
-               "bahan": [{"kode": r["komponen"].get("IPN"), "butuh": str(r.get("butuh")), "tersedia": str(r["tersedia"]),
-                          "kurang": str(r.get("kurang"))} for r in baris]}, args)
+        cetak({"teks": "\n".join(teks), "cukup": not kurang_ada, "maks_produksi": dec(maks),
+               "bahan": [{"kode": r["komponen"].get("IPN"), "butuh": dec(r.get("butuh")), "tersedia": dec(r["tersedia"]),
+                          "kurang": dec(r.get("kurang"))} for r in baris]}, args)
         return 0
     daftar = data_produksi_terbuka(args, token)
     teks = [f"PERINTAH PRODUKSI TERBUKA: {len(daftar)}"]
@@ -719,7 +726,7 @@ def cmd_produksi_ringkas(args, token):
         teks.append("(tidak ada perintah produksi terbuka)")
     teks.append("Untuk cek bahan: produksi-ringkas --produk <kode> --jumlah <unit>")
     cetak({"teks": "\n".join(teks), "produksi": [{"nomor": b["reference"], "produk": b.get("part_name"),
-                                                 "jumlah": str(ke_desimal(b["quantity"])), "selesai": str(ke_desimal(b.get("completed"))),
+                                                 "jumlah": dec(ke_desimal(b["quantity"])), "selesai": dec(ke_desimal(b.get("completed"))),
                                                  "target": b.get("target_date"), "terlambat": bool(b.get("overdue"))}
                                                 for b in daftar]}, args)
     return 0
@@ -923,8 +930,8 @@ def cmd_opname(args, token):
         teks.append("Hitung ulang item itu atau buat lembar baru ('opname-draf'). Tidak ada yang disimpan.")
         cetak({"teks": "\n".join(teks), "disimpan": False, "berubah": [x["id"] for x in berubah]}, args)
         return K_INPUT
-    data_json = [{"id": x["id"], "nama": x["nama"], "sistem": str(x["sistem_kini"]), "fisik": str(x["fisik"]),
-                  "selisih": str(x["selisih"])} for x in isi]
+    data_json = [{"id": x["id"], "nama": x["nama"], "sistem": dec(x["sistem_kini"]), "fisik": dec(x["fisik"]),
+                  "selisih": dec(x["selisih"])} for x in isi]
     if not args.ya:
         teks.append("\nBelum disimpan. Periksa angka di atas. Bila benar, ulangi perintah yang sama + --ya. "
                     "Semua item yang dihitung (termasuk yang sama) akan dicatat sebagai hasil opname hari ini.")

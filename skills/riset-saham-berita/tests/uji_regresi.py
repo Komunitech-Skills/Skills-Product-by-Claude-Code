@@ -37,7 +37,7 @@ class Parsing(unittest.TestCase):
     def test_format_indonesia_dan_akhiran(self):
         kasus = {
             "Rp1,2 T": "1200000000000", "Rp 1,2 triliun": "1200000000000", "1.234,5 miliar": "1234500000000",
-            "Rp5 M": "5000000000", "5 milyar": "5000000000", "2,5 bn": "2500000000", "3B": "3000000000",
+            "5 milyar": "5000000000", "2,5 bn": "2500000000", "3B": "3000000000",
             "12.5jt": "12500000", "12,5 juta": "12500000", "750 mn": "750000000", "10rb": "10000", "59k": "59000",
             "1.250": "1250", "Rp1.250": "1250", "Rp 49.900,-": "49900", "1.234.567": "1234567",
             "1,234,567": "1234567", "1.234.567,89": "1234567.89", "1,234,567.89": "1234567.89",
@@ -53,7 +53,7 @@ class Parsing(unittest.TestCase):
         self.assertEqual(R.parse_angka("-Rp3,4 T"), D("-3400000000000"))
         self.assertEqual(R.parse_angka("Rp-1.000"), D(-1000))
         self.assertEqual(R.parse_angka("−1.500"), D(-1500))
-        self.assertEqual(R.parse_angka("(Rp 2,5 M)"), D("-2500000000"))
+        self.assertEqual(R.parse_angka("(Rp 2,5 M)", arti_m="miliar"), D("-2500000000"))  # v1.0.1: M butuh arti_m
 
     def test_satuan_laporan_hanya_untuk_angka_tanpa_akhiran(self):
         self.assertEqual(R.parse_angka("1.234.567", 6), D("1234567000000"))   # dalam jutaan
@@ -306,6 +306,142 @@ class CLI(unittest.TestCase):
         # EPS = 355.480 jt x 2 / 5,2 M lembar = 136,72 ; PER = 685 / 136,7231 = 5,01
         self.assertIn("Rp136,72", out)
         self.assertIn("| PER | 5,01x |", out)
+
+
+class RevisiV101(unittest.TestCase):
+    """Regresi untuk temuan uji independen v1.0.0 (S1-S3, R1-R5)."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def tulis(self, nama, isi):
+        p = os.path.join(self.tmp, nama)
+        with open(p, "w", encoding="utf-8") as f:
+            f.write(isi)
+        return p
+
+    # S2 - akhiran "M"
+    def test_m_ditolak_tanpa_arti_m(self):
+        for teks in ("Rp5 M", "61,9 M", "5.2M", "(Rp 2,5 M)"):
+            with self.subTest(teks=teks):
+                with self.assertRaises(R.InputError) as ctx:
+                    R.parse_angka(teks)
+                self.assertIn("miliar", str(ctx.exception))
+                self.assertIn("million", str(ctx.exception))
+
+    def test_m_dengan_arti_m(self):
+        cat = []
+        self.assertEqual(R.parse_angka("Rp5 M", 0, cat, "miliar"), D("5000000000"))
+        self.assertTrue(any("MILIAR" in c for c in cat))
+        self.assertEqual(R.parse_angka("5.2M", arti_m="juta"), D("5200000"))
+        with self.assertRaises(R.InputError):
+            R.parse_angka("5 M", arti_m="lusin")
+
+    def test_satuan_inggris_jelas(self):
+        kasus = {"750 mn": "750000000", "1.5 million": "1500000", "2,5 bn": "2500000000", "3 billion": "3000000000",
+                 "1.2 trillion": "1200000000000", "4 tn": "4000000000000", "10 thousand": "10000", "5 mio": "5000000"}
+        for teks, harap in kasus.items():
+            with self.subTest(teks=teks):
+                self.assertEqual(R.parse_angka(teks), D(harap))
+
+    def test_m_di_json_dan_cli(self):
+        d = dict(LENGKAP, satuan_laporan="", pendapatan="1.200 M", pendapatan_lalu="1.000 M")
+        with self.assertRaises(R.InputError):
+            R.proses_rasio(d, HARI)
+        h = R.proses_rasio(dict(d, arti_m="miliar"), HARI)
+        self.assertEqual(h["angka"]["pendapatan"], D("1200000000000"))
+        p = self.tulis("m.json", json.dumps(d))
+        kode, _, err = jalankan(["rasio", p, "--hari-ini", "2026-09-29"])
+        self.assertEqual(kode, 1)
+        self.assertIn("ambigu", err)
+        kode, out, _ = jalankan(["rasio", p, "--hari-ini", "2026-09-29", "--arti-m", "miliar"])
+        self.assertEqual(kode, 0)
+        kode, out, _ = jalankan(["angka", "61,9 M", "--arti-m", "juta"])
+        self.assertTrue(out.startswith("61.900.000"))
+
+    # S1 - exit code level
+    def test_level_gagal_exit_3(self):
+        p = self.tulis("g.csv", "kode,harga_sekarang,level_atas,level_bawah\nAAAA,abc,1000,800\nBBBB,900,,\n")
+        kode, out, _ = jalankan(["level", p, "--hari-ini", "2026-09-29"])
+        self.assertEqual(kode, 3)
+        self.assertIn("0 saham dicek, 0 menyentuh level Anda, 2 baris GAGAL dicek", out)
+        self.assertIn("TIDAK berarti aman", out)
+
+    def test_level_campuran_tersentuh_dan_gagal_exit_3(self):
+        p = self.tulis("c.csv", "kode,harga_sekarang,level_atas\nAAAA,1100,1000\nBBBB,,1000\n")
+        kode, out, _ = jalankan(["level", p, "--format", "json", "--hari-ini", "2026-09-29"])
+        self.assertEqual(kode, 3)
+        data = json.loads(out)
+        self.assertEqual(data["ringkasan"], {"dicek": 1, "tersentuh": 1, "gagal_dicek": 1})
+
+    def test_level_file_tanpa_baris_exit_3(self):
+        p = self.tulis("k.csv", "kode,harga_sekarang,level_atas\n")
+        kode, out, _ = jalankan(["level", p])
+        self.assertEqual(kode, 3)
+        self.assertIn("tidak ada baris saham", out)
+
+    def test_level_tampil_desimal(self):  # R5
+        h = R.proses_level([{"kode": "X", "harga_sekarang": "1,5", "level_atas": "2", "level_bawah": "1"}], HARI)
+        md = R.md_level(h)
+        self.assertIn("Rp1,50", md)
+        self.assertIn("| Rp1 | Rp2 |", md)
+
+    # S3 - bank
+    def test_bank_pendapatan_dari_komponen(self):
+        d = dict(LENGKAP, sektor="Perbankan")
+        for k in ("pendapatan", "pendapatan_lalu"):
+            d.pop(k)
+        # (1.500 - 500) + 200 = 1.200 ; lalu (1.300 - 400) + 100 = 1.000 -> +20% ; margin 150/1200 = 12,5%
+        d.update(pendapatan_bunga="1.500", beban_bunga="500", pendapatan_operasional_lain="200",
+                 pendapatan_bunga_lalu="1.300", beban_bunga_lalu="400", pendapatan_operasional_lain_lalu="100")
+        h = R.proses_rasio(d, HARI)
+        self.assertEqual(rasio(h, "pertumbuhan_pendapatan")["nilai"], D(20))
+        m = rasio(h, "margin_bersih")
+        self.assertEqual(m["nilai"], D("12.5"))
+        self.assertIn("tidak sebanding lintas sektor", m["nama"])
+        self.assertIn("pendapatan bunga bersih", m["rumus"])
+        self.assertTrue(any("dihitung = pendapatan bunga - beban bunga" in f for f in h["fakta"]))
+        self.assertTrue(any("ROE hitungan ini bisa berbeda" in f for f in h["fakta"]))
+
+    def test_bank_isi_total_pendapatan_bunga_diperingatkan(self):
+        h = R.proses_rasio(dict(LENGKAP, sektor="Bank", pendapatan_bunga="1.200"), HARI)
+        self.assertTrue(any(f.startswith("PERINGATAN") and "bruto" in f for f in h["fakta"]))
+        h = R.proses_rasio(dict(LENGKAP, sektor="bank", jenis_pendapatan="total pendapatan bunga"), HARI)
+        self.assertTrue(any(f.startswith("PERINGATAN") for f in h["fakta"]))
+        h = R.proses_rasio(dict(LENGKAP, sektor="bank"), HARI)
+        self.assertTrue(any("pastikan 'pendapatan'" in f for f in h["fakta"]))
+        h = R.proses_rasio(dict(LENGKAP, sektor="bank", jenis_pendapatan="pendapatan bunga bersih + operasional lain"), HARI)
+        self.assertFalse(any(f.startswith("PERINGATAN") for f in h["fakta"]))
+
+    def test_non_bank_tanpa_catatan_bank(self):
+        h = R.proses_rasio(dict(LENGKAP, sektor="Konsumer"), HARI)
+        self.assertEqual(rasio(h, "margin_bersih")["nama"], "Margin laba bersih")
+        self.assertFalse(any("Bank" in f or "Sektor keuangan" in f for f in h["fakta"]))
+
+    # R1-R4
+    def test_nol_koma_desimal(self):
+        self.assertEqual(R.parse_angka("0.125"), D("0.125"))
+        self.assertEqual(R.parse_angka("0,125"), D("0.125"))
+
+    def test_satuan_frasa_laporan(self):
+        for teks, harap in (("dalam jutaan Rupiah", 6), ("(dalam jutaan rupiah)", 6), ("in millions of Rupiah", 6),
+                            ("Rp juta", 6), ("dalam miliaran", 9), ("in thousands", 3)):
+            with self.subTest(teks=teks):
+                self.assertEqual(R.satuan_ke_pangkat(teks), harap)
+
+    def test_laba_ke_rugi_simetris(self):
+        h = R.proses_rasio(dict(LENGKAP, laba_bersih="(50)"), HARI)
+        self.assertTrue(any("Berbalik dari LABA" in f for f in h["fakta"]))
+        self.assertFalse(any("Laba bersih turun" in f for f in h["fakta"]))
+
+    def test_roe_basis_campuran_dan_rata_rata_induk(self):
+        h = R.proses_rasio(dict(LENGKAP, laba_bersih_entitas_induk="140"), HARI)
+        self.assertTrue(any("mencampur basis" in f for f in h["fakta"]))
+        # induk: 140 / ((1.200 + 800) / 2 = 1.000) = 14%
+        h = R.proses_rasio(dict(LENGKAP, laba_bersih_entitas_induk="140", ekuitas_entitas_induk="1.200",
+                                ekuitas_entitas_induk_lalu="800"), HARI)
+        self.assertEqual(rasio(h, "roe")["nilai"], D(14))
+        self.assertFalse(any("mencampur basis" in f for f in h["fakta"]))
 
 
 if __name__ == "__main__":

@@ -343,6 +343,26 @@ class UjiTemplateTeksOkr(Dasar):
         self.assertIn("target di chat 20 berbeda dari rencana 15", out["draf"][0]["cek"])
         self.assertEqual(out["tidak_terbaca"][0]["alasan"], "KPI tidak jelas")
 
+    def test_rekap_log(self):
+        log = os.path.join(TPL, "log-operasional-contoh.csv")
+        kode, out = jalan("rekap-log", "--log", log)
+        self.assertEqual(kode, 0, out)
+        got = {(h["orang"], h["kpi"]): h["realisasi"] for h in out["realisasi"]}
+        self.assertEqual(got[("Dewi Lestari", "Waktu respons pertama")], "8")          # (6+11+7)/3
+        self.assertEqual(got[("Dewi Lestari", "Komplain selesai <=2 hari")], "75")     # 3 ya dari 4
+        self.assertEqual(got[("Eko Saputra", "Pengiriman tepat waktu")], "75")         # 3 ya dari 4
+        self.assertEqual(got[("Joko Susilo", "Salah kirim")], "3")                     # 1 + 2
+        # mingguan: ISO minggu 37 = Senin 7 - Minggu 13 Sep 2026 -> Joko 12 Sep (2),
+        # Dewi komplain 9 Sep (tidak) + 10 Sep (ya) = 1 dari 2 = 50%
+        kode, out = jalan("rekap-log", "--log", log, "--per", "minggu", "--periode", "2026-W37")
+        self.assertEqual([(h["orang"], h["realisasi"]) for h in out["realisasi"]],
+                         [("Joko Susilo", "2"), ("Dewi Lestari", "50")])
+        buruk = self.file("l.csv", "tanggal,orang,kpi,nilai,cara\n31/02/2026,Ani,X,1,jumlah\n2026-09-01,Ani,Y,mungkin,persen\n")
+        kode, out = jalan("rekap-log", "--log", buruk)
+        self.assertEqual(kode, 1)
+        self.assertIn("tidak terbaca", out["error"])
+        self.assertIn("ya/tidak", out["error"])
+
     def test_okr(self):
         kode, out = jalan("okr", "--okr", os.path.join(TPL, "okr-contoh.csv"), "--jalan", "0,5")
         self.assertEqual(kode, 0, out)
