@@ -134,3 +134,26 @@ mengulang/menandai. Karena itu 8, bukan 9.
    tanpa TD, CSV koma desimal tanpa kutip.
 3. Ajukan S-baru-4 (hipotensi) ke peninjau medis.
 4. `platform_teruji`: `claude-code (simulasi agent)` sampai uji platform asli.
+
+---
+
+## Catatan revisi 1.0.2 (oleh pembuat, 2026-09-29 — bukan bagian teks penguji)
+Menindaklanjuti S-baru-1 s.d. S-baru-4 dan S-baru-3 di atas. Status tetap **`lulus`**, tetap
+**PERLU REVIEW tenaga medis + legal**; perubahan ini belum diuji ulang oleh penguji independen.
+
+| Temuan | Perbaikan di `scripts/klinis.py` | Tes regresi (`tests/uji_regresi.py`, kelas `TesRevisi102`) |
+|---|---|---|
+| S-baru-1a TD parsial | `--sistolik` saja / `--diastolik` saja (perintah `preeklampsia` dan `map`) tetap dinilai terhadap ambang; tercetak "TD 170/? …" + "Diastolik TIDAK diisi … MAP tidak dihitung" | `test_hanya_sistolik_170_tanda_bahaya`, `test_hanya_diastolik`, `test_parsial_di_luar_rentang_tetap_ditolak`, `test_cli_hanya_sistolik` |
+| S-baru-1b kode tak dikenal | Kode gejala/faktor tak dikenal (dan `diabetes` di mode NICE) tidak lagi membatalkan hasil: semua yang dikenal dinilai, tanda bahaya tercetak dulu, lalu stderr memuat kode tak dikenal + daftar kode gejala & faktor valid, baru exit 1. Tanpa tanda bahaya pun, "Lanjutkan ANC rutin" diganti kalimat bersyarat | `test_cli_kode_tidak_dikenal_tanda_bahaya_dulu`, `test_cli_gejala_tak_dikenal_bersama_gejala_valid`, `test_cli_map_gejala_tak_dikenal`, `test_json_kode_tidak_dikenal`, `test_kode_tak_dikenal_tanpa_bahaya_tidak_anc_polos` |
+| S-baru-2 tanpa TD | Baris "!! PERHATIAN: Tanda bahaya (TD/gejala) belum diperiksa - ukur TD dan tanyakan gejala bahaya sebelum menyimpulkan."; saran rutin menjadi "Hanya bila TD lengkap & gejala bahaya sudah diperiksa dan normal: lanjutkan ANC rutin". SKILL.md: jalankan `map` setiap kali TD/gejala disebut | `test_tanpa_td_tidak_anc_polos` |
+| S-baru-4 hipotensi | Sistolik < 90 atau diastolik < 60 → "TD RENDAH - EVALUASI KLINIS SESUAI PROTOKOL" (tanpa "ANC rutin"); sumber NHLBI *Low Blood Pressure* (< 90/60, diperbarui 2022). **PERLU REVIEW medis** (butir 14 di `references/sumber-pedoman.md`) | `test_td_rendah`, `test_td_tinggi_plus_diastolik_rendah` |
+| S-baru-3 `imt-batch` | Pemisah `;` dideteksi otomatis (koma desimal dibaca benar); baris berkolom lebih → "GAGAL - TIDAK DIHITUNG: kolom berlebih … Petunjuk: koma desimal tanpa tanda kutip …", batch tetap jalan; pesan kolom wajib menyebut pemisah | `test_batch_koma_desimal_tanpa_kutip`, `test_batch_titik_koma`, `test_batch_pesan_pemisah`, `test_cli_batch_tidak_crash` |
+| RINGAN `--json` | Posisi `--json` (sebelum sub-perintah) disebut di SKILL.md & docstring | — |
+
+Tes lama yang mengharapkan penolakan (`test_kode_tidak_dikenal`, `test_map_setengah`, bagian
+`diabetes` NICE & `pusing-dikit`) disesuaikan ke perilaku baru. Hasil: **83/83 lulus**. Sapuan
+pembuat (scratchpad `revisi-klinis2/sapuan.py`): 11.829 kombinasi TD lengkap/parsial × faktor ×
+gejala (termasuk kode tak dikenal) × KIA/NICE — 0 pelanggaran (TD ≥ 140/90, < 90/60, atau gejala
+bahaya → selalu ada tanda bahaya tanpa "ANC rutin"; TD parsial/kode tak dikenal → tidak ada
+"Lanjutkan ANC rutin" polos; tanpa pemicu → tidak ada tanda bahaya palsu). Versi 1.0.2 di
+`catalog.csv` dan `VERSI` script.
