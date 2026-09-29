@@ -88,7 +88,9 @@ perintah: `python3 <folder-skill-ini>/scripts/<nama>.py` (Windows: `python`/`py`
 1. `scripts/jalankan_bot.py --konfigurasi bot/konfigurasi.json` = satu putaran.
 2. Keluaran = pesan siap kirim atau `NO_REPLY` (tidak ada kejadian). Riwayat: `bot/transaksi.csv`,
    `bot/audit.jsonl`, status: `scripts/berhenti.py --konfigurasi bot/konfigurasi.json --status`.
-3. Jadwalkan (Langkah F) supaya berjalan otomatis. Sarankan paper minimal beberapa hari.
+3. Jadwalkan (Langkah F) supaya berjalan otomatis. Syarat live nanti: aturan yang sama sudah jalan di
+   paper dengan **harga & jam asli** minimal **3 putaran dalam rentang ≥ 24 jam** (putaran dengan
+   `--harga`/`--sekarang` tidak dihitung). Sarankan paper beberapa hari.
 
 ### D. Testnet (opsional, uang mainan)
 Binance Spot Testnet (kunci dibuat member di testnet.binance.vision, login GitHub) atau demo
@@ -96,16 +98,21 @@ Indodax (demo-indodax.com). Ubah `"mode": "testnet"` + `"kunci"`; panduan membua
 `references/keamanan-kunci-api.md`. Harga testnet berbeda dari pasar asli; itu normal.
 
 ### E. Live (uang asli), hanya atas permintaan eksplisit member, bertahap
-1. Pastikan aturan yang **sama persis** sudah jalan di paper (script menolak jika belum).
+1. Pastikan aturan yang **sama persis** sudah jalan di paper (≥ 3 putaran harga asli, ≥ 24 jam;
+   script menolak jika belum).
 2. Member membuat kunci **trade-only tanpa withdraw** (idealnya dibatasi IP), menyimpannya sendiri.
 3. Ubah `"mode": "live"`. Jalankan `scripts/siapkan_live.py --konfigurasi bot/konfigurasi.json`
    → tampilkan ringkasan & **kode konfirmasi** ke member apa adanya.
-4. `scripts/siapkan_live.py ... --cek-kunci` → Binance live: izin diperiksa otomatis (ditolak bila
-   ada withdraw). Indodax: izin tidak bisa dibaca lewat API → member wajib memastikan manual.
-5. Minta member **mengetik sendiri** frasa `LIVE <kode> SAYA TANGGUNG RISIKONYA` dan menyatakan
-   kunci tanpa withdraw. Hanya bila frasa dari member persis sama:
-   `scripts/siapkan_live.py ... --frasa "<frasa member>" --kunci-tanpa-withdraw`.
-   Agent **tidak boleh** mengetikkan frasa atas nama member atau menyingkat langkah ini.
+4. `scripts/siapkan_live.py ... --cek-kunci` → Binance live: izin diperiksa otomatis lewat endpoint
+   baca-saja `apiRestrictions` (ditolak bila ada withdraw). **Indodax: skill sengaja TIDAK memanggil
+   metode withdraw apa pun** (termasuk yang baca-saja) → izin dicek manual lewat daftar periksa.
+5. Tampilkan **DAFTAR PERIKSA WAJIB** dari langkah 3 apa adanya. Member membuka layar API di situs
+   bursa **sendiri**, memastikan izin withdraw MATI, lalu **mengetik sendiri** frasa
+   `LIVE <kode> SAYA TANGGUNG RISIKONYA` + menyatakan semua butir daftar periksa selesai. Hanya bila
+   frasa dari member persis sama dan member menyatakan daftar periksa selesai:
+   `scripts/siapkan_live.py ... --frasa "<frasa member>" --saya-sudah-cek-tanpa-withdraw`.
+   Agent **tidak boleh** mengetikkan frasa, mencentang daftar periksa atas nama member, atau
+   menyingkat langkah ini.
 6. Perintah/jadwal live wajib memuat `--izinkan-live`. Setiap perubahan konfigurasi membatalkan
    konfirmasi (kode berubah) → ulangi dari E.1.
 7. Sarankan mulai dengan modal kecil. Binance global bukan PAKD berizin OJK → live di sana butuh
@@ -120,7 +127,11 @@ atau perintah ditolak → berhenti dan beri langkah persiapan; jangan menyelidik
 ### G. Berhenti, status, lanjutkan
 - "Stop/hentikan bot" → **langsung** `scripts/berhenti.py --konfigurasi bot/konfigurasi.json`
   (tanpa perlu konfirmasi; berhenti selalu aman). Tambah `--batalkan-order` untuk testnet/live.
-  Koin yang dipegang **tidak** dijual otomatis; sampaikan itu.
+  Koin yang dipegang **tidak** dijual otomatis; sampaikan itu. File STOP ditulis di folder bot,
+  folder konfigurasi, **dan** lokasi global `~/.komunitech/bot-trading-kripto/STOP-<id>`
+  (Windows: `C:\Users\<nama>\.komunitech\...`), jadi bot berhenti apa pun `--folder-bot` jadwalnya.
+- "Hentikan SEMUA bot" → `scripts/berhenti.py --semua` (file global `STOP-SEMUA`). Mencabutnya hanya
+  atas persetujuan member: `--cabut-semua --saya-sudah-cek`, lalu tiap bot dilanjutkan sendiri-sendiri.
 - Bot juga berhenti sendiri saat batas risiko tersentuh, konfigurasi berubah saat memegang koin,
   kunci bermasalah, atau status order tidak pasti. Sampaikan alasannya apa adanya.
 - Melanjutkan: jelaskan alasan berhenti, minta member meninjau, dan hanya setelah member
@@ -129,9 +140,14 @@ atau perintah ditolak → berhenti dan beri langkah persiapan; jangan menyelidik
 ### H. Fee & pajak
 - Setiap jual dipotong **PPh 22 final 0,21%** (PAKD dalam negeri) atau **1%** (luar negeri),
   PMK 50/2025, berlaku 1 Agustus 2025, dibulatkan ke bawah; **belum dicocokkan dengan Coretax**.
+- **Pasangan kripto-kripto (mis. BTCUSDT)** = tukar-menukar (swap): PPh atas nilai **masing-masing**
+  aset yang diserahkan (Pasal 11 ayat (2) huruf b, Pasal 12 ayat (5) huruf b) → sisi **beli** (menyerahkan
+  USDT) juga dipotong PPh; bot menyisihkannya sehingga total bayar tetap ≤ nominal order. Pasangan
+  rupiah: beli tanpa PPh.
 - Rekap per bulan: `scripts/hitung_pajak_biaya.py --transaksi bot/transaksi.csv [--kurs-idr 16500]`.
   Satu transaksi: `--nilai-jual 15000000 --pajak domestik --fee-persen 0.2`.
-- Pembelian aset kripto tidak dikenai PPN (Pasal 2 ayat (1) PMK 50/2025). Kepastian kewajiban
+- Penyerahan aset kripto tidak dikenai PPN (Pasal 2 ayat (1)); jasa platform (fee) dikenai PPN
+  (Pasal 2 ayat (2) huruf a) yang dipungut bursa dan sudah termasuk angka fee. Kepastian kewajiban
   pribadi → konsultan pajak/DJP.
 
 ## Format output
@@ -154,7 +170,17 @@ Contoh keluaran nyata: `examples/`.
   yang menunggu), jadi harga yang melompati beberapa tingkat di antara putaran hanya mengisi satu
   tingkat. Slippage tidak dimodelkan di simulasi.
 - **Data/bursa gagal:** tidak ada order; dilaporkan sekali, lalu saat pulih. Status order tidak
-  pasti (koneksi putus saat order) → bot berhenti, minta member cek aplikasi bursa.
+  pasti (koneksi putus saat order) → bot berhenti, minta member cek aplikasi bursa. Harga 0/rusak
+  dari API → tidak ada order.
+- **Jam komputer mundur** (baterai RTC, koreksi NTP, VPS salah jam): batas rugi harian **tidak**
+  di-reset; bot memakai waktu terbaru yang pernah dilihat, tetap menegakkan batas, dan memberi
+  peringatan sekali. Sarankan member memperbaiki jam/NTP.
+- **Pengalihan (redirect) dari bursa:** permintaan bertanda tangan tidak pernah diikuti ke alamat
+  lain (kunci tidak ikut terkirim); bot melaporkan dan tidak berorder.
+- **Angka konfigurasi** ditulis tanpa pemisah ribuan ("500000", bukan "500.000"); script menolak
+  pola ribuan dan angka tidak wajar dengan pesan jelas.
+- **Grid:** stop-loss global & untung/rugi memakai harga rata-rata semua koin bot, jadi SL global bisa
+  terpicu di dalam rentang grid dan satu jual slot bisa tercatat rugi; jelaskan ini ke member.
 - **Angka Indodax:** bila respons order tidak memuat rincian isi, transaksi ditandai ESTIMASI;
   minta member mencocokkan dengan riwayat Indodax.
 - **Status pengujian (jujur):** data publik Indodax & Binance (data-api) **diuji langsung**.
