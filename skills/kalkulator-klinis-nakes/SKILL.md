@@ -63,6 +63,14 @@ Script `map` dan `preeklampsia` selalu memeriksa ini dulu:
 - **TD ≥ 160 sistolik atau ≥ 110 diastolik**, atau ada **gejala bahaya** (`--gejala`) →
   `TANDA BAHAYA - SEGERA EVALUASI/RUJUK` sesuai protokol kegawatdaruratan fasilitas.
 - **TD ≥ 140 sistolik atau ≥ 90 diastolik** → `TD RENTANG HIPERTENSI - EVALUASI/RUJUK HARI INI`.
+- **TD < 90 sistolik atau < 60 diastolik** → `TD RENDAH - EVALUASI KLINIS SESUAI PROTOKOL`
+  (ambang konservatif, sumber NHLBI < 90/60; **PERLU REVIEW medis**).
+- **TD hanya satu angka** (mis. "170, diastolik lupa"): jalankan dengan angka yang ada saja
+  (`--sistolik 170`) — ambang tetap dinilai, MAP tidak dihitung, script menulis angka yang
+  kurang. Tanpa TD sama sekali, script menulis "Tanda bahaya (TD/gejala) belum diperiksa" —
+  sampaikan apa adanya, jangan simpulkan "ANC rutin".
+- **Setiap kali TD atau gejala disebut** di permintaan apa pun (HPL, BB hamil, IMT), jalankan
+  juga `map` (dengan `--gejala`) agar lapisan ini selalu diperiksa.
 - Sumber ambang: NICE NG133 (2019, diperbarui 2023) & ACOG Practice Bulletin 222 (2020);
   gejala: Buku KIA (cetakan 2025) & NICE NG133. Keduanya **tidak pernah** berakhir dengan
   "Lanjutkan ANC rutin". Tulis baris tanda bahaya **paling atas** di jawaban.
@@ -83,8 +91,12 @@ Script `map` dan `preeklampsia` selalu memeriksa ini dulu:
    python3 scripts/klinis.py imt-batch --file pasien.csv     # kolom: id,tinggi,berat[,lingkar_perut,jk]
    python3 scripts/klinis.py kognitif --instrumen moca --skor 24 --pendidikan-tahun 9
    ```
-   Tambah `--json` bila perlu data terstruktur. Kode keluar 1 = input tidak valid → sampaikan
-   pesannya apa adanya dan minta data yang benar; **jangan menebak angka**.
+   Tambah `--json` (letakkan **sebelum** sub-perintah: `klinis.py --json imt ...`) bila perlu
+   data terstruktur. Kode keluar 1 = input tidak valid → sampaikan pesannya apa adanya dan minta
+   data yang benar; **jangan menebak angka**. Khusus kode gejala/faktor tak dikenal: hasil
+   (termasuk ‼️ tanda bahaya) tetap tercetak dulu, lalu daftar kode tak dikenal + kode valid di
+   stderr (exit 1) → sampaikan tanda bahaya lebih dulu, lalu petakan ulang kodenya dan jalankan
+   lagi.
 5. Jika Python tidak bisa dijalankan: hitung manual dengan rumus di `references/`, tulis
    "dihitung manual — verifikasi ulang", dan **tetap** terapkan lapisan tanda bahaya dulu.
    Tanggal wajib dihitung per hari kalender (kabisat!).
@@ -165,6 +177,9 @@ Contoh lengkap lain: `examples/`.
 ## Batasan & penanganan error
 - **Angka tidak masuk akal** (TD 80/120, tinggi 16 cm, HPHT di masa depan): script menolak
   dengan pesan jelas → minta pengguna cek ulang/satuan.
+- **CSV `imt-batch`:** pemisah koma atau titik koma (;) dikenali otomatis. Koma desimal pada
+  CSV berpemisah koma tanpa tanda kutip → baris itu "GAGAL - TIDAK DIHITUNG" + petunjuk
+  (pakai titik desimal, tanda kutip, atau pemisah ;); baris lain tetap dihitung.
 - **Satuan:** tinggi ≥ 3 dianggap cm, < 3 dianggap meter; berat kg; TD mmHg; koma desimal
   boleh ("1,65"). Pon/inci → minta dikonversi dulu oleh pengguna (jangan tebak).
 - **Siklus di luar 21–45 hari atau UK HPHT > 44 minggu:** bila ada data USG, script tetap

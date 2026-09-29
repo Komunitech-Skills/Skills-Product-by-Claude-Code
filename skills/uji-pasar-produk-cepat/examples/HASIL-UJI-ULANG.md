@@ -41,7 +41,7 @@ $ python3 scripts/hasil_eksperimen.py sampel --banding --a 2 --b 6
 ```
 Verifikasi independen: Wilson 11/190 = 3,26%-10,07% ✅; n per varian 2% vs 6% = 376 ✅; **Fisher tepat 3/180 vs 11/190 = 0,054** (script tidak menghitungnya karena sel harapan terkecil 6,8 ≥ 5 dan n ≥ 50).
 
-Jawaban agent (mengikuti SKILL): foto B dipakai sebagai acuan; konversi B 5,8% (kemungkinan besar 3%-10%) sudah di atas target 3% → LANJUT; untuk 60 pesanan/bulan perlu ±1.035 pengunjung (60/0,058) atau ±1.819 pada batas bawah 3,3%; minggu dibedakan = kelompok belum tentu setara (hari/kampanye), jadi uji ulang dua foto bersamaan bila fitur tersedia. Asumsi berikutnya: ulasan/beli ulang, ongkir kirim botol kaca.
+Jawaban agent (mengikuti SKILL): foto B dipakai sebagai acuan; konversi B 5,8% (kemungkinan besar 3%-10%) sudah di atas target 3% → LANJUT; untuk 60 pesanan/bulan perlu ±1.037 pengunjung (60 ÷ 11/190) atau ±1.819 pada batas bawah 3,3% yang dibacakan script (±1.839 bila memakai batas bawah tak dibulatkan 3,26%); minggu dibedakan = kelompok belum tentu setara (hari/kampanye), jadi uji ulang dua foto bersamaan bila fitur tersedia. Asumsi berikutnya: ulasan/beli ulang, ongkir kirim botol kaca.
 **Vonis: LULUS dengan catatan (N1).** Keputusan wajar, angka benar, tetapi kata "layak dipilih sebagai pemenang" terlalu tegas untuk total 14 pesanan: uji z tanpa koreksi kontinuitas memberi p 0,038, sedangkan Fisher 0,054.
 
 ### R2 — Data rusak
@@ -57,7 +57,7 @@ Rentang wajar 95% (Wilson): 11,7% sampai 25,3%
 Artinya: dengan data ini, angka sebenarnya kemungkinan besar ada di antara 12% dan 25%.
 KEPUTUSAN: LANJUT BERTAHAP: angka mencapai target, tapi batas bawah rentang (11,7%) masih di bawah target. ...
 ```
-Angka sama dengan v1.0.0 (Wilson 11,7%-25,3% ✅); label kini "LANJUT BERTAHAP" (dulu "LANJUT DENGAN CATATAN") dan tafsir B7 baru. Dengan Langkah 6 (B8), agent kini **wajib** menulis: 300 toples (anggap 1 toples/pembeli) ÷ 0,175 = 1.715 kontak (tengah), ÷ 0,117 = 2.565 kontak (hati-hati), padahal kontak yang ada 120 → jangan 300, mulai batch kecil. Ini sebelumnya hanya dilakukan inisiatif penguji; sekarang bagian dari skill.
+Angka sama dengan v1.0.0 (Wilson 11,7%-25,3% ✅); label kini "LANJUT BERTAHAP" (dulu "LANJUT DENGAN CATATAN") dan tafsir B7 baru. Dengan Langkah 6 (B8), agent kini **wajib** menulis: 300 toples (anggap 1 toples/pembeli) ÷ 0,175 = 1.715 kontak (tengah), ÷ 0,117 = 2.565 kontak (hati-hati; 2.556 bila memakai batas bawah tak dibulatkan 11,74%), padahal kontak yang ada 120 → jangan 300, mulai batch kecil. Ini sebelumnya hanya dilakukan inisiatif penguji; sekarang bagian dari skill.
 **Vonis: LULUS (tidak ada regresi, lebih baik dari v1.0.0).**
 
 ## 3. Temuan baru (tidak memblokir)

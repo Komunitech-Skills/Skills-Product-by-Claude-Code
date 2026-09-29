@@ -71,5 +71,7 @@ dan sebutkan acuannya (PERLU REVIEW).
 
 ## IMT banyak pasien (posbindu)
 `python3 scripts/klinis.py imt-batch --file data.csv` — kolom `id,tinggi,berat` (opsional
-`lingkar_perut,jk`). Baris rusak ditandai "TIDAK DIHITUNG", baris lain tetap dihitung. Pakai
+`lingkar_perut,jk`). Pemisah koma atau titik koma (;, ekspor Excel lokal) dikenali otomatis.
+Baris rusak ditandai "TIDAK DIHITUNG" (koma desimal tanpa tanda kutip → "GAGAL" + petunjuk),
+baris lain tetap dihitung. Pakai
 ID/inisial, bukan nama lengkap.

@@ -64,7 +64,13 @@ cetakan 2025 **MAP ≥ 90**: 110/80 → tepat 90,0 → **memenuhi**; 109/80 → 
 |---|---|---|
 | TD ≥ 160 sistolik **atau** ≥ 110 diastolik | TANDA BAHAYA — SEGERA evaluasi/rujuk sesuai protokol kegawatdaruratan fasilitas | NICE NG133 (hipertensi berat ≥ 160/110); ACOG PB 222 (2020) |
 | TD ≥ 140 sistolik **atau** ≥ 90 diastolik | TD rentang hipertensi — ukur ulang, evaluasi/rujuk HARI INI (kronik bila < 20 mg; gestasional/preeklampsia bila ≥ 20 mg) | NICE NG133 (≥ 140/90) |
+| TD < 90 sistolik **atau** < 60 diastolik | TD RENDAH — evaluasi klinis sesuai protokol HARI INI (keadaan umum, nadi, perdarahan, dehidrasi, tanda syok). **PERLU REVIEW medis** | NHLBI (NIH) *Low Blood Pressure*, definisi < 90/60 mmHg (diperbarui 24 Mar 2022) — dipakai sebagai penanda konservatif |
 | Gejala (`--gejala`): nyeri-kepala-hebat, pandangan-kabur, nyeri-ulu-hati, kejang, penurunan-kesadaran, sesak, bengkak-mendadak, perdarahan, ketuban-pecah, gerak-janin-berkurang, demam-tinggi, muntah-terus | TANDA BAHAYA — SEGERA evaluasi/rujuk | Buku KIA (tanda bahaya ibu hamil); NICE NG133 (gejala preeklampsia berat) |
+
+TD parsial (hanya sistolik atau hanya diastolik) tetap dinilai terhadap ambang di atas; MAP
+tidak dihitung dan angka yang kurang disebut. Kode gejala/faktor tak dikenal tidak menghentikan
+penilaian: tanda bahaya tercetak dulu, lalu kode tak dikenal dilaporkan (exit 1). Tanpa TD,
+hasil memuat "Tanda bahaya (TD/gejala) belum diperiksa".
 
 Hasil dengan tanda bahaya **tidak pernah** memuat "Lanjutkan ANC rutin". Ambang & daftar gejala
 **PERLU REVIEW** terhadap protokol fasilitas/PNPK yang dipakai.
