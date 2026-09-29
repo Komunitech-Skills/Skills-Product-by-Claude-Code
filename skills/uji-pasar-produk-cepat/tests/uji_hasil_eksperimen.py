@@ -65,7 +65,7 @@ if he.ukuran_sampel(0.05, 0.2) != 246: gagal.append("sampel 5% p20 harus 246")
 
 # CLI: keputusan
 k, o, _ = jalan("hasil", "--ditawari", "80", "--aksi", "14", "--target", "15")
-if k != 0 or "17,5%" not in o or "LANJUT DENGAN CATATAN" not in o: gagal.append("hasil 14/80 target 15: " + o)
+if k != 0 or "17,5%" not in o or "LANJUT BERTAHAP" not in o: gagal.append("hasil 14/80 target 15: " + o)
 k, o, _ = jalan("hasil", "--ditawari", "200", "--aksi", "60", "--target", "15")
 if "LANJUT (kuat)" not in o: gagal.append("hasil 60/200 harus LANJUT kuat: " + o)
 k, o, _ = jalan("hasil", "--ditawari", "80", "--aksi", "8", "--target", "15", "--batas-stop", "8")
@@ -75,9 +75,45 @@ if "STOP" not in o: gagal.append("hasil 3/100 harus STOP: " + o)
 k, o, _ = jalan("hasil", "--ditawari", "10", "--aksi", "4")
 if "SAMPEL KECIL" not in o: gagal.append("n=10 harus peringatan sampel kecil")
 k, o, _ = jalan("banding", "--a-ditawari", "100", "--a-aksi", "12", "--b-ditawari", "100", "--b-aksi", "24")
-if "Varian B memang lebih baik" not in o: gagal.append("banding 12v24: " + o)
+if "Varian B layak dipilih" not in o or "memang lebih baik" in o: gagal.append("banding 12v24: " + o)
 k, o, _ = jalan("banding", "--a-ditawari", "20", "--a-aksi", "3", "--b-ditawari", "20", "--b-aksi", "6")
 if "SAMPEL KECIL" not in o or "kebetulan" not in o: gagal.append("banding kecil: " + o)
+
+# B1: Fisher tepat (dihitung terpisah dengan pecahan & faktorial): 0/10 vs 4/10 -> 0,0867; 0/20 vs 5/20 -> 0,0471
+dekat("fisher 0/10 v 4/10", he.fisher_tepat(0, 10, 4, 10), 0.08669, 1e-4)
+dekat("fisher 0/20 v 5/20", he.fisher_tepat(0, 20, 5, 20), 0.04707, 1e-4)
+dekat("fisher 9/60 v 15/60", he.fisher_tepat(9, 60, 15, 60), 0.2536, 1e-4)
+dekat("fisher sama", he.fisher_tepat(5, 20, 5, 20), 1.0, 1e-9)
+k, o, _ = jalan("banding", "--a-ditawari", "10", "--a-aksi", "0", "--b-ditawari", "10", "--b-aksi", "4")
+if k != 0 or "Fisher" not in o or "0,0867" not in o or "BELUM meyakinkan" not in o or "memang lebih baik" in o or "layak dipilih" in o:
+    gagal.append("banding 0/10 v 4/10 harus Fisher p 0,0867 dan tidak signifikan: " + o)
+k, o, _ = jalan("banding", "--a-ditawari", "20", "--a-aksi", "0", "--b-ditawari", "20", "--b-aksi", "5")
+if "sampel terlalu kecil untuk yakin" not in o or "layak dipilih" in o:
+    gagal.append("banding 0/20 v 5/20 (kecil) tidak boleh klaim pemenang: " + o)
+
+# B2: sampel dua varian, power 80%, alfa 5% (cek independen: power normal di n dan n-1)
+for pa, pb, harap in ((.10, .20, 199), (.15, .25, 250), (.10, .15, 686), (.20, .25, 1094)):
+    if he.sampel_banding(pa, pb) != harap: gagal.append(f"sampel_banding {pa} {pb} harus {harap}, dapat {he.sampel_banding(pa, pb)}")
+k, o, _ = jalan("sampel", "--banding", "--a", "15", "--b", "25")
+if k != 0 or "250 orang PER VARIAN" not in o: gagal.append("sampel --banding 15 25: " + o)
+k, o, _ = jalan("sampel", "--margin", "10", "--perkiraan", "20")
+if "SEBANYAK" in o or "--banding" not in o: gagal.append("sampel margin harus merujuk --banding: " + o)
+
+# B3: peringatan margin >= perkiraan dan hasil < 30
+k, o, _ = jalan("sampel", "--margin", "10", "--perkiraan", "5")
+if "19 orang" not in o or "sama atau lebih besar" not in o or "minimal 30" not in o: gagal.append("sampel m10 p5: " + o)
+k, o, _ = jalan("sampel", "--margin", "60")
+if "minimal 30" not in o: gagal.append("sampel m60: " + o)
+
+# B5: --batas-stop tanpa --target -> peringatan
+k, o, _ = jalan("hasil", "--ditawari", "80", "--aksi", "14", "--batas-stop", "8")
+if k != 0 or "tanpa --target" not in o: gagal.append("batas-stop tanpa target: " + o)
+
+# B6: n < 30 dengan batas bawah >= T -> bukan "kuat"
+k, o, _ = jalan("hasil", "--ditawari", "12", "--aksi", "10", "--target", "15")
+if "LANJUT (kuat)" in o or "LANJUT BERTAHAP (sampel kecil)" not in o: gagal.append("10/12 harus LANJUT BERTAHAP (sampel kecil): " + o)
+# B7: tafsir rentang
+if "dengan data ini, angka sebenarnya" not in o or "kalau uji diulang" in o: gagal.append("tafsir rentang: " + o)
 
 # Data rusak -> kode 2 + pesan jelas, bukan traceback
 for argv in (("hasil", "--ditawari", "0", "--aksi", "0"),
@@ -87,13 +123,25 @@ for argv in (("hasil", "--ditawari", "0", "--aksi", "0"),
              ("hasil", "--ditawari", "10", "--aksi", "3", "--target", "10", "--batas-stop", "20"),
              ("hasil", "--ditawari", "10", "--aksi", "3", "--target", "0"),
              ("sampel", "--margin", "0"),
-             ("sampel", "--margin", "10", "--perkiraan", "100")):
+             ("sampel", "--margin", "10", "--perkiraan", "100"),
+             ("sampel",),
+             ("sampel", "--banding", "--a", "15"),
+             ("sampel", "--banding", "--a", "15", "--b", "15"),
+             ("sampel", "--banding", "--a", "0", "--b", "15")):
     k, o, e = jalan(*argv)
     if k != 2 or "INPUT TIDAK VALID" not in e or "Traceback" in e:
         gagal.append(f"data rusak {argv}: kode={k} err={e!r}")
 for argv in (("hasil", "--ditawari", "abc", "--aksi", "3"), ("hasil", "--ditawari", "1.000", "--aksi", "3")):
     k, o, e = jalan(*argv)
     if k == 0 or "bilangan bulat" not in e: gagal.append(f"non-angka {argv}: {k} {e!r}")
+
+# B4: persen berpola ribuan ditolak (argparse, kode 2, pesan jelas)
+for argv in (("hasil", "--ditawari", "80", "--aksi", "14", "--target", "1.250"),
+             ("sampel", "--margin", "2.500")):
+    k, o, e = jalan(*argv)
+    if k != 2 or "ribuan" not in e: gagal.append(f"persen ribuan {argv}: {k} {e!r}")
+k, o, e = jalan("hasil", "--ditawari", "80", "--aksi", "14", "--target", "1,25")
+if k != 0 or "1,2%" not in o and "1,3%" not in o: gagal.append("persen desimal koma 1,25 harus diterima: " + o)
 
 if gagal:
     print("GAGAL:\n- " + "\n- ".join(gagal))
