@@ -52,3 +52,39 @@
 ## Skor: **8/10**
 Alasan: diuji terhadap InvenTree asli (Docker resmi) dengan data independen — semua angka baca & tulis tepat, pengaman tulis (pratinjau, `--ya`, stok-berubah, anti kirim-ulang, kode 8 saat tidak pasti) bekerja nyata, pesan galat Indonesia jelas, unggul jelas atas tanpa-skill dan atas MCP resmi untuk target pasar. Dikurangi karena M1 memblokir skenario inti untuk data yang umum, dan dua celah HTTP (S1, S2) pada skill yang memegang token tulis.
 **Rekomendasi:** perbaiki M1, S1, S2, D1 (+ D2 setelah dicek) → jalankan ulang regresi + uji ulang singkat skenario 03 dan redirect oleh penguji independen, lalu status `lulus`.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-29)
+**Penguji:** agent independen yang sama (bukan pembuat); tidak mengubah SKILL.md/scripts. **Server:** InvenTree 1.5.6 Docker milik penguji yang sama (data toko bangunan, lanjutan dari uji v1.0.0); dimatikan (`docker compose stop`) setelah uji. `inventree.py --versi` → `inventree-gudang 1.0.1`. Diff script 1.0.0→1.0.1 dibaca penuh (tetap Python standar; tidak ada DELETE/PUT/PATCH/subprocess; hanya 2 POST di balik `--ya`).
+
+### Reproduksi temuan lama
+| Temuan | Uji ulang (server asli / probe) | Status |
+|---|---|---|
+| **M1** IPN persis dianggap ambigu | PO-0002: `PK-05=5` → Paku 5 cm ✔; `Paku 5 cm=5` → PK-05 ✔; `#17=5` → PK-05 ✔; `PK-05B=4` → PK-05B ✔; `paku=3` → kode 7 dengan pilihan `PK-05 Paku 5 cm (#17, SKU pemasok WP-PK5); PK-05B ... (#18, SKU WP-PK5B)` ✔; `PK-05=2; PK-05=3` → ditolak "disebut lebih dari sekali" ✔ | **TERATASI** |
+| **S1** redirect membawa token | probe 302 127.0.0.1:8768 → 127.0.0.2:8769: `GALAT: ... mengalihkan (HTTP 302) ke '...' Demi keamanan token, skill TIDAK mengikuti pengalihan` (kode 4); `probe.log` **kosong** (v1.0.0: token diterima) | **TERATASI** |
+| **S2** HTTP_PROXY | proxy palsu pencatat di 127.0.0.1:8770, `HTTP_PROXY`/`http_proxy` diset, `NO_PROXY` dihapus. v1.0.1 → localhost dijangkau langsung (stok SM-01 91 sak), `proxy.log` kosong. **Kontrol v1.0.0** dengan ENV sama → proxy mencatat `Authorization=Token inv-...`. LAN `192.168.1.50` + `--izinkan-jarak-jauh` juga tidak lewat proxy penguji (403 yang muncul berasal dari jaringan sandbox `x-deny-reason: private_dest_ip`, sama dengan `curl --noproxy '*'`) | **TERATASI** |
+| D1 urutan mata uang (§5.1 baru) | setelan direset ke USD/`USD,EUR`, lalu ikuti panduan: Supported `IDR,USD` → Default `IDR` = diterima | **TERATASI** |
+| D2 sandi & token akun AI (§6b/c baru) | dijalankan lewat endpoint yang sama dengan tampilan web untuk akun baru `agen-uji`: buat user tanpa sandi → set-password (superuser saja; sandi lemah ditolak dengan pesan aturan sandi, ada opsi *Override warning*) → grup `Agen Baca` saja → login sebagai akun itu & buat token `openclaw-laptop-gudang` (berlaku s.d. 2027-09-29) → `simpan-kunci` → `cek` (akun agen-uji, baca OK, tulis tidak) → admin mencabut token → skill `401 ... (pesan server: Token has been revoked)`. Teks menu "Change Password", "Groups updated", "Generate Token", "Access Tokens" ada di bundel web 1.5.6. **Belum diklik di browser sungguhan** (sandbox tanpa browser) | **TERATASI** (UI: diverifikasi tidak langsung) |
+| L1 kemasan | `po-terbuka`: `sisa 1 kemasan pemasok (1 kemasan = 6; sisa = 6)`; pratinjau `terima 1 kemasan pemasok (= 6 stok)`; TERSIMPAN `+1 kemasan pemasok = +6 stok`; stok RL-09 21 = 9 + 6 + 6 ✔ | TERATASI |
+| L2 BO Pending | PKT-01: `dalam perintah produksi terbuka 4; perlu diproduksi lagi min. 1` (API: building 0, scheduled_to_build 4; 5−0−4=1 ✔) | TERATASI |
+| L3 catatan per baris | pratinjau `| catatan: ...`; catatan transaksi di InvenTree memuat `Catatan baris: id 7 (Besi Beton 10 mm): 2 batang bengkok retur ke pemasok; id 8 (...)` ✔ | TERATASI |
+| L4/L5 | SKILL.md kini menyuruh memecah per batch & menjelaskan stocktake_date | TERATASI |
+| L6 | folder kunci 700 (kode), peringatan LAN sekali, 502 kini menyarankan `docker compose ps` (diuji: server dimatikan → pesan baru muncul) | TERATASI |
+| L7/L8 | panduan §2 langkah 3–4 & status diperbarui | TERATASI |
+
+### 5 skenario diulang (server asli)
+1. **Cek stok & menipis** — SM-01 91 sak (58+25+8) ✔; 8 barang di bawah minimum = hitung ulang API 8 ✔. LULUS.
+2. **Opname Rak B, 3 selisih** — BT-01 820→823 (LEBIH 3), BS-10 120→118, BS-08 210→209 + GP-01 sama; pratinjau tidak menulis (tracking tetap 39); `--ya` → tepat 4 entri (39→43), jumlah API 823/118/209/45 ✔; kirim ulang lembar yang sama → `BERHENTI: stok ... BERUBAH` ✔. LULUS.
+3. **Terima barang PO sebagian** — satu perintah `"PK-05=10; PK-05B=4; RL-09=1"`: pratinjau tidak menulis (received tetap 12/20/0/1); `--ya` → received 12/30/4/2 ✔; stok PK-05 72,5, PK-05B 30, RL-09 21 ✔; sisa PO (CT-05 12, PK-05B 6 kg) ✔. LULUS.
+4. **Tidak lengkap** — tanpa file kunci (kode 3), 401, 404, port salah/Connection refused (kode 4), 502 dengan saran `docker compose ps`, server mati. Semua Indonesia. LULUS.
+5. **Di luar cakupan** — `hapus-semua` tidak ada; http publik ditolak (tanpa izin & tanpa HTTPS); trik `127.0.0.1@evil.com` ditolak. LULUS.
+
+**Regresi:** `tests/uji_regresi.py` **75/75 OK** (10,3 dtk).
+
+### Temuan tersisa
+- **RENDAH — 403 dari perantara non-InvenTree** (proxy/firewall jaringan yang membalas teks biasa) masih diberi pesan "akun pemilik token TIDAK PUNYA HAK ... Atur grup". Saran: bila badan jawaban bukan JSON InvenTree, sebut "ditolak oleh jaringan/perantara, bukan InvenTree".
+- **CATATAN** — langkah klik §6b (menu ⋮ → Change Password, pemindahan grup) diverifikasi lewat API & teks bundel, belum diklik di browser; tetap masuk uji platform asli oleh pemilik/tim.
+
+### Skor v1.0.1: **9/10**
+Semua temuan MAYOR/SEDANG teratasi dan terbukti di server asli + probe keamanan (dengan kontrol v1.0.0). Semua angka baca/tulis cocok dengan API, tidak ada penulisan tanpa `--ya`. Nilai 10 menunggu uji di browser/platform asli dan perbaikan pesan 403 perantara. **Rekomendasi: status `lulus`.**
