@@ -76,3 +76,14 @@ Setelah F1-F5 diperbaiki, perkiraan skor 8.
 - **F5 (B9)** tambah butir "Ukuran keberhasilan" (1-3 target terukur) di bagian 1/2 templat - ditulis ulang dengan cara sendiri.
 - F6 (minor): pesan kolom hilang (B6), peringatan `10,000` (B5), peringatan `--kapasitas` diabaikan pada ICE (B7), dokumentasikan perilaku seri/sepertiga (B8).
 - Katalog: `platform_teruji` cukup `claude-code (simulasi agent)` setelah lulus; status tetap `uji` sampai uji ulang.
+
+---
+## Catatan revisi 1.0.1 (oleh pembuat, 2026-09-29) - menunggu uji ulang independen
+- **F1:** `beri_tahap` dengan `--kapasitas`: ide yang tidak muat dilewati (tidak mengunci tahap); ide > kapasitas -> Nanti + catatan "pecah jadi langkah kecil". Uji regresi: `Besar(15),Sedang(4),Kecil(2)`, kap 10 -> Nanti, Sekarang, Sekarang; plus kasus lewati-lalu-lanjut.
+- **F2:** keyakinan 0 < k <= 1 tanpa `%` ditolak: "keyakinan ditulis persen 0-100; 0,9 maksudnya 90%?"; `0,9%` eksplisit tetap diterima. Uji regresi ditambah.
+- **F3:** `references/perizinan-produk.md` ditulis ulang, diverifikasi via situs resmi (dicek 2026-09-29): SNI wajib pakaian bayi (Permenperin 7/2014), mainan (Permenperin 24/2013 jo. 55/2013 jo. 111/2015), AMDK/garam; halal UMK makanan-minuman 17-10-2026 + kosmetik & sandang/aksesori mulai 18-10-2026 (UU 33/2014, PP 42/2024); PIRT = Perban BPOM 4/2024 + pengecualian (dingin/beku, kedap, SNI wajib, klaim, bayi, BTP, alkohol) & daya simpan < 7 hari; jamu -> BPOM TR (Perban BPOM 25/2023); merek.dgip.go.id; NIB PP 28/2025. Tiap baris punya dasar aturan + tanggal cek.
+- **F4:** contoh 01: teh disimpan dingin -> BPOM MD, bukan PIRT (dengan pilihan ubah proses), tenggat halal, tabel izin; roadmap = keluaran default contoh 02.
+- **F5:** "Ukuran keberhasilan" (1-3 target terukur) di bagian 2 templat, Format Output, cek akhir, dan contoh 01.
+- **F6:** `10,000` ditolak sebagai ambigu (`10,000,000` diterima); kolom wajib hilang -> "kolom wajib tidak ditemukan: ..." + judul terbaca, judul Inggris diterima; `--kapasitas` pada ICE -> PERINGATAN (stdout, stderr, JSON); pembagian tanpa kapasitas 4 ide = 2/1/1, skor seri ikut tahap atas (didokumentasikan di `references/prioritas.md`).
+- PERLU REVIEW sumber di ATTRIBUTION.md dicabut berdasar verifikasi penguji.
+- `tests/uji_regresi.py`: 40/40 lulus. `validate.py --skill spesifikasi-produk-usaha`: valid. Versi 1.0.1, status tetap `uji`.

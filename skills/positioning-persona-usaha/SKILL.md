@@ -44,6 +44,7 @@ Kerjakan berurutan; jangan lompat. Detail template ada di `references/`.
 - Ambil fakta dari pengguna. Bila ada keluaran `analisis-ulasan` (keluhan/pujian teratas, kalimat asli pelanggan) atau `riset-calon-pelanggan` (profil pelanggan ideal, daftar prospek), pakai itu dan sebut sumbernya.
 - Pisahkan tegas: **FAKTA** (dari pengguna/data) vs **HIPOTESIS** (tebakan wajar). Angka ukuran pasar/penduduk **tidak dikarang**; tulis "perkiraan kasar" atau minta pengguna mengecek (mis. data BPS, Google Maps, jumlah pengikut).
 - Kosakata pelanggan lebih berharga dari kata-kata indah: kumpulkan frasa asli ("bahannya adem", "nggak nerawang", "ongkirnya mahal").
+- **Jumlah tema ulasan ≠ jumlah pelanggan.** Satu ulasan bisa memuat beberapa pujian/keluhan, jadi hitungan per tema tumpang-tindih. Tulis angka per tema ("tepat jam: 19 dari 64 ulasan"), jangan dijumlahkan menjadi "31 pelanggan puas", dan jangan menyebut angka ulasan sebagai jumlah pelanggan di materi publik.
 
 ### 2. Segmentasi (S dalam STP)
 - Bagi pembeli potensial jadi **3-5 segmen** yang berbeda kebutuhannya (bukan sekadar beda usia). Dimensi yang dipakai UMKM: situasi/momen beli, kebutuhan utama, daya beli (rentang Rupiah per pembelian), kanal, kota/daerah, kebiasaan bayar (COD/transfer/e-wallet/paylater). Lihat `references/stp-umkm.md`.
@@ -52,9 +53,11 @@ Kerjakan berurutan; jangan lompat. Detail template ada di `references/`.
 ### 3. Targeting (T) dengan skor
 - Nilai tiap segmen 1-5 pada 7 kriteria: ukuran, daya beli, kebutuhan mendesak, jangkauan kanal, kecocokan produk, persaingan, kemampuan melayani. Penilaian = perkiraan; jelaskan alasan tiap angka satu kalimat.
 - **Hitung lewat script** (bukan dikira-kira): buat CSV dari `templates/segmen.csv`, lalu
-  `python3 scripts/skor_segmen.py segmen.csv` (Windows: `python` atau `py`). Bobot bisa diubah: `--bobot "daya_beli=30"`.
+  `python3 scripts/skor_segmen.py segmen.csv` (Windows: `python` atau `py`). Bobot bisa diubah: `--bobot "daya_beli=30,persaingan=5"` (antar-bobot dipisah koma; **desimal pakai titik**, mis. `ukuran=1.5`).
+- Nama segmen yang berisi koma wajib diberi tanda kutip di CSV (`"Ibu muda, pengajian",3,3,...`) atau ganti komanya dengan `/`. Salin nama segmen **lengkap** dari keluaran script (tidak dipotong) atau dari CSV.
 - Bila script tidak bisa dijalankan, hitung manual: skor = jumlah(bobot x nilai) / jumlah bobot x 20. Bobot awal: ukuran 15, daya beli 20, kebutuhan 20, kanal 15, kecocokan 15, persaingan 10, kemampuan melayani 5.
 - Pilih **1 segmen utama** (maks. 2). Skor >= 75 utama, 60-74 kandidat (uji kecil dulu), < 60 tunda. Katakan jelas: "untuk 90 hari ke depan fokus ke segmen X; segmen lain tetap boleh beli tapi tidak dikejar."
+- **Aturan seri:** bila dua segmen teratas selisih **5 poin atau kurang** (script mencetak "SETARA"), anggap skornya setara, karena penilaian 1-5 hanyalah perkiraan. Pilih dengan urutan dasar ini dan **tulis dasarnya** di jawaban: (1) segmen yang sudah terbukti membeli (FAKTA dari data/pelanggan sekarang), (2) yang paling murah & cepat diuji lewat kanal yang sudah dimiliki, (3) yang paling mudah dilayani dengan kapasitas sekarang. Segmen kedua dicatat sebagai kandidat uji berikutnya, bukan dibuang.
 
 ### 4. Persona (untuk segmen terpilih)
 - Buat **1 persona utama** (opsional 1 pendamping) memakai `references/persona-indonesia.md`: nama fiktif + usia, kota/daerah, pekerjaan, penghasilan kasar & daya beli per pembelian, kebiasaan digital (WA, marketplace, TikTok, IG), cara bayar, bahasa/gaya bicara, pemicu beli, keberatan, siapa yang memengaruhi (suami, teman pengajian, grup WA, ulasan), kutipan khas.
@@ -76,6 +79,7 @@ Kerjakan berurutan; jangan lompat. Detail template ada di `references/`.
 - Rumus: "Untuk [segmen] yang [kebutuhan], [Nama] adalah [kategori] yang [manfaat utama], karena [alasan percaya/bukti]. Berbeda dengan [alternatif], kami [pembeda]."
 - Beri **2 versi**: internal (lengkap) dan publik (1 kalimat, tanpa menyebut pesaing).
 - **5 opsi tagline** (maks. 8 kata, bahasa sehari-hari, tanpa klaim yang tak bisa dibuktikan) + 1 rekomendasi dengan alasan. Beri versi bio Instagram/TikTok (<= 150 karakter; hitung, jangan dikira).
+- **Cara menghitung karakter bio:** `python3 scripts/skor_segmen.py --hitung "teks bio"` (spasi & tanda baca ikut dihitung). Tanpa script: `python3 -c "print(len('teks bio'))"`, atau hitung manual per 10 karakter. Emoji dihitung 2 karakter atau lebih oleh sebagian aplikasi: tulis angka dari script ("86 karakter, dihitung") dan sisakan ruang +-5 karakter bila ada emoji.
 
 ### 8. Message house
 - Atap: pesan utama (1 kalimat). 3 pilar pesan (masing-masing: klaim, bukti, contoh kalimat). Fondasi: bukti/aset (ulasan asli, foto proses, sertifikat, garansi). Tambah **penanganan 3 keberatan** dan **kata yang dipakai / dihindari**.
@@ -85,7 +89,9 @@ Kerjakan berurutan; jangan lompat. Detail template ada di `references/`.
 - Beri 3 uji murah untuk memeriksa hipotesis: tanya 5 pelanggan lama lewat WA (pertanyaan disediakan di referensi), uji 2 versi tagline di status/story, cek 10 pertanyaan chat masuk. Tulis apa yang harus terjadi supaya positioning dipertahankan atau diubah.
 
 ## Format output
-Gunakan bagian bernomor ini (boleh dipangkas jika pengguna minta ringkas, tapi urutan tetap):
+**Mode chat (Telegram/WhatsApp, termasuk lewat OpenClaw, atau pengguna awam yang minta cepat):** kirim dulu **Ringkasan 5 baris** + **teks siap tempel** (bio, 1 tagline, 1 sapaan WA, judul listing) dalam satu pesan pendek (maks. ±25 baris, tanpa tabel lebar). Tutup dengan tawaran: "Mau versi lengkap (segmen & skor, persona, pembeda, message house, uji 7 hari)? Balas: lengkap." Kirim versi lengkap hanya bila diminta; tetap cantumkan satu baris asumsi dan klaim yang perlu dicek.
+
+Mode lengkap (dokumen/laptop): gunakan bagian bernomor ini (boleh dipangkas jika pengguna minta ringkas, tapi urutan tetap):
 ```
 # Positioning & Persona — <nama usaha>
 ## Ringkasan 5 baris   (segmen utama, persona, positioning, tagline terpilih, langkah pertama)
@@ -105,12 +111,12 @@ Input: "Toko hijab lokal, Bandung, harga Rp 89-189 ribu, jual lewat Shopee dan W
 Keluaran ringkas:
 - Segmen utama: **Karyawati muda kantoran** (skor 82/100). Persona: "Sinta, 27, admin di Bandung, ..." 
 - Positioning: "Untuk perempuan berhijab yang bekerja dan sering keringetan, [Nama] adalah hijab yang adem dan tidak nerawang, karena bahannya diuji dipakai seharian; berbeda dengan hijab fashion yang cantik di foto tapi gerah."
-- Tagline pilihan: "Adem dipakai seharian." Contoh lengkap: `examples/01-toko-hijab-stp-persona-lengkap.md`.
+- Tagline pilihan: "Adem dipakai seharian." Contoh lengkap (fiktif): `examples/contoh-fiktif-toko-hijab.md`.
 
 ## Batasan & penanganan error
 - **Bukan riset pasar.** Segmen, skor, dan persona = hipotesis terstruktur dari info pengguna. Katakan itu; sarankan uji 7 hari. Jangan menyebut angka ukuran pasar tanpa sumber.
 - **Tidak mengarang bukti:** jangan menulis testimoni, rating, jumlah pelanggan, penghargaan, atau sertifikat (halal/BPOM/SNI) yang tidak dipunyai pengguna. Beri placeholder `[isi: ...]`.
-- **Klaim berisiko** (kesehatan, "menyembuhkan", "pasti langsing", "100% aman", "termurah se-Indonesia", "BPOM" tanpa nomor): tolak/ganti versi yang sah dan bisa dibuktikan. Ingat UU Perlindungan Konsumen (iklan tidak boleh menyesatkan). Produk pangan/kosmetik/obat: arahkan pengguna mengecek aturan BPOM dan sertifikasi halal.
+- **Klaim berisiko** (kesehatan, "menyembuhkan", "pasti langsing", "100% aman", "termurah se-Indonesia", "BPOM" tanpa nomor): tolak/ganti versi yang sah dan bisa dibuktikan. Dasar: **UU No. 8 Tahun 1999 tentang Perlindungan Konsumen** (berlaku 20 April 2000): **Pasal 9** melarang menawarkan, mempromosikan, atau mengiklankan barang/jasa secara tidak benar atau seolah-olah (mis. seolah-olah memenuhi standar mutu tertentu, sudah mendapat persetujuan/sponsor, atau memakai kata berlebihan seperti "aman", "tanpa efek samping" tanpa keterangan lengkap), termasuk merendahkan barang/jasa lain; **Pasal 17** melarang iklan yang mengelabui konsumen soal kualitas, kuantitas, bahan, kegunaan, harga, atau jaminan, serta iklan yang memuat informasi keliru, salah, atau tidak tepat, atau memakai orang tanpa izinnya. Pelanggaran dapat dipidana (Pasal 62). Ringkasan pasal per 2026-09-29, bukan kutipan resmi; baca teks lengkap dan perubahannya di peraturan.go.id atau JDIH BPK. Produk pangan/kosmetik/obat: arahkan pengguna mengecek aturan BPOM dan sertifikasi halal.
 - **Bukan nasihat hukum/merek:** cek nama/tagline di pangkalan data merek DJKI sebelum dipakai jangka panjang.
 - **Data pribadi:** bila pengguna menempelkan chat/ulasan berisi nama & nomor, ringkas polanya saja; jangan menyalin identitas ke persona.
 - **Stereotip:** persona menggambarkan situasi dan kebutuhan, bukan menilai suku/agama/kelompok. Hindari generalisasi seperti "orang daerah pasti ...".

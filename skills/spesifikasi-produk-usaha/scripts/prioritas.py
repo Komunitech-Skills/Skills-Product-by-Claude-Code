@@ -60,8 +60,9 @@ def angka(teks, kolom):
     elif re.fullmatch(r"-?[1-9]\d{0,2},\d{3}", t):
         bulat = t.replace(",", "")
         raise GalatBaris(f"kolom '{kolom}' ambigu: {teks.strip()!r} maksudnya {bulat} atau "
-                         f"{t.replace(',', '.').rstrip('0').rstrip('.')}? Tulis tanpa koma "
-                         f"(mis. {bulat} atau {bulat[:-3]}.{bulat[-3:]}), atau desimal dengan satu/dua angka (0,5)")
+                         f"{t.replace(',', '.').rstrip('0').rstrip('.').replace('.', ',')}? Tulis {bulat} (atau {bulat[:-3]}.{bulat[-3:]}) "
+                         f"bila maksudnya ribuan, atau {t.replace(',', '.').rstrip('0').rstrip('.').replace('.', ',')} "
+                         f"bila maksudnya desimal")
     elif "," in t:
         t = t.replace(",", ".")
     elif t.count(".") > 1:

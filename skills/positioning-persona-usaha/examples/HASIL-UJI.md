@@ -72,3 +72,23 @@ Tidak ada batas skor 6 (A/B dan pesaing dimenangkan).
 12. (Opsional, dari banding pesaing) tawarkan menyimpan ringkasan positioning sebagai file konteks yang bisa dibaca skill Komunitech lain (`caption-sosmed-umkm`, `copy-landing-page`).
 
 Setelah perbaikan B1 dan butir 6/8, uji ulang oleh penguji independen (cukup skenario 1, 3, dan data rusak).
+
+## Catatan revisi v1.0.1 (pembuat, 2026-09-29)
+Menindaklanjuti permintaan perbaikan butir 1-11 (butir 12 opsional belum dikerjakan). Belum diuji ulang oleh penguji independen.
+
+| Butir | Perbaikan |
+|---|---|
+| 1 (B1) | `baca_csv` menolak baris berkolom lebih (kunci `None`) dengan `GAGAL: Baris N: jumlah kolom lebih banyak dari judul ... tanda kutip "..." atau ganti komanya dengan '/'`. Nama berkoma yang dikutip tetap diterima. Tes ditambah (`koma_tanpa_kutip`, `koma_berkutip`). |
+| 2 (B2) | Bobot `inf`, `nan`, `-inf`, `1e999` ditolak (`math.isfinite`); tes ditambah. |
+| 3 (B3) | Judul kolom ganda ditolak dengan nama kolomnya; tes ditambah. |
+| 4 (B4) | Didokumentasikan di docstring, pesan galat, dan SKILL Langkah 3: desimal bobot pakai titik (`ukuran=1.5`); `replace(",", ".")` yang tidak berguna dihapus. |
+| 5 (B5) | Lebar kolom tabel mengikuti nama terpanjang; nama tidak pernah dipotong. SKILL menyuruh menyalin nama lengkap. Tes `nama_utuh`. |
+| B6 | Pemisah tab kini dikenali (bonus); pesan kolom hilang menyebut pemisah yang dikenali. |
+| 6 | Aturan seri: dua teratas selisih <= 5 poin = SETARA (script mencetak baris "SETARA", JSON punya kunci `seri`); SKILL Langkah 3 memberi urutan dasar pilihan (FAKTA pembeli -> termurah diuji -> termudah dilayani) dan wajib menulis dasarnya. Tes selisih 3, 5 tepat, 6. |
+| 7 | Batasan menyebut UU No. 8 Tahun 1999 tentang Perlindungan Konsumen, Pasal 9 dan 17 (ringkasan isi), Pasal 62 (pidana), tanggal berlaku, dan tempat cek teks resmi. Catatan: ringkasan pasal ditulis pembuat, tidak diverifikasi web di sesi ini -> sebaiknya dicek penguji. |
+| 8 | Mode chat (Telegram/WA/OpenClaw/awam): Ringkasan 5 baris + teks siap tempel dulu (maks. ±25 baris), versi lengkap hanya bila diminta. |
+| 9 | Langkah 1: jumlah tema ulasan ≠ jumlah pelanggan; tulis angka per tema, jangan dijumlahkan. |
+| 10 | `python3 scripts/skor_segmen.py --hitung "teks"` menghitung karakter, jumlah emoji, panjang versi aplikasi (UTF-16), status MUAT/KEPANJANGAN terhadap 150; SKILL menjelaskan cara tanpa script dan catatan emoji (sisakan ±5). Bio contoh diverifikasi: hijab 86, katering 131 karakter (cocok). |
+| 11 | `examples/01-toko-hijab-stp-persona-lengkap.md` diganti nama menjadi `examples/contoh-fiktif-toko-hijab.md` (git mv); rujukan di SKILL.md & README diperbarui. |
+
+**Verifikasi angka:** skor uji seri dihitung tangan (X 4,4,4,5,5,2,4 = 410/100x20 = 82; Z = 395 -> 79; W = 385 -> 77; Y = 380 -> 76), cocok dengan keluaran script. `python3 scripts/uji_skor_segmen.py` -> "Semua uji lulus".

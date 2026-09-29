@@ -14,7 +14,14 @@
 Skor tinggi = layak lebih dulu. Skor hanya membandingkan **ide di daftar yang sama** dengan metode yang sama. Dua ide seri: yang usahanya lebih kecil didahulukan. Ide berskor tinggi tapi keyakinan rendah: uji kecil dulu.
 
 ## Format CSV
-RICE: `nama,jangkauan,dampak,keyakinan,usaha`. ICE: `nama,dampak,keyakinan,kemudahan`. Pemisah `,` `;` atau tab. Desimal `0,5` atau `0.5`; ribuan `1.500` (titik + tepat 3 angka) dibaca 1500.
+RICE: `nama,jangkauan,dampak,keyakinan,usaha`. ICE: `nama,dampak,keyakinan,kemudahan`. Pemisah `,` `;` atau tab. Desimal `0,5` atau `0.5`; ribuan `1.500` (titik + tepat 3 angka) dibaca 1500. Judul kolom Inggris (name, reach, impact, confidence, effort, ease) juga diterima; kolom wajib yang hilang disebut namanya.
+- `10,000` (satu koma + tepat 3 angka) **ditolak karena ambigu** (sepuluh ribu gaya Inggris, atau 10 gaya Indonesia): minta pengguna menulis `10000`, `10.000`, atau `10`. `10,000,000` (dua koma atau lebih) dibaca sepuluh juta.
+- Keyakinan RICE ditulis **persen 0-100**. Nilai 0 < k <= 1 tanpa tanda `%` (mis. `0,8`) ditolak dengan pesan "0,8 maksudnya 80%?". Bila memang kurang dari 1 persen, tulis `0,8%`.
+
+## Pembagian tahap (roadmap)
+- **Tanpa `--kapasitas`:** Sekarang = sepertiga teratas (dibulatkan ke atas), Berikutnya = separuh sisanya (dibulatkan ke atas), Nanti = sisanya. Jadi 3 ide = 1/1/1, 4 = 2/1/1, 5 = 2/2/1, 6 = 2/2/2, 7 = 3/2/2. Ide dengan skor **sama persis** ikut tahap ide di atasnya (bisa membuat tahap berikutnya lebih sedikit/kosong; script memberi catatan).
+- **Dengan `--kapasitas N` (RICE):** N = orang-hari yang tersedia per tahap. Ide diisi ke Sekarang menurut urutan skor selama total usaha <= N; ide yang tidak muat **dilewati** (tidak mengunci tahap) dan ide berikutnya yang muat tetap masuk. Sisanya diisi ke Berikutnya dengan cara sama, lalu sisanya Nanti. Ide yang usahanya > N selalu Nanti dengan catatan "pecah jadi langkah kecil".
+- `--kapasitas` pada ICE diabaikan dengan PERINGATAN (ICE tidak punya kolom usaha).
 
 ## Rumus manual (bila script tidak bisa jalan)
 Contoh RICE: jangkauan 500, dampak 1, keyakinan 80%, usaha 4 orang-hari: 500 x 1 x 0,8 / 4 = 100.

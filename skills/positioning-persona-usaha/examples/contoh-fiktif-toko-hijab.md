@@ -1,4 +1,4 @@
-# Contoh 01 — Positioning & Persona: Nayara Hijab (FIKTIF)
+# Contoh fiktif — Positioning & Persona: Nayara Hijab (FIKTIF)
 
 > Contoh ilustrasi format keluaran. Merek "Nayara Hijab" dan semua tokoh adalah rekaan; angka pasar tidak ada karena tidak dikarang. Ini bukan hasil uji resmi.
 

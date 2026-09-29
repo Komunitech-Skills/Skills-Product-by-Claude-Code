@@ -7,7 +7,8 @@
 - ✅ Urutan ide dengan **skor RICE/ICE yang dihitung**, bukan perasaan; hasilnya langsung jadi roadmap Sekarang/Berikutnya/Nanti.
 - ✅ Brief siap kirim ke maklon, supplier, penjahit, atau desainer tanpa membocorkan modal Anda.
 - ✅ Catatan versi resep/spesifikasi supaya perubahan tidak hilang.
-- ✅ Pengingat PIRT/BPOM/halal dengan tautan resmi, tanpa klaim kesehatan yang berisiko.
+- ✅ Pengingat izin yang tepat jalur: PIRT atau BPOM (produk dingin/beku tidak bisa PIRT), SNI wajib pakaian bayi & mainan anak, tenggat halal Oktober 2026 - dengan dasar aturan, tanggal cek, dan tautan resmi.
+- ✅ Ukuran keberhasilan terukur (target jual, pembeli ulang, skor uji rasa) supaya jelas kapan produk dianggap berhasil.
 
 ## Cocok untuk siapa
 Pemilik usaha makanan-minuman, fashion, kosmetik, kerajinan, dan jasa/aplikasi sederhana yang mau membuat produk baru atau merapikan produk lama, terutama yang bekerja sama dengan maklon atau produsen.
@@ -38,7 +39,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Scrip
 
 ## FAQ
 **Apakah ini menjamin izin PIRT/BPOM/halal saya beres?**
-Tidak. Ini pengingat dan tautan resmi; aturan bisa berubah. Konfirmasi ke Dinas Kesehatan, BPJPH, atau pendamping resmi.
+Tidak. Ini pengingat berdasar situs resmi (dicek 2026-09-29) dan aturan bisa berubah. Konfirmasi ke Dinas Kesehatan, BPJPH, atau pendamping resmi.
 
 **Bagaimana menghitung modal dan harga jual?**
 Skill ini menetapkan target HPP lalu merujuk ke skill `hitung-hpp` untuk angka pasti (dan `harga-jual-marketplace` untuk potongan marketplace).

@@ -4,17 +4,18 @@
 
 Urutan pengaman di setiap putaran:
   1. konfigurasi valid & batas risiko lengkap          (kalau tidak: tidak ada order)
-  2. file bot/STOP ada?                                  -> berhenti (tombol berhenti)
+  2. ada file STOP (folder bot, folder konfigurasi, atau global
+     ~/.komunitech/bot-trading-kripto/STOP-<id> / STOP-SEMUA)?  -> berhenti (tombol berhenti)
   3. bot sudah berstatus berhenti?                       -> diam sampai member melanjutkan
   4. mode live? wajib --izinkan-live + KONFIRMASI-LIVE.json cocok + sudah pernah disimulasikan
   5. kunci milik member (testnet/live) + cek izin kunci (live Binance: tolak bila ada withdraw)
   6. harga dari bursa (gagal -> tidak ada order)
-  7. stop-loss global & batas rugi harian                -> jual/berhenti
+  7. stop-loss global & batas rugi harian (tanggal tidak pernah mundur walau jam komputer mundur)
   8. aturan strategi -> niat order -> cek batas per order/total/order terbuka -> eksekusi
 Semua kejadian ditulis ke bot/audit.jsonl (kunci disamarkan) & transaksi ke bot/transaksi.csv.
 
 Keluaran: pesan siap kirim ke member, atau `NO_REPLY` bila tidak ada kejadian.
-Kode keluar: 0 tenang, 2 ada transaksi/kejadian, 3 bot berhenti, 1 error konfigurasi.
+Kode keluar: 0 tenang, 2 ada transaksi/kejadian, 3 bot berhenti, 1 error konfigurasi/tak terduga.
 Dengan --openclaw: SELALU keluar 0 (Gateway OpenClaw menganggap kode bukan-0 sebagai job gagal).
 
 Pakai:
@@ -35,6 +36,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from inti import (D, DISCLAIMER, WIB, KonfigurasiTidakValid, Penyamar, angka, catat_niat_berhasil,  # noqa: E402
                   cek_niat, cek_risiko_awal, cek_tombol_berhenti, ekuitas, hentikan, muat_konfigurasi,
+                  folder_stop_global,
                   muat_state, rencanakan, rp, sidik_jari_penuh, sidik_jari_strategi, simpan_json_atomik,
                   state_awal, teks, terapkan_isi, tulis_audit)
 from bursa import ErrorBursa, ErrorKunci, StatusTidakPasti, buat_adapter, muat_kunci  # noqa: E402
@@ -45,6 +47,44 @@ LABEL = {"paper": "[SIMULASI - bukan uang asli]", "testnet": "[TESTNET - uang ma
 KOLOM_TRANSAKSI = ["waktu", "mode", "bursa", "pasangan", "sisi", "jumlah_koin", "harga", "bruto",
                    "fee", "pajak_pph", "bersih", "realized_pl", "alasan", "order_id", "sumber_angka", "catatan"]
 FRASA_LIVE = "LIVE {kode} SAYA TANGGUNG RISIKONYA"
+# Syarat bukti simulasi sebelum live: putaran paper dengan harga ASLI dari bursa & jam asli
+# (bukan --harga/--sekarang/--url-uji), minimal sekian putaran dan rentang sekian jam.
+MIN_PAPER_PUTARAN = 3
+MIN_PAPER_JAM = 24
+KEDALUWARSA_KUNCI_PUTARAN = 600
+
+
+def bukti_paper(state, sj):
+    """Kembalikan (cukup: bool, keterangan) untuk bukti simulasi aturan dengan sidik `sj`."""
+    b = (state.get("paper_nyata_per_sidik") or {}).get(sj) or {}
+    n = int(b.get("jumlah", 0))
+    jam = 0.0
+    if b.get("pertama") and b.get("terakhir"):
+        jam = (datetime.fromisoformat(b["terakhir"]) - datetime.fromisoformat(b["pertama"])).total_seconds() / 3600
+    cukup = n >= MIN_PAPER_PUTARAN and jam >= MIN_PAPER_JAM
+    ket = (f"{n} putaran paper dengan harga asli selama {jam:.1f} jam "
+           f"(syarat: minimal {MIN_PAPER_PUTARAN} putaran dalam rentang minimal {MIN_PAPER_JAM} jam)")
+    return cukup, ket
+
+
+def ambil_kunci_putaran(p_kunci, sekarang_iso):
+    """Kunci putaran ATOMIK (O_CREAT|O_EXCL) supaya dua putaran tidak jalan bersamaan.
+    Kunci basi (> 10 menit, mis. proses sebelumnya mati) dihapus lalu dicoba sekali lagi."""
+    for _ in range(2):
+        try:
+            fd = os.open(p_kunci, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        except FileExistsError:
+            try:
+                if time.time() - os.path.getmtime(p_kunci) < KEDALUWARSA_KUNCI_PUTARAN:
+                    return False
+                os.remove(p_kunci)
+            except OSError:
+                return False
+            continue
+        with os.fdopen(fd, "w") as f:
+            f.write(sekarang_iso)
+        return True
+    return False
 
 
 def tulis_transaksi(path, baris):
@@ -62,6 +102,10 @@ def periksa_konfirmasi_live(cfg, state, folder_bot):
     if int(state.get("tick_paper_per_sidik", {}).get(sj, 0)) < 1:
         return ("Mode live ditolak: aturan yang SAMA persis belum pernah dijalankan di mode simulasi (paper). "
                 "Jalankan dulu dengan \"mode\": \"paper\" minimal satu putaran, lalu siapkan live lagi.")
+    cukup, ket = bukti_paper(state, sj)
+    if not cukup:
+        return (f"Mode live ditolak: bukti simulasi belum cukup -- baru {ket}. Biarkan jadwal paper berjalan "
+                "dulu dengan aturan yang sama, lalu siapkan live lagi.")
     path = os.path.join(folder_bot, "KONFIRMASI-LIVE.json")
     try:
         with open(path, encoding="utf-8") as f:
@@ -73,8 +117,9 @@ def periksa_konfirmasi_live(cfg, state, folder_bot):
     if k.get("kode") != kode or k.get("frasa") != FRASA_LIVE.format(kode=kode):
         return ("Mode live ditolak: konfigurasi berubah sejak konfirmasi terakhir (kode tidak cocok). "
                 "Ulangi scripts/siapkan_live.py supaya Anda meninjau aturan yang baru.")
-    if k.get("pernyataan_kunci_tanpa_withdraw") is not True:
-        return "Mode live ditolak: pernyataan 'kunci tanpa izin withdraw' belum dikonfirmasi."
+    if k.get("pernyataan_kunci_tanpa_withdraw") is not True or k.get("daftar_periksa_withdraw_selesai") is not True:
+        return ("Mode live ditolak: daftar periksa 'kunci tanpa izin withdraw' belum diselesaikan member "
+                "(siapkan_live.py --saya-sudah-cek-tanpa-withdraw).")
     return None
 
 
@@ -95,23 +140,25 @@ def satu_putaran(args):
     def audit(peristiwa, data):
         tulis_audit(p_audit, peristiwa, data, penyamar, sekarang)
 
-    # kunci putaran (cegah dua putaran bersamaan)
+    # kunci putaran (cegah dua putaran bersamaan) -- atomik
     p_kunci = os.path.join(folder_bot, ".sedang-jalan")
-    if os.path.exists(p_kunci) and time.time() - os.path.getmtime(p_kunci) < 600:
-        return 0, "NO_REPLY"
     os.makedirs(folder_bot, exist_ok=True)
-    with open(p_kunci, "w") as f:
-        f.write(sekarang.isoformat())
+    if not ambil_kunci_putaran(p_kunci, sekarang.isoformat()):
+        return 0, "NO_REPLY"
     try:
         state = muat_state(p_state, cfg)
         if state.get("mode") != mode:
             # ganti mode (mis. paper -> live): buku bot dimulai bersih, bukti simulasi dipertahankan
             bukti = state.get("tick_paper_per_sidik", {})
+            bukti_nyata = state.get("paper_nyata_per_sidik", {})
+            waktu_terakhir = state.get("waktu_terakhir")   # pengaman jam mundur tetap dibawa
             if state.get("mode") is not None:
                 audit("ganti_mode", {"dari": state.get("mode"), "ke": mode})
             berhenti_lama = (state.get("berhenti"), state.get("alasan_berhenti"))
             state = state_awal(cfg)
             state["tick_paper_per_sidik"] = bukti
+            state["paper_nyata_per_sidik"] = bukti_nyata
+            state["waktu_terakhir"] = waktu_terakhir
             if berhenti_lama[0]:
                 state["berhenti"], state["alasan_berhenti"] = berhenti_lama
             state["mode"] = mode
@@ -133,9 +180,10 @@ def satu_putaran(args):
                 return kode, "NO_REPLY"
             return kode, "\n".join([f"Bot kripto {label} {cfg['pasangan']}"] + pesan + ["", DISCLAIMER])
 
-        if cek_tombol_berhenti(folder_bot) and not state.get("berhenti"):
-            hentikan(state, "Tombol berhenti (file STOP) aktif.")
-            audit("tombol_berhenti", {})
+        aktif = cek_tombol_berhenti(args.konfigurasi, folder_bot)
+        if aktif and not state.get("berhenti"):
+            hentikan(state, "Tombol berhenti (file STOP) aktif: " + ", ".join(aktif))
+            audit("tombol_berhenti", {"file": aktif})
         if state.get("berhenti"):
             if not state.get("notif_berhenti_terkirim"):
                 state["notif_berhenti_terkirim"] = True
@@ -183,7 +231,9 @@ def satu_putaran(args):
                 state["izin_kunci_dicek_hari"] = sekarang.astimezone(WIB).date().isoformat()
             aturan = adapter.aturan_simbol()
             harga = adapter.harga()
-        except (ErrorBursa, KeyError, IndexError, ValueError) as e:
+            if not harga.is_finite() or harga <= 0:
+                raise ErrorBursa(f"harga tidak wajar ({harga})")
+        except (ErrorBursa, KeyError, IndexError, ValueError, TypeError, ArithmeticError) as e:
             audit("gagal_data", {"pesan": str(e)})
             if not state.get("gagal_data_dilaporkan"):
                 state["gagal_data_dilaporkan"] = True
@@ -206,9 +256,22 @@ def satu_putaran(args):
         if mode == "paper":
             b = state.setdefault("tick_paper_per_sidik", {})
             b[sj] = int(b.get(sj, 0)) + 1
+            if not (args.harga or args.sekarang or args.url_uji):
+                bn = state.setdefault("paper_nyata_per_sidik", {}).setdefault(sj, {"jumlah": 0})
+                bn["jumlah"] = int(bn.get("jumlah", 0)) + 1
+                bn.setdefault("pertama", sekarang.isoformat(timespec="seconds"))
+                if bn.get("terakhir") is None or sekarang.isoformat() > bn["terakhir"]:
+                    bn["terakhir"] = sekarang.isoformat(timespec="seconds")
         audit("putaran", {"mode": mode, "harga": teks(harga), "sidik": sj})
 
         alasan_henti, paksa = cek_risiko_awal(cfg, state, harga, sekarang)
+        if state.get("jam_mundur_terdeteksi"):
+            audit("jam_mundur", {"jam_komputer": sekarang.isoformat(), "dipakai": state.get("waktu_terakhir")})
+            if state.get("peringatan_jam_mundur") != state.get("hari"):
+                state["peringatan_jam_mundur"] = state.get("hari")
+                pesan.append(f"PERINGATAN: jam komputer mundur (sekarang {sekarang.isoformat(timespec='minutes')}, "
+                             f"putaran terakhir {state.get('waktu_terakhir')}). Batas rugi harian tetap dihitung "
+                             f"untuk tanggal {state.get('hari')} (tidak di-reset). Periksa pengaturan jam/NTP mesin bot.")
         daftar = [paksa] if paksa else ([] if alasan_henti else rencanakan(cfg, state, harga, sekarang))
         order_terbuka = adapter.jumlah_order_terbuka() if daftar else 0
         for niat in daftar:
@@ -251,6 +314,9 @@ def satu_putaran(args):
             baris += f"\n  Aturan Anda: {niat['alasan']}"
             if isi["sisi"] == "jual":
                 baris += f"\n  Untung/rugi transaksi ini: {rp(pl, kut)}"
+            if cfg["_jenis"] == "grid" and isi["sisi"] == "jual":
+                baris += ("\n  Catatan: untung/rugi dihitung dari harga rata-rata SEMUA koin bot, bukan harga beli "
+                          "slot ini saja (slot yang dijual di atas harga belinya bisa tercatat rugi).")
             if isi.get("sumber_angka") == "estimasi":
                 baris += "\n  Catatan: angka ESTIMASI, cocokkan dengan riwayat di aplikasi bursa."
             pesan.append(baris)
@@ -278,7 +344,8 @@ def satu_putaran(args):
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Jalankan satu putaran bot trading kripto (aturan milik member).")
     ap.add_argument("--konfigurasi", required=True)
-    ap.add_argument("--folder-bot", help="default: folder file konfigurasi")
+    ap.add_argument("--folder-bot", help="default: folder file konfigurasi. Tombol berhenti tetap dicek juga di "
+                                         "folder konfigurasi & " + folder_stop_global())
     ap.add_argument("--openclaw", action="store_true", help="selalu exit 0 (untuk jadwal OpenClaw)")
     ap.add_argument("--izinkan-live", action="store_true", help="wajib untuk mode live")
     ap.add_argument("--harga", help="UJI: harga manual (hanya mode paper)")
@@ -293,7 +360,11 @@ def main(argv=None):
         kode, keluaran = 1, f"Bot kripto: konfigurasi bermasalah, TIDAK ada order dijalankan.\n{e}"
     except ValueError as e:
         kode, keluaran = 1, f"Bot kripto: input bermasalah, TIDAK ada order dijalankan.\n{e}"
-    print(keluaran)
+    except Exception as e:  # noqa: BLE001 -- jangan pernah mengirim traceback ke member/OpenClaw
+        kode, keluaran = 1, (f"Bot kripto: kesalahan tak terduga ({type(e).__name__}), TIDAK ada order dijalankan "
+                             "putaran ini. Periksa konfigurasi & bot/audit.jsonl; bila berulang, hentikan bot "
+                             "(berhenti.py) dan hubungi dukungan Komunitech.")
+    print(Penyamar()(keluaran))
     return 0 if args.openclaw else kode
 
 

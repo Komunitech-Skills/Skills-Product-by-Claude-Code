@@ -20,7 +20,7 @@ Cukup satu kalimat tentang usahamu. AI menyusun target pasar, persona pelanggan,
 **Sebelum:** "Jual hijab, target semua wanita, kualitas terbaik, harga terjangkau."
 
 **Sesudah (cukup ketik):** "Aku jual hijab buatan sendiri di Bandung, Rp 89-189 ribu, lewat Shopee dan WA. Bantu cari target dan positioning."
-→ Segmen utama karyawati muda kantoran (skor 82/100), persona Sinta, tagline "Adem dipakai seharian", bio IG siap tempel, dan langkah uji 7 hari. Lihat `examples/01-toko-hijab-stp-persona-lengkap.md` (contoh fiktif).
+→ Segmen utama karyawati muda kantoran (skor 82/100), persona Sinta, tagline "Adem dipakai seharian", bio IG siap tempel, dan langkah uji 7 hari. Lihat `examples/contoh-fiktif-toko-hijab.md` (contoh fiktif).
 
 ## Cara pakai
 Ketik permintaan biasa, misalnya:
