@@ -2,7 +2,7 @@
 """Skor matriks pesaing berbobot + peta posisi teks. Python standar saja.
 
 CSV: kriteria,bobot,<nama kita>,<pesaing 1>,<pesaing 2>,...
-Nilai 1-5 (boleh desimal). Sel kosong = belum diketahui (tidak ikut dihitung,
+Nilai 1-5, makin tinggi = makin baik di mata pelanggan (harga murah = nilai tinggi). Boleh desimal. Sel kosong = belum diketahui (tidak ikut dihitung,
 bobot dinormalkan ulang per toko dan cakupan data ditampilkan).
 Pakai: python3 skor_matriks.py matriks.csv [--sumbu-x KRITERIA --sumbu-y KRITERIA]
        [--format json]   (Windows: python atau py)
@@ -11,6 +11,7 @@ import argparse
 import csv
 import io
 import json
+import math
 import sys
 
 
@@ -119,7 +120,7 @@ def peta(toko, krit, sx, sy):
         x, y = kx["nilai"][t], ky["nilai"][t]
         if x is None or y is None:
             continue
-        grid.setdefault((round(x), round(y)), []).append(f"{i}")
+        grid.setdefault((int(math.floor(x + 0.5)), int(math.floor(y + 0.5))), []).append(f"{i}")
     out = [f"Peta posisi (atas = {ky['nama']} tinggi, kanan = {kx['nama']} tinggi)"]
     for y in range(5, 0, -1):
         sel = ["/".join(grid.get((x, y), [])) or "." for x in range(1, 6)]
@@ -155,7 +156,7 @@ def main(argv=None):
     urut = sorted(hasil.items(), key=lambda kv: -(kv[1]["skor"] or 0))
     for n, (t, h) in enumerate(urut, 1):
         skor = "-" if h["skor"] is None else f"{h['skor']:.2f}".replace(".", ",")
-        print(f"| {n} | {t}{' (kita)' if t == toko[0] else ''} | {skor} | {h['cakupan_persen']}% | {', '.join(h['kosong']) or '-'} |")
+        print(f"| {n} | {t}{' (kita)' if t == toko[0] and t.lower() != 'kita' else ''} | {skor} | {h['cakupan_persen']}% | {', '.join(h['kosong']) or '-'} |")
     if any(h["cakupan_persen"] < 70 for h in hasil.values()):
         print("\nPERHATIAN: ada toko dengan data < 70% bobot; skor kurang dapat diandalkan, lengkapi dulu.")
     print("\n## Unggul dibanding rata-rata pesaing (urut prioritas = selisih x bobot)")
