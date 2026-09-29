@@ -17,7 +17,7 @@
 
 ## Contoh sebelum & sesudah
 **Sebelum:** "Aku mau produksi 200 pack dimsum mentai. Kayaknya laku sih."
-**Sesudah:** "Kirim penawaran ke 80 kontak, target 15% bayar DP dalam 5 hari." Hasil: 14 dari 80 (17,5%, rentang wajar 10,7%-27,3%) -> LANJUT DENGAN CATATAN: produksi 40 pack dulu, bukan 200, lalu uji pengiriman beku. Modal terlindungi.
+**Sesudah:** "Kirim penawaran ke 80 kontak, target 15% bayar DP dalam 5 hari." Hasil: 14 dari 80 (17,5%, rentang wajar 10,7%-27,3%) -> LANJUT BERTAHAP: produksi 40 pack dulu, bukan 200, lalu uji pengiriman beku. Modal terlindungi.
 
 ## Cara pakai
 Cukup tulis dalam bahasa biasa:

@@ -37,7 +37,19 @@ Semua angka di atas kasar dan bergantung kategori; kalau pengguna punya data sen
 ## 3. Aturan praktis jumlah sampel
 - Rumus kasar: n = 3,84 x p x (1 - p) ÷ margin^2 (p = perkiraan konversi, margin dalam desimal). Contoh: p 20%, margin +-10 poin -> 3,84 x 0,16 ÷ 0,01 = 61,5, jadi 62 orang. Tanpa perkiraan pakai p = 50%: margin +-10 -> 97 orang; +-5 -> 385 orang.
 - Skala UMKM: 30 (minimum arah), 50-100 (cukup untuk lanjut/stop kasar), 100+ (baru layak untuk selisih kecil).
-- Dua varian: minimal 50 per varian; selisih 10 poin persen biasanya baru meyakinkan di sekitar 100-150 per varian.
+- Konversi rendah (1-5%): margin sekitar separuh perkiraan (mis. p 4%, margin 2 -> 3,84 x 0,04 x 0,96 ÷ 0,0004 = 368,6, jadi 369 orang). Margin yang sama atau lebih besar dari perkiraan membuat rentang menyentuh 0% dan tidak berguna.
+- Dua varian: di bawah 50 per varian hanya sinyal arah. Jumlah **per varian** agar selisih terdeteksi dengan power 80% dan alfa 5% (dua sisi), rumus n = [1,96 x akar(2 x p̄ x (1 - p̄)) + 0,8416 x akar(pA(1 - pA) + pB(1 - pB))]^2 ÷ (pA - pB)^2, p̄ = rata-rata pA dan pB:
+
+| Varian A vs B | Orang per varian | Total |
+|---|---|---|
+| 5% vs 10% | 435 | 870 |
+| 10% vs 20% | 199 | 398 |
+| 15% vs 25% | 250 | 500 |
+| 10% vs 15% | 686 | 1.372 |
+| 20% vs 25% | 1.094 | 2.188 |
+
+  Power 80% artinya: kalau selisih sebenarnya memang sebesar itu, uji menemukannya kira-kira 8 dari 10 kali. Hitung kasus lain: `python3 scripts/hasil_eksperimen.py sampel --banding --a 15 --b 25`.
+- Sampel kecil (< 50 per varian atau ada sel harapan < 5): script memakai uji Fisher tepat, bukan uji z, dan tidak menyatakan pemenang pasti. Contoh: 0/10 vs 4/10 terlihat jauh (0% vs 40%), tapi p Fisher = 0,087, jadi belum meyakinkan.
 - Lebih baik dua uji bersih yang sama besar daripada sepuluh uji kecil-kecil yang tercampur.
 - Sampel harus **tidak bias**: jangan hanya menawari teman dekat; jangan menawari varian B ke orang yang lebih royal.
 - Hitung tepat: `python3 scripts/hasil_eksperimen.py sampel --margin 10 --perkiraan 20`.
@@ -45,8 +57,8 @@ Semua angka di atas kasar dan bergantung kategori; kalau pengguna punya data sen
 ## 4. Aturan keputusan
 | Kondisi | Keputusan |
 |---|---|
-| konversi >= T dan batas bawah Wilson >= T | LANJUT (kuat) |
-| konversi >= T, batas bawah < T | LANJUT bertahap / tambah sampel |
+| konversi >= T, batas bawah Wilson >= T, sampel >= 30 | LANJUT (kuat) |
+| konversi >= T, batas bawah < T (atau sampel < 30) | LANJUT BERTAHAP / tambah sampel |
 | S <= konversi < T | UBAH satu variabel, uji ulang (maks. 2 kali) |
 | konversi < S | STOP atau pivot |
 | Sampel < 30 | Sinyal arah saja; putuskan hanya untuk langkah kecil |
