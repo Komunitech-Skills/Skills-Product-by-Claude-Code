@@ -1,6 +1,6 @@
 # Ceklis Serah-Terima — Solusi VIP Kantor & Manajemen
 
-Satu halaman. **Jangan tulis nama/nomor karyawan, pelanggan, atau pemasok di ceklis ini** —
+Paket ini untuk member VIP (akses semua skill). Satu halaman. **Jangan tulis nama/nomor karyawan, pelanggan, atau pemasok di ceklis ini** —
 hanya status ya/tidak.
 
 ## Prasyarat
@@ -11,14 +11,16 @@ hanya status ya/tidak.
 
 ## Pemasangan skill
 - [ ] Skill inti terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`,
-      `laporan-otomatis-terjadwal`, `laporan-harian-usaha`, `laporan-status-kantor`,
+      `laporan-otomatis-terjadwal`, `laporan-status-kantor`,
       `ringkas-grup-wa`, `notulen-rapat`, `analisis-excel`, `analisis-rasio-keuangan-usaha`,
       `arus-kas-13minggu`, `presentasi-data-ke-atasan`, `buku-piutang`, `tagih-piutang`,
       `buku-stok`, `laporan-insiden-usaha`, `dasbor-lokal`.
+- [ ] **[VIP]** `laporan-harian-usaha` terpasang (tidak ada di bundle ecer).
 - [ ] `vikunja-tugas` terpasang (bila tim memakai daftar tugas) — aplikasi Vikunja sudah
       berjalan: ☐ dipasang sendiri ☐ jasa setup Komunitech.
-- [ ] Satu dari `frappe-books-usaha` / `dolibarr-usaha` (bila memakai): ☐ Frappe Books
+- [ ] **[PILIH SATU]** `frappe-books-usaha` ATAU `dolibarr-usaha` (bila memakai): ☐ Frappe Books
       ☐ Dolibarr ☐ tidak dipakai. Aplikasinya sudah terpasang: ☐ sendiri ☐ jasa setup.
+- [ ] Data awal stok dan piutang sudah diisi (agar laporan tidak kosong).
 - [ ] `karyawan-ai-mulai` dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` dijalankan (termasuk ringkasan UU PDP untuk data karyawan/pelanggan).
 
@@ -33,8 +35,8 @@ hanya status ya/tidak.
 ## Otomasi
 | Otomasi | Jadwal | Diuji sekali (`run --wait`)? | Aktif? |
 |---|---|---|---|
-| Laporan harian manajemen (laporan-harian-usaha) | 21.00 WIB | ☐ | ☐ |
-| Laporan mingguan manajemen | Senin 07.00 WIB | ☐ | ☐ |
+| **[VIP]** Laporan harian manajemen (laporan-harian-usaha) | 21.00 WIB | ☐ | ☐ |
+| **[VIP]** Laporan mingguan manajemen | Senin 07.00 WIB | ☐ | ☐ |
 | Tugas hari ini (vikunja-tugas, opsional) | 07.00 WIB | ☐ | ☐ |
 | Tugas terlambat (vikunja-tugas, opsional) | 07.05 WIB | ☐ | ☐ |
 | Ringkasan piutang (buku-piutang) | 07.45 WIB | ☐ | ☐ |

@@ -4,7 +4,7 @@ Semua perintah **disalin dari** `skills/pantau-pasar-kripto/references/openclaw-
 (pola `--command-argv` + `--command-cwd` + wrapper `NO_REPLY` dan ringkasan pagi bentuk agent).
 Tidak ada sintaks baru. Pola dasarnya sama dengan paket lain di `solusi-vip/`.
 
-Legenda: ✅/T = dijalankan sungguhan di Gateway uji Linux (OpenClaw 2026.9.5) oleh tim
+Legenda (tanda teknis untuk orang teknis; pemilik cukup tahu ✅ = terbukti jalan, S/⚠️ = uji dulu): ✅/T = dijalankan sungguhan di Gateway uji Linux (OpenClaw 2026.9.5) oleh tim
 kurasi. 📖/S = sintaks konsisten dengan pola ✅ tetapi kombinasi persisnya belum diuji ulang.
 ⚠️ = belum diverifikasi. **Pesan benar-benar tiba di Telegram belum pernah diuji** (butuh bot
 token asli) — uji dulu dengan `openclaw automations run <id> --wait`.
@@ -24,7 +24,7 @@ disclaimer: *"Informasi, bukan nasihat investasi. Keputusan & risiko sepenuhnya 
   Pengiriman nyata ke WA ⚠️ belum diuji.
 - Tunjukkan perintah + "Lanjut? (ya/tidak)" sebelum membuat jadwal.
 
-## 1. Notifikasi ambang harga, tiap jam (T di Linux, S di Windows)
+## 1. [VIP] Notifikasi ambang harga, tiap jam (T di Linux, S di Windows)
 Wrapper `cek_dan_lapor.py` mencetak pesan hanya bila ambang **member** terlewati atau
 pemantauan bermasalah; selain itu mencetak `NO_REPLY` sehingga tidak ada pesan terkirim.
 Cari path lengkap (ganti `NAMA`):
@@ -41,7 +41,7 @@ openclaw automations add --cron "0 * * * *" --tz "Asia/Jakarta" \
 - Pakai `--command-argv` (bukan `--command`): tanpa shell perantara, sehingga keluaran tenang
   persis `NO_REPLY`.
 - `--command-cwd` = folder workspace yang berisi folder `kripto/`.
-- Windows: ganti `"python3"` dengan `"python"` bila perlu; belum diuji di Windows, uji dulu.
+- Windows: ganti `"python3"` dengan `"py"` atau `"python"`; belum diuji di Windows, uji dulu.
 - **Cara uji yang benar:** (1) uji skrip di terminal dengan data tenang lalu data ambang
   terlewati (lihat `SKILL.md` skill); (2) `openclaw automations run <id> --wait` sekali dalam
   kondisi tenang: keluaran harus persis `NO_REPLY`, tanpa upaya pengiriman.
@@ -49,7 +49,7 @@ openclaw automations add --cron "0 * * * *" --tz "Asia/Jakarta" \
   `skills/pantau-pasar-kripto/references/openclaw-jadwal.md` §2 — kombinasi lengkapnya S; pakai
   hanya bila pola di atas tidak cukup.
 
-## 2. Ringkasan pagi: harga + berita bertautan sumber, 07.00 WIB (S)
+## 2. [VIP] Ringkasan pagi: harga + berita bertautan sumber, 07.00 WIB (S)
 Job agent yang selalu mengirim. Sintaks konsisten dengan pola `laporan-otomatis-terjadwal`
 (✅); isi prompt ini butuh model AI sungguhan sehingga belum diuji ulang.
 ```bash

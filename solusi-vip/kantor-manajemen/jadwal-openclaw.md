@@ -7,7 +7,7 @@ dipakai paket `konsultan/` dan `usaha-offline/`, yang flag-nya sudah dicocokkan 
 `openclaw automations add --help` OpenClaw 2026.9.6 (lihat `solusi-vip/README.md`, bagian
 Metodologi).
 
-Legenda: ✅ = pola dijalankan sungguhan di Gateway uji oleh tim kurasi. 📖 = hanya dicek lewat
+Legenda (tanda teknis untuk staf IT; pemilik cukup tahu ✅ = sudah terbukti jalan, 📖/⚠️ = perlu diuji dulu): ✅ = pola dijalankan sungguhan di Gateway uji oleh tim kurasi. 📖 = hanya dicek lewat
 `--help`/disalin dari pola ✅ skill lain. ⚠️ = kombinasi persis skill ini belum dicoba di Gateway.
 **Kirim pesan sungguhan ke Telegram belum pernah diuji** (butuh bot token asli) — uji dulu
 dengan `openclaw automations run <id> --wait`.
@@ -18,7 +18,7 @@ Telegram **pribadi** penerima. Cari path lengkap script (tanda `~` tidak dikenal
 ```bash
 python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/laporan-harian-usaha/scripts/laporan.py'))"
 ```
-Windows: ganti `"python3"` dengan `"py"` (atau `"python"`) — belum diuji; bila gagal pakai
+Windows: ganti `"python3"` dengan `"py"` atau `"python"` — belum diuji; bila gagal pakai
 bentuk agent (`--message`) di tiap bagian.
 
 ## 0. Aturan kanal
@@ -34,7 +34,7 @@ bentuk agent (`--message`) di tiap bagian.
 - Semua jadwal di bawah **hanya membaca**. Tunjukkan perintah + "Lanjut? (ya/tidak)" sebelum
   membuat jadwal, dan uji sekali sebelum dinyatakan aktif.
 
-## 1. Laporan harian manajemen, 21.00 WIB (laporan-harian-usaha) ✅
+## 1. [VIP] Laporan harian manajemen, 21.00 WIB (laporan-harian-usaha) ✅
 Dari `skills/laporan-harian-usaha/references/openclaw-jadwal.md` (flag inti ✅ dijalankan sungguhan):
 ```bash
 openclaw automations add --name "Laporan harian usaha" --cron "0 21 * * *" --tz Asia/Jakarta \
@@ -46,7 +46,7 @@ openclaw automations add --name "Laporan harian usaha" --cron "0 21 * * *" --tz 
 - Nama karyawan jadi inisial: tambahkan `"--samarkan"` ke argv.
 - Pabrik/gudang shift malam: `--cron "0 7 * * *"` dan tambahkan `"--tanggal","kemarin"` ke argv.
 
-## 2. Laporan mingguan manajemen, Senin 07.00 WIB ✅
+## 2. [VIP] Laporan mingguan manajemen, Senin 07.00 WIB ✅
 ```bash
 openclaw automations add --name "Laporan mingguan usaha" --cron "0 7 * * 1" --tz Asia/Jakarta \
   --command-argv '["python3","/home/NAMA/.openclaw/skills/laporan-harian-usaha/scripts/laporan.py","--periode","mingguan"]' \
@@ -99,7 +99,7 @@ openclaw automations add --name "Laporan stok menipis" --cron "0 7 * * *" --tz A
   --announce --channel telegram --to "<ID chat Telegram pimpinan>"
 ```
 
-## 6. Laporan gabungan lewat agent dengan saran singkat (opsional) ✅ (isi jawaban ⚠️)
+## 6. [VIP] Laporan gabungan lewat agent dengan saran singkat (opsional) ✅ (isi jawaban ⚠️)
 Dari `skills/laporan-harian-usaha/references/openclaw-jadwal.md` "Pilihan 2". Diterima Gateway
 (`agentTurn`, `toolsAllow: ["exec","read"]`); kualitas isi jawaban butuh model AI sungguhan.
 ```bash
@@ -111,9 +111,14 @@ openclaw automations add --name "Laporan harian (agent)" --cron "0 21 * * *" --t
 
 ## 7. Data dari file ekspor (laporan-otomatis-terjadwal)
 Bila data penjualan/kas masih berupa CSV/Excel dari aplikasi lain, `laporan-otomatis-terjadwal`
-menjadwalkan pengiriman hasil olahannya dengan pola yang sama (Bentuk A:
-`openclaw automations add "<cron>" "<pesan>" --name ... --tz ... --session isolated
---announce --channel telegram --to ...`). Perintah lengkap: `skills/laporan-otomatis-terjadwal/
+menjadwalkan pengiriman hasil olahannya dengan pola yang sama (Bentuk A). Contoh (jadwal & pesan sebagai argumen posisi, tanpa `--cron`):
+```bash
+openclaw automations add "0 21 * * *" \
+  "Pakai skill rekap-penjualan-csv pada file <folder-kerja>/penjualan/terbaru.csv lalu kirim ringkasannya apa adanya. Jangan mengubah angka." \
+  --name "Rekap penjualan dari CSV" --tz "Asia/Jakarta" --session isolated --tools exec,read \
+  --announce --channel telegram --to "<ID chat Telegram pimpinan>"
+```
+Perintah lengkap: `skills/laporan-otomatis-terjadwal/
 references/openclaw.md`.
 
 ## 8. Mengelola jadwal ✅
@@ -130,7 +135,7 @@ openclaw automations rm <id>                        # hanya id, permanen
 `disable`/`enable`/`edit`/`run`/`rm` dengan **nama** ditolak ("Automation not found") — pakai
 `id` (UUID) dari hasil `add`.
 
-## 9. Laporan harian dari Dolibarr atau Frappe Books, 21.00 WIB (pilih salah satu) ✅/⚠️
+## 9. [PILIH SATU] Laporan harian dari Dolibarr ATAU Frappe Books, 21.00 WIB ✅/⚠️
 **Dolibarr** — dari `skills/dolibarr-usaha/references/openclaw-jadwal.md` (✅ dijalankan
 sungguhan; kunci API dibaca dari file lokal, tidak ditaruh di jadwal):
 ```bash

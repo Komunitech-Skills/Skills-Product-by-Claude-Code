@@ -1,6 +1,6 @@
 # Ceklis Serah-Terima — Solusi VIP Riset Kripto & Keuangan Pribadi
 
-Satu halaman. **Jangan tulis saldo, alamat dompet, nomor rekening, seed phrase, atau API key
+Paket ini untuk member VIP (akses semua skill). Satu halaman. **Jangan tulis saldo, alamat dompet, nomor rekening, seed phrase, atau API key
 di ceklis ini** — hanya status ya/tidak.
 
 ## Prasyarat
@@ -10,8 +10,8 @@ di ceklis ini** — hanya status ya/tidak.
 - [ ] Member paham: bila mesin mati/tidur, notifikasi **tidak terkirim**.
 
 ## Pemasangan skill
-- [ ] 6 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `pantau-pasar-kripto`,
-      `atur-keuangan-pribadi`, `notebook-riset-lokal`, `asisten-tulis-riset`.
+- [ ] 6 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `atur-keuangan-pribadi`,
+      `notebook-riset-lokal`, `asisten-tulis-riset`, dan **[VIP]** `pantau-pasar-kripto`.
 - [ ] `karyawan-ai-mulai` dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` dijalankan.
 - [ ] Open Notebook (untuk `notebook-riset-lokal`, opsional): ☐ dipasang sendiri ☐ jasa setup

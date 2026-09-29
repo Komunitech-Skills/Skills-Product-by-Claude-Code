@@ -4,6 +4,17 @@ Untuk member VIP komunitech.com yang ingin **memahami, mencatat, dan memantau** 
 serta merapikan keuangan pribadi. Bahasa sehari-hari, langkah demi langkah. Setiap langkah
 punya **cara cek berhasil** dan **kalau gagal**.
 
+> **Paket ini untuk member VIP (akses semua skill).** Inti paket ini, `pantau-pasar-kripto`
+> (notifikasi harga, ringkasan pagi, checklist riset, jurnal), hanya ada di akses penuh VIP dan
+> ditandai **[VIP]** di bawah. Tidak ada bundle ecer untuk paket ini.
+
+## Mulai dari sini
+- **Pemakaian sehari-hari = ngobrol dengan agen OpenClaw** (Telegram atau chat OpenClaw)
+  dengan kalimat biasa seperti contoh di Bab 5.
+- **`jadwal-openclaw.md` hanya untuk pemasangan sekali** (membuat jadwal notifikasi otomatis).
+  Itu pekerjaan terminal: minta bantuan orang teknis atau **jasa setup berbayar Komunitech**.
+- **Gateway** = program OpenClaw yang berjalan di sebuah komputer dan menjalankan jadwal.
+
 > **PERINGATAN RISIKO — baca dulu.** Paket ini adalah alat **informasi dan pencatatan**.
 > **Bukan nasihat investasi, bukan rekomendasi beli/jual/tahan, bukan sinyal trading.**
 > Aset kripto berisiko tinggi: harga bisa turun tajam dan Anda bisa kehilangan seluruh modal.
@@ -12,7 +23,7 @@ punya **cara cek berhasil** dan **kalau gagal**.
 
 ## Apa yang bisa dan tidak bisa dilakukan paket ini
 
-| Bisa | Tidak (sengaja, keputusan Komunitech) |
+| Bisa (**[VIP]** = butuh `pantau-pasar-kripto`) | Tidak (sengaja, keputusan Komunitech) |
 |---|---|
 | Ringkasan pagi: harga + berita **bertautan sumber** | Auto-trading / bot beli-jual otomatis |
 | Notifikasi bila harga menyentuh ambang **yang Anda tetapkan sendiri** | Rekomendasi beli/jual/tahan, target harga, sinyal entry/exit |
@@ -48,11 +59,10 @@ dari paket ini.
 **Cabut (revoke)** di exchange sekarang, lalu buat yang baru. Skill tidak akan menyimpan
 atau mengulangnya.
 
-**Bursa/exchange:** gunakan hanya penyelenggara yang **terdaftar/berizin**. Sejak 2025 pengawasan
-aset kripto beralih dari Bappebti ke **OJK** (masa transisi berakhir 20 Januari 2026 — cek
-ojk.go.id untuk daftar terbaru). Selalu cek daftar resmi di **ojk.go.id** sebelum menyetor
-dana. Dugaan penipuan/investasi ilegal: hubungi **OJK 157** atau **Satgas PASTI**. Aturan
-dapat berubah; jangan menganggap catatan ini sebagai kepastian hukum terkini.
+**Bursa/exchange:** gunakan hanya bursa/penyelenggara perdagangan aset kripto yang
+**terdaftar/berizin OJK**. Cek daftar resmi terbaru di **ojk.go.id** sebelum menyetor dana.
+Dugaan penipuan/investasi ilegal: hubungi **OJK 157** atau **Satgas PASTI**. Aturan dapat
+berubah; catatan ini bukan kepastian hukum.
 
 ---
 
@@ -64,28 +74,29 @@ dapat berubah; jangan menganggap catatan ini sebagai kepastian hukum terkini.
    **(b)** mini PC/laptop bekas yang menyala 24 jam; **(c)** VPS milik Anda sendiri;
    **(d)** **jasa setup berbayar Komunitech** untuk memasang & menguji (b)/(c).
    - **Cara cek berhasil:** Anda tahu mesin mana yang menjalankan Gateway dan kapan menyala.
-   - **Kalau belum yakin:** mulai dengan ringkasan pagi saja (Bab 5b), saat laptop biasanya menyala.
+   - **Kalau belum yakin:** mulai dengan ringkasan pagi saja (Bab 5b, **[VIP]**), saat laptop biasanya menyala.
    - Ingat: pasar kripto buka 24 jam, tapi notifikasi **tidak terkirim** saat mesin mati.
 
 ---
 
 ## 2. Pasang paket skill
 
-Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `pantau-pasar-kripto`,
-`atur-keuangan-pribadi`, `notebook-riset-lokal`, `asisten-tulis-riset`.
+(Pekerjaan sekali saja; buka **Terminal**/**PowerShell**, masuk ke folder hasil ekstrak ZIP.)
+Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `atur-keuangan-pribadi`,
+`notebook-riset-lokal`, `asisten-tulis-riset`, dan **[VIP]** `pantau-pasar-kripto`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
 openclaw skills install ./cek-privasi-openclaw --global
-openclaw skills install ./pantau-pasar-kripto --global
 openclaw skills install ./atur-keuangan-pribadi --global
 openclaw skills install ./notebook-riset-lokal --global
 openclaw skills install ./asisten-tulis-riset --global
+openclaw skills install ./pantau-pasar-kripto --global   # [VIP]
 ```
 (Jalankan dari folder hasil ekstrak ZIP paket. Windows tanpa WSL: salin folder skill lewat File
 Explorer ke `%USERPROFILE%\.openclaw\skills\`. Lihat `docs/instalasi.md`.)
 
-- **Cara cek berhasil:** `openclaw skills list` menampilkan keenam nama.
+- **Cara cek berhasil:** `openclaw skills list` menampilkan keenam nama (lima tanpa `pantau-pasar-kripto` bila tidak VIP).
 - **Kalau gagal:** "already exists" aman dilewati; skill tidak muncul → pastikan folder yang
   disalin langsung berisi `SKILL.md`, buka sesi baru (`/new`); `exec` ditolak → salin manual.
 
@@ -107,14 +118,13 @@ exchange** ke chat AI. Tidak ada langkah di paket ini yang memintanya.
 
 ## 4. Hubungkan bot Telegram (kanal default)
 
-1. Di Telegram cari **@BotFather**, kirim `/newbot`, salin **token**.
-2. Jalankan:
-   ```bash
-   openclaw channels add --channel telegram --token <token-dari-BotFather>
-   ```
-3. Kirim "halo" ke bot (memicu **pairing**), lalu setujui:
-   `openclaw pairing list telegram` → `openclaw pairing approve telegram <KODE>` (berlaku 1 jam).
-4. Catat **ID chat** Anda lewat **@userinfobot**. Angka ini dipakai di semua jadwal.
+(Sekali saja; boleh dibantu orang teknis atau jasa setup Komunitech.)
+1. Di Telegram buka **@BotFather**, kirim `/newbot`, beri nama, salin **token**.
+2. Ketik ke OpenClaw: *"Tambahkan kanal Telegram dengan token ini: <token>"* (atau
+   `openclaw channels add --channel telegram --token <token>`).
+3. Kirim "halo" ke bot Anda. Bila diminta persetujuan: `openclaw pairing approve telegram <KODE>`
+   (kode dari `openclaw pairing list telegram`).
+4. Kirim pesan ke **@userinfobot** untuk mengetahui **ID chat** Anda; catat angkanya.
 
 - **Cara cek berhasil:** bot membalas "halo", ID chat tercatat di catatan pribadi.
 - **Kalau gagal:** token salah salin (ada spasi) atau pairing belum disetujui.
@@ -126,7 +136,7 @@ tertulis (teks di `jadwal-openclaw.md` §0). Telegram lebih aman dari risiko blo
 
 ## 5. Rutinitas
 
-### a. Tetapkan daftar pantauan Anda sendiri (sekali)
+### a. **[VIP]** Tetapkan daftar pantauan Anda sendiri (sekali)
 Ketik: *"Saya mau pantau BTC dan ETH. Beri tahu saya kalau turun lebih dari 5% dalam sehari
 atau harga BTC menyentuh Rp[angka]."* `pantau-pasar-kripto` membuat `kripto/PANTAU.md` dan
 `kripto/konfigurasi.json`. **Angka ambang selalu dari Anda**, bukan dari AI. Skill tidak
@@ -135,31 +145,30 @@ akan menyarankan angka ambang "yang bagus" karena itu sama dengan memberi sinyal
 - **Kalau gagal:** format aneh ("5 persen", "seratus juta") ditafsirkan lalu **ditunjukkan untuk
   dikonfirmasi** sebelum disimpan.
 
-### b. Ringkasan pagi: harga + berita bertautan sumber, 07.00 WIB (terjadwal)
+### b. **[VIP]** Ringkasan pagi: harga + berita bertautan sumber, 07.00 WIB (terjadwal)
 Ketik: *"Kirimi saya ringkasan pagi kripto jam 7 lewat Telegram."* Isinya: harga koin pantauan,
 judul berita **dengan tautan sumber**, dan disclaimer. Tanpa kesimpulan beli/jual. Bila AI tidak
 punya akses pencarian web, ia jujur bilang berita tidak bisa dibuat dan hanya mengirim harga.
 - **Cara cek berhasil:** jadwal diuji sekali (`automations run <id> --wait`), hasilnya dilihat
   sebelum dinyatakan aktif.
 
-### c. Notifikasi harga sesuai ambang Anda, per jam (terjadwal)
+### c. **[VIP]** Notifikasi harga sesuai ambang Anda, per jam (terjadwal)
 Ketik: *"Aktifkan notifikasi ambang harga kripto tiap jam."* Job berjalan tiap jam tetapi
 **diam bila tidak ada yang terlewati**; pesan hanya muncul saat ambang **Anda** tersentuh atau
 pemantauan bermasalah (data gagal/basi). Data basi selalu diberi label, angka tidak pernah
 dikarang.
 - **Kalau gagal:** uji dulu dengan data tenang (harus tidak ada pesan) lalu data ambang terlewati.
 
-### d. Riset proyek dengan checklist (manual)
+### d. **[VIP]** Riset proyek dengan checklist (manual)
 Ketik: *"Riset proyek [nama koin]: saya ingin tahu fakta-faktanya."* Hasilnya checklist due
 diligence (tim, audit, tokenomics, aktivitas, legalitas di Indonesia, tanda skema penipuan)
 **tanpa kesimpulan beli/jual**. Tanda bahaya disebut netral & edukatif.
 
-### e. Jurnal trading & hitung untung/rugi (manual)
+### e. **[VIP]** Jurnal trading & hitung untung/rugi (manual)
 Ketik: *"Rapikan jurnal trading saya dan hitung untung/rugi bulan ini"* dan tempel/kirim
-catatan Anda (tanggal, koin, harga, jumlah, biaya). Untung/rugi **dihitung script**, bukan
-ditebak. Skill boleh menunjukkan pola (mis. kapan Anda sering keluar terlalu cepat) sebagai
-refleksi pribadi, **bukan** sebagai saran transaksi berikutnya. Untuk pajak atas transaksi
-kripto, konsultasikan ke konsultan pajak.
+catatan Anda (tanggal, koin, harga, jumlah, biaya). Untung/rugi **dihitung script**, bukan ditebak; Anda menilai sendiri dari tabelnya.
+Skill tidak menganalisis pola perilaku Anda dan tidak memberi saran transaksi. Catat alasan/rencana
+Anda sendiri di kolom catatan jurnal. Untuk pajak atas transaksi kripto, tanyakan konsultan pajak.
 
 ### f. Anggaran & keuangan pribadi (manual)
 `atur-keuangan-pribadi` menghitung dengan script: anggaran bulanan (zero-based, dibanding
@@ -188,6 +197,7 @@ membeli aset tertentu.
 
 ## 6. Setelah semua jadwal aktif
 - Cek jadwal: *"jadwal apa saja yang aktif?"*; jeda: *"jeda notifikasi kripto saya."*
+- Bila Anda bukan member VIP: bagian 5f–5h tetap bisa dipakai; bagian **[VIP]** tidak.
 - `kripto/`, jurnal, dan catatan keuangan adalah data pribadi: simpan di komputer sendiri,
   jangan dibagikan; cadangkan berkala.
 - Ulangi `cek-privasi-openclaw` bila menambah kanal/skill baru.
