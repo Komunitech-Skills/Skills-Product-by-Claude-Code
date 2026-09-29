@@ -15,7 +15,8 @@ Sumber: teks resmi https://jdih.kemenkeu.go.id/api/download/66a7633b-9e1b-4a54-9
 Pembulatan: PPh dibulatkan ke BAWAH ke rupiah; fee ke rupiah terdekat. BELUM dicocokkan dengan Coretax.
 
   python3 hitung_pajak_biaya.py --nilai-jual 15000000 --pajak domestik --fee-persen 0.2
-  python3 hitung_pajak_biaya.py --transaksi bot/transaksi.csv [--kurs USDT=16500]   (rekap per bulan)
+  python3 hitung_pajak_biaya.py --transaksi bot/transaksi.csv [--kurs USDT=16.500]   (rekap per bulan)
+Kurs format Indonesia: "16.500" = 16500, desimal pakai koma ("16500,25"); "16,500", "16500.5", "1e5" ditolak (ambigu).
 Rekap dipisah PER MATA UANG KUTIPAN (IDR, USDT, USDC, BTC, ...) dan tidak pernah menjumlahkan mata uang
 berbeda. Konversi ke rupiah hanya dengan kurs yang Anda isi sendiri (--kurs), ditandai PERKIRAAN.
 """

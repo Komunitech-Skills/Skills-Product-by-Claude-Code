@@ -117,9 +117,15 @@ Indodax (demo-indodax.com). Ubah `"mode": "testnet"` + `"kunci"`; panduan membua
    konfigurasi persis + waktu pembuatan, wajib mulai dipakai dalam 24 jam, dan **batal** setiap kali
    konfigurasi berubah atau mode berganti (live → paper → live wajib konfirmasi baru) → ulangi dari E.1.
    Buku live (posisi, modal terpakai, patokan rugi) disimpan terpisah dan **tidak pernah di-reset** oleh
-   ganti mode; sebelum setiap order beli live, modal terpakai dicocokkan juga dengan **saldo koin di
-   bursa** (saldo sekarang − saldo saat live pertama) dan yang terbesar dipakai untuk `modal_maks_total`.
-   Saldo tidak bisa dicek → tidak ada order beli putaran itu.
+   ganti mode. Selain buku di folder bot, ada **buku live global per akun bursa** di
+   `~/.komunitech/bot-trading-kripto/akun/` (Windows: `C:\Users\<nama>\.komunitech\...`), dikunci per
+   bursa + sidik API key publik (hash, tanpa secret). Semua bot live dengan kunci API yang sama **bergiliran**
+   lewat kunci file OS, jadi salinan folder bot yang jalan bersamaan tidak bisa membeli dobel. Sebelum
+   **setiap** order beli live, modal terpakai = yang terbesar dari buku folder, buku global, dan
+   (saldo koin bursa − saldo milik member sebelum live pertama) × harga + order beli yang masih terbuka.
+   Menghapus `state.json`/folder bot tidak menambah jatah modal. Saldo/order tidak bisa dicek atau buku
+   global rusak → tidak ada order beli putaran itu. Sampaikan ke member: **satu kunci API untuk satu bot**,
+   jangan menyalin folder bot yang sedang aktif, dan jangan menghapus folder `~/.komunitech`.
 7. Sarankan mulai dengan modal kecil. Binance global bukan PAKD berizin OJK → live di sana butuh
    pernyataan tambahan di konfigurasi; utamakan PAKD berizin (Indodax). Lihat `references/regulasi-pajak.md`.
 
@@ -149,7 +155,9 @@ atau perintah ditolak → berhenti dan beri langkah persiapan; jangan menyelidik
   aset yang diserahkan (Pasal 11 ayat (2) huruf b, Pasal 12 ayat (5) huruf b) → sisi **beli** (menyerahkan
   USDT) juga dipotong PPh; bot menyisihkannya sehingga total bayar tetap ≤ nominal order. Pasangan
   rupiah: beli tanpa PPh.
-- Rekap per bulan: `scripts/hitung_pajak_biaya.py --transaksi bot/transaksi.csv [--kurs USDT=16500]`.
+- Rekap per bulan: `scripts/hitung_pajak_biaya.py --transaksi bot/transaksi.csv [--kurs USDT=16.500]`.
+  Kurs ditulis format Indonesia (`16.500` atau `16500`, desimal pakai koma: `16500,25`); bentuk ambigu
+  (`16,500`, `16500.5`, notasi ilmiah) ditolak dengan pesan GAGAL, jadi minta member menulis ulang.
   Rekap dipisah **per mata uang kutipan** (IDR, USDT, USDC, BTC, ...); mata uang berbeda tidak pernah
   dijumlahkan. Angka rupiah untuk kutipan non-IDR hanya muncul bila member mengisi kurs sendiri
   (`--kurs KUTIPAN=angka`, boleh berulang) dan ditandai **PERKIRAAN**.
@@ -200,5 +208,14 @@ Contoh keluaran nyata: `examples/`.
   member bertanya, dan sarankan paper → testnet → live kecil.
 - **Python tidak tersedia:** jangan menjalankan bot "manual" lewat chat. Bantu pasang Python atau
   tawarkan jasa setup Komunitech; untuk sementara member bisa memakai fitur order bawaan bursa.
+- **Batas modal live yang TIDAK bisa dijamin script (jujur):** pengguna yang punya akses ke komputer bot
+  bisa menghapus/menyunting buku global di `~/.komunitech/bot-trading-kripto/akun/` **sekaligus** state
+  bot; membuat **kunci API baru** untuk akun yang sama juga memulai buku global baru; dua mesin berbeda
+  (laptop + VPS) tidak berbagi kunci file OS. Dalam kasus itu koin hasil bot lama bisa dianggap milik
+  member dan satu jatah modal penuh tersedia lagi. Rekonsiliasi saldo bursa tetap berjalan, tetapi
+  patokannya ikut dibuat ulang. Saat patokan baru dibuat, bot menampilkan saldo koin yang dianggap milik
+  member; minta member memeriksanya. Pengaman terakhir tetap di sisi bursa: isi akun hanya dengan dana
+  sebesar batas modal.
+- **Kunci akun Windows** (`msvcrt`) dan macOS belum diuji di mesin asli; hanya Linux (fcntl) yang diuji.
 - **Data pribadi:** `bot/` berisi riwayat keuangan member; tetap lokal. Script hanya mengirim data
   ke API bursa (dan kunci hanya ke host bursa resmi; URL lain ditolak kecuali localhost untuk uji).

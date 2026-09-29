@@ -34,7 +34,7 @@ https://www.pajak.go.id/index.php/en/node/118105 · https://www.pajak.go.id/en/n
 **Pembulatan:** PPh = nilai jual × tarif, dibulatkan **ke bawah** ke rupiah (tidak pernah
 melebihi tarif). Fee dibulatkan ke rupiah terdekat. **Belum dicocokkan dengan Coretax** —
 bukti potong dari bursa yang berlaku. Untuk pasangan USDT, PPh dihitung dalam USDT (8 desimal);
-rekap dipisah per mata uang kutipan (IDR/USDT/USDC/BTC tidak pernah dijumlahkan); angka rupiah untuk kutipan non-IDR hanya perkiraan dengan `--kurs KUTIPAN=<angka>` yang member isi sendiri (`--kurs-idr` lama = kurs USDT). PMK meminta konversi kripto memakai nilai
+rekap dipisah per mata uang kutipan (IDR/USDT/USDC/BTC tidak pernah dijumlahkan); angka rupiah untuk kutipan non-IDR hanya perkiraan dengan `--kurs KUTIPAN=<angka>` yang member isi sendiri, format Indonesia (`16.500`/`16500`, desimal koma; bentuk ambigu ditolak; `--kurs-idr` lama = kurs USDT). PMK meminta konversi kripto memakai nilai
 bursa/sistem platform (Pasal 12 ayat (7)); kurs dari member hanyalah perkiraan rekap — bukti potong
 dari bursa yang berlaku. Kutipan yang dianggap fiat (tanpa PPh sisi beli): IDR, USD, EUR, dan mata
 uang fiat lain di `KUTIPAN_FIAT` (`scripts/inti.py`); kutipan lain dianggap aset kripto.

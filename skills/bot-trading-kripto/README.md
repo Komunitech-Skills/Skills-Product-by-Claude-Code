@@ -58,12 +58,19 @@ batas rugi, dan catatan lengkap, mulai dari simulasi tanpa uang asli.
 Urutan aman: **backtest → simulasi (paper) → testnet (opsional) → live** dengan konfirmasi
 bertahap (Anda sendiri mengetik kalimat persetujuan berisi kode unik).
 
-## Bursa yang didukung (v1.0.3)
+## Bursa yang didukung (v1.0.4)
 | Bursa | Simulasi | Testnet/demo | Live |
 |---|---|---|---|
 | Indodax (PAKD berizin OJK*) | Ya (harga asli, teruji) | demo-indodax.com (belum teruji) | Ya |
 | Binance Spot | Ya (harga asli, teruji) | Spot Testnet | Ya, dengan pernyataan khusus (bukan PAKD berizin OJK*) |
 \*Cek ulang daftar resmi di ojk.go.id.
+
+**Batas modal dijaga lintas folder:** bot live mencatat modal terpakai di buku global per akun
+bursa (di folder `.komunitech` komputer Anda) dan mengecek saldo koin + order terbuka di bursa sebelum
+setiap pembelian. Menyalin/menghapus folder bot tidak menambah jatah modal. Yang **tidak** bisa dicegah:
+orang yang menghapus folder `.komunitech` sekaligus data bot, memakai kunci API baru untuk akun yang sama,
+atau menjalankan bot di dua komputer sekaligus. Aturan aman: satu kunci API untuk satu bot, dan isi akun
+bursa hanya sebesar modal yang siap Anda pertaruhkan.
 
 **Kejujuran status uji:** harga & data publik kedua bursa diuji langsung. Pengiriman order,
 cek izin kunci, dan pembatalan order diuji terhadap **server tiruan** yang meniru dokumentasi
