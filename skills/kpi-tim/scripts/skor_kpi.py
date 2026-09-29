@@ -16,6 +16,9 @@ Perintah:
               dan tren dibanding periode sebelumnya.
   rekap-log   Rekap log operasional harian (komplain, respons CS, pengiriman, produksi)
               menjadi baris realisasi (jumlah / rata-rata / persen ya).
+  ekspor-db   Tulis rencana + skor + riwayat semua periode ke kpi.db (SQLite lokal, dibaca
+              dasbor-lokal/Datasette read-only) + kpi-metadata.yml; --anonim (kode P01..),
+              --grist (CSV per tabel untuk Grist).
   okr         Hitung progres OKR ringan (objective + 2-4 key result, 0-1,0).
 
 Aturan hitung lengkap: references/aturan-skor.md. Ringkas:
@@ -43,7 +46,7 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-VERSI = "1.0.1"
+VERSI = "1.1.0"
 D0 = Decimal(0)
 D100 = Decimal(100)
 
@@ -1719,6 +1722,259 @@ def _status_okr(p, jalan):
 
 
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# ekspor-db: rencana + skor + riwayat -> SQLite lokal (dasbor-lokal/Datasette) + CSV Grist
+# ---------------------------------------------------------------------------
+SKEMA_DB = """
+CREATE TABLE meta (kunci TEXT PRIMARY KEY, nilai TEXT);
+CREATE TABLE rencana (
+  periode_berlaku TEXT, divisi TEXT, orang TEXT, kpi TEXT, satuan TEXT, arah TEXT,
+  bobot REAL, target REAL, ambang REAL, maks_capai REAL, sumber TEXT);
+CREATE TABLE skor_kpi (
+  periode TEXT NOT NULL, tingkat TEXT NOT NULL, divisi TEXT, orang TEXT, kpi TEXT, satuan TEXT, arah TEXT,
+  bobot REAL, target REAL, ambang REAL, realisasi REAL, capaian_persen REAL, capaian_dipakai REAL,
+  nilai REAL, status TEXT, tren_capaian REAL);
+CREATE TABLE skor_orang (
+  periode TEXT NOT NULL, divisi TEXT, orang TEXT, skor REAL, status TEXT, tren REAL, lengkap INTEGER,
+  dasar TEXT, jumlah_kpi INTEGER, jumlah_kpi_kosong INTEGER, jumlah_kpi_merah INTEGER);
+CREATE TABLE skor_divisi (
+  periode TEXT NOT NULL, divisi TEXT, skor REAL, status TEXT, tren REAL, dasar_skor TEXT,
+  jumlah_orang INTEGER, jumlah_belum_lengkap INTEGER, sebagian INTEGER);
+CREATE TABLE skor_perusahaan (
+  periode TEXT NOT NULL, skor REAL, status TEXT, tren REAL, dasar TEXT,
+  jumlah_divisi_tanpa_skor INTEGER, sebagian INTEGER);
+CREATE INDEX i_skor_kpi ON skor_kpi(periode, status);
+CREATE INDEX i_skor_orang ON skor_orang(periode, divisi);
+"""
+TABEL_EKSPOR = ["rencana", "skor_kpi", "skor_orang", "skor_divisi", "skor_perusahaan"]
+PERINGATAN_LOKAL = ("Dasbor ini HANYA untuk komputer ini (127.0.0.1). Jangan dibuka ke jaringan/internet "
+                    "(tanpa 0.0.0.0, port-forward, atau tunnel) dan jangan dibagikan: skor per orang adalah "
+                    "data pribadi karyawan, bahan diskusi, bukan dasar sanksi/PHK.")
+
+
+def _r(d, n):
+    return None if d is None else float(bulat(d, n))
+
+
+def _baca_kunci(path):
+    peta = {"orang": {}, "divisi": {}}
+    if path.is_file():
+        with path.open(encoding="utf-8-sig", newline="") as f:
+            for r in csv.DictReader(f):
+                if r.get("jenis") in peta and r.get("nama") and r.get("kode"):
+                    peta[r["jenis"]][norm(r["nama"])] = r["kode"]
+    return peta
+
+
+def _buat_kode(jenis, nama_asli, peta, awalan, lebar):
+    """Beri kode acak (bukan urut abjad) ke nama yang belum punya; kode lama dipertahankan."""
+    import random
+    dipakai = set(peta[jenis].values())
+    baru = [n for n in nama_asli if norm(n) not in peta[jenis]]
+    kandidat = [awalan + str(i).zfill(lebar) for i in range(1, len(dipakai) + len(baru) + 1)]
+    kandidat = [k for k in kandidat if k not in dipakai]
+    random.SystemRandom().shuffle(kandidat)
+    for n, k in zip(baru, kandidat):
+        peta[jenis][norm(n)] = k
+
+
+def _tulis_csv_lurus(path, kolom, baris):
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(kolom)
+        for b in baris:
+            w.writerow(["" if v is None else v for v in b])
+
+
+def bangun_tabel_ekspor(rencana, per_periode, ok, dv):
+    """Susun baris tiap tabel dari hasil hitung_periode (ok/dv = fungsi penamaan orang/divisi)."""
+    T = {t: [] for t in TABEL_EKSPOR}
+    for b in rencana:
+        T["rencana"].append((b["periode"], dv(b["divisi"]), ok(b["orang"]) if b["orang"] else None, b["kpi"],
+                             b["satuan"], b["arah"], _r(b["bobot"], 4), _r(b["target"], 4), _r(b["ambang"], 4),
+                             _r(b["maks_capai"], 4), b.get("sumber", "")))
+
+    def baris_kpi(p, tingkat, divisi, orang, k):
+        return (p, tingkat, divisi, orang, k["kpi"], k["satuan"], k["arah"], _r(k["bobot"], 4), _r(k["target"], 4),
+                _r(k["ambang"], 4), _r(k["realisasi"], 4), _r(k["capaian_mentah"], 1), _r(k["capaian"], 1),
+                _r(k["kontribusi"], 2), k["status"], _r(k.get("tren_capaian"), 1))
+    for p, h in per_periode:
+        for o in h["orang"]:
+            for k in o["kpi"]:
+                T["skor_kpi"].append(baris_kpi(p, "orang", dv(o["divisi"]), ok(o["nama"]), k))
+            T["skor_orang"].append((p, dv(o["divisi"]), ok(o["nama"]), _r(o["skor"], 1), o["status"],
+                                    _r(o.get("tren"), 1), int(bool(o["lengkap"])), o["dasar"], len(o["kpi"]),
+                                    sum(1 for k in o["kpi"] if k["kosong"]),
+                                    sum(1 for k in o["kpi"] if k["status"] == "merah")))
+        for d in h["divisi"]:
+            for k in d["kpi"]:
+                T["skor_kpi"].append(baris_kpi(p, "divisi", dv(d["nama"]), None, k))
+            T["skor_divisi"].append((p, dv(d["nama"]), _r(d["skor"], 1), d["status"], _r(d.get("tren"), 1),
+                                     d["dasar_skor"], d["jumlah_orang"], len(d["belum_lengkap"]), int(d["sebagian"])))
+        c = h["perusahaan"]
+        T["skor_perusahaan"].append((p, _r(c["skor"], 1), c["status"], _r(c.get("tren"), 1), c["dasar"],
+                                     len(c["divisi_tanpa_skor"]), int(c["sebagian"])))
+    return T
+
+
+def cmd_ekspor_db(a):
+    import sqlite3
+    import shutil
+    siapkan_aturan(a)
+    rencana, err, cat = baca_rencana(a.rencana)
+    if err:
+        raise Gagal("Rencana KPI belum valid:\n- " + "\n- ".join(err))
+    realisasi, masalah = baca_realisasi(a.realisasi, a.periode_default, a.izinkan_minus)
+    periodes = sorted({r["periode"] for r in realisasi if r["periode"]})
+    if not periodes:
+        raise Gagal("Tidak ada periode di file realisasi. Isi kolom 'periode' atau pakai --periode-default 2026-09.")
+    folder = Path(a.keluar).expanduser()
+    file_db = folder / "kpi.db"
+    if file_db.exists() and not a.timpa:
+        raise Gagal("%s sudah ada. Pakai --timpa untuk menggantinya (database ini hanya ringkasan; "
+                    "sumber aslinya tetap file rencana & realisasi)." % file_db)
+    peringatan = list(masalah)
+    hitung = {}
+    for p in periodes:
+        h = hitung_periode(rencana, realisasi, p, a, peringatan)
+        if h is None:
+            continue
+        ada = any(not k["kosong"] for o in h["orang"] for k in o["kpi"]) or \
+            any(not k["kosong"] for d in h["divisi"] for k in d["kpi"])
+        if ada:
+            hitung[p] = h
+    dilewati = [p for p in periodes if p not in hitung]
+    if not hitung:
+        raise Gagal("Tidak ada periode yang bisa dihitung (rencana tidak berlaku atau realisasi kosong). "
+                    "Tidak ada database dibuat.")
+    for p, h in hitung.items():          # tren: aturan sama dengan perintah skor
+        lalu = periode_sebelumnya(periodes, p)
+        hl = hitung.get(lalu) if lalu else None
+        h["periode_lalu"] = None
+        if hl is not None and (any(o["skor"] is not None for o in hl["orang"]) or
+                               any(d["skor"] is not None for d in hl["divisi"])):
+            tambah_tren(h, hl)
+            h["periode_lalu"] = lalu
+    ok, dv = (lambda x: x), (lambda x: x)
+    kunci_path = folder / "kunci-kode-RAHASIA.csv"
+    peta = None
+    if a.anonim:
+        peta = _baca_kunci(kunci_path)
+        semua_orang = sorted({b["orang"] for b in rencana if b["orang"]})
+        semua_divisi = sorted({b["divisi"] for b in rencana})
+        _buat_kode("orang", semua_orang, peta, "P", max(2, len(str(len(semua_orang) + len(peta["orang"])))))
+        if a.anonim_divisi:
+            _buat_kode("divisi", semua_divisi, peta, "D", 2)
+        ok = lambda x: peta["orang"][norm(x)] if x else x
+        dv = (lambda x: peta["divisi"][norm(x)]) if a.anonim_divisi else (lambda x: x)
+    T = bangun_tabel_ekspor(rencana, list(hitung.items()), ok, dv)
+    if a.anonim:                          # urutan sisip tidak boleh membocorkan urutan abjad nama asli
+        for t in T:
+            T[t].sort(key=lambda r: tuple("" if v is None else str(v) for v in r))
+    folder.mkdir(parents=True, exist_ok=True)
+    if file_db.exists():
+        file_db.unlink()
+    conn = sqlite3.connect(str(file_db))
+    try:
+        conn.execute("PRAGMA journal_mode=DELETE")
+        conn.executescript(SKEMA_DB)
+        kolom = {}
+        for t, baris in T.items():
+            kolom[t] = [x[1] for x in conn.execute("PRAGMA table_info(%s)" % t)]
+            if baris:
+                conn.executemany("INSERT INTO %s VALUES (%s)" % (t, ",".join("?" * len(baris[0]))), baris)
+        meta = {"skema": "1", "dibuat_oleh": "kpi-tim %s" % VERSI, "anonim": "ya" if a.anonim else "tidak",
+                "divisi_anonim": "ya" if (a.anonim and a.anonim_divisi) else "tidak",
+                "periode": ",".join(hitung), "hijau": s_dec(a.hijau), "kuning": s_dec(a.kuning),
+                "cap": s_dec(a.cap), "data_kosong": a.data_kosong, "peringatan_lokal": PERINGATAN_LOKAL,
+                "dibuat_pada": datetime.date.today().isoformat()}
+        conn.executemany("INSERT INTO meta VALUES (?,?)", list(meta.items()))
+        conn.commit()
+    finally:
+        conn.close()
+    berkas = [str(file_db)]
+    tpl = Path(__file__).resolve().parent.parent / "templates" / "metadata-kpi.yml"
+    if tpl.is_file():
+        shutil.copyfile(str(tpl), str(folder / "kpi-metadata.yml"))
+        berkas.append(str(folder / "kpi-metadata.yml"))
+    if a.anonim:
+        with kunci_path.open("w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["jenis", "kode", "nama"])
+            asli = {"orang": {norm(b["orang"]): b["orang"] for b in rencana if b["orang"]},
+                    "divisi": {norm(b["divisi"]): b["divisi"] for b in rencana}}
+            for jenis in ("orang", "divisi"):
+                for n, kode in sorted(peta[jenis].items(), key=lambda kv: kv[1]):
+                    w.writerow([jenis, kode, asli[jenis].get(n, n)])
+        berkas.append(str(kunci_path))
+    if a.grist:
+        gd = folder / "grist"
+        gd.mkdir(parents=True, exist_ok=True)
+        for t in TABEL_EKSPOR:
+            _tulis_csv_lurus(str(gd / (t + ".csv")), kolom[t], T[t])
+            berkas.append(str(gd / (t + ".csv")))
+        (gd / "PETUNJUK-IMPOR-GRIST.md").write_text(PETUNJUK_GRIST, encoding="utf-8")
+        berkas.append(str(gd / "PETUNJUK-IMPOR-GRIST.md"))
+    perintah = 'datasette -i "%s" -m "%s" --host 127.0.0.1' % (file_db, folder / "kpi-metadata.yml")
+    data = {"ok": True, "versi": VERSI, "db": str(file_db), "periode": list(hitung), "periode_dilewati": dilewati,
+            "anonim": bool(a.anonim), "jumlah_baris": {t: len(T[t]) for t in T}, "berkas": berkas,
+            "peringatan_data_jumlah": len(peringatan), "perintah_datasette": perintah,
+            "peringatan_lokal": PERINGATAN_LOKAL}
+    L = ["✅ Database KPI ditulis: %s" % file_db,
+         "Periode: %s%s" % (", ".join(hitung), " (dilewati, tanpa data/rencana: %s)" % ", ".join(dilewati) if dilewati else ""),
+         "Baris: " + ", ".join("%s %d" % (t, len(T[t])) for t in T),
+         "Mode: %s" % ("ANONIM (kode P01.., nama ada di kunci-kode-RAHASIA.csv; simpan terpisah, jangan dibagikan)"
+                       if a.anonim else "dengan nama orang (data pribadi karyawan)")]
+    if peringatan:
+        L.append("⚠️ %d peringatan data (nama KPI salah ketik, duplikat, dll.); jalankan 'skor' untuk rinciannya."
+                 % len(peringatan))
+    L += ["", "Buka dasbor (hanya di komputer ini, baca-saja):", "  " + perintah, "  lalu buka http://127.0.0.1:8001",
+          "⚠️ " + PERINGATAN_LOKAL]
+    if a.grist:
+        L.append("CSV untuk Grist: %s (petunjuk: PETUNJUK-IMPOR-GRIST.md)" % (folder / "grist"))
+    cetak(a, data, "\n".join(L))
+    return 0
+
+
+PETUNJUK_GRIST = """# Impor KPI Tim ke Grist (untuk yang sudah memakai Grist)
+
+File di folder ini = satu CSV per tabel, isinya sama dengan database `kpi.db`
+(angka sudah dihitung `skor_kpi.py`; Grist hanya menampilkan, jangan menghitung ulang).
+
+| File | Isi |
+|---|---|
+| skor_perusahaan.csv | skor perusahaan per periode |
+| skor_divisi.csv | skor tiap divisi per periode |
+| skor_orang.csv | skor tiap orang per periode |
+| skor_kpi.csv | rincian tiap KPI (target, realisasi, capaian, status) |
+| rencana.csv | rencana KPI (bobot, target, ambang) |
+
+## Langkah (Grist Desktop atau Grist di komputer sendiri)
+1. Buka Grist, buat dokumen kosong: **Add New > Add Empty Document**, beri nama "KPI Tim".
+2. **Add New > Import from file**, pilih `skor_perusahaan.csv`. Di layar pratinjau biarkan
+   pilihan bawaan, klik **Import**. Ulangi untuk keempat file lainnya (satu tabel per file).
+3. Kolom `periode` dibiarkan bertipe Teks (contoh 2026-09). Kolom angka (skor, target, ...)
+   otomatis terbaca Angka. Kolom `status` berisi hijau/kuning/merah/belum.
+4. Warna semaphore: pilih kolom `status` > **Column Options > Cell Style** > **Add another rule**,
+   isi kondisi `$status == "merah"` (warna merah), lalu `"kuning"` dan `"hijau"`.
+5. Grafik tren: **Add New > Add Page > Select Widget: Chart**, sumber `skor_perusahaan`,
+   sumbu X `periode`, sumbu Y `skor`. Per divisi: sumber `skor_divisi`, satu seri per `divisi`.
+6. Bulan berikutnya: jalankan lagi `skor_kpi.py ekspor-db ... --timpa --grist`, lalu di Grist hapus
+   isi tiap tabel dan **Import from file** lagi (paling sederhana), atau pakai **Update existing
+   table** dengan kunci `periode` (+ `divisi`/`orang`/`kpi` bila ada).
+
+## Yang perlu diingat
+- Grist hanya di komputer sendiri (alamat `localhost`). Jangan buka ke internet atau tautan
+  publik: isinya skor per orang = data pribadi karyawan.
+- Lebih aman: ekspor dengan `--anonim` (nama diganti kode P01, P02, ...). Tabel kuncinya ada di
+  `kunci-kode-RAHASIA.csv` (bukan di folder ini); simpan terpisah dan jangan dibagikan.
+- Skor adalah bahan diskusi, bukan dasar sanksi atau PHK.
+- Panduan Grist: `docs/panduan-grist.md`. Skill `grist-usaha` membantu tabel/rumus tambahan.
+  Perintah `impor-csv` miliknya hanya untuk tabel yang SUDAH ada di Grist dan butuh REST API
+  (Docker), jadi untuk pertama kali pakai langkah Import di atas.
+"""
+
+
 def buat_parser():
     ap = argparse.ArgumentParser(prog="skor_kpi.py", description="KPI & target tim UMKM (Komunitech kpi-tim)")
     ap.add_argument("--versi", action="version", version=VERSI)
@@ -1770,6 +2026,25 @@ def buat_parser():
     p.add_argument("--maks-peringatan", type=int, default=5)
     umum(p)
 
+    p = sub.add_parser("ekspor-db", help="Tulis rencana+skor+riwayat ke SQLite lokal (dasbor-lokal/Datasette) & CSV Grist")
+    p.add_argument("--rencana", required=True)
+    p.add_argument("--realisasi", required=True)
+    p.add_argument("--keluar", required=True, help="Folder hasil (kpi.db, kpi-metadata.yml, ...)")
+    p.add_argument("--periode-default", help="Periode untuk baris realisasi yang kolom periodenya kosong")
+    p.add_argument("--data-kosong", choices=["tandai", "bobot-ulang", "nol"], default="tandai")
+    p.add_argument("--min-bobot", default="50")
+    p.add_argument("--cap", default="120")
+    p.add_argument("--hijau", default="100")
+    p.add_argument("--kuning", default="80")
+    p.add_argument("--bobot-divisi")
+    p.add_argument("--duplikat", choices=["tolak", "jumlah", "terakhir"], default="tolak")
+    p.add_argument("--izinkan-minus", action="store_true")
+    p.add_argument("--anonim", action="store_true", help="Ganti nama orang dengan kode P01.. (kunci di file terpisah)")
+    p.add_argument("--anonim-divisi", action="store_true", help="Dengan --anonim: nama divisi juga jadi kode D01..")
+    p.add_argument("--grist", action="store_true", help="Tulis juga satu CSV per tabel + petunjuk impor Grist")
+    p.add_argument("--timpa", action="store_true", help="Ganti kpi.db yang sudah ada")
+    umum(p)
+
     p = sub.add_parser("rekap-log", help="Log operasional harian -> baris realisasi")
     p.add_argument("--log", required=True, help="CSV/XLSX: tanggal, divisi, orang, kpi, nilai, cara")
     p.add_argument("--per", choices=["bulan", "minggu"], default="bulan")
@@ -1786,7 +2061,7 @@ def buat_parser():
 
 
 PERINTAH = {"katalog": cmd_katalog, "template": cmd_template, "cek": cmd_cek, "baca-teks": cmd_baca_teks,
-            "skor": cmd_skor, "okr": cmd_okr, "rekap-log": cmd_rekap_log}
+            "skor": cmd_skor, "ekspor-db": cmd_ekspor_db, "okr": cmd_okr, "rekap-log": cmd_rekap_log}
 
 
 def main(argv=None):

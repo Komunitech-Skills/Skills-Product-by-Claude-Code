@@ -67,6 +67,10 @@ Hasil: CSV `Tanggal;Keterangan;Masuk;Keluar;Kategori` (UTF-8 BOM, tanggal DD/MM/
   tidak ikut.
 - Teks script memberi perintah emkm siap pakai, termasuk `--kas-akhir-aktual` = saldo akhir gabungan (cek silang).
   Sebelum menjalankannya, tanyakan stok awal/akhir, piutang, utang, dan aset (lihat SKILL.md emkm).
+- v1.0.8: bila ada cicilan pinjaman (`bayar_pinjaman`), teks ekspor memuat satu "PERTANYAAN BUNGA" untuk seluruh
+  periode, JSON `baris_cicilan` (nomor baris file; judul = baris 1) dan `perintah_pokok_saja` (= perintah emkm +
+  `--bunga N=0` per baris cicilan). Jawaban "ya, pokok saja" → pakai `perintah_pokok_saja`; emkm tidak lagi bertanya
+  per baris. Ada cicilan yang masih termasuk bunga → ganti `0` baris itu dengan nominal bunganya.
 - Diuji: laba bersih emkm = hasil usaha kas-umkm bila tidak ada stok/piutang/utang/aset (tes otomatis).
 
 ## 3. Ke arus-kas-13minggu (proyeksi)
