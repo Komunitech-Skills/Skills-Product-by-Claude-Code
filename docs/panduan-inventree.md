@@ -6,7 +6,7 @@ InvenTree adalah program **gratis dan open-source** (lisensi MIT) untuk mengelol
 
 > Komunitech **tidak berafiliasi** dengan proyek InvenTree; "InvenTree" adalah nama milik pengembangnya.
 
-**Status panduan (29 September 2026).** Langkah dan nama menu dicocokkan dengan dokumentasi resmi (docs.inventree.org) dan kode sumber InvenTree **1.5.6** (rilis 26 Sep 2026). Komunitech **menjalankan InvenTree 1.5.6 sungguhan** (instalasi manual Linux, Python 3.12 + paket resmi ber-hash, database SQLite, terikat ke `127.0.0.1`) dan menguji semua perintah skill terhadapnya: akun & grup hak akses, token, mata uang IDR, stock opname, terima barang dari PO, BOM. **Belum dicoba langsung** oleh Komunitech: instalasi **Docker** (bagian 2 — cara yang disarankan resmi; di sandbox uji kami Docker tidak tersedia), Windows/macOS sungguhan, dan tampilan web (kami menguji lewat API). Bila tampilan di komputer Anda berbeda, ikuti tulisan di layar atau hubungi kami.
+**Status panduan (29 September 2026, diperbarui setelah uji independen).** Langkah dan nama menu dicocokkan dengan dokumentasi resmi (docs.inventree.org) dan kode sumber InvenTree **1.5.6** (rilis 26 Sep 2026). Komunitech **menjalankan InvenTree 1.5.6 sungguhan** (instalasi manual Linux, Python 3.12 + paket resmi ber-hash, database SQLite, terikat ke `127.0.0.1`) dan menguji semua perintah skill terhadapnya: akun & grup hak akses, token, mata uang IDR, stock opname, terima barang dari PO, BOM. **Jalur Docker (bagian 2) dijalankan penguji independen Komunitech** pada 29 Sep 2026 sampai `docker compose up -d` dan semua perintah skill terhadapnya (port hanya `127.0.0.1`, worker menyala; di sandbox uji, langkah `invoke update` diganti `invoke migrate` + `invoke static` karena batas jaringan sandbox — di komputer biasa pakai `invoke update`). Temuan uji itu (urutan mata uang, sandi akun AI) sudah dimasukkan ke bagian 5 & 6. **Belum dicoba langsung:** Windows/macOS sungguhan. Bila tampilan di komputer Anda berbeda, ikuti tulisan di layar atau hubungi kami.
 
 ## Daftar isi
 1. Sebelum mulai
@@ -46,7 +46,7 @@ Sumber resmi: https://docs.inventree.org/en/latest/start/docker_install/ . Inven
    curl -fsSL -o Caddyfile https://raw.githubusercontent.com/inventree/InvenTree/1.5.6/contrib/container/Caddyfile
    ```
    (Perintah ini hanya **mengunduh file teks**, tidak menjalankan apa pun. Buka dan baca dulu bila ingin.)
-2. Buka file `.env` dengan editor teks, ubah baris berikut (lihat juga bagian 4):
+2. Buka file `.env` dengan editor teks (Linux/Mac: `nano .env`, simpan dengan Ctrl+O lalu Enter, keluar Ctrl+X; Windows: klik kanan → Buka dengan → Notepad. File berawalan titik mungkin tersembunyi — aktifkan "tampilkan file tersembunyi"), ubah baris berikut (lihat juga bagian 4):
    ```
    INVENTREE_TAG=1.5.6
    INVENTREE_SITE_URL="http://localhost"
@@ -57,11 +57,11 @@ Sumber resmi: https://docs.inventree.org/en/latest/start/docker_install/ . Inven
    INVENTREE_PLUGINS_ENABLED=False
    ```
    (Dua baris `INVENTREE_HTTP_PORT`/`HTTPS_PORT` aslinya diawali `#`; hapus tanda `#`-nya.)
-3. Siapkan database (sekali saja, beberapa menit):
+3. Siapkan database (sekali saja; **butuh internet**, bisa **5–15 menit** karena mengunduh & memasang komponen — biarkan sampai selesai):
    ```bash
    docker compose run --rm inventree-server invoke update
    ```
-4. Buat akun admin (isi nama pengguna, email, sandi kuat):
+4. Buat akun admin (isi nama pengguna, email, sandi kuat — **sandi tidak terlihat saat diketik**, itu normal; ketik lalu Enter, lalu ulangi):
    ```bash
    docker compose run --rm inventree-server invoke superuser
    ```
@@ -87,7 +87,10 @@ Sumber resmi: https://docs.inventree.org/en/latest/start/docker_install/ . Inven
 
 ## 5. Setelan awal untuk usaha Indonesia
 Semua lewat **Settings** (ikon roda/menu profil kanan atas) — nama menu sesuai InvenTree 1.5.6.
-1. **Rupiah (wajib bila mencatat harga beli):** System Settings → **Pricing** → *Default Currency* = `IDR`, *Supported Currencies* = `IDR,USD`. (Bawaan InvenTree hanya USD/EUR/dll.; tanpa ini, pemasok ber-mata uang IDR **ditolak** — diuji Komunitech.)
+1. **Rupiah (wajib bila mencatat harga beli)** — System Settings → **Pricing**, **urutannya penting**:
+   1. Isi dulu *Supported Currencies* = `IDR,USD` → simpan.
+   2. Baru ubah *Default Currency* = `IDR` → simpan.
+   (Bila dibalik, InvenTree 1.5.6 menolak dengan "Chosen value is not a valid option" karena IDR belum ada di daftar — diuji penguji Komunitech. Bawaan InvenTree tidak memuat IDR; tanpa langkah ini pemasok ber-mata uang IDR **ditolak**.)
 2. **Bahasa Indonesia:** User Settings → **Account** (panel tema/tampilan) → *Language* → *Indonesian* (terjemahan buatan komunitas, sebagian mungkin masih Inggris). Panduan & skill ini menyebut nama menu versi Inggris.
 3. **Satuan:** isi kolom *Units* barang dengan satuan standar (`kg`, `g`, `L`, `m`). Satuan lokal seperti `pcs`, `sak`, `dus`, `rim` → tambahkan dulu di Admin Center → **Custom Units**, atau kosongkan (dianggap "buah").
 4. **Struktur:** buat **Stock Locations** (mis. `Gudang Utama` → `Rak A`, `Rak B`; `Ruang Produksi`; `Toko Depan`) dan **Part Categories** (mis. Bahan Baku, Kemasan, Produk Jadi).
@@ -104,9 +107,18 @@ Jangan berikan token akun admin ke AI. Buat dua grup dan dua akun:
 | `Agen Baca` | **View** pada: Part Categories, Parts, Bills of Material, Stock Locations, Stock Items, Build Orders, Purchase Orders | Chat harian & **jadwal laporan otomatis** |
 | `Agen Gudang` | Semua View di atas **+ Add & Change** pada **Stock Items** dan **Purchase Orders** (jangan Delete) | Stock opname & terima barang (selalu lewat pratinjau + "ya") |
 
-**b. Akun** — Admin Center → Users / Access → **Users** → Add: `agen-baca` (grup Agen Baca) dan `agen-gudang` (grup Agen Gudang). Jangan centang Superuser/Staff.
+**b. Akun khusus AI (hak minimal)** — langkah dilakukan akun admin (superuser) di tampilan web InvenTree 1.5.6:
+1. Admin Center → **Users / Access** → tabel **Users** → tombol **+ (Add User)** → isi *Username* `agen-baca` (nama depan/email boleh diisi "Bot AI" / email kantor). **Jangan** centang *Staff*/*Superuser*. Simpan. (Form ini memang **tidak meminta sandi**.)
+2. Masih di tabel Users, klik menu **⋮** (titik tiga) di baris `agen-baca` → **Change Password** → isi sandi panjang acak (simpan di pengelola sandi) → Submit. Menu ini hanya muncul untuk akun superuser. Bila sandi dianggap lemah, InvenTree meminta centang *override warning* — lebih baik pakai sandi yang lebih kuat.
+3. Klik baris `agen-baca` (atau ⋮ → Edit) → buka bagian **Groups** → pindahkan **hanya** grup `Agen Baca` ke daftar grup terpilih → simpan (muncul "Groups updated").
+4. Ulangi 1–3 untuk `agen-gudang` dengan grup `Agen Gudang` **saja**.
 
-**c. Token** — login sebagai akun itu → menu profil → **User Settings → Security → Access Tokens → Generate Token**. Token diawali `inv-` dan **hanya tampil sekali**; berlaku **1 tahun** (bawaan), setelah itu buat baru.
+**c. Token (dibuat oleh akun AI itu sendiri)** — token selalu dibuat oleh pemiliknya; panel *Tokens* di Admin Center hanya untuk melihat/mencabut.
+1. Log out dari akun admin (menu profil kanan atas → Logout), lalu login sebagai `agen-baca` dengan sandi dari langkah b.2.
+2. Menu profil → **User Settings → Security → Access Tokens → + (Generate Token)** → beri nama, mis. `openclaw-laptop-gudang` → Submit.
+3. Token diawali `inv-` dan **hanya tampil sekali** — langsung jalankan langkah d (tempel ke `simpan-kunci`), jangan disimpan di chat/catatan. Berlaku **1 tahun** (bawaan), setelah itu buat baru.
+4. Logout, login sebagai `agen-gudang`, ulangi 2–3 untuk token gudang. Terakhir login kembali sebagai admin bila perlu.
+5. Token bocor/perangkat hilang? Admin Center → Users / Access → **Tokens** → cabut (revoke) token itu, lalu buat baru.
 
 **d. Simpan token** di terminal Anda sendiri (bukan di chat):
 ```bash
@@ -151,6 +163,8 @@ Skill diuji dengan 1.5.6; versi lain tetap jalan tetapi `cek` akan menulis "belu
 | Pemasok/harga ditolak "IDR is not a valid choice" | Mata uang belum diatur (bagian 5.1) |
 | Stok menipis selalu kosong | Barang belum diisi *Minimum Stock* (bagian 5.5) |
 | `bom`: "bukan produk rakitan" | Centang *Assembly* pada produk & isi BOM (bagian 5.6) |
+| Skill: "mengalihkan (HTTP 30x)" | Alamat yang dipakai skill diarahkan ke alamat lain (mis. `http://` → `https://`, atau port lain). Demi keamanan token skill tidak mengikuti pengalihan → pakai alamat tujuan akhir (yang tampil di address bar browser) sebagai `INVENTREE_API_HOST` |
+| Skill memakai proxy kantor? | Tidak untuk alamat komputer ini/jaringan kantor — setelan `HTTP_PROXY`/`HTTPS_PROXY` sengaja diabaikan agar token tidak lewat proxy |
 | Opname "BERHENTI: stok BERUBAH" | Ada barang masuk/keluar setelah lembar dicetak → buat lembar baru, hitung ulang item itu |
 
 ## 12. Lampiran: instalasi manual tanpa Docker (untuk teknisi)

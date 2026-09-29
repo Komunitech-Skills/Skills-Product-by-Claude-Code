@@ -1,0 +1,68 @@
+(HTTP_PROXY=http://127.0.0.1:9 — proxy mati — sengaja di-set; NO_PROXY dikosongkan)
+$ python3 inventree.py cek
+CEK INVENTREE
+Alamat: http://127.0.0.1:8000
+Versi server: 1.5.6 (API 530)
+Token: inv-2d****0929
+Akun: agen-gudang
+- lihat barang: YA
+- lihat stok: YA
+- lihat lokasi: YA
+- lihat PO: YA
+- lihat produksi: YA
+- lihat BOM: YA
+- opname (tulis): YA
+- terima barang (tulis): YA
+Hak baca dasar: OK
+Catatan: token ini BISA MENULIS. Untuk jadwal otomatis pakai akun baca-saja.
+[kode keluar 0]
+
+$ python3 inventree.py po-terbuka
+PO TERBUKA (belum diterima penuh): 2
+
+PO-0001 | CV Tani Makmur (fiktif) | Sudah dipesan | target - | 1/2 baris lengkap
+  - Singkong Kupas [BB-001]: dipesan 200, diterima 150, sisa 50 kg
+
+PO-0002 | Toko Plastik Jaya (fiktif) | Sudah dipesan | target - | 0/2 baris lengkap
+  - Standing Pouch 250g [KM-001]: dipesan 1.000, diterima 0, sisa 1.000
+  - Label Stiker Sumber Rasa [KM-002]: dipesan 1.000, diterima 0, sisa 1.000
+[kode keluar 0]
+
+$ python3 inventree.py terima-barang --po PO-0001 --baris BB-001=10 --batch SK-3009
+PRATINJAU TERIMA BARANG PO-0001 dari CV Tani Makmur (fiktif)
+Masuk ke lokasi: Gudang Utama/Rak A
+Kode batch: SK-3009
+- Singkong Kupas [BB-001]: terima 10 kg (sisa pesanan 50)
+
+Belum disimpan. Cocokkan dengan surat jalan/nota pemasok. Bila benar, ulangi perintah + --ya.
+[kode keluar 0]
+
+$ python3 inventree.py terima-barang --po PO-0001 --baris Singkong Kupas=10 --batch SK-3009 --ya
+TERSIMPAN: 1 baris diterima dari PO-0001 ke Gudang Utama/Rak A (batch SK-3009).
+- Singkong Kupas: +10 kg
+Cek: 'po-terbuka' (sisa pesanan) atau 'stok <kode>'.
+[kode keluar 0]
+
+$ python3 inventree.py po-terbuka
+PO TERBUKA (belum diterima penuh): 2
+
+PO-0001 | CV Tani Makmur (fiktif) | Sudah dipesan | target - | 1/2 baris lengkap
+  - Singkong Kupas [BB-001]: dipesan 200, diterima 160, sisa 40 kg
+
+PO-0002 | Toko Plastik Jaya (fiktif) | Sudah dipesan | target - | 0/2 baris lengkap
+  - Standing Pouch 250g [KM-001]: dipesan 1.000, diterima 0, sisa 1.000
+  - Label Stiker Sumber Rasa [KM-002]: dipesan 1.000, diterima 0, sisa 1.000
+[kode keluar 0]
+
+$ python3 inventree.py stok-menipis
+STOK MENIPIS (di bawah minimum): 2 barang
+
+Kemasan:
+- Label Stiker Sumber Rasa [KM-002]: stok 300, minimum 500, kurang 200 (sedang dipesan 1.000; dibutuhkan produksi/penjualan terbuka 100; kekurangan terhadap minimum sudah tertutup pesanan/produksi berjalan)
+
+Produk Jadi:
+- Keripik Singkong Original 250g [PJ-002]: stok 90, minimum 150, kurang 60 (perlu diproduksi lagi min. 60)
+
+Catatan: hanya barang yang diberi 'Minimum Stock' di InvenTree yang diperiksa. 'Perlu dipesan' = minimum - stok - sedang dipesan - dalam perintah produksi terbuka (kebutuhan produksi/penjualan terbuka ditampilkan terpisah, tidak ditambahkan).
+[kode keluar 0]
+

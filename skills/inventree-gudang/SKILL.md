@@ -48,7 +48,7 @@ inventree.py lokasi            # daftar lokasi
 inventree.py lokasi "Rak A"    # isi satu lokasi (termasuk sub-lokasi)
 inventree.py stok-menipis
 ```
-`stok-menipis` hanya memeriksa barang yang diberi **Minimum Stock** di InvenTree. "Perlu dipesan lagi" = minimum − stok − sedang dipesan − sedang diproduksi; kebutuhan produksi/penjualan terbuka ditampilkan terpisah (tidak ditambahkan). Sampaikan rumus ini bila pengguna bertanya.
+`stok-menipis` hanya memeriksa barang yang diberi **Minimum Stock** di InvenTree. "Perlu dipesan lagi" = minimum − stok − sedang dipesan − jumlah dalam perintah produksi terbuka (termasuk yang masih Menunggu); kebutuhan produksi/penjualan terbuka ditampilkan terpisah (tidak ditambahkan). Sampaikan rumus ini bila pengguna bertanya.
 
 ### B. Stock opname (menulis — 3 langkah wajib)
 1. `inventree.py opname-draf --lokasi "Rak A"` → file CSV (pemisah `;`, desimal koma, siap Excel). Kirim/tunjukkan ke pengguna; petugas mengisi kolom `stok_fisik` (kosongkan item yang tidak dihitung).
@@ -105,6 +105,7 @@ Contoh lain di `examples/`. `--json` memberi field yang sama secara terstruktur 
 | 2 lembar opname tidak jelas | Angka/kolom salah | Tunjukkan baris yang salah, minta diperbaiki |
 | 6 "menolak data (400)" | InvenTree menolak isi transaksi | Sampaikan pesan server apa adanya |
 | 8 "TIDAK PASTI"/"MUNGKIN sudah masuk" | Putus/timeout/5xx **saat menulis** | **Jangan ulangi otomatis.** Minta pengguna cek riwayat stok/PO di InvenTree dulu |
+| 4 "mengalihkan (HTTP 30x)" | Alamat InvenTree mengarahkan ke alamat lain (mis. http→https, port lain) | Jangan akali; minta pengguna memakai alamat tujuan akhir sebagai `--url`/`INVENTREE_API_HOST` (panduan §11) |
 | 3 "File kunci ... tidak ditemukan" | Token belum disimpan | Pengguna menjalankan `simpan-kunci` |
 | 2 "bukan komputer ini"/"wajib HTTPS" | URL publik tanpa izin/HTTPS | Tolak; jelaskan risiko (panduan §4) |
 | "belum diuji Komunitech" | Versi selain 1.5.6 | Tetap jalan; minta pengguna mencocokkan angka penting di layar InvenTree |
