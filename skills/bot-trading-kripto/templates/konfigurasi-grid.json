@@ -1,0 +1,21 @@
+{
+  "mode": "paper",
+  "bursa": "indodax",
+  "pasangan": "btc_idr",
+  "strategi": {
+    "jenis": "grid",
+    "harga_bawah": "1400000000",
+    "harga_atas": "1600000000",
+    "jumlah_grid": 8,
+    "nominal_per_grid": "250000"
+  },
+  "batas_risiko": {
+    "modal_maks_per_order": "250000",
+    "modal_maks_total": "2000000",
+    "stop_loss_persen": "12",
+    "rugi_harian_maks": "250000",
+    "order_terbuka_maks": 2
+  },
+  "biaya": {"fee_persen": "0.2", "pajak": "domestik"},
+  "kunci": {"file": "~/.komunitech/kunci-bot.json"}
+}
