@@ -332,7 +332,7 @@ def hitung(info, a):
     elif laba_induk is not None and bulan < 12:
         laba_th = laba_induk * 12 / bulan
         ket_laba = f"{dasar_laba} {bulan} bulan x 12/{bulan} (disetahunkan sederhana, abaikan musim)"
-        fakta.append(f"Laporan interim {bulan} bulan: ROE, EPS, PER, dan rasio pembayaran memakai laba "
+        fakta.append(f"Laporan interim {bulan} bulan: ROE, EPS, dan PER memakai laba "
                      f"yang disetahunkan sederhana (x12/{bulan}). Hasil bisa meleset bila usaha musiman.")
     else:
         laba_th, ket_laba = laba_induk, dasar_laba
@@ -417,8 +417,10 @@ def hitung(info, a):
             r.append(_kurang("imbal_dividen", "Imbal hasil dividen" + tb, "%", "DPS / harga x 100%", ["Harga saham"]))
         else:
             r.append(_hasil("imbal_dividen", "Imbal hasil dividen" + tb, "%", "DPS / harga x 100%", dps / harga * 100))
-        if eps is not None and eps > 0:
-            r.append(_hasil("rasio_pembayaran", "Rasio pembayaran dividen", "%", "DPS / EPS x 100%", dps / eps * 100))
+        if eps is not None and eps > 0 and bulan == 12 and a["laba_bersih_ttm"] is None:
+            r.append(_hasil("rasio_pembayaran", "Rasio pembayaran dividen", "%",
+                            "DPS / EPS periode ini x 100% (cocokkan tahun buku dividen dengan periode laporan)",
+                            dps / eps * 100))
         fakta.append("Imbal hasil dividen memakai dividen yang SUDAH diumumkan/dibayar; dividen tahun "
                      "berikutnya belum tentu sama.")
     elif a["total_dividen"] is not None:
