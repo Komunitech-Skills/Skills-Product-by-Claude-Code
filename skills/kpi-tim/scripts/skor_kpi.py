@@ -1344,6 +1344,8 @@ def pecah_klausa(baris):
 POLA_ANGKA = re.compile(r"(?:(?<=[Rr][Pp])|(?<=[Rr][Pp]\.)|(?<![\w.,]))(\d+(?:[.,]\d+)*)\s*(jt|juta|rb|ribu|k|%|x)?(?!\w)", re.I)
 POLA_WA = re.compile(r"^\[?\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}[, ]+\d{1,2}[.:]\d{2}(?:[.:]\d{2})?\]?\s*(?:-\s*)?([^:]{1,40}):\s*(.*)$")
 POLA_KE_DEPAN = re.compile(r"(?<!\w)(bulan depan|minggu depan|tahun depan|besok|lusa|nanti|rencana|rencananya|akan|mau|target baru)(?!\w)", re.I)
+POLA_MASING = re.compile(r"(?<!\w)(masing|masing2|msg2|masing-masing|keduanya|berdua|bertiga|semuanya|tiap orang|"
+                         r"per orang|sama sama|sama-sama|sama2)(?!\w)", re.I)
 POLA_BUKAN_HASIL = re.compile(r"(?<!\w)(libur|izin|ijin|sakit|cuti|off|absen|lembur)(?!\w)", re.I)
 KATA_UMUM = {"yang", "sama", "dari", "untuk", "dengan", "tanpa", "waktu", "hari", "jumlah", "tepat", "lewat",
              "total", "rata", "per", "bulan", "minggu", "selesai"}
@@ -1433,6 +1435,38 @@ def cmd_baca_teks(a):
         return re.search(r"(?<!\w)%s" % re.escape(k), low) is not None
 
     draf, gagal, diabaikan = [], [], []
+
+    def buat_draf(kunci, kl, low, nums, kutip, masing=False, banyak_orang=False):
+        """Buat satu draf untuk orang `kunci`. Kembalikan alasan gagal (str) atau None."""
+        kandidat = []
+        for b in orang[kunci]:
+            skor = sum(len(k) for k in set(kata_kpi(b)) if ada_kata(k, low))
+            if skor:
+                kandidat.append((skor, b))
+        kandidat.sort(key=lambda x: -x[0])
+        if not kandidat or (len(kandidat) > 1 and kandidat[0][0] == kandidat[1][0]):
+            return "KPI tidak jelas" if not kandidat else "cocok ke lebih dari satu KPI"
+        b = kandidat[0][1]
+        target_sebut = [n["nilai"] for n in nums if n["target"]]
+        real = [n for n in nums if not n["target"]]
+        cat = []
+        if len(real) > 1:
+            cat.append("ada %d angka, dipakai yang pertama (%s)" % (len(real), fmt_angka(real[0]["nilai"])))
+        if target_sebut and target_sebut[0] != b["target"]:
+            cat.append("target di chat %s berbeda dari rencana %s" % (fmt_angka(target_sebut[0]), fmt_angka(b["target"])))
+        if banyak_orang:
+            cat.append("klausa menyebut lebih dari satu orang; dipakai %s" % b["orang"])
+        if masing:
+            cat.append("angka 'masing-masing' dipakai untuk tiap orang yang disebut")
+        cat += cek_satuan(real[0], b)
+        if real[0]["nilai"] < 0:
+            cat.append("angka minus")
+        draf.append({"periode": a.periode, "divisi": b["divisi"], "orang": b["orang"], "kpi": b["kpi"],
+                     "realisasi": s_dec(real[0]["nilai"]), "catatan": "dari teks: " + kutip[:120],
+                     "status_draf": "PERLU KONFIRMASI", "cek": "; ".join(cat),
+                     "_kutipan": kutip, "_target": b["target"]})
+        return None
+
     for baris_asli in teks.splitlines():
         baris = baris_asli.strip()
         if not baris:
@@ -1449,6 +1483,7 @@ def cmd_baca_teks(a):
         def tolak(alasan):
             gagal.append({"kutipan": kutip, "alasan": alasan})
 
+        antre = []              # v1.0.2: nama yang disebut tanpa angka ("Wulan & Rudi void masing2 1")
         for kl in pecah_klausa(baris):
             low = kl.lower()
             ditemukan = [n for p_, n in sorted(panggilan.items(), key=lambda x: -len(x[0]))
@@ -1462,6 +1497,9 @@ def cmd_baca_teks(a):
             if ditemukan or nums or punya_kata:
                 relevan = True
             if not nums:
+                if ditemukan and not punya_kata and not POLA_BUKAN_HASIL.search(low):
+                    antre += [n_ for n_ in ditemukan if n_ not in antre]
+                    continue
                 if punya_kata and not POLA_BUKAN_HASIL.search(low):
                     tolak("menyebut orang/KPI tetapi tidak ada angka yang terbaca: \"%s\"" % kl[:60])
                     tercatat = True
@@ -1489,34 +1527,27 @@ def cmd_baca_teks(a):
                 tolak("nama orang tidak dikenali")
                 tercatat = True
                 continue
-            kandidat = []
-            for b in orang[kini]:
-                skor = sum(len(k) for k in set(kata_kpi(b)) if ada_kata(k, low))
-                if skor:
-                    kandidat.append((skor, b))
-            kandidat.sort(key=lambda x: -x[0])
-            if not kandidat or (len(kandidat) > 1 and kandidat[0][0] == kandidat[1][0]):
-                tolak("KPI tidak jelas" if not kandidat else "cocok ke lebih dari satu KPI")
+            # v1.0.2: "Wulan & Rudi void masing2 1" -> nama tanpa angka di klausa sebelumnya ikut klausa ini
+            untuk = []
+            for n_ in antre + ditemukan + [kini]:
+                if n_ not in untuk:
+                    untuk.append(n_)
+            antre = []
+            if len(untuk) > 1 and not POLA_MASING.search(low):
+                tolak("angka untuk %s tidak jelas: masing-masing atau total bersama? Tanyakan, lalu tulis per orang "
+                      "(mis. \"%s 1, %s 1\"): \"%s\"" % (" & ".join(orang[n_][0]["orang"] for n_ in untuk),
+                                                            orang[untuk[0]][0]["orang"], orang[untuk[1]][0]["orang"],
+                                                            kl[:60]))
                 tercatat = True
                 continue
-            b = kandidat[0][1]
-            target_sebut = [n["nilai"] for n in nums if n["target"]]
-            real = [n for n in nums if not n["target"]]
-            cat = []
-            if len(real) > 1:
-                cat.append("ada %d angka, dipakai yang pertama (%s)" % (len(real), fmt_angka(real[0]["nilai"])))
-            if target_sebut and target_sebut[0] != b["target"]:
-                cat.append("target di chat %s berbeda dari rencana %s" % (fmt_angka(target_sebut[0]), fmt_angka(b["target"])))
-            if len(ditemukan) > 1:
-                cat.append("klausa menyebut lebih dari satu orang; dipakai %s" % orang[kini][0]["orang"])
-            cat += cek_satuan(real[0], b)
-            if real[0]["nilai"] < 0:
-                cat.append("angka minus")
-            draf.append({"periode": a.periode, "divisi": b["divisi"], "orang": b["orang"], "kpi": b["kpi"],
-                         "realisasi": s_dec(real[0]["nilai"]), "catatan": "dari teks: " + kutip[:120],
-                         "status_draf": "PERLU KONFIRMASI", "cek": "; ".join(cat),
-                         "_kutipan": kutip, "_target": b["target"]})
+            for n_ in untuk:
+                alasan = buat_draf(n_, kl, low, nums, kutip, masing=len(untuk) > 1,
+                                   banyak_orang=len(ditemukan) > 1 and len(untuk) == 1)
+                if alasan:
+                    tolak(alasan if len(untuk) == 1 else "%s: %s" % (orang[n_][0]["orang"], alasan))
             tercatat = True
+        if antre and tercatat:
+            tolak("%s disebut tanpa angka hasil" % " & ".join(orang[n_][0]["orang"] for n_ in antre))
         if relevan and not tercatat:
             tolak("menyebut orang/KPI tetapi tidak ada angka hasil yang terbaca")
         elif not relevan:
