@@ -34,6 +34,7 @@ class Kondisi:
         self.order_terbuka = 0
         self.putus_saat_order = False
         self.tolak_order = None
+        self.alihkan_ke = None      # URL dasar: bila diisi, SEMUA permintaan dijawab 302 ke sana (uji M1)
         self.permintaan = []   # (metode, path, header, query, body) -- untuk diperiksa tes
         self.order = []
 
@@ -62,6 +63,12 @@ class Handler(BaseHTTPRequestHandler):
         panjang = int(self.headers.get("Content-Length") or 0)
         body = self.rfile.read(panjang).decode() if panjang else ""
         k.permintaan.append((metode, u.path, dict(self.headers), u.query, body))
+        if k.alihkan_ke:
+            self.send_response(302)
+            self.send_header("Location", k.alihkan_ke + self.path)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
         q = dict(urllib.parse.parse_qsl(u.query))
         if u.path.startswith("/api/v3") or u.path.startswith("/sapi"):
             return self._binance(metode, u, q, body)

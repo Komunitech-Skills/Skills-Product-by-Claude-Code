@@ -557,7 +557,7 @@ def cmd_daftar_pelanggan(args):
     if args.contoh:
         d = api(cfg, "GET", "/subscribers", params={"list_id": l["id"], "per_page": args.contoh})
         for s in d["data"]["results"]:
-            cetak(f"  - {samar_email(s['email'])} ({s['name'][:30]}) {s['status']}")
+            cetak(f"  - {samar_email(s['email'])} ({str(s.get('name', ''))[:30]}) {s.get('status', '?')}")
 
 
 def cari_email(cfg, em):

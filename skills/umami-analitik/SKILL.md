@@ -8,7 +8,7 @@ description: Membaca laporan analitik website dari Umami (analitik web open-sour
 ## Tujuan
 Pemilik toko online, landing page, atau halaman link-bio yang memasang **Umami di komputer/server sendiri** (gratis, tanpa cookie, data tidak dititipkan ke Google) cukup bertanya dengan bahasa biasa, dan agent menjalankan `scripts/umami.py` yang membaca **REST API resmi Umami** (`/api/...`, header `Authorization: Bearer <kunci API>`). Hasilnya teks siap tempel: angka pasti dari Umami, dibandingkan dengan periode sebelumnya, dengan penjelasan awam. Python standar saja, tanpa instalasi paket. **Hanya membaca** — skill tidak punya perintah yang mengubah Umami.
 
-**Versi 1.0.0.** Diuji pembuat dengan **Umami 3.4.0 ASLI** (image Docker resmi `ghcr.io/umami-software/umami:3.4.0` + PostgreSQL 15, port hanya `127.0.0.1`): website dibuat, 51 kunjungan/event fiktif dikirim lewat endpoint publik `/api/send` (sama seperti kode pelacak), lalu semua perintah dijalankan dan **setiap angka dicocokkan dengan hitungan independen** dari daftar kunjungan. Termasuk akun view-only lewat tim, kunci API salah (401), website di luar akses, login sandi, server mati, pengalihan (redirect) ditolak. Uji regresi otomatis 28 skenario (server tiruan memutar ulang rekaman Umami 3.4.0). Belum diuji: Windows/Mac sungguhan, pengiriman Telegram, Umami versi 2.x.
+**Versi 1.0.1.** Diuji pembuat dengan **Umami 3.4.0 ASLI** (image Docker resmi `ghcr.io/umami-software/umami:3.4.0` + PostgreSQL 15, port hanya `127.0.0.1`): website dibuat, 51 kunjungan/event fiktif dikirim lewat endpoint publik `/api/send` (sama seperti kode pelacak), lalu semua perintah dijalankan dan **setiap angka dicocokkan dengan hitungan independen** dari daftar kunjungan. Termasuk akun view-only lewat tim, kunci API salah (401), website di luar akses, login sandi, server mati, pengalihan (redirect) ditolak. Uji regresi otomatis 33 skenario (server tiruan memutar ulang rekaman Umami 3.4.0). Belum diuji: Windows/Mac sungguhan, pengiriman Telegram, Umami versi 2.x.
 
 ## Kapan digunakan
 - "Umami saya nyambung?", "website apa saja di Umami?" → `cek`, `situs`
@@ -62,7 +62,7 @@ umami.py laporan-mingguan                # untuk jadwal Telegram
 **Cara membaca angka (sampaikan bila ditanya):**
 - *Pengunjung unik* = perangkat+browser berbeda (tanpa cookie; satu orang dengan HP & laptop = 2). *Kunjungan* = sesi kunjungan (Umami memulai kunjungan baru setelah ±30 menit). *Tayangan* = halaman dibuka.
 - *Bounce rate* = kunjungan yang hanya membuka 1 halaman **dan tidak klik event apa pun** ÷ kunjungan. Landing page satu halaman wajar bounce tinggi — lihat `konversi` (klik WA) sebagai ukuran utama.
-- *Rata-rata lama* = total lama kunjungan ÷ kunjungan (kunjungan 1 halaman terhitung 0 detik — sama dengan layar Umami).
+- *Rata-rata lama* = total lama kunjungan ÷ kunjungan (kunjungan 1 halaman terhitung 0 detik — sama dengan layar Umami). Angka ini **mengikuti hitungan Umami**: waktu setelah pencatatan terakhir (mis. menutup halaman) tidak terhitung, jadi bisa beberapa detik lebih kecil dari waktu sesungguhnya (uji: 70 vs 73 dtk). Skill selalu menampilkan angka Umami dan menyertakan catatan ini.
 - Angka per halaman/sumber/UTM/kota = **pengunjung unik di baris itu**; tidak boleh dijumlah antarbaris.
 - *Tingkat konversi* = pengunjung yang melakukan event ÷ pengunjung unik periode itu.
 - Kanal "Langsung" termasuk klik dari **WhatsApp/Telegram/aplikasi/QR** (tidak membawa alamat asal). Sarankan tautan ber-UTM (panduan §8) agar WA terbaca sebagai `utm_source=whatsapp`.

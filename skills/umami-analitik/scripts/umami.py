@@ -37,7 +37,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 UMAMI_TERUJI = "3.4.0"
 FOLDER_KUNCI = os.path.join(os.path.expanduser("~"), ".komunitech")
 KUNCI_DEFAULT = os.path.join(FOLDER_KUNCI, "umami-kunci.txt")
@@ -625,6 +625,11 @@ def tabel(baris, kolom, lebar_nama=34):
     return keluar
 
 
+CATATAN_DURASI = ("Catatan: 'Rata-rata lama' mengikuti hitungan Umami sendiri (jarak waktu pencatatan pertama sampai "
+                  "terakhir dalam satu kunjungan; kunjungan 1 halaman = 0 dtk). Waktu setelah pencatatan terakhir "
+                  "(mis. menutup halaman) tidak terhitung, jadi bisa sedikit lebih kecil dari waktu sesungguhnya.")
+
+
 def teks_ringkasan(s, b=None):
     def baris(label, kini, lalu=None, fmt=ribuan, kecil_lebih_baik=False):
         t = f"- {label:<22}: {fmt(kini)}"
@@ -685,6 +690,21 @@ def cmd_situs(k, args):
     return {"teks": "\n".join(teks), "situs": s}
 
 
+def catatan_kosong(k, situs, r, tz):
+    """Pesan bila periode tanpa pengunjung: bedakan 'belum pernah ada data' (cek kode pelacak) dari 'kosong di rentang ini'."""
+    try:
+        q = {"startAt": 0, "endAt": ms(r["sekarang"]), "timezone": TZ[tz][1]}
+        semua = olah_stat(k.get(f"/websites/{situs['id']}/stats", q) or {})
+    except Gagal:
+        semua = None
+    if semua is None:
+        return "Belum ada pengunjung tercatat pada periode ini."
+    if semua["tayangan"] == 0 and semua["pengunjung"] == 0:
+        return "Website ini belum pernah mencatat pengunjung. Bila website sudah ramai, cek kode pelacak (panduan bagian 5)."
+    return ("Tidak ada pengunjung pada periode ini, tetapi website ini punya data di periode lain, jadi kode pelacak "
+            "berfungsi. Kemungkinan rentang tanggal sebelum data mulai tercatat, di masa depan, atau memang sepi.")
+
+
 def cmd_ringkasan(k, args):
     situs = pilih_situs(k, args)
     r = rentang(args)
@@ -692,7 +712,8 @@ def cmd_ringkasan(k, args):
     b = statistik(k, situs, r, True, args.tz)
     teks = kepala("RINGKASAN WEBSITE", situs, r) + teks_ringkasan(s, b)
     if s["pengunjung"] == 0:
-        teks.append("Belum ada pengunjung tercatat. Bila website sudah ramai, cek kode pelacak (panduan bagian 5).")
+        teks.append(catatan_kosong(k, situs, r, args.tz))
+    teks.append(CATATAN_DURASI)
     teks.append("Catatan: pengunjung unik dihitung per perangkat+browser (tanpa cookie); satu orang dengan HP & "
                 "laptop terhitung 2.")
     return {"teks": "\n".join(teks), "situs": situs, "periode": _periode_json(r), "statistik": s, "pembanding": b}
@@ -860,6 +881,7 @@ def cmd_banding(k, args):
         a, c = peta.get(n, {}).get("tayangan", 0), petab.get(n, {}).get("tayangan", 0)
         baris.append([f"Event '{n}'", ribuan(a), ribuan(c), perubahan(a, c)])
     teks += tabel(baris, ["Ukuran", "Periode ini", "Pembanding", "Perubahan"], 22)
+    teks.append(CATATAN_DURASI)
     if args.periode in ("minggu-ini", "hari-ini", "7hari", "30hari", "bulan-ini") and not args.dari:
         teks.append("Catatan: periode berjalan dibandingkan dengan rentang yang SAMA PANJANG sampai jam yang sama "
                     "(adil, bukan minggu penuh vs setengah minggu).")
@@ -902,6 +924,10 @@ def cmd_konversi(k, args):
                       persen(d["pengunjung"], total["pengunjung"]), ribuan(lalu)])
     if ev:
         teks += tabel(baris, ["Event", "Jumlah", "Pengunjung", "Tingkat konversi", "Sebelumnya"], 24)
+        if total["pengunjung"] == 0:
+            teks.append("Catatan: ada event tetapi 0 pengunjung unik (tanpa tayangan halaman) pada periode ini, jadi "
+                        "tingkat konversi tidak bisa dihitung. Biasanya hari itu hanya berisi event; cek kode pelacak "
+                        "juga mengirim tayangan halaman.")
         teks.append(f"Tingkat konversi = pengunjung yang melakukan event / {ribuan(total['pengunjung'])} pengunjung "
                     f"unik periode ini.")
     rinci = []
@@ -1044,8 +1070,9 @@ def cmd_laporan_mingguan(k, args):
     if kota:
         T.append("Kota teratas: " + ", ".join(f"{label_kosong(d['nama'])} ({ribuan(d['jumlah'])})" for d in kota))
     if s["pengunjung"] == 0:
-        T += ["", "Belum ada pengunjung tercatat pada periode ini. Cek kode pelacak di website (panduan bagian 5)."]
-    T += ["", "Sumber data: Umami milik Anda (tanpa cookie). Pengunjung unik = perangkat+browser."]
+        T += ["", catatan_kosong(k, situs, r, args.tz)]
+    T += ["", "Rata-rata lama mengikuti hitungan Umami (aktivitas terakhir sebelum menutup halaman tidak terhitung).",
+          "Sumber data: Umami milik Anda (tanpa cookie). Pengunjung unik = perangkat+browser."]
     teks = "\n".join(T)
     if len(teks) > 3900:
         teks = teks[:3850] + "\n...(dipotong; lihat detail di layar Umami)"
@@ -1069,11 +1096,11 @@ def _opsi_umum(p, periode_default="7hari", periode=True):
     p.add_argument("--izinkan-jarak-jauh", dest="izinkan_jarak_jauh", action="store_true",
                    help="Izinkan --url server internet (HTTPS) yang diketik pengguna sendiri")
     p.add_argument("--situs", default=None, help="Nama/domain/id website (default ENV UMAMI_SITUS)")
-    p.add_argument("--tz", default="WIB", choices=list(TZ))
+    p.add_argument("--tz", default="WIB", help="Zona waktu: " + ", ".join(TZ))
     p.add_argument("--json", action="store_true")
     p.add_argument("--timeout", type=float, default=20.0)
     if periode:
-        p.add_argument("--periode", default=periode_default, choices=PERIODE)
+        p.add_argument("--periode", default=periode_default, help="Pilihan: " + ", ".join(PERIODE))
         p.add_argument("--dari", default=None, help="Tanggal awal YYYY-MM-DD (bersama --sampai)")
         p.add_argument("--sampai", default=None, help="Tanggal akhir YYYY-MM-DD (inklusif)")
         p.add_argument("--sekarang", default=None, help=argparse.SUPPRESS)
@@ -1130,6 +1157,8 @@ def main(argv=None):
             periksa_url(args.url, izinkan_publik=dari_pengguna)
         if getattr(args, "batas", 10) is not None and getattr(args, "batas", 10) < 1:
             raise Gagal("--batas minimal 1.", K_INPUT)
+        if hasattr(args, "tz") and args.tz not in TZ:
+            raise Gagal(f"Zona waktu tidak dikenal: {args.tz}. Pilihan: {', '.join(TZ)}.", K_INPUT)
         if hasattr(args, "periode"):
             rentang(args)  # validasi tanggal sebelum menghubungi server
         hasil = PERINTAH[args.perintah](Klien(args), args)

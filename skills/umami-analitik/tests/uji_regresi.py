@@ -54,6 +54,7 @@ class Tiruan:
         self.diterima = []
         self.timpa = {}
         self.login_2fa = False
+        self.kosong = False  # True: rentang tanpa rekaman dijawab kosong (website tanpa data di rentang itu)
 
 
 def buat_handler(t):
@@ -90,6 +91,10 @@ def buat_handler(t):
             if key in rek:
                 status, isi = rek[key]
                 return self._jawab(status, isi)
+            if t.kosong and peran == "baca" and self.command == "GET" and "/websites/" in key and "startAt=" in key:
+                if "/stats?" in key:
+                    return self._jawab(200, {"pageviews": 0, "visitors": 0, "visits": 0, "bounces": 0, "totaltime": 0})
+                return self._jawab(200, [])
             if peran == "lain":
                 return self._jawab(401, {"error": {"message": "Unauthorized", "status": 401}})
             return self._jawab(599, {"error": f"TIDAK ADA REKAMAN: {peran} {key}"})
@@ -116,6 +121,7 @@ class DasarServer(unittest.TestCase):
         self.t.timpa.clear()
         self.t.diterima.clear()
         self.t.login_2fa = False
+        self.t.kosong = False
 
     def jalan(self, *arg, kunci=KUNCI_BACA, env_tambah=None, url=True, sekarang=True, cwd=None):
         env = {k: v for k, v in os.environ.items() if not k.startswith("UMAMI_")}
@@ -425,6 +431,73 @@ class UjiPerintah(DasarServer):
         kode, _, err = self.jalan("cek", "--url", "https://analitik.tokosaya.id", url=False)
         self.assertEqual(kode, 2)
         self.assertIn("--izinkan-jarak-jauh", err)
+
+
+class UjiRevisi101(DasarServer):
+    """Regresi revisi 1.0.1 (perbaikan dari HASIL-UJI 1.0.0)."""
+
+    def test_rata_rata_lama_dijelaskan_dan_konsisten_dengan_umami(self):
+        for perintah in ("ringkasan", "banding", "laporan-mingguan"):
+            kode, out, err = self.jalan(perintah, "--periode", "minggu-lalu")
+            self.assertEqual(kode, 0, err)
+            self.assertIn("mengikuti hitungan Umami", out, perintah)
+        j = self.json_("ringkasan", "--periode", "minggu-lalu")
+        # angka yang tampil = total lama / kunjungan (dibulatkan ke bawah), sama dengan Umami
+        self.assertEqual(j["statistik"]["rata_detik"], j["statistik"]["total_detik"] // j["statistik"]["kunjungan"])
+
+    def test_periode_tak_dikenal_pesan_indonesia(self):
+        kode, out, err = self.jalan("ringkasan", "--periode", "tahun-lalu")
+        self.assertEqual(kode, 2)
+        self.assertIn("Periode tidak dikenal: tahun-lalu", err)
+        self.assertIn("minggu-lalu", err)
+        self.assertNotIn("invalid choice", err)
+        self.assertNotIn("usage:", err)
+        kode, out, err = self.jalan("ringkasan", "--tz", "XYZ")
+        self.assertEqual(kode, 2)
+        self.assertIn("Zona waktu tidak dikenal", err)
+
+    def _kosong(self, semua):
+        """Jalankan ringkasan rentang kosong; 'semua' = jawaban stats sepanjang waktu (None = tidak ada rekaman)."""
+        args = ("ringkasan", "--dari", "2020-01-01", "--sampai", "2020-01-07")
+        self.t.kosong = True
+        kode, out, err = self.jalan(*args)
+        self.assertEqual(kode, 0, err)
+        if semua is not None:
+            path = [p for (_, p, _, _) in self.t.diterima if "/stats?startAt=0&" in p][0]
+            self.t.timpa["GET " + path] = (500, {"error": "x"}) if semua == "gagal" else (200, semua)
+            kode, out, err = self.jalan(*args)
+            self.assertEqual(kode, 0, err)
+        return out
+
+    def test_rentang_kosong_membedakan_kode_pelacak(self):
+        ada = {"pageviews": 23, "visitors": 11, "visits": 12, "bounces": 3, "totaltime": 500}
+        nol = {"pageviews": 0, "visitors": 0, "visits": 0, "bounces": 0, "totaltime": 0}
+        out = self._kosong(ada)
+        self.assertIn("punya data di periode lain", out)
+        self.assertNotIn("cek kode pelacak", out)
+        self.t.timpa.clear()
+        out = self._kosong(nol)
+        self.assertIn("belum pernah mencatat pengunjung", out)
+        self.assertIn("cek kode pelacak", out)
+        self.t.timpa.clear()
+        out = self._kosong("gagal")  # cek data sepanjang waktu gagal -> pesan netral, tidak menyesatkan
+        self.assertIn("Belum ada pengunjung tercatat pada periode ini.", out)
+        self.assertNotIn("cek kode pelacak", out)
+
+    def test_konversi_hari_hanya_event_diberi_catatan(self):
+        args = ("konversi", "--periode", "minggu-lalu")
+        kode, out, err = self.jalan(*args)
+        self.assertEqual(kode, 0, err)
+        self.assertNotIn("0 pengunjung unik", out)
+        path = [p for (_, p, _, _) in self.t.diterima if "/stats?" in p][0]
+        self.t.timpa["GET " + path] = (200, {"pageviews": 0, "visitors": 0, "visits": 0, "bounces": 0, "totaltime": 0})
+        kode, out, err = self.jalan(*args)
+        self.assertEqual(kode, 0, err)
+        self.assertIn("0 pengunjung unik", out)
+        self.assertIn("tidak bisa dihitung", out)
+
+    def test_versi(self):
+        self.assertEqual(um.VERSI, "1.0.1")
 
 
 class UjiPengalihan(unittest.TestCase):

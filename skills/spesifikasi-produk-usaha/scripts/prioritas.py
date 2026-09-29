@@ -138,8 +138,14 @@ def proses(baris_list, metode):
     fn = hitung_rice if metode == "rice" else hitung_ice
     hasil, galat = [], []
     for no, b in enumerate(baris_list, start=2):
+        lebih = b.get(None)
         b = {normal_kolom(k): v for k, v in b.items() if k}
         nama = (b.get("nama") or "").strip()
+        if lebih:
+            galat.append((no, nama or "(tanpa nama)",
+                          "jumlah nilai lebih banyak dari judul kolom; kemungkinan ada koma di nama "
+                          "atau angka desimal (mis. 0,9) - beri tanda kutip atau pakai titik/titik koma"))
+            continue
         if not nama:
             if any((v or "").strip() for v in b.values() if isinstance(v, str)):
                 galat.append((no, "(tanpa nama)", "kolom 'nama' kosong"))

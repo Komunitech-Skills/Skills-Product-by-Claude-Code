@@ -40,6 +40,27 @@ import mock_bursa  # noqa: E402
 WIB = inti.WIB
 T0 = datetime(2026, 9, 29, 8, 0, tzinfo=WIB)
 
+_HOME_ASLI = {}
+
+
+def setUpModule():
+    """Tombol berhenti global ditulis ke ~/.komunitech/...; selama uji, 'home' dialihkan ke folder
+    sementara supaya uji tidak pernah menulis ke home pengguna sungguhan."""
+    global HOME_UJI
+    HOME_UJI = tempfile.mkdtemp(prefix="uji-bot-home-")
+    for k in ("HOME", "USERPROFILE"):
+        _HOME_ASLI[k] = os.environ.get(k)
+        os.environ[k] = HOME_UJI
+
+
+def tearDownModule():
+    for k, v in _HOME_ASLI.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+    shutil.rmtree(HOME_UJI, ignore_errors=True)
+
 DASAR = {
     "mode": "paper", "bursa": "indodax", "pasangan": "btc_idr",
     "strategi": {"jenis": "dca", "nominal_per_beli": "100000", "interval_jam": 24},
@@ -266,7 +287,20 @@ class Folder(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
+        shutil.rmtree(inti.folder_stop_global(), ignore_errors=True)
         os.environ.pop(bursa.ENV_KUNCI, None); os.environ.pop(bursa.ENV_SECRET, None)
+
+    def suntik_bukti_paper(self, jam=25, putaran=3):
+        """Tiru bukti paper dengan harga asli (uji tidak boleh menunggu 24 jam sungguhan)."""
+        cfg = inti.muat_konfigurasi(self.cfgp)
+        st = self.state()
+        sj = inti.sidik_jari_strategi(cfg)
+        akhir = datetime.now(WIB)
+        st.setdefault("paper_nyata_per_sidik", {})[sj] = {
+            "jumlah": putaran, "pertama": (akhir - timedelta(hours=jam)).isoformat(timespec="seconds"),
+            "terakhir": akhir.isoformat(timespec="seconds")}
+        with open(os.path.join(self.bot, "state.json"), "w") as f:
+            json.dump(st, f)
 
     def tulis_cfg(self, c):
         with open(self.cfgp, "w") as f:
@@ -415,14 +449,17 @@ class AlurMock(Folder):
         self.assertEqual(kode, 2, out); self.assertIn("[TESTNET", out); self.assertIn("BELI", out)
         post = [r for r in self.k.permintaan if r[0] == "POST"]
         self.assertEqual(len(post), 1)
-        self.assertIn("type=MARKET", post[0][3]); self.assertIn("quoteOrderQty=100", post[0][3])
+        # BTCUSDT = swap kripto-kripto: PPh 1% sisi beli disisihkan -> 100 / 1,01 = 99,00 USDT
+        self.assertIn("type=MARKET", post[0][3]); self.assertIn("quoteOrderQty=99.00", post[0][3])
         # rahasia tidak pernah muncul di query, log, state, transaksi, atau keluaran
         for r in self.k.permintaan:
             self.assertNotIn(mock_bursa.BINANCE_SECRET, r[3] + r[4])
         self.assertNotIn(mock_bursa.BINANCE_SECRET, self.semua_teks() + out)
         self.assertNotIn(mock_bursa.BINANCE_KEY, self.semua_teks() + out)
         st = self.state()
-        self.assertEqual(D(st["posisi_koin"]), D("0.00166") - D("0.00000166"))  # komisi dipotong dari BTC
+        self.assertEqual(D(st["posisi_koin"]), D("0.00165") - D("0.00000165"))  # komisi dipotong dari BTC
+        self.assertEqual(D(st["total_pajak"]), D("0.99"))                        # 1% x 99 USDT diserahkan
+        self.assertLessEqual(D(st["biaya_perolehan"]), D("100"))
 
     def test_live_binance_gerbang_bertahap(self):
         c = self.cfg_binance("paper")
@@ -433,22 +470,27 @@ class AlurMock(Folder):
         kode, out = self.tick("--url-uji", self.url, "--izinkan-live")
         self.assertEqual(kode, 3); self.assertIn("belum pernah dijalankan di mode simulasi", out)
         shutil.rmtree(self.bot); os.makedirs(self.bot)
-        # 2) simulasi dulu
+        # 2) simulasi dulu -- satu putaran lewat server tiruan BELUM cukup (L4)
         self.tulis_cfg(c)
         kode, out = self.tick("--url-uji", self.url)
         self.assertEqual(kode, 2, out)
-        # 3) live tanpa konfirmasi
         self.tulis_cfg(c_live)
         kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp])
+        self.assertEqual(kode, 2); self.assertIn("BELUM CUKUP", out)
+        self.suntik_bukti_paper()
+        # 3) live tanpa konfirmasi
+        kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp])
         self.assertEqual(kode, 0); self.assertIn("SAYA TANGGUNG RISIKONYA", out)
+        self.assertIn("DAFTAR PERIKSA WAJIB", out); self.assertIn("Enable Withdrawals", out)
         kode_konf = inti.sidik_jari_penuh(inti.muat_konfigurasi(self.cfgp))
         frasa = f"LIVE {kode_konf} SAYA TANGGUNG RISIKONYA"
         kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp, "--frasa", "LIVE salah SAYA TANGGUNG RISIKONYA",
-                                                 "--kunci-tanpa-withdraw"])
+                                                 "--saya-sudah-cek-tanpa-withdraw"])
         self.assertEqual(kode, 2)
         kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp, "--frasa", frasa])
         self.assertEqual(kode, 2)   # tanpa pernyataan tanpa-withdraw
-        kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp, "--frasa", frasa, "--kunci-tanpa-withdraw"])
+        kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp, "--frasa", frasa,
+                                                 "--saya-sudah-cek-tanpa-withdraw"])
         self.assertEqual(kode, 0, out)
         # 4) tanpa --izinkan-live tetap ditolak
         kode, out = self.tick("--url-uji", self.url)

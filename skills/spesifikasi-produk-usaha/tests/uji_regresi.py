@@ -139,6 +139,10 @@ rc, out, err = jalan("--metode", "ice", "--csv", f6, "--kapasitas", "10")
 cek("F6 ICE + kapasitas diberi peringatan", rc == 0 and "PERINGATAN" in out and "PERINGATAN" in err, (rc, out, err))
 rc, out, _ = jalan("--metode", "ice", "--csv", f6, "--kapasitas", "10", "--json")
 cek("F6 ICE + kapasitas json peringatan", rc == 0 and json.loads(out)["peringatan"], out)
+# B10: nilai lebih banyak dari judul kolom -> baris ditolak, bukan skor 0
+f7 = tulis("kolom-lebih.csv", "nama,reach,dampak,keyakinan,usaha\nTas kertas,300,1,0,9,2\nB,100,2,80,1\n")
+rc, out, err = jalan("--metode", "rice", "--csv", f7)
+cek("B10 baris kelebihan nilai ditolak", "lebih banyak dari judul kolom" in out + err and "Tas kertas" in out + err, (rc, out, err))
 cek("cek Fraction manual A", F(1000) * 2 * F(8, 10) / 10 == 160)
 
 print(f"\n{N[0] - len(GAGAL)}/{N[0]} lulus")

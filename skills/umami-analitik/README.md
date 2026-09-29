@@ -73,6 +73,9 @@ Setelah Umami terpasang dan tersambung, cukup ketik:
 4. Coba: "Cek Umami saya sudah nyambung belum?"
 
 ## FAQ
+**Kenapa "rata-rata lama" bisa beberapa detik lebih kecil dari perkiraan saya?**
+Angka itu mengikuti hitungan Umami sendiri: jarak waktu antara pencatatan pertama dan terakhir dalam satu kunjungan. Waktu setelah pencatatan terakhir (mis. menutup halaman) tidak terhitung, dan kunjungan 1 halaman dihitung 0 detik. Skill menampilkan angka yang sama dengan layar Umami dan menyertakan catatan ini di setiap laporan.
+
 **Apakah data pengunjung saya dikirim ke Komunitech atau pihak lain?**
 Tidak. Script hanya menghubungi Umami **milik Anda sendiri** dan hanya membaca angka ringkasan. Tidak ada data ke Komunitech, kecuali Anda sendiri mengatur laporan ke Telegram.
 

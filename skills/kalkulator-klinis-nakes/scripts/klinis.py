@@ -14,7 +14,10 @@ Perintah (jalankan dari folder skill; Windows: ganti python3 dengan python atau 
   python3 scripts/klinis.py imt-batch --file pasien.csv       # kolom: id,tinggi,berat[,lingkar_perut,jk]
   python3 scripts/klinis.py kognitif --instrumen moca --skor 24 --pendidikan-tahun 9
 
-Tambahkan --json untuk keluaran JSON. Kode keluar 1 = input tidak valid (pesan jelas di stderr).
+Tambahkan --json SEBELUM sub-perintah untuk keluaran JSON (mis. klinis.py --json imt ...).
+Kode keluar 1 = input tidak valid (pesan jelas di stderr). Pada map/preeklampsia, kode
+gejala/faktor tak dikenal TIDAK membatalkan tanda bahaya: hasil dicetak dulu, lalu kode tak
+dikenal + daftar kode valid di stderr, baru keluar 1.
 Setiap hasil memuat sumber pedoman + tahun dan kalimat "alat bantu, bukan pengganti penilaian klinis".
 """
 import argparse
@@ -25,7 +28,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from fractions import Fraction
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 PENAFIAN = ("Alat bantu untuk tenaga kesehatan, bukan pengganti penilaian klinis. "
             "Keputusan klinis tetap pada dokter/bidan yang memeriksa.")
 
@@ -43,6 +46,10 @@ SUMBER = {
                  "rentang berat >= 160 sistolik atau >= 110 diastolik",
     "bahaya_gejala": "Buku KIA (cetakan 2025) - tanda bahaya pada ibu hamil; NICE NG133 "
                      "(2019, diperbarui 2023) - gejala preeklampsia berat",
+    "td_rendah": "NHLBI (NIH), Low Blood Pressure - definisi TD rendah < 90/60 mmHg (halaman "
+                 "diperbarui 24 Mar 2022, https://www.nhlbi.nih.gov/health/low-blood-pressure); "
+                 "ambang sistolik < 90 atau diastolik < 60 dipakai sebagai penanda konservatif "
+                 "(PERLU REVIEW tenaga medis)",
     "naegele": "Aturan Naegele (HPHT + 7 hari - 3 bulan + 1 tahun); penyesuaian siklus = "
                "modifikasi umum (siklus - 28 hari)",
     "acog": "ACOG Committee Opinion No. 700 Methods for Estimating the Due Date (2017, "
@@ -136,15 +143,39 @@ def berat_kg(teks, nama="berat"):
 
 # ---------------------------------------------------------------- MAP & tanda bahaya
 
-def baca_td(sistolik, diastolik):
-    s, d = desimal(sistolik, "sistolik"), desimal(diastolik, "diastolik")
-    if not (Decimal(50) <= s <= Decimal(300)):
-        raise InputSalah(f"sistolik {sistolik}: di luar rentang wajar 50-300 mmHg")
-    if not (Decimal(20) <= d <= Decimal(200)):
-        raise InputSalah(f"diastolik {diastolik}: di luar rentang wajar 20-200 mmHg")
-    if d >= s:
+def baca_td(sistolik, diastolik, boleh_parsial=False):
+    """Validasi TD. Dengan boleh_parsial=True salah satu boleh None (tidak diisi)."""
+    if sistolik is None and diastolik is None:
+        raise InputSalah("isi sistolik dan/atau diastolik")
+    if not boleh_parsial and (sistolik is None or diastolik is None):
+        raise InputSalah("isi sistolik DAN diastolik")
+    s = d = None
+    if sistolik is not None:
+        s = desimal(sistolik, "sistolik")
+        if not (Decimal(50) <= s <= Decimal(300)):
+            raise InputSalah(f"sistolik {sistolik}: di luar rentang wajar 50-300 mmHg")
+    if diastolik is not None:
+        d = desimal(diastolik, "diastolik")
+        if not (Decimal(20) <= d <= Decimal(200)):
+            raise InputSalah(f"diastolik {diastolik}: di luar rentang wajar 20-200 mmHg")
+    if s is not None and d is not None and d >= s:
         raise InputSalah("diastolik harus lebih kecil dari sistolik (mungkin tertukar?)")
     return s, d
+
+
+def teks_td(s, d):
+    return f"{s if s is not None else '?'}/{d if d is not None else '?'}"
+
+
+def catatan_td_parsial(s, d):
+    """Kalimat untuk TD yang hanya terisi sebagian (None bila lengkap/kosong)."""
+    if s is not None and d is None:
+        return ("Diastolik TIDAK diisi: ambang tanda bahaya hanya dinilai dari sistolik; MAP "
+                "tidak dihitung. Ukur/lengkapi diastolik sebelum menyimpulkan.")
+    if d is not None and s is None:
+        return ("Sistolik TIDAK diisi: ambang tanda bahaya hanya dinilai dari diastolik; MAP "
+                "tidak dihitung. Ukur/lengkapi sistolik sebelum menyimpulkan.")
+    return None
 
 
 # Tanda bahaya: diperiksa SEBELUM saran rutin apa pun. PERLU REVIEW tenaga medis.
@@ -165,16 +196,15 @@ GEJALA_BAHAYA = {
 
 
 def baca_gejala(gejala):
+    """Kembalikan (kode dikenal, kode tidak dikenal). Kode tak dikenal TIDAK menghentikan
+    pemeriksaan tanda bahaya; pemanggil melaporkannya setelah hasil dicetak."""
     kode, salah = [], []
     for g in gejala or []:
         g = g.strip().lower()
         if not g:
             continue
         (kode if g in GEJALA_BAHAYA else salah).append(g)
-    if salah:
-        raise InputSalah("kode gejala tidak dikenal: " + ", ".join(salah) +
-                         " (lihat: python3 scripts/klinis.py faktor-preeklampsia)")
-    return sorted(set(kode))
+    return sorted(set(kode)), salah
 
 
 def cek_tanda_bahaya(s=None, d=None, gejala=()):
@@ -182,20 +212,34 @@ def cek_tanda_bahaya(s=None, d=None, gejala=()):
 
     - TD >= 160 sistolik ATAU >= 110 diastolik, atau ada gejala bahaya -> SEGERA evaluasi/rujuk.
     - TD >= 140 sistolik ATAU >= 90 diastolik -> evaluasi hipertensi & rujuk/konsultasi HARI INI.
-    Keduanya TIDAK PERNAH boleh berakhir dengan saran 'ANC rutin'.
+    - TD < 90 sistolik ATAU < 60 diastolik -> TD rendah, evaluasi klinis (PERLU REVIEW medis).
+    Semuanya TIDAK PERNAH boleh berakhir dengan saran 'ANC rutin'.
+    s atau d boleh None (TD parsial): nilai yang ada tetap dinilai.
     """
     alasan, sumber = [], []
-    berat = False
-    if s is not None:
-        if s >= 160 or d >= 110:
+    berat = hipertensi = rendah = False
+    tinggi_s = s is not None and s >= 160
+    tinggi_d = d is not None and d >= 110
+    ht_s = s is not None and s >= 140
+    ht_d = d is not None and d >= 90
+    if s is not None or d is not None:
+        td = teks_td(s, d)
+        if tinggi_s or tinggi_d:
             berat = True
-            alasan.append(f"TD {s}/{d} mmHg dalam rentang BERAT (>= 160 sistolik atau >= 110 "
+            alasan.append(f"TD {td} mmHg dalam rentang BERAT (>= 160 sistolik atau >= 110 "
                           "diastolik)")
             sumber.append(SUMBER["bahaya_td"])
-        elif s >= 140 or d >= 90:
-            alasan.append(f"TD {s}/{d} mmHg dalam rentang hipertensi (>= 140 sistolik atau >= 90 "
+        elif ht_s or ht_d:
+            hipertensi = True
+            alasan.append(f"TD {td} mmHg dalam rentang hipertensi (>= 140 sistolik atau >= 90 "
                           "diastolik)")
             sumber.append(SUMBER["bahaya_td"])
+        if (s is not None and s < 90) or (d is not None and d < 60):
+            rendah = True
+            alasan.append(f"TD {td} mmHg RENDAH (< 90 sistolik atau < 60 diastolik) - TD rendah, "
+                          "evaluasi klinis sesuai protokol (nilai perdarahan, dehidrasi, syok; "
+                          "PERLU REVIEW medis)")
+            sumber.append(SUMBER["td_rendah"])
     if gejala:
         berat = True
         alasan.append("Gejala bahaya: " + "; ".join(GEJALA_BAHAYA[g] for g in gejala))
@@ -206,30 +250,57 @@ def cek_tanda_bahaya(s=None, d=None, gejala=()):
         kategori = "TANDA BAHAYA - SEGERA EVALUASI/RUJUK"
         tindak = ("SEGERA evaluasi/rujuk sesuai protokol kegawatdaruratan fasilitas Anda "
                   "(jangan menunggu kunjungan berikutnya).")
-    else:
+    elif hipertensi:
         kategori = "TD RENTANG HIPERTENSI - EVALUASI/RUJUK HARI INI"
         tindak = ("Ukur ulang sesuai prosedur baku, lalu segera evaluasi/rujuk atau konsultasi "
                   "dokter sesuai protokol fasilitas HARI INI: nilai hipertensi dalam kehamilan "
                   "(kronik bila < 20 minggu; gestasional/preeklampsia bila >= 20 minggu - cek "
                   "proteinuria & gejala). Tidak cukup ditangani sebagai kunjungan rutin.")
+    else:
+        kategori = "TD RENDAH - EVALUASI KLINIS SESUAI PROTOKOL"
+        tindak = ("TD rendah - ukur ulang sesuai prosedur baku lalu evaluasi klinis sesuai "
+                  "protokol fasilitas HARI INI (nilai keadaan umum, nadi, perdarahan, "
+                  "dehidrasi, tanda syok). Tidak cukup ditangani sebagai kunjungan rutin. "
+                  "Ambang < 90/60 PERLU REVIEW tenaga medis.")
+    if rendah and (berat or hipertensi):
+        tindak += " Juga ada komponen TD rendah - evaluasi klinis sesuai protokol."
     return {"kategori": kategori, "alasan": alasan, "tindak_lanjut": tindak, "sumber": sumber}
 
 
-def hitung_map(sistolik, diastolik, gejala=None):
-    s, d = baca_td(sistolik, diastolik)
-    tepat = (Fraction(s) + 2 * Fraction(d)) / 3  # dibandingkan tanpa pembulatan
-    tampil = bulat(Decimal(tepat.numerator) / Decimal(tepat.denominator))
-    hasil = {"perintah": "map", "tanda_bahaya": None, "sistolik": str(s), "diastolik": str(d),
-             "map_mmhg": str(tampil), "map_90_atau_lebih": tepat >= 90,
-             "catatan": ["Dibandingkan dengan nilai tepat (tanpa pembulatan) terhadap ambang "
-                         "Buku KIA MAP >= 90. Ukur ulang sesuai prosedur baku bila hasil di "
-                         "sekitar 90."],
-             "sumber": [SUMBER["map"]], "penafian": PENAFIAN}
-    bahaya = cek_tanda_bahaya(s, d, baca_gejala(gejala))
+def hitung_map(sistolik, diastolik, gejala=None, boleh_parsial=False):
+    """MAP + lapisan tanda bahaya. boleh_parsial=True (CLI): bila hanya satu nilai TD diisi,
+    tanda bahaya tetap dinilai dari nilai yang ada; MAP tidak dihitung."""
+    s, d = baca_td(sistolik, diastolik, boleh_parsial)
+    kode_gejala, gejala_salah = baca_gejala(gejala)
+    hasil = {"perintah": "map", "tanda_bahaya": None, "peringatan": None,
+             "sistolik": str(s) if s is not None else "tidak diisi",
+             "diastolik": str(d) if d is not None else "tidak diisi",
+             "map_mmhg": None, "map_90_atau_lebih": None, "catatan": [],
+             "sumber": [], "penafian": PENAFIAN}
+    parsial = catatan_td_parsial(s, d)
+    if parsial:
+        hasil["peringatan"] = parsial
+    else:
+        tepat = (Fraction(s) + 2 * Fraction(d)) / 3  # dibandingkan tanpa pembulatan
+        tampil = bulat(Decimal(tepat.numerator) / Decimal(tepat.denominator))
+        hasil["map_mmhg"] = str(tampil)
+        hasil["map_90_atau_lebih"] = tepat >= 90
+        hasil["catatan"].append("Dibandingkan dengan nilai tepat (tanpa pembulatan) terhadap "
+                                "ambang Buku KIA MAP >= 90. Ukur ulang sesuai prosedur baku bila "
+                                "hasil di sekitar 90.")
+        hasil["sumber"].append(SUMBER["map"])
+    bahaya = cek_tanda_bahaya(s, d, kode_gejala)
     if bahaya:
         hasil["tanda_bahaya"] = (bahaya["kategori"] + ": " + "; ".join(bahaya["alasan"]) +
                                  ". Bila pasien hamil: " + bahaya["tindak_lanjut"])
         hasil["sumber"] += bahaya["sumber"]
+    if gejala_salah:
+        hasil["kode_tidak_dikenal"] = ["gejala: " + g for g in gejala_salah]
+        hasil["catatan"].append("Ada kode gejala tidak dikenal (belum dinilai): " +
+                                ", ".join(gejala_salah) + ". Petakan ke kode yang valid dan "
+                                "jalankan ulang; gejala itu bisa jadi tanda bahaya.")
+    if not hasil["sumber"]:
+        hasil["sumber"].append(SUMBER["bahaya_td"])
     return hasil
 
 
@@ -300,20 +371,21 @@ def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, 
             kode.add(f)
         else:
             tidak_dikenal.append(f)
-    if tidak_dikenal:
-        raise InputSalah("kode faktor tidak dikenal: " + ", ".join(tidak_dikenal) +
-                         " (lihat: python3 scripts/klinis.py faktor-preeklampsia)")
+    masalah_kode = ["faktor: " + f for f in tidak_dikenal]
     if pedoman == "nice" and "diabetes" in kode:
-        raise InputSalah("pedoman NICE membedakan jenis diabetes: pakai diabetes-pregestasional "
-                         "(DM tipe 1/2) atau diabetes-gestasional")
-    kode_gejala = baca_gejala(gejala)
+        kode.discard("diabetes")
+        masalah_kode.append("faktor: diabetes (pedoman NICE membedakan jenis: pakai "
+                            "diabetes-pregestasional untuk DM tipe 1/2 atau diabetes-gestasional)")
+    kode_gejala, gejala_salah = baca_gejala(gejala)
+    masalah_kode += ["gejala: " + g for g in gejala_salah]
     turunan_otomatis = []
     hasil_map = None
     s = d = None
-    if (sistolik is None) != (diastolik is None):
-        raise InputSalah("isi sistolik DAN diastolik untuk menghitung MAP")
-    if sistolik is not None:
-        s, d = baca_td(sistolik, diastolik)
+    td_parsial = None
+    if sistolik is not None or diastolik is not None:
+        s, d = baca_td(sistolik, diastolik, boleh_parsial=True)
+        td_parsial = catatan_td_parsial(s, d)
+    if s is not None and d is not None:
         hasil_map = hitung_map(s, d)
         if hasil_map["map_90_atau_lebih"]:
             if "map-90" not in kode:
@@ -376,6 +448,20 @@ def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, 
     else:
         arti_faktor = ("Tidak berarti bebas risiko; skrining hanya sebaik data yang diisi. "
                        "Lanjutkan ANC rutin.")
+    # Jangan pernah "Lanjutkan ANC rutin" polos bila TD belum lengkap / ada kode tak dikenal.
+    peringatan = []
+    if s is None and d is None and not kode_gejala:
+        peringatan.append("Tanda bahaya (TD/gejala) belum diperiksa - ukur TD dan tanyakan gejala "
+                          "bahaya sebelum menyimpulkan.")
+    elif td_parsial:
+        peringatan.append(td_parsial)
+    if masalah_kode:
+        peringatan.append("Ada kode tidak dikenal (" + "; ".join(masalah_kode) + ") - belum "
+                          "dinilai; kategori bisa berubah setelah kode diperbaiki.")
+    if peringatan and not berisiko:
+        arti_faktor = arti_faktor.replace(
+            "Lanjutkan ANC", "Hanya bila TD lengkap & gejala bahaya sudah diperiksa dan normal: "
+            "lanjutkan ANC")
 
     sumber = [SUMBER[pedoman]]
     if hasil_map:
@@ -406,8 +492,9 @@ def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, 
         catatan.append("Buku KIA: skrining dilakukan pada usia kehamilan < 20 minggu.")
     catatan.append("Keputusan terapi/obat pencegahan (termasuk dosis) BUKAN bagian alat ini - "
                    "ikuti PNPK/pedoman dan resep dokter.")
-    return {
+    hasil = {
         "perintah": "preeklampsia", "pedoman": nama, "tanda_bahaya": tanda,
+        "peringatan": " ".join(peringatan) or None,
         "kategori": kategori, "arti": arti,
         "kategori_faktor_risiko": kategori_faktor if bahaya else None,
         "faktor_tinggi": [FAKTOR[k][0] for k in tinggi],
@@ -416,6 +503,9 @@ def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, 
         "map": hasil_map["map_mmhg"] if hasil_map else None,
         "catatan": catatan, "sumber": sumber, "penafian": PENAFIAN,
     }
+    if masalah_kode:
+        hasil["kode_tidak_dikenal"] = masalah_kode
+    return hasil
 
 
 # ---------------------------------------------------------------- kehamilan
@@ -742,14 +832,33 @@ def imt_batch(teks_csv):
     """CSV berkolom: id,tinggi,berat[,lingkar_perut,jk]. Baris salah dilaporkan, tidak menghentikan."""
     import csv
     import io
-    baca = csv.DictReader(io.StringIO(teks_csv.lstrip("\ufeff")))
-    kolom = [c.strip().lower() for c in (baca.fieldnames or [])]
+    teks_csv = teks_csv.lstrip("\ufeff")
+    kepala = next((x for x in teks_csv.splitlines() if x.strip()), "")
+    # Ekspor Excel lokal Indonesia sering memakai titik koma (;) dan koma desimal.
+    pemisah = ";" if kepala.count(";") > kepala.count(",") else ","
+    baca = csv.DictReader(io.StringIO(teks_csv), delimiter=pemisah, restkey="__lebih__")
+    kolom = [(c or "").strip().lower() for c in (baca.fieldnames or [])]
     if not {"tinggi", "berat"} <= set(kolom):
-        raise InputSalah("CSV wajib berkolom minimal: id,tinggi,berat (opsional lingkar_perut,jk)")
+        raise InputSalah("CSV wajib berkolom minimal: id,tinggi,berat (opsional lingkar_perut,jk). "
+                         "Pemisah kolom harus koma (,) atau titik koma (;); baris pertama = "
+                         "nama kolom")
+    catatan = ["IMT dibulatkan 1 desimal (setengah ke atas) lalu dikategorikan. Hanya "
+               "dewasa >= 18 tahun, tidak untuk ibu hamil/anak. LP: L >= 90, P >= 80 cm."]
+    if pemisah == ";":
+        catatan.append("Pemisah titik koma (;) terdeteksi; koma desimal (1,65) dibaca benar.")
     baris, n_ok, n_salah = [], 0, 0
     for no, r in enumerate(baca, start=2):
+        lebih = r.pop("__lebih__", None)
         r = {(k or "").strip().lower(): (v or "").strip() for k, v in r.items()}
         label = r.get("id") or f"baris {no}"
+        if lebih is not None:
+            baris.append(f"{label} | GAGAL - TIDAK DIHITUNG: kolom berlebih "
+                         f"({len(kolom) + len(lebih)} nilai untuk {len(kolom)} kolom). Petunjuk: "
+                         "kemungkinan koma desimal tanpa tanda kutip (mis. 1,65) - pakai titik "
+                         "desimal (1.65), beri tanda kutip (\"1,65\"), atau simpan dengan pemisah "
+                         "titik koma (;)")
+            n_salah += 1
+            continue
         try:
             h = imt_dewasa(r.get("tinggi"), r.get("berat"), r.get("lingkar_perut") or None,
                            r.get("jk") or None)
@@ -764,15 +873,15 @@ def imt_batch(teks_csv):
         raise InputSalah("CSV tidak berisi baris data")
     return {"perintah": "imt-batch", "hasil_per_pasien": baris,
             "ringkasan": f"{n_ok} dihitung, {n_salah} tidak dihitung (cek data)",
-            "catatan": ["IMT dibulatkan 1 desimal (setengah ke atas) lalu dikategorikan. Hanya "
-                        "dewasa >= 18 tahun, tidak untuk ibu hamil/anak. LP: L >= 90, P >= 80 cm."],
+            "catatan": catatan,
             "sumber": [SUMBER["ap"], SUMBER["kemenkes_imt"]], "penafian": PENAFIAN}
 
 
 # ---------------------------------------------------------------- tampilan
 
 LABEL = {
-    "tanda_bahaya": "!! TANDA BAHAYA", "map_mmhg": "MAP (mmHg)", "map_90_atau_lebih": "MAP >= 90",
+    "tanda_bahaya": "!! TANDA BAHAYA", "peringatan": "!! PERHATIAN",
+    "kode_tidak_dikenal": "Kode tidak dikenal (belum dinilai)", "map_mmhg": "MAP (mmHg)", "map_90_atau_lebih": "MAP >= 90",
     "kategori": "KATEGORI", "kategori_faktor_risiko": "Kategori faktor risiko (pelengkap)",
     "perkiraan_trimester_1_kg": "Asumsi IOM trimester 1 (kg)",
     "arti": "Arti", "faktor_tinggi": "Faktor risiko tinggi", "faktor_sedang": "Faktor risiko sedang",
@@ -828,8 +937,8 @@ def main(argv=None):
     p.add_argument("--json", action="store_true")
     sub = p.add_subparsers(dest="perintah", required=True)
     a = sub.add_parser("map")
-    a.add_argument("--sistolik", required=True)
-    a.add_argument("--diastolik", required=True)
+    a.add_argument("--sistolik")
+    a.add_argument("--diastolik")
     a.add_argument("--gejala", default="")
     sub.add_parser("faktor-preeklampsia")
     a = sub.add_parser("preeklampsia")
@@ -867,7 +976,7 @@ def main(argv=None):
     ar = p.parse_args(argv)
     try:
         if ar.perintah == "map":
-            h = hitung_map(ar.sistolik, ar.diastolik, ar.gejala.split(","))
+            h = hitung_map(ar.sistolik, ar.diastolik, ar.gejala.split(","), boleh_parsial=True)
         elif ar.perintah == "faktor-preeklampsia":
             h = daftar_faktor()
         elif ar.perintah == "preeklampsia":
@@ -905,6 +1014,15 @@ def main(argv=None):
         print(json.dumps(h, ensure_ascii=False, indent=2))
     else:
         cetak(h)
+    if h.get("kode_tidak_dikenal"):
+        # Hasil (termasuk tanda bahaya) SUDAH dicetak; baru laporkan kode & keluar 1.
+        print("Input tidak valid: kode tidak dikenal: " + "; ".join(h["kode_tidak_dikenal"]),
+              file=sys.stderr)
+        print("Kode gejala valid: " + ", ".join(GEJALA_BAHAYA), file=sys.stderr)
+        print("Kode faktor valid: " + ", ".join(FAKTOR), file=sys.stderr)
+        print("Perbaiki kode lalu jalankan ulang (daftar lengkap: python3 scripts/klinis.py "
+              "faktor-preeklampsia).", file=sys.stderr)
+        return 1
     return 0
 
 
