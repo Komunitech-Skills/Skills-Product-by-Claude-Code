@@ -107,12 +107,15 @@ class TesPreeklampsia(unittest.TestCase):
         self.assertTrue(h2["kategori"].startswith("RISIKO TINGGI"))
 
     def test_kode_tidak_dikenal(self):
-        with self.assertRaises(k.InputSalah):
-            k.skrining_preeklampsia(["darah-tinggi-banget"])
+        # v1.0.2: tidak lagi dilempar; dilaporkan di field kode_tidak_dikenal (CLI exit 1)
+        h = k.skrining_preeklampsia(["darah-tinggi-banget"])
+        self.assertEqual(h["kode_tidak_dikenal"], ["faktor: darah-tinggi-banget"])
 
     def test_map_setengah(self):
-        with self.assertRaises(k.InputSalah):
-            k.skrining_preeklampsia(["nullipara"], 120, None)
+        # v1.0.2: TD parsial tidak ditolak; MAP tidak dihitung, ada peringatan
+        h = k.skrining_preeklampsia(["nullipara"], 120, None)
+        self.assertIsNone(h["map"])
+        self.assertIn("Diastolik TIDAK diisi", h["peringatan"])
 
     def test_wajib_sumber_dan_penafian(self):
         h = k.skrining_preeklampsia(["nullipara"])
@@ -444,8 +447,8 @@ class TesRevisi101(unittest.TestCase):
             h = k.skrining_preeklampsia([], gejala=[g])
             self.assertTrue(h["kategori"].startswith("TANDA BAHAYA"), g)
             self.assertNotIn("ANC rutin", self.json_teks(h))
-        with self.assertRaises(k.InputSalah):
-            k.skrining_preeklampsia([], gejala=["pusing-dikit"])
+        h = k.skrining_preeklampsia([], gejala=["pusing-dikit"])  # v1.0.2: dilaporkan
+        self.assertEqual(h["kode_tidak_dikenal"], ["gejala: pusing-dikit"])
 
     def test_T3_perintah_map_juga_menandai(self):
         self.assertIn("SEGERA", k.hitung_map(170, 115)["tanda_bahaya"])
@@ -466,8 +469,8 @@ class TesRevisi101(unittest.TestCase):
         self.assertTrue(any("tidak tercantum di NICE" in c for c in h["catatan"]))
         h = k.skrining_preeklampsia(["diabetes-pregestasional"], pedoman="nice")
         self.assertTrue(h["kategori"].startswith("RISIKO TINGGI"))
-        with self.assertRaises(k.InputSalah):
-            k.skrining_preeklampsia(["diabetes"], pedoman="nice")
+        h = k.skrining_preeklampsia(["diabetes"], pedoman="nice")  # v1.0.2: dilaporkan, bukan dilempar
+        self.assertTrue(any("diabetes" in x for x in h["kode_tidak_dikenal"]))
         # Buku KIA: diabetes dalam kehamilan = tinggi (semua kode diabetes)
         for f in ("diabetes", "diabetes-gestasional", "diabetes-pregestasional"):
             self.assertTrue(k.skrining_preeklampsia([f])["kategori"].startswith("RISIKO TINGGI"))
@@ -513,6 +516,158 @@ class TesRevisi101(unittest.TestCase):
             teks = self.json_teks(k.kognitif(ins, 20, 6))
             self.assertIn("HANYA menafsirkan skor total", teks)
             self.assertIn("lisensi/izin", teks)
+
+
+
+class TesRevisi102(unittest.TestCase):
+    """Temuan HASIL-UJI-ULANG v1.0.1 (S-baru-1 s.d. S-baru-4)."""
+
+    def json_teks(self, h):
+        return json.dumps(h, ensure_ascii=False)
+
+    # 1) TD parsial
+    def test_hanya_sistolik_170_tanda_bahaya(self):
+        h = k.skrining_preeklampsia([], 170, None)
+        self.assertTrue(h["kategori"].startswith("TANDA BAHAYA"))
+        self.assertIn("170/?", h["tanda_bahaya"])
+        self.assertIn("Diastolik TIDAK diisi", h["peringatan"])
+        self.assertNotIn("ANC rutin", self.json_teks(h))
+        self.assertIsNone(h["map"])
+
+    def test_hanya_diastolik(self):
+        h = k.skrining_preeklampsia([], None, 112)
+        self.assertTrue(h["kategori"].startswith("TANDA BAHAYA"))
+        self.assertIn("Sistolik TIDAK diisi", h["peringatan"])
+        h = k.skrining_preeklampsia([], None, 95)
+        self.assertTrue(h["kategori"].startswith("TD RENTANG HIPERTENSI"))
+        # parsial normal: tidak ada tanda bahaya, tapi tidak boleh "Lanjutkan ANC rutin" polos
+        h = k.skrining_preeklampsia([], 120, None)
+        self.assertIsNone(h["tanda_bahaya"])
+        self.assertNotIn("Lanjutkan ANC rutin", h["arti"])
+        self.assertIn("Diastolik TIDAK diisi", h["peringatan"])
+
+    def test_parsial_di_luar_rentang_tetap_ditolak(self):
+        for s, d in ((400, None), (None, 5), ("abc", None)):
+            with self.assertRaises(k.InputSalah, msg=(s, d)):
+                k.skrining_preeklampsia([], s, d)
+
+    def test_cli_hanya_sistolik(self):
+        kode, out, _ = jalankan("preeklampsia", "--sistolik", "170")
+        self.assertEqual(kode, 0)
+        self.assertIn("!! TANDA BAHAYA", out)
+        self.assertIn("Diastolik TIDAK diisi", out)
+        kode, out, _ = jalankan("map", "--diastolik", "112")
+        self.assertEqual(kode, 0)
+        self.assertIn("SEGERA", out)
+        self.assertIn("Sistolik TIDAK diisi", out)
+        kode, _, err = jalankan("map")
+        self.assertEqual(kode, 1)
+
+    # 2) Kode tak dikenal tidak menekan tanda bahaya
+    def test_cli_kode_tidak_dikenal_tanda_bahaya_dulu(self):
+        kode, out, err = jalankan("preeklampsia", "--faktor", "preeklampsia-dulu",
+                                  "--sistolik", "170", "--diastolik", "115", "--gejala", "pusing")
+        self.assertEqual(kode, 1)
+        self.assertIn("!! TANDA BAHAYA", out)
+        self.assertIn("SEGERA", out)
+        self.assertIn("preeklampsia-dulu", err)
+        self.assertIn("pusing", err)
+        self.assertIn("nyeri-kepala-hebat", err)   # daftar kode gejala valid
+        self.assertIn("riwayat-preeklampsia", err)  # daftar kode faktor valid
+
+    def test_cli_gejala_tak_dikenal_bersama_gejala_valid(self):
+        kode, out, err = jalankan("preeklampsia", "--gejala", "pusing,kejang")
+        self.assertEqual(kode, 1)
+        self.assertIn("SEGERA", out)
+        self.assertIn("pusing", err)
+
+    def test_cli_map_gejala_tak_dikenal(self):
+        kode, out, err = jalankan("map", "--sistolik", "165", "--diastolik", "100",
+                                  "--gejala", "pandangan kabur")
+        self.assertEqual(kode, 1)
+        self.assertIn("SEGERA", out)
+        self.assertIn("pandangan kabur", err)
+
+    def test_json_kode_tidak_dikenal(self):
+        kode, out, err = jalankan("--json", "preeklampsia", "--sistolik", "170",
+                                  "--diastolik", "115", "--gejala", "pusing")
+        self.assertEqual(kode, 1)
+        h = json.loads(out)
+        self.assertTrue(h["kategori"].startswith("TANDA BAHAYA"))
+        self.assertEqual(h["kode_tidak_dikenal"], ["gejala: pusing"])
+
+    def test_kode_tak_dikenal_tanpa_bahaya_tidak_anc_polos(self):
+        h = k.skrining_preeklampsia(["darah-tinggi-dulu"], 120, 80)
+        self.assertNotIn("Lanjutkan ANC rutin", h["arti"])
+        self.assertIn("kode tidak dikenal", h["peringatan"])
+
+    # 3) Tanpa TD
+    def test_tanpa_td_tidak_anc_polos(self):
+        for f in ([], ["nullipara"]):
+            h = k.skrining_preeklampsia(f)
+            self.assertNotIn("Lanjutkan ANC rutin", h["arti"])
+            self.assertIn("Tanda bahaya (TD/gejala) belum diperiksa", h["peringatan"])
+        kode, out, _ = jalankan("preeklampsia")
+        self.assertEqual(kode, 0)
+        self.assertIn("Tanda bahaya (TD/gejala) belum diperiksa", out)
+        self.assertNotIn("Lanjutkan ANC rutin", out)
+        # TD lengkap & normal -> saran rutin boleh, tanpa peringatan
+        h = k.skrining_preeklampsia([], 120, 80)
+        self.assertIsNone(h["peringatan"])
+
+    # 4) Hipotensi
+    def test_td_rendah(self):
+        for s, d in ((75, 45), (89, 70), (100, 59), (89.9, 60)):
+            h = k.skrining_preeklampsia([], s, d)
+            self.assertTrue(h["kategori"].startswith("TD RENDAH"), (s, d))
+            self.assertIn("TD rendah", h["arti"])
+            self.assertNotIn("ANC rutin", self.json_teks(h))
+            self.assertTrue(any("NHLBI" in x and "PERLU REVIEW" in x for x in h["sumber"]))
+        for s, d in ((90, 60), (110, 70)):
+            self.assertIsNone(k.skrining_preeklampsia([], s, d)["tanda_bahaya"], (s, d))
+        self.assertIn("TD RENDAH", k.hitung_map(85, 50)["tanda_bahaya"])
+        self.assertIn("TD RENDAH", k.skrining_preeklampsia([], 85, None)["kategori"])
+
+    def test_td_tinggi_plus_diastolik_rendah(self):
+        # 150/55: hipertensi (kategori lebih tinggi) + komponen TD rendah disebut
+        h = k.skrining_preeklampsia([], 150, 55)
+        self.assertTrue(h["kategori"].startswith("TD RENTANG HIPERTENSI"))
+        self.assertIn("RENDAH", h["tanda_bahaya"])
+        self.assertIn("TD rendah", h["arti"])
+
+    # 5) imt-batch
+    def test_batch_koma_desimal_tanpa_kutip(self):
+        h = k.imt_batch("id,tinggi,berat,lingkar_perut,jk\nA1,165,72,92,L\nA2,1,65,70,82,P\n")
+        self.assertIn("A1 | IMT 26.4", h["hasil_per_pasien"][0])
+        self.assertIn("GAGAL", h["hasil_per_pasien"][1])
+        self.assertIn("koma desimal", h["hasil_per_pasien"][1])
+        self.assertEqual(h["ringkasan"], "1 dihitung, 1 tidak dihitung (cek data)")
+
+    def test_batch_titik_koma(self):
+        # 70,5 / 1,65^2 = 70,5 / 2,7225 = 25,895 -> 25,9 ; 55/1,55^2 = 22,89 -> 22,9
+        h = k.imt_batch("id;tinggi;berat\nB1;1,65;70,5\nB2;155;55\n")
+        self.assertIn("B1 | IMT 25.9", h["hasil_per_pasien"][0])
+        self.assertIn("B2 | IMT 22.9", h["hasil_per_pasien"][1])
+        self.assertTrue(any("titik koma" in c for c in h["catatan"]))
+
+    def test_batch_pesan_pemisah(self):
+        with self.assertRaises(k.InputSalah) as e:
+            k.imt_batch("id|tinggi|berat\nX|160|60\n")
+        self.assertIn("Pemisah", str(e.exception))
+
+    def test_cli_batch_tidak_crash(self):
+        import tempfile
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False,
+                                         encoding="utf-8") as f:
+            f.write("id,tinggi,berat\nA1,1,65,70\nA2,160,60\n")
+            nama = f.name
+        try:
+            kode, out, _ = jalankan("imt-batch", "--file", nama)
+        finally:
+            os.unlink(nama)
+        self.assertEqual(kode, 0)
+        self.assertIn("GAGAL", out)
+        self.assertIn("A2 | IMT 23.4", out)  # 60/2,56 = 23,4375 -> 23,4
 
 
 if __name__ == "__main__":

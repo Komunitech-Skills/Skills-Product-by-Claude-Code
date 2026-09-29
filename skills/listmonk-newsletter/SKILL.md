@@ -46,7 +46,7 @@ Perintah: `python3 <folder-skill>/scripts/listmonk.py <perintah> [opsi]`. Opsi u
 2. Sampaikan ringkasan **apa adanya** (jumlah valid/dibuang) dan ingatkan: newsletter hanya untuk orang yang **memberi persetujuan** (UU PDP 27/2022: persetujuan sah, tujuan jelas, hak menarik persetujuan/hapus data). Tanyakan asal persetujuan (aturan keras #2).
 3. Belum ada list -> `buat-list --nama "Newsletter Toko" --optin double` (bawaan privat + double opt-in).
 4. `impor berkas --list <id> --sumber-persetujuan "Formulir toko Agu-Sep 2026" --saya-punya-izin` -> tampil ringkasan, **belum jalan**. Tunjukkan ke pengguna; setelah setuju ulangi dengan `--ya`. Status awal `unconfirmed` (bukan otomatis setuju).
-5. Double opt-in: `kirim-optin --list <id>` menampilkan jumlahnya; setelah pengguna setuju `--ya --konfirmasi-penerima N`. Hanya yang **klik konfirmasi** menerima newsletter. Ingatkan: gunakan bahasa Indonesia di pengaturan listmonk (panduan §7) agar email konfirmasi terbaca orang awam.
+5. Double opt-in: `kirim-optin --list <id>` menampilkan jumlahnya; setelah pengguna setuju `--ya --konfirmasi-penerima N`. Hanya yang **klik konfirmasi** menerima newsletter. Ingatkan: gunakan bahasa Indonesia di pengaturan listmonk (panduan §6) agar email konfirmasi terbaca orang awam.
 6. `--sudah-terkonfirmasi` hanya jika pengguna **memegang bukti** persetujuan tiap orang (mis. formulir online berstempel waktu). Catat alasannya.
 7. `daftar-pelanggan --list <id>` memberi hitungan sudah konfirmasi / belum / berhenti.
 

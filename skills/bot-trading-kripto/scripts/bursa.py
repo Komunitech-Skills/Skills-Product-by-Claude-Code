@@ -150,6 +150,10 @@ class _PenjagaRedirect(urllib.request.HTTPRedirectHandler):
         asal = urllib.parse.urlparse(req.full_url)
         tujuan = urllib.parse.urlparse(urllib.parse.urljoin(req.full_url, newurl))
         if self.bertanda or (asal.scheme, asal.hostname, asal.port) != (tujuan.scheme, tujuan.hostname, tujuan.port):
+            try:
+                fp.close()
+            except Exception:  # noqa: BLE001
+                pass
             raise _Dialihkan(code, asal.hostname, tujuan.hostname or "?")
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 

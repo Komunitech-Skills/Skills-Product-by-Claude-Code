@@ -420,6 +420,7 @@ class AlurMock(Folder):
     @classmethod
     def tearDownClass(cls):
         cls.srv.shutdown()
+        cls.srv.server_close()
 
     def setUp(self):
         super().setUp()
@@ -663,7 +664,8 @@ class M1Redirect(Folder):
 
     @classmethod
     def tearDownClass(cls):
-        cls.srv.shutdown(); cls.srv2.shutdown()
+        for srv in (cls.srv, cls.srv2):
+            srv.shutdown(); srv.server_close()
 
     def setUp(self):
         super().setUp()
@@ -701,15 +703,12 @@ class M1Redirect(Folder):
         self.assertEqual(self.k2.permintaan, [])
         self.assertEqual(self.k.order, [])
 
-    def test_publik_boleh_redirect_host_sama_saja(self):
+    def test_publik_redirect_host_lain_ditolak(self):
+        self.k.alihkan_ke = self.url2
         with self.assertRaises(bursa.ErrorBursa) as cm:
-            self.k.alihkan_ke = self.url2
             bursa._http("GET", self.url + "/api/v3/time")
         self.assertIn("host lain tidak diikuti", str(cm.exception))
         self.assertEqual(self.k2.permintaan, [])
-        self.k.alihkan_ke = None
-        self.k2.alihkan_ke = self.url2   # ke dirinya sendiri: host sama -> diikuti (lalu berulang, dibatasi urllib)
-        self.k2.alihkan_ke = None
 
 
 class M2PajakSwap(unittest.TestCase):
@@ -824,7 +823,7 @@ class M4WithdrawIndodax(AlurMock):
         frasa = f"LIVE {inti.sidik_jari_penuh(inti.muat_konfigurasi(self.cfgp))} SAYA TANGGUNG RISIKONYA"
         kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp, "--frasa", frasa])
         self.assertEqual(kode, 2); self.assertIn("--saya-sudah-cek-tanpa-withdraw", out)
-        with self.assertRaises(SystemExit):   # flag lama tidak diterima lagi
+        with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):   # flag lama ditolak
             jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp, "--frasa", frasa, "--kunci-tanpa-withdraw"])
         kode, out = jalankan(siapkan_live.main, ["--konfigurasi", self.cfgp, "--cek-kunci", "--url-uji", self.url])
         self.assertEqual(kode, 0, out); self.assertIn("TIDAK diperiksa otomatis", out)
