@@ -480,9 +480,12 @@ def cek_risiko_awal(cfg, state, harga, sekarang):
     - rugi harian: ekuitas turun > rugi_harian_maks sejak awal hari (WIB) -> berhenti"""
     ds = cfg["_d"]
     hari = sekarang.astimezone(WIB).date().isoformat()
+    e_now = ekuitas(state, harga)
     if state.get("hari") != hari or state.get("ekuitas_awal_hari") is None:
+        # patokan hari baru = nilai pada putaran terakhir sebelum pergantian hari (≈ pukul 00.00 WIB)
         state["hari"] = hari
-        state["ekuitas_awal_hari"] = teks(ekuitas(state, harga))
+        state["ekuitas_awal_hari"] = state.get("ekuitas_terakhir") or teks(e_now)
+    state["ekuitas_terakhir"] = teks(e_now)
     pos = D(state["posisi_koin"])
     rata = harga_rata(state)
     if pos > 0 and rata and harga <= rata * (1 - ds["stop_loss_persen"] / 100):
