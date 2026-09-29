@@ -1,0 +1,16 @@
+{
+  "_petunjuk": "Laundry, jasa servis, salon, bengkel. 'bau_aroma' bawaan dipakai untuk bau apek (JANGAN buat tema bau baru agar tidak dobel). Tema rasa/kemasan makanan dibuang.",
+  "hapus_tema": ["rasa", "keamanan", "varian_menu", "porsi_ukuran"],
+  "tambah_kata": {
+    "bau_aroma": ["lembab", "apek", "tidak kering", "setengah kering"],
+    "kualitas_produk": ["noda", "kusut", "luntur", "kebiruan", "sobek", "kancing", "susut", "hasil setrika", "hasil servis"],
+    "ketepatan_pesanan": ["hilang", "tertukar", "kaos kaki", "baju orang lain"],
+    "waktu_tunggu": ["selesai", "janji", "jadi jam", "estimasi"],
+    "pengiriman": ["jemput", "antar jemput", "dijemput"]
+  },
+  "tema": [
+    {"id": "kerusakan", "label": "Barang rusak / hilang (ganti rugi)", "kata": ["ganti rugi", "rusak", "hilang", "sobek", "kebiruan"], "dampak": 5}
+  ],
+  "kata_positif": ["wangi", "licin", "rapi"],
+  "kata_negatif": ["apek", "lembab", "kusut", "noda", "kebiruan"]
+}

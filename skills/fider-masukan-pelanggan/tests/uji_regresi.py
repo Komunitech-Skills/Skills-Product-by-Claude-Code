@@ -301,7 +301,7 @@ class UjiTulis(Dasar):
     def test_judul_pos_lama_disamarkan_saat_ditampilkan(self):
         Tiruan.data["posts"].append(pos(4, "Rina 0812-3456-7890 minta resi", 2))
         Tiruan.data["posts"].append(pos(5, "Hubungi (+62) 812 9999 8888 soal ongkir", 1))
-        for perintah in (("daftar",), ("daftar", "--json"), ("lihat", "4"), ("ringkasan",), ("draf-balasan", "4"),
+        for perintah in (("daftar",), ("daftar", "--json"), ("lihat", "4"), ("ringkasan-mingguan",), ("draf-balasan", "4"),
                          ("cari", "resi")):
             rc, out, _ = self.jalan(*perintah)
             self.assertEqual(rc, 0, perintah)
