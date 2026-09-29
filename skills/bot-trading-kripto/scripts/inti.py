@@ -435,13 +435,13 @@ def rencanakan(cfg, state, harga, sekarang):
             kunci = str(i)
             if kunci in slot and harga >= lv[i + 1]:
                 niat.append({"sisi": "jual", "jumlah_koin": D(slot[kunci]), "slot": kunci,
-                             "alasan": f"grid: harga >= level {i + 1} ({teks(lv[i + 1])})"})
+                             "alasan": f"grid: harga >= level {i + 1} ({rp(lv[i + 1], cfg['kutipan'])})"})
         for i in range(ds["jumlah_grid"]):
             kunci = str(i)
             # beli di slot i hanya bila harga di pita [lv_i, lv_i+1) -- satu slot per tick
             if kunci not in slot and lv[i] <= harga < lv[i + 1]:
                 niat.append({"sisi": "beli", "nilai_kutipan": ds["nominal"], "slot": kunci,
-                             "alasan": f"grid: harga di pita level {i} ({teks(lv[i])}-{teks(lv[i + 1])})"})
+                             "alasan": f"grid: harga di pita level {i} ({rp(lv[i], cfg['kutipan'])} s.d. {rp(lv[i + 1], cfg['kutipan'])})"})
     elif jenis == "tp_sl":
         status = state.get("tp_sl_status", "menunggu_masuk")
         if status == "menunggu_masuk" and pos == 0:
@@ -490,8 +490,8 @@ def cek_risiko_awal(cfg, state, harga, sekarang):
     pos = D(state["posisi_koin"])
     rata = harga_rata(state)
     if pos > 0 and rata and harga <= rata * (1 - ds["stop_loss_persen"] / 100):
-        return (f"STOP-LOSS: harga {teks(harga)} <= {teks(ds['stop_loss_persen'])}% di bawah harga rata-rata "
-                f"{teks(bulat_uang(rata, cfg['kutipan']))}. Posisi dijual & bot berhenti.",
+        return (f"STOP-LOSS: harga {rp(harga, cfg['kutipan'])} sudah {teks(ds['stop_loss_persen'])}% atau lebih di bawah "
+                f"harga rata-rata beli {rp(rata, cfg['kutipan'])}. Posisi dijual & bot berhenti.",
                 {"sisi": "jual", "jumlah_koin": pos, "alasan": "stop-loss global"})
     rugi = D(state["ekuitas_awal_hari"]) - ekuitas(state, harga)
     if rugi > ds["rugi_harian_maks"]:
