@@ -237,7 +237,7 @@ def satu_putaran(args):
             audit("gagal_data", {"pesan": str(e)})
             if not state.get("gagal_data_dilaporkan"):
                 state["gagal_data_dilaporkan"] = True
-                pesan.append(f"Tidak bisa mengambil data bursa: {e}. Tidak ada order dijalankan putaran ini.")
+                pesan.append(f"Tidak bisa mengambil data bursa: {str(e).rstrip('.')}. Tidak ada order dijalankan putaran ini.")
                 return selesai(2)
             return selesai(0)
         if state.pop("gagal_data_dilaporkan", False):
