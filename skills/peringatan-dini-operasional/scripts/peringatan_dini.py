@@ -36,6 +36,7 @@ Kode keluar: 0 = berhasil, 2 = input tidak bisa dibaca.
 import argparse
 import csv
 import json
+import math
 import re
 import sys
 import zipfile
@@ -45,7 +46,7 @@ from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal as D, InvalidOperation, 
 
 getcontext().prec = 28
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 MIN_RATA7 = 7
 MIN_TREN = 5
 MIN_SIGMA = 14
@@ -55,6 +56,13 @@ JENDELA_DASAR = 28
 HARI_TREN = 7
 R2_MIN_PROYEKSI = D("0.5")
 HARI_PROYEKSI = 7
+# Peluang ekor satu sisi (setara 2σ / 3σ / 4σ pada distribusi normal)
+P2 = 0.02275
+P3 = 0.00135
+P4 = 0.0000317
+EFEK_RELATIF = D("0.03")        # selisih minimal 3% dari rata-rata agar σ kecil tidak memicu alarm
+MAKS_LAMBDA_HITUNGAN = D(20)    # angka bulat dengan rata-rata < 20/hari -> model hitungan (Poisson)
+MIN_DASAR_HITUNGAN = 7
 
 HARI_ID = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"]
 HARI_PANJANG = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
@@ -72,8 +80,10 @@ KATA_NAIK_BURUK = ("reject", "cacat", "rusak", "gagal", "retur", "keluhan", "kom
                    "downtime", "mesin_mati", "breakdown", "waste", "buang", "terbuang", "void",
                    "batal", "refund", "lembur", "kecelakaan", "susut", "sisa_produk", "tidak_laku")
 KATA_TURUN_BURUK = ("output", "produksi", "hasil", "penjualan", "omzet", "omset", "transaksi",
-                    "hadir", "pengunjung", "order", "pesanan", "terkirim", "tepat_waktu", "sales",
-                    "pendapatan")
+                    "hadir", "kehadiran", "pengunjung", "order", "pesanan", "terkirim", "tepat_waktu", "sales",
+                    "pendapatan", "terjual", "pengiriman")
+KATA_KEJADIAN = ("kecelakaan", "k3", "cedera", "luka", "insiden", "kebakaran", "keracunan",
+                 "near_miss", "nyaris_celaka", "hampir_celaka")
 KATA_UANG = ("rp", "rupiah", "omzet", "omset", "nilai", "biaya", "pendapatan", "idr")
 KATA_TANGGAL = ("tanggal", "tgl", "date")
 KATA_CATATAN = ("catatan", "keterangan", "ket", "note", "notes", "kejadian")
@@ -302,7 +312,9 @@ def baca_tabel(path):
 # ----------------------------------------------------------------------------- struktur data
 SATUAN = {"pcs": "pcs", "kg": "kg", "gr": "gr", "g": "g", "rp": "Rp", "idr": "Rp", "liter": "liter",
           "ltr": "liter", "l": "liter", "pack": "pack", "box": "box", "dus": "dus", "orang": "orang",
-          "jam": "jam", "menit": "menit", "persen": "%", "pct": "%", "unit": "unit", "porsi": "porsi"}
+          "jam": "jam", "menit": "menit", "persen": "%", "pct": "%", "unit": "unit", "porsi": "porsi",
+          "m": "m", "meter": "m", "cm": "cm", "lembar": "lembar", "roll": "roll", "karung": "karung",
+          "sak": "sak", "botol": "botol"}
 
 
 def label_cantik(h):
@@ -385,8 +397,13 @@ def susun_data(tabel, args, catatan):
             per_tanggal[tgl] = [(no, r)]
     if lebih_panjang:
         catatan.append(f"{lebih_panjang} baris punya sel lebih banyak dari judul kolom (kemungkinan koma di dalam angka tanpa tanda kutip); sel lebihnya diabaikan -- cek file.")
+    saran_mdy = args.urutan_tanggal == "dmy" and any(
+        re.search(r"'\d{1,2}[-/.](1[3-9]|2\d|3[01])[-/.]\d{2,4}", d) for d in dilewati)
+    if saran_mdy:
+        catatan.append("Beberapa tanggal tampaknya format bulan/hari (AS), mis. 09/13/2026. Jalankan ulang dengan --urutan-tanggal mdy.")
     if not per_tanggal:
-        raise InputError("tidak ada baris dengan tanggal yang terbaca. " + "; ".join(dilewati[:3]))
+        raise InputError("tidak ada baris dengan tanggal yang terbaca. " + "; ".join(dilewati[:3])
+                         + (" -- tampaknya format bulan/hari (AS): coba --urutan-tanggal mdy" if saran_mdy else ""))
 
     # kolom angka vs teks
     kolom = []
@@ -422,10 +439,12 @@ def susun_data(tabel, args, catatan):
         if terbaca and terbaca >= 0.6 * (terbaca + gagal):
             sel_rusak.extend(rusak_kolom)
             kolom.append({"kolom": norm[i], "label": label_cantik(h), "indeks": i, "nilai": nilai})
-        elif cocok(norm[i], KATA_CATATAN) or (not kosong_semua and terbaca == 0):
+        elif cocok(norm[i], KATA_CATATAN):
             teks = {tgl: " / ".join(str(r[i]).strip() for _, r in isi if str(r[i]).strip())
                     for tgl, isi in per_tanggal.items()}
             kolom.append({"kolom": norm[i], "label": h, "indeks": i, "teks": teks})
+        elif not kosong_semua and terbaca == 0:
+            catatan.append(f"Kolom teks {h!r} diabaikan dan tidak pernah dikutip di laporan (bisa berisi nama orang).")
         elif kosong_semua:
             catatan.append(f"Kolom {h!r} kosong semua, diabaikan.")
         else:
@@ -486,7 +505,7 @@ def garis_dasar(titik):
     m, s = rata(nilai), sd_sampel(nilai)
     if len(nilai) >= MIN_SIGMA and s and s > 0:
         bersih = [(t, v) for t, v in titik if abs(v - m) / s <= 3]
-        if len(bersih) < len(titik):
+        if len(bersih) < len(titik) and sd_sampel([v for _, v in bersih]):
             hasil["pencilan_diabaikan"] = [t.isoformat() for t, v in titik if abs(v - m) / s > 3]
             nilai = [v for _, v in bersih]
             m, s = rata(nilai), sd_sampel(nilai)
@@ -549,7 +568,56 @@ def bulat(x, des=2):
 
 
 # ----------------------------------------------------------------------------- evaluasi metrik
-def evaluasi_metrik(k, arah, target, tgl_lap, uang):
+def ekor_normal(z):
+    """P(Z >= z) untuk normal baku (satu sisi)."""
+    return 0.5 * math.erfc(float(z) / math.sqrt(2))
+
+
+def ekor_poisson(x, lam, arah):
+    """arah 'naik': P(X >= x); 'turun': P(X <= x), X ~ Poisson(lam). Dihitung langsung per suku."""
+    lam, x = float(lam), int(x)
+    if lam <= 0:
+        return 0.0 if (arah == "naik" and x > 0) else 1.0
+
+    def pmf(k):
+        return math.exp(-lam + k * math.log(lam) - math.lgamma(k + 1))
+    if arah == "naik":
+        if x <= 0:
+            return 1.0
+        total, k = 0.0, x
+        while True:
+            suku = pmf(k)
+            total += suku
+            if k > lam and suku < 1e-18:
+                break
+            k += 1
+        return min(1.0, total)
+    return min(1.0, sum(pmf(k) for k in range(0, max(x, -1) + 1)))
+
+
+def peluang_teks(p):
+    if p <= 0.0001:
+        return "sangat jarang terjadi kebetulan (< 1 dari 10.000 hari)"
+    n = 1 / p
+    bulat_n = int(round(n, -1)) if n >= 20 else int(round(n))
+    return f"peluang kebetulan ±1 dari {fmt_angka(bulat_n)} hari"
+
+
+def level_dari_peluang(p, efek, p_lalu):
+    """p = peluang hari ini; efek = level maksimum yang diizinkan besar selisih;
+    p_lalu = peluang 2 angka sebelumnya (hanya yang efeknya juga cukup), terbaru dulu."""
+    lv = 0
+    kemarin = p_lalu[0] if p_lalu else 1.0
+    if p <= P2:
+        lv = 1
+    if p <= P3 or (p <= P2 and any(q <= P2 for q in p_lalu[:2])):
+        lv = 2
+    if p <= P4 or (p <= P3 and kemarin <= P2):
+        lv = 3
+    return min(lv, efek)
+
+
+def evaluasi_metrik(k, arah, target, tgl_lap, uang, kejadian=False):
     titik = sorted(k["nilai"].items())
     h = {"kolom": k["kolom"], "label": k["label"], "arah": arah, "uang": uang, "n": len(titik),
          "target": target, "level": 0, "alasan": [], "butuh_data": []}
@@ -571,7 +639,6 @@ def evaluasi_metrik(k, arah, target, tgl_lap, uang):
 
     kata_buruk = {"naik": ("naik", "di atas"), "turun": ("turun", "di bawah")}
 
-    # kemarin
     if len(titik) >= 2:
         h["sebelumnya"] = {"tanggal": titik[-2][0].isoformat(), "nilai": titik[-2][1]}
 
@@ -585,8 +652,9 @@ def evaluasi_metrik(k, arah, target, tgl_lap, uang):
     else:
         h["butuh_data"].append(f"rata-rata 7 hari butuh {MIN_RATA7} hari (ada {len(titik)})")
 
-    # garis dasar & sigma
-    dasar = garis_dasar(titik[:-1][-JENDELA_DASAR:])
+    # garis dasar & sigma (untuk JSON & model normal)
+    jendela_dasar = titik[:-1][-JENDELA_DASAR:]
+    dasar = garis_dasar(jendela_dasar)
     h["dasar"] = dasar
     z = None
     if dasar["n"] >= MIN_SIGMA and dasar.get("sd"):
@@ -595,10 +663,26 @@ def evaluasi_metrik(k, arah, target, tgl_lap, uang):
                       "batas_bawah_2": max(D(0), m - 2 * s), "batas_bawah_3": max(D(0), m - 3 * s)})
         z = (v_akhir - m) / s
         h["z"] = z
-    elif dasar["n"] >= MIN_SIGMA:
-        h["butuh_data"].append("angka selalu sama, batas kendali tidak bisa dihitung")
+
+    # pilih model
+    mentah = [v for _, v in jendela_dasar]
+    semua_bulat = all(v == v.to_integral_value() for v in mentah + [v_akhir])
+    if kejadian:
+        model = "kejadian"
+    elif len(mentah) >= MIN_DASAR_HITUNGAN and semua_bulat and rata(mentah) < MAKS_LAMBDA_HITUNGAN:
+        model = "hitungan"
+    elif dasar["n"] >= MIN_SIGMA and dasar.get("sd"):
+        model = "normal"
+    elif dasar["n"] >= MIN_DASAR_HITUNGAN and dasar.get("sd") == 0:
+        model = "konstan"
     else:
+        model = None
         h["butuh_data"].append(f"batas kendali (σ) butuh {MIN_SIGMA} hari sebelum hari ini (ada {dasar['n']})")
+    h["model"] = model
+    if model == "hitungan":
+        lam = rata(mentah)
+        h["hitungan"] = {"n": len(mentah), "lambda": lam, "maks_sebelumnya": max(mentah),
+                         "sd": sd_sampel(mentah)}
 
     # tren
     awal = tgl_lap - timedelta(days=HARI_TREN - 1)
@@ -623,34 +707,118 @@ def evaluasi_metrik(k, arah, target, tgl_lap, uang):
     h["naik_beruntun"] = beruntun(titik, "naik")
     h["turun_beruntun"] = beruntun(titik, "turun")
 
+    # kejadian (K3, kecelakaan): setiap kejadian = merah
+    if model == "kejadian":
+        if v_akhir > 0:
+            naikkan(3, f"{fmt_angka(v_akhir)} kejadian hari ini -- setiap kejadian wajib ditindaklanjuti & dicatat hari ini")
+
+    def basis_untuk(i):
+        """Garis dasar untuk angka ke-i dari belakang (1 = hari ini), dari angka SEBELUM angka itu."""
+        if i == 1:
+            return {"dasar": dasar, "mentah": mentah}
+        jd = titik[:-i][-JENDELA_DASAR:]
+        return {"dasar": garis_dasar(jd), "mentah": [v for _, v in jd]}
+
+    def sinyal(v, a, basis):
+        """-> (peluang ekor ke arah buruk, level maksimum yang diizinkan besar selisih)."""
+        tanda = D(1) if a == "naik" else D(-1)
+        dasar_b, mentah_b = basis["dasar"], basis["mentah"]
+        if model == "normal":
+            if dasar_b["n"] < MIN_SIGMA or not dasar_b.get("sd"):
+                return 1.0, 0
+            m, s = dasar_b["rata"], dasar_b["sd"]
+            zz = (v - m) / s * tanda
+            if zz <= 0:
+                return 1.0, 0
+            rel_ok = m == 0 or abs(v - m) / abs(m) >= EFEK_RELATIF
+            return ekor_normal(zz), (3 if rel_ok else 0)
+        if model == "hitungan":
+            if len(mentah_b) < MIN_DASAR_HITUNGAN:
+                return 1.0, 0
+            lam = rata(mentah_b)
+            lam_ef = max(lam, D("0.5") / len(mentah_b))
+            selisih = (v - lam_ef) * tanda
+            if selisih <= 0:
+                return 1.0, 0
+            p = ekor_poisson(v, lam_ef, a)
+            sd = sd_sampel(mentah_b)
+            if sd and sd > 0 and len(mentah_b) >= MIN_SIGMA:
+                p = max(p, ekor_normal((v - lam) / sd * tanda))
+            efek = 3 if selisih >= D("2.5") else (2 if selisih >= D("1.5") else (1 if selisih >= 1 else 0))
+            return p, efek
+        return 1.0, 0
+
     arah_cek = [arah] if arah in ("naik", "turun") else ["naik", "turun"]
     for a in arah_cek:
+        if model == "kejadian":
+            break
         kata, posisi = kata_buruk[a]
         tanda = D(1) if a == "naik" else D(-1)
-        # sigma
-        if z is not None:
-            zz = z * tanda
-            if zz >= 3:
-                naikkan(3, f"{fmt_satu(abs(z))}σ {posisi} rata-rata {dasar['n']} hari sebelumnya ({fmt_angka(dasar['rata'], uang)}) -- lewat batas bahaya 3σ")
-            elif zz >= 2:
-                naikkan(2, f"{fmt_satu(abs(z))}σ {posisi} rata-rata {dasar['n']} hari sebelumnya ({fmt_angka(dasar['rata'], uang)}) -- lewat batas waspada 2σ")
-            k7 = sisi_beruntun(titik, dasar["rata"], a)
+        pusat = None
+        if model in ("normal", "hitungan"):
+            p, efek = sinyal(v_akhir, a, basis_untuk(1))
+            p_lalu = []
+            for i in (2, 3):
+                if len(titik) > i and (titik[-i + 1][0] - titik[-i][0]).days <= 3:
+                    pl, el = sinyal(titik[-i][1], a, basis_untuk(i))
+                    p_lalu.append(pl if el >= 1 else 1.0)
+                else:
+                    break
+            lv = level_dari_peluang(p, efek, p_lalu)
+            h.setdefault("peluang", {})[a] = p
+            bertahan = p <= P2 and any(q <= P2 for q in p_lalu[:2])
+            ekor = " (2 dari 3 hari terakhir)" if bertahan else ""
+            if model == "normal":
+                pusat, sref = dasar["rata"], dasar["sd"]
+                if lv:
+                    zz = abs(z)
+                    batas = " -- lewat batas bahaya 3σ" if zz >= 3 else (" -- lewat batas waspada 2σ" if zz >= 2 else "")
+                    naikkan(lv, f"{fmt_satu(zz)}σ {posisi} rata-rata {dasar['n']} hari sebelumnya ({fmt_angka(pusat, uang)}){batas}{ekor}")
+            else:
+                pusat = h["hitungan"]["lambda"]
+                sref = pusat.sqrt() if pusat > 0 else D(1)
+                biasa = "biasanya 0" if pusat == 0 else f"biasanya ±{fmt_angka(pusat, des=1)}/hari"
+                if lv:
+                    naikkan(lv, f"{biasa} ({len(mentah)} hari sebelumnya), hari ini {fmt_angka(v_akhir)} -- {peluang_teks(p)}{ekor}")
+                if (a == "naik" and pusat < 1 and v_akhir > h["hitungan"]["maks_sebelumnya"]
+                        and v_akhir - pusat >= 1 and lv == 0):
+                    naikkan(1, f"biasanya hampir selalu 0; hari ini {fmt_angka(v_akhir)} -- tertinggi dalam {len(mentah)} hari tercatat")
+            # pola bergeser
+            k7 = sisi_beruntun(titik, pusat, a)
             if k7 >= 7:
-                naikkan(2, f"{k7} hari tercatat berturut-turut {posisi} rata-rata -- pola bergeser, bukan kebetulan sehari")
-        # beruntun
+                rk = rata([v for _, v in titik[-k7:]])
+                cukup = abs(rk - pusat) >= max(EFEK_RELATIF * abs(pusat), sref / 2)
+                if cukup:
+                    naikkan(2 if k7 >= 9 else 1, f"{k7} hari tercatat berturut-turut {posisi} rata-rata -- pola bergeser, bukan kebetulan sehari")
+        elif model == "konstan":
+            m = dasar["rata"]
+            d = (v_akhir - m) * tanda
+            if d > 0:
+                rel = d / abs(m) if m != 0 else D(1)
+                lv = 3 if rel >= D("0.5") else (2 if rel >= D("0.2") else (1 if rel >= D("0.05") else 0))
+                if lv:
+                    naikkan(lv, f"biasanya selalu {fmt_angka(m, uang)} ({dasar['n']} hari), hari ini {kata} {fmt_angka(rel * 100, des=0)}%")
+            pusat = m
+        # beruntun (hanya bila hari ini memang di sisi buruk rata-rata)
         kb = h["naik_beruntun"] if a == "naik" else h["turun_beruntun"]
-        if kb >= 5:
-            naikkan(2, f"{kata} {kb} hari berturut-turut")
-        elif kb >= 3 and arah != "dua":
+        sisi_buruk = pusat is None or (v_akhir - pusat) * tanda > 0
+        if sisi_buruk and kb >= 5:
+            naikkan(2 if arah != "dua" else 1, f"{kata} {kb} hari berturut-turut")
+        elif sisi_buruk and kb >= 3 and arah != "dua":
             naikkan(1, f"{kata} {kb} hari berturut-turut")
-        # hari yang sama
+        # hari yang sama (hanya kuning; butuh selisih bermakna)
         hs = h.get("hari_sama")
         if hs and hs["selisih_persen"] is not None and arah != "dua" and hs["rata"] >= MIN_RATA_PERSEN:
-            p = hs["selisih_persen"] * tanda
-            label_hari = HARI_PANJANG[tgl_lap.weekday()]
-            if p >= 35:
-                naikkan(2, f"{fmt_angka(abs(hs['selisih_persen']), des=0)}% {posisi} rata-rata hari {label_hari} {hs['n']} minggu terakhir ({fmt_angka(hs['rata'], uang)})")
-            elif p >= 20:
+            pr = hs["selisih_persen"] * tanda
+            if model == "normal":
+                sref_hs = dasar["sd"]
+            elif model == "hitungan":
+                sref_hs = hs["rata"].sqrt()
+            else:
+                sref_hs = None
+            cukup = (abs(v_akhir - hs["rata"]) >= 2 * sref_hs) if sref_hs else pr >= 35
+            if pr >= 25 and cukup:
+                label_hari = HARI_PANJANG[tgl_lap.weekday()]
                 naikkan(1, f"{fmt_angka(abs(hs['selisih_persen']), des=0)}% {posisi} rata-rata hari {label_hari} {hs['n']} minggu terakhir ({fmt_angka(hs['rata'], uang)})")
 
     # target
@@ -662,16 +830,20 @@ def evaluasi_metrik(k, arah, target, tgl_lap, uang):
             info["selisih_persen"] = (v_akhir - target) / target * 100
         h["target_info"] = info
         jenis = "maks" if arah == "naik" else "min"
+        kata_gagal = "melewati target" if arah == "naik" else "di bawah target"
         if buruk(v_akhir):
-            rel = abs(info.get("selisih_persen", D(100)))
-            lv = 3 if rel >= 50 else (2 if rel >= 10 else 1)
+            if target != 0:
+                rel = abs(info["selisih_persen"])
+                lv = 3 if rel >= 50 else (2 if rel >= 10 else 1)
+                persen = f" ({'+' if arah == 'naik' else '-'}{fmt_angka(rel, des=0)}%)"
+            else:
+                lv, persen = 2, ""
             if langgar7 >= 3:
                 lv = max(lv, 2)
-            naikkan(lv, f"{'melewati' if arah == 'naik' else 'di bawah'} target {jenis} {fmt_angka(target, uang)} ({'+' if arah == 'naik' else '-'}{fmt_angka(rel, des=0)}%)"
-                    + (f"; {langgar7} dari {info['n_7']} hari terakhir tidak capai target" if langgar7 >= 2 else ""))
+            naikkan(lv, f"{kata_gagal} {jenis} {fmt_angka(target, uang)}{persen}"
+                    + (f"; {langgar7} dari {info['n_7']} hari terakhir {kata_gagal}" if langgar7 >= 2 else ""))
         elif langgar7 >= 3:
-            naikkan(1, f"{langgar7} dari {info['n_7']} hari terakhir tidak capai target {jenis} {fmt_angka(target, uang)}")
-        # proyeksi kasar
+            naikkan(1, f"{langgar7} dari {info['n_7']} hari terakhir {kata_gagal} {jenis} {fmt_angka(target, uang)}")
         tr = h.get("tren")
         if not buruk(v_akhir) and tr and tr["r2"] >= R2_MIN_PROYEKSI:
             b = tr["kemiringan_per_hari"]
@@ -698,6 +870,12 @@ def evaluasi_stok(ks, kp, tgl_lap, lead):
         return h
     t_akhir, sisa = stok[-1]
     h["stok_akhir"] = sisa
+    if sisa == 0:
+        h["level"] = 3
+        h["sisa_hari"] = D(0)
+        h["perkiraan_habis"] = t_akhir.isoformat()
+        h["alasan"].append((3, f"stok HABIS (0) per {fmt_tgl(t_akhir)}; pemasok butuh {lead} hari -- pesan HARI INI"))
+        return h
     pakai = []
     if kp is not None:
         pakai = [v for t, v in sorted(kp["nilai"].items()) if t <= tgl_lap][-7:]
@@ -717,16 +895,35 @@ def evaluasi_stok(ks, kp, tgl_lap, lead):
     h["rata_pakai"] = rp
     h["n_pakai"] = len(pakai)
     if rp <= 0:
-        h["butuh_data"].append("pemakaian rata-rata 0, sisa hari tidak bisa dihitung")
+        h["butuh_data"].append("pemakaian rata-rata 0, sisa hari belum bisa dihitung")
         return h
     hari = (sisa / rp).quantize(D("0.1"), rounding=ROUND_FLOOR)
     h["sisa_hari"] = hari
-    h["perkiraan_habis"] = (t_akhir + timedelta(days=int(hari))).isoformat()
+    # stok = sisa AKHIR hari laporan. Hari penuh terakhir = +floor(sisa/pakai); mulai kurang = +ceil.
+    tepat = sisa / rp
+    penuh = int(tepat.to_integral_value(rounding=ROUND_FLOOR))
+    kurang = int(tepat.to_integral_value(rounding="ROUND_CEILING"))
+    t_kurang = t_akhir + timedelta(days=max(1, kurang))
+    h["cukup_sampai"] = (t_akhir + timedelta(days=penuh)).isoformat() if penuh >= 1 else None
+    h["perkiraan_habis"] = t_kurang.isoformat()
+    besok = t_akhir + timedelta(days=1)
+    if penuh < 1:
+        kapan = f"TIDAK cukup untuk besok -> habis besok ({fmt_tgl(besok)})"
+    elif penuh == 1 and kurang == 1:
+        kapan = f"cukup sampai besok ({fmt_tgl(besok)}) saja"
+    else:
+        kapan = f"cukup sampai {fmt_tgl(t_akhir + timedelta(days=penuh))}" + \
+                (f", mulai kurang {fmt_tgl(t_kurang)}" if kurang != penuh else "")
     teks = (f"sisa {fmt_angka(sisa)} = ±{fmt_angka(hari, des=1)} hari pemakaian (rata-rata {fmt_angka(rp)}/hari)"
-            f" -> perkiraan habis {fmt_tgl(t_akhir + timedelta(days=int(hari)))}; pemasok butuh {lead} hari")
+            f" -> {kapan}; pemasok butuh {lead} hari")
     if hari <= lead:
         h["level"] = 3
         teks += " -- pesan HARI INI"
+        kosong = D(lead) - tepat
+        if kosong > 0:
+            h["perkiraan_kosong_hari"] = kosong.quantize(D("0.1"), rounding=ROUND_HALF_UP)
+            teks += (f"; walau dipesan hari ini (datang ±{fmt_tgl(t_akhir + timedelta(days=lead))}),"
+                     f" kemungkinan kosong ±{fmt_satu(kosong)} hari")
     elif hari <= 2 * lead:
         h["level"] = 2
         teks += " -- siapkan pesanan"
@@ -754,6 +951,14 @@ PERTANYAAN = [
         "Terpusat di satu bagian/shift atau hari tertentu (mis. Senin, setelah gajian)?",
         "Ada penyakit musiman, masalah transportasi, atau lembur berlebihan minggu ini?",
         "Pekerjaan siapa yang terganggu, dan ada cadangan orangnya?"]),
+    (("downtime", "mesin_mati", "breakdown", "mesin_rusak"), [
+        "Mesin mana yang berhenti, berapa lama, dan apa gejalanya sebelum berhenti?",
+        "Jadwal perawatan/servis terakhir kapan? Ada suku cadang yang aus?",
+        "Berhentinya karena mesin, listrik/angin/air, atau menunggu bahan/operator?"]),
+    (("kecelakaan", "k3", "cedera", "luka", "insiden", "kebakaran", "keracunan", "near_miss"), [
+        "Korban sudah ditangani? Area/alat penyebab sudah diamankan agar tidak terulang hari ini?",
+        "Apa yang terjadi persis (tempat, jam, alat, APD dipakai atau tidak) -- catat tanpa menyalahkan orang.",
+        "Ada kejadian nyaris celaka serupa sebelumnya yang belum ditindaklanjuti?"]),
     (("output", "produksi", "hasil"), [
         "Mesin sempat berhenti/rusak? Berapa jam?",
         "Bahan baku sempat kurang atau telat datang?",
@@ -856,13 +1061,21 @@ def analisis(tabel, args):
                                           "nilai": nilai, "turunan": True}
                 catatan.append(f"Ditambahkan metrik turunan '% reject' = {angka[rj]['label']} ÷ {angka[out]['label']} × 100 (supaya kenaikan reject karena produksi naik tidak disalahartikan).")
 
+    kol_kejadian = set()
+    for a in args.kejadian or []:
+        for bag in a.split(","):
+            if bag.strip():
+                if normalisasi(bag) not in angka:
+                    raise InputError(f"--kejadian {bag!r}: kolom tidak ditemukan. Kolom angka: {', '.join(angka)}")
+                kol_kejadian.add(normalisasi(bag))
     metrik = []
     for n, k in angka.items():
         if n in kol_khusus:
             continue
-        arah = arah_manual.get(n) or ("naik" if n == "persen_reject" else tebak_arah(n))
+        kejadian = n in kol_kejadian or cocok(n, KATA_KEJADIAN)
+        arah = arah_manual.get(n) or ("naik" if n == "persen_reject" or kejadian else tebak_arah(n))
         uang = cocok(n, KATA_UANG)
-        metrik.append(evaluasi_metrik(k, arah, targets.get(n), tgl_lap, uang))
+        metrik.append(evaluasi_metrik(k, arah, targets.get(n), tgl_lap, uang, kejadian and arah == "naik"))
     for s, u in pasangan:
         metrik.append(evaluasi_stok(angka[s], angka.get(u) if u else None, tgl_lap,
                                     lead_manual.get(s, lead_umum)))
@@ -895,14 +1108,14 @@ def analisis(tabel, args):
     peringatan = sorted([m for m in metrik if m["level"] > 0],
                         key=lambda m: (-m["level"], -abs(m.get("z") or 0)))
     normal = [m for m in metrik if m["level"] == 0 and not m.get("tidak_diisi_hari_ini")
-              and (m.get("terbaru") or m.get("stok_akhir") is not None)]
+              and (m.get("terbaru") or m.get("sisa_hari") is not None)]
     hasil = {
         "versi": VERSI, "tanggal_laporan": tgl_lap.isoformat(),
         "periode": {"awal": rentang[0].isoformat(), "akhir": rentang[1].isoformat()},
         "data_sedikit": len(tgl_dipakai) < MIN_SIGMA + 1,
         "ringkas": {NAMA_LEVEL[l]: sum(1 for m in metrik if m["level"] == l) for l in (3, 2, 1)},
         "metrik": metrik, "kualitas_data": kualitas, "catatan": catatan,
-        "catatan_hari_ini": catatan_hari_ini,
+        "catatan_hari_ini": catatan_hari_ini, "sertakan_catatan": bool(args.sertakan_catatan),
     }
     hasil["ringkas"]["normal"] = len(normal)
     hasil["belum_diisi"] = not any(not m.get("tidak_diisi_hari_ini") for m in metrik)
@@ -930,7 +1143,13 @@ def susun_laporan(h, peringatan, normal, nama_usaha):
     r = h["ringkas"]
     L.append(f"Ringkas: {r['merah']} 🔴 · {r['oranye']} 🟠 · {r['kuning']} 🟡 · {r['normal']} normal")
     if h["data_sedikit"]:
-        L.append(f"⚠️ Data baru {kd['hari_tercatat']} hari: batas kendali (σ) butuh ≥{MIN_SIGMA + 1} hari, tren ≥{MIN_TREN} hari, banding hari yang sama ≥{7 * MIN_HARI_SAMA + 1} hari. Peringatan di bawah masih terbatas.")
+        n = kd["hari_tercatat"]
+        kurang = [f"batas kendali (σ) butuh ≥{MIN_SIGMA + 1} hari"]
+        if n < MIN_TREN:
+            kurang.append(f"tren ≥{MIN_TREN} hari")
+        if n < 7 * MIN_HARI_SAMA + 1:
+            kurang.append(f"banding hari yang sama ≥{7 * MIN_HARI_SAMA + 1} hari")
+        L.append(f"⚠️ Data baru {n} hari: " + ", ".join(kurang) + ". Peringatan di bawah masih terbatas.")
     L.append("")
     tampil = peringatan[:6]
     for m in tampil:
@@ -940,7 +1159,9 @@ def susun_laporan(h, peringatan, normal, nama_usaha):
         nilai = fmt_angka(m["terbaru"]["nilai"], m["uang"])
         extra = ""
         if m.get("sebelumnya"):
-            extra = f" (kemarin {fmt_angka(m['sebelumnya']['nilai'], m['uang'])})"
+            ts = date.fromisoformat(m["sebelumnya"]["tanggal"])
+            kapan = "kemarin" if (tgl - ts).days == 1 else f"sebelumnya {fmt_tgl(ts)}"
+            extra = f" ({kapan} {fmt_angka(m['sebelumnya']['nilai'], m['uang'])})"
         L.append(f"{WARNA[m['level']]} {m['label']}: {nilai} hari ini{extra}")
         alasan = [t for _, t in m["alasan"]]
         L.append("   " + "; ".join(alasan[:3]) + ".")
@@ -957,7 +1178,11 @@ def susun_laporan(h, peringatan, normal, nama_usaha):
         L.append("✅ Normal: " + ", ".join(m["label"] for m in normal))
     if kd["tidak_diisi_hari_ini"]:
         L.append("⬜ Belum diisi hari ini: " + ", ".join(kd["tidak_diisi_hari_ini"]))
-    if h["catatan_hari_ini"]:
+    belum_hitung = [m["label"] for m in h["metrik"] if m.get("jenis") == "stok" and m["level"] == 0
+                    and m.get("sisa_hari") is None and not m.get("tidak_diisi_hari_ini")]
+    if belum_hitung:
+        L.append("⬜ Sisa stok belum bisa dihitung (pemakaian kurang/0): " + ", ".join(belum_hitung))
+    if h["catatan_hari_ini"] and h.get("sertakan_catatan"):
         L.append("📝 Catatan hari ini: " + " | ".join(f'"{c}"' for c in h["catatan_hari_ini"]))
     if peringatan:
         L.append("")
@@ -988,6 +1213,10 @@ def susun_laporan(h, peringatan, normal, nama_usaha):
         info.append(f"{len(kd['baris_dilewati'])} baris dilewati (tanggal tidak terbaca)")
     if kd["sel_rusak"]:
         info.append(f"{len(kd['sel_rusak'])} sel angka tidak terbaca/negatif diabaikan")
+    if kd["tanggal_duplikat"]:
+        info.append(f"{len(kd['tanggal_duplikat'])} tanggal dobel (baris terakhir dipakai, kecuali --duplikat jumlah)")
+    if kd["angka_ambigu"]:
+        info.append(f"{len(kd['angka_ambigu'])} angka seperti {kd['angka_ambigu'][0]} dibaca ribuan")
     peng = [m for m in h["metrik"] if m.get("dasar", {}).get("pencilan_diabaikan")]
     if peng:
         info.append(f"{sum(len(m['dasar']['pencilan_diabaikan']) for m in peng)} angka ekstrem lama tidak dipakai di rata-rata")
@@ -1031,6 +1260,10 @@ def buat_parser():
     p.add_argument("--urutan-tanggal", choices=("dmy", "mdy"), default="dmy")
     p.add_argument("--nama-usaha", default="")
     p.add_argument("--tanpa-rasio", action="store_true", help="jangan tambah metrik %% reject otomatis")
+    p.add_argument("--kejadian", action="append",
+                   help="kolom kejadian kritis (mis. kecelakaan kerja): setiap angka > 0 = merah")
+    p.add_argument("--sertakan-catatan", action="store_true",
+                   help="kutip kolom catatan/keterangan di laporan teks (PERHATIAN: bisa berisi nama orang)")
     return p
 
 

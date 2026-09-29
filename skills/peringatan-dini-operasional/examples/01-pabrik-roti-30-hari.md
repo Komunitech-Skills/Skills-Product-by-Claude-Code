@@ -1,4 +1,4 @@
-# Contoh pembuat skill: pabrik roti fiktif, log 30 hari
+# Contoh pembuat skill: pabrik roti fiktif, log 30 hari (v1.0.1)
 
 > Contoh dari pembuat skill (bukan hasil uji independen). Usaha, angka, dan catatan **fiktif**.
 > File log: `examples/log-roti-30hari.csv` (31 Agu – 29 Sep 2026, Minggu 13 Sep libur, baris
@@ -27,14 +27,13 @@ Data 31 Agu–29 Sep (29 hari tercatat)
 Ringkas: 2 🔴 · 1 🟠 · 1 🟡 · 4 normal
 
 🔴 % reject: 3,08 hari ini (kemarin 2,25)
-   7,0σ di atas rata-rata 27 hari sebelumnya (1,47) -- lewat batas bahaya 3σ; naik 3 hari berturut-turut.
+   7,0σ di atas rata-rata 27 hari sebelumnya (1,47) -- lewat batas bahaya 3σ (2 dari 3 hari terakhir); naik 3 hari berturut-turut.
 🔴 Reject (pcs): 63 hari ini (kemarin 46)
-   6,8σ di atas rata-rata 27 hari sebelumnya (31,15) -- lewat batas bahaya 3σ; 112% di atas rata-rata hari Selasa 4 minggu terakhir (29,75); melewati target maks 50 (+26%).
-🟠 Stok tepung (kg): sisa 169 = ±3,2 hari pemakaian (rata-rata 52,29/hari) -> perkiraan habis Jum, 2 Okt; pemasok butuh 2 hari -- siapkan pesanan
+   6,8σ di atas rata-rata 27 hari sebelumnya (31,15) -- lewat batas bahaya 3σ (2 dari 3 hari terakhir); melewati target maks 50 (+26%); naik 3 hari berturut-turut.
+🟠 Stok tepung (kg): sisa 169 = ±3,2 hari pemakaian (rata-rata 52,29/hari) -> cukup sampai Jum, 2 Okt, mulai kurang Sab, 3 Okt; pemasok butuh 2 hari -- siapkan pesanan
 🟡 Penjualan (Rp): Rp 8.644.500 hari ini (kemarin Rp 8.730.000)
-   turun 3 hari berturut-turut; di bawah target min Rp 9.000.000 (-4%); 2 dari 7 hari terakhir tidak capai target.
+   turun 3 hari berturut-turut; di bawah target min Rp 9.000.000 (-4%); 2 dari 7 hari terakhir di bawah target.
 ✅ Normal: Output (pcs), Keluhan, Telat kirim, Absen
-📝 Catatan hari ini: "oven 2 suhu tidak stabil siang"
 
 ❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
 % reject:
@@ -53,7 +52,8 @@ Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah a
 ```
 
 ## Tambahan analisis agent (di luar pesan siap kirim)
-Reject naik 3 hari berturut-turut sejak 27 Sep dan melonjak 29 Sep; di kolom catatan ada "mulai pakai tepung merk
+Reject naik 3 hari berturut-turut sejak 27 Sep dan melonjak 29 Sep; di kolom catatan (dibaca agent
+dari JSON `catatan_hari_ini`, **tidak** dikutip di pesan Telegram kecuali `--sertakan-catatan`) ada "mulai pakai tepung merk
 baru dari pemasok baru" (28 Sep) dan "oven 2 suhu tidak stabil siang" (29 Sep). Keduanya layak
 dicek lebih dulu — kenaikan sudah dimulai 27 Sep, sehari sebelum tepung baru dipakai, jadi belum tentu satu
 penyebab. Tepung sebaiknya dipesan hari ini atau paling lambat besok pagi: sisa ±3,2 hari, pemasok butuh 2 hari.
@@ -64,9 +64,9 @@ Telegram?
 | Angka | Hitungan manual | Script |
 |---|---|---|
 | Garis dasar reject | 27 angka 31 Agu–28 Sep **tanpa** 7 Sep (95, pencilan): rata 31,148; sd sampel 4,688 | rata 31,15; σ 4,688 |
-| z reject hari ini | (63 − 31,148) / 4,688 = 6,79 | 6,8σ |
+| z reject hari ini | (63 − 31,148) / 4,688 = 6,79 (≥ 4σ → 🔴 walau satu hari) | 6,8σ 🔴 |
 | Rata-rata Selasa 4 minggu | 22 Sep 35, 15 Sep 26, 8 Sep 33, 1 Sep 25 → 119/4 = 29,75; 63 vs 29,75 = +112% | 29,75; 112% |
 | Target reject | (63 − 50) / 50 = +26% | +26% |
 | Pemakaian tepung 7 hari | 51+52+56+57+50+50+50 = 366 / 7 = 52,286 | 52,29 |
-| Sisa hari stok | 169 / 52,286 = 3,23 → dibulatkan ke bawah 3,2 → 29 Sep + 3 hari = Jum 2 Okt | 3,2; Jum, 2 Okt |
+| Sisa hari stok | 169 / 52,286 = 3,23 → ditampilkan 3,2 (ke bawah); 3 hari penuh → cukup sampai Jum 2 Okt, mulai kurang Sab 3 Okt | 3,2; Jum 2 Okt / Sab 3 Okt |
 | Level stok | 3,2 ≤ 2 × lead time (4) dan > 2 → 🟠 | 🟠 |

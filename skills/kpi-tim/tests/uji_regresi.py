@@ -378,5 +378,166 @@ class UjiTemplateTeksOkr(Dasar):
         self.assertEqual(kode, 1)
 
 
+class UjiV101(Dasar):
+    """Perbaikan v1.0.1 dari HASIL-UJI v1.0.0 (S-1..S-4, R-1..R-9)."""
+    NAMA = ["Andi", "Rina", "Dewi", "Budi", "Joko", "Eko", "Sari", "Tono"]
+
+    def test_s1_tanpa_nama_tidak_bocor(self):
+        for mode in ("tandai", "bobot-ulang", "nol"):
+            kode, out = self.skor("--periode", "2026-09", "--tanpa-nama", "--data-kosong", mode)
+            teks_json = json.dumps(out, ensure_ascii=False)
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                K.main(["skor", "--rencana", RENCANA, "--realisasi", REALISASI, "--periode", "2026-09",
+                        "--tanpa-nama", "--data-kosong", mode])
+            for n in self.NAMA:
+                self.assertNotIn(n, teks_json, (mode, n))
+                self.assertNotIn(n, buf.getvalue(), (mode, n))
+        kode, out = self.skor("--periode", "2026-09", "--tanpa-nama")
+        div = {d["nama"]: d for d in out["divisi"]}
+        self.assertEqual(div["Keuangan & Admin"]["jumlah_belum_lengkap"], 1)
+        self.assertNotIn("rata_individu", div["Sales"])
+        self.assertIn("(1 orang belum lengkap)", self._teks("--periode", "2026-09", "--tanpa-nama"))
+
+    def _teks(self, *extra, rencana=RENCANA, realisasi=REALISASI):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            K.main(["skor", "--rencana", rencana, "--realisasi", realisasi] + list(extra))
+        return buf.getvalue()
+
+    def test_s2_rupiah_minus(self):
+        self.assertEqual(K.angka("Rp -5.000.000"), D("-5000000"))
+        self.assertEqual(K.angka("-Rp5jt"), D("-5000000"))
+        self.assertEqual(K.angka("(5.000.000)"), D("-5000000"))
+        self.assertEqual(K.angka("(Rp 5.000)"), D("-5000"))
+        self.assertEqual(K.angka("Rp 1,2 jt"), D("1200000"))
+        self.assertEqual(K.angka("Rp12rb"), D("12000"))
+        p = self.file("p.csv", "divisi,orang,kpi,satuan,arah,bobot,target\nUsaha,Ani,Laba,Rp,naik,100,10000000\n")
+        r = self.file("r.csv", "periode,orang,kpi,realisasi\n2026-09,Ani,Laba,Rp -5.000.000\n")
+        kode, out = self.skor(rencana=p, realisasi=r)
+        self.assertEqual(kode, 1)                                   # minus ditolak tanpa --izinkan-minus
+        kode, out = self.skor("--izinkan-minus", rencana=p, realisasi=r)
+        k = self.orang(out, "Ani")["kpi"][0]
+        self.assertEqual(k["realisasi"], "-5000000")
+        self.assertEqual(k["capaian"], "0")                         # -5 jt / 10 jt = -50% -> 0 (bukan +50%)
+        self.assertIn("0,0% (batas bawah", self._teks("--izinkan-minus", "--orang", "Ani", rencana=p, realisasi=r))
+
+    def test_s3_rencana_berlaku_banyak_periode(self):
+        kode, out = jalan("template", "--tim", os.path.join(TPL, "tim-contoh.csv"), "--periode", "2026-10",
+                          "--keluar", self.dir)
+        rencana = os.path.join(self.dir, "rencana-kpi.csv")
+        with open(rencana, encoding="utf-8-sig") as f:
+            self.assertIn("2026-10..,", f.read())
+        r = self.file("r.csv", "periode,orang,kpi,realisasi\n"
+                               "2026-10,Andi Pratama,Jumlah closing,15\n2026-11,Andi Pratama,Jumlah closing,12\n"
+                               "2026-12,Andi Pratama,Jumlah closing,18\n")
+        kode, out = self.skor("--periode", "2026-11", "--data-kosong", "bobot-ulang", "--min-bobot", "10",
+                              rencana=rencana, realisasi=r)
+        self.assertEqual(kode, 0, out)
+        andi = self.orang(out, "Andi Pratama")
+        # 12/15 = 80 ; Oktober 15/15 = 100 -> tren -20
+        self.assertEqual(r1(andi["skor"]), D("80.0"))
+        self.assertEqual(r1(andi["tren"]), D("-20.0"))
+        self.assertEqual(out["periode_lalu"], "2026-10")
+        # sebelum masa berlaku: tidak ada rencana -> pesan menyarankan rentang
+        r2 = self.file("r2.csv", "periode,orang,kpi,realisasi\n2026-09,Andi Pratama,Jumlah closing,15\n")
+        kode, out = self.skor("--periode", "2026-09", rencana=rencana, realisasi=r2)
+        self.assertEqual(kode, 1)
+        self.assertIn("2026-10..", out["error"])
+        # rentang tertutup, periode tepat menang atas rentang, rentang tumpang tindih ditolak
+        p = self.file("p.csv", "periode,divisi,orang,kpi,satuan,arah,bobot,target\n"
+                               "2026-10..2026-11,G,Budi,Akurasi,%,naik,100,99\n"
+                               "2026-11,G,Budi,Akurasi,%,naik,100,90\n")
+        r3 = self.file("r3.csv", "periode,orang,kpi,realisasi\n2026-10,Budi,Akurasi,99\n2026-11,Budi,Akurasi,90\n"
+                                 "2026-12,Budi,Akurasi,90\n")
+        kode, out = self.skor("--periode", "2026-11", rencana=p, realisasi=r3)
+        self.assertEqual(r1(self.orang(out, "Budi")["skor"]), D("100.0"))      # target khusus 90
+        kode, out = self.skor("--periode", "2026-12", rencana=p, realisasi=r3)
+        self.assertEqual(kode, 1)                                             # di luar rentang
+        p2 = self.file("p2.csv", "periode,divisi,orang,kpi,satuan,arah,bobot,target\n"
+                                 "2026-10..,G,Budi,Akurasi,%,naik,100,99\n2026-11..,G,Budi,Akurasi,%,naik,100,90\n")
+        kode, out = self.skor("--periode", "2026-11", rencana=p2, realisasi=r3)
+        self.assertEqual(kode, 1)
+        self.assertIn("tumpang tindih", out["error"])
+        p3 = self.file("p3.csv", "periode,divisi,orang,kpi,satuan,arah,bobot,target\nOkt 2026,G,Budi,Akurasi,%,naik,100,99\n")
+        kode, out = jalan("cek", "--rencana", p3)
+        self.assertEqual(kode, 1)
+
+    def test_s3_peringatan_tren_hilang(self):
+        kode, out = self.skor("--periode", "2026-08")
+        self.assertIn("Tren tidak dihitung: file realisasi tidak berisi periode sebelumnya (2026-07).", out["peringatan"])
+        p = self.file("p.csv", "divisi,orang,kpi,satuan,arah,bobot,target\nG,Budi,Akurasi,%,naik,100,99\n")
+        r = self.file("r.csv", "periode,orang,kpi,realisasi\n2026-09,Budi,Akurasi,99\n2026-11,Budi,Akurasi,90\n")
+        kode, out = self.skor("--periode", "2026-11", rencana=p, realisasi=r)
+        self.assertIn("Periode 2026-10 tidak ada di data; tren dibandingkan dengan 2026-09.", out["peringatan"])
+        self.assertEqual(K.periode_seharusnya_lalu("2026-W01"), "2025-W52")
+        self.assertEqual(K.periode_seharusnya_lalu("2027-01"), "2026-12")
+        self.assertEqual(K.periode_seharusnya_lalu("2026-Q1"), "2025-Q4")
+
+    def test_s4_baca_teks_jebakan(self):
+        p = self.file("p.csv", "divisi,orang,kpi,satuan,arah,bobot,target,kata_kunci\n"
+                               "Mkt,Wulan,ROAS,x,naik,50,4,roas\nMkt,Wulan,Biaya per lead,Rp,turun,50,15000,cpl\n"
+                               "Toko,Fajar,Pesanan dikemas hari yang sama,%,naik,50,95,packing;dikemas\n"
+                               "Toko,Fajar,Transaksi per shift,transaksi,naik,50,80,transaksi\n"
+                               "Toko,Rudi,Transaksi per shift,transaksi,naik,100,80,transaksi\n")
+        t = self.file("t.txt", "Wulan roas 4,4x\n"
+                               "Wulan cpl Rp12rb\n"
+                               "Fajar target transaksi bulan depan 80\n"
+                               "Fajar besok libur 1 hari\n"
+                               "Rudi bantu Fajar packing 30 dus\n"
+                               "Nadia belum kirim laporan\n"
+                               "Rudi belum lapor transaksi\n"
+                               "Selamat pagi semua\n")
+        kode, out = jalan("baca-teks", "--rencana", p, "--teks", t, "--periode", "2026-09")
+        got = {(d["orang"], d["kpi"]): d for d in out["draf"]}
+        self.assertEqual(got[("Wulan", "ROAS")]["realisasi"], "4.4")
+        self.assertEqual(got[("Wulan", "ROAS")]["cek"], "")
+        self.assertEqual(got[("Wulan", "Biaya per lead")]["realisasi"], "12000")
+        packing = got[("Fajar", "Pesanan dikemas hari yang sama")]
+        self.assertIn("'dus'", packing["cek"])
+        self.assertIn("lebih dari satu orang", packing["cek"])
+        self.assertEqual(len(out["draf"]), 3)
+        alasan = {g["kutipan"]: g["alasan"] for g in out["tidak_terbaca"]}
+        self.assertIn("ke depan", alasan["Fajar target transaksi bulan depan 80"])
+        self.assertIn("bukan angka hasil kerja", alasan["Fajar besok libur 1 hari"])
+        self.assertIn("tidak ada angka", alasan["Rudi belum lapor transaksi"])
+        self.assertIn("Nadia belum kirim laporan", out["diabaikan"] + list(alasan))
+        self.assertEqual(out["diabaikan"][-1], "Selamat pagi semua")
+        # tidak ada baris yang hilang diam-diam
+        semua = {d["_kutipan"] if "_kutipan" in d else d["catatan"][11:] for d in out["draf"]}
+        self.assertEqual(len(set(alasan) | semua | set(out["diabaikan"])), 8)
+
+    def test_low_perbaikan(self):
+        # R-6: status_draf selain kosong/dikonfirmasi dilewati
+        p = self.file("p.csv", "divisi,orang,kpi,satuan,arah,bobot,target\nS,Ani,Omzet,Rp,naik,50,100\n"
+                               "S,Ani,Keterlambatan,hari,turun,50,2\n")
+        r = self.file("r.csv", "periode,orang,kpi,realisasi,status_draf\n2026-09,Ani,Omzet,90,ditolak\n"
+                               "2026-09,Ani,Omzet,100,dikonfirmasi\n2026-09,Ani,Keterlambatan,6,\n")
+        kode, out = self.skor(rencana=p, realisasi=r)
+        self.assertEqual(kode, 0, out)
+        self.assertTrue(any("status_draf 'ditolak'" in w for w in out["peringatan"]))
+        # .5x100 + .5x(2-6/2=-100 -> 0) = 50
+        self.assertEqual(r1(self.orang(out, "Ani")["skor"]), D("50.0"))
+        t = self._teks(rencana=p, realisasi=r)
+        self.assertNotIn("-100", t)                                 # R-1: tidak ada persen minus
+        self.assertIn("Keterlambatan 0,0% (batas bawah", t)
+        # R-3: mode nol -> perlu perhatian menunjuk KPI kosong (0%)
+        r2 = self.file("r2.csv", "periode,orang,kpi,realisasi\n2026-09,Ani,Keterlambatan,2\n")
+        t = self._teks("--data-kosong", "nol", rencana=p, realisasi=r2)
+        self.assertIn("perlu perhatian: Omzet tanpa data (dihitung 0,0%)", t)
+        # R-2: bobot-ulang tetapi bobot berdata < min -> tetap ada peringatan
+        kode, out = self.skor("--data-kosong", "bobot-ulang", "--min-bobot", "60", rencana=p, realisasi=r2)
+        self.assertTrue(any("Ani belum lengkap" in w and "min-bobot" in w for w in out["peringatan"]))
+        # R-5: capaian tidak wajar
+        r3 = self.file("r3.csv", "periode,orang,kpi,realisasi\n2026-09,Ani,Omzet,\"0,5\"\n2026-09,Ani,Keterlambatan,2\n")
+        kode, out = self.skor(rencana=p, realisasi=r3)
+        self.assertTrue(any("tidak wajar" in w for w in out["peringatan"]))
+        # R-7: tren capaian di 1:1 diberi label poin
+        t = self._teks("--periode", "2026-09", "--orang", "Joko Susilo")
+        self.assertIn("(capaian ▼66,7 poin vs 2026-08)", t)
+        # R-9: pipa ditutup tidak menghasilkan traceback (ditangani di __main__)
+        self.assertEqual(K.VERSI, "1.0.1")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

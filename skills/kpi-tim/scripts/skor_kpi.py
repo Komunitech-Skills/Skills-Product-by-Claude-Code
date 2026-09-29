@@ -34,6 +34,7 @@ import datetime
 import difflib
 import io
 import json
+import os
 import re
 import sys
 import zipfile
@@ -42,7 +43,7 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 D0 = Decimal(0)
 D100 = Decimal(100)
 
@@ -180,10 +181,26 @@ def angka(s, label="angka"):
     t = str(s).strip()
     if t in ("", "-", "—", "–"):
         return None
-    neg = t.startswith("-") or (t.startswith("(") and t.endswith(")"))
-    t = re.sub(r"(?i)\b(rp|idr)\.?", "", t)
-    t = t.replace("%", "").replace(" ", "").replace(" ", "").strip("()+-")
+    t = re.sub(r"\s", "", t).replace("−", "-")
+    neg = False
+    # Tanda minus boleh sebelum atau sesudah "Rp": "-Rp5jt", "Rp -5.000.000", "(5.000.000)", "Rp(5.000)"
+    for _ in range(3):
+        awal = t
+        if t.startswith("(") and t.endswith(")"):
+            neg, t = True, t[1:-1]
+        if t.startswith("-"):
+            neg, t = True, t[1:]
+        t = re.sub(r"(?i)^(rp|idr)\.?", "", t)
+        if t == awal:
+            break
+    t = t.lstrip("+").replace("%", "")
     t = re.sub(r"(?i)x$", "", t)
+    kali = Decimal(1)
+    m_suf = re.search(r"(?i)(jt|juta|rb|ribu|miliar)$", t)
+    if m_suf:
+        kali = {"jt": Decimal(10) ** 6, "juta": Decimal(10) ** 6, "rb": Decimal(1000), "ribu": Decimal(1000),
+                "miliar": Decimal(10) ** 9}[m_suf.group(1).lower()]
+        t = t[:m_suf.start()]
     if not t:
         return None
     if "," in t and "." in t:
@@ -198,7 +215,7 @@ def angka(s, label="angka"):
             t = t.replace(".", "")
     if not re.fullmatch(r"\d+(\.\d+)?", t):
         raise Gagal("%s '%s' bukan angka yang bisa dibaca." % (label, s))
-    d = Decimal(t)
+    d = Decimal(t) * kali
     return -d if neg else d
 
 
@@ -513,6 +530,10 @@ def baca_rencana(path):
             b["orang"] = ""
         b["kpi"] = " ".join(str(b["kpi"]).split())
         label = "Rencana baris %d (%s / %s)" % (no, b["orang"] or b["divisi"] or "?", b["kpi"] or "?")
+        try:
+            urai_periode_rencana(b["periode"])
+        except Gagal as e:
+            err.append("%s: %s" % (label, e))
         if not b["divisi"]:
             err.append("%s: kolom divisi kosong." % label)
         if not b["kpi"]:
@@ -585,15 +606,67 @@ def baca_rencana(path):
     return hasil, err, cat
 
 
+POLA_RENTANG = re.compile(r"^\s*([0-9A-Za-z-]+)?\s*(?:\.\.|s/d|sd|sampai)\s*([0-9A-Za-z-]+)?\s*$", re.I)
+
+
+def urai_periode_rencana(teks):
+    """'' -> semua; '2026-10' -> tepat; '2026-10..' / '2026-10..2026-12' / '2026-10 s/d 2026-12' -> rentang.
+    Kembalikan (jenis, awal, akhir) atau raise Gagal."""
+    t = str(teks or "").strip()
+    if not t:
+        return ("semua", None, None)
+    m = POLA_RENTANG.match(t)
+    if m:
+        a, b = (m.group(1) or "").strip(), (m.group(2) or "").strip()
+        if not a and not b:
+            raise Gagal("periode '%s' tidak lengkap." % t)
+        if a and b and (_pola_periode(a) != _pola_periode(b) or a > b):
+            raise Gagal("rentang periode '%s' tidak valid (format berbeda atau awal > akhir)." % t)
+        return ("rentang", a or None, b or None)
+    if re.fullmatch(r"[0-9A-Za-z-]+", t):
+        return ("tepat", t, t)
+    raise Gagal("periode '%s' tidak dikenali. Contoh: 2026-10, 2026-10.. (mulai Oktober), "
+                "2026-10..2026-12, atau kosong (semua periode)." % t)
+
+
+def berlaku_untuk(teks, periode):
+    """Prioritas kecocokan baris rencana dengan periode: 3 tepat, 2 rentang, 1 kosong, 0 tidak berlaku."""
+    jenis, a, b = urai_periode_rencana(teks)
+    if jenis == "semua":
+        return 1
+    if jenis == "tepat":
+        return 3 if a == periode else 0
+    patokan = a or b
+    if _pola_periode(patokan) != _pola_periode(periode):
+        return 0
+    if (a is None or a <= periode) and (b is None or periode <= b):
+        return 2
+    return 0
+
+
 def rencana_periode(rencana, periode):
-    """Baris rencana yang berlaku untuk periode ini (baris khusus periode menggantikan baris umum)."""
+    """Baris rencana yang berlaku untuk periode ini. Per orang/divisi dipakai SATU kelompok baris
+    (nilai kolom periode yang sama): tepat > rentang > kosong, supaya bobot tetap 100."""
     per_pemilik = {}
     for b in rencana:
         per_pemilik.setdefault(pemilik_kunci(b), []).append(b)
     hasil = []
     for pk, bs in per_pemilik.items():
-        khusus = [b for b in bs if b["periode"] == periode]
-        hasil += khusus if khusus else [b for b in bs if not b["periode"]]
+        kelompok = {}
+        for b in bs:
+            pr = berlaku_untuk(b["periode"], periode)
+            if pr:
+                kelompok.setdefault((pr, b["periode"]), []).append(b)
+        if not kelompok:
+            continue
+        top = max(k[0] for k in kelompok)
+        pilihan = [k for k in kelompok if k[0] == top]
+        if len(pilihan) > 1:
+            raise Gagal("Rencana %s punya beberapa rentang periode yang sama-sama berlaku untuk %s (%s). "
+                        "Rapikan kolom periode supaya tidak tumpang tindih."
+                        % (bs[0]["orang"] or "divisi " + bs[0]["divisi"], periode,
+                           ", ".join(k[1] for k in pilihan)))
+        hasil += kelompok[pilihan[0]]
     return hasil
 
 
@@ -645,9 +718,11 @@ def baca_realisasi(path, periode_default, izinkan_minus):
         if not norm(r.get("kpi")) and not str(teks_real).strip():
             continue
         label = "Realisasi baris %d (%s / %s)" % (no, r.get("orang") or r.get("divisi") or "?", r.get("kpi") or "?")
-        if norm(r.get("status_draf")) == "perlu konfirmasi":
-            masalah.append("%s: masih DRAF dari teks (status_draf = PERLU KONFIRMASI) -> dilewati. Setelah "
-                           "pemilik/manajer memastikan angkanya, ubah status_draf menjadi 'dikonfirmasi'." % label)
+        st_draf = norm(r.get("status_draf"))
+        if st_draf and st_draf not in ("dikonfirmasi", "konfirmasi", "ok", "oke", "benar"):
+            masalah.append("%s: status_draf '%s' -> dilewati. Hanya baris kosong atau 'dikonfirmasi' yang dihitung. "
+                           "Setelah pemilik/manajer memastikan angkanya, ubah status_draf menjadi 'dikonfirmasi'."
+                           % (label, r.get("status_draf")))
             continue
         try:
             t = str(teks_real).strip()
@@ -869,8 +944,18 @@ def ke_json(obj):
     return obj
 
 
+def fmt_capaian(k):
+    """Capaian untuk dibaca manusia: tidak pernah menampilkan persen minus."""
+    m = k.get("capaian_mentah")
+    if m is None:
+        return "tanpa data (dihitung 0,0%)" if k.get("capaian") is not None else "-"
+    if m < 0:
+        return "0,0% (batas bawah; realisasi jauh dari target)"
+    return fmt_pct(m)
+
+
 def kpi_terlemah(o, n=1):
-    ada = [k for k in o["kpi"] if not k["kosong"] and k["capaian"] is not None]
+    ada = [k for k in o["kpi"] if k["capaian"] is not None]
     ada.sort(key=lambda k: (k["capaian"], norm(k["kpi"])))
     return ada[:n]
 
@@ -892,7 +977,8 @@ def laporan_teks(h, a, peringatan):
         info = fmt_skor(d["skor"]) if d["skor"] is not None else "belum lengkap"
         ext = ""
         if d["sebagian"]:
-            ext = " (tanpa %s)" % ", ".join(d["belum_lengkap"])
+            ext = (" (%d orang belum lengkap)" % len(d["belum_lengkap"]) if a.tanpa_nama
+                   else " (tanpa %s)" % ", ".join(d["belum_lengkap"]))
         L.append("%s %s: %s%s%s" % (IKON[d["status"]], d["nama"], info, " " + tr if tr else "", ext))
     if not a.tanpa_nama:
         L.append("")
@@ -906,7 +992,7 @@ def laporan_teks(h, a, peringatan):
             lemah = kpi_terlemah(o)
             catat = ""
             if lemah and (lemah[0]["status"] == "merah" or (o["status"] != "hijau" and lemah[0]["status"] != "hijau")):
-                catat = " — perlu perhatian: %s %s" % (lemah[0]["kpi"], fmt_pct(lemah[0]["capaian_mentah"]))
+                catat = " — perlu perhatian: %s %s" % (lemah[0]["kpi"], fmt_capaian(lemah[0]))
             if o["dasar"] == "bobot-ulang":
                 catat += " (dihitung dari %s%% bobot)" % fmt_angka(o["bobot_tersedia"] * D100 / o["bobot_total"], 0)
             L.append("%s %s (%s): %s%s%s" % (IKON[o["status"]], o["nama"], o["divisi"], fmt_skor(o["skor"]),
@@ -941,16 +1027,18 @@ def laporan_orang(h, nama, a):
     L.append("")
     for k in o["kpi"]:
         if k["kosong"]:
-            L.append("⚪ %s — belum ada data (bobot %s%%, target %s)" % (k["kpi"], fmt_angka(k["bobot"]),
-                                                                     fmt_nilai(k["target"], k["satuan"])))
+            L.append("%s %s — belum ada data%s (bobot %s%%, target %s)"
+                     % (IKON[k["status"]], k["kpi"], ", dihitung 0%" if k["capaian"] is not None else "",
+                        fmt_angka(k["bobot"]), fmt_nilai(k["target"], k["satuan"])))
             continue
         arah = "↑" if k["arah"] == "naik" else "↓"
         tc = fmt_tren(k.get("tren_capaian"))
         batas = " (dibatasi %s%%)" % fmt_angka(k["maks_capai"], 0) if k["capaian_mentah"] > k["capaian"] else ""
         L.append("%s %s %s: %s dari target %s → capaian %s%s, bobot %s%%, nilai %s%s"
                  % (IKON[k["status"]], k["kpi"], arah, fmt_nilai(k["realisasi"], k["satuan"]),
-                    fmt_nilai(k["target"], k["satuan"]), fmt_pct(k["capaian_mentah"]), batas,
-                    fmt_angka(k["bobot"]), fmt_skor(k["kontribusi"]), " " + tc if tc else ""))
+                    fmt_nilai(k["target"], k["satuan"]), fmt_capaian(k), batas,
+                    fmt_angka(k["bobot"]), fmt_skor(k["kontribusi"]),
+                    " (capaian %s poin vs %s)" % (tc, h.get("periode_lalu")) if tc else ""))
     return "\n".join(L)
 
 
@@ -1035,7 +1123,7 @@ def cmd_template(a):
                           % (nama, t.get("peran", ""), ", ".join(sorted(KATALOG))))
             continue
         for k, s, ar, bo, tg, kk, sb in KATALOG[peran]:
-            rencana.append({"periode": a.periode or "", "divisi": t.get("divisi", "") or peran.title(),
+            rencana.append({"periode": (a.periode + "..") if a.periode else "", "divisi": t.get("divisi", "") or peran.title(),
                             "orang": nama, "kpi": k, "satuan": s, "arah": ar, "bobot": bo,
                             "target": tg, "ambang": "", "maks_capai": "", "kata_kunci": kk, "sumber": sb})
     if not rencana:
@@ -1052,6 +1140,7 @@ def cmd_template(a):
     petunjuk = [
         ["Petunjuk mengisi rencana KPI (Komunitech kpi-tim)"],
         ["1. Satu baris = satu KPI untuk satu orang. Kosongkan kolom 'orang' untuk KPI milik divisi."],
+        ["   Kolom periode: '2026-10..' = berlaku mulai Oktober dan bulan-bulan berikutnya; '2026-10..2026-12' = rentang; kosong = semua periode; '2026-10' = hanya bulan itu."],
         ["2. Bobot per orang WAJIB berjumlah 100. Saran 3-5 KPI per orang."],
         ["3. Arah: 'naik' = makin tinggi makin baik (omzet); 'turun' = makin rendah makin baik (komplain, reject)."],
         ["4. Target: angka saja, tanpa 'Rp' atau titik ribuan boleh. Target 0 hanya untuk arah 'turun' (nol kejadian)."],
@@ -1126,47 +1215,70 @@ def cmd_skor(a):
             raise Gagal("Periode tidak diketahui. Isi kolom 'periode' di file realisasi atau pakai --periode 2026-09.")
         periode = pilihan[-1]
     peringatan = list(masalah)
+    umum = []          # peringatan tanpa nama orang (boleh tampil di --tanpa-nama)
     h = hitung_periode(rencana, realisasi, periode, a, peringatan)
     if h is None:
-        raise Gagal("Tidak ada rencana KPI untuk periode %s." % periode)
+        raise Gagal("Tidak ada rencana KPI yang berlaku untuk periode %s. Kolom 'periode' di rencana: kosongkan "
+                    "(berlaku semua periode), atau isi rentang mis. '2026-10..' (mulai Oktober) atau "
+                    "'2026-10..2026-12'." % periode)
     ada_data = any(not k["kosong"] for o in h["orang"] for k in o["kpi"]) or \
         any(not k["kosong"] for d in h["divisi"] for k in d["kpi"])
     if not ada_data:
         raise Gagal("Belum ada satu pun realisasi untuk periode %s. Laporan tidak dibuat (tidak mengirim angka nol)." % periode)
+    seharusnya = periode_seharusnya_lalu(periode)
     lalu = a.periode_lalu or periode_sebelumnya(periodes, periode)
     h["periode_lalu"] = None
-    if lalu:
+    if not lalu:
+        umum.append("Tren tidak dihitung: file realisasi tidak berisi periode sebelumnya%s."
+                    % (" (%s)" % seharusnya if seharusnya else ""))
+    else:
+        if not a.periode_lalu and seharusnya and lalu != seharusnya:
+            umum.append("Periode %s tidak ada di data; tren dibandingkan dengan %s." % (seharusnya, lalu))
         hl = hitung_periode(rencana, realisasi, lalu, a, [], periksa=False)
-        if hl:
+        if hl is None:
+            umum.append("Tren tidak dihitung: rencana KPI tidak berlaku untuk %s (cek kolom periode di rencana, "
+                        "mis. kosongkan atau isi rentang '%s..')." % (lalu, lalu))
+        elif not any(o["skor"] is not None for o in hl["orang"]) and not any(d["skor"] is not None for d in hl["divisi"]):
+            umum.append("Tren tidak dihitung: tidak ada skor lengkap di periode %s." % lalu)
+        else:
             tambah_tren(h, hl)
             h["periode_lalu"] = lalu
+            for d in h["divisi"]:
+                dl = next((x for x in hl["divisi"] if norm(x["nama"]) == norm(d["nama"])), None)
+                if dl and d["dasar_skor"] == "rata-rata individu" and d.get("tren") is not None:
+                    n_kini = d["jumlah_orang"] - len(d["belum_lengkap"])
+                    n_lalu = dl["jumlah_orang"] - len(dl["belum_lengkap"])
+                    if n_kini != n_lalu:
+                        umum.append("Tren divisi %s membandingkan jumlah orang dinilai yang berbeda (%s: %d orang, "
+                                    "%s: %d orang)." % (d["nama"], lalu, n_lalu, periode, n_kini))
     for o in h["orang"]:
-        if o["skor"] is None and a.data_kosong == "tandai":
-            peringatan.append("%s belum lengkap (tidak ikut rata-rata divisi): belum ada data %s."
-                              % (o["nama"], ", ".join(o["kurang"])))
+        if o["skor"] is None:
+            alasan = ("bobot berdata %s%% < --min-bobot %s%%" % (fmt_angka(o["bobot_tersedia"] * D100 / o["bobot_total"], 1),
+                                                               fmt_angka(a.min_bobot))
+                      if a.data_kosong == "bobot-ulang" else "mode tandai")
+            peringatan.append("%s belum lengkap (tidak ikut rata-rata divisi; %s): belum ada data %s."
+                              % (o["nama"], alasan, ", ".join(o["kurang"])))
         elif o["dasar"] == "bobot-ulang":
             peringatan.append("%s: skor dihitung ulang dari KPI yang ada (%s%% bobot); belum ada data %s."
                               % (o["nama"], fmt_angka(o["bobot_tersedia"] * D100 / o["bobot_total"], 1), ", ".join(o["kurang"])))
         elif o["kurang"] and a.data_kosong == "nol":
             peringatan.append("%s: KPI tanpa data dihitung 0%% (--data-kosong nol): %s." % (o["nama"], ", ".join(o["kurang"])))
+        for k in o["kpi"]:
+            m = k.get("capaian_mentah")
+            if m is not None and k["arah"] == "naik" and (m < 1 or m > 1000):
+                peringatan.append("%s / %s: capaian %s tidak wajar. Cek penulisan angka/satuan (mis. '1,250' dibaca "
+                                  "1,25; tulis 1.250 untuk seribu dua ratus lima puluh)." % (o["nama"], k["kpi"], fmt_pct(m)))
     for d in h["divisi"]:
         if d["dasar_skor"] == "kpi-divisi" and d["kurang"]:
-            peringatan.append("KPI divisi %s belum ada data: %s." % (d["nama"], ", ".join(d["kurang"])))
+            umum.append("KPI divisi %s belum ada data: %s." % (d["nama"], ", ".join(d["kurang"])))
     aturan = {"cap": a.cap, "hijau": a.hijau, "kuning": a.kuning, "data_kosong": a.data_kosong,
               "min_bobot": a.min_bobot, "duplikat": a.duplikat}
     if a.csv_keluar:
         tulis_csv(a.csv_keluar, KOLOM_HASIL, baris_csv_hasil(h))
-    data = {"ok": True, "versi": VERSI, "aturan": aturan, "catatan_rencana": cat, "peringatan": peringatan}
+    data = {"ok": True, "versi": VERSI, "aturan": aturan, "catatan_rencana": cat, "peringatan": umum + peringatan}
     data.update(h)
     if a.tanpa_nama:
-        data.pop("orang")
-        data["peringatan"] = [w for w in peringatan if not any(norm(o["nama"]) in norm(w) for o in h["orang"])]
-        n_belum = sum(1 for o in h["orang"] if o["skor"] is None)
-        n_ulang = sum(1 for o in h["orang"] if o["dasar"] == "bobot-ulang")
-        if n_belum:
-            data["peringatan"].append("%d orang belum lengkap datanya (tidak ikut rata-rata divisi)." % n_belum)
-        if n_ulang:
-            data["peringatan"].append("%d orang dihitung dari sebagian KPI (--data-kosong bobot-ulang)." % n_ulang)
+        data = versi_tanpa_nama(data, h, umum, peringatan)
     if a.orang:
         teks = laporan_orang(h, a.orang, a)
         if a.json:
@@ -1179,16 +1291,65 @@ def cmd_skor(a):
     return 0
 
 
+def versi_tanpa_nama(data, h, umum, peringatan):
+    """Hapus semua nama orang: hanya perusahaan, divisi, dan hitungan agregat."""
+    bersih = {k: v for k, v in data.items() if k not in ("orang", "catatan_rencana", "divisi", "peringatan")}
+    divisi = []
+    for d in h["divisi"]:
+        dd = {k: v for k, v in d.items() if k not in ("belum_lengkap", "rata_individu")}
+        dd["jumlah_belum_lengkap"] = len(d["belum_lengkap"])
+        divisi.append(dd)
+    bersih["divisi"] = divisi
+    w = list(umum)
+    n_belum = sum(1 for o in h["orang"] if o["skor"] is None)
+    n_ulang = sum(1 for o in h["orang"] if o["dasar"] == "bobot-ulang")
+    if n_belum:
+        w.append("%d orang belum lengkap datanya (tidak ikut rata-rata divisi)." % n_belum)
+    if n_ulang:
+        w.append("%d orang dihitung dari sebagian KPI (--data-kosong bobot-ulang)." % n_ulang)
+    sisa = len(peringatan) - n_belum - n_ulang
+    if sisa > 0:
+        w.append("%d catatan data lain perlu dicek pemilik (lihat laporan lengkap)." % sisa)
+    bersih["peringatan"] = w
+    return bersih
+
+
+def periode_seharusnya_lalu(p):
+    m = re.fullmatch(r"(\d{4})-(\d{2})", p)
+    if m:
+        y, mo = int(m.group(1)), int(m.group(2))
+        return "%d-%02d" % ((y - 1, 12) if mo == 1 else (y, mo - 1))
+    m = re.fullmatch(r"(\d{4})-W(\d{2})", p)
+    if m:
+        try:
+            senin = datetime.date.fromisocalendar(int(m.group(1)), int(m.group(2)), 1)
+        except (ValueError, AttributeError):
+            return None
+        iso = (senin - datetime.timedelta(days=7)).isocalendar()
+        return "%d-W%02d" % (iso[0], iso[1])
+    m = re.fullmatch(r"(\d{4})-Q([1-4])", p)
+    if m:
+        y, q = int(m.group(1)), int(m.group(2))
+        return "%d-Q%d" % ((y - 1, 4) if q == 1 else (y, q - 1))
+    return None
+
+
 def pecah_klausa(baris):
     return [k.strip() for k in re.split(r"[;,]\s+|\s+dan\s+|\s+&\s+|\n", baris) if k.strip()]
 
 
-POLA_ANGKA = re.compile(r"(?<![\w.,])(\d+(?:[.,]\d+)*)\s*(jt|juta|rb|ribu|k|m|%)?(?![\w])", re.I)
+POLA_ANGKA = re.compile(r"(?:(?<=[Rr][Pp])|(?<=[Rr][Pp]\.)|(?<![\w.,]))(\d+(?:[.,]\d+)*)\s*(jt|juta|rb|ribu|k|%|x)?(?!\w)", re.I)
 POLA_WA = re.compile(r"^\[?\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}[, ]+\d{1,2}[.:]\d{2}(?:[.:]\d{2})?\]?\s*(?:-\s*)?([^:]{1,40}):\s*(.*)$")
+POLA_KE_DEPAN = re.compile(r"(?<!\w)(bulan depan|minggu depan|tahun depan|besok|lusa|nanti|rencana|rencananya|akan|mau|target baru)(?!\w)", re.I)
+POLA_BUKAN_HASIL = re.compile(r"(?<!\w)(libur|izin|ijin|sakit|cuti|off|absen|lembur)(?!\w)", re.I)
+KATA_UMUM = {"yang", "sama", "dari", "untuk", "dengan", "tanpa", "waktu", "hari", "jumlah", "tepat", "lewat",
+             "total", "rata", "per", "bulan", "minggu", "selesai"}
+KATA_SATUAN = {"dus", "pcs", "paket", "hari", "jam", "menit", "kali", "deal", "toko", "transaksi", "pesanan",
+               "sku", "unit", "lead", "leads", "karton", "kg", "orang", "nota", "struk", "chat", "item", "kejadian"}
 
 
 def ambil_angka(klausa):
-    """Kembalikan list (Decimal, posisi_awal, kata_sebelum)."""
+    """Kembalikan list dict: nilai, sufiks, rp (didahului 'Rp'), target (kata 'target' sebelumnya), satuan_teks."""
     hasil = []
     for m in POLA_ANGKA.finditer(klausa):
         try:
@@ -1196,13 +1357,42 @@ def ambil_angka(klausa):
         except Gagal:
             continue
         suf = (m.group(2) or "").lower()
-        if suf in ("jt", "juta", "m"):
+        if suf in ("jt", "juta"):
             v = v * Decimal(1000000)
         elif suf in ("rb", "ribu", "k"):
             v = v * Decimal(1000)
-        sebelum = klausa[max(0, m.start() - 12):m.start()].lower()
-        hasil.append((v, m.start(), sebelum))
+        sebelum = klausa[:m.start()].lower()
+        if re.search(r"(?:^|[\s:(])-\s*(?:rp\.?\s*)?$|rp\.?\s*-\s*$", sebelum):
+            v = -v
+        berikut = re.match(r"\s*([a-zA-Z]+)", klausa[m.end():])
+        hasil.append({"nilai": v, "sufiks": suf, "rp": bool(re.search(r"rp\.?\s*-?\s*$", sebelum)),
+                      "target": "target" in sebelum,
+                      "satuan_teks": berikut.group(1).lower() if berikut else ""})
     return hasil
+
+
+def cek_satuan(n, b):
+    """Catatan 'cek' bila angka di teks tidak cocok dengan satuan KPI."""
+    sat = norm(b["satuan"])
+    cat = []
+    if sat == "%":
+        if n["sufiks"] != "%":
+            cat.append("pastikan %s%s = persen (KPI dalam %%)"
+                       % (fmt_angka(n["nilai"]), " " + n["satuan_teks"] if n["satuan_teks"] else ""))
+    elif sat in ("rp", "rupiah", "idr"):
+        if not n["rp"] and n["sufiks"] not in ("jt", "juta", "rb", "ribu", "k") and abs(n["nilai"]) < 1000:
+            cat.append("nilai rupiah %s sangat kecil; maksudnya ribu atau juta?" % fmt_angka(n["nilai"]))
+    else:
+        if n["rp"] or n["sufiks"] in ("jt", "juta", "rb", "ribu", "k"):
+            cat.append("angka rupiah di chat, padahal satuan KPI '%s'" % b["satuan"])
+        if n["sufiks"] == "%" and sat != "%":
+            cat.append("angka persen di chat, padahal satuan KPI '%s'" % b["satuan"])
+        if n["sufiks"] == "x" and sat != "x":
+            cat.append("angka 'x' di chat, padahal satuan KPI '%s'" % b["satuan"])
+    if n["satuan_teks"] in KATA_SATUAN and n["satuan_teks"] not in sat.split() and \
+            not (n["satuan_teks"] == "leads" and "lead" in sat.split()):
+        cat.append("satuan di chat '%s' berbeda dari satuan KPI '%s'" % (n["satuan_teks"], b["satuan"]))
+    return cat
 
 
 def cmd_baca_teks(a):
@@ -1210,6 +1400,8 @@ def cmd_baca_teks(a):
     if err:
         raise Gagal("Rencana KPI belum valid:\n- " + "\n- ".join(err))
     rp = rencana_periode(rencana, a.periode)
+    if not rp:
+        raise Gagal("Tidak ada rencana KPI yang berlaku untuk periode %s." % a.periode)
     if a.teks == "-":
         teks = sys.stdin.read()
     else:
@@ -1227,16 +1419,33 @@ def cmd_baca_teks(a):
         depan = n.split()[0]
         if len([m for m in orang if m.split()[0] == depan]) == 1:
             panggilan.setdefault(depan, n)
-    draf, gagal = [], []
+
+    def kata_kpi(b):
+        kata = [k.strip().lower() for k in str(b.get("kata_kunci") or "").split(";") if k.strip()]
+        return kata + [w for w in re.findall(r"[a-z]+", norm(b["kpi"])) if len(w) >= 4 and w not in KATA_UMUM]
+
+    semua_kata = {k for b in rp for k in kata_kpi(b)}
+
+    def ada_kata(k, low):
+        return re.search(r"(?<!\w)%s" % re.escape(k), low) is not None
+
+    draf, gagal, diabaikan = [], [], []
     for baris_asli in teks.splitlines():
         baris = baris_asli.strip()
         if not baris:
             continue
+        kutip = baris_asli.strip()
         pengirim = None
         m = POLA_WA.match(baris)
         if m:
             pengirim, baris = m.group(1).strip(), m.group(2).strip()
         kini = None
+        tercatat = False        # baris ini menghasilkan draf atau catatan "tidak terbaca"
+        relevan = False         # baris menyebut orang/KPI/angka
+
+        def tolak(alasan):
+            gagal.append({"kutipan": kutip, "alasan": alasan})
+
         for kl in pecah_klausa(baris):
             low = kl.lower()
             ditemukan = [n for p_, n in sorted(panggilan.items(), key=lambda x: -len(x[0]))
@@ -1246,57 +1455,83 @@ def cmd_baca_teks(a):
             elif kini is None and pengirim and norm(pengirim) in panggilan:
                 kini = panggilan[norm(pengirim)]
             nums = ambil_angka(kl)
+            punya_kata = any(ada_kata(k, low) for k in semua_kata)
+            if ditemukan or nums or punya_kata:
+                relevan = True
             if not nums:
+                if punya_kata and not POLA_BUKAN_HASIL.search(low):
+                    tolak("menyebut orang/KPI tetapi tidak ada angka yang terbaca: \"%s\"" % kl[:60])
+                    tercatat = True
                 continue
-            if all("target" in sb for _, _, sb in nums) and draf and draf[-1]["_kutipan"] == baris_asli.strip():
-                # "..., target 15" -> target yang disebut untuk klausa sebelumnya
-                sebelumnya = draf[-1]
-                if nums[0][0] != sebelumnya["_target"]:
-                    sebelumnya["cek"] = "; ".join(x for x in (sebelumnya["cek"], "target di chat %s berbeda dari rencana %s"
-                                                              % (fmt_angka(nums[0][0]), fmt_angka(sebelumnya["_target"]))) if x)
+            if POLA_BUKAN_HASIL.search(low):
+                tolak("bukan angka hasil kerja (libur/izin/sakit/cuti): \"%s\"" % kl[:60])
+                tercatat = True
+                continue
+            if POLA_KE_DEPAN.search(low):
+                tolak("rencana/target ke depan, bukan realisasi: \"%s\"" % kl[:60])
+                tercatat = True
+                continue
+            if all(n["target"] for n in nums):
+                if draf and draf[-1]["_kutipan"] == kutip:
+                    # "..., target 15" -> target yang disebut untuk klausa sebelumnya
+                    sebelumnya = draf[-1]
+                    if nums[0]["nilai"] != sebelumnya["_target"]:
+                        sebelumnya["cek"] = "; ".join(x for x in (sebelumnya["cek"], "target di chat %s berbeda dari rencana %s"
+                                                                  % (fmt_angka(nums[0]["nilai"]), fmt_angka(sebelumnya["_target"]))) if x)
+                else:
+                    tolak("hanya angka target, tidak ada realisasi: \"%s\"" % kl[:60])
+                tercatat = True
                 continue
             if kini is None:
-                gagal.append({"kutipan": baris_asli.strip(), "alasan": "nama orang tidak dikenali"})
+                tolak("nama orang tidak dikenali")
+                tercatat = True
                 continue
             kandidat = []
             for b in orang[kini]:
-                kata = [k.strip().lower() for k in str(b.get("kata_kunci") or "").split(";") if k.strip()]
-                kata += [w for w in norm(b["kpi"]).split() if len(w) >= 4]
-                skor = sum(len(k) for k in set(kata) if re.search(r"(?<!\w)%s" % re.escape(k), low))
+                skor = sum(len(k) for k in set(kata_kpi(b)) if ada_kata(k, low))
                 if skor:
                     kandidat.append((skor, b))
             kandidat.sort(key=lambda x: -x[0])
             if not kandidat or (len(kandidat) > 1 and kandidat[0][0] == kandidat[1][0]):
-                gagal.append({"kutipan": baris_asli.strip(),
-                              "alasan": "KPI tidak jelas" if not kandidat else "cocok ke lebih dari satu KPI"})
+                tolak("KPI tidak jelas" if not kandidat else "cocok ke lebih dari satu KPI")
+                tercatat = True
                 continue
             b = kandidat[0][1]
-            target_sebut = [v for v, _, sb in nums if "target" in sb]
-            real = [v for v, _, sb in nums if "target" not in sb]
-            if not real:
-                gagal.append({"kutipan": baris_asli.strip(), "alasan": "hanya ada angka target, realisasi tidak ada"})
-                continue
+            target_sebut = [n["nilai"] for n in nums if n["target"]]
+            real = [n for n in nums if not n["target"]]
             cat = []
             if len(real) > 1:
-                cat.append("ada %d angka, dipakai yang pertama (%s)" % (len(real), fmt_angka(real[0])))
+                cat.append("ada %d angka, dipakai yang pertama (%s)" % (len(real), fmt_angka(real[0]["nilai"])))
             if target_sebut and target_sebut[0] != b["target"]:
                 cat.append("target di chat %s berbeda dari rencana %s" % (fmt_angka(target_sebut[0]), fmt_angka(b["target"])))
+            if len(ditemukan) > 1:
+                cat.append("klausa menyebut lebih dari satu orang; dipakai %s" % orang[kini][0]["orang"])
+            cat += cek_satuan(real[0], b)
+            if real[0]["nilai"] < 0:
+                cat.append("angka minus")
             draf.append({"periode": a.periode, "divisi": b["divisi"], "orang": b["orang"], "kpi": b["kpi"],
-                         "realisasi": s_dec(real[0]), "catatan": "dari teks: " + baris_asli.strip()[:120],
+                         "realisasi": s_dec(real[0]["nilai"]), "catatan": "dari teks: " + kutip[:120],
                          "status_draf": "PERLU KONFIRMASI", "cek": "; ".join(cat),
-                         "_kutipan": baris_asli.strip(), "_target": b["target"]})
+                         "_kutipan": kutip, "_target": b["target"]})
+            tercatat = True
+        if relevan and not tercatat:
+            tolak("menyebut orang/KPI tetapi tidak ada angka hasil yang terbaca")
+        elif not relevan:
+            diabaikan.append(kutip)
     if a.keluar:
         tulis_csv(a.keluar, ["periode", "divisi", "orang", "kpi", "realisasi", "catatan", "status_draf", "cek"], draf)
-    data = {"ok": True, "draf": ke_json(draf), "tidak_terbaca": gagal, "file": a.keluar}
+    data = {"ok": True, "draf": ke_json(draf), "tidak_terbaca": gagal, "diabaikan": diabaikan, "file": a.keluar}
     satuan = {(norm(b["orang"]), norm(b["kpi"])): b["satuan"] for b in rp}
     L = ["DRAF realisasi dari teks — WAJIB dicek sebelum dipakai:"]
     for d in draf:
         nilai = fmt_nilai(Decimal(d["realisasi"]), satuan.get((norm(d["orang"]), norm(d["kpi"])), ""))
-        L.append("- %s | %s = %s%s" % (d["orang"], d["kpi"], nilai, " (cek: %s)" % d["cek"] if d["cek"] else ""))
+        L.append("- %s | %s = %s%s" % (d["orang"], d["kpi"], nilai, " (CEK: %s)" % d["cek"] if d["cek"] else ""))
     if gagal:
-        L.append("Tidak terbaca (isi manual):")
+        L.append("Tidak terbaca (tanyakan/isi manual):")
         for g in gagal:
             L.append("- \"%s\" → %s" % (g["kutipan"][:80], g["alasan"]))
+    if diabaikan:
+        L.append("%d baris obrolan tanpa nama/KPI/angka diabaikan." % len(diabaikan))
     cetak(a, data, "\n".join(L))
     return 0
 
@@ -1580,4 +1815,14 @@ if __name__ == "__main__":
             sys.stdout.reconfigure(encoding="utf-8")
         except (ValueError, OSError):
             pass
-    sys.exit(main())
+    try:
+        kode = main()
+        sys.stdout.flush()
+    except BrokenPipeError:
+        # output dipotong (mis. "| head"): diam, bukan traceback
+        try:
+            sys.stdout = open(os.devnull, "w")
+        except OSError:
+            pass
+        kode = 0
+    sys.exit(kode)

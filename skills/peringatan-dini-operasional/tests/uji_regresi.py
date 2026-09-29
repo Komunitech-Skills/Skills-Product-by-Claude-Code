@@ -11,7 +11,9 @@ Angka acuan dihitung manual (lihat komentar tiap tes), bukan disalin dari keluar
 """
 import contextlib
 import io
+import math
 import os
+import random
 import sys
 import tempfile
 import unittest
@@ -112,8 +114,13 @@ class Parsing(unittest.TestCase):
 class Statistik(unittest.TestCase):
     # Garis dasar 14 hari: 8,12,8,12,... (7 kali 8 dan 7 kali 12).
     # rata = 10; tiap selisih ±2 -> jumlah kuadrat 14 x 4 = 56; varians = 56/13 = 4,307692;
-    # sigma = 2,075498; hari ke-15 (Selasa 15 Sep) = 16 -> z = 6 / 2,075498 = 2,8909 (>=2, <3 -> oranye)
+    # sigma = 2,075498; hari ke-15 (Selasa 15 Sep) = 16 -> z = 6 / 2,075498 = 2,8909
     DASAR = [8, 12] * 7
+    # v1.0.1: angka bulat dengan rata-rata < 20 memakai model hitungan (Poisson) untuk ATURAN warna
+    # (temuan penguji #2: 16 vs rata 10 wajar untuk hitungan kecil). Statistik σ/z tetap dihitung.
+    # Untuk menguji aturan σ dipakai deret yang sama x10 (rata 100 -> model normal):
+    # rata 100, sigma 20,75498; 160 -> z 2,8909; 170 -> z 3,3727; 190 -> z 4,3363.
+    DASAR10 = [80, 120] * 7
 
     def test_sigma_dan_z(self):
         m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR + [16]})), "reject")
@@ -123,13 +130,36 @@ class Statistik(unittest.TestCase):
         self.assertEqual(bulat(m["z"]), D("2.8909"))
         self.assertEqual(bulat(m["dasar"]["batas_atas_2"]), D("14.1510"))   # 10 + 2 x 2,075498
         self.assertEqual(bulat(m["dasar"]["batas_atas_3"]), D("16.2265"))   # 10 + 3 x 2,075498
+        # model hitungan: P(X >= 16 | lambda 10) = 0,049 > 0,0228 -> tidak ada alarm σ
+        self.assertEqual(m["model"], "hitungan")
+        self.assertFalse(any("σ" in t for _, t in m["alasan"]))
+        m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR10 + [160]})), "reject")
+        self.assertEqual(m["model"], "normal")
+        self.assertEqual(bulat(m["z"]), D("2.8909"))
         self.assertTrue(any("2,9σ" in t and "waspada" in t for _, t in m["alasan"]))
+        self.assertEqual(m["level"], 1)  # v1.0.1: 2σ satu hari saja = kuning (dulu oranye)
 
     def test_tiga_sigma_merah(self):
-        # 17 -> z = 7 / 2,075498 = 3,3727 -> merah
-        m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR + [17]})), "reject")
+        # v1.0.1: 3σ satu hari = oranye; merah bila >= 4σ, atau 3σ dan kemarin juga >= 2σ
+        m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR10 + [170]})), "reject")
         self.assertEqual(bulat(m["z"]), D("3.3727"))
+        self.assertEqual(m["level"], 2)
+        m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR10 + [190]})), "reject")
+        self.assertEqual(bulat(m["z"]), D("4.3363"))
         self.assertEqual(m["level"], 3)
+        # kemarin 160 (2,9σ terhadap garis dasar hari ini) lalu hari ini 185 -> bertahan -> merah
+        m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR10 + [160, 185]})), "reject")
+        self.assertGreaterEqual(m["z"], 3)
+        self.assertLess(m["z"], D("3.9"))
+        self.assertEqual(m["level"], 3)
+        self.assertTrue(any("2 dari 3 hari" in t for _, t in m["alasan"]))
+
+    def test_dua_sigma_bertahan_oranye(self):
+        # 2σ dua hari berturut-turut -> oranye (satu hari saja -> kuning)
+        m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR10 + [155, 158]})), "reject")
+        self.assertGreaterEqual(m["z"], 2)
+        self.assertLess(m["z"], 3)
+        self.assertEqual(m["level"], 2)
 
     def test_tren_kemiringan(self):
         # 7 hari terakhir (9-15 Sep): 8,12,8,12,8,12,16 ; x = 0..6 ; x_rata = 3 ; Sxx = 28
@@ -147,14 +177,18 @@ class Statistik(unittest.TestCase):
     def test_rata7_dan_hari_sama(self):
         # rata 7 terakhir (9-15 Sep) = 76/7 = 10,857143 ; 7 sebelumnya (2-8 Sep) = 12,8,12,8,12,8,12 = 72/7
         # perubahan = (76-72)/72 x 100 = 5,5556%
-        # hari yang sama (Selasa) 8 Sep = 12 dan 1 Sep = 8 -> rata 10 ; 16 vs 10 = +60% -> oranye (>=35%)
+        # hari yang sama (Selasa) 8 Sep = 12 dan 1 Sep = 8 -> rata 10 ; 16 vs 10 = +60%
         m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR + [16]})), "reject")
         self.assertEqual(bulat(m["rata7"]), D("10.8571"))
         self.assertEqual(bulat(m["perubahan7_persen"]), D("5.5556"))
         self.assertEqual(m["hari_sama"]["n"], 2)
         self.assertEqual(bulat(m["hari_sama"]["rata"]), D("10.0000"))
         self.assertEqual(bulat(m["hari_sama"]["selisih_persen"]), D("60.0000"))
-        self.assertEqual(m["level"], 2)
+        # v1.0.1: rata hari sama 10 < 5? tidak; tapi hitungan kecil: selisih 6 < 2 x akar(10) = 6,32 -> tidak kuning
+        self.assertFalse(any("rata-rata hari" in t for _, t in m["alasan"]))
+        # x10: 160 vs 100 = +60% dan selisih 60 >= 2 x 20,755 -> kuning (aturan hari-sama kini maks kuning)
+        m = metrik(jalankan(tabel(["reject"], {"reject": self.DASAR10 + [160]})), "reject")
+        self.assertTrue(any(lv == 1 and "60% di atas rata-rata hari Selasa" in t for lv, t in m["alasan"]))
 
     def test_pencilan_dibuang_sekali(self):
         # 18 angka 9,11,... (rata 10) + 1 angka 40 di hari ke-19 -> tahap 1: rata 220/19 = 11,5789,
@@ -211,11 +245,32 @@ class Stok(unittest.TestCase):
         s = metrik(h, "stok_tepung")
         self.assertEqual(s["rata_pakai"], D(70))
         self.assertEqual(s["sisa_hari"], D("2.5"))
-        self.assertEqual(s["perkiraan_habis"], (MULAI + timedelta(days=6 + 2)).isoformat())
+        # v1.0.1 (temuan penguji #4): stok akhir 2,57 hari -> 2 hari penuh (cukup sampai +2),
+        # mulai kurang di hari ke-3 (+3). Dulu "habis" = +floor = +2.
+        self.assertEqual(s["cukup_sampai"], (MULAI + timedelta(days=6 + 2)).isoformat())
+        self.assertEqual(s["perkiraan_habis"], (MULAI + timedelta(days=6 + 3)).isoformat())
         self.assertEqual(s["level"], 2)  # 2,5 <= 2 x lead 2
         h = jalankan(tabel(["stok_tepung", "pakai_tepung"], {"stok_tepung": stok, "pakai_tepung": pakai}), "--lead-time", "3")
         self.assertEqual(metrik(h, "stok_tepung")["level"], 3)  # 2,5 <= 3
         self.assertFalse(any(m["kolom"] == "pakai_tepung" for m in h["metrik"]))
+
+    def test_stok_kurang_dari_sehari(self):
+        # stok 45, pemakaian 50/hari -> 0,9 hari: "habis besok", bukan tanggal hari ini (temuan #4)
+        h = jalankan(tabel(["stok_kopi", "pakai_kopi"], {"stok_kopi": [200, 150, 95, 45], "pakai_kopi": [50, 50, 55, 50]}))
+        s = metrik(h, "stok_kopi")
+        self.assertEqual(s["sisa_hari"], D("0.8"))  # 45 / 51,25 = 0,878 -> 0,8
+        self.assertEqual(s["perkiraan_habis"], (MULAI + timedelta(days=4)).isoformat())
+        self.assertIsNone(s["cukup_sampai"])
+        teks = s["alasan"][0][1]
+        self.assertIn("habis besok", teks)
+        self.assertIn("kemungkinan kosong", teks)
+        self.assertEqual(s["level"], 3)
+
+    def test_stok_pakai_nol_bukan_normal(self):
+        h = jalankan(tabel(["stok_kain_m", "pakai_kain_m"], {"stok_kain_m": [100] * 5, "pakai_kain_m": [0] * 5}))
+        self.assertNotIn("Stok kain (m)", h["laporan_teks"].split("✅ Normal:")[-1].split("\n")[0]
+                         if "✅ Normal:" in h["laporan_teks"] else "")
+        self.assertIn("belum bisa dihitung", h["laporan_teks"])
 
     def test_sisa_hari_tanpa_kolom_pakai(self):
         # penurunan harian 50,60,60,60 (hari restok +370 diabaikan) -> rata 57,5 ; 580/57,5 = 10,08 -> 10,0
@@ -270,6 +325,20 @@ class DataBuruk(unittest.TestCase):
         data = P.susun_data(t, args, [])
         self.assertEqual(data["kolom"][0]["nilai"][date(2026, 9, 1)], D(15))
 
+    def test_kolom_teks_tidak_dikutip(self):
+        # temuan penguji #3: kolom nama karyawan tidak boleh ikut ke laporan
+        t = tabel(["karyawan_absen", "jumlah_absen"], {"karyawan_absen": ["Budi"] * 5, "jumlah_absen": [1, 0, 1, 2, 1]})
+        h = jalankan(t)
+        self.assertNotIn("Budi", h["laporan_teks"])
+        self.assertNotIn("Budi", str(h["catatan_hari_ini"]))
+        self.assertTrue(any("karyawan_absen" in c for c in h["catatan"]))
+
+    def test_target_nol_tanpa_persen(self):
+        h = jalankan(tabel(["keluhan"], {"keluhan": [0, 0, 0, 1]}, target={"keluhan": "0"}))
+        m = metrik(h, "keluhan")
+        self.assertEqual(m["level"], 2)
+        self.assertFalse(any("%" in t for _, t in m["alasan"]))
+
     def test_abaikan_tanggal(self):
         h = jalankan(tabel(["reject"], {"reject": [30, 31, 99, 29]}), "--abaikan-tanggal", "2026-09-03")
         self.assertEqual(metrik(h, "reject")["n"], 3)
@@ -286,6 +355,81 @@ class DataBuruk(unittest.TestCase):
         m = metrik(h, "persen_reject")
         self.assertEqual(m["terbaru"]["nilai"], D(3))
         self.assertEqual(m["arah"], "naik")
+
+
+def poisson_acak(r, lam):
+    """Bilangan Poisson (algoritma Knuth), hanya untuk membuat data uji."""
+    batas, k, prod = math.exp(-lam), 0, 1.0
+    while True:
+        prod *= r.random()
+        if prod < batas:
+            return k
+        k += 1
+
+
+class KeandalanAlarm(unittest.TestCase):
+    """v1.0.1 -- temuan penguji #1 (alarm terlewat) dan #2 (alarm palsu)."""
+
+    def test_ekor_poisson_manual(self):
+        # P(X >= 2 | 1) = 1 - e^-1 (1 + 1) = 0,2642411 ; P(X <= 0 | 2) = e^-2 = 0,1353353
+        self.assertAlmostEqual(P.ekor_poisson(2, 1, "naik"), 0.2642411, places=6)
+        self.assertAlmostEqual(P.ekor_poisson(0, 2, "turun"), 0.1353353, places=6)
+        # P(X >= 16 | 10) = 0,0487404 (tabel Poisson)
+        self.assertAlmostEqual(P.ekor_poisson(16, 10, "naik"), 0.0487404, places=6)
+
+    def test_alarm_palsu_data_stabil(self):
+        # Log stabil 6 kolom (+ % reject otomatis), 45 hari, TANPA perubahan apa pun; dinilai hari ke-31..45.
+        # Syarat: hari dengan >= oranye <= 5%, hari dengan merah <= 1%. (v1.0.0: 31% dan 5,9%.)
+        kolom = ["output_pcs", "reject_pcs", "penjualan_rp", "keluhan", "telat_kirim", "absen", "retur"]
+        hari = oranye = merah = 0
+        for benih in range(40):
+            r = random.Random(1000 + benih)
+            t = [["tanggal"] + kolom]
+            for i in range(45):
+                t.append([(MULAI + timedelta(days=i)).isoformat(), str(round(r.gauss(2000, 60))),
+                          str(poisson_acak(r, 30)), str(round(r.gauss(9e6, 4e5))), str(poisson_acak(r, 0.7)),
+                          str(poisson_acak(r, 7)), str(poisson_acak(r, 1.2)), str(poisson_acak(r, 15))])
+            for d in range(30, 45):
+                h = jalankan(t, "--tanggal", (MULAI + timedelta(days=d)).isoformat())
+                mx = max(m["level"] for m in h["metrik"])
+                hari += 1
+                oranye += mx >= 2
+                merah += mx >= 3
+        self.assertLessEqual(oranye / hari, 0.05, f"oranye+ {oranye}/{hari}")
+        self.assertLessEqual(merah / hari, 0.01, f"merah {merah}/{hari}")
+
+    def test_alarm_tidak_terlewat_garis_dasar_nol(self):
+        # 20 hari keluhan 0, kecelakaan 0, output selalu 100; hari ini keluhan 6, kecelakaan 2, output 0
+        t = tabel(["keluhan", "kecelakaan_kerja", "output"],
+                  {"keluhan": [0] * 20 + [6], "kecelakaan_kerja": [0] * 20 + [2], "output": [100] * 20 + [0]})
+        h = jalankan(t)
+        self.assertEqual(metrik(h, "keluhan")["level"], 3)
+        self.assertEqual(metrik(h, "kecelakaan_kerja")["level"], 3)
+        self.assertEqual(metrik(h, "kecelakaan_kerja")["model"], "kejadian")
+        self.assertEqual(metrik(h, "output")["level"], 3)
+        self.assertNotIn("✅ Normal", h["laporan_teks"])
+        # satu keluhan setelah 20 hari nol -> minimal kuning, bukan "Normal"
+        h = jalankan(tabel(["keluhan"], {"keluhan": [0] * 20 + [1]}))
+        self.assertEqual(metrik(h, "keluhan")["level"], 1)
+        # dua keluhan -> oranye; satu angka 1 di masa lalu tidak membuat alarm hilang
+        h = jalankan(tabel(["keluhan"], {"keluhan": [0] * 9 + [1] + [0] * 10 + [2]}))
+        self.assertEqual(metrik(h, "keluhan")["level"], 2)
+        # --kejadian untuk kolom bernama bebas
+        h = jalankan(tabel(["mesin_rusak"], {"mesin_rusak": [0] * 10 + [1]}), "--kejadian", "mesin_rusak")
+        self.assertEqual(metrik(h, "mesin_rusak")["level"], 3)
+
+    def test_sensitivitas_tetap(self):
+        # output normal 2000 +- 60 lalu turun 10% dua hari -> minimal oranye pada hari ke-2
+        r = random.Random(5)
+        out = [round(r.gauss(2000, 60)) for _ in range(28)] + [1800, 1800]
+        h = jalankan(tabel(["output_pcs"], {"output_pcs": out}))
+        self.assertGreaterEqual(metrik(h, "output_pcs")["level"], 2)
+
+    def test_sigma_sangat_kecil_butuh_selisih_bermakna(self):
+        # penjualan hampir konstan: selisih 1% tidak memicu alarm walau z besar (temuan penguji #6)
+        jual = [9000000, 9010000] * 10 + [8910000]
+        h = jalankan(tabel(["penjualan_rp"], {"penjualan_rp": jual}))
+        self.assertEqual(metrik(h, "penjualan_rp")["level"], 0)
 
 
 class BerkasDanLaporan(unittest.TestCase):
@@ -324,8 +468,13 @@ class BerkasDanLaporan(unittest.TestCase):
         self.assertEqual(bulat(st["rata_pakai"]), D("52.2857"))
         self.assertEqual(st["sisa_hari"], D("3.2"))
         teks = h["laporan_teks"]
-        for frasa in ("🔴 Reject (pcs): 63", "laporan-insiden-usaha", "bukan kepastian", "oven 2 suhu tidak stabil"):
+        for frasa in ("🔴 Reject (pcs): 63", "laporan-insiden-usaha", "bukan kepastian"):
             self.assertIn(frasa, teks)
+        # v1.0.1 (temuan penguji #3): catatan teks tidak dikutip kecuali --sertakan-catatan
+        self.assertNotIn("oven 2 suhu tidak stabil", teks)
+        self.assertEqual(h["catatan_hari_ini"], ["oven 2 suhu tidak stabil siang"])
+        h2 = P.analisis(P.baca_tabel(p), P.buat_parser().parse_args([p, "--sertakan-catatan"]))
+        self.assertIn("oven 2 suhu tidak stabil", h2["laporan_teks"])
         self.assertLessEqual(len(teks.splitlines()), 40)
 
     def test_cli_kode_keluar(self):

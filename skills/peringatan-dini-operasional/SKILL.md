@@ -74,8 +74,14 @@ Opsi (tambahkan pada kedua perintah):
 | Satu tanggal muncul beberapa baris (per shift) | `--duplikat jumlah` (default: baris terakhir dipakai) |
 | Format tanggal bulan/hari (AS) | `--urutan-tanggal mdy` |
 | Jangan tambahkan metrik % reject otomatis | `--tanpa-rasio` |
+| Kejadian kritis: setiap angka > 0 = 🔴 (otomatis untuk kecelakaan/K3/cedera/insiden/kebakaran/keracunan) | `--kejadian mesin_rusak` |
+| Kutip kolom catatan/keterangan di pesan (hanya bila pengguna minta; lihat Privasi) | `--sertakan-catatan` |
 
 Dari JSON, periksa sebelum melapor:
+- `metrik[].model` — `normal` (σ), `hitungan` (angka bulat rata-rata < 20/hari: keluhan, retur,
+  telat, absen — pakai peluang Poisson), `kejadian` (tiap kejadian = 🔴), `konstan` (angka biasanya
+  selalu sama → pakai persen selisih). Kolom yang jarang terjadi tapi kritis (mis. `mesin_rusak`,
+  `tumpahan_bahan`) tanyakan: "setiap kejadian perlu 🔴?" → bila ya, jalankan ulang dengan `--kejadian`.
 - `metrik[].arah` — kalau ada kolom yang arahnya salah (mis. `sisa_roti` ditebak `dua`), jalankan
   ulang dengan `--arah`. Kolom yang tidak dikenal lebih baik ditanyakan daripada ditebak.
 - `kualitas_data` — `hari_kosong`, `baris_dilewati`, `sel_rusak`, `angka_ambigu`,
@@ -88,7 +94,7 @@ Dari JSON, periksa sebelum melapor:
 - Tampilkan `laporan_teks` (output mode teks) **apa adanya** — itu versi siap kirim Telegram
   (± 30 baris, tanpa tabel markdown supaya rapi di HP). Jangan mengubah angka, warna, atau alasan.
 - Di bawahnya (di luar pesan siap kirim), tambahkan maksimal 3 kalimat analisis dari agent:
-  kaitkan peringatan dengan `catatan_hari_ini` / kolom catatan bila relevan (mis. "reject naik
+  kaitkan peringatan dengan `catatan_hari_ini` (JSON) bila relevan — **tanpa menyebut nama orang** (mis. "reject naik
   sejak 26 Sep, bersamaan dengan catatan 'tepung merk baru' 28 Sep — cek ini lebih dulu"), tanpa
   menyatakannya sebagai penyebab pasti.
 - Tawarkan langkah lanjut: (a) isi 5 kenapa bersama tim untuk peringatan 🔴 teratas,
@@ -112,7 +118,7 @@ Ringkas: <n> 🔴 · <n> 🟠 · <n> 🟡 · <n> normal
    <alasan 1>; <alasan 2>; <alasan 3>.
 🟠 Stok <bahan>: sisa <x> = ±<h> hari pemakaian ... -> perkiraan habis <tanggal>
 ✅ Normal: <daftar>
-📝 Catatan hari ini: "<isi kolom catatan>"
+📝 Catatan hari ini: "<isi kolom catatan>"   ← hanya dengan --sertakan-catatan
 
 ❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
 <Metrik>: • 3 pertanyaan (bahan/mesin/orang/cara kerja/pengukuran)
@@ -158,5 +164,19 @@ Aturan warna & ambang lengkap: `references/cara-kerja-aturan.md`.
 - **Tanpa Python:** jangan mengarang σ atau tren. Hitung manual hanya rata-rata 7 hari, banding
   target, dan sisa hari stok (stok ÷ rata-rata pemakaian) dengan rumus tertulis, lalu beri tahu
   bahwa hasil belum diverifikasi script dan aturan σ/tren tidak dijalankan.
-- **Privasi:** semua hitungan lokal; jangan mengirim file ke layanan lain. Laporan tidak memuat
-  nama pelanggan/pasien/karyawan — hanya angka agregat.
+- **Privasi:** semua hitungan lokal; jangan mengirim file ke layanan lain. Pesan siap kirim hanya
+  berisi angka. Kolom teks selain catatan/keterangan (mis. `karyawan_absen`) diabaikan & tidak
+  pernah dikutip. Kolom catatan hanya ikut bila `--sertakan-catatan` — sebelum memakainya
+  (terutama di jadwal otomatis), peringatkan pengguna: "catatan bisa berisi nama karyawan/
+  pelanggan dan akan terkirim ke Telegram; pastikan catatan tidak memuat nama." Sarankan kolom
+  catatan ditulis tanpa nama orang.
+
+## Riwayat versi
+- **1.0.1 (2026-09-29)** — revisi hasil uji independen (6/10): aturan warna diganti model peluang
+  (normal/hitungan Poisson/kejadian/konstan) dengan syarat selisih minimal & bertahan (2σ satu
+  hari = 🟡; 🟠 = 3σ, atau 2σ di 2 dari 3 hari; 🔴 = 4σ, atau 3σ + kemarin ≥ 2σ); banding hari yang
+  sama maks 🟡; metrik biasanya-nol & angka konstan tidak lagi "Normal" saat melonjak; `--kejadian`;
+  kolom teks tidak dikutip kecuali `--sertakan-catatan`; stok < 1 hari = "habis besok" + perkiraan
+  hari kosong; target 0, duplikat & angka ambigu di laporan teks, saran `--urutan-tanggal mdy`.
+  Data stabil sintetis: hari ≥ 🟠 turun dari 31% → ±3%, 🔴 dari 5,9% → ±0,2%.
+- **1.0.0 (2026-09-29)** — rilis awal (status uji).

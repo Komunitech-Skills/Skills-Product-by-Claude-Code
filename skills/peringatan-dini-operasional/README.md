@@ -3,11 +3,11 @@
 **Isi log harian sederhana, AI memberi tahu angka mana yang mulai tidak normal, seberapa gawat, dan apa yang perlu dicek hari ini.**
 
 ## Manfaat
-- ✅ **Peringatan berwarna yang jelas:** 🔴 bahaya, 🟠 waspada, 🟡 perhatikan, masing-masing dengan alasan berangka ("reject naik 3 hari berturut-turut, 6,8σ di atas rata-rata, lewat target maks 50")
+- ✅ **Peringatan berwarna yang jelas:** 🔴 bahaya, 🟠 waspada, 🟡 perhatikan, masing-masing dengan alasan berangka ("reject naik 3 hari berturut-turut, 6,8σ di atas rata-rata, lewat target maks 50"). Oranye/merah hanya untuk lonjakan jelas atau yang bertahan, jadi tidak bikin "kebal alarm"; keluhan/kecelakaan yang biasanya nol langsung ditandai begitu muncul
 - ✅ **Stok tidak habis mendadak:** sisa stok diubah jadi "cukup ±3,2 hari, perkiraan habis Jumat", dibandingkan dengan lama pemasok mengirim
 - ✅ **Langsung tahu apa yang dicek:** daftar pertanyaan akar masalah (bahan, mesin, orang, cara kerja) + pancingan 5 kenapa, tanpa mencari kambing hitam
 - ✅ **Angka dihitung, bukan dikira:** rata-rata 7 hari, tren, banding target, banding hari yang sama 4 minggu lalu, dan batas kendali dihitung script. Angka kosong tidak diisi tebakan
-- ✅ **Otomatis tiap malam:** bisa dijadwalkan di OpenClaw, laporan 1 halaman masuk ke Telegram
+- ✅ **Otomatis tiap malam:** bisa dijadwalkan di OpenClaw, laporan 1 halaman (hanya angka, tanpa nama orang) masuk ke Telegram
 
 ## Cocok untuk siapa
 - Pemilik & manajer pabrik kecil-menengah, konveksi, percetakan
@@ -19,7 +19,7 @@
 **Sebelum:** Tiap hari mengisi Excel produksi. Reject naik pelan-pelan 30 → 34 → 39 → 46 dan tidak ada yang sadar, sampai hari ke-5 reject 63 roti dan tepung ternyata tinggal cukup 3 hari. Baru ketahuan saat pelanggan komplain dan produksi hampir berhenti.
 
 **Sesudah (cukup ketik):** "Ini log produksi 30 hari. Ada yang perlu diwaspadai? Pemasok tepung butuh 2 hari."
-→ Satu pesan: 🔴 Reject 63 (6,8σ di atas rata-rata, +112% dibanding Selasa biasanya, lewat target maks 50) · 🟠 Stok tepung cukup ±3,2 hari, habis Jumat, segera pesan · 🟡 Penjualan turun 3 hari. Plus catatan hari itu ("oven 2 suhu tidak stabil") dan 6 pertanyaan cek untuk tim.
+→ Satu pesan: 🔴 Reject 63 (6,8σ di atas rata-rata, +112% dibanding Selasa biasanya, lewat target maks 50) · 🟠 Stok tepung cukup ±3,2 hari, habis Jumat, segera pesan · 🟡 Penjualan turun 3 hari. Plus 6 pertanyaan cek untuk tim.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
