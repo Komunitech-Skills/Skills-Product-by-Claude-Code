@@ -62,6 +62,8 @@ Lalu satu baris: "Perkiraan durasi sulih suara: NN dtk (target NN dtk, 150 kata/
 **6. Checklist Label AI & Etika** (centang sesuai jalur produksi)
 **7. Langkah Produksi Cepat** (urutan kerja 4-6 langkah, tanpa menyebut merek alat kecuali diminta pengguna)
 
+**Mode Ringkas (video 15 dtk atau kurang, atau bila pengguna minta cepat):** keluarkan hanya bagian 0 (2 baris), 1 (satu hook terbaik + satu cadangan), 2 (naskah & timing), 4 (sulih suara final), 5 (caption & 3-5 hashtag), dan 6 (checklist label satu baris). Storyboard dan langkah produksi diberikan hanya bila pengguna meminta ("lengkap"). Tawarkan sekali: "Mau versi lengkap dengan storyboard?"
+
 ## Blok Prompt Generik untuk Alat Video/Gambar AI
 Tempel di alat apa pun (teks-ke-video atau gambar-ke-video). Tulis **satu blok per adegan**, klip 3-8 detik, dalam bahasa Inggris (kebanyakan alat lebih akurat), tanpa nama orang/merek terkenal:
 
@@ -86,11 +88,11 @@ Vertikal 9:16, HP ditopang (tripod/tumpukan buku), cahaya jendela di samping (hi
 - **Kalimat pengungkapan** bila ada unsur AI: "Video ini dibuat dengan bantuan AI." Letakkan di baris pertama/terakhir caption, bukan disembunyikan di antara hashtag.
 - Berikan 2 varian caption (santai dan singkat).
 
-## Label Konten AI (ringkasan, per 2026-09-29)
-Ringkasan berikut berasal dari sumber pihak ketiga yang dirangkum di riset Komunitech (`research/sources/video-ai-2026-09-29.md`); **aturan platform sering berubah**. Minta pengguna memeriksa halaman bantuan resmi platform sebelum unggah. Detail dan tautan ada di `references/label-ai.md`.
-- **TikTok:** wajib beri label bila video memuat wajah/suara sintetis yang realistis. Ada tombol "AI-generated content" di layar unggah. TikTok juga dapat membaca metadata C2PA dan melabeli otomatis.
-- **YouTube (Shorts):** centang pengungkapan "altered or synthetic content" untuk konten realistis yang bisa disangka nyata (orang, kejadian, tempat). Animasi jelas fiksi/efek produksi biasa umumnya tidak perlu.
-- **Instagram/Facebook (Meta):** label "AI info" bisa terpasang otomatis; gunakan opsi pengungkapan AI saat unggah bila tersedia.
+## Label Konten AI (ringkasan, dicek ke halaman resmi 2026-09-29)
+Ringkasan berikut dicocokkan dengan halaman resmi platform pada 2026-09-29 (rincian, tautan, dan bagian yang belum bisa diverifikasi ada di `references/label-ai.md`); **aturan platform sering berubah**. Tetap minta pengguna memeriksa halaman bantuan resmi sebelum unggah.
+- **TikTok:** beri label pada konten realistis yang dibuat/diubah AI (alat label di layar unggah, atau stiker/keterangan). TikTok juga melabeli otomatis lewat metadata C2PA dan efek AI bawaannya. Halaman bantuan TikTok tidak bisa dibaca otomatis; rinciannya dari newsroom resmi.
+- **YouTube (Shorts):** aktifkan pengaturan "AI use" di YouTube Studio untuk konten realistis yang bisa disangka nyata. Konten jelas fiksi/tidak realistis dan bantuan naskah/judul tidak perlu; musik buatan AI tercantum sebagai contoh yang perlu diungkap.
+- **Instagram/Facebook (Meta):** label "AI info" bisa terpasang otomatis lewat penanda C2PA/IPTC; untuk video/audio realistis buatan AI, pengungkapan mandiri diwajibkan. Nama opsi persisnya di aplikasi belum terverifikasi.
 - **Kebiasaan aman (semua platform):** tambahkan kalimat "dibuat dengan bantuan AI" di caption bila ada visual/suara buatan AI yang tampak nyata; jangan menghapus watermark/penanda AI dari alat; pakai musik/suara dari perpustakaan resmi platform; unggah manual.
 Checklist ringkas (cetak di bagian 6 output):
 - [ ] Ada wajah/suara/kejadian buatan AI yang tampak nyata? Jika ya, label platform dicentang.
@@ -112,6 +114,12 @@ Output (potongan): Asumsi: 30 dtk, jualan, rekam HP, santai. Hook rekomendasi: "
 - Produk diatur (obat, suplemen, kosmetik, makanan olahan, alkohol, rokok): jangan klaim khasiat; minta nomor izin edar (BPOM/PIRT/halal) hanya jika pengguna sudah memilikinya, dan jangan mengarang nomornya. Arahkan ke aturan platform untuk kategori terbatas.
 - Durasi > 60 dtk: jelaskan bahwa skill ini untuk 15-60 dtk; tawarkan memecah jadi seri.
 - Angka (harga, diskon, stok) hanya dari pengguna; jangan menebak. Hitung diskon/harga dengan aritmetika biasa dan bulatkan ke rupiah terdekat.
+- Produk tidak disebut sama sekali dan pengguna menjawab "lanjut": jangan mengarang produk. Buat naskah dengan penanda [NAMA PRODUK] dan [HARGA] untuk diisi pengguna, dan tulis itu di Asumsi.
+- Script memberi PERINGATAN (adegan tanpa kata/hanya emoji, `[jeda abc]`, `--wpm` di luar 80-220): sampaikan ke pengguna dan perbaiki naskahnya; `--wpm` di luar 40-400 ditolak.
 - Script gagal / Python tidak ada: hitung manual dengan rumus di Langkah 5 dan sebutkan bahwa itu perkiraan.
 - Perkiraan durasi ±10-15%; sarankan pengguna merekam sulih suara lalu mengukur ulang.
 - Info ini bukan nasihat hukum; aturan platform dan UU (mis. perlindungan data pribadi, hak cipta) bisa berubah.
+
+## Riwayat versi
+- **1.0.1** (2026-09-29): script memperingatkan adegan tanpa kata/hanya emoji dan `[jeda abc]` (bukan angka), memperingatkan `--wpm` di luar 80-220 dan menolak di luar 40-400, kolom tabel tidak melebur untuk angka besar, pesan "KEPENDEKAN" lebih ramah; Mode Ringkas untuk video 15 dtk; `references/label-ai.md` dicocokkan ke halaman resmi (TikTok newsroom, YouTube Help, Meta) per 2026-09-29. Uji regresi 17.
+- **1.0.0** (2026-09-29): rilis awal.

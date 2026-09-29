@@ -145,3 +145,10 @@ broadcast-wa belum mulus).
 Perbaikan N1–N3 dan K2-sebagian di v1.0.2 diverifikasi tuntas dengan kasus uji baru (bukan sekadar mengulang
 test milik pembuat), tanpa regresi pada 57 tes otomatis maupun angka pipeline. Sisa cacat kosmetik/rendah yang
 sudah diketahui tidak menghalangi rilis.
+
+## Verifikasi pengamanan (2026-09-29)
+Penguji independen, crm-wa 1.0.3.
+- `python3 tests/uji_regresi.py`: 61 tes OK.
+- Folder kosong (HOME sementara), 20 subcommand dijalankan: `init` tanpa `--ya` hanya pratinjau (menampilkan path db), `init --mulai-baru` tanpa `--ya` idem; perintah lain (ubah/catat/tunda/terkirim/lihat/draf/atur/tambah/daftar/rekap/hari-ini/impor/restore/dst.) gagal "Database CRM belum ada" (rc 1) atau salah argumen (rc 2). **0 file/folder dibuat** di semua kasus. `init --ya` baru membuat `crm.db`.
+- SKILL.md aturan 4 + Langkah A: tunjukkan path DB, tunggu "ya" di pesan berikutnya, dilarang pratinjau dan `--ya` dalam satu giliran.
+**Verdict: LULUS** (perlindungan di script terbukti; kepatuhan agent atas gerbang "ya" perlu dikonfirmasi di uji OpenClaw nyata).
