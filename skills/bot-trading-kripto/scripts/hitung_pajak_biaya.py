@@ -4,8 +4,14 @@
 Dasar: PMK 50/2025 (berlaku 1 Agustus 2025) -- PPh Pasal 22 final atas penjualan aset kripto:
   0,21% dari nilai transaksi lewat PAKD/PPMSE dalam negeri (dipungut otomatis oleh bursa),
   1%    lewat platform luar negeri (bila platform tidak ditunjuk DJP, penjual menyetor sendiri).
-Penyerahan aset kripto tidak dikenai PPN (Pasal 2 ayat (1) PMK 50/2025). Pembeli tidak dikenai PPh ini.
-Sumber: https://www.pajak.go.id/index.php/en/node/118105 & https://www.pajak.go.id/en/node/117774 (dibaca 2026-09-29).
+Pasangan RUPIAH: pembeli tidak dikenai PPh ini (nilai = uang yang dibayar pembeli, Pasal 12 ayat (5) huruf a).
+Pasangan KRIPTO-KRIPTO (mis. BTCUSDT, USDT = aset kripto) = tukar-menukar (swap): PPh atas nilai MASING-MASING
+aset yang diserahkan (Pasal 11 ayat (2) huruf b, Pasal 12 ayat (5) huruf b) -> sisi BELI juga kena;
+rekap di bawah menjumlahkan kolom pajak_pph dari SEMUA baris (beli & jual).
+Penyerahan aset kripto tidak dikenai PPN (Pasal 2 ayat (1)); jasa platform/fee dikenai PPN (Pasal 2 ayat (2)
+huruf a) yang dipungut bursa dan sudah termasuk dalam angka fee dari bursa.
+Sumber: teks resmi https://jdih.kemenkeu.go.id/api/download/66a7633b-9e1b-4a54-9046-5320aa96c7e1/2025pmkeuangan050.pdf
+& https://www.pajak.go.id/index.php/en/node/118105 (dibaca 2026-09-29).
 Pembulatan: PPh dibulatkan ke BAWAH ke rupiah; fee ke rupiah terdekat. BELUM dicocokkan dengan Coretax.
 
   python3 hitung_pajak_biaya.py --nilai-jual 15000000 --pajak domestik --fee-persen 0.2
@@ -20,7 +26,8 @@ from collections import OrderedDict
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
 
 TARIF = {"domestik": Decimal("0.0021"), "luar_negeri": Decimal("0.01")}
-CATATAN = ("Dasar: PMK 50/2025 (berlaku 1 Agustus 2025), dicek 2026-09-29 di pajak.go.id. Pembulatan belum "
+CATATAN = ("Dasar: PMK 50/2025 (berlaku 1 Agustus 2025), dicek 2026-09-29 di teks resmi JDIH Kemenkeu. Pasangan "
+           "kripto-kripto (swap): PPh juga di sisi beli. Pembulatan belum "
            "dicocokkan dengan Coretax. Ini alat bantu hitung, bukan nasihat pajak -- konfirmasi ke konsultan pajak/DJP.")
 
 
@@ -56,14 +63,21 @@ def rekap(path, kurs):
                 if k is None:
                     raise ValueError("pasangan non-IDR butuh --kurs-idr")
                 r = per_bulan.setdefault(bulan, {"jumlah_jual": 0, "nilai_jual_idr": Decimal(0),
-                                                 "pph_idr": Decimal(0), "fee_idr": Decimal(0), "nilai_beli_idr": Decimal(0)})
-                r["fee_idr"] += dec(b["fee"], "fee") * k
+                                                 "pph_idr": Decimal(0), "pph_sisi_beli_idr": Decimal(0),
+                                                 "fee_idr": Decimal(0), "nilai_beli_idr": Decimal(0)})
+                fee = dec(b["fee"], "fee") * k
+                bruto = dec(b["bruto"], "bruto") * k
+                pph = dec(b.get("pajak_pph") or "0", "pajak_pph") * k
+                if b["sisi"] not in ("jual", "beli"):
+                    raise ValueError(f"sisi '{b['sisi']}' tidak dikenal")
+                r["fee_idr"] += fee
+                r["pph_idr"] += pph
                 if b["sisi"] == "jual":
                     r["jumlah_jual"] += 1
-                    r["nilai_jual_idr"] += dec(b["bruto"], "bruto") * k
-                    r["pph_idr"] += dec(b["pajak_pph"] or "0", "pajak_pph") * k
+                    r["nilai_jual_idr"] += bruto
                 else:
-                    r["nilai_beli_idr"] += dec(b["bruto"], "bruto") * k
+                    r["nilai_beli_idr"] += bruto
+                    r["pph_sisi_beli_idr"] += pph
             except (KeyError, ValueError) as e:
                 rusak.append({"baris": no, "alasan": str(e)})
     hasil = {m: {k: (rp(v) if isinstance(v, Decimal) else v) for k, v in r.items()} for m, r in per_bulan.items()}

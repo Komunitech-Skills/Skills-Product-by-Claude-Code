@@ -315,17 +315,17 @@ def slug_tag(s):
 
 
 # ---------------------------------------------------------------- pengambilan data
-def semua_pos(k, view="all", statuses=None, tags=None, query=None, limit="all"):
-    q = {"view": view, "limit": limit}
-    if statuses:
-        q["statuses"] = ",".join(statuses)
-    if tags:
-        q["tags"] = ",".join(tags)
+def semua_pos(k, statuses=None, query=None, limit="all"):
+    """Ambil pos. Filter status dilakukan DI SINI (sisi klien): pada uji Fider v0.38.0, view=all
+    mengabaikan parameter statuses, dan view lain diam-diam membatasi ke open/planned/started."""
+    q = {"view": "all", "limit": limit}
     if query:
         q["query"] = query
     hasil = k.minta("GET", "/api/v1/posts", query=q)
     if not isinstance(hasil, list):
-        raise Gagal("Bentuk jawaban daftar pos tidak dikenali (versi Fider berbeda?).", K_SERVER)
+        raise Gagal("Bentuk jawaban daftar pos tidak dikenal (versi Fider berbeda?).", K_SERVER)
+    if statuses:
+        hasil = [p for p in hasil if p.get("status") in statuses]
     return hasil
 
 
@@ -365,7 +365,7 @@ def cmd_cek(k, args):
     except Gagal as e:
         if e.kode == K_IZIN:
             role = "Collaborator (bukan Administrator: tidak bisa membuat tag baru)"
-    total = len(semua_pos(k, "all"))
+    total = len(semua_pos(k))
     teks = (f"OK: Fider terhubung di {k.url}\n- Kunci API   : valid (tidak ditampilkan)\n- Peran akun  : {role}\n"
             f"- Jumlah pos  : {angka(total)} (tidak termasuk duplikat/dihapus)\n- Jumlah tag  : {len(t)}")
     cetak({"ok": True, "url": k.url, "peran": role, "pos": total, "tag": len(t)}, args, teks)
@@ -381,11 +381,16 @@ def cmd_daftar(k, args):
             if not baku:
                 raise Gagal(f"Status {s!r} tidak dikenal. Pilihan: terbuka, rencana, dikerjakan, selesai, ditolak.", K_INPUT)
             st.append(baku)
-    view = {"suara": "most-wanted", "terbaru": "recent", "diskusi": "most-discussed"}[args.urut]
-    pos = semua_pos(k, view, st, [slug_tag(t) for t in args.tag.split(",")] if args.tag else None,
-                    limit="all")
+    pos = semua_pos(k, st)
+    if args.tag:
+        want = {slug_tag(t) for t in args.tag.split(",")}
+        pos = [p for p in pos if want & set(p.get("tags") or [])]
     if args.urut == "suara":
         pos.sort(key=lambda p: (-p.get("votesCount", 0), p["number"]))
+    elif args.urut == "diskusi":
+        pos.sort(key=lambda p: (-p.get("commentsCount", 0), p["number"]))
+    else:
+        pos.sort(key=lambda p: -p["number"])
     pos = pos[: args.batas]
     if not pos:
         cetak([], args, "Tidak ada pos yang cocok.")
@@ -398,7 +403,7 @@ def cmd_cari(k, args):
     kata = " ".join(args.kata).strip()
     if not kata:
         raise Gagal("Tulis kata yang dicari: cari \"QRIS\"", K_INPUT)
-    pos = semua_pos(k, "all", query=kata, limit="30")
+    pos = semua_pos(k, query=kata, limit="30")
     if not pos:
         cetak([], args, f"Tidak ada pos yang mengandung \"{kata}\".")
         return K_OK
@@ -441,10 +446,11 @@ def cmd_ringkasan(k, args):
     """Ringkasan mingguan: pos teratas berdasarkan suara + suara baru dalam N hari (butuh peran Collaborator)."""
     sekarang = dt.datetime.now(dt.timezone.utc)
     awal = sekarang - dt.timedelta(days=args.hari)
-    aktif = semua_pos(k, "all", ["open", "planned", "started"])
-    selesai = semua_pos(k, "all", ["completed"])
+    semua = semua_pos(k)
+    aktif = [p for p in semua if p.get("status") in ("open", "planned", "started")]
+    selesai = [p for p in semua if p.get("status") == "completed"]
     aktif.sort(key=lambda p: (-p.get("votesCount", 0), p["number"]))
-    baru = [p for p in aktif + selesai + semua_pos(k, "all", ["declined"])
+    baru = [p for p in sorted(semua, key=lambda p: -p["number"])
             if (waktu(p.get("createdAt")) or awal) >= awal]
     selesai_baru = [p for p in selesai if (waktu((p.get("response") or {}).get("respondedAt")) or awal - dt.timedelta(1)) >= awal]
     top = aktif[: args.top]
@@ -619,7 +625,7 @@ def cmd_impor(k, args):
     butir = baca_catatan(args.berkas)
     if len(butir) > BATAS_IMPOR:
         raise Gagal(f"Terlalu banyak butir ({len(butir)}); maksimum {BATAS_IMPOR} per impor. Pecah berkasnya.", K_INPUT)
-    ada = semua_pos(k, "all")
+    ada = semua_pos(k)
     rencana = siapkan_impor(butir, args.sumber, ada, args.tetap)
     tag_ada = {t["slug"] for t in daftar_tag(k)}
     tag_hilang = sorted({slug_tag(t) for r in rencana for t in r["tag"]} - tag_ada)
@@ -711,6 +717,9 @@ def cmd_gabung(k, args):
     if dup == asli:
         raise Gagal("Pos tidak bisa digabung ke dirinya sendiri.", K_INPUT)
     pd, pa = satu_pos(k, dup), satu_pos(k, asli)
+    if pd.get("status") == "duplicate":
+        cetak({"sudah_duplikat": True}, args, f"Pos #{dup} sudah berstatus duplikat; tidak ada yang diubah.")
+        return K_OK
     if pa.get("status") == "duplicate":
         raise Gagal(f"Pos #{asli} sendiri sudah berstatus duplikat. Pilih pos induk yang lain.", K_INPUT)
     ringkas = (f"Akan menandai pos #{dup} \"{pd['title']}\" ({angka(pd.get('votesCount', 0))} suara) sebagai DUPLIKAT dari "

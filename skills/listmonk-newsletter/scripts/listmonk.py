@@ -828,7 +828,10 @@ def cmd_ubah_status(args, status, kata):
     if not args.ya:
         cetak(f"Kampanye #{k['id']} '{k['name']}' status {k['status']} akan {kata}.")
         raise Galat("Ulangi dengan --ya setelah pengguna setuju.", 6)
-XX
+    if k["status"] == "scheduled" and status == "cancelled":
+        status = "draft"  # listmonk: jadwal dibatalkan dengan mengembalikan ke draf
+        kata = "dikembalikan ke draf (jadwal dibatalkan)"
+    api(cfg, "PUT", f"/campaigns/{k['id']}/status", data={"status": status})
     cetak(f"Kampanye #{k['id']} {kata}.")
 
 
