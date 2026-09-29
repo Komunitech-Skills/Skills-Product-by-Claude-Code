@@ -154,7 +154,9 @@ python3 scripts/skor_kpi.py ekspor-db --rencana KPI/rencana-kpi.csv --realisasi 
   + `--anonim-divisi` (nama jadi kode P01../D01.., kunci di `kunci-kode-RAHASIA.csv`, simpan
   terpisah; kode stabil antar ekspor). Mode anonim menerapkan **k-anonimitas (default 3,
   `--k-anonim`)**: divisi < 3 orang digabung jadi "Lainnya"; baris per orang hanya diekspor bila
-  ≥ 3 orang di kelompok itu punya daftar KPI yang sama; target/ambang/realisasi per orang
+  ≥ 3 orang di kelompok itu punya daftar KPI yang sama, dan **semua** anggota kelompok lolos (satu
+  tersembunyi → seluruh kelompok tanpa baris per orang, agar tidak bisa dihitung balik dari skor
+  divisi); target/ambang/realisasi per orang
   dikosongkan. Pada tim kecil sering **tidak ada baris per orang** sama sekali. Sampaikan ini
   apa adanya (catatan 🔒 di output). `--k-anonim 1` = hanya kode, mudah ditebak; jangan untuk layar
   bersama.

@@ -46,7 +46,7 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-VERSI = "1.1.1"
+VERSI = "1.1.2"
 D0 = Decimal(0)
 D100 = Decimal(100)
 
@@ -1956,10 +1956,21 @@ def lindungi_k_anonim(rencana, hitung, k, a):
     for n, pr in profil.items():
         kelompok.setdefault((label[div_orang[n]], frozenset(pr)), []).append(n)
     terbit = {n for anggota in kelompok.values() if len(anggota) >= k and total_orang >= k for n in anggota}
+    # v1.1.2 supresi komplementer: skor kelompok (divisi/"Lainnya") + baris orang yang terbit tidak boleh bisa
+    # dipakai menghitung balik orang yang disembunyikan (4 x skor divisi - jumlah 3 orang = orang ke-4).
+    # Jadi per kelompok: SEMUA anggota terbit, atau TIDAK ADA baris per orang sama sekali.
+    anggota_label = {}
+    for n_, d_ in div_orang.items():
+        anggota_label.setdefault(label[d_], set()).add(n_)
+    for lb, anggota in anggota_label.items():
+        if not anggota <= terbit:
+            terbit -= anggota
     disembunyikan = len(profil) - len(terbit)
     if disembunyikan:
-        catatan.append("%d dari %d orang tidak diekspor per orang (profil KPI-nya dimiliki kurang dari %d orang); "
-                       "tetap dihitung di skor divisi & perusahaan." % (disembunyikan, len(profil), k))
+        catatan.append("%d dari %d orang tidak diekspor per orang (profil KPI-nya dimiliki kurang dari %d orang, "
+                       "atau ada rekan sekelompok yang disembunyikan sehingga seluruh kelompok ikut disembunyikan agar "
+                       "tidak bisa dihitung balik dari skor divisi); tetap dihitung di skor divisi & perusahaan."
+                       % (disembunyikan, len(profil), k))
     catatan.append("Target, ambang, dan realisasi per orang dikosongkan di mode anonim.")
     # rencana: KPI divisi dari divisi yang tidak digabung + satu baris per profil (tanpa target)
     renc, sudah = [], set()

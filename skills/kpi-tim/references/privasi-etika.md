@@ -30,8 +30,9 @@ Pelindungan Data Pribadi). Pegangan skill ini:
 - Mode anonim memakai **k-anonimitas** (`--k-anonim`, default 3): divisi dengan kurang dari 3 orang
   digabung menjadi "Lainnya" (skornya rata-rata divisi anggotanya, sehingga skor pribadi tidak bisa
   dihitung balik dari skor perusahaan); baris per orang hanya diekspor untuk orang yang daftar
-  KPI-nya sama dengan minimal 3 orang di kelompoknya; target, ambang, dan realisasi per orang
-  dikosongkan. Tujuannya: nama KPI ("Akurasi stok") + jumlah orang tidak lagi menunjuk satu orang.
+  KPI-nya sama dengan minimal 3 orang di kelompoknya; bila satu anggota kelompok disembunyikan,
+  seluruh kelompok tanpa baris per orang (supresi komplementer: mencegah "4 × skor divisi − jumlah 3
+  orang yang tampil = orang ke-4"); target, ambang, dan realisasi per orang dikosongkan. Tujuannya: nama KPI ("Akurasi stok") + jumlah orang tidak lagi menunjuk satu orang.
 - Batasnya: rekan yang tahu kinerja seseorang (atau yang berkolusi membuka skornya) masih bisa
   menduga. Untuk tim sangat kecil, laporan `--tanpa-nama` (perusahaan & divisi) lebih aman.
   `--k-anonim 1` mematikan perlindungan ini (hanya kode) dan tidak untuk layar bersama.

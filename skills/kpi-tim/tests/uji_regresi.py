@@ -883,10 +883,55 @@ class UjiKAnonim(Dasar):
                                    "(target IS NOT NULL OR ambang IS NOT NULL OR realisasi IS NOT NULL)").fetchone()[0], 0)
         self.assertEqual(c.execute("SELECT COUNT(*) FROM rencana WHERE orang IS NOT NULL").fetchone()[0], 0)
 
+    def assert_tanpa_supresi_parsial(self, c):
+        """Cek umum: untuk setiap divisi/kelompok, baris per orang = 0 atau = jumlah anggota (tidak sebagian)."""
+        for (p, dv, n) in c.execute("SELECT periode, divisi, jumlah_orang FROM skor_divisi").fetchall():
+            tampil = c.execute("SELECT COUNT(*) FROM skor_orang WHERE periode=? AND divisi=?", (p, dv)).fetchone()[0]
+            self.assertIn(tampil, (0, n), (p, dv, tampil, n))
+
+    def test_serangan_selisih_4_orang_3_tampil_gagal(self):
+        # Divisi Sales 4 orang: 3 berprofil sama (Ana, Beni, Cici), Deni punya KPI tambahan (profil unik).
+        # v1.1.1: 3 baris tampil + skor divisi -> Deni = 4 x divisi - (Ana + Beni + Cici). v1.1.2 harus menolak.
+        rencana = ("divisi,orang,kpi,satuan,arah,bobot,target\n"
+                   "Sales,Ana,Omzet,Rp,naik,100,100\nSales,Beni,Omzet,Rp,naik,100,100\n"
+                   "Sales,Cici,Omzet,Rp,naik,100,100\n"
+                   "Sales,Deni,Omzet,Rp,naik,60,100\nSales,Deni,Kunjungan toko,toko,naik,40,50\n"
+                   "Gudang,Eko,Akurasi,%,naik,100,99\nGudang,Fani,Akurasi,%,naik,100,99\nGudang,Gita,Akurasi,%,naik,100,99\n")
+        real = ("periode,orang,kpi,realisasi\n2026-09,Ana,Omzet,90\n2026-09,Beni,Omzet,110\n2026-09,Cici,Omzet,100\n"
+                "2026-09,Deni,Omzet,80\n2026-09,Deni,Kunjungan toko,46\n"
+                "2026-09,Eko,Akurasi,99\n2026-09,Fani,Akurasi,97\n2026-09,Gita,Akurasi,98\n")
+        p, r = self.file("pa.csv", rencana), self.file("ra.csv", real)
+        f = os.path.join(self.dir, "serang")
+        kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", f, "--anonim", "--anonim-divisi")
+        self.assertEqual(kode, 0, out)
+        c = sqlite3.connect(os.path.join(f, "kpi.db"))
+        _, s = jalan("skor", "--rencana", p, "--realisasi", r, "--periode", "2026-09")
+        deni = D(next(o for o in s["orang"] if o["nama"] == "Deni")["skor"])   # .6x80 + .4x92 = 84,8
+        self.assertEqual(r1(deni), D("84.8"))
+        # divisi 4 orang: tidak ada satu pun baris per orang (bukan 3 dari 4)
+        (kode_sales, n), = c.execute("SELECT divisi, jumlah_orang FROM skor_divisi WHERE jumlah_orang=4").fetchall()
+        self.assertEqual(c.execute("SELECT COUNT(*) FROM skor_orang WHERE divisi=?", (kode_sales,)).fetchone()[0], 0)
+        # serangan: 4 x skor divisi - jumlah skor orang yang tampil di divisi itu
+        (sd,), = c.execute("SELECT skor FROM skor_divisi WHERE divisi=?", (kode_sales,)).fetchall()
+        tampil = [x for (x,) in c.execute("SELECT skor FROM skor_orang WHERE divisi=?", (kode_sales,))]
+        self.assertEqual(len(tampil), 0)                           # tidak ada bahan untuk mengurangi
+        tebakan_selisih = 4 * sd - sum(tampil)                        # = 4 x divisi: jumlah 4 orang, bukan Deni
+        self.assertNotAlmostEqual(tebakan_selisih, float(deni), delta=1.0)
+        semua_nilai = {x for (x,) in c.execute("SELECT skor FROM skor_orang")} | \
+            {x for (x,) in c.execute("SELECT skor FROM skor_divisi")} | \
+            {x for (x,) in c.execute("SELECT skor FROM skor_perusahaan")}
+        self.assertNotIn(float(r1(deni)), semua_nilai)
+        # divisi lain (3 orang, profil sama semua) tetap tampil lengkap
+        self.assertEqual(c.execute("SELECT COUNT(*) FROM skor_orang").fetchone()[0], 3)
+        self.assert_tanpa_supresi_parsial(c)
+        self.assert_k_anonim(c, 3)
+        self.assertNotIn(b"Kunjungan toko", _bytes(os.path.join(f, "kpi.db")))
+
     def test_divisi_satu_orang_tidak_bisa_ditebak_k3(self):
         out, f, c = self.ekspor()
         self.assertEqual(out["k_anonim"], 3)
         self.assert_k_anonim(c, 3)
+        self.assert_tanpa_supresi_parsial(c)
         # Gudang (1 orang) + Kasir (2 orang) digabung jadi satu kelompok 3 orang; Online 3 orang tetap
         divisi = {r[0]: r for r in c.execute("SELECT divisi, jumlah_orang, skor FROM skor_divisi")}
         self.assertEqual(sorted(r[1] for r in divisi.values()), [3, 3])
@@ -915,8 +960,10 @@ class UjiKAnonim(Dasar):
     def test_k_bisa_diatur_dan_k1_memperingatkan(self):
         out, f, c = self.ekspor("--k-anonim", "2", nama="k2")
         self.assert_k_anonim(c, 2)
-        # k=2: Kasir (2, profil sama) boleh tampil per orang; Bayu tetap tidak (profil unik)
-        self.assertEqual(c.execute("SELECT COUNT(DISTINCT orang) FROM skor_orang").fetchone()[0], 5)
+        # k=2: Kasir + Gudang = "Lainnya". Bayu (profil unik) tersembunyi, maka Wulan & Rudi IKUT disembunyikan
+        # (v1.1.2): kalau tidak, skor Gudang = 2 x Lainnya - skor Kasir -> skor Bayu terbaca. Hanya Online (3) tampil.
+        self.assertEqual(c.execute("SELECT COUNT(DISTINCT orang) FROM skor_orang").fetchone()[0], 3)
+        self.assert_tanpa_supresi_parsial(c)
         self.assertNotIn(b"Akurasi stok", _bytes(os.path.join(f, "kpi.db")))
         out, f, c = self.ekspor("--k-anonim", "1", nama="k1")
         self.assertIn(b"Akurasi stok", _bytes(os.path.join(f, "kpi.db")))
@@ -932,6 +979,7 @@ class UjiKAnonim(Dasar):
                           os.path.join(self.dir, "dist"), "--anonim", "--anonim-divisi")
         c = sqlite3.connect(os.path.join(self.dir, "dist", "kpi.db"))
         self.assert_k_anonim(c, 3)
+        self.assert_tanpa_supresi_parsial(c)
         # Keuangan & Admin (2 orang) digabung; Lainnya 2026-09 = (Gudang 91,7279 + Keuangan 93,0526)/2 = 92,39
         skor = sorted(r[0] for r in c.execute("SELECT skor FROM skor_divisi WHERE periode='2026-09'"))
         self.assertEqual(skor, [92.4, 96.1])

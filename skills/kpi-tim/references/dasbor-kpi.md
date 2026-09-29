@@ -11,7 +11,8 @@ python3 scripts/skor_kpi.py ekspor-db --rencana KPI/rencana-kpi.csv --realisasi 
 ```
 Mode anonim (untuk layar bersama/Grist): nama → kode, divisi < `--k-anonim` orang (default 3)
 digabung jadi "Lainnya", baris per orang hanya untuk profil KPI yang dimiliki ≥ 3 orang, target/
-ambang/realisasi per orang kosong. Tim kecil bisa tidak punya baris per orang; itu disengaja
+ambang/realisasi per orang kosong; satu divisi/kelompok menampilkan baris per orang untuk semua
+anggotanya atau tidak sama sekali (tidak bisa dihitung balik). Tim kecil bisa tidak punya baris per orang; itu disengaja
 (lihat `privasi-etika.md`).
 Opsi aturan skor sama seperti `skor`: `--cap`, `--hijau`, `--kuning`, `--data-kosong`, `--min-bobot`,
 `--bobot-divisi`, `--duplikat`, `--periode-default`, `--izinkan-minus`.
