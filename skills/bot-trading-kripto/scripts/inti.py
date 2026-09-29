@@ -688,18 +688,23 @@ def cek_risiko_awal(cfg, state, harga, sekarang):
     return None, None
 
 
-def cek_niat(cfg, state, niat, harga, jumlah_order_terbuka, paparan_bursa=None):
+def cek_niat(cfg, state, niat, harga, jumlah_order_terbuka, paparan_bursa=None, buku_global=None,
+             beli_terbuka=None):
     """Periksa satu niat terhadap batas risiko. Kembalikan (status, pesan):
     'ok' | 'lewati' (terlalu kecil / kas kurang, tidak berbahaya) | 'berhenti' (batas dilanggar).
     paparan_bursa (live): nilai koin milik bot menurut SALDO BURSA (saldo - saldo awal) x harga.
-    Modal terpakai = yang TERBESAR dari buku bot dan saldo bursa."""
+    buku_global (live): modal terpakai GABUNGAN semua bot pada akun+pasangan ini (buku_global.py).
+    beli_terbuka (live): nilai kutipan yang masih tertahan di order BELI terbuka di bursa.
+    Modal terpakai = yang TERBESAR dari buku folder, buku global, dan saldo bursa + order beli terbuka."""
     ds, kut = cfg["_d"], cfg["kutipan"]
     if niat["sisi"] == "beli" and paparan_bursa is not None:
-        terpakai = max(D(state["biaya_perolehan"]), paparan_bursa)
+        bg, bt = buku_global or NOL, beli_terbuka or NOL
+        terpakai = max(D(state["biaya_perolehan"]), bg, paparan_bursa + bt)
         if terpakai + niat["nilai_kutipan"] > ds["modal_maks_total"]:
             return "berhenti", (f"BATAS MODAL TOTAL (live, dicocokkan dengan saldo bursa): modal terpakai "
-                                f"{rp(terpakai, kut)} (buku bot {rp(D(state['biaya_perolehan']), kut)}, saldo bursa "
-                                f"{rp(paparan_bursa, kut)}) + order {rp(niat['nilai_kutipan'], kut)} > "
+                                f"{rp(terpakai, kut)} (buku bot {rp(D(state['biaya_perolehan']), kut)}, buku global akun "
+                                f"{rp(bg, kut)}, saldo bursa {rp(paparan_bursa, kut)}, order beli terbuka "
+                                f"{rp(bt, kut)}) + order {rp(niat['nilai_kutipan'], kut)} > "
                                 f"{rp(ds['modal_maks_total'], kut)}. Bot berhenti membeli.")
     if jumlah_order_terbuka >= ds["order_terbuka_maks"]:
         return "berhenti", (f"BATAS ORDER TERBUKA: ada {jumlah_order_terbuka} order terbuka di bursa "

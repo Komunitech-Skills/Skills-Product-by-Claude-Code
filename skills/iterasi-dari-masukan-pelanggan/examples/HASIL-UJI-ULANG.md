@@ -80,3 +80,19 @@ umum Google Form (kolom NPS tidak dikenali, tanggal format AS) dan pada "Unicode
 
 ## 7. Kolom katalog yang disarankan
 `skor_kualitas` = 7, `status` = `lulus`, `platform_teruji` = `claude-code (simulasi agent)`. Uji platform asli (Tahap 6 no. 8-10) belum dilakukan.
+
+
+## Catatan revisi 1.0.2 (pembuat, 2026-09-29)
+Patch atas butir "Perbaikan disarankan" di atas. Diuji dengan baris & berkas buatan sendiri (set berlabel penguji TIDAK dibaca). Belum diuji ulang oleh penguji independen; status tetap `lulus`, skor 7 (tidak dinaikkan sendiri).
+
+| Celah | Perbaikan | Tes regresi |
+|---|---|---|
+| Kolom NPS Google Form ("...merekomendasikan...?", "Kepuasan") diabaikan diam-diam | Judul samar dikenali bila ISINYA angka; kolom teks bernama "Kepuasan" tidak salah dibaca sebagai nilai; kolom angka 0-10 berjudul tak dikenal dipakai bila jelas 0-10 (ada 0/ > 5) + PERINGATAN; kolom angka lain yang tidak dipakai selalu diberi PERINGATAN | `test_kolom_nps_*`, `test_judul_samar_*`, `test_kolom_angka_*` |
+| Tanggal format AS salah bulan tanpa peringatan | Urutan hari/bulan vs bulan/hari dideteksi per kolom/chat; ambigu, campuran, AM/PM, tak terbaca, bulan di masa depan -> PERINGATAN; opsi `--urutan-tanggal` | `test_tanggal_*`, `test_bulan_masa_depan_*` |
+| `.txt` UTF-16 bertab (Excel "Unicode Text") dibaca sebagai tempelan | Dibaca sebagai tabel; tab tidak seragam -> PERINGATAN | `test_unicode_text_utf16_tab`, `test_txt_tab_tak_seragam_*` |
+| "pas dipake..." pujian; "semoga gak telat" pujian; "ga bikin jerawatan" keluhan | "pas dipakai" dihapus dari frasa pujian; "pas datang udah dingin" keluhan; kalimat harapan (semoga/jangan/mohon + negasi) = saran; "bikin/membuat/menyebabkan" ikut perantara negasi | `test_pas_dipakai_*`, `test_harapan_*` |
+| "dikirim2" -> `[nomor]` | Kata huruf kecil + "2" bukan kode | `test_kata_ulang_*` |
+| Nama belakang bocor setelah "a.n." | Kata sesudah a.n./atas nama disamarkan (huruf besar, `[nama]`, atau kata bukan-umum, maks 3-4 kata) | `test_nama_belakang_setelah_an_*` |
+| Tema lemah | Ketepatan pesanan: "pesan X dikirim item/yang ...", "3x pesen 3x salah", "salah terus", "tidak dikasih/dimasukkan", "datang 1"; pengiriman: paket, estimasi, tiba, pengantaran, lacak, dll., dan bukan pengiriman bila hanya salah-kirim/jumlah kurang; stok: "kapan restock/ready?" = keluhan, "sering kosong", "tidak kebagian", OOS | `test_ketepatan_*`, `test_pengiriman`, `test_stok` |
+
+Keterbatasan tersisa (sengaja tidak ditangani, sudah ada di Batasan/peringatan): sindiran, dua tanda kutip nyasar, pertanyaan stok "ready ga kak?" (tetap netral), "paket dititip satpam padahal ga minta" (tema pengiriman netral). Uji: `python3 scripts/uji_olah_masukan.py` -> 85 tes OK; `validate.py --skill iterasi-dari-masukan-pelanggan` lulus; `uji_openclaw.sh` 111/111. Berkas bantu: scratchpad `revisi-iterasi2/`.

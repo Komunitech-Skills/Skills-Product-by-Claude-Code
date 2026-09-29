@@ -1220,6 +1220,212 @@ class LB4DisclaimerBacktest(unittest.TestCase):
 
 
 
+# =============================================================================== revisi 1.0.4
+import subprocess  # noqa: E402
+import buku_global  # noqa: E402
+
+SKRIP_BOT = os.path.join(SKILL, "scripts", "jalankan_bot.py")
+
+
+class N1R1R2BukuGlobal(AlurMock):
+    """N1-R1: salinan folder bot yang jalan BERSAMAAN (dulu 300 > 200 USDT). N1-R2: state.json dihapus ->
+    paper ulang -> frasa baru (dulu 400 > 200 USDT). Ditutup oleh kunci akun + buku live global di
+    ~/.komunitech/bot-trading-kripto/akun/ + rekonsiliasi saldo & order terbuka sebelum SETIAP beli."""
+
+    BATAS = N1BukuLiveDanKonfirmasi.BATAS
+    cfg_n1 = N1BukuLiveDanKonfirmasi.cfg_n1
+    konfirmasi = N1BukuLiveDanKonfirmasi.konfirmasi
+    tulis_state = N1BukuLiveDanKonfirmasi.tulis_state
+    majukan_dca = N1BukuLiveDanKonfirmasi.majukan_dca
+    mulai_live = N1BukuLiveDanKonfirmasi.mulai_live
+    beli = N1BukuLiveDanKonfirmasi.beli
+    live = N1BukuLiveDanKonfirmasi.live
+    lanjutkan = N1BukuLiveDanKonfirmasi.lanjutkan
+
+    def setUp(self):
+        super().setUp()
+        self.k.nilai_order_terbuka, self.k.jeda_order = D("50"), 0.0
+
+    def tearDown(self):
+        self.k.jeda_order = 0.0
+        super().tearDown()
+
+    def dibayar(self):
+        return sum(D(o["cummulativeQuoteQty"]) * D("1.01") for o in self.beli())   # + PPh 1% sisi beli
+
+    def sidik(self):
+        return buku_global.sidik_akun("binance", mock_bursa.BINANCE_KEY)
+
+    def test_r1_salinan_folder_berjalan_bersamaan(self):
+        self.mulai_live()
+        kode, out = self.live()
+        self.assertEqual(kode, 2, out)
+        self.majukan_dca()
+        # 5 salinan folder bot (state + konfirmasi ikut tersalin) + aslinya dijalankan SERENTAK
+        folder = [self.bot]
+        for i in range(5):
+            f = os.path.join(self.tmp, f"bot-salinan-{i}")
+            shutil.copytree(self.bot, f)
+            folder.append(f)
+        self.k.jeda_order = 0.3          # order lambat terisi: tanpa kunci akun, semua proses membaca saldo lama
+        proses = [subprocess.Popen([sys.executable, SKRIP_BOT, "--konfigurasi", os.path.join(f, "konfigurasi.json"),
+                                    "--url-uji", self.url, "--izinkan-live"],
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) for f in folder]
+        keluaran = [p.communicate(timeout=120)[0] for p in proses]
+        semua = "\n".join(keluaran)
+        self.assertNotIn("Traceback", semua)
+        self.assertEqual(len(self.beli()), 2, semua)          # 1 + tepat 1 lagi, bukan 3 (300 USDT)
+        self.assertLessEqual(self.dibayar(), D("200"))
+        self.assertIn("BATAS MODAL TOTAL", semua)
+        self.assertIn("buku global akun", semua)
+        with open(buku_global.path_buku(self.sidik())) as f:
+            e = json.load(f)["pasangan"]["BTCUSDT"]
+        self.assertLessEqual(D(e["biaya_perolehan"]), D("200"))
+        self.assertEqual(e["jumlah_transaksi"], 2)
+
+    def test_r1_kunci_akun_eksklusif_lintas_proses(self):
+        sidik = self.sidik()
+        kode_anak = ("import sys; sys.path.insert(0, %r); import buku_global as b\n"
+                     "try:\n    b.KunciAkun(%r, tunggu=0.5).ambil(); print('DAPAT')\n"
+                     "except b.AkunSibuk as e:\n    print('SIBUK', e)") % (os.path.join(SKILL, "scripts"), sidik)
+        with buku_global.KunciAkun(sidik):
+            out = subprocess.run([sys.executable, "-c", kode_anak], capture_output=True, text=True, timeout=60).stdout
+            self.assertIn("SIBUK", out)
+        out = subprocess.run([sys.executable, "-c", kode_anak], capture_output=True, text=True, timeout=60).stdout
+        self.assertIn("DAPAT", out)                          # kunci OS lepas -> proses lain boleh
+
+    def test_r2_hapus_state_paper_ulang_frasa_baru(self):
+        self.mulai_live()
+        self.assertEqual(self.live()[0], 2)
+        self.majukan_dca()
+        self.assertEqual(self.live()[0], 2)                  # 2 beli ~ 200 USDT
+        # member menghapus state.json, membangun ulang bukti paper 24 jam, lalu mengetik frasa BARU
+        os.remove(os.path.join(self.bot, "state.json"))
+        os.remove(os.path.join(self.bot, "KONFIRMASI-LIVE.json"))
+        self.tulis_cfg(self.cfg_n1("paper"))
+        self.tick("--url-uji", self.url)
+        self.suntik_bukti_paper()
+        self.tulis_cfg(self.cfg_n1("live"))
+        self.konfirmasi()
+        kode, out = self.live()
+        self.assertEqual(kode, 3, out)
+        self.assertIn("BATAS MODAL TOTAL", out); self.assertIn("buku global akun", out)
+        self.assertEqual(len(self.beli()), 2)                 # dulu 4 beli ~ 400 USDT
+        self.assertLessEqual(self.dibayar(), D("200"))
+        # patokan saldo TIDAK dibuat ulang dari saldo sekarang (koin bot lama tetap dihitung milik bot)
+        self.assertEqual(self.state()["saldo_koin_awal_bursa"], "0")
+
+    def test_r2_folder_baru_total_dan_buku_global_tanpa_rahasia(self):
+        self.mulai_live()
+        self.assertEqual(self.live()[0], 2)
+        p = buku_global.path_buku(self.sidik())
+        self.assertTrue(p.startswith(os.path.join(HOME_UJI, ".komunitech", "bot-trading-kripto", "akun")))
+        with open(p) as f:
+            isi = f.read()
+        self.assertNotIn(mock_bursa.BINANCE_KEY, isi); self.assertNotIn(mock_bursa.BINANCE_SECRET, isi)
+        self.assertNotIn(mock_bursa.BINANCE_SECRET[:16], os.path.basename(p))
+        self.assertNotEqual(self.sidik(), buku_global.sidik_akun("binance", mock_bursa.BINANCE_SECRET))
+        # folder bot dibuang total, bot baru dibangun di folder lain dengan aturan sama -> tetap 1 jatah modal
+        shutil.rmtree(self.bot)
+        self.bot = os.path.join(self.tmp, "bot-baru"); os.makedirs(self.bot)
+        self.cfgp = os.path.join(self.bot, "konfigurasi.json")
+        self.mulai_live()
+        self.assertEqual(self.live()[0], 2)                  # 100 + 100 = 200 masih boleh
+        self.majukan_dca()
+        kode, out = self.live()
+        self.assertEqual(kode, 3, out); self.assertIn("BATAS MODAL TOTAL", out)
+        self.assertEqual(len(self.beli()), 2)
+
+    def test_order_beli_terbuka_dihitung(self):
+        self.mulai_live()
+        self.k.order_terbuka, self.k.nilai_order_terbuka = 1, D("150")   # 150 USDT tertahan di order beli limit
+        kode, out = self.live()
+        self.assertEqual(kode, 3, out)
+        self.assertIn("order beli terbuka 150 USDT", out); self.assertIn("BATAS MODAL TOTAL", out)
+        self.assertEqual(self.beli(), [])
+
+    def test_buku_global_rusak_tanpa_beli(self):
+        self.mulai_live()
+        os.makedirs(buku_global.folder_akun(), exist_ok=True)
+        with open(buku_global.path_buku(self.sidik()), "w") as f:
+            f.write("{rusak")
+        kode, out = self.live()
+        self.assertIn("rusak", out); self.assertNotIn("Traceback", out)
+        self.assertEqual(self.beli(), [])
+
+    def test_migrasi_buku_folder_lama_ke_global(self):
+        # bot 1.0.3 yang sudah live (buku live di folder, belum ada buku global)
+        self.mulai_live()
+        self.assertEqual(self.live()[0], 2)
+        os.remove(buku_global.path_buku(self.sidik()))
+        self.majukan_dca()
+        self.assertEqual(self.live()[0], 2)                  # 200: masih dalam batas
+        with open(buku_global.path_buku(self.sidik())) as f:
+            e = json.load(f)["pasangan"]["BTCUSDT"]
+        self.assertGreater(D(e["biaya_perolehan"]), D("190"))   # buku folder ikut dipindah ke global
+        self.assertEqual(e["saldo_koin_awal_bursa"], "0")        # patokan lama dari folder (bukan saldo sekarang)
+
+    def test_catat_isi_jual_mengurangi_modal(self):
+        e = {"posisi_koin": "0.002", "biaya_perolehan": "200", "jumlah_transaksi": 2}
+        buku_global.catat_isi(e, {"sisi": "jual", "jumlah": D("0.001"), "bersih": D("110")}, "USDT")
+        self.assertEqual((e["posisi_koin"], e["biaya_perolehan"]), ("0.001", "100"))
+        buku_global.catat_isi(e, {"sisi": "jual", "jumlah": D("0.001"), "bersih": D("110")}, "USDT")
+        self.assertEqual((e["posisi_koin"], e["biaya_perolehan"]), ("0", "0"))
+
+    def test_indodax_nilai_order_beli_terbuka(self):
+        c = copy.deepcopy(DASAR)
+        c.update(mode="testnet", kunci={"file": self.tulis_kunci(mock_bursa.INDODAX_KEY, mock_bursa.INDODAX_SECRET)})
+        cfg = inti.normalisasi_konfigurasi(c)
+        ad = bursa.Indodax(cfg, "testnet", bursa.Kunci(mock_bursa.INDODAX_KEY, mock_bursa.INDODAX_SECRET, "uji"),
+                           self.url)
+        self.k.order_terbuka, self.k.nilai_order_terbuka = 2, D("100000")
+        self.assertEqual(ad.ringkas_order_terbuka(), (2, D("200000")))
+        self.assertEqual(ad.jumlah_order_terbuka(), 2)
+
+
+class R3KursFormatIndonesia(unittest.TestCase):
+    """R3: --kurs dibaca format Indonesia; input ambigu & notasi ilmiah ditolak dengan GAGAL, tanpa traceback."""
+
+    rekap = LB2RekapPajakPerMataUang.rekap
+    BARIS = LB2RekapPajakPerMataUang.BARIS
+
+    def pph_usdt(self, kurs):
+        kode, out = self.rekap(self.BARIS, "--kurs", "USDT=" + kurs)
+        self.assertEqual(kode, 0, out)
+        return json.loads(out)["per_bulan"]["2026-09"]["USDT"]["perkiraan_rupiah"]["pph_idr"]
+
+    def test_ribuan_indonesia(self):
+        self.assertEqual(hitung_pajak_biaya.angka_kurs("16.500", "k"), D("16500"))
+        self.assertEqual(hitung_pajak_biaya.angka_kurs("1.500.000.000", "k"), D("1500000000"))
+        self.assertEqual(hitung_pajak_biaya.angka_kurs("16.500,25", "k"), D("16500.25"))
+        self.assertEqual(hitung_pajak_biaya.angka_kurs("16500,5", "k"), D("16500.5"))
+        self.assertEqual(self.pph_usdt("16.500"), 18150)            # 1,1 USDT x 16.500 (dulu: Rp18)
+        self.assertEqual(self.pph_usdt("16500"), 18150)
+
+    def test_ambigu_ditolak(self):
+        for kurs in ("16,500", "16500.5", "16.5", "16,500.00", "1.50.000", "-16500", "abc", "0"):
+            kode, out = self.rekap(self.BARIS, "--kurs", "USDT=" + kurs)
+            self.assertEqual(kode, 1, kurs); self.assertIn("GAGAL", out)
+        kode, out = self.rekap(self.BARIS, "--kurs", "USDT=16,500")
+        self.assertIn("AMBIGU", out)
+
+    def test_nilai_ekstrem_gagal_tanpa_traceback(self):
+        skrip = os.path.join(SKILL, "scripts", "hitung_pajak_biaya.py")
+        with tempfile.TemporaryDirectory() as t:
+            p = os.path.join(t, "trx.csv")
+            with open(p, "w", newline="") as f:
+                w = csv.DictWriter(f, fieldnames=jalankan_bot.KOLOM_TRANSAKSI)
+                w.writeheader()
+                w.writerow({"waktu": "2026-09-02T08:00:00+07:00", "pasangan": "BTCUSDT", "sisi": "jual",
+                            "bruto": "1000000000000000", "fee": "0", "pajak_pph": "0"})
+            for argv in (["--transaksi", p, "--kurs", "USDT=1e400"], ["--transaksi", p, "--kurs-idr", "1e400"],
+                         ["--nilai-jual", "1e400"], ["--transaksi", p, "--kurs", "USDT=1.000.000.000.000.000"]):
+                r = subprocess.run([sys.executable, skrip, *argv], capture_output=True, text=True, timeout=60)
+                self.assertNotIn("Traceback", r.stdout + r.stderr, argv)
+                self.assertEqual(r.returncode, 1, argv); self.assertIn("GAGAL", r.stdout, argv)
+
+
+
 class UjiSingkatanFlag(unittest.TestCase):
     """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
 

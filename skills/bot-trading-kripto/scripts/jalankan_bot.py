@@ -12,6 +12,9 @@ Urutan pengaman di setiap putaran:
   6. harga dari bursa (gagal -> tidak ada order)
   7. stop-loss global & batas rugi harian (tanggal tidak pernah mundur walau jam komputer mundur)
   8. aturan strategi -> niat order -> cek batas per order/total/order terbuka -> eksekusi
+     LIVE: seluruh langkah 6-8 di bawah KUNCI AKUN global (satu proses per akun bursa, apa pun folder
+     bot-nya); sebelum SETIAP order beli, modal terpakai dicocokkan dengan buku live GLOBAL akun
+     (~/.komunitech/bot-trading-kripto/akun/), saldo koin di bursa, dan order beli yang masih terbuka.
 Semua kejadian ditulis ke bot/audit.jsonl (kunci disamarkan) & transaksi ke bot/transaksi.csv.
 
 Keluaran: pesan siap kirim ke member, atau `NO_REPLY` bila tidak ada kejadian.
@@ -41,6 +44,7 @@ from inti import (D, DISCLAIMER, NOL, WIB, KonfigurasiTidakValid, Penyamar, ambi
                   terapkan_isi, tulis_audit)
 from datetime import timedelta  # noqa: E402
 from bursa import ErrorBursa, ErrorKunci, StatusTidakPasti, buat_adapter, muat_kunci  # noqa: E402
+import buku_global as bg  # noqa: E402
 
 FOLDER_SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LABEL = {"paper": "[SIMULASI - bukan uang asli]", "testnet": "[TESTNET - uang mainan]",
@@ -189,6 +193,7 @@ def satu_putaran(args):
     os.makedirs(folder_bot, exist_ok=True)
     if not ambil_kunci_putaran(p_kunci, sekarang.isoformat()):
         return 0, "NO_REPLY"
+    kunci_akun = None
     try:
         state = muat_state(p_state, cfg)
         pesan_awal = []
@@ -274,6 +279,22 @@ def satu_putaran(args):
                 pesan.append(f"Masalah kunci API: {e}")
                 return selesai(3)
             penyamar.rahasia = [r for r in kunci.rahasia() if len(r) >= 6]
+        sidik = None
+        if mode == "live":
+            # KUNCI AKUN global: dua salinan folder bot (atau dua mesin berbagi home) tidak bisa membaca
+            # saldo & mengirim order bersamaan. Dipegang sampai akhir putaran.
+            sidik = bg.sidik_akun(cfg["bursa"], kunci.rahasia()[0])
+            try:
+                kunci_akun = bg.KunciAkun(sidik).ambil()
+            except bg.AkunSibuk as e:
+                audit("akun_sibuk", {"pesan": str(e)})
+                if not state.get("akun_sibuk_dilaporkan"):
+                    state["akun_sibuk_dilaporkan"] = True
+                    pesan.append(f"Putaran dilewati tanpa order: {e}. Pastikan hanya SATU jadwal bot yang memakai "
+                                 "kunci API ini (jangan menjalankan salinan folder bot bersamaan).")
+                    return selesai(2)
+                return selesai(0)
+            state.pop("akun_sibuk_dilaporkan", None)
 
         adapter = buat_adapter(cfg, kunci, D(args.harga) if args.harga else None, args.url_uji)
         try:
@@ -332,25 +353,58 @@ def satu_putaran(args):
                              f"putaran terakhir {state.get('waktu_terakhir')}). Batas rugi harian tetap dihitung "
                              f"untuk tanggal {state.get('hari')} (tidak di-reset). Periksa pengaturan jam/NTP mesin bot.")
         daftar = [paksa] if paksa else ([] if alasan_henti else rencanakan(cfg, state, harga, sekarang))
-        paparan = None
-        if mode == "live":
-            # Rekonsiliasi dengan SALDO BURSA (baca-saja): koin milik bot = saldo sekarang - saldo awal
-            # (dicatat di buku live pada putaran live pertama). Modal terpakai = max(buku bot, saldo bursa).
+        buku_g = entri_g = None
+        if mode == "live" and daftar:
             try:
-                saldo = adapter.saldo_koin()
-                if state.get("saldo_koin_awal_bursa") in (None, ""):
-                    state["saldo_koin_awal_bursa"] = teks(max(NOL, saldo - D(state["posisi_koin"])))
-                    audit("saldo_awal_live", {"saldo_koin_awal_bursa": state["saldo_koin_awal_bursa"]})
-                paparan = max(NOL, saldo - D(state["saldo_koin_awal_bursa"])) * harga
-            except (ErrorBursa, KeyError, ValueError, TypeError, ArithmeticError) as e:
-                audit("saldo_bursa_gagal", {"pesan": str(e)})
+                buku_g = bg.muat_buku(sidik)
+                entri_g = bg.entri(buku_g, cfg["pasangan"], state)
+            except bg.BukuGlobalRusak as e:
+                audit("buku_global_rusak", {"pesan": str(e)})
                 if any(n["sisi"] == "beli" for n in daftar):
-                    pesan.append("Saldo bursa tidak bisa dicek untuk batas modal total; order BELI dilewati "
-                                 "putaran ini (tidak ada pembelian tanpa pengecekan).")
+                    pesan.append(str(e))
                 daftar = [n for n in daftar if n["sisi"] != "beli"]
-        order_terbuka = adapter.jumlah_order_terbuka() if daftar else 0
+
+        def rekonsiliasi_live():
+            """Dipanggil tepat sebelum SETIAP order beli live (di bawah kunci akun). Kembalikan
+            (paparan saldo bursa, modal terpakai buku global, nilai order beli terbuka, jumlah order terbuka)."""
+            saldo = adapter.saldo_koin()
+            lokal = state.get("saldo_koin_awal_bursa")
+            if entri_g.get("saldo_koin_awal_bursa") in (None, ""):
+                kandidat = [max(NOL, saldo - D(state["posisi_koin"]))]
+                if lokal not in (None, ""):
+                    kandidat.append(D(str(lokal)))
+                entri_g["saldo_koin_awal_bursa"] = teks(min(kandidat))
+                bg.simpan_buku(sidik, buku_g)
+                audit("saldo_awal_live", {"saldo_koin_awal_bursa": entri_g["saldo_koin_awal_bursa"],
+                                          "buku_global": os.path.basename(bg.path_buku(sidik))})
+                if D(entri_g["saldo_koin_awal_bursa"]) > 0:
+                    pesan.append(f"Catatan: saldo {entri_g['saldo_koin_awal_bursa']} {cfg['koin']} yang sudah ada di akun "
+                                 "sebelum bot live pertama dicatat sebagai milik Anda (bukan bot) di buku live global. "
+                                 "Bila sebagian koin itu sebenarnya hasil bot lama, hentikan bot dan hubungi dukungan.")
+            elif lokal not in (None, "") and D(str(lokal)) < D(entri_g["saldo_koin_awal_bursa"]):
+                entri_g["saldo_koin_awal_bursa"] = teks(D(str(lokal)))   # patokan lebih rendah = lebih ketat
+                bg.simpan_buku(sidik, buku_g)
+            state["saldo_koin_awal_bursa"] = entri_g["saldo_koin_awal_bursa"]
+            pap = max(NOL, saldo - D(entri_g["saldo_koin_awal_bursa"])) * harga
+            n_terbuka, nilai_beli_terbuka = adapter.ringkas_order_terbuka()
+            return pap, D(entri_g["biaya_perolehan"]), nilai_beli_terbuka, n_terbuka
+
+        order_terbuka = adapter.jumlah_order_terbuka() if daftar and mode != "live" else 0
+        if mode == "live" and any(n["sisi"] == "jual" for n in daftar):
+            order_terbuka = adapter.jumlah_order_terbuka()
         for niat in daftar:
-            status, ket = cek_niat(cfg, state, niat, harga, order_terbuka, paparan)
+            paparan = modal_global = beli_terbuka = None
+            if mode == "live" and niat["sisi"] == "beli":
+                try:
+                    paparan, modal_global, beli_terbuka, order_terbuka = rekonsiliasi_live()
+                except (ErrorBursa, KeyError, ValueError, TypeError, ArithmeticError, OSError) as e:
+                    audit("saldo_bursa_gagal", {"pesan": str(e)})
+                    teks_gagal = ("Saldo bursa tidak bisa dicek untuk batas modal total (saldo koin/order terbuka); "
+                                  "order BELI dilewati putaran ini (tidak ada pembelian tanpa pengecekan).")
+                    if teks_gagal not in pesan:
+                        pesan.append(teks_gagal)
+                    continue
+            status, ket = cek_niat(cfg, state, niat, harga, order_terbuka, paparan, modal_global, beli_terbuka)
             if status == "lewati":
                 audit("niat_dilewati", {"niat": niat, "alasan": ket})
                 continue
@@ -372,8 +426,14 @@ def satu_putaran(args):
                 audit("order_ditolak", {"niat": niat, "pesan": str(e)})
                 break
             pl = terapkan_isi(state, isi, kut)
-            if paparan is not None and isi["sisi"] == "beli":
-                paparan += isi["bersih"]          # saldo bursa di atas diambil sebelum order ini
+            if entri_g is not None:
+                # buku global diperbarui SEGERA (masih di bawah kunci akun), sebelum order berikutnya
+                bg.catat_isi(entri_g, isi, kut, sekarang)
+                try:
+                    bg.simpan_buku(sidik, buku_g)
+                except OSError as e:
+                    alasan_henti = (f"Buku live global tidak bisa disimpan ({type(e).__name__}). Bot berhenti demi "
+                                    "batas modal; periksa ruang disk/izin folder ~/.komunitech.")
             catat_niat_berhasil(state, niat, isi, sekarang)
             tulis_transaksi(p_trx, {
                 "waktu": sekarang.isoformat(timespec="seconds"), "mode": mode, "bursa": cfg["bursa"],
@@ -397,7 +457,7 @@ def satu_putaran(args):
             if isi.get("sumber_angka") == "estimasi":
                 baris += "\n  Catatan: angka ESTIMASI, cocokkan dengan riwayat di aplikasi bursa."
             pesan.append(baris)
-            if niat.get("alasan") == "stop-loss global":
+            if niat.get("alasan") == "stop-loss global" or alasan_henti:
                 break
         if alasan_henti:
             hentikan(state, alasan_henti)
@@ -412,6 +472,8 @@ def satu_putaran(args):
                          f"{rp(D(state['realized_pl']), kut)}.")
         return selesai(3 if alasan_henti else (2 if pesan else 0))
     finally:
+        if kunci_akun is not None:
+            kunci_akun.lepas()
         try:
             os.remove(p_kunci)
         except OSError:

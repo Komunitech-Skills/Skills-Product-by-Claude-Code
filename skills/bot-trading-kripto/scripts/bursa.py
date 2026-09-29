@@ -163,7 +163,7 @@ def _http(metode, url, header=None, body=None, order=False):
     header = header or {}
     bertanda = any(k.lower() in HEADER_RAHASIA for k in header)
     req = urllib.request.Request(url, data=data, method=metode, headers=header)
-    req.add_header("User-Agent", "komunitech-bot-trading-kripto/1.0.3")
+    req.add_header("User-Agent", "komunitech-bot-trading-kripto/1.0.4")
     pembuka = urllib.request.build_opener(_PenjagaRedirect(bertanda))
     try:
         with pembuka.open(req, timeout=BATAS_WAKTU) as r:
@@ -281,6 +281,21 @@ class Binance:
 
     def jumlah_order_terbuka(self):
         return len(self._bertanda("GET", "/api/v3/openOrders", {"symbol": self.cfg["pasangan"]}))
+
+    def ringkas_order_terbuka(self):
+        """(jumlah order terbuka, nilai kutipan yang masih tertahan di order BELI terbuka) -- baca-saja."""
+        daftar = self._bertanda("GET", "/api/v3/openOrders", {"symbol": self.cfg["pasangan"]})
+        nilai = NOL
+        for o in daftar:
+            if str(o.get("side", "")).upper() != "BUY":
+                continue
+            harga = D(str(o.get("price") or "0"))
+            sisa = D(str(o.get("origQty") or "0")) - D(str(o.get("executedQty") or "0"))
+            if harga > 0 and sisa > 0:
+                nilai += sisa * harga
+            else:
+                nilai += max(NOL, D(str(o.get("origQuoteOrderQty") or "0")) - D(str(o.get("cummulativeQuoteQty") or "0")))
+        return len(daftar), nilai
 
     def saldo_koin(self):
         """Saldo koin (free + locked) di akun -- baca-saja (GET /api/v3/account). Untuk rekonsiliasi
@@ -404,9 +419,24 @@ class Indodax:
         return total
 
     def jumlah_order_terbuka(self):
+        return self.ringkas_order_terbuka()[0]
+
+    def ringkas_order_terbuka(self):
+        """(jumlah order terbuka, rupiah yang masih tertahan di order BELI terbuka) -- baca-saja."""
         r = self._tapi("openOrders", {"pair": self.cfg["pasangan"]})
         o = r.get("orders") or []
-        return len(o) if isinstance(o, list) else sum(len(v) for v in o.values())
+        if isinstance(o, dict):
+            o = [x for v in o.values() for x in (v or [])]
+        nilai = NOL
+        for x in o:
+            if str(x.get("type", "")).lower() != "buy":
+                continue
+            if x.get("remain_idr") not in (None, ""):
+                nilai += D(str(x["remain_idr"]))
+            else:
+                sisa = x.get(f"remain_{self.koin}") or x.get(f"order_{self.koin}") or "0"
+                nilai += D(str(sisa)) * D(str(x.get("price") or "0"))
+        return len(o), nilai
 
     def order_pasar(self, sisi, nilai_kutipan=None, jumlah_koin=None, langkah=D("0.00000001")):
         p = {"pair": self.cfg["pasangan"], "order_type": "market",

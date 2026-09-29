@@ -22,6 +22,7 @@ Contoh:
 """
 import argparse
 import csv
+import datetime
 import io
 import json
 import os
@@ -35,7 +36,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 
 
 class Gagal(Exception):
@@ -79,7 +80,16 @@ FRASA = [
     (r"\bkurang\s+lebih\b", "kuranglebih"),
     (r"\btidak\s+ada\s+(?:yang\s+)?(?:minus|masalah|kendala|keluhan|kekurangan|komplain|cacat|lecet|kurang)(?:nya)?\b"
      r"|\btanpa\s+(?:minus|cacat|kendala|masalah)\b|\bno\s+minus\b", "tanpaminus"),
-    (r"\bkurang\s+(?:\d+|satu|dua|tiga|empat|lima|se(?:biji|bungkus|kotak|porsi|potong|pcs|buah|lembar|pasang))\b|\b(?:yang\s+)?(?:datang|sampai|dikirim)\s+(?:cuma|hanya|cuman)\s+\d+\b|\btidak\s+lengkap\b", "kurangjumlah"),
+    (r"\bkurang\s+(?:\d+|satu|dua|tiga|empat|lima|se(?:biji|bungkus|kotak|porsi|potong|pcs|buah|lembar|pasang))\b|\b(?:yang\s+)?(?:datang|sampai|dikirim|dapat|isinya?)\s+(?:cuma|hanya|cuman)\s+\d+\b|\btidak\s+lengkap\b"
+     r"|\b(?:datang|sampai|dikirim|dapat)\s+(?:cuma\s+|hanya\s+)?(?:1|satu)\s+(?:biji|buah|pcs|pasang|lembar|potong)?\s*(?:saja)?(?=\s*(?:$|[,.!?;]))"
+     r"|\btidak\s+(?:dimasukkan|dimasukin|dimasukan|disertakan|dibungkus|dibawakan|dikasih|dikasi|termasuk)\b"
+     r"|\blupa\s+(?:dimasukkan|dimasukin|dimasukan|dikirim|dibungkus)\b", "kurangjumlah"),
+    (r"\b\d+\s*(?:x|kali)\s+(?:pesan\w*|order)\s+\d+\s*(?:x|kali)\s+salah\b|\bsalah\s+(?:terus|lagi|melulu)\b"
+     r"|\b(?:pesan\w*|order)\s+(?:\w+\s+){0,5}?(?:tapi\s+|malah\s+|kok\s+)?(?:dikasih|dikirim|diberi)\s+(?:yang|item|warna|ukuran|size|rasa|varian|model|barang\s+lain)\b"
+     r"|\b(?:pesan\w*|order)\s+(?:\w+\s+){0,3}?(?:tapi|malah|kok)\s+(?:dapat|datang)\b", "salahpesanan"),
+    (r"\b(?:pas|waktu|saat|begitu)\s+(?:datang|sampai|tiba|diterima)\s+(?:sudah\s+|udah\s+)?(?:dingin|kempes|melempem)\b", "makanandingin"),
+    (r"\bkapan\s+(?:\w+\s+){0,2}?(?:restock|ready|ada\s+lagi|tersedia|masuk\s+lagi|balik|kembali\s+ada)\b|\b(?:restock|ready)\s+kapan\b"
+     r"|\btidak\s+kebagian\b|\bout\s+of\s+stock\b|\boos\b|\bludes\b|\b(?:sering|selalu)\s+(?:habis|kosong)\b|\b(?:habis|kosong)\s+terus\b", "habis"),
     (r"\b(?:dikirim|dikasih|diberi)\s+salah(?:\s+(?:warna|ukuran|size|varian|model|barang|menu|produk|item))?\b|\btidak\s+sesuai\s+(?:pesanan|order)\b|\bsalah\s+(?:pesan(?:an)?|kirim|item|ambil|isi|warna|ukuran|size|varian|"
      r"model|barang|menu|produk|alamat|hitung)\b", "salahpesanan"),
     (r"\btidak\s+sesuai\b|\bbeda\s+(?:jauh|banget|sekali|warna|ukuran|bahan|model|dengan|sama|dari)\b|\btidak\s+(?:kayak|seperti|mirip)\s+"
@@ -97,7 +107,7 @@ FRASA = [
     (r"\bbenda\s+asing\b|\b(?:nemu|menemukan|ketemu|ditemukan|temukan|ada)\s+(?:plastik|kerikil|batu|staples|stapler|kawat|"
      r"kaca|beling|belatung|kuku|isolasi)\b", "bendaasing"),
     (r"\bsesuai\s+(?:foto|gambar|deskripsi|pesanan|order|harapan|ekspektasi)\b", "sesuaiharapan"),
-    (r"\bpas\s+(?:banget|sekali|di\s*badan|di\s*kaki|dipakai|ukuran\w*)\b|\b(?:ukuran|size|porsi|harga|rasa)(?:nya)?\s+(?:sudah\s+)?pas\b",
+    (r"\bpas\s+(?:banget|sekali|di\s*badan|di\s*kaki|ukuran\w*)\b|\b(?:ukuran|size|porsi|harga|rasa)(?:nya)?\s+(?:sudah\s+)?pas\b",
      "pasbanget"),
     (r"\bharga(?:nya)?\s+(?:\w+\s+){0,2}naik\b|\bnaik\s+(?:terus|lagi)\b|\bnaik\s+harga\b", "harganaik"),
     (r"\bsudah\s+(?:\d+\s*(?:hari|minggu|bulan|jam)|seminggu|sebulan|berhari\s+hari|berminggu\s+minggu)\b"
@@ -130,11 +140,13 @@ kemahalan kemanisan keasinan kepedasan kepahitan keasaman kusut noda jerawat jer
 berantakan php kosong harganaik sudahlama tunggulama cepatrusak fasilitasrusak musikkeras makanandingin kurangjumlah""".split())
 PENGUAT = {"begitu", "terlalu", "banget", "sekali", "agak", "sangat", "amat", "cukup", "sih", "juga"}
 PERANTARA = {"pernah", "ada", "yang", "juga", "sama", "begitu", "terlalu", "sangat", "pula", "kunjung", "mau", "bisa", "jadi", "lagi", "sih",
-             "dong", "kok", "terus", "cukup", "sampai", "dapat", "dikasih", "segera"}
+             "dong", "kok", "terus", "cukup", "sampai", "dapat", "dikasih", "segera", "bikin", "membuat", "menimbulkan",
+             "menyebabkan"}
 BERLEBIH = {"terlalu", "kelewat", "kebanyakan", "kelewatan"}
 SARAN = re.compile(r"\b(sebaiknya|semoga\s+ada|tolong\s+(?:ditambah|tambah|dibuat|dibuatkan|diperbaiki|dibenahi|diadakan)|mohon|"
                    r"kalau\s+bisa|usul\w*|saran\w*|request|harap|kapan\s+(?:ada|ready|buka|restock)|bisa\s+tidak|boleh\s+tidak|"
                    r"tambahin|ditambah|dibuatkan|next|pengen|ingin|mau\s+dong)\b")
+RE_OPTATIF = re.compile(r"\b(?:semoga|jangan|harap|mohon|tolong|supaya|biar|agar)\b")
 TANYA_MINTA = re.compile(r"\b(kapan|bisa|boleh|ada|tolong|mohon|apakah|mau)\b")
 
 # id, label, dampak (1-5), pola (bagian regex; imbuhan di-/ter-/ke-/ber- dan -nya/-kan/-an/-in/-ya dikenali)
@@ -145,11 +157,12 @@ TEMA_BAWAAN = [
      r"tumpah|penyok|segel|wadah|botol|toples|lakban|kresek"),
     ("harga", "Harga / ongkir", 2, r"harga|mahal|murah|terjangkau|ongkir|diskon|promo|sepadan|biaya|tarif|hemat|pricey|kemahalan|harganaik"),
     ("pengiriman", "Pengiriman / ketepatan waktu", 3, r"kirim|pengiriman|kurir|ojol|ojek|gojek|grab|shopeefood|gofood|telat|terlambat|datang|"
-     r"sampai|antar|tepatwaktu|delivery|resi|ekspedisi|jne|jnt|sicepat|anteraja|nyasar|kilat|ngaret|molor|dijemput|jemput"),
+     r"sampai|antar|tepatwaktu|delivery|resi|ekspedisi|jne|jnt|sicepat|anteraja|nyasar|kilat|ngaret|molor|dijemput|jemput|"
+     r"pengantaran|kiriman|terkirim|estimasi|paket|lacak|tracking|tiba|keterlambatan|lamban|dititipkan|titip|satpam"),
     ("layanan", "Layanan / respons admin & staf", 3, r"admin|layanan|pelayanan|pelayan|respons|responscepat|responslambat|balas|chat|ramah|"
      r"sopan|judes|galak|cuek|staf|pegawai|karyawan|kasir|barista|waiter|waitress|teknisi|montir|mekanik|seller|penjual|ditanggapi|"
      r"tanggap|sabar|informatif|amanah|dilayani|melayani"),
-    ("ketepatan_pesanan", "Ketepatan pesanan", 4, r"ketuker|tertukar|kelupaan|lupa\s+dimasukkan|salahpesanan|kurangjumlah|ketinggalan"),
+    ("ketepatan_pesanan", "Ketepatan pesanan", 4, r"ketuker|ketukar|tertukar|kelupaan|lupa\s+dimasukkan|salahpesanan|kurangjumlah|ketinggalan|zonk|salah\s+item"),
     ("kualitas_produk", "Kualitas produk / sesuai foto", 4, r"kualitas|bahan|jahitan|jahit|awet|rusak|cacat|luntur|pudar|kusam|warna|"
      r"sesuaiharapan|tidaksesuai|patah|retak|lecet|berfungsi|robek|lepas|tipis|nerawang|ritsleting|kancing|macet|mati|ori|original|palsu|kw|"
      r"jerawat|jerawatan|iritasi|gatal|perih|breakout|kusut|noda|hasil|mulus|cepatrusak|jebol|melar|rontok|hancur|pecah"),
@@ -159,7 +172,7 @@ TEMA_BAWAAN = [
     ("bau_aroma", "Bau / aroma", 3, r"bau|apek|tengik|anyir|pesing|busuk|wangi|harum|aroma"),
     ("porsi_ukuran", "Porsi / ukuran / size", 3, r"porsi|ukuran|size|kekecilan|kebesaran|kesempitan|kepanjangan|kependekan|pelit|kenyang|"
      r"mengenyangkan|gramasi|isian|pasbanget"),
-    ("stok_ketersediaan", "Stok / ketersediaan", 2, r"habis|kosong|stok|stock|restock|ready|preorder|kehabisan"),
+    ("stok_ketersediaan", "Stok / ketersediaan", 2, r"habis|kosong|stok|stock|restock|ready|preorder|kehabisan|persediaan|langka|indent|kebagian"),
     ("pembayaran", "Pembayaran / refund", 3, r"bayar|pembayaran|transfer|qris|cod|refund|pengembalian|kembalian|tagihan|invoice|nota|struk|"
      r"cashback|saldo"),
     ("varian_menu", "Varian / menu / pilihan", 2, r"varian|menu|pilihan|model|motif|koleksi|rasa\s+baru|warna\s+baru|warna\s+lain"),
@@ -206,12 +219,12 @@ RE_HP = re.compile(r"(?<![\w/])(?:\+?62|0)[\s.-]?8\d{1,2}[\s.-]?\d{3,4}[\s.-]?\d
 RE_TELP = re.compile(r"(?<![\w/.,])(?:\(0[2-7]\d{1,2}\)|0[2-7]\d{1,2}|\+62[\s.-]?[2-7]\d{1,2})[\s.-]?\d{3,4}[\s.-]?\d{3,5}(?![\d.,]*\d)")
 RE_USER = re.compile(r"(?<![\w.])@[A-Za-z0-9_.]{2,}")
 RE_NOPESAN = re.compile(r"\b(?:inv|invoice|order|pesanan|resi|no\.?\s*(?:pesanan|order|resi|inv))\s*[:#.\-]?\s*(?=[A-Za-z0-9\-/]*\d)[A-Za-z0-9\-/]{5,}\b", re.I)
-RE_KODE = re.compile(r"\b(?=[A-Za-z0-9\-]*\d)(?=[A-Za-z0-9\-]*[A-Za-z])[A-Za-z0-9\-]{8,}\b|\b\d{9,}\b")
+RE_KODE = re.compile(r"\b(?![a-z]{3,}2\b)(?=[A-Za-z0-9\-]*\d)(?=[A-Za-z0-9\-]*[A-Za-z])[A-Za-z0-9\-]{8,}\b|\b\d{9,}\b")
 RE_ALAMAT = re.compile(r"\b(?:jl|jln|jalan|gg|gang)\.?\s+[^,;\n]{3,40}", re.I)
 RE_ALAMAT2 = re.compile(r"\b(?:perum(?:ahan)?|komplek|kompleks|komp|cluster|apartemen|apart|griya|villa|residence)\.?\s+[^,;\n]{2,40}", re.I)
 RE_BLOK = re.compile(r"\b(?:blok|blk|rt|rw|kav)\.?\s*[A-Za-z]?\d{1,4}[A-Za-z]?\b(?:\s*/\s*\d{1,3})?", re.I)
 RE_PLAT = re.compile(r"\b[A-Z]{1,2}\s?\d{1,4}\s?[A-Z]{1,3}\b")
-RE_AN = re.compile(r"(?i:\b(?:a\.\s?n\.?|a/n|an\.|atas\s+nama))\s+[A-Za-z][A-Za-z']+(?:\s+[A-Z][A-Za-z']+){0,2}")
+RE_AN = re.compile(r"((?i:\b(?:a\.\s?n\.?|a/n|an\.|atas\s+nama)))\s+((?:\[nama\]|[A-Za-z][A-Za-z']*)(?:\s+(?:\[nama\]|[A-Za-z][A-Za-z']*)){0,4})")
 RE_SAYA = re.compile(r"\b((?i:nama\s+(?:saya|sy|aku)|namaku))\s+([A-Za-z][A-Za-z']{1,})(?:\s+([A-Z][A-Za-z']{2,}))?"
                      r"|\b((?i:saya|aku|sy))\s+([A-Z][a-z']{2,})(?:\s+([A-Z][a-z']{2,}))?")
 RE_SAPAAN_NAMA = re.compile(r"\b(" + SAPAAN + r")\.?\s+(?:(" + GELAR + r")\s+)?([A-Z][A-Za-z']{2,})(?:\s+([A-Z][A-Za-z']{2,}))?")
@@ -246,6 +259,22 @@ def token_nama(nama_pengirim):
     return hasil
 
 
+def _samarkan_an(m):
+    """Kata sesudah 'a.n.' / 'atas nama' = nama. Kata pertama selalu; berikutnya bila berhuruf besar/[nama] atau bukan kata umum."""
+    kata = m.group(2).split()
+    maks = 4 if kata[0].lower() in {s.lower() for s in SAPAAN_KATA} else 3
+    dipakai = 1
+    for k in kata[1:maks]:
+        nama_besar = k[:1].isupper() and k not in BUKAN_NAMA and k.lower() not in KATA_UMUM
+        nama_kecil = k[:1].islower() and not _bukan_nama(k) and k not in VOCAB and len(k) >= 3
+        if k == "[nama]" or nama_besar or nama_kecil:
+            dipakai += 1
+        else:
+            break
+    sisa = " ".join(kata[dipakai:])
+    return re.sub(r"\s+", " ", m.group(1)) + " [nama]" + ((" " + sisa) if sisa else "")
+
+
 def samarkan(teks, nama_pengirim=()):
     t = teks
     for n in sorted(token_nama(nama_pengirim) if nama_pengirim else (), key=len, reverse=True):
@@ -262,7 +291,7 @@ def samarkan(teks, nama_pengirim=()):
     t = RE_ALAMAT2.sub("[alamat]", t)
     t = RE_BLOK.sub("[alamat]", t)
     t = RE_PLAT.sub("[plat]", t)
-    t = RE_AN.sub(lambda m: re.match(r"\S+(?:\s+nama)?", m.group(0)).group(0) + " [nama]", t)
+    t = RE_AN.sub(_samarkan_an, t)
 
     def _saya(m):
         if m.group(1):  # "nama saya X" -> selalu disamarkan
@@ -288,8 +317,9 @@ BULAN = {"jan": 1, "januari": 1, "feb": 2, "februari": 2, "mar": 3, "maret": 3, 
          "okt": 10, "oktober": 10, "oct": 10, "nov": 11, "november": 11, "des": 12, "desember": 12, "dec": 12}
 
 
-def bulan_dari(s):
-    """Kembalikan 'YYYY-MM' dari string tanggal (dd/mm/yyyy, yyyy-mm-dd, '12 Sep 2026'), atau None."""
+def bulan_dari(s, urutan="hb"):
+    """Kembalikan 'YYYY-MM' dari string tanggal (dd/mm/yyyy, yyyy-mm-dd, '12 Sep 2026'), atau None.
+    urutan 'hb' = hari/bulan (Indonesia, bawaan); 'bh' = bulan/hari (format AS, mis. Google Form 8/15/2026)."""
     if not s:
         return None
     s = str(s).strip()
@@ -299,7 +329,7 @@ def bulan_dari(s):
     else:
         m = re.match(r"(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})", s)
         if m:
-            mo, y = int(m.group(2)), int(m.group(3))
+            mo, y = int(m.group(1) if urutan == "bh" else m.group(2)), int(m.group(3))
             if y < 100:
                 y += 2000
         else:
@@ -312,6 +342,60 @@ def bulan_dari(s):
     if not (1 <= mo <= 12 and 2000 <= y <= 2100):
         return None
     return "%04d-%02d" % (y, mo)
+
+
+RE_TGL_ANGKA = re.compile(r"^\s*(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})(.*)$")
+RE_AMPM = re.compile(r"\b[AP]\.?M\b", re.I)
+
+
+def deteksi_urutan(daftar, paksa=None):
+    """Tentukan urutan tanggal angka ('hb' hari/bulan atau 'bh' bulan/hari) dari SEMUA tanggal satu kolom/berkas.
+    Kembalikan (urutan, daftar peringatan). Tanggal ambigu (semua bagian <= 12) ditandai; tanggal tak terbaca dihitung."""
+    hb = bh = ambigu = ampm = tak = 0
+    for v in daftar:
+        v = (v or "").strip()
+        if not v:
+            continue
+        m = RE_TGL_ANGKA.match(v)
+        if not m:
+            if bulan_dari(v) is None:
+                tak += 1
+            continue
+        a, b = int(m.group(1)), int(m.group(2))
+        if a > 12 and b > 12:
+            tak += 1
+        elif a > 12:
+            hb += 1
+        elif b > 12:
+            bh += 1
+        else:
+            ambigu += 1
+            if RE_AMPM.search(m.group(4)):
+                ampm += 1
+    pr = []
+    if paksa:
+        urutan = paksa
+    elif hb and bh:
+        urutan = "hb" if hb >= bh else "bh"
+        pr.append("tanggal bercampur dua urutan (%d hari/bulan, %d bulan/hari) - dibaca %s; sebagian bulan bisa salah. Samakan format tanggal "
+                  "di berkas, atau pakai --urutan-tanggal." % (hb, bh, "hari/bulan" if urutan == "hb" else "bulan/hari"))
+    elif bh:
+        urutan = "bh"
+        pr.append("tanggal terbaca berformat bulan/hari (AS, mis. 8/15/2026) - bulan dihitung dengan urutan itu.")
+    elif hb:
+        urutan = "hb"
+    elif ambigu and ampm >= 0.5 * ambigu:
+        urutan = "bh"
+        pr.append("%d tanggal ambigu (semua bagian <= 12) berpenanda AM/PM, khas format AS - dibaca bulan/hari. Periksa; bila salah pakai "
+                  "--urutan-tanggal hari-bulan." % ambigu)
+    else:
+        urutan = "hb"
+        if ambigu:
+            pr.append("%d tanggal ambigu (mis. 03/04/2026 bisa 3 April atau 4 Maret) - dibaca hari/bulan (format Indonesia). Bila berkas dari "
+                      "Google Form/Excel berformat AS, ulangi dengan --urutan-tanggal bulan-hari." % ambigu)
+    if tak:
+        pr.append("%d tanggal tidak terbaca (format tak dikenali) - masukan itu masuk 'tanpa tanggal', tren bulanan tidak lengkap." % tak)
+    return urutan, pr
 
 
 # ------------------------------------------------------------------ pembacaan berkas
@@ -441,6 +525,9 @@ KATA_PERAN_SARAN = {"ditambah", "tambah", "ditambahkan", "ingin", "harapan", "us
                     "diinginkan", "inginkan", "dijual", "tersedia", "wishlist"}
 KATA_PERAN_KELUHAN = {"perbaiki", "diperbaiki", "kurang", "keluhan", "kritik", "masalah", "kendala", "komplain"}
 KOLOM_NILAI = {"bintang", "rating", "star", "stars", "skor", "score", "nilai", "nps", "rate", "penilaian"}
+# judul survei yang lazim tanpa kata "nilai/skor" ("Seberapa besar kemungkinan Anda merekomendasikan ...?"); dipakai hanya bila ISINYA angka
+KOLOM_NILAI_SAMAR = {"merekomendasikan", "rekomendasi", "rekomendasikan", "recommend", "kemungkinan", "likelihood", "kepuasan", "puas",
+                     "satisfaction", "satisfied", "kepuasannya"}
 KOLOM_TANGGAL = {"tanggal", "tgl", "date", "waktu", "time", "created", "dibuat", "timestamp", "cap"}
 KOLOM_KANAL = {"kanal", "channel", "platform", "sumber", "source"}
 KOSONG = {"", "-", "--", "—", ".", "..", "n/a", "na", "none", "null", "x", "tidak ada", "ga ada", "gak ada", "nggak ada", "belum ada",
@@ -472,7 +559,7 @@ def pilih_kolom(header, jenis, paksa=None):
     p = _cocok_paksa(header, paksa, jenis)
     if p is not None:
         return p
-    kamus = {"bintang": KOLOM_NILAI, "tanggal": KOLOM_TANGGAL, "kanal": KOLOM_KANAL}[jenis]
+    kamus = {"bintang": KOLOM_NILAI | KOLOM_NILAI_SAMAR, "tanggal": KOLOM_TANGGAL, "kanal": KOLOM_KANAL}[jenis]
     hasil = []
     for h in header:
         tk = set(_tok(h))
@@ -587,13 +674,23 @@ def nilai_ke_bintang(nilai, skala):
     return max(1, min(5, int(round(nilai))))
 
 
-def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skala=None, nama="CSV"):
+def _angka_kecil(baris, h):
+    """Nilai kolom h yang bilangan bulat 0-10 (untuk mengenali kolom nilai dari isinya). Kembalikan (daftar angka, jumlah terisi)."""
+    isi = [(b.get(h) or "").strip() for b in baris]
+    isi = [v for v in isi if v]
+    return [int(v) for v in isi if re.fullmatch(r"\d{1,2}", v) and int(v) <= 10], len(isi)
+
+
+def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skala=None, nama="CSV", pemisah=None, urutan_tanggal=None):
     """Kembalikan (daftar item mentah, info kolom, peringatan)."""
     sampel = teks[:4096]
-    try:
-        dialek = csv.Sniffer().sniff(sampel, delimiters=",;\t")
-    except csv.Error:
-        dialek = csv.excel
+    if pemisah:
+        dialek = csv.excel_tab if pemisah == "\t" else csv.excel
+    else:
+        try:
+            dialek = csv.Sniffer().sniff(sampel, delimiters=",;\t")
+        except csv.Error:
+            dialek = csv.excel
     try:
         csv.field_size_limit(10 * 1024 * 1024)
         pembaca = csv.DictReader(io.StringIO(teks), dialect=dialek)
@@ -607,6 +704,8 @@ def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skal
         raise Gagal("%s: tanda kutip (\") tidak seimbang - beberapa baris tergabung jadi satu. Buka di Excel/Google Sheets lalu simpan "
                     "ulang sebagai CSV, atau hapus tanda kutip yang tidak berpasangan." % nama)
     kb = pilih_kolom(header, "bintang", kolom_bintang)
+    if not kolom_bintang:  # judul samar ("...merekomendasikan...?", "Kepuasan") hanya dipakai bila isinya angka
+        kb = [h for h in kb if set(_tok(h)) & KOLOM_NILAI or (lambda a: a[1] and len(a[0]) >= 0.6 * a[1])(_angka_kecil(baris_semua, h))]
     kd = pilih_kolom(header, "tanggal", kolom_tanggal)
     kk = pilih_kolom(header, "kanal")
     kt, peringatan = pilih_kolom_teks(header, baris_semua, kolom_teks, kecuali=set(kb[:1] + kd[:1] + kk[:1]))
@@ -615,6 +714,24 @@ def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skal
                     % (nama, ", ".join('"%s"' % h for h in header)))
     kt_nama = [h for h, _ in kt]
     kb = [h for h in kb if h not in kt_nama]
+    # kolom angka 0-10 yang judulnya tidak dikenali: pakai bila jelas skala 0-10 (ada 0 atau > 5), selain itu BERI PERINGATAN (jangan diam)
+    dipakai_lain = set(kt_nama) | set(kb[:1]) | set(kd[:1]) | set(kk[:1])
+    kandidat = []
+    for h in header:
+        tk = set(_tok(h))
+        if h in dipakai_lain or tk & (KOLOM_NAMA | KATA_PENGHALANG | KATA_KATEGORI | KOLOM_TANGGAL | KOLOM_KANAL):
+            continue
+        a, n_isi = _angka_kecil(baris_semua, h)
+        if n_isi >= 5 and len(a) >= 0.8 * n_isi and len(set(a)) >= 3:
+            kandidat.append((h, a))
+    if kandidat and not kb and not kolom_bintang and len(kandidat) == 1 and (min(kandidat[0][1]) == 0 or max(kandidat[0][1]) > 5):
+        kb = [kandidat[0][0]]
+        peringatan.append("kolom \"%s\" dikenali sebagai nilai 0-10 dari ISINYA (judulnya tidak menyebut nilai/skor). Bila bukan nilai "
+                          "kepuasan/NPS, abaikan; bila salah kolom, pakai --kolom-bintang." % kb[0])
+    else:
+        for h, a in kandidat:
+            peringatan.append("kolom \"%s\" berisi angka %d-%d tetapi TIDAK dipakai sebagai nilai/bintang. Bila itu nilai kepuasan/NPS, ulangi "
+                              "dengan --kolom-bintang \"%s\" (dan --skala 10 bila 0-10)." % (h, min(a), max(a), h))
     # skala nilai
     sk, angka = None, []
     if kb:
@@ -634,6 +751,10 @@ def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skal
             if pr:
                 peringatan.append(pr)
     kolom_identitas = [h for h in header if set(_tok(h)) & (KOLOM_NAMA | {"pesanan", "order", "invoice", "id"}) and h not in kt_nama]
+    urutan = "hb"
+    if kd:
+        urutan, pr_tgl = deteksi_urutan([b.get(kd[0]) for b in baris_semua], urutan_tanggal)
+        peringatan += ["kolom tanggal \"%s\": %s" % (kd[0], x) for x in pr_tgl]
     hasil = []
     for baris in baris_semua:
         nilai = None
@@ -652,7 +773,7 @@ def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skal
                     hasil.append({"kosong": True})
                 continue
             hasil.append({"tgl": tgl, "nilai": nilai, "skala": sk if nilai is not None else None, "isi": isi, "kanal": kanal or None,
-                          "identitas": (k,) + identitas, "peran": peran, "kolom": k})
+                          "identitas": (k,) + identitas, "peran": peran, "kolom": k, "urutan": urutan})
     nilai_baris = []
     if kb:
         for baris in baris_semua:
@@ -662,7 +783,8 @@ def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skal
     responden = sum(1 for b in baris_semua if any((b.get(k) or "").strip().lower() not in KOSONG for k, _ in kt))
     info = {"kolom_teks": kt_nama, "kolom_nilai": kb[0] if kb else None, "nilai_baris": nilai_baris if sk == 10 else [],
             "responden": responden, "skala_nilai": ("0-10" if sk == 10 else "1-5") if kb else None,
-            "kolom_tanggal": kd[0] if kd else None, "baris": len(baris_semua)}
+            "kolom_tanggal": kd[0] if kd else None, "baris": len(baris_semua),
+            "urutan_tanggal": ("bulan/hari" if urutan == "bh" else "hari/bulan") if kd else None}
     return hasil, info, peringatan
 
 
@@ -677,16 +799,33 @@ def baca_berkas(spesifikasi, opsi):
     ext = path.lower().rsplit(".", 1)[-1] if "." in path else ""
     info = {"berkas": nama, "kanal": kanal, "jenis": "teks", "peringatan": [], "catatan": catatan}
     baris1 = teks.lstrip("\ufeff").split("\n", 1)[0]
-    if ext in ("csv", "tsv") or (ext not in ("txt",) and len(re.split(r"[,;\t]", baris1)) >= 2 and not RE_WA1.match(baris1)):
+    # .txt berisi tabel bertab (ekspor Excel "Unicode Text"): baca sebagai tabel, bukan teks tempelan
+    tab_tabel = False
+    if ext == "txt":
+        baris_isi = [b for b in teks.lstrip("\ufeff").splitlines() if b.strip()]
+        jt = baris_isi[0].count("\t") if baris_isi else 0
+        if jt >= 1 and len(baris_isi) >= 2 and not RE_WA1.match(baris_isi[0].strip("\ufeff")):
+            cek = baris_isi[1:21]
+            if sum(1 for b in cek if b.count("\t") == jt) >= 0.6 * len(cek):
+                tab_tabel = True
+                info["catatan"].append("berkas .txt bertab dibaca sebagai tabel (baris pertama = judul kolom)")
+            else:
+                info["peringatan"].append("berkas .txt punya karakter tab di baris pertama tetapi barisnya tidak seragam - dibaca sebagai teks "
+                                          "biasa. Bila ini tabel Excel, simpan ulang sebagai CSV.")
+    if tab_tabel or ext in ("csv", "tsv") or (ext not in ("txt",) and len(re.split(r"[,;\t]", baris1)) >= 2 and not RE_WA1.match(baris1)):
         info["jenis"] = "csv"
         mentah, kol, pr = baca_csv(teks, getattr(opsi, "kolom_teks", None), getattr(opsi, "kolom_bintang", None),
-                                   getattr(opsi, "kolom_tanggal", None), getattr(opsi, "skala", None), nama)
+                                   getattr(opsi, "kolom_tanggal", None), getattr(opsi, "skala", None), nama,
+                                   "\t" if tab_tabel else None, getattr(opsi, "urutan_tanggal", None))
         info.update(kol)
         info["peringatan"] += pr
         return kanal, mentah, info, None
     wa, hitung = baca_wa(teks, getattr(opsi, "staf_list", []))
     if len(wa) >= 3 and sum(1 for p in wa if p[1]) >= 3 and hitung:
         info["jenis"] = "whatsapp"
+        urutan, pr = deteksi_urutan([p[0] for p in wa], getattr(opsi, "urutan_tanggal", None))
+        info["urutan"] = urutan
+        info["peringatan"] += ["tanggal chat: " + x for x in pr]
         return kanal, wa, info, hitung
     return kanal, baca_teks_bebas(teks), info, None
 
@@ -920,6 +1059,9 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
     tanpa_tema_keluhan = False
     for k, tanya in klausa:
         s = skor_klausa(k, kata_pos, kata_neg, tanya, neg_kustom)
+        optatif = bool(s > 0 and RE_OPTATIF.search(k) and set(re.findall(r"[a-z]+", k)) & NEGATOR)
+        if optatif:
+            s = 0   # "semoga lain kali tidak telat" = harapan, bukan pujian
         total += s
         if s > 0:
             jenis = "pujian"
@@ -931,9 +1073,13 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
             jenis = "pujian"
         else:
             jenis = "netral"
-        if jenis != "keluhan" and (SARAN.search(k) or (tanya and TANYA_MINTA.search(k)) or peran == "saran"):
+        if jenis != "keluhan" and (optatif or SARAN.search(k) or (tanya and TANYA_MINTA.search(k)) or peran == "saran"):
             jenis = "saran"
         cocok = [t["id"] for t in tema if t["pola"].search(k)]
+        # salah kirim/jumlah kurang = ketepatan pesanan, bukan keterlambatan: kata "dikirim/datang" saja tidak cukup untuk tema pengiriman
+        if "ketepatan_pesanan" in cocok and "pengiriman" in cocok and not re.search(
+                r"pengiriman|kurir|ekspedisi|telat|terlambat|lambat|lama|kilat|ngaret|molor|resi|paket|nyasar", k):
+            cocok.remove("pengiriman")
         for tid in cocok:
             per_tema[tid].add(jenis)
         if jenis == "keluhan" and not cocok:
@@ -983,7 +1129,7 @@ def olah(sumber, opsi, konfigurasi=None):
                     dibuang["pesan staf"] += 1
                     continue
                 isi = RE_PENGIRIM_MEDIA.sub("", isi).strip()
-                item.append(dict(kanal=kanal, tgl=tgl, nilai=None, skala=None, isi=isi, nama=nama, peran="ulasan",
+                item.append(dict(kanal=kanal, tgl=tgl, nilai=None, skala=None, isi=isi, nama=nama, peran="ulasan", urutan=info.get("urutan", "hb"),
                                  identitas=(info["berkas"], pengirim.lower(), tgl), berkas=info["berkas"], min_kata=2))
         else:
             for b in mentah:
@@ -991,7 +1137,7 @@ def olah(sumber, opsi, konfigurasi=None):
                     dibuang["jawaban kosong ('-', 'tidak ada')"] += 1
                     continue
                 item.append(dict(kanal=b.get("kanal") or kanal, tgl=b["tgl"], nilai=b["nilai"], skala=b["skala"], isi=b["isi"], nama=(),
-                                 peran=b.get("peran", "ulasan"), kolom=b.get("kolom"),
+                                 peran=b.get("peran", "ulasan"), kolom=b.get("kolom"), urutan=b.get("urutan", "hb"),
                                  identitas=(info["berkas"],) + b["identitas"] if b.get("identitas") else None, berkas=info["berkas"],
                                  # ulasan 1 kata tetap dihitung bila ada nilai/bintang ("basi" + bintang 1) atau dari kolom permintaan
                                  min_kata=1 if b.get("peran") == "saran" or b["nilai"] is not None else 2))
@@ -1032,10 +1178,15 @@ def olah(sumber, opsi, konfigurasi=None):
             kolom_norm = normalkan(it["kolom"])
             tema_kolom = [t["id"] for t in tema if t["pola"].search(kolom_norm)]
         sent, per_tema = analisis_item(anonim, bintang_setara, tema, kata_pos, kata_neg, it["peran"], tema_kolom)
-        hasil_item.append({"kanal": it["kanal"], "bulan": bulan_dari(it["tgl"]),
+        hasil_item.append({"kanal": it["kanal"], "bulan": bulan_dari(it["tgl"], it.get("urutan", "hb")),
                            "bintang": int(round(it["nilai"])) if it["nilai"] is not None and it["skala"] == 5 else None,
                            "nilai_0_10": it["nilai"] if it["skala"] == 10 else None, "peran": it["peran"],
                            "teks": anonim, "sentimen": sent, "tema": {k: sorted(v) for k, v in per_tema.items()}})
+    sekarang = datetime.date.today()
+    depan = sorted({i["bulan"] for i in hasil_item if i["bulan"] and i["bulan"] > "%04d-%02d" % (sekarang.year, sekarang.month)})
+    if depan:
+        meta["peringatan"].append("ada masukan bertanggal di masa depan (bulan %s) - kemungkinan urutan hari/bulan tertukar atau tanggal salah; "
+                                  "periksa dengan --urutan-tanggal." % ", ".join(depan))
     sama = sum(c - 1 for c in teks_sama.values() if c > 1)
     if sama:
         meta["peringatan"].append("%d masukan bertulisan sama dari pengirim/baris berbeda tetap dihitung (bukan duplikat). "
@@ -1131,7 +1282,7 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
     return {
         "versi_script": VERSI, "total_masukan": n, "dibuang": dibuang,
         "sumber": [{k: v for k, v in s.items() if k in ("berkas", "kanal", "jenis", "kolom_teks", "kolom_nilai", "skala_nilai",
-                                                          "kolom_tanggal", "baris", "responden", "catatan")} for s in meta.get("sumber", [])],
+                                                          "kolom_tanggal", "baris", "responden", "catatan", "urutan_tanggal")} for s in meta.get("sumber", [])],
         "peringatan": peringatan,
         "per_kanal": dict(kanal.most_common()), "sentimen": {k: sent.get(k, 0) for k in ("positif", "netral", "negatif")},
         "nps": nps,
@@ -1165,7 +1316,7 @@ def cetak_teks(r, opsi, maks_tanpa_tema=20):
             out.append("Sumber %s (%s): CSV %d baris (%d berisi jawaban); kolom teks: %s; nilai: %s; tanggal: %s" % (
                 s["berkas"], s["kanal"], s.get("baris", 0), s.get("responden", 0), ", ".join('"%s"' % k for k in s.get("kolom_teks", [])),
                 ('"%s" (skala %s)' % (s["kolom_nilai"], s["skala_nilai"])) if s.get("kolom_nilai") else "-",
-                ('"%s"' % s["kolom_tanggal"]) if s.get("kolom_tanggal") else "-"))
+                (('"%s"' % s["kolom_tanggal"]) + (" (dibaca %s)" % s["urutan_tanggal"] if s.get("urutan_tanggal") else "")) if s.get("kolom_tanggal") else "-"))
         else:
             out.append("Sumber %s (%s): %s" % (s["berkas"], s["kanal"], "chat WhatsApp" if s["jenis"] == "whatsapp" else "teks tempelan"))
     out.append("Kanal: " + ", ".join("%s %d" % (k, v) for k, v in r["per_kanal"].items()))
@@ -1240,6 +1391,8 @@ def main(argv=None):
     ap.add_argument("--kolom-teks", help="Nama kolom teks CSV (boleh beberapa, pisah koma)")
     ap.add_argument("--kolom-bintang", help="Nama kolom nilai/bintang CSV")
     ap.add_argument("--kolom-tanggal", help="Nama kolom tanggal CSV")
+    ap.add_argument("--urutan-tanggal", choices=["hari-bulan", "bulan-hari"],
+                    help="Paksa urutan tanggal angka: hari-bulan (Indonesia, 15/08/2026) atau bulan-hari (AS/Google Form, 8/15/2026)")
     ap.add_argument("--skala", choices=["5", "10"], help="Paksa skala kolom nilai: 5 (bintang 1-5) atau 10 (nilai 0-10/NPS)")
     ap.add_argument("--buang-teks-sama", action="store_true",
                     help="Buang teks yang sama persis per kanal walau dari pembeli berbeda (bawaan: hanya baris identik yang dibuang)")
@@ -1250,6 +1403,7 @@ def main(argv=None):
     ap.add_argument("--simpan-anonim", help="Simpan data yang SUDAH disamarkan ke CSV ini (kanal,bulan,bintang,nilai_0_10,sentimen,tema,teks)")
     opsi = ap.parse_args(argv)
     opsi.staf_list = [s.strip() for s in opsi.staf.split(",") if s.strip()]
+    opsi.urutan_tanggal = {"hari-bulan": "hb", "bulan-hari": "bh"}.get(opsi.urutan_tanggal)
     try:
         konfigurasi = muat_tema(opsi.tema) if opsi.tema else None
         if opsi.daftar_pengirim:

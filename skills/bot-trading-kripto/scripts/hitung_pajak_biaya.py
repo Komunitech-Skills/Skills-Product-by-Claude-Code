@@ -23,6 +23,7 @@ berbeda. Konversi ke rupiah hanya dengan kurs yang Anda isi sendiri (--kurs), di
 import argparse
 import csv
 import json
+import re
 import sys
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
@@ -33,6 +34,9 @@ CATATAN = ("Dasar: PMK 50/2025 (berlaku 1 Agustus 2025), dicek 2026-09-29 di tek
            "dicocokkan dengan Coretax. Ini alat bantu hitung, bukan nasihat pajak -- konfirmasi ke konsultan pajak/DJP.")
 
 
+BATAS_NILAI = Decimal("1e15")   # di atas ini pasti salah ketik (mencegah overflow/traceback)
+
+
 def dec(s, nama):
     try:
         x = Decimal(str(s).strip())
@@ -40,6 +44,37 @@ def dec(s, nama):
         raise ValueError(f"{nama} '{s}' bukan angka")
     if not x.is_finite() or x < 0:
         raise ValueError(f"{nama} harus angka >= 0")
+    if x > BATAS_NILAI:
+        raise ValueError(f"{nama} '{s}' terlalu besar (maks 1.000.000.000.000.000). Periksa lagi.")
+    return x
+
+
+# Kurs ditulis format INDONESIA: titik = pemisah ribuan, koma = desimal.
+_KURS_BULAT = re.compile(r"[0-9]+")                                  # 16500
+_KURS_RIBUAN = re.compile(r"[1-9][0-9]{0,2}(\.[0-9]{3})+(,[0-9]+)?")   # 16.500 / 1.500.000.000 / 16.500,25
+_KURS_KOMA = re.compile(r"[0-9]+,[0-9]+")                             # 16500,25 / 0,5
+
+
+def angka_kurs(teks_kurs, nama):
+    """Baca kurs format Indonesia. '16.500' = 16500; '16.500,25' = 16500.25; '16500,5' = 16500.5.
+    DITOLAK karena ambigu: '16,500' (ribuan gaya Inggris atau 16,5?), '16500.5' / '16.5' (desimal gaya Inggris
+    atau ribuan salah tulis?), '16,500.00', notasi ilmiah ('1e400'), dan angka di luar batas wajar."""
+    t = str(teks_kurs).strip().replace(" ", "")
+    contoh = "tulis mis. 16500 atau 16.500 (desimal pakai koma: 16500,25)"
+    if _KURS_BULAT.fullmatch(t):
+        angka_std = t
+    elif _KURS_RIBUAN.fullmatch(t):
+        angka_std = t.replace(".", "").replace(",", ".")
+    elif _KURS_KOMA.fullmatch(t):
+        if re.fullmatch(r"[1-9][0-9]{0,2},[0-9]{3}", t):
+            raise ValueError(f"{nama} '{teks_kurs}' AMBIGU (16,500 bisa berarti 16500 atau 16,5); {contoh}")
+        angka_std = t.replace(",", ".")
+    else:
+        raise ValueError(f"{nama} '{teks_kurs}' tidak dikenali/ambigu; {contoh}. Notasi ilmiah (1e5) dan "
+                         "titik desimal gaya Inggris (16500.5) tidak diterima.")
+    x = dec(angka_std, nama)
+    if x <= 0:
+        raise ValueError(f"{nama} harus lebih dari 0")
     return x
 
 
@@ -89,10 +124,9 @@ def parse_kurs(daftar):
         k = k.strip().upper()
         if k == "IDR":
             raise ValueError("--kurs untuk IDR tidak perlu (rupiah tidak dikonversi)")
-        x = dec(v, f"kurs {k}")
-        if x <= 0:
-            raise ValueError(f"kurs {k} harus lebih dari 0")
-        out[k] = x
+        if not re.fullmatch(r"[A-Z0-9]{2,10}", k):
+            raise ValueError(f"--kurs '{item}': nama kutipan '{k}' tidak wajar (mis. USDT, USDC, BTC)")
+        out[k] = angka_kurs(v, f"kurs {k}")
     return out
 
 
@@ -198,8 +232,9 @@ def main(argv=None):
         else:
             print("Isi --nilai-jual atau --transaksi.")
             return 1
-    except (ValueError, FileNotFoundError) as e:
-        print(json.dumps({"status": "error", "pesan": str(e)}, ensure_ascii=False))
+    except (ValueError, OSError, ArithmeticError) as e:
+        pesan = str(e) if isinstance(e, (ValueError, OSError)) else f"angka di luar jangkauan hitung ({type(e).__name__})"
+        print(json.dumps({"status": "error", "pesan": "GAGAL: " + pesan}, ensure_ascii=False))
         return 1
     print(json.dumps({"status": "ok", **out}, ensure_ascii=False, indent=2))
     return 0

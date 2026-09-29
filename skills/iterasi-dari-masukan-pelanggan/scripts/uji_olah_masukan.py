@@ -16,6 +16,7 @@ class Opsi:
     buang_teks_sama = False
     contoh = 3
     min_bulan = 5
+    urutan_tanggal = None
 
 
 def tulis(dir_, nama, isi):
@@ -647,6 +648,153 @@ class UjiPenyamaranLanjut(unittest.TestCase):
         t = om.samarkan("makasih kak paketnya udh sampe, bagus bgt kak", ["Kak Yanti"])
         self.assertEqual(t, "makasih kak paketnya udh sampe, bagus bgt kak")
         self.assertEqual(om.samarkan("Yanti bilang bagus", ["Kak Yanti"]), "[nama] bilang bagus")
+
+
+# ======================================================================= regresi v1.0.2
+def _analisis(teks, bintang=None):
+    tema, pos, neg = om.buat_tema(None)
+    sent, pt = om.analisis_item(om.samarkan(teks), bintang, tema, pos, neg)
+    return sent, {k: sorted(v) for k, v in pt.items()}
+
+
+class UjiRegresi102(unittest.TestCase):
+    FORM = ("Timestamp,Seberapa besar kemungkinan Anda merekomendasikan kedai kami kepada teman?,Apa yang perlu kami perbaiki?\n"
+            "8/15/2026 19:40:51,9,kopinya enak\n8/16/2026 10:02:11,10,nyaman sekali\n9/1/2026 09:00:00,3,musik kekencengan\n"
+            "9/2/2026 11:00:00,8,oke saja\n9/3/2026 12:00:00,6,wifi mati\n9/4/2026 12:00:00,0,kecewa lama\n9/5/2026 12:00:00,9,mantap\n")
+
+    # --- kolom NPS Google Form
+    def test_kolom_nps_judul_pertanyaan(self):
+        _, r, _, _ = olah_berkas("form.csv", self.FORM)
+        self.assertIsNotNone(r["nps"])
+        self.assertEqual(r["nps"]["responden"], 7)
+        self.assertEqual((r["nps"]["promotor_9_10"], r["nps"]["detraktor_0_6"]), (3, 3))
+        self.assertEqual(r["sumber"][0]["skala_nilai"], "0-10")
+
+    def test_judul_samar_berisi_teks_bukan_nilai(self):
+        isi = "Kepuasan,Komentar\nsangat puas dengan rasanya,enak banget\nlumayan puas,oke sekali\ncukup puas,bagus deh\n"
+        _, r, _, meta = olah_berkas("x.csv", isi)
+        self.assertIsNone(r["nps"])
+        self.assertIsNone(r["sumber"][0]["kolom_nilai"])   # kolom teks bukan kolom nilai
+
+    def test_kolom_angka_judul_tak_dikenal_dipakai_bila_jelas_0_10(self):
+        isi = "Ulasan,Q3\n" + "".join("komentar %d enak,%d\n" % (i, v) for i, v in enumerate([0, 10, 9, 5, 7, 8]))
+        _, r, _, _ = olah_berkas("x.csv", isi)
+        self.assertEqual(r["sumber"][0]["kolom_nilai"], "Q3")
+        self.assertTrue(any("ISINYA" in p for p in r["peringatan"]))
+
+    def test_kolom_angka_ambigu_diberi_peringatan(self):
+        isi = "Ulasan,Q3\n" + "".join("komentar %d enak,%d\n" % (i, v) for i, v in enumerate([1, 2, 3, 4, 5, 4]))
+        _, r, _, _ = olah_berkas("x.csv", isi)
+        self.assertIsNone(r["sumber"][0]["kolom_nilai"])
+        self.assertTrue(any("TIDAK dipakai" in p and "Q3" in p for p in r["peringatan"]))
+
+    # --- tanggal format AS
+    def test_tanggal_as_terbaca_dan_ditandai(self):
+        _, r, _, _ = olah_berkas("form.csv", self.FORM)
+        self.assertEqual(r["per_bulan"], {"2026-08": 2, "2026-09": 5})
+        self.assertTrue(any("bulan/hari" in p for p in r["peringatan"]))
+
+    def test_tanggal_ambigu_ditandai(self):
+        isi = "Tanggal,Ulasan\n03/04/2026,enak banget\n05/04/2026,kemasan rusak\n01/05/2026,pengiriman lama\n"
+        _, r, _, _ = olah_berkas("a.csv", isi)
+        self.assertTrue(any("ambigu" in p for p in r["peringatan"]))
+        self.assertEqual(r["per_bulan"], {"2026-04": 2, "2026-05": 1})   # bawaan hari/bulan
+        _, r2, _, _ = olah_berkas("a.csv", isi, urutan_tanggal="bh")
+        self.assertEqual(r2["per_bulan"], {"2026-01": 1, "2026-03": 1, "2026-05": 1})
+
+    def test_tanggal_ambigu_am_pm_dibaca_as(self):
+        isi = "Timestamp,Ulasan\n8/5/2026 7:40:51 PM,enak banget\n8/6/2026 8:00:00 AM,kemasan rusak\n"
+        _, r, _, _ = olah_berkas("a.csv", isi)
+        self.assertEqual(r["per_bulan"], {"2026-08": 2})
+        self.assertTrue(any("AM/PM" in p for p in r["peringatan"]))
+
+    def test_tanggal_dua_urutan_dan_tak_terbaca(self):
+        isi = "Tanggal,Ulasan\n15/08/2026,enak banget\n8/15/2026,kemasan rusak\nkemarin sore,pengiriman lama\n"
+        _, r, _, _ = olah_berkas("a.csv", isi)
+        teks = " ".join(r["peringatan"])
+        self.assertIn("bercampur", teks)
+        self.assertIn("tidak terbaca", teks)
+
+    def test_tanggal_wa_tidak_berubah(self):
+        isi = "15/08/2026 10.00 - Sari: enak banget kak\n16/08/2026 10.00 - Budi: kemasan rusak parah\n17/08/2026 10.00 - Ani: mantap bgt\n"
+        _, r, _, _ = olah_berkas("chat.txt", isi)
+        self.assertEqual(r["per_bulan"], {"2026-08": 3})
+
+    def test_bulan_masa_depan_diperingatkan(self):
+        isi = "Tanggal,Ulasan\n15/12/2099,enak banget\n16/12/2099,kemasan rusak\n"
+        _, r, _, _ = olah_berkas("a.csv", isi)
+        self.assertTrue(any("masa depan" in p for p in r["peringatan"]))
+
+    # --- UTF-16 .txt bertab
+    def test_unicode_text_utf16_tab(self):
+        txt = ("Tanggal\tBintang\tUlasan\n15/08/2026\t5\tenak banget\n16/08/2026\t1\tpesanan salah terus\n"
+               "17/08/2026\t2\tkirimnya lama banget\n18/08/2026\t4\tmantap\n19/08/2026\t5\tbagus\n")
+        for mentah in (b"\xff\xfe" + txt.encode("utf-16-le"), txt.encode("utf-8")):
+            _, r, _, _ = olah_berkas("excel.txt", mentah)
+            self.assertEqual(r["total_masukan"], 5)
+            self.assertEqual(r["sumber"][0]["jenis"], "csv")
+            self.assertEqual(r["sumber"][0]["kolom_teks"], ["Ulasan"])
+            self.assertEqual(r["per_bulan"], {"2026-08": 5})
+
+    def test_txt_tab_tak_seragam_diperingatkan(self):
+        isi = "Catatan\tpenting\nenak banget kak\nkemasan rusak parah\nlama banget pengirimannya\n"
+        _, r, _, _ = olah_berkas("t.txt", isi)
+        self.assertTrue(any("tab" in p for p in r["peringatan"]))
+
+    # --- pas dipakai dan sejenisnya
+    def test_pas_dipakai_bukan_pujian(self):
+        for t in ("pas dipake 2x udah melar", "pas dipake langsung robek", "pas dipakai ternyata luntur"):
+            self.assertEqual(_analisis(t)[0], "negatif", t)
+        self.assertEqual(_analisis("pas dateng udah dingin")[0], "negatif")
+        self.assertEqual(_analisis("ukurannya pas banget")[0], "positif")
+        self.assertEqual(_analisis("pas dateng masih anget")[0], "positif")
+
+    def test_harapan_dan_negasi_keluhan(self):
+        for t in ("semoga lain kali gak telat", "jangan telat lagi ya"):
+            sent, tm = _analisis(t)
+            self.assertNotEqual(sent, "positif", t)
+            self.assertEqual(tm.get("pengiriman"), ["saran"], t)
+        self.assertEqual(_analisis("gak telat sama sekali")[0], "positif")
+        self.assertEqual(_analisis("ga bikin jerawatan")[0], "positif")
+        self.assertEqual(_analisis("bikin jerawatan")[0], "negatif")
+
+    # --- kata ulang "2"
+    def test_kata_ulang_tidak_disamarkan(self):
+        for k in ("dikirim2", "berkali2", "dibalas2"):
+            self.assertEqual(om.samarkan("ga " + k), "ga " + k)
+        self.assertIn("[nomor]", om.samarkan("resi JP1234567890"))
+        self.assertIn("[nomor]", om.samarkan("kode ABC12345XY"))
+        sent, tm = _analisis("barang ga dikirim2")
+        self.assertEqual(sent, "negatif")
+        self.assertEqual(tm.get("pengiriman"), ["keluhan"])
+
+    # --- a.n. / atas nama
+    def test_nama_belakang_setelah_an_tidak_bocor(self):
+        t = om.samarkan("transfer a.n. Yuyun Kartika ya", ["Mbak Yuyun"])
+        self.assertNotIn("Kartika", t)
+        self.assertNotIn("Yuyun", t)
+        for teks, bocor in {"a.n. bu ratna sari mantap": "sari", "atas nama budi santoso": "santoso", "a/n Siti Aminah Putri ok": "Putri",
+                            "a.n. yuyun kartika": "kartika"}.items():
+            self.assertNotIn(bocor, om.samarkan(teks), teks)
+        self.assertEqual(om.samarkan("a.n. Siti ya"), "a.n. [nama] ya")
+
+    # --- kosakata tema lemah
+    def test_ketepatan_pesanan_tersirat(self):
+        for t in ("pesen navy dikirim item", "3x pesen 3x salah", "pesen yg ga pedes dikasih yg pedes", "zonk pesen 2 dateng 1",
+                  "sendok ga dikasih", "lupa dimasukin sambelnya", "pesanan salah terus", "pesan A tapi dapat B"):
+            sent, tm = _analisis(t)
+            self.assertEqual(tm.get("ketepatan_pesanan"), ["keluhan"], t)
+            self.assertNotIn("pengiriman", tm, t)
+
+    def test_pengiriman(self):
+        for t in ("pengirimannya lama banget", "kurir nyasar, paketnya telat 3 hari", "estimasi 2 hari tapi 6 hari baru tiba"):
+            self.assertIn("keluhan", _analisis(t)[1].get("pengiriman", []), t)
+        self.assertEqual(_analisis("pengantaran cepet")[1].get("pengiriman"), ["pujian"])
+
+    def test_stok(self):
+        for t in ("kapan restock kak?", "kapan ready lagi?", "sering kosong stoknya", "ga kebagian terus"):
+            self.assertEqual(_analisis(t)[1].get("stok_ketersediaan"), ["keluhan"], t)
+        self.assertNotIn("keluhan", _analisis("stok ready ga kak?")[1].get("stok_ketersediaan", []))
 
 
 if __name__ == "__main__":
