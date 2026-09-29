@@ -39,7 +39,7 @@ import urllib.parse
 import urllib.request
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 INVENTREE_TERUJI = ("1.5.6",)
 API_TERUJI = 530
 KUNCI_DEFAULT = os.path.join(os.path.expanduser("~"), ".komunitech", "inventree-kunci.txt")
@@ -190,7 +190,14 @@ def simpan_kunci(args):
     if not token_wajar(token):
         raise Gagal("Token InvenTree seharusnya diawali 'inv-' (InvenTree 1.x). Salin ulang dari halaman "
                     "profil pengguna > Access Tokens (tampil hanya sekali saat dibuat).", K_INPUT)
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    folder = os.path.dirname(path)
+    baru = not os.path.isdir(folder)
+    os.makedirs(folder, mode=0o700, exist_ok=True)
+    if baru:
+        try:
+            os.chmod(folder, 0o700)
+        except OSError:
+            pass
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(fd, "w", encoding="utf-8") as f:
         f.write(token + "\n")
@@ -238,6 +245,16 @@ def samarkan(token):
 # ============================================================ HTTP ke InvenTree
 
 
+_SUDAH_DIPERINGATKAN = set()
+_POLA_LAN = r"^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)"
+
+
+def host_lokal_atau_lan(url):
+    host = (urllib.parse.urlsplit(url).hostname or "").lower()
+    return (host in ("127.0.0.1", "localhost", "::1") or host.endswith(".localhost")
+            or re.match(_POLA_LAN, host) is not None)
+
+
 def periksa_url(url, izinkan_jarak_jauh):
     u = urllib.parse.urlsplit(url)
     if u.scheme not in ("http", "https") or not u.hostname:
@@ -245,7 +262,7 @@ def periksa_url(url, izinkan_jarak_jauh):
     host = u.hostname.lower()
     if host in ("127.0.0.1", "localhost", "::1") or host.endswith(".localhost"):
         return
-    kantor = re.match(r"^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)", host)
+    kantor = re.match(_POLA_LAN, host)
     if not izinkan_jarak_jauh:
         raise Gagal(
             f"Alamat InvenTree '{url}' bukan komputer ini (localhost/127.0.0.1). Jangan buka InvenTree ke "
@@ -254,8 +271,27 @@ def periksa_url(url, izinkan_jarak_jauh):
     if not kantor and u.scheme != "https":
         raise Gagal(f"Alamat internet '{url}' wajib HTTPS. InvenTree tidak boleh diakses lewat http biasa di "
                     f"internet terbuka (token ikut terkirim tanpa enkripsi).", K_INPUT)
-    if kantor and u.scheme != "https":
+    if kantor and u.scheme != "https" and url not in _SUDAH_DIPERINGATKAN:
+        _SUDAH_DIPERINGATKAN.add(url)
         sys.stderr.write(f"PERINGATAN: {url} memakai http biasa di jaringan kantor, bukan komputer ini sendiri.\n")
+
+
+class _TolakPengalihan(urllib.request.HTTPRedirectHandler):
+    """Jangan pernah mengikuti redirect: header Authorization (token) bisa terbawa ke alamat lain
+    yang belum lolos periksa_url, atau HTTPS turun ke HTTP."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise Gagal(
+            f"InvenTree di {req.full_url.split('/api')[0]} mengalihkan (HTTP {code}) ke {newurl!r}. Demi keamanan "
+            f"token, skill TIDAK mengikuti pengalihan. Pakai alamat tujuan akhir yang benar sebagai --url / ENV "
+            f"INVENTREE_API_HOST (mis. versi https:// atau port yang benar; panduan bagian 11).", K_KONEKSI)
+
+
+def buat_opener(url):
+    """Alamat komputer ini / jaringan kantor: proxy dari ENV (HTTP_PROXY/HTTPS_PROXY) DIABAIKAN supaya token
+    tidak pernah lewat proxy. Alamat internet (hanya HTTPS + --izinkan-jarak-jauh) memakai setelan proxy sistem."""
+    proxy = urllib.request.ProxyHandler({}) if host_lokal_atau_lan(url) else urllib.request.ProxyHandler()
+    return urllib.request.build_opener(proxy, _TolakPengalihan())
 
 
 def panggil(method, path, args, token=None, body=None, tulis=False):
@@ -269,7 +305,7 @@ def panggil(method, path, args, token=None, body=None, tulis=False):
     if data is not None:
         req.add_header("Content-Type", "application/json")
     try:
-        with urllib.request.urlopen(req, timeout=args.timeout) as resp:
+        with buat_opener(url).open(req, timeout=args.timeout) as resp:
             mentah = resp.read()
             return json.loads(mentah) if mentah else None
     except urllib.error.HTTPError as e:
@@ -300,7 +336,9 @@ def panggil(method, path, args, token=None, body=None, tulis=False):
             if tulis:
                 raise Gagal(f"InvenTree membalas galat server ({e.code}) saat MENULIS. Data MUNGKIN sudah masuk "
                             f"sebagian. JANGAN ulangi otomatis - cek dulu di layar InvenTree.", K_TAKPASTI)
-            raise Gagal(f"InvenTree membalas galat server ({e.code}). Coba lagi sebentar; bila terus, cek log "
+            saran = (" (502/503/504 biasanya: InvenTree sedang menyala/mati atau kotak server mati - cek "
+                     "'docker compose ps' di folder InvenTree)") if e.code in (502, 503, 504) else ""
+            raise Gagal(f"InvenTree membalas galat server ({e.code}){saran}. Coba lagi sebentar; bila terus, cek log "
                         f"InvenTree.", K_KONEKSI)
         raise Gagal(f"InvenTree membalas kode {e.code}: {pesan or mentah[:200]!r}", K_KONEKSI)
     except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
@@ -529,7 +567,9 @@ def data_stok_menipis(args, token):
         stok = ke_desimal(p.get("total_in_stock", p.get("in_stock")))
         mn = ke_desimal(p.get("minimum_stock"))
         dipesan = ke_desimal(p.get("ordering"))
-        diproduksi = ke_desimal(p.get("building"))
+        # 'building' = output yang sedang dikerjakan; 'scheduled_to_build' = sisa perintah produksi terbuka
+        # (termasuk yang masih Menunggu). Pakai yang lebih besar supaya BO Pending ikut dihitung.
+        diproduksi = max(ke_desimal(p.get("building")), ke_desimal(p.get("scheduled_to_build")))
         dibutuhkan = ke_desimal(p.get("required_for_build_orders")) + ke_desimal(p.get("required_for_sales_orders"))
         kurang = mn - stok
         saran = mn - stok - dipesan - diproduksi
@@ -554,7 +594,7 @@ def teks_stok_menipis(hasil):
         if r["dipesan"] > 0:
             ket.append(f"sedang dipesan {fmt(r['dipesan'])}{u}")
         if r["diproduksi"] > 0:
-            ket.append(f"sedang diproduksi {fmt(r['diproduksi'])}{u}")
+            ket.append(f"dalam perintah produksi terbuka {fmt(r['diproduksi'])}{u}")
         if r["dibutuhkan"] > 0:
             ket.append(f"dibutuhkan produksi/penjualan terbuka {fmt(r['dibutuhkan'])}{u}")
         if r["saran"] > 0:
@@ -571,7 +611,7 @@ def cmd_stok_menipis(args, token):
     hasil = data_stok_menipis(args, token)
     teks = teks_stok_menipis(hasil)
     teks.append("\nCatatan: hanya barang yang diberi 'Minimum Stock' di InvenTree yang diperiksa. 'Perlu dipesan' = "
-                "minimum - stok - sedang dipesan - sedang diproduksi (kebutuhan produksi/penjualan terbuka ditampilkan terpisah, tidak ditambahkan).")
+                "minimum - stok - sedang dipesan - dalam perintah produksi terbuka (kebutuhan produksi/penjualan terbuka ditampilkan terpisah, tidak ditambahkan).")
     cetak({"teks": "\n".join(teks), "jumlah": len(hasil),
            "barang": [{k: (dec(v) if isinstance(v, Decimal) else v) for k, v in r.items()} for r in hasil]}, args)
     return 0
@@ -605,8 +645,14 @@ def cmd_po_terbuka(args, token):
             if sisa <= 0:
                 continue
             pd = ln.get("part_detail") or {}
+            kemasan = ke_desimal((ln.get("supplier_part_detail") or {}).get("pack_quantity_native") or 1)
+            if kemasan == 1:
+                ket_sat = satuan(pd)
+            else:
+                ket_sat = (f" kemasan pemasok (1 kemasan = {fmt(kemasan)}{satuan(pd)}; sisa = "
+                           f"{fmt(sisa * kemasan)}{satuan(pd)})")
             teks.append(f"  - {pd.get('name', ln.get('internal_part_name', '?'))} [{pd.get('IPN') or '-'}]: dipesan {fmt(pesan)},"
-                        f" diterima {fmt(terima)}, sisa {fmt(sisa)}{satuan(pd)}")
+                        f" diterima {fmt(terima)}, sisa {fmt(sisa)}{ket_sat}")
             sisa_list.append({"baris": ln["pk"], "kode": pd.get("IPN"), "sisa": dec(sisa)})
         data.append({"id": o["pk"], "nomor": o["reference"], "pemasok": o.get("supplier_name"),
                      "status": o.get("status"), "target": o.get("target_date"), "terlambat": bool(o.get("overdue")),
@@ -896,6 +942,23 @@ def baca_lembar_opname(path):
     return isi, lewati, salah
 
 
+BATAS_CATATAN = 500  # kolom catatan riwayat stok InvenTree 1.5.6 maks. 512 karakter
+
+
+def susun_catatan_opname(tanggal, catatan_umum, isi):
+    """Satu catatan transaksi untuk semua item (API /stock/count/ hanya menerima satu 'notes'). Catatan per baris
+    lembar ditempel dengan id stoknya supaya tidak hilang diam-diam; dipotong rapi bila melebihi batas InvenTree."""
+    teks = f"Opname {tanggal.isoformat()} via Komunitech inventree-gudang"
+    if catatan_umum:
+        teks += f": {catatan_umum}"
+    per_baris = [f"id {x['id']} ({x['nama'] or x['kode']}): {x['catatan']}" for x in isi if x.get("catatan")]
+    if per_baris:
+        teks += " | Catatan baris: " + "; ".join(per_baris)
+    if len(teks) > BATAS_CATATAN:
+        teks = teks[:BATAS_CATATAN - 20].rstrip() + " ...(terpotong)"
+    return teks
+
+
 def cmd_opname(args, token):
     isi, lewati, salah = baca_lembar_opname(args.file)
     if salah:
@@ -923,7 +986,8 @@ def cmd_opname(args, token):
         u = f" {x['satuan']}" if x["satuan"] else ""
         tanda = "sama" if x["selisih"] == 0 else ("LEBIH " if x["selisih"] > 0 else "KURANG ") + fmt(abs(x["selisih"])) + u
         teks.append(f"- {x['nama']} [{x['kode'] or '-'}] {x['lokasi']}{' batch ' + x['batch'] if x['batch'] else ''}: "
-                    f"sistem {fmt(x['sistem_kini'])}{u}, fisik {fmt(x['fisik'])}{u} -> {tanda}")
+                    f"sistem {fmt(x['sistem_kini'])}{u}, fisik {fmt(x['fisik'])}{u} -> {tanda}"
+                    + (f" | catatan: {x['catatan']}" if x["catatan"] else ""))
     teks.append(f"\nRingkasan: {len(beda)} item selisih, {len(isi) - len(beda)} item sama.")
     if berubah:
         teks.append("\nBERHENTI: stok berikut BERUBAH di InvenTree sejak lembar dibuat (ada transaksi masuk/keluar):")
@@ -935,14 +999,15 @@ def cmd_opname(args, token):
     data_json = [{"id": x["id"], "nama": x["nama"], "sistem": dec(x["sistem_kini"]), "fisik": dec(x["fisik"]),
                   "selisih": dec(x["selisih"])} for x in isi]
     if not args.ya:
+        ada_cat = any(x["catatan"] for x in isi)
         teks.append("\nBelum disimpan. Periksa angka di atas. Bila benar, ulangi perintah yang sama + --ya. "
-                    "Semua item yang dihitung (termasuk yang sama) akan dicatat sebagai hasil opname hari ini.")
+                    "Semua item yang dihitung (termasuk yang sama) dicatat di riwayat stok InvenTree; tanggal opname "
+                    "terakhir (stocktake) hanya berubah pada item yang jumlahnya berubah."
+                    + (" Catatan per baris ikut disimpan di catatan transaksi." if ada_cat else ""))
         cetak({"teks": "\n".join(teks), "disimpan": False, "item": data_json}, args)
         return 0
-    catatan = f"Opname {hari_ini(args.tz).isoformat()} via Komunitech inventree-gudang"
-    if args.catatan:
-        catatan += f": {args.catatan}"
-    body = {"items": [{"pk": x["id"], "quantity": f"{x['fisik']:f}"} for x in isi], "notes": catatan[:250]}
+    catatan = susun_catatan_opname(hari_ini(args.tz), args.catatan, isi)
+    body = {"items": [{"pk": x["id"], "quantity": f"{x['fisik']:f}"} for x in isi], "notes": catatan}
     panggil("POST", "/stock/count/", args, token, body=body, tulis=True)
     teks2 = [f"TERSIMPAN: hasil opname {len(isi)} item dicatat di InvenTree ({len(beda)} item disesuaikan).",
              f"Catatan transaksi: {catatan}",
@@ -991,6 +1056,43 @@ def urai_baris_terima(teks):
     return hasil
 
 
+def _label_baris(ln):
+    pd = ln.get("part_detail") or {}
+    sku = f", SKU pemasok {ln['sku']}" if ln.get("sku") else ""
+    return f"{pd.get('IPN') or '-'} {pd.get('name', '?')} (#{pd.get('pk', ln.get('part'))}{sku})"
+
+
+def pilih_baris_po(sebutan, terbuka, po):
+    """Cocokkan sebutan barang ke baris PO terbuka. Urutan: #id barang -> IPN persis -> nama persis -> SKU persis
+    -> (baru) potongan IPN/nama. Kecocokan PERSIS selalu menang atas potongan (PK-05 tidak bentrok dengan PK-05B)."""
+    s = sebutan.strip()
+    kecil = s.lower()
+
+    def pd(ln):
+        return ln.get("part_detail") or {}
+
+    if s.startswith("#") and s[1:].isdigit():
+        pid = int(s[1:])
+        tahap = [[x for x in terbuka if pd(x[0]).get("pk", x[0].get("part")) == pid]]
+    else:
+        tahap = [
+            [x for x in terbuka if (pd(x[0]).get("IPN") or "").lower() == kecil],
+            [x for x in terbuka if (pd(x[0]).get("name") or "").lower() == kecil],
+            [x for x in terbuka if (x[0].get("sku") or "").lower() == kecil],
+            [x for x in terbuka if kecil in (pd(x[0]).get("IPN") or "").lower()
+             or kecil in (pd(x[0]).get("name") or "").lower()],
+        ]
+    for cocok in tahap:
+        if len(cocok) == 1:
+            return cocok[0]
+        if len(cocok) > 1:
+            raise Gagal(f"'{s}' cocok dengan lebih dari satu baris {po['reference']}: " +
+                        "; ".join(_label_baris(l) for l, _ in cocok) +
+                        ". Sebutkan kode (IPN) persis, #id barang, atau SKU pemasok.", K_GANDA)
+    raise Gagal(f"'{s}' tidak ada di baris terbuka {po['reference']}. Baris terbuka: " +
+                "; ".join(_label_baris(l) for l, _ in terbuka), K_INPUT)
+
+
 def cmd_terima_barang(args, token):
     po = cari_po(args, token, args.po)
     if po.get("status") not in (20, 25):
@@ -1010,18 +1112,10 @@ def cmd_terima_barang(args, token):
         rencana = [(ln, sisa) for ln, sisa in terbuka]
     elif args.baris:
         for sebutan, n in urai_baris_terima(args.baris):
-            kecil = sebutan.lower()
-            cocok = [(ln, sisa) for ln, sisa in terbuka
-                     if kecil in ((ln.get("part_detail") or {}).get("IPN") or "").lower()
-                     or kecil in ((ln.get("part_detail") or {}).get("name") or "").lower()
-                     or kecil == (ln.get("sku") or "").lower()]
-            if not cocok:
-                raise Gagal(f"'{sebutan}' tidak ada di baris terbuka {po['reference']}. Baris terbuka: " +
-                            ", ".join(f"{(l.get('part_detail') or {}).get('IPN')} {(l.get('part_detail') or {}).get('name')}"
-                                      for l, _ in terbuka), K_INPUT)
-            if len(cocok) > 1:
-                raise Gagal(f"'{sebutan}' cocok dengan lebih dari satu baris PO. Pakai kode (IPN) persis.", K_GANDA)
-            ln, sisa = cocok[0]
+            ln, sisa = pilih_baris_po(sebutan, terbuka, po)
+            if any(ln["pk"] == r[0]["pk"] for r in rencana):
+                raise Gagal(f"'{sebutan}' disebut lebih dari sekali di --baris (baris PO yang sama). Gabungkan jumlahnya "
+                            f"dalam satu entri, atau jalankan terpisah per batch.", K_INPUT)
             if n > sisa:
                 raise Gagal(f"{(ln.get('part_detail') or {}).get('name')}: diterima {fmt(n)} melebihi sisa pesanan {fmt(sisa)}. "
                             f"Kelebihan barang dicatat manual di InvenTree (atau ubah jumlah PO dulu).", K_INPUT)
@@ -1043,7 +1137,7 @@ def cmd_terima_barang(args, token):
         spd = ln.get("supplier_part_detail") or {}
         kemasan = ke_desimal(spd.get("pack_quantity_native") or 1)
         teks.append(f"- {pd.get('name', '?')} [{pd.get('IPN') or '-'}]: terima {fmt(n)}"
-                    f"{satuan(pd) if kemasan == 1 else ' kemasan pemasok'} (sisa pesanan {fmt(ke_desimal(ln['quantity']) - ke_desimal(ln.get('received')))})")
+                    f"{satuan(pd) if kemasan == 1 else f' kemasan pemasok (= {fmt(n * kemasan)}{satuan(pd)} stok)'} (sisa pesanan {fmt(ke_desimal(ln['quantity']) - ke_desimal(ln.get('received')))})")
         if kemasan != 1:
             peringatan.append(f"{pd.get('name')}: 1 kemasan pemasok = {fmt(kemasan)}{satuan(pd)}; jumlah di atas dalam KEMASAN.")
         if pd.get("trackable"):
@@ -1072,7 +1166,12 @@ def cmd_terima_barang(args, token):
     teks2 = [f"TERSIMPAN: {len(items)} baris diterima dari {po['reference']} ke "
              f"{lokasi.get('pathstring') if lokasi else 'lokasi tujuan baris PO'}" + (f" (batch {args.batch})" if args.batch else "") + "."]
     for ln, n in rencana:
-        teks2.append(f"- {(ln.get('part_detail') or {}).get('name')}: +{fmt(n)}")
+        pdx = ln.get("part_detail") or {}
+        kemasan = ke_desimal((ln.get("supplier_part_detail") or {}).get("pack_quantity_native") or 1)
+        if kemasan == 1:
+            teks2.append(f"- {pdx.get('name')}: +{fmt(n)}{satuan(pdx)}")
+        else:
+            teks2.append(f"- {pdx.get('name')}: +{fmt(n)} kemasan pemasok = +{fmt(n * kemasan)}{satuan(pdx)} stok")
     teks2.append("Cek: 'po-terbuka' (sisa pesanan) atau 'stok <kode>'.")
     cetak({"teks": "\n".join(teks2), "disimpan": True}, args)
     return 0

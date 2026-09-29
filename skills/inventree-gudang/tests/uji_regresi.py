@@ -58,9 +58,11 @@ def buat_handler(t):
         def log_message(self, *a):
             pass
 
-        def _jawab(self, status, body):
+        def _jawab(self, status, body, header=None):
             raw = json.dumps(body).encode("utf-8")
             self.send_response(status)
+            for k, v in (header or {}).items():
+                self.send_header(k, v)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(raw)))
             self.end_headers()
@@ -126,7 +128,8 @@ class DasarServer(unittest.TestCase):
         self.t.bukan_inventree = False
 
     def jalan(self, *argv, token=TOKEN_BACA, env_tambah=None, cwd=None):
-        env = {k: v for k, v in os.environ.items() if not k.startswith("INVENTREE_")}
+        env = {k: v for k, v in os.environ.items() if not k.startswith("INVENTREE_")
+               and k.lower() not in ("http_proxy", "https_proxy", "all_proxy", "no_proxy")}
         env["HOME"] = self.tmp
         env["USERPROFILE"] = self.tmp
         env["INVENTREE_API_HOST"] = self.url
@@ -430,13 +433,15 @@ class TesBaca(DasarServer):
         f = os.path.join(self.tmp, "e.csv")
         k, out, _ = self.jalan("ekspor-csv", "--keluaran", f)
         self.assertEqual(k, 0)
-        baris = list(csv.reader(open(f, encoding="utf-8-sig"), delimiter=";"))
+        with open(f, encoding="utf-8-sig") as fh:
+            baris = list(csv.reader(fh, delimiter=";"))
         rek = FIX["GET /api/stock/?in_stock=true&location_detail=true&part_detail=true&limit=100&offset=0"]["baca"]["body"]["results"]
         self.assertEqual(len(baris) - 1, len(rek))
         self.assertIn(["5", "BB-003", "Bumbu Balado", "Gudang Utama/Rak A", "BL-0901", "12,5", "kg", "", "OK", ""], baris)
         f2 = os.path.join(self.tmp, "b.csv")
         self.jalan("ekspor-csv", "--jenis", "barang", "--pemisah", "koma", "--keluaran", f2)
-        b2 = list(csv.reader(open(f2, encoding="utf-8-sig")))
+        with open(f2, encoding="utf-8-sig") as fh:
+            b2 = list(csv.reader(fh))
         self.assertEqual(b2[0][:3], ["kode", "nama", "kategori"])
         self.assertTrue(any(r[0] == "BB-003" and r[4] == "12.5" for r in b2))
 
@@ -462,7 +467,8 @@ class TesGalat(DasarServer):
 
     def test_403_baca_saja_tidak_bisa_menulis(self):
         f = os.path.join(self.tmp, "o403.csv")
-        open(f, "w", encoding="utf-8").write("id_stok;stok_sistem;stok_fisik\n5;12,5;12\n")
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write("id_stok;stok_sistem;stok_fisik\n5;12,5;12\n")
         k, _, err = self.jalan("opname", "--file", f, "--ya")
         self.assertEqual(k, inv.K_AUTH)
         self.assertIn("403", err)
@@ -500,14 +506,16 @@ class TesOpname(DasarServer):
     # Rekaman 'gudang' untuk /api/stock/{1,3,5}/ = keadaan SESUDAH opname (57 / 17,5 / 12,5).
     def lembar(self, nama, isi):
         f = os.path.join(self.tmp, nama)
-        open(f, "w", encoding="utf-8-sig").write(isi)
+        with open(f, "w", encoding="utf-8-sig") as fh:
+            fh.write(isi)
         return f
 
     def test_draf(self):
         f = os.path.join(self.tmp, "draf.csv")
         k, out, _ = self.jalan("opname-draf", "--lokasi", "Rak A", "--keluaran", f)
         self.assertEqual(k, 0)
-        baris = list(csv.reader(open(f, encoding="utf-8-sig"), delimiter=";"))
+        with open(f, encoding="utf-8-sig") as fh:
+            baris = list(csv.reader(fh, delimiter=";"))
         self.assertEqual(baris[0], inv.KOLOM_OPNAME)
         self.assertEqual(len(baris), 5)
         self.assertTrue(all(r[7] == "" for r in baris[1:]))
@@ -622,6 +630,202 @@ class TesTerima(DasarServer):
         k, _, err = self.jalan("terima-barang", "--po", "PO-0001", "--semua", token=TOKEN_GUDANG)
         self.assertEqual(k, inv.K_INPUT)
         self.assertIn("Sudah dipesan", err)
+
+
+
+# ============================================================ 9. v1.0.1: pencocokan baris PO, redirect, proxy, catatan
+
+class Penangkap:
+    """Server kedua yang mencatat setiap permintaan (termasuk header Authorization) yang SAMPAI kepadanya."""
+
+    def __init__(self):
+        self.masuk = []
+        tangkap = self
+
+        class H(BaseHTTPRequestHandler):
+            def log_message(self, *a):
+                pass
+
+            def _catat(self):
+                tangkap.masuk.append((self.command, self.path, self.headers.get("Authorization"),
+                                      self.headers.get("Proxy-Authorization")))
+                raw = b'{"server": "InvenTree", "version": "palsu"}'
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+            do_GET = do_POST = do_CONNECT = _catat
+
+        self.srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
+        self.url = f"http://127.0.0.1:{self.srv.server_address[1]}"
+        threading.Thread(target=self.srv.serve_forever, daemon=True).start()
+
+    def tutup(self):
+        self.srv.shutdown()
+        self.srv.server_close()
+
+
+def baris_po_tiruan(daftar):
+    """daftar: [(pk_baris, pk_barang, IPN, nama, sku, pesan, diterima, kemasan)] -> jawaban po-line bergaya 1.5.6."""
+    hasil = []
+    for pk, part, ipn, nama, sku, pesan, terima, kemasan in daftar:
+        hasil.append({"pk": pk, "order": 1, "part": 100 + pk, "quantity": pesan, "received": terima, "sku": sku,
+                      "destination": None, "internal_part": part, "internal_part_name": nama,
+                      "part_detail": {"pk": part, "IPN": ipn, "name": nama, "units": "", "trackable": False},
+                      "supplier_part_detail": {"pk": 100 + pk, "SKU": sku, "pack_quantity_native": kemasan}})
+    return {"count": len(hasil), "next": None, "previous": None, "results": hasil}
+
+
+KEY_BARIS_PO1 = "GET /api/order/po-line/?order=1&part_detail=true&limit=100&offset=0"
+
+
+class TesV101(DasarServer):
+    def pasang_baris(self):
+        self.t.timpa[KEY_BARIS_PO1] = (200, baris_po_tiruan([
+            (1, 51, "PK-05", "Paku 5 cm", "SUP-P5", 10, 0, 1),
+            (2, 52, "PK-05B", "Paku 5 cm Beton", "SUP-P5B", 10, 0, 1),
+            (3, 53, "RL-09", "Rol Kabel", "SUP-RL", 2, 0, 6),
+        ]))
+
+    def test_ipn_persis_menang_atas_awalan(self):
+        self.pasang_baris()
+        k, out, err = self.jalan("terima-barang", "--po", "PO-0001", "--baris", "PK-05=4", token=TOKEN_GUDANG)
+        self.assertEqual(k, 0, err)
+        self.assertIn("Paku 5 cm [PK-05]: terima 4", out)
+        self.assertNotIn("PK-05B", out)
+        k, out, _ = self.jalan("terima-barang", "--po", "PO-0001", "--baris", "pk-05b=3", token=TOKEN_GUDANG)
+        self.assertIn("Paku 5 cm Beton [PK-05B]: terima 3", out)
+
+    def test_nama_persis_menang_dan_simpan_baris_benar(self):
+        self.pasang_baris()
+        k, out, err = self.jalan("terima-barang", "--po", "PO-0001", "--baris", "Paku 5 cm=2", "--ya", token=TOKEN_GUDANG)
+        self.assertEqual(k, 0, err)
+        self.assertEqual(self.tulis()[0][3]["items"][0]["line_item"], 1)
+
+    def test_id_barang_dan_sku(self):
+        self.pasang_baris()
+        k, out, _ = self.jalan("terima-barang", "--po", "PO-0001", "--baris", "#52=1; SUP-P5=1", token=TOKEN_GUDANG)
+        self.assertEqual(k, 0)
+        self.assertIn("[PK-05B]: terima 1", out)
+        self.assertIn("[PK-05]: terima 1", out)
+
+    def test_potongan_ambigu_tetap_ditanya(self):
+        self.pasang_baris()
+        k, _, err = self.jalan("terima-barang", "--po", "PO-0001", "--baris", "paku=1", token=TOKEN_GUDANG)
+        self.assertEqual(k, inv.K_GANDA)
+        self.assertIn("SKU pemasok SUP-P5B", err)
+        self.assertEqual(self.tulis(), [])
+
+    def test_baris_sama_dua_kali_ditolak(self):
+        self.pasang_baris()
+        k, _, err = self.jalan("terima-barang", "--po", "PO-0001", "--baris", "PK-05=1; #51=1", token=TOKEN_GUDANG)
+        self.assertEqual(k, inv.K_INPUT)
+        self.assertIn("lebih dari sekali", err)
+
+    def test_kemasan_pemasok_ditampilkan(self):
+        self.pasang_baris()
+        k, out, _ = self.jalan("terima-barang", "--po", "PO-0001", "--baris", "RL-09=1", token=TOKEN_GUDANG)
+        self.assertIn("terima 1 kemasan pemasok (= 6 stok)", out)
+        k, out, _ = self.jalan("terima-barang", "--po", "PO-0001", "--baris", "RL-09=1", "--ya", token=TOKEN_GUDANG)
+        self.assertIn("+1 kemasan pemasok = +6 stok", out)
+
+    def test_redirect_tidak_diikuti_token_tidak_bocor(self):
+        tangkap = Penangkap()
+        try:
+            key = "GET /api/part/?search=keripik&active=true&limit=100&offset=0"
+            self.t.timpa[key] = (302, {}, {"Location": tangkap.url + "/api/part/?search=keripik"})
+            k, _, err = self.jalan("cari", "keripik")
+            self.assertEqual(k, inv.K_KONEKSI)
+            self.assertIn("mengalihkan", err)
+            self.assertEqual(tangkap.masuk, [])  # tidak ada permintaan (apalagi token) ke alamat tujuan redirect
+            self.t.timpa["POST /api/stock/count/"] = (307, {}, {"Location": tangkap.url + "/api/stock/count/"})
+            f = os.path.join(self.tmp, "r307.csv")
+            with open(f, "w", encoding="utf-8") as fh:
+                fh.write("id_stok;stok_sistem;stok_fisik\n5;12,5;12\n")
+            k, _, err = self.jalan("opname", "--file", f, "--ya", token=TOKEN_GUDANG)
+            self.assertEqual(k, inv.K_KONEKSI)
+            self.assertEqual(tangkap.masuk, [])
+        finally:
+            tangkap.tutup()
+
+    def test_proxy_env_diabaikan_untuk_localhost(self):
+        proxy = Penangkap()
+        try:
+            env = {"HTTP_PROXY": proxy.url, "http_proxy": proxy.url, "HTTPS_PROXY": proxy.url,
+                   "https_proxy": proxy.url, "ALL_PROXY": proxy.url}
+            k, out, err = self.jalan("cari", "keripik", env_tambah=env)
+            self.assertEqual(k, 0, err)
+            self.assertIn("Jumlah: 2", out)
+            self.assertEqual(proxy.masuk, [])  # token tidak pernah lewat proxy
+            self.assertTrue(any(d[2] == "baca" for d in self.t.diterima))  # langsung ke server lokal
+        finally:
+            proxy.tutup()
+
+    def test_opener_lokal_tanpa_proxy_internet_pakai_proxy(self):
+        lama = os.environ.get("HTTPS_PROXY")
+        os.environ["HTTPS_PROXY"] = "http://proxy.kantor.contoh:3128"
+        try:
+            def proxies(url):
+                op = inv.buat_opener(url)
+                # ProxyHandler({}) tidak didaftarkan urllib sama sekali (tanpa metode *_open) = tanpa proxy.
+                ph = [h for h in op.handlers if isinstance(h, inv.urllib.request.ProxyHandler)]
+                self.assertTrue(any(isinstance(h, inv._TolakPengalihan) for h in op.handlers))
+                return ph[0].proxies if ph else {}
+            self.assertEqual(proxies("http://localhost"), {})
+            self.assertEqual(proxies("http://192.168.1.10:8000"), {})
+            self.assertIn("https", proxies("https://gudang.contoh.com"))
+        finally:
+            if lama is None:
+                del os.environ["HTTPS_PROXY"]
+            else:
+                os.environ["HTTPS_PROXY"] = lama
+
+    def test_catatan_per_baris_ikut_dikirim(self):
+        f = os.path.join(self.tmp, "cat.csv")
+        with open(f, "w", encoding="utf-8-sig") as fh:
+            fh.write("id_stok;nama;stok_sistem;stok_fisik;catatan\n3;Minyak;17,5;17;1 jeriken bocor\n1;Singkong;57;57;\n")
+        k, out, _ = self.jalan("opname", "--file", f, token=TOKEN_GUDANG)
+        self.assertIn("| catatan: 1 jeriken bocor", out)
+        k, out, err = self.jalan("opname", "--file", f, "--ya", token=TOKEN_GUDANG)
+        self.assertEqual(k, 0, err)
+        notes = self.tulis()[0][3]["notes"]
+        self.assertIn("id 3 (Minyak): 1 jeriken bocor", notes)
+        self.assertLessEqual(len(notes), 512)
+
+    def test_catatan_panjang_dipotong(self):
+        import datetime as _dt
+        isi = [{"id": i, "nama": "Barang", "kode": "", "catatan": "x" * 80} for i in range(20)]
+        teks = inv.susun_catatan_opname(_dt.date(2026, 9, 29), "akhir bulan", isi)
+        self.assertLessEqual(len(teks), 512)
+        self.assertTrue(teks.endswith("(terpotong)"))
+
+    def test_produksi_menunggu_ikut_dihitung(self):
+        key = "GET /api/part/?low_stock=true&active=true&limit=100&offset=0"
+        rek = json.loads(json.dumps(FIX[key]["baca"]["body"]))
+        for p in rek["results"]:
+            if p["IPN"] == "PJ-002":
+                p["scheduled_to_build"] = 40.0   # BO Pending 40 unit, building masih 0
+        self.t.timpa[key] = (200, rek)
+        k, out, _ = self.jalan("stok-menipis")
+        self.assertIn("dalam perintah produksi terbuka 40", out)
+        self.assertIn("perlu diproduksi lagi min. 20", out)  # 150 - 90 - 0 - 40
+
+    def test_folder_kunci_700(self):
+        if os.name == "nt":
+            self.skipTest("izin POSIX")
+        home = tempfile.mkdtemp()
+        env = {k: v for k, v in os.environ.items() if not k.startswith("INVENTREE_")}
+        env["HOME"] = home
+        p = subprocess.run([PY, SKRIP, "simpan-kunci"], input="inv-abc123abc123abc123\n", capture_output=True,
+                           text=True, env=env, timeout=30)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(stat.S_IMODE(os.stat(os.path.join(home, ".komunitech")).st_mode), 0o700)
+
+    def test_peringatan_lan_sekali(self):
+        k, _, err = self.jalan("cari", "x", "--url", "http://192.168.254.254:9", "--izinkan-jarak-jauh",
+                               "--timeout", "0.5")
+        self.assertEqual(err.count("PERINGATAN"), 1)
 
 
 if __name__ == "__main__":
