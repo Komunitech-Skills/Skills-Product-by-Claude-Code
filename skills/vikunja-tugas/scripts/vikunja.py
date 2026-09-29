@@ -762,6 +762,13 @@ _BUKAN_NAMA |= {
     "catatan penting", "poin", "point", "points", "step", "steps", "langkah", "phase", "fase", "tahap",
     "week", "minggu", "day", "hari", "today", "hari ini", "tomorrow", "besok", "kpi", "okr", "sop", "faq",
 }
+# v1.0.5: kata permintaan/pembuka ("Mohon: kirim faktur", "Tolong: ...", "Harap: ...") bukan nama orang.
+_BUKAN_NAMA |= {
+    "mohon", "dimohon", "tolong", "harap", "diharap", "diharapkan", "silakan", "silahkan", "minta", "diminta",
+    "bantu", "ingat", "ingatkan", "jangan lupa", "pastikan", "wajib", "harus", "perlu", "butuh", "usul", "usulan",
+    "saran", "pesan", "please", "pls", "plz", "kindly", "reminder untuk", "mari", "ayo", "yuk", "kalau bisa",
+    "bisa tolong", "mohon bantuan", "tolong ya", "harap dicatat", "catatan tambahan", "catatan khusus",
+}
 
 
 def urai_dari_teks(teks, acuan, anggota_dikenal=None):

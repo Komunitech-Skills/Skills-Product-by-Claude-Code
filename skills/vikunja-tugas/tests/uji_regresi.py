@@ -665,6 +665,19 @@ class TesUjungKeUjung(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertTrue(os.path.exists(os.path.join(d, "draf.json")))
 
+    def test_v105_kata_permintaan_bukan_pic(self):
+        # temuan uji ulang v1.0.3: "Mohon: Bu Rina tolong kirim faktur" dulu terbaca PIC "Mohon"
+        for kata in ("Mohon", "Tolong", "Harap", "Catatan", "MOHON", "Silakan", "Dimohon", "Pastikan", "Please"):
+            draf, _ = vikunja.urai_dari_teks("- %s: Bu Rina kirim faktur besok" % kata, HARI_ACUAN)
+            self.assertIsNone(draf[0]["ke"], kata)
+            self.assertTrue(draf[0]["judul"].startswith(kata), draf[0]["judul"])
+
+    def test_v105_nama_asli_dan_anggota_tetap(self):
+        draf, _ = vikunja.urai_dari_teks("- Budi: kirim faktur\n- PIC: Rina follow up", HARI_ACUAN)
+        self.assertEqual([x["ke"] for x in draf], ["Budi", "Rina"])
+        draf, _ = vikunja.urai_dari_teks("- Mohon: kirim faktur", HARI_ACUAN, anggota_dikenal=["Mohon"])
+        self.assertEqual(draf[0]["ke"], "Mohon")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
