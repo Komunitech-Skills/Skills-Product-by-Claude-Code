@@ -560,11 +560,15 @@ def cmd_daftar_pelanggan(args):
             cetak(f"  - {samar_email(s['email'])} ({s['name'][:30]}) {s['status']}")
 
 
+def cari_email(cfg, em):
+    """Cari pelanggan dengan email persis (pakai parameter 'search', tanpa izin SQL)."""
+    d = api(cfg, "GET", "/subscribers", params={"search": em, "per_page": 50})
+    return [x for x in d["data"]["results"] if x["email"].lower() == em.lower()]
+
+
 def cmd_hapus_pelanggan(args):
     cfg = Konfig(args)
-    d = api(cfg, "GET", "/subscribers", params={"per_page": 5, "query": "LOWER(subscribers.email) = '"
-                                                 + args.email.lower().replace("'", "''") + "'"})
-    res = d["data"]["results"]
+    res = cari_email(cfg, args.email)
     if not res:
         raise Galat("Email itu tidak ada di listmonk.", 7)
     cetak(f"Ditemukan: {samar_email(res[0]['email'])} (#{res[0]['id']}). Ini menghapus permanen data orang tsb "
@@ -735,8 +739,8 @@ def cmd_uji_kirim(args):
         raise Galat("Alamat email uji tidak valid.", 2)
     if len(em) > 254:
         raise Galat("Alamat email uji terlalu panjang.", 2)
-    ada = api(cfg, "GET", "/subscribers", params={"per_page": 1, "query": "LOWER(subscribers.email) = '" + em.replace("'", "''") + "'"})
-    if not ada["data"]["results"]:
+    ada = cari_email(cfg, em)
+    if not ada:
         api(cfg, "POST", "/subscribers", data={"email": em, "name": args.nama_uji or "Uji Pemilik", "status": "enabled",
                                                 "lists": [], "attribs": {"catatan": "alamat uji internal"}})
         cetak("Alamat uji dicatat sebagai pelanggan internal (tanpa list, tidak akan menerima kampanye).")
