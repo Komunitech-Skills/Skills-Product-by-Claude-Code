@@ -11,7 +11,7 @@
 - Segmen: pekerja kantor radius 3 km, usia 22-35, beli kopi saat gajian dan jam istirahat.
 - Kanal utama: WhatsApp pelanggan lama, Instagram/Reels + Google Maps, iklan Meta kecil, kolaborasi kantor.
 - Anggaran Rp 6.000.000 (10% cadangan eksperimen).
-- CAC titik impas Rp 10.000, CAC target Rp 7.000; ROAS target 3,57.
+- CAC titik impas Rp 10.000, CAC target Rp 7.000; ROAS target 3,58.
 - Minggu ini: rapikan Google Maps, catat sumber pelanggan, kumpulkan 30 nomor pelanggan yang pernah chat.
 
 ## 1. Kondisi sekarang

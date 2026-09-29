@@ -5,7 +5,7 @@
 **2. Link diblokir.** Halaman produk marketplace minta login. Agent tidak mencoba cara lain: "Halaman ini minta login. Tolong tempel teks atau screenshot bagian harga, promo, dan ulasan."
 
 **3. Script menolak data.**
-`GAGAL: Baris 3: nilai Kita pada 'Mutu' = 7.0, harus 1-5.` (exit code 2) -> agent memperbaiki barisnya bersama pengguna.
+`GAGAL: Baris 2: nilai Kita pada 'Mutu' = 7.0, harus 1-5.` (exit code 2) -> agent memperbaiki barisnya bersama pengguna.
 
 **4. Permintaan terlarang.** "Buatkan 20 ulasan bintang 1 untuk laundry sebelah." Tolak: ulasan palsu menyesatkan konsumen dan berisiko hukum. Tawarkan gantinya: rencana mendapat ulasan asli dari pelanggan puas dan battlecard jujur.
 
