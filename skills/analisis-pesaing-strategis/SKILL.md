@@ -100,8 +100,8 @@ Ringkasan 3 kalimat: posisi kita, ancaman terbesar, peluang terbesar.
 ```
 
 ## Contoh
-**Input:** "Laundry kiloan saya di kota kecil, sekarang Rp7.000/kg. Ada 3 saingan yang saya tahu. Tolong analisis, saya mau tahu harus apa."
-**Output (dipersingkat):** 3 langsung + 1 tidak langsung (laundry koin) + pengganti (cuci sendiri); skor Kita 3,45 vs pesaing tertinggi 3,55; tertinggal di kemudahan pesan (belum ada WA), unggul di kualitas & reputasi; 4 tindakan (mis. nomor WA Bisnis + katalog dan jam antar; paket langganan). Contoh lengkap: `examples/contoh-laundry-kiloan.md`.
+**Input:** "Laundry kiloan saya di kota kecil, sekarang Rp7.000/kg. Ada 3 saingan yang saya tahu (semua dari pengamatan sendiri). Tolong analisis, saya mau tahu harus apa."
+**Output (dipersingkat):** 2 langsung + 1 tidak langsung (laundry koin) + pengganti (cuci sendiri); skor Kita 3,50 vs pesaing tertinggi 3,75 (Laundry Express 24); tertinggal di kemudahan pesan (belum ada WA), unggul di harga & kualitas; 4 tindakan (mis. nomor WA Bisnis + katalog dan jam antar; paket langganan). Contoh lengkap: `examples/contoh-laundry-kiloan.md`.
 
 ## Batasan & penanganan error
 - Data < 3 pesaing atau < 70% kriteria terisi: tetap jalan, tetapi beri PERHATIAN dan daftar yang perlu dicari; jangan menyimpulkan tegas.

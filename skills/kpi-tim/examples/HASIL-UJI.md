@@ -206,3 +206,21 @@ Temuan:
 
 ### Skor: **7/10** (revisi temuan 1 sebelum lulus/rilis)
 Alasan: k-anonimitas menutup kebocoran v1.1.0 (divisi 1–2 orang, nama KPI, target/realisasi), angka dan query Datasette tetap tepat, 48 tes lulus, riwayat versi rapi. Namun kebocoran lewat aritmetika sederhana masih ada pada struktur tim yang umum (divisi 4 orang dengan 1 peran berbeda).
+
+## Uji ulang v1.1.2 (2026-09-29)
+- **Penguji:** agent independen (bukan pembuat); scratchpad `uji-0929-akhir`; Datasette 0.65.5 di venv scratch. Script/SKILL.md tidak diubah. `VERSI` 1.1.2 = catalog ✅; README memuat baris 1.1.2 (supresi komplementer).
+- **Tes:** `tests/uji_regresi.py` **49/49 OK**.
+- **Serangan selisih (ulang, Data B):** Sales (4 orang, Deni berprofil beda) kini **tanpa baris per orang sama sekali**; `skor_orang`/`skor_kpi`/`rencana` hanya untuk Gudang (3 orang, semua tampil). 4 × skor divisi − jumlah terekspor tidak bisa dihitung → **Deni tidak terekstraksi** ✅. Data A: semua orang di "Lainnya", 0 baris per orang ✅.
+- **Sudut lain (semua gagal merekonstruksi):**
+  - Divisi vs perusahaan: perusahaan = rata-rata 4 divisi asli; 4×perusahaan − Gudang − Sales = Admin+CS = 2×"Lainnya" (redundan), Hana (Admin, 1 orang) tidak terpisahkan ✅.
+  - Tren antar periode: kolom `tren` = selisih nilai yang sudah tampil; tidak memberi angka baru ✅.
+  - Jumlah/bobot KPI: `rencana` hanya profil kelompok yang terekspor (tanpa orang, target, ambang); profil Sales/Deni tidak muncul ✅.
+  - Anggota belum lengkap (Gudang, 1 KPI kosong 2026-09) dalam mode `tandai`/`bobot-ulang`/`nol`: skor divisi = rata-rata anggota yang tampil (atau semua anggota tampil di mode nol) → tidak ada skor tersembunyi yang bisa diturunkan ✅. (Info: baris orang belum lengkap tampil dengan skor kosong & `lengkap=0`.)
+  - Perubahan komposisi (anggota baru di 2026-09): semua anggota kelompok tampil atau tidak, per periode ✅.
+  - Grist CSV, `kpi.db`, `kpi-metadata.yml`: tanpa nama orang/divisi; kunci hanya di `kunci-kode-RAHASIA.csv` ✅.
+- **Datasette:** `-i b3/kpi.db -m kpi-metadata.yml --host 127.0.0.1` → **5/5 canned query** jalan (perusahaan 2, divisi 3, orang 3, tren 6, merah 2), SQL tulis ditolak (400); `dasbor.py query kpi-tim divisi-terbaru` jalan. Agregat perusahaan/divisi identik dengan v1.1.1 yang sudah dicocokkan dengan `skor --json` (102,7/95,1; Gudang 99,6/94,7; Sales 85,5/88,8) ✅.
+
+Temuan: tidak ada yang baru (hanya INFO di atas). Batas yang wajar dan sudah disebut di SKILL.md: pada tim kecil sering tidak ada baris per orang; kolusi (anggota membuka skor pribadinya) di luar cakupan.
+
+### Skor: **9/10** (lulus)
+Alasan: supresi komplementer menutup serangan selisih v1.1.1 tanpa mengubah angka; enam sudut rekonstruksi lain gagal pada dua dataset; Datasette & dasbor-lokal tetap jalan; 49 tes lulus; versi & riwayat koheren.
