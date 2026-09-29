@@ -122,14 +122,21 @@ Untuk SETIAP skill, catat di `research/sources/`: nama, URL, pembuat, tanggal up
 
 **ATM = Amati, Tiru, Modifikasi dengan nilai tambah BESAR.** Ambil struktur/alur yang terbukti, lalu wajib tambahkan minimal: lokalisasi penuh konteks Indonesia (bahasa, regulasi, Rupiah, marketplace/WA), contoh kasus lokal, script/perhitungan yang teruji, penanganan input awam, dan dokumentasi pembeli. Hasilnya harus menang telak di uji banding melawan skill sumbernya.
 
-**Aturan lisensi (tidak boleh dilanggar):**
+**Aturan lisensi:**
 - **MIT / MIT-0 / BSD** → boleh dimodifikasi & dijual. Sertakan atribusi dan teks lisensi asli (MIT-0 tidak wajib atribusi, tapi tetap dicatat).
 - **Apache-2.0** → boleh, dengan teks lisensi, atribusi, file `NOTICE` asli (jika ada), dan keterangan bahwa file telah diubah.
 - **CC-BY** → boleh dengan atribusi. **CC-BY-NC / non-commercial** → DILARANG dijual.
-- **GPL** → turunan wajib tetap GPL dan terbuka; tandai "PERLU REVIEW" untuk pemilik.
+- **GPL/AGPL/CC-BY-SA** → turunan wajib tetap berlisensi sama; boleh dijual (lihat keputusan pemilik di bawah).
 - **Tanpa lisensi / proprietary / berbayar milik pihak lain** → DILARANG disalin atau dijual ulang. Hanya boleh sebagai inspirasi, lalu tulis ulang dari nol.
-- **Tulis ulang bersih** (disetujui pemilik 2026-09-26) untuk sumber CC-BY-NC, CC-BY-SA, GPL/AGPL, Commons Clause, atau tanpa lisensi: jangan salin/modifikasi teks, contoh, atau template-nya. Agent 1 membaca sumber dan menulis **daftar ide/fitur saja** (tanpa kutipan) di `research/sources/`; agent 2 yang **tidak membaca sumber** menulis skill dari daftar itu + riset sendiri. Hasilnya karya baru Komunitech dan boleh dijual. Asal ide dicatat di `research/sources/`, tidak diklaim "berbasis" sumber itu di materi jualan.
-- Ragu → tandai "PERLU REVIEW", jangan masuk produk berbayar.
+- **Tulis ulang bersih** (disetujui pemilik 2026-09-26) untuk sumber CC-BY-NC, Commons Clause, proprietary, atau tanpa lisensi (GPL/AGPL/CC-BY-SA boleh salin-edit dengan lisensi sama, atau tulis ulang bersih bila ingin hasil proprietary): jangan salin/modifikasi teks, contoh, atau template-nya. Agent 1 membaca sumber dan menulis **daftar ide/fitur saja** (tanpa kutipan) di `research/sources/`; agent 2 yang **tidak membaca sumber** menulis skill dari daftar itu + riset sendiri. Hasilnya karya baru Komunitech dan boleh dijual. Asal ide dicatat di `research/sources/`, tidak diklaim "berbasis" sumber itu di materi jualan.
+- **Keputusan pemilik 2026-09-26 (lanjutan, disetujui langsung):**
+  - **Proyek bersumber kuat selalu dicek & dinilai, apa pun lisensinya.** Lisensi hanya menentukan *cara* mengambil, bukan alasan melewatkan.
+  - **MIT/BSD/Apache/CC-BY** → salin, edit (ATM), jual; sertakan atribusi.
+  - **GPL/AGPL/CC-BY-SA** → boleh salin, edit (ATM), dan dijual, **dengan syarat hasilnya berlisensi sama** (teks lisensi disertakan, pembeli boleh membagikan ulang file skill). Nilai jual Komunitech ada di panduan, dukungan, jasa setup, dan paket VIP. Catat lisensi di catalog.csv.
+  - **CC-BY-NC / tanpa lisensi / proprietary** → tidak boleh disalin-edit untuk dijual (tetap karya turunan). Pakai **Tulis ulang bersih versi ringkas**: satu agent kecil menulis daftar ide ±½ halaman tanpa kutipan, agent pembuat menulis dari daftar itu. Alternatif: minta izin komersial ke pembuat (draf pesan disiapkan untuk pemilik); bila diizinkan tertulis, boleh salin-edit.
+- Ragu → pakai Tulis ulang bersih; bila tetap ragu, tandai "PERLU REVIEW".
+- **Skill hukum Indonesia (keputusan pemilik 2026-09-26):** skill hukum yang sudah `lulus` dipertahankan (tetap dirawat bila aturan berubah). Skill hukum baru **tidak dikerjakan** dan kandidat hukum tidak diusulkan kecuali pemilik meminta.
+- **Prioritas kurasi (keputusan pemilik 2026-09-26):** kerjakan dulu kandidat bersumber **kuat** (sinyal bukti paling banyak: bintang/fork tinggi, pembuat resmi, masih dirawat). Sumber lemah — termasuk yang terlanjur lolos — dikerjakan paling akhir.
 
 **Nilai tambah wajib:** skill publik gratis (mis. dari ClawHub) bisa didapat siapa pun. Jangan jual apa adanya. Minimal lakukan: lokalisasi Indonesia, perbaikan kualitas, contoh kasus lokal, pengujian lintas platform, dan dokumentasi pembeli. Jika nilai tambah tidak signifikan, masukkan ke tier GRATIS saja.
 

@@ -1,0 +1,36 @@
+{
+  "_sumber": "Direkam dari Vikunja 2.6.0 ASLI (binary resmi linux-amd64, checksum SHA-256 cocok) yang dijalankan Komunitech di 127.0.0.1:3456 pada 2026-09-26. Bukan dikarang.",
+  "info": {"version": "v2.6.0"},
+  "task_dibuat": {
+    "id": 1, "title": "Beli semen 50 sak", "description": "", "done": false,
+    "done_at": "0001-01-01T00:00:00Z", "due_date": "2026-09-26T10:00:00Z",
+    "reminders": null, "project_id": 2, "repeat_after": 0, "repeat_mode": 0, "priority": 3,
+    "start_date": "0001-01-01T00:00:00Z", "end_date": "0001-01-01T00:00:00Z",
+    "assignees": [], "labels": null, "hex_color": "", "percent_done": 0,
+    "identifier": "#1", "index": 1, "created": "2026-09-26T09:35:04Z", "updated": "2026-09-26T09:35:04Z",
+    "created_by": {"id": 1, "name": "", "username": "komunitech_test"}
+  },
+  "task_dengan_assignee": {
+    "id": 2, "title": "Tagih pelanggan telat", "done": false, "due_date": "2026-09-20T10:00:00Z",
+    "project_id": 2, "priority": 0,
+    "assignees": [{"id": 1, "name": "", "username": "komunitech_test"}]
+  },
+  "proyek": {
+    "id": 2, "title": "Toko Bangunan Sinar Jaya", "description": "", "identifier": "",
+    "is_archived": false, "is_favorite": false,
+    "owner": {"id": 1, "name": "", "username": "komunitech_test"}
+  },
+  "proyek_inbox": {"id": 1, "title": "Inbox"},
+  "token_dibuat": {
+    "id": 1, "title": "skill-uji", "token": "tk_38e17fd7a105ad7ecbcf0f491d78c1c78c3d7f52",
+    "permissions": {"projects": ["read_all", "read_one"], "tasks": ["read_all", "read_one", "create", "update"]},
+    "expires_at": "2027-09-26T09:34:58Z", "owner_id": 1
+  },
+  "galat_401": {"code": 11, "message": "missing, malformed, expired or otherwise invalid token provided"},
+  "galat_404_task": {"code": 4001, "message": "This task does not exist"},
+  "grup_izin": {
+    "tasks": ["create", "create_bulk", "delete", "duplicate", "position", "read", "read_all", "read_one", "update", "update_bulk"],
+    "projects": ["background", "create", "delete", "duplicate", "projectusers", "read_all", "read_one", "update"],
+    "tasks_assignees": ["create", "delete", "read_all", "update_bulk"]
+  }
+}

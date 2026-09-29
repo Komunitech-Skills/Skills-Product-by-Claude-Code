@@ -3,10 +3,13 @@
 **Tempel lowongan + ceritakan pengalamanmu, dapat CV ramah ATS dan surat lamaran siap kirim — tanpa karangan.**
 
 ## Manfaat
+- ✅ Profil pengalaman induk — isi riwayat kerja sekali, dipakai berulang di setiap lamaran (tidak ketik ulang)
+- ✅ Evaluasi kecocokan lowongan: skor + alasan + celah, sebelum kamu buang waktu melamar yang tidak cocok
 - ✅ CV otomatis disesuaikan kata kunci lowongan, tanpa mengarang pengalaman/gelar
 - ✅ Format ramah ATS (satu kolom, tanpa tabel/foto) — lolos penyaringan otomatis di portal karier & website perusahaan
 - ✅ Skor kecocokan kata kunci dihitung script, bukan dikira-kira, lengkap daftar kata kunci yang hilang
 - ✅ Surat lamaran formal, email singkat, dan pesan WA/LinkedIn ke rekruter — sekali jalan
+- ✅ Latihan wawancara metode STAR berbasis pengalaman nyatamu, lengkap sesi roleplay tanya-jawab
 - ✅ Bahasa Indonesia & Inggris, plus checklist typo/format sebelum kirim
 
 ## Cocok untuk siapa
@@ -23,9 +26,13 @@
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Sesuaikan CV saya dengan lowongan Admin Gudang ini [tempel]"
+- "Saya cocok nggak sama lowongan ini? Kasih skor sama alasannya"
 - "Bikinkan surat lamaran untuk posisi Staff Finance di PT Sejahtera"
 - "Cek CV saya cocok nggak sama lowongan ini"
 - "Bikinkan pesan WA buat kenalan ke HRD-nya"
+- "Latih saya wawancara buat posisi ini pakai metode STAR"
+
+Lamaran pertama, kamu akan diajak mengisi **profil pengalaman induk** (riwayat kerja, pendidikan, keahlian, ekspektasi gaji). Simpan hasilnya sebagai file di komputermu — lamaran berikutnya tinggal tempel lagi, tidak perlu mengetik ulang.
 
 ## Instalasi singkat
 Salin folder `cv-lamaran-ats` ke folder skills AI agent kamu:
@@ -48,3 +55,10 @@ Perkiraan sederhana seberapa banyak kata kunci penting di lowongan yang juga mun
 
 **Bisa buat versi CV yang lebih "cantik" (ada warna/desain)?**
 Bisa, tapi versi ATS (teks polos, satu kolom) tetap yang utama untuk lamaran online. Versi visual hanya disarankan untuk dikirim langsung ke perusahaan kecil yang tidak pakai sistem ATS.
+
+**Apakah skill ini mengambil lowongan otomatis dari LinkedIn/JobStreet/Glints?**
+Tidak. Kamu yang menempel teks lowongan dari sumber mana pun (JobStreet, Glints, Kalibrr, LinkedIn, Instagram, dll). Skill ini tidak login atau mengambil data otomatis dari situs manapun — lebih aman dan tidak melanggar aturan platform tersebut.
+
+## Riwayat versi singkat
+- **1.1.0** — tambah profil pengalaman induk, evaluasi kecocokan lowongan (skor+alasan+celah), dan latihan wawancara STAR.
+- **1.0.1** — versi awal: CV ramah ATS, surat lamaran, skor kecocokan kata kunci.

@@ -85,3 +85,7 @@ Lanjutan dari `kurasi-terbukti-2026-09-23.md` (dokumen/office/presentasi/riset s
 **Kategori tanpa kandidat ATM layak (rekomendasi: KREASI orisinal, bukan kurasi):** Customer Service, Data & Spreadsheet/Excel, HR/Rekrutmen, Kehidupan Pribadi–Travel — semua kandidat yang ditemukan gagal ambang bukti (≤75★ untuk repo niche) atau berlisensi terlarang; ide konsepnya (audit spreadsheet, playbook pelanggan marah, lokalisasi hukum ketenagakerjaan) dicatat sebagai inspirasi backlog, bukan sumber ATM.
 
 **Hambatan:** `api.github.com` diblokir (403) — semua metrik bintang/fork lewat WebFetch halaman web atau cross-check artikel pihak ketiga, bukan API resmi, jadi ada risiko kecil angka sedikit basi. VoltAgent "Marketing & Sales" (108 entri) tidak punya metrik sama sekali di listingnya sendiri sehingga tidak bisa dinilai satu-satu dalam anggaran tersisa — kategori ini dilewati massal seperti halnya PDF/Data ClawHub sesi lalu.
+
+## Keputusan pemilik 2026-09-26 — sumber lemah dijadikan inspirasi saja
+- `ekstrak-nota-faktur` (inspirasi: github.com/manairalabs/bicara-skills, MIT, 0★/0 fork) dan `atur-keuangan-pribadi` (inspirasi: github.com/openaccountant/skills, MIT, 75★/16 fork) diubah jalurnya dari `kurasi` ke `orisinal` di catalog.csv. Isi keduanya sudah ditulis ulang & diuji sendiri; sumber hanya dicatat sebagai inspirasi. ATTRIBUTION.md dan teks lisensi MIT tetap disertakan (aman secara lisensi).
+- Keduanya berprioritas terakhir untuk pekerjaan lanjutan (sumber lemah).

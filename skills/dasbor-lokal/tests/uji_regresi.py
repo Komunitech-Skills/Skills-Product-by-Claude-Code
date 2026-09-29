@@ -82,6 +82,29 @@ class UjiStokMenipis(unittest.TestCase):
         self.assertEqual(d["jumlah_baris"], 2)
 
 
+class UjiFormatTeks(unittest.TestCase):
+    def test_float_bulat_tanpa_titik_nol(self):
+        # v1.0.1: stok REAL 25.0 dari SQLite dulu tampil "25.0" di mode teks, sekarang "25".
+        self.assertEqual(dasbor.fmt_nilai("stok", 25.0), "25")
+        self.assertEqual(dasbor.fmt_nilai("stok_min", 5.0), "5")
+
+    def test_float_pecahan_tetap_apa_adanya(self):
+        self.assertEqual(dasbor.fmt_nilai("stok", 25.5), "25.5")
+
+    def test_kolom_uang_tetap_format_rupiah(self):
+        kolom_uang = next(iter(dasbor.KOLOM_UANG))
+        self.assertEqual(dasbor.fmt_nilai(kolom_uang, 15000.0), "Rp 15.000")
+
+    def test_cetak_tabel_teks_tidak_ada_titik_nol(self):
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            dasbor.cetak_tabel({"alat": "buku-stok", "query": "stok-menipis", "judul": "x",
+                                 "db": "x.db", "baris": [{"sku": "A", "stok": 25.0}]})
+        keluaran = buf.getvalue()
+        self.assertIn("25", keluaran)
+        self.assertNotIn("25.0", keluaran)
+
+
 class UjiPenjualanPerHari(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

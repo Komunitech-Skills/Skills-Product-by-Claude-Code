@@ -46,7 +46,8 @@ Paket ini berisi (folder skill, dari member area/ZIP paket VIP Anda): `karyawan-
 `cek-privasi-openclaw`, `listing-marketplace`, `harga-jual-marketplace`,
 `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`, `naskah-live-jualan`, `buku-stok`,
 `agen-cs-toko`, `foto-produk-brief`, `laporan-otomatis-terjadwal`, `rekap-penjualan-csv`,
-`konten-mingguan`, `pesan-prospek-wa`, `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`.
+`konten-mingguan`, `pesan-prospek-wa`, `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`,
+`kas-umkm`, `buku-piutang`, `laporan-iklan-mingguan`.
 
 **Cara paling andal (disarankan untuk OpenClaw):**
 ```bash
@@ -68,6 +69,9 @@ openclaw skills install ./pesan-prospek-wa --global
 openclaw skills install ./crm-wa --global
 openclaw skills install ./analisis-excel --global
 openclaw skills install ./brainstorming-ide-usaha --global
+openclaw skills install ./kas-umkm --global
+openclaw skills install ./buku-piutang --global
+openclaw skills install ./laporan-iklan-mingguan --global
 ```
 (Jalankan dari folder tempat Anda mengekstrak ZIP paket, sehingga `./nama-skill` adalah folder
 yang berisi `SKILL.md` langsung di dalamnya. Windows: kalau tidak lewat WSL, salin folder ke
@@ -78,7 +82,7 @@ Atau, kalau Gateway Anda punya halaman **Plugins → Skills** dengan tombol impo
 per satu (fitur ini tersedia di sebagian instalasi Gateway, bukan semua — kalau tidak ada
 tombolnya, pakai cara `openclaw skills install` di atas).
 
-- **Cara cek berhasil:** ketik `openclaw skills list` — semua 18 nama skill di atas muncul. Atau
+- **Cara cek berhasil:** ketik `openclaw skills list` — semua 21 nama skill di atas muncul. Atau
   ketik di chat: "skill apa saja yang saya punya?" (bila `exec` diizinkan agent akan menjalankan
   `openclaw skills list` untuk Anda).
 - **Kalau gagal:**
@@ -249,6 +253,40 @@ Anda (modal, waktu, SDM), memunculkan beberapa pendekatan, menyaringnya dengan s
 feeling), lalu menutup dengan **rencana aksi 7 hari** yang bisa langsung dikerjakan.
 - **Cara cek berhasil:** Anda menerima 2–3 ide dengan untung-rugi masing-masing + rencana 7 hari,
   bukan cuma daftar ide acak.
+
+### j. Ringkasan kas harian (jam 21.00 WIB, terjadwal — kalau catatan kas terpisah dari kasir)
+Kalau Anda mencatat kas masuk/keluar/prive secara terpisah dari `buku-stok`/kasir (mis. usaha
+tanpa kasir digital), ketik: *"Aktifkan ringkasan kas harian jam 9 malam."* `kas-umkm` mengirim
+saldo, uang masuk/keluar, dan prive pemilik hari itu ke Telegram.
+- **Cara cek berhasil:** jadwal diuji sekali (`run --wait`) dan hasilnya ditunjukkan sebelum
+  dinyatakan aktif.
+- **Kalau gagal:** buku kas belum dibuat → catat transaksi pertama dulu ("catat kas masuk 500
+  ribu dari penjualan tunai"), baru aktifkan jadwalnya.
+- **Privasi:** ringkasan berisi saldo & mutasi kas — tersimpan di riwayat chat Telegram Anda.
+
+### k. Ringkasan piutang reseller/pelanggan tempo (jam 07.45 WIB, terjadwal)
+Punya reseller/pelanggan yang beli dengan tempo/bon? Ketik: *"Aktifkan ringkasan piutang harian
+jam 7.45 pagi."* `buku-piutang` mengirim daftar yang jatuh tempo & terlambat bayar, **nama
+disamarkan jadi inisial secara default** untuk privasi.
+- **Cara cek berhasil:** jadwal diuji sekali, hasilnya ditunjukkan sebelum aktif.
+- **Kalau gagal:** database piutang belum ada → catat piutang pertama dulu ("catat piutang Bu
+  Rina 500 ribu, tempo 7 hari"), baru aktifkan jadwalnya.
+- **Bukan untuk kirim tagihan otomatis ke pelanggan.** Draf pesan tagihan diminta langsung ke
+  agent ("pesan tagihan untuk P0002"), Anda yang mengirim.
+
+### l. Laporan iklan mingguan (Senin jam 08.00 WIB, terjadwal — kalau Anda beriklan)
+Beriklan di Meta Ads/TikTok Ads/Shopee Ads/Google Ads? Ketik: *"Aktifkan laporan iklan mingguan
+tiap Senin jam 8 pagi."* `laporan-iklan-mingguan` membandingkan ekspor CSV minggu ini vs minggu
+lalu dan mengirim ringkasan (belanja, hasil, efisiensi) ke Telegram.
+- **Wajib manual tiap minggu:** ekspor CSV dari Ads Manager (1-2 menit per platform) dan simpan
+  dengan **nama file tetap** (mis. timpa `meta-minggu-lalu.csv` dengan isi lama, simpan ekspor
+  baru sebagai `meta-minggu-ini.csv`) **sebelum** jam 08.00 Senin — OpenClaw **tidak** login/
+  menarik data otomatis dari platform iklan mana pun (kredensial tidak boleh disimpan di
+  OpenClaw).
+- **Cara cek berhasil:** jadwal diuji sekali, hasilnya ditunjukkan sebelum aktif. Kalau file
+  minggu ini belum diekspor, laporan akan bilang jujur "data belum ada" — bukan mengarang angka.
+- **Kalau gagal:** lupa ekspor tiap Senin pagi → pasang pengingat terpisah, atau geser jam jadwal
+  agak siang (mis. 09.00) untuk memberi waktu ekspor.
 
 ---
 

@@ -13,6 +13,11 @@ siapa yang harus diingatkan (H-3, H-1, hari ini, terlambat) beserta **draf pesan
 disalin**. **Staf yang menyalin dan mengirim sendiri.** Tidak ada pengiriman otomatis, tidak ada
 broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 
+**Versi 1.0.2** (revisi rendah): docstring script diperbaiki -- kata yang menyerupai diagnosis
+ditolak dengan kode keluar **1** (bukan 2; kode 2 khusus data pribadi pihak lain/DataPribadi),
+dokumentasi sebelumnya salah menyebut keduanya kode 2. Pembulatan tanggal "N bulan lagi" ke akhir
+bulan (mis. 31 Jan → 28/29 Feb) sekarang dijelaskan eksplisit di bagian Input. Uji regresi 34/34.
+
 ## Kapan digunakan
 - "Catat: Bu Sari, WA 0812-0000-1111, kontrol gigi tanggal 10 Oktober, setuju dihubungi."
 - "Ada pasien vaksin hewan (kucing Mimi) minggu depan, nomor pemiliknya 0812..., boleh diingatkan."
@@ -27,6 +32,11 @@ broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 - **Diagnosis, rekam medis, hasil lab, atau instruksi medis** apa pun → **tolak**, arahkan ke
   tenaga kesehatan. Skill ini hanya mencatat *jenis kunjungan umum* (kontrol, vaksin, cabut
   jahitan, cek gigi, vaksin hewan, groom, sunat, medical check up, dll), **bukan** nama penyakit.
+  Pengecualian: **nama vaksin/imunisasi boleh disebut apa adanya** (mis. "imunisasi campak",
+  "vaksin rabies", "vaksin MR", "imunisasi difteri (DPT)") karena itu jenis kunjungan, bukan
+  diagnosis pasien — yang tetap ditolak adalah kalimat bernada hasil pemeriksaan, mis. "riwayat
+  campak", "positif rabies", "didiagnosis difteri". Kalau ditolak dan bukan diagnosis, tulis jenis
+  kunjungan netral, mis. "kontrol lanjutan".
 - Leaflet edukasi pasien, FAQ klinik, balasan chat umum, atau rekap kunjungan agregat →
   `edukasi-pasien-klinik`.
 - **Kirim pesan otomatis/broadcast ke pasien** → **tolak**. Keputusan pemilik: OpenClaw memakai
@@ -67,6 +77,13 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 termasuk pertanyaan persetujuan. Jangan pernah mengasumsikan persetujuan "ya" tanpa pasien
 menyatakannya.
 
+**Pembulatan tanggal "N bulan lagi":** bila tanggal acuan tidak ada di bulan tujuan (mis. 31
+Januari + 1 bulan → Februari tidak punya tanggal 31), script **turun ke tanggal terakhir bulan
+itu** (28 Februari, atau 29 di tahun kabisat) — bukan meloncat ke bulan berikutnya atau menolak
+input. Script menambahkan Catatan yang menyebutkan penyesuaian ini apa adanya (mis. "Tanggal 31
+tidak ada di bulan itu; dipakai 28 Februari 2027"); tampilkan catatan itu ke pengguna, jangan
+menyembunyikannya.
+
 ## Cara menjalankan script
 Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python`/`py`):
 ```bash
@@ -83,8 +100,10 @@ Database default `pasien/DAFTAR.csv` di folder kerja; ganti dengan `--file PATH`
 - **Tanyakan persetujuan secara eksplisit** ("Bu Sari setuju diingatkan lewat WA untuk jadwal
   kontrolnya?") sebelum mengisi `--persetujuan`. Jangan menebak "ya".
 - `jenis` hanya kategori umum (kontrol, vaksin, cabut jahitan, cek gigi, vaksin hewan, groom,
-  sunat, medical check up, dll). Kalau pengguna menyebut nama penyakit/diagnosis, script menolak
-  (kode keluar 1) — minta pengguna menyebut jenis kunjungan saja, bukan diagnosisnya.
+  sunat, medical check up, imunisasi/vaksin apa pun namanya — mis. "imunisasi campak", "vaksin
+  rabies", dll). Kalau pengguna menyebut nama penyakit/diagnosis dengan nada hasil pemeriksaan
+  (riwayat, positif, didiagnosis, dll — bukan sekadar nama vaksin), script menolak (kode keluar 1)
+  — minta pengguna menyebut jenis kunjungan yang netral, mis. "kontrol lanjutan".
 - Nomor WA diterima format apa pun (0812…, +62812…, 62812…) dan disimpan sebagai `62…`.
 - Klinik hewan: nama pasien = nama hewan (mis. "Kucing Mimi"), nomor WA = nomor pemilik.
 

@@ -1,0 +1,50 @@
+{
+  "config": {
+    "slug": "toko-scenario2",
+    "title": "Toko Scenario2",
+    "description": "Data buatan tangan Komunitech untuk menguji jalur kode (bukan hasil rekam server sungguhan) - lihat uptime-kuma-2.5.5-status-page.json untuk data hasil rekam server ASLI.",
+    "icon": "/icon.svg",
+    "autoRefreshInterval": 300,
+    "theme": "auto",
+    "published": true,
+    "showTags": false,
+    "customCSS": null,
+    "footerText": null,
+    "showPoweredBy": true,
+    "analyticsId": null,
+    "analyticsScriptUrl": null,
+    "analyticsType": null,
+    "showCertificateExpiry": true,
+    "showOnlyLastHeartbeat": false,
+    "rssTitle": null
+  },
+  "incidents": [],
+  "publicGroupList": [
+    {
+      "id": 1,
+      "name": "Utama",
+      "weight": 1,
+      "monitorList": [
+        {
+          "id": 10,
+          "name": "Toko Online",
+          "sendUrl": 1,
+          "type": "http",
+          "url": "https://tokosaya.contoh",
+          "certExpiryDaysRemaining": 9,
+          "validCert": true
+        },
+        {
+          "id": 11,
+          "name": "WA Katalog",
+          "sendUrl": 1,
+          "type": "http",
+          "url": "https://wa.me/6281234567890",
+          "certExpiryDaysRemaining": 120,
+          "validCert": true
+        }
+      ]
+    }
+  ],
+  "maintenanceList": []
+}

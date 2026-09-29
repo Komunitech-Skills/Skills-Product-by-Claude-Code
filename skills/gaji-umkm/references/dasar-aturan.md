@@ -1,4 +1,4 @@
-# Dasar aturan gaji-umkm — berlaku per 23 September 2026 (diperbarui 26 September 2026, v1.0.1)
+# Dasar aturan gaji-umkm — berlaku per 23 September 2026 (diperbarui 26 September 2026, v1.0.2)
 
 > Ringkasan untuk alat bantu hitung, bukan nasihat hukum/pajak. **gaji-umkm tidak menetapkan tarif sendiri.** Semua tarif, batas upah, tabel TER, dan rumus berasal dari script skill Komunitech berikut, disalin persis di `scripts/mesin/` (sha256 di `scripts/mesin/SUMBER.json`). Rincian sumber resmi & status verifikasi ada di dokumen skill sumbernya.
 
@@ -43,6 +43,7 @@
 
 ## Pagar kepatuhan BPJS (v1.0.1)
 - UU 24/2011 Pasal 15 ayat (1)–(2): pemberi kerja wajib mendaftarkan dirinya dan pekerjanya ke BPJS serta memberikan data yang lengkap dan benar. PP 86/2013: sanksi administratif (teguran tertulis, denda, tidak mendapat pelayanan publik tertentu). Perpres 82/2018 jo. 64/2020 Pasal 32: dasar iuran BPJS Kesehatan = gaji pokok + tunjangan tetap, batas atas Rp 12.000.000 (batas bawah UMK di mesin slip-gaji-bpjs).
+- v1.0.2: gaji pokok/tunjangan tetap "dibayar" (`isi`) yang lebih kecil dari data karyawan pada bulan **penuh** ikut dipagari, karena dasar iuran BPJS (Kesehatan & Ketenagakerjaan) bulan itu ikut turun; bulan masuk/keluar tengah bulan (prorata) tidak dipagari.
 - JP tidak dipagari karena kewajiban JP bertahap menurut skala usaha (usaha mikro/kecil belum wajib JP) — tetap tampil di data karyawan.
 
 ## Sumber

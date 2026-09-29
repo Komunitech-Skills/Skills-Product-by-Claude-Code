@@ -41,11 +41,27 @@ Hasil: CSV `Tanggal;Keterangan;Masuk;Keluar;Kategori` (UTF-8 BOM, tanggal DD/MM/
   sebagai kas awal.
 - Kolom Kategori berisi kode emkm: penjualan → `pendapatan_usaha` (keluar → `retur_penjualan`), modal →
   `setoran_modal`, beli-stok → `pembelian_bahan`, gaji → `beban_gaji`, listrik-air → `beban_utilitas`, sewa →
-  `beban_sewa`, prive → `prive`, pinjaman → `pinjaman_diterima`/`bayar_pinjaman`, selisih hitung laci →
+  `beban_sewa`, prive → `prive`, pinjaman → `pinjaman_diterima`/`bayar_pinjaman`, kasbon (v1.0.3) → `piutang_lain`, selisih hitung laci →
   `pendapatan_lain`/`beban_lain`.
-- Kategori `pajak` dan `lain-lain` sengaja dikosongkan agar emkm mengklasifikasi dari keterangan (mis. "PPh final" →
-  beban PPh, "PBJT" → pajak daerah + pertanyaan, "biaya transfer" → beban keuangan). Keterangan pajak tanpa kata pajak
-  diberi awalan "Pajak: ".
+- Kategori `pajak` sengaja dikosongkan agar emkm mengklasifikasi dari keterangan (mis. "PPh final" → beban PPh,
+  "PBJT" → pajak daerah + pertanyaan). Keterangan pajak tanpa kata pajak diberi awalan "Pajak: ".
+- `lain-lain` (v1.0.2): pemasukan → `pendapatan_lain`; biaya bank (biaya tarik tunai/adm/transfer, atau biaya/adm di
+  akun bank/e-wallet selain admin marketplace) → `beban_keuangan`; pengeluaran yang keterangannya memuat kata pindah
+  dana/prive/modal/pinjaman (mis. "PINDAH BUKU" yang digolongkan lain-lain) → `beban_lain`; selain itu dikosongkan agar
+  emkm memilih pos beban yang lebih rinci. Tujuannya: laba emkm = hasil usaha kas-umkm (dulu "BIAYA TARIK TUNAI" dibaca
+  emkm sebagai pindah dana → laba lebih besar Rp 7.500 dan neraca tidak seimbang).
+- v1.0.3: catatan baru `lain-lain` berketerangan kasbon/uang muka karyawan, keperluan pribadi, atau utang/cicilan
+  sudah dipindah ke `kasbon`/`prive`/`pinjaman` saat dicatat. Catatan LAMA yang masih `lain-lain` tetap ditulis
+  `beban_lain` (laba emkm = hasil usaha) dan ekspor memberi daftar perintah `golongkan --id N --kategori …` untuk
+  membetulkannya. Bila ada cicilan/bayar utang, ekspor mengingatkan `--utang-bank-awal <sisa utang awal periode>`
+  (tanpa ini sisa utang emkm minus dan neraca tidak seimbang); kasbon yang dikembalikan melebihi yang diberikan →
+  `--piutang-lain-awal`.
+- v1.0.4: `lain-lain` keluar berketerangan bunga/denda/biaya + cicilan/angsuran/utang/pinjaman → `beban_keuangan`;
+  utang/bon ke pemasok/toko/grosir → `bayar_utang_usaha` (emkm menghitungnya sebagai pembelian kredit bila tidak ada
+  `--utang-usaha-awal`, jadi laba tetap = hasil usaha; isi `--utang-usaha-awal` hanya bila bon itu memang sudah
+  tercatat sebagai utang di awal periode); denda/sanksi pajak (kategori `pajak` maupun `lain-lain`) → `beban_lain`.
+- v1.0.5: "PAJAK BUNGA"/"PPh bunga" (PPh final atas bunga tabungan/jasa giro, kategori `pajak` atau `lain-lain`) → `beban_pajak_penghasilan`, bukan `beban_lain`. Catatan gabungan pokok + denda tidak bisa dibuat lagi (dipisah saat catat/impor), jadi pokok selalu `bayar_pinjaman` dan denda `beban_keuangan`.
+- v1.0.6: pengeluaran `lain-lain` berisi kata alat/aset (mesin, rak, etalase, kulkas, meja, renovasi…, bukan servis/perbaikan) tetap dikirim dengan kolom Kategori kosong; laporan-keuangan-emkm dapat menggolongkannya `aset_tetap` sehingga **laba emkm = hasil usaha + nilai aset tersebut (dikurangi penyusutan)**. Ekspor menuliskan catatan berisi daftar baris dan totalnya; bila pengguna ingin barang kecil dihitung beban, isi kolom Kategori baris itu dengan `beban_lain`.
 - Pindah dana antar akun tidak ditulis (kas + rekening dihitung sebagai satu pos kas di emkm). Catatan yang dibatalkan
   tidak ikut.
 - Teks script memberi perintah emkm siap pakai, termasuk `--kas-akhir-aktual` = saldo akhir gabungan (cek silang).

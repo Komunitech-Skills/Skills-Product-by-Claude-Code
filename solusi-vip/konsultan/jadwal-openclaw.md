@@ -121,6 +121,73 @@ dengan karyawan) — lihat tabel pemetaan profil atau `--daftar-profil` di `SKIL
 kalender-pajak, dan `PANDUAN.md` §5j. Uji dulu sebelum percaya jadwal aktif:
 `openclaw automations run <id> --wait`.
 
+## 8b. Laporan pembukuan bulanan (hledger-usaha), tanggal 1 jam 07.50 WIB ✅/⚠️
+Disalin persis dari `skills/hledger-usaha/references/openclaw-jadwal.md`. Pola sudah **dijalankan
+sungguhan** ✅ untuk skill `dolibarr-usaha`; kombinasi persis dengan `hledger_usaha.py` ⚠️ belum
+diuji di Gateway oleh tim kurasi.
+1. Cari path lengkap script: `python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/hledger-usaha/scripts/hledger_usaha.py'))"`
+2. Uji dulu di terminal: `python3 <path> bulanan --bulan lalu` harus menampilkan laporan.
+3. Buat jadwal:
+   ```bash
+   openclaw automations add --name "Laporan bulanan pembukuan" --cron "50 7 1 * *" --tz Asia/Jakarta \
+     --command-argv '["python3","/home/NAMA/.openclaw/skills/hledger-usaha/scripts/hledger_usaha.py","bulanan","--bulan","lalu"]' \
+     --announce --channel telegram --to "<ID chat Telegram pemilik>"
+   ```
+- File jurnal bukan di `~/Pembukuan/usaha.journal` → tambahkan `"--jurnal","/path/lengkap/usaha.journal"` ke argv.
+- Neraca tidak seimbang → kode keluar 4, jadwal tercatat gagal (sengaja, agar pemilik tahu).
+- Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
+
+## 8c. Ringkasan piutang retainer/termin (buku-piutang), 07.45 WIB ✅/⚠️
+Disalin persis dari `skills/buku-piutang/references/openclaw-jadwal.md` §"Pilihan 1". Pola
+`--command-argv`/`--cron`/`--tz`/`--announce --channel telegram` ✅ **dijalankan sungguhan** untuk
+skill lain (`crm-wa`, `kasir-lokal`, `pengingat-follow-up`); kombinasi persis dengan `piutang.py`
+⚠️ belum diuji di Gateway oleh tim kurasi.
+1. Cari path lengkap script: `python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/buku-piutang/scripts/piutang.py'))"`
+2. Buat jadwal (nama klien disamarkan jadi inisial secara default):
+   ```bash
+   openclaw automations add --name "Ringkasan piutang harian" --cron "45 7 * * *" --tz Asia/Jakarta \
+     --command-argv '["python3","/home/NAMA/.openclaw/skills/buku-piutang/scripts/piutang.py","ringkasan","--samarkan"]' \
+     --announce --channel telegram --to "<ID chat Telegram pemilik>"
+   ```
+- Jadwal **hanya menjalankan perintah baca** — tidak pernah `--ya`/`catat`/`bayar`.
+- Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
+
+## 8d. Pengingat gaji & setoran staf tetap (gaji-umkm, opsional), 07.00 WIB ✅/⚠️
+Hanya untuk agensi/kantor dengan staf tetap bergaji bulanan. Disalin persis dari
+`skills/gaji-umkm/references/openclaw-jadwal.md` §"Pilihan 1". Pola ✅ **dijalankan sungguhan**
+untuk skill lain (`crm-wa`, `kasir-lokal`, `pengingat-follow-up`); kombinasi persis dengan
+`gaji.py` ⚠️ belum diuji di Gateway oleh tim kurasi.
+1. Cari path lengkap script: `python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/gaji-umkm/scripts/gaji.py'))"`
+2. Buat jadwal (tenggat 3 hari ke depan, hanya total perusahaan, tanpa nama karyawan):
+   ```bash
+   openclaw automations add --name "Pengingat gaji & setoran" --cron "0 7 * * *" --tz Asia/Jakarta \
+     --command-argv '["python3","/home/NAMA/.openclaw/skills/gaji-umkm/scripts/gaji.py","pengingat","--rentang","3"]' \
+     --announce --channel telegram --to "<ID chat Telegram pemilik>"
+   ```
+- Jadwal **hanya menjalankan perintah baca** (`pengingat`) — tidak pernah `hitung`/`final`/`isi`/`transfer`.
+- Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
+
+## 8e. Draf laporan progres mingguan ke klien (laporan-klien-konsultan), Jumat 16.00 WIB ✅/⚠️
+Disalin persis dari `skills/laporan-klien-konsultan/references/openclaw-jadwal.md` §1 (Bentuk A)
+— **mengisi celah "laporan status ke klien"** yang sebelumnya dicatat belum ada di paket ini
+(lihat `solusi-vip/README.md` §"Celah"). Pola sudah **dijalankan sungguhan** ✅ untuk skill lain
+(`pengingat-follow-up`, sumber pola aslinya); kombinasi persis dengan `laporan_klien.py` ⚠️ belum
+diuji di Gateway oleh tim kurasi. **Draf ini hanya terkirim ke konsultan sendiri, tidak pernah
+langsung ke klien.**
+```bash
+openclaw automations add "0 16 * * 5" \
+  "Pakai skill laporan-klien-konsultan. Jalankan: python3 <folder-skill>/scripts/laporan_klien.py --file <folder-kerja>/laporan/log-kerja-klien.csv laporan --klien \"<Nama Klien>\" --periode mingguan --json. Tampilkan field teks_email dan teks_wa apa adanya dalam Bahasa Indonesia -- JANGAN mengubah angka atau jam. Ini DRAF untuk saya tinjau, JANGAN mengirim apa pun ke klien." \
+  --name "Draf laporan mingguan - <Nama Klien>" --tz "Asia/Jakarta" --session isolated \
+  --tools exec,read --announce --channel telegram --to "<ID chat Telegram konsultan>"
+```
+- `--tools exec,read` ✅ (terbukti untuk skill lain) — jadwal ini hanya boleh menjalankan script &
+  membaca file, tidak bisa mengirim pesan/browser/tulis file sendiri.
+- Satu klien = satu jadwal. Untuk beberapa klien, ulangi perintah ini dengan `--name` dan
+  `--klien` berbeda per klien, jam digeser-geser agar tidak menumpuk (mis. 16.00, 16.10, 16.20).
+- Alternatif hemat token (tanpa AI) dan laporan bulanan: lihat
+  `skills/laporan-klien-konsultan/references/openclaw-jadwal.md` §2-3.
+- Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
+
 ## 9. Yang belum diverifikasi ⚠️
 - Membuat jadwal di atas langsung dari chat ("aktifkan pengingat jam 8"). Tool `cron` untuk agent
   memang ada dan hanya untuk owner, tapi kombinasi persisnya belum dicoba tim kami. Kalau
@@ -131,6 +198,10 @@ kalender-pajak, dan `PANDUAN.md` §5j. Uji dulu sebelum percaya jadwal aktif:
 - Jadwal pengingat pajak (§8, `kalender-pajak`) di atas — pola cron & `--command-argv` sudah
   terbukti untuk skill lain, tapi kombinasi persis dengan `kalender_pajak.py` belum dicoba di
   Gateway oleh tim kurasi.
+- Jadwal pembukuan bulanan, piutang harian, pengingat gaji, dan draf laporan klien (§8b-8e,
+  `hledger-usaha`, `buku-piutang`, `gaji-umkm`, `laporan-klien-konsultan`) — pola cron sudah
+  terbukti untuk skill lain, tapi kombinasi persis dengan script masing-masing skill belum
+  dicoba di Gateway oleh tim kurasi.
 
 ## 10. Syarat komputer menyala
 Jadwal berjalan **di dalam proses Gateway**. Kalau laptop mati/tidur di jam 08.00, rekap **tidak

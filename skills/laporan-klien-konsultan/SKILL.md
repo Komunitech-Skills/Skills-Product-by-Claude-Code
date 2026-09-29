@@ -12,6 +12,11 @@ klien cukup **mencatat pekerjaan sekali jalan** saat selesai dikerjakan, lalu ti
 nol tiap minggu dan tanpa menghitung jam secara manual. Semua angka (total jam, jumlah pekerjaan)
 dihitung `scripts/laporan_klien.py`, bukan diperkirakan.
 
+**Versi 1.0.1** (revisi rendah): konversi "N menit" → desimal jam (mis. 90 menit → `--jam 1.5`)
+sekarang dijelaskan eksplisit di bagian 1 karena `--jam` hanya menerima desimal; file log CSV
+0-byte (bukan sekadar "belum ada catatan", tapi rusak/tanpa header sama sekali) sekarang ditolak
+dengan pesan jelas alih-alih diam-diam dianggap "tidak ada catatan". Uji regresi 28/28.
+
 ## Kapan digunakan
 - "Catat: hari ini saya kerjakan rekonsiliasi bank untuk PT Maju, 2,5 jam, selesai."
 - "Buatkan laporan mingguan untuk klien PT Maju Jaya."
@@ -72,6 +77,11 @@ python3 <folder-skill-ini>/scripts/laporan_klien.py catat \
   `progress`, `stuck`, dst.) -- lihat pesan error untuk daftar lengkap bila salah ketik.
 - `--jam` boleh pakai koma (`2,5`) atau titik (`2.5`); kosongkan bila tidak dihitung per jam
   (mis. retainer bulanan tetap) -- **jangan menebak jam**, biarkan kosong.
+- Script hanya menerima **angka desimal jam** (mis. `2.5`), bukan format "N menit" -- kalau
+  pengguna menyebut waktu dalam menit (mis. "90 menit", "45 menit tadi"), **agent yang mengonversi**
+  ke desimal jam sebelum memanggil `--jam`: menit ÷ 60, dibulatkan 2 desimal bila perlu (contoh:
+  90 menit → `--jam 1.5`; 45 menit → `--jam 0.75`; 100 menit → `--jam 1.67`). Sebutkan hasil
+  konversi ke pengguna sebelum menyimpan, supaya bisa dikoreksi bila salah dengar.
 - `--kendala "..."` untuk hambatan di pihak konsultan (mis. menunggu tools/izin internal).
 - `--butuh-klien "..."` untuk hal yang perlu klien berikan/putuskan (mis. dokumen, approval).
 - **Sebelum mengetik pekerjaan/kendala/kebutuhan**, lihat Batasan di bawah soal data pribadi/

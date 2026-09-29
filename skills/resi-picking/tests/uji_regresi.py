@@ -385,6 +385,37 @@ class UjiHeaderMarketplaceAsli(unittest.TestCase):
         self.assertIn("KolomAneh1", data["error"])
 
 
+class UjiKolomAmbigu(unittest.TestCase):
+    """v1.0.2: kalau ada >1 kolom yang sama-sama cocok sinonim suatu field (mis. dua kolom SKU),
+    auto-deteksi tetap memilih salah satu (tidak gagal), tapi WAJIB memperingatkan pengguna + saran
+    --kolom-... supaya bisa dikoreksi kalau yang dipilih salah."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_dua_kolom_sku_mirip_beri_peringatan_ambigu(self):
+        isi = ("No. Pesanan,SKU Induk,Nomor SKU,Nama Produk,Jumlah\n"
+              "A1,SKU-INDUK-1,SKU-JUAL-1,Barang A,2\n")
+        f = tulis(self.dir, "dua-sku.csv", isi)
+        kode, data, _, err = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertIn("SKU", data["kolom_ambigu"])
+        self.assertIn("--kolom-sku", " ".join(data["peringatan"]))
+
+    def test_override_manual_menghilangkan_peringatan_ambigu(self):
+        isi = ("No. Pesanan,SKU Induk,Nomor SKU,Nama Produk,Jumlah\n"
+              "A1,SKU-INDUK-1,SKU-JUAL-1,Barang A,2\n")
+        f = tulis(self.dir, "dua-sku.csv", isi)
+        kode, data, _, err = jalankan(f, "--kolom-sku", "Nomor SKU", "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertNotIn("SKU", data["kolom_ambigu"])
+        self.assertEqual(data["pemetaan_kolom"]["SKU"], "Nomor SKU")
+
+
 class UjiBarisRingkasan(unittest.TestCase):
     """Baris total/ringkasan di bagian bawah ekspor tidak boleh 'menempel' ke pesanan sebelumnya."""
 

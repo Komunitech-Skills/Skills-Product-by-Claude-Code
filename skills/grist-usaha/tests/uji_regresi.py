@@ -25,6 +25,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from decimal import Decimal
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -46,11 +47,12 @@ KUNCI_UJI = "kunciuji-abcdef0123456789"
 
 class TestBersihkanAngka(unittest.TestCase):
     def cek(self, teks, harap):
-        hasil = grist._bersihkan_angka(teks)
+        hasil, _alasan = grist._bersihkan_angka(teks)
         if harap is None:
             self.assertIsNone(hasil, f"{teks!r} seharusnya BUKAN angka")
         else:
-            self.assertAlmostEqual(hasil, harap, msg=f"{teks!r}")
+            self.assertIsInstance(hasil, Decimal, f"{teks!r} harus Decimal (uang), bukan float")
+            self.assertEqual(hasil, Decimal(str(harap)), f"{teks!r}")
 
     def test_format_rupiah_ribuan_titik_desimal_koma(self):
         self.cek("Rp 1.234.567,89", 1234567.89)
@@ -80,6 +82,299 @@ class TestBersihkanAngka(unittest.TestCase):
         self.cek("Rp. 50.000", 50000)
 
 
+class TestSingkatanBesaranUang(unittest.TestCase):
+    """v1.0.1: temuan TINGGI Akun B - README/SKILL mengklaim 'Rp 1,25jt' dirapikan otomatis,
+    padahal v1.0.0 mengembalikan None (lihat examples/HASIL-UJI.md &
+    examples/03-rekap-operasional-csv.md temuan #1). Uji >= 10 kasus singkatan + kasus ambigu."""
+
+    def cek(self, teks, harap):
+        hasil, _alasan = grist._bersihkan_angka(teks)
+        if harap is None:
+            self.assertIsNone(hasil, f"{teks!r} seharusnya None (bukan angka/ambigu)")
+        else:
+            self.assertIsInstance(hasil, Decimal, f"{teks!r} harus Decimal (uang), bukan float")
+            self.assertEqual(hasil, Decimal(str(harap)), f"{teks!r}")
+
+    def test_klaim_readme_rp_1_25jt(self):
+        # Kasus PERSIS yang diklaim README/SKILL dan gagal di v1.0.0 - harus lulus di v1.0.1.
+        self.cek("Rp 1,25jt", 1_250_000)
+
+    def test_juta_koma_desimal(self):
+        self.cek("1,25jt", 1_250_000)
+        self.cek("1,25 juta", 1_250_000)
+
+    def test_juta_titik_desimal(self):
+        self.cek("1.5jt", 1_500_000)
+        self.cek("1.5 juta", 1_500_000)
+
+    def test_juta_bulat(self):
+        self.cek("2jt", 2_000_000)
+        self.cek("Rp2juta", 2_000_000)
+
+    def test_ribu_rb_dan_kata_penuh(self):
+        self.cek("500rb", 500_000)
+        self.cek("500 ribu", 500_000)
+        self.cek("12,5rb", 12_500)
+
+    def test_ribu_huruf_k(self):
+        self.cek("50k", 50_000)
+        self.cek("1.5k", 1_500)
+
+    def test_miliar_kata_penuh(self):
+        self.cek("1,2 miliar", 1_200_000_000)
+        self.cek("Rp 2miliar", 2_000_000_000)
+
+    def test_miliar_huruf_besar_m(self):
+        # Huruf BESAR tunggal 'M' diterima sebagai miliar (konvensi umum, didokumentasikan).
+        self.cek("1.5M", 1_500_000_000)
+        self.cek("Rp 2M", 2_000_000_000)
+
+    def test_huruf_kecil_m_tunggal_ambigu_ditolak(self):
+        # Huruf KECIL tunggal 'm' SENGAJA ditolak (ambigu, beda dari 'M' besar/'miliar' penuh).
+        self.cek("2m", None)
+        self.cek("1.5m", None)
+        hasil, alasan = grist._bersihkan_angka("2m")
+        self.assertIsNone(hasil)
+        self.assertIsNotNone(alasan)
+        self.assertIn("ambigu", alasan.lower())
+
+    def test_koma_dan_titik_sekaligus_sebelum_singkatan_ambigu(self):
+        hasil, alasan = grist._bersihkan_angka("1.250,5jt")
+        self.assertIsNone(hasil)
+        self.assertIsNotNone(alasan)
+        self.assertIn("ambigu", alasan.lower())
+
+    def test_singkatan_negatif(self):
+        self.cek("-500rb", -500_000)
+
+    def test_bukan_singkatan_tetap_none_tanpa_alasan_aneh(self):
+        # Kata biasa yang TIDAK berakhiran singkatan sama sekali -> None, None (tidak berubah).
+        hasil, alasan = grist._bersihkan_angka("Gula Pasir 1kg")
+        self.assertIsNone(hasil)
+        self.assertIsNone(alasan)
+
+    def test_akhiran_k_pada_kata_biasa_tidak_ikut_kena(self):
+        # "1kg" bukan digit-murni + 'k' (ada 'g' sesudahnya) -> bukan singkatan, None/None biasa.
+        hasil, alasan = grist._bersihkan_angka("Minyak Goreng 1L")
+        self.assertIsNone(hasil)
+        self.assertIsNone(alasan)
+
+
+class TestAngkaIndonesiaV102(unittest.TestCase):
+    """v1.0.2 (tugas H2): kasus wajib + jebakan. Nilai ambigu -> None + alasan, BUKAN tebakan."""
+
+    def nilai(self, teks):
+        hasil, alasan = grist._bersihkan_angka(teks)
+        return hasil, alasan
+
+    def sama(self, teks, harap):
+        hasil, alasan = self.nilai(teks)
+        self.assertIsNone(alasan, f"{teks!r}: {alasan}")
+        self.assertIsInstance(hasil, Decimal)
+        self.assertEqual(hasil, Decimal(harap), f"{teks!r}")
+
+    def ditolak(self, teks, kata=None):
+        hasil, alasan = self.nilai(teks)
+        self.assertIsNone(hasil, f"{teks!r} seharusnya ditolak, dapat {hasil}")
+        self.assertTrue(alasan, f"{teks!r} ditolak tapi TANPA alasan")
+        if kata:
+            self.assertIn(kata, alasan.lower())
+
+    # --- kasus wajib dari tugas ---
+    def test_juta_koma_desimal(self):
+        self.sama("1,25jt", "1250000")
+
+    def test_ribu_dengan_spasi(self):
+        self.sama("2,5 rb", "2500")
+
+    def test_ribuan_titik_polos(self):
+        self.sama("1.250.000", "1250000")
+
+    def test_rupiah_ekor_koma_strip(self):
+        self.sama("Rp 1.250.000,-", "1250000")
+        self.sama("Rp. 75.000,-", "75000")
+
+    def test_miliar_kata_dan_m_besar(self):
+        self.sama("1,5 miliar", "1500000000")
+        self.sama("2 Milyar", "2000000000")
+        self.sama("1,5M", "1500000000")
+
+    # --- jebakan ---
+    def test_jebakan_titik_vs_koma_satu_angka(self):
+        # '1.5' dan '1,5' sama-sama 1,5 (satu angka di belakang pemisah = desimal).
+        self.sama("1.5", "1.5")
+        self.sama("1,5", "1.5")
+        self.sama("1.5jt", "1500000")
+        self.sama("1,5jt", "1500000")
+
+    def test_jebakan_titik_tiga_angka_adalah_ribuan(self):
+        # Gaya Indonesia: titik + tepat 3 angka = pemisah ribuan.
+        self.sama("1.500", "1500")
+
+    def test_jebakan_10k(self):
+        self.sama("10k", "10000")
+        self.sama("10K", "10000")
+
+    def test_gabungan_jt_rb_didukung(self):
+        self.sama("3 jt 500 rb", "3500000")
+        self.sama("3jt500rb", "3500000")
+        self.sama("Rp 1 miliar 250 jt", "1250000000")
+
+    def test_gabungan_salah_ditolak_jelas(self):
+        self.ditolak("3jt500", "ambigu")          # ekor tanpa singkatan
+        self.ditolak("500 rb 3 jt", "urutan")      # urutan naik
+        self.ditolak("3 jt 1500 rb", "melebihi")   # bagian bawah >= satuan di atasnya
+        self.ditolak("1,5jt 200rb", "bulat")       # desimal di bentuk gabungan
+
+    def test_singkatan_dengan_tiga_angka_di_belakang_pemisah_ambigu(self):
+        # '1.500rb' bisa 1,5 ribu atau 1.500 ribu -> tolak, jangan tebak.
+        self.ditolak("1.500rb", "ambigu")
+        self.ditolak("1,250jt", "ambigu")
+
+    def test_pengelompokan_ribuan_rusak_ditolak(self):
+        self.ditolak("1.23.456", "ambigu")
+        self.ditolak("12,5.5", "ambigu")
+
+    def test_satuan_bukan_uang_diberi_alasan(self):
+        self.ditolak("1kg", "kg")
+
+    def test_negatif(self):
+        self.sama("-Rp 18.500", "-18500")
+        self.sama("Rp -500rb", "-500000")
+
+    def test_presisi_decimal_angka_besar(self):
+        # Float/'%.10g' v1.0.1 membulatkan angka > 10 digit; Decimal wajib persis.
+        self.sama("Rp 12.345.678.901,55", "12345678901.55")
+        self.assertEqual(grist._teks_angka(Decimal("12345678901.55")), "12345678901.55")
+        self.assertEqual(grist._teks_angka(Decimal("1.25") * Decimal(1_000_000)), "1250000")
+        self.assertEqual(grist._teks_angka(Decimal("100.00")), "100")
+
+    def test_teks_biasa_tetap_none_tanpa_alasan(self):
+        # ('08123456789 (WA)' pindah ke TestAngkaV103: sejak v1.0.3 diberi alasan telepon/kode.)
+        for t in ("Kopi Robusta", "-", "Rp", "belum diisi", "(kosong)"):
+            hasil, alasan = self.nilai(t)
+            self.assertIsNone(hasil, t)
+            self.assertIsNone(alasan, t)
+
+
+class TestAngkaV103(unittest.TestCase):
+    """v1.0.3 (uji ulang Akun B, examples/06-...): nol di depan dijaga; '(1.000)' akuntansi;
+    '+', '.5jt', teks tambahan -> alasan; '1,000' tanpa singkatan = 1000 (sengaja, terdokumentasi)."""
+
+    def sama(self, teks, harap):
+        hasil, alasan = grist._bersihkan_angka(teks)
+        self.assertIsNone(alasan, f"{teks!r}: {alasan}")
+        self.assertEqual(hasil, Decimal(harap), f"{teks!r}")
+
+    def ditolak(self, teks, kata):
+        hasil, alasan = grist._bersihkan_angka(teks)
+        self.assertIsNone(hasil, f"{teks!r} seharusnya ditolak, dapat {hasil}")
+        self.assertTrue(alasan, f"{teks!r} ditolak tanpa alasan")
+        self.assertIn(kata, alasan.lower())
+
+    def test_nol_depan_telepon_dan_kode_jadi_teks(self):
+        for t in ("081234567890", "007", "0123", "Rp 007", "08123456789 (WA)", "00"):
+            self.ditolak(t, "telepon/kode")
+
+    def test_nol_yang_sah_tetap_angka(self):
+        self.sama("0", "0")
+        self.sama("0,5", "0.5")
+        self.sama("0.5", "0.5")
+        self.sama("Rp 0", "0")
+        self.sama("0,5jt", "500000")
+
+    def test_nol_diikuti_ribuan_ambigu(self):
+        self.ditolak("0.500", "ambigu")
+        self.ditolak("0,500", "ambigu")
+
+    def test_kurung_negatif_akuntansi(self):
+        self.sama("(1.000)", "-1000")
+        self.sama("(Rp 1.250.000)", "-1250000")
+        self.sama("Rp (1.000)", "-1000")
+        self.sama("(500rb)", "-500000")
+        self.ditolak("-(1.000)", "ambigu")
+
+    def test_tanda_plus_ditolak_dengan_alasan(self):
+        self.ditolak("+500rb", "+")
+        self.ditolak("+6281234567890", "telepon")
+
+    def test_titik_di_depan_dan_teks_tambahan_diberi_alasan(self):
+        self.ditolak(".5jt", "0 di depan")
+        self.ditolak("15rb/pcs", "tambahan")
+        self.ditolak("500 ribu rupiah", "tambahan")
+
+    def test_koma_tiga_angka_tanpa_singkatan_sengaja_ribuan(self):
+        # Keputusan terdokumentasi (references/singkatan-besaran.md): tanpa singkatan, '1,000'
+        # dibaca 1000 (ekspor spreadsheet gaya Inggris); desimal 3 angka untuk rupiah tidak lazim.
+        # DENGAN singkatan ('1,250jt') tetap ditolak karena selisihnya 1000x.
+        self.sama("1,000", "1000")
+        self.sama("12,345", "12345")
+        self.sama("1,000,000", "1000000")
+        hasil, alasan = grist._bersihkan_angka("1,250jt")
+        self.assertIsNone(hasil)
+
+    def test_csv_kolom_telepon_dan_kode_tetap_text_dengan_peringatan(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            f = d / "pelanggan.csv"
+            f.write_text("Nama,No WA,Kode Barang,Total\nBu Sari,081234567890,007,\"Rp 1.250.000,-\"\n"
+                         "Pak Budi,085712345678,0123,500rb\n", encoding="utf-8")
+            p = subprocess.run([sys.executable, SKRIP, "bersihkan-csv", str(f), "--json"],
+                               capture_output=True, text=True, cwd=d)
+            self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("'No WA' -> NoWa  (Text)", p.stdout)
+            self.assertIn("'Kode Barang' -> KodeBarang  (Text)", p.stdout)
+            self.assertIn("'Total' -> Total  (Numeric)", p.stdout)
+            self.assertIn("nomor telepon/kode", p.stdout)
+            self.assertIn("baris 2: '081234567890'", p.stdout)
+            isi = (d / "pelanggan-bersih.csv").read_text(encoding="utf-8")
+            self.assertIn("081234567890", isi)
+            self.assertIn(",007,", isi)
+            self.assertIn("1250000", isi)
+            data = json.loads([l for l in p.stdout.splitlines() if l.startswith("{")][0])
+            nol = {k["kolom"]: k["baris"] for k in data["kolom_nol_depan"]}
+            self.assertEqual(set(nol), {"No WA", "Kode Barang"})
+            self.assertEqual(nol["Kode Barang"][1], {"baris": 3, "nilai": "0123"})
+
+
+class TestBersihkanCsvV102(unittest.TestCase):
+    """CLI: nilai ambigu disebut baris & alasannya; angka besar ditulis persis."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_ambigu_disebut_baris_nilai_alasan(self):
+        f = self.dir / "omzet.csv"
+        f.write_text("Bulan,Omzet\nJan,\"Rp 1.250.000,-\"\nFeb,1.500rb\nMar,3 jt 500 rb\n",
+                     encoding="utf-8")
+        p = subprocess.run([sys.executable, SKRIP, "bersihkan-csv", str(f), "--json"],
+                           capture_output=True, text=True, cwd=self.dir)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertIn("'Omzet' -> Omzet  (Text)", p.stdout)
+        self.assertIn("baris 3: '1.500rb'", p.stdout)
+        self.assertIn("ambigu", p.stdout)
+        data = json.loads([l for l in p.stdout.splitlines() if l.startswith("{")][0])
+        g = data["kolom_gagal_sebagian"][0]
+        self.assertEqual(g["kolom"], "Omzet")
+        self.assertEqual(g["gagal"][0]["baris"], 3)
+        self.assertTrue(g["gagal"][0]["alasan"])
+
+    def test_angka_besar_ditulis_persis(self):
+        f = self.dir / "aset.csv"
+        f.write_text("Item,Nilai\nGedung,\"Rp 12.345.678.901,55\"\nMobil,\"1 miliar 250 jt\"\n",
+                     encoding="utf-8")
+        p = subprocess.run([sys.executable, SKRIP, "bersihkan-csv", str(f)],
+                           capture_output=True, text=True, cwd=self.dir)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        isi = (self.dir / "aset-bersih.csv").read_text(encoding="utf-8")
+        self.assertIn("12345678901.55", isi)
+        self.assertIn("1250000000", isi)
+
+
 class TestBersihkanHeader(unittest.TestCase):
     def test_spasi_jadi_camelcase(self):
         self.assertEqual(grist._bersihkan_header("Nama Pelanggan"), "NamaPelanggan")
@@ -96,6 +391,76 @@ class TestBersihkanHeader(unittest.TestCase):
 
     def test_diawali_angka_diberi_awalan_k(self):
         self.assertEqual(grist._bersihkan_header("2025 Target"), "K2025Target")
+
+
+class TestBersihkanCsvLaporanBarisGagal(unittest.TestCase):
+    """v1.0.1: temuan SEDANG Akun B - satu sel gagal parse membatalkan konversi SATU KOLOM PENUH
+    tanpa menyebut baris mana (examples/03-rekap-operasional-csv.md temuan #2). Perilaku
+    all-or-nothing per kolom DIPERTAHANKAN (aman, tidak ada silent-wrong-number) tapi sekarang
+    baris & nilai penyebabnya WAJIB disebut di pesan & JSON."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def tulis(self, nama, isi):
+        p = self.dir / nama
+        p.write_text(isi, encoding="utf-8")
+        return p
+
+    def jalan(self, *args):
+        return subprocess.run([sys.executable, SKRIP, "bersihkan-csv", *args],
+                              capture_output=True, text=True, cwd=self.dir)
+
+    def test_kolom_sebagian_gagal_disebut_baris_dan_nilainya(self):
+        isi = ("Nama Barang,Harga Satuan,Total Penjualan\n"
+              "Minyak Goreng,\"Rp 18.500\",\"Rp1.250.000,00\"\n"
+              "Beras,\"62.500\",\"125000.50\"\n"
+              "Item Aneh,\"tiga puluh ribu\",\"belum diisi\"\n")
+        f = self.tulis("rekap.csv", isi)
+        p = self.jalan(str(f), "--json")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        # Kolom Harga Satuan & Total Penjualan tetap Text (perilaku lama dipertahankan)...
+        self.assertIn("'Harga Satuan' -> HargaSatuan  (Text)", p.stdout)
+        self.assertIn("'Total Penjualan' -> TotalPenjualan  (Text)", p.stdout)
+        # ...TAPI sekarang pesan menyebut baris & nilai penyebabnya secara eksplisit.
+        self.assertIn("PERINGATAN", p.stdout)
+        self.assertIn("baris 4", p.stdout)
+        self.assertIn("tiga puluh ribu", p.stdout)
+        self.assertIn("belum diisi", p.stdout)
+        baris_json = [l for l in p.stdout.splitlines() if l.startswith("{")][0]
+        data = json.loads(baris_json)
+        gagal = {g["kolom"]: g["gagal"] for g in data["kolom_gagal_sebagian"]}
+        self.assertEqual(len(gagal["Harga Satuan"]), 1)
+        self.assertEqual(gagal["Harga Satuan"][0]["baris"], 4)
+        self.assertEqual(gagal["Harga Satuan"][0]["nilai"], "tiga puluh ribu")
+        self.assertEqual(gagal["Total Penjualan"][0]["nilai"], "belum diisi")
+
+    def test_kolom_teks_murni_tidak_dilaporkan_sebagai_gagal(self):
+        # Kolom yang memang isinya teks semua (tidak pernah ada sel yang berhasil jadi angka)
+        # BUKAN "kegagalan" - tidak boleh muncul di peringatan/JSON kolom_gagal_sebagian.
+        isi = "Nama Barang,Harga\nMinyak Goreng,18500\nBeras,62500\n"
+        f = self.tulis("rekap2.csv", isi)
+        p = self.jalan(str(f), "--json")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertNotIn("PERINGATAN", p.stdout)
+        baris_json = [l for l in p.stdout.splitlines() if l.startswith("{")][0]
+        data = json.loads(baris_json)
+        self.assertEqual(data["kolom_gagal_sebagian"], [])
+
+    def test_singkatan_besaran_ikut_dirapikan_lewat_cli(self):
+        isi = "Nama Barang,Harga\nMinyak Goreng,\"Rp 1,25jt\"\nBeras,\"500rb\"\n"
+        f = self.tulis("rekap3.csv", isi)
+        p = self.jalan(str(f), "--json")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertIn("'Harga' -> Harga  (Numeric)", p.stdout)
+        keluaran = self.dir / "rekap3-bersih.csv"
+        isi_keluaran = keluaran.read_text(encoding="utf-8")
+        self.assertIn("1250000", isi_keluaran)
+        self.assertIn("500000", isi_keluaran)
 
 
 class TestMasker(unittest.TestCase):

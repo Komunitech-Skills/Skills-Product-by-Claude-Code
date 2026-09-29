@@ -11,9 +11,9 @@ hanya status ya/tidak.
       dicatat di sini, cukup dipastikan ada).
 
 ## Pemasangan skill
-- [ ] 10 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`,
+- [ ] 11 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`,
       `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`,
-      `kebijakan-privasi-pdp`, `sop-onboarding`, `kontrak-kerja-pkwt`.
+      `kebijakan-privasi-pdp`, `sop-onboarding`, `kontrak-kerja-pkwt`, `pengingat-pasien-klinik`.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, termasuk ringkasan UU PDP data kesehatan.
 
@@ -33,6 +33,20 @@ hanya status ya/tidak.
 | Rekap CS harian (Copilot) | 20.00 WIB | ☐ | ☐ | ☐ |
 | Laporan operasional klinik | Mingguan/harian | ☐ | ☐ | ☐ |
 | Konten edukasi kesehatan | Jumat 16.00 WIB | ☐ | — (bukan data pasien) | ☐ |
+| Ringkasan pengingat pasien harian | 07.30 WIB | ☐ | ☐ (tanpa nomor WA) | ☐ |
+
+## Pengingat pasien (`pengingat-pasien-klinik`)
+- [ ] Data disimpan **lokal** di komputer klinik (`pasien/DAFTAR.csv`), minimal: nama panggilan,
+      nomor WA, jenis kunjungan umum, tanggal berikutnya. **Tidak ada** diagnosis/rekam medis/NIK.
+- [ ] Persetujuan (`--persetujuan ya/tidak`) ditanyakan secara eksplisit ke setiap pasien
+      sebelum dicatat — tidak pernah diasumsikan "ya".
+- [ ] Pasien yang menolak (`persetujuan: tidak`) **tidak pernah** muncul di daftar harian
+      (H-3/H-1/hari ini/terlambat) maupun draf pesan.
+- [ ] Draf pesan WA (daftar harian) hanya **disalin & dikirim staf** dari WA klinik — tidak ada
+      pengiriman otomatis maupun broadcast lewat OpenClaw.
+- [ ] Ringkasan terjadwal ke Telegram pemilik/PIC memakai `--samarkan` dan **tidak pernah**
+      memuat nomor WA.
+- [ ] Permintaan hapus data pasien (`hapus --id/--wa`) dijalankan **segera**, tidak ditunda.
 
 ## Privasi & batasan medis (wajib dicentang semua)
 - [ ] Tidak ada skrining/diagnosis/kalkulator medis/dosis/interpretasi lab/triase dijalankan

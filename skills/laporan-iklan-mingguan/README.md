@@ -14,7 +14,9 @@ lengkap dengan iklan mana yang harus dimatikan.**
 - ✅ Baca CSV Meta Ads, TikTok Ads Manager, Shopee Ads, TikTok Shop Ads (dulu Tokopedia Ads), dan
   Google Ads — bahkan bisa digabung jadi satu laporan lintas platform
 - ✅ Langsung dari file ekspor apa adanya: baris judul, baris "Total", sel kosong, dan kolom
-  rata-rata bawaan ditangani otomatis dan dicatat di laporan, bukan dihitung dua kali atau dibuang
+  rata-rata bawaan ditangani otomatis dan dicatat di laporan, bukan dihitung dua kali atau dibuang.
+  Kampanye bernama "Total 12.12 Flash Sale" atau "Jumlah 2 Pcs Bundling" tetap dihitung, dan setiap
+  baris yang dikecualikan sebagai total selalu disebut nama & biayanya di bagian ⚠️
 - ✅ Tidak pernah menghitung dolar sebagai Rupiah: kalau file ternyata mata uang asing, AI berhenti
   dan menanyakan kurs dulu
 

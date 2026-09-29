@@ -36,7 +36,7 @@ dari dokter/tenaga kesehatan — tidak pernah ditebak AI.
 
 Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`, `agen-cs-toko`,
 `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`, `kebijakan-privasi-pdp`,
-`sop-onboarding`, `kontrak-kerja-pkwt`.
+`sop-onboarding`, `kontrak-kerja-pkwt`, `pengingat-pasien-klinik`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
@@ -49,11 +49,12 @@ openclaw skills install ./laporan-status-kantor --global
 openclaw skills install ./kebijakan-privasi-pdp --global
 openclaw skills install ./sop-onboarding --global
 openclaw skills install ./kontrak-kerja-pkwt --global
+openclaw skills install ./pengingat-pasien-klinik --global
 ```
 (Jalankan dari folder hasil ekstrak ZIP paket. Windows tanpa WSL: salin folder skill lewat File
 Explorer ke `%USERPROFILE%\.openclaw\skills\` — lihat `docs/instalasi.md`.)
 
-- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-10 nama skill di atas.
+- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-11 nama skill di atas.
 - **Kalau gagal:** lihat bagian "Kalau gagal" yang sama di panduan toko-online (pesan "already
   exists" = aman; skill tidak terbaca = buka sesi baru; `exec` ditolak = salin manual).
 
@@ -118,10 +119,8 @@ Skill **tidak menambah/menebak** instruksi medis apa pun.
   `[isi ...]` untuk bagian yang belum lengkap (mis. nomor kontak klinik).
 - **Kalau gagal (dokter belum sempat memberi poin):** skill akan meminta poinnya dulu, tidak
   mengarang instruksi medis.
-- **Pengingat kontrol/vaksin per pasien** saat ini **belum** bisa dijadwalkan otomatis
-  (menyimpan tanggal per pasien butuh data pribadi kesehatan — lihat "Celah" di
-  `solusi-vip/README.md`). Untuk sekarang, buat pengingatnya per kasus saat pasien kontrol,
-  dikirim manual oleh admin.
+- **Pengingat kontrol/vaksin per pasien** (tanggal kontrol berikutnya, bukan instruksi medis)
+  memakai skill terpisah `pengingat-pasien-klinik` — lihat §5i.
 
 ### c. Konten edukasi kesehatan mingguan (Jumat sore, terjadwal)
 Ketik: *"Tiap Jumat sore kirimi saya ide konten edukasi kesehatan untuk klinik, dengan sumber
@@ -174,6 +173,41 @@ sesuai aturan, menghitung uang kompensasi akhir kontrak, dan bisa **memeriksa** 
 sudah ada untuk klausul berbahaya (mis. tanpa BPJS, masa percobaan yang dilarang di PKWT).
 - **Batasan:** bukan untuk status kepegawaian tenaga medis (dokter/perawat dengan STR/SIP) yang
   biasanya punya aturan tersendiri — untuk itu konsultasikan ke konsultan hukum ketenagakerjaan.
+
+### i. Pengingat kontrol/vaksin pasien (buku jadwal harian, terjadwal ke Telegram pemilik/PIC)
+`pengingat-pasien-klinik` adalah **buku jadwal lokal minimal** — hanya nama panggilan, nomor WA,
+jenis kunjungan umum (kontrol, vaksin, cabut jahitan, dll.), dan tanggal. **Tidak ada
+diagnosis/rekam medis** yang disimpan.
+
+1. **Catat pasien** saat pasien dijadwalkan kontrol/vaksin berikutnya. Ketik ke agent, mis.:
+   *"Catat Bu Sari, kontrol gigi 10 hari lagi, WA 0812-0000-1111, dia setuju diingatkan lewat WA."*
+   - **Tanyakan persetujuan pasien secara eksplisit** sebelum mencatat — jangan pernah diasumsikan
+     "ya". Pasien yang menolak tetap tercatat (agar staf tidak bertanya ulang) tapi **tidak pernah
+     muncul** di daftar harian maupun draf pesan.
+   - **Cara cek berhasil:** agent membalas satu baris konfirmasi berisi nama, jenis kunjungan,
+     tanggal, dan status persetujuan.
+   - **Kalau gagal:** field wajib kurang (nama/WA/jenis/tanggal/persetujuan) — agent akan
+     menanyakan sekali dalam satu pesan, isi saja jawabannya.
+2. **Daftar harian & draf pesan (dipakai staf tiap pagi, bukan otomatis):** ketik *"siapa yang
+   harus diingatkan hari ini?"* — muncul daftar TERLAMBAT/HARI INI/BESOK/H-3 plus **draf pesan WA
+   sopan siap disalin**. **Staf sendiri yang menyalin dan mengirim** dari WA klinik — tidak ada
+   pengiriman otomatis maupun broadcast.
+   - **Cara cek berhasil:** setiap draf ditandai "salin & kirim sendiri, JANGAN dikirim otomatis"
+     dan hanya berisi nama, jenis kunjungan umum, dan tanggal — tidak ada saran medis.
+3. **Setelah pasien datang/batal:** ketik *"Bu Sari sudah datang, jadwalkan lagi 3 bulan lagi"*
+   atau *"Pak Budi batal, pindah kota"* — jadwal berikutnya (atau penghentian) tercatat otomatis.
+4. **Ringkasan harian ke Telegram pemilik/PIC (terjadwal, jam 07.30 WIB — opsional):** ketik
+   *"kirim ringkasan pengingat pasien tiap pagi jam 7.30 ke Telegram saya"*. Ringkasan berisi
+   **jumlah** TERLAMBAT/HARI INI/BESOK/H-3 (nama boleh disamarkan jadi inisial) — **tidak pernah**
+   memuat nomor WA. Lihat perintah persis di `jadwal-openclaw.md` §5.
+   - **Cara cek berhasil:** uji sekali (`automations run <id> --wait`), pastikan hasilnya tidak
+     memuat nomor WA sebelum jadwal dianggap aktif.
+5. **Hapus data atas permintaan pasien:** begitu pasien minta datanya dihapus, langsung ketik
+   *"Bu Sari minta datanya dihapus"* — agent menampilkan pratinjau lalu meminta konfirmasi sebelum
+   menghapus permanen (UU PDP 27/2022). **Jangan ditunda.**
+- **Batasan:** hanya jenis kunjungan umum (kontrol, vaksin, cek gigi, dll.) yang boleh dicatat —
+  **bukan** nama penyakit/diagnosis/hasil pemeriksaan; skill menolak sendiri isian yang
+  menyerupai itu. Bukan pengganti sistem antrean/rekam medis elektronik klinik.
 
 ---
 

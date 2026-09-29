@@ -91,3 +91,57 @@ Ekspor EMKM skenario 01 → `laporan_emkm.py`: laba Rp 914.749 (EMKM bulat), tot
 - Jadwal OpenClaw (`references/openclaw-jadwal.md`) di Gateway sungguhan dan pengiriman Telegram.
 - File jurnal buatan tangan pengguna yang memakai fitur hledger lanjutan (hanya diuji: pembaca bawaan menolak dengan pesan jelas; mesin hledger membaca).
 - Mutasi bank asli dari bank lain selain format uji (BRI, BNI, bank digital).
+
+---
+
+## Uji ulang v1.0.1 (Akun B)
+- **Tanggal:** 2026-09-26 · **Penguji:** agent independen Akun B (bukan pembuat) · rincian: `examples/06-uji-ulang-v1.0.1-akun-b.md`
+- **Lingkungan:** salinan skill di scratchpad, Linux, Python 3.11, data fiktif; **hledger 1.52.4 resmi** (SHA-256 `f76a2e40…9643a` dihitung ulang = tabel panduan & digest rilis yang dicatat sebelumnya), tidak dipasang ke sistem.
+
+| Temuan lama | Status v1.0.1 |
+|---|---|
+| 1 larangan pembukuan ganda | **Tertutup** (instruksi): baris tabel + jawaban baku (UU KUP Ps. 28 (3), Ps. 39 (1) d & f), termasuk `--jurnal` kedua & memundurkan tanggal; 3 kalimat penggelapan ditolak, permintaan sah tidak. |
+| 2 pola PPh 23 | **Tertutup.** `--diterima 9,8jt` atas piutang 10 jt → hledger asli: BCA +9.800.000, `Aset:Pajak Dibayar Dimuka:PPh 23` +200.000, piutang −10.000.000; pendapatan tetap bruto; neraca 22.000.000 seimbang; hitung sendiri cocok. `--pph23 2%`, PERHATIAN tarif ≠ 2%/4%, bentrok `--diterima`, potongan tak masuk akal — semua benar; pengingat bukti potong tampil. |
+| 3 pengingat penjualan tunai | **Sebagian.** "INGAT …" selalu tampil saat impor ✅; tetapi CATATAN di laba rugi **tidak muncul** bila mutasi berisi TARIKAN ATM/Setor Tunai (posting `Aset:Kas` dianggap transaksi kas) — terbukti pada data impor Agustus dan jurnal skenario 03 lama (asal temuan). |
+
+Temuan baru: **[SEDANG]** `cek_tunai` tertipu baris tarik/setor tunai dari mutasi (lihat atas; saran: abaikan transaksi `sumber:mutasi-bank` saat mencari transaksi kas + tes). **[RENDAH]** `--pph23` diterima pada `--jenis jual` (barang) tanpa peringatan.
+Tanpa regresi: 36/36 OK dengan hledger, 36 OK (5 dilewati) tanpa hledger; angka kunci v1.0.0 (914.749,50 / 18.740.500; 19.880.000 / 47.380.000; −6.832.354,67 / 21.167.645,33) sama persis; `validate.py --skill hledger-usaha` ✅.
+
+### Skor: **8/10**
+Alasan: PPh 23 dan larangan pembukuan ganda dikerjakan dengan baik dan angkanya cocok dengan hledger asli; tidak ada regresi. Turun dari 9 karena perbaikan temuan 3 tidak bekerja pada kasus yang justru memicu temuan itu (mutasi dengan tarik tunai ATM), sehingga laporan laba rugi dari impor bank masih bisa disajikan tanpa peringatan. Setelah `cek_tunai` diperbaiki + dites → layak 9.
+
+## Uji ulang independen v1.0.2 (Akun B, 2026-09-26)
+- **Penguji:** agent independen Akun B (bukan pembuat) · rincian: `examples/07-uji-ulang-v1.0.2-akun-b.md`
+- **Lingkungan:** salinan skill di scratchpad, Linux, Python 3.11, data fiktif; **hledger 1.52.4 resmi diunduh ulang** dari halaman rilis GitHub, SHA-256 `f76a2e40…9643a` = tabel `docs/panduan-hledger.md` (digest API rilis tidak bisa dibaca dari sesi ini).
+
+| Temuan uji ulang v1.0.1 | Status v1.0.2 |
+|---|---|
+| [SEDANG] CATATAN tunai tertipu tarik/setor tunai | **Tertutup.** CATATAN kini muncul pada impor Agustus (TARIKAN ATM), jurnal skenario 03 lama (TARIKAN ATM + Setor Tunai; `laba-rugi` & `bulanan`) dan data baru (2× TARIKAN ATM, SETOR TUNAI, `catat tarik-tunai`/`setor-tunai`, prive tunai), dengan hledger maupun mesin bawaan; hilang setelah penjualan/biaya tunai dicatat. Angka laba/neraca data baru cocok dengan hitung Decimal penguji dan hledger asli (laba 1.235.000 → 6.243.333; aset 15.653.333 SEIMBANG). |
+| [RENDAH] `--pph23` pada `--jenis jual` | **Tertutup.** `--pph23 2%`/`--diterima`/nominal, alias `penjualan`, `--via tempo`, dan `--batch` ditolak (exit 2) dengan pesan jelas + arahan `--jenis jasa`; jurnal tidak berubah. Jasa (2% × 3.333.333 = 66.666, dibulatkan ke bawah) dan `terima-piutang --diterima` tetap benar. |
+
+Temuan baru: **[RENDAH]** `terima-piutang --diterima` atas piutang yang berasal dari `--jenis jual` (barang) tetap dicatat sebagai PPh 23 tanpa peringatan.
+Tanpa regresi: 38/38 OK dengan hledger, 38 OK (5 dilewati) tanpa hledger; angka kunci v1.0.0 (914.749,50; 19.880.000; −6.832.354,67 / 21.167.645,33 SEIMBANG) sama persis; `validate.py --skill hledger-usaha` ✅.
+
+### Skor: **9/10**
+Alasan: kedua temuan U19 tertutup dan terbukti pada kasus asal temuan maupun data baru, angka cocok dengan hledger asli dan hitungan independen, tanpa regresi. Belum 10: Windows/Mac dan jadwal OpenClaw belum diuji di platform asli; sisa celah PPh 23 lewat `terima-piutang` (kecil).
+
+## Uji ulang v1.0.3 (2026-09-28)
+- **Penguji:** agent independen (bukan pembuat); hanya membaca folder skill, menjalankan script di scratchpad `uji-keu-0928/hl`, data fiktif, Linux, Python 3.11, **hledger 1.52.4 asli** (`hledger bal`, `hledger check`).
+- **Tes regresi:** `tests/uji_regresi.py` **41/41 OK**.
+
+| Skenario `terima-piutang --pph23/--diterima` | Hasil |
+|---|---|
+| A. Piutang PT Maju hanya dari `--jenis jual` 10 jt; `--pph23 2%`, `--diterima 9,8jt`, lewat `--batch`, dan `--mesin bawaan` | **Ditolak** (exit 2) dengan pesan jelas + arahan (biaya transfer / PPh 22 / ubah jadi jasa); jurnal tidak berubah. ✅ |
+| F. Penjualan barang ke sub-akun pihak, pelunasan tanpa `--pihak` (akun induk) | Ditolak (sub-akun ikut dibaca). ✅ |
+| B. Piutang jasa 12.345.678, `--pph23 2%` | Diizinkan tanpa PERHATIAN asal. Bank 12.098.765, PPh 23 dibayar dimuka 246.913 (2% = 246.913,56 dibulatkan ke bawah), piutang 0 — cocok Decimal penguji & hledger. ✅ |
+| C. Campuran barang 5 jt + jasa 3 jt, `--pph23 60rb` | Diizinkan + PERHATIAN "bercampur" + PERHATIAN bukan 2%/4%. Bank 7.940.000, PPh 23 60.000, piutang 0 — cocok. ✅ |
+| D. Asal tidak ada di jurnal (saldo awal), 7.777.777 `--diterima 7.622.222` | Diizinkan + PERHATIAN "asal tidak ditemukan". Kas 7.622.222, PPh 23 155.555 (dalam toleransi 2%), piutang −7.777.777 — cocok. ✅ |
+
+Selisih angka vs hitung independen/hledger: **0**.
+
+Temuan (semua RENDAH):
+1. **[RENDAH]** Asal piutang dibaca dari **nama akun pendapatan**, bukan dari jenis catatan: `--jenis jual --akun "Pendapatan:Usaha"` (tanpa kata penjualan/barang) digolongkan "lain" → `--pph23` diterima **tanpa PERHATIAN**. Saran: tandai transaksi `jual` (mis. tag) atau beri PERHATIAN juga untuk golongan "lain".
+2. **[RENDAH]** Skenario D membuat saldo piutang negatif tanpa peringatan (saldo awal belum dicatat). Saran: ingatkan catat saldo awal piutang dulu.
+
+### Skor: **9/10**
+Alasan: penolakan PPh 23 atas piutang barang bekerja di semua jalur (CLI, batch, hledger & mesin bawaan, akun induk/sub-akun), kasus campuran/tidak diketahui diizinkan dengan PERHATIAN yang tepat, angka tepat ke rupiah di hledger asli, tanpa regresi. Belum 10: celah kecil via akun pendapatan bernama umum dan platform asli belum diuji.

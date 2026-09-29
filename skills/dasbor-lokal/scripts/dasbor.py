@@ -257,6 +257,10 @@ def fmt_nilai(kolom, nilai):
         return ""
     if kolom in KOLOM_UANG and isinstance(nilai, (int, float)):
         return "Rp " + "{:,.0f}".format(nilai).replace(",", ".")
+    if isinstance(nilai, float) and nilai.is_integer():
+        # SQLite REAL sering menyimpan angka bulat (mis. stok) sebagai float — tampilkan
+        # "25", bukan "25.0", di mode teks. Angka pecahan asli (mis. 25.5) tetap apa adanya.
+        return str(int(nilai))
     return str(nilai)
 
 

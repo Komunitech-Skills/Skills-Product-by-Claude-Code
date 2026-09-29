@@ -785,7 +785,7 @@ class UjiN2BarisTotal(_Dasar):
                                 "Rekap Mingguan,500000,90000,1400,15\n")
         d = self.json_ok("analisis", str(p))
         self.assertEqual(d["total"]["biaya"], 1000000)          # tidak dibuang diam-diam
-        w = [x for x in d["peringatan"] if "TERHITUNG DUA KALI" in x]
+        w = [x for x in d["peringatan"] if "terjumlah dua kali" in x]
         self.assertEqual(len(w), 1)
         self.assertIn("Rekap Mingguan", w[0])
         self.assertIn("seharusnya Rp 500.000, bukan Rp 1.000.000", w[0])
@@ -796,7 +796,7 @@ class UjiN2BarisTotal(_Dasar):
         d = self.json_ok("analisis", str(p))
         self.assertEqual(d["total"]["biaya"], 200000)
         self.assertEqual(d["baris_dilewati_baris_total"], 0)
-        self.assertTrue(any("Total Look Hijab" in x and "TERHITUNG DUA KALI" in x for x in d["peringatan"]))
+        self.assertTrue(any("Total Look Hijab" in x and "terjumlah dua kali" in x for x in d["peringatan"]))
 
     def test_label_sedang_angka_tidak_cocok_diberi_peringatan(self):
         p = self.tulis("s.csv", KOLOM_SEDERHANA + "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
@@ -811,6 +811,323 @@ class UjiN2BarisTotal(_Dasar):
         d = self.json_ok("analisis", str(p))
         self.assertEqual(d["total"]["biaya"], 1900000)
         self.assertEqual(d["peringatan"], [])
+
+
+class UjiM1LabelTotalAngkaBukanCakupan(unittest.TestCase):
+    """v1.0.3 (M1, examples/07-uji-ulang-v1.0.2.md P5/P7/P7b): nama kampanye ASLI berawalan
+    'Total'/'Jumlah' + angka + kata BUKAN cakupan (mis. '12.12 Flash Sale', '2 Pcs Bundling')
+    tidak boleh dibuang diam-diam sebagai baris total. Setiap baris yang TETAP dibuang sebagai
+    total (label kuat/sedang) sekarang HARUS selalu memberi ⚠️ menyebut nama & biayanya."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def tulis(self, nama, isi):
+        p = self.dir / nama
+        p.write_text(isi, encoding="utf-8")
+        return p
+
+    def json_ok(self, *args):
+        kode, keluar, galat = jalankan(*args, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, galat)
+        return json.loads(keluar)
+
+    def test_jenis_label_total_angka_diikuti_kata_bukan_cakupan_jadi_lemah(self):
+        # Root cause M1: dulu sisa yang DIAWALI ANGKA langsung "kuat" tanpa mengecek kata
+        # sesudahnya. "Total 4 kampanye" (angka + kata cakupan) tetap "kuat"; "Total 12.12 Flash
+        # Sale" / "Jumlah 2 Pcs Bundling" (angka + kata BUKAN cakupan) sekarang harus "lemah".
+        f = modul.jenis_label_total
+        self.assertEqual(f("Total 4 kampanye"), "kuat")
+        self.assertEqual(f("Total (5 iklan)"), "kuat")
+        self.assertEqual(f("Total 12.12 Flash Sale"), "lemah")
+        self.assertEqual(f("Jumlah 2 Pcs Bundling"), "lemah")
+        self.assertEqual(f("Total Look Hijab"), "lemah")   # regresi: tidak boleh berubah
+
+    def test_p5_dua_kampanye_asli_berawalan_total_jumlah_angka_tidak_dibuang(self):
+        # Persis skenario P5 di examples/07-uji-ulang-v1.0.2.md (tanpa baris total sungguhan).
+        p = self.tulis("p5.csv", KOLOM_SEDERHANA +
+                       "Total 12.12 Flash Sale,600000,40000,600,20\n"
+                       "Jumlah 2 Pcs Bundling,250000,15000,250,7\n"
+                       "Promo Reguler,150000,9000,150,4\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertEqual(d["total"]["biaya"], 1_000_000)   # BUKAN Rp 150.000 seperti bug v1.0.2
+        nama = {k["nama"] for k in d["per_kampanye"]}
+        self.assertIn("Total 12.12 Flash Sale", nama)
+        self.assertIn("Jumlah 2 Pcs Bundling", nama)
+        # Verifikasi independen pakai Decimal, bukan cuma percaya angka skill.
+        self.assertEqual(Decimal(600000) + Decimal(250000) + Decimal(150000), Decimal(d["total"]["biaya"]))
+
+    def test_p4_nama_look_hijab_dan_variasi_tidak_dibuang(self):
+        # P4: kampanye bernama "Total Look Hijab"/"Jumlah Terbatas - Khimar" dll (kata biasa
+        # sesudah Total/Jumlah, TANPA angka) - regresi, harus tetap seperti v1.0.2.
+        p = self.tulis("p4.csv", KOLOM_SEDERHANA +
+                       "Total Look Hijab,400000,20000,300,10\n"
+                       "Jumlah Terbatas Khimar,350000,18000,280,9\n"
+                       "Totalitas Gamis,150000,9000,150,4\n"
+                       "Total Diskon Bergo,100000,6000,90,3\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertEqual(d["total"]["biaya"], 1_000_000)
+
+    def test_label_kuat_dibuang_selalu_diberi_peringatan_cocok(self):
+        # "Total 4 kampanye" TETAP dibuang (label kuat, angka+kata cakupan) - tapi sekarang HARUS
+        # selalu ada ⚠️ menyebut namanya & biayanya, walau angkanya COCOK dengan jumlah baris lain
+        # (sebelum v1.0.3, label "kuat" yang cocok tidak pernah diberi ⚠️ sama sekali).
+        p = self.tulis("kuat_cocok.csv", KOLOM_SEDERHANA +
+                       "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                       "Total 4 kampanye,500000,36000,500,15\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.assertEqual(d["total"]["biaya"], 500000)
+        self.assertTrue(any("Total 4 kampanye" in x and "Rp 500.000" in x for x in d["peringatan"]))
+
+    def test_label_kuat_dibuang_selalu_diberi_peringatan_tidak_cocok(self):
+        # Label kuat ("Total") yang biayanya JAUH dari jumlah baris lain - sebelum v1.0.3 dibuang
+        # 100% diam-diam tanpa ⚠️ sama sekali (celah M1 untuk label kuat, beda dari sedang).
+        p = self.tulis("kuat_beda.csv", KOLOM_SEDERHANA +
+                       "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                       "Total,999999,80000,900,30\n")
+        d = self.json_ok("analisis", str(p))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.assertEqual(d["total"]["biaya"], 500000)
+        w = [x for x in d["peringatan"] if "Total" in x and "tidak sama dengan jumlah baris lain" in x]
+        self.assertEqual(len(w), 1)
+        self.assertIn("Rp 999.999", w[0])
+        self.assertIn("Rp 500.000", w[0])
+
+
+def _jumlah_biaya(baris_csv, kecuali=()):
+    """Hitung ulang total biaya secara independen (Decimal) dari baris CSV sederhana
+    'nama,biaya,...' - baris yang namanya ada di `kecuali` tidak dijumlah."""
+    tot = Decimal(0)
+    for b in baris_csv.strip().splitlines():
+        sel = next(csv.reader([b]))
+        if sel[0] not in kecuali:
+            tot += Decimal(sel[1])
+    return tot
+
+
+class UjiV103KasusM1M2M3(_Dasar):
+    """v1.0.3: baris hanya dianggap total bila label ringkasan murni, lolos cek silang ±2%,
+    dan/atau kolom nama kosong + cocok dengan tetangganya. Setiap baris yang dikecualikan
+    SELALU diberi ⚠️ berisi nama/label + biayanya. Total diverifikasi ulang dengan Decimal."""
+
+    def cek_total(self, d, data, kecuali=()):
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), _jumlah_biaya(data, kecuali))
+
+    def test_label_sisa_hanya_angka_jadi_lemah(self):
+        f = modul.jenis_label_total
+        for s in ("Total 12.12", "Jumlah 2", "Total (3)", "Total: 2026", "Total 12.12 Flash Sale",
+                  "Total: Flash Sale Ramadan", "Jumlah 2 Pcs Bundling"):
+            self.assertEqual(f(s), "lemah", s)
+        for s in ("Total", "Total:", "Total 4 kampanye", "Total (5 iklan)", "Total: Account", "Totals"):
+            self.assertIn(f(s), ("kuat", "sedang"), s)
+
+    def test_nama_total_angka_saja_dihitung(self):
+        data = ("Total 12.12,400000,30000,400,12\nJumlah 2,100000,5000,90,3\n"
+                "Promo Gajian,250000,12000,200,6\n")
+        d = self.json_ok("analisis", str(self.tulis("a.csv", KOLOM_SEDERHANA + data)))
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.cek_total(d, data)
+
+    def test_p5_ditambah_baris_total_asli_hanya_total_asli_yang_dibuang(self):
+        data = ("Total 12.12 Flash Sale,600000,40000,600,20\nJumlah 2 Pcs Bundling,250000,15000,250,7\n"
+                "Promo Reguler,150000,9000,150,4\nTotal,1000000,64000,1000,31\n")
+        d = self.json_ok("analisis", str(self.tulis("p5b.csv", KOLOM_SEDERHANA + data)))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.cek_total(d, data, kecuali=("Total",))
+        self.assertEqual(Decimal(d["total"]["biaya"]), Decimal("1000000"))
+        self.assertTrue(any("'Total'" in x and "Rp 1.000.000" in x for x in d["peringatan"]))
+
+    def test_nama_total_angka_yang_lolos_cek_silang_dibuang_dengan_peringatan(self):
+        # Satu-satunya jalan nama "Total 12.12 ..." dibuang: angkanya ≈ jumlah baris lain (±2%).
+        data = ("Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                "Total 12.12 Flash Sale,505000,36300,505,15\n")
+        d = self.json_ok("analisis", str(self.tulis("c.csv", KOLOM_SEDERHANA + data)))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.cek_total(d, data, kecuali=("Total 12.12 Flash Sale",))
+        self.assertTrue(any("Total 12.12 Flash Sale" in x and "Rp 505.000" in x and "baris TOTAL" in x
+                            for x in d["peringatan"]))
+
+    def test_label_total_di_kolom_lain_nama_terisi_tetap_dihitung(self):
+        teks = ("Campaign name,Keterangan,Cost,Impressions,Clicks,Conversions\n"
+                "Promo Gajian,Total,300000,20000,300,10\nPromo B,,200000,16000,200,5\n"
+                "Promo C,,100000,5000,80,2\n")
+        d = self.json_ok("analisis", str(self.tulis("k.csv", teks)))
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertEqual(Decimal(d["total"]["biaya"]), Decimal(300000) + Decimal(200000) + Decimal(100000))
+
+    def test_setiap_baris_dibuang_selalu_ada_peringatan_nama_dan_biaya(self):
+        # P2: 'Totals' +1,5% -> dibuang (label ringkasan murni) tapi tetap ⚠️ nama + biaya.
+        data = "Promo A,500000,30000,500,14\nPromo B,300000,20000,300,10\nTotals,812000,50000,800,24\n"
+        d = self.json_ok("analisis", str(self.tulis("p2.csv", KOLOM_SEDERHANA + data)))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.cek_total(d, data, kecuali=("Totals",))
+        self.assertTrue(any("'Totals'" in x and "Rp 812.000" in x for x in d["peringatan"]))
+        self.assertIn("PERLU DICEK", d["teks"])
+
+    def test_m2_label_asing_selisih_3_persen_diberi_peringatan(self):
+        data = ("Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\n"
+                "Akun Toko Berkah,515000,37080,515,15\n")
+        d = self.json_ok("analisis", str(self.tulis("p7.csv", KOLOM_SEDERHANA + data)))
+        self.cek_total(d, data)                                     # tidak dibuang diam-diam
+        w = [x for x in d["peringatan"] if "terjumlah dua kali" in x]
+        self.assertEqual(len(w), 1)
+        self.assertIn("Akun Toko Berkah", w[0])
+        self.assertIn("Rp 515.000", w[0])
+
+    def test_m2_selisih_10_persen_tanpa_peringatan_palsu(self):
+        data = "Utama,900000,60000,900,30\nPromo A,500000,20000,300,10\nPromo B,500000,16000,200,5\n"
+        d = self.json_ok("analisis", str(self.tulis("u.csv", KOLOM_SEDERHANA + data)))
+        self.cek_total(d, data)
+        self.assertEqual(d["peringatan"], [])
+
+    P8B = ("Campaign name,Ad name,Cost,Impressions,Clicks,Conversions\n"
+           "Grand Total,,550000,30000,500,17\n"
+           "Kamp A,Iklan 1,200000,10000,200,6\nKamp A,Iklan 2,100000,6000,100,3\n"
+           "Subtotal Kamp A,,300000,16000,300,9\n"
+           "Kamp B,Iklan 3,250000,14000,200,8\n"
+           "Subtotal Kamp B,,250000,14000,200,8\n")
+
+    def test_m3_subtotal_tanpa_titik_dua_cocok_tetangga_dibuang(self):
+        d = self.json_ok("analisis", str(self.tulis("p8b.csv", self.P8B)))
+        self.assertEqual(d["baris_dilewati_baris_total"], 3)
+        self.assertEqual(Decimal(d["total"]["biaya"]), Decimal(200000) + Decimal(100000) + Decimal(250000))
+        self.assertEqual(d["total"]["hasil"], 17)
+        self.assertFalse(any(k["nama"].startswith("(tanpa nama") for k in d["per_kampanye"]))
+        for lbl, rp in (("Subtotal Kamp A", "Rp 300.000"), ("Subtotal Kamp B", "Rp 250.000")):
+            self.assertTrue(any(lbl in x and rp in x and "SUBTOTAL" in x for x in d["peringatan"]), lbl)
+        self.assertTrue(any("'Grand Total'" in x and "Rp 550.000" in x for x in d["peringatan"]))
+
+    def test_m3_label_nama_kosong_angka_tidak_cocok_tetap_dihitung_dengan_peringatan(self):
+        teks = ("Campaign name,Ad name,Cost,Impressions,Clicks,Conversions\n"
+                "Kamp A,Iklan 1,200000,10000,200,6\nKamp A,Iklan 2,100000,6000,100,3\n"
+                "Total 12.12 Flash Sale,,90000,4000,70,2\n")
+        d = self.json_ok("analisis", str(self.tulis("m3.csv", teks)))
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertEqual(Decimal(d["total"]["biaya"]), Decimal(200000) + Decimal(100000) + Decimal(90000))
+        self.assertTrue(any("Total 12.12 Flash Sale" in x and "TETAP dihitung" in x and "Rp 90.000" in x
+                            for x in d["peringatan"]))
+
+
+class UjiV104SubtotalDiKolomNama(_Dasar):
+    """v1.0.4 (N3, examples/08-uji-ulang-v103-akun-b.md): subtotal buatan admin DI KOLOM NAMA yang
+    memuat nama kampanye tidak boleh terhitung dua kali; setiap baris yang dikecualikan diberi ⚠️
+    nama + biaya; kampanye sungguhan tidak pernah dibuang diam-diam. Total dicek ulang dengan Decimal."""
+
+    def cek_total(self, d, data, kecuali=()):
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), _jumlah_biaya(data, kecuali))
+
+    def test_fungsi_pengenal_subtotal(self):
+        f = modul.awalan_subtotal
+        self.assertEqual(f("Subtotal: Retarget Video"), "retarget video")
+        self.assertEqual(f("Sub total - Retarget Video"), "retarget video")
+        self.assertEqual(f("SUB-TOTAL Retarget Video"), "retarget video")
+        self.assertEqual(f("Jumlah sementara"), "")
+        for s in ("Subtotalan Promo", "Retarget Video", "Total Look Hijab", "Jumlah 2 Pcs Bundling"):
+            self.assertIsNone(f(s), s)
+        g = modul.nama_subtotal_dari
+        self.assertTrue(g("Retarget Video Total", "Retarget Video"))
+        self.assertTrue(g("Total: Retarget Video", "Retarget Video"))
+        self.assertFalse(g("Retarget Video Baru", "Retarget Video"))
+        self.assertFalse(g("Retarget Video", "Retarget Video"))
+
+    def test_repro_kecil_n3_subtotal_nama_kampanye_tidak_dobel(self):
+        # Repro kecil di examples/08: dulu Rp 294.240 tanpa ⚠️, seharusnya Rp 202.120.
+        data = ("Retarget Video,50000,4000,60,2\nRetarget Video,42120,3500,55,1\n"
+                "Subtotal: Retarget Video,92120,7500,115,3\n"
+                "Promo A,60000,5000,70,2\nPromo B,50000,4000,50,1\n")
+        d = self.json_ok("analisis", str(self.tulis("n3.csv", KOLOM_SEDERHANA + data)))
+        self.cek_total(d, data, kecuali=("Subtotal: Retarget Video",))
+        self.assertEqual(Decimal(d["total"]["biaya"]), Decimal("202120"))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.assertNotIn("Subtotal: Retarget Video", [k["nama"] for k in d["per_kampanye"]])
+        self.assertTrue(any("'Subtotal: Retarget Video'" in x and "Rp 92.120" in x for x in d["peringatan"]))
+
+    def test_variasi_label_subtotal_dikecualikan_dengan_peringatan(self):
+        for lbl in ("Sub total - Retarget Video", "Sub-total Retarget Video", "SUBTOTAL: retarget video",
+                    "Jumlah sementara", "Retarget Video Total", "Total: Retarget Video",
+                    "Jumlah Retarget Video"):
+            with self.subTest(label=lbl):
+                data = ("Retarget Video,50000,4000,60,2\nRetarget Video,42120,3500,55,1\n"
+                        f"{lbl},92120,7500,115,3\nPromo A,60000,5000,70,2\nPromo B,50000,4000,50,1\n")
+                d = self.json_ok("analisis", str(self.tulis("v.csv", KOLOM_SEDERHANA + data)))
+                self.cek_total(d, data, kecuali=(lbl,))
+                self.assertEqual(d["baris_dilewati_baris_total"], 1)
+                self.assertTrue(any(f"'{lbl}'" in x and "Rp 92.120" in x for x in d["peringatan"]))
+
+    def test_file_04_tiktok_harian_subtotal_per_kampanye_dan_total(self):
+        # Pola file 04 examples/08: baris harian, "Subtotal: <kampanye>" tanpa tanggal di tengah,
+        # "Subtotal" polos, lalu "Total of 3 campaigns" (+Rp 1). Semua subtotal/total dikecualikan.
+        baris, kunci = [], Decimal(0)
+        for nama, b, im, kl, kv in (("Retarget Video", "25000.25", 3000, 40, 1),
+                                    ("Katalog Hijab", "30000", 3500, 50, 2),
+                                    ("Live Payday", "30333", 2800, 35, 1)):
+            for i in range(7):
+                baris.append(f"2026-09-{14 + i},{nama},{b},{im},{kl},{kv}")
+                kunci += Decimal(b)
+            baris.append(f",Subtotal: {nama},{Decimal(b) * 7},{im * 7},{kl * 7},{kv * 7}")
+        baris.append(f",Subtotal,{kunci},64400,875,28")
+        baris.append(f"Total of 3 campaigns,,{kunci + 1},64400,875,28")
+        teks = "By Day,Campaign name,Cost,Impressions,Clicks (destination),Conversions\n" + "\n".join(baris) + "\n"
+        d = self.json_ok("analisis", str(self.tulis("f04.csv", teks)))
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), kunci)   # 597.332,75 (Decimal)
+        self.assertEqual(d["total"]["hasil"], 28)
+        self.assertEqual(d["jumlah_kampanye"], 3)
+        self.assertFalse(any(k["nama"].lower().startswith("subtotal") for k in d["per_kampanye"]))
+        for nama, rp in (("Retarget Video", "Rp 175.002"), ("Katalog Hijab", "Rp 210.000"),
+                         ("Live Payday", "Rp 212.331")):
+            self.assertTrue(any(f"'Subtotal: {nama}'" in x and rp in x for x in d["peringatan"]), nama)
+        self.assertEqual(d["periode"]["label"], "2026-09-14 s.d. 2026-09-20")
+
+    def test_nama_mirip_subtotal_angka_tidak_cocok_tetap_dihitung(self):
+        data = ("Retarget Video,50000,4000,60,2\nRetarget Video,42120,3500,55,1\n"
+                "Retarget Video Total,30000,2000,20,1\nPromo A,60000,5000,70,2\n")
+        d = self.json_ok("analisis", str(self.tulis("m.csv", KOLOM_SEDERHANA + data)))
+        self.cek_total(d, data)                                  # tidak dibuang
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertTrue(any("Retarget Video Total" in x and "TETAP dihitung" in x and "Rp 30.000" in x
+                            for x in d["peringatan"]))
+
+    def test_awalan_subtotal_angka_tidak_cocok_tetap_ada_peringatan(self):
+        data = ("Promo A,60000,5000,70,2\nPromo B,50000,4000,50,1\nSubtotal: Promo Lama,12345,900,10,0\n")
+        d = self.json_ok("analisis", str(self.tulis("s.csv", KOLOM_SEDERHANA + data)))
+        self.cek_total(d, data, kecuali=("Subtotal: Promo Lama",))
+        self.assertTrue(any("'Subtotal: Promo Lama'" in x and "Rp 12.345" in x and "tidak cocok" in x
+                            for x in d["peringatan"]))
+
+    def test_baris_harian_asli_yang_kebetulan_sama_dengan_jumlah_tidak_dibuang(self):
+        # Hari ke-3 = hari 1 + hari 2 (biaya, tayangan, klik) tetapi BERTANGGAL -> data asli, dihitung.
+        teks = ("Date,Campaign name,Cost,Impressions,Clicks,Conversions\n"
+                "2026-09-14,Retarget Video,100000,5000,50,2\n2026-09-15,Retarget Video,100000,5000,50,2\n"
+                "2026-09-16,Retarget Video,200000,10000,100,4\n2026-09-16,Promo A,80000,4000,30,1\n")
+        d = self.json_ok("analisis", str(self.tulis("h.csv", teks)))
+        self.assertEqual(Decimal(d["total"]["biaya"]), Decimal(480000))
+        self.assertEqual(d["baris_dilewati_baris_total"], 0)
+        self.assertFalse(any("subtotal" in x.lower() for x in d["peringatan"]))
+
+    def test_nama_sama_tanpa_tanggal_cocok_semua_metrik_dikecualikan(self):
+        teks = ("Date,Campaign name,Cost,Impressions,Clicks,Conversions\n"
+                "2026-09-14,Retarget Video,100000,5000,50,2\n2026-09-15,Retarget Video,120000,6000,55,2\n"
+                ",Retarget Video,220000,11000,105,4\n2026-09-15,Promo A,80000,4000,30,1\n")
+        d = self.json_ok("analisis", str(self.tulis("t.csv", teks)))
+        self.assertEqual(Decimal(d["total"]["biaya"]), Decimal(100000) + Decimal(120000) + Decimal(80000))
+        self.assertEqual(d["baris_dilewati_baris_total"], 1)
+        self.assertTrue(any("'Retarget Video'" in x and "Rp 220.000" in x and "subtotal" in x
+                            for x in d["peringatan"]))
+
+    def test_peringatan_m2_bahasa_sopan_tanpa_huruf_kapital_menakutkan(self):
+        data = "Promo A,300000,20000,300,10\nPromo B,200000,16000,200,5\nRekap Mingguan,500000,90000,1400,15\n"
+        d = self.json_ok("analisis", str(self.tulis("m2.csv", KOLOM_SEDERHANA + data)))
+        w = [x for x in d["peringatan"] if "terjumlah dua kali" in x]
+        self.assertEqual(len(w), 1)
+        self.assertNotIn("TERHITUNG DUA KALI", w[0])
+        self.assertIn("Mohon", w[0])
 
 
 if __name__ == "__main__":
