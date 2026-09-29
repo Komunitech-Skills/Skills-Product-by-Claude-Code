@@ -191,3 +191,18 @@ Temuan:
 
 ### Skor: **8/10** (lulus; perbaiki temuan 1 sebelum rilis/beta)
 Alasan: keempat perbaikan 1.0.2 terbukti; `ekspor-db` akurat (0 beda vs `skor`), read-only di Datasette asli, kode anonim stabil, Grist konsisten; 45 tes lulus. Turun dari 9 karena janji privasi mode anonim (`--anonim-divisi`) tidak terpenuhi pada tim kecil—fitur yang justru dirancang untuk layar bersama—dan catatan versi/status tidak konsisten.
+
+## Uji ulang v1.1.1 (2026-09-29)
+- **Penguji:** agent independen (bukan pembuat); scratchpad `uji-0929-akhir`; Datasette 0.65.5 di venv scratch. Script/SKILL.md tidak diubah.
+- **Tes:** `tests/uji_regresi.py` **48/48 OK**. `VERSI` 1.1.1 = catalog (status `uji`) ✅. **Riwayat README koheren:** 1.1.1 → 1.1.0 → 1.0.2 ("Tidak dirilis terpisah (digabung ke 1.1.0)") → 1.0.1 → 1.0.0; kalimat "belum diuji independen" di 1.1.0 sudah dihapus ✅.
+- **Data A** (5 orang; Kasir 2, Gudang 1, Online 2; 2 periode), `--anonim --anonim-divisi --grist`: semua divisi → "Lainnya" (5 orang), 0 baris per orang/rencana/skor_kpi, hanya skor perusahaan = Lainnya. **Re-identifikasi gagal** ✅.
+- **Data B** (10 orang; Sales 4 = 3 profil KPI sama + **Deni** profil berbeda, Gudang 3, Admin **1**, CS **2**; 2 periode): Admin+CS → "Lainnya" (3 orang), Gudang & Sales per orang hanya untuk profil yang dimiliki ≥3 orang, target/ambang/realisasi kosong, `rencana` tanpa orang, nama tidak ada di DB/metadata/CSV Grist, kunci terpisah. `--k-anonim 1` memberi ⚠️; tanpa `--anonim-divisi` nama divisi besar tetap tampil + "Lainnya".
+  - Hana (Admin, 1 orang): "Lainnya" = rata-rata divisi Admin & CS (bobot sama) dan perusahaan = rata-rata 4 divisi asli → keduanya hanya memberi Admin+CS (225,7 vs 2×112,9); **tidak terpisahkan** ✅.
+  - **Deni (Sales): TEREKSTRAKSI ❌.** `skor_divisi` D03 menulis `jumlah_orang` 4 dan skor 85,5, sedangkan `skor_orang` memuat 3 orang lain D03 (95,1 + 72,8 + 88,9). Skor Deni = 4 × 85,5 − 256,8 = **85,2** (asli 85,0); 2026-09: **99,0** (asli 98,9). Siapa pun yang tahu Sales berisi 4 orang dan hanya satu profil berbeda (mis. supervisor) mendapat skor pribadinya.
+- **Datasette:** `datasette -i a3/kpi.db -i a1/kpi.db -m kpi-metadata.yml --host 127.0.0.1` → **5/5 canned query** jalan (orang_terbaru 6, tren_orang 12, kpi_merah 5), SQL tulis ditolak (400). **Agregat = `skor --json`: 12 nilai (perusahaan, Gudang, Sales, 3 orang terekspor × 2 periode), 0 beda.** CSV Grist = jumlah baris tabel DB.
+
+Temuan:
+1. **[SEDANG — pemblokir rilis] Serangan selisih (differencing):** bila dalam satu divisi tepat 1 orang tidak diekspor (atau semua kecuali 1), skornya = jumlah_orang × skor divisi − jumlah skor yang terekspor. Klaim README "Nama KPI + jumlah orang tidak lagi bisa menunjuk satu orang" belum benar. Saran: bila jumlah orang yang disembunyikan dalam satu divisi (per periode) 1 ≤ n < k, sembunyikan juga baris per orang divisi itu (atau pindahkan orang tersembunyi ke "Lainnya" termasuk skor divisinya); tambah tes regresi serangan selisih (juga lewat `tren`).
+
+### Skor: **7/10** (revisi temuan 1 sebelum lulus/rilis)
+Alasan: k-anonimitas menutup kebocoran v1.1.0 (divisi 1–2 orang, nama KPI, target/realisasi), angka dan query Datasette tetap tepat, 48 tes lulus, riwayat versi rapi. Namun kebocoran lewat aritmetika sederhana masih ada pada struktur tim yang umum (divisi 4 orang dengan 1 peran berbeda).
