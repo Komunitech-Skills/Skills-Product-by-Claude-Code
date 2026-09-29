@@ -333,5 +333,212 @@ class Cli(unittest.TestCase):
                 self.assertNotIn("Traceback", err)
 
 
+# ================================================================ revisi 1.0.1 (permintaan HASIL-UJI.md)
+
+class Revisi101Pkp(unittest.TestCase):
+    """Cacat 1: jalur PKP harus bisa dihitung penuh oleh script (kasus S3 nugget, CV fiktif)."""
+    TERMASUK = S.Pajak("termasuk")
+
+    def test_lantai_paket_176675(self):
+        # HPP paket 93.000 + 2.500 = 95.500 ; margin 40% dari DPP -> DPP 95.500/0,6 = 159.166,67 -> 159.167
+        # PPN floor(159.167 x 0,11 = 17.508,37) = 17.508 -> harga tayang 176.675 (BUKAN 176.700)
+        h = S.hitung_margin(D(95500), margin=D("0.4"), pajak=self.TERMASUK)
+        self.assertEqual((h["harga"], h["dpp"], h["ppn"]), (D(176675), D(159167), D(17508)))
+        # 176.674 -> DPP 159.166 (159.167 + 17.508 = 176.675 > 176.674) -> margin < 40%
+        self.assertLess(S.hitung_margin(D(95500), harga=D(176674), pajak=self.TERMASUK)["margin"], D("0.4"))
+
+    def test_169900_margin_3761(self):
+        # 169.900/1,11 = 153.063,06 ; DPP 153.063 + PPN floor(16.836,93)=16.836 = 169.899 -> sisa 1
+        # 153.064 + 16.837 = 169.901 > 169.900 ; laba 153.063 - 95.500 = 57.563 ; margin 57.563/153.063 = 37,607%
+        h = S.hitung_margin(D(95500), harga=D(169900), pajak=self.TERMASUK, margin_min=D("0.4"))
+        self.assertEqual((h["dpp"], h["laba"]), (D(153063), D(57563)))
+        self.assertEqual(S.pct(h["margin"]), "37,61%")
+        self.assertFalse(h["aman"])
+        self.assertEqual(h["batas"], D(176675))
+        _, out, _ = jalan("margin", "--hpp", "95.500", "--harga", "169.900", "--ppn", "termasuk", "--margin-min", "40")
+        self.assertIn("sisa pembulatan Rp1", out)
+        self.assertIn("DI BAWAH MIN", out)
+
+    def test_164900(self):
+        # 164.900/1,11 = 148.558,56 ; 148.559 + floor(16.341,49)=16.341 = 164.900 pas ; laba 53.059 -> 35,72%
+        h = S.hitung_margin(D(95500), harga=D(164900), pajak=self.TERMASUK)
+        self.assertEqual(h["dpp"], D(148559))
+        self.assertEqual(S.pct(h["margin"]), "35,72%")
+
+    def test_bundel_termasuk_ppn(self):
+        # 3 x 59.900 = 179.700 ; paket 150.000 -> DPP 135.136 (135.136 + 14.864 = 150.000)
+        # laba paket 135.136 - 95.500 = 39.636 ; margin 29,33% ; satuan: DPP 59.900 = 53.964 -> 3 x 53.964 - 93.000 = 68.892
+        # hemat tayang 29.700 (16,53%) ; lantai 40% = 176.675
+        item = [S.parse_item("Nugget:59.900:31rb:3")]
+        h = S.hitung_bundel(item, D(150000), D(2500), margin_min=D("0.4"), pajak=self.TERMASUK)
+        self.assertEqual((h["dpp_bundel"], h["laba_bundel"], h["laba_terpisah"]), (D(135136), D(39636), D(68892)))
+        self.assertEqual(S.pct(h["margin_bundel"]), "29,33%")
+        self.assertEqual(S.pct(h["margin_terpisah"]), "42,55%")
+        self.assertEqual((h["hemat"], S.pct(h["hemat_persen"])), (D(29700), "16,53%"))
+        self.assertEqual(h["batas"], D(176675))
+        self.assertFalse(h["aman"])
+
+    def test_bep_dan_elastisitas_termasuk_ppn(self):
+        # 59.900 -> DPP 53.964 ; laba 22.964 ; BEP 12.000.000/22.964 = 522,56 -> 523
+        h = S.hitung_bep(D(12000000), D(59900), D(31000), pajak=self.TERMASUK)
+        self.assertEqual(h["unit"], D(523))
+        # 54.900 -> DPP 49.460 (49.461 + 5.440 = 54.901 > 54.900) ; laba 18.460 ; impas 800 x 18.460/22.964 = 643,09 -> 644
+        e = S.hitung_elastisitas(D(54900), D(800), D(31000), harga_baru=[D(59900)], pajak=self.TERMASUK)
+        self.assertEqual(e["laba_unit"], D(18460))
+        self.assertEqual(e["skenario"][0]["volume_impas"], D(644))
+
+    def test_mode_belum_dan_potongan_dari_harga_tayang(self):
+        # DPP 50.000 -> PPN 5.500 -> tayang 55.500 ; potongan 10% dari 55.500 = 5.550 ; laba 50.000 - 5.550 - 30.000 = 14.450
+        h = S.hitung_margin(D(30000), harga=D(50000), biaya=D("0.1"), pajak=S.Pajak("belum"))
+        self.assertEqual((h["tayang"], h["potongan"], h["laba"]), (D(55500), D(5550), D(14450)))
+        self.assertEqual(S.pct(h["margin"]), "28,9%")
+
+    def test_cantik_dan_tangga_termasuk_ppn(self):
+        h = S.hitung_cantik(D(176675), D(95500), D("0.4"), pajak=self.TERMASUK)
+        st = {b["harga"]: b["aman"] for b in h["baris"]}
+        self.assertFalse(st[D(169900)])
+        self.assertFalse(st[D(175900)])   # DPP 158.469 -> 39,74%
+        self.assertTrue(st[D(176900)])    # DPP 159.370 -> 40,08%
+        t = S.hitung_tangga(D(59900), D(31000), [S.parse_level("Kafe:3:=50000")], D("0.4"), pajak=self.TERMASUK)
+        # 50.000 -> DPP 45.045 (45.045 + 4.954 = 49.999, sisa 1) ; laba 14.045 ; margin 31,18% < 40%
+        self.assertEqual(t["baris"][0]["dpp"], D(45045))
+        self.assertFalse(t["baris"][0]["aman"])
+
+    def test_markup_dengan_potongan_tidak_berubah(self):
+        # 11.500 x 1,5 / 0,9 = 19.166,67 -> 19.167 (rumus lama tetap berlaku tanpa PPN)
+        self.assertEqual(S.hitung_margin(D(11500), markup=D("0.5"), biaya=D("0.1"))["harga"], D(19167))
+
+    def test_cli_ppn_semua_perintah(self):
+        perintah = [
+            ["margin", "--hpp", "95500", "--margin", "40", "--ppn", "termasuk"],
+            ["bep", "--biaya-tetap", "12jt", "--harga", "59900", "--hpp", "31000", "--ppn", "termasuk"],
+            ["tangga", "--harga-ecer", "59900", "--hpp", "31000", "--margin-min", "30", "--level", "R:10:10", "--ppn", "termasuk"],
+            ["diskon", "--harga", "59900", "--hpp", "31000", "--diskon", "10", "--ppn", "termasuk"],
+            ["bundel", "--item", "N:59900:31000:3", "--harga-bundel", "165000", "--ppn", "termasuk"],
+            ["elastisitas", "--harga", "54900", "--volume", "800", "--hpp", "31000", "--harga-baru", "59900", "--ppn", "termasuk"],
+            ["cantik", "--harga", "176675", "--hpp", "95500", "--margin-min", "40", "--ppn", "belum", "--mewah"],
+        ]
+        for p in perintah:
+            with self.subTest(p=p[0]):
+                kode, out, err = jalan(*p)
+                self.assertEqual(kode, 0, err)
+                self.assertIn("DPP", out)
+                self.assertIn("Coretax", out)
+
+
+class Revisi101Reseller(unittest.TestCase):
+    """Cacat 3: harga reseller konsisten dengan harga toko; reseller tetap untung."""
+
+    def test_anjuran_lebih_mahal_dari_toko(self):
+        # kasus S1: toko Rp47.900 tetapi reseller disuruh jual Rp49.900 -> peringatan
+        h = S.hitung_tangga(D(47900), D(22000), [S.parse_level("Reseller:10:15")], D("0.4"), harga_anjuran=D(49900))
+        self.assertTrue(any("LEBIH MAHAL" in p and "toko" in p for p in h["peringatan"]))
+
+    def test_untung_reseller_default_harga_toko(self):
+        # anjuran = eceran 47.900 ; reseller 15% -> 40.715 ; untung 7.185 (15%)
+        h = S.hitung_tangga(D(47900), D(22000), [S.parse_level("Reseller:10:15")], D("0.4"))
+        r = h["baris"][0]
+        self.assertEqual((r["harga"], r["untung_reseller"]), (D(40715), D(7185)))
+        self.assertEqual(S.pct(r["margin_reseller"]), "15%")
+        self.assertEqual(h["peringatan"], [])
+
+    def test_reseller_tidak_untung_dan_tipis(self):
+        lv = [S.parse_level("Reseller:10:5"), S.parse_level("Agen:50:=48000")]
+        h = S.hitung_tangga(D(47900), D(22000), lv, D("0.4"))
+        self.assertTrue(any("Reseller" in p and "kurang tertarik" in p for p in h["peringatan"]))   # 5% < 10%
+        self.assertTrue(any("Agen" in p and "TIDAK UNTUNG" in p for p in h["peringatan"]))
+        self.assertTrue(any("terbalik" in p for p in h["peringatan"]))
+
+    def test_eceran_sendiri_tidak_dicek_sebagai_reseller(self):
+        h = S.hitung_tangga(D(28000), D(11500), [S.parse_level("Eceran:1:0")], D("0.35"))
+        self.assertFalse(h["baris"][0]["reseller"])
+        self.assertEqual(h["peringatan"], [])
+
+
+class Revisi101Ringan(unittest.TestCase):
+    """Cacat ringan 4-9."""
+
+    def test_4_harga_di_bawah_modal(self):
+        h = S.hitung_margin(D(30000), harga=D(25000))
+        self.assertTrue(any("RUGI Rp5.000" in p for p in h["peringatan"]))
+        kode, out, _ = jalan("margin", "--hpp", "30000", "--harga", "30000")
+        self.assertEqual(kode, 0)
+        self.assertIn("PERHATIAN: harga di bawah modal", out)
+
+    def test_5_batas_aman_tidak_negatif(self):
+        # kontribusi 10.000 ; BEP 1.200 ; jual 800 -> kurang 400 unit (400/1.200 = 33,33%)
+        h = S.hitung_bep(D(12000000), D(30000), D(20000), volume=D(800))
+        self.assertNotIn("batas_aman", h)
+        self.assertEqual((h["kurang"], S.pct(h["kurang_persen"])), (D(400), "33,33%"))
+        _, out, _ = jalan("bep", "--biaya-tetap", "12jt", "--harga", "30000", "--hpp", "20000", "--volume", "800")
+        self.assertIn("kurang 400 unit (33,33%)", out)
+        self.assertNotIn("-33", out)
+        _, out, _ = jalan("bep", "--biaya-tetap", "12jt", "--harga", "30000", "--hpp", "20000", "--volume", "0")
+        self.assertIn("kurang 1.200 unit (100%)", out)
+
+    def test_6_hari_jual_harus_positif(self):
+        for hari in ("-5", "0", "dua"):
+            with self.subTest(hari=hari):
+                kode, _, err = jalan("bep", "--biaya-tetap", "1jt", "--harga", "30000", "--hpp", "20000", "--hari-jual", hari)
+                self.assertEqual(kode, 2)
+                self.assertIn("hari jual", err)
+        with self.assertRaises(S.InputError):
+            S.hitung_bep(D(1000000), D(30000), D(20000), hari_jual=0)
+
+    def test_7_tanpa_pembagian_nol(self):
+        rusak = [
+            ["tangga", "--harga-ecer", "300", "--hpp", "100", "--margin-min", "10", "--level", "R:10:50", "--kelipatan", "500"],
+            ["diskon", "--harga", "1", "--hpp", "0,5", "--diskon", "60"],
+            ["elastisitas", "--harga", "1", "--volume", "10", "--hpp", "0,5", "--ubah", "-60"],
+        ]
+        for p in rusak:
+            with self.subTest(p=p):
+                kode, _, err = jalan(*p)
+                self.assertEqual(kode, 2)
+                self.assertIn("Rp0", err)
+                self.assertNotIn("Traceback", err)
+
+    def test_8_angka_ambigu_ditolak(self):
+        for teks in ("12.5", "1.25", "28.50"):
+            with self.subTest(teks=teks):
+                with self.assertRaises(S.InputError):
+                    S.parse_rupiah(teks)
+        self.assertEqual(S.parse_rupiah("12.500"), D(12500))
+        self.assertEqual(S.parse_rupiah("1.5jt"), D(1500000))
+        self.assertEqual(S.parse_rupiah("12,5rb"), D(12500))
+        h = S.hitung_margin(D(100), harga=D(28000))
+        self.assertTrue(any("kurang dari 1%" in p for p in h["peringatan"]))
+
+    def test_9_laba_promo_dibulatkan_di_tampilan(self):
+        # beli 2 gratis 1: laba efektif 7.166,67 -> tampil Rp7.167 (hitungan tetap presisi)
+        _, out, _ = jalan("diskon", "--harga", "28000", "--hpp", "11500", "--beli-gratis", "2:1")
+        self.assertIn("laba Rp7.167/unit", out)
+        self.assertNotIn("Rp7.166,67", out)
+
+    def test_status_margin_min_pada_margin_dan_diskon(self):
+        h = S.hitung_margin(D(11500), harga=D(17000), margin_min=D("0.35"))
+        self.assertFalse(h["aman"])
+        self.assertEqual(h["batas"], D(17693))
+        _, out, _ = jalan("diskon", "--harga", "28000", "--hpp", "11500", "--diskon", "40", "--margin-min", "35")
+        self.assertIn("DI BAWAH minimum", out)   # 16.800 -> margin 31,55% < 35%
+
+
+class Revisi101Dokumen(unittest.TestCase):
+    """Cacat 2, 3, 10, 11: aturan di SKILL.md."""
+
+    def setUp(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as f:
+            self.teks = f.read()
+
+    def test_wajib_script_untuk_setiap_harga(self):
+        self.assertIn("WAJIB", self.teks)
+        for kata in ("reseller", "harga cantik", "--ppn termasuk", "--harga-anjuran", "bundel"):
+            self.assertIn(kata, self.teks)
+
+    def test_kartel_tanpa_klaim_sanksi(self):
+        self.assertIn("UU 5/1999", self.teks)
+        self.assertIn("tanpa klaim sanksi", self.teks)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

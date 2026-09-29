@@ -47,7 +47,7 @@ Harga ideal ada di antara pagar dan atap. Jika lantai di atas pagar tertinggi: p
 
 ### Tangga harga reseller/grosir/agen
 - **Cocok:** ingin dijualkan orang lain (reseller WA, warung, kantin, toko oleh-oleh).
-- **Cara:** `tangga`. Aturan praktis: selisih harga reseller ke eceran harus cukup untuk untung reseller (umumnya 15–30%), minimal beli naik bertahap, dan **harga eceran anjuran** ditetapkan agar reseller tidak banting harga di marketplace. Tulis syarat: minimal beli, cara bayar (lunas/DP), retur, wilayah.
+- **Cara:** `tangga`. Aturan praktis: selisih harga reseller ke eceran harus cukup untuk untung reseller (umumnya 15–30%), minimal beli naik bertahap, dan **harga eceran anjuran** ditetapkan agar reseller tidak banting harga di marketplace. **Harga eceran anjuran reseller = harga eceran toko yang berlaku**; bila harga naik bertahap, perbarui harga toko, anjuran, dan daftar harga reseller bersamaan (jangan toko Rp47.900 tetapi reseller disuruh jual Rp49.900). Untung reseller = anjuran − harga beli reseller; `tangga` menampilkannya dan memberi PERHATIAN bila ≤ 0 atau di bawah `--margin-reseller-min` (default 10%). Tulis syarat: minimal beli, cara bayar (lunas/DP), retur, wilayah.
 - **Periksa:** level tertinggi (agen) tetap ≥ margin minimum Anda. Laba per unit kecil tidak apa bila volume besar dan biaya layanannya kecil (tanpa kemasan satuan, ambil sendiri).
 
 ## 3. Harga untuk kanal berbeda

@@ -4,7 +4,7 @@
 
 ## Manfaat
 - ✅ Harga yang disarankan **tidak pernah di bawah batas untung** Anda (dihitung dari modal + potongan + margin minimum)
-- ✅ Daftar harga reseller/grosir/agen siap kirim ke WA, lengkap untung per level
+- ✅ Daftar harga reseller/grosir/agen siap kirim ke WA, lengkap untung Anda dan untung reseller per level (harga anjuran reseller selalu sama dengan harga toko)
 - ✅ Tahu dulu sebelum promo: "diskon 20% berarti penjualan harus naik 51% agar untung sama", plus alternatif promo yang lebih aman
 - ✅ Paket hemat & hampers dicek: pembeli hemat berapa, Anda untung berapa
 - ✅ Rencana naik harga saat bahan naik: berapa pelanggan boleh berkurang sebelum rugi, plus teks pengumuman yang sopan
@@ -53,4 +53,4 @@ Margin = untung dibagi harga jual; markup = untung dibagi modal. Modal Rp10.000 
 Tidak ada yang bisa memastikan. Yang pasti dihitung: berapa penjualan boleh turun sebelum untung Anda lebih kecil dari sekarang. Perkiraan pada tiga tingkat kepekaan pembeli diberi label "perkiraan", dan skill menyarankan uji kecil dulu.
 
 **Usaha saya PKP, bagaimana dengan PPN?**
-Untung dihitung dari harga sebelum PPN. Bila ingin harga tayang cantik yang sudah termasuk PPN (mis. Rp49.900), skill menghitung DPP dan PPN-nya (tarif 12% × DPP nilai lain 11/12, dibulatkan ke bawah). Pembulatan belum dicocokkan dengan Coretax; untuk faktur resmi ikuti Coretax atau konsultan pajak. Bila bukan PKP, Anda tidak boleh memungut PPN.
+Untung dihitung dari harga sebelum PPN. Bila ingin harga tayang cantik yang sudah termasuk PPN (mis. Rp49.900), skill menghitung DPP dan PPN-nya (tarif 12% × DPP nilai lain 11/12, dibulatkan ke bawah), margin dari DPP, dan harga tayang minimum termasuk PPN — untuk harga satuan, reseller, paket, promo, dan harga cantik. Pembulatan belum dicocokkan dengan Coretax; untuk faktur resmi ikuti Coretax atau konsultan pajak. Bila bukan PKP, Anda tidak boleh memungut PPN.

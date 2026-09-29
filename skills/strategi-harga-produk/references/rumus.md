@@ -22,6 +22,11 @@ Notasi: P = harga jual, C = HPP/biaya variabel per unit, f = potongan % dari har
 | Elastisitas (ESTIMASI) | volume baru ≈ volume × (1 + e × perubahan harga) | unit terdekat |
 | PPN non-mewah (PKP) | 11% × DPP (= 12% × 11/12 × DPP) | **ke bawah** sekali |
 | DPP dari harga termasuk PPN T | DPP bulat terbesar dengan DPP + PPN(DPP) ≤ T; sisa ditampilkan | |
+| Laba PKP (harga tayang T termasuk PPN) | DPP(T) − f × T − C; margin = laba ÷ DPP(T) | |
+| Harga tayang minimum PKP untuk margin m | DPP terkecil dengan DPP − f × (DPP + PPN) − C ≥ m × DPP, lalu T = DPP + PPN(DPP) | DPP bulat, PPN ke bawah |
+| Untung reseller | harga eceran anjuran (= harga toko) − harga beli reseller; persen = ÷ harga anjuran | |
+
+Contoh PKP: HPP paket Rp95.500, margin 40% → DPP 95.500 ÷ 0,6 = 159.166,67 → 159.167; PPN ⌊17.508,37⌋ = 17.508 → harga tayang **Rp176.675** (bukan Rp176.700).
 
 Contoh cek cepat: C = Rp11.500, target margin 40%, tanpa potongan → P = 11.500 ÷ 0,6 = 19.166,67 → **Rp19.167**.
 

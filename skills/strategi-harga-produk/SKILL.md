@@ -20,7 +20,7 @@ Membantu pemilik usaha memutuskan **berapa harga yang dipasang, untuk siapa, dan
 - Rincian potongan Shopee/Tokopedia/TikTok Shop (admin, gratis ongkir, PPh 22 0,5%) → **harga-jual-marketplace**. Di sini cukup satu angka `--biaya-persen` total.
 - Mengumpulkan & membandingkan harga toko pesaing → **riset-harga-kompetitor** (median & rentang pasarnya dipakai di sini).
 - Detail PPN/faktur → **hitung-ppn** / **buat-invoice**. Kalender promo setahun → **promo-kalender**.
-- Harga saham/kripto, tarif jasa profesi yang diatur (notaris, dokter), atau kesepakatan harga antar-pesaing (kartel: melanggar UU 5/1999) → tolak dengan sopan.
+- Harga saham/kripto, tarif jasa profesi yang diatur (notaris, dokter), atau kesepakatan harga antar-pesaing → tolak dengan sopan. Untuk kartel cukup sebut bahwa kesepakatan harga antar-pesaing dilarang UU 5/1999, **tanpa klaim sanksi** atau penerapan pada usaha tertentu (ada pengecualian, mis. usaha kecil); sarankan konsultasi hukum bila perlu, lalu tawarkan strategi harga yang sah.
 
 ## Input
 | Data | Wajib? | Jika tidak ada |
@@ -32,7 +32,7 @@ Membantu pemilik usaha memutuskan **berapa harga yang dipasang, untuk siapa, dan
 | Kanal jual & potongannya | Tidak | Anggap jual langsung (0%); marketplace → minta angka dari harga-jual-marketplace |
 | Harga pesaing (terendah/median/tertinggi) | Tidak | Minta 3–5 harga, atau pakai riset-harga-kompetitor |
 | Biaya tetap bulanan & penjualan per bulan | Tidak | Lewati BEP, sebutkan |
-| Status PKP | Tidak | Anggap **bukan PKP** (harga tanpa PPN) dan beri pengingat |
+| Status PKP | Tidak | Anggap **bukan PKP** (harga tanpa PPN) dan beri pengingat. Bila PKP: tanyakan apakah harga yang disebut sudah termasuk PPN |
 
 Jika data wajib kurang, tanyakan **sekali** dalam satu pesan (maks. 5 pertanyaan singkat). Jika pengguna ingin cepat, pakai default di atas dan tulis asumsinya di bagian atas jawaban.
 
@@ -61,7 +61,7 @@ Tanyakan/tentukan satu tujuan utama: **masuk pasar** (cari pelanggan dulu), **un
 
 Gabungan wajar (mis. berbasis nilai + 3 pilihan + tangga reseller). Jangan menyarankan harga di bawah lantai demi "perang harga".
 
-### 4. Hitung dengan script (wajib untuk semua angka uang)
+### 4. Hitung dengan script (WAJIB untuk setiap angka uang)
 ```
 python3 <folder-skill-ini>/scripts/strategi_harga.py <perintah> [opsi]
 ```
@@ -77,19 +77,28 @@ Windows: ganti `python3` dengan `py` atau `python`. Semua uang pakai Decimal; an
 | Simulasi naik/turun harga | `elastisitas --harga 28000 --volume 600 --hpp 11500 --ubah 10 --ubah -10` atau `--harga-baru 29.900` `[--elastisitas -1,5 --biaya-tetap 6,5jt]` |
 | Harga cantik | `cantik --harga 52300 [--hpp 30000 --margin-min 40 --harga-min 50000]` |
 | Harga + PPN (PKP) | `ppn --harga 49900 --mode termasuk --status-pkp pkp` |
+| Cek satu harga rekomendasi | `margin --hpp 31000 --harga 59.900 --margin-min 40 [--ppn termasuk]` → status OK / DI BAWAH MIN |
 
 Aturan penting:
+- **Setiap harga yang muncul di Ringkasan, Tabel harga, dan teks siap tempel WAJIB berasal dari keluaran satu perintah script** — termasuk harga eceran baru, harga reseller/grosir/agen, harga paket alternatif, harga promo, dan **harga cantik**. Jangan menghitung sendiri (mengalikan 1,11, mengurangi persen, membulatkan) walau terlihat sederhana. Contoh: harga eceran baru → `margin --harga <baru> --margin-min <min>`; daftar reseller → `tangga --harga-ecer <harga baru> --level Nama:min:=harga`; alternatif paket → `bundel ... --margin-min <min>` per harga atau `cantik --hpp <HPP paket> --margin-min <min>`; volume promo → `diskon ... --volume`. Satu perintah boleh dijalankan berkali-kali.
+- Kolom **Status OK / DI BAWAH MIN** di tabel harga disalin dari script. Harga di bawah margin minimum pilihan pengguna (atau default) **wajib** diberi tanda DI BAWAH MIN beserta alasannya bila tetap disarankan.
+- **PKP:** tambahkan `--ppn termasuk` bila harga yang dibicarakan sudah termasuk PPN (harga tayang), atau `--ppn belum` bila harga = DPP; berlaku untuk `margin`, `bep`, `tangga`, `diskon`, `bundel`, `elastisitas`, `cantik` (`--mewah` untuk PPN 12% penuh). Script memisah DPP & PPN (PPN dibulatkan ke bawah, sisa pembulatan ditampilkan), menghitung margin dari DPP, dan mengembalikan harga minimum dalam bentuk harga tayang. Jangan membagi/mengalikan 1,11 secara manual.
 - **HPP** di `bep`, `diskon`, `elastisitas` = biaya yang ikut bertambah per unit (bahan, kemasan, upah borongan). Sewa/gaji tetap masuk `--biaya-tetap`.
 - `--biaya-persen` = total potongan persen dari harga jual (admin marketplace, komisi, MDR QRIS). Dapatkan dari **harga-jual-marketplace**.
 - **Margin ≠ markup.** Margin = laba ÷ harga jual; markup = laba ÷ HPP. Selalu sebutkan keduanya bila pengguna memakai kata "untung 50%" (tanyakan maksudnya bila ragu).
-- Bila script tidak bisa dijalankan: hitung manual dengan rumus di `references/rumus.md`, tampilkan rumusnya, dan tulis "dihitung manual".
+- Hanya bila script benar-benar tidak bisa dijalankan (tidak ada Python): hitung manual dengan rumus di `references/rumus.md`, tampilkan rumusnya, dan tulis "dihitung manual" di setiap angka tersebut. Jika script bisa dijalankan, tulisan "dihitung manual" tidak boleh muncul.
 - Hasil `elastisitas` adalah **ESTIMASI**: selalu tulis kata "perkiraan" dan sarankan uji kecil. Yang pasti hanya "volume impas".
 
 ### 5. Susun aturan promo yang menjaga margin (lihat `references/aturan-promo.md`)
 Untuk setiap promo yang diusulkan, tulis: batas diskon maksimal (dari script), volume tambahan yang dibutuhkan, durasi/kuota, siapa yang dapat, dan kapan dihentikan. Tandai **TIDAK DISARANKAN** bila promo rugi per unit atau butuh kenaikan penjualan > 100%.
 
 ### 6. Harga cantik & tampilan
-Pilih akhiran sesuai citra (lihat `references/psikologi-dan-paket.md`): x.900 / x9.900 untuk kesan hemat, angka bulat untuk kesan premium/jasa. Kandidat di bawah lantai tidak boleh dipilih. Untuk PKP: margin dihitung dari harga **sebelum** PPN; bila ingin harga tayang cantik termasuk PPN, pakai `ppn --mode termasuk`.
+Pilih akhiran sesuai citra (lihat `references/psikologi-dan-paket.md`): x.900 / x9.900 untuk kesan hemat, angka bulat untuk kesan premium/jasa. Kandidat di bawah lantai tidak boleh dipilih. Harga cantik yang direkomendasikan harus muncul di tabel `cantik` (atau dicek dengan `margin --harga`). Untuk PKP: margin dihitung dari DPP; untuk harga tayang cantik termasuk PPN jalankan `cantik --harga <harga> --hpp <HPP> --margin-min <min> --ppn termasuk`.
+
+### 6b. Reseller & paket: konsistensi antar-kanal
+- **Harga eceran anjuran reseller = harga eceran toko yang berlaku.** Jangan menyuruh reseller jual di atas atau di bawah harga toko. Bila harga toko dinaikkan bertahap, perbarui harga toko, anjuran reseller, dan daftar harga reseller **bersamaan**.
+- Harga beli reseller harus di bawah harga anjuran dan menyisakan untung reseller (umumnya 15–30%). Jalankan `tangga` (anjuran default = `--harga-ecer`; isi `--harga-anjuran` hanya bila berbeda dan sampaikan PERHATIAN-nya). Script memberi PERHATIAN bila anjuran berbeda dari harga toko, reseller tidak untung, atau untungnya di bawah `--margin-reseller-min` (default 10%).
+- Bila ada peluang paket (pembeli sering beli ≥ 2, ada produk pelengkap, momen hampers), **tawarkan satu opsi paket** yang sudah dicek dengan `bundel --margin-min`.
 
 ### 7. Rencana uji & naik harga
 Beri 1–2 uji kecil yang bisa dilakukan tanpa alat khusus (mis. 2 minggu harga baru untuk pelanggan baru saja, tawarkan 2 pilihan paket di WA dan catat mana yang dipilih, pre-order dengan harga baru). Untuk kenaikan harga: umumkan 1–2 minggu sebelumnya dengan alasan jujur, beri kesempatan beli harga lama terbatas, naikkan bertahap (≤ 10% per langkah bila pelanggan sensitif).
@@ -98,7 +107,7 @@ Beri 1–2 uji kecil yang bisa dilakukan tanpa alat khusus (mis. 2 minggu harga 
 Selalu dengan urutan ini, bahasa sederhana:
 1. **Ringkasan 3 baris:** harga yang disarankan, strategi, alasan utama.
 2. **Asumsi** (HPP perkiraan? margin minimum default? potongan 0%? non-PKP?).
-3. **Tabel harga** (per pilihan/level/paket): harga, laba per unit, margin, status OK/di bawah minimum.
+3. **Tabel harga** (per pilihan/level/paket): harga, laba per unit, margin, status OK/DI BAWAH MIN — semuanya dari keluaran script. Untuk tangga reseller tambahkan kolom untung reseller. Untuk PKP tampilkan harga tayang termasuk PPN dan DPP.
 4. **Aturan promo** (bila relevan): batas diskon, volume tambahan yang dibutuhkan, durasi.
 5. **Simulasi** (bila diminta) berlabel **ESTIMASI**.
 6. **Langkah minggu ini** (maks. 5 butir) + teks siap tempel bila perlu (pengumuman harga, daftar harga reseller untuk WA).
@@ -116,9 +125,10 @@ Selalu dengan urutan ini, bahasa sederhana:
 Contoh lengkap: `examples/`.
 
 ## Batasan & penanganan error
-- Script keluar dengan `GAGAL: ...` (kode 2) untuk input yang tidak terbaca atau mustahil (HPP ≥ harga, target margin + potongan ≥ 100%, format level/item salah). Jelaskan ke pengguna dengan bahasa awam dan minta angka yang benar; **jangan menebak**.
+- Script keluar dengan `GAGAL: ...` (kode 2) untuk input yang tidak terbaca, ambigu, atau mustahil (angka seperti `12.5`, target margin + potongan ≥ 100%, BEP saat harga < HPP, hari jual ≤ 0, harga menjadi Rp0 setelah diskon/pembulatan, format level/item salah). Jelaskan ke pengguna dengan bahasa awam dan minta angka yang benar; **jangan menebak**.
+- Baris `PERHATIAN:` (harga di bawah modal, penjualan masih di bawah titik impas, margin di bawah minimum, reseller tidak untung) wajib disampaikan ke pengguna, bukan disembunyikan.
 - Elastisitas pasar tidak diketahui pasti; jangan menyajikan hasil simulasi sebagai kepastian.
 - Tidak memberi nasihat pajak rinci. PPN: hanya PKP yang boleh memungut; tarif 12% × DPP nilai lain 11/12 (efektif 11%) untuk non-mewah, dasar PMK 131/2024 (berlaku 1 Jan 2025). Pembulatan PPN: dari DPP persis, dibulatkan ke bawah sekali; **belum dicocokkan dengan Coretax** — bila berbeda, ikuti Coretax. Cek aturan terbaru di pajak.go.id atau konsultan pajak.
 - Jangan menyarankan harga coret palsu (harga "sebelum diskon" yang tidak pernah berlaku) atau klaim "termurah" tanpa bukti: menyesatkan konsumen (UU 8/1999 Perlindungan Konsumen).
-- Jangan menyarankan kesepakatan harga dengan pesaing (UU 5/1999).
+- Jangan menyarankan kesepakatan harga dengan pesaing (UU 5/1999); saat menolak, jangan menambahkan klaim sanksi atau penerapan hukum yang spesifik.
 - Nama marketplace hanya penyebut kanal; skill ini tidak berafiliasi dengan marketplace mana pun.
