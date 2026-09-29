@@ -6,8 +6,8 @@
 
 ## Manfaat
 - ✅ **Bebas biaya per kontak.** Mailchimp menarik biaya makin mahal seiring daftar membesar; listmonk gratis, Anda hanya membayar pengirim email (SMTP) yang murah atau ber-paket gratis.
-- ✅ **Aman secara hukum dan reputasi.** Pengingat persetujuan UU PDP 27/2022, **double opt-in**, tautan berhenti berlangganan wajib, dan **menolak daftar hasil beli/scraping**.
-- ✅ **AI tidak bisa "kelepasan kirim".** Sebelum email keluar ke daftar, AI menampilkan jumlah penerima dan menunggu jawaban "ya" Anda; kirim ditolak bila belum ada uji kirim ke diri sendiri.
+- ✅ **Aman secara hukum dan reputasi.** Pengingat persetujuan UU PDP 27/2022, **double opt-in**, tautan berhenti berlangganan wajib, dan **menolak daftar tanpa persetujuan (beli, scraping, grup WA, vendor, "dapat dari teman")**.
+- ✅ **AI tidak bisa "kelepasan kirim".** Sebelum email keluar ke daftar, AI menampilkan jumlah penerima dan menunggu jawaban "ya" Anda; kirim ditolak bila versi isi yang sama belum diuji-kirim ke alamat milik Anda sendiri (tidak ada jalan pintas), atau bila tautan berhenti berlangganan tidak benar-benar ada (tautan di dalam komentar HTML tidak dihitung).
 - ✅ **CSV/Excel berantakan jadi rapi.** Email rusak, duplikat, salah ketik (`gmial.com`), dan yang menolak, dibuang atau ditandai otomatis; angka dihitung script, bukan dikira.
 - ✅ **Email Indonesia siap kirim.** Subjek, sapaan nama, ajakan pesan WhatsApp, dan cek risiko spam.
 - ✅ **Tahu hasilnya.** Terkirim, dibuka, klik, tautan terlaris, dengan catatan jujur cara membaca angka.
@@ -54,12 +54,13 @@ Setelah listmonk terpasang dan tersambung, cukup ketik:
 2. Salin folder `listmonk-newsletter` ke lokasi skill platform Anda (detail semua platform di `docs/instalasi.md`):
    - **OpenClaw / Codex / Claude Code / Cursor:** rujuk `docs/instalasi.md` untuk folder skill masing-masing.
 3. Buat akun API berizin terbatas (panduan §7) lalu jalankan sendiri `python3 scripts/listmonk.py simpan-akun` (Windows: `python`/`py`). **Jangan tempel token di chat.**
-4. Ketik "Cek listmonk saya nyambung belum".
+4. Daftarkan email Anda sendiri (maks. 3) untuk uji kirim: jalankan sendiri `python3 scripts/listmonk.py simpan-alamat-uji --email emailanda@...`. Uji kirim hanya boleh ke alamat ini.
+5. Ketik "Cek listmonk saya nyambung belum".
 
 ## FAQ
 **Apakah ini menjamin email tidak masuk spam?** Tidak. Masuk-inbox ditentukan penyedia SMTP, verifikasi domain (SPF/DKIM/DMARC), kualitas daftar, dan isi email. Skill memberi cek dasar dan panduan verifikasi, bukan jaminan.
 
-**Bisakah saya mengimpor kontak dari daftar yang saya beli atau kumpulkan dari medsos?** Tidak. Skill menolaknya karena tidak ada persetujuan orang-orangnya (UU PDP 27/2022) dan email Anda bisa diblokir. Kumpulkan pendaftar sendiri lewat formulir/QR; skill membantu menyusun ajakannya.
+**Bisakah saya mengimpor kontak dari daftar yang saya beli atau kumpulkan dari medsos?** Tidak. Skill hanya menerima kontak yang mendaftar sendiri: formulir di website, kotak opt-in saat checkout, atau persetujuan tertulis/terekam. Daftar beli, vendor, database, hasil scraping, grup WA, dan "dapat dari teman" ditolak karena tidak ada persetujuan orang-orangnya (UU PDP 27/2022) dan email Anda bisa diblokir. Sumber yang tidak dikenal harus Anda konfirmasi dan jawabannya dicatat. Catatan jujur: saringan ini pengaman tambahan berbasis kata kunci, bukan jaminan hukum; tanggung jawab tetap pada pemilik daftar.
 
 **Apakah saya bisa memakai listmonk di laptop saja?** Untuk belajar, ya. Untuk newsletter sungguhan, tautan konfirmasi dan berhenti harus bisa dibuka penerima, jadi listmonk perlu server dengan HTTPS (panduan §2, §4) atau jasa setup Komunitech.
 

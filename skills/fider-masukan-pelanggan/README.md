@@ -28,7 +28,7 @@ RENCANA IMPOR dari catatan.txt: 4 butir
       1 nomor HP/email disembunyikan (papan Fider biasanya publik)
 2. [BUAT  ] Tolong ada notifikasi WA kalau pesanan sudah dikirim, minta 3 orang
 3. [BUAT  ] Ongkir ke luar Jawa sering salah hitung. Kontak: [email disembunyikan]
-4. [LEWATI] Tambah pembayaran QRIS
+4. [TAHAN] Tambah pembayaran QRIS
       mirip dengan #1 "Tambah pembayaran QRIS" (kemiripan 100%)
 PRATINJAU - BELUM ADA YANG DITULIS ke Fider. ...
 ```
@@ -44,7 +44,7 @@ Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (
 
 **Apakah AI bisa merusak papan saya?** Skill tidak punya perintah menghapus pos atau mengubah pengaturan. Semua penulisan (impor, tag, gabung, status, komentar) butuh persetujuan Anda lewat pratinjau. Sebaiknya buat akun Collaborator khusus AI (panduan §6) dan cadangkan database berkala (panduan §10).
 
-**Bagaimana dengan privasi pelanggan?** Papan Fider bisa dilihat publik. Skill menyamarkan nomor HP dan email otomatis, tetapi nama dan detail pesanan Anda periksa sendiri di pratinjau. Catat hanya usulan, bukan data pelanggan. Detail ada di panduan §9.
+**Bagaimana dengan privasi pelanggan?** Papan Fider bisa dilihat publik. Skill menyamarkan nomor HP, telepon rumah/kantor, dan email otomatis, tetapi nama dan detail pesanan Anda periksa sendiri di pratinjau. Catat hanya usulan, bukan data pelanggan. Detail ada di panduan §9.
 
 ## Status jujur
-Versi 1.0.0, status uji. Diuji pembuat pada Fider **v0.38.0 asli** (Docker + PostgreSQL 17, Linux) plus 24 uji otomatis. **Belum diuji:** Windows/macOS, peran Collaborator di Fider asli, jadwal OpenClaw/Telegram, HTTPS di VPS sungguhan. Uji banding oleh penguji independen dan uji platform asli menyusul.
+Versi 1.0.1, status uji. Diuji pada Fider **v0.38.0 asli** (Docker + PostgreSQL 17, Linux; Administrator dan Collaborator) plus 37 uji otomatis. **Belum diuji:** Windows/macOS, jadwal OpenClaw/Telegram, HTTPS di VPS sungguhan. Uji banding oleh penguji independen dan uji platform asli menyusul.

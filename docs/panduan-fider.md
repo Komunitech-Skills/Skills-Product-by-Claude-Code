@@ -77,6 +77,8 @@ Cek berhasil: `docker --version` dan `docker compose version` menampilkan nomor 
          EMAIL_SMTP_PORT: ${SMTP_PORT:-587}
          EMAIL_SMTP_USERNAME: ${SMTP_USER:-}
          EMAIL_SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+         # Sebagian penyedia SMTP (port 587) meminta STARTTLS: tambahkan baris EMAIL_SMTP_ENABLE_STARTTLS: "true"
+         # (menurut docs.fider.io; belum kami coba dengan penyedia sungguhan)
 
    volumes:
      fider-db:
