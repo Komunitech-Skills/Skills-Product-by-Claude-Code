@@ -1,5 +1,5 @@
 [
-  {"nama": "Contoh A (kredit)", "harga_bulanan": 29, "mata_uang": "USD", "satuan": "kredit", "batas_bulanan": 600, "kredit_per_menit": 30},
-  {"nama": "Contoh B (menit)", "harga_bulanan": 29, "mata_uang": "USD", "satuan": "menit", "batas_bulanan": 10},
-  {"nama": "Contoh C (menit + tambahan)", "harga_bulanan": 480000, "mata_uang": "IDR", "satuan": "menit", "batas_bulanan": 5, "biaya_tambahan_per_satuan": 60000}
+  {"nama": "Contoh A (kredit) - ANGKA ILUSTRASI, bukan paket nyata", "harga_bulanan": 29, "mata_uang": "USD", "satuan": "kredit", "batas_bulanan": 600, "kredit_per_menit": 30},
+  {"nama": "Contoh B (menit) - ANGKA ILUSTRASI", "harga_bulanan": 29, "mata_uang": "USD", "satuan": "menit", "batas_bulanan": 10},
+  {"nama": "Contoh C (menit + tambahan) - ILUSTRASI", "harga_bulanan": 480000, "mata_uang": "IDR", "satuan": "menit", "batas_bulanan": 5, "biaya_tambahan_per_satuan": 60000}
 ]

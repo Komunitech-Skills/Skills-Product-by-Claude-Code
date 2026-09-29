@@ -3,7 +3,7 @@
 
 Hanya Python standar. Angka uang memakai Decimal, dibulatkan ke rupiah terdekat (setengah ke atas).
 
-Contoh:
+Contoh (--anggaran opsional, dalam Rupiah):
   python3 scripts/rencana_konten_avatar.py --paket paket.json --video 12 --menit 0.75 --revisi 25 --kurs 16500
 Windows: pakai `python` atau `py`. Format paket.json: lihat examples/contoh-paket.json
 """
@@ -14,6 +14,7 @@ from decimal import Decimal, InvalidOperation, ROUND_CEILING, ROUND_HALF_UP
 
 SATUAN = {"menit", "kredit"}
 MATA_UANG = {"IDR", "USD"}
+BATAS_ATAS = Decimal(10) ** 12
 
 
 class DataBuruk(ValueError):
@@ -31,6 +32,8 @@ def dec(nilai, nama, minimum=Decimal(0)):
         raise DataBuruk(f"'{nama}' tidak valid: {nilai!r}")
     if d < minimum:
         raise DataBuruk(f"'{nama}' tidak boleh kurang dari {minimum}: {nilai!r}")
+    if d > BATAS_ATAS:
+        raise DataBuruk(f"'{nama}' terlalu besar (maks {BATAS_ATAS}): {nilai!r}")
     return d
 
 
@@ -70,7 +73,7 @@ def muat_paket(data):
     return hasil
 
 
-def hitung(paket, video, menit_per_video, revisi_persen, kurs):
+def hitung(paket, video, menit_per_video, revisi_persen, kurs, anggaran=None):
     """Kembalikan (menit_butuh, daftar hasil per paket)."""
     video = dec(video, "video", Decimal(1))
     menit_per_video = dec(menit_per_video, "menit per video")
@@ -78,6 +81,7 @@ def hitung(paket, video, menit_per_video, revisi_persen, kurs):
         raise DataBuruk("'menit per video' harus lebih dari 0")
     revisi = dec(revisi_persen, "revisi")
     kurs = dec(kurs, "kurs")
+    anggaran = None if anggaran is None else dec(anggaran, "anggaran")
     menit_butuh = video * menit_per_video * (Decimal(1) + revisi / Decimal(100))
     keluar = []
     for p in paket:
@@ -95,6 +99,9 @@ def hitung(paket, video, menit_per_video, revisi_persen, kurs):
         else:
             n = int((butuh / p["batas"]).to_integral_value(rounding=ROUND_CEILING))
             total, status, catatan = harga_idr * n, "kurang", f"setara {n} langganan/bulan atau naik paket"
+        if anggaran is not None and status != "kurang" and rupiah(total) > anggaran:
+            catatan = (catatan + "; " if catatan else "") + "melebihi anggaran"
+            status = "lewat-anggaran"
         keluar.append({
             "nama": p["nama"], "satuan": p["satuan"], "butuh": butuh, "batas": p["batas"],
             "sisa": max(Decimal(0), p["batas"] - butuh), "status": status,
@@ -113,12 +120,13 @@ def cetak(menit_butuh, hasil):
               f"{h['status']:<14}{'Rp{:,}'.format(h['biaya_idr']).replace(',', '.'):>14}"
               f"{'Rp{:,}'.format(h['biaya_per_menit_idr']).replace(',', '.'):>10}"
               + (f"  ({h['catatan']})" if h["catatan"] else ""))
-    layak = [h for h in hasil if h["status"] != "kurang"]
+    layak = [h for h in hasil if h["status"] in ("cukup", "tambah-satuan")]
     if layak:
         b = min(layak, key=lambda h: h["biaya_idr"])
         print(f"Termurah yang mencukupi: {b['nama']} (Rp{b['biaya_idr']:,}".replace(",", ".") + "/bulan)")
     else:
-        print("Tidak ada paket yang mencukupi pada satu langganan; lihat kolom catatan.")
+        print("PERINGATAN: tidak ada paket yang mencukupi DAN masuk anggaran. Kurangi jumlah video/durasi/revisi, "
+              "naikkan anggaran, atau rekam sebagian video secara manual.")
     print("Catatan: harga adalah input Anda, cek ulang di halaman resmi; belum termasuk pajak/biaya bank.")
 
 
@@ -129,6 +137,7 @@ def main(argv=None):
     ap.add_argument("--menit", required=True, help="menit per video (mis. 0.75 = 45 detik)")
     ap.add_argument("--revisi", default="25", help="persen tambahan untuk render ulang (default 25)")
     ap.add_argument("--kurs", default="0", help="Rp per 1 USD, wajib bila ada paket USD")
+    ap.add_argument("--anggaran", default=None, help="batas biaya per bulan (Rp); paket di atasnya tidak direkomendasikan")
     ap.add_argument("--json", action="store_true", help="keluaran JSON")
     a = ap.parse_args(argv)
     try:
@@ -139,8 +148,8 @@ def main(argv=None):
             raise DataBuruk(f"tidak bisa membaca {a.paket}: {e.strerror}")
         except json.JSONDecodeError as e:
             raise DataBuruk(f"{a.paket} bukan JSON valid: {e}")
-        mb, hasil = hitung(muat_paket(data), a.video, a.menit, a.revisi, a.kurs)
-    except DataBuruk as e:
+        mb, hasil = hitung(muat_paket(data), a.video, a.menit, a.revisi, a.kurs, a.anggaran)
+    except (DataBuruk, ArithmeticError) as e:
         print(f"GALAT: {e}", file=sys.stderr)
         return 2
     if a.json:

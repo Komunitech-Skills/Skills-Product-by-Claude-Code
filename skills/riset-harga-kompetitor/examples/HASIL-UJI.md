@@ -159,3 +159,8 @@ Tes regresi 41/41 OK. Data: 14 baris (semua setara Rp100.000/kg) + 7 baris harga
 - `500 gr isi 2`, `2 pack 500 gr`, `3 botol 250 ml` -> dikalikan (1 kg, 1 kg, 750 ml) + catatan "cek: bila angka itu sudah total"; `isi 10 pcs 250 gr` tidak dikalikan (250 g). U1 **beres**.
 - 8 ukuran baru: `3 x 1/2 kg`, `1,5 kg`, `500gr (isi 4)`, `2 pouch 250 gr`, `250 gram x 4 pcs`, `500 g isi 1`, `isi 2 @250gr` benar. Temuan RENDAH: satuan kemasan tak dikenal (`10 sachet 25 gr`, `2 karung 1 kg`) tidak dikalikan; `1 lusin 100 gr` dibaca 100 g. Ketiganya tidak menyesatkan diam-diam karena setara menyimpang jauh, keluar dari statistik dengan peringatan (kecuali `2 karung 1 kg`, harga setara 2x tepat: baris itu ikut tersaring sebagai pencilan, bukan salah hitung).
 **Skor: 8,5/10. Lulus.**
+
+## Uji ulang (2026-09-29, patch) - v1.0.3 - penguji independen
+Tes regresi 44/44 OK. `baca_ukuran` dengan 13 string sendiri: `10 sachet 25 gr`=250 g, `2 karung 25 kg`=50.000 g, `1 lusin 100 gr`=1.200 g, `2 kodi 50 gr`=2.000 g, `1 rim`=500 pcs, `100 gr x 2 lusin`=2.400 g, `3 sachet x 30 ml`=90 ml, `1 lusin`=12 pcs; semua benar dan diberi catatan "dibaca N kemasan". Uji penuh CSV 6 pesaing (JSON): P25/median/P75/P90 (25.333/26.000/27.500/29.666,6), harga minimum 24.075 (dibulatkan atas), balik modal 18.572, laba & margin titik dan harga cantik, median awal 26.750 dan pencilan (setara 59.524) - semua cocok dengan hitungan Decimal saya.
+Temuan RENDAH: `25 gr 10 sachet` (jumlah di belakang) tidak dikalikan (dipakai 25 g + catatan); `1,5 kodi` desimal tidak dikalikan (ada catatan); `10 sachet 2 gr isi 5` dibaca 50 x 2 g (ambigu). Semua memberi catatan, tidak diam-diam.
+**Skor: 8,5/10. Lulus.**

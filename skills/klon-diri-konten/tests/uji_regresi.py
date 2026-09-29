@@ -76,6 +76,34 @@ class Uji(unittest.TestCase):
             with self.assertRaises(r.DataBuruk):
                 r.hitung(p, *args)
 
+    def test_anggaran_dan_termurah(self):
+        ps = paket({"nama": "Murah", "harga_bulanan": 100000, "satuan": "menit", "batas_bulanan": 5},
+                   {"nama": "Mahal", "harga_bulanan": 900000, "satuan": "menit", "batas_bulanan": 30},
+                   {"nama": "Pas", "harga_bulanan": 400000, "satuan": "menit", "batas_bulanan": 30})
+        _, h = r.hitung(ps, 8, 1, 0, 0, 500000)
+        st = {x["nama"]: x["status"] for x in h}
+        self.assertEqual(st, {"Murah": "kurang", "Mahal": "lewat-anggaran", "Pas": "cukup"})
+
+    def test_tidak_ada_yang_muat_anggaran(self):
+        ps = paket({"nama": "Mahal", "harga_bulanan": 900000, "satuan": "menit", "batas_bulanan": 30})
+        ok = self.cli(json.dumps([{"nama": "Mahal", "harga_bulanan": 900000, "batas_bulanan": 30}]),
+                      "--video", "8", "--menit", "1", "--anggaran", "500000")
+        self.assertEqual(ok.returncode, 0)
+        self.assertIn("PERINGATAN", ok.stdout)
+        self.assertNotIn("Termurah", ok.stdout)
+
+    def test_angka_raksasa_galat_rapi(self):
+        js = json.dumps([{"nama": "A", "harga_bulanan": 1, "batas_bulanan": 5}])
+        for arg in (("--kurs", "1e999"), ("--video", "1e999"), ("--anggaran", "1e999"), ("--revisi", "1e999")):
+            base = {"--video": "1", "--menit": "1"}
+            base.update(dict([arg]))
+            args = [x for kv in base.items() for x in kv]
+            if "--kurs" in base or "--anggaran" in base:
+                pass
+            p = self.cli(js, *args)
+            self.assertEqual(p.returncode, 2, (arg, p.stderr))
+            self.assertNotIn("Traceback", p.stderr)
+
     def cli(self, isi, *args):
         with tempfile.TemporaryDirectory() as d:
             f = os.path.join(d, "p.json")

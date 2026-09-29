@@ -30,3 +30,9 @@ Ketidakcocokan yang mengubah tindakan: tidak ada. Hanya kelengkapan.
 Rekomendasi: perbarui header (sebagian terverifikasi tanggal ini via sumber resmi) dan tambahkan poin di atas.
 
 ## Keputusan: LULUS bersyarat (>=7). Perbaiki 1-2 (dan 3-4 murah) lalu uji ulang script. Tidak ada temuan Kritis/Tinggi.
+
+## Uji ulang (2026-09-29, patch) - v1.0.1 - penguji independen
+Tes regresi 17/17 OK. Dicoba langsung: adegan hanya emoji/kosong -> peringatan jelas; `[jeda abc]`, `[jeda -2]`, `[JEDA 1e3]` -> jeda bawaan 0,5 + peringatan; `--wpm` 60/300 -> peringatan, 30/5000/nan -> ditolak (kode 2); jeda 40000 dtk -> kolom tabel tidak melebur; `[jeda 1,5]` = 1,5 dtk. Mode Ringkas (video <=15 dtk) ada di SKILL.md dengan bagian yang benar.
+Verifikasi `references/label-ai.md` ke URL resmi (diambil ulang hari ini): YouTube 14328491 (wajib bila realistis; pengecualian naskah/judul/thumbnail/sulih suara suara sendiri; "AI use" di YouTube Studio; label otomatis; musik AI; tidak ada kata Shorts, sudah dicatat jujur), Meta about.fb.com (C2PA/IPTC; wajib ungkap video/audio realistis; sanksi), TikTok newsroom 2023 (label AIGC realistis; stiker/keterangan; efek AI berlabel) dan 2024 (Content Credentials/C2PA) - semua COCOK. Klaim "jangan menyesatkan meski berlabel" (TikTok) tidak tampak di kutipan yang saya baca; kecil, sebaiknya dilepas atau diberi sumber.
+Temuan RENDAH: tabel jeda absurd tetap diterima tanpa peringatan (mis. [jeda 40000]).
+**Skor: 8/10. Lulus.**

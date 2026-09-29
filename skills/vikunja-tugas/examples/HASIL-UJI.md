@@ -200,3 +200,8 @@ Tes regresi 69/69 OK. 21 baris gaya WA (bullet) lewat `dari-teks`:
 - `TOPIC:`, `INFO:`, `UPDATE:`, `NOTE:`, `AGENDA:`, `FYI:`, `Perihal:`, `Action:`, `Reminder:`, `Hasil rapat:`, `Catatan:`, `Urgent:`, `Deadline:` -> tanpa PIC, judul utuh (tanggal Jumat/besok/25/10 tetap terbaca benar). Nama asli `Budi:`, `ANDI:`, `Siti Aminah -`, `PIC: Rina/Andi` (awal & akhir) terbaca. `--anggota "Topic,Tono,Info"` menang atas daftar kata header (perilaku sesuai dokumen).
 - Temuan RENDAH: kata pembuka umum yang tidak ada di daftar, mis. `Mohon: Bu Rina tolong kirim faktur`, masih jadi PIC "Mohon" (draf tetap wajib diperiksa pengguna, sudah diperingatkan `_dugaan`). Baris tanpa bullet tidak dibaca (sesuai aturan).
 **Skor: 8,5/10. Lulus.**
+
+## Uji ulang (2026-09-29, patch) - v1.0.5 - penguji independen
+Tes regresi 71/71 OK. `urai_dari_teks`: `Mohon:`, `Tolong:`, `Harap:`, `TOLONG:`, `Catatan:`, `Please:` tidak lagi jadi PIC (ke=None, judul utuh). Nama asli tetap: `Siti:`, `Budi Santoso:`, `Andi -`, `Dewi Ayu:`. `Mari:` (kata ajakan sekaligus nama) bukan PIC, tetapi jadi PIC bila termasuk `--anggota`. 
+Temuan RENDAH: `Mohon Ibu Ani:` dan `Tolong Budi:` masih terbaca PIC "Mohon Ibu Ani"/"Tolong Budi"; `Harap. Catatan:` jadi PIC. Draf masih dicek pengguna sebelum masuk, jadi dampak kecil.
+**Skor: 9/10. Lulus.**

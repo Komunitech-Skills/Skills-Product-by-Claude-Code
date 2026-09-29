@@ -201,3 +201,8 @@ Tes regresi 91/91 OK.
 - P-4: ⚠️ subtotal/total menyebut total alternatif dan angkanya benar (file 900k+250k: "Rp650.000 / Rp1.550.000"; `Total` 1.650.000 -> 950.000 / 2.600.000; `Retarget Video Total` 1.300.000 / 650.000). N3 tidak mundur (6 varian subtotal, tidak dihitung dua kali).
 - Temuan RENDAH (bukan regresi, perilaku sama di v1.0.4): baris total kampanye tanpa label di kolom grup iklan kosong (`Search Brand`, 700.000 = jumlah grup di atasnya) tetap dihitung tanpa peringatan -> total 1.650.000, seharusnya 950.000. Dengan `--kolom-nama "Asset group"` baris kosong masih "(tanpa nama, baris N)".
 **Skor: 8,5/10. Lulus.**
+
+## Uji ulang (2026-09-29, patch) - v1.0.7 - penguji independen
+Tes regresi 94/94 OK. Google Ads 2 level, baris total kampanye tanpa label dengan Ad group kosong: total di bawah, di atas grup, dua kampanye sekaligus, format `Rp300.000`, dan placeholder `--` semuanya tidak terhitung dua kali dan diberi ⚠️. Total dicek dengan Decimal: 1.100.000 / 1.200 klik / 28 hasil / 4.200.000 nilai (v1.0.4 menghasilkan 1.800.000 tanpa peringatan, jadi perbaikan nyata); dua kampanye 850.000 / 24 hasil / 3.450.000 cocok. PMax sungguhan (angka berbeda) tetap dihitung; biaya kebetulan sama tetapi tayangan/klik beda tetap dihitung + ⚠️ lunak. Tanpa regresi N3/M1 (`Subtotal: Retarget Video` dikecualikan; `Total 12.12 Flash Sale` dan `Jumlah 2 Pcs Bundling` dihitung; total 1.000.000).
+Temuan RENDAH (bukan regresi, sama di v1.0.4): `Retarget Video Total` yang diletakkan DI ATAS kampanyenya tetap terhitung dua kali tanpa ⚠️ (800.000, seharusnya 500.000). PMax sungguhan yang angkanya kebetulan sama persis dengan jumlah grup lain dibuang dengan ⚠️ (sesuai desain).
+**Skor: 9/10. Lulus.**

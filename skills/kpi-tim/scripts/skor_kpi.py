@@ -958,8 +958,10 @@ def fmt_capaian(k):
 
 
 def kpi_terlemah(o, n=1):
+    """KPI dengan capaian terendah; bila seri (mis. beberapa KPI tanpa data = 0% di mode nol), yang BOBOTNYA
+    terbesar didahulukan (v1.0.2), lalu nama."""
     ada = [k for k in o["kpi"] if k["capaian"] is not None]
-    ada.sort(key=lambda k: (k["capaian"], norm(k["kpi"])))
+    ada.sort(key=lambda k: (k["capaian"], -k["bobot"], norm(k["kpi"])))
     return ada[:n]
 
 
@@ -977,7 +979,8 @@ def laporan_teks(h, a, peringatan):
     L.append("*Divisi*")
     for d in h["divisi"]:
         tr = fmt_tren(d.get("tren"))
-        info = fmt_skor(d["skor"]) if d["skor"] is not None else "belum lengkap"
+        info = fmt_skor(d["skor"]) if d["skor"] is not None else (
+            "tidak ditampilkan (1 orang dinilai)" if d.get("disembunyikan") else "belum lengkap")
         ext = ""
         if d["sebagian"]:
             ext = (" (%d orang belum lengkap)" % len(d["belum_lengkap"]) if a.tanpa_nama
@@ -996,8 +999,11 @@ def laporan_teks(h, a, peringatan):
             catat = ""
             if lemah and (lemah[0]["status"] == "merah" or (o["status"] != "hijau" and lemah[0]["status"] != "hijau")):
                 catat = " — perlu perhatian: %s %s" % (lemah[0]["kpi"], fmt_capaian(lemah[0]))
+                lain_kosong = [k for k in o["kpi"] if k["kosong"] and k is not lemah[0]]
+                if lemah[0]["kosong"] and lain_kosong:
+                    catat += " (+%d KPI lain tanpa data)" % len(lain_kosong)
             if o["dasar"] == "bobot-ulang":
-                catat += " (dihitung dari %s%% bobot)" % fmt_angka(o["bobot_tersedia"] * D100 / o["bobot_total"], 0)
+                catat += " (dihitung dari %s%% bobot)" % fmt_angka(o["bobot_tersedia"] * D100 / o["bobot_total"], 1)
             L.append("%s %s (%s): %s%s%s" % (IKON[o["status"]], o["nama"], o["divisi"], fmt_skor(o["skor"]),
                                              " " + tr if tr else "", catat))
     if peringatan:
@@ -1278,6 +1284,8 @@ def cmd_skor(a):
               "min_bobot": a.min_bobot, "duplikat": a.duplikat}
     if a.csv_keluar:
         tulis_csv(a.csv_keluar, KOLOM_HASIL, baris_csv_hasil(h))
+    if a.tanpa_nama and not a.orang:
+        h = anonim_divisi(h, a, umum)                      # v1.0.2: divisi 1 orang digabung/disembunyikan
     data = {"ok": True, "versi": VERSI, "aturan": aturan, "catatan_rencana": cat, "peringatan": umum + peringatan}
     data.update(h)
     if a.tanpa_nama:
@@ -1292,6 +1300,46 @@ def cmd_skor(a):
         teks = laporan_teks(h, a, data["peringatan"])
     cetak(a, data, teks)
     return 0
+
+
+MIN_ORANG_ANONIM = 2
+
+
+def anonim_divisi(h, a, umum):
+    """v1.0.2 (--tanpa-nama): skor divisi yang hanya berisi 1 orang dinilai = skor pribadi orang itu. Divisi seperti
+    itu DIGABUNG menjadi "Gabungan divisi kecil" (bila gabungannya >= 2 orang) atau DISEMBUNYIKAN dengan catatan.
+    Skor perusahaan tidak diubah. Kembalikan salinan h dengan daftar divisi baru."""
+    def n_dinilai(d):
+        if d["dasar_skor"] == "rata-rata individu":
+            return d["jumlah_orang"] - len(d["belum_lengkap"])
+        return d["jumlah_orang"] if d["jumlah_orang"] else MIN_ORANG_ANONIM   # KPI divisi tanpa daftar orang
+    kecil = [d for d in h["divisi"] if d["skor"] is not None and n_dinilai(d) < MIN_ORANG_ANONIM]
+    if not kecil:
+        return h
+    tampil = [d for d in h["divisi"] if not any(d is k for k in kecil)]
+    n_total = sum(max(n_dinilai(d), 1) for d in kecil)
+    nama = ", ".join(d["nama"] for d in kecil)
+    if len(kecil) >= 2 and n_total >= MIN_ORANG_ANONIM:
+        skor = sum(d["skor"] for d in kecil) / len(kecil)
+        tampil.append({"nama": "Gabungan divisi kecil (%s)" % nama, "jumlah_orang": n_total, "skor": skor,
+                       "status": status_skor(skor, a.hijau, a.kuning), "dasar_skor": "gabungan divisi kecil",
+                       "kpi": [], "kurang": [], "skor_sementara": None, "belum_lengkap": [], "sebagian": False})
+        umum.append("Divisi %s hanya berisi 1 orang yang dinilai, jadi skornya digabung (rata-rata divisi) agar skor "
+                    "pribadi tidak terlihat di laporan tanpa nama." % nama)
+    else:
+        for d in kecil:
+            tampil.append({"nama": d["nama"], "jumlah_orang": d["jumlah_orang"], "skor": None, "status": "belum",
+                           "dasar_skor": "disembunyikan (1 orang dinilai)", "kpi": [], "kurang": [],
+                           "skor_sementara": None, "belum_lengkap": list(d["belum_lengkap"]),
+                           "sebagian": d["sebagian"], "disembunyikan": True})
+        umum.append("Skor divisi %s tidak ditampilkan: hanya 1 orang yang dinilai, sehingga skor divisi = skor "
+                    "pribadi. Skor perusahaan tetap menghitungnya; bila divisinya sedikit, pertimbangkan menggabungkan "
+                    "divisi kecil di rencana KPI sebelum dikirim ke grup." % nama)
+    urut = {norm(d["nama"]): i for i, d in enumerate(h["divisi"])}
+    tampil.sort(key=lambda d: urut.get(norm(d["nama"]), len(urut)))
+    h2 = dict(h)
+    h2["divisi"] = tampil
+    return h2
 
 
 def versi_tanpa_nama(data, h, umum, peringatan):

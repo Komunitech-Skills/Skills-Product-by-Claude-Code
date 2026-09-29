@@ -1,7 +1,7 @@
 Kebutuhan render (termasuk revisi): 11.25 menit/bulan
 Paket                      Butuh     Batas     Sisa  Status           Biaya/bulan  Rp/menit
-Contoh A (kredit)         337.50    600.00   262.50  cukup              Rp478.500  Rp42.533
-Contoh B (menit)           11.25     10.00     0.00  kurang             Rp957.000  Rp85.067  (setara 2 langganan/bulan atau naik paket)
+Contoh A (kredit) - A     337.50    600.00   262.50  cukup              Rp478.500  Rp42.533
+Contoh B (menit) - AN      11.25     10.00     0.00  kurang             Rp957.000  Rp85.067  (setara 2 langganan/bulan atau naik paket)
 Contoh C (menit + tam      11.25      5.00     0.00  tambah-satuan      Rp855.000  Rp76.000  (beli tambahan 6.25 menit)
-Termurah yang mencukupi: Contoh A (kredit) (Rp478.500/bulan)
+Termurah yang mencukupi: Contoh A (kredit) - ANGKA ILUSTRASI. bukan paket nyata (Rp478.500/bulan)
 Catatan: harga adalah input Anda, cek ulang di halaman resmi; belum termasuk pajak/biaya bank.
