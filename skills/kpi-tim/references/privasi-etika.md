@@ -25,10 +25,16 @@ Pelindungan Data Pribadi). Pegangan skill ini:
   pemilik/manajer yang berwenang; jangan di folder bersama, drive publik, atau dikirim lewat grup.
 - Datasette/Grist dijalankan **hanya di `127.0.0.1`/`localhost`**. Jangan `--host 0.0.0.0`,
   port-forward, tunnel (ngrok dsb.), atau tautan publik Grist.
-- Untuk layar bersama atau berbagi dengan konsultan: `--anonim` (kode P01.. acak, bukan urut abjad;
-  catatan realisasi tidak ikut). Simpan `kunci-kode-RAHASIA.csv` terpisah. Divisi berisi 1 orang
-  tetap mudah ditebak: `--anonim-divisi`. Kode anonim bukan jaminan mutlak (orang yang tahu angka
-  targetnya bisa menebak); untuk tim sangat kecil pakai laporan `--tanpa-nama`.
+- Untuk layar bersama atau berbagi dengan konsultan: `--anonim --anonim-divisi` (kode P01../D01..
+  acak, bukan urut abjad; catatan realisasi tidak ikut). Simpan `kunci-kode-RAHASIA.csv` terpisah.
+- Mode anonim memakai **k-anonimitas** (`--k-anonim`, default 3): divisi dengan kurang dari 3 orang
+  digabung menjadi "Lainnya" (skornya rata-rata divisi anggotanya, sehingga skor pribadi tidak bisa
+  dihitung balik dari skor perusahaan); baris per orang hanya diekspor untuk orang yang daftar
+  KPI-nya sama dengan minimal 3 orang di kelompoknya; target, ambang, dan realisasi per orang
+  dikosongkan. Tujuannya: nama KPI ("Akurasi stok") + jumlah orang tidak lagi menunjuk satu orang.
+- Batasnya: rekan yang tahu kinerja seseorang (atau yang berkolusi membuka skornya) masih bisa
+  menduga. Untuk tim sangat kecil, laporan `--tanpa-nama` (perusahaan & divisi) lebih aman.
+  `--k-anonim 1` mematikan perlindungan ini (hanya kode) dan tidak untuk layar bersama.
 - Hapus `kpi.db`/CSV bila sudah tidak diperlukan; bisa dibuat ulang dari file rencana & realisasi.
 
 ## KPI bukan pengawasan

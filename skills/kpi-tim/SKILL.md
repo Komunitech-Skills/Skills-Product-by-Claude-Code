@@ -133,12 +133,12 @@ progres`). 1 objective = 2–4 key result terukur. `skor_kpi.py okr --okr okr.cs
 Check-in mingguan: perbarui kolom `sekarang`, jalankan dengan `--jalan` = bagian waktu yang lewat.
 OKR untuk arah & fokus, tidak masuk skor KPI dan tidak untuk gaji.
 
-### 7. Dasbor KPI lokal (opsional, v1.1.0) — `ekspor-db`
+### 7. Dasbor KPI lokal (opsional) — `ekspor-db`
 Tanpa software baru: hasil hitung disimpan ke SQLite yang dibaca `dasbor-lokal` (Datasette) atau
 diimpor ke Grist (`grist-usaha`). Rincian & langkah awam: `references/dasbor-kpi.md`.
 ```bash
 python3 scripts/skor_kpi.py ekspor-db --rencana KPI/rencana-kpi.csv --realisasi KPI/realisasi.csv \
-  --keluar KPI/dasbor [--anonim [--anonim-divisi]] [--grist] [--timpa]
+  --keluar KPI/dasbor [--anonim [--anonim-divisi] [--k-anonim 3]] [--grist] [--timpa]
 ```
 - Menulis `kpi.db` (tabel `skor_perusahaan`, `skor_divisi`, `skor_orang`, `skor_kpi`, `rencana`,
   `meta`) untuk **semua periode** di file realisasi (tren ikut), `kpi-metadata.yml` (5 query siap
@@ -151,8 +151,13 @@ python3 scripts/skor_kpi.py ekspor-db --rencana KPI/rencana-kpi.csv --realisasi 
 - **Wajib sampaikan ke pengguna:** dasbor hanya untuk komputer ini (`127.0.0.1`); jangan
   `--host 0.0.0.0`, port-forward, tunnel, atau kirim `kpi.db`/CSV ke orang lain: skor per orang =
   data pribadi karyawan. Untuk ditampilkan ke orang lain (rapat, layar bersama) pakai `--anonim`
-  (nama jadi kode P01.., kunci di `kunci-kode-RAHASIA.csv`, simpan terpisah); divisi berisi 1 orang
-  tetap mudah ditebak: tambah `--anonim-divisi`. Ekspor ulang memakai kunci yang sama (kode stabil).
+  + `--anonim-divisi` (nama jadi kode P01../D01.., kunci di `kunci-kode-RAHASIA.csv`, simpan
+  terpisah; kode stabil antar ekspor). Mode anonim menerapkan **k-anonimitas (default 3,
+  `--k-anonim`)**: divisi < 3 orang digabung jadi "Lainnya"; baris per orang hanya diekspor bila
+  ≥ 3 orang di kelompok itu punya daftar KPI yang sama; target/ambang/realisasi per orang
+  dikosongkan. Pada tim kecil sering **tidak ada baris per orang** sama sekali. Sampaikan ini
+  apa adanya (catatan 🔒 di output). `--k-anonim 1` = hanya kode, mudah ditebak; jangan untuk layar
+  bersama.
 - `kpi.db` adalah ringkasan: bulan berikutnya jalankan ulang dengan `--timpa`. Jangan mengedit
   `kpi.db` (dibuka read-only/immutable); sumber kebenaran tetap file rencana & realisasi.
 - Tanpa Datasette/Grist skill tetap berguna (laporan teks di langkah 5).
