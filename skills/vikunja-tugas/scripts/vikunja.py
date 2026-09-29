@@ -740,6 +740,35 @@ _POLA_PIC = re.compile(r"^([A-Za-z][A-Za-z .]{1,29}?)\s*[:\-–]\s+(.+)$")
 _POLA_PIC_LABEL = re.compile(r"\bPIC\s*[:\-–]\s*([A-Z][A-Za-z]*(?:\s+[A-Z][A-Za-z]*){0,2})\b")
 _POLA_MENDESAK = re.compile(r"\b(mendesak|urgent|penting|segera|asap)\b", re.IGNORECASE)
 _BUKAN_NAMA = {"pic", "catatan", "note", "todo", "tugas", "deadline", "tenggat", "prioritas", "urgent"}
+# v1.0.3: kata judul/header umum (Inggris & Indonesia) di notulen/WA/email yang berbentuk "Kata: ..." tetapi BUKAN
+# nama orang ("TOPIC: bahas marketing" dulu terbaca PIC "TOPIC"). Dicocokkan tanpa peduli huruf besar/kecil,
+# kecuali kandidat persis nama anggota yang dikenal (--anggota).
+_BUKAN_NAMA |= {
+    "topic", "topik", "info", "informasi", "update", "status", "subject", "subjek", "perihal", "hal", "re", "fw",
+    "fwd", "fyi", "notes", "memo", "agenda", "action", "action item", "action items", "next step", "next steps",
+    "follow up", "followup", "fu", "reminder", "pengingat", "summary", "ringkasan", "rangkuman", "kesimpulan",
+    "hasil", "result", "results", "issue", "issues", "masalah", "problem", "question", "pertanyaan", "q", "a",
+    "answer", "jawaban", "goal", "goals", "target", "tujuan", "plan", "rencana", "project", "proyek", "task",
+    "tasks", "to do", "done", "selesai", "pending", "progress", "progres", "wip", "blocker", "blockers", "risk",
+    "risiko", "decision", "keputusan", "owner", "due", "due date", "date", "tanggal", "time", "waktu", "jam",
+    "tempat", "lokasi", "location", "venue", "meeting", "rapat", "notulen", "minutes", "attendees", "peserta",
+    "hadir", "budget", "anggaran", "biaya", "cost", "price", "harga", "note to self", "ps", "nb", "penting",
+    "important", "new", "baru", "old", "urgent", "asap", "high", "medium", "low", "priority", "key point",
+    "key points", "highlight", "highlights", "detail", "details", "description", "deskripsi", "keterangan", "ket",
+    "link", "url", "file", "lampiran", "attachment", "contact", "kontak", "email", "phone", "hp", "wa", "admin",
+    "team", "tim", "all", "semua", "everyone", "general", "umum", "misc", "lainnya", "lain lain", "other",
+    "others", "context", "konteks", "background", "latar belakang", "outcome", "output", "input", "feedback",
+    "masukan", "review", "cek", "check", "checklist", "warning", "peringatan", "alert", "error", "bug", "fix",
+    "catatan penting", "poin", "point", "points", "step", "steps", "langkah", "phase", "fase", "tahap",
+    "week", "minggu", "day", "hari", "today", "hari ini", "tomorrow", "besok", "kpi", "okr", "sop", "faq",
+}
+# v1.0.5: kata permintaan/pembuka ("Mohon: kirim faktur", "Tolong: ...", "Harap: ...") bukan nama orang.
+_BUKAN_NAMA |= {
+    "mohon", "dimohon", "tolong", "harap", "diharap", "diharapkan", "silakan", "silahkan", "minta", "diminta",
+    "bantu", "ingat", "ingatkan", "jangan lupa", "pastikan", "wajib", "harus", "perlu", "butuh", "usul", "usulan",
+    "saran", "pesan", "please", "pls", "plz", "kindly", "reminder untuk", "mari", "ayo", "yuk", "kalau bisa",
+    "bisa tolong", "mohon bantuan", "tolong ya", "harap dicatat", "catatan tambahan", "catatan khusus",
+}
 
 
 def urai_dari_teks(teks, acuan, anggota_dikenal=None):
@@ -757,7 +786,7 @@ def urai_dari_teks(teks, acuan, anggota_dikenal=None):
             kandidat, sisa = m2.group(1).strip(), m2.group(2).strip()
             kata = kandidat.split()
             cocok_dikenal = anggota_dikenal and kandidat.lower() in {a.lower() for a in anggota_dikenal}
-            bukan_nama = kandidat.lower() in _BUKAN_NAMA
+            bukan_nama = not cocok_dikenal and (" ".join(kandidat.lower().replace(".", " ").split()) in _BUKAN_NAMA)
             if not bukan_nama and (cocok_dikenal or (1 <= len(kata) <= 3 and all(w[0:1].isupper() for w in kata))):
                 pic, isi = kandidat, sisa
         if pic is None:
@@ -868,33 +897,33 @@ def _tambah_opsi_umum(p):
 
 
 def buat_parser():
-    ap = argparse.ArgumentParser(prog="vikunja.py", description="Asisten tugas/proyek Vikunja (Komunitech)")
+    ap = argparse.ArgumentParser(prog="vikunja.py", description="Asisten tugas/proyek Vikunja (Komunitech)", allow_abbrev=False)
     sub = ap.add_subparsers(dest="perintah", required=True)
 
-    p = sub.add_parser("simpan-kunci")
+    p = sub.add_parser("simpan-kunci", allow_abbrev=False)
     p.add_argument("--kunci-file", dest="kunci_file", default=None)
     p.add_argument("--ya", action="store_true")
 
     for nama in ("cek", "daftar-proyek"):
-        p = sub.add_parser(nama)
+        p = sub.add_parser(nama, allow_abbrev=False)
         _tambah_opsi_umum(p)
 
     for nama in ("hari-ini", "terlambat", "minggu-ini"):
-        p = sub.add_parser(nama)
+        p = sub.add_parser(nama, allow_abbrev=False)
         _tambah_opsi_umum(p)
         p.add_argument("--proyek", default=None)
 
-    p = sub.add_parser("cari")
+    p = sub.add_parser("cari", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("kata_kunci")
     p.add_argument("--proyek", default=None)
 
-    p = sub.add_parser("ringkasan")
+    p = sub.add_parser("ringkasan", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--proyek", default=None)
     p.add_argument("--hanya-terlambat", dest="hanya_terlambat", action="store_true")
 
-    p = sub.add_parser("tambah")
+    p = sub.add_parser("tambah", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--judul", default=None)
     p.add_argument("--proyek", default=None)
@@ -905,12 +934,12 @@ def buat_parser():
     p.add_argument("--batch", default=None)
     p.add_argument("--ya", action="store_true")
 
-    p = sub.add_parser("selesai")
+    p = sub.add_parser("selesai", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--id", type=int, required=True)
     p.add_argument("--ya", action="store_true")
 
-    p = sub.add_parser("dari-teks")
+    p = sub.add_parser("dari-teks", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--teks", default=None)
     p.add_argument("--file", default=None)

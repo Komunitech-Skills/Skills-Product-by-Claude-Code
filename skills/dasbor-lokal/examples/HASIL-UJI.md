@@ -93,3 +93,16 @@ dibuat manual (tabel `produk` gaya `buku-stok`) untuk menguji `fmt_nilai` secara
 **Skor: 9/10.** Perbaikan tampilan stok integer di v1.0.1 terverifikasi benar, dan kolom Rupiah
 terbukti tidak terpengaruh (jalur kode terpisah). Tidak ada temuan baru. Skor dipertahankan sama
 seperti uji U18 sebelumnya (9/10) — satu-satunya temuan RENDAH dari sesi itu kini tertutup.
+
+## Uji ulang (2026-09-29, akhir) — v1.0.2
+- **Penguji:** agent independen (bukan pembuat); scratchpad `uji-0929-akhir`; DB **asli** dibuat dengan script masing-masing alat (buku-stok, kasir-lokal, crm-wa, absensi-lokal, buku-piutang, kas-umkm 30 transaksi, kpi-tim `ekspor-db` 2 periode); Datasette 0.65.5 di venv scratch. Script/SKILL.md tidak diubah.
+- **Tes regresi:** `tests/uji_regresi.py` **25/25 OK**; `validate.py --skill dasbor-lokal` ✅. `VERSI` 1.0.2 = catalog ✅.
+- **kpi-tim (alat ke-7):** `daftar-query` menampilkan 5 query; `query kpi-tim <5 query> --db …` → nilai sama dengan Datasette & `skor_kpi.py skor` (perusahaan 107,2/91,9; divisi 107,7/112,9/100,9; orang & tren cocok); `kpi-merah` pada DB 2026-08 → 3 baris tepat; DB mode `--anonim` juga jalan. `cari` menemukan `kpi/kpi.db` di bawah `KOMUNITECH_DATA`.
+- **Tanpa regresi 6 alat lain:** diff kode 1.0.1→1.0.2 hanya menambah blok `kpi-tim`. Keluaran `query --json` versi lama (git 89ba6d5) vs baru pada DB asli **identik** untuk stok-menipis, penjualan-per-hari, prospek-per-tahap, kehadiran-harian, piutang-jatuh-tempo, saldo-per-akun. Perintah `datasette` hasil script (7 DB `-i` immutable + `templates/metadata.yml`, 127.0.0.1) dijalankan dengan Datasette asli: **11/11 canned query** berhasil (6 alat + 5 kpi), angka cocok (saldo kas 5.265.000/4.317.000, piutang 2.500.000, prospek 1.450.000).
+
+Temuan:
+1. **[RENDAH]** Contoh di kpi-tim memakai `KPI/dasbor/kpi.db`, bukan lokasi default dasbor-lokal; `cari` menunjukkan "TIDAK ADA" kecuali pengguna memakai `--db`/`KOMUNITECH_KPI_DB`. Saran: satu kalimat di SKILL.md dasbor-lokal.
+2. **[INFO]** Mewarisi temuan privasi kpi-tim mode `--anonim` (divisi 1 orang + nama KPI dapat ditebak); saran "pakai `--anonim` bila layar dilihat orang lain" perlu disesuaikan bersama perbaikan kpi-tim.
+
+### Skor: **9/10** (lulus)
+Alasan: alat ke-7 terpasang benar di jalur Python dan Datasette asli, angka sama dengan sumber, akses tetap baca-saja, tanpa regresi pada 6 alat lain (keluaran identik). Sisa temuan dokumentasi.

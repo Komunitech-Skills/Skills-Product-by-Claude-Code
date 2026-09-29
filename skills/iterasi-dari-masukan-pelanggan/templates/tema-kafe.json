@@ -1,0 +1,50 @@
+{
+  "_petunjuk": "Kafe/kedai kopi/restoran dine-in. Tema bawaan 'fasilitas' dan 'waktu_tunggu' sudah ada; di sini hanya ditambah kata khas kafe.",
+  "hapus_tema": [],
+  "tambah_kata": {
+    "fasilitas": [
+      "password wifi",
+      "stop kontak",
+      "smoking area",
+      "area merokok",
+      "outdoor",
+      "indoor",
+      "sofa",
+      "nugas",
+      "wfc"
+    ],
+    "waktu_tunggu": [
+      "lama keluar",
+      "lama dibuat",
+      "reservasi",
+      "booking"
+    ],
+    "rasa": [
+      "gula aren",
+      "latte",
+      "espresso",
+      "manisnya",
+      "creamy",
+      "watery",
+      "encer"
+    ],
+    "layanan": [
+      "barista",
+      "waiter",
+      "kasir"
+    ]
+  },
+  "tema": [],
+  "kata_positif": [
+    "cozy",
+    "aesthetic",
+    "instagramable",
+    "creamy"
+  ],
+  "kata_negatif": [
+    "encer",
+    "watery",
+    "gerah",
+    "bising"
+  ]
+}

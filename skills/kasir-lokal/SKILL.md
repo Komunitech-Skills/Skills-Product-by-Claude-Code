@@ -5,6 +5,8 @@ description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite l
 
 # Kasir Lokal (POS satu outlet)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua transaksi ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/kasir.py`. Hasil: nota bernomor urut, struk siap cetak, uang laci tercocokkan, rekap harian siap kirim, dan omzet bulanan siap untuk pajak.
 
@@ -144,6 +146,7 @@ Produk terlaris (penjualan bersih):
 - [ ] Tidak ada void/retur yang tujuannya mengecilkan omzet atau pajak
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Bukan mesin EDC/QRIS dinamis, bukan akuntansi penuh, bukan multi-outlet. Satu database dipakai satu komputer; jangan simpan di folder sinkron (Google Drive/Dropbox) yang dibuka dua komputer sekaligus.
 - Database terkunci (jadwal OpenClaw sedang membaca) → script menunggu 15 detik lalu memberi pesan jelas; ulangi perintah yang sama.
 - File CSV dari Excel (pemisah `;`, BOM, Windows-1252) dibaca otomatis; `.xlsx` diminta disimpan sebagai CSV. CSV hasil ekspor aman dari formula injection (teks diawali `=`,`+`,`@`, atau `-` yang bukan angka, diberi tanda `'`; angka minus seperti `-2,5` tetap angka).

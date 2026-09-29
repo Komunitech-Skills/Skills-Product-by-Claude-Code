@@ -1,0 +1,45 @@
+﻿# Umami - Keripik Bu Sri (landing) (keripikbusri.contoh.id) - minggu lalu, Senin 21 Sep 2026 - Minggu 27 Sep 2026 - zona WIB
+bagian;nama;pengunjung;kunjungan;tayangan;bounce;bounce_persen;rata_detik
+ringkasan;total;11;12;23;3;25,0;48
+halaman;/;10;11;11;;;
+halaman;/produk/keripik-balado;5;5;5;;;
+halaman;/cara-pesan;3;3;3;;;
+halaman;/produk/keripik-original;2;2;2;;;
+halaman;/terima-kasih;2;2;2;;;
+kanal;Media sosial;6;6;8;3;50,0;11
+kanal;Langsung;4;4;9;0;0,0;71
+kanal;Pencarian Google dll;2;2;6;0;0,0;112
+referrer;l.instagram.com;3;3;3;;;
+referrer;google.com;2;2;2;;;
+referrer;tiktok.com;2;2;2;;;
+referrer;l.facebook.com;1;1;1;;;
+utm_source;instagram;3;3;3;;;
+utm_source;tiktok;2;2;2;;;
+utm_source;whatsapp;2;2;2;;;
+utm_medium;social;3;3;3;;;
+utm_medium;status;2;2;2;;;
+utm_medium;video;2;2;2;;;
+utm_campaign;promo-gajian-sep;7;7;7;;;
+event;klik-wa;3;3;3;;;
+event;beli;2;2;2;;;
+perangkat;HP;8;9;17;2;22,2;37
+perangkat;Komputer (layar besar);2;2;5;0;0,0;120
+perangkat;Tablet;1;1;1;1;100,0;0
+negara;Indonesia;10;11;21;3;27,3;50
+negara;Malaysia;1;1;2;0;0,0;25
+kota;Jakarta;2;3;7;0;0,0;68
+kota;Surabaya;2;2;2;1;50,0;0
+kota;Bandung;1;1;2;0;0,0;90
+kota;Denpasar;1;1;3;0;0,0;75
+kota;Kuala Lumpur;1;1;2;0;0,0;25
+kota;Makassar;1;1;2;0;0,0;35
+kota;Medan;1;1;1;1;100,0;0
+kota;Semarang;1;1;3;0;0,0;150
+kota;Yogyakarta;1;1;1;1;100,0;0
+harian;2026-09-21;2;;5;;;
+harian;2026-09-22;2;;3;;;
+harian;2026-09-23;1;;2;;;
+harian;2026-09-24;1;;1;;;
+harian;2026-09-25;1;;2;;;
+harian;2026-09-26;2;;3;;;
+harian;2026-09-27;3;;7;;;

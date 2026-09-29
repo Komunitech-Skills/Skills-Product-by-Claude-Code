@@ -5,6 +5,8 @@ description: Menyusun laporan keuangan UMKM sesuai SAK EMKM (Laporan Laba Rugi, 
 
 # Laporan Keuangan SAK EMKM dari Buku Kas
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah catatan uang masuk-keluar sehari-hari menjadi laporan keuangan standar SAK EMKM yang rapi, seimbang, dan dijelaskan dengan bahasa awam, sehingga pemilik tahu untung/ruginya dan punya dokumen untuk bank, investor, atau arsip usaha.
 

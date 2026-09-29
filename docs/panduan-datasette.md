@@ -1,6 +1,6 @@
 # Panduan Pasang Datasette untuk UMKM (bahasa awam)
 
-Datasette adalah program **gratis dan open-source** (lisensi Apache-2.0, dibuat Simon Willison) untuk membuka database SQLite di browser: lihat tabel, sortir, klik-klik, jalankan pertanyaan (SQL) — seperti dasbor BI berbayar, tapi jalan **di komputer Anda sendiri**. Panduan ini menyiapkan Datasette agar bisa dipakai skill **Dasbor Lokal** (`dasbor-lokal`) untuk membuka data alat lokal Komunitech: `buku-stok`, `kasir-lokal`, `crm-wa`, `absensi-lokal`, `buku-piutang`, `kas-umkm`.
+Datasette adalah program **gratis dan open-source** (lisensi Apache-2.0, dibuat Simon Willison) untuk membuka database SQLite di browser: lihat tabel, sortir, klik-klik, jalankan pertanyaan (SQL) — seperti dasbor BI berbayar, tapi jalan **di komputer Anda sendiri**. Panduan ini menyiapkan Datasette agar bisa dipakai skill **Dasbor Lokal** (`dasbor-lokal`) untuk membuka data alat lokal Komunitech: `buku-stok`, `kasir-lokal`, `crm-wa`, `absensi-lokal`, `buku-piutang`, `kas-umkm`, dan `kpi-tim` (dasbor KPI).
 
 > **Kabar baik:** skill `dasbor-lokal` **tetap bisa menjawab pertanyaan walau Datasette belum dipasang** (memakai `sqlite3` bawaan Python). Memasang Datasette menambah tampilan browser yang bisa diklik-klik dan tanya SQL bebas.
 
@@ -109,6 +109,7 @@ Lokasi database default tiap alat (skill `dasbor-lokal` sudah tahu ini; hanya un
 | `absensi-lokal` | `~/KomunitechData/absensi/absensi.db` |
 | `buku-piutang` | `~/KomunitechData/piutang/piutang.db` |
 | `kas-umkm` | `~/KomunitechData/kas/kas.db` |
+| `kpi-tim` | `~/KomunitechData/kpi/kpi.db` (dibuat lewat `skor_kpi.py ekspor-db`; boleh juga folder lain, mis. `KPI/dasbor/kpi.db`) |
 
 (`~` = folder home Anda, mis. `C:\Users\NamaAnda` di Windows. Bila Anda memindahkan database ke lokasi lain lewat `--db`/ENV saat memakai alat itu, cek lokasinya di `SKILL.md` alat tersebut.)
 
@@ -133,6 +134,7 @@ datasette -i ~/KomunitechData/stok.db -i ~/KomunitechData/kasir/kasir.db --host 
 | `absensi-lokal` | `kehadiran_harian` | Jam masuk/pulang tiap karyawan hari ini |
 | `crm-wa` | `prospek_per_tahap` | Jumlah & nilai prospek per tahap pipeline |
 | `kas-umkm` | `saldo_per_akun` | Saldo tiap akun kas (laci, bank, e-wallet, dst.) |
+| `kpi-tim` | `perusahaan_tren`, `divisi_terbaru`, `orang_terbaru`, `tren_orang`, `kpi_merah` | Skor KPI perusahaan/divisi/orang, tren per periode, KPI merah. Berisi skor per orang (data pribadi): hanya `127.0.0.1`; gunakan `--anonim` di `ekspor-db` bila dilihat orang lain. Diuji dengan Datasette 0.65.5 (29 September 2026) |
 
 Tidak mau/tidak sempat pasang Datasette? Semua query yang sama bisa dijalankan lewat perintah teks biasa (lihat `skills/dasbor-lokal/SKILL.md`):
 ```

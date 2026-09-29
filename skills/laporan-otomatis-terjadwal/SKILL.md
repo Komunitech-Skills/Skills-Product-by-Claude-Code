@@ -5,6 +5,8 @@ description: Menyiapkan laporan rutin (harian/mingguan/bulanan) di OpenClaw yang
 
 # Laporan Otomatis Terjadwal
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membuat pengguna OpenClaw yang awam teknologi punya laporan rutin (penjualan, kas,
 stok, piutang, ringkasan bulanan) yang **otomatis terkirim** ke Telegram atau WhatsApp
@@ -134,7 +136,9 @@ lalu yang lupa diganti) tidak lolos tanpa peringatan dan terkirim ulang seolah d
 ### 4. Tentukan kanal pengiriman
 - **Telegram = default.** Kalau belum ada bot: pandu buat bot lewat @BotFather, lalu
   `openclaw channels add --channel telegram --token <token>` (lihat `references/openclaw.md`
-  §3). Tidak ada risiko blokir karena memakai API resmi.
+  §3). Tidak ada risiko blokir karena memakai API resmi. Perintah `channels add` itu **diketik
+  pengguna sendiri**; agent tidak pernah meminta token ditempel di chat dan tidak pernah mencarinya
+  di environment, `openclaw.json`, atau riwayat.
 - **WhatsApp hanya dengan syarat berikut, semuanya harus dipenuhi:**
   1. Nomor **terpisah** dari nomor WA usaha/pribadi utama (dokumentasi resmi OpenClaw sendiri
      menyarankan ini).
@@ -153,7 +157,9 @@ lalu yang lupa diganti) tidak lolos tanpa peringatan dan terkirim ulang seolah d
 
 ### 5. Buat jadwal (SELALU minta izin eksplisit sebelum menjalankan perintah)
 Ringkas dulu ke pengguna: laporan apa, dari data mana, jadwal & zona waktu, dikirim ke kanal &
-tujuan apa. Minta konfirmasi "Lanjut? (ya/tidak)". Setelah "ya", jalankan (lihat
+tujuan apa. Minta konfirmasi "Lanjut? (ya/tidak)", lalu **berhenti dan tunggu balasan** (permintaan
+awal bukan persetujuan). Perintah ditolak (`requires credentials`, `token missing`, Gateway mati) →
+berhenti, beri langkah persiapan; jangan menyelidiki kredensial. Setelah "ya", jalankan (lihat
 `references/openclaw.md` §1-§2 untuk semua opsi & alasan pemilihannya; Windows: `python`/`py`):
 
 ```bash
@@ -250,6 +256,7 @@ lihat/jeda/hapus jadwal (pakai `id`) → ingatkan syarat komputer menyala.
 - [ ] Pengguna sudah diberi tahu jadwal butuh komputer menyala terus + opsi-opsinya.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Data tidak ada/kosong → tidak pernah mengirim angka nol.** Selalu jalankan
   `cek_sumber_data.py` dulu; kalau tidak siap, hentikan proses dan tunjukkan pesannya apa
   adanya. Prompt automation juga sudah diberi instruksi eksplisit untuk melakukan hal yang sama

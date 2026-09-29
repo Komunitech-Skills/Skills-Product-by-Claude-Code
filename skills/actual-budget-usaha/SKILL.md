@@ -5,6 +5,8 @@ description: Asisten Actual Budget (aplikasi anggaran amplop gratis, MIT, data l
 
 # Actual Budget Usaha (anggaran amplop lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pengguna **Actual Budget** (aplikasi anggaran amplop pengganti YNAB, gratis, data di komputer sendiri) cukup
 menyerahkan file mutasi bank atau bertanya "anggaran saya bulan ini gimana?". Agent menjalankan
@@ -134,6 +136,7 @@ Contoh lengkap: `examples/01-konversi-mutasi-bca.md`, `examples/02-ringkasan-bul
   Kolom saldo (bila ada) dipakai untuk **cek saldo**.
 
 ## Keamanan & batasan (wajib dipatuhi agent)
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - `db.sqlite` **hanya dibaca** (mode read-only SQLite, disalin ke memori). Jangan pernah menjalankan SQL tulis,
   mengedit, memindahkan, atau menghapus file di folder budget Actual.
 - Script tidak memakai internet dan tidak butuh akun/API key. Jangan menyarankan membuka server Actual ke internet.

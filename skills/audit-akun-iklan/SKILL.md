@@ -5,6 +5,8 @@ description: Audit kesehatan pengaturan & struktur akun iklan Meta/Facebook/Inst
 
 # Audit Akun Iklan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 Versi 1.0.1 (2026-09-26) — lihat "Riwayat versi" di bawah.
 
 ## Tujuan
@@ -118,6 +120,7 @@ Contoh lain: `examples/uji-pembuat-02-klinik-kecantikan-meta.md`, `examples/uji-
 - Klinik: jangan meminta/menyimpan data pasien. Screenshot sebaiknya disamarkan.
 
 ## Riwayat versi
+- **1.0.2** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
 - **1.0.1** (2026-09-26): perbaikan dari uji independen — ROAS impas tidak crash pada laba sangat kecil
   (laba dibulatkan ke bawah); `tidak_berlaku` tanpa syarat → `tidak_tahu`; cek kritis tidak berlaku
   membatasi label; platform bukti kurang tanpa label mutu; urutan anggaran setelah batas untung;

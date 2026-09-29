@@ -5,6 +5,8 @@ description: Membuat slip gaji per karyawan dan rekap payroll bulanan untuk usah
 
 # Slip Gaji + BPJS + PPh 21
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah daftar gaji karyawan menjadi slip gaji siap cetak/kirim dan rekap payroll yang benar hitungannya: iuran BPJS sesuai batas upah terbaru, lembur sesuai PP 35/2021, PPh 21 metode TER, take home pay, dan total biaya perusahaan.
 
@@ -38,6 +40,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 1. Susun data karyawan menjadi CSV (pemisah `;` atau `,`) dengan kolom seperti `templates/karyawan-contoh.csv`. Kolom wajib: `nama`, `ptkp`, `gaji_pokok`. Kolom opsional: `jabatan`, `nik`, `tunjangan_tetap`, `tunjangan_tidak_tetap`, `lembur_hari_kerja` (jam per hari dipisah `+`, mis. `2+3+1`), `lembur_hari_libur` (mis. `8+5`; pola 6 hari: akhiran `p` bila libur resmi jatuh di hari kerja terpendek, mis. `5p`), `lembur_rp` (nominal lembur jadi, bila tidak pakai jam), `bonus`/`thr`, `potongan_lain`, `zakat`, `jkk_persen`, `ikut_jp`/`ikut_bpjs_tk`/`ikut_bpjs_kesehatan` (ya/tidak), `dtp` (ya/tidak; hanya masa 2026, sektor/KLU sudah dikonfirmasi, dan `bruto_tetap_januari` ≤ Rp 10 jt — bila tidak memenuhi, script otomatis memotong PPh normal dan memberi ⚠️), `bruto_tetap_januari`, `dasar_bpjs_kesehatan`, dan untuk Desember/berhenti: `berhenti`, `bruto_sd_bulan_lalu`, `pph21_sd_bulan_lalu`, `iuran_sd_bulan_lalu`, serta **wajib** `jumlah_bulan_kerja` atau `bulan_mulai` (1 bila sejak Januari).
+   **Data gaji = data pribadi sensitif:** tulis CSV input dan folder `--out` di **folder kerja yang disepakati dengan pengguna** (mis. folder kerja OpenClaw/agent atau folder yang ia sebut), **bukan `/tmp`** atau folder sementara lain; sebutkan path lengkapnya.
 2. Jalankan (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/payroll.py --data karyawan.csv --periode 2026-09 --perusahaan "CV Maju Jaya" --umk "5.396.761" --jkk 0,54 --out payroll-2026-09
@@ -45,7 +48,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    Satu karyawan tanpa CSV: `--nama Budi --ptkp K/1 --gaji-pokok 6jt --tunjangan-tetap 500rb --lembur-hari-kerja 2+3`.
    Opsi lain: `--hari-kerja 6`, `--batas-jp <nilai>` (wajib bila periode di luar Maret 2025–Februari 2027), `--pemisah-csv ,`, `--format json`.
 3. Script membuat 3 file di folder `--out`: `slip-gaji-YYYY-MM.md` (tempel ke chat/dokumen), `slip-gaji-YYYY-MM.html` (buka di browser → Cetak/Save as PDF; satu slip per halaman), `rekap-payroll-YYYY-MM.csv` (buka di Excel). Bila ada satu saja data karyawan yang salah, **tidak ada file dibuat** dan script menampilkan daftar kesalahannya.
-4. Sampaikan ke pengguna: tabel rekap dari script, lokasi file, setiap ⚠️ peringatan (UMK, lembur > 4 jam, JKK tidak standar, dsb.), asumsi yang dipakai, dan disclaimer.
+4. Sampaikan ke pengguna: tabel rekap dari script, lokasi file, setiap ⚠️ peringatan (UMK, lembur > 4 jam, JKK tidak standar, dsb.), asumsi yang dipakai, dan disclaimer. Bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah slip jadi (hapus hanya bila pengguna setuju).
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tulis langkahnya, tabel TER ada di `references/tabel-ter.md`, dan beri tahu pengguna bahwa hasil dihitung manual (slip HTML/CSV tidak dibuat).
 
 ## Rumus (untuk hitung manual)

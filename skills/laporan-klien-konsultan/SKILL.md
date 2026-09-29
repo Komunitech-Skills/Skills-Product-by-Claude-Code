@@ -5,6 +5,8 @@ description: Mencatat pekerjaan harian untuk klien (proyek, jam, status, kendala
 
 # Laporan Klien (Konsultan/Freelancer)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Konsultan dan freelancer (pajak, hukum, IT, desain, marketing, dll.) yang harus rutin melapor ke
 klien cukup **mencatat pekerjaan sekali jalan** saat selesai dikerjakan, lalu tinggal minta
@@ -150,6 +152,7 @@ Jaya" --periode mingguan` → tampilkan ketiga versi + catatan bila ada.
 Contoh lengkap input/output nyata: `examples/uji-pembuat-01-konsultan-pajak.md`.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **UU PDP (UU 27/2022) -- catat seperlunya saja.** Kolom `pekerjaan`/`kendala`/
   `butuh_dari_klien` **tidak untuk** menyimpan data rahasia klien yang tidak perlu: nomor
   rekening, kredensial/password, dokumen internal rahasia klien, atau data pribadi karyawan

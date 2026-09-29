@@ -5,6 +5,8 @@ description: Menyusun Surat Peringatan karyawan (SP1, SP2, SP3) yang proporsiona
 
 # Surat Peringatan Karyawan (SP1/SP2/SP3)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha dan staf HR memberi sanksi yang **adil, proporsional, dan tercatat rapi**: tingkat SP tepat, fakta jelas (bukan emosi), dasar aturan disebut, masa berlaku benar, dan karyawan diberi kesempatan memperbaiki diri.
 

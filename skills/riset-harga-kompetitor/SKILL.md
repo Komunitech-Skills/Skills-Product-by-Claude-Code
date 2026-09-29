@@ -5,6 +5,8 @@ description: Riset harga pesaing untuk penjual UMKM - membuka link produk pesain
 
 # Riset Harga Kompetitor
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjawab pertanyaan penjual: "Harga pasaran produk seperti punya saya berapa, posisi harga saya di mana, dan sebaiknya saya pasang harga berapa supaya tetap untung?" Hasil akhirnya tabel pembanding + rekomendasi harga yang **tidak pernah di bawah batas untung** pengguna.
 
@@ -42,7 +44,7 @@ Jika HPP atau data pesaing belum ada, tanyakan **sekali** dalam satu pesan berno
 - Dari tiap produk, catat ke tabel: `toko, nama, platform, varian, ukuran, harga, harga_coret, promo, rating, terjual, ulasan, lokasi, sumber, tanggal_cek` (template: `templates/pesaing-template.csv`). Tulis **harga apa adanya** seperti tampil (mis. `Rp49.900`, `49,9rb`, `Rp 1,2 jt`, `49.900-59.900`); script yang merapikan.
 - `harga` = harga yang dibayar pembeli sebelum ongkir (setelah diskon toko). `harga_coret` = harga yang dicoret. Voucher/gratis ongkir → kolom `promo`. `sumber` = link, atau "(ditempel pengguna)" / "(screenshot)". `tanggal_cek` = hari ini (YYYY-MM-DD).
 - Pastikan varian yang dicatat **sebanding** dengan produk pengguna (ukuran/tipe sama atau bisa disetarakan). Jika ragu, tanyakan. Bila halaman menampilkan daftar varian dengan harga berbeda, catat **harga varian yang sebanding**, bukan rentangnya.
-- `ukuran` ditulis seperti tampil: `250 gr`, `1/2 kg`, `setengah kilo`, `2 x 250 gr`, `250 gr x 2`, `isi 2 @250gr`, `250 g + 250 g`. Produk satuan tanpa berat/isi (hijab, kaos, dll.) → tulis `1 pcs` untuk produk pengguna **dan** pesaing; paket → `2 pcs`, `isi 3`.
+- `ukuran` ditulis seperti tampil: `250 gr`, `1/2 kg`, `setengah kilo`, `2 x 250 gr`, `250 gr x 2`, `isi 2 @250gr`, `250 g + 250 g`, `500 gr isi 2`, `2 pack 500 gr` (dua yang terakhir dikalikan + diberi catatan cek). Produk satuan tanpa berat/isi (hijab, kaos, dll.) → tulis `1 pcs` untuk produk pengguna **dan** pesaing; paket → `2 pcs`, `isi 3`.
 - Di CSV, nilai yang mengandung koma (`"4,9"`, `"1,2RB terjual"`) **wajib diberi tanda kutip**, atau simpan sebagai JSON. Baris yang kolomnya bergeser dilewati script dengan alasan.
 
 ### 2. Hitung dengan script
@@ -126,5 +128,8 @@ Link yang tidak bisa dibuka: <daftar, bila ada>
 - Rekomendasi adalah bahan keputusan, bukan jaminan laku atau untung. Keputusan akhir harga ada di pengguna.
 
 ## Riwayat versi
+- **1.0.4** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
+- **1.0.3** (2026-09-29): satuan kemasan/jumlah mengalikan ukuran: `10 sachet 25 gr` = 250 g, `2 karung 1 kg` = 2 kg, `1 lusin 100 gr` = 1.200 g (12 x 100 g), `2 kodi 50 gr` = 2 kg, `100 gr x 2 lusin` = 2.400 g (dengan catatan "cek"); `1 lusin` sendiri = 12 pcs, `1 kodi` = 20 pcs, `1 rim` = 500 lembar. Jumlah butir di dalam (`isi 10 sachet 25 gr`) tidak dikalikan. Uji regresi 44.
+- **1.0.2** (2026-09-29): ukuran `500 gr isi 2`, `250gr (isi 2)`, `2 pack 500 gr`, `3 botol 250 ml` dibaca sebagai isi total (1 kg / 500 g / 1 kg / 750 ml) dengan catatan "cek: bila angka itu sudah total, tulis ulang ukurannya"; jumlah butir di dalam (`isi 10 pcs 250 gr`, `250 gr isi 20 sachet`) tidak dikalikan; `isi 2 pack 500 gr` dibaca total 500 g dengan catatan cek. Sampaikan catatan "cek" ke pengguna bila harga setara pesaing itu memengaruhi rekomendasi.
 - **1.0.1** (2026-09-28): perbaikan hasil uji independen - ukuran pecahan (`1/2 kg`, `setengah kilo`) dan paket (`250 g x 2`, `isi 2 @250gr`, `250 g + 250 g`, `2 pcs @ 250 gr`) dibaca benar; pesaing jauh dari median dikeluarkan dari statistik (`--pakai-semua` untuk mengikutkan); strategi premium kini P75-P90; mode pasar saja tanpa HPP; CSV ANSI/UTF-16 & kolom bergeser ditangani; harga < Rp 100 ditolak; pilih satuan yang sama bila teks memuat beberapa ukuran; pesan error lebih jelas; bagian "Cara menguji harga baru".
 - **1.0.0** (2026-09-28): rilis awal.

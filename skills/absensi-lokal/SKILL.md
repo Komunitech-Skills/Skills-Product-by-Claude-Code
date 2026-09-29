@@ -5,6 +5,8 @@ description: Aplikasi absensi karyawan lokal (SQLite di komputer pemilik) yang d
 
 # Absensi Lokal (pengganti aplikasi absensi bulanan)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi "aplikasi absensi" pemilik usaha tanpa langganan: data ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/absensi.py`. Hasil akhir: kehadiran tercatat rapi, rekap bulanan per karyawan, upah lembur yang benar menurut PP 35/2021, daftar data ganjil yang perlu dicek, dan file untuk skill `slip-gaji-bpjs`.
 
@@ -131,6 +133,7 @@ Setiap rekap yang memuat lembur diakhiri disclaimer dari script (PP 35/2021, pem
 - [ ] `--db` konsisten; tidak ada NIK/rekening yang disimpan
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Golongan jabatan tertentu** (pemikir/perencana/pengendali, waktu kerja tidak dapat dibatasi, upah lebih tinggi — Pasal 27 ayat (2)–(5)) tidak dibayar lembur **hanya bila diatur di PK/PP/PKB**; tandai dengan `--tanpa-lembur ya` atas keputusan pengguna. Sektor usaha tertentu dengan waktu kerja khusus (Pasal 23–25, 30: mis. migas, tambang daerah tertentu) dan upah satuan hasil (Pasal 33 ayat (2)–(3)) **tidak didukung** — arahkan ke konsultan/Disnaker.
 - Batas 4 jam/hari & 18 jam/minggu (Pasal 26) hanya diperingatkan; lembur tetap dihitung sesuai yang disetujui. Lembur hari libur di atas tangga Pasal 31 (11/9/12 jam) ditolak. Batas 18 jam/minggu dihitung per minggu Senin–Minggu penuh, termasuk hari di luar periode rekap. Kewajiban makan-minum ≥ 1.400 kkal bila lembur ≥ 4 jam (Pasal 29) muncul sebagai pengingat di pratinjau lembur dan rekap, tidak dihitung rupiah.
 - Pola kerja di luar 5/6 hari (mis. 4 hari on/off, shift rotasi mingguan) belum didukung: satu karyawan = satu shift tetap; rotasi → ubah `--shift` per periode atau catat manual. Cuti bersama dianggap libur resmi **hanya jika** pengguna mencatatnya di `libur` — status cuti bersama untuk swasta perlu dikonfirmasi (lihat references).

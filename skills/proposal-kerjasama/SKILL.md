@@ -5,6 +5,8 @@ description: Menyusun proposal kerja sama bisnis berbahasa Indonesia (B2B, kemit
 
 # Proposal Kerja Sama
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah ide kerja sama yang masih di kepala pengguna menjadi proposal yang meyakinkan calon mitra: jelas apa untungnya bagi **mereka**, bagaimana cara kerjanya, dan langkah berikutnya. Angka simulasi (bagi hasil, margin, konsinyasi) dihitung script, bukan dikira.
 

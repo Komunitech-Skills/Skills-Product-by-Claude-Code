@@ -250,7 +250,7 @@ def parse_jam(teks):
 
 
 def main():
-    p = argparse.ArgumentParser(description="Siapkan daftar kirim broadcast WA yang patuh izin.")
+    p = argparse.ArgumentParser(description="Siapkan daftar kirim broadcast WA yang patuh izin.", allow_abbrev=False)
     p.add_argument("--kontak", required=True, help="file CSV kontak (kolom nama, nomor, persetujuan)")
     p.add_argument("--pesan", required=True, help="file .txt berisi variasi pesan, dipisah baris '---'")
     p.add_argument("--output", default="broadcast_siap.csv", help="file CSV hasil (default broadcast_siap.csv)")

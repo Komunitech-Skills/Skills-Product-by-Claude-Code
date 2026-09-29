@@ -13,7 +13,7 @@ Tahap 6), **belum** `rilis` dan **belum** punya `tier_final`/`harga_final_idr` �
 diisi pemilik (lihat Tahap 7 `CLAUDE.md`). Folder ini adalah **materi panduan**, bukan penentu
 harga atau status jual.
 
-## Empat paket
+## Enam paket
 
 | Paket | Untuk siapa | Isi (skill) |
 |---|---|---|
@@ -21,6 +21,8 @@ harga atau status jual.
 | `klinik/` | Klinik pratama/gigi/kecantikan/fisioterapi, praktik dokter/bidan mandiri | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-klinik.txt`): `edukasi-pasien-klinik`, `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`. Otomasi tambahan (akses penuh VIP), lihat `klinik/PANDUAN.md` §5i: `pengingat-pasien-klinik` (buku jadwal kontrol/vaksin lokal minimal, draf WA disalin staf, ringkasan terjadwal 07.30 WIB) |
 | `konsultan/` | Konsultan, agensi, freelancer B2B | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle tematik (`bundles/paket-konsultan-freelancer.txt`): `proposal-kerjasama`, `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`, `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`. Otomasi tambahan (akses penuh VIP), lihat `konsultan/PANDUAN.md` §5: `hledger-usaha` (pembukuan berpasangan freelancer/agensi tanpa aplikasi berbayar, bulanan tgl 1), `buku-piutang` (invoice retainer/termin yang belum lunas, harian 07.45), `gaji-umkm` (opsional, bila agensi punya staf tetap, pengingat harian 07.00), `laporan-klien-konsultan` (draf laporan progres mingguan ke klien, Jumat 16.00 — draf saja, dikirim manual) |
 | `usaha-offline/` | Kafe/resto/warung makan, warung/toko kelontong, bengkel, laundry — usaha tatap muka | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Paket lengkap (lihat `usaha-offline/PANDUAN.md`): `kasir-lokal`, `buku-stok`, `kas-umkm`, `absensi-lokal`, `gaji-umkm`, `laporan-harian-usaha`, `buku-piutang`, `tagih-piutang`, `hitung-hpp`, `pph-final-umkm`, `agen-cs-toko`, `balas-chat-cs`, `caption-sosmed-umkm`, `promo-kalender`, `laporan-otomatis-terjadwal` |
+| `kantor-manajemen/` | Direktur/manajer manufaktur, distribusi, logistik, kantor besar (16–50+ staf) | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. Bundle ecer `bundles/paket-kantor-manajemen.txt` (subset, lihat `bundles/README.md`): `laporan-otomatis-terjadwal`, `laporan-status-kantor`, `ringkas-grup-wa`, `vikunja-tugas`, `notulen-rapat`, `analisis-excel`, `analisis-rasio-keuangan-usaha`, `arus-kas-13minggu`, `presentasi-data-ke-atasan`, `dasbor-lokal`, `buku-piutang`, `tagih-piutang`, `buku-stok`, `laporan-insiden-usaha`. Tambahan akses penuh VIP: `laporan-harian-usaha` (laporan harian 21.00 & mingguan Senin 07.00 ke Telegram), serta `frappe-books-usaha` atau `dolibarr-usaha` (pilih satu; perlu dipasang, tawarkan jasa setup). Tugas dari grup WA = draf yang dikonfirmasi manusia; pelacakan = daftar tugas, bukan pengawasan karyawan |
+| `kripto-keuangan/` | Member yang meriset kripto dan merapikan keuangan pribadi | Starter: `karyawan-ai-mulai`, `cek-privasi-openclaw`. **Khusus VIP** (tanpa bundle ecer). Skill: `atur-keuangan-pribadi`, `notebook-riset-lokal`, `asisten-tulis-riset`, dan inti paket `pantau-pasar-kripto` (ringkasan pagi & notifikasi ambang yang ditetapkan member sendiri, checklist riset, jurnal trading). **Tanpa** auto-trading, rekomendasi beli/jual, atau pembuatan bot |
 
 Kenapa lebih banyak dari isi bundle ecer di masing-masing `.txt`: member **VIP** (beda dari
 pembeli ecer/bundle) punya **akses penuh ke seluruh library** (Bab 1 `CLAUDE.md`), jadi paket
@@ -37,7 +39,7 @@ Setiap subfolder paket berisi:
 - **`CEKLIS.md`** — ceklis serah-terima satu halaman untuk member atau teknisi jasa setup,
   termasuk poin privasi.
 
-## Aturan yang dipatuhi keempat paket (keputusan pemilik, 2026-09-23)
+## Aturan yang dipatuhi keenam paket (keputusan pemilik, 2026-09-23)
 
 1. **Telegram (bot resmi) = kanal default** untuk semua laporan/rekap/pengingat ke pemilik usaha.
 2. **WhatsApp** hanya boleh dipakai untuk notifikasi ke pemilik **sendiri**, dengan **nomor
@@ -51,8 +53,13 @@ Setiap subfolder paket berisi:
    **jasa setup berbayar Komunitech** sebagai opsi tanpa mencantumkan harga.
 6. **Klinik**: hanya edukasi pasien, balasan chat umum non-diagnosis, dan laporan operasional
    agregat (tanpa nama/diagnosis pasien). **Tidak ada** skrining/diagnosis/kalkulator medis.
-7. **Kripto**: sengaja **tidak** dimasukkan ke paket manapun di sini — menunggu keputusan pemilik
-   (lihat §5 `research/solusi-member-vip-2026-09-23.md`).
+7. **Kripto** (keputusan pemilik 2026-09-23, paket `kripto-keuangan/`): hanya riset, ringkasan
+   berita, jurnal trading, dan notifikasi harga dengan ambang yang ditetapkan member sendiri.
+   **Tanpa** auto-trading, **tanpa** rekomendasi beli/jual/sinyal, tanpa bot; wajib disclaimer
+   bukan nasihat investasi.
+8. **Kantor & manajemen** (`kantor-manajemen/`): tugas dari grup WA hanya **draf** yang
+   dikonfirmasi manusia; pelacakan = daftar tugas, bukan pengawasan karyawan; aplikasi yang
+   perlu dipasang (Frappe Books/Dolibarr/Vikunja) ditawarkan lewat jasa setup berbayar.
 
 ## Metodologi verifikasi perintah OpenClaw
 
@@ -62,7 +69,7 @@ sebagian besar **sudah diuji sungguhan** terhadap Gateway OpenClaw lokal (2026.9
 Untuk sesi ini, tambahan verifikasi dilakukan dengan menjalankan `bash scripts/uji_openclaw.sh
 2026.9.6` (memasang OpenClaw 2026.9.6 ke `/tmp/uji-openclaw`) lalu membandingkan setiap flag yang
 dipakai di paket ini terhadap `openclaw automations add --help` dan `openclaw channels add --help`
-sungguhan. Hasil: **semua flag yang dipakai di ketiga paket (`--cron`/posisi, `--tz`, `--name`,
+sungguhan. Hasil: **semua flag yang dipakai di paket-paket ini (`--cron`/posisi, `--tz`, `--name`,
 `--session`, `--announce`, `--channel`, `--to`, `--tools`, `--at`, `--best-effort-deliver`,
 `--model`, `--delete-after-run`) ada persis** di `--help` OpenClaw 2026.9.6 — tidak ada flag yang
 sudah berubah/hilang sejak dokumen sumbernya ditulis. Uji muat skill (`openclaw skills check
@@ -106,7 +113,7 @@ ada di `references/openclaw*.md` skill terkait.
 sejajar dengan folder skill dan `LISENSI.txt`/`CARA-INSTAL.md` (lihat blok `if a.vip:` di
 `scripts/build.py`). Diverifikasi ulang di Tahap C sesi ini dengan
 `python3 scripts/build.py --pembeli "UJI INTERNAL" --vip --izinkan-draft`: ZIP berisi
-`solusi-vip/usaha-offline/PANDUAN.md`, `jadwal-openclaw.md`, `CEKLIS.md` (dan ketiga paket
+`solusi-vip/usaha-offline/PANDUAN.md`, `jadwal-openclaw.md`, `CEKLIS.md` (dan paket
 lain). Tidak ada perubahan lanjutan yang diperlukan untuk menyertakan paket baru — cukup tambah
 folder `solusi-vip/<paket-baru>/`.
 

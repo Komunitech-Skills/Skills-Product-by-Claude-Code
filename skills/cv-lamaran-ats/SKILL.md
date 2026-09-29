@@ -5,6 +5,8 @@ description: Menyesuaikan CV dan surat lamaran dengan lowongan kerja tertentu �
 
 # CV & Lamaran Ramah ATS
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menyesuaikan CV dan surat lamaran pengguna dengan lowongan kerja tertentu, memakai kata kunci dari lowongan itu — **tanpa mengarang** pengalaman, gelar, sertifikat, atau tanggung jawab yang tidak dimiliki pengguna. Semua proses merujuk ke **profil pengalaman induk** pengguna (satu sumber kebenaran riwayat asli) agar konsisten di setiap lamaran. Hasil akhir: evaluasi kecocokan lowongan (skor + alasan + celah), CV versi ATS siap tempel, surat lamaran, pesan singkat ke rekruter, skor kecocokan kata kunci, dan (bila diminta) latihan wawancara berbasis STAR.
 

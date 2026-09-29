@@ -5,6 +5,8 @@ description: Meringkas ekspor chat grup WhatsApp (.txt/.zip "Tanpa Media") menja
 
 # Ringkas Grup WhatsApp
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Grup WA kerja/proyek/komunitas sering punya ratusan pesan yang tenggelam. Skill ini membaca
 **ekspor chat resmi WhatsApp** (fitur bawaan, bukan sadap/pantau diam-diam), mem-parsing pesan
@@ -140,6 +142,7 @@ Rentang: 12–13 Sep 2026 · 16 pesan (dari 4 orang)
 - [ ] Statistik (jumlah per pengirim, jam ramai, media/dihapus) disertakan.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Tidak pernah memantau/menyadap diam-diam.** Skill ini hanya memproses ekspor yang pengguna buat sendiri secara sadar dari grup yang mereka ikuti. Permintaan meringkas chat/grup orang lain tanpa sepengetahuan mereka (mis. pasangan, karyawan) **ditolak** — jelaskan bahwa itu melanggar privasi dan berpotensi melanggar UU PDP, dan skill tidak dirancang untuk itu.
 - **Privasi anggota grup**: isi grup adalah data pribadi orang lain, dan akan diproses oleh penyedia model AI yang dipakai pengguna. Ingatkan ini terutama untuk grup yang bukan seluruhnya kolega kerja (mis. ada anggota keluarga/pelanggan/pasien) dan tawarkan `--samarkan`. Untuk grup yang sangat sensitif (keluarga, pasien, HR), sarankan tetap pakai Jalur 1 (ekspor manual) dan **jangan** menyarankan Jalur 2 (bot live di grup) — lihat `references/openclaw-grup.md` untuk alasannya.
 - **`--samarkan` bersifat upaya terbaik (best-effort), BUKAN jaminan mutlak.** Script mengganti pengirim, nama yang disebut di isi pesan/@mention/pesan sistem (termasuk kata depan/panggilan seperti "Budi" dari "Budi Santoso"), sapaan+nama pihak luar ("Pak Budi" → "Orang N"), dan nomor telepon Indonesia & internasional. Yang **tidak** selalu tertangkap: nama tanpa huruf kapital konsisten, singkatan/inisial, ejaan nama yang berbeda-beda, nama yang menyatu dengan kata lain tanpa spasi, atau nama yang kebetulan sama dengan kata umum. **Selalu** sampaikan isi `kemungkinan_nama_tersisa` ke pengguna sebagai daftar yang perlu dicek manual sebelum hasil dibagikan ke pihak lain — jangan pernah bilang hasilnya "pasti anonim".

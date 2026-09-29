@@ -902,23 +902,23 @@ def cmd_restore(args):
 
 # --------------------------------------------------------------------------- argparse
 def buat_parser():
-    p = argparse.ArgumentParser(prog="arsip.py", description="Arsip nota & faktur UMKM (indeks SQLite lokal).")
-    umum = argparse.ArgumentParser(add_help=False)
+    p = argparse.ArgumentParser(prog="arsip.py", description="Arsip nota & faktur UMKM (indeks SQLite lokal).", allow_abbrev=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--json", action="store_true", help="Keluaran JSON (disarankan untuk agent).")
     umum.add_argument("--db", help="Lokasi file indeks (default ~/KomunitechData/arsip-nota/arsip.db).")
     sub = p.add_subparsers(dest="perintah")
     sub.required = True
 
-    s = sub.add_parser("init", parents=[umum], help="Buat indeks arsip baru.")
+    s = sub.add_parser("init", parents=[umum], help="Buat indeks arsip baru.", allow_abbrev=False)
     s.add_argument("--folder-arsip", help="Folder tujuan file nota (default: folder 'arsip' di sebelah indeks).")
     s.add_argument("--mulai-baru", action="store_true", help="Buat indeks kosong baru (indeks lama dipindah).")
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_init)
 
-    s = sub.add_parser("info", parents=[umum], help="Ringkasan indeks arsip.")
+    s = sub.add_parser("info", parents=[umum], help="Ringkasan indeks arsip.", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_info)
 
-    s = sub.add_parser("tambah", parents=[umum], help="Arsipkan satu file nota/faktur ke indeks.")
+    s = sub.add_parser("tambah", parents=[umum], help="Arsipkan satu file nota/faktur ke indeks.", allow_abbrev=False)
     s.add_argument("--file", required=True, help="Path foto/PDF nota yang akan diarsipkan.")
     s.add_argument("--tanggal", required=True, help="Tanggal nota, format DD/MM/YYYY.")
     s.add_argument("--vendor", required=True, help="Nama penjual/vendor di nota.")
@@ -933,7 +933,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_tambah)
 
-    s = sub.add_parser("cari", parents=[umum], help="Cari nota di indeks.")
+    s = sub.add_parser("cari", parents=[umum], help="Cari nota di indeks.", allow_abbrev=False)
     s.add_argument("--vendor")
     s.add_argument("--kategori")
     s.add_argument("--dari")
@@ -943,7 +943,7 @@ def buat_parser():
     s.add_argument("--cari", help="Cari kata di vendor/catatan.")
     s.set_defaults(fungsi=cmd_cari)
 
-    s = sub.add_parser("rekap", parents=[umum], help="Rekap per kategori/vendor untuk suatu periode.")
+    s = sub.add_parser("rekap", parents=[umum], help="Rekap per kategori/vendor untuk suatu periode.", allow_abbrev=False)
     s.add_argument("--bulan")
     s.add_argument("--tahun")
     s.add_argument("--dari")
@@ -952,10 +952,10 @@ def buat_parser():
     s.add_argument("--csv")
     s.set_defaults(fungsi=cmd_rekap)
 
-    s = sub.add_parser("duplikat", parents=[umum], help="Cari nota yang kemungkinan sudah diarsipkan dua kali.")
+    s = sub.add_parser("duplikat", parents=[umum], help="Cari nota yang kemungkinan sudah diarsipkan dua kali.", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_duplikat)
 
-    s = sub.add_parser("ekspor", parents=[umum], help="Ekspor CSV pengeluaran (siap diimpor kas-umkm).")
+    s = sub.add_parser("ekspor", parents=[umum], help="Ekspor CSV pengeluaran (siap diimpor kas-umkm).", allow_abbrev=False)
     s.add_argument("--bulan")
     s.add_argument("--tahun")
     s.add_argument("--dari")
@@ -963,11 +963,11 @@ def buat_parser():
     s.add_argument("--csv", required=True)
     s.set_defaults(fungsi=cmd_ekspor)
 
-    s = sub.add_parser("backup", parents=[umum], help="Cadangkan/lihat cadangan indeks.")
+    s = sub.add_parser("backup", parents=[umum], help="Cadangkan/lihat cadangan indeks.", allow_abbrev=False)
     s.add_argument("--daftar", action="store_true")
     s.set_defaults(fungsi=cmd_backup)
 
-    s = sub.add_parser("restore", parents=[umum], help="Pulihkan indeks dari cadangan.")
+    s = sub.add_parser("restore", parents=[umum], help="Pulihkan indeks dari cadangan.", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_restore)

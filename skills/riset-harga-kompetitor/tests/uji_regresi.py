@@ -480,5 +480,63 @@ class UjiRevisi101(unittest.TestCase):
         self.assertTrue(any("tulis 1 pcs" in c for c in h["pesaing"][0]["catatan"]))
 
 
+class UjiRevisi102(unittest.TestCase):
+    """U1 uji ulang v1.0.1: 'isi N' / 'N pack' tanpa x/@ di sekitar berat."""
+
+    def test_u1_isi_dan_pack_dikalikan(self):
+        for teks, harap in (("500 gr isi 2", 1000), ("250gr (isi 2)", 500), ("2 pack 500 gr", 1000),
+                            ("500 gr isi 2 pack", 1000), ("500gr, isi 2 bungkus", 1000), ("3 botol 250 ml", 750),
+                            ("Paket 2 pouch 250 gr", 500)):
+            (dim, qty), cat = B.baca_ukuran(teks, "ml" if "ml" in teks else "g")
+            self.assertEqual(qty, D(harap), teks)
+            self.assertTrue(any("kemasan x" in c and "cek" in c for c in cat), (teks, cat))
+
+    def test_u1_tidak_berubah(self):
+        # jumlah butir di dalam kemasan tidak dikalikan; pengali x/@ tetap tanpa catatan cek
+        for teks, dp, harap in (("isi 10 pcs 250 gr", "g", ("g", D(250))), ("250 gr isi 10 pcs", "g", ("g", D(250))),
+                                ("kopi 250 gr isi 20 sachet", "g", ("g", D(250))), ("1 pack 500 gr", "g", ("g", D(500))),
+                                ("isi 2 @250gr", "g", ("g", D(500))), ("250 g x 2", "g", ("g", D(500))),
+                                ("2 pcs @ 250 gr", "g", ("g", D(500))), ("isi 12", None, ("pcs", D(12)))):
+            u, cat = B.baca_ukuran(teks, dp)
+            self.assertEqual(u, harap, teks)
+            self.assertFalse(any("kemasan x" in c for c in cat), (teks, cat))
+        u, cat = B.baca_ukuran("isi 2 pack 500 gr", "g")       # ambigu: dibaca total, tetapi diberi tahu
+        self.assertEqual(u, ("g", D(500)))
+        self.assertTrue(any("dibaca total" in c and "2 x 500 g" in c for c in cat), cat)
+
+    def test_u1_harga_setara_di_analisis(self):
+        # produk kita 500 gr; pesaing '500 gr isi 2' Rp 90.000 -> setara 90.000 / 1000 x 500 = 45.000
+        h = B.olah([baris(90000, "500 gr isi 2"), baris(88000, "2 pack 500 gr"), baris(46000, "500 gr")],
+                   {"hpp": 20000, "ukuran": "500 gr"}, hari_ini=HARI)
+        self.assertEqual([p["setara"] for p in h["pesaing"]], [D(45000), D(44000), D(46000)])
+        self.assertTrue(any("cek" in c for c in h["pesaing"][0]["catatan"]), h["pesaing"][0]["catatan"])
+        self.assertEqual(h["stat"]["n"], 3)
+
+    def test_v103_satuan_kemasan_mengalikan(self):
+        # 1 lusin = 12 pcs; sachet/karung/lusin/kodi di depan ukuran mengalikan; rim = 500 lembar
+        kasus = (("10 sachet 25 gr", "g", 250), ("2 karung 1 kg", "g", 2000), ("1 lusin 100 gr", "g", 1200),
+                 ("2 kodi 50 gr", "g", 2000), ("3 lusin @ 100 gr", "g", 3600), ("100 gr x 2 lusin", "g", 2400),
+                 ("1 karung 25 kg", "g", 25000))
+        for teks, dp, harap in kasus:
+            (dim, qty), cat = B.baca_ukuran(teks, dp)
+            self.assertEqual(qty, D(harap), teks)
+        self.assertTrue(any("cek" in c for c in B.baca_ukuran("1 lusin 100 gr", "g")[1]))
+        for teks, harap in (("1 lusin", 12), ("2 lusin", 24), ("1 kodi", 20), ("1 rim", 500), ("2 rim", 1000),
+                            ("10 sachet", 10)):
+            self.assertEqual(B.parse_ukuran(teks), ("pcs", D(harap)), teks)
+
+    def test_v103_jumlah_di_dalam_tidak_dikalikan(self):
+        for teks in ("isi 10 sachet 25 gr", "25 gr isi 10 sachet", "kopi 250 gr isi 20 sachet"):
+            (dim, qty), _ = B.baca_ukuran(teks, "g")
+            self.assertLess(qty, 1000, teks)
+        self.assertEqual(B.baca_ukuran("kopi 250 gr isi 20 sachet", "g")[0], ("g", D(250)))
+
+    def test_v103_harga_setara_lusin_karung(self):
+        # produk kita 100 gr; pesaing '1 lusin 100 gr' Rp 120.000 -> per 100 g = 10.000
+        h = B.olah([baris(120000, "1 lusin 100 gr"), baris(20000, "2 karung 1 kg"), baris(10500, "100 gr")],
+                   {"hpp": 5000, "ukuran": "100 gr"}, hari_ini=HARI)
+        self.assertEqual([p["setara"] for p in h["pesaing"]], [D(10000), D(1000), D(10500)])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -5,6 +5,8 @@ description: Menyusun draf surat perjanjian sederhana berbahasa Indonesia dengan
 
 # Perjanjian Sederhana
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pelaku usaha kecil dan profesional membuat draf perjanjian yang rapi, seimbang, dan mudah dipahami. Draf memakai struktur pasal yang lazim di Indonesia, angka dan terbilangnya dihitung script, pasal berisiko ditandai, dan disertai checklist sebelum tanda tangan. Ini draf, bukan nasihat hukum.
 

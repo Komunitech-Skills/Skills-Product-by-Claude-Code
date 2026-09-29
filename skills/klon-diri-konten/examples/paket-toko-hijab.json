@@ -1,0 +1,5 @@
+[
+  {"nama": "HeyGen Creator", "harga_bulanan": 29, "mata_uang": "USD", "satuan": "kredit", "batas_bulanan": 600, "kredit_per_menit": 10},
+  {"nama": "Synthesia Starter", "harga_bulanan": 29, "mata_uang": "USD", "satuan": "menit", "batas_bulanan": 10},
+  {"nama": "Synthesia Creator", "harga_bulanan": 89, "mata_uang": "USD", "satuan": "menit", "batas_bulanan": 30}
+]

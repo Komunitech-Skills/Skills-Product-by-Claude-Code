@@ -1,5 +1,7 @@
 # Jalur 2 — Bot di dalam grup WA (live) via OpenClaw
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Baca ini hanya bila pengguna secara eksplisit ingin bot ikut ke dalam grup dan merespons
 langsung di sana**, bukan sekadar meringkas file ekspor (itu Jalur 1 — jalur utama skill ini,
 tanpa risiko, lihat `SKILL.md`). Jalur 2 **tidak** dijalankan otomatis oleh skill ini — skill

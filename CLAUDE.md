@@ -24,9 +24,10 @@ Dua jalur produksi:
 **Keputusan pemilik untuk jalur 3 (2026-09-23):**
 - **Kanal:** Telegram (bot resmi) = default untuk laporan & notifikasi. WhatsApp (OpenClaw memakai WhatsApp Web, tidak resmi, nomor bisa diblokir) hanya dengan **nomor terpisah** untuk notifikasi ke pemilik sendiri + persetujuan risiko tertulis. Agen CS di WA = mode **Copilot** (AI menyiapkan balasan, manusia yang mengirim). Tidak ada broadcast/blast lewat OpenClaw.
 - **Mesin 24 jam:** berikan panduan (laptop/mini PC selalu menyala atau VPS milik member) + tawarkan **jasa setup berbayar** Komunitech.
-- **Kripto:** hanya riset, ringkasan berita, jurnal trading, dan notifikasi harga yang diatur member sendiri. **Tanpa** auto-trading, **tanpa** rekomendasi beli/jual.
-- **Kesehatan:** hanya edukasi pasien, balasan chat umum non-diagnosis, dan laporan operasional klinik. **Tanpa** skrining/diagnosis/kalkulator medis.
-- Ditolak: clone wajah/suara tanpa izin, posting otomatis yang diklaim padahal tidak didukung, scraping marketplace lewat login browser.
+- **Kripto:** riset, ringkasan berita, jurnal trading, notifikasi harga. **Auto-trading diizinkan (keputusan pemilik 2026-09-29)** dengan syarat: menjalankan aturan/strategi yang ditetapkan member sendiri di akun member sendiri; default mode simulasi/paper & testnet; API key tanpa izin tarik dana; batas risiko wajib (modal maks, stop-loss, batas rugi harian, tombol berhenti); disclaimer risiko. Tetap **tanpa** rekomendasi/sinyal beli-jual dari Komunitech dan tanpa janji profit.
+- **Kesehatan:** edukasi pasien, balasan chat umum non-diagnosis, laporan operasional klinik. **Skrining & kalkulator klinis diizinkan (keputusan pemilik 2026-09-29) khusus untuk tenaga kesehatan** sebagai alat bantu keputusan: memakai skor/pedoman resmi yang dikutip (sumber + tahun), hasil ditinjau tenaga kesehatan, bukan diagnosis untuk pasien awam, tanpa dosis obat; wajib ditandai PERLU REVIEW tenaga medis sebelum rilis.
+- **Clone wajah/suara & video AI diizinkan (keputusan pemilik 2026-09-29)** hanya untuk diri sendiri atau orang yang memberi persetujuan tertulis, dengan label konten AI sesuai aturan platform.
+- Ditolak: clone wajah/suara orang lain tanpa izin, posting otomatis yang diklaim padahal tidak didukung, scraping marketplace lewat login browser.
 
 **Keputusan pemilik 2026-09-26 (disetujui langsung oleh pemilik):**
 - **Harga & tier:** `tier_final`/`harga_final_idr` = usulan kurator untuk skill yang sudah `lulus`. Skill yang lulus berikutnya diisi sama dengan usulan dan dicatat di laporan sesi; pemilik boleh mengubah kapan saja.

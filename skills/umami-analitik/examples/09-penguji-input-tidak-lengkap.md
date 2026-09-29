@@ -1,0 +1,2 @@
+# 09 (penguji) - Input tidak lengkap
+Skenario: "Laporan web saya gimana akhir-akhir ini?" (tanpa periode/situs). Sesuai SKILL.md: pakai `7hari`, sebut asumsi, satu website otomatis dipilih -> jalan. Tanpa kunci: `GALAT ... File kunci tidak ditemukan ... simpan-kunci` (kode 3). Situs tak ada: daftar yang tersedia (kode 2). Periode salah `kapan-kapan`: argparse berbahasa Inggris "invalid choice" (tidak ramah awam, tetapi agent bisa menangani). Tanggal `30-09-2026` -> pesan Indonesia jelas. LULUS dengan catatan.

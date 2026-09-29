@@ -817,6 +817,9 @@ def analisis_file(path, override, args):
                 f"yang boros tidak tersembunyi di dalam total induknya. Untuk rincian per "
                 f"{'kampanye' if level_rincian != 'kampanye' else level_rincian}, jalankan ulang dengan "
                 f"--kolom-nama \"{kolom_induk[-1]}\".")
+    # v1.0.5 (P-3): kolom grup aset (Google Performance Max) sebagai nama cadangan bila kolom nama kosong
+    kolom_aset = next((h for h in header if h and h != kolom.get("nama") and _tanpa_label_uang(_norm(h)) in
+                       {"asset group", "asset group name", "grup aset", "nama grup aset"}), None)
     if info["baris_judul"]:
         catatan.append(f"{len(info['baris_judul'])} baris judul/keterangan di atas tabel dilewati "
                        f"(mis. '{info['baris_judul'][0][:60]}').")
@@ -846,6 +849,9 @@ def analisis_file(path, override, args):
     # "sedang" - dipakai supaya SETIAP baris yang dibuang selalu dapat ⚠️ menyebut nama & biayanya
     # (temuan M1), bukan cuma label "sedang" yang angkanya tidak cocok seperti versi sebelumnya.
     baris_total_info = []
+    # v1.0.5 (P-4): (indeks peringatan, biaya baris, dihitung?) -> setelah total dihitung, ⚠️ subtotal/total
+    # yang meragukan ditambah kalimat "bila baris itu (tidak) dihitung, total belanja menjadi ...".
+    alt_total = []
 
     for r in data:
         sel = [s for s in r["__sel__"] if (s or "").strip()]
@@ -867,6 +873,14 @@ def analisis_file(path, override, args):
 
         nama = " ".join((r.get(kolom["nama"]) or "").split()) if kolom.get("nama") else ""
         nama_asli_kosong = not nama
+        if not nama and not label_total:
+            # v1.0.5 (P-3): baris tanpa grup iklan/iklan (mis. Google Performance Max) memakai nama
+            # grup aset, lalu nama induknya (kampanye), bukan "(tanpa nama, baris N)".
+            for h in [kolom_aset] + kolom_induk:
+                isi = " ".join((r.get(h) or "").split()) if h else ""
+                if any(c.isalnum() for c in isi) and jenis_label_total(isi) not in ("kuat", "sedang"):
+                    nama = isi if h == kolom_aset else f"{isi} (tanpa {level_rincian or 'nama'})"
+                    break
         if not nama:
             nama = f"(tanpa nama, baris {r['__no_baris__']})"
 
@@ -1061,6 +1075,7 @@ def analisis_file(path, override, args):
                     "tidak terjumlah dua kali. Bila itu kampanye sungguhan, mohon ganti namanya di file "
                     "lalu jalankan ulang.")
             else:
+                alt_total.append((len(peringatan), x["biaya"], False))
                 peringatan.append(
                     f"Baris '{x['nama_asli']}' (baris {x['no_baris']}, biaya {b_x}) diawali kata "
                     "'Subtotal'/'Jumlah sementara', jadi dianggap subtotal dan tidak dihitung, walaupun "
@@ -1079,6 +1094,7 @@ def analisis_file(path, override, args):
                     f"di atasnya ({b_run}). Baris ini tidak dihitung supaya biayanya tidak terjumlah dua "
                     "kali. Bila itu kampanye sungguhan, mohon ganti namanya di file lalu jalankan ulang.")
             else:
+                alt_total.append((len(peringatan), x["biaya"], True))
                 peringatan.append(
                     f"Nama baris '{x['nama_asli']}' (biaya {b_x}) mirip subtotal dari '{induk}', tetapi "
                     f"angkanya tidak sama dengan jumlah baris '{induk}' di atasnya ({b_run}), jadi TETAP "
@@ -1100,6 +1116,38 @@ def analisis_file(path, override, args):
     for x in [y for y in rekaman if y["n3"]]:
         baris_total.append(x["nama_asli"])
         rekaman.remove(x)
+
+    # --- v1.0.6: baris total kampanye TANPA label (kolom grup iklan/iklan kosong) di file bertingkat ---
+    # Bila kampanye yang sama punya baris rincian bernama, baris berkolom-rinci-kosong itu bisa berupa total
+    # kampanye (mis. "Search Brand,,700000,..." di bawah dua grup iklan). Biaya, tayangan & klik ≈ (±2%)
+    # jumlah baris rincian -> dibuang dengan ⚠️ (tidak dihitung dua kali); selain itu tetap dihitung + ⚠️.
+    if kolom_induk:
+        for x in list(rekaman):
+            if x["nama_asli"] or x["kandidat_subtotal"] or not any(x["induk"]):
+                continue
+            saudara = [y for y in rekaman if y is not x and y["nama_asli"] and y["induk"] == x["induk"]]
+            if not saudara:
+                continue
+            b_x = fmt_rp(x["biaya"] * kurs)
+            b_s = fmt_rp(sum((g["biaya"] for g in saudara), NOL) * kurs)
+            kamp = x["induk"][-1] or x["induk"][0]
+            if _cocok_jumlah(x, saudara, True):
+                x["n3"] = True
+                peringatan.append(
+                    f"Baris kampanye '{kamp}' tanpa {level_rincian} (baris {x['no_baris']}, biaya {b_x}) "
+                    f"tampaknya total kampanye: biaya, tayangan & kliknya sama dengan jumlah {len(saudara)} "
+                    f"baris {level_rincian} kampanye itu ({b_s}). Baris ini tidak dihitung supaya biayanya "
+                    "tidak terjumlah dua kali. Bila itu data sungguhan (mis. Performance Max), mohon "
+                    "beri tahu agar dihitung ulang.")
+            else:
+                peringatan.append(
+                    f"Baris kampanye '{kamp}' tanpa {level_rincian} (baris {x['no_baris']}, biaya {b_x}) "
+                    f"tetap dihitung, tetapi kampanye itu juga punya {len(saudara)} baris {level_rincian} "
+                    f"bernama (jumlah {b_s}). Mohon cek: bila baris ini sebenarnya total kampanye, hapus "
+                    "dari file lalu jalankan ulang agar tidak terjumlah dua kali.")
+        for x in [y for y in rekaman if y["n3"] and not y["nama_asli"]]:
+            baris_total.append(f"total {x['induk'][-1] or x['induk'][0]}")
+            rekaman.remove(x)
 
     # --- M3: kolom nama kosong + label mirip total di kolom lain (mis. "Subtotal Kamp A") ---
     # Dibuang HANYA bila biaya, tayangan & klik ≈ (±2%) jumlah beberapa baris data tepat di atas
@@ -1135,6 +1183,7 @@ def analisis_file(path, override, args):
                 f"tepat {kata_arah} (biaya {fmt_rp(b_grup * kurs)}), jadi dianggap SUBTOTAL dan tidak "
                 "dihitung. Bila itu iklan sungguhan, beri nama di file lalu jalankan ulang.")
         else:
+            alt_total.append((len(peringatan), x["biaya"], True))
             peringatan.append(
                 f"Baris {x['no_baris']} tidak ada nama di kolom {level_rincian or 'kampanye'}, tapi kolom lain "
                 f"berbunyi '{x['kandidat_subtotal']}' (mirip label total/ringkasan). Angkanya tidak cocok "
@@ -1191,6 +1240,7 @@ def analisis_file(path, override, args):
                     "(biayanya tidak terbaca sebagai angka, jadi tidak bisa dicek silang). Cek dulu file "
                     "asli kalau itu ternyata kampanye sungguhan.")
             elif jml_biaya > 0 and not _dekat(b, jml_biaya):
+                alt_total.append((len(peringatan), b, False))
                 peringatan.append(
                     f"Baris '{lbl}' dianggap baris total/ringkasan dan tidak dihitung, tetapi biayanya "
                     f"({fmt_rp(b * kurs)}) tidak sama dengan jumlah baris lain ({fmt_rp(jml_biaya * kurs)}). "
@@ -1233,6 +1283,16 @@ def analisis_file(path, override, args):
             total[kk] += v[kk]
         daftar_kampanye.append({"nama": nama, **metrik(v, ada_nilai)})
     t = metrik(total, ada_nilai)
+    for idx, b_baris, dihitung in alt_total:                     # v1.0.5 (P-4)
+        b_rp = b_baris * kurs
+        if dihitung:
+            peringatan[idx] += (f" Total belanja file ini sekarang {fmt_rp(total['biaya'])} (baris itu ikut "
+                                f"dihitung); bila baris itu ternyata subtotal, totalnya menjadi "
+                                f"{fmt_rp(total['biaya'] - b_rp)}.")
+        else:
+            peringatan[idx] += (f" Total belanja file ini sekarang {fmt_rp(total['biaya'])} (baris itu tidak "
+                                f"dihitung); bila baris itu ternyata kampanye sungguhan, totalnya menjadi "
+                                f"{fmt_rp(total['biaya'] + b_rp)}.")
 
     # --- periode ---
     tgl_judul = []

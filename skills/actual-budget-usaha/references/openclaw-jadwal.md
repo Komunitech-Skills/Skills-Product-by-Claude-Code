@@ -1,5 +1,7 @@
 # Ringkasan anggaran terjadwal ke Telegram pemilik (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status:** ⚠️ **belum diverifikasi untuk skill ini.** Perintah mengikuti pola yang sudah diuji pada skill
 `dolibarr-usaha` (OpenClaw 2026.9.6: `automations add --command-argv` diterima, `automations run --wait` menjalankan
 script). Untuk `actual-budget-usaha` sendiri belum dijalankan di Gateway sungguhan, dan pengiriman nyata ke Telegram

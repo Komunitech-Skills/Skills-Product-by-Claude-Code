@@ -5,6 +5,8 @@ description: Menyusun urutan pesan follow-up WhatsApp dan email untuk calon pemb
 
 # Follow-up Prospek
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu penjual menindaklanjuti prospek yang diam tanpa terkesan mengejar-ngejar: tiap pesan membawa alasan baru untuk membalas, memudahkan prospek berkata "ya" **atau** "tidak", dan berhenti dengan sopan di akhir urutan. Hasilnya: urutan pesan siap kirim + tanggal kirimnya.
 

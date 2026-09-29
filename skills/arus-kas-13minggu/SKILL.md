@@ -5,6 +5,8 @@ description: Membuat proyeksi arus kas 13 minggu (cash flow forecast mingguan) u
 
 # Proyeksi Arus Kas 13 Minggu
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjawab pertanyaan pemilik usaha: **"Minggu ke berapa uang saya akan kurang, berapa kurangnya, dan apa yang bisa saya lakukan sekarang?"** Hasilnya tabel saldo per minggu, tanda bahaya, opsi tindakan beserta angka dampaknya, dan file CSV untuk Excel.
 

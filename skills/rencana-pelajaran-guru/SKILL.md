@@ -5,6 +5,8 @@ description: Membuat Modul Ajar/RPP lengkap, RPP 1 lembar, LKPD, serta soal+kunc
 
 # Rencana Pelajaran Guru (Modul Ajar Kurikulum Merdeka)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah satu kalimat permintaan guru (mis. "buatkan modul ajar IPA kelas 7 tentang
 ekosistem 2 pertemuan") menjadi Modul Ajar lengkap + LKPD + soal & rubrik yang siap

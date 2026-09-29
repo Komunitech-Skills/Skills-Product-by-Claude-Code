@@ -5,6 +5,8 @@ description: Aplikasi buku stok/inventori lokal (SQLite di komputer pengguna) ya
 
 # Buku Stok (inventori lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi "aplikasi stok" pengguna tanpa langganan: semua data ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat script `scripts/stok.py`. Hasil akhirnya: stok selalu tercatat, HPP dihitung otomatis, stok terpotong dari file pesanan marketplace, daftar ambil barang siap cetak, dan laporan harian siap kirim.
 
@@ -132,6 +134,7 @@ Kelola: `openclaw automations list`, `openclaw automations run <id>` (uji sekara
 - [ ] `--db` konsisten bila pengguna memakai lokasi selain default
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Bukan akuntansi penuh**: tidak ada jurnal, piutang, pajak, biaya admin marketplace. Laba kotor di laporan = omzet tercatat − HPP (perkiraan). Untuk pembukuan pakai `laporan-keuangan-emkm`.
 - HPP memakai **rata-rata tertimbang bergerak**: HPP baru = (stok lama × HPP lama + qty masuk × harga beli) ÷ (stok lama + qty masuk). Barang keluar tidak mengubah HPP. Jika stok lama ≤ 0, HPP = harga beli terbaru. HPP disimpan 4 desimal; rupiah ditampilkan dibulatkan ke rupiah terdekat (0,5 ke atas).
 - Nama kolom & status ekspor marketplace bisa berubah; deteksi memakai kata kunci umum, jadi **pemetaan selalu dikonfirmasi**. Status tidak dikenal tetap dihitung terjual + diberi peringatan (bisa diatur `--abaikan-status`).

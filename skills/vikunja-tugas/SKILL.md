@@ -5,8 +5,14 @@ description: Mengoperasikan Vikunja (manajer tugas/proyek open-source, self-host
 
 # Vikunja Tugas (asisten Vikunja lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik/admin usaha kecil yang memakai **Vikunja di server/komputer sendiri** (pengganti Trello/ClickUp/Asana berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/vikunja.py` untuk membaca atau menyiapkan tugas lewat **REST API resmi Vikunja** (`/api/v1`, header `Authorization: Bearer tk_...`). Data tetap di komputer/server pengguna. Python standar saja, tanpa instalasi paket.
+
+**Versi 1.0.5** (revisi rendah, uji regresi saja): `dari-teks` tidak lagi menangkap kata permintaan pembuka sebagai nama PIC — "Mohon:", "Tolong:", "Harap:", "Silakan:", "Dimohon:", "Pastikan:", "Please:", dll. (dulu `Mohon: Bu Rina kirim faktur` → `ke: "Mohon"`); nama asli dan `--anggota` tetap menang. Uji regresi 71. Sebelumnya:
+
+**Versi 1.0.3** (revisi rendah, uji regresi saja): `dari-teks` tidak lagi menangkap kata judul/header notulen berbentuk `Kata:` sebagai nama PIC — "TOPIC:", "INFO:", "UPDATE:", "STATUS:", "NOTE:", "AGENDA:", "SUBJECT:", "Next Step:", "FYI:", "Perihal:", "Topik:", dll. (dulu `TOPIC: bahas rencana marketing` → `ke: "TOPIC"`). Baris seperti itu kini tanpa PIC dan judulnya utuh; nama asli (`Budi:`, `ANDI:`, `Siti Aminah:`) dan label `PIC: Nama` tetap terbaca; anggota yang disebut lewat `--anggota` selalu menang. Uji regresi 69/69. Sebelumnya:
 
 **Versi 1.0.2** (revisi rendah, belum diuji ulang server asli — hanya uji regresi & dokumentasi): (1) `--ke` sekarang didokumentasikan mensyaratkan target sudah jadi **kolaborator proyek** di Vikunja + cara menambahkannya (bagian D.4); (2) `dari-teks` kini mendeteksi label eksplisit `PIC: Nama` di mana pun dalam baris (dulu hanya `Nama: tugas` di awal baris; `PIC: Andi kirim penawaran` dulu tidak terbaca, sekarang `ke: "Andi"`). Uji regresi 67/67. Sebelumnya:
 
@@ -111,6 +117,8 @@ Jumlah: 1
 Contoh lain (tambah, ringkasan, dari-teks, batch, error) di `examples/`. `--json` berisi field yang sama secara terstruktur.
 
 ## Batasan & penanganan error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Pesan / kode keluar | Artinya | Yang dilakukan agent |
 |---|---|---|
 | 4 "tidak bisa dihubungi" | Vikunja mati atau alamat/port salah | Minta nyalakan Vikunja, buka alamat di browser (panduan §3/§7) |

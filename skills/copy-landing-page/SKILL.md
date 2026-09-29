@@ -5,6 +5,8 @@ description: Membuat teks halaman jualan berbahasa Indonesia untuk landing page,
 
 # Copy Landing Page
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 Mengubah info produk seadanya menjadi teks halaman jualan yang lengkap, jujur, dan siap tempel — untuk landing page sendiri, link-in-bio (Linktree/Saweria/bio Instagram), atau halaman produk di website/toko online.
 
 ## Kapan digunakan

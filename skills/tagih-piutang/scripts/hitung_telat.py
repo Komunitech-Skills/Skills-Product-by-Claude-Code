@@ -9,9 +9,12 @@ Mode 1 – satu tagihan:
       --denda-persen 0,1 --denda-per hari --denda-maks 5% --tenggang 3 \
       --dasar-denda "Pasal 4 Perjanjian Pasok No. 07/PKS/2026"
 
-Mode 2 – banyak tagihan (rekap umur piutang) dari CSV berkolom:
+Mode 2 – banyak tagihan (rekap umur piutang) dari CSV atau Excel .xlsx berkolom:
   pelanggan,no_invoice,nominal,jatuh_tempo[,dibayar][,sudah_diingatkan]
   python3 hitung_telat.py --file piutang.csv --tanggal 2026-09-23
+  python3 hitung_telat.py --file piutang.xlsx --sheet Piutang --tanggal 2026-09-23
+  File .xlsx dibaca dengan library standar (zipfile + xml), TANPA openpyxl/pandas: jangan pernah menginstal
+  paket untuk skill ini. File .xls lama / .ods / .numbers -> minta pengguna menyimpan ulang sebagai CSV.
 
 Aturan hitung:
   - Hari terlambat = tanggal hitung - tanggal jatuh tempo (hari kalender).
@@ -26,7 +29,9 @@ import json
 import math
 import re
 import sys
-from datetime import date, datetime
+import zipfile
+import xml.etree.ElementTree as ET
+from datetime import date, datetime, timedelta
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
@@ -64,6 +69,148 @@ def parse_angka(teks, nama="angka"):
         return Decimal(s) * pengali
     except InvalidOperation:
         raise InputSalah(f"{nama} tidak bisa dibaca sebagai angka: {teks!r}")
+
+
+# ---------------------------------------------------------------- baca .xlsx tanpa paket tambahan
+_NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+_NS_R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+_BATAS_XML = 50 * 1024 * 1024  # tolak isi XML > 50 MB (perlindungan file rusak/zip bomb)
+MINTA_CSV = ("Buka file di Excel/Google Sheets/LibreOffice lalu Simpan Sebagai (Save As) \"CSV UTF-8\", "
+             "kemudian kirim file CSV-nya.")
+
+
+def _xml(z, nama):
+    try:
+        info = z.getinfo(nama)
+    except KeyError:
+        return None
+    if info.file_size > _BATAS_XML:
+        raise InputSalah(f"file Excel terlalu besar untuk dibaca ({nama}). " + MINTA_CSV)
+    data = z.read(nama)
+    if b"<!DOCTYPE" in data[:2048].upper():
+        raise InputSalah("file Excel berisi DOCTYPE yang tidak didukung. " + MINTA_CSV)
+    return ET.fromstring(data)
+
+
+def _kolom_ke_indeks(ref):
+    m = re.match(r"([A-Z]+)", ref or "")
+    if not m:
+        return None
+    n = 0
+    for c in m.group(1):
+        n = n * 26 + ord(c) - 64
+    return n - 1
+
+
+def _angka_xlsx(v):
+    try:
+        d = Decimal(v)
+    except InvalidOperation:
+        return v
+    d = d.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    return str(int(d)) if d == d.to_integral_value() else str(d).replace(".", ",")
+
+
+def baca_xlsx(path, sheet=None):
+    """Baca satu sheet .xlsx jadi list baris (list teks). Hanya zipfile + xml.etree dari library standar."""
+    try:
+        z = zipfile.ZipFile(path)
+    except (zipfile.BadZipFile, OSError):
+        raise InputSalah("file .xlsx tidak bisa dibuka (rusak, terkunci kata sandi, atau bukan .xlsx asli). " + MINTA_CSV)
+    with z:
+        wb = _xml(z, "xl/workbook.xml")
+        if wb is None:
+            raise InputSalah("isi file .xlsx tidak dikenali. " + MINTA_CSV)
+        pr = wb.find(_NS + "workbookPr")
+        tahun1904 = pr is not None and pr.get("date1904") in ("1", "true")
+        sheets = [(s.get("name"), s.get(_NS_R + "id")) for s in wb.iter(_NS + "sheet")]
+        if not sheets:
+            raise InputSalah("file .xlsx tidak berisi sheet. " + MINTA_CSV)
+        if sheet:
+            cocok = [x for x in sheets if (x[0] or "").strip().lower() == sheet.strip().lower()]
+            if not cocok:
+                raise InputSalah(f"sheet {sheet!r} tidak ada. Sheet yang tersedia: {', '.join(x[0] for x in sheets)}")
+            nama_sheet, rid = cocok[0]
+        else:
+            nama_sheet, rid = sheets[0]
+        target = None
+        rels = _xml(z, "xl/_rels/workbook.xml.rels")
+        if rels is not None:
+            for r in rels:
+                if r.get("Id") == rid:
+                    target = r.get("Target", "")
+        if not target:
+            target = "worksheets/sheet1.xml"
+        target = target.lstrip("/")
+        path_sheet = target if target.startswith("xl/") else "xl/" + target
+        teks_bersama = []
+        ss = _xml(z, "xl/sharedStrings.xml")
+        if ss is not None:
+            for si in ss.iter(_NS + "si"):
+                teks_bersama.append("".join(t.text or "" for t in si.iter(_NS + "t")))
+        ws = _xml(z, path_sheet)
+        if ws is None:
+            raise InputSalah(f"sheet {nama_sheet!r} tidak bisa dibaca. " + MINTA_CSV)
+        hasil = []
+        for row in ws.iter(_NS + "row"):
+            isi = {}
+            for i_auto, c in enumerate(row.iter(_NS + "c")):
+                idx = _kolom_ke_indeks(c.get("r"))
+                idx = i_auto if idx is None else idx
+                jenis = c.get("t", "n")
+                v = c.find(_NS + "v")
+                if jenis == "inlineStr":
+                    el = c.find(_NS + "is")
+                    nilai = "".join(t.text or "" for t in el.iter(_NS + "t")) if el is not None else ""
+                elif v is None or v.text is None:
+                    nilai = ""
+                elif jenis == "s":
+                    try:
+                        nilai = teks_bersama[int(v.text)]
+                    except (ValueError, IndexError):
+                        nilai = ""
+                elif jenis in ("str", "e"):
+                    nilai = v.text
+                elif jenis == "b":
+                    nilai = "TRUE" if v.text == "1" else "FALSE"
+                else:
+                    nilai = ("n", v.text)  # angka mentah; dibedakan agar tanggal serial bisa dikenali
+                isi[idx] = nilai
+            if isi:
+                hasil.append([isi.get(i, "") for i in range(max(isi) + 1)])
+    return hasil, tahun1904
+
+
+def serial_ke_tanggal(teks, tahun1904=False):
+    n = float(teks)
+    awal = date(1904, 1, 1) if tahun1904 else date(1899, 12, 30)
+    return (awal + timedelta(days=int(n))).isoformat()
+
+
+def baris_dari_xlsx(path, sheet=None):
+    data, tahun1904 = baca_xlsx(path, sheet)
+    data = [b for b in data if any((x[1] if isinstance(x, tuple) else str(x)).strip() for x in b)]
+    if not data:
+        return []
+    kepala = [str(x[1] if isinstance(x, tuple) else x).strip() for x in data[0]]
+    hasil = []
+    for b in data[1:]:
+        d = {}
+        for i, k in enumerate(kepala):
+            if not k:
+                continue
+            x = b[i] if i < len(b) else ""
+            if isinstance(x, tuple):
+                if k.lower() == "jatuh_tempo":
+                    try:
+                        x = serial_ke_tanggal(x[1], tahun1904)
+                    except (ValueError, OverflowError):
+                        x = x[1]
+                else:
+                    x = _angka_xlsx(x[1])
+            d[k] = x
+        hasil.append(d)
+    return hasil
 
 
 def parse_tgl(teks, nama):
@@ -234,17 +381,39 @@ def satu(a, tgl):
 
 
 def banyak(a, tgl):
+    ext = a.file.lower().rsplit(".", 1)[-1] if "." in a.file else ""
+    if ext in ("xls", "ods", "numbers", "xlsb"):
+        raise InputSalah(f"format .{ext} tidak bisa dibaca tanpa menginstal paket (dan paket tidak boleh diinstal). "
+                         + MINTA_CSV)
     try:
-        with open(a.file, newline="", encoding="utf-8-sig") as f:
+        with open(a.file, "rb") as f:
+            zip_asli = f.read(4) == b"PK\x03\x04"
+    except OSError as e:
+        raise InputSalah(f"file tidak bisa dibuka: {e}")
+    if ext in ("xlsx", "xlsm") or zip_asli:
+        baris = baris_dari_xlsx(a.file, a.sheet)
+    else:
+        baris = baca_csv(a.file)
+    return olah_baris(baris, tgl)
+
+
+def baca_csv(path):
+    try:
+        with open(path, newline="", encoding="utf-8-sig") as f:
             contoh = f.read(4096)
             f.seek(0)
             try:
                 dialek = csv.Sniffer().sniff(contoh, delimiters=",;\t|")
             except csv.Error:
                 dialek = csv.excel
-            baris = list(csv.DictReader(f, dialect=dialek))
+            return list(csv.DictReader(f, dialect=dialek))
     except OSError as e:
         raise InputSalah(f"file tidak bisa dibuka: {e}")
+    except UnicodeDecodeError:
+        raise InputSalah("encoding file tidak dikenali. " + MINTA_CSV)
+
+
+def olah_baris(baris, tgl):
     wajib = {"pelanggan", "nominal", "jatuh_tempo"}
     if not baris:
         raise InputSalah("file kosong")
@@ -328,7 +497,7 @@ def teks_banyak(h):
 
 
 def main():
-    p = argparse.ArgumentParser(description="Hitung keterlambatan piutang & denda (sesuai kesepakatan tertulis)")
+    p = argparse.ArgumentParser(description="Hitung keterlambatan piutang & denda (sesuai kesepakatan tertulis)", allow_abbrev=False)
     p.add_argument("--nominal", help="Nominal tagihan, mis. 'Rp 12.500.000'")
     p.add_argument("--dibayar", action="append", help="Pembayaran sebagian (bisa diulang)")
     p.add_argument("--jatuh-tempo", help="Tanggal jatuh tempo YYYY-MM-DD")
@@ -344,7 +513,8 @@ def main():
     p.add_argument("--konfirmasi-denda-tinggi", action="store_true",
                    help="Konfirmasi bahwa denda > 1%%/hari memang sesuai perjanjian")
     p.add_argument("--dasar-denda", help="Rujukan kesepakatan tertulis, mis. 'Pasal 4 Perjanjian No. ...'")
-    p.add_argument("--file", help="CSV banyak tagihan: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar,sudah_diingatkan")
+    p.add_argument("--file", help="CSV atau .xlsx banyak tagihan: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar,sudah_diingatkan")
+    p.add_argument("--sheet", help="Nama sheet untuk file .xlsx (default: sheet pertama)")
     p.add_argument("--format", choices=["teks", "json", "keduanya"], default="keduanya")
     a = p.parse_args()
     try:

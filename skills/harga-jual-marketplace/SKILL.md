@@ -5,6 +5,8 @@ description: Menghitung harga jual minimal (balik modal) dan harga rekomendasi d
 
 # Harga Jual Marketplace
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjawab pertanyaan penjual online: "Berapa harga yang harus saya pasang supaya setelah semua potongan marketplace saya tetap untung sesuai target?" — dan sebaliknya, "Kalau saya jual segini, untung bersih saya berapa?"
 

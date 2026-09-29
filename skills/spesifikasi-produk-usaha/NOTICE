@@ -1,0 +1,14 @@
+spesifikasi-produk-usaha
+Copyright 2026 Komunitech (komunitech.com)
+
+Skill ini memuat bagian yang diadaptasi dari:
+  - product-on-purpose/pm-skills (skill deliver-prd), Apache License 2.0,
+    Copyright 2026 Jonathan Prisant. https://github.com/product-on-purpose/pm-skills
+  - phuryn/pm-skills (create-prd, outcome-roadmap, prioritization-frameworks), MIT,
+    Copyright (c) 2026 Pawel Huryn. https://github.com/phuryn/pm-skills
+
+Repo product-on-purpose/pm-skills tidak menyertakan berkas NOTICE (dicek 2026-09-29),
+sehingga tidak ada teks NOTICE asli yang perlu diteruskan. Berkas ini adalah NOTICE
+milik Komunitech untuk karya turunan.
+
+File yang diubah dinyatakan di ATTRIBUTION.md (bagian "Pernyataan perubahan").

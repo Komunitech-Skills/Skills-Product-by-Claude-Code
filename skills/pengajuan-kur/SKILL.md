@@ -5,6 +5,8 @@ description: Membantu UMKM menyiapkan pengajuan KUR (Kredit Usaha Rakyat) atau k
 
 # Persiapan Pengajuan KUR
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membuat pemilik usaha datang ke bank **siap dan realistis**: dokumen lengkap, cerita usaha yang jelas, rencana dana yang rapi, dan tahu sejak awal apakah cicilannya sanggup dibayar. Skill ini **tidak** menjanjikan kredit disetujui.
 

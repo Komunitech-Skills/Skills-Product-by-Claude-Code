@@ -5,6 +5,8 @@ description: Meringkas puluhan sampai ribuan ulasan pelanggan (tempelan teks ata
 
 # Analisis Ulasan Pelanggan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah tumpukan ulasan menjadi laporan satu halaman: apa yang paling sering dikeluhkan, apa yang paling disukai, apa yang harus diperbaiki duluan, dan konten apa yang bisa dibuat dari pujian. Semua angka dihitung script; tema dipastikan agent dengan bukti kutipan.
 

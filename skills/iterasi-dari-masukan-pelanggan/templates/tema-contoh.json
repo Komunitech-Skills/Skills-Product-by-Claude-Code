@@ -1,0 +1,15 @@
+{
+  "_petunjuk": "Contoh katering/warung makan. 'tambah_kata' MENAMBAH kata ke tema bawaan (aman). 'tema' dengan id BARU membuat tema baru; id yang SAMA dengan tema bawaan MENGGANTI seluruh kata bawaannya. 'hapus_tema' membuang tema bawaan yang tidak relevan. 'ganti_tema': true membuang SEMUA tema bawaan. Daftar id bawaan: rasa, kemasan, harga, pengiriman, layanan, ketepatan_pesanan, kualitas_produk, keamanan, kebersihan, bau_aroma, porsi_ukuran, stok_ketersediaan, pembayaran, varian_menu, fasilitas, waktu_tunggu.",
+  "ganti_tema": false,
+  "hapus_tema": [],
+  "tambah_kata": {
+    "rasa": ["tekstur", "kematengan"],
+    "pengiriman": ["jam makan siang", "catering telat"]
+  },
+  "tema": [
+    {"id": "tekstur_nasi", "label": "Tekstur nasi", "kata": ["pera", "lembek", "nasi keras", "kering"], "dampak": 3},
+    {"id": "parkir_lokasi", "label": "Parkir / lokasi", "kata": ["parkir", "lokasi", "susah dicari"], "dampak": 2}
+  ],
+  "kata_positif": ["nendang", "juara"],
+  "kata_negatif": ["pera", "lembek", "sempit"]
+}

@@ -5,6 +5,8 @@ description: Membuat SATU laporan mingguan bahasa awam dari ekspor CSV iklan Met
 
 # Laporan Iklan Mingguan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha yang beriklan (Meta/Instagram, TikTok, Shopee, Tokopedia/TikTok Shop, Google)
 cukup mengekspor CSV dari Ads Manager masing-masing lalu dapat **satu laporan mingguan** bahasa
@@ -190,6 +192,7 @@ Omzet toko minggu ini 20 juta."
 dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v1.0.2.md`.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Nama kolom bisa berbeda** menurut bahasa/versi UI Ads Manager. **Belum semua nama kolom
   terverifikasi dari ekspor asli**: nama kolom Meta Ads dan perilaku sel `Results` kosong,
   bentuk ekspor Google Ads (baris judul, `Total: Account`), dan beberapa kolom TikTok bersandar
@@ -248,6 +251,12 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v
   pelanggan/nomor kontak yang diproses atau dikirim ke layanan eksternal.
 
 ## Riwayat versi
+- **1.0.8** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
+- **1.0.7** (2026-09-29): pada file bertingkat (kampanye > grup iklan), baris yang kolom grup iklannya kosong padahal kampanye itu punya baris grup iklan bernama diperiksa: bila biaya, tayangan & kliknya sama dengan jumlah baris grup iklan (total kampanye tanpa label) baris itu tidak dihitung dua kali dan diberi ⚠️; bila tidak sama tetap dihitung dengan ⚠️ "mohon cek". Baris Performance Max tanpa saudara tidak terkena. Tes regresi 94.
+- **1.0.5** (2026-09-29): baris Google Performance Max tanpa grup iklan tidak lagi tampil
+  "(tanpa nama, baris N)", melainkan memakai nama grup aset (bila ada kolom "Asset group") atau nama
+  kampanye + "(tanpa grup iklan)" (P-3); ⚠️ subtotal/total yang meragukan kini menyebut total belanja
+  sekarang dan total alternatif bila baris itu dihitung/tidak dihitung (P-4). Tes regresi 91.
 - **1.0.4** (2026-09-28): subtotal buatan admin di kolom nama ("Subtotal: Retarget Video",
   "Retarget Video Total", "Jumlah sementara") tidak lagi terhitung dua kali dan selalu diberi ⚠️
   nama + biaya (N3); kalimat ⚠️ "biaya hampir sama dengan jumlah baris lain" dilunakkan. Tes regresi

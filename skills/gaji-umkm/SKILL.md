@@ -5,6 +5,8 @@ description: Aplikasi penggajian bulanan lokal untuk UMKM 5-50 karyawan (databas
 
 # Gaji UMKM (aplikasi penggajian bulanan lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi "aplikasi payroll" pemilik usaha tanpa biaya bulanan: data karyawan, komponen gaji, dan riwayat setiap bulan ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/gaji.py`. Hasil tiap bulan: gaji semua karyawan dihitung benar, rekap setoran BPJS & PPh 21, slip per karyawan, dan file transfer untuk diunggah sendiri ke internet banking.
 
@@ -119,6 +121,7 @@ Lalu tanyakan: "Sudah benar? Kalau ya, saya kunci (final) periode ini."
 - [ ] Disclaimer, dasar aturan & tanggal berlaku, catatan pembulatan/Coretax, saran konsultan pajak ikut
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Kode keluar 1 + `error` untuk: PTKP salah (K/4), angka rusak/format Inggris, tanggal salah, NIK bukan 16 angka, rekening rusak karena Excel (`1,23E+12`), file .xlsx (minta simpan sebagai CSV), impor dengan satu baris salah (**tidak ada yang disimpan**), karyawan tak dikenal/nama kembar (tanyakan kodenya dari `pilihan`), jam lembur libur melewati tangga PP 35/2021, periode final (terkunci), data Januari s.d. bulan lalu kurang untuk Desember/bulan keluar, batas upah JP periode belum tercatat (minta angka dari pengumuman BPJS → `atur --batas-jp`). Sampaikan dengan bahasa sederhana.
 - "Mesin hitung ... berbeda dari salinan resmi" → file di `scripts/mesin/` berubah; hitungan dihentikan. Minta pemilik memasang ulang skill dari paket asli.
 - "Database sedang dipakai program lain" → data aman; tunggu lalu ulangi. Database rusak → `backup --daftar` lalu `restore`.

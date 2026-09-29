@@ -7,6 +7,7 @@
 - ✅ **Dasbor beneran di browser (opsional).** Lewat Datasette (perangkat lunak gratis terpisah), buka `http://127.0.0.1:8001` dan lihat, sortir, klik-klik tabel data toko Anda sendiri seperti dasbor BI berbayar — tanpa kirim satu baris pun ke internet.
 - ✅ **Tetap jalan tanpa instalasi apa pun.** Tidak mau pasang Datasette? Skill ini tetap menjawab pertanyaan lewat Python bawaan, langsung dari terminal/chat.
 - ✅ **Aman by design.** Semua database dibuka **baca-saja/immutable** — apa pun yang diketik atau diklik, data asli tidak bisa berubah lewat skill ini. Dasbor hanya bisa dibuka dari komputer sendiri (`127.0.0.1`), tidak pernah ke internet.
+- ✅ **Dasbor KPI tim (v1.0.2).** Alat ke-7, `kpi-tim`: skor perusahaan → divisi → orang, tren per periode, dan daftar KPI merah, dari `kpi.db` yang dibuat `kpi-tim` (`ekspor-db`). Ada mode anonim di sisi `kpi-tim` bila layar dilihat orang lain.
 - ✅ **Query yang benar-benar berguna**, bukan generik: stok menipis (dengan yang paling parah di atas), penjualan per hari (nota yang dibatalkan otomatis dikeluarkan), piutang jatuh tempo, kehadiran karyawan, prospek per tahap pipeline, saldo kas per akun.
 
 ## Cocok untuk siapa
@@ -63,6 +64,8 @@ Cukup ketik permintaan biasa:
 3. (Opsional, untuk tampilan browser) pasang **Datasette** sekali mengikuti `docs/panduan-datasette.md` — perintahnya resmi dari PyPI (`pip`/`pipx install datasette`), bukan tempel-jalankan skrip dari internet.
 
 Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, atau paket tambahan untuk fitur intinya.
+
+**Versi 1.0.2:** menambah alat `kpi-tim` (5 query, blok `kpi` di `templates/metadata.yml`); diuji dengan Datasette 0.65.5 di virtualenv terpisah (`--immutable`, `127.0.0.1`, hash database sama sebelum/sesudah) dan uji regresi 25/25.
 
 **Status uji jujur (versi 1.0.0):** diuji pembuat dengan database fiktif hasil menjalankan langsung skill `buku-stok`, `kasir-lokal`, `crm-wa`, `absensi-lokal`, `buku-piutang`, dan `kas-umkm`, ditambah uji regresi otomatis (`tests/uji_regresi.py`, 18 skenario termasuk database rusak/tidak ada/tabel salah). Datasette 0.65.5 dari PyPI resmi dicoba di virtualenv terpisah (tidak dipasang ke sistem) dan hasil canned query dicocokkan manual — **cocok**, dan hash file database sebelum/sesudah **sama persis** (tidak berubah). **Belum** diuji oleh penguji independen, belum diuji di OpenClaw/Codex/Cursor sungguhan, dan belum diuji dengan data usaha nyata dalam jumlah besar.
 

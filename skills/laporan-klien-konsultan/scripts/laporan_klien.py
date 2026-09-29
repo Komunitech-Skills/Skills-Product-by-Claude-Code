@@ -590,17 +590,17 @@ def cmd_laporan(args):
 # ---------------------------------------------------------------------------
 
 def build_parser():
-    ap = argparse.ArgumentParser(prog="laporan_klien.py", description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(prog="laporan_klien.py", description=__doc__.splitlines()[0], allow_abbrev=False)
     ap.add_argument("--file", help="Path file log CSV (default: log-kerja-klien.csv atau "
                                      "ENV KOMUNITECH_LAPORAN_KLIEN_FILE)")
     sub = ap.add_subparsers(dest="perintah", required=True)
 
-    p_init = sub.add_parser("init", help="Buat file log kosong")
+    p_init = sub.add_parser("init", help="Buat file log kosong", allow_abbrev=False)
     p_init.add_argument("--paksa", action="store_true", help="Timpa file yang sudah ada")
     p_init.add_argument("--json", action="store_true")
     p_init.set_defaults(func=cmd_init)
 
-    p_catat = sub.add_parser("catat", help="Catat satu pekerjaan")
+    p_catat = sub.add_parser("catat", help="Catat satu pekerjaan", allow_abbrev=False)
     p_catat.add_argument("--klien", required=True)
     p_catat.add_argument("--proyek", required=True)
     p_catat.add_argument("--pekerjaan", required=True)
@@ -614,11 +614,11 @@ def build_parser():
     p_catat.add_argument("--json", action="store_true")
     p_catat.set_defaults(func=cmd_catat)
 
-    p_daftar = sub.add_parser("daftar-klien", help="Lihat daftar klien yang tercatat")
+    p_daftar = sub.add_parser("daftar-klien", help="Lihat daftar klien yang tercatat", allow_abbrev=False)
     p_daftar.add_argument("--json", action="store_true")
     p_daftar.set_defaults(func=cmd_daftar_klien)
 
-    p_lap = sub.add_parser("laporan", help="Susun draf laporan progres satu klien")
+    p_lap = sub.add_parser("laporan", help="Susun draf laporan progres satu klien", allow_abbrev=False)
     p_lap.add_argument("--klien", required=True)
     p_lap.add_argument("--periode", default="minggu-ini",
                         help="mingguan/bulanan, minggu-ini (default)/minggu-lalu/bulan-ini/bulan-lalu")

@@ -5,6 +5,8 @@ description: Menghitung HPP (harga pokok produksi/modal) per unit untuk produk m
 
 # Hitung HPP, Harga Jual & BEP
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah daftar bahan dan biaya usaha menjadi **HPP per unit yang akurat**, harga jual yang sesuai target, dan jumlah penjualan minimal per bulan agar tidak rugi (BEP) — lengkap dengan rincian yang bisa dicek ulang.
 

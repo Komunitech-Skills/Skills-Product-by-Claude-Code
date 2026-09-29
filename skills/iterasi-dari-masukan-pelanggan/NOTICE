@@ -1,0 +1,10 @@
+iterasi-dari-masukan-pelanggan
+Copyright (c) Komunitech (komunitech.com)
+
+This product includes ideas and structure adapted from:
+  - phuryn/pm-skills (MIT), Copyright (c) 2026 Pawel Huryn
+  - product-on-purpose/pm-skills (Apache-2.0), Copyright 2026 Jonathan Prisant
+
+Modification notice (Apache-2.0 section 4(b)): the files in this folder were substantially modified
+from the original works (rewritten in Indonesian, merged, and extended with new scripts, templates and examples).
+The upstream project did not provide a NOTICE file at the time of review (2026-09-29).

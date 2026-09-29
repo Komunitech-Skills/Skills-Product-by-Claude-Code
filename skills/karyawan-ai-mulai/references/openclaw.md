@@ -1,5 +1,7 @@
 # Perintah OpenClaw yang dipakai skill ini
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Semua perintah di bawah **diverifikasi** dengan `--help` di OpenClaw **2026.9.5** (mesin uji
 terisolasi, tanpa login kanal apa pun). Kalau versi OpenClaw pengguna berbeda dan perintah
 gagal, jalankan `<perintah> --help` dulu untuk memastikan opsinya masih sama, lalu beri tahu

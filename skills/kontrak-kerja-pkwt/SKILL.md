@@ -5,6 +5,8 @@ description: Menyusun draf kontrak kerja PKWT (Perjanjian Kerja Waktu Tertentu /
 
 # Kontrak Kerja PKWT (Karyawan Kontrak)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha dan HR membuat kontrak karyawan kontrak yang **sesuai aturan**, **menemukan klausul berbahaya** di draf yang sudah ada, dan **menghitung uang kompensasi akhir kontrak** serta **ganti rugi** bila kontrak diputus lebih cepat, dengan angka yang dihitung script (bukan dikira-kira).
 

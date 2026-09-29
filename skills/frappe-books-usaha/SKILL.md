@@ -5,6 +5,8 @@ description: Asisten Frappe Books (software akuntansi desktop gratis, offline, f
 
 # Frappe Books Usaha
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha yang memakai **Frappe Books** di komputernya sendiri (gratis, offline, pengganti Jurnal/Kledo/Paper.id)
 cukup mengetik permintaan biasa, dan agent: (1) membaca file datanya **tanpa mengubah apa pun** untuk membuat laporan,
@@ -145,6 +147,8 @@ Setelah angka dari script, agent boleh menambah maksimal 3 saran singkat yang je
   "unduh lalu langsung jalankan".
 
 ## Batasan & penanganan error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Kode / pesan | Artinya | Yang dilakukan agent |
 |---|---|---|
 | 3 "tidak ditemukan" / "Lokasi file ... belum diketahui" | Path salah | Tanyakan lokasi; bawaan `Documents/Frappe Books/`, `~/Frappe Books/`, `OneDrive/Documents/Frappe Books/` |

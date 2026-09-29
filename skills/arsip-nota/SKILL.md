@@ -5,6 +5,8 @@ description: Merapikan foto/PDF nota, struk, kuitansi, dan faktur UMKM dari fold
 
 # Arsip Nota (arsip-nota)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 _Versi 1.0.1 — perbaikan uji independen: respons `tambah` yang diblokir duplikat sekarang jujur (`mode:
 "diblokir_duplikat"`, bukan "tersimpan"); tambahan kata kunci tebak kategori toko bangunan & BBM._
 
@@ -124,6 +126,7 @@ Vendor teratas:
 - [ ] Hasil `duplikat` disampaikan tanpa menuduh; pengguna yang memutuskan mana yang benar
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Bukan OCR.** Skill ini tidak membaca angka dari foto/PDF; data harus dari `ekstrak-nota-faktur` atau diketik pengguna. Foto yang belum ada datanya tidak bisa langsung diarsipkan.
 - Nominal disimpan bulat rupiah (dibulatkan ke rupiah terdekat bila input berupa desimal, diberitahukan sebagai peringatan).
 - Nama file dibuat aman untuk Windows/Mac/Linux (karakter `< > : " / \ | ? *` dihapus, nama panjang dipotong, nama terlarang Windows seperti `CON`/`PRN` diberi awalan). Ekstensi file di luar `.jpg/.jpeg/.png/.pdf/.heic/.heif/.webp/.gif/.tif/.tiff/.bmp` tetap diarsipkan, hanya diberi peringatan.

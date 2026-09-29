@@ -1,0 +1,17 @@
+Proprietary - Komunitech (komunitech.com)
+Hak cipta (c) 2026 Komunitech. Seluruh hak dilindungi.
+
+Skill "kalkulator-klinis-nakes" (SKILL.md, README.md, scripts/, tests/, templates/, references/,
+dan examples/) adalah karya orisinal Komunitech yang ditulis dari nol. Rumus dan ambang klinis
+dikutip dari pedoman publik yang disebut di references/sumber-pedoman.md (fakta/rumus, bukan
+salinan teks). Skill ini TIDAK memuat butir soal MMSE (hak cipta PAR Inc.) maupun MoCA (hak
+cipta MoCA Cognition / Z. Nasreddine); nama instrumen hanya disebut sebagai penyebut, dan
+Komunitech tidak berafiliasi dengan pemiliknya, maupun dengan Kemenkes RI, NICE, atau ACOG.
+
+Dilisensikan kepada pembeli untuk pemakaian sendiri di praktik/fasilitas kesehatannya. Dilarang
+menjual ulang, membagikan ulang, atau mempublikasikan isi skill ini tanpa izin tertulis.
+Penggunaan tunduk pada LISENSI.txt yang disertakan dalam paket pembelian.
+
+Disediakan apa adanya tanpa jaminan. Alat bantu untuk tenaga kesehatan, bukan pengganti
+penilaian klinis, bukan alat diagnosis, dan tidak memberi dosis obat. Tanggung jawab keputusan
+klinis ada pada tenaga kesehatan yang memeriksa. Contoh di examples/ memakai data fiktif.

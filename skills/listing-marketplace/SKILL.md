@@ -5,6 +5,8 @@ description: Membuat listing produk siap tempel untuk Shopee, Tokopedia, dan Tik
 
 # Listing Marketplace (Shopee, Tokopedia, TikTok Shop)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah info produk seadanya menjadi listing yang mudah ditemukan di pencarian marketplace, jelas bagi
 pembeli, dan aman dari pelanggaran aturan (teks terpotong, kontak di luar platform, klaim tanpa bukti).

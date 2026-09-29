@@ -5,6 +5,8 @@ description: Onboarding "Starter Kit Karyawan AI" untuk pengguna OpenClaw yang b
 
 # Starter Kit "Karyawan AI" — Onboarding
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membuat pengguna OpenClaw yang awam teknologi **mulai memakai** library skill Komunitech
 dalam satu percakapan: dari "tidak tahu mulai dari mana" sampai punya hasil nyata di tangan
@@ -189,6 +191,7 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
       tanpa scraping marketplace via login browser.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Industri/tugas tanpa padanan di `peta-skill.md`:** katakan jujur, jangan mengarang nama
   skill. Tawarkan paket umum atau skill terdekat.
 - **Skill yang direkomendasikan (mis. `laporan-otomatis-terjadwal`, `buku-stok`, atau skill baru

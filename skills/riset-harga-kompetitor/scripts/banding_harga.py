@@ -15,7 +15,7 @@ Aturan hitung (ditulis juga di hasil):
 - Margin = laba / harga jual (bukan markup).
 - Harga rentang "49.900-59.900" memakai harga terendah (bisa diubah dengan --rentang).
 - Ukuran berbeda disetarakan: harga setara = harga / isi pesaing x isi produk kita (satuan g, ml, atau pcs).
-- Ukuran seperti "1/2 kg", "setengah kilo", "250 g x 2", "isi 2 @250gr", "250 g + 250 g" dibaca lengkap.
+- Ukuran seperti "1/2 kg", "setengah kilo", "250 g x 2", "isi 2 @250gr", "250 g + 250 g", "500 gr isi 2", "2 pack 500 gr" dibaca lengkap.
 - Harga setara yang di bawah setengah atau di atas dua kali median (min. 3 pesaing) TIDAK ikut statistik
   (tetap tampil di tabel), kecuali --pakai-semua.
 - Persentil memakai interpolasi linear (sama dengan PERCENTILE.INC di Excel/Google Sheets).
@@ -202,8 +202,12 @@ _SATUAN = {
     "pcs": ("pcs", 1), "pc": ("pcs", 1), "buah": ("pcs", 1), "bh": ("pcs", 1), "biji": ("pcs", 1),
     "lembar": ("pcs", 1), "lbr": ("pcs", 1), "sachet": ("pcs", 1), "butir": ("pcs", 1),
     "pasang": ("pcs", 1), "tablet": ("pcs", 1), "kapsul": ("pcs", 1), "roll": ("pcs", 1),
-    "lusin": ("pcs", 12), "kodi": ("pcs", 20),
+    "lusin": ("pcs", 12), "kodi": ("pcs", 20), "rim": ("pcs", 500),
 }
+# v1.0.3: satuan kemasan/jumlah yang mengalikan ukuran di sebelahnya: '10 sachet 25 gr' = 10 x 25 g,
+# '2 karung 1 kg' = 2 kg, '1 lusin 100 gr' = 12 x 100 g, '2 kodi 50 gr' = 40 x 50 g.
+_KALI_SATUAN = {"sachet": 1, "karung": 1, "lusin": 12, "kodi": 20}
+_KS_RE = "|".join(_KALI_SATUAN)
 _SAT_RE = "|".join(sorted(_SATUAN, key=len, reverse=True))
 _SAT_NON_PCS = "|".join(sorted((k for k, v in _SATUAN.items() if v[0] != "pcs"), key=len, reverse=True))
 # kata kemasan yang boleh menempel pada pengali: "2 pcs @ 250 gr", "250 gr x 2 pcs", "isi 2 bungkus @250gr"
@@ -215,8 +219,43 @@ _POLA_UKUR = re.compile(r"(?<![\d.,/])(?:(?:(\d+)\s+)?(\d+)\s*/\s*(\d+)|(%s))\s*
 _POLA_DEPAN = re.compile(r"(?<![\d.,/])(\d+)\s*(?:(?:%s)\s*)?(?:[x*]\s*@?|@)\s*$" % _KEMASAN)
 _POLA_BELAKANG = re.compile(r"\s*[x*]\s*(\d+)(?![\d.,/])(?!\s*(?:%s)\b)(?:\s*(?:%s)\b)?" % (_SAT_NON_PCS, _KEMASAN))
 _POLA_ISI = re.compile(r"\bisi\s*(\d+)\b(?!\s*(?:%s)\b)" % _SAT_RE)
+# v1.0.2 (U1): pengali tanpa 'x'/'@'. Kemasan penuh (bukan pcs/biji/buah = butir isi) di depan ukuran:
+# '2 pack 500 gr', '3 botol 250 ml'. 'isi N' tepat di belakang ukuran: '500 gr isi 2', '250gr (isi 2)',
+# 'isi 2 pack'. 'isi 10 pcs 250 gr' / '250 gr isi 10 pcs' = jumlah butir di dalam, TIDAK dikalikan.
+_KEMASAN_PENUH = ("bungkus|bks|pack|pak|pax|sachet|botol|btl|pouch|toples|jar|box|dus|kotak|kaleng|cup|tube|"
+                  "renceng|karton")
+_POLA_DEPAN_KEMASAN = re.compile(r"(?<![\d.,/])(?<!isi )(?<!isi)(\d+)\s*(?:%s)\s*$" % _KEMASAN_PENUH)
+_POLA_BELAKANG_ISI = re.compile(r"\s*[(\[,-]?\s*isi\s*(\d+)(?![\d.,/])(?!\s*(?:%s|pcs|pc|buah|bh|biji|butir|"
+                                r"lembar|lbr|potong|keping|keping|slice)\b)(?:\s*(?:%s)\b)?\s*[)\]]?" %
+                                (_SAT_RE, _KEMASAN_PENUH))
 _KATA = [(r"\bsetengah\s*", "1/2 "), (r"\bseperempat\s*", "1/4 "), (r"\btiga\s+perempat\s*", "3/4 "),
          ("½", " 1/2"), ("¼", " 1/4"), ("¾", " 3/4"), ("×", "x")]
+
+
+_POLA_KALI_DEPAN = re.compile(r"(?<![\d.,/])(?<!isi )(?<!isi)(\d+)\s*(%s)\b\s*(?:[x*@]\s*)?(?=%s\s*(?:%s)\b)" % (
+    _KS_RE, _NUM, _SAT_NON_PCS))
+_POLA_KALI_BELAKANG = re.compile(r"(%s\s*(?:%s))\s*[x*]\s*(\d+)\s*(lusin|kodi|karung)\b" % (_NUM, _SAT_NON_PCS))
+
+
+def _kali_satuan(t):
+    """Ubah '1 lusin 100 gr' -> '12 x 100 gr' (dan '100 gr x 2 lusin' -> '100 gr x 24'). Kembalikan (teks, catatan)."""
+    cat = []
+
+    def dep(m):
+        n = int(m.group(1)) * _KALI_SATUAN[m.group(2)]
+        if n > 1:
+            cat.append("'{}' dibaca {} kemasan x ukuran; cek: bila angka itu sudah total, tulis ulang "
+                       "ukurannya".format(m.group(0).strip(), n))
+        return "%d x " % n
+
+    def bel(m):
+        n = int(m.group(2)) * _KALI_SATUAN[m.group(3)]
+        cat.append("'{}' dibaca {} kemasan x ukuran; cek: bila angka itu sudah total, tulis ulang "
+                   "ukurannya".format(m.group(0).strip(), n))
+        return "%s x %d" % (m.group(1), n)
+    t = _POLA_KALI_DEPAN.sub(dep, t)
+    t = _POLA_KALI_BELAKANG.sub(bel, t)
+    return t, cat
 
 
 def _angka_ukuran(s):
@@ -249,6 +288,7 @@ def baca_ukuran(teks, dim_pilih=None):
     t = str(teks).lower()
     for pola, ganti in _KATA:
         t = re.sub(pola, ganti, t)
+    t, catatan_kali = _kali_satuan(t)
     grup, habis = [], 0
     for m in _POLA_UKUR.finditer(t):
         if m.start() < habis:
@@ -261,13 +301,30 @@ def baca_ukuran(teks, dim_pilih=None):
         qty = qty * Decimal(kali)
         mulai, akhir, jumlah_kemasan = m.start(), m.end(), None
         d = _POLA_DEPAN.search(t, 0, m.start())
+        tanpa_kali = False
+        if not d:
+            d = _POLA_DEPAN_KEMASAN.search(t, habis, m.start())       # v1.0.2: '2 pack 500 gr'
+            tanpa_kali = bool(d)
         if d:
             mulai, jumlah_kemasan = d.start(), int(d.group(1))
             grup = [g for g in grup if g["akhir"] <= mulai]          # '2 pcs' di '2 pcs @ 250 gr' ikut terpakai
         bl = _POLA_BELAKANG.match(t, m.end())
+        if not bl:
+            bl = _POLA_BELAKANG_ISI.match(t, m.end())                 # v1.0.2: '500 gr isi 2', '250gr (isi 2)'
+            tanpa_kali = tanpa_kali or bool(bl)
         if bl:
             akhir = bl.end()
             jumlah_kemasan = (jumlah_kemasan or 1) * int(bl.group(1))
+        if not jumlah_kemasan:
+            ik = re.search(r"\bisi\s*(\d+)\s*(?:%s)\s*$" % _KEMASAN_PENUH, t[habis:m.start()])
+            if ik and int(ik.group(1)) > 1:                          # 'isi 2 pack 500 gr': dibaca total, beri tahu
+                catatan_kali.append("'{}' dibaca total {}; cek: bila {} itu per kemasan, tulis '{} x {}'".format(
+                    (ik.group(0) + t[m.start():m.end()]).strip(), teks_ukuran(dim, qty), teks_ukuran(dim, qty),
+                    ik.group(1), teks_ukuran(dim, qty)))
+        if tanpa_kali and jumlah_kemasan and jumlah_kemasan > 1:
+            catatan_kali.append("'{}' dibaca {} kemasan x {} = {}; cek: bila angka itu sudah total, tulis ulang "
+                                "ukurannya".format(re.sub(r"[()\[\]]", "", t[mulai:akhir]).strip(" ,-"), jumlah_kemasan,
+                                                   teks_ukuran(dim, qty), teks_ukuran(dim, qty * jumlah_kemasan)))
         if jumlah_kemasan:
             qty = qty * jumlah_kemasan
         sek = [("pcs", Decimal(jumlah_kemasan))] if jumlah_kemasan and dim != "pcs" else []
@@ -286,7 +343,7 @@ def baca_ukuran(teks, dim_pilih=None):
     if not grup:
         m = _POLA_ISI.search(t)
         return (("pcs", Decimal(m.group(1))), []) if m else (None, [])
-    pilih, catatan = grup[0], []
+    pilih, catatan = grup[0], list(catatan_kali)
     if dim_pilih:
         cocok = [g for g in grup if g["dim"] == dim_pilih]
         if cocok:

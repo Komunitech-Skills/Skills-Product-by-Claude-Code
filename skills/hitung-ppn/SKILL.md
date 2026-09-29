@@ -5,6 +5,8 @@ description: Kalkulator PPN Indonesia 12% (DPP nilai lain 11/12, efektif 11% unt
 
 # Hitung PPN
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menghitung PPN dengan benar sesuai aturan 2025–2026 (tarif 12% dengan DPP nilai lain 11/12) dan menjelaskan hasilnya dengan bahasa sederhana, siap ditempel ke penawaran, chat, atau catatan.
 

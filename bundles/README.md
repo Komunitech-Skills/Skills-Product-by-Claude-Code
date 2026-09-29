@@ -22,3 +22,13 @@ pantau-pasar-kripto, laporan-harian-usaha) sengaja tidak dimasukkan.
 
 Semua bundle sudah diuji `build.py --izinkan-draft` (2026-09-24) dan berhasil.
 Penjualan nyata menunggu: status skill `rilis` + `tier_final`/`harga_final_idr` dari pemilik.
+
+Bundle baru (2026-09-29, harga bundle belum diusulkan — menunggu pemilik):
+- `paket-kantor-manajemen` (16 skill) adalah **subset** dari `solusi-vip/kantor-manajemen/`.
+  Mencakup PANDUAN Bab 2-4 dan 5c-5e, 5f-5h, 5i, 5j-k, 5m. **Tidak** mencakup 5a-5b dan
+  `jadwal-openclaw.md` §1, §2, §6 (butuh `laporan-harian-usaha`, tier vip) maupun 5l/§9
+  (pilih `frappe-books-usaha` ATAU `dolibarr-usaha`, perlu aplikasi terpasang). Paket lengkap
+  = akses VIP.
+- Paket kripto (`solusi-vip/kripto-keuangan/`) **khusus VIP**: tidak ada bundle ecer karena
+  intinya, `pantau-pasar-kripto`, bertier vip. Skill pendukungnya (`atur-keuangan-pribadi`,
+  `notebook-riset-lokal`, `asisten-tulis-riset`) bisa dibeli ecer satuan.

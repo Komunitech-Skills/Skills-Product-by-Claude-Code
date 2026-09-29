@@ -1,5 +1,7 @@
 # Laporan Frappe Books otomatis ke Telegram pemilik (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status:** ⚠️ **BELUM DIVERIFIKASI untuk skill ini.** Perintah di bawah menyalin pola `openclaw automations add --command-argv`
 yang sudah diuji pada skill `dolibarr-usaha` (OpenClaw 2026.9.6, CLI asli: jadwal diterima, `automations run --wait`
 menjalankan script dan `summary` berisi teks laporan). Untuk `frappe-books-usaha` sendiri belum dijalankan di Gateway sungguhan,

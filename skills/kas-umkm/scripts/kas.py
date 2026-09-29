@@ -45,7 +45,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 APLIKASI = "kas-umkm"
-VERSI = "1.0.6"
+VERSI = "1.0.8"
 SKEMA = 1
 BATAS_NOMINAL = 10 ** 12            # Rp 1 triliun: di atas ini pasti salah ketik
 NOMINAL_BESAR = 50 * 10 ** 6        # di atas ini diberi catatan "pastikan jumlah nolnya benar"
@@ -95,12 +95,23 @@ ALIAS_KATEGORI = {
     "kasbon": ["kasbon", "kas bon", "uang muka karyawan", "pinjaman karyawan", "piutang karyawan", "kasbon karyawan"],
     "lain-lain": ["lain lain", "lain", "lainnya", "dll", "lain2", "other"],
 }
+# v1.0.8: konteks rumah tangga ("beli gula buat di rumah", "beli sayur untuk rumah", "sarapan anak",
+# "makan keluarga") -> prive. Diperiksa SEBELUM kosakata bahan pangan (beli-stok). Rumah makan/sakit/pelanggan dll.
+# bukan rumah pemilik; "produksi di rumah" (usaha rumahan) juga bukan.
+KONTEKS_RUMAH = (r"(buat|untuk|utk|bwt|bagi|keperluan|kebutuhan)( di)? rumah(?! makan| sakit| kos| kost| produksi| "
+                 r"pelanggan| pembeli| konsumen| customer| klien| pemesan)|"
+                 r"(masak|makan|sarapan|dapur|konsumsi) di rumah(?! makan| sakit)|"
+                 r"sarapan (anak|anak anak|keluarga|suami|istri)|"
+                 r"(buat|untuk|utk|bwt|makan|keperluan|kebutuhan|konsumsi) keluarga|"
+                 r"(buat|untuk|utk|bwt) (anak anak|anak|suami|istri)(?! buah| magang| didik| asuh| yatim)")
+POLA_KONTEKS_RUMAH = re.compile(r"\b(" + KONTEKS_RUMAH + r")\b")
 # Tebakan kategori dari catatan (dipakai bila --kategori kosong); urutan penting.
 TEBAK = [
     ("prive", "keluar", r"\b(prive|privee|pribadi|rumah tangga|(belanja|keperluan|kebutuhan)( \w+){0,2} rumah"
                         r"(?! makan| sakit| kos| kost| produksi)|(dapur|sayur|masak) rumah(?! makan)|spp|"
                         r"uang sekolah|sekolah anak|jajan|uang saku|arisan|kondangan|kirim (ortu|orang tua|ibu|bapak)|"
-                        r"liburan|gaji (saya|pemilik|owner|sendiri))\b"),   # v1.0.5: belanja dapur/sayur rumah
+                        r"liburan|gaji (saya|pemilik|owner|sendiri)|" + KONTEKS_RUMAH + r")\b"),
+    # v1.0.5: belanja dapur/sayur rumah; v1.0.8: konteks rumah tangga (KONTEKS_RUMAH) MENANG atas kosakata bahan
     ("pajak", "keluar", r"\b(pajak|pph|pbjt|pb1|ppn)\b"),
     ("kasbon", None, r"\b(kasbon|kas bon|uang muka (karyawan|pegawai|gaji)|(pinjaman|pinjam) (karyawan|pegawai)|"
                      r"piutang karyawan)\b"),
@@ -114,6 +125,11 @@ TEBAK = [
     # v1.0.6: bahan habis pakai usaha jasa (laundry, salon, bengkel cuci) & biaya operasional umum
     ("beli-stok", "keluar", r"\b(deterjen|detergen|sabun cuci|pewangi|pelembut|softener|parfum laundry|"
                             r"pemutih|plastik laundry|plastik packing|kantong plastik|plastik|kresek|hanger)\b"),
+    # v1.0.7: bahan pangan umum (toko roti, warung, katering) & bahan bakar masak usaha
+    ("beli-stok", "keluar", r"\b(tepung|terigu|maizena|tapioka|gula|mentega|margarin|butter|telur|telor|ragi|fermipan|"
+                            r"baking powder|pengembang|minyak goreng|minyak|santan|susu|keju|coklat|cokelat|meses|"
+                            r"vanili|beras|bumbu|cabe|cabai|bawang|daging|ayam|ikan|sayur|sayuran|buah|kopi|teh|"
+                            r"es batu|gas elpiji|elpiji|lpg|gas melon|tabung gas|isi gas|gas 3 ?kg|gas 12 ?kg)\b"),
     ("lain-lain", "keluar", r"\b(servis|service|perbaikan|reparasi|fotokopi|fotocopy|print|atk|alat tulis|cetak nota|"
                             r"ongkir|ongkos kirim|parkir|internet|wifi|materai|meterai)\b"),
     ("modal", "masuk", r"\b(modal|suntik dana|suntikan dana)\b"),
@@ -439,6 +455,22 @@ POLA_BUKAN_ASET = re.compile(r"\b(servis|service|perbaikan|reparasi|ganti oli|ol
                              r"maintenance|perawatan|betulin|benerin|sewa|cicilan|angsuran|bensin|bbm|parkir)\b")
 
 
+# v1.0.7: rincian beban untuk pengeluaran lain-lain (semua jenis beban usaha di laporan-keuangan-emkm)
+BEBAN_LAIN_EMKM = [(k, re.compile(p)) for k, p in (
+    ("beban_admin_penjualan", r"\b(shopee|tokopedia|tokped|tiktok|lazada|blibli|bukalapak|marketplace|gofood|"
+                              r"grabfood|shopeefood|mdr|komisi|biaya qris|fee marketplace)\b"),
+    ("beban_pemasaran", r"\b(iklan|ads|promosi|promo|endorse|brosur|spanduk|banner|baliho)\b"),
+    ("beban_pajak_lain", r"\b(materai|meterai|retribusi|pbb|stnk|samsat|perizinan|izin usaha)\b"),
+    ("beban_perawatan", r"\b(servis|service|perbaikan|reparasi|ganti oli|oli|tambal|sparepart|suku cadang|"
+                        r"maintenance|perawatan|betulin|benerin)\b"),
+    ("beban_transportasi", r"\b(bensin|bbm|pertalite|pertamax|solar|ongkir|ongkos kirim|ekspedisi|kurir|parkir|"
+                           r"tol|ojek|ojol|gosend|grab|gojek|transport)\b"),
+    ("beban_utilitas", r"\b(internet|wifi|indihome|pulsa|kuota|paket data|telepon|telpon|galon|gas|elpiji|lpg)\b"),
+    ("beban_perlengkapan", r"\b(kemasan|packaging|plastik|kresek|kardus|dus|lakban|stiker|label|atk|alat tulis|"
+                           r"kertas|tinta|sabun|pembersih|tisu|tissue|masker|sarung tangan)\b"),
+)]
+
+
 def kode_emkm(kategori, arah, ket, jenis_akun):
     """Kode kategori laporan-keuangan-emkm untuk satu baris ekspor ("" = diklasifikasi emkm dari keterangan).
     v1.0.2: lain-lain tidak lagi selalu dikosongkan. Pemasukan lain-lain -> pendapatan_lain; biaya bank ->
@@ -468,7 +500,14 @@ def kode_emkm(kategori, arah, ket, jenis_akun):
         # v1.0.3: catatan lama 'lain-lain' berketerangan utang/kasbon/pribadi tetap beban_lain (sama dengan hasil usaha
         # kas-umkm); ekspor mengingatkan untuk menggolongkannya ulang.
         return "beban_lain"
-    return ""
+    if POLA_ASET_EMKM.search(n) and not POLA_BUKAN_ASET.search(n):
+        return ""                                      # v1.0.6: biarkan emkm menilai aset tetap (diperingatkan)
+    # v1.0.7: lain-lain yang sudah dipilih/dikonfirmasi = biaya usaha; selalu diberi kode beban agar emkm tidak
+    # menaruhnya di BELUM TERKLASIFIKASI (laba tetap = hasil usaha; semua kode di bawah = beban usaha emkm).
+    for kode_b, pola in BEBAN_LAIN_EMKM:
+        if pola.search(n):
+            return kode_b
+    return "beban_lain"
 
 
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
@@ -820,7 +859,12 @@ POLA_NEGASI = re.compile(r"\b(tanpa|bebas|free|gratis|tidak ada|tidak kena|tidak
                          r"ga ada|enggak ada|ngga ada|no|non|nol|bukan) (denda|bunga|biaya|adm|admin|administrasi|"
                          r"provisi|sanksi)( (admin|adm|administrasi|provisi))?\b|"
                          r"\b(denda|bunga|biaya|adm|admin|administrasi|provisi)( (admin|adm))? (0|nol)( persen)?\b(?! \d)|"
-                         r"\b(0|nol) (persen )?(denda|bunga)\b")
+                         r"\b(0|nol) (persen )?(denda|bunga)\b|"
+                         # v1.0.7: "denda nihil", "dendanya dihapus", "bunga dibebaskan", "denda tidak dikenakan"
+                         r"\b(denda|bunga|biaya|adm|admin|administrasi|provisi|sanksi)( (admin|adm))? (nihil|kosong|"
+                         r"dihapus|dihapuskan|dihapusin|dibebaskan|dihilangkan|ditiadakan|diputihkan|diputihin|"
+                         r"digratiskan|tidak ada|tak ada|gak ada|ga ada|nggak ada|ngga ada|enggak ada|"
+                         r"tidak dikenakan|tidak dikenai|tidak kena|gak kena|ga kena|nggak kena)\b")
 
 
 def normal_ket(teks):
@@ -1409,6 +1453,12 @@ def siapkan_entri(conn, arah, jumlah_teks, kategori_teks, metode_teks, catatan, 
                         (catatan or "tanpa catatan", arah, rp(jumlah), ", ".join(KATEGORI)), perlu_kategori=True,
                         pertanyaan=tanya_kategori(catatan, arah, jumlah))
         asumsi.append("kategori '%s' ditebak dari kata '%s'" % (kat, kata))
+        if kat == "prive" and (POLA_KONTEKS_RUMAH.search(n_cat) or
+                               re.search(r"\b(rumah|keluarga|anak|sarapan|suami|istri)\b", kata or "")):  # v1.0.8
+            peringatan.append("'%s' ditebak PRIVE (keperluan rumah/keluarga, bukan biaya usaha) karena menyebut "
+                              "'%s'. Pastikan dengan pengguna: 'Belanja ini untuk rumah atau untuk usaha?' Bila "
+                              "untuk usaha (mis. bahan katering yang dimasak di rumah), pilih --kategori beli-stok."
+                              % (catatan, kata))
     kat_awal = kat
     kat, alasan = koreksi_lain_lain(kat, arah, catatan)
     peringatan.extend(peringatan_kategori(kat, arah, catatan))                 # v1.0.5
@@ -3052,7 +3102,7 @@ def cmd_ekspor(args):
     else:
         pr.append("Saldo awal gabungan minus (%s); tidak ditulis di file. Periksa saldo awal akun." % rp(saldo_awal))
     n_pindah = 0
-    salah_golong, gerak = [], {}
+    salah_golong, gerak, cicilan = [], {}, []
     for r in rows:
         if r["kategori"] == "pindah":
             n_pindah += 1
@@ -3070,6 +3120,8 @@ def cmd_ekspor(args):
             ket = "Pajak: " + ket
         data.append([tgl_id(r["tanggal"]), ket, r["jumlah"] if r["arah"] == "masuk" else "",
                      r["jumlah"] if r["arah"] == "keluar" else "", kode])
+        if r["status"] == "aktif" and r["kategori"] == "pinjaman" and r["arah"] == "keluar":
+            cicilan.append((len(data) + 1, ket, r["jumlah"]))          # v1.0.8: no. baris file (judul = baris 1)
     path = tulis_csv(path, ["Tanggal", "Keterangan", "Masuk", "Keluar", "Kategori"], data, args.pemisah)
     # v1.0.6: pembelian alat/aset berkategori kosong -> emkm bisa mencatatnya ASET TETAP (disusutkan), bukan beban
     aset = [(d[0], d[1], d[3]) for d in data[1 if saldo_awal >= 0 else 0:]
@@ -3105,16 +3157,31 @@ def cmd_ekspor(args):
     perintah = ("python3 <folder-laporan-keuangan-emkm>/scripts/laporan_emkm.py \"%s\" --nama-usaha \"%s\" "
                 "--periode-awal %s --periode-akhir %s --kas-akhir-aktual %d" %
                 (path, cfg["nama_usaha"], dari.isoformat(), sampai.isoformat(), saldo_akhir))
+    perintah_pokok = None
+    if cicilan:
+        # v1.0.8: emkm menanyakan bunga untuk SETIAP baris bayar_pinjaman. Di buku kas, bunga/denda dicatat terpisah
+        # (lain-lain -> beban_keuangan), jadi tanyakan SEKALI per periode lalu kirim --bunga N=0 untuk semua baris.
+        bunga_flag = " ".join("--bunga %d=0" % c[0] for c in cicilan)
+        perintah_pokok = perintah + " " + bunga_flag
+        pr.append("PERTANYAAN BUNGA (tanyakan SEKALI untuk periode ini, bukan per baris): ada %d baris cicilan pinjaman "
+                  "(%s). Buku kas mencatatnya sebagai POKOK saja; bunga/denda yang dibayar terpisah sudah tercatat "
+                  "sebagai biaya. Tanyakan: 'Apakah semua cicilan ini sudah TANPA bunga (bunganya dicatat terpisah "
+                  "atau pinjamannya tanpa bunga)?' Bila ya, pakai perintah dengan %s (lihat perintah_pokok_saja) agar "
+                  "emkm tidak menanyakannya lagi per baris. Bila ada cicilan yang masih termasuk bunga, tanyakan "
+                  "nominal bunga per pinjaman per bulan lalu ganti 0 pada baris itu dengan nominal bunganya." % (
+                      len(cicilan), "; ".join("baris %d '%s' %s" % (c[0], c[1][:40], rp(c[2])) for c in cicilan[:10]),
+                      bunga_flag))
     t = ("Ekspor untuk skill laporan-keuangan-emkm: %d baris %s - %s ke %s\n"
-         "Kolom: Tanggal;Keterangan;Masuk;Keluar;Kategori (kode kategori emkm; pajak & sebagian lain-lain dikosongkan "
+         "Kolom: Tanggal;Keterangan;Masuk;Keluar;Kategori (kode kategori emkm; pajak & pembelian alat/aset dikosongkan "
          "agar emkm mengklasifikasi dari keterangan; biaya bank = beban_keuangan, pemasukan lain-lain = "
-         "pendapatan_lain). Pindah dana antar akun (%d baris) tidak ditulis karena kas + rekening "
+         "pendapatan_lain, pengeluaran lain-lain lain = kode beban usaha, paling umum beban_lain). Pindah dana antar akun (%d baris) tidak ditulis karena kas + rekening "
          "dihitung sebagai satu. Saldo awal gabungan semua akun %s, saldo akhir %s.\n"
          "Jalankan (tanyakan dulu stok awal/akhir, piutang, utang, aset):\n%s" %
          (len(data), tgl_id(dari), tgl_id(sampai), path, n_pindah, rp(saldo_awal), rp(saldo_akhir), perintah))
     t += "".join("\nCatatan: " + p for p in pr)
     return {"ok": True, "mode": "baca", "file": path, "baris": len(data), "saldo_awal": saldo_awal,
-            "saldo_akhir": saldo_akhir, "perintah_emkm": perintah, "peringatan": pr, "teks": t}, t
+            "saldo_akhir": saldo_akhir, "perintah_emkm": perintah, "perintah_pokok_saja": perintah_pokok,
+            "baris_cicilan": [c[0] for c in cicilan], "peringatan": pr, "teks": t}, t
 
 
 ARUS_LABEL = {("penjualan", "masuk"): "Penjualan (rata-rata riwayat)", ("penjualan", "keluar"): "Retur penjualan",
@@ -3335,25 +3402,25 @@ def parse_hari_ini(teks):
 
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--db", help="File database (default ~/KomunitechData/kas/kas.db; ENV KOMUNITECH_KAS_DB)")
     umum.add_argument("--json", action="store_true", help="Output JSON (untuk agent)")
     umum.add_argument("--hari-ini", help=argparse.SUPPRESS)
-    tulis = argparse.ArgumentParser(add_help=False)
+    tulis = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     tulis.add_argument("--ya", action="store_true", help="Simpan (tanpa ini hanya pratinjau)")
-    periode = argparse.ArgumentParser(add_help=False)
+    periode = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     periode.add_argument("--tanggal", help="Satu hari: hari-ini, kemarin, 26/09/2026")
     periode.add_argument("--minggu", help="Senin-Minggu: ini, lalu, atau tanggal di minggu itu")
     periode.add_argument("--bulan", help="ini, lalu, 09/2026, September 2026")
     periode.add_argument("--dari")
     periode.add_argument("--sampai")
 
-    p = ParserID(prog="kas.py", description="Buku kas harian lokal UMKM (kas-umkm %s)" % VERSI)
+    p = ParserID(prog="kas.py", description="Buku kas harian lokal UMKM (kas-umkm %s)" % VERSI, allow_abbrev=False)
     p.add_argument("--versi", action="version", version="kas-umkm " + VERSI)
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True
 
-    s = sub.add_parser("init", parents=[umum, tulis], help="Buat buku kas baru")
+    s = sub.add_parser("init", parents=[umum, tulis], help="Buat buku kas baru", allow_abbrev=False)
     s.add_argument("--nama-usaha")
     s.add_argument("--kas-awal", help="Uang di laci saat mulai (default 0)")
     s.add_argument("--mulai", help="Tanggal mulai pencatatan (default hari ini)")
@@ -3363,16 +3430,16 @@ def buat_parser():
                    help="Buku kas rusak & tidak ada cadangan: pindahkan file rusak ke backup-kas lalu buat baru")
     s.set_defaults(fungsi=cmd_init)
 
-    s = sub.add_parser("info", parents=[umum], help="Lokasi database, akun & saldo, cadangan")
+    s = sub.add_parser("info", parents=[umum], help="Lokasi database, akun & saldo, cadangan", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_info)
 
-    s = sub.add_parser("atur", parents=[umum, tulis], help="Ubah nama usaha, zona, batas prive")
+    s = sub.add_parser("atur", parents=[umum, tulis], help="Ubah nama usaha, zona, batas prive", allow_abbrev=False)
     s.add_argument("--nama-usaha")
     s.add_argument("--zona")
     s.add_argument("--batas-prive", help="mis. 3jt, atau 'hapus'")
     s.set_defaults(fungsi=cmd_atur)
 
-    s = sub.add_parser("akun", parents=[umum, tulis], help="Akun uang: daftar | tambah | ubah")
+    s = sub.add_parser("akun", parents=[umum, tulis], help="Akun uang: daftar | tambah | ubah", allow_abbrev=False)
     s.add_argument("aksi", choices=["daftar", "tambah", "ubah"])
     s.add_argument("--akun", help="Akun yang diubah (untuk ubah)")
     s.add_argument("--nama")
@@ -3384,7 +3451,7 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_akun)
 
-    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat uang masuk/keluar")
+    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat uang masuk/keluar", allow_abbrev=False)
     s.add_argument("--masuk", help="Nominal uang masuk")
     s.add_argument("--keluar", help="Nominal uang keluar")
     s.add_argument("--kategori", help=", ".join(KATEGORI))
@@ -3398,7 +3465,7 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_catat)
 
-    s = sub.add_parser("pindah", parents=[umum, tulis], help="Pindah dana antar akun (tidak mengubah hasil usaha)")
+    s = sub.add_parser("pindah", parents=[umum, tulis], help="Pindah dana antar akun (tidak mengubah hasil usaha)", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     s.add_argument("--ke", required=True)
     s.add_argument("--jumlah", required=True)
@@ -3408,20 +3475,20 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_pindah)
 
-    s = sub.add_parser("batal", parents=[umum, tulis], help="Batalkan catatan (tidak dihapus)")
+    s = sub.add_parser("batal", parents=[umum, tulis], help="Batalkan catatan (tidak dihapus)", allow_abbrev=False)
     s.add_argument("--id", required=True, help="ID catatan, mis. 12 atau #12")
     s.add_argument("--alasan", required=True)
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_batal)
 
     s = sub.add_parser("golongkan", parents=[umum, tulis],
-                       help="Tetapkan kategori catatan 'Perlu dicek' (atau ubah jadi pindah:<akun>)")
+                       help="Tetapkan kategori catatan 'Perlu dicek' (atau ubah jadi pindah:<akun>)", allow_abbrev=False)
     s.add_argument("--id", required=True, help="ID catatan, mis. 12 atau 12,15")
     s.add_argument("--kategori", required=True, help="Kategori, atau pindah:<akun pasangan>")
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_golongkan)
 
-    s = sub.add_parser("opname", parents=[umum, tulis], help="Hitung uang fisik laci/brankas vs buku")
+    s = sub.add_parser("opname", parents=[umum, tulis], help="Hitung uang fisik laci/brankas vs buku", allow_abbrev=False)
     s.add_argument("--akun", help="Default: satu-satunya akun tunai")
     s.add_argument("--fisik", help="Total uang yang dihitung")
     s.add_argument("--pecahan", help="Rincian: '100rb x5, 50rb x3, 2rb x10, koin 3.500'")
@@ -3432,14 +3499,14 @@ def buat_parser():
     s.add_argument("--maks", type=int, default=20)
     s.set_defaults(fungsi=cmd_opname)
 
-    s = sub.add_parser("rekap", parents=[umum, periode], help="Rekap harian/mingguan/bulanan (teks siap Telegram)")
+    s = sub.add_parser("rekap", parents=[umum, periode], help="Rekap harian/mingguan/bulanan (teks siap Telegram)", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_rekap)
 
-    s = sub.add_parser("saldo", parents=[umum], help="Saldo per akun")
+    s = sub.add_parser("saldo", parents=[umum], help="Saldo per akun", allow_abbrev=False)
     s.add_argument("--tanggal")
     s.set_defaults(fungsi=cmd_saldo)
 
-    s = sub.add_parser("daftar", parents=[umum, periode], help="Daftar catatan (dengan ID)")
+    s = sub.add_parser("daftar", parents=[umum, periode], help="Daftar catatan (dengan ID)", allow_abbrev=False)
     s.add_argument("--kategori")
     s.add_argument("--akun")
     s.add_argument("--cari")
@@ -3447,7 +3514,7 @@ def buat_parser():
     s.add_argument("--maks", type=int, default=50)
     s.set_defaults(fungsi=cmd_daftar)
 
-    s = sub.add_parser("impor", parents=[umum, tulis], help="Impor CSV buku kas / mutasi bank")
+    s = sub.add_parser("impor", parents=[umum, tulis], help="Impor CSV buku kas / mutasi bank", allow_abbrev=False)
     s.add_argument("file")
     s.add_argument("--akun", help="Akun tujuan semua baris (mis. BRI untuk mutasi BRI)")
     s.add_argument("--jenis-file", choices=["mutasi-bank", "buku-kas"], help="Arti kolom Debit/Kredit")
@@ -3459,7 +3526,7 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_impor)
 
-    s = sub.add_parser("impor-kasir", parents=[umum, tulis], help="Impor rekap harian kasir-lokal (JSON)")
+    s = sub.add_parser("impor-kasir", parents=[umum, tulis], help="Impor rekap harian kasir-lokal (JSON)", allow_abbrev=False)
     s.add_argument("file", help="Hasil: kasir.py rekap --tanggal <tgl> --json > rekap-kasir.json")
     s.add_argument("--akun-untuk", action="append", help="Metode=akun, mis. qris=BRI (bisa diulang)")
     s.add_argument("--ganti", action="store_true", help="Ganti impor tanggal yang sama (impor lama dibatalkan)")
@@ -3467,7 +3534,7 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_impor_kasir)
 
-    s = sub.add_parser("ekspor", parents=[umum, periode], help="Ekspor CSV: lengkap | emkm | arus-kas")
+    s = sub.add_parser("ekspor", parents=[umum, periode], help="Ekspor CSV: lengkap | emkm | arus-kas", allow_abbrev=False)
     s.add_argument("--format", choices=["lengkap", "emkm", "arus-kas"], default="lengkap")
     s.add_argument("--csv", help="File tujuan (default folder ekspor/ di sebelah database)")
     s.add_argument("--pemisah", default=";", help="Pemisah CSV (default ';' untuk Excel Indonesia)")
@@ -3475,11 +3542,11 @@ def buat_parser():
     s.add_argument("--semua", action="store_true", help="lengkap: termasuk yang dibatalkan")
     s.set_defaults(fungsi=cmd_ekspor)
 
-    s = sub.add_parser("backup", parents=[umum], help="Buat cadangan / --daftar")
+    s = sub.add_parser("backup", parents=[umum], help="Buat cadangan / --daftar", allow_abbrev=False)
     s.add_argument("--daftar", action="store_true")
     s.add_argument("--label")
     s.set_defaults(fungsi=cmd_backup)
-    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan")
+    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     s.set_defaults(fungsi=cmd_restore)
     return p

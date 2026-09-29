@@ -181,6 +181,19 @@ Grist saya"* (atau pesanan/stok/jadwal-konten), dan agent akan:
 Empat template itu: **Daftar Pelanggan**, **Pesanan**, **Stok Sederhana**, **Jadwal Konten**.
 Lihat contoh hasil jadi di `examples/` skill.
 
+### 5b. Dasbor KPI Tim di Grist (impor CSV dari skill `kpi-tim`)
+Sudah memakai skill `kpi-tim`? Minta agent: *"Siapkan file KPI untuk diimpor ke Grist."* Agent
+menjalankan `python3 scripts/skor_kpi.py ekspor-db ... --grist` dan menghasilkan folder `grist/`
+berisi satu CSV per tabel (`skor_perusahaan`, `skor_divisi`, `skor_orang`, `skor_kpi`, `rencana`)
+plus `PETUNJUK-IMPOR-GRIST.md`. Ringkas: **Add New → Import from file** per CSV, warna semaphore
+lewat **Cell Style** pada kolom `status`, grafik tren lewat widget **Chart**. Angka sudah dihitung
+skript, jangan dihitung ulang dengan rumus Grist. Bulan berikutnya ekspor ulang lalu impor ulang.
+- Pakai `--anonim` bila layar dilihat orang lain (nama diganti kode P01, P02, ...).
+- Dokumen ini berisi skor per orang (data pribadi): Grist hanya di komputer sendiri (bagian 8), jangan
+  bagikan tautannya.
+- Jujur: langkah impor ini disusun dari dokumentasi Grist dan struktur CSV yang diuji; **belum
+  dicoba** di Grist Desktop/grist-core sungguhan.
+
 ---
 
 ## 6. Kunci API (opsional, untuk skill `grist-usaha`)

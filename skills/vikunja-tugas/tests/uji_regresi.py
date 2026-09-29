@@ -171,6 +171,27 @@ class TesDariTeks(unittest.TestCase):
         self.assertEqual(draf, [])
         self.assertEqual(diabaikan, 1)
 
+    def test_v103_kata_header_inggris_bukan_pic(self):
+        # temuan uji ulang v1.0.2: "TOPIC:" dulu terbaca PIC "TOPIC" dan terhapus dari judul
+        for kata in ("TOPIC", "INFO", "UPDATE", "STATUS", "NOTE", "AGENDA", "SUBJECT", "Next Step", "Action Items",
+                     "FYI", "Reminder", "Summary", "Topik", "Perihal", "Update", "RE"):
+            baris = "- %s: bahas rencana marketing minggu depan" % kata
+            draf, _ = vikunja.urai_dari_teks(baris, HARI_ACUAN)
+            self.assertIsNone(draf[0]["ke"], kata)
+            self.assertEqual(draf[0]["judul"], "%s: bahas rencana marketing minggu depan" % kata, kata)
+
+    def test_v103_nama_asli_tetap_terbaca(self):
+        for baris, nama in (("- Budi: follow up supplier", "Budi"), ("- Siti Aminah: kirim invoice", "Siti Aminah"),
+                            ("- ANDI: cek stok gudang", "ANDI"), ("- Status: cek laporan PIC: Rina", "Rina"),
+                            ("- UPDATE - kirim revisi desain PIC: Maya", "Maya")):
+            draf, _ = vikunja.urai_dari_teks(baris, HARI_ACUAN)
+            self.assertEqual(draf[0]["ke"], nama, baris)
+        # anggota yang dikenal menang atas daftar kata header (orang bernama "Tim")
+        draf, _ = vikunja.urai_dari_teks("- Tim: siapkan materi", HARI_ACUAN)
+        self.assertIsNone(draf[0]["ke"])
+        draf, _ = vikunja.urai_dari_teks("- Tim: siapkan materi", HARI_ACUAN, anggota_dikenal=["Tim"])
+        self.assertEqual(draf[0]["ke"], "Tim")
+
 
 # ============================================================ 3. validasi URL (keamanan)
 
@@ -643,6 +664,35 @@ class TesUjungKeUjung(unittest.TestCase):
             )
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertTrue(os.path.exists(os.path.join(d, "draf.json")))
+
+    def test_v105_kata_permintaan_bukan_pic(self):
+        # temuan uji ulang v1.0.3: "Mohon: Bu Rina tolong kirim faktur" dulu terbaca PIC "Mohon"
+        for kata in ("Mohon", "Tolong", "Harap", "Catatan", "MOHON", "Silakan", "Dimohon", "Pastikan", "Please"):
+            draf, _ = vikunja.urai_dari_teks("- %s: Bu Rina kirim faktur besok" % kata, HARI_ACUAN)
+            self.assertIsNone(draf[0]["ke"], kata)
+            self.assertTrue(draf[0]["judul"].startswith(kata), draf[0]["judul"])
+
+    def test_v105_nama_asli_dan_anggota_tetap(self):
+        draf, _ = vikunja.urai_dari_teks("- Budi: kirim faktur\n- PIC: Rina follow up", HARI_ACUAN)
+        self.assertEqual([x["ke"] for x in draf], ["Budi", "Rina"])
+        draf, _ = vikunja.urai_dari_teks("- Mohon: kirim faktur", HARI_ACUAN, anggota_dikenal=["Mohon"])
+        self.assertEqual(draf[0]["ke"], "Mohon")
+
+
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "vikunja.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["simpan-kunci", "--kunci-file", os.path.join(t, "k.txt"), "--y"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+            self.assertFalse(os.path.exists(os.path.join(t, "k.txt")), "singkatan flag tidak boleh menulis apa pun")
 
 
 if __name__ == "__main__":

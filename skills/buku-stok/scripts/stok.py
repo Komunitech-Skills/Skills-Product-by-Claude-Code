@@ -1962,27 +1962,27 @@ def cmd_laporan(args):
 
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--db", help="Path file database (default ~/KomunitechData/stok.db atau ENV KOMUNITECH_STOK_DB)")
     umum.add_argument("--json", action="store_true", help="Output JSON (untuk dibaca agent)")
     umum.add_argument("--hari-ini", help=argparse.SUPPRESS)
-    tulis = argparse.ArgumentParser(add_help=False)
+    tulis = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     tulis.add_argument("--ya", action="store_true", help="Simpan perubahan (tanpa ini hanya pratinjau)")
 
-    p = argparse.ArgumentParser(prog="stok.py", description="buku-stok Komunitech - stok/inventori lokal (SQLite).")
+    p = argparse.ArgumentParser(prog="stok.py", description="buku-stok Komunitech - stok/inventori lokal (SQLite).", allow_abbrev=False)
     p.add_argument("--versi", action="version", version="buku-stok " + VERSI)
     sub = p.add_subparsers(dest="perintah", metavar="PERINTAH")
     sub.required = True
 
-    s = sub.add_parser("init", parents=[umum, tulis], help="Buat database stok baru")
+    s = sub.add_parser("init", parents=[umum, tulis], help="Buat database stok baru", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_init)
-    s = sub.add_parser("info", parents=[umum], help="Info database & backup")
+    s = sub.add_parser("info", parents=[umum], help="Info database & backup", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_info)
 
-    s = sub.add_parser("produk", help="Tambah/ubah/cari/impor produk")
+    s = sub.add_parser("produk", help="Tambah/ubah/cari/impor produk", allow_abbrev=False)
     ps = s.add_subparsers(dest="aksi", metavar="AKSI")
     ps.required = True
-    a = ps.add_parser("tambah", parents=[umum, tulis], help="Tambah produk (SKU per varian)")
+    a = ps.add_parser("tambah", parents=[umum, tulis], help="Tambah produk (SKU per varian)", allow_abbrev=False)
     a.add_argument("--sku", required=True)
     a.add_argument("--nama", required=True)
     a.add_argument("--varian", default="")
@@ -1994,18 +1994,18 @@ def buat_parser():
     a.add_argument("--stok-awal", help="Stok awal (dicatat sebagai saldo awal dengan harga beli)")
     a.add_argument("--tanggal")
     a.set_defaults(fungsi=cmd_produk_tambah)
-    a = ps.add_parser("ubah", parents=[umum, tulis], help="Ubah data produk")
+    a = ps.add_parser("ubah", parents=[umum, tulis], help="Ubah data produk", allow_abbrev=False)
     a.add_argument("--sku", required=True)
     for f in ("nama", "varian", "satuan", "lokasi", "harga-beli", "harga-jual", "stok-min", "sku-baru", "koreksi-hpp"):
         a.add_argument("--" + f)
     a.add_argument("--nonaktif", action="store_true")
     a.add_argument("--aktif", action="store_true")
     a.set_defaults(fungsi=cmd_produk_ubah)
-    a = ps.add_parser("cari", parents=[umum], help="Cari produk (kosong = semua)")
+    a = ps.add_parser("cari", parents=[umum], help="Cari produk (kosong = semua)", allow_abbrev=False)
     a.add_argument("kata", nargs="?", default="")
     a.add_argument("--semua", action="store_true", help="Termasuk produk nonaktif")
     a.set_defaults(fungsi=cmd_produk_cari)
-    a = ps.add_parser("impor", parents=[umum, tulis], help="Impor daftar produk dari CSV/XLSX")
+    a = ps.add_parser("impor", parents=[umum, tulis], help="Impor daftar produk dari CSV/XLSX", allow_abbrev=False)
     a.add_argument("file")
     a.add_argument("--tanggal")
     a.set_defaults(fungsi=cmd_produk_impor)
@@ -2013,7 +2013,7 @@ def buat_parser():
     for nama, fungsi, pilihan, bantuan in (
             ("masuk", cmd_masuk, ["beli", "retur-pembeli", "saldo-awal", "lainnya"], "Barang masuk (pembelian/restock)"),
             ("keluar", cmd_keluar, ["jual", "retur-supplier", "rusak", "hilang", "pakai-sendiri", "lainnya"], "Barang keluar")):
-        s = sub.add_parser(nama, parents=[umum, tulis], help=bantuan)
+        s = sub.add_parser(nama, parents=[umum, tulis], help=bantuan, allow_abbrev=False)
         s.add_argument("--sku")
         s.add_argument("--qty")
         s.add_argument("--harga", help="Harga per satuan (masuk: harga beli; keluar jual: harga jual)")
@@ -2029,7 +2029,7 @@ def buat_parser():
             s.add_argument("--izinkan-minus", action="store_true", help="Izinkan stok menjadi minus (tetap diberi peringatan)")
         s.set_defaults(fungsi=fungsi)
 
-    s = sub.add_parser("opname", parents=[umum, tulis], help="Stock opname: hitung fisik -> selisih -> penyesuaian")
+    s = sub.add_parser("opname", parents=[umum, tulis], help="Stock opname: hitung fisik -> selisih -> penyesuaian", allow_abbrev=False)
     s.add_argument("--hitung", action="append", help="SKU=jumlah fisik (boleh berulang)")
     s.add_argument("--file", help="CSV hasil hitung: kolom SKU, Fisik, Alasan (opsional)")
     s.add_argument("--alasan", help="Alasan selisih untuk semua baris yang tidak punya alasan sendiri")
@@ -2037,7 +2037,7 @@ def buat_parser():
     s.add_argument("--ref", default="")
     s.set_defaults(fungsi=cmd_opname)
 
-    s = sub.add_parser("impor-pesanan", parents=[umum, tulis], help="Impor file pesanan Shopee/TikTok Shop/Tokopedia")
+    s = sub.add_parser("impor-pesanan", parents=[umum, tulis], help="Impor file pesanan Shopee/TikTok Shop/Tokopedia", allow_abbrev=False)
     s.add_argument("file")
     s.add_argument("--platform", choices=["shopee", "tiktok", "tokopedia", "lainnya"])
     for f in SINONIM_PESANAN:
@@ -2047,7 +2047,7 @@ def buat_parser():
     s.add_argument("--lewati-tak-dikenal", action="store_true", help="Tetap impor walau ada SKU belum terdaftar")
     s.set_defaults(fungsi=cmd_impor_pesanan)
 
-    s = sub.add_parser("picking", parents=[umum, tulis], help="Daftar ambil barang & urutan resi dari pesanan belum dikirim")
+    s = sub.add_parser("picking", parents=[umum, tulis], help="Daftar ambil barang & urutan resi dari pesanan belum dikirim", allow_abbrev=False)
     s.add_argument("--platform")
     s.add_argument("--urut", choices=["kurir", "resi", "batas", "pesanan"], default="kurir")
     s.add_argument("--csv")
@@ -2056,7 +2056,7 @@ def buat_parser():
     s.add_argument("--tandai-dikemas", action="store_true", help="Tandai semua pesanan di daftar sebagai sudah dikemas")
     s.set_defaults(fungsi=cmd_picking)
 
-    s = sub.add_parser("laporan", parents=[umum], help="Laporan stok")
+    s = sub.add_parser("laporan", parents=[umum], help="Laporan stok", allow_abbrev=False)
     s.add_argument("jenis_laporan", choices=list(LAPORAN))
     s.add_argument("--cari")
     s.add_argument("--hari", type=int, default=30, help="Batas hari untuk laporan tidak-laku (default 30)")
@@ -2069,11 +2069,11 @@ def buat_parser():
     s.add_argument("--pemisah", default=";", help="Pemisah CSV: ';' (Excel Indonesia, default) atau ','")
     s.set_defaults(fungsi=cmd_laporan)
 
-    s = sub.add_parser("backup", parents=[umum], help="Buat salinan database bertanggal")
+    s = sub.add_parser("backup", parents=[umum], help="Buat salinan database bertanggal", allow_abbrev=False)
     s.add_argument("--label")
     s.add_argument("--daftar", action="store_true", help="Tampilkan daftar backup")
     s.set_defaults(fungsi=cmd_backup)
-    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan database dari file backup")
+    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan database dari file backup", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     s.set_defaults(fungsi=cmd_restore)
     return p

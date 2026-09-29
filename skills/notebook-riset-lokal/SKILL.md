@@ -5,6 +5,8 @@ description: Mengumpulkan PDF/artikel/notulen/katalog supplier ke "notebook" ris
 
 # Notebook Riset Lokal (asisten Open Notebook lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Profesional/pemilik usaha yang memakai **Open Notebook di komputer/server sendiri** (alternatif NotebookLM, lisensi MIT, dipasang lewat Docker) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/notebook.py` untuk menambah sumber, bertanya, mencari, dan meringkas lewat **REST API resmi Open Notebook**. Cocok untuk: kumpulan regulasi/PP/PMK, katalog supplier, notulen rapat, kumpulan artikel riset kompetitor. Python standar saja, tanpa instalasi paket.
 
@@ -108,6 +110,8 @@ Teks siap tempel, mis. hasil `tanya`:
 Contoh lain (tambah-sumber, ringkasan, cari, podcast, error) di `examples/`. `--json` berisi field yang sama secara terstruktur; tanpa `--json`, pratinjau ditampilkan sebagai teks baris demi baris.
 
 ## Batasan & penanganan error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Pesan / kode keluar | Artinya | Yang dilakukan agent |
 |---|---|---|
 | 4 "tidak bisa dihubungi" | Open Notebook mati atau alamat/port salah | Minta nyalakan Docker (panduan §3/§7), cek `docker compose ps` |

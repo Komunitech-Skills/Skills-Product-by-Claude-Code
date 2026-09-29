@@ -62,10 +62,15 @@ Hasil: CSV `Tanggal;Keterangan;Masuk;Keluar;Kategori` (UTF-8 BOM, tanggal DD/MM/
   tercatat sebagai utang di awal periode); denda/sanksi pajak (kategori `pajak` maupun `lain-lain`) → `beban_lain`.
 - v1.0.5: "PAJAK BUNGA"/"PPh bunga" (PPh final atas bunga tabungan/jasa giro, kategori `pajak` atau `lain-lain`) → `beban_pajak_penghasilan`, bukan `beban_lain`. Catatan gabungan pokok + denda tidak bisa dibuat lagi (dipisah saat catat/impor), jadi pokok selalu `bayar_pinjaman` dan denda `beban_keuangan`.
 - v1.0.6: pengeluaran `lain-lain` berisi kata alat/aset (mesin, rak, etalase, kulkas, meja, renovasi…, bukan servis/perbaikan) tetap dikirim dengan kolom Kategori kosong; laporan-keuangan-emkm dapat menggolongkannya `aset_tetap` sehingga **laba emkm = hasil usaha + nilai aset tersebut (dikurangi penyusutan)**. Ekspor menuliskan catatan berisi daftar baris dan totalnya; bila pengguna ingin barang kecil dihitung beban, isi kolom Kategori baris itu dengan `beban_lain`.
+- v1.0.7: pengeluaran `lain-lain` lainnya **tidak lagi dikosongkan** (dulu mis. "belanja dapur" masuk "BELUM TERKLASIFIKASI" dan laporan ditandai sementara). Kode rinci dari keterangan: servis/perbaikan → `beban_perawatan`, bensin/parkir/ongkir → `beban_transportasi`, gas/elpiji/internet/pulsa → `beban_utilitas`, materai/retribusi → `beban_pajak_lain`, iklan/promosi → `beban_pemasaran`, kemasan/plastik/ATK → `beban_perlengkapan`, admin/komisi marketplace → `beban_admin_penjualan`, selain itu `beban_lain`. Semuanya beban usaha, jadi laba emkm tetap = hasil usaha. Yang tetap kosong hanya pembelian alat/aset (lihat v1.0.6).
 - Pindah dana antar akun tidak ditulis (kas + rekening dihitung sebagai satu pos kas di emkm). Catatan yang dibatalkan
   tidak ikut.
 - Teks script memberi perintah emkm siap pakai, termasuk `--kas-akhir-aktual` = saldo akhir gabungan (cek silang).
   Sebelum menjalankannya, tanyakan stok awal/akhir, piutang, utang, dan aset (lihat SKILL.md emkm).
+- v1.0.8: bila ada cicilan pinjaman (`bayar_pinjaman`), teks ekspor memuat satu "PERTANYAAN BUNGA" untuk seluruh
+  periode, JSON `baris_cicilan` (nomor baris file; judul = baris 1) dan `perintah_pokok_saja` (= perintah emkm +
+  `--bunga N=0` per baris cicilan). Jawaban "ya, pokok saja" → pakai `perintah_pokok_saja`; emkm tidak lagi bertanya
+  per baris. Ada cicilan yang masih termasuk bunga → ganti `0` baris itu dengan nominal bunganya.
 - Diuji: laba bersih emkm = hasil usaha kas-umkm bila tidak ada stok/piutang/utang/aset (tes otomatis).
 
 ## 3. Ke arus-kas-13minggu (proyeksi)

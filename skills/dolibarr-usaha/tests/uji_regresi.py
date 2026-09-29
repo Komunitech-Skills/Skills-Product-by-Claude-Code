@@ -1442,5 +1442,21 @@ class UjiDolibarr(unittest.TestCase):
         self.assertEqual(p.returncode, 2)
 
 
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "dolibarr.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["simpan-kunci", "--kunci-file", os.path.join(t, "k.txt"), "--y"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+            self.assertFalse(os.path.exists(os.path.join(t, "k.txt")), "singkatan flag tidak boleh menulis apa pun")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

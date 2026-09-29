@@ -1,0 +1,52 @@
+kanal,bulan,bintang,nilai_0_10,sentimen,tema,teks
+WhatsApp,2026-09,,,negatif,kemasan;pengiriman,"Kak Dapur Bu [nama], pesanan nasi kotak kemarin datangnya telat 1 jam, pas rapat sudah mulai"
+WhatsApp,2026-09,,,positif,rasa,"Tapi rasanya enak banget, ayam bakarnya empuk"
+WhatsApp,2026-09,,,netral,pengiriman,"Halo kak, kirim ke [alamat], hubungi [hp]"
+WhatsApp,2026-09,,,negatif,porsi_ukuran,"Kemarin sambalnya kurang, porsi nasinya juga sedikit"
+WhatsApp,2026-09,,,netral,varian_menu,"Kak [nama] mau tanya, boleh tidak tambah menu vegetarian? Semoga ada paket tanpa daging"
+WhatsApp,2026-09,,,negatif,kemasan,"Kotak nasinya bocor, kuah sayur tumpah ke mana-mana, kecewa"
+WhatsApp,2026-09,,,negatif,keamanan;kebersihan,"Ada rambut di lauknya, jorok banget. Tolong diperiksa"
+WhatsApp,2026-09,,,positif,layanan;pengiriman,"Pengiriman tepat waktu, admin ramah, langganan terus!"
+WhatsApp,2026-09,,,negatif,harga,"Harga naik ya? Agak mahal sekarang, ongkir juga"
+WhatsApp,2026-09,,,negatif,kemasan;ketepatan_pesanan,"Pesanan kurang satu kotak, salah hitung"
+WhatsApp,2026-09,,,positif,rasa,"Sambalnya mantap, gurih dan segar"
+WhatsApp,2026-09,,,positif,kemasan;rasa,"Makasih kak, nasi kotaknya rapi dan enak"
+Shopee,2026-08,5,,positif,kemasan;pengiriman;rasa,"Enak banget ayam bakarnya, packing rapi, pengiriman cepat"
+Shopee,2026-08,4,,positif,porsi_ukuran;rasa,Rasa mantap tapi porsi agak sedikit
+Shopee,2026-08,1,,negatif,pengiriman;rasa,"Pesanan datang telat 2 jam, nasi sudah dingin. Kecewa"
+Shopee,2026-08,5,,positif,harga;rasa,"Order lagi pasti, harga terjangkau dan enak"
+Shopee,2026-08,2,,negatif,kemasan,"Kemasan bocor, kuah tumpah"
+Shopee,2026-08,5,,positif,layanan,"Admin ramah, respon cepat"
+Shopee,2026-08,3,,netral,rasa,"Lumayan, rasanya biasa saja, agak hambar"
+Shopee,2026-08,1,,negatif,keamanan,"Ada rambut di dalam nasi, jijik. Tidak akan beli lagi"
+Shopee,2026-08,4,,positif,pengiriman;rasa,"Enak, pengiriman tepat waktu"
+Shopee,2026-08,2,,negatif,pengiriman,"Kurir lama banget, telat lagi"
+Shopee,2026-08,5,,positif,harga,"Mantul, worth it, recommended"
+Shopee,2026-08,1,,negatif,ketepatan_pesanan,"Pesanan salah kirim, tertukar dengan orang lain"
+Shopee,2026-09,5,,positif,kemasan;rasa,"Sambal enak bgt, packing aman"
+Shopee,2026-09,2,,negatif,pengiriman;rasa;waktu_tunggu,"Nunggu lama, kurir telat, nasi dingin"
+Shopee,2026-09,1,,negatif,pengiriman,"Telat lagi 90 menit, sangat mengecewakan"
+Shopee,2026-09,4,,positif,harga;rasa,"Rasa enak, harga agak mahal sekarang"
+Shopee,2026-09,2,,negatif,kemasan,Kemasan penyok dan bocor lagi
+Shopee,2026-09,5,,positif,layanan,"Ramah dan cepat tanggap, langganan"
+Shopee,2026-09,3,,netral,harga;porsi_ukuran,Porsi kecil untuk harga segitu
+Shopee,2026-09,1,,negatif,pengiriman,"Telat sekali, kurir susah dihubungi"
+Shopee,2026-09,5,,positif,rasa,"Ayamnya empuk, bumbu nendang"
+Shopee,2026-09,2,,negatif,kualitas_produk;rasa,"Nasi hambar dan lauk dingin, tidak sesuai foto"
+Shopee,2026-09,4,,positif,pengiriman;rasa,"Enak, sayang pengiriman telat sedikit"
+Shopee,2026-09,5,,positif,pengiriman;rasa,"Pengiriman cepat, rapi, enak"
+Shopee,2026-09,1,,negatif,keamanan,Ada ulat kecil di sayur! Tolong periksa dapurnya
+Shopee,2026-09,5,,positif,,"Mantap, terima kasih"
+Instagram,,,,netral,rasa;varian_menu,"[akun] enak banget kak, kapan ada menu vegetarian?"
+Instagram,,,,negatif,harga,"[akun] harganya kok naik, jadi mahal"
+Instagram,,,,netral,pengiriman;rasa,"kemarin pesan lewat kak [nama] dikirim telat, tapi rasanya juara"
+Instagram,,,,positif,harga,"Semoga ada paket hemat untuk kantor, hubungi saya di [email]"
+Instagram,,,,positif,kemasan,"Packing nya cakep dan rapi, suka!"
+Survei,2026-09,,,negatif,pengiriman,Pengiriman sering telat
+Survei,2026-09,,,positif,rasa,Rasa ayam bakar enak
+Survei,2026-09,,,negatif,porsi_ukuran,Porsi kurang banyak
+Survei,2026-09,,,positif,,Sambal mantap
+Survei,2026-09,,,netral,varian_menu,Tolong tambah menu sayur tanpa santan
+Survei,2026-09,,,positif,layanan,Admin ramah
+Survei,2026-09,,,negatif,kemasan,Kemasan kadang bocor
+Survei,2026-09,,,positif,harga,Harga terjangkau

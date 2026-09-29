@@ -5,6 +5,8 @@ description: Mengatur keuangan pribadi & keluarga Indonesia dalam Rupiah — ang
 
 # Atur Keuangan Pribadi
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pekerja, keluarga, dan pekerja lepas Indonesia menjawab empat pertanyaan uang sehari-hari dengan **angka yang dihitung, bukan dikira**:
 1. **Gaji habis ke mana, dan seharusnya ke mana?** → anggaran bulanan zero-based + banding 50/30/20.

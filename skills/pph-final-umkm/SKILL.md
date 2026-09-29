@@ -5,6 +5,8 @@ description: Menghitung PPh Final UMKM 0,5% per bulan dengan pelacak omzet kumul
 
 # PPh Final UMKM 0,5%
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pelaku UMKM tahu berapa PPh Final 0,5% yang perlu disetor tiap bulan, berapa sisa omzet bebas pajak, dan kapan batas-batas penting terlewati — dengan tabel yang siap disimpan atau diserahkan ke admin/konsultan.
 

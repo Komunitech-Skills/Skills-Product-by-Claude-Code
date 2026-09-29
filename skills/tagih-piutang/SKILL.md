@@ -5,6 +5,8 @@ description: Menyusun pesan penagihan piutang bertahap (WA/email/surat): penging
 
 # Tagih Piutang
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha menagih pembayaran yang tertunda dengan urutan pesan yang makin tegas tapi tetap menjaga hubungan dan tetap di koridor hukum. Angka (hari terlambat, sisa, denda) dihitung script, sehingga pesan tidak salah nominal.
 
@@ -37,6 +39,8 @@ Membantu pemilik usaha menagih pembayaran yang tertunda dengan urutan pesan yang
 
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, pakai default dan tulis "Asumsi" di akhir.
 
+**Sumber data = hanya yang diberikan pengguna.** Jika data tagihan tidak disebut di chat atau di file yang ia tunjuk, **tanyakan** — jangan menjelajah folder, membuka invoice/kuitansi/log lain, grep, atau mencari di memori untuk "menemukan" piutang. File Excel `.xlsx` dibaca langsung oleh script (tanpa paket tambahan); `.xls`/`.ods`/format lain atau file yang gagal dibaca → minta pengguna menyimpannya sebagai **CSV UTF-8**. **Jangan pernah menjalankan `pip install` (openpyxl, pandas, dll.)** atau menginstal apa pun untuk skill ini.
+
 ## Langkah kerja
 1. **Hitung dengan script** (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
@@ -45,7 +49,7 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    ```
    - `--sudah-diingatkan N` = jumlah pengingat yang **sudah** terkirim (dari "Riwayat penagihan"; default 0). Script memakainya untuk menentukan tahap.
    - Denda **hanya** jika ada kesepakatan tertulis: tambahkan `--denda-persen 0,1 --denda-per hari` (atau `--denda-per bulan`, `--denda-tetap "Rp 100.000"`), `--tenggang 3`, `--denda-maks 5%`, dan `--dasar-denda "Pasal 4 Perjanjian No. ..."`. Jika script menulis PERINGATAN bahwa dasar denda kosong, jangan cantumkan denda di pesan sampai pengguna mengonfirmasi dasarnya.
-   - Banyak tagihan: `--file piutang.csv` (kolom `pelanggan,no_invoice,nominal,jatuh_tempo,dibayar`) → rekap umur piutang + urutan prioritas penagihan.
+   - Banyak tagihan: `--file piutang.csv` atau `--file piutang.xlsx` (opsional `--sheet NamaSheet`; kolom `pelanggan,no_invoice,nominal,jatuh_tempo,dibayar`) → rekap umur piutang + urutan prioritas penagihan. Hanya file yang ditunjuk pengguna.
    - Script menolak denda > 1% per hari (atau setara per bulan) sebagai kemungkinan salah ketik, serta `--denda-maks` tanpa satuan ≤ 100 atau < Rp 1.000. Tanyakan konfirmasi ke pengguna; tambahkan `--konfirmasi-denda-tinggi` hanya bila pengguna memastikan angka itu memang tertulis di perjanjian.
    - Script keluar dengan kode ≠ 0 dan pesan `ERROR:` bila input salah; perbaiki, jangan menebak.
 2. **Tentukan tahap** dari output `tahap` script:
@@ -129,4 +133,5 @@ Asumsi: tenggat 7 hari. (Jika pengguna belum pernah mengirim pengingat, script m
 - Bukan nasihat hukum. Somasi, gugatan (termasuk gugatan sederhana), dan penagihan lintas negara → advokat.
 - Script tidak menghitung bunga moratoir menurut undang-undang, bunga berbunga, atau denda dengan dasar pembayaran bertanggal; jika diminta, jelaskan dan sarankan advokat/akuntan.
 - Jika pengguna tidak punya bukti tertulis (invoice, PO, chat kesepakatan), sarankan mengumpulkan bukti dulu dan gunakan nada tahap 3–4 saja.
+- File tidak terbaca (`.xls` lama, terkunci kata sandi, rusak) → script menulis `ERROR:` + minta CSV; sampaikan itu ke pengguna. Jangan mencari cara lain dengan menginstal paket.
 - Jika debitur membantah tagihan (barang cacat, belum diterima), hentikan eskalasi; sarankan klarifikasi & rekonsiliasi dulu.

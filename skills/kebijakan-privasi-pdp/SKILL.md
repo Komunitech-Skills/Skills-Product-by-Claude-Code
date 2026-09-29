@@ -5,6 +5,8 @@ description: Menyusun Kebijakan Privasi sesuai UU 27/2022 Pelindungan Data Priba
 
 # Kebijakan Privasi & Kepatuhan UU PDP untuk Usaha
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu UMKM dan usaha Indonesia memenuhi kewajiban dasar UU 27/2022 tentang Pelindungan Data Pribadi (UU PDP) lewat dokumen yang siap tempel: kebijakan privasi, pemberitahuan & persetujuan, tanggapan permintaan pelanggan, dan langkah bila data bocor. Isinya mengikuti praktik usaha yang sebenarnya, tidak ada yang dikarang, dan dasar aturannya disebut. Ini draf, **bukan nasihat hukum**.
 

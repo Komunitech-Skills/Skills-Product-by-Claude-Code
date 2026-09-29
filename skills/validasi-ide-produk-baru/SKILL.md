@@ -5,6 +5,8 @@ description: Mengubah satu kalimat ide produk/menu/layanan baru menjadi hipotesi
 
 # Validasi Ide Produk Baru
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah ide satu kalimat ("saya mau jual kopi susu gula aren kemasan literan") menjadi hipotesis yang bisa diuji, lalu memandu uji pasar **murah dan cepat (≤7 hari)** memakai kanal yang sudah dimiliki UMKM Indonesia (WA, IG, marketplace, warung langganan) — dan menutup dengan keputusan **LANJUT / UBAH / HENTIKAN** berdasarkan angka hasil uji, bukan feeling atau "kayaknya laku".
 

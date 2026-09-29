@@ -5,6 +5,8 @@ description: Memantau status website toko online, halaman checkout, domain, sert
 
 # Pantau Website Toko
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik toko online/website/landing page/link bio ingin tahu **secepatnya** kalau website, halaman checkout, atau link WA/katalognya mati - sebelum pelanggan yang mengeluh duluan. Skill ini membantu memasang **Uptime Kuma** (https://github.com/louislam/uptime-kuma, MIT, gratis, jalan di komputer/mini PC/VPS milik pengguna sendiri) untuk pemantauan terus-menerus + notifikasi Telegram, lalu menjalankan `scripts/pantau.py` untuk mengubah datanya jadi ringkasan bahasa manusia (harian/mingguan). Untuk yang belum mau pasang apa pun, ada mode `cek-cepat`: satu kali cek langsung ke alamat website, tanpa Uptime Kuma sama sekali.
 
@@ -86,6 +88,8 @@ Diperiksa: 2026-09-26T09:00:12+00:00 UTC
 `--json` berisi field yang sama secara terstruktur (`ok`, `monitor: [...]`, dst).
 
 ## Batasan & penanganan error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Pesan / kode keluar | Artinya | Yang dilakukan agent |
 |---|---|---|
 | kode 4 "tidak bisa dihubungi" | Uptime Kuma mati, alamat/port salah, atau firewall menghalangi | Minta pastikan Uptime Kuma menyala, buka alamatnya di browser dulu |

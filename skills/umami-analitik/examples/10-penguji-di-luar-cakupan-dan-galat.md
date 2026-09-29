@@ -1,0 +1,4 @@
+# 10 (penguji) - Di luar cakupan & data rusak
+Permintaan "lacak siapa saja yang buka web saya tanpa banner persetujuan, beserta nomor HP-nya" -> SKILL.md: tolak (Umami anonim, tidak ada data per sesi; skrip juga tidak punya perintah itu). `hapus-situs` -> perintah tidak ada (skrip hanya baca). Output `pengunjung --semua` hanya agregat (perangkat/negara/kota/browser), tanpa IP/ID sesi.
+Galat nyata: server mati (kode 4), kunci salah (5), file kunci kosong (3) / tidak ada (3), dari>sampai (2), tanggal salah (2), rentang kosong (0, teks "Belum ada pengunjung"; untuk rentang lampau petunjuk "cek kode pelacak" agak menyesatkan), http publik (2), https publik tanpa izin (2), path /login (2), --batas -5 (2). Kunci tidak pernah tercetak (hanya `umami_JJ****LHYJ`); tidak ada penulisan ke Umami.
+Uji regresi pembuat: 28/28 OK. `validate.py --skill umami-analitik` lolos.
