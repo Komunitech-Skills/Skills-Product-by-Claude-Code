@@ -153,3 +153,9 @@ Error CLI lain (HPP 0/teks, biaya+margin ≥ 100%, ukuran "sebungkus", file hany
 2. Kurator menjalankan `bash scripts/uji_openclaw.sh` sebelum mengubah status.
 
 Artefak uji ulang (data, output, `verif.py`): scratchpad sesi `uji-riset-101/{data,out,verif.py}`.
+
+## Uji ulang (2026-09-29) - v1.0.2 - penguji independen
+Tes regresi 41/41 OK. Data: 14 baris (semua setara Rp100.000/kg) + 7 baris harga bervariasi; statistik diverifikasi ulang dengan Decimal (PERCENTILE.INC): terendah/P25/median/P75/P90/tertinggi dan harga minimum (Rp85.070) cocok persis.
+- `500 gr isi 2`, `2 pack 500 gr`, `3 botol 250 ml` -> dikalikan (1 kg, 1 kg, 750 ml) + catatan "cek: bila angka itu sudah total"; `isi 10 pcs 250 gr` tidak dikalikan (250 g). U1 **beres**.
+- 8 ukuran baru: `3 x 1/2 kg`, `1,5 kg`, `500gr (isi 4)`, `2 pouch 250 gr`, `250 gram x 4 pcs`, `500 g isi 1`, `isi 2 @250gr` benar. Temuan RENDAH: satuan kemasan tak dikenal (`10 sachet 25 gr`, `2 karung 1 kg`) tidak dikalikan; `1 lusin 100 gr` dibaca 100 g. Ketiganya tidak menyesatkan diam-diam karena setara menyimpang jauh, keluar dari statistik dengan peringatan (kecuali `2 karung 1 kg`, harga setara 2x tepat: baris itu ikut tersaring sebagai pencilan, bukan salah hitung).
+**Skor: 8,5/10. Lulus.**

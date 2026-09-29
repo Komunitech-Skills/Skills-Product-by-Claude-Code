@@ -194,3 +194,10 @@ Alasan:
 | P-4 | Rendah | ⚠️ `Subtotal …` yang tidak cocok tidak menyebut total alternatif |
 
 **Skor: 9 / 10. Keputusan: LULUS.** N3 ditutup. Ekspor asli per platform tetap PERLU REVIEW sebelum uji platform asli/beta.
+
+## Uji ulang (2026-09-29) - v1.0.5 - penguji independen
+Tes regresi 91/91 OK.
+- P-3: baris PMax tanpa grup iklan tampil `PMax Sepatu (tanpa grup iklan)` (bukan "tanpa nama, baris N"). Total file dicek manual: Rp2.900.000, 1.800 klik, cocok.
+- P-4: ⚠️ subtotal/total menyebut total alternatif dan angkanya benar (file 900k+250k: "Rp650.000 / Rp1.550.000"; `Total` 1.650.000 -> 950.000 / 2.600.000; `Retarget Video Total` 1.300.000 / 650.000). N3 tidak mundur (6 varian subtotal, tidak dihitung dua kali).
+- Temuan RENDAH (bukan regresi, perilaku sama di v1.0.4): baris total kampanye tanpa label di kolom grup iklan kosong (`Search Brand`, 700.000 = jumlah grup di atasnya) tetap dihitung tanpa peringatan -> total 1.650.000, seharusnya 950.000. Dengan `--kolom-nama "Asset group"` baris kosong masih "(tanpa nama, baris N)".
+**Skor: 8,5/10. Lulus.**
