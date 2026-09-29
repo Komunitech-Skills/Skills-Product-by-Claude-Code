@@ -34,11 +34,12 @@ from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from inti import (D, DISCLAIMER, WIB, KonfigurasiTidakValid, Penyamar, angka, catat_niat_berhasil,  # noqa: E402
-                  cek_niat, cek_risiko_awal, cek_tombol_berhenti, ekuitas, hentikan, muat_konfigurasi,
-                  folder_stop_global,
-                  muat_state, rencanakan, rp, sidik_jari_penuh, sidik_jari_strategi, simpan_json_atomik,
-                  state_awal, teks, terapkan_isi, tulis_audit)
+from inti import (D, DISCLAIMER, NOL, WIB, KonfigurasiTidakValid, Penyamar, ambil_buku, angka,  # noqa: E402
+                  catat_niat_berhasil, cek_niat, cek_risiko_awal, cek_tombol_berhenti, ekuitas, hentikan,
+                  folder_stop_global, hash_konfigurasi, muat_konfigurasi, muat_state, pasang_buku, rencanakan,
+                  rp, segel_konfirmasi, sidik_jari_penuh, sidik_jari_strategi, simpan_json_atomik, teks,
+                  terapkan_isi, tulis_audit)
+from datetime import timedelta  # noqa: E402
 from bursa import ErrorBursa, ErrorKunci, StatusTidakPasti, buat_adapter, muat_kunci  # noqa: E402
 
 FOLDER_SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -52,6 +53,8 @@ FRASA_LIVE = "LIVE {kode} SAYA TANGGUNG RISIKONYA"
 MIN_PAPER_PUTARAN = 3
 MIN_PAPER_JAM = 24
 KEDALUWARSA_KUNCI_PUTARAN = 600
+# KONFIRMASI-LIVE.json SEKALI PAKAI: wajib dipakai (putaran live pertama) dalam 24 jam sejak dibuat.
+KEDALUWARSA_KONFIRMASI = timedelta(hours=24)
 
 
 def bukti_paper(state, sj):
@@ -96,8 +99,12 @@ def tulis_transaksi(path, baris):
         w.writerow(baris)
 
 
-def periksa_konfirmasi_live(cfg, state, folder_bot):
-    """Kembalikan None bila semua syarat live terpenuhi, atau pesan penolakan."""
+def periksa_konfirmasi_live(cfg, state, folder_bot, sekarang=None):
+    """Kembalikan None bila semua syarat live terpenuhi, atau pesan penolakan.
+    Konfirmasi SEKALI PAKAI: dipakai pada putaran live pertama -> menjadi `sesi_live` yang terikat ke hash
+    konfigurasi persis. Sesi batal bila mode berganti atau konfigurasi berubah; konfirmasi yang sama tidak
+    bisa dipakai lagi (id-nya dicatat di state & file ditandai `dipakai`)."""
+    sekarang = sekarang or datetime.now(WIB)
     sj = sidik_jari_strategi(cfg)
     if int(state.get("tick_paper_per_sidik", {}).get(sj, 0)) < 1:
         return ("Mode live ditolak: aturan yang SAMA persis belum pernah dijalankan di mode simulasi (paper). "
@@ -113,13 +120,50 @@ def periksa_konfirmasi_live(cfg, state, folder_bot):
     except (OSError, json.JSONDecodeError):
         return ("Mode live ditolak: KONFIRMASI-LIVE.json belum ada/rusak. Jalankan scripts/siapkan_live.py "
                 "dan ikuti langkah konfirmasinya.")
+    if not isinstance(k, dict):
+        k = {}
+    hash_cfg = hash_konfigurasi(cfg)
     kode = sidik_jari_penuh(cfg)
+    sesi = state.get("sesi_live")
+    if sesi and sesi.get("hash_konfigurasi") != hash_cfg:
+        state["sesi_live"] = sesi = None          # konfigurasi berubah -> sesi live batal
     if k.get("kode") != kode or k.get("frasa") != FRASA_LIVE.format(kode=kode):
         return ("Mode live ditolak: konfigurasi berubah sejak konfirmasi terakhir (kode tidak cocok). "
                 "Ulangi scripts/siapkan_live.py supaya Anda meninjau aturan yang baru.")
     if k.get("pernyataan_kunci_tanpa_withdraw") is not True or k.get("daftar_periksa_withdraw_selesai") is not True:
         return ("Mode live ditolak: daftar periksa 'kunci tanpa izin withdraw' belum diselesaikan member "
                 "(siapkan_live.py --saya-sudah-cek-tanpa-withdraw).")
+    idk, waktu_k = k.get("id"), k.get("waktu")
+    if (not idk or not waktu_k or k.get("hash_konfigurasi") != hash_cfg
+            or k.get("segel") != segel_konfirmasi(idk, hash_cfg, waktu_k)):
+        return ("Mode live ditolak: KONFIRMASI-LIVE.json tidak terikat ke konfigurasi ini (format lama, disunting, "
+                "atau disalin). Ulangi scripts/siapkan_live.py.")
+    if sesi and sesi.get("id") == idk:
+        return None                                # sesi live yang sama masih berlaku
+    dipakai = state.setdefault("konfirmasi_live_dipakai", [])
+    if idk in dipakai or k.get("dipakai"):
+        return ("Mode live ditolak: konfirmasi live ini SUDAH DIPAKAI (sekali pakai). Konfirmasi batal setiap kali "
+                "mode berganti atau konfigurasi berubah. Tinjau lagi posisi & batas risiko, lalu ulangi "
+                "scripts/siapkan_live.py.")
+    try:
+        t_k = datetime.fromisoformat(waktu_k)
+        if t_k.tzinfo is None:
+            t_k = t_k.replace(tzinfo=WIB)
+    except (TypeError, ValueError):
+        return "Mode live ditolak: waktu di KONFIRMASI-LIVE.json rusak. Ulangi scripts/siapkan_live.py."
+    if sekarang - t_k > KEDALUWARSA_KONFIRMASI or t_k - sekarang > timedelta(minutes=10):
+        return ("Mode live ditolak: konfirmasi live kedaluwarsa (wajib dipakai dalam 24 jam sejak dibuat). "
+                "Ulangi scripts/siapkan_live.py.")
+    # pakai konfirmasi: sekali pakai, terikat hash konfigurasi + waktu
+    state["sesi_live"] = {"id": idk, "hash_konfigurasi": hash_cfg, "waktu": waktu_k,
+                          "mulai": sekarang.isoformat(timespec="seconds")}
+    dipakai.append(idk)
+    del dipakai[:-50]
+    k["dipakai"] = sekarang.isoformat(timespec="seconds")
+    try:
+        simpan_json_atomik(path, k)
+    except OSError:
+        pass                                       # id sudah tercatat di state -> tetap sekali pakai
     return None
 
 
@@ -147,20 +191,30 @@ def satu_putaran(args):
         return 0, "NO_REPLY"
     try:
         state = muat_state(p_state, cfg)
-        if state.get("mode") != mode:
-            # ganti mode (mis. paper -> live): buku bot dimulai bersih, bukti simulasi dipertahankan
-            bukti = state.get("tick_paper_per_sidik", {})
-            bukti_nyata = state.get("paper_nyata_per_sidik", {})
-            waktu_terakhir = state.get("waktu_terakhir")   # pengaman jam mundur tetap dibawa
-            if state.get("mode") is not None:
-                audit("ganti_mode", {"dari": state.get("mode"), "ke": mode})
-            berhenti_lama = (state.get("berhenti"), state.get("alasan_berhenti"))
-            state = state_awal(cfg)
-            state["tick_paper_per_sidik"] = bukti
-            state["paper_nyata_per_sidik"] = bukti_nyata
-            state["waktu_terakhir"] = waktu_terakhir
-            if berhenti_lama[0]:
-                state["berhenti"], state["alasan_berhenti"] = berhenti_lama
+        pesan_awal = []
+        mode_lama = state.get("mode")
+        if mode_lama != mode:
+            # Ganti mode: buku TIAP MODE terpisah & disimpan. Buku mode lama disimpan di buku_per_mode,
+            # buku mode baru dipulihkan (bila pernah ada). Buku LIVE (posisi, modal terpakai, patokan rugi)
+            # tidak pernah di-reset oleh ganti mode. Bukti simulasi, waktu_terakhir (pengaman jam), dan
+            # status berhenti berada di luar buku sehingga ikut terbawa.
+            bpm = state.get("buku_per_mode")
+            if not isinstance(bpm, dict):
+                bpm = {}
+            if mode_lama is not None:
+                audit("ganti_mode", {"dari": mode_lama, "ke": mode})
+                bpm[mode_lama] = ambil_buku(state)
+                if mode_lama == "live" and D(state.get("posisi_koin") or "0") > 0:
+                    pesan_awal.append(
+                        f"PERHATIAN: mode diganti dari LIVE ke {mode}. Posisi live ({teks(D(state['posisi_koin']))} "
+                        f"{cfg['koin']}, modal terpakai {rp(D(state['biaya_perolehan']), cfg['kutipan'])}) TETAP "
+                        "tercatat di buku live dan tetap dihitung dalam batas modal total bila kembali ke live. "
+                        "Posisi itu TIDAK dipantau stop-loss selama mode bukan live -- cek di aplikasi bursa.")
+            pasang_buku(state, cfg, bpm.pop(mode, None))
+            state["buku_per_mode"] = bpm
+            if state.get("sesi_live"):
+                audit("konfirmasi_live_batal", {"alasan": "ganti mode", "id": state["sesi_live"].get("id")})
+            state["sesi_live"] = None                     # ganti mode membatalkan konfirmasi live
             state["mode"] = mode
         sj = sidik_jari_strategi(cfg)
         if state.get("sidik_jari_strategi") != sj:
@@ -172,7 +226,7 @@ def satu_putaran(args):
                 state["sidik_jari_strategi"] = sj
             audit("aturan_berubah", {"sidik_baru": sj})
 
-        pesan = []
+        pesan = pesan_awal
 
         def selesai(kode):
             simpan_json_atomik(p_state, state)
@@ -200,7 +254,7 @@ def satu_putaran(args):
                 audit("live_ditolak", {"alasan": "tanpa --izinkan-live"})
                 pesan.append("Mode live ditolak: perintah tidak memuat --izinkan-live.")
                 return selesai(3)
-            tolak = periksa_konfirmasi_live(cfg, state, folder_bot)
+            tolak = periksa_konfirmasi_live(cfg, state, folder_bot, sekarang)
             if tolak:
                 hentikan(state, tolak)
                 audit("live_ditolak", {"alasan": tolak})
@@ -273,9 +327,25 @@ def satu_putaran(args):
                              f"putaran terakhir {state.get('waktu_terakhir')}). Batas rugi harian tetap dihitung "
                              f"untuk tanggal {state.get('hari')} (tidak di-reset). Periksa pengaturan jam/NTP mesin bot.")
         daftar = [paksa] if paksa else ([] if alasan_henti else rencanakan(cfg, state, harga, sekarang))
+        paparan = None
+        if mode == "live":
+            # Rekonsiliasi dengan SALDO BURSA (baca-saja): koin milik bot = saldo sekarang - saldo awal
+            # (dicatat di buku live pada putaran live pertama). Modal terpakai = max(buku bot, saldo bursa).
+            try:
+                saldo = adapter.saldo_koin()
+                if state.get("saldo_koin_awal_bursa") in (None, ""):
+                    state["saldo_koin_awal_bursa"] = teks(max(NOL, saldo - D(state["posisi_koin"])))
+                    audit("saldo_awal_live", {"saldo_koin_awal_bursa": state["saldo_koin_awal_bursa"]})
+                paparan = max(NOL, saldo - D(state["saldo_koin_awal_bursa"])) * harga
+            except (ErrorBursa, KeyError, ValueError, TypeError, ArithmeticError) as e:
+                audit("saldo_bursa_gagal", {"pesan": str(e)})
+                if any(n["sisi"] == "beli" for n in daftar):
+                    pesan.append("Saldo bursa tidak bisa dicek untuk batas modal total; order BELI dilewati "
+                                 "putaran ini (tidak ada pembelian tanpa pengecekan).")
+                daftar = [n for n in daftar if n["sisi"] != "beli"]
         order_terbuka = adapter.jumlah_order_terbuka() if daftar else 0
         for niat in daftar:
-            status, ket = cek_niat(cfg, state, niat, harga, order_terbuka)
+            status, ket = cek_niat(cfg, state, niat, harga, order_terbuka, paparan)
             if status == "lewati":
                 audit("niat_dilewati", {"niat": niat, "alasan": ket})
                 continue
@@ -297,6 +367,8 @@ def satu_putaran(args):
                 audit("order_ditolak", {"niat": niat, "pesan": str(e)})
                 break
             pl = terapkan_isi(state, isi, kut)
+            if paparan is not None and isi["sisi"] == "beli":
+                paparan += isi["bersih"]          # saldo bursa di atas diambil sebelum order ini
             catat_niat_berhasil(state, niat, isi, sekarang)
             tulis_transaksi(p_trx, {
                 "waktu": sekarang.isoformat(timespec="seconds"), "mode": mode, "bursa": cfg["bursa"],

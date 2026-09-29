@@ -185,5 +185,20 @@ class Uji(unittest.TestCase):
         self.assertNotEqual(r.returncode, 0)
 
 
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "siapkan_broadcast.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["--kontak", os.path.join(t, "k.csv"), "--pesan", os.path.join(t, "p.txt"), "--saya-pastikan"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60, cwd=t)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

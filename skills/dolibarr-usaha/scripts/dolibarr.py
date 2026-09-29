@@ -1605,7 +1605,7 @@ def buat_parser():
     umum2 = buat_umum(TINGKAT[2])
 
     ap = ParserID(prog="dolibarr.py", description="Asisten Dolibarr lokal (Komunitech). Default hanya baca.",
-                  parents=[umum])
+                  parents=[umum], allow_abbrev=False)
     sub = ap.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.add_parser("cek", parents=[umum1], help="Cek koneksi, versi, modul, hak akses", allow_abbrev=False)
     sk = sub.add_parser("simpan-kunci", parents=[umum1], help="Simpan kunci API ke file lokal (izin 600)", allow_abbrev=False)

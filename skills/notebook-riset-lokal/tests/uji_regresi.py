@@ -402,6 +402,15 @@ def main():
     cek("31 podcast-mulai profil hilang -> pesan spesifik", rc != 0 and "belum dibuat" in msg and "Settings > Podcasts" in msg, msg)
     srv7.shutdown()
 
+    # 32: singkatan flag konfirmasi (--y untuk --ya) ditolak (regresi keamanan argparse)
+    with tempfile.TemporaryDirectory() as tmp32:
+        berkas32 = os.path.join(tmp32, "kunci.txt")
+        p32 = subprocess.run([sys.executable, SCRIPT, "simpan-kunci", "--kunci-file", berkas32, "--y"],
+                             capture_output=True, text=True, timeout=30)
+        msg = p32.stdout + p32.stderr
+        cek("32 singkatan --y ditolak, tidak menulis file kunci",
+            p32.returncode != 0 and "unrecognized arguments" in msg and not os.path.exists(berkas32), msg)
+
     print(f"\nLULUS: {len(PASSED)}  GAGAL: {len(FAILED)}")
     for f in FAILED:
         print(f"  ❌ {f}")

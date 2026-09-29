@@ -3415,7 +3415,7 @@ def buat_parser():
     periode.add_argument("--dari")
     periode.add_argument("--sampai")
 
-    p = ParserID(prog="kas.py", description="Buku kas harian lokal UMKM (kas-umkm %s)" % VERSI)
+    p = ParserID(prog="kas.py", description="Buku kas harian lokal UMKM (kas-umkm %s)" % VERSI, allow_abbrev=False)
     p.add_argument("--versi", action="version", version="kas-umkm " + VERSI)
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True

@@ -2635,7 +2635,7 @@ def buat_parser():
     sam = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     sam.add_argument("--samarkan", action="store_true", help="Samarkan nomor & nama, tanpa tautan wa.me")
 
-    p = ParserID(prog="crm.py", description="CRM lokal chat WA -> deal (crm-wa %s)" % VERSI)
+    p = ParserID(prog="crm.py", description="CRM lokal chat WA -> deal (crm-wa %s)" % VERSI, allow_abbrev=False)
     p.add_argument("--versi", action="version", version="crm-wa " + VERSI)
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True

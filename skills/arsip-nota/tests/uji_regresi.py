@@ -243,6 +243,13 @@ cek("50. 'bp' di dalam kata 'atap' TIDAK salah tertebak Transportasi (BBM)",
 k, h = jalankan("info")
 cek("51. info akhir: jumlah_nota sesuai jumlah yang tersimpan (11)", h.get("jumlah_nota") == 11)
 
+# ------------------------------------------------------------------ singkatan flag konfirmasi
+# Regresi keamanan: argparse tidak boleh menerima singkatan (--y untuk --ya).
+_db_singkat = os.path.join(WORK, "singkat", "arsip.db")
+_p = subprocess.run([sys.executable, SCRIPT, "init", "--db", _db_singkat, "--y"], capture_output=True, text=True, cwd=WORK)
+cek("52. singkatan flag konfirmasi (--y) ditolak dan tidak menulis apa pun",
+    _p.returncode != 0 and "unrecognized arguments" in (_p.stdout + _p.stderr) and not os.path.exists(_db_singkat))
+
 shutil.rmtree(WORK, ignore_errors=True)
 
 print("\n" + ("SEMUA LULUS" if not GAGAL else "%d GAGAL: %s" % (len(GAGAL), ", ".join(GAGAL))))

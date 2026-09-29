@@ -2433,7 +2433,7 @@ def buat_parser():
     kel = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     kel.add_argument("--keluar", help="Folder file keluaran (default: keluaran/<periode> di sebelah database)")
 
-    p = ParserID(prog="gaji.py", description="Penggajian bulanan lokal UMKM (gaji-umkm %s)" % VERSI)
+    p = ParserID(prog="gaji.py", description="Penggajian bulanan lokal UMKM (gaji-umkm %s)" % VERSI, allow_abbrev=False)
     p.add_argument("--versi", action="version", version="gaji-umkm " + VERSI)
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True

@@ -2492,7 +2492,7 @@ def buat_parser():
     tulis = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     tulis.add_argument("--ya", action="store_true", help="Simpan (tanpa ini hanya pratinjau)")
 
-    p = ParserID(prog="kasir.py", description="Kasir UMKM lokal (kasir-lokal %s)" % VERSI)
+    p = ParserID(prog="kasir.py", description="Kasir UMKM lokal (kasir-lokal %s)" % VERSI, allow_abbrev=False)
     p.add_argument("--versi", action="version", version="kasir-lokal " + VERSI)
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True

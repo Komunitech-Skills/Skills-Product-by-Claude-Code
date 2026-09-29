@@ -2848,7 +2848,7 @@ def buat_parser():
     sam = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     sam.add_argument("--samarkan", action="store_true", help="Nama jadi inisial, nomor WA disamarkan")
 
-    p = ParserID(prog="piutang.py", description="Buku piutang pelanggan lokal (buku-piutang %s)" % VERSI)
+    p = ParserID(prog="piutang.py", description="Buku piutang pelanggan lokal (buku-piutang %s)" % VERSI, allow_abbrev=False)
     p.add_argument("--versi", action="version", version="buku-piutang " + VERSI)
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True

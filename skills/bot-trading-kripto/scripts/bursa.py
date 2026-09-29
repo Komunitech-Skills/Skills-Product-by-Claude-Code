@@ -163,7 +163,7 @@ def _http(metode, url, header=None, body=None, order=False):
     header = header or {}
     bertanda = any(k.lower() in HEADER_RAHASIA for k in header)
     req = urllib.request.Request(url, data=data, method=metode, headers=header)
-    req.add_header("User-Agent", "komunitech-bot-trading-kripto/1.0.1")
+    req.add_header("User-Agent", "komunitech-bot-trading-kripto/1.0.2")
     pembuka = urllib.request.build_opener(_PenjagaRedirect(bertanda))
     try:
         with pembuka.open(req, timeout=BATAS_WAKTU) as r:
@@ -282,6 +282,15 @@ class Binance:
     def jumlah_order_terbuka(self):
         return len(self._bertanda("GET", "/api/v3/openOrders", {"symbol": self.cfg["pasangan"]}))
 
+    def saldo_koin(self):
+        """Saldo koin (free + locked) di akun -- baca-saja (GET /api/v3/account). Untuk rekonsiliasi
+        paparan live terhadap modal_maks_total."""
+        akun = self._bertanda("GET", "/api/v3/account", {"omitZeroBalances": "true"})
+        for b in akun.get("balances", []):
+            if str(b.get("asset", "")).upper() == self.cfg["koin"]:
+                return D(str(b.get("free", "0"))) + D(str(b.get("locked", "0")))
+        return NOL
+
     def order_pasar(self, sisi, nilai_kutipan=None, jumlah_koin=None, langkah=D("0.00000001")):
         p = {"symbol": self.cfg["pasangan"], "type": "MARKET", "newOrderRespType": "FULL",
              "newClientOrderId": "kt-" + uuid.uuid4().hex[:20]}
@@ -383,6 +392,16 @@ class Indodax:
                             "metode withdraw apa pun). Buka Indodax > Pengaturan API, pastikan izin 'withdraw' "
                             "TIDAK dicentang, lalu selesaikan daftar periksa di siapkan_live.py "
                             "(--saya-sudah-cek-tanpa-withdraw). Lihat references/keamanan-kunci-api.md.")}
+
+    def saldo_koin(self):
+        """Saldo koin (tersedia + ditahan order) dari getInfo -- baca-saja."""
+        r = self._tapi("getInfo")
+        total = NOL
+        for kunci in ("balance", "balance_hold"):
+            v = (r.get(kunci) or {}).get(self.koin)
+            if v not in (None, ""):
+                total += D(str(v))
+        return total
 
     def jumlah_order_terbuka(self):
         r = self._tapi("openOrders", {"pair": self.cfg["pasangan"]})

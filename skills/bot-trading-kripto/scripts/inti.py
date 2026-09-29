@@ -14,7 +14,7 @@ import json
 import os
 import re
 from datetime import datetime, timedelta, timezone
-from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP  # noqa: F401
 
 D = Decimal
 WIB = timezone(timedelta(hours=7))
@@ -280,9 +280,20 @@ def sidik_jari_strategi(cfg):
     return hashlib.sha256(_kanonik(inti).encode()).hexdigest()[:16]
 
 
-def sidik_jari_penuh(cfg):
+def hash_konfigurasi(cfg):
+    """SHA-256 penuh atas SELURUH konfigurasi (termasuk mode & kunci) -- pengikat konfirmasi live."""
     bersih = {k: v for k, v in cfg.items() if not k.startswith("_")}
-    return hashlib.sha256(_kanonik(bersih).encode()).hexdigest()[:12]
+    return hashlib.sha256(_kanonik(bersih).encode()).hexdigest()
+
+
+def sidik_jari_penuh(cfg):
+    return hash_konfigurasi(cfg)[:12]
+
+
+def segel_konfirmasi(id_konfirmasi, hash_cfg, waktu):
+    """Segel yang mengikat SATU konfirmasi live ke hash konfigurasi PERSIS + waktu pembuatannya.
+    Mengubah salah satunya (atau menyalin konfirmasi ke konfigurasi lain) membuat segel tidak cocok."""
+    return hashlib.sha256(f"konfirmasi-live|{id_konfirmasi}|{hash_cfg}|{waktu}".encode()).hexdigest()
 
 
 # ---------------------------------------------------------------------------- state
@@ -313,7 +324,34 @@ def state_awal(cfg):
         "jumlah_tick": 0,
         "tick_paper_per_sidik": {},
         "paper_nyata_per_sidik": {},   # putaran paper dengan harga & jam asli (syarat gerbang live)
+        "jejak_ekuitas": [],           # [[waktu_iso, ekuitas]] untuk batas rugi 24 jam bergulir
+        "buku_per_mode": {},           # buku tiap mode yang sedang tidak aktif (buku LIVE tidak pernah dibuang)
+        "konfirmasi_live_dipakai": [], # id KONFIRMASI-LIVE.json yang sudah dipakai (sekali pakai)
+        "sesi_live": None,             # {"id","hash_konfigurasi","waktu"} konfirmasi yang sedang berlaku
     }
+
+
+# Field "buku" (akuntansi & risiko) yang TERPISAH per mode. Ganti mode = simpan buku mode lama,
+# pulihkan buku mode baru. Buku live (posisi, modal terpakai, patokan rugi) tidak pernah di-reset.
+KOLOM_BUKU = ("kas", "posisi_koin", "biaya_perolehan", "realized_pl", "total_fee", "total_pajak",
+              "jumlah_transaksi", "terakhir_beli_dca", "grid_slot", "tp_sl_status", "hari",
+              "ekuitas_awal_hari", "ekuitas_terakhir", "buku_rugi_harian", "jejak_ekuitas",
+              "saldo_koin_awal_bursa")
+
+
+def ambil_buku(state):
+    return json.loads(json.dumps({k: state.get(k) for k in KOLOM_BUKU}))
+
+
+def pasang_buku(state, cfg, buku=None):
+    """Pasang buku sebuah mode ke state. buku=None -> buku baru (kas = modal_maks_total)."""
+    baru = state_awal(cfg)
+    for k in KOLOM_BUKU:
+        state[k] = baru.get(k)
+    if buku:
+        for k in KOLOM_BUKU:
+            if k in buku:
+                state[k] = buku[k]
 
 
 def muat_state(path, cfg):
@@ -540,6 +578,38 @@ def cek_tombol_berhenti(path_konfigurasi, folder_bot):
 
 TOLERANSI_JAM_MUNDUR = timedelta(minutes=2)
 SIMPAN_HARI_BUKU = 14
+JENDELA_24J = timedelta(hours=24)
+JARAK_JEJAK = timedelta(minutes=15)   # satu sampel ekuitas per 15 menit (cukup untuk patokan 24 jam)
+MAKS_JEJAK = 400
+
+
+def patokan_24_jam(state, sekarang, e_now):
+    """Batas rugi 24 jam BERGULIR (pelengkap batas per tanggal): patokan = ekuitas pada sampel TERTUA
+    yang waktunya >= (jam komputer - 24 jam). Karena memakai jam komputer apa adanya (bukan tanggal yang
+    'tidak pernah mundur'), lompatan jam MAJU lalu kembali tidak memberi jatah rugi tambahan: sampel
+    sebelum lompatan masih berada di jendela 24 jam saat jam kembali. Kembalikan patokan (Decimal)."""
+    t = sekarang.astimezone(WIB)
+    jejak = state.get("jejak_ekuitas")
+    if not isinstance(jejak, list):
+        jejak = []
+    bersih = []
+    for s in jejak:
+        try:
+            bersih.append((datetime.fromisoformat(s[0]).astimezone(WIB), D(str(s[1]))))
+        except (TypeError, ValueError, IndexError, InvalidOperation):
+            continue
+    bersih.sort(key=lambda x: x[0])
+    di_jendela = [s for s in bersih if s[0] >= t - JENDELA_24J]
+    patokan = di_jendela[0][1] if di_jendela else e_now
+    # simpan sampel baru bila jaraknya >= 15 menit dari semua sampel (jam mundur/maju tetap tercatat)
+    if all(abs(s[0] - t) >= JARAK_JEJAK for s in bersih):
+        bersih.append((t, e_now))
+        bersih.sort(key=lambda x: x[0])
+    # batasi jumlah saja (bukan umur): sampel lama tidak terpakai selama jam normal, tetapi tetap ada
+    # bila jam komputer kembali dari lompatan jauh ke depan (400 x 15 menit ~ 4 hari)
+    bersih = bersih[-MAKS_JEJAK:]
+    state["jejak_ekuitas"] = [[s[0].isoformat(timespec="seconds"), teks(s[1])] for s in bersih]
+    return patokan
 
 
 def hari_efektif(state, sekarang):
@@ -593,17 +663,44 @@ def cek_risiko_awal(cfg, state, harga, sekarang):
         return (f"STOP-LOSS: harga {rp(harga, cfg['kutipan'])} sudah {teks(ds['stop_loss_persen'])}% atau lebih di bawah "
                 f"harga rata-rata beli {rp(rata, cfg['kutipan'])}. Posisi dijual & bot berhenti.",
                 {"sisi": "jual", "jumlah_koin": pos, "alasan": "stop-loss global"})
-    rugi = D(state["ekuitas_awal_hari"]) - ekuitas(state, harga)
-    if rugi > ds["rugi_harian_maks"]:
-        return (f"BATAS RUGI HARIAN: turun {rp(rugi, cfg['kutipan'])} hari ini (batas "
-                f"{rp(ds['rugi_harian_maks'], cfg['kutipan'])}). Bot berhenti, tidak ada order baru.", None)
+    patokan_hari = D(state["ekuitas_awal_hari"])
+    if mundur:
+        # Jam tidak monoton (sekarang < putaran terbaru): tetap konservatif. Patokan = yang TERTINGGI dari
+        # tanggal menurut jam komputer s.d. tanggal efektif (menutup celah "lompat maju lalu kembali").
+        tgl_jam = sekarang.astimezone(WIB).date().isoformat()
+        for tgl, nilai in buku.items():
+            if tgl_jam <= tgl <= hari:
+                try:
+                    patokan_hari = max(patokan_hari, D(str(nilai)))
+                except InvalidOperation:
+                    pass
+    patokan_24j = patokan_24_jam(state, sekarang, e_now)
+    rugi_hari = patokan_hari - e_now
+    rugi_24j = patokan_24j - e_now
+    batas = ds["rugi_harian_maks"]
+    if rugi_hari > batas or rugi_24j > batas:
+        if rugi_hari >= rugi_24j:
+            ket = f"turun {rp(rugi_hari, cfg['kutipan'])} hari ini"
+        else:
+            ket = f"turun {rp(rugi_24j, cfg['kutipan'])} dalam 24 jam terakhir"
+        return (f"BATAS RUGI HARIAN: {ket} (batas {rp(batas, cfg['kutipan'])}). "
+                "Bot berhenti, tidak ada order baru.", None)
     return None, None
 
 
-def cek_niat(cfg, state, niat, harga, jumlah_order_terbuka):
+def cek_niat(cfg, state, niat, harga, jumlah_order_terbuka, paparan_bursa=None):
     """Periksa satu niat terhadap batas risiko. Kembalikan (status, pesan):
-    'ok' | 'lewati' (terlalu kecil / kas kurang, tidak berbahaya) | 'berhenti' (batas dilanggar)."""
+    'ok' | 'lewati' (terlalu kecil / kas kurang, tidak berbahaya) | 'berhenti' (batas dilanggar).
+    paparan_bursa (live): nilai koin milik bot menurut SALDO BURSA (saldo - saldo awal) x harga.
+    Modal terpakai = yang TERBESAR dari buku bot dan saldo bursa."""
     ds, kut = cfg["_d"], cfg["kutipan"]
+    if niat["sisi"] == "beli" and paparan_bursa is not None:
+        terpakai = max(D(state["biaya_perolehan"]), paparan_bursa)
+        if terpakai + niat["nilai_kutipan"] > ds["modal_maks_total"]:
+            return "berhenti", (f"BATAS MODAL TOTAL (live, dicocokkan dengan saldo bursa): modal terpakai "
+                                f"{rp(terpakai, kut)} (buku bot {rp(D(state['biaya_perolehan']), kut)}, saldo bursa "
+                                f"{rp(paparan_bursa, kut)}) + order {rp(niat['nilai_kutipan'], kut)} > "
+                                f"{rp(ds['modal_maks_total'], kut)}. Bot berhenti membeli.")
     if jumlah_order_terbuka >= ds["order_terbuka_maks"]:
         return "berhenti", (f"BATAS ORDER TERBUKA: ada {jumlah_order_terbuka} order terbuka di bursa "
                             f"(batas {ds['order_terbuka_maks']}). Bot berhenti; cek manual di aplikasi bursa.")
