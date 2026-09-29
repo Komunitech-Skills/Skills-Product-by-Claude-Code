@@ -84,3 +84,54 @@ Kode keluar: `rasio` 0 = sukses, 1 = JSON rusak / bukan objek / saham 0 / period
 ## Rekomendasi
 Status boleh naik ke `lulus` (skor 8). Perbaiki S1-S3 (perubahan kecil di script + 3-4 baris SKILL.md) sebelum uji platform asli/beta;
 setelah revisi, jalankan ulang skenario 02 & uji `level` oleh penguji independen.
+
+---
+
+# Uji ulang v1.0.1 (2026-09-29)
+
+- **Penguji:** agent independen yang sama (bukan pembuat); SKILL.md & script tidak diubah; tanpa commit.
+- **Tes pembuat:** `tests/uji_regresi.py` **43/43 OK**.
+
+## Skor: **9 / 10** -> LULUS (naik dari 8)
+Semua temuan SEDANG (S1-S3) dan RENDAH (R1-R8) diperbaiki dan terverifikasi. Kepatuhan tetap bersih. Sisa: 2 catatan RENDAH
+di `references/jadwal-openclaw.md` (di bawah) dan jadwal skill ini sendiri belum diuji di Gateway OpenClaw.
+
+## Regresi 7 dataset / 62 nilai
+- d1, d2, d4, d5, d7: exit 0, **61/61 + 1 (d5 ROE 19,05%) = 62/62 cocok** dengan verifikasi Decimal independen (angka identik dengan v1.0.0).
+- d3 & d6 (berisi "61,9 M", "98,7 M"): kini **ditolak** (exit 1, pesan "akhiran M ambigu ... --arti-m miliar / juta"). Dengan
+  `--arti-m miliar` atau `"arti_m": "miliar"` hasil identik dengan v1.0.0 + catatan "dibaca MILIAR karena arti_m = miliar";
+  dengan `--arti-m juta` total dividen Rp61,9 jt (DPS Rp0,01) - benar secara hitung.
+- Catatan: `examples/03-normal-tempelan.md` langkah 2 menggambarkan perilaku v1.0.0 ("61,9 M" langsung dibaca miliar); di v1.0.1
+  agent wajib mengisi `arti_m` setelah konfirmasi pengguna - alur konfirmasi yang dijalankan agent di uji 03 kini dipaksa script.
+
+## Verifikasi perbaikan
+| Temuan | Hasil v1.0.1 | Status |
+|---|---|---|
+| S1 `level` exit 0 walau baris gagal | Semua salah -> **3**; campuran salah (L6) -> 3; tersentuh + gagal (L8) -> 3 + baris "Ringkasan: ... 1 menyentuh level Anda, 1 baris GAGAL dicek ... TIDAK berarti aman" dan baris tersentuh tetap tampil; header saja -> 3; normal 0/2 tetap; kolom hilang/file kosong/tidak ada -> 1. Didokumentasikan di docstring & SKILL.md E.3 | Tuntas |
+| S2 "M" diam-diam = miliar | "5 M", "IDR 5.2M" ditolak (exit 1) tanpa `--arti-m`; "mn" = juta tetap | Tuntas |
+| S3 pendapatan bank | Label "Margin laba bersih (bank; tidak sebanding lintas sektor)", fakta "pendapatan = pendapatan bunga bersih + pendapatan operasional lain", peringatan ROE beda dari yang dilaporkan bank; SKILL.md B.4 diperbarui | Tuntas |
+| R1 "0.125" -> 125 | Kini 0,125 | Tuntas |
+| R2 "dalam jutaan rupiah" | Diterima (pangkat 6) | Tuntas |
+| R3 laba -> rugi | Fakta "Berbalik dari LABA menjadi RUGI; persen kurang bermakna" (nilai -251% tetap tampil di tabel - dapat diterima) | Tuntas |
+| R4 basis ROE campur | `ekuitas_entitas_induk_lalu` -> rata-rata (9/90 = 10,00% cocok); laba induk / total ekuitas -> fakta "ROE mencampur basis" (9/110 = 8,18% cocok) | Tuntas |
+| R5 tampilan level desimal | "1,5" tampil Rp1,50 | Tuntas |
+| R6 rujukan skill lain | `references/jadwal-openclaw.md` sendiri | Tuntas (lihat catatan) |
+| R7 saham treasuri | SKILL.md B.4: saham beredar dikurangi saham treasuri | Tuntas |
+| R8 cuplikan mesin pencari | SKILL.md A.6: status "dari cuplikan pencarian, perlu dicek" | Tuntas |
+
+## Cek `references/jadwal-openclaw.md` vs `skills/laporan-otomatis-terjadwal/references/openclaw.md`
+- Bentuk perintah = **Bentuk A** referensi (jadwal & pesan posisional, tanpa `--cron`) dengan opsi yang sama persis:
+  `--tz "Asia/Jakarta" --name ... --session isolated --announce --channel telegram --to ...`. Pengelolaan `automations run <id> --wait`,
+  `disable <id>`, `rm <id>` juga ada di referensi. **Tidak ada flag karangan.** Status "belum diuji di Gateway untuk skill ini" ditulis jujur.
+  Kanal default Telegram ke pemilik, WhatsApp hanya nomor terpisah + persetujuan tertulis, tanpa broadcast - sesuai keputusan pemilik.
+- **RENDAH J1:** pesan jadwal menyuruh agent "balas persis NO_REPLY" bila kode 0. Referensi `laporan-otomatis-terjadwal` tidak
+  memakai/membuktikan penekanan `NO_REPLY` untuk job berbasis pesan agent + `--announce`; bukti `NO_REPLY` di repo hanya untuk pola
+  `--command-argv` di `pantau-pasar-kripto`. Risiko: pemilik menerima teks "NO_REPLY" tiap hari bursa. Saran: tandai "belum terbukti"
+  dan uji dengan `automations run <id> --wait` saat semua level tidak tersentuh.
+- **RENDAH J2:** pesan jadwal tidak menyebut perilaku untuk **kode 1** (tabel §3 menyebut "kirim pesan galat"); tambahkan "Kode 1: kirim pesan galat apa adanya" ke teks pesan.
+
+## Sapuan kepatuhan v1.0.1
+grep kata rekomendasi (beli/jual/tahan/akumulasi/target harga/sinyal/undervalued/murah/mahal/layak/menarik/harga wajar/peluang/support/resistance/entry/cut loss)
+di SKILL.md, README, references (termasuk jadwal-openclaw.md), templates, script: semua kemunculan berupa larangan, penolakan, atau kutipan
+permintaan pengguna. **Kebocoran: 0.** Disclaimer OJK (kontak 157) tetap ada di SKILL.md, README, dan kedua keluaran script; pesan jadwal
+mewajibkan disclaimer & "tanpa rekomendasi beli/jual".

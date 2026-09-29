@@ -905,7 +905,7 @@ def laporan_teks(h, a, peringatan):
             tr = fmt_tren(o.get("tren"))
             lemah = kpi_terlemah(o)
             catat = ""
-            if lemah and lemah[0]["status"] != "hijau":
+            if lemah and (lemah[0]["status"] == "merah" or (o["status"] != "hijau" and lemah[0]["status"] != "hijau")):
                 catat = " — perlu perhatian: %s %s" % (lemah[0]["kpi"], fmt_pct(lemah[0]["capaian_mentah"]))
             if o["dasar"] == "bobot-ulang":
                 catat += " (dihitung dari %s%% bobot)" % fmt_angka(o["bobot_tersedia"] * D100 / o["bobot_total"], 0)
@@ -1161,6 +1161,12 @@ def cmd_skor(a):
     if a.tanpa_nama:
         data.pop("orang")
         data["peringatan"] = [w for w in peringatan if not any(norm(o["nama"]) in norm(w) for o in h["orang"])]
+        n_belum = sum(1 for o in h["orang"] if o["skor"] is None)
+        n_ulang = sum(1 for o in h["orang"] if o["dasar"] == "bobot-ulang")
+        if n_belum:
+            data["peringatan"].append("%d orang belum lengkap datanya (tidak ikut rata-rata divisi)." % n_belum)
+        if n_ulang:
+            data["peringatan"].append("%d orang dihitung dari sebagian KPI (--data-kosong bobot-ulang)." % n_ulang)
     if a.orang:
         teks = laporan_orang(h, a.orang, a)
         if a.json:
