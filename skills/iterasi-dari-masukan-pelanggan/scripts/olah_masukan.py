@@ -129,6 +129,8 @@ hancur remuk pecah penyok macet error mati panas gerah pengap berisik bising sem
 kemahalan kemanisan keasinan kepedasan kepahitan keasaman kusut noda jerawat jerawatan iritasi gatal perih breakout jebol melar rontok
 berantakan php kosong harganaik sudahlama tunggulama cepatrusak fasilitasrusak musikkeras makanandingin kurangjumlah""".split())
 PENGUAT = {"begitu", "terlalu", "banget", "sekali", "agak", "sangat", "amat", "cukup", "sih", "juga"}
+PERANTARA = {"pernah", "ada", "yang", "juga", "sama", "begitu", "terlalu", "sangat", "pula", "kunjung", "mau", "bisa", "jadi", "lagi", "sih",
+             "dong", "kok", "terus", "cukup", "sampai", "dapat", "dikasih", "segera"}
 BERLEBIH = {"terlalu", "kelewat", "kebanyakan", "kelewatan"}
 SARAN = re.compile(r"\b(sebaiknya|semoga\s+ada|tolong\s+(?:ditambah|tambah|dibuat|dibuatkan|diperbaiki|dibenahi|diadakan)|mohon|"
                    r"kalau\s+bisa|usul\w*|saran\w*|request|harap|kapan\s+(?:ada|ready|buka|restock)|bisa\s+tidak|boleh\s+tidak|"
@@ -786,8 +788,8 @@ def skor_klausa(klausa, kata_pos, kata_neg, tanya=False, neg_kustom=frozenset())
     skor, i = 0, 0
     while i < len(tok):
         k = tok[i]
-        sebelum = tok[max(0, i - 2):i]
-        dinegasi = any(x in NEGATOR for x in sebelum)
+        # negasi hanya untuk kata tepat sesudahnya, atau dengan satu kata antara ("tidak pernah telat", "belum juga datang")
+        dinegasi = (i >= 1 and tok[i - 1] in NEGATOR) or (i >= 2 and tok[i - 2] in NEGATOR and tok[i - 1] in PERANTARA)
         if k == "kurang":
             j = i + 1
             while j < len(tok) and tok[j] in PENGUAT:
@@ -972,7 +974,8 @@ def olah(sumber, opsi, konfigurasi=None):
                 item.append(dict(kanal=b.get("kanal") or kanal, tgl=b["tgl"], nilai=b["nilai"], skala=b["skala"], isi=b["isi"], nama=(),
                                  peran=b.get("peran", "ulasan"), kolom=b.get("kolom"),
                                  identitas=(info["berkas"],) + b["identitas"] if b.get("identitas") else None, berkas=info["berkas"],
-                                 min_kata=1 if b.get("peran") == "saran" else 2))
+                                 # ulasan 1 kata tetap dihitung bila ada nilai/bintang ("basi" + bintang 1) atau dari kolom permintaan
+                                 min_kata=1 if b.get("peran") == "saran" or b["nilai"] is not None else 2))
         info["masukan_mentah"] = len(item) - n_awal
         meta["sumber"].append(info)
         for p in info["peringatan"]:

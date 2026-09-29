@@ -65,4 +65,6 @@ Setelah listmonk terpasang dan tersambung, cukup ketik:
 **Apakah saya bisa memakai listmonk di laptop saja?** Untuk belajar, ya. Untuk newsletter sungguhan, tautan konfirmasi dan berhenti harus bisa dibuka penerima, jadi listmonk perlu server dengan HTTPS (panduan §2, §4) atau jasa setup Komunitech.
 
 ## Batasan yang jujur
+**Pengaman ini melindungi dari kelalaian agent, bukan dari orang yang punya akses shell.** Gerbang uji-kirim, konfirmasi jumlah penerima, alamat uji, dan saringan sumber persetujuan mencegah agent salah kirim atau lupa menguji. Orang/agent dengan akses shell ke komputer Anda tetap bisa memalsukan berkas catatan lokal (`listmonk-uji.json`, alamat uji), memakai terminal palsu, atau memanggil API listmonk langsung. Catatan uji-kirim diberi tanda HMAC dengan kunci di folder konfigurasi Anda agar suntingan iseng terdeteksi, tetapi itu bukan pengaman terhadap penyerang. Tetap gunakan akun API berperan terbatas dan periksa ringkasan sebelum menjawab "ya".
+
 Diuji pembuat pada listmonk 6.2.0 asli dengan SMTP penampung lokal. Belum diuji: pengiriman lewat Brevo/Amazon SES sungguhan, kotak masuk Gmail/Yahoo, Windows/macOS. Skill bukan nasihat hukum.

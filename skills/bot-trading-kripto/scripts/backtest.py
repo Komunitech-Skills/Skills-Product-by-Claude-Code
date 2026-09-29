@@ -24,7 +24,7 @@ from decimal import InvalidOperation
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from inti import (D, NOL, WIB, KonfigurasiTidakValid, SUMBER_PAJAK, catat_niat_berhasil, cek_niat,  # noqa: E402
+from inti import (D, DISCLAIMER, NOL, WIB, KonfigurasiTidakValid, SUMBER_PAJAK, catat_niat_berhasil, cek_niat,  # noqa: E402
                   cek_risiko_awal, ekuitas, hentikan, muat_konfigurasi, rencanakan, rp, simulasi_isi,
                   state_awal, teks, terapkan_isi, bulat_uang)
 
@@ -137,7 +137,7 @@ def jalankan(cfg, data):
         "bot_berhenti": st["alasan_berhenti"],
         "pembanding_beli_sekali_tahan": {"ekuitas_akhir": teks(bulat_uang(bh_akhir, kut)),
                                          "hasil_persen": teks(((bh_akhir - modal) / modal * 100).quantize(D("0.01")))},
-        "transaksi": transaksi, "kejadian": kejadian, "kutipan": kut,
+        "transaksi": transaksi, "kejadian": kejadian, "kutipan": kut, "disclaimer": DISCLAIMER,
         "catatan": ["Hasil masa lalu tidak menjamin hasil masa depan.",
                     "Order diasumsikan terisi di harga penutupan tiap baris; slippage & likuiditas tidak dimodelkan.",
                     "Pembanding 'beli sekali & tahan' hanya fakta historis, bukan rekomendasi.",
@@ -158,6 +158,7 @@ def teks_laporan(h, cfg):
     if h.get("baris_rusak"):
         r.append(f"Baris CSV dilewati: {len(h['baris_rusak'])} (lihat keluaran JSON)")
     r += ["Catatan: " + c for c in h["catatan"]]
+    r += ["", "DISCLAIMER: " + DISCLAIMER]
     return "\n".join(r)
 
 

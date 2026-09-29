@@ -29,10 +29,11 @@ def reset():
               {"id": 3, "email": "c@example.test", "name": "C", "lists": {1: "unconfirmed"}},
               {"id": 4, "email": "d@example.test", "name": "D", "lists": {2: "confirmed"}}],
         camp={"id": 7, "name": "Promo", "subject": "Halo {{ .Subscriber.FirstName }}", "status": "draft",
-              "body": "<p>Hai. Hubungi WhatsApp 0812. {{ UnsubscribeURL }}</p>", "content_type": "html",
+              "body": "<p>Hai. Hubungi WhatsApp 0812. <a href=\"{{ UnsubscribeURL }}\">Berhenti</a></p>", "content_type": "html",
               "template_id": 1, "lists": [{"id": 1}], "from_email": "T <t@example.test>", "sent": 10, "to_send": 10,
               "views": 4, "clicks": 2, "bounces": 1, "type": "regular", "messenger": "email",
               "created_at": "2026-09-01T00:00:00Z"},
+        tpl_body="<html><a href=\"{{ UnsubscribeURL }}\">berhenti</a></html>", preview=True,
         calls=[], tests=[], imports=[])
 
 
@@ -90,7 +91,20 @@ class H(BaseHTTPRequestHandler):
         if p == "/api/campaigns/7" and metode == "GET":
             return self._out({"data": STATE["camp"]})
         if p == "/api/templates/1":
-            return self._out({"data": {"body": "<html>{{ UnsubscribeURL }}</html>"}})
+            return self._out({"data": {"body": STATE["tpl_body"]}})
+        if p == "/api/campaigns/7/preview" and metode == "POST":
+            if not STATE["preview"]:
+                return self._out({"message": "tidak ada"}, 404)
+            from urllib.parse import parse_qs as pq
+            f = {k: v[0] for k, v in pq(raw.decode()).items()}
+            b = f.get("body", "")
+            t = STATE["tpl_body"] if f.get("template_id") == "1" else "{{ template \"content\" . }}"
+            html = t.replace('{{ template "content" . }}', b) if "{{ template" in t else t + b
+            html = html.replace("{{ UnsubscribeURL }}", "http://x.test/subscription/aaa/bbb").replace("{{UnsubscribeURL}}", "http://x.test/subscription/aaa/bbb")
+            b_ = html.encode()
+            self.send_response(200); self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Length", str(len(b_))); self.end_headers(); self.wfile.write(b_)
+            return
         if p == "/api/campaigns/7/test":
             STATE["tests"].append(json.loads(raw))
             return self._out({"data": True})
@@ -145,6 +159,7 @@ class Uji(unittest.TestCase):
         lm.F_UJI = os.path.join(cls.tmp, "uji.json")
         lm.F_ALAMAT_UJI = os.path.join(cls.tmp, "alamat-uji.txt")
         lm.F_LOG_IMPOR = os.path.join(cls.tmp, "log-impor.jsonl")
+        lm.F_KUNCI = os.path.join(cls.tmp, "kunci.txt")
         lm.F_ALAMAT = os.path.join(cls.tmp, "alamat.txt")
         lm.F_AKUN = os.path.join(cls.tmp, "akun.txt")
         lm.F_TOKEN = os.path.join(cls.tmp, "token.txt")
@@ -158,7 +173,7 @@ class Uji(unittest.TestCase):
 
     def setUp(self):
         reset()
-        for f in (lm.F_UJI, lm.F_LOG_IMPOR):
+        for f in (lm.F_UJI, lm.F_LOG_IMPOR, lm.F_KUNCI):
             if os.path.exists(f):
                 os.remove(f)
         with open(lm.F_ALAMAT_UJI, "w") as f:  # alamat uji milik pemilik (didaftarkan manusia)
@@ -385,7 +400,8 @@ class Uji(unittest.TestCase):
         d = lm.muat_uji()
         (kunci, nilai), = d.items()
         self.assertTrue(kunci.endswith("#7"))
-        self.assertEqual(len(nilai["sidik"]), 16)
+        self.assertEqual(len(nilai["sidik"]), 32)
+        self.assertIn("hmac", nilai)
         self.assertNotIn("s@example.test", json.dumps(d))  # alamat disamarkan
         for ubah in ("subject", "body", "from_email"):
             with self.subTest(ubah=ubah):
@@ -616,8 +632,156 @@ class Uji(unittest.TestCase):
         semua += o + e + open(lm.F_LOG_IMPOR, encoding="utf-8").read()
         self.assertNotIn(TOKEN, semua)
 
+    # ---- 1.0.2: sidik lengkap, lint tautan tampak, konsen, HMAC
+    def _kirim_ditolak(self):
+        return jalankan("kirim", "7", "--ya", "--konfirmasi-penerima", "2")[0]
+
+    def test_sidik_mencakup_altbody_headers_lists_dan_template(self):
+        self.assertEqual(jalankan("uji-kirim", "7", "--ke", "s@example.test")[0], 0)
+        ubahan = [
+            ("altbody", lambda: STATE["camp"].__setitem__("altbody", "teks baru")),
+            ("headers", lambda: STATE["camp"].__setitem__("headers", [{"X-Uji": "1"}])),
+            ("lists", lambda: STATE["camp"].__setitem__("lists", [{"id": 1}, {"id": 2}])),
+            ("template", lambda: STATE.__setitem__("tpl_body", STATE["tpl_body"] + "<p>iklan baru</p>")),
+        ]
+        for nama, f in ubahan:
+            with self.subTest(ubah=nama):
+                asli = (dict(STATE["camp"]), STATE["tpl_body"])
+                f()
+                self.assertEqual(self._kirim_ditolak(), 6, nama)
+                self.assertNotEqual(STATE["camp"]["status"], "running")
+                STATE["camp"].clear(); STATE["camp"].update(asli[0]); STATE["tpl_body"] = asli[1]
+        self.assertEqual(self._kirim_ditolak(), 0)
+
+    def test_urutan_lists_tidak_mengubah_sidik(self):
+        a = dict(STATE["camp"], lists=[{"id": 1}, {"id": 2}])
+        b = dict(STATE["camp"], lists=[{"id": 2}, {"id": 1}])
+        self.assertEqual(lm.sidik(a, "t"), lm.sidik(b, "t"))
+        self.assertNotEqual(lm.sidik(a, "t"), lm.sidik(a, "t2"))
+
+    def test_hmac_catatan_dipalsukan_ditolak(self):
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
+        d = lm.muat_uji()
+        kunci = list(d)[0]
+        # 1) hapus tanda
+        rek = dict(d[kunci]); rek.pop("hmac")
+        json.dump({kunci: rek}, open(lm.F_UJI, "w"))
+        self.assertEqual(self._kirim_ditolak(), 6)
+        # 2) tanda ngawur
+        json.dump({kunci: dict(rek, hmac="0" * 64)}, open(lm.F_UJI, "w"))
+        self.assertEqual(self._kirim_ditolak(), 6)
+        # 3) catatan palsu dengan sidik benar tapi tanpa kunci
+        json.dump({kunci: {"sidik": lm.sidik(STATE["camp"], STATE["tpl_body"]), "ke": "s***", "waktu": "x"}}, open(lm.F_UJI, "w"))
+        self.assertEqual(self._kirim_ditolak(), 6)
+        # 4) ubah 'ke' pada catatan asli
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
+        d = lm.muat_uji(); d[kunci]["ke"] = "orang@x"
+        json.dump(d, open(lm.F_UJI, "w"))
+        self.assertEqual(self._kirim_ditolak(), 6)
+        # 5) kunci dihapus
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
+        os.remove(lm.F_KUNCI)
+        self.assertEqual(self._kirim_ditolak(), 6)
+
+    def test_berkas_uji_dan_kunci_izin_600(self):
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
+        if os.name == "posix":
+            for f in (lm.F_UJI, lm.F_KUNCI):
+                self.assertEqual(os.stat(f).st_mode & 0o777, 0o600, f)
+
+    def test_lint_tautan_berhenti_harus_href_a_yang_tampak(self):
+        buruk = [
+            '<script>var u="{{ UnsubscribeURL }}";</script><p>hai</p>',
+            '<style>.a{background:url({{ UnsubscribeURL }})}</style>',
+            '<script>tak ditutup {{ UnsubscribeURL }}',
+            '<img alt="{{ UnsubscribeURL }}" src="x.png">',
+            '<a href="https://x.test" title="{{ UnsubscribeURL }}">berhenti</a>',
+            '<div data-u="{{ UnsubscribeURL }}">berhenti</div>',
+            '<p>{{ UnsubscribeURL }}</p>',
+            '<!-- <a href="{{ UnsubscribeURL }}">x</a> -->',
+            '<!-- tak ditutup <a href="{{ UnsubscribeURL }}">x</a>',
+            '<a style="display:none" href="{{ UnsubscribeURL }}">x</a>',
+            '<a href="{{ UnsubscribeURL }}" style="font-size:0">x</a>',
+        ]
+        for b in buruk:
+            with self.subTest(b=b):
+                self.assertFalse(lm.punya_tautan_berhenti(b), b)
+        for b in ('<a href="{{ UnsubscribeURL }}">berhenti</a>', "<a class='x' href='{{UnsubscribeURL}}'>b</a>",
+                  '<A HREF={{UnsubscribeURL}}>b</A>', '<a\n href="{{ UnsubscribeURL }}"\n>b</a><script>x</script>'):
+            with self.subTest(b=b):
+                self.assertTrue(lm.punya_tautan_berhenti(b), b)
+        self.assertTrue(lm.punya_tautan_berhenti("[berhenti]({{ UnsubscribeURL }})", "markdown"))
+        self.assertFalse(lm.punya_tautan_berhenti("[berhenti]({{ UnsubscribeURL }})", "html"))
+
+    def test_kampanye_dengan_script_dan_tag_ditolak_uji_dan_kirim(self):
+        # kampanye dibuat di layar listmonk (bukan lewat buat-kampanye), tetap ditolak di gerbang
+        STATE["camp"]["body"] = '<script>x="{{ UnsubscribeURL }}"</script><p>Hai WA 0812</p>'
+        STATE["tpl_body"] = "<html>{{ template \"content\" . }}</html>"
+        self.assertEqual(jalankan("uji-kirim", "7", "--ke", "s@example.test")[0], 6)
+        self.assertEqual(STATE["tests"], [])
+        self.assertEqual(self._kirim_ditolak(), 6)
+        self.assertEqual(jalankan("periksa-kampanye", "7")[0], 6)
+
+    def test_pratinjau_render_tanpa_tautan_ditolak(self):
+        # statis lolos (ada <a href> bertag), tetapi hasil render listmonk tidak memuat tautan berhenti
+        orig = STATE["camp"]["body"]
+        STATE["camp"]["body"] = '<a href="{{ UnsubscribeURL }}">b</a> WA 0812'
+        STATE["tpl_body"] = "<html>isi kosong</html>"
+        # render tiruan: template tanpa {{ template "content" }} -> body tetap ditambahkan, jadi paksa hasil tanpa tautan
+        STATE["preview"] = True
+        h = lm.render_pratinjau(lm.Konfig(type("A", (), {"url": None})()), STATE["camp"])
+        self.assertIsNotNone(h)
+        self.assertIn("/subscription/", h)
+        # pratinjau tak tersedia -> tetap boleh (peringatan), pemeriksaan statis berlaku
+        STATE["preview"] = False
+        k, o, _ = jalankan("periksa-kampanye", "7")
+        self.assertEqual(k, 0)
+        self.assertIn("Pratinjau hasil render", o)
+        STATE["camp"]["body"] = orig
+
+    def test_sumber_sinonim_beli_sewa_leads_ditolak(self):
+        buruk = ["Hasil pembelian dari agensi", "Data sewaan", "sewa", "rental data", "rental list email", "leads",
+                 "Leads dari iklan", "list jual", "List Jual Beli", "pihak ketiga", "third party", "mitra bisnis",
+                 "lead generation", "dapat dr temen", "hasil akuisisi", "database sewaan", "data dijual vendor",
+                 "P E M B E L I A N", "pembel1an data"]
+        for sb in buruk:
+            with self.subTest(sumber=sb):
+                STATE["imports"].clear()
+                self.assertEqual(self._impor(sb, "--pengguna-konfirmasi-setuju",
+                                             "Ya, saya yakin setiap orang sudah setuju")[0], 6, sb)
+                self.assertEqual(STATE["imports"], [])
+
+    def test_sumber_sah_tidak_salah_tolak_oleh_kata_baru(self):
+        for sb in ("Formulir pendaftaran di website toko", "Pembeli mencentang opt-in saat checkout"):
+            with self.subTest(sumber=sb):
+                self.assertEqual(lm.klasifikasi_sumber(sb), "sah")
+
+    def test_konfirmasi_buatan_agen_ditolak(self):
+        for kf in ("ya", "Ya, saya yakin", "Pengguna sudah konfirmasi bahwa semua setuju",
+                   "user confirmed that everyone agreed to receive email", "diasumsikan semua sudah setuju",
+                   "oke lanjutkan saja ya sekarang juga", "dapat dari teman, semua setuju"):
+            with self.subTest(kf=kf):
+                STATE["imports"].clear()
+                self.assertEqual(self._impor("pelanggan lama toko", "--pengguna-konfirmasi-setuju", kf)[0], 6, kf)
+                self.assertEqual(STATE["imports"], [])
+        self.assertEqual(self._impor("pelanggan lama toko", "--pengguna-konfirmasi-setuju",
+                                     "Ya, mereka isi buku tamu dan tulis setuju dikirimi email")[0], 0)
+
+    def test_kutipan_verbatim_tercatat_di_log(self):
+        kalimat = "Ya, semua mengisi buku tamu toko dan menulis setuju dikirimi email"
+        self._impor("pelanggan lama toko", "--pengguna-konfirmasi-setuju", kalimat)
+        log = [json.loads(x) for x in open(lm.F_LOG_IMPOR, encoding="utf-8")]
+        self.assertEqual([x for x in log if x["hasil"] == "diimpor"][0]["konfirmasi_pengguna"], kalimat)
+
+    def test_dokumen_mengakui_keterbatasan(self):
+        d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+        for f in ("SKILL.md", "README.md"):
+            t = open(os.path.join(d, f), encoding="utf-8").read().lower()
+            self.assertIn("akses shell", t, f)
+            self.assertIn("kelalaian agent", t, f)
+
     def test_versi(self):
-        self.assertEqual(lm.VERSI, "1.0.1")
+        self.assertEqual(lm.VERSI, "1.0.2")
 
 
 if __name__ == "__main__":

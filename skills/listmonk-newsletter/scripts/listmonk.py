@@ -13,6 +13,7 @@ import argparse
 import csv
 import getpass
 import hashlib
+import hmac
 import io
 import ipaddress
 import json
@@ -29,13 +30,14 @@ import zipfile
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 DIR_KONFIG = os.path.join(os.path.expanduser("~"), ".komunitech")
 F_ALAMAT = os.path.join(DIR_KONFIG, "listmonk-alamat.txt")
 F_AKUN = os.path.join(DIR_KONFIG, "listmonk-akun.txt")
 F_TOKEN = os.path.join(DIR_KONFIG, "listmonk-token.txt")
 F_UJI = os.path.join(DIR_KONFIG, "listmonk-uji.json")
 F_ALAMAT_UJI = os.path.join(DIR_KONFIG, "listmonk-alamat-uji.txt")
+F_KUNCI = os.path.join(DIR_KONFIG, "listmonk-kunci.txt")
 F_LOG_IMPOR = os.path.join(DIR_KONFIG, "listmonk-log-impor.jsonl")
 MAKS_ALAMAT_UJI = 3
 ALAMAT_BAWAAN = "http://localhost:9000"
@@ -57,11 +59,16 @@ _TERLARANG = [
     r"copy", r"salin", r"\bhasil (ambil|kumpul|cari|unduh|download)\b", r"\bbot\b", r"cold ?(email|mail|list)",
     r"tidak (tahu|ingat)", r"nggak (tahu|ingat|tau)", r"gak (tahu|ingat|tau)", r"\blupa\b", r"entah", r"unknown", r"tak diketahui",
     r"pokoknya", r"semua orang", r"asal (kirim|ambil)",
+    # 1.0.2: sinonim pembelian/sewa/jual-beli data & perantara
+    r"pembelian", r"\bsewa\w*", r"rental", r"\bleads?\b", r"lead ?gen", r"list ?jual",
+    r"data ?jual", r"\bjual ?(data|list|kontak|email)", r"dijual", r"menjual", r"agensi", r"agency", r"pihak ?ketiga",
+    r"third ?part", r"mitra", r"akuisisi", r"acquisition", r"temen", r"\bdr (temen|teman)", r"list ?beli", r"data ?beli",
 ]
 _RE_TERLARANG = re.compile("|".join(_TERLARANG), re.I)
 # bentuk tanpa spasi/tanda baca, untuk mengelak ejaan "s c r a p" / "b3li"
 _STEM_PADAT = ("scrap", "vendor", "database", "grupwa", "wagrup", "grupwhatsapp", "curian", "bocor", "dibeli",
-               "membeli", "harvest", "crawl", "hasilbeli", "hasilbeli", "temanku", "dapatdari", "marketplace")
+               "membeli", "harvest", "crawl", "hasilbeli", "temanku", "dapatdari", "marketplace",
+               "pembelian", "sewaan", "listjual", "leads", "rental", "pihakketiga", "thirdparty")
 _LEET = str.maketrans("013457@$", "oieastas")
 _SAH = re.compile(
     r"(formulir|\bform\b|web ?form|halaman (daftar|pendaftaran)|pendaftaran (di |lewat )?(website|situs|web|online)|"
@@ -199,7 +206,7 @@ def samarkan(teks, cfg):
     return teks
 
 
-def api(cfg, metode, path, data=None, params=None, multipart=None, ok404=False):
+def api(cfg, metode, path, data=None, params=None, multipart=None, ok404=False, form=None, raw_teks=False):
     cfg.butuh_akun()
     url = cfg.url + "/api" + path
     if params:
@@ -218,6 +225,9 @@ def api(cfg, metode, path, data=None, params=None, multipart=None, ok404=False):
             parts.append(h.encode() + (isi if isinstance(isi, bytes) else isi.encode("utf-8")) + b"\r\n")
         body = b"".join(parts) + f"--{b}--\r\n".encode()
         headers["Content-Type"] = f"multipart/form-data; boundary={b}"
+    elif form is not None:
+        body = urllib.parse.urlencode(form).encode("utf-8")
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
     elif data is not None:
         body = json.dumps(data).encode("utf-8")
         headers["Content-Type"] = "application/json"
@@ -250,6 +260,8 @@ def api(cfg, metode, path, data=None, params=None, multipart=None, ok404=False):
     except (urllib.error.URLError, OSError, TimeoutError) as e:
         raise Galat(f"Tidak bisa menghubungi listmonk di {cfg.url}. Pastikan listmonk menyala dan alamat benar. "
                     f"({samarkan(str(getattr(e, 'reason', e)), cfg)[:120]})", 4)
+    if raw_teks:
+        return raw.decode("utf-8", "replace")
     try:
         return json.loads(raw)
     except ValueError:
@@ -605,6 +617,23 @@ def sidik_berkas(path):
         return ""
 
 
+RE_KATA_SETUJU = re.compile(r"setuju|persetujuan|izin|mendaftar|daftar sendiri|opt-?in|consent|agree|sepakat|"
+                            r"berlangganan|subscribe", re.I)
+RE_BUATAN_AGEN = re.compile(r"(pengguna|user|owner|pemilik)\s+(sudah\s+|telah\s+)?(konfirmasi|confirm|menegaskan|menyatakan|"
+                            r"menjawab|setuju)|dikonfirmasi (oleh )?(pengguna|user)|atas nama pengguna|assumed|diasumsikan", re.I)
+
+
+def konfirmasi_valid(teks):
+    """Penyaring kasar untuk jawaban pengguna. TIDAK bisa membuktikan siapa yang mengetik (lihat SKILL.md):
+    agen wajib mengutip kalimat yang DIKETIK pengguna, kata demi kata."""
+    t = (teks or "").strip()
+    if len(t) < 20 or len(t.split()) < 4:
+        return False
+    if klasifikasi_sumber(t) == "terlarang" or RE_BUATAN_AGEN.search(t):
+        return False
+    return bool(RE_KATA_SETUJU.search(t))
+
+
 def cmd_impor(args):
     sumber = (args.sumber_persetujuan or "").strip()
     if not args.saya_punya_izin or not sumber:
@@ -626,13 +655,14 @@ def cmd_impor(args):
                     "tertulis/terekam.", 6)
     konfirmasi = (args.pengguna_konfirmasi_setuju or "").strip()
     if kelas == "tak_dikenal":
-        if len(konfirmasi) < 10 or klasifikasi_sumber(konfirmasi) == "terlarang":
+        if not konfirmasi_valid(konfirmasi):
             catat_impor(dict(rekam, hasil="ditolak-sumber-belum-dikonfirmasi"))
             raise Galat("DITOLAK: sumber persetujuan ini tidak dikenali sebagai sumber yang sah. TANYAKAN pengguna: "
                         "'Apakah setiap orang di daftar ini sendiri yang mendaftar/setuju menerima email Anda? "
                         "Lewat apa (formulir website, opt-in saat checkout, atau persetujuan tertulis/terekam)?' "
-                        "Bila pengguna menegaskan YA, ulangi dengan --pengguna-konfirmasi-setuju \"<jawaban "
-                        "pengguna apa adanya>\". Jawaban dicatat di log lokal.", 6)
+                        "Bila pengguna menegaskan YA DENGAN MENGETIK sendiri, ulangi dengan --pengguna-konfirmasi-setuju "
+                        "\"<kalimat yang diketik pengguna, kata demi kata>\" (min. 4 kata, menyebut persetujuan). "
+                        "Agent DILARANG mengarang/menyimpulkan jawaban ini. Dicatat di log lokal.", 6)
         rekam["konfirmasi_pengguna"] = konfirmasi[:300]
     if args.sudah_terkonfirmasi and kelas != "sah":
         catat_impor(dict(rekam, hasil="ditolak-terkonfirmasi-tanpa-bukti"))
@@ -732,32 +762,77 @@ def cmd_hapus_pelanggan(args):
 
 
 # ---------------------------------------------------------------- kampanye
-def sidik(kamp):
-    return hashlib.sha256((str(kamp.get("subject", "")) + "\0" + str(kamp.get("body", "")) + "\0" +
-                           str(kamp.get("template_id", "")) + "\0" + str(kamp.get("content_type", "")) + "\0" +
-                           str(kamp.get("from_email", ""))).encode("utf-8")).hexdigest()[:16]
+def _kanon(x):
+    return json.dumps(x, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+
+
+def sidik(kamp, tpl=""):
+    """Sidik isi uji-kirim (1.0.2): subjek, isi, teks polos (altbody), headers, ID list tujuan, template_id,
+    ISI template (diambil lewat API), tipe isi, pengirim. Perubahan apa pun -> wajib uji-kirim ulang."""
+    ids = sorted(int(l["id"]) for l in (kamp.get("lists") or []) if isinstance(l, dict) and "id" in l)
+    bagian = [str(kamp.get("subject", "")), str(kamp.get("body", "")), str(kamp.get("altbody") or ""),
+              _kanon(kamp.get("headers") or []), _kanon(ids), str(kamp.get("template_id", "")),
+              str(tpl or ""), str(kamp.get("content_type", "")), str(kamp.get("from_email", ""))]
+    return hashlib.sha256("\0".join(bagian).encode("utf-8")).hexdigest()[:32]
 
 
 def muat_uji():
     try:
         with open(F_UJI, encoding="utf-8") as f:
-            return json.load(f)
+            d = json.load(f)
+            return d if isinstance(d, dict) else {}
     except (OSError, ValueError):
         return {}
 
 
-def simpan_uji(cfg, kamp, alamat=""):
-    """Catatan uji-kirim lokal: kunci = alamat server + id kampanye; nilai memuat sidik isi (subjek+isi+template+pengirim)."""
+def kunci_hmac(buat=False):
+    """Kunci acak lokal (~/.komunitech/listmonk-kunci.txt, izin 600). Hanya pengaman terhadap edit iseng."""
+    k = baca_file(F_KUNCI)
+    if not k and buat:
+        try:
+            tulis_rahasia(F_KUNCI, os.urandom(32).hex())
+        except OSError:
+            return ""
+        k = baca_file(F_KUNCI)
+    return k
+
+
+def tanda_uji(kunci, kunci_rekam, sidik_, ke, waktu):
+    pesan = "|".join((kunci_rekam, sidik_, ke, waktu)).encode("utf-8")
+    return hmac.new(kunci.encode("utf-8"), pesan, hashlib.sha256).hexdigest()
+
+
+def simpan_uji(cfg, kamp, alamat="", tpl=""):
+    """Catatan uji-kirim lokal: kunci = alamat server + id kampanye; nilai memuat sidik isi lengkap + HMAC."""
     d = muat_uji()
-    d[f"{cfg.url}#{kamp['id']}"] = {"sidik": sidik(kamp), "ke": samar_email(alamat) if alamat else "",
-                                    "waktu": datetime.now().isoformat(timespec="seconds")}
+    kr = f"{cfg.url}#{kamp['id']}"
+    rek = {"sidik": sidik(kamp, tpl), "ke": samar_email(alamat) if alamat else "",
+           "waktu": datetime.now().isoformat(timespec="seconds")}
+    kunci = kunci_hmac(buat=True)
+    if kunci:
+        rek["hmac"] = tanda_uji(kunci, kr, rek["sidik"], rek["ke"], rek["waktu"])
+    d[kr] = rek
     os.makedirs(DIR_KONFIG, exist_ok=True)
-    with open(F_UJI, "w", encoding="utf-8") as f:
+    fd = os.open(F_UJI, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
         json.dump(d, f)
 
 
-def sudah_diuji(cfg, kamp):
-    return muat_uji().get(f"{cfg.url}#{kamp['id']}", {}).get("sidik") == sidik(kamp)
+def sudah_diuji(cfg, kamp, tpl=None):
+    kr = f"{cfg.url}#{kamp['id']}"
+    rek = muat_uji().get(kr, {})
+    if not isinstance(rek, dict):
+        return False
+    if tpl is None:
+        tpl = ambil_template(cfg, kamp.get("template_id")) if kamp.get("content_type") != "visual" else ""
+    if rek.get("sidik") != sidik(kamp, tpl):
+        return False
+    kunci = kunci_hmac()
+    tanda = rek.get("hmac")
+    if not kunci or not tanda:
+        return False  # catatan tanpa tanda tangan (dipalsukan/diedit) tidak dipercaya
+    ok = tanda_uji(kunci, kr, str(rek.get("sidik", "")), str(rek.get("ke", "")), str(rek.get("waktu", "")))
+    return hmac.compare_digest(ok, str(tanda))
 
 
 def ambil_kampanye(cfg, ref):
@@ -776,23 +851,80 @@ def ambil_template(cfg, tid):
     return (d or {}).get("data", {}).get("body", "") or ""
 
 
-RE_KOMENTAR = re.compile(r"<!--.*?-->|\{\{/\*.*?\*/\}\}|\{\{-?\s*/\*.*?\*/\s*-?\}\}", re.S)
+RE_KOMENTAR = re.compile(r"<!--.*?(?:-->|\Z)|\{\{/\*.*?\*/\}\}|\{\{-?\s*/\*.*?\*/\s*-?\}\}", re.S)
+RE_BLOK_MATI = re.compile(r"<\s*(script|style)\b.*?(?:<\s*/\s*\1\s*>|\Z)", re.S | re.I)
 RE_TAG_BERHENTI = re.compile(r"\{\{-?\s*UnsubscribeURL\s*-?\}\}")
+RE_A_TAG = re.compile(r"<\s*a\b([^>]*)>", re.I | re.S)
+RE_HREF = re.compile(r"""\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""", re.I)
+RE_TERSEMBUNYI = re.compile(r"display\s*:\s*none|visibility\s*:\s*hidden|font-size\s*:\s*0(?![.\d])|opacity\s*:\s*0(?![.\d])", re.I)
 
 
-def punya_tautan_berhenti(teks):
-    """Tag {{ UnsubscribeURL }} harus ada DI LUAR komentar HTML/template. Komentar tidak dihitung."""
-    return bool(RE_TAG_BERHENTI.search(RE_KOMENTAR.sub("", teks or "")))
+def _bersih(teks):
+    """Buang komentar (HTML/template) lalu blok <script>/<style> (termasuk yang tidak ditutup)."""
+    t = RE_KOMENTAR.sub("", teks or "")
+    return RE_BLOK_MATI.sub("", t)
+
+
+def _href_tampak(teks, pola):
+    """Ada <a href> yang TERLIHAT (bukan display:none dsb) dan href-nya cocok dengan pola?"""
+    for m in RE_A_TAG.finditer(teks):
+        atr = m.group(1)
+        h = RE_HREF.search(atr)
+        if not h:
+            continue
+        nilai = next((g for g in h.groups() if g is not None), "")
+        if not pola.search(nilai):
+            continue
+        if RE_TERSEMBUNYI.search(atr):
+            continue
+        return True
+    return False
+
+
+def punya_tautan_berhenti(teks, tipe="html"):
+    """1.0.2: {{ UnsubscribeURL }} harus berada di href sebuah <a> yang tampak, DI LUAR komentar, <script>,
+    <style>, dan atribut lain (alt/title/data-*). Untuk markdown: [teks](...) juga diterima."""
+    t = _bersih(teks)
+    if _href_tampak(t, RE_TAG_BERHENTI):
+        return True
+    if tipe == "markdown" and re.search(r"\]\(\s*<?\{\{-?\s*UnsubscribeURL\s*-?\}\}", t):
+        return True
+    return False
+
+
+def render_pratinjau(cfg, k):
+    """Minta listmonk merender kampanye (POST /api/campaigns/:id/preview). None bila tidak tersedia."""
+    try:
+        form = {"template_id": k.get("template_id") or "", "content_type": k.get("content_type") or "html",
+                "body": k.get("body") or ""}
+        html = api(cfg, "POST", f"/campaigns/{int(k['id'])}/preview", form=form, raw_teks=True)
+    except (Galat, ValueError, KeyError, TypeError):
+        return None
+    return html if isinstance(html, str) and html.strip().startswith(("<", "\ufeff<")) else None
+
+
+RE_URL_BERHENTI = re.compile(r"/subscription/", re.I)
 
 
 def lint_kampanye(cfg, k):
     """Kembalikan (galat[], peringatan[])."""
     g, p = [], []
     body = (k.get("body") or "")
-    tpl = ambil_template(cfg, k.get("template_id")) if k.get("content_type") != "visual" else ""
-    if not punya_tautan_berhenti(body) and not punya_tautan_berhenti(tpl):
-        g.append("Tidak ada tautan berhenti berlangganan yang berfungsi: tag {{ UnsubscribeURL }} harus ada di isi "
-                 "atau template DI LUAR komentar (tautan di dalam <!-- --> tidak dihitung). Wajib ada.")
+    tipe = k.get("content_type") or "html"
+    tpl = ambil_template(cfg, k.get("template_id")) if tipe != "visual" else ""
+    if re.search(r"<\s*script\b", body, re.I):
+        g.append("Isi email mengandung <script>. Tidak dipakai di email dan tidak dihitung sebagai tautan; hapus.")
+    if not punya_tautan_berhenti(body, tipe) and not punya_tautan_berhenti(tpl):
+        g.append("Tidak ada tautan berhenti berlangganan yang berfungsi: tag {{ UnsubscribeURL }} harus ada di "
+                 "atribut href sebuah tautan <a> yang terlihat, di isi atau template (bukan di komentar, <script>, "
+                 "<style>, atau atribut lain seperti alt). Wajib ada.")
+    else:
+        html = render_pratinjau(cfg, k)
+        if html is None:
+            p.append("Pratinjau hasil render dari listmonk tidak tersedia; tautan berhenti hanya diperiksa dari teks isi/template.")
+        elif not _href_tampak(_bersih(html), RE_URL_BERHENTI):
+            g.append("Hasil render listmonk tidak memuat tautan berhenti berlangganan (<a href=.../subscription/...>) "
+                     "yang terlihat. Perbaiki isi/template.")
 
     if not (k.get("subject") or "").strip():
         g.append("Subjek kosong.")
@@ -949,6 +1081,7 @@ def cmd_uji_kirim(args):
         for x in g:
             cetak("GALAT   : " + x)
         raise Galat("DITOLAK: perbaiki galat di atas dulu; uji-kirim tidak dicatat sebagai lulus.", 6)
+    tpl = ambil_template(cfg, k.get("template_id")) if k.get("content_type") != "visual" else ""
     ada = cari_email(cfg, em)
     if not ada:
         api(cfg, "POST", "/subscribers", data={"email": em, "name": args.nama_uji or "Uji Pemilik", "status": "enabled",
@@ -959,7 +1092,7 @@ def cmd_uji_kirim(args):
     payload["lists"] = [l["id"] for l in k.get("lists", [])]
     payload["subscribers"] = [em]
     api(cfg, "POST", f"/campaigns/{k['id']}/test", data=payload)
-    simpan_uji(cfg, k, em)
+    simpan_uji(cfg, k, em, tpl)
     cetak(f"Email uji dikirim ke {samar_email(em)}. Minta pengguna memeriksa kotak masuk DAN folder spam: "
           "tampilan HP, tautan, tautan berhenti berlangganan (buka tautannya, harus tampil halaman berhenti).")
 

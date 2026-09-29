@@ -32,6 +32,7 @@ FOLDER_RAHASIA = os.path.join(os.path.expanduser("~"), ".komunitech")
 KUNCI_DEFAULT = os.path.join(FOLDER_RAHASIA, "fider-kunci.txt")
 ALAMAT_DEFAULT_FILE = os.path.join(FOLDER_RAHASIA, "fider-alamat.txt")
 ALAMAT_BAWAAN = "http://localhost:3000"
+MAKS_PELANGGAN = 100000
 
 STATUS_SAH = ("open", "planned", "started", "completed", "declined")
 NAMA_STATUS = {
@@ -146,12 +147,20 @@ def host_lokal(host):
 
 
 def periksa_url(url):
-    p = urllib.parse.urlparse(url)
-    if p.scheme not in ("http", "https") or not p.hostname:
+    if re.search(r"\s", url or ""):
+        raise Gagal(f"Alamat Fider tidak valid: {url!r} (tidak boleh memuat spasi).", K_INPUT)
+    try:
+        p = urllib.parse.urlparse(url)
+        host = p.hostname
+        p.port  # noqa: B018 - memicu ValueError bila port rusak
+        username, password = p.username, p.password
+    except ValueError:
         raise Gagal(f"Alamat Fider tidak valid: {url!r} (contoh: http://localhost:3000 atau https://saran.tokosaya.id)", K_INPUT)
-    if p.scheme == "http" and not host_lokal(p.hostname):
+    if p.scheme not in ("http", "https") or not host:
+        raise Gagal(f"Alamat Fider tidak valid: {url!r} (contoh: http://localhost:3000 atau https://saran.tokosaya.id)", K_INPUT)
+    if p.scheme == "http" and not host_lokal(host):
         raise Gagal("Alamat Fider di internet wajib HTTPS (kunci API tidak boleh lewat HTTP polos).", K_INPUT)
-    if p.username or p.password:
+    if username or password:
         raise Gagal("Alamat Fider tidak boleh memuat sandi di dalamnya.", K_INPUT)
 
 
@@ -272,24 +281,60 @@ def rapikan(teks):
 
 
 RE_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(\.[\w-]+)+")
-RE_HP = re.compile(r"(?<![\w])(?:\+?62|0)[\s.-]?8\d{1,3}[\s.-]?\d{3,4}[\s.-]?\d{2,5}(?!\d)")
-# Telepon rumah/kantor: 021-5551234, (0274) 555123, +62 21 5551234, 021 555 1234
-RE_TELP = re.compile(r"(?<![\w.,])(?:\+62[\s.-]?\(?0?\d{2,3}\)?|\(0\d{2,3}\)|0\d{2,3})[\s.-]?\d{3,4}[\s.-]?\d{3,4}(?!\d)")
+# Kandidat nomor: deretan angka yang dipisah spasi . - en/em dash / dan kurung (boleh diawali +).
+RE_KANDIDAT = re.compile(r"(?<!\d)[(+]*\d(?:[\d\s().\-\u2010-\u2015/]{0,40}\d)?(?!\d)")
+RE_TANGGAL = re.compile(r"\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}|\d{4}[/.-]\d{1,2}[/.-]\d{1,2}")
+
+
+def _mirip_nomor_telepon(potongan):
+    """True bila potongan (deretan angka + pemisah) berbentuk nomor HP/telepon Indonesia."""
+    if RE_TANGGAL.fullmatch(potongan.strip(" ()")):
+        return False
+    d = re.sub(r"\D", "", potongan)
+    if d.startswith("62"):
+        return 9 <= len(d) <= 15 and d[2] != "0"
+    return d.startswith("0") and 9 <= len(d) <= 13 and d[1] != "0"
+
+
+def _samarkan_kandidat(c):
+    """Cari nomor terpanjang di dalam kandidat (batas hanya di pemisah spasi); kembalikan (teks, jumlah)."""
+    g = list(re.finditer(r"\d+", c))
+    for i in range(len(g)):
+        if i and not re.search(r"\s", c[g[i - 1].end():g[i].start()]):
+            continue
+        for j in range(len(g) - 1, i - 1, -1):
+            if j < len(g) - 1 and not re.search(r"\s", c[g[j].end():g[j + 1].start()]):
+                continue
+            awal, akhir = g[i].start(), g[j].end()
+            while awal > 0 and c[awal - 1] in "+(":
+                awal -= 1
+            while akhir < len(c) and c[akhir] == ")":
+                akhir += 1
+            if _mirip_nomor_telepon(c[awal:akhir]):
+                kiri, n1 = _samarkan_kandidat(c[:awal]) if re.search(r"\d", c[:awal]) else (c[:awal], 0)
+                kanan, n2 = _samarkan_kandidat(c[akhir:]) if re.search(r"\d", c[akhir:]) else (c[akhir:], 0)
+                return kiri + "[nomor disembunyikan]" + kanan, 1 + n1 + n2
+    return c, 0
 
 
 def samarkan_pribadi(teks):
-    """Papan Fider biasanya publik: sembunyikan nomor HP/telepon & email dari catatan WA sebelum ditulis."""
+    """Papan Fider biasanya publik: sembunyikan nomor HP/telepon & email sebelum ditulis atau ditampilkan.
+    Format yang dikenali: 0812-3456-7890, 0812.3456.7890, (+62) 812 ..., +62-812-..., 62812..., digit berspasi,
+    telepon rumah 021-5551234, (0274) 555123, en dash, garis miring."""
     n = 0
 
-    def ganti(pesan):
-        def f(_):
-            nonlocal n
-            n += 1
-            return pesan
-        return f
-    teks = RE_EMAIL.sub(ganti("[email disembunyikan]"), teks)
-    teks = RE_HP.sub(ganti("[nomor disembunyikan]"), teks)
-    teks = RE_TELP.sub(ganti("[nomor disembunyikan]"), teks)
+    def ganti_email(_):
+        nonlocal n
+        n += 1
+        return "[email disembunyikan]"
+
+    def ganti_nomor(m):
+        nonlocal n
+        hasil, j = _samarkan_kandidat(m.group(0))
+        n += j
+        return hasil
+    teks = RE_EMAIL.sub(ganti_email, teks or "")
+    teks = RE_KANDIDAT.sub(ganti_nomor, teks)
     return teks, n
 
 
@@ -319,7 +364,7 @@ for _baku, _daftar in {
     "cetak": "cetak print",
     "resi": "resi receipt struk",
     "diskon": "diskon potongan discount",
-    "kirim": "kirim pengiriman kurir shipping",
+    "kirim": "kirim pengiriman kurir shipping ongkir ongkos",
     "gelap": "gelap dark",
 }.items():
     for _k in _daftar.split():
@@ -418,9 +463,13 @@ def baris_pos(p):
 def cetak(hasil, args, teks):
     k = _KUNCI_AKTIF[0]
     if args.json:
-        print(samarkan(json.dumps(hasil, ensure_ascii=False, indent=2), k))
+        out, _ = samarkan_pribadi(json.dumps(hasil, ensure_ascii=False, indent=2))
+        print(samarkan(out, k))
     else:
-        print(samarkan(teks, k))
+        out, n = samarkan_pribadi(teks)  # judul/uraian pos LAMA bisa memuat HP/email: samarkan saat ditampilkan
+        if n:
+            out += f"\n({n} nomor HP/telepon/email pada tampilan ini disembunyikan.)"
+        print(samarkan(out, k))
 
 
 PRATINJAU = "PRATINJAU - BELUM ADA YANG DITULIS ke Fider. Setelah pemilik setuju, ulangi perintah yang sama dengan --ya."
@@ -713,14 +762,21 @@ def siapkan_impor(butir, sumber, ada, tetap):
         elif len(judul) > BATAS_JUDUL:
             uraian = judul + "\n\n" + uraian
         tambahan, klaim = [], None
-        if b.get("pelanggan"):
+        if b.get("pelanggan") not in (None, ""):
             try:
+                if isinstance(b["pelanggan"], bool):
+                    raise ValueError
                 klaim = int(b["pelanggan"])
-                tambahan.append(f"Dilaporkan oleh sekitar {angka(klaim)} pelanggan.")
-            except (ValueError, TypeError):
+            except (ValueError, TypeError, OverflowError):
                 raise Gagal(f"'pelanggan' harus angka (butir: {judul_akhir!r}).", K_FILE)
+            if not 1 <= klaim <= MAKS_PELANGGAN:
+                raise Gagal(f"'pelanggan' harus angka bulat 1 sampai {angka(MAKS_PELANGGAN)} (butir: {judul_akhir!r}).", K_FILE)
+            tambahan.append(f"Dilaporkan oleh sekitar {angka(klaim)} pelanggan.")
         if sumber:
-            tambahan.append(f"Sumber: {sumber}.")
+            sumber_aman, n3 = samarkan_pribadi(rapikan(sumber))
+            n2 += n3
+            if sumber_aman:
+                tambahan.append(f"Sumber: {sumber_aman}.")
         uraian_akhir = (uraian + ("\n\n" if uraian and tambahan else "") + " ".join(tambahan)).strip()
         dipotong = len(uraian_akhir) > BATAS_URAIAN
         if dipotong:
@@ -884,9 +940,9 @@ def cmd_status(k, args):
     catatan, nsam = samarkan_pribadi((args.catatan or "").strip())
     if len(catatan) > BATAS_URAIAN:
         raise Gagal("Catatan terlalu panjang (maks. 5.000 karakter).", K_INPUT)
-    if baku == "declined" and not catatan:
-        raise Gagal("Status Ditolak wajib disertai --catatan berisi alasan yang jujur (tampil publik). "
-                    "Menolak usulan pelanggan tanpa alasan tidak diizinkan.", K_INPUT)
+    if baku == "declined" and (len(re.findall(r"[^\W\d_]", catatan)) < 8 or len(catatan.split()) < 2):
+        raise Gagal("Status Ditolak wajib disertai --catatan berisi alasan yang jujur dan bermakna (minimal beberapa "
+                    "kata; tampil publik). Menolak usulan pelanggan tanpa alasan tidak diizinkan.", K_INPUT)
     p = satu_pos(k, n)
     if p.get("status") == "duplicate":
         raise Gagal(f"Pos #{n} berstatus duplikat; ubah pos induknya, bukan yang ini.", K_INPUT)

@@ -278,6 +278,54 @@ class UjiTulis(Dasar):
         banyak = self.tulis("\n\n".join(f"butir unik nomor {i} xq{i}" for i in range(60)), "banyak.txt")
         self.assertEqual(self.jalan("impor", banyak)[0], fider.K_INPUT)
 
+    def test_impor_sumber_disamarkan(self):
+        p = self.tulis("Tambah warna hitam\n")
+        rc, out, _ = self.jalan("impor", p, "--sumber", "WA dari 0812-3456-7890", "--ya")
+        self.assertEqual(rc, 0, out)
+        self.assertNotIn("3456", json.dumps(Tiruan.data["posts"]))
+        self.assertNotIn("3456", out)
+        rc, out, _ = self.jalan("impor", self.tulis("Tambah ukuran besar\n", "b.txt"), "--sumber", "WA 0812-3456-7890")
+        self.assertNotIn("3456", out)
+        self.assertIn("[nomor disembunyikan]", out)
+
+    def test_impor_pelanggan_negatif_dan_tidak_wajar_ditolak(self):
+        for nilai in ("-5", "0", "99999999999999999999", "true", "\"abc\"", "1.5e400"):
+            p = self.tulis('[{"judul":"Tambah warna hitam","pelanggan":%s}]' % nilai, "n.json")
+            rc, _, err = self.jalan("impor", p, "--ya")
+            self.assertEqual(rc, fider.K_FILE, nilai)
+            self.assertIn("pelanggan", err)
+        self.assertEqual(len(Tiruan.data["posts"]), 3)
+        p = self.tulis('[{"judul":"Tambah warna hitam","pelanggan":3}]', "ok.json")
+        self.assertEqual(self.jalan("impor", p, "--ya")[0], 0)
+
+    def test_judul_pos_lama_disamarkan_saat_ditampilkan(self):
+        Tiruan.data["posts"].append(pos(4, "Rina 0812-3456-7890 minta resi", 2))
+        Tiruan.data["posts"].append(pos(5, "Hubungi (+62) 812 9999 8888 soal ongkir", 1))
+        for perintah in (("daftar",), ("daftar", "--json"), ("lihat", "4"), ("ringkasan",), ("draf-balasan", "4"),
+                         ("cari", "resi")):
+            rc, out, _ = self.jalan(*perintah)
+            self.assertEqual(rc, 0, perintah)
+            self.assertNotIn("3456", out, perintah)
+            self.assertNotIn("9999", out, perintah)
+        rc, out, _ = self.jalan("gabung", "4", "1")
+        self.assertNotIn("3456", out)
+
+    def test_url_rusak_gagal_bersih(self):
+        for buruk in ("http://[::1]evil", "http://[::1", "http://localhost:abc", "http:// localhost", "https://[x"):
+            out, err = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                rc = fider.main(["cek", "--url", buruk, "--kunci-file", self.kf])
+            self.assertEqual(rc, fider.K_INPUT, buruk)
+            self.assertIn("GALAT", err.getvalue())
+
+    def test_status_tolak_catatan_sepele_ditolak(self):
+        for c in ("-", "ok", "  ", "tidak", "12345"):
+            rc, _, _ = self.jalan("status", "1", "ditolak", "--catatan", c, "--ya")
+            self.assertEqual(rc, fider.K_INPUT, c)
+        self.assertEqual(Tiruan.data["posts"][0]["status"], "open")
+        rc, _, _ = self.jalan("status", "1", "ditolak", "--catatan", "Belum sesuai rencana produk kami", "--ya")
+        self.assertEqual(rc, 0)
+
     def test_status_pratinjau_lalu_tulis(self):
         rc, out, _ = self.jalan("status", "1", "dikerjakan")
         self.assertIn("PRATINJAU", out)
@@ -450,6 +498,20 @@ class UjiUnit(unittest.TestCase):
             self.assertNotRegex(h, r"\d{5}", t)
         for aman in ("harga Rp15.000 dan 3 pcs", "tanggal 2026-09-29", "Rp 1.021.555.000", "pesanan 12 buah 2 warna"):
             self.assertEqual(fider.samarkan_pribadi(aman)[1], 0, aman)
+
+    def test_samarkan_format_telepon_tambahan(self):
+        for x in ("(+62) 812 3456 7890", "+62-812-3456-7890", "0812.3456.7890", "62812345678901", "0812 3456 7890",
+                  "0 8 1 2 3 4 5 6 7 8 9 0", "62 21 5551234", "kontak0812-3456-7890", "0812 - 3456 - 7890",
+                  "0812\u20133456\u20137890", "0812/3456/7890", "tel:+622155512", "0896 1234 5678 9",
+                  "hub 0812-3456-7890."):
+            h, n = fider.samarkan_pribadi(x)
+            self.assertGreaterEqual(n, 1, x)
+            self.assertNotRegex(h, r"\d{4}", x)
+        for aman in ("Rp 1.021.555.000", "tanggal 01/09/2026 pukul 10", "buka 08.00-17.00", "stok 0812", "rek 1234567890",
+                     "NPWP 01.234.567.8-901.000", "Rp 1.500.000 dan 12 buah"):
+            self.assertEqual(fider.samarkan_pribadi(aman)[1], 0, aman)
+        self.assertEqual(fider.samarkan_pribadi("2026-09-29 0812345678")[0], "2026-09-29 [nomor disembunyikan]")
+        self.assertEqual(fider.samarkan_pribadi("hub 0812-3456-7890 15 pcs")[0], "hub [nomor disembunyikan] 15 pcs")
 
     def test_samarkan_kunci(self):
         self.assertEqual(fider.samarkan("galat abc123 xyz", "abc123"), "galat *** xyz")

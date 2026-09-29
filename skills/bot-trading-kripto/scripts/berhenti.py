@@ -91,6 +91,10 @@ def main(argv=None):
               f"modal terpakai {rp(D(st['biaya_perolehan']), kut)} | untung/rugi terealisasi {rp(D(st['realized_pl']), kut)}")
         print(f"Total fee {rp(D(st['total_fee']), kut)} | PPh {rp(D(st['total_pajak']), kut)} | "
               f"transaksi {st.get('jumlah_transaksi', 0)} | putaran {st.get('jumlah_tick', 0)}")
+        bl = (st.get("buku_per_mode") or {}).get("live") if cfg["mode"] != "live" else None
+        if bl and D(str(bl.get("posisi_koin") or "0")) > 0:
+            print(f"Buku LIVE tersimpan (mode sekarang {cfg['mode']}): koin {teks(D(str(bl['posisi_koin'])))} "
+                  f"{cfg['koin']} | modal terpakai {rp(D(str(bl.get('biaya_perolehan') or '0')), kut)}")
         return 0
 
     if a.lanjutkan:
