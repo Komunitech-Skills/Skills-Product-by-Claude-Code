@@ -718,5 +718,83 @@ class UjiV101(Dasar):
         self.assertIn("--pph23", teks)
 
 
+class UjiV104(Dasar):
+    """Uji ulang v1.0.3 (9/10): asal piutang dari JENIS transaksi (bukan nama akun); pelunasan piutang yang
+    tidak ada di jurnal diberi PERHATIAN."""
+
+    def test_asal_dari_jenis_jual_walau_akun_umum(self):
+        self.run_("init", "--jurnal", self.j, "--nama", "Toko Uji", "--bank", "BCA")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "10jt", "--via", "tempo",
+                            "--akun", "Pendapatan:Usaha", "--akun-baru", "--pihak", "PT Maju",
+                            "--tanggal", "2026-09-02", "--ya")
+        self.assertEqual(k, 0, o + e)
+        self.assertIn("jenis:jual", isi(self.j).decode())
+        self.assertEqual(hu.jenis_pendapatan("Pendapatan:Usaha"), "lain")        # nama akun saja tidak cukup
+        sebelum = isi(self.j)
+        for tambahan in (["--pph23", "2%"], ["--diterima", "9,8jt"]):
+            k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "10jt",
+                                "--via", "bank", "--pihak", "PT Maju", "--tanggal", "2026-09-12", *tambahan, "--ya")
+            self.assertEqual(k, 2, o + e)
+            self.assertIn("PENJUALAN BARANG", e)
+        self.assertEqual(isi(self.j), sebelum)
+        # jasa dengan akun bernama umum tetap boleh PPh 23 tanpa PERHATIAN asal
+        self.run_("catat", "--jurnal", self.j, "--jenis", "jasa", "--nominal", "5jt", "--via", "tempo",
+                  "--akun", "Pendapatan:Usaha", "--pihak", "CV Jasa", "--tanggal", "2026-09-03", "--ya")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "5jt", "--via",
+                            "bank", "--pihak", "CV Jasa", "--pph23", "2%", "--tanggal", "2026-09-13", "--ya")
+        self.assertEqual(k, 0, o + e)
+        self.assertNotIn("PERHATIAN", o)
+        t = hu.parse_jurnal(isi(self.j).decode()).txns[-1]
+        self.assertEqual(dict(t.postings)["Aset:Bank:BCA"], Decimal(5000000) - Decimal(100000))
+
+    def test_jurnal_lama_tanpa_tag_akun_umum_diberi_perhatian(self):
+        self.run_("init", "--jurnal", self.j, "--nama", "Toko Uji", "--bank", "BCA")
+        with open(self.j, "a", encoding="utf-8") as f:           # catatan gaya v1.0.3 (tanpa tag jenis)
+            f.write("\n2026-09-02 Tagihan - PT Lama  ; pihak:PT Lama\n"
+                    "    Aset:Piutang Usaha:PT Lama           Rp 4.000.000\n"
+                    "    Pendapatan:Usaha                    Rp -4.000.000\n")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "4jt", "--via",
+                            "bank", "--pihak", "PT Lama", "--pph23", "2%", "--tanggal", "2026-09-12", "--akun-baru")
+        self.assertEqual(k, 0, o + e)
+        self.assertIn("jenisnya tidak jelas", o)
+
+    def test_pelunasan_piutang_tidak_ada_di_jurnal_diperingatkan(self):
+        self.run_("init", "--jurnal", self.j, "--nama", "Toko Uji", "--bank", "BCA")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "7.777.777",
+                            "--via", "bank", "--pihak", "PT Hantu", "--tanggal", "2026-09-12")
+        self.assertEqual(k, 0, o + e)
+        self.assertIn("PERHATIAN: saldo piutang Aset:Piutang Usaha:PT Hantu", o)
+        self.assertIn("minus Rp 7.777.777", o)
+        # piutang sebagian: tagihan 3 jt, dibayar 5 jt -> minus 2 jt
+        self.run_("catat", "--jurnal", self.j, "--jenis", "jasa", "--nominal", "3jt", "--via", "tempo",
+                  "--pihak", "PT Kurang", "--tanggal", "2026-09-02", "--ya")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "5jt", "--via",
+                            "bank", "--pihak", "PT Kurang", "--tanggal", "2026-09-12")
+        self.assertIn("minus Rp 2.000.000", o)
+        # pelunasan normal: tanpa PERHATIAN
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "3jt", "--via",
+                            "bank", "--pihak", "PT Kurang", "--tanggal", "2026-09-12")
+        self.assertEqual(k, 0, o + e)
+        self.assertNotIn("PERHATIAN", o)
+
+    def test_batch_tagihan_lalu_pelunasan_satu_batch(self):
+        self.run_("init", "--jurnal", self.j, "--nama", "Toko Uji", "--bank", "BCA")
+        b = os.path.join(self.tmp, "batch.json")
+        with open(b, "w", encoding="utf-8") as f:
+            json.dump([{"jenis": "jual", "nominal": "2jt", "via": "tempo", "pihak": "PT Satu", "tanggal": "2026-09-02"},
+                       {"jenis": "terima-piutang", "nominal": "2jt", "via": "bank", "pihak": "PT Satu",
+                        "tanggal": "2026-09-05"}], f)
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--batch", b)
+        self.assertEqual(k, 0, o + e)
+        self.assertNotIn("PERHATIAN", o)
+        with open(b, "w", encoding="utf-8") as f:
+            json.dump([{"jenis": "jual", "nominal": "2jt", "via": "tempo", "pihak": "PT Satu", "tanggal": "2026-09-02"},
+                       {"jenis": "terima-piutang", "nominal": "2jt", "via": "bank", "pihak": "PT Satu",
+                        "pph23": "2%", "tanggal": "2026-09-05"}], f)
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--batch", b)
+        self.assertEqual(k, 2, o + e)
+        self.assertIn("PENJUALAN BARANG", e)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

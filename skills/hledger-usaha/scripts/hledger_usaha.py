@@ -21,6 +21,7 @@ Perintah:
 Windows: pakai `python` atau `py` sebagai ganti `python3`.
 """
 import argparse
+import copy
 import csv
 import datetime as dt
 import difflib
@@ -1214,6 +1215,11 @@ RE_PENDAPATAN_JASA = re.compile(r"jasa|sewa|royalti|konsultan|honor|fee|komisi|s
 RE_PENDAPATAN_BARANG = re.compile(r"penjualan|barang|dagang|produk|jual", re.I)
 
 
+# v1.0.4: jenis catatan disimpan sebagai tag transaksi ("; jenis:jual" / "; jenis:jasa") agar asal piutang
+# dibaca dari JENIS TRANSAKSI, bukan hanya nama akun pendapatan ("Pendapatan:Usaha" dari --jenis jual = barang).
+TAG_JENIS = {"jual": "barang", "penjualan": "barang", "jasa": "jasa"}
+
+
 def jenis_pendapatan(akun):
     """'jasa' (boleh PPh 23), 'barang' (penjualan barang, tidak ada PPh 23), atau 'lain'."""
     if RE_PENDAPATAN_JASA.search(akun):
@@ -1233,10 +1239,17 @@ def asal_piutang(j, akun_piutang, sampai):
             continue
         if not any((a == akun_piutang or a.startswith(akun_piutang + ":")) and v > 0 for a, v in t.postings):
             continue
+        dari_tag = TAG_JENIS.get((t.tags.get("jenis") or "").strip().lower())
         for a, v in t.postings:
             if v < 0 and j.gol(a) == "pendapatan":
-                hasil.add(jenis_pendapatan(a))
+                hasil.add(dari_tag or jenis_pendapatan(a))
     return hasil
+
+
+def saldo_piutang(j, akun_piutang, sampai):
+    """Saldo akun piutang (termasuk sub-akunnya) di jurnal sampai tanggal itu."""
+    return sum((v for a, v in saldo_per(j, sampai=sampai).items()
+                if a == akun_piutang or a.startswith(akun_piutang + ":")), NOL)
 
 
 def teks_persen_polos(d):
@@ -1303,6 +1316,7 @@ def rencana_dari(j, e, tahun=None):
         return v
 
     if jenis in ("jual", "penjualan", "jasa"):
+        tags["jenis"] = "jasa" if jenis == "jasa" else "jual"          # v1.0.4: asal piutang dari jenis catatan
         n = nom()
         ak_p = akun_arg or ("Pendapatan:Jasa" if jenis == "jasa" else "Pendapatan:Penjualan")
         lawan = akun_via(j, via, bank, "piutang", pihak)
@@ -1364,6 +1378,11 @@ def rencana_dari(j, e, tahun=None):
                 catatan.append("PERHATIAN: asal piutang {} tidak ditemukan di jurnal (mis. dari saldo awal). PPh 23 "
                                "hanya untuk tagihan jasa/sewa/royalti, bukan penjualan barang - pastikan ada bukti "
                                "potong.".format(dasar))
+            elif "lain" in asal:
+                catatan.append("PERHATIAN: piutang {} berasal dari pendapatan yang jenisnya tidak jelas (akun "
+                               "pendapatan tanpa kata jasa/sewa atau penjualan, dicatat sebelum v1.0.4). PPh 23 hanya "
+                               "untuk tagihan jasa/sewa/royalti, bukan penjualan barang - pastikan ada bukti potong."
+                               .format(dasar))
             ps = [(masuk_ke, n - pph), (AKUN_PPH23, pph), (dasar, -n)]
             arti = ("Pelanggan melunasi piutang {} (piutang berkurang penuh): uang masuk {} ke {}, dipotong PPh 23 {} "
                     "yang dicatat sebagai pajak dibayar dimuka (bukan beban, pendapatan tetap bruto).".format(
@@ -1372,6 +1391,14 @@ def rencana_dari(j, e, tahun=None):
         else:
             ps = [(masuk_ke, n), (dasar, -n)]
             arti = "Pelanggan membayar piutang {} (piutang berkurang).".format(rp(n))
+        sisa = saldo_piutang(j, dasar, tgl)                   # v1.0.4: piutang yang tidak ada di jurnal
+        if sisa < n:
+            catatan.append("PERHATIAN: saldo piutang {} di jurnal per {} hanya {}, lebih kecil dari pelunasan {}, "
+                           "sehingga piutang menjadi minus {}. Kemungkinan tagihannya (atau saldo awal piutang) belum "
+                           "dicatat. Catat dulu: --jenis jual/jasa --via tempo (tagihan baru) atau --jenis saldo-awal "
+                           "(piutang lama), lalu catat pelunasan ini. Bila uang ini sebenarnya penjualan tunai, pakai "
+                           "--jenis jual/jasa --via bank.".format(dasar, teks_tanggal(tgl), rp(max(sisa, NOL)), rp(n),
+                                                                   rp(n - sisa)))
         ket = ket or "Terima pelunasan" + (" - " + tags["pihak"] if pihak else "")
     elif jenis in ("bayar-utang", "pelunasan-utang"):
         n = nom()
@@ -1510,9 +1537,15 @@ def cmd_catat(a):
         entri = [{k: getattr(a, k) for k in ("jenis", "tanggal", "nominal", "via", "bank", "pihak", "ket", "akun",
                                               "dari", "ke", "posting", "pokok", "bunga", "pph23", "diterima")}]
     rencana = []
+    # v1.0.4: entri batch berikutnya ikut "melihat" entri sebelumnya (tagihan tempo lalu pelunasannya dalam satu
+    # batch) untuk cek asal & saldo piutang; jurnal asli (j) tetap dipakai untuk cek akun dan dobel.
+    j_sem = copy.copy(j)
+    j_sem.txns = list(j.txns)
     for i, e in enumerate(entri, start=1):
         try:
-            rencana.append(rencana_dari(j, e))
+            r = rencana_dari(j_sem, e)
+            rencana.append(r)
+            j_sem.txns.append(Transaksi(r.tanggal, r.ket, dict(r.tags), list(r.postings), 0, len(j_sem.txns)))
         except Gagal as g:
             raise Gagal(("Transaksi ke-{}: ".format(i) if len(entri) > 1 else "") + str(g), g.kode)
     baru = periksa_akun(j, rencana, a.akun_baru)
