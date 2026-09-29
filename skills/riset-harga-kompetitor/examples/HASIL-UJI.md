@@ -100,3 +100,56 @@ Per 100 g dicek manual (mis. 42.500/200x100 = 21.250 ✓). Contoh pembuat (`cont
 4. Uji ulang oleh penguji independen (fokus data ukuran & CSV).
 
 Artefak uji penguji (CSV, output, `verif.py`) ada di scratchpad sesi: `uji-riset-harga/{data,out,verif.py}`.
+
+---
+
+# Uji ulang v1.0.1 (2026-09-28)
+
+- **Penguji:** agent independen kedua (bukan pembuat, bukan penguji v1.0.0), hanya membaca folder skill. Model: Opus.
+- **Lokasi:** salinan skill di scratchpad. **Platform:** `claude-code (simulasi agent)`. `scripts/uji_openclaw.sh` (di luar folder skill) tidak dijalankan penguji.
+- **Uji regresi bawaan:** `tests/uji_regresi.py` -> **38 tes lulus**.
+
+## Skor: **8,5 / 10 - LULUS** (layak `lulus`; temuan di bawah tidak menghalangi)
+
+Semua temuan T1-T12 diperbaiki dan terbukti dengan data baru penguji. Hitungan tetap eksak (**388 nilai, 0 selisih**). Sisa temuan hanya kasus ambigu yang jarang dan kosmetik.
+
+## Verifikasi T1-T12 dengan data baru (14 file: 12 CSV/JSON + 2 varian)
+| # | Data uji penguji | Hasil |
+|---|---|---|
+| T1 | `1/2 kg`, `1/4 kg`, `setengah kilo`, `½ kg`, `seperempat kilo`, `1 1/2 kg` (kopi 250 g); `1/3 kg` | Benar semua (500/250/500/500/250/1.500 g); `1/3 kg` ditolak per baris + alasan ✓ |
+| T2 | `250 g x 2`, `isi 2 @250gr`, `250 g + 250 g`, `Paket 3 pcs @ 100 gr`, `250gr x 2 pcs`, `12x25g`, `2 x 250 ml` | 500/500/500/300/500/300 g benar; `2 x 250 ml` = 500 ml, dikeluarkan karena satuan beda ✓ |
+| T3 | Madu 250 ml, Rp 180.000 & Rp 25.000 di antara 65-75 rb | Keluar dari statistik, tetap tampil + peringatan; `--pakai-semua` mengikutkan ✓ |
+| T4 | Sabun 800 ml, strategi premium | Rentang P75-P90 (Rp 21.000-22.800), di atas tengah (Rp 18.000-21.000) ✓ |
+| T5 | Tanpa `--hpp` | Mode pasar saja: statistik + posisi, tanpa minimum/rekomendasi, minta HPP ✓ |
+| T6 | CSV cp1252 (`Café Lëmbang`, `Señor`), CSV UTF-16, file biner | cp1252 & UTF-16 terbaca benar (+ info ANSI); biner -> `ERROR` exit 2 ✓ |
+| T7 | `4,9` dan `1,2RB terjual` tanpa kutip; baris kurang kolom | Baris lebih kolom dilewati + alasan jelas; kurang kolom diperingatkan ✓ |
+| T8 | JSON `"harga": 49.9` dan `99` | Ditolak (< Rp 100) + alasan ✓ |
+| T9 | `isi 10 pcs 250 gr` (produk 250 g) | Dipakai 250 g + catatan ✓ |
+| T10 | `Rp -49.900`, `--margin -5`, kolom harga tak ada, duplikat URL beda harga, jumlah promo | Semua pesan tepat; duplikat menyebut beda harga; promo "dari N pesaing di tabel" ✓ |
+| T11 | Hijab: 4 tanpa ukuran + 1 `2 pcs` | Peringatan muncul; dengan `1 pcs` disetarakan benar (Rp 22.500/pcs) ✓ |
+| T12 | SKILL.md | Bagian "Cara menguji harga baru" ada ✓ |
+
+Error CLI lain (HPP 0/teks, biaya+margin ≥ 100%, ukuran "sebungkus", file hanya judul) -> `ERROR:` jelas, exit 2 ✓.
+
+## Verifikasi angka independen
+`verif.py` penguji (tidak mengimpor script; harga & isi diketik ulang manual dari data mentah) menghitung ulang dengan Decimal: harga setara, status ikut/tidak (aturan pencilan), n, terendah/P25/median/P75/P90/tertinggi (PERCENTILE.INC), posisi harga kita, balik modal & minimum (ceil), rentang/titik per strategi (murah/tengah/premium, batas minimum), harga cantik (cari semua kandidat ...900), laba & margin di titik dan harga cantik, tanda PERHATIAN. 14 kasus (termasuk mode pasar saja, JSON `produk_kita`, `--pakai-semua`): **388 nilai, 0 selisih**.
+
+## Skenario normal lengkap
+`06-uji-ulang-v1.0.1.md`: sambal bawang 150 ml vs 8 pesaing (teks ditempel, Shopee + biaya 12,5% + 1.250, margin 25%). Ukuran `2 x 150 ml`/`1/2 L`, rentang harga, pencilan truffle, satuan gram, dan PERHATIAN pasar di bawah minimum semuanya benar. **Lulus.**
+
+## Temuan baru
+**SEDANG (tidak menghalangi)**
+- **U1 - "isi N" / "N pack" di sekitar berat dibaca sebagai satu kemasan tanpa catatan.** `500 gr isi 2`, `250gr (isi 2)`, `2 pack 500 gr` -> 500/250/500 g. Maknanya memang ambigu (total atau per kemasan), tetapi script diam saja; selisih tepat 2x juga lolos aturan pencilan (batasnya "di bawah separuh / di atas dua kali"). Usul: tambahkan catatan "cek: isi N ini total atau per kemasan?" bila ada `isi N`/`N pack` tanpa `x`/`@`.
+
+**RENDAH**
+- **U2** - Kolom `#` di tabel = nomor urut tampil, sedangkan "Perlu dicek" memakai nomor baris file (mis. baris 4 D tampil sebagai #3 saat baris 1 dilewati). Samakan, atau pakai nomor baris file di tabel.
+- **U3** - Ukuran yang ditolak (`1/3 kg`, `250 g + 250 ml`) hanya muncul di kolom Catatan tabel, tidak di "Perlu dicek".
+- **U4** - Strategi premium memakai P90, tetapi tabel ringkasan tidak menampilkan P90.
+- **U5** - Paket di kolom `ukuran` (`Paket 3 pcs @ 100 gr`, `250 g x 2`) tidak ikut terdeteksi di "bundling" (yang dicek hanya nama/varian/promo).
+- **U6** - Kosmetik: "Rentang harga: Rp 30.000 - Rp 30.000" saat rentang menyempit ke minimum; `--format json` menulis margin sebagai pecahan 2 desimal (`0.44`), kehilangan presisi bagi pemakai JSON.
+
+## Rekomendasi
+1. Status boleh naik ke `lulus` (skor 8,5 >= 7). U1 sebaiknya diperbaiki di 1.0.2 (+ uji regresi `500 gr isi 2`, `2 pack 500 gr`).
+2. Kurator menjalankan `bash scripts/uji_openclaw.sh` sebelum mengubah status.
+
+Artefak uji ulang (data, output, `verif.py`): scratchpad sesi `uji-riset-101/{data,out,verif.py}`.
