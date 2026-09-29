@@ -143,6 +143,10 @@ for argv in (("hasil", "--ditawari", "80", "--aksi", "14", "--target", "1.250"),
 k, o, e = jalan("hasil", "--ditawari", "80", "--aksi", "14", "--target", "1,25")
 if k != 0 or "1,2%" not in o and "1,3%" not in o: gagal.append("persen desimal koma 1,25 harus diterima: " + o)
 
+# N1: uji z < 0,05 tapi Fisher >= 0,05 -> tidak dinyatakan pemenang
+k, o, e = jalan("banding", "--a-ditawari", "180", "--a-aksi", "3", "--b-ditawari", "190", "--b-aksi", "11")
+if k != 0 or "pemenang untuk kelompok" in o or "Cek silang" not in o: gagal.append("N1 cek silang Fisher: " + o)
+
 if gagal:
     print("GAGAL:\n- " + "\n- ".join(gagal))
     sys.exit(1)

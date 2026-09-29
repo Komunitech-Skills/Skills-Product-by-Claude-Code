@@ -29,9 +29,18 @@ Alternatif: variabel lingkungan yang Anda set sendiri di mesin bot:
 ## Indodax (PAKD berizin OJK — cek ulang daftar di ojk.go.id)
 - Buat kunci di menu pengaturan API Trade di akun Indodax (nama menu dapat berubah; ikuti
   tampilan terbaru). Pilih izin **view + trade saja**, jangan withdraw.
-- **Penting:** API Indodax tidak menyediakan cara membaca izin kunci, jadi bot **tidak bisa
-  memeriksa otomatis** apakah withdraw dimatikan. Anda wajib memastikannya sendiri; pernyataan
-  Anda dicatat di `bot/KONFIRMASI-LIVE.json`.
+- **Penting (keputusan kurator Komunitech 2026-09-29):** bot **tidak memanggil metode keluarga
+  withdraw apa pun** di Indodax — termasuk `withdrawFee` yang baca-saja dan secara teori bisa dipakai
+  menebak izin — supaya kode bot tidak pernah menyentuh fitur tarik dana. Karena itu izin withdraw
+  **tidak diperiksa otomatis**. Sebelum live, `siapkan_live.py` menampilkan **DAFTAR PERIKSA WAJIB**:
+  1. login ke indodax.com (cek alamat situs), buka Pengaturan API;
+  2. temukan kunci bot (cocokkan beberapa karakter awal, jangan tempel ke chat);
+  3. pastikan izin **withdraw TIDAK dicentang** (hanya view + trade);
+  4. bila ternyata aktif: hapus kunci, buat baru tanpa withdraw;
+  5. tidak ada kunci lain berizin withdraw di komputer bot.
+  Setelah Anda sendiri menyelesaikannya, agent menjalankan
+  `siapkan_live.py ... --saya-sudah-cek-tanpa-withdraw`; bukti dicatat di `bot/KONFIRMASI-LIVE.json`.
+  Bot live menolak jalan tanpa bukti daftar periksa ini.
 - Demo/latihan: dokumentasi resmi Indodax menyebut **demo-indodax.com** (saldo demo, tidak bisa
   ditarik). Status di skill ini: **belum teruji** (situs demo meminta login saat diuji
   2026-09-29). Kunci demo dibuat di situs demo, bukan di akun asli.
@@ -48,8 +57,15 @@ Alternatif: variabel lingkungan yang Anda set sendiri di mesin bot:
 - Binance global tidak tercantum di daftar PAKD berizin OJK (cek ojk.go.id); PPh 1% dan bila
   platform tidak ditunjuk DJP, Anda menyetor sendiri. Bot mewajibkan
   `"saya_paham_binance_bukan_pakd_ojk": true` bila tetap dipilih.
-- Bot memeriksa izin lewat `GET /sapi/v1/account/apiRestrictions` dan **menolak** kunci yang
+- Bot memeriksa izin lewat `GET /sapi/v1/account/apiRestrictions` (endpoint **baca-saja**, hanya
+  membaca pengaturan kunci, tidak memindahkan dana) dan **menolak** kunci yang
   `enableWithdrawals: true`, tidak punya izin spot, atau punya izin margin/futures/transfer.
+  Daftar periksa `--saya-sudah-cek-tanpa-withdraw` tetap wajib sebagai lapis kedua.
+
+## Pengalihan alamat (redirect)
+Permintaan bertanda tangan (membawa kunci) **tidak pernah** mengikuti pengalihan HTTP ke alamat lain,
+sehingga kunci tidak ikut terkirim ke host selain bursa resmi. Bila bursa mengalihkan (mis. situs
+demo meminta login), bot melaporkannya dan tidak berorder.
 
 ## Kalau curiga kunci bocor
 1. Jalankan tombol berhenti: `python3 scripts/berhenti.py --konfigurasi bot/konfigurasi.json --batalkan-order`

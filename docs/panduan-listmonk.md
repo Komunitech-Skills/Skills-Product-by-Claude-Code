@@ -78,11 +78,12 @@ services:
       - ./unggahan:/listmonk/uploads
 ```
    Ganti kedua `GANTI-...` dengan sandi panjang dan acak (sandi DB harus sama di dua tempat). **Jangan bagikan file ini** dan jangan taruh di tempat publik. Versi dikunci (`v6.2.0`) agar tidak berubah sendiri; cek versi terbaru di https://github.com/knadh/listmonk/releases sebelum memasang.
-2. **Pertama kali saja**, siapkan isi database (perintah satu baris; kalau ini pemasangan baru, aman):
+2. **Pertama kali saja**, nyalakan database dulu, tunggu ±10 detik, lalu siapkan isinya:
 ```
+docker compose up -d db
 docker compose run --rm app ./listmonk --install --idempotent --yes
 ```
-   Perintah ini membuat tabel dan akun admin dari `LISTMONK_ADMIN_USER/PASSWORD`.
+   Perintah kedua membuat tabel dan akun admin dari `LISTMONK_ADMIN_USER/PASSWORD` (jika muncul "connection refused", tunggu sebentar lalu ulangi). Sudah diuji: kedua perintah ini lalu langkah 3 menghasilkan halaman login yang bisa dibuka.
 3. Nyalakan: `docker compose up -d`. Tunggu ±10 detik, buka **http://localhost:9000** di browser.
 4. **HTTPS untuk server internet (Caddy, contoh):** arahkan domain (mis. `surat.tokosaya.id`) ke IP server; pasang Caddy dan isi `Caddyfile`:
 ```

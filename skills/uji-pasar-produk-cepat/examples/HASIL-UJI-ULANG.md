@@ -73,3 +73,6 @@ Angka sama dengan v1.0.0 (Wilson 11,7%-25,3% ✅); label kini "LANJUT BERTAHAP" 
 - (+) Tidak ada lagi klaim pemenang pada sampel < 50 per varian; alat power/MDE menutup kekalahan terhadap pesaing; validasi input lengkap tanpa traceback; regresi S1 lebih baik.
 - (−) N1: masih ada celah overclaim tipis di zona konversi rendah yang justru relevan untuk marketplace; N2 tampilan persen.
 - Rekomendasi: boleh lanjut ke uji platform asli / `beta`; N1 dan N2 sebaiknya diperbaiki di v1.0.2 (tidak perlu uji ulang penuh, cukup tes tambahan).
+
+## Catatan revisi 1.0.2 (kurator)
+- N1 diperbaiki: bila uji z < 0,05 tetapi uji Fisher tepat >= 0,05, hasil tidak dinyatakan pemenang (cek silang). Tes regresi ditambah.

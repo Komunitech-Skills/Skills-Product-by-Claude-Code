@@ -167,6 +167,13 @@ def cmd_banding(a):
         pf = fisher_tepat(xa, na, xb, nb)
         out.append(f"Sampel kecil, jadi dipakai uji Fisher tepat: p = {pf:.4f}".replace(".", ","))
         pv = pf
+    elif pv < 0.05 and na + nb <= 20000:
+        # cek silang: pemenang hanya bila uji z DAN Fisher tepat sama-sama < 0,05
+        pf = fisher_tepat(xa, na, xb, nb)
+        if pf >= 0.05:
+            out.append(f"Cek silang uji Fisher tepat: p = {pf:.4f} (di atas 0,05), jadi hasil di batas; "
+                       "tidak dinyatakan pemenang.".replace(".", ",", 1))
+            pv = pf
     unggul = "B" if pb > pa else "A"
     if pv < 0.05 and not kecil:
         out.append(f"Artinya: selisih sebesar ini jarang muncul hanya karena kebetulan (p < 0,05). "

@@ -42,7 +42,11 @@ openclaw automations enable <id>
 openclaw automations rm <id>          # hapus
 ```
 Menjeda jadwal **bukan** tombol berhenti: bila member ingin bot berhenti total, jalankan
-`scripts/berhenti.py` (membuat file `bot/STOP`) **dan** jeda jadwalnya.
+`scripts/berhenti.py` (membuat file `STOP` di folder bot, folder konfigurasi, dan lokasi global
+`~/.komunitech/bot-trading-kripto/STOP-<id>` — jadi tetap berlaku walau jadwal memakai `--folder-bot`
+lain) **dan** jeda jadwalnya. "Hentikan semua bot": `scripts/berhenti.py --semua`.
+Jadwal & perintah berhenti/lanjutkan harus dijalankan oleh **akun pengguna yang sama** di komputer
+yang sama (lokasi global ada di folder home akun itu).
 
 ## 5. Perintah dari Telegram
 Member cukup menulis ke agen OpenClaw: "stop bot", "status bot", "lanjutkan bot". Agent menjalankan

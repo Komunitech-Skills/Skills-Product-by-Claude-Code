@@ -32,24 +32,31 @@ Opsional: `langkah_jumlah` & `min_nilai_order` (untuk paper; testnet/live diambi
 | Batas | Rumus | Akibat |
 |---|---|---|
 | Stop-loss global | harga ≤ rata-rata × (1 − SL%) | jual semua posisi bot → **berhenti** |
-| Rugi harian | nilai pada putaran terakhir sebelum 00.00 WIB − nilai sekarang > `rugi_harian_maks` | **berhenti** |
+| Rugi harian | nilai pada putaran terakhir sebelum 00.00 WIB − nilai sekarang > `rugi_harian_maks`. Patokan per tanggal disimpan di `state.json` (`buku_rugi_harian`) dan tidak pernah ditimpa; tanggal diambil dari waktu putaran **terbaru yang pernah dilihat** (`waktu_terakhir`), jadi jam komputer mundur tidak me-reset batas | **berhenti** |
 | Modal per order | nilai beli > `modal_maks_per_order` | **berhenti** |
 | Modal total | modal terpakai (biaya perolehan posisi) + order > `modal_maks_total` | **berhenti** |
 | Order terbuka | jumlah order terbuka di bursa ≥ `order_terbuka_maks` | **berhenti** |
-| Tombol berhenti | file `bot/STOP` ada | **berhenti** |
+| Tombol berhenti | salah satu ada: `<folder bot>/STOP`, `<folder konfigurasi>/STOP`, `~/.komunitech/bot-trading-kripto/STOP-<id konfigurasi>`, `~/.komunitech/bot-trading-kripto/STOP-SEMUA` | **berhenti** |
 Lain-lain yang menghentikan bot: status order tidak pasti, order ditolak bursa, kunci
 bermasalah/berizin withdraw (Binance live), konfigurasi berubah saat memegang koin, gerbang live gagal.
 Berhenti = tidak ada order baru; posisi tidak dijual (kecuali stop-loss).
 
 ## Akuntansi bot
 - Kas bot awal = `modal_maks_total` (anggaran virtual; bot tidak memakai saldo lain di akun).
-- Beli: jumlah = bulat_bawah((nominal / (1+fee)) / harga, lot); bayar = harga×jumlah + fee ≤ nominal.
+- Beli: jumlah = bulat_bawah((nominal / (1+fee+t)) / harga, lot); bayar = harga×jumlah + fee + PPh beli ≤ nominal.
+  t = PPh sisi beli: 0 untuk kutipan rupiah; = tarif PPh untuk kutipan aset kripto (USDT dll., swap,
+  PMK 50/2025 Pasal 12 ayat (5) huruf b).
 - Jual: bruto = harga × jumlah; fee = bruto × fee%; PPh = ⌊bruto × tarif⌋; bersih = bruto − fee − PPh.
 - Untung/rugi terealisasi memakai **harga rata-rata tertimbang** (berbeda dari FIFO di skill
   `pantau-pasar-kripto`; keduanya sah, sebut metodenya bila dibandingkan).
 - Rupiah dibulatkan ke rupiah terdekat; USDT 8 desimal; PPh dibulatkan ke bawah.
+- **Grid:** rata-rata dihitung dari SEMUA koin bot. Akibatnya stop-loss global bisa terpicu saat harga
+  masih di dalam rentang grid, dan jual satu slot di atas harga belinya bisa tercatat rugi (pesan
+  bot memberi catatan). Pilih `stop_loss_persen` dengan mempertimbangkan lebar grid.
+- Angka ditulis tanpa pemisah ribuan ("500000"); "500.000" ditolak supaya tidak terbaca Rp500.
 
 ## File di folder bot
 `konfigurasi.json` (member) · `state.json` (status bot) · `audit.jsonl` (log semua kejadian,
-append-only, kunci disamarkan) · `transaksi.csv` · `STOP` (tombol berhenti) ·
+append-only, kunci disamarkan) · `transaksi.csv` · `STOP` (tombol berhenti; juga ada salinan global di
+`~/.komunitech/bot-trading-kripto/`) ·
 `KONFIRMASI-LIVE.json` (bukti konfirmasi live).

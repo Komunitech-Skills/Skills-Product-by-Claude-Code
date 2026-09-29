@@ -91,11 +91,14 @@ berhenti saat batas rugi tersentuh. Contoh backtest di paket ini justru menunjuk
 
 **2. Apakah dana saya bisa dicuri lewat bot ini?**
 Bot hanya memakai kunci **tanpa izin tarik dana**, disimpan di komputer Anda (bukan di chat,
-bukan di server Komunitech). Kunci dengan izin withdraw ditolak (Binance) atau wajib Anda
-pastikan dimatikan (Indodax). Jika curiga bocor: "stop bot", cabut kunci di bursa, buat baru.
+bukan di server Komunitech). Kunci dengan izin withdraw ditolak otomatis (Binance) atau wajib Anda
+pastikan mati lewat daftar periksa di layar Indodax sebelum live (bot sengaja tidak menyentuh fitur
+withdraw sama sekali). Kunci tidak pernah dikirim ke alamat selain bursa resmi, termasuk saat bursa
+mengalihkan alamat. Jika curiga bocor: "stop bot", cabut kunci di bursa, buat baru.
 
 **3. Bagaimana dengan pajaknya?**
 Setiap penjualan dihitung PPh final 0,21% (bursa dalam negeri) atau 1% (luar negeri) sesuai
-PMK 50/2025 (berlaku 1 Agustus 2025). Bursa dalam negeri memotongnya otomatis; bot mencatatnya
+PMK 50/2025 (berlaku 1 Agustus 2025). Untuk pasangan kripto-kripto (mis. BTC/USDT) PPh juga dihitung
+di sisi beli, karena menurut PMK itu tukar-menukar kripto dikenai PPh atas nilai masing-masing aset. Bursa dalam negeri memotongnya otomatis; bot mencatatnya
 agar untung/rugi Anda bersih. Pembulatan belum dicocokkan dengan Coretax; bukti potong dari
 bursa yang berlaku. Untuk kewajiban pajak pribadi, konsultasikan ke konsultan pajak/DJP.
