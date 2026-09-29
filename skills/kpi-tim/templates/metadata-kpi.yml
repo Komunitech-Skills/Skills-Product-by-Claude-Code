@@ -1,0 +1,41 @@
+title: Dasbor KPI Tim (lokal)
+description: "Data KPI tim dari kpi-tim (skor_kpi.py ekspor-db). Hanya untuk komputer ini (127.0.0.1): jangan dibuka ke jaringan/internet, jangan dibagikan. Skor per orang = data pribadi karyawan; bahan diskusi, bukan dasar sanksi atau PHK."
+databases:
+  kpi:
+    title: KPI Tim
+    queries:
+      perusahaan_tren:
+        title: Skor perusahaan per periode (tren)
+        sql: |
+          SELECT periode, skor, status, tren, dasar, sebagian
+          FROM skor_perusahaan
+          ORDER BY periode DESC
+      divisi_terbaru:
+        title: Skor per divisi, periode terbaru
+        sql: |
+          SELECT periode, divisi, skor, status, tren, jumlah_orang, jumlah_belum_lengkap, dasar_skor
+          FROM skor_divisi
+          WHERE periode = (SELECT MAX(periode) FROM skor_divisi)
+          ORDER BY divisi
+      orang_terbaru:
+        title: Skor per orang (dikelompokkan per divisi), periode terbaru
+        sql: |
+          SELECT periode, divisi, orang, skor, status, tren, jumlah_kpi_merah, jumlah_kpi_kosong
+          FROM skor_orang
+          WHERE periode = (SELECT MAX(periode) FROM skor_orang)
+          ORDER BY divisi, orang
+      tren_orang:
+        title: Tren skor per orang per periode
+        sql: |
+          SELECT divisi, orang, periode, skor, status, tren
+          FROM skor_orang
+          ORDER BY divisi, orang, periode
+      kpi_merah:
+        title: KPI berstatus merah, periode terbaru
+        sql: |
+          SELECT periode, divisi, COALESCE(orang, '(KPI divisi)') AS orang, kpi, satuan,
+                 target, realisasi, capaian_persen, bobot
+          FROM skor_kpi
+          WHERE status = 'merah'
+            AND periode = (SELECT MAX(periode) FROM skor_kpi)
+          ORDER BY divisi, orang, capaian_persen

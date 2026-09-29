@@ -1130,6 +1130,41 @@ class UjiV104SubtotalDiKolomNama(_Dasar):
         self.assertIn("Mohon", w[0])
 
 
+class UjiV106TotalKampanyeTanpaLabel(_Dasar):
+    """v1.0.6: baris total kampanye dengan kolom grup iklan kosong (tanpa label) tidak terhitung diam-diam."""
+
+    def test_total_kampanye_cocok_dibuang_dengan_peringatan(self):
+        teks = ("Campaign,Ad group,Cost,Impressions,Clicks,Conversions\n"
+                "Search Brand,Merek,400000,20000,600,10\n"
+                "Search Brand,Umum,300000,10000,300,5\n"
+                "Search Brand,,700000,30000,900,15\n"
+                "Search Lain,Kata,250000,8000,200,3\n")
+        d = self.json_ok("analisis", str(self.tulis("t1.csv", teks)))
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), Decimal(950000))
+        w = [x for x in d["peringatan"] if "tanpa grup iklan" in x and "Search Brand" in x]
+        self.assertEqual(len(w), 1, d["peringatan"])
+        self.assertIn("tidak dihitung", w[0])
+        self.assertIn("Rp 700.000", w[0])
+
+    def test_baris_kosong_tidak_cocok_tetap_dihitung_dengan_peringatan(self):
+        teks = ("Campaign,Ad group,Cost,Impressions,Clicks,Conversions\n"
+                "Search Brand,Merek,400000,20000,600,10\n"
+                "Search Brand,Umum,300000,10000,300,5\n"
+                "Search Brand,,50000,2000,40,1\n")
+        d = self.json_ok("analisis", str(self.tulis("t2.csv", teks)))
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), Decimal(750000))
+        self.assertTrue(any("tetap dihitung" in x and "Search Brand" in x for x in d["peringatan"]), d["peringatan"])
+
+    def test_pmax_tanpa_saudara_tidak_diperingatkan(self):
+        teks = ("Campaign,Ad group,Cost,Impressions,Clicks,Conversions\n"
+                "Search Brand,Merek,120000,8000,300,6\n"
+                "PMax Toko,,250000,96340,1702,41\n")
+        d = self.json_ok("analisis", str(self.tulis("t3.csv", teks)))
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), Decimal(370000))
+        self.assertFalse(any("tanpa grup iklan" in x and "tetap dihitung" in x or "total kampanye" in x
+                             for x in d["peringatan"]), d["peringatan"])
+
+
 class UjiV105NamaPMaxDanTotalAlternatif(_Dasar):
     """v1.0.5 (P-3, P-4 uji ulang v1.0.4): baris Google Performance Max tanpa grup iklan memakai nama
     grup aset/kampanye; ⚠️ subtotal/total yang meragukan menyebut total alternatif (Decimal)."""

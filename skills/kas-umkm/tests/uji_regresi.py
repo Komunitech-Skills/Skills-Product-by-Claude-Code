@@ -1656,5 +1656,72 @@ class UjiV107(Dasar):
         self.assertNotIn("BELUM TERKLASIFIKASI", r.stdout)
 
 
+class UjiV108(Dasar):
+    """Uji ulang v1.0.7 (8,5/10): konteks rumah tangga menang atas tebakan bahan pangan; pertanyaan bunga emkm
+    cukup SEKALI per periode (--bunga N=0 untuk semua baris cicilan pokok)."""
+
+    def test_konteks_rumah_mengalahkan_bahan_pangan(self):
+        for ket in ("beli gula buat di rumah", "beli telur untuk sarapan anak di rumah",
+                    "belanja telur buat masak di rumah", "beli sayur untuk rumah", "beli beras buat makan keluarga",
+                    "belanja dapur rumah", "susu buat anak"):
+            self.assertEqual(K.tebak_kategori(ket, "keluar")[0], "prive", ket)
+            out = self.ok("catat", "--keluar", "30rb", "--metode", "tunai", "--catatan", ket)   # pratinjau
+            self.assertEqual(out["entri"][0]["kategori"], "prive", ket)
+            self.assertTrue(any("rumah atau untuk usaha" in p for p in out["peringatan"]), (ket, out))
+        # bukan rumah pemilik / usaha rumahan -> tetap bahan usaha
+        for ket in ("beli sayur buat rumah makan", "beli gula untuk rumah makan", "terigu buat produksi di rumah",
+                    "beli gula", "beli terigu buat pesanan"):
+            self.assertEqual(K.tebak_kategori(ket, "keluar")[0], "beli-stok", ket)
+        self.assertEqual(K.tebak_kategori("gaji anak buah", "keluar")[0], "gaji")
+        self.assertEqual(K.tebak_kategori("bayar utang ke keluarga", "keluar")[0], "pinjaman")
+        self.assertEqual(K.tebak_kategori("pinjaman dari keluarga", "masuk")[0], "pinjaman")
+        # beli-stok dipilih eksplisit untuk belanja rumah -> diperingatkan (prive?)
+        out = self.ok("catat", "--keluar", "30rb", "--kategori", "beli-stok", "--metode", "tunai", "--catatan",
+                      "beli gula buat di rumah")
+        self.assertTrue(any("prive" in p for p in out["peringatan"]), out)
+
+    def test_bunga_emkm_ditanya_sekali(self):
+        c = lambda *a: self.ok("catat", *a, "--ya")
+        c("--masuk", "3jt", "--kategori", "penjualan", "--metode", "tunai", "--catatan", "jualan", "--tanggal", "02/09/2026")
+        c("--keluar", "500rb", "--kategori", "pinjaman", "--metode", "tunai", "--catatan", "angsuran oven ke-3",
+          "--tanggal", "05/09/2026")
+        c("--keluar", "300rb", "--kategori", "pinjaman", "--metode", "tunai", "--catatan", "cicilan mixer ke-5",
+          "--tanggal", "06/09/2026")
+        c("--keluar", "400rb", "--kategori", "pinjaman", "--metode", "transfer", "--catatan", "setoran KUR BRI",
+          "--tanggal", "10/09/2026")
+        out = self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
+        with open(out["file"], encoding="utf-8-sig", newline="") as fh:
+            rows = list(csv.reader(fh, delimiter=";"))
+        # nomor baris file (judul = baris 1) untuk tiap cicilan pokok
+        harap = [i + 1 for i, r in enumerate(rows) if r[4] == "bayar_pinjaman"]
+        self.assertEqual(len(harap), 3)
+        self.assertEqual(out["baris_cicilan"], harap)
+        tanya = [p for p in out["peringatan"] if p.startswith("PERTANYAAN BUNGA")]
+        self.assertEqual(len(tanya), 1, out["peringatan"])                       # satu pertanyaan, bukan tiga
+        for n in harap:
+            self.assertIn("--bunga %d=0" % n, out["perintah_pokok_saja"])
+        emkm = os.path.join(SKILLS, "laporan-keuangan-emkm", "scripts", "laporan_emkm.py")
+        if not os.path.isfile(emkm):
+            self.skipTest("laporan-keuangan-emkm tidak ada di sebelah skill ini")
+        dasar = [sys.executable, emkm, out["file"], "--format", "json", "--periode-awal", "2026-09-01",
+                 "--periode-akhir", "2026-09-26", "--kas-akhir-aktual", str(out["saldo_akhir"]),
+                 "--utang-bank-awal", "5000000"]
+        r = subprocess.run(dasar, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(len([q for q in json.loads(r.stdout)["pertanyaan"] if "BUNGA" in q]), 3)   # tanpa flag: per baris
+        flag = []
+        for n in harap:
+            flag += ["--bunga", "%d=0" % n]
+        r = subprocess.run(dasar + flag, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        d = json.loads(r.stdout)
+        self.assertFalse([q for q in d["pertanyaan"] if "BUNGA" in q], d["pertanyaan"])
+        # hasil usaha = 3.000.000 (pokok cicilan 1,2 jt bukan biaya) = laba emkm
+        self.assertEqual(self.ok("rekap", "--bulan", "09/2026")["hasil_usaha"], 3000000)
+        self.assertEqual(d["laba_rugi"]["laba_bersih"], 3000000)
+        self.assertEqual(d["status"], "LENGKAP")
+        self.assertTrue(d["posisi_keuangan"]["seimbang"], d["posisi_keuangan"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

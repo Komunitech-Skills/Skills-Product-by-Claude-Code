@@ -1117,6 +1117,38 @@ def analisis_file(path, override, args):
         baris_total.append(x["nama_asli"])
         rekaman.remove(x)
 
+    # --- v1.0.6: baris total kampanye TANPA label (kolom grup iklan/iklan kosong) di file bertingkat ---
+    # Bila kampanye yang sama punya baris rincian bernama, baris berkolom-rinci-kosong itu bisa berupa total
+    # kampanye (mis. "Search Brand,,700000,..." di bawah dua grup iklan). Biaya, tayangan & klik ≈ (±2%)
+    # jumlah baris rincian -> dibuang dengan ⚠️ (tidak dihitung dua kali); selain itu tetap dihitung + ⚠️.
+    if kolom_induk:
+        for x in list(rekaman):
+            if x["nama_asli"] or x["kandidat_subtotal"] or not any(x["induk"]):
+                continue
+            saudara = [y for y in rekaman if y is not x and y["nama_asli"] and y["induk"] == x["induk"]]
+            if not saudara:
+                continue
+            b_x = fmt_rp(x["biaya"] * kurs)
+            b_s = fmt_rp(sum((g["biaya"] for g in saudara), NOL) * kurs)
+            kamp = x["induk"][-1] or x["induk"][0]
+            if _cocok_jumlah(x, saudara, True):
+                x["n3"] = True
+                peringatan.append(
+                    f"Baris kampanye '{kamp}' tanpa {level_rincian} (baris {x['no_baris']}, biaya {b_x}) "
+                    f"tampaknya total kampanye: biaya, tayangan & kliknya sama dengan jumlah {len(saudara)} "
+                    f"baris {level_rincian} kampanye itu ({b_s}). Baris ini tidak dihitung supaya biayanya "
+                    "tidak terjumlah dua kali. Bila itu data sungguhan (mis. Performance Max), mohon "
+                    "beri tahu agar dihitung ulang.")
+            else:
+                peringatan.append(
+                    f"Baris kampanye '{kamp}' tanpa {level_rincian} (baris {x['no_baris']}, biaya {b_x}) "
+                    f"tetap dihitung, tetapi kampanye itu juga punya {len(saudara)} baris {level_rincian} "
+                    f"bernama (jumlah {b_s}). Mohon cek: bila baris ini sebenarnya total kampanye, hapus "
+                    "dari file lalu jalankan ulang agar tidak terjumlah dua kali.")
+        for x in [y for y in rekaman if y["n3"] and not y["nama_asli"]]:
+            baris_total.append(f"total {x['induk'][-1] or x['induk'][0]}")
+            rekaman.remove(x)
+
     # --- M3: kolom nama kosong + label mirip total di kolom lain (mis. "Subtotal Kamp A") ---
     # Dibuang HANYA bila biaya, tayangan & klik ≈ (±2%) jumlah beberapa baris data tepat di atas
     # ATAU tepat di bawahnya (pola subtotal). Selain itu tetap dihitung + ⚠️.

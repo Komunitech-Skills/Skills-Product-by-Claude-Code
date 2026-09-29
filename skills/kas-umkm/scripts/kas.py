@@ -95,12 +95,23 @@ ALIAS_KATEGORI = {
     "kasbon": ["kasbon", "kas bon", "uang muka karyawan", "pinjaman karyawan", "piutang karyawan", "kasbon karyawan"],
     "lain-lain": ["lain lain", "lain", "lainnya", "dll", "lain2", "other"],
 }
+# v1.0.8: konteks rumah tangga ("beli gula buat di rumah", "beli sayur untuk rumah", "sarapan anak",
+# "makan keluarga") -> prive. Diperiksa SEBELUM kosakata bahan pangan (beli-stok). Rumah makan/sakit/pelanggan dll.
+# bukan rumah pemilik; "produksi di rumah" (usaha rumahan) juga bukan.
+KONTEKS_RUMAH = (r"(buat|untuk|utk|bwt|bagi|keperluan|kebutuhan)( di)? rumah(?! makan| sakit| kos| kost| produksi| "
+                 r"pelanggan| pembeli| konsumen| customer| klien| pemesan)|"
+                 r"(masak|makan|sarapan|dapur|konsumsi) di rumah(?! makan| sakit)|"
+                 r"sarapan (anak|anak anak|keluarga|suami|istri)|"
+                 r"(buat|untuk|utk|bwt|makan|keperluan|kebutuhan|konsumsi) keluarga|"
+                 r"(buat|untuk|utk|bwt) (anak anak|anak|suami|istri)(?! buah| magang| didik| asuh| yatim)")
+POLA_KONTEKS_RUMAH = re.compile(r"\b(" + KONTEKS_RUMAH + r")\b")
 # Tebakan kategori dari catatan (dipakai bila --kategori kosong); urutan penting.
 TEBAK = [
     ("prive", "keluar", r"\b(prive|privee|pribadi|rumah tangga|(belanja|keperluan|kebutuhan)( \w+){0,2} rumah"
                         r"(?! makan| sakit| kos| kost| produksi)|(dapur|sayur|masak) rumah(?! makan)|spp|"
                         r"uang sekolah|sekolah anak|jajan|uang saku|arisan|kondangan|kirim (ortu|orang tua|ibu|bapak)|"
-                        r"liburan|gaji (saya|pemilik|owner|sendiri))\b"),   # v1.0.5: belanja dapur/sayur rumah
+                        r"liburan|gaji (saya|pemilik|owner|sendiri)|" + KONTEKS_RUMAH + r")\b"),
+    # v1.0.5: belanja dapur/sayur rumah; v1.0.8: konteks rumah tangga (KONTEKS_RUMAH) MENANG atas kosakata bahan
     ("pajak", "keluar", r"\b(pajak|pph|pbjt|pb1|ppn)\b"),
     ("kasbon", None, r"\b(kasbon|kas bon|uang muka (karyawan|pegawai|gaji)|(pinjaman|pinjam) (karyawan|pegawai)|"
                      r"piutang karyawan)\b"),
@@ -1442,6 +1453,12 @@ def siapkan_entri(conn, arah, jumlah_teks, kategori_teks, metode_teks, catatan, 
                         (catatan or "tanpa catatan", arah, rp(jumlah), ", ".join(KATEGORI)), perlu_kategori=True,
                         pertanyaan=tanya_kategori(catatan, arah, jumlah))
         asumsi.append("kategori '%s' ditebak dari kata '%s'" % (kat, kata))
+        if kat == "prive" and (POLA_KONTEKS_RUMAH.search(n_cat) or
+                               re.search(r"\b(rumah|keluarga|anak|sarapan|suami|istri)\b", kata or "")):  # v1.0.8
+            peringatan.append("'%s' ditebak PRIVE (keperluan rumah/keluarga, bukan biaya usaha) karena menyebut "
+                              "'%s'. Pastikan dengan pengguna: 'Belanja ini untuk rumah atau untuk usaha?' Bila "
+                              "untuk usaha (mis. bahan katering yang dimasak di rumah), pilih --kategori beli-stok."
+                              % (catatan, kata))
     kat_awal = kat
     kat, alasan = koreksi_lain_lain(kat, arah, catatan)
     peringatan.extend(peringatan_kategori(kat, arah, catatan))                 # v1.0.5
@@ -3085,7 +3102,7 @@ def cmd_ekspor(args):
     else:
         pr.append("Saldo awal gabungan minus (%s); tidak ditulis di file. Periksa saldo awal akun." % rp(saldo_awal))
     n_pindah = 0
-    salah_golong, gerak = [], {}
+    salah_golong, gerak, cicilan = [], {}, []
     for r in rows:
         if r["kategori"] == "pindah":
             n_pindah += 1
@@ -3103,6 +3120,8 @@ def cmd_ekspor(args):
             ket = "Pajak: " + ket
         data.append([tgl_id(r["tanggal"]), ket, r["jumlah"] if r["arah"] == "masuk" else "",
                      r["jumlah"] if r["arah"] == "keluar" else "", kode])
+        if r["status"] == "aktif" and r["kategori"] == "pinjaman" and r["arah"] == "keluar":
+            cicilan.append((len(data) + 1, ket, r["jumlah"]))          # v1.0.8: no. baris file (judul = baris 1)
     path = tulis_csv(path, ["Tanggal", "Keterangan", "Masuk", "Keluar", "Kategori"], data, args.pemisah)
     # v1.0.6: pembelian alat/aset berkategori kosong -> emkm bisa mencatatnya ASET TETAP (disusutkan), bukan beban
     aset = [(d[0], d[1], d[3]) for d in data[1 if saldo_awal >= 0 else 0:]
@@ -3138,6 +3157,20 @@ def cmd_ekspor(args):
     perintah = ("python3 <folder-laporan-keuangan-emkm>/scripts/laporan_emkm.py \"%s\" --nama-usaha \"%s\" "
                 "--periode-awal %s --periode-akhir %s --kas-akhir-aktual %d" %
                 (path, cfg["nama_usaha"], dari.isoformat(), sampai.isoformat(), saldo_akhir))
+    perintah_pokok = None
+    if cicilan:
+        # v1.0.8: emkm menanyakan bunga untuk SETIAP baris bayar_pinjaman. Di buku kas, bunga/denda dicatat terpisah
+        # (lain-lain -> beban_keuangan), jadi tanyakan SEKALI per periode lalu kirim --bunga N=0 untuk semua baris.
+        bunga_flag = " ".join("--bunga %d=0" % c[0] for c in cicilan)
+        perintah_pokok = perintah + " " + bunga_flag
+        pr.append("PERTANYAAN BUNGA (tanyakan SEKALI untuk periode ini, bukan per baris): ada %d baris cicilan pinjaman "
+                  "(%s). Buku kas mencatatnya sebagai POKOK saja; bunga/denda yang dibayar terpisah sudah tercatat "
+                  "sebagai biaya. Tanyakan: 'Apakah semua cicilan ini sudah TANPA bunga (bunganya dicatat terpisah "
+                  "atau pinjamannya tanpa bunga)?' Bila ya, pakai perintah dengan %s (lihat perintah_pokok_saja) agar "
+                  "emkm tidak menanyakannya lagi per baris. Bila ada cicilan yang masih termasuk bunga, tanyakan "
+                  "nominal bunga per pinjaman per bulan lalu ganti 0 pada baris itu dengan nominal bunganya." % (
+                      len(cicilan), "; ".join("baris %d '%s' %s" % (c[0], c[1][:40], rp(c[2])) for c in cicilan[:10]),
+                      bunga_flag))
     t = ("Ekspor untuk skill laporan-keuangan-emkm: %d baris %s - %s ke %s\n"
          "Kolom: Tanggal;Keterangan;Masuk;Keluar;Kategori (kode kategori emkm; pajak & pembelian alat/aset dikosongkan "
          "agar emkm mengklasifikasi dari keterangan; biaya bank = beban_keuangan, pemasukan lain-lain = "
@@ -3147,7 +3180,8 @@ def cmd_ekspor(args):
          (len(data), tgl_id(dari), tgl_id(sampai), path, n_pindah, rp(saldo_awal), rp(saldo_akhir), perintah))
     t += "".join("\nCatatan: " + p for p in pr)
     return {"ok": True, "mode": "baca", "file": path, "baris": len(data), "saldo_awal": saldo_awal,
-            "saldo_akhir": saldo_akhir, "perintah_emkm": perintah, "peringatan": pr, "teks": t}, t
+            "saldo_akhir": saldo_akhir, "perintah_emkm": perintah, "perintah_pokok_saja": perintah_pokok,
+            "baris_cicilan": [c[0] for c in cicilan], "peringatan": pr, "teks": t}, t
 
 
 ARUS_LABEL = {("penjualan", "masuk"): "Penjualan (rata-rata riwayat)", ("penjualan", "keluar"): "Retur penjualan",
