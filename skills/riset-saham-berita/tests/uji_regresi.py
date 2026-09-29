@@ -444,5 +444,40 @@ class RevisiV101(unittest.TestCase):
         self.assertFalse(any("mencampur basis" in f for f in h["fakta"]))
 
 
+class JadwalOpenClaw(unittest.TestCase):
+    """v1.0.2 (J1/J2): pesan jadwal tidak bergantung pada NO_REPLY dan mendefinisikan pesan untuk kode 0/1/2/3."""
+
+    def setUp(self):
+        with open(os.path.join(AKAR, "references", "jadwal-openclaw.md"), encoding="utf-8") as f:
+            self.isi = f.read()
+        blok = self.isi.split("```bash", 1)[1].split("```", 1)[0]
+        self.pesan = blok.split('"10 16 * * 1-5"', 1)[1].split('" \\', 1)[0]
+
+    def test_tanpa_no_reply_di_perintah(self):
+        self.assertNotIn("NO_REPLY", self.pesan)
+        self.assertIn("belum terbukti", self.isi)                   # alasan tidak dipakai ditulis jujur
+
+    def test_pesan_untuk_setiap_kode(self):
+        for kode in ("Kode 0:", "Kode 1:", "Kode 2:", "Kode 3:"):
+            self.assertIn(kode, self.pesan)
+        self.assertIn("tidak ada level tersentuh", self.pesan)
+        self.assertIn("GAGAL dijalankan (kode 1)", self.pesan)
+        self.assertIn("jangan dianggap aman", self.pesan)
+        self.assertIn("Tanpa rekomendasi beli/jual", self.pesan)
+        for baris in ("| 0 |", "| 1 |", "| 2 |", "| 3 |"):
+            self.assertIn(baris, self.isi)
+
+    def test_contoh_ringkasan_kode_0_sama_dengan_script(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, "w.csv")
+            with open(f, "w", encoding="utf-8") as fh:
+                fh.write("kode,harga_sekarang,tanggal_harga,sumber_harga,level_bawah,level_atas\n"
+                         "BBRI,4000,2026-09-29,idx.co.id,3500,4500\n")
+            kode, out, _ = jalankan(["level", f, "--hari-ini", "2026-09-29"])
+        self.assertEqual(kode, 0, out)
+        self.assertIn("Ringkasan: 1 saham dicek, 0 menyentuh level Anda, 0 baris GAGAL dicek.", out)
+        self.assertIn("Ringkasan: 5 saham dicek, 0 menyentuh level Anda, 0 baris GAGAL dicek.", self.isi)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

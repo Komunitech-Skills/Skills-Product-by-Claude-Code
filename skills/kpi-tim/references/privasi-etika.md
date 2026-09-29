@@ -8,7 +8,10 @@ Pelindungan Data Pribadi). Pegangan skill ini:
   mengirim data ke mana pun.
 - Laporan per orang hanya untuk **pemilik/manajer yang berwenang**. Jangan kirim ke grup kantor.
   Untuk papan target/grup, pakai `--tanpa-nama` (perusahaan & divisi saja; di teks maupun JSON
-  tidak ada nama orang, hanya hitungan seperti "1 orang belum lengkap").
+  tidak ada nama orang, hanya hitungan seperti "1 orang belum lengkap"). Skor divisi berisi satu
+  orang dinilai = skor pribadi, jadi di `--tanpa-nama` divisi seperti itu digabung dengan divisi kecil
+  lain (bobot rata-rata sama dengan skor perusahaan, sehingga tidak bisa dihitung balik) atau, bila
+  tidak ada divisi lain, disembunyikan. Jangan menambahkan kembali skor divisi itu secara manual.
 - Setiap karyawan berhak melihat **rincian KPI miliknya sendiri** (`--orang "Nama"`), bukan
   milik rekan kerja.
 - Laporan per orang **diurutkan per divisi & nama, bukan peringkat**. Jangan membuat "papan
@@ -16,6 +19,17 @@ Pelindungan Data Pribadi). Pegangan skill ini:
 - Simpan secukupnya: nama panggilan + divisi sudah cukup. Tidak perlu NIK, alamat, atau nomor HP
   di file KPI.
 - Saran: jalankan skill `cek-privasi-openclaw` sebelum mengaktifkan laporan terjadwal.
+
+## Dasbor lokal (`ekspor-db`)
+- `kpi.db`, `kpi-metadata.yml`, dan CSV Grist berisi skor per orang = data pribadi. Simpan di komputer
+  pemilik/manajer yang berwenang; jangan di folder bersama, drive publik, atau dikirim lewat grup.
+- Datasette/Grist dijalankan **hanya di `127.0.0.1`/`localhost`**. Jangan `--host 0.0.0.0`,
+  port-forward, tunnel (ngrok dsb.), atau tautan publik Grist.
+- Untuk layar bersama atau berbagi dengan konsultan: `--anonim` (kode P01.. acak, bukan urut abjad;
+  catatan realisasi tidak ikut). Simpan `kunci-kode-RAHASIA.csv` terpisah. Divisi berisi 1 orang
+  tetap mudah ditebak: `--anonim-divisi`. Kode anonim bukan jaminan mutlak (orang yang tahu angka
+  targetnya bisa menebak); untuk tim sangat kecil pakai laporan `--tanpa-nama`.
+- Hapus `kpi.db`/CSV bila sudah tidak diperlukan; bisa dibuat ulang dari file rencana & realisasi.
 
 ## KPI bukan pengawasan
 - Ukur **hasil kerja** (omzet, pesanan terkirim, komplain selesai), bukan gerak-gerik orang.

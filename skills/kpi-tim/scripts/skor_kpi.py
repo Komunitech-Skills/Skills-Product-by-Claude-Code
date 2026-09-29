@@ -2017,6 +2017,17 @@ def cmd_ekspor_db(a):
          "Baris: " + ", ".join("%s %d" % (t, len(T[t])) for t in T),
          "Mode: %s" % ("ANONIM (kode P01.., nama ada di kunci-kode-RAHASIA.csv; simpan terpisah, jangan dibagikan)"
                        if a.anonim else "dengan nama orang (data pribadi karyawan)")]
+    kecil = []
+    if a.anonim and not a.anonim_divisi:
+        per_div = {}
+        for b in rencana:
+            if b["orang"]:
+                per_div.setdefault(b["divisi"], set()).add(norm(b["orang"]))
+        kecil = sorted(d for d, s in per_div.items() if len(s) < 2)
+        if kecil:
+            data["peringatan_privasi"] = ("Divisi berisi 1 orang mudah ditebak walau nama disamarkan: %s. "
+                                          "Pakai --anonim-divisi." % ", ".join(kecil))
+            L.append("⚠️ " + data["peringatan_privasi"])
     if peringatan:
         L.append("⚠️ %d peringatan data (nama KPI salah ketik, duplikat, dll.); jalankan 'skor' untuk rinciannya."
                  % len(peringatan))

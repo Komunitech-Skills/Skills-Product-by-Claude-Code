@@ -40,3 +40,17 @@
 Bagian keamanan lengkap (2FA, bukti, jika ditiru, daftar tolak). Label AI ada di SKILL, formulir, alur, dan caption. Penyebutan merek netral, "tidak berafiliasi" ada di SKILL dan README. Terintegrasi dengan `studio-video-pendek-ai` (rujukan saling silang benar).
 
 **Syarat lulus:** perbaiki T1-T3 (+T4, T7), uji ulang oleh penguji independen.
+
+---
+
+# Uji ulang v1.0.1 (2026-09-29)
+
+**Skor: 7/10 - lulus bersyarat (satu koreksi fakta Synthesia wajib sebelum rilis).**
+
+**Perbaikan terverifikasi:** T1 (contoh 01 kini paket nyata; matematika benar: 11,25 mnt, HeyGen 112,5 kredit di asumsi 10 kredit/mnt, Rp478.500, Starter 2 langganan Rp957.000, Creator Rp1.468.500 = lewat-anggaran; ambang 600/11,25 = 53,3 kredit/mnt benar). T2 (ElevenLabs Starter = klon instan, Creator = profesional; cocok dengan halaman resmi 2026-09-29). T4 (formulir: UU 27/2022, biometrik, hak, retensi/penghapusan). T5 (label ILUSTRASI). T7: `1e999` kini GALAT rapi untuk kurs, anggaran, video, revisi. `--anggaran` dan status `lewat-anggaran` bekerja (peringatan muncul bila anggaran 100 rb). 13 tes regresi OK; data rusak (teks, 0, negatif, NaN, JSON rusak, kredit 0) semua kode 2. Lima skenario uji ulang tetap lulus (perilaku SKILL.md tak berubah).
+
+**Fakta resmi dicek ulang 2026-09-29 (WebFetch):** HeyGen cocok (Creator US$29/600 kredit, Pro 49/1.000, Business 149/1.500; resmi tidak menyebut kredit per menit, jadi 10 kredit/mnt memang hanya ilustrasi). ElevenLabs cocok.
+
+**KOREKSI ATAS TEMUAN SAYA (T3) - MASALAH BARU, sedang:** dua dari tiga pengambilan halaman Synthesia (termasuk kutipan verbatim per baris) menunjukkan **Starter = "3 personal avatars" dan voice cloning termasuk di Starter**; hanya satu pengambilan awal saya yang menampilkan 0. Jadi T3 kemungkinan **salah dari sisi saya** (ringkasan halaman tidak konsisten) dan v1.0.0 kemungkinan benar. Akibatnya v1.0.1 memuat klaim yang kemungkinan salah: `references/pilihan-alat.md` baris Synthesia ("Starter tanpa avatar pribadi dan tanpa klon suara"), baris 29 ("Synthesia Starter tidak untuk wajah sendiri"), dan alasan di contoh 01 butir 3. Kesimpulan contoh 01 tetap benar karena Starter kurang menit (11,25 > 10) tanpa perlu alasan avatar. **Wajib:** kurator/pemilik cek langsung halaman Synthesia di browser; bila benar 3 avatar, kembalikan ke "Starter: 3 avatar pribadi, klon suara termasuk" dan hapus alasan itu. Sebelum itu, tulis "belum pasti, cek halaman".
+
+Belum berubah/masih terbuka: D-ID dan CapCut tetap tidak terverifikasi resmi (ditandai jujur); label AI masih bersumber pihak ketiga.

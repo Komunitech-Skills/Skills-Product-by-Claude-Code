@@ -1,6 +1,6 @@
 ---
 name: kpi-tim
-description: KPI & target tim untuk UMKM (data di Excel/Google Sheets, kertas, grup WA) - pilih KPI dari katalog per peran (sales, CS, produksi, gudang, keuangan, marketing, admin, kurir, kasir), buat rencana KPI (bobot 100%, target, ambang) sebagai CSV/XLSX, ubah laporan grup WA ("Andi closing 12 deal") jadi draf realisasi, hitung capaian & skor tertimbang per orang/divisi/perusahaan dengan script (arah naik/turun, batas 120%, status hijau/kuning/merah, tren, data kosong), OKR ringan, draf laporan Telegram & catatan 1:1, jadwal OpenClaw. Gunakan saat pengguna minta "buat KPI karyawan", "target sales per orang", "hitung pencapaian KPI", "penilaian kinerja tim", "OKR", KPI scorecard, team targets, performance dashboard, weighted KPI score. Bukan untuk hitung gaji/bonus, PHK/sanksi, atau memantau karyawan diam-diam.
+description: KPI & target tim untuk UMKM (data di Excel/Google Sheets, kertas, grup WA) - pilih KPI dari katalog per peran (sales, CS, produksi, gudang, keuangan, marketing, admin, kurir, kasir), buat rencana KPI (bobot 100%, target, ambang) sebagai CSV/XLSX, ubah laporan grup WA ("Andi closing 12 deal") jadi draf realisasi, hitung capaian & skor tertimbang per orang/divisi/perusahaan dengan script (arah naik/turun, batas 120%, status hijau/kuning/merah, tren, data kosong), OKR ringan, draf laporan Telegram & catatan 1:1, jadwal OpenClaw, dasbor lokal (ekspor-db ke SQLite/Datasette/Grist, mode anonim). Gunakan saat pengguna minta "buat KPI karyawan", "target sales per orang", "hitung pencapaian KPI", "penilaian kinerja tim", "OKR", "dasbor KPI", KPI scorecard, team targets, performance dashboard, weighted KPI score. Bukan untuk hitung gaji/bonus, PHK/sanksi, atau memantau karyawan diam-diam.
 ---
 
 # KPI Tim
@@ -79,7 +79,9 @@ Pilih sesuai sumber data:
 - **Teks grup WA / ketikan**: `skor_kpi.py baca-teks --rencana ... --teks rekap.txt --periode
   2026-09 --keluar draf.csv` (atau `--teks -` dari stdin). Hasilnya **DRAF** (`status_draf =
   PERLU KONFIRMASI`) + daftar "tidak terbaca" (tanpa nama, tanpa angka, rencana/target ke
-  depan, libur/izin/sakit) + jumlah baris obrolan yang diabaikan. Baris draf bertanda **CEK**
+  depan, libur/izin/sakit) + jumlah baris obrolan yang diabaikan. "Wulan & Rudi void masing2 1"
+  → draf untuk **keduanya** (CEK "masing-masing"); tanpa kata masing-masing/berdua → "tidak terbaca"
+  (tanyakan: per orang atau total?). Baris draf bertanda **CEK**
   (satuan beda, beberapa angka/orang, angka minus) wajib ditanyakan satu per satu, jangan cukup
   "ok" massal. Tunjukkan tabel draf ke pengguna, minta konfirmasi/koreksi, baru ubah `status_draf` menjadi `dikonfirmasi` dan gabungkan ke file
   realisasi. Baris draf yang belum dikonfirmasi **selalu dilewati** saat menghitung skor.
@@ -115,7 +117,10 @@ python3 scripts/skor_kpi.py skor --rencana KPI/rencana-kpi.csv --realisasi KPI/r
 - **Ringkasan pemilik** (default teks, siap Telegram): perusahaan → divisi → orang (urut divisi &
   nama, **bukan peringkat**), KPI paling perlu perhatian per orang, peringatan. Kirim apa adanya.
 - **Grup/papan kantor**: `--tanpa-nama` (hanya perusahaan & divisi; nama diganti hitungan
-  "1 orang belum lengkap", juga di JSON), setelah pemilik setuju.
+  "1 orang belum lengkap", juga di JSON), setelah pemilik setuju. Divisi yang hanya berisi
+  **1 orang dinilai** otomatis **digabung** ("Gabungan: Gudang + Admin", rata-rata dengan bobot yang
+  sama dengan skor perusahaan) agar skor pribadinya tidak terbaca; bila tidak ada divisi lain,
+  skornya "tidak ditampilkan". Sampaikan ⚠️-nya ke pemilik.
 - **Bahan 1:1**: `skor --orang "Joko Susilo"` → rincian per KPI (realisasi, target, capaian,
   bobot, nilai, tren). Isi `templates/catatan-1on1.md`: angka disalin dari script, apresiasi
   dulu, pertanyaan terbuka, kemungkinan penyebab sebagai **hipotesis**, kolom kesepakatan kosong.
@@ -128,7 +133,31 @@ progres`). 1 objective = 2–4 key result terukur. `skor_kpi.py okr --okr okr.cs
 Check-in mingguan: perbarui kolom `sekarang`, jalankan dengan `--jalan` = bagian waktu yang lewat.
 OKR untuk arah & fokus, tidak masuk skor KPI dan tidak untuk gaji.
 
-### 7. Jadwal otomatis (OpenClaw, opsional)
+### 7. Dasbor KPI lokal (opsional, v1.1.0) — `ekspor-db`
+Tanpa software baru: hasil hitung disimpan ke SQLite yang dibaca `dasbor-lokal` (Datasette) atau
+diimpor ke Grist (`grist-usaha`). Rincian & langkah awam: `references/dasbor-kpi.md`.
+```bash
+python3 scripts/skor_kpi.py ekspor-db --rencana KPI/rencana-kpi.csv --realisasi KPI/realisasi.csv \
+  --keluar KPI/dasbor [--anonim [--anonim-divisi]] [--grist] [--timpa]
+```
+- Menulis `kpi.db` (tabel `skor_perusahaan`, `skor_divisi`, `skor_orang`, `skor_kpi`, `rencana`,
+  `meta`) untuk **semua periode** di file realisasi (tren ikut), `kpi-metadata.yml` (5 query siap
+  klik: perusahaan per periode, divisi & orang periode terbaru, tren per orang, **KPI 🔴**), dan
+  dengan `--grist` satu CSV per tabel + `PETUNJUK-IMPOR-GRIST.md`. Angka = keluaran `skor`
+  (aturan sama: `--cap`, `--hijau`, `--kuning`, `--data-kosong`), tidak dihitung ulang di SQL.
+- Buka: `datasette -i KPI/dasbor/kpi.db -m KPI/dasbor/kpi-metadata.yml --host 127.0.0.1`
+  (Datasette belum ada: `docs/panduan-datasette.md`), atau tanpa Datasette lewat `dasbor-lokal`
+  (`dasbor.py query kpi-tim kpi-merah --db KPI/dasbor/kpi.db`). Grist: `docs/panduan-grist.md`.
+- **Wajib sampaikan ke pengguna:** dasbor hanya untuk komputer ini (`127.0.0.1`); jangan
+  `--host 0.0.0.0`, port-forward, tunnel, atau kirim `kpi.db`/CSV ke orang lain: skor per orang =
+  data pribadi karyawan. Untuk ditampilkan ke orang lain (rapat, layar bersama) pakai `--anonim`
+  (nama jadi kode P01.., kunci di `kunci-kode-RAHASIA.csv`, simpan terpisah); divisi berisi 1 orang
+  tetap mudah ditebak: tambah `--anonim-divisi`. Ekspor ulang memakai kunci yang sama (kode stabil).
+- `kpi.db` adalah ringkasan: bulan berikutnya jalankan ulang dengan `--timpa`. Jangan mengedit
+  `kpi.db` (dibuka read-only/immutable); sumber kebenaran tetap file rencana & realisasi.
+- Tanpa Datasette/Grist skill tetap berguna (laporan teks di langkah 5).
+
+### 8. Jadwal otomatis (OpenClaw, opsional)
 Ikuti `references/jadwal-openclaw.md` (pola terverifikasi dari `laporan-otomatis-terjadwal`):
 tunjukkan contoh laporan dulu → penerima hanya pemilik/manajer via Telegram → minta izin →
 `openclaw automations add "0 7 2 * *" "<pesan>" --name ... --tz "Asia/Jakarta" --session isolated
@@ -173,5 +202,9 @@ Perusahaan: 🟡 93,6 (▲6,3 vs 2026-08) — sebagian
 - **Bukan dasar keputusan otomatis**: skor adalah bahan diskusi. Permintaan "siapa yang harus
   dipecat berdasarkan KPI" → tolak memberi keputusan; tawarkan bahan 1:1, rencana perbaikan,
   dan rujuk ke peraturan perusahaan/`surat-peringatan-karyawan`/profesional.
+- **Dasbor (`ekspor-db`)**: hanya localhost; ada peringatan cetak di keluaran, salin ke pengguna. Permintaan
+  membuka dasbor ke internet/HP lain/grup → tolak, tawarkan `--anonim` atau laporan teks `--tanpa-nama`.
+  Periode tanpa data/rencana dilewati (tercantum di `periode_dilewati`); file `kpi.db` yang sudah ada
+  tidak ditimpa tanpa `--timpa`; rencana tidak valid = tidak ada database dibuat.
 - **XLSX** ditulis dengan Python standar (tanpa rumus/warna bersyarat). Bila Excel menolak
   membuka, pakai `rencana-kpi.csv` (isinya sama).

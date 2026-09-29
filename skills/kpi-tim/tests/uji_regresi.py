@@ -398,7 +398,9 @@ class UjiV101(Dasar):
                 self.assertNotIn(n, buf.getvalue(), (mode, n))
         kode, out = self.skor("--periode", "2026-09", "--tanpa-nama")
         div = {d["nama"]: d for d in out["divisi"]}
-        self.assertEqual(div["Keuangan & Admin"]["jumlah_belum_lengkap"], 1)
+        # v1.0.2 (R-13): Keuangan & Admin hanya 1 orang dinilai -> digabung dengan divisi terkecil lain
+        self.assertNotIn("Keuangan & Admin", div)
+        self.assertEqual(div["Gabungan: Keuangan & Admin + Gudang & Pengiriman"]["jumlah_belum_lengkap"], 1)
         self.assertNotIn("rata_individu", div["Sales"])
         self.assertIn("(1 orang belum lengkap)", self._teks("--periode", "2026-09", "--tanpa-nama"))
 
@@ -627,10 +629,12 @@ class UjiEksporDb(Dasar):
                 (real, cap, dipakai, nilai, st), = self.q(
                     f, "SELECT realisasi,capaian_persen,capaian_dipakai,nilai,status FROM skor_kpi "
                        "WHERE periode=? AND orang=? AND kpi=?", periode, b["orang"], b["kpi"])
-                self.assertEqual(real, float(b["realisasi"]), b)
-                self.assertEqual(cap, float(b["capaian_persen"]), b)
-                self.assertEqual(dipakai, float(b["capaian_dipakai"]), b)
-                self.assertEqual(nilai, float(b["nilai"]), b)
+                def f_(x):
+                    return float(x) if x != "" else None
+                self.assertEqual(real, f_(b["realisasi"]), b)
+                self.assertEqual(cap, f_(b["capaian_persen"]), b)
+                self.assertEqual(dipakai, f_(b["capaian_dipakai"]), b)
+                self.assertEqual(nilai, f_(b["nilai"]), b)
                 self.assertEqual(st, b["status_kpi"], b)
 
     def test_angka_tangan_contoh_distributor(self):
@@ -694,13 +698,13 @@ class UjiEksporDb(Dasar):
         # nilai sama, hanya nama diganti kode
         for o in s["orang"]:
             (sk, st), = self.q(f, "SELECT skor,status FROM skor_orang WHERE periode='2026-09' AND orang=?", kunci[o["nama"]])
-            self.assertEqual(sk, float(r1(o["skor"])))
+            self.assertEqual(sk, float(r1(o["skor"])) if o["skor"] is not None else None)
             self.assertEqual(st, o["status"])
         self.assertEqual(self.q(f, "SELECT COUNT(*) FROM skor_orang WHERE orang NOT LIKE 'P%'")[0][0], 0)
         self.assertEqual(self.q(f, "SELECT nilai FROM meta WHERE kunci='anonim'")[0][0], "ya")
         # urutan sisip tidak mengikuti abjad nama asli
-        urut = [r[0] for r in self.q(f, "SELECT orang FROM skor_orang WHERE periode='2026-09' ORDER BY rowid")]
-        self.assertEqual(urut, sorted(urut))
+        urut = self.q(f, "SELECT divisi, orang FROM skor_orang WHERE periode='2026-09' ORDER BY rowid")
+        self.assertEqual(urut, sorted(urut))      # urut menurut kode, bukan menurut abjad nama asli
 
     def test_anonim_kode_stabil_dan_divisi(self):
         kode, out, f = self.ekspor("--anonim", "--anonim-divisi", nama="a2")
@@ -711,6 +715,18 @@ class UjiEksporDb(Dasar):
         for d in ("Sales", "Gudang", "Keuangan"):
             self.assertNotIn(d.encode(), mentah)
         self.assertEqual(sorted(r[0] for r in self.q(f, "SELECT DISTINCT divisi FROM skor_divisi")), ["D01", "D02", "D03"])
+
+    def test_peringatan_divisi_satu_orang_saat_anonim(self):
+        p = self.file("p1.csv", "divisi,orang,kpi,arah,bobot,target\nA,Ani,Omzet,naik,100,100\nB,Bo,Omzet,naik,100,100\n"
+                                "B,Cu,Omzet,naik,100,100\n")
+        r = self.file("r1.csv", "periode,orang,kpi,realisasi\n2026-09,Ani,Omzet,90\n2026-09,Bo,Omzet,80\n2026-09,Cu,Omzet,70\n")
+        kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", os.path.join(self.dir, "s"), "--anonim")
+        self.assertEqual(kode, 0, out)
+        self.assertIn("A", out["peringatan_privasi"])
+        self.assertNotIn("Ani", out["peringatan_privasi"])
+        kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", os.path.join(self.dir, "s2"),
+                          "--anonim", "--anonim-divisi")
+        self.assertNotIn("peringatan_privasi", out)
 
     def test_csv_grist(self):
         kode, out, f = self.ekspor("--grist", "--anonim", nama="g")
@@ -730,25 +746,92 @@ class UjiEksporDb(Dasar):
         self.assertEqual(r["2026-09"]["tren"], "6.3")
         self.assertEqual(r["2026-08"]["tren"], "")           # kosong = tidak ada tren
         self.assertNotIn("Joko", open(os.path.join(gd, "skor_orang.csv"), encoding="utf-8").read())
-        self.assertIn("127.0.0.1" if False else "localhost", open(os.path.join(gd, "PETUNJUK-IMPOR-GRIST.md"), encoding="utf-8").read())
+        self.assertIn("localhost", open(os.path.join(gd, "PETUNJUK-IMPOR-GRIST.md"), encoding="utf-8").read())
 
     def test_data_rusak_dan_periode_kosong(self):
         p = self.file("p.csv", "divisi,orang,kpi,arah,bobot,target\nA,Ani,Omzet,naik,100,100\n")
         r = self.file("r.csv", "periode,orang,kpi,realisasi\n2026-08,Ani,Omzet,90\n2026-09,Ani,Omzet,\n2026-10,Ani,Omzet,abc\n")
         kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r, "--keluar", os.path.join(self.dir, "x"))
-        # 'abc' bukan angka: ditolak apa adanya, tidak ada database setengah jadi
-        self.assertEqual(kode, 1)
-        self.assertFalse(os.path.exists(os.path.join(self.dir, "x", "kpi.db")))
+        # 'abc' bukan angka: dilaporkan sebagai peringatan (sama seperti 'skor'); periodenya tidak dihitung
+        self.assertEqual(kode, 0, out)
+        self.assertEqual(out["periode"], ["2026-08"])
+        self.assertGreater(out["peringatan_data_jumlah"], 0)
         r2 = self.file("r2.csv", "periode,orang,kpi,realisasi\n2026-08,Ani,Omzet,90\n2026-09,Ani,Omzet,\n")
         kode, out = jalan("ekspor-db", "--rencana", p, "--realisasi", r2, "--keluar", os.path.join(self.dir, "y"))
         self.assertEqual(kode, 0, out)
         self.assertEqual(out["periode"], ["2026-08"])
-        self.assertEqual(out["periode_dilewati"], ["2026-09"] if "2026-09" in out["periode_dilewati"] else out["periode_dilewati"])
+        self.assertEqual(out["periode_dilewati"], [])   # baris realisasi kosong tidak dianggap periode
         # rencana tidak valid -> tidak ada database
         bad = self.file("bad.csv", "divisi,orang,kpi,arah,bobot,target\nA,Ani,Omzet,naik,60,100\n")
         kode, out = jalan("ekspor-db", "--rencana", bad, "--realisasi", r2, "--keluar", os.path.join(self.dir, "z"))
         self.assertEqual(kode, 1)
         self.assertFalse(os.path.exists(os.path.join(self.dir, "z")))
+
+
+class UjiV102(Dasar):
+    """Sisa temuan rendah uji ulang v1.0.1: R-10 s/d R-13."""
+
+    RENCANA_KASIR = ("divisi,orang,kpi,satuan,arah,bobot,target,kata_kunci\n"
+                     "Kasir,Wulan,Void,kali,turun,50,2,void\nKasir,Wulan,Transaksi per shift,transaksi,naik,50,80,transaksi\n"
+                     "Kasir,Rudi,Void,kali,turun,50,2,void\nKasir,Rudi,Transaksi per shift,transaksi,naik,50,80,transaksi\n")
+
+    def test_r10_masing_masing_untuk_semua_nama(self):
+        p = self.file("p.csv", self.RENCANA_KASIR)
+        t = self.file("t.txt", "Wulan & Rudi void masing2 1\nWulan dan Rudi void 2\nRudi, Wulan transaksi masing-masing 70\n")
+        kode, out = jalan("baca-teks", "--rencana", p, "--teks", t, "--periode", "2026-09")
+        got = sorted((d["orang"], d["kpi"], d["realisasi"]) for d in out["draf"])
+        self.assertEqual(got, [("Rudi", "Transaksi per shift", "70"), ("Rudi", "Void", "1"),
+                               ("Wulan", "Transaksi per shift", "70"), ("Wulan", "Void", "1")])
+        self.assertTrue(all("masing-masing" in d["cek"] for d in out["draf"]))
+        # tanpa "masing-masing": tidak ditebak (total berdua atau per orang?) -> ditanyakan, tidak hilang diam-diam
+        alasan = {g["kutipan"]: g["alasan"] for g in out["tidak_terbaca"]}
+        self.assertIn("masing-masing atau total", alasan["Wulan dan Rudi void 2"])
+
+    def test_r11_presisi_bobot_sama(self):
+        # bobot 50,5 berdata dari 100 -> teks orang & peringatan sama-sama "50,5%"
+        p = self.file("p.csv", "divisi,orang,kpi,satuan,arah,bobot,target\nS,Ani,Omzet,Rp,naik,50.5,100\n"
+                               "S,Ani,Retur,kali,turun,49.5,2\n")
+        r = self.file("r.csv", "periode,orang,kpi,realisasi\n2026-09,Ani,Omzet,100\n")
+        t = self._teks("--data-kosong", "bobot-ulang", rencana=p, realisasi=r)
+        self.assertIn("(dihitung dari 50,5% bobot)", t)
+        self.assertIn("(50,5% bobot)", t)
+        self.assertNotIn("51%", t)
+
+    def test_r12_perlu_perhatian_kpi_kosong_berbobot_terbesar(self):
+        p = self.file("p.csv", "divisi,orang,kpi,satuan,arah,bobot,target\nS,Mira,Akurasi,%,naik,20,100\n"
+                               "S,Mira,Aaa kecil,%,naik,30,100\nS,Mira,Zzz besar,%,naik,50,100\n")
+        r = self.file("r.csv", "periode,orang,kpi,realisasi\n2026-09,Mira,Akurasi,100\n")
+        t = self._teks("--data-kosong", "nol", rencana=p, realisasi=r)
+        self.assertIn("perlu perhatian: Zzz besar tanpa data (dihitung 0,0%) (+1 KPI lain tanpa data)", t)
+
+    def test_r13_tanpa_nama_divisi_satu_orang(self):
+        p = self.file("p.csv", "divisi,orang,kpi,satuan,arah,bobot,target\nSales,Ani,Omzet,%,naik,100,100\n"
+                               "Sales,Budi,Omzet,%,naik,100,100\nGudang,Joko,Akurasi,%,naik,100,100\n"
+                               "Admin,Sari,Tugas,%,naik,100,100\nAdmin,Tono,Tugas,%,naik,100,100\n")
+        r = self.file("r.csv", "periode,orang,kpi,realisasi\n2026-09,Ani,Omzet,90\n2026-09,Budi,Omzet,110\n"
+                               "2026-09,Joko,Akurasi,70\n2026-09,Sari,Tugas,80\n2026-09,Tono,Tugas,100\n")
+        kode, out = self.skor("--tanpa-nama", rencana=p, realisasi=r)
+        div = {d["nama"]: d for d in out["divisi"]}
+        # Gudang (1 orang) digabung dengan divisi terkecil lain (Admin 2 orang < ... seri dengan Sales -> nama)
+        self.assertNotIn("Gudang", div)
+        g = div["Gabungan: Gudang + Admin"] if "Gabungan: Gudang + Admin" in div else div["Gabungan: Admin + Gudang"]
+        self.assertEqual(r1(g["skor"]), D("80.0"))                    # (70 + (80+100)/2) / 2 = 80
+        self.assertEqual(r1(div["Sales"]["skor"]), D("100.0"))
+        self.assertEqual(r1(out["perusahaan"]["skor"]), D("86.7"))    # (100 + 70 + 90) / 3
+        self.assertNotIn("70", json.dumps(out["divisi"]))             # skor Joko tidak terlihat
+        t = self._teks("--tanpa-nama", rencana=p, realisasi=r)
+        self.assertNotIn("Gudang: 70", t)
+        self.assertIn("digabung", t)
+        # hanya satu divisi berisi 1 orang -> disembunyikan
+        p2 = self.file("p2.csv", "divisi,orang,kpi,satuan,arah,bobot,target\nGudang,Joko,Akurasi,%,naik,100,100\n")
+        r2 = self.file("r2.csv", "periode,orang,kpi,realisasi\n2026-09,Joko,Akurasi,70\n")
+        t = self._teks("--tanpa-nama", rencana=p2, realisasi=r2)
+        self.assertIn("Gudang: tidak ditampilkan (1 orang dinilai)", t)
+        # tanpa --tanpa-nama tetap apa adanya
+        kode, out = self.skor(rencana=p, realisasi=r)
+        self.assertIn("Gudang", {d["nama"] for d in out["divisi"]})
+
+    _teks = UjiV101._teks
 
 
 if __name__ == "__main__":

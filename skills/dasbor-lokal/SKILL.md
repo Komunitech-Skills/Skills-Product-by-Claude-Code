@@ -1,6 +1,6 @@
 ---
 name: dasbor-lokal
-description: Dasbor lokal read-only di atas SQLite untuk alat Komunitech (buku-stok, kasir-lokal, crm-wa, absensi-lokal, buku-piutang, kas-umkm) - temukan file database, jalankan canned query siap pakai (penjualan per hari, stok menipis, piutang jatuh tempo, kehadiran, prospek per tahap, saldo kas), dan siapkan perintah Datasette read-only/immutable untuk eksplorasi interaktif di browser localhost. Tanpa Datasette pun tetap jalan lewat script sqlite3 standar. Gunakan saat pengguna minta "buka dasbor toko saya", "lihat semua data di satu tempat", "explore database", local dashboard, data explorer, SQL browser. Berbeda dari laporan-harian-usaha (teks harian siap kirim); dasbor-lokal untuk eksplorasi interaktif, bukan laporan terjadwal.
+description: Dasbor lokal read-only di atas SQLite untuk alat Komunitech (buku-stok, kasir-lokal, crm-wa, absensi-lokal, buku-piutang, kas-umkm, kpi-tim) - temukan file database, jalankan canned query siap pakai (penjualan per hari, stok menipis, piutang jatuh tempo, kehadiran, prospek per tahap, saldo kas, skor KPI tim & KPI merah), dan siapkan perintah Datasette read-only/immutable untuk eksplorasi interaktif di browser localhost. Tanpa Datasette pun tetap jalan lewat script sqlite3 standar. Gunakan saat pengguna minta "buka dasbor toko saya", "lihat semua data di satu tempat", "explore database", local dashboard, data explorer, SQL browser. Berbeda dari laporan-harian-usaha (teks harian siap kirim); dasbor-lokal untuk eksplorasi interaktif, bukan laporan terjadwal.
 ---
 
 # Dasbor Lokal (jembatan baca-saja ke database alat Komunitech)
@@ -10,6 +10,11 @@ Pemilik usaha yang memakai beberapa alat lokal Komunitech (kasir, stok, CRM, abs
 1. Query SQL siap pakai ("canned query") untuk pertanyaan yang paling sering ditanyakan.
 2. Perintah **Datasette** (perangkat lunak terpisah, Apache-2.0, https://datasette.io/) untuk membukanya di browser bila pengguna mau eksplorasi interaktif.
 3. Jalur cadangan Python murni (`scripts/dasbor.py query ...`) yang mencetak tabel ringkas walau Datasette tidak terpasang.
+
+**Versi 1.0.2** (revisi rendah): alat ke-7 `kpi-tim` (database `kpi.db` hasil `skor_kpi.py ekspor-db`,
+5 query: `perusahaan-tren`, `divisi-terbaru`, `orang-terbaru`, `tren-orang`, `kpi-merah`; blok `kpi` di
+`templates/metadata.yml`). Skor per orang = data pribadi karyawan: tetap `127.0.0.1` saja; sarankan
+`--anonim` di `ekspor-db` bila layar dilihat orang lain. Uji regresi 25/25.
 
 **Versi 1.0.1** (revisi rendah): mode teks (`query ... ` tanpa `--json`) sekarang menampilkan angka
 bulat dari kolom REAL SQLite (mis. `stok`) sebagai `25`, bukan `25.0` — nilai pecahan asli (`25.5`)
@@ -49,6 +54,7 @@ python3 scripts/dasbor.py query buku-piutang piutang-jatuh-tempo
 python3 scripts/dasbor.py query absensi-lokal kehadiran-harian --tanggal 2026-09-25
 python3 scripts/dasbor.py query crm-wa prospek-per-tahap
 python3 scripts/dasbor.py query kas-umkm saldo-per-akun
+python3 scripts/dasbor.py query kpi-tim kpi-merah        # butuh kpi.db dari kpi-tim ekspor-db
 ```
 - Lihat daftar lengkap: `python3 scripts/dasbor.py daftar-query`.
 - `--db PATH` mengganti lokasi database default (berguna bila pengguna menyimpan di tempat lain).

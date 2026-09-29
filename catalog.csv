@@ -76,7 +76,7 @@ gaji-umkm,HR,orisinal,,Proprietary Komunitech,9,ecer,199000,ecer,199000,1.0.3,"c
 kas-umkm,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.8,"claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI);openclaw 2026.9.6 (uji platform otomatis oleh agent, model asli via router)",beta,2026-09-29
 grist-usaha,Data & Analisis,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-26
 hledger-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,149000,ecer,149000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
-dasbor-lokal,Data & Analisis,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-28
+dasbor-lokal,Data & Analisis,orisinal,,Proprietary Komunitech,9,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 siyuan-sop,Produktivitas,kurasi,https://github.com/siyuan-note/siyuan,AGPL-3.0 (software tidak didistribusikan); skill orisinal Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 vikunja-tugas,Produktivitas,kurasi,https://github.com/go-vikunja/vikunja,"AGPL-3.0 (software, tidak didistribusikan); skill orisinal Komunitech",9,ecer,99000,ecer,99000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 arsip-nota,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,49000,ecer,49000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
@@ -94,6 +94,6 @@ riset-harga-kompetitor,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Ko
 studio-video-pendek-ai,Marketing & Konten,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 riset-saham-berita,Data & Analisis,orisinal,,Proprietary Komunitech,9,vip,149000,vip,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 peringatan-dini-operasional,Data & Analisis,orisinal,,Proprietary Komunitech,8,ecer,149000,ecer,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
-kpi-tim,HR,orisinal,,Proprietary Komunitech,9,ecer,149000,ecer,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
+kpi-tim,HR,orisinal,,Proprietary Komunitech,9,ecer,149000,ecer,149000,1.1.0,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 inventree-gudang,Produktivitas,kurasi,https://github.com/inventree/InvenTree,MIT (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,149000,ecer,149000,1.0.1,"claude-code (simulasi agent, InvenTree 1.5.6 asli);openclaw 2026.9.6 (uji muat CLI)",lulus,2026-09-29
 klon-diri-konten,Marketing & Konten,orisinal,,Proprietary Komunitech,6,ecer,149000,,,1.0.1,,uji,2026-09-29

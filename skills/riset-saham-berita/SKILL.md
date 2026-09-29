@@ -147,7 +147,9 @@ pertama catatan. Jangan menutup dengan kesimpulan ("layak", "menarik", "hindari"
 5. Pengecekan terjadwal (mis. OpenClaw cron) hanya bila agent bisa mengambil harga dari halaman
    publik tanpa login; kanal default **Telegram ke pemilik sendiri**, tanpa broadcast ke grup.
    Contoh perintah & cara uji: `references/jadwal-openclaw.md`. Minta konfirmasi "Lanjut? ya/tidak"
-   sebelum membuat jadwal.
+   sebelum membuat jadwal. Setiap giliran **selalu** mengirim satu pesan sesuai kode (0 = satu baris
+   pendek "tidak ada level tersentuh"; 1 = "GAGAL dijalankan" + galat); jangan memakai `NO_REPLY`
+   (belum terbukti meredam pesan di OpenClaw).
 
 ## Format output
 - Judul: `Catatan Riset: KODE - Nama emiten` + tanggal disusun + tanggal data terbaru.
@@ -183,6 +185,9 @@ Lengkap: `examples/contoh-pembuat-cnth.md`.
   mengirim portofolio pengguna ke mana pun selain penyedia model AI yang dipakai agent.
 
 ## Riwayat versi
+- **1.0.2 (2026-09-29):** jadwal OpenClaw tidak lagi mengandalkan `NO_REPLY` (belum terbukti); kode 0
+  mengirim satu baris pendek "tidak ada level tersentuh", dan isi pesan untuk kode 1/2/3 (serta bila
+  script tidak bisa dijalankan) didefinisikan di `references/jadwal-openclaw.md`.
 - **1.0.1 (2026-09-29):** `level` keluar dengan kode 3 + baris ringkasan bila ada baris gagal dicek;
   akhiran "M" tidak lagi diasumsikan miliar (wajib `arti_m`), satuan Inggris (mn/million/bn/billion)
   dan frasa "dalam jutaan Rupiah" didukung; panduan pendapatan bank + peringatan total pendapatan
