@@ -13,7 +13,7 @@ Library **agent skills** siap pakai untuk pengusaha & profesional Indonesia, ole
 |---|---|
 | **1. Skill** | 92 skill lulus uji internal: keuangan & pajak, HR & gaji, marketing & konten, toko online/marketplace, sales, customer service, produktivitas, data |
 | **2. Produk siap pakai pengganti SaaS** | Software yang jalan di komputer pembeli (data lokal, tanpa biaya bulanan), dioperasikan AI agent: kasir, stok, absensi, piutang, CRM WA, dasbor, PDF, serta asisten untuk Frappe Books, Dolibarr, hledger, Actual Budget, Grist, Vikunja, SiYuan, Open Notebook, Uptime Kuma |
-| **3. Solusi member VIP** | Paket skill + konfigurasi OpenClaw (jadwal, Telegram) + panduan per profesi: toko online, klinik, konsultan, usaha offline — lihat [`solusi-vip/`](solusi-vip/) |
+| **3. Solusi member VIP** | Paket skill + konfigurasi OpenClaw (jadwal, Telegram) + panduan: toko online, klinik, konsultan, usaha offline, kantor & manajemen, riset kripto & keuangan pribadi — lihat [`solusi-vip/`](solusi-vip/) |
 
 Sumber kebenaran daftar skill, status, versi, tier, dan harga: [`catalog.csv`](catalog.csv).
 Status mengikuti alur `ide → draft → uji → lulus → beta → rilis`; hanya `rilis` yang dijual ke pembeli.

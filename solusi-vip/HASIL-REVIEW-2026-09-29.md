@@ -98,3 +98,35 @@ Langkah yang berpotensi membingungkan:
 
 ## Perbaikan yang dilakukan reviewer
 Tidak ada (tidak ditemukan typo/tautan rusak yang sepele).
+
+---
+
+## Review ulang (2026-09-29)
+
+Checklist 1–5 dijalankan ulang. `validate.py` lulus (92 skill). Build `paket-kantor-manajemen --izinkan-draft` berhasil (16 skill), `dist/` dibersihkan. Perintah jadwal tidak berubah (tidak ada flag baru); hanya label [VIP]/[PILIH SATU] dan teks ditambahkan.
+
+| Temuan awal | Status |
+|---|---|
+| T1 bundle kripto tanpa `pantau-pasar-kripto` | Selesai. Bundle ecer kripto dihapus, paket ditandai khusus VIP di PANDUAN, README solusi-vip, dan `bundles/README.md` |
+| T2 bundle kantor tanpa laporan-harian/Frappe/Dolibarr | Selesai. Ditandai [VIP] dan [PILIH SATU] di PANDUAN, CEKLIS, jadwal, dan ada catatan untuk pembeli ecer |
+| S1 overclaim laporan-harian-usaha | Selesai. 5a menyebut sumber data dan batasannya |
+| S2 klaim analisis pola jurnal | Selesai. Diganti "tidak menganalisis pola perilaku" |
+| S3 data awal | Selesai. Ada bagian "isi data awal dulu" dan catatan di CEKLIS |
+| S4 blok install Frappe+Dolibarr | Selesai. Dipisah dengan panduan memilih |
+| S5 tanggal transisi OJK | Selesai. Tanggal dihapus, diarahkan ke ojk.go.id |
+| R1 urutan 5f/5g/5k | Sebagian. Vikunja tetap dipasang di Bab 1, tapi tidak ada catatan "lewati 5f-5g sampai terpasang" |
+| Simulasi awam | Membaik. Kotak "Mulai dari sini", definisi Gateway, terminal diserahkan ke staf IT/jasa setup. Sisa: Bab 4 (BotFather/pairing) tanpa gambar |
+
+Larangan kripto (sinyal, rekomendasi, entry, target) tetap hanya muncul sebagai penolakan. Disclaimer ada. Tidak ada data pribadi.
+
+**Isu baru (rendah):**
+- Kantor 5a merujuk `rekap-penjualan-csv` (ada di catalog.csv, tetapi tidak termasuk daftar skill paket ini; sebutkan perlu dipasang terpisah).
+- Sisa R1 di atas.
+
+**Skor baru:** kantor-manajemen 8.5/10, kripto-keuangan 8.5/10.
+
+## Tindak lanjut koordinator (2026-09-29)
+- `rekap-penjualan-csv` ditambahkan ke `bundles/paket-kantor-manajemen.txt` (dirujuk di 5a).
+- R1: catatan "Lewati sampai Vikunja terpasang" sudah ada di awal bagian 5f (baris ±209) — dianggap selesai.
+- Bab 4 (BotFather/pairing) tetap teknis → kandidat perbaikan bersama untuk semua paket (dan jasa setup).
+- Status: kedua paket **siap dipakai member VIP** (8,5/10).
