@@ -58,7 +58,7 @@ batas rugi, dan catatan lengkap, mulai dari simulasi tanpa uang asli.
 Urutan aman: **backtest → simulasi (paper) → testnet (opsional) → live** dengan konfirmasi
 bertahap (Anda sendiri mengetik kalimat persetujuan berisi kode unik).
 
-## Bursa yang didukung (v1.0.1)
+## Bursa yang didukung (v1.0.2)
 | Bursa | Simulasi | Testnet/demo | Live |
 |---|---|---|---|
 | Indodax (PAKD berizin OJK*) | Ya (harga asli, teruji) | demo-indodax.com (belum teruji) | Ya |

@@ -570,7 +570,9 @@ class UjiTema(unittest.TestCase):
         self.assertEqual(self.tema_dari("ada rambut di nasi", 1)["keamanan"], {"keluhan"})
 
     def test_tambah_kata_tidak_mengganti_kata_bawaan(self):
-        tema = om.buat_tema({"tambah_kata": {"layanan": ["dibales"]}})
+        tema = om.buat_tema({"tambah_kata": {"layanan": ["dibales"], "fasilitas": ["smoking area"]}})
+        self.assertIn("layanan", self.tema_dari("ga dibales", tema=tema))       # kata slang ikut dinormalkan
+        self.assertIn("fasilitas", self.tema_dari("smoking areanya sempit", tema=tema))
         self.assertIn("layanan", self.tema_dari("chat ga dibales", tema=tema))
         self.assertIn("layanan", self.tema_dari("admin judes", tema=tema))
 

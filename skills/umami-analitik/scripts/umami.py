@@ -37,7 +37,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 UMAMI_TERUJI = "3.4.0"
 FOLDER_KUNCI = os.path.join(os.path.expanduser("~"), ".komunitech")
 KUNCI_DEFAULT = os.path.join(FOLDER_KUNCI, "umami-kunci.txt")

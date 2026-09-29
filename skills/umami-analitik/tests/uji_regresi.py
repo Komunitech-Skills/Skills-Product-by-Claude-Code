@@ -497,7 +497,7 @@ class UjiRevisi101(DasarServer):
         self.assertIn("tidak bisa dihitung", out)
 
     def test_versi(self):
-        self.assertEqual(um.VERSI, "1.0.1")
+        self.assertEqual(um.VERSI, "1.0.2")
 
 
 class UjiPengalihan(unittest.TestCase):

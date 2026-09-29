@@ -79,9 +79,9 @@ FRASA = [
     (r"\bkurang\s+lebih\b", "kuranglebih"),
     (r"\btidak\s+ada\s+(?:yang\s+)?(?:minus|masalah|kendala|keluhan|kekurangan|komplain|cacat|lecet|kurang)(?:nya)?\b"
      r"|\btanpa\s+(?:minus|cacat|kendala|masalah)\b|\bno\s+minus\b", "tanpaminus"),
-    (r"\bkurang\s+\d+\b|\b(?:yang\s+)?(?:datang|sampai|dikirim)\s+(?:cuma|hanya|cuman)\s+\d+\b|\btidak\s+lengkap\b", "kurangjumlah"),
+    (r"\bkurang\s+(?:\d+|satu|dua|tiga|empat|lima|se(?:biji|bungkus|kotak|porsi|potong|pcs|buah|lembar|pasang))\b|\b(?:yang\s+)?(?:datang|sampai|dikirim)\s+(?:cuma|hanya|cuman)\s+\d+\b|\btidak\s+lengkap\b", "kurangjumlah"),
     (r"\b(?:dikirim|dikasih|diberi)\s+salah(?:\s+(?:warna|ukuran|size|varian|model|barang|menu|produk|item))?\b|\btidak\s+sesuai\s+(?:pesanan|order)\b|\bsalah\s+(?:pesan(?:an)?|kirim|item|ambil|isi|warna|ukuran|size|varian|"
-     r"model|barang|menu|produk|alamat)\b", "salahpesanan"),
+     r"model|barang|menu|produk|alamat|hitung)\b", "salahpesanan"),
     (r"\btidak\s+sesuai\b|\bbeda\s+(?:jauh|banget|sekali|warna|ukuran|bahan|model|dengan|sama|dari)\b|\btidak\s+(?:kayak|seperti|mirip)\s+"
      r"(?:di\s+)?(?:foto|gambar|deskripsi|iklan|contoh)", "tidaksesuai"),
     (r"\bresponscepat\b|\bcepat\s+respons\w*|\brespons\w*\s+cepat\b|\bcepat\s+tanggap\b|\bgercep\b|\bcepat\s+dibalas\b", "responscepat"),
@@ -121,7 +121,7 @@ awet kokoh kuat sesuai amanah sabar informatif jujur sigap tanggap perfect sempu
 akurat lumayan senang cinta memuaskan istimewa teliti profesional helpful membantu tebal wow
 responscepat orderlagi tepatwaktu sepadan sesuaiharapan tanpaminus pasbanget masihhangat terima kasih""".split())
 NEG = set("""telat terlambat lama basi jelek kecewa mahal bocor tumpah rusak salah lambat pelit hambar anyep lembek pera keras alot gosong
-mentah tidaksesuai salahpesanan penyok kotor bau amis apek tengik anyir pesing busuk judes kasar cuek galak sombong lupa tertukar ketuker
+mentah tidaksesuai salahpesanan penyok kotor jorok dekil kumuh berdebu lengket bau amis apek tengik anyir pesing busuk judes kasar cuek galak sombong lupa tertukar ketuker
 kedaluwarsa rambut serangga lalat semut ulat kecoa belatung tikus jamur berjamur cacat luntur pudar kusam lepas robek tipis nerawang
 sakitperut mual muntah diare keracunan jijik komplain marah zonk tipu penipu bohong kapok menyesal habis kehabisan ribet susah sulit masalah
 parah mengecewakan buruk kekecilan kebesaran kesempitan kepanjangan kependekan sedikit responslambat bendaasing lecet lecek retak patah
@@ -158,7 +158,7 @@ TEMA_BAWAAN = [
     ("kebersihan", "Kebersihan", 3, r"kotor|jorok|higienis|bersih|kebersihan|debu|berdebu|lengket"),
     ("bau_aroma", "Bau / aroma", 3, r"bau|apek|tengik|anyir|pesing|busuk|wangi|harum|aroma"),
     ("porsi_ukuran", "Porsi / ukuran / size", 3, r"porsi|ukuran|size|kekecilan|kebesaran|kesempitan|kepanjangan|kependekan|pelit|kenyang|"
-     r"mengenyangkan|gramasi|sedikit|pasbanget"),
+     r"mengenyangkan|gramasi|isian|pasbanget"),
     ("stok_ketersediaan", "Stok / ketersediaan", 2, r"habis|kosong|stok|stock|restock|ready|preorder|kehabisan"),
     ("pembayaran", "Pembayaran / refund", 3, r"bayar|pembayaran|transfer|qris|cod|refund|pengembalian|kembalian|tagihan|invoice|nota|struk|"
      r"cashback|saldo"),
@@ -830,7 +830,26 @@ def skor_klausa(klausa, kata_pos, kata_neg, tanya=False, neg_kustom=frozenset())
 
 
 def _pola_kata(kata):
-    return "|".join(r"\s+".join(re.escape(b) for b in k.lower().split()) for k in kata if k and k.strip())
+    """Kata tema.json -> regex. Kata ikut dinormalkan seperti teks ('dibales' -> 'dibalas', 'fast respon' -> 'responscepat')."""
+    bentuk = []
+    for k in kata:
+        if not isinstance(k, str) or not k.strip():
+            continue
+        for v in {k.lower().strip(), normalkan(k).strip()}:
+            if v:
+                bentuk.append(r"\s+".join(re.escape(b) for b in v.split()))
+    return "|".join(sorted(set(bentuk), key=len, reverse=True))
+
+
+def _kata_sentimen(daftar):
+    hasil = set()
+    for k in daftar or []:
+        if isinstance(k, str) and k.strip():
+            hasil.add(k.lower().strip())
+            n = normalkan(k).strip()
+            if n and " " not in n:
+                hasil.add(n)
+    return hasil
 
 
 def buat_tema(konfigurasi):
@@ -870,8 +889,8 @@ def buat_tema(konfigurasi):
             baru = dict(id=str(t["id"]), label=t.get("label", t["id"]), dampak=max(1, min(5, dampak)),
                         pola=re.compile(AFIKS[0] + "(?:" + pola + ")" + AFIKS[1], re.I))
             tema = [x for x in tema if x["id"] != baru["id"]] + [baru]
-        kata_pos |= {k.lower() for k in konfigurasi.get("kata_positif", []) or []}
-        neg_kustom = {k.lower() for k in konfigurasi.get("kata_negatif", []) or []}
+        kata_pos |= _kata_sentimen(konfigurasi.get("kata_positif"))
+        neg_kustom = _kata_sentimen(konfigurasi.get("kata_negatif"))
         kata_neg |= neg_kustom
         kata_pos -= neg_kustom
     buat_tema.neg_kustom = frozenset(neg_kustom)

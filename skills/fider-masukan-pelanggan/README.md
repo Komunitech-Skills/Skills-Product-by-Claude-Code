@@ -47,4 +47,4 @@ Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (
 **Bagaimana dengan privasi pelanggan?** Papan Fider bisa dilihat publik. Skill menyamarkan nomor HP, telepon rumah/kantor, dan email otomatis, tetapi nama dan detail pesanan Anda periksa sendiri di pratinjau. Catat hanya usulan, bukan data pelanggan. Detail ada di panduan §9.
 
 ## Status jujur
-Versi 1.0.1, status uji. Diuji pada Fider **v0.38.0 asli** (Docker + PostgreSQL 17, Linux; Administrator dan Collaborator) plus 37 uji otomatis. **Belum diuji:** Windows/macOS, jadwal OpenClaw/Telegram, HTTPS di VPS sungguhan. Uji banding oleh penguji independen dan uji platform asli menyusul.
+Versi 1.0.2, status uji. Diuji pada Fider **v0.38.0 asli** (Docker + PostgreSQL 17, Linux; Administrator dan Collaborator) plus 43 uji otomatis. **Belum diuji:** Windows/macOS, jadwal OpenClaw/Telegram, HTTPS di VPS sungguhan. Uji banding oleh penguji independen dan uji platform asli menyusul.

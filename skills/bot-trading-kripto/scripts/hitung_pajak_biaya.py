@@ -141,7 +141,7 @@ def rekap(path, kurs=None):
     if tanpa_kurs:
         peringatan.append("Pasangan non-rupiah (" + ", ".join(sorted(tanpa_kurs)) + ") dilaporkan dalam mata uang "
                           "kutipannya, TIDAK dijumlahkan sebagai rupiah. Untuk perkiraan rupiah, isi kurs sendiri, "
-                          "mis. --kurs " + sorted(tanpa_kurs)[0] + "=16500.")
+                          "--kurs " + sorted(tanpa_kurs)[0] + "=<rupiah per 1 " + sorted(tanpa_kurs)[0] + ">.")
     if len(total) > 1:
         peringatan.append("Ada lebih dari satu mata uang kutipan; jumlahkan ke rupiah hanya setelah dikonversi dengan "
                           "kurs yang sah (lihat references/regulasi-pajak.md, Pasal 12 ayat (7) PMK 50/2025).")

@@ -34,6 +34,8 @@ class Kondisi:
         self.order_terbuka = 0
         self.putus_saat_order = False
         self.tolak_order = None
+        self.saldo_btc = Decimal("0")   # saldo BTC akun tiruan (bertambah saat order beli terisi)
+        self.gagal_saldo = False        # bila True, endpoint saldo menjawab error (uji rekonsiliasi)
         self.alihkan_ke = None      # URL dasar: bila diisi, SEMUA permintaan dijawab 302 ke sana (uji M1)
         self.permintaan = []   # (metode, path, header, query, body) -- untuk diperiksa tes
         self.order = []
@@ -115,8 +117,11 @@ class Handler(BaseHTTPRequestHandler):
                                      "enableFixReadOnly": True, "enableSpotAndMarginTrading": True,
                                      "enablePortfolioMarginTrading": False})
         if p == "/api/v3/account":
+            if k.gagal_saldo:
+                return self._kirim(500, {"code": -1000, "msg": "An unknown error occurred."})
             return self._kirim(200, {"canTrade": True, "canWithdraw": True, "canDeposit": True, "accountType": "SPOT",
-                                     "balances": [{"asset": "USDT", "free": "10000.00000000", "locked": "0.00000000"}],
+                                     "balances": [{"asset": "USDT", "free": "10000.00000000", "locked": "0.00000000"},
+                                                  {"asset": "BTC", "free": _dec(k.saldo_btc), "locked": "0"}],
                                      "permissions": ["SPOT"]})
         if p == "/api/v3/openOrders" and metode == "GET":
             return self._kirim(200, [{"symbol": "BTCUSDT", "orderId": i, "status": "NEW"} for i in range(k.order_terbuka)])
@@ -141,6 +146,7 @@ class Handler(BaseHTTPRequestHandler):
                 eq = Decimal(q["quantity"])
                 kom, aset = (eq * harga * Decimal("0.001")).quantize(Decimal("0.00000001")), "USDT"
             cq = eq * harga
+            k.saldo_btc += (eq - kom) if q["side"] == "BUY" else -eq
             resp = {"symbol": "BTCUSDT", "orderId": 28 + len(k.order), "orderListId": -1,
                     "clientOrderId": q.get("newClientOrderId"), "transactTime": int(time.time() * 1000),
                     "price": "0.00000000", "origQty": _dec(eq), "executedQty": _dec(eq),
@@ -164,7 +170,8 @@ class Handler(BaseHTTPRequestHandler):
         m = p.get("method")
         if m == "getInfo":
             return self._kirim(200, {"success": 1, "return": {"server_time": int(time.time()),
-                                                              "balance": {"idr": 5000000, "btc": "0.00000000"}}})
+                                                              "balance": {"idr": 5000000, "btc": _dec(k.saldo_btc)},
+                                                              "balance_hold": {"idr": 0, "btc": "0.00000000"}}})
         if m == "openOrders":
             return self._kirim(200, {"success": 1, "return": {"orders": [
                 {"order_id": str(170 + i), "type": "buy", "order_type": "limit", "price": "1400000000"}
@@ -183,6 +190,7 @@ class Handler(BaseHTTPRequestHandler):
                 fee = (idr * Decimal("0.002")).quantize(Decimal("1"))
                 btc = ((idr - fee) / k.harga_btcidr).quantize(Decimal("0.00000001"), ROUND_DOWN)
                 ret = {"receive_btc": _dec(btc), "spend_rp": int(idr - fee), "fee": int(fee), "remain_rp": 0}
+                k.saldo_btc += btc
             else:
                 ret = {"receive_btc": "0.00000000", "spend_rp": 0, "fee": 0, "remain_rp": 0}
             ret.update(order_id=59632813 + len(k.order), client_order_id=p.get("client_order_id"))

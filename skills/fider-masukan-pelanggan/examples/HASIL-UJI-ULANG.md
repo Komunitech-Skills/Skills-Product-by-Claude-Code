@@ -35,3 +35,14 @@ Semua butir WAJIB (M1-M4) terbukti bekerja. Nilai tidak 9 karena masih ada celah
 
 ## Belum diuji (dan jangan diklaim)
 Windows/macOS, HTTPS di VPS sungguhan, OpenClaw jadwal + Telegram, Codex/Cursor, Fider selain v0.38.0. `platform_teruji` tetap hanya simulasi agen.
+
+## Catatan revisi 1.0.2 (maker, 2026-09-29)
+Perbaikan atas cacat di atas. Belum diuji ulang oleh penguji independen; skor 8/10 belum diubah.
+- K3: `--sumber` kini disamarkan (pratinjau dan hasil tulis), dihitung di penghitung "disembunyikan".
+- K2: penyamar nomor ditulis ulang berbasis kandidat angka + pemisah: `(+62) 812...`, `+62-812-...`, `0812.3456.7890`, `62812...`, digit berspasi (`0 8 1 2 ...`), `0812 - 3456 - 7890`, en dash, garis miring, `tel:+622155512`, menempel huruf (`kontak0812-...`), dan 13 digit (`0896 1234 5678 9`). Tetap tidak menutup: Rp 1.500.000, tanggal (termasuk `01/09/2026`), jam `08.00-17.00`, NPWP, rekening 10 digit tanpa awalan 0/62, "stok 0812". Batasan jujur: angka berawalan 0 sepanjang 9-13 digit (mis. rekening berawalan 0) akan ikut ditutup.
+- K4: semua keluaran (`daftar`, `cari`, `lihat`, `ringkasan-mingguan`, pratinjau `gabung`, `draf-balasan`, juga `--json`) disamarkan saat ditampilkan, dengan catatan jumlahnya.
+- K1: URL rusak (`http://[::1]evil`, `http://[::1`, port bukan angka, ada spasi) kini galat kode 2 tanpa traceback.
+- K6: `pelanggan` harus bulat 1 sampai 100.000 (negatif, 0, terlalu besar, boolean ditolak); catatan penolakan sepele ("-", "ok", satu kata) ditolak.
+- K7: sinonim "ongkir/ongkos" -> kirim. Skor tetap hanya petunjuk; aturan SKILL.md 8 tetap berlaku.
+- Tidak diubah: `impor --tetap berkas` (pesan argparse Inggris, rendah); `http://[::1]` gagal terhubung di kontainer (bukan kesalahan skill).
+- Uji regresi 37 -> 43 (semua lulus); `validate.py --skill fider-masukan-pelanggan` dijalankan di bawah.

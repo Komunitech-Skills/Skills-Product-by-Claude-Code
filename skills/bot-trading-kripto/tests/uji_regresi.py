@@ -764,8 +764,11 @@ class M2PajakSwap(unittest.TestCase):
                         "bruto": "110", "fee": "0.11", "pajak_pph": "1.1"})
         kode, out = jalankan(hitung_pajak_biaya.main, ["--transaksi", f.name, "--kurs-idr", "16000"])
         os.remove(f.name)
-        j = json.loads(out)["per_bulan"]["2026-09"]
-        self.assertEqual((j["pph_idr"], j["pph_sisi_beli_idr"]), (33440, 15840))   # (0,99+1,1) x 16.000
+        j = json.loads(out)["per_bulan"]["2026-09"]["USDT"]
+        self.assertEqual((j["pph"], j["pph_sisi_beli"]), ("2.09", "0.99"))        # dalam USDT, bukan rupiah
+        r = j["perkiraan_rupiah"]
+        self.assertEqual((r["pph_idr"], r["pph_sisi_beli_idr"]), (33440, 15840))   # (0,99+1,1) x 16.000
+        self.assertIn("PERKIRAAN", r["label"]); self.assertEqual(r["kurs_dari_pengguna"], "16000")
 
 
 class M3TombolBerhentiGlobal(Folder):
