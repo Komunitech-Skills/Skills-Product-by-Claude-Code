@@ -19,6 +19,7 @@ import json
 import os
 import re
 import stat
+import unicodedata
 import sys
 import urllib.error
 import urllib.parse
@@ -28,20 +29,71 @@ import zipfile
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 DIR_KONFIG = os.path.join(os.path.expanduser("~"), ".komunitech")
 F_ALAMAT = os.path.join(DIR_KONFIG, "listmonk-alamat.txt")
 F_AKUN = os.path.join(DIR_KONFIG, "listmonk-akun.txt")
 F_TOKEN = os.path.join(DIR_KONFIG, "listmonk-token.txt")
 F_UJI = os.path.join(DIR_KONFIG, "listmonk-uji.json")
+F_ALAMAT_UJI = os.path.join(DIR_KONFIG, "listmonk-alamat-uji.txt")
+F_LOG_IMPOR = os.path.join(DIR_KONFIG, "listmonk-log-impor.jsonl")
+MAKS_ALAMAT_UJI = 3
 ALAMAT_BAWAAN = "http://localhost:9000"
 TZ = {"WIB": 7, "WITA": 8, "WIT": 9}
 MAKS_BERKAS = 50 * 1024 * 1024
-# kata yang menandakan daftar kontak tidak berizin -> ditolak
-KATA_TERLARANG = re.compile(
-    r"\b(beli|membeli|dibeli|sewa|menyewa|disewa|jual[- ]?beli|scrap\w*|hasil ambil|"
-    r"database (orang|umum|pihak)|data (bekas|curian|bocor\w*)|bought|purchased|rented|scraped|leaked)\b",
-    re.I)
+# Sumber persetujuan. Ini HANYA pengaman tambahan (kata kunci mudah dielak); tanggung jawab
+# tetap pada pemilik daftar. Aturan: sumber TERLARANG selalu ditolak; sumber SAH dikenali dari
+# kata kunci; sumber TAK DIKENAL wajib dikonfirmasi pengguna dan jawabannya dicatat.
+_TERLARANG = [
+    r"\b(beli|dibeli|membeli|belian|sewa|disewa|menyewa|jual[- ]?beli|bought|purchased|rented|buy)\b",
+    r"scrap", r"crawl", r"harvest", r"vendor", r"suplier", r"supplier", r"broker", r"reseller data",
+    r"databas", r"data ?base", r"bocor", r"leak", r"curi", r"stolen", r"bekas", r"hack",
+    r"\b(grup|group|grub|gc|wag)\b", r"\bwa ?(grup|group|gc)\b", r"grup ?(wa|whatsapp|telegram|tele|fb|facebook)",
+    r"teman", r"kenalan", r"kawan", r"sahabat", r"saudara", r"tetangga", r"rekan", r"kolega", r"friend",
+    r"dapat dari", r"dapet dari", r"dari orang", r"dikasih", r"dikirimi?n?", r"dititip", r"titip", r"tukar", r"barter",
+    r"marketplace", r"tokopedia", r"shopee", r"lazada", r"bukalapak", r"tiktok ?shop",
+    r"instagram", r"\big\b", r"facebook", r"linkedin", r"medsos", r"media sosial", r"followers?", r"pengikut",
+    r"google maps", r"direktori", r"directory", r"yellow ?pages", r"website orang", r"cari di", r"ambil dari",
+    r"copy", r"salin", r"\bhasil (ambil|kumpul|cari|unduh|download)\b", r"\bbot\b", r"cold ?(email|mail|list)",
+    r"tidak (tahu|ingat)", r"nggak (tahu|ingat|tau)", r"gak (tahu|ingat|tau)", r"\blupa\b", r"entah", r"unknown", r"tak diketahui",
+    r"pokoknya", r"semua orang", r"asal (kirim|ambil)",
+]
+_RE_TERLARANG = re.compile("|".join(_TERLARANG), re.I)
+# bentuk tanpa spasi/tanda baca, untuk mengelak ejaan "s c r a p" / "b3li"
+_STEM_PADAT = ("scrap", "vendor", "database", "grupwa", "wagrup", "grupwhatsapp", "curian", "bocor", "dibeli",
+               "membeli", "harvest", "crawl", "hasilbeli", "hasilbeli", "temanku", "dapatdari", "marketplace")
+_LEET = str.maketrans("013457@$", "oieastas")
+_SAH = re.compile(
+    r"(formulir|\bform\b|web ?form|halaman (daftar|pendaftaran)|pendaftaran (di |lewat )?(website|situs|web|online)|"
+    r"(daftar|subscribe|berlangganan) (sendiri )?(lewat|di|via|melalui) (website|situs|web|form|formulir)|landing ?page|"
+    r"(checkout|check-?out|kasir online).{0,40}(opt-?in|centang|tickbox|checkbox|setuju|persetujuan)|"
+    r"(opt-?in|centang|tickbox|checkbox|setuju|persetujuan).{0,40}(checkout|check-?out)|"
+    r"persetujuan tertulis|surat persetujuan|tanda tangan|ditandatangani|"
+    r"persetujuan (yang )?(direkam|terekam)|rekaman persetujuan|persetujuan rekaman|recorded consent|written consent|"
+    r"consent form|mendaftar sendiri|\bqr)", re.I)
+
+
+def normal_sumber(teks):
+    t = unicodedata.normalize("NFKD", teks or "")
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return t.lower()
+
+
+def klasifikasi_sumber(teks):
+    """-> 'terlarang' | 'sah' | 'tak_dikenal'. Terlarang menang atas sah."""
+    t = normal_sumber(teks)
+    varian = [t, t.translate(_LEET)]
+    for v in varian:
+        if _RE_TERLARANG.search(v):
+            return "terlarang"
+        padat = re.sub(r"[^a-z0-9]", "", v)
+        if any(st in padat for st in _STEM_PADAT):
+            return "terlarang"
+    if _SAH.search(t):
+        return "sah"
+    return "tak_dikenal"
+
+
 KATA_SPAM = ["gratis!!!", "100% untung", "pasti untung", "klik sekarang!!!", "menang undian",
              "transfer dulu", "hadiah pasti", "free money"]
 RE_EMAIL = re.compile(r"^[A-Za-z0-9._%+\-']+@[A-Za-z0-9](?:[A-Za-z0-9\-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9\-]*[A-Za-z0-9])?)+$")
@@ -190,6 +242,9 @@ def api(cfg, metode, path, data=None, params=None, multipart=None, ok404=False):
             raise Galat(f"Ditolak listmonk (HTTP {e.code}): {pesan or 'akun/token salah atau tidak berhak'}. "
                         "Periksa akun API dan perannya (docs/panduan-listmonk.md).", 5)
         if e.code == 404:
+            if not pesan:
+                raise Galat(f"Tidak ditemukan (HTTP 404) di {path}. Alamat ini mungkin BUKAN server listmonk "
+                            "(atau listmonk versi lama/alamat kurang awalan). Periksa alamat dengan 'cek'.", 7)
             raise Galat(f"Tidak ditemukan (HTTP 404) di {path}: {pesan}", 7)
         raise Galat(f"listmonk menolak (HTTP {e.code}): {pesan}", 5 if e.code < 500 else 4)
     except (urllib.error.URLError, OSError, TimeoutError) as e:
@@ -229,13 +284,21 @@ def kolom_xlsx(path):
         nama = z.namelist()
         ss = []
         if "xl/sharedStrings.xml" in nama:
-            for si in ET.fromstring(z.read("xl/sharedStrings.xml")).findall("m:si", ns):
+            try:
+                akar_ss = ET.fromstring(z.read("xl/sharedStrings.xml"))
+            except ET.ParseError:
+                raise Galat("Daftar teks Excel rusak/tidak terbaca. Simpan ulang dari Excel sebagai .csv.", 3)
+            for si in akar_ss.findall("m:si", ns):
                 ss.append("".join(t.text or "" for t in si.iter("{%s}t" % ns["m"])))
         sheets = sorted(n for n in nama if re.match(r"xl/worksheets/sheet\d+\.xml$", n))
         if not sheets:
             raise Galat("Tidak ada lembar kerja di berkas Excel.", 3)
         rows = []
-        for r in ET.fromstring(z.read(sheets[0])).iter("{%s}row" % ns["m"]):
+        try:
+            akar = ET.fromstring(z.read(sheets[0]))
+        except (ET.ParseError, KeyError, ValueError):
+            raise Galat("Isi lembar Excel rusak/tidak terbaca. Simpan ulang dari Excel sebagai .csv.", 3)
+        for r in akar.iter("{%s}row" % ns["m"]):
             baris = {}
             for c in r.findall("m:c", ns):
                 ref = c.get("r", "")
@@ -246,7 +309,10 @@ def kolom_xlsx(path):
                 t = c.get("t")
                 v = c.find("m:v", ns)
                 if t == "s" and v is not None and v.text is not None:
-                    val = ss[int(v.text)] if int(v.text) < len(ss) else ""
+                    try:
+                        val = ss[int(v.text)] if 0 <= int(v.text) < len(ss) else ""
+                    except ValueError:
+                        val = ""
                 elif t == "inlineStr":
                     val = "".join(x.text or "" for x in c.iter("{%s}t" % ns["m"]))
                 else:
@@ -274,6 +340,16 @@ NAMA_EMAIL = ("email", "e-mail", "surel", "alamat email", "email address", "mail
 NAMA_NAMA = ("name", "nama", "nama lengkap", "nama pelanggan", "full name")
 NAMA_IZIN = ("setuju", "persetujuan", "consent", "izin", "opt-in", "optin", "berlangganan", "subscribe")
 NEGATIF = {"tidak", "no", "n", "0", "false", "tdk", "batal", "unsubscribe", "berhenti", "belum"}
+# Kolom persetujuan: HANYA nilai ini yang dianggap setuju. Kosong/tidak jelas = TIDAK setuju.
+POSITIF = {"ya", "y", "yes", "iya", "ya.", "setuju", "sudah", "ok", "oke", "true", "1", "benar", "agree", "opt-in", "optin"}
+NAMA_SUMBER = ("sumber", "source", "asal", "origin", "dari mana", "asal kontak")
+
+
+def bersihkan_teks(t, maks):
+    """Buang karakter kontrol dan awalan =+-@ (injeksi rumus Excel) sepenuhnya."""
+    t = "".join(c for c in (t or "") if c >= " " and c != "\x7f")
+    t = re.sub(r"^[=+\-@\s|]+", "", t.strip())
+    return t[:maks]
 
 
 def analisis_kontak(rows, kol_email=None, kol_nama=None):
@@ -310,7 +386,13 @@ def analisis_kontak(rows, kol_email=None, kol_nama=None):
         if p in low:
             iizin = low.index(p)
             break
-    hasil = {"ok": [], "tidak_valid": [], "duplikat": [], "tanpa_izin": [], "mencurigakan": [], "kosong": 0,
+    isum = None
+    for p in NAMA_SUMBER:
+        if p in low:
+            isum = low.index(p)
+            break
+    hasil = {"ok": [], "tidak_valid": [], "duplikat": [], "tanpa_izin": [], "izin_kosong": 0, "mencurigakan": [],
+             "kosong": 0, "formula_dibersihkan": 0, "sumber_terlarang": [],
              "kolom_ekstra": [h for i, h in enumerate(header) if i not in (ie, inama, iizin) and h]}
     lihat = set()
     for n, r in enumerate(baris_data, start=2):
@@ -321,9 +403,16 @@ def analisis_kontak(rows, kol_email=None, kol_nama=None):
         if not RE_EMAIL.match(em) or ".." in em or len(em) > 254:
             hasil["tidak_valid"].append((n, em))
             continue
-        if iizin is not None and iizin < len(r) and r[iizin].strip().lower() in NEGATIF:
-            hasil["tanpa_izin"].append((n, em))
+        if isum is not None and isum < len(r) and klasifikasi_sumber(r[isum]) == "terlarang":
+            hasil["sumber_terlarang"].append((n, em))
             continue
+        if iizin is not None:
+            nilai = (r[iizin].strip().lower() if iizin < len(r) else "")
+            if nilai not in POSITIF:  # kosong / tidak jelas / negatif = tidak setuju
+                hasil["tanpa_izin"].append((n, em))
+                if not nilai:
+                    hasil["izin_kosong"] += 1
+                continue
         if em in lihat:
             hasil["duplikat"].append((n, em))
             continue
@@ -332,14 +421,21 @@ def analisis_kontak(rows, kol_email=None, kol_nama=None):
         if dom in TYPO:
             hasil["mencurigakan"].append((n, em, f"mungkin maksudnya @{TYPO[dom]}"))
         nama = (r[inama].strip() if inama is not None and inama < len(r) else "")
-        nama = re.sub(r"^[=+\-@\s]+", "", nama)[:200]
+        bersih = bersihkan_teks(nama, 200)
+        if bersih != nama.strip()[:200]:
+            hasil["formula_dibersihkan"] += 1
+        nama = bersih
         if not nama:
             nama = re.sub(r"[._\-\d]+", " ", em.split("@")[0]).strip().title() or em.split("@")[0]
         attr = {}
         for i, h in enumerate(header):
             if i in (ie, inama, iizin) or not h or i >= len(r) or not r[i].strip():
                 continue
-            attr[h] = r[i].strip()[:500]
+            nilai_attr = bersihkan_teks(r[i], 500)
+            if nilai_attr != r[i].strip()[:500]:
+                hasil["formula_dibersihkan"] += 1
+            if nilai_attr:
+                attr[bersihkan_teks(h, 100) or h] = nilai_attr
         hasil["ok"].append({"email": em, "name": nama, "attributes": attr})
     return hasil
 
@@ -357,6 +453,12 @@ def laporan_kontak(h, tulis=cetak):
     tulis(f"Email tidak valid (dibuang)   : {rp_angka(len(h['tidak_valid']))}")
     tulis(f"Duplikat (dibuang)            : {rp_angka(len(h['duplikat']))}")
     tulis(f"Menolak/belum setuju (dibuang): {rp_angka(len(h['tanpa_izin']))}")
+    if h.get("izin_kosong"):
+        tulis(f"  - {rp_angka(h['izin_kosong'])} di antaranya kolom persetujuan KOSONG (kosong dianggap TIDAK setuju).")
+    if h.get("sumber_terlarang"):
+        tulis(f"Sumber kolom 'sumber' tergolong tidak berizin (dibuang): {rp_angka(len(h['sumber_terlarang']))}")
+    if h.get("formula_dibersihkan"):
+        tulis(f"Sel bertanda rumus (=,+,-,@) dibersihkan: {rp_angka(h['formula_dibersihkan'])}")
     tulis(f"Baris kosong                  : {rp_angka(h['kosong'])}")
     if h["mencurigakan"]:
         tulis(f"Perlu dicek manual (salah ketik?) - TETAP disertakan: {len(h['mencurigakan'])}")
@@ -486,13 +588,56 @@ def cmd_periksa_kontak(args):
     cetak("INGAT: pastikan tiap orang di berkas ini SUDAH setuju menerima email Anda (lihat SKILL.md, UU PDP).")
 
 
+def catat_impor(rekam):
+    """Tambahkan satu baris JSON ke log impor lokal (tanpa email/kontak, izin 600)."""
+    rekam = dict(rekam, waktu=datetime.now().isoformat(timespec="seconds"))
+    os.makedirs(DIR_KONFIG, exist_ok=True)
+    fd = os.open(F_LOG_IMPOR, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+    with os.fdopen(fd, "a", encoding="utf-8") as f:
+        f.write(json.dumps(rekam, ensure_ascii=False) + "\n")
+
+
+def sidik_berkas(path):
+    try:
+        with open(path, "rb") as f:
+            return hashlib.sha256(f.read()).hexdigest()[:16]
+    except OSError:
+        return ""
+
+
 def cmd_impor(args):
-    if not args.saya_punya_izin or not args.sumber_persetujuan:
+    sumber = (args.sumber_persetujuan or "").strip()
+    if not args.saya_punya_izin or not sumber:
         raise Galat("DITOLAK: impor wajib menyebut asal persetujuan (--sumber-persetujuan \"...\") dan "
-                    "--saya-punya-izin. Tanyakan pengguna: dari mana kontak ini dan bagaimana mereka setuju?", 6)
-    if KATA_TERLARANG.search(args.sumber_persetujuan) or KATA_TERLARANG.search(os.path.basename(args.berkas)):
-        raise Galat("DITOLAK: daftar hasil beli/sewa/scraping tidak boleh dikirimi newsletter (tidak ada "
-                    "persetujuan mereka; melanggar UU PDP 27/2022). Impor hanya orang yang mendaftar sendiri.", 6)
+                    "--saya-punya-izin. Sumber yang sah: formulir di website, kotak opt-in saat checkout, atau "
+                    "persetujuan tertulis/terekam. Tanyakan pengguna: dari mana kontak ini dan bagaimana mereka setuju?", 6)
+    berkas = os.path.basename(args.berkas)
+    kelas = klasifikasi_sumber(sumber)
+    if kelas != "terlarang" and klasifikasi_sumber(berkas) == "terlarang":
+        kelas = "terlarang"
+    rekam = {"berkas": berkas[:80], "sidik_berkas": sidik_berkas(args.berkas), "list": str(args.list),
+             "sumber": sumber[:200], "klasifikasi": kelas}
+    if kelas == "terlarang":
+        catat_impor(dict(rekam, hasil="ditolak-sumber-terlarang"))
+        raise Galat("DITOLAK: sumber seperti grup WA, vendor, beli/sewa, database, scraping, marketplace, "
+                    "medsos, atau 'dapat dari teman' bukan persetujuan. Orang-orang itu tidak pernah setuju "
+                    "menerima email Anda (UU PDP 27/2022) dan email Anda bisa diblokir. Impor hanya orang yang "
+                    "mendaftar sendiri: formulir website, kotak opt-in saat checkout, atau persetujuan "
+                    "tertulis/terekam.", 6)
+    konfirmasi = (args.pengguna_konfirmasi_setuju or "").strip()
+    if kelas == "tak_dikenal":
+        if len(konfirmasi) < 10 or klasifikasi_sumber(konfirmasi) == "terlarang":
+            catat_impor(dict(rekam, hasil="ditolak-sumber-belum-dikonfirmasi"))
+            raise Galat("DITOLAK: sumber persetujuan ini tidak dikenali sebagai sumber yang sah. TANYAKAN pengguna: "
+                        "'Apakah setiap orang di daftar ini sendiri yang mendaftar/setuju menerima email Anda? "
+                        "Lewat apa (formulir website, opt-in saat checkout, atau persetujuan tertulis/terekam)?' "
+                        "Bila pengguna menegaskan YA, ulangi dengan --pengguna-konfirmasi-setuju \"<jawaban "
+                        "pengguna apa adanya>\". Jawaban dicatat di log lokal.", 6)
+        rekam["konfirmasi_pengguna"] = konfirmasi[:300]
+    if args.sudah_terkonfirmasi and kelas != "sah":
+        catat_impor(dict(rekam, hasil="ditolak-terkonfirmasi-tanpa-bukti"))
+        raise Galat("DITOLAK: --sudah-terkonfirmasi hanya untuk sumber yang jelas sah (formulir website, checkout "
+                    "opt-in, persetujuan tertulis/terekam) dan yang buktinya Anda pegang.", 6)
     cfg = Konfig(args)
     l = cari_list(cfg, args.list)
     h = analisis_kontak(baca_baris_kontak(args.berkas), args.kolom_email, args.kolom_nama)
@@ -503,6 +648,10 @@ def cmd_impor(args):
     if status == "confirmed" and l["optin"] == "double":
         cetak("PERHATIAN: memakai --sudah-terkonfirmasi (Anda memegang bukti persetujuan tiap orang).")
     cetak(f"Tujuan: list #{l['id']} '{l['name']}' (opt-in {l['optin']}), status langganan awal: {status}")
+    if h.get("sumber_terlarang"):
+        catat_impor(dict(rekam, hasil="ditolak-kolom-sumber-terlarang"))
+        raise Galat("DITOLAK: kolom 'sumber' di berkas menyebut asal yang tidak berizin (beli/grup WA/scraping/dll) "
+                    f"pada {len(h['sumber_terlarang'])} baris. Pisahkan hanya orang yang mendaftar sendiri, lalu ulangi.", 6)
     if not args.ya:
         cetak("BELUM DIIMPOR. Tunjukkan ringkasan ini ke pengguna, lalu jalankan ulang dengan --ya.")
         raise Galat("Menunggu konfirmasi (--ya).", 6)
@@ -525,6 +674,9 @@ def cmd_impor(args):
             break
         time.sleep(1)
     cetak(f"Impor {st.get('status')}: {st.get('imported', 0)} dari {st.get('total', 0)} baris.")
+    cetak("CATATAN: angka ini menghitung baris yang diproses. Kontak yang SEBELUMNYA berhenti berlangganan atau "
+          "diblokir di listmonk TIDAK dihidupkan lagi (sengaja, menghormati pilihan mereka).")
+    catat_impor(dict(rekam, hasil="diimpor", status_awal=status, baris=len(h["ok"])))
     if l["optin"] == "double" and status == "unconfirmed":
         cetak("LANGKAH BERIKUTNYA: kirim email konfirmasi (double opt-in) dengan 'kirim-optin'. "
               "Hanya yang klik konfirmasi yang akan menerima newsletter.")
@@ -582,7 +734,8 @@ def cmd_hapus_pelanggan(args):
 # ---------------------------------------------------------------- kampanye
 def sidik(kamp):
     return hashlib.sha256((str(kamp.get("subject", "")) + "\0" + str(kamp.get("body", "")) + "\0" +
-                           str(kamp.get("template_id", ""))).encode("utf-8")).hexdigest()[:16]
+                           str(kamp.get("template_id", "")) + "\0" + str(kamp.get("content_type", "")) + "\0" +
+                           str(kamp.get("from_email", ""))).encode("utf-8")).hexdigest()[:16]
 
 
 def muat_uji():
@@ -593,9 +746,11 @@ def muat_uji():
         return {}
 
 
-def simpan_uji(cfg, kamp):
+def simpan_uji(cfg, kamp, alamat=""):
+    """Catatan uji-kirim lokal: kunci = alamat server + id kampanye; nilai memuat sidik isi (subjek+isi+template+pengirim)."""
     d = muat_uji()
-    d[f"{cfg.url}#{kamp['id']}"] = {"sidik": sidik(kamp), "waktu": datetime.now().isoformat(timespec="seconds")}
+    d[f"{cfg.url}#{kamp['id']}"] = {"sidik": sidik(kamp), "ke": samar_email(alamat) if alamat else "",
+                                    "waktu": datetime.now().isoformat(timespec="seconds")}
     os.makedirs(DIR_KONFIG, exist_ok=True)
     with open(F_UJI, "w", encoding="utf-8") as f:
         json.dump(d, f)
@@ -621,13 +776,24 @@ def ambil_template(cfg, tid):
     return (d or {}).get("data", {}).get("body", "") or ""
 
 
+RE_KOMENTAR = re.compile(r"<!--.*?-->|\{\{/\*.*?\*/\}\}|\{\{-?\s*/\*.*?\*/\s*-?\}\}", re.S)
+RE_TAG_BERHENTI = re.compile(r"\{\{-?\s*UnsubscribeURL\s*-?\}\}")
+
+
+def punya_tautan_berhenti(teks):
+    """Tag {{ UnsubscribeURL }} harus ada DI LUAR komentar HTML/template. Komentar tidak dihitung."""
+    return bool(RE_TAG_BERHENTI.search(RE_KOMENTAR.sub("", teks or "")))
+
+
 def lint_kampanye(cfg, k):
     """Kembalikan (galat[], peringatan[])."""
     g, p = [], []
     body = (k.get("body") or "")
     tpl = ambil_template(cfg, k.get("template_id")) if k.get("content_type") != "visual" else ""
-    if "UnsubscribeURL" not in body and "UnsubscribeURL" not in tpl:
-        g.append("Tidak ada tautan berhenti berlangganan ({{ UnsubscribeURL }}) di isi/template. Wajib ada.")
+    if not punya_tautan_berhenti(body) and not punya_tautan_berhenti(tpl):
+        g.append("Tidak ada tautan berhenti berlangganan yang berfungsi: tag {{ UnsubscribeURL }} harus ada di isi "
+                 "atau template DI LUAR komentar (tautan di dalam <!-- --> tidak dihitung). Wajib ada.")
+
     if not (k.get("subject") or "").strip():
         g.append("Subjek kosong.")
     if not k.get("lists"):
@@ -729,16 +895,60 @@ def cmd_daftar_kampanye(args):
         cetak("(belum ada kampanye)")
 
 
+def muat_alamat_uji():
+    try:
+        with open(F_ALAMAT_UJI, encoding="utf-8") as f:
+            baris = [x.strip().lower() for x in f.read().splitlines()]
+    except OSError:
+        return []
+    return [x for x in baris if x and RE_EMAIL.match(x)][:MAKS_ALAMAT_UJI]
+
+
+def cmd_simpan_alamat_uji(args):
+    """Pemilik mendaftarkan alamat emailnya sendiri untuk uji-kirim. Hanya lewat terminal manusia."""
+    if not sys.stdin.isatty():
+        raise Galat("Perintah ini harus dijalankan pengguna sendiri di terminal. Agent tidak boleh menambah alamat uji.", 3)
+    em = args.email.strip().lower()
+    if not RE_EMAIL.match(em) or len(em) > 254:
+        raise Galat("Alamat email tidak valid.", 2)
+    ada = muat_alamat_uji()
+    if em in ada:
+        cetak("Alamat itu sudah terdaftar sebagai alamat uji.")
+        return
+    if len(ada) >= MAKS_ALAMAT_UJI:
+        raise Galat(f"Maksimal {MAKS_ALAMAT_UJI} alamat uji. Hapus baris di {F_ALAMAT_UJI} bila perlu mengganti.", 2)
+    jawab = input(f"Ketik 'ini email saya' untuk menyatakan {samar_email(em)} adalah email MILIK ANDA SENDIRI: ").strip().lower()
+    if jawab != "ini email saya":
+        raise Galat("Dibatalkan.", 2)
+    os.makedirs(DIR_KONFIG, exist_ok=True)
+    with open(F_ALAMAT_UJI, "w", encoding="utf-8") as f:
+        f.write("\n".join(ada + [em]) + "\n")
+    cetak(f"Alamat uji tersimpan ({len(ada) + 1}/{MAKS_ALAMAT_UJI}).")
+
+
 def cmd_uji_kirim(args):
     cfg = Konfig(args)
+    izin = muat_alamat_uji()
+    if not izin:
+        raise Galat("DITOLAK: belum ada alamat uji milik Anda. Pengguna menjalankan SENDIRI di terminal: "
+                    "python3 scripts/listmonk.py simpan-alamat-uji --email emailanda@... "
+                    "(uji-kirim hanya boleh ke alamat milik pemilik).", 6)
+    em = (args.ke or "").strip().lower()
+    if not em:
+        if len(izin) != 1:
+            raise Galat("Ada beberapa alamat uji; sebut salah satu dengan --ke.", 2)
+        em = izin[0]
+    if em not in izin:
+        raise Galat("DITOLAK: uji-kirim hanya ke alamat uji milik pemilik yang sudah didaftarkan "
+                    "(simpan-alamat-uji). Alamat lain tidak diterima.", 6)
     k = ambil_kampanye(cfg, args.id)
     if k["status"] not in ("draft", "scheduled", "paused"):
         raise Galat(f"Kampanye berstatus {k['status']}; uji-kirim hanya untuk draf/terjadwal/jeda.", 2)
-    em = args.ke.strip().lower()
-    if not RE_EMAIL.match(em):
-        raise Galat("Alamat email uji tidak valid.", 2)
-    if len(em) > 254:
-        raise Galat("Alamat email uji terlalu panjang.", 2)
+    g, _ = lint_kampanye(cfg, k)
+    if g:
+        for x in g:
+            cetak("GALAT   : " + x)
+        raise Galat("DITOLAK: perbaiki galat di atas dulu; uji-kirim tidak dicatat sebagai lulus.", 6)
     ada = cari_email(cfg, em)
     if not ada:
         api(cfg, "POST", "/subscribers", data={"email": em, "name": args.nama_uji or "Uji Pemilik", "status": "enabled",
@@ -749,9 +959,9 @@ def cmd_uji_kirim(args):
     payload["lists"] = [l["id"] for l in k.get("lists", [])]
     payload["subscribers"] = [em]
     api(cfg, "POST", f"/campaigns/{k['id']}/test", data=payload)
-    simpan_uji(cfg, k)
+    simpan_uji(cfg, k, em)
     cetak(f"Email uji dikirim ke {samar_email(em)}. Minta pengguna memeriksa kotak masuk DAN folder spam: "
-          "tampilan HP, tautan, tautan berhenti berlangganan.")
+          "tampilan HP, tautan, tautan berhenti berlangganan (buka tautannya, harus tampil halaman berhenti).")
 
 
 def parse_waktu(teks, tz):
@@ -783,7 +993,7 @@ def gerbang_kirim(cfg, k, args, aksi):
         raise Galat("DITOLAK: perbaiki galat di atas dulu.", 6)
     diuji = sudah_diuji(cfg, k)
     cetak("  Uji-kirim ke diri sendiri: " + ("SUDAH (isi sama)" if diuji else "BELUM / isi berubah sejak uji"))
-    if not diuji and not args.tanpa_uji:
+    if not diuji:
         raise Galat("DITOLAK: lakukan 'uji-kirim' ke email Anda sendiri dulu (isi harus sama persis).", 6)
     if total == 0:
         raise Galat("DITOLAK: penerima 0. Impor kontak & kirim konfirmasi opt-in dulu.", 6)
@@ -869,8 +1079,15 @@ def cmd_statistik(args):
 
 # ---------------------------------------------------------------- CLI
 def buat_parser():
-    p = argparse.ArgumentParser(prog="listmonk.py", description="Pembantu newsletter listmonk (Komunitech).")
+    p = argparse.ArgumentParser(prog="listmonk.py", description="Pembantu newsletter listmonk (Komunitech).",
+                                allow_abbrev=False)
     sub = p.add_subparsers(dest="perintah", required=True)
+    _tambah = sub.add_parser
+
+    def _tambah_ketat(*a, **k):
+        k.setdefault("allow_abbrev", False)
+        return _tambah(*a, **k)
+    sub.add_parser = _tambah_ketat
 
     def umum(s):
         s.add_argument("--url", help="alamat listmonk (bawaan http://localhost:9000)")
@@ -893,6 +1110,7 @@ def buat_parser():
     s.set_defaults(f=cmd_periksa_kontak)
     s = umum(sub.add_parser("impor")); s.add_argument("berkas"); s.add_argument("--list", required=True)
     s.add_argument("--sumber-persetujuan"); s.add_argument("--saya-punya-izin", action="store_true")
+    s.add_argument("--pengguna-konfirmasi-setuju", help="jawaban pengguna apa adanya, untuk sumber yang tak dikenal")
     s.add_argument("--sudah-terkonfirmasi", action="store_true")
     s.add_argument("--kolom-email"); s.add_argument("--kolom-nama"); s.add_argument("--ya", action="store_true")
     s.set_defaults(f=cmd_impor)
@@ -911,14 +1129,15 @@ def buat_parser():
     s.set_defaults(f=cmd_buat_kampanye)
     s = umum(sub.add_parser("periksa-kampanye")); s.add_argument("id"); s.set_defaults(f=cmd_periksa_kampanye)
     s = umum(sub.add_parser("daftar-kampanye")); s.add_argument("--batas", type=int, default=10); s.set_defaults(f=cmd_daftar_kampanye)
-    s = umum(sub.add_parser("uji-kirim")); s.add_argument("id"); s.add_argument("--ke", required=True)
+    s = sub.add_parser("simpan-alamat-uji"); s.add_argument("--email", required=True); s.set_defaults(f=cmd_simpan_alamat_uji)
+    s = umum(sub.add_parser("uji-kirim")); s.add_argument("id"); s.add_argument("--ke")
     s.add_argument("--nama-uji"); s.set_defaults(f=cmd_uji_kirim)
     for nama, fn in (("kirim", cmd_kirim), ("jadwal", cmd_jadwal)):
         s = umum(sub.add_parser(nama)); s.add_argument("id")
         if nama == "jadwal":
             s.add_argument("--waktu", required=True); s.add_argument("--tz", choices=list(TZ), default="WIB")
         s.add_argument("--ya", action="store_true"); s.add_argument("--konfirmasi-penerima", type=int)
-        s.add_argument("--tanpa-uji", action="store_true"); s.set_defaults(f=fn)
+        s.set_defaults(f=fn)
     for nama, st, kata in (("jeda", "paused", "dijeda"), ("batalkan", "cancelled", "dibatalkan")):
         s = umum(sub.add_parser(nama)); s.add_argument("id"); s.add_argument("--ya", action="store_true")
         s.set_defaults(f=(lambda a, st=st, kata=kata: cmd_ubah_status(a, st, kata)))
@@ -936,6 +1155,13 @@ def main(argv=None):
         return e.kode
     except BrokenPipeError:
         return 0
+    except KeyboardInterrupt:
+        print("Dibatalkan.", file=sys.stderr)
+        return 2
+    except Exception as e:  # jangan tampilkan Traceback mentah (bisa memuat data); sebut jenis galatnya saja
+        print(f"GALAT tak terduga ({type(e).__name__}). Periksa berkas/alamat, atau kerjakan manual lewat layar listmonk.",
+              file=sys.stderr)
+        return 1
     return 0
 
 

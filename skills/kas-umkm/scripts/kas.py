@@ -3402,13 +3402,13 @@ def parse_hari_ini(teks):
 
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--db", help="File database (default ~/KomunitechData/kas/kas.db; ENV KOMUNITECH_KAS_DB)")
     umum.add_argument("--json", action="store_true", help="Output JSON (untuk agent)")
     umum.add_argument("--hari-ini", help=argparse.SUPPRESS)
-    tulis = argparse.ArgumentParser(add_help=False)
+    tulis = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     tulis.add_argument("--ya", action="store_true", help="Simpan (tanpa ini hanya pratinjau)")
-    periode = argparse.ArgumentParser(add_help=False)
+    periode = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     periode.add_argument("--tanggal", help="Satu hari: hari-ini, kemarin, 26/09/2026")
     periode.add_argument("--minggu", help="Senin-Minggu: ini, lalu, atau tanggal di minggu itu")
     periode.add_argument("--bulan", help="ini, lalu, 09/2026, September 2026")
@@ -3420,7 +3420,7 @@ def buat_parser():
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True
 
-    s = sub.add_parser("init", parents=[umum, tulis], help="Buat buku kas baru")
+    s = sub.add_parser("init", parents=[umum, tulis], help="Buat buku kas baru", allow_abbrev=False)
     s.add_argument("--nama-usaha")
     s.add_argument("--kas-awal", help="Uang di laci saat mulai (default 0)")
     s.add_argument("--mulai", help="Tanggal mulai pencatatan (default hari ini)")
@@ -3430,16 +3430,16 @@ def buat_parser():
                    help="Buku kas rusak & tidak ada cadangan: pindahkan file rusak ke backup-kas lalu buat baru")
     s.set_defaults(fungsi=cmd_init)
 
-    s = sub.add_parser("info", parents=[umum], help="Lokasi database, akun & saldo, cadangan")
+    s = sub.add_parser("info", parents=[umum], help="Lokasi database, akun & saldo, cadangan", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_info)
 
-    s = sub.add_parser("atur", parents=[umum, tulis], help="Ubah nama usaha, zona, batas prive")
+    s = sub.add_parser("atur", parents=[umum, tulis], help="Ubah nama usaha, zona, batas prive", allow_abbrev=False)
     s.add_argument("--nama-usaha")
     s.add_argument("--zona")
     s.add_argument("--batas-prive", help="mis. 3jt, atau 'hapus'")
     s.set_defaults(fungsi=cmd_atur)
 
-    s = sub.add_parser("akun", parents=[umum, tulis], help="Akun uang: daftar | tambah | ubah")
+    s = sub.add_parser("akun", parents=[umum, tulis], help="Akun uang: daftar | tambah | ubah", allow_abbrev=False)
     s.add_argument("aksi", choices=["daftar", "tambah", "ubah"])
     s.add_argument("--akun", help="Akun yang diubah (untuk ubah)")
     s.add_argument("--nama")
@@ -3451,7 +3451,7 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_akun)
 
-    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat uang masuk/keluar")
+    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat uang masuk/keluar", allow_abbrev=False)
     s.add_argument("--masuk", help="Nominal uang masuk")
     s.add_argument("--keluar", help="Nominal uang keluar")
     s.add_argument("--kategori", help=", ".join(KATEGORI))
@@ -3465,7 +3465,7 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_catat)
 
-    s = sub.add_parser("pindah", parents=[umum, tulis], help="Pindah dana antar akun (tidak mengubah hasil usaha)")
+    s = sub.add_parser("pindah", parents=[umum, tulis], help="Pindah dana antar akun (tidak mengubah hasil usaha)", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     s.add_argument("--ke", required=True)
     s.add_argument("--jumlah", required=True)
@@ -3475,20 +3475,20 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_pindah)
 
-    s = sub.add_parser("batal", parents=[umum, tulis], help="Batalkan catatan (tidak dihapus)")
+    s = sub.add_parser("batal", parents=[umum, tulis], help="Batalkan catatan (tidak dihapus)", allow_abbrev=False)
     s.add_argument("--id", required=True, help="ID catatan, mis. 12 atau #12")
     s.add_argument("--alasan", required=True)
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_batal)
 
     s = sub.add_parser("golongkan", parents=[umum, tulis],
-                       help="Tetapkan kategori catatan 'Perlu dicek' (atau ubah jadi pindah:<akun>)")
+                       help="Tetapkan kategori catatan 'Perlu dicek' (atau ubah jadi pindah:<akun>)", allow_abbrev=False)
     s.add_argument("--id", required=True, help="ID catatan, mis. 12 atau 12,15")
     s.add_argument("--kategori", required=True, help="Kategori, atau pindah:<akun pasangan>")
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_golongkan)
 
-    s = sub.add_parser("opname", parents=[umum, tulis], help="Hitung uang fisik laci/brankas vs buku")
+    s = sub.add_parser("opname", parents=[umum, tulis], help="Hitung uang fisik laci/brankas vs buku", allow_abbrev=False)
     s.add_argument("--akun", help="Default: satu-satunya akun tunai")
     s.add_argument("--fisik", help="Total uang yang dihitung")
     s.add_argument("--pecahan", help="Rincian: '100rb x5, 50rb x3, 2rb x10, koin 3.500'")
@@ -3499,14 +3499,14 @@ def buat_parser():
     s.add_argument("--maks", type=int, default=20)
     s.set_defaults(fungsi=cmd_opname)
 
-    s = sub.add_parser("rekap", parents=[umum, periode], help="Rekap harian/mingguan/bulanan (teks siap Telegram)")
+    s = sub.add_parser("rekap", parents=[umum, periode], help="Rekap harian/mingguan/bulanan (teks siap Telegram)", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_rekap)
 
-    s = sub.add_parser("saldo", parents=[umum], help="Saldo per akun")
+    s = sub.add_parser("saldo", parents=[umum], help="Saldo per akun", allow_abbrev=False)
     s.add_argument("--tanggal")
     s.set_defaults(fungsi=cmd_saldo)
 
-    s = sub.add_parser("daftar", parents=[umum, periode], help="Daftar catatan (dengan ID)")
+    s = sub.add_parser("daftar", parents=[umum, periode], help="Daftar catatan (dengan ID)", allow_abbrev=False)
     s.add_argument("--kategori")
     s.add_argument("--akun")
     s.add_argument("--cari")
@@ -3514,7 +3514,7 @@ def buat_parser():
     s.add_argument("--maks", type=int, default=50)
     s.set_defaults(fungsi=cmd_daftar)
 
-    s = sub.add_parser("impor", parents=[umum, tulis], help="Impor CSV buku kas / mutasi bank")
+    s = sub.add_parser("impor", parents=[umum, tulis], help="Impor CSV buku kas / mutasi bank", allow_abbrev=False)
     s.add_argument("file")
     s.add_argument("--akun", help="Akun tujuan semua baris (mis. BRI untuk mutasi BRI)")
     s.add_argument("--jenis-file", choices=["mutasi-bank", "buku-kas"], help="Arti kolom Debit/Kredit")
@@ -3526,7 +3526,7 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_impor)
 
-    s = sub.add_parser("impor-kasir", parents=[umum, tulis], help="Impor rekap harian kasir-lokal (JSON)")
+    s = sub.add_parser("impor-kasir", parents=[umum, tulis], help="Impor rekap harian kasir-lokal (JSON)", allow_abbrev=False)
     s.add_argument("file", help="Hasil: kasir.py rekap --tanggal <tgl> --json > rekap-kasir.json")
     s.add_argument("--akun-untuk", action="append", help="Metode=akun, mis. qris=BRI (bisa diulang)")
     s.add_argument("--ganti", action="store_true", help="Ganti impor tanggal yang sama (impor lama dibatalkan)")
@@ -3534,7 +3534,7 @@ def buat_parser():
     s.add_argument("--izinkan-minus", action="store_true")
     s.set_defaults(fungsi=cmd_impor_kasir)
 
-    s = sub.add_parser("ekspor", parents=[umum, periode], help="Ekspor CSV: lengkap | emkm | arus-kas")
+    s = sub.add_parser("ekspor", parents=[umum, periode], help="Ekspor CSV: lengkap | emkm | arus-kas", allow_abbrev=False)
     s.add_argument("--format", choices=["lengkap", "emkm", "arus-kas"], default="lengkap")
     s.add_argument("--csv", help="File tujuan (default folder ekspor/ di sebelah database)")
     s.add_argument("--pemisah", default=";", help="Pemisah CSV (default ';' untuk Excel Indonesia)")
@@ -3542,11 +3542,11 @@ def buat_parser():
     s.add_argument("--semua", action="store_true", help="lengkap: termasuk yang dibatalkan")
     s.set_defaults(fungsi=cmd_ekspor)
 
-    s = sub.add_parser("backup", parents=[umum], help="Buat cadangan / --daftar")
+    s = sub.add_parser("backup", parents=[umum], help="Buat cadangan / --daftar", allow_abbrev=False)
     s.add_argument("--daftar", action="store_true")
     s.add_argument("--label")
     s.set_defaults(fungsi=cmd_backup)
-    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan")
+    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     s.set_defaults(fungsi=cmd_restore)
     return p

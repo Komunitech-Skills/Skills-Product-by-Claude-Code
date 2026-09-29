@@ -140,6 +140,8 @@ class Uji(unittest.TestCase):
         cls.tmp = tempfile.mkdtemp()
         lm.DIR_KONFIG = cls.tmp
         lm.F_UJI = os.path.join(cls.tmp, "uji.json")
+        lm.F_ALAMAT_UJI = os.path.join(cls.tmp, "alamat-uji.txt")
+        lm.F_LOG_IMPOR = os.path.join(cls.tmp, "log-impor.jsonl")
         lm.F_ALAMAT = os.path.join(cls.tmp, "alamat.txt")
         lm.F_AKUN = os.path.join(cls.tmp, "akun.txt")
         lm.F_TOKEN = os.path.join(cls.tmp, "token.txt")
@@ -153,8 +155,11 @@ class Uji(unittest.TestCase):
 
     def setUp(self):
         reset()
-        if os.path.exists(lm.F_UJI):
-            os.remove(lm.F_UJI)
+        for f in (lm.F_UJI, lm.F_LOG_IMPOR):
+            if os.path.exists(f):
+                os.remove(f)
+        with open(lm.F_ALAMAT_UJI, "w") as f:  # alamat uji milik pemilik (didaftarkan manusia)
+            f.write("saya@example.test\ns@example.test\n")
 
     # ---- berkas kontak
     def _csv(self, isi):
@@ -173,6 +178,7 @@ class Uji(unittest.TestCase):
         self.assertEqual(len(h["mencurigakan"]), 1)
         self.assertEqual(h["kosong"], 1)
         self.assertEqual(h["ok"][3]["name"], "cmd|x")  # '=' di depan dibuang
+        self.assertEqual(h["formula_dibersihkan"], 1)
         self.assertEqual(h["ok"][0]["attributes"], {"Kota": "Bdg"})
 
     def test_csv_tanpa_header_dan_tanpa_email(self):
@@ -257,12 +263,14 @@ class Uji(unittest.TestCase):
 
     def test_daftar_gabungan_single_optin_hitung_semua(self):
         STATE["camp"]["lists"] = [{"id": 2}]
-        _, o, _ = jalankan("kirim", "7", "--tanpa-uji")
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
+        _, o, _ = jalankan("kirim", "7")
         self.assertIn("2 penerima", o)  # d confirmed + b unconfirmed (single opt-in)
 
     def test_penerima_nol_ditolak(self):
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
         STATE["subs"] = []
-        self.assertEqual(jalankan("kirim", "7", "--tanpa-uji", "--ya", "--konfirmasi-penerima", "0")[0], 6)
+        self.assertEqual(jalankan("kirim", "7", "--ya", "--konfirmasi-penerima", "0")[0], 6)
 
     def test_jadwal(self):
         jalankan("uji-kirim", "7", "--ke", "s@example.test")
@@ -343,6 +351,268 @@ class Uji(unittest.TestCase):
     def test_parse_waktu(self):
         self.assertEqual(lm.parse_waktu("2026-10-05 09:00", "WIB").isoformat(), "2026-10-05T09:00:00+07:00")
         self.assertEqual(lm.parse_waktu("2026-10-05 9:30", "WIT").isoformat(), "2026-10-05T09:30:00+09:00")
+
+    # ================= REGRESI 1.0.1 =================
+    # -- P1.1 gerbang uji-kirim
+    def test_tanpa_uji_tidak_ada_lagi(self):
+        for cmd in ("kirim", "jadwal"):
+            extra = ["--waktu", "2099-01-01 09:00"] if cmd == "jadwal" else []
+            k, _, e = jalankan(cmd, "7", *extra, "--tanpa-uji", "--ya", "--konfirmasi-penerima", "2")
+            self.assertEqual(k, 2)  # argumen tak dikenal
+        self.assertNotEqual(STATE["camp"]["status"], "running")
+
+    def test_singkatan_opsi_ditolak(self):
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
+        k, _, e = jalankan("kirim", "7", "--y", "--konfirmasi-penerima", "2")
+        self.assertEqual(k, 2)
+        self.assertNotEqual(STATE["camp"]["status"], "running")
+        k, _, _ = jalankan("kirim", "7", "--ya", "--konfirmasi-p", "2")
+        self.assertEqual(k, 2)
+        k, _, _ = jalankan("impor", "x.csv", "--li", "1")
+        self.assertEqual(k, 2)
+        self.assertEqual(STATE["camp"]["status"], "draft")
+
+    def test_gerbang_uji_semua_jalur_tanpa_uji(self):
+        self.assertEqual(jalankan("kirim", "7", "--ya", "--konfirmasi-penerima", "2")[0], 6)
+        self.assertEqual(jalankan("jadwal", "7", "--waktu", "2099-01-01 09:00", "--ya", "--konfirmasi-penerima", "2")[0], 6)
+        self.assertEqual(STATE["camp"]["status"], "draft")
+
+    def test_catatan_uji_kunci_id_dan_sidik_isi(self):
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
+        d = lm.muat_uji()
+        (kunci, nilai), = d.items()
+        self.assertTrue(kunci.endswith("#7"))
+        self.assertEqual(len(nilai["sidik"]), 16)
+        self.assertNotIn("s@example.test", json.dumps(d))  # alamat disamarkan
+        for ubah in ("subject", "body", "from_email"):
+            with self.subTest(ubah=ubah):
+                asli = STATE["camp"][ubah]
+                STATE["camp"][ubah] = asli + " x"
+                self.assertEqual(jalankan("kirim", "7", "--ya", "--konfirmasi-penerima", "2")[0], 6)
+                STATE["camp"][ubah] = asli
+        self.assertEqual(jalankan("kirim", "7", "--ya", "--konfirmasi-penerima", "2")[0], 0)
+
+    def test_uji_di_kampanye_lain_tidak_berlaku(self):
+        jalankan("uji-kirim", "7", "--ke", "s@example.test")
+        d = lm.muat_uji()
+        d[list(d)[0].replace("#7", "#8")] = d.pop(list(d)[0])
+        json.dump(d, open(lm.F_UJI, "w"))
+        self.assertEqual(jalankan("kirim", "7", "--ya", "--konfirmasi-penerima", "2")[0], 6)
+
+    # -- P1.2 penerima uji-kirim
+    def test_uji_kirim_hanya_alamat_terdaftar(self):
+        k, _, e = jalankan("uji-kirim", "7", "--ke", "korban@orang.test")
+        self.assertEqual(k, 6)
+        self.assertEqual(STATE["tests"], [])
+        self.assertFalse(any(m == "POST" and p == "/api/subscribers" for m, p, _ in STATE["calls"]))  # tak buat pelanggan asing
+        self.assertEqual(lm.muat_uji(), {})
+
+    def test_uji_kirim_tanpa_daftar_alamat_ditolak(self):
+        os.remove(lm.F_ALAMAT_UJI)
+        self.assertEqual(jalankan("uji-kirim", "7", "--ke", "saya@example.test")[0], 6)
+        self.assertEqual(STATE["tests"], [])
+
+    def test_uji_kirim_alamat_tunggal_default_dan_maks_tiga(self):
+        open(lm.F_ALAMAT_UJI, "w").write("a1@example.test\na2@example.test\na3@example.test\na4@example.test\n")
+        self.assertEqual(len(lm.muat_alamat_uji()), 3)
+        self.assertEqual(jalankan("uji-kirim", "7")[0], 2)  # banyak alamat: harus sebut satu
+        self.assertEqual(jalankan("uji-kirim", "7", "--ke", "a4@example.test")[0], 6)  # di luar 3 pertama
+        open(lm.F_ALAMAT_UJI, "w").write("satu@example.test\n")
+        self.assertEqual(jalankan("uji-kirim", "7")[0], 0)
+        self.assertEqual(STATE["tests"][0]["subscribers"], ["satu@example.test"])
+
+    def test_simpan_alamat_uji_butuh_terminal(self):
+        # stdin uji bukan terminal -> agent tidak bisa menambah alamat
+        self.assertEqual(jalankan("simpan-alamat-uji", "--email", "x@orang.test")[0], 3)
+        self.assertNotIn("x@orang.test", open(lm.F_ALAMAT_UJI).read())
+
+    # -- P1.3 tautan berhenti
+    def test_tautan_berhenti_dalam_komentar_tidak_dihitung(self):
+        for body in ("<p>Hai WA 0812</p><!-- {{ UnsubscribeURL }} -->",
+                     "<p>Hai</p><!--\n<a href=\"{{ UnsubscribeURL }}\">berhenti</a>\n-->",
+                     "<p>Hai</p>{{/* {{ UnsubscribeURL }} */}}",
+                     "<p>UnsubscribeURL</p>"):
+            with self.subTest(body=body):
+                STATE["camp"]["body"] = body
+                STATE["camp"]["template_id"] = 99
+                self.assertEqual(jalankan("uji-kirim", "7", "--ke", "s@example.test")[0], 6)
+                self.assertEqual(STATE["tests"], [])
+                self.assertEqual(jalankan("kirim", "7", "--ya", "--konfirmasi-penerima", "2")[0], 6)
+                self.assertEqual(jalankan("periksa-kampanye", "7")[0], 6)
+
+    def test_tautan_berhenti_valid_di_isi_atau_template(self):
+        self.assertTrue(lm.punya_tautan_berhenti('<a href="{{ UnsubscribeURL }}">x</a>'))
+        self.assertTrue(lm.punya_tautan_berhenti("<!-- catatan --><a href=\"{{UnsubscribeURL}}\">x</a>"))
+        self.assertFalse(lm.punya_tautan_berhenti(""))
+        # template bawaan (mock) memuat tag di luar komentar, isi tidak
+        STATE["camp"]["body"] = "<p>Hai WA 0812</p>"
+        self.assertEqual(jalankan("uji-kirim", "7", "--ke", "s@example.test")[0], 0)
+
+    def test_komentar_di_template_tidak_dihitung(self):
+        self.assertFalse(lm.punya_tautan_berhenti("<html><!-- {{ UnsubscribeURL }} --></html>"))
+
+    # -- P1.4 sumber persetujuan
+    def _impor(self, sumber, *extra, isi="email\na@x.id\n"):
+        return jalankan("impor", self._csv(isi), "--list", "1", "--sumber-persetujuan", sumber, "--saya-punya-izin",
+                        "--ya", *extra)
+
+    def test_sumber_terlarang_ditolak_semua_variasi(self):
+        buruk = ["grup WA komunitas", "Grup Whatsapp alumni", "dari vendor", "Vendor data", "hasil beli", "dibeli dari toko data",
+                 "database orang", "database pelanggan", "hasil scrape IG", "Scraping marketplace", "dapat dari teman",
+                 "dikasih teman", "Dapet dari teman kantor", "b3li database", "s c r a p e", "beli", "B E L I putus",
+                 "Tokopedia buyer list", "followers Instagram", "sewa list", "data bocor", "lupa dari mana", "tidak tahu",
+                 "formulir website tapi juga hasil beli", "WA group"]
+        for sb in buruk:
+            with self.subTest(sumber=sb):
+                STATE["imports"].clear()
+                k, _, _ = self._impor(sb)
+                self.assertEqual(k, 6, sb)
+                self.assertEqual(STATE["imports"], [])
+
+    def test_sumber_terlarang_tidak_bisa_dielak_konfirmasi(self):
+        k, _, _ = self._impor("grup WA", "--pengguna-konfirmasi-setuju", "semua orang sudah setuju kok")
+        self.assertEqual(k, 6)
+        k, _, _ = self._impor("apa saja", "--pengguna-konfirmasi-setuju", "dapat dari teman saya")
+        self.assertEqual(k, 6)
+        self.assertEqual(STATE["imports"], [])
+
+    def test_sumber_sah_diterima(self):
+        for sb in ("Formulir pendaftaran di website toko", "Kotak opt-in tidak tercentang saat checkout",
+                   "persetujuan tertulis (tanda tangan) di kasir", "Rekaman persetujuan lisan pelanggan"):
+            with self.subTest(sumber=sb):
+                STATE["imports"].clear()
+                self.assertEqual(self._impor(sb)[0], 0, sb)
+                self.assertEqual(len(STATE["imports"]), 1)
+
+    def test_checkout_tanpa_opt_in_bukan_persetujuan(self):
+        self.assertEqual(lm.klasifikasi_sumber("pembeli checkout"), "tak_dikenal")
+        self.assertEqual(lm.klasifikasi_sumber("pembeli toko saya"), "tak_dikenal")
+
+    def test_sumber_tak_dikenal_wajib_konfirmasi_dan_dicatat(self):
+        k, _, e = self._impor("pelanggan lama toko")
+        self.assertEqual(k, 6)
+        self.assertEqual(STATE["imports"], [])
+        k, _, _ = self._impor("pelanggan lama toko", "--pengguna-konfirmasi-setuju", "ya")  # terlalu pendek
+        self.assertEqual(k, 6)
+        k, _, _ = self._impor("pelanggan lama toko", "--pengguna-konfirmasi-setuju",
+                              "Ya, mereka isi buku tamu dan tulis setuju dikirimi email")
+        self.assertEqual(k, 0)
+        self.assertEqual(len(STATE["imports"]), 1)
+        log = [json.loads(x) for x in open(lm.F_LOG_IMPOR, encoding="utf-8")]
+        diimpor = [x for x in log if x["hasil"] == "diimpor"]
+        self.assertEqual(len(diimpor), 1)
+        self.assertIn("buku tamu", diimpor[0]["konfirmasi_pengguna"])
+        self.assertEqual(diimpor[0]["klasifikasi"], "tak_dikenal")
+        self.assertNotIn("a@x.id", open(lm.F_LOG_IMPOR, encoding="utf-8").read())  # log tanpa kontak
+
+    def test_penolakan_juga_dicatat(self):
+        self._impor("hasil beli")
+        log = [json.loads(x) for x in open(lm.F_LOG_IMPOR, encoding="utf-8")]
+        self.assertEqual(log[-1]["hasil"], "ditolak-sumber-terlarang")
+
+    def test_sudah_terkonfirmasi_butuh_sumber_sah(self):
+        k, _, _ = self._impor("pelanggan lama toko", "--pengguna-konfirmasi-setuju", "Ya, mereka setuju tertulis di buku",
+                              "--sudah-terkonfirmasi")
+        self.assertEqual(k, 6)
+        k, _, _ = self._impor("Formulir website toko", "--sudah-terkonfirmasi")
+        self.assertEqual(k, 0)
+        self.assertIn(b'"confirmed"', STATE["imports"][0])
+
+    def test_nama_berkas_terlarang_ditolak(self):
+        p = os.path.join(self.tmp, "hasil-beli-database.csv")
+        open(p, "w").write("email\na@x.id\n")
+        k, _, _ = jalankan("impor", p, "--list", "1", "--sumber-persetujuan", "Formulir website", "--saya-punya-izin", "--ya")
+        self.assertEqual(k, 6)
+
+    def test_kolom_sumber_terlarang_di_berkas(self):
+        p = self._csv("email,sumber\na@x.id,formulir web\nb@x.id,grup WA alumni\n")
+        k, o, _ = jalankan("impor", p, "--list", "1", "--sumber-persetujuan", "Formulir website", "--saya-punya-izin", "--ya")
+        self.assertEqual(k, 6)
+        self.assertEqual(STATE["imports"], [])
+
+    # -- P2
+    def test_kolom_setuju_kosong_dianggap_tidak_setuju(self):
+        h = lm.analisis_kontak(lm.baca_baris_kontak(self._csv(
+            "email,setuju\na@x.id,ya\nb@x.id,\nc@x.id,mungkin\nd@x.id,Ya\ne@x.id,tidak\n")))
+        self.assertEqual([d["email"] for d in h["ok"]], ["a@x.id", "d@x.id"])
+        self.assertEqual(len(h["tanpa_izin"]), 3)
+        self.assertEqual(h["izin_kosong"], 1)
+
+    def test_tanpa_kolom_setuju_tetap_masuk(self):
+        h = lm.analisis_kontak(lm.baca_baris_kontak(self._csv("email\na@x.id\n")))
+        self.assertEqual(len(h["ok"]), 1)
+
+    def test_bersihkan_awalan_rumus_nama_dan_atribut(self):
+        h = lm.analisis_kontak(lm.baca_baris_kontak(self._csv(
+            'email,nama,kota\na@x.id,"=+@-HYPERLINK(x)","@SUM(1)"\nb@x.id,Bo,Solo\n')))
+        self.assertEqual(h["ok"][0]["name"], "HYPERLINK(x)")
+        self.assertEqual(h["ok"][0]["attributes"]["kota"], "SUM(1)")
+        self.assertEqual(h["formula_dibersihkan"], 2)
+        self.assertEqual(h["ok"][1]["name"], "Bo")
+
+    def test_impor_beri_catatan_berhenti_diblokir(self):
+        _, o, _ = self._impor("Formulir website")
+        self.assertIn("TIDAK dihidupkan lagi", o)
+
+    def test_xlsx_xml_rusak_pesan_ramah(self):
+        p = os.path.join(self.tmp, "rusak2.xlsx")
+        with zipfile.ZipFile(p, "w") as z:
+            z.writestr("xl/worksheets/sheet1.xml", "<worksheet><sheetData><row>")
+        with self.assertRaises(lm.Galat):
+            lm.baca_baris_kontak(p)
+        self.assertEqual(jalankan("periksa-kontak", p)[0], 3)
+        p2 = os.path.join(self.tmp, "rusak3.xlsx")
+        with zipfile.ZipFile(p2, "w") as z:
+            z.writestr("xl/worksheets/sheet1.xml", "<worksheet/>")
+            z.writestr("xl/sharedStrings.xml", "<sst><si>")
+        self.assertEqual(jalankan("periksa-kontak", p2)[0], 3)
+
+    def test_404_tanpa_pesan_dikira_bukan_listmonk(self):
+        class N(BaseHTTPRequestHandler):
+            def log_message(self, *a):
+                pass
+
+            def do_GET(self):
+                self.send_response(404)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+        s = HTTPServer(("127.0.0.1", 0), N)
+        threading.Thread(target=s.serve_forever, daemon=True).start()
+        try:
+            k, _, e = jalankan("cek", "--url", f"http://127.0.0.1:{s.server_port}")
+            self.assertEqual(k, 7)
+            self.assertIn("BUKAN server listmonk", e)
+        finally:
+            s.shutdown()
+
+    def test_tidak_ada_traceback_mentah(self):
+        orig = lm.cmd_cek
+        try:
+            def rusak(a):
+                raise RuntimeError("boom " + TOKEN)
+            lm.cmd_cek = rusak
+            p = lm.buat_parser()
+            k, _, e = 0, "", ""
+            import unittest.mock as um
+            with um.patch.object(lm, "buat_parser", lambda: um.Mock(parse_args=lambda argv: um.Mock(f=rusak))):
+                k, o, e = jalankan("cek")
+            self.assertEqual(k, 1)
+            self.assertNotIn("Traceback", e)
+            self.assertNotIn(TOKEN, e)
+        finally:
+            lm.cmd_cek = orig
+
+    def test_token_tidak_tercetak_di_alur_baru(self):
+        semua = ""
+        for a in (["uji-kirim", "7", "--ke", "s@example.test"], ["kirim", "7"], ["uji-kirim", "7", "--ke", "asing@x.test"]):
+            _, o, e = jalankan(*a)
+            semua += o + e
+        _, o, e = self._impor("hasil beli")
+        semua += o + e + open(lm.F_LOG_IMPOR, encoding="utf-8").read()
+        self.assertNotIn(TOKEN, semua)
+
+    def test_versi(self):
+        self.assertEqual(lm.VERSI, "1.0.1")
 
 
 if __name__ == "__main__":

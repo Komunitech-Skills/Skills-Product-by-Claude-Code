@@ -1108,31 +1108,31 @@ def _opsi_umum(p, periode_default="7hari", periode=True):
 
 
 def buat_parser():
-    ap = argparse.ArgumentParser(prog="umami.py", description="Laporan analitik web Umami (Komunitech)")
+    ap = argparse.ArgumentParser(prog="umami.py", description="Laporan analitik web Umami (Komunitech)", allow_abbrev=False)
     ap.add_argument("--versi", action="version", version=f"umami-analitik {VERSI}")
     sub = ap.add_subparsers(dest="perintah", required=True)
-    p = sub.add_parser("simpan-kunci")
+    p = sub.add_parser("simpan-kunci", allow_abbrev=False)
     p.add_argument("--kunci-file", dest="kunci_file", default=None)
     p.add_argument("--ya", action="store_true")
-    p = sub.add_parser("simpan-alamat")
+    p = sub.add_parser("simpan-alamat", allow_abbrev=False)
     p.add_argument("alamat")
-    _opsi_umum(sub.add_parser("cek"), periode=False)
-    _opsi_umum(sub.add_parser("situs"), periode=False)
+    _opsi_umum(sub.add_parser("cek", allow_abbrev=False), periode=False)
+    _opsi_umum(sub.add_parser("situs", allow_abbrev=False), periode=False)
     for nama in ("ringkasan", "sumber", "utm", "konversi"):
-        _opsi_umum(sub.add_parser(nama))
-    p = sub.add_parser("halaman")
+        _opsi_umum(sub.add_parser(nama, allow_abbrev=False))
+    p = sub.add_parser("halaman", allow_abbrev=False)
     _opsi_umum(p)
     p.add_argument("--jenis", choices=["teratas", "masuk", "keluar"], default="teratas")
-    p = sub.add_parser("pengunjung")
+    p = sub.add_parser("pengunjung", allow_abbrev=False)
     _opsi_umum(p)
     p.add_argument("--semua", action="store_true", help="Tambah browser, sistem operasi, bahasa")
-    _opsi_umum(sub.add_parser("banding"), "minggu-ini")
-    _opsi_umum(sub.add_parser("tautan"))
-    p = sub.add_parser("ekspor-csv")
+    _opsi_umum(sub.add_parser("banding", allow_abbrev=False), "minggu-ini")
+    _opsi_umum(sub.add_parser("tautan", allow_abbrev=False))
+    p = sub.add_parser("ekspor-csv", allow_abbrev=False)
     _opsi_umum(p)
     p.add_argument("--keluaran", default=None)
     p.add_argument("--pemisah", choices=["titik-koma", "koma"], default="titik-koma")
-    _opsi_umum(sub.add_parser("laporan-mingguan"), "minggu-lalu")
+    _opsi_umum(sub.add_parser("laporan-mingguan", allow_abbrev=False), "minggu-lalu")
     return ap
 
 

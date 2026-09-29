@@ -35,7 +35,7 @@ FOLDER_SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Tombol berhenti / status / lanjutkan bot kripto")
+    ap = argparse.ArgumentParser(description="Tombol berhenti / status / lanjutkan bot kripto", allow_abbrev=False)
     ap.add_argument("--konfigurasi")
     ap.add_argument("--semua", action="store_true", help="hentikan SEMUA bot (file STOP-SEMUA global)")
     ap.add_argument("--cabut-semua", action="store_true", help="hapus STOP-SEMUA (wajib --saya-sudah-cek)")

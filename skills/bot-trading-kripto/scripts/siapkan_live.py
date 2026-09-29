@@ -72,7 +72,7 @@ def ringkasan(cfg):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Persiapan mode live bot kripto (konfirmasi bertahap)")
+    ap = argparse.ArgumentParser(description="Persiapan mode live bot kripto (konfirmasi bertahap)", allow_abbrev=False)
     ap.add_argument("--konfigurasi", required=True)
     ap.add_argument("--folder-bot")
     ap.add_argument("--cek-kunci", action="store_true")

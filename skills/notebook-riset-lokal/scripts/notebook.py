@@ -531,25 +531,25 @@ def _tambah_opsi_umum(p):
 
 
 def buat_parser():
-    p = argparse.ArgumentParser(prog="notebook.py", description="Asisten Open Notebook lokal (Komunitech)")
+    p = argparse.ArgumentParser(prog="notebook.py", description="Asisten Open Notebook lokal (Komunitech)", allow_abbrev=False)
     p.add_argument("--versi", action="version", version=f"notebook-riset-lokal {VERSI}")
     sub = p.add_subparsers(dest="perintah", required=True)
 
-    sp = sub.add_parser("simpan-kunci", help="simpan kata sandi API ke file lokal")
+    sp = sub.add_parser("simpan-kunci", help="simpan kata sandi API ke file lokal", allow_abbrev=False)
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("cek", help="cek server bisa dihubungi")
+    sp = sub.add_parser("cek", help="cek server bisa dihubungi", allow_abbrev=False)
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("daftar-notebook", help="daftar notebook yang ada")
+    sp = sub.add_parser("daftar-notebook", help="daftar notebook yang ada", allow_abbrev=False)
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("buat-notebook", help="buat notebook baru")
+    sp = sub.add_parser("buat-notebook", help="buat notebook baru", allow_abbrev=False)
     sp.add_argument("--nama", required=True)
     sp.add_argument("--deskripsi", default="")
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("tambah-sumber", help="tambah sumber ke notebook")
+    sp = sub.add_parser("tambah-sumber", help="tambah sumber ke notebook", allow_abbrev=False)
     sp.add_argument("--notebook", required=True, help="nama atau id notebook")
     sp.add_argument("--tipe", required=True, choices=["link", "teks", "file"])
     sp.add_argument("--sumber-url", dest="sumber_url", default=None, help="alamat web (tipe link)")
@@ -557,35 +557,35 @@ def buat_parser():
     sp.add_argument("--judul", default=None)
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("daftar-sumber", help="daftar sumber dalam satu notebook")
+    sp = sub.add_parser("daftar-sumber", help="daftar sumber dalam satu notebook", allow_abbrev=False)
     sp.add_argument("--notebook", required=True)
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("tanya", help="tanya-jawab dengan sumber di notebook")
+    sp = sub.add_parser("tanya", help="tanya-jawab dengan sumber di notebook", allow_abbrev=False)
     sp.add_argument("--notebook", default=None, help="kosongkan untuk cari di semua notebook")
     sp.add_argument("--pertanyaan", required=True)
     sp.add_argument("--model", default=None, help="id model AI (default: model chat default di Open Notebook)")
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("ringkasan", help="ringkas seluruh sumber dalam satu notebook")
+    sp = sub.add_parser("ringkasan", help="ringkas seluruh sumber dalam satu notebook", allow_abbrev=False)
     sp.add_argument("--notebook", required=True)
     sp.add_argument("--model", default=None)
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("cari", help="cari kata kunci (tanpa model AI)")
+    sp = sub.add_parser("cari", help="cari kata kunci (tanpa model AI)", allow_abbrev=False)
     sp.add_argument("--kueri", required=True)
     sp.add_argument("--notebook", default=None)
     sp.add_argument("--batas", type=int, default=20)
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("podcast-mulai", help="mulai membuat podcast audio dari notebook")
+    sp = sub.add_parser("podcast-mulai", help="mulai membuat podcast audio dari notebook", allow_abbrev=False)
     sp.add_argument("--notebook", required=True)
     sp.add_argument("--profil", required=True, help="nama profil episode (sudah dibuat di Open Notebook)")
     sp.add_argument("--pembicara", required=True, help="nama profil pembicara (sudah dibuat di Open Notebook)")
     sp.add_argument("--nama-episode", dest="nama_episode", required=True)
     _tambah_opsi_umum(sp)
 
-    sp = sub.add_parser("podcast-status", help="cek status pembuatan podcast")
+    sp = sub.add_parser("podcast-status", help="cek status pembuatan podcast", allow_abbrev=False)
     sp.add_argument("--id", required=True, help="job_id dari podcast-mulai")
     _tambah_opsi_umum(sp)
 

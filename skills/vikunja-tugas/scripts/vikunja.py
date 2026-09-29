@@ -897,33 +897,33 @@ def _tambah_opsi_umum(p):
 
 
 def buat_parser():
-    ap = argparse.ArgumentParser(prog="vikunja.py", description="Asisten tugas/proyek Vikunja (Komunitech)")
+    ap = argparse.ArgumentParser(prog="vikunja.py", description="Asisten tugas/proyek Vikunja (Komunitech)", allow_abbrev=False)
     sub = ap.add_subparsers(dest="perintah", required=True)
 
-    p = sub.add_parser("simpan-kunci")
+    p = sub.add_parser("simpan-kunci", allow_abbrev=False)
     p.add_argument("--kunci-file", dest="kunci_file", default=None)
     p.add_argument("--ya", action="store_true")
 
     for nama in ("cek", "daftar-proyek"):
-        p = sub.add_parser(nama)
+        p = sub.add_parser(nama, allow_abbrev=False)
         _tambah_opsi_umum(p)
 
     for nama in ("hari-ini", "terlambat", "minggu-ini"):
-        p = sub.add_parser(nama)
+        p = sub.add_parser(nama, allow_abbrev=False)
         _tambah_opsi_umum(p)
         p.add_argument("--proyek", default=None)
 
-    p = sub.add_parser("cari")
+    p = sub.add_parser("cari", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("kata_kunci")
     p.add_argument("--proyek", default=None)
 
-    p = sub.add_parser("ringkasan")
+    p = sub.add_parser("ringkasan", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--proyek", default=None)
     p.add_argument("--hanya-terlambat", dest="hanya_terlambat", action="store_true")
 
-    p = sub.add_parser("tambah")
+    p = sub.add_parser("tambah", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--judul", default=None)
     p.add_argument("--proyek", default=None)
@@ -934,12 +934,12 @@ def buat_parser():
     p.add_argument("--batch", default=None)
     p.add_argument("--ya", action="store_true")
 
-    p = sub.add_parser("selesai")
+    p = sub.add_parser("selesai", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--id", type=int, required=True)
     p.add_argument("--ya", action="store_true")
 
-    p = sub.add_parser("dari-teks")
+    p = sub.add_parser("dari-teks", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--teks", default=None)
     p.add_argument("--file", default=None)

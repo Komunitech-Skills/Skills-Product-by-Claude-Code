@@ -2366,26 +2366,26 @@ def cmd_backup(a):
 # ============================================================ argparse
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--jurnal", help="file jurnal (default: $LEDGER_FILE atau ~/Pembukuan/usaha.journal)")
     umum.add_argument("--hledger", help="path program hledger (default: cari di PATH / $HLEDGER)")
     umum.add_argument("--mesin", choices=["auto", "hledger", "bawaan"], default="auto")
     umum.add_argument("--json", action="store_true", help="keluaran JSON (laporan)")
 
     p = argparse.ArgumentParser(prog="hledger_usaha.py", description="Asisten pembukuan hledger untuk UMKM "
-                                "(Komunitech v{}).".format(VERSI))
+                                "(Komunitech v{}).".format(VERSI), allow_abbrev=False)
     p.add_argument("--versi", action="version", version=VERSI)
     sub = p.add_subparsers(dest="perintah")
 
-    s = sub.add_parser("init", parents=[umum], help="buat buku (file jurnal) baru")
+    s = sub.add_parser("init", parents=[umum], help="buat buku (file jurnal) baru", allow_abbrev=False)
     s.add_argument("--nama", help="nama usaha")
     s.add_argument("--bank", action="append", help="nama rekening bank, mis. BCA (bisa diulang)")
     s.set_defaults(fungsi=cmd_init)
 
-    s = sub.add_parser("cek", parents=[umum], help="cek hledger & file jurnal")
+    s = sub.add_parser("cek", parents=[umum], help="cek hledger & file jurnal", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_cek)
 
-    s = sub.add_parser("catat", parents=[umum], help="catat transaksi")
+    s = sub.add_parser("catat", parents=[umum], help="catat transaksi", allow_abbrev=False)
     s.add_argument("--jenis")
     s.add_argument("--tanggal")
     s.add_argument("--nominal")
@@ -2407,7 +2407,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true", help="simpan (setelah pengguna setuju)")
     s.set_defaults(fungsi=cmd_catat)
 
-    s = sub.add_parser("impor-bank", parents=[umum], help="impor CSV mutasi bank")
+    s = sub.add_parser("impor-bank", parents=[umum], help="impor CSV mutasi bank", allow_abbrev=False)
     s.add_argument("file")
     s.add_argument("--bank", help="rekening tujuan, mis. BCA atau Aset:Bank:BCA")
     s.add_argument("--aturan", help="file aturan .rules (default: aturan-bank.rules di folder jurnal)")
@@ -2420,7 +2420,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_impor_bank)
 
-    s = sub.add_parser("tambah-aturan", parents=[umum], help="tambah kata kunci pengelompokan mutasi bank")
+    s = sub.add_parser("tambah-aturan", parents=[umum], help="tambah kata kunci pengelompokan mutasi bank", allow_abbrev=False)
     s.add_argument("--kata", action="append", required=True)
     s.add_argument("--akun", required=True)
     s.add_argument("--arah", choices=["masuk", "keluar", "dua"], default="dua")
@@ -2428,7 +2428,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_tambah_aturan)
 
-    s = sub.add_parser("stok-akhir", parents=[umum], help="penyesuaian nilai persediaan dari hitung stok")
+    s = sub.add_parser("stok-akhir", parents=[umum], help="penyesuaian nilai persediaan dari hitung stok", allow_abbrev=False)
     s.add_argument("--nilai", required=True)
     s.add_argument("--tanggal")
     s.add_argument("--akun")
@@ -2436,7 +2436,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_stok_akhir)
 
-    s = sub.add_parser("saldo", parents=[umum], help="saldo akun")
+    s = sub.add_parser("saldo", parents=[umum], help="saldo akun", allow_abbrev=False)
     s.add_argument("akun", nargs="*")
     s.add_argument("--tanggal")
     s.add_argument("--bulan")
@@ -2446,7 +2446,7 @@ def buat_parser():
     for nama, f, per in (("laba-rugi", cmd_laba_rugi, True), ("arus-kas", cmd_arus_kas, True),
                          ("bulanan", cmd_bulanan, True), ("neraca", cmd_neraca, False),
                          ("ekspor-emkm", cmd_ekspor_emkm, True)):
-        s = sub.add_parser(nama, parents=[umum])
+        s = sub.add_parser(nama, parents=[umum], allow_abbrev=False)
         s.add_argument("--bulan", help="2026-09 | 09/2026 | 'September 2026' | ini | lalu")
         if per:
             s.add_argument("--dari")
@@ -2458,7 +2458,7 @@ def buat_parser():
             s.add_argument("--timpa", action="store_true")
         s.set_defaults(fungsi=f)
 
-    s = sub.add_parser("backup", parents=[umum], help="salin jurnal & aturan")
+    s = sub.add_parser("backup", parents=[umum], help="salin jurnal & aturan", allow_abbrev=False)
     s.add_argument("--ke", help="folder tujuan (default: backup/ di folder jurnal)")
     s.set_defaults(fungsi=cmd_backup)
     return p

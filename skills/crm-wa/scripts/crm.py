@@ -2626,13 +2626,13 @@ class ParserID(argparse.ArgumentParser):
 
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--db", help="File database (default ~/KomunitechData/crm/crm.db; ENV KOMUNITECH_CRM_DB)")
     umum.add_argument("--json", action="store_true", help="Output JSON (untuk agent/laporan-harian-usaha)")
     umum.add_argument("--hari-ini", help=argparse.SUPPRESS)
-    tulis = argparse.ArgumentParser(add_help=False)
+    tulis = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     tulis.add_argument("--ya", action="store_true", help="Simpan perubahan besar (tanpa ini hanya pratinjau)")
-    sam = argparse.ArgumentParser(add_help=False)
+    sam = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     sam.add_argument("--samarkan", action="store_true", help="Samarkan nomor & nama, tanpa tautan wa.me")
 
     p = ParserID(prog="crm.py", description="CRM lokal chat WA -> deal (crm-wa %s)" % VERSI)
@@ -2640,7 +2640,7 @@ def buat_parser():
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True
 
-    s = sub.add_parser("init", parents=[umum, tulis], help="Buat database baru")
+    s = sub.add_parser("init", parents=[umum, tulis], help="Buat database baru", allow_abbrev=False)
     s.add_argument("--nama-usaha")
     s.add_argument("--pengirim", help="Nama yang dipakai di draf pesan (mis. Sari)")
     s.add_argument("--sapaan", help="Sapaan default (Kak/Bapak/Ibu/-). Default Kak")
@@ -2648,16 +2648,16 @@ def buat_parser():
     s.add_argument("--mulai-baru", action="store_true",
                    help="Database rusak & tidak ada cadangan: pindahkan file rusak ke backup-crm lalu buat baru")
     s.set_defaults(fungsi=cmd_init)
-    s = sub.add_parser("info", parents=[umum], help="Lokasi database, jumlah kontak, cadangan")
+    s = sub.add_parser("info", parents=[umum], help="Lokasi database, jumlah kontak, cadangan", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_info)
-    s = sub.add_parser("atur", parents=[umum, tulis], help="Ubah pengaturan")
+    s = sub.add_parser("atur", parents=[umum, tulis], help="Ubah pengaturan", allow_abbrev=False)
     s.add_argument("--nama-usaha")
     s.add_argument("--pengirim")
     s.add_argument("--sapaan")
     s.add_argument("--zona")
     s.set_defaults(fungsi=cmd_atur)
 
-    s = sub.add_parser("tambah", parents=[umum, tulis], help="Tambah kontak/lead")
+    s = sub.add_parser("tambah", parents=[umum, tulis], help="Tambah kontak/lead", allow_abbrev=False)
     s.add_argument("--nama", required=True)
     s.add_argument("--wa", help="Nomor WA (0812..., +62..., 62...)")
     s.add_argument("--sumber", help="ig, tiktok, shopee, referensi, walk-in, ...")
@@ -2673,7 +2673,7 @@ def buat_parser():
     s.add_argument("--izinkan-duplikat", action="store_true")
     s.set_defaults(fungsi=cmd_tambah)
 
-    s = sub.add_parser("ubah", parents=[umum, tulis], help="Ubah data kontak")
+    s = sub.add_parser("ubah", parents=[umum, tulis], help="Ubah data kontak", allow_abbrev=False)
     s.add_argument("--kontak", required=True, help="Kode (K0003), nama, atau nomor WA")
     for o in ("--nama", "--wa", "--sumber", "--label", "--tambah-label", "--hapus-label", "--nilai", "--kebutuhan",
               "--sapaan", "--masuk"):
@@ -2681,7 +2681,7 @@ def buat_parser():
     s.add_argument("--izinkan-duplikat", action="store_true")
     s.set_defaults(fungsi=cmd_ubah)
 
-    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat interaksi / pindah tahap / nilai / follow-up")
+    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat interaksi / pindah tahap / nilai / follow-up", allow_abbrev=False)
     s.add_argument("--kontak", required=True)
     s.add_argument("--isi", help="Isi catatan interaksi (pribadi, tidak masuk draf)")
     s.add_argument("--tahap")
@@ -2692,17 +2692,17 @@ def buat_parser():
     s.add_argument("--tanggal", help="Tanggal interaksi (default hari ini)")
     s.set_defaults(fungsi=cmd_catat)
 
-    s = sub.add_parser("tunda", parents=[umum, tulis], help="Pindah jadwal follow-up")
+    s = sub.add_parser("tunda", parents=[umum, tulis], help="Pindah jadwal follow-up", allow_abbrev=False)
     s.add_argument("--kontak", required=True)
     s.add_argument("--ke", required=True)
     s.set_defaults(fungsi=cmd_tunda)
 
-    s = sub.add_parser("terkirim", parents=[umum, tulis], help="Catat bahwa pemilik sudah mengirim pesan")
+    s = sub.add_parser("terkirim", parents=[umum, tulis], help="Catat bahwa pemilik sudah mengirim pesan", allow_abbrev=False)
     s.add_argument("--kontak", required=True)
     s.add_argument("--berikutnya", help="Jadwal follow-up berikutnya (default otomatis; 'stop' = tanpa jadwal)")
     s.set_defaults(fungsi=cmd_terkirim)
 
-    s = sub.add_parser("daftar", parents=[umum, sam], help="Daftar kontak")
+    s = sub.add_parser("daftar", parents=[umum, sam], help="Daftar kontak", allow_abbrev=False)
     s.add_argument("--tahap", help="aktif (default), terbuka, semua, atau nama tahap")
     s.add_argument("--label")
     s.add_argument("--sumber")
@@ -2711,23 +2711,23 @@ def buat_parser():
     s.add_argument("--maks", type=int, default=50)
     s.set_defaults(fungsi=cmd_daftar)
 
-    s = sub.add_parser("lihat", parents=[umum], help="Detail + riwayat satu kontak")
+    s = sub.add_parser("lihat", parents=[umum], help="Detail + riwayat satu kontak", allow_abbrev=False)
     s.add_argument("--kontak", required=True)
     s.add_argument("--maks", type=int, default=20)
     s.set_defaults(fungsi=cmd_lihat)
 
-    s = sub.add_parser("draf", parents=[umum], help="Draf pesan + tautan wa.me untuk satu kontak")
+    s = sub.add_parser("draf", parents=[umum], help="Draf pesan + tautan wa.me untuk satu kontak", allow_abbrev=False)
     s.add_argument("--kontak", required=True)
     s.add_argument("--pesan", help="Pakai teks ini (mis. draf yang sudah diperhalus) untuk tautan wa.me")
     s.set_defaults(fungsi=cmd_draf)
 
-    s = sub.add_parser("hari-ini", parents=[umum, sam], help="Pengingat follow-up harian + draf pesan")
+    s = sub.add_parser("hari-ini", parents=[umum, sam], help="Pengingat follow-up harian + draf pesan", allow_abbrev=False)
     s.add_argument("--maks-draf", type=int, default=10)
     s.add_argument("--tanpa-draf", action="store_true")
     s.add_argument("--semua", action="store_true", help="Tampilkan semua baris (default maks 20 per kelompok)")
     s.set_defaults(fungsi=cmd_hari_ini)
 
-    s = sub.add_parser("rekap", parents=[umum, sam], help="Rekap pipeline, konversi, sumber lead")
+    s = sub.add_parser("rekap", parents=[umum, sam], help="Rekap pipeline, konversi, sumber lead", allow_abbrev=False)
     s.add_argument("--periode", help="hari-ini, kemarin, minggu-ini, minggu-lalu, bulan-ini (default), bulan-lalu, "
                                      "tahun-ini, semua")
     s.add_argument("--bulan", help="YYYY-MM, ini, lalu")
@@ -2737,24 +2737,24 @@ def buat_parser():
     s.add_argument("--rumus", action="store_true", help="Tampilkan rumus perhitungan")
     s.set_defaults(fungsi=cmd_rekap)
 
-    s = sub.add_parser("cek-duplikat", parents=[umum, sam], help="Cari kontak dobel")
+    s = sub.add_parser("cek-duplikat", parents=[umum, sam], help="Cari kontak dobel", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_cek_duplikat)
-    s = sub.add_parser("gabung", parents=[umum, tulis], help="Gabungkan dua kontak (besar: --ya)")
+    s = sub.add_parser("gabung", parents=[umum, tulis], help="Gabungkan dua kontak (besar: --ya)", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     s.add_argument("--ke", required=True)
     s.set_defaults(fungsi=cmd_gabung)
-    s = sub.add_parser("hapus", parents=[umum, tulis], help="Hapus kontak permanen (besar: --ya)")
+    s = sub.add_parser("hapus", parents=[umum, tulis], help="Hapus kontak permanen (besar: --ya)", allow_abbrev=False)
     s.add_argument("--kontak", required=True)
     s.set_defaults(fungsi=cmd_hapus)
 
-    s = sub.add_parser("impor", parents=[umum, tulis], help="Impor kontak dari CSV (besar: --ya)")
+    s = sub.add_parser("impor", parents=[umum, tulis], help="Impor kontak dari CSV (besar: --ya)", allow_abbrev=False)
     s.add_argument("file")
     s.add_argument("--sumber-default")
     s.add_argument("--tahap-default")
     s.add_argument("--sebar", type=int, help="Jadwalkan kontak terbuka tanpa jadwal: N kontak per hari mulai hari ini")
     s.add_argument("--tanpa-nomor", action="store_true", help="Izinkan impor walau kolom nomor WA tidak ditemukan")
     s.set_defaults(fungsi=cmd_impor)
-    s = sub.add_parser("ekspor", parents=[umum, sam], help="Ekspor ke CSV")
+    s = sub.add_parser("ekspor", parents=[umum, sam], help="Ekspor ke CSV", allow_abbrev=False)
     s.add_argument("--ke", "--csv", dest="ke",
                    help="File tujuan. Default: <folder database>/ekspor/crm-<format>-<waktu>.csv")
     s.add_argument("--file-pengingat", help="Format pengingat: file DAFTAR.csv pengingat-follow-up")
@@ -2763,11 +2763,11 @@ def buat_parser():
     s.add_argument("--timpa", action="store_true")
     s.set_defaults(fungsi=cmd_ekspor)
 
-    s = sub.add_parser("backup", parents=[umum], help="Buat cadangan / --daftar")
+    s = sub.add_parser("backup", parents=[umum], help="Buat cadangan / --daftar", allow_abbrev=False)
     s.add_argument("--daftar", action="store_true")
     s.add_argument("--label")
     s.set_defaults(fungsi=cmd_backup)
-    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan (besar: --ya)")
+    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan (besar: --ya)", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     s.set_defaults(fungsi=cmd_restore)
     return p

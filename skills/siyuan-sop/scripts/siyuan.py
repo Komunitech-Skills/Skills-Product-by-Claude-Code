@@ -466,30 +466,30 @@ def p_ekspor_basis(url, token, lokal, notebook, file_tujuan, filter_kata):
 
 # ------------------------------------------------------------------ CLI
 def buat_parser():
-    ap = argparse.ArgumentParser(prog="siyuan.py", description="Asisten SiYuan lokal (Komunitech)")
+    ap = argparse.ArgumentParser(prog="siyuan.py", description="Asisten SiYuan lokal (Komunitech)", allow_abbrev=False)
     ap.add_argument("--url", default=os.environ.get("SIYUAN_URL", URL_DEFAULT))
     ap.add_argument("--kunci-file")
     ap.add_argument("--izinkan-jarak-jauh", action="store_true")
     ap.add_argument("--json", action="store_true")
     sub = ap.add_subparsers(dest="perintah", required=True)
 
-    sub.add_parser("cek")
-    sp = sub.add_parser("simpan-kunci")
+    sub.add_parser("cek", allow_abbrev=False)
+    sp = sub.add_parser("simpan-kunci", allow_abbrev=False)
     sp.add_argument("--ya", action="store_true")
     sp.add_argument("--token")  # untuk pengujian otomatis saja; interaktif dianjurkan di pemakaian nyata
 
-    sub.add_parser("daftar-buku")
+    sub.add_parser("daftar-buku", allow_abbrev=False)
 
-    sc = sub.add_parser("cari")
+    sc = sub.add_parser("cari", allow_abbrev=False)
     sc.add_argument("kata")
     sc.add_argument("--maks", type=int, default=20)
 
-    sb = sub.add_parser("baca")
+    sb = sub.add_parser("baca", allow_abbrev=False)
     sb.add_argument("--id")
     sb.add_argument("--notebook")
     sb.add_argument("--path")
 
-    sm = sub.add_parser("buat")
+    sm = sub.add_parser("buat", allow_abbrev=False)
     sm.add_argument("--notebook", required=True)
     sm.add_argument("--path", required=True)
     sm.add_argument("--md")
@@ -498,18 +498,18 @@ def buat_parser():
     sm.add_argument("--ya", action="store_true")
     sm.add_argument("--timpa", action="store_true")
 
-    st = sub.add_parser("tambah")
+    st = sub.add_parser("tambah", allow_abbrev=False)
     st.add_argument("--id", required=True)
     st.add_argument("--md")
     st.add_argument("--md-file")
     st.add_argument("--stdin", action="store_true")
     st.add_argument("--ya", action="store_true")
 
-    sl = sub.add_parser("lama")
+    sl = sub.add_parser("lama", allow_abbrev=False)
     sl.add_argument("--hari", type=int, default=90)
     sl.add_argument("--notebook")
 
-    se = sub.add_parser("ekspor-basis")
+    se = sub.add_parser("ekspor-basis", allow_abbrev=False)
     se.add_argument("--notebook", required=True)
     se.add_argument("--file")
     se.add_argument("--filter")

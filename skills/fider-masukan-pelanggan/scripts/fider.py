@@ -16,6 +16,7 @@ import argparse
 import datetime as dt
 import difflib
 import getpass
+import ipaddress
 import json
 import os
 import re
@@ -26,7 +27,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 FOLDER_RAHASIA = os.path.join(os.path.expanduser("~"), ".komunitech")
 KUNCI_DEFAULT = os.path.join(FOLDER_RAHASIA, "fider-kunci.txt")
 ALAMAT_DEFAULT_FILE = os.path.join(FOLDER_RAHASIA, "fider-alamat.txt")
@@ -46,6 +47,9 @@ ALIAS_STATUS = {
 }
 BATAS_JUDUL = 100
 BATAS_IMPOR = 50
+BATAS_URAIAN = 5000
+AMBANG_MIRIP = 0.6
+_KUNCI_AKTIF = [""]  # dipakai cetak() agar kunci tidak pernah lolos ke layar
 
 # Kode keluar
 K_OK, K_INPUT, K_KUNCI, K_JARINGAN, K_SERVER, K_FILE, K_IZIN = 0, 2, 3, 4, 5, 6, 7
@@ -124,10 +128,21 @@ def alamat_awal(args):
     return ALAMAT_BAWAAN, False
 
 
+_JARINGAN_PRIVAT = [ipaddress.ip_network(x) for x in
+                    ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7")]
+
+
 def host_lokal(host):
-    if host in ("localhost", "127.0.0.1", "::1", "[::1]") or host.endswith(".local"):
+    """HTTP polos hanya untuk localhost, loopback, dan ALAMAT IP privat sungguhan.
+    Nama host apa pun (mis. 10.contoh.com) dianggap internet -> wajib HTTPS."""
+    h = (host or "").strip().lower().strip("[]").rstrip(".")
+    if h == "localhost":
         return True
-    return bool(re.match(r"^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)", host))
+    try:
+        ip = ipaddress.ip_address(h)
+    except ValueError:
+        return False
+    return ip.is_loopback or any(ip in n for n in _JARINGAN_PRIVAT if n.version == ip.version)
 
 
 def periksa_url(url):
@@ -145,7 +160,11 @@ def simpan_kunci(args):
     if os.path.exists(path) and not args.ya:
         raise Gagal(f"File kunci sudah ada: {path}\nUntuk mengganti, ulangi dengan --ya.", K_FILE)
     sys.stderr.write(f"Kunci akan disimpan di: {path}\n")
-    kunci = getpass.getpass("Tempel kunci API Fider (tidak terlihat), lalu Enter: ").strip()
+    try:
+        kunci = getpass.getpass("Tempel kunci API Fider (tidak terlihat), lalu Enter: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        raise Gagal("simpan-kunci harus dijalankan sendiri di jendela terminal biasa (bukan lewat pipa/otomatis) "
+                    "agar kunci bisa ditempel tersembunyi.", K_INPUT)
     if not kunci:
         raise Gagal("Kunci kosong, tidak disimpan.", K_INPUT)
     if re.search(r"\s", kunci):
@@ -169,6 +188,16 @@ def simpan_alamat(args):
 class _TanpaRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *a, **k):
         return None
+
+
+TERJEMAH_GALAT = [
+    ("already been posted", "Usulan dengan judul yang sama sudah ada di Fider."),
+    ("title is required", "Judul usulan wajib diisi."),
+    ("title must have", "Judul usulan terlalu panjang/pendek (1-100 karakter)."),
+    ("title invalid", "Judul usulan tidak valid (1-100 karakter)."),
+    ("not found", "Data tidak ditemukan di Fider."),
+    ("must be", "Isian tidak memenuhi syarat Fider (periksa panjang/format)."),
+]
 
 
 class Klien:
@@ -217,6 +246,10 @@ class Klien:
         except ValueError:
             pass
         pesan = samarkan(pesan, self.kunci)
+        for asing, indo in TERJEMAH_GALAT:
+            if asing in pesan.lower():
+                pesan = indo
+                break
         if e.code in (301, 302, 303, 307, 308):
             raise Gagal("Fider mengalihkan (redirect) permintaan; ditolak demi keamanan kunci. "
                         "Periksa alamat (mungkin harus https://).", K_JARINGAN)
@@ -240,10 +273,12 @@ def rapikan(teks):
 
 RE_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(\.[\w-]+)+")
 RE_HP = re.compile(r"(?<![\w])(?:\+?62|0)[\s.-]?8\d{1,3}[\s.-]?\d{3,4}[\s.-]?\d{2,5}(?!\d)")
+# Telepon rumah/kantor: 021-5551234, (0274) 555123, +62 21 5551234, 021 555 1234
+RE_TELP = re.compile(r"(?<![\w.,])(?:\+62[\s.-]?\(?0?\d{2,3}\)?|\(0\d{2,3}\)|0\d{2,3})[\s.-]?\d{3,4}[\s.-]?\d{3,4}(?!\d)")
 
 
 def samarkan_pribadi(teks):
-    """Papan Fider biasanya publik: sembunyikan nomor HP & email dari catatan WA sebelum ditulis."""
+    """Papan Fider biasanya publik: sembunyikan nomor HP/telepon & email dari catatan WA sebelum ditulis."""
     n = 0
 
     def ganti(pesan):
@@ -254,6 +289,7 @@ def samarkan_pribadi(teks):
         return f
     teks = RE_EMAIL.sub(ganti("[email disembunyikan]"), teks)
     teks = RE_HP.sub(ganti("[nomor disembunyikan]"), teks)
+    teks = RE_TELP.sub(ganti("[nomor disembunyikan]"), teks)
     return teks, n
 
 
@@ -268,17 +304,51 @@ def normal(t):
     return re.sub(r"[^a-z0-9 ]+", " ", (t or "").lower()).split()
 
 
-STOP = {"yang", "dan", "di", "ke", "untuk", "dengan", "ada", "tolong", "dong", "ya", "nih", "the", "a", "saya", "kami", "bisa", "mau", "minta"}
+# Kata umum (tidak membedakan maksud) dan sinonim kecil. Sisanya dianggap kata penentu (mis. QRIS, GoPay).
+STOP = {"yang", "dan", "di", "ke", "untuk", "dengan", "ada", "tolong", "dong", "ya", "nih", "the", "a", "saya", "kami",
+        "bisa", "mau", "minta", "tambah", "tambahkan", "fitur", "opsi", "pilihan", "pakai", "menggunakan", "via", "lewat",
+        "buat", "supaya", "agar", "usulan", "aplikasi", "app", "mohon", "harus", "jadi", "itu", "ini", "juga", "lebih",
+        "kak", "min", "please", "add", "support", "dukung", "dukungan", "atau", "pada", "dari", "oleh", "sih"}
+SINONIM = {}
+for _baku, _daftar in {
+    "bayar": "bayar pembayaran membayar payment pay bayarnya",
+    "notifikasi": "notif notifikasi pemberitahuan notification notifications pemberitahuannya",
+    "whatsapp": "wa whatsapp whats",
+    "email": "email surel mail",
+    "laporan": "laporan report rekap",
+    "cetak": "cetak print",
+    "resi": "resi receipt struk",
+    "diskon": "diskon potongan discount",
+    "kirim": "kirim pengiriman kurir shipping",
+    "gelap": "gelap dark",
+}.items():
+    for _k in _daftar.split():
+        SINONIM[_k] = _baku
+
+
+def kata_penentu(t):
+    hasil = set()
+    for w in normal(t):
+        if w in STOP:
+            continue
+        if w.endswith("nya") and len(w) > 5:
+            w = w[:-3]
+        hasil.add(SINONIM.get(w, w))
+    return hasil
 
 
 def kemiripan(a, b):
-    ta, tb = [w for w in normal(a) if w not in STOP], [w for w in normal(b) if w not in STOP]
-    if not ta or not tb:
+    """0..1. Dibandingkan lewat kata penentu (sinonim disatukan). Beda kata penentu = beda permintaan
+    (GoPay != QRIS, email != WA). Hasil hanya PETUNJUK: pemilik/agen yang memutuskan duplikat atau bukan."""
+    sa, sb = kata_penentu(a), kata_penentu(b)
+    if not sa or not sb:
         return 0.0
-    sa, sb = set(ta), set(tb)
     jaccard = len(sa & sb) / len(sa | sb)
-    urut = difflib.SequenceMatcher(None, " ".join(ta), " ".join(tb)).ratio()
-    return max(jaccard, urut * 0.9)
+    if sa == sb:
+        return 1.0
+    if (sa < sb or sb < sa) and len(min(sa, sb, key=len)) >= 2:
+        jaccard = max(jaccard, 0.65)  # satu berisi yang lain: mungkin sama, tetap perlu dicek manusia
+    return jaccard
 
 
 def angka(n):
@@ -346,10 +416,11 @@ def baris_pos(p):
 
 
 def cetak(hasil, args, teks):
+    k = _KUNCI_AKTIF[0]
     if args.json:
-        print(json.dumps(hasil, ensure_ascii=False, indent=2))
+        print(samarkan(json.dumps(hasil, ensure_ascii=False, indent=2), k))
     else:
-        print(teks)
+        print(samarkan(teks, k))
 
 
 PRATINJAU = "PRATINJAU - BELUM ADA YANG DITULIS ke Fider. Setelah pemilik setuju, ulangi perintah yang sama dengan --ya."
@@ -361,10 +432,10 @@ def cmd_cek(k, args):
     role = "tidak diketahui"
     try:
         k.minta("GET", "/api/v1/users", query={"limit": "1"})
-        role = "Administrator (dapat membaca daftar pengguna)"
+        role = "Collaborator atau Administrator (peran pastinya tidak dapat dipastikan lewat API; tag-buat hanya untuk Administrator)"
     except Gagal as e:
         if e.kode == K_IZIN:
-            role = "Collaborator (bukan Administrator: tidak bisa membuat tag baru)"
+            role = "kemungkinan Collaborator (tidak bisa membaca daftar pengguna; tidak bisa membuat tag baru)"
     total = len(semua_pos(k))
     teks = (f"OK: Fider terhubung di {k.url}\n- Kunci API   : valid (tidak ditampilkan)\n- Peran akun  : {role}\n"
             f"- Jumlah pos  : {angka(total)} (tidak termasuk duplikat/dihapus)\n- Jumlah tag  : {len(t)}")
@@ -490,22 +561,37 @@ def cmd_ringkasan(k, args):
     return K_OK
 
 
-def buat_draf(p, gaya, catatan):
-    judul = p["title"]
-    nama_hal = rapikan(judul)
+def buat_draf(p, gaya, catatan, topik=""):
+    """Teks disesuaikan dengan STATUS pos: tidak pernah menyatakan 'selesai' bila belum Selesai."""
+    nama_hal = rapikan(topik) or rapikan(p["title"])
+    st = p.get("status")
     suara = p.get("votesCount", 0)
-    if gaya == "santai":
-        buka = "Halo Kak, kabar baik!"
-        inti = f"Usulan \"{nama_hal}\" sekarang sudah kami kerjakan dan bisa dipakai."
-        tutup = "Terima kasih sudah ikut memberi masukan. Kalau masih ada yang kurang pas, kabari kami ya."
+    santai = gaya == "santai"
+    buka = "Halo Kak," if santai else "Halo,"
+    if st == "completed":
+        if santai:
+            buka = "Halo Kak, kabar baik!"
+            inti = f"Usulan \"{nama_hal}\" sekarang sudah kami kerjakan dan bisa dipakai."
+        else:
+            inti = f"Kami informasikan bahwa usulan \"{nama_hal}\" telah selesai kami kerjakan."
+    elif st == "started":
+        inti = (f"Usulan \"{nama_hal}\" sedang kami kerjakan. Kami kabari lagi setelah bisa dipakai." if santai else
+                f"Kami informasikan bahwa usulan \"{nama_hal}\" sedang dalam pengerjaan. Kami akan mengabari setelah tersedia.")
+    elif st == "planned":
+        inti = (f"Usulan \"{nama_hal}\" sudah masuk rencana kami." if santai else
+                f"Kami informasikan bahwa usulan \"{nama_hal}\" telah masuk dalam rencana pengembangan kami.")
+    elif st == "declined":
+        inti = (f"Usulan \"{nama_hal}\" belum bisa kami wujudkan saat ini." if santai else
+                f"Kami informasikan bahwa usulan \"{nama_hal}\" belum dapat kami wujudkan untuk saat ini.")
     else:
-        buka = "Selamat siang,"
-        inti = f"Kami informasikan bahwa usulan \"{nama_hal}\" telah selesai kami perbaiki/tambahkan."
-        tutup = "Terima kasih atas masukan Anda. Jika masih ada kendala, silakan sampaikan kembali kepada kami."
+        inti = (f"Usulan \"{nama_hal}\" sudah kami terima dan sedang kami tinjau." if santai else
+                f"Usulan \"{nama_hal}\" telah kami terima dan sedang kami tinjau.")
+    tutup = ("Terima kasih sudah ikut memberi masukan. Kalau masih ada yang kurang pas, kabari kami ya." if santai else
+             "Terima kasih atas masukan Anda. Jika ada yang ingin disampaikan, silakan hubungi kami kembali.")
     baris = [buka, inti]
     if catatan:
         baris.append(catatan.strip())
-    if suara >= 2:
+    if suara >= 2 and st != "declined":
         baris.append(f"Usulan ini didukung {angka(suara)} orang, terima kasih untuk semuanya.")
     baris.append(tutup)
     return "\n".join(baris)
@@ -517,11 +603,14 @@ def cmd_draf(k, args):
     peringatan = ""
     if p.get("status") != "completed":
         peringatan = (f"PERINGATAN: pos #{n} berstatus \"{NAMA_STATUS.get(p.get('status'))}\", belum \"Selesai\". "
-                      "Pastikan perbaikannya benar-benar sudah jalan sebelum draf ini dikirim.\n\n")
-    draf = buat_draf(p, args.gaya, args.catatan)
+                      "Draf di bawah TIDAK menyatakan sudah selesai; isinya menyesuaikan status. "
+                      "Jangan mengirim kabar \"sudah diperbaiki\" sebelum statusnya Selesai.\n\n")
+    draf = buat_draf(p, args.gaya, args.catatan, args.topik)
+    saran = "" if args.topik else ("\nCatatan: judul dikutip apa adanya dari Fider; bila kurang enak dibaca pelanggan, "
+                                   "ganti dengan --topik \"kalimat singkat\".")
     teks = (peringatan + f"DRAF BALASAN untuk pos #{n} (belum dikirim ke siapa pun; pemilik yang mengirim/menempel):\n"
-            f"------------------------------\n{draf}\n------------------------------\n"
-            "Untuk menempelkannya sebagai komentar publik di Fider: komentar " + str(n) + " --teks \"...\" --ya")
+            f"------------------------------\n{draf}\n------------------------------" + saran +
+            "\nUntuk menempelkannya sebagai komentar publik di Fider: komentar " + str(n) + " --teks \"...\" --ya")
     cetak({"nomor": n, "status": p.get("status"), "draf": draf, "perlu_periksa": bool(peringatan)}, args, teks)
     return K_OK
 
@@ -533,6 +622,16 @@ def wajib_ya(args, ringkas, hasil=None):
         return True
     cetak({"pratinjau": True, **(hasil or {})}, args, f"{ringkas}\n\n{PRATINJAU}")
     return False
+
+
+def _buang_kosong(butir, path):
+    """Buang butir yang judulnya tanpa huruf/angka (mis. '-')."""
+    bersih = [b for b in butir if any(c.isalnum() for c in str(b["judul"]))]
+    if len(bersih) < len(butir):
+        sys.stderr.write(f"Catatan: {len(butir) - len(bersih)} butir kosong (tanpa huruf/angka) dibuang.\n")
+    if not bersih:
+        raise Gagal(f"Berkas {path} tidak berisi butir yang bisa dipakai.", K_FILE)
+    return bersih
 
 
 def baca_catatan(path):
@@ -562,7 +661,7 @@ def baca_catatan(path):
                 tag = [t for t in tag.split(",") if t.strip()]
             butir.append({"judul": str(x["judul"]), "uraian": str(x.get("uraian", "")),
                           "tag": [str(t) for t in tag], "pelanggan": x.get("pelanggan")})
-        return butir
+        return _buang_kosong(butir, path)
     butir, sekarang = [], []
     for baris in teks.replace("\r\n", "\n").split("\n"):
         b = baris.strip()
@@ -582,13 +681,30 @@ def baca_catatan(path):
     for bl in butir:
         judul, sisa = bl[0], " ".join(bl[1:])
         hasil.append({"judul": judul, "uraian": sisa, "tag": [], "pelanggan": None})
+    return _buang_kosong(hasil, path)
+
+
+def parse_tetap(nilai, jumlah):
+    """--tetap: kosong/'semua' = semua butir mirip tetap dibuat; atau daftar nomor butir '2,5'."""
+    if not nilai:
+        return set()
+    if str(nilai).strip().lower() in ("semua", "all"):
+        return set(range(1, jumlah + 1))
+    hasil = set()
+    for x in str(nilai).split(","):
+        x = x.strip()
+        if not x.isdigit() or not 1 <= int(x) <= jumlah:
+            raise Gagal(f"--tetap: nomor butir {x!r} tidak ada (butir 1-{jumlah}). Contoh: --tetap 2,5 atau --tetap semua.", K_INPUT)
+        hasil.add(int(x))
     return hasil
 
 
 def siapkan_impor(butir, sumber, ada, tetap):
-    """Bersihkan, samarkan data pribadi, dan tandai kemungkinan duplikat."""
+    """Bersihkan, samarkan data pribadi, dan TANDAI kemungkinan duplikat. Butir yang ditandai TIDAK ditulis
+    kecuali pemilik memilihnya lewat --tetap (nomor butir) - skor hanya petunjuk, bukan keputusan."""
     rencana, terlihat = [], []
-    for b in butir:
+    tetap = tetap if isinstance(tetap, (set, frozenset)) else set()
+    for no, b in enumerate(butir, 1):
         judul, n1 = samarkan_pribadi(rapikan(b["judul"]))
         uraian, n2 = samarkan_pribadi(b["uraian"].strip())
         judul_akhir = potong(judul, BATAS_JUDUL)
@@ -596,52 +712,66 @@ def siapkan_impor(butir, sumber, ada, tetap):
             uraian = judul
         elif len(judul) > BATAS_JUDUL:
             uraian = judul + "\n\n" + uraian
-        tambahan = []
+        tambahan, klaim = [], None
         if b.get("pelanggan"):
             try:
-                tambahan.append(f"Dilaporkan oleh sekitar {angka(int(b['pelanggan']))} pelanggan.")
+                klaim = int(b["pelanggan"])
+                tambahan.append(f"Dilaporkan oleh sekitar {angka(klaim)} pelanggan.")
             except (ValueError, TypeError):
                 raise Gagal(f"'pelanggan' harus angka (butir: {judul_akhir!r}).", K_FILE)
         if sumber:
             tambahan.append(f"Sumber: {sumber}.")
         uraian_akhir = (uraian + ("\n\n" if uraian and tambahan else "") + " ".join(tambahan)).strip()
+        dipotong = len(uraian_akhir) > BATAS_URAIAN
+        if dipotong:
+            uraian_akhir = uraian_akhir[: BATAS_URAIAN - 1].rstrip() + "…"
         mirip, skor = None, 0.0
         for p in ada + terlihat:
-            s = kemiripan(judul_akhir, p["title"] if "title" in p else p["judul"])
-            if s > skor:
-                skor, mirip = s, p
-        aksi = "buat"
-        if mirip and skor >= 0.6:
-            aksi = "buat" if tetap else "lewati"
-        rencana.append({"judul": judul_akhir, "uraian": uraian_akhir, "tag": b.get("tag", []),
-                        "disamarkan": n1 + n2, "aksi": aksi,
+            s_ = kemiripan(judul_akhir, p["title"] if "title" in p else p["judul"])
+            if s_ > skor:
+                skor, mirip = s_, p
+        ditandai = bool(mirip and skor >= AMBANG_MIRIP)
+        aksi = "tahan" if ditandai and no not in tetap else "buat"
+        rencana.append({"no": no, "judul": judul_akhir, "uraian": uraian_akhir, "tag": b.get("tag", []),
+                        "disamarkan": n1 + n2, "aksi": aksi, "dipotong": dipotong, "klaim_pelanggan": klaim,
                         "mirip_dengan": ({"nomor": mirip.get("number"), "judul": mirip.get("title", mirip.get("judul")),
-                                          "skor": round(skor, 2)} if mirip and skor >= 0.6 else None)})
+                                          "skor": round(skor, 2)} if ditandai else None)})
         terlihat.append({"judul": judul_akhir})
     return rencana
 
 
 def cmd_impor(k, args):
     butir = baca_catatan(args.berkas)
+    if k.kunci in json.dumps(butir, ensure_ascii=False):
+        raise Gagal("Berkas ini berisi kunci API. Berkas kunci tidak boleh diimpor ke papan.", K_FILE)
+    jalur = os.path.realpath(os.path.expanduser(args.berkas))
+    if os.path.commonpath([jalur, os.path.realpath(FOLDER_RAHASIA)]) == os.path.realpath(FOLDER_RAHASIA):
+        raise Gagal("Berkas di folder rahasia (~/.komunitech) tidak boleh diimpor.", K_FILE)
     if len(butir) > BATAS_IMPOR:
         raise Gagal(f"Terlalu banyak butir ({len(butir)}); maksimum {BATAS_IMPOR} per impor. Pecah berkasnya.", K_INPUT)
     ada = semua_pos(k)
-    rencana = siapkan_impor(butir, args.sumber, ada, args.tetap)
+    rencana = siapkan_impor(butir, args.sumber, ada, parse_tetap(args.tetap, len(butir)))
     tag_ada = {t["slug"] for t in daftar_tag(k)}
     tag_hilang = sorted({slug_tag(t) for r in rencana for t in r["tag"]} - tag_ada)
     baris = [f"RENCANA IMPOR dari {os.path.basename(args.berkas)}: {len(rencana)} butir"]
-    for i, r in enumerate(rencana, 1):
-        cap = "BUAT  " if r["aksi"] == "buat" else "LEWATI"
-        baris.append(f"{i}. [{cap}] {r['judul']}")
+    for r in rencana:
+        cap = "BUAT  " if r["aksi"] == "buat" else "TAHAN "
+        baris.append(f"{r['no']}. [{cap}] {r['judul']}")
         if r["uraian"]:
             baris.append(f"      uraian: {potong(r['uraian'], 90)}")
         if r["mirip_dengan"]:
             m = r["mirip_dengan"]
             acuan = f"#{m['nomor']}" if m["nomor"] else "butir lain di berkas ini"
-            baris.append(f"      mirip dengan {acuan} \"{m['judul']}\" (kemiripan {int(m['skor'] * 100)}%)"
-                         + ("" if r["aksi"] == "lewati" else " - tetap dibuat (--tetap)"))
+            baris.append(f"      MIRIP dengan {acuan} \"{m['judul']}\" (skor {int(m['skor'] * 100)}%, hanya petunjuk) - "
+                         + ("ditahan: tanyakan pemilik, sama maksudnya atau beda? Bila beda/tetap dibuat: --tetap "
+                            f"{r['no']}" if r["aksi"] == "tahan" else "tetap dibuat (dipilih lewat --tetap)"))
+        if r["klaim_pelanggan"]:
+            baris.append(f"      klaim \"{angka(r['klaim_pelanggan'])} pelanggan\" berasal dari isi berkas (tidak diverifikasi); "
+                         "pastikan benar dari catatan asli")
+        if r["dipotong"]:
+            baris.append(f"      uraian dipotong ke {angka(BATAS_URAIAN)} huruf")
         if r["disamarkan"]:
-            baris.append(f"      {r['disamarkan']} nomor HP/email disembunyikan (papan Fider biasanya publik)")
+            baris.append(f"      {r['disamarkan']} nomor HP/telepon/email disembunyikan (papan Fider biasanya publik)")
         if r["tag"]:
             baris.append(f"      tag: {', '.join(r['tag'])}")
     if tag_hilang:
@@ -650,10 +780,10 @@ def cmd_impor(k, args):
                  + (" (akan dihapus, --hapus-suara-saya)." if args.hapus_suara_saya else "."))
     if not wajib_ya(args, "\n".join(baris), {"rencana": rencana, "tag_belum_ada": tag_hilang}):
         return K_OK
-    dibuat, lewati = [], 0
+    dibuat, tahan = [], 0
     for r in rencana:
-        if r["aksi"] == "lewati":
-            lewati += 1
+        if r["aksi"] == "tahan":
+            tahan += 1
             continue
         res = k.minta("POST", "/api/v1/posts", {"title": r["judul"], "description": r["uraian"]})
         no = res.get("number")
@@ -667,9 +797,9 @@ def cmd_impor(k, args):
                 k.minta("POST", f"/api/v1/posts/{no}/tags/{s}")
         dibuat.append({"nomor": no, "judul": r["judul"]})
         time.sleep(args.jeda)
-    teks = f"SELESAI: {len(dibuat)} pos dibuat, {lewati} dilewati (kemungkinan duplikat).\n" + \
+    teks = f"SELESAI: {len(dibuat)} pos dibuat, {tahan} ditahan (kemungkinan duplikat, menunggu keputusan pemilik).\n" + \
         "\n".join(f"- #{d['nomor']} {d['judul']}" for d in dibuat)
-    cetak({"dibuat": dibuat, "dilewati": lewati}, args, teks)
+    cetak({"dibuat": dibuat, "ditahan": tahan}, args, teks)
     return K_OK
 
 
@@ -716,6 +846,9 @@ def cmd_gabung(k, args):
     dup, asli = nomor_valid(args.duplikat), nomor_valid(args.asli)
     if dup == asli:
         raise Gagal("Pos tidak bisa digabung ke dirinya sendiri.", K_INPUT)
+    catatan, nsam = samarkan_pribadi((args.catatan or "").strip())
+    if len(catatan) > BATAS_URAIAN:
+        raise Gagal("Catatan terlalu panjang (maks. 5.000 karakter).", K_INPUT)
     pd, pa = satu_pos(k, dup), satu_pos(k, asli)
     if pd.get("status") == "duplicate":
         cetak({"sudah_duplikat": True}, args, f"Pos #{dup} sudah berstatus duplikat; tidak ada yang diubah.")
@@ -724,11 +857,17 @@ def cmd_gabung(k, args):
         raise Gagal(f"Pos #{asli} sendiri sudah berstatus duplikat. Pilih pos induk yang lain.", K_INPUT)
     ringkas = (f"Akan menandai pos #{dup} \"{pd['title']}\" ({angka(pd.get('votesCount', 0))} suara) sebagai DUPLIKAT dari "
                f"#{asli} \"{pa['title']}\" ({angka(pa.get('votesCount', 0))} suara).\n"
-               "Pos duplikat hilang dari daftar utama dan suaranya dipindahkan ke pos induk oleh Fider.")
+               "Pos duplikat hilang dari daftar utama dan suaranya dipindahkan ke pos induk oleh Fider.\n"
+               f"Uraian #{dup}: {potong(pd.get('description') or '(kosong)', 160)}\n"
+               f"Uraian #{asli}: {potong(pa.get('description') or '(kosong)', 160)}\n"
+               "PERIKSA: apakah kedua pos benar-benar meminta HAL YANG SAMA? Sama topik belum tentu sama permintaan."
+               + (f"\n({nsam} nomor HP/email pada catatan disembunyikan.)" if nsam else ""))
+    if kemiripan(pd["title"], pa["title"]) < 0.3:
+        ringkas += "\nPERINGATAN: judul kedua pos hampir tidak mirip. Pastikan tidak salah nomor."
     if not wajib_ya(args, ringkas, {"duplikat": dup, "asli": asli}):
         return K_OK
     k.minta("PUT", f"/api/v1/posts/{dup}/status", {"status": "duplicate", "originalNumber": asli,
-                                                     "text": args.catatan or ""})
+                                                     "text": catatan})
     sesudah = satu_pos(k, asli)
     cetak({"duplikat": dup, "asli": asli, "suara_asli": sesudah.get("votesCount")}, args,
           f"SELESAI: #{dup} digabung ke #{asli}. Suara #{asli} sekarang {angka(sesudah.get('votesCount', 0))}.")
@@ -742,16 +881,23 @@ def cmd_status(k, args):
         raise Gagal(f"Status {args.status!r} tidak dikenal. Pilihan: terbuka, rencana, dikerjakan, selesai, ditolak. "
                     "(Untuk duplikat pakai perintah gabung.) Fider diam-diam menganggap status asing sebagai 'terbuka', "
                     "jadi script menolaknya di sini.", K_INPUT)
+    catatan, nsam = samarkan_pribadi((args.catatan or "").strip())
+    if len(catatan) > BATAS_URAIAN:
+        raise Gagal("Catatan terlalu panjang (maks. 5.000 karakter).", K_INPUT)
+    if baku == "declined" and not catatan:
+        raise Gagal("Status Ditolak wajib disertai --catatan berisi alasan yang jujur (tampil publik). "
+                    "Menolak usulan pelanggan tanpa alasan tidak diizinkan.", K_INPUT)
     p = satu_pos(k, n)
     if p.get("status") == "duplicate":
         raise Gagal(f"Pos #{n} berstatus duplikat; ubah pos induknya, bukan yang ini.", K_INPUT)
     ringkas = (f"Akan mengubah status pos #{n} \"{p['title']}\": {NAMA_STATUS.get(p.get('status'))} -> {NAMA_STATUS[baku]}."
-               + (f"\nTeks tanggapan publik: \"{args.catatan}\"" if args.catatan else "\n(tanpa teks tanggapan)"))
-    if baku in ("completed", "declined") and not args.catatan:
+               + (f"\nTeks tanggapan publik: \"{catatan}\"" if catatan else "\n(tanpa teks tanggapan)")
+               + (f"\n({nsam} nomor HP/email pada catatan disembunyikan.)" if nsam else ""))
+    if baku == "completed" and not catatan:
         ringkas += "\nSaran: tambahkan --catatan agar pelanggan yang memberi suara tahu alasannya."
     if not wajib_ya(args, ringkas, {"nomor": n, "status": baku}):
         return K_OK
-    k.minta("PUT", f"/api/v1/posts/{n}/status", {"status": baku, "text": args.catatan or ""})
+    k.minta("PUT", f"/api/v1/posts/{n}/status", {"status": baku, "text": catatan})
     sesudah = satu_pos(k, n)
     if sesudah.get("status") != baku:
         raise Gagal(f"Fider tidak menerapkan status {baku} (status sekarang {sesudah.get('status')}).", K_SERVER)
@@ -788,9 +934,16 @@ PERINTAH = {
 
 
 def buat_parser():
-    ap = argparse.ArgumentParser(prog="fider.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(prog="fider.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 allow_abbrev=False)
     ap.add_argument("--versi", action="version", version=VERSI)
     sub = ap.add_subparsers(dest="perintah", required=True)
+    _asli = sub.add_parser
+
+    def _tambah(*a, **k):  # semua sub-parser: singkatan opsi DILARANG (mis. --y tidak boleh berarti --ya)
+        k.setdefault("allow_abbrev", False)
+        return _asli(*a, **k)
+    sub.add_parser = _tambah
 
     def umum(p, tulis=False):
         p.add_argument("--url", help="alamat Fider (bawaan: ENV FIDER_URL, file alamat, atau http://localhost:3000)")
@@ -814,9 +967,11 @@ def buat_parser():
     p.add_argument("--hari", type=int, default=7); p.add_argument("--top", type=int, default=5)
     p = umum(sub.add_parser("draf-balasan")); p.add_argument("nomor")
     p.add_argument("--gaya", choices=["sopan", "santai"], default="sopan"); p.add_argument("--catatan", default="")
+    p.add_argument("--topik", default="", help="kalimat singkat pengganti judul pos di draf")
     p = umum(sub.add_parser("impor"), True); p.add_argument("berkas")
     p.add_argument("--sumber", default="", help="mis. 'WhatsApp pelanggan' atau 'ulasan Shopee'")
-    p.add_argument("--tetap", action="store_true", help="tetap buat walau mirip pos lama")
+    p.add_argument("--tetap", nargs="?", const="semua", default="",
+                   help="tetap buat butir yang ditahan karena mirip: nomor butir (mis. 2,5) atau 'semua'")
     p.add_argument("--hapus-suara-saya", action="store_true"); p.add_argument("--jeda", type=float, default=0.2)
     p = umum(sub.add_parser("tag"), True); p.add_argument("nomor"); p.add_argument("nama", help="satu atau beberapa, pisah koma")
     p.add_argument("--lepas", action="store_true")
@@ -832,6 +987,7 @@ def buat_parser():
 def main(argv=None):
     args = buat_parser().parse_args(argv)
     kunci = ""
+    _KUNCI_AKTIF[0] = ""
     try:
         if args.perintah == "simpan-kunci":
             return simpan_kunci(args)
@@ -840,6 +996,7 @@ def main(argv=None):
         url, _ = alamat_awal(args)
         periksa_url(url)
         kunci = ambil_kunci(args)
+        _KUNCI_AKTIF[0] = kunci
         if re.search(r"\s", kunci):
             raise Gagal("Kunci API berisi spasi/baris baru; simpan ulang dengan simpan-kunci --ya.", K_KUNCI)
         if getattr(args, "batas", 1) < 1 or getattr(args, "hari", 1) < 1 or getattr(args, "top", 1) < 1:

@@ -780,14 +780,14 @@ def op_info(a, baris, path):
 
 # --------------------------------------------------------------------------- main
 def buat_parser():
-    p = argparse.ArgumentParser(description="Pengingat kontrol/vaksin pasien klinik (lokal, tanpa rekam medis).")
+    p = argparse.ArgumentParser(description="Pengingat kontrol/vaksin pasien klinik (lokal, tanpa rekam medis).", allow_abbrev=False)
     p.add_argument("--file", default=os.path.join("pasien", "DAFTAR.csv"))
     p.add_argument("--hari-ini", help="Tanggal acuan (untuk uji), format bebas mis. 2026-10-01")
     p.add_argument("--tz", default="Asia/Jakarta")
     p.add_argument("--json", action="store_true")
     sub = p.add_subparsers(dest="perintah", required=True)
 
-    s = sub.add_parser("tambah")
+    s = sub.add_parser("tambah", allow_abbrev=False)
     s.add_argument("--nama", required=True)
     s.add_argument("--wa", required=True)
     s.add_argument("--jenis", required=True)
@@ -795,7 +795,7 @@ def buat_parser():
     s.add_argument("--persetujuan", required=True, choices=PERSETUJUAN)
     s.add_argument("--catatan", default="")
 
-    s = sub.add_parser("ubah")
+    s = sub.add_parser("ubah", allow_abbrev=False)
     s.add_argument("--id", required=True)
     s.add_argument("--nama")
     s.add_argument("--wa")
@@ -804,38 +804,38 @@ def buat_parser():
     s.add_argument("--catatan")
     s.add_argument("--persetujuan", choices=PERSETUJUAN)
 
-    s = sub.add_parser("ubah-status")
+    s = sub.add_parser("ubah-status", allow_abbrev=False)
     s.add_argument("--id", required=True)
     s.add_argument("--status", required=True, choices=STATUS)
     s.add_argument("--berikutnya")
     s.add_argument("--alasan")
 
-    s = sub.add_parser("hapus")
+    s = sub.add_parser("hapus", allow_abbrev=False)
     s.add_argument("--id")
     s.add_argument("--wa")
     s.add_argument("--ya", action="store_true")
 
-    s = sub.add_parser("impor")
+    s = sub.add_parser("impor", allow_abbrev=False)
     s.add_argument("path")
     s.add_argument("--jenis-default")
     s.add_argument("--tanggal-default")
     s.add_argument("--persetujuan-default", choices=PERSETUJUAN)
     s.add_argument("--ya", action="store_true")
 
-    s = sub.add_parser("daftar")
+    s = sub.add_parser("daftar", allow_abbrev=False)
     s.add_argument("--kapan", choices=["terlambat", "hari-ini", "besok", "h-1", "h-3", "minggu-ini", "semua"])
     s.add_argument("--tanpa-draf", dest="tanpa_draf", action="store_true")
     s.add_argument("--klinik", default="")
 
-    s = sub.add_parser("draf")
+    s = sub.add_parser("draf", allow_abbrev=False)
     s.add_argument("--id", required=True)
     s.add_argument("--klinik", default="")
 
-    s = sub.add_parser("ringkasan")
+    s = sub.add_parser("ringkasan", allow_abbrev=False)
     s.add_argument("--samarkan", action="store_true")
     s.add_argument("--tanpa-nama", dest="tanpa_nama", action="store_true")
 
-    sub.add_parser("info")
+    sub.add_parser("info", allow_abbrev=False)
     return p
 
 

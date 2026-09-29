@@ -98,7 +98,7 @@ kpi-tim,HR,orisinal,,Proprietary Komunitech,9,ecer,149000,ecer,149000,1.1.2,"cla
 inventree-gudang,Produktivitas,kurasi,https://github.com/inventree/InvenTree,MIT (software tidak didistribusikan); skill orisinal Komunitech,9,ecer,149000,ecer,149000,1.0.2,"claude-code (simulasi agent, InvenTree 1.5.6 asli);openclaw 2026.9.6 (uji muat CLI)",lulus,2026-09-29
 klon-diri-konten,Marketing & Konten,orisinal,,Proprietary Komunitech,7,ecer,149000,ecer,149000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.6 (uji muat CLI),lulus,2026-09-29
 kalkulator-klinis-nakes,Data & Analisis,orisinal,,Proprietary Komunitech,8,vip,149000,vip,149000,1.0.2,claude-code (simulasi agent),lulus,2026-09-29
-bot-trading-kripto,Data & Analisis,orisinal,,Proprietary Komunitech,6,vip,249000,,,1.0.1,,uji,2026-09-29
+bot-trading-kripto,Data & Analisis,orisinal,,Proprietary Komunitech,7,vip,249000,,,1.0.1,,uji,2026-09-29
 rencana-marketing-usaha,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills ; https://github.com/phuryn/pm-skills,MIT (atribusi di ATTRIBUTION.md),8,ecer,149000,ecer,149000,1.0.1,claude-code (simulasi agent),lulus,2026-09-29
 analisis-pesaing-strategis,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills;https://github.com/phuryn/pm-skills,MIT (atribusi di ATTRIBUTION.md),8,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent),lulus,2026-09-29
 positioning-persona-usaha,Marketing & Konten,kurasi,https://github.com/phuryn/pm-skills;https://github.com/coreyhaines31/marketingskills,MIT (atribusi di ATTRIBUTION.md),9,ecer,99000,ecer,99000,1.0.1,claude-code (simulasi agent),lulus,2026-09-29

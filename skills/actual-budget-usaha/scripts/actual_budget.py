@@ -1167,9 +1167,9 @@ def cmd_cari(a):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Asisten Actual Budget lokal (Komunitech, v{})".format(VERSI))
+    ap = argparse.ArgumentParser(description="Asisten Actual Budget lokal (Komunitech, v{})".format(VERSI), allow_abbrev=False)
     sub = ap.add_subparsers(dest="cmd")
-    s = sub.add_parser("konversi", help="mutasi bank CSV -> CSV impor Actual")
+    s = sub.add_parser("konversi", help="mutasi bank CSV -> CSV impor Actual", allow_abbrev=False)
     s.add_argument("mutasi")
     s.add_argument("--bank", help="BCA, BRI, MANDIRI, BNI, LAIN (opsional; kolom dideteksi otomatis)")
     s.add_argument("--tahun", type=int, help="tahun untuk tanggal tanpa tahun (mis. BCA '01/09')")
@@ -1182,13 +1182,13 @@ def main(argv=None):
     s.add_argument("--json", action="store_true")
     for nama, bantu in (("cek", "periksa file budget"), ("kategori", "daftar kategori"),
                         ("ringkasan", "ringkasan bulanan")):
-        s = sub.add_parser(nama, help=bantu)
+        s = sub.add_parser(nama, help=bantu, allow_abbrev=False)
         s.add_argument("--db", required=True, help="path db.sqlite atau folder budget Actual")
         s.add_argument("--json", action="store_true")
         if nama == "ringkasan":
             s.add_argument("--bulan", default="ini", help="2026-09 | 09/2026 | 'September 2026' | ini | lalu")
             s.add_argument("--top", type=int, default=5, help="jumlah pengeluaran terbesar (default 5)")
-    s = sub.add_parser("cari", help="cari budget Actual di folder data")
+    s = sub.add_parser("cari", help="cari budget Actual di folder data", allow_abbrev=False)
     s.add_argument("--folder")
     a = ap.parse_args(argv)
     if not a.cmd:

@@ -909,27 +909,27 @@ def _opsi_umum(p):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="grist.py", description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(prog="grist.py", description=__doc__.splitlines()[0], allow_abbrev=False)
     sub = ap.add_subparsers(dest="perintah", required=True)
 
-    p = sub.add_parser("cek", help="Cek koneksi REST API & daftar dokumen yang bisa diakses")
+    p = sub.add_parser("cek", help="Cek koneksi REST API & daftar dokumen yang bisa diakses", allow_abbrev=False)
     _opsi_umum(p)
     p.set_defaults(fungsi=cmd_cek)
 
-    p = sub.add_parser("simpan-kunci", help="Simpan kunci API Grist (ditanya lewat prompt, tidak terlihat)")
+    p = sub.add_parser("simpan-kunci", help="Simpan kunci API Grist (ditanya lewat prompt, tidak terlihat)", allow_abbrev=False)
     p.add_argument("--kunci-file", help="Simpan ke path lain (default: ~/.komunitech/grist-kunci.txt)")
     p.add_argument("--ya", action="store_true", help="Timpa file kunci yang sudah ada")
     p.set_defaults(fungsi=cmd_simpan_kunci)
 
-    p_pola = sub.add_parser("pola", help="Pola tabel siap pakai untuk UMKM")
+    p_pola = sub.add_parser("pola", help="Pola tabel siap pakai untuk UMKM", allow_abbrev=False)
     sub_pola = p_pola.add_subparsers(dest="aksi_pola", required=True)
-    p2 = sub_pola.add_parser("daftar", help="Daftar semua pola")
+    p2 = sub_pola.add_parser("daftar", help="Daftar semua pola", allow_abbrev=False)
     p2.set_defaults(fungsi=cmd_pola_daftar)
-    p2 = sub_pola.add_parser("tampilkan", help="Detail satu pola")
+    p2 = sub_pola.add_parser("tampilkan", help="Detail satu pola", allow_abbrev=False)
     p2.add_argument("nama", choices=list(POLA_TABEL))
     p2.set_defaults(fungsi=cmd_pola_tampilkan)
 
-    p = sub.add_parser("buat-tabel", help="Buat tabel dari pola siap pakai lewat REST API (perlu kunci)")
+    p = sub.add_parser("buat-tabel", help="Buat tabel dari pola siap pakai lewat REST API (perlu kunci)", allow_abbrev=False)
     p.add_argument("pola", choices=list(POLA_TABEL))
     p.add_argument("--dokumen", required=True, help="Nama dokumen Grist, atau docId")
     p.add_argument("--tabel", help="Nama tabel (default: nama bawaan pola)")
@@ -937,13 +937,13 @@ def main(argv=None):
     _opsi_umum(p)
     p.set_defaults(fungsi=cmd_buat_tabel)
 
-    p = sub.add_parser("bersihkan-csv", help="Rapikan angka Rupiah/nama kolom CSV sebelum diimpor ke Grist")
+    p = sub.add_parser("bersihkan-csv", help="Rapikan angka Rupiah/nama kolom CSV sebelum diimpor ke Grist", allow_abbrev=False)
     p.add_argument("file")
     p.add_argument("--keluaran", help="Nama file CSV hasil (default: <nama>-bersih.csv)")
     p.add_argument("--json", action="store_true")
     p.set_defaults(fungsi=cmd_bersihkan_csv)
 
-    p = sub.add_parser("impor-csv", help="Impor baris CSV ke tabel Grist yang SUDAH ADA lewat REST API")
+    p = sub.add_parser("impor-csv", help="Impor baris CSV ke tabel Grist yang SUDAH ADA lewat REST API", allow_abbrev=False)
     p.add_argument("file")
     p.add_argument("--dokumen", required=True, help="Nama dokumen Grist, atau docId")
     p.add_argument("--tabel", required=True, help="Nama tabel tujuan (harus sudah ada)")
@@ -951,19 +951,19 @@ def main(argv=None):
     _opsi_umum(p)
     p.set_defaults(fungsi=cmd_impor_csv)
 
-    p = sub.add_parser("daftar-tabel", help="Baca file .grist (read-only): daftar tabel")
+    p = sub.add_parser("daftar-tabel", help="Baca file .grist (read-only): daftar tabel", allow_abbrev=False)
     p.add_argument("file", help="Path file .grist")
     p.add_argument("--json", action="store_true")
     p.set_defaults(fungsi=cmd_daftar_tabel)
 
-    p = sub.add_parser("ringkasan", help="Baca file .grist (read-only): ringkasan satu tabel")
+    p = sub.add_parser("ringkasan", help="Baca file .grist (read-only): ringkasan satu tabel", allow_abbrev=False)
     p.add_argument("file", help="Path file .grist")
     p.add_argument("tabel", help="Nama tabel (tableId, sesuai di Grist)")
     p.add_argument("--n", type=int, default=5, help="Jumlah baris contoh (default 5)")
     p.add_argument("--json", action="store_true")
     p.set_defaults(fungsi=cmd_ringkasan)
 
-    p = sub.add_parser("ekspor-csv", help="Baca file .grist (read-only): ekspor satu tabel ke CSV")
+    p = sub.add_parser("ekspor-csv", help="Baca file .grist (read-only): ekspor satu tabel ke CSV", allow_abbrev=False)
     p.add_argument("file", help="Path file .grist")
     p.add_argument("tabel", help="Nama tabel (tableId, sesuai di Grist)")
     p.add_argument("--keluaran", help="Nama file CSV hasil (default: <tabel>.csv)")

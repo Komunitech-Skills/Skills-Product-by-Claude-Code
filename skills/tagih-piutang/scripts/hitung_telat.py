@@ -497,7 +497,7 @@ def teks_banyak(h):
 
 
 def main():
-    p = argparse.ArgumentParser(description="Hitung keterlambatan piutang & denda (sesuai kesepakatan tertulis)")
+    p = argparse.ArgumentParser(description="Hitung keterlambatan piutang & denda (sesuai kesepakatan tertulis)", allow_abbrev=False)
     p.add_argument("--nominal", help="Nominal tagihan, mis. 'Rp 12.500.000'")
     p.add_argument("--dibayar", action="append", help="Pembayaran sebagian (bisa diulang)")
     p.add_argument("--jatuh-tempo", help="Tanggal jatuh tempo YYYY-MM-DD")

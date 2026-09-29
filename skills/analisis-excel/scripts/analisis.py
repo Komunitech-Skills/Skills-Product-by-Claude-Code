@@ -4173,7 +4173,7 @@ def muat(args, path, sheet, pakai_opsi_baris=True):
 
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("file", help="File .csv / .xlsx")
     umum.add_argument("--sheet", help="Nama atau nomor sheet (XLSX). \"semua\" = gabung semua sheet terlihat "
                       "berstruktur sama; \"Q1,Q2,Q3\" = gabung sheet tertentu. Default: sheet pertama yang terlihat")
@@ -4214,31 +4214,31 @@ def buat_parser():
     umum.add_argument("--tampilkan-pribadi", action="store_true",
                       help="Tampilkan NIK/HP/email/rekening lengkap (default disamarkan; UU PDP)")
 
-    nilai = argparse.ArgumentParser(add_help=False)
+    nilai = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     nilai.add_argument("--nilai", help="Kolom angka yang dihitung (kosong = hitung banyak baris)")
     nilai.add_argument("--fungsi", choices=["jumlah", "rata", "median", "hitung", "min", "max"],
                        help="Default: jumlah (atau hitung bila tanpa --nilai)")
     nilai.add_argument("--per", choices=["hari", "minggu", "bulan", "kuartal", "tahun"],
                        help="Pengelompokan tanggal (default: bulan)")
 
-    ap = argparse.ArgumentParser(description="Analisis spreadsheet CSV/XLSX untuk pengguna awam (Komunitech).")
+    ap = argparse.ArgumentParser(description="Analisis spreadsheet CSV/XLSX untuk pengguna awam (Komunitech).", allow_abbrev=False)
     ap.add_argument("--versi", action="version", version=VERSI)
     sub = ap.add_subparsers(dest="perintah")
-    sub.add_parser("daftar", parents=[umum], help="Daftar sheet & info pembacaan")
-    sub.add_parser("profil", parents=[umum], help="Profil data")
-    p = sub.add_parser("ringkas", parents=[umum], help="Ringkasan statistik")
+    sub.add_parser("daftar", parents=[umum], help="Daftar sheet & info pembacaan", allow_abbrev=False)
+    sub.add_parser("profil", parents=[umum], help="Profil data", allow_abbrev=False)
+    p = sub.add_parser("ringkas", parents=[umum], help="Ringkasan statistik", allow_abbrev=False)
     p.add_argument("--kolom", action="append", help="Batasi ke kolom ini (bisa diulang)")
-    p = sub.add_parser("pivot", parents=[umum, nilai], help="Group-by / pivot")
+    p = sub.add_parser("pivot", parents=[umum, nilai], help="Group-by / pivot", allow_abbrev=False)
     p.add_argument("--grup", required=True, help="Kolom pengelompokan (kategori atau tanggal)")
     p.add_argument("--kolom-pivot", help="Kolom kedua untuk tabel silang (opsional)")
     p.add_argument("--urut", choices=["nilai", "nama"], help="Urutan baris (default: nilai; tanggal: waktu)")
     p.add_argument("--n", type=int, help="Tampilkan N baris pertama saja")
-    sub.add_parser("tren", parents=[umum, nilai], help="Tren per periode")
-    p = sub.add_parser("top", parents=[umum, nilai], help="Top-N / bottom-N")
+    sub.add_parser("tren", parents=[umum, nilai], help="Tren per periode", allow_abbrev=False)
+    p = sub.add_parser("top", parents=[umum, nilai], help="Top-N / bottom-N", allow_abbrev=False)
     p.add_argument("--grup", help="Kolom kategori (kosong = per baris)")
     p.add_argument("--n", type=int, help="Jumlah (default 10)")
     p.add_argument("--terbawah", action="store_true", help="Urutkan dari terkecil")
-    p = sub.add_parser("banding", parents=[umum, nilai], help="Bandingkan dua periode / dua file")
+    p = sub.add_parser("banding", parents=[umum, nilai], help="Bandingkan dua periode / dua file", allow_abbrev=False)
     p.add_argument("--periode-a", help="Periode pembanding (lama), mis. 2026-08")
     p.add_argument("--periode-b", help="Periode yang dinilai (baru), mis. 2026-09")
     p.add_argument("--file-b", help="File kedua (bandingkan file A vs file B)")
@@ -4246,7 +4246,7 @@ def buat_parser():
     p.add_argument("--grup", help="Rinci perbandingan per kategori")
     p.add_argument("--label-a", help="Label periode/file A")
     p.add_argument("--label-b", help="Label periode/file B")
-    p = sub.add_parser("bersihkan", parents=[umum], help="Tulis CSV bersih")
+    p = sub.add_parser("bersihkan", parents=[umum], help="Tulis CSV bersih", allow_abbrev=False)
     p.add_argument("--buang-duplikat", action="store_true", help="Buang baris yang persis sama")
     return ap
 

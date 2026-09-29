@@ -1573,7 +1573,7 @@ TINGKAT = ("_t0_", "_t1_", "_t2_")
 
 
 def buat_umum(awalan):
-    u = argparse.ArgumentParser(add_help=False)
+    u = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     d = argparse.SUPPRESS
     u.add_argument("--url", dest=awalan + "url", default=d,
                    help="Alamat Dolibarr (default ENV DOLIBARR_URL atau {})".format(URL_DEFAULT))
@@ -1607,15 +1607,15 @@ def buat_parser():
     ap = ParserID(prog="dolibarr.py", description="Asisten Dolibarr lokal (Komunitech). Default hanya baca.",
                   parents=[umum])
     sub = ap.add_subparsers(dest="perintah", parser_class=ParserID)
-    sub.add_parser("cek", parents=[umum1], help="Cek koneksi, versi, modul, hak akses")
-    sk = sub.add_parser("simpan-kunci", parents=[umum1], help="Simpan kunci API ke file lokal (izin 600)")
+    sub.add_parser("cek", parents=[umum1], help="Cek koneksi, versi, modul, hak akses", allow_abbrev=False)
+    sk = sub.add_parser("simpan-kunci", parents=[umum1], help="Simpan kunci API ke file lokal (izin 600)", allow_abbrev=False)
     sk.add_argument("--ya", action="store_true", help="Izinkan menimpa file kunci yang sudah ada")
 
-    pel = sub.add_parser("pelanggan", parents=[umum1], help="Cari/tambah pelanggan")
+    pel = sub.add_parser("pelanggan", parents=[umum1], help="Cari/tambah pelanggan", allow_abbrev=False)
     ps = pel.add_subparsers(dest="aksi", parser_class=ParserID)
-    c = ps.add_parser("cari", parents=[umum2])
+    c = ps.add_parser("cari", parents=[umum2], allow_abbrev=False)
     c.add_argument("kata")
-    t = ps.add_parser("tambah", parents=[umum2])
+    t = ps.add_parser("tambah", parents=[umum2], allow_abbrev=False)
     t.add_argument("--nama", required=True)
     t.add_argument("--telepon")
     t.add_argument("--email")
@@ -1625,9 +1625,9 @@ def buat_parser():
     t.add_argument("--ya", action="store_true", help="Benar-benar simpan (tanpa ini hanya pratinjau)")
     t.add_argument("--tetap-buat", action="store_true", help="Tetap buat walau ada nama mirip")
 
-    inv = sub.add_parser("invoice", parents=[umum1], help="Buat draf invoice")
+    inv = sub.add_parser("invoice", parents=[umum1], help="Buat draf invoice", allow_abbrev=False)
     isub = inv.add_subparsers(dest="aksi", parser_class=ParserID)
-    ib = isub.add_parser("buat", parents=[umum2])
+    ib = isub.add_parser("buat", parents=[umum2], allow_abbrev=False)
     ib.add_argument("--pelanggan", required=True, help="ID pelanggan (dari `pelanggan cari`)")
     ib.add_argument("--item", action="append", help="\"nama|jumlah|harga[|diskon%%]\" atau \"@KODE|jumlah[|harga]\"")
     ib.add_argument("--ppn", choices=sorted(PPN), default="umum",
@@ -1639,17 +1639,17 @@ def buat_parser():
     ib.add_argument("--ya", action="store_true", help="Benar-benar buat draf (tanpa ini hanya pratinjau)")
     ib.add_argument("--tetap-buat", action="store_true", help="Tetap buat walau ada draf kembar")
 
-    pi = sub.add_parser("piutang", parents=[umum1], help="Invoice belum lunas + umur piutang")
+    pi = sub.add_parser("piutang", parents=[umum1], help="Invoice belum lunas + umur piutang", allow_abbrev=False)
     pi.add_argument("--per-tanggal", default="hari-ini")
     pi.add_argument("--samarkan", action="store_true", help="Nama pelanggan jadi inisial")
     pi.add_argument("--maks", type=int, default=30)
 
-    s = sub.add_parser("stok", parents=[umum1], help="Cek stok produk")
+    s = sub.add_parser("stok", parents=[umum1], help="Cek stok produk", allow_abbrev=False)
     s.add_argument("kata", nargs="?")
     s.add_argument("--menipis", action="store_true", help="Hanya yang menipis/habis/minus")
     s.add_argument("--maks", type=int, default=50)
 
-    lh = sub.add_parser("laporan-harian", parents=[umum1], help="Ringkasan harian untuk pemilik")
+    lh = sub.add_parser("laporan-harian", parents=[umum1], help="Ringkasan harian untuk pemilik", allow_abbrev=False)
     lh.add_argument("--tanggal", default="hari-ini")
     return ap
 
