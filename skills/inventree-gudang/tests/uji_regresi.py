@@ -64,7 +64,10 @@ def buat_handler(t):
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(raw)))
             self.end_headers()
-            self.wfile.write(raw)
+            try:
+                self.wfile.write(raw)
+            except (BrokenPipeError, ConnectionResetError):
+                pass  # klien sudah menyerah (uji timeout)
 
         def _layani(self):
             n = int(self.headers.get("Content-Length") or 0)
@@ -114,6 +117,7 @@ class DasarServer(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.srv.shutdown()
+        cls.srv.server_close()
 
     def setUp(self):
         self.t.diterima.clear()
@@ -270,7 +274,8 @@ class TesToken(unittest.TestCase):
         p = self.jalan("simpan-kunci", masukan=rahasia + "\n")
         self.assertEqual(p.returncode, 0, p.stderr)
         path = os.path.join(self.home, ".komunitech", "inventree-kunci.txt")
-        self.assertEqual(open(path).read().strip(), rahasia)
+        with open(path) as fh:
+            self.assertEqual(fh.read().strip(), rahasia)
         if os.name != "nt":
             self.assertEqual(stat.S_IMODE(os.stat(path).st_mode), 0o600)
         self.assertNotIn(rahasia, p.stdout + p.stderr)
@@ -285,7 +290,8 @@ class TesToken(unittest.TestCase):
 
     def test_urutan_token(self):
         f = os.path.join(self.home, "kunci2.txt")
-        open(f, "w").write("inv-darifile\n")
+        with open(f, "w") as fh:
+            fh.write("inv-darifile\n")
         os.chmod(f, 0o600)
 
         class A:

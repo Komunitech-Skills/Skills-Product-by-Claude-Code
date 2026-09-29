@@ -208,7 +208,8 @@ def _baca_file_token(path, sumber):
         raise Gagal(f"File kunci ({sumber}) tidak ditemukan: {path}. Jalankan dulu "
                     f"'python3 inventree.py simpan-kunci' (lihat docs/panduan-inventree.md bagian 6).", K_FILE)
     cek_izin_file(path)
-    token = open(path, encoding="utf-8").read().strip()
+    with open(path, encoding="utf-8") as f:
+        token = f.read().strip()
     if not token:
         raise Gagal(f"File kunci ({sumber}) kosong: {path}.", K_FILE)
     if re.search(r"\s", token):
@@ -854,7 +855,8 @@ def cmd_opname_draf(args, token):
 def baca_lembar_opname(path):
     if not os.path.isfile(path):
         raise Gagal(f"File opname tidak ditemukan: {path}", K_FILE)
-    mentah = open(path, encoding="utf-8-sig", errors="replace").read()
+    with open(path, encoding="utf-8-sig", errors="replace") as f:
+        mentah = f.read()
     if not mentah.strip():
         raise Gagal("File opname kosong.", K_FILE)
     baris_pertama = mentah.splitlines()[0]
