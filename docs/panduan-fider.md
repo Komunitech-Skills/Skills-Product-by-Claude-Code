@@ -61,7 +61,7 @@ Cek berhasil: `docker --version` dan `docker compose version` menampilkan nomor 
          retries: 10
 
      fider:
-       image: getfider/fider:v0.38.0        # versi dikunci agar tidak berubah sendiri
+       image: getfider/fider:v0.38.0        # versi dikunci agar tidak berubah sendiri (docs.fider.io memakai tag "stable"; cek tag terbaru sebelum rilis)
        restart: unless-stopped
        depends_on:
          db:

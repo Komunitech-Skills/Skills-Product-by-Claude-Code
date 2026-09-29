@@ -42,3 +42,13 @@ RENDAH
 
 ## Catatan uji
 Data uji pribadi hanya fiktif. Instans uji: proyek Docker `ujifider` (port 3100) masih menyala; hentikan dengan `docker compose -p ujifider down -v` di scratchpad `uji-fider/`.
+
+## Catatan revisi 1.0.1 (pembuat, 2026-09-29)
+Semua butir daftar perbaikan dikerjakan. Diverifikasi ulang pada Fider v0.38.0 asli (port 3100) dan 37 uji regresi (13 baru); `validate.py --skill` lulus. Perlu uji ulang oleh penguji independen.
+- **M1:** `allow_abbrev=False` di parser utama dan semua subparser; `--y` kini galat "unrecognized arguments" (kode 2), tidak menulis. Uji: 3 singkatan + cek semua parser.
+- **M2:** `host_lokal` memakai `ipaddress`: HTTP hanya untuk `localhost`, loopback, 10/8, 172.16/12, 192.168/16, fc00::/7 berupa alamat IP literal. `10.contoh.com`, `192.168.evil.com`, `.local`, `localhost.evil.com` wajib HTTPS. Berlaku juga di `simpan-alamat`.
+- **M3:** kemiripan memakai kata penentu (kata umum dibuang, sinonim kecil: bayar/pembayaran, WA/WhatsApp, notif/notifikasi, dll.). GoPay/ShopeePay tidak lagi mirip QRIS; "Bayar QRIS" = "Tambah pembayaran QRIS". Butir mirip kini TAHAN (bukan lewati diam-diam), pratinjau menjelaskan, dan dibuat hanya lewat `--tetap <nomor butir>|semua`. Gabung tetap butuh `--ya`, pratinjau memuat uraian kedua pos + peringatan bila judul tak mirip. Skor hanya petunjuk; SKILL.md menugaskan agen menilai maksud.
+- **M4:** telepon rumah/kantor (021-…, (0274) …, +62 21 …, 021 555 1234) disamarkan; harga/tanggal tidak.
+- **M5:** draf mengikuti status (tidak menulis "selesai" bila belum), salam netral "Halo", opsi `--topik` pengganti judul mentah.
+- **S1:** impor berkas kunci / berkas berisi kunci / folder `~/.komunitech` ditolak; `cetak()` menyamarkan kunci di semua keluaran. **S2:** `cek` tidak lagi menyebut pasti "Administrator". **S3:** butir tanpa huruf/angka dibuang. **S4:** uraian maks. 5.000 huruf; `simpan-kunci` tanpa terminal = pesan jelas (bukan traceback). **S5:** `--catatan` status/gabung disamarkan. **S6:** aturan 7-8 di SKILL.md; `status ditolak` wajib `--catatan`; klaim `pelanggan` ditandai "tidak diverifikasi" di pratinjau. **S7:** galat Fider umum diterjemahkan (mis. judul sudah ada; dicek di Fider asli).
+- **Rendah:** panduan menyebut `EMAIL_SMTP_ENABLE_STARTTLS` dan tag `stable`; `platform_teruji` tetap kosong. Belum diuji: Windows/macOS, HTTPS VPS, OpenClaw+Telegram, Codex/Cursor.
