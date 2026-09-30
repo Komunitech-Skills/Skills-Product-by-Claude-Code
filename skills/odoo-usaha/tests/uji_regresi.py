@@ -48,7 +48,8 @@ def jalan(port, *argv, kunci=st.KUNCI_BACA, home=None, env_tambah=None, masukan=
         env["ODOO_DB"] = st.DB
     if login:
         env["ODOO_LOGIN"] = {"baca": "bot-laporan@tokomaju.test", "jual": "bot-penjualan@tokomaju.test",
-                             "admin": "admin@tokomaju.test"}.get(login, login)
+                             "admin": "admin@tokomaju.test",
+                             "sendiri": "bot-own@tokomaju.test"}.get(login, login)
     env.update(env_tambah or {})
     p = subprocess.run([PY, SKRIP] + list(argv), capture_output=True, text=True, env=env, input=masukan, timeout=60)
     KELUARAN.append(p.stdout + p.stderr)
@@ -70,6 +71,23 @@ def harapan_penjualan(data, awal_utc, akhir_utc):
     so = [s for s in data["sale.order"] if s["state"] in ("sale", "done") and awal_utc <= s["date_order"] < akhir_utc
           and s["currency_id"][1] == "IDR"]
     return len(so), sum(Decimal(str(s["amount_total"])) for s in so)
+
+
+def harapan_piutang_lampau(data, per):
+    """Hitung ulang independen: faktur terbit <= per, sisa per tanggal = sisa kini + pelunasan setelah per."""
+    baris_ke_faktur = {b["id"]: b["move_id"][0] for b in data["account.move.line"]}
+    tambah = {}
+    for pr in data["account.partial.reconcile"]:
+        if pr["max_date"] > per:
+            fid = baris_ke_faktur[pr["debit_move_id"][0]]
+            tambah[fid] = tambah.get(fid, Decimal(0)) + Decimal(str(pr["amount"]))
+    hasil = {}
+    for f in data["account.move"]:
+        if f["move_type"] == "out_invoice" and f["state"] == "posted" and f["invoice_date"] <= per:
+            sisa = Decimal(str(f["amount_residual_signed"])) + tambah.get(f["id"], Decimal(0))
+            if sisa > 0:
+                hasil[f["name"]] = sisa
+    return hasil
 
 
 def harapan_piutang(data, per):
@@ -187,7 +205,10 @@ class UjiIntegrasi(unittest.TestCase):
             self.assertEqual(k, 0, err)
             self.assertIn("Versi Odoo: {}.0".format(v), out)
             self.assertIn("JSON-2" if v >= 19 else "XML-RPC", out)
-            self.assertIn("belum diuji ke server Odoo asli", out)
+            self.assertIn("diuji ke Odoo Community 18 & 19 asli", out)
+            self.assertNotIn("belum diuji ke server Odoo asli", out)
+            self.assertIn("- Pesanan penjualan: SEMUA data", out)
+            self.assertNotIn("PERINGATAN DATA SEBAGIAN", out)
 
     def test_cek_admin_diberi_risiko(self):
         k, out, _ = jalan(self.s[19].port, "cek", kunci=st.KUNCI_ADMIN, login="admin")
@@ -568,6 +589,110 @@ class UjiGalatDanKeamanan(unittest.TestCase):
         badan = kode.split('"""', 2)[2]      # lewati docstring modul
         for kata in ('"unlink"', "'unlink'", '"write"', "action_confirm", "action_post", "database/drop", "/jsonrpc"):
             self.assertNotIn(kata, badan)
+
+
+# ============================================================ perbaikan 1.0.1 (temuan penguji Odoo asli 18 & 19)
+class UjiPerbaikan101(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.s = {v: Server(v) for v in (17, 19)}
+
+    @classmethod
+    def tearDownClass(cls):
+        for s in cls.s.values():
+            s.tutup()
+
+    def own(self, v, *argv):
+        return jalan(self.s[v].port, *argv, kunci=st.KUNCI_SENDIRI, login="sendiri")
+
+    def test_own_documents_penjualan_tidak_diam_diam(self):
+        for v in (17, 19):
+            k, out, err = self.own(v, "penjualan", "--tanggal", TGL)
+            self.assertEqual(k, 9, out + err)
+            self.assertIn("PERINGATAN DATA SEBAGIAN", out)
+            self.assertIn("Own Documents", out)
+            self.assertIn("Jumlah pesanan: 1", out)          # hanya S00102 milik bot-own
+            k, out, err = self.own(v, "penjualan", "--tanggal", TGL, "--terima-sebagian", "--json")
+            self.assertEqual(k, 0, err)
+            d = json.loads(out)
+            self.assertTrue(d["data_sebagian"])
+            self.assertTrue(d["peringatan"])
+            self.assertEqual(Decimal(str(d["pesanan"]["total"])), Decimal("149850"))
+
+    def test_own_documents_cek_dan_laporan(self):
+        k, out, err = self.own(19, "cek")
+        self.assertEqual(k, 0, err)
+        self.assertIn("- Pesanan penjualan: HANYA milik pengguna API ini", out)
+        self.assertIn("PERINGATAN DATA SEBAGIAN", out)
+        k, out, err = self.own(19, "laporan-harian", "--tanggal", TGL)
+        self.assertEqual(k, 9, out + err)
+        self.assertTrue(out.splitlines()[2].startswith("PERINGATAN DATA SEBAGIAN"), out)
+        k, out, err = self.own(17, "piutang", "--per-tanggal", TGL)
+        self.assertEqual(k, 9, out + err)
+        self.assertIn("INV/2026/00190", out)
+        self.assertNotIn("INV/2026/00170", out)
+
+    def test_hak_penuh_tanpa_peringatan(self):
+        for argv in (["penjualan", "--tanggal", TGL], ["laporan-harian", "--tanggal", TGL],
+                     ["piutang", "--per-tanggal", TGL]):
+            k, out, err = jalan(self.s[19].port, *argv)
+            self.assertEqual(k, 0, out + err)
+            self.assertNotIn("PERINGATAN", out)
+
+    def test_has_group_tidak_ada_tidak_memblokir(self):
+        s = Server(19, ["tanpa_has_group"])
+        try:
+            k, out, err = jalan(s.port, "cek")
+            self.assertEqual(k, 0, err)
+            self.assertIn("tidak bisa dipastikan", out)
+            k, out, err = jalan(s.port, "penjualan", "--tanggal", TGL)
+            self.assertEqual(k, 0, err)
+        finally:
+            s.tutup()
+
+    def test_has_group_hanya_untuk_res_users(self):
+        api = od.Odoo("http://127.0.0.1:9", "db", "x", "kunci-uji-12345678", "xmlrpc")
+        api.protokol = "xmlrpc"
+        with self.assertRaises(od.Gagal) as c:
+            api.panggil("sale.order", "has_group", [1], group_ext_id="base.group_user")
+        self.assertIn("tidak diizinkan", c.exception.pesan)
+
+    def test_piutang_per_tanggal_lampau(self):
+        data = self.s[19].t.data
+        for per, total, jumlah in (("2026-09-25", Decimal("9756900"), 6), ("2026-08-15", Decimal("9268500"), 3)):
+            har = harapan_piutang_lampau(data, per)
+            self.assertEqual((sum(har.values()), len(har)), (total, jumlah), per)
+            for v in (17, 19):
+                k, out, err = jalan(self.s[v].port, "piutang", "--per-tanggal", per, "--json")
+                self.assertEqual(k, 0, out + err)
+                d = json.loads(out)
+                self.assertEqual(Decimal(str(d["total"])), total, (v, per))
+                self.assertEqual({f["nomor"]: Decimal(str(f["sisa"])) for f in d["faktur"]}, har, (v, per))
+        k, out, _ = jalan(self.s[19].port, "piutang", "--per-tanggal", "2026-08-15")
+        self.assertNotIn("INV/2026/00190", out)                 # terbit 10 Sep: belum ada per 15 Agu
+        self.assertIn("INV/2026/00185", out)                    # dibayar 1 Sep: per 15 Agu masih penuh
+        self.assertNotIn("dibayar sebagian", out)
+        self.assertIn("pelunasan bertanggal setelah 2026-08-15", out)
+        k, out, _ = jalan(self.s[19].port, "piutang", "--per-tanggal", "2026-09-25")
+        self.assertIn("INV/2026/00193", out)                    # lunas 28 Sep: per 25 Sep masih terbuka
+        self.assertNotIn("INV/2026/00194", out)                 # lunas 20 Sep
+        self.assertNotIn("nota kredit belum dipakai", out)      # RINV 30 Sep belum terbit
+
+    def test_piutang_lampau_tanpa_hak_pelunasan_kode_9(self):
+        k, out, err = self.own(19, "piutang", "--per-tanggal", "2026-09-25")
+        self.assertEqual(k, 9, out + err)
+        self.assertIn("pelunasan setelah 2026-09-25 tidak bisa dibaca", out)
+
+    def test_stok_masuk_terjadwal_diterangkan(self):
+        k, out, _ = jalan(self.s[19].port, "stok-menipis")
+        self.assertIn("Gelas Kertas 12oz (isi 50): stok 0 (HABIS), perkiraan 50, min 20, maks 100 -> saran pesan 50 "
+                      "(sudah ada barang masuk terjadwal 50)", out)
+
+    def test_env_host_diizinkan_tidak_lagi_membuka_host(self):
+        k, _, err = jalan(None, "cek", "--url", "https://erp.tokosaya.test",
+                          env_tambah={"ODOO_HOST_DIIZINKAN": "erp.tokosaya.test"})
+        self.assertEqual(k, 2)
+        self.assertIn("--izinkan-host", err)
 
 
 if __name__ == "__main__":

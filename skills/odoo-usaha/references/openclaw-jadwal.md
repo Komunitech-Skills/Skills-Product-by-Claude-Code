@@ -5,7 +5,7 @@
 **Status verifikasi (jujur, 30 September 2026).** Bentuk perintah di bawah mengikuti pola yang sudah dijalankan
 sungguhan di Gateway lokal OpenClaw 2026.9.6 untuk skill lain di repo Komunitech (`dolibarr-usaha`: job diterima,
 jadwal & zona waktu tersimpan, `automations run` menjalankan script, galat tercatat `status: error`). Untuk
-`odoo-usaha` sendiri, jadwal **belum** diuji di Gateway sungguhan dan **belum** diuji ke Odoo asli; pengiriman ke
+`odoo-usaha` sendiri, jadwal **belum** diuji di Gateway sungguhan (script sudah diuji ke Odoo Community 18 & 19 asli); pengiriman ke
 Telegram belum diuji (butuh token bot asli). Jika sebuah opsi ditolak, jalankan `openclaw automations add --help`.
 
 ## 0. Aturan kanal (keputusan pemilik Komunitech, 2026-09-23)
@@ -18,7 +18,7 @@ Telegram belum diuji (butuh token bot asli). Jika sebuah opsi ditolak, jalankan 
 
 ## 1. Siapkan (sekali)
 1. Gateway OpenClaw menyala saat jadwal. Odoo **lokal**: Odoo juga harus menyala (komputer toko yang tidak dimatikan, mini PC, VPS milik pengguna, atau jasa setup Komunitech). Odoo Online (*.odoo.com): cukup Gateway + internet.
-2. Pakai kunci pengguna **Bot Laporan (baca-saja)** di file default `~/.komunitech/odoo-kunci.txt`, disimpan **oleh akun yang menjalankan Gateway**: `python3 <path odoo.py> simpan-kunci`. **Jangan** menaruh kunci di `--command-env` atau `--message` (isi jadwal tersimpan di database Gateway). Odoo 19+: kunci punya masa berlaku; catat tanggalnya dan ganti sebelum habis (laporan akan GAGAL kode 5 bila kunci kedaluwarsa).
+2. Pakai kunci pengguna **Bot Laporan** (Penjualan *All Documents* + Akuntansi *Read-only* + Inventori *User*, bukan admin; Odoo tidak punya peran baca-saja murni — pengaman tulis ada di script, lihat `docs/panduan-odoo.md` §5) di file default `~/.komunitech/odoo-kunci.txt`, disimpan **oleh akun yang menjalankan Gateway**: `python3 <path odoo.py> simpan-kunci`. **Jangan** menaruh kunci di `--command-env` atau `--message` (isi jadwal tersimpan di database Gateway). Odoo 19+: kunci punya masa berlaku; catat tanggalnya dan ganti sebelum habis (laporan akan GAGAL kode 5 bila kunci kedaluwarsa).
 3. Alamat/database sudah disimpan dengan `atur` oleh akun yang sama (berkas `~/.komunitech/odoo.json`, non-rahasia).
 4. Telegram: buat bot di @BotFather → `openclaw channels add --channel telegram --token <token>` (pengguna sendiri yang menempel token di terminalnya) → kirim "halo" ke bot → `openclaw pairing list telegram` lalu `openclaw pairing approve telegram <KODE>`. Cara mencari ID chat: skill `laporan-otomatis-terjadwal`, `references/openclaw.md`.
 5. Cari path lengkap (argv tidak mengenal `~`):
@@ -68,4 +68,5 @@ Ganti baris terakhir menjadi `--announce --channel whatsapp --to "+62<nomor pemi
 - `summary` "GAGAL: ... tidak bisa dihubungi" → Odoo lokal mati / internet putus.
 - `summary` "Kunci API belum diatur" padahal di terminal jalan → kunci disimpan oleh akun lain; jalankan `simpan-kunci` dengan akun yang menjalankan Gateway.
 - `summary` "Kunci API ditolak" → kunci dicabut/kedaluwarsa; buat kunci baru di Odoo, `simpan-kunci --ya`.
+- `status: error` dengan teks "PERINGATAN DATA SEBAGIAN" (kode 9) → hak Bot Laporan *Own Documents*; angka hanya sebagian. Ubah hak jadi *All Documents* (+ Akuntansi *Read-only*). Jangan menambah `--terima-sebagian` di jadwal laporan pemilik.
 - `deliveryStatus: not-delivered` + `Telegram bot token missing` → kanal Telegram belum disiapkan (§1 langkah 4).
