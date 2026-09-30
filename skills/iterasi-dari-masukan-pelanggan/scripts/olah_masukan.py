@@ -490,7 +490,7 @@ betul benar bener setuju ditunggu tunggu dulu lho loh sekalian lancar beres kela
 makasi makasii mksh mks trimakasih trims hehe wkwk haha hihi btw sama kembali selalu terus banget sekali dong nih tuh lah kah pun doang
 aja saja semua semuanya semoga cepat sukses berkah barokah mantul mantap sabar ramah juga kok sih deh nya kan ok pagi siang sore malam
 selamat permisi maaf mohon tolong salam met happy good nice thanks thank sorry please yes nope bisa boleh udah sudah belum blm udh sdh
-ready kirim kirimin order pesan cek mampir datang balik lagi kapan dimana mana gimana berapa apa bantu lanjut gas proses""".split())
+ready kirim kirimin order pesan cek mampir datang balik lagi kapan dimana mana gimana berapa apa bantu lanjut gas proses dicek""".split())
 
 
 def _kata_umum_sapaan(k):
@@ -501,9 +501,9 @@ def _kata_umum_sapaan(k):
     # "dibantu", "diproses", "ditunggu" (awalan + kata dasar yang dikenal). Akhiran -in/-lah TIDAK dipakai (nama: Paimin, Abdullah).
     if len(k) >= 6 and k.endswith("kan"):
         return True
-    kamus = STOPWORD_SAPAAN | KATA_UMUM | AKSI | set(POS) | set(NEG) | set(SLANG)
+    kamus = STOPWORD_SAPAAN | AKSI | set(POS) | set(NEG)   # kata dasar >= 4 huruf: "dimas" (mas), "dinda" (nda) tetap nama
     for awal in ("di", "me", "ter", "ber"):
-        if k.startswith(awal) and len(k) - len(awal) >= 3 and k[len(awal):] in kamus:
+        if k.startswith(awal) and len(k) - len(awal) >= 4 and k[len(awal):] in kamus:
             return True
     return False
 
