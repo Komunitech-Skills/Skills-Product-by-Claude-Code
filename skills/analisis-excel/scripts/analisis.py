@@ -39,7 +39,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.11"
+VERSI = "1.0.14"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -3661,11 +3661,20 @@ def _nilai_csv(v, jenis, excel_id):
     return aman_csv(str(v))
 
 
+def periksa_keluaran(args, path):
+    """Pengaman file keluaran: tidak pernah menimpa file asli; file lain yang sudah ada hanya dengan --timpa."""
+    asli = [args.file] + ([args.file_b] if getattr(args, "file_b", None) else [])
+    if any(os.path.realpath(path) == os.path.realpath(a) for a in asli):
+        raise InputError("File keluaran tidak boleh menimpa file asli.")
+    if os.path.lexists(path) and not getattr(args, "timpa", False):
+        raise InputError("File keluaran sudah ada: {}. Pakai nama lain atau tambahkan --timpa bila pengguna "
+                         "sudah setuju menimpa.".format(path))
+
+
 def cmd_bersihkan(args, data):
     h = hasil_dasar(data, "bersihkan", "Data dibersihkan")
     keluar = args.keluar or os.path.splitext(args.file)[0] + "-bersih.csv"
-    if os.path.abspath(keluar) == os.path.abspath(args.file):
-        raise InputError("File keluaran tidak boleh menimpa file asli.")
+    periksa_keluaran(args, keluar)
     buang_dup = args.buang_duplikat
     seen = set()
     dup = 0
@@ -3788,10 +3797,11 @@ def _json_default(o):
     return str(o)
 
 
-def tulis_csv_hasil(h, path, excel_id):
+def tulis_csv_hasil(h, path, excel_id, args):
     if not h["tabel"]:
         return
     t = h["tabel"][0]
+    periksa_keluaran(args, path)
     try:
         with open(path, "w", newline="", encoding="utf-8-sig") as f:
             w = csv.writer(f, delimiter=";" if excel_id else ",")
@@ -4206,6 +4216,8 @@ def buat_parser():
                       help="Tetap hitung baris ini sebagai data walau tampak ringkasan/catatan, mis. \"12\"")
     umum.add_argument("--json", action="store_true", help="Keluaran JSON (untuk agent)")
     umum.add_argument("--keluar", help="Simpan tabel hasil utama ke file CSV ini")
+    umum.add_argument("--timpa", action="store_true",
+                      help="Izinkan menimpa file --keluar yang sudah ada (hanya setelah pengguna setuju; file asli tetap tidak bisa ditimpa)")
     umum.add_argument("--excel-id", action="store_true",
                       help="CSV keluaran untuk Excel berbahasa Indonesia (pemisah ; dan koma desimal)")
     umum.add_argument("--paksa", action="store_true",
@@ -4271,7 +4283,7 @@ def jalankan(argv=None):
         data = muat(args, args.file, args.sheet)
         h = PERINTAH[args.perintah](args, data)
     if args.keluar and args.perintah != "bersihkan":
-        tulis_csv_hasil(h, args.keluar, args.excel_id)
+        tulis_csv_hasil(h, args.keluar, args.excel_id, args)
     # buang duplikat peringatan, pertahankan urutan
     h["peringatan"] = list(OrderedDict.fromkeys(h["peringatan"]))
     h["catatan"] = list(OrderedDict.fromkeys(h["catatan"]))

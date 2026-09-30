@@ -2517,5 +2517,68 @@ class UjiSingkatanFlag(unittest.TestCase):
             self.assertIn("unrecognized arguments", p.stdout + p.stderr)
 
 
+class UjiTimpaFileKeluaran(unittest.TestCase):
+    """v1.0.14: --keluar ke file yang sudah ada ditolak tanpa --timpa; file asli tidak pernah bisa ditimpa."""
+
+    ISI = "Tanggal,Kategori,Jumlah\n2026-09-01,Bensin,50000\n2026-09-02,Parkir,10000\n2026-09-03,Bensin,30000\n"
+
+    def _siapkan(self, t):
+        asli = Path(t) / "biaya.csv"
+        asli.write_text(self.ISI, encoding="utf-8")
+        ada = Path(t) / "ada.csv"
+        ada.write_text("KEEP", encoding="utf-8")
+        return asli, ada
+
+    def test_bersihkan_dan_pivot_ditolak_tanpa_timpa(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, ada = self._siapkan(t)
+            for argv in (["bersihkan", asli, "--keluar", ada],
+                         ["pivot", asli, "--grup", "Kategori", "--nilai", "Jumlah", "--keluar", ada]):
+                code, out, err = jalankan(*argv)
+                self.assertNotEqual(code, 0, out + err)
+                self.assertIn("GAGAL: File keluaran sudah ada: {}".format(ada), err)
+                self.assertIn("--timpa", err)
+                self.assertNotIn("Traceback", err)
+                self.assertEqual(ada.read_text(encoding="utf-8"), "KEEP")
+            self.assertEqual(asli.read_text(encoding="utf-8"), self.ISI)
+
+    def test_dengan_timpa_berhasil(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, ada = self._siapkan(t)
+            for argv in (["bersihkan", asli, "--keluar", ada, "--timpa"],
+                         ["pivot", asli, "--grup", "Kategori", "--nilai", "Jumlah", "--keluar", ada, "--timpa"]):
+                ada.write_text("KEEP", encoding="utf-8")
+                code, out, err = jalankan(*argv)
+                self.assertEqual(code, 0, err)
+                self.assertNotEqual(ada.read_text(encoding="utf-8-sig"), "KEEP")
+            self.assertIn("Bensin", ada.read_text(encoding="utf-8-sig"))
+            self.assertEqual(asli.read_text(encoding="utf-8"), self.ISI)
+
+    def test_file_baru_tetap_bisa_dibuat_tanpa_timpa(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, _ = self._siapkan(t)
+            baru = Path(t) / "baru.csv"
+            code, out, err = jalankan("bersihkan", asli, "--keluar", baru)
+            self.assertEqual(code, 0, err)
+            self.assertTrue(baru.exists())
+
+    def test_file_asli_tidak_bisa_ditimpa_walau_timpa(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, _ = self._siapkan(t)
+            for argv in (["bersihkan", asli, "--keluar", asli, "--timpa"],
+                         ["pivot", asli, "--grup", "Kategori", "--nilai", "Jumlah", "--keluar", asli, "--timpa"]):
+                code, out, err = jalankan(*argv)
+                self.assertNotEqual(code, 0, out + err)
+                self.assertIn("tidak boleh menimpa file asli", err)
+                self.assertEqual(asli.read_text(encoding="utf-8"), self.ISI)
+
+    def test_singkatan_timpa_ditolak(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, ada = self._siapkan(t)
+            code, out, err = jalankan("bersihkan", asli, "--keluar", ada, "--tim")
+            self.assertNotEqual(code, 0)
+            self.assertEqual(ada.read_text(encoding="utf-8"), "KEEP")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

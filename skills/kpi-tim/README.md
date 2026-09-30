@@ -7,7 +7,7 @@
 - ✅ **Template Excel/Google Sheets jadi dalam semenit.** Sebutkan nama, divisi, dan peran tim. AI membuat file rencana KPI (bobot sudah 100%, target contoh, lembar petunjuk) dan lembar isian realisasi.
 - ✅ **Rekap grup WA langsung jadi angka.** Tempel pesan seperti "Andi closing 14 deal, target 15, omzet 162 jt". AI menyusunnya jadi tabel draf untuk kamu cek dulu, tanpa perlu mengetik ulang.
 - ✅ **Skor dihitung script, bukan dikira.** KPI "makin rendah makin baik" (komplain, reject, telat) dihitung dengan rumus yang benar. Capaian dibatasi 120% supaya satu KPI tidak menutupi yang lain. Hasilnya berupa skor tertimbang per orang, divisi, dan perusahaan, lengkap dengan tren dibanding bulan lalu.
-- ✅ **Dasbor KPI di komputermu sendiri.** Riwayat skor semua bulan disimpan ke satu file database, lalu bisa dilihat di browser (Datasette lewat skill `dasbor-lokal`) atau diimpor ke Grist: perusahaan → divisi → orang, tren per bulan, dan daftar KPI merah. Ada mode **anonim** untuk layar bersama: nama diganti kode, divisi kecil digabung, dan orang yang bisa ditebak dari daftar KPI-nya tidak ditampilkan per orang. Tanpa software baru, tanpa langganan.
+- ✅ **Dasbor KPI dari file lokal.** Riwayat skor semua bulan disimpan ke satu file database, lalu bisa dilihat di browser (Datasette lewat skill `dasbor-lokal`) atau diimpor ke Grist: perusahaan → divisi → orang, tren per bulan, dan daftar KPI merah. Ada mode **anonim** untuk layar bersama: nama diganti kode, divisi kecil digabung, dan orang yang bisa ditebak dari daftar KPI-nya tidak ditampilkan per orang. Tanpa software baru, tanpa langganan.
 - ✅ **Laporan siap kirim dan bahan 1:1.** Ringkasan untuk Telegram pemilik (bisa dijadwalkan otomatis lewat OpenClaw), rincian per orang untuk ngobrol 1:1, dan OKR ringan untuk target kuartalan.
 
 ## Cocok untuk siapa
@@ -45,7 +45,7 @@ Cukup ketik ke AI agent kamu, misalnya:
 
 ## Syarat
 - Python 3.8 atau lebih baru (di Mac/Linux biasanya sudah ada; di Windows pasang gratis dari python.org). Tidak perlu internet, akun, API key, atau instalasi paket.
-- Data berupa file di komputermu sendiri: CSV atau Excel (.xlsx). Untuk Google Sheets: unduh sebagai .xlsx/.csv, lalu impor kembali template yang dibuat AI.
+- Data berupa file di folder kerja yang kita sepakati (path-nya selalu saya sebutkan; bukan folder sementara /tmp): CSV atau Excel (.xlsx). Untuk Google Sheets: unduh sebagai .xlsx/.csv, lalu impor kembali template yang dibuat AI.
 - Jadwal otomatis ke Telegram hanya untuk OpenClaw, dan komputer harus menyala saat jam jadwal.
 
 ## Dasbor KPI (opsional)
@@ -70,7 +70,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 Tidak. Skor ini bahan diskusi dan pembinaan. Sebelum keputusan kepegawaian, dengarkan penjelasan karyawan, periksa hambatan di luar kendalinya, dan ikuti peraturan perusahaan serta UU Ketenagakerjaan. Untuk surat peringatan, gunakan skill `surat-peringatan-karyawan`. Untuk sengketa, konsultasikan ke HR atau konsultan hukum.
 
 **Data kinerja karyawan disimpan di mana, dan siapa yang bisa melihat?**
-Di komputermu sendiri. Script tidak mengirim data ke mana pun. Laporan per orang disarankan hanya untuk pemilik/manajer. Untuk grup kantor tersedia mode tanpa nama (skor perusahaan & divisi saja). Daftar orang diurutkan per divisi dan nama, bukan peringkat, supaya tidak ada yang dipermalukan.
+Di folder kerja pada mesin yang menjalankan OpenClaw (komputer atau VPS milik Anda), path-nya disebut sebelum file ditulis. Script tidak mengirim data ke mana pun. Agen AI membaca data KPI saat bekerja, dan laporan Telegram hanya berisi skor yang Anda pilih untuk dikirim. Laporan per orang disarankan hanya untuk pemilik/manajer. Untuk grup kantor tersedia mode tanpa nama (skor perusahaan & divisi saja). Daftar orang diurutkan per divisi dan nama, bukan peringkat, supaya tidak ada yang dipermalukan.
 
 **Tim saya belum punya target. Apakah target di template bisa langsung dipakai?**
 Target di katalog hanya contoh. Target yang adil berasal dari data 3 bulan terakhir usahamu, ditambah kenaikan wajar, dan dibicarakan dengan orangnya. Kalau belum ada data, pakai bulan pertama untuk mengukur saja, lalu pasang target di bulan berikutnya.
