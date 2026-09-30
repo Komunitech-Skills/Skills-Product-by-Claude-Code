@@ -487,6 +487,27 @@ class UjiRevisi101(unittest.TestCase):
         e = cari(a, "spt-op", "tahunan", "Tahun pajak 2025")
         self.assertEqual(e["tanggal"], "2026-03-31")
         self.assertIn("KEP-55/PJ/2026", e["keterangan"])
+        # Regresi v1.0.6: KEP-55 BUKAN perpanjangan - jatuh tempo tetap, hanya sanksi dihapus s.d. 30 Apr 2026.
+        self.assertIn("jatuh tempo tetap 31 Mar 2026", e["keterangan"])
+        self.assertIn("menghapus sanksi", e["keterangan"])
+        self.assertIn("30 Apr 2026", e["keterangan"])
+        self.assertNotIn("diperpanjang", e["keterangan"])
+        # Badan TP 2025: tanggal tetap 30 Apr 2026, catatan KEP-71 (bukan KEP-55)
+        b = acara_json("--profil", "badan-umum", "--tahun", "2026")
+        eb = cari(b, "spt-badan", "tahunan", "Tahun pajak 2025")
+        self.assertEqual(eb["tanggal"], "2026-04-30")
+        self.assertIn("KEP-71/PJ/2026", eb["keterangan"])
+        self.assertNotIn("KEP-55", eb["keterangan"])
+        self.assertIn("jatuh tempo tetap", eb["keterangan"])
+        # Tahun pajak lain tidak diberi catatan kebijakan khusus
+        e26 = cari(acara_json("--profil", "spt-op", "--tahun", "2027"), "spt-op", "tahunan", "Tahun pajak 2026")
+        self.assertNotIn("KEP-", e26["keterangan"])
+        # Teks skill & referensi tidak lagi menyebut KEP-55 sebagai perpanjangan/pengunduran
+        for f in (SINI / "SKILL.md", SINI / "references" / "aturan-tenggat.md", SCRIPT):
+            t = f.read_text(encoding="utf-8")
+            self.assertNotIn("diundur ke 30 April 2026", t)
+            self.assertNotIn("KEP-55/PJ/2026 → 30 Apr", t)
+            self.assertNotIn("diperpanjang DJP sampai 30 Apr 2026", t)
 
     # Aturan yang diverifikasi ulang
     def test_aturan_pph25_dan_pasal(self):
