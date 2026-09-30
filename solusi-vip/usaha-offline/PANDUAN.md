@@ -288,6 +288,19 @@ olahan file itu (lewat `rekap-penjualan-csv`) tanpa Anda menghitung manual tiap 
 catatan sudah lewat `kasir-lokal`/`kas-umkm`/`buku-stok`/`absensi-lokal`, poin b–e di atas sudah
 cukup dan skill ini tidak perlu dipakai.
 
+### m. Skill tambahan pertumbuhan usaha (opsional, akses penuh VIP)
+Semua dipicu manual, tanpa jadwal baru. Pasang: `openclaw skills install ./<nama> --global`.
+- **`program-referral-loyalitas`:** *"Bikin kartu stempel/poin untuk pelanggan kafe saya."* Hasil:
+  hitungan hadiah aman dari margin (bukan kira-kira), syarat & ketentuan, teks ajakan WA/IG yang
+  **Anda kirim satu per satu**, tanpa blast. (Klinik/apotek: versi tanpa imbalan.)
+- **`strategi-harga-produk`:** *"Tentukan harga menu baru dan paket hemat."* Cocok setelah
+  `hitung-hpp`: harga cantik, bundling, tangga harga grosir/reseller, aturan diskon yang tidak rugi.
+- **`iterasi-dari-masukan-pelanggan`:** ekspor ulasan Google Maps/chat pelanggan sebulan, lalu
+  *"Jadikan rencana perbaikan."* Data pribadi disamarkan otomatis.
+- **`rencana-marketing-usaha`:** rencana promo kuartalan (gajian, Ramadan, Harbolnas), melengkapi
+  `promo-kalender`.
+- **Cara cek berhasil:** ada angka & dokumen siap pakai. **Kalau gagal:** siapkan HPP/margin dulu (§5h).
+
 ---
 
 ## 6. Setelah semua jadwal aktif

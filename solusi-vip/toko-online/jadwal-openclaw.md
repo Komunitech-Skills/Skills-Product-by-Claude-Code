@@ -194,6 +194,22 @@ openclaw automations add --name "Laporan iklan mingguan" --cron "0 8 * * 1" --tz
 - Windows: bentuk `--command-argv` ini belum diuji di Gateway Windows; pakai Bentuk A.
 - Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
 
+## 11. Laporan web mingguan (umami-analitik), Senin 07.00 WIB 📖
+Disalin dari `skills/umami-analitik/references/openclaw-jadwal.md` (Pilihan 1). `laporan-mingguan`
+diuji ke Umami 3.4.0 asli; **jadwal & pengiriman Telegram ⚠️ belum diuji** di Gateway. Umami
+**perlu dipasang** dulu (jasa setup berbayar Komunitech tersedia). Jadwal hanya membaca.
+```bash
+python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/umami-analitik/scripts/umami.py'))"
+openclaw automations add --name "Umami - laporan web mingguan" --cron "0 7 * * 1" --tz Asia/Jakarta \
+  --command-argv '["python3","/home/NAMA/.openclaw/skills/umami-analitik/scripts/umami.py","laporan-mingguan","--situs","tokosaya.id"]' \
+  --command-env '{"UMAMI_URL":"http://localhost:3000"}' \
+  --announce --channel telegram --to <chat-id-telegram-pemilik>
+```
+- Kunci **tidak** ditulis di jadwal; simpan dengan `simpan-kunci` (akun view-only) di komputer Gateway.
+- Skill lain di §5m (referral, iterasi masukan, listmonk, luncurkan produk, video) **dipicu manual**,
+  tidak ada jadwalnya; newsletter tidak pernah dijadwalkan sebagai blast.
+- Uji dulu: `openclaw automations run <id> --wait`.
+
 ## WhatsApp (hanya bila syarat berikut semua terpenuhi)
 1. **Nomor terpisah** — bukan nomor toko/CS yang dikenal pelanggan.
 2. Hanya mengirim ke **pemilik sendiri**.

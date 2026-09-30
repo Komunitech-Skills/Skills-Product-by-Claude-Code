@@ -259,6 +259,30 @@ Komunitech** bila tim Anda tidak punya staf IT. Laporan harian dari salah satuny
 otomatis (`jadwal-openclaw.md` §9). Komunitech tidak berafiliasi dengan pembuat Frappe Books
 maupun Dolibarr.
 
+### l2. **[VIP, PILIHAN ERP]** Odoo untuk usaha mapan (`odoo-usaha`) — tawarkan jasa setup
+Alternatif ketiga selain Frappe Books/Dolibarr **bila perusahaan sudah memakai Odoo** (Community/
+Enterprise/Odoo Online) atau butuh ERP lebih besar. Ketik: *"Kirim laporan harian Odoo jam 9 malam
+ke Telegram."* Isi: penjualan hari itu, piutang (nama disamarkan), stok menipis. Memakai kunci
+pengguna khusus **Bot Laporan** (bukan admin); jadwal hanya membaca, tidak pernah membuat
+penawaran/faktur. Perintah di `jadwal-openclaw.md` §9b. Odoo lokal harus menyala saat jadwal.
+Komunitech tidak berafiliasi dengan Odoo S.A.
+
+### l3. **[VIP]** KPI tim (`kpi-tim`) — bulanan tanggal 2, 07.00 WIB (terjadwal)
+Ketik: *"Buat KPI untuk tim sales dan gudang saya dari Excel ini."* Agent memilih KPI dari
+katalog per peran, membuat rencana (bobot 100%), lalu menghitung skor dari realisasi yang Anda isi
+(angka dari script, bukan dikira). Laporan bulanan dikirim **hanya ke pimpinan** di Telegram; skor
+per orang **tidak boleh** ke grup karyawan (untuk grup pakai `--tanpa-nama`). KPI = alat
+pembinaan, bukan pengawasan. Perintah di `jadwal-openclaw.md` §9c.
+- **Cara cek berhasil:** contoh laporan pertama diperlihatkan dan disetujui sebelum jadwal aktif.
+- **Kalau gagal:** realisasi periode itu belum diisi, laporan akan bilang "data belum lengkap", bukan angka nol.
+
+### l4. **[VIP]** Peringatan dini operasional (`peringatan-dini-operasional`) — harian 20.00 WIB (terjadwal)
+Untuk produksi/distribusi yang punya log harian (output, reject, stok bahan, telat kirim, keluhan).
+Ketik: *"Pantau log harian ini dan beri peringatan dini tiap jam 8 malam."* Script menghitung tren,
+batas kendali, dan sisa hari stok; yang menyimpang ditandai. Log diisi **satu file tetap** sebelum
+jam kirim. Perintah di `jadwal-openclaw.md` §9d. Untuk kejadian besar tetap pakai
+`laporan-insiden-usaha` (manual).
+
 ### m. Dasbor lokal (opsional)
 `dasbor-lokal` membaca (hanya-baca, tidak pernah menulis) database alat Komunitech di komputer
 Anda seperti stok dan piutang, lalu menampilkan ringkasan siap pakai; tampilan interaktif di

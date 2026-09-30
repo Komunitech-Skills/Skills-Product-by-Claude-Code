@@ -1,0 +1,10 @@
+Proprietary - Komunitech (komunitech.com)
+Hak cipta (c) 2026 Komunitech. Seluruh hak dilindungi.
+
+Skill ini (SKILL.md, README.md, scripts/, references/, examples/, dan panduan terkait docs/panduan-kanboard.md) adalah karya orisinal Komunitech dan dilisensikan kepada pembeli untuk pemakaian pribadi/usaha sendiri. Dilarang menjual ulang, membagikan ulang, atau mempublikasikan isi skill ini tanpa izin tertulis. Disediakan apa adanya tanpa jaminan.
+
+CATATAN KOMPONEN PIHAK KETIGA
+Tentang Kanboard: skill ini adalah program terpisah yang berkomunikasi dengan server Kanboard MILIK PENGGUNA lewat JSON-RPC API resmi Kanboard (POST /jsonrpc.php, didokumentasikan di https://docs.kanboard.org/v1/api/). Skill ini tidak menyalin, memodifikasi, atau menyertakan kode Kanboard. Nama metode dan bentuk data API diverifikasi dari dokumentasi resmi dan dengan menjalankan Kanboard v1.2.54 dari kode sumber resmi (lihat catatan riset Komunitech).
+Kanboard (https://github.com/kanboard/kanboard) berlisensi MIT, Copyright (c) Frederic Guillot. Kanboard TIDAK didistribusikan dalam paket ini; pembeli mengunduhnya sendiri dari sumber resmi (GitHub Releases atau image Docker resmi kanboard/kanboard) sesuai docs/panduan-kanboard.md.
+
+"Kanboard" adalah nama proyek milik pembuatnya. Komunitech TIDAK berafiliasi dengan, tidak disponsori, dan tidak didukung oleh proyek Kanboard; nama dipakai hanya untuk menjelaskan kompatibilitas. Nama produk/platform pihak ketiga lain yang disebut (Docker, OpenClaw, Telegram, WhatsApp, Trello, ClickUp) hanya sebagai penyebut produk; Komunitech tidak berafiliasi dengan pemiliknya.

@@ -125,9 +125,18 @@ SEMUA_KEWAJIBAN = list(KEWAJIBAN_MASA) + list(KEWAJIBAN_TAHUNAN)
 # pemanfaatan dari luar Daerah Pabean oleh bukan-PKP). Dicocokkan dengan naskah resmi 2026-09-26.
 TAHUNAN_TIDAK_GESER = ("spt-op", "spt-badan")
 
-# Perpanjangan khusus DJP yang sudah diketahui (tanggal di kalender TIDAK diubah; hanya diberi catatan).
+# Kebijakan khusus DJP yang sudah diketahui (tanggal di kalender TIDAK diubah; hanya diberi catatan).
+# KEP-55/PJ/2026 TIDAK memperpanjang jatuh tempo: jatuh tempo SPT OP TP 2025 tetap 31 Mar 2026;
+# yang dihapus hanya sanksi administratif (denda/bunga) bila lapor/bayar s.d. 30 Apr 2026, khusus
+# orang pribadi. Sumber resmi: https://pajak.go.id/en/node/119611 (dicek 2026-09-30).
+# Badan: KEP-71/PJ/2026 juga TIDAK mengubah jatuh tempo (4 bulan setelah akhir tahun pajak); sanksi
+# denda/bunga dihapus bila lapor/bayar s.d. 1 bulan setelah jatuh tempo. Sumber resmi:
+# https://www.pajak.go.id/id/pengumuman/kebijakan-penghapusan-sanksi-administratif-atas-keterlambatan-pembayaran-dan-pelaporan-1
 PERPANJANGAN_KHUSUS = {
-    ("spt-op", 2025): "tahun pajak 2025 diperpanjang DJP sampai 30 Apr 2026 (KEP-55/PJ/2026)",
+    ("spt-op", 2025): ("jatuh tempo tetap 31 Mar 2026; KEP-55/PJ/2026 menghapus sanksi denda/bunga "
+                       "bila lapor/bayar paling lambat 30 Apr 2026 (khusus orang pribadi, bukan perpanjangan)"),
+    ("spt-badan", 2025): ("jatuh tempo tetap; KEP-71/PJ/2026 menghapus sanksi denda/bunga bila lapor/bayar "
+                          "paling lambat 1 bulan setelah jatuh tempo (bukan perpanjangan)"),
 }
 
 DISCLAIMER = (

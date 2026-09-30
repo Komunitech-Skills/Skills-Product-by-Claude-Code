@@ -17,6 +17,8 @@ pelanggan/karyawan/nomor HP di repo Komunitech.
       `kas-umkm`, `absensi-lokal`, `gaji-umkm`, `laporan-harian-usaha`, `buku-piutang`,
       `tagih-piutang`, `hitung-hpp`, `pph-final-umkm`, `agen-cs-toko`, `balas-chat-cs`,
       `caption-sosmed-umkm`, `promo-kalender`, `laporan-otomatis-terjadwal`.
+- [ ] (Opsional) skill tambahan: `program-referral-loyalitas`, `strategi-harga-produk`,
+      `iterasi-dari-masukan-pelanggan`, `rencana-marketing-usaha` (manual, tanpa blast).
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, member sudah punya 1 hasil nyata di tangan.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, laporan lampu lalu lintas sudah dibaca member, dan
       setiap perbaikan 🔴/🟡 yang disetujui sudah dijalankan **satu per satu**.

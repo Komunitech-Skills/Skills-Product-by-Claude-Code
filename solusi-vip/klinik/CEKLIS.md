@@ -14,6 +14,8 @@ hanya status ya/tidak.
 - [ ] 11 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`,
       `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`,
       `kebijakan-privasi-pdp`, `sop-onboarding`, `kontrak-kerja-pkwt`, `pengingat-pasien-klinik`.
+- [ ] (Opsional) `program-referral-loyalitas` (versi tanpa imbalan rujukan, PERLU REVIEW tenaga
+      medis/hukum) dan `iterasi-dari-masukan-pelanggan` terpasang; tidak ada hadiah untuk merujuk pasien.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, termasuk ringkasan UU PDP data kesehatan.
 

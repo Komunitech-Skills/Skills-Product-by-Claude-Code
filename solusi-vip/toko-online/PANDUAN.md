@@ -288,6 +288,29 @@ lalu dan mengirim ringkasan (belanja, hasil, efisiensi) ke Telegram.
 - **Kalau gagal:** lupa ekspor tiap Senin pagi → pasang pengingat terpisah, atau geser jam jadwal
   agak siang (mis. 09.00) untuk memberi waktu ekspor.
 
+### m. Skill tambahan pertumbuhan toko (opsional, akses penuh VIP)
+Pasang yang Anda butuhkan saja: `openclaw skills install ./<nama-skill> --global`.
+- **`program-referral-loyalitas` (manual):** *"Bikin program ajak teman dapat diskon untuk toko saya."*
+  Hasilnya hitungan biaya per referral & titik impas hadiah dari margin, syarat & ketentuan siap
+  tempel, dan teks ajakan WA/IG **yang Anda kirim satu per satu** (bukan blast).
+  **Cara cek berhasil:** ada angka hadiah aman + aturan anti-curang. **Kalau gagal:** siapkan margin
+  produk dulu (pakai `harga-jual-marketplace`).
+- **`iterasi-dari-masukan-pelanggan` (manual, bulanan):** ekspor chat/ulasan Shopee-Tokopedia
+  sebulan, lalu *"Ubah masukan pelanggan bulan ini jadi rencana perbaikan."* Data pribadi
+  disamarkan otomatis. Beda dengan `analisis-ulasan`: ini sampai ke **daftar perbaikan berurutan**.
+- **`umami-analitik` (terjadwal, Senin 07.00 WIB):** kalau punya website/toko sendiri dengan Umami
+  (analitik gratis, **perlu dipasang**, tawarkan jasa setup). Ketik: *"Aktifkan laporan web
+  mingguan tiap Senin jam 7."* Kunci API akun **view-only**, tidak pernah ditaruh di jadwal. Perintah
+  di `jadwal-openclaw.md` §11.
+- **`listmonk-newsletter` (manual, perlu dipasang):** email hanya ke orang yang **mendaftar
+  sendiri** (double opt-in + tombol berhenti). Agent selalu uji kirim ke email Anda dan bertanya
+  "Kirim ke sekitar N orang?" sebelum kirim. **Tidak dijadwalkan otomatis dan bukan blast.**
+- **`luncurkan-produk-baru` (manual):** *"Susun rencana peluncuran produk baru saya."* Untuk
+  produk baru yang butuh uji pasar dulu, minta juga `uji-pasar-produk-cepat`.
+- **`studio-video-pendek-ai` (manual):** paket video pendek TikTok/Reels (naskah per adegan,
+  shot list, caption). Anda yang merekam & mengunggah; wajah/suara AI hanya untuk diri sendiri
+  atau orang yang setuju tertulis, dan beri label konten AI sesuai aturan platform.
+
 ---
 
 ## 6. Setelah semua jadwal aktif

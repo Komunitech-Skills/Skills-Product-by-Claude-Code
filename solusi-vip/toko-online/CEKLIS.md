@@ -19,6 +19,10 @@ pelanggan/nomor HP di repo Komunitech.
       `laporan-otomatis-terjadwal`, `rekap-penjualan-csv`, `konten-mingguan`, `pesan-prospek-wa`,
       `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`, `kas-umkm`, `buku-piutang`,
       `laporan-iklan-mingguan`.
+- [ ] (Opsional) skill tambahan sesuai kebutuhan: `program-referral-loyalitas`,
+      `iterasi-dari-masukan-pelanggan`, `umami-analitik`, `listmonk-newsletter`,
+      `luncurkan-produk-baru`, `uji-pasar-produk-cepat`, `studio-video-pendek-ai`. Umami/listmonk
+      perlu dipasang (jasa setup); tidak ada blast, email hanya ke yang mendaftar sendiri.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, member sudah punya 1 hasil nyata di tangan.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, laporan lampu lalu lintas sudah dibaca member, dan
       setiap perbaikan 🔴/🟡 yang disetujui sudah dijalankan **satu per satu**.

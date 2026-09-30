@@ -209,6 +209,18 @@ diagnosis/rekam medis** yang disimpan.
   **bukan** nama penyakit/diagnosis/hasil pemeriksaan; skill menolak sendiri isian yang
   menyerupai itu. Bukan pengganti sistem antrean/rekam medis elektronik klinik.
 
+### j. Skill tambahan klinik (opsional, akses penuh VIP)
+- **`program-referral-loyalitas` (manual) - versi TANPA imbalan:** untuk fasilitas kesehatan skill
+  hanya merancang edukasi, pengingat kontrol (kirim staf via §5i), dan kartu info klinik.
+  **Tanpa diskon/poin/hadiah/komisi untuk merujuk pasien** (Permenkes 1787/2010 dan kode etik
+  profesi). Ditandai PERLU REVIEW tenaga medis/hukum. *"Bikin program edukasi & kartu info klinik
+  tanpa hadiah."*
+- **`iterasi-dari-masukan-pelanggan` (manual, bulanan):** ekspor ulasan Google Maps/survei
+  kepuasan, lalu *"Jadikan masukan pasien bulan ini rencana perbaikan layanan."* Fokus antrean,
+  keramahan, kebersihan, jam layanan. Data disamarkan; **jangan menempel isi keluhan medis/diagnosis**.
+  Balasan ke ulasan tetap lewat `balas-ulasan-pelanggan` (staf yang mengirim).
+- **Cara cek berhasil:** hasilnya tidak memuat imbalan rujukan maupun nama/nomor pasien.
+
 ---
 
 ## 6. Setelah semua jadwal aktif

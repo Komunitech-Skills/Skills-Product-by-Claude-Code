@@ -188,6 +188,11 @@ openclaw automations add "0 16 * * 5" \
   `skills/laporan-klien-konsultan/references/openclaw-jadwal.md` §2-3.
 - Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
 
+## 8f. Skill merek, positioning & harga: tanpa jadwal
+`strategi-merek-usaha`, `positioning-persona-usaha`, `analisis-pesaing-strategis`,
+`strategi-harga-produk`, `rencana-marketing-usaha` dipicu **manual** (lihat `PANDUAN.md` §5o).
+Tidak ada jadwal dan tidak ada pengiriman otomatis ke klien/calon klien.
+
 ## 9. Yang belum diverifikasi ⚠️
 - Membuat jadwal di atas langsung dari chat ("aktifkan pengingat jam 8"). Tool `cron` untuk agent
   memang ada dan hanya untuk owner, tapi kombinasi persisnya belum dicoba tim kami. Kalau

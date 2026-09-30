@@ -106,6 +106,9 @@ openclaw automations rm <id>                         # hapus permanen (hanya id,
 `run`/`disable`/`enable`/`edit`/`rm` **wajib** pakai `id` (UUID dari hasil `add`) — memakai nama
 di perintah-perintah ini ditolak dengan `Automation not found: <nama>`.
 
+## 9. Skill tambahan (referral, harga, masukan pelanggan, rencana marketing): tanpa jadwal
+Dipicu manual (lihat `PANDUAN.md` §5m). Tidak ada jadwal baru dan tidak ada kiriman massal ke pelanggan.
+
 ## WhatsApp (hanya bila syarat berikut semua terpenuhi)
 1. **Nomor terpisah** — bukan nomor toko/CS yang dikenal pelanggan.
 2. Hanya mengirim ke **pemilik sendiri**.

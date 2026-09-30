@@ -205,6 +205,21 @@ sore."*
 - **Draf ini hanya terkirim ke Anda.** Anda yang meninjau lalu menyalin ke email/WA klien —
   tidak pernah otomatis ke klien.
 
+### o. Merek, positioning & harga jasa Anda (manual, dipicu Anda)
+Semua skill di bawah dipicu satu kalimat; tanpa jadwal. Pasang: `openclaw skills install ./<nama> --global`.
+- **`strategi-merek-usaha`:** *"Bantu saya menamai agensi baru dan merumuskan penawarannya."* Isi:
+  10 opsi nama dengan skor, cek arti negatif, panduan cek domain/handle/merek DJKI.
+- **`positioning-persona-usaha`:** *"Susun persona klien ideal dan positioning saya."* Hasil: segmen
+  berskor, value proposition, tagline, message house untuk profil/proposal.
+- **`analisis-pesaing-strategis`:** *"Bandingkan saya dengan 3 agensi pesaing."* Dari halaman
+  publik atau teks yang Anda tempel.
+- **`strategi-harga-produk`:** untuk tarif jasa: paket good-better-best, retainer, diskon yang aman.
+  Hasilnya masuk ke `surat-penawaran-harga` dan `proposal-kerjasama`.
+- **`rencana-marketing-usaha`:** rencana kuartalan untuk mendapat klien (kanal, anggaran, target).
+- **Cara cek berhasil:** ada dokumen siap pakai, bukan saran umum. **Kalau gagal:** jawab pertanyaan
+  singkat yang diajukan agent (sekali, dalam satu pesan).
+- Komunikasi ke calon klien tetap draf yang **Anda kirim sendiri**, bukan kirim massal.
+
 ---
 
 ## 6. Setelah semua jadwal aktif

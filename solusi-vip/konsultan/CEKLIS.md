@@ -16,6 +16,8 @@ Satu halaman. **Jangan tulis nama/nomor klien di ceklis ini** — hanya status y
       `presentasi-instan`, `tender-checklist`, `kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`,
       `kalender-pajak`, `hledger-usaha`, `buku-piutang`, `laporan-klien-konsultan`, dan opsional
       `gaji-umkm` (hanya kalau ada staf tetap).
+- [ ] (Opsional) skill tambahan: `strategi-merek-usaha`, `positioning-persona-usaha`,
+      `analisis-pesaing-strategis`, `strategi-harga-produk`, `rencana-marketing-usaha` (manual, tanpa jadwal).
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, termasuk ringkasan UU PDP untuk data klien.
 

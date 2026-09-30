@@ -14,7 +14,7 @@ tidak boleh masuk bundle ecer (dicek otomatis oleh build.py).
 | paket-klinik | 5 | Rp495.000 | Rp249.000 | Klinik pratama/gigi/kecantikan, praktik mandiri |
 | paket-konsultan-freelancer | 8 | Rp742.000 | Rp349.000 | Konsultan, agensi, freelancer B2B |
 | paket-karyawan-ai-openclaw | 5 | Rp347.000 | Rp199.000 | Pengguna OpenClaw pemula (starter kit, privasi, laporan, ringkas grup) |
-| paket-strategi-produk-marketing | 11 | Rp1.339.000 | Rp599.000 | Pemilik usaha/tim yang mengembangkan & memasarkan produk (positioning, pesaing, harga, peluncuran, uji pasar, masukan pelanggan, analitik web, newsletter, papan masukan) |
+| paket-strategi-produk-marketing | 13 | Rp1.487.000 | Rp599.000 | Pemilik usaha/tim yang mengembangkan & memasarkan produk (positioning, merek & penawaran, pesaing, harga, peluncuran, uji pasar, referral & loyalitas, masukan pelanggan, analitik web, newsletter, papan masukan) |
 | paket-kantor-manajemen | 17 | Rp1.386.000 | Rp599.000 | Kantor/usaha yang ingin AI mengelola administrasi & manajemen harian lewat OpenClaw (subset solusi VIP kantor-manajemen) |
 
 Dasar usulan: ±50% dari total harga ecer (acuan `research/harga.md`) supaya bundle
@@ -25,7 +25,7 @@ pantau-pasar-kripto, laporan-harian-usaha) sengaja tidak dimasukkan.
 Semua bundle sudah diuji `build.py --izinkan-draft` (2026-09-24) dan berhasil.
 Penjualan nyata menunggu: status skill `rilis` + `tier_final`/`harga_final_idr` dari pemilik.
 
-**Harga final disetujui pemilik (2026-09-30):** `paket-strategi-produk-marketing` = **Rp599.000**,
+**Harga final disetujui pemilik (2026-09-30):** `paket-strategi-produk-marketing` = **Rp599.000** (13 skill; strategi-merek-usaha & program-referral-loyalitas ditambahkan 2026-09-30, harga tetap),
 `paket-kantor-manajemen` = **Rp599.000**. Bundle lain masih usulan.
 
 Bundle baru (2026-09-29, harga bundle belum diusulkan — menunggu pemilik):
