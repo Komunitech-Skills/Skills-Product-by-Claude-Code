@@ -28,12 +28,13 @@ Salin folder `strategi-konten-iklan` ke lokasi skill di platform Anda (OpenClaw,
 ## FAQ
 1. **Apakah skill ini menjalankan iklan saya?** Tidak. Skill merencanakan dan menghitung; Anda yang membuat dan menayangkan iklan. Jangan pernah membagikan password atau kode OTP akun iklan.
 2. **Apakah ada jaminan penjualan atau ROAS tertentu?** Tidak. Yang dihitung hanya batas impas dan pembagian uang; hasil bergantung produk, harga, kreatif, dan persaingan.
-3. **Apa bedanya dengan skill rencana marketing, kalender konten, dan laporan iklan?** Rencana marketing menyusun tujuan dan kanal keseluruhan; kalender konten menjadwalkan posting harian; laporan iklan membaca hasil iklan yang sudah tayang. Skill ini di tengahnya: pilar konten dan anggaran iklan bulanan.
+3. **Apa bedanya dengan skill rencana marketing, kalender konten, dan laporan iklan?** Rencana marketing (`rencana-marketing-usaha`) menyusun rencana menyeluruh 1-12 bulan; kalender konten menjadwalkan posting harian; laporan iklan membaca hasil iklan yang sudah tayang. Skill ini di tengahnya: pilar konten dan anggaran iklan bulanan.
 
 ## Skill pendamping
 `rencana-marketing-usaha`, `kalender-konten-30hari`, `laporan-iklan-mingguan`, `caption-sosmed-umkm`, `hitung-hpp`, `strategi-harga-produk`
 
 ## Riwayat versi
+- **1.0.1 (2026-09-30):** saringan kanal konsisten (dasar minggu terkecil; tidak ada "0 - DI BAWAH BATAS" tanpa catatan); saat uang tipis kanal yang paling cocok dipertahankan (`--jenis marketplace|jasa-lokal`); tujuan campuran (`--tujuan awareness:30,penjualan:70`); peringatan margin tipis/negatif; kata kunci kategori lebih lengkap (skincare, suplemen, klinik, pinjaman, dll.); alias kanal (ig, fb, tiktok shop, tokopedia) dan format `Rp 3.000.000,-`; panduan retargeting singkat; pembeda tegas dengan `rencana-marketing-usaha`.
 - **1.0.0 (2026-09-30):** rilis awal.
 
 ## Asal-usul

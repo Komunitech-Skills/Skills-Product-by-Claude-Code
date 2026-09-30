@@ -35,6 +35,29 @@ BOBOT = {
 # Batas uji: anggaran MINIMAL per iklan per hari (aturan praktis Komunitech, BUKAN syarat platform).
 MIN_HARIAN = {"meta": 25000, "tiktok": 30000, "shopee": 10000, "tiktokshop": 20000, "google": 25000}
 
+# Kata kunci (awalan kata) yang memicu catatan kategori terbatas.
+KATA_KATEGORI = {
+    "kesehatan": ["kesehatan", "skincare", "kosmetik", "kecantikan", "suplemen", "vitamin", "herbal", "jamu",
+                  "obat", "klinik", "farmasi", "apotek", "dokter", "rumah sakit", "diet", "perawatan kulit"],
+    "keuangan": ["keuangan", "pinjaman", "pinjol", "investasi", "asuransi", "kredit", "koperasi", "saham"],
+    "kripto": ["kripto", "crypto", "aset digital", "bitcoin"],
+}
+ALIAS_KANAL = {
+    "meta": "meta", "ig": "meta", "instagram": "meta", "fb": "meta", "facebook": "meta",
+    "tiktok": "tiktok", "tt": "tiktok",
+    "shopee": "shopee",
+    "tiktokshop": "tiktokshop", "tokopedia": "tiktokshop", "tokped": "tiktokshop",
+    "google": "google", "gads": "google",
+}
+MARKETPLACE = ["shopee", "tiktokshop"]
+JENIS = ["umum", "marketplace", "jasa-lokal"]
+# Urutan prioritas kanal bila anggaran kecil memaksa memilih (paling cocok dulu). 'umum' = menurut bobot tujuan.
+PRIORITAS = {
+    "marketplace": ["shopee", "tiktokshop", "meta", "tiktok", "google"],
+    "jasa-lokal": ["google", "meta", "tiktok", "shopee", "tiktokshop"],
+}
+NAMA_JENIS = {"umum": "usaha umum", "marketplace": "penjualan marketplace", "jasa-lokal": "jasa lokal"}
+
 DILARANG = ["judi", "togel", "slot online", "rokok", "vape", "miras", "narkoba", "senjata",
             "obat keras", "pinjol ilegal", "gambling", "casino", "porn", "bokep"]
 CATATAN_KATEGORI = {
@@ -60,13 +83,14 @@ class Gagal(ValueError):
 # --------------------------------------------------------------------------------------
 SATUAN = {"rb": 10 ** 3, "ribu": 10 ** 3, "k": 10 ** 3, "jt": 10 ** 6, "juta": 10 ** 6,
           "miliar": 10 ** 9, "milyar": 10 ** 9}
-_RE_RUPIAH = re.compile(r"(?:rp\.?\s*)?(\d[\d.,]*)\s*([a-z]+)?", re.I)
+_RE_RUPIAH = re.compile(r"(?:(?:rp|idr)\.?\s*)?(\d[\d.,]*)\s*([a-z]+)?", re.I)
 _TITIK_RIBU = re.compile(r"[1-9]\d{0,2}(\.\d{3})+")
 
 
 def parse_rupiah(teks, nama="nilai"):
     """'1.500.000', '1,5jt', '500rb', 'Rp2 juta' -> int rupiah. Ambigu/rusak -> Gagal."""
     s = str(teks).replace(" ", " ").strip().lower()
+    s = re.sub(r"[.,]-$", "", s)          # 'Rp 3.000.000,-' -> 'rp 3.000.000'
     m = _RE_RUPIAH.fullmatch(s)
     if not m:
         raise Gagal(f"{nama} '{teks}' tidak terbaca. Contoh yang benar: 1.500.000 | 1,5jt | 500rb | 2 juta.")
@@ -127,8 +151,86 @@ def parse_persen(teks, nama="persen"):
     if p <= 0 or p > 100:
         raise Gagal(f"{nama} '{teks}' harus lebih dari 0 dan paling tinggi 100%.")
     if p <= 1 and not ada_persen:
-        raise Gagal(f"{nama} '{teks}' ambigu: 0,4 berarti 0,4% atau 40%? Tulis '40%' (atau '0,4%').")
+        alt = format((p * SERATUS).normalize(), "f").replace(".", ",")
+        asli = format(p.normalize(), "f").replace(".", ",")
+        raise Gagal(f"{nama} '{teks}' ambigu: {teks} berarti {asli}% atau {alt}%? "
+                    f"Tulis '{alt}%' (atau '{asli}%').")
     return p
+
+
+def parse_margin(teks):
+    """Seperti parse_persen, tetapi margin nol/negatif dijelaskan (setiap penjualan rugi)."""
+    s = str(teks).strip().lower().replace(" ", "").replace(",", ".")
+    if s.endswith("%"):
+        s = s[:-1]
+    try:
+        nilai = Decimal(s)
+    except Exception:
+        nilai = None
+    if nilai is not None and nilai <= 0:
+        raise Gagal(f"--margin '{teks}': margin nol atau negatif berarti SETIAP penjualan rugi sebelum biaya iklan. "
+                    "Iklan tidak akan menolong: perbaiki harga jual atau harga pokok dulu (lihat skill "
+                    "strategi-harga-produk / hitung-hpp), lalu hitung ulang.")
+    return parse_persen(teks, "--margin")
+
+
+def parse_tujuan(teks):
+    """'penjualan' -> {'penjualan': 100}; 'awareness:30,penjualan:70' -> porsi (total wajib 100)."""
+    bagian = [x.strip() for x in re.split(r"[,;]", str(teks).lower()) if x.strip()]
+    if not bagian:
+        raise Gagal("--tujuan kosong. Pilihan: penjualan, awareness, leads, atau campuran (awareness:30,penjualan:70).")
+    if len(bagian) == 1 and ":" not in bagian[0]:
+        if bagian[0] not in BOBOT:
+            raise Gagal(f"--tujuan '{bagian[0]}' tidak dikenal. Pilihan: {', '.join(sorted(BOBOT))}, "
+                        "atau campuran dengan porsi (mis. awareness:30,penjualan:70).")
+        return {bagian[0]: 100}
+    porsi = {}
+    for b in bagian:
+        if b.count(":") != 1:
+            raise Gagal(f"--tujuan '{b}' salah format. Tujuan campuran ditulis nama:persen, mis. awareness:30,penjualan:70.")
+        nama, angka = [x.strip() for x in b.split(":")]
+        if nama not in BOBOT:
+            raise Gagal(f"--tujuan '{nama}' tidak dikenal. Pilihan: {', '.join(sorted(BOBOT))}.")
+        angka = angka.rstrip("%").strip()
+        if not re.fullmatch(r"[1-9]\d{0,2}", angka):
+            raise Gagal(f"--tujuan porsi '{angka}' untuk {nama} harus bilangan bulat lebih dari 0.")
+        if nama in porsi:
+            raise Gagal(f"--tujuan: '{nama}' disebut dua kali.")
+        porsi[nama] = int(angka)
+    if sum(porsi.values()) != 100:
+        raise Gagal(f"--tujuan: total porsi {sum(porsi.values())}%, harus tepat 100% "
+                    "(mis. awareness:30,penjualan:70).")
+    return porsi
+
+
+def bobot_gabungan(porsi):
+    """Bobot kanal = rata-rata tertimbang bobot tiap tujuan menurut porsinya."""
+    return {k: Decimal(sum(p * BOBOT[t][k] for t, p in porsi.items())) / 100 for k in KANAL}
+
+
+def parse_kanal(teks):
+    """'meta,ig, tiktok shop' -> ['meta','tiktokshop'] (alias diterima), plus catatan alias."""
+    hasil, catatan = [], []
+
+    def norm(t):
+        t = re.sub(r"[-_\s]", "", t.strip().lower())
+        return t[:-3] if t.endswith("ads") and t[:-3] in ALIAS_KANAL else t
+    for potong in re.split(r"[,;]", teks):
+        if not potong.strip():
+            continue
+        bagian = [potong] if norm(potong) in ALIAS_KANAL else potong.split()
+        for t in bagian:
+            n = norm(t)
+            if n not in ALIAS_KANAL:
+                raise Gagal(f"--kanal '{t.strip()}' tidak dikenal. Pilihan: {', '.join(KANAL)} "
+                            "(alias: ig, instagram, fb, facebook, tiktok shop, tokopedia, google ads).")
+            k = ALIAS_KANAL[n]
+            if n in ("tokopedia", "tokped"):
+                catatan.append("Tokopedia dihitung sebagai TikTok Shop Ads. Cek di Seller Center apakah iklan "
+                               "toko Anda dikelola lewat sana.")
+            if k not in hasil:
+                hasil.append(k)
+    return hasil, catatan
 
 
 # --------------------------------------------------------------------------------------
@@ -151,23 +253,49 @@ def bagi(total, bobot):
     return bagian, sisa
 
 
-def pilih_kanal(anggaran, tujuan, kanal_diminta, minggu, min_harian):
-    """Tentukan kanal aktif. Kanal yang bagiannya di bawah batas uji dibuang satu per satu
-    (bobot terkecil dulu; seri: yang paling belakang), lalu anggaran dibagi ulang."""
-    bobot = BOBOT[tujuan]
-    aktif = [k for k in kanal_diminta if bobot[k] > 0]
+def layak(b, bobot_minggu, k, min_harian):
+    """Kanal layak bila minggu TERKECIL-nya cukup untuk 1 iklan berbatas uji selama 7 hari.
+    Dasar yang sama dipakai untuk 'iklan aktif maks' (>= 1 berarti layak)."""
+    per_minggu, _ = bagi(b, bobot_minggu)
+    return min(per_minggu) >= HARI_PER_MINGGU * min_harian[k]
+
+
+def pilih_kanal(anggaran, bobot, kanal_diminta, bobot_minggu, min_harian, prioritas, cadangan):
+    """Tentukan kanal aktif (kanal_diminta berurutan). Aturan bila uang terlalu tipis:
+    1. Saring dengan dasar minggu terkecil (lihat layak()).
+    2. Bila kanal berprioritas tertinggi sendiri tidak layak, kanal berprioritas terendah dibuang
+       (uang dipusatkan); bila tidak, kanal tidak layak berprioritas terendah yang dibuang. Ulangi.
+    3. Bila tersisa satu kanal dan masih tidak layak, cari kanal lain (dari `cadangan`, menurut
+       prioritas) yang layak dengan seluruh anggaran.
+    Kembali (aktif, dikeluarkan{kanal: alasan}, masih_di_bawah_batas)."""
+    aktif = sorted([k for k in kanal_diminta if bobot[k] > 0], key=prioritas.index)
     dikeluarkan = {k: "kurang cocok untuk tujuan ini" for k in kanal_diminta if bobot[k] == 0}
     if not aktif:
         raise Gagal("Tidak ada kanal yang cocok untuk tujuan ini. Untuk 'leads' pakai meta/google/tiktok.")
-    hari = HARI_PER_MINGGU * minggu
+    awal = aktif[:]
     while True:
         bag, _ = bagi(anggaran, [bobot[k] for k in aktif])
-        lemah = [k for k, b in zip(aktif, bag) if b < hari * min_harian[k]]
-        if not lemah or len(aktif) == 1:
-            return aktif, dikeluarkan, bool(lemah)
-        buang = sorted(lemah, key=lambda k: (bobot[k], -aktif.index(k)))[0]
-        dikeluarkan[buang] = "bagian anggarannya di bawah batas uji"
+        lemah = [k for k, b in zip(aktif, bag) if not layak(b, bobot_minggu, k, min_harian)]
+        if not lemah:
+            break
+        if len(aktif) == 1:
+            for k in awal:
+                if k != aktif[0] and k in cadangan and layak(anggaran, bobot_minggu, k, min_harian):
+                    dikeluarkan[aktif[0]] = (f"anggaran sebulan tidak cukup untuk menguji di sini; "
+                                             f"dialihkan ke {NAMA_KANAL[k]} yang masih layak")
+                    dikeluarkan.pop(k, None)
+                    aktif = [k]
+                    lemah = []
+                    break
+            break
+        buang = aktif[-1] if aktif[0] in lemah else [k for k in aktif if k in lemah][-1]
+        if buang in lemah:
+            dikeluarkan[buang] = "minggu terkecilnya di bawah batas uji (kurang dari 7 hari x minimum harian)"
+        else:
+            dikeluarkan[buang] = (f"anggaran dipusatkan ke {NAMA_KANAL[aktif[0]]} (prioritas tertinggi) "
+                                  "karena uang terlalu tipis untuk dibagi")
         aktif.remove(buang)
+    return [k for k in kanal_diminta if k in aktif], dikeluarkan, bool(lemah)
 
 
 def hitung(a):
@@ -175,7 +303,11 @@ def hitung(a):
     if anggaran < 100000:
         raise Gagal("--anggaran di bawah Rp100.000 per bulan terlalu kecil untuk iklan berbayar. "
                     "Pakai konten organik dulu (lihat skill kalender-konten-30hari).")
-    tujuan = a.tujuan
+    porsi = parse_tujuan(a.tujuan)
+    campuran = len(porsi) > 1
+    tujuan = next(iter(porsi)) if not campuran else "campuran: " + " + ".join(f"{t} {p}%" for t, p in porsi.items())
+    bobot = bobot_gabungan(porsi)
+    perlu_aov = "penjualan" in porsi or "leads" in porsi
     minggu = a.minggu
     if not 1 <= minggu <= 5:
         raise Gagal("--minggu harus 1 sampai 5.")
@@ -189,30 +321,23 @@ def hitung(a):
                 raise Gagal(f"--bobot-minggu '{t}' harus bilangan bulat 1-99.")
             bobot_minggu.append(Decimal(t))
 
-    kanal_diminta = KANAL[:]
+    kanal_diminta, catatan = KANAL[:], []
     if a.kanal:
-        kanal_diminta = []
-        for t in re.split(r"[,\s;]+", a.kanal.strip().lower()):
-            t = t.replace("-", "").replace("_", "").replace(" ", "")
-            if not t:
-                continue
-            if t not in KANAL:
-                raise Gagal(f"--kanal '{t}' tidak dikenal. Pilihan: {', '.join(KANAL)}.")
-            if t not in kanal_diminta:
-                kanal_diminta.append(t)
+        kanal_diminta, catatan = parse_kanal(a.kanal)
         if not kanal_diminta:
             raise Gagal("--kanal kosong.")
 
-    catatan = []
     kategori = (a.kategori or "umum").strip().lower()
     for kata in DILARANG:
         if kata in kategori:
             raise Gagal(f"Kategori '{a.kategori}' dilarang/sangat dibatasi di platform iklan utama; "
                         "rencana anggaran tidak disusun.")
+    cocok = False
     for kunci, teks in CATATAN_KATEGORI.items():
-        if kunci in kategori:
+        if any(re.search(r"\b" + re.escape(kata), kategori) for kata in KATA_KATEGORI[kunci]):
             catatan.append(teks)
-    if a.kategori and kategori != "umum" and not any(k in kategori for k in CATATAN_KATEGORI):
+            cocok = True
+    if a.kategori and kategori != "umum" and not cocok:
         catatan.append(f"Kategori '{a.kategori}': cek dulu apakah termasuk kategori terbatas di kebijakan "
                        "iklan resmi tiap platform.")
 
@@ -224,12 +349,12 @@ def hitung(a):
     # ---- target dari margin & AOV
     target = None
     aov = parse_rupiah(a.aov, "--aov") if a.aov else None
-    margin = parse_persen(a.margin, "--margin") if a.margin else None
+    margin = parse_margin(a.margin) if a.margin else None
     closing = parse_persen(a.closing, "--closing") if a.closing else None
-    if tujuan == "penjualan" and (aov is None or margin is None):
+    if "penjualan" in porsi and (aov is None or margin is None):
         raise Gagal("Untuk tujuan 'penjualan' wajib isi --aov (harga rata-rata per pesanan) dan --margin "
                     "(margin kotor, mis. 40%). Tanpa keduanya target CPA/ROAS tidak bisa dihitung.")
-    if tujuan == "leads" and (aov is None or margin is None or closing is None):
+    if "leads" in porsi and (aov is None or margin is None or closing is None):
         raise Gagal("Untuk tujuan 'leads' wajib isi --aov (nilai rata-rata satu penjualan), --margin, dan "
                     "--closing (persen calon pembeli yang akhirnya membeli, mis. 20%).")
     if (aov is None) != (margin is None):
@@ -251,13 +376,28 @@ def hitung(a):
             target["cpl_impas"] = bulat(laba * c)
             target["cpl_target"] = bulat(laba * c * PORSI_CPA_AMAN)
         target["pesanan_minimal_impas"] = int((Decimal(anggaran) / laba).to_integral_value(rounding=ROUND_CEILING))
-    elif tujuan == "awareness":
+        impas = Decimal(target["roas_impas"])
+        if impas >= 10:
+            catatan.append(f"PERINGATAN margin sangat tipis: ROAS impas {koma(target['roas_impas'])}x (hampir mustahil "
+                           "dicapai iklan berbayar). Perbaiki harga jual / harga pokok / biaya dulu (skill "
+                           "strategi-harga-produk, hitung-hpp) sebelum menaikkan anggaran iklan.")
+        elif impas >= 5:
+            catatan.append(f"Margin tipis: ROAS impas {koma(target['roas_impas'])}x cukup berat. Pertimbangkan "
+                           "menaikkan harga atau menekan biaya sebelum memperbesar iklan, dan mulai dari anggaran uji kecil.")
+    elif not perlu_aov:
         catatan.append("Tanpa --aov/--margin: rencana awareness tidak menghitung CPA/ROAS (memang bukan tolok ukurnya).")
 
     # ---- kanal & minggu
-    aktif, dikeluarkan, di_bawah = pilih_kanal(anggaran, tujuan, kanal_diminta, minggu, min_harian)
+    jenis = a.jenis
+    prioritas = PRIORITAS.get(jenis) or sorted(KANAL, key=lambda k: (-bobot[k], KANAL.index(k)))
+    cadangan = kanal_diminta if (a.kanal or jenis == "marketplace") else [k for k in kanal_diminta if k not in MARKETPLACE]
+    if campuran:
+        catatan.append("Tujuan campuran: bobot kanal = rata-rata tertimbang bobot tiap tujuan menurut porsinya "
+                       "(titik awal). Target CPA/ROAS berlaku untuk bagian penjualan/leads; bagian awareness "
+                       "dinilai dari jangkauan, bukan CPA.")
+    aktif, dikeluarkan, _ = pilih_kanal(anggaran, bobot, kanal_diminta, bobot_minggu, min_harian, prioritas, cadangan)
     hari_total = HARI_PER_MINGGU * minggu
-    bobot_kanal = [BOBOT[tujuan][k] for k in aktif]
+    bobot_kanal = [bobot[k] for k in aktif]
     bag_kanal, sisa_kanal = bagi(anggaran, bobot_kanal)
     hasil_kanal = []
     sisa_minggu = {}
@@ -267,22 +407,28 @@ def hitung(a):
             sisa_minggu[k] = sm
         uji = bulat(Decimal(b) * PORSI_UJI)
         iklan_maks = min(p // (HARI_PER_MINGGU * min_harian[k]) for p in per_minggu)
-        item = {"kanal": k, "nama": NAMA_KANAL[k], "bobot": BOBOT[tujuan][k], "anggaran": b,
+        item = {"kanal": k, "nama": NAMA_KANAL[k], "bobot": (int(bobot[k]) if bobot[k] == int(bobot[k]) else float(bobot[k])), "anggaran": b,
                 "persen": str((Decimal(b) * SERATUS / anggaran).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)),
                 "aman": b - uji, "uji": uji, "per_minggu": per_minggu,
                 "rata_per_hari": bulat(Decimal(b) / hari_total),
                 "min_harian_per_iklan": min_harian[k], "iklan_aktif_maks": int(iklan_maks)}
         if iklan_maks < 1:
-            item["hari_tayang_terbiayai"] = int(b // min_harian[k])
+            item["hari_tayang_terbiayai"] = int(min(b // min_harian[k], hari_total))
         hasil_kanal.append(item)
-    if di_bawah:
-        catatan.append("Anggaran DI BAWAH batas uji untuk kanal ini: iklan hanya bisa tayang sebagian hari "
-                       "atau dengan 1 iklan berbudget kecil. Kumpulkan anggaran dulu atau andalkan konten organik.")
+    for x in hasil_kanal:
+        if x["iklan_aktif_maks"] < 1:
+            catatan.append(f"Anggaran DI BAWAH batas uji untuk {x['nama']} (minggu terkecil kurang dari 7 hari x "
+                           f"{rp(x['min_harian_per_iklan'])}): iklan hanya bisa tayang sebagian hari atau dengan 1 iklan "
+                           "berbudget kecil. Kumpulkan anggaran dulu atau andalkan konten organik. Sudah tidak ada "
+                           "kanal lain yang lebih layak untuk anggaran ini.")
+    if len(hasil_kanal) == 1 and len(kanal_diminta) > 1:
+        catatan.append(f"Hanya {hasil_kanal[0]['nama']} yang dipertahankan karena anggaran terlalu tipis untuk dibagi "
+                       f"(aturan: prioritas untuk {NAMA_JENIS[jenis]}; ubah dengan --jenis umum|marketplace|jasa-lokal).")
     total_minggu = [sum(x["per_minggu"][i] for x in hasil_kanal) for i in range(minggu)]
     assert sum(x["anggaran"] for x in hasil_kanal) == anggaran
     assert sum(total_minggu) == anggaran
     return {
-        "anggaran": anggaran, "tujuan": tujuan, "minggu": minggu, "hari_tayang": hari_total,
+        "anggaran": anggaran, "tujuan": tujuan, "porsi_tujuan": porsi, "jenis": jenis, "minggu": minggu, "hari_tayang": hari_total,
         "bobot_minggu": [int(b) for b in bobot_minggu], "target": target, "kanal": hasil_kanal,
         "total_per_minggu": total_minggu, "sisa_pembulatan_kanal": sisa_kanal,
         "sisa_pembulatan_minggu": sisa_minggu,
@@ -344,7 +490,8 @@ def teks_laporan(h):
         o.append(f"| {x['nama']} | {rp(x['rata_per_hari'])} | {rp(x['min_harian_per_iklan'])} | {akhir} |")
     o.append("")
     if h["kanal_dikeluarkan"]:
-        o.append("Kanal tidak dipakai: " + "; ".join(f"{k} ({v})" for k, v in h["kanal_dikeluarkan"].items()) + ".")
+        o.append("Kanal tidak dipakai: " + "; ".join(f"{k} ({v})" for k, v in h["kanal_dikeluarkan"].items())
+                 + ". Anggarannya sudah dialihkan ke kanal yang dipakai (total tetap sama).")
     sk = h["sisa_pembulatan_kanal"]
     sm = h["sisa_pembulatan_minggu"]
     terbesar = max(h["kanal"], key=lambda x: x["bobot"])["nama"]
@@ -361,7 +508,11 @@ def teks_laporan(h):
 def buat_parser():
     p = argparse.ArgumentParser(allow_abbrev=False, description="Alokasi anggaran iklan bulanan per kanal & minggu.")
     p.add_argument("--anggaran", required=True, help="anggaran sebulan, mis. 10jt, 1.500.000, 500rb")
-    p.add_argument("--tujuan", choices=sorted(BOBOT), default="penjualan")
+    p.add_argument("--tujuan", default="penjualan",
+                   help="penjualan | awareness | leads, atau campuran berporsi total 100, mis. awareness:30,penjualan:70")
+    p.add_argument("--jenis", choices=JENIS, default="umum",
+                   help="dipakai bila anggaran kecil memaksa memilih kanal: marketplace (Shopee/TikTok Shop dulu), "
+                        "jasa-lokal (Google/Meta dulu), umum (menurut bobot tujuan)")
     p.add_argument("--aov", help="harga rata-rata per pesanan (atau nilai satu penjualan untuk leads)")
     p.add_argument("--margin", help="margin kotor setelah biaya admin marketplace & ongkir, mis. 40%%")
     p.add_argument("--closing", help="khusus leads: persen calon pembeli yang jadi membeli, mis. 20%%")
@@ -376,6 +527,11 @@ def buat_parser():
 
 def main(argv=None):
     try:
+        argv = list(sys.argv[1:] if argv is None else argv)
+        for i, t in enumerate(argv[:-1]):   # '--margin -10%' dibaca argparse sebagai opsi; gabungkan
+            if t == "--margin" and argv[i + 1].startswith("-"):
+                argv[i:i + 2] = ["--margin=" + argv[i + 1]]
+                break
         a = buat_parser().parse_args(argv)
         h = hitung(a)
     except Gagal as e:

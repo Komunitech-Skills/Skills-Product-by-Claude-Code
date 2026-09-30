@@ -229,5 +229,161 @@ class Penolakan(unittest.TestCase):
             self.assertTrue(any("TERBATAS" in c for c in h["catatan"]), kat)
 
 
+class Perbaikan101(unittest.TestCase):
+    """Tes v1.0.1. Angka dihitung manual (rumus di komentar)."""
+    DASAR = ["--aov", "150rb", "--margin", "40%"]
+
+    def test_s1_saringan_kanal_pakai_minggu_terkecil(self):
+        # 5jt, bobot minggu 1 1 1 4 (total 7): google 500rb -> minggu kecil 71.428 < 175.000 -> keluar.
+        # tiktok 1.111.111/7 = 158.730 < 210.000 dan tiktokshop 833.333/7 = 119.047 < 140.000 -> keluar berurutan.
+        # tersisa meta:shopee = 35:20 -> 5.000.000 x 35/55 = 3.181.818 ; shopee 1.818.182
+        h = js("--anggaran", "5jt", *self.DASAR, "--bobot-minggu", "1", "1", "1", "4")
+        self.assertEqual([(k["kanal"], k["anggaran"]) for k in h["kanal"]],
+                         [("meta", 3181818), ("shopee", 1818182)])
+        # meta minggu: 3.181.818 x 1/7 = 454.545 (x3), 4/7 = 1.818.182 ; jumlah 3.181.817 -> sisa +1 ke minggu 4
+        self.assertEqual(h["kanal"][0]["per_minggu"], [454545, 454545, 454545, 1818183])
+        self.assertEqual(h["kanal"][0]["iklan_aktif_maks"], 2)     # 454.545 // 175.000
+        self.assertEqual(h["kanal"][1]["iklan_aktif_maks"], 3)     # 259.740 // 70.000
+        self.assertTrue(all(k["iklan_aktif_maks"] >= 1 for k in h["kanal"]))
+        self.assertEqual(sum(k["anggaran"] for k in h["kanal"]), 5000000)
+        self.assertTrue(any("minggu terkecil" in v for v in h["kanal_dikeluarkan"].values()))
+
+    def test_s1_di_bawah_batas_selalu_ada_catatan_dan_hari_dibatasi(self):
+        h = js("--anggaran", "500rb", "--aov", "80rb", "--margin", "35%")
+        self.assertTrue(any("DI BAWAH batas uji" in c for c in h["catatan"]))
+        # --minggu 1: 7 hari; 500.000 / 25.000 = 20 hari tetapi dibatasi 7
+        h = js("--anggaran", "100rb", "--aov", "80rb", "--margin", "35%", "--minggu", "1", "--kanal", "meta")
+        self.assertEqual(h["kanal"][0]["hari_tayang_terbiayai"], 4)   # 100.000 / 25.000
+        h = js("--anggaran", "1jt", "--aov", "80rb", "--margin", "35%", "--minggu", "1", "--kanal", "meta",
+               "--min-harian", "5rb")
+        self.assertGreaterEqual(h["kanal"][0]["iklan_aktif_maks"], 1)
+
+    def test_s2_marketplace_mempertahankan_shopee(self):
+        # 500rb: minggu 125.000 ; hanya shopee (70.000/minggu) yang layak
+        h = js("--anggaran", "500rb", "--aov", "80rb", "--margin", "35%", "--jenis", "marketplace")
+        self.assertEqual([k["kanal"] for k in h["kanal"]], ["shopee"])
+        self.assertEqual(h["kanal"][0]["anggaran"], 500000)
+        self.assertEqual(h["kanal"][0]["iklan_aktif_maks"], 1)     # 125.000 // 70.000
+        self.assertFalse(any("DI BAWAH" in c for c in h["catatan"]))
+
+    def test_s2_jasa_lokal_mempertahankan_google(self):
+        # leads 1,5jt: google 1.500.000 -> minggu 375.000 // 175.000 = 2 ; CPL impas 500rb x 40% x 20% = 40.000
+        h = js("--anggaran", "1,5jt", "--tujuan", "leads", "--aov", "500rb", "--margin", "40%",
+               "--closing", "20%", "--jenis", "jasa-lokal")
+        self.assertEqual([(k["kanal"], k["anggaran"]) for k in h["kanal"]], [("google", 1500000)])
+        self.assertEqual(h["kanal"][0]["iklan_aktif_maks"], 2)
+        self.assertEqual(h["target"]["cpl_impas"], 40000)
+        self.assertEqual(h["target"]["cpl_target"], 28000)         # 70%
+        self.assertIn("Meta (IG/FB)", h["kanal_dikeluarkan"])
+        # tanpa --jenis (umum): tetap perilaku lama, Meta yang dipertahankan
+        h = js("--anggaran", "1,5jt", "--tujuan", "leads", "--aov", "500rb", "--margin", "40%", "--closing", "20%")
+        self.assertEqual([k["kanal"] for k in h["kanal"]], ["meta"])
+
+    def test_s3_tujuan_campuran(self):
+        # bobot = 30% awareness (40,40,5,5,10) + 70% penjualan (35,20,20,15,10)
+        # meta 12+24,5=36,5 ; tiktok 12+14=26 ; shopee 1,5+14=15,5 ; tiktokshop 1,5+10,5=12 ; google 3+7=10
+        h = js("--anggaran", "10jt", "--tujuan", "awareness:30,penjualan:70", *self.DASAR)
+        self.assertEqual([k["anggaran"] for k in h["kanal"]], [3650000, 2600000, 1550000, 1200000, 1000000])
+        self.assertEqual(sum(k["anggaran"] for k in h["kanal"]), 10000000)
+        self.assertEqual(h["porsi_tujuan"], {"awareness": 30, "penjualan": 70})
+        self.assertEqual(h["target"]["roas_impas"], "2.50")
+        self.assertEqual([k["iklan_aktif_maks"] for k in h["kanal"]], [5, 3, 5, 2, 1])
+        # penjualan:100 sama dengan 'penjualan'
+        self.assertEqual(js("--anggaran", "10jt", "--tujuan", "penjualan:100", *self.DASAR)["kanal"],
+                         js("--anggaran", "10jt", *self.DASAR)["kanal"])
+
+    def test_s3_tujuan_campuran_validasi(self):
+        for tujuan, kata in [("awareness:30,penjualan:60", "harus tepat 100"),
+                             ("awareness:50,penjualan:60", "harus tepat 100"),
+                             ("awareness:50,awareness:50", "dua kali"),
+                             ("awareness:30,promo:70", "tidak dikenal"),
+                             ("awareness:30,penjualan", "salah format"),
+                             ("awareness:30,penjualan:0", "lebih dari 0"),
+                             ("promo", "tidak dikenal")]:
+            kode, out, err = jalan("--anggaran", "5jt", "--tujuan", tujuan, *self.DASAR)
+            self.assertEqual(kode, 2, tujuan)
+            self.assertIn(kata, err, tujuan)
+
+    def test_s3_campuran_leads_wajib_closing_dan_awareness_tanpa_aov(self):
+        kode, _, err = jalan("--anggaran", "5jt", "--tujuan", "awareness:50,leads:50", *self.DASAR)
+        self.assertEqual(kode, 2)
+        self.assertIn("--closing", err)
+        h = js("--anggaran", "10jt", "--tujuan", "awareness:100", "--kanal", "meta,tiktok")
+        self.assertEqual([k["anggaran"] for k in h["kanal"]], [5000000, 5000000])
+
+    def test_r1_margin_tipis(self):
+        # margin 8%: ROAS impas 1/0,08 = 12,50 (>= 10) -> peringatan kuat
+        h = js("--anggaran", "8jt", "--aov", "100rb", "--margin", "8%")
+        self.assertEqual(h["target"]["roas_impas"], "12.50")
+        self.assertTrue(any("PERINGATAN margin sangat tipis" in c for c in h["catatan"]))
+        # margin 15%: 1/0,15 = 6,67 (5-10) -> catatan tipis biasa
+        h = js("--anggaran", "8jt", "--aov", "100rb", "--margin", "15%")
+        self.assertEqual(h["target"]["roas_impas"], "6.67")
+        self.assertTrue(any("Margin tipis" in c for c in h["catatan"]))
+        self.assertFalse(any("PERINGATAN" in c for c in h["catatan"]))
+        # margin 40%: tanpa peringatan
+        h = js("--anggaran", "8jt", "--aov", "100rb", "--margin", "40%")
+        self.assertFalse(any("tipis" in c for c in h["catatan"]))
+
+    def test_r1_margin_nol_dan_negatif(self):
+        for m in ["-10%", "0%", "-5"]:
+            kode, out, err = jalan("--anggaran", "8jt", "--aov", "100rb", "--margin", m)
+            self.assertEqual(kode, 2, m)
+            self.assertIn("SETIAP penjualan rugi", err, m)
+        kode, out, err = jalan("--anggaran", "8jt", "--aov", "100rb", "--margin=-10%")
+        self.assertIn("SETIAP penjualan rugi", err)
+
+    def test_r2_kata_kunci_kategori(self):
+        for kat in ["skincare", "suplemen diet", "klinik gigi", "kosmetik", "obat herbal", "pinjaman online",
+                    "asuransi", "investasi saham", "crypto", "aset digital"]:
+            h = js("--anggaran", "5jt", "--aov", "100rb", "--margin", "40%", "--kategori", kat)
+            self.assertTrue(any("TERBATAS" in c for c in h["catatan"]), kat)
+        h = js("--anggaran", "5jt", "--aov", "100rb", "--margin", "40%", "--kategori", "kaos")
+        self.assertFalse(any("TERBATAS" in c for c in h["catatan"]))
+        self.assertTrue(any("cek dulu" in c for c in h["catatan"]))
+
+    def test_r3_alias_kanal_dan_format_rupiah(self):
+        arg = ["--anggaran", "10jt", "--tujuan", "awareness"]
+        for teks, harap in [("ig,fb", ["meta"]), ("Instagram, Facebook", ["meta"]),
+                            ("tiktok shop", ["tiktokshop"]), ("TikTok-Shop,shopee", ["shopee", "tiktokshop"]),
+                            ("Shopee Ads", ["shopee"]), ("google ads; ig", ["meta", "google"]),
+                            ("meta tiktok", ["meta", "tiktok"])]:
+            h = js(*arg, "--kanal", teks)
+            self.assertEqual(sorted(k["kanal"] for k in h["kanal"]), sorted(harap), teks)
+        h = js(*arg, "--kanal", "tokopedia,ig")
+        self.assertEqual(sorted(k["kanal"] for k in h["kanal"]), ["meta", "tiktokshop"])
+        self.assertTrue(any("Tokopedia" in c for c in h["catatan"]))
+        self.assertEqual(A.parse_rupiah("Rp 3.000.000,-"), 3000000)
+        self.assertEqual(A.parse_rupiah("IDR 3jt"), 3000000)
+        self.assertEqual(A.parse_rupiah("Rp. 1.500.000"), 1500000)
+        for buruk in ["3.000.000,-,-", "rp -", "IDR"]:
+            with self.assertRaises(A.Gagal, msg=buruk):
+                A.parse_rupiah(buruk)
+        self.gagal_kanal("youtube")
+
+    def gagal_kanal(self, kanal):
+        kode, out, err = jalan("--anggaran", "5jt", "--kanal", kanal, "--aov", "100rb", "--margin", "40%")
+        self.assertEqual(kode, 2)
+        self.assertIn(f"'{kanal}' tidak dikenal", err)
+
+    def test_r4_pesan_margin_dinamis(self):
+        for teks, alt in [("0,4", "40%"), ("0,5", "50%"), ("0,25", "25%")]:
+            with self.assertRaises(A.Gagal) as c:
+                A.parse_persen(teks)
+            self.assertIn(f"{teks}% atau {alt}", str(c.exception))
+
+    def test_semua_kombinasi_total_sama_dengan_anggaran(self):
+        for ang in ["500rb", "1,5jt", "3jt", "7,777jt".replace("7,777jt", "7777777"), "20jt"]:
+            for tujuan in ["penjualan", "awareness:30,penjualan:70", "leads:50,awareness:50"]:
+                for jenis in ["umum", "marketplace", "jasa-lokal"]:
+                    for bm in (["1", "1", "1", "1"], ["1", "1", "1", "3"]):
+                        h = js("--anggaran", ang, "--tujuan", tujuan, "--jenis", jenis, "--aov", "200rb",
+                               "--margin", "30%", "--closing", "20%", "--bobot-minggu", *bm)
+                        self.assertEqual(sum(k["anggaran"] for k in h["kanal"]), h["anggaran"])
+                        self.assertEqual(sum(h["total_per_minggu"]), h["anggaran"])
+                        if len(h["kanal"]) > 1:
+                            self.assertTrue(all(k["iklan_aktif_maks"] >= 1 for k in h["kanal"]))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
