@@ -14,6 +14,7 @@ tidak boleh masuk bundle ecer (dicek otomatis oleh build.py).
 | paket-klinik | 5 | Rp495.000 | Rp249.000 | Klinik pratama/gigi/kecantikan, praktik mandiri |
 | paket-konsultan-freelancer | 8 | Rp742.000 | Rp349.000 | Konsultan, agensi, freelancer B2B |
 | paket-karyawan-ai-openclaw | 5 | Rp347.000 | Rp199.000 | Pengguna OpenClaw pemula (starter kit, privasi, laporan, ringkas grup) |
+| paket-strategi-produk-marketing | 11 | Rp1.339.000 | Rp599.000 | Pemilik usaha/tim yang mengembangkan & memasarkan produk (positioning, pesaing, harga, peluncuran, uji pasar, masukan pelanggan, analitik web, newsletter, papan masukan) |
 
 Dasar usulan: ±50% dari total harga ecer (acuan `research/harga.md`) supaya bundle
 jelas lebih hemat, namun tetap di bawah langganan SaaS 1–2 bulan yang digantikan.
