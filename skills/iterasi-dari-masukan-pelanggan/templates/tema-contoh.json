@@ -4,7 +4,7 @@
   "hapus_tema": [],
   "tambah_kata": {
     "rasa": ["tekstur", "kematengan"],
-    "pengiriman": ["jam makan siang", "catering telat"]
+    "pengiriman": ["catering telat", "katering telat"]
   },
   "tema": [
     {"id": "tekstur_nasi", "label": "Tekstur nasi", "kata": ["pera", "lembek", "nasi keras", "kering"], "dampak": 3},

@@ -95,6 +95,9 @@ Ringkasan: "Pengiriman telat = isu #1: 9 dari 51 masukan (17,6%), muncul di 4 ka
 
 ## Batasan & penanganan error
 - Tema dari kata kunci **belum** memahami sarkasme atau konteks panjang; itu sebabnya verifikasi kutipan wajib. Teks campur bahasa daerah/emoji: baca manual dan tambahkan kata ke `tema.json`.
+- Sindiran ("keren, belum dijawab juga 👍", "hebat, datang pas acara sudah bubar 😂") dan pertanyaan menagih ("sudah transfer dari pagi, belum lunas kak?") tidak dihitung otomatis ke tabel bila tanpa kata keluhan jelas; script memasukkannya ke "Perlu dibaca agent" sebagai `[KELUHAN? ...]`. Agent memutuskan dan menandai koreksinya.
+- Pertanyaan stok ("kapan restock/ready ...?") dihitung **keluhan stok** hanya bila ada nada kecewa (lama, kosong terus, emoji kesal) atau bintang ≤ 3; bila bintang 4-5 atau bernada senang ("mau order lagi 😍") dicatat sebagai **permintaan** (saran) di tema Stok. Telat yang dimaklumi pelanggan ("telat karena tanggal merah, wajar") dihitung **netral**, bukan keluhan maupun pujian.
+- `tema.json` dicocokkan pada teks yang **sudah dinormalkan** (slang -> baku): mis. "di-read doang" menjadi "dibaca saja", "abis pake" menjadi "sesudah pakai", "blm" menjadi "belum". Tulis kata tema dalam bentuk baku atau slang - keduanya ikut dinormalkan.
 - Data sedikit: < 30 masukan = arah saja, jangan menyimpulkan persentase. Tren bulanan butuh ≥ 5 masukan per bulan ("data kurang"); tema dengan < 3 keluhan di dua bulan terakhir tidak diberi tren ("keluhan terlalu sedikit"); total < 30 atau < 10 per bulan ditandai "indikatif: data kecil".
 - Survei: satu responden bisa memberi beberapa jawaban (satu per kolom pertanyaan); NPS dihitung per responden, persentase tema per jawaban. Sebut keduanya.
 - Masukan hanya dari pelanggan yang mau bicara (bias): jangan klaim mewakili semua pelanggan; saran tambah survei singkat 3 pertanyaan.
