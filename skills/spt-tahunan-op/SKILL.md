@@ -29,7 +29,7 @@ Membantu orang biasa tahu **sebelum membuka Coretax**: berapa PPh terutang setah
 | Tiap bukti potong A1/A2: **penghasilan neto** & PPh 21 dipotong | Bila karyawan | Bila hanya tahu bruto → `--a1-bruto` (sebut: kurang tepat) |
 | Usaha/pekerjaan bebas: peredaran bruto setahun + persen norma (NPPN), **atau** neto dari pembukuan | Bila ada | Persen norma: minta pengguna cek lampiran PER-17/PJ/2015 (KLU + kota); jangan menebak |
 | Sudah kirim pemberitahuan NPPN ke DJP (paling lambat 31 Maret tahun itu)? | Bila NPPN | Tanyakan |
-| Omzet & PPh final 0,5% (PP 55) setahun | Bila ada | Hanya dicatat |
+| Omzet & PPh final 0,5% (PP 55) setahun | Bila ada | Hanya dicatat. **Hanya untuk usaha** (dagang/produksi/jasa biasa) — penghasilan **pekerjaan bebas** (dokter, pengacara, notaris, akuntan, arsitek, konsultan, seniman/influencer, penceramah, penulis, agen/perantara) tidak boleh 0,5%, wajib NPPN/pembukuan (PP 55/2022 Ps. 56 s.t.d.d. PP 20/2026) |
 | Zakat mandiri ke BAZNAS/LAZ resmi (bukan yang dipotong kantor) | Tidak | 0 |
 | PPh 21 bukan pegawai, PPh 22, PPh 23, angsuran PPh 25 yang sudah dibayar | Tidak | 0 |
 
@@ -49,6 +49,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - `--hari-ini YYYY-MM-DD` (cek batas lapor) · `--format json`.
    Angka: format Indonesia (`1.250.000`, `2,5jt`, `500rb`, `1,2 miliar`). Angka ambigu (`1,500`, `2.5jt`, `5m`, `114,000,000`) **ditolak** — tanyakan ulang ke pengguna, jangan menebak.
 3. Salin tabel & angka dari output script **apa adanya**. Lalu tulis penjelasan bahasa awam 3–5 kalimat: kenapa kurang/lebih bayar (mis. "dua kantor sama-sama memakai PTKP penuh, jadi saat digabung ada pajak yang belum terpotong").
+   **Karyawan 1 pemberi kerja tapi hasilnya kurang/lebih bayar** (script memberi peringatan "CEK ULANG bukti potong A1"): jangan langsung suruh bayar. Jelaskan dengan bahasa awam: "Kantor biasanya sudah menghitung ulang pajak setahun di gaji bulan terakhir, jadi kalau hanya satu kantor hasilnya umumnya nihil. Selisih ini tanda ada yang perlu dicek dulu." Sarankan cek dengan HRD/bagian gaji: status PTKP di A1 (menikah/anak sudah diperbarui?), angka neto & PPh 21 yang diketik sama persis dengan A1, dan tidak ada A1 lain/pembetulan. Bila A1 memang benar, hasil script yang dipakai.
 4. Tambahkan **peta ke Coretax** (tabel di bawah) dan **langkah berikutnya** sesuai hasil (KB: bayar dulu lewat kode billing; LB: pilih restitusi/kompensasi; nihil: tinggal lapor).
 5. Sertakan peringatan, catatan, checklist dokumen, dan disclaimer dari output.
 6. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tunjukkan setiap langkah, dan tulis "dihitung manual — cek ulang".
@@ -67,7 +68,9 @@ selisih        = PPh terutang − (PPh 21 semua bukti potong + PPh 22 + PPh 23 +
   > 0 kurang bayar (PPh 29) · < 0 lebih bayar · 0 nihil
 PPh 25 tahun depan (bila ada usaha/pekerjaan bebas) = (PPh terutang − PPh 21/22/23) ÷ 12
 ```
-Omzet PPh final 0,5% **tidak** masuk rumus di atas (dilaporkan terpisah).
+Omzet PPh final 0,5% **tidak** masuk rumus di atas (dilaporkan terpisah). Beda dua jalur ini:
+- **PPh final 0,5%** (PP 55/2022 s.t.d.d. PP 20/2026): untuk **usaha** OP dengan peredaran bruto ≤ Rp4,8 M; omzet s.d. Rp500 jt pertama setahun tidak kena; pajak = 0,5% × omzet (bukan laba), sudah lunas saat disetor, tidak dikreditkan.
+- **Pekerjaan bebas** (profesi/keahlian: dokter, pengacara, notaris, akuntan, arsitek, konsultan, seniman/influencer, penceramah, penulis, perantara, dll.): **tidak boleh** 0,5%; neto dihitung NPPN/pembukuan lalu tarif Pasal 17. Bila pengguna mencampur keduanya, pisahkan dulu; ragu termasuk pekerjaan bebas atau tidak → tanyakan/arahkan ke Kring Pajak.
 
 ## Peta ke SPT Coretax (tahun pajak 2025 dst.)
 Formulir 1770/1770S/1770SS **sudah dihapus**; sekarang satu SPT Tahunan PPh OP dinamis (PER-11/PJ/2025). Kode lampiran bisa berubah — cocokkan di layar Coretax.
@@ -111,5 +114,7 @@ _Disclaimer_
 - Script keluar kode 2 + `ERROR: ...` untuk: status tidak dikenal/tanggungan > 3, angka ambigu/negatif, persen norma di luar 0–100, NPPN dengan peredaran bruto ≥ Rp4,8 M, tanpa penghasilan. Jelaskan dengan bahasa sederhana dan minta data yang benar.
 - Neto usaha negatif (rugi) ditolak → arahkan ke konsultan (kompensasi kerugian di luar cakupan).
 - NPPN tanpa pemberitahuan: hasil hanya simulasi — menurut DJP WP dianggap memilih pembukuan (⚠️ PERLU REVIEW nomor pasal & konsekuensi jangka panjang).
+- **Batas lapor:** paling lambat 3 bulan setelah akhir tahun pajak → **31 Maret** tahun berikutnya (UU KUP Ps. 3). TP 2025: jatuh tempo **tetap 31 Maret 2026**; KEP-55/PJ/2026 **bukan perpanjangan**, hanya menghapus sanksi (denda & bunga) bila lapor/bayar s.d. 30 April 2026. Bila 31 Maret jatuh pada Sabtu/Minggu/libur, cek pengumuman DJP terbaru (⚠️ PERLU REVIEW: belum terverifikasi apakah aturan "hari kerja berikutnya" PMK 81/2024 berlaku untuk SPT Tahunan) — sarankan lapor lebih awal.
+- Angka negatif ditolak dengan pesan ramah (isi angka positif). "5,054 miliar" diterima; "5,054 M"/"5m" ditolak (M = juta atau miliar?) → minta ditulis "miliar" atau angka penuh.
 - Sanksi bunga keterlambatan bayar tidak dihitung (tarif berubah tiap bulan); denda telat lapor Rp100.000 disebutkan.
 - Jangan mengklaim hasil pasti sama dengan Coretax; Coretax yang final. Selalu sarankan cek ulang ke DJP/konsultan untuk kasus besar atau tidak biasa.

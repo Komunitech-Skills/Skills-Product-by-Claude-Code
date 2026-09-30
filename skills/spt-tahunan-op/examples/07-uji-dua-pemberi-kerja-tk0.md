@@ -37,10 +37,10 @@
 **5. Hasil: KURANG BAYAR**
 PPh terutang Rp 3.975.000 − kredit Rp 900.000 = **Rp 3.075.000 harus disetor (PPh Pasal 29) sebelum lapor**.
 
-**Batas lapor:** 31 Maret 2026, diperpanjang khusus tahun pajak 2025 sampai 30 April 2026 (KEP-55/PJ/2026) — SUDAH LEWAT
+**Batas lapor:** 31 Maret 2026 (jatuh tempo formal tetap). Khusus tahun pajak 2025: sanksi administrasi (denda & bunga) dihapus bila lapor dan/atau bayar paling lambat 30 April 2026 (KEP-55/PJ/2026) — JATUH TEMPO SUDAH LEWAT
 
 **⚠️ Peringatan**
-- Batas lapor (2026-04-30) SUDAH LEWAT per 2026-09-30. Tetap laporkan secepatnya; denda telat lapor SPT Tahunan OP Rp100.000 ditagih lewat STP; kurang bayar yang dibayar setelah batas juga kena bunga per bulan (tarif KMK bulanan — tidak dihitung di sini).
+- Batas lapor (2026-03-31) SUDAH LEWAT per 2026-09-30 (masa penghapusan sanksi KEP-55/PJ/2026 s.d. 2026-04-30 juga sudah berakhir). Tetap laporkan secepatnya; denda telat lapor SPT Tahunan OP Rp100.000 ditagih lewat STP; kurang bayar yang dibayar setelah jatuh tempo juga kena bunga per bulan (tarif KMK bulanan — tidak dihitung di sini).
 
 **Catatan**
 - Punya 2 bukti potong pekerjaan: tiap pemberi kerja sudah memakai PTKP penuh, jadi saat digabung di SPT hampir selalu KURANG BAYAR. Ini normal, bukan kesalahan.
@@ -60,3 +60,5 @@ _Alat bantu hitung, bukan konsultan pajak dan bukan nasihat pajak. Dasar: UU PPh
 **Hitungan independen penguji:** neto 72.000.000 + 48.500.000 = 120.500.000; PTKP TK/0 54.000.000; PKP 66.500.000; PPh = 3.000.000 + 15% × 6.500.000 (975.000) = 3.975.000; kredit 900.000 → **KURANG BAYAR 3.075.000** ✔. Cek kewajaran A1 #1: (72 jt − 54 jt) × 5% = 900.000 ✔ konsisten.
 
 **Penilaian:** benar; catatan "2 bukti potong → hampir selalu kurang bayar" tepat dan membantu. Parser menerima `900rb` dan `48,5jt` dengan benar.
+
+> **Catatan v1.0.1 (2026-09-30):** teks batas lapor & peringatan di atas diperbarui ke output script v1.0.1 (jatuh tempo formal TP 2025 tetap 31 Maret 2026; KEP-55/PJ/2026 hanya menghapus sanksi s.d. 30 April 2026). Angka tidak berubah.

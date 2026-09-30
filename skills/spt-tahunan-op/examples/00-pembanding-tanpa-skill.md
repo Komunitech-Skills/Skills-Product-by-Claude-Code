@@ -57,7 +57,7 @@ Penguji independen, 2026-09-30. Kedua jawaban dari agent headless Claude Sonnet 
 > 
 > **Penjelasan singkat:** Pajak setahun yang seharusnya Anda bayar adalah Rp10.875.000. Kantor baru memotong Rp10.500.000, jadi masih kurang Rp375.000. Selisih seperti ini sering terjadi karena pemotongan bulanan hanya perkiraan. Anda wajib menyetor selisihnya sebelum melapor.
 > 
-> **⚠️ Batas lapor sudah lewat.** Batas lapor tahun pajak 2025 adalah 31 Maret 2026, diperpanjang sampai 30 April 2026. Hari ini 30 September 2026, jadi Anda terlambat. Kalau belum lapor:
+> **⚠️ Batas lapor sudah lewat.** Batas lapor tahun pajak 2025 adalah 31 Maret 2026 [v1.0.0 menulis bahwa batas ini "diperpanjang" sampai 30 April 2026 — keliru; dikoreksi di v1.0.1: jatuh tempo tetap 31 Maret 2026, KEP-55/PJ/2026 hanya menghapus sanksi bila lapor/bayar s.d. 30 April 2026]. Hari ini 30 September 2026, jadi Anda terlambat. Kalau belum lapor:
 > - Lapor secepatnya.
 > - Denda telat lapor Rp100.000, ditagih lewat STP.
 > - Kekurangan bayar yang disetor setelah batas juga kena bunga bulanan. Tarifnya berubah tiap bulan, jadi tidak saya hitung.
@@ -97,7 +97,7 @@ Penguji independen, 2026-09-30. Kedua jawaban dari agent headless Claude Sonnet 
 | Angka (PTKP, PKP, PPh, KB Rp375.000) | Benar | Benar (dihitung script, bisa diaudit) |
 | Formulir | **Salah**: "Formulir SPT 1770 S" — sudah dihapus sejak TP 2025 (PER-11/PJ/2025) | Benar: satu SPT OP Coretax + peta Lampiran/Bagian |
 | Cara bayar KB | Kurang tepat: suruh buat billing sendiri & isi NTPN (alur DJP Online lama) | Benar: Coretax membuat kode billing otomatis ("SPT menunggu pembayaran") |
-| Batas lapor | 31 Maret 2026, tidak tahu KEP-55 | Tahu KEP-55, tetapi menyebut "diperpanjang" (DJP: jatuh tempo formal tetap 31 Maret; yang diberikan penghapusan sanksi s.d. 30 April) |
+| Batas lapor | 31 Maret 2026, tidak tahu KEP-55 | Tahu KEP-55, tetapi v1.0.0 keliru menyebutnya perpanjangan (DJP: jatuh tempo formal tetap 31 Maret; yang diberikan penghapusan sanksi s.d. 30 April; dikoreksi di v1.0.1) |
 | Wawasan | **Lebih baik**: menyarankan cek HRD karena 1 pemberi kerja setahun penuh seharusnya NIHIL | Tidak ada; malah salah menyebut "kantor baru" |
 | Checklist, asumsi, disclaimer | Checklist cukup; tanpa disclaimer | Lengkap, asumsi eksplisit, disclaimer |
 

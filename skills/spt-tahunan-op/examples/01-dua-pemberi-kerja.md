@@ -45,10 +45,10 @@ python3 scripts/spt_op.py --status K/1 --tahun 2025 --a1 90jt 1.350.000 --a1 60j
 **5. Hasil: KURANG BAYAR**
 PPh terutang Rp 7.050.000 − kredit Rp 1.350.000 = **Rp 5.700.000 harus disetor (PPh Pasal 29) sebelum lapor**.
 
-**Batas lapor:** 31 Maret 2026, diperpanjang khusus tahun pajak 2025 sampai 30 April 2026 (KEP-55/PJ/2026) — SUDAH LEWAT
+**Batas lapor:** 31 Maret 2026 (jatuh tempo formal tetap). Khusus tahun pajak 2025: sanksi administrasi (denda & bunga) dihapus bila lapor dan/atau bayar paling lambat 30 April 2026 (KEP-55/PJ/2026) — JATUH TEMPO SUDAH LEWAT
 
 **⚠️ Peringatan**
-- Batas lapor (2026-04-30) SUDAH LEWAT per 2026-09-30. Tetap laporkan secepatnya; denda telat lapor SPT Tahunan OP Rp100.000 ditagih lewat STP; kurang bayar yang dibayar setelah batas juga kena bunga per bulan (tarif KMK bulanan — tidak dihitung di sini).
+- Batas lapor (2026-03-31) SUDAH LEWAT per 2026-09-30 (masa penghapusan sanksi KEP-55/PJ/2026 s.d. 2026-04-30 juga sudah berakhir). Tetap laporkan secepatnya; denda telat lapor SPT Tahunan OP Rp100.000 ditagih lewat STP; kurang bayar yang dibayar setelah jatuh tempo juga kena bunga per bulan (tarif KMK bulanan — tidak dihitung di sini).
 
 **Catatan**
 - Punya 2 bukti potong pekerjaan: tiap pemberi kerja sudah memakai PTKP penuh, jadi saat digabung di SPT hampir selalu KURANG BAYAR. Ini normal, bukan kesalahan.
@@ -69,6 +69,8 @@ _Alat bantu hitung, bukan konsultan pajak dan bukan nasihat pajak. Dasar: UU PPh
 
 **Peta ke Coretax:** kedua bukti potong → Lampiran 1 (cek sudah muncul otomatis) · neto, PTKP, PKP, PPh terutang → Induk Bagian B–C · kredit Rp1.350.000 & kurang bayar → Bagian D–E.
 
-**Langkah berikutnya:** (1) buat konsep SPT di Coretax, pastikan kedua bukti potong masuk; (2) karena kurang bayar, bayar Rp5.700.000 lewat kode billing yang dibuat Coretax; (3) kirim SPT setelah pembayaran tervalidasi. Batas TP 2025 (30 April 2026) sudah lewat → lapor secepatnya; denda Rp100.000 dan bunga akan ditagih lewat STP.
+**Langkah berikutnya:** (1) buat konsep SPT di Coretax, pastikan kedua bukti potong masuk; (2) karena kurang bayar, bayar Rp5.700.000 lewat kode billing yang dibuat Coretax; (3) kirim SPT setelah pembayaran tervalidasi. Jatuh tempo TP 2025 (31 Maret 2026) dan masa penghapusan sanksi KEP-55/PJ/2026 (s.d. 30 April 2026) sudah lewat → lapor secepatnya; denda Rp100.000 dan bunga akan ditagih lewat STP.
 
 **Verifikasi manual:** 150.000.000 − 63.000.000 = 87.000.000 → 5% × 60.000.000 = 3.000.000; 15% × 27.000.000 = 4.050.000; total 7.050.000 − 1.350.000 = **5.700.000** ✔ (sama dengan tes regresi kasus 02).
+
+> **Catatan v1.0.1 (2026-09-30):** teks batas lapor & peringatan di atas diperbarui ke output script v1.0.1 (jatuh tempo formal TP 2025 tetap 31 Maret 2026; KEP-55/PJ/2026 hanya menghapus sanksi s.d. 30 April 2026). Angka tidak berubah.

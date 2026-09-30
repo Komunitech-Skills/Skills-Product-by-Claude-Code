@@ -14,7 +14,7 @@ Contoh:
   python3 spt_op.py --status TK/0 --a1 114jt 3jt --omzet-final 600jt --pph-final 500rb --format json
 
 Angka format Indonesia: titik = ribuan, koma = desimal (1.250.000,50), akhiran rb/ribu/k, jt/juta,
-miliar/milyar. Angka yang ambigu (1,500 · 2.5jt · 1,250,000 · 5m) DITOLAK.
+miliar/milyar. Angka yang ambigu (1,500 · 2.5jt · 1,250,000 · 5m) DITOLAK. "5,054 miliar" diterima (= 5.054.000.000).
 
 Hanya library standar Python 3.8+. Tanpa akses jaringan. Keluar kode 2 bila input salah.
 Tidak mengisi atau mengirim SPT ke DJP — hanya menghitung.
@@ -26,7 +26,7 @@ import re
 import sys
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 
 # ------------------------------------------------------------------ konstanta aturan
 PTKP_DIRI = Decimal(54000000)        # UU 7/2021 HPP Pasal 7 ayat (1); PMK 101/2016
@@ -52,7 +52,8 @@ DENDA_TELAT_LAPOR = Decimal(100000)  # UU KUP Pasal 7 ayat (1)
 
 DASAR_ATURAN = ("UU PPh s.t.d.t.d. UU 7/2021 (HPP) Pasal 7 & 17; PMK 101/PMK.010/2016 (PTKP); PMK 168/2023 "
                 "(biaya jabatan, pembulatan PKP); PER-17/PJ/2015 & PMK 81/2024 (NPPN); PP 55/2022 jo. PP 20/2026 "
-                "(PPh final UMKM); PP 60/2010 (zakat); PER-11/PJ/2025 (bentuk SPT Coretax); UU KUP Pasal 7")
+                "(PPh final UMKM); PP 60/2010 (zakat); PER-11/PJ/2025 (bentuk SPT Coretax); UU KUP Pasal 3 & 7; "
+                "KEP-55/PJ/2026 (penghapusan sanksi TP 2025)")
 DISCLAIMER = ("Alat bantu hitung, bukan konsultan pajak dan bukan nasihat pajak. Dasar: " + DASAR_ATURAN +
               "; dicek per 30 September 2026. Pembulatan belum dicocokkan dengan hitungan otomatis Coretax. "
               "Skill ini tidak mengisi atau mengirim SPT atas nama Anda. Cocokkan dengan Coretax DJP, "
@@ -88,7 +89,8 @@ def parse_angka(nilai, nama="angka", boleh_negatif=False):
     if s.startswith("-"):
         negatif, s = True, s[1:]
     if re.fullmatch(r"[\d.,]+m", s):
-        raise InputError("{}: '{}' ambigu (m = juta atau miliar?). Tulis 'jt' atau 'miliar'".format(nama, asli))
+        raise InputError("{}: '{}' ambigu (M = juta atau miliar?). Contoh yang benar: '5,054 miliar', "
+                         "'5.054.000.000', atau '250jt'".format(nama, asli))
     pengali = 1
     for akh, kali in _AKHIRAN:
         if s.endswith(akh):
@@ -106,7 +108,10 @@ def parse_angka(nilai, nama="angka", boleh_negatif=False):
                              "mis. 1.250.000,50".format(nama, asli))
         if not desimal:
             raise InputError("{}: '{}' tidak lengkap setelah koma".format(nama, asli))
-        if len(desimal) == 3 and "." not in utuh:
+        if len(desimal) == 3 and "." not in utuh and pengali != 10 ** 9:
+            if pengali > 1:
+                raise InputError("{}: '{}' ambigu (koma + 3 angka sebelum satuan). Contoh yang benar: 1,5jt "
+                                 "(satu setengah juta) atau 1.500jt (seribu lima ratus juta)".format(nama, asli))
             raise InputError("{}: '{}' ambigu (1,500 = seribu lima ratus atau satu koma lima?). Tulis 1.500 "
                              "untuk ribuan atau 1,5 untuk desimal".format(nama, asli))
     else:
@@ -123,9 +128,25 @@ def parse_angka(nilai, nama="angka", boleh_negatif=False):
     if negatif:
         d = -d
     if d < 0 and not boleh_negatif:
-        raise InputError("{}: tidak boleh negatif ({}). Rugi usaha/kompensasi kerugian di luar cakupan skill "
-                         "ini — konsultasikan ke konsultan pajak".format(nama, asli))
+        raise InputError(pesan_negatif(nama, asli))
     return d
+
+
+def pesan_negatif(nama, asli):
+    """Pesan ramah untuk angka negatif; saran rugi usaha hanya untuk angka penghasilan."""
+    pesan = "{}: angka tidak boleh negatif ({}). Isi dengan angka positif, mis. 5jt atau 5.000.000".format(nama, asli)
+    if any(k in nama for k in ("neto", "bruto", "omzet")):
+        pesan += ". Bila maksudnya rugi usaha: kompensasi kerugian di luar cakupan skill ini — konsultasikan ke " \
+                 "konsultan pajak"
+    return pesan
+
+
+def cek_negatif_argv(argv):
+    """argparse menganggap '-10jt' sebagai nama opsi. Tangkap lebih dulu agar pesannya ramah."""
+    for i, tok in enumerate(argv):
+        if re.match(r"^-\s*(rp\.?\s*)?\d", str(tok), re.IGNORECASE):
+            opsi = next((argv[j] for j in range(i - 1, -1, -1) if str(argv[j]).startswith("--")), "angka")
+            raise InputError(pesan_negatif(opsi, tok))
 
 
 def parse_persen(nilai, nama):
@@ -343,25 +364,64 @@ def hitung(args, hari_ini=None):
         catatan.append("Perkiraan angsuran PPh 25 tahun {} = (PPh terutang − PPh 21/22/23 yang dipotong) ÷ 12 "
                        "(UU PPh Pasal 25 ayat (1)). Cocokkan dengan Lampiran 4 di Coretax.".format(tahun + 1))
 
-    # --- batas waktu
+    # --- cek kewajaran: karyawan 1 pemberi kerja seharusnya umumnya NIHIL
+    cek_a1_tunggal = (len(pekerjaan) == 1 and not usaha and not lain and not zakat and jenis != "K/I"
+                      and not any(getattr(args, a) for a in ("pph21_lain", "pph22", "pph23", "pph25"))
+                      and status_spt != "NIHIL")
+    if cek_a1_tunggal:
+        peringatan.append(
+            "Anda hanya punya 1 pemberi kerja, tetapi hasilnya {} {}. Biasanya kantor sudah menghitung ulang pajak "
+            "setahun di gaji bulan terakhir (Desember atau bulan keluar), sehingga hasil SPT karyawan 1 kantor "
+            "umumnya NIHIL. Sebelum lapor/bayar, CEK ULANG bukti potong A1 dengan HRD/bagian gaji: (1) status "
+            "PTKP di A1 sama dengan status Anda per 1 Januari (mis. sudah menikah/punya anak tapi belum "
+            "diperbarui di kantor); (2) angka 'penghasilan neto' dan 'PPh 21 dipotong' yang Anda masukkan sama "
+            "persis dengan A1{}; (3) tidak ada A1 lain (mis. kantor lama/pembetulan). Bila A1 memang begitu, "
+            "hasil ini yang dipakai; selisih kecil (beberapa rupiah) bisa karena pembulatan.".format(
+                status_spt, format_rp(abs(selisih)),
+                " (neto Anda dihitung dari bruto — minta angka neto di A1)" if args.a1_bruto else ""))
+
+    # --- batas waktu: UU KUP Pasal 3 ayat (3) huruf b — paling lambat 3 bulan setelah akhir tahun pajak
+    batas = datetime.date(tahun + 1, 3, 31)
+    batas_bebas_sanksi = None
     if tahun == 2025:
-        batas = datetime.date(2026, 4, 30)
-        ket_batas = ("31 Maret 2026, diperpanjang khusus tahun pajak 2025 sampai 30 April 2026 (KEP-55/PJ/2026)")
+        batas_bebas_sanksi = datetime.date(2026, 4, 30)
+        ket_batas = ("31 Maret 2026 (jatuh tempo formal tetap). Khusus tahun pajak 2025: sanksi "
+                     "administrasi (denda & bunga) dihapus bila lapor dan/atau bayar paling lambat 30 April 2026 "
+                     "(KEP-55/PJ/2026)")
     else:
-        batas = datetime.date(tahun + 1, 3, 31)
-        ket_batas = "31 Maret {} (tidak bergeser walau hari libur — lapor lebih awal)".format(tahun + 1)
+        ket_batas = ("31 Maret {} (3 bulan setelah akhir tahun pajak). Bila jatuh pada Sabtu/Minggu/hari libur, "
+                     "cek pengumuman DJP terbaru — paling aman lapor sebelum tanggal itu".format(tahun + 1))
     sudah_lewat = hari_ini > batas
-    if sudah_lewat:
-        peringatan.append("Batas lapor ({}) SUDAH LEWAT per {}. Tetap laporkan secepatnya; denda telat lapor SPT "
+    bunga_kb = ("; kurang bayar yang dibayar setelah jatuh tempo juga kena bunga per bulan (tarif KMK bulanan — "
+                "tidak dihitung di sini)" if status_spt == "KURANG BAYAR" else "")
+    if sudah_lewat and batas_bebas_sanksi and hari_ini <= batas_bebas_sanksi:
+        peringatan.append("Jatuh tempo ({}) sudah lewat per {}, tetapi masih dalam masa penghapusan sanksi "
+                          "KEP-55/PJ/2026: lapor{} paling lambat {} agar denda & bunga tidak ditagih.".format(
+                              batas.isoformat(), hari_ini.isoformat(),
+                              " dan bayar" if status_spt == "KURANG BAYAR" else "", batas_bebas_sanksi.isoformat()))
+    elif sudah_lewat:
+        peringatan.append("Batas lapor ({}) SUDAH LEWAT per {}{}. Tetap laporkan secepatnya; denda telat lapor SPT "
                           "Tahunan OP Rp100.000 ditagih lewat STP{}.".format(
                               batas.isoformat(), hari_ini.isoformat(),
-                              "; kurang bayar yang dibayar setelah batas juga kena bunga per bulan (tarif KMK "
-                              "bulanan — tidak dihitung di sini)" if status_spt == "KURANG BAYAR" else ""))
+                              " (masa penghapusan sanksi KEP-55/PJ/2026 s.d. {} juga sudah berakhir)".format(
+                                  batas_bebas_sanksi.isoformat()) if batas_bebas_sanksi else "", bunga_kb))
 
     if omzet_final:
         catatan.append("Omzet PPh final 0,5% ({}) TIDAK ikut dihitung tarif Pasal 17; dilaporkan di lampiran "
                        "penghasilan final / rekap peredaran bruto beserta PPh final yang sudah disetor ({}).".format(
                            format_rp(omzet_final), format_rp(pph_final)))
+        catatan.append("PPh final 0,5% hanya untuk penghasilan USAHA (dagang, produksi, jasa biasa). Penghasilan "
+                       "dari PEKERJAAN BEBAS (mis. dokter, pengacara, notaris, akuntan, arsitek, konsultan, "
+                       "seniman/influencer, penceramah, penulis, agen/perantara) tidak boleh memakai 0,5% — hitung "
+                       "dengan NPPN/pembukuan (--nppn / --pembukuan-neto). Dasar: PP 55/2022 Pasal 56 s.t.d.d. "
+                       "PP 20/2026.")
+        if pph_final:
+            perkiraan = bulat_bawah(max(Decimal(0), omzet_final - Decimal(500000000)) * Decimal("0.005"))
+            if abs(pph_final - perkiraan) > Decimal(10000):
+                catatan.append("Cek kewajaran PPh final: 0,5% × (omzet {} − Rp500 juta bebas pajak) = {}, sedangkan "
+                               "yang Anda isi {}. Perbedaan bisa wajar (mis. PPh dipungut marketplace/pemungut, "
+                               "omzet belum tercatat per bulan), tetapi cocokkan dengan bukti setor.".format(
+                                   format_rp(omzet_final), format_rp(perkiraan), format_rp(pph_final)))
         if omzet_final <= Decimal(500000000) and not pph_final:
             catatan.append("Omzet final setahun tidak lebih dari Rp500 juta: untuk orang pribadi bagian ini bebas PPh "
                            "final 0,5% (PP 55/2022 s.t.d.d. UU HPP), tetapi omzetnya tetap dilaporkan di SPT.")
@@ -411,8 +471,11 @@ def hitung(args, hari_ini=None):
         "pph_final_disetor": pph_final,
         "perkiraan_pph25_per_bulan_tahun_berikut": pph25_berikut,
         "batas_lapor": batas.isoformat(),
+        "batas_bebas_sanksi_kep55": batas_bebas_sanksi.isoformat() if batas_bebas_sanksi else None,
+        "cek_ulang_a1_ke_hrd": cek_a1_tunggal,
         "keterangan_batas": ket_batas,
         "batas_sudah_lewat": sudah_lewat,
+        "tanggal_acuan": hari_ini.isoformat(),
         "peringatan": peringatan,
         "catatan": catatan,
         "checklist_dokumen": checklist(pekerjaan, usaha, zakat, omzet_final, args, jenis, status_spt),
@@ -511,7 +574,13 @@ def teks(h):
     if h["omzet_final_pp55"]:
         b.append("Info: omzet PPh final 0,5% {} (PPh final disetor {}) dilaporkan terpisah, tidak mengubah angka di atas."
                  .format(format_rp(h["omzet_final_pp55"]), format_rp(h["pph_final_disetor"])))
-    b += ["", "**Batas lapor:** {}{}".format(h["keterangan_batas"], " — SUDAH LEWAT" if h["batas_sudah_lewat"] else "")]
+    label = ""
+    if h["batas_sudah_lewat"]:
+        label = " — JATUH TEMPO SUDAH LEWAT"
+        bs = h.get("batas_bebas_sanksi_kep55")
+        if bs and h["tanggal_acuan"] <= bs:
+            label += " (masih masa bebas sanksi s.d. {})".format(bs)
+    b += ["", "**Batas lapor:** {}{}".format(h["keterangan_batas"], label)]
     if h["peringatan"]:
         b += ["", "**⚠️ Peringatan**"] + ["- " + p for p in h["peringatan"]]
     if h["catatan"]:
@@ -555,6 +624,12 @@ def buat_parser():
 
 def main(argv=None):
     ap = buat_parser()
+    argv = list(sys.argv[1:] if argv is None else argv)
+    try:
+        cek_negatif_argv(argv)
+    except InputError as e:
+        print("ERROR: {}".format(e), file=sys.stderr)
+        return 2
     args = ap.parse_args(argv)
     try:
         hari = None

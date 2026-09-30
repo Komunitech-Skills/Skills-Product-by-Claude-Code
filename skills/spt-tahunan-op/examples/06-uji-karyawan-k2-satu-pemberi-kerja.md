@@ -40,10 +40,11 @@ Penguji independen, 2026-09-30. Agent headless (Claude Sonnet, `claude -p`) memb
 **5. Hasil: KURANG BAYAR**
 PPh terutang Rp 10.875.000 − kredit Rp 10.500.000 = **Rp 375.000 harus disetor (PPh Pasal 29) sebelum lapor**.
 
-**Batas lapor:** 31 Maret 2026, diperpanjang khusus tahun pajak 2025 sampai 30 April 2026 (KEP-55/PJ/2026) — SUDAH LEWAT
+**Batas lapor:** 31 Maret 2026 (jatuh tempo formal tetap). Khusus tahun pajak 2025: sanksi administrasi (denda & bunga) dihapus bila lapor dan/atau bayar paling lambat 30 April 2026 (KEP-55/PJ/2026) — JATUH TEMPO SUDAH LEWAT
 
 **⚠️ Peringatan**
-- Batas lapor (2026-04-30) SUDAH LEWAT per 2026-09-30. Tetap laporkan secepatnya; denda telat lapor SPT Tahunan OP Rp100.000 ditagih lewat STP; kurang bayar yang dibayar setelah batas juga kena bunga per bulan (tarif KMK bulanan — tidak dihitung di sini).
+- Anda hanya punya 1 pemberi kerja, tetapi hasilnya KURANG BAYAR Rp 375.000. Biasanya kantor sudah menghitung ulang pajak setahun di gaji bulan terakhir (Desember atau bulan keluar), sehingga hasil SPT karyawan 1 kantor umumnya NIHIL. Sebelum lapor/bayar, CEK ULANG bukti potong A1 dengan HRD/bagian gaji: (1) status PTKP di A1 sama dengan status Anda per 1 Januari (mis. sudah menikah/punya anak tapi belum diperbarui di kantor); (2) angka 'penghasilan neto' dan 'PPh 21 dipotong' yang Anda masukkan sama persis dengan A1; (3) tidak ada A1 lain (mis. kantor lama/pembetulan). Bila A1 memang begitu, hasil ini yang dipakai; selisih kecil (beberapa rupiah) bisa karena pembulatan.
+- Batas lapor (2026-03-31) SUDAH LEWAT per 2026-09-30 (masa penghapusan sanksi KEP-55/PJ/2026 s.d. 2026-04-30 juga sudah berakhir). Tetap laporkan secepatnya; denda telat lapor SPT Tahunan OP Rp100.000 ditagih lewat STP; kurang bayar yang dibayar setelah jatuh tempo juga kena bunga per bulan (tarif KMK bulanan — tidak dihitung di sini).
 
 **Catatan**
 - Kurang bayar (PPh Pasal 29) wajib dilunasi SEBELUM SPT dikirim. Di Coretax, SPT kurang bayar masuk 'SPT menunggu pembayaran' dan kode billing dibuat otomatis.
@@ -62,3 +63,5 @@ _Alat bantu hitung, bukan konsultan pajak dan bukan nasihat pajak. Dasar: UU PPh
 **Hitungan independen penguji:** PTKP K/2 = 54.000.000 + 4.500.000 + 2 × 4.500.000 = 67.500.000. PKP = 180.000.000 − 67.500.000 = 112.500.000 (sudah bulat ribuan). PPh = 5% × 60.000.000 (3.000.000) + 15% × 52.500.000 (7.875.000) = 10.875.000. Kredit 10.500.000 → **KURANG BAYAR 375.000** ✔ sama dengan script.
 
 **Penilaian:** angka benar; peta Coretax & langkah bayar (kode billing otomatis) benar. Kekurangan: (1) teks batas lapor menulis "diperpanjang sampai 30 April 2026" — menurut DJP (pajak.go.id/en/node/119611) jatuh tempo formal tetap 31 Maret 2026, KEP-55 hanya menghapus sanksi s.d. 30 April; (2) agent menyebut "kantor baru" padahal pengguna hanya punya satu kantor (salah kutip kecil); (3) tidak ada saran "cek ke HRD" — untuk 1 pemberi kerja setahun penuh, PPh 21 Desember seharusnya sudah menyamakan dengan PPh terutang, jadi selisih Rp375.000 patut ditanyakan ke HRD (baseline tanpa skill justru menyebut ini).
+
+> **Catatan v1.0.1 (2026-09-30):** teks batas lapor & peringatan di atas diperbarui ke output script v1.0.1 (jatuh tempo formal TP 2025 tetap 31 Maret 2026; KEP-55/PJ/2026 hanya menghapus sanksi s.d. 30 April 2026). Peringatan cek ulang A1 ke HRD (kekurangan #3 di atas) kini dikeluarkan script. Angka tidak berubah.

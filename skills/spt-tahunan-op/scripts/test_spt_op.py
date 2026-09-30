@@ -158,10 +158,39 @@ class TestKasus(unittest.TestCase):
 
 
 class TestBatasWaktu(unittest.TestCase):
-    def test_tp2025_diperpanjang(self):
+    def test_tp2025_jatuh_tempo_tetap_31_maret_kep55_hapus_sanksi(self):
+        # v1.0.1: KEP-55/PJ/2026 BUKAN perpanjangan — jatuh tempo tetap 31 Maret 2026; sanksi dihapus s.d. 30 April
         h = hitung("--status", "TK/0", "--tahun", "2025", "--a1", "114jt", "3jt", hari=datetime.date(2026, 4, 15))
-        self.assertEqual(h["batas_lapor"], "2026-04-30")
+        self.assertEqual(h["batas_lapor"], "2026-03-31")
+        self.assertEqual(h["batas_bebas_sanksi_kep55"], "2026-04-30")
+        self.assertTrue(h["batas_sudah_lewat"])
+        self.assertNotIn("diperpanjang", h["keterangan_batas"])
+        self.assertIn("jatuh tempo formal tetap", h["keterangan_batas"])
+        self.assertTrue(any("masa penghapusan sanksi" in p for p in h["peringatan"]))
+        self.assertFalse(any("Rp100.000" in p for p in h["peringatan"]))
+
+    def test_tp2025_setelah_30_april_kena_denda(self):
+        h = hitung("--status", "TK/0", "--tahun", "2025", "--a1", "114jt", "3jt", hari=datetime.date(2026, 5, 1))
+        self.assertTrue(any("Rp100.000" in p and "berakhir" in p for p in h["peringatan"]))
+
+    def test_tp2025_sebelum_31_maret(self):
+        h = hitung("--status", "TK/0", "--tahun", "2025", "--a1", "114jt", "3jt", hari=datetime.date(2026, 3, 31))
         self.assertFalse(h["batas_sudah_lewat"])
+        self.assertEqual(h["peringatan"], [])
+
+    def test_teks_tanpa_kata_diperpanjang(self):
+        out = subprocess.run([sys.executable, os.path.join(FOLDER, "spt_op.py"), "--status", "TK/0", "--tahun",
+                              "2025", "--a1", "114jt", "3jt", "--hari-ini", "2026-09-30"],
+                             capture_output=True, text=True, check=True).stdout
+        self.assertNotIn("diperpanjang", out)
+        self.assertIn("31 Maret 2026", out)
+        self.assertIn("KEP-55/PJ/2026", out)
+
+    def test_tahun_lain_hari_libur_cek_djp(self):
+        h = hitung("--status", "TK/0", "--tahun", "2026", "--a1", "114jt", "3jt", hari=datetime.date(2027, 2, 1))
+        self.assertEqual(h["batas_lapor"], "2027-03-31")
+        self.assertIsNone(h["batas_bebas_sanksi_kep55"])
+        self.assertIn("hari libur", h["keterangan_batas"])
 
     def test_tp2026_lewat(self):
         h = hitung("--status", "TK/0", "--tahun", "2026", "--a1", "114jt", "3jt", hari=datetime.date(2027, 4, 1))
@@ -176,6 +205,50 @@ class TestBatasWaktu(unittest.TestCase):
     def test_default_tahun_lalu(self):
         h = hitung("--status", "TK/0", "--a1", "114jt", "3jt", hari=datetime.date(2026, 9, 30))
         self.assertEqual(h["tahun_pajak"], 2025)
+
+
+class TestCekA1Tunggal(unittest.TestCase):
+    def test_satu_pemberi_kerja_kurang_bayar_disarankan_cek_hrd(self):
+        # Skenario 06 penguji: K/2, neto 180 jt, PPh 21 10,5 jt → KB 375.000 → sarankan cek A1 ke HRD
+        h = hitung("--status", "K/2", "--tahun", "2025", "--a1", "180jt", "10,5jt")
+        self.assertEqual(h["selisih"], D(375000))
+        self.assertTrue(h["cek_ulang_a1_ke_hrd"])
+        self.assertTrue(any("HRD" in p and "PTKP" in p for p in h["peringatan"]))
+
+    def test_satu_pemberi_kerja_lebih_bayar_juga_dicek(self):
+        h = hitung("--status", "TK/0", "--tahun", "2025", "--a1", "114jt", "4jt")
+        self.assertEqual(h["status_spt"], "LEBIH BAYAR")
+        self.assertTrue(h["cek_ulang_a1_ke_hrd"])
+
+    def test_nihil_atau_dua_pemberi_kerja_tidak_dicek(self):
+        self.assertFalse(hitung("--status", "TK/0", "--tahun", "2025", "--a1", "114jt", "3jt")["cek_ulang_a1_ke_hrd"])
+        h = hitung("--status", "K/1", "--tahun", "2025", "--a1", "90jt", "1.350.000", "--a1", "60jt", "0")
+        self.assertFalse(h["cek_ulang_a1_ke_hrd"])
+        self.assertFalse(any("HRD" in p for p in h["peringatan"]))
+
+    def test_zakat_mandiri_tidak_dicek(self):
+        # LB karena zakat mandiri itu wajar (kasus 05) → tidak memicu saran cek HRD
+        h = hitung("--status", "TK/0", "--tahun", "2025", "--a1", "150jt", "8,4jt", "--zakat", "3.750.000")
+        self.assertFalse(h["cek_ulang_a1_ke_hrd"])
+
+    def test_a1_dari_bruto_diberi_catatan_neto(self):
+        h = hitung("--status", "TK/0", "--tahun", "2025", "--a1-bruto", "60jt", "0", "6", "1,2jt")
+        self.assertTrue(any("dihitung dari bruto" in p for p in h["peringatan"]))
+
+
+class TestPPhFinal(unittest.TestCase):
+    def test_pekerjaan_bebas_disebut(self):
+        h = hitung("--status", "TK/0", "--tahun", "2025", "--a1", "114jt", "3jt", "--omzet-final", "600jt",
+                   "--pph-final", "500rb")
+        self.assertTrue(any("PEKERJAAN BEBAS" in c and "PP 20/2026" in c for c in h["catatan"]))
+        # 0,5% × (600 jt − 500 jt) = 500.000 → cocok, tidak ada catatan kewajaran
+        self.assertFalse(any("Cek kewajaran PPh final" in c for c in h["catatan"]))
+
+    def test_pph_final_tidak_wajar_dicatat(self):
+        # 0,5% × (900 jt − 500 jt) = 2.000.000; diisi 4.500.000 → dicatat
+        h = hitung("--status", "TK/0", "--tahun", "2025", "--a1", "114jt", "3jt", "--omzet-final", "900jt",
+                   "--pph-final", "4,5jt")
+        self.assertTrue(any("Cek kewajaran PPh final" in c and "Rp 2.000.000" in c for c in h["catatan"]))
 
 
 class TestAngka(unittest.TestCase):
@@ -198,6 +271,23 @@ class TestAngka(unittest.TestCase):
     def test_negatif_ditolak(self):
         with self.assertRaises(spt_op.InputError):
             spt_op.parse_angka("-5jt")
+
+    def test_koma_tiga_digit_miliar_diterima(self):
+        p = spt_op.parse_angka
+        self.assertEqual(p("5,054miliar"), D(5054000000))
+        self.assertEqual(p("5,054 miliar"), D(5054000000))
+        self.assertEqual(p("Rp 1,250 milyar"), D(1250000000))
+
+    def test_m_ditolak_dengan_contoh(self):
+        for s in ["5,054 M", "5,054M", "5M"]:
+            with self.assertRaises(spt_op.InputError) as cm:
+                spt_op.parse_angka(s)
+            self.assertIn("5,054 miliar", str(cm.exception))
+
+    def test_koma_tiga_digit_jt_tetap_ditolak_dengan_contoh(self):
+        with self.assertRaises(spt_op.InputError) as cm:
+            spt_op.parse_angka("1,500jt")
+        self.assertIn("1,5jt", str(cm.exception))
 
 
 class TestError(unittest.TestCase):
@@ -229,6 +319,25 @@ class TestError(unittest.TestCase):
         kode, err = gagal("--status", "TK/0", "--a1", "114,000,000", "3jt")
         self.assertEqual(kode, 2)
         self.assertIn("Inggris", err)
+
+    def test_negatif_lewat_cli_pesan_ramah(self):
+        for argv in (["--a1", "-10jt", "0"], ["--a1", "100jt", "0", "--zakat", "-5jt"],
+                     ["--a1", "100jt", "0", "--pph23", "-Rp1.000.000"]):
+            kode, err = gagal("--status", "TK/0", *argv)
+            self.assertEqual(kode, 2, argv)
+            self.assertIn("tidak boleh negatif", err)
+            self.assertNotIn("expected", err)
+        kode, err = gagal("--status", "TK/0", "--a1", "100jt", "0", "--zakat", "-5jt")
+        self.assertIn("--zakat", err)
+        self.assertNotIn("rugi usaha", err)
+
+    def test_negatif_bentuk_sama_dengan(self):
+        kode, err = gagal("--status", "TK/0", "--a1", "100jt", "0", "--zakat=-5jt")
+        self.assertEqual(kode, 2)
+        self.assertIn("tidak boleh negatif", err)
+        self.assertNotIn("rugi usaha", err)
+        kode, err = gagal("--status", "TK/0", "--pembukuan-neto=-5jt")
+        self.assertIn("rugi usaha", err)
 
     def test_nppn_tanpa_pemberitahuan_diberi_peringatan(self):
         h = hitung("--status", "TK/0", "--tahun", "2025", "--nppn", "200jt", "50", "--nppn-diberitahukan", "tidak")
