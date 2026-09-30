@@ -15,7 +15,9 @@ dibulatkan 2 desimal per baris - hanya pendekatan, bukan perilaku pasti Odoo.
 
 Jalankan manual (untuk contoh):  python3 tests/server_tiruan.py --port 8069 --versi 19
 Mode gangguan: --mode timeout_create | error500_create | redirect | xmlrpc_hilang | tanpa_stok | bukan_odoo |
-tolak_semua
+tolak_semua | tanpa_has_group
+Hak terbatas: KUNCI_SENDIRI (peran "sendiri" = Sales Own Documents) hanya melihat pesanan/faktur miliknya,
+seperti record rule Odoo asli (dibuktikan penguji di Odoo 18 & 19: Rp 0 untuk pesanan milik orang lain).
 """
 import argparse
 import copy
@@ -31,8 +33,19 @@ KUNCI = {
     "kt-baca-4f1c9a7e2b6d8c0a5e3f": {"uid": 6, "login": "bot-laporan@tokomaju.test", "peran": "baca"},
     "kt-jual-9b2e7c4a1f8d6e0b3a5c": {"uid": 7, "login": "bot-penjualan@tokomaju.test", "peran": "jual"},
     "kt-admin-2a7f9c1e5b3d8a6c4e0f": {"uid": 2, "login": "admin@tokomaju.test", "peran": "admin"},
+    "kt-sendiri-7d3b1e9f5a2c8e4b6d0a": {"uid": 8, "login": "bot-own@tokomaju.test", "peran": "sendiri"},
 }
-KUNCI_BACA, KUNCI_JUAL, KUNCI_ADMIN = list(KUNCI)
+KUNCI_BACA, KUNCI_JUAL, KUNCI_ADMIN, KUNCI_SENDIRI = list(KUNCI)
+# Grup per peran (meniru Odoo 18/19 asli yang diuji penguji: has_group dipanggil dengan ids=[uid]).
+GRUP = {
+    "baca": {"base.group_user", "sales_team.group_sale_salesman", "sales_team.group_sale_salesman_all_leads",
+             "account.group_account_readonly", "stock.group_stock_user"},
+    "jual": {"base.group_user", "sales_team.group_sale_salesman", "sales_team.group_sale_salesman_all_leads"},
+    "admin": {"base.group_user", "base.group_system", "sales_team.group_sale_salesman",
+              "sales_team.group_sale_salesman_all_leads", "account.group_account_invoice"},
+    # "Sales: User: Own Documents" saja: record rule membatasi ke milik sendiri (user_id / invoice_user_id)
+    "sendiri": {"base.group_user", "sales_team.group_sale_salesman"},
+}
 
 
 def data_awal(versi):
@@ -96,14 +109,15 @@ def data_awal(versi):
          "product_max_qty": 40.0, "qty_on_hand": 30.0, "qty_forecast": 30.0},
     ]
 
-    def so(i, nama, pid, tgl, state, dpp, tax, cur=None, origin=False):
+    def so(i, nama, pid, tgl, state, dpp, tax, cur=None, origin=False, penjual=2):
         return {"id": i, "name": nama, "partner_id": [pid, p[pid]], "date_order": tgl, "state": state,
+                "user_id": [penjual, "Penjual"],
                 "amount_untaxed": dpp, "amount_tax": tax, "amount_total": round(dpp + tax, 2),
                 "currency_id": cur or idr, "origin": origin, "create_date": tgl, "validity_date": False}
     pesanan = [
         # 30 Sep 2026 WIB = 2026-09-29 17:00:00 .. 2026-09-30 17:00:00 UTC
         so(101, "S00101", 3, "2026-09-29 18:30:00", "sale", 332345.0, 36557.95),   # 01.30 WIB tgl 30
-        so(102, "S00102", 8, "2026-09-30 02:15:00", "sale", 135000.0, 14850.0),
+        so(102, "S00102", 8, "2026-09-30 02:15:00", "sale", 135000.0, 14850.0, penjual=8),   # milik bot-own
         so(103, "S00103", 12, "2026-09-30 07:40:00", "sale", 1260000.0, 138600.0),
         so(104, "S00104", 9, "2026-09-30 09:05:00", "draft", 500000.0, 55000.0),    # draf: tidak dihitung
         so(105, "S00105", 11, "2026-09-30 10:00:00", "cancel", 90000.0, 9900.0),    # batal
@@ -130,9 +144,10 @@ def data_awal(versi):
          "price_unit": 225000.0, "discount": 0.0, "price_subtotal": 900000.0},
     ]
 
-    def fk(i, nama, pid, jenis, tgl, due, dpp, tax, sisa, state="posted", bayar="not_paid"):
+    def fk(i, nama, pid, jenis, tgl, due, dpp, tax, sisa, state="posted", bayar="not_paid", penjual=2):
         tanda = -1 if jenis == "out_refund" else 1
         return {"id": i, "name": nama, "partner_id": [pid, p[pid]], "move_type": jenis, "state": state,
+                "invoice_user_id": [penjual, "Penjual"],
                 "invoice_date": tgl, "invoice_date_due": due, "amount_untaxed_signed": tanda * dpp,
                 "amount_tax_signed": tanda * tax, "amount_total_signed": tanda * round(dpp + tax, 2),
                 "amount_residual_signed": tanda * sisa, "payment_state": bayar, "currency_id": idr}
@@ -143,7 +158,8 @@ def data_awal(versi):
         fk(180, "INV/2026/00180", 9, "out_invoice", "2026-07-01", "2026-07-06", 1250000.0, 137500.0, 1387500.0),
         fk(185, "INV/2026/00185", 10, "out_invoice", "2026-08-10", "2026-08-24", 2000000.0, 220000.0, 1110000.0,
            bayar="partial"),
-        fk(190, "INV/2026/00190", 11, "out_invoice", "2026-09-10", "2026-09-17", 450000.0, 49500.0, 499500.0),
+        fk(190, "INV/2026/00190", 11, "out_invoice", "2026-09-10", "2026-09-17", 450000.0, 49500.0, 499500.0,
+           penjual=8),
         fk(192, "INV/2026/00192", 3, "out_invoice", "2026-09-20", "2026-10-04", 900000.0, 99000.0, 999000.0),
         fk(193, "INV/2026/00193", 13, "out_invoice", "2026-09-15", "2026-09-29", 90000.0, 9900.0, 0.0,
            bayar="in_payment"),
@@ -152,15 +168,30 @@ def data_awal(versi):
            state="draft"),
         fk(170, "INV/2026/00170", 12, "out_invoice", "2026-05-20", "2026-06-19", 5100000.0, 561000.0, 5661000.0),
     ]
+    # Pelunasan (account.partial.reconcile): debit = baris piutang faktur (id 9000 + id faktur), credit = pembayaran.
+    # 185: dibayar 1.110.000 pada 2026-09-01; 193: lunas 2026-09-28 (in_payment); 194: lunas 2026-09-20.
+    baris_akun = [{"id": 9000 + f["id"], "move_id": [f["id"], f["name"]]} for f in faktur] + \
+        [{"id": 9500 + i, "move_id": [700 + i, "PBAYAR/%d" % i]} for i in range(3)]
+    parsial = [
+        {"id": 1, "debit_move_id": [9185, "INV/2026/00185"], "credit_move_id": [9500, "PBAYAR/0"], "amount": 1110000.0,
+         "max_date": "2026-09-01"},
+        {"id": 2, "debit_move_id": [9193, "INV/2026/00193"], "credit_move_id": [9501, "PBAYAR/1"], "amount": 99900.0,
+         "max_date": "2026-09-28"},
+        {"id": 3, "debit_move_id": [9194, "INV/2026/00194"], "credit_move_id": [9502, "PBAYAR/2"], "amount": 333000.0,
+         "max_date": "2026-09-20"},
+    ]
     user = [{"id": 2, "name": "Administrator", "login": "admin@tokomaju.test", "share": False,
              "company_id": [1, "Toko Maju Kopi"]},
             {"id": 6, "name": "Bot Laporan", "login": "bot-laporan@tokomaju.test", "share": False,
              "company_id": [1, "Toko Maju Kopi"]},
             {"id": 7, "name": "Bot Penjualan", "login": "bot-penjualan@tokomaju.test", "share": False,
+             "company_id": [1, "Toko Maju Kopi"]},
+            {"id": 8, "name": "Bot Own", "login": "bot-own@tokomaju.test", "share": False,
              "company_id": [1, "Toko Maju Kopi"]}]
     return {
         "res.partner": partner, "product.product": produk_rec, "stock.warehouse.orderpoint": orderpoint,
         "sale.order": pesanan, "sale.order.line": baris, "account.move": faktur, "res.users": user,
+        "account.move.line": baris_akun, "account.partial.reconcile": parsial,
         "res.company": [{"id": 1, "name": "Toko Maju Kopi", "currency_id": idr}],
         "ir.config_parameter": [{"id": 1, "key": "web.base.url", "value": "http://localhost:8069"}],
     }
@@ -255,7 +286,19 @@ class Tiruan:
             raise PermissionError("You are not allowed to access 'System Parameter' (ir.config_parameter) records.")
         if metode == "context_get":
             return {"lang": "id_ID", "tz": "Asia/Jakarta", "uid": user["uid"]}
+        if model == "res.users" and metode == "has_group":
+            if "tanpa_has_group" in self.mode:
+                raise AttributeError("The method 'has_group' does not exist on the model 'res.users'")
+            if not ids or len(ids) != 1:
+                raise ValueError("Expected singleton: res.users()")
+            return kw.get("group_ext_id") in GRUP[user["peran"]]
+        if user["peran"] == "sendiri" and model in ("account.partial.reconcile", "account.move.line"):
+            raise PermissionError("You are not allowed to access '{}' records.".format(model))
         recs = self.model(model)
+        if user["peran"] == "sendiri":     # record rule "Own Documents": milik sendiri atau tanpa penjual
+            fld = {"sale.order": "user_id", "account.move": "invoice_user_id"}.get(model)
+            if fld:
+                recs = [r for r in recs if not r.get(fld) or r[fld][0] == user["uid"]]
         if metode == "fields_get":
             return self.fields_get(model)
         if metode == "search_count":
@@ -391,7 +434,7 @@ def buat_handler(t):
             if db != DB or not u or u["uid"] != uid or kunci in t.kunci_kedaluwarsa:
                 return self.fault(3, "Access Denied")
             ids = None
-            if met in ("read",):
+            if met in ("read", "has_group"):
                 ids = args[0] if args else kw.pop("ids", [])
             if met == "create":
                 kw = {"vals_list": args[0] if isinstance(args[0], list) else [args[0]]}

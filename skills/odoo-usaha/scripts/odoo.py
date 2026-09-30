@@ -25,7 +25,9 @@ Kode keluar: 0 berhasil | 2 argumen/input/alamat salah | 3 Odoo tidak bisa dihub
 4 modul/fitur/protokol tidak tersedia | 5 kunci/login salah atau hak akses kurang |
 6 galat lain dari Odoo | 7 tidak dibuat: kemungkinan data ganda atau pilihan ambigu |
 8 SAAT MENULIS: koneksi putus/timeout/jawaban rusak/galat 5xx - draf MUNGKIN sudah tersimpan,
-cek Odoo dulu, JANGAN langsung mengulang.
+cek Odoo dulu, JANGAN langsung mengulang | 9 DATA SEBAGIAN: laporan tercetak, tetapi hak pengguna API
+membatasi data (mis. Sales "Own Documents") atau status per tanggal lampau tidak bisa dihitung penuh -
+angka kemungkinan lebih kecil dari sebenarnya (--terima-sebagian = sengaja, kode 0).
 """
 import argparse
 import datetime as dt
@@ -44,9 +46,9 @@ import urllib.request
 import xmlrpc.client
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
-VERSI_SKRIP = "1.0.0"
+VERSI_SKRIP = "1.0.1"
 URL_DEFAULT = "http://localhost:8069"
-VERSI_RANCANG = (16, 20)          # rentang versi yang dirancang (belum diuji ke Odoo asli)
+VERSI_RANCANG = (16, 20)          # dirancang 16-20; diuji ke Odoo Community asli 18 & 19 (penguji independen)
 BATAS_WAKTU = 20
 PER_HALAMAN = 200
 MAKS_HALAMAN = 50                 # 10.000 baris
@@ -57,10 +59,19 @@ MAKS_TELEGRAM = 3500              # batas aman < 4096 karakter satu pesan Telegr
 
 KELUAR_ARG, KELUAR_KONEKSI, KELUAR_MODUL, KELUAR_AKSES, KELUAR_LAIN, KELUAR_DOBEL = 2, 3, 4, 5, 6, 7
 KELUAR_TIDAK_PASTI = 8
+KELUAR_SEBAGIAN = 9
 
 # Daftar izin metode Odoo. Semua panggilan lewat Odoo.panggil() diperiksa di sini.
 METODE_BACA = {"search_read", "search_count", "read", "fields_get", "context_get"}
 METODE_TULIS = {("sale.order", "create")}
+METODE_BACA_KHUSUS = {("res.users", "has_group")}   # hanya memeriksa grup pengguna API sendiri
+
+# Grup Odoo (xml id, sama di 16-19) untuk menilai CAKUPAN data. Aturan rekaman (record rule) Odoo:
+# grup "Sales: User: Own Documents" hanya melihat pesanan & faktur miliknya (atau tanpa penjual);
+# "All Documents" melihat semua. Faktur terlihat semua bila punya grup Akuntansi (Billing/Read-only).
+GRUP_PENJUAL_SENDIRI = "sales_team.group_sale_salesman"
+GRUP_PENJUAL_SEMUA = "sales_team.group_sale_salesman_all_leads"
+GRUP_FAKTUR_SEMUA = ("account.group_account_invoice", "account.group_account_readonly")
 
 PPN = {
     "umum": {"efektif": Decimal("0.11"), "label": "PPN 12% x DPP nilai lain 11/12 (efektif 11%)"},
@@ -669,7 +680,7 @@ class Odoo:
     # -------------------------------------------------------------- panggilan umum (dengan daftar izin)
     def panggil(self, model, metode, ids=None, **kw):
         tulis = (model, metode) in METODE_TULIS
-        if metode not in METODE_BACA and not tulis:
+        if metode not in METODE_BACA and not tulis and (model, metode) not in METODE_BACA_KHUSUS:
             raise Gagal("Metode {}.{} tidak diizinkan oleh skill ini (hanya baca + draf quotation).".format(model, metode),
                         KELUAR_ARG)
         if self.protokol == "json2":
@@ -725,6 +736,42 @@ def mata_uang_perusahaan(api):
     except Gagal:
         pass
     return None, ""
+
+
+def cakupan_data(api):
+    """Nilai apakah hak pengguna API melihat SEMUA pesanan/faktur atau hanya miliknya sendiri.
+
+    Memakai res.users.has_group (hanya membaca grup pengguna API sendiri; teruji di Odoo 18 & 19 asli).
+    Kembalikan {"sale.order": s, "account.move": s} dengan s = "semua" | "sendiri" | "tidak_diketahui".
+    Batas: aturan rekaman buatan sendiri / multi-perusahaan tidak bisa dinilai dari grup.
+    """
+    if getattr(api, "_cakupan", None) is not None:
+        return api._cakupan
+    hasil = {"sale.order": "tidak_diketahui", "account.move": "tidak_diketahui"}
+    if api.uid:
+        try:
+            punya = {}
+            for g in (GRUP_PENJUAL_SENDIRI, GRUP_PENJUAL_SEMUA) + GRUP_FAKTUR_SEMUA:
+                punya[g] = bool(api.panggil("res.users", "has_group", [api.uid], group_ext_id=g))
+            hanya_sendiri = punya[GRUP_PENJUAL_SENDIRI] and not punya[GRUP_PENJUAL_SEMUA]
+            hasil["sale.order"] = "sendiri" if hanya_sendiri else "semua"
+            hasil["account.move"] = "sendiri" if hanya_sendiri and not any(punya[g] for g in GRUP_FAKTUR_SEMUA) \
+                else "semua"
+        except Gagal:
+            pass
+    api._cakupan = hasil
+    return hasil
+
+
+def peringatan_cakupan(api, model):
+    """Teks PERINGATAN bila data model itu kemungkinan terpotong oleh hak pengguna API, selain itu None."""
+    c = cakupan_data(api).get(model)
+    label = {"sale.order": "pesanan penjualan", "account.move": "faktur"}[model]
+    if c == "sendiri":
+        return ("PERINGATAN DATA SEBAGIAN: pengguna API hanya berhak 'Sales: Own Documents', jadi angka {} di bawah "
+                "HANYA milik pengguna itu (bisa jauh lebih kecil dari angka usaha). Untuk laporan lengkap beri hak "
+                "'All Documents' (docs/panduan-odoo.md §5).".format(label))
+    return None
 
 
 def catatan_mata_uang(nama_mu):
@@ -843,6 +890,21 @@ def cmd_cek(api, args, catatan_url, sumber_kunci):
                                                                          else "galat: " + e.pesan)
             out["modul"][model] = status
         b.append("- {}: {}".format(label, status))
+    cak = cakupan_data(api)
+    out["cakupan"] = cak
+    teks_cak = {"semua": "SEMUA data", "sendiri": "HANYA milik pengguna API ini (Own Documents)",
+                "tidak_diketahui": "tidak bisa dipastikan (cocokkan dengan layar Odoo)"}
+    b.append("Cakupan data (dari grup hak pengguna API):")
+    for label, model in (("Pesanan penjualan", "sale.order"), ("Faktur pelanggan", "account.move")):
+        if out["modul"].get(model) == "ok":
+            b.append("- {}: {}".format(label, teks_cak[cak[model]]))
+    for model in ("sale.order", "account.move"):
+        pr = peringatan_cakupan(api, model) if out["modul"].get(model) == "ok" else None
+        if pr:
+            out["catatan"].append(pr)
+    if "tidak_diketahui" in [cak[m] for m in ("sale.order", "account.move") if out["modul"].get(m) == "ok"]:
+        out["catatan"].append("Cakupan hak (semua data / hanya milik sendiri) tidak bisa diperiksa di server ini. "
+                              "Pastikan pengguna API berhak 'Sales: All Documents' dan cocokkan angka dengan layar Odoo.")
     try:
         api.panggil("ir.config_parameter", "search_count", domain=[])
         out["catatan"].append("RISIKO: kunci ini milik pengguna dengan hak ADMINISTRATOR Pengaturan. Untuk laporan & "
@@ -857,8 +919,8 @@ def cmd_cek(api, args, catatan_url, sumber_kunci):
     if api.protokol == "xmlrpc" and mayor and mayor >= 19:
         out["catatan"].append("XML-RPC usang sejak Odoo 19 dan akan dihapus (Odoo 22 / Online 21.1). Pakai --protokol "
                               "json2 atau otomatis.")
-    out["catatan"].append("Skill ini belum diuji ke server Odoo asli (hanya server tiruan). Cocokkan angka pertama kali "
-                          "dengan layar Odoo.")
+    out["catatan"].append("Skill ini sudah diuji ke Odoo Community 18 & 19 asli (lokal, data uji); belum ke Odoo Online, "
+                          "Enterprise, atau versi 16/17/20. Cocokkan angka pertama kali dengan layar Odoo.")
     b.append("CATATAN:")
     b.extend("- " + x for x in out["catatan"])
     out["teks"] = "\n".join(b)
@@ -936,6 +998,9 @@ def cmd_penjualan(api, args, offset):
         raise Gagal("Penjualan tidak bisa dibaca: " + e.pesan, e.kode, saran=e.saran)
     b = ["RINGKASAN PENJUALAN ODOO", tanggal_panjang(tgl)]
     out = {"tanggal": tgl, "mata_uang": mu}
+    peringatan = [x for x in (peringatan_cakupan(api, "sale.order") if h["pesanan"] is not None else None,
+                              peringatan_cakupan(api, "account.move") if h["faktur"] is not None else None) if x]
+    b.extend(peringatan)
     c = catatan_mata_uang(mu)
     if h["pesanan"] is not None:
         p = h["pesanan"]
@@ -982,7 +1047,16 @@ def cmd_penjualan(api, args, offset):
     if c:
         b.append(c)
     out["teks"] = "\n".join(b)
+    tandai_sebagian(out, peringatan, args)
     return out
+
+
+def tandai_sebagian(out, peringatan, args):
+    """Data kemungkinan terpotong -> kode 9 (kecuali --terima-sebagian), peringatan tetap tercetak."""
+    out["peringatan"] = list(peringatan)
+    out["data_sebagian"] = bool(peringatan)
+    if peringatan and not getattr(args, "terima_sebagian", False):
+        out["kode_keluar"] = KELUAR_SEBAGIAN
 
 
 # ------------------------------------------------------------------ perintah: piutang
@@ -1001,37 +1075,96 @@ def kelompok_umur(hari):
 URUT_UMUR = ["belum jatuh tempo", "1-30 hari", "31-60 hari", "61-90 hari", ">90 hari"]
 
 
-def ambil_piutang(api, per_tanggal):
-    fk = api.cari("account.move", [["move_type", "=", "out_invoice"], ["state", "=", "posted"],
-                                   ["payment_state", "in", ["not_paid", "partial"]]],
-                  ["name", "partner_id", "invoice_date", "invoice_date_due", "amount_total_signed",
-                   "amount_residual_signed", "payment_state"], order="invoice_date_due asc")
+def _bayar_setelah(api, per_tanggal):
+    """Jumlah pelunasan (account.partial.reconcile) bertanggal SETELAH per_tanggal, per ID faktur/nota kredit.
+
+    max_date = tanggal terakhir dari dua baris yang dicocokkan (tanggal akuntansi pembayaran/nota kredit).
+    Sisa per tanggal = sisa saat ini + pelunasan setelah tanggal itu. Nilai dalam mata uang perusahaan.
+    """
+    parsial = api.cari("account.partial.reconcile", [["max_date", ">", per_tanggal.isoformat()]],
+                       ["debit_move_id", "credit_move_id", "amount"])
+    per_baris = {}
+    for pr in parsial:
+        for f in ("debit_move_id", "credit_move_id"):
+            lid, _ = m2o(pr.get(f))
+            if lid:
+                per_baris[lid] = per_baris.get(lid, Decimal(0)) + uang(pr.get("amount"))
+    per_faktur = {}
+    if per_baris:
+        ids = sorted(per_baris)
+        for i in range(0, len(ids), 500):
+            for ln in api.cari("account.move.line", [["id", "in", ids[i:i + 500]]], ["move_id"]):
+                mid, _ = m2o(ln.get("move_id"))
+                if mid:
+                    per_faktur[mid] = per_faktur.get(mid, Decimal(0)) + per_baris.get(ln["id"], Decimal(0))
+    return per_faktur
+
+
+def ambil_piutang(api, per_tanggal, sekarang=None):
+    """Faktur pelanggan terposting yang belum lunas per tanggal acuan.
+
+    - Faktur yang tanggal fakturnya SETELAH tanggal acuan tidak dihitung (belum terbit).
+    - Tanggal acuan di masa lalu: pelunasan bertanggal setelah tanggal itu ditambahkan kembali ke sisa
+      (faktur yang sekarang lunas tetapi dulu belum ikut dihitung). Bila tabel pelunasan tidak bisa dibaca
+      (hak kurang), dipakai status bayar saat ini + info["terbatas"] = True.
+    """
+    sekarang = sekarang or per_tanggal
+    lampau = per_tanggal < sekarang
+    info = {"lampau": lampau, "terbatas": False, "alasan": ""}
+    batas_terbit = ["invoice_date", "<=", per_tanggal.isoformat()]
+    fields = ["name", "partner_id", "invoice_date", "invoice_date_due", "amount_total_signed",
+              "amount_residual_signed", "payment_state", "move_type"]
+    terbuka = [["state", "=", "posted"], ["payment_state", "in", ["not_paid", "partial"]], batas_terbit]
+    fk = api.cari("account.move", [["move_type", "=", "out_invoice"]] + terbuka, fields, order="invoice_date_due asc")
+    kredit = api.cari("account.move", [["move_type", "=", "out_refund"]] + terbuka, fields)
+    tambah = {}
+    if lampau:
+        try:
+            tambah = _bayar_setelah(api, per_tanggal)
+        except Gagal as e:
+            if e.kode not in (KELUAR_AKSES, KELUAR_MODUL):
+                raise
+            info["terbatas"], info["alasan"] = True, e.pesan
+        sudah = {f["id"] for f in fk + kredit}
+        lain = [i for i in tambah if i not in sudah]
+        if lain:
+            extra = api.cari("account.move", [["id", "in", lain], ["move_type", "in", ["out_invoice", "out_refund"]],
+                                              ["state", "=", "posted"], batas_terbit], fields)
+            fk += [f for f in extra if f.get("move_type") == "out_invoice"]
+            kredit += [f for f in extra if f.get("move_type") == "out_refund"]
     daftar = []
     for f in fk:
-        sisa = uang(f.get("amount_residual_signed"))
+        sisa = uang(f.get("amount_residual_signed")) + tambah.get(f["id"], Decimal(0))
+        sisa = min(sisa, uang(f.get("amount_total_signed")))
         if sisa <= 0:
             continue
         due = tanggal_odoo(f.get("invoice_date_due")) or tanggal_odoo(f.get("invoice_date"))
         hari = (per_tanggal - due).days if due else 0
         pid, nama = m2o(f.get("partner_id"))
+        dibayar_sebagian = sisa < uang(f.get("amount_total_signed"))
         daftar.append({"nomor": f.get("name"), "pelanggan_id": pid, "pelanggan": nama,
                        "tanggal": tanggal_odoo(f.get("invoice_date")), "jatuh_tempo": due,
                        "total": uang(f.get("amount_total_signed")), "sisa": sisa, "hari_lewat": hari,
-                       "umur": kelompok_umur(hari), "sebagian": f.get("payment_state") == "partial"})
-    kredit = api.cari("account.move", [["move_type", "=", "out_refund"], ["state", "=", "posted"],
-                                       ["payment_state", "in", ["not_paid", "partial"]]],
-                      ["name", "amount_residual_signed"])
-    nilai_kredit = sum((abs(uang(k.get("amount_residual_signed"))) for k in kredit), Decimal(0))
-    return daftar, len(kredit), nilai_kredit
+                       "umur": kelompok_umur(hari), "sebagian": dibayar_sebagian})
+    daftar.sort(key=lambda d: (d["jatuh_tempo"] or dt.date.max, d["nomor"] or ""))
+    n_kredit, nilai_kredit = 0, Decimal(0)
+    for k in kredit:
+        sisa = abs(uang(k.get("amount_residual_signed"))) + tambah.get(k["id"], Decimal(0))
+        sisa = min(sisa, abs(uang(k.get("amount_total_signed"))) or sisa)
+        if sisa > 0:
+            n_kredit += 1
+            nilai_kredit += sisa
+    return daftar, n_kredit, nilai_kredit, info
 
 
 def cmd_piutang(api, args, offset):
     per = parse_tanggal(args.per_tanggal, offset)
-    daftar, n_kredit, nilai_kredit = ambil_piutang(api, per)
+    daftar, n_kredit, nilai_kredit, info = ambil_piutang(api, per, hari_ini(offset))
     _, mu = mata_uang_perusahaan(api)
     total = sum((d["sisa"] for d in daftar), Decimal(0))
     telat = [d for d in daftar if d["hari_lewat"] > 0]
-    b = ["PIUTANG PELANGGAN ODOO (per {})".format(tanggal_panjang(per)),
+    peringatan = [x for x in (peringatan_cakupan(api, "account.move"), peringatan_per_tanggal(info, per)) if x]
+    b = ["PIUTANG PELANGGAN ODOO (per {})".format(tanggal_panjang(per))] + peringatan + [
          "Belum lunas: {} faktur, {}".format(len(daftar), format_rp(total)),
          "Lewat jatuh tempo: {} faktur, {}".format(len(telat), format_rp(sum((d["sisa"] for d in telat), Decimal(0))))]
     umur = {k: {"jumlah": 0, "nilai": Decimal(0)} for k in URUT_UMUR}
@@ -1074,10 +1207,29 @@ def cmd_piutang(api, args, offset):
     c = catatan_mata_uang(mu)
     if c:
         b.append(c)
-    b.append("Status bayar = kondisi SAAT INI di Odoo. Faktur draf tidak dihitung.")
+    b.append(keterangan_status_bayar(info, per))
     keluar = [dict(d, pelanggan=nama(d["pelanggan"])) for d in urut]
-    return {"per_tanggal": per, "total": total, "jumlah": len(daftar), "umur": umur, "faktur": keluar,
-            "nota_kredit": {"jumlah": n_kredit, "nilai": nilai_kredit}, "teks": "\n".join(b)}
+    out = {"per_tanggal": per, "total": total, "jumlah": len(daftar), "umur": umur, "faktur": keluar,
+           "nota_kredit": {"jumlah": n_kredit, "nilai": nilai_kredit}, "teks": "\n".join(b)}
+    tandai_sebagian(out, peringatan, args)
+    return out
+
+
+def peringatan_per_tanggal(info, per):
+    if info.get("lampau") and info.get("terbatas"):
+        return ("PERINGATAN DATA SEBAGIAN: pelunasan setelah {} tidak bisa dibaca ({}); faktur yang lunas SETELAH "
+                "tanggal itu tidak ikut dihitung, jadi piutang per tanggal itu bisa lebih kecil dari sebenarnya. "
+                "Butuh hak Akuntansi baca (Read-only/Billing).".format(per.isoformat(), info.get("alasan")))
+    return None
+
+
+def keterangan_status_bayar(info, per):
+    if not info.get("lampau"):
+        return "Status bayar = kondisi SAAT INI di Odoo. Faktur draf dan faktur bertanggal setelah {} tidak dihitung." \
+            .format(per.isoformat())
+    return ("Per tanggal lampau: faktur bertanggal setelah {0} tidak dihitung; pelunasan bertanggal setelah {0} "
+            "dihitung belum terjadi (tanggal akuntansi pembayaran/nota kredit). Faktur yang sesudahnya dibatalkan/"
+            "dikembalikan ke draf tidak terlihat. Faktur draf tidak dihitung.".format(per.isoformat()))
 
 
 # ------------------------------------------------------------------ perintah: stok-menipis
@@ -1117,7 +1269,7 @@ def ambil_stok_menipis(api):
         saran = max(target - perkiraan, Decimal(0))
         perhatian.append({"produk_id": pid, "produk": nama, "lokasi": m2o(o.get("location_id"))[1], "stok": ada,
                           "perkiraan": perkiraan, "minimum": mn, "maksimum": mx, "status": status,
-                          "saran_pesan": saran, "aturan": True})
+                          "saran_pesan": saran, "aturan": True, "masuk_terjadwal": perkiraan > ada})
     habis = api.cari("product.product", domain_barang_stok(api) + [["qty_available", "<=", 0]],
                      ["display_name", "default_code", "qty_available", "virtual_available"], batas=500)
     tanpa_aturan = []
@@ -1144,7 +1296,11 @@ def cmd_stok_menipis(api, args):
             b.append("- {}: stok {} ({}), perkiraan {}, min {}{} -> saran pesan {}".format(
                 pendek(x["produk"], 50), format_angka(x["stok"]), x["status"], format_angka(x["perkiraan"]),
                 format_angka(x["minimum"]), ", maks {}".format(format_angka(x["maksimum"])) if x["maksimum"] > x["minimum"]
-                else "", format_angka(x["saran_pesan"])))
+                else "", format_angka(x["saran_pesan"])) + (
+                " (sudah ada barang masuk terjadwal {}; tunggu penerimaan)".format(
+                    format_angka(x["perkiraan"] - x["stok"])) if x["masuk_terjadwal"] and x["saran_pesan"] == 0
+                else " (sudah ada barang masuk terjadwal {})".format(format_angka(x["perkiraan"] - x["stok"]))
+                if x["masuk_terjadwal"] else ""))
         if len(perhatian) > args.maks:
             b.append("... dan {} lainnya.".format(len(perhatian) - args.maks))
     else:
@@ -1409,10 +1565,14 @@ def cmd_laporan_harian(api, args, offset):
     tgl = parse_tanggal(args.tanggal, offset)
     per = hari_ini(offset) if args.tanggal in (None, "hari-ini") else tgl
     b = ["LAPORAN HARIAN ODOO", tanggal_panjang(tgl)]
-    perhatian, galat, out = [], [], {"tanggal": tgl}
+    perhatian, galat, out, peringatan = [], [], {"tanggal": tgl}, []
     mu_id, mu = mata_uang_perusahaan(api)
     h = ambil_penjualan(api, tgl, offset, mu_id)
     kmrn = ambil_penjualan(api, tgl - dt.timedelta(days=1), offset, mu_id)
+    if h["pesanan"] is not None and peringatan_cakupan(api, "sale.order"):
+        peringatan.append(peringatan_cakupan(api, "sale.order"))
+    if peringatan_cakupan(api, "account.move"):
+        peringatan.append(peringatan_cakupan(api, "account.move"))
     b += ["", "PENJUALAN"]
     if h["pesanan"] is not None:
         p = h["pesanan"]
@@ -1438,7 +1598,10 @@ def cmd_laporan_harian(api, args, offset):
         b.append("Faktur: tidak bisa dibaca ({})".format(h["galat"]["faktur"].pesan))
     b += ["", "PIUTANG (per {})".format(per.isoformat())]
     try:
-        daftar, n_kredit, _ = ambil_piutang(api, per)
+        daftar, n_kredit, _, info_piutang = ambil_piutang(api, per, hari_ini(offset))
+        pp = peringatan_per_tanggal(info_piutang, per)
+        if pp:
+            peringatan.append(pp)
         telat = sorted([d for d in daftar if d["hari_lewat"] > 0], key=lambda d: (-d["hari_lewat"], -d["sisa"]))
         b.append("Belum lunas: {} faktur, {}".format(len(daftar), format_rp(sum((d["sisa"] for d in daftar), Decimal(0)))))
         b.append("Lewat jatuh tempo: {} faktur, {}".format(len(telat),
@@ -1480,10 +1643,12 @@ def cmd_laporan_harian(api, args, offset):
     if c:
         b.append(c)
     b.append("(Nama pelanggan disamarkan. Angka dihitung script dari Odoo.)")
+    b[2:2] = peringatan
     teks = "\n".join(b)
     if len(teks) > MAKS_TELEGRAM:
         teks = teks[: MAKS_TELEGRAM - 40].rsplit("\n", 1)[0] + "\n... (dipotong; batas pesan Telegram)"
     out["teks"] = teks
+    tandai_sebagian(out, peringatan, args)
     # Satu bagian gagal -> bagian lain tetap dikirim (kode 0). SEMUA bagian gagal -> kode bukan 0 (jadwal tercatat gagal).
     if h["pesanan"] is None and h["faktur"] is None and "piutang" not in out and "stok" not in out:
         out["kode_keluar"] = galat[0].kode
@@ -1518,10 +1683,12 @@ def buat_parser():
     pj.add_argument("--tanggal", default="hari-ini")
     pj.add_argument("--rinci", action="store_true", help="Tampilkan daftar pesanan")
     pj.add_argument("--samarkan", action="store_true", help="Nama pelanggan jadi inisial")
+    pj.add_argument("--terima-sebagian", action="store_true", help="Data sebagian (hak Own Documents) disengaja: peringatan tetap tampil, kode keluar 0")
     pi = sub.add_parser("piutang", parents=[umum], allow_abbrev=False, help="Faktur belum lunas + umur piutang")
     pi.add_argument("--per-tanggal", default="hari-ini")
     pi.add_argument("--samarkan", action="store_true", help="Nama pelanggan jadi inisial")
     pi.add_argument("--maks", type=int, default=30)
+    pi.add_argument("--terima-sebagian", action="store_true", help="Data sebagian (hak Own Documents) disengaja: peringatan tetap tampil, kode keluar 0")
     st = sub.add_parser("stok-menipis", parents=[umum], allow_abbrev=False, help="Stok habis/menipis + saran pesan")
     st.add_argument("--maks", type=int, default=50)
     pl = sub.add_parser("pelanggan", allow_abbrev=False, help="Cari pelanggan")
@@ -1543,6 +1710,7 @@ def buat_parser():
     qb.add_argument("--tetap-buat", action="store_true", help="Tetap buat walau ada draf serupa")
     lh = sub.add_parser("laporan-harian", parents=[umum], allow_abbrev=False, help="Laporan harian untuk Telegram pemilik")
     lh.add_argument("--tanggal", default="hari-ini")
+    lh.add_argument("--terima-sebagian", action="store_true", help="Data sebagian (hak Own Documents) disengaja: peringatan tetap tampil, kode keluar 0")
     return ap
 
 
@@ -1569,8 +1737,7 @@ def main(argv=None):
             for nama in ("maks",):
                 if hasattr(args, nama) and not 1 <= getattr(args, nama) <= 1000:
                     raise Gagal("--maks harus 1 sampai 1000.", KELUAR_ARG)
-            izin = list(konfig.get("host_diizinkan") or []) + \
-                [h for h in (os.environ.get("ODOO_HOST_DIIZINKAN") or "").split(",") if h.strip()]
+            izin = list(konfig.get("host_diizinkan") or [])   # hanya lewat `atur --izinkan-host` (penegasan pemilik)
             url, _, tanpa_proxy, catatan_url = cek_url(
                 args.url or os.environ.get("ODOO_URL") or konfig.get("url") or URL_DEFAULT, izin)
             db = args.db or os.environ.get("ODOO_DB") or konfig.get("db") or ""
