@@ -214,6 +214,8 @@ FRASA_104 = [
     # "lama/telat ..., wajar/maklum" = pelanggan memaklumi -> netral (bukan keluhan, bukan pujian)
     (r"\b(?:lama|telat|terlambat|lambat|molor|ngaret)(?:\s+(?:sedikit|banget|sekali|juga))?\b([^.!?;]{0,50}?)[,\s]+(?:masih\s+|cukup\s+|sangat\s+|jadi\s+)?(?:wajar|maklum|"
      r"dimaklumi|dimaklum|bisa\s+dimaklumi|dimengerti|bisa\s+dimengerti|tidak\s+apa(?:\s+apa)?|tidak\s+masalah)\b", _lama_wajar),
+    # v1.0.6 "cuma/hanya telat 5 menit" = pelanggan mengecilkan keterlambatan menit -> dimaklumi
+    (r"\b(?:cuma|hanya|cuman)\s+(?:telat|terlambat|lambat)\s+(?:\d+\s*|se|beberapa\s+)menit\b", "lamawajar"),
     (r"\b(?:wajar|maklum|dimaklumi|tidak\s+apa\s+apa|tidak\s+masalah)\s+(?:(?:kalau|kalo|jika|bila|sih|lah|saja|kok|kak|ya|min|mas|mbak|"
      r"bu|pak|deh|kalaupun|walau|meski)\s+){0,2}(?:agak\s+|sedikit\s+)?(?:lama|telat|terlambat|lambat)\b", "lamawajar"),
     # "di read doang", "cuma dibaca" = chat diabaikan (layanan)
@@ -285,8 +287,8 @@ FRASA_103 = [
 ]
 FRASA = FRASA_104 + FRASA_103 + [
     (r"\bkurang\s+lebih\b", "kuranglebih"),
-    (r"\btidak\s+ada\s+(?:yang\s+)?(?:minus|masalah|kendala|keluhan|kekurangan|komplain|cacat|lecet|kurang)(?:nya)?\b"
-     r"|\btanpa\s+(?:minus|cacat|kendala|masalah)\b|\bno\s+minus\b", "tanpaminus"),
+    (r"(?:\btidak\s+ada\s+(?:yang\s+)?(?:minus|masalah|kendala|keluhan|kekurangan|komplain|cacat|lecet|kurang)(?:nya)?\b"
+     r"|\btanpa\s+(?:minus|cacat|kendala|masalah)\b|\bno\s+minus\b)(?:\s+(?:sedikit\s*pun|satu\s*pun|sama\s+sekali|apa\s*pun))?", "tanpaminus"),
     (r"\bkurang\s+(?:\d+|satu|dua|tiga|empat|lima|se(?:biji|bungkus|kotak|porsi|potong|pcs|buah|lembar|pasang))\b|\b(?:yang\s+)?(?:datang|sampai|dikirim|dapat|isinya?)\s+(?:cuma|hanya|cuman)\s+\d+\b|\btidak\s+lengkap\b"
      r"|\b(?:datang|sampai|dikirim|dapat)\s+(?:cuma\s+|hanya\s+)?(?:1|satu)\s+(?:biji|buah|pcs|pasang|lembar|potong)?\s*(?:saja)?(?=\s*(?:$|[,.!?;]))"
      r"|\btidak\s+(?:dimasukkan|dimasukin|dimasukan|disertakan|dibungkus|dibawakan|dikasih|dikasi|termasuk)\b"
@@ -354,7 +356,7 @@ recommended top oke keren juara wangi harum hemat bersih higienis aman kenyang m
 awet kokoh kuat sesuai amanah sabar informatif jujur sigap tanggap perfect sempurna best love lucu mulus kilat ori original asli bersahabat
 akurat lumayan senang cinta memuaskan istimewa teliti profesional helpful membantu tebal wow matang
 responscepat orderlagi tepatwaktu sepadan sesuaiharapan tanpaminus pasbanget masihhangat terima kasih
-terang sejuk lancar stabil jernih""".split())
+terang sejuk lancar stabil jernih semularagu utuh""".split())
 NEG = set("""telat terlambat lama basi jelek kecewa mahal bocor tumpah rusak salah lambat pelit hambar anyep lembek pera keras alot gosong
 mentah tidaksesuai salahpesanan penyok kotor jorok dekil kumuh berdebu lengket bau amis apek tengik anyir pesing busuk judes kasar cuek galak sombong lupa tertukar ketuker
 kedaluwarsa rambut serangga lalat semut ulat kecoa belatung tikus jamur berjamur cacat luntur pudar kusam lepas robek tipis nerawang
@@ -1595,7 +1597,8 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
             jenis = "pujian"
         else:
             jenis = "netral"
-        if jenis != "keluhan" and (optatif or SARAN.search(k) or (tanya and TANYA_MINTA.search(k)) or peran == "saran"):
+        if jenis != "keluhan" and (optatif or SARAN.search(k) or (tanya and TANYA_MINTA.search(k)) or peran == "saran"
+                                   or (s == 0 and re.search(r"\bsemoga\b", k))):   # v1.0.6 "semoga stoknya segera ada" = harapan
             jenis = "saran"
         if s == 0 and "lamawajar" in k:
             jenis = "netral"   # "telat karena tanggal merah, wajar" = dimaklumi pelanggan: bukan keluhan, bukan pujian
