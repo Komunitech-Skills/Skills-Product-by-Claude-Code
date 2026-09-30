@@ -84,10 +84,13 @@ def main():
     cek("minggu depan", pt("minggu depan", acuan)[0] == dt.date(2026, 10, 7))
     cek("Minggu (hari)", pt("Minggu", acuan)[0] == dt.date(2026, 10, 4))
     cek("25/10", pt("25/10", acuan)[0] == dt.date(2026, 10, 25))
+    cek("akhir bulan", pt("akhir bulan", acuan)[0] == dt.date(2026, 9, 30))
+    cek("akhir bulan (Feb)", pt("akhir bulan", dt.date(2028, 2, 3))[0] == dt.date(2028, 2, 29))
+    cek("awal bulan depan", pt("awal bulan depan", dt.date(2026, 12, 15))[0] == dt.date(2027, 1, 1))
     cek("5/1 -> tahun depan", pt("5/1", acuan)[0] == dt.date(2027, 1, 5))
     cek("25 Oktober 2026", pt("25 Oktober 2026", acuan)[0] == dt.date(2026, 10, 25))
     cek("default jam 17", pt("2026-10-05", acuan) == (dt.date(2026, 10, 5), 17, 0))
-    for buruk in ("kapan-kapan", "31/02/2026", "besok jam 25:00"):
+    for buruk in ("besok lusa", "kapan-kapan", "31/02/2026", "besok jam 25:00"):
         try:
             pt(buruk, acuan)
             gagal(f"tenggat buruk diterima: {buruk}")
@@ -254,6 +257,9 @@ def main():
         cek("kolom tak ada -> 2", rc == 2, err)
         rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "Y", "--tenggat", "kapan2"], url=url)
         cek("tenggat buruk -> 2", rc == 2 and "SARAN" in err, err)
+        rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "Lama", "--tenggat", "1/1/2020"],
+                             url=url)
+        cek("tenggat lampau diperingatkan", rc == 0 and "SUDAH LEWAT" in out, out + err)
         rc, out, err = jalan(["tambah-kartu", "--judul", "Y"], url=url)
         cek("tanpa papan -> 2", rc == 2, err)
         rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "  "], url=url)

@@ -198,6 +198,8 @@ _JAM_RE = re.compile(r"\b(?:jam|pukul)\s+(\d{1,2})(?:[:.](\d{2}))?\b|\b(\d{1,2})
 def cari_tanggal(teks, acuan):
     """Satu frasa tanggal Indonesia -> date atau None."""
     t = teks.lower().strip().replace("jum'at", "jumat")
+    if re.search(r"\bbesok lusa\b|\bkapan[- ]?kapan\b", t):  # ungkapan 'suatu saat', bukan tanggal
+        return None
     if re.search(r"\bhari ini\b", t):
         return acuan
     if re.search(r"\bbesok\b", t):
@@ -207,6 +209,11 @@ def cari_tanggal(teks, acuan):
     m = re.search(r"\b(\d{1,3})\s+hari\s+lagi\b", t)
     if m:
         return acuan + dt.timedelta(days=int(m.group(1)))
+    if re.search(r"\bakhir bulan( ini)?\b", t):
+        besok_bulan = (acuan.replace(day=28) + dt.timedelta(days=4)).replace(day=1)
+        return besok_bulan - dt.timedelta(days=1)
+    if re.search(r"\bawal bulan depan\b", t):
+        return (acuan.replace(day=28) + dt.timedelta(days=4)).replace(day=1)
     if re.search(r"\b(minggu|pekan) depan\b", t):
         return acuan + dt.timedelta(days=7)
     m = re.search(r"\b(senin|selasa|rabu|kamis|jumat|sabtu|minggu)(\s+depan)?\b", t)
@@ -263,7 +270,7 @@ def parse_tenggat(teks, acuan):
         raise Gagal(
             f"Tenggat tidak dikenali: {teks!r}.", K_INPUT,
             saran="Format yang didukung: 'hari ini', 'besok', 'lusa', 'N hari lagi', nama hari "
-                  "('Jumat', 'Jumat depan'), 'minggu depan', '25/10' (tanggal/bulan), '25/10/2026', "
+                  "('Jumat', 'Jumat depan'), 'minggu depan', 'akhir bulan', 'awal bulan depan', '25/10' (tanggal/bulan), '25/10/2026', "
                   "'25 Oktober 2026', '2026-10-25'; boleh ditambah 'jam 14:00'.")
     return tanggal, jam, menit
 
@@ -876,8 +883,10 @@ def cmd_tambah_kartu(kb, args):
     if args.tenggat:
         tgl, jam, menit = parse_tenggat(args.tenggat, sekarang(args.tz).date())
         tz_nama, tzs = kb.tz_server()
-        params["date_due"], _ = tenggat_ke_server(tgl, jam, menit, args.tz, tzs)
+        params["date_due"], epoch = tenggat_ke_server(tgl, jam, menit, args.tz, tzs)
         ringkas.append(f"Jatuh tempo: {tgl_panjang(tgl)} jam {jam:02d}:{menit:02d} {args.tz}")
+        if epoch < sekarang(args.tz).timestamp():
+            ringkas.append("PERINGATAN: jatuh tempo ini SUDAH LEWAT - kartu langsung tercatat terlambat. Benar?")
     if args.ke:
         orang = kb.anggota(p["id"])
         kunci = args.ke.strip().lower()
