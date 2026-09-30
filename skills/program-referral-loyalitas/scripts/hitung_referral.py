@@ -25,6 +25,7 @@ SATU = D(1)
 SERATUS = D(100)
 PORSI_AMAN_BAWAAN = D(30)      # aturan praktis: total hadiah <= 30% dari laba kotor seumur pelanggan
 BATAS_PERHATIAN_POIN = D("0.5")  # aturan praktis: hadiah poin <= 50% dari margin kotor
+PORSI_SARAN_PESANAN_PERTAMA = D("0.5")  # saran konservatif: total hadiah <= 50% laba kotor pesanan pertama
 
 
 class InputError(ValueError):
@@ -80,58 +81,126 @@ def angka(x):
 
 # ---------------------------------------------------------------- parsing input awam
 
-_RIBUAN = re.compile(r"^\d{1,3}(\.\d{3})+(,\d+)?$")
-_RIBUAN_KOMA = re.compile(r"^\d{1,3}(,\d{3})+$")
+_RIBUAN = re.compile(r"^\d{1,3}(\.\d{3})+(,\d+)?$")      # 40.000 | 1.500.000 | 38.000,50
+_RIBUAN_KOMA = re.compile(r"^\d{1,3}(,\d{3})+$")          # 52,300 (gaya Inggris)
+_AKHIRAN = re.compile(r"^(.*?)(rb|ribu|k|jt|juta)$")
+
+
+def _bersihkan(nilai, nama):
+    if nilai is None:
+        raise InputError(f"{nama} kosong")
+    s = str(nilai).strip().lower().replace(" ", "")
+    if not s:
+        raise InputError(f"{nama} kosong")
+    if s.startswith("-"):
+        raise InputError(f"{nama} tidak boleh negatif (didapat {nilai})")
+    return s
+
+
+def _pisah_akhiran(s):
+    m = _AKHIRAN.match(s)
+    if not m:
+        return s, None
+    return m.group(1), (D(1000) if m.group(2) in ("rb", "ribu", "k") else D(1000000))
+
+
+def _angka_berakhiran(s, nilai, nama):
+    """Bagian angka sebelum rb/jt: '1,5' / '1.5' = desimal, '1.500' = ribuan."""
+    if _RIBUAN.match(s) and "," not in s:
+        s = s.replace(".", "")
+    elif re.match(r"^\d+[.,]\d+$", s):
+        s = s.replace(",", ".")
+    if not re.match(r"^\d+(\.\d+)?$", s):
+        raise InputError(f"{nama} '{nilai}' tidak terbaca (contoh benar: 40rb, 1,5jt)")
+    return D(s)
 
 
 def parse_rupiah(nilai, boleh_nol=False, nama="angka"):
-    """'Rp52.300', '52300', '52,3rb', '1,2jt' -> Decimal. Angka ambigu seperti '12.5' DITOLAK."""
+    """'Rp52.300', '52300', '1.500.000', '52,3rb', '1,2jt' -> Decimal. Angka ambigu seperti '12.5' DITOLAK."""
     if isinstance(nilai, (int, D)):
         x = D(nilai)
     else:
-        if nilai is None:
-            raise InputError(f"{nama} kosong")
-        s = str(nilai).strip().lower().replace(" ", "")
+        s = _bersihkan(nilai, nama)
         s = re.sub(r"^(rp\.?|idr)", "", s)
-        s = re.sub(r",-$", "", s)
-        kali = SATU
-        m = re.match(r"^(.*?)(rb|ribu|k|jt|juta)$", s)
-        if m:
-            s, suf = m.group(1), m.group(2)
-            kali = D(1000) if suf in ("rb", "ribu", "k") else D(1000000)
-            if _RIBUAN.match(s) and "," not in s:
-                s = s.replace(".", "")
-            else:
+        s = re.sub(r"(,-|\.-)$", "", s)
+        s, kali = _pisah_akhiran(s)
+        if kali is not None:
+            x = _angka_berakhiran(s, nilai, nama) * kali
+        else:
+            if _RIBUAN.match(s):
+                s = s.replace(".", "").replace(",", ".")
+            elif _RIBUAN_KOMA.match(s):
+                s = s.replace(",", "")
+            elif re.match(r"^\d+,\d{1,2}$", s):
+                if 1 <= int(s.split(",")[0]) < 1000:
+                    raise InputError(f"{nama} '{nilai}' ambigu: Rp{s} kurang dari seribu rupiah. "
+                                     f"Maksud Anda {s}rb atau {s}jt? Tulis mis. {s}rb")
                 s = s.replace(",", ".")
-        elif _RIBUAN.match(s):
-            s = s.replace(".", "").replace(",", ".")
-        elif _RIBUAN_KOMA.match(s):
-            s = s.replace(",", "")
-        elif re.match(r"^\d+,\d{1,2}$", s):
-            s = s.replace(",", ".")
-        elif re.match(r"^\d+\.\d+$", s):
-            raise InputError(f"{nama} '{nilai}' ambigu: titik dipakai sebagai pemisah ribuan. "
-                             f"Tulis mis. 12.500 (dua belas ribu lima ratus) atau 12,5rb")
-        if not re.match(r"^\d+(\.\d+)?$", s):
-            raise InputError(f"{nama} '{nilai}' tidak terbaca sebagai rupiah (contoh benar: 52.300, 52rb, 1,2jt)")
-        try:
-            x = D(s) * kali
-        except InvalidOperation:
-            raise InputError(f"{nama} '{nilai}' tidak terbaca sebagai rupiah")
+            elif re.match(r"^\d+\.\d+$", s):
+                raise InputError(f"{nama} '{nilai}' ambigu: titik dipakai sebagai pemisah ribuan. "
+                                 f"Tulis mis. 12.500 (dua belas ribu lima ratus) atau 12,5rb")
+            if not re.match(r"^\d+(\.\d+)?$", s):
+                raise InputError(f"{nama} '{nilai}' tidak terbaca sebagai rupiah (contoh benar: 52.300, 52rb, 1,2jt)")
+            try:
+                x = D(s)
+            except InvalidOperation:
+                raise InputError(f"{nama} '{nilai}' tidak terbaca sebagai rupiah")
     if x < 0 or (x == 0 and not boleh_nol):
         raise InputError(f"{nama} harus lebih dari 0 (didapat {nilai})" if not boleh_nol
                          else f"{nama} tidak boleh negatif (didapat {nilai})")
     return x
 
 
+def parse_jumlah(nilai, nama="angka", boleh_nol=False, bulat_saja=False):
+    """Jumlah (orang, poin, kali, bulan) - BUKAN rupiah.
+
+    bulat_saja=True  (poin, pelanggan, referral): '40.000' / '1.500.000' = ribuan; '40rb', '1,5jt' boleh.
+    bulat_saja=False (frekuensi, bulan, pesanan ulang): desimal pakai koma ('0,25', '1,5');
+                     '1.000' atau '1,000' AMBIGU (seribu atau satu?) -> GAGAL, tidak ditebak.
+    """
+    s = _bersihkan(nilai, nama)
+    if re.match(r"^(rp|idr)", s):
+        raise InputError(f"{nama} adalah jumlah, bukan rupiah; tulis tanpa 'Rp' (mis. 40.000 atau 40000)")
+    s, kali = _pisah_akhiran(s)
+    if kali is not None:
+        x = _angka_berakhiran(s, nilai, nama) * kali
+    elif re.match(r"^\d+$", s):
+        x = D(s)
+    elif _RIBUAN.match(s):
+        if bulat_saja or "," in s:
+            x = D(s.replace(".", "").replace(",", "."))
+        else:
+            raise InputError(f"{nama} '{nilai}' ambigu: bisa dibaca {s.replace('.', '')} atau {s.replace('.', ',')}. "
+                             f"Untuk desimal pakai koma (mis. 1,5); untuk ribuan tulis tanpa titik (mis. 1000)")
+    elif _RIBUAN_KOMA.match(s) and not s.startswith("0,"):
+        raise InputError(f"{nama} '{nilai}' ambigu: koma bisa berarti desimal atau ribuan. "
+                         f"Tulis ribuan dengan titik (mis. 1.000) atau desimal dengan satu/dua angka di belakang koma (mis. 1,5)")
+    elif re.match(r"^\d+,\d+$", s):
+        x = D(s.replace(",", "."))
+    elif re.match(r"^\d+\.\d+$", s):
+        raise InputError(f"{nama} '{nilai}' ambigu: titik di Indonesia adalah pemisah ribuan. "
+                         f"Untuk desimal pakai koma (mis. 1,5)")
+    else:
+        raise InputError(f"{nama} '{nilai}' tidak terbaca (tulis angka biasa, mis. 2, 1,5, atau 40.000)")
+    if bulat_saja and x != x.to_integral_value():
+        raise InputError(f"{nama} harus bilangan bulat (didapat {nilai})")
+    if x < 0 or (x == 0 and not boleh_nol):
+        raise InputError(f"{nama} harus lebih dari 0 (didapat {nilai})")
+    return x
+
+
 def parse_persen(nilai, nama="persen", maks=D(100)):
-    """'15', '15%', '12,5%' -> pecahan Decimal 0.15. Angka SELALU dianggap persen."""
-    s = str(nilai).strip().replace(" ", "").replace("%", "").replace(",", ".")
+    """'15', '15%', '12,5%', '12.5' -> pecahan Decimal 0.15. Angka SELALU dianggap persen.
+    '1.000' / '12,500' (tiga angka di belakang pemisah) AMBIGU -> GAGAL."""
+    s = _bersihkan(nilai, nama).replace("%", "")
+    if re.match(r"^\d+[.,]\d{3}", s) and not re.match(r"^0[.,]", s):
+        raise InputError(f"{nama} '{nilai}' ambigu: tulis persen dengan koma desimal, mis. 12,5 (bukan 1.000 atau 12,500)")
+    s = s.replace(",", ".")
     if not re.match(r"^\d+(\.\d+)?$", s):
         raise InputError(f"{nama} '{nilai}' tidak terbaca (contoh benar: 15 atau 12,5%; tidak boleh negatif)")
     x = D(s)
     if x > maks:
-        raise InputError(f"{nama} {nilai}% di luar batas wajar (maks {maks}%)")
+        raise InputError(f"{nama} {str(nilai).strip().rstrip('%')}% di luar batas wajar (maks {maks}%)")
     return x / SERATUS
 
 
@@ -151,18 +220,6 @@ def parse_hadiah(nilai, aov, nama="hadiah"):
     return bulat(parse_rupiah(nilai, boleh_nol=True, nama=nama))
 
 
-def parse_angka(nilai, nama="angka", boleh_nol=False, bulat_saja=False):
-    s = str(nilai).strip().replace(",", ".")
-    if not re.match(r"^\d+(\.\d+)?$", s):
-        raise InputError(f"{nama} '{nilai}' tidak terbaca (tulis angka biasa, mis. 2 atau 1,5)")
-    x = D(s)
-    if bulat_saja and x != x.to_integral_value():
-        raise InputError(f"{nama} harus bilangan bulat (didapat {nilai})")
-    if x < 0 or (x == 0 and not boleh_nol):
-        raise InputError(f"{nama} harus lebih dari 0 (didapat {nilai})")
-    return x
-
-
 def parse_skenario(teks):
     """'realistis:10:2:25' = nama : % pelanggan yang merujuk : teman per perujuk : % teman yang beli."""
     bagian = str(teks).split(":")
@@ -171,7 +228,7 @@ def parse_skenario(teks):
                          f"mis. realistis:10:2:25")
     return {"nama": bagian[0].strip(),
             "merujuk": parse_persen(bagian[1], "persen pelanggan yang merujuk"),
-            "teman": parse_angka(bagian[2], "teman per perujuk", boleh_nol=True),
+            "teman": parse_jumlah(bagian[2], "teman per perujuk", boleh_nol=True),
             "beli": parse_persen(bagian[3], "persen teman yang membeli")}
 
 
@@ -205,8 +262,12 @@ def titik_impas(aov, margin, pemberi, teman, lain, frekuensi, umur, porsi):
     h["batas_aman"] = ke_bawah(h["ltv"] * porsi)
     h["pemberi_maks"] = max(NOL, h["batas_aman"] - teman - lain)
     h["impas_pertama"] = lpo
-    if biaya <= h["batas_aman"]:
+    # saran konservatif: pesanan pertama tetap menyisakan >= separuh laba kotor, dan tidak melewati batas atas
+    h["pemberi_saran"] = min(h["pemberi_maks"], max(NOL, ke_bawah(lpo * PORSI_SARAN_PESANAN_PERTAMA) - teman - lain))
+    if biaya <= h["batas_aman"] and h["laba_setelah"] >= 0:
         h["status"] = "AMAN"
+    elif biaya <= h["batas_aman"]:
+        h["status"] = "RUGI DI PESANAN PERTAMA"
     elif biaya <= h["ltv"]:
         h["status"] = "PERHATIAN"
     else:
@@ -317,8 +378,14 @@ def cetak_impas(h):
            f"Perkiraan laba kotor seumur pelanggan: {rp(h['ltv'])} ({angka(h['pesanan_seumur'])} pesanan; asumsi "
            f"{angka(h['frekuensi'])}x per bulan selama {angka(h['umur'])} bulan)",
            f"Batas hadiah aman ({pct(h['porsi'], 0)} dari laba seumur pelanggan): {rp(h['batas_aman'])} total per referral",
-           f"Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): {rp(h['pemberi_maks'])}",
+           f"BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): {rp(h['pemberi_maks'])}",
+           f"Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): {rp(h['pemberi_saran'])}",
            f"STATUS: {h['status']}"]
+    if h["pemberi_saran"] == 0:
+        out.append("Catatan: hadiah teman + biaya lain sudah memakai 50% atau lebih laba pesanan pertama; tidak ada ruang hadiah pemberi versi konservatif.")
+    if h["laba_setelah"] < 0:
+        out.append(f"PERHATIAN: RUGI {rp(-h['laba_setelah'])} per referral di pesanan pertama. Balik modal hanya bila teman membeli lagi "
+                   f"sampai pesanan ke-{angka(h['pesanan_impas'])}; bila teman hanya membeli sekali, program ini rugi.")
     if h["status"] == "PERHATIAN":
         out.append("PERHATIAN: biaya di atas batas aman tetapi masih di bawah laba seumur pelanggan; aman hanya bila pelanggan benar-benar rutin membeli.")
     if h["status"] == "TIDAK DISARANKAN":
@@ -431,8 +498,8 @@ def jalankan(argv=None):
             aov=parse_rupiah(a.aov, nama="nilai pesanan") if a.aov else None,
             omzet=parse_rupiah(a.omzet_bulan, nama="omzet") if a.omzet_bulan else None,
             breakage=parse_persen(a.breakage, "breakage", D(99)),
-            beredar=parse_angka(a.poin_beredar, "poin beredar", boleh_nol=True, bulat_saja=True) if a.poin_beredar else None,
-            min_tukar=parse_angka(a.minimum_tukar, "minimum tukar", bulat_saja=True) if a.minimum_tukar else None))
+            beredar=parse_jumlah(a.poin_beredar, "poin beredar", boleh_nol=True, bulat_saja=True) if a.poin_beredar else None,
+            min_tukar=parse_jumlah(a.minimum_tukar, "minimum tukar", bulat_saja=True) if a.minimum_tukar else None))
     aov = parse_rupiah(a.aov, nama="nilai pesanan")
     margin = parse_margin(a.margin)
     pem = parse_hadiah(a.hadiah_pemberi, aov, "hadiah pemberi")
@@ -441,19 +508,19 @@ def jalankan(argv=None):
     anggaran = parse_rupiah(a.anggaran, nama="anggaran") if getattr(a, "anggaran", None) else None
     cac = parse_rupiah(a.cac_iklan, nama="biaya iklan") if getattr(a, "cac_iklan", None) else None
     if a.perintah == "biaya":
-        jml = parse_angka(a.jumlah_referral, "jumlah referral", bulat_saja=True) if a.jumlah_referral else None
+        jml = parse_jumlah(a.jumlah_referral, "jumlah referral", bulat_saja=True) if a.jumlah_referral else None
         return cetak_biaya(biaya_referral(aov, margin, pem, tem, lain), jml, anggaran, cac)
     if a.perintah == "impas":
-        frek = parse_angka(a.frekuensi_bulan, "frekuensi per bulan")
-        umur = parse_angka(a.umur_bulan, "umur pelanggan (bulan)")
+        frek = parse_jumlah(a.frekuensi_bulan, "frekuensi per bulan")
+        umur = parse_jumlah(a.umur_bulan, "umur pelanggan (bulan)")
         porsi = parse_persen(a.porsi_ltv, "porsi laba", D(100))
         if porsi <= 0:
             raise InputError("porsi laba harus lebih dari 0%")
         return cetak_impas(titik_impas(aov, margin, pem, tem, lain, frek, umur, porsi))
     if a.perintah == "simulasi":
-        pel = parse_angka(a.pelanggan_aktif, "pelanggan aktif", bulat_saja=True)
+        pel = parse_jumlah(a.pelanggan_aktif, "pelanggan aktif", bulat_saja=True)
         sken = [parse_skenario(x) for x in (a.skenario or SKENARIO_BAWAAN)]
-        ulang = parse_angka(a.pesanan_ulang, "pesanan ulang", boleh_nol=True)
+        ulang = parse_jumlah(a.pesanan_ulang, "pesanan ulang", boleh_nol=True)
         per, hasil = simulasi(pel, aov, margin, pem, tem, lain, sken, ulang, anggaran, cac)
         return cetak_simulasi(per, hasil, pel, ulang, anggaran, cac)
     raise InputError("perintah tidak dikenal")

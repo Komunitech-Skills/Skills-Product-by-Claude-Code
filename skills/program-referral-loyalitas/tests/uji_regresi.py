@@ -111,7 +111,8 @@ class Impas(unittest.TestCase):
         h = H.titik_impas(D(60000), D("0.55"), D(40000), D(6000), D(2000), D(2), D(6), D("0.3"))
         self.assertEqual(h["pesanan_impas"], D(2))
         self.assertEqual(h["bulan_impas"], D(1))
-        self.assertEqual(h["status"], "AMAN")                            # 48000 <= 118800
+        # v1.0.1: 48000 <= batas 118800 TETAPI rugi 15000 di pesanan pertama -> tidak boleh berstatus "AMAN"
+        self.assertEqual(h["status"], "RUGI DI PESANAN PERTAMA")
 
     def test_status_perhatian_dan_tidak_disarankan(self):
         # frekuensi 1 x 6 bln -> LTV = 33000 x 6 = 198000 ; aman 30% = 59400
@@ -133,7 +134,10 @@ class Impas(unittest.TestCase):
         self.assertEqual(kode, 0)
         self.assertIn("pesanan ke-2 milik teman, sekitar bulan ke-1", out)
         self.assertIn("Rp118.800 total per referral", out)
-        self.assertIn("STATUS: AMAN", out)
+        self.assertIn("STATUS: RUGI DI PESANAN PERTAMA", out)             # v1.0.1 (sebelumnya "AMAN")
+        self.assertNotIn("STATUS: AMAN", out)
+        self.assertIn("PERHATIAN: RUGI Rp15.000 per referral di pesanan pertama", out)   # 33000 - 48000
+        self.assertIn("sampai pesanan ke-2", out)
 
 
 class Poin(unittest.TestCase):
@@ -254,6 +258,171 @@ class InputBuruk(unittest.TestCase):
     def test_tanpa_perintah(self):
         kode, _, _ = jalan()
         self.assertEqual(kode, 2)
+
+
+class FormatIndonesia(unittest.TestCase):
+    """v1.0.1 (temuan T1): angka format Indonesia untuk SEMUA argumen; ambigu -> GAGAL, tidak ditebak."""
+
+    def cek_gagal(self, *argv, kata="GAGAL"):
+        kode, out, err = jalan(*argv)
+        self.assertEqual(kode, 2, (out, err))
+        self.assertIn(kata, err)
+        self.assertNotIn("Traceback", err)
+        return err
+
+    def test_rupiah_semua_bentuk(self):
+        harap = {"40.000": 40000, "52.340": 52340, "1.500.000": 1500000, "Rp38.000": 38000, "Rp 38.000": 38000,
+                 "rp38.000,-": 38000, "IDR38000": 38000, "38rb": 38000, "38ribu": 38000, "38k": 38000,
+                 "1,5jt": 1500000, "1.5jt": 1500000, "1,5 juta": 1500000, "2,5rb": 2500, "38.000,50": D("38000.50"),
+                 "52,300": 52300, "300": 300, "0,5": D("0.5")}
+        for teks, nilai in harap.items():
+            self.assertEqual(H.parse_rupiah(teks), D(nilai), teks)
+
+    def test_rupiah_ambigu_ditolak(self):
+        for teks in ("12.5", "1.5", "12,5", "52,3", "1,2", "-40.000", "Rp", "40.00.0", "4O.000"):
+            with self.assertRaises(H.InputError, msg=teks):
+                H.parse_rupiah(teks)
+
+    def test_jumlah_bulat_semua_bentuk(self):
+        harap = {"40.000": 40000, "52.340": 52340, "1.500.000": 1500000, "2.000": 2000, "1.000": 1000,
+                 "40000": 40000, "40rb": 40000, "1,5jt": 1500000, "12": 12, "0": 0}
+        for teks, nilai in harap.items():
+            self.assertEqual(H.parse_jumlah(teks, "poin", boleh_nol=True, bulat_saja=True), D(nilai), teks)
+
+    def test_jumlah_bulat_ditolak(self):
+        # 1,000 = satu atau seribu? ; 1.5 = titik bukan desimal ; 2,5 = orang/poin pecahan ; Rp = bukan jumlah
+        for teks in ("1,000", "52,340", "1.5", "2,5", "Rp40.000", "abc", "-5", "1,5rb5"):
+            with self.assertRaises(H.InputError, msg=teks):
+                H.parse_jumlah(teks, "poin", boleh_nol=True, bulat_saja=True)
+
+    def test_jumlah_desimal(self):
+        harap = {"0,25": D("0.25"), "1,5": D("1.5"), "2": 2, "12": 12, "1.000,5": D("1000.5"), "0,250": D("0.25")}
+        for teks, nilai in harap.items():
+            self.assertEqual(H.parse_jumlah(teks, "frekuensi"), D(nilai), teks)
+        for teks in ("1.000", "2.000", "1,000", "12,500", "1.5", "0.25"):
+            with self.assertRaises(H.InputError, msg=teks):
+                H.parse_jumlah(teks, "frekuensi")
+
+    def test_persen(self):
+        harap = {"12,5": D("0.125"), "12.5": D("0.125"), "12,5%": D("0.125"), "40": D("0.4"), "0,5": D("0.005")}
+        for teks, nilai in harap.items():
+            self.assertEqual(H.parse_persen(teks), nilai, teks)
+        for teks in ("1.000", "12,500", "1.000.000", "-5", "abc", "150"):
+            with self.assertRaises(H.InputError, msg=teks):
+                H.parse_persen(teks)
+
+    def test_pesan_persen_tidak_ganda(self):
+        err = self.cek_gagal("biaya", "--aov", "50rb", "--margin", "50", "--hadiah-teman", "150%")
+        self.assertIn("150%", err)
+        self.assertNotIn("%%", err)
+
+    def test_cli_poin_beredar_dan_minimum(self):
+        # 40.000 poin x Rp300 = Rp12.000.000 ; minimum 1.000 poin x Rp10.000 = Rp10.000.000 belanja, x300 = Rp300.000
+        kode, out, _ = jalan("poin", "--belanja-per-poin", "Rp10.000", "--nilai-poin", "300", "--margin", "65",
+                             "--poin-beredar", "40.000", "--minimum-tukar", "1.000")
+        self.assertEqual(kode, 0)
+        self.assertIn("poin beredar 40.000 poin: maksimal Rp12.000.000", out)
+        self.assertIn("Minimum tukar 1.000 poin = belanja kumulatif Rp10.000.000, hadiah Rp300.000", out)
+        # 52.340 x Rp300 = Rp15.702.000 ; breakage 25% -> 15.702.000 x 0,75 = 11.776.500
+        kode, out, _ = jalan("poin", "--belanja-per-poin", "10rb", "--nilai-poin", "300", "--margin", "65",
+                             "--poin-beredar", "52.340", "--breakage", "25", "--omzet-bulan", "1,5jt", "--aov", "38rb")
+        self.assertEqual(kode, 0)
+        self.assertIn("52.340 poin: maksimal Rp15.702.000", out)
+        self.assertIn("perkiraan Rp11.776.500", out)
+        self.assertIn("Omzet Rp1.500.000/bulan: biaya poin maksimal (semua ditukar) Rp45.000", out)   # 1,5jt x 3%
+        self.assertIn("Pesanan Rp38.000: dapat 3 poin", out)                                          # floor(3,8)
+        kode, out, _ = jalan("poin", "--belanja-per-poin", "10rb", "--nilai-poin", "300", "--margin", "65",
+                             "--poin-beredar", "40rb")
+        self.assertIn("40.000 poin: maksimal Rp12.000.000", out)
+
+    def test_cli_simulasi_pelanggan_ribuan(self):
+        # 2.000 pelanggan ; realistis 10% -> 200 perujuk x 2 = 400 teman x 25% = 100 pembeli
+        kode, out, _ = jalan("simulasi", "--pelanggan-aktif", "2.000", "--aov", "Rp60.000", "--margin", "55",
+                             "--hadiah-pemberi", "10rb", "--hadiah-teman", "10%", "--skenario", "realistis:10:2:25",
+                             "--anggaran", "1.500.000", "--pesanan-ulang", "0,5")
+        self.assertEqual(kode, 0)
+        self.assertIn("2.000 pelanggan aktif", out)
+        self.assertIn("200 perujuk -> 400 teman diajak -> 100 pembeli baru", out)
+        self.assertIn("biaya hadiah Rp1.600.000", out)                  # 100 x 16000
+        self.assertIn("melebihi anggaran Rp1.500.000", out)
+        self.assertIn("laba kotor Rp4.950.000", out)                     # 100 x 33000 x 1,5
+
+    def test_cli_jumlah_referral_dan_anggaran(self):
+        # 1.000 referral x 18000 = 18.000.000
+        kode, out, _ = jalan("biaya", "--aov", "60.000", "--margin", "55", "--hadiah-pemberi", "10.000",
+                             "--hadiah-teman", "10%", "--biaya-lain", "2rb", "--jumlah-referral", "1.000",
+                             "--anggaran", "20jt", "--cac-iklan", "Rp25.000")
+        self.assertEqual(kode, 0)
+        self.assertIn("Program 1.000 referral berhasil: total biaya Rp18.000.000", out)
+        self.assertIn("cukup (sisa Rp2.000.000)", out)
+
+    def test_cli_impas_desimal_koma(self):
+        # frekuensi 0,5 x 12 bulan = 6 pesanan ; aov 180rb x 40% = 72000 ; LTV 432000 ; 30% = 129600
+        kode, out, _ = jalan("impas", "--aov", "Rp180.000", "--margin", "40", "--hadiah-pemberi", "15rb",
+                             "--hadiah-teman", "15.000", "--frekuensi-bulan", "0,5", "--umur-bulan", "12",
+                             "--porsi-ltv", "30")
+        self.assertEqual(kode, 0)
+        self.assertIn("Rp129.600 total per referral", out)
+
+    def test_cli_ambigu_gagal(self):
+        self.cek_gagal("poin", "--belanja-per-poin", "10rb", "--nilai-poin", "300", "--margin", "65", "--poin-beredar", "52,340")
+        self.cek_gagal("poin", "--belanja-per-poin", "10rb", "--nilai-poin", "300", "--margin", "65", "--minimum-tukar", "1,000")
+        self.cek_gagal("poin", "--belanja-per-poin", "10rb", "--nilai-poin", "300", "--margin", "65", "--poin-beredar", "Rp40.000")
+        self.cek_gagal("simulasi", "--pelanggan-aktif", "2,000", "--aov", "60rb", "--margin", "55")
+        self.cek_gagal("impas", "--aov", "60rb", "--margin", "55", "--umur-bulan", "1.000", kata="ambigu")
+        self.cek_gagal("impas", "--aov", "60rb", "--margin", "55", "--frekuensi-bulan", "1.5", kata="ambigu")
+        self.cek_gagal("simulasi", "--pelanggan-aktif", "400", "--aov", "60rb", "--margin", "55", "--pesanan-ulang", "1.000")
+        self.cek_gagal("simulasi", "--pelanggan-aktif", "400", "--aov", "60rb", "--margin", "55",
+                       "--skenario", "a:10:1.000:25", kata="ambigu")
+        self.cek_gagal("simulasi", "--pelanggan-aktif", "400", "--aov", "60rb", "--margin", "55",
+                       "--skenario", "a:1.000:2:25", kata="ambigu")
+        self.cek_gagal("biaya", "--aov", "60rb", "--margin", "1.000", kata="ambigu")
+        self.cek_gagal("biaya", "--aov", "12,5", "--margin", "55", kata="ambigu")
+        self.cek_gagal("biaya", "--aov", "60rb", "--margin", "55", "--jumlah-referral", "1,000")
+        self.cek_gagal("poin", "--belanja-per-poin", "10rb", "--nilai-poin", "300", "--margin", "65", "--breakage", "12,500")
+
+
+class StatusJujur(unittest.TestCase):
+    """v1.0.1 (temuan S1 & S2)."""
+
+    def test_rugi_pertama_bukan_aman(self):
+        # 145000 x 38% = 55100 ; hadiah 50000 + 20% x 145000 (29000) = 79000 -> rugi 23900 ; ceil(79000/55100) = 2
+        # frekuensi 1 x 12 -> LTV 661200 ; 30% = 198360 -> 79000 di bawah batas, tetapi TIDAK boleh "AMAN"
+        h = H.titik_impas(D(145000), D("0.38"), D(50000), D(29000), D(0), D(1), D(12), D("0.3"))
+        self.assertEqual(h["laba_setelah"], D(-23900))
+        self.assertEqual(h["status"], "RUGI DI PESANAN PERTAMA")
+        self.assertEqual(h["pesanan_impas"], D(2))
+
+    def test_saran_konservatif_dan_batas_atas(self):
+        # hijab 180rb 40%: lpo 72000 ; teman 15000 ; saran = floor(72000 x 50%) - 15000 = 21000
+        # batas aman 129600 (0,5 x 12) ; batas atas pemberi = 129600 - 15000 = 114600
+        h = H.titik_impas(D(180000), D("0.4"), D(15000), D(15000), D(0), D("0.5"), D(12), D("0.3"))
+        self.assertEqual(h["status"], "AMAN")
+        self.assertEqual(h["pemberi_maks"], D(114600))
+        self.assertEqual(h["pemberi_saran"], D(21000))
+        kode, out, _ = jalan("impas", "--aov", "180rb", "--margin", "40", "--hadiah-pemberi", "15rb",
+                             "--hadiah-teman", "15rb", "--frekuensi-bulan", "0,5", "--umur-bulan", "12")
+        self.assertIn("BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp114.600", out)
+        self.assertIn("Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp21.000", out)
+        self.assertNotIn("Hadiah pemberi maksimal", out)
+        self.assertIn("STATUS: AMAN", out)
+
+    def test_saran_tidak_melebihi_batas_atas(self):
+        # lpo 33000 ; frekuensi 1 x 1 -> LTV 33000 ; 30% = 9900 ; batas atas pemberi = 9900 ; saran = min(9900, 16500) = 9900
+        h = H.titik_impas(D(60000), D("0.55"), D(0), D(0), D(0), D(1), D(1), D("0.3"))
+        self.assertEqual(h["pemberi_maks"], D(9900))
+        self.assertEqual(h["pemberi_saran"], D(9900))
+
+    def test_saran_nol_bila_tidak_ada_ruang(self):
+        # lpo 33000 ; teman 20000 > 16500 -> saran 0 + catatan
+        kode, out, _ = jalan("impas", "--aov", "60rb", "--margin", "55", "--hadiah-teman", "20rb", "--frekuensi-bulan", "2")
+        self.assertIn("SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp0", out)
+        self.assertIn("tidak ada ruang hadiah pemberi versi konservatif", out)
+
+    def test_tidak_disarankan_tetap_diberi_peringatan_rugi(self):
+        kode, out, _ = jalan("impas", "--aov", "60rb", "--margin", "55", "--hadiah-pemberi", "200rb")
+        self.assertIn("STATUS: TIDAK DISARANKAN", out)
+        self.assertIn("PERHATIAN: RUGI Rp167.000 per referral di pesanan pertama", out)      # 33000 - 200000
 
 
 if __name__ == "__main__":
