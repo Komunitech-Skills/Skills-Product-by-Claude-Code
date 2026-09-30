@@ -23,7 +23,7 @@ Status mengikuti alur `ide → draft → uji → lulus → beta → rilis`; hany
 | Kanal | Akses |
 |---|---|
 | **Member VIP** | Seluruh library + `solusi-vip/` + update berkala |
-| **Ecer / bundle** | Per skill atau per paket tematik (11 bundle) di [`bundles/`](bundles/) |
+| **Ecer / bundle** | Per skill atau per paket tematik (10 bundle) di [`bundles/`](bundles/) |
 | **Gratis** | Beberapa skill sederhana sebagai pengenalan (tier `gratis`) |
 
 Setiap paket diberi **watermark lisensi** (nama/ID pembeli + kode lisensi unik) agar kebocoran bisa dilacak.

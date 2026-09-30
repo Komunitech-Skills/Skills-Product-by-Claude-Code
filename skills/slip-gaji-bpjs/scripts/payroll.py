@@ -24,6 +24,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 from decimal import Decimal
 
 import ter_core as tc
@@ -502,7 +503,28 @@ def total_rekap(hasil):
     return t
 
 
+def peringatan_folder_sementara(path):
+    """Beri PERINGATAN (stderr) bila path keluaran ada di folder sementara sistem. Tidak memblokir."""
+    try:
+        target = os.path.realpath(path)
+        akar = {tempfile.gettempdir(), "/tmp", "/var/tmp"}
+        for k in ("TEMP", "TMP", "TMPDIR"):
+            if os.environ.get(k):
+                akar.add(os.environ[k])
+        for a in akar:
+            a = os.path.realpath(a)
+            if target == a or target.startswith(a.rstrip(os.sep) + os.sep):
+                print("PERINGATAN: file keluaran ditulis di folder sementara ({}). Data gaji bersifat pribadi; "
+                      "folder sementara bisa dibaca pengguna lain dan terhapus otomatis. Simpan di folder kerja "
+                      "yang disepakati.".format(target), file=sys.stderr)
+                return True
+    except (OSError, ValueError):
+        pass
+    return False
+
+
 def tulis_output(hasil, cfg, folder):
+    peringatan_folder_sementara(folder)
     os.makedirs(folder, exist_ok=True)
     kode = "{}-{:02d}".format(cfg["tahun"], cfg["bulan"])
     md_path = os.path.join(folder, "slip-gaji-{}.md".format(kode))

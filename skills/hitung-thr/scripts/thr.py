@@ -22,6 +22,7 @@ import io
 import json
 import re
 import sys
+import tempfile
 from decimal import Decimal
 
 import ter_core as tc
@@ -471,6 +472,26 @@ def jalankan(args):
     return hasil, galat, cfg
 
 
+def peringatan_folder_sementara(path):
+    """Beri PERINGATAN (stderr) bila path keluaran ada di folder sementara sistem. Tidak memblokir."""
+    try:
+        target = os.path.realpath(path)
+        akar = {tempfile.gettempdir(), "/tmp", "/var/tmp"}
+        for k in ("TEMP", "TMP", "TMPDIR"):
+            if os.environ.get(k):
+                akar.add(os.environ[k])
+        for a in akar:
+            a = os.path.realpath(a)
+            if target == a or target.startswith(a.rstrip(os.sep) + os.sep):
+                print("PERINGATAN: file keluaran ditulis di folder sementara ({}). Data gaji bersifat pribadi; "
+                      "folder sementara bisa dibaca pengguna lain dan terhapus otomatis. Simpan di folder kerja "
+                      "yang disepakati.".format(target), file=sys.stderr)
+                return True
+    except (OSError, ValueError):
+        pass
+    return False
+
+
 def main(argv=None):
     args = buat_parser().parse_args(argv)
     try:
@@ -488,6 +509,7 @@ def main(argv=None):
                         Decimal(0)),
              "diterima": sum((h["thr_setelah_pph"] for h in hasil), Decimal(0))}
     if args.csv:
+        peringatan_folder_sementara(args.csv)
         try:
             with open(args.csv, "w", encoding="utf-8-sig", newline="") as f:
                 w = csv.writer(f, delimiter=";")
