@@ -34,7 +34,7 @@ Salin folder `iterasi-dari-masukan-pelanggan` ke lokasi skill platform Anda: Ope
 Lokasi terverifikasi ada di `docs/instalasi.md` dalam paket. Setelah itu mulai sesi baru.
 
 ## Isi paket
-`SKILL.md` (alur kerja), `scripts/olah_masukan.py` (+ `uji_olah_masukan.py`), `templates/` (tema untuk katering, fashion, kafe, laundry/jasa; backlog, balasan, kabar perbaikan, cara ekspor WA),
+`SKILL.md` (alur kerja), `scripts/olah_masukan.py` (+ `uji_olah_masukan.py`, `tests/uji_regresi.py`), `templates/` (tema untuk katering, fashion, kafe, laundry/jasa; backlog, balasan, kabar perbaikan, cara ekspor WA),
 `references/` (prioritas, privasi, siklus bulanan), `examples/` (data fiktif katering harian), `ATTRIBUTION.md`.
 
 ## FAQ

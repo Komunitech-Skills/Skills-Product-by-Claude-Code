@@ -105,3 +105,73 @@ BUKAN_KELUHAN = [
     ("oke kak ditunggu restocknya", None),
     ("dateng tepat waktu, kurirnya sopan", None),
 ]
+
+# Set kedua: ditulis setelah putaran perbaikan pertama dan DIUKUR DULU sebelum perbaikan lanjutan (hasil awal: ketepatan pesanan 5/10,
+# stok 5/6, 6 keluhan tidak tampil di tabel maupun "Perlu dibaca"). Sekarang ikut dijaga sebagai regresi.
+KELUHAN_2 = [
+    ("order kaos hitam 3, yg dikirim putih semua", None, {"ketepatan_pesanan"}),
+    ("pesenan saya ketuker sama punya orang", None, {"ketepatan_pesanan"}),
+    ("minta es dikit malah dikasih full es", None, {"ketepatan_pesanan"}),
+    ("gorengan yg dibayar 10 cuma dibungkus 8", None, {"ketepatan_pesanan"}),
+    ("pilih rasa coklat keju, yg sampai rasa original", None, {"ketepatan_pesanan"}),
+    ("sedotan sama sendoknya ga dikasih lagi", None, {"ketepatan_pesanan"}),
+    ("nomor sepatunya beda dari yg aku checkout", None, {"ketepatan_pesanan"}),
+    ("udah request tanpa gula, tetep manis bgt", None, {"ketepatan_pesanan"}),
+    ("barang yg dateng bukan yg di foto etalase", None, {"ketepatan_pesanan"}),
+    ("pesanan kurang satu kotak", None, {"ketepatan_pesanan"}),
+    ("kurirnya ga dateng2 padahal udah janji jam 3", None, {"pengiriman"}),
+    ("paket saya ilang di ekspedisi", None, {"pengiriman"}),
+    ("udah 5 hari status masih dikemas", None, {"pengiriman"}),
+    ("pengirimannya lelet bgt kak", None, {"pengiriman"}),
+    ("drivernya nyasar mulu, akhirnya cancel", None, {"pengiriman"}),
+    ("telat 2 hari dari estimasi", None, {"pengiriman"}),
+    ("barang blm sampe jg sampe sekarang", None, {"pengiriman"}),
+    ("resinya ga bisa dilacak sama sekali", None, {"pengiriman"}),
+    ("jne nya lama pol", None, {"pengiriman"}),
+    ("dikirim ke kota yg salah, harus nunggu balik lagi", None, {"pengiriman"}),
+    ("stok selalu kosong kalo weekend", None, {"stok_ketersediaan"}),
+    ("udah checkout, ternyata barang ga ready", None, {"stok_ketersediaan"}),
+    ("kehabisan terus tiap kesini", None, {"stok_ketersediaan"}),
+    ("pesanan dibatalin sepihak alasannya stok abis", None, {"stok_ketersediaan"}),
+    ("kapan ukuran M nya restok, udah lama nunggu", None, {"stok_ketersediaan"}),
+    ("warna yg aku mau ga pernah ready", None, {"stok_ketersediaan"}),
+    ("admin lama bales chat", None, {"layanan"}),
+    ("mas kasirnya jutek bgt", None, {"layanan"}),
+    ("tas nya udah sobek padahal baru dipake seminggu", None, {"kualitas_produk"}),
+    ("hpnya mati total setelah 2 hari", None, {"kualitas_produk"}),
+    ("kuahnya anyep ga ada rasanya", None, {"rasa"}),
+    ("susunya udah asem pas dibuka", None, {"keamanan"}),
+    ("kotaknya basah, kuenya berantakan", None, {"kemasan"}),
+    ("harga naik tapi porsinya makin kecil", None, {"harga","porsi_ukuran"}),
+    ("toiletnya bau pesing", None, {"fasilitas","bau_aroma"}),
+    ("nunggu makanan 1 jam lebih", None, {"waktu_tunggu"}),
+    ("udah transfer tapi dibilang belum masuk", None, {"pembayaran"}),
+    ("sumpah ga lagi2 belanja di sini", None, set()),
+    ("yah gitu deh, ga sesuai harapan", None, set()),
+    ("dah lah males", None, set()),
+    ("😡😡😡", 1, set()),
+    ("hmm 2 bintang dulu ya", 2, set()),
+]
+
+BUKAN_KELUHAN_2 = [
+    ("kiriman cepet, makasih kak",None),
+    ("stok ready semua kak?",None),
+    ("lengkap semua sesuai orderan",None),
+    ("mantul, kurir ramah",None),
+    ("semoga cepet restock ya",None),
+    ("rasanya enak banget, pasti order lagi",None),
+    ("pas dateng langsung dilayani",None),
+    ("ukuran L masih ada kak?",None),
+    ("barangnya sesuai pesanan, top",None),
+    ("tadi pesan ayam geprek datang cepat",None)
+]
+
+# Kalimat yang MIRIP salah-kirim tetapi sebenarnya sesuai pesanan / pujian (penjaga keluhan palsu pola v1.0.3)
+MIRIP_TAPI_SESUAI = [
+    "pesan warna hitam yang datang juga hitam, sesuai", "order 3 yang datang 3, lengkap", "beli 2 cuma bayar 1, promo mantap",
+    "pesan jam 7 yang datang jam 8 pas buat sarapan", "pilih warna navy, yang sampai navy juga cantik",
+    "pesan ukuran L yang datang ukuran L, pas", "order size M dapetnya M, pas banget", "checkout malam, pagi sudah sampai",
+    "minta tambah sambal, dikasih banyak makasih", "request tanpa bawang dan dituruti", "catatan saya diikuti semua",
+    "sampai sekarang masih langganan", "sudah 2 tahun langganan, belum pernah kecewa", "preorder 3 hari sesuai info",
+    "dapet bonus stiker lucu", "jujur enak banget", "pas rapat kantor pesan 50 kotak, semua suka",
+]

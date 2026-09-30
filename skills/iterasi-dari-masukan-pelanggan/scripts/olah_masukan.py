@@ -92,15 +92,32 @@ SLANG = {
 _PESAN = r"(?:pesan|order|checkout|beli|minta|pilih|klik)\w*"
 _TERIMA = r"(?:datang|sampai|dikirim|dikasih|diberi|dapat|diantar|nongol|muncul)(?:nya)?"
 _DESKRIPTOR = (r"(?:yang|warna|ukuran|size|varian|rasa|level|no|nomor|model|motif|tipe|type|seri|paket|item|barang|produk|menu|"
-               r"xs|s|m|l|xl|xxl|xxxl|\dxl)")
+               r"xs|s|m|l|xl|xxl|xxxl|\dxl|hitam|putih|merah|biru|hijau|kuning|coklat|cokelat|abu|ungu|pink|navy|cream|krem|maroon|tosca|"
+               r"mocca|sage|original|ori|polos|bermotif|bukan)")
+_JEDA = r"(?:(?:\w+|,)\s+){0,6}?"   # sampai 6 kata (boleh melewati koma) antara "pesan X" dan "yang datang Y"
+_BUKAN_WAKTU_KATA = (r"(?:jam|hari|besok|lusa|minggu|bulan|tanggal|pagi|siang|sore|malam|telat|terlambat|lama|cepat|tepat|sesuai|pas|"
+                     r"benar|lengkap|aman|sudah|juga|sama|persis|sesuaiharapan|tepatwaktu)$")
 _BUKAN_WAKTU = (r"(?!\s+(?:jam|hari|besok|lusa|minggu|bulan|tanggal|pagi|siang|sore|malam|telat|terlambat|lama|cepat|tepat|sesuai|pas|"
-                r"benar|lengkap|aman|sudah|\d+\s*(?:hari|jam|menit|minggu))\b)")
+                r"benar|lengkap|aman|sudah|juga|sama|persis|\d+\s*(?:hari|jam|menit|minggu))\b)")
 
 
 def _angka_beda(m):
     """'beli 6 ... yang sampai 5' -> salah jumlah; 'beli 3 yang datang 3' dibiarkan (sesuai)."""
     a = re.findall(r"\d+", m.group(1))
     return m.group(0) if a and a[0] == m.group(2) else " salahpesanan "
+
+
+_KATEGORI = {"yang", "warna", "ukuran", "size", "varian", "rasa", "model", "motif", "tipe", "type", "no", "nomor", "level", "seri", "paket",
+             "item", "barang", "produk", "menu"}
+
+
+def _beda_pesanan(m):
+    """'pesan navy ... yang datang hitam' -> salah pesanan; 'pilih navy, yang sampai navy juga' / '... warna sesuai' dibiarkan."""
+    awal = set(re.findall(r"[a-z0-9]+", m.group(1)))
+    nilai = m.group(3) if m.group(2) in _KATEGORI else m.group(2)
+    if (m.group(3) and re.match(_BUKAN_WAKTU_KATA, m.group(3))) or (nilai and nilai in awal):
+        return m.group(0)
+    return " salahpesanan "
 
 
 FRASA_103 = [
@@ -112,24 +129,27 @@ FRASA_103 = [
     (r"\b(?:tidak|belum)\s+(?:pernah|juga|kunjung)\s+(?:(?:saya|kami|aku)\s+)?(?:di)?terima\b|\bbelum\s+(?:(?:saya|kami|aku)\s+)?(?:di)?terima\b"
      r"|\btidak\s+(?:saya|kami|aku)\s+terima\b", "belumsampai"),
     # ketepatan pesanan
-    (r"\b" + _PESAN + r"\s+(?:\w+\s+){0,6}?(?:malah|kok|justru|eh|tapi)\s+(?:yang\s+|malah\s+)?" + _TERIMA + r"\b" + _BUKAN_WAKTU,
-     "salahpesanan"),
-    (r"\b(" + _PESAN + r"\s+(?:\w+\s+){0,6}?)yang\s+" + _TERIMA + r"\s+(\d+)\b", _angka_beda),
-    (r"\b" + _PESAN + r"\s+(?:\w+\s+){0,6}?(?:yang\s+)?" + _TERIMA + r"\s+(?:malah\s+|justru\s+|kok\s+)?" + _DESKRIPTOR + r"\b" + _BUKAN_WAKTU,
-     "salahpesanan"),
-    (r"\b" + _TERIMA + r"\s+(?:yang|warna|ukuran|size|varian|model|motif)\s+(?:\w+\s+){0,2}?(?:padahal|harusnya|seharusnya|bukannya)\s+"
-     r"(?:\w+\s+){0,3}?" + _PESAN, "salahpesanan"),
-    (r"\bbukan\s+(?:yang|barang|warna|ukuran|varian|model)\s+(?:\w+\s+){0,2}?(?:saya\s+|aku\s+|kami\s+)?(?:di)?" + _PESAN, "salahpesanan"),
-    (r"\b(?:varian|warna|ukuran|size|model|motif|menu|item|barang|isi|isinya|topping|pesanan|produk|tipe|level)(?:nya)?\s+(?:yang\s+)?"
-     r"(?:(?:datang|dikirim|dikasih|sampai|diberi|diantar)(?:nya)?\s+)?salah\b", "salahpesanan"),
     (r"\b(?:beda|berbeda|lain|tidak\s+sesuai|tidak\s+sama)\s+(?:dengan\s+|sama\s+|dari\s+)?(?:apa\s+)?yang\s+(?:saya\s+|aku\s+|kami\s+|sudah\s+)?"
      r"(?:di)?(?:pesan|order|pilih|klik|checkout|beli|minta|tulis|catat)\w*|\btidak\s+sesuai\s+(?:dengan\s+)?(?:catatan|request|permintaan|"
      r"pesanan|checkout)\b", "salahpesanan"),
+    (r"\b" + _PESAN + r"\s+" + _JEDA + r"(?:malah|kok|justru|eh|tapi)\s+(?:yang\s+|malah\s+)?" + _TERIMA + r"\b" + _BUKAN_WAKTU,
+     "salahpesanan"),
+    (r"\b(" + _PESAN + r"\s+" + _JEDA + r")yang\s+" + _TERIMA + r"\s+(\d+)\b", _angka_beda),
+    (r"\b((?:pesan|order|beli|bayar|dibayar)\w*\s+\d+\s+(?:\w+\s+){0,3}?)(?:cuma|hanya|cuman)\s+(?:di)?(?:kirim|datang|dapat|sampai|kasih|isi|bungkus|antar|terima|"
+     r"masuk|hitung|ada)\w*\s+(\d+)\b", _angka_beda),
+    (r"\b(" + _PESAN + r"\s+" + _JEDA + r")(?:yang\s+)?" + _TERIMA + r"\s+(?:malah\s+|justru\s+|kok\s+)?(" + _DESKRIPTOR +
+     r")\b(?:\s+([a-z0-9]+)\b)?", _beda_pesanan),
+    (r"\b" + _TERIMA + r"\s+(?:yang|warna|ukuran|size|varian|model|motif)\s+(?:\w+\s+){0,2}?(?:padahal|harusnya|seharusnya|bukannya)\s+"
+     r"(?:\w+\s+){0,3}?" + _PESAN, "salahpesanan"),
+    (r"\b(?:datang|dikirim|sampai|dapat|dikasih)\w*\s+bukan\s+(?:yang|barang|warna|ukuran|varian|model|pesanan)\b", "salahpesanan"),
+    (r"\bbukan\s+(?:yang|barang|warna|ukuran|varian|model)\s+(?:\w+\s+){0,2}?(?:saya\s+|aku\s+|kami\s+)?(?:di)?" + _PESAN, "salahpesanan"),
+    (r"\b(?:varian|warna|ukuran|size|model|motif|menu|item|barang|isi|isinya|topping|pesanan|produk|tipe|level)(?:nya)?\s+(?:yang\s+)?"
+     r"(?:(?:datang|dikirim|dikasih|sampai|diberi|diantar)(?:nya)?\s+)?salah\b", "salahpesanan"),
     (r"\b(?:catatan|note|notes|request|permintaan)\w*\s+(?:(?:\w+|,)\s+){0,10}?(?:diabaikan|dicuekin|cuek|tidak\s+(?:dibaca|diikuti|"
-     r"dituruti|diperhatikan|digubris)|tetap\s+(?:saja\s+)?(?:dikasih|diberi|dikirim|dimasukkan|pakai|dipakai|ada|dibuat))\b", "salahpesanan"),
+     r"dituruti|diperhatikan|digubris)|tetap\s+(?:saja\s+)?(?!dilayani|ramah|enak|bagus|mantap|oke|cepat)[a-z]+)\b", "salahpesanan"),
     (r"\b(?:dikirim|dikasih|diberi|dapat|datang|diantar)(?:nya)?\s+(?:yang|barang|produk|item|warna|ukuran|model)\s+(?:lain|beda|berbeda|salah)\b",
      "salahpesanan"),
-    (r"\b(?:cuma|hanya|cuman)\s+(?:di)?(?:kirim|datang|dapat|sampai|kasih|isi)\w*\s+\d+\b|\bkurang\s+(?:item|barang|pcs|biji|satu|sebiji)\b"
+    (r"\b(?:cuma|hanya|cuman)\s+(?:di)?(?:kirim|datang|dapat|sampai|kasih|isi|bungkus|antar|terima|masuk|hitung)\w*\s+\d+\b|\bkurang\s+(?:item|barang|pcs|biji|satu|sebiji)\b"
      r"|\b(?:jumlah|jumlahnya|item|itemnya)\s+(?:\w+\s+)?kurang\b"
      r"|\b(?:bonus|hadiah|gift|freebie\w*|gratisan|merchandise|merch|souvenir|kelengkapan|aksesori\w*)\s+(?:\w+\s+){0,5}?(?:tidak|belum)\s+"
      r"(?:pernah\s+|juga\s+)?(?:ada|dikasih|dikirim|dimasukkan|dimasukin|datang|sampai|diberi|termasuk)\b"
@@ -137,10 +157,15 @@ FRASA_103 = [
     # stok
     (r"\b(?:selalu|sering|sudah|lagi|terus)\s+sold\b|\b(?:ternyata|malah|tapi|eh)\s+(?:harus\s+|mesti\s+|jadi\s+|masih\s+)?(?:preorder|indent|inden)\b"
      r"|\btidak\s+pernah\s+ada\s+lagi\b|\btidak\s+(?:pernah\s+)?(?:dijual|diproduksi|tersedia|dibuat|restock)\s+lagi\b"
-     r"|\bkapan\s+(?:\w+\s+){0,2}?(?:diisi|dibuat|dijual|diproduksi|produksi|stok)\s+lagi\b", "habis"),
+     r"|\bkapan\s+(?:\w+\s+){0,2}?(?:diisi|dibuat|dijual|diproduksi|produksi|stok)\s+lagi\b"
+     r"|\bkapan\s+(?:\w+\s+){3,4}?(?:restock|ready|tersedia)\b", "habis"),
+    (r"\b(?:masih|belum)\s+(?:juga\s+)?(?:di)?(?:kemas|proses|packing|pack|pick\s*up|pickup)\w*", "belumdikirim"),
+    (r"\b(?:makin|semakin|tambah)\s+(?:kecil|sedikit|tipis|dikit)\b", "sedikit"),
     # kualitas / rasa / nada kecewa
     (r"\bdead\s*pixel\b", "deadpixel"),
     (r"\bmasih\s+(?:merah|berdarah)\b", "mentah"),
+    (r"\b(?:sudah|baru\s+dibuka\s+sudah)\s+(?:asam|berlendir|menggumpal|bau\s+asam)\b", "basi"),
+    (r"\btidak\s+(?:terlalu\s+|begitu\s+)?rapat\b", "tidakrapat"),
     (r"\bkok\s+(?:jadi\s+)?(?:begini|begitu)\b", "mengecewakan"),
     (r"\b\d+\s*menit\s+baru\b", "sudahlama"),
     (r"\b(?:sampai|hingga)\s+(?:sekarang|saat\s+ini|hari\s+ini|detik\s+ini|kini)\b", "hinggakini"),  # bukan tema pengiriman
@@ -198,7 +223,7 @@ ready tersedia""".split())
 POS = set("""enak lezat nikmat mantap bagus puas suka cepat rapi ramah sopan murah terjangkau fresh segar hangat renyah empuk gurih
 recommended top oke keren juara wangi harum hemat bersih higienis aman kenyang mengenyangkan responsif adem nyaman cozy cantik lembut halus
 awet kokoh kuat sesuai amanah sabar informatif jujur sigap tanggap perfect sempurna best love lucu mulus kilat ori original asli bersahabat
-akurat lumayan senang cinta memuaskan istimewa teliti profesional helpful membantu tebal wow matang rapat
+akurat lumayan senang cinta memuaskan istimewa teliti profesional helpful membantu tebal wow matang
 responscepat orderlagi tepatwaktu sepadan sesuaiharapan tanpaminus pasbanget masihhangat terima kasih""".split())
 NEG = set("""telat terlambat lama basi jelek kecewa mahal bocor tumpah rusak salah lambat pelit hambar anyep lembek pera keras alot gosong
 mentah tidaksesuai salahpesanan penyok kotor jorok dekil kumuh berdebu lengket bau amis apek tengik anyir pesing busuk judes kasar cuek galak sombong lupa tertukar ketuker
@@ -209,7 +234,9 @@ hancur remuk pecah penyok macet error mati panas gerah pengap berisik bising sem
 kemahalan kemanisan keasinan kepedasan kepahitan keasaman kusut noda jerawat jerawatan iritasi gatal perih breakout jebol melar rontok
 berantakan php kosong harganaik sudahlama tunggulama cepatrusak fasilitasrusak musikkeras makanandingin kurangjumlah
 kesal jengkel sebal rugi dirugikan bosan malas batal dibatalkan rembes merembes stuck nyangkut tertahan mandek belumsampai mengelupas
-bolong bengkok karatan konslet korslet longgar kendor deadpixel diabaikan""".split())
+bolong bengkok karatan konslet korslet longgar kendor deadpixel diabaikan tidakrapat belumdikirim berlendir menggumpal""".split())
+KELUHAN_KUAT = {"salahpesanan", "kurangjumlah", "bendaasing", "sakitperut", "belumsampai", "belumdikirim", "nyasar", "tidaksesuai",
+                "keracunan", "basi", "kedaluwarsa"}
 PENGUAT = {"begitu", "terlalu", "banget", "sekali", "agak", "sangat", "amat", "cukup", "sih", "juga"}
 PERANTARA = {"pernah", "ada", "yang", "juga", "sama", "begitu", "terlalu", "sangat", "pula", "kunjung", "mau", "bisa", "jadi", "lagi", "sih",
              "dong", "kok", "terus", "cukup", "sampai", "dapat", "dikasih", "segera", "bikin", "membuat", "menimbulkan",
@@ -226,11 +253,11 @@ TEMA_BAWAAN = [
     ("rasa", "Rasa / cita rasa", 4, r"rasa|enak|lezat|nikmat|gurih|hambar|anyep|asin|manis|pedas|pahit|asam|amis|gosong|mentah|renyah|empuk|"
      r"alot|keras|lembek|pera|bumbu|nendang|kematangan|matang|kemanisan|keasinan|kepedasan|kepahitan|keasaman|makanandingin|masihhangat"),
     ("kemasan", "Kemasan / packing", 3, r"kemasan|kemas|packing|packaging|pack|bungkus|dus|kardus|box|kotak|plastik|bubble|bubblewrap|bocor|"
-     r"tumpah|penyok|segel|wadah|botol|toples|lakban|kresek|rembes|merembes"),
+     r"tumpah|penyok|segel|wadah|botol|toples|lakban|kresek|rembes|merembes|tidakrapat"),
     ("harga", "Harga / ongkir", 2, r"harga|mahal|murah|terjangkau|ongkir|diskon|promo|sepadan|biaya|tarif|hemat|pricey|kemahalan|harganaik"),
     ("pengiriman", "Pengiriman / ketepatan waktu", 3, r"kirim|pengiriman|kurir|ojol|ojek|gojek|grab|shopeefood|gofood|telat|terlambat|datang|"
      r"sampai|antar|tepatwaktu|delivery|resi|ekspedisi|jne|jnt|sicepat|anteraja|nyasar|kilat|ngaret|molor|dijemput|jemput|"
-     r"pengantaran|kiriman|terkirim|estimasi|paket|lacak|tracking|tiba|keterlambatan|lamban|dititipkan|titip|satpam|belumsampai|nyangkut|"
+     r"pengantaran|kiriman|terkirim|estimasi|paket|lacak|tracking|tiba|keterlambatan|lamban|dititipkan|titip|satpam|belumsampai|belumdikirim|nyangkut|"
      r"stuck|tertahan|mandek|manifest|transit|gudang\s+transit|spx|ninja|lion\s+parcel|wahana|idexpress|lalamove|paxel|gosend|grabexpress|"
      r"same\s*day|instan|instant|driver"),
     ("layanan", "Layanan / respons admin & staf", 3, r"admin|layanan|pelayanan|pelayan|respons|responscepat|responslambat|balas|chat|ramah|"
@@ -244,7 +271,7 @@ TEMA_BAWAAN = [
      r"jerawat|jerawatan|iritasi|gatal|perih|breakout|kusut|noda|hasil|mulus|cepatrusak|jebol|melar|rontok|hancur|pecah|mengelupas|bolong|"
      r"bengkok|karat|karatan|konslet|korslet|longgar|kendor|deadpixel|layar|baterai|ngecas|dicas|nyala|menyala|sol|lem"),
     ("keamanan", "Keamanan produk (benda asing, basi, sakit)", 5, r"basi|kedaluwarsa|rambut|serangga|lalat|semut|ulat|belatung|kecoa|tikus|"
-     r"bendaasing|sakitperut|diare|keracunan|mual|muntah|alergi|jamur|berjamur|jijik"),
+     r"bendaasing|sakitperut|diare|keracunan|mual|muntah|alergi|jamur|berjamur|jijik|berlendir|menggumpal"),
     ("kebersihan", "Kebersihan", 3, r"kotor|jorok|higienis|bersih|kebersihan|debu|berdebu|lengket"),
     ("bau_aroma", "Bau / aroma", 3, r"bau|apek|tengik|anyir|pesing|busuk|wangi|harum|aroma"),
     ("porsi_ukuran", "Porsi / ukuran / size", 3, r"porsi|ukuran|size|kekecilan|kebesaran|kesempitan|kepanjangan|kependekan|pelit|kenyang|"
@@ -1059,6 +1086,8 @@ def skor_klausa(klausa, kata_pos, kata_neg, tanya=False, neg_kustom=frozenset())
                 nilai = -1   # "belum datang", "tidak berfungsi", "tidak ada kabar"
             if nilai:
                 terpakai = i
+        if nilai < 0 and k in KELUHAN_KUAT:
+            nilai = -2       # "salah kirim ... original": kata positif sesudahnya tidak menetralkan keluhan yang jelas
         if tanya and nilai > 0:
             nilai = 0        # pertanyaan bukan pujian ("sesuai foto tidak?")
         skor += nilai
@@ -1138,6 +1167,7 @@ buat_tema.neg_kustom = frozenset()
 
 
 _CACHE_TYPO = {}
+_TERAKHIR = {}   # hasil normalisasi analisis_item terakhir (dipakai ulang oleh nada_keluhan agar tidak dihitung dua kali)
 
 
 def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan", tema_kolom=()):
@@ -1151,12 +1181,16 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
         vocab, peta = _CACHE_TYPO["vocab"], _CACHE_TYPO["peta"]
     else:
         vocab = peta = None
-    klausa = pecah_klausa(normalkan(teks_anonim, vocab, peta))
+    norm = normalkan(teks_anonim, vocab, peta)
+    klausa = pecah_klausa(norm)
+    _TERAKHIR.clear()
+    _TERAKHIR.update(teks=teks_anonim, norm=norm, skor=[])
     total = 0
     per_tema = defaultdict(set)
     tanpa_tema_keluhan = False
     for k, tanya in klausa:
         s = skor_klausa(k, kata_pos, kata_neg, tanya, neg_kustom)
+        _TERAKHIR["skor"].append(s)
         optatif = bool(s > 0 and RE_OPTATIF.search(k) and set(re.findall(r"[a-z]+", k)) & NEGATOR)
         if optatif:
             s = 0   # "semoga lain kali tidak telat" = harapan, bukan pujian
@@ -1208,18 +1242,25 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
 RE_NADA_KELUHAN = re.compile(
     r"\b(?:kok|masa|padahal|kecewa|mengecewakan|komplain|kapok|menyesal|rugi|dirugikan|kesal|jengkel|sebal|zonk|parah|php|tipu|penipu|"
     r"bohong|batal|dibatalkan|refund|retur|harusnya|seharusnya|terus\s+menerus|berkali|lagi\s+lagi|bagaimana\s+sih|tolong\s+dong|"
-    r"mending|kapan\s+lagi\s+tidak|tidak\s+lagi|tidak\s+akan|sayang\s+sekali|sayangnya|marah|kesel|bosan|biasa\s+saja|jelek|buruk)\b"
+    r"mending|kapan\s+lagi\s+tidak|tidak\s+lagi|tidak\s+akan|sayang\s+sekali|sayangnya|marah|kesel|bosan|biasa\s+saja|jelek|buruk|"
+    r"bukan\s+(?:yang|barang|pesanan)|tetap\s+saja|(?:cuma|hanya|cuman)\s+(?:\w+\s+)?\d+|yang\s+(?:datang|dikirim|sampai|dapat|dikasih)\w*|"
+    r"masih\s+(?:di)?(?:kemas|proses)\w*|belum\s+juga|sampai\s+sekarang|hinggakini)\b"
     r"|[\U0001F620\U0001F621\U0001F92C\U0001F624\U0001F612\U0001F644\U0001F44E\U0001F61E\U0001F614\U0001F622\U0001F62D\U0001F494\U0001F611]")
+RE_EMOJI_KELUHAN = re.compile(r"[\U0001F620\U0001F621\U0001F92C\U0001F624\U0001F612\U0001F644\U0001F44E\U0001F61E\U0001F614\U0001F622"
+                              r"\U0001F62D\U0001F494\U0001F611]")
 
 
 def nada_keluhan(teks_anonim, bintang, kata_pos=None, kata_neg=None):
     """True bila masukan bernada keluhan: bintang/nilai rendah, ada klausa negatif, atau penanda keluhan umum tanpa nada positif."""
     if bintang is not None and bintang <= 2:
         return True
-    kata_pos = POS if kata_pos is None else kata_pos
-    kata_neg = NEG if kata_neg is None else kata_neg
-    norm = normalkan(teks_anonim)
-    skor = [skor_klausa(k, kata_pos, kata_neg, tanya) for k, tanya in pecah_klausa(norm)]
+    if _TERAKHIR.get("teks") == teks_anonim:
+        norm, skor = _TERAKHIR["norm"], _TERAKHIR["skor"]
+    else:
+        kata_pos = POS if kata_pos is None else kata_pos
+        kata_neg = NEG if kata_neg is None else kata_neg
+        norm = normalkan(teks_anonim)
+        skor = [skor_klausa(k, kata_pos, kata_neg, tanya) for k, tanya in pecah_klausa(norm)]
     if any(x < 0 for x in skor):
         return True
     return bool(RE_NADA_KELUHAN.search(norm) or RE_NADA_KELUHAN.search(teks_anonim)) and sum(skor) <= 0
@@ -1294,7 +1335,12 @@ def olah(sumber, opsi, konfigurasi=None):
     for it in item:
         anonim = samarkan(it["isi"], it["nama"])
         bersih = re.sub(r"\W+", " ", anonim.lower()).strip()
-        if not bersih or len(re.findall(r"\w+", bersih)) < it["min_kata"] or not re.search(r"[a-z]", bersih):
+        # jaring pengaman: "😡😡" atau "zonk" dengan bintang 1-2 tetap dihitung (bukan dibuang sebagai 'terlalu pendek')
+        b_setara = None if it["peran"] == "saran" else nilai_ke_bintang(it["nilai"], it["skala"])
+        pendek_keluhan = bool(anonim.strip()) and ((b_setara is not None and b_setara <= 2) or RE_EMOJI_KELUHAN.search(anonim))
+        if pendek_keluhan and not bersih:
+            bersih = anonim.strip()
+        elif not pendek_keluhan and (not bersih or len(re.findall(r"\w+", bersih)) < it["min_kata"] or not re.search(r"[a-z]", bersih)):
             dibuang["terlalu pendek"] += 1
             pendek_per_berkas[it["berkas"]] += 1
             continue
@@ -1517,7 +1563,7 @@ def cetak_teks(r, opsi, maks_tanpa_tema=20):
     pd = r.get("perlu_dibaca") or {"tidak_terklasifikasi": 0, "tanpa_tema": 0, "keluhan_tanpa_tabel": 0, "bernada_keluhan": 0, "daftar": []}
     out.append("\n## Perlu dibaca agent\n")
     out.append("Tidak terklasifikasi: %d masukan (%d tanpa tema + %d bernada keluhan tetapi tidak masuk tabel keluhan). "
-               "%d bernada keluhan - WAJIB dibaca & dimasukkan ke tema yang tepat (lewat tema.json atau koreksi bertanda)." % (
+               "Di antaranya %d bernada keluhan - WAJIB dibaca & dimasukkan ke tema yang tepat (lewat tema.json atau koreksi bertanda)." % (
                    pd["tidak_terklasifikasi"], pd["tanpa_tema"], pd["keluhan_tanpa_tabel"], pd["bernada_keluhan"]))
     out.append("Tanpa tema terdeteksi: %d (%.1f%%). Kata teratas: %s" % (b["jumlah"], b["persen"], ", ".join(b["kata_teratas"]) or "-"))
     keluhan = [d for d in pd["daftar"] if d["nada_keluhan"]]
