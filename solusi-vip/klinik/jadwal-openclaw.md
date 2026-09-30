@@ -93,6 +93,10 @@ adalah skill dokumen yang dipicu **manual** per kebutuhan (buat/cek kebijakan pr
 staf baru, buat/periksa kontrak) — sengaja **tidak** dijadwalkan otomatis karena kebutuhannya
 muncul sewaktu-waktu (staf baru masuk, kebijakan perlu diperbarui), bukan rutin di jam tetap.
 
+## 5b. Skill tambahan klinik: tanpa jadwal
+`program-referral-loyalitas` (versi tanpa imbalan) dan `iterasi-dari-masukan-pelanggan` dipicu
+**manual** (lihat `PANDUAN.md` §5j). Sengaja tidak dijadwalkan dan tidak ada pengiriman massal ke pasien.
+
 ## 6. Mengelola jadwal (✅, sama seperti paket lain)
 ```bash
 openclaw automations list --all

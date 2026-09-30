@@ -156,6 +156,41 @@ openclaw automations add --name "Laporan harian Frappe Books" --cron "0 21 * * *
 Sesuaikan path `.books.db`. Keduanya aplikasi yang **perlu dipasang** — tawarkan **jasa setup
 berbayar Komunitech**.
 
+## 9b. [PILIH ERP] Laporan harian dari Odoo (odoo-usaha), 21.00 WIB ⚠️
+Dari `skills/odoo-usaha/references/openclaw-jadwal.md` (Pilihan 1). Jadwal & Telegram belum diuji
+di Gateway. Syarat: kunci pengguna **Bot Laporan** disimpan dengan `simpan-kunci` dan alamat
+disimpan dengan `atur` oleh akun yang menjalankan Gateway; kunci tidak pernah di jadwal. Jalankan
+`laporan-harian` manual dulu. Hanya perintah baca. Perlu dipasang: tawarkan **jasa setup berbayar**.
+```bash
+openclaw automations add --name "Laporan harian Odoo" --cron "0 21 * * *" --tz Asia/Jakarta \
+  --command-argv '["python3","/home/NAMA/.openclaw/skills/odoo-usaha/scripts/odoo.py","laporan-harian"]' \
+  --announce --channel telegram --to "<ID chat Telegram pimpinan>"
+```
+- Alamat belum disimpan: tambahkan `--command-env "ODOO_URL=https://tokosaya.odoo.com"` (hanya alamat).
+- Kunci Odoo 19+ punya masa berlaku; ganti sebelum habis (laporan gagal kode 5 bila kedaluwarsa).
+
+## 9c. KPI tim bulanan (kpi-tim), tanggal 2 jam 07.00 WIB ⚠️
+Dari `skills/kpi-tim/references/jadwal-openclaw.md` (Bentuk A: **tanpa** `--cron`; jadwal sebagai
+argumen pertama). Struktur folder: `KPI/rencana-kpi.csv`, `KPI/realisasi.csv`. Penerima hanya pimpinan.
+```bash
+openclaw automations add "0 7 2 * *" \
+  "Jalankan resep di KPI/RESEP-laporan-kpi.md untuk bulan lalu (format periode YYYY-MM). Pakai HANYA angka dari output skor_kpi.py, jangan menghitung atau membulatkan sendiri. Kirim apa adanya, maksimal 25 baris. Kalau script error atau belum ada realisasi untuk periode itu, kirim pesan singkat 'Data KPI <periode> belum lengkap: <isi error>' dan JANGAN kirim angka nol." \
+  --name "Laporan KPI bulanan" --tz "Asia/Jakarta" --session isolated \
+  --announce --channel telegram --to "<ID chat Telegram pimpinan>"
+```
+Mingguan Senin 07.30: sama, cron `"30 7 * * 1"`, periode `YYYY-Www`. Skor per orang tidak ke grup.
+
+## 9d. Peringatan dini operasional harian (peringatan-dini-operasional), 20.00 WIB ⚠️
+Dari `skills/peringatan-dini-operasional/references/jadwal-openclaw.md` (Bentuk A). Uji manual dulu
+dengan `peringatan_dini.py`; log di satu file tetap.
+```bash
+openclaw automations add "0 20 * * *" \
+  "Pakai skill peringatan-dini-operasional. Jalankan scripts/peringatan_dini.py pada file <path-log> dengan --tanggal <tanggal hari ini WIB, YYYY-MM-DD> --nama-usaha \"<nama>\" <opsi target/stok yang sama dengan uji manual>. Kirim isi laporan teks apa adanya (jangan mengubah angka, jangan menambah angka). Kalau hasilnya LOG HARIAN BELUM DIISI atau GALAT, kirim itu saja dengan singkat -- JANGAN menulis 'aman' atau angka nol." \
+  --name "Peringatan dini harian" --tz "Asia/Jakarta" --session isolated \
+  --announce --channel telegram --to "<ID chat Telegram pimpinan>"
+```
+Kirim hanya ke pimpinan, tidak ke grup/karyawan. Uji: `openclaw automations run <id> --wait`.
+
 ## 10. Yang belum diverifikasi ⚠️
 - Pesan benar-benar tiba di Telegram/WhatsApp (uji internal tanpa token/nomor asli).
 - Membuat jadwal langsung dari chat ("aktifkan laporan jam 9 malam"): bergantung izin `cron`
