@@ -215,6 +215,10 @@ def hitung(args, hari_ini=None):
         raise InputError("--tahun {} di luar cakupan (tarif UU HPP berlaku sejak tahun pajak 2022)".format(tahun))
 
     catatan, peringatan = [], []
+    if hari_ini.year <= tahun:
+        peringatan.append("Tahun pajak {} belum berakhir per {}: hasil ini PERKIRAAN. Hitung ulang setelah semua "
+                          "bukti potong tahun {} diterima (biasanya Januari–Februari {}).".format(
+                              tahun, hari_ini.isoformat(), tahun, tahun + 1))
 
     # --- pekerjaan (bukti potong A1/A2)
     pekerjaan = []
@@ -358,6 +362,9 @@ def hitung(args, hari_ini=None):
         catatan.append("Omzet PPh final 0,5% ({}) TIDAK ikut dihitung tarif Pasal 17; dilaporkan di lampiran "
                        "penghasilan final / rekap peredaran bruto beserta PPh final yang sudah disetor ({}).".format(
                            format_rp(omzet_final), format_rp(pph_final)))
+        if omzet_final <= Decimal(500000000) and not pph_final:
+            catatan.append("Omzet final setahun tidak lebih dari Rp500 juta: untuk orang pribadi bagian ini bebas PPh "
+                           "final 0,5% (PP 55/2022 s.t.d.d. UU HPP), tetapi omzetnya tetap dilaporkan di SPT.")
         if omzet_final > BATAS_NPPN:
             peringatan.append("Omzet final di atas Rp4,8 miliar: tahun berikutnya tidak lagi memenuhi syarat PPh final "
                               "0,5% — konsultasikan ke konsultan pajak.")
