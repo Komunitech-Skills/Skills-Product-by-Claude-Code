@@ -4,7 +4,7 @@
 
 > Komunitech **tidak berafiliasi** dengan Odoo S.A. Odoo adalah software milik Odoo S.A. (edisi Community berlisensi LGPL-3.0). Skill dan panduan ini adalah karya orisinal Komunitech yang memakai **API eksternal resmi** Odoo milik Anda sendiri. Odoo tidak disertakan dalam paket.
 
-> **Status jujur (v1.0.0, 30 Sep 2026):** skill ini sudah diuji dengan **server Odoo tiruan** yang meniru format API resmi Odoo 16–19 (42 uji otomatis), tetapi **belum diuji ke server Odoo asli**. Pada pemakaian pertama, cocokkan angka dengan layar Odoo Anda. Bila ada yang berbeda, kirim pesannya (tanpa kunci API) ke dukungan Komunitech.
+> **Status jujur (v1.0.1, 30 Sep 2026):** sudah diuji ke **Odoo Community 18 & 19 asli** (dijalankan lokal dengan data uji fiktif) oleh penguji independen, plus 51 uji otomatis. **Belum** diuji ke Odoo Online (*.odoo.com), Enterprise, atau Odoo 16/17/20, maupun data usaha sungguhan. Pada pemakaian pertama, cocokkan angka dengan layar Odoo Anda. Bila ada yang berbeda, kirim pesannya (tanpa kunci API) ke dukungan Komunitech.
 
 ## Manfaat
 - ✅ **Tanpa buka banyak menu.** Penjualan hari ini vs kemarin, produk terlaris, faktur terbit, piutang per umur, dan stok kritis — cukup satu kalimat biasa.
@@ -81,7 +81,11 @@ Setelah tersambung, cukup ketik:
 Tidak. Script hanya menghubungi Odoo **milik Anda** (komputer ini, `*.odoo.com`, atau server yang Anda daftarkan sendiri). Tidak ada data ke Komunitech; laporan ke Telegram hanya bila Anda sendiri mengaturnya. Kunci API disimpan di komputer Anda dengan izin khusus pemilik dan tidak pernah ditampilkan.
 
 **Bisakah AI salah mengubah atau menghapus data Odoo saya?**
-Skill ini hanya membaca, dan satu-satunya yang bisa ditulis adalah **draf penawaran** — itu pun selalu pratinjau dulu dan menunggu jawaban "ya". Tidak ada perintah hapus, konfirmasi pesanan, posting faktur, atau pembayaran. Untuk laporan harian, pakai pengguna Odoo yang **hanya bisa melihat**; Odoo sendiri akan menolak perubahan dari akun itu.
+Skill ini hanya membaca, dan satu-satunya yang bisa ditulis adalah **draf penawaran** — itu pun selalu pratinjau dulu dan menunggu jawaban "ya". Tidak ada perintah hapus, konfirmasi pesanan, posting faktur, atau pembayaran; script menolak semua itu bahkan bila kuncinya milik administrator (sudah diuji). Catatan jujur: Odoo sendiri tidak punya peran Penjualan yang "hanya bisa melihat", jadi pakai pengguna khusus AI dengan hak secukupnya (bukan administrator) agar kerusakan terbatas bila kunci bocor — lihat `docs/panduan-odoo.md` §5.
 
 **Odoo saya versi baru/lama, apakah jalan?**
-Dirancang untuk Odoo 16–20: Odoo 19 ke atas memakai API JSON-2 yang baru, Odoo 16–18 memakai XML-RPC (dipilih otomatis). Odoo Online harus **paket Custom** agar API aktif. Karena belum diuji ke Odoo asli, cocokkan angka pertama kali dengan layar Odoo Anda.
+Dirancang untuk Odoo 16–20: Odoo 19 ke atas memakai API JSON-2 yang baru, Odoo 16–18 memakai XML-RPC (dipilih otomatis). Sudah diuji ke Odoo Community 18 & 19; versi lain dan Odoo Online (harus **paket Custom** agar API aktif) belum diuji, jadi cocokkan angka pertama kali dengan layar Odoo Anda.
+
+## Riwayat versi
+- **1.0.1 (30 Sep 2026)** — perbaikan dari uji ke Odoo Community 18 & 19 asli: (1) hak *Own Documents* tidak lagi menghasilkan angka penjualan/faktur kecil (bisa Rp 0) diam-diam — `cek` menampilkan cakupan data, laporan memberi **PERINGATAN DATA SEBAGIAN** + kode 9 (`--terima-sebagian` bila memang disengaja); (2) `piutang --per-tanggal` di masa lalu tidak lagi memasukkan faktur yang belum terbit dan memperhitungkan pelunasan setelah tanggal itu; (3) panduan hak pengguna diperbaiki secara jujur (Odoo tidak punya peran Penjualan baca-saja; pengaman tulis ada di script); (4) keterangan "barang masuk terjadwal" di stok menipis; (5) ENV `ODOO_HOST_DIIZINKAN` dihapus (host hanya lewat `atur --izinkan-host`).
+- **1.0.0 (30 Sep 2026)** — rilis awal.

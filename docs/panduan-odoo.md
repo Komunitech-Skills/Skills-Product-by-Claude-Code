@@ -6,7 +6,7 @@ Odoo adalah software bisnis lengkap (penjualan, faktur, stok, pembelian, CRM, da
 
 > Komunitech **tidak berafiliasi** dengan Odoo S.A. "Odoo" adalah merek milik Odoo S.A.
 
-**Status panduan (30 September 2026, jujur):** langkah API (kunci API, XML-RPC, JSON-2, syarat paket Custom) dicocokkan dengan **dokumentasi resmi Odoo 19.0 & 20.0** (https://www.odoo.com/documentation/19.0/developer/reference/external_api.html dan `external_rpc_api.html`). Perintah Docker dicocokkan dengan dokumentasi image resmi `odoo` di Docker Hub. **Komunitech belum mencoba langkah ini pada Odoo asli**; nama menu bisa sedikit berbeda antar versi dan bahasa. Bila tampilan Anda berbeda, ikuti tulisan di layar dan hubungi kami.
+**Status panduan (30 September 2026, jujur):** langkah API (kunci API, XML-RPC, JSON-2, syarat paket Custom) dicocokkan dengan **dokumentasi resmi Odoo 19.0 & 20.0** (https://www.odoo.com/documentation/19.0/developer/reference/external_api.html dan `external_rpc_api.html`). Perintah Docker dicocokkan dengan dokumentasi image resmi `odoo` di Docker Hub. Skill `odoo-usaha` sudah diuji ke **Odoo Community 18 & 19 asli** (Docker lokal, data uji) oleh penguji independen, termasuk hak pengguna di §5; belum ke Odoo Online, Enterprise, atau versi 16/17/20. Nama menu bisa sedikit berbeda antar versi dan bahasa. Bila tampilan Anda berbeda, ikuti tulisan di layar dan hubungi kami.
 
 ## Daftar isi
 1. Sebelum mulai (cek versi & paket)
@@ -66,10 +66,22 @@ Setelah itu pasang aplikasi **Penjualan**, **Faktur (Invoicing)**, dan **Invento
 ---
 
 ## 5. Buat pengguna khusus AI (berhak minimal)
-Kenapa? Agar kalau kunci bocor, kerusakannya terbatas, dan riwayat perubahan di Odoo tercatat atas nama "Bot", bukan Anda. Menu: **Pengaturan → Pengguna & Perusahaan → Pengguna → Baru**.
+Kenapa? Agar kalau kunci bocor, kerusakannya terbatas, riwayat perubahan di Odoo tercatat atas nama "Bot", dan kunci bisa dicabut tanpa mengganggu akun Anda. Menu: **Pengaturan → Pengguna & Perusahaan → Pengguna → Baru**.
 
-| Pengguna | Untuk | Hak yang disarankan |
+**Terus terang dulu:** Odoo **tidak punya** peran "hanya baca" murni untuk Penjualan. Hak *Penjualan: User* di Odoo (Own Documents maupun All Documents) juga boleh membuat penawaran — untuk *All Documents* + Akuntansi *Read-only* ini terbukti saat uji di Odoo 18 & 19 (draf berhasil dibuat). Yang mencegah AI mengubah data adalah **pengaman di dalam skill** (daftar metode yang boleh dipanggil: hanya baca + draf penawaran; hapus/konfirmasi/posting/bayar ditolak bahkan dengan kunci administrator). Hak Odoo di bawah ini membatasi kerusakan **bila kunci dicuri dan dipakai di luar skill**.
+
+| Pengguna | Untuk | Hak minimum yang realistis |
 |---|---|---|
+| **Bot Laporan** | Chat harian, laporan terjadwal, piutang | Penjualan: ***User: All Documents*** (wajib untuk angka lengkap); Akuntansi/Faktur: ***Read-only*** (bukan *Billing* — *Billing* juga boleh memposting faktur); Inventori: *User*. **Bukan** Administrator/Pengaturan |
+| **Bot Penjualan** (opsional) | Membuat draf penawaran | Sama dengan Bot Laporan, atau Penjualan *User: All Documents* saja. Gunanya kunci terpisah: riwayat "dibuat oleh" jelas dan kunci pembuat draf bisa dicabut sendiri — **bukan** pemisahan hak baca/tulis |
+
+- **Jangan pakai *User: Own Documents* untuk laporan.** Dengan hak itu Odoo hanya memperlihatkan pesanan & faktur **milik pengguna itu** (atau tanpa penjual). Laporan akan menunjukkan angka jauh lebih kecil (bisa Rp 0). Sejak versi 1.0.1 skill memeriksa grup pengguna API dan menulis **PERINGATAN DATA SEBAGIAN** + kode keluar 9 (jadwal tercatat gagal), tetapi solusinya tetap memberi hak *All Documents*.
+- **Piutang per tanggal lampau** (`piutang --per-tanggal 2026-06-30`) butuh hak Akuntansi baca (*Read-only* atau *Billing*) agar tanggal pelunasan bisa dibaca. Tanpa itu skill memberi PERINGATAN.
+- Nama hak berbeda-beda antar versi (Odoo 19 memakai "peran"). Prinsipnya: **bisa melihat semua** Penjualan, Faktur, Inventori; **tidak** berhak Administrator.
+- Odoo Online/Enterprise menghitung biaya per pengguna. Bila tidak ingin menambah pengguna, kunci API boleh dibuat dari akun Anda sendiri, tetapi **jangan akun Administrator**, pastikan hak Penjualan Anda *All Documents*, dan simpan kunci hanya di komputer Anda.
+- `cek` menampilkan "Cakupan data" (SEMUA / HANYA milik pengguna API ini) dan CATATAN "RISIKO ... ADMINISTRATOR" bila kunci milik admin. Aturan akses buatan sendiri (record rule khusus) atau pembatasan multi-perusahaan tidak terdeteksi — cocokkan angka pertama kali dengan layar Odoo.
+
+---|---|---|
 | **Bot Laporan** | Chat harian, laporan terjadwal | Penjualan: *User: All Documents* (atau hak baca); Faktur/Akuntansi: hak **baca** (*Read-only* bila tersedia, selain itu *Billing*); Inventori: *User*. **Bukan** Administrator/Pengaturan |
 | **Bot Penjualan** (opsional) | Membuat draf penawaran | Penjualan: *User: Own Documents* atau *All Documents*. Tanpa hak Pengaturan |
 
@@ -108,7 +120,7 @@ python3 <folder-skill>/scripts/odoo.py atur --url http://localhost:8069 --db tok
 python3 <folder-skill>/scripts/odoo.py atur --url https://erp.tokomaju.id --izinkan-host
 python3 <folder-skill>/scripts/odoo.py cek
 ```
-- ✅ **Cek berhasil:** `cek` menampilkan versi, pengguna "Bot Laporan", dan "bisa dibaca" untuk aplikasi yang terpasang.
+- ✅ **Cek berhasil:** `cek` menampilkan versi, pengguna "Bot Laporan", "bisa dibaca" untuk aplikasi yang terpasang, dan "Cakupan data: SEMUA data" (bukan "HANYA milik pengguna API ini").
 - Lalu cocokkan sekali: jalankan `penjualan --tanggal kemarin` dan bandingkan dengan menu Penjualan → Pesanan (filter tanggal kemarin, status Pesanan Penjualan).
 
 ---
@@ -121,6 +133,7 @@ python3 <folder-skill>/scripts/odoo.py cek
 | "Endpoint XML-RPC ... tidak ada" | Odoo 22 / Odoo Online 21.1 ke atas menghapus XML-RPC | `atur --protokol json2` (Odoo 19+) |
 | "Nama database ... belum diatur" | Odoo ≤18 butuh nama database | Lihat di halaman pilih database (`/web/database/selector`) atau tanya penyedia hosting |
 | "Hak akses ... kurang" | Pengguna bot belum diberi hak aplikasi itu | Atur hak di menu Pengguna (§5) |
+| "PERINGATAN DATA SEBAGIAN" / kode 9 / penjualan Rp 0 padahal ada pesanan | Hak Penjualan *Own Documents*, atau piutang lampau tanpa hak Akuntansi baca | Ubah hak jadi *All Documents* + Akuntansi *Read-only* (§5) |
 | "mengalihkan permintaan" | Alamat http padahal server memakai https, atau alamat lama | Pakai alamat persis dari browser |
 | "Sertifikat HTTPS ... tidak valid" | Sertifikat server kedaluwarsa/buatan sendiri | Pasang sertifikat resmi (teknisi) |
 | Angka beda dengan layar Odoo | Filter tanggal/zona waktu, mata uang lain, faktur draf | Samakan filter; laporkan ke dukungan Komunitech (tanpa kunci) |
