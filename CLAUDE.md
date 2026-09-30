@@ -37,6 +37,12 @@ Dua jalur produksi:
 - **Merek pihak ketiga di nama skill** (mis. Dolibarr): boleh sebagai penyebut produk, wajib keterangan "tidak berafiliasi".
 - **Default branch repo** diperbarui berkala lewat PR dari branch kerja Akun A.
 
+**Keputusan pemilik 2026-09-30 (disetujui langsung oleh pemilik):**
+- **MoCA di kalkulator-klinis-nakes tetap dipakai** (tafsir skor total saja; butir/formulir tidak ditulis; lisensi & sertifikasi MoCA tanggung jawab nakes pengguna). Tetap wajib PERLU REVIEW tenaga medis sebelum rilis.
+- **bot-trading-kripto, Indodax:** daftar periksa + pernyataan member (frasa diketik sendiri) bahwa izin tarik dana MATI **cukup** untuk live; skill tetap tidak memanggil metode withdraw apa pun.
+- **Kunci testnet** untuk uji bot-trading sungguhan disediakan pemilik lewat secret environment (bukan ditempel di chat, tidak pernah masuk repo/log).
+- **Harga bundle final:** `paket-strategi-produk-marketing` Rp599.000, `paket-kantor-manajemen` Rp599.000.
+
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
 Bahasa: Bahasa Indonesia sebagai utama; bilingual ID/EN bila relevan.
