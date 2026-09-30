@@ -692,7 +692,7 @@ CATATAN_KOLOM_TERAKHIR = ("Kartu di kolom TERAKHIR papan (mis. Selesai/Tayang/Di
 
 def cmd_baca(kb, args):
     kartu = kumpulkan(kb, args)
-    cakupan = args.papan or "semua papan aktif"
+    cakupan = cari_papan(kb, args.papan)["name"] if args.papan else "semua papan aktif"
     telat, hini, macet = pilah(kartu, args.tz, getattr(args, "hari", 3))
     if args.perintah == "terlambat":
         daftar, judul, tampil = telat, "KARTU TERLAMBAT", ("tenggat",)
@@ -716,7 +716,8 @@ def cmd_laporan(kb, args):
     telat, hini, macet = pilah(kartu, args.tz, args.hari)
     now = sekarang(args.tz)
     teks = [f"LAPORAN PAPAN KERJA - {tgl_panjang(now)} {now:%H:%M} {args.tz}",
-            f"Papan: {args.papan or 'semua papan aktif'} | kartu terbuka: {len(kartu)}",
+            f"Papan: {cari_papan(kb, args.papan)['name'] if args.papan else 'semua papan aktif'} | "
+            f"kartu terbuka: {len(kartu)}",
             f"Terlambat {len(telat)} | Jatuh tempo hari ini {len(hini)} | Macet >= {args.hari} hari {len(macet)}", ""]
     for judul, daftar, tampil in (("TERLAMBAT", telat, ("tenggat",)), ("HARI INI", hini, ("tenggat",)),
                                   (f"MACET >= {args.hari} HARI", macet, ("macet",))):
