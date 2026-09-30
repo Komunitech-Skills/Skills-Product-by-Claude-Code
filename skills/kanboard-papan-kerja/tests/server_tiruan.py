@@ -116,6 +116,16 @@ def buat_handler(negara):
                 self.end_headers()
                 self.wfile.write(isi)
                 return
+            if negara.mode == "http501":
+                isi = b"<html>Not Implemented</html>"
+                self.send_response(501)
+                self.send_header("Content-Length", str(len(isi)))
+                self.end_headers()
+                self.wfile.write(isi)
+                return
+            if negara.mode == "aneh":
+                self._kirim(200, {"jsonrpc": "2.0", "result": [1, "x", None, {"id": "?"}], "id": 1})
+                return
             if negara.mode == "lambat":
                 time.sleep(3)
             if self.path != "/jsonrpc.php":

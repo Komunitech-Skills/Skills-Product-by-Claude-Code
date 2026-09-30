@@ -115,4 +115,4 @@ program-referral-loyalitas,Marketing & Konten,kurasi,https://github.com/coreyhai
 odoo-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech (Odoo LGPL-3.0/proprietary Odoo S.A. tidak didistribusikan),8,ecer,249000,ecer,249000,1.0.2,"claude-code (simulasi agent);odoo community 18 & 19 (docker, uji agent)",lulus,2026-09-30
 strategi-konten-iklan,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT (atribusi di ATTRIBUTION.md),9,ecer,79000,ecer,79000,1.0.1,claude-code (simulasi agent),lulus,2026-09-30
 spt-tahunan-op,Keuangan & Akuntansi,orisinal,,,9,ecer,79000,ecer,79000,1.0.1,claude-code (simulasi agent),lulus,2026-09-30
-kanboard-papan-kerja,Produktivitas,orisinal,,Proprietary Komunitech (Kanboard MIT tidak didistribusikan),,ecer,99000,,,1.0.0,openclaw 2026.9.7 (uji muat CLI),uji,2026-09-30
+kanboard-papan-kerja,Produktivitas,orisinal,,Proprietary Komunitech (Kanboard MIT tidak didistribusikan),,ecer,99000,,,1.0.1,openclaw 2026.9.7 (uji muat CLI),uji,2026-09-30

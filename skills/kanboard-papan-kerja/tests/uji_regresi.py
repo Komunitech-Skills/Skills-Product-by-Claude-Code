@@ -103,6 +103,54 @@ def main():
     s, _ = kbmod.tenggat_ke_server(dt.date(2026, 10, 1), 10, 0, "WITA", kbmod.zona_server("Asia/Jakarta"))
     cek("WITA->Asia/Jakarta", s == "2026-10-01 09:00", s)
 
+    # v1.0.1: jam bahasa Indonesia (acuan tetap)
+    for teks, harap in (("besok jam 3 sore", 15), ("besok jam 7 malam", 19), ("besok jam 9 pagi", 9),
+                        ("besok jam 12 siang", 12), ("besok jam 1 siang", 13), ("Jumat 10.00", 10),
+                        ("Jumat 10:00", 10), ("besok pukul 4 sore", 16), ("besok 14.30", 14),
+                        ("besok jam 03:00", 3), ("besok jam 12 malam", 0)):
+        r = pt(teks, acuan)
+        cek(f"jam {teks!r}", r[1] == harap, f"{r}")
+    cek("Jumat 10.00 tanggal & menit", pt("Jumat 10.00", acuan) == (dt.date(2026, 10, 2), 10, 0))
+    cek("jam 3.30 sore", pt("besok jam 3.30 sore", acuan) == (dt.date(2026, 10, 1), 15, 30))
+    for ambigu in ("besok jam 3", "besok 5.00", "lusa pukul 1"):
+        try:
+            pt(ambigu, acuan)
+            gagal(f"jam ambigu diterima diam-diam: {ambigu}")
+        except kbmod.Gagal as e:
+            cek(f"jam ambigu {ambigu}", e.kode == 2 and "sore" in (e.saran or ""))
+    s1, e1 = kbmod.tenggat_ke_server(dt.date(2026, 10, 2), 10, 0, "WIB", kbmod.zona_server("UTC"))
+    cek("Jumat 10.00 WIB -> 03:00 UTC (tidak ganda)", s1 == "2026-10-02 03:00", s1)
+    # v1.0.1: tanggal tanpa tahun yang sudah lewat
+    acuan30 = dt.date(2026, 9, 30)
+    for teks in ("28/09", "27/09", "28 September"):
+        tg, _, _, w = kbmod.parse_tenggat_lengkap(teks, acuan30)
+        cek(f"{teks} tetap 2026 + peringatan", tg.year == 2026 and len(w) == 1 and "SUDAH LEWAT" in w[0], f"{tg} {w}")
+    tg, _, _, w = kbmod.parse_tenggat_lengkap("5/1", acuan30)
+    cek("5/1 jauh lewat -> 2027 + peringatan tahun", tg == dt.date(2027, 1, 5) and "2027" in w[0], f"{tg} {w}")
+    tg, _, _, w = kbmod.parse_tenggat_lengkap("28/09/2026", acuan30)
+    cek("tahun disebut tanpa peringatan tahun", tg.year == 2026 and not w)
+    tg, _, _, w = kbmod.parse_tenggat_lengkap("30/09", acuan30)
+    cek("hari ini tanpa tahun tidak diperingatkan", not w)
+    cek("dd/mm format Indonesia (3/4 = 3 April)", pt("3/4/2027", acuan30)[0] == dt.date(2027, 4, 3))
+    cek("kemarin", pt("kemarin", acuan30)[0] == dt.date(2026, 9, 29))
+
+    # v1.0.1: kartu di kolom terakhir tidak masuk hari-ini/terlambat (jam dipalsukan)
+    asli = kbmod.sekarang
+    kbmod.sekarang = lambda tz: dt.datetime(2026, 9, 30, 12, 0, tzinfo=kbmod.zona_lokal(tz))
+    try:
+        due = int(dt.datetime(2026, 9, 30, 9, 0, tzinfo=WIB).timestamp())
+        dasar = {"date_moved": due, "judul": "x", "pic": "", "papan": "p", "kolom": "k", "kolom_id": 1}
+        kt = [dict(dasar, id=1, date_due=due, kolom_terakhir=False), dict(dasar, id=2, date_due=due, kolom_terakhir=True)]
+        telat, hini, macet = kbmod.pilah(kt, "WIB", 3)
+        cek("kolom Selesai tidak di hari-ini", [k["id"] for k in hini] == [1], f"{hini}")
+        cek("kolom Selesai tidak di terlambat", [k["id"] for k in telat] == [1], f"{telat}")
+    finally:
+        kbmod.sekarang = asli
+
+    # v1.0.1: KANBOARD_USER tanpa token -> GAGAL, bukan file default
+    rc, out, err = jalan(["cek"], pengguna=None, env_extra={"KANBOARD_USER": "budi"})
+    cek("USER tanpa TOKEN -> 3", rc == 3 and "berpasangan" in err and "Traceback" not in err, err)
+
     # alamat
     for url, harap in (("http://kanboard.contoh.com", 2), ("https://kanboard.contoh.com", 2),
                        ("http://192.168.1.20:8080", 2), ("http://u:p@127.0.0.1:8080", 2),
@@ -260,6 +308,20 @@ def main():
         rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "Lama", "--tenggat", "1/1/2020"],
                              url=url)
         cek("tenggat lampau diperingatkan", rc == 0 and "SUDAH LEWAT" in out, out + err)
+        rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "Jam ambigu", "--tenggat", "besok jam 3",
+                              "--ya"], url=url)
+        cek("jam ambigu ditolak sebelum menulis", rc == 2 and "sore" in err and "createTask" not in ng.data["log"][-1:],
+            out + err)
+        rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "Jam sore", "--tenggat",
+                              "besok jam 3 sore"], url=url)
+        cek("jam 3 sore -> 15:00 di pratinjau", rc == 0 and "jam 15:00 WIB" in out, out + err)
+        rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "Tgl lewat", "--tenggat", "1/1"],
+                             url=url)
+        cek("dd/mm tanpa tahun -> peringatan tahun", rc == 0 and "PERINGATAN" in out and "tahun" in out, out + err)
+        rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "PIC pendek", "--ke", "b"], url=url)
+        cek("--ke 1 huruf ditolak", rc == 2 and "pendek" in err, out + err)
+        rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "PIC sebagian", "--ke", "bud"], url=url)
+        cek("--ke sebagian ditegaskan", rc == 0 and "dicocokkan sebagian" in out, out + err)
         rc, out, err = jalan(["tambah-kartu", "--judul", "Y"], url=url)
         cek("tanpa papan -> 2", rc == 2, err)
         rc, out, err = jalan(["tambah-kartu", "--papan", "konveksi", "--judul", "  "], url=url)
@@ -307,6 +369,9 @@ def main():
     for mode, argv, harap, kata in (
             ("redirect", ["cek"], 2, "mengalihkan"),
             ("bukan_kanboard", ["cek"], 4, "bukan JSON-RPC"),
+            ("http501", ["daftar-papan"], 4, "bukan JSON-RPC"),
+            ("aneh", ["daftar-papan"], 4, "tidak sesuai bentuk"),
+            ("aneh", ["laporan"], 4, "tidak sesuai bentuk"),
             ("lambat", ["cek", "--timeout", "1"], 4, "tidak menjawab"),
             ("timeout_tulis", ["tambah-kartu", "--papan", "1", "--judul", "Z", "--ya", "--timeout", "1"], 8, "MUNGKIN"),
             ("error500_tulis", ["tambah-kartu", "--papan", "1", "--judul", "Z", "--ya"], 8, "MUNGKIN"),
@@ -316,7 +381,7 @@ def main():
         srv, ng, url = server(mode)
         try:
             rc, out, err = jalan(argv, url=url)
-            cek(f"gangguan {mode} {argv[0]}", rc == harap and kata in err, f"rc={rc} {err}")
+            cek(f"gangguan {mode} {argv[0]}", rc == harap and kata in err and "Traceback" not in err, f"rc={rc} {err}")
             if mode == "redirect":
                 cek("redirect: tidak ada permintaan ke host lain", "evil" not in out)
         finally:

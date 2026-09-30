@@ -45,7 +45,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI_SKRIP = "1.0.0"
+VERSI_SKRIP = "1.0.1"
 KANBOARD_TERUJI = ("v1.2.54", "1.2.54")
 URL_DEFAULT = "http://127.0.0.1:8080"
 FOLDER_KONF = os.path.join(os.path.expanduser("~"), ".komunitech")
@@ -192,16 +192,45 @@ def epoch_ke_lokal(nilai, tz_nama):
     return dt.datetime.fromtimestamp(n, zona_lokal(tz_nama))
 
 
-_JAM_RE = re.compile(r"\b(?:jam|pukul)\s+(\d{1,2})(?:[:.](\d{2}))?\b|\b(\d{1,2}):(\d{2})\b")
+_KET = r"(?:\s*(pagi|siang|sore|petang|malam))?"
+_JAM_RE = re.compile(
+    r"\b(?:jam|pukul)\s+(\d{1,2})(?:[:.](\d{2}))?(?![\d:./-])" + _KET
+    + r"|(?<![\d/.:-])(\d{1,2})[:.](\d{2})(?![\d/.:-])" + _KET)
 
 
-def cari_tanggal(teks, acuan):
-    """Satu frasa tanggal Indonesia -> date atau None."""
+def baca_jam(jam, menit, ket, teks_jam):
+    """Jam tulisan orang Indonesia -> (jam24, menit). Jam 1-6 tanpa keterangan = ambigu -> Gagal (tanya)."""
+    if not (0 <= jam <= 23 and 0 <= menit <= 59):
+        raise Gagal(f"Jam tidak valid di tenggat: {teks_jam!r}", K_INPUT)
+    if jam >= 13 or teks_jam.startswith("0") and not ket:  # 24 jam eksplisit ('14:00', '03:00')
+        return jam, menit
+    if ket == "pagi":
+        return (0 if jam == 12 else jam), menit
+    if ket == "siang":
+        return (jam + 12 if 1 <= jam <= 6 else jam), menit
+    if ket in ("sore", "petang"):
+        return (jam + 12 if 1 <= jam <= 11 else jam), menit
+    if ket == "malam":
+        return (0 if jam == 12 else jam + 12 if 5 <= jam <= 11 else jam), menit
+    if 1 <= jam <= 6:
+        raise Gagal(f"Jam {teks_jam!r} tidak jelas: {jam:02d}:{menit:02d} dini hari atau {jam + 12}:{menit:02d}?",
+                    K_INPUT, saran=f"Tanyakan ke pengguna, lalu tulis dengan keterangan: 'jam {jam} sore' "
+                                   f"({jam + 12}:{menit:02d}) atau format 24 jam '{jam + 12}:{menit:02d}' / "
+                                   f"'{jam:02d}:{menit:02d}' (dini hari).")
+    return jam, menit
+
+
+def cari_tanggal(teks, acuan, info=None):
+    """Satu frasa tanggal Indonesia -> date atau None. info (dict) diisi bila tahun tidak disebut."""
     t = teks.lower().strip().replace("jum'at", "jumat")
+    if info is None:
+        info = {}
     if re.search(r"\bbesok lusa\b|\bkapan[- ]?kapan\b", t):  # ungkapan 'suatu saat', bukan tanggal
         return None
     if re.search(r"\bhari ini\b", t):
         return acuan
+    if re.search(r"\bkemarin\b", t):
+        return acuan - dt.timedelta(days=1)
     if re.search(r"\bbesok\b", t):
         return acuan + dt.timedelta(days=1)
     if re.search(r"\blusa\b", t):
@@ -232,47 +261,67 @@ def cari_tanggal(teks, acuan):
         d, mo = int(m.group(1)), int(m.group(2))
         y = int(m.group(3)) if m.group(3) else acuan.year
         y = y + 2000 if y < 100 else y
-        return _tanggal_aman(y, mo, d, acuan, bool(m.group(3)))
+        return _tanggal_aman(y, mo, d, acuan, bool(m.group(3)), info)
     m = re.search(r"\b(\d{1,2})\s+([a-z]+)\.?(?:\s+(\d{4}))?\b", t)
     if m and m.group(2) in BULAN_KATA:
         y = int(m.group(3)) if m.group(3) else acuan.year
-        return _tanggal_aman(y, BULAN_KATA[m.group(2)], int(m.group(1)), acuan, bool(m.group(3)))
+        return _tanggal_aman(y, BULAN_KATA[m.group(2)], int(m.group(1)), acuan, bool(m.group(3)), info)
     return None
 
 
-def _tanggal_aman(y, mo, d, acuan, tahun_disebut):
+def _tanggal_aman(y, mo, d, acuan, tahun_disebut, info=None):
+    """Tanggal tanpa tahun yang sudah lewat TIDAK diam-diam dipindah ke tahun depan, kecuali sudah lewat > 60 hari
+    (dianggap maksud tahun depan). Kedua kasus dicatat di info agar diberi PERINGATAN."""
     try:
         hasil = dt.date(y, mo, d)
     except ValueError:
         return None
-    if not tahun_disebut and hasil < acuan - dt.timedelta(days=1):
-        try:
-            hasil = dt.date(y + 1, mo, d)
-        except ValueError:
-            pass
+    if not tahun_disebut:
+        if info is not None:
+            info["tanpa_tahun"] = True
+        if hasil < acuan - dt.timedelta(days=60):
+            try:
+                hasil = dt.date(y + 1, mo, d)
+                if info is not None:
+                    info["digeser"] = True
+            except ValueError:
+                pass
     return hasil
 
 
-def parse_tenggat(teks, acuan):
-    """'besok jam 14:00' -> (date, jam, menit). Default jam 17:00."""
-    jam, menit, sisa = 17, 0, teks
+def parse_tenggat_lengkap(teks, acuan):
+    """'besok jam 3 sore' -> (date, jam, menit, [peringatan]). Default jam 17:00."""
+    jam, menit, sisa, peringatan = 17, 0, teks, []
     m = _JAM_RE.search(teks)
     if m:
         if m.group(1):
-            jam, menit = int(m.group(1)), int(m.group(2) or 0)
+            j, mn, ket, mentah = int(m.group(1)), int(m.group(2) or 0), m.group(3), m.group(1)
         else:
-            jam, menit = int(m.group(3)), int(m.group(4))
-        if not (0 <= jam <= 23 and 0 <= menit <= 59):
-            raise Gagal(f"Jam tidak valid di tenggat: {teks!r}", K_INPUT)
+            j, mn, ket, mentah = int(m.group(4)), int(m.group(5)), m.group(6), m.group(4)
+        jam, menit = baca_jam(j, mn, ket, mentah)
         sisa = (teks[:m.start()] + teks[m.end():]).strip()
-    tanggal = cari_tanggal(sisa, acuan)
+    info = {}
+    tanggal = cari_tanggal(sisa, acuan, info)
     if tanggal is None:
         raise Gagal(
             f"Tenggat tidak dikenali: {teks!r}.", K_INPUT,
             saran="Format yang didukung: 'hari ini', 'besok', 'lusa', 'N hari lagi', nama hari "
                   "('Jumat', 'Jumat depan'), 'minggu depan', 'akhir bulan', 'awal bulan depan', '25/10' (tanggal/bulan), '25/10/2026', "
-                  "'25 Oktober 2026', '2026-10-25'; boleh ditambah 'jam 14:00'.")
-    return tanggal, jam, menit
+                  "'25 Oktober 2026', '2026-10-25'; boleh ditambah 'jam 14:00', '10.00' atau 'jam 3 sore'.")
+    if info.get("digeser"):
+        peringatan.append(f"PERINGATAN: tanggal tanpa tahun sudah lewat jauh, dibaca sebagai tahun {tanggal.year}. "
+                          f"Benar tahun {tanggal.year}? (sebutkan tahunnya bila bukan)")
+    elif info.get("tanpa_tahun") and tanggal < acuan:
+        peringatan.append(f"PERINGATAN: tanggal {tanggal.day:02d}/{tanggal.month:02d} tahun {tanggal.year} SUDAH LEWAT "
+                          f"(hari ini {acuan.day:02d}/{acuan.month:02d}/{acuan.year}). Maksudnya tahun "
+                          f"{tanggal.year + 1}? Minta pengguna menyebut tahunnya (mis. {tanggal.day:02d}/"
+                          f"{tanggal.month:02d}/{tanggal.year + 1}).")
+    return tanggal, jam, menit, peringatan
+
+
+def parse_tenggat(teks, acuan):
+    """Versi ringkas: (date, jam, menit). Peringatan tersedia lewat parse_tenggat_lengkap."""
+    return parse_tenggat_lengkap(teks, acuan)[:3]
 
 
 def tenggat_ke_server(tanggal, jam, menit, tz_lokal, tz_server):
@@ -332,6 +381,9 @@ def ambil_kunci(args):
     u, t = os.environ.get("KANBOARD_USER", "").strip(), os.environ.get("KANBOARD_TOKEN", "").strip()
     if u and t:
         return u, t
+    if bool(u) != bool(t):
+        raise Gagal("KANBOARD_USER dan KANBOARD_TOKEN harus diisi berpasangan (salah satunya kosong).", K_FILE,
+                    saran="Isi keduanya, atau kosongkan keduanya dan pakai file kunci (simpan-kunci).")
     if os.environ.get("KANBOARD_KUNCI_FILE"):
         return _baca_kunci(os.path.expanduser(os.environ["KANBOARD_KUNCI_FILE"]), "ENV KANBOARD_KUNCI_FILE")
     return _baca_kunci(KUNCI_DEFAULT, "file kunci default")
@@ -471,7 +523,7 @@ class Kanboard:
                 mentah = e.read(65536)
             except (OSError, http.client.HTTPException):
                 mentah = b""
-            if status >= 500:
+            if status >= 500 and status != 501:
                 if tulis:
                     raise Gagal(f"Kanboard membalas galat server {status} saat MENULIS.", K_TAKPASTI,
                                 saran="Data MUNGKIN sudah tersimpan. Jangan ulangi otomatis - buka Kanboard di "
@@ -664,7 +716,7 @@ def pilah(kartu, tz, hari_macet):
     for k in kartu:
         if k["date_due"]:
             due = epoch_ke_lokal(k["date_due"], tz)
-            if due.date() == hari_ini:
+            if due.date() == hari_ini and not k["kolom_terakhir"]:
                 hini.append(k)
             if k["date_due"] < batas and not k["kolom_terakhir"]:
                 telat.append(k)
@@ -699,7 +751,7 @@ def cmd_baca(kb, args):
         cat = CATATAN_KOLOM_TERAKHIR
     elif args.perintah == "hari-ini":
         daftar, judul, tampil = hini, f"KARTU JATUH TEMPO HARI INI ({tgl_panjang(sekarang(args.tz))})", ("tenggat",)
-        cat = ("Kartu tanpa tanggal jatuh tempo tidak muncul di sini. Kartu jatuh tempo hari ini yang jamnya sudah "
+        cat = ("Kartu tanpa tanggal jatuh tempo dan kartu di kolom terakhir (beres) tidak muncul di sini. Kartu jatuh tempo hari ini yang jamnya sudah "
                "lewat muncul di sini MAUPUN di 'terlambat' - jangan dijumlahkan sebagai kartu unik.")
     else:
         daftar, tampil = macet, ("macet", "tenggat")
@@ -882,17 +934,21 @@ def cmd_tambah_kartu(kb, args):
     ringkas = [f"PRATINJAU KARTU BARU", f"Papan: {p['name']} (id {p['id']})", f"Kolom: {kol['title']}",
                f"Judul: {judul}"]
     if args.tenggat:
-        tgl, jam, menit = parse_tenggat(args.tenggat, sekarang(args.tz).date())
+        tgl, jam, menit, peringatan = parse_tenggat_lengkap(args.tenggat, sekarang(args.tz).date())
         tz_nama, tzs = kb.tz_server()
         params["date_due"], epoch = tenggat_ke_server(tgl, jam, menit, args.tz, tzs)
         ringkas.append(f"Jatuh tempo: {tgl_panjang(tgl)} jam {jam:02d}:{menit:02d} {args.tz}")
+        ringkas += peringatan
         if epoch < sekarang(args.tz).timestamp():
             ringkas.append("PERINGATAN: jatuh tempo ini SUDAH LEWAT - kartu langsung tercatat terlambat. Benar?")
     if args.ke:
         orang = kb.anggota(p["id"])
         kunci = args.ke.strip().lower()
-        cocok = [(i, n) for i, n in orang.items() if n.lower() == kunci] or \
-                [(i, n) for i, n in orang.items() if kunci in n.lower()]
+        persis = [(i, n) for i, n in orang.items() if n.lower() == kunci]
+        if not persis and len(kunci) < 2:
+            raise Gagal(f"Nama PIC '{args.ke}' terlalu pendek untuk dicocokkan.", K_INPUT,
+                        saran="Tulis minimal 2 huruf nama, atau nama lengkapnya.")
+        cocok = persis or [(i, n) for i, n in orang.items() if kunci in n.lower()]
         if not cocok:
             raise Gagal(f"Anggota '{args.ke}' tidak ditemukan di papan ini. Yang bisa ditugaskan: "
                         + (", ".join(orang.values()) or "(tidak ada)") + ".", K_INPUT,
@@ -901,7 +957,7 @@ def cmd_tambah_kartu(kb, args):
         if len(cocok) > 1:
             raise Gagal(f"'{args.ke}' cocok lebih dari satu: " + ", ".join(n for _, n in cocok) + ".", K_GANDA)
         params["owner_id"] = int(cocok[0][0])
-        ringkas.append(f"PIC: {cocok[0][1]}")
+        ringkas.append(f"PIC: {cocok[0][1]}" + ("" if persis else f" (dicocokkan sebagian dari '{args.ke.strip()}' - benar?)"))
     if args.catatan:
         params["description"] = args.catatan[:5000]
         ringkas.append(f"Catatan: {args.catatan[:200]}")
@@ -1036,6 +1092,12 @@ def main(argv=None):
     except KeyboardInterrupt:
         sys.stderr.write("Dibatalkan.\n")
         return 130
+    except Exception as e:  # data tak terduga dari server: pesan ramah, bukan traceback
+        sys.stderr.write("GAGAL: Data dari Kanboard tidak sesuai bentuk yang diharapkan "
+                         f"({type(e).__name__}).\n")
+        sys.stderr.write("SARAN: Pastikan alamat menunjuk ke Kanboard asli (versi v1.2.x) lalu ulangi; bila tetap "
+                         "begini, jangan ulangi perintah tulis sebelum mengecek Kanboard.\n")
+        return K_KONEKSI
 
 
 if __name__ == "__main__":

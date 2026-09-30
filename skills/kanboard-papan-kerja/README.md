@@ -71,3 +71,7 @@ Tidak. Skill ini tidak punya perintah hapus/tutup, dan daftar perintah yang bole
 
 **Saya belum pernah pakai Docker. Susah?**
 Cukup memasang Docker Desktop lalu menempel satu baris perintah dari panduan. Bila tetap ragu, Komunitech menyediakan jasa setup berbayar (pasang, amankan, buat papan & token, jadwal laporan Telegram, backup).
+
+## Riwayat versi
+- **1.0.1 (2026-09-30):** pembacaan jam bahasa Indonesia diperbaiki ("jam 3 sore" = 15:00, "10.00" = 10:00; jam 1-6 tanpa keterangan ditanyakan); tanggal tanpa tahun yang sudah lewat kini diberi PERINGATAN (tidak diam-diam ke tahun depan); kartu di kolom Selesai tidak muncul di "hari ini"; pesan ramah (tanpa traceback) untuk data aneh dari server; "kemarin" dikenali; pencocokan PIC sebagian ditegaskan.
+- **1.0.0:** rilis awal.

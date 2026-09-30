@@ -10,7 +10,7 @@ description: Mengoperasikan Kanboard (papan kerja kanban open-source, self-hoste
 ## Tujuan
 Pemilik/admin usaha yang memakai **Kanboard di komputer/server sendiri** cukup mengetik permintaan biasa; agent menjalankan `scripts/kanboard.py` yang memanggil **JSON-RPC API resmi Kanboard** (`POST <alamat>/jsonrpc.php`, HTTP Basic Auth nama pengguna + token). Data tetap di komputer pengguna. Python standar saja. Komunitech tidak berafiliasi dengan proyek Kanboard.
 
-**Versi 1.0.0.** Diuji pembuat ke **Kanboard v1.2.54 asli** (kode sumber resmi tag `v1.2.54`, PHP 8.4 + SQLite, zona server UTC dan Asia/Jakarta, token pribadi Manager/User dan token aplikasi `jsonrpc`) + uji regresi otomatis dengan server tiruan (106 cek, termasuk 401/403/timeout/5xx/redirect). Belum diuji: image Docker resmi, Windows/macOS sungguhan.
+**Versi 1.0.1.** Diuji pembuat ke **Kanboard v1.2.54 asli** (kode sumber resmi tag `v1.2.54`, PHP 8.4 + SQLite, zona server UTC dan Asia/Jakarta, token pribadi Manager/User dan token aplikasi `jsonrpc`) + uji regresi otomatis dengan server tiruan (142 cek, termasuk 401/403/timeout/5xx/redirect). Belum diuji: image Docker resmi, Windows/macOS sungguhan.
 
 ## Kapan digunakan
 - "Kanboard saya nyambung?" → `cek`
@@ -69,9 +69,9 @@ python3 <folder-skill>/scripts/kanboard.py laporan [--hari 3] [--papan "..."]
 python3 <folder-skill>/scripts/kanboard.py tambah-kartu --papan "Konveksi" --judul "Seragam SD Harapan 120 pcs" \
   [--kolom "Order Masuk"] [--tenggat "Jumat jam 10:00"] [--ke "Ayu"] [--catatan "DP 50% sudah masuk"]
 ```
-- Default kolom = kolom pertama. Tenggat: `hari ini`, `besok`, `lusa`, `N hari lagi`, nama hari (`Jumat` = Jumat terdekat, `Jumat depan` = Jumat di minggu berikutnya), `minggu depan`, `akhir bulan`, `awal bulan depan`, `25/10` (tanggal/bulan), `25/10/2026`, `25 Oktober 2026`, `2026-10-25`; opsional `jam 14:00`/`pukul 9` (default 17:00 zona `--tz`). Script mengonversi ke zona waktu server Kanboard sendiri.
+- Default kolom = kolom pertama. Tenggat: `hari ini`, `besok`, `lusa`, `N hari lagi`, nama hari (`Jumat` = Jumat terdekat, `Jumat depan` = Jumat di minggu berikutnya), `minggu depan`, `akhir bulan`, `awal bulan depan`, `25/10` (tanggal/bulan), `25/10/2026`, `25 Oktober 2026`, `2026-10-25`; opsional `jam 14:00`/`10.00`/`pukul 9`/`jam 3 sore` (pagi/siang/sore/malam dikenali; default 17:00 zona `--tz`). Jam 1-6 TANPA keterangan (mis. `jam 3`) ditolak: tanyakan pengguna sekali, atau tulis ulang sebagai `jam 3 sore`/`15:00` sebelum memanggil script. Tanggal `dd/mm` selalu format Indonesia (hari/bulan) Script mengonversi ke zona waktu server Kanboard sendiri.
 - `--ke` = nama/username **anggota papan** (dari daftar yang boleh ditugaskan Kanboard).
-- Pratinjau dulu → "ya" → ulangi dengan `--ya`. Tenggat yang sudah lewat diberi PERINGATAN — tanyakan ulang.
+- Pratinjau dulu → "ya" → ulangi dengan `--ya`. Tenggat yang sudah lewat diberi PERINGATAN — tanyakan ulang. Tanggal tanpa tahun yang sudah lewat tidak diam-diam dipindah ke tahun depan: tanyakan tahunnya lalu tulis lengkap (mis. `28/09/2027`). Kartu di kolom terakhir (Selesai) tidak dihitung `hari-ini`/`terlambat`/`macet`.
 - Kartu terbuka berjudul sama di papan itu → ditolak (kode 7); pakai `--boleh-ganda` **hanya** bila pengguna menegaskan itu kartu berbeda.
 - Banyak kartu: jalankan satu per satu setelah satu konfirmasi atas daftar lengkap yang ditunjukkan; laporkan hasil tiap kartu. Bila satu gagal kode 8, **berhenti**.
 
