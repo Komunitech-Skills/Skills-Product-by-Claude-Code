@@ -5,6 +5,8 @@ description: Mengelola newsletter email UMKM lewat listmonk milik sendiri (pengg
 
 # listmonk Newsletter (pengganti Mailchimp untuk UMKM)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha yang memasang **listmonk di komputer/server sendiri** (gratis, tanpa biaya per kontak) cukup memberi perintah biasa; agent menyiapkan kontak, menulis email, menguji, menjadwalkan, dan membaca hasilnya lewat `scripts/listmonk.py` (Python standar, memanggil REST API listmonk). Yang dikirim hanya kepada orang yang **mendaftar sendiri** dan **selalu setelah pengguna menyetujui jumlah penerima**.
 

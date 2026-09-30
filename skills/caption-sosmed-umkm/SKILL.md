@@ -5,6 +5,8 @@ description: Membuat caption media sosial (Instagram, TikTok, Facebook, WhatsApp
 
 # Caption Sosmed UMKM
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 Menghasilkan caption jualan yang terasa lokal, tidak kaku, dan mendorong pembeli bertindak.
 
 ## Kapan TIDAK digunakan

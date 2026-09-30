@@ -18,6 +18,7 @@ import csv
 import io
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from decimal import InvalidOperation
@@ -47,19 +48,84 @@ def parse_waktu(s):
     raise ValueError(f"waktu '{s}' tidak dikenali (pakai YYYY-MM-DD)")
 
 
-def parse_harga(s):
-    s = s.strip().replace("Rp", "").replace(" ", "")
-    if "," in s and "." in s:
-        s = s.replace(".", "").replace(",", ".")
-    elif "," in s:
-        s = s.replace(",", ".")
+# "38.000" / "1.500" / "1,500": satu pemisah + tepat 3 angka -> bisa ribuan ATAU desimal, tergantung gaya
+_AMBIGU = re.compile(r"[1-9]\d{0,2}[.,]\d{3}")
+
+
+def _bersihkan(s):
+    s = re.sub(r"(?i)^\s*(rp|idr)\.?", "", str(s).strip())
+    return s.replace(" ", "").replace("\u00a0", "").lstrip("+")
+
+
+def gaya_angka(s):
+    """Tebak gaya satu nilai harga: 'id' (titik ribuan, koma desimal), 'intl' (titik desimal gaya
+    bursa), 'ambigu' ('38.000' bisa 38000 atau 38), 'polos' (bilangan bulat), atau None (bukan angka)."""
+    v = _bersihkan(s).lstrip("-")
+    if re.fullmatch(r"\d+", v):
+        return "polos"
+    if _AMBIGU.fullmatch(v):
+        return "ambigu"
+    if re.fullmatch(r"[1-9]\d{0,2}(\.\d{3})+(,\d+)?|\d+,\d+", v):
+        return "id"
+    if re.fullmatch(r"\d+\.\d+|[1-9]\d{0,2}(,\d{3})+(\.\d+)?", v):
+        return "intl"
+    return None
+
+
+def parse_harga(s, gaya=None):
+    """Baca harga penutupan dari CSV.
+
+    gaya='intl' = format bursa (titik desimal: '114311.97', '38000.5', '38.000' = 38).
+    gaya='id'   = format spreadsheet Indonesia (titik ribuan, koma desimal: '38.000' = 38000,
+                  '1.908.238.000', '38.000,50', 'Rp38.000').
+    gaya=None   = tebak per nilai; bentuk ambigu ('38.000', '1.500') DITOLAK, tidak ditebak diam-diam.
+    baca_csv() menentukan gaya satu kolom penuh sebelum memanggil fungsi ini."""
+    asli = str(s).strip()
+    v = _bersihkan(asli)
+    negatif = v.startswith("-")
+    v = v.lstrip("-")
+    g = gaya_angka(v)
+    if g is None:
+        raise ValueError(f"harga '{asli}' bukan angka")
+    if g == "ambigu":
+        if gaya is None:
+            raise ValueError(f"harga '{asli}' ambigu: pemisahnya bisa berarti ribuan ({re.sub('[.,]', '', v)}) atau desimal. "
+                             "Simpan CSV tanpa pemisah ribuan (mis. 38000) atau pakai format asli bursa.")
+        g = gaya
+    elif g not in ("polos", gaya) and gaya is not None:
+        raise ValueError(f"harga '{asli}' formatnya berbeda dengan nilai lain di kolom yang sama")
+    if g == "id":
+        v = v.replace(".", "").replace(",", ".")
+    elif g == "intl":
+        v = v.replace(",", "")
     try:
-        x = D(s)
+        x = D(v)
     except InvalidOperation:
-        raise ValueError(f"harga '{s}' bukan angka")
-    if not x.is_finite() or x <= 0:
+        raise ValueError(f"harga '{asli}' bukan angka")
+    if negatif or not x.is_finite() or x <= 0:
         raise ValueError("harga harus > 0")
     return x
+
+
+def tentukan_gaya(nilai):
+    """Satu gaya untuk seluruh kolom harga. Kolom yang hanya berisi bentuk ambigu ('38.000')
+    dan bilangan bulat tidak bisa dipastikan -> KonfigurasiTidakValid dengan pesan jelas."""
+    ada = {gaya_angka(v) for v in nilai}
+    if "id" in ada and "intl" in ada:
+        raise KonfigurasiTidakValid(
+            "Kolom harga mencampur format Indonesia (38.000,50) dan format bursa (38000.50). "
+            "Samakan formatnya, sebaiknya angka polos tanpa pemisah ribuan.")
+    if "id" in ada:
+        return "id"
+    if "intl" in ada:
+        return "intl"
+    if "ambigu" in ada:
+        contoh = next(v for v in nilai if gaya_angka(v) == "ambigu")
+        raise KonfigurasiTidakValid(
+            f"Harga di CSV ambigu, mis. '{str(contoh).strip()}': titik bisa berarti ribuan (gaya Indonesia, "
+            "pasangan IDR) atau desimal (gaya bursa). Simpan ulang CSV tanpa pemisah ribuan (mis. 38000 atau "
+            "38000.5), atau unduh ulang data asli dari bursa.")
+    return None
 
 
 def baca_csv(path):
@@ -75,10 +141,12 @@ def baca_csv(path):
     if not kw or not kh:
         raise KonfigurasiTidakValid(f"CSV wajib punya kolom waktu {K_WAKTU} dan harga penutupan {K_HARGA}. "
                                     f"Kolom yang ada: {r.fieldnames}")
+    baris = list(r)
+    gaya = tentukan_gaya([b[kh] or "" for b in baris])
     data, rusak = [], []
-    for no, b in enumerate(r, start=2):
+    for no, b in enumerate(baris, start=2):
         try:
-            data.append((parse_waktu(b[kw] or ""), parse_harga(b[kh] or "")))
+            data.append((parse_waktu(b[kw] or ""), parse_harga(b[kh] or "", gaya)))
         except Exception as e:  # noqa: BLE001 -- baris rusak dicatat, tidak menghentikan
             rusak.append({"baris": no, "alasan": str(e) or type(e).__name__})
     data.sort(key=lambda x: x[0])

@@ -9,6 +9,7 @@ Windows: pakai `python` atau `py`. Format paket.json: lihat examples/contoh-pake
 """
 import argparse
 import json
+import re
 import sys
 from decimal import Decimal, InvalidOperation, ROUND_CEILING, ROUND_HALF_UP
 
@@ -21,12 +22,60 @@ class DataBuruk(ValueError):
     """Input pengguna tidak valid."""
 
 
-def dec(nilai, nama, minimum=Decimal(0)):
+SATUAN_RUPIAH = (("ribu", 1000), ("rb", 1000), ("k", 1000), ("juta", 10 ** 6), ("jt", 10 ** 6))
+
+
+def _teks_angka(nilai, nama, uang):
+    """Ubah teks angka jadi string Decimal. uang=True: format Rupiah Indonesia (titik ribuan, koma desimal,
+    'Rp', 'rb'/'jt'); bentuk ragu ('16.5', '1,5', '16,500') ditolak. uang=False: angka biasa
+    (menit, persen, jumlah, harga USD) dengan desimal titik atau koma; pola ribuan '1.500' ditolak karena ragu."""
+    asli = str(nilai)
+    s = asli.strip().lower().replace("\u00a0", "").replace(" ", "")
+    kali = 1
+    if uang:
+        s = re.sub(r"^(rp|idr)\.?", "", s)
+        s = re.sub(r"[,.]-+$", "", s)
+        for akhiran, k in SATUAN_RUPIAH:
+            if s.endswith(akhiran) and s[: -len(akhiran)]:
+                s, kali = s[: -len(akhiran)], k
+                break
+    neg = "-" if s.startswith("-") else ""
+    v = s.lstrip("-")
+    ragu = DataBuruk(f"'{nama}' meragukan: {asli!r} (titik/koma bisa berarti ribuan atau desimal). "
+                     + ("Tulis 16500, 16.500, atau Rp16.500." if uang else "Tulis 1500 atau 1,5."))
+    if re.fullmatch(r"\d+", v):
+        pass
+    elif kali != 1 and re.fullmatch(r"\d+[.,]\d+", v):                  # 1,5jt / 1.5jt
+        v = v.replace(",", ".")
+    elif re.fullmatch(r"[1-9]\d{0,2}(\.\d{3})+(,\d+)?", v):             # 16.500 / 1.500.000 / 16.500,25
+        if not uang and not re.fullmatch(r"[1-9]\d{0,2}(\.\d{3}){2,}(,\d+)?|[1-9]\d{0,2}\.\d{3},\d+", v):
+            raise ragu                                                     # '1.500' pada menit/jumlah: ragu
+        v = v.replace(".", "").replace(",", ".")
+    elif re.fullmatch(r"[1-9]\d{0,2},\d{3}", v):                         # 16,500 -> ragu
+        raise ragu
+    elif re.fullmatch(r"\d+[.,]\d+", v):
+        if uang and not re.fullmatch(r"\d{4,}[.,]\d{1,2}", v):           # 16.5 / 1,5 / 150,50 rupiah -> ragu
+            raise ragu
+        v = v.replace(",", ".")
+    else:
+        raise DataBuruk(f"'{nama}' bukan angka: {nilai!r}")
+    try:
+        return Decimal(neg + v) * kali
+    except InvalidOperation:
+        raise DataBuruk(f"'{nama}' bukan angka: {nilai!r}")
+
+
+def dec(nilai, nama, minimum=Decimal(0), uang=False):
     if isinstance(nilai, bool) or nilai is None:
         raise DataBuruk(f"'{nama}' harus berupa angka, bukan {nilai!r}")
     try:
-        d = Decimal(str(nilai).strip().replace(",", "."))
-    except (InvalidOperation, ValueError):
+        if isinstance(nilai, (int, float, Decimal)):
+            d = Decimal(str(nilai))
+        else:
+            d = _teks_angka(nilai, nama, uang)
+    except (InvalidOperation, ValueError) as e:
+        if isinstance(e, DataBuruk):
+            raise
         raise DataBuruk(f"'{nama}' bukan angka: {nilai!r}")
     if not d.is_finite():
         raise DataBuruk(f"'{nama}' tidak valid: {nilai!r}")
@@ -66,9 +115,10 @@ def muat_paket(data):
         tambahan = p.get("biaya_tambahan_per_satuan")
         hasil.append({
             "nama": nama, "satuan": satuan, "mata_uang": mu,
-            "harga": dec(p.get("harga_bulanan"), f"{nama}.harga_bulanan"),
+            "harga": dec(p.get("harga_bulanan"), f"{nama}.harga_bulanan", uang=(mu == "IDR")),
             "batas": batas, "kredit_per_menit": kpm,
-            "tambahan": None if tambahan is None else dec(tambahan, f"{nama}.biaya_tambahan_per_satuan"),
+            "tambahan": None if tambahan is None else dec(tambahan, f"{nama}.biaya_tambahan_per_satuan",
+                                                         uang=(mu == "IDR")),
         })
     return hasil
 
@@ -80,8 +130,8 @@ def hitung(paket, video, menit_per_video, revisi_persen, kurs, anggaran=None):
     if menit_per_video == 0:
         raise DataBuruk("'menit per video' harus lebih dari 0")
     revisi = dec(revisi_persen, "revisi")
-    kurs = dec(kurs, "kurs")
-    anggaran = None if anggaran is None else dec(anggaran, "anggaran")
+    kurs = dec(kurs, "kurs", uang=True)
+    anggaran = None if anggaran is None else dec(anggaran, "anggaran", uang=True)
     menit_butuh = video * menit_per_video * (Decimal(1) + revisi / Decimal(100))
     keluar = []
     for p in paket:

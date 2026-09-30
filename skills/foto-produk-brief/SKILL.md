@@ -5,6 +5,8 @@ description: Membuat brief & shot list foto/video produk dengan HP tanpa studio 
 
 # Brief Foto & Video Produk dengan HP
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Memberi pengguna (atau staf/fotografer freelance) **satu lembar kerja siap eksekusi**: foto apa saja yang diambil, dari sudut mana, dengan latar & cahaya apa, rasio berapa, urutan upload, plus ide video pendek — cukup dengan HP, jendela, dan properti murah. Hasil akhirnya: foto yang jujur (sesuai barang asli) dan lengkap menjawab pertanyaan pembeli.
 

@@ -66,5 +66,36 @@ class TesDaftar(unittest.TestCase):
         self.assertEqual(hasil["max"], 41)
 
 
+class TesFormatAngkaIndonesia(unittest.TestCase):
+    """Audit format angka 2026-09-30: '38.000' dulu terbaca 38 (selisih 7, bukan 7.000)."""
+
+    def test_titik_ribuan_dan_rp(self):
+        for teks, harap in (("38.000", 38000), ("1.500", 1500), ("Rp38.000", 38000), ("Rp 38.000", 38000),
+                            ("1.250.000", 1250000), ("1.250.000,50", Decimal("1250000.50")), ("2,5", Decimal("2.5")),
+                            ("38rb", 38000), ("1,5jt", 1500000), ("-Rp5.000.000", -5000000), ("32000000", 32000000)):
+            self.assertEqual(modul.baca_angka(teks), Decimal(harap), teks)
+
+    def test_pasangan_titik_ribuan(self):
+        hasil = modul.proses_pasangan("Omzet:38.000:45.000")
+        self.assertEqual((hasil["nilai_lama"], hasil["nilai_baru"], hasil["selisih"], hasil["persen_perubahan"]),
+                         (38000, 45000, 7000, 18.4))
+        self.assertEqual(modul.proses_pasangan("Omzet:Rp38.000:Rp 45.000")["selisih"], 7000)
+
+    def test_bentuk_ragu_ditolak(self):
+        for teks in ("38.5", "1,500", "0.5", "abc", "2m"):
+            with self.assertRaises(ValueError, msg=teks):
+                modul.baca_angka(teks)
+        with self.assertRaises(ValueError):
+            modul.proses_pasangan("Omzet:38.5:45")
+
+    def test_daftar_titik_ribuan_dan_titik_koma(self):
+        hasil = modul.proses_daftar("Jual=1.500,2.000")
+        self.assertEqual((hasil["total"], hasil["min"], hasil["max"]), (3500, 1500, 2000))
+        hasil = modul.proses_daftar("Omzet=1,5jt;2jt;850rb")
+        self.assertEqual(hasil["total"], 4350000)
+        with self.assertRaises(ValueError):
+            modul.proses_daftar("Omzet=1,5jt,2jt")
+
+
 if __name__ == "__main__":
     unittest.main()

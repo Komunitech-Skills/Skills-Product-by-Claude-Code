@@ -197,6 +197,10 @@ Contoh keluaran nyata: `examples/`.
   lain (kunci tidak ikut terkirim); bot melaporkan dan tidak berorder.
 - **Angka konfigurasi** ditulis tanpa pemisah ribuan ("500000", bukan "500.000"); script menolak
   pola ribuan dan angka tidak wajar dengan pesan jelas.
+- **Kolom harga CSV backtest:** format satu kolom ditentukan sekaligus: format bursa (titik desimal,
+  "114311.97") atau format Excel Indonesia (titik ribuan, koma desimal, "1.908.238.000", "38.000,50").
+  Kolom yang hanya berisi bentuk ragu ("38.000" bisa 38000 atau 38) atau mencampur keduanya ditolak
+  dengan pesan jelas; minta member menyimpan ulang tanpa pemisah ribuan.
 - **Grid:** stop-loss global & untung/rugi memakai harga rata-rata semua koin bot, jadi SL global bisa
   terpicu di dalam rentang grid dan satu jual slot bisa tercatat rugi; jelaskan ini ke member.
 - **Angka Indodax:** bila respons order tidak memuat rincian isi, transaksi ditandai ESTIMASI;

@@ -36,7 +36,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
-VERSI = "1.0.3"
+VERSI = "1.0.6"
 VERSI_DIUJI = "Frappe Books v0.36.0 (skema juga dicocokkan dengan cabang main 0.37.0, 20 Sep 2026)"
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
 NOL = Decimal(0)
@@ -167,11 +167,24 @@ def baca_rupiah(teks, label="nilai"):
 
 
 def baca_jumlah(teks, label="jumlah"):
-    s = str(teks or "").strip().replace(" ", "")
+    """Jumlah barang: '3', '1,5' (desimal koma), '2.5' (desimal titik), '1.500' / '1.250.000' (titik
+    ribuan), '1.500,5'. Bentuk ambigu ('1,500': 1,5 atau 1500?) dan format Inggris ditolak."""
+    s = str(teks or "").strip().replace(" ", "").replace("\u00a0", "")
     if s == "":
         raise ValueError(f"{label} kosong")
-    if "," in s and "." not in s:
+    v = s.lstrip("-")
+    if re.fullmatch(r"\d+", v):
+        pass
+    elif re.fullmatch(r"[1-9]\d{0,2}(\.\d{3})+(,\d+)?", v):          # 1.500 / 1.250.000 / 1.500,5
+        s = s.replace(".", "").replace(",", ".")
+    elif re.fullmatch(r"[1-9]\d{0,2},\d{3}", v):                      # 1,500 -> ragu
+        raise ValueError(f"{label} '{teks}' ambigu (1,5 atau 1500?); tulis 1500 atau 1,5")
+    elif re.fullmatch(r"\d+,\d+", v):                                  # 1,5
         s = s.replace(",", ".")
+    elif re.fullmatch(r"\d+\.\d+", v):                                # 2.5 / 0.500 / 1500.5
+        pass
+    else:
+        raise ValueError(f"{label} '{teks}' bukan angka (contoh: 3, 1,5, atau 1.500)")
     try:
         return Decimal(s)
     except InvalidOperation:

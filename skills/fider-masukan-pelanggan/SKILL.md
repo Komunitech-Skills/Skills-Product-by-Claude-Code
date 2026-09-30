@@ -5,6 +5,8 @@ description: Mengelola papan masukan & voting fitur Fider (open-source, penggant
 
 # Masukan Pelanggan Fider (papan saran & voting untuk UMKM/tim produk)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha atau tim produk yang memasang **Fider di komputer/server sendiri** (gratis, tanpa biaya bulanan per pengguna) cukup bicara biasa, dan agent menjalankan `scripts/fider.py` yang memanggil **REST API resmi Fider** (`/api/v1/...`, header `Authorization: Bearer <kunci API>`). Hasil: catatan berantakan dari WA/marketplace jadi usulan rapi di papan, duplikat tergabung, ringkasan mingguan siap tempel, status terbarui, dan draf kabar perbaikan siap kirim. Python standar saja; tanpa instalasi paket.
 

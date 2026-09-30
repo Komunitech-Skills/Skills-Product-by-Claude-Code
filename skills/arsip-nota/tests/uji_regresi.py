@@ -250,6 +250,24 @@ _p = subprocess.run([sys.executable, SCRIPT, "init", "--db", _db_singkat, "--y"]
 cek("52. singkatan flag konfirmasi (--y) ditolak dan tidak menulis apa pun",
     _p.returncode != 0 and "unrecognized arguments" in (_p.stdout + _p.stderr) and not os.path.exists(_db_singkat))
 
+# ------------------------------------------------------------------ format angka Indonesia (audit 2026-09-30)
+sys.path.insert(0, os.path.join(DIR, "..", "scripts"))
+import arsip as _arsip  # noqa: E402
+for _teks, _harap in (("38.000", 38000), ("1.500", 1500), ("Rp38.000", 38000), ("Rp 1.250.000", 1250000),
+                      ("1.250.000,50", 1250001), ("1,2jt", 1200000), ("150rb", 150000), ("10000.50", 10001),
+                      ("1,250,000", 1250000)):
+    try:
+        _hasil = _arsip.parse_nominal(_teks)[0]
+    except _arsip.Gagal as _e:
+        _hasil = "Gagal: %s" % _e
+    cek("53. parse_nominal %r -> %s" % (_teks, _harap), _hasil == _harap)
+for _teks in ("150,50", "1,5", "38.5", "1,500", "0.5"):
+    k, h = jalankan("tambah", "--file", foto1, "--tanggal", "20/09/2026", "--vendor", "X", "--nominal", _teks)
+    cek("54. nominal ragu %r ditolak jelas (tidak jadi Rp15.050/Rp15)" % _teks,
+        k == 1 and "meragukan" in h.get("error", ""))
+k, h = jalankan("info")
+cek("55. nominal ragu tidak menyimpan nota apa pun (tetap 11)", h.get("jumlah_nota") == 11)
+
 shutil.rmtree(WORK, ignore_errors=True)
 
 print("\n" + ("SEMUA LULUS" if not GAGAL else "%d GAGAL: %s" % (len(GAGAL), ", ".join(GAGAL))))

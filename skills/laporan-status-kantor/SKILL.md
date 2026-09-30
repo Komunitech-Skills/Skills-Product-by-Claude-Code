@@ -5,6 +5,8 @@ description: Mengubah catatan kerja berantakan (chat grup, poin acak, transkrip 
 
 # Laporan Status Kantor
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menyusun laporan status dan komunikasi internal kantor dari bahan mentah (catatan chat, poin
 acak, transkrip voice note) menjadi teks rapi, konsisten formatnya, dan siap tempel ke

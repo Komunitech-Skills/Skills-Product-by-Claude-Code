@@ -5,6 +5,8 @@ description: Membaca laporan analitik website dari Umami (analitik web open-sour
 
 # Umami Analitik (laporan web untuk UMKM)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik toko online, landing page, atau halaman link-bio yang memasang **Umami di komputer/server sendiri** (gratis, tanpa cookie, data tidak dititipkan ke Google) cukup bertanya dengan bahasa biasa, dan agent menjalankan `scripts/umami.py` yang membaca **REST API resmi Umami** (`/api/...`, header `Authorization: Bearer <kunci API>`). Hasilnya teks siap tempel: angka pasti dari Umami, dibandingkan dengan periode sebelumnya, dengan penjelasan awam. Python standar saja, tanpa instalasi paket. **Hanya membaca** — skill tidak punya perintah yang mengubah Umami.
 

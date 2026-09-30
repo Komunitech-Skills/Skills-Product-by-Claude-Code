@@ -126,5 +126,54 @@ class Uji(unittest.TestCase):
         self.assertEqual(p.returncode, 0, p.stderr)
 
 
+class UjiFormatAngka(unittest.TestCase):
+    """Audit format angka 2026-09-30: '--kurs 16.500' dulu terbaca 16,5 (biaya Rp479, benar Rp478.500)."""
+    USD = {"nama": "K", "harga_bulanan": 29, "mata_uang": "USD", "satuan": "menit", "batas_bulanan": 60}
+
+    def test_rupiah_format_indonesia(self):
+        for teks, harap in (("16.500", 16500), ("16500", 16500), ("Rp16.500", 16500), ("Rp 16.500", 16500),
+                            ("38.000", 38000), ("1.500", 1500), ("1.250.000", 1250000),
+                            ("16.500,25", Decimal("16500.25")), ("1,5jt", 1500000), ("500rb", 500000)):
+            self.assertEqual(r.dec(teks, "kurs", uang=True), Decimal(harap), teks)
+
+    def test_kurs_bertitik_ribuan_hasil_benar(self):
+        for kurs in ("16.500", "Rp16.500", "16500"):
+            _, h = r.hitung(paket(self.USD), 12, "0.75", 25, kurs)
+            self.assertEqual(h[0]["biaya_idr"], 478500, kurs)
+
+    def test_rupiah_ragu_ditolak(self):
+        for teks in ("16.5", "1,5", "16,500", "150,50"):
+            with self.assertRaises(r.DataBuruk, msg=teks):
+                r.dec(teks, "anggaran", uang=True)
+
+    def test_angka_biasa_tetap_dan_ribuan_ragu_ditolak(self):
+        self.assertEqual(r.dec("0.75", "menit"), Decimal("0.75"))
+        self.assertEqual(r.dec("0,75", "menit"), Decimal("0.75"))
+        self.assertEqual(r.dec("29.99", "harga USD"), Decimal("29.99"))
+        for teks in ("1.500", "1,500"):
+            with self.assertRaises(r.DataBuruk, msg=teks):
+                r.dec(teks, "video")
+
+    def test_paket_idr_teks_bertitik(self):
+        p = paket({"nama": "C", "harga_bulanan": "480.000", "mata_uang": "IDR", "satuan": "menit",
+                   "batas_bulanan": 5, "biaya_tambahan_per_satuan": "Rp60.000"})
+        self.assertEqual((p[0]["harga"], p[0]["tambahan"]), (Decimal(480000), Decimal(60000)))
+        p = paket({"nama": "U", "harga_bulanan": "29.99", "mata_uang": "USD", "batas_bulanan": 5})
+        self.assertEqual(p[0]["harga"], Decimal("29.99"))
+
+    def test_cli_kurs_dan_anggaran_bertitik(self):
+        f = os.path.join(AKAR, "examples", "contoh-paket.json")
+        a = subprocess.run([sys.executable, SCRIPT, "--paket", f, "--video", "12", "--menit", "0.75",
+                            "--kurs", "16.500", "--anggaran", "Rp1.000.000", "--json"], capture_output=True, text=True)
+        b = subprocess.run([sys.executable, SCRIPT, "--paket", f, "--video", "12", "--menit", "0.75",
+                            "--kurs", "16500", "--anggaran", "1000000", "--json"], capture_output=True, text=True)
+        self.assertEqual(a.returncode, 0, a.stderr)
+        self.assertEqual(a.stdout, b.stdout)
+        c = subprocess.run([sys.executable, SCRIPT, "--paket", f, "--video", "12", "--menit", "0.75",
+                            "--kurs", "16.5"], capture_output=True, text=True)
+        self.assertEqual(c.returncode, 2)
+        self.assertIn("meragukan", c.stderr)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

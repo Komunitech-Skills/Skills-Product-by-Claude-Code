@@ -25,7 +25,7 @@ from pathlib import Path
 
 APLIKASI = "komunitech-arsip-nota"
 SKEMA = 1
-VERSI = "1.0.1"
+VERSI = "1.0.5"
 
 KATEGORI = OrderedDict([
     ("bahan-baku", ("Bahan baku", ["bahan", "baku", "sembako", "grosir", "supplier", "pemasok",
@@ -233,7 +233,8 @@ def bulat(x):
 
 
 def parse_nominal(teks):
-    """'4,5 jt' | '4.500.000' | 'Rp4.500.000' | '150rb' | '25000' | '25000.50' -> (Decimal bulat, dibulatkan?)."""
+    """'4,5 jt' | '4.500.000' | 'Rp4.500.000' | '150rb' | '25000' | '25000.50' -> (Decimal bulat, dibulatkan?).
+    Bentuk ragu tanpa satuan ('1,5', '150,50', '38.5', '1,500') DITOLAK, tidak ditebak diam-diam."""
     if teks is None or not str(teks).strip():
         raise Gagal("Nominal kosong.")
     asli = str(teks).strip()
@@ -256,12 +257,23 @@ def parse_nominal(teks):
     sisa = sisa.strip()
     if sisa:
         s2 = sisa.replace(" ", "")
-        if re.fullmatch(r"\d{1,3}(\.\d{3})+(,\d+)?", s2):
+        saran = "Contoh: 150000, 150.000, 150rb, Rp1.250.000, 4,5jt."
+        if re.fullmatch(r"\d+", s2):
+            pass
+        elif re.fullmatch(r"[1-9]\d{0,2}(\.\d{3})+(,\d+)?", s2):      # 38.000 / 1.250.000 / 38.000,50
             s2 = s2.replace(".", "").replace(",", ".")
         elif re.fullmatch(r"\d+,\d{1,2}", s2) and cocok_satuan:
             s2 = s2.replace(",", ".")
-        else:
+        elif re.fullmatch(r"[1-9]\d{0,2}(,\d{3}){2,}", s2):              # 1,250,000 (gaya Inggris)
             s2 = s2.replace(",", "")
+        elif re.fullmatch(r"\d{4,}[.,]\d{1,2}", s2):                    # 10000.50 / 10000,50 (ada sen)
+            s2 = s2.replace(",", ".")
+        elif re.fullmatch(r"\d+[.,]\d+", s2):
+            # 1,5 / 150,50 / 38.5 / 1,500: nominal nota tidak mungkin Rp1,5; bisa maksud 1,5jt atau 1.500
+            raise Gagal("Nominal '%s' meragukan: pemisahnya bisa berarti ribuan atau desimal (sen). "
+                        "Tulis jelas, mis. 1.500 atau 1,5jt atau 150.050. %s" % (asli, saran))
+        else:
+            raise Gagal("Nominal '%s' tidak dikenali. %s" % (asli, saran))
         try:
             total += Decimal(s2)
         except InvalidOperation:

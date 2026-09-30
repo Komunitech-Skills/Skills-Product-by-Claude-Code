@@ -303,6 +303,16 @@ class UjiPpn(unittest.TestCase):
             with self.assertRaises(ValueError):
                 fb.baca_rupiah(teks)
 
+    def test_21b_baca_jumlah_format_indonesia(self):
+        # audit format angka 2026-09-30: '1.500' dulu terbaca 1,5 dan '38.000' terbaca 38 (diam-diam)
+        ok = {"3": 3, "1.500": 1500, "38.000": 38000, "1.250.000": 1250000, "1.500,5": Decimal("1500.5"),
+              "1,5": Decimal("1.5"), "2.5": Decimal("2.5"), "0.500": Decimal("0.5"), "0,25": Decimal("0.25")}
+        for teks, harap in ok.items():
+            self.assertEqual(fb.baca_jumlah(teks), Decimal(harap), teks)
+        for teks in ("1,500", "1,250,000", "abc", "", "1.5.0"):
+            with self.assertRaises(ValueError, msg=teks):
+                fb.baca_jumlah(teks)
+
 
 class UjiCsv(Dasar):
     def test_22_csv_pelanggan_template_resmi(self):
