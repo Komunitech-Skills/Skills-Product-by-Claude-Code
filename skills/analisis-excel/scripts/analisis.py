@@ -39,7 +39,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.14"
+VERSI = "1.0.15"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -3664,7 +3664,14 @@ def _nilai_csv(v, jenis, excel_id):
 def periksa_keluaran(args, path):
     """Pengaman file keluaran: tidak pernah menimpa file asli; file lain yang sudah ada hanya dengan --timpa."""
     asli = [args.file] + ([args.file_b] if getattr(args, "file_b", None) else [])
-    if any(os.path.realpath(path) == os.path.realpath(a) for a in asli):
+    def _sama(a):
+        if os.path.realpath(path) == os.path.realpath(a):
+            return True
+        try:  # hard link / beda kapital di sistem file tak peka huruf besar-kecil
+            return os.path.exists(path) and os.path.samefile(path, a)
+        except OSError:
+            return False
+    if any(_sama(a) for a in asli):
         raise InputError("File keluaran tidak boleh menimpa file asli.")
     if os.path.lexists(path) and not getattr(args, "timpa", False):
         raise InputError("File keluaran sudah ada: {}. Pakai nama lain atau tambahkan --timpa bila pengguna "
@@ -3799,6 +3806,7 @@ def _json_default(o):
 
 def tulis_csv_hasil(h, path, excel_id, args):
     if not h["tabel"]:
+        h["peringatan"].append("Tidak ada tabel hasil, jadi file {} TIDAK dibuat.".format(path))
         return
     t = h["tabel"][0]
     periksa_keluaran(args, path)

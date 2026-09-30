@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import os
 import unittest
 import zipfile
 from datetime import date
@@ -2515,6 +2516,36 @@ class UjiSingkatanFlag(unittest.TestCase):
             p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60, cwd=t)
             self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
             self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+
+
+class UjiHardLinkDanTabelKosong(unittest.TestCase):
+    """v1.0.15: hard link ke file asli tetap ditolak walau --timpa; --keluar tanpa tabel diberi peringatan."""
+
+    def test_hard_link_ke_asli_ditolak(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli = Path(t) / "data.csv"
+            isi = "Kategori,Jumlah\nA,1\nB,2\n"
+            asli.write_text(isi, encoding="utf-8")
+            link = Path(t) / "lain.csv"
+            try:
+                os.link(asli, link)
+            except (OSError, AttributeError):
+                self.skipTest("hard link tidak didukung")
+            code, out, err = jalankan("pivot", asli, "--grup", "Kategori", "--nilai", "Jumlah",
+                                      "--keluar", link, "--timpa")
+            self.assertNotEqual(code, 0, out + err)
+            self.assertIn("tidak boleh menimpa file asli", err)
+            self.assertEqual(asli.read_text(encoding="utf-8"), isi)
+
+    def test_daftar_keluar_diberi_peringatan(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli = Path(t) / "data.csv"
+            asli.write_text("Kategori,Jumlah\nA,1\n", encoding="utf-8")
+            baru = Path(t) / "baru.csv"
+            code, out, err = jalankan("daftar", asli, "--keluar", baru)
+            self.assertEqual(code, 0, out + err)
+            self.assertFalse(baru.exists())
+            self.assertIn("TIDAK dibuat", out)
 
 
 class UjiTimpaFileKeluaran(unittest.TestCase):
