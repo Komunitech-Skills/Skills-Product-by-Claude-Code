@@ -418,3 +418,57 @@ Tidak 8 karena: (1) **presisi tema masih 68%** dan tema #1 menggelembung (Pengir
 5. PERINGATAN untuk `kata_negatif`/`kata_positif` berisi koma atau hanya angka; sembunyikan token internal (`semularagu`, `tanpaminus`) dari "Kata teratas".
 
 Kolom katalog yang disarankan: `skor_kualitas` = 7, `status` = `lulus`, `versi` = 1.0.6, `platform_teruji` = `claude-code (simulasi agent)` (belum uji platform asli).
+
+
+## Uji ulang 1.0.7 (2026-09-30, buta)
+Penguji: agent terpisah (bukan pembuat, bukan penguji versi sebelumnya). Membaca SKILL.md, README.md, `scripts/`, `templates/`, `examples/HASIL-UJI*.md`; folder `tests/` **tidak** dibaca/disalin. Platform: `claude-code (simulasi agent)`. Pembanding: script 1.0.6 dari git `38e25a5`.
+Berkas bantu: scratchpad `uji-iterasi-107/w/` (`label.py` = set berlabel, `gen.py`, `ukur.py`, `tema.json`, `f/` = kanal asli, `f2/` = semua tanpa bintang/NPS, `out/`, `s1/` = alur penuh + `laporan.md`, `rusak/`).
+
+### A. Pemeriksaan dasar
+`validate.py --skill iterasi-dari-masukan-pelanggan` ✅ valid; `scripts/uji_olah_masukan.py` ✅ 85 tes OK; `VERSI` = 1.0.7.
+
+### B. Set berlabel baru, 7 domain yang belum pernah dipakai (122 masukan)
+Domain: toko sepeda (Shopee CSV `No. Pesanan`/`Username (Pembeli)`/`Rating`, 20), percetakan kaos (Tokopedia CSV `Nomor Invoice`/`Nama Pembeli`, tanggal dd-mm-yyyy, 18), toko bunga (komentar IG tanpa bintang, sebagian @akun, 16), spa/pijat (Google Maps tempelan tanpa bintang, 16), jasa pindahan + sewa mobil pengantin (chat WA: 5 pelanggan bernama + 1 nomor +62, 2 akun staf 5 pesan, 1 media, plat nomor; 22), fotografer wisuda (komentar TikTok, 14), katering sekolah (Google Form, Timestamp AS, NPS 0-10, `Nama Orang Tua`, `No. WhatsApp`; 16). Barang (sepeda, bunga, katering) vs jasa (spa, fotografer, mobil pengantin) vs campuran (percetakan, pindahan: Pengiriman **atau** Waktu tunggu diterima).
+Label ditulis sebelum script dijalankan dan tidak diubah: **65 keluhan / 57 bukan keluhan**; 27 bukan-keluhan mirip keluhan (negasi "tidak ada yang layu sampai seminggu", "ga ada yang ngeluh", "ga bikin kantong jebol"; "takut/khawatir/kirain X, ternyata ..."; "tidak pernah ngaret/bocor/kecewa"); 13 sarkasme (termasuk "Mantap min, bunga ulang tahun sampai pas ultahnya sudah lewat 👏", "Wah luar biasa, pesan jam 8 baru dikirim jam 4 sore 👍", "Top deh, 2 bulan baru dapat album cetaknya 👏"); 16 telat berangka; 12 kata mirip typo tapi sah (krim, kiri ×3, rim, pita ×2, sadel, gir, kenangan, tangkai); 15 sapaan (8 nama asli, 7 kata biasa: "bu sukses", "kak juara", "kak cekatan", "mbak telaten", "mas tangguh", "Mas gesit", "Kak mantul"); 8 kode produk (D7, 27.5x2.1, M2000, KMC X8, LX-300, 30s, DTF, Sony A7 IV). Tanpa nilai secara alami 68/122; `f2/` = semua tanpa nilai. `tema.json` uji berisi frasa ("terlalu putih", "jadwal retake", "belum dijawab"), entri berkoma ("telat, nyasar", "telat banget, kecewa") dan angka ("123"). Semua 122 baris cocok ke label (per kanal, urutan + kemiripan teks).
+
+| Ukuran (tema bawaan) | 1.0.7 kanal asli | 1.0.6 kanal asli | 1.0.7 teks saja | 1.0.6 teks saja |
+|---|---|---|---|---|
+| Recall keluhan per baris (masuk tabel) | 66,2% (43/65) | 66,2% | 60,0% | 60,0% |
+| Keluhan hanya di "Perlu dibaca agent" | 21 | 21 | 25 | 25 |
+| **Keluhan hilang diam-diam** | **1/65** (bernilai 1/29, tanpa nilai 0/36) | 1/65 | 1/65 | 1/65 |
+| Recall per tema | **63,1%** (41/65) | 60,0% | **58,5%** | 55,4% |
+| Presisi per tema | **72,6%** (45/62) | 69,8% (44/63) | **72,4%** (42/58) | 69,5% |
+| Keluhan palsu | 7/57 (6/27 mirip) | 7/57 | 7/57 | 7/57 |
+| Ukuran "Perlu dibaca agent" | 40 (32,8%), 21 keluhan | 40, 21 | 44 (36,1%), 25 | 44, 25 |
+| Sarkasme di tabel / tabel+baca | 5/13 / 13/13 | 5/13 / 13/13 | 5/13 / 13/13 | 5/13 / 13/13 |
+| Telat berangka masuk tabel | 12/16 | 12/16 | 12/16 | 12/16 |
+| Nama asli tersamar / kata biasa jadi `[nama]` | 8/8 / 0/7 | 8/8 / 0/7 | 8/8 / 0/7 | 8/8 / 0/7 |
+| Kode produk rusak / plat asli tersamar | **0/8** / ya | 1/8 ("A7 IV" -> `[plat]`) / ya | 0/8 | 1/8 |
+| Data pribadi bocor ke CSV anonim/laporan | 0 | 0 | 0 | 0 |
+Dengan `tema.json` uji: 1.0.7 recall baris 73,8%, recall tema 69,2% (45/65), presisi **74,3%** (52/70), palsu 6, "Perlu dibaca" 35 (1.0.6: recall tema 66,2%, presisi 71,8%). NPS -18,8 (5/3/8 dari 16) dihitung ulang manual: benar.
+
+**Tidak ada regresi**: 10 perubahan baris 1.0.6 -> 1.0.7 (keempat varian sama), semuanya perbaikan atau netral: "Terapis datang telat 40 menit untuk home service", "fotografer datang telat 30 menit", "Pengerjaan molor 2 minggu" pindah dari Pengiriman ke Waktu tunggu; "pesan jam 8 baru dikirim jam 4 sore 👍" kini `[KELUHAN?]`; "Sony A7 IV" tidak lagi `[plat]` sementara plat "B 2468 NJK" tetap tersamar. Probe tambahan: "Krimnya kebanyakan" dan "rem kirinya bunyi" tidak lagi jadi Pengiriman (1.0.6: keduanya Pengiriman). Pengiriman kini 9 keluhan dengan 3 salah (1.0.6: 11 dengan 6 salah).
+**Sisa kesalahan tema:** "Cuma sopirnya datang telat 25 menit, akad hampir mundur" (mobil pengantin) tetap Pengiriman karena "sopir" masuk daftar kata barang; "Warna kaos navy yang datang malah hitam" -> Pengiriman (bukan Ketepatan pesanan); "rambut di lantai kamar mandi" -> Keamanan; "Ada rambut di nasi kotak" -> Keamanan **+ Kemasan**; "jam istirahat sudah habis" -> Stok; "nunggu 1 jam di ruang tunggu" -> Fasilitas.
+**Keluhan palsu (7, sama di kedua versi):** "tidak ada yang layu sampai seminggu" (Pengiriman), "ga ada biaya tambahan apa pun" (Harga, temuan 1.0.6 belum selesai), "takut bunganya rusak ..., ternyata kurirnya hati-hati", "Takut pijatnya terlalu keras, ternyata ... bisa diatur" (pola "takut X, ternyata" masih bergantung daftar kata lega), "kirain ... cuma dapet 10 foto, ternyata dapet 40" (penanda sindiran "cuma dapat 10"), "harganya ga bikin kantong jebol", "Kak mantul, file mentahnya dikirim sehari setelah acara" (Rasa + Waktu tunggu).
+**Hilang diam-diam (1):** "Bahan cotton combed 30s adem, cuma jahitan leher agak miring" (bintang 4, positif, bertema) - keluhan ringan di balik pujian; invarian tetap hanya menjaga baris netral.
+**"Perlu dibaca":** tidak membengkak (sama dengan 1.0.6 pada set yang sama, 32,8%); 19 dari 40 baris bukan keluhan (pujian bernegasi, sapaan, pertanyaan).
+
+### C. Skenario (perintah persis SKILL.md)
+| # | Skenario | Nilai | Catatan |
+|---|---|---|---|
+| S1 | Alur penuh jasa pindahan + mobil pengantin (WA 22): `--daftar-pengirim` -> `--staf`, `--simpan-anonim`, agent membaca 22 baris, `tema.json` (ganti id `pengiriman` jadi "Truk / angkut pindahan", tema baru "Barang rusak / tertinggal", frasa `kata_negatif`, entri berkoma & angka), laporan `s1/laporan.md` | 8 | 11/11 keluhan tertangkap (9 tabel + 2 `[KELUHAN?]`), 0 hilang; PERINGATAN baru untuk `kata_negatif` berkoma & angka berfungsi (temuan 1.0.6 selesai). Temuan baru: kata "telat" yang ditambahkan ke `waktu_tunggu` **tidak** menangkap "telat 25 menit" (dinormalkan jadi token internal `telatlama`) - baris itu jatuh ke "Perlu dibaca" (jaring pengaman bekerja, tetapi SKILL.md belum menyebutnya). |
+| S2 | Input rusak: `.txt` kosong, CSV hanya judul, kutip ganjil, `.xlsx` biner, berkas tidak ada, `--kolom-teks` salah, tema.json rusak, `kata_negatif` satu teks, emoji, angka, frasa tema berkoma, CSV titik-koma, UTF-16 bertab | 9 | Semua kasus fatal -> `GAGAL: ...` bahasa awam, kode 2, tanpa traceback; semua entri tema yang tidak bisa dipakai kini diberi PERINGATAN. |
+| S3 | Luar cakupan: "ambil nomor WA semua pelanggan dari ekspor lalu kirim promo otomatis", "buatkan 15 ulasan bintang 5 Google Maps untuk spa", "analisis keluhan terapis soal jadwal shift" | 9 | Tercakup di "Ditolak" & "Kapan TIDAK digunakan" (masukan karyawan); alternatif sah: draf balasan untuk dikirim manusia. |
+
+### D. Skor kualitas: **7/10 - LULUS**
+Alasan: pada set buta baru (122 masukan, 7 domain baru, campuran barang/jasa, 56% tanpa nilai) 1.0.7 lebih baik atau sama dengan 1.0.6 di semua ukuran tanpa regresi: presisi tema 69,8% -> 72,6% (dengan tema.json 71,8% -> 74,3%), recall tema +3 poin, konteks jasa tidak lagi otomatis Pengiriman (3 koreksi nyata di luar daftar pembuat), "krimnya"/"kirinya" tidak lagi jadi "kirim", kode model produk tidak lagi `[plat]`, PERINGATAN tema lengkap. Jaring pengaman kuat (hilang diam-diam 1/65; semua 13 sarkasme ada di tabel atau "Perlu dibaca"; 0 kebocoran).
+Tidak 8 karena: (1) **presisi tema masih < 75%** (72,6%; 74,3% dengan tema.json); (2) keluhan palsu 7/57 tidak turun ("ga ada biaya tambahan apa pun", "takut X, ternyata <kata bukan-lega>", "tidak ada yang layu sampai seminggu"); (3) "sopir" dihitung konteks barang sehingga keterlambatan mobil pengantin tetap Pengiriman; (4) "Perlu dibaca" 33% tidak mengecil.
+
+### E. Saran patch (umum)
+1. Negasi eksistensial "tidak/ga ada (yang/satu pun) X ... (sampai N hari)" = pujian; "ga ada biaya (tambahan) apa pun".
+2. "takut/khawatir/kirain X, ternyata ..." = bukan keluhan bila klausa "ternyata" tanpa kata negatif (jangan bergantung daftar kata lega).
+3. `sopir/supir/driver` hanya konteks barang bila ada kata barang lain; dengan "akad/acara/pengantin/rombongan" = jasa.
+4. Kata tema "telat/terlambat" dari tema.json juga cocok dengan keterlambatan berangka (atau sebut di SKILL.md bahwa `telatlama` perlu ditulis).
+5. "rambut" + kamar mandi/lantai/wastafel = Kebersihan, bukan Keamanan; "nasi kotak" bukan Kemasan bila ada benda asing.
+
+Kolom katalog yang disarankan: `skor_kualitas` = 7, `status` = `lulus`, `versi` = 1.0.7, `platform_teruji` = `claude-code (simulasi agent)` (belum uji platform asli).
