@@ -81,13 +81,6 @@ Kenapa? Agar kalau kunci bocor, kerusakannya terbatas, riwayat perubahan di Odoo
 - Odoo Online/Enterprise menghitung biaya per pengguna. Bila tidak ingin menambah pengguna, kunci API boleh dibuat dari akun Anda sendiri, tetapi **jangan akun Administrator**, pastikan hak Penjualan Anda *All Documents*, dan simpan kunci hanya di komputer Anda.
 - `cek` menampilkan "Cakupan data" (SEMUA / HANYA milik pengguna API ini) dan CATATAN "RISIKO ... ADMINISTRATOR" bila kunci milik admin. Aturan akses buatan sendiri (record rule khusus) atau pembatasan multi-perusahaan tidak terdeteksi — cocokkan angka pertama kali dengan layar Odoo.
 
----|---|---|
-| **Bot Laporan** | Chat harian, laporan terjadwal | Penjualan: *User: All Documents* (atau hak baca); Faktur/Akuntansi: hak **baca** (*Read-only* bila tersedia, selain itu *Billing*); Inventori: *User*. **Bukan** Administrator/Pengaturan |
-| **Bot Penjualan** (opsional) | Membuat draf penawaran | Penjualan: *User: Own Documents* atau *All Documents*. Tanpa hak Pengaturan |
-
-- Nama hak akses berbeda-beda antar versi (Odoo 19 memakai "peran"). Prinsipnya: **bisa melihat** Penjualan, Faktur, Inventori; **tidak** berhak Administrator.
-- Odoo Online/Enterprise menghitung biaya per pengguna. Bila tidak ingin menambah pengguna, kunci API boleh dibuat dari akun Anda sendiri, tetapi **jangan akun Administrator** dan simpan hanya di komputer Anda.
-- `cek` akan menulis CATATAN "RISIKO ... ADMINISTRATOR" bila kunci milik admin.
 
 ---
 
