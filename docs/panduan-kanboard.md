@@ -78,7 +78,7 @@ Unduh **hanya** dari sumber resmi: `github.com/kanboard/kanboard` (halaman Relea
 **Peran aplikasi Kanboard** (Pengaturan → Pengguna):
 | Peran | Bisa apa (terkait skill) |
 |---|---|
-| Administrator | Semua. Jangan pakai akun ini untuk AI sehari-hari |
+| Administrator | Semua lewat layar. Lewat token pribadi, skill tetap hanya melihat papan tempat admin jadi **anggota**. Jangan pakai akun ini untuk AI sehari-hari |
 | **Manajer** (*Manager*) | Membuat **papan tim**, mengatur papan miliknya — **disarankan untuk akun AI/pemilik** |
 | Pengguna (*User*) | Hanya membuat **papan pribadi** (`buat-papan --pribadi`) dan bekerja di papan tempat ia jadi anggota |
 
