@@ -316,6 +316,7 @@ def buat_handler(negara):
 def jalankan(port=0, mode="normal", tz="UTC"):
     negara = Negara(mode, tz)
     srv = ThreadingHTTPServer(("127.0.0.1", port), buat_handler(negara))
+    srv.handle_error = lambda *a: None  # klien memutus koneksi (uji timeout) bukan galat uji
     th = threading.Thread(target=srv.serve_forever, daemon=True)
     th.start()
     return srv, negara
