@@ -20,6 +20,8 @@ hanya status ya/tidak.
       berjalan: ☐ dipasang sendiri ☐ jasa setup Komunitech.
 - [ ] **[PILIH SATU]** `frappe-books-usaha` ATAU `dolibarr-usaha` (bila memakai): ☐ Frappe Books
       ☐ Dolibarr ☐ tidak dipakai. Aplikasinya sudah terpasang: ☐ sendiri ☐ jasa setup.
+- [ ] (Opsional, VIP) skill tambahan: `odoo-usaha` (bila memakai Odoo; perlu dipasang, jasa setup),
+      `kpi-tim`, `peringatan-dini-operasional`. Laporan hanya ke pimpinan, skor per orang tidak ke grup.
 - [ ] Data awal stok dan piutang sudah diisi (agar laporan tidak kosong).
 - [ ] `karyawan-ai-mulai` dijalankan sekali, ada 1 hasil nyata.
 - [ ] `cek-privasi-openclaw` dijalankan (termasuk ringkasan UU PDP untuk data karyawan/pelanggan).
