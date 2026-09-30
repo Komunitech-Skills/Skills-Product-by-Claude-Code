@@ -5,6 +5,8 @@ description: Membuat balasan chat customer service (CS) untuk WhatsApp dan chat 
 
 # Balas Chat CS
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membuat admin toko bisa membalas chat pelanggan dengan cepat, ramah, konsisten, dan tidak salah janji — baik membalas satu chat yang sedang masuk maupun menyiapkan **bank jawaban** (quick reply) untuk dipakai berulang.
 

@@ -1340,7 +1340,7 @@ def _cakupan_negasi(tok, kata_pos, kata_neg, neg_kustom=frozenset()):
 
 
 def skor_klausa(klausa, kata_pos, kata_neg, tanya=False, neg_kustom=frozenset()):
-    tok = re.findall(r"[a-z0-9\[\]]+", klausa)
+    tok = re.findall(r"[a-z0-9_\[\]]+", klausa)
     tetap = _cakupan_negasi(tok, kata_pos, kata_neg, neg_kustom)   # v1.0.5: indeks -> nilai yang sudah pasti
     skor, i = 0, 0
     terpakai = -1   # indeks kata terakhir yang sudah "dimakan" negasi ("belum sampai" -> kata sesudahnya tidak ikut dinegasi)
@@ -1417,27 +1417,72 @@ def skor_klausa(klausa, kata_pos, kata_neg, tanya=False, neg_kustom=frozenset())
     return skor
 
 
-def _pola_kata(kata):
-    """Kata tema.json -> regex. Kata ikut dinormalkan seperti teks ('dibales' -> 'dibalas', 'fast respon' -> 'responscepat')."""
+RE_PEMISAH_KLAUSA = re.compile(r"[.!?;,]|\s-\s|\b(?:tapi|namun|cuma|hanya\s+saja|sayang(?:nya)?|sedangkan|padahal|cuman|tetapi)\b")
+
+
+def _pola_kata(kata, konteks="tema.json", peringatan=None):
+    """Kata/frasa tema.json -> regex. Kata ikut dinormalkan seperti teks ('dibales' -> 'dibalas', 'fast respon' -> 'responscepat').
+    v1.0.6: entri yang tidak mungkin cocok (bukan teks, tanpa huruf/angka, berisi pemisah klausa) diberi PERINGATAN, tidak diam-diam."""
     bentuk = []
     for k in kata:
         if not isinstance(k, str) or not k.strip():
+            if peringatan is not None:
+                peringatan.append("%s: entri %r bukan kata/teks - diabaikan. Tulis sebagai \"kata\" dalam tanda kutip." % (konteks, k))
             continue
-        for v in {k.lower().strip(), normalkan(k).strip()}:
+        n = normalkan(k).strip()
+        if not re.search(r"[a-z0-9]", n):
+            if peringatan is not None:
+                peringatan.append("%s: \"%s\" tidak berisi huruf/angka (mis. emoji/tanda baca) - tidak bisa dicocokkan, diabaikan. "
+                                  "Tulis kata biasa." % (konteks, k))
+            continue
+        if peringatan is not None and RE_PEMISAH_KLAUSA.search(n):
+            peringatan.append("%s: frasa \"%s\" berisi pemisah kalimat (koma/titik/'tapi'/'padahal'...) - teks dipecah di situ, jadi frasa "
+                              "ini tidak akan pernah cocok. Pecah menjadi dua kata/frasa terpisah." % (konteks, k))
+        for v in {k.lower().strip(), n}:
             if v:
                 bentuk.append(r"\s+".join(re.escape(b) for b in v.split()))
     return "|".join(sorted(set(bentuk), key=len, reverse=True))
 
 
-def _kata_sentimen(daftar):
-    hasil = set()
-    for k in daftar or []:
-        if isinstance(k, str) and k.strip():
-            hasil.add(k.lower().strip())
-            n = normalkan(k).strip()
-            if n and " " not in n:
-                hasil.add(n)
-    return hasil
+def _kata_sentimen(daftar, konteks="kata_negatif", peringatan=None):
+    """v1.0.6: kembalikan (kata tunggal, {token_frasa: regex}). Frasa ('belum kelar', 'pelan banget') dicocokkan pada teks yang SUDAH
+    dinormalkan lalu digabung menjadi satu token ('belum_kelar') sebelum sentimen dihitung. Entri yang tidak bisa dipakai -> PERINGATAN."""
+    peringatan = [] if peringatan is None else peringatan
+    hasil, frasa = set(), {}
+    if daftar is None:
+        return hasil, frasa
+    if isinstance(daftar, str):
+        peringatan.append("tema.json: %s harus daftar [\"...\", \"...\"], bukan satu teks - dibaca sebagai satu entri." % konteks)
+        daftar = [daftar]
+    elif not isinstance(daftar, list):
+        peringatan.append("tema.json: %s harus daftar [\"...\"] - diabaikan." % konteks)
+        return hasil, frasa
+    for k in daftar:
+        if not isinstance(k, str) or not k.strip():
+            peringatan.append("tema.json: %s berisi entri %r yang bukan kata - diabaikan." % (konteks, k))
+            continue
+        kata = re.findall(r"[a-z0-9]+", normalkan(k))
+        if not kata:
+            peringatan.append("tema.json: %s \"%s\" tidak berisi huruf/angka (mis. emoji) - tidak bisa dipakai, diabaikan. Tulis kata biasa."
+                              % (konteks, k))
+            continue
+        if len(kata) == 1:
+            hasil.add(kata[0])
+            if re.fullmatch(r"[a-z0-9]+", k.lower().strip()):
+                hasil.add(k.lower().strip())
+            continue
+        token = "_".join(kata)
+        frasa[token] = re.compile(r"(?<![a-z0-9_])" + r"(?:\s+[^\w\s])*\s+".join(re.escape(x) for x in kata) + r"(?![a-z0-9_])")
+        hasil.add(token)
+    return hasil, frasa
+
+
+def gabung_frasa(norm, frasa=None):
+    """v1.0.6: frasa kata_positif/kata_negatif -> satu token ('belum kelar' -> 'belum_kelar'); frasa terpanjang lebih dulu."""
+    frasa = buat_tema.frasa if frasa is None else frasa
+    for token in sorted(frasa, key=len, reverse=True):
+        norm = frasa[token].sub(token, norm)
+    return norm
 
 
 def buat_tema(konfigurasi):
@@ -1445,6 +1490,7 @@ def buat_tema(konfigurasi):
     tema = [dict(id=i, label=l, dampak=d, pola=re.compile(AFIKS[0] + p + AFIKS[1])) for i, l, d, p in TEMA_BAWAAN]
     kata_pos, kata_neg = set(POS), set(NEG)
     neg_kustom = set()
+    frasa = {}
     peringatan = []
     buat_tema.peringatan = peringatan
     if konfigurasi:
@@ -1464,8 +1510,10 @@ def buat_tema(konfigurasi):
             if not isinstance(kata, list):
                 raise Gagal("tema.json: tambah_kata[\"%s\"] harus daftar kata, mis. [\"dibales\", \"fast respon\"]." % tid)
             for t in tema:
-                if t["id"] == tid and _pola_kata(kata):
-                    t["pola"] = re.compile(t["pola"].pattern[:-len(AFIKS[1])] + "|" + _pola_kata(kata) + AFIKS[1], re.I)
+                if t["id"] == tid:
+                    pola = _pola_kata(kata, "tema.json tambah_kata[\"%s\"]" % tid, peringatan)
+                    if pola:
+                        t["pola"] = re.compile(t["pola"].pattern[:-len(AFIKS[1])] + "|" + pola + AFIKS[1], re.I)
                     break
             else:
                 raise Gagal("tema.json: tambah_kata memakai id \"%s\" yang tidak ada. Id bawaan: %s." % (tid, ", ".join(t[0] for t in TEMA_BAWAAN)))
@@ -1475,8 +1523,9 @@ def buat_tema(konfigurasi):
         for t in daftar:
             if not isinstance(t, dict) or not t.get("id") or not isinstance(t.get("kata", []), list):
                 raise Gagal("tema.json: setiap tema perlu \"id\" dan \"kata\" (daftar). Contoh: templates/tema-contoh.json.")
-            pola = _pola_kata(t.get("kata", []))
+            pola = _pola_kata(t.get("kata", []), "tema.json tema \"%s\"" % t["id"], peringatan)
             if not pola:
+                peringatan.append("tema.json: tema \"%s\" tidak punya kata yang bisa dipakai - tema ini diabaikan." % t["id"])
                 continue
             try:
                 dampak = int(t.get("dampak", 3))
@@ -1485,16 +1534,22 @@ def buat_tema(konfigurasi):
             baru = dict(id=str(t["id"]), label=t.get("label", t["id"]), dampak=max(1, min(5, dampak)),
                         pola=re.compile(AFIKS[0] + "(?:" + pola + ")" + AFIKS[1], re.I))
             tema = [x for x in tema if x["id"] != baru["id"]] + [baru]
-        kata_pos |= _kata_sentimen(konfigurasi.get("kata_positif"))
-        neg_kustom = _kata_sentimen(konfigurasi.get("kata_negatif"))
+        pos_kustom, frasa_pos = _kata_sentimen(konfigurasi.get("kata_positif"), "kata_positif", peringatan)
+        neg_kustom, frasa_neg = _kata_sentimen(konfigurasi.get("kata_negatif"), "kata_negatif", peringatan)
+        kata_pos |= pos_kustom
         kata_neg |= neg_kustom
         kata_pos -= neg_kustom
+        frasa = dict(frasa_pos, **frasa_neg)
     buat_tema.neg_kustom = frozenset(neg_kustom)
+    buat_tema.frasa = frasa
+    buat_tema.frasa_kata = frozenset(w for t in frasa for w in t.split("_") if w.isalpha())
     return tema, kata_pos, kata_neg
 
 
 buat_tema.neg_kustom = frozenset()
 buat_tema.peringatan = []
+buat_tema.frasa = {}
+buat_tema.frasa_kata = frozenset()
 
 
 _CACHE_TYPO = {}
@@ -1504,7 +1559,7 @@ _TERAKHIR = {}   # hasil normalisasi analisis_item terakhir (dipakai ulang oleh 
 def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan", tema_kolom=()):
     """Kembalikan (sentimen_pesan, {tema_id: set(jenis)}). bintang = setara 1-5 (lihat nilai_ke_bintang) atau None."""
     neg_kustom = buat_tema.neg_kustom
-    vocab_tambah = frozenset((kata_pos | kata_neg) - VOCAB)
+    vocab_tambah = frozenset(({w for w in kata_pos | kata_neg if "_" not in w} | buat_tema.frasa_kata) - VOCAB)
     if vocab_tambah:
         if _CACHE_TYPO.get("kunci") != vocab_tambah:
             vocab = VOCAB | vocab_tambah
@@ -1513,7 +1568,7 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
     else:
         vocab = peta = None
     norm = normalkan(teks_anonim, vocab, peta)
-    klausa = pecah_klausa(norm)
+    klausa = pecah_klausa(gabung_frasa(norm) if buat_tema.frasa else norm)   # v1.0.6 frasa kata_positif/kata_negatif = satu token
     _TERAKHIR.clear()
     _TERAKHIR.update(teks=teks_anonim, norm=norm, skor=[])
     total = 0
@@ -1524,6 +1579,7 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
         restock_keluhan = _restock_keluhan(teks_anonim, norm, bintang)
     for k, tanya in klausa:
         s = skor_klausa(k, kata_pos, kata_neg, tanya, neg_kustom)
+        k = k.replace("_", " ")   # tema & penanda lain dicocokkan pada kata aslinya (frasa tidak menyembunyikan kata tema)
         _TERAKHIR["skor"].append(s)
         optatif = bool(s > 0 and RE_OPTATIF.search(k) and set(re.findall(r"[a-z]+", k)) & NEGATOR)
         if optatif:
@@ -1658,7 +1714,8 @@ def nada_keluhan(teks_anonim, bintang, kata_pos=None, kata_neg=None):
         kata_pos = POS if kata_pos is None else kata_pos
         kata_neg = NEG if kata_neg is None else kata_neg
         norm = normalkan(teks_anonim)
-        skor = [skor_klausa(k, kata_pos, kata_neg, tanya) for k, tanya in pecah_klausa(norm)]
+        skor = [skor_klausa(k, kata_pos, kata_neg, tanya, buat_tema.neg_kustom)
+                for k, tanya in pecah_klausa(gabung_frasa(norm) if buat_tema.frasa else norm)]
     if any(x < 0 for x in skor):
         return True
     if sindiran_atau_tagih(teks_anonim, norm):
@@ -1675,9 +1732,18 @@ def perlu_dibaca(i, kata_pos=None, kata_neg=None):
     if any("keluhan" in j for j in i["tema"].values()):
         return None
     nada = i.get("nada_keluhan")
+    b = i.get("bintang_setara", i.get("bintang"))
     if nada is None:
-        nada = nada_keluhan(i["teks"], i.get("bintang_setara", i.get("bintang")), kata_pos, kata_neg)
-    return "keluhan tanpa tabel" if nada else None
+        nada = nada_keluhan(i["teks"], b, kata_pos, kata_neg)
+    if nada:
+        return "keluhan tanpa tabel"
+    # v1.0.6 invarian: tema yang hanya "netral" (tanpa keluhan/pujian/saran) + tanpa nilai tinggi = nada belum terbaca. Masukan seperti ini
+    # dulu hanya tertangkap sebagai "tanpa tema"; menambah kata tema TIDAK BOLEH mengeluarkannya dari daftar baca.
+    jenis = set().union(*i["tema"].values())
+    if (jenis <= {"netral"} and i.get("peran") != "saran" and (b is None or b == 3) and i.get("sentimen") != "positif"
+            and not re.search(r"\?[\s\W]*$", i["teks"])):
+        return "tema tanpa nada"
+    return None
 
 
 def potong(t, n=140):
@@ -1897,6 +1963,7 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
         "perlu_dibaca": {"tidak_terklasifikasi": len(daftar_baca),
                          "tanpa_tema": sum(1 for d in daftar_baca if d["alasan"] == "tanpa tema"),
                          "keluhan_tanpa_tabel": sum(1 for d in daftar_baca if d["alasan"] == "keluhan tanpa tabel"),
+                         "tema_tanpa_nada": sum(1 for d in daftar_baca if d["alasan"] == "tema tanpa nada"),
                          "bernada_keluhan": sum(1 for d in daftar_baca if d["nada_keluhan"]),
                          "daftar": daftar_baca},
     }
@@ -1966,9 +2033,11 @@ def cetak_teks(r, opsi, maks_tanpa_tema=20):
     b = r["belum_terklasifikasi"]
     pd = r.get("perlu_dibaca") or {"tidak_terklasifikasi": 0, "tanpa_tema": 0, "keluhan_tanpa_tabel": 0, "bernada_keluhan": 0, "daftar": []}
     out.append("\n## Perlu dibaca agent\n")
-    out.append("Tidak terklasifikasi: %d masukan (%d tanpa tema + %d bernada keluhan tetapi tidak masuk tabel keluhan). "
+    ttn = pd.get("tema_tanpa_nada", 0)
+    out.append("Tidak terklasifikasi: %d masukan (%d tanpa tema + %d bernada keluhan tetapi tidak masuk tabel keluhan%s). "
                "Di antaranya %d bernada keluhan - WAJIB dibaca & dimasukkan ke tema yang tepat (lewat tema.json atau koreksi bertanda)." % (
-                   pd["tidak_terklasifikasi"], pd["tanpa_tema"], pd["keluhan_tanpa_tabel"], pd["bernada_keluhan"]))
+                   pd["tidak_terklasifikasi"], pd["tanpa_tema"], pd["keluhan_tanpa_tabel"],
+                   (" + %d bertema tetapi nadanya belum terbaca" % ttn) if ttn else "", pd["bernada_keluhan"]))
     out.append("Tanpa tema terdeteksi: %d (%.1f%%). Kata teratas: %s" % (b["jumlah"], b["persen"], ", ".join(b["kata_teratas"]) or "-"))
     keluhan = [d for d in pd["daftar"] if d["nada_keluhan"]]
     lain = [d for d in pd["daftar"] if not d["nada_keluhan"]]
@@ -1979,8 +2048,8 @@ def cetak_teks(r, opsi, maks_tanpa_tema=20):
                 "%s (%s)" % (k, "/".join(v)) for k, v in sorted(d["tema"].items()))
             out.append("- [KELUHAN? %s] \"%s\"" % (ket, d["teks"]))
     if lain:
-        out.append("\nTanpa tema, nada netral/positif:")
-        out += ["- \"%s\"" % d["teks"] for d in lain[:maks_tanpa_tema]]
+        out.append("\nTanpa tema / bertema tanpa nada (netral) - bisa keluhan tersirat, baca:")
+        out += ["- %s\"%s\"" % ("[tema: %s] " % ", ".join(sorted(d["tema"])) if d["tema"] else "", d["teks"]) for d in lain[:maks_tanpa_tema]]
         if len(lain) > maks_tanpa_tema:
             out.append("- ... +%d lainnya: lihat --format json atau CSV --simpan-anonim (kolom perlu_dibaca)" % (len(lain) - maks_tanpa_tema))
     out.append("\nCatatan: hasil ini SARINGAN PERTAMA dari kata kunci. Baca kutipan tiap tema & koreksi lewat tema.json. "
