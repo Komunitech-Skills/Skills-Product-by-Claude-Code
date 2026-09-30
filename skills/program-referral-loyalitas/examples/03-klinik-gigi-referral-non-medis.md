@@ -1,72 +1,55 @@
-# Contoh 03 - Klinik gigi: referral yang aman (usaha FIKTIF)
+# Contoh 03 - Klinik gigi: program TANPA imbalan untuk merujuk (usaha FIKTIF)
 
-> Contoh buatan Komunitech dengan usaha fiktif "Klinik Gigi Sehat Dua". Angka = keluaran nyata script; margin 60% dan frekuensi kunjungan adalah asumsi. Bukan nasihat hukum atau etika profesi.
+> Contoh buatan Komunitech dengan usaha fiktif "Klinik Gigi Sehat Dua". Direvisi di v1.0.1 (sebelumnya menyarankan hadiah produk non-medis untuk pengajak; itu dihapus karena berisiko melanggar aturan iklan pelayanan kesehatan). **PERLU REVIEW tenaga medis/hukum.** Bukan nasihat hukum atau etika profesi.
 
 **Permintaan pengguna:** "Klinik gigi kami mau bikin program ajak teman. Kepikiran diskon 20% pembersihan karang gigi untuk pasien yang ajak teman, dan simpan nomor teman-temannya biar kami WA satu-satu. Rata-rata layanan Rp350.000, untung kotor 60%, pasien datang tiap 4 bulan."
 
 ## Yang skill lakukan
-1. **Menahan dua hal** dan menjelaskan dengan sopan:
-   - Diskon/insentif untuk **tindakan medis** berisiko melanggar aturan profesi dan etika iklan layanan kesehatan; tanyakan dulu ke organisasi profesi atau dinas kesehatan. Skill menyarankan hadiah **non-medis** (produk perawatan umum, paket edukasi keluarga).
-   - **Mengumpulkan nomor teman** tanpa persetujuan teman itu bertentangan dengan prinsip UU PDP (data pribadi pihak ketiga). Solusi: pasien membagikan kartu/teks sendiri; teman yang menghubungi klinik lebih dulu.
-2. **Menghitung** program alternatif: hadiah produk perawatan bermodal Rp20.000 untuk pengajak dan Rp20.000 untuk teman + Rp3.000 kartu/kemasan.
-
-## Perhitungan (script)
-```
-$ python3 scripts/hitung_referral.py biaya --aov 350rb --margin 60 --hadiah-pemberi 20rb --hadiah-teman 20rb --biaya-lain 3rb
-BIAYA PER REFERRAL BERHASIL (dibayar hanya bila teman benar-benar membeli)
-Nilai pesanan pertama rata-rata : Rp350.000  |  margin kotor 60%
-Laba kotor pesanan pertama      : Rp210.000 (sebelum hadiah)
-Hadiah pemberi (perujuk)        : Rp20.000
-Hadiah/diskon teman             : Rp20.000
-Biaya lain per referral         : Rp3.000
-BIAYA PER REFERRAL              : Rp43.000 = 12,29% dari nilai pesanan, 20,48% dari laba kotor
-Laba pesanan pertama setelah hadiah: Rp167.000
-Hadiah berupa produk sendiri: isi dengan modal (HPP) produk, bukan harga jual.
-(kode keluar 0)
-```
-
-```
-$ python3 scripts/hitung_referral.py impas --aov 350rb --margin 60 --hadiah-pemberi 20rb --hadiah-teman 20rb --biaya-lain 3rb --frekuensi-bulan 0,25 --umur-bulan 24
-TITIK IMPAS HADIAH REFERRAL
-Laba kotor per pesanan          : Rp210.000 (nilai pesanan Rp350.000, margin 60%)
-Biaya per referral              : Rp43.000 (pemberi Rp20.000 + teman Rp20.000 + lain Rp3.000)
-Balik modal setelah             : pesanan ke-1 milik teman (langsung di pesanan pertama)
-Hadiah maks agar impas di pesanan pertama: Rp210.000 (total pemberi + teman + lain)
-Perkiraan laba kotor seumur pelanggan: Rp1.260.000 (6 pesanan; asumsi 0,25x per bulan selama 24 bulan)
-Batas hadiah aman (30% dari laba seumur pelanggan): Rp378.000 total per referral
-Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): Rp355.000
-STATUS: AMAN
-Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
-(kode keluar 0)
-```
-
+1. **Mengenali fasilitas kesehatan** (klinik gigi, ada tindakan medis oleh dokter gigi), sehingga pola referral berhadiah **tidak dipakai**.
+2. **Menahan tiga hal** dan menjelaskan dengan sopan:
+   - **Diskon 20% untuk pasien yang mengajak teman** = promosi penjualan berupa potongan harga/imbalan atas pelayanan kesehatan. Permenkes 1787/2010 tentang Iklan dan Publikasi Pelayanan Kesehatan Pasal 5 melarang iklan/publikasi promosi penjualan dalam bentuk apa pun (diskon, imbalan, MLM); Kode Etik Kedokteran Gigi Indonesia (PDGI) juga melarang dokter gigi memberi diskon/janji agar pasien datang.
+   - **Hadiah "non-medis" untuk pengajak** juga tidak disarankan: frasa "dalam bentuk apa pun" membuatnya berisiko, jadi skill tidak merancangnya.
+   - **Mengumpulkan nomor teman** pasien tanpa persetujuan teman itu bertentangan dengan prinsip UU 27/2022 (data pribadi pihak ketiga).
+3. **Mengalihkan** ke program yang membuat pasien kembali dan bercerita sendiri, tanpa imbalan untuk merujuk. Karena tidak ada hadiah, script `biaya`/`impas` **tidak dijalankan** (tidak ada biaya referral yang perlu dihitung).
 
 ## Jawaban skill
 
 ### 1. Ringkasan
-- **Program:** "Kartu Sehat Keluarga". Pasien yang mengajak teman/keluarga mendapat produk perawatan gigi umum (bukan obat) setelah temannya menyelesaikan kunjungan pertama; teman mendapat produk yang sama saat kunjungan pertama. **Tidak ada potongan tindakan medis.**
-- Biaya per referral Rp43.000 (12,29% dari nilai layanan, 20,48% dari laba kotor). Laba kunjungan pertama setelah hadiah Rp167.000; balik modal langsung.
-- Batas hadiah aman Rp378.000 per referral (asumsi 0,25x per bulan selama 24 bulan), status AMAN, jadi klinik masih punya ruang tanpa perlu diskon tindakan.
+- **Program:** "Kartu Kontrol Keluarga Sehat Dua" = pengingat kontrol tiap 4 bulan + kelas edukasi singkat + kartu info klinik yang boleh dibagikan pasien **tanpa kode dan tanpa hadiah**.
+- **Tidak ada** diskon tindakan, poin, voucher, komisi, atau hadiah untuk pasien yang mengajak.
+- Alasan: aturan iklan pelayanan kesehatan dan kode etik dokter gigi; yang aman dan tetap efektif adalah pasien rutin kontrol dan keluarganya mendapat informasi yang jelas.
 
 ### 2. Aturan program
-- Hadiah dihitung dari **modal** produk (Rp20.000), bukan harga jual.
-- Teman = pasien baru yang belum pernah berkunjung; hadiah diberikan setelah kunjungan pertama selesai.
-- Data yang dicatat: nama panggilan, nomor WA, kode, tanggal; **tanpa diagnosis, alasan kunjungan, atau rekam medis**.
-- Pesan ke pasien dikirim staf satu per satu kepada pasien yang setuju dihubungi (lihat skill `pengingat-pasien-klinik` untuk pengingat kontrol).
-- Jangan klaim hasil ("gigi putih pasti", "tanpa sakit"). Jangan testimoni yang menjanjikan hasil.
+| Bagian | Isi |
+|---|---|
+| Pengingat kontrol | Staf mengirim draf pesan satu per satu, 1 minggu sebelum jadwal kontrol 4 bulanan, hanya ke pasien yang setuju dihubungi (skill `pengingat-pasien-klinik`). Pasien bisa berhenti kapan saja dengan membalas STOP. |
+| Kelas edukasi | 1x per bulan, 30 menit, topik umum (mis. "cara sikat gigi anak", "kapan perlu ke dokter gigi"). Gratis untuk umum, tanpa promo harga, tanpa janji hasil. |
+| Kartu info klinik | Berisi alamat, jam praktik, nama dokter gigi berizin (dengan nomor SIP bila diwajibkan), daftar layanan. Pasien boleh memberikannya ke keluarga/kenalan. **Tanpa kode perujuk, tanpa hadiah.** |
+| Kartu kontrol keluarga | Mencatat tanggal kontrol berikutnya tiap anggota keluarga; bukan kartu poin/diskon. |
+| Informasi tarif | Tarif layanan dijelaskan jujur di awal; tidak ada harga coret atau "promo terbatas". |
+| Data | Nama panggilan, nomor WA, jadwal kontrol berikutnya. **Tanpa diagnosis, rekam medis, atau alasan kunjungan.** Tidak meminta nomor teman pasien. |
+| Larangan konten | Tanpa testimoni hasil di media massa/sosial, tanpa "terbaik/termurah/pasti tanpa sakit", tanpa foto sebelum-sesudah yang menjanjikan hasil. |
 
-### 3. Teks ajakan (kartu yang dibagikan pasien)
-> Klinik Gigi Sehat Dua: pemeriksaan gigi keluarga dengan dokter berizin. Sebut nama [PENGAJAK] saat mendaftar; setelah kunjungan pertama, Anda mendapat [PRODUK PERAWATAN] sebagai ucapan selamat datang. Info: [NOMOR KLINIK]. Syarat berlaku.
+### 3. Teks siap pakai
+**Pengingat kontrol (dikirim staf satu per satu):**
+> Halo [NAMA PANGGILAN], ini Klinik Gigi Sehat Dua. Jadwal kontrol gigi Anda berikutnya sekitar [TANGGAL]. Bila ingin membuat janji, balas pesan ini atau hubungi [NOMOR KLINIK]. Balas STOP bila tidak ingin diingatkan lagi.
 
-### 4. Catatan kepatuhan
-- Tanyakan ke organisasi profesi/dinas kesehatan setempat sebelum meluncurkan (aturan promosi layanan kesehatan bervariasi). Skill ini menandai bagian ini **PERLU REVIEW** oleh pemilik klinik/tenaga medis.
-- S&K memakai `templates/syarat-ketentuan.md` dengan hadiah non-medis dan klausul data pribadi.
+**Kartu info klinik (boleh dibagikan pasien, tanpa hadiah):**
+> Klinik Gigi Sehat Dua - [ALAMAT]. Praktik: [HARI & JAM]. Dokter gigi: [NAMA, drg.]. Layanan: pemeriksaan, pembersihan karang gigi, tambal, dll. Pendaftaran: [NOMOR KLINIK].
+
+**Undangan kelas edukasi (status/story):**
+> Kelas gratis "Cara Sikat Gigi Anak yang Benar", [TANGGAL], [JAM], di Klinik Gigi Sehat Dua. Terbuka untuk umum, tempat terbatas [JUMLAH] orang. Daftar: [NOMOR KLINIK].
+
+### 4. Catatan kepatuhan (PERLU REVIEW tenaga medis/hukum)
+- Dasar: Permenkes 1787/MENKES/PER/XII/2010 Pasal 5 (masih berlaku lewat UU 17/2023 Pasal 453; tidak ditemukan pencabutan di PP 28/2024; dicek 2026-09-30), Kode Etik Kedokteran Gigi Indonesia (PDGI) Pasal 3, UU 27/2022 (data pribadi).
+- Bila klinik tetap ingin memberi hadiah dalam bentuk apa pun, minta dulu konfirmasi **tertulis** dari dinas kesehatan setempat dan PDGI cabang; skill tidak merancang atau mengiklankannya sebelum itu.
+- Kelas edukasi "gratis": benar-benar tanpa syarat dan tanpa penjualan di dalam kelas.
 
 ### 5. Langkah minggu ini
-1. Konsultasi singkat ke organisasi profesi tentang bentuk hadiah.
-2. Siapkan 20 paket produk perawatan dan cetak kartu.
-3. Isi lembar catatan (tanpa data medis).
-4. Uji ke 15 pasien rutin selama 30 hari.
-5. Tinjau biaya per referral (script) di akhir bulan.
+1. Minta dokter gigi penanggung jawab meninjau teks di atas (PERLU REVIEW).
+2. Tanyakan persetujuan dihubungi kepada pasien saat kunjungan; catat di lembar (tanpa data medis).
+3. Cetak 100 kartu info + kartu kontrol keluarga.
+4. Jadwalkan kelas edukasi pertama.
+5. Akhir bulan: hitung berapa pasien kontrol tepat waktu dan berapa pasien baru yang menjawab "tahu dari keluarga/teman".
 
-Angka dihitung dengan script dari data yang Anda berikan. Keputusan besar hadiah tetap di tangan Anda.
+Keputusan program tetap di tangan klinik dan tenaga medis penanggung jawab.

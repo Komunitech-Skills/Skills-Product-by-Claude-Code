@@ -17,6 +17,6 @@ Prinsip: cegah secukupnya, jangan menuduh. Bila ragu, hubungi pelanggan dengan s
 - **UU 27/2022 Pelindungan Data Pribadi:** kumpulkan data seminimal mungkin, beri tahu tujuan, dasar yang jelas (persetujuan atau kebutuhan transaksi), amankan, hapus bila tidak diperlukan, jangan bagikan. Beri jalan mudah berhenti menerima pesan. Jangan meminta pelanggan menyerahkan kontak temannya; biarkan teman menghubungi lebih dulu.
 - **UU 7/2014 Perdagangan:** skema piramida dilarang. Program komisi: satu tingkat, dari penjualan barang nyata.
 - **Aturan platform:** WhatsApp, Instagram, dan marketplace punya aturan sendiri soal pesan massal dan mengalihkan transaksi. Kirim pesan satu per satu kepada orang yang sudah berhubungan; jangan blast.
-- **Kesehatan:** hadiah tidak boleh menjadi insentif tindakan/obat; tanyakan organisasi profesi/dinas kesehatan.
+- **Fasilitas kesehatan (PERLU REVIEW tenaga medis/hukum):** Permenkes 1787/2010 Pasal 5 melarang iklan/publikasi promosi penjualan dalam bentuk apa pun (diskon, imbalan atas pelayanan kesehatan, MLM); kode etik profesi (KODEKGI, KODEKI) melarang janji/diskon agar pasien datang. Skill tidak merancang imbalan untuk merujuk pasien; alternatifnya edukasi, pengingat kontrol, dan kartu info tanpa imbalan (`pola-per-usaha.md` bagian 3).
 - **Pajak:** hadiah tunai/komisi dapat punya konsekuensi pajak bagi penerima dan pemberi; tanyakan konsultan pajak. Skill ini tidak menghitung pajak.
 - **Konten AI/testimoni:** jangan membuat testimoni palsu; label bila memakai bantuan AI sesuai aturan platform.

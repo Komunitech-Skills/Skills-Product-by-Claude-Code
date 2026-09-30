@@ -30,7 +30,8 @@ Balik modal setelah             : pesanan ke-1 milik teman (langsung di pesanan 
 Hadiah maks agar impas di pesanan pertama: Rp72.000 (total pemberi + teman + lain)
 Perkiraan laba kotor seumur pelanggan: Rp432.000 (6 pesanan; asumsi 0,5x per bulan selama 12 bulan)
 Batas hadiah aman (30% dari laba seumur pelanggan): Rp129.600 total per referral
-Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): Rp114.600
+BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp114.600
+Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp21.000
 STATUS: AMAN
 Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
 (kode keluar 0)
@@ -61,8 +62,10 @@ Balik modal setelah             : pesanan ke-2 milik teman, sekitar bulan ke-2 b
 Hadiah maks agar impas di pesanan pertama: Rp72.000 (total pemberi + teman + lain)
 Perkiraan laba kotor seumur pelanggan: Rp432.000 (6 pesanan; asumsi 0,5x per bulan selama 12 bulan)
 Batas hadiah aman (30% dari laba seumur pelanggan): Rp129.600 total per referral
-Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): Rp99.600
-STATUS: AMAN
+BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp99.600
+Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp6.000
+STATUS: RUGI DI PESANAN PERTAMA
+PERHATIAN: RUGI Rp8.000 per referral di pesanan pertama. Balik modal hanya bila teman membeli lagi sampai pesanan ke-2; bila teman hanya membeli sekali, program ini rugi.
 Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
 (kode keluar 0)
 ```
@@ -98,8 +101,9 @@ Margin 40% dari pengguna. Frekuensi beli 0,5x per bulan (tiap 2 bulan) dan umur 
 | Biaya per referral | Rp30.000 |
 | Laba pesanan pertama setelah hadiah | Rp42.000 |
 | Batas hadiah aman per referral | Rp129.600 (status AMAN) |
-| Hadiah pengajak maksimal (hadiah teman tetap Rp15.000) | Rp114.600 |
-| Pilihan lebih besar (Rp50.000 + Rp30.000 = Rp80.000) | biaya Rp80.000; laba pesanan pertama setelah hadiah -Rp8.000 (rugi di pesanan pertama), balik modal di pesanan ke-2 (sekitar bulan ke-2), status AMAN terhadap laba seumur pelanggan; cocok hanya untuk momen khusus dengan kuota kecil |
+| Batas atas hadiah pengajak (bukan anjuran; hadiah teman tetap Rp15.000) | Rp114.600 |
+| Hadiah pengajak saran (konservatif, total hadiah maks. 50% laba pesanan pertama) | Rp21.000 (usulan Rp15.000 sudah di bawahnya) |
+| Pilihan lebih besar (Rp50.000 + Rp30.000 = Rp80.000) | biaya Rp80.000; laba pesanan pertama setelah hadiah -Rp8.000 (rugi di pesanan pertama), balik modal di pesanan ke-2 (sekitar bulan ke-2), status **RUGI DI PESANAN PERTAMA** (masih di bawah batas aman laba seumur pelanggan, tetapi rugi bila teman hanya membeli sekali); cocok hanya untuk momen khusus dengan kuota kecil |
 
 ### 4. Aturan program
 - Teman = nomor/akun yang belum pernah beli. Nomor, alamat, dan akun yang sama dengan pengajak tidak sah.

@@ -18,7 +18,9 @@ Semua angka di skill ini seharusnya keluar dari `scripts/hitung_referral.py`. Ru
 | Bulan balik modal | naik ke atas ((pesanan balik modal - 1) / frekuensi beli per bulan) |
 | Laba kotor seumur pelanggan | LPO x frekuensi per bulan x umur pelanggan (bulan) |
 | Batas hadiah aman | turun ke bawah (laba seumur pelanggan x 30%) |
-| Hadiah perujuk maksimal | batas aman - hadiah teman - biaya lain (minimal 0) |
+| BATAS ATAS hadiah perujuk (bukan anjuran) | batas aman - hadiah teman - biaya lain (minimal 0) |
+| Hadiah perujuk SARAN (konservatif) | min(batas atas, bulat ke bawah(laba kotor pesanan x 50%) - hadiah teman - biaya lain), minimal 0 |
+| Status impas | AMAN bila biaya <= batas aman **dan** laba pesanan pertama setelah hadiah >= 0; RUGI DI PESANAN PERTAMA bila biaya <= batas aman tetapi laba pesanan pertama < 0; PERHATIAN bila biaya > batas aman tetapi <= laba seumur; TIDAK DISARANKAN bila > laba seumur |
 | Hadiah poin (% belanja) | nilai 1 poin / belanja per 1 poin |
 | Porsi margin yang dipakai poin | hadiah poin % / margin % |
 | Poin per transaksi | turun ke bawah (nilai transaksi / belanja per poin) |

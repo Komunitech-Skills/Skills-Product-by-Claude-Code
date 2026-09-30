@@ -50,7 +50,8 @@ Balik modal setelah             : pesanan ke-1 milik teman (langsung di pesanan 
 Hadiah maks agar impas di pesanan pertama: Rp22.500 (total pemberi + teman + lain)
 Perkiraan laba kotor seumur pelanggan: Rp540.000 (24 pesanan; asumsi 4x per bulan selama 6 bulan)
 Batas hadiah aman (30% dari laba seumur pelanggan): Rp162.000 total per referral
-Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): Rp157.000
+BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp157.000
+Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp6.250
 STATUS: AMAN
 Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
 (kode keluar 0)
@@ -70,7 +71,7 @@ Angka skenario adalah asumsi awal, bukan patokan pasar; ganti dengan data Anda s
 
 ## Jawaban skill (ringkas)
 - **Ringkasan:** program "Ajak Tetangga": teman dapat potongan Rp5.000 di nota pertama, pengajak dapat potongan Rp5.000 di nota berikutnya setelah nota teman lunas. Biaya per referral Rp10.000 (22,22% dari nota, 44,44% dari laba kotor), laba nota pertama Rp12.500.
-- Batas aman Rp162.000 per referral (asumsi 4x per bulan, 6 bulan), jadi hadiah masih bisa dinaikkan bila perlu; mulai kecil, lihat respons 2 minggu.
+- Batas aman Rp162.000 per referral (asumsi 4x per bulan, 6 bulan) adalah **batas atas, bukan anjuran**. Hadiah pengajak versi konservatif maksimal Rp6.250 (total hadiah maks. 50% laba nota pertama), jadi usulan Rp5.000 sudah pas; mulai kecil, lihat respons 2 minggu.
 - **Asumsi yang perlu diganti:** margin sebenarnya, umur langganan, dan skenario simulasi (asumsi awal, bukan patokan pasar). Simulasi 120 pelanggan tetap: skenario realistis 12 perujuk -> 24 teman diajak -> 6 pembeli baru, biaya hadiah Rp60.000 (ESTIMASI).
 - **Aturan:** teman = nomor baru; nomor sama dengan pengajak tidak sah; potongan hanya untuk nota lunas; maksimal 3 hadiah per pengajak per bulan.
 - **Teks WA:** "Halo Kak [NAMA], terima kasih sudah langganan [LAUNDRY]. Kalau ada tetangga/teman yang butuh laundry, suruh chat kami dan sebut nama Kakak. Temannya potongan Rp5.000 di nota pertama, Kakak potongan Rp5.000 setelah nota temannya lunas. Balas STOP kalau tidak ingin info seperti ini."

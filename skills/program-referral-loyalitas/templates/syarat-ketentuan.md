@@ -13,4 +13,4 @@ Berlaku mulai [TANGGAL] sampai [TANGGAL / "sampai diumumkan berakhir"].
 9. **Perubahan.** [NAMA USAHA] dapat mengubah atau menghentikan program dengan pemberitahuan di [WA/IG/toko]. Hadiah yang sudah berhak diterima tetap dihormati.
 10. **Kontak.** [NAMA] di [NOMOR/AKUN].
 
-> Isi semua kurung siku dengan angka dari keluaran script. Bagian S&K adalah contoh umum, bukan nasihat hukum; sesuaikan dengan usaha Anda (klinik: hadiah non-medis).
+> Isi semua kurung siku dengan angka dari keluaran script. Bagian S&K adalah contoh umum, bukan nasihat hukum; sesuaikan dengan usaha Anda (fasilitas kesehatan: template ini **tidak** dipakai untuk hadiah merujuk pasien; lihat `references/pola-per-usaha.md` bagian 3).
