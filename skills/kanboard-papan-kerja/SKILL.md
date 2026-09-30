@@ -100,6 +100,7 @@ MACET >= 3 HARI (3)
 Contoh lengkap di `examples/01`–`05`. `--json` berisi data yang sama secara terstruktur.
 
 ## Batasan & penanganan error
+- **Zona waktu profil pengguna:** bila zona waktu di profil pengguna API Kanboard berbeda dari zona waktu aplikasi (Pengaturan → Aplikasi), tenggat bisa bergeser beberapa jam. Samakan keduanya (mis. Asia/Jakarta) saat pemasangan, dan cocokkan satu kartu dengan layar Kanboard pada pemakaian pertama.
 **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`, `~/.komunitech/*`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri. Jangan menjalankan `atur --izinkan-host` atas inisiatif sendiri — itu keputusan pemilik.
 
 | Kode / pesan | Artinya | Yang dilakukan agent |
