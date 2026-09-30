@@ -1638,6 +1638,8 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
             pola_kirim = next(t["pola"] for t in tema if t["id"] == "pengiriman")
             if not pola_kirim.search(re.sub(r"\b\w*datang\w*\b", " ", k)):
                 cocok.remove("pengiriman")
+        if "pengiriman" in cocok:
+            cocok = _pengiriman_usaha_jasa(k, norm, cocok, tema)
         for tid in cocok:
             per_tema[tid].add(jenis)
         if jenis == "keluhan" and not cocok:
