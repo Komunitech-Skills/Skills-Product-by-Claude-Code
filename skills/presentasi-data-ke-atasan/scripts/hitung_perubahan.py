@@ -20,16 +20,20 @@ Pemakaian:
     python3 hitung_perubahan.py --pasangan "Omzet:32000000:24500000" \
         --pasangan "Biaya iklan:4000000:5600000"
 
-Format satu --pasangan: "Label:nilai_lama:nilai_baru" (angka polos, tanpa "Rp"
-atau titik ribuan; agent yang membersihkan input pengguna dulu sebelum memanggil
-script ini, mis. dengan skill `analisis-excel`/`rekap-penjualan-csv` bila sumbernya
-file, atau langsung dari angka yang disebutkan pengguna di chat).
+Format satu --pasangan: "Label:nilai_lama:nilai_baru". Angka boleh polos (32000000)
+atau format Indonesia seperti yang diketik pengguna: 38.000 / 1.250.000 (titik =
+ribuan), 38.000,50 atau 2,5 (koma = desimal), Rp38.000 / Rp 38.000, 38rb, 1,5jt.
+Bentuk ragu seperti 38.5 (titik diikuti 1-2 angka) atau 1,500 (koma diikuti tepat
+3 angka) DITOLAK dengan pesan jelas, tidak ditebak diam-diam.
 
 Bisa juga dipakai untuk menghitung dari daftar angka satu kolom (mis. omzet 7
 hari terakhir) dengan --daftar, untuk mendapat total, rata-rata, min, max.
+Pemisah --daftar: koma ("Stok=18,24,29") atau titik-koma bila ada koma desimal
+/ rb / jt ("Omzet=1,5jt;2jt;850rb").
 """
 import argparse
 import json
+import re
 import sys
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
@@ -38,6 +42,53 @@ def format_angka(d: Decimal) -> int:
     """Bulatkan nilai bilangan bulat terdekat (dipakai untuk Rupiah maupun angka lain,
     mis. total/rata-rata di --daftar yang belum tentu Rupiah)."""
     return int(d.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
+
+SATUAN = (("ribu", 1000), ("rb", 1000), ("k", 1000), ("juta", 10 ** 6), ("jt", 10 ** 6),
+          ("miliar", 10 ** 9), ("milyar", 10 ** 9))
+SARAN = "Contoh yang benar: 38000, 38.000, Rp38.000, 1.250.000,50, 2,5, 38rb, 1,5jt."
+
+
+def punya_satuan(teks: str) -> bool:
+    return re.search(r"(ribu|rb|k|juta|jt|miliar|milyar)$", teks.strip().lower()) is not None
+
+
+def baca_angka(teks: str) -> Decimal:
+    """Baca angka gaya Indonesia. Titik = ribuan, koma = desimal. Bentuk ragu -> ValueError."""
+    asli = str(teks).strip()
+    s = asli.lower().replace("\u00a0", "").replace(" ", "")
+    s = re.sub(r"^(rp|idr)\.?", "", s)
+    s = re.sub(r"[,.]-+$", "", s)
+    neg = s.startswith("-")
+    s = s.lstrip("-")
+    s = re.sub(r"^(rp|idr)\.?", "", s)
+    kali = 1
+    for akhiran, k in SATUAN:
+        if s.endswith(akhiran) and s[: -len(akhiran)]:
+            s, kali = s[: -len(akhiran)], k
+            break
+    if re.fullmatch(r"\d+", s):
+        pass
+    elif kali != 1 and re.fullmatch(r"\d+[.,]\d+", s):                 # 1,5jt / 1.5jt
+        s = s.replace(",", ".")
+    elif re.fullmatch(r"[1-9]\d{0,2}(\.\d{3})+(,\d+)?", s):            # 38.000 / 1.250.000,50
+        s = s.replace(".", "").replace(",", ".")
+    elif re.fullmatch(r"[1-9]\d{0,2},\d{3}", s):                        # 1,500 -> ragu
+        raise ValueError(f"angka {asli!r} meragukan (1,5 atau 1.500?). {SARAN}")
+    elif re.fullmatch(r"\d+,\d+", s):                                   # 2,5 / 38000,50
+        s = s.replace(",", ".")
+    elif re.fullmatch(r"\d{4,}\.\d{1,2}", s):                           # 38000.5 (format mesin)
+        pass
+    elif re.fullmatch(r"\d+\.\d+", s):                                  # 38.5 / 0.5 -> ragu
+        raise ValueError(f"angka {asli!r} meragukan (titik dibaca ribuan; untuk desimal pakai koma, "
+                         f"mis. 38,5; untuk ribuan 38.500). {SARAN}")
+    else:
+        raise ValueError(f"angka tidak valid: {asli!r}. {SARAN}")
+    try:
+        d = Decimal(s) * kali
+    except InvalidOperation:
+        raise ValueError(f"angka tidak valid: {asli!r}. {SARAN}")
+    return -d if neg else d
 
 
 def persen(lama: Decimal, baru: Decimal):
@@ -53,10 +104,10 @@ def proses_pasangan(spek: str):
         raise ValueError(f"format harus 'Label:nilai_lama:nilai_baru', dapat: {spek!r}")
     label, s_lama, s_baru = bagian
     try:
-        lama = Decimal(s_lama.strip())
-        baru = Decimal(s_baru.strip())
-    except InvalidOperation:
-        raise ValueError(f"angka tidak valid di {spek!r} (jangan pakai 'Rp'/titik ribuan)")
+        lama = baca_angka(s_lama)
+        baru = baca_angka(s_baru)
+    except ValueError as e:
+        raise ValueError(f"{e} (di {spek!r})")
     selisih = baru - lama
     p = persen(lama, baru)
     if p is None:
@@ -84,14 +135,16 @@ def proses_daftar(nama_spek: str):
         raise ValueError(f"format --daftar harus 'Label=angka1,angka2,...', dapat: {nama_spek!r}")
     label, s_angka = nama_spek.split("=", 1)
     angka = []
-    for token in s_angka.split(","):
-        token = token.strip()
-        if not token:
-            continue
+    token_list = [t.strip() for t in s_angka.split(";" if ";" in s_angka else ",") if t.strip()]
+    if ";" not in s_angka and len({punya_satuan(t) for t in token_list}) > 1:
+        # mis. "1,5jt,2jt" -> "1" | "5jt" | "2jt": koma desimal tertukar dengan pemisah
+        raise ValueError(f"daftar {label!r} mencampur angka ber-satuan (rb/jt) dan tanpa satuan dengan pemisah "
+                         "koma; bila ada koma desimal, pisahkan dengan titik-koma, mis. 'Omzet=1,5jt;2jt'")
+    for token in token_list:
         try:
-            angka.append(Decimal(token))
-        except InvalidOperation:
-            raise ValueError(f"angka tidak valid di daftar {label!r}: {token!r}")
+            angka.append(baca_angka(token))
+        except ValueError as e:
+            raise ValueError(f"{e} (di daftar {label!r})")
     if not angka:
         raise ValueError(f"daftar {label!r} kosong")
     total = sum(angka)

@@ -36,7 +36,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.6"
+VERSI = "1.0.7"
 
 
 class Gagal(Exception):
@@ -1169,6 +1169,11 @@ def baca_berkas(spesifikasi, opsi):
 
 
 # ------------------------------------------------------------------ normalisasi & koreksi typo
+# v1.0.7: kata sah (KBBI/umum) yang berjarak SATU huruf dari kata kamus - tidak pernah "dikoreksi" sebagai typo. Daftar ini hasil
+# pemeriksaan menyeluruh semua bentuk hapus-1-huruf dari kamus (tests/uji_regresi_107.py memeriksa ulang setiap versi).
+KATA_SAH = set("""krim kiri kenang kenangan mengenangkan korset menular menguar sasana susana dialas tracing pacing""".split())
+
+
 def _kata_pola(pola):
     return set(re.findall(r"[a-z]{3,}", pola))
 
@@ -1202,16 +1207,29 @@ def koreksi_typo(tok, vocab=None, peta=None):
     (terlalu sering salah: 'tanggal'->'tanggap', 'benar'->'besar')."""
     vocab = VOCAB if vocab is None else vocab
     peta = _HAPUS if peta is None else peta
-    if tok in vocab or tok in KATA_UMUM or len(tok) < 4 or not tok.isalpha():
+    if tok in vocab or tok in KATA_UMUM or tok in KATA_SAH or len(tok) < 4 or not tok.isalpha():
         return tok
     tunggal = re.sub(r"(.)\1+", r"\1", tok)
     if tunggal in vocab:
         return tunggal
-    if len(tok) >= 6:
+    # v1.0.7: akhiran klitik (-nya/-ku/-mu/-lah/-kah) tidak ikut dihitung panjang kata. Huruf hilang hanya dikoreksi bila KATA DASARNYA
+    # >= 6 huruf dan bukan kata sah: 'krimnya' (krim) bukan 'kirimnya', 'kirinya' (kiri) bukan 'kirimnya'.
+    dasar = tok
+    for akhir in ("nya", "lah", "kah", "ku", "mu"):
+        if tok.endswith(akhir) and len(tok) - len(akhir) >= 3:
+            dasar = tok[:-len(akhir)]
+            break
+    if dasar != tok and (dasar in KATA_SAH or dasar in KATA_UMUM or dasar in vocab):
+        return tok
+    if len(dasar) >= 6:
         # huruf pertama sama; huruf terakhir yang hilang tidak dikoreksi ('berisi' bukan 'berisik')
         kand = {w for w in peta.get(tok, ()) if w[0] == tok[0] and w[:-1] != tok}
         if len(kand) == 1:
             return kand.pop()
+        if dasar != tok:   # 'dikirmnya' -> 'dikirim' + 'nya'
+            kand = {w for w in peta.get(dasar, ()) if w[0] == dasar[0] and w[:-1] != dasar}
+            if len(kand) == 1:
+                return kand.pop() + tok[len(dasar):]
     return tok
 
 
@@ -1230,7 +1248,10 @@ def _slang(k):
 
 
 def normalkan(teks, vocab=None, peta=None):
-    t = teks.lower()
+    # v1.0.7: jenjang sekolah bukan slang ('SMP' bukan 'sampai', 'SMA' bukan 'sama'): huruf besar, atau sesudah kelas/anak/siswa
+    t = re.sub(r"\b(?:SMA|SMP|SMK|MTs)\b", " sekolah ", teks)
+    t = re.sub(r"(?i)\b(kelas|anak|siswa|murid|lulusan|jenjang|tingkat|les|bimbel)(\s+(?:\d+\s+)?)(?:sma|smp|smk|sd)\b", r"\1\2sekolah", t)
+    t = t.lower()
     t = re.sub(r"\[(nama|hp|telepon|email|tautan|akun|nomor|alamat|plat)\]", r" \1x ", t)
     t = re.sub(r"(.)\1{2,}", r"\1\1", t)                  # 'enaaak' -> 'enaak'
     t = re.sub(r"\b([a-z]{3,})2([a-z]{0,4})\b", r"\1\2", t)  # 'anak2' -> 'anak', v1.0.6 'teman2nya' -> 'temannya', 'dimahal2in'

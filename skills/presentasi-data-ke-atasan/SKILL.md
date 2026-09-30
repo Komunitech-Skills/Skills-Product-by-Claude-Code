@@ -71,8 +71,10 @@ atasan langsung, tujuan = lapor kondisi terkini) dan sebutkan di akhir hasil.
      --pasangan "Omzet:32000000:24500000" \
      --pasangan "Biaya iklan:4000000:5600000"
    ```
+   Angka boleh ditulis seperti pengguna mengetiknya (`38.000`, `Rp 1.250.000`, `2,5`, `38rb`,
+   `1,5jt`); bentuk ragu (`38.5`, `1,500`) ditolak script, jadi tanyakan maksudnya ke pengguna.
    Untuk total/rata-rata dari daftar angka (mis. omzet harian), pakai `--daftar
-   "Label=angka1,angka2,..."`. Jika Python tidak tersedia, hitung manual langkah demi
+   "Label=angka1,angka2,..."` (pakai `;` sebagai pemisah bila ada koma desimal/rb/jt). Jika Python tidak tersedia, hitung manual langkah demi
    langkah (selisih = baru − lama; persen = selisih ÷ lama × 100, bulatkan 1 desimal)
    dan beri tahu pengguna hasil belum diverifikasi script.
 3. **Rumuskan satu kalimat inti ("so what").** Bukan topik ("Laporan omzet September"),

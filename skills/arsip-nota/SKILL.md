@@ -7,6 +7,9 @@ description: Merapikan foto/PDF nota, struk, kuitansi, dan faktur UMKM dari fold
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
+_Versi 1.0.5 — nominal ragu tanpa satuan (`1,5`, `150,50`, `38.5`, `1,500`) kini ditolak dengan pesan jelas, bukan
+diam-diam terbaca Rp15/Rp15.050; bila ditolak, tanyakan maksud pengguna (mis. 1.500 atau 1,5jt). `38.000`, `Rp38.000`,
+`1.250.000,50`, `150rb`, `1,5jt` tetap diterima._
 _Versi 1.0.1 — perbaikan uji independen: respons `tambah` yang diblokir duplikat sekarang jujur (`mode:
 "diblokir_duplikat"`, bukan "tersimpan"); tambahan kata kunci tebak kategori toko bangunan & BBM._
 

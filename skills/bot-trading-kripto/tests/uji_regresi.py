@@ -1455,5 +1455,56 @@ class UjiSingkatanFlagLive(unittest.TestCase):
             self.assertIn("unrecognized arguments", p.stdout + p.stderr)
 
 
+# =============================================================================== revisi 1.0.5
+class FormatAngkaCsvHarga(unittest.TestCase):
+    """Audit format angka 2026-09-30: '38.000' tidak boleh diam-diam terbaca 38 (atau 38000) tanpa
+    konteks. Gaya ditentukan per kolom; data asli bursa (titik desimal) tetap terbaca seperti semula."""
+
+    def csv(self, isi):
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, encoding="utf-8") as f:
+            f.write(isi)
+        try:
+            return backtest.baca_csv(f.name)
+        finally:
+            os.remove(f.name)
+
+    def test_nilai_ambigu_tanpa_konteks_ditolak(self):
+        for v in ("38.000", "1.500", "Rp38.000", "1,500"):
+            with self.assertRaises(ValueError, msg=v):
+                backtest.parse_harga(v)
+
+    def test_gaya_indonesia(self):
+        for v, harap in (("38.000", "38000"), ("1.500", "1500"), ("Rp38.000", "38000"), ("Rp 1.250.000", "1250000"),
+                         ("1.250.000,50", "1250000.50"), ("38000,5", "38000.5")):
+            self.assertEqual(backtest.parse_harga(v, "id"), D(harap), v)
+
+    def test_gaya_bursa_tetap(self):
+        for v, harap in (("114311.97000000", "114311.97"), ("38000.5", "38000.5"), ("0.000123", "0.000123"),
+                         ("0.500", "0.5"), ("1908238000", "1908238000"), ("38.000", "38")):
+            self.assertEqual(backtest.parse_harga(v, "intl"), D(harap), v)
+        self.assertEqual(backtest.parse_harga("114311.97000000"), D("114311.97"))
+
+    def test_csv_idr_bertitik_ribuan_terbaca_ribuan(self):
+        data, rusak = self.csv("tanggal;close\n2026-01-01;1.908.238.000\n2026-01-02;38.000\n2026-01-03;Rp 1.500,50\n")
+        self.assertEqual(rusak, [])
+        self.assertEqual([h for _, h in data], [D("1908238000"), D("38000"), D("1500.50")])
+
+    def test_csv_bursa_titik_desimal_tetap(self):
+        data, rusak = self.csv("tanggal,close\n2026-01-01,1.500\n2026-01-02,1.52\n2026-01-03,38000.5\n")
+        self.assertEqual(rusak, [])
+        self.assertEqual([h for _, h in data], [D("1.5"), D("1.52"), D("38000.5")])
+        data, _ = backtest.baca_csv(os.path.join(SINI, "data", "btcusdt-harian-2025-2026.csv"))
+        self.assertEqual(data[0][1], D("114048.93"))
+
+    def test_csv_hanya_bentuk_ambigu_ditolak_jelas(self):
+        with self.assertRaises(inti.KonfigurasiTidakValid) as k:
+            self.csv("tanggal;close\n2026-01-01;38.000\n2026-01-02;38.500\n2026-01-03;39000\n")
+        self.assertIn("ambigu", str(k.exception))
+
+    def test_csv_campur_format_ditolak(self):
+        with self.assertRaises(inti.KonfigurasiTidakValid):
+            self.csv("tanggal;close\n2026-01-01;38.000,50\n2026-01-02;38000.5\n")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
