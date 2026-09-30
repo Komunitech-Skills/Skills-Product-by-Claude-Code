@@ -36,7 +36,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.3"
+VERSI = "1.0.5"
 
 
 class Gagal(Exception):
@@ -85,7 +85,10 @@ SLANG = {
     "cancel": "batal", "cancelled": "batal", "canceled": "batal", "po": "preorder", "bulukan": "berjamur",
     "jamuran": "berjamur", "ngelupas": "mengelupas", "kelupas": "mengelupas", "copot": "lepas", "dpet": "dapat",
     "kerasa": "terlihat", "terasa": "terlihat", "gini": "begini", "ongkosnya": "ongkir", "readystock": "ready stock",
-    "soldout": "habis", "gamau": "tidak mau", "gabakal": "tidak akan",
+    "soldout": "habis", "gatel": "gatal", "gamau": "tidak mau", "gabakal": "tidak akan",
+    # v1.0.5: "gpp/gapapa" = tidak apa-apa (penanda memaklumi)
+    "gpp": "tidak apa apa", "gapapa": "tidak apa apa", "gakpapa": "tidak apa apa", "gapapah": "tidak apa apa", "nggakpapa": "tidak apa apa",
+    "ngapapa": "tidak apa apa", "gppa": "tidak apa apa", "ndakpapa": "tidak apa apa", "tidakpapa": "tidak apa apa",
 }
 # Frasa -> satu token (diterapkan setelah slang, sebelum pecah klausa)
 # v1.0.3: ketepatan pesanan berbasis POLA ("pesan/checkout X ... yang datang/dapat/dikasih Y"), bukan frasa hafalan.
@@ -120,12 +123,89 @@ def _beda_pesanan(m):
     return " salahpesanan "
 
 
+def _gap(n):
+    """v1.0.5: jendela 0..n kata antara dua bagian pola; tidak boleh melewati kata negasi ('segel masih utuh, belum pernah dibuka')."""
+    return r"(?:(?!(?:tidak|belum|bukan|tanpa|jangan)\b)\w+\s+){0,%d}?" % n
+
+
+# v1.0.5: "habis/abis" + kata berawalan di-/ter-/ke- = "sesudah" ("abis diservis", "abis ketiban", "abis terkena"), KECUALI kata kerja
+# yang memang berarti stok habis dibeli orang ("habis diborong/dibeli/terjual") dan kata waktu berawalan ke- ("habis kemarin").
+_HABIS_STOK_KK = r"(?:diborong\w*|dibeli\w*|dipesan\w*|dipesen\w*|dijual\w*|terjual|laku|diambil\w*|dibooking|dibook|keburu|kemarin|kemaren|kecuali|kebagian|ketika)\b"
+# kata di klausa yang menandakan arti stok ("abis dibawa pulang, ga kebagian" tetap stok)
+_HABIS_STOK_KONTEKS = r"(?![^.!?;,]*\b(?:kebagian|stok|stock|kosong|sold|restock|ready|preorder|kehabisan)\b)"
+# v1.0.5: salah kirim UMUM "pesan/order/beli X ... (yang) datang/dikirim/dikasih Y" dengan Y berbeda dari X, untuk barang APA PUN
+# (angka/satuan/pecahan/kata benda), bukan hanya deskriptor fashion. Y dianggap barang bila tidak berisi kata waktu/penilaian/orang.
+_Y_BATAS = set("""tapi namun padahal karena dan dengan dalam ke di dari pada jadi sudah sih deh kok ya kak min nih dong lho loh banget sekali
+juga lagi semua semuanya kondisi keadaan walau meski terus""".split())
+_Y_BUKAN_BARANG = set("""jam hari besok lusa minggu bulan tahun tanggal pagi siang sore malam subuh kemarin tadi sekarang nanti kemudian
+langsung duluan belakangan sesuai pas persis sama benar lengkap aman utuh selamat tepat cepat lambat lama telat terlambat kilat awal akhir
+bonus gratis hadiah diskon promo cashback voucher poin free extra tambahan lebih kurang cuma hanya cuman sesuaiharapan tepatwaktu pasbanget
+kurir driver ojol ojek abang bapak mas mbak orang orangnya pengantar satpam tetangga paket paketnya resi sampai datang dikirim dalamwaktu""".split())
+_SATUAN = set("""porsi pcs pc buah biji lembar pasang dus box kotak bungkus pack pak botol kaleng kg kilo gram gr ons meter m cm mm inch inci
+liter ml lusin kodi set unit ekor batang sak karung roll rol ikat sisir tangkai pot polybag yang nya""".split())
+_X_BUKAN_BARANG = set("""di ke dari lewat via sama dengan untuk jam kemarin tadi hari minggu bulan pagi siang sore malam sekarang online disini
+sini situ lagi sudah dulu""".split())
+_TERIMA_TANPA_YANG = {"dikasih", "dikirim", "diberi", "dikasihnya", "dikirimnya", "diberinya"}
+
+
+def _dasar(t):
+    return re.sub(r"nya$", "", t) if len(t) > 5 else t
+
+
+def _salah_barang(m):
+    x = [t for t in re.findall(r"[a-z0-9]+", m.group(2))]
+    if not x or x[0] in _X_BUKAN_BARANG:
+        return m.group(0)
+    if not m.group(3) and m.group(4) not in _TERIMA_TANPA_YANG:
+        return m.group(0)
+    y_semua = m.group(5).split()
+    y = []
+    for t in y_semua:
+        if t in _Y_BATAS:
+            break
+        y.append(t)
+    ekor = " ".join(y_semua[len(y):])
+    if not y or any(t in _Y_BUKAN_BARANG or t in NEGATOR or t in POS or t in NEG or t in AKSI for t in y):
+        return m.group(0)
+    xs = {_dasar(t) for t in x}
+    beda = [t for t in y if re.fullmatch(r"[a-z0-9]+", t) and _dasar(t) not in xs and t not in _SATUAN]
+    if not beda:
+        return m.group(0)
+    return " salahpesanan " + ekor + " "
+
+
+# v1.0.4: konteks yang mengubah arti kata keluhan (dijalankan paling awal)
+_HABIS_SESUDAH = (r"pakai|dipakai|memakai|pemakaian|makan|dimakan|minum|diminum|mandi|cuci|dicuci|mencuci|tidur|bangun|olahraga|kerja|"
+                  r"pulang|gajian|lebaran|kena|dilindas|dilindes|dilindas|ditabrak|diinjak|dibanting|dilempar|dipukul|digebuk|digiling|"
+                  r"jatuh|dijemur|disetrika|oles|dioles|operasi|melahirkan|nonton|main|belanja|itu|begitu")
+FRASA_104 = [
+    # "abis/habis" = sesudah/seperti sesudah ("abis pake ini muka merah", "kayak abis dilindes truk"), bukan stok habis
+    (r"\b(kayak|kaya|kyk|kek|seperti|bagai|bagaikan|macam|mirip|kayaknya)\s+habis\b", r"\1 sesudah"),
+    (r"\bhabis\s+(?=(?:" + _HABIS_SESUDAH + r"|ini|\d+\s*(?:x|kali|hari|minggu|bulan)\s+(?:di)?(?:pakai|cuci|oles|minum))\b)", "sesudah "),
+    (r"\bhabis\s+" + _HABIS_STOK_KONTEKS + r"(?=(?!" + _HABIS_STOK_KK + r")(?:di|ter|ke)[a-z]{3,}\b)", "sesudah "),
+    # "jual/kirim stok lama" = barang lama/kedaluwarsa (keamanan), bukan stok kosong
+    (r"\b(?:jual|kirim|dikirim|dikasih|dapat|diberi)\w*\s+(?:\w+\s+){0,2}?(?:stok|stock)\s+lama\b"
+     r"|\bini\s+(?:stok|stock)\s+lama\b|\b(?:stok|stock)\s+lama\b(?=\s*(?:(?:ya|kah|nih|deh|sih|kak|min|kayaknya|sepertinya)\s*)*(?:[?.!]|$))",
+     "stoklama"),
+    # "lama/telat ..., wajar/maklum" = pelanggan memaklumi -> netral (bukan keluhan, bukan pujian)
+    (r"\b(?:lama|telat|terlambat|lambat|molor|ngaret)(?:\s+(?:sedikit|banget|sekali|juga))?\b([^.!?;]{0,50}?)[,\s]+(?:masih\s+|cukup\s+|sangat\s+|jadi\s+)?(?:wajar|maklum|"
+     r"dimaklumi|dimaklum|bisa\s+dimaklumi|dimengerti|bisa\s+dimengerti|tidak\s+apa(?:\s+apa)?|tidak\s+masalah)\b", r"lamawajar\1"),
+    (r"\b(?:wajar|maklum|dimaklumi|tidak\s+apa\s+apa|tidak\s+masalah)\s+(?:(?:kalau|kalo|jika|bila|sih|lah|saja|kok|kak|ya|min|mas|mbak|"
+     r"bu|pak|deh|kalaupun|walau|meski)\s+){0,2}(?:agak\s+|sedikit\s+)?(?:lama|telat|terlambat|lambat)\b", "lamawajar"),
+    # "di read doang", "cuma dibaca" = chat diabaikan (layanan)
+    (r"\b(?:(?:cuma|hanya|cuman)\s+dibaca|dibaca\s+saja)\b(?=\s*(?:$|[,.!?;]|tidak|belum|tanpa|terus|lagi|sampai|dari))", r"\g<0> diabaikan"),
+    # segel terbuka/rusak = kemasan (dan bisa keamanan) - keluhan
+    (r"\bsegel\w*\s+" + _gap(8) + r"(?:terbuka|kebuka|dibuka|rusak|robek|lepas|hilang|bolong|putus|tidak\s+ada)\b", "segelrusak"),
+    # permukaan lengket = kebersihan; tekstur produk lengket BUKAN kebersihan (tanpa kata meja/lantai/dll.)
+    (r"\b((?:meja|lantai|kursi|piring|gelas|sendok|garpu|mangkok|mangkuk|nampan|gagang|pegangan|toilet|wastafel|karpet|sofa|menu|"
+     r"tempat\s+duduk)(?:nya)?\s+" + _gap(4) + r")lengket\b", r"\1lengket kotor"),
+]
 FRASA_103 = [
     (r"(?:^|(?<=[,.!?] ))(?:jujur|sejujurnya)(?:\s+(?:saja|ya|sih|deh|nih))?\b", "sejujurnya"),  # "jujur, ..." = pembuka, bukan pujian
     (r"\bongkos\s+(?:kirim|antar)\w*", "ongkir"),
     # pengiriman: nyasar / tidak diterima
     (r"\b(?:diterima|dikirim|diantar|antar|sampai|nyasar)\w*\s+(?:ke\s+)?(?:orang|alamat|rumah|tempat|kota)\s+(?:lain|yang\s+salah|tetangga)\b"
-     r"|\bsalah\s+alamat\b|\b(?:muter|mutar|putar|keliling)\s+(?:\w+\s+)?(?:sejam|lama|\d+\s*(?:jam|menit)|berjam\s+jam)\b", "nyasar"),
+     r"|\bsalah\s+alamat\b|\b(?:muter|mutar|putar|keliling)\s+(?:\w+\s+)?(?:sejam|lama|\d+\s*(?:jam|menit|hari|minggu)|berjam\s+jam|berhari\s+hari)\b", "nyasar"),
     (r"\b(?:tidak|belum)\s+(?:pernah|juga|kunjung)\s+(?:(?:saya|kami|aku)\s+)?(?:di)?terima\b|\bbelum\s+(?:(?:saya|kami|aku)\s+)?(?:di)?terima\b"
      r"|\btidak\s+(?:saya|kami|aku)\s+terima\b", "belumsampai"),
     # ketepatan pesanan
@@ -139,6 +219,8 @@ FRASA_103 = [
      r"masuk|hitung|ada)\w*\s+(\d+)\b", _angka_beda),
     (r"\b(" + _PESAN + r"\s+" + _JEDA + r")(?:yang\s+)?" + _TERIMA + r"\s+(?:malah\s+|justru\s+|kok\s+)?(" + _DESKRIPTOR +
      r")\b(?:\s+([a-z0-9]+)\b)?", _beda_pesanan),
+    (r"\b(" + _PESAN + r")\s+((?:(?:[a-z0-9]+|,|/)\s+){1,7}?)(?:(yang)\s+)?(" + _TERIMA + r")\s+([a-z0-9/]+(?:\s+[a-z0-9/]+){0,5})",
+     _salah_barang),
     (r"\b" + _TERIMA + r"\s+(?:yang|warna|ukuran|size|varian|model|motif)\s+(?:\w+\s+){0,2}?(?:padahal|harusnya|seharusnya|bukannya)\s+"
      r"(?:\w+\s+){0,3}?" + _PESAN, "salahpesanan"),
     (r"\b(?:datang|dikirim|sampai|dapat|dikasih)\w*\s+bukan\s+(?:yang|barang|warna|ukuran|varian|model|pesanan)\b", "salahpesanan"),
@@ -157,8 +239,9 @@ FRASA_103 = [
     # stok
     (r"\b(?:selalu|sering|sudah|lagi|terus)\s+sold\b|\b(?:ternyata|malah|tapi|eh)\s+(?:harus\s+|mesti\s+|jadi\s+|masih\s+)?(?:preorder|indent|inden)\b"
      r"|\btidak\s+pernah\s+ada\s+lagi\b|\btidak\s+(?:pernah\s+)?(?:dijual|diproduksi|tersedia|dibuat|restock)\s+lagi\b"
-     r"|\bkapan\s+(?:\w+\s+){0,2}?(?:diisi|dibuat|dijual|diproduksi|produksi|stok)\s+lagi\b"
-     r"|\bkapan\s+(?:\w+\s+){3,4}?(?:restock|ready|tersedia)\b", "habis"),
+     , "habis"),
+    (r"\bkapan\s+(?:\w+\s+){0,2}?(?:diisi|dibuat|dijual|diproduksi|produksi|stok)\s+lagi\b"
+     r"|\bkapan\s+(?:\w+\s+){3,4}?(?:restock|ready|tersedia)\b", "tanyarestock"),
     (r"\b(?:masih|belum)\s+(?:juga\s+)?(?:di)?(?:kemas|proses|packing|pack|pick\s*up|pickup)\w*", "belumdikirim"),
     (r"\b(?:makin|semakin|tambah)\s+(?:kecil|sedikit|tipis|dikit)\b", "sedikit"),
     # kualitas / rasa / nada kecewa
@@ -168,9 +251,11 @@ FRASA_103 = [
     (r"\btidak\s+(?:terlalu\s+|begitu\s+)?rapat\b", "tidakrapat"),
     (r"\bkok\s+(?:jadi\s+)?(?:begini|begitu)\b", "mengecewakan"),
     (r"\b\d+\s*menit\s+baru\b", "sudahlama"),
-    (r"\b(?:sampai|hingga)\s+(?:sekarang|saat\s+ini|hari\s+ini|detik\s+ini|kini)\b", "hinggakini"),  # bukan tema pengiriman
+    (r"\b(?:sampai|hingga)\s+(?:sekarang|saat\s+ini|hari\s+ini|detik\s+ini|kini)\b", "hinggakini"),
+    # v1.0.5: "tidak sampai sejam/2 hari sudah ..." = kurang dari (cepat), bukan "belum sampai"
+    (r"\btidak\s+(?:sampai|hingga)\s+(?=(?:\d+\s*(?:menit|jam|hari|minggu)|se(?:jam|hari|minggu|menit)|setengah\s+(?:jam|hari))\b)", "dalamwaktu "),  # bukan tema pengiriman
 ]
-FRASA = FRASA_103 + [
+FRASA = FRASA_104 + FRASA_103 + [
     (r"\bkurang\s+lebih\b", "kuranglebih"),
     (r"\btidak\s+ada\s+(?:yang\s+)?(?:minus|masalah|kendala|keluhan|kekurangan|komplain|cacat|lecet|kurang)(?:nya)?\b"
      r"|\btanpa\s+(?:minus|cacat|kendala|masalah)\b|\bno\s+minus\b", "tanpaminus"),
@@ -182,8 +267,9 @@ FRASA = FRASA_103 + [
      r"|\b(?:pesan\w*|order)\s+(?:\w+\s+){0,5}?(?:tapi\s+|malah\s+|kok\s+)?(?:dikasih|dikirim|diberi)\s+(?:yang|item|warna|ukuran|size|rasa|varian|model|barang\s+lain)\b"
      r"|\b(?:pesan\w*|order)\s+(?:\w+\s+){0,3}?(?:tapi|malah|kok)\s+(?:dapat|datang)\b", "salahpesanan"),
     (r"\b(?:pas|waktu|saat|begitu)\s+(?:datang|sampai|tiba|diterima)\s+(?:sudah\s+|udah\s+)?(?:dingin|kempes|melempem)\b", "makanandingin"),
-    (r"\bkapan\s+(?:\w+\s+){0,2}?(?:restock|ready|ada\s+lagi|tersedia|masuk\s+lagi|balik|kembali\s+ada)\b|\b(?:restock|ready)\s+kapan\b"
-     r"|\btidak\s+kebagian\b|\bout\s+of\s+stock\b|\boos\b|\bludes\b|\b(?:sering|selalu)\s+(?:habis|kosong)\b|\b(?:habis|kosong)\s+terus\b", "habis"),
+    (r"\bkapan\s+(?:\w+\s+){0,2}?(?:restock|ready|ada\s+lagi|tersedia|masuk\s+lagi|balik|kembali\s+ada)\b|\b(?:restock|ready)\s+kapan\b",
+     "tanyarestock"),
+    (r"\btidak\s+kebagian\b|\bout\s+of\s+stock\b|\boos\b|\bludes\b|\b(?:sering|selalu)\s+(?:habis|kosong)\b|\b(?:habis|kosong)\s+terus\b", "habis"),
     (r"\b(?:dikirim|dikasih|diberi)\s+salah(?:\s+(?:warna|ukuran|size|varian|model|barang|menu|produk|item))?\b|\btidak\s+sesuai\s+(?:pesanan|order)\b|\bsalah\s+(?:pesan(?:an)?|kirim|item|ambil|isi|warna|ukuran|size|varian|"
      r"model|barang|menu|produk|alamat|hitung)\b", "salahpesanan"),
     (r"\btidak\s+sesuai\b|\bbeda\s+(?:jauh|banget|sekali|warna|ukuran|bahan|model|dengan|sama|dari)\b|\btidak\s+(?:kayak|seperti|mirip)\s+"
@@ -219,7 +305,20 @@ NEGATOR = {"tidak", "belum", "bukan", "tanpa", "jangan"}
 # kata "aksi netral": setelah negasi berarti keluhan ("belum datang", "tidak dibalas", "tidak berfungsi")
 AKSI = set("""datang sampai dikirim kirim balas dibalas respons direspons diproses proses berfungsi nyala menyala jalan masuk cair gerak
 bergerak diangkat dihubungi bisa dikembalikan diganti ditanggapi update dikabari kabar dapat dicek diantar diterima terima jadi ada
-ready tersedia""".split())
+ready tersedia jawab dijawab digubris dikonfirmasi konfirmasi diurus dilayani
+pemberitahuan info informasi penjelasan kejelasan kepastian izin permisi balasan jawaban tanggapan dihubungi""".split())
+# v1.0.5 cakupan negasi eksistensial: "tidak/belum ada (yang) X", "tanpa X", "bebas X", "anti X" dengan X kata masalah = pernyataan
+# positif/netral ("tidak ada yang retak", "bebas noda", "gak ada bau apek"). Jendela beberapa kata, boleh melewati kata pengisi.
+NEG_EKSIS_AWAL = {"tanpa", "bebas", "anti"}
+NEG_EKSIS_ISI = set("""yang satupun satu pun sedikitpun sedikit sama sekali apapun apa pun lagi tanda kok sih ya kak min dan atau maupun ataupun
+serta juga the""".split())
+JENDELA_EKSIS = 4
+JENDELA_HILANG = 5
+# masalah yang "hilang/sembuh" = hasil baik ("noda membandel bisa hilang", "jerawat hilang"), bukan barang hilang
+PENGHILANG = {"hilang", "lenyap", "sembuh", "berkurang", "teratasi", "minggat", "rontok"}
+MASALAH_HILANG = set("""noda bau apek amis anyir pesing tengik busuk kotor kotoran debu berdebu jerawat jerawatan iritasi gatal perih kusam
+karat karatan jamur berjamur lengket kerak flek ketombe sakit nyeri pegal pegel mual lecet kusut breakout keringat gores goresan baret kerut
+keriput bengkak demam batuk pilek pusing bintik bruntusan komedo lumut kerak""".split())
 POS = set("""enak lezat nikmat mantap bagus puas suka cepat rapi ramah sopan murah terjangkau fresh segar hangat renyah empuk gurih
 recommended top oke keren juara wangi harum hemat bersih higienis aman kenyang mengenyangkan responsif adem nyaman cozy cantik lembut halus
 awet kokoh kuat sesuai amanah sabar informatif jujur sigap tanggap perfect sempurna best love lucu mulus kilat ori original asli bersahabat
@@ -234,7 +333,7 @@ hancur remuk pecah penyok macet error mati panas gerah pengap berisik bising sem
 kemahalan kemanisan keasinan kepedasan kepahitan keasaman kusut noda jerawat jerawatan iritasi gatal perih breakout jebol melar rontok
 berantakan php kosong harganaik sudahlama tunggulama cepatrusak fasilitasrusak musikkeras makanandingin kurangjumlah
 kesal jengkel sebal rugi dirugikan bosan malas batal dibatalkan rembes merembes stuck nyangkut tertahan mandek belumsampai mengelupas
-bolong bengkok karatan konslet korslet longgar kendor deadpixel diabaikan tidakrapat belumdikirim berlendir menggumpal""".split())
+bolong bengkok karatan konslet korslet longgar kendor deadpixel diabaikan tidakrapat belumdikirim berlendir menggumpal stoklama segelrusak""".split())
 KELUHAN_KUAT = {"salahpesanan", "kurangjumlah", "bendaasing", "sakitperut", "belumsampai", "belumdikirim", "nyasar", "tidaksesuai",
                 "keracunan", "basi", "kedaluwarsa"}
 PENGUAT = {"begitu", "terlalu", "banget", "sekali", "agak", "sangat", "amat", "cukup", "sih", "juga"}
@@ -243,7 +342,7 @@ PERANTARA = {"pernah", "ada", "yang", "juga", "sama", "begitu", "terlalu", "sang
              "menyebabkan"}
 BERLEBIH = {"terlalu", "kelewat", "kebanyakan", "kelewatan"}
 SARAN = re.compile(r"\b(sebaiknya|semoga\s+ada|tolong\s+(?:ditambah|tambah|dibuat|dibuatkan|diperbaiki|dibenahi|diadakan)|mohon|"
-                   r"kalau\s+bisa|usul\w*|saran\w*|request|harap|kapan\s+(?:ada|ready|buka|restock)|bisa\s+tidak|boleh\s+tidak|"
+                   r"kalau\s+bisa|usul\w*|saran\w*|request|harap|kapan\s+(?:ada|ready|buka|restock)|tanyarestock|bisa\s+tidak|boleh\s+tidak|"
                    r"tambahin|ditambah|dibuatkan|next|pengen|ingin|mau\s+dong)\b")
 RE_OPTATIF = re.compile(r"\b(?:semoga|jangan|harap|mohon|tolong|supaya|biar|agar)\b")
 TANYA_MINTA = re.compile(r"\b(kapan|bisa|boleh|ada|tolong|mohon|apakah|mau)\b")
@@ -253,7 +352,7 @@ TEMA_BAWAAN = [
     ("rasa", "Rasa / cita rasa", 4, r"rasa|enak|lezat|nikmat|gurih|hambar|anyep|asin|manis|pedas|pahit|asam|amis|gosong|mentah|renyah|empuk|"
      r"alot|keras|lembek|pera|bumbu|nendang|kematangan|matang|kemanisan|keasinan|kepedasan|kepahitan|keasaman|makanandingin|masihhangat"),
     ("kemasan", "Kemasan / packing", 3, r"kemasan|kemas|packing|packaging|pack|bungkus|dus|kardus|box|kotak|plastik|bubble|bubblewrap|bocor|"
-     r"tumpah|penyok|segel|wadah|botol|toples|lakban|kresek|rembes|merembes|tidakrapat"),
+     r"tumpah|penyok|segel|wadah|botol|toples|lakban|kresek|rembes|merembes|tidakrapat|segelrusak"),
     ("harga", "Harga / ongkir", 2, r"harga|mahal|murah|terjangkau|ongkir|diskon|promo|sepadan|biaya|tarif|hemat|pricey|kemahalan|harganaik"),
     ("pengiriman", "Pengiriman / ketepatan waktu", 3, r"kirim|pengiriman|kurir|ojol|ojek|gojek|grab|shopeefood|gofood|telat|terlambat|datang|"
      r"sampai|antar|tepatwaktu|delivery|resi|ekspedisi|jne|jnt|sicepat|anteraja|nyasar|kilat|ngaret|molor|dijemput|jemput|"
@@ -261,7 +360,7 @@ TEMA_BAWAAN = [
      r"stuck|tertahan|mandek|manifest|transit|gudang\s+transit|spx|ninja|lion\s+parcel|wahana|idexpress|lalamove|paxel|gosend|grabexpress|"
      r"same\s*day|instan|instant|driver"),
     ("layanan", "Layanan / respons admin & staf", 3, r"admin|layanan|pelayanan|pelayan|respons|responscepat|responslambat|balas|chat|ramah|"
-     r"sopan|judes|galak|cuek|staf|pegawai|karyawan|kasir|barista|waiter|waitress|teknisi|montir|mekanik|seller|penjual|ditanggapi|"
+     r"sopan|judes|galak|cuek|diabaikan|jawab|staf|pegawai|karyawan|kasir|barista|waiter|waitress|teknisi|montir|mekanik|seller|penjual|ditanggapi|"
      r"tanggap|sabar|informatif|amanah|dilayani|melayani"),
     ("ketepatan_pesanan", "Ketepatan pesanan", 4, r"ketuker|ketukar|tertukar|kelupaan|lupa\s+dimasukkan|salahpesanan|kurangjumlah|ketinggalan|zonk|salah\s+item"),
     ("kualitas_produk", "Kualitas produk / sesuai foto", 4, r"kualitas|bahan|jahitan|jahit|awet|rusak|cacat|luntur|pudar|kusam|"
@@ -271,12 +370,12 @@ TEMA_BAWAAN = [
      r"jerawat|jerawatan|iritasi|gatal|perih|breakout|kusut|noda|hasil|mulus|cepatrusak|jebol|melar|rontok|hancur|pecah|mengelupas|bolong|"
      r"bengkok|karat|karatan|konslet|korslet|longgar|kendor|deadpixel|layar|baterai|ngecas|dicas|nyala|menyala|sol|lem"),
     ("keamanan", "Keamanan produk (benda asing, basi, sakit)", 5, r"basi|kedaluwarsa|rambut|serangga|lalat|semut|ulat|belatung|kecoa|tikus|"
-     r"bendaasing|sakitperut|diare|keracunan|mual|muntah|alergi|jamur|berjamur|jijik|berlendir|menggumpal"),
-    ("kebersihan", "Kebersihan", 3, r"kotor|jorok|higienis|bersih|kebersihan|debu|berdebu|lengket"),
+     r"bendaasing|sakitperut|diare|keracunan|mual|muntah|alergi|jamur|berjamur|jijik|berlendir|menggumpal|stoklama"),
+    ("kebersihan", "Kebersihan", 3, r"kotor|jorok|higienis|bersih|kebersihan|debu|berdebu"),
     ("bau_aroma", "Bau / aroma", 3, r"bau|apek|tengik|anyir|pesing|busuk|wangi|harum|aroma"),
     ("porsi_ukuran", "Porsi / ukuran / size", 3, r"porsi|ukuran|size|kekecilan|kebesaran|kesempitan|kepanjangan|kependekan|pelit|kenyang|"
      r"mengenyangkan|gramasi|isian|pasbanget"),
-    ("stok_ketersediaan", "Stok / ketersediaan", 2, r"habis|kosong|stok|stock|restock|ready|preorder|kehabisan|persediaan|langka|indent|inden|kebagian|tersedia"),
+    ("stok_ketersediaan", "Stok / ketersediaan", 2, r"habis|kosong|stok|stock|restock|tanyarestock|ready|preorder|kehabisan|persediaan|langka|indent|inden|kebagian|tersedia"),
     ("pembayaran", "Pembayaran / refund", 3, r"bayar|pembayaran|transfer|qris|cod|refund|pengembalian|kembalian|tagihan|invoice|nota|struk|"
      r"cashback|saldo"),
     ("varian_menu", "Varian / menu / pilihan", 2, r"varian|menu|pilihan|model|motif|koleksi|rasa\s+baru|warna\s+baru|warna\s+lain"),
@@ -324,14 +423,32 @@ RE_TELP = re.compile(r"(?<![\w/.,])(?:\(0[2-7]\d{1,2}\)|0[2-7]\d{1,2}|\+62[\s.-]
 RE_USER = re.compile(r"(?<![\w.])@[A-Za-z0-9_.]{2,}")
 RE_NOPESAN = re.compile(r"\b(?:inv|invoice|order|pesanan|resi|no\.?\s*(?:pesanan|order|resi|inv))\s*[:#.\-]?\s*(?=[A-Za-z0-9\-/]*\d)[A-Za-z0-9\-/]{5,}\b", re.I)
 RE_KODE = re.compile(r"\b(?![a-z]{3,}2\b)(?=[A-Za-z0-9\-]*\d)(?=[A-Za-z0-9\-]*[A-Za-z])[A-Za-z0-9\-]{8,}\b|\b\d{9,}\b")
-RE_ALAMAT = re.compile(r"\b(?:jl|jln|jalan|gg|gang)\.?\s+[^,;\n]{3,40}", re.I)
-RE_ALAMAT2 = re.compile(r"\b(?:perum(?:ahan)?|komplek|kompleks|komp|cluster|apartemen|apart|griya|villa|residence)\.?\s+[^,;\n]{2,40}", re.I)
+# v1.0.5: alamat dikenali per kata (nama jalan + nomor/blok/RT), berhenti di kata biasa -> kalimat keluhan sesudahnya tidak ikut tertelan.
+# "jalan"/"gang" huruf kecil hanya dianggap alamat bila diikuti huruf besar/angka ("di jalan tol" bukan alamat).
+RE_ALAMAT = re.compile(r"\b(?:(?i:jl|jln)\b\.?|(?i:gg)\.|(?i:gg)(?=\s+[A-Z0-9])|(?i:jalan|gang)(?=\s+[A-Z0-9]))\s*")
+RE_ALAMAT2 = re.compile(r"\b(?i:perum(?:ahan)?|komplek|kompleks|komp|cluster|apartemen|apart|griya|villa|residence)\b\.?\s*")
+RE_KATA_ALAMAT = re.compile(r"(?:[A-Z][\w'-]*\.?|\d+[A-Za-z]?(?:/\d+)?\.?|[A-Za-z]\d+[A-Za-z]?|(?i:no|nomor|nmr|blok|blk|rt|rw|gg|gang|kav|"
+                            r"kavling|lt|lantai|raya|dalam|timur|barat|utara|selatan|ujung|indah|asri|permai)\.?|[A-Za-z]\.?|/)$")
 RE_BLOK = re.compile(r"\b(?:blok|blk|rt|rw|kav)\.?\s*[A-Za-z]?\d{1,4}[A-Za-z]?\b(?:\s*/\s*\d{1,3})?", re.I)
 RE_PLAT = re.compile(r"\b[A-Z]{1,2}\s?\d{1,4}\s?[A-Z]{1,3}\b")
 RE_AN = re.compile(r"((?i:\b(?:a\.\s?n\.?|a/n|an\.|atas\s+nama)))\s+((?:\[nama\]|[A-Za-z][A-Za-z']*)(?:\s+(?:\[nama\]|[A-Za-z][A-Za-z']*)){0,4})")
 RE_SAYA = re.compile(r"\b((?i:nama\s+(?:saya|sy|aku)|namaku))\s+([A-Za-z][A-Za-z']{1,})(?:\s+([A-Z][A-Za-z']{2,}))?"
                      r"|\b((?i:saya|aku|sy))\s+([A-Z][a-z']{2,})(?:\s+([A-Z][a-z']{2,}))?")
 RE_SAPAAN_NAMA = re.compile(r"\b(" + SAPAAN + r")\.?\s+(?:(" + GELAR + r")\s+)?([A-Z][A-Za-z']{2,})(?:\s+([A-Z][A-Za-z']{2,}))?")
+# v1.0.5: kata umum sehari-hari yang sering muncul sesudah sapaan ("gpp kak maklum", "iya mas siap") - BUKAN nama
+STOPWORD_SAPAAN = set("""maklum siap oke okay okey sip siip gpp gapapa gakpapa ngapapa santai aman sehat semangat amin aamiin iya iyaa yaa
+betul benar bener setuju ditunggu tunggu dulu lho loh sekalian lancar beres kelar noted baik baiklah punten nuhun suwun nuwun matur tq ty
+makasi makasii mksh mks trimakasih trims hehe wkwk haha hihi btw sama kembali selalu terus banget sekali dong nih tuh lah kah pun doang
+aja saja semua semuanya semoga cepat sukses berkah barokah mantul mantap sabar ramah juga kok sih deh nya kan ok pagi siang sore malam
+selamat permisi maaf mohon tolong salam met happy good nice thanks thank sorry please yes nope bisa boleh udah sudah belum blm udh sdh
+ready kirim kirimin order pesan cek mampir datang balik lagi kapan dimana mana gimana berapa apa""".split())
+
+
+def _kata_umum_sapaan(k):
+    k = (k or "").lower()
+    return k in STOPWORD_SAPAAN or re.sub(r"(.)\1+", r"\1", k) in STOPWORD_SAPAAN
+
+
 RE_SAPAAN_KECIL = re.compile(r"\b(" + SAPAAN + r")\s+([a-z]{3,12})(?=\s*(?:[,.!?)~]|$))")
 BUKAN_NAMA = {"Admin", "Seller", "Toko", "Min", "Kasir", "Owner", "Saya", "Aku", "Tolong", "Mau", "Ini", "Itu", "Yang", "Kok", "Bisa",
               "Boleh", "Apakah", "Minta", "Terima", "Terimakasih", "Makasih", "Halo", "Hai", "Selamat", "Maaf", "Pesanan", "Order",
@@ -339,7 +456,11 @@ BUKAN_NAMA = {"Admin", "Seller", "Toko", "Min", "Kasir", "Owner", "Saya", "Aku",
               "Pesan", "Kirim", "Nanti", "Besok", "Sama", "Juga", "Tapi", "Dan", "Atau", "Kalau", "Kapan", "Gimana", "Bagaimana", "Apa",
               "Sangat", "Suka", "Senang", "Puas", "Kecewa", "Beli", "Pakai", "Harus", "Sedang", "Lagi", "Baru", "Masih", "Tidak", "Ga",
               "Gak", "Enggak", "Nggak", "Punya", "Pernah", "Selalu", "Langganan", "Pelanggan", "Customer", "Cs", "Mohon", "Silakan"}
-RE_PENGIRIM_MEDIA = re.compile(r"<media[^>]*>|<attached[^>]*>|\(file attached\)|gambar tidak disertakan|video tidak disertakan|stiker tidak disertakan|audio tidak disertakan|dokumen tidak disertakan", re.I)
+# v1.0.5: penanda media WhatsApp Android/iOS, bahasa Indonesia & Inggris ("image omitted", "<Media tidak disertakan>", "stiker dihilangkan")
+RE_PENGIRIM_MEDIA = re.compile(
+    r"<media[^>]*>|<attached[^>]*>|\(file attached\)|(?:[^\s<>]+\s+•\s+(?:\d+\s+\w+\s+)?)?(?:document|dokumen)\s+omitted|"
+    r"\b(?:image|video|audio|sticker|gif|contact\s+card|photo|voice\s+message)\s+omitted\b|"
+    r"\b(?:gambar|foto|video|stiker|audio|dokumen|gif|kartu\s+kontak|pesan\s+suara)\s+(?:tidak\s+disertakan|dihilangkan|dihapus)\b", re.I)
 RE_SISTEM_TEKS = re.compile(r"pesan ini dihapus|you deleted this message|this message was deleted|pesan dihapus|end-to-end|terenkripsi|"
                             r"bergabung menggunakan tautan|telah ditambahkan|meninggalkan grup|mengubah (?:ikon|subjek|deskripsi)|null$", re.I)
 
@@ -379,6 +500,54 @@ def _samarkan_an(m):
     return re.sub(r"\s+", " ", m.group(1)) + " [nama]" + ((" " + sisa) if sisa else "")
 
 
+def _umum(k):
+    k = k.lower().strip(".")
+    return (k in KATA_UMUM or k in POS or k in NEG or k in AKSI or k in NEGATOR or k in SLANG or k in STOPWORD_SAPAAN
+            or re.sub(r"(nya|lah)$", "", k) in KATA_UMUM | set(SLANG))
+
+
+def _samarkan_alamat(t, awal):
+    """Ganti '<kata kunci alamat> <nama jalan> [No 5] [RT 04] ...' dengan [alamat]; berhenti pada kata biasa/tanda baca."""
+    hasil, pos = [], 0
+    for m in awal.finditer(t):
+        if m.start() < pos:
+            continue
+        sisa = t[m.end():]
+        kata = re.match(r"[^\s,;!?()\[\]]+(?:\s+[^\s,;!?()\[\]]+){0,7}", sisa)
+        if not kata:
+            continue
+        token = kata.group(0).split()
+        pakai, kecil = 0, 0
+        singkatan = {"no", "gg", "blk", "kav", "lt", "rt", "rw", "jl", "jln", "komp"}
+        for n, k in enumerate(token):
+            if n and token[n - 1].endswith(".") and token[n - 1][:-1].lower() not in singkatan and len(token[n - 1]) > 2:
+                break   # titik akhir kalimat: kata sesudahnya bukan alamat
+            if n == 0:
+                if k[:1].islower() and _umum(k):
+                    break
+                pakai = 1
+                continue
+            if k[:1].islower() and not re.match(r"\d", k) and not RE_KATA_ALAMAT.match(k):
+                if _umum(k) or kecil >= 2 or len(k) < 3:
+                    break
+                kecil += 1
+            elif not RE_KATA_ALAMAT.match(k):
+                break
+            elif k[:1].isupper() and any(re.match(r"\d", x) for x in token[:n]) and _umum(k):
+                break   # "Jl. Melati No 5 Kurirnya telat": sesudah nomor, kata umum berhuruf besar bukan alamat
+            pakai = n + 1
+        if not pakai:
+            continue
+        panjang = len(" ".join(token[:pakai]))
+        akhir = m.end() + sisa.index(token[0]) + panjang
+        ujung = token[pakai - 1]
+        if ujung.endswith(".") and ujung[:-1].lower() not in singkatan and len(ujung) > 2:
+            akhir -= 1   # titik akhir kalimat tidak ikut disamarkan
+        hasil.append(t[pos:m.start()] + "[alamat]")
+        pos = akhir
+    return "".join(hasil) + t[pos:]
+
+
 def samarkan(teks, nama_pengirim=()):
     t = teks
     for n in sorted(token_nama(nama_pengirim) if nama_pengirim else (), key=len, reverse=True):
@@ -391,8 +560,8 @@ def samarkan(teks, nama_pengirim=()):
     t = RE_USER.sub("[akun]", t)
     t = RE_NOPESAN.sub("[nomor]", t)
     t = RE_KODE.sub("[nomor]", t)
-    t = RE_ALAMAT.sub("[alamat]", t)
-    t = RE_ALAMAT2.sub("[alamat]", t)
+    t = _samarkan_alamat(t, RE_ALAMAT)
+    t = _samarkan_alamat(t, RE_ALAMAT2)
     t = RE_BLOK.sub("[alamat]", t)
     t = RE_PLAT.sub("[plat]", t)
     t = RE_AN.sub(_samarkan_an, t)
@@ -406,12 +575,13 @@ def samarkan(teks, nama_pengirim=()):
     t = RE_SAYA.sub(_saya, t)
 
     def _sapaan(m):
-        if m.group(3) in BUKAN_NAMA or (m.group(2) is None and _bukan_nama(m.group(3))):
+        if m.group(3) in BUKAN_NAMA or (m.group(2) is None and (_bukan_nama(m.group(3)) or _kata_umum_sapaan(m.group(3)))):
             return m.group(0)
         ekor = (" " + m.group(4)) if m.group(4) and _bukan_nama(m.group(4)) else ""
         return m.group(1) + (" " + m.group(2) if m.group(2) else "") + " [nama]" + ekor
     t = RE_SAPAAN_NAMA.sub(_sapaan, t)
-    t = RE_SAPAAN_KECIL.sub(lambda m: m.group(0) if _bukan_nama(m.group(2)) or m.group(2) in VOCAB else m.group(1) + " [nama]", t)
+    t = RE_SAPAAN_KECIL.sub(lambda m: m.group(0) if _bukan_nama(m.group(2)) or m.group(2) in VOCAB or _kata_umum_sapaan(m.group(2))
+                            else m.group(1) + " [nama]", t)
     return re.sub(r"\s+", " ", t).strip()
 
 
@@ -902,6 +1072,9 @@ def baca_berkas(spesifikasi, opsi):
     kanal = kanal.strip() or re.sub(r"\.\w+$", "", path.replace("\\", "/").split("/")[-1]) or "kanal"
     ext = path.lower().rsplit(".", 1)[-1] if "." in path else ""
     info = {"berkas": nama, "kanal": kanal, "jenis": "teks", "peringatan": [], "catatan": catatan}
+    if ext == "json":
+        info["peringatan"].append("berkas .json dibaca sebagai teks tempelan (satu masukan per baris). Bila ini berkas tema, pakai --tema %s; "
+                                  "bila data ulasan, ekspor sebagai CSV." % nama)
     baris1 = teks.lstrip("\ufeff").split("\n", 1)[0]
     # .txt berisi tabel bertab (ekspor Excel "Unicode Text"): baca sebagai tabel, bukan teks tempelan
     tab_tabel = False
@@ -1002,6 +1175,7 @@ def normalkan(teks, vocab=None, peta=None):
     t = re.sub(r"\b([a-z]{3,})2\b", r"\1", t)            # 'anak2' -> 'anak'
     t = re.sub(r"\b([a-z]{3,})-\1\b", r"\1", t)          # 'gerak-gerak'
     t = re.sub(r"\b(di|ke|ter|ber)-(?=[a-z]{3,})", r"\1", t)  # 'di-read' -> 'diread', 'di-cancel'
+    t = re.sub(r"\bdi\s+read\b", "diread", t)               # v1.0.4: 'di read' = 'diread'
     t = re.sub(r"\bj\s*&\s*t\b", "jnt", t)
     t = re.sub(r"\bg(?:a|ak|k)(?=(?:enak|sesuai|bisa|ada|jelas|dibalas|dibales|datang|dateng|nyampe|sampai|bagus|ramah|rapi|bersih|awet|"
                r"adem|nyaman|mau|respon|fresh|sopan|cocok)\b)", "tidak ", t)
@@ -1034,8 +1208,11 @@ def pecah_klausa(t):
 
 
 def polaritas(k, kata_pos, kata_neg):
-    for cal in (k, re.sub(r"(?:nya|ya|in|kan|lah)$", "", k), re.sub(r"^di", "", re.sub(r"(?:nya|in|kan)$", "", k))):
+    for cal in (k, re.sub(r"(?:nya|ya|in|kan|lah)$", "", k), re.sub(r"^di", "", re.sub(r"(?:nya|in|kan)$", "", k)),
+                re.sub(r"^ke(\w{3,})an(?:nya)?$", r"\1", k)):   # v1.0.5 "kerusakan" -> "rusak"
         if cal and len(cal) >= 3:
+            if cal != k and cal in {"terima", "kasih"}:
+                continue   # v1.0.5: "diterima" bukan "terima kasih"
             if cal in kata_neg:
                 return -1
             if cal in kata_pos:
@@ -1043,12 +1220,72 @@ def polaritas(k, kata_pos, kata_neg):
     return 0
 
 
+def _masalah(t):
+    return t in MASALAH_HILANG or re.sub(r"(?:nya|ny)$", "", t) in MASALAH_HILANG
+
+
+def _cakupan_negasi(tok, kata_pos, kata_neg, neg_kustom=frozenset()):
+    """v1.0.5: aturan cakupan negasi UMUM (jendela kata), dikembalikan sebagai {indeks: nilai}.
+    1. Negasi eksistensial "tidak/belum ada (yang) X" / "tanpa X" / "bebas X" / "anti X": kata masalah X dalam JENDELA_EKSIS kata
+       (melewati kata pengisi 'yang', 'satupun', 'sama sekali', dll.) dibalik jadi positif; X berikutnya yang disambung 'dan/atau' ikut.
+       "ada" sendiri tidak lagi dihitung keluhan bila yang dinegasi ternyata kata masalah. Bila kata pertama yang ditemui adalah aksi
+       ("tidak ada yang bisa dihubungi", "tidak ada yang balas") -> keluhan. Kata benda biasa ("ga ada parkiran") -> aturan lama (keluhan).
+    2. Masalah + hilang/sembuh/berkurang dalam JENDELA_HILANG kata ("noda tinta bisa hilang", "jerawat hilang") = hasil baik: masalah 0, hilang +1;
+       "noda tidak hilang" tetap keluhan (hilang dinegasi)."""
+    tetap = {}
+    n = len(tok)
+    for i, k in enumerate(tok):
+        if k in NEG_EKSIS_AWAL or (k in {"ada", "terdapat", "ditemukan", "kelihatan", "terlihat"} and i >= 1 and tok[i - 1] in {"tidak", "belum"}):
+            j, dilihat, balik = i + 1, 0, []
+            while j < n and dilihat < JENDELA_EKSIS:
+                t = tok[j]
+                if t in NEG_EKSIS_ISI:
+                    j += 1
+                    continue
+                p = polaritas(t, kata_pos, kata_neg)
+                if p < 0 or t in neg_kustom or _masalah(t):
+                    balik.append(j)
+                    j += 1
+                    continue
+                if balik or t in NEGATOR or p > 0:
+                    break
+                if t in AKSI and k not in NEG_EKSIS_AWAL - {"tanpa"} and not balik:
+                    if tok[i] in {"ada", "terdapat"}:
+                        tetap[i] = 0
+                        tetap[j] = -1          # "tidak ada yang bisa dihubungi", "tidak ada yang balas"
+                    break
+                dilihat += 1
+                j += 1
+            if balik:
+                for b in balik:
+                    tetap[b] = 1
+                if k not in NEG_EKSIS_AWAL:
+                    tetap[i] = 0               # "ada" pada "tidak ada noda" bukan keluhan
+                    tetap[i - 1] = 0
+                else:
+                    tetap[i] = 0
+    for j, k in enumerate(tok):
+        if k in PENGHILANG and j not in tetap:
+            for b in range(j - 1, max(-1, j - 1 - JENDELA_HILANG), -1):
+                if _masalah(tok[b]):
+                    tetap.setdefault(b, 0)
+                    negasi = (j >= 1 and tok[j - 1] in NEGATOR) or (j >= 2 and tok[j - 2] in NEGATOR and tok[j - 1] in PERANTARA)
+                    tetap[j] = -1 if negasi else 1
+                    break
+    return tetap
+
+
 def skor_klausa(klausa, kata_pos, kata_neg, tanya=False, neg_kustom=frozenset()):
     tok = re.findall(r"[a-z0-9\[\]]+", klausa)
+    tetap = _cakupan_negasi(tok, kata_pos, kata_neg, neg_kustom)   # v1.0.5: indeks -> nilai yang sudah pasti
     skor, i = 0, 0
     terpakai = -1   # indeks kata terakhir yang sudah "dimakan" negasi ("belum sampai" -> kata sesudahnya tidak ikut dinegasi)
     while i < len(tok):
         k = tok[i]
+        if i in tetap:
+            skor += 0 if (tanya and tetap[i] > 0) else tetap[i]
+            i += 1
+            continue
         # negasi hanya untuk kata tepat sesudahnya, atau dengan satu kata antara ("tidak pernah telat", "belum juga datang")
         dinegasi = (i >= 1 and tok[i - 1] in NEGATOR) or (i >= 2 and tok[i - 2] in NEGATOR and tok[i - 1] in PERANTARA
                                                            and terpakai != i - 1)
@@ -1123,12 +1360,20 @@ def buat_tema(konfigurasi):
     tema = [dict(id=i, label=l, dampak=d, pola=re.compile(AFIKS[0] + p + AFIKS[1])) for i, l, d, p in TEMA_BAWAAN]
     kata_pos, kata_neg = set(POS), set(NEG)
     neg_kustom = set()
+    peringatan = []
+    buat_tema.peringatan = peringatan
     if konfigurasi:
         if not isinstance(konfigurasi, dict):
             raise Gagal("tema.json harus berupa objek {...}; lihat templates/tema-contoh.json.")
         if konfigurasi.get("ganti_tema"):
             tema = []
-        hapus = set(konfigurasi.get("hapus_tema", []) or [])
+        hapus = konfigurasi.get("hapus_tema", []) or []
+        if not isinstance(hapus, list):
+            hapus = [hapus]
+        hapus = set(str(h) for h in hapus)
+        dikenal = {t["id"] for t in tema}
+        for h in sorted(hapus - dikenal):
+            peringatan.append("tema.json: hapus_tema \"%s\" tidak dikenal - diabaikan. Id bawaan: %s." % (h, ", ".join(sorted(dikenal))))
         tema = [t for t in tema if t["id"] not in hapus]
         for tid, kata in (konfigurasi.get("tambah_kata", {}) or {}).items():
             if not isinstance(kata, list):
@@ -1164,6 +1409,7 @@ def buat_tema(konfigurasi):
 
 
 buat_tema.neg_kustom = frozenset()
+buat_tema.peringatan = []
 
 
 _CACHE_TYPO = {}
@@ -1188,6 +1434,9 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
     total = 0
     per_tema = defaultdict(set)
     tanpa_tema_keluhan = False
+    restock_keluhan = None
+    if "tanyarestock" in norm:
+        restock_keluhan = _restock_keluhan(teks_anonim, norm, bintang)
     for k, tanya in klausa:
         s = skor_klausa(k, kata_pos, kata_neg, tanya, neg_kustom)
         _TERAKHIR["skor"].append(s)
@@ -1207,6 +1456,13 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
             jenis = "netral"
         if jenis != "keluhan" and (optatif or SARAN.search(k) or (tanya and TANYA_MINTA.search(k)) or peran == "saran"):
             jenis = "saran"
+        if s == 0 and "lamawajar" in k:
+            jenis = "netral"   # "telat karena tanggal merah, wajar" = dimaklumi pelanggan: bukan keluhan, bukan pujian
+        if s == 0 and restock_keluhan is not None and "tanyarestock" in k:
+            # "kapan restock?" = keluhan hanya bila ada nada kecewa/bintang <= 3; bernada senang/bintang 4-5 = permintaan (saran)
+            jenis = "keluhan" if restock_keluhan else "saran"
+            if restock_keluhan and bintang is None:
+                total -= 1
         cocok = [t["id"] for t in tema if t["pola"].search(k)]
         # salah kirim/jumlah kurang = ketepatan pesanan, bukan keterlambatan: kata "dikirim/datang" saja tidak cukup untuk tema pengiriman
         if "ketepatan_pesanan" in cocok and "pengiriman" in cocok and not re.search(
@@ -1237,6 +1493,27 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
     return sent, per_tema
 
 
+RE_RESTOCK_KECEWA = re.compile(
+    r"\b(?:lama|kelamaan|sudahlama|tunggulama|terus|lagi\s+lagi|sering|selalu|kecewa|mengecewakan|berkali|habis|kosong|kehabisan|"
+    r"tidak\s+pernah|belum\s+juga|hinggakini|capek|bosan|php|kesal|dari\s+(?:bulan|minggu|kemarin|dulu|lama)|sudah\s+\d+|kok|masa)\b")
+RE_RESTOCK_SENANG = re.compile(
+    r"\b(?:orderlagi|mau\s+(?:\w+\s+)?(?:order|beli|pesan|ambil|checkout|borong|coba)|pengen|ingin|suka|naksir|incar\w*|favorit|"
+    r"langganan|terima\s+kasih|recommended|bagus|enak|cantik|mantap|keren|love|lucu|cocok)\b")
+RE_EMOJI_SENANG = re.compile(r"[\U0001F60D\U0001F970\u2764\U0001F60A\u263A\U0001F929\U0001F495\U0001F496\u2728\U0001F917\U0001F618"
+                             r"\U0001F64F\U0001F601\U0001F604\U0001F973]")
+
+
+def _restock_keluhan(teks, norm, bintang):
+    """Pertanyaan restock/ready: True = keluhan stok, False = permintaan (catatan saran)."""
+    if bintang is not None and bintang <= 3:
+        return True
+    if RE_RESTOCK_KECEWA.search(norm) or RE_EMOJI_KELUHAN.search(teks):
+        return True
+    if bintang is not None and bintang >= 4:
+        return False
+    return not (RE_RESTOCK_SENANG.search(norm) or RE_EMOJI_SENANG.search(teks))
+
+
 # Jaring pengaman: penanda nada keluhan umum (dibaca pada teks yang sudah dinormalkan). Hanya untuk daftar "Perlu dibaca agent",
 # tidak pernah menambah angka tabel keluhan.
 RE_NADA_KELUHAN = re.compile(
@@ -1244,10 +1521,43 @@ RE_NADA_KELUHAN = re.compile(
     r"bohong|batal|dibatalkan|refund|retur|harusnya|seharusnya|terus\s+menerus|berkali|lagi\s+lagi|bagaimana\s+sih|tolong\s+dong|"
     r"mending|kapan\s+lagi\s+tidak|tidak\s+lagi|tidak\s+akan|sayang\s+sekali|sayangnya|marah|kesel|bosan|biasa\s+saja|jelek|buruk|"
     r"bukan\s+(?:yang|barang|pesanan)|tetap\s+saja|(?:cuma|hanya|cuman)\s+(?:\w+\s+)?\d+|yang\s+(?:datang|dikirim|sampai|dapat|dikasih)\w*|"
-    r"masih\s+(?:di)?(?:kemas|proses)\w*|belum\s+juga|sampai\s+sekarang|hinggakini)\b"
+    r"masih\s+(?:di)?(?:kemas|proses)\w*|belum\s+juga|sampai\s+sekarang|hinggakini|ternyata\s+(?:tetap|masih|malah)|"
+    r"katanya\b[^.!?]{0,60}\bternyata|(?:sesudah|setelah)\b[^.!?]{0,60}\bmalah)\b"
     r"|[\U0001F620\U0001F621\U0001F92C\U0001F624\U0001F612\U0001F644\U0001F44E\U0001F61E\U0001F614\U0001F622\U0001F62D\U0001F494\U0001F611]")
 RE_EMOJI_KELUHAN = re.compile(r"[\U0001F620\U0001F621\U0001F92C\U0001F624\U0001F612\U0001F644\U0001F44E\U0001F61E\U0001F614\U0001F622"
                               r"\U0001F62D\U0001F494\U0001F611]")
+
+
+# v1.0.4 sindiran: pujian/emoji ironi + konteks buruk ("keren, belum dijawab dari minggu lalu 👍", "hebat, datang pas sudah selesai 😂")
+RE_SINDIR_PUJI = re.compile(r"\b(?:hebat|keren|mantap|salut|luar\s+biasa|wow|top|juara|pintar|pinter|bagus|sip|the\s+best|good\s+job|"
+                            r"terima\s+kasih\s+(?:loh|lho|ya|banyak|sekali)|makasih\s+(?:loh|lho))\b")
+RE_SINDIR_EMOJI = re.compile(r"[\U0001F643\U0001F644\U0001F44F\U0001F642]")   # 🙃 🙄 👏 🙂
+# v1.0.5: konteks buruk dibagi dua. KUAT = jelas buruk apa pun kalimatnya (waktu molor, acara sudah bubar, tidak ada kabar).
+# LEMAH ("belum", "rusak", "malah", "tidak bisa") hanya dihitung bila klausanya memang bernilai negatif - "keren, tidak ada yang rusak 👏",
+# "hebat, noda bisa hilang 👏", "mantap, malah dapat bonus 👏" bukan sindiran.
+RE_SINDIR_KONTEKS = re.compile(
+    r"\b(?:hinggakini|sudahlama|tunggulama|nyasar|kelamaan|selesai\s+makan|"
+    r"sudah\s+(?:selesai|bubar|lewat|tutup|pulang|kelar|berangkat)|dari\s+(?:minggu|bulan)\s+(?:lalu|kemarin)|tidak\s+ada\s+kabar|"
+    r"(?:sampai|baru)\s+\d+\s*(?:hari|minggu|bulan)|\d+\s*(?:hari|minggu|bulan)\s+baru)\b")
+RE_SINDIR_KONTEKS_LEMAH = re.compile(r"\b(?:belum(?!\s+pernah)|tidak\s+bisa|muter|remuk|penyok|hancur|rusak|mati|malah|hilang)\b")
+# v1.0.4 pertanyaan menagih: "kok belum dikirim?", "sudah transfer dari pagi, belum lunas kak?"
+RE_TAGIH_KOK = re.compile(r"\b(?:kok|masa|kenapa|mengapa)\b(?:\s+\w+){0,4}?\s+(?:belum|tidak|masih)\b")
+RE_TAGIH_BELUM = re.compile(r"\bbelum\s+(?:juga\s+)?(?!(?:pernah|kak|ya|sih|min|nih|dong|kah|gan|sis|bang|mas|mbak|ada\s+yang)\b)[a-z]{3,}")
+RE_TAGIH_KONTEKS = re.compile(r"\b(?:sudah|transfer|bayar|dibayar|checkout|pesan|order|dari|kemarin|tadi|hinggakini|sudahlama|kok|masa)\b")
+
+
+def sindiran_atau_tagih(teks_anonim, norm):
+    """True bila kalimat mirip sindiran atau pertanyaan menagih (hanya untuk 'Perlu dibaca agent', tidak menambah tabel)."""
+    if RE_SINDIR_PUJI.search(norm) or RE_SINDIR_EMOJI.search(teks_anonim):
+        if RE_SINDIR_KONTEKS.search(norm):
+            return True
+        for k, tanya in pecah_klausa(norm):
+            if RE_SINDIR_KONTEKS_LEMAH.search(k) and skor_klausa(k, POS, NEG, tanya) < 0:
+                return True
+    for k, tanya in pecah_klausa(norm):
+        if tanya and (RE_TAGIH_KOK.search(k) or (RE_TAGIH_BELUM.search(k) and RE_TAGIH_KONTEKS.search(norm))):
+            return True
+    return False
 
 
 def nada_keluhan(teks_anonim, bintang, kata_pos=None, kata_neg=None):
@@ -1262,6 +1572,8 @@ def nada_keluhan(teks_anonim, bintang, kata_pos=None, kata_neg=None):
         norm = normalkan(teks_anonim)
         skor = [skor_klausa(k, kata_pos, kata_neg, tanya) for k, tanya in pecah_klausa(norm)]
     if any(x < 0 for x in skor):
+        return True
+    if sindiran_atau_tagih(teks_anonim, norm):
         return True
     return bool(RE_NADA_KELUHAN.search(norm) or RE_NADA_KELUHAN.search(teks_anonim)) and sum(skor) <= 0
 
@@ -1292,7 +1604,7 @@ def olah(sumber, opsi, konfigurasi=None):
     tema, kata_pos, kata_neg = buat_tema(konfigurasi)
     item = []
     dibuang = Counter()
-    meta = {"pengirim": {}, "sumber": [], "peringatan": []}
+    meta = {"pengirim": {}, "sumber": [], "peringatan": list(buat_tema.peringatan)}
     buang_teks_sama = getattr(opsi, "buang_teks_sama", False)
     staf = [s.lower() for s in getattr(opsi, "staf_list", [])]
     for spes in sumber:
@@ -1308,7 +1620,11 @@ def olah(sumber, opsi, konfigurasi=None):
                 if any(s in pengirim.lower() for s in staf):
                     dibuang["pesan staf"] += 1
                     continue
+                ada_media = bool(RE_PENGIRIM_MEDIA.search(isi))
                 isi = RE_PENGIRIM_MEDIA.sub("", isi).strip()
+                if ada_media and not re.search(r"\w", isi) and not RE_EMOJI_KELUHAN.search(isi):
+                    dibuang["pesan sistem/media"] += 1
+                    continue
                 item.append(dict(kanal=kanal, tgl=tgl, nilai=None, skala=None, isi=isi, nama=nama, peran="ulasan", urutan=info.get("urutan", "hb"),
                                  identitas=(info["berkas"], pengirim.lower(), tgl), berkas=info["berkas"], min_kata=2))
         else:
