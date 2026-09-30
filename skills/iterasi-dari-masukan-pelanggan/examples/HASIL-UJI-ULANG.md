@@ -96,3 +96,136 @@ Patch atas butir "Perbaikan disarankan" di atas. Diuji dengan baris & berkas bua
 | Tema lemah | Ketepatan pesanan: "pesan X dikirim item/yang ...", "3x pesen 3x salah", "salah terus", "tidak dikasih/dimasukkan", "datang 1"; pengiriman: paket, estimasi, tiba, pengantaran, lacak, dll., dan bukan pengiriman bila hanya salah-kirim/jumlah kurang; stok: "kapan restock/ready?" = keluhan, "sering kosong", "tidak kebagian", OOS | `test_ketepatan_*`, `test_pengiriman`, `test_stok` |
 
 Keterbatasan tersisa (sengaja tidak ditangani, sudah ada di Batasan/peringatan): sindiran, dua tanda kutip nyasar, pertanyaan stok "ready ga kak?" (tetap netral), "paket dititip satpam padahal ga minta" (tema pengiriman netral). Uji: `python3 scripts/uji_olah_masukan.py` -> 85 tes OK; `validate.py --skill iterasi-dari-masukan-pelanggan` lulus; `uji_openclaw.sh` 111/111. Berkas bantu: scratchpad `revisi-iterasi2/`.
+
+
+## Uji ulang 1.0.2 (penguji independen kedua, 2026-09-30)
+Penguji: agent terpisah (bukan pembuat, bukan penguji 1.0.1). Hanya membaca folder skill + CLAUDE.md. Platform: `claude-code (simulasi agent)`.
+Berkas bantu: scratchpad `uji-ulang-iterasi2/` (`label.py` = set berlabel baru, `ukur.py`, `fitur.py`, `f/` = berkas uji).
+
+### A. Pemeriksaan dasar
+| Butir | Hasil |
+|---|---|
+| `python3 scripts/validate.py --skill iterasi-dari-masukan-pelanggan` | ✅ 1 skill valid, 111 baris katalog sesuai |
+| `scripts/uji_olah_masukan.py` | ✅ 85 tes OK |
+| Berkas rusak (tidak ada, kosong, biner, tanpa kolom teks, kutip ganjil, tema.json rusak, `--kolom-bintang` salah) | ✅ semua `GAGAL: ...` bahasa awam, tanpa traceback (tidak ada regresi) |
+
+### B. Verifikasi perbaikan yang diklaim di "Catatan revisi 1.0.2"
+| Klaim | Hasil | Bukti |
+|---|---|---|
+| Kolom NPS Google Form | ✅ | "Seberapa besar kemungkinan Anda merekomendasikan ...?" dan "Tingkat kepuasan Anda" dipakai sebagai nilai 0-10; NPS +0,0 cocok hitung tangan (4 promotor / 2 pasif / 4 detraktor). Kolom angka berjudul asing ("Q1") dipakai + PERINGATAN. Kolom teks bernama "Kepuasan" tetap dibaca sebagai teks, kolom "Nilai" sebagai nilai. Kolom "Nomor WA" tidak terbaca. |
+| Tanggal AS & ambigu | ✅ | Timestamp `8/13/2026 19:00:11` -> bulan/hari + PERINGATAN, bulan 2026-08 benar. Semua tanggal ≤ 12 -> PERINGATAN "ambigu" (+ "masa depan" bila bulan > September). Campuran dua urutan, tanggal tak terbaca ("kemarin"), bulan 2026-12 -> PERINGATAN. Chat WA iOS AS (`[8/15/26, 7:40:51 PM]`) dan WA ambigu juga diberi peringatan; `--urutan-tanggal bulan-hari` mengubah bulan dengan benar. ISO `2026-08-01 10:11` benar tanpa peringatan palsu. |
+| UTF-16 .txt ("Unicode Text") | ✅ | UTF-16 BOM bertab, UTF-16 LE tanpa BOM, dan UTF-8 bertab dibaca sebagai tabel (kolom teks/bintang/tanggal benar). Tab tidak seragam -> PERINGATAN + dibaca sebagai teks (judul ikut jadi masukan, tapi terlihat). Teks tempelan dengan satu tab nyasar -> PERINGATAN, tetap benar. |
+| "pas dipake" | ✅ | "pas dipake 2x udah melar", "pas dipake langsung robek" = keluhan; "pas dipake enak banget", "ukurannya pas dipake" = pujian. "semoga lain kali gak telat" = saran; "ga bikin jerawatan" = pujian; "pas dateng udah dingin" = keluhan (tema rasa saja, bukan pengiriman). |
+| "dikirim2" tidak disamarkan | ✅ | "dikirim2", "berkali2", "dibalas2" utuh -> tema pengiriman/layanan keluhan; kode "ABCD12345" tetap `[nomor]`. |
+| Nama setelah "a.n."/"atas nama" | ✅ (sisa kecil) | "a.n. Yuyun Kartika", "atas nama Budi Santoso Wijaya", "a.n. siti rahma", "a/n", "an.", "resi a.n. [nama] Kartika" tersamar penuh; kata keluhan sesudahnya ("belum dikirim", "telat parah", "tapi belum dikonfirmasi") tetap utuh. Sisa: nama 5+ kata bocor sebagian ("a.n. [nama] Putri Lestari"); "a.n. saya sendiri" ikut disamarkan (berlebihan, tidak berbahaya). |
+| Leksikon pengiriman / ketepatan / stok | ⚠️ hanya frasa uji sebelumnya | Semua frasa yang dilaporkan penguji 1.0.1 kini benar ("pesen navy dikirim item", "3x pesen 3x salah", "pesen yg ga pedes dikasih yg pedes", "kapan restock?", "sering kosong", "ga kebagian"). Tetapi pada set baru (bagian C) recall ketiga tema ini tetap rendah -> perbaikan cenderung per frasa, belum menggeneralisasi. |
+
+### C. Set berlabel baru (buta bagi pembuat)
+74 baris baru (54 keluhan / 20 bukan keluhan; 64 pasangan keluhan-tema), ditulis sebelum menjalankan script: kue/bakery, frozen food, skincare,
+aksesori HP, fashion, kafe, laundry, catering; slang, sindiran, negasi, pertanyaan, harapan; sengaja diperbanyak pengiriman (13), ketepatan
+pesanan (9) dan stok (5). Jalur ukur sama dengan penguji 1.0.1 (`samarkan` -> `analisis_item`, tema bawaan) dan dicek ulang lewat CLI
+(`buta.csv`, hasil tabel identik). Label yang bisa diperdebatkan: "kopinya asem banget kayak basi" (rasa+keamanan), "biasa aja, nggak istimewa" (rasa), "tolong ... pake ekspedisi yg lebih cepet" (keluhan pengiriman).
+
+| Ukuran | Dengan bintang | Teks saja | (1.0.1, set lama) |
+|---|---|---|---|
+| Recall keluhan per baris | **70%** (38/54) | **61%** (33/54) | 75% / 72% |
+| Presisi keluhan per baris | **100%** (38/38) | **100%** (33/33) | 98% |
+| Keluhan palsu | 0/20 | 0/20 | 1/31 |
+| Recall per baris bila sentimen "negatif" juga dihitung | 78% (42/54) | - | 82% |
+| Recall per tema | **64%** (41/64) | **59%** (38/64) | 69% |
+| Presisi per tema | **80%** (41/51) | **88%** (38/43) | 83% |
+
+Per tema (dengan bintang; tp/fn/fp): bau 2/0/0, fasilitas 2/0/0, kebersihan 1/0/0, waktu tunggu 1/0/0, kemasan 3/0/1, pembayaran 3/0/1,
+porsi 2/0/1, keamanan 3/1/0 (75%), layanan 3/1/0 (75%), rasa 3/1/2 (75%/60%), kualitas 5/2/2 (71%/71%), stok 3/2/0 (60%),
+harga 1/1/0, varian 1/1/1, **pengiriman 6/7/2 (46%/75%)**, **ketepatan pesanan 2/7/0 (22%)**.
+
+Kesalahan khas yang tersisa:
+- Ketepatan pesanan: "Pesan ukuran L yang datang ukuran S" & "order 2 lusin cuma dikirim 18 pcs" -> masuk **pengiriman** (+porsi); "pesan warna sage kok dapetnya mint", "toppingnya salah, minta keju dikasih coklat", "bonus stiker ga pernah dikasih", "catatan tanpa bawang diabaikan", "yang dateng varian original padahal checkout varian pedas" tidak terbaca. Akibatnya di tabel script ketepatan pesanan = 2 keluhan ("Pantau") padahal label = 9 (isu #2).
+- Slang umum belum dinormalkan: "belom nyampe" (vs "belum sampai" benar), "abis mulu" (vs "habis terus" benar), "di-read doang", "bosen", "lelet" tidak ada -> keluhan netral.
+- "warna hitam" (pertanyaan stok) memicu kualitas_produk keluhan; "kerasa tipis" memicu tema rasa; "stok kosong, dicancel" memicu pembayaran dari "udah bayar".
+- Sindiran ("hebat ya, pesen senin sampenya senin depan 👏") tidak terbaca (sudah diakui di Batasan).
+
+### D. Kegagalan diam-diam
+- Input/berkas: **tidak ditemukan** lagi kegagalan diam-diam pada kasus 1.0.1 (NPS, tanggal AS/ambigu, Unicode Text) - semuanya kini benar atau diberi PERINGATAN.
+- Klasifikasi: 10 masukan tanpa tema muncul di "Perlu dibaca agent" (terlihat). Namun **9/54 keluhan (17%)** bersentimen netral/positif dan hanya bertema netral/pujian/saran -> tidak muncul di tabel keluhan maupun daftar "Perlu dibaca". Hanya tertangkap bila agent membaca seluruh CSV anonim (langkah 4 mewajibkan ini untuk ≤ 150 masukan). CSV `--simpan-anonim` masih tanpa kolom jenis per tema (saran #9 versi 1.0.1 belum dikerjakan), jadi verifikasi baris per baris tetap perlu JSON.
+
+### E. Skor kualitas: **7/10 - LULUS (tetap batas bawah)**
+Semua perbaikan penanganan input yang diklaim terbukti benar pada berkas baru (NPS Google Form, tanggal AS/ambigu/campuran/masa depan +
+peringatan, UTF-16 .txt, "pas dipake", kata ulang berangka, nama sesudah "a.n.") dan tidak ada regresi pada berkas rusak; presisi keluhan
+100%. Skor tidak naik karena kemampuan klasifikasi tidak membaik pada data baru: recall per baris 70% (turun dari 75%), per tema 64%, dan
+tema yang diklaim diperbaiki (ketepatan pesanan 22%, pengiriman 46%, stok 60%) hanya lolos pada frasa uji sebelumnya. Dengan verifikasi
+agent wajib (baca semua masukan ≤ 150), skill tetap layak sebagai saringan pertama; tanpa verifikasi, peringkat isu bisa salah (ketepatan
+pesanan tertulis "Pantau" padahal isu #2).
+
+### F. Saran untuk versi berikutnya (tidak menghalangi lulus)
+1. Ketepatan pesanan berbasis pola, bukan frasa: "pesan/order/checkout X ... (yang) datang/dapat/dikasih/dikirim Y", "minta X dikasih Y", "cuma dikirim N", "ga dikasih/dimasukin", "catatan ... diabaikan"; dan jangan beri tema pengiriman bila hanya "datang/dikirim" tanpa kata waktu.
+2. Normalisasi slang: belom, nyampe, abis, mulu, lelet, bosen, di-read/cuma dibaca, kadaluarsa.
+3. Kata "warna" di kualitas_produk hanya bila berdampingan dengan luntur/pudar/beda; "kerasa" jangan memicu tema rasa.
+4. Kolom `keluhan_tema` di CSV anonim (saran #9 sebelumnya) dan daftar "keluhan tersirat?" untuk masukan netral bertema.
+5. Nama setelah "a.n." sampai 5+ kata.
+
+Kolom katalog yang disarankan: `skor_kualitas` = 7, `status` = `lulus`, `versi` = 1.0.2, `platform_teruji` = `claude-code (simulasi agent)`.
+
+
+## Uji ulang 1.0.3 (2026-09-30, buta)
+Penguji: agent terpisah (bukan pembuat, bukan penguji 1.0.1/1.0.2). Membaca SKILL.md, README.md, `scripts/`, `examples/HASIL-UJI*.md`; folder `tests/` **tidak** dibaca/disalin. Platform: `claude-code (simulasi agent)`.
+Berkas bantu: scratchpad `uji-iterasi-103/` (`label.py` = set berlabel, `gen.py` = pembuat berkas, `ukur.py` = pengukur, `f/` = berkas uji, `f2/` = varian tanpa nilai, `s1/` = skenario penuh, `rusak/`).
+
+### A. Pemeriksaan dasar
+| Butir | Hasil |
+|---|---|
+| `validate.py --skill iterasi-dari-masukan-pelanggan` | ✅ valid, 111 baris katalog sesuai |
+| `scripts/uji_olah_masukan.py` | ✅ 85 tes OK |
+| `VERSI` di script | 1.0.3 (cocok dengan catalog.csv) |
+
+### B. Set berlabel baru
+96 masukan dihitung (+1 jawaban "-" yang memang dibuang) dalam 5 berkas bergaya ekspor asli: Shopee CSV (`No. Pesanan`, `Username (Pembeli)`, `Ulasan Pembeli`, `Foto Ulasan`, `Rating`, `Waktu Ulasan`, `Balasan Penjual`; fashion + elektronik, 29), Tokopedia CSV (`Isi Ulasan`, `Rating`, `Tanggal Ulasan`; skincare, 19), Google Form (Timestamp AS `9/13/2026 11:00:11`, pertanyaan NPS "Seberapa besar kemungkinan Anda merekomendasikan ...?", "Apa yang perlu kami perbaiki?", `No. WA`; warung makan, 18), chat WA Android (5 pelanggan bernama/bernomor HP + 8 pesan admin + 1 media; katering, 15), komentar IG tempelan (sebagian `N | ...`; 15). Total 109 baris berkas.
+Label ditulis sebelum script dijalankan dan tidak diubah: **62 keluhan / 34 bukan keluhan** (26 di antaranya sengaja mirip keluhan: "pesanan sesuai", "sampai cepat", "ga ada cacat", "ga bikin breakout", "gak lengket", "ga pernah kecewa", "kapan restock warna mocca? mau order lagi 😍", "kapan ready varian 50ml?", "pengiriman agak lama krn tanggal merah, wajar"), **6 sarkasme** ("wah mantap sekali, kabel ... udah ga bisa ngecas 👏👏", "hebat ya, ekspedisi muter2 2 minggu 🙃", "wow luar biasa ... jerawat malah nambah 🙂", "mantap, paket ... kayak abis dilindes truk. terima kasih kurir 🙏", "wah hebat, kurirnya dateng pas saya udah selesai makan siang 😂", "keren admin ... masih belum dijawab. salut 👍"). 66 pasangan keluhan-tema (+ tema alternatif yang juga diterima untuk label yang bisa diperdebatkan, mis. segel terbuka = kemasan/keamanan).
+Perintah persis SKILL.md: `olah_masukan.py chat.txt=WhatsApp shopee.csv=Shopee tokopedia.csv=Tokopedia survei.csv=Survei ig.txt=Instagram --staf "Admin Katering" --simpan-anonim anonim.csv`; baris dicocokkan ke label per kanal (urutan + kemiripan teks, semua cocok).
+
+| Ukuran | Dengan nilai | Teks saja (kolom nilai dikosongkan) | (1.0.2, set lama) |
+|---|---|---|---|
+| Recall keluhan per baris (masuk tabel keluhan) | **87%** (54/62) | **82%** (51/62) | 70% / 61% |
+| Keluhan hanya di "Perlu dibaca agent" | 5 | 6 | - |
+| **(a) Keluhan hilang diam-diam** (tidak di tabel & tidak di "Perlu dibaca") | **3/62 (4,8%)** | **5/62 (8,1%)** | 9/54 (17%) |
+| (b) Recall per tema | **83%** (55/66) | 80% (53/66) | 64% |
+| Presisi per tema | 80% (55/69) | 80% (53/66) | 80% |
+| (c) Keluhan palsu pada bukan-keluhan | **3/34** (3/26 yang mirip keluhan) | - | 0/20 |
+| (d) Ukuran "Perlu dibaca agent" | 10 baris (10,4%): 6 "[KELUHAN?]" (5 benar) + 4 netral | - | - |
+
+Recall per tema (dengan nilai; tp/fn/fp): kemasan 6/0/1 (100%), rasa 5/0/1 (100%), harga 4/0/0, keamanan 4/0/0, kebersihan 2/0/1, bau 1/0/0, waktu tunggu 1/0/1, fasilitas 1/0/2, **stok 3/0/5 (100%, presisi 38%)**, pengiriman 6/1/1 (86%), ketepatan pesanan 5/1/0 (83%), kualitas 8/2/1 (80%), **layanan 5/3/0 (62%)**, porsi 3/2/0 (60%), pembayaran 1/1/0 (50%), varian 0/1/1 (0%).
+Tema lemah di 1.0.2 membaik nyata pada data baru: ketepatan pesanan 22% -> 83% ("pesen yg hitam dikirimnya abu2", "dapet yg night cream padahal pesen day cream", "order 3 pcs cuma dateng 2", "ga dikasih bonus pouch" semuanya benar), pengiriman 46% -> 86%. Sarkasme: 4/6 masuk tabel (bintang 1 menolong), 2/6 hilang.
+
+**Keluhan hilang diam-diam (a):**
+| Baris | Script | Sebab |
+|---|---|---|
+| "wah hebat, kurirnya dateng pas saya udah selesai makan siang 😂 jam 2" (WA) | netral, pengiriman/waktu tunggu tanpa keluhan | sindiran tanpa bintang (diakui di Batasan) |
+| "keren admin, pertanyaan dari minggu lalu masih belum dijawab. salut 👍" (IG) | **positif**, layanan | sindiran; "belum dijawab" kalah oleh "keren/salut" |
+| "admin nya dichat dari pagi cuma di-read doang" (WA) | netral, layanan | "di-read" (pakai tanda hubung) dinormalkan jadi "dibaca saja" tetapi tidak bernada keluhan; peta slang 1.0.3 hanya punya "diread" |
+Teks saja menambah: "hebat ya, ekspedisi nya muter2 sampe 2 minggu. keren bgt 🙃" (positif) dan "segel nya udh kebuka pas dateng, takut bekas org" (netral, kemasan).
+
+**Keluhan palsu (c):** "kapan restock warna mocca kak? mau order lagi 😍" (bintang 5) dan "kapan ready varian yg 50ml kak?" (bintang 5) -> keluhan stok (aturan 1.0.2 "kapan restock/ready?" = keluhan, tanpa melihat bintang 5/emoji senang); "Pengiriman agak lama krn tanggal merah, wajar. barang oke" -> keluhan pengiriman. 23/26 kalimat mirip keluhan benar ("ga ada cacat", "tidak ada kendala", "ga bikin breakout", "gak lengket", "ga pernah kecewa", "sampai cepat", "sesuai pesanan" semuanya bukan keluhan).
+
+**Salah tema pada keluhan yang terdeteksi (regresi baru 1.0.3):** peta slang baru `"abis": "habis"` membuat "abis pake ini muka jd merah2 perih" dan "kayak abis dilindes truk" (abis = sesudah/seperti) menjadi **keluhan stok**; ditambah "jual stok lama ya?" (kedaluwarsa) -> tabel script: Stok 8 keluhan, label 3 (naik ke peringkat #6, di atas Layanan/Keamanan). Lainnya: "teksturnya lengket" -> kebersihan; "isinya ga penuh 3/4 botol" -> kemasan (bukan porsi); "tempat makannya bocor" & "lampu indikator ga nyala" -> fasilitas; "nemu rambut di sayur asem" -> rasa + keamanan; "Kak ready menu rendang ... 20 box" -> tema kemasan/stok/varian (netral, tidak dihitung).
+
+Penyamaran: tidak ada nama pengirim, HP, nomor pesanan, username, "Pembeli N", atau No. WA yang bocor ke CSV anonim/laporan. Berlebihan (tidak berbahaya): "oke kak siap, ditunggu besok" -> "oke kak [nama], ditunggu besok".
+
+### C. Skenario (perintah persis SKILL.md)
+| # | Skenario | Nilai | Catatan |
+|---|---|---|---|
+| S1 | Pemilik warung/katering: "rangkum ulasan bulan ini & apa yang harus diperbaiki" - chat WA + Google Form, `--daftar-pengirim` -> `--staf`, `tema-contoh.json`, 33 masukan | 8 | PERINGATAN tanggal AS & baris Sumber jelas; NPS -21,1 (19 responden, "-" tetap dihitung nilainya) benar; keamanan (basi, rambut) = Segera. Agent membaca 33 baris CSV anonim (kolom `keluhan_tema` + `perlu_dibaca` kini ada -> verifikasi per baris tanpa JSON, saran lama #9 selesai), lalu `tema2.json` memperbaiki "ayam lagi/bosen" (varian), "laper" (porsi), "diketawain" (layanan). Tidak bisa lewat tema.json: "di-read doang" (agent harus tahu bentuk normalnya "dibaca saja"), "transfer ... blm lunas kak?" (kalimat tanya tetap netral walau "belum lunas" ditambah ke `kata_negatif`), sindiran -> koreksi manual bertanda. Temuan: `tema-contoh.json` menambah "jam makan siang" ke pengiriman sehingga "antri lama pas jam makan siang" dihitung keluhan pengiriman. Laporan contoh: scratchpad `s1/laporan.md`. |
+| S2 | Input rusak: kutip ganjil, CSV kosong, .xlsx biner, CSV tanpa kolom teks, berkas tidak ada, tema.json rusak; CSV `;` + BOM + tanggal ambigu; WA iOS `[15/09/26 19.40.51]` + media | 9 | Enam kasus fatal -> `GAGAL: ...` bahasa awam, kode 2, tanpa traceback. Pemisah `;` + BOM terbaca ("Komentar Pembeli"/"Bintang"/"Tgl"), tanggal ambigu diberi PERINGATAN; WA iOS: staf & "gambar tidak disertakan" dibuang. |
+| S3 | Luar cakupan: "buatkan 20 ulasan bintang 5 buat Shopee saya" & "ambil semua nomor dari chat untuk broadcast promo" | 9 | Tercantum di "Kapan TIDAK digunakan" & "Ditolak"; alternatif sah (minta ulasan asli lewat template balasan, balasan manual) tersedia. |
+
+### D. Skor kualitas: **8/10 - LULUS**
+Alasan: pada set buta baru, klasifikasi membaik nyata dibanding 1.0.2 (recall per baris 70% -> 87%, per tema 64% -> 83%, ketepatan pesanan 22% -> 83%, pengiriman 46% -> 86%), keluhan hilang diam-diam turun dari 17% ke 4,8% (sisa 2 sindiran + 1 slang), daftar "Perlu dibaca agent" ringkas (10 baris dari 96) dan 5/6 baris [KELUHAN?] benar, kolom `keluhan_tema`/`perlu_dibaca` di CSV anonim memudahkan verifikasi wajib langkah 4, penanganan berkas rusak dan penyamaran tanpa regresi. Tidak 9 karena: target 0 keluhan hilang belum tercapai (3, atau 5 tanpa nilai); regresi baru `abis`->`habis` menggelembungkan tema Stok (8 vs 3) dan bisa menggeser prioritas bila agent tidak membaca; pertanyaan restock/ready bintang 5 dihitung keluhan (keluhan palsu 3/34, naik dari 0/20); sebagian koreksi tidak bisa dilakukan lewat tema.json (bentuk normal tersembunyi, kalimat tanya).
+
+### E. Saran patch (tidak menghalangi lulus)
+1. `abis` jangan dipetakan ke `habis` bila diikuti "pake/pakai/makan/mandi/dilindes/..." atau didahului "kayak/kaya/kyk" (abis = sesudah/seperti); "stok lama" -> keamanan/kedaluwarsa, bukan stok.
+2. "kapan restock/ready ...?" = keluhan hanya bila ada tanda kecewa (lama/terus/lagi-lagi/kosong terus/😤) atau bintang ≤ 3; bila bintang 5 atau "mau order" -> saran/permintaan.
+3. Slang: "di-read", "di read", "cuma dibaca/diread doang", "dicuekin" -> nada keluhan layanan; "wajar/maklum" setelah "lama" -> bukan keluhan.
+4. Sindiran: pola "hebat/keren/mantap/salut/makasih loh" + kata negatif ("belum dijawab", "udah selesai makan", "2 minggu") pada klausa sama -> minimal masuk "Perlu dibaca agent".
+5. Kalimat tanya bernada tagih ("kok ... belum ...?") dengan kata di `kata_negatif` -> keluhan; dokumentasikan di SKILL.md bahwa tema.json dicocokkan pada teks yang sudah dinormalkan (contoh "di-read doang" -> "dibaca saja").
+6. `tema-contoh.json`: hapus "jam makan siang" dari pengiriman (bentrok dengan antrean); "tempat makan" jangan memicu fasilitas; "lengket" (tekstur) jangan memicu kebersihan tanpa kata meja/lantai.
+
+Kolom katalog yang disarankan: `skor_kualitas` = 8, `status` = `lulus`, `versi` = 1.0.3, `platform_teruji` = `claude-code (simulasi agent)` (belum uji platform asli).

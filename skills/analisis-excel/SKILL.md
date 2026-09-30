@@ -148,7 +148,11 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
 6. **File baru (`bersihkan`, `--keluar`) hanya setelah pengguna setuju:** sebutkan dulu path lengkap
    file yang akan dibuat (mis. "Saya simpan versi bersih ke `<folder-kerja>/biaya-bersih.csv`, oke?"),
    tulis setelah ia mengiyakan. File asli **tidak pernah** diubah/ditimpa; path `--keluar` tidak boleh
-   sama dengan file asli. Bila pengguna minta "langsung aja", tetap sebutkan path file yang dibuat.
+   sama dengan file asli. Bila pengguna minta "langsung aja", tetap sebutkan path file yang dibuat, dan file yang sudah ada tidak pernah ditimpa tanpa izin.
+   **Sebelum memakai `--keluar`, cek apakah file itu sudah ada.** Bila ada, tanyakan: "File X sudah ada,
+   timpa atau simpan sebagai X-2?". Jangan menimpa tanpa jawaban tegas; "langsung aja" bukan izin
+   menimpa. `--timpa` hanya dipakai setelah pengguna setuju (tanpa `--timpa`, script menolak dengan
+   "GAGAL: File keluaran sudah ada").
    Peringatan script seperti "rumus tanpa nilai tersimpan" disampaikan apa adanya beserta sarannya
    (buka di Excel lalu Simpan); jangan menilai sendiri bahwa dampaknya "tidak signifikan".
 
