@@ -219,7 +219,7 @@ class UjiIntegrasi(unittest.TestCase):
         # faktur 30 Sep: 368.902,95 + 1.398.600 - 49.950 (nota kredit)
         self.assertIn("Rp 1.717.552,95", out)
         # kemarin 999.000 + 499.500 = 1.498.500; (1.917.352,95 - 1.498.500)/1.498.500 = 27,95% -> 28
-        self.assertIn("Kemarin: Rp 1.498.500 (+28%)", out)
+        self.assertIn("Kemarin: Rp 1.498.500 (+28,0%)", out)
         self.assertIn("JANGAN dijumlahkan", out)
         self.assertNotIn("Hotel Melati", out)       # tanpa --rinci tidak ada nama
         k, out, _ = jalan(self.s[17].port, "penjualan", "--tanggal", TGL, "--rinci", "--samarkan")

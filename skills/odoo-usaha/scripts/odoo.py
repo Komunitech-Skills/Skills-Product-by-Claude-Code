@@ -148,6 +148,11 @@ def persen_ubah(sekarang, banding):
     return ((sekarang - banding) / banding * 100).quantize(Decimal("0.1"), ROUND_HALF_UP)
 
 
+def format_persen(p):
+    """Decimal 1 desimal -> '+28,0' / '-3,5' (tanda selalu ditulis)."""
+    return ("+" if p > 0 else "") + "{:.1f}".format(p).replace(".", ",")
+
+
 def ke_json(o):
     if isinstance(o, Decimal):
         return int(o) if o == o.to_integral_value() else float(o)
@@ -940,8 +945,7 @@ def cmd_penjualan(api, args, offset):
         if kmrn["pesanan"] is not None:
             pr = persen_ubah(p["total"], kmrn["pesanan"]["total"])
             b.append("Kemarin: {}{}".format(format_rp(kmrn["pesanan"]["total"]),
-                                            "" if pr is None else " ({}{}%)".format("+" if pr > 0 else "",
-                                                                                   format_angka(pr))))
+                                            "" if pr is None else " ({}%)".format(format_persen(pr))))
         if p["jumlah"]:
             b.append("Rata-rata per pesanan: {}".format(format_rp(rupiah_bulat(p["total"] / p["jumlah"]))))
         terlaris, e = _panggil_baca_saja(produk_terlaris, api, p["ids"])
@@ -1414,8 +1418,7 @@ def cmd_laporan_harian(api, args, offset):
         p = h["pesanan"]
         pr = persen_ubah(p["total"], kmrn["pesanan"]["total"]) if kmrn["pesanan"] is not None else None
         b.append("Pesanan terkonfirmasi: {}, total {}{}".format(
-            p["jumlah"], format_rp(p["total"]), "" if pr is None else " ({}{}% vs kemarin)".format(
-                "+" if pr > 0 else "", format_angka(pr))))
+            p["jumlah"], format_rp(p["total"]), "" if pr is None else " ({}% vs kemarin)".format(format_persen(pr))))
         b.append("Sebelum pajak {} | Pajak {}".format(format_rp(p["dpp"]), format_rp(p["pajak"])))
         terlaris, _ = _panggil_baca_saja(produk_terlaris, api, p["ids"], 3)
         if terlaris:
