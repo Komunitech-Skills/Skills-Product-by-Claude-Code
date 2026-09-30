@@ -1,6 +1,6 @@
 ---
 name: program-referral-loyalitas
-description: Merancang program referral ("ajak teman dapat hadiah"), poin/stempel loyalitas, dan member untuk UMKM Indonesia (toko online, kafe, klinik, jasa, reseller/dropship) lengkap dengan hitungan pasti - biaya per referral, titik impas hadiah dari margin, nilai poin dan liability poin, simulasi skenario - plus aturan anti-curang (akun ganda, self-referral), syarat dan ketentuan siap tempel, teks ajakan WhatsApp/Instagram siap kirim satu per satu (tanpa blast), dan kepatuhan (promo tidak menyesatkan, UU PDP). Gunakan saat pengguna bilang "bikin program referral", "ajak teman dapat diskon", "kartu member/poin/stempel", "pelanggan biar balik lagi", "hadiah aman berapa", "program reseller/komisi", "kode referral", atau referral program, loyalty program, points, retention, refer a friend, word of mouth.
+description: Merancang program referral ("ajak teman dapat hadiah"), poin/stempel loyalitas, dan member untuk UMKM Indonesia (toko online, kafe, jasa, reseller/dropship; klinik/praktik kesehatan hanya versi tanpa imbalan: edukasi & pengingat kontrol) lengkap dengan hitungan pasti - biaya per referral, titik impas hadiah dari margin, nilai poin dan liability poin, simulasi skenario - plus aturan anti-curang (akun ganda, self-referral), syarat dan ketentuan siap tempel, teks ajakan WhatsApp/Instagram siap kirim satu per satu (tanpa blast), dan kepatuhan (promo tidak menyesatkan, UU PDP). Gunakan saat pengguna bilang "bikin program referral", "ajak teman dapat diskon", "kartu member/poin/stempel", "pelanggan biar balik lagi", "hadiah aman berapa", "program reseller/komisi", "kode referral", atau referral program, loyalty program, points, retention, refer a friend, word of mouth.
 ---
 
 # Program Referral & Loyalitas
@@ -19,7 +19,7 @@ Membantu pemilik usaha membuat program **"pelanggan mengajak pelanggan"** dan **
 ## Kapan TIDAK digunakan (arahkan ke skill lain)
 - Menghitung HPP/margin produk -> **hitung-hpp**; harga dan promo diskon umum -> **strategi-harga-produk**, **promo-kalender**.
 - Rencana marketing menyeluruh -> **rencana-marketing-usaha**; caption/konten -> **caption-sosmed-umkm**; pesan ke prospek -> **pesan-prospek-wa**; catatan kontak pelanggan -> **crm-wa**; kebijakan privasi -> **kebijakan-privasi-pdp**.
-- **Ditolak dengan sopan:** kirim pesan massal otomatis/blast ke daftar kontak (skill ini hanya menyiapkan teks yang dikirim pemilik satu per satu ke orang yang pernah berhubungan/setuju), hadiah untuk merekrut anggota bertingkat atau bayar-untuk-ikut (skema piramida/MLM), ulasan/like berbayar yang disamarkan, hadiah untuk layanan medis yang melanggar aturan profesi, membeli data kontak.
+- **Ditolak dengan sopan:** kirim pesan massal otomatis/blast ke daftar kontak (skill ini hanya menyiapkan teks yang dikirim pemilik satu per satu ke orang yang pernah berhubungan/setuju), hadiah untuk merekrut anggota bertingkat atau bayar-untuk-ikut (skema piramida/MLM), ulasan/like berbayar yang disamarkan, referral berimbalan/diskon/poin/komisi untuk **layanan kesehatan** (lihat "Fasilitas kesehatan" di bawah), membeli data kontak.
 
 ## Input
 | Data | Wajib? | Jika tidak ada |
@@ -42,7 +42,8 @@ Jika data wajib kurang, tanyakan **sekali** dalam satu pesan (maks. 5 pertanyaan
 |---|---|---|
 | Toko online / fesyen | Referral dua sisi (voucher teman + saldo/voucher perujuk) | Beli tidak tiap minggu; rekomendasi teman berpengaruh |
 | Kafe / warung / F&B | Poin atau stempel + "traktir teman" | Sering datang; hadiah murah karena margin besar |
-| Klinik / perawatan | Referral **edukatif dan non-medis** + pengingat kontrol | Aturan profesi; jangan insentif tindakan medis |
+| Klinik, praktik dokter/dokter gigi/bidan, apotek, lab (fasilitas kesehatan) | **Tanpa imbalan untuk merujuk:** edukasi, pengingat kontrol, kartu info | Permenkes 1787/2010 Pasal 5 & kode etik profesi melarang promosi penjualan/diskon/imbalan layanan kesehatan |
+| Salon, spa, barbershop (bukan tindakan medis) | Referral + paket langganan (pola jasa) | Bukan fasilitas kesehatan; tetap tanpa klaim kesehatan |
 | Jasa (laundry, bengkel, salon, servis) | Referral + paket langganan | Kepercayaan tinggi, frekuensi sedang |
 | Reseller / dropship | Komisi satu tingkat dari penjualan nyata | Bukan rekrutmen bertingkat |
 Boleh gabungan (mis. poin + referral). Satu program sederhana yang dijalankan lebih baik daripada tiga yang rumit.
@@ -54,7 +55,7 @@ Minta rekomendasi **saat pelanggan sedang puas**: barang baru diterima dan cocok
 ```
 python3 <folder-skill-ini>/scripts/hitung_referral.py <perintah> [opsi]
 ```
-Windows: ganti `python3` dengan `py` atau `python`. Uang boleh ditulis `60.000`, `60rb`, `1,2jt`. Persen ditulis angka biasa (`55` = 55%). Hadiah boleh rupiah (`15rb`) atau persen pesanan (`10%`).
+Windows: ganti `python3` dengan `py` atau `python`. Uang boleh ditulis `60.000`, `Rp60.000`, `60rb`, `1,2jt`, `1.500.000`. Jumlah poin/orang/referral boleh ditulis `40.000`, `40000`, atau `40rb` (tanpa "Rp"). Desimal pakai **koma** (`0,25` kali per bulan, `12,5` persen). Persen ditulis angka biasa (`55` = 55%). Hadiah boleh rupiah (`15rb`) atau persen pesanan (`10%`). Angka yang bisa dibaca dua arah (mis. frekuensi `1.000`, jumlah `1,000`, rupiah `12,5`) ditolak `GAGAL`; tanyakan maksudnya ke pengguna, jangan menebak.
 
 | Kebutuhan | Perintah |
 |---|---|
@@ -67,6 +68,7 @@ Aturan penting:
 - **Setiap angka rupiah/persen di ringkasan, tabel, dan teks siap tempel WAJIB dari keluaran script.** Jangan menghitung sendiri walau terlihat sederhana. Satu perintah boleh dijalankan berkali-kali (mis. tiga pilihan hadiah).
 - Hadiah dibayar **hanya setelah teman benar-benar membeli** (dan lewat masa retur/pembatalan), sehingga biaya = jumlah referral **berhasil** x biaya per referral.
 - Hadiah berupa produk sendiri dihitung dengan **modal (HPP)**, bukan harga jual (isi opsi hadiah dengan HPP).
+- `impas`: baris **BATAS ATAS hadiah pemberi** adalah plafon teoretis, **bukan anjuran**; yang disarankan ke pengguna adalah baris **Hadiah pemberi SARAN** (konservatif: total hadiah maks. 50% laba pesanan pertama). Status `RUGI DI PESANAN PERTAMA` wajib disampaikan apa adanya (jangan ditulis "aman").
 - `impas`: batas aman **30%** dari laba kotor seumur pelanggan dan status poin ("perhatian" bila hadiah > 50% margin) adalah **aturan praktis**, bukan hukum; sebutkan itu. Frekuensi dan umur pelanggan adalah **asumsi** sampai ada data.
 - `simulasi`: skenario bawaan (konservatif/realistis/optimis) hanya **asumsi awal**, bukan patokan pasar; selalu tulis "ESTIMASI" dan sarankan mengganti dengan data setelah 1 bulan.
 - Bila script tidak bisa dijalankan (tidak ada Python): hitung dengan rumus di `references/rumus-dan-acuan.md`, tampilkan rumusnya, dan tulis "dihitung manual". Jika script bisa dijalankan, tulisan itu tidak boleh muncul.
@@ -92,7 +94,7 @@ Sediakan 3 varian singkat (WA personal, status/story IG, kartu/brosur) dengan ba
 - **Data pribadi** (UU 27/2022 tentang Pelindungan Data Pribadi): catat seminimal mungkin (nama panggilan, nomor WA, kode, tanggal, status hadiah), beri tahu tujuannya, jangan kirim promosi ke orang yang tidak setuju atau sudah berhenti, jangan bagikan daftar ke pihak lain, simpan aman. Jangan minta pelanggan mengunggah nomor teman-temannya.
 - **Marketplace:** ikuti aturan platform; jangan mengajak pembeli pindah transaksi di luar platform bila dilarang. Hadiah lewat voucher toko/produk setelah pesanan selesai.
 - **Reseller:** komisi hanya dari penjualan barang nyata, satu tingkat; jangan ada biaya pendaftaran atau imbalan merekrut anggota (UU 7/2014 tentang Perdagangan melarang skema piramida).
-- **Klinik/kesehatan:** hadiah hanya untuk hal non-medis (mis. produk perawatan, edukasi); jangan insentif tindakan/obat; tanyakan ke organisasi profesi/dinas kesehatan.
+- **Fasilitas kesehatan (klinik, RS, praktik dokter/dokter gigi/bidan, apotek, lab, fisioterapi, klinik kecantikan dengan tindakan medis) - PERLU REVIEW tenaga medis/hukum:** Permenkes 1787/2010 tentang Iklan dan Publikasi Pelayanan Kesehatan Pasal 5 melarang iklan/publikasi promosi penjualan **dalam bentuk apa pun**, termasuk diskon, imbalan atas pelayanan kesehatan, dan MLM (masih berlaku lewat UU 17/2023 Pasal 453; tidak ditemukan pencabutan di PP 28/2024; dicek 2026-09-30). Kode etik profesi (KODEKGI PDGI, KODEKI IDI) melarang dokter/dokter gigi memberi janji atau diskon agar pasien datang. Maka skill **tidak** merancang hadiah/diskon/poin/komisi untuk merujuk pasien, juga tidak hadiah "non-medis" untuk pengajak. Rancang: (1) program edukasi (kelas/materi kesehatan umum), (2) pengingat kontrol yang dikirim staf (skill `pengingat-pasien-klinik`), (3) kartu info klinik yang boleh dibagikan pasien **tanpa imbalan**, (4) informasi layanan dan tarif yang jujur, tanpa testimoni dan pujian berlebihan. Hitungan `biaya`/`impas` tidak dipakai untuk imbalan rujukan. Bila pemilik tetap ingin hadiah, minta konfirmasi tertulis dari dinas kesehatan/organisasi profesi dulu. Rincian: `references/pola-per-usaha.md` bagian 3.
 - **Pajak:** hadiah tunai atau komisi bernilai besar dapat punya konsekuensi pajak; skill ini tidak menghitung pajak, tanyakan konsultan pajak.
 
 ### 9. Ukur & rencana uji 30 hari
@@ -124,5 +126,5 @@ Contoh lengkap: `examples/`.
 - Baris `PERHATIAN:` (hadiah lebih besar dari laba pesanan pertama, melebihi anggaran, poin melebihi margin) wajib disampaikan, bukan disembunyikan.
 - Skill tidak menjamin pelanggan akan mengajak teman; tingkat merujuk bergantung pada produk, layanan, dan momen. Jangan menjanjikan kenaikan omzet.
 - Skill tidak mengirim pesan, tidak mengelola kontak otomatis, dan tidak memasang aplikasi. Semua pengiriman oleh pemilik.
-- Bukan nasihat hukum, pajak, atau profesi kesehatan; arahkan ke profesional untuk kasus khusus.
+- Bukan nasihat hukum, pajak, atau profesi kesehatan; arahkan ke profesional untuk kasus khusus. Bagian fasilitas kesehatan berstatus **PERLU REVIEW tenaga medis/hukum**.
 - Nama marketplace/aplikasi hanya penyebut kanal; skill ini tidak berafiliasi dengan pihak mana pun.
