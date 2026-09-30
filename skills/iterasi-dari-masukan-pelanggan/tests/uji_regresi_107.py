@@ -271,6 +271,19 @@ class UjiPenyamaran107(unittest.TestCase):
             self.assertFalse(re.search(r"\d{2,}", s), teks)
 
 
+class UjiKataTeratas(unittest.TestCase):
+    def test_token_internal_tidak_tampil(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "a.txt")
+            with open(p, "w", encoding="utf-8") as f:
+                f.write("awalnya ragu, ternyata tidak ada minusnya\nsemula ragu tapi ternyata oke banget\nkok begini sih hasilnya kecewa\n")
+            o = Opsi()
+            item, tema, dibuang, meta = om.olah([p], o)
+            kata = om.ringkas(item, tema, dibuang, o, meta)["belum_terklasifikasi"]["kata_teratas"]
+        self.assertFalse({"semularagu", "tanpaminus"} & set(kata), kata)
+        self.assertIn("ragu", kata)   # kebalikan: kata yang benar-benar ditulis tetap tampil
+
+
 class UjiContohTidakMemburuk(unittest.TestCase):
     def test_examples_data(self):
         dd = SKILL_DIR / "examples" / "data"
