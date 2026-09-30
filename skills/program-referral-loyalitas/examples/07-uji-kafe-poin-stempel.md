@@ -1,17 +1,13 @@
 # 07 - Skenario normal 2: kafe dengan poin + kartu stempel + "traktir teman" (usaha FIKTIF)
 
-> Uji independen Tahap 6 (2026-09-30). Angka dari `scripts/hitung_referral.py`, diverifikasi ulang secara independen.
+> Uji ulang independen v1.0.1 (2026-09-30; versi awal diuji pada v1.0.0). Angka dari `scripts/hitung_referral.py`, diverifikasi ulang secara independen.
 
 **Permintaan pengguna:** "Kafe saya Kopi Lereng, rata-rata sekali datang Rp38.500, margin 65%, omzet Rp45jt sebulan. Sudah jalan poin: tiap Rp10rb dapat 1 poin, 1 poin = Rp300, minimal tukar 50 poin. Poin yang belum ditukar sekarang 52.340 poin, kira-kira 25% nggak pernah ditukar. Mau tambah kartu stempel (beli 8 gratis 1, minuman Rp28rb modalnya Rp9rb) dan 'traktir teman' 1 minuman gratis. Aman? Utang poin saya berapa?"
 
 ## Perhitungan (script)
-Percobaan pertama, angka poin beredar ditulis persis seperti pengguna (`52.340`):
+Angka poin beredar ditulis persis seperti pengguna (`52.340`, format Indonesia); v1.0.1 membacanya sebagai 52.340 poin:
 ```
 $ python3 scripts/hitung_referral.py poin --belanja-per-poin 10rb --nilai-poin 300 --margin 65 --aov 38.500 --omzet-bulan 45jt --breakage 25 --poin-beredar 52.340 --minimum-tukar 50
-GAGAL: poin beredar harus bilangan bulat (didapat 52.340)
-(kode keluar 2)
-
-$ python3 scripts/hitung_referral.py poin --belanja-per-poin 10rb --nilai-poin 300 --margin 65 --aov 38.500 --omzet-bulan 45jt --breakage 25 --poin-beredar 52340 --minimum-tukar 50
 NILAI POIN LOYALITAS
 Aturan: tiap belanja Rp10.000 = 1 poin; 1 poin ditukar senilai Rp300
 Hadiah poin = 3% dari belanja = 4,62% dari margin kotor 65%
@@ -55,7 +51,8 @@ Balik modal setelah             : pesanan ke-1 milik teman (langsung di pesanan 
 Hadiah maks agar impas di pesanan pertama: Rp25.025 (total pemberi + teman + lain)
 Perkiraan laba kotor seumur pelanggan: Rp450.450 (18 pesanan; asumsi 3x per bulan selama 6 bulan)
 Batas hadiah aman (30% dari laba seumur pelanggan): Rp135.135 total per referral
-Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): Rp126.135
+BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp126.135
+Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp3.512
 STATUS: AMAN
 Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
 (kode keluar 0)
@@ -82,6 +79,7 @@ Margin 65%, omzet, breakage 25% dari pengguna (breakage = perkiraan). Pelanggan 
 | Minimum tukar 50 poin | belanja kumulatif Rp500.000, hadiah Rp15.000 |
 | Kartu stempel (8 stempel) | 4,02% dari belanja; 6,18% dari margin (OK); hadiah Rp9.000 (modal) setelah belanja Rp224.000 |
 | Traktir teman (1 minuman, modal Rp9.000) | biaya Rp9.000 per teman baru; laba kunjungan pertama Rp16.025; batas aman Rp135.135 (AMAN) |
+| Bila nanti pengajak ikut diberi hadiah | SARAN konservatif paling besar Rp3.512 per teman (batas atas Rp126.135 bukan anjuran) |
 | 30 teman baru/bulan, anggaran Rp300.000 | total Rp270.000, cukup (sisa Rp30.000) |
 
 ### 4. Aturan program
@@ -109,6 +107,7 @@ Tiap belanja Rp10.000 = 1 poin; 50 poin ditukar senilai Rp15.000; poin berlaku 6
 ### 8. Catatan
 Angka dihitung dengan script dari data yang Anda berikan. Keputusan besar hadiah tetap di tangan Anda. Pembukuan liability poin secara formal: tanyakan akuntan.
 
-## Catatan penguji (TEMUAN)
-- **Temuan TINGGI:** penulisan jumlah poin dengan pemisah ribuan Indonesia (`52.340`) **ditolak** dengan pesan membingungkan ("harus bilangan bulat"), dan untuk angka yang kebetulan kelipatan 1.000 (mis. `40.000`) **diterima diam-diam sebagai 40** sehingga liability menjadi Rp12.000, bukan Rp12.000.000. Lihat `HASIL-UJI.md` bagian temuan. Di skenario ini agent harus menulis ulang `52340` secara manual agar benar.
-- "Poin kedaluwarsa" hanya bisa dimodelkan lewat `--breakage`; tidak ada perintah khusus masa berlaku. Cukup untuk UMKM, catat sebagai rendah.
+## Catatan penguji
+- Uji ulang v1.0.1: temuan lama T1 **teratasi**. `--poin-beredar 52.340` kini dibaca 52.340 poin (liability Rp15.702.000, sama dengan input `52340`); agent tidak perlu lagi menulis ulang angka pengguna. Angka ambigu seperti `52,340` atau `52.3` ditolak `GAGAL` (kode 2) dengan pesan jelas.
+- Semua angka cocok dengan hitungan independen (Fraction), termasuk baris baru SARAN Rp3.512 = floor(Rp25.025 x 50%) - Rp9.000.
+- "Poin kedaluwarsa" tetap hanya bisa dimodelkan lewat `--breakage`; rendah, cukup untuk UMKM.

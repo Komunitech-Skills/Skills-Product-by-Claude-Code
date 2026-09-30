@@ -15,7 +15,7 @@
 ## Jawaban skill
 
 ### 1. Ringkasan
-- **Program:** "Kartu Kontrol Keluarga Sehat Dua" = pengingat kontrol tiap 4 bulan + kelas edukasi singkat + kartu info klinik yang boleh dibagikan pasien **tanpa kode dan tanpa hadiah**.
+- **Program:** "Kartu Kontrol Keluarga Sehat Dua" = pengingat kontrol tiap 4 bulan + kelas edukasi singkat + kartu info klinik untuk pasien sendiri **tanpa kode dan tanpa hadiah** (klinik tidak meminta pasien menyebarkannya).
 - **Tidak ada** diskon tindakan, poin, voucher, komisi, atau hadiah untuk pasien yang mengajak.
 - Alasan: aturan iklan pelayanan kesehatan dan kode etik dokter gigi; yang aman dan tetap efektif adalah pasien rutin kontrol dan keluarganya mendapat informasi yang jelas.
 
@@ -24,7 +24,7 @@
 |---|---|
 | Pengingat kontrol | Staf mengirim draf pesan satu per satu, 1 minggu sebelum jadwal kontrol 4 bulanan, hanya ke pasien yang setuju dihubungi (skill `pengingat-pasien-klinik`). Pasien bisa berhenti kapan saja dengan membalas STOP. |
 | Kelas edukasi | 1x per bulan, 30 menit, topik umum (mis. "cara sikat gigi anak", "kapan perlu ke dokter gigi"). Gratis untuk umum, tanpa promo harga, tanpa janji hasil. |
-| Kartu info klinik | Berisi alamat, jam praktik, nama dokter gigi berizin (dengan nomor SIP bila diwajibkan), daftar layanan. Pasien boleh memberikannya ke keluarga/kenalan. **Tanpa kode perujuk, tanpa hadiah.** |
+| Kartu info klinik | Berisi alamat, jam praktik, nama dokter gigi berizin (dengan nomor SIP bila diwajibkan), daftar layanan. Untuk pasien sendiri; klinik tidak meminta atau mendorong pasien membagikannya (KODEKGI 2020 Pasal 3 butir 1.2.4 & Pasal 5). **Tanpa kode perujuk, tanpa hadiah.** |
 | Kartu kontrol keluarga | Mencatat tanggal kontrol berikutnya tiap anggota keluarga; bukan kartu poin/diskon. |
 | Informasi tarif | Tarif layanan dijelaskan jujur di awal; tidak ada harga coret atau "promo terbatas". |
 | Data | Nama panggilan, nomor WA, jadwal kontrol berikutnya. **Tanpa diagnosis, rekam medis, atau alasan kunjungan.** Tidak meminta nomor teman pasien. |
@@ -34,7 +34,7 @@
 **Pengingat kontrol (dikirim staf satu per satu):**
 > Halo [NAMA PANGGILAN], ini Klinik Gigi Sehat Dua. Jadwal kontrol gigi Anda berikutnya sekitar [TANGGAL]. Bila ingin membuat janji, balas pesan ini atau hubungi [NOMOR KLINIK]. Balas STOP bila tidak ingin diingatkan lagi.
 
-**Kartu info klinik (boleh dibagikan pasien, tanpa hadiah):**
+**Kartu info klinik (untuk pasien sendiri, tanpa hadiah):**
 > Klinik Gigi Sehat Dua - [ALAMAT]. Praktik: [HARI & JAM]. Dokter gigi: [NAMA, drg.]. Layanan: pemeriksaan, pembersihan karang gigi, tambal, dll. Pendaftaran: [NOMOR KLINIK].
 
 **Undangan kelas edukasi (status/story):**

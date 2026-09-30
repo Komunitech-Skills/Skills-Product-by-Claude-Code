@@ -1,6 +1,6 @@
 # 06 - Skenario normal 1: toko hijab online di Shopee + WhatsApp (usaha FIKTIF)
 
-> Uji independen Tahap 6 (2026-09-30), dijalankan dari salinan skill di scratchpad. Penguji bertindak sebagai agent yang memakai skill. Semua angka rupiah berasal dari `scripts/hitung_referral.py` (keluaran di bawah) dan sudah diverifikasi ulang secara independen (lihat `HASIL-UJI.md`).
+> Uji ulang independen v1.0.1 (2026-09-30; versi awal diuji pada v1.0.0), dijalankan dari salinan skill di scratchpad. Penguji bertindak sebagai agent yang memakai skill. Semua angka rupiah berasal dari `scripts/hitung_referral.py` (keluaran di bawah) dan sudah diverifikasi ulang secara independen (lihat `HASIL-UJI.md` dan `HASIL-UJI-ULANG.md`).
 
 **Permintaan pengguna:** "Saya jualan hijab di Shopee sama WA, namanya Kerudung Nara. Rata-rata sekali belanja Rp145.000, untung kotor 38%. Mau bikin program ajak teman: teman dapat diskon 10%, yang ngajak dapat Rp20.000. Kartu ajakan di paket modalnya Rp1.500. Pelanggan sekitar 850, biasanya beli lagi tiap 2 bulan. Iklan sekarang Rp55.000 per pembeli baru, anggaran hadiah maks Rp750.000 sebulan. Aman nggak? Kalau dinaikin jadi Rp50.000 + 20% gimana?"
 
@@ -28,7 +28,8 @@ Balik modal setelah             : pesanan ke-1 milik teman (langsung di pesanan 
 Hadiah maks agar impas di pesanan pertama: Rp55.100 (total pemberi + teman + lain)
 Perkiraan laba kotor seumur pelanggan: Rp330.600 (6 pesanan; asumsi 0,5x per bulan selama 12 bulan)
 Batas hadiah aman (30% dari laba seumur pelanggan): Rp99.180 total per referral
-Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): Rp83.180
+BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp83.180
+Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp11.550
 STATUS: AMAN
 Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
 (kode keluar 0)
@@ -44,6 +45,22 @@ BIAYA PER REFERRAL              : Rp79.000 = 54,48% dari nilai pesanan, 143,38% 
 Laba pesanan pertama setelah hadiah: -Rp23.900
 PERHATIAN: hadiah lebih besar dari laba kotor pesanan pertama (rugi Rp23.900 per referral). Balik modal hanya bila teman membeli lagi, minimal 1 pesanan ulang.
 Hadiah berupa produk sendiri: isi dengan modal (HPP) produk, bukan harga jual.
+(kode keluar 0)
+
+$ python3 scripts/hitung_referral.py impas --aov 145rb --margin 38 --hadiah-pemberi 50rb --hadiah-teman 20% --frekuensi-bulan 0,5 --umur-bulan 12
+TITIK IMPAS HADIAH REFERRAL
+Laba kotor per pesanan          : Rp55.100 (nilai pesanan Rp145.000, margin 38%)
+Biaya per referral              : Rp79.000 (pemberi Rp50.000 + teman Rp29.000 + lain Rp0)
+Balik modal setelah             : pesanan ke-2 milik teman, sekitar bulan ke-2 bila belanja 0,5x per bulan
+Hadiah maks agar impas di pesanan pertama: Rp55.100 (total pemberi + teman + lain)
+Perkiraan laba kotor seumur pelanggan: Rp330.600 (6 pesanan; asumsi 0,5x per bulan selama 12 bulan)
+Batas hadiah aman (30% dari laba seumur pelanggan): Rp99.180 total per referral
+BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp70.180
+Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp0
+STATUS: RUGI DI PESANAN PERTAMA
+Catatan: hadiah teman + biaya lain sudah memakai 50% atau lebih laba pesanan pertama; tidak ada ruang hadiah pemberi versi konservatif.
+PERHATIAN: RUGI Rp23.900 per referral di pesanan pertama. Balik modal hanya bila teman membeli lagi sampai pesanan ke-2; bila teman hanya membeli sekali, program ini rugi.
+Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
 (kode keluar 0)
 
 $ python3 scripts/hitung_referral.py simulasi --pelanggan-aktif 850 --aov 145rb --margin 38 --hadiah-pemberi 20rb --hadiah-teman 10% --biaya-lain 1.500 --pesanan-ulang 1 --anggaran 750rb --cac-iklan 55rb
@@ -64,8 +81,9 @@ Angka skenario adalah asumsi awal, bukan patokan pasar; ganti dengan data Anda s
 
 ### 1. Ringkasan
 - **Program:** referral dua sisi. Teman baru dapat **potongan 10% (rata-rata Rp14.500)** di pesanan pertama; pengajak dapat **voucher Rp20.000** setelah pesanan teman selesai dan lewat masa retur.
-- **Aman.** Biaya per referral **Rp36.000** (24,83% dari pesanan, 65,34% dari laba kotor); laba pesanan pertama tetap **Rp19.100**, balik modal langsung di pesanan pertama. Lebih murah dari iklan (Rp55.000), selisih Rp19.000.
-- **Usulan Rp50.000 + 20% tidak disarankan untuk program rutin:** biaya Rp79.000, **rugi Rp23.900 per referral** di pesanan pertama; hanya balik modal bila teman membeli lagi.
+- **Status AMAN.** Biaya per referral **Rp36.000** (24,83% dari pesanan, 65,34% dari laba kotor); laba pesanan pertama tetap **Rp19.100**, balik modal langsung di pesanan pertama. Lebih murah dari iklan (Rp55.000), selisih Rp19.000.
+- **Catatan hati-hati:** voucher pengajak Rp20.000 sudah di atas angka **SARAN konservatif Rp11.550** (agar total hadiah maks. separuh laba pesanan pertama). Rp20.000 masih boleh karena status AMAN, tetapi jalankan dengan kuota; bila ingin lebih aman, pakai voucher paling besar Rp11.550. Angka Rp83.180 di hasil script adalah **batas atas, bukan anjuran**.
+- **Usulan Rp50.000 + 20%: STATUS RUGI DI PESANAN PERTAMA.** Biaya Rp79.000, **rugi Rp23.900 per referral**; baru balik modal bila teman belanja lagi sampai pesanan ke-2 (sekitar bulan ke-2). Bila teman hanya membeli sekali, program ini rugi. Tidak disarankan untuk program rutin.
 
 ### 2. Asumsi
 Margin 38% dan biaya iklan dari Anda. Beli ulang 0,5x per bulan (tiap 2 bulan) selama 12 bulan: asumsi. Batas aman 30% dari laba seumur pelanggan = aturan praktis, bukan hukum.
@@ -77,8 +95,10 @@ Margin 38% dan biaya iklan dari Anda. Beli ulang 0,5x per bulan (tiap 2 bulan) s
 | Biaya per referral (Rp20.000 + Rp14.500 + kartu Rp1.500) | Rp36.000 |
 | Laba pesanan pertama setelah hadiah | Rp19.100 |
 | Batas hadiah aman per referral | Rp99.180 (STATUS: AMAN) |
+| Batas atas hadiah pengajak (bukan anjuran) | Rp83.180 |
+| Hadiah pengajak SARAN (konservatif) | Rp11.550 |
 | Kuota dengan anggaran Rp750.000 | maksimal 20 referral berhasil per bulan |
-| Opsi Rp50.000 + 20% | biaya Rp79.000; laba pesanan pertama -Rp23.900 (PERHATIAN) |
+| Opsi Rp50.000 + 20% | biaya Rp79.000; laba pesanan pertama -Rp23.900; STATUS: RUGI DI PESANAN PERTAMA, balik modal di pesanan ke-2 |
 
 ### 4. Aturan program
 - Teman = nomor/akun Shopee yang **belum pernah** beli di Kerudung Nara. Nomor, alamat kirim, atau nama penerima yang sama dengan pengajak = tidak sah.
@@ -121,5 +141,7 @@ Dengan 850 pelanggan dan 1 pesanan ulang per teman baru: konservatif 9 pembeli b
 Angka dihitung dengan script dari data yang Anda berikan. Keputusan besar hadiah tetap di tangan Anda. Promo harus jelas syaratnya (UU 8/1999 Perlindungan Konsumen); data pelanggan dicatat seminimal mungkin dan tidak dibagikan (UU 27/2022 PDP). Skill ini tidak berafiliasi dengan Shopee.
 
 ## Catatan penguji
-- Semua angka cocok dengan hitungan independen. Langkah kerja 1-9 dan format output diikuti.
-- Catatan kecil: `simulasi` menghitung omzet dari nilai pesanan penuh (Rp145.000) walau teman mendapat potongan 10% di pesanan pertama; laba sudah benar (diskon masuk biaya), hanya omzet sedikit lebih tinggi (Rp14.500 per pembeli baru).
+- Uji ulang v1.0.1: semua angka cocok dengan hitungan independen (Fraction). Langkah kerja 1-9 dan format output diikuti.
+- Temuan lama S1 **teratasi**: opsi rugi (Rp50.000 + 20%) kini berstatus `RUGI DI PESANAN PERTAMA`, bukan `AMAN`.
+- Temuan lama S2 **teratasi**: baris hadiah pemberi kini berlabel `BATAS ATAS ... (bukan anjuran)` dan ada baris `SARAN` (Rp11.550) yang dipakai jawaban.
+- Catatan kecil tetap: `simulasi` menghitung omzet dari nilai pesanan penuh (Rp145.000) walau teman mendapat potongan 10%; laba sudah benar.

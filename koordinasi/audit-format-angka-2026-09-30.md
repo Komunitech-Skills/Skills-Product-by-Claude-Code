@@ -89,3 +89,18 @@ Pakai kembali pola parser yang sudah teruji di hitung-ppn / kasir-lokal: `\d{1,3
 Skill yang perlu diperbaiki: presentasi-data-ke-atasan, klon-diri-konten, laporan-otomatis-terjadwal, arsip-nota. Opsional: frappe-books-usaha dan bot-trading-kripto (peringatan bila pola ribuan muncul di harga IDR).
 
 Setiap perbaikan perlu ditambah tes regresi untuk `38.000`, `1.500`, dan `Rp38.000`.
+
+## Verifikasi perbaikan (2026-09-30)
+
+Penguji independen, di salinan scratchpad (`.../scratchpad/verif-angka`). Tidak ada file skill yang diubah, tidak ada commit.
+
+| skill | hasil | bukti singkat |
+|---|---|---|
+| presentasi-data-ke-atasan 1.0.3 | OK | Repro `Omzet:38.000:45.000` → 38000/45000, selisih 7000, +18,4% (dihitung ulang: 7000/38000 = 18,42%). `Rp38.000`, `Rp 45.000`, `rp 1.000.000`, `Rp.2.000.000`, `38rb`, `1,5jt`, `1.5jt`, `-1.500` benar. `38.5`, `1,500`, dan kosong ditolak dengan pesan jelas. `--daftar "Jual=1.500,2.000"` → 1500+2000 = 3500. `1,5jt,2jt` ditolak dengan saran titik-koma. 13 tes lulus. |
+| klon-diri-konten 1.0.3 | OK | `--kurs 16.500` hasilnya sama persis dengan `16500`: A Rp478.500 (29×16.500), B Rp957.000, C Rp855.000 (480.000 + 6,25×60.000), per menit Rp42.533/85.067/76.000, semua dicek ulang. `Rp 16.500` dan `16,5rb` benar. `16.5`, `16,500`, `-16500`, kosong, dan `abc` ditolak. paket.json teks `"480.000"`, `"Rp60.000"`, USD `"29,99"` → Rp494.835 (benar). IDR `"480,5"` ditolak. `--menit 1.500` ditolak. 19 tes lulus. |
+| laporan-otomatis-terjadwal 1.1.4 | OK | `"38.000"` → Rp 38.000, `"1.500"` → Rp 1.500, `"1.250.000"`, `"Rp 38.000"`, `38rb`, `1,5jt`, `38k` benar. `"38.5"`, `"1,5"`, `"1,500"`, `""`, `true`, dan `null` → exit 1 dengan pesan. Half-up: 2.5 → 3, 3.5 → 4, -2.5 → -Rp 3. Ini sesuai standar "rupiah terdekat" di CLAUDE.md dan ROUND_HALF_UP di skill lain. Tidak menyangkut PPN (aturan floor tidak berlaku di sini). JSON angka bulat identik dengan versi lama. 6 tes lulus. |
+| arsip-nota 1.0.5 | OK | Repro CLI `--nominal "150,50"` → `ok:false`, exit 1, nota tidak tersimpan. `1,5`, `1,500`, dan `38.5` ditolak. 22 input yang dulu benar (`38.000`, `Rp 1.250.000`, `4,5 jt`, `1,5jt`, `25000.50`, `1,250,000`, `Rp. 38.000,-`, dan lainnya) hasilnya identik dengan 9d626a5. Uji regresi: SEMUA LULUS (55). |
+| frappe-books-usaha 1.0.6 | OK | `baca_jumlah('1.500')` = 1500, `38.000` = 38000, `1.250.000` dan `1.500,5` sekarang terbaca. `1,500` ditolak karena ambigu. `3`, `1,5`, `2.5`, `0.500`, `1500.5`, `10,25` identik dengan versi lama. qty ≤ 0 tetap ditolak di impor. 47 tes lulus. |
+| bot-trading-kripto 1.0.5 | OK | Backtest lama (9d626a5) vs baru, 4 konfigurasi × 4 CSV (btcidr, btcusdt, harga 5 desimal, harga 1 desimal): 16/16 output IDENTIK byte demi byte. CSV IDR bertitik ribuan (`1.908.238.000`) kini sama persis dengan CSV polos; versi lama menolak semua barisnya. Kolom yang semuanya ambigu (`100.500`) atau campur gaya ditolak dengan pesan jelas. Repro `parse_harga('38.000')` → ValueError ambigu. 135 tes lulus. Hanya backtest.py yang berubah. |
+
+Catatan kecil, bukan regresi (sudah ada sebelumnya): di presentasi-data-ke-atasan, `--daftar "Rating=4,5,3,5"` terbaca 4 nilai (4, 5, 3, 5) karena koma dipakai sebagai pemisah. Hal ini sudah didokumentasikan (pakai `;`). Keluaran dibulatkan ke bilangan bulat, sehingga `2,5 → 3,75` tampil sebagai selisih 1 (persen 50,0 tetap benar).

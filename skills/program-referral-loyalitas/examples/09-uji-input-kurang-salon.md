@@ -1,6 +1,6 @@
 # 09 - Skenario input tidak lengkap: salon (usaha FIKTIF)
 
-> Uji independen Tahap 6 (2026-09-30).
+> Uji ulang independen v1.0.1 (2026-09-30; versi awal diuji pada v1.0.0).
 
 **Pesan 1 pengguna:** "Bikin program member buat salon saya dong, biar pelanggan balik lagi."
 
@@ -48,7 +48,8 @@ Balik modal setelah             : pesanan ke-1 milik teman (langsung di pesanan 
 Hadiah maks agar impas di pesanan pertama: Rp75.000 (total pemberi + teman + lain)
 Perkiraan laba kotor seumur pelanggan: Rp450.000 (6 pesanan; asumsi 1x per bulan selama 6 bulan)
 Batas hadiah aman (30% dari laba seumur pelanggan): Rp135.000 total per referral
-Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): Rp120.000
+BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp120.000
+Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp22.500
 STATUS: AMAN
 Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
 (kode keluar 0)
@@ -57,7 +58,7 @@ Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan,
 
 ### Ringkasan
 - **Poin member:** tiap belanja Rp25.000 = 1 poin, 20 poin (belanja Rp500.000) ditukar hadiah Rp20.000. Biaya 4% dari belanja = 8% dari margin (STATUS OK).
-- **Ajak teman:** teman baru potongan Rp15.000, pengajak voucher Rp15.000 setelah teman selesai perawatan. Biaya per referral Rp30.000 (20% dari transaksi, 40% dari laba kotor), laba kunjungan pertama tetap Rp45.000, AMAN (batas Rp135.000).
+- **Ajak teman:** teman baru potongan Rp15.000, pengajak voucher Rp15.000 setelah teman selesai perawatan. Biaya per referral Rp30.000 (20% dari transaksi, 40% dari laba kotor), laba kunjungan pertama tetap Rp45.000, AMAN (batas Rp135.000). Voucher pengajak Rp15.000 di bawah angka SARAN konservatif Rp22.500; batas atas Rp120.000 bukan anjuran.
 - Semua angka bergantung pada asumsi margin 50%; kirim angka modal (bahan + upah) kalau mau dihitung ulang.
 
 ### Aturan, S&K, teks
@@ -80,4 +81,6 @@ GAGAL: nilai pesanan '150.5' ambigu: titik dipakai sebagai pemisah ribuan. Tulis
 > Maaf, angka "150.5" belum jelas bagi saya: maksudnya Rp150.500 atau Rp150.000-an? Tolong tulis ulang, mis. 150.500 atau 150rb.
 
 ## Catatan penguji
-- Lulus: bertanya sekali, 5 pertanyaan, menawarkan jalur cepat, asumsi ditandai jelas, tidak menghitung sebelum AOV ada (AOV wajib untuk angka, sesuai tabel Input).
+- Lulus (uji ulang v1.0.1): bertanya sekali, 5 pertanyaan, menawarkan jalur cepat, asumsi ditandai jelas, tidak menghitung sebelum AOV ada.
+- Angka ambigu `150.5` tetap ditolak `GAGAL` kode 2 dengan pesan yang sama; tambahan uji ulang: `--aov 12,5` (Rp12,5?) ditolak dengan saran "12,5rb", `--frekuensi-bulan 1.000` ditolak ambigu. Tidak ada regresi.
+- Salon di sini adalah perawatan rambut/wajah non-medis (pola jasa). Bila salon melakukan tindakan medis (suntik, laser, peeling medis), skill mengarahkan ke bagian fasilitas kesehatan (tanpa imbalan untuk merujuk).

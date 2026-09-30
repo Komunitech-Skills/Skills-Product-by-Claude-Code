@@ -20,7 +20,7 @@ Semua usaha di bawah fiktif; angka di kolom "hasil script" berasal dari `scripts
 - **Alternatif patuh (tanpa imbalan untuk merujuk):**
   1. **Program edukasi:** kelas/materi kesehatan umum (mis. "cara sikat gigi anak", "persiapan kehamilan"), boleh dibagikan pasien ke keluarganya; tanpa janji hasil, tanpa promo harga.
   2. **Pengingat kontrol:** draf pesan yang dikirim staf satu per satu kepada pasien yang setuju dihubungi (skill `pengingat-pasien-klinik`); data minimal, tanpa diagnosis.
-  3. **Kartu info klinik:** alamat, jam praktik, nama tenaga kesehatan berizin, layanan yang tersedia; boleh diberikan pasien ke kenalan, **tanpa kode dan tanpa hadiah**.
+  3. **Kartu info klinik:** alamat, jam praktik, nama tenaga kesehatan berizin, layanan yang tersedia; disediakan di klinik untuk pasien sendiri, **tanpa kode dan tanpa hadiah**; bila pasien atas kemauan sendiri memberikannya ke kenalan, itu bukan program klinik. Untuk praktik dokter gigi/dokter, klinik **tidak meminta atau mendorong** pasien membagikan kartu ini (KODEKGI 2020 Pasal 3 butir 1.2.4 & Pasal 5; KODEKI Pasal 3, PERLU REVIEW).
   4. **Kartu anggota/kartu kontrol keluarga** untuk mencatat jadwal kontrol, bukan untuk poin atau potongan.
   5. **Pelayanan yang membuat pasien bercerita sendiri:** waktu tunggu jelas, penjelasan tarif di awal, tindak lanjut ramah.
 - **Bila pemilik tetap ingin hadiah:** minta dulu konfirmasi **tertulis** dari dinas kesehatan setempat dan organisasi profesi; skill hanya mencatat keputusan itu, tidak mengiklankannya.

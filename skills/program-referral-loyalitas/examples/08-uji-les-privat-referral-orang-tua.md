@@ -1,6 +1,6 @@
 # 08 - Skenario normal 3: jasa les privat, referral orang tua (usaha FIKTIF)
 
-> Uji independen Tahap 6 (2026-09-30). Angka dari `scripts/hitung_referral.py`, diverifikasi ulang secara independen.
+> Uji ulang independen v1.0.1 (2026-09-30; versi awal diuji pada v1.0.0). Angka dari `scripts/hitung_referral.py`, diverifikasi ulang secara independen.
 
 **Permintaan pengguna:** "Saya punya les privat SD-SMP 'Bimbel Cerdas Pagi', SPP Rp1,2 juta per bulan, margin sekitar 50% setelah bayar tutor. Murid aktif 60. Mau bikin program referral buat orang tua: yang ngajak dapat potongan SPP Rp100rb, murid baru gratis biaya pendaftaran Rp150rb. Iklan FB sekarang habis Rp350rb per murid baru. Anggaran Rp1,5jt/bulan. Rata-rata murid bertahan 8 bulan."
 
@@ -28,7 +28,8 @@ Balik modal setelah             : pesanan ke-1 milik teman (langsung di pesanan 
 Hadiah maks agar impas di pesanan pertama: Rp600.000 (total pemberi + teman + lain)
 Perkiraan laba kotor seumur pelanggan: Rp4.800.000 (8 pesanan; asumsi 1x per bulan selama 8 bulan)
 Batas hadiah aman (30% dari laba seumur pelanggan): Rp1.440.000 total per referral
-Hadiah pemberi maksimal (bila hadiah teman & biaya lain tetap): Rp1.290.000
+BATAS ATAS hadiah pemberi (bukan anjuran; di atas ini melewati batas aman): Rp1.290.000
+Hadiah pemberi SARAN (konservatif: total hadiah maks. 50% laba pesanan pertama): Rp150.000
 STATUS: AMAN
 Asumsi frekuensi, umur pelanggan, dan porsi 30% adalah aturan praktis/perkiraan, bukan kepastian; cek dengan data penjualan Anda.
 (kode keluar 0)
@@ -61,10 +62,11 @@ Margin 50% dari pengguna. Murid bayar 1x per bulan selama 8 bulan (dari pengguna
 | Biaya per referral | Rp250.000 |
 | Laba bulan pertama setelah hadiah | Rp350.000 |
 | Batas hadiah aman per referral | Rp1.440.000 (AMAN) |
+| Hadiah pengajak SARAN (konservatif) | Rp150.000 (hadiah Anda Rp100.000) |
 | Kuota dengan anggaran Rp1.500.000 | maks 6 per bulan |
 | Simulasi ESTIMASI (60 murid, 5 bulan ulang) | hati-hati 2 murid baru, laba setelah hadiah Rp6.700.000; realistis 5 murid baru, Rp16.750.000 |
 
-Batas aman Rp1.440.000 **bukan saran menaikkan hadiah**; hadiah sekarang sudah cukup menarik untuk orang tua dan menyisakan ruang bila ada murid yang berhenti lebih cepat.
+Batas aman Rp1.440.000 dan batas atas hadiah pengajak Rp1.290.000 **bukan anjuran menaikkan hadiah** (script memberi label BATAS ATAS). Hadiah pengajak **SARAN** konservatif dari script: **Rp150.000**; hadiah Anda Rp100.000 sudah di bawahnya, jadi tidak perlu dinaikkan.
 
 ### 4. Aturan program
 - Hadiah pengajak diberikan setelah murid baru **menyelesaikan 1 bulan pertama dan membayar SPP bulan ke-2** (mencegah daftar lalu keluar).
@@ -96,5 +98,6 @@ Orang tua murid aktif (Pengajak) yang mengajak keluarga lain yang belum pernah m
 Angka dihitung dengan script dari data yang Anda berikan. Keputusan besar hadiah tetap di tangan Anda. Potongan SPP bukan uang tunai; untuk komisi tunai bernilai besar tanyakan konsultan pajak.
 
 ## Catatan penguji
-- Semua angka cocok. Skill tidak secara eksplisit menyebut **data anak** (UU PDP Pasal 25 soal persetujuan orang tua); jawaban di atas menambahkannya dari pengetahuan penguji. Temuan rendah: tambahkan satu baris di `pola-per-usaha.md` bagian jasa/les.
-- Output `impas` menampilkan "Hadiah pemberi maksimal Rp1.290.000"; untuk pembeli awam angka ini bisa dibaca sebagai saran. Agent perlu menjelaskan bahwa itu batas atas, bukan anjuran (dilakukan di atas). Temuan rendah.
+- Uji ulang v1.0.1: semua angka cocok dengan hitungan independen; SARAN Rp150.000 = floor(Rp600.000 x 50%) - Rp150.000.
+- Temuan lama S2 **teratasi**: output `impas` kini memberi label `BATAS ATAS ... (bukan anjuran)` untuk Rp1.290.000 dan baris `SARAN`, sehingga agent tidak perlu menambah penjelasan sendiri.
+- Temuan lama R3 (data anak) **belum** ditangani di skill: SKILL.md/references tidak menyebut persetujuan orang tua untuk data anak (UU 27/2022 Pasal 25). Jawaban di atas menambahkannya dari pengetahuan penguji. Tetap rendah.
