@@ -8,7 +8,7 @@
 - **Pasal 11**: penjualan obral/lelang tidak boleh mengelabui (mis. menaikkan harga sebelum obral).
 - **Pasal 12**: melarang menawarkan harga/tarif khusus dalam waktu dan jumlah tertentu bila pelaku usaha tidak bermaksud melaksanakannya sesuai waktu dan jumlah yang dijanjikan.
 - **Pasal 13**: melarang menawarkan hadiah dengan maksud tidak memberikannya atau memberikan tidak sesuai yang dijanjikan.
-- **Pasal 17**: iklan tidak boleh mengelabui soal kualitas, kuantitas, bahan, kegunaan, harga, atau jaminan, atau memuat informasi keliru.
+- **Pasal 17**: ditujukan kepada **pelaku usaha periklanan** (yang memproduksi/mengedarkan iklan, mis. agensi), bukan penjual pada umumnya: dilarang memproduksi iklan yang mengelabui soal kualitas, kuantitas, bahan, kegunaan, harga/tarif, ketepatan waktu, atau jaminan, memuat informasi keliru, atau tidak memuat risiko pemakaian (Pasal 17 ayat 1), dan melanjutkan peredaran iklan yang sudah melanggar (ayat 2). Bagi penjual, larangan mengelabui ada di Pasal 9-13; bila memakai jasa agensi, pastikan isi iklan tetap benar.
 Pelanggaran dapat dikenai sanksi (mis. Pasal 62). Skill tidak menilai kasus tertentu.
 
 ## Kelangkaan yang jujur

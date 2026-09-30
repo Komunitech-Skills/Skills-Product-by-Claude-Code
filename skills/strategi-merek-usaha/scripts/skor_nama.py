@@ -35,7 +35,9 @@ BOBOT_AWAL = {"panjang": 10, "suku_kata": 10, "ejaan": 10, "kemiripan": 20,
 BATAS_SERI = 5.0
 MAKS_NAMA = 100
 VOKAL = set("aiueo")
-DIFTONG = ("ai", "au", "oi")
+DIFTONG = ("ai", "au", "oi", "eu")  # eu = vokal Sunda (Seulas = seu-las)
+GENERIK_BAWAAN = ("kopi", "teh", "toko", "warung", "kedai", "depot", "rumah", "cafe", "kafe", "resto",
+                  "restoran", "bengkel", "laundry", "salon", "studio", "jaya", "abadi", "mandiri", "makmur")
 
 
 class InputSalah(Exception):
@@ -47,7 +49,7 @@ def huruf(teks):
 
 
 def suku_kata_kata(kata):
-    """Hitung suku kata satu kata. Tiap huruf vokal = 1 suku kata, kecuali diftong ai/au/oi
+    """Hitung suku kata satu kata. Tiap huruf vokal = 1 suku kata, kecuali diftong ai/au/oi/eu
     (dihitung 1). Kata tanpa vokal (singkatan mis. BCA) dibaca per huruf."""
     k = re.sub(r"[^a-z]", "", kata.lower())
     if not k:
@@ -115,12 +117,21 @@ def skor_ejaan(nama):
     return max(s, 1), alasan
 
 
-def kemiripan(nama, merek):
-    """Kembalikan (skor 1-5, merek paling mirip, rasio). Rasio = difflib pada huruf saja."""
-    a = huruf(nama)
+def tanpa_generik(teks, generik):
+    """Buang kata generik (per kata utuh) dari teks; hasil huruf saja."""
+    sisa = [k for k in re.split(r"\s+", teks.strip()) if huruf(k) not in generik]
+    return huruf(" ".join(sisa))
+
+
+def kemiripan(nama, merek, generik=()):
+    """Kembalikan (skor 1-5, merek paling mirip, rasio). Rasio = difflib pada huruf saja.
+    Kata generik (kopi, toko, ...) dibuang dari kedua sisi sebelum dibandingkan; merek yang seluruhnya
+    generik dilewati; nama yang seluruhnya generik dibandingkan apa adanya."""
+    generik = {huruf(g) for g in generik}
+    a = tanpa_generik(nama, generik) or huruf(nama)
     terbaik, rasio_max = "", 0.0
     for m in merek:
-        b = huruf(m)
+        b = tanpa_generik(m, generik)
         if not a or not b:
             continue
         r = difflib.SequenceMatcher(None, a, b).ratio()
@@ -229,11 +240,13 @@ def baca_csv(path):
     return data
 
 
-def nilai(data, merek, bobot):
+def nilai(data, merek, bobot, generik=()):
     hasil = []
     total_bobot = sum(bobot.values())
     for r in data:
         nama = r["nama"]
+        if not huruf(nama):
+            raise InputSalah(f"nama '{nama}' tidak berisi huruf; beri nama dengan huruf")
         nilai_k, catatan, tandai = {}, [], []
         nilai_k["panjang"] = skor_panjang(len(huruf(nama)))
         sk = suku_kata(nama)
@@ -243,7 +256,7 @@ def nilai(data, merek, bobot):
         if alasan:
             catatan.append("ejaan: " + ", ".join(alasan))
         if merek:
-            m, terdekat, rasio = kemiripan(nama, merek)
+            m, terdekat, rasio = kemiripan(nama, merek, generik)
             nilai_k["kemiripan"] = m
             if m <= 2:
                 catatan.append(f"mirip '{terdekat}' ({rasio:.0%} ejaan)")
@@ -269,9 +282,11 @@ def nilai(data, merek, bobot):
     return hasil, seri
 
 
-def cetak_teks(hasil, seri, bobot, merek):
+def cetak_teks(hasil, seri, bobot, merek, generik):
     print(f"Bobot: " + ", ".join(f"{k}={bobot[k]:g}" for k in KRITERIA))
     print(f"Merek pembanding: {', '.join(merek) if merek else '(tidak ada)'}")
+    if generik and merek:
+        print(f"Kata generik diabaikan saat cek kemiripan: {', '.join(generik)}")
     print()
     print(f"{'#':>2}  {'Nama':<24}{'Skor':>6}  {'Huruf':>5} {'Suku':>4}  Status / catatan")
     for i, x in enumerate(hasil, 1):
@@ -291,6 +306,8 @@ def cetak_teks(hasil, seri, bobot, merek):
 
 
 def hitung_satu(nama):
+    if not huruf(nama):
+        raise InputSalah(f"nama '{nama}' tidak berisi huruf; beri nama dengan huruf")
     e, alasan = skor_ejaan(nama)
     print(f"Nama: {nama}")
     print(f"Huruf (tanpa spasi/simbol): {len(huruf(nama))}; suku kata: {suku_kata(nama)}")
@@ -303,6 +320,8 @@ def main(argv=None):
     p.add_argument("csv", nargs="?", help="file CSV calon nama")
     p.add_argument("--merek", default="", help="merek yang ingin dibandingkan, dipisah koma")
     p.add_argument("--merek-file", default="", help="file teks berisi satu merek per baris")
+    p.add_argument("--generik", default="", help='kata umum tambahan yang diabaikan saat cek kemiripan, mis. "sambal,nasi"')
+    p.add_argument("--tanpa-generik", action="store_true", help="matikan daftar kata generik bawaan (kopi, toko, warung, ...)")
     p.add_argument("--bobot", default="", help='mis. "kemiripan=30,khas=10"')
     p.add_argument("--format", choices=["teks", "json", "csv"], default="teks")
     p.add_argument("--hitung", default="", help="hitung panjang & suku kata satu nama")
@@ -318,12 +337,13 @@ def main(argv=None):
             raise InputSalah('sebutkan file CSV calon nama, atau pakai --hitung "nama"')
         bobot = baca_bobot(a.bobot)
         merek = daftar_merek(a.merek, a.merek_file)
-        hasil, seri = nilai(baca_csv(a.csv), merek, bobot)
+        generik = ([] if a.tanpa_generik else list(GENERIK_BAWAAN)) + [x.strip().lower() for x in re.split(r"[,;]", a.generik) if x.strip()]
+        hasil, seri = nilai(baca_csv(a.csv), merek, bobot, generik)
     except InputSalah as e:
         print(f"GAGAL: {e}", file=sys.stderr)
         return 2
     if a.format == "json":
-        print(json.dumps({"bobot": bobot, "merek": merek, "seri": seri, "hasil": hasil},
+        print(json.dumps({"bobot": bobot, "merek": merek, "generik": generik, "seri": seri, "hasil": hasil},
                          ensure_ascii=False, indent=2))
     elif a.format == "csv":
         w = csv.writer(sys.stdout, lineterminator="\n")
@@ -332,7 +352,7 @@ def main(argv=None):
             w.writerow([i, x["nama"], x["skor"]] + [x["nilai"][k] for k in KRITERIA]
                        + ["TANDAI: " + "; ".join(x["tandai"]) if x["tandai"] else "layak dicek"])
     else:
-        cetak_teks(hasil, seri, bobot, merek)
+        cetak_teks(hasil, seri, bobot, merek, generik)
     return 0
 
 

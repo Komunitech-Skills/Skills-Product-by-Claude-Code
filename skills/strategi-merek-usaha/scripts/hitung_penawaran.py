@@ -14,11 +14,13 @@ Rumus (rupiah dibulatkan ke rupiah terdekat, .5 ke atas):
   laba = harga_tayang - biaya_platform - hpp - biaya_bonus - biaya_refund
   margin = laba / harga_tayang
 Dengan --margin-minimal M: dihitung batas biaya bonus per unit agar margin >= M%.
-Keluar kode 0 bila sukses, 2 bila input salah.
+Nominal boleh format Indonesia: 38000, 38.000, Rp38.000, 38rb, 1,5jt, 38.000,50. Yang ambigu (38.5) -> GAGAL.
+Persen: 10, 10%, 7,5. Keluar kode 0 bila sukses, 2 bila input salah.
 """
 import argparse
 import json
 import math
+import re
 import sys
 
 
@@ -28,6 +30,51 @@ class InputSalah(Exception):
 
 def bulat(x):
     return int(math.floor(x + 0.5))
+
+
+_SUFIKS = {"rb": 1_000, "ribu": 1_000, "k": 1_000, "jt": 1_000_000, "juta": 1_000_000}
+
+
+def baca_rupiah(teks, nama="nilai"):
+    """Baca nominal format Indonesia. Terima: 38000, 38.000, 1.500.000, Rp38.000, Rp 38.000,-,
+    38.000,50 (koma = desimal), 38,5, 38rb, 38 ribu, 1,5jt, 1.5jt, 2 juta.
+    Ambigu (mis. 38.5, 38,000, 1.500rb, 1,500.50) -> InputSalah, bukan ditebak."""
+    t = str(teks).strip().lower()
+    asli = str(teks).strip()
+    t = re.sub(r"^rp\.?\s*", "", t)
+    t = re.sub(r",-$", "", t).replace(" ", "")
+    if t.startswith("-"):
+        raise InputSalah(f"{nama} tidak boleh negatif: '{asli}'")
+    m = re.match(r"^([0-9.,]+?)(rb|ribu|k|jt|juta)?$", t)
+    if not m or not re.search(r"\d", m.group(1)):
+        raise InputSalah(f"{nama} '{asli}' bukan nominal yang dikenal (contoh: 38000, 38.000, Rp38.000, 38rb, 1,5jt)")
+    angka_t, suf = m.group(1), m.group(2)
+    ambigu = InputSalah(f"{nama} '{asli}' ambigu (titik/koma bisa ribuan atau desimal). "
+                        "Tulis tanpa pemisah (38000), titik ribuan (38.000), atau koma desimal (38,5)")
+    if suf:
+        if re.fullmatch(r"\d+", angka_t):
+            nilai = float(angka_t)
+        elif re.fullmatch(r"\d+,\d{1,2}", angka_t) or re.fullmatch(r"\d+\.\d{1,2}", angka_t):
+            nilai = float(angka_t.replace(",", "."))
+        else:
+            raise ambigu
+        return nilai * _SUFIKS[suf]
+    if re.fullmatch(r"\d+", angka_t):
+        return float(angka_t)
+    if re.fullmatch(r"[1-9]\d{0,2}(\.\d{3})+(,\d+)?", angka_t):
+        return float(angka_t.replace(".", "").replace(",", "."))
+    if re.fullmatch(r"\d+,\d{1,2}", angka_t):
+        return float(angka_t.replace(",", "."))
+    raise ambigu
+
+
+def baca_persen(teks, nama="nilai"):
+    t = str(teks).strip().replace(" ", "")
+    if t.endswith("%"):
+        t = t[:-1]
+    if re.fullmatch(r"\d+([.,]\d+)?", t):
+        return float(t.replace(",", "."))
+    raise InputSalah(f"--{nama} '{teks}' bukan persen yang dikenal (contoh: 10, 7,5, 10%)")
 
 
 def angka(nama, v, minimum=0.0, maksimum=None):
@@ -45,10 +92,7 @@ def baca_bonus(teks):
         if "=" not in bag:
             raise InputSalah(f"bonus '{bag.strip()}' harus berbentuk Nama=biaya")
         n, b = bag.rsplit("=", 1)
-        try:
-            biaya = float(b.strip().replace("_", ""))
-        except ValueError:
-            raise InputSalah(f"biaya bonus '{n.strip()}' bukan angka: '{b.strip()}' (rupiah tanpa titik ribuan)")
+        biaya = baca_rupiah(b, f"biaya bonus '{n.strip()}'")
         if biaya != biaya or biaya < 0 or biaya == float("inf"):
             raise InputSalah(f"biaya bonus '{n.strip()}' harus 0 atau lebih")
         if not n.strip():
@@ -83,27 +127,27 @@ def rp(n):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description="Laba per unit penawaran", allow_abbrev=False)
-    p.add_argument("--harga", type=float, required=True, help="harga normal per unit (Rp)")
-    p.add_argument("--hpp", type=float, required=True, help="modal per unit (Rp)")
-    p.add_argument("--diskon", type=float, default=0.0, help="diskon persen")
-    p.add_argument("--platform", type=float, default=0.0, help="total potongan marketplace/payment persen")
+    p.add_argument("--harga", type=str, required=True, help="harga normal per unit, mis. 38000, 38.000, Rp38.000, 38rb")
+    p.add_argument("--hpp", type=str, required=True, help="modal per unit (Rp)")
+    p.add_argument("--diskon", type=str, default="0", help="diskon persen")
+    p.add_argument("--platform", type=str, default="0", help="total potongan marketplace/payment persen")
     p.add_argument("--bonus", default="", help='"Nama=biaya modal;Nama2=biaya"')
-    p.add_argument("--refund", type=float, default=0.0, help="perkiraan persen pembeli minta uang kembali")
-    p.add_argument("--margin-minimal", type=float, default=None, help="target margin minimal persen")
+    p.add_argument("--refund", type=str, default="0", help="perkiraan persen pembeli minta uang kembali")
+    p.add_argument("--margin-minimal", type=str, default=None, help="target margin minimal persen")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
     try:
         a = p.parse_args(argv)
     except SystemExit as e:
         return 2 if e.code else 0
     try:
-        harga = angka("harga", a.harga, 0.0)
+        harga = angka("harga", baca_rupiah(a.harga, "--harga"), 0.0)
         if harga <= 0:
             raise InputSalah("--harga harus lebih dari 0")
-        hpp = angka("hpp", a.hpp, 0.0)
-        diskon = angka("diskon", a.diskon, 0.0, 100.0)
-        platform = angka("platform", a.platform, 0.0, 100.0)
-        refund = angka("refund", a.refund, 0.0, 100.0)
-        mm = None if a.margin_minimal is None else angka("margin-minimal", a.margin_minimal, 0.0, 99.0)
+        hpp = angka("hpp", baca_rupiah(a.hpp, "--hpp"), 0.0)
+        diskon = angka("diskon", baca_persen(a.diskon, "diskon"), 0.0, 100.0)
+        platform = angka("platform", baca_persen(a.platform, "platform"), 0.0, 100.0)
+        refund = angka("refund", baca_persen(a.refund, "refund"), 0.0, 100.0)
+        mm = None if a.margin_minimal is None else angka("margin-minimal", baca_persen(a.margin_minimal, "margin-minimal"), 0.0, 99.0)
         bonus = baca_bonus(a.bonus)
         if diskon >= 100:
             raise InputSalah("--diskon 100 berarti gratis; pakai angka di bawah 100")
@@ -111,6 +155,12 @@ def main(argv=None):
     except InputSalah as e:
         print(f"GAGAL: {e}", file=sys.stderr)
         return 2
+    peringatan = []
+    if harga < 1000:
+        peringatan.append(f"PERINGATAN: harga {rp(bulat(harga))} sangat kecil. Bila maksud Anda ribuan, tulis 38000 atau 38rb.")
+    if 0 < hpp < 100:
+        peringatan.append(f"PERINGATAN: HPP {rp(bulat(hpp))} sangat kecil. Bila maksud Anda ribuan, tulis 17000 atau 17rb.")
+    r["peringatan"] = peringatan
     if a.format == "json":
         print(json.dumps(r, ensure_ascii=False, indent=2))
         return 0
@@ -128,6 +178,8 @@ def main(argv=None):
     if mm is not None:
         print(f"Ruang biaya bonus maksimum agar margin >= {mm:g}%: {rp(r['ruang_bonus_maks'])} per unit; "
               + ("memenuhi." if r["memenuhi_margin_minimal"] else "BELUM memenuhi."))
+    for w in peringatan:
+        print(w)
     if diskon > 50:
         print("Catatan: diskon > 50% -- pastikan harga normal pernah benar-benar berlaku (lihat SKILL.md, kelangkaan jujur).")
     return 0

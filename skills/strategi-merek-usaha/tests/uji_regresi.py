@@ -161,5 +161,69 @@ class UjiPenawaran(unittest.TestCase):
             self.assertEqual(jalan(H, *arg)[0], 2, arg)
 
 
+class UjiRevisi101(unittest.TestCase):
+    def test_format_rupiah_indonesia(self):
+        casos = {"38000": 38000, "38.000": 38000, "1.500": 1500, "1.500.000": 1500000, "Rp38.000": 38000,
+                 "Rp 38.000": 38000, "rp38.000,-": 38000, "38rb": 38000, "38 ribu": 38000, "1,5jt": 1500000,
+                 "1.5jt": 1500000, "2 juta": 2000000, "38.000,50": 38000.5, "38,5": 38.5, "12k": 12000}
+        for teks, hasil in casos.items():
+            self.assertAlmostEqual(H.baca_rupiah(teks), hasil, msg=teks)
+
+    def test_format_rupiah_ambigu_gagal(self):
+        for teks in ("38.5", "1.5", "38,000", "1.500rb", "1,500.50", "0.500", "abc", "", "Rp", "-5", "38..000", "1.50.000"):
+            with self.assertRaises(H.InputSalah, msg=teks):
+                H.baca_rupiah(teks)
+
+    def test_cli_titik_ribuan_benar(self):
+        k, o, _ = jalan(H, "--harga", "38.000", "--hpp", "17rb", "--platform", "8")
+        # tayang 38.000 ; fee 3.040 ; laba = 38.000-3.040-17.000 = 17.960
+        self.assertEqual(k, 0)
+        self.assertIn("LABA per unit       : Rp17.960", o)
+        k, o, _ = jalan(H, "--harga", "Rp38.000", "--hpp", "17.000", "--bonus", "Tas=1.500;Stiker=500")
+        self.assertEqual(k, 0)
+        self.assertIn("LABA per unit       : Rp19.000", o)  # 38.000-17.000-2.000
+
+    def test_cli_ambigu_gagal_dan_peringatan(self):
+        k, _, e = jalan(H, "--harga", "38.5", "--hpp", "17000")
+        self.assertEqual(k, 2)
+        self.assertIn("ambigu", e)
+        self.assertEqual(jalan(H, "--harga", "38000", "--hpp", "17000", "--bonus", "Tas=1.5")[0], 2)
+        k, o, _ = jalan(H, "--harga", "38", "--hpp", "17")
+        self.assertEqual(k, 0)
+        self.assertIn("PERINGATAN: harga Rp38 sangat kecil", o)
+
+    def test_persen(self):
+        self.assertEqual(H.baca_persen("7,5"), 7.5)
+        self.assertEqual(H.baca_persen("10%"), 10.0)
+        k, _, _ = jalan(H, "--harga", "100000", "--hpp", "1000", "--diskon", "abc")
+        self.assertEqual(k, 2)
+
+    def test_nama_tanpa_huruf(self):
+        k, _, e = jalan(N, tulis("nama\n2.5\n"))
+        self.assertEqual(k, 2)
+        self.assertIn("tidak berisi huruf", e)
+        self.assertEqual(jalan(N, "--hitung", "123")[0], 2)
+
+    def test_eu_satu_vokal(self):
+        self.assertEqual(N.suku_kata("Seulas"), 2)   # seu-las
+        self.assertEqual(N.suku_kata("Neundeut"), 2)  # neun-deut
+
+    def test_kata_generik(self):
+        # "Kopi Senja" vs merek "Kopi" : merek seluruhnya generik -> dilewati, tidak ditandai
+        f = tulis("nama\nKopi Senja\nWarung Bintang\n")
+        k, o, _ = jalan(N, f, "--merek", "Kopi, Warung")
+        self.assertEqual(k, 0)
+        self.assertNotIn("TANDAI", o)
+        # tetap tertangkap bila bagian khasnya mirip
+        k, o, _ = jalan(N, tulis("nama\nKopi Kenangan Baru\n"), "--merek", "Kopi Kenangan")
+        self.assertIn("TANDAI: terlalu mirip", o)
+        # tanpa penanganan generik, perilaku lama (semua yang memuat 'kopi' mirip)
+        k, o, _ = jalan(N, f, "--merek", "Kopi", "--tanpa-generik")
+        self.assertIn("TANDAI", o)
+        # opsi generik tambahan
+        k, o, _ = jalan(N, tulis("nama\nSambal Nusa\n"), "--merek", "Sambal", "--generik", "sambal")
+        self.assertNotIn("TANDAI", o)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -56,3 +56,11 @@ Hanya bila memang benar. Skill menolak kelangkaan palsu dan menawarkan versi juj
 Tidak. Agent yang menjalankan script; bila tidak bisa, hitungan manual dengan rumus di `references/`.
 
 Kredit sumber terbuka dan lisensi: lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
+
+## Riwayat versi
+### Catatan revisi 1.0.1 (2026-09-30)
+- Penghitung penawaran kini membaca nominal format Indonesia (`38.000`, `Rp38.000`, `38rb`, `1,5jt`, `38.000,50`); bentuk ambigu (`38.5`) ditolak dengan pesan jelas, harga sangat kecil diberi peringatan.
+- Tabel kelas Nice ditambah kelas 5, 37, 44 dan diperiksa ulang terhadap Nice Classification edisi ke-13 (versi 2026).
+- Ringkasan Pasal 17 UU 8/1999 diperjelas: berlaku untuk pelaku usaha periklanan.
+- Nama tanpa huruf ditolak; "eu" (Sunda) dihitung satu vokal; kata generik (kopi, toko, warung, dst.) tidak lagi membuat semua nama tertandai mirip (opsi `--generik`, `--tanpa-generik`).
+- Tes regresi bertambah dari 17 menjadi 25.

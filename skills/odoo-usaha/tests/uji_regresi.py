@@ -335,7 +335,9 @@ class UjiTulis(unittest.TestCase):
         k, out, err = self.buat(19, extra=["--ya", "--berlaku", "7"])
         self.assertEqual(k, 0, err)
         so = self.draf_ai()[0]
-        self.assertEqual(so["validity_date"], None or so["validity_date"])
+        import datetime as dt
+        berlaku = dt.date.fromisoformat(so["validity_date"])
+        self.assertIn((berlaku - od.hari_ini(7)).days, (7,))
         baris = [b for b in self.s.t.data["sale.order.line"] if b["order_id"][0] == so["id"]]
         self.assertEqual([(b["product_id"][0], b["product_uom_qty"], b["price_unit"]) for b in baris],
                          [(21, 3.0, 45000.0), (22, 2.0, 32500.0), (25, 1.0, 132345.0)])
@@ -484,7 +486,8 @@ class UjiGalatDanKeamanan(unittest.TestCase):
         self.assertIn("--izinkan-host", err)
         k, out, _ = jalan(None, "atur", "--url", "https://erp.tokosaya.test", "--izinkan-host", home=home, kunci=None)
         self.assertEqual(k, 0)
-        konf = json.load(open(os.path.join(home, ".komunitech", "odoo.json")))
+        with open(os.path.join(home, ".komunitech", "odoo.json"), encoding="utf-8") as f:
+            konf = json.load(f)
         self.assertEqual(konf["host_diizinkan"], ["erp.tokosaya.test"])
         if os.name != "nt":
             self.assertEqual(stat.S_IMODE(os.stat(os.path.join(home, ".komunitech", "odoo.json")).st_mode), 0o600)
@@ -517,7 +520,8 @@ class UjiGalatDanKeamanan(unittest.TestCase):
         self.assertNotIn(st.KUNCI_BACA, out + err)
         k, _, err = jalan(None, "simpan-kunci", kunci=None, home=home, masukan="kunci-lain-123456789\n")
         self.assertEqual(k, 2)
-        self.assertEqual(open(path).read().strip(), st.KUNCI_BACA)
+        with open(path, encoding="utf-8") as f:
+            self.assertEqual(f.read().strip(), st.KUNCI_BACA)
         s = Server(19)
         try:
             k, out, _ = jalan(s.port, "cek", kunci=None, home=home)
@@ -562,7 +566,7 @@ class UjiGalatDanKeamanan(unittest.TestCase):
         with open(SKRIP, encoding="utf-8") as f:
             kode = f.read()
         badan = kode.split('"""', 2)[2]      # lewati docstring modul
-        for kata in ('"unlink"', "'unlink'", '"write"', "action_confirm", "action_post", "/web/database"):
+        for kata in ('"unlink"', "'unlink'", '"write"', "action_confirm", "action_post", "database/drop", "/jsonrpc"):
             self.assertNotIn(kata, badan)
 
 

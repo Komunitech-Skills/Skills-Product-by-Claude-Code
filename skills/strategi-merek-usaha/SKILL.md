@@ -54,6 +54,7 @@ python3 scripts/skor_nama.py nama.csv --merek "Merek A, Merek B"      # Windows:
 python3 scripts/skor_nama.py nama.csv --merek-file merek.txt --bobot "kemiripan=30,khas=10"
 ```
 - Script menghitung panjang huruf, suku kata, kemudahan ejaan, dan **kemiripan ejaan** dengan daftar merek **yang diberikan pengguna**; sisanya dari nilai manual. Skala 0-100. Bobot memakai titik untuk desimal.
+- **Kata generik** (kopi, toko, warung, kedai, depot, bengkel, laundry, jaya, dst.; daftar lengkap di `scripts/skor_nama.py`) dibuang dari kedua sisi sebelum cek kemiripan, supaya merek "Kopi" tidak menandai semua nama berkata "kopi". Tambah kata umum lain dengan `--generik "sambal,nasi"`; matikan bawaan dengan `--tanpa-generik`. Bagian khas nama (mis. "Kenangan") tetap dibandingkan. Tetap: masukkan **merek utuh** pesaing ("Kopi Kenangan"), bukan kata umum saja. Nama tanpa huruf (mis. "2.5") ditolak.
 - Nama berstatus **TANDAI** (terlalu mirip merek yang diberikan, atau arti negatif) tidak boleh direkomendasikan. Selisih <= 5 poin = **SETARA**: putuskan lewat uji ucap 5 orang dan hasil cek ketersediaan.
 - Bila script tidak bisa dijalankan, hitung manual: skor = jumlah(bobot x nilai 1-5) / jumlah bobot x 20 (bobot awal: panjang 10, suku kata 10, ejaan 10, kemiripan 20, aman makna 20, khas 15, relevan 15). Aturan skor tiap kriteria ada di `references/kriteria-nama.md`.
 - Script tidak mendengar bunyi dan tidak tahu merek yang tidak disebutkan. Nama Inggris dan singkatan dihitung suku katanya kira-kira.
@@ -90,6 +91,7 @@ Penawaran yang kuat menaikkan nilai di mata pembeli, tidak sekadar memotong harg
 python3 scripts/hitung_penawaran.py --harga 38000 --hpp 17000 --platform 8 --diskon 0 \
   --bonus "Stiker=500;Kartu resep=800" --refund 2 --margin-minimal 25
 ```
+Nominal boleh ditulis gaya Indonesia (`38000`, `38.000`, `Rp38.000`, `38rb`, `1,5jt`, `38.000,50`); persen boleh `7,5` atau `10%`. Bentuk ambigu seperti `38.5` atau `38,000` ditolak dengan pesan GAGAL: tanya pengguna, jangan ditebak. Harga/HPP di bawah Rp1.000 diberi PERINGATAN (mungkin maksudnya ribuan).
 Keluaran: harga tayang, potongan platform, HPP, biaya bonus (biaya modal), perkiraan refund, **laba per unit**, margin, dan ruang biaya bonus maksimum. Rupiah dibulatkan ke rupiah terdekat. Bila **RUGI** atau margin di bawah target: kurangi bonus/diskon atau naikkan harga sebelum menulis materi. Bandingkan minimal dua versi (mis. diskon 15% vs bonus). Tanpa Python: rumus di `references/rumus-penawaran.md`. Potongan platform = angka dari pengguna (cek di pusat penjual masing-masing); jangan menebak.
 
 ### B4. Tulis materi siap tempel
@@ -129,7 +131,7 @@ Keluaran ringkas: 10 nama + skor (mis. "Cabe Gendis 86/100, layak dicek"), dafta
 - **Bukan nasihat hukum atau merek.** Skill tidak menyatakan sebuah nama boleh didaftarkan, bebas dari sengketa, atau tidak melanggar merek pihak lain. Hasil PDKI dan keputusan pendaftaran ada di DJKI dan konsultan kekayaan intelektual. Pertanyaan hukum (mis. "aman dari gugatan?") dijawab dengan arahan ke konsultan KI.
 - **Tidak mengklaim ketersediaan** domain, handle, atau merek. Semua berstatus "belum dicek" sampai pengguna melapor.
 - **Tidak mengarang** testimoni, jumlah pembeli, penghargaan, sertifikat, stok, atau tanggal. Pakai `[isi: ...]`.
-- **Kelangkaan palsu ditolak:** stok "tinggal 3" padahal banyak, penghitung waktu yang diulang terus, harga coret yang tidak pernah berlaku, bonus/hadiah yang tidak diberikan. Tawarkan versi jujur. Dasar: **UU No. 8 Tahun 1999 tentang Perlindungan Konsumen**, Pasal 9, 10, 11, 12, 13, dan 17 (ringkasan per 2026-09-30, bukan kutipan resmi; baca teks lengkap di peraturan.go.id atau JDIH BPK).
+- **Kelangkaan palsu ditolak:** stok "tinggal 3" padahal banyak, penghitung waktu yang diulang terus, harga coret yang tidak pernah berlaku, bonus/hadiah yang tidak diberikan. Tawarkan versi jujur. Dasar: **UU No. 8 Tahun 1999 tentang Perlindungan Konsumen**, Pasal 9, 10, 11, 12, 13 (untuk penjual) dan 17 (untuk pelaku usaha periklanan/agensi) (ringkasan per 2026-09-30, bukan kutipan resmi; baca teks lengkap di peraturan.go.id atau JDIH BPK).
 - **Klaim berisiko** (kesehatan, "menyembuhkan", "pasti langsing", "termurah se-Indonesia", "BPOM/halal" tanpa nomor): ganti dengan versi yang bisa dibuktikan. Pangan/kosmetik/obat: arahkan cek aturan BPOM dan sertifikasi halal.
 - **Bukan blast:** pesan WA hanya untuk kontak yang sudah berinteraksi/bersedia; skill tidak mengirim pesan sendiri.
 - Input terlalu tipis ("bikin nama"): tanyakan sekali (5 pertanyaan) atau kerjakan versi cepat dengan asumsi.
