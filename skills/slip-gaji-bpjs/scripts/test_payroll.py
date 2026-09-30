@@ -251,5 +251,29 @@ class TestInputRusak(unittest.TestCase):
             shutil.rmtree(tmp)
 
 
+def _tulis_data(tmp):
+    path = os.path.join(tmp, "k.csv")
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f, delimiter=";")
+        w.writerow(["Nama", "PTKP", "Gaji Pokok", "Jabatan"])
+        w.writerow(["Ani", "TK/0", "Rp 6.000.000", "Kasir"])
+    return path
+
+
+class TestPeringatanTemp(unittest.TestCase):
+    def test_fungsi(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertTrue(payroll.peringatan_folder_sementara(os.path.join(tmp, "x")))
+        self.assertFalse(payroll.peringatan_folder_sementara(os.path.expanduser("~")))
+
+    def test_cli_tetap_menulis_dan_memperingatkan(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            r = subprocess.run([sys.executable, os.path.join(FOLDER, "payroll.py"), "--data", _tulis_data(tmp), "--periode", "2026-09", "--out", os.path.join(tmp, "o")], capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn("PERINGATAN", r.stderr)
+            self.assertIn("folder sementara", r.stderr)
+            self.assertTrue(os.path.exists(os.path.join(tmp, "o", "rekap-payroll-2026-09.csv")))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

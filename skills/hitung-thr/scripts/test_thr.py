@@ -222,5 +222,20 @@ class TestRusak(unittest.TestCase):
             self.assertTrue(os.path.exists(out))
 
 
+class TestPeringatanTemp(unittest.TestCase):
+    def test_fungsi(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertTrue(thr.peringatan_folder_sementara(os.path.join(tmp, "x")))
+        self.assertFalse(thr.peringatan_folder_sementara(os.path.expanduser("~")))
+
+    def test_cli_tetap_menulis_dan_memperingatkan(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            r = subprocess.run([sys.executable, os.path.join(FOLDER, "thr.py"), "--hari-raya", "2027-03-10", "--nama", "Budi", "--gaji-pokok", "6jt", "--mulai", "2026-06-10", "--tanggal-bayar", "2027-03-05", "--csv", os.path.join(tmp, "thr.csv")], capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn("PERINGATAN", r.stderr)
+            self.assertIn("folder sementara", r.stderr)
+            self.assertTrue(os.path.exists(os.path.join(tmp, "thr.csv")))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
