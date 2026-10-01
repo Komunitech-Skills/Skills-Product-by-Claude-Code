@@ -26,6 +26,20 @@ Mengubah "saya mau usaha X tapi bingung mulai dari mana" menjadi beberapa ide ko
    diberikan pengguna ditandai "asumsi". Pada kasus investasi/bagi hasil **jangan
    menyebut angka imbal hasil** (mis. "2–5%/bulan") — itu karangan; cukup "sesuai laba
    riil yang dilaporkan".
+4. **Harga yang disarankan wajib dicek kewajarannya — lewat script, bukan perasaan.**
+   Harga baru/paket dihitung dari **biaya + margin**: `rencana --modal-unit <biaya/unit>
+   --margin-target <persen>` (harga minimal keluar dari script), lalu dibandingkan dengan
+   acuan pasar dari pengguna: `--harga-lama <harga eceran sendiri per satuan>` dan
+   `--harga-pesaing <harga pesaing per satuan>`. Untuk paket/langganan isi beberapa satuan,
+   tambahkan `--isi-per-unit <mis. 15> --satuan kg` supaya harga per kg terlihat. Bila script
+   menulis **CEK** (lebih mahal dari harga sendiri/pesaing): turunkan harga/isi paket, atau
+   sebutkan nilai tambah konkret yang dibayar pelanggan — jangan menulis "asumsi dari pola
+   harga Anda" bila angkanya tidak cocok. Bila belum ada acuan pasar, tulis
+   `[isi: harga pesaing per satuan]` (status BELUM DICEK). Isi paket & frekuensi layanan
+   (mis. antar-jemput 1×/minggu) harus **sama** di cara uji, hitungan, dan tabel 7 hari.
+5. **Jangan mengutip nomor pasal pidana** (KUHP, UU Perbankan, dll.) kecuali pengguna
+   memintanya. Bila diminta, pakai hanya [references/rujukan-kasus-terlarang.md](references/rujukan-kasus-terlarang.md)
+   (KUHP baru UU 1/2023 berlaku sejak 2 Januari 2026; nomor pasal KUHP lama tidak dipakai).
 
 ## Tujuan
 
@@ -44,7 +58,7 @@ Membantu pemilik UMKM/profesional Indonesia curah gagasan secara **terarah**: me
 - Butuh nama usaha sekadar generator cepat tanpa proses (mis. "kasih 20 nama toko, cepat") — boleh dipakai jalur cepat skill ini (lihat Langkah Kerja Jalur A), tapi kalau pengguna benar-benar hanya mau daftar nama tanpa konteks apa pun, cukup beri daftar dan tawarkan sesi lengkap sebagai opsi, jangan dipaksakan.
 - Riset kelayakan pasar mendalam (survei, analisis kompetitor terinci, proyeksi keuangan multi-tahun) — skill ini hanya menyaring ide dengan cepat & murah, bukan pengganti riset pasar profesional atau studi kelayakan formal.
 - Keputusan hukum/pajak/perizinan usaha (bentuk badan usaha, PKP, NIB, dll.) — arahkan ke profesional/instansi terkait; skill ini tidak membahas legalitas.
-- Ide di kategori terlarang (skema piramida/money game, judi, produk ilegal, investasi tanpa izin OJK, klaim obat menyembuhkan tanpa izin edar) → tolak dengan sopan, jelaskan alasannya. Dasar aturan (dicek 2026-09-25, aturan bisa berubah — sebutkan ini ke pengguna bila relevan): skema piramida dilarang oleh **UU No. 7/2014 tentang Perdagangan, Pasal 9** (ancaman pidana penjara & denda); penawaran investasi/produk jasa keuangan tanpa izin diawasi lewat **UU No. 8/1995 tentang Pasar Modal** dan **UU No. 4/2023 (P2SK)** yang memperkuat kewenangan OJK menindak entitas ilegal — cek daftar entitas resmi di situs OJK sebelum menilai suatu ide investasi legal/tidak.
+- Ide di kategori terlarang (skema piramida/money game, judi, produk ilegal, investasi tanpa izin OJK, klaim obat menyembuhkan tanpa izin edar) → tolak dengan sopan, jelaskan alasannya. Jelaskan dengan bahasa awam (skema piramida dilarang UU Perdagangan; menghimpun dana/menawarkan investasi tanpa izin diawasi OJK — cek daftar entitas berizin di situs OJK atau Kontak OJK 157), **tanpa nomor pasal pidana** kecuali diminta (Aturan tempo 5; rujukan terkini di [references/rujukan-kasus-terlarang.md](references/rujukan-kasus-terlarang.md), dicek 2026-10-01).
 
 ## Input
 Gali (atau simpulkan dari cerita pengguna) sebelum mulai:
@@ -88,7 +102,7 @@ Kalau ragu antara dua jalur, pilih yang **lebih dalam** (lebih aman kelebihan pr
 4. **Ajukan 2–3 pendekatan** (bukan satu ide tunggal) dengan untung-rugi masing-masing (modal, **waktu balik modal kasar** — hitung dengan `python3 scripts/skor_ide.py impas --modal <rupiah> --margin <rupiah per unit>` bila ada perkiraan margin per unit, lihat C.8 untuk detail cara pakai/batasannya) dan rekomendasi Anda + alasan. Kalau pendekatan yang dipertimbangkan ≥4, boleh saring dulu dengan skor tertimbang seperti Langkah C.5 sebelum menyajikan 2–3 teratas.
 5. **Langsung susun rencana untuk ide rekomendasi** di balasan yang sama (Aturan tempo 1); tutup dengan konfirmasi singkat: "Mau ganti ke ide #2/#3? Ketik nomornya, rencananya aku sesuaikan."
 6. **Rancang uji murah (MVP)** untuk ide yang disepakati memakai [templates/kerangka-uji-murah.md](templates/kerangka-uji-murah.md): cara uji (pre-order via status WA/story, jual terbatas ke pelanggan tetap dulu, dsb.), durasi (default 1 minggu bila tidak disebutkan), target ukuran berhasil (default 10 pelanggan/pesanan), dan kapan berhenti/lanjut.
-   Hitung rupiahnya: `python3 scripts/skor_ide.py rencana --harga <jual/unit> --modal-unit <bahan+kemasan/unit> --potongan-persen <komisi aplikasi, 0 bila via WA> --biaya-uji <total uang keluar 7 hari> --target <unit>` (tambahkan `--modal <alat>` bila ada beli alat). Kutip angka keluaran apa adanya. Persen potongan GoFood/GrabFood/ShopeeFood/marketplace **tanyakan atau minta pengguna cek di aplikasi mitranya** — jangan mengarang; bila belum tahu, hitung dua skenario (jual langsung via WA = 0% dan via aplikasi dengan persen yang disebut pengguna).
+   Hitung rupiahnya: `python3 scripts/skor_ide.py rencana --harga <jual/unit> --modal-unit <bahan+kemasan/unit> --potongan-persen <komisi aplikasi, 0 bila via WA> --biaya-uji <total uang keluar 7 hari> --target <unit>` (tambahkan `--modal <alat>` bila ada beli alat; untuk harga baru pakai `--margin-target <persen>` sebagai ganti `--harga`; **selalu** tambahkan `--harga-lama`/`--harga-pesaing` per satuan dari pengguna dan `--isi-per-unit`/`--satuan` untuk paket — Aturan tempo 4). Kutip angka keluaran apa adanya. Contoh paket laundry: `rencana --modal-unit 48rb --margin-target 30 --isi-per-unit 15 --satuan kg --harga-lama 6rb --harga-pesaing 5rb --biaya-uji 200rb --target 10` → harga minimal Rp68.572 (Rp4.571/kg, WAJAR). Persen potongan GoFood/GrabFood/ShopeeFood/marketplace **tanyakan atau minta pengguna cek di aplikasi mitranya** — jangan mengarang; bila belum tahu, hitung dua skenario (jual langsung via WA = 0% dan via aplikasi dengan persen yang disebut pengguna).
 7. Tutup dengan **Rencana Uji 7 Hari** (lihat Format Output).
 
 **Jalur C — Perlu Rencana (usaha baru/diversifikasi/perubahan besar):**
@@ -116,8 +130,9 @@ Sesuaikan dengan jalur yang dipakai:
 2. **Ide yang dipertimbangkan** — tabel ringkas (nama ide, pendekatan/teknik sumbernya, skor bila dihitung).
 3. **Ide terpilih** — 1 (atau 2 untuk diuji berdampingan) ide yang disepakati pengguna, dengan alasan.
 4. **Rencana uji murah (MVP)** — cara uji, durasi, target ukuran berhasil, kapan berhenti/lanjut.
-5. **Hitungan rupiah** — kutipan keluaran `skor_ide.py rencana`: harga, potongan aplikasi, modal/unit, untung/unit, biaya uji, laba uji, unit untuk menutup biaya uji.
-6. **Rencana Uji 7 Hari** — tabel wajib dengan kolom `Hari | Tugas konkret | Target angka | Biaya (Rp)`, Hari 1 s/d 7 lengkap. Target kumulatif Hari 3/5/7 dari keluaran `rencana`; total kolom biaya = `--biaya-uji`. Hari 7 = evaluasi dengan ambang lanjut/perbaiki/hentikan dari keluaran script. Contoh baris: `1 | Kirim penawaran PO paket langganan ke 40 kontak pelanggan lama via WA (satu per satu) | 40 pesan terkirim, ≥5 balasan | Rp0`.
+5. **Hitungan rupiah** — kutipan keluaran `skor_ide.py rencana`: harga (dari biaya + margin bila harga baru), harga per satuan, **cek kewajaran harga** vs harga sendiri & pesaing (WAJAR / CEK / BELUM DICEK), potongan aplikasi, modal/unit, untung/unit, biaya uji, laba uji, unit untuk menutup biaya uji.
+6. **Rencana Uji 7 Hari** — tabel wajib dengan kolom `Hari | Tugas konkret | Target angka | Biaya (Rp)`, Hari 1 s/d 7 lengkap. Target kumulatif Hari 3/5/7 dari keluaran `rencana`; total kolom biaya = `--biaya-uji`. **Titik berhenti dini** dari script ditulis di baris Hari 3 dan Hari 5 (Hari 3 = 0 → ganti tawaran/kanal; Hari 5 di bawah ambang → hentikan dan hemat sisa biaya). Hari 7 = evaluasi dengan ambang lanjut/perbaiki/hentikan dari keluaran script.
+   Tambahkan **2 tanda bahaya** (pre-mortem): dua alasan paling mungkin ide ini gagal + sinyal awal yang dipantau Hari 1–3 (mis. "banyak yang tanya harga lalu diam → harga terlalu tinggi"). Contoh baris: `1 | Kirim penawaran PO paket langganan ke 40 kontak pelanggan lama via WA (satu per satu) | 40 pesan terkirim, ≥5 balasan | Rp0`.
 7. **Asumsi yang dipakai** (bila ada default karena input awal kurang lengkap) + lokasi file bila ada yang disimpan + konfirmasi ganti ide.
 
 ## Contoh
