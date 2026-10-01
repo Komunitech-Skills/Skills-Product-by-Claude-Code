@@ -89,3 +89,23 @@ kumulatif Hari 3/5/7 — dengan rumus tertulis. File kerja hanya disimpan di fol
 (lokasinya disebut), atau tidak sama sekali (data skor lewat stdin). Saran kanal uji khas
 Indonesia (status/grup WA, PO + QRIS, titip warung, tanggal gajian). AI tidak lagi
 menyebut angka imbal hasil karangan pada kasus investasi/bagi hasil.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+Dari uji ulang OpenClaw: saran paket laundry keluar Rp8.000–9.000/kg padahal harga
+sendiri Rp6.000/kg dan pesaing Rp5.000/kg, dan pada kasus money game AI mengutip pasal
+KUHP lama (378/372) yang sudah tidak berlaku sejak KUHP baru (UU 1/2023) berlaku
+2 Januari 2026. Perbaikan:
+- **Cek kewajaran harga otomatis.** `skor_ide.py rencana` kini bisa menghitung harga dari
+  **biaya + margin** (`--margin-target`), menampilkan **harga per kg/porsi** untuk paket
+  (`--isi-per-unit`, `--satuan`), lalu membandingkannya dengan harga kamu sendiri
+  (`--harga-lama`) dan harga pesaing (`--harga-pesaing`): hasilnya WAJAR / CEK / BELUM
+  DICEK. Harga yang lebih mahal dari acuan diberi peringatan dan harus disertai nilai tambah
+  nyata atau diturunkan.
+- **Titik berhenti dini** di rencana 7 hari: Hari 3 masih 0 → ganti tawaran/kanal; Hari 5
+  di bawah ambang → hentikan uji dan hemat sisa biaya. Ditambah 2 tanda bahaya (pre-mortem)
+  yang dipantau Hari 1–3.
+- **Tanpa pasal pidana kecuali diminta.** Untuk ide terlarang AI menjelaskan bahayanya
+  dengan bahasa awam; bila kamu minta dasar hukumnya, rujukan terkini (KUHP baru Pasal
+  492 penipuan & Pasal 486 penggelapan, Kontak OJK 157, Satgas PASTI) ada di
+  `references/rujukan-kasus-terlarang.md` (dicek 1 Oktober 2026).
+- 8 tes baru (total 87 tes, semua lulus).

@@ -27,16 +27,18 @@ Tentukan sebelum mulai uji, bukan sesudah (supaya keputusan tidak bias karena "s
 Sebutkan perkiraan biaya maksimal yang rela dikeluarkan untuk uji ini (bagian dari modal yang disebutkan di Input) — jangan biarkan uji coba menghabiskan seluruh modal yang sebenarnya disiapkan untuk produksi penuh.
 
 ## 6. Hitungan rupiah & tabel Rencana Uji 7 Hari (wajib di balasan kedua)
-Hitung dulu: `python3 scripts/skor_ide.py rencana --harga <jual/unit> --modal-unit <modal/unit> --potongan-persen <komisi aplikasi; 0 via WA> --biaya-uji <total 7 hari> --target <unit>`.
+Hitung dulu: `python3 scripts/skor_ide.py rencana --harga <jual/unit> --modal-unit <modal/unit> --potongan-persen <komisi aplikasi; 0 via WA> --biaya-uji <total 7 hari> --target <unit> --harga-lama <harga sendiri/satuan> --harga-pesaing <harga pesaing/satuan>` (harga baru: ganti `--harga` dengan `--margin-target <persen>`; paket: tambah `--isi-per-unit <n> --satuan <kg/porsi>`). Cek kewajaran harus WAJAR, atau jelaskan nilai tambahnya; tanpa acuan pasar tulis `[isi: harga pesaing per satuan]`.
 
 | Hari | Tugas konkret | Target angka | Biaya (Rp) |
 |---|---|---|---|
 | 1 | Siapkan penawaran + foto/daftar harga; kirim ke N kontak pelanggan lama via WA (satu per satu) | N pesan, ≥X balasan | … |
 | 2 | Pasang di status WA/IG + 1–2 grup lokal (izin admin); buka PO dengan DP/QRIS | ≥Y peminat | … |
-| 3 | Layani pesanan pertama; catat keluhan | kumulatif ≥ angka "Hari 3" script | … |
+| 3 | Layani pesanan pertama; catat keluhan. **Berhenti dini:** masih 0 → ganti tawaran/kanal | kumulatif ≥ angka "Hari 3" script | … |
 | 4 | Perbaiki 1 hal dari keluhan; minta testimoni | ≥1 testimoni | … |
-| 5 | Ulangi penawaran ke kontak yang belum membalas / titip jual | kumulatif ≥ angka "Hari 5" script | … |
+| 5 | Ulangi penawaran ke kontak yang belum membalas / titip jual. **Berhenti dini:** di bawah ambang "Hari 5" script → hentikan, hemat sisa biaya | kumulatif ≥ angka "Hari 5" script | … |
 | 6 | Dorong momen (Jumat/gajian/weekend) | … | … |
 | 7 | Rekap & putuskan dengan ambang dari script (lanjut/perbaiki/hentikan) | kumulatif ≥ target | Rp0 |
 
 Total kolom biaya = `--biaya-uji`. Ganti contoh tugas sesuai ide; setiap baris wajib punya angka.
+
+**Tanda bahaya (pre-mortem):** 2 alasan paling mungkin gagal + sinyal awal yang dipantau Hari 1–3.
