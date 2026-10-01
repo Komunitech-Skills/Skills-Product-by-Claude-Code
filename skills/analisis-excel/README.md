@@ -118,6 +118,12 @@ Excel), skill memberi tahu baris mana penyebabnya dan tidak menyodorkan angka fi
 Tidak. Skill ini fokus menjawab pertanyaan dari data yang sudah terjadi (total, rata-rata, tren,
 perbandingan). Untuk prediksi/statistik lanjut, gunakan jasa analis data.
 
+## Catatan revisi 1.0.17 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: AI sempat menulis dua persen hasil hitungan sendiri yang salah ("65,6% dari transport September", seharusnya 83,8%; "Kurir 26%", seharusnya 27,4%) dan melewatkan bagian "Perlu dicek". Kini:
+  - Semua persen/porsi wajib diambil dari script. Baru: `--nilai "Gaji Pokok+Tunjangan"` menjumlah beberapa kolom per kelompok, lengkap dengan rincian tiap kolom dan "% dari total"; `banding` per kelompok menampilkan "% dari total" periode kedua dan berapa persen kenaikan yang disumbang kelompok terbesar.
+  - Keluaran script **selalu** punya bagian "Perlu dicek" (berisi "tidak ada" bila memang tidak ada), dan jawaban AI wajib menyalinnya.
+  - Kalimat "rata-rata per hari" diperjelas menjadi "per hari kalender" — hanya menyamakan panjang bulan, bukan koreksi data yang belum lengkap.
+
 ## Riwayat versi
 | Versi | Tanggal | Perubahan |
 |---|---|---|

@@ -52,6 +52,9 @@ Mahkamah Konstitusi memerintahkan UU Ketenagakerjaan baru paling lambat sekitar 
 **Bisa untuk karyawan tetap atau menghitung pesangon PHK?**
 Tidak. Skill ini khusus kontrak kerja waktu tertentu (PKWT), termasuk harian lepas. Untuk karyawan tetap, PHK, dan pesangon, skill akan menjelaskan bedanya lalu menyarankan kamu berkonsultasi ke Disnaker atau konsultan hukum. Untuk THR, slip gaji, dan surat peringatan, gunakan skill Komunitech `hitung-thr`, `slip-gaji-bpjs`, dan `surat-peringatan-karyawan`.
 
+## Catatan revisi 1.0.7 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: jawaban sempat menyebut "usaha kecil ≤ Rp5 miliar/tahun menurut UU UMKM" — **salah**. Kriteria resmi ada di PP 7/2021 Pasal 35 dan memakai **dua ukuran**: modal usaha (mikro s.d. Rp1 miliar; kecil > Rp1 miliar s.d. Rp5 miliar; menengah > Rp5 miliar s.d. Rp10 miliar, tanpa tanah & bangunan) **atau** hasil penjualan setahun (mikro s.d. Rp2 miliar; kecil > Rp2 miliar s.d. Rp15 miliar; menengah > Rp15 miliar s.d. Rp50 miliar). Angka ini kini tercatat di rujukan skill dan AI **wajib mengutipnya dari sana**, bukan dari ingatan; skill tetap tidak memutuskan status usahamu.
+
 ## Riwayat versi
 - **1.0.4 (26 September 2026)** — perbaikan kecil dari uji ulang v1.0.3 (semua angka rupiah tidak berubah):
   - Opsi usaha mikro/kecil: rumus umum kini disebut konsisten sebagai **acuan praktik baik, bukan batas bawah wajib** (sejalan dengan checklist B4a — besaran kesepakatan di bawah acuan sah bila ditulis jelas).

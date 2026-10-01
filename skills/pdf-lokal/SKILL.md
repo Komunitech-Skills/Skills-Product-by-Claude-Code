@@ -1,6 +1,6 @@
 ---
 name: pdf-lokal
-description: Mengolah file PDF (gabung, pisah, kompres, OCR, foto ke PDF, putar, watermark, kunci/buka sandi, rapikan resi marketplace untuk dicetak) lewat Stirling-PDF yang terpasang di komputer sendiri, tanpa unggah ke situs luar. Pakai saat pengguna minta "gabung PDF", "kompres PDF biar muat WA/email", "PDF ini kebalik", "scan ini susah dicari teksnya (OCR)", "ubah foto nota jadi PDF", "kunci PDF gaji", "rapikan resi Shopee/Tokopedia biar hemat kertas". Keywords: merge PDF, split PDF, compress PDF, OCR PDF, PDF ke Word tidak termasuk, watermark PDF, password PDF, print resi.
+description: Mengolah file PDF (gabung, pisah, kompres, OCR, foto ke PDF, putar, watermark, kunci/buka sandi, rapikan resi marketplace untuk dicetak) lewat Stirling-PDF di komputer sendiri; bila Stirling-PDF belum ada, otomatis memakai qpdf/Ghostscript/pdftk yang sudah terpasang (tanpa install, tanpa unggah ke situs luar). Pakai saat pengguna minta "gabung PDF", "kompres PDF biar muat WA/email", "PDF ini kebalik", "scan ini susah dicari teksnya (OCR)", "ubah foto nota jadi PDF", "kunci PDF gaji", "rapikan resi Shopee/Tokopedia biar hemat kertas". Keywords: merge PDF, split PDF, compress PDF, OCR PDF, PDF ke Word tidak termasuk, watermark PDF, password PDF, print resi.
 ---
 
 # pdf-lokal
@@ -40,8 +40,8 @@ watermark, kunci/buka sandi, dan menyusun beberapa resi marketplace jadi satu le
   arahkan ke aplikasi Stirling-PDF langsung atau Word/Google Docs bila sumber aslinya ada.
 - **Tanda tangan digital bersertifikat, SSO, multi-user/tim, audit log** → itu fitur
   **proprietary/berbayar** Stirling-PDF, di luar cakupan skill ini (lihat Batasan).
-- Stirling-PDF belum terpasang sama sekali → lihat "Cara manual tanpa script" di bawah,
-  atau pakai `docs/panduan-stirling-pdf.md` untuk memasangnya (5-10 menit, gratis).
+- (Bukan alasan berhenti:) Stirling-PDF belum terpasang/menyala → **pakai jalur cadangan**
+  di Langkah kerja 1, jangan langsung menyuruh pengguna memasang Stirling-PDF.
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
@@ -61,10 +61,24 @@ urutannya? (2) mau disimpan di folder yang sama?"
 ## Langkah kerja
 
 > **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
-1. Pastikan Stirling-PDF berjalan: jalankan `python3 scripts/pdf.py cek`.
-   - Kalau gagal terhubung → beri tahu pengguna Stirling-PDF belum menyala, tawarkan
-     "Cara manual tanpa script" di bawah, atau arahkan ke `docs/panduan-stirling-pdf.md`.
-2. Pilih perintah yang sesuai (tabel di bawah), jalankan lewat `scripts/pdf.py`.
+1. Cek Stirling-PDF: `python3 scripts/pdf.py cek` (Windows: `py scripts\pdf.py cek`).
+   - **Siap dipakai** → lanjut langkah 2 dengan `scripts/pdf.py`.
+   - **Gagal terhubung / ditolak** → JANGAN berhenti dan jangan menyuruh pasang dulu.
+     Jalankan `python3 scripts/pdf_cadangan.py alat`: script mendeteksi `qpdf`,
+     Ghostscript (`gs`/`gswin64c`), dan `pdftk` yang **sudah** terpasang dan mencetak
+     perintah mana yang BISA. Bila tugasnya bertanda BISA (gabung, pisah-rentang,
+     pisah-halaman, kompres, putar, kunci, buka-kunci) → **kerjakan langsung** dengan
+     `scripts/pdf_cadangan.py` (sintaks sama, lihat tabel cadangan), lalu sampaikan
+     hasil + satu kalimat: "Stirling-PDF belum menyala, jadi aku pakai <alat> yang sudah
+     ada di komputermu - file tidak keluar dari komputer."
+   - Tugas butuh Stirling-PDF (OCR, watermark, foto-ke-pdf, rapikan-resi) atau tidak ada
+     alat sama sekali → jelaskan singkat, tawarkan "Cara manual" di bawah dan
+     `references/pasang-stirling.md` (agent membacakan langkahnya; pengguna yang memasang).
+   - **Dilarang:** `pip install`, `apt/brew/winget install`, mengunduh program, atau
+     menulis script PDF sendiri dengan library yang belum ada. Bila pypdf/pikepdf
+     kebetulan sudah terpasang, boleh dipakai hanya bila script cadangan tidak bisa.
+2. Pilih perintah yang sesuai (tabel di bawah), jalankan lewat `scripts/pdf.py`
+   (Stirling) atau `scripts/pdf_cadangan.py` (cadangan).
 3. Baca pesan keluaran: script selalu mencetak **path lengkap file hasil**. Sampaikan
    path itu apa adanya ke pengguna, jangan mengarang nama file lain.
 4. Bila script melapor GAGAL, teruskan pesannya ke pengguna (sudah ditulis dalam
@@ -89,6 +103,32 @@ rapikan-resi r1.pdf r2.pdf --per-lembar 4  Susun beberapa resi jadi N per lembar
 Semua perintah punya `--keluaran PATH` (atau `--keluaran-folder` untuk yang hasilnya
 banyak file) untuk menentukan lokasi hasil sendiri; kalau tidak diisi, script memakai
 nama otomatis di folder yang sama dengan file asli.
+
+### Daftar perintah `scripts/pdf_cadangan.py` (tanpa Stirling-PDF)
+```
+alat                                       Deteksi qpdf/gs/pdftk & perintah yang BISA
+gabung file1.pdf file2.pdf ...             qpdf > pdftk > gs
+pisah-rentang file.pdf --halaman 3-7       qpdf > pdftk > gs (gs: satu rentang saja)
+pisah-halaman file.pdf                     qpdf > pdftk (hasil: folder <file>-per-halaman/)
+kompres file.pdf --level ringan|sedang|kuat  gs (benar-benar mengecilkan gambar) > qpdf (tanpa-rugi)
+putar file.pdf --derajat 90|180|270        qpdf > pdftk (searah jarum jam, semua halaman)
+kunci file.pdf --sandi ...                 qpdf (AES-256) > pdftk (AES-128)
+buka-kunci file.pdf --sandi ...            qpdf > pdftk
+```
+Opsi `--keluaran PATH` (atau `--keluaran-folder`) dan `--alat qpdf|gs|pdftk` (paksa alat).
+Alat dipanggil tanpa shell; kata sandi untuk qpdf dikirim lewat file argumen sementara
+(tidak tampil di daftar proses). Hasil divalidasi (harus PDF); kompres yang tidak
+mengecilkan file dibuang dan dilaporkan jujur. Default kompres `sedang` (/ebook ±150 dpi,
+cukup tajam untuk nota/dokumen); `kuat` (/screen ±72 dpi) hanya bila masih kebesaran.
+
+**Contoh (Stirling mati, qpdf+gs ada):** "gabungin nota-a, b, c lalu kecilin buat WA" →
+```
+python3 scripts/pdf.py cek                         # gagal terhubung
+python3 scripts/pdf_cadangan.py alat               # gabung via qpdf, kompres via gs: BISA
+python3 scripts/pdf_cadangan.py gabung nota-a.pdf nota-b.pdf nota-c.pdf --keluaran nota-gabungan.pdf
+python3 scripts/pdf_cadangan.py kompres nota-gabungan.pdf
+```
+Laporkan ukuran sebelum→sesudah dan path hasil persis seperti dicetak script.
 
 ## Format output
 Setiap perintah mencetak ringkasan singkat + path lengkap, contoh:
@@ -121,9 +161,13 @@ berukuran **A4** (21×29,7 cm) — cocok untuk printer biasa, tetapi **bukan** u
 printer thermal 10×15. Pengguna printer thermal sebaiknya mencetak resi aslinya
 satu per satu. Sarankan cetak 1 lembar percobaan dulu sebelum mencetak banyak.
 
-## Cara manual tanpa script (Stirling-PDF belum terpasang / lagi tidak mau jalan)
+## Cara manual (Stirling-PDF tidak ada DAN jalur cadangan tidak bisa)
 Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
-1. Buka aplikasi Stirling-PDF (lihat `docs/panduan-stirling-pdf.md` untuk memasang).
+0. Tanpa aplikasi tambahan: **macOS Preview** bisa gabung (seret thumbnail antar file),
+   putar, kunci (File > Export > Encrypt), dan kompres (Export > Quartz Filter "Reduce
+   File Size"). **Windows**: ambil rentang halaman lewat Cetak > "Microsoft Print to PDF"
+   > isi Halaman; untuk resi, dialog Cetak > "Halaman per lembar 2/4".
+1. Buka aplikasi Stirling-PDF (cara pasang: `references/pasang-stirling.md`).
 2. Di halaman utama, klik kartu tool yang sesuai (mis. "Merge", "Compress", "OCR / Add
    Text Layer", "Add Password", "N-up / Multi Page Layout" untuk resi).
 3. Seret file ke kotak upload, atur opsi di layar, klik proses, lalu unduh hasilnya.
@@ -140,9 +184,12 @@ Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
    komputermu") - ini berlaku bahkan kalau pengguna sendiri yang memintanya diupload.
 
 ## Batasan & penanganan error
-- **Stirling-PDF mati/belum terpasang** → script memberi pesan jelas + arahan ke
-  `docs/panduan-stirling-pdf.md` dan "Cara manual" di atas. Tidak pernah mencoba
-  mengunduh/menjalankan Stirling-PDF secara otomatis.
+- **Stirling-PDF mati/belum terpasang** → jalur cadangan `scripts/pdf_cadangan.py`
+  (langkah 1). Tidak pernah mengunduh/memasang/menjalankan Stirling-PDF atau alat lain
+  secara otomatis. Panduan pasang ada di `references/pasang-stirling.md`.
+- **Jalur cadangan** diuji dengan qpdf 11 & Ghostscript 10 di Linux (`tests/uji_cadangan.py`);
+  pdftk hanya diuji dengan alat tiruan; Windows/macOS belum diuji langsung. Bila alat
+  menolak file (rusak/terkunci/halaman melebihi), script memberi pesan awam, bukan traceback.
 - **Endpoint tidak ada di versi Stirling-PDF pengguna** (404) → script menyarankan
   cek versi (`cek`) dan perbarui aplikasinya; tidak berpura-pura berhasil.
 - **File terlalu besar** (413) → script menyarankan `kompres` dulu atau menaikkan
@@ -175,7 +222,7 @@ Skill tetap berguna sebagai panduan meski script tidak bisa dijalankan:
   kemungkinan `foto-ke-pdf`, aplikasi akan minta login Stirling Cloud atau tersambung
   ke server self-hosted - **bukan berarti fitur itu berbayar**, tapi engine OCR-nya
   (Tesseract) memang tidak dibundel di mode itu. Solusi tetap gratis & 100% lokal:
-  pasang Stirling-PDF lewat **Docker** (lihat `docs/panduan-stirling-pdf.md` Jalur B)
+  pasang Stirling-PDF lewat **Docker** (lihat `references/pasang-stirling.md` Jalur B)
   seperti yang dipakai untuk menguji skill ini, lalu (opsional) sambungkan aplikasi
   desktop ke situ lewat Settings > Connection > Self-hosted server. Script sudah
   mendeteksi error 404 ini dan menjelaskannya ke pengguna.

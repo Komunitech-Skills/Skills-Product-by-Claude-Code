@@ -77,3 +77,15 @@ Tidak. SCAMPER, skor tertimbang, titik impas — semuanya dijelaskan dengan baha
   - Dasar aturan (UU No. 7/2014 Pasal 9, UU No. 8/1995, UU No. 4/2023 P2SK) ditambahkan untuk kategori terlarang.
   - 28 tes regresi baru ditambahkan di `scripts/test_skor_ide.py` (total 60 tes, semua lulus).
 - **1.0.0** (2026-09-25) — Rilis draft pertama (lihat `ATTRIBUTION.md` untuk sumber & proses ATM).
+
+## Catatan revisi 1.0.5 (2026-10-01)
+Dari uji sebelum/sesudah OpenClaw: setelah 2 giliran AI masih menunggu persetujuan dan
+belum memberi rencana, serta menyimpan CSV di folder skill tanpa bilang. Kini **paling
+lambat di balasan kedua** kamu sudah menerima ide terpilih + **Rencana Uji 7 Hari**
+(Hari 1–7, target angka, biaya rupiah); ganti ide cukup ketik nomornya. Baru: perintah
+`skor_ide.py rencana` menghitung **untung bersih per unit setelah potongan
+GoFood/ShopeeFood/marketplace**, laba uji, unit untuk menutup biaya uji, dan target
+kumulatif Hari 3/5/7 — dengan rumus tertulis. File kerja hanya disimpan di folder kerjamu
+(lokasinya disebut), atau tidak sama sekali (data skor lewat stdin). Saran kanal uji khas
+Indonesia (status/grup WA, PO + QRIS, titip warung, tanggal gajian). AI tidak lagi
+menyebut angka imbal hasil karangan pada kasus investasi/bagi hasil.

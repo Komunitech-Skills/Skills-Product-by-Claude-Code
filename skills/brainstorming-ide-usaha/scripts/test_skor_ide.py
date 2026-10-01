@@ -588,5 +588,78 @@ class TesModalMarginNegatifCli(unittest.TestCase):
         self.assertEqual(kode_keluar, 1)
 
 
+class TesRencanaUji7Hari(unittest.TestCase):
+    """v1.0.5: hitungan rupiah rencana uji 7 hari (angka diverifikasi manual)."""
+
+    def test_angka_dasar(self):
+        r = modul.hitung_rencana(25000, 14000, 20, 300000, 30, 1500000)
+        self.assertEqual(r["potongan_rp"], 5000)          # 25.000 x 20%
+        self.assertEqual(r["margin_unit"], 6000)          # 25.000 - 5.000 - 14.000
+        self.assertEqual(r["margin_persen"], 24.0)
+        self.assertEqual(r["laba_uji"], -120000)          # 30 x 6.000 - 300.000
+        self.assertEqual(r["unit_tutup_biaya"], 50)       # ceil(300.000 / 6.000)
+        self.assertEqual(r["unit_impas_modal"], 250)      # ceil(1.500.000 / 6.000)
+        self.assertEqual(r["target_kumulatif"], {3: 9, 5: 18, 7: 30})
+        self.assertEqual(r["ambang_perbaiki"], 9)
+
+    def test_potongan_dibulatkan_rupiah_terdekat(self):
+        r = modul.hitung_rencana(9999, 5000, 20)
+        self.assertEqual(r["potongan_rp"], 2000)          # 1.999,8 -> 2.000
+        self.assertEqual(r["margin_unit"], 2999)
+
+    def test_rugi_per_unit_ditandai(self):
+        r = modul.hitung_rencana(10000, 9000, 20)
+        self.assertTrue(r["rugi_per_unit"])
+        self.assertIsNone(r["unit_tutup_biaya"])
+
+    def test_input_buruk(self):
+        for argumen in [(0, 1000), (10000, -1), (10000, 1000, 100), (10000, 1000, -5),
+                        (10000, 1000, 0, -1), (10000, 1000, 0, 0, 0), (float("nan"), 1000)]:
+            with self.assertRaises(modul.DataTidakValid, msg=str(argumen)):
+                modul.hitung_rencana(*argumen)
+
+    def test_cli_format_indonesia(self):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc = modul.main(["rencana", "--harga", "Rp25.000", "--modal-unit", "14rb",
+                             "--potongan-persen", "20,5%", "--biaya-uji", "300rb", "--target", "30"])
+        out = buf.getvalue()
+        self.assertEqual(rc, 0)
+        self.assertIn("20,5% = Rp5.125", out)
+        self.assertIn("Rp5.875 (23,5% dari harga)", out)
+        self.assertIn("-Rp123.750", out)                  # 30 x 5.875 - 300.000
+        self.assertIn("Hari 3 >= 9, Hari 5 >= 18, Hari 7 >= 30", out)
+        self.assertIn("PERINGATAN: target 7 hari belum menutup biaya uji", out)
+
+    def test_cli_rugi(self):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            modul.main(["rencana", "--harga", "10rb", "--modal-unit", "9rb", "--potongan-persen", "20"])
+        self.assertIn("RUGI", buf.getvalue())
+
+
+class TesIdeDariStdin(unittest.TestCase):
+    """v1.0.5: skor tanpa menulis file (--ide -), supaya tidak ada CSV nyasar di folder skill."""
+
+    def test_stdin(self):
+        import sys as _sys
+        data = ("nama_ide,kesesuaian_modal,potensi_permintaan,kemudahan_eksekusi,kecocokan_keahlian,potensi_margin\n"
+                "Kilat,5,4,4,4,4\nAntar,4,4,4,4,4\n").encode("utf-8")
+
+        class _Stdin:
+            buffer = io.BytesIO(data)
+
+        lama_stdin, modul._STDIN_CACHE = _sys.stdin, None
+        _sys.stdin = _Stdin()
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = modul.main(["skor", "--ide", "-"])
+        finally:
+            _sys.stdin, modul._STDIN_CACHE = lama_stdin, None
+        self.assertEqual(rc, 0)
+        self.assertIn("4.278", buf.getvalue())            # (5*5+4*4+4*3+4*2+4*4)/18 = 77/18
+
+
 if __name__ == "__main__":
     unittest.main()
