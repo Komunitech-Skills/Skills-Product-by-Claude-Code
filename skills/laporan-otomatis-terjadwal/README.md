@@ -83,6 +83,11 @@ berisiko diblokir kalau dipakai mengirim pesan otomatis. Telegram memakai bot re
 itu. WhatsApp tetap bisa dipakai untuk laporan ke dirimu sendiri, di nomor terpisah, setelah kamu
 membaca & menyetujui peringatan risikonya.
 
+## Catatan revisi 1.1.7 (2026-10-01)
+- Uji ulang OpenClaw 2026-10-01: satu sesi mencoba kirim pesan uji Telegram tanpa "ya" lalu kehabisan waktu; sesi lain mengintip secrets/database OpenClaw. Kini ada **Aturan aksi** di awal SKILL.md: tidak ada kirim pesan (termasuk uji kirim) dan tidak ada jadwal sebelum "ya" atas ringkasan rencana (isi laporan, jam, kanal tujuan, plus satu uji kirim).
+- Cek kanal hanya lewat `openclaw channels status` (perintah resmi, tidak menampilkan kredensial) atau bertanya ke pemilik; dilarang membaca file kredensial/secrets/token/`openclaw.json`/database/log OpenClaw.
+- Kanal belum siap atau perintah ditolak → panduan singkat lalu berhenti, tanpa mencoba-coba; maksimal satu cek kanal per giliran agar alur ringkas dan tidak kehabisan waktu.
+
 ## Catatan revisi 1.1.6 (2026-10-01)
 - Uji OpenClaw 2026-10-01: agent sempat langsung memanggil `cron.add`. Kini urutan wajib sebelum membuat jadwal (CLI maupun tool `cron.add`): cek kanal tujuan tersedia (`openclaw channels status`), tampilkan ringkasan jadwal, tunggu "ya" — "lanjut" sebelum ringkasan bukan persetujuan.
 - Label hitungan penjualan diperbaiki: "57 nota / 110 pcs" (atau "N baris penjualan" bila tidak ada kolom nota), bukan "57 item". Total pcs dihitung dengan script dari hasil `rekap-penjualan-csv` (`--top 1000`).
