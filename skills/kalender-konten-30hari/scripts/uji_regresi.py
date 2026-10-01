@@ -140,6 +140,75 @@ class Uji(unittest.TestCase):
         self.assertEqual(r.returncode, 2)
         self.assertTrue(any("Baris 3" in p and "GAGAL" in p for p in json.loads(r.stdout)["ringkasan"]["peringatan"]))
 
+    # --- Uji ulang OpenClaw 2026-10-01 (1.0.6): alur ringan + klaim produk/janji kirim karangan ---
+    FAKTA_SARI = ('Tolong bikinin kalender konten 30 hari mulai 1 Maret 2027 buat usaha kue kering "Dapur Bu Sari" di '
+                  'Semarang. Jualan nastar Rp95.000/toples, order lewat WA, kirim dalam kota aja. Platform IG sama '
+                  'TikTok, aku sanggupnya 2 video seminggu.')
+    ARG_SARI = ["--mulai", "2027-03-01", "--hari", "30", "--pilar", "Promo Nastar,Proses Dapur,Tips Kue Kering,Testimoni",
+                "--platform", "IG,TikTok"]
+
+    def isian_sari(self, ganti=None):
+        baris = ["{} | {} | Foto toples nastar Rp95.000 dari dekat | Nastar Dapur Bu Sari | Order lewat WA".format(
+            i, "Video IG+TikTok" if i % 4 == 0 else "Foto IG saja") for i in range(1, 31)]
+        for no, teks in (ganti or {}).items():
+            baris[no - 1] = teks
+        return self.tulis("No | Format | Ide | Hook | CTA\n" + "\n".join(baris), "isi.txt")
+
+    def selesai(self, isi, catatan="Tips: batch video di akhir pekan. Asumsi: gajian 25 & 1."):
+        folder = tempfile.mkdtemp()
+        r = jalan(*(self.ARG_SARI + ["--isi", isi, "--fakta", self.FAKTA_SARI, "--catatan", self.tulis(catatan),
+                                     "--judul", "Kalender Konten Dapur Bu Sari", "--selesai", folder]))
+        return r, folder
+
+    def test_selesai_sekali_jalan_menulis_semua_file_dan_tabel_ringkas(self):
+        r, folder = self.selesai(self.isian_sari())
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(sorted(os.listdir(folder)), ["kalender.csv", "kalender.md", "ringkas.md"])
+        tabel = [x for x in r.stdout.splitlines() if x.startswith("| ") and x[2].isdigit()]
+        self.assertEqual(len(tabel), 30)                      # 1 baris per hari
+        self.assertTrue(all(x.count("|") == 7 for x in tabel))  # 6 kolom saja di chat
+        self.assertIn("Idulfitri 1448 H (perkiraan) — tanpa jualan", r.stdout)
+        self.assertIn("Hook & CTA 3 hari pertama", r.stdout)
+        self.assertIn("menunggu sidang isbat", r.stdout)
+        self.assertEqual(r.stdout.count('— CTA:'), 3)
+        self.assertIn("HASIL: LULUS", r.stdout)
+        with open(os.path.join(folder, "kalender.csv"), encoding="utf-8-sig") as f:
+            self.assertEqual(len(f.read().strip().splitlines()), 31)
+
+    def test_selesai_menangkap_klaim_produk_dan_janji_kirim(self):
+        isi = self.isian_sari({3: "3 | - | Isi nanasnya padat, bukan cuma manis doang | Renyah, lumer di mulut | "
+                                   "Order via WA buat besok dikirim",
+                               5: "5 | - | Bentuknya dicetak satu-satu | Pre-order Lebaran sudah dibuka | Order lewat WA",
+                               13: "13 | - | Dapur Bu Sari sudah buka lagi! | Nastar fresh | Order lewat WA"})
+        r, _ = self.selesai(isi)
+        self.assertEqual(r.returncode, 2)
+        for frasa in ("Isi nanasnya padat", "Renyah", "lumer", "besok dikirim", "dicetak satu-satu", "Pre-order",
+                      "sudah buka lagi"):
+            self.assertIn(frasa, r.stdout)
+
+    def test_selesai_cek_tanggal_di_catatan(self):
+        r, _ = self.selesai(self.isian_sari(), "Tips: Idulfitri ±19 Mar 2027 jangan jualan.")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("19 Mar 2027", r.stdout)
+
+    def test_kalimat_edukasi_rasa_bukan_klaim(self):
+        f = self.tulis("Tips simpan nastar biar tetap renyah: toples rapat. Jadwal produksi padat minggu ini.")
+        r = jalan(*(self.ARG_SARI + ["--cek-teks", f, "--fakta", self.FAKTA_SARI]))
+        self.assertNotIn("[fakta]", r.stdout)
+
+    def test_isian_teks_rusak(self):
+        for isi in ("1 | a | b", "x | a | b | c", "31 | a | b | c"):
+            r = jalan(*(self.ARG_SARI + ["--isi", self.tulis(isi, "isi.txt"), "--format", "md"]))
+            self.assertEqual(r.returncode, 1, isi)
+        r = jalan("--isi", self.tulis("1 | a | b | c", "isi.txt"), "--format", "md")  # tanpa --mulai
+        self.assertEqual(r.returncode, 1)
+
+    def test_format_ringkas_kerangka(self):
+        r = jalan(*(self.ARG_SARI + ["--format", "ringkas"]))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(len([x for x in r.stdout.splitlines() if x.startswith("| ") and x[2].isdigit()]), 30)
+        self.assertNotIn("menunggu sidang isbat", r.stdout)  # label dipendekkan → hemat token
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

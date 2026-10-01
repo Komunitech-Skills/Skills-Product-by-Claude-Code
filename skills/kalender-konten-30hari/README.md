@@ -48,6 +48,12 @@ Bisa. Sebutkan kemampuanmu, nanti jadwalnya disesuaikan.
 **File CSV-nya berantakan di Excel?**
 Minta "CSV pakai titik koma" untuk Excel berbahasa Indonesia, atau "pakai koma" untuk Google Sheets.
 
+## Catatan revisi 1.0.6 (2026-10-01)
+- Lebih ringan dan andal di Telegram/OpenClaw: AI cukup menjalankan script 2 kali (kerangka + finalisasi). Satu perintah finalisasi `--selesai` langsung menyimpan file CSV + tabel lengkap, mencetak tabel ringkas untuk chat (1 baris per hari, Hook & CTA 3 hari pertama), dan sekaligus cek-silang tanggal & fakta. Isian ditulis sebagai teks sederhana `No | Format | Ide | Hook | CTA`, bukan JSON besar.
+- Caption lengkap hanya ditulis bila Anda minta (maks. 3–5 hari per balasan).
+- Cek fakta diperluas: rasa/tekstur ("isi nanasnya padat", "renyah", "lumer"), cara buat ("dicetak satu-satu"), janji kirim ("besok dikirim"), dan jadwal toko ("pre-order dibuka", "sudah buka lagi") yang tidak Anda sebut ditandai GAGAL. Kalimat tips ("biar tetap renyah") tidak dianggap klaim.
+- Platform yang tidak Anda sebut dicatat di Asumsi.
+
 ## Catatan revisi 1.0.5 (2026-10-01)
 - Ramadan, Idulfitri, dan Imlek kini diisi otomatis oleh script dari tabel perkiraan (berlabel "perkiraan"): tiap hari Ramadan diberi "Ramadan hari ke-N", plus Nuzulul Qur'an, 10 malam terakhir, batas THR ±H-7, Lebaran & H+1, dan pasca-Lebaran. Tidak ada lagi "Tanggal tua" di tengah Ramadan.
 - Cek-silang baru `--cek-teks`: tanggal hari besar yang disebut di tips/catatan harus sama dengan tabel (mis. Idulfitri 10 Mar 2027, bukan "19–20 Mar"); jawaban untuk periode Ramadan wajib menyebut Ramadan.

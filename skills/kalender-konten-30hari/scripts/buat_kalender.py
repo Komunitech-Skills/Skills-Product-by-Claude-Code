@@ -435,14 +435,93 @@ def baca_teks(path):
         galat("File {} tidak bisa dibaca sebagai teks UTF-8: {}".format(path, e))
 
 
-def baca_isi(path):
-    """Baca baris kalender yang sudah diisi. Hari dihitung ulang dari tanggal agar tidak salah."""
+def isi_berbentuk_json(teks):
+    return teks.lstrip().startswith(("{", "["))
+
+
+def gabung_isi_teks(kerangka, teks, path):
+    """Isian ringan (bukan JSON), satu baris per hari:  No | Ide Konten | Hook / Judul | CTA
+    atau  No | Format | Ide Konten | Hook / Judul | CTA  ("-" = format bawaan). Baris kosong/#komentar diabaikan.
+    Tanggal, hari, momen, pilar, dan platform diambil dari kerangka (tidak perlu ditulis ulang)."""
+    per_no = {}
+    for n, mentah in enumerate(teks.splitlines(), start=1):
+        b = mentah.strip()
+        if not b or b.startswith("#") or re.fullmatch(r"[|\s:-]+", b):
+            continue
+        sel = [x.strip() for x in b.strip("|").split("|")]
+        if not re.fullmatch(r"\d{1,3}", sel[0]):
+            if sel[0].lower() in ("no", "nomor"):
+                continue  # baris judul
+            galat("{} baris {}: kolom pertama harus nomor hari (1–{}). Format: No | Ide | Hook | CTA".format(
+                path, n, len(kerangka)))
+        if len(sel) not in (4, 5):
+            galat("{} baris {}: harus 4 kolom (No | Ide | Hook | CTA) atau 5 kolom (No | Format | Ide | Hook | CTA), "
+                  "dapat {}. Jangan pakai tanda | di dalam teks.".format(path, n, len(sel)))
+        no = int(sel[0])
+        if not 1 <= no <= len(kerangka):
+            galat("{} baris {}: nomor hari {} di luar 1–{}.".format(path, n, no, len(kerangka)))
+        if no in per_no:
+            print("PERINGATAN: nomor hari {} ditulis lebih dari sekali; yang terakhir dipakai.".format(no), file=sys.stderr)
+        per_no[no] = sel
+    hasil = []
+    for r in kerangka:
+        r = dict(r)
+        sel = per_no.get(r["No"])
+        if sel:
+            if len(sel) == 5:
+                if sel[1] and sel[1] != "-":
+                    r["Format"] = sel[1]
+                sel = sel[:1] + sel[2:]
+            r["Ide Konten"], r["Hook / Judul"], r["CTA"] = sel[1], sel[2], sel[3]
+        hasil.append(r)
+    kosong = [str(r["No"]) for r in hasil if not r["Ide Konten"].strip()]
+    if kosong:
+        print("PERINGATAN: kolom 'Ide Konten' masih kosong di baris: " + ", ".join(kosong), file=sys.stderr)
+    return hasil
+
+
+def momen_singkat(m):
+    tanpa_jualan = SUFIKS_PERINGATAN in m or "hard-selling" in m
+    m = m.replace(SUFIKS_PERINGATAN, "").replace(" — ucapan, tanpa hard-selling", "")
+    m = m.replace(LABEL_PERKIRAAN, "perkiraan").replace(" (cek kampanye marketplace)", "")
+    m = m.replace(" — musim promo akhir tahun", "").replace(" (cek aturan Kemnaker)", "")
+    m = m.replace(" — info toko buka/jadwal kirim, halal bihalal", "")
+    return m + (" — tanpa jualan" if tanpa_jualan else "")
+
+
+def potong(teks, maks=90):
+    teks = " ".join(teks.split())
+    if len(teks) <= maks:
+        return teks
+    return teks[:maks].rsplit(" ", 1)[0] + "…"
+
+
+def tabel_ringkas(baris, judul, hitung, platform, detail=3):
+    """Versi chat: 1 baris per hari + Hook & CTA hanya untuk beberapa hari pertama."""
+    out = ["## {}".format(judul),
+           "Pilar: " + ", ".join("{} ({} hari)".format(k, v) for k, v in hitung.items()) + " | Platform: " + platform,
+           "", "| No | Tanggal | Hari | Momen | Format | Ide Konten |", "|---|---|---|---|---|---|"]
+    for b in baris:
+        sel = [str(b["No"]), b["Tanggal_tampil"], b["Hari"], momen_singkat(b["Momen"]) or "-", b["Format"],
+               potong(b["Ide Konten"]) or "[isi: ide]"]
+        out.append("| " + " | ".join(x.replace("|", "/") for x in sel) + " |")
+    if any(LABEL_PERKIRAAN in b["Momen"] for b in baris):
+        out += ["", "(perkiraan) = tanggal Ramadan/Idulfitri/Imlek belum resmi — menunggu sidang isbat / cek SKB 3 Menteri."]
+    if detail:
+        out += ["", "Hook & CTA {} hari pertama (semua hari ada di file):".format(min(detail, len(baris)))]
+        for b in baris[:detail]:
+            out.append("- {} {}: \"{}\" — CTA: {}".format(b["Hari"], b["Tanggal_tampil"], b["Hook / Judul"] or "[isi]",
+                                                         b["CTA"] or "[isi]"))
+    return "\n".join(out) + "\n"
+
+
+def baca_isi(path, teks=None):
+    """Baca baris kalender (JSON) yang sudah diisi. Hari dihitung ulang dari tanggal agar tidak salah."""
+    if teks is None:
+        teks = baca_teks(path)
     try:
-        with open(path, encoding="utf-8-sig") as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        galat("File tidak ditemukan: {}".format(path))
-    except (ValueError, UnicodeDecodeError) as e:
+        data = json.loads(teks)
+    except ValueError as e:
         galat("File {} bukan JSON yang valid: {}".format(path, e))
     baris = data.get("baris") if isinstance(data, dict) else data
     if not isinstance(baris, list) or not baris:
@@ -485,11 +564,18 @@ def main():
                                       "fakta; pakai bersama --isi atau --mulai/--hari")
     p.add_argument("--fakta", help="salinan persis pesan pengguna, untuk cek klaim yang dikarang (cek_fakta.py)")
     p.add_argument("--fakta-file", help="file .txt berisi salinan persis pesan pengguna")
-    p.add_argument("--format", choices=["md", "csv", "json"], default="md")
+    p.add_argument("--format", choices=["md", "csv", "json", "ringkas"], default="md",
+                   help="ringkas = tabel kerangka pendek (No, Tanggal, Hari, Momen, Pilar, Format) untuk diisi")
     p.add_argument("--pemisah", default=",", help="pemisah CSV: ',' (Google Sheets) atau ';' (Excel Indonesia)")
     p.add_argument("--output", help="simpan ke file ini (default: tampil di layar)")
     p.add_argument("--isi", help="file JSON berisi baris yang SUDAH diisi ide (hasil --format json yang dilengkapi); "
                                  "script hanya memeriksa & mengekspor ke md/csv")
+    p.add_argument("--selesai", metavar="FOLDER",
+                   help="SEKALI JALAN: dengan --isi, simpan FOLDER/kalender.md + kalender.csv + ringkas.md, cetak tabel "
+                        "ringkas untuk chat, lalu cek-silang tanggal & fakta (pakai --fakta-file, --catatan)")
+    p.add_argument("--catatan", help="file tips + asumsi yang akan ditampilkan ke pengguna (ikut dicek dengan --selesai)")
+    p.add_argument("--judul", help="judul kalender, mis. 'Kalender Konten Dapur Bu Sari' (untuk --selesai)")
+    p.add_argument("--detail", type=int, default=3, help="jumlah hari pertama yang Hook & CTA-nya tampil di chat (0–5)")
     p.add_argument("--hari-ini", help=argparse.SUPPRESS)
     a = p.parse_args()
 
@@ -541,7 +627,19 @@ def main():
     for jenis, nilai in (("awal_ramadan", a.awal_ramadan), ("idulfitri", a.idulfitri), ("imlek", a.imlek)):
         if nilai:
             override[jenis] = parse_tanggal(nilai, "--" + jenis.replace("_", "-"))
-    baris_isi = baca_isi(a.isi) if a.isi else None
+    baris_isi, isi_teks = None, None
+    if a.isi:
+        mentah = baca_teks(a.isi)
+        if isi_berbentuk_json(mentah):
+            baris_isi = baca_isi(a.isi, mentah)
+        else:
+            if not a.mulai:
+                galat("Isian teks (No | Ide | Hook | CTA) butuh --mulai dan --hari yang sama dengan kerangka.")
+            isi_teks = mentah
+    if a.selesai and not a.isi:
+        galat("--selesai butuh --isi (file isian).")
+    if not 0 <= a.detail <= 5:
+        galat("--detail harus 0–5.")
     if baris_isi:
         mulai = parse_tanggal(baris_isi[0]["Tanggal"])
         akhir = parse_tanggal(baris_isi[-1]["Tanggal"])
@@ -566,9 +664,14 @@ def main():
         print("HASIL: {} ({} GAGAL, {} CEK)".format("GAGAL" if gagal else "LULUS", len(gagal), len(temuan) - len(gagal)))
         sys.exit(2 if gagal else 0)
 
+    if isi_teks is not None:
+        kerangka_baris, bentrok_awal = susun(mulai, a.hari, pilar, platform, gajian, momen_semua)
+        baris_isi = gabung_isi_teks(kerangka_baris, isi_teks, a.isi)
     if baris_isi:
         baris = baris_isi
         bentrok = periksa_isi(baris, gajian, momen_semua)
+        if isi_teks is not None:
+            bentrok = bentrok_awal + bentrok
         if fakta is not None:
             for b in baris:
                 isi = " | ".join([b["Ide Konten"], b["Hook / Judul"], b["CTA"]])
@@ -591,6 +694,22 @@ def main():
             "Pilar {} mengisi {} dari {} hari (>40%). Audiens mudah bosan; pertimbangkan menambah pilar non-promo.".format(
                 idx_promo, hitung[idx_promo], a.hari))
 
+    if a.selesai:
+        selesai(a, baris, ringkasan, hitung, kunci, mulai, akhir, fakta, pemisah)
+        return
+
+    if a.format == "ringkas":
+        out = ["Kerangka {} s.d. {} ({} hari) — isi Ide/Hook/CTA per No".format(fmt_tgl(mulai), fmt_tgl(akhir), a.hari),
+               "", "| No | Tanggal | Hari | Momen | Pilar | Format |", "|---|---|---|---|---|---|"]
+        for b in baris:
+            out.append("| {} | {} | {} | {} | {} | {} |".format(b["No"], b["Tanggal_tampil"], b["Hari"],
+                                                               momen_singkat(b["Momen"]) or "-", b["Pilar"], b["Format"]))
+        out.append("")
+        out.append("Sebaran pilar: " + ", ".join("{} {}".format(k, v) for k, v in hitung.items()))
+        for w in ringkasan["peringatan"]:
+            out.append("PERINGATAN: " + w)
+        sys.stdout.write("\n".join(out) + "\n")
+        return
     if a.format == "json":
         teks = json.dumps({"ringkasan": ringkasan, "baris": baris}, ensure_ascii=False, indent=2)
     elif a.format == "csv":
@@ -601,18 +720,7 @@ def main():
             w.writerow([b["No"], b["Tanggal"]] + [b[k] for k in KOLOM[2:]])
         teks = buf.getvalue()
     else:
-        out = ["Kalender konten {} s.d. {} ({} hari)".format(fmt_tgl(mulai), fmt_tgl(akhir), a.hari), "",
-               "| " + " | ".join(KOLOM) + " |", "|" + "---|" * len(KOLOM)]
-        for b in baris:
-            sel = [str(b["No"]), b["Tanggal_tampil"]] + [str(b[k]).replace("|", "/").replace("\n", " ") for k in KOLOM[2:]]
-            out.append("| " + " | ".join(sel) + " |")
-        out.append("")
-        out.append("Sebaran pilar: " + ", ".join("{} {}".format(k, v) for k, v in hitung.items()))
-        if di_luar:
-            out.append("Momen di luar rentang (diabaikan): " + ", ".join(di_luar))
-        for w in ringkasan["peringatan"]:
-            out.append("PERINGATAN: " + w)
-        teks = "\n".join(out) + "\n"
+        teks = teks_md(baris, mulai, akhir, a.hari, hitung, ringkasan, di_luar)
 
     if a.output:
         try:
@@ -630,6 +738,69 @@ def main():
     if any("GAGAL" in w for w in ringkasan["peringatan"]):
         print("Ada GAGAL (klaim yang tidak disebut pengguna). Perbaiki barisnya lalu jalankan ulang.", file=sys.stderr)
         sys.exit(2)
+
+
+def teks_md(baris, mulai, akhir, jumlah, hitung, ringkasan, di_luar=()):
+    out = ["Kalender konten {} s.d. {} ({} hari)".format(fmt_tgl(mulai), fmt_tgl(akhir), jumlah), "",
+           "| " + " | ".join(KOLOM) + " |", "|" + "---|" * len(KOLOM)]
+    for b in baris:
+        sel = [str(b["No"]), b["Tanggal_tampil"]] + [str(b[k]).replace("|", "/").replace("\n", " ") for k in KOLOM[2:]]
+        out.append("| " + " | ".join(sel) + " |")
+    out.append("")
+    out.append("Sebaran pilar: " + ", ".join("{} {}".format(k, v) for k, v in hitung.items()))
+    if di_luar:
+        out.append("Momen di luar rentang (diabaikan): " + ", ".join(di_luar))
+    for w in ringkasan["peringatan"]:
+        out.append("PERINGATAN: " + w)
+    return "\n".join(out) + "\n"
+
+
+def selesai(a, baris, ringkasan, hitung, kunci, mulai, akhir, fakta, pemisah):
+    """Satu panggilan: simpan md + csv + ringkas, tampilkan versi chat, lalu cek-silang semuanya."""
+    folder = a.selesai
+    try:
+        os.makedirs(folder, exist_ok=True)
+    except OSError as e:
+        galat("Folder {} tidak bisa dibuat: {}".format(folder, e))
+    platform = baris[0]["Platform"] if baris else ""
+    judul = "{} — {} s.d. {}".format(a.judul or "Kalender Konten", fmt_tgl(mulai), fmt_tgl(akhir))
+    ringkas = tabel_ringkas(baris, judul, hitung, platform, a.detail)
+    catatan = baca_teks(a.catatan) if a.catatan else ""
+    buf = io.StringIO()
+    w = csv.writer(buf, delimiter=pemisah, lineterminator="\n")
+    w.writerow(KOLOM)
+    for b in baris:
+        w.writerow([b["No"], b["Tanggal"]] + [b[k] for k in KOLOM[2:]])
+    berkas = {"kalender.md": (teks_md(baris, mulai, akhir, len(baris), hitung, ringkasan), "utf-8"),
+              "kalender.csv": (buf.getvalue(), "utf-8-sig"),
+              "ringkas.md": (ringkas + ("\n" + catatan if catatan else ""), "utf-8")}
+    for nama, (isi, enc) in berkas.items():
+        try:
+            with open(os.path.join(folder, nama), "w", encoding=enc, newline="") as f:
+                f.write(isi)
+        except OSError as e:
+            galat("Gagal menyimpan {}: {}".format(nama, e))
+    temuan = cek_teks(ringkas + "\n" + catatan, kunci, mulai, akhir)
+    if fakta is not None and catatan.strip():
+        temuan += cek_fakta_teks(catatan, fakta)
+    temuan = ["{}: [baris] {}".format("GAGAL" if "GAGAL" in w else "CEK", w.replace(": GAGAL: [fakta]", ":"))
+              for w in ringkasan["peringatan"]] + temuan
+    gagal = [x for x in temuan if x.startswith("GAGAL")]
+    sys.stdout.write(ringkas)
+    print("")
+    print("File: {} | {} (pemisah '{}') | {}".format(*(os.path.join(folder, n) for n in
+                                                        ("kalender.md", "kalender.csv")), pemisah,
+                                                     os.path.join(folder, "ringkas.md")))
+    print("")
+    print("=== CEK-SILANG (untuk agent, jangan ditempel ke pengguna) ===")
+    for x in temuan:
+        print(x)
+    if fakta is None:
+        print("CEK: --fakta-file tidak diberikan; klaim karangan belum dicek.")
+    print("HASIL: {} ({} GAGAL, {} CEK)".format("GAGAL" if gagal else "LULUS", len(gagal), len(temuan) - len(gagal)))
+    if gagal:
+        print("Perbaiki HANYA baris/kalimat yang GAGAL di file isian/catatan, lalu jalankan perintah yang sama sekali lagi.")
+    sys.exit(2 if gagal else 0)
 
 
 if __name__ == "__main__":
