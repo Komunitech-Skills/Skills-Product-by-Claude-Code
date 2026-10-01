@@ -51,6 +51,10 @@ Skill ini sengaja dibuat hati-hati. Hanya hal yang jelas disepakati yang ditulis
 **Hal rahasia seperti gaji ikut masuk ke pesan WA?**
 Tidak. Info sensitif hanya ada di notulen lengkap, tidak di pesan grup.
 
+## Catatan revisi 1.0.4 (2026-10-01)
+- Temuan uji ulang OpenClaw: muncul satu tugas (untuk Hendra) yang tidak ada di catatan.
+- Kini setiap tugas dan PIC wajib berasal dari catatan; yang tersirat/tidak jelas ditulis `[cek: …]`.
+
 ## Catatan revisi 1.0.3 (2026-10-01)
 Perbaikan dari uji OpenClaw asli (notulen dari catatan rapat berantakan):
 - Tenggat berawalan kini dikenali script: "sebelum rabu", "sblm jumat", "paling lambat senin depan", "maks besok", "s.d. akhir bulan" → mis. "Sebelum Rabu, 7 Oktober 2026".

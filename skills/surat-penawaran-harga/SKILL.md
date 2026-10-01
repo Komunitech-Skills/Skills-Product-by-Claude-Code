@@ -35,6 +35,7 @@ Menghasilkan SPH yang rapi, benar hitungannya, dan siap dikirim (dokumen + teks 
 | Masa berlaku penawaran | Tidak | 14 hari sejak tanggal surat |
 | Syarat pembayaran | Tidak | DP 50% saat PO, pelunasan sebelum barang dikirim |
 | Waktu & cara pengiriman | Tidak | 3–7 hari kerja setelah DP diterima; `[isi]` jika tidak tahu |
+| Kota & tanggal surat | Tidak | Kota: `[isi: kota]` (jangan ditebak); tanggal: hari ini, disebut sebagai asumsi |
 | Nomor urut & kode surat | Tidak | Nomor urut 001, kode `SPH/<singkatan usaha>` |
 | Nama & jabatan penanda tangan | Tidak | `[Nama]`, `[Jabatan]` |
 | Rekening bank | Tidak | Tulis `[Bank – No. Rek – a.n.]` |
@@ -64,6 +65,7 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - `--format json` bila hanya butuh angka. Script keluar dengan kode ≠ 0 dan pesan `ERROR:` bila input salah; perbaiki lalu jalankan ulang, jangan menebak angka.
 4. **Susun surat** memakai angka dari output script apa adanya (lihat Format output). Kerangka lengkap & variasi kalimat pembuka ada di `references/kerangka-sph.md`.
 5. **Sediakan versi siap cetak — DI CHAT.** Balasan chat **SELALU** memuat (a) **isi surat lengkap** (kop sampai tanda tangan, siap salin/cetak) dan (b) **teks WhatsApp pendek siap kirim**. Menyimpan ke file saja **tidak cukup**: pengguna (mis. lewat Telegram) tidak bisa membuka path lokal, dan ringkasan angka tanpa surat dianggap gagal. File `SPH-<nomor urut>.md` hanya **tambahan** (bila bisa menulis file; sebutkan lokasinya, lampirkan bila kanal mendukung).
+   - **Data yang tidak diberikan tidak boleh dikarang:** kota surat, tanggal surat, nomor surat, alamat, rekening, nama penanda tangan. Tulis `[isi: kota]`, `[isi: tanggal]`, dst., atau — khusus tanggal — pakai tanggal hari ini dan sebutkan di daftar asumsi. **Dilarang** mengisi kota (mis. "Jakarta") dari tebakan. Setiap default yang dipakai (nomor 001, masa berlaku, syarat bayar, jabatan) wajib tercantum di "Asumsi yang dipakai" di giliran mana pun surat ditampilkan.
    - **PIC tidak diketahui:** pakai sapaan umum "Bapak/Ibu Bagian Pengadaan" (atau "Bapak/Ibu Pimpinan" untuk usaha kecil), **bukan** `[Nama PIC]`.
    - **Penjual bukan PKP:** tulis "Harga final; penjual bukan PKP sehingga tidak memungut PPN." Jangan menulis "belum kena PPN"/"belum termasuk PPN" (menyesatkan, seolah PPN menyusul). Skill ini **tidak membuat PDF**: katakan terus terang, lalu beri cara singkat — tempel/buka surat di Word atau Google Docs → *File → Download/Save as PDF*. Jangan memasang paket pembuat PDF.
 6. **Buat versi WhatsApp — wajib tampil di chat, tanpa menunggu diminta** (ringkas, tanpa tabel, ≤ 15 baris). **Jangan menyebut lampiran/PDF yang tidak benar-benar dibuat dan dilampirkan.** Kalimat lampiran hanya dipakai bila file surat memang ikut dikirim, dengan menyebut format sebenarnya.

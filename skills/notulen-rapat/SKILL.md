@@ -42,7 +42,7 @@ Jika catatan tidak ada, minta ditempel. Info lain **tidak perlu ditanyakan dulu*
    - **Action item**: ada tugas + pelaksana (dan tenggat bila ada).
    - **Poin diskusi**: usulan, pendapat, data, pertimbangan yang belum final.
    - **Belum diputuskan / ditunda**: dibahas tapi tidak ada kesimpulan.
-4. **Jangan mengarang.** Usulan tidak boleh ditulis sebagai keputusan. Jika tidak jelas apakah sudah disepakati, masukkan ke Poin Diskusi dengan tanda `⚠️ belum jelas apakah disepakati`. Tugas tanpa pelaksana ditulis `PIC: ⚠️ belum ditentukan`. Tugas tanpa tenggat ditulis `⚠️ belum ada tenggat`.
+4. **Jangan mengarang.** Usulan tidak boleh ditulis sebagai keputusan. Jika tidak jelas apakah sudah disepakati, masukkan ke Poin Diskusi dengan tanda `⚠️ belum jelas apakah disepakati`. **Setiap tugas dan PIC wajib berasal dari catatan** — jangan menambah tugas lanjutan yang "logis" tetapi tidak disebut (mis. catatan hanya bilang A mengajukan dan B setuju → itu keputusan, bukan tugas baru untuk A). Tugas/PIC yang tersirat atau tidak jelas ditulis `[cek: …]` dan masuk "Perlu dikonfirmasi", bukan dimasukkan sebagai tugas pasti. Tugas tanpa pelaksana ditulis `PIC: ⚠️ belum ditentukan`. Tugas tanpa tenggat ditulis `⚠️ belum ada tenggat`.
 5. **Konversi tanggal relatif** ("besok", "Jumat depan", "akhir bulan") ke tanggal nyata dengan script agar nama hari tidak salah. Script `tanggal_relatif.py` ada di subfolder `scripts/` di folder yang sama dengan file SKILL.md ini (mis. di OpenClaw: `~/.openclaw/skills/notulen-rapat/scripts/tanggal_relatif.py`). Pakai path itu langsung — **jangan mencari script atau file ke seluruh disk** (`find /` dsb.). Windows: `python` atau `py`:
    ```bash
    python3 scripts/tanggal_relatif.py --rapat "<tanggal rapat>" --ekspresi "jumat depan" "akhir bulan" --format teks
@@ -142,6 +142,7 @@ Template kosong (untuk dicetak/diisi tangan) ada di `references/aturan-klasifika
 - [ ] Setiap keputusan punya dasar kalimat di catatan (kata sepakat/deal/oke/diputuskan atau persetujuan pimpinan).
 - [ ] Tidak ada nama, angka, tanggal, atau tugas yang tidak ada di catatan.
 - [ ] Setiap action item punya PIC dan tenggat, atau diberi tanda ⚠️.
+- [ ] Setiap action item & PIC bisa ditunjuk ke kalimat di catatan; tidak ada tugas tambahan karangan.
 - [ ] Tanggal relatif sudah dikonversi dan ditandai; nama hari sesuai tanggal; awalan "sebelum/paling lambat" tetap tertulis.
 - [ ] Angka setelah nama alat/tempat ("forklift 2") ditulis sebagai nomor unit, bukan jumlah; yang ragu diberi `[cek: …]`.
 - [ ] Bagian "Perlu dikonfirmasi" berisi semua ambiguitas.

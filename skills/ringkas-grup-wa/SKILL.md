@@ -67,7 +67,8 @@ Jika info lain kurang, **jangan tanya lebih dari sekali**: proses dengan default
 7. **Susun daftar tindakan** (siapa – apa – tenggat) memakai format yang sama dengan `notulen-rapat`: PIC diambil dari pengirim tugas/yang diberi tugas jika jelas dari teks; tenggat mengikuti tulisan asli, ditambah tanggal `tenggat_terdeteksi` dari script bila ada (jangan menghitung tanggal sendiri; untuk konversi tanggal relatif yang lebih rumit, arahkan ke `notulen-rapat` yang punya `scripts/tanggal_relatif.py`). Tugas tanpa PIC/tenggat jelas → tandai `⚠️ belum jelas`.
 8. **Sertakan kutipan asli singkat + jam** untuk tiap butir Perlu Perhatian (maks ±15 kata kutipan, bukan parafrase, agar pengguna bisa mengecek langsung di grup).
 9. **Grup sangat ramai** (statistik total pesan tinggi, atau rentang > 1 hari dengan ratusan pesan/hari): sajikan **per hari** memakai grouping `hari[]` dari JSON, hari terbaru duluan; jangan gabung jadi satu daftar panjang tak terkelompok.
-10. Tutup dengan ringkasan angka singkat (statistik) dan tawarkan: ringkas rentang waktu lain, atau ubah ke daftar tindakan saja untuk kirim ke grup (bukan skill ini yang mengirim — pengguna yang menyalin/mengirim sendiri).
+10. **Angka jumlah butir (judul bagian, "(n)", "tiga lainnya", dsb.) jangan ditulis dari perkiraan.** Susun daftar final dulu, lalu hitung ulang jumlah butir yang benar-benar tertulis; angka pesan/pengirim/lewat tenggat diambil dari keluaran script (`statistik`, `jumlah_lewat_tenggat`). Bila menyebut "N lainnya" sambil menyebut nama, jumlah nama harus sama dengan N. Jangan menulis angka jumlah tanpa menghitung. Nama pihak (pelanggan/vendor/supplier) disalin sesuai peran di chat.
+11. Tutup dengan ringkasan angka singkat (statistik) dan tawarkan: ringkas rentang waktu lain, atau ubah ke daftar tindakan saja untuk kirim ke grup (bukan skill ini yang mengirim — pengguna yang menyalin/mengirim sendiri).
 
 ## Format output
 ```
@@ -137,6 +138,7 @@ Rentang: 12–13 Sep 2026 · 16 pesan (dari 4 orang)
 - [ ] Tidak ada isi/keputusan/nominal yang tidak ada di kutipan asli.
 - [ ] Setiap butir Perlu Perhatian punya kutipan singkat + jam, bukan parafrase bebas.
 - [ ] Setiap item di `kandidat_perlu_perhatian[]` sudah dipertimbangkan (masuk kategori, atau sengaja dikeluarkan).
+- [ ] Setiap "(n)"/"N lainnya" sudah dihitung ulang dari daftar final yang tampil.
 - [ ] Catatan `urutan_tanggal`/ambiguitas dari script disampaikan ke pengguna, tidak disembunyikan — termasuk peringatan "satu kombinasi tanggal" bila ada.
 - [ ] Daftar tindakan: setiap baris punya PIC & tenggat, atau ditandai ⚠️.
 - [ ] Semua kandidat `lewat_tenggat: true` ditandai "⏰ LEWAT TENGGAT" (tidak ada tenggat basi yang tampil seolah masih berlaku).

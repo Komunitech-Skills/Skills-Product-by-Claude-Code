@@ -46,7 +46,7 @@ Jika pengguna ingin cepat, tulis balasan dengan asumsi aman dan sebutkan asumsin
      chat pribadi → penutup. Jangan membantah fakta di depan umum; klarifikasi seperlunya dengan netral.
    Sebut hanya detail yang ditulis pengulas sendiri. Jangan tulis nomor pesanan/resi, alamat, nomor HP,
    isi chat. Jangan menawarkan imbalan untuk ubah/hapus ulasan. Jangan menjanjikan kompensasi yang
-   belum disetujui pemilik.
+   belum disetujui pemilik. **Klaim tindakan yang belum dikonfirmasi pemilik** ("sudah kami bahas bersama tim", "sudah kami tegur", "sudah kami perbaiki", "sudah kami kirim ulang") **dilarang** ditulis sebagai fakta; jadikan isian `[konfirmasi pemilik: sudah dibahas bersama tim?]` atau beri dua pilihan kalimat (versi bila sudah / versi netral "masukan Kakak kami catat dan teruskan") dan tanyakan ke pemilik. Tanpa konfirmasi, pakai versi netral.
    **Khusus fasilitas/layanan kesehatan** (klinik, praktik dokter/dokter gigi, bidan, apotek, laboratorium,
    RS, fisioterapi, psikolog) — **PERLU REVIEW** tenaga medis/kepatuhan sebelum dipakai sebagai aturan final:
    - Jangan menyebut atau mengonfirmasi bahwa pengulas/keluarganya **pasien**, kapan berkunjung, atau

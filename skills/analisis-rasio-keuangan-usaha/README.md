@@ -56,6 +56,10 @@ Tidak ke mana-mana. Script berjalan di komputermu sendiri dan tidak mengakses in
 ---
 *Disclaimer: hasil analisis membantu memahami kondisi keuangan usaha. Hasil ini bukan nasihat investasi, bukan penilaian kredit, dan bukan laporan audit. Untuk keputusan besar, konsultasikan dengan akuntan atau pendamping UMKM.*
 
+## Catatan revisi 1.0.5 (2026-10-01)
+- Temuan uji ulang OpenClaw: jenis/skala usaha untuk ambang tidak dilabeli asumsi.
+- Kini wajib ditulis "Asumsi: jenis usaha …, skala …".
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 Perbaikan dari uji OpenClaw asli (bahan rapat komisaris):
 - Utang bank yang jatuh tempo ≤ 12 bulan kini dicatat terpisah dan **dibandingkan langsung dengan kas**. Bila utangnya lebih besar dari kas, hasil menyebut risiko likuiditas (mis. "SEDANG") beserta alasannya, rasio kas tidak lagi hijau, dan saran pertama adalah mengurus jadwal/perpanjangan pinjaman.

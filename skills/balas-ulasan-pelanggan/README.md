@@ -48,6 +48,10 @@ Skill membuat balasan yang tetap sopan dan netral, lalu menyarankan kamu melapor
 **Apakah balasannya diposting otomatis?**
 Tidak. Kamu tinggal menyalin dan menempelkannya sendiri, jadi tetap bisa dicek dulu.
 
+## Catatan revisi 1.0.5 (2026-10-01)
+- Temuan uji ulang OpenClaw: balasan menulis "sudah kami bahas bersama tim" tanpa konfirmasi pemilik.
+- Kini klaim tindakan jadi isian/pilihan untuk dikonfirmasi pemilik; default versi netral.
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Temuan uji ulang OpenClaw (faskes): frasa "saat berkunjung ke klinik kami" masih mengonfirmasi kunjungan.
 - Mode `--faskes` kini menandai GAGAL "saat berkunjung/datang/berobat" (tanpa subjek) + 1 uji regresi baru; aturan di SKILL.md diperbarui.

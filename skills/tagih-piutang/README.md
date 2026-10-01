@@ -48,6 +48,10 @@ Jangan. Itu bisa melanggar UU ITE dan UU Pelindungan Data Pribadi. Skill ini han
 **Apakah surat teguran ini sama dengan bantuan pengacara?**
 Tidak. Surat ini membantu menagih secara resmi. Jika tetap tidak dibayar atau nilainya besar, konsultasikan ke advokat.
 
+## Catatan revisi 1.0.5 (2026-10-01)
+- Temuan uji ulang OpenClaw: pesan menulis "kami lampirkan surat" padahal tidak ada file.
+- Kini lampiran hanya disebut bila pengguna menyatakan ada; selain itu ditulis `[lampirkan: …]` dengan catatan pengguna yang membuat/melampirkan. Catatan pemilik di luar blok pesan.
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 Perbaikan dari uji OpenClaw asli (paket kantor-manajemen, konsultan, usaha-offline):
 - File piutang dengan judul kolom umum langsung terbaca: `no_faktur`, `nilai_faktur`, `sudah_dibayar`, `customer`, `due_date`, `amount`, `paid`, kolom `sisa`/`outstanding`, judul berkurung seperti "Nilai Faktur (Rp)". Kolom lain (no. WA, tanggal faktur) diabaikan. Angka format Indonesia dan tanggal "25 Sep 2026" diterima. Bila kolom tidak dikenali, pesan error menyebut nama kolom yang diterima dan kolom yang ada di file.

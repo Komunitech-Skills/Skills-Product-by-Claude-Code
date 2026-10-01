@@ -80,6 +80,10 @@ instruksi umum dari dokter.
 Bisa — template leaflet, pengingat, dan FAQ bersifat umum untuk semua jenis praktik kesehatan;
 kamu tinggal isi poin sesuai bidangmu.
 
+## Catatan revisi 1.0.8 (2026-10-01)
+- Temuan uji ulang OpenClaw: pembuka "boleh langsung dikirim ke pasien" masih berupa izin kirim dari AI.
+- Kini pembuka wajib: draf perlu dicek tenaga kesehatan/staf sebelum dikirim.
+
 ## Catatan revisi 1.0.7 (2026-10-01)
 - Temuan uji ulang OpenClaw: catatan admin menyebut "tidak menjawab soal amoxicillin sisa" padahal draf justru melarangnya.
 - Kini ada aturan "Catatan untuk admin" di SKILL.md: catatan wajib konsisten dengan isi draf, tanpa klaim "aman dikirim tanpa dokter".

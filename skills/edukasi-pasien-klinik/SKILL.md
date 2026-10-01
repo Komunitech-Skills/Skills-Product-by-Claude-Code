@@ -122,6 +122,7 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 
 ## Catatan untuk admin (konsisten dengan draf)
 Saat membalas chat pasien yang keluar cakupan, catatan untuk admin (di luar draf) **harus menggambarkan isi draf apa adanya**:
+- **Pembuka balasan ke pengguna:** jangan menulis "boleh langsung dikirim" atau izin kirim sejenis. Tulis: "Ini draf; mohon dicek tenaga kesehatan/staf klinik sebelum dikirim ke pasien." (skill ini PERLU REVIEW tenaga medis).
 - Tulis: "Draf **tidak** memberi izin/dosis/takaran dan **tidak** menebak diagnosis; hanya memuat pesan keselamatan baku (mis. jangan memberikan obat resep sisa/milik orang lain sebelum diperiksa dokter, jalur IGD/119)."
 - **Dilarang** menulis "tidak menjawab soal obat sisa/amoxicillin" bila drafnya memuat larangan itu — itu bertentangan dengan draf dan membingungkan admin.
 - Jangan menulis klaim "aman dikirim tanpa dokter"; tulis "kalimat keselamatan ini PERLU REVIEW tenaga medis klinik sebelum dipakai sebagai template tetap".
@@ -132,6 +133,7 @@ Saat membalas chat pasien yang keluar cakupan, catatan untuk admin (di luar draf
 - [ ] Semua instruksi medis (obat, pantangan, tanda bahaya) persis dari yang diberikan dokter —
       tidak ditambah/ditebak skill, tanpa kata penguat/promosi baru ("kuat", "ampuh", "maksimal");
       baris tambahan template (IGD/119, catatan) disebut ke admin sebagai tambahan template.
+- [ ] Pembuka menyatakan draf perlu dicek tenaga kesehatan/staf sebelum dikirim (tidak ada "boleh langsung dikirim").
 - [ ] Catatan untuk admin sesuai isi draf (tidak mengaku "tidak menjawab" hal yang drafnya larang).
 - [ ] Semua jadwal & biaya berasal dari isian klinik — tidak dikarang.
 - [ ] Tidak ada nama/NIK/tanggal lahir/diagnosis pasien sungguhan di output (pakai contoh/anonim

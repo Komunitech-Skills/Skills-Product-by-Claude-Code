@@ -68,7 +68,7 @@ Tawarkan `templates/isian-rasio.csv` bila pengguna lebih suka mengisi tabel. Jik
 3. **Baca "Perlu dicek"** (angka tak terbaca, mustahil, neraca tidak seimbang, baris tak dikenal). Tanyakan dalam satu pesan, lalu jalankan ulang. Selama status data SEMENTARA, sebut hasilnya sementara. Bila status **DATA BELUM CUKUP** (kurang dari 5 rasio bisa dinilai), jangan menyimpulkan usaha "sehat". Sampaikan pos yang belum ada (saran "Lengkapi data") dan ajukan pertanyaan di bagian Input.
 4. **Sajikan hasil** dengan format di bawah. Semua angka, status, dan persen **dari output script**. Boleh menyederhanakan kalimat "Artinya", tetapi tidak boleh mengubah angka atau status.
    - **Likuiditas:** salin kalimat "Pemeriksaan kas vs utang jatuh tempo" (tingkat RENDAH / RENDAH–SEDANG / SEDANG / TINGGI) beserta rinciannya apa adanya. **Dilarang** menulis "tidak ada risiko gagal bayar" atau "pasti aman" — paling rendah tulis "risiko rendah". Rasio lancar/cepat yang 🟢 tidak menghapus risiko bila kas < utang bank jatuh tempo.
-   - **Skala & jenis usaha:** script menulis skala (mikro/kecil/menengah/besar dari penjualan setahun) dan ambang yang dipakai — sebutkan. Bila jenis usaha **tidak disebut pengguna** dan Anda memilih `--jenis` sendiri, tulis di bagian Asumsi: "Jenis usaha diasumsikan [dagang], karena …; beri tahu bila keliru."
+   - **Skala & jenis usaha:** script menulis skala (mikro/kecil/menengah/besar dari penjualan setahun) dan ambang yang dipakai — sebutkan. Bila jenis usaha **tidak disebut pengguna** dan Anda memilih `--jenis` sendiri, tulis di bagian Asumsi: "Asumsi: jenis usaha [dagang], karena …; skala [kecil] menurut penjualan setahun; beri tahu bila keliru." **Wajib** memakai kata "Asumsi:" untuk jenis/skala usaha yang dipakai menentukan ambang, juga bila jenis tampak jelas dari data; jangan hanya menulisnya di kepala laporan tanpa label.
 5. **Kesiapan KUR:** sampaikan kesimpulan + poin ✓/⚠/✗ apa adanya. Jika pengguna ingin lanjut mengajukan, arahkan ke `pengajuan-kur` (simulasi cicilan, checklist dokumen). Tegaskan: bank yang memutuskan.
 6. Periksa checklist, lalu kirim. Tawarkan: hitung ulang tiap bulan/kuartal, bandingkan dengan periode lalu, atau versi ringkas untuk dilampirkan ke proposal.
 
@@ -105,7 +105,7 @@ usaha dagang: 10 baik, 1 waspada, 0 bahaya. Perlu diperhatikan: Umur stok 35,8 h
 ## Checklist sebelum mengirim
 - [ ] Semua angka dari output script (atau hitung manual yang ditandai jelas).
 - [ ] Rasio "tidak dihitung" ditampilkan beserta alasannya, bukan diganti 0 atau ditebak.
-- [ ] Jenis usaha & sifat ambang (pedoman praktis, bukan standar resmi) disebut; jenis yang dipilih agent sendiri ditulis sebagai asumsi.
+- [ ] Jenis usaha & sifat ambang (pedoman praktis, bukan standar resmi) disebut; jenis & skala yang dipilih agent sendiri ditulis dengan label "Asumsi: …".
 - [ ] Utang bank jatuh tempo ≤ 12 bulan diisi lewat `--utang-bank-pendek`; kalimat tingkat risiko likuiditas disalin dari script; tidak ada frasa "tidak ada risiko".
 - [ ] Peringatan (angka mustahil, neraca tidak seimbang, SEMENTARA) disampaikan.
 - [ ] Kesiapan KUR disebut sebagai pembacaan angka, **bukan** keputusan bank; tidak menjanjikan kredit cair.
