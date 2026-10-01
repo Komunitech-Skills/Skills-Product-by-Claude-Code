@@ -1,6 +1,6 @@
 ---
 name: surat-peringatan-karyawan
-description: Menyusun Surat Peringatan karyawan (SP1, SP2, SP3) yang proporsional dan terdokumentasi, berisi fakta pelanggaran, dasar perjanjian kerja/peraturan perusahaan, masa berlaku 6 bulan yang dihitung script, harapan perbaikan, kolom tanda tangan, plus berita acara klarifikasi dan catatan proses. Gunakan saat pengguna minta buat SP, surat teguran, surat peringatan pertama/kedua/ketiga, menindak karyawan telat/bolos, atau employee warning letter, disciplinary letter. Bukan untuk surat PHK.
+description: Menyusun Surat Peringatan karyawan (SP1, SP2, SP3) yang proporsional dan terdokumentasi, berisi fakta pelanggaran, dasar perjanjian kerja/peraturan perusahaan, masa berlaku 6 bulan yang dihitung script, harapan perbaikan, kolom tanda tangan, plus berita acara klarifikasi dan catatan proses. Gunakan saat pengguna minta buat SP, surat teguran, surat peringatan pertama/kedua/ketiga, menindak karyawan telat/bolos, atau employee warning letter, disciplinary letter. Juga dipakai saat pengguna ingin langsung memecat/PHK karyawan karena pelanggaran (mis. ketahuan menggelapkan uang): skill memberi langkah aman sebelum PHK (klarifikasi, skorsing dengan upah tetap dibayar, cek dasar di PK/PP/PKB); surat PHK final tidak disusun.
 ---
 
 # Surat Peringatan Karyawan (SP1/SP2/SP3)
