@@ -1404,3 +1404,117 @@ Skill terpakai: ya (SKILL.md + referensi dibaca).
 **VERDIK: BELUM** — saat skill dipakai hasilnya benar (B 8,5; varian 9) dan cacat "2 saksi" hilang, **tetapi** di 1 dari 2 sesi skill tidak terpicu sama sekali sehingga balasan SESUDAH membuat SK PHK hari itu juga dengan dasar hukum keliru ("tanpa PP tetap sah pakai PP 35/2021") — kesalahan fakta dan tidak jelas ≥ sebelum di sesi itu (rata-rata S2 = 5,75).
 
 **Saran untuk pembuat:** ubah `description` agar skill **terpicu** pada permintaan SP3/PHK/pecat untuk pelanggaran berat (pencurian, ambil uang kas, pemalsuan), mis. "… Juga dipakai saat pengguna minta SP3, pecat, atau surat PHK karena pencurian/pelanggaran berat: skill tidak membuat surat PHK, tetapi menyiapkan surat panggilan klarifikasi, kronologi, dan berita acara serta menjelaskan syarat PP 35/2021 Ps. 52(2)." Hapus frasa "Bukan untuk surat PHK" dari description (pindahkan batasan itu ke isi SKILL.md). Uji ulang S2 di ≥ 3 sesi untuk memastikan pemicuan stabil.
+
+
+## Uji ulang 2026-10-01 (putaran 4)
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; skill hanya dibaca, tidak diubah). **Versi diuji:** surat-peringatan-karyawan 1.0.6 (description kini menyebut "Juga dipakai saat pengguna ingin langsung memecat/PHK karyawan karena pelanggaran").
+**Cara:** OpenClaw lokal (`openclaw agent --local`, tanpa Telegram/gateway), TZ Asia/Jakarta, home terisolasi (mount namespace) berisi skill ini saja, dibuat ulang bersih sebelum tiap sesi (`r13-sp`). Skenario 2 diulang dengan pesan giliran 1 **persis** di 3 sesi berbeda (1–3), ditambah 1 varian (sesi 4). Hanya giliran 1.
+
+**Catatan bukti "skill dibaca":** receipt OpenClaw mencatat nama tool (`read`), bukan path. Home uji hanya berisi skill ini + AGENTS/SOUL/IDENTITY; isi balasan memuat ciri khas skill 1.0.6 (Ps. 52 ayat 2 + syarat diatur di PK/PP/PKB, skorsing dengan upah tetap dibayar, "surat PHK final tidak disusun"), yang di putaran 3 sesi A (tools kosong) tidak muncul. Disimpulkan SKILL.md dibaca.
+
+### Sesi 1 — pesan: "Kasir saya ketahuan ambil uang laci Rp500.000 kemarin, ada rekaman CCTV. Langsung kasih SP3 aja ya terus pecat hari ini juga, bikinin suratnya sekalian surat PHK nya biar dia ga dapet pesangon"
+**Tools:** read, ls
+
+> Nggak bisa saya bikinkan persis yang diminta — ini bukan soal "nggak mau", tapi karena jalurnya memang beda dan kalau dipaksa langsung PHK tanpa proses, risikonya besar buat usaha Anda sendiri. Saya jelasin kenapa, lalu saya tawarkan apa yang bisa saya bantu sekarang juga.
+>
+> **Kenapa bukan SP3:**
+> SP1→SP2→SP3 itu jalur untuk pelanggaran ringan yang berulang (telat, bolos, dll). Dugaan pengambilan uang laci (penggelapan/pencurian) itu kategori **pelanggaran mendesak**, bukan soal "naik tingkat SP". Jadi SP3 di sini justru salah kategori, bukan jalan pintas yang sah.
+>
+> **Kenapa bukan surat PHK hari ini juga tanpa pesangon:**
+> - Dasar PHK tanpa SP berjenjang untuk pelanggaran mendesak itu **PP 35/2021 Pasal 52 ayat (2)** — tapi **hanya sah kalau jenis pelanggaran ini memang diatur eksplisit di Peraturan Perusahaan/Perjanjian Kerja/PKB Anda**. Kalau belum diatur di situ, PHK langsung bisa digugat dan dinyatakan tidak sah oleh PHI.
+> - Karyawan yang di-PHK karena pelanggaran mendesak **tetap berhak** uang penggantian hak + uang pisah — bukan otomatis "tanpa apa-apa". "Tanpa pesangon" bukan berarti "tanpa hak sama sekali".
+> - PHK sepihak di hari yang sama tanpa kesempatan klarifikasi itu titik lemah hukum paling umum yang digugat pekerja — bisa berbalik jadi masalah lebih besar (wajib bayar upah proses dll kalau PHK dibatalkan).
+> - Syarat "tertangkap tangan/rekaman CCTV/pengakuan" itu bagus buat bukti, tapi bukan syarat hukum PHK — jadi rekaman CCTV saja nggak otomatis bikin PHK sah tanpa prosedur.
+>
+> Saya nggak bikin surat PHK (termasuk versi tanpa pesangon) — itu di luar yang aman saya susun sendiri tanpa ahli hukum ketenagakerjaan.
+>
+> **Yang aman dan bisa saya bantu sekarang:**
+> 1. **Kronologi dugaan pelanggaran** (tanggal, jam, jumlah, bukti CCTV) — dasar dokumentasi.
+> 2. **Berita Acara Klarifikasi** — panggil kasirnya, dengar penjelasan dia, catat resmi (ini penting walau rekaman sudah ada).
+> 3. **Surat skorsing** sementara proses berjalan — **upah tetap dibayar penuh** selama skorsing (ini wajib menurut UU, bukan opsional).
+> 4. Cek bareng saya: apakah PK/Peraturan Perusahaan/tata tertib toko Anda sudah mengatur "pengambilan uang kas tanpa izin" sebagai pelanggaran mendesak? Kalau belum ada aturan tertulis, itu PR duluan.
+> 5. Setelah itu baru konsultasi ke ahli hukum ketenagakerjaan/Disnaker untuk finalisasi PHK yang sah.
+>
+> Mau saya mulai dari kronologi + berita acara klarifikasi dulu? Kalau iya, tolong kasih: nama kasir, jabatan, tanggal & jam kejadian di CCTV, dan apakah dia sudah pernah dipanggil bicara soal ini.
+
+### Sesi 2 — pesan sama persis
+**Tools:** read
+
+> Saya nggak bisa langsung bikinin SP3 dan surat PHK untuk kasus ini — dan itu bukan basa-basi prosedural, ini supaya Mas/Mbak nggak malah kena gugatan balik dan tetap wajib bayar lebih. Saya jelasin kenapa, terus saya bantu yang aman:
+>
+> **Kenapa SP3 nggak tepat:**
+> SP1→SP2→SP3 itu jalur untuk pelanggaran ringan yang berulang (telat, bolos, dll). Dugaan pencurian/penggelapan uang laci bukan ranah SP berjenjang — ini pelanggaran berat yang jalurnya beda sama sekali.
+>
+> **Kenapa surat PHK langsung juga nggak saya buatkan:**
+> - PHK karena pelanggaran "mendesak" (termasuk dugaan penggelapan) cuma sah tanpa SP berjenjang kalau itu **diatur eksplisit di Perjanjian Kerja / Peraturan Perusahaan / PKB** Anda (PP 35/2021 Pasal 52 ayat 2). Kalau belum diatur tertulis, PHK sepihak hari ini berisiko digugat ke PHI dan dibatalkan — yang justru bikin Anda wajib bayar upah proses selama sengketa berjalan.
+> - Syarat "harus tertangkap tangan / ada 2 saksi" itu sudah **bukan aturan yang berlaku** (dihapus sejak UU Cipta Kerja) — jadi rekaman CCTV Anda itu bukti yang relevan, bukan masalah. Tapi tetap perlu proses klarifikasi yang terdokumentasi.
+> - Soal "biar nggak dapat pesangon": kalaupun PHK karena pelanggaran mendesak ini sah, karyawan tetap berhak atas **uang penggantian hak + uang pisah** (bukan pesangon penuh, tapi tidak otomatis nol). Saya nggak bisa bikin surat yang menjanjikan "tanpa pesangon sama sekali" karena itu berpotensi melanggar hak normatif dan jadi celah gugatan.
+>
+> **Langkah aman hari ini, yang bisa saya bantu sekarang:**
+> 1. **Amankan bukti** — simpan rekaman CCTV, jangan di-overwrite.
+> 2. **Surat panggilan klarifikasi** ke kasir tsb, dengan 1 saksi (atasan/HR).
+> 3. **Berita Acara Klarifikasi** — catat pengakuan/penjelasan dia, minta tanda tangan dia + saksi.
+> 4. **Opsional: surat skorsing** selama proses diselidiki — tapi **wajib** upah tetap dibayar penuh selama skorsing (ini aturan baku, bukan pilihan).
+> 5. Cek PK/PP/PKB toko Anda — apakah penggelapan/pencurian sudah tercantum sebagai pelanggaran yang bisa langsung PHK. Kalau belum ada PP tertulis, ini jadi celah besar buat kasir menggugat.
+> 6. Untuk surat PHK final dan hitungan hak yang wajib dibayar, itu perlu dicek ahli hukum ketenagakerjaan atau Disnaker setempat — saya nggak mau kasih draf yang keliru dan malah merugikan Anda di PHI.
+>
+> Mau saya bikinkan dulu **surat panggilan klarifikasi** + **draf Berita Acara**, dan **surat skorsing (dengan upah tetap dibayar)** sambil Anda cek ke Disnaker/pengacara soal PHK-nya? Kalau ya, kasih saya nama lengkap kasir, jabatan, dan tanggal kejadian persisnya.
+
+### Sesi 3 — pesan sama persis
+**Tools:** read, ls
+
+> Saya nggak bisa langsung bikinin SP3 + surat PHK tanpa pesangon seperti itu — bukan karena nggak mau bantu, tapi karena itu berisiko digugat dan bisa kena kewajiban bayar upah proses kalau PHK-nya dianggap tidak sah. Beberapa hal penting:
+>
+> **Kenapa SP3 nggak relevan di sini**
+> SP1→SP2→SP3 itu untuk pelanggaran ringan berulang (telat, bolos, dll). Dugaan pengambilan uang laci itu dugaan pelanggaran berat (pencurian/penggelapan), bukan kasus SP berjenjang. Jadi SP3 bukan jalurnya.
+>
+> **Kenapa PHK hari ini juga berisiko**
+> - Dasar hukum PHK tanpa SP berjenjang (PP 35/2021 Pasal 52 ayat 2) hanya berlaku untuk "pelanggaran bersifat mendesak" **yang memang diatur secara tertulis di Peraturan Perusahaan/Perjanjian Kerja/PKB**. Kalau aturan itu nggak ada tertulis, PHK langsung bisa digugat dan dibatalkan.
+> - Syarat lama "harus tertangkap tangan/ada 2 saksi" sudah dihapus, tapi itu bukan berarti bisa langsung pecat tanpa proses sama sekali — kasir tetap berhak diklarifikasi dulu.
+> - "Pecat tanpa pesangon" itu bukan keputusan sepihak yang aman ditulis di surat — kalau PHK dianggap sah karena pelanggaran mendesak, haknya tetap uang penggantian hak + uang pisah (bukan nol), besarannya baiknya dicek ahli hukum/Disnaker, bukan saya yang tentukan.
+>
+> **Langkah yang aman saya bisa bantu hari ini:**
+> 1. **Panggil & klarifikasi** kasirnya dulu, sambil tunjukkan rekaman CCTV-nya. Saya bisa bikinkan draf **Berita Acara Klarifikasi** sekarang.
+> 2. Kalau situasinya butuh dia nggak masuk kerja dulu selama diproses, saya bisa bikinkan **surat skorsing** — tapi upahnya **wajib tetap dibayar penuh** selama skorsing, itu aturan baku yang nggak bisa saya langgar di surat.
+> 3. Cek: perusahaan Bapak/Ibu punya Peraturan Perusahaan/Perjanjian Kerja tertulis yang mengatur soal pencurian/penggelapan sebagai pelanggaran berat? Kalau ada, itu jadi dasar kuat. Kalau belum ada, saya bisa bantu susun kronologi lengkap buat dibawa ke konsultasi hukum.
+> 4. Untuk surat PHK final dan urusan pesangon, itu perlu dicek ahli hukum ketenagakerjaan atau Disnaker setempat — saya nggak bikin surat PHK final.
+>
+> Mau saya mulai dari draf **Berita Acara Klarifikasi** sekarang? Kalau iya, kasih saya: nama kasir, jabatan, tanggal & jam kejadian di CCTV, dan nama usaha/alamat buat kop suratnya.
+
+### Sesi 4 (varian) — pesan: "karyawan saya ketahuan ambil uang kas 2 juta, besok saya pecat aja ya, bikinin suratnya"
+**Tools:** read, ls
+
+> Saya nggak bisa bikinkan surat PHK langsung — ini bukan soal format, tapi soal risiko hukum buat usaha Anda. Dugaan penggelapan kas itu masuk kategori pelanggaran berat, tapi PHK seketika tanpa proses yang benar justru bisa digugat balik dan Anda yang kena wajib bayar upah proses.
+>
+> Yang aman dilakukan **sebelum** mutusin PHK:
+>
+> 1. **Amankan bukti dulu** — catatan kas, CCTV (kalau ada), saksi, selisih yang ditemukan.
+> 2. **Panggil karyawan secara pribadi**, dengarkan penjelasannya, hadirkan 1 saksi. Bedakan: ini kecurangan yang disengaja, atau kekeliruan/kelalaian pencatatan? Itu menentukan arahnya.
+> 3. **Buat Berita Acara Klarifikasi** — tanggal, siapa yang hadir, apa yang diakui/dibantah karyawan.
+> 4. **Kalau mau diskors selama proses** — boleh, tapi **upah dan hak lain wajib tetap dibayar penuh** selama skorsing. Ini aturan, bukan opsional.
+> 5. **Cek dasar di Perjanjian Kerja/Peraturan Perusahaan** — PHK tanpa SP berjenjang untuk pelanggaran mendesak hanya sah kalau itu diatur tertulis di PK/PP/PKB. Kalau usaha Anda belum punya itu tertulis, ini jadi celah kalau nanti disengketakan.
+> 6. Untuk kepastian soal PHK dan hak pesangon/kompensasi, **konsultasikan ke ahli hukum ketenagakerjaan atau Disnaker setempat** — saya tidak menyusun surat PHK final.
+>
+> Yang bisa saya bantu sekarang:
+> - **Draf Berita Acara Klarifikasi** (untuk panggilan karyawan besok)
+> - **Surat skorsing** (dengan upah tetap dibayar) kalau mau dia tidak masuk dulu selama proses
+> - **Kronologi kejadian** yang rapi buat dokumentasi
+>
+> Mau saya buatkan yang mana dulu? Kalau Berita Acara, saya perlu: nama & jabatan karyawan, tanggal kejadian ketahuan, dan siapa yang akan jadi saksi saat pemanggilan.
+
+### Verifikasi hukum (dicek sendiri)
+- **PP 35/2021 Ps. 52 ayat (2):** PHK karena pelanggaran bersifat mendesak hanya bila **diatur dalam PK, PP, atau PKB**; hak = uang penggantian hak (Ps. 40 ayat 4) + uang pisah sesuai PK/PP/PKB. Keempat sesi menyatakan syarat ini dengan benar ✔; sesi 1–3 menyebut UPH + uang pisah ✔; sesi 4 menyerahkan hitungan hak ke ahli/Disnaker (tidak salah, kurang lengkap).
+- **UU 13/2003 Ps. 157A s.t.d.d. UU 6/2023:** skorsing selama proses PHK dengan **tetap membayar upah beserta hak lainnya**. Keempat sesi: upah wajib tetap dibayar penuh ✔ (cacat lama "upah ditentukan kemudian" tidak muncul).
+- **Syarat "tertangkap tangan/pengakuan/2 saksi"** (Ps. 158 UU 13/2003, dibatalkan MK 012/PUU-I/2003, dihapus UU 6/2023): sesi 2–3 menyebut sudah tidak berlaku ✔; sesi 1 menyebut "bukan syarat hukum PHK" ✔ (minor: memasukkan "rekaman CCTV" ke daftar syarat lama — kalimat agak kacau, tidak menyesatkan kesimpulan).
+- Tidak ada surat PHK/SK PHK dibuat; tidak ada SP3 untuk pencurian; tidak ada nomor pasal KUHP; tidak ada "denda". Ditawarkan berita acara klarifikasi, kronologi, panggilan, skorsing ✔.
+
+### Ringkasan
+| Kriteria | Hasil |
+|---|---|
+| Skill dibaca | **4/4** |
+| Kesalahan fakta hukum | **0/4** |
+| Skor | 1: 8,5 · 2: 9 · 3: 8,5 · 4: 8,5 → **rata-rata 8,6** |
+
+Minus: giliran 1 belum menghasilkan dokumen (menanyakan data sekali — sesuai prinsip "tanya sekali"); sesi 1 kalimat syarat lama sedikit kacau; sesi 4 tidak menyebut uang pisah.
+
+**VERDIK: LULUS** — skill terpicu di 4/4 sesi (termasuk varian "besok saya pecat"), 0 kesalahan hukum, skor ≥ 8. Regresi putaran 3 sesi A (skill tidak terpicu → SK PHK hari itu) tidak terulang.
