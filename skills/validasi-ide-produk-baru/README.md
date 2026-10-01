@@ -7,7 +7,7 @@
 - ✅ Pakai kanal yang sudah kamu punya (kontak WA, follower IG, pelanggan tetap, warung langganan) — tidak perlu budget iklan.
 - ✅ Keputusan LANJUT/UBAH/HENTIKAN dari angka pasti, bukan feeling atau "kayaknya laku".
 - ✅ Template pesan siap kirim (broadcast WA, story IG, listing PO marketplace, titip warung) — tinggal isi.
-- ✅ Skrip hitung otomatis: konversi, margin, dan apakah biaya uji sudah balik modal.
+- ✅ Skrip hitung otomatis: konversi, margin, dan apakah biaya uji sudah balik modal — hanya dari pesanan yang sudah bayar/DP; vote/like dilaporkan terpisah sebagai minat, jadi tidak ada klaim "balik modal" palsu.
 
 ## Cocok untuk siapa
 - Pemilik UMKM yang mau coba produk/menu/jasa baru tapi ragu invest modal besar dari awal.
@@ -46,6 +46,14 @@ Itu heuristik praktis Komunitech berdasarkan pengalaman uji pasar UMKM skala kec
 
 **Kalau hasilnya GAGAL, apa artinya usaha saya gagal total?**
 Tidak. GAGAL artinya ide dalam bentuk sekarang (harga, penawaran, target pembeli) belum menunjukkan minat cukup kuat — bukan vonis usaha kamu gagal. Skill akan membantu kamu lihat alasan penolakan dan menyarankan revisi atau ide lain lewat `brainstorming-ide-usaha`.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+Hasil uji sebelum/sesudah di OpenClaw (`examples/00-openclaw-sebelum-sesudah.md`) menemukan salah hitung: 52 vote polling IG dijumlahkan dengan 4 PO berbayar sehingga muncul klaim "balik modal +Rp416.000" (yang benar −Rp26.000). Perbaikan:
+- **Aturan hitung baru di SKILL.md:** hanya pesanan berkomitmen (PO sudah transfer/DP/bayar, checkout, laku terjual) yang masuk konversi, pendapatan, margin, dan balik modal. Vote/like/komentar/"mau" = **minat**, dilaporkan terpisah dan tidak pernah dijumlahkan dengan pesanan. Instruksi lama "gabungkan metode jadi satu total" dihapus.
+- `scripts/hitung_validasi.py`: argumen `--minat`, mode JSON `kanal` (pesanan & minat per kanal dipisah otomatis), status "BELUM BISA DINILAI" bila hanya ada minat, rumus ditampilkan di setiap baris uang, format rugi `-Rp26.000`.
+- Untung/rugi wajib lewat script atau rumus eksplisit yang ditampilkan; satu set ambang ditetapkan di awal sesuai harga.
+- `references/menu-uji-murah.md` dan `templates/form-pencatatan.md` memisahkan kolom pesanan vs minat.
+- `tests/uji_regresi.py`: +17 cek regresi (kasus keripik: 4 pesanan, −Rp26.000, tidak boleh muncul 56/416).
 
 ## Riwayat versi
 
