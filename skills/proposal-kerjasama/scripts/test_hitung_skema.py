@@ -133,5 +133,62 @@ class UjiCekFakta(unittest.TestCase):
         self.assertEqual(len(h["temuan"]), 4)
 
 
+def cek_mitra(teks, fakta=FAKTA_KOPI):
+    import json
+    r = subprocess.run([sys.executable, CEK_FAKTA, "--teks", teks, "--fakta", fakta, "--abaikan", "jam", "--json",
+                        "--dokumen-mitra"], capture_output=True, text=True, encoding="utf-8")
+    return r, json.loads(r.stdout)
+
+
+class UjiUlang20261001(unittest.TestCase):
+    """Uji ulang anti-karang OpenClaw 2026-10-01: kota mitra jadi kota usaha & modal/laba bocor ke proposal."""
+
+    def test_kota_mitra_dikarang_jadi_kota_usaha(self):
+        r, h = cek_fakta("Saya [Nama], pemilik Kopi Pakde — kopi susu literan di Solo.")
+        self.assertEqual(r.returncode, 2)
+        self.assertEqual([t["kategori"] for t in h["temuan"]], ["lokasi"])
+
+    def test_kota_mitra_dalam_konteks_mitra_lulus(self):
+        for teks in ("Kopi Pakde ingin menitipkan produk di minimarket Berkah Mart di Solo.",
+                     "Kopi susu literan untuk Berkah Mart di Solo.",
+                     "Produk paling laris se-Solo [isi: bukti data penjualan]."):
+            r, h = cek_fakta(teks)
+            self.assertNotIn("lokasi", [t["kategori"] for t in h["temuan"]], teks)
+
+    def test_kota_usaha_dari_pengguna_tidak_ditandai(self):
+        fakta = ("usaha keripik singkong pedas 'Kriuk Mbok Darmi' di Bantul, mau titip jual di 5 cabang Kopi Senja "
+                 "Jogja. Harga jual 25rb/bungkus.")
+        r, h = cek_fakta("Kriuk Mbok Darmi, keripik singkong pedas dari Bantul.", fakta)
+        self.assertEqual(h["temuan"], [])
+        fakta3 = ("Tolong buatin proposal titip jual keripik tempe \"Tempe Mbak Wid\" ke toko oleh-oleh \"Sari Rasa\" di "
+                  "Malang. Harga jual di toko Rp15.000/bungkus.")
+        r, h = cek_fakta("Keripik tempe Tempe Mbak Wid di Malang.", fakta3)
+        self.assertEqual(r.returncode, 2)
+        r, h = cek_fakta("Sebagai toko oleh-oleh di Malang, Sari Rasa dikunjungi pembeli oleh-oleh.", fakta3)
+        self.assertNotIn("lokasi", [t["kategori"] for t in h["temuan"]])
+
+    def test_modal_dan_laba_bocor_ke_proposal(self):
+        teks = ("**Catatan soal persentase:** Pada harga jual Rp20.000/botol dan modal produksi Rp14.000/botol, bagian 35% "
+                "akan membuat Kopi Pakde merugi Rp1.000/botol (titik impas ada di 30%). Karena itu kami mengusulkan 25% "
+                "(untung Rp1.000/botol bagi kami) sebagai titik awal diskusi.")
+        r, h = cek_mitra(teks)
+        self.assertEqual(r.returncode, 2)
+        gagal = " | ".join(t["frasa"] for t in h["temuan"] if t["kategori"] == "internal" and t["level"] == "GAGAL")
+        for frasa in ("modal produksi Rp14.000", "merugi Rp1.000", "titik impas ada di 30%", "untung Rp1.000"):
+            self.assertIn(frasa, gagal)
+
+    def test_proposal_bersih_untuk_mitra_lulus(self):
+        teks = ("- Bagian Berkah Mart yang kami usulkan: 25% = Rp 5.000/botol terjual.\n"
+                "- Tambahan pendapatan tanpa modal stok, tanpa risiko rugi beli putus.\n"
+                "- Kami membuka reseller dengan untung Rp 30.000 per pcs untuk reseller.")
+        r, h = cek_mitra(teks)
+        self.assertEqual(r.returncode, 0, h)
+        self.assertEqual([t for t in h["temuan"] if t["level"] == "GAGAL"], [])
+
+    def test_internal_hanya_dengan_dokumen_mitra(self):
+        r, h = cek_fakta("Info untuk kamu: modal Rp14.000/botol, laba Rp1.000/botol.")
+        self.assertNotIn("internal", [t["kategori"] for t in h["temuan"]])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

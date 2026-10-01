@@ -10,6 +10,11 @@ Tujuan: menangkap fakta yang dikarang AI — hal yang terdengar wajar tetapi tid
              BPOM), sifat produk ("murni", "tanpa pengawet", "homemade"), manfaat kesehatan, urgensi
              ("stok terbatas", "besok harga naik"), dan layanan ("gratis ongkir", "tanpa minimal").
 - ANGKA    : angka kredibilitas ("500 pelanggan", "sejak 2019", "3 cabang") yang tidak ada di fakta.
+- KLAIM juga mencakup rasa/tekstur/isi ("isi nanasnya padat", "renyah", "lumer", "dicetak satu-satu") dan janji
+             layanan/pengiriman/jadwal toko ("besok dikirim", "pre-order dibuka", "sudah buka lagi", "toko libur").
+- LOKASI   : kota yang di fakta hanya kota MITRA ("ke minimarket Berkah Mart di Solo") tetapi di teks dipakai
+             sebagai kota usaha ("Kopi Pakde — kopi susu literan di Solo").
+- INTERNAL : (hanya dengan --dokumen-mitra) modal/HPP/laba/titik impas pengguna yang bocor ke dokumen untuk mitra.
 
 Teks di dalam kurung siku ([isi: ...], [tunjukkan tekstur]) dan kalimat tanya diabaikan.
 Klaim reputasi yang disebut pengguna tetap ditandai CEK bila barisnya tidak memuat [isi: bukti].
@@ -32,7 +37,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-KATEGORI = ("jam", "asal", "ukuran", "klaim", "angka")
+KATEGORI = ("jam", "asal", "ukuran", "klaim", "angka", "lokasi", "internal")
 KATA_NEGASI = r"\b(?:tidak|tak|bukan|tanpa|jangan|belum|nggak|ngga|gak|ga|enggak|ndak|tdk)\b"
 
 # ---------- JAM ----------
@@ -91,7 +96,40 @@ POLA_KLAIM = [
                 r"|\b(?:dikirim|pengiriman|kirim)\s+(?:cepat|hari\s+ini|di\s+hari\s+yang\s+sama)\b"
                 r"|\b(?:antar|jemput|ongkir|pengiriman|kirim)\s+(?:\S+\s+){0,2}?gratis\b", "semua"),
     ("layanan", r"\b(?P<k>garansi|dijamin|jaminan\s+uang\s+kembali)\b", "k"),
+    # Rasa/tekstur/isi produk: hanya bila disebut pengguna ("isi nanasnya padat", "renyah", "lumer di mulut").
+    ("rasa/tekstur", r"\b(?:isi|isian|isinya|selai\w*|topping\w*|daging\w*|rasa\w*|tekstur\w*|adonan\w*|kulit\w*"
+                     r"|potongan\w*|porsi\w*)\s+(?:\w+\s+){0,2}?(?P<k>padat|melimpah|tebal|penuh|full|besar"
+                     r"|lembut|meresap|nendang)\b", "k"),
+    ("rasa/tekstur", r"\b(?P<k>renyah|garing|crispy|crunchy|kriuk|lumer|legit|gurih|empuk|lembut|juicy|moist|awet"
+                     r"|tahan\s+lama|wangi\s+tahan\s+lama|melimpah)\b", "k"),
+    ("cara buat", r"\b(?:dicetak|dibuat|dibentuk|digulung|diisi|dikemas|dipilih|diolah|dimasak|dipanggang)\s+"
+                  r"(?:satu[\s-]+(?:per[\s-]+)?satu|manual|(?:pakai\s+|dengan\s+)?tangan|sendiri|fresh|setiap\s+hari"
+                  r"|tiap\s+hari)\b|\bhandmade\b|\bbuatan\s+tangan\b", "semua"),
+    # Janji pengiriman/jadwal yang tidak disebut pengguna.
+    ("janji layanan", r"\b(?:besok|lusa|esok|hari\s+ini\s+juga)\s+(?:langsung\s+)?(?:dikirim|sampai|diantar|tiba|siap"
+                      r"|dijemput)\b|\b(?:dikirim|diantar|kirim|antar|sampai|tiba)\s+(?:\w+\s+)?(?:besok|lusa|esok"
+                      r"|H\s*\+\s*1|1\s*x\s*24\s*jam|24\s*jam)\b|\blangsung\s+(?:dikirim|diantar|diproses)\b", "semua"),
+    ("janji layanan", r"\b(?:pre[\s-]?order|PO)\b", r"re:pre[\s-]?order|\bpo\b"),
+    ("janji layanan", r"\b(?:sudah\s+|udah\s+)?buka\s+(?:lagi|kembali)\b|\b(?:toko|kami|dapur|kedai|outlet|warung|gerai)"
+                      r"\s+(?:\w+\s+)?(?:tutup|libur)\b|\b(?:tutup|libur)\s+(?:sementara|lebaran|selama|dulu)\b",
+     r"re:\b(?:tutup|libur|buka\s+(?:lagi|kembali))\b"),
 ]
+# Kalimat edukasi ("biar tetap renyah", "cara simpan supaya awet") bukan klaim produk.
+KONTEKS_EDUKASI = re.compile(r"\b(?:biar|agar|supaya|cara|tips|trik|simpan|menyimpan|resep)\b", re.IGNORECASE)
+JENIS_EDUKASI = ("rasa/tekstur",)
+KATA_MITRA = (r"toko|minimarket|mart|kafe|cafe|kedai|resto|restoran|warung|gerai|outlet|cabang|supermarket|swalayan"
+              r"|hotel|kantor|kampus|sekolah|mitra|pasar|mall|plaza|apotek|butik|distributor|agen|reseller|event|bazar")
+POLA_INTERNAL = [
+    re.compile(r"\b(?:modal|hpp|harga\s+pokok|biaya\s+produksi|ongkos\s+produksi|titik\s+impas|impas)\b"
+               r"[^.!?\n|]{0,40}?(?:Rp\s?\d[\d.,]*\d|Rp\s?\d|\d{1,3}(?:\.\d{3})+|\d+(?:[.,]\d+)?\s?%)", re.IGNORECASE),
+    re.compile(r"\b(?:untung|keuntungan|laba|margin|rugi|merugi|kerugian)\b[^.!?\n|]{0,40}?(?:Rp\s?\d[\d.,]*\d|Rp\s?\d|\d{1,3}(?:\.\d{3})+"
+               r"|\d+(?:[.,]\d+)?\s?%)", re.IGNORECASE),
+]
+POLA_MILIK_KAMI = re.compile(r"\b(?:untung|keuntungan|laba|margin)\s+(?:\S+\s+){0,3}?(?:bagi|untuk|buat)\s+(?:kami|kita|saya|aku)\b"
+                             r"|\b(?:untung|keuntungan|laba|margin)\s+(?:kami|kita|saya|aku)\b"
+                             r"|\b(?:kami|kita|saya|aku)\s+(?:\w+\s+){0,2}?(?:untung|laba)\b", re.IGNORECASE)
+KATA_PERTAMA = re.compile(r"\b(?:kami|kita|saya|aku|produsen|pemilik|kamu)\b", re.IGNORECASE)
+
 POLA_ANGKA = [
     re.compile(r"\b(?P<n>\d[\d.]*)\s*\+?\s*(?:pelanggan|pembeli|reseller|follower|pengikut|testimoni|ulasan"
                r"|terjual|tahun\s+berdiri|tahun\s+pengalaman)\b", re.IGNORECASE),
@@ -171,10 +209,36 @@ def ukuran_set(teks):
     return hasil
 
 
-def periksa(teks, fakta, abaikan=()):
+def kota_mitra(fakta):
+    """Kota yang di fakta HANYA muncul sebagai lokasi mitra ("ke minimarket Berkah Mart di Solo").
+    Kembalikan {kota: set(token nama/jenis mitra)}. Kota yang juga muncul dalam konteks lain (mis. "usaha aku di
+    Bantul", "dari Solo") tidak dimasukkan."""
+    hasil, lain = {}, set()
+    for m in re.finditer(r"\b([A-Z][a-z][\w-]*)\b", fakta):
+        kota = m.group(1)
+        sebelum = fakta[max(0, m.start() - 80):m.start()]
+        sebelum = re.split(r"[.!?\n]", sebelum)[-1]
+        if re.search(r"(?:^|\s)se-$", sebelum):
+            continue  # "paling laris se-Solo" = klaim pengguna, bukan konteks lokasi usaha
+        if not re.search(r"\bdi\s+$", sebelum):
+            if re.search(r"\b(?:dari|asal|kota)\s+$", sebelum):
+                lain.add(kota)
+            continue
+        ke = list(re.finditer(r"\bke\s+", sebelum))
+        if ke and not re.search(r"\b(?:usaha|produksi|rumah|tinggal|domisili)\b", sebelum[ke[-1].end():],
+                                re.IGNORECASE):
+            token = {w.lower() for w in re.findall(r"[\w-]{3,}", sebelum[ke[-1].end():])} - {"yang", "ada", "punya"}
+            hasil.setdefault(kota, set()).update(token)
+        else:
+            lain.add(kota)
+    return {k: v for k, v in hasil.items() if k not in lain}
+
+
+def periksa(teks, fakta, abaikan=(), dokumen_mitra=False):
     """Kembalikan list (level, kategori, frasa, pesan)."""
     fakta_l = fakta.lower()
     temuan, lihat = [], set()
+    mitra_kota = kota_mitra(fakta) if "lokasi" not in abaikan else {}
 
     def tambah(level, kat, frasa, pesan):
         kunci = (kat, frasa.lower())
@@ -238,6 +302,42 @@ def periksa(teks, fakta, abaikan=()):
                     if not re.search(r"(?<![\d.])" + re.escape(n) + r"(?![\d])", fakta):
                         tambah("GAGAL", "angka", m.group(0), "Angka '{}' tidak ada di fakta pengguna. Hapus atau "
                                                              "[isi: angka sebenarnya].".format(m.group(0)))
+        # LOKASI: kota mitra dipakai sebagai kota usaha/produk
+        for kota, token in mitra_kota.items():
+            for m in re.finditer(r"(?<![\w-])" + re.escape(kota) + r"\b", baris):
+                sebelum = re.split(r"[.!?|]", baris[:m.start()])[-1]
+                if re.search(r"se-\s*$", sebelum):
+                    continue
+                kata = [w.lower() for w in re.findall(r"[\w-]+", sebelum)][-8:]
+                if any(w in token or re.fullmatch(KATA_MITRA, w) for w in kata):
+                    continue
+                if any(re.fullmatch(r"(?:ter)?laris|terbaik|favorit|dikenal|terkenal|populer|nomor|satu", w)
+                       for w in kata[-4:]):
+                    continue  # klaim reputasi diperiksa di KLAIM
+                frasa = " ".join(sebelum.split()[-4:] + [kota])
+                tambah("GAGAL", "lokasi", frasa, "'{}' — pengguna menyebut {} hanya sebagai lokasi mitra, bukan kota usaha/"
+                                                 "produk. Tulis kota usaha [isi: kota usaha] atau kaitkan {} dengan mitra "
+                                                 "(mis. 'untuk <mitra> di {}').".format(frasa, kota, kota, kota))
+        # INTERNAL: modal/laba pengguna di dokumen untuk mitra
+        if dokumen_mitra and "internal" not in abaikan:
+            for kal, _ in kalimat(baris):
+                for pola in POLA_INTERNAL:
+                    for m in pola.finditer(kal):
+                        kata0 = m.group(0).split()[0].lower()
+                        if kata0 in ("untung", "keuntungan", "laba", "margin"):
+                            # Untung milik mitra/reseller ("untung reseller Rp30.000/pcs") boleh ditulis; yang dilarang
+                            # untung/laba MILIK PENGGUNA ("untung Rp1.000/botol bagi kami", "laba kami").
+                            milik_kami = POLA_MILIK_KAMI.search(kal)
+                            mitra = re.search(r"\b(?:" + KATA_MITRA + r"|anda|bapak|ibu|kakak)\b", kal, re.IGNORECASE)
+                            if not milik_kami and mitra:
+                                continue
+                            if not milik_kami and not KATA_PERTAMA.search(kal):
+                                tambah("CEK", "internal", m.group(0), "'{}' — pastikan ini untung MITRA, bukan laba "
+                                                                      "pengguna.".format(m.group(0).strip()))
+                                continue
+                        tambah("GAGAL", "internal", m.group(0), "'{}' — angka internal pengguna (modal/HPP/laba/titik "
+                                                                "impas) jangan masuk dokumen untuk mitra; pindahkan ke "
+                                                                "catatan untuk pemilik.".format(m.group(0).strip()))
         # KLAIM
         if "klaim" not in abaikan:
             for kal, tanya in kalimat(baris):
@@ -256,6 +356,13 @@ def periksa(teks, fakta, abaikan=()):
                                 r"\b(?:testimoni|ulasan|foto|kutipan|data|bukti|angka|stok|rekam\w*|nama|akun|pelanggan"
                                 r"|pembeli|harga)\s+(?:\w+\s+)?$", kal[:m.start()], re.IGNORECASE):
                             continue  # "testimoni asli", "stok asli" = keaslian data, bukan klaim produk
+                        if jenis in JENIS_EDUKASI and KONTEKS_EDUKASI.search(kal[:m.start()]):
+                            continue  # "biar tetap renyah" = tips, bukan klaim
+                        if cara.startswith("re:"):
+                            if not re.search(cara[3:], fakta_l, re.IGNORECASE):
+                                tambah("GAGAL", "klaim", frasa, "'{}' — {} yang tidak disebut pengguna. Hapus, ganti "
+                                                                "[isi: ...], atau tanyakan ke pengguna.".format(frasa, jenis))
+                            continue
                         if cara == "selalu":
                             tambah("GAGAL", "klaim", frasa, "'{}' — klaim {} (menyembuhkan/khasiat) tidak boleh ditulis, "
                                                             "walau diminta pengguna.".format(frasa, jenis))
@@ -290,6 +397,8 @@ def main():
     p.add_argument("--fakta-file", help="file .txt berisi daftar 'Fakta dari pengguna'")
     p.add_argument("--abaikan", default="", help="kategori yang dilewati, dipisah koma: " + ",".join(KATEGORI))
     p.add_argument("--json", action="store_true", help="keluarkan JSON")
+    p.add_argument("--dokumen-mitra", action="store_true",
+                   help="teks akan dikirim ke mitra (proposal/WA/email): modal/HPP/laba/titik impas ditandai GAGAL")
     a = p.parse_args()
 
     if (a.teks is None) == (a.teks_file is None):
@@ -307,7 +416,7 @@ def main():
     if salah:
         galat("Kategori --abaikan tidak dikenal: {}. Pilihan: {}.".format(", ".join(sorted(salah)), ", ".join(KATEGORI)))
 
-    temuan = periksa(teks, fakta, abaikan)
+    temuan = periksa(teks, fakta, abaikan, a.dokumen_mitra)
     gagal = sum(1 for t in temuan if t["level"] == "GAGAL")
     hasil = "GAGAL" if gagal else "LULUS"
     if a.json:
