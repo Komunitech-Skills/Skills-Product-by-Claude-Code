@@ -52,6 +52,12 @@ Mahkamah Konstitusi memerintahkan UU Ketenagakerjaan baru paling lambat sekitar 
 **Bisa untuk karyawan tetap atau menghitung pesangon PHK?**
 Tidak. Skill ini khusus kontrak kerja waktu tertentu (PKWT), termasuk harian lepas. Untuk karyawan tetap, PHK, dan pesangon, skill akan menjelaskan bedanya lalu menyarankan kamu berkonsultasi ke Disnaker atau konsultan hukum. Untuk THR, slip gaji, dan surat peringatan, gunakan skill Komunitech `hitung-thr`, `slip-gaji-bpjs`, dan `surat-peringatan-karyawan`.
 
+## Catatan revisi 1.0.8 (2026-10-01)
+- Dari uji ulang OpenClaw: jawaban sempat menyimpulkan "omzet di atas Rp2 miliar berarti bukan usaha mikro/kecil" — **salah**. Menurut PP 7/2021 Pasal 35, Rp2 miliar hanya batas usaha **mikro**; usaha **kecil** sampai Rp15 miliar (omzet) atau Rp5 miliar (modal).
+- **Status usaha kini dihitung, bukan ditebak:** script baru `scripts/status_usaha.py` menghitung kelas usaha dari omzet setahun dan/atau modal usaha, lalu menulis hasilnya sebagai "hasil perhitungan — konfirmasi dengan dokumen NIB/OSS". Bila omzet/modal belum diketahui, AI tidak memutuskan dan memakai klausul versi umum.
+- **Batas upah usaha mikro/kecil memakai tingkat provinsi** (PP 36/2021 Pasal 36: paling sedikit 50% rata-rata konsumsi dan 25% di atas garis kemiskinan **provinsi**, data BPS), bukan kota. Script menghitung batasnya bila angka BPS diisi; template Pasal 4 ayat (2) kini punya versi umum dan versi usaha mikro/kecil.
+- Tes baru `tests/uji_status_usaha.py` (39 cek) + uji regresi lama tetap lulus.
+
 ## Catatan revisi 1.0.7 (2026-10-01)
 - Dari uji OpenClaw sebelum/sesudah: jawaban sempat menyebut "usaha kecil ≤ Rp5 miliar/tahun menurut UU UMKM" — **salah**. Kriteria resmi ada di PP 7/2021 Pasal 35 dan memakai **dua ukuran**: modal usaha (mikro s.d. Rp1 miliar; kecil > Rp1 miliar s.d. Rp5 miliar; menengah > Rp5 miliar s.d. Rp10 miliar, tanpa tanah & bangunan) **atau** hasil penjualan setahun (mikro s.d. Rp2 miliar; kecil > Rp2 miliar s.d. Rp15 miliar; menengah > Rp15 miliar s.d. Rp50 miliar). Angka ini kini tercatat di rujukan skill dan AI **wajib mengutipnya dari sana**, bukan dari ingatan; skill tetap tidak memutuskan status usahamu.
 
