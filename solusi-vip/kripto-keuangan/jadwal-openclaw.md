@@ -10,7 +10,8 @@ kurasi. 📖/S = sintaks konsisten dengan pola ✅ tetapi kombinasi persisnya be
 token asli) — uji dulu dengan `openclaw automations run <id> --wait`.
 
 **Semua ambang dan daftar koin berasal dari member sendiri. Jadwal ini hanya memberi tahu,
-tidak pernah memberi saran beli/jual dan tidak pernah mengeksekusi order.** Setiap pesan memuat
+tidak pernah memberi saran beli/jual dan tidak pernah mengeksekusi order.** (Jadwal bot
+auto-trading milik `bot-trading-kripto` tidak termasuk di sini; skill itu belum masuk paket.) Setiap pesan memuat
 disclaimer: *"Informasi, bukan nasihat investasi. Keputusan & risiko sepenuhnya milik Anda."*
 
 ## 0. Aturan kanal

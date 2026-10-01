@@ -29,9 +29,11 @@ di ceklis ini** — hanya status ya/tidak.
 | Notifikasi ambang harga (diam bila tenang) | tiap jam | ☐ tenang ☐ terlewati | ☐ |
 
 ## Batas tegas (wajib dicentang semua)
-- [ ] Member paham **tidak ada auto-trading**, tidak ada rekomendasi beli/jual/tahan, tidak ada
-      sinyal atau target harga, dan tidak ada pembuatan bot trading di paket ini.
-- [ ] Member sudah membaca bagian "Kenapa auto-trading tidak disediakan" di `PANDUAN.md`.
+- [ ] Member paham skill di paket ini **tidak mengeksekusi order**, dan tidak ada rekomendasi
+      beli/jual/tahan, sinyal, target harga, atau janji profit dari Komunitech.
+- [ ] Member sudah membaca Bab 0 `PANDUAN.md`: auto-trading hanya lewat `bot-trading-kripto`
+      (aturan member sendiri, default simulasi/testnet, API key tanpa izin tarik dana, batas
+      risiko + tombol berhenti) dan skill itu **belum termasuk paket ini** (menunggu uji testnet).
 - [ ] Tidak ada API key/secret exchange, seed phrase, atau kunci privat yang pernah ditempel ke
       chat. Bila pernah: sudah **dicabut (revoke)** dan diganti.
 - [ ] Member paham ini **bukan nasihat investasi**; kripto berisiko tinggi, modal bisa hilang.
