@@ -51,7 +51,7 @@ import json
 import sys
 from collections import defaultdict, deque
 from datetime import date, datetime
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP
 
 KOLOM_WAJIB = ["tanggal", "koin", "aksi", "jumlah_koin", "harga_satuan", "biaya"]
 
@@ -354,6 +354,65 @@ def periksa_biaya(baris_ok):
     return hasil, catatan_sisi
 
 
+# v1.0.6: estimasi PPh final kripto -- HANYA dihitung di sini (uji ulang OpenClaw 2026-10-01 skenario 03:
+# agent menghitung 0,21% atas beli + jual = Rp48.951, padahal benar hanya atas JUAL = Rp18.585).
+# Dasar: PMK 50/2025 (berlaku 1 Agustus 2025), ringkasan resmi https://www.pajak.go.id/index.php/en/node/117234
+#  - objek PPh = penghasilan PENJUAL aset kripto -> basis = nilai transaksi JUAL; transaksi BELI tidak dikenai PPh.
+#  - PPh Pasal 22 final 0,21% bila lewat PPMSE yang merupakan PAKD dalam negeri (dipungut PAKD);
+#  - 1% bila lewat PPMSE yang bukan PAKD dalam negeri (luar negeri); bila PPMSE itu belum ditunjuk pemungut,
+#    wajib disetor sendiri oleh penjual.
+#  - PPN atas penyerahan aset kripto tidak dipungut lagi sejak 1 Agustus 2025 (PPN atas JASA platform/fee
+#    exchange tetap ada dan merupakan bagian biaya exchange, bukan PPh ini).
+TARIF_PPH_KRIPTO = {"dalam-negeri": Decimal("0.21"), "luar-negeri": Decimal("1")}
+KET_PLATFORM = {
+    "dalam-negeri": "PAKD dalam negeri berizin OJK (mis. Indodax) -- PPh dipungut otomatis oleh exchange",
+    "luar-negeri": "PPMSE bukan PAKD dalam negeri (exchange luar negeri) -- bila exchange itu belum ditunjuk "
+                   "sebagai pemungut, PPh wajib disetor sendiri oleh penjual",
+}
+
+
+def hitung_estimasi_pajak(baris_ok, platform, dari=None, sampai=None, total_realized_pl=0):
+    tarif = TARIF_PPH_KRIPTO[platform]
+    rinci = []
+    total_nilai = Decimal(0)
+    total_pph = 0
+    for r in baris_ok:
+        if r["aksi"] != "jual":
+            continue
+        if (dari and r["tanggal"] < dari) or (sampai and r["tanggal"] > sampai):
+            continue
+        nilai = Decimal(str(r["jumlah_koin"])) * Decimal(str(r["harga_satuan"]))
+        pph = int((nilai * tarif / 100).quantize(Decimal("1"), rounding=ROUND_DOWN))  # sama dgn bot-trading-kripto
+        total_nilai += nilai
+        total_pph += pph
+        rinci.append({"baris": r["baris"], "tanggal": r["tanggal"].isoformat(), "koin": r["koin"],
+                      "nilai_jual": bulat_rupiah(nilai), "estimasi_pph": pph})
+    tarif_teks = format(tarif.normalize(), "f").replace(".", ",")
+    def rp(x):
+        return "Rp" + f"{x:,}".replace(",", ".")
+    teks = (f"Estimasi PPh Pasal 22 final {tarif_teks}% (PMK 50/2025) = {tarif_teks}% x total nilai JUAL "
+            f"{rp(bulat_rupiah(total_nilai))} = {rp(total_pph)}. Transaksi BELI tidak dikenai PPh.")
+    return {
+        "dasar_hukum": "PMK 50/2025, berlaku 1 Agustus 2025 (ringkasan resmi: "
+                       "https://www.pajak.go.id/index.php/en/node/117234)",
+        "jenis": "PPh Pasal 22 final, dipungut dari PENJUAL",
+        "platform": platform,
+        "keterangan_platform": KET_PLATFORM[platform],
+        "tarif_persen": float(tarif),
+        "basis": "nilai transaksi JUAL (jumlah koin x harga satuan, sebelum fee). Transaksi BELI tidak dikenai "
+                 "PPh. PPN atas penyerahan aset kripto tidak dipungut sejak 1 Agustus 2025.",
+        "per_transaksi_jual": rinci,
+        "total_nilai_jual": bulat_rupiah(total_nilai),
+        "total_estimasi_pph": total_pph,
+        "ringkasan_teks": teks,
+        "sudah_termasuk_di_kolom_biaya": "TIDAK DIKETAHUI -- jangan disimpulkan dari kemiripan angka; cek kolom "
+                                          "pajak/PPh di riwayat transaksi exchange",
+        "pl_bila_pph_belum_di_kolom_biaya": total_realized_pl - total_pph,
+        "catatan": "Estimasi per transaksi dibulatkan ke bawah ke rupiah penuh; pembulatan exchange bisa berbeda "
+                   "beberapa rupiah. Bukan perhitungan SPT/nasihat pajak -- kepastian ke konsultan pajak/DJP.",
+    }
+
+
 def daftar_tinjau_ulang(baris_ok, hari_ini):
     hasil = []
     for r in baris_ok:
@@ -401,6 +460,9 @@ def main(argv=None):
                           "memakai seluruh riwayat 'beli'). Default: semua.")
     ap.add_argument("--dari", default=None, help="Batas awal (YYYY-MM-DD), menimpa --periode kalau diisi.")
     ap.add_argument("--sampai", default=None, help="Batas akhir (YYYY-MM-DD), menimpa --periode kalau diisi.")
+    ap.add_argument("--platform", choices=["dalam-negeri", "luar-negeri"], default="dalam-negeri",
+                     help="Tempat transaksi untuk estimasi PPh final: dalam-negeri (PAKD berizin OJK, 0,21%%) atau "
+                          "luar-negeri (bukan PAKD dalam negeri, 1%%). Default: dalam-negeri -- sebutkan asumsi ini.")
     args = ap.parse_args(argv)
 
     try:
@@ -476,8 +538,9 @@ def main(argv=None):
         "cek_biaya_beli_vs_jual": catatan_sisi,
         "cek_biaya_keterangan": (
             "Baris di 'cek_biaya' hanya DITANDAI agar dicek ke riwayat transaksi exchange (mis. salah ketik, "
-            "fee trading + PPh 0,21% tercampur, atau biaya lain). Sebabnya tidak ditebak; P/L tetap dihitung "
+            "biaya lain). Sebabnya tidak ditebak (juga tidak disimpulkan apakah PPh sudah termasuk); P/L tetap dihitung "
             "dari angka yang dicatat.") if (cek_biaya or catatan_sisi) else None,
+        "estimasi_pajak": hitung_estimasi_pajak(baris_ok, args.platform, dari, sampai, total_realized_pl),
         "jumlah_baris_dihitung": len(baris_ok),
         "peringatan_global": peringatan_global,
         "disclaimer": "Angka dari yang Anda catat sendiri, bukan nasihat investasi.",

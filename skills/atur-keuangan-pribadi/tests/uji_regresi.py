@@ -8,6 +8,7 @@ ditulis terpisah dari logika Decimal di script — bukan memanggil fungsi yang s
 """
 import math
 import random
+import re
 import subprocess
 import sys
 import unittest
@@ -368,9 +369,10 @@ class TesCicilanMasukPokok(unittest.TestCase):
         pos = [k.parse_pos(p) for p in self.POS]
         h = k.hitung_anggaran([("Gaji", Decimal(9500000))], [], pos, [Decimal(50), Decimal(30), Decimal(20)])
         # independen: wajib 2.000.000+1.150.000+650.000+1.787.500+350.000+350.000+150.000+120.000
+        # + v1.0.6 kewajiban rutin keluarga (Kiriman ibu 1.000.000)
         self.assertEqual(h["pokok_dana_darurat"], Decimal(sum([2000000, 1150000, 650000, 1787500, 350000,
-                                                                350000, 150000, 120000])))
-        self.assertIn("Shopee PayLater", [n for n, _ in h["pokok_rinci"]])
+                                                                350000, 150000, 120000, 1000000])))
+        self.assertIn("Shopee PayLater", [n for n, _, _ in h["pokok_rinci"]])
 
     def test_cicilan_berlabel_lain_tetap_pokok_tapi_ekstra_tidak(self):
         pos = [k.parse_pos(p) for p in ["Kos=1jt", "Paylater=300rb:keinginan", "Kartu kredit=400rb:tabungan",
@@ -385,8 +387,8 @@ class TesCicilanMasukPokok(unittest.TestCase):
         r = jalankan(*argumen)
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("Dasar dana darurat", r.stdout)
-        self.assertIn("Shopee PayLater (cicilan)", r.stdout)
-        self.assertIn("--pengeluaran-pokok 6557500 ", r.stdout)
+        self.assertIn("| Shopee PayLater | cicilan/utang minimum |", r.stdout)
+        self.assertIn("--pengeluaran-pokok 7557500 ", r.stdout)
 
     def test_cli_dana_darurat_dengan_cicilan(self):
         r = jalankan("dana-darurat", "--pengeluaran-pokok", "6.907.500", "--cicilan", "PayLater=650rb",
@@ -407,6 +409,84 @@ class TesCicilanMasukPokok(unittest.TestCase):
         r = jalankan("dana-darurat", "--pos", "Kontrakan=2jt", "--cicilan", "KPR=3jt", "--status", "lajang")
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("Rp15.000.000", r.stdout)   # 5 jt x 3 bulan
+
+
+
+class TesUji02KirimanKeluargaMasukPokok(unittest.TestCase):
+    """v1.0.6 (uji ulang OpenClaw 2026-10-01 skenario 02, data mutasi-september.csv): kiriman ortu Rp1 jt
+    dulu keluar dari pokok diam-diam -> dasar Rp6.282.500, target 9 bln Rp56.542.500 (kekecilan Rp9 jt).
+    Angka benar dihitung ulang dengan python (Fraction) terpisah dari script:
+      pokok = 2.000.000 + 1.150.000 + 650.000 + 500.000 + 350.000 + 1.500.000 + 132.500 + 1.000.000 = 7.282.500
+      9 bln = 65.542.500 ; 12 bln = 87.390.000 ; saldo 4 jt, setor 717.500 -> ceil(61.542.500/717.500) = 86 bln
+    """
+
+    POS = ["Kontrakan=2jt", "Cicilan motor Adira=1,15jt", "Shopee PayLater=650rb", "Token PLN + Pulsa=500rb",
+           "SPP PAUD=350rb", "Belanja bulanan & dapur=1,5jt", "Bensin + admin bank=132.500:wajib",
+           "Kiriman ortu=1jt", "Arisan RT=500rb", "Jajan e-wallet QRIS=2.185.500:keinginan",
+           "Top-up Indodax=2,5jt"]
+    POKOK = F(2000000 + 1150000 + 650000 + 500000 + 350000 + 1500000 + 132500 + 1000000)
+
+    def argumen(self, *tambahan):
+        a = ["anggaran", "--pemasukan", "Gaji=9,5jt"]
+        for p in self.POS:
+            a += ["--pos", p]
+        return a + list(tambahan)
+
+    def test_pokok_uji02(self):
+        self.assertEqual(self.POKOK, 7282500)
+        r = jalankan(*self.argumen())
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("| Kiriman ortu | kewajiban rutin keluarga | Rp1.000.000 |", r.stdout)
+        self.assertIn("| Shopee PayLater | cicilan/utang minimum | Rp650.000 |", r.stdout)
+        self.assertIn("**Total pengeluaran pokok** | | **Rp7.282.500**", r.stdout)
+        self.assertIn("--pengeluaran-pokok 7282500 ", r.stdout)
+        # pos yang dikeluarkan WAJIB tercetak beserta alasannya
+        bagian = r.stdout.split("Pos DIKELUARKAN dari pokok", 1)[1]
+        for nama in ("Arisan RT", "Jajan e-wallet QRIS", "Top-up Indodax"):
+            self.assertRegex(bagian, r"\| {} \| Rp[0-9.]+ \| [a-z]".format(re.escape(nama)))
+        self.assertNotIn("Kiriman ortu", bagian.split("- Pokok =")[0])
+
+    def test_target_dana_darurat_uji02(self):
+        r = jalankan("dana-darurat", "--pos", "Kontrakan=2jt", "--pos", "Token PLN + Pulsa=500rb",
+                     "--pos", "SPP PAUD=350rb", "--pos", "Belanja bulanan & dapur=1,5jt",
+                     "--pos", "Bensin + admin bank=132.500", "--cicilan", "Motor=1,15jt",
+                     "--cicilan", "PayLater=650rb", "--keluarga", "Kiriman ortu=1jt",
+                     "--dikeluarkan", "Top-up Indodax=2,5jt;top-up investasi, bisa dihentikan",
+                     "--status", "anak", "--saldo", "4jt", "--setoran", "717500")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("Rp7.282.500", r.stdout)
+        self.assertIn(k.rp(Decimal(int(self.POKOK * 9))), r.stdout)      # Rp65.542.500
+        self.assertIn(k.rp(Decimal(int(self.POKOK * 12))), r.stdout)     # Rp87.390.000
+        self.assertIn("Rp65.542.500", r.stdout)
+        self.assertIn("Rp87.390.000", r.stdout)
+        self.assertIn("{} bulan".format(math.ceil((self.POKOK * 9 - 4000000) / 717500)), r.stdout)  # 86
+        self.assertIn("Kiriman ortu (kewajiban keluarga)", r.stdout)
+        self.assertIn("| Top-up Indodax | Rp2.500.000 | top-up investasi, bisa dihentikan |", r.stdout)
+        self.assertNotIn("CEK KIRIMAN KELUARGA", r.stdout)
+        self.assertNotIn("CEK CICILAN", r.stdout)
+        # angka lama yang salah tidak boleh muncul
+        self.assertNotIn("Rp56.542.500", r.stdout)
+
+    def test_bukan_pokok_atas_keputusan_pengguna(self):
+        r = jalankan(*self.argumen("--bukan-pokok", "Kiriman ortu"))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("**Rp6.282.500**", r.stdout)
+        self.assertIn("| Kiriman ortu | Rp1.000.000 | dikeluarkan atas keputusan pengguna |", r.stdout)
+        r = jalankan(*self.argumen("--pokok-juga", "Arisan RT"))
+        self.assertIn("**Rp7.782.500**", r.stdout)
+        r = jalankan(*self.argumen("--bukan-pokok", "Kiriman orang tua"))
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("tidak cocok dengan nama pos", r.stderr)
+
+    def test_dana_darurat_tanpa_keluarga_diingatkan(self):
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "6.282.500", "--cicilan", "PayLater=650rb",
+                     "--status", "anak")
+        self.assertIn("CEK KIRIMAN KELUARGA", r.stdout)
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "6.282.500", "--status", "anak",
+                     "--dikeluarkan", "Kiriman ortu=1jt;ortu sudah mandiri, kiriman bisa dihentikan")
+        self.assertNotIn("CEK KIRIMAN KELUARGA", r.stdout)
+        self.assertIn("Rp6.282.500", r.stdout)
+        self.assertIn("ortu sudah mandiri", r.stdout)
 
 
 # ---------------------------------------------------------------------------

@@ -80,6 +80,17 @@ gagal diambil, skill memakai data cache terakhir dengan peringatan jelas (jam da
 Anda diberi tahu apa adanya, bukan diberi angka palsu.
 
 ## Riwayat versi
+- **Catatan revisi 1.0.6 (2026-10-01)** — dari uji ulang OpenClaw: (1) **perbaikan pajak**:
+  estimasi PPh final kini **hanya dihitung script jurnal** dan hanya atas **nilai transaksi
+  JUAL** sesuai PMK 50/2025 (0,21% di exchange dalam negeri berizin OJK, 1% di exchange luar
+  negeri; beli tidak kena PPh; PPN atas penyerahan kripto tidak dipungut sejak 1 Agustus 2025).
+  Versi 1.0.5 sempat menghitung atas beli + jual (Rp48.951; benar Rp18.585 pada kasus uji) dan
+  menebak pajak sudah termasuk fee — kini AI dilarang menebak dan meminta Anda mengecek kolom
+  pajak di riwayat transaksi exchange; (2) setiap berita/fakta riset wajib ber-URL lengkap ke
+  artikel/halaman yang dikutip (bukan beranda atau "via Google News"); (3) jam data dihitung
+  ke WIB lewat script baru `scripts/jam_wib.py` (sebelumnya jam UTC pernah tertulis sebagai
+  WIB, selisih 7 jam); (4) data alokasi token hanya dari sumber resmi proyek dengan tanggal
+  sumber, atau dinyatakan "belum bisa dicek".
 - **Catatan revisi 1.0.5 (2026-10-01)** — dari uji OpenClaw solusi VIP kripto-keuangan:
   (1) tabel harga memakai **satu mata uang acuan** untuk persen 24 jam (tidak lagi campur
   Rupiah/USD) dan selalu menyebut sumber + jam data; (2) hasil riset koin untuk chat dibuat
