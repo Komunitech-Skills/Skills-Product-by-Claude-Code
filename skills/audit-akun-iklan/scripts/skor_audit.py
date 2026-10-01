@@ -75,7 +75,7 @@ SINONIM_STATUS = {
 NAMA_HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 NAMA_BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 SATU_DESIMAL = Decimal("0.1")
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 # Cek anggaran yang TIDAK boleh dikerjakan (menaikkan anggaran) sebelum cek batas-untungnya beres.
 PRASYARAT = {"T08": "T09", "S07": "S06", "TS05": "TS04"}
 BATAS_RASIO_BERLAKU = Decimal("0.5")   # bila < 50% bobot cek berlaku -> maksimal "sementara"
@@ -211,6 +211,52 @@ def normal_status(teks):
     return None
 
 
+# Pola kredensial yang tidak boleh ikut tercetak di laporan (password/OTP/token/kartu).
+_LABEL_KUAT = (r"(?:kata\s*sandi|sandi|password|passwd|pwd|kode\s*otp|otp|kode\s*verifikasi|kode\s*akses|"
+               r"access[\s_-]*token|token\s*akses|api[\s_-]*key|kunci\s*api)")
+_LABEL_LEMAH = r"(?:pass|pin|token|secret)"   # wajib diikuti ':' atau '=' (hindari "pin lokasi", "token iklan")
+_POLA_RAHASIA = [
+    # "password: Klinik#2026", "password nya Klinik#2026", "otp 123456", "pin=1234"
+    re.compile(r"(?i)\b(" + _LABEL_KUAT + r")\b(\s*(?:[:=]|adalah|nya)?\s*)([^\s,;]+)"),
+    re.compile(r"(?i)\b(" + _LABEL_LEMAH + r")\b(\s*[:=]\s*)([^\s,;]+)"),
+    # token Meta (EAA...), kunci gaya sk-/ghp_/AIza, JWT
+    re.compile(r"\b(EAA[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,}|"
+               r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,})\b"),
+    # nomor kartu 13-19 digit (boleh dipisah spasi/tanda hubung, bukan titik ribuan rupiah)
+    re.compile(r"(?<![\d.,])(?:\d[ -]?){12,18}\d(?![\d.,])"),
+]
+SAMARAN = "[DISAMARKAN]"
+
+
+def samarkan_kredensial(teks):
+    """Ganti password/OTP/token/nomor kartu dengan [DISAMARKAN]. Kembalikan (teks, jumlah_samaran)."""
+    if not teks:
+        return teks, 0
+    n = 0
+    hasil = teks
+
+    def ganti_label(mo):
+        nonlocal n
+        nilai = mo.group(3)
+        if nilai == SAMARAN:
+            return mo.group(0)
+        if not re.search(r"[:=]", mo.group(2)) and nilai.isalpha():
+            return mo.group(0)   # "OTP belum aktif", "password lama" = kalimat biasa, bukan rahasia
+        n += 1
+        return mo.group(1) + mo.group(2) + SAMARAN
+
+    def ganti_utuh(mo):
+        nonlocal n
+        n += 1
+        return SAMARAN
+
+    for pola in _POLA_RAHASIA[:2]:
+        hasil = pola.sub(ganti_label, hasil)
+    for pola in _POLA_RAHASIA[2:]:
+        hasil = pola.sub(ganti_utuh, hasil)
+    return hasil, n
+
+
 def baca_jawaban(path):
     """Kembalikan (dict id->(status, catatan), dict belanja dari file, list peringatan)."""
     p = Path(path)
@@ -266,7 +312,11 @@ def baca_jawaban(path):
         if id_ in jawaban and jawaban[id_][0] != s:
             raise InputSalah(f"{id_} dijawab dua kali dengan status berbeda "
                              f"({jawaban[id_][0]} vs {s}); pilih salah satu")
-        jawaban[id_] = (s, (cat or "").strip())
+        cat, n_samar = samarkan_kredensial((cat or "").strip())
+        if n_samar:
+            peringatan.append(f"{id_}: catatan berisi password/OTP/token/nomor kartu -> disamarkan. "
+                              "Minta pemilik segera ganti password & aktifkan verifikasi 2 langkah.")
+        jawaban[id_] = (s, cat)
     if not jawaban:
         raise InputSalah("tidak ada baris jawaban berisi id")
     return jawaban, belanja, peringatan
@@ -691,7 +741,10 @@ def main(argv=None):
                     mulai = date.fromisoformat(args.mulai)
                 except ValueError:
                     raise InputSalah(f"--mulai harus YYYY-MM-DD, dapat {args.mulai!r}")
-            h = hitung(jawaban, belanja, mulai, args.usaha)
+            usaha, n_samar = samarkan_kredensial(args.usaha)
+            if n_samar:
+                peringatan.append("--usaha berisi password/OTP/token -> disamarkan")
+            h = hitung(jawaban, belanja, mulai, usaha)
             h["peringatan"] = peringatan + h["peringatan"]
             print(ke_json(h) if args.json else teks_laporan(h))
             return 0

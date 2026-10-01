@@ -40,7 +40,7 @@ import urllib.request
 from pathlib import Path
 
 APLIKASI = "pantau-website-toko"
-VERSI = "1.0.5"
+VERSI = "1.0.6"
 UA = f"{APLIKASI}/{VERSI} (+komunitech.com; baca status-page publik saja)"
 
 # Konstanta status Uptime Kuma (sama persis dengan src/util.ts versi resmi)

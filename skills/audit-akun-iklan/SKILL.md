@@ -7,7 +7,7 @@ description: Audit kesehatan pengaturan & struktur akun iklan Meta/Facebook/Inst
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
-Versi 1.0.4 (2026-10-01) — lihat "Riwayat versi" di bawah.
+Versi 1.0.5 (2026-10-01) — lihat "Riwayat versi" di bawah.
 
 ## Tujuan
 Pemilik UMKM atau agensi kecil tahu **apa yang salah di pengaturan akun iklannya** dan **apa yang
@@ -44,6 +44,18 @@ Info kurang? Tanyakan **sekali** dalam satu pesan (maks. 8 pertanyaan). Bila pen
 "langsung aja", jalankan dengan bukti yang ada; semua yang belum jelas = `tidak_tahu`.
 
 ## Langkah kerja
+
+> **ATURAN KEAMANAN NOMOR 1 — password/OTP/token (berlaku sebelum langkah apa pun):**
+> Bila pengguna menempel password, kode OTP, PIN, token/kunci API, kode akses, atau nomor kartu:
+> - **JANGAN PERNAH mengulang** nilainya di balasan (tidak sebagian, tidak disamarkan sebagian, tidak
+>   di dalam kutipan/tabel/kode), **jangan menyimpan** atau menuliskannya ke file apa pun (termasuk
+>   `jawaban.csv` dan kolom `catatan`), dan **jangan memakainya** untuk login.
+> - Sebut saja "password yang kamu kirim" — lalu minta pengguna **segera mengganti password** akun itu
+>   dan **mengaktifkan verifikasi 2 langkah (2FA)**, karena password sudah terkirim lewat chat.
+> - Lanjutkan audit **tanpa kredensial**: cukup ekspor data (CSV) atau tangkapan layar dari Ads
+>   Manager/Seller Centre (sarankan menutup data pelanggan). Skill ini tidak pernah butuh login.
+> - Script menyamarkan pola kredensial di kolom `catatan` dan `--usaha` menjadi `[DISAMARKAN]` sebagai
+>   jaring pengaman, tapi itu **bukan izin** untuk menuliskannya.
 
 > **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Path relatif terhadap folder skill ini. Windows: ganti `python3` dengan `python`/`py`.
@@ -142,6 +154,9 @@ Contoh lain: `examples/uji-pembuat-02-klinik-kecantikan-meta.md`, `examples/uji-
 - Klinik: jangan meminta/menyimpan data pasien. Screenshot sebaiknya disamarkan.
 
 ## Riwayat versi
+- **1.0.5** (2026-10-01): uji ulang OpenClaw — aturan keamanan password/OTP/token dinaikkan ke awal
+  Langkah kerja (jangan diulang/disimpan/dipakai; minta ganti password + 2FA; audit dari ekspor/screenshot);
+  script menyamarkan pola kredensial di `catatan`/`--usaha` + tes.
 - **1.0.4** (2026-10-01): perbaikan uji OpenClaw — setiap ROAS dari pengguna wajib dibandingkan dengan
   ROAS impas (`roas-impas --roas-aktual`, status RUGI/IMPAS/UNTUNG + tes); aturan cabang kesehatan
   (Permenkes 1787/2010 Pasal 5: tanpa testimoni pasien, diskon/promo, janji hasil); baris "File kerja" di output.

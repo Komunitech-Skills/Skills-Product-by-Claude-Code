@@ -67,6 +67,11 @@ Cukup ketik permintaan biasa ke AI agent Anda:
 3. Bila memakai Uptime Kuma: catat alamat status page Anda (bentuk `http://ALAMAT:PORT/status/NAMA-SLUG`, dari `docs/panduan-uptime-kuma.md` §5) — tidak ada token/API key yang perlu disiapkan.
 4. Coba: "Cek website saya masih hidup nggak?" atau "Ringkas status website toko saya."
 
+## Catatan revisi 1.0.6 (2026-10-01)
+- Batas layanan dipertegas di bagian paling awal skill dan di deskripsinya: AI tidak memasang Uptime Kuma, monitor, maupun alert WA/notifikasi — dipasang Anda sendiri (dipandu) atau lewat jasa setup Komunitech; notifikasi resmi lewat Telegram.
+- Kalimat baku penolakan untuk permintaan memantau website pesaing/orang lain, tanpa tawaran cek terjadwal ke situs mereka.
+- Contoh balasan yang benar ditambahkan di `examples/10-contoh-balasan-pantau-saingan-dan-minta-pasang.md`.
+
 ## Catatan revisi 1.0.5 (2026-10-01)
 - Ringkasan kini menghitung **kejadian** down (beberapa cek gagal berurutan = 1 kejadian) lengkap dengan jam mulai–selesai (WIB) dan durasinya — tidak lagi "turun 5x" yang membingungkan.
 - Angka menit & persen disampaikan persis seperti hasil script.
