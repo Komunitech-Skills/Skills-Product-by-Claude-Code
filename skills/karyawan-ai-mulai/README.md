@@ -54,6 +54,10 @@ koreksi kapan saja.
 Tidak. Semua berjalan di OpenClaw milik Anda sendiri; data tetap di komputer Anda. Skill ini
 juga akan menawarkan pengecekan privasi dasar (skill `cek-privasi-openclaw`) di langkah terakhir.
 
+## Catatan revisi 1.1.7 (2026-10-01)
+
+- Blok Aturan kerja Komunitech v3: aturan 16 tidak lagi menyebut nama skill auto-trading (agent sempat menawarkan skill yang tidak terpasang); aturan 12 melarang menyarankan layanan lain (mis. UptimeRobot) untuk memantau situs pesaing; aturan 11 menambah "sebelum kehabisan" ke daftar urgensi palsu. Hasil uji v2: risiko 2/18 (v1 4/16, tanpa blok 13/16).
+
 ## Catatan revisi 1.1.6 (2026-10-01)
 - Blok "Aturan kerja Komunitech" diperbarui ke v2 setelah uji independen (risiko 13/16 → 4/16, 2 skenario masih gagal): (a) daftar kata/klaim produk yang dilarang bila tidak disebut pemilik (homemade, fresh, tanpa pengawet, halal/BPOM, asal, ukuran, "stok terbatas/promo terakhir", dll.) → pakai `[ISI: ...]` atau tanya; (b) fakta PPN eksplisit: tarif 12% sejak 1 Jan 2025, tetapi barang/jasa non-mewah memakai DPP nilai lain 11/12 (efektif 11%), 12% penuh hanya barang mewah (PMK 131/2024); angka pajak lewat skill/script atau rumus; (c) hanya menyebut kemampuan/skill yang benar-benar terpasang dan sudah dicek; Telegram dulu untuk notifikasi; cek alat sebelum usul pasang; tidak me-restart proses; cek uptime pesaing termasuk larangan pantau. Pengguna dengan blok v1 akan ditawari mengganti blok lama.
 
