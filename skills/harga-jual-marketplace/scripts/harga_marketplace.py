@@ -28,6 +28,7 @@ import sys
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP, InvalidOperation
 
 TANGGAL_ATURAN = "2026-09-23"
+VERSI = "1.0.3"
 TARIF_PPH22 = Decimal("0.5")
 BATAS_ATAS_HARGA = Decimal(10) ** 12
 PERINGATAN_CONTOH = ("ANGKA CONTOH: persentase biaya platform di hasil ini berasal dari template contoh, BUKAN tarif "
@@ -377,8 +378,8 @@ def main(argv=None):
     p.add_argument("--config", help="File JSON berisi modal, target, dan daftar platform (untuk perbandingan)")
     p.add_argument("--modal", help="Modal/HPP per barang termasuk kemasan, mis. 35.000")
     p.add_argument("--platform", default="Marketplace", help="Nama platform untuk label")
-    for k, h in (("admin", "Biaya admin/komisi (%)"), ("layanan", "Biaya layanan / program gratis ongkir (%)"),
-                 ("pembayaran", "Biaya pembayaran/transaksi (%)"), ("iklan", "Biaya iklan (%) - opsional")):
+    for k, h in (("admin", "Biaya admin/komisi (%%)"), ("layanan", "Biaya layanan / program gratis ongkir (%%)"),
+                 ("pembayaran", "Biaya pembayaran/transaksi (%%)"), ("iklan", "Biaya iklan (%%) - opsional")):
         p.add_argument("--" + k, help=h)
         p.add_argument("--maks-" + k, help="Batas maksimum {} per barang (Rp), jika ada".format(k))
     p.add_argument("--per-pesanan", help="Biaya tetap per pesanan (Rp), mis. biaya proses pesanan")

@@ -147,6 +147,67 @@ class Uji(unittest.TestCase):
         self.assertEqual(h["denda"], 270000)
         self.assertEqual(h["total_ditagih"], 10270000)
 
+    # ---- v1.0.4 (uji OpenClaw 2026-10-01): alias kolom, format angka ID, jadwal tahap berikutnya
+    def test_alias_kolom_faktur(self):
+        # Kolom seperti di uji OpenClaw 04 + kolom ekstra (tanggal_faktur, no_wa) yang harus diabaikan.
+        f = os.path.join(self.dir, "piutang.csv")
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write("no_faktur,pelanggan,tanggal_faktur,jatuh_tempo,nilai_faktur,sudah_dibayar,no_wa\n"
+                     "INV-01,Toko A,2026-08-05,2026-09-05,\"6.300.000\",,0812\n"
+                     "INV-02,CV B,2026-07-24,24 Agu 2026,Rp 12.500.000,\"2,5jt\",0813\n"
+                     "INV-03,PT C,2026-08-01,2026-09-01,1000000,1000000,0814\n")
+        h = self.rekap(f)
+        self.cek_rekap(h)
+        self.assertEqual(h["kolom_dipakai"]["no_invoice"], "no_faktur")
+        self.assertEqual(h["kolom_dipakai"]["dibayar"], "sudah_dibayar")
+        self.assertEqual(h["total_telat"], 16300000)
+        self.assertEqual({x["no_invoice"] for x in h["daftar"]}, {"INV-01", "INV-02"})
+
+    def test_alias_kolom_inggris_dan_kurung(self):
+        f = os.path.join(self.dir, "ar.csv")
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write("Customer;Invoice No;Amount (Rp);Due Date;Paid\n"
+                     "Toko A;INV-01;6.300.000;05/09/2026;0\nCV B;INV-02;12.500.000;2026-08-24;2.500.000\n")
+        self.cek_rekap(self.rekap(f))
+
+    def test_kolom_sisa_saja(self):
+        f = os.path.join(self.dir, "sisa.csv")
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write("nama_pelanggan,jatuh_tempo,sisa_tagihan\nToko A,2026-09-05,6.300.000\nCV B,2026-08-24,10.000.000\n")
+        h = self.rekap(f)
+        self.cek_rekap(h)
+        self.assertIn("sisa_tagihan", h["catatan_kolom"])
+
+    def test_kolom_tidak_dikenal_pesan_jelas(self):
+        f = os.path.join(self.dir, "aneh.csv")
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write("siapa,berapa,kapan\nToko A,100,2026-09-05\n")
+        kode, _, err = self.jalan("--file", f, "--tanggal", TGL)
+        self.assertNotEqual(kode, 0)
+        self.assertIn("nilai_faktur", err)
+        self.assertIn("Kolom di file: siapa, berapa, kapan", err)
+
+    def test_jadwal_hubungan_dekat_tidak_dua_hari(self):
+        # Uji usaha-offline 05: tetangga, telat 6 hari, 1x diingatkan -> jangan naik tahap dalam 2 hari.
+        kode, out, err = self.jalan("--nominal", "Rp 1.350.000", "--jatuh-tempo", "2026-09-25", "--tanggal",
+                                    "2026-10-01", "--sudah-diingatkan", "1", "--hubungan", "dekat", "--format", "json")
+        self.assertEqual(kode, 0, err)
+        j = json.loads(out)["jadwal"]
+        self.assertEqual(j["jeda_hari"], 14)
+        self.assertEqual(j["tenggat_bayar"], "2026-10-15")
+        self.assertEqual(j["kirim_berikutnya"], "2026-10-16")
+        self.assertIn("ajak bicara langsung", j["kalimat"])
+
+    def test_jadwal_bisnis_kalimat_jelas(self):
+        # Uji konsultan 03: telat 21 hari, 2x diingatkan -> tenggat Kamis 8 Okt, tahap 6 Jumat 9 Okt.
+        kode, out, err = self.jalan("--nominal", "12000000", "--jatuh-tempo", "2026-09-10", "--tanggal",
+                                    "2026-10-01", "--sudah-diingatkan", "2", "--format", "json")
+        self.assertEqual(kode, 0, err)
+        j = json.loads(out)["jadwal"]
+        self.assertEqual(j["kalimat"], "Tenggat bayar di pesan ini: Kamis, 8 Oktober 2026 (7 hari dari 1 Oktober 2026). "
+                                       "Jika sampai tanggal itu belum ada pembayaran atau kabar, pada Jumat, 9 Oktober 2026 "
+                                       "kirim tahap 6.")
+
 
 
 class UjiSingkatanFlag(unittest.TestCase):

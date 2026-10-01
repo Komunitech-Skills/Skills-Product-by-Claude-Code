@@ -15,6 +15,7 @@ Angka boleh gaya Indonesia (`"65.000"`, `"1,5jt"`, `"Rp 3.000.000"`). Diskon: `"
 | `diskon` | Diskon total sebelum ongkir & PPN | 0 |
 | `ongkir` | Ongkos kirim | 0 |
 | `ppn` | `false`, `true`, atau `{"aktif": true, "jenis": "umum"/"mewah", "ongkir_kena_ppn": true}` | false |
+| `pph23` | `false`, `true` (jasa 2%), atau `{"aktif": true, "tanpa_npwp": true}` (4%), `{"dasar": "5.000.000"}` (nilai jasa saja bila ada barang), `{"tarif": 2}`. Hanya info: menampilkan PPh 23 yang dipotong pembeli & estimasi diterima bersih; **total tagihan tidak berubah**. Hanya untuk invoice (v1.0.3) | false |
 | `pembayaran[]` | Uang yang **sudah diterima**: `tanggal`, `jumlah`, `keterangan` (mis. "DP") | kosong; kuitansi tanpa pembayaran = lunas penuh |
 | `termin[]` | Jadwal: `nama`, `persen` **atau** `jumlah`, `jatuh_tempo` | kosong |
 | `rekening[]` | `bank`, `nomor`, `atas_nama` (tampil bila masih ada sisa tagihan) | kosong |

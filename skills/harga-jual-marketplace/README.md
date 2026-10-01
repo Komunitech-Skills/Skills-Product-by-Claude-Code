@@ -47,3 +47,8 @@ Sejak 1 Agustus 2026 marketplace yang ditunjuk memungut PPh 22 sebesar 0,5% dari
 
 **Modal saya belum tahu pasti, bagaimana?**
 Hitung dulu dengan skill `hitung-hpp` (bahan, tenaga kerja, kemasan, dll.), lalu pakai hasilnya sebagai modal di sini.
+
+## Catatan revisi 1.0.3 (2026-10-01)
+- AI wajib menyalin blok "Catatan & asumsi" dari script **kata per kata** ke balasan: dasar aturan PPh 22 marketplace (PMK 37/2025, berlaku 1 Agustus 2026), syarat pengecualian omzet ≤ Rp500 juta, tanggal berlaku, dan disclaimer (temuan uji OpenClaw: sempat diringkas jadi "per PMK terbaru").
+- Perbaikan: `harga_marketplace.py --help` sebelumnya error; kini tampil normal.
+- Instruksi: script dijalankan dari subfolder `scripts/` di folder skill. 3 tes otomatis baru (`tests/`).
