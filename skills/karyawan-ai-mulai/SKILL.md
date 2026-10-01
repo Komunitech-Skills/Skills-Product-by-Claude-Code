@@ -89,9 +89,23 @@ wawancara. Pakai default di atas, sebutkan asumsinya secara singkat di akhir, da
    Pengguna harus melihat **hasil siap pakai** di menit pertama, bukan penjelasan umum.
 7. **Simpan profil kerja** (bukan data pribadi pelanggan) ke memori lokal sesuai
    `references/openclaw.md` §4, supaya skill lain tidak bertanya ulang hal yang sama.
-8. **Beri rencana 7 hari** — satu kebiasaan baru per hari, memakai skill dari rekomendasi.
+8. **Tawarkan memasang "Aturan kerja Komunitech" ke `AGENTS.md` workspace** (OpenClaw saja).
+   Alasan untuk pengguna (1 kalimat): OpenClaw membaca `AGENTS.md` di setiap percakapan, jadi
+   aturan aman (pesan ke pelanggan = draf, tidak mengulang password, tidak memasang apa pun tanpa
+   izin, dll.) tetap berlaku walau skill tidak terbuka. Langkah:
+   a. Tampilkan **isi lengkap** `references/aturan-kerja-agents.md` di chat dulu.
+   b. Baca `AGENTS.md` di workspace OpenClaw (biasanya `~/.openclaw/workspace/AGENTS.md`; jangan
+      mencari ke seluruh disk — bila tidak ada di sana, tanyakan lokasinya). Kalau sudah ada
+      baris `komunitech-aturan-kerja: mulai`, katakan "sudah terpasang" dan lewati (bila versinya
+      lebih lama, tawarkan mengganti **hanya** blok di antara penanda `mulai`…`selesai`).
+   c. Minta konfirmasi eksplisit ("ya/tidak"). Setelah "ya": **tambahkan** blok di akhir file
+      (append), jangan menimpa atau mengubah isi lain. File belum ada → buat baru berisi blok itu.
+   d. Sebutkan lokasi lengkap file dan bahwa aturan berlaku mulai **sesi baru** (`/new`).
+   `write`/`exec` tidak diizinkan, atau pengguna memakai platform lain → beri langkah salin-tempel
+   manual (Control UI: Settings → Agents → Files → AGENTS.md). Pengguna menolak → lanjut saja.
+9. **Beri rencana 7 hari** — satu kebiasaan baru per hari, memakai skill dari rekomendasi.
    Format lihat di bawah. Sesuaikan urutan dengan tugas prioritas pengguna.
-9. **Tawarkan cek privasi.** Jelaskan singkat (2 kalimat) apa yang dicek `cek-privasi-openclaw`,
+10. **Tawarkan cek privasi.** Jelaskan singkat (2 kalimat) apa yang dicek `cek-privasi-openclaw`,
    dan tanyakan apakah mau langsung dijalankan sekarang atau nanti. **Jangan** menjalankannya
    sendiri di sini — itu tanggung jawab skill `cek-privasi-openclaw`.
 
@@ -123,6 +137,10 @@ Ide otomasi lanjutan (opsional, bisa nanti): <1 kalimat>
 | 2 | ... | ... |
 | ... | ... | ... |
 | 7 | ... | ... |
+
+## Aturan Kerja Komunitech
+<isi blok ditampilkan> — boleh saya tambahkan ke akhir AGENTS.md Anda (<lokasi>)? (ya/tidak)
+[setelah "ya"] Ditambahkan ke <lokasi lengkap>; berlaku mulai sesi baru (/new).
 
 ## Privasi
 Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang (skill
@@ -183,6 +201,8 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
       dijanjikan — bukan diasumsikan otomatis ada.
 - [ ] Tidak ada pemasangan skill tanpa izin eksplisit pengguna.
 - [ ] Ada minimal satu hasil nyata siap pakai (bukan cuma rencana).
+- [ ] Blok aturan kerja ditampilkan dulu dan hanya ditambahkan (append) ke AGENTS.md setelah
+      "ya"; isi AGENTS.md lain tidak diubah; tidak dipasang dua kali.
 - [ ] Rencana 7 hari konkret dan sesuai prioritas pengguna.
 - [ ] Menyebut fakta yang belum pasti dengan jujur (mis. skill tidak ada padanan, otomasi
       butuh komputer menyala).
