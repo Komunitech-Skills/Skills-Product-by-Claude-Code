@@ -78,3 +78,21 @@ Penilaian jujur:
 
 **3. Riset koin jujur soal yang belum pasti** (04, ajakan teman beli WLD)
 - Dengan skill: *"fakta kuat (WLD bisa dibeli di Indodax) sudah jelas, tapi status 'resmi di DAKD mana' perlu Kakak cek sendiri di cfx.co.id"* + harga, suplai beredar, ATH yang semuanya cocok dengan data penguji. (Tanpa skill: alokasi token salah, tanpa tautan.)
+
+## Uji ulang 2026-10-01
+
+**Penguji:** agent penguji independen (bukan pembuat, tidak mengubah skill). **Versi:** `atur-keuangan-pribadi` 1.0.5, `pantau-pasar-kripto` 1.0.5. **Cara:** OpenClaw lokal (`openclaw agent --local`), model router Komunitech yang sama, home `sol2-kripto-keuangan` (6 skill paket yang sama) **direset bersih sebelum tiap skenario**; pesan, jawaban lanjutan member (03), dan `mutasi-september.csv` (02) identik dengan uji asal. Angka diverifikasi ulang dengan python (FIFO pecahan eksak; `keuangan.py` dijalankan ulang di salinan), harga dicek ke CoinGecko & Indodax pada menit yang sama, dasar pajak dicek ke pajak.go.id. Tidak ada API key exchange; gateway tidak dijalankan; database sesi tidak dibaca. Rincian & balasan utuh: `uji-openclaw/NN-*-ulang.md`.
+
+| # | Skenario | Cacat lama hilang? | Regresi baru | Sesudah lama | Ulang |
+|---|---|---|---|---|---|
+| 01 | Harga + berita pagi | **ya** — persen 24 jam kini konsisten Rupiah (cocok `idr_24h_change`), sumber + jam WIB benar, 2.297 karakter | 4 dari 6 berita tanpa URL artikel (hanya beranda / "via Google News"); `kripto/konfigurasi.json` ambang 5% ditulis tanpa disebut | 8.5 | **8** |
+| 02 | Budget & dana darurat | **ya** — cicilan PayLater masuk pokok; realisasi vs anggaran + jembatan 3 bulan untuk potongan jajan 54% | **kiriman ortu Rp1 jt dikeluarkan dari pokok tanpa penjelasan** (melanggar SKILL.md langkah 5) → target 9 bln Rp56,5 jt, kekecilan ±Rp9–11,6 jt (lebih besar dari cacat lama ±5,85 jt); langkah "redirect Rp2,5 jt ke dana darurat" bertentangan dengan tabel | 8 | **8** |
+| 03 | P/L + pajak, info kurang | **ya** — fee jual BTC 0,4% ditandai, tanpa mengubah P/L | **pajak salah**: 0,21% dihitung atas beli + jual (Rp48.951; benar Rp18.585 atas jual saja, PMK 50/2025 memungut dari penjual) + tebakan "pajak sudah ikut di fee" (dilarang SKILL.md D.3). P/L −Rp329.620 tetap benar. | 9 | **7** |
+| 04 | Riset koin WLD | **sebagian** — 3.069 karakter (dari ±6.600), tetap di atas target 2.500; sumber **masih** nama domain tanpa `https://`, sebagian klaim tanpa sumber | jam data "07:10 WIB" padahal 14:10 WIB (UTC dikira WIB); alokasi token usang 10%/11,1% muncul lagi (resmi 13,5%/9,8%) | 8.5 | **7.5** |
+| 05 | Batas aman sinyal beli | **ya** — OJK/PAKD, Satgas PASTI, OJK 157 disebut; frasa internal hilang; disclaimer | tidak ada | 8.5 | **9** |
+| | **Rata-rata** | | | **8.5** | **7.9** |
+
+**Keputusan penguji (jujur):**
+- **`atur-keuangan-pribadi` 1.0.5 — BELUM.** Cacat PayLater dan potongan tajam sudah beres dan tampilannya jauh lebih membantu, tetapi tujuan perbaikan (dasar dana darurat yang lengkap) belum tercapai: pos kiriman keluarga kini terlewat. Perbaikan: `anggaran` memasukkan kelompok "Keluarga & sosial" (kiriman ortu) ke "Dasar dana darurat" secara default dan mencetaknya; SKILL.md mewajibkan menyebut pos yang **dikeluarkan** dari pokok + alasan, atau menanyakannya sekali.
+- **`pantau-pasar-kripto` 1.0.5 — BELUM.** 4 cacat lama sebagian besar beres (mata uang acuan, penandaan fee, OJK 157/Satgas PASTI, panjang riset), tetapi muncul regresi berat pada pembeda jualan utama: **info pajak salah** (03). Ditambah tautan sumber belum lengkap (01, 04) dan jam salah (04). Perbaikan: SKILL.md D.5 + `references/regulasi.md` §4 tulis eksplisit "PPh 22 final 0,21% dipungut dari **penjual**, basis = Σ nilai transaksi **jual**; beli tidak kena PPh, tanpa PPN" + larangan menyimpulkan pajak termasuk/tidak termasuk dalam fee member; wajib URL artikel lengkap per berita/klaim (bukan beranda/Google News); konversi `last_updated` ke WIB (UTC+7) eksplisit; alokasi token hanya dari sumber resmi proyek. Tambahkan kasus 03 ke tes regresi lalu uji ulang 01, 03, 04.
+- Catatan: sebagian regresi (01 tautan, 04 jam/alokasi) bisa juga variasi antar-run model, tetapi aturan skill seharusnya mencegahnya; tiap skenario hanya dijalankan sekali.
