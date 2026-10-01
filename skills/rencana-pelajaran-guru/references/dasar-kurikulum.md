@@ -20,6 +20,7 @@ langsung situs Kemendikdasmen dari lingkungan kerja) pada **2026-09-24**.
   Pancasila" (6 dimensi)** masih lazim dipakai sekolah yang belum memperbarui dokumen —
   skill ini memakai istilah yang guru minta, dan bila tidak disebutkan memakai istilah
   terbaru "Profil Lulusan" sambil mencatat padanan dimensi lama jika relevan.
+- **Nama 8 dimensi Profil Lulusan (Permendikdasmen No. 10 Tahun 2025 tentang SKL; dicek 2026-10-01)** — salin persis, jangan diparafrasekan: (1) Keimanan dan Ketakwaan terhadap Tuhan YME, (2) Kewargaan, (3) Penalaran Kritis, (4) Kreativitas, (5) Kolaborasi, (6) Kemandirian, (7) Kesehatan, (8) Komunikasi. Padanan lama (Profil Pelajar Pancasila, 6 dimensi): Bernalar Kritis -> Penalaran Kritis, Gotong Royong -> Kolaborasi, Mandiri -> Kemandirian, Kreatif -> Kreativitas. Verifikasi ulang ke dokumen resmi Kemendikdasmen bila ragu.
 - **"Deep Learning"/Pembelajaran Mendalam** adalah *pendekatan* (berkesadaran, bermakna,
   menggembirakan) yang menekankan pembelajaran lintas tema/mapel dan pemahaman mendalam —
   bukan format dokumen baru. Skill ini menambahkan sentuhan pendekatan ini (kaitkan topik

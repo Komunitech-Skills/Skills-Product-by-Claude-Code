@@ -62,3 +62,6 @@ melanggar aturan integritas akademik kampus.
 **Gaya kutipannya bisa diubah ke format akademik (APA)?**
 Bisa. Defaultnya gaya sederhana `[1]` `[2]` yang mudah dibaca orang awam; tinggal minta "pakai gaya APA"
 untuk tulisan yang lebih formal/akademik.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+dari uji ulang OpenClaw: skill kini ikut terbaca saat pengguna minta "bikinin esai/tugas kuliah/makalah/skripsi" (pemicu di deskripsi) dan aturan integritas akademik dipertegas: hanya kerangka, sumber, umpan balik, dan parafrase berkutipan; tidak menawarkan draf utuh untuk "ditulis ulang/dibumbui". Setiap angka/fakta, termasuk perbandingan biaya (mis. tarif EDC), wajib berkutipan [n] atau [perlu sumber]; `cek_sitasi.py` dijalankan dan ringkasannya ditampilkan.

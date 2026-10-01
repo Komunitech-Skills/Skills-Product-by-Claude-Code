@@ -57,3 +57,6 @@ apa saja yang diasumsikan di akhir hasil, supaya kamu tinggal koreksi yang perlu
 **Bagaimana kalau ada hari besar/Ramadan yang tanggalnya beda tiap tahun?**
 Tanggal bergerak (Ramadan, Lebaran, Imlek, libur sekolah) tidak ditebak sembarangan — skill akan minta
 tanggalnya ke kamu atau menandainya jelas sebagai perkiraan yang perlu dicek ke kalender resmi tahun itu.
+
+## Catatan revisi 1.0.5 (2026-10-01)
+dari uji ulang OpenClaw: caption lengkap + hashtag setiap hari wajib tampil di chat (file hanya cadangan); produk pangan olahan/kosmetik/suplemen/obat tradisional diingatkan soal izin edar BPOM/SPP-IRT sebelum dipromosikan.
