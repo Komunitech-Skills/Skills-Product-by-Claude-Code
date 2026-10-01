@@ -28,7 +28,7 @@ import sys
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP, InvalidOperation
 
 TANGGAL_ATURAN = "2026-09-23"
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 TARIF_PPH22 = Decimal("0.5")
 BATAS_ATAS_HARGA = Decimal(10) ** 12
 PERINGATAN_CONTOH = ("ANGKA CONTOH: persentase biaya platform di hasil ini berasal dari template contoh, BUKAN tarif "
@@ -230,6 +230,26 @@ def memenuhi(r, target):
     return r["laba_bersih"] >= 0
 
 
+def status_target(r, target):
+    """Status harga terhadap target (v1.0.4): dikutip AI apa adanya, AI tidak menilai sendiri."""
+    jenis, nilai = target
+    if jenis == "impas":
+        return None
+    ok = memenuhi(r, target)
+    if jenis == "margin":
+        perlu = r["harga_setelah_voucher"] * nilai / 100
+        nyata = "margin " + (format_persen(r["margin_persen"]) if r["margin_persen"] is not None else "-")
+    elif jenis == "laba":
+        perlu, nyata = nilai, "laba " + format_rp(r["laba_bersih"])
+    else:
+        perlu = r["modal"] * nilai / 100
+        nyata = "markup " + (format_persen(r["markup_persen"]) if r["markup_persen"] is not None else "-")
+    if ok:
+        return "MEMENUHI target {} ({})".format(label_target(target), nyata)
+    kurang = max(perlu, Decimal(0)) - r["laba_bersih"]
+    return "DI BAWAH target {} ({}; laba kurang {} per barang)".format(label_target(target), nyata, format_rp(kurang))
+
+
 def cari_harga(modal, pf, target):
     """Harga tayang (rupiah bulat) terkecil yang memenuhi target. Laba naik seiring harga (sudah dicek)."""
     if memenuhi(rincian(0, modal, pf), target):
@@ -267,9 +287,21 @@ def bulatkan_atas(nilai, kelipatan):
     return (nilai / kelipatan).quantize(Decimal(1), ROUND_CEILING) * kelipatan
 
 
-def hitung_platform(modal, pf, target, harga_jual=None, kelipatan=Decimal(500)):
+def banding(modal, pf, target, daftar_harga):
+    out = []
+    for h in daftar_harga or []:
+        rr = rincian(h, modal, pf)
+        out.append({"harga_tayang": h, "rincian": rr,
+                    "memenuhi_target": memenuhi(rr, target) if target[0] != "impas" else rr["laba_bersih"] >= 0,
+                    "status_target": status_target(rr, target)})
+    return out
+
+
+def hitung_platform(modal, pf, target, harga_jual=None, kelipatan=Decimal(500), daftar_banding=None):
     if harga_jual is not None:
-        return {"platform": pf["nama"], "mode": "cek_harga", "rincian": rincian(harga_jual, modal, pf)}
+        r0 = rincian(harga_jual, modal, pf)
+        return {"platform": pf["nama"], "mode": "cek_harga", "rincian": r0,
+                "status_target": status_target(r0, target), "banding": banding(modal, pf, target, daftar_banding)}
     cek_kelayakan(pf, target)
     h_min = cari_harga(modal, pf, ("impas", 0))
     h_target = cari_harga(modal, pf, target)
@@ -282,6 +314,8 @@ def hitung_platform(modal, pf, target, harga_jual=None, kelipatan=Decimal(500)):
         "harga_rekomendasi": h_rek,
         "rincian_minimal": rincian(h_min, modal, pf),
         "rincian_rekomendasi": rincian(h_rek, modal, pf),
+        "status_target": status_target(rincian(h_rek, modal, pf), target),
+        "banding": banding(modal, pf, target, daftar_banding),
     }
 
 
@@ -314,6 +348,18 @@ def tabel_rincian(r):
     k = format_persen(r["markup_persen"]) if r["markup_persen"] is not None else "-"
     out.append("| Margin (laba / harga setelah voucher) | {} |".format(m))
     out.append("| Markup (laba / modal) | {} |".format(k))
+    return out
+
+
+def tabel_banding(h, target):
+    out = ["", "Banding harga (dihitung script; kutip baris ini, jangan menilai sendiri):", "",
+           "| Harga tayang | Uang diterima | Laba/barang | Margin | Status target |", "|---:|---:|---:|---:|---|"]
+    for b in h["banding"]:
+        r = b["rincian"]
+        st = b["status_target"] or ("untung" if r["laba_bersih"] >= 0 else "RUGI")
+        out.append("| {} | {} | {} | {} | {} |".format(
+            format_rp(r["harga_tayang"]), format_rp(r["uang_diterima"]), format_rp(r["laba_bersih"]),
+            format_persen(r["margin_persen"]) if r["margin_persen"] is not None else "-", st))
     return out
 
 
@@ -350,6 +396,10 @@ def teks_hasil(hasil, modal, target, kelipatan, catatan):
             out.append("Rincian pada harga rekomendasi:")
             out.append("")
             out += tabel_rincian(h["rincian_rekomendasi"])
+            out.append("")
+            out.append("Status target pada harga rekomendasi: **{}**".format(h["status_target"]))
+            if h["banding"]:
+                out += tabel_banding(h, target)
         else:
             r = h["rincian"]
             out.append("### {} - cek harga {}".format(h["platform"], format_rp(r["harga_tayang"])))
@@ -358,6 +408,11 @@ def teks_hasil(hasil, modal, target, kelipatan, catatan):
             if r["laba_bersih"] < 0:
                 out.append("")
                 out.append("RUGI {} per barang pada harga ini.".format(format_rp(-r["laba_bersih"])))
+            if h["status_target"]:
+                out.append("")
+                out.append("Status target: **{}**".format(h["status_target"]))
+            if h["banding"]:
+                out += tabel_banding(h, target)
         out.append("")
     out.append("**Catatan & asumsi**")
     for c in catatan:
@@ -393,7 +448,10 @@ def main(argv=None):
     g.add_argument("--target-margin", help="Target margin %% dari harga setelah voucher (default 20)")
     g.add_argument("--target-laba", help="Target laba bersih Rp per barang")
     g.add_argument("--target-markup", help="Target markup %% dari modal")
-    g.add_argument("--harga-jual", help="Mode cek: harga tayang yang ingin dicek labanya")
+    p.add_argument("--harga-jual", help="Mode cek: harga tayang yang ingin dicek labanya (boleh digabung dengan "
+                                        "--target-*, script lalu mencetak status target)")
+    p.add_argument("--banding-harga", help="Harga lain yang ingin dicek terhadap target, dipisah ';', "
+                                           "mis. '62.900;59.900' (v1.0.4)")
     p.add_argument("--bulatkan", default="500", help="Kelipatan pembulatan ke atas harga rekomendasi (default 500; 1 = tanpa)")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
     a = p.parse_args(argv)
@@ -454,7 +512,17 @@ def main(argv=None):
         if a.pph22 and cfg.get("platform"):
             for pf in daftar:
                 pf["pph22"] = a.pph22 == "ya"
-        hasil = [hitung_platform(modal, pf, target, harga_jual, kelipatan) for pf in daftar]
+        bh = a.banding_harga if a.banding_harga is not None else cfg.get("banding_harga")
+        daftar_banding = []
+        if bh is not None:
+            bagian = bh if isinstance(bh, list) else str(bh).split(";")
+            for x in bagian:
+                if str(x).strip():
+                    v = parse_angka(x, "banding harga")
+                    if v < 0:
+                        raise ValueError("banding harga tidak boleh negatif")
+                    daftar_banding.append(v)
+        hasil = [hitung_platform(modal, pf, target, harga_jual, kelipatan, daftar_banding) for pf in daftar]
     except ValueError as e:
         sys.stderr.write("ERROR: {}\n".format(e))
         return 2

@@ -51,8 +51,10 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    # Bandingkan beberapa platform
    python3 <folder-skill-ini>/scripts/harga_marketplace.py --config platform.json
    ```
+   Cek harga lain terhadap target (mis. harga psikologis): tambahkan `--banding-harga "62.900;59.900"` pada perintah cari harga, atau gabungkan `--harga-jual 62.900 --target-margin 25`.
    Opsi lain: `--pembayaran`, `--iklan` (%), `--voucher 10%` / `--voucher 5000`, `--maks-voucher`, `--qty-per-pesanan`, `--biaya-lain` (Rp/barang), `--target-laba`, `--target-markup`, `--pph22 tidak`, `--bulatkan 1000` (kelipatan pembulatan, default 500), `--format json`.
-3. Sajikan hasil: harga minimal, harga rekomendasi, dan tabel rincian dari script **apa adanya**. Tambahkan 1–2 saran praktis berbasis angka (mis. "voucher 10% menurunkan laba Rp3.500/barang").
+3. Sajikan hasil: harga minimal, harga rekomendasi, tabel rincian, dan baris **"Status target"** dari script **apa adanya**. Tambahkan 1–2 saran praktis berbasis angka (mis. "voucher 10% menurunkan laba Rp3.500/barang").
+   **Perbandingan terhadap target hanya dari script (wajib):** kata "memenuhi/di atas/di bawah target", "masih untung/rugi", dan angka laba/margin untuk harga apa pun **dikutip dari baris "Status target" atau tabel "Banding harga" keluaran script** — jangan menilai sendiri. Sebelum menyebut atau menyarankan harga lain (mis. harga psikologis Rp62.900), jalankan ulang dengan `--banding-harga` lalu kutip statusnya. Bila belum dihitung, jangan menyebut harga itu.
 4. **Salin blok "Catatan & asumsi" dari script ke balasan chat apa adanya, kata per kata** — termasuk "PPh 22 marketplace 0,5% (PMK 37/2025, berlaku 1 Agustus 2026)", syarat pengecualian omzet ≤ Rp500 juta, baris "Berlaku per <tanggal>" dan "Alat bantu hitung, bukan nasihat pajak". Jangan diringkas menjadi "sesuai PMK terbaru"/"aturan terbaru" dan jangan dihilangkan walau balasan dipersingkat.
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah dan beri tahu bahwa hasil dihitung manual.
 
@@ -110,6 +112,7 @@ Bulatkan harga **ke atas** ke rupiah penuh, lalu ke atas ke kelipatan pembulatan
 ## Checklist sebelum mengirim hasil
 - [ ] Persentase biaya berasal dari pengguna, atau diberi label "contoh — cek Seller Center".
 - [ ] Asumsi dasar biaya (harga setelah voucher) dan target default disebut.
+- [ ] Setiap pernyataan "memenuhi/di bawah target" dikutip dari "Status target"/"Banding harga" script; harga lain yang disebut sudah dihitung dengan `--banding-harga`.
 - [ ] PPh 22 0,5% disertakan (atau dijelaskan kenapa tidak) + catatan pengecualian OP omzet ≤ Rp500 juta dengan surat pernyataan.
 - [ ] Harga rekomendasi dibulatkan ke atas dan laba pada harga itu ditampilkan.
 - [ ] Format Rupiah `Rp 1.250.000`; disclaimer + tanggal berlaku ada.

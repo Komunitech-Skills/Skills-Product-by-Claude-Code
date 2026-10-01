@@ -33,12 +33,14 @@ Menghasilkan invoice atau kuitansi yang rapi, angkanya pasti benar (dihitung scr
 | Kota & nama penanda tangan | Tidak | `[isi kota]`, `[isi nama penanda tangan]` — **jangan dikarang** |
 | Tanggal & jatuh tempo | Tidak | Hari ini; jatuh tempo 14 hari |
 | Diskon total, ongkir | Tidak | 0 |
-| PPN (hanya jika penjual PKP) + jenis (umum/mewah) | Tidak | Tanpa PPN |
+| Status PKP penjual (+ jenis PPN umum/mewah) | Tidak | Pengguna menyebut **PKP** → `"pkp": true` + `"ppn": true` (PPN 12% × DPP nilai lain 11/12, jenis umum) **tanpa bertanya**, sebut asumsinya. Tidak menyebut PKP → tanpa PPN |
 | Pembeli memotong PPh 23 (klien badan/PT/CV membayar **jasa**) | Tidak | Bila pengguna menyebut "dipotong PPh 23" atau klien badan untuk jasa: **aktifkan** `"pph23": true` (2% dari nilai jasa tanpa PPN; tanpa NPWP 4%) dan sebut asumsinya |
 | DP/pembayaran yang sudah diterima, termin | Tidak | Belum ada |
 | Rekening, alamat/kontak, NPWP, catatan, jabatan | Tidak | Dikosongkan |
 
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna minta PPN, pastikan ia **PKP**; jika tidak, jelaskan bahwa PPN tidak boleh dicantumkan.
+
+**PKP = PPN aktif secara default (jangan bertanya ulang).** Bila pengguna sudah menyebut dirinya PKP ("saya sudah PKP", "usaha kami PKP"), langsung buat invoice ber-PPN: **PPN 12% dengan DPP nilai lain 11/12** (PMK 131/2024, barang/jasa non-mewah). Tulis asumsinya di akhir balasan (mis. "PPN 12% × DPP nilai lain 11/12 karena Anda PKP; bila transaksi ini disepakati tanpa PPN, beri tahu saya"). Jangan pernah menanyakan atau menyebut "PPN 11%" ke pengguna — sebut selalu "PPN 12% (DPP nilai lain 11/12)". Nomor (default `0001`), kota, dan penanda tangan yang tidak disebut cukup jadi placeholder; itu juga bukan alasan untuk bertanya bila item, pembeli, dan penjual sudah lengkap.
 
 **Jangan mengarang data.** Kota, nama penanda tangan, alamat, rekening, NPWP hanya diisi bila pengguna menyebutnya. Bila tidak, biarkan kosong di JSON: script menulis `[isi kota]` / `[isi nama penanda tangan]` dan baris "PERLU DIISI" — sampaikan ke pengguna.
 
@@ -69,7 +71,7 @@ jumlah baris   = qty × harga − diskon baris        (diskon % dari qty × harg
 subtotal       = jumlah semua baris
 setelah diskon = subtotal − diskon total           (diskon % dari subtotal; dibulatkan ke rupiah terdekat)
 DPP            = setelah diskon + ongkir           (ongkir tidak dimasukkan bila "ongkir_kena_ppn": false)
-PPN (PKP saja) = non-mewah: 12% × (11/12 × DPP) = 11% × DPP; mewah: 12% × DPP; dibulatkan KE BAWAH
+PPN (PKP saja) = non-mewah: 12% × DPP nilai lain (11/12 × DPP); mewah: 12% × DPP; dibulatkan KE BAWAH
 TOTAL          = setelah diskon + ongkir + PPN
 PPh 23 (info)  = 2% × nilai jasa tanpa PPN (default subtotal setelah diskon, tanpa ongkir); tanpa NPWP 4%;
                  dibulatkan KE BAWAH. Estimasi diterima bersih = TOTAL − PPh 23 (TOTAL tagihan tidak berubah;
@@ -115,6 +117,7 @@ Catatan ke pengguna: DP Rp3.000.000 tidak melewati Rp5 juta, jadi meterai tidak 
 - [ ] Klien badan + jasa + disebut "potong PPh 23" → PPh 23 & estimasi diterima bersih ikut tampil (dari script).
 - [ ] Invoice lengkap ditulis di chat; file HTML dilampirkan bila bisa (bukan hanya path).
 - [ ] PPN hanya muncul bila penjual PKP; tidak ada PPN untuk non-PKP.
+- [ ] Pengguna menyebut PKP → PPN 12% (DPP nilai lain 11/12) langsung dipakai tanpa bertanya, asumsi disebut; tidak ada tulisan "PPN 11%".
 - [ ] Nomor = nomor terakhir dari pengguna + 1 (cek baris "Nomor terakhir dibaca"); jatuh tempo tidak lebih awal dari tanggal dokumen.
 - [ ] Tidak ada data karangan: kota/penanda tangan yang tidak disebut tetap `[isi ...]` dan disampaikan ke pengguna.
 - [ ] Penanda meterai sesuai (> Rp5.000.000 penerimaan uang).

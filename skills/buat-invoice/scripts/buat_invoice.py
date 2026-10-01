@@ -38,7 +38,7 @@ from hitung_ppn import hitung_ppn_dari_dpp, parse_angka, format_rp, format_angka
 BATAS_METERAI = Decimal(5000000)
 TARIF_METERAI = Decimal(10000)
 TANGGAL_ATURAN = "2026-09-23"
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 TARIF_PPH23_JASA = Decimal(2)   # UU PPh Pasal 23 ayat (1) huruf c; tanpa NPWP 100% lebih tinggi (ayat 1a)
 NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
               "Oktober", "November", "Desember"]
