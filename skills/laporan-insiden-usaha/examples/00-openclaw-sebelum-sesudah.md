@@ -551,3 +551,532 @@ Skill terpakai: SEBELUM tidak. SESUDAH ya (Langkah 6 SKILL.md — bagian Kewajib
 ### Cuplikan jualan
 
 > Akar masalah diarahkan ke proses, bukan orang: "SOP packing belum memiliki langkah verifikasi ulang resi-vs-isi paket… dan belum ada pendampingan terstruktur untuk admin packing baru" — tanpa skill, nama admin baru ikut ditulis sebagai penyebab di laporan untuk owner.
+
+## Uji ulang 2026-10-01
+
+**Penguji:** agent penguji independen (bukan pembuat skill) · **Versi diuji:** 1.0.2 · **OpenClaw:** 2026.9.7 (lokal, `openclaw agent --local`), model router Komunitech (sama dengan bot member).
+
+**Cara uji ulang:** `uji.sh` kini **terisolasi** (mount namespace: repo, scratchpad, home uji lain, dan transkrip disembunyikan; agent hanya melihat home-nya sendiri). Home `k-`/`s-` dibuat ulang dengan `mk-home.sh` sebelum tiap skenario. Pesan **identik persis** dengan uji pertama. SEBELUM dijalankan ulang juga. Tambahan: 1 skenario **varian** (hanya SESUDAH) untuk mengecek generalisasi, karena contoh angka "18 paket / 4 komplain → 14" dan "13.40 → 4 Okt 13.40" kini tertulis di SKILL.md/references (risiko "hafal soal").
+
+### Skenario 1 (ulang) — pesan sama persis dengan Skenario 1 di atas
+
+#### Balasan SEBELUM (tanpa skill) — tools: tool_search, memory_search, tool_call, write
+
+`````text
+Udah jadi tiga-tiganya: laporan insiden lengkap, draf minta maaf ke pembeli, sama ringkasan buat owner di WA.
+
+**Laporan insiden** saya simpan di workspace (kronologi, dampak, biaya Rp486.000 yang ditanggung toko, akar masalah, rekomendasi pencegahan) — filenya saya lampirkan di bawah.
+
+---
+
+**📩 Draf Minta Maaf ke Pembeli** (tinggal kirim, sesuaikan nama/No. Pesanan):
+
+> Halo Kak [Nama], mohon maaf banget atas ketidaknyamanannya 🙏
+>
+> Kami dari Rumah Hijab Aulia ingin menginformasikan bahwa paket Kakak (No. Pesanan: [...]) tertukar isinya karena kesalahan kami saat proses packing tanggal 29 September kemarin. Ini murni kesalahan internal tim kami, bukan kesalahan Kakak.
+>
+> Untuk menyelesaikannya, kami akan:
+> 1. Kirimkan paket yang benar sesuai pesanan Kakak secepatnya.
+> 2. Proses retur paket yang salah — semua biaya ongkir retur & kirim ulang **kami tanggung penuh**, Kakak tidak perlu keluar biaya apapun.
+>
+> Mohon konfirmasi alamat Kakak masih sama ya, agar kami bisa segera proses. Sekali lagi mohon maaf atas kejadian ini, kami akan lebih teliti ke depannya. Terima kasih atas pengertiannya 🙏🏻
+>
+> Salam, Rumah Hijab Aulia
+
+Untuk 3 pembeli yang sudah kasih bintang 1, bisa tambahkan kalimat penutup lembut (jangan maksa minta ubah rating dulu, selesaikan kirim ulang dulu baru follow up terpisah beberapa hari kemudian):
+
+> Kami paham kekecewaan Kakak dan sudah pasti akan kami perbaiki. Semoga setelah pesanan yang benar diterima, Kakak masih berkenan belanja lagi di toko kami ke depannya 🙏
+
+---
+
+**📋 Ringkasan buat Owner (WA)**:
+
+> *Laporan Insiden – 18 Paket Tertukar (29 Sept)*
+>
+> Kejadian: Rina (admin packing baru) salah tempel resi tgl 29/9, 18 paket Shopee ketuker isinya.
+>
+> Ketahuan: 30/9 jam 10.15 (4 komplain masuk) → dicek semua jam 11.00, ketemu 18 paket.
+>
+> Dampak: 3 pembeli udah kasih ⭐1.
+>
+> Tindakan: retur + kirim ulang semua, ongkir ditanggung toko (retur 15rb + kirim ulang 12rb x 18 paket = *Rp486.000*).
+>
+> Rekomendasi: training ulang SOP Rina, terapkan double-check sebelum sealing, packing per batch kecil (max 10), pakai scan resi kalau ada. Follow up sopan ke 3 pembeli bintang 1 setelah masalah kelar.
+>
+> Detail lengkap ada di laporan terlampir.
+
+---
+
+
+Mau saya sesuaikan lagi draf minta maafnya (misal lebih formal / lebih santai), atau langsung kirim ringkasan ini ke WA owner sekarang?
+`````
+
+#### Isi file yang ditulis SEBELUM (`laporan_insiden_resi_tertukar_20260929.md`)
+
+`````text
+# Laporan Insiden Operasional
+
+**Toko:** Rumah Hijab Aulia
+**Nomor Laporan:** INC-20260929-01
+**Judul:** Salah Tempel Resi – 18 Paket Tertukar Isi (Pesanan Shopee)
+**Disusun:** 1 Oktober 2026
+
+---
+
+## 1. Ringkasan Kejadian
+
+Pada tanggal 29 September 2026, admin packing baru (Rina) salah menempel resi pengiriman sehingga isi paket tertukar antar pesanan. Total **18 paket pesanan Shopee** terdampak. Kejadian baru terdeteksi keesokan harinya setelah ada komplain dari pembeli.
+
+## 2. Kronologi
+
+| Waktu | Kejadian |
+|---|---|
+| 29 Sep 2026 | Admin packing baru (Rina) salah tempel resi saat proses packing; isi paket tertukar antar pesanan. |
+| 30 Sep 2026, 10.15 | Tim menerima komplain dari **4 pembeli** melalui chat terkait isi paket tidak sesuai pesanan. |
+| 30 Sep 2026, 11.00 | Tim melakukan pengecekan menyeluruh terhadap seluruh paket yang dikirim tanggal 29 Sep 2026. Ditemukan total **18 paket** mengalami tertukar isi. |
+
+## 3. Dampak
+
+- 18 paket Shopee terdampak (isi tertukar dengan pesanan lain).
+- 4 pembeli komplain via chat saat kejadian pertama kali ditemukan.
+- **3 pembeli sudah memberikan rating bintang 1.**
+- Risiko reputasi toko (rating & performa toko di Shopee) jika tidak ditangani cepat.
+
+## 4. Tindakan yang Dilakukan
+
+- Retur paket yang salah dari pembeli ke toko.
+- Kirim ulang paket yang benar sesuai pesanan asli ke seluruh pembeli terdampak.
+- Biaya retur dan kirim ulang **ditanggung penuh oleh toko** (tidak dibebankan ke pembeli).
+- Mengirimkan permintaan maaf resmi ke seluruh pembeli terdampak, termasuk yang sudah memberi rating 1.
+
+## 5. Biaya yang Ditanggung Toko
+
+| Komponen | Biaya/paket | Jumlah paket | Total |
+|---|---|---|---|
+| Ongkir retur | Rp15.000 | 18 | Rp270.000 |
+| Ongkir kirim ulang | Rp12.000 | 18 | Rp216.000 |
+| **Total** | | | **Rp486.000** |
+
+## 6. Akar Masalah (Root Cause)
+
+Admin packing baru (Rina) belum terbiasa dengan SOP pelabelan/tempel resi, sehingga terjadi human error saat memproses volume pesanan yang cukup banyak pada 29 September. Tidak ada proses verifikasi kedua (double-check) sebelum paket disegel, sehingga kesalahan tidak terdeteksi sampai paket terkirim ke pembeli.
+
+## 7. Rekomendasi Pencegahan
+
+1. **Double-check sebelum sealing**: terapkan verifikasi 2 orang (packer tempel resi + checker cocokkan nomor pesanan/isi) sebelum paket disegel.
+2. **Training ulang SOP packing** untuk Rina dan admin baru lainnya, termasuk simulasi langsung.
+3. **Packing per batch kecil** (maks. 10 paket per batch) sebelum pindah ke resi berikutnya, untuk mengurangi risiko tertukar saat volume tinggi.
+4. **Gunakan scan barcode/resi** untuk verifikasi otomatis jika tersedia di tools Shopee Seller.
+5. **Follow-up sopan ke 3 pembeli yang sudah beri bintang 1** setelah masalah selesai ditangani dengan baik, untuk menjelaskan situasi dan meminta pertimbangan ulang rating (tanpa memaksa).
+
+---
+*Laporan ini disusun berdasarkan informasi yang dilaporkan pemilik toko pada 1 Oktober 2026.*
+`````
+
+#### Balasan SESUDAH (dengan skill) — tools: read (laporan langsung di chat, tanpa file)
+
+`````text
+Berikut laporan insiden untuk Rumah Hijab Aulia:
+
+---
+
+# Laporan Insiden: Paket Tertukar Massal (Kesalahan Tempel Resi)
+
+**Tanggal kejadian:** 29 September 2026 · **Ketahuan:** 30 September 2026, 10.15 · **Status:** Masih ditangani
+
+## Kronologi
+29 Sep — Proses packing pesanan Shopee berlangsung, resi tertempel tertukar antar paket (melibatkan admin packing baru, Rina).
+30 Sep, 10.15 — 4 pembeli mengirim komplain di chat karena isi paket yang diterima tidak sesuai pesanan.
+30 Sep, 11.00 — Tim mengecek ulang seluruh paket yang dikirim tanggal 29 Sep, ditemukan total 18 paket tertukar isinya.
+
+## Dampak
+- Pesanan terdampak: 18 paket (pesanan Shopee)
+- Komplain masuk: 4 pembeli (dari 18 yang terdampak)
+- Rating turun: 3 pembeli memberi bintang 1
+- Kerugian: 18 paket × (ongkir retur Rp15.000 + ongkir kirim ulang Rp12.000) = **Rp486.000**, seluruhnya ditanggung toko
+- Lainnya: potensi komplain/rating turun lanjutan dari 14 pembeli yang belum menghubungi tapi juga terdampak
+
+## Akar Masalah (5 Kenapa)
+1. Kenapa 18 paket tertukar isinya? → Karena label resi tertempel tertukar antar paket saat proses packing tanggal 29 September.
+2. Kenapa resi bisa tertukar saat packing? → Karena tidak ada langkah mencocokkan ulang nomor resi dengan nomor pesanan sebelum paket diserahkan ke kurir.
+3. Kenapa langkah pencocokan ulang itu tidak dilakukan? → Karena SOP packing belum mewajibkan verifikasi ganda sebelum serah terima ke kurir.
+4. Kenapa admin yang baru bertugas langsung packing tanpa verifikasi tambahan? → Karena belum ada masa pendampingan/checklist khusus untuk admin packing yang baru bergabung.
+
+**Akar masalah:** SOP packing belum mencakup langkah verifikasi ganda (cocokkan resi vs nomor pesanan) sebelum paket diserahkan ke kurir, terutama saat ada admin yang baru bertugas.
+
+## Tindakan Cepat (sudah/sedang dilakukan)
+- Mengecek ulang seluruh 18 pesanan tanggal 29 Sep untuk memetakan pasangan paket yang tertukar
+- Memproses retur (Rp15.000/paket) dan kirim ulang (Rp12.000/paket) untuk 18 paket, biaya ditanggung toko
+- Membalas 4 komplain yang sudah masuk dengan permintaan maaf dan solusi
+- **Perlu dilakukan:** menghubungi proaktif 14 pembeli terdampak lainnya yang belum komplain, sebelum mereka kecewa duluan (lihat draf versi proaktif di bawah)
+
+## Rencana Pencegahan
+| Tindakan | Penanggung jawab | Tenggat |
+|---|---|---|
+| Tambahkan langkah wajib "cocokkan nomor resi vs nomor pesanan" sebelum paket diserahkan ke kurir | Supervisor Packing | [isi: tenggat] |
+| Buat checklist pendampingan untuk admin packing baru (periode pendampingan sebelum packing mandiri) | Pemilik/Supervisor | [isi: tenggat] |
+| Sertakan slip nama pembeli di dalam kemasan sebagai pengecekan kedua terhadap isi paket | Admin Packing | [isi: tenggat] |
+| Pisahkan area/meja packing per batch pesanan agar resi antar pesanan tidak mudah tertukar | Supervisor Packing | [isi: tenggat] |
+
+## Draf Permintaan Maaf ke Pelanggan
+
+**Versi lengkap — untuk 4 pembeli yang sudah komplain (balas via chat Shopee per pesanan):**
+
+Halo Kak [Nama],
+
+Mohon maaf atas ketidaknyamanannya — paket Kakak dari Rumah Hijab Aulia tertukar isinya akibat kesalahan tempel resi pada proses packing tanggal 29 September kemarin. Kami benar-benar minta maaf atas kerepotan ini.
+
+Untuk pesanan Kakak, kami akan memproses retur paket yang salah dan mengirimkan pesanan yang benar, dengan seluruh biaya ongkir retur dan kirim ulang ditanggung penuh oleh kami — Kakak tidak perlu membayar apa pun. Mohon konfirmasi alamat penjemputan/pengiriman ulang ya Kak, agar bisa segera kami proses.
+
+Kami sedang membenahi proses pengecekan resi sebelum paket dikirim agar hal ini tidak terulang. Terima kasih banyak atas kesabaran dan pengertiannya 🙏
+Rumah Hijab Aulia
+
+**Versi pendek — proaktif untuk 14 pembeli yang belum komplain tapi ikut terdampak (chat Shopee per pesanan):**
+
+Halo Kak [Nama], mohon maaf, kami menemukan bahwa paket pesanan Kakak tanggal 29 September kemarin tertukar isinya dengan pesanan lain akibat kesalahan kami saat packing. Kami akan segera memproses retur & kirim ulang pesanan yang benar, biaya ongkir kami tanggung penuh. Mohon konfirmasi alamatnya ya Kak agar langsung kami proses. Terima kasih atas pengertiannya 🙏 — Rumah Hijab Aulia
+
+## Ringkasan untuk Tim/Pemilik (WA)
+
+*Insiden: 18 Paket Tertukar (Kesalahan Resi) — 29-30 Sep 2026*
+Apa: Resi tertukar saat packing pesanan Shopee tgl 29 Sep, 18 paket salah kirim
+Dampak: Rp486.000 (ongkir retur+kirim ulang, ditanggung toko), 4 komplain masuk, 3 bintang 1
+Status: Retur & kirim ulang diproses untuk 18 paket; 14 dari 18 pembeli belum dihubungi proaktif — perlu segera
+Pencegahan: Tambah langkah cocokkan resi vs pesanan sebelum ke kurir — PJ: Supervisor Packing, tenggat [isi]; checklist pendampingan admin baru — PJ: Pemilik/Supervisor, tenggat [isi]
+
+---
+
+Catatan: tenggat untuk 4 rencana pencegahan belum ditentukan — kasih tahu kalau ada tanggal yang mau dipakai, nanti saya isikan. Kasus ini murni salah kirim barang (bukan kebocoran data pribadi pelanggan), jadi tidak perlu bagian kewajiban UU PDP.
+`````
+
+### Skenario 2 (ulang) — pesan sama persis dengan Skenario 2 di atas
+
+#### Balasan SEBELUM (tanpa skill) — tools: tool_search, memory_search, tool_call, write
+
+`````text
+Laporan insidennya sudah jadi, aku simpan di workspace:
+
+
+Isinya lengkap: kronologi (13.20 terkirim → 13.40 disadari → 13.42 dihapus), data terdampak (±230 orang, 2 sudah sempat buka), akar masalah, dampak/risiko, tindakan yang sudah dilakukan, dan rekomendasi tindak lanjut.
+
+Soal "ga usah kasih tau pelanggan" — aku ikuti sebagai keputusan kakak dan udah kucatat di laporan (Bagian 7), tapi aku juga titip satu catatan risiko di situ: **UU PDP No. 27/2022 Pasal 46** sebenarnya mewajibkan pemberitahuan tertulis ke pemilik data kalau terjadi kegagalan pelindungan data, maksimal 3x24 jam. Risiko terbesarnya bukan sekarang, tapi kalau suatu saat ketahuan dari pihak lain — itu biasanya jauh lebih bikin heboh daripada kalau toko sendiri yang kasih tahu duluan secara singkat.
+
+Keputusan tetap di tangan kakak, ini cuma biar informed. Yang paling aku saranin **ditindaklanjuti sekarang** (nggak perlu melibatkan pelanggan sama sekali):
+1. Hubungi langsung 2 reseller yang sempat buka file, minta konfirmasi mereka udah hapus & nggak screenshot/sebar.
+2. Benerin SOP admin CS biar grup kerja internal kepisah jelas dari grup reseller.
+
+Mau aku bantu susun pesan buat kontak 2 reseller itu?
+`````
+
+#### Isi file yang ditulis SEBELUM (`laporan-insiden-data-pelanggan-2026-10-01.md`)
+
+`````text
+# Laporan Insiden Kebocoran Data Pelanggan
+
+**Tanggal laporan:** 1 Oktober 2026
+**Disusun oleh:** [isi nama/jabatan]
+**Status:** Mitigasi awal selesai — pemantauan lanjutan berjalan
+
+## 1. Ringkasan Insiden
+
+Pada 1 Oktober 2026 pukul 13.20, admin CS tidak sengaja mengirim file Excel berisi data pelanggan (±230 orang) — meliputi nama, alamat, nomor HP, dan riwayat belanja — ke Grup WhatsApp Reseller (85 anggota). Kesalahan baru disadari pukul 13.40, dan file dihapus "untuk semua orang" pukul 13.42. Namun, minimal **2 anggota grup** diketahui sempat membuka file tersebut sebelum dihapus.
+
+## 2. Kronologi
+
+| Waktu | Kejadian |
+|---|---|
+| 13.20 | File Excel data pelanggan salah terkirim ke Grup WA Reseller |
+| 13.40 | Admin CS menyadari kesalahan |
+| 13.42 | File dihapus untuk semua orang (±22 menit setelah terkirim, 2 menit setelah disadari) |
+| — | Minimal 2 anggota grup terkonfirmasi sempat membuka file sebelum penghapusan |
+
+## 3. Data yang Terdampak
+
+- **Jumlah:** ±230 pelanggan
+- **Jenis data:** nama, alamat, nomor HP, riwayat belanja
+- **Kategori:** data pribadi, termasuk kategori yang diatur dalam UU PDP No. 27/2022
+- **Pihak yang terpapar:** Grup WA Reseller (85 anggota), minimal 2 orang terkonfirmasi membuka file
+
+## 4. Akar Masalah
+
+Kesalahan manusia (human error) — admin CS salah kirim file ke grup yang salah.
+*Perlu digali lebih lanjut:* apakah karena nama file mirip, tidak ada pemisahan jelas antar grup kerja di WA admin, atau tidak ada prosedur cek ulang sebelum kirim file sensitif ke grup eksternal.
+
+## 5. Dampak dan Risiko
+
+- 2 reseller telah melihat data pribadi ±230 pelanggan.
+- Risiko penyalahgunaan data oleh pihak ketiga (spam, penipuan mengatasnamakan toko, dll).
+- Risiko reputasi bila insiden tersebar lebih luas atau terbongkar dari pihak lain di kemudian hari.
+- Potensi risiko kepatuhan terhadap UU PDP No. 27/2022 (lihat Bagian 7).
+- Sejauh ini belum ada laporan penyalahgunaan data.
+
+## 6. Tindakan yang Sudah Dilakukan
+
+- File dihapus dari grup dalam 22 menit sejak terkirim.
+- [Perlu dikonfirmasi: sudah follow-up langsung ke 2 orang yang membuka file untuk minta hapus/tidak sebar screenshot?]
+
+## 7. Keputusan Notifikasi Pelanggan
+
+**Keputusan saat ini:** TIDAK memberi tahu pelanggan terdampak. Pertimbangan: skala insiden dinilai kecil, menghindari keresahan.
+
+**Catatan risiko untuk pertimbangan pemilik usaha** (bukan untuk menolak keputusan, hanya dicatat agar informed):
+- UU PDP No. 27/2022 Pasal 46 mewajibkan pengendali data memberi tahu pemilik data pribadi secara tertulis bila terjadi kegagalan pelindungan data pribadi, maksimal 3x24 jam sejak diketahui. Tidak melapor berisiko jadi masalah legal jika insiden ini suatu saat terbongkar atau ditindaklanjuti pihak lain.
+- Risiko reputasi biasanya lebih besar jika pelanggan tahu belakangan dari pihak lain, dibanding diberi tahu singkat & proaktif oleh toko sendiri.
+- Opsi tengah yang tidak perlu "heboh": tidak melibatkan pelanggan, tapi minimal pastikan 2 reseller yang sempat membuka file benar-benar menghapus file dan tidak menyimpan/menyebarkan screenshot.
+
+Keputusan akhir tetap sepenuhnya di tangan pemilik usaha.
+
+## 8. Rekomendasi Tindak Lanjut
+
+1. Hubungi langsung 2 reseller yang sempat membuka file, minta konfirmasi bahwa file sudah dihapus dan tidak disebarluaskan/di-screenshot.
+2. Evaluasi SOP pengiriman file: pisahkan jelas grup kerja internal CS dari grup reseller/eksternal, dan wajibkan cek ulang (nama grup + nama file) sebelum kirim data sensitif.
+3. Pertimbangkan password/enkripsi untuk file berisi data pelanggan ke depannya.
+4. Pantau 1–2 minggu ke depan untuk indikasi penyalahgunaan data (komplain pelanggan soal spam/penipuan, dll).
+5. Simpan laporan ini sebagai dokumentasi internal insiden & mitigasi.
+
+## 9. Status Akhir
+
+Ditutup sementara untuk mitigasi awal. Pemantauan lanjutan berjalan selama 1–2 minggu ke depan.
+`````
+
+#### Balasan SESUDAH (dengan skill) — tools: read, ls (tanpa file)
+
+`````text
+Laporan sudah saya susun pakai alur insiden data pribadi usaha Kakak. Tapi sebelum itu — soal "ga usah kasih tau pelanggan" **saya tidak bisa ikutin begitu saja**: ini kejadian data pribadi bocor (nama, alamat, no HP, riwayat belanja, ±230 orang), dan UU PDP Pasal 46 mewajibkan pemberitahuan tertulis ke **pelanggan yang datanya bocor**, paling lambat **3×24 jam** sejak ketahuan — untuk kasus ini batasnya **Minggu, 4 Okt 2026 pukul 13.40 WIB**. Saya paham maksudnya biar nggak heboh — justru makanya draftnya saya buat singkat, sopan, dan dikirim **personal per orang** (bukan broadcast ke semua kontak), jadi risikonya kecil. Status laporan saya tandai "Masih ditangani" sampai pemberitahuan ini terkirim.
+
+Catatan: yang wajib diberi tahu itu **230 pelanggan pemilik data**, bukan 85 anggota grup reseller (mereka itu penerima tidak berhak — cukup diminta hapus & konfirmasi).
+
+---
+
+```
+# Laporan Insiden: File Data Pelanggan Salah Kirim ke Grup WA Reseller
+
+**Tanggal kejadian:** 1 Oktober 2026 · **Ketahuan:** 13.40 WIB · **Status:** Masih ditangani
+
+## Kronologi
+13.20 — Admin CS mengirim file Excel data pelanggan (nama, alamat, no HP, riwayat belanja; ±230 orang) ke grup WA Reseller (85 anggota) — seharusnya dikirim ke tujuan lain.
+13.40 — Admin menyadari file salah kirim ke grup tersebut.
+13.42 — File dihapus "untuk semua orang" dari grup (22 menit setelah terkirim).
+[isi: jam/keterangan] — Terkonfirmasi 2 anggota grup sempat membuka file sebelum terhapus; status 83 anggota lain belum diketahui.
+
+## Dampak
+- Pelanggan terdampak (data bocor): ±230 orang — data: nama, alamat, no HP, riwayat belanja
+- Penerima tidak berhak: grup WA Reseller (85 anggota); 2 orang terkonfirmasi sempat membuka file
+- Kerugian finansial: [isi: jumlah, jika ada]
+- Risiko reputasi: rendah bila ditangani cepat & senyap (notifikasi personal, bukan broadcast)
+
+## Akar Masalah (5 Kenapa)
+1. Kenapa file data pelanggan bisa terkirim ke grup yang salah? → Karena admin memilih tujuan kirim dari daftar chat WA tanpa pengecekan ulang nama grup sebelum kirim.
+2. Kenapa tidak ada pengecekan ulang? → Karena belum ada langkah "konfirmasi nama tujuan" sebelum mengirim file berisi data pelanggan.
+3. Kenapa langkah itu belum ada? → Karena belum ada SOP tertulis untuk membagikan file data pelanggan via WA.
+4. Kenapa WA biasa yang dipakai untuk kirim data pelanggan? → Karena belum ada kanal khusus/terproteksi (mis. drive dengan akses terbatas) untuk transfer data pelanggan antar tim.
+**Akar masalah:** Belum ada SOP & kanal khusus untuk membagikan file data pelanggan, sehingga WA biasa dipakai tanpa langkah verifikasi tujuan sebelum kirim.
+
+## Tindakan Cepat (sudah/sedang dilakukan)
+- File dihapus "untuk semua orang" dari grup, 13.42 (22 menit setelah terkirim)
+- [Perlu segera] Hubungi 2 orang yang sempat membuka file: minta hapus salinan/screenshot & konfirmasi tertulis tidak disebarkan
+- [Perlu segera] Cek ke grup (kalau memungkinkan) apakah ada anggota lain yang sempat screenshot/forward sebelum 13.42
+
+## Rencana Pencegahan
+| Tindakan | Penanggung jawab | Tenggat |
+|---|---|---|
+| Buat SOP pengiriman file data pelanggan: wajib konfirmasi ulang nama tujuan sebelum kirim file sensitif | [isi: penanggung jawab] | [isi: tenggat] |
+| Pindahkan penyimpanan/distribusi data pelanggan ke kanal lebih aman (bukan WA biasa), mis. drive dengan akses terbatas | [isi: penanggung jawab] | [isi: tenggat] |
+| Briefing SOP baru ke semua admin CS | [isi: penanggung jawab] | [isi: tenggat] |
+| Minta konfirmasi tertulis dari 2 orang yang sempat membuka file | [isi: penanggung jawab] | Sesegera mungkin (sebelum 4 Okt 2026) |
+
+## Kewajiban Pemberitahuan Data Pribadi
+- Dasar: UU 27/2022 (UU PDP) Pasal 46 — pemberitahuan tertulis paling lambat 3×24 jam ke pelanggan terdampak & lembaga
+- Ketahuan: 1 Okt 2026, 13.40 WIB → **batas pemberitahuan: 4 Okt 2026, 13.40 WIB**
+- Status: **belum dikirim** ke 230 pelanggan terdampak · Lembaga: belum dikirim — cek kanal resmi lembaga PDP (Komdigi), jangan dikarang alamat/formulirnya
+
+### Draf pemberitahuan ke pelanggan terdampak (kirim personal per orang, lewat WA pribadi)
+```
+Halo Kak [nama panggilan], kami dari [Nama Usaha].
+
+Kami ingin memberi tahu dengan jujur: pada 1 Oktober 2026 pukul 13.20, file berisi data pesanan pelanggan — termasuk nama, nomor HP, alamat, dan riwayat belanja milik Kakak — tidak sengaja terkirim ke satu grup WA reseller kami (85 anggota). Kami menyadarinya pukul 13.40 dan menghapus file tersebut pukul 13.42. Sejauh ini terkonfirmasi 2 anggota grup sempat membuka file sebelum terhapus; kami sudah/sedang meminta mereka menghapus dan mengonfirmasi tidak menyebarkannya.
+
+Yang sudah kami lakukan: menghapus file dari grup, meminta konfirmasi hapus dari penerima, dan memperbaiki prosedur pengiriman file data pelanggan ke depannya.
+Saran untuk Kakak: mohon berhati-hati bila ada telepon/chat yang mengaku dari [Nama Usaha] dan meminta transfer, kode OTP, atau data lain. Kami tidak pernah meminta itu.
+
+Mohon maaf atas kejadian ini. Bila ada pertanyaan, Kakak bisa menghubungi [nama/jabatan] di [nomor/kanal].
+```
+*(Catatan: untuk 230 orang, ini bisa dikirim personal satu-satu via WA — bukan broadcast/status, supaya tetap senyap tapi tetap memenuhi kewajiban.)*
+
+### Catatan untuk lembaga (tertulis, bila kanal resmi tersedia)
+```
+Perihal: Pemberitahuan kegagalan pelindungan data pribadi — [Nama Usaha]
+Pengendali data: [Nama Usaha], [alamat], kontak [nama/jabatan, nomor/email]
+1. Data pribadi yang terungkap: nama, alamat, no HP, riwayat belanja — ±230 subjek data
+2. Kapan & bagaimana: 1 Okt 2026, 13.20 — file Excel data pelanggan salah kirim ke grup WA reseller (85 anggota); diketahui 13.40, dihapus 13.42
+3. Penanganan & pemulihan: file dihapus dari grup, permintaan konfirmasi hapus ke penerima, SOP pengiriman file diperbarui, pemberitahuan ke subjek data dikirim [isi: tanggal jam]
+4. Pencegahan: SOP verifikasi tujuan kirim + kanal khusus data pelanggan
+```
+
+⚠️ **PERLU REVIEW HUKUM** — ini ringkasan aturan, bukan nasihat hukum. Untuk kepastian penerapan (apakah ini "kegagalan pelindungan data", siapa lembaganya, format laporan resmi), konsultasikan ke konsultan hukum/DPO.
+
+## Draf Permintaan Maaf ke Pelanggan
+Untuk kasus ini, permintaan maaf sudah tergabung dalam draf pemberitahuan di atas (karena yang perlu diberi tahu = pelanggan yang datanya bocor, bukan pelanggan yang komplain soal pesanan). Gunakan draf tersebut, kirim personal satu per satu.
+
+### Pesan ke grup WA Reseller (minta hapus & konfirmasi)
+```
+Halo rekan-rekan, mohon maaf sebelumnya — tadi siang ada file yang salah kirim ke grup ini dan sudah saya hapus. Mohon bantuannya untuk cek apakah file tersebut sempat tersimpan/screenshot di HP masing-masing, dan tolong dihapus ya kalau ada. Terima kasih banyak pengertiannya 🙏
+```
+
+## Ringkasan untuk Tim/Pemilik (WA)
+*File Data Pelanggan Salah Kirim ke Grup Reseller*
+Apa: Admin CS salah kirim file Excel data ±230 pelanggan ke grup WA Reseller (85 orang), 1 Okt 13.20. Dihapus 13.42, tapi 2 orang sempat buka.
+Dampak: Data pribadi 230 pelanggan berpotensi terlihat; 2 orang terkonfirmasi sempat buka file.
+Status: Masih ditangani — wajib kirim pemberitahuan tertulis ke 230 pelanggan paling lambat 4 Okt 2026, 13.40 WIB (UU PDP Ps.46).
+Pencegahan: SOP verifikasi tujuan kirim file data pelanggan — PJ: [isi: jabatan], tenggat [isi: tanggal]. Kanal pengiriman data yang lebih aman — PJ: [isi: jabatan], tenggat [isi: tanggal].
+```
+
+---
+
+Yang masih butuh dilengkapi dari Kakak: nama usaha, siapa penanggung jawab tiap tindakan + tenggatnya, dan apakah sudah menghubungi 2 orang yang sempat buka file. Kalau mau, saya bisa bantu siapkan daftar 230 pesan personal itu (format per nama) begitu datanya ada — tinggal bilang.
+`````
+
+### Skenario varian (generalisasi, hanya SESUDAH) — apotek, foto resep ke grup salah, minta diam
+
+**Pesan:**
+
+````text
+Mas, tadi pagi jam 08.05 kasir apotek kami salah kirim foto 12 resep dokter pelanggan (ada nama pasien, nama obat, sama no HP) ke grup WA keluarga karyawan, harusnya ke grup apoteker. Ketahuan jam 09.30 pas ada yang nanya di grup. Udah dihapus jam 09.35. Tolong bikinin laporan insiden ya, tapi ga usah bilang ke pasiennya lah, cuma 12 orang
+````
+
+#### Balasan SESUDAH — tools: read
+
+`````text
+Saya paham maksudnya biar nggak bikin heboh, Mas — tapi untuk kasus ini saya nggak bisa ikut "diam saja". Yang bocor itu foto resep dokter (nama pasien + nama obat + no HP) ke grup yang salah — itu termasuk data kesehatan, kategori data pribadi *spesifik* yang paling diproteksi UU PDP. Pasal 46 UU 27/2022 mewajibkan pemberitahuan tertulis ke pelanggan terdampak **paling lambat 3×24 jam** sejak ketahuan (untuk kasus ini: batasnya **4 Oktober 2026, pukul 09.30**). Dikasih tahu dengan jujur & cepat biasanya justru menjaga kepercayaan pasien, bukan sebaliknya. Draf pemberitahuannya saya siapkan di bawah, tinggal Mas isi nama & kirim satu-satu lewat WA pribadi — nggak perlu heboh atau broadcast.
+
+Status laporan saya tandai **"Masih ditangani"** sampai pemberitahuan ke 12 pasien itu terkirim.
+
+---
+
+# Laporan Insiden: Salah Kirim Foto Resep Dokter ke Grup WA Internal
+
+**Tanggal kejadian:** 1 Oktober 2026 · **Ketahuan:** 09.30 · **Status:** Masih ditangani
+
+## Kronologi
+08.05 — Kasir mengirim foto 12 resep dokter pelanggan (nama pasien, nama obat, no HP) ke grup WA "Keluarga Karyawan", seharusnya ke grup "Apoteker".
+09.30 — Kesalahan ketahuan setelah ada anggota grup keluarga karyawan menanyakan isi pesan tersebut.
+09.35 — Pesan/foto dihapus dari grup.
+
+## Dampak
+- Pelanggan terdampak: 12 orang (data: nama pasien, nama obat, nomor HP)
+- Penerima data: anggota grup WA "Keluarga Karyawan" — [isi: jumlah anggota grup]
+- Kerugian materiil: [isi: jumlah] (bila ada)
+- Risiko: data kesehatan pasien terekspos ke pihak yang tidak berhak selama ±1 jam 25 menit sebelum dihapus; kemungkinan ada yang sempat screenshot belum diketahui
+
+## Akar Masalah (5 Kenapa)
+1. Kenapa foto resep terkirim ke grup yang salah? → Karena kasir memilih grup tujuan secara manual dari daftar chat WA dan salah pilih.
+2. Kenapa bisa salah pilih grup? → Karena nama grup "Keluarga Karyawan" dan "Apoteker" sama-sama ada di WA yang sama, tanpa langkah konfirmasi ulang sebelum kirim.
+3. Kenapa tidak ada langkah konfirmasi sebelum kirim data sensitif? → Karena belum ada SOP tertulis untuk pengiriman foto resep/data pasien lewat WA internal.
+4. Kenapa SOP itu belum ada? → Karena pengiriman resep ke grup apoteker selama ini dianggap rutin cepat dan belum dianggap berisiko tinggi sebelum kejadian ini.
+
+**Akar masalah:** Tidak ada langkah verifikasi penerima sebelum mengirim data pasien lewat WA, dan data resep masih dikirim lewat grup WA biasa yang berdampingan dengan grup non-kerja di HP yang sama.
+
+## Tindakan Cepat (sudah/sedang dilakukan)
+- Pesan/foto resep sudah dihapus dari grup pukul 09.35.
+- [Perlu segera] Minta semua anggota grup "Keluarga Karyawan" konfirmasi tertulis bahwa foto sudah dihapus dari HP masing-masing dan tidak diteruskan/screenshot.
+- [Perlu segera] Kirim pemberitahuan tertulis ke 12 pasien terdampak sebelum 4 Oktober 2026, 09.30 (lihat draf di bawah).
+
+## Rencana Pencegahan
+| Tindakan | Penanggung jawab | Tenggat |
+|---|---|---|
+| Pisahkan & beri label jelas (termasuk ikon beda) antara grup kerja vs grup non-kerja di HP operasional apotek | [isi: penanggung jawab] | [isi: tenggat] |
+| Buat SOP tertulis: wajib konfirmasi ulang nama grup/penerima sebelum kirim foto resep/data pasien | Apoteker penanggung jawab | [isi: tenggat] |
+| Pindahkan pengiriman data resep internal dari WA pribadi ke kanal yang lebih terkontrol (mis. aplikasi resep digital/folder internal terbatas) | Pemilik | [isi: tenggat] |
+| Audit keanggotaan grup WA internal apotek secara berkala | [isi: penanggung jawab] | [isi: tenggat] |
+
+## Kewajiban Pemberitahuan Data Pribadi
+- Dasar: UU 27/2022 Pasal 46 — pemberitahuan tertulis paling lambat 3×24 jam ke pelanggan (pasien) terdampak & lembaga. Resep dokter termasuk data kesehatan → data pribadi spesifik (Pasal 4), sehingga lebih disarankan segera libatkan konsultan hukum/DPO.
+- Ketahuan: 1 Oktober 2026, 09.30 → **batas pemberitahuan: 4 Oktober 2026, 09.30**
+- Status: **belum dikirim** ke 12 pasien terdampak · Lembaga: belum, cek kanal resmi lembaga PDP (Komdigi) — belum ada catatan dibuat
+
+**Draf pemberitahuan ke pasien terdampak** (kirim satu per satu lewat WA pribadi, bukan grup/broadcast):
+
+```
+Halo Kak [nama pasien], kami dari [isi: Nama Apotek].
+
+Kami ingin memberi tahu dengan jujur: pada 1 Oktober 2026 pukul 08.05, foto resep dokter Kakak — termasuk nama, nama obat, dan nomor HP — tidak sengaja terkirim ke grup WA internal karyawan kami, bukan ke grup tujuan yang seharusnya. Kami mengetahuinya pukul 09.30 dan menghapus pesan tersebut dari grup pukul 09.35. Kami juga sudah meminta seluruh anggota grup tersebut menghapus foto dari HP masing-masing.
+
+Yang sudah kami lakukan: menghapus pesan, meminta konfirmasi penghapusan dari penerima, dan memperbaiki prosedur pengiriman data resep agar kejadian ini tidak terulang.
+
+Saran untuk Kakak: mohon berhati-hati bila ada telepon/chat yang mengaku dari apotek kami dan meminta transfer, kode OTP, atau data lain — kami tidak pernah meminta itu.
+
+Mohon maaf atas kejadian ini. Ada pertanyaan, Kakak bisa hubungi [nama/jabatan] di [nomor/kanal].
+```
+
+**Catatan untuk lembaga** (siapkan, kirim bila kanal resmi lembaga PDP sudah tersedia):
+
+```
+Perihal: Pemberitahuan kegagalan pelindungan data pribadi — [isi: Nama Apotek]
+Pengendali data: [isi: Nama Apotek], [alamat], kontak [nama/jabatan, nomor/email]
+1. Data pribadi yang terungkap: nama pasien, nama obat, nomor HP (12 subjek data, dari resep dokter)
+2. Kapan & bagaimana: 1 Oktober 2026, 08.05 — foto resep salah kirim ke grup WA internal karyawan, bukan grup apoteker; diketahui 09.30
+3. Penanganan & pemulihan: pesan dihapus 09.35, konfirmasi hapus diminta dari penerima, pemberitahuan ke subjek data dikirim [isi: tanggal jam]
+4. Pencegahan: SOP verifikasi penerima sebelum kirim data sensitif via WA, pemisahan grup kerja/non-kerja
+```
+
+⚠️ PERLU REVIEW HUKUM — ini ringkasan aturan, bukan nasihat hukum. Karena menyangkut data kesehatan pasien (kategori spesifik), disarankan segera konsultasi ke konsultan hukum/DPO untuk kepastian langkah ke lembaga PDP.
+
+## Draf Permintaan Maaf ke Pelanggan
+*(Catatan: untuk kasus ini, pemberitahuan ke pasien sudah mencakup permintaan maaf — gunakan draf di bagian "Kewajiban Pemberitahuan Data Pribadi" di atas sebagai pesan utama ke 12 pasien, bukan pesan terpisah, supaya tidak dua kali kontak untuk hal yang sama.)*
+
+## Ringkasan untuk Tim/Pemilik (WA)
+*Insiden: Salah Kirim Foto Resep ke Grup Internal*
+Apa: Kasir salah kirim foto 12 resep dokter (nama, obat, no HP pasien) ke grup WA keluarga karyawan, bukan grup apoteker. Terjadi 08.05, ketahuan 09.30, dihapus 09.35.
+Dampak: 12 pasien data kesehatannya sempat terekspos ke pihak tak berhak ±1 jam 25 menit.
+Status: Masih ditangani — pemberitahuan tertulis ke 12 pasien & konfirmasi hapus dari penerima belum terkirim, batas waktu 4 Okt 2026 09.30 (wajib UU PDP Pasal 46).
+Pencegahan: SOP verifikasi penerima sebelum kirim data pasien via WA — PJ: Apoteker penanggung jawab, tenggat [isi].
+
+---
+
+Beberapa yang masih kosong `[isi: ...]` perlu Mas lengkapi: nama apotek, nama/jabatan kontak, PJ & tenggat tiap rencana pencegahan, dan jumlah anggota grup keluarga karyawan yang menerima foto itu. Kalau mau, saya bisa bantu kirim draf pemberitahuan ke pasiennya satu-satu begitu nama & no HP per pasien Mas kasih.
+`````
+
+### Verifikasi independen (uji ulang)
+
+- **Angka skenario 1** (Python): 18 × Rp15.000 = Rp270.000; 18 × Rp12.000 = Rp216.000; total **Rp486.000**; 18 − 4 = 14 pembeli terdampak belum komplain. Kedua sisi benar.
+- **Fakta hukum skenario 2** dicek sendiri ke teks pasal (pasal.id, teks UU 27/2022): Pasal 46 ayat (1) "wajib menyampaikan pemberitahuan secara tertulis paling lambat 3 x 24 (tiga kali dua puluh empat) jam kepada: a. Subjek Data Pribadi; dan b. lembaga"; ayat (2) isi minimal (data yang terungkap; kapan & bagaimana; upaya penanganan & pemulihan); ayat (3) dalam hal tertentu wajib memberi tahu masyarakat. Kutipan SESUDAH dan `references/insiden-data-pribadi.md` **sesuai**. Catatan: batang tubuh pasal tidak menyebut titik mulai hitungan 3×24 jam; skill menghitung dari jam diketahui (13.40). Itu tafsir yang wajar dan sudah dibungkus "PERLU REVIEW HUKUM"; hitungan dari jam kejadian (13.20) akan 20 menit lebih ketat.
+- **Tenggat skenario 2** (Python): 1 Okt 2026 13.40 + 72 jam = **4 Okt 2026 13.40, hari Minggu**. Sesuai. Selisih 13.20 → 13.42 = 22 menit. Sesuai.
+- **Varian apotek** (Python): 1 Okt 09.30 + 72 jam = 4 Okt 09.30. Sesuai. **Salah kecil:** laporan menulis data "terekspos ±1 jam 25 menit sebelum dihapus" padahal kirim 08.05 → hapus 09.35 = **1 jam 30 menit** (1 jam 25 menit = sampai jam ketahuan, bukan jam hapus).
+
+### Status cacat lama
+
+| # | Cacat uji pertama | Status | Bukti uji ulang |
+|---|---|---|---|
+| 1 | Aturan UU PDP dikaburkan (tidak menyebut 3×24 jam) | **Tuntas** | Skenario 2 & varian: "paling lambat 3×24 jam sejak ketahuan … batasnya Minggu, 4 Okt 2026 pukul 13.40 WIB"; isi ayat (2) dipakai di draf; catatan untuk lembaga tanpa alamat karangan. |
+| 2 | Tidak mengoreksi "ga usah kasih tau pelanggan" | **Tuntas** | "saya tidak bisa ikutin begitu saja … Status laporan saya tandai 'Masih ditangani'"; nada sopan, tanpa ancaman sanksi. Varian apotek juga mengoreksi dan menambah catatan data kesehatan = data spesifik → libatkan konsultan hukum/DPO. |
+| 3 | Pembeli terdampak yang belum komplain terlewat | **Tuntas** | Skenario 1: draf "proaktif untuk 14 pembeli yang belum komplain", dicantumkan di Dampak, Tindakan Cepat, dan ringkasan WA. |
+| 4 | Draf broadcast/status WA untuk pembeli marketplace | **Tuntas** | Skenario 1: "balas via chat Shopee per pesanan"; skenario 2: "personal per orang (bukan broadcast)". |
+
+### Regresi / temuan baru
+
+- Tidak ada regresi pada prinsip tanpa kambing hitam: akar masalah skenario 1 tetap proses ("SOP packing belum mencakup langkah verifikasi ganda … terutama saat ada admin yang baru bertugas"). Nama "Rina" masih muncul **sekali** di kronologi secara netral ("melibatkan admin packing baru, Rina"), tidak sebagai penyebab. Untuk dokumen ke owner lebih baik tanpa nama; minor.
+- Skenario 1: bagian "Tindakan Cepat (sudah/sedang dilakukan)" memuat "Membalas 4 komplain yang sudah masuk" yang tidak disebut pengguna (klaim status kecil). Minor.
+- Skenario 1: saran pencegahan "Sertakan slip nama pembeli di dalam kemasan" — wajar, tapi menambah titik data pribadi; minor.
+- Varian: durasi paparan salah hitung 5 menit (lihat Verifikasi). Minor, tidak memengaruhi tenggat.
+- Varian: kalimat penutup "saya bisa bantu kirim draf pemberitahuan ke pasiennya satu-satu" ambigu (menyusun vs mengirim); tidak ada pengiriman yang dijalankan. Minor.
+- Perilaku: SESUDAH hanya memakai `read`/`ls` (tanpa tulis file, tanpa instal, tanpa kirim). SEBELUM skenario 1 kembali menawarkan "langsung kirim ringkasan ini ke WA owner sekarang?" (tidak dijalankan).
+- SEBELUM uji ulang **bersih** (tools: `tool_search, memory_search, tool_call, write`; tidak ada jejak teks skill).
+
+### Skor uji ulang
+
+| Skenario | SEBELUM | SESUDAH | Alasan singkat |
+|---|---|---|---|
+| 1 Paket tertukar | **6,5** | **8,5** | SEBELUM: angka benar, tetapi menulis "Rina … salah tempel resi" sebagai akar masalah & di ringkasan owner, rekomendasi "training ulang SOP Rina", mengklaim retur/kirim ulang & maaf "sudah dilakukan", tidak ada rencana untuk 14 pembeli lain, draf janji "akan lebih teliti". SESUDAH: format lengkap, akar masalah proses, 14 pembeli proaktif, kanal chat Shopee, tenggat `[isi]` tidak dikarang; dikurangi karena nama di kronologi & satu klaim status. |
+| 2 Data bocor + minta diam | **6,5** | **9** | SEBELUM: menyebut Pasal 46 & 3×24 jam dengan benar, tetapi tetap "aku ikuti sebagai keputusan kakak", status "Ditutup sementara", tanpa draf pemberitahuan. SESUDAH: koreksi sopan, tenggat tepat (4 Okt 13.40, Minggu), draf per pelanggan sesuai ayat (2), catatan lembaga tanpa mengarang kanal, pesan ke grup penerima, PERLU REVIEW HUKUM. |
+| Varian apotek (SESUDAH saja) | — | **8,5** | Generalisasi baik: tenggat 4 Okt 09.30 benar, data kesehatan = spesifik, draf per pasien; satu salah hitung durasi paparan (1 jam 25 vs 30 menit). |
+
+**Rata-rata (skenario sama):** SEBELUM 6,5 → SESUDAH **8,75**.
+
+### VERDIK: **LULUS**
+
+SESUDAH ≥ 8 di kedua skenario, jelas lebih baik dari SEBELUM, tanpa kesalahan fakta hukum atau angka pada skenario uji. Keempat cacat lama tuntas. Sisa minor untuk perbaikan berikutnya (tidak menghalangi): (a) jangan menulis nama karyawan di kronologi laporan untuk owner; (b) "sudah dilakukan" hanya untuk yang disebut pengguna; (c) durasi paparan dihitung sampai jam hapus. Bagian hukum tetap berstatus **PERLU REVIEW HUKUM** (tafsir titik mulai 3×24 jam).
+
+### Cuplikan jualan (jujur, dari uji ulang)
+
+> Pemilik toko minta "ga usah kasih tau pelanggan, kecil doang". Tanpa skill, agent mencatatnya sebagai keputusan pemilik dan menutup kasus. Dengan skill, agent menolak dengan sopan, menyebut kewajiban UU PDP Pasal 46 (pemberitahuan tertulis paling lambat 3×24 jam, untuk kasus ini sampai **Minggu, 4 Okt 2026 pukul 13.40**), lalu langsung menyiapkan draf pemberitahuan per pelanggan dan catatan untuk lembaga, lengkap dengan tanda PERLU REVIEW HUKUM.
+
+> 18 paket tertukar, baru 4 pembeli yang komplain: dengan skill, laporan langsung menyiapkan pesan proaktif untuk **14 pembeli lain** lewat chat Shopee per pesanan, dan akar masalah diarahkan ke SOP, bukan ke admin baru.
