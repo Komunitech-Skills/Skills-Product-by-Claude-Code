@@ -99,6 +99,15 @@ Pihak perusahaan,          Karyawan,               Saksi,
 ```
 
 ---
+## 4b. Kalimat wajib bila pengguna meminta surat skorsing (selama proses PHK)
+```
+Selama masa skorsing, Saudara/i tidak diwajibkan hadir di tempat kerja, dan upah beserta
+hak lain yang biasa diterima TETAP DIBAYAR PENUH sesuai ketentuan perundang-undangan
+ketenagakerjaan, sampai proses ini selesai.
+```
+Jangan menulis "hak atas upah ditentukan kemudian", "upah dipotong", atau menyebut nomor pasal pidana. Untuk keputusan PHK, arahkan ke ahli hukum ketenagakerjaan/Disnaker.
+
+---
 ## 5. Contoh kasus lokal (acuan penulisan fakta)
 1. **Toko bangunan, Sidoarjo — kasir terlambat 6x/bulan** → SP1 (sudah 2x teguran lisan).
 2. **Online shop skincare, Tangerang — staf packing salah kirim 5 paket dalam 2 minggu saat SP1 (terbit 14 Juli 2026) masih berlaku** → cek script `--terbit 14-07-2026 --cek <tanggal pelanggaran>` → masih aktif → SP2. Lampirkan daftar nomor pesanan & komplain pembeli.

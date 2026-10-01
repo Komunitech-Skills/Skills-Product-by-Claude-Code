@@ -6,7 +6,7 @@ Pakai untuk mengisi `--bobot-minggu` (mis. `1 1 1 2` = minggu ke-4 anggaran dua 
 |---|---|---|
 | Gajian & tanggal tua | sekitar tanggal 25-1 (gajian); tanggal tua 15-24 | Naikkan anggaran menjelang gajian, tahan di tanggal tua untuk produk non-esensial; produk murah/esensial lebih tahan |
 | Tanggal kembar (9.9, 10.10, 11.11, 12.12) | tanggal tetap | Kampanye marketplace besar; bergantung program platform, cek Seller Center untuk syarat ikut voucher/gratis ongkir |
-| Harbolnas | biasanya sekitar 12.12 | Persiapan stok & kreatif 2-3 minggu sebelumnya; naikkan anggaran bertahap (maks +20% per langkah), jangan melonjak mendadak |
+| Harbolnas (Hari Belanja Online Nasional) | **12 Desember (12.12)**; beberapa tahun dibuat rangkaian beberapa hari di sekitar 12.12, cek pengumuman resmi tahun berjalan. **11.11 bukan Harbolnas** (11.11 = tanggal kembar) | Persiapan stok & kreatif 2-3 minggu sebelumnya; naikkan anggaran bertahap (maks +20% per langkah), jangan melonjak mendadak |
 | Ramadan & Lebaran | tanggal berubah tiap tahun (cek keputusan pemerintah) | Puncak fashion, makanan, hampers, kirim paket; pesanan awal jauh sebelum Lebaran karena batas kirim ekspedisi |
 | Tahun ajaran baru | sekitar Juli | Seragam, alat tulis, tas, les |
 | 17 Agustus | tanggal tetap | Atribut, lomba, promo bertema |

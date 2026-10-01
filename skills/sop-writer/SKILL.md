@@ -112,14 +112,15 @@ Berlaku untuk: ... | Tidak mengatur: ...
 ### B. Hitung uang
 3. Cetak laporan penjualan shift dari aplikasi kasir.
 4. Hitung uang tunai di laci per pecahan.
-5. Kurangi uang modal awal (Rp [isi]) dari total tunai.
-6. ⚠️ Bandingkan tunai dengan "Penjualan Tunai" di laporan. (Selisih harus ketahuan hari ini, bukan akhir bulan.)
+   **Rumus:** uang seharusnya di laci = modal Rp [isi] + Penjualan Tunai di laporan. Setoran = uang di laci − modal.
+5. Pisahkan uang modal Rp [isi] dari uang lain, biarkan di laci untuk besok. (Hanya sekali di sini.)
+6. ⚠️ Bandingkan sisa uang tunai dengan "Penjualan Tunai" di laporan. (Selisih harus ketahuan hari ini, bukan akhir bulan.)
 7. Cek total QRIS di aplikasi/mutasi dengan "Penjualan QRIS" di laporan.
 ### C. Serah terima
 8. Tulis hasil di Form Closing: tunai, QRIS, selisih.
 9. Hitung ulang bersama kasir shift berikutnya atau supervisor.
 10. Tanda tangan berdua di Form Closing.
-11. Masukkan uang setoran ke amplop.
+11. Masukkan uang setoran (semua tunai selain modal) ke amplop.
 12. Tulis tanggal dan shift di amplop.
 13. Simpan amplop di brankas.
 
@@ -146,6 +147,7 @@ Contoh SOP lengkap lainnya (buka toko, packing pesanan online, handling komplain
 - [ ] Kode, versi, tanggal berlaku, dan riwayat revisi terisi.
 
 ## Batasan & penanganan error
+- **Izin usaha makanan jangan tertukar:** warung/rumah makan/katering (pangan siap saji) → **Sertifikat Laik Higiene Sanitasi (SLHS)** atau, untuk usaha risiko rendah, label pengawasan/pembinaan dari Dinas Kesehatan kab/kota (Permenkes 14/2021). **PIRT/SPP-IRT** hanya untuk pangan olahan **kemasan** produksi rumah tangga. Sebut "cek ke Dinas Kesehatan setempat".
 - Jangan mengarang angka yang spesifik usaha (modal kasir, batas selisih, target harian, harga). Pakai `[isi]` atau angka contoh berlabel "(usulan, sesuaikan)".
 - Jika cara kerja yang dijelaskan pengguna berisiko (mis. uang dihitung sendirian tanpa saksi, bahan makanan mentah dan matang dicampur), tetap buat SOP-nya, tambahkan langkah pengaman, dan jelaskan alasannya di catatan.
 - Jika pengguna meminta SOP yang melanggar hak karyawan (mis. menahan KTP/ijazah, potong gaji otomatis untuk selisih kas tanpa kesepakatan), jangan masukkan langkah itu. Beri catatan singkat dan sarankan konsultasi ke Disnaker/ahli hukum.

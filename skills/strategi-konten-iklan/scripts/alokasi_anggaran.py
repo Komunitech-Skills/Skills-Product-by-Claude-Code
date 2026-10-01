@@ -50,6 +50,8 @@ ALIAS_KANAL = {
     "google": "google", "gads": "google",
 }
 MARKETPLACE = ["shopee", "tiktokshop"]
+# Kanal penjualan utama (tempat pembeli bertransaksi) mendapat bobot = 2x bobot kanal pendukung terbesar.
+PENGALI_UTAMA = 2
 JENIS = ["umum", "marketplace", "jasa-lokal"]
 # Urutan prioritas kanal bila anggaran kecil memaksa memilih (paling cocok dulu). 'umum' = menurut bobot tujuan.
 PRIORITAS = {
@@ -298,6 +300,23 @@ def pilih_kanal(anggaran, bobot, kanal_diminta, bobot_minggu, min_harian, priori
     return [k for k in kanal_diminta if k in aktif], dikeluarkan, bool(lemah)
 
 
+def tentukan_kanal_utama(a, jenis, kanal_diminta):
+    """Kanal tempat penjualan terbanyak terjadi. Dari --kanal-utama; bila kosong dan --jenis marketplace,
+    marketplace pertama (Shopee, lalu TikTok Shop) yang ada di kanal yang dipakai. Lainnya None."""
+    if getattr(a, "kanal_utama", None):
+        daftar, _ = parse_kanal(a.kanal_utama)
+        if len(daftar) != 1:
+            raise Gagal("--kanal-utama hanya satu kanal (tempat penjualan terbanyak), mis. --kanal-utama shopee.")
+        k = daftar[0]
+        if k not in kanal_diminta:
+            raise Gagal(f"--kanal-utama {NAMA_KANAL[k]} tidak ada di --kanal. Tambahkan ke --kanal atau pilih "
+                        "kanal utama lain.")
+        return k
+    if jenis == "marketplace":
+        return next((k for k in MARKETPLACE if k in kanal_diminta), None)
+    return None
+
+
 def hitung(a):
     anggaran = parse_rupiah(a.anggaran, "--anggaran")
     if anggaran < 100000:
@@ -389,8 +408,24 @@ def hitung(a):
 
     # ---- kanal & minggu
     jenis = a.jenis
+    utama = tentukan_kanal_utama(a, jenis, kanal_diminta)
+    if utama is not None and set(porsi) != {"awareness"}:
+        if bobot[utama] == 0:
+            catatan.append(f"{NAMA_KANAL[utama]} disebut sebagai sumber penjualan utama, tetapi tidak cocok untuk "
+                           "tujuan ini (mis. leads); porsinya tidak dinaikkan.")
+        else:
+            lain = [bobot[k] for k in kanal_diminta if k != utama and bobot[k] > 0]
+            if lain:
+                bobot[utama] = max(bobot[utama], PENGALI_UTAMA * max(lain))
+            catatan.append(f"Kanal penjualan utama: {NAMA_KANAL[utama]} -> porsinya dibuat {PENGALI_UTAMA}x kanal "
+                           "pendukung terbesar (iklan di tempat pembeli bertransaksi dulu; kanal lain sebagai "
+                           "pendukung). Ganti dengan --kanal-utama bila penjualan terbanyak datang dari kanal lain.")
     prioritas = PRIORITAS.get(jenis) or sorted(KANAL, key=lambda k: (-bobot[k], KANAL.index(k)))
+    if utama is not None:
+        prioritas = [utama] + [k for k in prioritas if k != utama]
     cadangan = kanal_diminta if (a.kanal or jenis == "marketplace") else [k for k in kanal_diminta if k not in MARKETPLACE]
+    if utama is not None and utama not in cadangan:
+        cadangan = cadangan + [utama]
     if campuran:
         catatan.append("Tujuan campuran: bobot kanal = rata-rata tertimbang bobot tiap tujuan menurut porsinya "
                        "(titik awal). Target CPA/ROAS berlaku untuk bagian penjualan/leads; bagian awareness "
@@ -517,6 +552,8 @@ def buat_parser():
     p.add_argument("--margin", help="margin kotor setelah biaya admin marketplace & ongkir, mis. 40%%")
     p.add_argument("--closing", help="khusus leads: persen calon pembeli yang jadi membeli, mis. 20%%")
     p.add_argument("--kanal", help="pilihan: " + ",".join(KANAL) + " (default semua)")
+    p.add_argument("--kanal-utama", help="kanal tempat penjualan terbanyak terjadi (mis. shopee); porsinya dibuat "
+                                         "2x kanal pendukung terbesar. Default: Shopee/TikTok Shop bila --jenis marketplace")
     p.add_argument("--minggu", type=int, default=4, help="jumlah minggu (1-5, default 4)")
     p.add_argument("--bobot-minggu", nargs="+", help="bobot bulat per minggu, mis. 1 1 1 2 (momen belanja di minggu 4)")
     p.add_argument("--min-harian", help="ganti batas uji minimum per iklan per hari untuk semua kanal")

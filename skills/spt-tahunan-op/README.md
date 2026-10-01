@@ -50,6 +50,7 @@ Rumus dan tarif mengikuti aturan resmi yang dicek per 30 September 2026, tetapi 
 SPT badan, pisah harta/memilih terpisah, penghasilan luar negeri, rugi usaha, dan WNA datang/pergi di tengah tahun. Untuk itu, skill akan menyarankan konsultan pajak atau Kring Pajak 1500200.
 
 ## Riwayat versi
+- **Catatan revisi 1.0.3 (2026-10-01)** — Fakta pajak: jasa yang diterima orang pribadi (konsultan/freelancer) dipotong klien dengan **PPh 21 bukan pegawai** (BP21, PMK 168/2023), bukan PPh 23. Opsi baru `--final-salah-skema`: PPh final 0,5% yang terlanjur disetor atas pekerjaan bebas tidak dikreditkan dan **tidak** dilaporkan di Lampiran 2; diarahkan ke permohonan pengembalian pajak yang seharusnya tidak terutang lewat Coretax (pemindahbukuan umumnya tidak bisa, PMK 81/2024 Ps. 109 ayat (3)) + konfirmasi KPP/konsultan. Tetap ⚠️ PERLU REVIEW konsultan pajak.
 - **1.0.1 (2026-09-30)** — Koreksi batas lapor TP 2025: jatuh tempo tetap 31 Maret 2026; KEP-55/PJ/2026 hanya menghapus sanksi bila lapor/bayar s.d. 30 April 2026 (bukan perpanjangan). Peringatan baru untuk karyawan 1 kantor yang hasilnya kurang/lebih bayar: cek ulang bukti potong A1 dengan HRD dulu. Pesan error ramah untuk angka negatif; "5,054 miliar" kini diterima. Penjelasan beda PPh final 0,5% (usaha) vs pekerjaan bebas (PP 20/2026).
 - **1.0.0 (2026-09-30)** — Rilis pertama.
 

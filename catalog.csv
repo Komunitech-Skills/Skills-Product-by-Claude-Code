@@ -1,11 +1,11 @@
 nama,kategori,jalur,sumber_url,lisensi,skor_kualitas,tier_usulan,harga_usulan_idr,tier_final,harga_final_idr,versi,platform_teruji,status,tanggal_update
 caption-sosmed-umkm,Marketing & Konten,orisinal,,,7,gratis,0,gratis,0,1.1.1,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-09-30
 rekap-penjualan-csv,Data & Analisis,orisinal,,,8,ecer,99000,ecer,99000,1.2.3,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
-lowongan-kerja,HR,orisinal,,,8,ecer,49000,ecer,49000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
-surat-peringatan-karyawan,HR,orisinal,,,8,ecer,99000,ecer,99000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-10-01
+lowongan-kerja,HR,orisinal,,,8,ecer,49000,ecer,49000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
+surat-peringatan-karyawan,HR,orisinal,,,8,ecer,99000,ecer,99000,1.0.4,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-10-01
 surat-resmi,Legal & Dokumen,orisinal,,,8,ecer,49000,ecer,49000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
 notulen-rapat,Produktivitas,orisinal,,,8,gratis,0,gratis,0,1.0.4,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
-sop-writer,Produktivitas,orisinal,,,8,ecer,99000,ecer,99000,1.0.2,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
+sop-writer,Produktivitas,orisinal,,,8,ecer,99000,ecer,99000,1.0.3,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
 surat-penawaran-harga,Sales,orisinal,,,8,ecer,99000,ecer,99000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
 proposal-kerjasama,Sales,orisinal,,,8,ecer,99000,ecer,99000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-01
 follow-up-prospek,Sales,orisinal,,,8,ecer,49000,ecer,49000,1.0.4,claude-code (simulasi agent);openclaw 2026.9.5 (uji muat CLI),lulus,2026-10-01
@@ -113,6 +113,6 @@ listmonk-newsletter,Marketing & Konten,orisinal,https://github.com/knadh/listmon
 strategi-merek-usaha,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills;https://github.com/phuryn/pm-skills,MIT (atribusi di ATTRIBUTION.md),9,ecer,69000,ecer,69000,1.0.2,claude-code (simulasi agent),lulus,2026-10-01
 program-referral-loyalitas,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT (atribusi di ATTRIBUTION.md),8,ecer,79000,ecer,79000,1.0.3,claude-code (simulasi agent),lulus,2026-10-01
 odoo-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech (Odoo LGPL-3.0/proprietary Odoo S.A. tidak didistribusikan),8,ecer,249000,ecer,249000,1.0.3,"claude-code (simulasi agent);odoo community 18 & 19 (docker, uji agent)",lulus,2026-10-01
-strategi-konten-iklan,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT (atribusi di ATTRIBUTION.md),9,ecer,79000,ecer,79000,1.0.2,claude-code (simulasi agent),lulus,2026-10-01
-spt-tahunan-op,Keuangan & Akuntansi,orisinal,,,9,ecer,79000,ecer,79000,1.0.2,claude-code (simulasi agent),lulus,2026-10-01
+strategi-konten-iklan,Marketing & Konten,kurasi,https://github.com/coreyhaines31/marketingskills,MIT (atribusi di ATTRIBUTION.md),9,ecer,79000,ecer,79000,1.0.3,claude-code (simulasi agent),lulus,2026-10-01
+spt-tahunan-op,Keuangan & Akuntansi,orisinal,,,9,ecer,79000,ecer,79000,1.0.3,claude-code (simulasi agent),lulus,2026-10-01
 kanboard-papan-kerja,Produktivitas,orisinal,,Proprietary Komunitech (Kanboard MIT tidak didistribusikan),8,ecer,99000,ecer,99000,1.0.2,"openclaw 2026.9.7 (uji muat CLI);kanboard 1.2.54 (php+sqlite, uji agent)",lulus,2026-10-01

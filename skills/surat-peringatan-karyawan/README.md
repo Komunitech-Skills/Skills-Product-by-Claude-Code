@@ -50,3 +50,7 @@ Tidak. PHK punya prosedur dan hak pekerja yang wajib dipenuhi, sehingga sebaikny
 
 **Bagaimana kalau karyawan menolak tanda tangan?**
 Skill memberi langkahnya: catat penolakan, minta saksi tanda tangan, dan simpan bukti penyerahan.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Surat dan penjelasan tidak lagi mengutip nomor pasal pidana (rujukan "Pasal 374 KUHP" lama sudah usang sejak KUHP baru UU 1/2023 berlaku 2 Januari 2026; padanannya Pasal 488). Dugaan pidana cukup disebut dan diarahkan ke ahli hukum/kepolisian.
+- Surat skorsing (bila diminta) wajib menyatakan upah dan hak lain **tetap dibayar penuh** selama skorsing (UU 13/2003 Pasal 157A s.t.d.d. UU 6/2023; Putusan MK 168/PUU-XXI/2023), tidak lagi "ditentukan kemudian".

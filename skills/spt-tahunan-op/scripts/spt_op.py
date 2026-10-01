@@ -26,7 +26,7 @@ import re
 import sys
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP
 
-VERSI = "1.0.1"
+VERSI = "1.0.3"
 
 # ------------------------------------------------------------------ konstanta aturan
 PTKP_DIRI = Decimal(54000000)        # UU 7/2021 HPP Pasal 7 ayat (1); PMK 101/2016
@@ -290,6 +290,11 @@ def hitung(args, hari_ini=None):
     pph_final = parse_angka(args.pph_final, "--pph-final") if args.pph_final else Decimal(0)
     if pph_final and not omzet_final:
         raise InputError("--pph-final diisi tanpa --omzet-final. Isi omzet setahun yang kena PPh final 0,5%")
+    final_salah = (parse_angka(args.final_salah_skema, "--final-salah-skema")
+                   if args.final_salah_skema else Decimal(0))
+    if final_salah and not usaha:
+        raise InputError("--final-salah-skema diisi tanpa penghasilan pekerjaan bebas. Hitung dulu penghasilan "
+                         "pekerjaan bebas itu dengan --nppn BRUTO PERSEN atau --pembukuan-neto NETO")
 
     if args.nppn:
         total_bruto_usaha = bruto_nppn + omzet_final
@@ -428,6 +433,15 @@ def hitung(args, hari_ini=None):
         if omzet_final > BATAS_NPPN:
             peringatan.append("Omzet final di atas Rp4,8 miliar: tahun berikutnya tidak lagi memenuhi syarat PPh final "
                               "0,5% — konsultasikan ke konsultan pajak.")
+    if final_salah:
+        peringatan.append(
+            "PPh final 0,5% {} terlanjur disetor atas penghasilan PEKERJAAN BEBAS (salah skema): TIDAK "
+            "dikreditkan di hitungan ini dan JANGAN dilaporkan sebagai penghasilan final (Lampiran 2/L-3B) — "
+            "penghasilannya sudah dihitung lewat NPPN/pembukuan. Uang itu bisa diminta kembali lewat permohonan "
+            "pengembalian pajak yang seharusnya tidak terutang di Coretax (menu Pembayaran, formulir restitusi); "
+            "pemindahbukuan umumnya TIDAK bisa karena setoran PPh final UMKM dianggap sebagai penyampaian SPT Masa "
+            "(PMK 81/2024 Pasal 109 ayat (3)). Pastikan prosedurnya ke KPP/Kring Pajak 1500200 atau konsultan "
+            "pajak sebelum mengajukan.".format(format_rp(final_salah)))
     if jenis == "K/I":
         catatan.append("Status K/I: seluruh penghasilan & kredit pajak istri sudah harus dimasukkan ke angka di atas. "
                        "Istri yang hanya bekerja pada 1 pemberi kerja (sudah dipotong) dan tidak terkait usaha suami "
@@ -469,6 +483,7 @@ def hitung(args, hari_ini=None):
         "status_spt": status_spt,
         "omzet_final_pp55": omzet_final,
         "pph_final_disetor": pph_final,
+        "pph_final_salah_skema": final_salah,
         "perkiraan_pph25_per_bulan_tahun_berikut": pph25_berikut,
         "batas_lapor": batas.isoformat(),
         "batas_bebas_sanksi_kep55": batas_bebas_sanksi.isoformat() if batas_bebas_sanksi else None,
@@ -503,6 +518,9 @@ def checklist(pekerjaan, usaha, zakat, omzet_final, args, jenis, status_spt):
         c.append("Rekap peredaran bruto per bulan (pencatatan) + bukti pemberitahuan penggunaan NPPN ke DJP")
     if any(u["metode"] == "pembukuan" for u in usaha):
         c.append("Laporan keuangan (neraca & laba rugi) + rekonsiliasi fiskal dari pembukuan")
+    if h_final_salah(args):
+        c.append("Bukti setor (NTPN) PPh final 0,5% yang salah skema — untuk permohonan pengembalian pajak yang "
+                 "seharusnya tidak terutang (bukan untuk Lampiran 2)")
     if omzet_final:
         c.append("Rekap omzet PP 55 per bulan + bukti setor (NTPN) PPh final 0,5% / dokumen tagihan marketplace")
     if zakat:
@@ -525,6 +543,10 @@ def ke_json(obj):
     if isinstance(obj, (list, tuple)):
         return [ke_json(v) for v in obj]
     return obj
+
+
+def h_final_salah(args):
+    return bool(getattr(args, "final_salah_skema", None))
 
 
 def teks(h):
@@ -574,6 +596,9 @@ def teks(h):
     if h["omzet_final_pp55"]:
         b.append("Info: omzet PPh final 0,5% {} (PPh final disetor {}) dilaporkan terpisah, tidak mengubah angka di atas."
                  .format(format_rp(h["omzet_final_pp55"]), format_rp(h["pph_final_disetor"])))
+    if h.get("pph_final_salah_skema"):
+        b.append("Info: PPh final 0,5% salah skema {} tidak dikreditkan dan tidak dilaporkan di Lampiran 2 — "
+                 "lihat Peringatan (pengembalian lewat Coretax).".format(format_rp(h["pph_final_salah_skema"])))
     label = ""
     if h["batas_sudah_lewat"]:
         label = " — JATUH TEMPO SUDAH LEWAT"
@@ -612,6 +637,8 @@ def buat_parser():
     ap.add_argument("--omzet-final", help="Omzet setahun yang dikenai PPh final 0,5%% PP 55 (info, tidak dihitung "
                                           "Pasal 17)")
     ap.add_argument("--pph-final", help="Total PPh final 0,5%% yang sudah disetor/dipungut setahun (info)")
+    ap.add_argument("--final-salah-skema", help="PPh final 0,5%% yang TERLANJUR disetor atas penghasilan pekerjaan "
+                                                "bebas (salah skema): tidak dikreditkan, tidak masuk Lampiran 2")
     ap.add_argument("--zakat", help="Zakat/sumbangan keagamaan wajib ke lembaga resmi, di luar yang dipotong kantor")
     ap.add_argument("--pph21-lain", help="Total PPh 21 lain (bukti potong bukan pegawai/honor) di luar --a1")
     ap.add_argument("--pph22", help="Total PPh 22 yang dipungut (dapat dikreditkan)")

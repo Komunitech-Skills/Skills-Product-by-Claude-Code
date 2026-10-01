@@ -46,5 +46,10 @@ Bisa. Skill memakai praktik umum untuk jenis usahamu dan menandai langkah yang p
 **Bisa dibuat versi poster untuk ditempel?**
 Bisa. Minta "versi poster", nanti dibuat 5–7 langkah inti dengan huruf besar.
 
-**Apakah SOP ini cukup untuk sertifikasi (halal, PIRT, ISO)?**
+**Apakah SOP ini cukup untuk sertifikasi (halal, SLHS, PIRT, ISO)?**
 Belum. SOP ini untuk operasional harian. Untuk sertifikasi, ikuti ketentuan resmi dan konsultasikan ke petugas atau pendamping sertifikasi.
+
+## Catatan revisi 1.0.3 (2026-10-01)
+- Alur uang SOP kas konsisten: modal laci dipisah **satu kali** saja, ada baris rumus "uang seharusnya = modal + penjualan tunai; setoran = uang di laci − modal", dan aturan "satu tindakan hanya muncul sekali" di panduan bahasa.
+- Izin usaha makanan diperbaiki: warung/rumah makan memakai **Sertifikat Laik Higiene Sanitasi (SLHS)** (atau label pengawasan untuk risiko rendah) dari Dinas Kesehatan (Permenkes 14/2021); PIRT/SPP-IRT hanya untuk pangan olahan kemasan.
+
