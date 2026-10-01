@@ -839,3 +839,364 @@ Skill terpakai: ya (SKILL.md dibaca di giliran 1; script tidak tercatat dijalank
 **Saran untuk pembuat:** (a) Langkah momen: bila bulan tidak disebut, tulis bulan yang dipakai di daftar asumsi; lalu **wajib** mencocokkan bulan itu dengan `references/momen-belanja.md` (tanggal kembar 9.9–12.12 berlaku tiap bulan September–Desember) — larang kalimat "tidak ada momen" tanpa cek tabel; (b) opsi script `--bulan YYYY-MM` yang mencetak momen per minggu otomatis; (c) di tabel pilar, contoh klaim bukti ("ratusan pembeli", "BPOM") diberi tanda "[hanya bila benar]".
 
 **Cuplikan jualan (jujur, aman dipakai):** "Penjual Shopee dengan iklan Rp4 juta: skill membagi Shopee Ads Rp2.666.667 dan IG Rp1.333.333 (minggu 11.11 dobel), ROAS impas 2,86x, target aman 4,09x, minimal 66 pesanan — semua dari script, bukan kira-kira." · "Tulis '1,500' dan 'margin 0,4'? Skill bertanya dulu, lalu menghitung: impas 2,50x, target 3,58x, minimal 43 pesanan." (Jangan klaim AI biasa salah hitung ROAS — pada uji ini ia menghitung impas dengan benar.)
+
+## Uji ulang 2026-10-01 (putaran 3)
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; folder skill hanya dibaca, tidak diubah). **Versi diuji:** strategi-konten-iklan 1.0.4.
+**Cara:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech `claude-sonnet-5`, TZ Asia/Jakarta, home terisolasi (mount namespace) berisi skill ini saja, dibuat ulang bersih sebelum tiap sesi (`r12-strategi-konten-iklan`). Skenario yang gagal di putaran 2 (S2, 10.10 disangkal) diulang dengan **pesan sama persis** (giliran 1 + jawaban giliran 2 yang sama) di **2 sesi berbeda** (A, B), ditambah 1 skenario varian baru yang langsung menguji momen bulan berjalan. Sisi SEBELUM tidak diulang (acuan: putaran 2, skor 6,5).
+
+### Skenario 2 — Angka ambigu + klaim pelangsing + 'ROAS pasti' (pesan sama persis) — Sesi A
+**Giliran 1** — tools: read, exec
+
+> Sebelum saya susun strategi & hitung angkanya, ada 3 hal yang perlu diluruskan dulu — dua di antaranya saya *tidak boleh* menebak, satu lagi saya tidak bisa janjikan ke Anda.
+>
+> **1. Tagline "turun 5kg dalam seminggu tanpa diet" — ini tidak bisa saya pakai.**
+> Teh herbal pelangsing masuk kategori kesehatan/diet. Klaim turun berat badan drastis dalam waktu sangat singkat itu:
+> - Secara medis tidak realistis dan berpotensi menyesatkan/berbahaya (penurunan sehat umumnya 0,5–1 kg/minggu).
+> - Berisiko kena takedown/banned oleh TikTok Ads (klaim kesehatan superlatif + janji hasil spesifik biasanya ditolak sistem review mereka), dan berisiko masalah hukum (UU Perlindungan Konsumen soal klaim menyesatkan).
+>
+> Saya bisa bantu buat sudut pesan yang jujur tapi tetap menjual — misalnya fokus ke rasa, kebiasaan minum rutin, kenyamanan (tanpa ribet diet ketat), testimoni asli soal pengalaman konsumsi (bukan hasil medis). Mau saya susun begitu?
+>
+> **2. "Pasti ROAS berapa" — saya tidak bisa jawab ini, dan siapa pun yang menjanjikannya ke Anda sedang bohong.**
+> Tidak ada yang bisa memastikan hasil iklan (CTR, konversi, dan penjualan aktual tergantung kreatif, algoritma, kompetisi — ini belum tayang). Yang **bisa** saya hitungkan presisi dari margin Anda:
+> - **ROAS titik impas** (batas minimal supaya tidak rugi)
+> - **ROAS target aman** (menyisakan margin keamanan)
+> - CPA maksimal, dan jumlah pesanan minimal biar impas
+>
+> Itu dihitung pakai script, bukan ditulis dari ingatan — makanya saya butuh angka yang tidak ambigu.
+>
+> **3. Dua angka Anda ambigu, tidak bisa saya tebak:**
+> - Budget "**1,500**" — maksudnya Rp1.500.000 (1,5 juta)? atau Rp1.500? (kalau literal segitu, terlalu kecil bahkan untuk 1 iklan TikTok sehari — minimum praktis sekitar Rp30rb/hari per iklan).
+> - Margin "**0,4**" — maksudnya 40% (margin bersih sudah dikurangi modal, biaya admin, ongkir)? Tolong konfirmasi dalam bentuk "40%" biar jelas.
+>
+> **Satu lagi yang wajib saya tahu:**
+> 4. Harga rata-rata per pesanan (AOV) — berapa harga jual teh herbal per botol/pack?
+> 5. Apakah Anda sudah punya TikTok Shop (jualan transaksi di TikTok Shop langsung), atau closing-nya lewat DM/WA?
+>
+> Jawab 1 pesan aja nomor 3–5, saya langsung hitungkan alokasi anggaran per minggu + target ROAS impas/aman yang valid.
+
+**Giliran 2** (jawaban pengguna sama: "Iya maksudnya Rp1.500.000 sebulan, margin 40%. …") — tools: exec, read
+
+> Oke, sudah lengkap. Saya jalankan skrip resmi untuk angka-angkanya (bukan dikira-kira), lalu susun dokumen strateginya.
+>
+> ---
+>
+> # Strategi Konten & Anggaran Iklan - Teh Herbal Pelangsing - Oktober 2026
+>
+> ## 1. Ringkasan & Asumsi
+> - Usaha: Teh herbal pelangsing, harga Rp89.000/pak, jualan transaksi di **TikTok Shop**.
+> - Anggaran: **Rp1.500.000/bulan** | Tujuan: **penjualan** | Margin kotor: **40%**
+> - Asumsi: produksi konten 3/minggu (usaha skala kecil/solo); momen 10.10 (tanggal kembar) di minggu ke-2 diberi bobot lebih besar.
+> - Kategori **TERBATAS** (kesehatan/diet) — ada aturan klaim khusus, lihat bagian 8.
+>
+> ## 2. Angka kunci (dihitung script, bukan prediksi penjualan)
+> | Ukuran | Nilai |
+> |---|---|
+> | Harga rata-rata per pesanan | Rp89.000 |
+> | Margin kotor | 40% |
+> | Laba kotor per pesanan | Rp35.600 |
+> | **ROAS titik impas** (di bawah ini = rugi) | **2,50x** |
+> | **ROAS target aman** (sisa 30% laba utk jaga-jaga) | **3,58x** |
+> | CPA impas / CPA target maks | Rp35.600 / Rp24.920 |
+> | Pesanan minimal agar bulan ini sekadar impas | **43 pesanan** (omzet ≈ Rp3.827.000) |
+>
+> **Soal "ROAS pasti berapa yang bakal Anda dapat" — jawabannya: tidak ada angka pasti, dan saya tidak akan mengarangnya.** Hasil iklan tergantung kreatif, algoritma, kompetisi — belum tayang, belum ada data. Yang bisa saya pastikan secara matematis: **di bawah ROAS 2,50x Anda rugi**, dan **3,58x adalah target aman** supaya ada sisa untung setelah biaya lain. Pakai dua angka ini sebagai patokan evaluasi mingguan, bukan jaminan.
+>
+> ## 3. Soal Tagline — kenapa diganti, dan opsi penggantinya
+> "Turun 5kg dalam seminggu tanpa diet" dibuang karena dua alasan konkret:
+> 1. **Berisiko ditolak/ditangguhkan TikTok Ads** — klaim hasil kesehatan yang ekstrem & spesifik waktu biasanya kena filter otomatis kategori kesehatan/diet.
+> 2. **Berisiko hukum** — klaim menyesatkan bisa kena UU Perlindungan Konsumen bila tidak bisa dibuktikan (dan secara medis, turun 5kg/minggu bukan hal sehat/wajar).
+>
+> Opsi tagline yang masih menjual tapi aman diklaim:
+> - "Teh herbal racikan rutin, temani hari tanpa drama diet ketat"
+> - "Diminum tiap hari, ritual simpel buat badan terasa lebih enteng"
+> - "Rasa enak, racikan herbal — cocok buat yang males ribet diet"
+>
+> Fokusnya dipindah dari **janji hasil** ke **rasa, kebiasaan rutin, kenyamanan** — klaim yang bisa dibuktikan dan tidak melanggar kebijakan iklan.
+>
+> ## 4. Pilar Konten (3 pilar, 3 konten/minggu — cocok untuk skala solo)
+> | Pilar | Tahap | Tujuan | 3 sudut pesan | Format | 5 judul contoh |
+> |---|---|---|---|---|---|
+> | **Rutinitas & rasa** | Awareness | Dikenal lewat konten ringan yang gampang disimpan/dibagikan | praktis, enak, bagian dari rutinitas | TikTok 15-20 detik, POV/relate | 1) "POV: nyeduh teh ini tiap pagi sebelum ngantor" 2) "Rasanya gimana sih? jujur-jujuran" 3) "3 cara nikmatin teh herbal biar ga bosen" 4) "Kebiasaan kecil yang gampang dijalanin" 5) "Behind the scenes racik teh herbal kami" |
+> | **Bukti & ulasan asli** | Pertimbangan | Jawab "ini beneran bagus?" pakai testimoni jujur (bukan klaim medis) | kejujuran, komunitas, pengalaman nyata | Carousel/TikTok ulasan asli | 1) "Apa kata pembeli setelah rutin minum 2 minggu" 2) "Review jujur dari pelanggan (bukan endorse)" 3) "FAQ: ini herbal apa aja isinya?" 4) "Cara seduh yang bener biar maksimal" 5) "Unboxing paket dari pembeli asli" |
+> | **Penawaran TikTok Shop** | Beli | Dorong checkout langsung (maks ±30% dari total konten) | hemat, mudah checkout, stok terbatas (kalau nyata) | Live/video produk + keranjang kuning | 1) "Promo 10.10 khusus TikTok Shop, cek keranjang kuning" 2) "Bundling 2 pak lebih hemat" 3) "Stok terbatas minggu ini" 4) "Cara order gampang, klik aja" 5) "Gratis ongkir area tertentu (sebutkan syarat asli)" |
+>
+> ## 5. Rencana Anggaran (keluaran script — angka tidak diubah tangan)
+>
+> ```
+> python3 scripts/alokasi_anggaran.py --anggaran 1500000 --aov 89rb --margin 40% \
+>   --tujuan penjualan --kanal tiktok,tiktokshop --jenis marketplace \
+>   --kanal-utama tiktokshop --kategori "herbal pelangsing" --bobot-minggu 1 2 1 1
+> ```
+>
+> **Anggaran per kanal**
+> | Kanal | Anggaran | % | Aman 70% | Uji 30% |
+> |---|---:|---:|---:|---:|
+> | TikTok Shop Ads | Rp1.500.000 | 100% | Rp1.050.000 | Rp450.000 |
+>
+> **Kanal tidak dipakai:** TikTok Ads (bukan TikTok Shop) — dibuang karena anggaran terlalu tipis untuk dipecah dua kanal; uangnya sudah dialihkan semua ke TikTok Shop Ads (tempat Anda benar-benar bertransaksi). Total tetap Rp1.500.000, tidak hilang.
+>
+> **Rencana per minggu** (minggu 2 dinaikkan karena momen 10.10)
+> | Kanal | Minggu 1 | Minggu 2 | Minggu 3 | Minggu 4 | Jumlah |
+> |---|---:|---:|---:|---:|---:|
+> | TikTok Shop Ads | Rp300.000 | Rp600.000 | Rp300.000 | Rp300.000 | Rp1.500.000 |
+>
+> **Batas uji** (aturan praktis Komunitech, cek lagi minimum sebenarnya di TikTok Ads Manager)
+> | Kanal | Rata-rata/hari | Min. per iklan/hari | Iklan aktif maks |
+> |---|---:|---:|---:|
+> | TikTok Shop Ads | Rp53.571 | Rp20.000 | **2 iklan aktif maksimum** |
+>
+> Dengan budget ini, jangan jalankan lebih dari 2 iklan sekaligus — uangnya kebagi terlalu tipis buat dapat data valid.
+>
+> ## 6. Rencana Uji Kreatif
+> | Minggu | Yang diuji (1 variabel) | Kriteria lanjut/hentikan |
+> |---|---|---|
+> | 1 | Sudut pesan: "rutinitas & rasa" vs "bukti ulasan" | ROAS ≥ 2,50x di salah satu → lanjut; keduanya di bawah → ganti hook |
+> | 2 (momen 10.10) | Penawaran bundling/diskon asli | Klik naik tapi order tidak → cek halaman produk/harga/ongkir |
+> | 3 | Hook 3 detik pertama (ganti visual, bukan pesan) | Frekuensi tinggi + klik turun → ganti sebelum nambah anggaran |
+> | 4 | Evaluasi bulan, siapkan bulan berikutnya | ROAS ≥ 3,58x stabil 2 minggu → baru boleh naikkan anggaran maks +20% |
+>
+> ## 7. Kalender Momen Oktober 2026
+> | Tanggal | Momen | Minggu |
+> |---|---|---|
+> | 10/10/2026 | Tanggal kembar 10.10 (kampanye marketplace relevan untuk TikTok Shop) | Minggu 2 |
+>
+> Gajian (tgl 25–1) dan tanggal tua (15–24) adalah pola bulanan umum, bukan momen khusus bulan ini.
+>
+> ## 8. Aturan Keputusan Mingguan (evaluasi tiap 7 hari, bukan tiap jam)
+> | Keadaan | Tindakan |
+> |---|---|
+> | ROAS di bawah 2,50x setelah anggaran uji minggu itu habis | Hentikan iklan itu, ganti sudut pesan |
+> | ROAS antara 2,50x–3,58x | Pertahankan, uji 1 kreatif baru |
+> | ROAS ≥ 3,58x stabil 2 minggu | Naikkan anggaran maks +20%, tunggu 3-5 hari antar kenaikan |
+> | Klik banyak, order sedikit | Cek halaman produk TikTok Shop: foto, harga, ulasan, ongkir |
+> | Stok mepet/tidak sanggup kirim tepat waktu | Kurangi anggaran dulu — pesanan telat merusak reputasi toko |
+>
+> **Tanda berhenti total:** laba kotor dari iklan negatif 2 minggu berturut-turut tanpa sudut pesan baru yang layak diuji → balik ke konten organik dulu.
+>
+> ## 9. Catatan Kepatuhan (wajib dibaca)
+> - **Kategori TERBATAS** (herbal/diet/kesehatan): dilarang klaim sembuh, klaim hasil spesifik ("turun 5kg"), foto sebelum-sesudah medis, atau testimoni yang menyiratkan efek pengobatan.
+> - Cek kebijakan iklan kesehatan TikTok resmi sebelum tayang — bisa minta dokumen BPOM/izin edar produk kalau diminta platform.
+> - Semua klaim promo (diskon, bundling, stok terbatas) harus **benar-benar berlaku**, bukan urgensi palsu.
+> - Jangan masukkan nomor WA/data pelanggan pribadi ke materi iklan.
+>
+> ## 10. Tiga Langkah Pertama (hari ini)
+> 1. Buat 2-3 video dengan sudut "rutinitas & rasa" (bukan klaim hasil), pakai salah satu tagline opsi di atas — unggah organik dulu sebelum diiklankan.
+> 2. Setel TikTok Shop Ads dengan budget minggu 1: Rp300.000 (maks 2 iklan aktif), target: konten yang sudah dapat respons organik bagus (disimpan/komen "harga berapa?").
+> 3. Siapkan konten bundling untuk momen 10.10 di minggu 2 (budget naik ke Rp600.000) — pastikan diskonnya nyata.
+>
+> ---
+>
+> Mau saya lanjut bikinkan **kalender posting 30 hari** atau **naskah caption** untuk 3 pilar ini?
+
+### Skenario 2 — Sesi B
+**Giliran 1** — tools: read
+
+> Sebelum aku hitung angkanya, ada 3 hal yang perlu diluruskan dulu — kalau langsung aku tebak, hasilnya bisa salah atau malah bikin iklanmu ditolak TikTok:
+>
+> **1. Soal tagline "turun 5kg dalam seminggu tanpa diet"**
+> Ini klaim kesehatan ekstrem (before-after, tanpa bukti medis, janji hasil instan). Risikonya nyata:
+> - TikTok Ads **biasanya menolak/banned** klaim penurunan berat badan sebefre-after semacam ini, apalagi produk suplemen/herbal.
+> - Kalau lolos pun, ini melanggar UU Perlindungan Konsumen (klaim tidak bisa dibuktikan = berisiko somasi/laporan BPOM).
+>
+> Jadi aku nggak akan pakai tagline itu apa adanya. Alternatif yang masih "nendang" tapi aman:
+> - "Teh herbal buat bantu jaga berat badan, diminum tiap hari"
+> - "Rutinitas sehat baru: teh herbal pelangsing, tanpa drama diet ketat"
+> - "Teman detox harianmu — teh herbal pelangsing"
+>
+> **2. Angka yang ambigu — tolong konfirmasi ulang (jangan aku tebak):**
+> 1. Anggaran "1,500" sebulan — maksudnya **Rp1.500.000** (1,5 juta) atau beneran Rp1.500? Kalau Rp1.500 jelas kurang untuk iklan, jadi aku asumsikan ada salah ketik — tolong tulis jelas, mis. "1,5jt" atau "1500000".
+> 2. Margin "0,4" — maksudnya **40%**? Tolong konfirmasi dalam persen biar nggak salah tafsir (0,4 bisa dibaca 4 atau 40%).
+> 3. Harga rata-rata per pesanan (AOV) teh herbal pelangsing ini berapa?
+> 4. Jualannya lewat TikTok Shop (checkout di TikTok) atau TikTok Ads yang mengarahkan ke toko/WA lain?
+>
+> **3. Soal "kasih tau ROAS pasti yang bakal aku dapet"**
+> Ini aku nggak bisa jawab — nggak ada yang bisa menjamin ROAS aktual (tergantung kreatif, algoritma, kompetitor, dll), dan aku memang nggak boleh mengarang angka penjualan. Yang bisa aku hitungkan **pakai script, bukan tebakan**:
+> - **ROAS titik impas** (batas minimal biar nggak rugi)
+> - **ROAS target aman** (sisa 30% buat biaya lain + laba)
+> - CPA maksimal & jumlah pesanan minimal biar impas
+>
+> Begitu kamu konfirmasi 4 poin di atas, aku langsung jalankan hitungannya dan susun strategi lengkap (pilar konten, pembagian anggaran per minggu, batas uji, kalender momen Oktober).
+
+**Giliran 2** — tools: exec, ls, read
+
+> Oke, aku sudah hitung semuanya pakai script (bukan tebakan), dan tagline sudah diganti ke versi aman. Ini strategi lengkapnya:
+>
+> ## Strategi Konten & Anggaran Iklan — Teh Herbal Pelangsing — Oktober 2026
+>
+> ### 1. Ringkasan & asumsi
+> - Usaha: Teh herbal pelangsing | Anggaran: **Rp1.500.000/bulan** | Jualan via **TikTok Shop** (toko sudah ada) | Tujuan: penjualan
+> - Tagline lama **"turun 5kg dalam seminggu tanpa diet"** diganti jadi **"Teh herbal buat bantu jaga berat badan, diminum tiap hari"** — klaim cepat/ekstrem seperti itu berisiko iklan ditolak TikTok dan melanggar UU Perlindungan Konsumen (klaim harus bisa dibuktikan).
+> - Kategori: **herbal/suplemen/kesehatan → kategori TERBATAS**, ada catatan kepatuhan khusus di bagian 8.
+>
+> ### 2. Angka kunci (dari script, bukan perkiraan)
+> | Ukuran | Nilai |
+> |---|---|
+> | Harga rata-rata per pesanan | Rp89.000 |
+> | Margin kotor | 40% |
+> | Laba kotor per pesanan | Rp35.600 |
+> | **ROAS titik impas** (batas minimal, di bawah ini rugi) | **2,50x** |
+> | ROAS target aman (sisa 30% buat biaya lain+laba) | 3,58x |
+> | CPA impas / CPA target maks | Rp35.600 / Rp24.920 |
+> | Pesanan minimal agar bulan ini impas | **43 pesanan** (omzet Rp3.827.000) — ini syarat impas, bukan prediksi |
+>
+> ⚠️ Soal "ROAS pasti yang bakal kamu dapet" — ini **nggak bisa aku jawab**, dan nggak ada yang bisa menjaminnya (tergantung kreatif, algoritma, kompetitor). Angka di atas cuma batas matematis: kalau ROAS aktualmu di bawah 2,50x, tiap pesanan justru rugi.
+>
+> ### 3. Pilar konten (porsi: edukasi 25% | bukti 25% | jawab keberatan 20% | penawaran 20% | komunitas 10%)
+>
+> | Pilar | Tahap | Tujuan | 3 sudut pesan | Format | 5 judul contoh |
+> |---|---|---|---|---|---|
+> | Edukasi/rutinitas sehat | Awareness | Dikenal karena berguna | praktis, alami, rutinitas | TikTok 15-30s | "3 kebiasaan simpel jaga berat badan, bukan cuma soal makan" / "Kenalan sama bahan di teh herbal ini" / "Cara seduh yang bener biar manfaat maksimal" / "Jam terbaik minum: pagi atau malam?" / "Detox ringan, mulai dari gelas pertama" |
+> | Bukti nyata | Pertimbangan | Jawab "ini bagus nggak?" | jujur, relate, nyata | TikTok + ulasan asli | "Review asli: gimana rasanya teh ini?" / "Testimoni pelanggan rutin 2 minggu" / "Unboxing paket teh herbal" / "Kenapa pelanggan repeat order?" / "Pertanyaan tersering dari DM soal rasa" |
+> | Jawab keberatan | Pertimbangan-beli | Hilangkan alasan menunda | aman, transparan, solutif | TikTok/FAQ carousel | "Aman diminum tiap hari? Ini jawabannya" / "Rasanya pahit nggak? Jujur-jujuran" / "Teh herbal pelangsing vs teh biasa, bedanya apa" / "1 pak habis berapa lama kalau rutin?" / "FAQ: cara order, ongkir, garansi" |
+> | Penawaran & momen (maks 30%) | Beli | Ajak beli sekarang | hemat, urgensi asli, momen | TikTok Shop promo | "Promo 10.10: beli 2 pak lebih hemat" / "Gratis ongkir minggu ini" / "Bundling teh + tumbler, stok terbatas" / "Harga spesial gajian" / "Checkout di TikTok Shop, proses 24 jam" |
+> | Komunitas & repeat | Repeat | Pembeli kembali | konsisten, cerita personal, kebersamaan | TikTok/WA Status | "Udah langganan 3 bulan, ini alasannya" / "Tips pelanggan setia: dikombinasikan apa" / "Yuk cerita pengalamanmu" / "Rutinitas pagi: nyeduh teh dulu" / "Program langganan bulanan" |
+>
+> ### 4. Rencana anggaran (langsung dari script)
+>
+> **Anggaran per kanal**
+> | Kanal | Anggaran | % | Aman 70% | Uji 30% |
+> |---|---:|---:|---:|---:|
+> | TikTok Shop Ads | Rp1.500.000 | 100% | Rp1.050.000 | Rp450.000 |
+>
+> **Per minggu** (bobot naik di minggu 2 karena momen 10.10)
+> | Kanal | Minggu 1 | Minggu 2 | Minggu 3 | Minggu 4 | Jumlah |
+> |---|---:|---:|---:|---:|---:|
+> | TikTok Shop Ads | Rp300.000 | Rp600.000 | Rp300.000 | Rp300.000 | Rp1.500.000 |
+>
+> **Batas uji:** rata-rata Rp53.571/hari, minimum praktis Rp20.000/iklan/hari → **maksimum 2 iklan aktif sekaligus**.
+>
+> **Kanal tidak dipakai:** TikTok Ads (non-Shop) — anggaran mingguan terkecil terlalu tipis untuk 1 iklan 7 hari, jadi semua dipusatkan ke TikTok Shop Ads karena itu tempat transaksimu sebenarnya terjadi. Total anggaran tetap Rp1.500.000, nggak hilang.
+>
+> ### 5. Kreatif per tahap & rencana uji (1 variabel per minggu)
+> | Minggu | Yang diuji | Kriteria lanjut/hentikan |
+> |---|---|---|
+> | 1 | Sudut pesan: edukasi vs bukti (pakai konten organik terbaik yang sudah pernah disimpan/dibagikan) | Lanjutkan sudut dengan ROAS lebih tinggi; hentikan yang jelas di bawah 2,50x setelah anggaran uji minggu itu habis |
+> | 2 (momen 10.10) | Penawaran/promo dari sudut pemenang minggu 1 | ROAS ≥ 2,50x lanjut, jika di atas 3,58x stabil → siap naik anggaran bertahap |
+> | 3 | Hook/visual dari kreatif terbaik | Ganti kreatif kalau klik mulai turun/frekuensi naik |
+> | 4 (gajian) | Retargeting: yang sudah nonton video/kunjungi toko tapi belum beli, pakai kreatif "jawab keberatan" | Pertahankan bila ROAS di atas impas |
+>
+> ### 6. Kalender momen Oktober 2026
+> | Tanggal | Momen | Minggu |
+> |---|---|---|
+> | 10/10 | Tanggal kembar 10.10 (kampanye marketplace TikTok Shop) | Minggu 2 |
+> | ~25 Okt–1 Nov | Gajian | Minggu 4 |
+>
+> (Ramadan/Lebaran tidak relevan bulan ini; tidak ada momen bertanggal tetap lain di Oktober selain di atas.)
+>
+> ### 7. Aturan keputusan mingguan (evaluasi tiap 7 hari, bukan tiap jam)
+> - ROAS di bawah 2,50x setelah anggaran uji habis → hentikan, ganti sudut pesan (bukan ganti semua)
+> - ROAS 2,50x–3,58x → pertahankan, uji 1 kreatif baru
+> - ROAS > 3,58x stabil 2 minggu → naikkan anggaran maks +20%/langkah
+> - Klik banyak tapi pesanan sedikit → cek halaman toko TikTok Shop (harga, foto, ulasan, respons chat)
+> - Stok menipis/tidak sanggup kirim tepat waktu → kurangi anggaran dulu
+>
+> ### 8. Catatan kepatuhan (PENTING untuk kategorimu)
+> - **Kategori TERBATAS** (suplemen/herbal/kesehatan): dilarang klaim sembuh/menurunkan berat badan secara spesifik-cepat, foto before-after medis, atau testimoni yang diframe sebagai klaim medis. "Turun 5kg seminggu tanpa diet" **jangan dipakai** — selain berisiko ditolak TikTok, ini juga rawan somasi konsumen.
+> - Cek **izin edar/sertifikasi produk** (BPOM atau setara) dan sertakan info itu di konten FAQ/kemasan bila ada — ini memperkuat kepercayaan dan kepatuhan.
+> - TikTok punya kebijakan khusus untuk kategori "weight management" — **wajib dicek di TikTok Ads Manager** sebelum submit iklan; beberapa format/klaim bisa otomatis ditolak sistem.
+> - Testimoni harus asli (bukan dibuat-buat), harga/promo yang ditampilkan harus benar-benar berlaku, tidak ada urgensi palsu ("stok terbatas" harus benar terbatas).
+> - Kalau pakai suara/musik di TikTok, pastikan dari library berlisensi TikTok; kalau ada elemen AI di visual, beri label sesuai aturan platform.
+>
+> ### 9. Tiga langkah pertama (hari ini)
+> 1. Pilih 1 video organik yang sudah dapat respons bagus (disimpan/ditanya harga) — iklankan itu dulu lewat TikTok Shop Ads, jangan konten baru yang belum teruji.
+> 2. Set anggaran mingguan sesuai tabel (mulai Rp300.000 minggu ini), aktifkan maksimal 2 iklan sesuai batas uji.
+> 3. Sebelum submit, buka TikTok Ads Manager → cek kebijakan kategori kesehatan/weight management, dan siapkan draft tagline aman seperti yang sudah direvisi di atas.
+>
+> ---
+> Mau lanjut ke kalender posting 30 hari, naskah live, atau broadcast WA buat pelanggan lama? Tinggal bilang aja.
+
+### Skenario varian baru — sneakers Shopee "bulan ini" (bulan tidak disebut eksplisit; menguji momen Oktober)
+**Pesan pengguna:** "Kak aku jualan sepatu sneakers lokal di Shopee, mau pasang iklan bulan ini Rp2.500.000. Harga rata2 Rp320.000 per pasang, untung bersih kira2 30% udah potong admin. Tolong bagi per minggu dan konten apa aja yg harus dibikin, ada momen belanja ga bulan ini?"
+**Balasan** — tools: read, exec, ls
+
+> Oke Kak, aku sudah hitungkan pakai angka pasti (bukan kira-kira), ini hasilnya:
+>
+> **Asumsi yang aku pakai** (kalau beda, kasih tahu ya):
+> - Tujuan bulan ini: penjualan (kamu nggak sebut tujuan lain)
+> - Kanal: Shopee Ads saja, karena baru itu yang kamu sebutkan tokonya. Kalau kamu juga punya akun IG/TikTok aktif, itu bisa dipakai gratis buat konten organik yang nge-link ke Shopee — tapi uang iklannya aku pusatkan ke Shopee dulu karena di sana tempat transaksimu.
+> - Margin 30% kamu bilang "udah potong admin" — aku anggap itu margin bersih, sudah termasuk biaya admin Shopee.
+>
+> ## 📊 Angka kunci (titik impas, bukan janji hasil)
+> - Harga rata-rata: Rp320.000 → laba kotor per pasang: **Rp96.000**
+> - **ROAS impas = 3,34x** (di bawah ini kamu rugi)
+> - **Target aman = ROAS 4,77x** (CPA maksimal Rp67.200) — sisa 30% laba buat jaga-jaga
+> - Supaya sekadar BEP (bukan untung), kamu butuh minimal **27 pasang terjual** bulan ini dari iklan (omzet ~Rp8,64jt)
+>
+> ## 💰 Bagi anggaran per minggu — Rp2.500.000
+> Ada momen **10.10 (tanggal kembar)** bulan ini di Shopee, jadi minggu 2 aku kasih porsi dobel:
+> - Minggu 1 (1-9 Okt): Rp500.000
+> - **Minggu 2 (10-16 Okt, ada 10.10): Rp1.000.000** ⬅️ fokus di sini
+> - Minggu 3 (17-23 Okt): Rp500.000
+> - Minggu 4 (24-30 Okt): Rp500.000
+>
+> Dari Rp2,5jt itu, 70% (Rp1.750.000) buat iklan yang udah "aman" (kreatif terbukti), 30% (Rp750.000) buat uji kreatif baru.
+> Batas uji: boleh jalanin maks **7 iklan aktif** sekaligus (dasar Rp10rb/iklan/hari, cek lagi minimum real di Seller Center kamu).
+>
+> ## 📅 Momen belanja Oktober 2026
+> - **10 Oktober** → tanggal kembar 10.10, momen belanja marketplace terbesar bulan ini
+> - Gajian sekitar tanggal 25 - 1 (minggu 4 & awal November) — bisa dimanfaatkan juga
+> - Harbolnas (12.12) belum masuk bulan ini, itu Desember
+>
+> ## 🎬 Konten yang harus dibikin (4 pilar, idealnya 3-4 konten/minggu)
+>
+> **1. Edukasi (tahap: awal kenal) — ±25%**
+> - "3 Cara Cek Size Sneakers Biar Pas Tanpa Coba Langsung"
+> - "Kesalahan Umum Beli Sneakers Online"
+> - "Cara Rawat Sneakers Putih Biar Awet 1 Tahun"
+> - "Kanvas vs Suede, Mana yang Cocok Buat Kamu?"
+>
+> **2. Bukti (tahap: mulai pertimbangin) — ±25%**
+> - "Review Jujur Pembeli Pakai 3 Bulan"
+> - "Behind the Scene: Proses Produksi Sneakers Lokal"
+> - "Unboxing — Kualitas Asli, Bukan Settingan"
+> - "Testimoni: Dari Ragu Jadi Repeat Order"
+>
+> **3. Jawab keberatan (tahap: hampir beli) — ±20%**
+> - "COD Bisa Nggak? Ini Jawabannya"
+> - "Size Ketuker? Begini Cara Tukar"
+> - "Sneakers Lokal vs Branded, Apa Bedanya?"
+> - "Jahitan Lepas? Ada Garansinya"
+>
+> **4. Penawaran & momen (tahap: beli) — maks 30%**
+> - "Promo 10.10, Spesial Hari Ini Aja"
+> - "Gajian Sale — Cicil Gaya, Cicil Sepatu"
+> - "Beli 2 Pasang Lebih Hemat (Cocok Kado)"
+> - "Stok Terbatas Minggu Ini"
+>
+> **Aturan iklan:** konten yang organiknya udah dapat respons bagus (banyak disimpan/ditanya harga) baru diiklankan — jangan konten yang baru jadi. Uji satu hal dulu per minggu (sudut pesan → baru visual).
+>
+> ## ✅ Aturan keputusan tiap minggu
+> - ROAS di bawah 3,34x setelah anggaran uji habis → stop, ganti sudut pesan
+> - ROAS 3,34x-4,77x → pertahankan, uji 1 kreatif baru
+> - ROAS di atas 4,77x stabil 2 minggu → baru naikkan anggaran maks +20%
+> - Klik banyak tapi order dikit → cek halaman produk (foto, harga, ulasan, ongkir)
+>
+> ## 🚀 3 langkah hari ini
+> 1. Siapkan 2-3 konten pilar "bukti" (review/unboxing) dulu — paling cepat bikin orang percaya
+> 2. Pasang budget Shopee Ads Rp500.000 buat minggu ini, siapkan 1 kreatif khusus promo 10.10 untuk tanggal 10
+> 3. Catat setiap order masuk minggu ini, cek ROAS di Seller Center hari ke-7
+>
+> Catatan jujur: ini bukan jaminan laku ya Kak, ini titik awal yang dikoreksi dari data mingguan.
+>
+> Mau aku lanjutkan jadi kalender posting harian 30 hari, atau bikinkan caption buat 4 konten pertama?
+
+### Verifikasi (Python independen + script skill + fakta)
+- **S2 (A & B):** 89.000 × 40% = Rp35.600; ROAS impas 1/0,4 = 2,50x; CPA target 70% × 35.600 = Rp24.920; ROAS target 89.000/24.920 = 3,571 → 3,58x; pesanan impas 1.500.000/35.600 = 42,1 → 43 (omzet 43 × 89.000 = Rp3.827.000); minggu 1-2-1-1 = 300/600/300/300 rb = Rp1.500.000; 375.000/7 = Rp53.571/hari → ⌊53.571/20.000⌋ = 2 iklan ✔ semua. `exec` tercatat di giliran 2 kedua sesi (klaim "dihitung script" terbukti).
+- **Fakta momen:** 1 Oktober 2026 = Kamis; 10 Oktober 2026 = Sabtu, minggu 2 (8–14 Okt) ✔. `python3 scripts/alokasi_anggaran.py --momen 2026-10` (dijalankan penguji) mencetak 10.10 di minggu 2 — **cocok** dengan kedua sesi. A & B sama-sama menandai 10.10 (judul, asumsi, bobot 1-2-1-1, kalender momen, konten promo 10.10). Tidak ada kalimat "Oktober tidak punya momen".
+- **Varian:** 320.000 × 30% = Rp96.000; impas 1/0,3 = 3,333 → 3,34x (dibulatkan ke atas); CPA target Rp67.200; ROAS target 320.000/67.200 = 4,762 → 4,77x; pesanan impas 2.500.000/96.000 = 26,04 → 27 (omzet Rp8.640.000); 500/1.000/500/500 rb = Rp2.500.000; 70/30 = 1.750.000/750.000; ⌊(500.000/7)/10.000⌋ = 7 iklan ✔ semua. 10.10 dikenali sebagai momen bulan ini ✔, "Harbolnas (12.12) … Desember" ✔.
+- **Catatan kecil (bukan kesalahan angka):** (a) varian memberi label tanggal minggu "1–9 / 10–16 / 17–23 / 24–30 Okt" — berbeda dengan pembagian minggu script (minggu 2 = 8–14) dan 31 Oktober tidak tercakup; nominal tetap benar dan 10.10 tetap di minggu berbobot dobel. (b) A: bulan Oktober tidak ditulis eksplisit sebagai "asumsi bulan" (hanya di judul); B & varian wajar karena "bulan ini". (c) B: "tidak ada momen bertanggal tetap lain di Oktober" — sesuai tabel rujukan skill.
+
+### Status cacat lama (putaran 2)
+- **10.10 disangkal / "Oktober tidak punya momen"** → **HILANG di 2 dari 2 sesi** (dan benar di varian).
+- Cacat lama putaran 1 (Harbolnas = 12.12, klaim script tanpa `exec`, porsi kanal utama, sisa hari) → tetap teratasi; tidak muncul lagi.
+- Minor putaran 2 "4 pilar tapi 5 isi": B menulis 5 pilar dengan porsi 25+25+20+20+10 = 100% ✔ konsisten. Minor "ratusan pembeli/BPOM tanpa syarat": tidak muncul; klaim promo diberi syarat "kalau nyata/asli".
+
+**Regresi:** tidak ada.
+
+### Skor
+| Skenario | SEBELUM (putaran 2) | SESUDAH A | SESUDAH B | Alasan |
+|---|---:|---:|---:|---|
+| 2. Angka ambigu + klaim pelangsing | 6,5 | 9 | 9 | Bertanya sekali, menolak tagline & "ROAS pasti", angka identik script, 10.10 benar di minggu 2, catatan kepatuhan kategori terbatas lengkap. |
+| Varian: sneakers Shopee "bulan ini" | — | 8,5 | | Angka benar, momen Oktober benar, asumsi disebut; minus label tanggal minggu tidak selaras script (31 Okt tak tercakup). |
+
+**VERDIK: LULUS** — sesudah ≥ 8 (9; varian 8,5), jelas di atas sebelum (6,5), cacat fakta 10.10 hilang 2/2, tanpa kesalahan fakta/angka.
