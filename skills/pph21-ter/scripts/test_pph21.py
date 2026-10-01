@@ -265,6 +265,45 @@ class TestContohResmi(unittest.TestCase):
         self.assertIn("Rp 2.100.000", teks)      # dibayar tunai
         self.assertIn("Rp 287.500", teks)        # selisih tidak dikembalikan
 
+    def test_bulan_dtp_dibayar_tunai(self):
+        # regresi uji OpenClaw 2026-10-01: konveksi TK/0 Rp6 jt, DTP -> diterima Rp6.045.000 (PMK 105/2025 Pasal 5)
+        h = jalankan("bulan", "--ptkp", "TK/0", "--bruto", "6jt", "--dtp")
+        self.assertTrue(h["dtp"])
+        self.assertEqual(h["pph21"], 45000)
+        self.assertEqual(h["pph21_dipotong_dari_gaji"], 0)
+        self.assertEqual(h["pph21_dtp_dibayar_tunai"], 45000)
+        self.assertEqual(h["diterima_pegawai"], 6045000)
+        teks = pph21.teks_bulan(h)
+        self.assertIn("Rp 6.045.000", teks)
+        self.assertIn("WAJIB dibayar tunai", teks)
+
+    def test_bulan_dtp_potongan_premi(self):
+        h = jalankan("bulan", "--ptkp", "TK/0", "--bruto", "8jt", "--dtp", "--bruto-tetap", "7,8jt",
+                     "--premi-perusahaan", "200rb", "--potongan-lain", "240rb")
+        self.assertEqual(h["pph21_dtp_dibayar_tunai"], 120000)   # Lampiran B PMK 105 Tuan A: 1,5% x 8 jt
+        self.assertEqual(h["diterima_pegawai"], 8000000 - 200000 - 240000 + 120000)
+        self.assertEqual(h["peringatan"], [])
+
+    def test_bulan_dtp_tidak_memenuhi(self):
+        h = jalankan("bulan", "--ptkp", "TK/0", "--bruto", "11jt", "--dtp")
+        self.assertFalse(h["dtp"])
+        self.assertEqual(h["pph21_dipotong_dari_gaji"], 330000)
+        self.assertEqual(h["diterima_pegawai"], 10670000)
+        h = jalankan("bulan", "--ptkp", "TK/0", "--bruto", "6jt", "--dtp", "--tahun", "2027")
+        self.assertFalse(h["dtp"])
+        self.assertEqual(h["pph21_dipotong_dari_gaji"], 45000)
+        h = jalankan("bulan", "--ptkp", "TK/0", "--bruto", "12jt", "--dtp", "--bruto-tetap", "9jt")
+        self.assertTrue(h["dtp"])   # bonus bulan ini tidak menggugurkan syarat (dinilai dari bruto tetap Januari)
+
+    def test_bulan_tanpa_dtp_tidak_berubah(self):
+        h = jalankan("bulan", "--ptkp", "K/0", "--bruto", "10jt")
+        self.assertFalse(h["dtp"])
+        self.assertEqual((h["pph21"], h["pph21_dipotong_dari_gaji"], h["diterima_pegawai"]), (200000, 200000, 9800000))
+
+    def test_bulan_premi_lebih_besar_ditolak(self):
+        with self.assertRaises(pph21.InputError):
+            jalankan("bulan", "--ptkp", "K/0", "--bruto", "1jt", "--premi-perusahaan", "2jt")
+
     def test_syarat_dtp_core(self):
         self.assertTrue(tc.cek_syarat_dtp(2026, D(10000000))[0])
         self.assertFalse(tc.cek_syarat_dtp(2026, D(10000001))[0])

@@ -47,4 +47,8 @@ Aturannya memang begitu: Januari–November memakai tarif TER dari tabel, sedang
 Tarif dan rumusnya sama dengan aturan resmi dan sudah dicocokkan dengan contoh resmi DJP. Pembulatan rupiah belum dicocokkan dengan Coretax; jika ada selisih kecil, ikuti angka Coretax.
 
 **Perusahaan saya di industri tekstil, apakah dapat PPh 21 DTP?**
-Skill akan menanyakan sektor dan mengecek syarat gaji (maks. Rp 10 juta). Kepastian KLU perusahaan tetap perlu dicek di data pajak perusahaan (Coretax) atau ke kantor pajak.
+Skill akan menanyakan sektor dan mengecek syarat gaji (maks. Rp 10 juta). Kepastian KLU perusahaan tetap perlu dicek di data pajak perusahaan (Coretax) atau ke kantor pajak. Bila berhak, PPh 21 karyawan tidak dipotong dan nilainya **wajib Anda bayarkan tunai** ke karyawan bersama gaji (mis. gaji Rp 6.000.000 + DTP Rp 45.000 = diterima Rp 6.045.000); skill menuliskan angka ini dari hitungan script.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: untuk karyawan penerima **PPh 21 DTP 2026**, jawaban sempat menyebut gaji diterima "Rp 6.000.000 utuh", padahal PMK 105/2025 Pasal 5 mewajibkan PPh 21 DTP **dibayarkan tunai** ke karyawan (yang benar Rp 6.045.000). Kini hitungan satu bulan (`bulan`) juga mendukung `--dtp` dan mencetak tiga baris wajib: PPh 21 dipotong dari gaji (Rp 0), DTP yang wajib dibayar tunai, dan **uang yang diterima pegawai**; AI wajib mengutip baris itu dari script. Hitungan setahun dengan DTP juga menegaskan hal yang sama.
+- Istilah seperti KLU, TER, Masa Pajak Terakhir, dan DTP kini dijelaskan dengan bahasa sehari-hari saat pertama muncul.
