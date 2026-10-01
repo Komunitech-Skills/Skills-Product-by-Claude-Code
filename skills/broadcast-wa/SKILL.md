@@ -71,6 +71,7 @@ pakai default dan sebutkan asumsinya di akhir.
    python3 <folder-skill-ini>/scripts/siapkan_broadcast.py --kontak pelanggan.csv --pesan pesan.txt \
      --fakta-file fakta.txt --mulai "2026-09-28 10:00" --jam-kirim 09:00-20:00 --output broadcast_siap.csv
    ```
+   Cek fakta berjalan **otomatis** di script ini (tanpa `--fakta-file`, semua klaim dianggap karangan dan script GAGAL).
    Bila script menolak karena "klaim yang tidak disebut pemilik", hapus klaim itu dari variasi (atau tanyakan ke
    pemilik) lalu jalankan ulang — jangan melewati pemeriksaan ini. Tanpa CSV, cek variasi dengan
    `python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file pesan.txt --fakta-file fakta.txt --abaikan jam`

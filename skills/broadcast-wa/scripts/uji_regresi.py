@@ -216,10 +216,30 @@ class Uji(unittest.TestCase):
             r, _ = jalankan(k, jujur + "\n" + karang, "--fakta", fakta)
             self.assertNotEqual(r.returncode, 0, karang)
             self.assertIn("tidak disebut pemilik", r.stderr)
+        # v1.0.9: tanpa --fakta, klaim ("gratis ongkir") tetap ditolak; pemeriksaan tidak bisa dilewati.
         r, _ = jalankan(k, jujur)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("GAGAL cek fakta", r.stderr)
+        bersih = "Halo {sapaan} {nama}, bolu pandan Rp 39.000.\nBalas STOP untuk berhenti."
+        r, _ = jalankan(k, bersih)
         h = json.loads(r.stdout)
         self.assertEqual(h["cek_klaim_terhadap_fakta"], "belum")
         self.assertTrue(any("--fakta-file" in x for x in h["peringatan"]))
+
+    def test_v109_urgensi_karangan_tanpa_dan_dengan_fakta(self):
+        k = "nama,nomor,setuju\nA,081200000001,ya\n"
+        dasar = "Halo {sapaan} {nama}, bolu pandan Rp 39.000. "
+        akhir = "\nBalas STOP untuk berhenti."
+        fakta = "Bolu pandan Rp 39.000 tanggal 1-7 Oktober"
+        for karang in ("Khusus hari ini!", "Pesan sebelum kehabisan.", "Ini promo terakhir.", "Buruan order!",
+                       "Hari ini saja ya.", "Jangan sampai ketinggalan."):
+            for arg in ((), ("--fakta", fakta)):
+                r, _ = jalankan(k, dasar + karang + akhir, *arg)
+                self.assertNotEqual(r.returncode, 0, (karang, arg))
+                self.assertIn("GAGAL cek fakta", r.stderr)
+        # Bila memang dari pemilik, lolos.
+        r, _ = jalankan(k, dasar + "Khusus hari ini!" + akhir, "--fakta", fakta + ". Khusus hari ini saja")
+        self.assertEqual(r.returncode, 0, r.stderr)
 
 
 

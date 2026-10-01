@@ -293,8 +293,10 @@ def main():
               "\"Tidak ingin menerima info promo lagi? Balas STOP.\"".format(", ".join(tanpa_optout)))
 
     # Anti-karang: klaim (stok terbatas, terlaris, halal, gratis ongkir, ...) hanya boleh dari fakta pemilik.
-    cek_klaim = "belum"
-    if a.fakta is not None or a.fakta_file is not None:
+    # Pemeriksaan ini SELALU berjalan (tidak bisa dilewati): tanpa --fakta, semua klaim dianggap tidak disebut pemilik.
+    ada_fakta = a.fakta is not None or a.fakta_file is not None
+    fakta = ""
+    if ada_fakta:
         if a.fakta is not None and a.fakta_file is not None:
             galat("Isi salah satu: --fakta atau --fakta-file.")
         if a.fakta_file is not None:
@@ -307,17 +309,20 @@ def main():
             fakta = a.fakta
         if not fakta.strip():
             galat("Fakta kosong. Salin kata-kata pengguna tentang promo ke --fakta/--fakta-file.")
-        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-        import cek_fakta
-        karang = []
-        for i, v in enumerate(variasi, start=1):
-            for t in cek_fakta.periksa(re.sub(r"\{[^{}]+\}", " ", v), fakta, abaikan={"jam"}):
-                if t["level"] == "GAGAL":
-                    karang.append("Variasi {}: {}".format(i, t["pesan"]))
-        if karang:
-            galat("Ada klaim yang tidak disebut pemilik (jangan dikarang):\n- " + "\n- ".join(karang) +
-                  "\nHapus klaim itu atau tanyakan ke pemilik, lalu jalankan ulang.")
-        cek_klaim = "lulus"
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import cek_fakta
+    karang = []
+    for i, v in enumerate(variasi, start=1):
+        for t in cek_fakta.periksa(re.sub(r"\{[^{}]+\}", " ", v), fakta, abaikan={"jam"}):
+            if t["level"] == "GAGAL":
+                karang.append("Variasi {}: {}".format(i, t["pesan"]))
+    if karang:
+        galat("GAGAL cek fakta: ada klaim yang tidak disebut pemilik (jangan dikarang). Pesan BELUM siap kirim:\n- "
+              + "\n- ".join(karang) +
+              ("\nHapus klaim itu atau tanyakan ke pemilik, lalu jalankan ulang." if ada_fakta else
+               "\nHapus klaim itu, atau (bila memang dari pemilik) salin kata-kata pemilik apa adanya ke fakta.txt "
+               "dan jalankan ulang dengan --fakta-file fakta.txt."))
+    cek_klaim = "lulus" if ada_fakta else "belum"
 
     header, baris = baca_kontak(a.kontak)
     if not baris:
@@ -531,8 +536,8 @@ def main():
         if len(re.findall(r"https?://|www\.", v)) > 1:
             peringatan.append("Variasi {} berisi lebih dari 1 link; cukup 1 link.".format(i))
     if cek_klaim == "belum":
-        peringatan.append("Klaim di pesan belum dicek terhadap kata-kata pemilik. Jalankan ulang dengan "
-                          "--fakta-file fakta.txt agar klaim karangan (stok terbatas, terlaris, halal, ...) tertangkap.")
+        peringatan.append("Tidak ada klaim terlarang yang terdeteksi, tetapi kata-kata pemilik belum diberikan. Jalankan ulang "
+                          "dengan --fakta-file fakta.txt agar klaim yang sah dari pemilik dicocokkan.")
     if a.saya_pastikan_semua_setuju and not k_setuju:
         peringatan.append("Kolom persetujuan tidak ada; pengguna menyatakan semua kontak sudah setuju. "
                           "Simpan bukti persetujuan masing-masing kontak.")

@@ -89,6 +89,10 @@ POLA_KLAIM = [
     ("urgensi", r"\b(?:stok|kuota|barang|jumlah|slot)\s+(?:tinggal\s+\w+|terbatas|menipis|sedikit|hampir\s+habis)\b",
      "semua"),
     ("urgensi", r"\b(?:hari\s+terakhir|cuma\s+hari\s+ini|hanya\s+hari\s+ini|sebelum\s+kehabisan|batch\s+terakhir"
+                r"|khusus\s+(?:hari|minggu|malam|pagi|siang|sore)\s+ini|(?:hari|minggu|malam)\s+ini\s+(?:saja|aja|doang)"
+                r"|(?:promo|penawaran|kesempatan|diskon|harga)\s+terakhir|last\s+chance|buruan|keburu(?:\s+habis)?"
+                r"|ayo\s+cepat|cepetan|jangan\s+sampai\s+(?:kehabisan|ketinggalan|terlewat|telat|kelewatan)"
+                r"|(?:waktu|promo|penawaran|edisi|periode)\s+terbatas|mumpung\s+(?:masih|belum)"
                 r"|siapa\s+cepat|harga\s+(?:akan\s+)?naik|besok\s+(?:sudah\s+|udah\s+)?(?:balik|naik|kembali|normal|habis))\b",
      "semua"),
     ("layanan", r"\b(?:gratis|free)\s+(?:ongkir|ongkos\s+kirim|antar|jemput|sampel|sample|tester|pengiriman)\b"
