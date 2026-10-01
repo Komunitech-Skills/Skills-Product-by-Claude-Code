@@ -197,6 +197,36 @@ class TesHitungDowntime(unittest.TestCase):
         self.assertEqual(jumlah, 2)
 
 
+    def test_lima_heartbeat_berurutan_satu_insiden(self):
+        # Temuan uji OpenClaw 2026-10-01: 5 heartbeat TURUN berurutan dicetak "5x" -> harus 1 kejadian.
+        beats = [{"status": pantau.UP, "time": "2026-09-26 07:21:00"}]
+        beats += [{"status": pantau.DOWN, "time": f"2026-09-26 07:2{i}:00"} for i in range(2, 7)]
+        beats += [{"status": pantau.UP, "time": "2026-09-26 07:27:00"}]
+        menit, _, _, jumlah = pantau.hitung_downtime_jendela(beats, datetime.now(timezone.utc))
+        self.assertEqual(jumlah, 1)
+        self.assertAlmostEqual(menit, 5.0, places=3)
+        ins = pantau.daftar_insiden(beats, datetime.now(timezone.utc))
+        self.assertEqual(ins[0]["jumlah_titik"], 5)
+        self.assertEqual(pantau.jam_wib(ins[0]["mulai"]), "2026-09-26 14:22 WIB (07:22 UTC)")
+
+    def test_insiden_masih_berlangsung_dan_dua_insiden(self):
+        sekarang = datetime(2026, 9, 26, 8, 27, 6, tzinfo=timezone.utc)
+        beats = [{"status": pantau.DOWN, "time": "2026-09-26 07:00:00"},
+                  {"status": pantau.UP, "time": "2026-09-26 07:03:00"},
+                  {"status": pantau.UP, "time": "2026-09-26 08:14:00"},
+                  {"status": pantau.DOWN, "time": "2026-09-26 08:15:00"},
+                  {"status": pantau.DOWN, "time": "2026-09-26 08:16:00"},
+                  {"status": pantau.DOWN, "time": "2026-09-26 08:17:00"}]
+        ins = pantau.daftar_insiden(beats, sekarang)
+        self.assertEqual(len(ins), 2)
+        self.assertAlmostEqual(ins[0]["menit"], 3.0, places=3)
+        self.assertTrue(ins[1]["masih_berlangsung"])
+        self.assertAlmostEqual(ins[1]["menit"], 12.1, places=3)  # 08:15:00 -> 08:27:06
+        menit, _, _, jumlah = pantau.hitung_downtime_jendela(beats, sekarang)
+        self.assertEqual(jumlah, 2)
+        self.assertAlmostEqual(menit, 15.1, places=3)
+
+
 # ============================================================ 4. perintah 'cek' (ujung-ke-ujung)
 
 class TesCmdCek(unittest.TestCase):
@@ -299,16 +329,31 @@ class TesCmdRingkasan(unittest.TestCase):
         self.assertEqual(nama["Toko Online"]["status"], "AKTIF")  # heartbeat terakhir UP
         self.assertEqual(nama["Toko Online"]["sisa_hari_ssl"], 9)
         self.assertEqual(nama["Toko Online"]["uptime_24_jam_persen"], 95.0)
-        self.assertEqual(nama["WA Katalog"]["jendela_jumlah_turun"], 0)
+        self.assertEqual(nama["WA Katalog"]["jendela_jumlah_insiden"], 0)
 
     def test_downtime_jendela_dihitung_dari_heartbeat(self):
         kode, out, err = jalankan_pantau(["ringkasan", "--status-url", f"{self.base}/status/toko-scenario2",
                                             "--log", self.log, "--json"])
         data = json.loads(out)
         nama = {m["nama"]: m for m in data["monitor"]}
-        # id 10: turun 08:10-08:20 (2 titik turun berurutan -> 5 + 5 = 10 menit; lihat fixture)
-        self.assertEqual(nama["Toko Online"]["jendela_jumlah_turun"], 2)
+        # id 10: turun 08:10-08:20 (2 titik turun BERURUTAN = 1 kejadian, 10 menit; lihat fixture)
+        self.assertEqual(nama["Toko Online"]["jendela_jumlah_insiden"], 1)
+        self.assertEqual(nama["Toko Online"]["jendela_jumlah_heartbeat_turun"], 2)
+        ins = nama["Toko Online"]["jendela_insiden"]
+        self.assertEqual(len(ins), 1)
+        self.assertEqual(ins[0]["mulai_wib"], "2026-09-26 15:10 WIB (08:10 UTC)")
+        self.assertEqual(ins[0]["selesai_wib"], "2026-09-26 15:20 WIB (08:20 UTC)")
+        self.assertEqual(ins[0]["menit"], 10.0)
+        self.assertFalse(ins[0]["masih_berlangsung"])
         self.assertAlmostEqual(nama["Toko Online"]["jendela_menit_turun"], 10.0, places=3)
+
+    def test_teks_ringkasan_menyebut_kejadian_bukan_heartbeat(self):
+        kode, out, err = jalankan_pantau(["ringkasan", "--status-url", f"{self.base}/status/toko-scenario2",
+                                            "--log", self.log])
+        self.assertEqual(kode, 0, err)
+        self.assertIn("1 kejadian, total 10.0 menit", out)
+        self.assertIn("15:10 WIB (08:10 UTC) s/d 2026-09-26 15:20 WIB (08:20 UTC) - 10.0 menit", out)
+        self.assertNotIn("2x", out)
 
     def test_log_tertulis(self):
         jalankan_pantau(["ringkasan", "--status-url", f"{self.base}/status/toko-scenario2", "--log", self.log])

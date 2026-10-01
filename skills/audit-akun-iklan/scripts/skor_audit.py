@@ -75,7 +75,7 @@ SINONIM_STATUS = {
 NAMA_HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 NAMA_BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 SATU_DESIMAL = Decimal("0.1")
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 # Cek anggaran yang TIDAK boleh dikerjakan (menaikkan anggaran) sebelum cek batas-untungnya beres.
 PRASYARAT = {"T08": "T09", "S07": "S06", "TS05": "TS04"}
 BATAS_RASIO_BERLAKU = Decimal("0.5")   # bila < 50% bobot cek berlaku -> maksimal "sementara"

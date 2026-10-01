@@ -43,6 +43,9 @@ Salin folder `riset-saham-berita` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan; tanpa Python pun tetap bisa dengan hitung manual yang ditandai "belum diverifikasi script").
 
+## Catatan revisi 1.0.5 (2026-10-01)
+- Jadwal cek level harga (OpenClaw) hanya dibuat setelah Anda melihat perintah + jamnya dan membalas **"ya"** — tidak ada percobaan membuat jadwal sebelum itu.
+
 ## FAQ
 **Kenapa AI-nya tidak mau bilang saham ini bagus dibeli atau tidak?**
 Karena rekomendasi investasi adalah wewenang pihak berizin OJK, dan AI bisa salah atau terpengaruh informasi palsu di internet. Skill ini sengaja berhenti di fakta, angka, risiko, dan pertanyaan, supaya keputusan Anda berdasar data, bukan ikut-ikutan.

@@ -150,8 +150,11 @@ pertama catatan. Jangan menutup dengan kesimpulan ("layak", "menarik", "hindari"
    disclaimer. Bukan "saatnya jual/beli".
 5. Pengecekan terjadwal (mis. OpenClaw cron) hanya bila agent bisa mengambil harga dari halaman
    publik tanpa login; kanal default **Telegram ke pemilik sendiri**, tanpa broadcast ke grup.
-   Contoh perintah & cara uji: `references/jadwal-openclaw.md`. Minta konfirmasi "Lanjut? ya/tidak"
-   sebelum membuat jadwal. Setiap giliran **selalu** mengirim satu pesan sesuai kode (0 = satu baris
+   Contoh perintah & cara uji: `references/jadwal-openclaw.md`. **Urutan wajib:** (1) minta level
+   & jam dari pengguna, (2) tunjukkan perintah jadwal + jam, (3) tanya "Lanjut? ya/tidak" dan
+   **tunggu jawaban "ya"**, (4) baru buat jadwal. **Jangan memanggil alat jadwal/automations/cron
+   apa pun (termasuk "mencoba") sebelum langkah 3.** Laporkan hanya yang benar-benar dilakukan
+   (jangan menulis "sudah saya coba/laporkan ke sistem" bila tidak). Setiap giliran **selalu** mengirim satu pesan sesuai kode (0 = satu baris
    pendek "tidak ada level tersentuh"; 1 = "GAGAL dijalankan" + galat); jangan memakai `NO_REPLY`
    (belum terbukti meredam pesan di OpenClaw).
 
@@ -189,6 +192,7 @@ Lengkap: `examples/contoh-pembuat-cnth.md`.
   mengirim portofolio pengguna ke mana pun selain penyedia model AI yang dipakai agent.
 
 ## Riwayat versi
+- **1.0.5** (2026-10-01): urutan wajib jadwal OpenClaw — level & jam → tunjukkan perintah → tunggu "ya" → baru buat; tidak ada percobaan membuat jadwal sebelum konfirmasi.
 - **1.0.3** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
 - **1.0.2 (2026-09-29):** jadwal OpenClaw tidak lagi mengandalkan `NO_REPLY` (belum terbukti); kode 0
   mengirim satu baris pendek "tidak ada level tersentuh", dan isi pesan untuk kode 1/2/3 (serta bila

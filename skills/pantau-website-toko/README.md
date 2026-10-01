@@ -67,6 +67,11 @@ Cukup ketik permintaan biasa ke AI agent Anda:
 3. Bila memakai Uptime Kuma: catat alamat status page Anda (bentuk `http://ALAMAT:PORT/status/NAMA-SLUG`, dari `docs/panduan-uptime-kuma.md` §5) — tidak ada token/API key yang perlu disiapkan.
 4. Coba: "Cek website saya masih hidup nggak?" atau "Ringkas status website toko saya."
 
+## Catatan revisi 1.0.5 (2026-10-01)
+- Ringkasan kini menghitung **kejadian** down (beberapa cek gagal berurutan = 1 kejadian) lengkap dengan jam mulai–selesai (WIB) dan durasinya — tidak lagi "turun 5x" yang membingungkan.
+- Angka menit & persen disampaikan persis seperti hasil script.
+- Batas layanan diperjelas: AI tidak memasang Uptime Kuma atau notifikasi untuk Anda; pemasangan dilakukan sendiri (dipandu) atau lewat jasa setup Komunitech. Notifikasi resmi lewat Telegram; WhatsApp hanya dengan nomor terpisah sesuai kebijakan Komunitech.
+
 ## FAQ
 **Apakah data website saya dikirim ke server Komunitech atau pihak lain?**
 Tidak. Script ini hanya menghubungi Uptime Kuma **milik Anda sendiri** (biasanya `127.0.0.1`) atau website Anda sendiri langsung. Tidak ada data yang dikirim ke Komunitech, kecuali Anda sendiri mengatur jadwal laporan ke Telegram.

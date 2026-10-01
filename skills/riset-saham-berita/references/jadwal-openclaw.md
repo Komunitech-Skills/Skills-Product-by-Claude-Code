@@ -7,6 +7,16 @@ perintah `automations add` di bawah mengikuti pola yang sudah terbukti jalan di 
 OpenClaw 2026.9.5 untuk skill Komunitech lain (laporan terjadwal). Bila versi OpenClaw pengguna
 berbeda, jalankan `openclaw automations add --help` dulu dan sesuaikan; beri tahu pengguna.
 
+## 0. Urutan wajib sebelum membuat jadwal
+1. Minta dari pengguna: kode saham + level atas/bawah miliknya sendiri, jam cek, dan ID chat Telegram (bila belum ada).
+2. Tunjukkan perintah `openclaw automations add ...` lengkap + jam dalam WIB.
+3. Tanya "Lanjut? ya/tidak" dan **tunggu** balasan "ya".
+4. Baru jalankan perintahnya, lalu uji sesuai bagian 4.
+
+**Jangan memanggil alat jadwal/automations/cron apa pun — termasuk "mencoba dulu" — sebelum langkah 3.**
+Jawaban selain "ya" (diam, "nanti", pertanyaan lain) = jadwal tidak dibuat. Laporkan hanya tindakan
+yang benar-benar dilakukan.
+
 ## 1. Kenapa jadwalnya berupa pesan ke agent (bukan script saja)
 `scripts/rasio_saham.py` **tidak mengambil harga dari internet**. Jadi setiap giliran jadwal,
 agent yang harus: (1) membuka halaman harga publik tanpa login, (2) memperbarui kolom

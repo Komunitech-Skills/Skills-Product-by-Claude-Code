@@ -303,3 +303,288 @@ Skill terpakai: Ya — membaca SKILL.md, web_fetch, menjalankan script dan menul
 
 > Minta kalender sebulan, langsung dapat 30 baris lengkap (tanggal, hari, momen lokal, ide, hook, CTA) plus file CSV siap buka di Excel — dan jumlah video menyesuaikan kemampuan produksi Anda (3/minggu).
 
+
+
+## Uji ulang 2026-10-01
+
+**Versi diuji:** 1.0.4 · **Penguji:** agent penguji independen (bukan pembuat) · OpenClaw lokal terisolasi, home baru `r6k-kalender-konten-30hari` (SEBELUM, tanpa skill) dan `r6-kalender-konten-30hari` (SESUDAH, skill ini saja), dibuat ulang per skenario. Pesan identik dengan uji pertama.
+
+### Skenario 1 (ulang) — pesan sama persis
+
+**SEBELUM (tanpa skill)** — tools: ['tool_search', 'memory_search', 'tool_call']
+
+~~~~text
+Siap, ini kalender konten November 2026 buat **Wangi Bersih** (laundry kiloan Depok, Rp7.000/kg, antar-jemput, order via WA) — khusus IG + WA Status, dengan budget 3 video/minggu.
+
+**Pola kerja:**
+- Video (Reels IG + repost WA Status) di hari **Senin, Rabu, Jumat** → total 13 video sebulan, pas rata-rata 3x/minggu.
+- Hari lain cukup konten ringan: foto, banner promo, screenshot testimoni, atau polling stiker di WA Status (gak perlu edit video, 5 menit kelar).
+- Saran syuting: rekam 3 video sekaligus tiap akhir pekan/awal minggu, baru dijadwalkan posting — biar gak kejar tayang tiap hari.
+
+---
+
+**MINGGU 1 (1–7 Nov)**
+- Min 1: WA Status — quote pembuka bulan + jam buka/tutup
+- **Sen 2 (VIDEO)**: Proses cuci kilat + promo "Welcome November" — ajak order sebelum baju numpuk
+- Sel 3: IG Feed foto — banner harga Rp7.000/kg + gratis antar-jemput
+- **Rab 4 (VIDEO)**: Behind the scene — sortir & pisah warna biar baju gak luntur
+- Kam 5: WA Status — screenshot chat testimoni pelanggan
+- **Jum 6 (VIDEO)**: "Weekend numpuk cucian? Tinggal WA, kami jemput!" (CTA antar-jemput)
+- Sab 7: WA Status — promo "Sabtu-Minggu tetap jalan, order kapan aja"
+
+**MINGGU 2 (8–14 Nov)**
+- Min 8: WA Status — foto hasil lipatan rapi & wangi
+- **Sen 9 (VIDEO)**: Musim hujan males jemur? Serahin ke Wangi Bersih (angle solusi)
+- Sel 10: Hari Pahlawan — IG feed + WA Status: "Pahlawan rumah tangga, biar cucian kami yang urus" + promo spesial sehari
+- **Rab 11 (VIDEO)**: Testimoni pelanggan (rekam langsung/voice over ulasan)
+- Kam 12: WA Status — polling stiker "Wangi favorit: Lavender atau Bunga?"
+- **Jum 13 (VIDEO)**: Proses packing rapi, wangi tahan lama — ala "unboxing" laundry
+- Sab 14: WA Status — reminder area jangkauan antar-jemput Depok
+
+**MINGGU 3 (15–21 Nov)**
+- Min 15: IG Feed carousel — "5 Alasan Pilih Wangi Bersih"
+- **Sen 16 (VIDEO)**: Edukasi cara order — screen record chat WA step by step
+- Sel 17: WA Status — foto motor/armada antar-jemput
+- **Rab 18 (VIDEO)**: Day in the life kurir antar-jemput keliling Depok
+- Kam 19: WA Status — testimoni baru pelanggan
+- **Jum 20 (VIDEO)**: FAQ — jawab "berapa lama proses?", "area mana aja?"
+- Sab 21: WA Status — promo weekend "cucian numpuk, jemput hari ini juga"
+
+**MINGGU 4 (22–28 Nov)**
+- Min 22: IG Feed — foto before-after tempat cuci, kesan bersih & higienis
+- **Sen 23 (VIDEO)**: Promo gajian — bonus/diskon kiloan jelang akhir bulan
+- Sel 24: WA Status — countdown promo gajian (H-3, H-2, H-1)
+- **Rab 25 (VIDEO)**: Testimoni/UGC kedua — bandingin worth-it-nya Rp7rb/kg
+- Kam 26: Hari Guru Nasional — WA Status ucapan + opsional promo guru
+- **Jum 27 (VIDEO)**: Proses cuci express buat yang mau traveling weekend
+- Sab 28: WA Status — reminder kuota harian, "order cepat biar gak antre"
+
+**MINGGU 5 (29–30 Nov)**
+- Min 29: IG Feed carousel — recap testimoni & momen seru bulan ini
+- **Sen 30 (VIDEO)**: Recap closing November + teaser promo awal Desember
+
+---
+
+**Tips cepat:**
+- Semua video Reels tinggal di-screen record/share ulang ke WA Status, jadi 1 konten = 2 platform, hemat waktu.
+- Hari non-video tetap WAJIB isi WA Status minimal 1x biar status gak kosong (foto produk/testimoni paling gampang).
+- CTA tetap konsisten di tiap konten: "Order gampang, tinggal WA — jemput & antar gratis."
+
+Mau aku bikinin juga draft caption lengkap + hashtag buat ke-13 video itu, atau template desain IG feed-nya?
+~~~~
+
+**SESUDAH (dengan skill 1.0.4)** — tools: ['read', 'ls', 'exec']
+
+~~~~text
+Ini dia — **Kalender Konten November 2026 — Laundry Wangi Bersih (Depok)**
+Rp7.000/kg · Antar-jemput · Order via WA · Platform: **IG + WA Status**
+Cek: maksimal 3 video/minggu (sudah pas, lihat kolom Format — hari lain cukup foto, bukan video).
+
+| No | Tanggal | Hari | Momen | Pilar | Format | Ide Konten | Hook / Judul | CTA |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 01 Nov | Minggu | Gajian tgl 1 | Promo | Foto | Banner promo cuci kiloan Rp7.000/kg, ajak beresin cucian numpuk | Gajian cair, cucian numpuk? Serahin aja | Order/jadwalkan jemput via WA |
+| 2 | 02 Nov | Senin | | Hasil Cuci | Foto | Before-after cucian kotor → bersih wangi, rapi dilipat | Beda banget kan hasilnya? | Cek sendiri, order via WA |
+| 3 | 03 Nov | Selasa | | Tips | **Video** | Tips pisahkan baju putih & warna biar nggak luntur | Baju putih luntur? Ini sebabnya | Simpan tipsnya, order via WA |
+| 4 | 04 Nov | Rabu | | Promo | Foto | Foto timbangan + harga Rp7.000/kg, contoh hitungan | Rp7.000/kg aja, udah wangi rapi | Order lewat WA, kami jemput |
+| 5 | 05 Nov | Kamis | | Testimoni | **Video** | Pelanggan cerita kenapa langganan (dengan izin) `[isi: rekam testimoni asli]` | Kata pelanggan tetap kami | Mau coba juga? Chat WA |
+| 6 | 06 Nov | Jumat | | Antar Jemput | Foto | Kurir jemput cucian di depan rumah pelanggan | Nggak usah keluar rumah, kami jemput | Jadwalkan jemput via WA |
+| 7 | 07 Nov | Sabtu | | Hasil Cuci | **Video** | Proses lipat & packing cucian rapi siap diantar | Rapi gini siap dianter ke rumahmu | Order cuci kiloan via WA |
+| 8 | 08 Nov | Minggu | | Tips | Carousel | Tips simpan pakaian biar nggak apek musim hujan | Musim hujan, baju gampang apek? | Serahin ke kami, order via WA |
+| 9 | 09 Nov | Senin | | Promo | Foto | Ajakan rutin cuci kiloan tiap minggu | Senin produktif, cucian beres | Chat WA buat jadwal rutin |
+| 10 | 10 Nov | Selasa | Hari Pahlawan (peringatan — tanpa jualan) | Testimoni | **Video** | Ucapan Hari Pahlawan + apresiasi pelanggan & tim, tanpa penawaran apa pun | Selamat Hari Pahlawan | Terima kasih sudah percaya ke kami |
+| 11 | 11 Nov | Rabu | Tanggal kembar 11.11 (cek kampanye marketplace) | Promo | Foto | Promo 11.11 `[isi: promo jika ada]`; kalau belum ada, ajak beresin cucian sebelum akhir pekan | 11.11, waktunya beres-beres cucian | Order lewat WA, cek promo 11.11 |
+| 12 | 12 Nov | Kamis | | Antar Jemput | **Video** | POV kurir antar cucian bersih sampai depan pintu | Nyampe rumah udah wangi | Order antar jemput via WA |
+| 13 | 13 Nov | Jumat | | Hasil Cuci | Foto | Seragam kerja/sekolah wangi rapi bebas noda | Seragam kerja wangi lagi | Order cuci kiloan via WA |
+| 14 | 14 Nov | Sabtu | | Tips | **Video** | Tips hilangkan bau apek di lemari | Lemari bau apek? Coba ini | Cucian numpuk? Serahin lewat WA |
+| 15 | 15 Nov | Minggu | | Promo | Foto | Promo akhir pekan, ajak beresin cucian sebelum minggu baru | Minggu santai, cucian beres duluan | Jadwalkan jemput akhir pekan via WA |
+| 16 | 16 Nov | Senin | | Testimoni | Foto | Testimoni pelanggan (dengan izin) `[isi: foto & kutipan asli]` | Udah coba, langsung langganan | Gabung jadi pelanggan tetap, chat WA |
+| 17 | 17 Nov | Selasa | | Antar Jemput | **Video** | Behind the scene tim siap-siap jemput cucian pagi | Pagi-pagi, tim udah siap jemput | Order jemput hari ini via WA |
+| 18 | 18 Nov | Rabu | | Hasil Cuci | Foto | Cucian anak kos/karyawan rapi dilipat dalam kantong | Anak kos juga wajib coba ini | Order cuci kiloan via WA |
+| 19 | 19 Nov | Kamis | | Tips | **Video** | Tips cara lipat baju biar nggak kusut | Biar baju nggak gampang kusut | Males ngelipat? Serahin lewat WA |
+| 20 | 20 Nov | Jumat | Tanggal tua — nilai/hemat | Testimoni | Foto | Testimoni soal harga terjangkau di akhir bulan `[isi: kutipan asli]` | Akhir bulan, dompet aman | Tetap bisa cuci hemat, chat WA |
+| 21 | 21 Nov | Sabtu | Tanggal tua | Antar Jemput | **Video** | Ingatkan hemat tenaga & waktu, cukup WA, kami jemput | Tanggal tua, hemat tenaga & waktu | Order jemput sekarang via WA |
+| 22 | 22 Nov | Minggu | Tanggal tua | Hasil Cuci | Foto | Hitung-hitungan hemat dibanding nyuci sendiri | Itung-itung, lebih hemat lho | Coba hitung sendiri, chat WA |
+| 23 | 23 Nov | Senin | Tanggal tua | Tips | Carousel | Tips hemat waktu & air dengan serahkan cucian | Biar nyuci nggak boros air & waktu | Serahin ke kami aja, chat WA |
+| 24 | 24 Nov | Selasa | Tanggal tua | Testimoni | **Video** | Testimoni singkat soal harga bersahabat `[isi: rekam asli]` | Harga segini, hasilnya memuaskan | Yuk coba juga, chat WA |
+| 25 | 25 Nov | Rabu | Hari Guru + gajian tgl 25 | Promo | Foto | Ucapan Hari Guru + ajakan beresin seragam sekolah pas gajian | Selamat Hari Guru! Gajian, cucian beres | Order cuci kiloan via WA |
+| 26 | 26 Nov | Kamis | | Antar Jemput | **Video** | Proses packing cucian rapi sebelum diantar balik | Dibungkus rapi sebelum balik ke rumahmu | Order antar jemput via WA |
+| 27 | 27 Nov | Jumat | | Hasil Cuci | Foto | Seprai & handuk bersih wangi | Seprai numpuk? Gampang, serahin aja | Order cuci kiloan via WA |
+| 28 | 28 Nov | Sabtu | | Tips | **Video** | Tips simpan pakaian rapi biar awet wangi | Lemari rapi, baju awet wangi | Laundry numpuk? Order via WA |
+| 29 | 29 Nov | Minggu | | Promo | Foto | Rekap ajakan beresin cucian sebelum Desember mulai sibuk | Akhir November, beresin cucian dulu | Order sekarang via WA |
+| 30 | 30 Nov | Senin | | Testimoni | Foto | Rekap testimoni pelanggan selama November `[isi: kumpulan testimoni asli]` | Makasih udah percaya bulan ini | Yuk mulai langganan bulan depan, WA |
+
+Sebaran pilar: Promo 7, Hasil Cuci 6, Tips 6, Testimoni 6, Antar Jemput 5 — jualan langsung ~23%, sisanya nilai/edukasi/hiburan.
+
+📥 CSV sudah tersimpan: `kalender_wangibersih_november2026.csv` di workspace (pemisah koma, siap tempel ke Google Sheets).
+
+💡 Tips eksekusi:
+1. Shooting semua video (3/minggu = total 12 video) sekaligus tiap akhir pekan sebelumnya, pakai HP saja — cukup klip jemput, lipat, packing, dan quote testimoni.
+2. Siapkan 1 folder foto "before-after" dan "hasil rapi dilipat" — bisa dipakai ulang untuk beberapa hari Promo/Hasil Cuci.
+3. Minta izin tertulis singkat (japri WA) tiap kali pakai foto/kutipan pelanggan sebagai testimoni.
+4. Tanggal 10 Nov (Hari Pahlawan) sengaja tanpa jualan — jangan diganti promo.
+5. Cek tanggal 11.11 mendekati hari-H untuk promo marketplace terbaru biar bisa disesuaikan kontennya.
+
+📝 Asumsi: gajian tgl 1 & 25 (default); belum ada info promo khusus 11.11 atau testimoni pelanggan asli — bagian itu saya tandai `[isi: ...]`, tinggal kamu isi.
+
+Mau sekalian aku buatin caption lengkap untuk salah satu hari (misal hari 1 atau hari promo 11.11)?
+~~~~
+
+### Skenario 2 (ulang) — pesan sama persis
+
+**SEBELUM (tanpa skill)** — tools: ['tool_search', 'memory_search', 'tool_call', 'web_fetch']
+
+~~~~text
+Siap, ini kalender kontennya. Beberapa catatan dulu sebelum tabelnya:
+
+**Tanggal penting Ramadan–Lebaran 2027** (hasil hisab astronomis via API kalender Hijriah — Kemenag biasanya baru menetapkan resmi lewat Sidang Isbat H-1, jadi mungkin geser 1 hari, tapi aman dipakai buat rencana konten):
+- 🌙 Awal Puasa (1 Ramadan 1448H): **Senin, 8 Februari 2027**
+- 🎉 Lebaran/Idul Fitri (1 Syawal 1448H): **Selasa, 9 Maret 2027**
+
+Jadi kalender 30 hari (20 Feb–21 Mar 2027) kamu ini pas banget mulai dari pertengahan Ramadan, nanjak ke 10 hari terakhir (masa pre-order parsel paling kenceng), Lebaran, sampai Syawal — momentumnya pas untuk jualan kurma & parsel.
+
+## Kalender Konten 30 Hari — Kurma Barokah
+
+| # | Tanggal | Hari | Momen | Tema Konten | Ide Format/Caption |
+|---|---------|------|-------|-------------|---------------------|
+| 1 | 20 Feb | Sab | Ramadan 13 | Pembuka kalender promo | Carousel "5 Jenis Kurma Favorit buat Takjil" |
+| 2 | 21 Feb | Min | Ramadan 14 | Edukasi gizi | Reels: manfaat kurma buat buka puasa |
+| 3 | 22 Feb | Sen | Ramadan 15 (pertengahan) | Promo tengah bulan | Flash sale kurma kiloan 24 jam |
+| 4 | 23 Feb | Sel | Ramadan 16 | Testimoni | Repost story/review pelanggan |
+| 5 | 24 Feb | Rab | Ramadan 17 (Nuzulul Qur'an) | Spesial religi | Ucapan + promo "kurma teman tadarus" |
+| 6 | 25 Feb | Kam | Ramadan 18 | Behind the scene | Video proses packing kurma |
+| 7 | 26 Feb | Jum | Ramadan 19 | Jumat Berkah | Promo paket sedekah takjil |
+| 8 | 27 Feb | Sab | Ramadan 20 | **Buka pre-order parsel Lebaran** | Pengumuman + link order |
+| 9 | 28 Feb | Min | Ramadan 21 (malam ganjil 1) | Itikaf & malam Lailatul Qadar | Konten reflektif + kurma bekal itikaf |
+| 10 | 1 Mar | Sen | Ramadan 22 | Reveal produk | Unboxing isi paket parsel |
+| 11 | 2 Mar | Sel | Ramadan 23 (malam ganjil) | Promo premium | Paket Ajwa/Medjool spesial |
+| 12 | 3 Mar | Rab | Ramadan 24 | Edukasi pilihan | Carousel paket Silver/Gold/Platinum |
+| 13 | 4 Mar | Kam | Ramadan 25 (malam ganjil) | Testimoni korporat | Review hampers kantor/instansi |
+| 14 | 5 Mar | Jum | Ramadan 26 | Jumat Berkah + flash sale | Promo terbatas |
+| 15 | 6 Mar | Sab | Ramadan 27 (malam ganjil, kuat Lailatul Qadar) | Konten spesial religi | Doa + promo parsel sedekah yatim |
+| 16 | 7 Mar | Min | Ramadan 28 | **Reminder batas order** | CTA "H-2, pesan sekarang biar sampai sebelum Lebaran!" |
+| 17 | 8 Mar | Sen | Ramadan 29 (puasa terakhir) | Countdown Lebaran | "Besok Lebaran!" + info jam toko tutup |
+| 18 | 9 Mar | Sel | **HARI LEBARAN** | Ucapan Idul Fitri | "Selamat Idul Fitri 1448H, mohon maaf lahir batin" + info libur |
+| 19 | 10 Mar | Rab | Syawal 2 | Halal bihalal | Foto tim + ucapan lanjutan |
+| 20 | 11 Mar | Kam | Syawal 3 | Buka toko lagi | Info jam operasional + stok ready |
+| 21 | 12 Mar | Jum | Syawal 4 | Promo after-Lebaran | "Lebaran belum berakhir" diskon sisa stok |
+| 22 | 13 Mar | Sab | Syawal 5 | Oleh-oleh open house | Kurma buat tamu halal bihalal |
+| 23 | 14 Mar | Min | Syawal 6 | Puasa Syawal | Tips kurma buka puasa sunnah |
+| 24 | 15 Mar | Sen | Syawal 7 | Testimoni pasca-Lebaran | UGC pelanggan |
+| 25 | 16 Mar | Sel | Syawal 8 | Interaksi | Giveaway kecil buat followers |
+| 26 | 17 Mar | Rab | Syawal 9 | Edukasi | Cara simpan kurma biar awet |
+| 27 | 18 Mar | Kam | Syawal 10 | Resep kreatif | Olahan kurma non-Lebaran (energy ball/smoothie) |
+| 28 | 19 Mar | Jum | Syawal 11 | Jumat Berkah reguler | Promo mingguan |
+| 29 | 20 Mar | Sab | Syawal 12 | Interaktif | Polling/Q&A produk favorit |
+| 30 | 21 Mar | Min | Syawal 13 | Recap & teaser | Terima kasih + bocoran promo berikutnya |
+
+## Jam Posting
+
+Aku belum punya akses ke Insights IG akun kamu (belum ada integrasi/koneksi akun di sini), jadi ini **benchmark umum** untuk akun F&B Indonesia selama Ramadan–Lebaran, bukan data real akunmu:
+
+- **Selama Ramadan (hari 1–17, 20 Feb–8 Mar):** 16.00–17.30 WIB (golden hour jelang buka puasa) dan 20.00–21.30 WIB (habis tarawih, orang santai scroll HP). Alternatif pagi: 05.00–06.00 (abis sahur sebelum tidur lagi).
+- **Lebaran & Syawal (9–21 Mar):** 11.00–13.00 WIB (jam istirahat/kumpul) dan 19.30–21.00 WIB (malam santai).
+
+Biar akurat, cek sendiri di akun kamu: Profesional Dashboard → Insights → "Aktivitas Followers" (ada jam-per-jam kapan followers paling online). Kirim screenshot-nya ke aku kalau mau, nanti aku bantu sesuaikan jadwal postingnya ke jam yang benar-benar pas buat akun kamu.
+~~~~
+
+**SESUDAH (dengan skill 1.0.4)** — tools: ['tool_search', 'read', 'exec', 'write']
+
+~~~~text
+Kalender konten 30 hari untuk **Kurma Barokah** (kurma & parsel Lebaran, Medan) sudah jadi. Dua hal penting dulu:
+
+⚠️ **Tanggal 1 Ramadan & Idulfitri 2027 belum resmi** — sidang isbat Kemenag baru menentukan mendekati waktunya. Saya pakai *perkiraan kasar*: awal Ramadan 1448H ±8 Feb 2027, Idulfitri ±10 Mar 2027 (berarti 20 Feb–21 Mar 2027 ada di tengah Ramadan menuju Lebaran). **Cek lagi ke SKB 3 Menteri / pengumuman Kemenag mendekati Februari 2027** dan geser tanggal di kalender ini kalau meleset.
+
+📊 **Jam posting rame**: saya tidak punya akses ke Instagram Insight toko Anda, jadi tidak bisa kasih angka pasti. Titik awal umum untuk akun lokal Indonesia: **siang ±11.30–13.00 (jam istirahat)** dan **malam ±19.00–21.00**. Untuk Ramadan khususnya, banyak akun F&B/kuliner lokal justru makin ramai di **jelang buka puasa (16.30–18.00)** dan **selepas tarawih (20.30–22.00)**. Ini perkiraan umum, bukan data akun Anda — cek Insight IG Anda sendiri (Profesional Dashboard → Insight → aktivitas pengikut) untuk angka pastinya, lalu sesuaikan jadwal ini.
+
+## Kalender Konten Kurma Barokah — 20 Feb s.d. 21 Mar 2027
+Pilar: Promo Parsel & Kurma (6 hari), Edukasi Kurma (6), Proses & Kemasan (6), Testimoni Pelanggan (6), Ucapan Ramadan Lebaran (6) | Platform: IG + TikTok + WA Status
+
+| No | Tanggal | Hari | Momen | Pilar | Format | Ide Konten | Hook / Judul | CTA |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 20 Feb 2027 | Sabtu | Tanggal tua | Edukasi Kurma | Carousel | Kenalan jenis kurma yang dijual (ajwa, medjool, sukari — [isi: jenis yg dijual]) & kegunaannya untuk takjil/parsel | Kurma apa yang cocok buat buka puasamu? | Simpan dulu, checkout pas gajian |
+| 2 | 21 Feb 2027 | Minggu | Tanggal tua | Proses & Kemasan | Video proses | Proses sortir kurma lalu dikemas ke wadah sebelum dijual | Begini cara kami kemas kurma biar tetap segar | Tonton sampai habis |
+| 3 | 22 Feb 2027 | Senin | Tanggal tua | Testimoni Pelanggan | Foto/Story | Testimoni (izin) pengalaman beli kurma untuk buka puasa keluarga | Kata pelanggan soal kurma kami | Cerita pengalamanmu di komentar |
+| 4 | 23 Feb 2027 | Selasa | Tanggal tua | Ucapan Ramadan Lebaran | Bebas | Suasana toko menyambut pertengahan Ramadan, rak kurma & parsel mulai disiapkan | Ramadan sudah separuh jalan, semangat! | Mampir toko / chat WA |
+| 5 | 24 Feb 2027 | Rabu | Tanggal tua | Edukasi Kurma | Carousel | Tips memilih kurma berkualitas: tekstur, warna, kemasan | Begini cara pilih kurma yang bagus | Simpan sebelum belanja |
+| 6 | 25 Feb 2027 | Kamis | Gajian (25) | Promo Parsel & Kurma | Video+Story | Pilihan paket parsel Lebaran [isi: paket & harga], mulai pre-order | Baru gajian? Checklist parsel Lebaran! | Order via WA [isi: no. WA] |
+| 7 | 26 Feb 2027 | Jumat | — | Proses & Kemasan | Video proses | Proses menyusun isi parsel [isi: isi parsel] jadi hampers rapi | Intip proses packing parsel kami | DM tanya pilihan isi parsel |
+| 8 | 27 Feb 2027 | Sabtu | — | Testimoni Pelanggan | Foto/Story | Testimoni (izin) pelanggan korporat yang pesan parsel banyak untuk kantor | Kantor ini pesan parsel di sini | Mau pesan untuk kantor? Chat kami |
+| 9 | 28 Feb 2027 | Minggu | — | Ucapan Ramadan Lebaran | Bebas | Suasana ngabuburit, ajak follower share menu buka puasa favorit | Ngabuburit sambil cari kurma favorit | Komen menu buka puasamu |
+| 10 | 01 Mar 2027 | Senin | Gajian (1) | Promo Parsel & Kurma | Video+Story | Paket kurma kiloan [isi: ukuran & harga] untuk stok Ramadan-Lebaran | Gajian awal bulan, stok kurma sebulan | Order via WA |
+| 11 | 02 Mar 2027 | Selasa | — | Edukasi Kurma | Carousel | Manfaat kurma untuk energi saat sahur & buka puasa | Kenapa kurma wajib ada pas sahur? | Simpan sebagai pengingat sahur |
+| 12 | 03 Mar 2027 | Rabu | Tanggal kembar 3.3 (cek kampanye) | Promo Parsel & Kurma | Video+Story | Promo 3.3 untuk parsel [isi: detail promo]; jika belum ada, tampilkan katalog paket | Promo 3.3, checklist parsel Lebaran | Cek promo di WA |
+| 13 | 04 Mar 2027 | Kamis | — | Proses & Kemasan | Video proses | Proses packing & kirim parsel untuk pelanggan luar kota [isi: jangkauan kirim] | Siap kirim parsel ke luar kota | Tanya ongkir via WA |
+| 14 | 05 Mar 2027 | Jumat | — | Testimoni Pelanggan | Foto/Story | Testimoni (izin) kirim parsel ke keluarga luar kota karena tidak mudik | Kangen keluarga? Kirim kurma lewat kami | Mau kirim juga? Chat kami |
+| 15 | 06 Mar 2027 | Sabtu | — | Ucapan Ramadan Lebaran | Bebas | Countdown santai menuju Lebaran (perkiraan), ajak share rencana Lebaran | Lebaran sebentar lagi (perkiraan) | Share rencana Lebaranmu |
+| 16 | 07 Mar 2027 | Minggu | — | Promo Parsel & Kurma | Video+Story | Info batas order terakhir sebelum Lebaran [isi: tanggal batas] + katalog paket | Mau kirim sebelum Lebaran? Cek jadwalnya | Order & tanya jadwal kirim |
+| 17 | 08 Mar 2027 | Senin | Hari Perempuan Internasional | Edukasi Kurma | Carousel | Ide kado kurma/parsel untuk ibu/istri/rekan perempuan | Parsel kurma, hadiah manis buat perempuan hebat | Pesan kado spesial via WA |
+| 18 | 09 Mar 2027 | Selasa | — | Proses & Kemasan | Video proses | Suasana toko mulai ramai pesanan terakhir menjelang Lebaran (perkiraan) | Toko makin sibuk menjelang Lebaran | Masih bisa pesan, chat kami |
+| 19 | 10 Mar 2027 | Rabu | **Idulfitri 1448H (perkiraan, cek SKB 3 Menteri)** — peringatan | Testimoni Pelanggan | Foto/Story | Ucapan Selamat Idulfitri + foto pelanggan (izin) momen Lebaran bersama keluarga — **tanpa promosi** | Selamat Idulfitri 1448 H | Mohon maaf lahir dan batin |
+| 20 | 11 Mar 2027 | Kamis | Lebaran H+1 (perkiraan) — peringatan | Ucapan Ramadan Lebaran | Bebas | Ucapan silaturahmi, foto kebersamaan tim merayakan Lebaran — **tanpa promosi** | Taqabbalallahu minna wa minkum | Selamat merayakan bersama keluarga |
+| 21 | 12 Mar 2027 | Jumat | — | Promo Parsel & Kurma | Video+Story | Info toko buka kembali pasca Lebaran, restock kurma & sisa parsel [isi: promo restock] | Kurma Barokah buka lagi, yuk re-stock | Kunjungi toko / order WA |
+| 22 | 13 Mar 2027 | Sabtu | — | Edukasi Kurma | Carousel | Tips menyimpan kurma agar tahan lama setelah Lebaran | Kurma sisa Lebaran? Simpan begini | Share ke teman yang masih punya stok |
+| 23 | 14 Mar 2027 | Minggu | — | Proses & Kemasan | Video proses | Suasana toko merapikan stok & kemasan pasca Lebaran | Beres-beres toko setelah Lebaran | Follow terus update toko |
+| 24 | 15 Mar 2027 | Senin | — | Testimoni Pelanggan | Foto/Story | Testimoni (izin) pengalaman terima/kirim parsel dari toko | Parsel sampai tepat waktu | Terima kasih, order lagi via WA |
+| 25 | 16 Mar 2027 | Selasa | — | Ucapan Ramadan Lebaran | Bebas | Ajakan halal bihalal, foto kumpul keluarga ngemil kurma | Masih suasana halal bihalal | Share momen halal bihalalmu |
+| 26 | 17 Mar 2027 | Rabu | — | Promo Parsel & Kurma | Video+Story | Info kurma tetap tersedia di luar musim Lebaran [isi: varian & harga] | Ngidam kurma di luar Lebaran? Tetap ada | Order kapan saja via WA |
+| 27 | 18 Mar 2027 | Kamis | — | Edukasi Kurma | Carousel | Ide kurma sebagai oleh-oleh acara/arisan/kunjungan keluarga di Medan | Kurma, oleh-oleh yang selalu pas | Pesan untuk oleh-oleh via WA |
+| 28 | 19 Mar 2027 | Jumat | — | Proses & Kemasan | Video proses | Proses repacking kurma ke kemasan kecil/ekonomis untuk oleh-oleh | Kurma dikemas pas buat oleh-oleh | Tanya pilihan kemasan via WA |
+| 29 | 20 Mar 2027 | Sabtu | Tanggal tua | Testimoni Pelanggan | Foto/Story | Testimoni (izin) tetap beli kurma di tanggal tua karena harga [isi: info harga] terjangkau | Tetap hemat, tetap ada kurma | Cek kurma harga bersahabat di WA |
+| 30 | 21 Mar 2027 | Minggu | Tanggal tua | Ucapan Ramadan Lebaran | Bebas | Ucapan terima kasih ke pelanggan sepanjang Ramadan-Lebaran, ajak follow | Terima kasih sudah jadi bagian Ramadan kami | Follow terus biar gak ketinggalan promo |
+
+📥 File tersimpan di workspace:
+- `kurma-barokah/kalender.md` (tabel lengkap)
+- `kurma-barokah/kalender.csv` (pemisah `;`, siap buka di Excel; pakai `,` kalau mau Google Sheets — bilang saja)
+
+💡 **Tips eksekusi:**
+1. Batch produksi konten Sabtu/Minggu (hari tanggal tua, lebih santai) agar stok konten cukup untuk hari sibuk pra-Lebaran.
+2. Siapkan 1-2 foto produk/parsel berkualitas dari awal untuk dipakai ulang di beberapa hari.
+3. Tanggal 19-20 Mar (Idulfitri) **jangan jadwalkan apapun yang berbau jualan** — cuma ucapan.
+4. Cek Insight IG minggu pertama berjalan untuk tahu jam rame sebenarnya, lalu geser jadwal posting ke situ.
+5. Pantau pengumuman Kemenag soal 1 Ramadan & Idulfitri 2027 mendekati Februari — siap geser tanggal hari ke-19/20 kalau beda dari perkiraan.
+
+📝 **Asumsi yang saya pakai** (boleh dikoreksi):
+- Gajian pelanggan tgl 25 & 1 (default)
+- Kurma Barokah terima order via WA (nomor belum saya tahu — tandai `[isi: ...]`)
+- Jangkauan kirim luar kota belum dikonfirmasi
+- Belum ada data promo 3.3 spesifik — tabel pakai placeholder
+
+Mau saya lanjutkan dengan caption lengkap untuk hari-hari penting (gajian, 3.3, Idulfitri)? Atau isi kolom `[isi: ...]` kalau Anda kasih detail paket/harga/nomor WA-nya sekarang.
+~~~~
+
+### Verifikasi (Python, penguji)
+
+- 1 Nov 2026 = Minggu ✔; 10 Nov Hari Pahlawan, 11.11, 25 Nov Hari Guru ✔ (SESUDAH). SEBELUM menaruh Hari Guru di **Kamis 26 Nov** — salah (25 Nov).
+- SESUDAH skenario 1: video di hari 3,5,7 / 10,12,14 / 17,19,21 / 24,26,28 = 3 per blok 7 hari, total 12 ✔; pilar Promo 7/30 = 23% ✔; Hari Pahlawan tanpa jualan ✔. Klaim layanan karangan lama ("tanpa minimal berat", "jemput tanpa biaya") **tidak muncul lagi**; testimoni & promo 11.11 memakai `[isi]`. Sisa ringan: "bebas noda", "hitung-hitungan hemat dibanding nyuci sendiri", "nggak boros air". SEBELUM: CTA "jemput & antar gratis", "promo spesial sehari" di Hari Pahlawan, "kuota harian ... biar gak antre" (urgensi karangan), "cuci express".
+- Kalender Hijriah tabular (Python): 1 Ramadan 1448 H ≈ **8 Feb 2027**, 1 Syawal ≈ **10 Mar 2027** (selisih 30 hari). SESUDAH: "±8 Feb 2027", "Idulfitri ±10 Mar 2027", berlabel perkiraan + cek SKB/Kemenag ✔, konsisten ✔, tanpa klaim "sudah dicek" ✔. Hari dalam tabel (20 Feb Sabtu … 21 Mar Minggu) benar semua. CSV `kurma-barokah/kalender.csv` diperiksa penguji: 31 baris (header + 30), kolom Platform & Status ada.
+- SESUDAH skenario 2 — **kesalahan baru:** Tips #3 menulis "Tanggal **19-20 Mar** (Idulfitri) jangan jadwalkan jualan", padahal tabelnya sendiri menaruh Idulfitri di **10–11 Mar** (19–20 adalah nomor baris). Selain itu kolom Momen 20–24 Feb diberi "Tanggal tua" padahal itu pertengahan Ramadan; momen Ramadan penting untuk toko parsel (THR ±H-7, Nuzulul Qur'an, 10 malam terakhir) tidak muncul sama sekali.
+- SESUDAH: tidak ada urgensi palsu di CTA ("stok terbatas"/"buruan" hilang) ✔. Sisa: hook testimoni "Kantor ini pesan parsel di sini" dan "Parsel sampai tepat waktu" tanpa `[isi]` (diberi label "(izin)").
+- SEBELUM skenario 2: 1 Ramadan 8 Feb, Idulfitri 9 Mar dengan catatan isbat — dalam rentang wajar; label "Ramadan 13 … 29" per baris konsisten dan momen Ramadan (Nuzulul Qur'an, malam ganjil, batas order) relevan. Minus: mengarang paket Silver/Gold/Platinum, flash sale, "promo terbatas", testimoni korporat, "diskon sisa stok"; tanpa CSV.
+- Jam posting: kedua sisi jujur tidak punya akses Insight IG ✔.
+
+### Status cacat lama
+
+| Cacat uji pertama | Status |
+|---|---|
+| 1. Awal Ramadan 2027 = 17 Feb + "sudah dicek" | **Beres** — ±8 Feb, berlabel perkiraan, konsisten dengan ±10 Mar |
+| 2. Urgensi palsu di CTA | **Beres** |
+| 3. Klaim layanan karangan (skenario 1) | **Beres** (sisa klaim ringan) |
+| 4. Kolom Platform/Status hilang dari tabel chat | **Belum** di chat (ada di CSV) — tidak termasuk catatan revisi |
+
+**Regresi / cacat baru:** tanggal Idulfitri salah di Tips ("19-20 Mar"); momen Ramadan diganti "Tanggal tua".
+
+### Skor
+
+| | Sebelum | Sesudah | Alasan |
+|---|---|---|---|
+| Skenario 1 | 5.5 | 8.5 | SESUDAH 30 baris + CSV, kapasitas video dipatuhi, momen benar, tanpa klaim karangan besar; SEBELUM Hari Guru salah tanggal, "antar-jemput gratis" karangan, bukan kalender harian. |
+| Skenario 2 | 7 | 7 | SESUDAH tanggal Ramadan/Lebaran kini benar & jujur, format & CSV terlengkap, tanpa urgensi palsu — tetapi Tips menyebut Idulfitri 19–20 Mar (salah) dan momen Ramadan hilang; SEBELUM lebih kaya momen Ramadan namun penuh promo karangan. |
+| **Rata-rata** | **6.25** | **7.75** | |
+
+**VERDIK: BELUM** — SESUDAH 7,75 (< 8) dan ada kesalahan tanggal di output (Idulfitri "19-20 Mar" di Tips). Cacat utama uji pertama (17 Feb + "sudah dicek", urgensi palsu) sudah beres.
+
+Sisa untuk pembuat: (1) bila periode berada di Ramadan, script/Langkah kerja menandai "Ramadan hari ke-N (perkiraan)" di kolom Momen dan menambah THR (±H-7 Lebaran), Nuzulul Qur'an, 10 malam terakhir — jangan beri label "Tanggal tua" di tengah Ramadan; (2) checklist: setiap tanggal yang disebut di Tips/catatan harus sama dengan tabel (jangan memakai nomor baris sebagai tanggal).
+
+### Cuplikan jualan (jujur)
+
+> Minta kalender November, langsung dapat 30 baris (tanggal, hari, momen, ide, hook, CTA) + CSV, dengan 3 video per minggu persis sesuai kemampuan Anda — tanpa skill, bot menaruh Hari Guru di tanggal 26 dan menjanjikan "antar-jemput gratis" yang tidak pernah Anda tawarkan.

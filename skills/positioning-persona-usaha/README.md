@@ -54,5 +54,10 @@ Tidak. Script hanya memakai Python standar.
 **Boleh dipakai untuk produk kesehatan atau kosmetik?**
 Boleh untuk positioning, tetapi klaim khasiat tidak dibuatkan; kamu tetap perlu mengecek aturan BPOM dan sertifikasi halal.
 
+## Catatan revisi 1.0.4 (2026-10-01)
+- Klaim produk (komposisi, "alami/herbal", "100%", "tanpa pengawet") hanya ditulis bila Anda menyebutnya; selain itu muncul sebagai `[isi: …]` untuk Anda lengkapi.
+- Produk pangan, kosmetik, jamu/obat tradisional: ada pengingat izin edar BPOM (atau SPP-IRT untuk pangan olahan rumah tangga tertentu) **sebelum** dijual.
+- Lokasi file kerja yang dibuat selalu disebutkan.
+
 ## Catatan lisensi
 Sebagian kerangka diadaptasi dari skill berlisensi MIT (phuryn/pm-skills dan coreyhaines31/marketingskills); rincian dan teks lisensi ada di `ATTRIBUTION.md`. Skill ini tidak berafiliasi dengan pembuat sumber.
