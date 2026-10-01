@@ -54,3 +54,16 @@ Nilai jual paket sebaiknya ditekankan pada sistem kerja harian (pencatatan, jadw
 - Home SESUDAH berisi 24 skill, termasuk `dasbor-lokal` (status `draft`, menurut PANDUAN belum termasuk paket) dan skill di luar daftar 17+4 PANDUAN (`pengingat-follow-up`, `rekap-penjualan-csv`). Tidak ada yang terpakai di uji ini, tetapi isi home uji tidak persis sama dengan paket yang dijual.
 - SEBELUM mencoba web search (`tool_search`/`tool_call`) dan tidak tersedia — wajar untuk home kosong.
 - Setiap panggilan 1–4 menit; tidak ada kegagalan/timeout. Transkrip dibaca read-only dari SQLite sesi untuk memastikan skill/script yang dipakai.
+
+## Uji ulang 2026-10-01 (keuangan)
+
+Penguji independen, OpenClaw lokal asli, model router Komunitech (`claude-sonnet-5`), home baru `sol2-usaha-offline` (direset sebelum tiap skenario). Hanya sisi SESUDAH; pesan, jawaban lanjutan, dan file data identik dengan uji pertama. Semua angka dihitung ulang dengan Python dan script skill dijalankan ulang oleh penguji. Tidak ada paket pip yang terpasang selama uji.
+
+| # | Skill (versi) | Cacat lama hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [01](uji-openclaw/01-hpp-harga-jual-ulang.md) | `hitung-hpp` 1.0.3 | **Ya**: BEP Rp18.000 = 501 gelas (benar), "bahan baku Rp7.205 (54%) — komponen terbesar" (benar) | BEP Rp19.000/20.000 ditulis 450/409, script 451/410 (selisih 1 gelas, dibulatkan ke bawah oleh model); klaim harga pasar tanpa sumber | 7 → **8** | LULUS |
+| [02](uji-openclaw/02-gaji-bpjs-ulang.md) | `gaji-umkm` 1.0.6 | **Ya**: angka lengkap di giliran 1 dengan asumsi tanggal masuk disebut; UMK/JKK/tanggal masuk dalam satu pesan | Tidak ada (kecil: "dua hal" lalu tiga butir) | 8 → **9** | LULUS |
+| [03](uji-openclaw/03-pph-final-umkm-ulang.md) | `pph-final-umkm` 1.0.3 | **Ya, keduanya**: "16 Nov 2026 (15 Nov jatuh Minggu…)"; batas 7 tahun s.d. 2027 + PP 20/2026 belum diverifikasi | Tidak ada | 7 → **9** | LULUS |
+| [04](uji-openclaw/04-rekap-kas-harian-ulang.md) | `kas-umkm` 1.0.11 | **Ya**: skill kini terpakai (rekap per baris, laba kas + asumsinya, selisih laci), tawaran simpan ke buku kas | Tidak ada | 9 → **9** | LULUS |
+
+Semua angka (HPP 13.331,92; transfer 3.164.150/2.544.000 dan setor BPJS 818.800; PPh final Okt Rp260.000; laci 2.581.500, selisih −1.500) cocok dengan hitungan independen.

@@ -699,6 +699,57 @@ class UjiJurnalPL(unittest.TestCase):
         self.assertEqual(data["jumlah_baris_dihitung"], 1)
         self.assertAlmostEqual(data["posisi_tersisa"]["BTC"]["jumlah_tersisa"], 0.005)
 
+    def test_93_cek_biaya_tandai_fee_jual_janggal_v105(self):
+        # Data uji OpenClaw 2026-10-01 (skenario 03): fee jual BTC 18 Sep = 0,4%, lainnya 0,2%.
+        self._tulis_csv(
+            "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+            "2026-09-03,BTC,beli,0.002,1700000000,6800\n"
+            "2026-09-05,ETH,beli,0.05,62000000,6200\n"
+            "2026-09-12,SOL,beli,2,3100000,12400\n"
+            "2026-09-18,BTC,jual,0.001,1820000000,7280\n"
+            "2026-09-22,SOL,jual,2,2850000,11400\n"
+            "2026-09-25,BTC,beli,0.001,1760000000,3520\n"
+            "2026-09-28,ETH,jual,0.02,66500000,2660\n"
+        )
+        kode, out, err = jalankan_jurnal(["--jurnal", self.csv_path, "--hari-ini", "2026-09-30"])
+        self.assertEqual(kode, 0, err)
+        data = json.loads(out)
+        # P/L tidak berubah oleh pemeriksaan biaya (dihitung independen penguji: -329.620)
+        self.assertEqual(data["total_realized_pl"], -329620)
+        self.assertEqual([c["baris"] for c in data["cek_biaya"]], [5])
+        c = data["cek_biaya"][0]
+        self.assertAlmostEqual(c["biaya_persen"], 7280 / (0.001 * 1820000000) * 100, places=3)
+        self.assertIn("berbeda jauh", c["alasan"])
+        self.assertIn("0,40%", c["alasan"])
+        self.assertIsNotNone(data["cek_biaya_keterangan"])
+
+    def test_94_cek_biaya_di_atas_1_persen_dan_beli_vs_jual_v105(self):
+        self._tulis_csv(
+            "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+            "2026-01-01,BTC,beli,1,1000000,2000\n"
+            "2026-01-02,BTC,beli,1,1000000,2000\n"
+            "2026-02-01,BTC,jual,1,1000000,15000\n"
+            "2026-02-02,BTC,jual,1,1000000,15000\n"
+        )
+        kode, out, err = jalankan_jurnal(["--jurnal", self.csv_path, "--hari-ini", "2026-09-30"])
+        data = json.loads(out)
+        self.assertEqual(sorted(c["baris"] for c in data["cek_biaya"]), [4, 5])
+        self.assertTrue(all("di atas 1%" in c["alasan"] for c in data["cek_biaya"]))
+        self.assertIn("JUAL 1,50% vs BELI 0,20%", data["cek_biaya_beli_vs_jual"])
+
+    def test_95_cek_biaya_seragam_tidak_ditandai_v105(self):
+        self._tulis_csv(
+            "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+            "2026-01-01,BTC,beli,1,1000000,2000\n"
+            "2026-02-01,BTC,jual,1,1100000,2200\n"
+            "2026-02-02,ETH,beli,1,500000,0\n"
+        )
+        kode, out, err = jalankan_jurnal(["--jurnal", self.csv_path, "--hari-ini", "2026-09-30"])
+        data = json.loads(out)
+        self.assertEqual(data["cek_biaya"], [])
+        self.assertIsNone(data["cek_biaya_beli_vs_jual"])
+        self.assertIsNone(data["cek_biaya_keterangan"])
+
     def test_67_csv_dengan_bom_utf8(self):
         self._tulis_csv(
             "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"

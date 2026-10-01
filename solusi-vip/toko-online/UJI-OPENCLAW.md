@@ -84,3 +84,13 @@ Penguji independen (bukan pembuat). Home `sol-toko-online` direset dari skill te
 - 04 listing — **layak**, dan lebih kuat: "Aku sempat kasih kata 'rapi' di deskripsi tapi dihapus karena kamu gak bilang itu" (vs tanpa skill: "Dikirim cepat & packing aman · Banyak pelanggan repeat order!").
 - 05 promo — **layak**: "Pesanan dikirim paling lambat [isi: jumlah] hari kerja … aku nggak mau ngarang kuota/jam kirim" (vs tanpa skill: target 173 botol yang membandingkan dengan laba sebulan penuh).
 - 02 rekap — tetap **jangan dijual sebagai pembeda besar**; model tanpa skill sudah tepat. Boleh sebagai contoh kelengkapan format.
+
+## Uji ulang 2026-10-01 (keuangan)
+
+Penguji independen, OpenClaw lokal asli, model router Komunitech (`claude-sonnet-5`), home baru `sol2-toko-online` (direset). Hanya sisi SESUDAH; pesan identik dengan uji pertama. Angka dihitung ulang dengan Python. Tidak ada paket pip yang terpasang selama uji.
+
+| # | Skill (versi) | Cacat lama hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [01](uji-openclaw/01-harga-jual-shopee-ulang.md) | `harga-jual-marketplace` 1.0.3 | **Ya**: blok catatan disalin utuh: "PMK 37/2025, berlaku 1 Agustus 2026 … Berlaku per 2026-09-23. Alat bantu hitung, bukan nasihat pajak." | Kecil: narasi model menyebut Rp62.900 "di bawah target" (salah; margin 25,10%, harga target persis 62.800) | 8,5 → **8,5** | LULUS (saran: harga alternatif wajib dihitung script) |
+
+Angka script benar semua (harga minimal 44.858, rekomendasi 63.000, laba 15.875, margin 25,2%).

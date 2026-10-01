@@ -51,8 +51,9 @@ Jika pengguna ingin cepat, pakai default dan **sebutkan asumsinya**: pola 50/30/
    - Banding pola 50/30/20 (Kebutuhan termasuk keluarga/sosial). Keluarga dengan tanggungan/kota mahal: tawarkan 60/20/20 atau 70/10/20 — yang penting tabungan tetap ada.
    - **E-wallet (GoPay/OVO/DANA/ShopeePay):** top-up bukan pengeluaran; catat menurut pemakaiannya agar tidak dobel.
    - Total cicilan > 30% pemasukan → peringatkan, jangan tambah utang.
+   - Bila ada data realisasi (mis. mutasi rekening), tampilkan **realisasi bulan lalu vs anggaran** per pos; potongan > 30% dari realisasi ditandai sebagai **target bertahap** (mis. turun bertahap 2–3 bulan), jangan disajikan seolah langsung mudah.
    Detail kategori khas Indonesia: `references/pos-anggaran-indonesia.md`.
-5. **Dana darurat:** target = pengeluaran pokok × bulan: PNS/pegawai sangat stabil 3–6, lajang 3–6, menikah 6–9, punya anak/tanggungan 9–12, pekerja lepas/pemilik usaha 12. Lama tercapai = kekurangan ÷ setoran (dibulatkan ke atas). Punya utang berbunga tinggi: dana darurat awal ~1 bulan dulu, lalu fokus utang.
+5. **Dana darurat:** **pengeluaran pokok wajib mencakup SEMUA cicilan/utang minimum** (PayLater, kartu kredit, KPR, motor/leasing, KTA, pinjol, pinjaman keluarga yang ditagih rutin) + kebutuhan wajib (tempat tinggal, makan/dapur, listrik/air, transport, sekolah, BPJS) + kiriman keluarga yang tidak bisa ditunda. Bukan jajan/hiburan/top-up investasi. Selalu tampilkan **rincian pos yang dijumlahkan sebagai pokok** (pakai bagian "Dasar dana darurat" dari `anggaran`, atau `dana-darurat --pos ... --cicilan ...`). Target = pengeluaran pokok × bulan: PNS/pegawai sangat stabil 3–6, lajang 3–6, menikah 6–9, punya anak/tanggungan 9–12, pekerja lepas/pemilik usaha 12. Lama tercapai = kekurangan ÷ setoran (dibulatkan ke atas). Punya utang berbunga tinggi: dana darurat awal ~1 bulan dulu, lalu fokus utang.
 6. **Utang:**
    - Bunga **flat** (leasing motor/mobil, sebagian KTA) → konversi ke **efektif** dulu (`konversi-flat`). Jelaskan: flat dihitung dari pokok awal sepanjang tenor, sehingga bunga efektifnya hampir dua kali lipat.
    - Simulasikan **Avalanche** (bunga tertinggi dulu) dan **Snowball** (saldo terkecil dulu) dengan anggaran tetap; cicilan minimum utang yang lunas dialihkan ke utang berikutnya.
@@ -64,16 +65,18 @@ Jika pengguna ingin cepat, pakai default dan **sebutkan asumsinya**: pola 50/30/
 8. **Tulis hasil** sesuai format di bawah, dengan bahasa sehari-hari yang tidak menghakimi.
 
 ## Script (opsional, disarankan)
+Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (`scripts/keuangan.py`) — jangan mencarinya dengan `find /`. File milik pengguna (mis. mutasi rekening) dicari **hanya di folder kerja (workspace)** atau path yang disebut pengguna, bukan ke seluruh disk; tidak ketemu → tanyakan lokasinya.
 Jalankan dari folder skill (`python3`; Windows: `python` atau `py`):
 ```
 python3 scripts/keuangan.py anggaran --pemasukan "Gaji=7,5jt" --musiman "THR=7,5jt" --pos "Kontrakan=1,8jt" --pos "Kiriman ortu=750rb" --pos "Nongkrong=400rb:keinginan"
-python3 scripts/keuangan.py dana-darurat --pengeluaran-pokok 4,5jt --status anak --saldo 6jt --setoran 750rb
+python3 scripts/keuangan.py dana-darurat --pengeluaran-pokok 4,5jt --cicilan "PayLater=650rb" --cicilan "Motor=1,15jt" --status anak --saldo 6jt --setoran 750rb
 python3 scripts/keuangan.py utang --utang "Kartu kredit;12jt;1,75%/bln;600rb;kk" --utang "Paylater;3jt;2,5%/bln;200rb;paylater" --ekstra 1jt --metode banding [--jadwal]
 python3 scripts/keuangan.py konversi-flat --pokok 30jt --bunga-flat "0,9%/bln" --tenor 24 [--sudah-bayar 6]   # atau "12%/th"
 python3 scripts/keuangan.py target --nama "DP rumah" --biaya-sekarang 60jt --tahun 5 --inflasi 4 [--imbal 5] --terkumpul 10jt --kemampuan 700rb
 python3 scripts/keuangan.py target --jenis pensiun --pengeluaran-bulanan 6jt --tahun 25 --lama-pensiun 20
 ```
-- Pos anggaran: `nama=jumlah[:wajib|sosial|keinginan|tabungan]` (tanpa label → ditebak dari nama; tebakan ditandai).
+- Pos anggaran: `nama=jumlah[:wajib|sosial|keinginan|tabungan]` (tanpa label → ditebak dari nama; tebakan ditandai). `anggaran` juga mencetak **Dasar dana darurat** (pos wajib + semua cicilan, apa pun labelnya) beserta angka siap pakai untuk `dana-darurat`.
+- Dana darurat: `--pengeluaran-pokok` (gabungan) dan/atau rincian `--pos "nama=jumlah"`, ditambah `--cicilan "nama=jumlah"` (berulang). Tanpa cicilan tercatat, script mencetak "CEK CICILAN" — tanyakan/cek dulu ke pengguna.
 - Utang: `nama;saldo;bunga;cicilan_minimum[;jenis]`, bunga **dengan satuan** `24%/th`, `1,75%/bln`, `0,1%/hari` (kata sehari-hari juga diterima: `18% setahun`, `1,5% sebulan`, `1,5 persen per bulan`; atau `--per bulan|tahun` untuk angka tanpa satuan). Bunga bertanda `flat` ditolak di `utang` (konversi dulu); tandai `efektif` (mis. `1,6275%/bln efektif`) agar catatan FLAT untuk KTA/motor/mobil tidak muncul; jenis `kk|kta|paylater|pinjol|kpr|motor|mobil|keluarga|lain`.
 - Nominal gaji/saldo/pokok/pos anggaran < Rp10.000 (mis. "1.500"; pos yang ditulis dengan satuan seperti `5rb` tidak diperingatkan) → bagian PERINGATAN INPUT; konfirmasi ke pengguna. `target --kemampuan` juga menghitung bulan ke berapa target tercapai.
 - Input salah → pesan ramah tanpa traceback (kode keluar 2). Uji: `python3 tests/uji_regresi.py`.

@@ -82,3 +82,12 @@ Penguji independen (bukan pembuat). Home `sol-konsultan` direset dari skill terb
 **Cuplikan jualan sekarang layak?**
 - 04 laporan klien — **sekarang layak** (larangan di uji pertama dicabut): "Total jam dihitung oleh script: 9,75 jam (9 jam 45 menit)" + "Rencana berikutnya … script sengaja tidak mengarang ini" + "saya tidak akan kirim apa pun ke Pak Hendra". Tetap jujur: model tanpa skill juga menjumlah benar; pembedanya rencana tidak dikarang dan format konsisten.
 - 02 SPH — **belum layak** sampai regresi format diperbaiki dan diuji ulang.
+
+## Uji ulang 2026-10-01 (keuangan)
+
+Penguji independen, OpenClaw lokal asli, model router Komunitech (`claude-sonnet-5`), home baru `sol2-konsultan` (direset sebelum tiap skenario). Hanya sisi SESUDAH; pesan identik dengan uji pertama. Angka dihitung ulang dengan Python; script `kalender_pajak.py` dijalankan ulang oleh penguji. Tidak ada paket pip yang terpasang selama uji.
+
+| # | Skill (versi) | Cacat lama hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [01](uji-openclaw/01-invoice-ppn-pph23-ulang.md) | `buat-invoice` 1.0.3 | **Ya**: PPh 23 Rp270.000 & estimasi diterima bersih Rp14.715.000 dihitung script; invoice utuh ditulis di chat | **Giliran tambahan**: agent bertanya "apakah perlu mencantumkan **PPN 11%**" padahal member menyebut PKP dan data lengkap (uji pertama langsung jadi); label "PPN 11%" usang | 8 → **8** | LULUS dengan catatan (perbaiki default PPN untuk PKP & larang label 11%) |
+| [05](uji-openclaw/05-kalender-pajak-info-kurang-ulang.md) | `kalender-pajak` 1.0.7 | **Ya**: ambang Rp500 jt dihitung script (Okt pas 500 jt, lewat Nov, setor pertama Selasa 15 Des 2026); tanpa KAP karangan; tanpa rujukan skill yang tidak terpasang | Tidak ada (batas 7 tahun OP masih tidak disinggung) | 7 → **8,5** | LULUS |

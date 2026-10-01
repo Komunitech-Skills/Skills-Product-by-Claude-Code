@@ -356,6 +356,59 @@ class TesDanaDarurat(unittest.TestCase):
         self.assertIsNone(h[0]["lama"])
 
 
+class TesCicilanMasukPokok(unittest.TestCase):
+    """v1.0.5 (uji OpenClaw 2026-10-01 skenario 02): cicilan PayLater/KK/KPR/pinjol wajib masuk
+    pengeluaran pokok untuk dasar dana darurat (dulu PayLater Rp650rb terlewat -> target kurang +-Rp5,85 jt)."""
+
+    POS = ["Kontrakan=2jt", "Cicilan motor=1,15jt", "Shopee PayLater=650rb", "Belanja dapur=1.787.500",
+           "Token listrik=350rb", "SPP PAUD=350rb", "Pulsa=150rb", "Bensin=120rb", "Kiriman ibu=1jt",
+           "Arisan RT=500rb", "Dana darurat=750rb", "Jajan=692.500:keinginan"]
+
+    def test_anggaran_pokok_termasuk_semua_cicilan(self):
+        pos = [k.parse_pos(p) for p in self.POS]
+        h = k.hitung_anggaran([("Gaji", Decimal(9500000))], [], pos, [Decimal(50), Decimal(30), Decimal(20)])
+        # independen: wajib 2.000.000+1.150.000+650.000+1.787.500+350.000+350.000+150.000+120.000
+        self.assertEqual(h["pokok_dana_darurat"], Decimal(sum([2000000, 1150000, 650000, 1787500, 350000,
+                                                                350000, 150000, 120000])))
+        self.assertIn("Shopee PayLater", [n for n, _ in h["pokok_rinci"]])
+
+    def test_cicilan_berlabel_lain_tetap_pokok_tapi_ekstra_tidak(self):
+        pos = [k.parse_pos(p) for p in ["Kos=1jt", "Paylater=300rb:keinginan", "Kartu kredit=400rb:tabungan",
+                                        "Ekstra utang KK=500rb", "KPR=2jt", "Pinjol=250rb"]]
+        h = k.hitung_anggaran([("Gaji", Decimal(8000000))], [], pos, [Decimal(50), Decimal(30), Decimal(20)])
+        self.assertEqual(h["pokok_dana_darurat"], Decimal(1000000 + 300000 + 400000 + 2000000 + 250000))
+
+    def test_cli_anggaran_menampilkan_dasar_dana_darurat(self):
+        argumen = ["anggaran", "--pemasukan", "Gaji=9,5jt"]
+        for p in self.POS:
+            argumen += ["--pos", p]
+        r = jalankan(*argumen)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("Dasar dana darurat", r.stdout)
+        self.assertIn("Shopee PayLater (cicilan)", r.stdout)
+        self.assertIn("--pengeluaran-pokok 6557500 ", r.stdout)
+
+    def test_cli_dana_darurat_dengan_cicilan(self):
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "6.907.500", "--cicilan", "PayLater=650rb",
+                     "--status", "anak", "--saldo", "4jt", "--setoran", "750rb")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        pokok = 6907500 + 650000
+        self.assertIn(k.rp(Decimal(pokok)), r.stdout)
+        self.assertIn(k.rp(Decimal(pokok * 9)), r.stdout)          # Rp68.017.500
+        self.assertIn("{} bulan".format(math.ceil(F(pokok * 9 - 4000000, 750000))), r.stdout)
+        self.assertNotIn("CEK CICILAN", r.stdout)
+
+    def test_cli_dana_darurat_tanpa_cicilan_diingatkan(self):
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "5jt", "--status", "lajang")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("CEK CICILAN", r.stdout)
+
+    def test_cli_dana_darurat_hanya_rincian(self):
+        r = jalankan("dana-darurat", "--pos", "Kontrakan=2jt", "--cicilan", "KPR=3jt", "--status", "lajang")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("Rp15.000.000", r.stdout)   # 5 jt x 3 bulan
+
+
 # ---------------------------------------------------------------------------
 # Input buruk: tidak boleh ada traceback
 # ---------------------------------------------------------------------------
@@ -378,6 +431,8 @@ class TesInputBuruk(unittest.TestCase):
         ["dana-darurat", "--pengeluaran-pokok", "0", "--status", "lajang"],
         ["dana-darurat", "--pengeluaran-pokok", "3jt", "--status", "bujang"],
         ["dana-darurat", "--pengeluaran-pokok", "3jt"],
+        ["dana-darurat", "--status", "lajang"],
+        ["dana-darurat", "--cicilan", "PayLater=abc", "--status", "lajang"],
         ["target", "--biaya-sekarang", "10jt"],
         ["target", "--biaya-sekarang", "10jt", "--tahun", "3", "--inflasi", "-2"],
         ["target", "--biaya-sekarang", "10jt", "--tahun", "tiga"],

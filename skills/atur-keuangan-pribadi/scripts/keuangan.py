@@ -341,9 +341,18 @@ NAMA_KELOMPOK = {
     "tabungan": "Tabungan, dana darurat & pelunasan ekstra",
     "lain": "Belum dikelompokkan",
 }
-KATA_CICILAN = ("cicilan", "kpr", "kredit", "angsuran", "paylater", "pinjol", "kta", "leasing")
+KATA_CICILAN = ("cicilan", "kpr", "kredit", "angsuran", "paylater", "pay later", "pinjol", "kta", "leasing",
+                "spaylater", "kredivo", "akulaku", "pinjaman")
 KATA_EWALLET = ("gopay", "ovo", "shopeepay", "linkaja", "top up", "topup", "top-up", "e-wallet",
                 "ewallet", "saldo dana", "isi dana")
+
+
+def adalah_cicilan(nama):
+    """Pos cicilan/utang (PayLater, kartu kredit, KPR, pinjol, leasing, KTA) -> selalu masuk pengeluaran pokok."""
+    n = nama.lower()
+    if "ekstra" in n or "pelunasan" in n:   # setoran tambahan = tabungan/pelunasan, bukan kewajiban minimum
+        return False
+    return any(k in n for k in KATA_CICILAN)
 
 
 def tebak_kelompok(nama):
@@ -416,8 +425,12 @@ def hitung_anggaran(pemasukan, musiman, pos, pola):
     kebutuhan = per_kelompok["wajib"] + per_kelompok["sosial"]
     keinginan = per_kelompok["keinginan"] + per_kelompok["lain"]
     tabungan = per_kelompok["tabungan"]
-    cicilan = sum((n for nm, n, _, _ in pos if any(k in nm.lower() for k in KATA_CICILAN)), NOL)
+    cicilan = sum((n for nm, n, _, _ in pos if adalah_cicilan(nm)), NOL)
+    # v1.0.5: dasar dana darurat = semua pos wajib + SEMUA cicilan/utang minimum (apa pun kelompoknya).
+    pokok_rinci = [(nm, n) for nm, n, kel, _ in pos if n > 0 and (kel == "wajib" or adalah_cicilan(nm))]
+    pokok = sum((n for _, n in pokok_rinci), NOL)
     return {
+        "pokok_dana_darurat": pokok, "pokok_rinci": pokok_rinci,
         "total_bulanan": total_bulanan, "total_musiman": total_musiman,
         "musiman_per_bulan": musiman_per_bulan, "total_masuk": total_masuk,
         "per_kelompok": per_kelompok, "total_keluar": total_keluar, "sisa": sisa,
@@ -516,6 +529,20 @@ def cetak_anggaran(args):
                    "lalu 'gaji'-kan ke anggaran tiap bulan; jangan dianggap uang bebas.")
     if cat:
         out += ["", "## Catatan", ""] + ["- " + c for c in cat]
+    if h["pokok_rinci"]:
+        out += ["", "## Dasar dana darurat (pengeluaran pokok per bulan)", "",
+                "| Pos pokok | Jumlah |", "|---|---:|"]
+        for n, j in h["pokok_rinci"]:
+            out.append("| {}{} | {} |".format(n, " (cicilan)" if adalah_cicilan(n) else "", rp(j)))
+        out.append("| **Total pengeluaran pokok** | **{}** |".format(rp(h["pokok_dana_darurat"])))
+        sosial = [n for n, j, kel, _ in pos if kel == "sosial" and j > 0 and not adalah_cicilan(n)]
+        out += ["", "- Pokok = semua pos Kebutuhan wajib + SEMUA cicilan/utang minimum (PayLater, kartu kredit, "
+                "KPR, pinjol, leasing, KTA) - tetap harus dibayar walau penghasilan berhenti.",
+                "- Pakai angka ini untuk dana darurat: dana-darurat --pengeluaran-pokok {} --status ...".format(
+                    int(h["pokok_dana_darurat"].to_integral_value(rounding=ROUND_HALF_UP)))]
+        if sosial:
+            out.append("- Pos keluarga/sosial ({}) BELUM dihitung pokok; tambahkan bila tetap wajib dibayar "
+                       "(mis. kiriman orang tua yang tidak bisa ditunda).".format(", ".join(sosial)))
     return "\n".join(out)
 
 
@@ -550,14 +577,33 @@ def hitung_dana_darurat(pokok, status, saldo, setoran):
 
 
 def cetak_dana_darurat(args):
-    pokok = cek_nominal_kecil(parse_rupiah(args.pengeluaran_pokok, "Pengeluaran pokok per bulan", boleh_nol=False),
-                              args.pengeluaran_pokok, "Pengeluaran pokok per bulan")
+    rinci = []
+    if args.pengeluaran_pokok is not None:
+        dasar = cek_nominal_kecil(parse_rupiah(args.pengeluaran_pokok, "Pengeluaran pokok per bulan",
+                                               boleh_nol=not (args.pos or args.cicilan)),
+                                  args.pengeluaran_pokok, "Pengeluaran pokok per bulan")
+        if dasar > 0:
+            rinci.append(("Pengeluaran pokok (angka gabungan)", dasar, False))
+    for t in args.pos or []:
+        n, j = pisah_nama_jumlah(t, "Pos pokok")
+        rinci.append((n, cek_nominal_kecil(parse_rupiah(j, "Pos pokok '{}'".format(n)), j,
+                                           "Pos pokok '{}'".format(n)), adalah_cicilan(n)))
+    for t in args.cicilan or []:
+        n, j = pisah_nama_jumlah(t, "Cicilan")
+        rinci.append((n, parse_rupiah(j, "Cicilan '{}'".format(n)), True))
+    if not rinci and args.pengeluaran_pokok is None:
+        raise InputSalah("Isi --pengeluaran-pokok, atau rincian --pos \"Kontrakan=2jt\" / "
+                         "--cicilan \"PayLater=650rb\".")
+    pokok = sum((j for _, j, _ in rinci), NOL)
+    if pokok <= 0:
+        raise InputSalah("Pengeluaran pokok per bulan tidak boleh Rp0.")
+    ada_cicilan = any(c for _, _, c in rinci)
     saldo = cek_nominal_kecil(parse_rupiah(args.saldo, "Saldo dana darurat"), args.saldo, "Saldo dana darurat")
     setoran = parse_rupiah(args.setoran, "Setoran per bulan")
     ket, hasil = hitung_dana_darurat(pokok, args.status, saldo, setoran)
     out = ["# Dana Darurat", "", "- Status: {} -> target {} bulan pengeluaran pokok".format(
         ket, "-".join(str(h["bulan"]) for h in hasil)),
-        "- Pengeluaran pokok per bulan: {}".format(rp(pokok)),
+        "- Pengeluaran pokok per bulan: {}{}".format(rp(pokok), " (rincian di bawah)" if len(rinci) > 1 else ""),
         "- Saldo sekarang: {} | Setoran rutin: {}/bulan".format(rp(saldo), rp(setoran)), "",
         "| Target | Jumlah | Kekurangan | Lama tercapai | Progres |", "|---|---:|---:|---:|---:|"]
     for h in hasil:
@@ -571,9 +617,20 @@ def cetak_dana_darurat(args):
         out.append("| {} bulan | {} | {} | {} | {} {} |".format(
             h["bulan"], rp(h["target"]), rp(h["kurang"]), lama, "#" * blok + "." * (20 - blok),
             persen(h["progres"], 0)))
+    if len(rinci) > 1:
+        out += ["", "| Pos pokok | Jumlah |", "|---|---:|"]
+        for n, j, c in rinci:
+            out.append("| {}{} | {} |".format(n, " (cicilan)" if c else "", rp(j)))
+        out.append("| **Total pengeluaran pokok** | **{}** |".format(rp(pokok)))
     out += ["", "Catatan:",
             "- Pengeluaran pokok = yang tetap harus dibayar walau penghasilan berhenti (makan, tempat tinggal, "
-            "listrik/air, transport, cicilan minimum, sekolah, BPJS, kiriman keluarga yang wajib). Bukan nongkrong/hiburan.",
+            "listrik/air, transport, SEMUA cicilan/utang minimum, sekolah, BPJS, kiriman keluarga yang wajib). "
+            "Bukan nongkrong/hiburan."]
+    if not ada_cicilan:
+        out.append("- CEK CICILAN: belum ada cicilan yang tercatat. Bila ada cicilan PayLater, kartu kredit, KPR, "
+                   "motor/leasing, KTA, atau pinjol, tambahkan (--cicilan \"PayLater=650rb\") - cicilan tetap "
+                   "wajib dibayar saat penghasilan berhenti, jadi masuk dasar dana darurat.")
+    out += [
             "- Simpan di tempat terpisah yang aman dan cepat dicairkan (bukan instrumen yang nilainya naik-turun).",
             "- Punya utang berbunga tinggi (kartu kredit/paylater/pinjol)? Kumpulkan dana darurat awal ~1 bulan "
             "pengeluaran pokok dulu, lalu fokus lunasi utang, baru lengkapi dana darurat."]
@@ -1068,7 +1125,12 @@ def buat_parser():
     a.add_argument("--pola", default="50/30/20", help="Pola kebutuhan/keinginan/tabungan, mis. 60/20/20")
 
     d = sub.add_parser("dana-darurat", help="Target dana darurat sesuai status")
-    d.add_argument("--pengeluaran-pokok", required=True, help="Pengeluaran pokok per bulan")
+    d.add_argument("--pengeluaran-pokok", default=None,
+                   help="Pengeluaran pokok per bulan (gabungan). Boleh diganti/ditambah --pos dan --cicilan")
+    d.add_argument("--pos", action="append", help="Rincian pos pokok 'nama=jumlah' (berulang)")
+    d.add_argument("--cicilan", action="append",
+                   help="Cicilan/utang minimum 'nama=jumlah' (PayLater, kartu kredit, KPR, pinjol; berulang) - "
+                        "ditambahkan ke pengeluaran pokok")
     d.add_argument("--status", required=True, choices=sorted(STATUS_DANA_DARURAT))
     d.add_argument("--saldo", default="0", help="Dana darurat yang sudah ada")
     d.add_argument("--setoran", default="0", help="Setoran rutin per bulan")
