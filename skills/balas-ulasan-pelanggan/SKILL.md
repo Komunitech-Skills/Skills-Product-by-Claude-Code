@@ -51,7 +51,7 @@ Jika pengguna ingin cepat, tulis balasan dengan asumsi aman dan sebutkan asumsin
    RS, fisioterapi, psikolog) — **PERLU REVIEW** tenaga medis/kepatuhan sebelum dipakai sebagai aturan final:
    - Jangan menyebut atau mengonfirmasi bahwa pengulas/keluarganya **pasien**, kapan berkunjung, atau
      **tindakan, kondisi, keluhan, obat, hasil** apa pun — walaupun pengulas sendiri menulisnya
-     (❌ "saat periksa gigi putra/putri Bapak"; ✅ "mohon maaf bila pengalaman di klinik kami tidak sesuai harapan").
+     (❌ "saat periksa gigi putra/putri Bapak", ❌ "saat berkunjung ke klinik kami", "saat datang/berobat" — semuanya membenarkan kunjungan; ✅ "mohon maaf bila pengalaman di klinik kami tidak sesuai harapan").
    - Boleh menanggapi hal operasional secara umum (waktu tunggu, keramahan, kejelasan informasi) tanpa
      merinci kunjungan pengulas, lalu alihkan ke **kanal pribadi** (nomor/email resmi di profil, atau chat).
    - Dasar: kewajiban menjaga rahasia kesehatan pasien (UU 17/2023 tentang Kesehatan Pasal 301; PP 28/2024

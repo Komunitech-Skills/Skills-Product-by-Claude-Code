@@ -63,8 +63,10 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - Semua baris `ASUMSI (sebutkan ke pengguna)` dari script **wajib** disalin ke blok "Asumsi yang dipakai".
    - `--format json` bila hanya butuh angka. Script keluar dengan kode ≠ 0 dan pesan `ERROR:` bila input salah; perbaiki lalu jalankan ulang, jangan menebak angka.
 4. **Susun surat** memakai angka dari output script apa adanya (lihat Format output). Kerangka lengkap & variasi kalimat pembuka ada di `references/kerangka-sph.md`.
-5. **Sediakan versi siap cetak.** Surat (A) dalam markdown adalah versi siap cetak. Bila Anda bisa menulis file, simpan juga sebagai `SPH-<nomor urut>.md` di folder kerja yang disepakati dan sebutkan lokasinya (bila kanal chat mendukung lampiran, lampirkan file itu). Skill ini **tidak membuat PDF**: katakan terus terang, lalu beri cara singkat — tempel/buka surat di Word atau Google Docs → *File → Download/Save as PDF*. Jangan memasang paket pembuat PDF.
-6. **Buat versi WhatsApp** (ringkas, tanpa tabel, ≤ 15 baris). **Jangan menyebut lampiran/PDF yang tidak benar-benar dibuat dan dilampirkan.** Kalimat lampiran hanya dipakai bila file surat memang ikut dikirim, dengan menyebut format sebenarnya.
+5. **Sediakan versi siap cetak — DI CHAT.** Balasan chat **SELALU** memuat (a) **isi surat lengkap** (kop sampai tanda tangan, siap salin/cetak) dan (b) **teks WhatsApp pendek siap kirim**. Menyimpan ke file saja **tidak cukup**: pengguna (mis. lewat Telegram) tidak bisa membuka path lokal, dan ringkasan angka tanpa surat dianggap gagal. File `SPH-<nomor urut>.md` hanya **tambahan** (bila bisa menulis file; sebutkan lokasinya, lampirkan bila kanal mendukung).
+   - **PIC tidak diketahui:** pakai sapaan umum "Bapak/Ibu Bagian Pengadaan" (atau "Bapak/Ibu Pimpinan" untuk usaha kecil), **bukan** `[Nama PIC]`.
+   - **Penjual bukan PKP:** tulis "Harga final; penjual bukan PKP sehingga tidak memungut PPN." Jangan menulis "belum kena PPN"/"belum termasuk PPN" (menyesatkan, seolah PPN menyusul). Skill ini **tidak membuat PDF**: katakan terus terang, lalu beri cara singkat — tempel/buka surat di Word atau Google Docs → *File → Download/Save as PDF*. Jangan memasang paket pembuat PDF.
+6. **Buat versi WhatsApp — wajib tampil di chat, tanpa menunggu diminta** (ringkas, tanpa tabel, ≤ 15 baris). **Jangan menyebut lampiran/PDF yang tidak benar-benar dibuat dan dilampirkan.** Kalimat lampiran hanya dipakai bila file surat memang ikut dikirim, dengan menyebut format sebenarnya.
 7. **Periksa** dengan checklist, lalu tawarkan revisi (diskon, masa berlaku, gaya bahasa lebih formal/santai).
 
 ### Fallback jika Python tidak bisa dijalankan
@@ -112,7 +114,7 @@ Dengan hormat,
 Terbilang: *... Rupiah*
 
 **Syarat & ketentuan**
-1. Harga [belum/sudah] termasuk PPN. [Hapus baris ini jika bukan PKP → "Harga tidak dikenakan PPN."]
+1. Harga [belum/sudah] termasuk PPN. [Jika bukan PKP, ganti dengan: "Harga final; penjual bukan PKP sehingga tidak memungut PPN."]
 2. Penawaran berlaku sampai [tanggal dari script].
 3. Pembayaran: [DP 50% saat PO, pelunasan ...] ke [Bank – No. Rek – a.n.].
 4. Pengiriman: [estimasi], [franco/ambil sendiri/ongkir ditanggung ...].
@@ -158,6 +160,8 @@ Asumsi: ongkir Rp 300.000 ditagih penjual sehingga ikut DPP & dikenai PPN (jika 
 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua angka berasal dari output script (atau hitung manual yang ditulis lengkap + peringatan).
+- [ ] Balasan chat memuat isi surat lengkap DAN teks WA (bukan hanya ringkasan/path file).
+- [ ] Tidak ada `[Nama PIC]` bila pengguna bilang PIC tidak diketahui (pakai "Bapak/Ibu Bagian Pengadaan"); bukan PKP → tidak ada kata "belum kena/belum termasuk PPN".
 - [ ] PPN hanya muncul jika penjual PKP; teks "termasuk/belum termasuk PPN" konsisten dengan angka.
 - [ ] Total di tabel = total di teks WA = terbilang.
 - [ ] Nomor surat, tanggal, masa berlaku, perihal, penerima terisi (atau `[isi ...]` yang jelas).

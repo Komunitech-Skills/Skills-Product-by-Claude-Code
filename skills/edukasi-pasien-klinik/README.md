@@ -80,6 +80,10 @@ instruksi umum dari dokter.
 Bisa — template leaflet, pengingat, dan FAQ bersifat umum untuk semua jenis praktik kesehatan;
 kamu tinggal isi poin sesuai bidangmu.
 
+## Catatan revisi 1.0.7 (2026-10-01)
+- Temuan uji ulang OpenClaw: catatan admin menyebut "tidak menjawab soal amoxicillin sisa" padahal draf justru melarangnya.
+- Kini ada aturan "Catatan untuk admin" di SKILL.md: catatan wajib konsisten dengan isi draf, tanpa klaim "aman dikirim tanpa dokter".
+
 ## Catatan revisi 1.0.6 (2026-10-01)
 - Temuan uji OpenClaw (klinik 05 & 02): kalimat penolakan baku belum melarang memakai antibiotik/obat sisa atau milik orang lain; leaflet menambah kata "dengan kuat" yang tidak ditulis dokter.
 - Ditambah kalimat baku "jangan memberikan obat resep milik orang lain atau obat sisa, termasuk antibiotik sisa, sebelum diperiksa dokter" (tanpa dosis) — **PERLU REVIEW tenaga medis** sebelum rilis. Template leaflet kini melarang kata penguat/promosi yang tidak ditulis dokter dan meminta agent menyebut baris IGD/119 sebagai tambahan template. Script tidak berubah.

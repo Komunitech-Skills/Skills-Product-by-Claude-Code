@@ -81,7 +81,7 @@ POLA_FASKES = [
      r"(?:bapak|ibu|kakak|kak|pak|bu|anda|mas|mbak)\b",
      "menyebut anggota keluarga pengulas sebagai pasien"),
     (r"\b(?:pasien\s+kami|sebagai\s+pasien|data\s+pasien|kunjungan\s+(?:bapak|ibu|kakak|kak|anda)"
-     r"|saat\s+(?:bapak|ibu|kakak|kak|anda)\s+(?:datang|berkunjung|berobat))\b",
+     r"|saat\s+(?:(?:bapak|ibu|kakak|kak|anda)\s+)?(?:datang|berkunjung|berobat|kunjungan))\b",
      "mengonfirmasi status pasien/kunjungan"),
 ]
 POLA_MAAF = r"\b(?:maaf|mohon\s+maaf|meminta\s+maaf|minta\s+maaf)\b"

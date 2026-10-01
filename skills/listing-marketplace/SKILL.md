@@ -74,6 +74,10 @@ yang perlu dilengkapi dan asumsinya di akhir.
    emoji = 2), cocokkan dengan tabel batas, dan periksa manual daftar larangan di checklist (termasuk
    mencocokkan tiap klaim sifat dengan fakta pengguna). Beri tahu
    pengguna bahwa pengecekan dilakukan manual.
+   **Panjang yang dilaporkan harus dari teks FINAL yang ditampilkan:** jika teks diubah setelah dicek
+   (dipangkas, ditambah, emoji diganti), simpan ulang teks final persis ke file lalu jalankan ulang script
+   dan salin angka `panjang` dari hasil run terakhir itu. Jangan menaksir atau memakai angka dari draf lama.
+   Teks yang ditempel di blok kode harus identik dengan isi file yang dicek (termasuk baris kosong).
 7. Sajikan output sesuai format, lalu tawarkan revisi (nada, fokus kata kunci, versi lebih pendek).
 
 ## Format output

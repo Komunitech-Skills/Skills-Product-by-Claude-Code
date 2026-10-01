@@ -68,6 +68,15 @@ class Uji(unittest.TestCase):
         _, h = cek(teks, "google", "negatif")
         self.assertTrue(h["lulus"])
 
+    def test_faskes_saat_berkunjung_gagal(self):
+        # Temuan uji ulang OpenClaw 2026-10-01: "saat berkunjung ke klinik kami" masih mengonfirmasi kunjungan.
+        for frasa in ("saat berkunjung ke klinik kami", "saat datang ke klinik kami", "saat berobat di tempat kami"):
+            teks = ("Mohon maaf atas pengalaman kurang nyaman %s. Silakan hubungi nomor resmi di profil. "
+                    "Terima kasih." % frasa)
+            _, h = cek(teks, "google", "negatif", "--faskes")
+            self.assertFalse(h["lulus"], frasa)
+            self.assertIn("kunjungan", pesan(h))
+
     def test_faskes_balasan_umum_lulus(self):
         teks = ("Terima kasih atas masukannya, Pak Andi, dan mohon maaf bila pengalaman di klinik kami tidak sesuai "
                 "harapan, termasuk soal waktu tunggu dan keramahan tim. Kami ingin mendengar lebih lanjut secara "
