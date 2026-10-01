@@ -43,18 +43,21 @@ Jika catatan tidak ada, minta ditempel. Info lain **tidak perlu ditanyakan dulu*
    - **Poin diskusi**: usulan, pendapat, data, pertimbangan yang belum final.
    - **Belum diputuskan / ditunda**: dibahas tapi tidak ada kesimpulan.
 4. **Jangan mengarang.** Usulan tidak boleh ditulis sebagai keputusan. Jika tidak jelas apakah sudah disepakati, masukkan ke Poin Diskusi dengan tanda `⚠️ belum jelas apakah disepakati`. Tugas tanpa pelaksana ditulis `PIC: ⚠️ belum ditentukan`. Tugas tanpa tenggat ditulis `⚠️ belum ada tenggat`.
-5. **Konversi tanggal relatif** ("besok", "Jumat depan", "akhir bulan") ke tanggal nyata dengan script agar nama hari tidak salah. Path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`:
+5. **Konversi tanggal relatif** ("besok", "Jumat depan", "akhir bulan") ke tanggal nyata dengan script agar nama hari tidak salah. Script `tanggal_relatif.py` ada di subfolder `scripts/` di folder yang sama dengan file SKILL.md ini (mis. di OpenClaw: `~/.openclaw/skills/notulen-rapat/scripts/tanggal_relatif.py`). Pakai path itu langsung — **jangan mencari script atau file ke seluruh disk** (`find /` dsb.). Windows: `python` atau `py`:
    ```bash
-   python3 <folder-skill-ini>/scripts/tanggal_relatif.py --rapat "<tanggal rapat>" --ekspresi "jumat depan" "akhir bulan" --format teks
-   python3 <folder-skill-ini>/scripts/tanggal_relatif.py --cek "<tanggal>"   # cek nama hari tanggal di catatan
+   python3 scripts/tanggal_relatif.py --rapat "<tanggal rapat>" --ekspresi "jumat depan" "akhir bulan" --format teks
+   python3 scripts/tanggal_relatif.py --cek "<tanggal>"   # cek nama hari tanggal di catatan
    ```
-   Rapat hari **Minggu**: "minggu depan"/"<hari> depan" selalu `ambigu` (pekan depan bisa mulai besok atau pekan setelahnya). Script ini punya uji regresi: `python3 <folder-skill-ini>/scripts/uji_tanggal_relatif.py`.
+   Rapat hari **Minggu**: "minggu depan"/"<hari> depan" selalu `ambigu` (pekan depan bisa mulai besok atau pekan setelahnya). Script ini punya uji regresi: `python3 scripts/uji_tanggal_relatif.py`.
+   Kirim ekspresi **utuh beserta awalannya** ("sebelum rabu", "sblm jumat", "paling lambat senin depan", "maks besok") — script mengenali awalan itu dan mengisi `tenggat_teks` (mis. "Sebelum Rabu, 7 Oktober 2026"). Salin `tenggat_teks` apa adanya; jangan membuang kata "sebelum"/"paling lambat".
    Tulis keduanya, mis. `Jumat, 2 Oktober 2026 ("Jumat depan")`. Hasil berstatus `ambigu`/`perkiraan` → masukkan ke "Perlu dikonfirmasi" beserta alternatifnya; `tidak_dikenali` (mis. "secepatnya", "ASAP") → tulis apa adanya + ⚠️. Jika tanggal rapat tidak diketahui, biarkan relatif dan tandai.
    **Fallback tanpa Python:** hitung dari kalender, tulis "(nama hari dicek manual)", dan anggap "<hari> depan" ambigu (hari terdekat vs minggu berikutnya).
 6. **Angka & nama** disalin persis dari catatan. Jika ejaan nama berbeda-beda (Rina/Rinna), pakai yang paling sering muncul dan catat di "Perlu dikonfirmasi".
+   - **Angka setelah nama alat/tempat = nomor/kode unit, bukan jumlah.** "forklift 2 rusak" = forklift **nomor 2** (tulis "Forklift 2 rusak"), **bukan** "2 unit forklift". Sama untuk "mesin 3", "truk B 9123 XY", "gudang 2", "line 1", "kasir 4". Jumlah hanya bila angka di depan + satuan ("2 unit forklift", "3 mesin"). Bila ragu, tulis apa adanya + `[cek: nomor unit atau jumlah?]` dan masukkan ke "Perlu dikonfirmasi".
+   - Satuan uang disalin persis ("2,1M" = Rp 2.100.000.000 bila konteksnya miliar; ragu → `[cek: …]`).
 7. **Susun notulen** mengikuti format output: tabel action item diurutkan dari tenggat terdekat.
 8. **Buat pesan WA** ≤ 120 kata: keputusan utama + daftar tugas dengan mention nama + tenggat. Pakai format WA (`*tebal*`, `_miring_`), tanpa tabel.
-9. Periksa checklist, lalu tawarkan: versi PDF/Docs (salin ke Google Docs), versi email, atau pengingat tenggat.
+9. Periksa checklist, lalu tawarkan: versi PDF/Docs (salin ke Google Docs), versi email, atau pengingat tenggat. **Jangan menawarkan menghubungi/menanyakan langsung ke peserta** ("mau saya tanyakan ke Tono?") — agent tidak mengirim pesan ke orang lain; yang perlu dikonfirmasi ditulis sebagai daftar pertanyaan untuk pengguna.
 
 ## Format output
 ```
@@ -139,7 +142,8 @@ Template kosong (untuk dicetak/diisi tangan) ada di `references/aturan-klasifika
 - [ ] Setiap keputusan punya dasar kalimat di catatan (kata sepakat/deal/oke/diputuskan atau persetujuan pimpinan).
 - [ ] Tidak ada nama, angka, tanggal, atau tugas yang tidak ada di catatan.
 - [ ] Setiap action item punya PIC dan tenggat, atau diberi tanda ⚠️.
-- [ ] Tanggal relatif sudah dikonversi dan ditandai; nama hari sesuai tanggal.
+- [ ] Tanggal relatif sudah dikonversi dan ditandai; nama hari sesuai tanggal; awalan "sebelum/paling lambat" tetap tertulis.
+- [ ] Angka setelah nama alat/tempat ("forklift 2") ditulis sebagai nomor unit, bukan jumlah; yang ragu diberi `[cek: …]`.
 - [ ] Bagian "Perlu dikonfirmasi" berisi semua ambiguitas.
 - [ ] Pesan WA ≤ 120 kata, tanpa tabel, memuat keputusan dan tugas; hanya hal yang pasti (tanggal ambigu ditulis dua pilihan atau diberi tanda tanya).
 - [ ] Rupiah ditulis `Rp 150.000`.

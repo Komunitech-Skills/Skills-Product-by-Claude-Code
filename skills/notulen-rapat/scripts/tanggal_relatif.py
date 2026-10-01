@@ -20,7 +20,13 @@ Aturan tafsir (hasil ambigu selalu diberi alternatif + catatan):
     "ambigu" (pekan depan bisa dimulai besok atau pekan setelahnya); alternatif = +7 hari.
   - "akhir minggu" = Jumat minggu yang sama; "akhir bulan" = hari terakhir bulan itu;
     "awal bulan depan" = tanggal 1 bulan berikutnya.
-Hanya library standar Python 3.8+. Tanpa akses jaringan.
+  - Awalan batas waktu dikenali lalu ekspresi sisanya ditafsir dengan aturan di atas:
+    "sebelum/sblm/sebelom X" -> field batas="sebelum" (tenggat_teks "Sebelum Rabu, ..."; bila diartikan
+    ketat, selesai paling lambat sehari sebelumnya -> disebut di catatan);
+    "paling lambat/plg lambat/paling telat/maks/maksimal/max/deadline/tenggat/batas/s.d./s/d/sampai/hingga X"
+    -> batas="paling_lambat" (tenggat_teks "Paling lambat Senin, ...").
+    Contoh: "sebelum rabu", "sblm jumat", "paling lambat senin depan", "maks besok".
+Hanya library standar Python 3.8+. Tanpa akses jaringan. Versi 1.0.3 (2026-10-01).
 """
 import argparse
 import calendar
@@ -76,14 +82,38 @@ def teks(d):
     return f"{HARI[d.weekday()]}, {d.day} {BULAN[d.month - 1]} {d.year}"
 
 
+_AWALAN = re.compile(
+    r"^(?:(sebelum|sblm|sebelom|sblum)|(paling lambat|plg lambat|plg lmbt|paling telat|maksimal|maks\.?|max|"
+    r"deadline|tenggat|batas|s\.\s?d\.?|s/d|sd|sampai|smp|hingga))\s+(.+)$")
+
+
 def tafsir(ekspresi, rapat):
-    e = re.sub(r"\s+", " ", ekspresi.strip().lower())
+    e0 = re.sub(r"\s+", " ", ekspresi.strip().lower())
+    m = _AWALAN.match(e0)
+    if m and m.group(3).strip():
+        hasil = tafsir(m.group(3), rapat)
+        hasil["ekspresi"] = ekspresi
+        if hasil.get("tanggal"):
+            d = date.fromisoformat(hasil["tanggal"])
+            if m.group(1):
+                hasil["batas"] = "sebelum"
+                hasil["tenggat_teks"] = "Sebelum " + teks(d)
+                tambah = (f"'Sebelum' {teks(d)}: bila diartikan ketat, selesai paling lambat "
+                          f"{teks(d - timedelta(days=1))}.")
+            else:
+                hasil["batas"] = "paling_lambat"
+                hasil["tenggat_teks"] = "Paling lambat " + teks(d)
+                tambah = ""
+            hasil["catatan"] = " ".join(x for x in (hasil["catatan"], tambah) if x)
+        return hasil
+    e = e0
     senin_ini = rapat - timedelta(days=rapat.weekday())
     minggu_rapat = rapat.weekday() == 6  # rapat hari Minggu
     hasil = {"ekspresi": ekspresi, "status": "pasti", "alternatif": None, "catatan": ""}
 
     def set_(d, status="pasti", alt=None, cat=""):
-        hasil.update({"tanggal": d.isoformat(), "tanggal_teks": teks(d), "status": status,
+        hasil.update({"tanggal": d.isoformat(), "tanggal_teks": teks(d), "tenggat_teks": teks(d),
+                      "batas": None, "status": status,
                       "alternatif": teks(alt) if alt else None, "catatan": cat})
         return hasil
 
@@ -137,7 +167,8 @@ def tafsir(ekspresi, rapat):
                             "'Depan' bisa berarti minggu berikutnya atau hari terdekat. Mohon dikonfirmasi.")
             return set_(d)
         return set_(terdekat)
-    hasil.update({"status": "tidak_dikenali", "tanggal": None, "tanggal_teks": None,
+    hasil.update({"status": "tidak_dikenali", "tanggal": None, "tanggal_teks": None, "tenggat_teks": None,
+                  "batas": None,
                   "catatan": "Ekspresi tidak dikenali; biarkan apa adanya dan tandai ⚠️ di notulen."})
     return hasil
 
@@ -170,7 +201,7 @@ def main():
     if "tanggal_rapat" in out:
         print(f"Tanggal rapat: {out['tanggal_rapat']}")
         for h in out["hasil"]:
-            baris = f"- \"{h['ekspresi']}\" -> {h['tanggal_teks'] or '(tidak dikenali)'} [{h['status']}]"
+            baris = f"- \"{h['ekspresi']}\" -> {h.get('tenggat_teks') or '(tidak dikenali)'} [{h['status']}]"
             if h["alternatif"]:
                 baris += f" | alternatif: {h['alternatif']}"
             if h["catatan"]:

@@ -110,5 +110,32 @@ cek("kolom hilang ditolak", k == 2 and "Kolom wajib" in h["error"])
 k, h = jalankan(CONTOH, "--saldo-awal", "abc")
 cek("saldo rusak ditolak", k == 2)
 
+# v1.0.3 (uji OpenClaw 2026-10-01): narasi salah minggu cicilan → script mencetak kejadian per minggu.
+# Mulai Senin 5 Okt 2026: tgl 10 → minggu 1 (5–11 Okt), 6 (9–15 Nov), 10 (7–13 Des);
+# tgl 25 → minggu 3 (19–25 Okt), 8 (23–29 Nov), 12 (21–27 Des).
+k, h = jalankan(CONTOH, "--saldo-awal", "20jt", "--mulai", "2026-10-05")
+pm = h["per_minggu"]
+cicilan = [m["minggu"] for m in pm if any(x["kategori"] == "Cicilan bank" for x in m["kejadian"]["keluar"])]
+gaji = [m["minggu"] for m in pm if any(x["kategori"] == "Gaji karyawan" for x in m["kejadian"]["keluar"])]
+cek("kejadian: cicilan di minggu 1, 6, 10", cicilan == [1, 6, 10])
+cek("kejadian: gaji di minggu 3, 8, 12", gaji == [3, 8, 12])
+cek("kejadian_teks minggu 12 menyebut gaji, bukan cicilan",
+    "Gaji karyawan Rp 18.000.000" in pm[11]["kejadian_teks"] and "Cicilan" not in pm[11]["kejadian_teks"])
+cek("kejadian diurutkan nominal terbesar dulu",
+    [x["nominal"] for x in pm[7]["kejadian"]["keluar"]]
+    == sorted([x["nominal"] for x in pm[7]["kejadian"]["keluar"]], reverse=True))
+cek("kejadian_minggu_kritis memuat minggu saldo terendah",
+    any(t.startswith("Minggu %d:" % h["ringkasan"]["minggu_saldo_terendah"])
+        for t in h["ringkasan"]["kejadian_minggu_kritis"]))
+cek("jumlah kejadian keluar = total keluar per minggu",
+    all(sum(x["nominal"] for x in m["kejadian"]["keluar"]) == m["keluar"] for m in pm))
+with tempfile.TemporaryDirectory() as d:
+    f = os.path.join(d, "r.csv")
+    with open(f, "w", encoding="utf-8") as fh:
+        fh.write(CONTOH)
+    out = subprocess.run([sys.executable, SCRIPT, f, "--saldo-awal", "20jt", "--mulai", "2026-10-05",
+                          "--format", "teks"], capture_output=True, text=True).stdout
+cek("format teks mencetak 'Kejadian per minggu'", "Kejadian per minggu" in out and "- Minggu 10: keluar:" in out)
+
 print(f"\n{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'}")
 sys.exit(1 if GAGAL else 0)

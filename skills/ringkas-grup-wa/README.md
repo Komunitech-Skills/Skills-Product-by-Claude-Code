@@ -70,3 +70,9 @@ Tidak. Skill ini berjalan di komputer/AI agent Anda sendiri. File ekspor diprose
 
 **Kalau grup sangat aktif (ribuan pesan sebulan), apakah tetap bisa dipakai?**
 Bisa. Minta rentang waktu tertentu (mis. "3 hari terakhir" atau "sejak kemarin sore") supaya hasilnya tetap ringkas dan relevan; untuk grup sangat ramai, hasil otomatis dipecah per hari.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+Perbaikan dari uji OpenClaw asli (ringkasan grup WA gudang):
+- Tenggat yang sudah lewat kini ditandai **"⏰ LEWAT TENGGAT — cek status"**. Script membaca tanggal di pesan (29/9, 5 Okt, hari ini/besok/lusa, nama hari) dan membandingkannya dengan tanggal hari ini; rencana yang tanggalnya sudah lewat tidak lagi ditulis "sudah beres".
+- Ringkasan menyebut tanggal chat terakhir dan tanggal hari ini.
+- Path script ditulis jelas (subfolder `scripts/`); AI dilarang mencari file ke seluruh disk.
