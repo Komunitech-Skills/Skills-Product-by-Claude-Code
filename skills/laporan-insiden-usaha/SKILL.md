@@ -1,6 +1,6 @@
 ---
 name: laporan-insiden-usaha
-description: Menyusun laporan insiden operasional usaha (retur/pesanan salah kirim massal, stok habis saat promo, komplain viral di medsos, mesin kasir/QRIS error, karyawan telat buka toko, data pelanggan bocor ringan) berisi kronologi, dampak berangka, akar masalah tanpa menyalahkan orang (5 kenapa), tindakan cepat, rencana pencegahan dengan penanggung jawab & tenggat, draf permintaan maaf ke pelanggan, dan ringkasan singkat untuk WA tim/pemilik. Gunakan saat pengguna minta laporan insiden, postmortem toko/usaha, kronologi kejadian, incident report UMKM, atau draf minta maaf ke pelanggan setelah masalah operasional.
+description: Menyusun laporan insiden operasional usaha (retur/pesanan salah kirim massal, stok habis saat promo, komplain viral di medsos, mesin kasir/QRIS error, karyawan telat buka toko, data pribadi pelanggan bocor/salah kirim) berisi kronologi, dampak berangka, akar masalah tanpa menyalahkan orang (5 kenapa), tindakan cepat, rencana pencegahan dengan penanggung jawab & tenggat, draf permintaan maaf ke pelanggan, dan ringkasan singkat untuk WA tim/pemilik; untuk kebocoran data pribadi ditambah tenggat pemberitahuan 3×24 jam UU PDP Pasal 46 dan draf pemberitahuan ke pelanggan terdampak. Gunakan saat pengguna minta laporan insiden, postmortem toko/usaha, kronologi kejadian, incident report UMKM, draf minta maaf ke pelanggan setelah masalah operasional, atau data breach notification UMKM.
 ---
 
 # Laporan Insiden Usaha
@@ -36,7 +36,7 @@ Tanyakan **sekali** dalam satu pesan bila belum lengkap:
 | Kapan (tanggal & jam mulai/ketahuan/selesai) | Ya | — (tanyakan) |
 | Siapa/berapa yang terdampak (jumlah pesanan, pelanggan, atau omzet) | Tidak, tapi diminta jika ada | Ditandai `[isi: jumlah]` — **tidak pernah dikarang** |
 | Bagaimana ketahuan & bagaimana ditangani sejauh ini | Tidak | Ditandai `[isi: ...]` |
-| Apakah menyangkut data pelanggan | Ya, khusus dicek | Jika tidak disebut, dianggap tidak — tapi ingatkan sekali untuk dicek |
+| Apakah menyangkut data pribadi pelanggan (+ jam ketahuan, data apa saja, berapa orang, siapa penerimanya) | Ya, khusus dicek | Jika tidak disebut, dianggap tidak — tapi ingatkan sekali untuk dicek |
 | Nama usaha/toko (untuk draf minta maaf) | Tidak | `[Nama Usaha]` |
 
 ## Langkah Kerja
