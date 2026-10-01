@@ -108,3 +108,16 @@ ulang kalau sudah lama sejak tanggal di atas.
   Kalau agent punya akses pencarian web, cari ke ojk.go.id / peraturan.bpk.go.id langsung.
   Kalau tidak ada akses, tulis jujur "perlu dicek ke ojk.go.id" dan jangan mengarang nomor
   peraturan atau tanggal.
+
+## 6. Kanal pengaduan & cek legalitas (dicek 2026-10-01)
+- **Kontak OJK 157** adalah nomor layanan konsumen OJK (telepon 157, WhatsApp 081-157-157-157),
+  BUKAN nomor peraturan -- jangan menulis "POJK 157" atau "OJK 157" seolah aturan.
+- **Satgas PASTI** (Satuan Tugas Pemberantasan Aktivitas Keuangan Ilegal, dahulu Satgas Waspada
+  Investasi) menerima laporan penawaran investasi/kripto ilegal & janji imbal hasil tidak wajar:
+  sipasti.ojk.go.id, Kontak OJK 157, email satgaspasti@ojk.go.id.
+  Sumber: https://ojk.go.id/waspada-investasi/id/default.aspx ·
+  https://ojk.go.id/waspada-investasi/id/hubungikami.aspx
+- Kalimat baku saat menolak permintaan sinyal (tanpa menambah sinyal): *"Perdagangan aset kripto
+  di Indonesia diawasi OJK (POJK 27/2024, diubah POJK 23/2025). Pastikan platform Anda ada di
+  daftar PAKD berizin di situs OJK, dan waspadai grup sinyal/janji profit -- bisa dilaporkan ke
+  Satgas PASTI atau Kontak OJK 157."*
