@@ -46,7 +46,7 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-VERSI = "1.1.2"
+VERSI = "1.1.5"
 D0 = Decimal(0)
 D100 = Decimal(100)
 
@@ -1403,7 +1403,14 @@ def pecah_klausa(baris):
 
 
 POLA_ANGKA = re.compile(r"(?:(?<=[Rr][Pp])|(?<=[Rr][Pp]\.)|(?<![\w.,]))(\d+(?:[.,]\d+)*)\s*(jt|juta|rb|ribu|k|%|x)?(?!\w)", re.I)
-POLA_WA = re.compile(r"^\[?\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}[, ]+\d{1,2}[.:]\d{2}(?:[.:]\d{2})?\]?\s*(?:-\s*)?([^:]{1,40}):\s*(.*)$")
+# Cap waktu WhatsApp (salinan pesan & ekspor chat) dibuang SEBELUM angka dibaca, supaya tanggal/jam
+# ("[30/09 17.05]", "[30/09/26 08.15]", "[17.05, 30/9/2026]", "30/09/26 17.05 - ") tidak terbaca sebagai realisasi.
+_TGL = r"\d{1,2}[/.-]\d{1,2}(?:[/.-]\d{2,4})?"
+_TGL_TAHUN = r"\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}"
+_JAM = r"\d{1,2}[.:]\d{2}(?:[.:]\d{2})?(?:\s?[AaPp]\.?[Mm]\.?)?"
+POLA_CAP_WAKTU = re.compile(r"^(?:\[\s*(?:%s,?\s+%s|%s,?\s+%s)\s*\]|%s,?\s+%s)\s*(?:-\s*)?"
+                            % (_TGL, _JAM, _JAM, _TGL, _TGL_TAHUN, _JAM))
+POLA_PENGIRIM = re.compile(r"^([^:]{1,40}):\s*(.*)$")
 POLA_KE_DEPAN = re.compile(r"(?<!\w)(bulan depan|minggu depan|tahun depan|besok|lusa|nanti|rencana|rencananya|akan|mau|target baru)(?!\w)", re.I)
 POLA_MASING = re.compile(r"(?<!\w)(masing|masing2|msg2|masing-masing|keduanya|berdua|bertiga|semuanya|tiap orang|"
                          r"per orang|sama sama|sama-sama|sama2)(?!\w)", re.I)
@@ -1534,9 +1541,12 @@ def cmd_baca_teks(a):
             continue
         kutip = baris_asli.strip()
         pengirim = None
-        m = POLA_WA.match(baris)
+        m = POLA_CAP_WAKTU.match(baris)
         if m:
-            pengirim, baris = m.group(1).strip(), m.group(2).strip()
+            baris = baris[m.end():].strip()
+            m2 = POLA_PENGIRIM.match(baris)
+            if m2:
+                pengirim, baris = m2.group(1).strip(), m2.group(2).strip()
         kini = None
         tercatat = False        # baris ini menghasilkan draf atau catatan "tidak terbaca"
         relevan = False         # baris menyebut orang/KPI/angka
