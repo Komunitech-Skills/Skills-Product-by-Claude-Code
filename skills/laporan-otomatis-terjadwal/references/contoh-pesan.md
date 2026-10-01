@@ -11,7 +11,7 @@ Angka penjualan & stok berasal dari skenario yang diuji independen di Gateway Op
 *Laporan Penjualan Mingguan*
 Senin 14 - Minggu 20 Sep 2026
 Total omzet: Rp 2.778.000
-Jumlah baris/item terjual: 62
+Transaksi: 62 baris penjualan
 Rata-rata omzet/hari: Rp 396.857
 Hari terbaik: Minggu 20/09 (Rp 524.000)
 Hari terendah: Rabu 16/09 (Rp 270.000)
@@ -22,8 +22,10 @@ Hari terendah: Rabu 16/09 (Rp 270.000)
 ⚠️ 7 transaksi berstatus Batal tidak dihitung.
 ⚠️ 1 baris dilewati (tanggal tidak terbaca).
 ```
-Catatan: label "Jumlah baris/item terjual" (bukan "jumlah transaksi") karena satu pesanan
-marketplace bisa berisi beberapa baris produk -- lihat `templates/RESEP-penjualan.md`.
+Catatan: label "baris penjualan" karena CSV contoh tidak punya kolom nomor nota (satu pesanan
+marketplace bisa berisi beberapa baris produk). Bila ada kolom nota (`--kolom-pesanan`) atau
+1 baris = 1 nota, tulis "<N> nota / <Q> pcs" (mis. "57 nota / 110 pcs"); jumlah baris/nota tidak
+pernah disebut "item" -- lihat `templates/RESEP-penjualan.md`.
 
 ## Stok menipis -- sumber `buku-stok` (ada 2 produk menipis)
 

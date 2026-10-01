@@ -64,11 +64,14 @@ wawancara. Pakai default di atas, sebutkan asumsinya secara singkat di akhir, da
    risiko, CS WA selalu mode Copilot, kripto hanya riset/notifikasi, tanpa scraping marketplace).
    Untuk usaha 50+ karyawan dengan banyak cabang, sarankan eksplisit memisahkan rekap/laporan
    **per cabang** (satu file/folder data per cabang), bukan digabung jadi satu.
+   **Di balasan yang sama** dengan rekomendasi, langsung kerjakan Langkah 6 (Hasil Tugas
+   Pertama) — jangan menunggu pemasangan skill, AGENTS.md, atau giliran berikutnya.
 4. **Cek skill yang sudah terpasang, DAN pastikan yang belum terpasang benar-benar ADA di paket
    pembeli.** Ikuti `references/openclaw.md` §1 (`openclaw skills list`, atau baca folder skills
    bila `exec` tidak diizinkan) untuk yang sudah terpasang. Untuk rekomendasi yang belum
    terpasang, cek juga apakah foldernya ada di dalam Starter Kit/paket yang diunduh pengguna
-   (lihat §2) sebelum berjanji memasangnya — **jangan asumsikan semua skill di
+   (lihat §2 — **hanya** di folder Unduhan/Downloads dan folder yang disebut pengguna) sebelum
+   berjanji memasangnya — **jangan asumsikan semua skill di
    `references/peta-skill.md` otomatis ada di paket pembeli** (bundle bisa berbeda-beda, dan
    sebagian skill library terus bertambah). Kalau skill yang direkomendasikan ternyata tidak ada
    di kedua tempat (belum terpasang DAN tidak ada foldernya), katakan jujur: *"<nama skill> belum
@@ -76,24 +79,37 @@ wawancara. Pakai default di atas, sebutkan asumsinya secara singkat di akhir, da
    `references/peta-skill.md` atau paket umum. Tandai hasilnya: sudah ada / perlu dipasang (ada
    foldernya) / belum tersedia di paket.
 5. **Pandu pemasangan skill yang belum ada — SELALU minta izin eksplisit dulu.** Ikuti
-   `references/openclaw.md` §2: cari dulu folder hasil ekstrak Starter Kit (biasanya di folder
-   Unduhan), lalu pasang. Jangan pernah memasang tanpa konfirmasi "ya/lanjut" dari pengguna.
+   `references/openclaw.md` §2: cari folder hasil ekstrak paket **hanya** di folder
+   Unduhan/Downloads dan folder yang disebut pengguna. **Jangan** menelusuri `/tmp`, folder
+   skills instalasi OpenClaw lain, home pengguna lain, atau seluruh disk, dan jangan menyalin/
+   memasang skill dari lokasi lain mana pun tanpa izin. Tidak ketemu → tanyakan lokasinya.
+   Sebelum minta "ya", sebutkan **path sumber lengkap** dan path tujuan. Jangan pernah memasang
+   tanpa konfirmasi "ya/lanjut" dari pengguna.
    Kalau muncul pesan "already exists", jelaskan artinya dan tanya dulu sebelum memakai `--force`.
    Verifikasi hasil pasang dengan `openclaw skills info <nama>`. Jangan memasang dari sumber di
    luar paket Komunitech tanpa izin eksplisit terpisah. Jangan mempublikasikan skill apa pun ke
    ClawHub. Kalau `exec`/`read`/`write` tidak diizinkan (mis. profil tool `messaging`), jelaskan
    ke pengguna dan beri langkah salin-tempel manual — lihat catatan prasyarat di
    `references/openclaw.md` §1.
-6. **Jalankan SATU tugas pertama nyata** memakai skill yang paling relevan dari rekomendasi,
-   dengan data pengguna kalau ada, atau data contoh (`examples/` skill terkait) kalau belum ada.
-   Pengguna harus melihat **hasil siap pakai** di menit pertama, bukan penjelasan umum.
+6. **WAJIB — Hasil Tugas Pertama nyata di sesi pertama** (di balasan yang sama dengan
+   rekomendasi, lihat Langkah 3). Pilih tugas prioritas #1 pengguna dan kerjakan sekarang dengan
+   data/brief dari pengguna, atau data contoh yang ditandai jelas "contoh" bila belum ada data.
+   Kalau skill terkait belum terpasang, tetap kerjakan langsung dan katakan jujur: "dibuat
+   langsung; hasil akan lebih lengkap setelah skill <nama> terpasang". Output siap pakai (bukan
+   penjelasan umum), di bawah judul `## Hasil Tugas Pertama`. Jangan menulis placeholder klaim
+   hasil/khasiat/durasi (mis. "hasil terasa dalam [durasi]") untuk kosmetik/kesehatan; fakta
+   yang tidak disebut pengguna → `[ISI: ...]`. **Jangan menutup onboarding tanpa bagian ini.**
 7. **Simpan profil kerja** (bukan data pribadi pelanggan) ke memori lokal sesuai
    `references/openclaw.md` §4, supaya skill lain tidak bertanya ulang hal yang sama.
 8. **Tawarkan memasang "Aturan kerja Komunitech" ke `AGENTS.md` workspace** (OpenClaw saja).
    Alasan untuk pengguna (1 kalimat): OpenClaw membaca `AGENTS.md` di setiap percakapan, jadi
    aturan aman (pesan ke pelanggan = draf, tidak mengulang password, tidak memasang apa pun tanpa
    izin, dll.) tetap berlaku walau skill tidak terbuka. Langkah:
-   a. Tampilkan **isi lengkap** `references/aturan-kerja-agents.md` di chat dulu.
+   a. Tampilkan **isi lengkap** `references/aturan-kerja-agents.md` di chat dulu: baca file
+      dengan tool read lalu tempel isinya **apa adanya, kata per kata** (semua butir, termasuk
+      fakta PPN). Jangan diringkas, diparafrasekan, atau dipotong dengan "..."/"(19 poin)" —
+      pengguna harus menyetujui teks yang persis sama dengan yang akan ditulis. Terlalu panjang
+      untuk satu pesan → kirim dalam beberapa pesan, baru minta "ya".
    b. Baca `AGENTS.md` di workspace OpenClaw (biasanya `~/.openclaw/workspace/AGENTS.md`; jangan
       mencari ke seluruh disk — bila tidak ada di sana, tanyakan lokasinya). Kalau sudah ada
       baris `komunitech-aturan-kerja: mulai`, katakan "sudah terpasang" dan lewati (bila versinya
@@ -172,12 +188,13 @@ tapi perlu komputer menyala terus — bisa dibahas nanti.
 
 ## Status Pemasangan
 - Sudah terpasang: belum ada
-- Perlu dipasang: caption-sosmed-umkm, balas-chat-cs, rekap-penjualan-csv → boleh saya pasang
-  sekarang ke folder skill global OpenClaw Anda? (ya/tidak)
+- Perlu dipasang: caption-sosmed-umkm, balas-chat-cs, rekap-penjualan-csv (folder ditemukan di
+  ~/Downloads/<folder-paket>/) → boleh saya pasang sekarang ke folder skill global OpenClaw
+  Anda (~/.openclaw/skills)? (ya/tidak)
 
-[setelah "ya"]
 ## Hasil Tugas Pertama
-<contoh: 3 caption siap tempel untuk promo kopi hari ini, dari brief singkat pengguna>
+<3 caption siap tempel untuk promo kopi hari ini, dibuat langsung di balasan ini dari brief
+pengguna — tidak menunggu "ya" pemasangan>
 
 ## Rencana 7 Hari
 | Hari | Kebiasaan baru | Skill |
@@ -200,7 +217,13 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
 - [ ] Skill yang belum terpasang sudah dicek benar-benar ada foldernya di paket pembeli sebelum
       dijanjikan — bukan diasumsikan otomatis ada.
 - [ ] Tidak ada pemasangan skill tanpa izin eksplisit pengguna.
-- [ ] Ada minimal satu hasil nyata siap pakai (bukan cuma rencana).
+- [ ] Bagian `## Hasil Tugas Pertama` berisi hasil nyata siap pakai di balasan yang sama
+      dengan rekomendasi (bukan cuma rencana, tidak menunggu pemasangan).
+- [ ] Folder sumber skill hanya dicari di Unduhan/folder yang disebut pengguna; path sumber
+      disebut sebelum minta "ya"; tidak menyalin dari /tmp atau instalasi OpenClaw lain.
+- [ ] Istilah jujur: "Starter Kit/paket Anda" hanya untuk folder unduhan yang benar-benar
+      ditemukan; skill yang tidak ditemukan disebut "belum tersedia di paket Anda".
+- [ ] Blok aturan kerja ditampilkan utuh kata per kata (tidak diringkas) sebelum minta "ya".
 - [ ] Blok aturan kerja ditampilkan dulu dan hanya ditambahkan (append) ke AGENTS.md setelah
       "ya"; isi AGENTS.md lain tidak diubah; tidak dipasang dua kali.
 - [ ] Rencana 7 hari konkret dan sesuai prioritas pengguna.
@@ -237,6 +260,10 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
   `cek-privasi-openclaw` atau skill lain yang relevan bila ada.
 - **Usaha besar/multi-cabang (50+ karyawan):** jangan menggabung data semua cabang jadi satu
   rekap tanpa diminta — sarankan file/folder data terpisah per cabang agar laporan tetap akurat.
+- **Istilah jujur:** jangan menyebut sesuatu "Starter Kit Anda"/"paket Anda" kecuali foldernya
+  benar-benar ditemukan di Unduhan/folder yang disebut pengguna. Skill yang kebetulan ada di
+  lokasi lain (mis. `/tmp`, instalasi OpenClaw lain) bukan milik paket pengguna — jangan
+  disalin/dipasang; sebutkan temuannya dan tanyakan.
 - Skill ini **tidak** memasang paket dari luar Starter Kit Komunitech, **tidak** mempublikasikan
   apa pun ke ClawHub, dan **tidak** mengirim data pengguna ke server di luar penyedia model AI
   yang sudah dipilih pengguna sendiri.

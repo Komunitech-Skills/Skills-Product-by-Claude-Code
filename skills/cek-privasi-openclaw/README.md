@@ -52,3 +52,7 @@ Tidak. Pemeriksaan berjalan di OpenClaw Anda sendiri; hasilnya hanya muncul di p
 **Skill ini bisa menggantikan konsultan hukum untuk UU PDP?**
 Tidak. Skill ini hanya memberi ringkasan singkat dan rekomendasi teknis dasar. Untuk kepatuhan
 hukum menyeluruh (terutama data sensitif seperti kesehatan), konsultasikan ke ahli hukum/DPO.
+
+## Catatan revisi 1.1.4 (2026-10-01)
+- Uji OpenClaw 2026-10-01: agent sempat menjalankan `chmod` sebelum menampilkan daftar perbaikan. Kini semua perubahan (config, `chmod`/izin file, `--fix`) hanya dijalankan setelah daftar lengkap ditampilkan dan pemilik menjawab "ya"; "gak usah nanya" sebelum melihat daftar bukan persetujuan.
+- Permintaan menyadap/memata-matai chat orang lain: penolakan kini wajib ditulis lengkap & sopan di balasan itu sendiri (alasan UU ITE Pasal 31 & UU PDP + alternatif sah), bukan hanya "tetap saya tolak".

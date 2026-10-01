@@ -54,6 +54,10 @@ koreksi kapan saja.
 Tidak. Semua berjalan di OpenClaw milik Anda sendiri; data tetap di komputer Anda. Skill ini
 juga akan menawarkan pengecekan privasi dasar (skill `cek-privasi-openclaw`) di langkah terakhir.
 
+## Catatan revisi 1.1.8 (2026-10-01)
+
+- Uji OpenClaw 2026-10-01: (a) "Hasil Tugas Pertama" kini wajib di balasan yang sama dengan rekomendasi, tanpa menunggu pemasangan skill; (b) blok Aturan kerja ditampilkan utuh kata per kata sebelum minta "ya" (tidak diringkas); (c) folder skill hanya dicari di Unduhan/folder yang disebut pengguna, path sumber disebut sebelum minta izin, tidak menyalin dari `/tmp`/instalasi OpenClaw lain; (d) istilah jujur — "Starter Kit/paket Anda" hanya untuk folder unduhan yang benar-benar ditemukan; (e) tidak ada placeholder klaim hasil untuk kosmetik di tugas pertama.
+
 ## Catatan revisi 1.1.7 (2026-10-01)
 
 - Blok Aturan kerja Komunitech v3: aturan 16 tidak lagi menyebut nama skill auto-trading (agent sempat menawarkan skill yang tidak terpasang); aturan 12 melarang menyarankan layanan lain (mis. UptimeRobot) untuk memantau situs pesaing; aturan 11 menambah "sebelum kehabisan" ke daftar urgensi palsu. Hasil uji v2: risiko 2/18 (v1 4/16, tanpa blok 13/16).

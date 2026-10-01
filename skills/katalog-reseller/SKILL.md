@@ -47,8 +47,10 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    python3 <folder-skill-ini>/scripts/hitung_tier.py --produk "Kopi 250g" --hpp 32.000 --mode margin \
      --tier "Dropshipper:1:45" --tier "Reseller:12:35" --tier "Agen:60:25"
    # banyak produk: --config produk.json (contoh: templates/produk-contoh.json / .csv)
-   # daftar harga untuk dibagikan ke mitra (tanpa HPP & margin produsen): --csv-keluar daftar-harga-mitra.csv
+   # daftar harga untuk dibagikan ke mitra (tanpa HPP & margin produsen):
+   #   --csv-keluar "<folder-kerja-pengguna>/daftar-harga-mitra.csv"
    ```
+   **File CSV ditulis ke folder kerja pengguna** (workspace OpenClaw atau folder yang disepakati), **bukan** ke folder skill/`scripts/` atau `/tmp` — selalu beri path lengkap di `--csv-keluar`. Di balasan, sebut **lokasi lengkap** file (script mencetaknya sebagai path absolut).
    Opsi lain: `--biaya-produsen` (packing/label per unit), `--ongkir-ke-mitra` (Rp/unit; otomatis **tidak** dikenakan ke tier yang namanya mengandung "drop", karena dropshipper tidak menerima kiriman stok), `--min-margin-mitra 15`, `--min-margin-dropship 10`, `--min-margin-produsen 15`, `--bulatkan 100`, `--format json`. Tier boleh punya batas sendiri: `"Agen:60:35:20"`.
 3. **Baca status & peringatan.** Jangan menyajikan tier berstatus `PRODUSEN RUGI`, `MITRA RUGI`, atau `HARGA MITRA ≥ ECERAN` sebagai final. Untuk `MARGIN MITRA TIPIS` / `RUGI DI HARGA MINIMUM` / selisih tier terlalu kecil: jalankan ulang dengan usulan perbaikan (diskon tier lebih besar, harga eceran lebih tinggi, tier dikurangi) dan tampilkan perbandingannya.
 4. **Susun dokumen** dengan format di bawah: tabel internal (dengan margin produsen) **terpisah** dari daftar harga untuk mitra (tanpa HPP/margin produsen).
@@ -107,6 +109,7 @@ Pesan WA: "...Reseller beli 12 pcs (modal ±Rp 800.400), jika semua terjual di h
 ## Checklist sebelum mengirim hasil
 - [ ] Semua harga & untung berasal dari script (atau hitung manual yang disebut); tidak ada tier rugi yang disajikan final.
 - [ ] Tabel internal (HPP, margin produsen) terpisah dari daftar harga untuk mitra.
+- [ ] Bila CSV dibuat: tersimpan di folder kerja pengguna (bukan folder skill) dan path lengkapnya disebut di balasan.
 - [ ] Tier ditentukan dari jumlah beli sendiri; **tidak ada** bonus rekrut, biaya pendaftaran berbayar, atau komisi downline.
 - [ ] "Larangan banting harga" ditulis sebagai harga minimum anjuran + konsekuensi kebijakan, bukan denda.
 - [ ] Pesan rekrut memakai "±" & "jika terjual di harga eceran"; tanpa "pasti untung"/"passive income"; ada opt-out.

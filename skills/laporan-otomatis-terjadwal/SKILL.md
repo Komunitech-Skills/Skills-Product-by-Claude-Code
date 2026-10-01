@@ -117,7 +117,9 @@ lalu yang lupa diganti) tidak lolos tanpa peringatan dan terkirim ulang seolah d
    diminta>" dan hentikan (sama seperti data kosong -- lihat Langkah 2), jangan diam-diam
    mengirim angka yang cakupannya berbeda dari yang dijanjikan ke pengguna.
 3. Ambil angka-angka kunci dari output JSON script itu (JANGAN mengarang atau membulatkan
-   sendiri -- salin apa adanya).
+   sendiri -- salin apa adanya). **Label hitungan harus tepat:** jumlah nota/baris dan jumlah
+   barang (pcs) adalah dua angka berbeda -- tulis "57 nota / 110 pcs", bukan "57 item" (aturan
+   lengkap di `templates/RESEP-penjualan.md`).
 4. Susun JSON pesan (lihat skema di `scripts/susun_pesan.py`, bagian atas file) berisi maksimal
    4-6 baris angka utama + 1 daftar pendek (mis. 3-5 produk terlaris) -- **tanpa nama/kontak
    pelanggan perorangan**, sesuai UU PDP. Isi `catatan` dengan hal netral (mis. cakupan periode),
@@ -158,6 +160,18 @@ lalu yang lupa diganti) tidak lolos tanpa peringatan dan terkirim ulang seolah d
   arahkan ke `broadcast-wa` (dikirim manual/resmi, bukan otomatis).
 
 ### 5. Buat jadwal (SELALU minta izin eksplisit sebelum menjalankan perintah)
+Berlaku untuk **semua** cara membuat jadwal: CLI `openclaw automations add`/`cron add` maupun
+tool agent (mis. `cron.add`). Urutan wajib, tidak boleh dilompati:
+
+a. **Cek kanal pengiriman tersedia** (hanya baca): `openclaw channels status` (atau Control UI
+   `Settings → Channels`; versi lain: cek `openclaw channels --help`). Kanal tujuan (Telegram)
+   belum terpasang/belum pairing, atau ID chat tujuan belum diketahui → **berhenti**, beri
+   langkah §4 (`references/openclaw.md` §4), jangan membuat jadwal dulu.
+b. **Tampilkan ringkasan jadwal** dalam satu pesan: nama laporan, sumber data, jadwal (hari &
+   jam, `Asia/Jakarta`), kanal & tujuan, plus perintah yang akan dijalankan.
+c. **Tunggu "ya"** atas ringkasan itu. "Lanjut bikin jadwalnya", "gas", atau permintaan awal yang
+   diucapkan **sebelum** ringkasan ditampilkan **bukan** persetujuan.
+
 Ringkas dulu ke pengguna: laporan apa, dari data mana, jadwal & zona waktu, dikirim ke kanal &
 tujuan apa. Minta konfirmasi "Lanjut? (ya/tidak)", lalu **berhenti dan tunggu balasan** (permintaan
 awal bukan persetujuan). Perintah ditolak (`requires credentials`, `token missing`, Gateway mati) →
@@ -251,6 +265,9 @@ lihat/jeda/hapus jadwal (pakai `id`) → ingatkan syarat komputer menyala.
       atau sudah ditinjau ulang bersama pengguna sampai aman.
 - [ ] Penerima adalah pemilik/admin sendiri, bukan grup/pelanggan.
 - [ ] Kalau kanal WhatsApp: nomor terpisah + persetujuan risiko tertulis sudah didapat.
+- [ ] Kanal tujuan sudah dicek tersedia (`openclaw channels status`), ringkasan jadwal sudah
+      ditampilkan, dan pengguna menjawab "ya" **sebelum** jadwal dibuat (CLI maupun `cron.add`).
+- [ ] Label hitungan tepat: "<N> nota / <Q> pcs" (atau "<N> baris penjualan"), tidak "<N> item".
 - [ ] `id` jadwal (dari hasil `automations add`) sudah dicatat.
 - [ ] Jadwal sudah diuji sekali (`automations run <id> --wait`) dan hasilnya sesuai sebelum
       dianggap aktif.
