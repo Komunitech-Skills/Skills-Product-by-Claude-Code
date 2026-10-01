@@ -918,3 +918,489 @@ Skill terpakai: ya (SKILL.md + referensi dibaca).
 **Saran untuk pembuat:** di `references/regulasi.md`/`proses-dan-proporsionalitas.md` tambahkan kalimat tegas: "Jangan menyebut syarat 'tertangkap tangan, pengakuan, atau 2 saksi' — itu Pasal 158 UU 13/2003 yang dibatalkan MK 012/PUU-I/2003 dan dihapus UU 6/2023. Menurut PP 35/2021 Ps. 52(2) yang menentukan adalah apakah pelanggaran mendesak diatur dalam PK/PP/PKB; hadirkan saksi sebagai praktik baik, bukan syarat hukum." Hindari kata "denda" untuk akibat PHK tidak sah.
 
 **Cuplikan jualan (jujur, aman dipakai):** "Minta SP2? AI biasa langsung membuatnya — bahkan setelah diminta 'yang paling aman'. Skill ini mengecek dulu: SP1 10 Maret 2026 sudah berakhir 9 September 2026, jadi yang aman SP1 baru (berlaku s.d. 31 Maret 2027) lengkap dengan berita acara klarifikasi." · "Kasir ambil uang laci? Bukan SK PHK hari itu juga, tapi surat panggilan klarifikasi, kronologi, dan berita acara yang siap cetak."
+
+## Uji ulang 2026-10-01 (putaran 3)
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; folder skill hanya dibaca, tidak diubah). **Versi diuji:** surat-peringatan-karyawan 1.0.5.
+**Cara:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech `claude-sonnet-5`, TZ Asia/Jakarta, home terisolasi (mount namespace) berisi skill ini saja, dibuat ulang bersih sebelum tiap sesi (`r12-surat-peringatan-karyawan`). Skenario yang gagal di putaran 2 (S2, syarat "tertangkap tangan/pengakuan/2 saksi" dikaitkan ke PP 35/2021) diulang dengan **pesan sama persis** (giliran 1 + jawaban giliran 2 yang sama) di **2 sesi berbeda** (A, B), ditambah 1 varian baru yang langsung menanyakan "harus 2 saksi?". Sisi SEBELUM tidak diulang (acuan: putaran 2, skor 3).
+
+### Skenario 2 — Kasir ambil uang laci, minta SP3 + PHK (pesan sama persis) — Sesi A
+**Giliran 1** — tools: **(tidak ada — SKILL.md tidak dibaca)**
+
+> Sebelum saya buatkan suratnya, ada beberapa hal penting yang perlu diluruskan dulu biar suratnya sah secara hukum dan nggak jadi bumerang buat Anda:
+>
+> **1. "SP3" bukan alat yang tepat untuk kasus ini**
+> SP1-SP2-SP3 itu mekanisme untuk pelanggaran ringan yang berulang (telat, bolos, dll), masing-masing berlaku 6 bulan, baru di akumulasi jadi dasar PHK. Pencurian adalah **pelanggaran berat sekali tindak** — dasarnya langsung PHK seketika (Pasal 52 PP No. 35/2021 jo. UU Cipta Kerja), bukan lewat jenjang SP. Kalau saya paksa format SP3, malah bisa dipakai kasir itu untuk menggugat balik ("kenapa langsung SP3 tanpa SP1/SP2, prosesnya cacat").
+>
+> **2. "Pecat tanpa pesangon" — benar sebagian, bukan sepenuhnya**
+> Untuk PHK karena kesalahan berat (pencurian) dengan bukti sah: karyawan **memang tidak berhak atas uang pesangon dan uang penghargaan masa kerja**. TAPI dia **tetap berhak atas Uang Penggantian Hak** (Pasal 40 ayat 4 PP 35/2021) — contoh: sisa cuti tahunan yang belum diambil, ongkos pulang jika dulu direkrut dari daerah lain, dll. Ini bukan opsional, ini kewajiban hukum minimal. Kalau dilewatkan, risikonya digugat ke Disnaker/PHI.
+>
+> **3. Due process tetap perlu, biar kuat**
+> Walau bukti CCTV sudah ada, idealnya karyawan diberi kesempatan klarifikasi dulu (dicatat di Berita Acara) sebelum keputusan final — ini bukan untuk menunda, bisa dilakukan hari ini juga, tapi jadi bukti bahwa Anda sudah fair kalau suatu saat ada yang mempersoalkan ke Disnaker.
+>
+> Jadi saya siapkan **2 dokumen** yang benar secara prosedur, bukan SP3:
+>
+> ---
+>
+> ### DOKUMEN 1 — Berita Acara Klarifikasi
+>
+> ```
+> BERITA ACARA KLARIFIKASI
+> No: [NOMOR]/BA/[BULAN]/[TAHUN]
+>
+> Pada hari ini, [HARI], tanggal [TANGGAL] bulan [BULAN] tahun [TAHUN], 
+> bertempat di [NAMA USAHA/TOKO], telah dilakukan klarifikasi terhadap:
+>
+> Nama   : [NAMA KASIR]
+> Jabatan: Kasir
+> No. KTP/ID Karyawan: [NOMOR]
+>
+> Sehubungan dengan dugaan pengambilan uang kas/laci milik 
+> [NAMA USAHA] sejumlah Rp500.000 (lima ratus ribu rupiah) pada 
+> tanggal [TANGGAL KEJADIAN] sekitar pukul [JAM], yang terekam 
+> oleh kamera CCTV [LOKASI/NO. KAMERA].
+>
+> Hasil klarifikasi:
+> 1. Kepada yang bersangkutan telah diperlihatkan rekaman CCTV 
+>    dimaksud dan diberi kesempatan memberikan keterangan.
+> 2. Keterangan yang bersangkutan: 
+>    [DIISI SAAT KLARIFIKASI — tulis pengakuan/pembelaan dia apa adanya]
+> 3. Berdasarkan bukti rekaman dan keterangan di atas, disimpulkan 
+>    telah terjadi pengambilan uang milik perusahaan tanpa izin, 
+>    yang termasuk kategori pelanggaran berat/pencurian.
+>
+> Barang bukti: rekaman CCTV tanggal [TANGGAL], pukul [JAM] 
+> (disimpan/dibackup oleh pihak perusahaan).
+>
+> Demikian Berita Acara ini dibuat dengan sebenar-benarnya.
+>
+> Yang diklarifikasi,                    Yang memeriksa,
+>
+>
+> [NAMA KASIR]                           [NAMA PEMILIK/MANAJER]
+>
+>
+> Saksi 1,                               Saksi 2,
+>
+>
+> [NAMA]                                 [NAMA]
+> ```
+>
+> ---
+>
+> ### DOKUMEN 2 — Surat Keputusan PHK (Kesalahan Berat)
+>
+> ```
+> [KOP SURAT / NAMA USAHA]
+>
+> SURAT KEPUTUSAN
+> PEMUTUSAN HUBUNGAN KERJA
+> No: [NOMOR]/PHK/[BULAN]/[TAHUN]
+>
+> Yang bertanda tangan di bawah ini, [NAMA PEMILIK], selaku pemilik/
+> pimpinan [NAMA USAHA], menerangkan hal-hal sebagai berikut:
+>
+> Menimbang:
+> 1. Bahwa Sdr/i [NAMA KASIR], Kasir [NAMA USAHA], terbukti 
+>    mengambil uang kas/laci perusahaan sejumlah Rp500.000 tanpa 
+>    izin pada tanggal [TANGGAL], sebagaimana terekam CCTV dan 
+>    tertuang dalam Berita Acara Klarifikasi No. [NOMOR] tanggal 
+>    [TANGGAL].
+> 2. Bahwa perbuatan tersebut merupakan pelanggaran berat berupa 
+>    pencurian/penggelapan milik perusahaan sebagaimana diatur 
+>    dalam [Peraturan Perusahaan/Perjanjian Kerja Pasal ___, jika ada]
+>    dan Pasal 52 ayat (2) PP No. 35 Tahun 2021 jo. UU No. 6 Tahun 
+>    2023 tentang Cipta Kerja.
+> 3. Bahwa oleh karenanya hubungan kerja dapat diputuskan seketika 
+>    tanpa melalui mekanisme surat peringatan.
+>
+> Memutuskan:
+> 1. Menyatakan Pemutusan Hubungan Kerja (PHK) terhadap:
+>    Nama    : [NAMA KASIR]
+>    Jabatan : Kasir
+>    Mulai bekerja: [TANGGAL MASUK KERJA]
+>    efektif terhitung tanggal [TANGGAL PHK, hari ini].
+>
+> 2. Sesuai Pasal 52 PP 35/2021, karyawan yang di-PHK karena 
+>    kesalahan berat TIDAK berhak atas uang pesangon dan uang 
+>    penghargaan masa kerja.
+>
+> 3. Karyawan tetap berhak atas Uang Penggantian Hak berupa:
+>    - [sisa cuti tahunan yang belum diambil, jika ada: ___ hari]
+>    - [hak lain sesuai ketentuan perusahaan, jika ada]
+>    dibayarkan paling lambat [sesuai kebijakan/7 hari kerja].
+>
+> 4. Yang bersangkutan wajib mengembalikan seluruh inventaris/
+>    aset perusahaan yang masih dikuasainya paling lambat 
+>    [TANGGAL].
+>
+> Demikian surat keputusan ini dibuat untuk dilaksanakan sebagaimana 
+> mestinya.
+>
+> [KOTA], [TANGGAL]
+> [NAMA USAHA]
+>
+>
+> [NAMA PEMILIK/MANAJER]
+> Pemilik/Pimpinan
+>
+> Diterima oleh,
+>
+>
+> [NAMA KASIR]
+> (tanda tangan menyatakan menerima surat ini, bukan berarti setuju)
+> ```
+>
+> ---
+>
+> **Saran praktis, bukan basa-basi:**
+> - Backup rekaman CCTV-nya sekarang juga (jangan sampai ke-overwrite otomatis).
+> - Usahakan ada 2 saksi tanda tangan di Berita Acara — ini yang bikin posisi Anda kuat kalau nanti dipermasalahkan.
+> - Rp500.000 itu di bawah ambang pidana ringan, tapi kalau mau proses hukum (lapor polisi), itu pilihan terpisah dari PHK — bisa jalan paralel.
+> - Dokumen di atas template umum, bukan nasihat hukum resmi. Kalau ada Peraturan Perusahaan/Perjanjian Kerja tertulis, isi bagian "Pasal ___" di atas dengan pasal yang relevan — kalau tidak ada, tetap bisa pakai dasar PP 35/2021-nya saja.
+>
+> Mau saya isikan langsung nama, tanggal, dan detail lain kalau Anda kasih datanya? Biar tinggal print dan tanda tangan hari ini.
+
+**Giliran 2** (jawaban pengguna sama: "Toko saya Swalayan Barokah … PP perusahaan kami ga ada, cuma kontrak kerja biasa. Yaudah bikinin yg bisa dibikin") — tools: (tidak ada)
+
+> Siap Pak Hendra, saya isikan lengkap. Catatan dulu: karena Swalayan Barokah **tidak punya Peraturan Perusahaan**, dasar hukumnya saya pakai kontrak kerja + PP No. 35/2021 jo. UU Cipta Kerja langsung (ini sah, PP bukan syarat wajib untuk toko kecil, apalagi tanpa serikat pekerja).
+>
+> Satu hal yang belum saya tahu: **nominal gaji Sari per hari/bulan**, untuk menghitung Rupiah pasti dari uang pengganti cuti 4 hari. Kalau Anda kasih angkanya, saya hitungkan nominalnya — sementara saya tulis "4 hari" dulu di suratnya.
+>
+> ---
+>
+> ### DOKUMEN 1 — Berita Acara Klarifikasi
+>
+> ```
+> SWALAYAN BAROKAH
+> Jl. Merdeka No. 10, Solo
+>
+> BERITA ACARA KLARIFIKASI
+> No: 001/BA/X/2026
+>
+> Pada hari ini, Kamis, tanggal 1 Oktober 2026, bertempat di 
+> Swalayan Barokah, Jl. Merdeka No. 10, Solo, telah dilakukan 
+> klarifikasi terhadap:
+>
+> Nama    : Sari Wulandari
+> Jabatan : Kasir
+> Mulai bekerja: 2 Januari 2024
+>
+> Sehubungan dengan dugaan pengambilan uang kas/laci milik 
+> Swalayan Barokah sejumlah Rp500.000 (lima ratus ribu rupiah) 
+> pada tanggal 30 September 2026 sekitar pukul 20.15 WIB, yang 
+> terekam oleh kamera CCTV area kasir.
+>
+> Hasil klarifikasi:
+> 1. Kepada yang bersangkutan telah diperlihatkan rekaman CCTV 
+>    dimaksud dan diberi kesempatan memberikan keterangan.
+> 2. Keterangan yang bersangkutan: 
+>    _________________________________________________________
+>    _________________________________________________________
+>    (diisi langsung saat klarifikasi, tulis apa adanya — 
+>    pengakuan atau pembelaan dia)
+> 3. Berdasarkan bukti rekaman CCTV dan keterangan di atas, 
+>    disimpulkan telah terjadi pengambilan uang milik perusahaan 
+>    tanpa izin, yang termasuk kategori pelanggaran berat.
+>
+> Barang bukti: rekaman CCTV tanggal 30 September 2026, pukul 
+> 20.15 WIB (disimpan/dibackup oleh pihak perusahaan).
+>
+> Demikian Berita Acara ini dibuat dengan sebenar-benarnya.
+>
+> Yang diklarifikasi,                    Yang memeriksa,
+>
+>
+> Sari Wulandari                         Hendra Wijaya
+>                                         Pemilik Swalayan Barokah
+>
+>
+> Saksi 1,                               Saksi 2,
+>
+>
+> _______________                        _______________
+> (nama & tanda tangan)                  (nama & tanda tangan)
+> ```
+>
+> ---
+>
+> ### DOKUMEN 2 — Surat Keputusan PHK (Kesalahan Berat)
+>
+> ```
+> SWALAYAN BAROKAH
+> Jl. Merdeka No. 10, Solo
+>
+> SURAT KEPUTUSAN
+> PEMUTUSAN HUBUNGAN KERJA
+> No: 001/PHK/X/2026
+>
+> Yang bertanda tangan di bawah ini, Hendra Wijaya, selaku pemilik 
+> Swalayan Barokah, menerangkan hal-hal sebagai berikut:
+>
+> Menimbang:
+> 1. Bahwa Sdri. Sari Wulandari, Kasir Swalayan Barokah, terbukti 
+>    mengambil uang kas/laci perusahaan sejumlah Rp500.000 tanpa 
+>    izin pada tanggal 30 September 2026 pukul 20.15 WIB, 
+>    sebagaimana terekam CCTV dan tertuang dalam Berita Acara 
+>    Klarifikasi No. 001/BA/X/2026 tanggal 1 Oktober 2026.
+> 2. Bahwa perbuatan tersebut merupakan pelanggaran berat berupa 
+>    pencurian/penggelapan milik perusahaan, bertentangan dengan 
+>    Perjanjian Kerja yang bersangkutan dan Pasal 52 ayat (2) 
+>    PP No. 35 Tahun 2021 jo. UU No. 6 Tahun 2023 tentang 
+>    Cipta Kerja.
+> 3. Bahwa oleh karenanya hubungan kerja dapat diputuskan seketika 
+>    tanpa melalui mekanisme surat peringatan.
+>
+> Memutuskan:
+> 1. Menyatakan Pemutusan Hubungan Kerja (PHK) terhadap:
+>    Nama    : Sari Wulandari
+>    Jabatan : Kasir
+>    Mulai bekerja: 2 Januari 2024
+>    efektif terhitung tanggal 1 Oktober 2026.
+>
+> 2. Sesuai Pasal 52 PP 35/2021, karena PHK disebabkan kesalahan 
+>    berat, yang bersangkutan TIDAK berhak atas uang pesangon dan 
+>    uang penghargaan masa kerja.
+>
+> 3. Yang bersangkutan tetap berhak atas Uang Penggantian Hak 
+>    berupa:
+>    - Penggantian sisa cuti tahunan yang belum diambil: 4 (empat) 
+>      hari, setara Rp____________ (dihitung dari upah harian).
+>    dibayarkan paling lambat 7 (tujuh) hari kerja sejak tanggal 
+>    surat ini.
+>
+> 4. Yang bersangkutan wajib mengembalikan seluruh inventaris/
+>    aset perusahaan (seragam, kunci, kartu akses, dll) yang 
+>    masih dikuasainya paling lambat tanggal 1 Oktober 2026.
+>
+> Demikian surat keputusan ini dibuat untuk dilaksanakan sebagaimana 
+> mestinya.
+>
+> Solo, 1 Oktober 2026
+> Swalayan Barokah
+>
+>
+> Hendra Wijaya
+> Pemilik
+>
+> Diterima oleh,
+>
+>
+> Sari Wulandari
+> (tanda tangan menyatakan menerima surat ini, bukan berarti 
+> setuju dengan isinya)
+> ```
+>
+> ---
+>
+> **Langkah hari ini, berurutan:**
+> 1. Lakukan klarifikasi dulu (5-10 menit cukup), isi kolom keterangan di Berita Acara sesuai yang dia katakan, minta 2 saksi tanda tangan (bisa karyawan lain).
+> 2. Setelah itu baru serahkan Surat PHK, minta dia tanda tangan "diterima" (kalau menolak tanda tangan, catat saja "menolak tanda tangan, disaksikan oleh [nama saksi]" — surat tetap sah).
+> 3. Backup rekaman CCTV tanggal 30 September jam 20.15 ke penyimpanan terpisah (HP/laptop/cloud) sebelum ke-overwrite.
+> 4. Siapkan uang pengganti cuti 4 hari — ini wajib dibayar meski kasusnya pencurian, kasih tau saya nominal gaji hariannya kalau mau saya hitungkan Rupiahnya.
+>
+> Mau saya hitungkan juga nominal Rupiah uang penggantian cuti-nya kalau Anda kasih gaji pokok Sari per bulan?
+
+### Skenario 2 — Sesi B
+**Giliran 1** — tools: ls, read (SKILL.md dibaca)
+
+> Untuk kasus ini saya **tidak bisa langsung buatkan surat PHK**, dan proses SP1→SP2→SP3 lalu pecat hari ini juga bukan jalur yang pas. Saya jelaskan kenapa, lalu apa yang bisa saya bantu sekarang:
+>
+> **1. Ini dugaan pencurian/penggelapan, bukan kasus SP biasa**
+> Ambil uang laci pakai bukti CCTV masuk kategori pelanggaran berat/mendesak, bukan pelanggaran ringan yang jenjangnya SP1-SP2-SP3. Jadi memberi "SP3" dulu untuk kasus ini justru salah kaprah — SP3 itu untuk pelanggaran yang sudah berjenjang (telat berulang, dll), bukan untuk tindak pidana.
+>
+> **2. PHK tanpa pesangon tidak otomatis walau ada CCTV**
+> Dasar PHK karena pelanggaran mendesak (PP 35/2021 Pasal 52 ayat 2) hanya berlaku **kalau diatur jelas di Peraturan Perusahaan/Perjanjian Kerja Anda**. Kalau PP/PK tidak mengatur soal ini secara spesifik, "pecat tanpa pesangon hari ini juga" bisa berisiko digugat karyawan ke PHI (Pengadilan Hubungan Industrial) dan malah berbalik merugikan Anda — bisa diwajibkan bayar pesangon plus kompensasi lain.
+>
+> **3. Ada hal wajib sebelum PHK sah:**
+> - Karyawan tetap harus diberi kesempatan klarifikasi (dipanggil, didengar penjelasannya), didokumentasikan dalam Berita Acara — bukan untuk membela dia, tapi supaya proses PHK Anda kuat secara hukum kalau digugat.
+> - Ada tahap perundingan/pemberitahuan PHK sesuai UU Ketenagakerjaan, bukan pemutusan sepihak di tempat.
+>
+> **Yang bisa saya bantu buatkan sekarang:**
+> 1. **Kronologi kejadian** (tanggal, jam, jumlah Rp500.000, bukti CCTV) — rapi dan faktual.
+> 2. **Surat panggilan klarifikasi** ke kasir tersebut.
+> 3. **Draf Berita Acara Klarifikasi** untuk dokumentasi saat Anda bicara dengannya.
+> 4. Kalau Anda tetap ingin memberi SP sebagai bagian proses (opsional, bukan syarat untuk PHK pelanggaran berat) — bisa saya buatkan juga, tapi levelnya menyesuaikan riwayat dia, bukan otomatis SP3.
+>
+> Untuk **surat PHK final dan keputusan soal pesangon**, saya sarankan konsultasi ke ahli hukum ketenagakerjaan atau Disnaker setempat dulu — terutama untuk pastikan PP/PK perusahaan Anda memang mengatur kasus ini sebagai dasar PHK tanpa pesangon, supaya tidak berbalik jadi masalah hukum buat Anda.
+>
+> Mau saya mulai dari kronologi kejadian + surat panggilan klarifikasi dulu?
+
+**Giliran 2** — tools: (tidak ada; skill sudah dibaca di giliran 1)
+
+> Siap, Pak Hendra. Berikut 3 dokumen yang **bisa** saya buatkan sekarang untuk kasus Sari Wulandari — kronologi, surat panggilan klarifikasi, dan draf berita acara. Surat PHK/pesangon belum saya buatkan (alasannya saya tulis di bagian catatan di bawah).
+>
+> ---
+>
+> ```
+> KRONOLOGI KEJADIAN
+> (Dokumen internal — untuk arsip personalia, bukan untuk diserahkan ke karyawan)
+>
+> Swalayan Barokah
+> Jl. Merdeka No. 10, Solo
+>
+> Nama karyawan   : Sari Wulandari
+> Jabatan         : Kasir
+> Mulai kerja     : 2 Januari 2024
+> Riwayat SP      : Belum pernah
+> Sisa cuti       : 4 hari
+>
+> Uraian:
+> Pada tanggal 30 September 2026 pukul 20.15 WIB, berdasarkan rekaman CCTV toko,
+> Saudari Sari Wulandari tercatat mengambil uang dari laci kasir sejumlah
+> Rp500.000 (lima ratus ribu rupiah) tanpa izin dan tanpa pencatatan transaksi
+> yang sah.
+>
+> Bukti yang dimiliki:
+> - Rekaman CCTV tanggal 30 September 2026, pukul 20.15 WIB.
+> - [Tambahkan jika ada: hasil cocok-kas/selisih kas pada tanggal tersebut,
+>   nama petugas yang menemukan selisih, saksi yang melihat rekaman]
+>
+> Tindak lanjut:
+> 1. [tanggal] — Karyawan dipanggil untuk klarifikasi (lihat Surat Panggilan
+>    terlampir).
+> 2. [tanggal] — Berita Acara Klarifikasi dibuat dan ditandatangani.
+> 3. [tanggal] — Keputusan perusahaan diambil berdasarkan hasil klarifikasi.
+>
+> Dicatat oleh: Hendra Wijaya, Pemilik Swalayan Barokah
+> Tanggal catatan dibuat: 1 Oktober 2026
+> ```
+>
+> ---
+>
+> ```
+> Swalayan Barokah
+> Jl. Merdeka No. 10, Solo
+>
+> Solo, 1 Oktober 2026
+>
+> Nomor: 001/SP-KLARIFIKASI/SB/X/2026
+>
+> SURAT PANGGILAN KLARIFIKASI
+>
+> Kepada:
+> Sari Wulandari
+> Kasir — Swalayan Barokah
+>
+> Dengan ini kami meminta Saudari untuk hadir memberikan klarifikasi terkait
+> dugaan pengambilan uang laci kasir sejumlah Rp500.000 (lima ratus ribu
+> rupiah) pada tanggal 30 September 2026 pukul 20.15 WIB, sebagaimana
+> terekam dalam CCTV toko.
+>
+> Pertemuan klarifikasi akan dilaksanakan pada:
+> Hari/Tanggal : [isi]
+> Pukul        : [isi]
+> Tempat       : Swalayan Barokah, Jl. Merdeka No. 10, Solo
+>
+> Saudari dapat didampingi oleh rekan kerja bila diperlukan. Kehadiran
+> Saudari penting untuk memberikan penjelasan sebelum perusahaan mengambil
+> keputusan lebih lanjut.
+>
+> Demikian surat panggilan ini disampaikan.
+>
+> Hormat kami,
+>
+>
+> Hendra Wijaya
+> Pemilik, Swalayan Barokah
+> ```
+>
+> ---
+>
+> ```
+> BERITA ACARA KLARIFIKASI
+>
+> Pada hari ini, [tanggal], bertempat di Swalayan Barokah, Jl. Merdeka No. 10,
+> Solo, telah dilaksanakan pertemuan klarifikasi antara:
+>
+> 1. Hendra Wijaya — Pemilik Swalayan Barokah (Pihak Pertama)
+> 2. Sari Wulandari — Kasir (Pihak Kedua)
+> Saksi: [Nama, Jabatan]
+>
+> Perihal: Dugaan pengambilan uang laci kasir Rp500.000 pada 30 September
+> 2026 pukul 20.15 WIB, sebagaimana terekam CCTV.
+>
+> Pokok klarifikasi Pihak Kedua:
+> [diisi saat pertemuan — tulis apa adanya penjelasan/pengakuan karyawan,
+> jangan diringkas/diubah]
+>
+> Catatan tambahan:
+> [diisi — mis. karyawan mengakui, mengembalikan uang, atau membantah]
+>
+> Kesimpulan sementara:
+> [diisi setelah mendengar klarifikasi]
+>
+> Demikian Berita Acara ini dibuat dengan sebenarnya untuk digunakan
+> sebagaimana perlunya.
+>
+> Solo, [tanggal]
+>
+> Pihak Pertama,                    Pihak Kedua,
+>
+>
+> Hendra Wijaya                     Sari Wulandari
+>
+>
+> Saksi,
+>
+>
+> [Nama]
+> ```
+>
+> ---
+>
+> **Catatan penting kenapa surat PHK belum saya buatkan:**
+>
+> 1. **PP perusahaan tidak ada, cuma kontrak kerja biasa.** Dasar PHK tanpa pesangon untuk pelanggaran berat (PP 35/2021 Pasal 52 ayat 2) **hanya sah kalau diatur jelas di Perjanjian Kerja/PP/PKB**. Kalau kontrak kerja Sari tidak mencantumkan klausul tata tertib soal larangan mengambil uang/barang perusahaan dan konsekuensinya, dasar hukum Anda untuk PHK tanpa pesangon jadi lemah — bisa digugat ke PHI (Pengadilan Hubungan Industrial).
+>    → Bisa dicek: boleh kirimkan isi kontrak kerjanya, saya bantu lihat apakah ada klausul yang bisa jadi dasar.
+>
+> 2. **Klarifikasi dulu, baru keputusan.** Jangan pecat sebelum berita acara klarifikasi selesai — bukan untuk melindungi dia, tapi supaya posisi Anda kuat kalau nanti ada sengketa (ada dokumentasi proses yang adil).
+>
+> 3. **Sisa cuti 4 hari** itu hak yang tetap wajib dikompensasi/dibayar saat hubungan kerja berakhir, apa pun alasan berhentinya — baik PHK maupun mengundurkan diri. Jangan dihapus begitu saja.
+>
+> 4. **Soal pesangon:** keputusan "dapat/tidak dapat pesangon" dan surat PHK finalnya sebaiknya dikonsultasikan ke ahli hukum ketenagakerjaan atau Disnaker Solo dulu, karena nilainya tergantung dasar hukum yang valid (poin 1) — kalau salah langkah, risikonya malah Anda yang harus bayar lebih besar lewat putusan PHI.
+>
+> Mau saya bantu cek isi kontrak kerjanya untuk lihat ada klausul yang bisa dipakai sebagai dasar, Pak Hendra?
+
+### Skenario varian baru — admin gudang memalsukan nota, "harus 2 saksi?"
+**Pesan pengguna:** "Staf admin gudang saya ketahuan malsuin nota pembelian, selisihnya Rp1.200.000. Yang tau cuma saya sendiri dari cek nota, ga ada saksi lain. Bisa langsung PHK ga? katanya harus ada 2 saksi ya biar sah? Di PP perusahaan kami pemalsuan dokumen masuk pelanggaran berat yg bisa PHK."
+**Balasan** — tools: read
+
+> Jawab singkat: **mitos "harus 2 saksi" itu tidak berlaku lagi.**
+>
+> **Soal syarat 2 saksi:**
+> Itu dari Pasal 158 ayat (2) UU 13/2003 lama soal "kesalahan berat" — pasal itu sudah **dibatalkan MK (Putusan 012/PUU-I/2003)** dan **dihapus UU Cipta Kerja** (sekarang UU 6/2023). Jadi bukan syarat hukum yang berlaku sekarang. Aturan yang berlaku sekarang **PP 35/2021 Pasal 52 ayat (2)**: PHK boleh dilakukan **tanpa SP berjenjang** untuk pelanggaran bersifat mendesak, **asal diatur dalam PK/PP/PKB perusahaan** — dan PP Anda sudah mencantumkan pemalsuan dokumen sebagai pelanggaran berat, jadi syarat itu terpenuhi.
+>
+> **Jadi bukti dari Anda sendiri (cek nota) sah dipakai**, tanpa saksi lain, selama cukup kuat (nota asli vs nota yang dimalsukan, selisih Rp1.200.000 bisa ditunjukkan hitam di atas putih).
+>
+> **Tapi sebelum langsung PHK, perhatikan ini (bukan syarat hukum formal, tapi praktik baik + melindungi Anda dari gugatan):**
+> 1. **Panggil staf tersebut, dengar klarifikasinya**, dan buat **Berita Acara Klarifikasi** — ini bukti itikad baik dan prosedur adil kalau nanti disengketakan di PHI.
+> 2. Kumpulkan bukti fisik (nota asli, nota dipalsukan, bukti pembayaran/selisih) dan dokumentasikan.
+> 3. Cek ulang bunyi pasal PP perusahaan soal pemalsuan dokumen — pastikan memang masuk kategori "pelanggaran bersifat mendesak/berat yang dapat langsung PHK", bukan hanya pelanggaran biasa yang perlu SP berjenjang.
+> 4. Hak karyawan tetap wajib dipenuhi meski PHK karena pelanggaran berat: uang penggantian hak + uang pisah (besarannya ⚠️ perlu dicek, saya tidak menghitung — konsultasikan ke konsultan ketenagakerjaan/Disnaker).
+> 5. Pemalsuan dokumen berpotensi juga ranah pidana (pemalsuan surat). Itu pilihan terpisah (lapor polisi atau tidak) — bukan syarat untuk PHK-nya sendiri.
+>
+> Kalau mau, saya bisa bantu susun **Berita Acara Klarifikasi** dan draf kronologi kejadian untuk arsip/pegangan sebelum PHK — mau saya buatkan?
+>
+> Disclaimer: ini bantuan administrasi, bukan nasihat hukum. Untuk keputusan PHK final dan perhitungan hak karyawan, konsultasikan ke ahli hukum ketenagakerjaan atau Disnaker setempat.
+
+### Verifikasi (aturan, dicek sendiri)
+- **PP 35/2021 Pasal 52:** ayat (1) PHK karena pelanggaran PK/PP/PKB setelah SP1–SP3 (SP masing-masing berlaku paling lama 6 bulan kecuali diatur lain) → pesangon 0,5×, UPMK 1×, UPH; ayat (2) pengusaha dapat mem-PHK pekerja karena **pelanggaran bersifat mendesak yang diatur dalam PK, PP, atau PKB**, dengan hak **UPH (Ps. 40 ayat (4)) + uang pisah** sesuai PK/PP/PKB; ayat (3): PHK ini dapat dilakukan tanpa surat pemberitahuan ([hukumonline](https://www.hukumonline.com/berita/a/kritik-untuk-phk-karena-pelanggaran-bersifat-mendesak-lt65fac3b111ed4/), [teks PP 35/2021](https://learning.hukumonline.com/wp-content/uploads/2021/03/Peraturan-Pemerintah-Nomor-35-tahun-2021-Perjanjian-Kerja-Waktu-Tertentu-Alih-Daya-Waktu-Kerja-dan-Waktu-Istirahat-dan-Pemutusan-Hubungan-Kerja.pdf)). Syarat "tertangkap tangan / pengakuan / 2 saksi" berasal dari Pasal 158 ayat (2) UU 13/2003 (dibatalkan Putusan MK 012/PUU-I/2003; Pasal 158 dihapus UU Cipta Kerja/UU 6/2023) — bukan aturan berlaku.
+- **Sesi B (skill dibaca):** b1 "hanya berlaku kalau diatur jelas di PP/PK" ✔, tidak membuat surat PHK, menawarkan kronologi + panggilan + berita acara ✔; b2 menghasilkan 3 dokumen terisi data pengguna, tidak membuat SK PHK karena tidak ada PP dan isi kontrak belum dicek ✔, sisa cuti 4 hari wajib dibayar ✔. Tidak ada syarat 2 saksi. Minor: b1 "ada tahap perundingan/pemberitahuan PHK … bukan pemutusan sepihak" kurang tepat untuk pelanggaran mendesak (Ps. 52(3) memungkinkan PHK tanpa surat pemberitahuan untuk pelanggaran mendesak yang diatur di PK/PP/PKB); b2 tidak menyebut uang pisah.
+- **Varian (skill dibaca):** menyatakan syarat 2 saksi berasal dari Ps. 158 UU 13/2003, dibatalkan MK 012/PUU-I/2003 & dihapus UU 6/2023, dasar kini PP 35/2021 Ps. 52(2) ✔; UPH + uang pisah ✔; klarifikasi & berita acara sebagai praktik baik ✔. **Perbaikan 1.0.5 terbukti saat skill dipakai.**
+- **Sesi A (skill TIDAK dipakai, tools kosong di kedua giliran):** perilaku kembali seperti tanpa skill — membuat **SK PHK efektif 1 Oktober 2026** ("diputuskan seketika") + berita acara yang sudah menyimpulkan bersalah sebelum klarifikasi diisi. **Kesalahan fakta hukum:** a1 "kalau [PP/PK] tidak ada, tetap bisa pakai dasar PP 35/2021-nya saja" dan a2 "tidak punya Peraturan Perusahaan … dasar PP 35/2021 langsung (ini sah, PP bukan syarat wajib)" — **keliru**: Ps. 52(2) justru mensyaratkan pelanggaran mendesak diatur di PK/PP/PKB, sedangkan pengguna hanya punya "kontrak kerja biasa" yang isinya belum dicek. Uang pisah tidak disebut. a1 "Rp500.000 di bawah ambang pidana ringan" tidak tepat/menyesatkan untuk kasir (penggelapan dalam hubungan kerja). Syarat "2 saksi" hanya disebut sebagai saran ("usahakan … bikin posisi kuat"), tidak sebagai syarat hukum.
+- **Penyebab A (dugaan penguji):** description frontmatter memuat "**Bukan untuk surat PHK**"; pesan pengguna meminta "SP3 + surat PHK", sehingga model menilai skill tidak relevan dan tidak membukanya. Putaran 2 dan sesi B membuka skill, jadi pemicuan tidak stabil.
+
+### Status cacat lama (putaran 2)
+- **Syarat "tertangkap tangan/pengakuan/2 saksi" dikaitkan ke PP 35/2021** → tidak muncul sebagai syarat hukum di **2 dari 2** sesi (A hanya menyarankan saksi; B tidak menyebut); varian membantah dengan benar.
+- Kata "denda" untuk PHK tidak sah → tidak muncul (A & B).
+- **Namun regresi berat:** di sesi A skill tidak terpicu → SK PHK hari itu juga + dasar hukum keliru (lihat di atas). Ini cacat lama sisi SEBELUM yang muncul kembali di sisi SESUDAH.
+
+### Skor
+| Skenario | SEBELUM (putaran 2) | SESUDAH A | SESUDAH B | Alasan |
+|---|---:|---:|---:|---|
+| 2. Pencurian, minta SP3 + PHK | 3 | 3 | 8,5 | A: skill tidak dipakai; SK PHK hari ini + "PP bukan syarat" (salah), tanpa uang pisah. B: menolak PHK dengan dasar benar, 3 dokumen siap pakai terisi, sisa cuti; minus kalimat "wajib perundingan/pemberitahuan" yang kurang tepat & uang pisah tidak disebut. |
+| Varian: "harus 2 saksi?" | — | 9 | | Langsung & benar (Ps. 158 lama dibatalkan/dihapus; dasar Ps. 52(2)), UPH + uang pisah, praktik baik. |
+
+**VERDIK: BELUM** — saat skill dipakai hasilnya benar (B 8,5; varian 9) dan cacat "2 saksi" hilang, **tetapi** di 1 dari 2 sesi skill tidak terpicu sama sekali sehingga balasan SESUDAH membuat SK PHK hari itu juga dengan dasar hukum keliru ("tanpa PP tetap sah pakai PP 35/2021") — kesalahan fakta dan tidak jelas ≥ sebelum di sesi itu (rata-rata S2 = 5,75).
+
+**Saran untuk pembuat:** ubah `description` agar skill **terpicu** pada permintaan SP3/PHK/pecat untuk pelanggaran berat (pencurian, ambil uang kas, pemalsuan), mis. "… Juga dipakai saat pengguna minta SP3, pecat, atau surat PHK karena pencurian/pelanggaran berat: skill tidak membuat surat PHK, tetapi menyiapkan surat panggilan klarifikasi, kronologi, dan berita acara serta menjelaskan syarat PP 35/2021 Ps. 52(2)." Hapus frasa "Bukan untuk surat PHK" dari description (pindahkan batasan itu ke isi SKILL.md). Uji ulang S2 di ≥ 3 sesi untuk memastikan pemicuan stabil.
