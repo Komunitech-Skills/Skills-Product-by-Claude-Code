@@ -48,6 +48,11 @@ Bisa. Sebutkan saja, misalnya "host 2 orang, pakai sedikit bahasa Sunda".
 **Bagaimana kalau Python tidak ada di komputer saya?**
 Skill tetap jalan. AI agent menghitung manual dengan rumus yang sama dan memberi tahu kamu bahwa hitungannya manual.
 
+## Catatan revisi 1.0.5 (2026-10-01)
+- Langkah wajib baru: AI menulis dulu "Fakta dari pengguna" (hanya yang Anda sebut), lalu setiap klaim di naskah harus bisa ditelusuri ke daftar itu.
+- Script baru `scripts/cek_fakta.py` mencocokkan naskah dengan pesan Anda: jam live yang tidak Anda sebut, asal produk yang dikarang ("diambil dari Pekanbaru" padahal Anda hanya bilang *kirim* dari Pekanbaru), ukuran/isi, manfaat kesehatan, reputasi, dan urgensi palsu ditandai GAGAL dan wajib diperbaiki.
+- Tanpa jam mulai, rundown memakai "menit 0–3" (atau [isi: jam mulai]) — tidak lagi memakai jam 19:00 diam-diam.
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Persen diskon dan harga akhir dijaga konsisten: bila harga dibulatkan, yang diucapkan adalah persen sebenarnya atau "hemat RpX". Contoh Pashmina diperbaiki.
 - Detail produk yang tidak Anda berikan ditulis [isi: ...] atau arahan aksi, tidak dikarang.

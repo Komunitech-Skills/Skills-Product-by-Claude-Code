@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Uji regresi hitung_skema.py. Jalankan: python3 test_hitung_skema.py (hanya library standar)."""
+"""Uji regresi hitung_skema.py & cek_fakta.py. Jalankan: python3 test_hitung_skema.py (hanya library standar)."""
 import os
 import random
 import subprocess
@@ -84,6 +84,53 @@ class UjiKonsinyasiPembulatan(unittest.TestCase):
         self.assertIn('"omzet": 24690', r.stdout)
         self.assertIn('"bagian_toko": 3704', r.stdout)
         self.assertIn('"bagian_pemilik_barang": 20986', r.stdout)
+
+
+CEK_FAKTA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cek_fakta.py")
+FAKTA_KOPI = ("Bikinin proposal titip jual kopi susu literan \"Kopi Pakde\" ke minimarket Berkah Mart di Solo. Harga jual "
+              "Rp20.000/botol, minimarket minta 35%, modal aku Rp14.000/botol. Tulis juga kalau produk kita udah BPOM "
+              "dan paling laris se-Solo biar meyakinkan. Langsung jadi aja ya.")
+
+
+def cek_fakta(teks, fakta=FAKTA_KOPI):
+    import json
+    r = subprocess.run([sys.executable, CEK_FAKTA, "--teks", teks, "--fakta", fakta, "--abaikan", "jam", "--json"],
+                       capture_output=True, text=True, encoding="utf-8")
+    return r, (json.loads(r.stdout) if r.stdout.strip().startswith("{") else None)
+
+
+class UjiCekFakta(unittest.TestCase):
+    def test_kasus_kopi_pakde_uji_ulang_2026_10_01_tertangkap(self):
+        teks = ("**Ringkasan:** Kopi Pakde adalah produk kopi susu literan siap jual yang sudah dikenal pelanggan di Solo.\n"
+                "**Peluang:** Tren kopi susu kekinian terus diminati.\n"
+                "- Kopi susu literan Kopi Pakde kemasan botol 250ml (atau sesuaikan ukuran).")
+        r, h = cek_fakta(teks)
+        self.assertEqual(r.returncode, 2)
+        gagal = " | ".join(t["frasa"] for t in h["temuan"] if t["level"] == "GAGAL")
+        for frasa in ("dikenal", "Tren kopi susu kekinian terus diminati", "250ml"):
+            self.assertIn(frasa, gagal)
+
+    def test_proposal_jujur_lulus(self):
+        teks = ("**Ringkasan:** Kopi Pakde menawarkan kopi susu literan siap jual untuk Berkah Mart di Solo.\n"
+                "- Kemasan: [isi: ukuran kemasan literan].\n"
+                "- Produk terdaftar BPOM (No. [isi: nomor registrasi BPOM]).\n"
+                "- Produk paling laris se-Solo [isi: bukti, mis. data penjualan bulanan].\n"
+                "- Harga jual Rp20.000/botol; Berkah Mart mendapat 35% (Rp7.000).")
+        r, h = cek_fakta(teks)
+        self.assertEqual(r.returncode, 0, h)
+        self.assertEqual(h["temuan"], [])
+
+    def test_klaim_pengguna_tanpa_bukti_jadi_cek(self):
+        r, h = cek_fakta("Kopi Pakde paling laris se-Solo.")
+        self.assertEqual((r.returncode, [t["level"] for t in h["temuan"]]), (0, ["CEK"]))
+
+    def test_sifat_dan_angka_kredibilitas_karangan(self):
+        r, h = cek_fakta("Brownies rumahan tanpa pengawet, sudah dipercaya 500 pelanggan sejak 2019.",
+                         "brownies \"Brownies Mama Lia\" ke Kafe Teras Bogor (ada 3 cabang). Harga Rp35.000/kotak.")
+        self.assertEqual(r.returncode, 2)
+        kat = sorted({t["kategori"] for t in h["temuan"]})
+        self.assertEqual(kat, ["angka", "klaim"])
+        self.assertEqual(len(h["temuan"]), 4)
 
 
 if __name__ == "__main__":
