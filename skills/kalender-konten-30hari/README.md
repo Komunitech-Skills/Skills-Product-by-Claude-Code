@@ -47,3 +47,7 @@ Bisa. Sebutkan kemampuanmu, nanti jadwalnya disesuaikan.
 
 **File CSV-nya berantakan di Excel?**
 Minta "CSV pakai titik koma" untuk Excel berbahasa Indonesia, atau "pakai koma" untuk Google Sheets.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Tanggal hari besar (Ramadan, Lebaran, Imlek) diambil dari tabel perkiraan di skill, mis. awal Ramadan 2027 sekitar 8 Februari 2027 (perkiraan, menunggu sidang isbat), dan tidak pernah diklaim "sudah dicek".
+- Urgensi palsu ("stok terbatas", "hari terakhir") dilarang kecuali faktanya Anda berikan.

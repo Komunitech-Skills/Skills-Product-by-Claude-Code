@@ -48,3 +48,8 @@ Belum. Proposal adalah ajakan. Setelah sepakat, buat perjanjian tertulis (bisa d
 
 **Bisa dalam bahasa Inggris?**
 Bisa. Minta saja "buat versi bahasa Inggris" setelah proposal jadi.
+
+## Catatan revisi 1.0.5 (2026-10-01)
+- Tidak menambah klaim pemasaran yang tidak Anda berikan (termasuk klaim turunan seperti "dikenal luas").
+- Saran porsi bagi hasil/komisi kini dicek dengan hitungan untung-rugi dan titik impas ditampilkan (porsi di titik impas = laba Rp0, tidak disarankan).
+- Komitmen default (display, stok awal, isi ulang) dicatat di Asumsi.

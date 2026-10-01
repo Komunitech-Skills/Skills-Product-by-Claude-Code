@@ -47,7 +47,7 @@ pakai default dan sebutkan asumsinya di akhir.
    python3 <folder-skill-ini>/scripts/hitung_promo.py --nama "Hijab Voal" --harga-normal "Rp 89.000" \
      --harga-live "Rp 69.000" --bundling "3=Rp 189.000"
    ```
-   Atau `--diskon-persen 10 --bulatkan 1000` bila promo berupa persen. Produk tanpa promo tidak perlu
+   Atau `--diskon-persen 10 --bulatkan 1000` bila promo berupa persen. Bila pengguna menyebut persen, jalankan script dulu dengan `--bulatkan 1` (tanpa pembulatan); pembulatan hanya bila pengguna ingin harga "cantik". **Persen dan harga akhir harus konsisten:** jika harga dibulatkan, host DILARANG mengucapkan persen asli yang disebut pengguna (mis. "diskon 15%, jadi Rp39.000" padahal potongan sebenarnya 13%); ucapkan persen sebenarnya dari script (`persen_hemat_boleh_diucapkan`) atau cukup "hemat RpX". Tanpa Python: rumus pada langkah 6. Produk tanpa promo tidak perlu
    script: sebut harga normalnya saja. Pakai `kalimat_live` dan
    `persen_hemat_boleh_diucapkan` dari output. Script menolak harga live ≥ harga normal dan memberi
    peringatan untuk diskon ≥ 50% dan bundling yang per pcs-nya tidak lebih murah dari harga live
@@ -63,6 +63,8 @@ pakai default dan sebutkan asumsinya di akhir.
    perbandingan varian, jawab komentar).
 4. **Tulis naskah per segmen** mengikuti rundown: kalimat siap ucap (bukan poin), dengan arahan aksi
    dalam kurung siku, mis. `[angkat produk ke kamera]`, `[pin produk no. 1]`, `[baca komentar]`.
+   - **Detail demo yang tidak diberikan pengguna** (tekstur, rasa/level pedas, bahan, "favorit pelanggan", asal/proses, jumlah terbatas) jangan ditulis sebagai klaim; tulis arahan aksi `[tunjukkan tekstur]` atau `[isi: bahan/keunggulan produk]`.
+   - Jika jam mulai tidak diberikan, rundown memakai menit relatif (00:00–00:03) dan hal itu disebut di Asumsi.
    - Hook: pertanyaan/masalah pembeli dalam 1–2 kalimat. Demo: tunjukkan bukti (tekstur, ukuran, dipakai).
    - Harga: sebut harga normal → harga live → hemat (dari script). CTA: langkah checkout yang konkret
      ("klik keranjang kuning, pilih nomor 1, pilih warna, checkout").
@@ -115,7 +117,7 @@ Produk: Hijab Voal normal 89 ribu, live 69 ribu, paket 3 jadi 189 ribu. Pashmina
 | Produk | Normal | Harga live | Hemat | Bundling |
 |---|---|---|---|---|
 | Hijab Voal | Rp 89.000 | Rp 69.000 | Rp 20.000 (22%) | Isi 3 Rp 189.000 → Rp 63.000/pcs |
-| Pashmina Kaos | Rp 65.000 | Rp 59.000 (10%, dibulatkan ke atas ke Rp 1.000) | Rp 6.000 (9%) | – |
+| Pashmina Kaos | Rp 65.000 | Rp 59.000 (10% dibulatkan ke atas ke Rp 1.000; persen sebenarnya 9%) | Rp 6.000 (9%) | – |
 | Inner Ninja | Rp 25.000 | – | – | – |
 
 **[19:00–19:03] Pembukaan**
@@ -136,6 +138,8 @@ Catatan asumsi: host `[nama host]`; stok & voucher tidak disebut karena tidak di
 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua angka harga/potongan/persen/per pcs berasal dari script (atau hitung manual tertulis)
+- [ ] Persen yang diucapkan cocok dengan harga akhir (setelah pembulatan, pakai persen sebenarnya atau "hemat RpX")
+- [ ] Detail demo/produk yang tidak diberikan pengguna jadi `[isi: ...]` atau arahan aksi
 - [ ] Tidak ada kelangkaan palsu: stok/kuota hanya `[stok nyata]` atau angka dari pengguna
 - [ ] Harga normal adalah harga jual yang benar-benar berlaku sebelumnya (tanya bila ragu), bukan harga yang dinaikkan untuk dicoret
 - [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, original, terlaris, klaim kesehatan)

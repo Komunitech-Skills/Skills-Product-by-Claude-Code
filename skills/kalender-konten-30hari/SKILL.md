@@ -43,7 +43,7 @@ pakai default dan sebutkan asumsinya di akhir.
 > **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Baca `references/momen-dan-pilar.md`**: pilih 4–5 pilar sesuai jenis usaha (promo maks. ±30%),
    kenali momen di periode itu. Ramadan/Lebaran/Imlek dll. **tidak ditebak**: minta tanggalnya, atau
-   tulis "(perkiraan — cek SKB 3 Menteri)".
+   tulis "(perkiraan, menunggu sidang isbat / cek SKB 3 Menteri)" memakai tabel di references (mis. awal Ramadan 2027 ±8 Feb 2027). Jangan pernah menulis bahwa tanggal "sudah dicek" kecuali pengguna memberi sumbernya; periksa konsistensi Ramadan–Idulfitri (29/30 hari).
 2. **Buat kerangka tanggal** dengan script (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
    python3 <folder-skill-ini>/scripts/buat_kalender.py --mulai 2026-10-01 --hari 31 \
@@ -58,6 +58,7 @@ pakai default dan sebutkan asumsinya di akhir.
 3. **Isi kolom Ide Konten, Hook / Judul, CTA** untuk setiap baris: spesifik untuk produk pengguna
    (bukan "posting produk"), sesuai pilar & momen, dan realistis untuk UMKM (bisa dibuat dengan HP).
    Hook ≤ 10 kata. CTA sesuai cara order pengguna. Boleh ubah pilar satu hari bila momen menuntut.
+   **Dilarang** urgensi/kelangkaan palsu di hook, ide, dan CTA ("stok terbatas", "hari terakhir", "buruan sebelum kehabisan", "harga belum naik") dan testimoni/angka karangan, kecuali fakta itu diberikan pengguna. Syarat layanan yang tidak diberikan ("tanpa minimal", "gratis jemput") ditulis `[isi: ...]`.
    Jika kemampuan produksi terbatas (mis. 3 video/minggu), tandai hari sisanya "WA Status/Story saja"
    di kolom Format — jangan membuat rencana yang tidak sanggup dijalankan.
 4. **Ekspor**: simpan hasil isian sebagai JSON (bentuk sama dengan output `--format json`), lalu:
@@ -113,7 +114,8 @@ ulang tahun kedai ke-3, ada promo beli 2 gratis 1."
 - [ ] Jumlah baris = jumlah hari; tanggal & nama hari dari script (atau dicek manual)
 - [ ] Tiap baris punya ide spesifik, hook, dan CTA; tidak ada "dst."
 - [ ] Porsi promo ±20–30% (script memberi peringatan bila > 40%); hari peringatan tanpa hard-selling
-- [ ] Momen bertanggal tidak tetap diberi label "(perkiraan — cek SKB 3 Menteri)" atau dari pengguna
+- [ ] Momen bertanggal tidak tetap diberi label "(perkiraan, menunggu sidang isbat / cek SKB 3 Menteri)" atau dari pengguna; tidak ada klaim "sudah dicek" tanpa sumber
+- [ ] Tidak ada urgensi/kelangkaan palsu di CTA ("stok terbatas", "hari terakhir") kecuali dari pengguna
 - [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, terlaris) dan promo yang tidak disebut pengguna ditandai `[isi: ...]`
 - [ ] Konten yang memakai foto/ulasan pelanggan diberi catatan "dengan izin"
 - [ ] Opsi CSV ditawarkan, dengan pemisah sesuai aplikasi pengguna

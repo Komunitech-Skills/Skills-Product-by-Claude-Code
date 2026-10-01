@@ -43,7 +43,9 @@ Membuat admin toko bisa membalas chat pelanggan dengan cepat, ramah, konsisten, 
 3. **Komplain** → pakai alur **E-S-T** (detail & contoh per kasus di `references/alur-komplain.md`):
    - **Empati**: akui perasaan & minta maaf atas ketidaknyamanan (tanpa menyalahkan pelanggan/kurir secara berlebihan).
    - **Solusi**: minta data minimum yang dibutuhkan (nomor pesanan, foto/video unboxing), jelaskan pilihan solusi yang **diizinkan pengguna** dan batas waktunya.
-   - **Tindak lanjut**: kapan admin akan mengabari lagi (dalam jam operasional toko), lalu tepati. Tawarkan ringkasan tindakan untuk pengguna (apa yang harus dicek di gudang/ekspedisi).
+   - **Setiap permintaan pembeli wajib ditanggapi** (mis. "mau balikin/refund"): akui permintaannya; jika berbeda dari solusi yang diizinkan pengguna, jangan diabaikan dan jangan memaksakan solusi lain. Tulis jujur apa yang bisa/tidak bisa, dan tandai di catatan admin "pelanggan minta refund — konfirmasi pemilik".
+   - **Janji & kompensasi hanya dari kebijakan toko yang diberikan pengguna** (ongkir retur, ongkir kirim ulang, refund, voucher, kirim duluan). Bagian yang tidak disebut ditulis `[isi: kebijakan ongkir kirim ulang]` atau ditanyakan; jangan mengasumsikan siapa yang menanggung ongkos. Kebijakan sebagian (mis. "ongkir tukar ditanggung pembeli") hanya ditulis sebatas itu.
+   - **Tindak lanjut**: kapan admin akan mengabari lagi (dalam jam operasional toko), lalu tepati. Selalu sertakan waktu jelas (mis. "hari ini sebelum pukul 17.00" atau `[isi: batas waktu balasan]`), tidak cukup "segera". Tawarkan ringkasan tindakan untuk pengguna (apa yang harus dicek di gudang/ekspedisi).
 4. **Sesuaikan nada brand** (lihat tabel di `references/nada-brand.md`) dan saluran:
    - WA: boleh 1–2 emoji, paragraf pendek, bisa lebih personal.
    - Marketplace: lebih ringkas; arahkan proses (retur/komplain/pengembalian dana) lewat fitur resmi platform; **jangan** mengajak transaksi atau pindah chat ke luar platform (umumnya dilarang aturan marketplace — cek Seller Center).
@@ -101,6 +103,9 @@ Supaya keburu untuk Sabtu, dusty pink pengganti bisa kami kirim lebih dulu hari 
 - [ ] Tidak meminta pelanggan mengulang info yang sudah ia berikan di chat (nomor pesanan, alamat, foto).
 - [ ] Komplain memakai urutan empati → solusi → tindak lanjut dengan waktu yang jelas.
 - [ ] Tidak ada fakta karangan: stok, harga, ongkir, estimasi tiba, kebijakan retur, biaya admin → dari pengguna atau `[isi ...]`.
+- [ ] Setiap permintaan pembeli (refund, tukar, dll.) ditanggapi, bukan dilewati.
+- [ ] Janji/kompensasi ongkir hanya yang tertulis di kebijakan pengguna; sisanya `[isi: kebijakan ...]`.
+- [ ] Ada waktu tindak lanjut yang jelas.
 - [ ] Tidak menjanjikan solusi yang belum diizinkan pengguna (refund, voucher, kirim ulang) — tandai "usulan" di catatan admin.
 - [ ] Tidak menyalahkan pelanggan, tidak defensif, tidak menyindir.
 - [ ] Hanya meminta data yang perlu (nomor pesanan, foto/video); tidak meminta KTP, PIN, OTP, atau password.

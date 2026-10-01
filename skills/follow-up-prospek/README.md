@@ -47,3 +47,9 @@ Hentikan urutannya dan tanggapi balasannya. Skill ini juga menyediakan contoh ja
 
 **Apakah saya harus kasih diskon supaya prospek mau?**
 Tidak. Pesan dibuat dengan nilai tambah lain seperti info, contoh hasil, atau uji coba. Diskon hanya dimasukkan jika kamu memintanya.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Waktu relatif ("3 hari lalu") kini dihitung dari tanggal, tidak lagi menulis "kemarin" sembarangan.
+- Tawaran baru (mis. paket lebih kecil) diberi label "usulan — konfirmasi dulu".
+- Prospek yang minta tidak dihubungi: follow-up dihentikan, ditandai jangan dihubungi, tanpa jadwal ulang; diberi satu pesan penutup.
+- Kata pemicu di deskripsi diperjelas.

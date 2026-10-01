@@ -30,8 +30,11 @@ Perkiraan untuk perencanaan awal (**BELUM TERVERIFIKASI**, bisa bergeser ±1 har
 | Momen | Perkiraan |
 |---|---|
 | Imlek 2027 | ±6 Feb 2027 |
-| Awal Ramadan 1448 H | ±8 Feb 2027 |
-| Idulfitri 1448 H | ±10 Mar 2027 |
+| Awal Ramadan 1448 H | ±8 Feb 2027 (perkiraan, menunggu sidang isbat) |
+| Idulfitri 1448 H | ±10 Mar 2027 (perkiraan, menunggu sidang isbat) |
+| Awal Ramadan 1449 H | ±28 Jan 2028 (perkiraan kasar, ±1–2 hari) |
+
+Aturan pakai tabel ini: (1) tanggal hari besar berubah tahunan hanya boleh diambil dari tabel ini atau dari pengguna, selalu dengan label "perkiraan, menunggu sidang isbat / cek SKB 3 Menteri"; (2) **dilarang** menulis "sudah dicek sumber resmi" kecuali pengguna memberi sumbernya; (3) cek konsistensi: Idulfitri − awal Ramadan = 29/30 hari + 1 (Ramadan berlangsung 29–30 hari); (4) tahun di luar tabel: minta tanggal dari pengguna atau tulis `[isi: tanggal Ramadan tahun ini]`, jangan menggeser tanggal tahun lain dengan menebak.
 
 ## 4. Fase konten Ramadan–Lebaran (pakai bila rentang kalender menyentuh Ramadan)
 | Fase | Waktu | Fokus konten |

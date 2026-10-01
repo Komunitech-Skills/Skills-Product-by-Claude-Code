@@ -1,6 +1,6 @@
 ---
 name: follow-up-prospek
-description: Menyusun urutan pesan follow-up WhatsApp dan email untuk calon pembeli/klien yang belum membalas atau belum deal (H+1, H+3, H+7, H+14), sopan dan tidak memaksa, disesuaikan tahapnya (setelah kirim penawaran, setelah demo/meeting, setelah dijawab "nanti dulu", setelah tanya harga lalu hilang), lengkap dengan jadwal tanggal kirim dari script. Gunakan saat pengguna bilang prospek ghosting, klien belum balas, follow up penawaran, sales follow-up sequence, atau chasing a lead. Bukan untuk menagih pembayaran (pakai tagih-piutang) atau broadcast promo massal (pakai broadcast-wa).
+description: Menyusun urutan pesan follow-up WhatsApp dan email untuk calon pembeli/klien yang belum membalas atau belum deal (H+1, H+3, H+7, H+14), sopan dan tidak memaksa, disesuaikan tahapnya (setelah kirim penawaran, setelah demo/meeting, setelah dijawab "nanti dulu", setelah tanya harga lalu hilang), lengkap dengan jadwal tanggal kirim dari script. Gunakan saat pengguna bilang prospek ghosting, klien belum balas, penawaran belum dibalas, bikinin follow up, minta urutan follow up WA, prospek menolak atau minta tidak dihubungi (hasilnya: berhenti + pesan penutup), sales follow-up sequence, atau chasing a lead. Bukan untuk menagih pembayaran (pakai tagih-piutang) atau broadcast promo massal (pakai broadcast-wa).
 ---
 
 # Follow-up Prospek
@@ -21,7 +21,7 @@ Membantu penjual menindaklanjuti prospek yang diam tanpa terkesan mengejar-ngeja
 - Kirim promo ke banyak kontak sekaligus → `broadcast-wa`.
 - Jika skill rujukan di atas tidak terpasang, jelaskan singkat bedanya dan beri satu draf pesan netral saja (bukan urutan follow-up).
 - Membalas pertanyaan/komplain pelanggan yang masuk → `balas-chat-cs`.
-- Prospek sudah jelas menolak atau minta tidak dihubungi → jangan buat urutan; buat satu pesan penutup yang sopan saja (atau tidak mengirim apa pun).
+- Prospek sudah jelas menolak atau minta tidak dihubungi → HENTIKAN follow-up: jangan buat urutan, jangan menjadwalkan ulang, jangan menyarankan kontak ulang "2–3 bulan lagi" (kontak hanya bila prospek sendiri menghubungi lagi). Tandai "JANGAN DIHUBUNGI" di catatan prospek dan langsung beri satu draf pesan penutup siap kirim (terima kasih, tidak akan mengganggu lagi) atau sarankan tidak mengirim apa pun. Tolak juga permintaan urgensi palsu.
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
@@ -61,6 +61,8 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 3. **Tulis pesan** untuk tiap jadwal, per saluran:
    - **WA:** 2–5 kalimat, satu tujuan, satu pertanyaan penutup yang gampang dijawab. Maks. 1 emoji. Tanpa huruf kapital berteriak.
    - **Email (B2B):** subjek pendek & spesifik (balas di thread yang sama untuk ke-1 s.d. ke-3), 50–120 kata, tanda tangan lengkap.
+   - **Waktu relatif:** jangan menulis "kemarin"/"minggu lalu" dari asumsi. Hitung selisih antara tanggal kirim penawaran (H+0) dan tanggal kirim pesan (mis. 29 Sep → 2 Okt = "3 hari lalu"), atau tulis netral ("penawaran yang saya kirim sebelumnya"). Setelah jadwal ulang (`SUDAH LEWAT`), hitung dari tanggal kirim yang baru.
+   - **Tawaran baru** (paket lebih kecil, uji coba, diskon, bonus) yang tidak diberikan pengguna wajib diberi label tepat di bawah pesannya: `[usulan — konfirmasi dulu]`.
    - Variasikan pembuka; jangan mengulang "Mau follow up ya" di setiap pesan.
 4. **Sertakan aturan main** untuk pengguna: jam kirim yang disarankan, kapan berhenti, cara menanggapi balasan umum (lihat format output).
 5. **Periksa** dengan checklist; tawarkan versi lebih santai/formal atau bahasa Inggris.
@@ -89,7 +91,7 @@ Subjek: ...
 - B2B: kirim pukul 09.00–11.00 atau 13.00–15.00 hari kerja; hindari jam salat Jumat & larut malam.
 - B2C/online shop: 19.00–20.30 sering lebih efektif; jangan lewat pukul 21.00.
 - Jika prospek membalas di tengah urutan → hentikan urutan, tanggapi balasannya.
-- Jika dijawab "tidak" / "jangan dihubungi" → kirim ucapan terima kasih singkat, hapus dari daftar follow-up.
+- Jika dijawab "tidak" / "jangan dihubungi" → kirim ucapan terima kasih singkat (opsional), tandai JANGAN DIHUBUNGI, hapus dari daftar follow-up, jangan jadwalkan ulang.
 - Balasan umum & cara menjawab: "mahal" → ..., "tanya atasan dulu" → ..., "nanti" → ...
 
 ### Asumsi (jika ada)
@@ -101,13 +103,14 @@ Subjek: ...
 **Output (ringkas):** jadwal Kamis 24 Sep, Senin 28 Sep (H+3 digeser dari Sabtu), Jumat 2 Okt dan Jumat 9 Okt 2026 (digeser agar jarak antar-pesan tetap 4 dan 7 hari).
 ```
 Pesan ke-1 · Kamis, 24 September 2026 · WA
-Selamat pagi, Pak Made 🙏 Saya Wayan dari Bersih Kilat Laundry. Mau memastikan penawaran laundry seragam yang kami kirim kemarin sudah Bapak terima. Jika ada bagian yang perlu dijelaskan, misalnya jadwal jemput-antar atau penanganan noda, saya siap bantu.
+Selamat pagi, Pak Made 🙏 Saya Wayan dari Bersih Kilat Laundry. Mau memastikan penawaran laundry seragam yang kami kirim tanggal 23 September sudah Bapak terima. Jika ada bagian yang perlu dijelaskan, misalnya jadwal jemput-antar atau penanganan noda, saya siap bantu.
 
 Pesan ke-2 · Senin, 28 September 2026 · WA
 Selamat siang, Pak Made. Sebagai gambaran, pelanggan hotel kami biasanya memakai jadwal jemput pagi dan antar sore di hari yang sama, sehingga stok seragam tidak menumpuk. Apakah pola seperti itu cocok untuk kebutuhan Taman Sari?
 
 Pesan ke-3 · Jumat, 2 Oktober 2026 · WA
 Pak Made, supaya lebih mudah menilai, kami bisa mulai dengan uji coba 1 minggu untuk seragam housekeeping saja, tanpa kontrak. Kalau Bapak berkenan, cukup balas "coba" dan saya atur jadwal jemput pertamanya.
+[usulan — konfirmasi dulu: uji coba 1 minggu]
 
 Pesan ke-4 · Jumat, 9 Oktober 2026 · WA
 Selamat pagi, Pak Made. Sepertinya laundry seragam belum jadi prioritas saat ini, dan itu sama sekali tidak apa-apa. Saya tidak akan mengirim pengingat lagi. Jika suatu saat butuh cadangan laundry, nomor ini tetap aktif. Terima kasih atas waktunya, Pak 🙏
@@ -115,6 +118,8 @@ Selamat pagi, Pak Made. Sepertinya laundry seragam belum jadi prioritas saat ini
 Asumsi: nama pengirim "Wayan", uji coba 1 minggu diperbolehkan (konfirmasi ke pengguna sebelum dikirim).
 
 ## Checklist sebelum mengirim hasil
+- [ ] Frasa waktu relatif ("3 hari lalu") dihitung dari tanggal, bukan "kemarin" asumsi.
+- [ ] Prospek yang minta berhenti tidak masuk jadwal sama sekali.
 - [ ] Tanggal dari output script (atau hitung manual tertulis).
 - [ ] Tiap pesan punya tujuan berbeda dan satu ajakan yang mudah dijawab.
 - [ ] Tidak ada nada menyalahkan, urgensi palsu, atau klaim yang tidak diberikan pengguna.

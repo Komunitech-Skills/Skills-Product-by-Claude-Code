@@ -54,6 +54,7 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - Pisahkan skenario dengan `;` (maks. 5), mis. `"50;100;200"`. Label otomatis: Pesimis/Realistis/Optimis. Input ambigu seperti `30,60` ditolak script dengan pesan `ambigu` — tulis ulang dengan `;`.
    - Ada `test_hitung_skema.py` di folder `scripts/` untuk uji regresi (opsional, `python3 scripts/test_hitung_skema.py`).
    - Tabel "Bagian toko/mitra" masuk ke proposal; kolom modal/laba produsen **hanya untuk pengguna**, jangan dimasukkan ke proposal kecuali pengguna minta.
+   - **Saran porsi bagi hasil/komisi/diskon wajib dicek dengan hitungan untung/rugi eksplisit** sebelum disarankan atau dituliskan, dan tampilkan titik impasnya ke pengguna: porsi maksimal mitra/toko agar pemilik tidak rugi = (harga jual − modal) ÷ harga jual (mis. Rp20.000, modal Rp14.000 → 30% = impas, laba Rp0). Jangan menyarankan porsi yang sama dengan atau di atas titik impas; jalankan script dengan porsi yang disarankan dan pastikan laba per unit > 0 (tabel laba hanya untuk pengguna). Untuk bagi hasil laba/reseller, hitung juga margin pemilik/reseller per unit pada porsi tersebut.
    - Jika script menampilkan `PERINGATAN` (skema rugi), sampaikan ke pengguna sebelum menulis proposal.
    - Sponsorship: nilai paket biasanya angka tetap; tidak perlu script kecuali ada potongan/perhitungan. Jika menjumlahkan beberapa paket, jumlahkan manual dan tulis rinciannya.
 4. **Tulis proposal** dengan format di bawah. Versi singkat ≤ ±350 kata; versi lengkap boleh 2–5 halaman.
@@ -133,7 +134,9 @@ Asumsi yang disebut di akhir: stok awal 30 bungkus/cabang, isi ulang mingguan, d
 ## Checklist sebelum mengirim hasil
 - [ ] Setiap bagian menjawab "apa untungnya untuk mitra", bukan hanya memuji produk sendiri.
 - [ ] Angka dari output script (atau hitung manual tertulis + peringatan); tidak ada angka yang dikarang.
-- [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, SNI, "terlaris", jumlah pelanggan, follower).
+- [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, SNI, "terlaris", jumlah pelanggan, follower), termasuk klaim turunan ("dikenal luas di ...", "tren terus diminati"). Bila pengguna meminta klaim yang belum terbukti, tulis versi lunak + `[isi: bukti]`.
+- [ ] Porsi/komisi yang disarankan sudah dicek untung-rugi dan titik impasnya disebut ke pengguna.
+- [ ] Komitmen operasional default (display, stok awal, isi ulang) tercantum di Asumsi.
 - [ ] Skema jelas: alur barang & uang, jadwal bayar, retur/klaim, siapa menanggung apa.
 - [ ] Ada langkah berikutnya yang konkret (uji coba, jadwal meeting) dan kontak.
 - [ ] Data internal (modal, laba) tidak bocor ke proposal kecuali diminta.

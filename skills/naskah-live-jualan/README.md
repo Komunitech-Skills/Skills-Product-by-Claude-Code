@@ -47,3 +47,8 @@ Bisa. Sebutkan saja, misalnya "host 2 orang, pakai sedikit bahasa Sunda".
 
 **Bagaimana kalau Python tidak ada di komputer saya?**
 Skill tetap jalan. AI agent menghitung manual dengan rumus yang sama dan memberi tahu kamu bahwa hitungannya manual.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Persen diskon dan harga akhir dijaga konsisten: bila harga dibulatkan, yang diucapkan adalah persen sebenarnya atau "hemat RpX". Contoh Pashmina diperbaiki.
+- Detail produk yang tidak Anda berikan ditulis [isi: ...] atau arahan aksi, tidak dikarang.
+- Jam mulai yang tidak diberikan memakai menit relatif dan dicatat di Asumsi.
