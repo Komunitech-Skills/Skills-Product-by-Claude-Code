@@ -46,7 +46,7 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-VERSI = "1.1.5"
+VERSI = "1.1.6"
 D0 = Decimal(0)
 D100 = Decimal(100)
 
@@ -1623,9 +1623,11 @@ def cmd_baca_teks(a):
             tolak("menyebut orang/KPI tetapi tidak ada angka hasil yang terbaca")
         elif not relevan:
             diabaikan.append(kutip)
+    file_draf = None
     if a.keluar:
         tulis_csv(a.keluar, ["periode", "divisi", "orang", "kpi", "realisasi", "catatan", "status_draf", "cek"], draf)
-    data = {"ok": True, "draf": ke_json(draf), "tidak_terbaca": gagal, "diabaikan": diabaikan, "file": a.keluar}
+        file_draf = str(Path(a.keluar).expanduser().resolve())
+    data = {"ok": True, "draf": ke_json(draf), "tidak_terbaca": gagal, "diabaikan": diabaikan, "file": file_draf}
     satuan = {(norm(b["orang"]), norm(b["kpi"])): b["satuan"] for b in rp}
     L = ["DRAF realisasi dari teks — WAJIB dicek sebelum dipakai:"]
     for d in draf:
@@ -1637,6 +1639,8 @@ def cmd_baca_teks(a):
             L.append("- \"%s\" → %s" % (g["kutipan"][:80], g["alasan"]))
     if diabaikan:
         L.append("%d baris obrolan tanpa nama/KPI/angka diabaikan." % len(diabaikan))
+    if file_draf:
+        L.append("File draf disimpan di: %s (sebutkan lokasi ini ke pengguna)" % file_draf)
     cetak(a, data, "\n".join(L))
     return 0
 
@@ -1806,12 +1810,14 @@ def cmd_rekap_log(a):
         hasil.append({"periode": per, "divisi": div, "orang": orang, "kpi": kpi, "realisasi": s_dec(bulat(v, 2), 2),
                       "catatan": "dari log: %d catatan (%s)" % (n, g["cara"])})
     kolom = ["periode", "divisi", "orang", "kpi", "realisasi", "catatan"]
+    file_rekap = None
     if a.keluar:
         tulis_csv(a.keluar, kolom, hasil)
-    L = ["Rekap log → realisasi%s:" % (" (disimpan ke %s)" % a.keluar if a.keluar else "")]
+        file_rekap = str(Path(a.keluar).expanduser().resolve())
+    L = ["Rekap log → realisasi%s:" % (" (disimpan ke %s)" % file_rekap if file_rekap else "")]
     for h in hasil:
         L.append("- %s | %s | %s = %s (%s)" % (h["periode"], h["orang"] or h["divisi"], h["kpi"], h["realisasi"], h["catatan"]))
-    cetak(a, {"ok": True, "realisasi": hasil, "file": a.keluar}, "\n".join(L))
+    cetak(a, {"ok": True, "realisasi": hasil, "file": file_rekap}, "\n".join(L))
     return 0
 
 

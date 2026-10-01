@@ -58,6 +58,10 @@ Tidak. Agent yang menjalankan script; bila tidak bisa, hitungan manual dengan ru
 Kredit sumber terbuka dan lisensi: lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
 
 ## Riwayat versi
+### Catatan revisi 1.0.4 (2026-10-01)
+- Penjelasan "3 konsonan berturut" kini menyebut huruf dan katanya dengan tepat (mis. 'ncl' di 'Kinclong'), sehingga alasan di jawaban tidak lagi keliru menunjuk huruf. Nilai skor tidak berubah.
+- Tes regresi bertambah 2.
+
 ### Catatan revisi 1.0.3 (2026-10-01)
 - Cek nama kini membandingkan **bunyi**, bukan hanya ejaan: nama yang terdengar sama dengan pesaing yang Anda sebut (mis. "Kicks Klin" vs "Kick Clean") langsung ditandai.
 - Nama yang terbaca seperti kata Inggris berkonotasi buruk (mis. "Sneakuy" ~ "sneaky" = licik) ditandai dan tidak direkomendasikan.

@@ -60,7 +60,9 @@ Semua perintah: `python3 scripts/skor_kpi.py <perintah>` dari folder skill ini (
 ### 2. Buat rencana KPI (G1)
 **Lokasi file:** semua file KPI (tim, rencana, realisasi, `kpi.db`) disimpan di **folder kerja agent yang
 disepakati pengguna** (mis. folder kerja OpenClaw `~/.openclaw/workspace/KPI/` atau folder yang ia sebut).
-Sebutkan path lengkapnya sebelum menulis; jangan membuat folder baru sendiri di HOME (mis. `~/workspace/<nama>`)
+**Setiap balasan yang membuat/mengubah file wajib memuat baris `File kerja: <path lengkap>`** (termasuk
+balasan konfirmasi draf `baca-teks` yang berhenti sebelum skor; salin path dari baris "File draf disimpan di"
+di output script). Sebutkan path lengkapnya sebelum menulis; jangan membuat folder baru sendiri di HOME (mis. `~/workspace/<nama>`)
 atau di `/tmp`. Pakai folder yang sama setiap bulan agar rencana & realisasi mudah ditemukan.
 1. Tulis daftar tim ke CSV (`nama,divisi,peran`, contoh `templates/tim-contoh.csv`).
 2. `skor_kpi.py template --tim tim.csv --periode 2026-10 --keluar KPI/` → `rencana-kpi.csv`,
