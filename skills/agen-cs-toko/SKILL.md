@@ -65,9 +65,13 @@ Eskalasikan (jangan coba selesaikan sendiri) bila chat mengandung salah satu:
 - Pertanyaan medis (gejala, dosis, diagnosis) atau hukum di luar kebijakan toko → `references/klinik-dan-data-kesehatan.md`.
 - Pertanyaan yang jawabannya **tidak ada** di `PENGETAHUAN.md` dan bukan sekadar salam/basa-basi.
 
+Draf pesan penahan **dilarang menyatakan toko menyimpan data pembayaran/rekening/KTP pelanggan** (mis. "data rekening kami simpan"). Jika pelanggan mengirim data itu tanpa diminta: sarankan jangan mengirim foto/nomor KTP atau rekening di chat, dan rekening diminta lagi lewat kanal resmi saat klaim disetujui pemilik.
+
 Saat eskalasi: kirim **ringkasan 3 baris** ke pemilik (siapa, inti masalah, yang diminta) + draf **pesan penahan** yang sopan untuk pelanggan (mis. "Terima kasih infonya, Kak, tim kami cek dulu ya, mohon tunggu sebentar").
 
 ### 4. Jam kerja
+Jam kerja default (Senin–Sabtu 09.00–17.00 WIB) hanyalah **asumsi** bila pengguna belum menyebutnya: tulis di draf/ringkasan "jam kerja saya asumsikan 09.00–17.00, sesuaikan" agar pemilik mengoreksi sebelum janji waktu dikirim.
+
 Di luar jam kerja (dari `ATURAN.md`), FAQ tetap boleh dijawab (info tidak berubah di luar jam), tapi **janji tindak lanjut manusia** (retur, refund, jadwal) harus jatuh di jam kerja berikutnya, dan tambahkan kalimat "di luar jam operasional" bila relevan. Jangan menjanjikan respons cepat di luar jam kerja.
 
 ### 5. Identitas jujur
@@ -128,7 +132,8 @@ Untuk COD, area Bintaro termasuk yang kami layani (radius 5km). Mau pesan berapa
 - [ ] Setiap harga/stok/janji di draf ada persis di `PENGETAHUAN.md`, bukan dikira-kira.
 - [ ] Pemicu eskalasi sudah dicek; jika kena, draf berupa pesan penahan + ringkasan ke pemilik, bukan janji penyelesaian.
 - [ ] Tidak meminta/mengembalikan data sensitif (KTP/NIK, rekening, OTP, PIN, password) ke pelanggan.
-- [ ] Jam kerja diperhitungkan untuk janji waktu.
+- [ ] Jam kerja diperhitungkan untuk janji waktu; bila memakai jam default, disebut sebagai asumsi.
+- [ ] Draf tidak mengklaim menyimpan data rekening/KTP/pembayaran pelanggan.
 - [ ] Draf ditandai jelas ini adalah **draf**, manusia yang mengirim — bukan klaim "sudah terkirim".
 - [ ] Untuk klinik: tidak ada diagnosis/saran dosis/triase; sudah diarahkan ke tenaga kesehatan bila relevan.
 

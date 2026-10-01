@@ -114,6 +114,7 @@ item 7 hari ke depan (nomor, nama, tanggal), lalu **DRAF PESAN** per item (maks.
   7–13 hari minta tanggal pasti; 14–29 hari pemberitahuan tertulis **hanya jika sudah ≥ 1 kali diingatkan**;
   ≥ 30 hari pemberitahuan tertulis. ≥ 30 hari dan ≥ 2 kali diingatkan → saran somasi lewat `tagih-piutang`.
 - Prospek: draf singkat yang tidak memaksa. Untuk urutan lengkap → `follow-up-prospek`.
+- Placeholder seperti `[rekening]` di draf adalah bagian yang **wajib disebut** ke pemilik sebagai "perlu Anda lengkapi" (mis. "isi nomor rekening Anda sebelum draf dikirim"); jangan menyerahkan draf ber-placeholder tanpa catatan itu.
 - Timesheet: draf memakai placeholder `[TOTAL JAM]`/`[NILAI]`. Isi dengan Langkah 4 sebelum ditampilkan.
 - Janji: draf konfirmasi jadwal. Lainnya: pengingat untuk pemilik saja (tanpa draf).
 - `baris_ditolak` tidak kosong → **wajib** sebutkan nomor baris & alasannya. Jangan diam-diam dilewati.

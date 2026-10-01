@@ -18,7 +18,7 @@ Membantu pemilik usaha/tim sales menemukan calon pelanggan yang tepat: menentuka
 - "Bantu susun ICP untuk produk kemasan makanan ramah lingkungan"
 
 ## Kapan TIDAK digunakan
-- Pengguna sudah punya SATU calon pelanggan yang jelas dan hanya minta pesan pertamanya dibuatkan/diperiksa ("bikinkan pesan pembuka WA ke Bu Rina dari pameran kemarin") → `pesan-prospek-wa` (3 varian, cek spam/jam kirim/panjang lewat script, tautan wa.me). Batas cakupan: skill INI untuk MENCARI & MENYARING calon pelanggan; draf pesan pembuka di sini hanya singkat (2–3 kalimat per prospek). Jika `pesan-prospek-wa` tidak terpasang, tetap buatkan satu draf singkat dan sebutkan bahwa pesan bisa diperdalam.
+- Pengguna sudah punya SATU calon pelanggan yang jelas dan hanya minta pesan pertamanya dibuatkan/diperiksa ("bikinkan pesan pembuka WA ke Bu Rina dari pameran kemarin") → `pesan-prospek-wa` (3 varian, cek spam/jam kirim/panjang lewat script, tautan wa.me). Batas cakupan: skill INI untuk MENCARI & MENYARING calon pelanggan; draf pesan pembuka di sini hanya singkat (2–3 kalimat per prospek). Jika `pesan-prospek-wa` tidak terpasang, tetap buatkan satu draf singkat dan sebutkan bahwa pesan bisa diperdalam. **Jangan menyebut cara memasang skill lain** (mis. "install dari ClawHub" — keliru, itu skill Komunitech): sebut nama skill Komunitech terkait saja, dan hanya bila sudah terpasang.
 - Prospek yang **sudah** dihubungi dan sedang ditindaklanjuti (belum balas, minta waktu, dll.) → `follow-up-prospek`.
 - Menyusun proposal kerja sama resmi setelah prospek tertarik → `proposal-kerjasama`.
 - Menyusun surat penawaran harga formal → `surat-penawaran-harga`.

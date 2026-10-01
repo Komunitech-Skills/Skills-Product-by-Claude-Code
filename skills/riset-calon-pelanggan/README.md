@@ -47,3 +47,6 @@ Dari penilaian 0-5 yang kamu/tim sales isi sendiri untuk 4 hal: kecocokan profil
 
 **Bedanya dengan `follow-up-prospek`?**
 Skill ini untuk **mencari & menyaring** calon pelanggan baru, plus draf sapaan singkat. Untuk menyusun & memeriksa pesan pertama ke satu prospek secara mendalam → `pesan-prospek-wa`. `follow-up-prospek` dipakai setelah prospek sudah dihubungi tapi belum deal/belum balas.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: AI sempat menyarankan memasang skill lain "dari ClawHub" (keliru). Kini hanya menyebut nama skill Komunitech terkait bila relevan dan sudah terpasang, tanpa menyebut cara/sumber instalasi.

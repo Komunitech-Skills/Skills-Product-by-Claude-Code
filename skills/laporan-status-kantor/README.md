@@ -70,3 +70,6 @@ Tidak perlu. Skill ini dirancang untuk bekerja langsung dari bahan yang kamu ber
 Bisa. Sebut saja "santai" atau "gaya startup" saat minta, atau agent akan mengikuti gaya
 bahan mentah yang kamu berikan. Defaultnya sopan-formal karena mayoritas kantor Indonesia
 lebih aman dengan nada itu, terutama untuk laporan ke atasan/pemilik dan klien.
+
+## Catatan revisi 1.0.3 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: AI sempat memasukkan gaji dan THR per orang ke teks pengumuman grup dan menghitung THR sendiri. Kini pengumuman grup tidak pernah memuat nominal per orang (hanya tanggal bayar & dasar aturan); rincian per orang hanya lewat pesan pribadi/HR. Perhitungan THR diarahkan ke skill `hitung-thr` bila terpasang; bila tidak, AI menjelaskan nominal perlu dihitung terpisah.

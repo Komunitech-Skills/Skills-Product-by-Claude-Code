@@ -58,3 +58,6 @@ Karena PP 35/2021 Pasal 28 mensyaratkan perintah pengusaha dan persetujuan peker
 
 **Apakah angkanya dijamin sama dengan hitungan Disnaker?**
 Rumusnya mengikuti PP 35/2021 Pasal 31–33 (dikutip lengkap dengan pasalnya) dan dibulatkan ke rupiah terdekat. Ini alat bantu hitung, bukan nasihat hukum. Aturan perusahaanmu (PP/PK/PKB) yang lebih menguntungkan pekerja tetap berlaku. Untuk sektor khusus, golongan jabatan tertentu, atau sengketa, konsultasikan ke Disnaker atau konsultan.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: kini data karyawan selalu ditampilkan sebagai pratinjau dan baru disimpan setelah Anda membalas "ya"; tanggal yang kosong untuk semua karyawan ditandai "kemungkinan libur — konfirmasi" (bukan dianggap bolong per orang).

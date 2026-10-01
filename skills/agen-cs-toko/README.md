@@ -59,3 +59,6 @@ Tidak. Jika info belum ada di basis pengetahuan, draf akan menandai bagian itu "
 
 **Bisa dipakai untuk klinik/praktik dokter?**
 Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** memberi diagnosis, saran dosis, atau triase — pertanyaan medis selalu diarahkan ke dokter.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: draf penahan sempat berbunyi "data rekening kami simpan" dan janji jam 09.00 muncul tanpa disebut sebagai asumsi. Kini draf tidak boleh mengklaim menyimpan data pembayaran/KTP pelanggan (rekening diminta lagi lewat kanal resmi saat klaim disetujui), dan jam kerja default selalu disebut sebagai asumsi.

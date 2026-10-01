@@ -60,7 +60,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### A. Mulai ("catat absen karyawan saya")
 1. `info --json`. Jika database belum ada → satu pesan: (1) boleh disimpan di `~/KomunitechData/absensi/`? (2) daftar karyawan: nama, pola 5/6 hari, jam masuk–pulang; (3) pakai mesin fingerprint? Jika ya, ID tiap karyawan di mesin; (4) toleransi terlambat berapa menit? (5) mau dihitung rupiah lemburnya? Jika ya, gaji pokok + tunjangan tetap.
-2. `init` → konfirmasi → `init --ya`. Shift selain REG: `shift tambah --kode MALAM --masuk 22.00 --pulang 06.00 [--istirahat 60] [--pulang-hari-pendek 13.00]` (pulang ≤ masuk = otomatis lewat tengah malam).
+2. **Pratinjau data karyawan sebelum disimpan:** tampilkan tabel nama, pola hari kerja, jam, shift, ID mesin (gaji hanya bila diminta), lalu minta "ya". Simpan (`init --ya`, `karyawan tambah/impor ... --ya`) hanya setelah pengguna membalas "ya". Shift selain REG: `shift tambah --kode MALAM --masuk 22.00 --pulang 06.00 [--istirahat 60] [--pulang-hari-pendek 13.00]` (pulang ≤ masuk = otomatis lewat tengah malam).
 3. Banyak karyawan: `karyawan impor karyawan.csv` (contoh `templates/karyawan.csv`; shift yang disebut di file harus sudah dibuat — contoh itu memakai REG, ENAM 08.00–16.00 hari pendek 13.00, dan MALAM). Sedikit: `karyawan tambah --kode A01 --nama Andi [--jabatan ..] [--shift ..] [--hari-kerja 6] [--id-mesin 1] [--gaji-pokok 5jt --tunjangan-tetap 500rb | --upah-harian 150rb] [--tanpa-lembur ya]`.
 4. Libur resmi bulan berjalan: `libur tambah --tanggal 2026-12-25 --nama "Natal"` atau `--file libur.csv`. Jangan mengarang tanggal libur; minta pengguna mengonfirmasi dari SKB libur nasional/pengumuman daerah.
 
@@ -80,8 +80,9 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### D. Rekap bulanan
 1. `rekap --bulan 2026-09 --json` (tambah `--csv rekap.csv --csv-harian rincian.csv` bila diminta file Excel; pemisah `;`).
-2. Kirim teks rekap script **apa adanya** (siap tempel ke WA/Telegram). Lalu sampaikan bagian **PERLU DICEK** dan **hari tanpa keterangan** sebagai pertanyaan ke pengguna (izin/sakit/cuti/alpa?). Jika script menulis "Belum ada data absen", jangan tanyakan alpa — tanyakan apakah file mesin sudah diimpor. Bagian "Catatan (bukan lembur)" (pulang jauh lewat jadwal / masuk di hari libur tanpa lembur disetujui, pengingat makan Pasal 29) cukup diteruskan; jangan mengubahnya menjadi lembur tanpa persetujuan pengguna. Setelah dijawab, catat dengan `keterangan`, lalu rekap ulang.
-3. Untuk gaji: `rekap --bulan 2026-09 --csv-gaji lembur-gaji.csv [--gabung file-gaji-slip.csv] [--pola 5|6]` → teruskan ke skill `slip-gaji-bpjs` (jalankan dengan `--hari-kerja` sesuai pola). Jika file gaji sudah berisi `lembur_rp`, jam lembur tidak diisi (mencegah dobel) — sampaikan catatannya.
+2. Tanggal kerja yang kosong untuk SEMUA karyawan tandai "**kemungkinan libur — konfirmasi**" ke pengguna (jangan dihitung sebagai bolong/alpa individu; tanyakan lalu catat dengan `libur tambah` bila benar).
+3. Kirim teks rekap script **apa adanya** (siap tempel ke WA/Telegram). Lalu sampaikan bagian **PERLU DICEK** dan **hari tanpa keterangan** sebagai pertanyaan ke pengguna (izin/sakit/cuti/alpa?). Jika script menulis "Belum ada data absen", jangan tanyakan alpa — tanyakan apakah file mesin sudah diimpor. Bagian "Catatan (bukan lembur)" (pulang jauh lewat jadwal / masuk di hari libur tanpa lembur disetujui, pengingat makan Pasal 29) cukup diteruskan; jangan mengubahnya menjadi lembur tanpa persetujuan pengguna. Setelah dijawab, catat dengan `keterangan`, lalu rekap ulang.
+4. Untuk gaji: `rekap --bulan 2026-09 --csv-gaji lembur-gaji.csv [--gabung file-gaji-slip.csv] [--pola 5|6]` → teruskan ke skill `slip-gaji-bpjs` (jalankan dengan `--hari-kerja` sesuai pola). Jika file gaji sudah berisi `lembur_rp`, jam lembur tidak diisi (mencegah dobel) — sampaikan catatannya.
 
 ### E. Laporan harian & jadwal
 - `harian [--tanggal ...]` → siapa hadir, terlambat, belum absen, izin/sakit, lembur disetujui.
@@ -127,6 +128,7 @@ Setiap rekap yang memuat lembur diakhiri disclaimer dari script (PP 35/2021, pem
 **Agent:** `lembur --karyawan Joko --tanggal 2026-09-13 --jam 9 --catatan "perintah Pak Budi" --json` → "Saya akan mencatat lembur **disetujui** Joko, Minggu 13/09: 9 jam di hari istirahat (pola 5 hari, PP 35/2021 Pasal 31 ayat (3): 8 jam × 2 + 1 jam × 3 = 19 jam setara) ≈ Rp 461.272 (upah Joko Rp 200.000/hari × 21 = Rp 4.200.000/bulan). Simpan?" → "ya" → perintah sama + `--ya`.
 
 ## Checklist sebelum menjawab
+- [ ] Data karyawan dipratinjau dan dijawab "ya" sebelum disimpan; tanggal kosong untuk semua karyawan ditandai "kemungkinan libur — konfirmasi"
 - [ ] Perintah tulis sudah dipratinjau dan disetujui sebelum `--ya`
 - [ ] Pemetaan kolom & cara baca tanggal impor ditunjukkan
 - [ ] Semua `peringatan`/`PERLU DICEK` disampaikan; hari tanpa keterangan ditanyakan, tidak diisi sendiri
