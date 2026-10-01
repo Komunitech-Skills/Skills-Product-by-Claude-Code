@@ -144,6 +144,7 @@ Untuk PHK atau sengketa, konsultasikan ke ahli hukum ketenagakerjaan atau Disnak
 ## Batasan & penanganan error
 - Jangan menulis ancaman PHK langsung. Tulis konsekuensi bertahap sesuai ketentuan perusahaan.
 - Jika pengguna ingin langsung SP3/PHK untuk pelanggaran ringan pertama, jelaskan risiko (tidak proporsional, dapat digugat) dan sarankan SP1.
+- **Pelanggaran berat (pencurian, penggelapan, kekerasan):** dasar PHK tanpa SP berjenjang = PP 35/2021 Pasal 52 ayat (2) — pelanggaran bersifat mendesak **yang diatur dalam PK/PP/PKB**. **Jangan** menyebut syarat "tertangkap tangan / pengakuan / minimal 2 saksi" sebagai aturan: itu Pasal 158 UU 13/2003 lama yang dibatalkan MK (012/PUU-I/2003) dan dihapus UU Cipta Kerja/UU 6/2023. Saksi & berita acara boleh disarankan sebagai praktik baik pembuktian. Jangan menulis "denda" sebagai akibat PHK tidak sah. Lihat `references/regulasi.md`.
 - Jika SP sebelumnya sudah berakhir (cek script), pelanggaran baru umumnya kembali ke SP1 kecuali PK/PP/PKB mengatur lain.
 - Jika script error (format tanggal salah), baca pesan error, perbaiki input (mis. `23-09-2026`), jalankan ulang.
 - Aturan ketenagakerjaan sedang dalam proses perubahan (RUU Pelindungan Ketenagakerjaan ditargetkan Oktober 2026). Dasar aturan, tanggal berlaku, dan hal yang perlu verifikasi ada di `references/regulasi.md`.
