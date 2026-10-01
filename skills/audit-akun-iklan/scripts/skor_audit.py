@@ -591,26 +591,21 @@ def roas_impas(harga, modal, persen=Decimal(0), lain=Decimal(0)):
             "laba_kotor": laba, "biaya_iklan_maks_per_pesanan": laba, "roas_impas": roas}
 
 
-def status_roas(roas_aktual, roas_impas_):
-    """Bandingkan ROAS yang disebut pengguna dengan ROAS impas: RUGI / IMPAS / UNTUNG."""
-    if roas_aktual <= 0:
-        raise InputSalah("ROAS aktual/target harus lebih dari 0")
-    if roas_aktual < roas_impas_:
-        return "RUGI"
-    if roas_aktual == roas_impas_:
-        return "IMPAS"
-    return "UNTUNG"
-
-
 def banding_roas(r, daftar_roas):
-    """Untuk tiap ROAS (aktual/target) hitung status dan perkiraan laba/rugi per pesanan.
-    Biaya iklan per pesanan = harga / ROAS (dibulatkan ke rupiah terdekat)."""
+    """Bandingkan tiap ROAS (aktual/target) yang disebut pengguna dengan titik impas.
+    Status dihitung persis (tanpa pembulatan): biaya iklan per pesanan = harga / ROAS;
+    lebih besar dari laba kotor = RUGI, sama = IMPAS, lebih kecil = UNTUNG.
+    Nominal ditampilkan dibulatkan ke rupiah terdekat."""
     hasil = []
     for x in daftar_roas:
-        st = status_roas(x, r["roas_impas"])
-        biaya = (r["harga"] / x).quantize(Decimal(1), rounding=ROUND_HALF_UP)
-        hasil.append({"roas": x, "status": st, "biaya_iklan_per_pesanan": biaya,
-                      "laba_setelah_iklan_per_pesanan": r["laba_kotor"] - biaya})
+        if x <= 0:
+            raise InputSalah("ROAS aktual/target harus lebih dari 0")
+        biaya = r["harga"] / x
+        selisih = r["laba_kotor"] - biaya
+        st = "RUGI" if selisih < 0 else ("IMPAS" if selisih == 0 else "UNTUNG")
+        hasil.append({"roas": x, "status": st,
+                      "biaya_iklan_per_pesanan": biaya.quantize(Decimal(1), rounding=ROUND_HALF_UP),
+                      "laba_setelah_iklan_per_pesanan": selisih.quantize(Decimal(1), rounding=ROUND_HALF_UP)})
     return hasil
 
 
@@ -719,7 +714,12 @@ def main(argv=None):
                       "(di bawah angka ini iklan rugi; dibulatkan ke atas)")
                 for b in banding:
                     lr = b["laba_setelah_iklan_per_pesanan"]
-                    ket = f"laba ±{rupiah(lr)}" if lr >= 0 else f"rugi ±{rupiah(-lr)}"
+                    if b["status"] == "IMPAS":
+                        ket = "laba Rp 0"
+                    elif b["status"] == "UNTUNG":
+                        ket = f"laba ±{rupiah(lr)}" if lr > 0 else "laba < Rp 1"
+                    else:
+                        ket = f"rugi ±{rupiah(-lr)}" if lr < 0 else "rugi < Rp 1"
                     print(f"ROAS {str(b['roas']).replace('.', ',')} vs impas "
                           f"{str(r['roas_impas']).replace('.', ',')}: {b['status']} "
                           f"(biaya iklan ±{rupiah(b['biaya_iklan_per_pesanan'])}/pesanan, {ket} per pesanan)")
