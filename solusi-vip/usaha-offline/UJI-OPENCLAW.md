@@ -67,3 +67,11 @@ Penguji independen, OpenClaw lokal asli, model router Komunitech (`claude-sonnet
 | [04](uji-openclaw/04-rekap-kas-harian-ulang.md) | `kas-umkm` 1.0.11 | **Ya**: skill kini terpakai (rekap per baris, laba kas + asumsinya, selisih laci), tawaran simpan ke buku kas | Tidak ada | 9 → **9** | LULUS |
 
 Semua angka (HPP 13.331,92; transfer 3.164.150/2.544.000 dan setor BPJS 818.800; PPh final Okt Rp260.000; laci 2.581.500, selisih −1.500) cocok dengan hitungan independen.
+
+## Uji ulang 2026-10-01 (keuangan, putaran 2)
+
+Penguji independen, OpenClaw lokal asli, model router Komunitech, home baru (direset sebelum skenario). Hanya sisi SESUDAH; pesan identik dengan uji pertama dan uji ulang 1. Angka dihitung ulang dengan Python dan script skill dijalankan ulang oleh penguji. Tidak ada paket pip yang terpasang selama uji.
+
+| # | Skill (versi) | Cacat sisa hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [01](uji-openclaw/01-hpp-harga-jual-ulang2.md) | `hitung-hpp` 1.0.4 | **Ya**: semua BEP sama persis dengan script (Rp18.000 = 501, Rp20.000 = 410, Rp21.000 = 376, Rp22.000 = 347) | Tidak ada; sisa kecil: klaim "harga pasar umumnya 18-25rb" tanpa sumber | 8 → **8,5** | LULUS |

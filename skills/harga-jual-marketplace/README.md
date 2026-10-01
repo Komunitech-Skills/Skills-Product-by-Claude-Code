@@ -53,6 +53,10 @@ Hitung dulu dengan skill `hitung-hpp` (bahan, tenaga kerja, kemasan, dll.), lalu
 - Perbaikan: `harga_marketplace.py --help` sebelumnya error; kini tampil normal.
 - Instruksi: script dijalankan dari subfolder `scripts/` di folder skill. 3 tes otomatis baru (`tests/`).
 
+## Catatan revisi 1.0.5 (2026-10-01)
+
+- Catatan PPh 22 di keluaran script tidak lagi menampilkan teks perintah (`--pph22 tidak`) yang ikut tersalin ke chat member; kini berbunyi "bila sudah, minta hitung ulang tanpa PPh 22". Temuan uji ulang OpenClaw putaran 2.
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Script kini mencetak **status target** ("MEMENUHI target …" / "DI BAWAH target … laba kurang Rp …") pada harga rekomendasi dan pada mode cek harga bila target disebut (`--harga-jual 62.900 --target-margin 25`).
 - Opsi baru `--banding-harga "62.900;59.900"`: cek beberapa harga lain (mis. harga psikologis) sekaligus terhadap target, lengkap dengan laba, margin, dan status. AI wajib mengutip status ini, tidak menilai sendiri (temuan uji ulang OpenClaw: Rp62.900 disebut "di bawah target" padahal margin 25,1% ≥ 25%).

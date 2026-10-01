@@ -94,3 +94,13 @@ Penguji independen, OpenClaw lokal asli, model router Komunitech (`claude-sonnet
 | [01](uji-openclaw/01-harga-jual-shopee-ulang.md) | `harga-jual-marketplace` 1.0.3 | **Ya**: blok catatan disalin utuh: "PMK 37/2025, berlaku 1 Agustus 2026 … Berlaku per 2026-09-23. Alat bantu hitung, bukan nasihat pajak." | Kecil: narasi model menyebut Rp62.900 "di bawah target" (salah; margin 25,10%, harga target persis 62.800) | 8,5 → **8,5** | LULUS (saran: harga alternatif wajib dihitung script) |
 
 Angka script benar semua (harga minimal 44.858, rekomendasi 63.000, laba 15.875, margin 25,2%).
+
+## Uji ulang 2026-10-01 (keuangan, putaran 2)
+
+Penguji independen, OpenClaw lokal asli, model router Komunitech, home baru (direset sebelum skenario). Hanya sisi SESUDAH; pesan identik dengan uji pertama dan uji ulang 1. Angka dihitung ulang dengan Python dan script skill dijalankan ulang oleh penguji. Tidak ada paket pip yang terpasang selama uji.
+
+| # | Skill (versi) | Cacat sisa hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [01](uji-openclaw/01-harga-jual-shopee-ulang2.md) | `harga-jual-marketplace` 1.0.4 | **Ya**: status dikutip dari script ("memenuhi target margin 25% (hasil hitung script, bukan taksiran)"); Rp62.900 hanya ditawarkan untuk dihitung, tidak dinilai sendiri | Kecil (jargon): catatan script disalin kata per kata sehingga "hitung ulang dengan --pph22 tidak" sampai ke member awam; sumbernya teks catatan di script | 8,5 → **8,5** | LULUS (saran: ganti teks catatan script jadi "minta hitung ulang tanpa PPh 22") |
+
+Angka benar semua (target 62.800 → 63.000, minimal 44.858, laba 15.875, margin 25,2%, markup 41,78%).

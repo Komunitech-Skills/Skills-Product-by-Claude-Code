@@ -91,3 +91,13 @@ Penguji independen, OpenClaw lokal asli, model router Komunitech (`claude-sonnet
 |---|---|---|---|:-:|---|
 | [01](uji-openclaw/01-invoice-ppn-pph23-ulang.md) | `buat-invoice` 1.0.3 | **Ya**: PPh 23 Rp270.000 & estimasi diterima bersih Rp14.715.000 dihitung script; invoice utuh ditulis di chat | **Giliran tambahan**: agent bertanya "apakah perlu mencantumkan **PPN 11%**" padahal member menyebut PKP dan data lengkap (uji pertama langsung jadi); label "PPN 11%" usang | 8 → **8** | LULUS dengan catatan (perbaiki default PPN untuk PKP & larang label 11%) |
 | [05](uji-openclaw/05-kalender-pajak-info-kurang-ulang.md) | `kalender-pajak` 1.0.7 | **Ya**: ambang Rp500 jt dihitung script (Okt pas 500 jt, lewat Nov, setor pertama Selasa 15 Des 2026); tanpa KAP karangan; tanpa rujukan skill yang tidak terpasang | Tidak ada (batas 7 tahun OP masih tidak disinggung) | 7 → **8,5** | LULUS |
+
+## Uji ulang 2026-10-01 (keuangan, putaran 2)
+
+Penguji independen, OpenClaw lokal asli, model router Komunitech, home baru (direset sebelum skenario). Hanya sisi SESUDAH; pesan identik dengan uji pertama dan uji ulang 1. Angka dihitung ulang dengan Python dan script skill dijalankan ulang oleh penguji. Tidak ada paket pip yang terpasang selama uji.
+
+| # | Skill (versi) | Cacat sisa hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [01](uji-openclaw/01-invoice-ppn-pph23-ulang2.md) | `buat-invoice` 1.0.4 | **Ya**: invoice langsung jadi di giliran 1, PPN 12% × DPP nilai lain 11/12 dengan asumsi disebut; tanpa label "PPN 11%"; nomor/kota/penanda tangan jadi placeholder | Tidak ada | 8 → **9** | LULUS |
+
+Angka benar semua (subtotal 13.500.000; DPP 12.375.000; PPN 1.485.000; total 14.985.000; PPh 23 270.000; diterima bersih 14.715.000; jatuh tempo 15 Okt 2026).

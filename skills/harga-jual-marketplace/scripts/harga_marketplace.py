@@ -28,7 +28,7 @@ import sys
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP, InvalidOperation
 
 TANGGAL_ATURAN = "2026-09-23"
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 TARIF_PPH22 = Decimal("0.5")
 BATAS_ATAS_HARGA = Decimal(10) ** 12
 PERINGATAN_CONTOH = ("ANGKA CONTOH: persentase biaya platform di hasil ini berasal dari template contoh, BUKAN tarif "
@@ -548,7 +548,7 @@ def main(argv=None):
     if any(pf["pph22"] for pf in daftar):
         catatan.append("PPh 22 marketplace 0,5% (PMK 37/2025, berlaku 1 Agustus 2026). Penjual orang pribadi dengan "
                        "omzet setahun s.d. Rp500 juta bisa dikecualikan jika sudah menyampaikan surat pernyataan ke "
-                       "marketplace; hitung ulang dengan --pph22 tidak. PPh 22 ini bukan pajak baru; cara "
+                       "marketplace; bila sudah, minta hitung ulang tanpa PPh 22. PPh 22 ini bukan pajak baru; cara "
                        "memperhitungkannya dengan PPh final Anda, tanyakan ke DJP/konsultan.")
     else:
         catatan.append("PPh 22 marketplace tidak dipotong (dianggap sudah menyerahkan surat pernyataan/SKB). "
