@@ -56,14 +56,18 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar perta
 2. **Cek batasan medis dulu** (`references/batasan-medis.md`). Kalau permintaan menyentuh
    diagnosis/skrining/kalkulator medis/dosis/interpretasi lab/triase → **tolak** dengan sopan,
    jelaskan alasan singkat, tawarkan alternatif aman (arahkan ke dokter, buatkan jadwal
-   konsultasi, atau kalimat baku darurat).
+   konsultasi, atau kalimat baku darurat). Bila pasien menanyakan obat sisa/milik orang lain
+   (mis. antibiotik sisa), selalu sertakan kalimat baku "jangan memakai obat resep milik orang
+   lain atau obat sisa, termasuk antibiotik sisa" dari `references/batasan-medis.md` (tanpa dosis;
+   **PERLU REVIEW tenaga medis**).
 3. **Kumpulkan input wajib** sesuai tabel di atas. Untuk leaflet/pengingat/FAQ: minta poin dari
    tenaga kesehatan/klinik bila belum diberikan — jangan menebak.
 4. **Susun materi** memakai template yang sesuai (`templates/`) dan gaya bahasa
    `references/bahasa-awam-pasien.md`. Untuk konten medsos, cari/kutip sumber resmi dari
    `references/sumber-resmi-kesehatan.md` dan cantumkan sumber + tanggal.
-5. **Untuk rekap operasional:** jalankan `scripts/rekap_kunjungan.py` pada file CSV yang
-   diberikan (lihat Format Output). Jika Python tidak bisa dijalankan, ikuti panduan manual di
+5. **Untuk rekap operasional:** jalankan `scripts/rekap_kunjungan.py` (script ada di subfolder
+   `scripts/` di folder yang sama dengan SKILL.md ini; jangan mencarinya ke seluruh disk dengan
+   `find /`) pada file CSV yang diberikan (lihat Format Output). Jika Python tidak bisa dijalankan, ikuti panduan manual di
    `templates/rekap-operasional.md`.
 6. **Periksa checklist** di bawah sebelum mengirim hasil.
 7. Sertakan catatan singkat di akhir bila ada bagian yang butuh isian klinik (mis. "[isi dari
@@ -119,7 +123,8 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 ## Checklist sebelum mengirim hasil
 - [ ] Tidak ada diagnosis/skrining/kalkulator medis/dosis rekaan/interpretasi lab.
 - [ ] Semua instruksi medis (obat, pantangan, tanda bahaya) persis dari yang diberikan dokter —
-      tidak ditambah/ditebak skill.
+      tidak ditambah/ditebak skill, tanpa kata penguat/promosi baru ("kuat", "ampuh", "maksimal");
+      baris tambahan template (IGD/119, catatan) disebut ke admin sebagai tambahan template.
 - [ ] Semua jadwal & biaya berasal dari isian klinik — tidak dikarang.
 - [ ] Tidak ada nama/NIK/tanggal lahir/diagnosis pasien sungguhan di output (pakai contoh/anonim
       bila perlu ilustrasi).

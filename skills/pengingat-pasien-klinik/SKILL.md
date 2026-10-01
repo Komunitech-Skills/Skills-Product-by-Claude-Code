@@ -15,10 +15,9 @@ siapa yang harus diingatkan (H-3, H-1, hari ini, terlambat) beserta **draf pesan
 disalin**. **Staf yang menyalin dan mengirim sendiri.** Tidak ada pengiriman otomatis, tidak ada
 broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 
-**Versi 1.0.2** (revisi rendah): docstring script diperbaiki -- kata yang menyerupai diagnosis
-ditolak dengan kode keluar **1** (bukan 2; kode 2 khusus data pribadi pihak lain/DataPribadi),
-dokumentasi sebelumnya salah menyebut keduanya kode 2. Pembulatan tanggal "N bulan lagi" ke akhir
-bulan (mis. 31 Jan → 28/29 Feb) sekarang dijelaskan eksplisit di bagian Input. Uji regresi 34/34.
+**Versi 1.0.6** (revisi rendah, 2026-10-01): opsi umum `--json`, `--file`, `--hari-ini`, `--tz`
+kini diterima sebelum **atau** sesudah nama perintah (sebelumnya `<perintah> --json` gagal kode 2);
+lokasi script ditulis eksplisit. Uji regresi 38/38.
 
 ## Kapan digunakan
 - "Catat: Bu Sari, WA 0812-0000-1111, kontrol gigi tanggal 10 Oktober, setuju dihubungi."
@@ -87,10 +86,14 @@ tidak ada di bulan itu; dipakai 28 Februari 2027"); tampilkan catatan itu ke pen
 menyembunyikannya.
 
 ## Cara menjalankan script
-Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python`/`py`):
+Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill, mis.
+`~/.openclaw/skills/pengingat-pasien-klinik/scripts/` di OpenClaw); jangan mencarinya ke seluruh
+disk (`find /`). Windows: ganti `python3` dengan `python`/`py`.
 ```bash
-python3 <folder-skill-ini>/scripts/pengingat_pasien.py <perintah> [opsi] --json
+python3 <folder-skill-ini>/scripts/pengingat_pasien.py --json <perintah> [opsi]
+# contoh: python3 <folder-skill-ini>/scripts/pengingat_pasien.py --json daftar --kapan besok
 ```
+`--json`, `--file`, `--hari-ini`, `--tz` boleh ditulis sebelum atau sesudah nama perintah.
 Database default `pasien/DAFTAR.csv` di folder kerja; ganti dengan `--file PATH` bila perlu
 (pakai lokasi yang sama di semua perintah). Semua perintah, contoh, dan opsi lengkap ada di
 `references/perintah.md`.

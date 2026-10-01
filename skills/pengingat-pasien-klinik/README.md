@@ -76,3 +76,7 @@ klinik — tidak ada risiko salah kirim atau nomor WA klinik diblokir karena pes
 **Bagaimana kalau pasien minta datanya dihapus?**
 Tinggal minta ke asisten "hapus data [nama/nomor]". Data terhapus permanen dari file lokal,
 sesuai hak pasien menurut UU PDP 27/2022.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+- Temuan uji OpenClaw (klinik 03): contoh di SKILL.md (`<perintah> [opsi] --json`) gagal kode 2 karena script hanya menerima `--json` sebelum nama perintah; agent juga sempat mencari script ke seluruh disk.
+- Script kini menerima `--json`, `--file`, `--hari-ini`, `--tz` di kedua posisi; contoh SKILL.md & `references/perintah.md` diperbaiki dan diuji; lokasi script ditulis eksplisit (jangan `find /`). Uji regresi 38/38 (4 baru).

@@ -1,7 +1,8 @@
 # Rincian perintah `scripts/pengingat_pasien.py`
 
-Semua perintah menerima `--json` (di sebelum nama perintah) untuk keluaran JSON, dan `--file
-PATH` untuk lokasi CSV lain (default `pasien/DAFTAR.csv`). `--hari-ini` (format bebas) dan `--tz`
+Semua perintah menerima `--json` untuk keluaran JSON, dan `--file PATH` untuk lokasi CSV lain
+(default `pasien/DAFTAR.csv`). Opsi umum ini (juga `--hari-ini`, `--tz`) boleh ditulis sebelum
+atau sesudah nama perintah: `pengingat_pasien.py --json daftar` = `pengingat_pasien.py daftar --json`. `--hari-ini` (format bebas) dan `--tz`
 (default `Asia/Jakarta`) berguna untuk pengujian.
 
 ## tambah

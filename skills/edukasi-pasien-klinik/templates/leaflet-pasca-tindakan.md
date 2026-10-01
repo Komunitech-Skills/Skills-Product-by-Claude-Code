@@ -1,7 +1,11 @@
 # Template: Leaflet/Pesan Pasca-Tindakan
 
 Isi bagian `[dari dokter]` dengan poin yang diberikan dokter/tenaga kesehatan. Skill hanya
-merapikan bahasa dan format — tidak menambah instruksi medis baru.
+merapikan bahasa dan format — tidak menambah instruksi medis baru, **termasuk kata penguat atau
+promosi** yang tidak ditulis dokter (mis. "gigit kasa" jangan menjadi "gigit kasa dengan kuat";
+hindari "kuat", "ampuh", "maksimal", "pasti", "sesering mungkin" kecuali memang kata dokter).
+Kalimat penutup IGD/119 dan baris "Catatan" adalah **tambahan template** (bukan dari dokter) —
+beri tahu admin bahwa baris itu tambahan template dan boleh dihapus/diubah sesuai arahan dokter.
 
 ```
 🏥 [Nama Klinik]
