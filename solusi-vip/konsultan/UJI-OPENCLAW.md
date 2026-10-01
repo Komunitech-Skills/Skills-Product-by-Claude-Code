@@ -101,3 +101,14 @@ Penguji independen, OpenClaw lokal asli, model router Komunitech, home baru (dir
 | [01](uji-openclaw/01-invoice-ppn-pph23-ulang2.md) | `buat-invoice` 1.0.4 | **Ya**: invoice langsung jadi di giliran 1, PPN 12% × DPP nilai lain 11/12 dengan asumsi disebut; tanpa label "PPN 11%"; nomor/kota/penanda tangan jadi placeholder | Tidak ada | 8 → **9** | LULUS |
 
 Angka benar semua (subtotal 13.500.000; DPP 12.375.000; PPN 1.485.000; total 14.985.000; PPh 23 270.000; diterima bersih 14.715.000; jatuh tempo 15 Okt 2026).
+
+## Uji ulang ke-3 2026-10-01
+
+Penguji independen ke-3 (bukan pembuat). OpenClaw asli lokal, model router Komunitech; home `sol3-*` direset dari skill terbaru sebelum tiap skenario; pesan member, jawaban lanjutan, dan file data **sama persis** dengan uji pertama; hanya sisi SESUDAH. Angka dihitung ulang dengan Python dan script repo dijalankan penguji untuk cek balik. Argumen tool call tidak dibaca (database sesi tidak dibuka): tidak terlihat instalasi paket atau `find /` dari teks/berkas, tetapi tidak bisa dipastikan 100%.
+
+| # | Skill (versi) | Cacat lama hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [03](uji-openclaw/03-tagih-piutang-telat-ulang3.md) | `tagih-piutang` 1.0.4 | **Ya** — tanpa UU ITE ("Dasar: KUHPerdata (wanprestasi) dan ketentuan denda … kontrak"); jadwal jelas ("Tenggat … Kamis, 8 Oktober 2026 … pada Jumat, 9 Oktober 2026 kirim tahap 6") | Tidak ada berarti (denda yang terus bertambah tidak disebut; surat menulis "per 1 Oktober") | 9 → **9** | **LULUS** |
+| [02](uji-openclaw/02-surat-penawaran-harga-ulang3.md) | `surat-penawaran-harga` 1.0.4 | **Ya** — surat utuh + "Teks WhatsApp (siap kirim)" di chat di kedua giliran; "Bapak/Ibu Pimpinan"; "Harga final; penjual bukan PKP sehingga tidak memungut PPN"; WA "harga final, bukan PKP, tanpa PPN" | **Kota dikarang:** giliran 1 tidak bertanya, langsung menulis "**Jakarta**, 1 Oktober 2026" (member tak menyebut kota; tidak ada di daftar asumsi; member disuruh "tinggal isi bagian [...]"). Giliran 2 menambah "maks 2x revisi" & format file tanpa daftar asumsi | 7,5 → **8** | **LULUS** (patch kecil disarankan: kota tak diketahui → `[Kota]`; semua default wajib di daftar asumsi) |
+
+Angka benar semua (konsultan 03: 21 hari, denda Rp252.000 ≤ batas Rp600.000, total Rp12.252.000; 02: 9.300.000 − 930.000 = 8.370.000, DP/pelunasan 4.185.000, berlaku s.d. 15 Okt 2026). Cuplikan jualan 02 kini layak (surat + WA tampil di chat), dengan catatan regresi kota di atas.

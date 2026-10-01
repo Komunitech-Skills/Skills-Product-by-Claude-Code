@@ -75,3 +75,13 @@ Penguji independen, OpenClaw lokal asli, model router Komunitech, home baru (dir
 | # | Skill (versi) | Cacat sisa hilang? | Regresi / temuan baru | Skor lama → baru | Status |
 |---|---|---|---|:-:|---|
 | [01](uji-openclaw/01-hpp-harga-jual-ulang2.md) | `hitung-hpp` 1.0.4 | **Ya**: semua BEP sama persis dengan script (Rp18.000 = 501, Rp20.000 = 410, Rp21.000 = 376, Rp22.000 = 347) | Tidak ada; sisa kecil: klaim "harga pasar umumnya 18-25rb" tanpa sumber | 8 → **8,5** | LULUS |
+
+## Uji ulang ke-3 2026-10-01
+
+Penguji independen ke-3 (bukan pembuat). OpenClaw asli lokal, model router Komunitech; home `sol3-*` direset dari skill terbaru sebelum tiap skenario; pesan member, jawaban lanjutan, dan file data **sama persis** dengan uji pertama; hanya sisi SESUDAH. Angka dihitung ulang dengan Python dan script repo dijalankan penguji untuk cek balik. Argumen tool call tidak dibaca (database sesi tidak dibuka): tidak terlihat instalasi paket atau `find /` dari teks/berkas, tetapi tidak bisa dipastikan 100%.
+
+| # | Skill (versi) | Cacat lama hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [05](uji-openclaw/05-tagih-piutang-ulang3.md) | `tagih-piutang` 1.0.4 | **Ya** — rincian "Juli: Rp420.000 / Agustus: Rp465.000 / September: Rp465.000 / Total Rp1.350.000" di pesan WA; jeda 14 hari: "Tenggat … Kamis, 15 Oktober … pada Jumat, 16 Oktober ajak Bu Rina ngobrol langsung dulu" | Kecil: "Tenggat bayar di pesan ini" padahal teks WA tidak memuat tenggat; salam "Assalamu'alaikum" & nama "Siti" diasumsikan | 8 → **9** | **LULUS** |
+
+Angka: 1.350.000 ✓, telat 6 hari ✓, 15 Okt = Kamis ✓. Tetap tegas "kirim sendiri" — tidak ada tawaran kirim otomatis.

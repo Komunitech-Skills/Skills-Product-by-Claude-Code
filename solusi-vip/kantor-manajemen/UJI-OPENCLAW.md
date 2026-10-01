@@ -65,3 +65,17 @@
 - Dengan skill: *"Naikkan pemasukan ±Rp 60 juta/minggu → saldo terendah naik dari -Rp 451.000.000 menjadi +Rp 123.000.000 … Negosiasi termin … INI HANYA MENUNDA … saldo tetap minus Rp 371.000.000."*
 
 Jangan memakai skenario 02 (ringkas grup WA) dan 03 (rasio keuangan) sebagai bukti sebelum/sesudah: tanpa skill hasilnya hampir sama atau sama bagusnya.
+
+## Uji ulang ke-3 2026-10-01
+
+Penguji independen ke-3 (bukan pembuat). OpenClaw asli lokal, model router Komunitech; home `sol3-*` direset dari skill terbaru sebelum tiap skenario; pesan member, jawaban lanjutan, dan file data **sama persis** dengan uji pertama; hanya sisi SESUDAH. Angka dihitung ulang dengan Python dan script repo dijalankan penguji untuk cek balik. Argumen tool call tidak dibaca (database sesi tidak dibuka): tidak terlihat instalasi paket atau `find /` dari teks/berkas, tetapi tidak bisa dipastikan 100%.
+
+| # | Skill (versi) | Cacat lama hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [01](uji-openclaw/01-notulen-rapat-ulang3.md) | `notulen-rapat` 1.0.3 | **Ya** — "Sebelum Rabu, 7 Oktober 2026" (0 gagal script); "Forklift **nomor 2** rusak"; tidak ada tawaran menghubungi Tono | Tugas tambahan "Proses sewa forklift — Hendra" tidak ada di catatan (ditandai ⚠️); sel tenggat Tono menulis 9 Okt sambil ditandai ambigu | 8,5 → **9** | **LULUS** |
+| [02](uji-openclaw/02-ringkas-grup-wa-ulang3.md) | `ringkas-grup-wa` 1.0.4 | **Ya** — "⏰ LEWAT TENGGAT (29/09/2026, 2 hari lalu) — belum ada kabar forklift"; "hari ini 01/10/2026" | "PERLU PERHATIAN (6)" berisi 5 butir; "Tiga lainnya" menyebut 4; Sinar Jaya disebut "vendor" di penutup | 8 → **8,5** | **LULUS** |
+| [03](uji-openclaw/03-rasio-keuangan-ulang3.md) | `analisis-rasio-keuangan-usaha` 1.0.4 | **Ya** — "risiko likuiditas jangka pendek: SEDANG … Rp 900 jt lebih besar dari kas … 47%"; rasio kas 🟡; tanpa "tidak ada risiko". **Sebagian**: "Usaha dagang" tertulis tapi tak dilabeli asumsi | Tidak ada berarti (skala "kecil" per PP 7/2021 benar) | 8 → **9** | **LULUS** |
+| [04](uji-openclaw/04-tagih-piutang-ulang3.md) | `tagih-piutang` 1.0.4 | **Ya** — CSV `no_faktur/nilai_faktur/sudah_dibayar` langsung terbaca (0 gagal; script repo: "Kolom dipakai: … nominal=nilai_faktur"); total telat Rp221.800.000; tahap 5 = surat + WA pengantar | WA "Kami lampirkan surat … di pesan ini" tanpa catatan bahwa file/PDF dibuat member; UD Berkah Tani "jangan ditagih dulu" vs script "pengingat H-1"; catatan pemilik di dalam kutipan WA | 8,5 → **9** | **LULUS** |
+| [05](uji-openclaw/05-arus-kas-13-minggu-ulang3.md) | `arus-kas-13minggu` 1.0.3 | **Ya** — "minggu 3 … Gaji Rp 420.000.000 dan bahan baku Rp 130.000.000 … total keluar Rp 550.000.000" (tanpa salah minggu cicilan); "Belum termasuk pajak/BPJS" | Tidak ada berarti | 8,5 → **9** | **LULUS** |
+
+Angka: semua cocok dengan hitung ulang penguji (umur piutang & total Rp221,8 jt / Rp279,8 jt; 15 rasio; 13 saldo mingguan, 451/551 jt, simulasi opsi 1–4 termasuk 206 jt mg8 dari `proyeksi_kas.py`; kalender notulen). Rata-rata SESUDAH 8,3 → **8,9**. Cuplikan jualan 03 (rasio) kini layak: "Utang bank jatuh tempo ≤12 bulan (Rp 900 jt) lebih besar dari kas (Rp 420 jt). Kas hanya menutup 47%".

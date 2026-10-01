@@ -104,3 +104,11 @@ Penguji independen, OpenClaw lokal asli, model router Komunitech, home baru (dir
 | [01](uji-openclaw/01-harga-jual-shopee-ulang2.md) | `harga-jual-marketplace` 1.0.4 | **Ya**: status dikutip dari script ("memenuhi target margin 25% (hasil hitung script, bukan taksiran)"); Rp62.900 hanya ditawarkan untuk dihitung, tidak dinilai sendiri | Kecil (jargon): catatan script disalin kata per kata sehingga "hitung ulang dengan --pph22 tidak" sampai ke member awam; sumbernya teks catatan di script | 8,5 → **8,5** | LULUS (saran: ganti teks catatan script jadi "minta hitung ulang tanpa PPh 22") |
 
 Angka benar semua (target 62.800 → 63.000, minimal 44.858, laba 15.875, margin 25,2%, markup 41,78%).
+
+## Uji ulang ke-3 2026-10-01
+
+Penguji independen ke-3 (bukan pembuat). OpenClaw asli lokal, model router Komunitech; home `sol3-*` direset dari skill terbaru sebelum tiap skenario; pesan member, jawaban lanjutan, dan file data **sama persis** dengan uji pertama; hanya sisi SESUDAH. Angka dihitung ulang dengan Python dan script repo dijalankan penguji untuk cek balik. Argumen tool call tidak dibaca (database sesi tidak dibuka): tidak terlihat instalasi paket atau `find /` dari teks/berkas, tetapi tidak bisa dipastikan 100%.
+
+| # | Skill (versi) | Cacat lama hilang? | Regresi / temuan baru | Skor lama → baru | Status |
+|---|---|---|---|:-:|---|
+| [04](uji-openclaw/04-listing-ulang3.md) | `listing-marketplace` 1.0.4 | **Ya** — dilaporkan 673 & 294 karakter; teks yang tampil dihitung penguji 673 & 294, file di workspace identik; `cek_listing.py --fakta` (repo) LULUS tanpa temuan | Kecil, lolos script: "cocok … untuk kerja, kuliah, atau jalan santai" dan "warna kalem" tidak dari pemilik | 9 → **9** | **LULUS** |
