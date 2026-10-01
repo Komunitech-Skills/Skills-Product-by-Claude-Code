@@ -65,3 +65,22 @@ Pola yang diwaspadai kurator (nama contoh dari file skill bocor ke balasan, tahu
 **3. Balas ulasan bintang 1 (03)**
 - Tanpa skill: 924 karakter, mengklaim "packing & kirim sudah sesuai SLA" dan "bukan karena produknya tidak sesuai".
 - Dengan paket: balasan publik 469 karakter (tercek script) yang menjelaskan ekspedisi & cahaya foto tanpa membantah pembeli, plus pesan chat pribadi yang meminta nomor pesanan & foto barang.
+
+## Uji ulang 2026-10-01
+
+Penguji independen (bukan pembuat). Home `sol-toko-online` direset dari skill terbaru di repo sebelum tiap skenario; pesan member dan file `penjualan-september.csv` sama persis dengan uji pertama; hanya sisi SESUDAH diulang. Semua angka dihitung ulang dengan Python; script skill versi repo juga dijalankan penguji untuk cek balik. Rincian: [02-…-ulang](uji-openclaw/02-rekap-penjualan-csv-ulang.md), [04-…-ulang](uji-openclaw/04-listing-info-kurang-ulang.md), [05-…-ulang](uji-openclaw/05-promo-1111-cek-margin-ulang.md).
+
+| # | Skill (versi) | Sebelum | Sesudah lama | Sesudah baru | Cacat dilaporkan | Status |
+|---|---|---|---|---|---|---|
+| 02 | `rekap-penjualan-csv` 1.2.3 | 7,5 | 8,5 | **9** | "Hari paling rame" hanya dari omzet | **Hilang** — "Transaksi terbanyak: 1 & 5 September, sama-sama 5 pesanan unik" (benar) |
+| 04 | `listing-marketplace` 1.0.3 | 5,5 | 8,5 | **9** | Klaim "ga gampang buyar" tak disebut pemilik, cek tetap LULUS | **Hilang** — deskripsi hanya fakta pemilik; agent menghapus "rapi" sendiri; `cek_listing.py --fakta` menandai GAGAL frasa lama |
+| 05 | `promo-kalender` 1.0.3 | 6,5 | 8 | **8,5** | Periode 3 hari vs 1 hari; janji kirim dikarang | **Hilang keduanya** — 1 hari konsisten (target 6 botol, benar); waktu kirim/kuota/jam jadi `[isi: …]` |
+
+**Regresi baru:** tidak ada yang berbahaya. Kecil: (04) jumlah karakter deskripsi dilaporkan 505, teks yang tampil 515 (masih jauh di bawah batas); (05) opsi bundling dan peringatan "harga coret palsu" dari uji pertama tidak muncul lagi (jawaban lebih tipis, angka tetap benar). (02) agent menyapa member "Sol" — artefak nama home uji, bukan skill.
+
+**Status per skill:** ketiganya **LULUS uji ulang**.
+
+**Cuplikan jualan sekarang layak?**
+- 04 listing — **layak**, dan lebih kuat: "Aku sempat kasih kata 'rapi' di deskripsi tapi dihapus karena kamu gak bilang itu" (vs tanpa skill: "Dikirim cepat & packing aman · Banyak pelanggan repeat order!").
+- 05 promo — **layak**: "Pesanan dikirim paling lambat [isi: jumlah] hari kerja … aku nggak mau ngarang kuota/jam kirim" (vs tanpa skill: target 173 botol yang membandingkan dengan laba sebulan penuh).
+- 02 rekap — tetap **jangan dijual sebagai pembeda besar**; model tanpa skill sudah tepat. Boleh sebagai contoh kelengkapan format.

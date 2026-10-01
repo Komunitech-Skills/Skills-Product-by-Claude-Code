@@ -357,6 +357,48 @@ k, h = json_run("--jenis", "jasa", "--penjualan", "100jt", "--hpp", "20jt", "--l
 cek("H11 usaha jasa tanpa baris persediaan tetap dihitung lengkap (stok bukan pos wajib jasa)",
     dekat(r_(h, "rasio_lancar")["nilai"], F(15, 8)) and h["status_data"] == "LENGKAP")
 
+# ---------------------------------------------------------------- kasus I: uji OpenClaw 2026-10-01 (v1.0.4)
+# I1–I5 bahan komisaris: kas 420 jt < utang bank jatuh tempo ≤ 12 bln 900 jt. Rasio kas 420/1.660 = 0,253 (≥ 0,2
+# biasanya "baik") → wajib turun ke waspada; kas menutup 420/900 = 46,7% ≈ 47%; kas + piutang = 1.770 ≥ 1.660 → SEDANG.
+KOM = ["--jenis", "dagang", "--kas", "420jt", "--piutang", "1,35M", "--persediaan", "980jt", "--aset-lancar", "2,75M",
+       "--aset-tetap", "3,2M", "--total-aset", "5,95M", "--utang-usaha", "760jt", "--utang-bank-pendek", "900jt",
+       "--utang-lancar", "1,66M", "--utang-jangka-panjang", "1,8M", "--modal", "2,49M", "--penjualan", "9,6M",
+       "--hpp", "7,44M", "--laba-usaha", "710jt", "--beban-bunga", "310jt", "--laba-bersih", "312jt", "--bulan", "12"]
+k, h = json_run(*KOM)
+ak = h["periode"][-1]
+cek("I1 rasio kas 0,253 diturunkan ke waspada karena kas < utang bank jatuh tempo",
+    dekat(r_(h, "rasio_kas")["nilai"], F(420, 1660)) and r_(h, "rasio_kas")["status"] == "waspada")
+cek("I2 cek likuiditas tingkat SEDANG + rincian 'kas menutup 47%'",
+    ak["cek_likuiditas"]["tingkat"] == "SEDANG" and any("menutup 47%" in x for x in ak["cek_likuiditas"]["rincian"]))
+cek("I3 saran pertama = utang bank jatuh tempo > kas; KUR bukan 'ANGKA CUKUP SEHAT'",
+    h["saran"][0]["rasio"].startswith("Utang bank") and not ak["kesiapan_kredit"]["kesimpulan"].startswith("ANGKA"))
+k, out, err = jalankan(*KOM)
+cek("I4 teks tidak pernah berisi 'tidak ada risiko' sebagai kesimpulan & ada pemeriksaan kas vs utang",
+    k == 0 and "Risiko likuiditas jangka pendek SEDANG" in out and "tidak ada risiko gagal" not in out.lower())
+cek("I5 skala dari penjualan 9,6 M/tahun = kecil (PP 7/2021: > 2 M s.d. 15 M)", h["skala_usaha"] == "kecil")
+# I6 baris tabel "Utang bank jangka pendek" dikenali terpisah & ikut total utang lancar: 760 + 900 + 50 = 1.710 jt
+k, h = json_run(tulis("bank.csv", "Pos;2025\nPenjualan;9.600.000.000\nLaba bersih;312.000.000\nKas;420.000.000\n"
+                                  "Persediaan;980.000.000\nPiutang;1.350.000.000\nAset tetap;3.200.000.000\n"
+                                  "Utang usaha;760.000.000\nUtang bank jangka pendek;900.000.000\n"
+                                  "Utang pajak;50.000.000\nModal;2.440.000.000\n"))
+cek("I6 tabel: utang bank jangka pendek = pos sendiri, utang lancar = 1.710.000.000",
+    k == 0 and h["periode"][0]["data"]["utang_bank_pendek"] == 900000000
+    and h["periode"][0]["data"]["utang_lancar"] == 1710000000, h)
+# I7 skala menengah (penjualan 20 M): rasio kas 0,25 → waspada (ambang 0,3); cakupan bunga 1,8 → bahaya (ambang 2)
+MEN = ["--jenis", "dagang", "--penjualan", "20M", "--hpp", "16M", "--laba-usaha", "900jt", "--beban-bunga", "500jt",
+       "--laba-bersih", "300jt", "--kas", "250jt", "--piutang", "800jt", "--persediaan", "900jt", "--aset-tetap", "2M",
+       "--utang-usaha", "1M", "--utang-jangka-panjang", "1M", "--modal", "1,95M"]
+k, h = json_run(*MEN)
+cek("I7 skala menengah: rasio kas 0,25 waspada & cakupan bunga 1,8 bahaya (ambang menengah)",
+    h["skala_usaha"] == "menengah" and r_(h, "rasio_kas")["status"] == "waspada"
+    and dekat(r_(h, "cakupan_bunga")["nilai"], F(900, 500)) and r_(h, "cakupan_bunga")["status"] == "bahaya", h["skala_usaha"])
+# I8 kas ≥ utang lancar → RENDAH, tetap tanpa frasa "tidak ada risiko"
+k, h = json_run("--jenis", "jasa", "--penjualan", "100jt", "--hpp", "20jt", "--laba-bersih", "15jt", "--kas", "10jt",
+                "--piutang", "5jt", "--aset-tetap", "40jt", "--utang-lancar", "8jt", "--modal", "47jt")
+cl = h["periode"][-1]["cek_likuiditas"]
+cek("I8 kas 10 jt ≥ utang lancar 8 jt → tingkat RENDAH, bukan 'tidak ada risiko'",
+    cl["tingkat"] == "RENDAH" and "tidak ada risiko" not in cl["kalimat"].lower())
+
 shutil.rmtree(TMP, ignore_errors=True)
 print("\n%d uji, %d gagal." % (JUMLAH[0], len(GAGAL)))
 if GAGAL:

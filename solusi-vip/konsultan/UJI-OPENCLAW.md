@@ -63,3 +63,22 @@ Temuan ini memperkuat nilai paket.
 3. **Invoice PKP (01).** Tanpa skill: *"PPN 11%"*. Dengan skill: *"DPP nilai lain (11/12): Rp 12.375.000 · PPN 12%: Rp 1.485.000 … Invoice ini bukan faktur pajak — faktur pajak keluaran tetap dibuat di Coretax."*
 
 Jangan pakai skenario 04 (laporan klien) sebagai materi jualan sampai pembulatan jam diperbaiki.
+
+## Uji ulang 2026-10-01
+
+Penguji independen (bukan pembuat). Home `sol-konsultan` direset dari skill terbaru sebelum tiap skenario; pesan member (termasuk jawaban lanjutan di 02) dan `catatan-kerja.csv` sama persis dengan uji pertama; hanya sisi SESUDAH diulang. Rincian: [02-…-ulang](uji-openclaw/02-surat-penawaran-harga-ulang.md), [04-…-ulang](uji-openclaw/04-laporan-progres-klien-ulang.md).
+
+| # | Skill (versi) | Sebelum | Sesudah lama | Sesudah baru | Cacat dilaporkan | Status |
+|---|---|---|---|---|---|---|
+| 02 | `surat-penawaran-harga` 1.0.3 | 7 | 8 | **7,5** | WA: "Surat penawaran resmi (PDF) terlampir" padahal tak ada file | **Hilang** — "skill ini tidak membuat PDF … File → Download/Save as PDF"; WA (giliran tambahan): "Surat penawaran resminya menyusul/bisa saya kirimkan bila diperlukan" |
+| 04 | `laporan-klien-konsultan` 1.0.5 | 8 | 7 | **8,5** | Jam dibulatkan (3,2 / 9,8), "Periode periode kustom", CSV member tak terbaca, rencana mekanis, `find /` | **Hilang semua** — "9,75 jam (9 jam 45 menit)", item "3,25 jam", file dibaca langsung (`--file`), rencana `[isi: …]`; panggilan tool 8 → 5 |
+
+**Regresi baru:**
+- 02 (nyata): agent di giliran 2 **tidak menampilkan surat di chat** dan **tidak membuat teks WA** — hanya ringkasan + nama file `SPH-001-Berkah-Jaya-Bakery.md` di workspace (tak bisa dibuka member Telegram); WA baru muncul setelah diminta (penguji menambah giliran 3). Surat menulis `[Nama PIC]` padahal member menjawab "PIC nggak tahu" (uji pertama benar: "Pimpinan CV …"). Teks WA "(belum kena PPN)" menyiratkan PPN bisa ditambah — kesalahan yang dulu dikurangi di sisi tanpa skill.
+- 04 (kecil): rentang tanggal tertulis dua kali berturut-turut; draf butuh member mengisi 3 rencana sebelum kirim (disengaja, jujur).
+
+**Status per skill:** `laporan-klien-konsultan` **LULUS uji ulang**. `surat-penawaran-harga` **BELUM** — cacat lama hilang, tetapi output tidak lagi memenuhi format wajib (A) surat + (B) WA di chat. Saran: di SKILL.md tegaskan "selalu tampilkan surat lengkap + teks WA di chat; file `.md` hanya tambahan"; "PIC tidak diketahui → 'Pimpinan <nama perusahaan>', bukan placeholder"; teks WA non-PKP wajib "tanpa PPN (bukan PKP)", bukan "belum kena/termasuk PPN".
+
+**Cuplikan jualan sekarang layak?**
+- 04 laporan klien — **sekarang layak** (larangan di uji pertama dicabut): "Total jam dihitung oleh script: 9,75 jam (9 jam 45 menit)" + "Rencana berikutnya … script sengaja tidak mengarang ini" + "saya tidak akan kirim apa pun ke Pak Hendra". Tetap jujur: model tanpa skill juga menjumlah benar; pembedanya rencana tidak dikarang dan format konsisten.
+- 02 SPH — **belum layak** sampai regresi format diperbaiki dan diuji ulang.

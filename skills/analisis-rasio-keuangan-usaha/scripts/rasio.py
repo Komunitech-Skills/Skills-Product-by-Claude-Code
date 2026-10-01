@@ -20,7 +20,7 @@ import sys
 from datetime import date
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-VERSI = "1.0.2"
+VERSI = "1.0.4"
 D0 = Decimal(0)
 D100 = Decimal(100)
 HARI_SETAHUN = Decimal(365)
@@ -76,10 +76,14 @@ POS = {
     "utang_usaha": ("Utang usaha / pemasok", False,
                     ["utang usaha", "utang dagang", "utang pemasok", "utang supplier", "hutang usaha", "hutang dagang",
                      "accounts payable"]),
+    "utang_bank_pendek": ("Utang bank/pinjaman jatuh tempo ≤ 12 bulan", False,
+                          ["utang bank jangka pendek", "bagian lancar utang bank", "pinjaman bank jangka pendek",
+                           "utang bank lancar", "pinjaman jangka pendek", "kredit modal kerja",
+                           "bagian lancar pinjaman", "bagian lancar utang jangka panjang", "short term loan",
+                           "short-term loan", "short term bank loan"]),
     "utang_lancar_lain": ("Utang jangka pendek lain", False,
-                          ["utang lancar lain", "utang jangka pendek lain", "utang bank jangka pendek",
-                           "bagian lancar utang bank", "utang pajak", "utang lain", "utang lain-lain",
-                           "titipan pajak", "hutang lain"]),
+                          ["utang lancar lain", "utang jangka pendek lain", "utang pajak", "utang lain",
+                           "utang lain-lain", "titipan pajak", "hutang lain"]),
     "utang_lancar": ("Total utang lancar (≤ 1 tahun)", False,
                      ["utang lancar", "total utang lancar", "liabilitas jangka pendek", "kewajiban lancar",
                       "liabilitas lancar", "utang jangka pendek", "hutang lancar", "current liabilities"]),
@@ -145,6 +149,25 @@ AMBANG = {
                      "manufaktur": ("R", "45", "60"), "umum": ("R", "45", "60")},
 }
 
+# Skala usaha dari penjualan setahun (kriteria hasil penjualan tahunan PP 7/2021 Pasal 35).
+SKALA = [(Decimal(2_000_000_000), "mikro"), (Decimal(15_000_000_000), "kecil"),
+         (Decimal(50_000_000_000), "menengah")]
+# Usaha menengah/besar: ambang likuiditas kas & cakupan bunga lebih ketat (pedoman praktis, lihat
+# references/ambang-wajar.md bagian 2a). Ambang lain tetap per jenis usaha.
+AMBANG_MENENGAH = {"rasio_kas": ("T", "0.3", "0.15"), "cakupan_bunga": ("T", "3", "2")}
+_SKALA_AKTIF = ["kecil"]  # diisi per periode oleh hitung_periode()
+
+
+def skala_usaha(penjualan, bulan):
+    if penjualan is None or not bulan or bulan <= 0:
+        return None
+    setahun = Decimal(penjualan) * 12 / Decimal(bulan)
+    for batas, nama in SKALA:
+        if setahun <= batas:
+            return nama
+    return "besar"
+
+
 # Saran tindakan per rasio (dipakai bila status waspada/bahaya)
 SARAN = {
     "rasio_lancar": "Utang jangka pendek hampir/melebihi aset lancar. Tunda pembelian aset & prive besar, "
@@ -172,6 +195,10 @@ SARAN = {
                      "bank resmi, dan jangan menambah utang berbunga.",
     "hari_persediaan": "Stok terlalu lama mengendap. Catat stok per barang (skill buku-stok), stop belanja "
                        "barang yang tidak laku 30 hari, beli lebih sering dalam jumlah kecil, dan promo barang lama.",
+    "bank_pendek": "Utang bank yang jatuh tempo ≤ 12 bulan lebih besar dari kas. Minta jadwal jatuh tempo "
+                   "tertulis dari bank, ajukan perpanjangan/roll-over atau ubah ke pinjaman jangka panjang JAUH "
+                   "sebelum jatuh tempo, siapkan rencana kas (skill arus-kas-13minggu), dan percepat penagihan "
+                   "piutang.",
     "hari_piutang": "Pelanggan terlalu lama membayar. Tetapkan batas tempo tertulis, kirim pengingat sopan "
                     "sebelum jatuh tempo (skill tagih-piutang), dan batasi bon untuk pelanggan yang telat.",
 }
@@ -576,7 +603,8 @@ def lengkapi(p, cfg):
                 A.append("Seluruh utang bank %s dianggap utang lancar (konservatif). Bila sebagian baru jatuh "
                          "tempo setelah 12 bulan, isi --bagian-lancar-utang-bank (total pokok cicilan 12 bulan "
                          "ke depan)." % rp(ub))
-        p["utang_lancar_lain"] = lancar_bank + tp
+        p["utang_lancar_lain"] = tp
+        p["utang_bank_pendek"] = lancar_bank
         p["utang_jangka_panjang"] = ub - lancar_bank
         if p.get("_status_sumber", "").startswith("SEMENTARA"):
             W.append("Laporan sumber berstatus SEMENTARA (masih ada pertanyaan di laporan-keuangan-emkm). "
@@ -590,7 +618,7 @@ def lengkapi(p, cfg):
         p["laba_kotor"] = lk
     wajib_al = ["kas"] + ([] if cfg.get("jenis") == "jasa" else ["persediaan"])
     jumlah("aset_lancar", ["kas", "piutang", "persediaan", "aset_lancar_lain"], "Total aset lancar", wajib_al)
-    jumlah("utang_lancar", ["utang_usaha", "utang_lancar_lain"], "Total utang lancar")
+    jumlah("utang_lancar", ["utang_usaha", "utang_lancar_lain", "utang_bank_pendek"], "Total utang lancar")
     def tular(hasil, *sumber):
         if any(k in p["mustahil"] for k in sumber):
             p["mustahil"].add(hasil)
@@ -652,6 +680,8 @@ def nilai_status(kode, nilai, jenis):
     if jenis not in tab or nilai is None:
         return None, ""
     arah, baik, was = tab[jenis]
+    if _SKALA_AKTIF[0] in ("menengah", "besar") and kode in AMBANG_MENENGAH:
+        arah, baik, was = AMBANG_MENENGAH[kode]
     baik, was = Decimal(baik), Decimal(was)
     sat = NAMA_RASIO[kode][2]
     if arah == "T":
@@ -749,6 +779,7 @@ def hitung_periode(p, jenis):
 
     hari, bulan = p["hari"], p["bulan"]
     faktor_tahun = HARI_SETAHUN / hari
+    _SKALA_AKTIF[0] = skala_usaha(g("penjualan"), bulan) or "kecil"
 
     # --- likuiditas
     al, ul = g("aset_lancar"), g("utang_lancar")
@@ -770,6 +801,14 @@ def hitung_periode(p, jenis):
                                   "(kondisi aman)"))
         else:
             R.append(rasio(kode, bagi(pembilang, ul), rumus, jenis))
+    # Kas lebih kecil dari utang bank yang jatuh tempo ≤ 12 bulan → rasio kas tidak boleh "baik".
+    kas_, ubp = g("kas"), g("utang_bank_pendek")
+    if kas_ is not None and ubp and kas_ < ubp:
+        for r in R:
+            if r["kode"] == "rasio_kas" and r["status"] == "baik":
+                r["status"] = "waspada"
+                r["tafsiran"] += (" Diturunkan ke waspada: kas %s lebih kecil dari utang bank jatuh tempo ≤ 12 bulan %s."
+                                  % (rp(kas_), rp(ubp)))
     if al is not None and ul is not None and not rusak("aset_lancar", "utang_lancar"):
         R.append(rasio("modal_kerja", al - ul, "aset lancar − utang lancar", jenis, status="info"))
 
@@ -988,6 +1027,45 @@ def kesiapan_kredit(p, R):
     return hasil
 
 
+def cek_likuiditas(p):
+    """Pemeriksaan eksplisit kas vs kewajiban dekat. Tingkat risiko bertingkat — TIDAK PERNAH 'tidak ada risiko'."""
+    kas, ul, ubp = p.get("kas"), p.get("utang_lancar"), p.get("utang_bank_pendek")
+    al, ps, pi = p.get("aset_lancar"), p.get("persediaan") or D0, p.get("piutang") or D0
+    rinci = []
+    if kas is None or ul is None or {"kas", "utang_lancar"} & p["mustahil"]:
+        return {"tingkat": None, "kalimat": "Risiko likuiditas belum bisa dinilai: kas atau utang jangka pendek "
+                "belum diisi.", "rincian": rinci}
+    if ul == 0:
+        return {"tingkat": "RENDAH", "kalimat": "Risiko likuiditas jangka pendek RENDAH: tidak ada utang yang jatuh "
+                "tempo ≤ 12 bulan tercatat (risiko tetap ada bila ada kewajiban yang belum dicatat).", "rincian": rinci}
+    rinci.append("Kas %s vs total utang jangka pendek %s → kas menutup %s." % (rp(kas), rp(ul), pct(kas / ul)))
+    if ubp:
+        rinci.append("Kas %s vs utang bank jatuh tempo ≤ 12 bulan %s → kas menutup %s." % (rp(kas), rp(ubp),
+                                                                                           pct(kas / ubp)))
+    if kas >= ul:
+        tingkat, alasan = "RENDAH", "kas saja sudah cukup menutup seluruh utang jangka pendek"
+    elif ubp and kas < ubp:
+        cukup_tagih = kas + pi >= ul
+        tingkat = "SEDANG" if cukup_tagih else "TINGGI"
+        alasan = ("utang bank yang jatuh tempo ≤ 12 bulan (%s) lebih besar dari kas (%s); pelunasannya bergantung "
+                  "pada penagihan piutang%s atau perpanjangan (roll-over) dari bank. Bila bank tidak memperpanjang "
+                  "dan piutang tertagih terlambat, usaha bisa kesulitan membayar tepat waktu"
+                  % (rp(ubp), rp(kas), "" if cukup_tagih else ", penjualan stok,"))
+    elif al is not None and al < ul:
+        tingkat, alasan = "TINGGI", "aset lancar lebih kecil dari utang jangka pendek"
+    elif al is not None and al - ps < ul:
+        tingkat, alasan = "SEDANG", "tanpa menjual stok, kas + piutang belum cukup menutup utang jangka pendek"
+    else:
+        tingkat, alasan = "RENDAH–SEDANG", ("kas belum menutup seluruh utang jangka pendek; sisanya bergantung pada "
+                                           "piutang tertagih tepat waktu")
+    if ubp is None and (p.get("utang_jangka_panjang") or D0) > 0:
+        rinci.append("Utang bank jatuh tempo ≤ 12 bulan tidak dipisahkan. Bila ada pinjaman bank yang jatuh tempo "
+                     "dalam 12 bulan (termasuk bagian lancar pinjaman jangka panjang), isi --utang-bank-pendek "
+                     "lalu jalankan ulang.")
+    return {"tingkat": tingkat, "kalimat": "Risiko likuiditas jangka pendek %s: %s." % (tingkat, alasan),
+            "rincian": rinci}
+
+
 def saran_untuk(kode, p):
     """Pilih saran sesuai konteks angka (mis. rasio cepat rendah tapi stok kecil → saran utang/kas)."""
     al, ps, ta = p.get("aset_lancar"), p.get("persediaan"), p.get("total_aset")
@@ -1125,6 +1203,19 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
     akhir = hasil_periode[-1]
     p_akhir = periode[-1]
     akhir["kesiapan_kredit"] = kesiapan_kredit(p_akhir, akhir["rasio"])
+    _SKALA_AKTIF[0] = skala_usaha(p_akhir.get("penjualan"), p_akhir.get("bulan")) or "kecil"
+    skala = skala_usaha(p_akhir.get("penjualan"), p_akhir.get("bulan"))
+    akhir["skala_usaha"] = skala
+    likuid = cek_likuiditas(p_akhir)
+    akhir["cek_likuiditas"] = likuid
+    ubp_akhir, kas_akhir = p_akhir.get("utang_bank_pendek"), p_akhir.get("kas")
+    bank_lebih = bool(ubp_akhir and kas_akhir is not None and kas_akhir < ubp_akhir)
+    if bank_lebih:
+        akhir["kesiapan_kredit"]["cek"].append({"status": "⚠", "teks": "Utang bank jatuh tempo ≤ 12 bulan %s > kas %s "
+                                                "— bank akan menanyakan rencana pelunasan/perpanjangan."
+                                                % (rp(ubp_akhir), rp(kas_akhir))})
+        if akhir["kesiapan_kredit"]["kesimpulan"].startswith("ANGKA CUKUP SEHAT"):
+            akhir["kesiapan_kredit"]["kesimpulan"] = "PERLU PERBAIKAN/DATA TAMBAHAN — lihat poin ⚠/?"
     dinilai = sum(1 for r in akhir["rasio"] if r["status"] in ("baik", "waspada", "bahaya"))
     tl_kunci = [k for k in ("aset_lancar", "total_aset", "modal") if k in akhir["tak_lengkap"]]
     data_cukup = dinilai >= MIN_DINILAI and not tl_kunci
@@ -1149,8 +1240,11 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
             (kk["cicilan_bulanan"] is not None and kk["status_cicilan"] and "⛔" in kk["status_cicilan"]):
         saran.append({"rasio": "Rencana cicilan", "status": "bahaya" if not kk["rasio_cicilan_persen"] or
                       kk["rasio_cicilan_persen"] > 50 else "waspada", "saran": SARAN_KHUSUS["cicilan"]})
+    if bank_lebih:
+        saran.append({"rasio": "Utang bank jatuh tempo > kas", "status": "waspada" if likuid["tingkat"] == "SEDANG"
+                      else "bahaya", "saran": SARAN["bank_pendek"]})
     saran += [{"rasio": r["nama"], "status": r["status"], "saran": saran_untuk(r["kode"], p_akhir)}
-              for r in masalah if r["kode"] not in lewati]
+              for r in masalah if r["kode"] not in lewati and r["kode"] in NAMA_RASIO]
     sisa = len(saran) - 5
     saran = saran[:5]
     if sisa > 0:
@@ -1174,7 +1268,9 @@ def analisis(periode_mentah, jenis="umum", nama_usaha=None, cfg=None, catatan=No
         "versi_script": VERSI, "nama_usaha": nama_usaha or "[Nama Usaha]",
         "jenis_usaha": jenis, "jenis_usaha_teks": JENIS[jenis], "status_data": status_data,
         "periode": hasil_periode, "tren": tren(hasil_periode), "saran": saran,
-        "ringkasan_awam": ringkasan(akhir, jenis, data_cukup), "catatan_input": catatan,
+        "ringkasan_awam": ringkasan(akhir, jenis, data_cukup) + (" " + likuid["kalimat"] if likuid["tingkat"]
+                                                                  else ""),
+        "skala_usaha": skala, "catatan_input": catatan,
         "basis_tren": BASIS_TREN if len(hasil_periode) > 1 else None,
         "disclaimer": "Analisis angka untuk membantu pemilik usaha memahami kondisi keuangan. Bukan nasihat "
                       "investasi, bukan penilaian kredit, bukan laporan audit. Ambang wajar adalah pedoman praktis "
@@ -1195,6 +1291,12 @@ def teks(h):
     o.append("Jenis usaha: %s · Periode dianalisis: %s · Status data: **%s**" %
              (h["jenis_usaha_teks"], ", ".join(p["label"] for p in h["periode"]), h["status_data"]))
     o.append("")
+    sk = h.get("skala_usaha")
+    if sk:
+        o.append("Skala usaha (dari penjualan setahun, kriteria PP 7/2021): **%s**%s" % (
+            sk, " — ambang rasio kas & cakupan bunga memakai versi usaha menengah/besar (lebih ketat)."
+            if sk in ("menengah", "besar") else " — ambang pedoman usaha mikro/kecil."))
+    o.append("")
     o.append("## Ringkasan untuk pemilik")
     o.append(h["ringkasan_awam"])
     o.append("")
@@ -1211,6 +1313,12 @@ def teks(h):
             o.append("| %s | %s | %s | %s | %s | %s |" % (r["nama"], fmt(r["nilai"], r["satuan"]), r["rumus"],
                                                          r["ambang"] or "—", IKON.get(r["status"], r["status"]),
                                                          arti))
+        if kel == "likuiditas" and akhir.get("cek_likuiditas"):
+            cl = akhir["cek_likuiditas"]
+            o.append("")
+            o.append("**Pemeriksaan kas vs utang jatuh tempo:** %s" % cl["kalimat"])
+            o.extend("- " + x for x in cl["rincian"])
+            o.append("_Tingkat risiko dibaca dari angka neraca, bukan jaminan. Jangan disimpulkan \"tidak ada risiko\"._")
         o.append("")
     if h["tren"]:
         o.append("## Tren antarperiode")
