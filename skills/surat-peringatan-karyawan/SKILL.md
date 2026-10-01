@@ -35,6 +35,8 @@ Membantu pemilik usaha dan staf HR memberi sanksi yang **adil, proporsional, dan
 Jika info wajib kurang, tanyakan **sekali** (maks 5 pertanyaan bernomor). Jika pengguna ingin cepat, buat dengan placeholder dan sebutkan asumsinya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Susun fakta, bukan kesan.** Ubah keluhan ("dia malas") menjadi fakta terukur: tanggal, jam, jumlah kejadian, bukti (absensi fingerprint, CCTV, chat, laporan pelanggan, saksi). Jika tidak ada fakta terukur, minta dulu; jangan menulis tuduhan umum.
 2. **Tentukan tingkat SP secara proporsional** dengan matriks di `references/proses-dan-proporsionalitas.md`:
    - Belum ada SP aktif → umumnya **SP1** (untuk pelanggaran ringan pertama kali, sarankan dulu teguran lisan tercatat).

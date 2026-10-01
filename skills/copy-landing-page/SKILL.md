@@ -40,6 +40,8 @@ Tanyakan (atau simpulkan dari cerita pengguna):
 - Tidak ada testimoni/angka penjualan yang disebut sama sekali (lebih baik kosong daripada karangan).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Cek kepatuhan dulu.** Baca [references/dasar-hukum-klaim.md](references/dasar-hukum-klaim.md). Kalau produk masuk kategori sensitif (obat, suplemen, kosmetik, makanan/minuman berklaim kesehatan, jasa medis/klinik, keuangan/investasi), tandai klaim yang butuh izin resmi dan JANGAN tuliskan klaim tersebut kecuali pengguna memastikan izin/sertifikatnya ada.
 2. **Susun struktur halaman** mengikuti kerangka di [references/struktur-halaman.md](references/struktur-halaman.md): Headline → Sub-headline → Masalah → Manfaat (3–5, fokus hasil bukan fitur) → Cara Kerja/Cara Pesan (3–4 langkah) → Bukti Sosial → Penawaran (harga, ongkir, cara bayar) → Garansi/Retur → FAQ → CTA penutup.
 3. **Tulis 3 variasi headline** dengan pendekatan berbeda (hasil, pertanyaan, sebelum/sesudah) — lihat contoh formula di references.

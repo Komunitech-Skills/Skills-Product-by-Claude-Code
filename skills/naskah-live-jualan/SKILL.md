@@ -38,6 +38,8 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 pakai default dan sebutkan asumsinya di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Baca `references/etika-promo.md`.** Urgensi hanya boleh dari fakta nyata (stok di sistem, batas
    waktu voucher yang benar). Tolak kelangkaan palsu dan tawarkan versi jujurnya.
 2. **Hitung semua angka promo** per produk (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):

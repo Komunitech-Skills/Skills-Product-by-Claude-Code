@@ -73,6 +73,8 @@ dipaksakan jadi tabel Grist (lihat `references/pola-tabel-umkm.md` kolom "Kapan 
    Desktop, atau folder `grist-data/docs/` untuk Docker — lihat panduan bagian 4).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah (Windows: `python` atau `py` sebagai ganti `python3`). Tambah `--json` bila ingin
 membaca hasil terstruktur.
 

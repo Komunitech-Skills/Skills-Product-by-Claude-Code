@@ -38,6 +38,8 @@ Mengubah ide kerja sama yang masih di kepala pengguna menjadi proposal yang meya
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, isi dengan default, beri `[isi ...]` pada data spesifik, dan tulis "Asumsi" di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Pahami sudut pandang mitra.** Tulis dulu (untuk diri sendiri) 3 hal yang mitra pedulikan: tambahan pemasukan, risiko kecil, kerja tambahan minimal, citra/brand, kebutuhan pelanggannya. Semua bagian proposal harus menjawab ini.
 2. **Pilih kerangka** sesuai jenis kerja sama di `references/kerangka-per-jenis.md` (B2B supply, konsinyasi, reseller/agen, sponsorship, co-branding/kolaborasi).
 3. **Hitung simulasi angka dengan script** bila ada angka (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):

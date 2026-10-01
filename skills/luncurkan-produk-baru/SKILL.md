@@ -28,6 +28,8 @@ Bila pengguna ingin cepat: pakai default (jenis "lain", anggaran Rp 0 = hanya ka
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Gerbang kesiapan (2 menit)
 Cek tiga hal di `references/runbook-hari-h.md` bagian A: satu janji jelas, sudah dicoba orang luar, kemasan/label utuh. Jika belum: sarankan soft launch kecil, bukan menunda tanpa batas dan bukan menambah fitur terus.
 

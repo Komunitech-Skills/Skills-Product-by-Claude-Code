@@ -39,6 +39,8 @@ Membantu penjual menindaklanjuti prospek yang diam tanpa terkesan mengejar-ngeja
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, pakai default dan tulis "Asumsi" di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Tentukan tahap & tujuan tiap pesan** memakai pola di bawah (detail & contoh lengkap per tahap: `references/urutan-per-tahap.md`).
 
    | Ke | Waktu | Tujuan | Isi utama |

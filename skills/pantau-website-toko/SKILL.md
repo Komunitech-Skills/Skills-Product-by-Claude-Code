@@ -37,6 +37,8 @@ Dua jalur, jelaskan singkat lalu tanyakan mana yang dipilih bila belum jelas dar
 Tidak ada token/API key yang perlu disiapkan pengguna untuk skill ini — `/api/status-page/...` memang endpoint publik bawaan Uptime Kuma.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Semua perintah lintas OS (Windows: `python`/`py`). Tambahkan `--json` untuk hasil terstruktur.
 
 ### A. Cek koneksi ke status page

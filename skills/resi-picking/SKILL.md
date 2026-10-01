@@ -50,6 +50,8 @@ kalau ada, file lokasi rak dan file stok juga boleh disertakan biar daftarnya le
 pengguna cuma punya file pesanan, tetap jalankan tanpa lokasi/stok dan sebutkan itu sebagai asumsi.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. Simpan file yang dikirim pengguna ke folder kerja (mis. folder yang sama dengan file pesanan).
 2. Jalankan:
    ```bash

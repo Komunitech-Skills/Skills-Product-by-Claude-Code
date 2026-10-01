@@ -33,6 +33,8 @@ Menyatukan masukan yang tercecer di banyak tempat menjadi satu daftar "perbaiki 
 Bila belum ada data, tanyakan **sekali**: (1) kanal apa saja & bagaimana mengambil datanya (`templates/cara-ekspor-chat-whatsapp.txt`; ulasan: ekspor CSV atau salin-tempel; komentar IG/TikTok: salin-tempel satu per baris), (2) periode, (3) jenis usaha. Teks tempelan disimpan ke `.txt` di folder kerja (satu masukan per baris, boleh diawali `5 | ...`).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Kumpulkan & simpan file** per kanal di folder kerja. Jangan tempel data mentah ke laporan.
 2. **Cek pengirim WA** (bila ada chat): `python3 <folder-skill-ini>/scripts/olah_masukan.py chat.txt --daftar-pengirim` (Windows: `python` atau `py`). Nama hanya untuk Anda: **jangan salin nama itu ke laporan**. Tanyakan pengguna siapa yang tim; sebut di `--staf`.
 3. **Jalankan script** (semua kanal sekaligus; nama kanal setelah `=`):

@@ -47,6 +47,8 @@ Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mencatat dari kalimat biasa
 1. Ubah kalimat menjadi **jenis** + nominal + cara bayar (`--via kas|bank|tempo`) + pihak + keterangan. Tabel pemetaan kalimat → jenis & akun: `references/akun-dan-jenis.md`.
 2. Info kurang (cara bayar, nominal, akun beban) → tanyakan **sekali** dalam satu pesan bernomor. Jangan menebak cara bayar.

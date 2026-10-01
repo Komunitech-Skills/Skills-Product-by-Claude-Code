@@ -59,6 +59,8 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Kalim
 pertama di atas sudah cukup, jadi langsung simpan.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Semua perintah dijalankan dari folder kerja pengguna. Windows: ganti `python3` dengan `python` atau `py`.
 `S` di bawah = `python3 <folder-skill-ini>/scripts/cek_jatuh_tempo.py`.
 

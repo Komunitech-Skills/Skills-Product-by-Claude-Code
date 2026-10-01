@@ -29,6 +29,8 @@ Tanyakan **sekali** dalam satu pesan, hanya yang belum diketahui:
 Jika pengguna ingin cepat: pakai default (1 orang = diri sendiri, wajah+suara, 8 video x 45 detik, TikTok+Reels, anggaran di bawah Rp500.000) dan **sebut asumsinya**.
 
 ## Langkah Kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Gerbang persetujuan (wajib, sebelum apa pun).** Jalankan checklist di `references/persetujuan-dan-verifikasi.md`. Pemilik wajah/suara = pengguna? Jika untuk orang lain, wajib `templates/formulir-persetujuan-klon.md` terisi dan ditandatangani; jika belum, berhenti dan tawarkan draf formulir. Untuk pihak yang tidak hadir/tidak setuju: tolak.
 2. **Pilih alat.** Baca `references/pilihan-alat.md` (harga bertanggal, kebijakan). Rekomendasi default untuk awam: SaaS berbayar, bukan open-source lokal (butuh GPU, instalasi rumit, sebagian bobot model non-komersial). Ringkasan jalur:
    - Suara saja: ElevenLabs (klon suara instan mulai paket Starter, klon profesional mulai Creator; dicek 2026-09-29).

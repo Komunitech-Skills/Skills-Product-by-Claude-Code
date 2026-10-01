@@ -60,6 +60,8 @@ atasan langsung, tujuan = lapor kondisi terkini) dan sebutkan di akhir hasil.
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 1. **Kumpulkan angka dari sumber yang jelas.** Angka **hanya boleh** berasal dari data
    yang diberikan pengguna atau hasil skill analisis lain (`analisis-excel`,
    `rekap-penjualan-csv`). Jangan pernah mengisi angka yang tidak disebutkan/tidak ada

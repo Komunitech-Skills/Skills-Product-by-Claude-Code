@@ -50,6 +50,8 @@ Jika pengguna ingin cepat: katakan "cukup jawab no. 1–3 dulu", lalu buat draf 
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### Mode 1 — SUSUN kebijakan privasi
 1. **Saring cakupan** (lihat "Kapan TIDAK digunakan"). Bila ada data spesifik skala besar (mis. klinik dengan ribuan pasien, aplikasi kesehatan, layanan anak), tetap buat draf tetapi beri label **"DRAF — WAJIB DITINJAU KONSULTAN HUKUM"** dan ingatkan kemungkinan wajib DPO (Pasal 53 + Putusan MK 151/PUU-XXII/2024) dan penilaian dampak (Pasal 34).
 2. **Petakan data** dalam tabel: Data → Tujuan → Dasar pemrosesan (Pasal 20 ayat (2): persetujuan / pelaksanaan perjanjian / kewajiban hukum / kepentingan vital / tugas umum / kepentingan sah) → Penerima → Masa simpan. Aturan:

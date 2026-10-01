@@ -43,6 +43,8 @@ Pemilik/admin usaha kecil yang memakai **Vikunja di server/komputer sendiri** (p
 4. Opsi umum (`--url`, `--kunci-file`, `--izinkan-jarak-jauh`, `--tz`, `--json`, `--timeout`) ditulis setelah nama perintah.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah (Windows: `python` atau `py` sebagai ganti `python3`). Tambah `--json` untuk hasil terstruktur.
 
 ### A. Cek koneksi & izin

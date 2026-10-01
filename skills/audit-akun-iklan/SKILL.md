@@ -44,6 +44,8 @@ Info kurang? Tanyakan **sekali** dalam satu pesan (maks. 8 pertanyaan). Bila pen
 "langsung aja", jalankan dengan bukti yang ada; semua yang belum jelas = `tidak_tahu`.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Path relatif terhadap folder skill ini. Windows: ganti `python3` dengan `python`/`py`.
 
 1. **Tentukan platform** dan ambil daftar cek:

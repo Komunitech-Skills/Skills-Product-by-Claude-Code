@@ -38,6 +38,8 @@ Mengubah "jualan ke semua orang" menjadi pilihan yang jelas: **siapa** yang dila
 **Aturan tanya:** kalau info wajib kurang, tanyakan **sekali** dalam satu pesan berupa daftar singkat (maks. 5 pertanyaan). Kalau pengguna ingin cepat, langsung kerjakan dengan default dan tulis asumsinya di bagian "Asumsi".
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Kerjakan berurutan; jangan lompat. Detail template ada di `references/`.
 
 ### 1. Kumpulkan bahan (jangan mengarang)

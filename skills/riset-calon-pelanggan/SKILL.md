@@ -40,6 +40,8 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 1. **Susun atau konfirmasi ICP (Ideal Customer Profile).** Bantu pengguna menjawab: siapa yang paling diuntungkan produk/jasa ini, seberapa besar usahanya (omzet/jumlah karyawan/skala), di mana lokasinya, masalah apa yang mereka punya, siapa pengambil keputusan (owner/manajer/divisi apa), dan berapa kira-kira kemampuan bayar mereka. Tulis ICP dalam 1 paragraf ringkas + daftar ciri (bullet).
 
 2. **Arahkan sumber pencarian yang publik & sah** (lihat `references/sumber-pencarian.md` untuk detail per kategori):

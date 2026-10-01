@@ -41,6 +41,8 @@ Kalau info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar pert
 
 ## Langkah Kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Daftar asumsi paling berisiko
 Tulis 5-8 asumsi yang harus benar agar usaha berjalan, dikelompokkan (detail + contoh di [`references/asumsi-dan-kriteria.md`](references/asumsi-dan-kriteria.md)):
 **Minat** (ada yang mau?), **Harga** (mau bayar segini?), **Ulang** (beli lagi?), **Jangkauan** (bisa menjangkau pembeli lewat kanal ini?), **Produksi/kirim** (bisa dibuat & dikirim tanpa rusak/basi, terutama frozen/chilled?), **Untung** (margin masih ada setelah ongkir, kemasan, biaya platform?), **Izin/kepatuhan** (PIRT/BPOM/halal bila perlu).

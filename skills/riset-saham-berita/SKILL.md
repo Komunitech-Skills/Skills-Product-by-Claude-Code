@@ -71,6 +71,8 @@ Pengguna ingin cepat → default: **semua bagian, laporan keuangan terbaru yang 
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Kumpulkan fakta bersumber
 1. Ikuti urutan sumber di `references/sumber-data.md` (dokumen resmi dulu, berita sesudahnya).
 2. Per temuan catat: tanggal fakta, ringkasan tanpa opini, sumber + tanggal akses.

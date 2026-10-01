@@ -42,6 +42,8 @@ diubah jadi kaku dan formal.
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### Mode Periksa (deteksi + skor, tanpa menulis ulang)
 1. Baca draf penuh.
 2. Cocokkan tiap kalimat dengan daftar pola di `references/pola-ai-indonesia.md`. Kalau ada

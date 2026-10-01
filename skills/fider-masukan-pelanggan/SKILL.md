@@ -50,6 +50,8 @@ Pemilik usaha atau tim produk yang memasang **Fider di komputer/server sendiri**
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Impor catatan WA/marketplace menjadi usulan
 1. Kumpulkan catatan (tempel dari pengguna). Simpan ke berkas teks di folder sementara: **satu usulan per butir**: baris berbutir `-`/`*`/`1.` atau dipisah **baris kosong**; baris pertama = judul (maks 100 huruf, dipotong otomatis), baris berikutnya = uraian. Format JSON juga boleh: `[{"judul":"...","uraian":"...","tag":["pembayaran"],"pelanggan":3}]` (`pelanggan` = perkiraan berapa orang meminta).
 2. Tulis judul singkat dan netral ("Bisa bayar pakai QRIS"), bukan kutipan panjang. Buang nama & alamat pelanggan; jangan mengarang butir yang tidak ada di catatan.

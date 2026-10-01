@@ -41,6 +41,8 @@ Pemilik usaha yang memasang **listmonk di komputer/server sendiri** (gratis, tan
 4. Token/kata sandi tidak pernah ditampilkan, disimpan di berkas proyek, atau dimasukkan ke jadwal/log.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah: `python3 <folder-skill>/scripts/listmonk.py <perintah> [opsi]`. Opsi umum `--url`, `--json` ditulis **setelah** nama perintah.
 
 ### 1. Kontak (CSV/Excel) dan persetujuan UU PDP

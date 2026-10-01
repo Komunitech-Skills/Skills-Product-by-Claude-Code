@@ -35,6 +35,8 @@ Pemilik/admin usaha yang memakai **Kanboard di komputer/server sendiri** cukup m
 4. Akun berperan **Manajer** bisa membuat papan tim; peran **Pengguna** hanya papan pribadi (`--pribadi`).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah (Windows: `python`/`py` ganti `python3`). Opsi umum ditulis SETELAH nama perintah: `--url`, `--kunci-file`, `--tz WIB|WITA|WIT` (default WIB), `--json`, `--timeout` (detik, default 20).
 
 ### A. Cek & lihat papan

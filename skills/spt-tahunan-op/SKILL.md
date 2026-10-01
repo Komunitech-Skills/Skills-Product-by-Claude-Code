@@ -36,6 +36,8 @@ Membantu orang biasa tahu **sebelum membuka Coretax**: berapa PPh terutang setah
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan) + jalur cepat ("kalau mau cepat, sebutkan status & angka di bukti potong, sisanya saya anggap 0"). Contoh: `examples/04-input-kurang.md`.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. Petakan cerita pengguna ke input di atas. Satu pemberi kerja = satu `--a1`. Istri yang hanya bekerja di 1 kantor biasanya **tidak** digabung (pakai K/.., bukan K/I).
 2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash

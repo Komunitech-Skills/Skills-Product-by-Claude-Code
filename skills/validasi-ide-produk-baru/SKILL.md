@@ -41,6 +41,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar perta
 
 ## Langkah Kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Susun hipotesis dari ide satu kalimat
 Ubah ide jadi kalimat hipotesis eksplisit dengan format:
 

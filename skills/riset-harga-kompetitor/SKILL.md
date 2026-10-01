@@ -37,6 +37,8 @@ Jika HPP atau data pesaing belum ada, tanyakan **sekali** dalam satu pesan berno
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Kumpulkan data pesaing (sopan & legal)
 - Jika kamu (agent) punya kemampuan bawaan membuka halaman web (web fetch/browser), buka link **satu per satu**, maksimal ±20 link per permintaan, hanya halaman publik tanpa login. Hormati robots.txt dan ketentuan situs; jangan mengulang terus-menerus, jangan menjadwalkan, jangan memakai cara melewati blokir.
 - Jika halaman gagal dibuka, kosong, minta login, atau diblokir (Shopee dan Tokopedia sering begitu), **jangan mencoba cara lain**. Catat link itu, lalu minta pengguna: "Link ini tidak bisa saya buka. Tolong tempel teks halaman produknya atau kirim screenshot bagian harga, ukuran/varian, terjual, dan lokasi."

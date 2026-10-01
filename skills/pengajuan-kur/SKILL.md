@@ -43,6 +43,8 @@ Membuat pemilik usaha datang ke bank **siap dan realistis**: dokumen lengkap, ce
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor): plafon & tenor; laba bersih per bulan (atau omzet & biaya); cicilan lain; rencana penggunaan dana; profil singkat usaha. Jika pengguna hanya ingin simulasi, cukup plafon, tenor, (bunga), dan laba.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Simulasi & rasio** — jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/simulasi_kur.py --plafon "Rp 50.000.000" --tenor 36 \

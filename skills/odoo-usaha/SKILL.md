@@ -44,6 +44,8 @@ Pemilik/admin usaha yang sudah memakai **Odoo miliknya sendiri** cukup mengetik 
 5. Jalankan `cek`. Gagal → ikuti `GAGAL:` + `Saran:`.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah: `python3 <folder-skill>/scripts/odoo.py <perintah> [opsi]` (Windows: `python`/`py`). Opsi umum ditulis **setelah** nama perintah: `--url`, `--db`, `--login`, `--kunci-file`, `--protokol otomatis|xmlrpc|json2`, `--tz WIB|WITA|WIT`, `--timeout`, `--json`.
 
 ### A. Cek koneksi

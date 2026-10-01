@@ -54,6 +54,8 @@ mana data usaha dikirim.
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Pilih resep laporan
 Cocokkan jawaban wawancara ke salah satu resep di `templates/`:
 

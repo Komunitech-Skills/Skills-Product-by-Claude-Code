@@ -66,6 +66,8 @@ tujuan, panjang). Jika pengguna ingin cepat, pakai default dan sebutkan asumsiny
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Brief
 Kumpulkan info di atas. Simpan sebagai brief singkat (boleh pakai `templates/brief.md`) dan tampilkan
 ringkasannya ke pengguna sebelum lanjut, supaya arah tulisan disepakati dulu.

@@ -58,6 +58,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mulai ("pakai kasir untuk toko saya")
 1. `info --json`. Jika database belum ada → satu pesan: (1) nama toko, alamat, telepon, dan kota (WIB/WITA/WIT) untuk struk; (2) kirim daftar produk (file atau ketik); (3) jenis usaha & pajak: **restoran/kafe/warung makan dengan tempat makan atau katering** → sudah terdaftar pajak restoran/PBJT di Bapenda? berapa tarif di Perda/SKPD Anda, harga menu sudah termasuk pajak atau belum, ada service charge? — **toko lain** → sudah PKP (memungut PPN)? harga sudah termasuk PPN? (4) mau stok dipotong otomatis? Sudah pakai `buku-stok`? (5) printer struk 58 atau 80 mm?
    - Makanan/minuman objek PBJT **bukan objek PPN**: jangan memakai mode PPN untuk "pajak resto 10%". Tarif PBJT **wajib dari pengguna** (Perda/SKPD); jangan mengarang atau mengasumsikan 10%. Belum terdaftar/omzet di bawah batas Perda → mode `tanpa`, sarankan tanya Bapenda.

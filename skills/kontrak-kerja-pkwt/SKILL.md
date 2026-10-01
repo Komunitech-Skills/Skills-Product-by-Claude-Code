@@ -51,6 +51,8 @@ Jika pengguna ingin cepat ("langsung buatin aja"), buat dengan data yang ada, is
 - **Tanggal mulai belum diketahui:** tanyakan dulu. Bila pengguna tetap ingin draf sekarang, tulis `[isi: tanggal mulai]` / `[isi: tanggal akhir]`, jangan mengarang tanggal. Script butuh tanggal, jadi hitung kompensasi dengan rumus (12 bulan = 1 × upah; n bulan = n ÷ 12 × upah) dan beri label "dihitung manual, tanggal belum diisi". Batas 5 tahun ditulis sebagai "5 tahun sejak tanggal mulai kontrak pertama".
 
 ## Langkah kerja — mode Susun
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Uji kelayakan PKWT dulu** (pertanyaan no. 4). Jika pekerjaannya jelas **bersifat tetap** (mis. kasir tetap toko, admin tetap, koki tetap) dan tidak ada alasan waktu tertentu: jelaskan dengan sopan bahwa PKWT untuk pekerjaan tetap berisiko **demi hukum menjadi karyawan tetap (PKWTT)**. Tawarkan: (a) tetap membuat PKWT bila memang ada alasan sementara yang jujur, dengan alasan itu ditulis di Pasal 1 ayat (3); atau (b) memakai PKWTT dengan masa percobaan maks. 3 bulan (di luar cakupan template ini; arahkan ke konsultan).
 2. **Tentukan varian jangka waktu** di `templates/kerangka-pkwt.md`: A (jangka waktu), B (selesainya pekerjaan), atau C (harian lepas, < 21 hari/bulan).
 3. **Hitung dengan script** (lihat bagian Hitung): total jangka waktu termasuk kontrak sebelumnya (≤ 5 tahun), tanggal akhir, dan perkiraan kompensasi. Jika melebihi 5 tahun → hentikan penyusunan PKWT baru, jelaskan risikonya, sarankan PKWTT.

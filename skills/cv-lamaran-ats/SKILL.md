@@ -45,6 +45,8 @@ Jika data wajib kurang (terutama riwayat pengalaman pengguna), tanyakan **sekali
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 1. **Pastikan ada profil pengalaman induk** (lihat `references/profil-induk.md`). Jika pengguna belum pernah membuatnya di sesi ini/sebelumnya: minta CV lama (tempel teksnya, atau baca filenya bila agent bisa membuka file) atau daftar pengalaman/pendidikan/skill secara bebas, lalu susun jadi profil induk mengikuti format di referensi tersebut dan **tampilkan hasilnya ke pengguna** supaya bisa disimpan sendiri sebagai file. Jika pengguna sudah menempelkan profil induknya (dari sesi lalu), pakai itu langsung — jangan minta ulang. Kumpulkan juga **teks lowongan lengkap**. Jangan lanjut ke langkah berikutnya tanpa profil induk dan teks lowongan.
 
 2. **Evaluasi kecocokan lowongan** mengikuti `references/evaluasi-kecocokan.md`: jalankan saringan wajib (syarat mutlak, lokasi, gaji), lalu hitung skor per dimensi berbasis profil induk — hasilkan skor akhir + alasan + celah. Tampilkan ke pengguna dan tanyakan apakah mau lanjut ke penyusunan CV (terutama jika skor di bawah 60 atau ada GAGAL SYARAT). Jika pengguna hanya minta "sesuaikan CV" tanpa evaluasi, tetap tampilkan evaluasi ringkas sebagai bagian dari output, kecuali pengguna secara eksplisit minta dilewati.

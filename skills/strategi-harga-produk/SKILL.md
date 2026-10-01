@@ -40,6 +40,8 @@ Jika data wajib kurang, tanyakan **sekali** dalam satu pesan (maks. 5 pertanyaan
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Pahami tujuan harga
 Tanyakan/tentukan satu tujuan utama: **masuk pasar** (cari pelanggan dulu), **untung maksimal**, **tahan harga pesaing**, **naik harga**, atau **habiskan stok**. Tujuan menentukan strategi.
 

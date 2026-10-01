@@ -37,6 +37,8 @@ Jika data wajib kurang, tanyakan **sekali** dalam satu pesan (maks. 5 pertanyaan
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Pilih jenis program (lihat `references/pola-per-usaha.md`)
 | Usaha | Pola utama | Alasan singkat |
 |---|---|---|

@@ -38,6 +38,8 @@ Menghitung PPh 21 yang wajib dipotong pemberi kerja dari gaji karyawan dengan an
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. Tentukan jenis pegawai: **tetap** (gaji bulanan teratur), **tidak tetap dibayar bulanan**, atau **tidak tetap harian/borongan**.
 2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: ganti `python3` dengan `python` atau `py`). Angka boleh ditulis `10jt`, `Rp 10.000.000`, `15,5jt`.
    - Satu bulan (Jan–Nov, atau pegawai tidak tetap bulanan):

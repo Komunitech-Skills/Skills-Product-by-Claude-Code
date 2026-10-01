@@ -56,6 +56,8 @@ saja → tanyakan sekali: "Mau dimasukkan ke Actual Budget, atau ke buku kas har
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mutasi bank → CSV impor Actual
 1. Minta file **CSV** dari internet banking (Excel → "Simpan Sebagai" CSV; PDF tidak bisa) dan nama akun tujuannya di
    Actual. Tanyakan sekali bila kurang: bank, tahun (BCA menulis `01/09` tanpa tahun).

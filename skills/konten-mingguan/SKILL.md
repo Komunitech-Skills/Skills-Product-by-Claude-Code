@@ -47,6 +47,8 @@ Kalau info ini benar-benar belum ada, tulis placeholder eksplisit seperti `[nama
 hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angka atau nama.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Baca atau buat `konten/PROFIL.md`.** Kalau sudah ada, pakai isinya. Kalau belum, wawancara singkat
    (lihat Input), lalu tulis file itu dari `templates/PROFIL.md`. Perhatikan kolom "Larangan klaim" —
    ini menentukan apa yang **tidak boleh** ditulis di konten minggu ini.

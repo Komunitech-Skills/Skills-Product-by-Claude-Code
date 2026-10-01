@@ -51,6 +51,8 @@ metrik ditebak dari nama kolom) dan sebutkan asumsinya di bawah laporan.
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Siapkan file
 - File dari pengguna → pakai path-nya langsung.
 - Tabel ditempel di chat → simpan apa adanya ke `log.txt` di folder kerja yang disepakati (sebutkan path-nya) (tabel ber-garis tegak
