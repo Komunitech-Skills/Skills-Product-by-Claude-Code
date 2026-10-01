@@ -395,7 +395,7 @@ class UjiRevisi101(unittest.TestCase):
         d = json.loads(out)
         self.assertIsNone(d["platform"]["shopee"]["skor"])
         self.assertEqual(d["platform"]["shopee"]["label"], "Bukti belum cukup")
-        self.assertEqual(d["versi"], "1.0.1")
+        self.assertEqual(d["versi"], m.VERSI)
 
     def test_36_anggaran_tidak_dinaikkan_sebelum_batas_untung(self):
         cek, _ = m.muat_cek()
