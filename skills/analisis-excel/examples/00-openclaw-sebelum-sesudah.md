@@ -189,3 +189,145 @@ Skill terpakai (ya).
 **Catatan keamanan tanpa skill:** agent tanpa skill memasang `openpyxl` + `python-calamine` ke sistem tanpa bertanya untuk membuka .xlsx (skenario 1).
 
 **Cuplikan jualan:** "Buka file Excel tanpa memasang apa pun di komputer Anda — baris TOTAL dan subtotal yang ikut tersalin dikenali sehingga total tidak dobel (Rp29.550.000, bukan Rp47.400.000+)." *(Pakai setelah cacat 1 diperbaiki.)*
+
+## Uji ulang 2026-10-01
+
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; skill hanya dibaca). **Versi diuji:** analisis-excel 1.0.17.
+**Cara:** OpenClaw lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5`, TZ Asia/Jakarta. Home **terisolasi** per sisi (mount namespace: agent hanya melihat home-nya; `pip install` hanya bisa masuk ke home uji, pustaka Python sistem read-only). SEBELUM = home tanpa skill (`rk-analisis-excel`), SESUDAH = home berisi skill ini saja (`r-analisis-excel`); kedua sisi dijalankan **ulang** (sisi SEBELUM uji pertama bisa tercemar), dibuat ulang bersih per skenario; pesan **sama persis** dengan uji pertama, balasan lanjutan identik di kedua sisi. Angka diverifikasi independen dengan Python; fakta aturan dicek sendiri.
+
+**Data:** `gaji-karyawan-sep.csv` = file uji pertama (disalin utuh). `biaya-operasional.xlsx` uji pertama sudah tidak ada di folder uji, jadi **dibuat ulang** dengan ciri yang sama persis seperti dicatat di Verifikasi uji pertama: sheet "Biaya", judul di baris 1, header baris 3, 19 transaksi Agu–Sep 2026 (September s.d. tgl 28), kategori "Listrik/listrik/LISTRIK", baris TOTAL `=SUM` Rp48.985.000, total per kategori/bulan identik (Agu Rp22.550.000; Sep Rp26.435.000; Gaji Rp19.950.000; Transport 795.000 → 2.865.000 termasuk "Ganti ban mobil boks" Rp2.400.000). Keterangan baris lain disusun penguji.
+
+### Skenario 1 — xlsx biaya operasional (pesan sama persis)
+
+**SEBELUM (tanpa skill)** — tools: exec (memasang `openpyxl` + `et_xmlfile` lewat pip ke `~/.local` home uji tanpa bertanya; lalu membaca XML manual)
+
+~~~~text
+Udah aku buka file-nya langsung dari struktur XML (soalnya ada sedikit corrupt di metadata-nya, openpyxl sempat gagal baca, tapi datanya masih utuh). Ini hasilnya:
+
+**Kategori pengeluaran paling gede: Gaji** — total Rp19.950.000 (Agustus Rp9,6jt + September Rp10,35jt). Ini juara di kedua bulan, di atas Sewa (Rp13jt) dan Bahan Baku (Rp9,835jt).
+
+**September vs Agustus: naik 17,2%**
+- Agustus: Rp22.550.000
+- September: Rp26.435.000
+- Selisih: +Rp3.885.000
+
+**Penyebab kenaikannya, per kategori:**
+- 🚚 Transport — naik paling tajam, +Rp2.070.000 (dari 795rb → 2,865jt). Gara-gara ada **ganti ban mobil boks Rp2,4jt** — ini biaya sekali bayar (one-time), bukan tren rutin.
+- 🧈 Bahan Baku — +Rp975.000 (4,43jt → 5,405jt). Karena harga tepung&gula/mentega&telur naik dikit, plus ada pembelian **keju buat menu baru** (Rp625rb).
+- 👷 Gaji — +Rp750.000, karena ada **bonus lembur** buat kejar pesanan.
+- ⚡ Listrik — +Rp75.000, gara-gara **tambah daya oven**.
+- 📦 Lain-lain — naik tipis +Rp15.000 (beli sabun cuci loyang).
+- 🏠 Sewa — flat, nggak ada kenaikan.
+
+Jadi intinya: kenaikan September itu campuran **biaya tak terduga (ganti ban)** dan **biaya ekspansi yang disengaja** (menu baru pakai keju, lembur buat penuhi pesanan, tambah daya listrik buat oven) — bukan pemborosan rutin. Kalau ban mobil nggak diganti bulan ini, kenaikannya cuma sekitar ~6,6% aja.
+
+Satu catatan kecil: kategori "Listrik" di file kamu ditulis beda-beda casing (Listrik/listrik/LISTRIK) — udah aku gabungin manual buat hitung di atas, tapi kalau mau rapihin di spreadsheet biar nggak keitung terpisah pas bikin pivot table, kabarin aja.
+~~~~
+
+**SESUDAH (dengan skill)** — tools: exec, read (`analisis.py`; tidak memasang paket)
+
+~~~~text
+Udah aku cek, Kak. Dua catatan dulu sebelum angka:
+
+- Baris 23 di file itu baris **TOTAL** (rumus SUM), bukan transaksi — otomatis dikeluarkan dari hitungan, dan hasilnya pas cocok (Rp 48.985.000). Aman.
+- Kategori "Listrik" sempat ditulis beda-beda (LISTRIK/Listrik/listrik) — aku gabungkan jadi satu.
+- Data September baru sampai tanggal 28 (bukan akhir bulan penuh), jadi kenaikan di bawah ini kemungkinan masih bisa nambah dikit kalau ada transaksi tgl 29-30 yang belum dicatat.
+
+**Pengeluaran terbesar (Agustus+September digabung): Gaji**
+| Kategori | Total | % |
+|---|---:|---:|
+| Gaji | Rp 19.950.000 | 40,7% |
+| Sewa | Rp 13.000.000 | 26,5% |
+| Bahan Baku | Rp 9.835.000 | 20,1% |
+| Transport | Rp 3.660.000 | 7,5% |
+| Listrik | Rp 2.205.000 | 4,5% |
+| Lain-lain | Rp 335.000 | 0,7% |
+
+**September vs Agustus: naik 17,2%** (Rp 22.550.000 → Rp 26.435.000, selisih +Rp 3.885.000)
+
+Penyebab utamanya:
+1. **Transport** — naik paling tajam, 260% (Rp 795.000 → Rp 2.865.000, +Rp 2.070.000). Ini sendirian nyumbang lebih dari setengah (53%) total kenaikan — kelihatannya karena ada ganti ban mobil boks Rp 2.400.000 di September, bukan cuma bensin rutin.
+2. **Bahan Baku** naik 22% (+Rp 975.000) — wajar, biasanya ngikutin volume produksi.
+3. **Gaji** naik 7,8% (+Rp 750.000) — mungkin ada tambahan karyawan/lembur.
+4. Sewa tetap sama persis (Rp 6.500.000, 0%), Listrik & Lain-lain naik tipis.
+
+Jadi singkatnya: biaya paling besar tetap **Gaji**, tapi kenaikan September paling banyak digerakkan oleh **Transport** (gara-gara ganti ban mobil boks, pengeluaran tidak rutin), bukan karena biaya operasional harian naik merata.
+~~~~
+
+### Skenario 2 — CSV gaji + baris Subtotal + data pribadi (pesan sama persis)
+
+**SEBELUM (tanpa skill)** — tools: exec, read
+
+~~~~text
+Laporan Rekap Gaji Karyawan — September 2026
+(sumber: gaji-karyawan-sep.csv)
+
+**Produksi**
+- Gaji Pokok: Rp12.100.000
+- Tunjangan: Rp850.000
+- Subtotal: Rp12.950.000
+
+**Toko**
+- Gaji Pokok: Rp8.000.000
+- Tunjangan: Rp500.000
+- Subtotal: Rp8.500.000
+
+**Kurir**
+- Gaji Pokok: Rp7.200.000
+- Tunjangan: Rp900.000
+- Subtotal: Rp8.100.000
+
+**Total Keseluruhan (semua divisi)**
+- Total Gaji Pokok: Rp27.300.000
+- Total Tunjangan: Rp2.250.000
+- Total Gaji Pokok + Tunjangan: Rp29.550.000
+
+Data per divisi sudah dicek cocok sama baris "Subtotal" yang ada di CSV-nya, jadi angkanya konsisten. Mau saya kirimkan ke bos lewat channel tertentu (WA/email/dll), atau cukup laporan teks ini aja yang kamu forward sendiri?
+~~~~
+
+**SESUDAH (dengan skill)** — tools: exec, read
+
+~~~~text
+Sudah dihitung dari `gaji-karyawan-sep.csv` (7 karyawan, 3 baris subtotal di file asli dikeluarkan dari perhitungan karena itu baris total, bukan data karyawan baru — dan angkanya cocok persis dengan hasil pivot ini, jadi datanya konsisten).
+
+## 📋 Laporan Gaji Karyawan — September 2026
+
+| Divisi | Jml Karyawan | Gaji Pokok | Tunjangan | Total per Divisi | % dari Total |
+|---|---:|---:|---:|---:|---:|
+| Produksi | 3 | Rp 12.100.000 | Rp 850.000 | **Rp 12.950.000** | 43,8% |
+| Toko | 2 | Rp 8.000.000 | Rp 500.000 | **Rp 8.500.000** | 28,8% |
+| Kurir | 2 | Rp 7.200.000 | Rp 900.000 | **Rp 8.100.000** | 27,4% |
+| **TOTAL** | **7** | **Rp 27.300.000** | **Rp 2.250.000** | **Rp 29.550.000** | 100% |
+
+**Catatan:**
+- Divisi Produksi paling besar beban gajinya (Rp 12,95 juta), disusul Toko lalu Kurir.
+- Kurir punya tunjangan per kepala paling tinggi (Rp 450rb/orang) dibanding Produksi (~Rp 283rb/orang) dan Toko (Rp 250rb/orang).
+- File ini berisi data pribadi (NIK, No HP, nominal gaji) — tolong jangan diteruskan ke pihak lain tanpa izin ya, sesuai UU PDP No. 27/2022.
+
+Mau sekalian dibuatkan versi per-karyawan juga, atau grafik batang perbandingan divisinya?
+~~~~
+
+### Verifikasi (Python independen)
+- S1: Agu 22.550.000 → Sep 26.435.000 = +3.885.000 (**17,23%**) ✔ kedua sisi. Gaji 19.950.000 = 40,7% ✔; Sewa 26,5% ✔; Bahan Baku 20,1% ✔; Transport 7,5% ✔; Listrik 4,5% ✔; Lain-lain 0,7% ✔. Transport +260,4% ✔; sumbangan Transport ke kenaikan 2.070.000/3.885.000 = **53,3%** ✔ (SESUDAH "53%", ada di keluaran `banding` script). Bahan Baku +22,0% ✔, Gaji +7,8% ✔. SEBELUM "tanpa ganti ban naik ~6,6%": (26.435.000 − 2.400.000)/22.550.000 − 1 = 6,59% ✔.
+- S1 SESUDAH menyalin ketiga butir "Perlu dicek" script (baris TOTAL 23 dikeluarkan & cocok Rp48.985.000; data Sep s.d. tgl 28; Listrik digabung). Tidak ada lagi "rata-rata per hari ~21,1%" yang menyesatkan. Tidak ada persen karangan.
+- S2: Produksi 12.950.000 (43,8%), Toko 8.500.000 (28,8%), Kurir 8.100.000 (**27,4%**), total **29.550.000** ✔ — SESUDAH semua benar (persen dari `--nilai "Gaji Pokok+Tunjangan"`). Tunjangan per orang 450rb/≈283rb/250rb ✔ (dihitung agent, benar). Pengingat UU PDP ada. Kurang kecil: tidak menampilkan total DENGAN subtotal (Rp51.000.000) sebagai pembanding, tapi menyebut 3 baris subtotal dikeluarkan dan dicocokkan.
+- SEBELUM S2: angka benar; menawarkan "kirimkan ke bos lewat WA/email", tanpa pengingat data pribadi.
+
+### Status cacat lama
+1. Persen karangan sendiri (65,6% / 26%) → **TERATASI** (semua persen dari script, benar).
+2. "Rata-rata per hari" menyesatkan → **TERATASI** (tidak disajikan sebagai koreksi).
+3. "Perlu dicek" dilewati → **TERATASI** di S1; S2 menyebut subtotal tetapi tanpa total pembanding (minor).
+**Regresi:** tidak ditemukan. Catatan jujur: SESUDAH S1 menjelaskan penyebab sedikit kurang spesifik dibanding SEBELUM (SEBELUM membaca kolom Keterangan: keju menu baru, bonus lembur, tambah daya oven; SESUDAH menebak "mungkin tambahan karyawan/lembur").
+
+### Skor
+| Skenario | SEBELUM | SESUDAH | Alasan |
+|---|---:|---:|---|
+| 1. xlsx biaya | 7 | 8,5 | Angka sama benar; SEBELUM pasang paket tanpa izin; SESUDAH tanpa instal + "Perlu dicek" lengkap, penyebab kurang rinci. |
+| 2. CSV gaji | 7,5 | 9 | SESUDAH persen benar + privasi; SEBELUM menawarkan kirim data gaji. |
+| **Rata-rata** | **7,25** | **8,75** | |
+
+**VERDIK: LULUS** — sesudah ≥ 8, jelas ≥ sebelum, tanpa kesalahan fakta/angka.
+
+**Saran kecil (bukan penghalang):** dorong AI membaca kolom keterangan (`top --grup Keterangan` atau filter kategori yang naik) sebelum menyebut "gara-gara apa".
+
+**Cuplikan jualan (jujur):** "Buka file Excel tanpa memasang apa pun — AI biasa memasang paket Python dulu tanpa bertanya. Baris TOTAL dan Subtotal dikenali, semua persen dihitung script: Kurir 27,4%, total gaji Rp29.550.000 (bukan Rp51.000.000 bila subtotal ikut terhitung)."

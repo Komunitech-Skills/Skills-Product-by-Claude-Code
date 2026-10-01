@@ -157,3 +157,133 @@ Skill terpakai: Ya — membaca SKILL.md (read).
 
 > Dengan skill, setiap balasan datang dengan "Catatan untuk admin" (cek stok, proses retur lewat fitur resmi marketplace, kenapa tidak boleh memberi nomor WA) — bukan hanya teks balasan.
 
+
+
+## Uji ulang 2026-10-01
+
+**Versi diuji:** 1.0.3 · **Penguji:** agent penguji independen (bukan pembuat) · OpenClaw lokal terisolasi, home baru `r6k-balas-chat-cs` (SEBELUM, tanpa skill) dan `r6-balas-chat-cs` (SESUDAH, skill ini saja), dibuat ulang per skenario. Pesan identik dengan uji pertama.
+
+### Skenario 1 (ulang) — pesan sama persis
+
+**SEBELUM (tanpa skill)** — tools: []
+
+~~~~text
+Halo kak, maaf banget ya sepatunya kekecilan padahal udah cocokin size chart 😔 Kami paham banget rasa kecewanya, apalagi buat sepatu anak gitu ya.
+
+Tenang kak, bisa kita bantu tukar ukurannya kok! Jadi nanti kakak kirim balik sepatunya ke kami, kami kirim ukuran yang lebih besar sebagai gantinya. Untuk ongkir kirim balik ke kami nanti ditanggung dari pihak kakak ya, soalnya ini kasusnya bukan karena sepatu rusak/salah kirim dari kami.
+
+Kalau kakak setuju, boleh infoin:
+1. Mau tukar ke ukuran berapa?
+2. Nama & no HP buat resi pengiriman baliknya
+
+Nanti kami bantu arahkan proses tukarnya step by step ya kak 🙏
+~~~~
+
+**SESUDAH (dengan skill 1.0.3)** — tools: ['read']
+
+~~~~text
+**Balasan (siap kirim):**
+Hai Kak, mohon maaf banget ukuran 28 yang sampai ternyata kekecilan, padahal sudah ikutin size chart ya 🙏 Pasti bikin kecewa, kami ngerti.
+
+Untuk solusinya, kami bisa bantu tukar ke ukuran yang lebih pas. Catatannya, ongkir tukar nanti ditanggung dari Kakak ya. Soal "mau balikin", boleh dikonfirmasi dulu maksudnya tukar ukuran atau refund (pengembalian dana)? Kalau refund, mohon maaf kami belum bisa pastikan langsung di chat ini — silakan ajukan lewat fitur Pengembalian di Shopee ya, nanti diproses sesuai kebijakan yang berlaku di sana.
+
+Supaya kami bisa bantu proses tukarnya, boleh kirim nomor pesanan dan foto sepatu beserta ukuran kaki anak (pakai penggaris/alat ukur), Kak? Setelah itu kami bantu arahkan lewat fitur Pengembalian Shopee untuk pilih ukuran penggantinya.
+
+Kami kabari lagi setelah foto & nomor pesanannya kami terima ya, Kak [isi: sebelum jam berapa / jam operasional toko].
+
+**Alternatif lebih singkat:**
+Hai Kak, mohon maaf ukuran 28-nya kekecilan 🙏 Kami bisa bantu tukar ukuran (ongkir tukar ditanggung pembeli ya). Untuk refund, mohon ajukan lewat fitur Pengembalian Shopee. Boleh kirim nomor pesanan + foto sepatu & ukuran kaki anak dulu, Kak, biar kami bantu arahkan proses tukarnya?
+
+**Catatan untuk admin:**
+- Pelanggan minta "balikin" (bisa berarti refund) — ini di luar kebijakan tukar yang Kakak kasih, jadi di balasan diarahkan ke fitur Pengembalian Shopee, bukan dijanjikan refund langsung. Tandai: pelanggan minta refund — konfirmasi pemilik kalau mau ada kebijakan refund juga.
+- Cek lewat Seller Center alur resmi Pengembalian Shopee untuk kasus "ukuran tidak sesuai" supaya arahan ke pembeli benar.
+- Isi jam/waktu tindak lanjut di bagian `[isi: ...]` sebelum dikirim, sesuai jam operasional toko.
+- Setelah dapat foto ukuran kaki, cek size chart internal buat pastikan rekomendasi ukuran pengganti (misal 29) sebelum dikonfirmasi ke pembeli.
+~~~~
+
+### Skenario 2 (ulang) — pesan sama persis
+
+**SEBELUM (tanpa skill)** — tools: []
+
+~~~~text
+Transaksi di luar platform (COD transfer langsung) itu melanggar ToS Tokopedia dan bikin kamu **kehilangan proteksi penjual** — kalau pembeli kabur/komplain fiktif setelah transfer manual, Tokopedia gak bisa bantu apa-apa. Ini juga pola umum yang dipakai akun fake buat modus penipuan atau jebak suspend toko. Jadi tetap arahkan closing di Tokopedia, tapi kasih dia alasan & alternatif biar gak ilfeel.
+
+Contoh balasan (bisa langsung kamu pakai/sesuaikan):
+
+---
+
+"Halo kak, makasih udah tertarik sama tas kami! 🙏
+
+Untuk pembayaran, kami cuma terima lewat Tokopedia ya kak — ini justru demi keamanan kakak juga, soalnya kalau transfer langsung gak ada proteksi pembeli dari Tokopedia (misal barang gak sampai atau komplain gak bisa diproses).
+
+Soal harga, kami gak bisa kasih lebih murah di luar sistem, tapi kakak bisa cek:
+✅ Voucher toko yang lagi aktif di halaman produk
+✅ Gratis ongkir kalau ada promo
+✅ Diskon kalau beli 2pcs/bundling
+
+Kalau mau tanya-tanya detail bahan, warna, atau request custom, boleh banget chat di sini aja kak biar semua histori transaksinya aman dan tercatat 😊 Yuk langsung checkout, nanti kami bantu proses cepat!"
+
+---
+
+Beberapa catatan:
+- **Jangan kasih nomor WA admin** untuk transaksi — kalau memang kamu punya WA bisnis buat tanya-tanya produk/katalog umum (bukan closing), boleh dikasih, tapi tegaskan pembayaran tetap lewat Tokopedia.
+- Kalau dia ngotot terus minta transfer langsung, itu red flag kuat — mending dilepas aja daripada toko kena masalah.
+
+Mau saya buatkan versi yang lebih singkat/kasual juga, atau versi untuk ditaruh jadi template balasan cepat di Tokopedia?
+~~~~
+
+**SESUDAH (dengan skill 1.0.3)** — tools: ['read']
+
+~~~~text
+**Balasan (siap kirim):**
+Halo Kak, makasih ya sudah tertarik dengan tas kulitnya 🙏 Untuk harga, sama kok Kak baik transfer langsung maupun lewat Tokopedia — harga yang tertera di etalase sudah harga pas, nggak ada selisih.
+
+Soal pembayaran, mohon maaf kami hanya proses transaksi lewat checkout Tokopedia ya, Kak, bukan transfer langsung ke rekening pribadi. Ini supaya Kakak juga lebih aman — ada jaminan Tokopedia kalau barang belum sampai atau nggak sesuai, uangnya bisa ditarik balik. Kalau transfer langsung, perlindungan itu nggak berlaku buat Kakak.
+
+Yuk langsung checkout aja dari etalase kami, nanti kalau ada pertanyaan soal produk/ukuran/pengiriman boleh tanya terus di chat sini, saya bantu jawab sampai Kakak yakin order 😊
+
+**Alternatif lebih singkat:**
+Halo Kak, harganya sama kok mau checkout langsung di Tokopedia, nggak ada beda harga. Kami hanya terima pembayaran lewat sistem Tokopedia ya (bukan transfer langsung) biar ada jaminan keamanan buat Kakak juga. Kalau mau tanya-tanya produk dulu, boleh banget di sini aja Kak 😊
+
+**Catatan untuk admin:**
+- Jangan kasih nomor WA admin atau ajak transaksi di luar Tokopedia — ini melanggar aturan Seller Center dan bisa kena suspend toko, plus pembeli jadi tidak terlindungi (rawan modus penipuan "transfer dulu").
+- Tetap arahkan ke checkout di platform; tawarkan bantu jawab pertanyaan produk di chat supaya dia tidak kabur ke toko lain.
+- Kalau dia tetap ngotot minta WA/transfer langsung, admin boleh ulangi dengan sopan tapi tegas — jangan kasih.
+
+Catatan: saya tidak kasih nomor WA atau arahkan transfer langsung sesuai aturan marketplace (ini bukan larangan saya, tapi aturan Tokopedia yang bisa bikin toko kena sanksi kalau dilanggar). Kalau mau, saya bisa bikinkan juga versi balasan khusus buat dipakai berulang (bank jawaban) tiap ada pembeli yang minta hal serupa.
+~~~~
+
+### Verifikasi
+
+- Kebijakan pengguna: tukar ukuran, ongkir tukar ditanggung pembeli. SESUDAH hanya menulis itu ("ongkir tukar nanti ditanggung dari Kakak") — **tidak lagi** menjanjikan ongkir kirim pengganti ditanggung toko. SEBELUM kali ini juga tidak mengarang ongkir, tetapi meminta "nama & no HP" pembeli dan tidak menyebut fitur pengembalian Shopee.
+- Permintaan "mau balikin" kini ditanggapi SESUDAH (tanya tukar atau refund, arahkan pengajuan refund lewat fitur Pengembalian Shopee, catatan admin "konfirmasi pemilik"). SEBELUM mengabaikannya.
+- Waktu tindak lanjut: SESUDAH "Kami kabari lagi ... [isi: sebelum jam berapa / jam operasional toko]" — sesuai revisi.
+- Catatan kecil: SESUDAH menulis "arahkan lewat fitur Pengembalian Shopee untuk pilih ukuran penggantinya" — fitur pengembalian Shopee pada umumnya untuk pengembalian barang/dana, bukan memilih ukuran pengganti; catatan admin sudah meminta cek alur resmi di Seller Center.
+- Skenario 2 SEBELUM: mengarang "voucher toko yang lagi aktif", "gratis ongkir kalau ada promo", "diskon kalau beli 2pcs/bundling" dan membolehkan memberi WA untuk tanya produk. SESUDAH tidak memberi WA, tidak mengarang promo; masih menulis "harga di etalase sudah harga pas, nggak ada selisih" (pernyataan yang tidak diberikan pengguna, meski sejalan dengan penolakan transfer langsung).
+
+### Status cacat lama
+
+| Cacat uji pertama | Status |
+|---|---|
+| 1. Janji "ongkir pengganti kami tanggung" (karangan) | **Beres** |
+| 2. Permintaan refund tidak ditanggapi | **Beres** — ditanggapi + catatan admin konfirmasi pemilik |
+| 3. Tanpa waktu tindak lanjut | **Beres** — kalimat tindak lanjut dengan `[isi: jam]` |
+| 4. Klaim "harga terbaik" di skenario 2 | **Sebagian** — kini "harga pas, nggak ada selisih"; lebih netral tapi tetap pernyataan atas nama toko |
+
+**Regresi:** tidak ada.
+
+### Skor
+
+| | Sebelum | Sesudah | Alasan |
+|---|---|---|---|
+| Skenario 1 | 6.5 | 8.5 | SESUDAH sesuai kebijakan persis, menanggapi refund, ada waktu tindak lanjut & catatan admin; minus kecil soal fitur tukar Shopee. SEBELUM minta data pribadi, abaikan refund, tanpa proses resmi. |
+| Skenario 2 | 6.5 | 8 | SEBELUM mengarang 3 promo & membuka celah WA; SESUDAH tegas & siap kirim, minus "harga pas". |
+| **Rata-rata** | **6.5** | **8.25** | |
+
+**VERDIK: LULUS** — SESUDAH 8,25, jelas di atas SEBELUM (6,5); tidak ada janji/kompensasi karangan.
+
+Sisa (tidak memblokir): netralkan kalimat harga di bank jawaban off-platform; jangan sebut fitur pengembalian Shopee sebagai alat "pilih ukuran pengganti".
+
+### Cuplikan jualan (jujur)
+
+> Tanpa skill, bot menjanjikan "voucher toko", "gratis ongkir", dan "diskon beli 2" yang tidak pernah Anda tawarkan; dengan skill, balasan hanya memakai kebijakan toko Anda, menanggapi permintaan refund pembeli, dan menandai bagian yang perlu Anda isi atau konfirmasi.
