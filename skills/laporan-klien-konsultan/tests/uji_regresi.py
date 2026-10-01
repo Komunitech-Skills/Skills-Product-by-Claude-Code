@@ -78,7 +78,7 @@ class UjiCatat(unittest.TestCase):
         code, _, err = jalankan("catat", "--klien", "A", "--proyek", "B", "--pekerjaan", "C",
                                  "--jam", "abc", cwd=self.dir)
         self.assertEqual(code, 1)
-        self.assertIn("bukan angka", err)
+        self.assertIn("tidak dikenali", err)
 
     def test_jam_negatif_ditolak(self):
         code, _, err = jalankan("catat", "--klien", "A", "--proyek", "B", "--pekerjaan", "C",
@@ -187,12 +187,17 @@ class UjiLaporan(unittest.TestCase):
         self.assertEqual(d["periode"]["akhir"], "2026-08-31")
         self.assertEqual(d["jumlah_entri"], 1)
 
-    def test_rencana_diturunkan_dari_berjalan_jika_tidak_diberi(self):
+    def test_rencana_tanpa_data_jadi_isian_bukan_ulang_judul(self):
+        # 1.0.5: tidak lagi "Lanjutkan: <judul>" (mekanis); wajib isian [isi: ...] + catatan
         code, out, err = jalankan("--file", str(self.file), "laporan", "--klien", "PT Maju",
                                    "--dari", "2026-09-21", "--sampai", "2026-09-27", "--json",
                                    cwd=self.dir)
         d = json.loads(out)
-        self.assertEqual(d["rencana_berikutnya"], ["Lanjutkan: Susun SPT PPN (Pembukuan)"])
+        self.assertEqual(len(d["rencana_berikutnya"]), 3)  # 1 berjalan + 2 terkendala
+        self.assertTrue(all(r.startswith("[isi: ") for r in d["rencana_berikutnya"]))
+        self.assertFalse(any("Lanjutkan" in r for r in d["rencana_berikutnya"]))
+        self.assertEqual(d["rencana_perlu_diisi"], 3)
+        self.assertTrue(any("isian [isi: ...]" in c for c in d["catatan"]))
 
     def test_rencana_manual_dipakai_bukan_turunan(self):
         code, out, err = jalankan("--file", str(self.file), "laporan", "--klien", "PT Maju",
@@ -260,7 +265,164 @@ class UjiLaporan(unittest.TestCase):
         self.assertIn("init", err)
 
 
+DATA = SINI / "tests" / "data"
+
+
+class UjiRevisi105(unittest.TestCase):
+    """Regresi temuan uji OpenClaw 2026-10-01 (solusi-vip/konsultan, skenario 04)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def lapor(self, path, klien="PT Sentosa Makmur", *extra):
+        code, out, err = jalankan("--file", str(path), "laporan", "--klien", klien,
+                                   "--dari", "2026-09-22", "--sampai", "2026-09-26",
+                                   *extra, "--json", cwd=self.dir)
+        return code, (json.loads(out) if out.strip() else None), err
+
+    # --- file contoh skenario 04 (CSV milik member, format awam) ---
+    def test_file_member_skenario_04_terbaca_dan_total_persis(self):
+        code, d, err = self.lapor(DATA / "catatan-kerja.csv")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(d["jumlah_entri"], 5)  # 19 & 29 Sep + CV Lancar Abadi dikecualikan
+        self.assertEqual(len(d["selesai"]), 2)
+        self.assertEqual(len(d["berjalan"]), 3)
+        self.assertEqual(d["total_jam"], 9.75)
+        self.assertEqual(d["total_jam_teks"], "9,75 jam (9 jam 45 menit)")
+        jam_item = [r["jam"] for r in d["rincian"]]
+        self.assertEqual(sorted(jam_item), [1.0, 1.5, 1.5, 2.5, 3.25])  # "90 menit" -> 1,5
+        self.assertEqual(round(sum(jam_item), 2), d["total_jam"])
+        self.assertIn("3,25 jam", d["teks_wa"])
+        self.assertNotIn("3,2 jam", d["teks_wa"])
+        self.assertNotIn("9,8 jam", d["teks_wa"])
+        self.assertEqual(d["butuh_dari_klien"], ["nunggu data stok opname dari klien"])
+        self.assertIn("klien minta tambah alur retur", d["teks_wa"])  # keterangan ikut tampil
+
+    def test_total_sama_dengan_jumlah_item_yang_tampil(self):
+        import re as _re
+        code, d, err = self.lapor(DATA / "catatan-kerja.csv")
+        tampil = _re.findall(r"\((\d+(?:,\d+)?) jam\)", d["teks_wa"])
+        jumlah = sum(float(x.replace(",", ".")) for x in tampil)
+        self.assertAlmostEqual(jumlah, d["total_jam"], places=9)
+        self.assertIn(f"Total jam tercatat: {d['total_jam_teks']}", d["teks_wa"])
+
+    def test_tidak_ada_kata_periode_ganda(self):
+        code, d, err = self.lapor(DATA / "catatan-kerja.csv")
+        for teks in (d["teks_email"], d["teks_wa"], d["markdown"], d["ringkasan"]):
+            self.assertNotRegex(teks.lower(), r"periode\s+periode")
+            self.assertNotIn("kustom", teks.lower())
+
+    def test_rencana_dari_kolom_file_member(self):
+        f = self.dir / "dengan-rencana.csv"
+        f.write_text("Tanggal,Klien,Kegiatan,Durasi,Status,Rencana\n"
+                     "22/09/2026,PT A,Draft SOP,2 jam,berjalan,Kirim draf SOP ke klien Senin 29/9\n"
+                     "23/09/2026,PT A,Audit stok,1 jam,berjalan,\n", encoding="utf-8")
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(d["rencana_berikutnya"][0], "Kirim draf SOP ke klien Senin 29/9")
+        self.assertEqual(d["rencana_berikutnya"][1],
+                         '[isi: langkah berikutnya untuk "Audit stok" + target tanggal]')
+
+    # --- pembacaan toleran ---
+    def test_titik_koma_desimal_koma_cp1252(self):
+        f = self.dir / "excel-indo.csv"
+        f.write_bytes("Tgl;Client;Aktivitas;Jam;Status;Catatan\n"
+                      "22-09-2026;PT A;Rapat café;2,5;Selesai;\n"
+                      "23 Sep 2026;PT A;Laporan;1:15;on progress;\n".encode("cp1252"))
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(d["total_jam"], 3.75)
+        self.assertIn("café", d["teks_wa"])
+        self.assertTrue(any("Windows-1252" in c for c in d["catatan"]))
+
+    def test_bom_utf8_dan_header_inggris(self):
+        f = self.dir / "en.csv"
+        f.write_bytes("\ufeffDate,Client,Project,Task,Hours,Status,Notes\n"
+                      "2026-09-22,PT A,Web,Landing page,\"1,25\",done,\n".encode("utf-8"))
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(d["total_jam"], 1.25)
+        self.assertEqual(d["selesai"], ["Landing page"])
+
+    def test_utf16_tab_dari_excel(self):
+        f = self.dir / "u16.csv"
+        f.write_bytes("Tanggal\tKlien\tPekerjaan\tDurasi\n22/09/2026\tPT A\tRapat\t45 menit\n"
+                      .encode("utf-16"))
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(d["total_jam"], 0.75)
+
+    def test_tanpa_kolom_klien_dianggap_satu_klien_dengan_catatan(self):
+        f = self.dir / "satu-klien.csv"
+        f.write_text("Tanggal,Pekerjaan,Durasi\n22/09/2026,Rapat,1 jam 30 menit\n", encoding="utf-8")
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(d["total_jam"], 1.5)
+        self.assertTrue(any("tidak punya kolom Klien" in c for c in d["catatan"]))
+
+    def test_koma_desimal_tanpa_kutip_pesan_jelas(self):
+        f = self.dir / "rusak.csv"
+        f.write_text("Tanggal,Klien,Kerjaan,Durasi\n22/09/2026,PT A,Rapat,2,5 jam\n", encoding="utf-8")
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 1)
+        self.assertIn("Baris 2", err)
+        self.assertIn("tanda kutip", err)
+
+    def test_kolom_wajib_tidak_ada_pesan_jelas(self):
+        f = self.dir / "aneh.csv"
+        f.write_text("Kolom1,Kolom2\nx,y\n", encoding="utf-8")
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 1)
+        self.assertIn("tidak punya kolom wajib", err)
+        self.assertIn("Header yang terbaca", err)
+
+    def test_durasi_tidak_dikenali_sebut_baris(self):
+        f = self.dir / "durasi.csv"
+        f.write_text("Tanggal,Klien,Kerjaan,Durasi\n22/09/2026,PT A,Rapat,sebentar\n", encoding="utf-8")
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 1)
+        self.assertIn("Baris 2", err)
+        self.assertIn("90 menit", err)
+
+    def test_log_lama_skema_skill_tetap_terbaca(self):
+        f = self.dir / "log-kerja-klien.csv"
+        jalankan("--file", str(f), "catat", "--klien", "PT A", "--proyek", "P", "--pekerjaan",
+                 "Kerja", "--jam", "3,25", "--tanggal", "2026-09-22", cwd=self.dir)
+        code, d, err = self.lapor(f, "PT A")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(d["total_jam"], 3.25)
+
+
 class UjiFungsiInternal(unittest.TestCase):
+    def test_parse_jam_format_awam(self):
+        kasus = {"2": 2.0, "2,5": 2.5, "2.5": 2.5, "2,5 jam": 2.5, "90 menit": 1.5,
+                 "1 jam 30 menit": 1.5, "1:30": 1.5, "2h": 2.0, "45m": 0.75, "100 menit": 1.67,
+                 "3,25 jam": 3.25, "2 Jam": 2.0, "": None}
+        for teks, harap in kasus.items():
+            self.assertEqual(modul.parse_jam(teks), harap, teks)
+
+    def test_format_jam_dua_desimal_tanpa_pembulatan_ulang(self):
+        self.assertEqual(modul.format_jam(3.25), "3,25 jam")
+        self.assertEqual(modul.format_jam(9.75), "9,75 jam")
+        self.assertEqual(modul.format_jam(1.67), "1,67 jam")
+        self.assertEqual(modul.format_jam_menit(9.75), "9,75 jam (9 jam 45 menit)")
+        self.assertEqual(modul.format_jam_menit(0.5), "0,5 jam (30 menit)")
+        self.assertEqual(modul.format_jam_menit(1.67), "1,67 jam")
+
+    def test_jumlah_jam_persis(self):
+        self.assertEqual(modul.jumlah_jam([1.67, 1.67, 1.67]), 5.01)
+        self.assertEqual(modul.jumlah_jam([0.1, 0.2]), 0.3)
+
+    def test_tanggal_format_indonesia(self):
+        self.assertEqual(modul.baca_tanggal("22/09/2026"), date(2026, 9, 22))
+        self.assertEqual(modul.baca_tanggal("22 Sep 2026"), date(2026, 9, 22))
+        self.assertEqual(modul.baca_tanggal("22 Agustus 2026"), date(2026, 8, 22))
+        self.assertEqual(modul.baca_tanggal("2026-09-22 00:00:00"), date(2026, 9, 22))
+
     def test_rentang_minggu_ini_senin_minggu(self):
         label, a, b = modul.rentang_periode("minggu-ini", date(2026, 9, 26))  # Sabtu
         self.assertEqual((a, b), (date(2026, 9, 21), date(2026, 9, 27)))
