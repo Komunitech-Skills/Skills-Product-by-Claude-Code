@@ -32,16 +32,18 @@ Menghasilkan caption jualan yang terasa lokal, tidak kaku, dan mendorong pembeli
    - **B – Langsung jualan:** keunggulan + promo + CTA tegas.
    - **C – Santai/humor:** bahasa gaul yang ringan, sesuai target.
 3. **Sesuaikan dengan platform** (lihat tabel).
-4. **Cek panjang** setiap variasi sebelum mengirim: hitung kata caption (hashtag tidak dihitung).
-   Jika di luar rentang tabel, tulis ulang sampai masuk rentang.
-5. Tawarkan revisi: nada, panjang, atau fokus.
+4. **Daftar fakta.** Sebelum menulis, catat dalam hati "Fakta dari pengguna": hanya yang diucapkan pengguna (produk, harga, ukuran, lokasi, cara order). Apa pun di luar daftar itu tidak boleh muncul sebagai fakta; tulis `[isi: ...]` atau tanyakan.
+5. **Cek sebelum kirim.** Simpan 3 variasi ke file kerja lalu jalankan
+   `python3 <folder-skill-ini>/scripts/cek_caption.py --platform ig --teks-file caption.md --fakta "<kata-kata pengguna>"`
+   (`python`/`py` di Windows; platform: `ig`, `tiktok`, `fb`, `wa`). Skrip menghitung kata, hashtag, dan menandai klaim karangan/kesehatan. Perbaiki semua GAGAL sampai `HASIL: LULUS`. Bila skrip tidak bisa dijalankan, hitung manual: kata (tanpa hashtag) dan jumlah hashtag per variasi harus masuk tabel.
+6. Tawarkan revisi: nada, panjang, atau fokus.
 
 ## Aturan per platform
 
 | Platform | Panjang (tanpa hashtag) | Catatan |
 |---|---|---|
-| Instagram | 80–150 kata | Hook di baris pertama, paragraf pendek, 5–10 hashtag di akhir |
-| TikTok | 1–3 kalimat | Hook sangat kuat, 3–5 hashtag, sarankan teks overlay |
+| Instagram | 80–150 kata | Hook di baris pertama, maks. 2–3 kalimat per paragraf (baris kosong di antaranya), **3–8 hashtag relevan di baris terakhir, wajib di SETIAP variasi** |
+| TikTok | 8–60 kata (1–3 kalimat) | Hook sangat kuat, 3–5 hashtag, sarankan teks overlay |
 | Facebook | 50–120 kata | Boleh lebih bercerita, hashtag 0–3 |
 | WA Status | ≤ 30 kata | Tanpa hashtag, langsung ke promo & cara order |
 
@@ -49,13 +51,16 @@ Menghasilkan caption jualan yang terasa lokal, tidak kaku, dan mendorong pembeli
 
 ```
 **Variasi A – Storytelling**
-<caption>
+<caption, panjang sesuai tabel>
+#hashtag1 #hashtag2 #hashtag3  (jumlah sesuai tabel)
 
 **Variasi B – Langsung jualan**
 <caption>
+#hashtag ...
 
 **Variasi C – Santai**
 <caption>
+#hashtag ...
 
 💡 Tips posting: <1–2 saran singkat, mis. jam posting atau ide visual>
 ```
@@ -66,6 +71,7 @@ Menghasilkan caption jualan yang terasa lokal, tidak kaku, dan mendorong pembeli
 - Setiap variasi wajib punya **CTA** yang jelas sesuai cara order.
 - Emoji secukupnya (maks. 1 per kalimat); jangan berlebihan.
 - Hashtag campuran: umum (#umkmindonesia), niche (#kuekeringlebaran), dan lokal (#kulinerbandung) jika lokasi diketahui.
-- **Jangan** membuat klaim yang tidak diberikan pengguna (mis. "halal", "BPOM", "100% organik", "terlaris").
-- **Jangan** menulis klaim kesehatan/medis (menyembuhkan, mencegah penyakit, menurunkan berat badan) **walaupun diminta pengguna**. Jelaskan singkat bahwa klaim seperti itu berisiko melanggar aturan iklan BPOM, lalu tawarkan alternatif yang aman (fokus rasa, bahan, pengalaman).
+- **Fakta hanya dari pengguna.** Jangan menambah fakta apa pun yang tidak diberikan: bahan, "tanpa pengawet", "100% alami", asal/daerah, ukuran, stok terbatas, gratis ongkir/siap antar, jam buka, "terlaris/favorit", label halal/BPOM/PIRT, angka pelanggan, dan **testimoni/pengalaman pribadi karangan** ("dulu aku juga..."). Butuh detail itu? Tulis `[isi: ...]` atau tanyakan. Cerita di Variasi A memakai situasi umum pembeli (bukan "aku/saya" fiktif).
+- **Klaim kesehatan DILARANG walaupun diminta**, terutama untuk pangan, minuman, jamu/herbal, suplemen, dan kosmetik. Aturan iklan BPOM (Perka BPOM tentang pengawasan iklan pangan olahan/obat tradisional/kosmetik, serta UU 8/1999 Perlindungan Konsumen) melarang klaim mengobati, menyembuhkan, meredakan, mengatasi, mencegah penyakit, menurunkan berat badan/gula darah, detox, atau "pengganti obat". Itu juga mencakup bentuk halus: "bantu redakan kembung", "pas asam lambung naik", "menjaga imun", "bikin langsing". Jelaskan singkat ke pengguna, lalu tawarkan alternatif aman: rasa, aroma, tekstur, tradisi/kebiasaan minum, cara menikmati, bahan **yang disebut pengguna**, momen konsumsi (mis. "teman santai sore"). Pengguna perlu memastikan aturan terbaru di bpom.go.id; skill ini bukan nasihat hukum.
+- Kata yang jangan dipakai di caption pangan/jamu/kosmetik: menyembuhkan, mengobati, meredakan, mengatasi, menurunkan (gula darah/kolesterol/berat badan), detox, melangsingkan, pemutih, anti-(penyakit), obat alami, terapi, khasiat, "bantu ... (penyakit)".
 - Jangan menjelekkan merek pesaing.
