@@ -1,6 +1,6 @@
 ---
 name: kas-umkm
-description: Buku kas harian lokal untuk warung, toko, dan UMKM (SQLite di komputer pemilik, tanpa langganan/internet), dioperasikan lewat chat. Catat uang masuk/keluar per kategori (penjualan, modal, beli stok, gaji, listrik/air, sewa, prive, pajak, pinjaman/cicilan utang, kasbon karyawan), saldo per akun (laci, rekening, e-wallet, QRIS), pindah dana antar akun, hitung uang laci + selisih, rekap harian/mingguan/bulanan, peringatan prive berlebihan, impor CSV/mutasi bank dan rekap kasir-lokal, ekspor ke laporan-keuangan-emkm & arus-kas-13minggu, ringkasan harian ke Telegram (OpenClaw). Gunakan untuk "catat pengeluaran", "uang masuk hari ini", "saldo kas", "hitung laci", "rekap kas", "ambil uang pribadi", cash book, petty cash, daily cash log.
+description: Buku kas harian lokal untuk warung, toko, dan UMKM (SQLite di komputer pemilik, tanpa langganan/internet), dioperasikan lewat chat. Catat uang masuk/keluar per kategori (penjualan, modal, beli stok, gaji, listrik/air, sewa, prive, pajak, pinjaman/cicilan utang, kasbon karyawan), saldo per akun (laci, rekening, e-wallet, QRIS), pindah dana antar akun, hitung uang laci + selisih, rekap harian/mingguan/bulanan, peringatan prive berlebihan, impor CSV/mutasi bank dan rekap kasir-lokal, ekspor ke laporan-keuangan-emkm & arus-kas-13minggu, ringkasan harian ke Telegram (OpenClaw), juga rekap sekali jalan dari catatan kas teks/file tanpa database. Gunakan untuk "catat pengeluaran", "saldo kas", "hitung laci", "rekap kas", "rekap catatan kas dari file", "uang di laci harusnya berapa", "kok laci kurang", "untung hari ini", cash book, petty cash, cash count, cash drawer shortage, daily cash recap.
 ---
 
 # Buku Kas UMKM (kas-umkm)
@@ -14,6 +14,7 @@ Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan ke
 - "Catat pengeluaran 25 ribu beli es batu", "hari ini jualan tunai 1,2 juta, QRIS 350 ribu", "bayar listrik 200rb dari BRI"
 - "Ambil 300 ribu buat belanja rumah" (prive), "masukin modal 2 juta", "setor laci ke BRI 1 juta" (pindah dana)
 - "Hitung laci: 100rb 5 lembar, 50rb 3 lembar, receh 3.500" (opname), "kok uang laci kurang?"
+- "Ini catatan kas hari ini (file/teks), rekap: pemasukan, pengeluaran, untung, uang di laci harusnya berapa?" → **langkah B0** (tanpa database)
 - "Saldo kas sekarang berapa?", "rekap kas hari ini / minggu lalu / bulan September"
 - "Impor mutasi BRI ini", "masukkan rekap kasir hari ini ke buku kas"
 - "Kirim ringkasan kas ke Telegram saya tiap malam" (OpenClaw)
@@ -38,7 +39,7 @@ Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan ke
 7. **Satu buku yang benar — tolak pembukuan ganda.** Jawaban baku: "Maaf, saya tidak bisa membantu membuat pembukuan ganda (satu versi untuk pajak, satu versi 'asli'), mengecilkan omzet, atau menghapus/menyembunyikan catatan supaya pajak lebih kecil. Pencatatan wajib mencerminkan keadaan usaha yang sebenarnya (UU KUP Pasal 28 ayat (3)), dan memperlihatkan pembukuan yang tidak menggambarkan keadaan sebenarnya atau menyampaikan SPT yang isinya tidak benar adalah tindak pidana perpajakan (UU KUP Pasal 39 ayat (1) huruf d & f, UU 28/2007). Yang bisa saya bantu: merapikan satu buku kas yang benar, menghitung pajak yang memang terutang (mis. PPh Final UMKM 0,5% lewat `pph-final-umkm`, termasuk omzet sampai Rp 500 juta setahun yang tidak dikenai pajak untuk orang pribadi), dan menyiapkan ringkasan untuk konsultan pajak." Jangan menyarankan cara lain yang tujuannya sama.
 
 ## Cara menjalankan script
-Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python` atau `py`):
+Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). File yang disebut pengguna dicari di folder kerja/workspace saja. Windows: ganti `python3` dengan `python` atau `py`:
 ```bash
 python3 <folder-skill-ini>/scripts/kas.py <perintah> [opsi] --json
 ```
@@ -64,6 +65,22 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 1. `info --json`. Jika belum ada → satu pesan: (1) nama usaha; (2) uang di laci sekarang; (3) punya rekening/e-wallet untuk usaha? saldo masing-masing? uang QRIS masuk ke mana?; (4) mau batas ambil pribadi per bulan?; (5) di WIB/WITA/WIT?
 2. `init --nama-usaha "..." --kas-awal 500rb [--mulai DD/MM/YYYY] [--batas-prive 3jt] [--zona WIB]` → konfirmasi → `--ya`.
 3. Per rekening: `akun tambah --nama BRI --jenis bank --saldo-awal 3jt [--terima-qris]` / `--jenis e-wallet` → konfirmasi → `--ya`. Saldo awal = saldo **per tanggal mulai** (default hari ini).
+
+### B0. Rekap catatan kas dari teks/file (sekali jalan, tanpa database)
+Untuk "ini catatan kas hari ini, rekap / untung berapa / laci harusnya berapa / kok kurang" — **pakai skill ini**, jangan hitung sendiri.
+1. Baca file/teks pengguna (di folder kerja). Ubah **setiap** baris uang menjadi `arah;jumlah;kategori;metode;catatan`:
+   - kategori dari daftar di B.2 (kosong = ditebak script); "(dr laci)" = `tunai`, QRIS = `qris`, transfer = `transfer`; kasbon karyawan = `kasbon`, ambil pribadi = `prive`, setor/tarik antar akun sendiri = `pindah`.
+   - "modal laci pagi" → `--laci-awal`; "uang di laci pas tutup diitung" → `--fisik` (atau `--pecahan`).
+   - Satuan: "@85.000 × 2 org" → tulis totalnya (170.000) dan sebut di catatan; jangan menghitung lain di luar itu.
+2. Jalankan (tidak menulis database apa pun, tidak perlu `--ya`):
+   ```bash
+   python3 <folder-skill-ini>/scripts/kas.py cek-catatan --laci-awal 500rb --fisik 2.580.000 \
+     --baris "masuk;1.250.000;penjualan;tunai;jual nasi pagi" --baris "masuk;735rb;penjualan;qris;qris" \
+     --baris "keluar;66rb;beli-stok;tunai;gas 3 tabung" --baris "keluar;100rb;kasbon;tunai;kasbon Dedi" --json
+   ```
+   Banyak baris → tulis ke file `catatan-kas-<tanggal>.txt` di folder kerja (satu baris per entri) lalu `--file`.
+3. Salin ke chat apa adanya: tabel per baris, **hasil usaha**, hitungan **uang laci seharusnya**, **selisih (KURANG/LEBIH)**, kemungkinan penyebab, uang yang tidak lewat laci (QRIS/transfer), catatan, dan asumsi (kategori "ditebak", cara bayar dianggap tunai, baris "PERLU DICEK"). Tanyakan sekali, dalam satu pesan, kategori baris yang "PERLU DICEK".
+4. Tawarkan menyimpan ke buku kas: jalankan `catat --baris ...` (format sama) → pratinjau → simpan setelah "ya" (Aturan keamanan 1–2).
 
 ### B. Catat uang masuk/keluar (inti)
 1. Satu transaksi: `catat --keluar 25rb --kategori beli-stok --metode tunai --catatan "es batu"`.

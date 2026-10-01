@@ -423,7 +423,8 @@ class UjiRevisi101(unittest.TestCase):
 
     def test_p2_prodid_versi(self):
         ics = jalan("--profil", "op-umkm", "--tahun", "2026", "--format", "ics")
-        self.assertIn("PRODID:-//Komunitech//kalender-pajak 1.0.3//ID", ics)
+        self.assertIn("PRODID:-//Komunitech//kalender-pajak %s//ID" % kp.VERSI, ics)
+        self.assertEqual(kp.VERSI, "1.0.7")
 
     # P3 - CSV libur berkoma
     def test_p3_keterangan_berkoma_tanpa_kutip_tidak_terpotong(self):
@@ -651,6 +652,47 @@ class UjiRevisi102(unittest.TestCase):
                                   "--acara-pengingat", "--keluar", str(f)], sekarang_utc=STAMP)
             self.assertNotIn("--acara-pengingat", out.decode("utf-8"))
             self.assertIn("Google Calendar", out.decode("utf-8"))
+
+
+class UjiRevisi107(unittest.TestCase):
+    """v1.0.7 (uji OpenClaw 2026-10-01): kapan omzet kumulatif OP melewati Rp500 juta dihitung script,
+    bukan ditebak model; rujukan skill lain bersyarat ("bila terpasang")."""
+
+    def test_omzet_setahun_600jt_lewat_november(self):
+        # 600 jt / 12 = 50 jt/bln; kumulatif Okt = 500 jt (belum MELEWATI) -> Nov 550 jt -> setor pertama 15 Des 2026 (Selasa)
+        d = json.loads(jalan("--profil", "op-umkm", "--tahun", "2026", "--bulan-mulai", "10", "--jumlah-bulan", "1",
+                             "--omzet-setahun", "600jt", "--format", "json"))["omzet_lewat_500jt"]
+        self.assertEqual(d["bulan_lewat"], 11)
+        self.assertEqual(d["kumulatif_sebelum"], 500000000)
+        self.assertEqual(d["omzet_kena_bulan_lewat"], 50000000)
+        self.assertEqual(d["setor_pertama"], "2026-12-15")
+
+    def test_omzet_bulanan_lewat_oktober_geser_minggu(self):
+        # kumulatif s.d. Sep 492 jt; Okt +60 jt = 552 jt -> kena 52 jt; 15 Nov 2026 Minggu -> Senin 16 Nov
+        out = jalan("--profil", "op-umkm", "--tahun", "2026", "--bulan-mulai", "10", "--jumlah-bulan", "1",
+                    "--omzet-bulanan", "48jt,45jt,52jt,70jt,55jt,50jt,53jt,58jt,61jt,60jt")
+        self.assertIn("melewati Rp500 juta pada **Oktober 2026**", out)
+        self.assertIn("Rp 52.000.000", out)
+        self.assertIn("Senin, 16 November 2026", out)
+
+    def test_belum_lewat(self):
+        out = jalan("--profil", "op-umkm", "--tahun", "2026", "--omzet-bulanan", "100jt;100jt;100jt")
+        self.assertIn("belum melewati Rp500 juta (sisa Rp 200.000.000)", out)
+
+    def test_omzet_ditolak_untuk_badan_dan_input_rusak(self):
+        for argv in (["--profil", "badan-umkm", "--omzet-setahun", "600jt"],
+                     ["--profil", "badan-pkp", "--omzet-setahun", "600jt"],
+                     ["--profil", "op-umkm", "--omzet-setahun", "enam ratus"],
+                     ["--profil", "op-umkm", "--omzet-bulanan", ";".join(["10jt"] * 13)]):
+            with self.assertRaises(kp.InputSalah):
+                kp.jalankan(argv, sekarang_utc=STAMP)
+
+    def test_rujukan_skill_bersyarat_dan_tanpa_kap_karangan(self):
+        out = jalan("--profil", "op-umkm,pemberi-kerja,pkp", "--tahun", "2026", "--format", "checklist")
+        self.assertIn("hitung-ppn bila terpasang", out)
+        self.assertIn("pph-final-umkm (bila terpasang)", jalan("--profil", "op-umkm", "--tahun", "2026"))
+        self.assertNotIn("411125", out)
+        self.assertNotIn("411128", out)
 
 
 if __name__ == "__main__":

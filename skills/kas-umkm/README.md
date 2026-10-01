@@ -84,3 +84,8 @@ Bisa. Setelah menghitung uang fisik, Anda langsung tahu kurang/lebih berapa dan 
 
 **Saya sudah pakai Kasir Lokal. Perlu catat penjualan dua kali?**
 Tidak. Rekap harian kasir dimasukkan ke buku kas dengan satu perintah (tunai ke laci, QRIS ke rekening penampung). Buku kas juga menolak memasukkan rekap kasir bila tanggal itu sudah ada catatan penjualan manual, supaya penjualan tidak dobel.
+
+## Catatan revisi 1.0.11 (2026-10-01)
+- **Rekap catatan kas dari teks/file tanpa database** (perintah baru `cek-catatan`): kirim catatan kas hari ini (file atau ketikan), langsung dapat pemasukan, pengeluaran usaha, untung hari itu, uang laci seharusnya, dan selisih (kurang/lebih) dengan uang yang dihitung — tanpa menyimpan apa pun. Kasbon, prive, dan uang QRIS/transfer dipisah otomatis. Setelah itu Anda bisa memilih menyimpannya ke buku kas.
+- Skill kini terpicu oleh kalimat seperti "rekap catatan kas dari file", "uang di laci harusnya berapa", "kok laci kurang" (temuan uji OpenClaw: sebelumnya skill tidak terpakai).
+- Instruksi: script dijalankan dari subfolder `scripts/` di folder skill; file pengguna dicari di folder kerja saja (tidak mencari ke seluruh disk). 100 uji otomatis lulus (4 uji baru).

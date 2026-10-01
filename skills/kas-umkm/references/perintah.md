@@ -15,6 +15,7 @@ Semua perintah tulis hanya **pratinjau** sampai diberi `--ya`.
 | `pindah` | Pindah dana antar akun | `--dari`, `--ke`, `--jumlah`, `--biaya`, `--tanggal`, `--catatan` |
 | `batal` | Batalkan catatan (tidak dihapus) | `--id 12` atau `#12`, `--alasan` (wajib). Pindah dana: kedua sisi ikut batal |
 | `opname` | Hitung uang fisik vs buku | `--fisik N` atau `--pecahan "..."`, `--akun`, `--tanggal`, `--sesuaikan`, `--daftar` |
+| `cek-catatan` (v1.0.11) | Rekap sekali jalan dari catatan kas teks/file **tanpa database** (tidak menyimpan, tanpa `--ya`): pemasukan & beban usaha, hasil usaha (laba kas), kasbon/prive/modal terpisah, uang laci seharusnya, selisih dengan hitungan fisik | `--baris "arah;jumlah;kategori;metode;catatan"` diulang atau `--file catatan.txt` (baris `#` diabaikan), `--laci-awal`, `--fisik N` atau `--pecahan "..."`. Kategori kosong = ditebak; tidak tertebak = "PERLU DICEK" (ikut laci, tidak ikut hasil usaha); metode kosong = tunai (disebut sebagai asumsi) |
 | `rekap` | Rekap teks siap Telegram | `--tanggal`, `--minggu ini\|lalu\|tgl`, `--bulan ini\|lalu\|09/2026`, `--dari --sampai` (default hari ini) |
 | `saldo` | Saldo per akun per tanggal | `--tanggal` |
 | `daftar` | Catatan beserta ID | periode, `--kategori`, `--akun`, `--cari`, `--semua` (termasuk batal), `--maks` |

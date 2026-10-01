@@ -147,5 +147,60 @@ class UjiCLI(unittest.TestCase):
         self.assertIn("**No.:** INV/2026/09/0050", out)
 
 
+class UjiPPh23(unittest.TestCase):
+    """v1.0.3 (uji OpenClaw 2026-10-01): PPh 23 jasa 2% sebagai info, total tagihan tidak berubah.
+    Skenario: 8.750.000 + 2 x 2.375.000 = 13.500.000; PPN 12% x 11/12 x 13.500.000 = 1.485.000 -> total 14.985.000;
+    PPh 23 = 2% x 13.500.000 = 270.000 -> estimasi diterima bersih 14.985.000 - 270.000 = 14.715.000."""
+
+    DATA = {"tanggal": "2026-10-01", "jatuh_tempo_hari": 14,
+            "penjual": {"nama": "CV Uji Konsultan", "pkp": True, "npwp": "0000000000000000"},
+            "pembeli": {"nama": "PT Klien Uji"},
+            "items": [{"nama": "Jasa konsultasi", "qty": 1, "harga": "8.750.000"},
+                      {"nama": "Pendampingan", "qty": 2, "satuan": "hari", "harga": "2.375.000"}],
+            "ppn": True, "pph23": True}
+
+    setUp, tearDown, jalan = UjiCLI.setUp, UjiCLI.tearDown, UjiCLI.jalan
+
+    def test_skenario_konsultan(self):
+        kode, out, _ = self.jalan(self.DATA, "--format", "json")
+        self.assertEqual(kode, 0)
+        h = json.loads(out)
+        self.assertEqual(h["total"], 14985000)
+        self.assertEqual(h["pph23"]["pph23"], 270000)
+        self.assertEqual(h["pph23"]["estimasi_diterima_bersih"], 14715000)
+        self.assertEqual(h["sisa"], 14985000)          # total tagihan tidak dikurangi PPh 23
+        kode, out, _ = self.jalan(self.DATA)
+        self.assertIn("2% x Rp 13.500.000 = Rp 270.000", out)
+        self.assertIn("Estimasi diterima bersih: Rp 14.715.000", out)
+        self.assertIn("**TOTAL** | **Rp 14.985.000**", out)
+
+    def test_tanpa_npwp_dan_dasar_manual_dan_pembulatan(self):
+        d = copy.deepcopy(self.DATA)
+        d["pph23"] = {"tanpa_npwp": True}
+        h = json.loads(self.jalan(d, "--format", "json")[1])
+        self.assertEqual(h["pph23"]["pph23"], 540000)     # 4% x 13.500.000
+        d["pph23"] = {"dasar": "1.234.567"}
+        h = json.loads(self.jalan(d, "--format", "json")[1])
+        self.assertEqual(h["pph23"]["pph23"], 24691)      # 2% x 1.234.567 = 24.691,34 -> ke bawah
+        d["pph23"] = {"dasar": "99.000.000"}
+        self.assertEqual(self.jalan(d)[0], 2)             # dasar melebihi nilai sebelum PPN
+        d["pph23"] = {"tarif": "0"}
+        self.assertEqual(self.jalan(d)[0], 2)
+
+    def test_tidak_aktif_dan_kuitansi(self):
+        d = copy.deepcopy(self.DATA)
+        d["pph23"] = False
+        h = json.loads(self.jalan(d, "--format", "json")[1])
+        self.assertIsNone(h["pph23"])
+        d["pph23"], d["jenis_dokumen"] = True, "kuitansi"
+        self.assertEqual(self.jalan(d)[0], 2)
+
+    def test_html_memuat_info_pph23(self):
+        f = os.path.join(self.dir, "inv.html")
+        self.assertEqual(self.jalan(self.DATA, "--html", f)[0], 0)
+        with open(f, encoding="utf-8") as fh:
+            self.assertIn("Estimasi diterima bersih: Rp 14.715.000", fh.read())
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

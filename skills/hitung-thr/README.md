@@ -47,3 +47,8 @@ THR digabung dengan gaji di bulan dibayar, sehingga tarif PPh 21 (TER) naik ke b
 
 **Tanggal hari raya diambil dari mana?**
 Kamu yang menyebutkan tanggalnya (sesuai kalender libur nasional resmi). Skill lalu menghitung batas bayar H-7 secara otomatis.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Tahun Hijriah hari raya kini **dihitung** dengan script kecil `scripts/tahun_hijriah.py` (kalender Hijriah tabular; mis. 10 Maret 2027 = 1 Syawal 1448 H), bukan ditebak. Bila tidak dihitung, tahun Hijriah tidak dicantumkan (temuan uji: Lebaran Maret 2027 sempat ditulis 1449 H).
+- AI diinstruksikan tidak memakai nama dari contoh (mis. "Budi") di balasan; bila nama karyawan tidak diberikan, dipakai "Karyawan 1, 2, …".
+- Instruksi: script dijalankan dari subfolder `scripts/` di folder skill. Script `thr.py` tidak berubah (salinannya di gaji-umkm tetap identik); 29 uji otomatis lulus (3 uji baru).
