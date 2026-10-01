@@ -52,20 +52,23 @@ Tawarkan `templates/isian-rasio.csv` bila pengguna lebih suka mengisi tabel. Jik
    - Tabel dari chat/Excel → simpan ke `data.csv` atau `.md`. Kolom 1 = nama pos, kolom berikutnya = periode (lama → baru). Pemisah `;`, `,`, tab, atau tabel `|`. Bila pemisahnya koma, angka ribuan wajib dikutip (`Kas,"1,250,000"`) atau ditulis `Kas;1.250.000`. Tanpa itu script menolak dengan GALAT, tidak menebak angkanya. Ini termasuk sel yang pecah menjadi 1–3 digit, mis. `Kas,250,000`.
    - Angka yang diketik → pakai opsi `--penjualan`, `--kas`, dst.
    - File .xlsx/PDF → minta disimpan sebagai CSV atau ditempel.
-2. **Jalankan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+2. **Jalankan script.** Script `rasio.py` ada di subfolder `scripts/` di folder yang sama dengan file SKILL.md ini (mis. di OpenClaw: `~/.openclaw/skills/analisis-rasio-keuangan-usaha/scripts/rasio.py`). Pakai path itu langsung — **jangan mencari script atau file ke seluruh disk** (`find /` dsb.). Windows: `python` atau `py`:
    ```bash
-   python3 <folder-skill-ini>/scripts/rasio.py data.csv --jenis dagang --nama-usaha "Toko Berkah" --cicilan-bulanan 500rb
-   python3 <folder-skill-ini>/scripts/rasio.py --jenis jasa --penjualan 216jt --hpp 71jt --laba-bersih 23,7jt \
+   python3 scripts/rasio.py data.csv --jenis dagang --nama-usaha "Toko Berkah" --cicilan-bulanan 500rb
+   python3 scripts/rasio.py --jenis jasa --penjualan 216jt --hpp 71jt --laba-bersih 23,7jt \
      --kas 4jt --piutang 9jt --persediaan 3jt --aset-tetap 75jt --utang-usaha 6jt --utang-lancar-lain 12jt \
      --utang-jangka-panjang 35jt --modal 38jt --bulan 12
-   python3 <folder-skill-ini>/scripts/rasio.py laporan-jan.json laporan-feb.json --jenis katering --bagian-lancar-utang-bank 4jt
+   python3 scripts/rasio.py laporan-jan.json laporan-feb.json --jenis katering --bagian-lancar-utang-bank 4jt
    ```
    - Nominal boleh format Indonesia: `Rp 1.500.000`, `1,5jt`, `150rb`, `(8.000.000)` = negatif, `1,2 M` = miliar. Angka negatif lewat opsi: `--modal -4jt` atau `--modal=-4jt`.
    - Opsi lain: `--penjualan-kredit`, `--beban-bunga`, `--laba-usaha`, `--persediaan-awal`, `--piutang-awal`, `--total-aset`, `--total-utang`, `--utang-lancar`, `--hari`. Opsi yang diberikan bersama file berlaku untuk **periode terakhir**.
+   - **Utang bank/pinjaman yang jatuh tempo ≤ 12 bulan** (utang bank jangka pendek, kredit modal kerja, bagian lancar pinjaman) → selalu isi terpisah dengan `--utang-bank-pendek`, **jangan** digabung ke `--utang-lancar-lain`. Script memakainya untuk pemeriksaan kas vs utang jatuh tempo.
    - Dari EMKM, utang bank dianggap utang lancar seluruhnya (konservatif). Tanyakan pokok yang jatuh tempo 12 bulan ke depan lalu isi `--bagian-lancar-utang-bank`.
    - `--format json` untuk angka mentah. Default teks Markdown siap tempel.
 3. **Baca "Perlu dicek"** (angka tak terbaca, mustahil, neraca tidak seimbang, baris tak dikenal). Tanyakan dalam satu pesan, lalu jalankan ulang. Selama status data SEMENTARA, sebut hasilnya sementara. Bila status **DATA BELUM CUKUP** (kurang dari 5 rasio bisa dinilai), jangan menyimpulkan usaha "sehat". Sampaikan pos yang belum ada (saran "Lengkapi data") dan ajukan pertanyaan di bagian Input.
 4. **Sajikan hasil** dengan format di bawah. Semua angka, status, dan persen **dari output script**. Boleh menyederhanakan kalimat "Artinya", tetapi tidak boleh mengubah angka atau status.
+   - **Likuiditas:** salin kalimat "Pemeriksaan kas vs utang jatuh tempo" (tingkat RENDAH / RENDAH–SEDANG / SEDANG / TINGGI) beserta rinciannya apa adanya. **Dilarang** menulis "tidak ada risiko gagal bayar" atau "pasti aman" — paling rendah tulis "risiko rendah". Rasio lancar/cepat yang 🟢 tidak menghapus risiko bila kas < utang bank jatuh tempo.
+   - **Skala & jenis usaha:** script menulis skala (mikro/kecil/menengah/besar dari penjualan setahun) dan ambang yang dipakai — sebutkan. Bila jenis usaha **tidak disebut pengguna** dan Anda memilih `--jenis` sendiri, tulis di bagian Asumsi: "Jenis usaha diasumsikan [dagang], karena …; beri tahu bila keliru."
 5. **Kesiapan KUR:** sampaikan kesimpulan + poin ✓/⚠/✗ apa adanya. Jika pengguna ingin lanjut mengajukan, arahkan ke `pengajuan-kur` (simulasi cicilan, checklist dokumen). Tegaskan: bank yang memutuskan.
 6. Periksa checklist, lalu kirim. Tawarkan: hitung ulang tiap bulan/kuartal, bandingkan dengan periode lalu, atau versi ringkas untuk dilampirkan ke proposal.
 
@@ -102,13 +105,14 @@ usaha dagang: 10 baik, 1 waspada, 0 bahaya. Perlu diperhatikan: Umur stok 35,8 h
 ## Checklist sebelum mengirim
 - [ ] Semua angka dari output script (atau hitung manual yang ditandai jelas).
 - [ ] Rasio "tidak dihitung" ditampilkan beserta alasannya, bukan diganti 0 atau ditebak.
-- [ ] Jenis usaha & sifat ambang (pedoman praktis, bukan standar resmi) disebut.
+- [ ] Jenis usaha & sifat ambang (pedoman praktis, bukan standar resmi) disebut; jenis yang dipilih agent sendiri ditulis sebagai asumsi.
+- [ ] Utang bank jatuh tempo ≤ 12 bulan diisi lewat `--utang-bank-pendek`; kalimat tingkat risiko likuiditas disalin dari script; tidak ada frasa "tidak ada risiko".
 - [ ] Peringatan (angka mustahil, neraca tidak seimbang, SEMENTARA) disampaikan.
 - [ ] Kesiapan KUR disebut sebagai pembacaan angka, **bukan** keputusan bank; tidak menjanjikan kredit cair.
 - [ ] Disclaimer ada. Tidak ada rekomendasi investasi.
 
 ## Batasan & penanganan error
-- Uji regresi: `python3 <folder-skill-ini>/tests/uji_regresi.py` (harus "SEMUA UJI LULUS").
+- Uji regresi: `python3 tests/uji_regresi.py` (subfolder `tests/` di folder skill ini) (harus "SEMUA UJI LULUS").
 - Script keluar kode 2 dengan pesan `GALAT: ...` untuk file kosong, tidak ada, Excel/PDF/biner, JSON rusak, jenis usaha tak dikenal, atau tidak ada angka yang terbaca. Sampaikan pesan itu beserta cara memperbaikinya.
 - Pembagi nol → "tidak dihitung" + alasan. Modal ≤ 0 → ROE/DER tidak bermakna (bahaya). Aset/utang negatif → mustahil, rasio terkait tidak dihitung. Baris tabel tak dikenal dilewati dan dilaporkan.
 - Tabel utama periode terakhir memakai rata-rata saldo awal-akhir bila tersedia. Tabel tren memakai saldo akhir untuk semua periode agar sebanding, dan basis ini ditulis di output. Jangan membandingkan angka tabel utama dengan kolom tren periode sebelumnya.

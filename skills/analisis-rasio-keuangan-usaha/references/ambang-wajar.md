@@ -31,6 +31,11 @@ Format: **baik / waspada**. Nilai yang lebih buruk dari batas waspada = bahaya. 
 
 Yang tidak diberi status, cukup "info": modal kerja, margin usaha, perputaran (persediaan, piutang, aset), lama bayar pemasok, dan siklus kas. Rasio-rasio ini hanya bermakna bila dibandingkan antarperiode.
 
+### 2a. Skala usaha & pemeriksaan kas vs utang jatuh tempo (v1.0.4, 2026-10-01)
+- **Skala** dihitung dari penjualan setahun (penjualan × 12 ÷ bulan periode) memakai kriteria hasil penjualan tahunan PP 7/2021 Pasal 35: mikro ≤ Rp2 M, kecil > Rp2 M s.d. Rp15 M, menengah > Rp15 M s.d. Rp50 M, besar > Rp50 M. *(perlu review: kutipan pasal dari ringkasan sekunder)*
+- Untuk skala **menengah/besar**, dua ambang diperketat (pedoman praktis Komunitech): rasio kas ≥ 0,3 baik / ≥ 0,15 waspada; cakupan bunga ≥ 3 baik / ≥ 2 waspada. Alasannya: usaha yang lebih besar biasanya membiayai modal kerja dengan pinjaman bank berjangka pendek, dan bank umum lazim mensyaratkan cakupan bunga minimal sekitar 2× dalam perjanjian kredit (praktik umum, bukan aturan resmi). Ambang lain tetap per jenis usaha.
+- **Pemeriksaan kas vs utang jatuh tempo** (semua skala): bila utang bank/pinjaman yang jatuh tempo ≤ 12 bulan lebih besar dari kas, status rasio kas paling tinggi 🟡 waspada, muncul saran "utang bank jatuh tempo > kas", dan kesiapan kredit tidak boleh "ANGKA CUKUP SEHAT". Tingkat risiko likuiditas ditulis bertingkat — RENDAH (kas ≥ seluruh utang lancar), RENDAH–SEDANG, SEDANG (kas < utang bank jatuh tempo tetapi kas + piutang cukup, atau kas + piutang < utang lancar), TINGGI (aset lancar < utang lancar, atau kas + piutang tidak cukup menutup utang lancar saat kas < utang bank jatuh tempo). Skill tidak pernah menulis "tidak ada risiko".
+
 **Catatan jenis usaha**
 - Warung makan, katering, dan kue dimasukkan ke **produksi**, karena mereka mengolah bahan. Margin kotornya biasanya jauh di atas warung sembako.
 - Toko fashion atau aksesori bermargin tinggi tetap "dagang". Margin kotor 30–50% di sana wajar dan akan tampil "baik".

@@ -600,9 +600,69 @@ _KW_KEPUTUSAN = re.compile(
 )
 
 
-def tandai_kandidat_perhatian(pesan, nama_saya=None):
+_BULAN_TENGGAT = {"jan": 1, "feb": 2, "peb": 2, "mar": 3, "apr": 4, "mei": 5, "may": 5, "jun": 6, "jul": 7,
+                  "agu": 8, "agt": 8, "aug": 8, "sep": 9, "okt": 10, "oct": 10, "nov": 11, "nop": 11,
+                  "des": 12, "dec": 12}
+_HARI_TENGGAT = {"senin": 0, "selasa": 1, "rabu": 2, "kamis": 3, "jumat": 4, "jum'at": 4, "sabtu": 5}
+_RE_TGL_ANGKA = re.compile(r"(?<![\d/])(\d{1,2})/(\d{1,2})(?:/(\d{2}|\d{4}))?(?![\d/])")
+_RE_TGL_BULAN = re.compile(r"\b(\d{1,2})\s+(jan|feb|peb|mar|apr|mei|may|jun|jul|agu|agt|aug|sep|okt|oct|nov|nop|des|dec)[a-z]*\b",
+                           re.IGNORECASE)
+_RE_RELATIF = re.compile(r"\b(hari ini|besok|lusa)\b", re.IGNORECASE)
+_RE_HARI = re.compile(r"\b(senin|selasa|rabu|kamis|jum'?at|sabtu|hari minggu)\b", re.IGNORECASE)
+
+
+def _tahun_terdekat(tgl_pesan, bulan, hari):
+    """Tanggal tanpa tahun → tahun yang paling dekat dengan tanggal pesan (antisipasi Des→Jan)."""
+    calon = []
+    for th in (tgl_pesan.year - 1, tgl_pesan.year, tgl_pesan.year + 1):
+        try:
+            calon.append(date(th, bulan, hari))
+        except ValueError:
+            pass
+    return min(calon, key=lambda d: abs((d - tgl_pesan).days)) if calon else None
+
+
+def deteksi_tenggat(teks, tgl_pesan):
+    """Cari tenggat di teks pesan. Kembalikan (tanggal, potongan_teks, pasti) atau None.
+    Urutan: tanggal angka (29/9) > tanggal + bulan (30 Sep) > hari ini/besok/lusa > nama hari (perkiraan)."""
+    m = _RE_TGL_ANGKA.search(teks)
+    if m:
+        h, b = int(m.group(1)), int(m.group(2))
+        if 1 <= b <= 12 and 1 <= h <= 31:
+            if m.group(3):
+                th = int(m.group(3))
+                th = th + 2000 if th < 100 else th
+                try:
+                    return date(th, b, h), m.group(0), True
+                except ValueError:
+                    pass
+            else:
+                d = _tahun_terdekat(tgl_pesan, b, h)
+                if d:
+                    return d, m.group(0), True
+    m = _RE_TGL_BULAN.search(teks)
+    if m:
+        d = _tahun_terdekat(tgl_pesan, _BULAN_TENGGAT[m.group(2)[:3].lower()], int(m.group(1)))
+        if d:
+            return d, m.group(0), True
+    m = _RE_RELATIF.search(teks)
+    if m:
+        geser = {"hari ini": 0, "besok": 1, "lusa": 2}[m.group(1).lower()]
+        return tgl_pesan + timedelta(days=geser), m.group(0), True
+    m = _RE_HARI.search(teks)
+    if m:
+        nama = m.group(1).lower().replace("hari ", "")
+        target = 6 if nama == "minggu" else _HARI_TENGGAT.get(nama.replace("'", ""), _HARI_TENGGAT.get(nama))
+        if target is not None:
+            selisih = (target - tgl_pesan.weekday()) % 7
+            return tgl_pesan + timedelta(days=selisih), m.group(0), False
+    return None
+
+
+def tandai_kandidat_perhatian(pesan, nama_saya=None, tanggal_acuan=None):
     """Daftar pesan `jenis: obrolan` yang mengandung sinyal 'perlu perhatian'. WAJIB dipakai
-    sebagai checklist minimum oleh agent (lihat SKILL.md) — bukan pengganti penilaian akhir."""
+    sebagai checklist minimum oleh agent (lihat SKILL.md) — bukan pengganti penilaian akhir.
+    Bila tenggat terbaca dan tanggalnya < tanggal_acuan (hari ini), item diberi lewat_tenggat=True."""
     hasil = []
     for p in pesan:
         if p["jenis"] != "obrolan":
@@ -621,10 +681,22 @@ def tandai_kandidat_perhatian(pesan, nama_saya=None):
             sinyal.append("tenggat_tanggal")
         if _KW_KEPUTUSAN.search(teks):
             sinyal.append("keputusan_komplain")
+        tg = deteksi_tenggat(teks, datetime.fromisoformat(p["waktu"]).date())
+        if tg and "tenggat_tanggal" not in sinyal:
+            sinyal.append("tenggat_tanggal")
         if sinyal:
-            hasil.append({
-                "waktu": p["waktu"], "pengirim": p["pengirim"], "teks": p["teks"], "sinyal": sinyal,
-            })
+            item = {"waktu": p["waktu"], "pengirim": p["pengirim"], "teks": p["teks"], "sinyal": sinyal}
+            if tg:
+                tgl, potongan, pasti = tg
+                item["tenggat_terdeteksi"] = tgl.isoformat()
+                item["tenggat_dari_teks"] = potongan
+                item["tenggat_pasti"] = pasti
+                if tanggal_acuan is not None:
+                    item["lewat_tenggat"] = tgl < tanggal_acuan
+                    if item["lewat_tenggat"]:
+                        item["label_tenggat"] = "⏰ LEWAT TENGGAT (%s, %d hari lalu) — cek status" % (
+                            tgl.strftime("%d/%m/%Y"), (tanggal_acuan - tgl).days)
+            hasil.append(item)
     return hasil
 
 
@@ -695,7 +767,7 @@ def main():
     ap.add_argument("--sejak", help="Hanya pesan sejak waktu ini. ISO ('2026-09-12 17:00') atau 'kemarin 17:00'/'hari ini'/'besok'.")
     ap.add_argument("--sampai", help="Hanya pesan sampai waktu ini. Format sama seperti --sejak.")
     ap.add_argument("--hari-terakhir", type=int, help="Hanya pesan dalam N hari terakhir (dihitung dari --sekarang atau waktu sekarang).")
-    ap.add_argument("--sekarang", help="Override waktu 'sekarang' (ISO), untuk pengujian/hasil yang bisa diulang. Default: waktu saat script dijalankan.")
+    ap.add_argument("--sekarang", help="Override waktu 'sekarang' (ISO) = tanggal acuan untuk menandai tenggat yang sudah lewat. Default: waktu saat script dijalankan.")
     ap.add_argument("--samarkan", action="store_true", help="Samarkan (best-effort) pengirim, nama di isi pesan/@mention/pesan sistem, sapaan+nama non-anggota, dan nomor telepon. Selalu cek 'kemungkinan_nama_tersisa' di output sebelum membagikan hasil.")
     ap.add_argument("--nama-saya", help="Nama Anda persis seperti di grup, untuk menandai pesan sendiri ('dari_saya') dan mendeteksi mention langsung ke Anda di 'kandidat_perlu_perhatian'.")
     ap.add_argument("--indent", type=int, default=2, help="Indentasi JSON output (default 2; pakai 0 untuk satu baris ringkas).")
@@ -761,7 +833,8 @@ def main():
 
     # Checklist kandidat "perlu perhatian" dihitung SEBELUM penyamaran, dari teks asli,
     # supaya deteksi kata kunci tidak terganggu oleh label "Anggota N"/"Orang N".
-    kandidat_perhatian = tandai_kandidat_perhatian(pesan_terfilter, args.nama_saya)
+    tanggal_acuan = sekarang.date()
+    kandidat_perhatian = tandai_kandidat_perhatian(pesan_terfilter, args.nama_saya, tanggal_acuan)
 
     pemetaan_samaran = None
     nama_tersisa = []
@@ -775,11 +848,18 @@ def main():
                 if asli.lower() == args.nama_saya.strip().lower():
                     nama_saya_untuk_kandidat = label
                     break
-        kandidat_perhatian = tandai_kandidat_perhatian(pesan_terfilter, nama_saya_untuk_kandidat)
+        kandidat_perhatian = tandai_kandidat_perhatian(pesan_terfilter, nama_saya_untuk_kandidat, tanggal_acuan)
 
     rentang_asli = None
     if pesan:
         rentang_asli = {"pertama": pesan[0]["waktu"], "terakhir": pesan[-1]["waktu"]}
+    lewat = [k for k in kandidat_perhatian if k.get("lewat_tenggat")]
+    if pesan_terfilter:
+        tgl_akhir_chat = datetime.fromisoformat(pesan_terfilter[-1]["waktu"]).date()
+        if tanggal_acuan > tgl_akhir_chat:
+            catatan.append(f"Chat terakhir {tgl_akhir_chat.strftime('%d/%m/%Y')}, tanggal acuan (hari ini) "
+                           f"{tanggal_acuan.strftime('%d/%m/%Y')}: {len(lewat)} kandidat dengan tenggat yang sudah "
+                           "lewat ditandai 'lewat_tenggat'.")
 
     hasil = {
         "file": args.file,
@@ -796,6 +876,8 @@ def main():
         "disamarkan": bool(args.samarkan),
         "jumlah_anggota_disamarkan": len(pemetaan_samaran) if pemetaan_samaran else None,
         "kemungkinan_nama_tersisa": nama_tersisa,
+        "tanggal_acuan": tanggal_acuan.isoformat(),
+        "jumlah_lewat_tenggat": len(lewat),
         "kandidat_perlu_perhatian": kandidat_perhatian,
         "statistik": hitung_statistik(pesan_terfilter),
         "hari": kelompokkan_per_hari(pesan_terfilter),
