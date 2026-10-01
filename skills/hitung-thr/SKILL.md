@@ -19,13 +19,14 @@ Menghitung THR setiap karyawan dengan benar menurut aturan, termasuk karyawan ba
 ## Kapan TIDAK digunakan
 - Slip gaji bulanan lengkap → `slip-gaji-bpjs`. PPh 21 setahun/Desember → `pph21-ter`.
 - Bonus/insentif kinerja, THR ASN/PNS, pesangon/PHK → jelaskan di luar cakupan dan arahkan ke Disnaker/konsultan.
-- Menentukan tanggal hari raya → minta pengguna menyebutkan tanggal resmi (SKB libur nasional); skill tidak menebak tanggal.
+- Menetapkan tanggal resmi hari raya → itu wewenang pemerintah (SKB libur nasional). Untuk Idul Fitri/Idul Adha, skill hanya **mengecek** tanggal dari pengguna terhadap perkiraan (langkah 2a).
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
 | Tanggal hari raya & namanya (Idul Fitri, Natal, Nyepi, Waisak, Imlek) | Ya | — (tanyakan) |
-| Per karyawan: nama, tanggal mulai kerja (atau masa kerja dalam bulan) | Ya | — (tanyakan) |
+| Per karyawan: tanggal mulai kerja (atau masa kerja dalam bulan) | Ya | — (tanyakan) |
+| Nama karyawan | **Tidak** | "Karyawan 1", "Karyawan 2", … — **jangan pernah menanyakan nama** |
 | Gaji pokok + tunjangan tetap (tetap/kontrak) atau upah tiap bulan (harian lepas/satuan hasil) | Ya | — (tanyakan) |
 | Status: tetap (PKWTT), kontrak (PKWT), harian, satuan | Tidak | Tetap |
 | Status PTKP (untuk PPh 21) | Tidak | PPh 21 tidak dihitung — sebutkan |
@@ -36,25 +37,32 @@ Menghitung THR setiap karyawan dengan benar menurut aturan, termasuk karyawan ba
 | Sektor/KLU untuk PPh 21 DTP 2026 | Hanya bila THR dibayar tahun 2026 dan gaji tetap ≤ Rp 10 jt | Tanyakan; jangan diasumsikan |
 | Bruto tetap & teratur Januari 2026/bulan pertama kerja (`bruto_tetap_januari`, syarat DTP ≤ Rp 10 jt) | Bila `dtp=ya` | Gaji pokok + tunjangan tetap, dengan peringatan |
 
+Nama karyawan, nama usaha, dan PTKP **bukan** alasan untuk bertanya: bila gaji, tanggal mulai, dan tanggal hari raya sudah ada, langsung hitung (nama → "Karyawan 1", usaha → "Usaha Anda", PTKP → PPh 21 tidak dihitung) lalu sebutkan asumsinya di akhir. Jangan menjelaskan aturan internal skill ke pengguna (mis. "saya tidak boleh pakai nama contoh").
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya.
 
 ## Langkah kerja
 1. Susun data karyawan (lihat `templates/karyawan-thr-contoh.csv`; pemisah `;` atau `,`). Kolom: `nama` (wajib), `jenis`, `ptkp`, `gaji_pokok`, `tunjangan_tetap`, `tanggal_mulai` atau `masa_kerja_bulan`, `upah_bulanan` (harian/satuan: upah tiap bulan urut dari terlama, dipisah `+`, mis. `3jt+3,2jt+2,8jt`), `bruto_bulan_bayar`, `thr_kebijakan`, `tanggal_berhenti`, `dtp` (ya/tidak; script menolak otomatis bila THR tidak dibayar di tahun 2026 atau `bruto_tetap_januari` > Rp 10 jt), `bruto_tetap_januari`, `jabatan`.
    **Data gaji = data pribadi sensitif:** tulis CSV karyawan dan `--csv` rekap di **folder kerja yang disepakati dengan pengguna** (mis. folder kerja OpenClaw/agent atau folder yang ia sebut), **bukan `/tmp`** atau folder sementara lain; sebutkan path lengkapnya.
+2a. **Cek tanggal Lebaran/Idul Adha (wajib untuk Idul Fitri & Idul Adha, sebelum thr.py):**
+   ```bash
+   python3 <folder-skill-ini>/scripts/tahun_hijriah.py <tanggal-dari-pengguna> --cek idul-fitri   # atau --cek idul-adha
+   ```
+   - Keluar "COCOK" → lanjut dengan tanggal pengguna.
+   - Keluar "PERINGATAN" (tanggal bukan 1 Syawal/10 Zulhijah, selisih > 2 hari dari perkiraan) → di balasan yang **sama** (tanpa menunda hitungan), sampaikan **sekali** dengan sopan: tanggal yang disebut jatuh pada <tanggal Hijriah dari script>, Idul Fitri diperkirakan <perkiraan> (tanggal resmi menunggu penetapan pemerintah/SKB), sehingga batas bayar H-7 = <batas_bayar_h7_perkiraan>. Jalankan `thr.py` dengan **tanggal perkiraan** itu sebagai `--hari-raya` dan sebut asumsinya. Bila pengguna lalu bersikeras memakai tanggalnya sendiri, hitung ulang dengan tanggal itu tanpa berdebat lagi (cukup satu kalimat pengingat risiko denda 5% bila ternyata terlambat).
+   - Hari raya lain (Natal, Nyepi, Waisak, Imlek): pakai tanggal pengguna apa adanya.
 2. Jalankan. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
-   python3 <folder-skill-ini>/scripts/tahun_hijriah.py 2027-03-10      # hanya untuk Idul Fitri/Idul Adha
-   python3 <folder-skill-ini>/scripts/thr.py --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" --perusahaan "<nama usaha pengguna>" --data karyawan.csv --csv rekap-thr.csv
+      python3 <folder-skill-ini>/scripts/thr.py --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" --perusahaan "<nama usaha pengguna>" --data karyawan.csv --csv rekap-thr.csv
    ```
    Satu karyawan: `--nama "<nama dari pengguna>" --ptkp K/1 --gaji-pokok 5jt --tunjangan-tetap 500rb --mulai 2026-06-15`. Opsi: `--tanggal-bayar`, `--format json`.
    - **Tahun Hijriah tidak boleh ditebak.** Cantumkan "1448 H" dsb. di `--nama-hari-raya` dan di balasan **hanya** bila berasal dari `tahun_hijriah.py` (atau disebut pengguna) dan script tidak menandai "BELUM PASTI"; selain itu tulis tanpa tahun Hijriah (mis. "Idul Fitri 2027").
-   - **Nama dari contoh bukan data pengguna.** Nama di SKILL.md, `templates/`, dan `examples/` (mis. Budi, Rina, CV Maju Jaya) hanya ilustrasi — jangan pernah muncul di perintah atau balasan. Pakai nama yang diberikan pengguna; bila tidak ada nama, pakai "Karyawan 1", "Karyawan 2".
+   - **Nama dari contoh bukan data pengguna.** Nama di SKILL.md, `templates/`, dan `examples/` (mis. Budi, Rina, CV Maju Jaya) hanya ilustrasi — jangan pernah muncul di perintah atau balasan. Pakai nama yang diberikan pengguna; bila tidak ada nama, langsung pakai "Karyawan 1", "Karyawan 2" (jangan bertanya).
 3. Tampilkan di balasan chat, apa adanya (tanpa diringkas), tabel rincian dari script, batas bayar H-7, catatan per karyawan, semua ⚠️ peringatan, lalu draf pengumuman. Rincian nominal per orang bersifat pribadi — jangan dimasukkan ke pengumuman grup. Sebutkan lokasi file rekap; bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah selesai (hapus hanya bila pengguna setuju). Jangan menawarkan kirim lewat WA/email bila kanal itu belum diatur pengguna.
 4. Bila THR dibayar di **Desember** (mis. Natal) atau bulan karyawan berhenti, PPh 21 dihitung ulang setahun — jelaskan dan sarankan skill `pph21-ter`/`slip-gaji-bpjs`.
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah (tabel TER di `references/tabel-ter.md`), tulis langkahnya, dan beri tahu pengguna bahwa hasil dihitung manual.
 
 ## Rumus (untuk hitung manual)
-Dasar: Permenaker 6/2016 & SE Menaker M/3/HK.04.00/III/2026, berlaku per 2026-09-23 (rincian: `references/regulasi.md`).
+Dasar: Permenaker 6/2016 & SE Menaker M/3/HK.04.00/III/2026 (untuk hari raya 2027 dst., sebut "SE Menaker THR tahun berjalan, terbit menjelang hari raya"), berlaku per 2026-09-23 (rincian: `references/regulasi.md`).
 - Masa kerja = bulan penuh dari tanggal mulai sampai tanggal hari raya, **inklusif** (hari mulai dan hari raya ikut dihitung): 11 Mar 2026 s.d. 10 Mar 2027 = 12 bulan; 12 Mar 2026 s.d. 10 Mar 2027 = 11 bulan (script memberi ⚠️ bila kurang ≤ 3 hari dari bulan berikutnya). Ini konvensi skill karena aturan tidak mengatur pecahan bulan.
 - < 1 bulan: tidak wajib · 1 s.d. < 12 bulan: **masa kerja ÷ 12 × upah 1 bulan** · ≥ 12 bulan: **1 × upah 1 bulan**.
 - Upah 1 bulan: gaji pokok + tunjangan tetap (atau upah bersih bila tanpa tunjangan). Harian lepas: rata-rata upah 12 bulan terakhir (≥ 12 bulan) atau rata-rata per bulan selama masa kerja. Satuan hasil: rata-rata 12 bulan terakhir.
@@ -84,6 +92,8 @@ _(Nama di contoh ini fiktif — jangan dipakai di balasan.)_
 
 ## Checklist sebelum mengirim hasil
 - [ ] Angka dari script (atau ditandai "dihitung manual").
+- [ ] Tidak menanyakan nama karyawan; tanpa nama → "Karyawan 1".
+- [ ] Idul Fitri/Idul Adha: `tahun_hijriah.py --cek` sudah dijalankan; bila PERINGATAN, perkiraan tanggal & batas H-7-nya disampaikan sekali.
 - [ ] Tidak ada nama dari contoh (Budi, Rina, CV Maju Jaya) di balasan; tahun Hijriah hanya dari `tahun_hijriah.py`/pengguna atau dihilangkan.
 - [ ] Masa kerja 11 vs 12 bulan dicek teliti (12 bulan = THR penuh).
 - [ ] Komponen upah hanya gaji pokok + tunjangan tetap (bukan uang makan/transport harian yang tidak tetap).

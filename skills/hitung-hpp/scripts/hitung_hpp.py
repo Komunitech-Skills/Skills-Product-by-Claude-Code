@@ -35,7 +35,7 @@ import re
 import sys
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP, InvalidOperation
 
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 
 # ---------------------------------------------------------------- satuan
 SATUAN = {

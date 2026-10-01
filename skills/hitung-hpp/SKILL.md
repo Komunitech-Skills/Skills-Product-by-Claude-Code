@@ -46,6 +46,7 @@ Jasa: 1 unit = 1 proyek/sesi; isi tenaga kerja (jam × tarif) dan overhead bulan
    ```
    Opsi: `--margin` / `--markup` (pilih satu), `--harga-jual`, `--banding-harga "18000;19500"`, `--bulatkan 1000`, `--susut 5`, `--satuan-produk pcs`, `--format json`.
 3. Tampilkan tabel rincian, ringkasan HPP, porsi biaya, harga jual, dan BEP dari script **apa adanya** (salin angkanya ke balasan chat, jangan dibulatkan/diringkas ulang).
+   **Aturan kutip angka (wajib):** setiap angka BEP (unit & rupiah), persentase BEP terhadap rencana produksi, laba/unit, margin, dan porsi biaya yang muncul di balasan — termasuk di daftar saran/pilihan harga — **disalin karakter demi karakter dari baris keluaran script** (tabel pilihan harga, "Banding harga", blok BEP, "Porsi biaya"). Jangan menghitung ulang, membagi sendiri, atau membulatkan ulang (BEP script sudah dibulatkan **ke atas**: 450,23 → 451, bukan 450). Bila angka yang ingin disebut tidak ada di keluaran, jalankan script lagi; jangan mengarang.
 4. **Setiap harga yang Anda sarankan atau bahas wajib dihitung script.** Jika ingin menyarankan harga yang tidak ada di tabel (mis. Rp18.000 di antara pilihan Rp17.000 dan Rp19.500), jalankan ulang dengan `--banding-harga "18000"` (atau `--harga-jual`) **sebelum** menyebutnya, lalu kutip laba, margin, dan BEP dari baris itu. Jangan menaksir BEP, laba, atau margin untuk rentang harga ("BEP ~429–460") — sebut BEP per harga dari script.
 5. Jelaskan singkat beda **margin vs markup** bila pengguna menyebut salah satunya, lalu beri 2–3 saran berbasis angka. Klaim "komponen biaya terbesar" dan perbandingan bahan vs biaya tetap **hanya** dari blok "Porsi biaya dalam HPP" keluaran script — jangan membandingkan angka sendiri.
 6. Jika ada asumsi (upah pemilik belum dihitung — script otomatis memberi catatan bila tidak ada data tenaga kerja; produksi per bulan diperkirakan), sebutkan di akhir. "Laba kotor" = harga − HPP, belum dikurangi biaya tetap lain di luar HPP.
@@ -102,7 +103,7 @@ Pembulatan: rincian ditampilkan 2 desimal; harga rekomendasi dan BEP dibulatkan 
 - [ ] Biaya per bulan dan penyusutan dibagi produksi per bulan; biaya tetap tidak dihitung ganda di BEP.
 - [ ] Margin dan markup tidak tertukar; keduanya ditampilkan setaranya.
 - [ ] Harga rekomendasi dibulatkan ke atas; laba & margin pada harga itu ditampilkan.
-- [ ] Setiap harga yang disebut di saran ada di keluaran script (tabel pilihan, `--harga-jual`, atau `--banding-harga`); BEP & porsi biaya dikutip dari script.
+- [ ] Setiap harga yang disebut di saran ada di keluaran script (tabel pilihan, `--harga-jual`, atau `--banding-harga`); BEP, % BEP & porsi biaya dikutip **persis** dari script (cocokkan tiap angka BEP di balasan dengan baris script — tidak ada yang dibulatkan ke bawah).
 - [ ] Asumsi (upah pemilik, produksi per bulan) disebut. Format Rupiah `Rp 1.250.000`.
 
 ## Batasan & penanganan error
