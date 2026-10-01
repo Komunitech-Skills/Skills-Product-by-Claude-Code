@@ -112,6 +112,18 @@ skill akan pakai jawaban default yang masuk akal dan menyebutkan asumsinya.
   karyawan-ai-mulai". Kalau rekomendasi menyebut skill yang ternyata tidak ada foldernya di paket
   Anda, itu akan dikatakan jujur ("belum tersedia di paket Anda") — bukan bug, tapi batas paket.
 
+### Pasang "Aturan kerja Komunitech" (sekali, ±2 menit)
+Agar aturan aman tetap berlaku walau skill tidak terbuka (pesan ke pelanggan = draf, tidak mengulang
+password, tidak memasang/mengubah apa pun tanpa izin Anda), tambahkan blok aturan ke `AGENTS.md`
+OpenClaw — file ini dibaca di setiap percakapan. `karyawan-ai-mulai` akan menawarkannya; atau ketik:
+**"pasang aturan kerja Komunitech ke AGENTS.md"**. Isi blok ada di
+`templates/openclaw-AGENTS-komunitech.md` (paket VIP). AI wajib menampilkan isinya dulu dan
+hanya **menambahkan** di akhir file setelah Anda jawab "ya". Cara manual: Control UI →
+Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawah, simpan.
+
+- **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
+  menyebut aturannya tanpa membuka file lain.
+
 ---
 
 ## 3. Jalankan `cek-privasi-openclaw`

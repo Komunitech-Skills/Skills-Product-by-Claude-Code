@@ -128,6 +128,18 @@ Explorer ke `%USERPROFILE%\.openclaw\skills\`. Lihat `docs/instalasi.md`.)
 **Aturan emas:** jangan pernah menempel **seed phrase / kunci privat / password / API key
 exchange** ke chat AI. Tidak ada langkah di paket ini yang memintanya.
 
+### Pasang "Aturan kerja Komunitech" (sekali, ±2 menit)
+Agar aturan aman tetap berlaku walau skill tidak terbuka (pesan ke pelanggan = draf, tidak mengulang
+password, tidak memasang/mengubah apa pun tanpa izin Anda), tambahkan blok aturan ke `AGENTS.md`
+OpenClaw — file ini dibaca di setiap percakapan. `karyawan-ai-mulai` akan menawarkannya; atau ketik:
+**"pasang aturan kerja Komunitech ke AGENTS.md"**. Isi blok ada di
+`templates/openclaw-AGENTS-komunitech.md` (paket VIP). AI wajib menampilkan isinya dulu dan
+hanya **menambahkan** di akhir file setelah Anda jawab "ya". Cara manual: Control UI →
+Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawah, simpan.
+
+- **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
+  menyebut aturannya tanpa membuka file lain.
+
 ---
 
 ## 4. Hubungkan bot Telegram (kanal default)

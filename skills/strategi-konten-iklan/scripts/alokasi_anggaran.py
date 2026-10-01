@@ -473,6 +473,71 @@ def hitung(a):
 
 
 # --------------------------------------------------------------------------------------
+# Momen belanja per bulan (SAMA dengan tabel references/momen-belanja.md; ubah keduanya bersamaan)
+# --------------------------------------------------------------------------------------
+# (bulan, tanggal, nama, puncak?) -- hanya momen bertanggal TETAP. Ramadan/Lebaran tidak ditebak.
+MOMEN_TETAP = [
+    (1, 1, "Tahun Baru", False),
+    (8, 17, "17 Agustus", False),
+    (9, 9, "Tanggal kembar 9.9 (kampanye marketplace)", True),
+    (10, 10, "Tanggal kembar 10.10 (kampanye marketplace)", True),
+    (11, 11, "Tanggal kembar 11.11 (kampanye marketplace; BUKAN Harbolnas)", True),
+    (12, 12, "Harbolnas (Hari Belanja Online Nasional) & tanggal kembar 12.12", True),
+    (12, 22, "Hari Ibu", True),
+    (12, 25, "Natal", True),
+]
+MOMEN_SELALU = [
+    "Gajian sekitar tanggal 25-1 (minggu 4 dan hari evaluasi); tanggal tua 15-24 (minggu 3-4) - pola bulanan",
+    "Ramadan & Lebaran: tanggal berubah tiap tahun - TIDAK dihitung script; tanyakan/cek keputusan pemerintah",
+    "Awal bulan/bonus/THR: bervariasi - tanyakan pola pembeli",
+]
+_RE_BULAN = re.compile(r"(\d{4})-(\d{1,2})")
+
+
+def minggu_ke(tanggal, minggu=4):
+    """Minggu script (1-7 = minggu 1, 8-14 = minggu 2, ...); None bila di luar hari tayang (hari evaluasi)."""
+    m = (tanggal - 1) // HARI_PER_MINGGU + 1
+    return m if m <= minggu else None
+
+
+def momen_bulan(teks, minggu=4):
+    """Daftar momen untuk bulan 'YYYY-MM' diambil dari tabel tetap di atas, dipetakan ke minggu script."""
+    t = _RE_BULAN.fullmatch(str(teks).strip())
+    if not t or not 1 <= int(t.group(2)) <= 12:
+        raise Gagal(f"--momen '{teks}' harus berbentuk TAHUN-BULAN, mis. 2026-10.")
+    tahun, bulan = int(t.group(1)), int(t.group(2))
+    daftar, bobot = [], [1] * minggu
+    for b, tgl, nama, puncak in MOMEN_TETAP:
+        if b != bulan:
+            continue
+        mg = minggu_ke(tgl, minggu)
+        daftar.append({"tanggal": f"{tgl}/{bulan}/{tahun}", "nama": nama, "minggu": mg, "puncak": puncak})
+        if puncak and mg:
+            bobot[mg - 1] = 2
+    if bulan == 7:
+        daftar.append({"tanggal": f"sekitar Juli {tahun}", "nama": "Tahun ajaran baru (seragam, alat tulis, tas, les)",
+                       "minggu": None, "puncak": False})
+    return {"bulan": f"{tahun}-{bulan:02d}", "momen": daftar, "pola_bulanan": MOMEN_SELALU,
+            "saran_bobot_minggu": bobot}
+
+
+def teks_momen(m):
+    o = [f"## Kalender momen {m['bulan']} (dari tabel references/momen-belanja.md)"]
+    if m["momen"]:
+        o.append("| Tanggal | Momen | Minggu script |")
+        o.append("|---|---|---|")
+        for x in m["momen"]:
+            mg = f"Minggu {x['minggu']}" if x["minggu"] else "di luar 28 hari tayang / cek sendiri"
+            o.append(f"| {x['tanggal']} | {x['nama']} | {mg} |")
+    else:
+        o.append("Tidak ada momen bertanggal TETAP di tabel untuk bulan ini (tetap cek pola bulanan di bawah).")
+    o.append("Pola bulanan & momen tidak tetap:")
+    o.extend(f"- {x}" for x in m["pola_bulanan"])
+    o.append("Saran --bobot-minggu (minggu momen puncak = 2): " + " ".join(map(str, m["saran_bobot_minggu"])))
+    return "\n".join(o)
+
+
+# --------------------------------------------------------------------------------------
 # Format
 # --------------------------------------------------------------------------------------
 def rp(n):
@@ -542,7 +607,9 @@ def teks_laporan(h):
 
 def buat_parser():
     p = argparse.ArgumentParser(allow_abbrev=False, description="Alokasi anggaran iklan bulanan per kanal & minggu.")
-    p.add_argument("--anggaran", required=True, help="anggaran sebulan, mis. 10jt, 1.500.000, 500rb")
+    p.add_argument("--anggaran", help="anggaran sebulan, mis. 10jt, 1.500.000, 500rb (wajib kecuali hanya --momen)")
+    p.add_argument("--momen", help="bulan rencana TAHUN-BULAN, mis. 2026-10: cetak momen belanja bulan itu dari tabel "
+                                   "referensi + minggu script + saran --bobot-minggu. Boleh dipakai tanpa --anggaran")
     p.add_argument("--tujuan", default="penjualan",
                    help="penjualan | awareness | leads, atau campuran berporsi total 100, mis. awareness:30,penjualan:70")
     p.add_argument("--jenis", choices=JENIS, default="umum",
@@ -570,11 +637,22 @@ def main(argv=None):
                 argv[i:i + 2] = ["--margin=" + argv[i + 1]]
                 break
         a = buat_parser().parse_args(argv)
+        m = momen_bulan(a.momen, a.minggu if 1 <= a.minggu <= 5 else 4) if a.momen else None
+        if not a.anggaran:
+            if not m:
+                raise Gagal("--anggaran wajib diisi (atau pakai --momen TAHUN-BULAN untuk daftar momen saja).")
+            print(json.dumps(m, ensure_ascii=False, indent=2) if a.json else teks_momen(m))
+            return 0
         h = hitung(a)
+        if m:
+            h["momen"] = m
     except Gagal as e:
         print(f"GAGAL: {e}", file=sys.stderr)
         return 2
-    print(json.dumps(h, ensure_ascii=False, indent=2) if a.json else teks_laporan(h))
+    if a.json:
+        print(json.dumps(h, ensure_ascii=False, indent=2))
+    else:
+        print(teks_laporan(h) + ("\n\n" + teks_momen(h["momen"]) if "momen" in h else ""))
     return 0
 
 

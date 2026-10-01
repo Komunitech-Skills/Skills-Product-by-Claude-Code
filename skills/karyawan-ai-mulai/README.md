@@ -8,6 +8,7 @@
 - ✅ Langsung lihat **hasil nyata** di menit pertama (bukan sekadar penjelasan).
 - ✅ Rencana 7 hari sederhana supaya kebiasaan baru terbentuk, satu langkah per hari.
 - ✅ Diingatkan soal privasi sejak awal — cocok untuk yang khawatir data bocor.
+- ✅ Menawarkan memasang "Aturan kerja Komunitech" ke `AGENTS.md` OpenClaw Anda (setelah Anda setujui), supaya aturan aman tetap berlaku di setiap percakapan.
 
 ## Cocok untuk siapa
 - Pemilik usaha/profesional yang **sudah pakai OpenClaw** tapi belum tahu mulai dari mana.
@@ -52,3 +53,6 @@ koreksi kapan saja.
 **Apakah data usaha saya dikirim ke Komunitech?**
 Tidak. Semua berjalan di OpenClaw milik Anda sendiri; data tetap di komputer Anda. Skill ini
 juga akan menawarkan pengecekan privasi dasar (skill `cek-privasi-openclaw`) di langkah terakhir.
+
+## Catatan revisi 1.1.5 (2026-10-01)
+- Langkah baru: menawarkan memasang blok "Aturan kerja Komunitech" (`references/aturan-kerja-agents.md`) ke `AGENTS.md` workspace OpenClaw. Isi blok selalu ditampilkan dulu, hanya ditambahkan di akhir file setelah Anda menjawab "ya" (isi lain tidak diubah), dan tidak dipasang dua kali. Alasannya: uji OpenClaw 2026-10-01 menunjukkan perilaku berisiko (menawarkan kirim WA otomatis, mengulang password, `find /`, `pip install`, mengubah konfigurasi sendiri, mengarang fakta produk) justru muncul saat skill tidak dibuka; `AGENTS.md` dibaca OpenClaw di setiap percakapan.
