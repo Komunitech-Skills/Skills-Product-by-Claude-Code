@@ -47,3 +47,9 @@ Skill akan membantu membuat pesan untuk meminta izin pelanggan lebih dulu. Mengi
 
 **Kenapa harus ada kalimat "Balas STOP"?**
 Pelanggan berhak berhenti menerima promo kapan saja. Dengan cara berhenti yang jelas, pelanggan lebih jarang memblokir atau melaporkan nomormu.
+
+## Catatan revisi 1.0.8 (2026-10-01)
+- Kolom **Sapaan/Panggilan** di file kontak kini dipakai ("Bu Siti", "Pak Fajar"), tidak lagi diganti "Kak".
+- Versi daftar siaran (tanpa nama) dipisah jelas dan ditolak bila masuk ke daftar kirim personal.
+- Pemeriksaan anti-karang: klaim seperti "stok terbatas", "terlaris", "halal" ditolak bila tidak disebut pemilik (`--fakta-file`).
+- Kolom "Setuju Promo" dikenali otomatis sebagai kolom persetujuan.

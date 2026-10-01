@@ -45,8 +45,8 @@ pakai default dan sebutkan asumsinya di akhir.
    belum punya data persetujuan, tetap bantu buat pesannya, tapi sertakan cara mengumpulkan izin.
 2. **Tulis 3–5 variasi pesan** (±300–600 karakter, maks. ±700) dengan pembuka, isi, dan penutup yang
    berbeda-beda, bukan sekadar ganti satu kata. Setiap variasi wajib:
-   - menyapa dengan `{sapaan} {nama}` (hasilnya mis. "Bu Siti", "Kak Rina") — kecuali versi khusus daftar
-     siaran WhatsApp Business, yang memakai sapaan umum tanpa placeholder;
+   - menyapa dengan `{sapaan} {nama}` (hasilnya mis. "Bu Siti", "Kak Rina"). Bila CSV punya kolom sapaan
+     (Sapaan/Panggilan), script memakai isinya; kolom kosong → awalan nama/gelar → default "Kak";
    - menyebut nama toko dan alasan singkat mereka menerima pesan (mis. "pelanggan setia Laundry X");
    - isi promo yang **persis** dari pengguna (harga, periode, syarat) — **jangan menghitung angka baru**
      (persen hemat, total); jika pengguna ingin menyebut "hemat X%", minta angkanya;
@@ -58,13 +58,23 @@ pakai default dan sebutkan asumsinya di akhir.
    Pakai satu sapaan yang konsisten dalam satu pesan: jika menyapa "{sapaan} {nama}", jangan ganti ke "Kamu"
    di kalimat berikutnya (pakai "{sapaan}" lagi).
    Emoji secukupnya (maks. 3), tanpa huruf kapital semua, tanpa "URGENT!!!", maks. 1 link.
+   - **Anti-karang:** klaim urgensi/reputasi/label/layanan ("stok terbatas", "terlaris", "halal", "gratis ongkir",
+     "besok harga naik") hanya boleh bila **disebut pemilik**. Tidak disebut → jangan ditulis (boleh tanya).
+   - **Versi daftar siaran** (WhatsApp Business, tanpa `{nama}`, sapaan umum "Halo Kak") ditulis di bagian
+     **terpisah** dan **tidak** dimasukkan ke file pesan untuk daftar kirim personal — script menolak variasi tanpa
+     `{nama}` bila CSV punya kolom nama.
 3. **Saran jadwal kirim** sesuai audiens: jam kirim, hari, bertahap per batch (lihat references).
-4. **Jika pengguna memberi file kontak CSV**, simpan variasi ke file teks (dipisah baris `---`), lalu jalankan
+4. **Jika pengguna memberi file kontak CSV**, simpan variasi personal ke file teks (dipisah baris `---`), salin
+   **kata-kata pengguna tentang promo apa adanya** ke `fakta.txt` (jangan ditambah), lalu jalankan
    (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
    python3 <folder-skill-ini>/scripts/siapkan_broadcast.py --kontak pelanggan.csv --pesan pesan.txt \
-     --mulai "2026-09-28 10:00" --jam-kirim 09:00-20:00 --output broadcast_siap.csv
+     --fakta-file fakta.txt --mulai "2026-09-28 10:00" --jam-kirim 09:00-20:00 --output broadcast_siap.csv
    ```
+   Bila script menolak karena "klaim yang tidak disebut pemilik", hapus klaim itu dari variasi (atau tanyakan ke
+   pemilik) lalu jalankan ulang — jangan melewati pemeriksaan ini. Tanpa CSV, cek variasi dengan
+   `python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file pesan.txt --fakta-file fakta.txt --abaikan jam`
+   (harus `HASIL: LULUS`). Kolom sapaan terdeteksi otomatis (Sapaan, Panggilan, Sebutan; atau `--kolom-sapaan`).
    Script hanya meloloskan kontak yang setuju, membuang yang minta berhenti (kolom Berhenti berisi apa pun
    selain kosong/tidak/0/-, misalnya "ya", "STOP", "x", atau tanggal; juga `--daftar-berhenti stop.txt`).
    Nomor yang pernah berhenti/tidak setuju di satu baris tetap dikecualikan walau muncul lagi di baris lain. Script juga
@@ -101,6 +111,9 @@ pakai default dan sebutkan asumsinya di akhir.
 
 ### Variasi 2
 ...
+
+### Versi daftar siaran WhatsApp Business (tanpa nama — JANGAN dipakai untuk kirim personal)
+<pesan dengan sapaan umum, tanpa placeholder>
 
 ### Jadwal kirim yang disarankan
 - <hari/tanggal>, <jam> <zona>, bertahap <n> pesan per batch, jeda <...>
@@ -147,7 +160,9 @@ File: broadcast_siap.csv (berisi jadwal & link wa.me per kontak — simpan, jang
 ## Checklist sebelum mengirim hasil
 - [ ] Setiap variasi punya {sapaan} {nama}, nama toko, CTA, dan teks berhenti
 - [ ] Angka promo persis dari pengguna; tidak ada angka hasil hitungan sendiri
-- [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, terlaris, "stok terakhir" palsu)
+- [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, terlaris, "stok terbatas/terakhir") — dicek
+      script `--fakta-file` / `cek_fakta.py`
+- [ ] Sapaan mengikuti kolom Sapaan pengguna bila ada; versi daftar siaran terpisah dari variasi personal
 - [ ] Variasi benar-benar berbeda (pembuka, susunan, CTA), maks. 1 link, emoji ≤ 3
 - [ ] Ada saran jadwal bertahap & pengingat UU PDP
 - [ ] Jika memakai file kontak: ringkasan script dilaporkan, daftar nomor tidak ditempel di chat

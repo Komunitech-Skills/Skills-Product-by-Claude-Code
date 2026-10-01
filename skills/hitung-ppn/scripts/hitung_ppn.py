@@ -205,6 +205,18 @@ def buat_teks(h, a, catatan):
     if a.mode == "termasuk" and h["selisih_pembulatan"] != 0:
         baris.append("Selisih pembulatan: {} (harga termasuk PPN - total hitung)".format(
             format_rp(h["selisih_pembulatan"], True)))
+    if a.status_pkp != "non-pkp":
+        # Blok siap tempel untuk penawaran/chat: WAJIB memuat baris DPP nilai lain (non-mewah) agar pembaca
+        # tidak mengira "12% x harga" salah hitung.
+        baris.append("")
+        baris.append("--- Teks siap tempel (penawaran/chat) ---")
+        baris.append("Harga sebelum PPN (DPP)  : {}".format(format_rp(h["dpp"], True)))
+        if h["jenis"] == "umum":
+            baris.append("DPP nilai lain (11/12)   : {}".format(format_rp(h["dpp_nilai_lain"], True)))
+            baris.append("PPN 12% x DPP nilai lain : {}".format(format_rp(h["ppn"])))
+        else:
+            baris.append("PPN 12% (barang mewah)   : {}".format(format_rp(h["ppn"])))
+        baris.append("Total                    : {}".format(format_rp(h["total"], True)))
     baris.append("")
     baris.append("Pembulatan: " + CATATAN_PEMBULATAN)
     for c in catatan:

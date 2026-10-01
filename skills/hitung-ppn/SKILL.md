@@ -83,6 +83,16 @@ Pembulatan: PPN dibulatkan ke bawah sekali ke rupiah penuh (belum dicocokkan den
 
 _Dasar: UU HPP & PMK 131/2024, berlaku per 23 September 2026. Alat bantu hitung, bukan nasihat pajak; untuk kasus khusus hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
 ```
+**Teks siap tempel** (untuk penawaran/chat/invoice; ambil dari blok "Teks siap tempel" output script) **wajib
+memuat baris DPP nilai lain** untuk non-mewah — jangan hanya "PPN 12% = Rp ...", karena pembaca bisa mengira
+12% × harga salah hitung:
+```
+Harga sebelum PPN (DPP)  : Rp 5.250.000
+DPP nilai lain (11/12)   : Rp 4.812.500
+PPN 12% x DPP nilai lain : Rp 577.500
+Total                    : Rp 5.827.500
+```
+Untuk penjual non-PKP tidak ada teks siap tempel (PPN tidak boleh ditagihkan).
 
 ## Contoh
 **Input pengguna:** "Harga jasa desain 7,5 juta sudah termasuk PPN. PPN-nya berapa? Saya PKP."
@@ -108,6 +118,7 @@ _Dasar: UU HPP & PMK 131/2024, berlaku per 23 September 2026. Alat bantu hitung,
 - [ ] Angka berasal dari script (atau ditandai "dihitung manual").
 - [ ] Jelas apakah harga awal termasuk/belum termasuk PPN, dan asumsinya disebut.
 - [ ] Non-mewah memakai 11/12; mewah memakai 12% penuh.
+- [ ] Teks siap tempel (bila dibuat) memuat baris "DPP nilai lain (11/12)" untuk non-mewah.
 - [ ] Peringatan PKP muncul bila status non-PKP atau belum diketahui.
 - [ ] Pembulatan dijelaskan; format Rupiah `Rp 1.250.000`.
 - [ ] Disclaimer + tanggal berlaku ada.

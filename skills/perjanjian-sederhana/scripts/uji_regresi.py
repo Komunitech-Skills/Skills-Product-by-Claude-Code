@@ -112,6 +112,17 @@ def main():
         jalan(["terbilang", "5m"], kode=1)
         jalan(["sampai", "2026-10-01"], kode=1)
         jalan(["retainer", "--per-bulan", "1jt", "--bulan", "2", "--mulai", "2026-01-31"], kode=1)
+        # v1.0.4: tanggal tanda tangan tidak diisi otomatis; [isi: ...] terdeteksi sebagai isian kosong
+        d = jalan(["tanggal"])
+        cek("tanggal tanpa argumen -> [isi: tanggal], bukan hari ini",
+            d["tanggal"] is None and "[isi: tanggal]" in d["kalimat_pembuka"], d)
+        d = jalan(["tanggal", "2026-10-05"])
+        cek("tanggal diberikan -> Senin 5 Oktober 2026", d["hari"] == "Senin" and d["tanggal"] == "2026-10-05")
+        fi = os.path.join(tmp, "isi.md")
+        with open(fi, "w", encoding="utf-8") as f:
+            f.write("# PERJANJIAN SEWA\nPada hari ini, [isi: hari], tanggal [isi: tanggal] ...\n## Pasal 1\n")
+        d = jalan(["cek", fi])
+        cek("cek menandai [isi: tanggal] sebagai isian kosong", "[isi: tanggal]" in json.dumps(d, ensure_ascii=False), d)
         kosong = os.path.join(tmp, "kosong.md")
         open(kosong, "w").close()
         jalan(["cek", kosong], kode=1)

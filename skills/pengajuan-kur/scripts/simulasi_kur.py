@@ -216,6 +216,8 @@ def main():
     p.add_argument("--laba-bersih", help="Laba bersih usaha per bulan (setelah semua biaya usaha)")
     p.add_argument("--biaya-rumah-tangga", help="Kebutuhan rumah tangga per bulan yang diambil dari laba (opsional)")
     p.add_argument("--cicilan-lain", default="0", help="Cicilan lain yang sedang berjalan per bulan (default 0)")
+    p.add_argument("--tenor-investasi", type=int, help="Tenor (bulan) porsi investasi untuk opsi pisah akad "
+                   "(default: batas tenor investasi KUR, 60 bulan)")
     p.add_argument("--target-rasio", type=float, default=30.0, help="Batas rasio aman (%%) untuk hitung plafon maksimal (default 30)")
     p.add_argument("--rincian-dana", help="Rencana penggunaan dana: 'Etalase [inv]=5jt; Bahan baku [mk]=Rp 15.000.000' "
                    "(dicek agar jumlahnya sama dengan plafon). Penanda [inv]=investasi, [mk]=modal kerja (opsional)")
@@ -470,12 +472,43 @@ def main():
                              f"flat {float(bunga)}% untuk KUR, minta penjelasan dan tabel angsuran resmi.")
                 cek_kur["perhatian"].append(teks)
 
+    # Opsi pisah akad: dana campuran [inv]+[mk] -> modal kerja dan investasi dengan tenor berbeda.
+    pisah = None
+    if rincian and set(rincian.get("porsi", {})) == {"investasi", "modal-kerja"}:
+        at = ATURAN_KUR[cek_kur["jenis"]] if cek_kur is not None else {"tenor": {"modal-kerja": 36, "investasi": 60}}
+        n_mk = min(n, at["tenor"]["modal-kerja"])
+        n_inv = a.tenor_investasi or at["tenor"]["investasi"]
+        if not 1 <= n_inv <= 360:
+            gagal("--tenor-investasi harus 1–360 bulan.")
+        fas = []
+        for jp, tn in (("modal-kerja", n_mk), ("investasi", n_inv)):
+            nom = rincian["porsi"][jp]
+            jd = jadwal_anuitas(nom, bunga, tn)
+            fas.append({"jenis": jp, "plafon": nom, "tenor_bulan": tn, "cicilan_per_bulan": jd[0]["cicilan"],
+                        "total_bunga": sum(x["bunga"] for x in jd)})
+        tahap1 = sum(f["cicilan_per_bulan"] for f in fas)
+        pendek = min(f["tenor_bulan"] for f in fas)
+        sisa = sum(f["cicilan_per_bulan"] for f in fas if f["tenor_bulan"] > pendek)
+        pisah = {"fasilitas": fas, "metode": "anuitas", "bunga_per_tahun_persen": float(bunga),
+                 "cicilan_tahap_1": tahap1, "bulan_tahap_1": pendek,
+                 "cicilan_setelah_bulan_" + str(pendek): sisa,
+                 "total_bunga": sum(f["total_bunga"] for f in fas),
+                 "catatan": "Dua fasilitas/akad terpisah (modal kerja & investasi). Tanyakan ke bank penyalur apakah "
+                            "boleh dipisah dalam pengajuan ini, bunga tiap akad (sektor perdagangan: bunga bisa naik per "
+                            "akad, KUR Mikro perdagangan maks. 2 akad), dan biaya tambahannya. Total bunga lebih besar "
+                            "karena tenor investasi lebih panjang."}
+        if laba is not None and laba > 0:
+            r1 = float(round(Decimal(tahap1 + lain) / laba * 100, 1))
+            pisah["rasio_tahap_1_persen"] = r1
+            pisah["kategori_tahap_1"] = kategori_rasio(r1)
+
     out = {
         "input": {"plafon": P, "bunga_per_tahun_persen": float(bunga),
                   "sumber_bunga": sumber_bunga,
                   "tenor_bulan": n, "tenor_tahun": round(n / 12, 2)},
         "hasil": hasil_metode,
         "rencana_penggunaan_dana": rincian,
+        "opsi_pisah_akad": pisah,
         "cek_ketentuan_kur": cek_kur,
         "pembulatan": "Bunga & pokok per bulan dibulatkan ke rupiah penuh (0,5 ke atas); selisih pembulatan di cicilan terakhir.",
         "peringatan": peringatan,
@@ -542,6 +575,15 @@ def main():
             tag = {"investasi": " [investasi]", "modal-kerja": " [modal kerja]"}.get(x.get("jenis"), "")
             print(f"  - {x['pos']}{tag}: {rp(x['nominal'])} ({x['persen']}%)")
         print(f"  Total {rp(rincian['total'])} → {rincian['status']}")
+    if pisah:
+        print(f"\nOpsi pisah akad (anuitas {pisah['bunga_per_tahun_persen']}%):")
+        for f_ in pisah["fasilitas"]:
+            print(f"  - {f_['jenis']} {rp(f_['plafon'])}, {f_['tenor_bulan']} bulan: {rp(f_['cicilan_per_bulan'])}/bulan")
+        print(f"  Bulan 1–{pisah['bulan_tahap_1']}: {rp(pisah['cicilan_tahap_1'])}/bulan"
+              + (f" → rasio {pisah['rasio_tahap_1_persen']}% ({pisah['kategori_tahap_1']})" if "rasio_tahap_1_persen" in pisah else "")
+              + f"; sesudahnya {rp(pisah['cicilan_setelah_bulan_' + str(pisah['bulan_tahap_1'])])}/bulan; "
+              f"total bunga {rp(pisah['total_bunga'])}")
+        print("  " + pisah["catatan"])
     if "perbandingan" in out:
         print(f"\nFlat lebih mahal {rp(out['perbandingan']['selisih_total_bunga_flat_minus_anuitas'])} total bunga.")
     for w in peringatan:

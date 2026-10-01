@@ -66,6 +66,10 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor): plafo
 3. **Nilai kemampuan bayar** (rasio = total cicilan ÷ laba bersih per bulan; panduan umum skill ini, **bukan** aturan bank):
    - ≤ 30% 🟢 AMAN · > 30–50% 🟡 BERAT, perlu hati-hati · > 50% 🔴 TERLALU BERAT · ≥ 100% ⛔ laba tidak cukup.
    - Jika 🟡/🔴/⛔: **wajib** beri peringatan jelas + alternatif dari output (`plafon_maks_pada_target_rasio`, tenor lebih panjang, bertahap).
+   - **Dana campuran** (`[inv]` + `[mk]` di `--rincian-dana`): script menghitung `opsi_pisah_akad` — modal kerja
+     (tenor ≤ batas modal kerja) dan investasi (default 60 bulan; ubah dengan `--tenor-investasi`) sebagai dua
+     fasilitas. Sampaikan cicilan tahap 1, rasionya, cicilan sesudah modal kerja lunas, dan total bunga yang lebih
+     besar; sebut bahwa pemisahan & bunga tiap akad harus ditanyakan ke bank.
 4. **Checklist dokumen** — dari `references/checklist-dan-narasi.md` bagian A. Syarat Permenko (KTP-el, NIB/SKU, usaha ≥ 6 bulan, NPWP sesuai plafon, belum pernah menerima kredit komersial produktif) boleh disebut dengan pasalnya. Item lain diberi label **(cek ke bank penyalur)**.
 5. **Narasi profil usaha** — template bagian B; hanya fakta dari pengguna, bagian kosong ditulis `[isi: …]`.
 6. **Rencana penggunaan dana** — tabel dari `rencana_penggunaan_dana` script; jika status bukan SESUAI, minta pengguna menyesuaikan.
@@ -77,6 +81,26 @@ Anuitas: cicilan = P × r ÷ (1 − (1 + r)^−n). Flat: cicilan = P ÷ n + P ×
 Rasio = cicilan ÷ laba bersih × 100%. Plafon maks (anuitas) = cicilan maks × (1 − (1 + r)^−n) ÷ r. Bulatkan ke rupiah penuh.
 
 ## Format output
+**Balasan chat diringkas dulu.** Untuk pertanyaan chat ("cicilannya berapa? aman? dokumen apa?") kirim
+**Ringkasan** (maks. ±12 baris): cicilan/bulan (anuitas) + label sumber bunga, rasio & status 🟢/🟡/🔴, 1–2
+alternatif bila berat (plafon aman, opsi pisah akad), `perhatian` penting, 5–6 dokumen inti, dan 1 langkah
+berikutnya. Tutup dengan tawaran **rincian opsional**: "Mau saya lengkapi tabel anuitas vs flat, rencana
+penggunaan dana, dan profil usaha siap salin?" Format lengkap di bawah dipakai bila pengguna minta "lengkap",
+"buat berkas pengajuan", atau setuju rincian.
+
+Ringkasan (contoh bentuk):
+```
+**KUR Rp 75 juta, 36 bulan** — bunga 6% efektif (ACUAN Permenko 1/2026, konfirmasi ke bank)
+- Cicilan: **Rp 2.281.645/bulan** → 35,1% dari laba → 🟡 BERAT
+- Opsi lebih ringan: pisah akad (sparepart 36 bln + alat 60 bln) → Rp 1.948.971/bulan (30,0%) 3 tahun pertama,
+  lalu Rp 579.984/bulan; atau turunkan plafon ke ±Rp 64.098.000
+- Perhatian: kalau bank menyebut "flat 6%", itu setara ±11% efektif — minta tabel angsuran resmi
+- Dokumen inti: KTP-el, KK, NIB/SKU, NPWP (plafon > Rp 50 juta), catatan keuangan, foto usaha
+- Berikutnya: cek SLIK OJK, lalu datangi bank penyalur
+Mau saya lengkapi rinciannya (tabel anuitas vs flat, rencana dana, profil usaha siap salin)?
+```
+
+Format lengkap:
 ```
 ## Persiapan Pengajuan KUR — <nama usaha>
 ⚠️ Suku bunga <x>% = <dari bank / ACUAN Permenko 1/2026 Pasal … — konfirmasi ke bank penyalur / ANGKA CONTOH — cek bank/kur.ekon.go.id>
@@ -124,7 +148,8 @@ Rencana dana: Oven Rp 18.000.000 (36%) · Bahan baku Rp 22.000.000 (44%) · Etal
 - [ ] Semua `perhatian` dari `cek_ketentuan_kur` disampaikan (plafon di luar rentang, tenor melebihi batas, batas akad, bunga flat).
 - [ ] Semua angka cicilan, rasio, total, persen dari script (atau fallback manual yang disebutkan).
 - [ ] Beda anuitas vs flat dijelaskan dengan angka.
-- [ ] Peringatan tegas bila rasio > 30%; alternatif konkret diberikan.
+- [ ] Peringatan tegas bila rasio > 30%; alternatif konkret diberikan (termasuk `opsi_pisah_akad` bila dana campuran).
+- [ ] Balasan chat dimulai dengan ringkasan; rincian lengkap ditawarkan, tidak dipaksakan.
 - [ ] Syarat Permenko disebut dengan pasalnya; dokumen lain bertanda "cek ke bank penyalur"; tidak ada hal BELUM TERVERIFIKASI (mis. bebas provisi) yang ditulis pasti.
 - [ ] Narasi tanpa klaim karangan; bagian kosong `[isi: …]`.
 - [ ] Tidak ada janji persetujuan, plafon, atau lama proses; disclaimer ada.
