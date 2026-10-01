@@ -9,8 +9,9 @@ import unittest
 SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cek_balasan.py")
 
 
-def cek(teks, platform="shopee", jenis="negatif"):
-    r = subprocess.run([sys.executable, SCRIPT, "--platform", platform, "--jenis", jenis, "--teks", teks, "--json"],
+def cek(teks, platform="shopee", jenis="negatif", *arg):
+    r = subprocess.run([sys.executable, SCRIPT, "--platform", platform, "--jenis", jenis, "--teks", teks, "--json"]
+                       + list(arg),
                        capture_output=True, text=True, encoding="utf-8")
     return r, (json.loads(r.stdout) if r.returncode == 0 else None)
 
@@ -54,6 +55,31 @@ class Uji(unittest.TestCase):
     def test_input_rusak(self):
         self.assertEqual(cek("x", "lazada")[0].returncode, 1)
         self.assertEqual(cek("   ")[0].returncode, 1)
+
+    def test_faskes_konfirmasi_perawatan_gagal(self):
+        # Temuan uji OpenClaw 2026-10-01 (klinik 04): balasan publik menyebut "periksa gigi putra/putri Bapak".
+        teks = ("Terima kasih atas ulasannya, Pak Andi. Mohon maaf antrean lama dan saat periksa gigi putra/putri "
+                "Bapak dokter kurang menjelaskan. Silakan hubungi kami lewat nomor resmi di profil.")
+        _, h = cek(teks, "google", "negatif", "--faskes")
+        self.assertFalse(h["lulus"])
+        self.assertIn("periksa", pesan(h))
+        self.assertIn("putra/putri Bapak", pesan(h))
+        # Tanpa --faskes (toko biasa) aturan ini tidak berlaku
+        _, h = cek(teks, "google", "negatif")
+        self.assertTrue(h["lulus"])
+
+    def test_faskes_balasan_umum_lulus(self):
+        teks = ("Terima kasih atas masukannya, Pak Andi, dan mohon maaf bila pengalaman di klinik kami tidak sesuai "
+                "harapan, termasuk soal waktu tunggu dan keramahan tim. Kami ingin mendengar lebih lanjut secara "
+                "pribadi; mohon hubungi kami lewat nomor resmi yang tercantum di profil. — Klinik Gigi Senyum Sehat")
+        _, h = cek(teks, "google", "negatif", "--faskes")
+        self.assertTrue(h["lulus"], h["temuan"])
+
+    def test_faskes_status_pasien_gagal(self):
+        _, h = cek("Terima kasih, sebagai pasien kami Ibu tentu berhak kecewa. Mohon maaf, silakan hubungi kami.",
+                   "google", "negatif", "--faskes")
+        self.assertFalse(h["lulus"])
+        self.assertIn("status pasien", pesan(h))
 
 
 if __name__ == "__main__":

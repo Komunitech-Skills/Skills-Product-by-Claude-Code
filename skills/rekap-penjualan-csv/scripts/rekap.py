@@ -177,6 +177,9 @@ def main():
     grup.add_argument("--kolom-total", help="Total harga per baris")
     grup.add_argument("--kolom-harga", help="Harga satuan (dikali qty)")
     p.add_argument("--kolom-status", help="Kolom status pesanan (untuk membuang batal/retur)")
+    p.add_argument("--kolom-pesanan",
+                   help="Kolom nomor pesanan/transaksi (mis. 'No. Pesanan'); jumlah pesanan per hari dihitung unik. "
+                        "Tanpa ini, jumlah transaksi = jumlah baris valid.")
     p.add_argument("--abaikan-status",
                    help="Kata status yang dibuang, pisahkan koma. MENGGANTI seluruh daftar bawaan: "
                         + ", ".join(STATUS_BATAL_DEFAULT))
@@ -195,7 +198,7 @@ def main():
 
     kolom = list(baris[0].keys())
     wajib = [a.kolom_tanggal, a.kolom_produk, a.kolom_total or a.kolom_harga]
-    wajib += [k for k in (a.kolom_qty, a.kolom_status) if k]
+    wajib += [k for k in (a.kolom_qty, a.kolom_status, a.kolom_pesanan) if k]
     hilang = [k for k in wajib if k not in kolom]
     if hilang:
         keluar_error({"error": "Kolom tidak ditemukan", "hilang": hilang, "kolom_tersedia": kolom})
@@ -214,6 +217,8 @@ def main():
     varian_nama = defaultdict(set)   # kunci -> semua ejaan asli
     status_dihitung = defaultdict(int)
     per_hari = defaultdict(float)
+    baris_per_hari = defaultdict(int)
+    pesanan_per_hari = defaultdict(set)
     dilewati = defaultdict(int)
     dibuang_status = defaultdict(int)
     total, n = 0.0, 0
@@ -251,6 +256,10 @@ def main():
         per_produk[produk]["qty"] += qty
         per_produk[produk]["omzet"] += nilai
         per_hari[tgl.isoformat()] += nilai
+        baris_per_hari[tgl.isoformat()] += 1
+        if a.kolom_pesanan:
+            no = (r.get(a.kolom_pesanan) or "").strip()
+            pesanan_per_hari[tgl.isoformat()].add(no or "(baris %d)" % n)
         total += nilai
         n += 1
 
@@ -262,6 +271,14 @@ def main():
     hari = sorted(per_hari.items())
     terbaik = max(hari, key=lambda x: x[1])
     terendah = min(hari, key=lambda x: x[1])
+    if a.kolom_pesanan:
+        transaksi_harian = {k: len(pesanan_per_hari[k]) for k, _ in hari}
+        satuan_transaksi = "pesanan unik (kolom {})".format(a.kolom_pesanan)
+    else:
+        transaksi_harian = {k: baris_per_hari[k] for k, _ in hari}
+        satuan_transaksi = "baris transaksi"
+    maks_trx = max(transaksi_harian.values())
+    tgl_maks_trx = [k for k, v in transaksi_harian.items() if v == maks_trx]
     awal, akhir = date.fromisoformat(hari[0][0]), date.fromisoformat(hari[-1][0])
     hari_kalender = (akhir - awal).days + 1
 
@@ -288,6 +305,9 @@ def main():
         "hari_terbaik": {"tanggal": terbaik[0], "omzet": round(terbaik[1], 2)},
         "hari_terendah": {"tanggal": terendah[0], "omzet": round(terendah[1], 2)},
         "omzet_harian": {k: round(v, 2) for k, v in hari},
+        "hari_transaksi_terbanyak": {"tanggal": tgl_maks_trx[0], "jumlah": maks_trx,
+                                     "semua_tanggal_seri": tgl_maks_trx, "satuan": satuan_transaksi},
+        "jumlah_transaksi_harian": transaksi_harian,
         "baris_dilewati": sum(dilewati.values()),
         "alasan_dilewati": dict(dilewati),
         "dibuang_karena_status": dict(dibuang_status),

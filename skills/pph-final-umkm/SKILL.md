@@ -30,12 +30,13 @@ Membantu pelaku UMKM tahu berapa PPh Final 0,5% yang perlu disetor tiap bulan, b
 | Bulan pertama data | Tidak | Januari |
 | Omzet tahun ini sebelum bulan pertama data | Tidak | Rp 0 (beri pengingat bila data tidak mulai Januari) |
 | PPh 22 yang sudah dipotong marketplace per bulan | Tidak | Rp 0 |
+| Tahun NPWP terdaftar (untuk batas jangka waktu tarif 0,5%) | Tidak | Tidak dihitung — script tetap memberi aturan umumnya; tanyakan bersama pertanyaan lain bila memang perlu bertanya |
 
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Omzet = total penjualan kotor sebelum dikurangi biaya, dari **semua** usaha.
 
 ## Langkah kerja
 1. Kumpulkan omzet per bulan. Data berupa file? Terima CSV (`bulan;omzet;pph22`) atau JSON.
-2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+2. Jalankan script. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
    python3 <folder-skill-ini>/scripts/pph_final.py --jenis op --tahun 2026 --omzet 45jt 60jt 80jt 120jt 150jt 90jt
    ```
@@ -43,10 +44,13 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - Badan: `--jenis badan --jenis-badan pt-perorangan|koperasi|cv|firma|pt|lainnya`.
    - PPh 22 marketplace: `--pph22 0 0 250rb ...` (urutan sama dengan omzet).
    - Dari file: `--file omzet.csv` (kolom `bulan`, `omzet`, opsional `pph22`).
+   - Tahun NPWP terdaftar disebut pengguna (mis. "NPWP dari 2021")? Wajib tambahkan `--tahun-terdaftar 2021`.
    - `--hari-ini 2026-09-23` untuk menentukan tanggal acuan (default hari ini); bulan dengan PPh > 0 yang batas setornya sudah lewat ditandai "SUDAH LEWAT".
    - `--format json` untuk angka mentah.
-3. Salin tabel & ringkasan dari script apa adanya. Tambahkan 1–2 kalimat penjelasan dengan bahasa sederhana (mis. "Bulan Juni omzet Anda melewati Rp500 juta, jadi hanya Rp45 juta yang kena pajak").
-4. Selalu sertakan catatan penting dan disclaimer dari output.
+3. Salin tabel & ringkasan dari script apa adanya ke balasan chat. Tambahkan 1–2 kalimat penjelasan dengan bahasa sederhana (mis. "Bulan Juni omzet Anda melewati Rp500 juta, jadi hanya Rp45 juta yang kena pajak").
+4. Selalu sertakan catatan penting dan disclaimer dari output — salin apa adanya, jangan diringkas jadi "sesuai aturan terbaru". **Dua catatan ini wajib muncul di balasan bila ada di output:**
+   - **Batas setor jatuh hari libur** (mis. "15 November 2026 jatuh hari Minggu → boleh disetor paling lambat Senin 16 November 2026, PMK 81/2024 Pasal 100"). Sebut tanggal hari kerjanya, bukan hanya tanggal 15.
+   - **Batas jangka waktu tarif 0,5%** (PP 55/2022 Pasal 59: orang pribadi 7 tahun pajak sejak terdaftar, mis. NPWP 2021 → s.d. 2027) beserta keterangan bahwa perubahan oleh PP 20/2026 belum diverifikasi.
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tunjukkan tiap bulan, dan beri tahu bahwa hasil dihitung manual.
 6. Periksa checklist.
 
@@ -67,7 +71,8 @@ PPh final = 0,5% × omzet_kena_pajak, dibulatkan ke bawah ke rupiah penuh
 ```
 Contoh orang pribadi: kumulatif sampai Mei Rp455 juta, omzet Juni Rp90 juta → kumulatif Rp545 juta → kena pajak Rp545 jt − Rp500 jt = Rp45 juta → PPh Juni = Rp225.000. Juli omzet Rp70 juta → seluruhnya kena → Rp350.000.
 
-Batas setor yang ditampilkan: tanggal 15 bulan berikutnya.
+Batas setor yang ditampilkan: tanggal 15 bulan berikutnya (PMK 81/2024 Pasal 94). Bila jatuh Sabtu/Minggu/libur nasional/cuti bersama → hari kerja berikutnya (Pasal 100 ayat (1)); data libur 2026–2027 di `references/libur-nasional-<tahun>.csv`.
+Jangka waktu tarif 0,5% (PP 55/2022 Pasal 59): orang pribadi 7 tahun pajak; koperasi, CV, firma, PT perorangan 4; PT 3 — dihitung sejak tahun terdaftar (terdaftar sebelum 2018 → sejak 2018). Status setelah PP 20/2026 belum diverifikasi.
 
 ## Format output
 ```
@@ -90,7 +95,7 @@ _Dasar aturan + berlaku per + disclaimer_
 | Bulan | Omzet | Omzet kumulatif | Omzet kena pajak | PPh final 0,5% | PPh 22 marketplace (info) | Setor paling lambat | Keterangan |
 | Mei | Rp 150.000.000 | Rp 455.000.000 | Rp 0 | Rp 0 | - | 2026-06-15 | masih dalam Rp500 juta bebas |
 | Juni | Rp 90.000.000 | Rp 545.000.000 | Rp 45.000.000 | Rp 225.000 | - | 2026-07-15 | melewati Rp500 juta; hanya Rp 45.000.000 yang kena pajak |
-| Juli | Rp 70.000.000 | Rp 615.000.000 | Rp 70.000.000 | Rp 350.000 | Rp 350.000 | 2026-08-15 | - |
+| Juli | Rp 70.000.000 | Rp 615.000.000 | Rp 70.000.000 | Rp 350.000 | Rp 350.000 | 2026-08-15 (libur -> 2026-08-18) | - |
 | **Total** | **Rp 615.000.000** | | | **Rp 575.000** | Rp 350.000 | | |
 
 Juni adalah bulan pertama Anda kena pajak: hanya bagian di atas Rp500 juta (Rp45 juta) yang dihitung.
@@ -102,7 +107,8 @@ PPh 22 Rp350.000 yang dipotong Shopee dicatat terpisah; angka PPh final BELUM di
 - [ ] Omzet kumulatif memperhitungkan bulan-bulan sebelumnya di tahun yang sama.
 - [ ] Bulan saat melewati Rp500 juta hanya menghitung selisihnya.
 - [ ] PPh 22 marketplace hanya dicatat, **tidak** dikurangkan otomatis, dan diberi catatan cek DJP/konsultan.
-- [ ] Hal yang belum terverifikasi (masa transisi CV/firma/PT, batas jangka waktu tarif 0,5%) **tidak** dinyatakan pasti.
+- [ ] Hal yang belum terverifikasi (masa transisi CV/firma/PT, perubahan batas jangka waktu oleh PP 20/2026) **tidak** dinyatakan pasti, tetapi batas jangka waktu menurut PP 55/2022 tetap **disebut** (dengan tahun akhirnya bila tahun terdaftar diketahui).
+- [ ] Batas setor yang jatuh di hari libur disebut beserta tanggal hari kerja berikutnya.
 - [ ] Peringatan Rp4,8 miliar muncul bila relevan.
 - [ ] Disclaimer + dasar aturan + tanggal berlaku ada.
 

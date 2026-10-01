@@ -17,16 +17,21 @@ import argparse
 import csv
 import datetime
 import json
+import os
 import re
 import sys
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
+VERSI = "1.0.3"
 TANGGAL_ATURAN = "2026-09-23"
 DASAR_ATURAN = "PP 55/2022 jo. PP 20/2026 (PPh Final UMKM 0,5%); PMK 37/2025 (PPh 22 marketplace)"
 TARIF = Decimal("0.005")
 BATAS_BEBAS_OP = Decimal(500000000)
 BATAS_OMZET_UMKM = Decimal(4800000000)
 
+NAMA_HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+# PP 55/2022 Pasal 59 ayat (1): jangka waktu paling lama pemakaian tarif PPh final 0,5% (tahun pajak).
+JANGKA_WAKTU_TAHUN = {"op": 7, "koperasi": 4, "cv": 4, "firma": 4, "pt-perorangan": 4, "pt": 3}
 NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
               "September", "Oktober", "November", "Desember"]
 ALIAS_BULAN = {
@@ -201,6 +206,83 @@ def batas_setor(tahun, bulan):
     return datetime.date(tahun, bulan + 1, 15)
 
 
+_LIBUR_CACHE = {}
+
+
+def libur_nasional(tahun):
+    """Libur nasional + cuti bersama dari references/libur-nasional-<tahun>.csv (SKB 3 menteri).
+    Mengembalikan dict tanggal -> keterangan, atau None bila data tahun itu belum ada."""
+    if tahun not in _LIBUR_CACHE:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "references",
+                            "libur-nasional-{}.csv".format(tahun))
+        data = None
+        if os.path.isfile(path):
+            data = {}
+            with open(path, encoding="utf-8-sig", newline="") as f:
+                for r in csv.DictReader(f):
+                    try:
+                        data[datetime.date.fromisoformat(r["tanggal"].strip())] = (r.get("keterangan") or "").strip()
+                    except (KeyError, ValueError, AttributeError):
+                        continue
+        _LIBUR_CACHE[tahun] = data
+    return _LIBUR_CACHE[tahun]
+
+
+def geser_hari_kerja(tgl):
+    """Batas setor jatuh hari libur -> hari kerja berikutnya (PMK 81/2024 Ps. 100 ayat 1).
+    Hari libur = Sabtu, Minggu, libur nasional, cuti bersama. Kembalikan (tanggal, alasan[], data_libur_lengkap)."""
+    alasan = []
+    lengkap = True
+    while True:
+        libur = libur_nasional(tgl.year)
+        if libur is None:
+            lengkap = False
+        if tgl.weekday() >= 5:
+            alasan.append("{} {}".format(NAMA_HARI[tgl.weekday()], format_tgl_pendek(tgl)))
+        elif libur and tgl in libur:
+            alasan.append("{} ({})".format(format_tgl_pendek(tgl), libur[tgl]))
+        else:
+            return tgl, alasan, lengkap
+        tgl += datetime.timedelta(days=1)
+
+
+def format_tgl_pendek(tgl):
+    return "{} {}".format(tgl.day, NAMA_BULAN[tgl.month - 1])
+
+
+def format_tgl(tgl):
+    return "{} {} {} {}".format(NAMA_HARI[tgl.weekday()], tgl.day, NAMA_BULAN[tgl.month - 1], tgl.year)
+
+
+def catatan_jangka_waktu(jenis, jenis_badan, tahun, tahun_terdaftar):
+    """Batas jangka waktu tarif 0,5% menurut PP 55/2022 Pasal 59 (status setelah PP 20/2026 belum diverifikasi)."""
+    kunci = "op" if jenis == "op" else jenis_badan
+    n = JANGKA_WAKTU_TAHUN.get(kunci)
+    label = "orang pribadi" if jenis == "op" else (LABEL_BADAN.get(jenis_badan) or "badan")
+    status = ("PP 20/2026 dilaporkan mengubah/menghapus batas jangka waktu ini, tetapi BELUM kami verifikasi - "
+              "pastikan ke DJP (Kring Pajak 1500200) sebelum tahun batas itu.")
+    if n is None:
+        return ("Batas jangka waktu tarif 0,5% (PP 55/2022 Pasal 59): orang pribadi 7 tahun pajak; koperasi, CV, "
+                "firma, PT perorangan 4 tahun pajak; PT 3 tahun pajak, dihitung sejak tahun terdaftar. " + status)
+    if tahun_terdaftar is None:
+        return ("Batas jangka waktu tarif 0,5% untuk {} menurut PP 55/2022 Pasal 59: paling lama {} tahun pajak sejak "
+                "tahun NPWP terdaftar (mis. terdaftar 2021 -> s.d. tahun pajak {}). Isi --tahun-terdaftar agar "
+                "dihitung. {}".format(label, n, 2021 + n - 1, status))
+    mulai = max(tahun_terdaftar, 2018)
+    akhir = mulai + n - 1
+    awal_txt = ("terdaftar {}".format(tahun_terdaftar) if tahun_terdaftar >= 2018 else
+                "terdaftar {} (sebelum PP 23/2018, dihitung sejak 2018)".format(tahun_terdaftar))
+    teks = ("Batas jangka waktu tarif 0,5% untuk {} menurut PP 55/2022 Pasal 59: {} tahun pajak; NPWP {} -> "
+            "tarif 0,5% s.d. tahun pajak {}, mulai {} memakai tarif umum dengan pembukuan/NPPN."
+            .format(label, n, awal_txt, akhir, akhir + 1))
+    if tahun > akhir:
+        teks += (" PERHATIAN: tahun pajak {} sudah MELEWATI batas itu menurut PP 55/2022, jadi hasil 0,5% di atas "
+                 "mungkin tidak berlaku.".format(tahun))
+    elif tahun == akhir:
+        teks += " Tahun pajak {} adalah tahun TERAKHIR menurut PP 55/2022.".format(tahun)
+    return teks + " " + status
+
+
 def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None):
     if not data:
         raise ValueError("belum ada data omzet")
@@ -234,6 +316,8 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None):
         else:
             kena = omzet
         pph = (kena * TARIF).quantize(Decimal(1), ROUND_FLOOR)
+        tgl15 = batas_setor(tahun, b)
+        tgl_kerja, alasan_geser, libur_lengkap = geser_hari_kerja(tgl15)
         ket = []
         if jenis == "op" and sebelum <= BATAS_BEBAS_OP < kumulatif:
             bulan_lewat_500 = NAMA_BULAN[b - 1]
@@ -251,8 +335,12 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None):
             "omzet_kena_pajak": kena,
             "pph_final": pph,
             "pph22_marketplace_info": pph22,
-            "setor_paling_lambat": batas_setor(tahun, b).isoformat(),
-            "batas_setor_sudah_lewat": bool(hari_ini and pph > 0 and batas_setor(tahun, b) < hari_ini),
+            "setor_paling_lambat": tgl15.isoformat(),
+            "setor_hari_kerja": tgl_kerja.isoformat(),
+            "batas_setor_hari_libur": tgl_kerja != tgl15,
+            "alasan_geser": alasan_geser,
+            "data_libur_lengkap": libur_lengkap,
+            "batas_setor_sudah_lewat": bool(hari_ini and pph > 0 and tgl_kerja < hari_ini),
             "keterangan": "; ".join(ket),
         })
 
@@ -276,6 +364,17 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None):
     elif kumulatif > BATAS_OMZET_UMKM * Decimal("0.8"):
         catatan.append("Omzet kumulatif sudah di atas 80% dari batas Rp4,8 miliar. Siapkan pembukuan bila "
                        "batas terlewati.")
+    for r in rows:
+        if r["batas_setor_hari_libur"] and r["pph_final"] > 0:
+            tk = datetime.date.fromisoformat(r["setor_hari_kerja"])
+            catatan.append("Setoran masa {} {}: tanggal 15 jatuh pada hari libur ({}) -> boleh disetor paling "
+                           "lambat hari kerja berikutnya, {} (PMK 81/2024 Pasal 100 ayat (1)).{}".format(
+                               r["nama_bulan"], tahun, ", ".join(r["alasan_geser"]), format_tgl(tk),
+                               "" if r["data_libur_lengkap"] else " Data libur nasional/cuti bersama tahun itu "
+                               "belum ada di skill (hanya Sabtu/Minggu yang dicek) - cek kalender pajak DJP."))
+    if any(not r["data_libur_lengkap"] for r in rows):
+        catatan.append("Data libur nasional/cuti bersama untuk sebagian tahun batas setor belum tersedia di skill; "
+                       "untuk tahun itu hanya Sabtu/Minggu yang digeser. Cek kalender pajak DJP.")
     lewat = [r["nama_bulan"] for r in rows if r["batas_setor_sudah_lewat"]]
     if lewat:
         catatan.append("Batas setor untuk {} sudah lewat per {}. Jika belum disetor, segera setor dan cek ke DJP "
@@ -308,9 +407,11 @@ CATATAN_TETAP = [
     "Tarif 0,5% dihitung dari OMZET (peredaran bruto), bukan dari laba.",
     "Pembulatan: PPh tiap bulan dibulatkan ke bawah ke rupiah penuh (pecahan rupiah dibuang); belum dicocokkan "
     "dengan Coretax - bila berbeda, ikuti Coretax.",
-    "Batas setor tercantum = tanggal 15 bulan berikutnya (ketentuan umum PMK 81/2024); cek DJP bila jatuh di hari libur.",
-    "PP 20/2026: ketentuan masa transisi untuk CV/firma/PT dan batas jangka waktu pemakaian tarif 0,5% belum "
-    "kami verifikasi. Cek pajak.go.id atau Kring Pajak 1500200 sebelum mengambil keputusan.",
+    "Batas setor tercantum = tanggal 15 bulan berikutnya (PMK 81/2024 Pasal 94); bila jatuh Sabtu/Minggu/libur "
+    "nasional/cuti bersama, boleh disetor hari kerja berikutnya (Pasal 100 ayat (1)) - ditampilkan setelah tanda "
+    "'libur ->'. Data libur: SKB 3 menteri 2026 & 2027; pemerintah bisa mengubahnya, cek kalender pajak DJP.",
+    "PP 20/2026: ketentuan masa transisi untuk CV/firma/PT belum kami verifikasi. Cek pajak.go.id atau Kring Pajak "
+    "1500200 sebelum mengambil keputusan.",
     "Tidak berlaku untuk penghasilan dari jasa pekerjaan bebas (mis. dokter, notaris, konsultan) dan penghasilan "
     "lain yang dikecualikan PP 55/2022.",
 ]
@@ -350,7 +451,9 @@ def teks_markdown(h, jenis_badan):
             b["nama_bulan"], format_rp(b["omzet"], True), format_rp(b["omzet_kumulatif"], True),
             format_rp(b["omzet_kena_pajak"], True), format_rp(b["pph_final"]),
             format_rp(b["pph22_marketplace_info"]) if b["pph22_marketplace_info"] else "-",
-            b["setor_paling_lambat"] + (" (SUDAH LEWAT)" if b["batas_setor_sudah_lewat"] else ""),
+            b["setor_paling_lambat"]
+            + (" (libur -> {})".format(b["setor_hari_kerja"]) if b["batas_setor_hari_libur"] else "")
+            + (" (SUDAH LEWAT)" if b["batas_setor_sudah_lewat"] else ""),
             b["keterangan"] or "-"))
     out.append("| **Total** | **{}** | | | **{}** | {} | | |".format(
         format_rp(r["total_omzet_periode"], True), format_rp(r["total_pph_final"]),
@@ -399,6 +502,8 @@ def main(argv=None):
     p.add_argument("--file", help="CSV (kolom bulan;omzet;pph22) atau JSON sebagai ganti --omzet")
     p.add_argument("--omzet-sebelumnya", default="0",
                    help="Omzet kumulatif tahun ini SEBELUM bulan pertama data (default 0)")
+    p.add_argument("--tahun-terdaftar", type=int,
+                   help="Tahun NPWP terdaftar (untuk batas jangka waktu tarif 0,5%% menurut PP 55/2022 Pasal 59)")
     p.add_argument("--hari-ini", help="Tanggal acuan untuk menandai batas setor yang sudah lewat (YYYY-MM-DD, default hari ini)")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
     a = p.parse_args(argv)
@@ -408,6 +513,9 @@ def main(argv=None):
             raise ValueError("--jenis-badan hanya untuk --jenis badan")
         if not 2000 <= a.tahun <= 2100:
             raise ValueError("tahun {} tidak masuk akal".format(a.tahun))
+        if a.tahun_terdaftar is not None and not 1980 <= a.tahun_terdaftar <= a.tahun:
+            raise ValueError("--tahun-terdaftar {} tidak masuk akal (harus 1980 s.d. tahun pajak {})".format(
+                a.tahun_terdaftar, a.tahun))
         if a.file and a.omzet:
             raise ValueError("pakai salah satu: --omzet atau --file")
         if a.file:
@@ -437,7 +545,10 @@ def main(argv=None):
         sys.stderr.write("ERROR: {}\n".format(e))
         return 2
 
-    hasil["catatan"] = catatan_jenis(a.jenis, a.jenis_badan) + hasil["catatan"] + CATATAN_TETAP
+    hasil["catatan"] = (catatan_jenis(a.jenis, a.jenis_badan)
+                        + [catatan_jangka_waktu(a.jenis, a.jenis_badan, a.tahun, a.tahun_terdaftar)]
+                        + hasil["catatan"] + CATATAN_TETAP)
+    hasil["tahun_terdaftar"] = a.tahun_terdaftar
     hasil["dasar_aturan"] = DASAR_ATURAN
     hasil["berlaku_per"] = TANGGAL_ATURAN
     hasil["disclaimer"] = ("Alat bantu hitung, bukan nasihat pajak. Konfirmasi ke DJP (Kring Pajak 1500200) "

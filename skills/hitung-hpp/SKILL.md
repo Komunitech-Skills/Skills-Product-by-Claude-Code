@@ -39,16 +39,17 @@ Jasa: 1 unit = 1 proyek/sesi; isi tenaga kerja (jam × tarif) dan overhead bulan
 
 ## Langkah kerja
 1. Susun data ke file JSON di folder kerja pengguna, mengikuti `templates/contoh-hpp.json` (format lengkap: `references/format-input.md`). CSV sederhana juga bisa: `templates/contoh-hpp.csv`.
-2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+2. Jalankan script. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
    python3 <folder-skill-ini>/scripts/hitung_hpp.py --file hpp-brownies.json
    python3 <folder-skill-ini>/scripts/hitung_hpp.py --file bahan.csv --hasil-per-batch 16 --produksi-per-bulan 400 --margin 40
    ```
-   Opsi: `--margin` / `--markup` (pilih satu), `--harga-jual`, `--bulatkan 1000`, `--susut 5`, `--satuan-produk pcs`, `--format json`.
-3. Tampilkan tabel rincian, ringkasan HPP, harga jual, dan BEP dari script **apa adanya**.
-4. Jelaskan singkat beda **margin vs markup** bila pengguna menyebut salah satunya, lalu beri 2–3 saran berbasis angka (mis. komponen biaya terbesar, dampak kenaikan harga bahan).
-5. Jika ada asumsi (upah pemilik belum dihitung — script otomatis memberi catatan bila tidak ada data tenaga kerja; produksi per bulan diperkirakan), sebutkan di akhir. "Laba kotor" = harga − HPP, belum dikurangi biaya tetap lain di luar HPP.
-6. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tunjukkan tiap langkah, beri tahu bahwa hasil dihitung manual.
+   Opsi: `--margin` / `--markup` (pilih satu), `--harga-jual`, `--banding-harga "18000;19500"`, `--bulatkan 1000`, `--susut 5`, `--satuan-produk pcs`, `--format json`.
+3. Tampilkan tabel rincian, ringkasan HPP, porsi biaya, harga jual, dan BEP dari script **apa adanya** (salin angkanya ke balasan chat, jangan dibulatkan/diringkas ulang).
+4. **Setiap harga yang Anda sarankan atau bahas wajib dihitung script.** Jika ingin menyarankan harga yang tidak ada di tabel (mis. Rp18.000 di antara pilihan Rp17.000 dan Rp19.500), jalankan ulang dengan `--banding-harga "18000"` (atau `--harga-jual`) **sebelum** menyebutnya, lalu kutip laba, margin, dan BEP dari baris itu. Jangan menaksir BEP, laba, atau margin untuk rentang harga ("BEP ~429–460") — sebut BEP per harga dari script.
+5. Jelaskan singkat beda **margin vs markup** bila pengguna menyebut salah satunya, lalu beri 2–3 saran berbasis angka. Klaim "komponen biaya terbesar" dan perbandingan bahan vs biaya tetap **hanya** dari blok "Porsi biaya dalam HPP" keluaran script — jangan membandingkan angka sendiri.
+6. Jika ada asumsi (upah pemilik belum dihitung — script otomatis memberi catatan bila tidak ada data tenaga kerja; produksi per bulan diperkirakan), sebutkan di akhir. "Laba kotor" = harga − HPP, belum dikurangi biaya tetap lain di luar HPP.
+7. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tunjukkan tiap langkah, beri tahu bahwa hasil dihitung manual.
 
 ## Rumus (untuk hitung manual)
 ```
@@ -101,6 +102,7 @@ Pembulatan: rincian ditampilkan 2 desimal; harga rekomendasi dan BEP dibulatkan 
 - [ ] Biaya per bulan dan penyusutan dibagi produksi per bulan; biaya tetap tidak dihitung ganda di BEP.
 - [ ] Margin dan markup tidak tertukar; keduanya ditampilkan setaranya.
 - [ ] Harga rekomendasi dibulatkan ke atas; laba & margin pada harga itu ditampilkan.
+- [ ] Setiap harga yang disebut di saran ada di keluaran script (tabel pilihan, `--harga-jual`, atau `--banding-harga`); BEP & porsi biaya dikutip dari script.
 - [ ] Asumsi (upah pemilik, produksi per bulan) disebut. Format Rupiah `Rp 1.250.000`.
 
 ## Batasan & penanganan error

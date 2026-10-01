@@ -35,6 +35,8 @@ import re
 import sys
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP, InvalidOperation
 
+VERSI = "1.0.3"
+
 # ---------------------------------------------------------------- satuan
 SATUAN = {
     # massa (dasar gram)
@@ -307,6 +309,18 @@ def hitung(d):
 
     hpp = sum(per_kategori.values(), Decimal(0))
     biaya_tetap_bulanan = tetap_bulanan_hpp + penyusutan_bulanan + tetap_lain
+    porsi = None
+    if hpp > 0:
+        urut_kat = sorted(((KATEGORI[k], v) for k, v in per_kategori.items() if v), key=lambda x: -x[1])
+        terbesar = max(rincian, key=lambda r: r["biaya_per_unit"])
+        porsi = {
+            "per_kategori": [{"kategori": k, "per_unit": v, "persen_hpp": v / hpp * 100} for k, v in urut_kat],
+            "variabel_per_unit": variabel, "variabel_persen_hpp": variabel / hpp * 100,
+            "tetap_per_unit": hpp - variabel, "tetap_persen_hpp": (hpp - variabel) / hpp * 100,
+            "komponen_terbesar": {"nama": terbesar["nama"], "kategori": terbesar["kategori"],
+                                  "per_unit": terbesar["biaya_per_unit"],
+                                  "persen_hpp": terbesar["biaya_per_unit"] / hpp * 100},
+        }
     return {
         "nama_produk": d.get("nama_produk") or "Produk",
         "jenis": d.get("jenis") or "produk",
@@ -320,6 +334,7 @@ def hitung(d):
         "biaya_variabel_per_unit": variabel,
         "biaya_tetap_dialokasikan_per_unit": hpp - variabel,
         "biaya_tetap_lain": daftar_tetap_lain,
+        "porsi_biaya": porsi,
         "biaya_tetap_bulanan": {
             "dari_hpp_per_bulan": tetap_bulanan_hpp,
             "penyusutan": penyusutan_bulanan,
@@ -398,6 +413,21 @@ def susun_harga(h, d):
             a["target_margin_persen"] = m
             a["bep"] = hitung_bep(h, harga)
             out["pilihan_margin"].append(a)
+    banding = d.get("banding_harga")
+    if banding not in (None, "", []):
+        if isinstance(banding, (str, int, float, Decimal)) and not isinstance(banding, bool):
+            banding = [b for b in re.split(r"[;/|]|,\s+|(?<![A-Za-z.])\s+(?=\d)", str(banding)) if b.strip()] \
+                if isinstance(banding, str) else [banding]
+        if not isinstance(banding, list):
+            raise ValueError("banding_harga harus daftar harga, mis. [18000, 19500]")
+        out["banding_harga"] = []
+        for no, b in enumerate(banding, 1):
+            harga = parse_angka(b, "banding_harga ke-{}".format(no))
+            if harga <= 0:
+                raise ValueError("banding_harga ke-{} harus lebih dari 0".format(no))
+            a = analisis_harga(h, harga)
+            a["bep"] = hitung_bep(h, harga)
+            out["banding_harga"].append(a)
     # BEP memakai harga saat ini jika ada, jika tidak harga rekomendasi
     acuan = out.get("harga_saat_ini") or out.get("harga_rekomendasi")
     if acuan:
@@ -455,6 +485,18 @@ def teks(h, hg):
     out.append("- **HPP per {}: {}**".format(s, format_rp(h["hpp_per_unit"], True)))
     out.append("  - biaya variabel {} + biaya tetap dialokasikan {}".format(
         format_rp(h["biaya_variabel_per_unit"], True), format_rp(h["biaya_tetap_dialokasikan_per_unit"], True)))
+    pr = h.get("porsi_biaya")
+    if pr:
+        out += ["", "**Porsi biaya dalam HPP** (urut dari terbesar)", ""]
+        for k in pr["per_kategori"]:
+            out.append("- {}: {} ({} dari HPP)".format(k["kategori"], format_rp(k["per_unit"], True),
+                                                     format_persen(k["persen_hpp"])))
+        out.append("- Biaya variabel (habis per unit/batch): {} ({}); biaya tetap bulanan yang dialokasikan: {} ({})"
+                   .format(format_rp(pr["variabel_per_unit"], True), format_persen(pr["variabel_persen_hpp"]),
+                           format_rp(pr["tetap_per_unit"], True), format_persen(pr["tetap_persen_hpp"])))
+        t = pr["komponen_terbesar"]
+        out.append("- Komponen tunggal terbesar: {} ({}) {} per {} ({} dari HPP)".format(
+            t["nama"], t["kategori"], format_rp(t["per_unit"], True), s, format_persen(t["persen_hpp"])))
     out.append("")
     out.append("**Harga jual** (dibulatkan ke atas kelipatan {})".format(format_rp(hg["kelipatan_pembulatan"])))
     out.append("")
@@ -490,6 +532,22 @@ def teks(h, hg):
             out.append("| {} | {} | {} | {} | {} |".format(
                 format_persen(r["target_margin_persen"]), format_rp(r["harga"]), format_rp(r["laba_per_unit"], True),
                 format_persen(r["markup_persen"]) if r["markup_persen"] is not None else "-", bep))
+    if hg.get("banding_harga"):
+        out += ["", "**Banding harga yang dibahas** (dihitung script)", "",
+                "| Harga jual | Laba kotor per {} | Margin | Markup | BEP per bulan | BEP % rencana produksi |".format(s),
+                "|---:|---:|---:|---:|---:|---:|"]
+        for r in hg["banding_harga"]:
+            b = r["bep"]
+            if b["status"] == "ok":
+                bep = "{} {} (tepatnya {})".format(format_angka(b["bep_unit"]), s, format_angka(b["bep_unit_tepat"]))
+                persen = format_persen(b["persen_dari_produksi"]) if "persen_dari_produksi" in b else "-"
+            else:
+                bep = "tanpa biaya tetap" if b["status"] == "tanpa_biaya_tetap" else "tidak tercapai"
+                persen = "-"
+            out.append("| {} | {} | {} | {} | {} | {} |".format(
+                format_rp(r["harga"], True), format_rp(r["laba_per_unit"], True),
+                format_persen(r["margin_persen"]),
+                format_persen(r["markup_persen"]) if r["markup_persen"] is not None else "-", bep, persen))
     b = hg.get("bep")
     t = h["biaya_tetap_bulanan"]
     if b:
@@ -534,6 +592,8 @@ def main(argv=None):
     g.add_argument("--margin", help="Target margin %% dari harga jual")
     g.add_argument("--markup", help="Markup %% dari HPP")
     p.add_argument("--harga-jual", help="Harga jual saat ini (untuk cek laba & BEP)")
+    p.add_argument("--banding-harga", help="Daftar harga yang ingin dibandingkan, dipisah ';' atau spasi, "
+                                           "mis. \"18000;19500\" (laba, margin, BEP tiap harga)")
     p.add_argument("--bulatkan", help="Kelipatan pembulatan ke atas harga rekomendasi (default 500)")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
     a = p.parse_args(argv)
@@ -551,7 +611,8 @@ def main(argv=None):
                 raise ValueError("isi JSON harus berupa objek {...}. Lihat templates/contoh-hpp.json")
         for kunci, nilai in (("nama_produk", a.nama_produk), ("satuan_produk", a.satuan_produk),
                              ("hasil_per_batch", a.hasil_per_batch), ("produksi_per_bulan", a.produksi_per_bulan),
-                             ("susut_bahan_persen", a.susut), ("harga_jual", a.harga_jual), ("bulatkan", a.bulatkan)):
+                             ("susut_bahan_persen", a.susut), ("harga_jual", a.harga_jual), ("bulatkan", a.bulatkan),
+                             ("banding_harga", a.banding_harga)):
             if nilai is not None:
                 d[kunci] = nilai
         if a.margin is not None:

@@ -49,7 +49,7 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - PKP, barang mewah kena PPnBM → `--ppn mewah` (12% × harga penuh; PPnBM tidak dihitung skill ini, sarankan konsultan pajak).
    - Ragu apakah PKP → tanyakan. Jika tetap tidak tahu, pakai `tidak` dan beri catatan.
    - **Ongkir/biaya pasang yang ditagih penjual ikut DPP dan dikenai PPN** (jika PKP). Selalu sebutkan ini di blok "Asumsi". Jika ongkir hanya titipan/penggantian biaya kurir yang ditagih terpisah (mis. pembeli membayar kurir langsung, atau reimburse sesuai resi), **jangan pakai `--ongkir`**; tulis di syarat pengiriman "Ongkos kirim ditanggung pembeli sesuai tarif ekspedisi".
-3. **Hitung dengan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+3. **Hitung dengan script.** Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jangan mencarinya ke seluruh disk (`find /`). Windows: `python` atau `py`.
    ```bash
    python3 <folder-skill-ini>/scripts/hitung_sph.py \
      --item "Kursi kantor ergonomis|10|unit|Rp 1.250.000|5%" \
@@ -63,8 +63,9 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - Semua baris `ASUMSI (sebutkan ke pengguna)` dari script **wajib** disalin ke blok "Asumsi yang dipakai".
    - `--format json` bila hanya butuh angka. Script keluar dengan kode ≠ 0 dan pesan `ERROR:` bila input salah; perbaiki lalu jalankan ulang, jangan menebak angka.
 4. **Susun surat** memakai angka dari output script apa adanya (lihat Format output). Kerangka lengkap & variasi kalimat pembuka ada di `references/kerangka-sph.md`.
-5. **Buat versi WhatsApp** (ringkas, tanpa tabel, ≤ 15 baris) untuk dikirim bersama PDF-nya.
-6. **Periksa** dengan checklist, lalu tawarkan revisi (diskon, masa berlaku, gaya bahasa lebih formal/santai).
+5. **Sediakan versi siap cetak.** Surat (A) dalam markdown adalah versi siap cetak. Bila Anda bisa menulis file, simpan juga sebagai `SPH-<nomor urut>.md` di folder kerja yang disepakati dan sebutkan lokasinya (bila kanal chat mendukung lampiran, lampirkan file itu). Skill ini **tidak membuat PDF**: katakan terus terang, lalu beri cara singkat — tempel/buka surat di Word atau Google Docs → *File → Download/Save as PDF*. Jangan memasang paket pembuat PDF.
+6. **Buat versi WhatsApp** (ringkas, tanpa tabel, ≤ 15 baris). **Jangan menyebut lampiran/PDF yang tidak benar-benar dibuat dan dilampirkan.** Kalimat lampiran hanya dipakai bila file surat memang ikut dikirim, dengan menyebut format sebenarnya.
+7. **Periksa** dengan checklist, lalu tawarkan revisi (diskon, masa berlaku, gaya bahasa lebih formal/santai).
 
 ### Fallback jika Python tidak bisa dijalankan
 Hitung manual langkah demi langkah dan tulis perhitungannya, lalu beri tahu pengguna: "Angka dihitung manual, mohon dicek ulang."
@@ -134,7 +135,9 @@ Berikut penawaran harga dari [Usaha] untuk [kebutuhan]:
 • [Item 2] – ...
 Total: *Rp ...* ([termasuk/tanpa] PPN[, sudah termasuk ongkir])
 Berlaku s.d. [tanggal]. Pembayaran [ringkas]. Pengiriman [ringkas].
-Surat penawaran resmi (PDF) terlampir. Jika ada yang ingin disesuaikan, kabari saja ya, Bapak/Ibu.
+[Hanya jika file surat benar-benar dilampirkan: "Surat penawaran resminya terlampir."]
+[Jika belum ada file: "Surat penawaran resminya menyusul/bisa kami kirimkan bila diperlukan."]
+Jika ada yang ingin disesuaikan, kabari saja ya, Bapak/Ibu.
 ```
 
 ## Contoh
@@ -148,8 +151,9 @@ Berikut penawaran harga dari CV Maju Kreasi Sejahtera untuk kebutuhan furnitur k
 • Meja kerja 120x60 – 10 unit × Rp 950.000
 Total: *Rp 23.781.750* (sudah termasuk PPN & ongkir Semarang)
 Berlaku s.d. 7 Oktober 2026. DP 50% saat PO, pelunasan sebelum kirim.
-Surat penawaran resmi terlampir ya, Bu. Jika jumlahnya ingin disesuaikan, kabari saja.
+Surat penawaran resminya menyusul ya, Bu. Jika jumlahnya ingin disesuaikan, kabari saja.
 ```
+(Surat lengkap tersedia dalam format siap cetak; PDF tidak dibuat oleh skill — buka di Word/Google Docs lalu simpan sebagai PDF bila perlu. Setelah pemilik melampirkan file-nya, kalimat "menyusul" boleh diganti "terlampir".)
 Asumsi: ongkir Rp 300.000 ditagih penjual sehingga ikut DPP & dikenai PPN (jika ongkir hanya titipan biaya kurir, hitung ulang tanpa `--ongkir`); pembayaran DP 50%, pengiriman 5 hari kerja (tidak disebutkan pengguna).
 
 ## Checklist sebelum mengirim hasil
@@ -161,6 +165,7 @@ Asumsi: ongkir Rp 300.000 ditagih penjual sehingga ikut DPP & dikenai PPN (jika 
 - [ ] Tidak ada klaim yang tidak diberikan pengguna (garansi, SNI, TKDN, "termurah").
 - [ ] Jika ongkir dipakai dan penjual PKP, asumsi "ongkir ikut DPP & kena PPN" tertulis. Jika ongkir gratis, tulis "Ongkos kirim: Gratis" atau "Harga franco [alamat]" di syarat.
 - [ ] Asumsi ditulis jika memakai default.
+- [ ] Teks WA tidak menyebut "terlampir"/"PDF" kecuali file itu benar-benar dibuat dan dilampirkan; bila PDF tidak dibuat, disebut terus terang beserta cara menyimpannya sebagai PDF.
 
 ## Batasan & penanganan error
 - Skill tidak menerbitkan faktur pajak; faktur resmi dibuat PKP lewat Coretax. Standar pembulatan library: total baris & diskon ke rupiah terdekat, PPN dihitung persis lalu **dibulatkan ke bawah** sekali (sama dengan skill `hitung-ppn` & `buat-invoice`). Pembulatan ini **belum dicocokkan dengan Coretax**, jadi faktur resmi bisa berbeda Rp 1.

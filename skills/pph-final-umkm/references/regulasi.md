@@ -10,9 +10,9 @@
 | Orang pribadi | Omzet s.d. **Rp500 juta setahun tidak dikenai pajak**; 0,5% atas omzet di atasnya | Terverifikasi |
 | Badan | Tanpa pembebasan Rp500 juta | Terverifikasi (dipakai skill) |
 | CV, firma, PT biasa | Dikeluarkan dari skema; ada masa transisi | Lama transisi **BELUM TERVERIFIKASI** |
-| Batas jangka waktu pemakaian tarif 0,5% untuk OP & PT perorangan | Dilaporkan berubah/dihapus | **BELUM TERVERIFIKASI** |
+| Batas jangka waktu pemakaian tarif 0,5% | PP 55/2022 Pasal 59: OP 7 tahun pajak; koperasi, CV, firma, PT perorangan 4; PT 3; sejak tahun terdaftar (terdaftar sebelum PP 23/2018 → sejak 2018). Script menghitung tahun akhirnya dengan `--tahun-terdaftar` (v1.0.3) | Teks PP 55/2022 terverifikasi; perubahan/penghapusan oleh PP 20/2026 **BELUM TERVERIFIKASI** — selalu disebut bersama peringatan ini |
 | Omzet melewati Rp4,8 M di tengah tahun | Berdasarkan PP 55/2022: tarif 0,5% tetap sampai akhir tahun pajak, tahun berikutnya tarif umum | Perlu dicek ulang terhadap PP 20/2026 — skill menyebut "umumnya" + arahkan ke DJP |
-| Batas setor | Tanggal 15 bulan berikutnya (PMK 81/2024) | Perlu dicek ulang; bila jatuh di hari libur ikuti ketentuan DJP |
+| Batas setor | Tanggal 15 bulan berikutnya (PMK 81/2024 Pasal 94); jatuh hari libur (Sabtu, Minggu, libur nasional, cuti bersama) → paling lambat hari kerja berikutnya (Pasal 100 ayat (1)) | Pasal dicocokkan dengan naskah resmi oleh skill kalender-pajak (2026-09-26). Data libur `libur-nasional-2026.csv` & `-2027.csv` disalin dari kalender-pajak (SKB 3 menteri; 2027 PERLU REVIEW terhadap lampiran resmi). Tahun tanpa data → hanya Sabtu/Minggu + peringatan |
 | Penghasilan dikecualikan | Mis. jasa sehubungan pekerjaan bebas (dokter, notaris, konsultan, dll.) | Berdasarkan PP 55/2022; perlu dicek ulang |
 
 ## PPh 22 Marketplace (PMK 37/2025) — berlaku 1 Agustus 2026

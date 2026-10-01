@@ -47,3 +47,7 @@ Tidak. Surat penawaran hanya penawaran. Faktur pajak tetap dibuat lewat Coretax 
 
 **Harus install Python?**
 Tidak wajib. Jika komputer punya Python, angka dihitung otomatis oleh kalkulator bawaan. Jika tidak, AI tetap menghitung langkah demi langkah dan memberi tanda agar kamu mengecek ulang.
+
+## Catatan revisi 1.0.3 (2026-10-01)
+- Temuan uji OpenClaw: teks WA menulis "Surat penawaran resmi (PDF) terlampir" padahal tidak ada file yang dibuat.
+- Teks WA kini tidak boleh menyebut lampiran yang tidak benar-benar dikirim. Surat lengkap disediakan sebagai versi siap cetak (markdown, bisa disimpan sebagai `SPH-<nomor>.md`); skill menyebut terus terang bahwa PDF tidak dibuat dan memberi cara menyimpannya sebagai PDF lewat Word/Google Docs. Script tidak berubah.

@@ -47,11 +47,24 @@ Jika pengguna ingin cepat, tulis balasan dengan asumsi aman dan sebutkan asumsin
    Sebut hanya detail yang ditulis pengulas sendiri. Jangan tulis nomor pesanan/resi, alamat, nomor HP,
    isi chat. Jangan menawarkan imbalan untuk ubah/hapus ulasan. Jangan menjanjikan kompensasi yang
    belum disetujui pemilik.
+   **Khusus fasilitas/layanan kesehatan** (klinik, praktik dokter/dokter gigi, bidan, apotek, laboratorium,
+   RS, fisioterapi, psikolog) — **PERLU REVIEW** tenaga medis/kepatuhan sebelum dipakai sebagai aturan final:
+   - Jangan menyebut atau mengonfirmasi bahwa pengulas/keluarganya **pasien**, kapan berkunjung, atau
+     **tindakan, kondisi, keluhan, obat, hasil** apa pun — walaupun pengulas sendiri menulisnya
+     (❌ "saat periksa gigi putra/putri Bapak"; ✅ "mohon maaf bila pengalaman di klinik kami tidak sesuai harapan").
+   - Boleh menanggapi hal operasional secara umum (waktu tunggu, keramahan, kejelasan informasi) tanpa
+     merinci kunjungan pengulas, lalu alihkan ke **kanal pribadi** (nomor/email resmi di profil, atau chat).
+   - Dasar: kewajiban menjaga rahasia kesehatan pasien (UU 17/2023 tentang Kesehatan Pasal 301; PP 28/2024
+     Pasal 788–789 juga berlaku untuk staf admin) dan data kesehatan termasuk data pribadi bersifat spesifik
+     (UU 27/2022 tentang PDP Pasal 4 ayat (2) huruf a). Bukan nasihat hukum.
+   - Jalankan script dengan `--faskes`.
 3. **Untuk ulasan negatif/netral dengan masalah**, tulis juga **pesan chat pribadi** (eskalasi) yang boleh
    meminta bukti & nomor pesanan secara pribadi.
-4. **Cek otomatis** setiap balasan publik (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
+4. **Cek otomatis** setiap balasan publik. Script ada di subfolder `scripts/` di folder yang sama dengan
+   SKILL.md ini (folder skill); jangan mencarinya ke seluruh disk (`find /`). Windows: `python`/`py`.
    ```bash
    python3 <folder-skill-ini>/scripts/cek_balasan.py --platform shopee --jenis negatif --teks "<balasan>"
+   # klinik/faskes: tambahkan --faskes
    ```
    Platform: `shopee`, `tokopedia`, `tiktok`, `google`, `lainnya`. Perbaiki semua **GAGAL** (data pribadi,
    ajakan keluar platform di marketplace, permintaan ubah ulasan, terlalu panjang); tinjau **CEK** & **SARAN**.
@@ -123,6 +136,7 @@ resmi yang tercantum di profil usaha.
 - [ ] Ulasan negatif: ada maaf + arahan ke chat pribadi (marketplace: fitur chat toko, bukan WA)
 - [ ] Janji/kompensasi hanya yang disetujui pemilik; fakta toko tidak dikarang
 - [ ] Spesifik terhadap isi ulasan; panjang dalam batas aman (cek batas terbaru)
+- [ ] Faskes/klinik: tidak menyebut/mengonfirmasi status pasien, kunjungan, tindakan, atau kondisi; dialihkan ke kanal pribadi; script dengan `--faskes` lulus
 - [ ] Hasil cek script dilaporkan (atau "dicek manual")
 
 ## Batasan & penanganan error
