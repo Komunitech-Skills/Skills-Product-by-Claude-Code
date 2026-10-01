@@ -7,7 +7,7 @@ description: Audit kesehatan pengaturan & struktur akun iklan Meta/Facebook/Inst
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
-Versi 1.0.1 (2026-09-26) — lihat "Riwayat versi" di bawah.
+Versi 1.0.4 (2026-10-01) — lihat "Riwayat versi" di bawah.
 
 ## Tujuan
 Pemilik UMKM atau agensi kecil tahu **apa yang salah di pengaturan akun iklannya** dan **apa yang
@@ -44,6 +44,8 @@ Info kurang? Tanyakan **sekali** dalam satu pesan (maks. 8 pertanyaan). Bila pen
 "langsung aja", jalankan dengan bukti yang ada; semua yang belum jelas = `tidak_tahu`.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Path relatif terhadap folder skill ini. Windows: ganti `python3` dengan `python`/`py`.
 
 1. **Tentukan platform** dan ambil daftar cek:
@@ -61,6 +63,12 @@ Path relatif terhadap folder skill ini. Windows: ganti `python3` dengan `python`
    - Tulis alasan singkat + angka bukti di kolom `catatan` (mis. "Frekuensi 7 hari 4,6").
    - Butuh ROAS impas (S02, S06, TS02, TS04, M10, T09)? Hitung dulu:
      `python3 scripts/skor_audit.py roas-impas --harga 149rb --modal 78rb --biaya-persen 12 --biaya-lain 2000`
+   - **Wajib: setiap ROAS yang disebut pengguna (ROAS aktual/rata-rata DAN target ROAS) dibandingkan
+     dengan ROAS impas** lewat `--roas-aktual` (bisa diulang), mis. pengguna menulis "target ROAS 2,
+     ROAS rata-rata bulan ini 2,3" → `... roas-impas --harga 189rb --modal 95rb --biaya-persen 12 --roas-aktual 2 --roas-aktual 2,3`.
+     Script mencetak `RUGI`/`IMPAS`/`UNTUNG` + rugi/laba per pesanan. Tulis status itu apa adanya di
+     jawaban (mis. "ROAS bulan ini 2,3 < impas 2,66 → saat ini iklan RUGI ±Rp10.854 per pesanan").
+     Tanpa Python: biaya iklan per pesanan = harga ÷ ROAS; lebih besar dari laba kotor = RUGI.
    Buat file jawaban dari templat lalu isi:
    `python3 scripts/skor_audit.py templat --platform shopee --keluar jawaban.csv`
 4. **Hitung skor, prioritas, dan rencana**:
@@ -76,6 +84,18 @@ Path relatif terhadap folder skill ini. Windows: ganti `python3` dengan `python`
    - Usaha lokal (M08: area layanan terbatas): atasi frekuensi tinggi (M18) dengan materi baru atau
      anggaran turun, **bukan** memperluas lokasi di luar area layanan.
    - Platform berstatus bukti kurang: tulis "bukti belum cukup", jangan beri label Sehat/Kritis.
+   - Tidak ada ROAS dari pengguna yang boleh dilewati: setiap angka ROAS yang disebut muncul di jawaban
+     dengan status RUGI/IMPAS/UNTUNG dari script.
+   - **Cabang kesehatan (klinik, praktik dokter/dokter gigi, klinik kecantikan/estetika, apotek, lab,
+     rumah sakit = fasilitas pelayanan kesehatan):** iklan tunduk pada Permenkes No. 1787/MENKES/PER/XII/2010
+     tentang Iklan dan Publikasi Pelayanan Kesehatan, Pasal 5. **Jangan menyarankan testimoni pasien**
+     dalam bentuk apa pun (video/lisan/tulisan/screenshot ulasan — huruf n), promosi penjualan/diskon/
+     imbalan atas layanan (huruf m, termasuk "konsultasi gratis" sebagai promo), janji hasil/pengharapan
+     tidak realistis (huruf c), atau perbandingan dengan faskes lain (huruf d). Jangan menyarankan foto
+     kondisi tubuh/kulit pasien (sebelum maupun sesudah). Alternatif aman: edukasi kesehatan umum,
+     profil layanan & jadwal, tenaga kesehatan yang tersedia, fasilitas, cara reservasi. Tulis
+     "PERLU cek aturan & kode etik profesi terbaru bersama penanggung jawab klinik". Detail:
+     `references/sumber-fakta-platform.md` (baris Faskes).
 
 Bila Python tidak bisa dijalankan: baca `scripts/daftar_cek.csv` dan `scripts/bobot_kategori.csv`,
 hitung dengan rumus di `references/metode-skor.md`, tampilkan langkah hitungnya, dan tulis
@@ -90,9 +110,11 @@ Skor: <skor>/100 – <label> – <final/sementara> (bukti <cakupan>%)
 3 MASALAH TERBESAR (bahasa awam)
 1. <judul> – kenapa merugikan – cara benahi – ±waktu
 ...
+ROAS vs IMPAS  [tiap ROAS dari pengguna: angka – RUGI/IMPAS/UNTUNG – rugi/laba per pesanan, dari script]
 PRIORITAS LENGKAP & RENCANA 7 HARI  [dari script]
 YANG BELUM BISA DINILAI  [cek tidak_tahu + bukti yang dibutuhkan]
 Minggu depan: ekspor data → laporan-iklan-mingguan → audit ulang.
+File kerja: <path file jawaban yang dibuat, bila ada>
 ```
 Skor berstatus **bukti kurang** (< 60%) tidak boleh disebut nilai akun — katakan "belum bisa dinilai,
 butuh bukti: …".
@@ -120,6 +142,9 @@ Contoh lain: `examples/uji-pembuat-02-klinik-kecantikan-meta.md`, `examples/uji-
 - Klinik: jangan meminta/menyimpan data pasien. Screenshot sebaiknya disamarkan.
 
 ## Riwayat versi
+- **1.0.4** (2026-10-01): perbaikan uji OpenClaw — setiap ROAS dari pengguna wajib dibandingkan dengan
+  ROAS impas (`roas-impas --roas-aktual`, status RUGI/IMPAS/UNTUNG + tes); aturan cabang kesehatan
+  (Permenkes 1787/2010 Pasal 5: tanpa testimoni pasien, diskon/promo, janji hasil); baris "File kerja" di output.
 - **1.0.2** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
 - **1.0.1** (2026-09-26): perbaikan dari uji independen — ROAS impas tidak crash pada laba sangat kecil
   (laba dibulatkan ke bawah); `tidak_berlaku` tanpa syarat → `tidak_tahu`; cek kritis tidak berlaku

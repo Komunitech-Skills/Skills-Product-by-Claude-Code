@@ -10,6 +10,7 @@ Subperintah:
 
 Contoh:
   python3 pph21.py bulan --ptkp K/0 --bruto 10jt
+  python3 pph21.py bulan --ptkp TK/0 --bruto 6jt --dtp
   python3 pph21.py setahun --ptkp K/0 --gaji 10jt --iuran 100rb
   python3 pph21.py setahun --ptkp TK/0 --gaji 17,5jt --iuran 100rb --akhir 8 --status berhenti
   python3 pph21.py setahun --ptkp K/1 --data gaji.csv --dtp --format json
@@ -72,6 +73,43 @@ def cmd_bulan(args):
     bruto = angka(args.bruto, "--bruto")
     tarif, bawah, atas = tc.tarif_ter_bulanan(bruto, kat)
     pph = tc.bulat_bawah(bruto * tarif / 100)
+    premi = angka(args.premi_perusahaan, "--premi-perusahaan") if args.premi_perusahaan else Decimal(0)
+    potongan = angka(args.potongan_lain, "--potongan-lain") if args.potongan_lain else Decimal(0)
+    if premi > bruto:
+        raise InputError("--premi-perusahaan ({}) lebih besar dari --bruto ({})".format(
+            tc.format_rp(premi), tc.format_rp(bruto)))
+    peringatan = []
+    dtp_ok = False
+    if args.dtp:
+        dasar = angka(args.bruto_tetap, "--bruto-tetap") if args.bruto_tetap else bruto - premi
+        ok, alasan = tc.cek_syarat_dtp(args.tahun, dasar)
+        if ok:
+            dtp_ok = True
+            if not args.bruto_tetap:
+                peringatan.append("Syarat DTP (maks Rp 10.000.000) dicek memakai bruto bulan ini {} karena "
+                                  "--bruto-tetap tidak diisi. Syarat resmi memakai gaji + tunjangan tetap & teratur "
+                                  "bulan Januari 2026 (atau bulan pertama kerja) — pastikan angkanya sama."
+                                  .format(tc.format_rp(dasar)))
+        else:
+            peringatan.append("Tidak memenuhi syarat PPh 21 DTP: {}. PPh 21 dipotong normal.".format(alasan))
+    dtp = pph if dtp_ok else Decimal(0)
+    dipotong = Decimal(0) if dtp_ok else pph
+    diterima = bruto - premi - dipotong - potongan + dtp
+    catatan = [
+        "Berlaku untuk masa Januari–November (dan setiap bulan pegawai tidak tetap yang dibayar bulanan). "
+        "Desember atau bulan berhenti bekerja wajib dihitung ulang: pakai subperintah 'setahun'.",
+        "Bruto = seluruh penghasilan bulan itu: gaji, tunjangan, lembur, bonus/THR yang dibayar bulan itu, "
+        "plus premi JKK, JKM, dan BPJS Kesehatan bagian perusahaan.",
+        "Uang diterima pegawai = bruto − premi bagian perusahaan (--premi-perusahaan) − PPh 21 dipotong − "
+        "potongan lain (--potongan-lain, mis. iuran BPJS bagian karyawan) + PPh 21 DTP tunai. Rincian slip gaji "
+        "lengkap: skill slip-gaji-bpjs.",
+        tc.CATATAN_PEMBULATAN,
+    ]
+    if dtp_ok:
+        catatan.insert(0, "PPh 21 DTP (PMK 105/2025 Pasal 5): PPh 21 TIDAK dipotong dari gaji dan WAJIB dibayarkan "
+                          "TUNAI oleh pemberi kerja kepada pegawai bersama gaji; uang DTP ini bukan penghasilan "
+                          "kena pajak. Tetap dibuat bukti potong dan dilaporkan di SPT Masa PPh 21/26. "
+                          "Sektor/KLU harus sudah dikonfirmasi (Lampiran A PMK 105/2025).")
     return {
         "jenis": "bulan",
         "ptkp": ptkp,
@@ -80,13 +118,14 @@ def cmd_bulan(args):
         "tarif_ter_persen": tarif,
         "rentang_baris": {"di_atas": bawah, "sampai_dengan": atas},
         "pph21": pph,
-        "catatan": [
-            "Berlaku untuk masa Januari–November (dan setiap bulan pegawai tidak tetap yang dibayar bulanan). "
-            "Desember atau bulan berhenti bekerja wajib dihitung ulang: pakai subperintah 'setahun'.",
-            "Bruto = seluruh penghasilan bulan itu: gaji, tunjangan, lembur, bonus/THR yang dibayar bulan itu, "
-            "plus premi JKK, JKM, dan BPJS Kesehatan bagian perusahaan.",
-            tc.CATATAN_PEMBULATAN,
-        ],
+        "dtp": dtp_ok,
+        "pph21_dipotong_dari_gaji": dipotong,
+        "pph21_dtp_dibayar_tunai": dtp,
+        "premi_perusahaan": premi,
+        "potongan_lain": potongan,
+        "diterima_pegawai": diterima,
+        "peringatan": peringatan,
+        "catatan": catatan,
     }
 
 
@@ -104,12 +143,36 @@ def teks_bulan(h):
         "- Status PTKP: {} → TER kategori {}".format(h["ptkp"], h["kategori"]),
         "- Penghasilan bruto sebulan: {}".format(tc.format_rp(h["bruto"], desimal=True)),
         "- Baris tabel: {} → tarif {}".format(rentang, tc.format_persen(h["tarif_ter_persen"])),
-        "- **PPh 21 dipotong: {}**".format(tc.format_rp(h["pph21"])),
+    ]
+    if h["dtp"]:
+        baris += [
+            "- PPh 21 terutang: {}".format(tc.format_rp(h["pph21"])),
+            "- **PPh 21 dipotong dari gaji: Rp 0** (ditanggung pemerintah, PMK 105/2025)",
+            "- **PPh 21 DTP yang WAJIB dibayar tunai ke pegawai bersama gaji: {}**".format(
+                tc.format_rp(h["pph21_dtp_dibayar_tunai"])),
+        ]
+    else:
+        baris.append("- **PPh 21 dipotong: {}**".format(tc.format_rp(h["pph21"])))
+    rumus = [tc.format_rp(h["bruto"], desimal=True)]
+    if h["premi_perusahaan"]:
+        rumus.append("− {} (premi bagian perusahaan, tidak dibayar ke pegawai)".format(
+            tc.format_rp(h["premi_perusahaan"], True)))
+    rumus.append("− {} (PPh 21 dipotong)".format(tc.format_rp(h["pph21_dipotong_dari_gaji"])))
+    if h["potongan_lain"]:
+        rumus.append("− {} (potongan lain)".format(tc.format_rp(h["potongan_lain"], True)))
+    if h["dtp"]:
+        rumus.append("+ {} (PPh 21 DTP tunai)".format(tc.format_rp(h["pph21_dtp_dibayar_tunai"])))
+    baris.append("- **Uang yang diterima pegawai{}: {}** = {}".format(
+        "" if h["potongan_lain"] else " (sebelum potongan lain seperti iuran BPJS karyawan)",
+        tc.format_rp(h["diterima_pegawai"], True), " ".join(rumus)))
+    baris += [
         "",
         "Cara hitung: {} × {} = {} (dibulatkan ke bawah ke rupiah penuh).".format(
             tc.format_persen(h["tarif_ter_persen"]), tc.format_rp(h["bruto"], desimal=True),
             tc.format_rp(h["pph21"])),
     ]
+    if h["peringatan"]:
+        baris += ["", "⚠️ Peringatan:"] + ["- " + p for p in h["peringatan"]]
     baris += ["", "Catatan:"] + ["- " + c for c in h["catatan"]]
     baris += ["", "_" + tc.DISCLAIMER + "_"]
     return "\n".join(baris)
@@ -385,6 +448,9 @@ def teks_setahun(h):
         out.append("- PPh 21 terutang setahun yang ditanggung pemerintah (hasil hitung ulang Masa Pajak Terakhir): {}".format(tc.format_rp(rk["pph21_terutang_setahun"])))
         out.append("- PPh 21 DTP yang benar-benar dibayar tunai ke pegawai (jumlah bulan yang positif): {}".format(
             tc.format_rp(rk["total_dtp_dibayar_tunai"])))
+        out.append("- **Tiap bulan PPh 21 TIDAK dipotong dari gaji, dan angka kolom \"PPh 21 DTP (dibayar tunai)\" "
+                   "WAJIB dibayarkan tunai ke pegawai bersama gaji** (PMK 105/2025 Pasal 5): uang diterima pegawai "
+                   "= gaji yang dibayar − potongan lain + DTP tunai bulan itu.")
         if rk["total_dtp_dibayar_tunai"] != rk["pph21_terutang_setahun"]:
             out.append("  Selisih {} = kelebihan DTP yang tidak dikembalikan (PMK 105/2025 Pasal 5 ayat 5).".format(
                 tc.format_rp(rk["total_dtp_dibayar_tunai"] - rk["pph21_terutang_setahun"])))
@@ -499,6 +565,13 @@ def buat_parser():
     b = sub.add_parser("bulan", help="PPh 21 satu bulan dengan TER bulanan")
     b.add_argument("--ptkp", required=True, help="Status PTKP: TK/0, TK/1, TK/2, TK/3, K/0, K/1, K/2, K/3")
     b.add_argument("--bruto", required=True, help="Penghasilan bruto sebulan, mis. 10jt atau 'Rp 10.000.000'")
+    b.add_argument("--dtp", action="store_true", help="Terapkan PPh 21 DTP PMK 105/2025 (KLU harus sudah dicek)")
+    b.add_argument("--bruto-tetap", help="Gaji + tunjangan tetap & teratur Januari 2026/bulan pertama kerja "
+                                         "(syarat DTP maks Rp10 jt; default: bruto bulan ini)")
+    b.add_argument("--tahun", type=int, default=2026)
+    b.add_argument("--premi-perusahaan", help="Premi JKK/JKM/BPJS Kesehatan bagian perusahaan yang ikut di --bruto "
+                                              "(tidak dibayar ke pegawai)")
+    b.add_argument("--potongan-lain", help="Potongan gaji lain, mis. iuran BPJS bagian karyawan (untuk uang diterima)")
 
     s = sub.add_parser("setahun", help="Tabel per bulan + hitung ulang Masa Pajak Terakhir")
     s.add_argument("--ptkp", required=True)

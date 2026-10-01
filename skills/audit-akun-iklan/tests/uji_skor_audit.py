@@ -395,7 +395,7 @@ class UjiRevisi101(unittest.TestCase):
         d = json.loads(out)
         self.assertIsNone(d["platform"]["shopee"]["skor"])
         self.assertEqual(d["platform"]["shopee"]["label"], "Bukti belum cukup")
-        self.assertEqual(d["versi"], "1.0.1")
+        self.assertEqual(d["versi"], m.VERSI)
 
     def test_36_anggaran_tidak_dinaikkan_sebelum_batas_untung(self):
         cek, _ = m.muat_cek()
@@ -431,6 +431,26 @@ class UjiRevisi101(unittest.TestCase):
         code, out, _ = jalan("templat", "--platform", "shopee-gmvmax")
         self.assertEqual(code, 0)
         self.assertIn("S01", out)
+
+    def test_39_banding_roas_aktual_vs_impas(self):
+        # Kasus uji OpenClaw 2026-10-01: ROAS 2,3 dari pengguna di bawah impas 2,66 -> RUGI
+        r = m.roas_impas(Decimal(189000), Decimal(95000), Decimal(12))
+        self.assertEqual(r["roas_impas"], Decimal("2.66"))
+        b = {x["roas"]: x for x in m.banding_roas(r, [Decimal("2.3"), Decimal("2"), Decimal("2.65"), Decimal("3")])}
+        self.assertEqual(b[Decimal("2.3")]["status"], "RUGI")
+        # independen: 189000/2,3 = 82173,91 -> 82174; laba 71320 - 82173,91 = -10853,91 -> -10854
+        self.assertEqual(b[Decimal("2.3")]["biaya_iklan_per_pesanan"], Decimal(82174))
+        self.assertEqual(b[Decimal("2.3")]["laba_setelah_iklan_per_pesanan"], Decimal(-10854))
+        self.assertEqual(b[Decimal("2")]["laba_setelah_iklan_per_pesanan"], Decimal(-23180))
+        self.assertEqual(b[Decimal("2.65")]["status"], "RUGI")   # 189000/2,65 = 71320,75 > 71320
+        self.assertEqual(b[Decimal("3")]["status"], "UNTUNG")
+        r2 = m.roas_impas(Decimal(100000), Decimal(50000))
+        self.assertEqual(m.banding_roas(r2, [Decimal(2)])[0]["status"], "IMPAS")
+        code, out, _ = jalan("roas-impas", "--harga", "189rb", "--modal", "95rb", "--biaya-persen", "12",
+                             "--roas-aktual", "2,3")
+        self.assertEqual(code, 0)
+        self.assertIn("ROAS 2,3 vs impas 2,66: RUGI", out)
+        self.assertEqual(jalan("roas-impas", "--harga", "189rb", "--modal", "95rb", "--roas-aktual", "0")[0], 2)
 
 
 def jalan_jawaban(jw, *extra):

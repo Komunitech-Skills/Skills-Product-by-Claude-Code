@@ -16,6 +16,19 @@ Rumus:
     Jika --biaya-uji diisi:
       selisih_modal   = total_margin - biaya_uji   (positif = sudah balik modal uji)
 
+ATURAN PENTING (v1.0.4): hanya PESANAN BERKOMITMEN (pre-order yang sudah
+transfer/DP/bayar, atau order yang benar-benar masuk) yang boleh diisi ke
+--preorder dan ikut hitungan konversi, margin, dan balik modal. SINYAL MINAT
+(vote polling, like, komentar "mau", balasan "minat" tanpa bayar) diisi ke
+--minat: hanya dilaporkan terpisah, TIDAK PERNAH dihitung sebagai pesanan
+atau pendapatan.
+
+Mode banyak kanal (file JSON):
+  {"harga": 18000, "hpp": 9500, "biaya_uji": 60000,
+   "kanal": [{"nama": "Broadcast WA", "ditawari": 45, "preorder": 4},
+             {"nama": "Polling IG", "ditawari": 380, "minat": 52}]}
+  Kanal yang hanya punya "minat" tidak ikut klasifikasi maupun hitungan uang.
+
 Rupiah dibulatkan ke rupiah terdekat. Hanya library standar Python 3.8+.
 
 Field UANG (--harga, --hpp, --biaya-uji) menerima format Indonesia:
@@ -40,7 +53,8 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
 def rupiah(nilai: Decimal) -> str:
     bulat = nilai.quantize(Decimal("1"), rounding=ROUND_HALF_UP)
-    return f"Rp{bulat:,.0f}".replace(",", ".")
+    tanda = "-" if bulat < 0 else ""
+    return f"{tanda}Rp{abs(bulat):,.0f}".replace(",", ".")
 
 
 def ke_desimal(nilai, nama):
@@ -135,7 +149,8 @@ def parse_args():
     p = argparse.ArgumentParser(description="Hitung hasil uji validasi ide produk baru.")
     p.add_argument("--file", help="File JSON berisi field: ditawari, preorder, harga, hpp (opsional), biaya_uji (opsional)")
     p.add_argument("--ditawari", type=str, help="Jumlah orang/tampilan yang ditawari")
-    p.add_argument("--preorder", type=str, help="Jumlah pre-order/pembeli yang benar-benar memesan")
+    p.add_argument("--preorder", type=str, help="Jumlah PESANAN BERKOMITMEN (sudah transfer/DP/bayar/order masuk). JANGAN isi vote/like/komentar")
+    p.add_argument("--minat", type=str, default=None, help="Sinyal minat tanpa bayar (vote polling, like, komentar 'mau'). Dilaporkan terpisah, TIDAK dihitung sebagai pesanan")
     p.add_argument("--harga", type=str, help="Harga jual rencana per unit (Rupiah)")
     p.add_argument("--hpp", type=str, default=None, help="Modal/HPP per unit (Rupiah), opsional")
     p.add_argument("--biaya-uji", type=str, default=None, help="Total biaya untuk menjalankan uji (bahan sampel, ongkir, pulsa), opsional")
@@ -167,8 +182,6 @@ def main():
             raise SystemExit(f"Error: '{nama_json}' wajib diisi (lewat --{nama_cli.replace('_','-')} atau field '{nama_json}' di file JSON).")
         return default
 
-    ditawari = ke_desimal(ambil("ditawari", "ditawari"), "ditawari")
-    preorder = ke_desimal(ambil("preorder", "preorder"), "preorder")
     harga = parse_uang(ambil("harga", "harga"), "harga")
     hpp_raw = ambil("hpp", "hpp", wajib=False)
     biaya_uji_raw = ambil("biaya_uji", "biaya_uji", wajib=False)
@@ -176,13 +189,43 @@ def main():
     ambang_bersyarat = ke_desimal(ambil("ambang_bersyarat", "ambang_bersyarat", wajib=False, default=args.ambang_bersyarat), "ambang-bersyarat")
     min_sampel = ke_desimal(ambil("min_sampel", "min_sampel", wajib=False, default=args.min_sampel), "min-sampel")
 
-    # --- validasi ---
-    if ditawari <= 0:
-        raise SystemExit("Error: 'ditawari' harus lebih dari 0 (tidak bisa hitung konversi dari 0 orang).")
-    if preorder < 0:
-        raise SystemExit("Error: 'preorder' tidak boleh negatif.")
-    if preorder > ditawari:
-        raise SystemExit(f"Error: 'preorder' ({preorder}) tidak boleh lebih besar dari 'ditawari' ({ditawari}) — periksa kembali data.")
+    # --- kumpulkan kanal ---
+    if args.ditawari is None and args.preorder is None and args.minat is None and "kanal" in data:
+        if not isinstance(data["kanal"], list) or not data["kanal"]:
+            raise SystemExit("Error: 'kanal' di file JSON harus berupa daftar (list) yang tidak kosong.")
+        kanal_mentah = data["kanal"]
+    else:
+        kanal_mentah = [{
+            "nama": "Uji",
+            "ditawari": ambil("ditawari", "ditawari"),
+            "preorder": ambil("preorder", "preorder", wajib=False),
+            "minat": ambil("minat", "minat", wajib=False),
+        }]
+        if kanal_mentah[0]["preorder"] is None and kanal_mentah[0]["minat"] is None:
+            raise SystemExit("Error: 'preorder' wajib diisi (jumlah pesanan yang sudah transfer/DP/bayar; isi 0 bila belum ada). Vote/like/komentar diisi ke --minat.")
+
+    kanal = []
+    for i, k in enumerate(kanal_mentah, 1):
+        if not isinstance(k, dict):
+            raise SystemExit(f"Error: kanal ke-{i} harus berupa objek JSON.")
+        nama = str(k.get("nama") or f"Kanal {i}")
+        if k.get("ditawari") is None:
+            raise SystemExit(f"Error: kanal '{nama}' belum punya 'ditawari'.")
+        d = ke_desimal(k["ditawari"], f"ditawari ({nama})")
+        po = None if k.get("preorder") is None else ke_desimal(k["preorder"], f"preorder ({nama})")
+        mn = None if k.get("minat") is None else ke_desimal(k["minat"], f"minat ({nama})")
+        if po is None and mn is None:
+            raise SystemExit(f"Error: kanal '{nama}' harus punya 'preorder' (pesanan berkomitmen) atau 'minat' (vote/like).")
+        if d <= 0:
+            raise SystemExit(f"Error: 'ditawari' ({nama}) harus lebih dari 0 (tidak bisa hitung konversi dari 0 orang).")
+        for label, v in (("preorder", po), ("minat", mn)):
+            if v is not None:
+                if v < 0:
+                    raise SystemExit(f"Error: '{label}' ({nama}) tidak boleh negatif.")
+                if v > d:
+                    raise SystemExit(f"Error: '{label}' ({nama}) = {v:g} tidak boleh lebih besar dari 'ditawari' ({d:g}) — periksa kembali data.")
+        kanal.append({"nama": nama, "ditawari": d, "preorder": po, "minat": mn})
+
     if harga <= 0:
         raise SystemExit("Error: 'harga' harus lebih dari 0.")
     if ambang_bersyarat > ambang_lulus:
@@ -202,8 +245,38 @@ def main():
         if biaya_uji < 0:
             raise SystemExit("Error: 'biaya-uji' tidak boleh negatif.")
 
-    # --- hitung konversi ---
-    konversi = (preorder / ditawari * Decimal(100)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+    komit = [k for k in kanal if k["preorder"] is not None]
+    hanya_minat = [k for k in kanal if k["preorder"] is None]
+
+    def pct(a, b):
+        return (a / b * Decimal(100)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+
+    print("=== HASIL VALIDASI IDE ===")
+    print("Yang dihitung sebagai pesanan: HANYA pre-order yang sudah transfer/DP/bayar atau order masuk.")
+    if len(kanal) > 1:
+        print("\nPer kanal:")
+        for k in kanal:
+            bagian = [f"ditawari {k['ditawari']:g}"]
+            if k["preorder"] is not None:
+                bagian.append(f"pesanan {k['preorder']:g} ({pct(k['preorder'], k['ditawari'])}%)")
+            if k["minat"] is not None:
+                bagian.append(f"minat {k['minat']:g} ({pct(k['minat'], k['ditawari'])}%, BUKAN pesanan)")
+            print(f"  - {k['nama']}: " + ", ".join(bagian))
+        print()
+
+    total_minat = sum((k["minat"] for k in kanal if k["minat"] is not None), Decimal(0))
+    if not komit:
+        print("Pesanan berkomitmen : 0 (belum ada kanal dengan pre-order/DP/bayar)")
+        print(f"Sinyal minat        : {total_minat:g} (vote/like/komentar — TIDAK dihitung sebagai pesanan)")
+        print("Klasifikasi         : BELUM BISA DINILAI")
+        print("Saran               : Minat belum sama dengan membeli. Ubah minat jadi pesanan dulu: buka pre-order dengan DP/transfer ke yang vote/komentar, lalu hitung ulang.")
+        if biaya_uji is not None:
+            print(f"\nSelisih biaya uji   : 0 - {rupiah(biaya_uji)} = {rupiah(-biaya_uji)} (BELUM balik modal uji; minat tidak menghasilkan uang)")
+        return
+
+    ditawari = sum((k["ditawari"] for k in komit), Decimal(0))
+    preorder = sum((k["preorder"] for k in komit), Decimal(0))
+    konversi = pct(preorder, ditawari)
 
     if konversi >= ambang_lulus:
         klasifikasi = "LULUS"
@@ -215,12 +288,17 @@ def main():
         klasifikasi = "GAGAL"
         saran = "Data belum mendukung ide ini dalam bentuk sekarang — pertimbangkan HENTIKAN atau pivot besar. Kumpulkan alasan penolakan dari form pencatatan sebagai bahan ide berikutnya (brainstorming-ide-usaha)."
 
-    print("=== HASIL VALIDASI IDE ===")
-    print(f"Ditawari       : {ditawari:g} orang/tampilan")
-    print(f"Pre-order/beli : {preorder:g}")
-    print(f"Konversi       : {konversi}%")
+    nama_komit = ", ".join(k["nama"] for k in komit) if len(kanal) > 1 else None
+    print(f"Ditawari       : {ditawari:g} orang/tampilan" + (f"  (kanal pesanan: {nama_komit})" if nama_komit else ""))
+    print(f"Pre-order/beli : {preorder:g}  (pesanan berkomitmen saja)")
+    print(f"Konversi       : {konversi}%  (= {preorder:g} / {ditawari:g} x 100)")
+    if total_minat > 0 or any(k["minat"] is not None for k in kanal):
+        catatan = f" — dari kanal {', '.join(k['nama'] for k in hanya_minat)}" if hanya_minat and len(kanal) > 1 else ""
+        print(f"Sinyal minat   : {total_minat:g} (vote/like/komentar{catatan}) — dilaporkan terpisah, TIDAK ikut konversi, margin, atau balik modal")
     if ditawari < min_sampel:
         print(f"PERINGATAN: jumlah ditawari ({ditawari:g}) di bawah ambang sampel minimal ({min_sampel:g}) — anggap ini INDIKASI AWAL, bukan kesimpulan final.")
+    if ditawari >= 100 and konversi > 30:
+        print("PERINGATAN: konversi > 30% dari >= 100 orang tidak biasa — pastikan angka pre-order adalah pesanan yang sudah bayar/DP, bukan vote/like/komentar.")
     print(f"Ambang         : LULUS >= {ambang_lulus:g}% | LULUS BERSYARAT >= {ambang_bersyarat:g}% | GAGAL < {ambang_bersyarat:g}%")
     print(f"Klasifikasi    : {klasifikasi}")
     print(f"Saran          : {saran}")
@@ -228,15 +306,14 @@ def main():
     if hpp is not None:
         margin_per_unit = harga - hpp
         total_margin = margin_per_unit * preorder
-        print("\n=== MARGIN & BIAYA UJI ===")
-        print(f"Margin per unit      : {rupiah(margin_per_unit)}  ({rupiah(harga)} - {rupiah(hpp)})")
-        print(f"Total margin preorder: {rupiah(total_margin)}  ({margin_per_unit:g} x {preorder:g} unit)")
+        print("\n=== MARGIN & BIAYA UJI (hanya dari pesanan berkomitmen) ===")
+        print(f"Margin per unit      : {rupiah(margin_per_unit)}  (= {rupiah(harga)} - {rupiah(hpp)})")
+        print(f"Total margin preorder: {rupiah(total_margin)}  (= {rupiah(margin_per_unit)} x {preorder:g} unit)")
         if biaya_uji is not None:
             selisih = total_margin - biaya_uji
             status_modal = "SUDAH balik modal uji" if selisih >= 0 else "BELUM balik modal uji"
             print(f"Biaya uji            : {rupiah(biaya_uji)}")
-            print(f"Selisih              : {rupiah(selisih)}  ({status_modal})")
-
+            print(f"Selisih              : {rupiah(selisih)}  (= {rupiah(total_margin)} - {rupiah(biaya_uji)}; {status_modal})")
 
 if __name__ == "__main__":
     try:

@@ -64,6 +64,8 @@ isi angka dari kalimat member, dan **tunjukkan semua asumsi**. Batas risiko TIDA
 diam-diam: kalau member tidak menyebut, tanyakan (itu satu-satunya hal yang wajib ditanyakan).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Folder kerja member: `bot/` di workspace (satu folder per bot, mis. `bot-dca-btc/`). Semua
 perintah: `python3 <folder-skill-ini>/scripts/<nama>.py` (Windows: `python`/`py`).
 

@@ -29,7 +29,7 @@ import json
 import os
 import re
 import sys
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP
 
 sys.dont_write_bytecode = True  # jangan membuat __pycache__ di folder skill
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +38,8 @@ from hitung_ppn import hitung_ppn_dari_dpp, parse_angka, format_rp, format_angka
 BATAS_METERAI = Decimal(5000000)
 TARIF_METERAI = Decimal(10000)
 TANGGAL_ATURAN = "2026-09-23"
+VERSI = "1.0.4"
+TARIF_PPH23_JASA = Decimal(2)   # UU PPh Pasal 23 ayat (1) huruf c; tanpa NPWP 100% lebih tinggi (ayat 1a)
 NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
               "Oktober", "November", "Desember"]
 
@@ -281,6 +283,33 @@ def hitung(d):
         ppn["ongkir_kena_ppn"] = ongkir_kena
     total = setelah_diskon + ongkir + (ppn["ppn"] if ppn else 0)
 
+    # PPh 23 (info saja: dipotong & disetor pembeli/pemberi kerja; TIDAK mengubah total tagihan)
+    pph23 = None
+    cfg23 = d.get("pph23") or False
+    if cfg23:
+        if not isinstance(cfg23, dict):
+            cfg23 = {"aktif": bool(cfg23)}
+        if cfg23.get("aktif", True):
+            if jenis_dok != "invoice":
+                raise ValueError("pph23 hanya untuk invoice (bukan kuitansi)")
+            tanpa_npwp = bool(cfg23.get("tanpa_npwp", False))
+            tarif = parse_angka(cfg23["tarif"], "pph23.tarif") if cfg23.get("tarif") not in (None, "") \
+                else TARIF_PPH23_JASA * (2 if tanpa_npwp else 1)
+            if not 0 < tarif <= 15:
+                raise ValueError("pph23.tarif harus di atas 0 s.d. 15 (persen)")
+            if cfg23.get("dasar") not in (None, ""):
+                dasar = rupiah_bulat(parse_angka(cfg23["dasar"], "pph23.dasar"))
+                sumber_dasar = "diisi pengguna"
+                if dasar <= 0 or dasar > setelah_diskon + ongkir:
+                    raise ValueError("pph23.dasar harus lebih dari 0 dan tidak melebihi nilai sebelum PPN ({})"
+                                     .format(format_rp(setelah_diskon + ongkir)))
+            else:
+                dasar = setelah_diskon
+                sumber_dasar = "subtotal setelah diskon, tanpa PPN" + (" dan tanpa ongkir" if ongkir else "")
+            potong = (dasar * tarif / 100).quantize(Decimal(1), ROUND_FLOOR)
+            pph23 = {"tarif": tarif, "dasar": dasar, "sumber_dasar": sumber_dasar, "pph23": potong,
+                     "tanpa_npwp": tanpa_npwp, "estimasi_diterima_bersih": total - potong}
+
     # pembayaran
     bayar = []
     for i, p in enumerate(d.get("pembayaran") or [], 1):
@@ -374,7 +403,7 @@ def hitung(d):
         "jenis_dokumen": jenis_dok, "tanggal": tgl, "jatuh_tempo": jatuh_tempo,
         "penjual": penjual, "pembeli": pembeli, "baris": baris, "subtotal": subtotal,
         "diskon": diskon, "diskon_persen": diskon_persen, "setelah_diskon": setelah_diskon, "ongkir": ongkir,
-        "ppn": ppn, "total": total, "pembayaran": bayar, "dibayar": dibayar, "sisa": max(sisa, Decimal(0)),
+        "ppn": ppn, "pph23": pph23, "total": total, "pembayaran": bayar, "dibayar": dibayar, "sisa": max(sisa, Decimal(0)),
         "termin": termin, "status": status, "meterai": meterai, "peringatan": peringatan,
         "terbilang_total": terbilang(total),
         "terbilang_diterima": terbilang(dibayar) if dibayar else None,
@@ -446,6 +475,14 @@ def teks_terbilang(h):
     return terbilang(h["sisa"]) if h["pembayaran"] else h["terbilang_total"]
 
 
+def teks_pph23(h):
+    q = h["pph23"]
+    return ("_Info PPh 23 (dipotong & disetor oleh {}, tidak mengurangi total tagihan): {}% x {} = {}. "
+            "Estimasi diterima bersih: {}. Mohon kirimkan bukti potong PPh 23._".format(
+                md(h["pembeli"]["nama"]), format_angka(q["tarif"]).replace(".", ","), format_rp(q["dasar"]),
+                format_rp(q["pph23"]), format_rp(q["estimasi_diterima_bersih"])))
+
+
 def markdown(h, nomor):
     judul = "KUITANSI" if h["jenis_dokumen"] == "kuitansi" else "INVOICE"
     out = ["# {}".format(judul), ""]
@@ -497,6 +534,8 @@ def markdown(h, nomor):
     if h["jenis_dokumen"] == "invoice":
         out.append("")
         out.append("Terbilang: _{}_".format(teks_terbilang(h)))
+    if h.get("pph23"):
+        out += ["", teks_pph23(h)]
     if h["termin"]:
         out += ["", "**Jadwal pembayaran**", "", "| Termin | Persen | Jumlah | Jatuh tempo |", "|---|---:|---:|---|"]
         for t in h["termin"]:
@@ -593,6 +632,8 @@ def html_dok(h, nomor):
             e(pb.get("nama")), e(format_rp(h["dibayar"])), e(teks_terbilang(h)),
             e(", ".join(b["nama"] for b in h["baris"])), sisa)
     tb = "<p class='terbilang'>Terbilang: {}</p>".format(e(teks_terbilang(h))) if h["jenis_dokumen"] == "invoice" else ""
+    if h.get("pph23"):
+        tb += "<p class='kecil'><em>{}</em></p>".format(e(teks_pph23(h).strip("_")))
     termin = ""
     if h["termin"]:
         termin = "<p class='label'>Jadwal pembayaran</p><table class='item'><tr><th>Termin</th><th class='kanan'>Persen</th>" \
@@ -709,6 +750,20 @@ def main(argv=None):
             print("- PPN dihitung dengan DPP nilai lain 11/12 (PMK 131/2024, berlaku per {}): dari DPP persis lalu "
                   "dibulatkan ke bawah sekali. Pembulatan ini belum dicocokkan dengan Coretax; bila berbeda, ikuti "
                   "Coretax. Invoice ini bukan faktur pajak; buat faktur pajak di Coretax.".format(TANGGAL_ATURAN))
+        if h.get("pph23"):
+            q = h["pph23"]
+            print("- PPh 23 (info, TIDAK mengubah total tagihan): {}% x {} ({}) = {}, dibulatkan ke bawah. Dipotong & "
+                  "disetor oleh {} (pemberi kerja/pembeli jasa) saat membayar; Anda menerima bukti potong (simpan "
+                  "untuk SPT Tahunan). Bila Anda memakai PPh final UMKM 0,5% dan sudah memberi Surat Keterangan PP 55 "
+                  "ke pembeli, PPh 23 tidak dipotong - matikan pph23. Estimasi diterima bersih: {} - {} = {}.{}{} Dasar: UU PPh Pasal 23 "
+                  "(jasa 2%; tanpa NPWP 100% lebih tinggi). Pembulatan belum dicocokkan dengan Coretax.".format(
+                      format_angka(q["tarif"]).replace(".", ","), format_rp(q["dasar"]), q["sumber_dasar"],
+                      format_rp(q["pph23"]), h["pembeli"]["nama"], format_rp(h["total"]), format_rp(q["pph23"]),
+                      format_rp(q["estimasi_diterima_bersih"]),
+                      " Bila ada DP/termin, PPh 23 dipotong per pembayaran sesuai porsinya." if h["dibayar"] or
+                      h["termin"] else "",
+                      " Bila invoice juga berisi barang (bukan jasa), isi pph23.dasar dengan nilai jasanya saja."
+                      if q["sumber_dasar"] != "diisi pengguna" else ""))
         print("- Pembulatan: jumlah baris & diskon dibulatkan ke rupiah terdekat.")
         for w in h["peringatan"]:
             print("- PERHATIAN: " + w)

@@ -26,7 +26,12 @@ lokal Indonesia). BOM UTF-8 di awal file (ditulis Excel) dan file yang tidak mur
 
 Baris yang rusak (kolom wajib kosong, angka tidak valid, aksi bukan beli/jual, jual melebihi
 stok tercatat) TIDAK menghentikan proses -- dicatat di "baris_bermasalah" dengan nomor baris
-dan alasannya (Bahasa Indonesia), baris lain tetap dihitung. Jurnal yang valid tapi belum
+dan alasannya (Bahasa Indonesia), baris lain tetap dihitung.
+
+Pemeriksaan kewajaran biaya (v1.0.5, field `cek_biaya`): baris yang biayanya > 1% nilai transaksi,
+atau berbeda jauh (>= 1,5x, selisih >= 0,05 poin) dari median transaksi lain di sisi yang sama
+(beli/jual), ditandai tanpa
+menebak sebabnya; `cek_biaya_beli_vs_jual` menandai bila median biaya jual vs beli berbeda jauh. Jurnal yang valid tapi belum
 punya transaksi (header saja) BUKAN error -- keluar status "ok" dengan hasil kosong.
 
 Pembulatan: semua angka Rupiah pada hasil akhir (proceeds, cost basis, P/L) dibulatkan ke
@@ -46,7 +51,7 @@ import json
 import sys
 from collections import defaultdict, deque
 from datetime import date, datetime
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP
 
 KOLOM_WAJIB = ["tanggal", "koin", "aksi", "jumlah_koin", "harga_satuan", "biaya"]
 
@@ -281,6 +286,133 @@ def hitung_fifo(baris_ok):
     return posisi, realized, bermasalah_tambahan
 
 
+# v1.0.5: pemeriksaan kewajaran biaya per sisi transaksi (uji OpenClaw 2026-10-01: fee jual 0,4% vs
+# lainnya 0,2% tidak ditandai). Skrip hanya MENANDAI; tidak menebak sebabnya dan tidak mengubah P/L.
+BATAS_BIAYA_WAJAR_PERSEN = 1.0     # fee + pajak per transaksi di exchange Indonesia umumnya jauh di bawah 1%
+RASIO_BEDA_JAUH = 1.5              # >= 1,5x (atau <= 1/1,5) dari median pembanding = berbeda jauh
+SELISIH_MIN_POIN = 0.05            # abaikan selisih < 0,05 poin persen (pembulatan fee)
+
+
+def _pid(x):
+    """Persen gaya Indonesia: 0.4 -> '0,40'."""
+    return f"{x:.2f}".replace(".", ",")
+
+
+def _median(nilai):
+    v = sorted(nilai)
+    n = len(v)
+    if n == 0:
+        return None
+    return v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2.0
+
+
+def _beda_jauh(a, b):
+    if b is None or b <= 0:
+        return False
+    return abs(a - b) >= SELISIH_MIN_POIN and (a >= b * RASIO_BEDA_JAUH or a * RASIO_BEDA_JAUH <= b)
+
+
+def periksa_biaya(baris_ok):
+    """Kembalikan daftar baris dengan rasio biaya janggal (persen dari nilai transaksi)."""
+    data = []
+    for r in baris_ok:
+        nilai = r["jumlah_koin"] * r["harga_satuan"]
+        if nilai <= 0:
+            continue
+        data.append((r, r["biaya"] / nilai * 100.0))
+    hasil = []
+    med_sisi = {a: _median([p for r, p in data if r["aksi"] == a and p > 0]) for a in ("beli", "jual")}
+    for i, (r, persen) in enumerate(data):
+        alasan = []
+        if persen > BATAS_BIAYA_WAJAR_PERSEN:
+            alasan.append(f"biaya {_pid(persen)}% dari nilai transaksi, di atas {BATAS_BIAYA_WAJAR_PERSEN:.0f}% "
+                          "(fee + pajak di exchange Indonesia umumnya jauh di bawah ini)")
+        # Pembanding: median transaksi di SISI YANG SAMA (beli vs beli, jual vs jual). Grup >= 3 baris
+        # memakai median grup (termasuk baris ini) agar satu pencilan tidak ikut menandai baris normal;
+        # grup 2 baris dibanding dengan baris pasangannya; tanpa pasangan sesisi -> median semua baris (>= 3).
+        grup = [p for rr, p in data if p > 0 and rr["aksi"] == r["aksi"]]
+        if len(grup) >= 3:
+            lain, label = grup, f"transaksi {r['aksi']} lain"
+        elif len(grup) == 2:
+            lain, label = [p for j, (rr, p) in enumerate(data)
+                           if j != i and p > 0 and rr["aksi"] == r["aksi"]], f"transaksi {r['aksi']} lain"
+        else:
+            semua = [p for _, p in data if p > 0]
+            lain, label = (semua if len(semua) >= 3 else []), "transaksi lain"
+        med_lain = _median(lain)
+        if persen > 0 and _beda_jauh(persen, med_lain):
+            alasan.append(f"biaya {_pid(persen)}% berbeda jauh dari {label} (median {_pid(med_lain)}%)")
+        if alasan:
+            hasil.append({
+                "baris": r["baris"], "tanggal": r["tanggal"].isoformat(), "koin": r["koin"], "aksi": r["aksi"],
+                "biaya": bulat_rupiah(r["biaya"]), "biaya_persen": round(persen, 3), "alasan": "; ".join(alasan),
+            })
+    catatan_sisi = None
+    if med_sisi["beli"] and med_sisi["jual"] and _beda_jauh(med_sisi["jual"], med_sisi["beli"]):
+        catatan_sisi = (f"Rata-rata (median) biaya JUAL {_pid(med_sisi['jual'])}% vs BELI {_pid(med_sisi['beli'])}% "
+                        "berbeda jauh -- cek tabel fee resmi exchange Anda.")
+    return hasil, catatan_sisi
+
+
+# v1.0.6: estimasi PPh final kripto -- HANYA dihitung di sini (uji ulang OpenClaw 2026-10-01 skenario 03:
+# agent menghitung 0,21% atas beli + jual = Rp48.951, padahal benar hanya atas JUAL = Rp18.585).
+# Dasar: PMK 50/2025 (berlaku 1 Agustus 2025), ringkasan resmi https://www.pajak.go.id/index.php/en/node/117234
+#  - objek PPh = penghasilan PENJUAL aset kripto -> basis = nilai transaksi JUAL; transaksi BELI tidak dikenai PPh.
+#  - PPh Pasal 22 final 0,21% bila lewat PPMSE yang merupakan PAKD dalam negeri (dipungut PAKD);
+#  - 1% bila lewat PPMSE yang bukan PAKD dalam negeri (luar negeri); bila PPMSE itu belum ditunjuk pemungut,
+#    wajib disetor sendiri oleh penjual.
+#  - PPN atas penyerahan aset kripto tidak dipungut lagi sejak 1 Agustus 2025 (PPN atas JASA platform/fee
+#    exchange tetap ada dan merupakan bagian biaya exchange, bukan PPh ini).
+TARIF_PPH_KRIPTO = {"dalam-negeri": Decimal("0.21"), "luar-negeri": Decimal("1")}
+KET_PLATFORM = {
+    "dalam-negeri": "PAKD dalam negeri berizin OJK (mis. Indodax) -- PPh dipungut otomatis oleh exchange",
+    "luar-negeri": "PPMSE bukan PAKD dalam negeri (exchange luar negeri) -- bila exchange itu belum ditunjuk "
+                   "sebagai pemungut, PPh wajib disetor sendiri oleh penjual",
+}
+
+
+def hitung_estimasi_pajak(baris_ok, platform, dari=None, sampai=None, total_realized_pl=0):
+    tarif = TARIF_PPH_KRIPTO[platform]
+    rinci = []
+    total_nilai = Decimal(0)
+    total_pph = 0
+    for r in baris_ok:
+        if r["aksi"] != "jual":
+            continue
+        if (dari and r["tanggal"] < dari) or (sampai and r["tanggal"] > sampai):
+            continue
+        nilai = Decimal(str(r["jumlah_koin"])) * Decimal(str(r["harga_satuan"]))
+        pph = int((nilai * tarif / 100).quantize(Decimal("1"), rounding=ROUND_DOWN))  # sama dgn bot-trading-kripto
+        total_nilai += nilai
+        total_pph += pph
+        rinci.append({"baris": r["baris"], "tanggal": r["tanggal"].isoformat(), "koin": r["koin"],
+                      "nilai_jual": bulat_rupiah(nilai), "estimasi_pph": pph})
+    tarif_teks = format(tarif.normalize(), "f").replace(".", ",")
+    def rp(x):
+        return "Rp" + f"{x:,}".replace(",", ".")
+    teks = (f"Estimasi PPh Pasal 22 final {tarif_teks}% (PMK 50/2025) = {tarif_teks}% x total nilai JUAL "
+            f"{rp(bulat_rupiah(total_nilai))} = {rp(total_pph)}. Transaksi BELI tidak dikenai PPh.")
+    return {
+        "dasar_hukum": "PMK 50/2025, berlaku 1 Agustus 2025 (ringkasan resmi: "
+                       "https://www.pajak.go.id/index.php/en/node/117234)",
+        "jenis": "PPh Pasal 22 final, dipungut dari PENJUAL",
+        "platform": platform,
+        "keterangan_platform": KET_PLATFORM[platform],
+        "tarif_persen": float(tarif),
+        "basis": "nilai transaksi JUAL (jumlah koin x harga satuan, sebelum fee). Transaksi BELI tidak dikenai "
+                 "PPh. PPN atas penyerahan aset kripto tidak dipungut sejak 1 Agustus 2025.",
+        "per_transaksi_jual": rinci,
+        "total_nilai_jual": bulat_rupiah(total_nilai),
+        "total_estimasi_pph": total_pph,
+        "ringkasan_teks": teks,
+        "sudah_termasuk_di_kolom_biaya": "TIDAK DIKETAHUI -- jangan disimpulkan dari kemiripan angka; cek kolom "
+                                          "pajak/PPh di riwayat transaksi exchange",
+        "pl_bila_pph_belum_di_kolom_biaya": total_realized_pl - total_pph,
+        "catatan": "Estimasi per transaksi dibulatkan ke bawah ke rupiah penuh; pembulatan exchange bisa berbeda "
+                   "beberapa rupiah. Bukan perhitungan SPT/nasihat pajak -- kepastian ke konsultan pajak/DJP.",
+    }
+
+
 def daftar_tinjau_ulang(baris_ok, hari_ini):
     hasil = []
     for r in baris_ok:
@@ -328,6 +460,9 @@ def main(argv=None):
                           "memakai seluruh riwayat 'beli'). Default: semua.")
     ap.add_argument("--dari", default=None, help="Batas awal (YYYY-MM-DD), menimpa --periode kalau diisi.")
     ap.add_argument("--sampai", default=None, help="Batas akhir (YYYY-MM-DD), menimpa --periode kalau diisi.")
+    ap.add_argument("--platform", choices=["dalam-negeri", "luar-negeri"], default="dalam-negeri",
+                     help="Tempat transaksi untuk estimasi PPh final: dalam-negeri (PAKD berizin OJK, 0,21%%) atau "
+                          "luar-negeri (bukan PAKD dalam negeri, 1%%). Default: dalam-negeri -- sebutkan asumsi ini.")
     args = ap.parse_args(argv)
 
     try:
@@ -356,6 +491,9 @@ def main(argv=None):
             "total_realized_pl": 0,
             "baris_bermasalah": [],
             "tinjau_ulang_jatuh_tempo": [],
+            "cek_biaya": [],
+            "cek_biaya_beli_vs_jual": None,
+            "cek_biaya_keterangan": None,
             "jumlah_baris_dihitung": 0,
             "peringatan_global": peringatan_global,
             "pesan": "Jurnal masih kosong (header ada, belum ada transaksi tercatat).",
@@ -381,6 +519,7 @@ def main(argv=None):
         realized = realized_semua
 
     total_realized_pl = bulat_rupiah(sum(r["pl"] for lst in realized.values() for r in lst))
+    cek_biaya, catatan_sisi = periksa_biaya(baris_ok)
 
     hasil = {
         "status": "ok",
@@ -395,6 +534,13 @@ def main(argv=None):
         "total_realized_pl": total_realized_pl,
         "baris_bermasalah": semua_bermasalah,
         "tinjau_ulang_jatuh_tempo": daftar_tinjau_ulang(baris_ok, hari_ini),
+        "cek_biaya": cek_biaya,
+        "cek_biaya_beli_vs_jual": catatan_sisi,
+        "cek_biaya_keterangan": (
+            "Baris di 'cek_biaya' hanya DITANDAI agar dicek ke riwayat transaksi exchange (mis. salah ketik, "
+            "biaya lain). Sebabnya tidak ditebak (juga tidak disimpulkan apakah PPh sudah termasuk); P/L tetap dihitung "
+            "dari angka yang dicatat.") if (cek_biaya or catatan_sisi) else None,
+        "estimasi_pajak": hitung_estimasi_pajak(baris_ok, args.platform, dari, sampai, total_realized_pl),
         "jumlah_baris_dihitung": len(baris_ok),
         "peringatan_global": peringatan_global,
         "disclaimer": "Angka dari yang Anda catat sendiri, bukan nasihat investasi.",

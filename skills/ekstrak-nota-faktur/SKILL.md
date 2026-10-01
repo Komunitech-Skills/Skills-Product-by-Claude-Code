@@ -39,6 +39,8 @@ Bila pengguna hanya **mengetik angka** tanpa foto (mis. "DPP 10 juta, PPN 1,2 ju
 Jika dokumen belum dikirim atau tidak bisa dibuka, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jangan bertanya hal yang ada defaultnya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Baca tiap dokumen** dan isi data mengikuti `references/skema-data.md` (contoh lengkap: `templates/contoh-input.json`). Aturan membaca:
    - Salin angka, nomor, NPWP, dan terbilang **persis** seperti tertulis.
    - Kolom yang tidak ada di dokumen → `null`. Kolom yang ada tapi buram/terpotong → `"TIDAK_TERBACA"`, lalu tulis bagian yang terlihat di `catatan` (mis. "total terlihat 3?1.500"). **Jangan menebak digit, jangan mengarang item.**

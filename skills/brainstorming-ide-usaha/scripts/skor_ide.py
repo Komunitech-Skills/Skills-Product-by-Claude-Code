@@ -8,12 +8,16 @@ atau `py`).
 Perintah:
   skor   -- hitung skor tertimbang & peringkat dari file ide (CSV) + bobot (JSON, opsional)
   impas  -- hitung titik impas kasar (unit) dari modal awal & margin per unit
+  rencana -- hitungan rupiah rencana uji 7 hari: margin bersih per unit setelah potongan
+             aplikasi/marketplace, laba uji, unit untuk menutup biaya uji, target harian
 
 Contoh:
   python3 skor_ide.py skor --ide ide.csv --bobot bobot.json
   python3 skor_ide.py skor --ide ide.csv               # tanpa bobot -> pakai default/sama rata
   python3 skor_ide.py impas --modal 5000000 --margin 15000
   python3 skor_ide.py impas --modal Rp5.000.000 --margin 15rb
+  python3 skor_ide.py skor --ide -  < ide.csv            # baca CSV dari stdin, tanpa menulis file
+  python3 skor_ide.py rencana --harga 25rb --modal-unit 14rb --potongan-persen 20 --biaya-uji 300rb --target 30
 
 Format file: lihat templates/format-data-skor.md di folder skill.
 """
@@ -56,7 +60,24 @@ class DataTidakValid(Exception):
 # Pembacaan file (encoding & pemisah CSV gaya Excel Indonesia)
 # ---------------------------------------------------------------------------
 
+_STDIN_CACHE = None
+
+
 def _baca_file_teks(path, label):
+    global _STDIN_CACHE
+    if str(path) == "-":
+        # Data ide lewat stdin (heredoc/pipe) supaya agent tidak perlu menulis file.
+        if _STDIN_CACHE is None:
+            _STDIN_CACHE = sys.stdin.buffer.read()
+        data = _STDIN_CACHE
+        if not data.strip():
+            raise DataTidakValid(f"data {label} dari stdin kosong")
+        for enc in ("utf-8-sig", "cp1252"):
+            try:
+                return data.decode(enc)
+            except UnicodeDecodeError:
+                continue
+        raise DataTidakValid(f"data {label} dari stdin bukan teks yang bisa dibaca")
     p = Path(path)
     try:
         data = p.read_bytes()
@@ -454,6 +475,17 @@ def _tipe_rupiah_cli(mentah):
         raise argparse.ArgumentTypeError(str(e))
 
 
+def _tipe_persen_cli(mentah):
+    s = mentah.strip().rstrip("%").replace(",", ".")
+    try:
+        nilai = float(s)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"persen tidak valid: {mentah!r} — contoh: 20 atau 20,5")
+    if not math.isfinite(nilai):
+        raise argparse.ArgumentTypeError(f"persen bukan angka wajar: {mentah!r}")
+    return nilai
+
+
 def format_rupiah(nilai):
     dibulatkan = round(nilai, 2)
     if dibulatkan == int(dibulatkan):
@@ -503,12 +535,198 @@ def cmd_impas(args):
     return 0
 
 
+def hitung_rencana(harga, modal_unit, potongan_persen=0.0, biaya_uji=0.0, target=10, modal_awal=None,
+                   margin_target=None, isi_per_unit=None, satuan=None, harga_lama=None, harga_pesaing=None):
+    """Hitungan rupiah rencana uji 7 hari. Semua nominal dibulatkan ke rupiah terdekat.
+
+    v1.0.6 — cek kewajaran harga (agar saran harga tidak asal):
+    harga_saran      = ceil(modal_unit / (1 - potongan% - margin_target%))   (bila margin_target diisi;
+                       bila harga=None, harga jual = harga_saran)
+    harga_per_satuan = harga / isi_per_unit   (mis. paket 15 kg -> per kg)
+    dibandingkan dengan harga_lama (harga eceran sendiri per satuan) & harga_pesaing (per satuan):
+    lebih mahal dari salah satunya -> status "CEK"; tanpa acuan pasar -> status "BELUM DICEK".
+    berhenti dini    = Hari 3 masih 0 -> ganti tawaran/kanal; Hari 5 < target kumulatif Hari 3 -> hentikan.
+
+    potongan_rp      = round(harga x potongan_persen / 100)    (komisi aplikasi/marketplace)
+    margin_unit      = harga - potongan_rp - modal_unit          (untung bersih per unit)
+    margin_persen    = margin_unit / harga x 100
+    laba_uji         = target x margin_unit - biaya_uji          (bila target tercapai)
+    unit_tutup_biaya = ceil(biaya_uji / margin_unit)
+    unit_impas_modal = ceil(modal_awal / margin_unit)            (bila modal_awal diisi)
+    ambang           = berhenti < ceil(30% target) <= perbaiki < target <= lanjut
+    """
+    if margin_target is not None:
+        if not math.isfinite(margin_target) or margin_target < 0:
+            raise DataTidakValid(f"margin target harus 0 atau lebih (nilai: {margin_target!r})")
+        if potongan_persen + margin_target >= 100:
+            raise DataTidakValid("potongan aplikasi + margin target harus di bawah 100 persen")
+        if not math.isfinite(modal_unit) or modal_unit < 0:
+            raise DataTidakValid(f"modal per unit tidak boleh negatif (nilai: {modal_unit:g})")
+    if harga is None:
+        if margin_target is None:
+            raise DataTidakValid("isi --harga, atau --margin-target supaya harga dihitung dari biaya + margin")
+        harga = math.ceil(round(modal_unit) / (1 - (potongan_persen + margin_target) / 100))
+    for nama, nilai in (("isi per unit", isi_per_unit), ("harga lama per satuan", harga_lama),
+                        ("harga pesaing per satuan", harga_pesaing)):
+        if nilai is not None and (not math.isfinite(nilai) or nilai <= 0):
+            raise DataTidakValid(f"{nama} harus lebih besar dari 0 (nilai: {nilai!r})")
+    for nama, nilai in (("harga jual", harga), ("modal per unit", modal_unit), ("biaya uji", biaya_uji)):
+        if not math.isfinite(nilai):
+            raise DataTidakValid(f"{nama} bukan angka wajar: {nilai!r}")
+    if harga < 1:
+        raise DataTidakValid(f"harga jual per unit harus minimal Rp1 (nilai: {harga:g})")
+    if modal_unit < 0:
+        raise DataTidakValid(f"modal per unit tidak boleh negatif (nilai: {modal_unit:g})")
+    if biaya_uji < 0:
+        raise DataTidakValid(f"biaya uji tidak boleh negatif (nilai: {biaya_uji:g})")
+    if not (0 <= potongan_persen < 100):
+        raise DataTidakValid(f"potongan aplikasi/marketplace harus 0 sampai di bawah 100 persen (nilai: {potongan_persen:g})")
+    if target < 1:
+        raise DataTidakValid(f"target 7 hari minimal 1 unit/pesanan (nilai: {target})")
+    if modal_awal is not None and modal_awal < 0:
+        raise DataTidakValid(f"modal awal tidak boleh negatif (nilai: {modal_awal:g})")
+
+    harga, modal_unit, biaya_uji = round(harga), round(modal_unit), round(biaya_uji)
+    potongan_rp = round(harga * potongan_persen / 100)
+    margin = harga - potongan_rp - modal_unit
+    hasil = {
+        "harga": harga, "potongan_persen": potongan_persen, "potongan_rp": potongan_rp,
+        "modal_unit": modal_unit, "margin_unit": margin,
+        "margin_persen": round(margin * 100 / harga, 1),
+        "biaya_uji": biaya_uji, "target": target,
+        "omzet_target": target * harga,
+        "laba_uji": target * margin - biaya_uji,
+        "ambang_perbaiki": math.ceil(target * 0.3),
+        "target_kumulatif": {3: math.ceil(target * 0.3), 5: math.ceil(target * 0.6), 7: target},
+        "rugi_per_unit": margin <= 0,
+        "unit_tutup_biaya": None, "unit_impas_modal": None, "modal_awal": None,
+    }
+    tk = hasil["target_kumulatif"]
+    hasil["berhenti_dini"] = {3: 0, 5: tk[3]}   # Hari 3 = 0 -> ganti tawaran; Hari 5 < tk[3] -> hentikan
+    # --- cek kewajaran harga (v1.0.6)
+    isi = isi_per_unit or 1
+    hasil.update({"margin_target": margin_target, "harga_saran": None, "isi_per_unit": isi,
+                  "satuan": satuan or "unit", "harga_per_satuan": round(harga / isi),
+                  "modal_per_satuan": round(modal_unit / isi),
+                  "harga_lama": round(harga_lama) if harga_lama else None,
+                  "harga_pesaing": round(harga_pesaing) if harga_pesaing else None,
+                  "selisih_vs_lama_persen": None, "selisih_vs_pesaing_persen": None, "catatan_kewajaran": []})
+    if margin_target is not None:
+        hasil["harga_saran"] = math.ceil(modal_unit / (1 - (potongan_persen + margin_target) / 100))
+        if harga < hasil["harga_saran"]:
+            hasil["catatan_kewajaran"].append(
+                f"harga di bawah harga minimal untuk margin {margin_target:g}% "
+                f"({format_rupiah(hasil['harga_saran'])}).")
+    hps = harga / isi
+    for kunci, acuan, label in (("lama", harga_lama, "harga eceran Anda sendiri"),
+                                ("pesaing", harga_pesaing, "harga pesaing")):
+        if acuan:
+            selisih = round((hps - acuan) * 100 / acuan, 1)
+            hasil[f"selisih_vs_{kunci}_persen"] = selisih
+            if selisih > 0:
+                hasil["catatan_kewajaran"].append(
+                    f"per {hasil['satuan']} {format_rupiah(round(hps))} lebih mahal {_persen(selisih)} dari {label} "
+                    f"({format_rupiah(round(acuan))}/{hasil['satuan']}) — sebutkan nilai tambah yang membuat pelanggan "
+                    "mau membayar lebih, atau turunkan harga/isi paket.")
+    if not harga_lama and not harga_pesaing:
+        hasil["kewajaran"] = "BELUM DICEK"
+    else:
+        hasil["kewajaran"] = "CEK" if hasil["catatan_kewajaran"] else "WAJAR"
+    if margin > 0:
+        hasil["unit_tutup_biaya"] = math.ceil(biaya_uji / margin) if biaya_uji else 0
+        if modal_awal:
+            hasil["modal_awal"] = round(modal_awal)
+            hasil["unit_impas_modal"] = math.ceil(round(modal_awal) / margin)
+    return hasil
+
+
+def _rp(n):
+    return ("-" if n < 0 else "") + format_rupiah(abs(n))
+
+
+def _persen(x):
+    return f"{x:g}".replace(".", ",") + "%"
+
+
+def _unit(n):
+    return f"{n:,}".replace(",", ".")
+
+
+def _selisih(x):
+    return ("+" if x > 0 else "") + _persen(x)
+
+
+def _cetak_kewajaran(r, w):
+    sat = r["satuan"]
+    if r["harga_saran"] is not None:
+        print(f"{'Harga minimal margin ' + _persen(r['margin_target']):<{w}}: {format_rupiah(r['harga_saran'])} "
+              "(= modal / (1 - potongan - margin); bulatkan ke atas ke harga yang enak)")
+    if r["isi_per_unit"] != 1:
+        print(f"{'Isi per unit':<{w}}: {_persen(r['isi_per_unit'])[:-1]} {sat}")
+        print(f"{'Harga per ' + sat:<{w}}: {format_rupiah(r['harga_per_satuan'])} (modal {format_rupiah(r['modal_per_satuan'])}/{sat})")
+    if r["harga_lama"]:
+        print(f"{'Harga eceran Anda per ' + sat:<{w}}: {format_rupiah(r['harga_lama'])} (selisih {_selisih(r['selisih_vs_lama_persen'])})")
+    if r["harga_pesaing"]:
+        print(f"{'Harga pesaing per ' + sat:<{w}}: {format_rupiah(r['harga_pesaing'])} (selisih {_selisih(r['selisih_vs_pesaing_persen'])})")
+    if r["kewajaran"] == "BELUM DICEK":
+        print(f"{'Cek kewajaran harga':<{w}}: BELUM DICEK - isi [isi: harga pesaing per {sat}] lalu jalankan ulang "
+              "dengan --harga-pesaing (dan --harga-lama bila sudah berjualan)")
+    else:
+        print(f"{'Cek kewajaran harga':<{w}}: {r['kewajaran']}")
+    for c in r["catatan_kewajaran"]:
+        print(f"PERINGATAN HARGA: {c}")
+
+
+def cmd_rencana(args):
+    if args.harga is None and args.margin_target is None:
+        print("Data tidak valid: isi --harga, atau --margin-target supaya harga dihitung dari biaya + margin",
+              file=sys.stderr)
+        return 1
+    try:
+        r = hitung_rencana(args.harga, args.modal_unit, args.potongan_persen, args.biaya_uji,
+                           args.target, args.modal, margin_target=args.margin_target,
+                           isi_per_unit=args.isi_per_unit, satuan=args.satuan,
+                           harga_lama=args.harga_lama, harga_pesaing=args.harga_pesaing)
+    except DataTidakValid as e:
+        print(f"Data tidak valid: {e}", file=sys.stderr)
+        return 1
+    w = 30
+    print(f"{'Harga jual per unit':<{w}}: {format_rupiah(r['harga'])}")
+    if r["potongan_persen"]:
+        print(f"{'Potongan aplikasi/marketplace':<{w}}: {_persen(r['potongan_persen'])} = {format_rupiah(r['potongan_rp'])}")
+    print(f"{'Modal per unit (bahan+kemasan)':<{w}}: {format_rupiah(r['modal_unit'])}")
+    print(f"{'Untung bersih per unit':<{w}}: {_rp(r['margin_unit'])} ({_persen(r['margin_persen'])} dari harga)")
+    _cetak_kewajaran(r, w)
+    if r["rugi_per_unit"]:
+        print()
+        print("PERINGATAN: RUGI/TIDAK UNTUNG per unit. Jangan uji dengan harga ini - naikkan harga,")
+        print("turunkan modal per unit, atau pilih kanal tanpa potongan (mis. pesan langsung via WA).")
+        return 0
+    print(f"{'Biaya uji 7 hari':<{w}}: {format_rupiah(r['biaya_uji'])}")
+    print(f"{'Target 7 hari':<{w}}: {_unit(r['target'])} unit/pesanan (omzet {format_rupiah(r['omzet_target'])})")
+    print(f"{'Laba uji bila target tercapai':<{w}}: {_rp(r['laba_uji'])}")
+    print(f"{'Unit untuk menutup biaya uji':<{w}}: {_unit(r['unit_tutup_biaya'])}")
+    if r["unit_impas_modal"] is not None:
+        print(f"{'Balik modal awal ' + format_rupiah(r['modal_awal']):<{w}}: {_unit(r['unit_impas_modal'])} unit")
+    tk = r["target_kumulatif"]
+    print(f"{'Target kumulatif':<{w}}: Hari 3 >= {_unit(tk[3])}, Hari 5 >= {_unit(tk[5])}, Hari 7 >= {_unit(tk[7])}")
+    print(f"{'Keputusan Hari 7':<{w}}: >= {_unit(r['target'])} lanjut | {_unit(r['ambang_perbaiki'])}-{_unit(r['target'] - 1)} perbaiki & uji ulang | < {_unit(r['ambang_perbaiki'])} hentikan/ganti ide")
+    print(f"{'Berhenti dini (hemat biaya)':<{w}}: Hari 3 = 0 -> ganti tawaran/kanal | Hari 5 < {_unit(r['berhenti_dini'][5])} -> hentikan uji")
+    if r["unit_tutup_biaya"] > r["target"]:
+        print("PERINGATAN: target 7 hari belum menutup biaya uji - kecilkan biaya uji atau naikkan target.")
+    print()
+    print("Rumus: untung/unit = harga - potongan - modal per unit; laba uji = target x untung/unit - biaya uji.")
+    print("Pembulatan ke rupiah terdekat. Perkiraan kasar, bukan HPP lengkap (pakai skill 'hitung-hpp').")
+    return 0
+
+
 def buat_parser():
     p = argparse.ArgumentParser(description="Skor ide usaha tertimbang + titik impas kasar")
     sub = p.add_subparsers(dest="perintah", required=True)
 
     p_skor = sub.add_parser("skor", help="Hitung skor tertimbang & peringkat ide")
-    p_skor.add_argument("--ide", required=True, help="Path file CSV daftar ide")
+    p_skor.add_argument("--ide", required=True,
+                        help="Path file CSV daftar ide di folder kerja pengguna, atau '-' untuk membaca dari stdin")
     p_skor.add_argument(
         "--bobot",
         required=False,
@@ -531,10 +749,34 @@ def buat_parser():
     )
     p_impas.set_defaults(func=cmd_impas)
 
+    p_ren = sub.add_parser("rencana", help="Hitungan rupiah rencana uji 7 hari")
+    p_ren.add_argument("--harga", type=_tipe_rupiah_cli, default=None,
+                       help="Harga jual per unit (Rupiah). Boleh kosong bila --margin-target diisi")
+    p_ren.add_argument("--modal-unit", required=True, type=_tipe_rupiah_cli,
+                       help="Modal per unit: bahan + kemasan + ongkos langsung (Rupiah)")
+    p_ren.add_argument("--potongan-persen", type=_tipe_persen_cli, default=0.0,
+                       help="Potongan/komisi aplikasi atau marketplace dalam persen (0 bila jual langsung via WA)")
+    p_ren.add_argument("--biaya-uji", type=_tipe_rupiah_cli, default=0.0,
+                       help="Total uang keluar khusus uji 7 hari: sampel, cetak, iklan, ongkir promo (Rupiah)")
+    p_ren.add_argument("--target", type=int, default=10, help="Target unit/pesanan dalam 7 hari (default 10)")
+    p_ren.add_argument("--modal", type=_tipe_rupiah_cli, default=None,
+                       help="Opsional: modal awal alat/peralatan untuk dihitung balik modalnya (Rupiah)")
+    p_ren.add_argument("--margin-target", type=_tipe_persen_cli, default=None,
+                       help="Margin bersih yang diinginkan (persen dari harga) -> harga minimal dihitung dari biaya")
+    p_ren.add_argument("--isi-per-unit", type=_tipe_persen_cli, default=None,
+                       help="Isi satu unit/paket dalam satuan dasar, mis. 15 (kg) untuk paket 15 kg")
+    p_ren.add_argument("--satuan", default=None, help="Nama satuan dasar, mis. kg, porsi, pcs")
+    p_ren.add_argument("--harga-lama", type=_tipe_rupiah_cli, default=None,
+                       help="Harga eceran Anda sendiri per satuan dasar saat ini (acuan kewajaran)")
+    p_ren.add_argument("--harga-pesaing", type=_tipe_rupiah_cli, default=None,
+                       help="Harga pesaing per satuan dasar yang disebut pengguna (acuan pasar)")
+    p_ren.set_defaults(func=cmd_rencana)
+
     return p
 
 
-_OPSI_RUPIAH = ("--modal", "--margin")
+_OPSI_RUPIAH = ("--modal", "--margin", "--harga", "--modal-unit", "--biaya-uji", "--harga-lama",
+                "--harga-pesaing")
 
 
 def _gabungkan_opsi_negatif(argv):

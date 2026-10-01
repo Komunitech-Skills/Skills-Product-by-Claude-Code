@@ -34,6 +34,8 @@ Dua hasil siap pakai: (A) **nama** usaha/produk yang mudah diucap, aman dari art
 
 **Aturan tanya:** bila info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar singkat (maks. 5 pertanyaan). Bila pengguna ingin cepat, langsung kerjakan dengan default yang masuk akal dan tulis asumsinya di bagian "Asumsi".
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ## Bagian A: Penamaan
 
 ### A1. Pahami usahanya
@@ -42,10 +44,13 @@ Ringkas 3 baris: apa yang dijual, ke siapa, kesan yang diinginkan. Tanyakan kata
 ### A2. Buat 10 opsi
 - Campur pendekatan: deskriptif ("Sambal Cobek Rina"), berasal dari kata daerah/serapan, gabungan kata, akhiran/awalan (-ku, Kita, Nusa), dan satu opsi berani. Beri **satu kalimat alasan** per opsi.
 - Hindari nama yang hanya menempel pada merek besar ("Indomilk Baru"), nama orang terkenal, nama lembaga/instansi, dan kata yang dilarang sebagai klaim (mis. "Halal", "BPOM", "Asli" tanpa dasar).
-- Tulis opsi ke CSV memakai `templates/nama.csv` (kolom `nama`, `aman_makna`, `khas`, `relevan`).
+- Tulis opsi ke CSV memakai `templates/nama.csv` (kolom `nama`, `aman_makna`, `khas`, `relevan`). **Simpan CSV di folder kerja pengguna** (mis. `merek/nama-<usaha>.csv`), **jangan** di dalam folder skill, dan sebut lokasinya ke pengguna ("File kerja: …").
 
 ### A3. Periksa arti dan bunyi (manual, jangan mengarang)
 - Untuk tiap nama tanyakan: adakah arti buruk/lucu di bahasa daerah (Jawa, Sunda, Batak, Minang, Bugis, Betawi, Madura, dan daerah pembeli), di slang/plesetan, atau saat disingkat/dibaca cepat? Bila kamu tidak yakin arti sebuah kata daerah, **jangan menebak**; tulis "perlu ditanyakan ke penutur asli" dan minta pengguna bertanya ke 3 orang dari daerah berbeda.
+- **Bacakan nama seperti kata Inggris** (dan slang internet) yang mirip: ada arti buruk? (mis. "Sneakuy" terbaca "sneaky" = licik → `aman_makna` 1). Script juga menandai kemiripan dengan daftar kata Inggris berkonotasi buruk, tetapi daftar itu ringkas — tetap periksa sendiri.
+- **Bandingkan bunyi dengan setiap pesaing yang disebut pengguna**, bukan hanya ejaannya ("Kicks Klin" dibaca sama dengan "Kick Clean" → terlalu mirip). Masukkan **semua** nama pesaing yang disebut pengguna ke `--merek`.
+- Jangan mengklaim asal-usul atau arti slang/daerah tanpa sumber (mis. "akhiran -uy khas Medan"); bila tidak yakin, tulis "perlu ditanyakan ke penutur asli".
 - Uji ucap: bisa dieja lewat telepon/voice note tanpa salah? Sekali dengar bisa ditulis? Nilai 1-5 ke `aman_makna`, `khas`, `relevan` berikut alasan singkat. Penilaian = pendapat, bukan fakta; katakan begitu.
 
 ### A4. Skor lewat script
@@ -53,11 +58,11 @@ Ringkas 3 baris: apa yang dijual, ke siapa, kesan yang diinginkan. Tanyakan kata
 python3 scripts/skor_nama.py nama.csv --merek "Merek A, Merek B"      # Windows: python atau py
 python3 scripts/skor_nama.py nama.csv --merek-file merek.txt --bobot "kemiripan=30,khas=10"
 ```
-- Script menghitung panjang huruf, suku kata, kemudahan ejaan, dan **kemiripan ejaan** dengan daftar merek **yang diberikan pengguna**; sisanya dari nilai manual. Skala 0-100. Bobot memakai titik untuk desimal.
+- Script menghitung panjang huruf, suku kata, kemudahan ejaan, **kemiripan ejaan dan bunyi kira-kira** (c/q/ck→k, ph/v→f, z→s, x→ks, ee/ea→i, oo→u, -s jamak dibuang, huruf ganda dirapatkan) dengan daftar merek **yang diberikan pengguna**, serta **kemiripan dengan kata Inggris umum berkonotasi buruk**; sisanya dari nilai manual. Skala 0-100. Bobot memakai titik untuk desimal.
 - **Kata generik** (kopi, toko, warung, kedai, depot, bengkel, laundry, jaya, dst.; daftar lengkap di `scripts/skor_nama.py`) dibuang dari kedua sisi sebelum cek kemiripan, supaya merek "Kopi" tidak menandai semua nama berkata "kopi". Tambah kata umum lain dengan `--generik "sambal,nasi"`; matikan bawaan dengan `--tanpa-generik`. Bagian khas nama (mis. "Kenangan") tetap dibandingkan. Tetap: masukkan **merek utuh** pesaing ("Kopi Kenangan"), bukan kata umum saja. Nama tanpa huruf (mis. "2.5") ditolak.
-- Nama berstatus **TANDAI** (terlalu mirip merek yang diberikan, atau arti negatif) tidak boleh direkomendasikan. Selisih <= 5 poin = **SETARA**: putuskan lewat uji ucap 5 orang dan hasil cek ketersediaan.
+- Nama berstatus **TANDAI** (terlalu mirip merek yang diberikan — ejaan atau bunyi —, mirip kata Inggris berkonotasi buruk, atau arti negatif) tidak boleh direkomendasikan; sebut alasannya ke pengguna. Selisih <= 5 poin = **SETARA**: putuskan lewat uji ucap 5 orang dan hasil cek ketersediaan.
 - Bila script tidak bisa dijalankan, hitung manual: skor = jumlah(bobot x nilai 1-5) / jumlah bobot x 20 (bobot awal: panjang 10, suku kata 10, ejaan 10, kemiripan 20, aman makna 20, khas 15, relevan 15). Aturan skor tiap kriteria ada di `references/kriteria-nama.md`.
-- Script tidak mendengar bunyi dan tidak tahu merek yang tidak disebutkan. Nama Inggris dan singkatan dihitung suku katanya kira-kira.
+- Normalisasi bunyi hanya perkiraan dan script tidak tahu merek yang tidak disebutkan. Nama Inggris dan singkatan dihitung suku katanya kira-kira.
 
 ### A5. Cek ketersediaan (agent hanya MENYARANKAN)
 Agent **tidak mengklaim** sebuah nama "tersedia" atau "aman". Beri daftar cek untuk 3 nama teratas, dan biarkan pengguna yang memeriksa:
@@ -68,7 +73,7 @@ Agent **tidak mengklaim** sebuah nama "tersedia" atau "aman". Beri daftar cek un
 Tandai tiap butir "belum dicek" sampai pengguna melapor hasilnya.
 
 ### A6. Cek merek DJKI (praktis, tanpa opini hukum)
-Ikuti `references/cek-merek-pdki.md`: buka pdki-indonesia.dgip.go.id, cari nama dan varian ejaan/bunyi, filter kelas Nice yang sesuai produk **dan kelas terkait**, catat temuan (nama, kelas, status) di tabel, lalu bawa ke konsultan kekayaan intelektual bila ada yang mirip atau bila akan mendaftar. Agent tidak menyimpulkan "boleh/tidak boleh".
+Ikuti `references/cek-merek-pdki.md` (baca tabel kelasnya, lalu **sebut nomor kelas Nice** di jawaban, mis. jasa cuci/perawatan sepatu = kelas 37, produk perawatan sepatu yang dijual = kelas 3 sebagai kelas terkait): buka pdki-indonesia.dgip.go.id, cari nama dan varian ejaan/bunyi, filter kelas Nice yang sesuai produk **dan kelas terkait**, catat temuan (nama, kelas, status) di tabel, lalu bawa ke konsultan kekayaan intelektual bila ada yang mirip atau bila akan mendaftar. Agent tidak menyimpulkan "boleh/tidak boleh".
 
 ### A7. Keluaran nama
 Tabel 10 opsi + skor, 3 pilihan teratas dengan alasan, daftar cek per nama (status "belum dicek"), pertanyaan penutup: "Mau saya buatkan tagline dan bio dari nama pilihanmu?" (arahkan ke `positioning-persona-usaha` untuk tagline mendalam).
@@ -99,7 +104,7 @@ Untuk kanal yang diminta (default: WA + IG + marketplace):
 - **WhatsApp**: 1 pesan ke kontak yang sudah pernah berinteraksi/bersedia dihubungi (bukan blast ke nomor acak), maks. ±8 baris, ada ajakan membalas.
 - **Instagram**: caption pendek + 3 alternatif kalimat pembuka.
 - **Marketplace**: judul (jelas produk + ukuran + keunggulan nyata), 3 poin manfaat, kalimat garansi.
-Semua angka, syarat garansi, tanggal berakhir, dan stok harus sama persis dengan hasil B3 dan fakta pengguna. Bagian yang belum diketahui ditulis `[isi: ...]`. Template: `templates/penawaran.md`.
+Semua angka, syarat garansi, tanggal berakhir, dan stok harus sama persis dengan hasil B3 dan fakta pengguna. **Klaim produk** — ukuran/isi (mis. "200 ml"), bahan, "asli", "alami", "tanpa pengawet", daya tahan, hasil pemakaian — hanya ditulis bila pengguna menyebutnya; selain itu `[isi: ukuran]`, `[isi: tanpa pengawet? ya/tidak]`, dst. Bagian lain yang belum diketahui juga ditulis `[isi: ...]`. Template: `templates/penawaran.md`.
 
 ### B5. Periksa kepatuhan sebelum tayang
 Jalankan ceklis di `references/kata-dan-klaim.md`: klaim berlebihan, harga coret yang benar-benar pernah berlaku, batas waktu/stok nyata, hadiah/bonus benar-benar diberikan, tanpa testimoni karangan, produk teregulasi (pangan, kosmetik, obat, suplemen) mengikuti aturan BPOM/halal, tanda #iklan untuk endorse.
@@ -130,7 +135,8 @@ Keluaran ringkas: 10 nama + skor (mis. "Cabe Gendis 86/100, layak dicek"), dafta
 ## Batasan & penanganan error
 - **Bukan nasihat hukum atau merek.** Skill tidak menyatakan sebuah nama boleh didaftarkan, bebas dari sengketa, atau tidak melanggar merek pihak lain. Hasil PDKI dan keputusan pendaftaran ada di DJKI dan konsultan kekayaan intelektual. Pertanyaan hukum (mis. "aman dari gugatan?") dijawab dengan arahan ke konsultan KI.
 - **Tidak mengklaim ketersediaan** domain, handle, atau merek. Semua berstatus "belum dicek" sampai pengguna melapor.
-- **Tidak mengarang** testimoni, jumlah pembeli, penghargaan, sertifikat, stok, atau tanggal. Pakai `[isi: ...]`.
+- **Tidak mengarang** testimoni, jumlah pembeli, penghargaan, sertifikat, stok, tanggal, maupun klaim produk (ukuran, bahan, "tanpa pengawet"). Pakai `[isi: ...]`.
+- **File kerja** (CSV nama, draf penawaran) hanya ditulis ke folder kerja pengguna, tidak pernah ke folder skill; selalu sebut lokasinya.
 - **Kelangkaan palsu ditolak:** stok "tinggal 3" padahal banyak, penghitung waktu yang diulang terus, harga coret yang tidak pernah berlaku, bonus/hadiah yang tidak diberikan. Tawarkan versi jujur. Dasar: **UU No. 8 Tahun 1999 tentang Perlindungan Konsumen**, Pasal 9, 10, 11, 12, 13 (untuk penjual) dan 17 (untuk pelaku usaha periklanan/agensi) (ringkasan per 2026-09-30, bukan kutipan resmi; baca teks lengkap di peraturan.go.id atau JDIH BPK).
 - **Klaim berisiko** (kesehatan, "menyembuhkan", "pasti langsing", "termurah se-Indonesia", "BPOM/halal" tanpa nomor): ganti dengan versi yang bisa dibuktikan. Pangan/kosmetik/obat: arahkan cek aturan BPOM dan sertifikasi halal.
 - **Bukan blast:** pesan WA hanya untuk kontak yang sudah berinteraksi/bersedia; skill tidak mengirim pesan sendiri.

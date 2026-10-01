@@ -39,6 +39,8 @@ Pemilik/admin gudang usaha manufaktur kecil, distributor, atau toko grosir yang 
 4. Alamat default `http://localhost` (instalasi Docker resmi). Beda (mis. `http://127.0.0.1:8000`)? pakai ENV `INVENTREE_API_HOST` atau `--url`. Opsi umum (`--url`, `--kunci-file`, `--izinkan-jarak-jauh`, `--tz`, `--json`, `--timeout`) ditulis **setelah** nama perintah.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah: `python3 <folder-skill>/scripts/inventree.py <perintah> ...` (Windows: `python`/`py`). Barang boleh disebut dengan kode IPN (`BB-001`), nama, atau `#id`. Nama yang cocok ke beberapa barang → script menolak & menampilkan pilihan (kode 7): **tanyakan ke pengguna, jangan menebak**.
 
 ### A. Baca stok

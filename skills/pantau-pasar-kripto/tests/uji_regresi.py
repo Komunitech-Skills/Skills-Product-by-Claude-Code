@@ -699,6 +699,57 @@ class UjiJurnalPL(unittest.TestCase):
         self.assertEqual(data["jumlah_baris_dihitung"], 1)
         self.assertAlmostEqual(data["posisi_tersisa"]["BTC"]["jumlah_tersisa"], 0.005)
 
+    def test_93_cek_biaya_tandai_fee_jual_janggal_v105(self):
+        # Data uji OpenClaw 2026-10-01 (skenario 03): fee jual BTC 18 Sep = 0,4%, lainnya 0,2%.
+        self._tulis_csv(
+            "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+            "2026-09-03,BTC,beli,0.002,1700000000,6800\n"
+            "2026-09-05,ETH,beli,0.05,62000000,6200\n"
+            "2026-09-12,SOL,beli,2,3100000,12400\n"
+            "2026-09-18,BTC,jual,0.001,1820000000,7280\n"
+            "2026-09-22,SOL,jual,2,2850000,11400\n"
+            "2026-09-25,BTC,beli,0.001,1760000000,3520\n"
+            "2026-09-28,ETH,jual,0.02,66500000,2660\n"
+        )
+        kode, out, err = jalankan_jurnal(["--jurnal", self.csv_path, "--hari-ini", "2026-09-30"])
+        self.assertEqual(kode, 0, err)
+        data = json.loads(out)
+        # P/L tidak berubah oleh pemeriksaan biaya (dihitung independen penguji: -329.620)
+        self.assertEqual(data["total_realized_pl"], -329620)
+        self.assertEqual([c["baris"] for c in data["cek_biaya"]], [5])
+        c = data["cek_biaya"][0]
+        self.assertAlmostEqual(c["biaya_persen"], 7280 / (0.001 * 1820000000) * 100, places=3)
+        self.assertIn("berbeda jauh", c["alasan"])
+        self.assertIn("0,40%", c["alasan"])
+        self.assertIsNotNone(data["cek_biaya_keterangan"])
+
+    def test_94_cek_biaya_di_atas_1_persen_dan_beli_vs_jual_v105(self):
+        self._tulis_csv(
+            "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+            "2026-01-01,BTC,beli,1,1000000,2000\n"
+            "2026-01-02,BTC,beli,1,1000000,2000\n"
+            "2026-02-01,BTC,jual,1,1000000,15000\n"
+            "2026-02-02,BTC,jual,1,1000000,15000\n"
+        )
+        kode, out, err = jalankan_jurnal(["--jurnal", self.csv_path, "--hari-ini", "2026-09-30"])
+        data = json.loads(out)
+        self.assertEqual(sorted(c["baris"] for c in data["cek_biaya"]), [4, 5])
+        self.assertTrue(all("di atas 1%" in c["alasan"] for c in data["cek_biaya"]))
+        self.assertIn("JUAL 1,50% vs BELI 0,20%", data["cek_biaya_beli_vs_jual"])
+
+    def test_95_cek_biaya_seragam_tidak_ditandai_v105(self):
+        self._tulis_csv(
+            "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+            "2026-01-01,BTC,beli,1,1000000,2000\n"
+            "2026-02-01,BTC,jual,1,1100000,2200\n"
+            "2026-02-02,ETH,beli,1,500000,0\n"
+        )
+        kode, out, err = jalankan_jurnal(["--jurnal", self.csv_path, "--hari-ini", "2026-09-30"])
+        data = json.loads(out)
+        self.assertEqual(data["cek_biaya"], [])
+        self.assertIsNone(data["cek_biaya_beli_vs_jual"])
+        self.assertIsNone(data["cek_biaya_keterangan"])
+
     def test_67_csv_dengan_bom_utf8(self):
         self._tulis_csv(
             "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
@@ -1073,6 +1124,128 @@ class UjiDokumentasiOpenclawJadwal(unittest.TestCase):
     def test_92_menyebut_risiko_sh_lc_dan_kontaminasi_profil_login(self):
         self.assertIn("sh -lc", self.teks)
         self.assertTrue("nvm" in self.teks or "profil login" in self.teks)
+
+
+class UjiV106PajakHanyaAtasJual(unittest.TestCase):
+    """v1.0.6 -- regresi uji ulang OpenClaw 2026-10-01 skenario 03: agent menghitung PPh 0,21% atas
+    beli + jual (Rp48.951) dan menebak pajak sudah termasuk fee. Benar (PMK 50/2025, pajak.go.id):
+    PPh 22 final dipungut dari PENJUAL atas nilai transaksi JUAL saja.
+    Hitung independen (integer, tanpa memanggil script):
+      jual BTC 0,001 x 1.820.000.000 = 1.820.000 ; SOL 2 x 2.850.000 = 5.700.000 ; ETH 0,02 x 66.500.000 = 1.330.000
+      total jual 8.850.000 x 21/10000 = 18.585 (per baris 3.822 + 11.970 + 2.793) ; 1% = 88.500
+      (beli + jual = 23.310.000 x 0,21% = 48.951 -> angka SALAH, tidak boleh muncul)
+    """
+
+    CSV = ("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+           "2026-09-03,BTC,beli,0.002,1700000000,6800\n"
+           "2026-09-05,ETH,beli,0.05,62000000,6200\n"
+           "2026-09-12,SOL,beli,2,3100000,12400\n"
+           "2026-09-18,BTC,jual,0.001,1820000000,7280\n"
+           "2026-09-22,SOL,jual,2,2850000,11400\n"
+           "2026-09-25,BTC,beli,0.001,1760000000,3520\n"
+           "2026-09-28,ETH,jual,0.02,66500000,2660\n")
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.csv_path = os.path.join(self.tmp.name, "JURNAL.csv")
+        with open(self.csv_path, "w", encoding="utf-8") as f:
+            f.write(self.CSV)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def jalankan(self, *tambahan):
+        kode, out, err = jalankan_jurnal(["--jurnal", self.csv_path, "--hari-ini", "2026-09-30",
+                                          "--periode", "bulan-ini"] + list(tambahan))
+        self.assertEqual(kode, 0, err)
+        return json.loads(out)
+
+    def test_93_pajak_kasus_uji03_hanya_atas_jual(self):
+        d = self.jalankan()
+        self.assertEqual(d["total_realized_pl"], -329620)          # P/L tidak berubah
+        p = d["estimasi_pajak"]
+        nilai_jual = 1820000 + 5700000 + 1330000
+        self.assertEqual(p["total_nilai_jual"], nilai_jual)
+        self.assertEqual(p["total_estimasi_pph"], nilai_jual * 21 // 10000)   # 18.585
+        self.assertEqual(p["total_estimasi_pph"], 18585)
+        self.assertEqual([x["estimasi_pph"] for x in p["per_transaksi_jual"]], [3822, 11970, 2793])
+        self.assertEqual({x["koin"] for x in p["per_transaksi_jual"]}, {"BTC", "SOL", "ETH"})
+        self.assertNotIn("48951", out_teks(d))
+        self.assertNotIn("48.951", out_teks(d))
+        self.assertIn("Rp18.585", p["ringkasan_teks"])
+        self.assertIn("BELI tidak dikenai PPh", p["ringkasan_teks"])
+        self.assertIn("PENJUAL", p["jenis"])
+        self.assertIn("TIDAK DIKETAHUI", p["sudah_termasuk_di_kolom_biaya"])
+        self.assertEqual(p["pl_bila_pph_belum_di_kolom_biaya"], -329620 - 18585)
+        self.assertEqual(p["platform"], "dalam-negeri")
+
+    def test_94_pajak_luar_negeri_1_persen(self):
+        p = self.jalankan("--platform", "luar-negeri")["estimasi_pajak"]
+        self.assertEqual(p["total_estimasi_pph"], 88500)
+        self.assertIn("disetor sendiri", p["keterangan_platform"])
+
+    def test_95_filter_periode_juga_membatasi_pajak_dan_beli_saja_nol(self):
+        d = self.jalankan("--dari", "2026-09-01", "--sampai", "2026-09-20")
+        self.assertEqual(d["estimasi_pajak"]["total_nilai_jual"], 1820000)
+        self.assertEqual(d["estimasi_pajak"]["total_estimasi_pph"], 3822)
+        d = self.jalankan("--dari", "2026-09-01", "--sampai", "2026-09-15")   # hanya beli
+        self.assertEqual(d["estimasi_pajak"]["total_estimasi_pph"], 0)
+        self.assertEqual(d["estimasi_pajak"]["per_transaksi_jual"], [])
+
+    def test_96_dokumen_menulis_basis_jual_dan_larangan_menebak(self):
+        with open(os.path.join(SKILL_DIR, "SKILL.md"), encoding="utf-8") as f:
+            skill = f.read()
+        with open(os.path.join(SKILL_DIR, "references", "regulasi.md"), encoding="utf-8") as f:
+            reg = f.read()
+        self.assertIn("nilai transaksi JUAL", skill)
+        self.assertIn("Jangan menebak apakah PPh sudah termasuk", skill)
+        self.assertIn("jangan menghitung pajak sendiri", skill)
+        self.assertIn("Transaksi BELI tidak dikenai PPh", reg)
+        self.assertIn("PENJUAL", reg)
+        self.assertIn("https://www.pajak.go.id/index.php/en/node/117234", reg)
+        self.assertNotIn("biasanya sudah dipotong otomatis oleh exchange -- lihat", skill)
+
+
+def out_teks(d):
+    return json.dumps(d, ensure_ascii=False)
+
+
+class UjiV106JamWib(unittest.TestCase):
+    """v1.0.6 -- regresi uji ulang 04: last_updated CoinGecko 07:10 UTC ditulis '07:10 WIB'."""
+
+    def jalankan(self, *args):
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "jam_wib.py")] + list(args),
+                              capture_output=True, text=True)
+        return proc.returncode, proc.stdout.strip(), proc.stderr
+
+    def test_97_utc_z_jadi_wib_plus_7(self):
+        kode, out, _ = self.jalankan("2026-10-01T07:10:41.512Z")
+        self.assertEqual(kode, 0)
+        self.assertTrue(out.startswith("1 Okt 2026 14:10 WIB"), out)
+
+    def test_98_lintas_hari_dan_epoch(self):
+        self.assertTrue(self.jalankan("2026-09-30T20:30:00+00:00")[1].startswith("1 Okt 2026 03:30 WIB"))
+        epoch = int(dt.datetime(2026, 10, 1, 7, 14, tzinfo=dt.timezone.utc).timestamp())
+        self.assertTrue(self.jalankan(str(epoch))[1].startswith("1 Okt 2026 14:14 WIB"))
+        self.assertTrue(self.jalankan(str(epoch * 1000))[1].startswith("1 Okt 2026 14:14 WIB"))
+        self.assertTrue(self.jalankan("2026-10-01T14:14:00+07:00")[1].startswith("1 Okt 2026 14:14 WIB"))
+        self.assertTrue(self.jalankan("2026-10-01T07:10:41.512345678Z")[1].startswith("1 Okt 2026 14:10 WIB"))
+
+    def test_99_tanpa_zona_ditolak_tanpa_traceback(self):
+        kode, out, err = self.jalankan("2026-10-01 07:14")
+        self.assertEqual(kode, 2)
+        self.assertIn("tidak punya zona waktu", err)
+        self.assertNotIn("Traceback", err)
+        kode, _, err = self.jalankan("kemarin")
+        self.assertEqual(kode, 2)
+        self.assertNotIn("Traceback", err)
+
+    def test_100_skill_mewajibkan_url_lengkap_dan_tanggal_tokenomics(self):
+        with open(os.path.join(SKILL_DIR, "SKILL.md"), encoding="utf-8") as f:
+            skill = f.read()
+        self.assertIn("URL artikel lengkap", skill)
+        self.assertIn("jam_wib.py", skill)
+        self.assertIn("wajib menyebut tanggal sumbernya", skill)
 
 
 if __name__ == "__main__":

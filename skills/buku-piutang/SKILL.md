@@ -61,6 +61,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mulai
 1. `info --json`. Belum ada database → tanyakan nama usaha, nama di pesan, rekening pembayaran, termin biasa (hari), zona (WIB/WITA/WIT).
 2. `init --nama-usaha "..." --pengirim "..." --rekening "BCA ... a.n. ..." [--termin 14] [--zona WIB]` → pratinjau → setuju → ulangi + `--ya`.

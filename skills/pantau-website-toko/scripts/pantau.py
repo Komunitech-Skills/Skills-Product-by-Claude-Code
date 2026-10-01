@@ -40,7 +40,7 @@ import urllib.request
 from pathlib import Path
 
 APLIKASI = "pantau-website-toko"
-VERSI = "1.0.1"
+VERSI = "1.0.5"
 UA = f"{APLIKASI}/{VERSI} (+komunitech.com; baca status-page publik saja)"
 
 # Konstanta status Uptime Kuma (sama persis dengan src/util.ts versi resmi)
@@ -190,21 +190,54 @@ def urai_waktu_kuma(teks):
     raise Gagal(f"format waktu heartbeat tidak dikenali: {teks!r}")
 
 
+WIB = dt.timezone(dt.timedelta(hours=7), "WIB")
+
+
+def jam_wib(t):
+    """'2026-09-26 14:22 WIB (07:22 UTC)' - pengguna awam membaca jam WIB."""
+    if t is None:
+        return "-"
+    return f"{t.astimezone(WIB).strftime('%Y-%m-%d %H:%M')} WIB ({t.astimezone(dt.timezone.utc).strftime('%H:%M')} UTC)"
+
+
+def daftar_insiden(beats, sekarang):
+    """Kelompokkan heartbeat TURUN yang BERURUTAN menjadi satu insiden (kejadian).
+    Insiden mulai di heartbeat TURUN pertama, selesai di heartbeat bukan-TURUN berikutnya
+    (atau masih berlangsung sampai `sekarang`). Durasi = selesai - mulai (menit, eksplisit)."""
+    insiden = []
+    if not beats:
+        return insiden
+    waktu = [urai_waktu_kuma(b["time"]) for b in beats]
+    aktif = None
+    for i, b in enumerate(beats):
+        if b["status"] == DOWN:
+            if aktif is None:
+                aktif = {"mulai": waktu[i], "jumlah_titik": 0}
+            aktif["jumlah_titik"] += 1
+        elif aktif is not None:
+            aktif["selesai"] = waktu[i]
+            aktif["masih_berlangsung"] = False
+            insiden.append(aktif)
+            aktif = None
+    if aktif is not None:
+        aktif["selesai"] = sekarang
+        aktif["masih_berlangsung"] = True
+        insiden.append(aktif)
+    for x in insiden:
+        x["menit"] = max(0.0, (x["selesai"] - x["mulai"]).total_seconds() / 60.0)
+    return insiden
+
+
 def hitung_downtime_jendela(beats, sekarang):
     """Durasi TURUN (menit) yang benar-benar terekam di daftar heartbeat yang diambil (paling
-    banyak 100 titik terakhir dari server). Dihitung eksplisit: jumlah selisih waktu antar
-    titik berurutan yang statusnya TURUN, bukan tebakan."""
+    banyak 100 titik terakhir dari server), dan JUMLAH INSIDEN (rangkaian heartbeat TURUN
+    berurutan = 1 insiden; bukan jumlah heartbeat). Dihitung eksplisit, bukan tebakan."""
     if not beats:
         return 0.0, None, None, 0
     waktu = [urai_waktu_kuma(b["time"]) for b in beats]
-    total_menit = 0.0
-    jumlah_turun = 0
-    for i, b in enumerate(beats):
-        if b["status"] == DOWN:
-            jumlah_turun += 1
-            akhir = waktu[i + 1] if i + 1 < len(beats) else sekarang
-            total_menit += max(0.0, (akhir - waktu[i]).total_seconds() / 60.0)
-    return total_menit, waktu[0], waktu[-1], jumlah_turun
+    insiden = daftar_insiden(beats, sekarang)
+    total_menit = sum(x["menit"] for x in insiden)
+    return total_menit, waktu[0], waktu[-1], len(insiden)
 
 
 def cmd_ringkasan(args):
@@ -232,7 +265,9 @@ def cmd_ringkasan(args):
         beats_sorted = sorted(beats, key=lambda b: b["time"])
         current = beats_sorted[-1] if beats_sorted else None
         uptime24 = uptime_list.get(f"{mid}_24")
-        menit_turun, mulai, akhir, jumlah_turun = hitung_downtime_jendela(beats_sorted, sekarang)
+        menit_turun, mulai, akhir, jumlah_insiden = hitung_downtime_jendela(beats_sorted, sekarang)
+        insiden = daftar_insiden(beats_sorted, sekarang)
+        titik_turun = sum(1 for b in beats_sorted if b["status"] == DOWN)
         cert_hari = m.get("certExpiryDaysRemaining")
         cert_hari = cert_hari if isinstance(cert_hari, int) else None
         monitor_https = str(m.get("url") or "").lower().startswith("https://")
@@ -257,9 +292,20 @@ def cmd_ringkasan(args):
             "ping_ms": current.get("ping") if current else None,
             "uptime_24_jam_persen": round(uptime24 * 100, 2) if isinstance(uptime24, (int, float)) else None,
             "jendela_menit_turun": round(menit_turun, 1),
-            "jendela_jumlah_turun": jumlah_turun,
+            "jendela_jumlah_insiden": jumlah_insiden,
+            "jendela_jumlah_heartbeat_turun": titik_turun,
+            "jendela_insiden": [{
+                "mulai": x["mulai"].isoformat(), "mulai_wib": jam_wib(x["mulai"]),
+                "selesai": None if x["masih_berlangsung"] else x["selesai"].isoformat(),
+                "selesai_wib": None if x["masih_berlangsung"] else jam_wib(x["selesai"]),
+                "masih_berlangsung": x["masih_berlangsung"],
+                "menit": round(x["menit"], 1),
+                "jumlah_heartbeat_turun": x["jumlah_titik"],
+            } for x in insiden],
             "jendela_mulai": mulai.isoformat() if mulai else None,
             "jendela_akhir": akhir.isoformat() if akhir else None,
+            "jendela_mulai_wib": jam_wib(mulai) if mulai else None,
+            "jendela_akhir_wib": jam_wib(akhir) if akhir else None,
             "jendela_jumlah_titik": len(beats_sorted),
             "sisa_hari_ssl": cert_hari,
             "catatan_ssl": catatan_ssl,
@@ -290,7 +336,7 @@ def cmd_ringkasan(args):
 
 def cetak_ringkasan_teks(hasil):
     print(f"RINGKASAN STATUS - {hasil['judul']} ({hasil['slug']})")
-    print(f"Diperiksa: {hasil['waktu_cek']} UTC")
+    print(f"Diperiksa: {jam_wib(dt.datetime.fromisoformat(hasil['waktu_cek']))}")
     print("-" * 60)
     for m in hasil["monitor"]:
         tanda = {"AKTIF": "OK", "TURUN": "!!", "MENUNGGU": "..", "PEMELIHARAAN": "**"}.get(m["status"], "??")
@@ -302,10 +348,15 @@ def cetak_ringkasan_teks(hasil):
         else:
             print("     Uptime 24 jam   : belum ada data (monitor baru ditambahkan)")
         if m["jendela_jumlah_titik"]:
-            print(f"     Terlihat TURUN dalam {m['jendela_jumlah_titik']} cek terakhir yang terbaca "
-                  f"({m['jendela_mulai']} s/d {m['jendela_akhir']} UTC): "
-                  f"{m['jendela_jumlah_turun']}x, total {m['jendela_menit_turun']} menit "
+            print(f"     Kejadian TURUN dalam {m['jendela_jumlah_titik']} cek terakhir yang terbaca "
+                  f"({m['jendela_mulai_wib']} s/d {m['jendela_akhir_wib']}): "
+                  f"{m['jendela_jumlah_insiden']} kejadian, total {m['jendela_menit_turun']} menit "
                   f"(HANYA jendela ini, bukan seluruh hari/minggu)")
+            for no, x in enumerate(m["jendela_insiden"], 1):
+                if x["masih_berlangsung"]:
+                    print(f"       {no}. turun sejak {x['mulai_wib']} - MASIH TURUN, sudah {x['menit']} menit")
+                else:
+                    print(f"       {no}. {x['mulai_wib']} s/d {x['selesai_wib']} - {x['menit']} menit")
         if m["sisa_hari_ssl"] is not None:
             peringatan = "  <-- SEGERA PERPANJANG" if m["sisa_hari_ssl"] <= 14 else ""
             print(f"     Sertifikat SSL  : {m['sisa_hari_ssl']} hari lagi{peringatan}")

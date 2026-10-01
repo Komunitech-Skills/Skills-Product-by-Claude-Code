@@ -237,5 +237,71 @@ class TestPeringatanTemp(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(tmp, "thr.csv")))
 
 
+class TesTahunHijriah(unittest.TestCase):
+    """v1.0.4: tahun Hijriah hari raya dihitung, bukan ditebak (temuan uji: Maret 2027 ditulis 1449 H)."""
+
+    def test_idul_fitri_dan_adha_dikenal(self):
+        import tahun_hijriah as th
+        # Idul Fitri resmi: 10 Apr 2024 = 1445 H, 31 Mar 2025 = 1446 H, 21 Mar 2026 = 1447 H, 10 Mar 2027 = 1448 H
+        for tgl, tahun in (("2024-04-10", 1445), ("2025-03-31", 1446), ("2026-03-21", 1447), ("2027-03-10", 1448)):
+            y, m, _ = th.ke_hijriah(datetime.date.fromisoformat(tgl))
+            self.assertEqual((y, m), (tahun, 10), tgl)
+        y, m, d = th.ke_hijriah(datetime.date(2026, 5, 27))   # Iduladha 1447 H
+        self.assertEqual((y, m, d), (1447, 12, 10))
+        self.assertNotEqual(th.ke_hijriah(datetime.date(2027, 3, 10))[0], 1449)
+
+    def test_dekat_pergantian_tahun_tidak_pasti(self):
+        import tahun_hijriah as th
+        self.assertFalse(th.hasil(datetime.date(2026, 6, 16))["tahun_pasti"])
+        self.assertTrue(th.hasil(datetime.date(2027, 3, 10))["tahun_pasti"])
+
+    def test_cli(self):
+        p = subprocess.run([sys.executable, os.path.join(FOLDER, "tahun_hijriah.py"), "2027-03-10"],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(p.returncode, 0)
+        self.assertIn("1448 H", p.stdout)
+        p = subprocess.run([sys.executable, os.path.join(FOLDER, "tahun_hijriah.py"), "10-03-2027"],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(p.returncode, 2)
+
+
+class TesCekTanggalLebaran(unittest.TestCase):
+    """v1.0.5 (uji OpenClaw ulang 2026-10-01): pengguna menyebut Lebaran 20 Maret 2027 (= 11 Syawal 1448 H)."""
+
+    def test_tanggal_keliru_diperingatkan(self):
+        import tahun_hijriah as th
+        c = th.cek_hari_raya(datetime.date(2027, 3, 20), "idul-fitri")
+        self.assertFalse(c["sesuai"])
+        self.assertEqual(c["perkiraan"], "2027-03-10")
+        self.assertEqual(c["batas_bayar_h7_perkiraan"], "2027-03-03")
+        self.assertEqual(c["selisih_hari"], 10)
+        self.assertIn("11 Syawal 1448 H", c["peringatan"])
+
+    def test_toleransi_dua_hari(self):
+        import tahun_hijriah as th
+        for tgl, sesuai in (("2027-03-08", True), ("2027-03-12", True), ("2027-03-13", False), ("2027-03-07", False)):
+            self.assertEqual(th.cek_hari_raya(datetime.date.fromisoformat(tgl), "idul-fitri")["sesuai"], sesuai, tgl)
+        # Lebaran resmi 2024-2026 lolos cek
+        for tgl in ("2024-04-10", "2025-03-31", "2026-03-21"):
+            self.assertTrue(th.cek_hari_raya(datetime.date.fromisoformat(tgl), "idul-fitri")["sesuai"], tgl)
+
+    def test_idul_adha(self):
+        import tahun_hijriah as th
+        self.assertTrue(th.cek_hari_raya(datetime.date(2026, 5, 27), "idul-adha")["sesuai"])
+        c = th.cek_hari_raya(datetime.date(2026, 6, 10), "idul-adha")
+        self.assertFalse(c["sesuai"])
+        self.assertEqual(c["perkiraan"], "2026-05-27")
+
+    def test_cli_cek(self):
+        s = os.path.join(FOLDER, "tahun_hijriah.py")
+        p = subprocess.run([sys.executable, s, "2027-03-20", "--cek", "idul-fitri"], capture_output=True, text=True, timeout=60)
+        self.assertEqual(p.returncode, 0)
+        self.assertIn("PERINGATAN", p.stdout)
+        self.assertIn("2027-03-03", p.stdout)
+        p = subprocess.run([sys.executable, s, "2027-03-10", "--cek", "idul-fitri"], capture_output=True, text=True, timeout=60)
+        self.assertNotIn("PERINGATAN", p.stdout)
+        self.assertIn("COCOK", p.stdout)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -39,7 +39,7 @@ Menjadi "aplikasi payroll" pemilik usaha tanpa biaya bulanan: data karyawan, kom
    Script memagari hal ini: `karyawan tambah/ubah/impor` yang membuat karyawan **tanpa BPJS Kesehatan/Ketenagakerjaan** atau **dasar BPJS Kesehatan di bawah upah** hanya tampil sebagai pratinjau berlabel "PERLU PERSETUJUAN KHUSUS"; `--ya` saja ditolak. Flag `--ya-saya-paham [--alasan-khusus "..."]` **hanya** ditambahkan bila pemilik sendiri, setelah membaca peringatan, menyebut alasan sah (mis. iuran sudah dibayar lewat sistem lain) — tidak pernah untuk tujuan menghindari kewajiban, tidak dari jadwal. Persetujuan dicatat di log, dan `hitung` tetap mengingatkan tiap bulan. JP saja yang tidak diikuti (usaha mikro/kecil belum wajib JP) tidak dipagari. Sejak v1.0.2 pagar yang sama berlaku untuk `isi --gaji-pokok-dibayar`/`--tunjangan-tetap-dibayar` (juga kolomnya di `isi --file`) yang **menurunkan dasar BPJS pada bulan penuh** (karyawan tidak masuk/keluar bulan itu): ditolak tanpa `--ya-saya-paham`, tercatat di log bila disetujui, dan `hitung` mengingatkan.
 
 ## Cara menjalankan script
-Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python` atau `py`):
+Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: ganti `python3` dengan `python` atau `py`:
 ```bash
 python3 <folder-skill-ini>/scripts/gaji.py <perintah> [opsi] --json
 ```
@@ -51,7 +51,8 @@ python3 <folder-skill-ini>/scripts/gaji.py <perintah> [opsi] --json
 | Info | Wajib? | Default |
 |---|---|---|
 | Nama usaha | Saat mulai (boleh kosong) | Kosong |
-| Per karyawan: nama, status PTKP (TK/0…K/3), gaji pokok, **tanggal masuk** | Ya | — (tanyakan) |
+| Per karyawan: nama, status PTKP (TK/0…K/3), gaji pokok | Ya | — (tanyakan) |
+| Tanggal masuk | Ya untuk database, tapi **jangan menahan hitungan** | 1 Januari tahun berjalan (anggap sudah bekerja sebelum bulan ini, bukan karyawan baru) — sebut asumsinya dan minta koreksi bila ia masuk tahun ini; penting untuk THR, Desember, dan karyawan keluar |
 | Jabatan, tunjangan tetap, tunjangan tidak tetap rutin, jenis (tetap/kontrak) | Tidak | Kosong / 0 / tetap |
 | Ikut BPJS apa saja (`kes,tk,jp` / `kes,tk` / `kes` / `tidak`) | Tidak | Semua — sebutkan asumsinya |
 | Tarif JKK perusahaan, UMK daerah (dari SK Gubernur) | Tidak | JKK 0,24%; UMK tidak dicek — sebutkan |
@@ -61,11 +62,16 @@ python3 <folder-skill-ini>/scripts/gaji.py <perintah> [opsi] --json
 | Desember/karyawan keluar: data PPh 21 Januari s.d. bulan lalu | Otomatis dari periode final; bila belum pakai aplikasi sejak Januari → `saldo-awal` | — (script menolak bila kurang) |
 | Sektor/KLU untuk PPh 21 DTP 2026 | Hanya bila relevan | Jangan diasumsikan |
 
-Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pemilik ingin cepat, pakai default dan sebutkan asumsinya.
+**Bertanya hanya SEKALI, dalam SATU pesan.** Jika nama, PTKP, dan gaji pokok sudah ada, jangan berhenti untuk bertanya: pakai default di atas (tanggal masuk, JKK 0,24%, BPJS semua, pola 5 hari), hitung, lalu di **pesan yang sama** cantumkan daftar bernomor "Asumsi yang perlu Anda cek" — tanggal masuk, **UMK daerah** (angka dari SK Gubernur; tanpa itu cek UMK & batas bawah BPJS dilewati), tarif JKK, dan hal lain yang kurang. Jangan bertanya tanggal masuk/UMK/JKK di giliran terpisah. Hanya bila data wajib (nama/PTKP/gaji pokok) benar-benar kosong, tanyakan semuanya sekaligus (maks. 5 pertanyaan) dalam satu pesan.
 
 ## Langkah kerja
 
 ### A. Mulai (sekali)
+0. **Pemakaian pertama dan pemilik langsung minta angka** (mis. "hitungin gaji September Andi & Sari"): jangan menahan jawaban sampai database jadi. Di balasan PERTAMA:
+   - tulis CSV sementara di folder kerja (kolom `nama;ptkp;gaji_pokok;tunjangan_tetap;lembur_hari_kerja`, mis. `2+2+2` = 3 hari × 2 jam) dan jalankan mesin yang sama tanpa database: `python3 <folder-skill-ini>/scripts/mesin/payroll.py --data karyawan-sementara.csv --periode 2026-09 [--umk ..] [--jkk ..] --out <folder-kerja>/payroll-2026-09` (tidak menyimpan apa pun ke database; label hasilnya "hitungan sementara");
+   - salin rekap, "Setor BPJS…/PPh 21" dan peringatan apa adanya;
+   - di pesan yang sama: daftar asumsi bernomor (lihat Input) + pratinjau penyimpanan ("Bila ingin disimpan sebagai aplikasi gaji: database baru di …, karyawan Andi (masuk 1 Jan 2026 — asumsi) …. Balas 'ya' atau koreksi").
+   Setelah pemilik setuju, lanjut langkah 1–3 di bawah dengan data yang sudah dikoreksi.
 1. `info --json`. Database belum ada → `init --nama-usaha "..."` → pratinjau → setuju → `--ya`.
 2. `atur --umk 5.396.761 --jkk 0,54 --tanggal-gajian 25` (UMK & JKK dari pemilik; tanggal gajian 1–31 atau `akhir`).
 3. Karyawan: banyak → `karyawan impor karyawan.csv` (contoh `templates/karyawan-contoh.csv`); sedikit → `karyawan tambah --nama "Andi" --ptkp K/1 --gaji-pokok 6jt --tunjangan-tetap 750rb --masuk 2019-03-01 [--jabatan ..] [--bpjs kes,tk,jp] [--hari-kerja 6] [--bank BCA --rekening ..]`. Pratinjau → `--ya`.
@@ -114,6 +120,7 @@ Lalu tanyakan: "Sudah benar? Kalau ya, saya kunci (final) periode ini."
 
 ## Checklist sebelum menjawab
 - [ ] Angka dari script; perintah besar sudah dipratinjau & disetujui sebelum `--ya`
+- [ ] Tidak ada giliran tanya-jawab terpisah untuk tanggal masuk/UMK/JKK: default dipakai, asumsi & pertanyaan digabung dalam satu pesan
 - [ ] Semua peringatan (masuk/keluar tengah bulan, UMK, alpa, DTP, tanpa BPJS/dasar BPJS rendah) disampaikan
 - [ ] Permintaan menghindari BPJS/pajak ditolak (Aturan wajib 7); `--ya-saya-paham` tidak pernah ditambahkan sendiri
 - [ ] Periode final tidak diubah kecuali lewat `revisi` dengan alasan

@@ -251,6 +251,28 @@ class TestPPhFinal(unittest.TestCase):
         self.assertTrue(any("Cek kewajaran PPh final" in c and "Rp 2.000.000" in c for c in h["catatan"]))
 
 
+class TestFinalSalahSkema(unittest.TestCase):
+    def test_konsultan_terlanjur_setor_final(self):
+        # NPPN 380 jt × 50% = 190 jt; PTKP TK/0 54 jt → PKP 136 jt
+        # PPh = 5% × 60 jt + 15% × 76 jt = 3.000.000 + 11.400.000 = 14.400.000 ; setoran 0,5% 1,9 jt TIDAK dikredit
+        h = hitung("--status", "TK/0", "--tahun", "2025", "--nppn", "380jt", "50", "--nppn-diberitahukan", "tidak",
+                   "--final-salah-skema", "1,9jt")
+        self.assertEqual(h["pph_terutang"], D(14400000))
+        self.assertEqual(h["total_kredit"], D(0))
+        self.assertEqual(h["selisih"], D(14400000))
+        self.assertEqual(h["omzet_final_pp55"], D(0))
+        self.assertTrue(any("salah skema" in p and "PMK 81/2024" in p and "JANGAN dilaporkan" in p
+                            for p in h["peringatan"]))
+        self.assertFalse(any("lampiran penghasilan final / rekap" in c for c in h["catatan"]))
+        teks = spt_op.teks(h)
+        self.assertIn("tidak dilaporkan di Lampiran 2", teks)
+
+    def test_final_salah_tanpa_pekerjaan_bebas_ditolak(self):
+        kode, err = gagal("--status", "TK/0", "--tahun", "2025", "--a1", "60jt", "0", "--final-salah-skema", "1jt")
+        self.assertEqual(kode, 2)
+        self.assertIn("--nppn", err)
+
+
 class TestAngka(unittest.TestCase):
     def test_diterima(self):
         p = spt_op.parse_angka

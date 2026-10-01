@@ -17,7 +17,8 @@ Membantu pemilik usaha dan staf HR memberi sanksi yang **adil, proporsional, dan
 
 ## Kapan TIDAK digunakan
 - **Surat PHK / pemecatan / pesangon** → jangan buat. Jelaskan singkat bahwa PHK punya prosedur dan hak pekerja yang wajib dipenuhi, lalu arahkan ke ahli hukum ketenagakerjaan atau Disnaker setempat.
-- Dugaan tindak pidana (pencurian, penggelapan, kekerasan, pelecehan) → boleh bantu kronologi & berita acara, tapi sarankan konsultasi ahli hukum sebelum mengambil tindakan.
+- Dugaan tindak pidana (pencurian, penggelapan, kekerasan, pelecehan) → boleh bantu kronologi & berita acara, tapi sarankan konsultasi ahli hukum sebelum mengambil tindakan. **Jangan mengutip nomor pasal pidana (KUHP)** di surat maupun penjelasan, kecuali pengguna memintanya; cukup tulis "dugaan pencurian/penggelapan — konsultasikan ke ahli hukum/kepolisian". Bila diminta: KUHP baru (UU 1/2023) berlaku sejak **2 Januari 2026**; Pasal 374 KUHP lama tidak dipakai lagi (padanannya Pasal 488 UU 1/2023, penggelapan karena hubungan kerja) — tetap minta dicek ahli hukum.
+- **Surat skorsing** hanya bila pengguna meminta, dan **wajib** memuat kalimat: "Selama masa skorsing, upah beserta hak lain yang biasa diterima tetap dibayar penuh." Jangan pernah menulis upah "ditentukan kemudian", dipotong, atau tidak dibayar (UU 13/2003 Pasal 157A ayat (2) s.t.d.d. UU 6/2023; Putusan MK 168/PUU-XXI/2023: kewajiban berjalan sampai proses perselisihan berkekuatan hukum tetap). Lihat `references/regulasi.md` bagian 3.
 - Kontrak kerja → `perjanjian-sederhana`. Lowongan → `lowongan-kerja`. Surat resmi lain → `surat-resmi`. SOP → `sop-writer`.
 
 ## Input
@@ -35,6 +36,8 @@ Membantu pemilik usaha dan staf HR memberi sanksi yang **adil, proporsional, dan
 Jika info wajib kurang, tanyakan **sekali** (maks 5 pertanyaan bernomor). Jika pengguna ingin cepat, buat dengan placeholder dan sebutkan asumsinya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Susun fakta, bukan kesan.** Ubah keluhan ("dia malas") menjadi fakta terukur: tanggal, jam, jumlah kejadian, bukti (absensi fingerprint, CCTV, chat, laporan pelanggan, saksi). Jika tidak ada fakta terukur, minta dulu; jangan menulis tuduhan umum.
 2. **Tentukan tingkat SP secara proporsional** dengan matriks di `references/proses-dan-proporsionalitas.md`:
    - Belum ada SP aktif → umumnya **SP1** (untuk pelanggaran ringan pertama kali, sarankan dulu teguran lisan tercatat).

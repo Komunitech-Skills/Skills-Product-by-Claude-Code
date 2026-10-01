@@ -34,3 +34,7 @@ Bisa. AI agent akan mencocokkan kolom secara otomatis.
 
 **Bagaimana kalau ada baris yang rusak?**
 Baris yang rusak dilewati, lalu jumlah dan alasannya dilaporkan.
+
+## Catatan revisi 1.2.3 (2026-10-01)
+- Temuan uji OpenClaw: pertanyaan "hari paling rame" hanya dijawab dari sisi omzet.
+- Rekap kini juga menampilkan hari dengan transaksi terbanyak (per pesanan unik lewat `--kolom-pesanan`, atau per baris). Ditambah uji regresi `scripts/uji_regresi.py` (4 tes).

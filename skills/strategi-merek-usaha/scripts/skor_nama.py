@@ -16,9 +16,12 @@ Otomatis dihitung script: panjang, suku_kata, ejaan, kemiripan (terhadap daftar 
 Bobot awal (jumlah 100): panjang 10, suku_kata 10, ejaan 10, kemiripan 20, aman_makna 20, khas 15, relevan 15.
 Skor = jumlah(bobot x nilai) / jumlah(bobot) x 20 -> skala 0-100. Bobot memakai TITIK untuk desimal.
 Nama dengan koma wajib diberi tanda kutip di CSV.
-Tanda TANDAI (nama tidak boleh dipilih sebelum diperiksa): kemiripan terlalu tinggi dengan merek yang diberikan,
-atau aman_makna = 1. Script TIDAK memeriksa ketersediaan domain/handle/merek terdaftar dan tidak mendengar bunyi
-(kemiripan = kemiripan ejaan saja). Dua nama teratas selisih <= 5 poin = SETARA.
+Tanda TANDAI (nama tidak boleh dipilih sebelum diperiksa): kemiripan terlalu tinggi dengan merek yang diberikan
+(ejaan ATAU bunyi kira-kira), mirip kata Inggris umum berkonotasi buruk (daftar KATA_INGGRIS_BURUK), atau
+aman_makna = 1. Kemiripan bunyi memakai normalisasi sederhana (c/q/ck->k, ph/v->f, z->s, x->ks, ee/ea->i,
+oo->u, y akhir->i, -s jamak dibuang, huruf ganda dirapatkan), jadi "Kicks Klin" ~ "Kick Clean" tertangkap.
+Script TIDAK memeriksa ketersediaan domain/handle/merek terdaftar dan tidak benar-benar mendengar bunyi.
+Dua nama teratas selisih <= 5 poin = SETARA.
 Keluar kode 0 bila sukses, 2 bila input salah (pesan jelas di stderr).
 """
 import argparse
@@ -38,6 +41,25 @@ VOKAL = set("aiueo")
 DIFTONG = ("ai", "au", "oi", "eu")  # eu = vokal Sunda (Seulas = seu-las)
 GENERIK_BAWAAN = ("kopi", "teh", "toko", "warung", "kedai", "depot", "rumah", "cafe", "kafe", "resto",
                   "restoran", "bengkel", "laundry", "salon", "studio", "jaya", "abadi", "mandiri", "makmur")
+
+# Kata umum bahasa Inggris yang berkonotasi buruk/vulgar. Nama yang bunyinya mirip (mis. "Sneakuy" ~ "sneaky" =
+# licik) ditandai untuk diperiksa. Daftar sengaja ringkas; arti di bahasa daerah tetap dicek manual (aman_makna).
+KATA_INGGRIS_BURUK = {
+    "sneaky": "licik/diam-diam", "sly": "licik", "shady": "mencurigakan",
+    "sketchy": "meragukan", "dodgy": "meragukan", "cheat": "curang", "scam": "penipuan", "fake": "palsu",
+    "phony": "palsu", "bogus": "palsu", "liar": "pembohong", "fraud": "penipuan", "cheap": "murahan",
+    "trash": "sampah", "junk": "rongsokan", "rotten": "busuk", "stinky": "bau busuk", "stink": "bau busuk",
+    "smelly": "bau", "dirty": "kotor", "filthy": "jorok", "gross": "menjijikkan", "nasty": "menjijikkan",
+    "messy": "berantakan", "sloppy": "asal-asalan", "lazy": "malas", "ugly": "jelek", "dumb": "bodoh",
+    "stupid": "bodoh", "idiot": "bodoh", "loser": "pecundang", "broke": "bangkrut/rusak", "broken": "rusak",
+    "sick": "sakit", "dead": "mati", "die": "mati", "kill": "membunuh", "killer": "pembunuh",
+    "poison": "racun", "toxic": "beracun", "evil": "jahat", "devil": "setan", "hell": "neraka",
+    "creepy": "seram/mesum", "greedy": "rakus", "sucks": "payah", "suck": "payah", "crap": "kotoran (kasar)",
+    "poop": "tinja", "shit": "kotoran (kasar)", "piss": "air kencing (kasar)", "fart": "kentut",
+    "vomit": "muntah", "puke": "muntah", "damn": "umpatan", "bitch": "umpatan kasar", "fuck": "umpatan kasar",
+    "slut": "umpatan kasar", "porn": "pornografi", "drug": "narkoba", "weed": "ganja",
+}
+BATAS_BUNYI_BURUK = 0.85
 
 
 class InputSalah(Exception):
@@ -123,22 +145,64 @@ def tanpa_generik(teks, generik):
     return huruf(" ".join(sisa))
 
 
+def bunyi_kata(kata):
+    """Normalisasi bunyi kira-kira satu kata (lintas ejaan Indonesia/Inggris), huruf saja."""
+    k = huruf(kata).replace("z", "s")
+    if len(k) > 3 and k.endswith("s") and k[-2] not in VOKAL and k[-2] != "s":
+        k = k[:-1]                      # jamak Inggris: kicks/kickz -> kick (bukan "bagus", "gendis")
+    for a, b in (("ph", "f"), ("ck", "k"), ("qu", "kw"), ("ee", "i"), ("ea", "i"), ("oo", "u"),
+                 ("c", "k"), ("q", "k"), ("x", "ks"), ("v", "f")):
+        k = k.replace(a, b)
+    if len(k) > 2 and k.endswith("y") and k[-2] not in VOKAL:
+        k = k[:-1] + "i"                # sneaky -> sniki
+    elif len(k) > 2 and k.endswith("y"):
+        k = k[:-1] + "i"                # -uy/-ay/-oy: sneakuy -> snikui
+    k = re.sub(r"([a-z])\1+", r"\1", k)  # huruf ganda dirapatkan
+    return k
+
+
+def bunyi(teks):
+    return "".join(bunyi_kata(w) for w in re.split(r"\s+", teks.strip()) if huruf(w))
+
+
+def kata_khas(teks, generik):
+    return [w for w in re.split(r"\s+", teks.strip()) if huruf(w) and huruf(w) not in generik]
+
+
+def rasio_pasangan(a, b):
+    r = difflib.SequenceMatcher(None, a, b).ratio()
+    if min(len(a), len(b)) >= 4 and (a in b or b in a):
+        r = max(r, 0.9)
+    return r
+
+
 def kemiripan(nama, merek, generik=()):
-    """Kembalikan (skor 1-5, merek paling mirip, rasio). Rasio = difflib pada huruf saja.
+    """Kembalikan (skor 1-5, merek paling mirip, rasio, jenis). Rasio = difflib, nilai tertinggi dari
+    (a) ejaan huruf saja dan (b) bunyi kira-kira (`bunyi`). Bila SEMUA kata khas merek muncul (bunyinya)
+    sebagai kata di nama (mis. "Fresh Kickz" memuat "Kick"), rasio dianggap >= 0,9.
     Kata generik (kopi, toko, ...) dibuang dari kedua sisi sebelum dibandingkan; merek yang seluruhnya
     generik dilewati; nama yang seluruhnya generik dibandingkan apa adanya."""
     generik = {huruf(g) for g in generik}
     a = tanpa_generik(nama, generik) or huruf(nama)
-    terbaik, rasio_max = "", 0.0
+    kata_a = kata_khas(nama, generik) or [nama]
+    a_bunyi = "".join(bunyi_kata(w) for w in kata_a)
+    set_a = {bunyi_kata(w) for w in kata_a}
+    terbaik, rasio_max, jenis_max = "", 0.0, "ejaan"
     for m in merek:
         b = tanpa_generik(m, generik)
         if not a or not b:
             continue
-        r = difflib.SequenceMatcher(None, a, b).ratio()
-        if min(len(a), len(b)) >= 4 and (a in b or b in a):
-            r = max(r, 0.9)
+        r_ejaan = rasio_pasangan(a, b)
+        kata_b = kata_khas(m, generik)
+        b_bunyi = "".join(bunyi_kata(w) for w in kata_b)
+        # bunyi hanya dibandingkan utuh bila keduanya >= 4 huruf (bentuk pendek terlalu mudah "mirip")
+        r_bunyi = rasio_pasangan(a_bunyi, b_bunyi) if min(len(a_bunyi), len(b_bunyi)) >= 4 else 0.0
+        set_b = {bunyi_kata(w) for w in kata_b}
+        if set_b and all(len(w) >= 3 for w in set_b) and set_b <= set_a:
+            r_bunyi = max(r_bunyi, 0.9)
+        r, jenis = (r_ejaan, "ejaan") if r_ejaan >= r_bunyi else (r_bunyi, "bunyi")
         if r > rasio_max:
-            rasio_max, terbaik = r, m
+            rasio_max, terbaik, jenis_max = r, m, jenis
     if rasio_max >= 0.85:
         s = 1
     elif rasio_max >= 0.75:
@@ -149,7 +213,29 @@ def kemiripan(nama, merek, generik=()):
         s = 4
     else:
         s = 5
-    return s, terbaik, rasio_max
+    return s, terbaik, rasio_max, jenis_max
+
+
+def cek_kata_buruk(nama):
+    """Cari kata Inggris berkonotasi buruk yang ejaan/bunyinya mirip nama (per kata dan nama utuh).
+    Kembalikan daftar (kata, arti, rasio)."""
+    kandidat = [w for w in re.split(r"\s+", nama.strip()) if huruf(w)]
+    if len(kandidat) > 1:
+        kandidat.append(nama)
+    temuan = {}
+    for w in kandidat:
+        hw, bw = huruf(w), (bunyi(w) if " " in w else bunyi_kata(w))
+        for kata, arti in KATA_INGGRIS_BURUK.items():
+            bk = bunyi_kata(kata)
+            r = max(difflib.SequenceMatcher(None, hw, kata).ratio(), difflib.SequenceMatcher(None, bw, bk).ratio())
+            if hw == kata or bw == bk:
+                r = 1.0
+            elif len(kata) < 5:
+                continue                # kata pendek (die, hell, sick): hanya bila sama persis ejaan/bunyinya
+            if r >= BATAS_BUNYI_BURUK and min(len(hw), len(kata)) >= 3:
+                if r > temuan.get(kata, (None, 0))[1]:
+                    temuan[kata] = (arti, r)
+    return sorted(((k, a, r) for k, (a, r) in temuan.items()), key=lambda x: -x[2])
 
 
 def baca_bobot(teks):
@@ -256,12 +342,12 @@ def nilai(data, merek, bobot, generik=()):
         if alasan:
             catatan.append("ejaan: " + ", ".join(alasan))
         if merek:
-            m, terdekat, rasio = kemiripan(nama, merek, generik)
+            m, terdekat, rasio, jenis = kemiripan(nama, merek, generik)
             nilai_k["kemiripan"] = m
             if m <= 2:
-                catatan.append(f"mirip '{terdekat}' ({rasio:.0%} ejaan)")
+                catatan.append(f"mirip '{terdekat}' ({rasio:.0%} {jenis})")
             if m == 1:
-                tandai.append(f"terlalu mirip '{terdekat}'")
+                tandai.append(f"terlalu mirip '{terdekat}'" + (" (bunyi)" if jenis == "bunyi" else ""))
         else:
             nilai_k["kemiripan"] = 3
             catatan.append("kemiripan belum diperiksa (tidak ada daftar merek)")
@@ -273,6 +359,10 @@ def nilai(data, merek, bobot, generik=()):
                 nilai_k[k] = r[k]
         if nilai_k["aman_makna"] == 1:
             tandai.append("arti/konotasi negatif")
+        buruk = cek_kata_buruk(nama)
+        if buruk:
+            k0, arti0, _ = buruk[0]
+            tandai.append(f"bunyi/ejaan mirip kata Inggris '{k0}' ({arti0})")
         skor = sum(bobot[k] * nilai_k[k] for k in KRITERIA) / total_bobot * 20
         hasil.append({"nama": nama, "huruf": len(huruf(nama)), "suku_kata": sk, "nilai": nilai_k,
                       "skor": round(skor, 1), "tandai": tandai, "catatan": catatan})

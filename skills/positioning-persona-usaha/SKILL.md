@@ -38,6 +38,8 @@ Mengubah "jualan ke semua orang" menjadi pilihan yang jelas: **siapa** yang dila
 **Aturan tanya:** kalau info wajib kurang, tanyakan **sekali** dalam satu pesan berupa daftar singkat (maks. 5 pertanyaan). Kalau pengguna ingin cepat, langsung kerjakan dengan default dan tulis asumsinya di bagian "Asumsi".
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Kerjakan berurutan; jangan lompat. Detail template ada di `references/`.
 
 ### 1. Kumpulkan bahan (jangan mengarang)
@@ -84,6 +86,7 @@ Kerjakan berurutan; jangan lompat. Detail template ada di `references/`.
 ### 8. Message house
 - Atap: pesan utama (1 kalimat). 3 pilar pesan (masing-masing: klaim, bukti, contoh kalimat). Fondasi: bukti/aset (ulasan asli, foto proses, sertifikat, garansi). Tambah **penanganan 3 keberatan** dan **kata yang dipakai / dihindari**.
 - Sertakan **teks siap tempel**: bio IG/TikTok, judul + 3 poin listing marketplace, 1 caption, 1 sapaan balasan WhatsApp untuk pelanggan baru. Detail: `references/kanvas-nilai-dan-pesan.md`.
+- **Klaim produk hanya dari fakta pengguna.** Komposisi/bahan, "alami", "herbal", "100%", "tanpa pengawet/pewarna", ukuran/isi, asal bahan, daya tahan, sertifikat: tulis **hanya bila pengguna menyebutnya**. Selain itu pakai placeholder `[isi: komposisi/bahan utama]`, `[isi: tanpa pengawet? ya/tidak]`, dst. — juga di teks siap tempel. Jangan "melengkapi" dari kebiasaan produk sejenis.
 
 ### 9. Langkah uji cepat 7 hari
 - Beri 3 uji murah untuk memeriksa hipotesis: tanya 5 pelanggan lama lewat WA (pertanyaan disediakan di referensi), uji 2 versi tagline di status/story, cek 10 pertanyaan chat masuk. Tulis apa yang harus terjadi supaya positioning dipertahankan atau diubah.
@@ -104,7 +107,7 @@ Mode lengkap (dokumen/laptop): gunakan bagian bernomor ini (boleh dipangkas jika
 ## 7. Message house + teks siap tempel
 ## 8. Uji 7 hari & pengingat
 ```
-Selalu tutup dengan: ceklis klaim (Batasan), asumsi, dan "apa yang perlu kamu cek sendiri".
+Selalu tutup dengan: ceklis klaim (Batasan), asumsi, dan "apa yang perlu kamu cek sendiri". Bila menulis file, tambahkan baris terakhir `File kerja: <path>` (juga di mode chat).
 
 ## Contoh singkat
 Input: "Toko hijab lokal, Bandung, harga Rp 89-189 ribu, jual lewat Shopee dan WA, pesaing banyak."
@@ -115,7 +118,8 @@ Keluaran ringkas:
 
 ## Batasan & penanganan error
 - **Bukan riset pasar.** Segmen, skor, dan persona = hipotesis terstruktur dari info pengguna. Katakan itu; sarankan uji 7 hari. Jangan menyebut angka ukuran pasar tanpa sumber.
-- **Tidak mengarang bukti:** jangan menulis testimoni, rating, jumlah pelanggan, penghargaan, atau sertifikat (halal/BPOM/SNI) yang tidak dipunyai pengguna. Beri placeholder `[isi: ...]`.
+- **Tidak mengarang bukti maupun klaim produk:** jangan menulis testimoni, rating, jumlah pelanggan, penghargaan, sertifikat (halal/BPOM/SNI), **komposisi, "alami/herbal", "100%", atau "tanpa pengawet"** yang tidak disebut pengguna. Beri placeholder `[isi: ...]`.
+- **Izin edar sebelum dijual (pangan, kosmetik, obat tradisional/jamu, suplemen):** sebutkan dalam satu kalimat bahwa produk wajib punya izin yang sesuai **sebelum dijual**, bukan hanya "jangan tulis BPOM sampai nomornya keluar": kosmetik = notifikasi BPOM; obat tradisional/jamu & suplemen kesehatan = izin edar BPOM; pangan olahan = izin edar BPOM (MD/ML), atau **SPP-IRT** (nomor P-IRT, Peraturan BPOM No. 4 Tahun 2024) untuk pangan olahan industri rumah tangga yang jenisnya termasuk daftar SPP-IRT. Dikecualikan dari SPP-IRT antara lain pangan umur simpan < 7 hari dan pangan siap saji. Produk dengan klaim kesehatan (mis. teh/jamu "pelangsing") umumnya **tidak** bisa memakai SPP-IRT. Tandai "PERLU cek ke BPOM/Dinas Kesehatan setempat" (ringkasan per 2026-10-01, bukan nasihat hukum; sumber: sppirt.pom.go.id, intelijen.pom.go.id).
 - **Klaim berisiko** (kesehatan, "menyembuhkan", "pasti langsing", "100% aman", "termurah se-Indonesia", "BPOM" tanpa nomor): tolak/ganti versi yang sah dan bisa dibuktikan. Dasar: **UU No. 8 Tahun 1999 tentang Perlindungan Konsumen** (berlaku 20 April 2000): **Pasal 9** melarang menawarkan, mempromosikan, atau mengiklankan barang/jasa secara tidak benar atau seolah-olah (mis. seolah-olah memenuhi standar mutu tertentu, sudah mendapat persetujuan/sponsor, atau memakai kata berlebihan seperti "aman", "tanpa efek samping" tanpa keterangan lengkap), termasuk merendahkan barang/jasa lain; **Pasal 17** melarang iklan yang mengelabui konsumen soal kualitas, kuantitas, bahan, kegunaan, harga, atau jaminan, serta iklan yang memuat informasi keliru, salah, atau tidak tepat, atau memakai orang tanpa izinnya. Pelanggaran dapat dipidana (Pasal 62). Ringkasan pasal per 2026-09-29, bukan kutipan resmi; baca teks lengkap dan perubahannya di peraturan.go.id atau JDIH BPK. Produk pangan/kosmetik/obat: arahkan pengguna mengecek aturan BPOM dan sertifikasi halal.
 - **Bukan nasihat hukum/merek:** cek nama/tagline di pangkalan data merek DJKI sebelum dipakai jangka panjang.
 - **Data pribadi:** bila pengguna menempelkan chat/ulasan berisi nama & nomor, ringkas polanya saja; jangan menyalin identitas ke persona.

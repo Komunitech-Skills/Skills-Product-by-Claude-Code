@@ -43,12 +43,12 @@ class UjiNama(unittest.TestCase):
         self.assertEqual(N.skor_ejaan("Bangsa")[0], 5)       # ng bukan kluster
 
     def test_kemiripan(self):
-        s, m, r = N.kemiripan("Indomi", ["Indomie"])
+        s, m, r, _ = N.kemiripan("Indomi", ["Indomie"])
         self.assertEqual(s, 1)  # ratio 2*6/13=0.923
         self.assertEqual(m, "Indomie")
-        s2, _, _ = N.kemiripan("Warung Bintang", ["Indomie"])
+        s2, _, _, _ = N.kemiripan("Warung Bintang", ["Indomie"])
         self.assertEqual(s2, 5)
-        s3, _, _ = N.kemiripan("Kopi Kenangan Senja", ["Kopi Kenangan"])
+        s3, _, _, _ = N.kemiripan("Kopi Kenangan Senja", ["Kopi Kenangan"])
         self.assertEqual(s3, 1)  # mengandung merek
 
     def test_skor_total_tangan(self):
@@ -223,6 +223,37 @@ class UjiRevisi101(unittest.TestCase):
         # opsi generik tambahan
         k, o, _ = jalan(N, tulis("nama\nSambal Nusa\n"), "--merek", "Sambal", "--generik", "sambal")
         self.assertNotIn("TANDAI", o)
+
+
+class UjiBunyiDanKataBuruk(unittest.TestCase):
+    """Temuan uji OpenClaw 2026-10-01: 'Kicks Klin' lolos terhadap pesaing 'Kick Clean', dan 'Sneakuy'
+    (dibaca 'sneaky' = licik) direkomendasikan."""
+
+    def test_normalisasi_bunyi(self):
+        self.assertEqual(N.bunyi("Kicks Klin"), N.bunyi("Kick Clean"))   # kikklin
+        self.assertEqual(N.bunyi_kata("Kickz"), "kik")
+        self.assertEqual(N.bunyi_kata("Gendis"), "gendis")   # -is bukan jamak Inggris
+        self.assertEqual(N.bunyi_kata("Bagus"), "bagus")
+
+    def test_mirip_bunyi_pesaing_ditandai(self):
+        s, m, r, jenis = N.kemiripan("Kicks Klin", ["Kick Clean"], N.GENERIK_BAWAAN)
+        self.assertEqual((s, m, jenis), (1, "Kick Clean", "bunyi"))
+        s, m, _, _ = N.kemiripan("Fresh Kickz", ["Kick"], N.GENERIK_BAWAAN)
+        self.assertEqual((s, m), (1, "Kick"))               # kata khas merek dimuat utuh (bunyi)
+        s, _, _, _ = N.kemiripan("Sepatu Kinclong", ["Kick Clean"], N.GENERIK_BAWAAN)
+        self.assertGreaterEqual(s, 4)                        # tidak ikut tertandai
+        k, o, _ = jalan(N, tulis("nama\nKicks Klin\nSepatu Kinclong\n"), "--merek", "Kick Clean")
+        self.assertIn("TANDAI: terlalu mirip 'Kick Clean' (bunyi)", o)
+        self.assertIn("Teratas yang layak dicek: 'Sepatu Kinclong'", o)
+
+    def test_kata_inggris_buruk(self):
+        self.assertEqual(N.cek_kata_buruk("Sneakuy")[0][0], "sneaky")
+        self.assertEqual(N.cek_kata_buruk("Dirtee")[0][0], "dirty")
+        for aman in ("Sneaker", "Bagus", "Hellen", "Kopi Diem", "Sika", "Sambal Nusa", "Kilap"):
+            self.assertEqual(N.cek_kata_buruk(aman), [], aman)
+        k, o, _ = jalan(N, tulis("nama,aman_makna\nSneakuy,5\nKilap,5\n"))
+        self.assertIn("TANDAI: bunyi/ejaan mirip kata Inggris 'sneaky' (licik/diam-diam)", o)
+        self.assertIn("Teratas yang layak dicek: 'Kilap'", o)
 
 
 if __name__ == "__main__":

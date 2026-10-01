@@ -987,5 +987,39 @@ class UjiKAnonim(Dasar):
         self.assertEqual(c.execute("SELECT skor FROM skor_perusahaan WHERE periode='2026-09'").fetchone()[0], 93.6)
 
 
+class UjiV115CapWaktuWA(Dasar):
+    """Temuan uji OpenClaw 2026-10-01: cap waktu WA "[30/09 17.05]" terbaca sebagai angka 30."""
+
+    RENCANA_TOKO = ("divisi,orang,kpi,satuan,arah,bobot,target,kata_kunci\n"
+                    "Sales,Budi,Omzet,Rp,naik,60,50000000,omzet\nSales,Budi,Closing,deal,naik,40,20,closing\n"
+                    "CS,Sari,Waktu respons,menit,turun,50,10,respon\nCS,Sari,Komplain selesai,%,naik,50,90,komplain\n"
+                    "Gudang,Joko,Salah kirim,kali,turun,50,3,salah kirim\nGudang,Joko,Tepat waktu,%,naik,50,95,tepat waktu\n")
+
+    def test_cap_waktu_wa_diabaikan(self):
+        p = self.file("p.csv", self.RENCANA_TOKO)
+        t = self.file("t.txt", "[30/09 17.05] Budi: omzet saya 38jt pak, closing 15\n"
+                               "[30/09/26 08.15] Sari: respon rata2 8 menit, komplain selesai 85%\n"
+                               "[17.12, 30/9/2026] Joko: salah kirim 5x pak maaf, tepat waktu 97%\n")
+        kode, out = jalan("baca-teks", "--rencana", p, "--teks", t, "--periode", "2026-09")
+        self.assertEqual(kode, 0, out)
+        got = {(d["orang"], d["kpi"]): d["realisasi"] for d in out["draf"]}
+        self.assertEqual(got, {("Budi", "Omzet"): "38000000", ("Budi", "Closing"): "15",
+                               ("Sari", "Waktu respons"): "8", ("Sari", "Komplain selesai"): "85",
+                               ("Joko", "Salah kirim"): "5", ("Joko", "Tepat waktu"): "97"})
+        self.assertFalse(any("ada " in d["cek"] and "angka" in d["cek"] for d in out["draf"]), out["draf"])
+        self.assertFalse(any(d["realisasi"] == "30" for d in out["draf"]))
+
+    def test_format_ekspor_wa(self):
+        p = self.file("p.csv", self.RENCANA_TOKO)
+        t = self.file("t.txt", "30/09/26 17.05 - Budi: omzet 41jt\n30/09/2026, 17:06 - Budi: closing 18\n")
+        kode, out = jalan("baca-teks", "--rencana", p, "--teks", t, "--periode", "2026-09")
+        got = {(d["orang"], d["kpi"]): d["realisasi"] for d in out["draf"]}
+        self.assertEqual(got, {("Budi", "Omzet"): "41000000", ("Budi", "Closing"): "18"})
+        # baris tanpa cap waktu tetap dibaca seperti biasa ("12.5 jt" bukan cap waktu)
+        t = self.file("t2.txt", "Budi omzet 12.5 jt\n")
+        kode, out = jalan("baca-teks", "--rencana", p, "--teks", t, "--periode", "2026-09")
+        self.assertEqual(out["draf"][0]["realisasi"], "12500000")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

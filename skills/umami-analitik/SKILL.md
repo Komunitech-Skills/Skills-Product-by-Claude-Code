@@ -40,6 +40,8 @@ Pemilik toko online, landing page, atau halaman link-bio yang memasang **Umami d
 4. Lebih dari satu website → sebut `--situs <nama/domain>` atau ENV `UMAMI_SITUS`. Opsi umum (`--situs`, `--periode`, `--dari/--sampai`, `--tz WIB|WITA|WIT`, `--batas`, `--json`) ditulis **setelah** nama perintah.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah: `python3 <folder-skill>/scripts/umami.py <perintah> [opsi]` (Windows: `python`/`py`).
 
 **Periode** (`--periode`, bawaan `7hari`; `banding` bawaan `minggu-ini`; `laporan-mingguan` bawaan `minggu-lalu`):

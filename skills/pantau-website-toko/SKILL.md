@@ -8,9 +8,9 @@ description: Memantau status website toko online, halaman checkout, domain, sert
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
-Pemilik toko online/website/landing page/link bio ingin tahu **secepatnya** kalau website, halaman checkout, atau link WA/katalognya mati - sebelum pelanggan yang mengeluh duluan. Skill ini membantu memasang **Uptime Kuma** (https://github.com/louislam/uptime-kuma, MIT, gratis, jalan di komputer/mini PC/VPS milik pengguna sendiri) untuk pemantauan terus-menerus + notifikasi Telegram, lalu menjalankan `scripts/pantau.py` untuk mengubah datanya jadi ringkasan bahasa manusia (harian/mingguan). Untuk yang belum mau pasang apa pun, ada mode `cek-cepat`: satu kali cek langsung ke alamat website, tanpa Uptime Kuma sama sekali.
+Pemilik toko online/website/landing page/link bio ingin tahu **secepatnya** kalau website, halaman checkout, atau link WA/katalognya mati - sebelum pelanggan yang mengeluh duluan. Skill ini memandu pengguna memasang sendiri **Uptime Kuma** (https://github.com/louislam/uptime-kuma, MIT, gratis, jalan di komputer/mini PC/VPS milik pengguna sendiri) untuk pemantauan terus-menerus + notifikasi Telegram, lalu menjalankan `scripts/pantau.py` untuk mengubah datanya jadi ringkasan bahasa manusia (harian/mingguan). Untuk yang belum mau pasang apa pun, ada mode `cek-cepat`: satu kali cek langsung ke alamat website, tanpa Uptime Kuma sama sekali.
 
-**Versi 1.0.1.** Diuji pembuat dengan **Uptime Kuma 2.5.5 ASLI** (rilis resmi dari GitHub, dipasang & dijalankan sungguhan, terikat ke `127.0.0.1`, dari nol sampai status page publik terisi 2 monitor) untuk `cek` dan `ringkasan` (endpoint publik `/api/status-page/<slug>` & `/api/status-page/heartbeat/<slug>`); plus uji regresi otomatis dengan server tiruan dan `cek-cepat` diuji dengan server HTTP & HTTPS tiruan (termasuk sertifikat SSL self-signed sungguhan). Lihat `research/sources/uptime-kuma-2026-09-26.md` untuk metodologi lengkap. **Diuji penguji independen** (Akun B, 2026-09-26, skor 9/10): mengonfirmasi Uptime Kuma 2.5.5 asli & perhitungan angka independen, dan menemukan dua hal yang diperbaiki di v1.0.1 — (1) `cek-cepat` dulu mengikuti redirect diam-diam sehingga kode 3xx aslinya tak pernah terlihat (sekarang rantai redirect ditampilkan eksplisit, lihat bagian D); (2) `ringkasan` dulu diam saja tanpa sisa hari SSL untuk monitor https dengan sertifikat tidak tepercaya di Uptime Kuma, karena Uptime Kuma sendiri hanya mengisi `certExpiryDaysRemaining` untuk sertifikat valid (sekarang ada catatan eksplisit, lihat bagian B). **Belum diuji**: instalasi Windows/macOS sungguhan, Docker Compose (kebijakan sandbox), pengiriman notifikasi Telegram sungguhan (butuh token bot asli), dan jadwal OpenClaw sungguhan.
+**Versi 1.0.5** (2026-10-01: jumlah TURUN dihitung per **kejadian** + durasi & jam WIB, bukan per heartbeat; batas tawaran pemasangan/notifikasi diperjelas). Diuji pembuat dengan **Uptime Kuma 2.5.5 ASLI** (rilis resmi dari GitHub, dipasang & dijalankan sungguhan, terikat ke `127.0.0.1`, dari nol sampai status page publik terisi 2 monitor) untuk `cek` dan `ringkasan` (endpoint publik `/api/status-page/<slug>` & `/api/status-page/heartbeat/<slug>`); plus uji regresi otomatis dengan server tiruan dan `cek-cepat` diuji dengan server HTTP & HTTPS tiruan (termasuk sertifikat SSL self-signed sungguhan). Lihat `research/sources/uptime-kuma-2026-09-26.md` untuk metodologi lengkap. **Diuji penguji independen** (Akun B, 2026-09-26, skor 9/10): mengonfirmasi Uptime Kuma 2.5.5 asli & perhitungan angka independen, dan menemukan dua hal yang diperbaiki di v1.0.1 — (1) `cek-cepat` dulu mengikuti redirect diam-diam sehingga kode 3xx aslinya tak pernah terlihat (sekarang rantai redirect ditampilkan eksplisit, lihat bagian D); (2) `ringkasan` dulu diam saja tanpa sisa hari SSL untuk monitor https dengan sertifikat tidak tepercaya di Uptime Kuma, karena Uptime Kuma sendiri hanya mengisi `certExpiryDaysRemaining` untuk sertifikat valid (sekarang ada catatan eksplisit, lihat bagian B). **Belum diuji**: instalasi Windows/macOS sungguhan, Docker Compose (kebijakan sandbox), pengiriman notifikasi Telegram sungguhan (butuh token bot asli), dan jadwal OpenClaw sungguhan.
 
 ## Kapan digunakan
 - "Website toko saya kayaknya lagi down" / "cek website saya masih hidup nggak" → `cek-cepat <url>` (kalau belum ada Uptime Kuma) atau `ringkasan` (kalau sudah ada).
@@ -26,6 +26,9 @@ Pemilik toko online/website/landing page/link bio ingin tahu **secepatnya** kala
 - **Memasang/mengonfigurasi Uptime Kuma langsung** (unduh, jalankan, buat status page) → **manusia** yang melakukan sendiri lewat browser mengikuti `docs/panduan-uptime-kuma.md`, atau **jasa setup Komunitech**. Skill ini hanya membaca hasilnya lewat script.
 - **Mengubah pengaturan Uptime Kuma** (tambah/hapus monitor, ubah status page, atur notifikasi) lewat skill ini → tidak bisa; skill ini sengaja **hanya membaca** (`GET` ke endpoint publik/situs), tidak pernah login atau menulis ke Uptime Kuma. Arahkan ke layar Uptime Kuma langsung.
 - **Pemantauan performa/keamanan mendalam** (load testing, pentest, uji kerentanan) → di luar cakupan; skill ini murni "hidup/mati + berapa lama respons + SSL berapa hari lagi".
+- **Tawaran yang jujur (wajib, jangan dilebihkan):** agent **tidak bisa** memasang Uptime Kuma, membuat monitor, atau memasang notifikasi untuk pengguna — jangan menulis "aku bisa pasang monitor" atau "aku pasang alert ke WA". Yang **bisa**: `cek-cepat` satu kali ke situs milik pengguna, `ringkasan`/`mingguan` dari status page yang sudah ada, menjelaskan langkah pasang di `docs/panduan-uptime-kuma.md`, dan (setelah pengguna menjawab "ya") jadwal ringkasan OpenClaw ke Telegram. Contoh kalimat: *"Pemasangan Uptime Kuma dilakukan Anda sendiri (±20–30 menit, saya pandu langkahnya) atau lewat jasa setup Komunitech. Notifikasi saat down memakai Telegram bawaan Uptime Kuma."*
+- **Notifikasi WhatsApp:** kanal resmi = **Telegram**. WhatsApp hanya sesuai kebijakan Komunitech: nomor WA **terpisah** khusus notifikasi ke pemilik sendiri + persetujuan risiko tertulis (WhatsApp lewat OpenClaw memakai WhatsApp Web tidak resmi, nomor bisa diblokir); tidak pernah broadcast ke pelanggan. Jangan menawarkan "alert otomatis ke WA" sebagai pilihan biasa.
+- Situs bukan milik pengguna: jangan menawarkan "cek kapan pun kamu minta" — tolak pemantauan berulang, termasuk cek manual berulang.
 - Belum tahu apakah butuh Uptime Kuma atau cukup `cek-cepat` sesekali → jelaskan bedanya (lihat Persiapan), biarkan pengguna memilih.
 
 ## Persiapan
@@ -37,6 +40,8 @@ Dua jalur, jelaskan singkat lalu tanyakan mana yang dipilih bila belum jelas dar
 Tidak ada token/API key yang perlu disiapkan pengguna untuk skill ini — `/api/status-page/...` memang endpoint publik bawaan Uptime Kuma.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Semua perintah lintas OS (Windows: `python`/`py`). Tambahkan `--json` untuk hasil terstruktur.
 
 ### A. Cek koneksi ke status page
@@ -49,7 +54,9 @@ Atau `--url http://127.0.0.1:3001 --slug toko-saya` terpisah. Laporkan judul sta
 ```bash
 python3 <folder-skill>/scripts/pantau.py ringkasan --status-url http://127.0.0.1:3001/status/toko-saya
 ```
-Untuk tiap monitor di status page itu, tampilkan: status sekarang (AKTIF/TURUN/MENUNGGU/PEMELIHARAAN), ping terakhir, **uptime 24 jam** (angka resmi dari Uptime Kuma sendiri, bukan hitungan skill), downtime yang **benar-benar terekam** di data yang diambil (jumlah kali TURUN + total menit, dengan jendela waktu yang jelas - biasanya hanya beberapa jam terakhir, BUKAN seluruh hari, karena Uptime Kuma hanya mengirim ±100 titik heartbeat terakhir lewat endpoint publik ini), dan sisa hari SSL (bila diaktifkan). Setiap kali dijalankan, hasilnya **ditambahkan** ke log lokal (`~/.komunitech/pantau-website-log.jsonl` default, bisa diubah `--log`) untuk dipakai `mingguan`. Pakai `--tanpa-log` bila tidak ingin mencatat.
+Untuk tiap monitor di status page itu, tampilkan: status sekarang (AKTIF/TURUN/MENUNGGU/PEMELIHARAAN), ping terakhir, **uptime 24 jam** (angka resmi dari Uptime Kuma sendiri, bukan hitungan skill), downtime yang **benar-benar terekam** di data yang diambil (**jumlah kejadian** TURUN — rangkaian heartbeat TURUN berurutan = 1 kejadian — beserta jam mulai–selesai WIB dan durasi tiap kejadian, plus total menit, dengan jendela waktu yang jelas - biasanya hanya beberapa jam terakhir, BUKAN seluruh hari, karena Uptime Kuma hanya mengirim ±100 titik heartbeat terakhir lewat endpoint publik ini), dan sisa hari SSL (bila diaktifkan). Setiap kali dijalankan, hasilnya **ditambahkan** ke log lokal (`~/.komunitech/pantau-website-log.jsonl` default, bisa diubah `--log`) untuk dipakai `mingguan`. Pakai `--tanpa-log` bila tidak ingin mencatat.
+
+**Cara menyampaikan ke pengguna:** sebut "N kejadian", bukan "turun Nx/mati-nyala" (satu kejadian 5 menit ≠ putus-sambung 5 kali). Salin menit & persen **persis** dari output script (script "12.1 menit" → tulis "12,1 menit", bukan "±11 menit"). Kejadian "MASIH TURUN" ditulis "turun sejak <jam WIB>, sudah <menit> menit (masih berlangsung)". Jam ditulis WIB sesuai output.
 
 **Keterbatasan SSL yang perlu disebut apa adanya (bukan bug skill):** Uptime Kuma **hanya** mengisi sisa hari SSL untuk sertifikat yang **tepercaya** (valid). Untuk monitor `https://` dengan sertifikat self-signed/tidak tepercaya, baris "Sertifikat SSL" akan berisi **catatan eksplisit** ("SSL tidak terbaca dari Uptime Kuma...") - bukan diam tanpa keterangan, dan bukan berarti skill lupa mengecek. Arahkan pengguna ke `cek-cepat` (bagian D) untuk tetap melihat sisa harinya langsung.
 
@@ -77,15 +84,16 @@ Jadwal `ringkasan` (dan/atau `mingguan`) harian ke Telegram pemilik: ikuti `refe
 Teks siap tempel (contoh nyata dari `examples/`, angka dari data uji Komunitech):
 ```
 RINGKASAN STATUS - Toko Saya (toko-saya)
-Diperiksa: 2026-09-26T09:00:12+00:00 UTC
+Diperiksa: 2026-09-26 16:00 WIB (09:00 UTC)
 ------------------------------------------------------------
 [OK] Toko Online  (grup: Utama)
      Status sekarang : AKTIF, ping 210 ms
      Uptime 24 jam   : 95.0% (dihitung Uptime Kuma sendiri)
-     Terlihat TURUN dalam 5 cek terakhir yang terbaca (...): 2x, total 10.0 menit (HANYA jendela ini, bukan seluruh hari/minggu)
+     Kejadian TURUN dalam 5 cek terakhir yang terbaca (2026-09-26 15:00 WIB (08:00 UTC) s/d 2026-09-26 15:20 WIB (08:20 UTC)): 1 kejadian, total 10.0 menit (HANYA jendela ini, bukan seluruh hari/minggu)
+       1. 2026-09-26 15:10 WIB (08:10 UTC) s/d 2026-09-26 15:20 WIB (08:20 UTC) - 10.0 menit
      Sertifikat SSL  : 9 hari lagi  <-- SEGERA PERPANJANG
 ```
-`--json` berisi field yang sama secara terstruktur (`ok`, `monitor: [...]`, dst).
+`--json` berisi field yang sama secara terstruktur (`ok`, `monitor: [...]`, `jendela_jumlah_insiden`, `jendela_insiden: [{mulai_wib, selesai_wib, menit, masih_berlangsung}]`, dst). `jendela_jumlah_heartbeat_turun` = jumlah titik cek, **bukan** jumlah kejadian — jangan disebut sebagai "turun Nx".
 
 ## Batasan & penanganan error
 **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
@@ -111,7 +119,9 @@ Diperiksa: 2026-09-26T09:00:12+00:00 UTC
 
 ## Checklist sebelum menjawab
 - [ ] Situs yang dipantau dikonfirmasi milik/dikelola pengguna sendiri
-- [ ] Angka (uptime %, menit down, sisa hari SSL) dari script, tidak diubah/dikira-kira
+- [ ] Angka (uptime %, menit down, sisa hari SSL) disalin persis dari script, tidak diubah/dikira-kira/dibulatkan
+- [ ] Downtime disebut per **kejadian** (jam WIB + durasi), bukan jumlah heartbeat
+- [ ] Tidak ada klaim "saya pasangkan Uptime Kuma/notifikasi"; notifikasi = Telegram (WA hanya sesuai kebijakan Komunitech)
 - [ ] Jendela waktu downtime & sifat "rata-rata dari log sendiri" (`mingguan`) dijelaskan, bukan disajikan seolah angka resmi penuh
 - [ ] `cek-cepat` tidak disarankan dijalankan berulang cepat sebagai pengganti Uptime Kuma
 - [ ] Sertifikat SSL tidak terpercaya ditandai jelas, bukan disamarkan

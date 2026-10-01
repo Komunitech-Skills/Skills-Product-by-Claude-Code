@@ -41,6 +41,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar perta
 
 ## Langkah Kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Susun hipotesis dari ide satu kalimat
 Ubah ide jadi kalimat hipotesis eksplisit dengan format:
 
@@ -56,15 +58,19 @@ Jika pengguna belum yakin di salah satu bagian, itu justru sinyal untuk diuji, b
 ### 2. Pilih metode uji murah sesuai kanal yang dimiliki
 Cocokkan dengan tabel di [`references/menu-uji-murah.md`](references/menu-uji-murah.md). Ringkasnya:
 
-| Metode | Cocok kalau | Yang diukur |
-|---|---|---|
-| **Pre-order via broadcast/status WA** | Punya ≥30 kontak relevan | Jumlah yang klik/bales minat ÷ jumlah dikirimi |
-| **Polling story Instagram** | Punya ≥100 follower aktif | Jumlah vote "mau beli" ÷ jumlah yang lihat story (views) |
-| **Lapak percobaan di marketplace** (listing dulu, produksi setelah order masuk / sistem PO) | Sudah ada toko marketplace atau gampang buka | Jumlah chat serius + order ÷ jumlah dilihat (views listing) |
-| **Sampel ke pelanggan tetap** | Punya ≥10 pelanggan langganan/reguler | Jumlah yang bilang "iya, mau beli lagi/rutin" ÷ jumlah diberi sampel |
-| **Titip di warung/reseller** | Ada warung/toko langganan yang mau dititipi | Jumlah terjual ÷ jumlah dititipkan dalam periode uji |
+| Metode | Cocok kalau | **Pesanan** (masuk hitungan) | **Minat** (dilaporkan terpisah) |
+|---|---|---|---|
+| **Pre-order via broadcast/status WA** | Punya ≥30 kontak relevan | Sudah transfer/DP ÷ jumlah dikirimi | Balas "mau"/konfirmasi tapi belum bayar |
+| **Polling story Instagram** | Punya ≥100 follower aktif | — (polling saja tidak menghasilkan pesanan; DM pemilih "Ya" dengan tawaran PO + DP) | Vote "mau beli" ÷ views |
+| **Lapak percobaan di marketplace** (sistem PO) | Sudah ada toko marketplace atau gampang buka | Order di-checkout/dibayar ÷ views listing | Chat tanya harga/cara beli |
+| **Sampel ke pelanggan tetap** | Punya ≥10 pelanggan langganan/reguler | Pesan ulang & bayar dalam 7 hari ÷ jumlah diberi sampel | "Iya, mau beli rutin" tanpa pesan |
+| **Titip di warung/reseller** | Ada warung/toko langganan yang mau dititipi | Laku terjual ÷ jumlah dititipkan | — |
 
-Boleh pakai lebih dari satu metode sekaligus kalau kanalnya memungkinkan — hasilnya digabung sebagai total "ditawari" dan total "pre-order/beli".
+**ATURAN HITUNG (wajib, tanpa pengecualian):**
+- **Pesanan** = tindakan berkomitmen: pre-order yang sudah transfer/DP/bayar, order checkout, barang laku terjual. **Hanya pesanan** yang masuk konversi, pendapatan, margin, dan balik modal.
+- **Minat** = vote polling, like, emoji, komentar "mau", chat tanya harga, janji "nanti beli", konfirmasi tanpa bayar. Minat **tidak pernah** dihitung sebagai pesanan, **tidak pernah** dijumlahkan dengan pesanan, dan **tidak pernah** dikalikan harga/margin. Laporkan di baris tersendiri ("52 vote = sinyal minat, belum pesanan").
+- Boleh pakai lebih dari satu metode. Pesanan dari beberapa kanal berkomitmen boleh dijumlahkan; kanal yang hanya menghasilkan minat dilaporkan terpisah. Tampilkan juga konversi per kanal. Jika semua kanal hanya menghasilkan minat → hasil **BELUM BISA DINILAI**; sarankan ubah minat jadi PO berbayar dulu.
+- Jika pengguna menyebut angka tanpa jelas jenisnya ("yang mau 20 orang"), tanyakan sekali: "sudah transfer/DP atau baru bilang mau?" — bila tidak dijawab, anggap **minat**.
 
 ### 3. Tetapkan kriteria lulus/gagal SEBELUM mulai uji
 Ini wajib ditentukan dulu, supaya tidak "menggeser target" setelah lihat hasil. Pakai ambang default berikut (heuristik praktis Komunitech, **bukan hukum pasti** — boleh disesuaikan dan sebutkan alasannya kalau diubah):
@@ -74,7 +80,9 @@ Ini wajib ditentukan dulu, supaya tidak "menggeser target" setelah lihat hasil. 
 - **LULUS BERSYARAT (ubah dulu sebelum lanjut penuh):** konversi 8%–<15% — ada minat tapi belum kuat; biasanya harga, penawaran, atau target pembeli perlu direvisi.
 - **GAGAL (hentikan/ganti ide):** konversi < 8%.
 
-Produk harga rendah/impulsif (di bawah ~Rp30rb, dibeli tanpa banyak mikir) boleh naikkan ambang ke 20%/10%; produk harga tinggi/pertimbangan lama (di atas ~Rp300rb) boleh turunkan ke 10%/5% — jelaskan penyesuaian ini ke pengguna, jangan diam-diam ubah tanpa bilang.
+Produk harga rendah/impulsif (di bawah ~Rp30rb, dibeli tanpa banyak mikir) boleh naikkan ambang ke 20%/10%; produk harga tinggi/pertimbangan lama (di atas ~Rp300rb) boleh turunkan ke 10%/5% — jelaskan penyesuaian ini ke pengguna, jangan diam-diam ubah tanpa bilang. **Tetapkan SATU set ambang di awal sesuai harga** dan pakai itu saja di seluruh jawaban (jalankan script dengan `--ambang-lulus`/`--ambang-bersyarat` yang sesuai); jangan menampilkan dua klasifikasi dengan ambang berbeda.
+
+Konversi dihitung dari **pesanan** (lihat Aturan Hitung di Langkah 2), bukan dari minat.
 
 ### 4. Siapkan pesan & form pencatatan
 Pakai template siap pakai di [`templates/pesan-uji-murah.md`](templates/pesan-uji-murah.md) (broadcast WA, caption status/story, caption polling IG, deskripsi listing PO marketplace, pitch titip warung) — sudah dalam bahasa Indonesia sehari-hari, tinggal isi kurung siku `[...]`.
@@ -82,11 +90,20 @@ Pakai template siap pakai di [`templates/pesan-uji-murah.md`](templates/pesan-uj
 Untuk mencatat hasil, pakai tabel di [`templates/form-pencatatan.md`](templates/form-pencatatan.md): tanggal, kanal, jumlah ditawari/dilihat, jumlah pre-order/beli, alasan yang tidak beli (kalau sempat ditanya — ini bahan revisi kalau LULUS BERSYARAT).
 
 ### 5. Jalankan uji 7 hari, lalu hitung hasil
-Setelah masa uji selesai, hitung dengan `scripts/hitung_validasi.py` (Python standar, tanpa instalasi):
+Setelah masa uji selesai, **angka konversi, margin, dan untung/rugi wajib dihitung lewat script** `scripts/hitung_validasi.py` (Python standar, tanpa instalasi; Windows: `python` atau `py`) — jangan dihitung di kepala:
 
 ```
-python3 scripts/hitung_validasi.py --ditawari 20 --preorder 4 --harga 25000 --hpp 12000 --biaya-uji 50000
+python3 scripts/hitung_validasi.py --ditawari 20 --preorder 4 --minat 6 --harga 25000 --hpp 12000 --biaya-uji 50000
 ```
+`--preorder` = pesanan berkomitmen saja (isi 0 bila belum ada); `--minat` (opsional) = vote/like/komentar — dilaporkan terpisah dan tidak ikut hitungan uang.
+
+Untuk beberapa kanal sekaligus, pakai file JSON mode `kanal` (pesanan & minat dipisah otomatis):
+```json
+{"harga": 18000, "hpp": 9500, "biaya_uji": 60000,
+ "kanal": [{"nama": "Broadcast WA", "ditawari": 45, "preorder": 4},
+           {"nama": "Polling IG", "ditawari": 380, "minat": 52}]}
+```
+Hasil yang benar untuk contoh ini: pesanan 4 dari 45 (8,9%), margin 4 × Rp8.500 = Rp34.000, selisih Rp34.000 − Rp60.000 = **−Rp26.000 (belum balik modal)**. 52 vote = minat, bukan pesanan.
 
 Atau lewat file JSON:
 ```
@@ -97,11 +114,16 @@ Isi `data-uji.json` contoh:
 {"ditawari": 20, "preorder": 4, "harga": 25000, "hpp": 12000, "biaya_uji": 50000}
 ```
 
-Script menghitung: persentase konversi, klasifikasi LULUS/LULUS BERSYARAT/GAGAL (bisa override ambang dengan `--ambang-lulus` dan `--ambang-bersyarat`), margin per unit (jika `--hpp` diisi), total margin dari pre-order, dan selisih terhadap biaya uji (balik modal atau belum). Jika jumlah ditawari < 20, script menambahkan peringatan sampel kecil.
+Script menghitung (dan menampilkan rumusnya): persentase konversi, klasifikasi LULUS/LULUS BERSYARAT/GAGAL (bisa override ambang dengan `--ambang-lulus` dan `--ambang-bersyarat`), margin per unit (jika `--hpp` diisi), total margin dari pre-order, dan selisih terhadap biaya uji (balik modal atau belum). Jika jumlah ditawari < 20, script menambahkan peringatan sampel kecil.
 
 Field uang (`--harga`, `--hpp`, `--biaya-uji`) menerima format Indonesia: angka polos (`25000`), titik ribuan (`25.000`, `Rp25.000`), atau singkatan (`25rb`, `1jt`, `1,5jt`). Format yang tidak jelas (mis. `25.5`, `1.234,56`) **ditolak** dengan pesan error, bukan ditebak — tulis ulang sesuai salah satu format di atas.
 
-Jika tidak ada Python yang bisa dijalankan, hitung manual: `konversi (%) = (jumlah pre-order ÷ jumlah ditawari) × 100`, bulatkan ke satu desimal; bandingkan ke ambang Langkah 3 secara manual — skill tetap berguna tanpa script.
+Jika tidak ada Python yang bisa dijalankan, hitung manual dan **tampilkan setiap rumus beserta angkanya** (jangan hanya hasil akhir):
+- `konversi (%) = pesanan ÷ ditawari (kanal pesanan) × 100`, bulatkan ke satu desimal
+- `margin per unit = harga − HPP`
+- `total margin = margin per unit × pesanan` (**pesanan saja**, bukan minat)
+- `selisih = total margin − biaya uji` (negatif = belum balik modal)
+Bandingkan konversi ke ambang Langkah 3 — skill tetap berguna tanpa script.
 
 ### 6. Rekomendasikan keputusan
 Berdasarkan klasifikasi hasil:
@@ -124,9 +146,10 @@ Selalu tampilkan alasan yang diberikan calon pembeli yang menolak (dari form pen
 Lihat `examples/01-kopi-susu-literan.md` (kopi susu gula aren kemasan literan, pre-order via status WA, hasil LULUS) dan `examples/02-jasa-laundry-sepatu.md` (jasa laundry sepatu, polling story IG + titip flyer di warung, hasil LULUS BERSYARAT → revisi harga). Kasus tambahan (kelas online Canva, uji lewat pre-order WA ke grup alumni pelatihan) dibahas ringkas di `references/menu-uji-murah.md`.
 
 ## Batasan & Penanganan Error
+- **Minat ≠ pesanan.** Vote/like/komentar/"mau" tanpa bayar tidak pernah dihitung sebagai pesanan atau pendapatan. Klaim "sudah balik modal"/"untung" hanya boleh muncul dari hasil script atau rumus eksplisit yang ditampilkan.
 - **Bukan riset pasar ilmiah.** Ambang 15%/8% adalah heuristik praktis, bukan angka baku industri — sebutkan ini ke pengguna, terutama untuk keputusan bermodal besar (di atas puluhan juta Rupiah), sarankan tambah metode uji atau konsultasi profesional.
 - **Sampel kecil = hasil belum pasti.** Selalu tandai hasil dari <20 orang yang ditawari sebagai "indikasi awal", jangan disebut kesimpulan final.
 - **Bukan pengganti kalkulasi biaya rinci.** Kalau pengguna butuh HPP/BEP presisi sebelum memutuskan modal produksi besar, arahkan ke `hitung-hpp` setelah hasil validasi LULUS.
 - **Data uji tidak masuk akal** (mis. jumlah pre-order lebih besar dari jumlah ditawari, angka negatif, harga Rp0, atau format harga ambigu seperti `25.5`/`1.234,56`) → script menolak dan menjelaskan bagian mana yang salah; jangan memaksakan perhitungan atau menebak angka.
-- **Pesan pre-order harus jujur soal batal/refund** — jangan pernah kirim template pre-order (#1/#4 di `templates/pesan-uji-murah.md`) tanpa mengisi bagian kebijakan batal/refund; ini wajib, bukan opsional.
+- **Pesan pre-order harus jujur soal batal/refund** — jangan pernah kirim template pre-order (#1/#4 di `templates/pesan-uji-murah.md`) tanpa mengisi bagian kebijakan batal/refund; ini wajib, bukan opsional. Jika alurnya tidak meminta bayar/DP di depan, ganti kalimat refund dengan "belum perlu bayar sekarang" — dan ingat hasilnya hanya minat sampai ada pembayaran.
 - **Tidak mendukung klaim medis/investasi/keuangan berizin khusus** — kalau ide produk menyentuh area ini (mis. suplemen kesehatan, produk investasi), ingatkan kebutuhan izin resmi (BPOM, OJK, dll.) di luar cakupan validasi pasar skill ini.

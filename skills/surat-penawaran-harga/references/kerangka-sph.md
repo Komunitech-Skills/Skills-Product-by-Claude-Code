@@ -40,6 +40,6 @@ Script membuatnya otomatis dengan `--nomor-urut 12 --kode "SPH/MKS"`. Jika usaha
 | Sekolah/yayasan | Formal-hangat | Sebutkan kepala sekolah/bendahara sebagai penerima |
 
 ## Contoh kasus lokal lain
-1. **Katering kantor (bukan PKP):** "Dapur Bu Sri, Bekasi" menawarkan 150 nasi box ayam bakar @35rb + 150 air mineral @4rb ke panitia seminar, diskon 5%. Total Rp 5.557.500, tanpa PPN.
+1. **Katering kantor (bukan PKP):** "Dapur Bu Sri, Bekasi" menawarkan 150 nasi box ayam bakar @35rb + 150 air mineral @4rb ke panitia seminar, diskon 5%. Total Rp 5.557.500; "Harga final, penjual bukan PKP sehingga tidak memungut PPN."
 2. **Toko bangunan (PKP):** "TB Sumber Rejeki, Sidoarjo" menawarkan 100 sak semen @72.500 + 50 batang besi 10mm @98.000 diskon 2% ke kontraktor. Subtotal Rp 12.052.000, PPN Rp 1.325.720, total Rp 13.377.720.
 3. **Jasa (harga sudah termasuk PPN):** konsultan IT PKP menawarkan paket Rp 11.100.000 termasuk PPN → DPP Rp 10.000.000, PPN Rp 1.100.000.

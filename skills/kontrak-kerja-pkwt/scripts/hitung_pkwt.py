@@ -67,7 +67,8 @@ CATATAN_UMK = ("USAHA MIKRO/KECIL: menurut PP 35/2021 Pasal 16 ayat (6), besaran
                "BUKAN jumlah yang diwajibkan dan BUKAN batas bawah wajib; besaran di bawah acuan sah bila "
                "disepakati dan ditulis jelas. Tuliskan besaran yang disepakati di kontrak. Hak atas kompensasi tetap "
                "ada; yang disepakati adalah besarannya. Ganti rugi Pasal 62 UU 13/2003 tidak terpengaruh. "
-               "Pastikan usaha memang tergolong usaha mikro/kecil (kriteria PP 7/2021; cek ke Dinas Koperasi & UKM "
+               "Pastikan usaha memang tergolong usaha mikro/kecil (kriteria PP 7/2021 Pasal 35: modal usaha ATAU "
+               "hasil penjualan tahunan — angka di references/dasar-hukum.md baris 7b; cek ke Dinas Koperasi & UKM "
                "atau konsultan).")
 
 
@@ -499,7 +500,8 @@ def teks(h):
              "168/PUU-XXI/2023 (dicek 26 September 2026). Konfirmasi ke Disnaker/konsultan hukum.")
     if not h.get("usaha_mikro_kecil"):
         b.append("Usaha mikro/kecil? Besaran kompensasi ditentukan kesepakatan (PP 35/2021 Pasal 16 ayat (6)); "
-                 "jalankan ulang dengan --usaha-mikro-kecil.")
+                 "hitung statusnya dulu dengan scripts/status_usaha.py --omzet ... (konfirmasi NIB/OSS), "
+                 "bila hasilnya usaha mikro/kecil jalankan ulang dengan --usaha-mikro-kecil.")
     return "\n".join(b)
 
 

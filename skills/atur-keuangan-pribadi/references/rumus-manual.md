@@ -20,6 +20,8 @@ Contoh: gaji 7.500.000; THR 7.500.000 + bonus 5.000.000 → 12.500.000 ÷ 12 = 1
 
 ## 2. Dana darurat
 ```
+Pokok/bulan = kebutuhan wajib + SEMUA cicilan/utang minimum (PayLater, kartu kredit, KPR, motor, KTA, pinjol)
+              + kiriman keluarga yang tidak bisa ditunda (bukan jajan/hiburan/top-up investasi)
 Target      = Pengeluaran pokok/bulan × N bulan
               (PNS 3–6 | lajang 3–6 | menikah 6–9 | punya anak/tanggungan 9–12 | pekerja lepas/usaha 12)
 Kekurangan  = max(Target − Saldo, 0)

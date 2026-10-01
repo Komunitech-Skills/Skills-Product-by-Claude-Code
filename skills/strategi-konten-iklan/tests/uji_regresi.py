@@ -372,6 +372,39 @@ class Perbaikan101(unittest.TestCase):
                 A.parse_persen(teks)
             self.assertIn(f"{teks}% atau {alt}", str(c.exception))
 
+    def test_r5_kanal_penjualan_utama(self):
+        # Penjual Shopee + IG, 4jt: bobot meta 35, shopee dinaikkan ke 2 x 35 = 70 -> 1/3 : 2/3
+        dasar = ["--anggaran", "4jt", "--aov", "175rb", "--margin", "35%", "--kanal", "meta,shopee"]
+        for ekstra in (["--jenis", "marketplace"], ["--kanal-utama", "shopee"]):
+            h = js(*dasar, *ekstra)
+            ang = {k["kanal"]: k["anggaran"] for k in h["kanal"]}
+            self.assertEqual(ang, {"meta": 1333333, "shopee": 2666667})   # 4.000.000/3 dibulatkan; sisa ke terbesar
+            self.assertGreater(ang["shopee"], ang["meta"])
+            self.assertTrue(any("Kanal penjualan utama: Shopee Ads" in c for c in h["catatan"]))
+        # tanpa jenis/kanal-utama: perilaku lama (meta 35 : shopee 20)
+        h = js(*dasar)
+        self.assertEqual({k["kanal"]: k["anggaran"] for k in h["kanal"]}, {"meta": 2545455, "shopee": 1454545})
+        # penjual yang transaksinya lewat DM IG: --kanal-utama meta -> meta 2 x 20 = 70 (tetap 70 karena 35 < 40)
+        h = js(*dasar, "--kanal-utama", "ig")
+        self.assertEqual({k["kanal"]: k["anggaran"] for k in h["kanal"]}, {"meta": 2666667, "shopee": 1333333})
+        # TikTok Shop sebagai utama dengan 3 kanal: tiktokshop = 2 x 35 = 70 ; total 70+35+20 = 125
+        h = js("--anggaran", "10jt", "--aov", "100rb", "--margin", "40%", "--kanal", "meta,tiktok,tiktokshop",
+               "--kanal-utama", "tiktok shop")
+        self.assertEqual({k["kanal"]: k["anggaran"] for k in h["kanal"]},
+                         {"meta": 2800000, "tiktok": 1600000, "tiktokshop": 5600000})
+        # awareness murni: tidak dinaikkan
+        h = js("--anggaran", "4jt", "--tujuan", "awareness", "--kanal", "meta,shopee", "--kanal-utama", "shopee")
+        self.assertEqual({k["kanal"]: k["anggaran"] for k in h["kanal"]}, {"meta": 3555556, "shopee": 444444})
+
+    def test_r5_kanal_utama_validasi(self):
+        kode, _, err = jalan("--anggaran", "4jt", "--aov", "175rb", "--margin", "35%", "--kanal", "meta",
+                             "--kanal-utama", "shopee")
+        self.assertEqual(kode, 2)
+        self.assertIn("tidak ada di --kanal", err)
+        kode, _, err = jalan("--anggaran", "4jt", "--aov", "175rb", "--margin", "35%", "--kanal-utama", "shopee,meta")
+        self.assertEqual(kode, 2)
+        self.assertIn("hanya satu kanal", err)
+
     def test_semua_kombinasi_total_sama_dengan_anggaran(self):
         for ang in ["500rb", "1,5jt", "3jt", "7,777jt".replace("7,777jt", "7777777"), "20jt"]:
             for tujuan in ["penjualan", "awareness:30,penjualan:70", "leads:50,awareness:50"]:

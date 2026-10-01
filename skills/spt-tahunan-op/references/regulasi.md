@@ -1,6 +1,6 @@
 # Dasar aturan — SPT Tahunan PPh Orang Pribadi
 
-Dicek **30 September 2026**. ✅ = diverifikasi dari naskah resmi/situs DJP · 🟡 = sumber sekunder konsisten · ⚠️ = PERLU REVIEW.
+Dicek **30 September 2026** (baris PPh 21 bukan pegawai & setoran final salah skema: 1 Oktober 2026). ✅ = diverifikasi dari naskah resmi/situs DJP · 🟡 = sumber sekunder konsisten · ⚠️ = PERLU REVIEW.
 Riset lengkap + URL: `research/sources/spt-tahunan-op-2026-09-30.md` (repo kurator).
 
 | Topik | Aturan yang dipakai | Status | Dasar |
@@ -13,6 +13,8 @@ Riset lengkap + URL: `research/sources/spt-tahunan-op-2026-09-30.md` (repo kurat
 | PPh final UMKM | Omzet 0,5% (PP 55/2022 jo. PP 20/2026) tidak ikut tarif Ps. 17; dilaporkan di lampiran penghasilan final/L-3B. OP: omzet s.d. Rp500 jt/tahun tidak kena; bruto ≤ Rp4,8 M; PP 20/2026: berlaku tanpa batas waktu untuk OP selama memenuhi kriteria. **Penghasilan pekerjaan bebas dikecualikan** (PP 55/2022 Ps. 56 ayat (3)–(4) s.t.d.d. PP 20/2026; daftar profesi diperluas mis. influencer/selebgram/bloger/vloger) | ✅ (DJP) · 🟡 nomor ayat (DDTC) | pajak.go.id/en/node/119950; news.ddtc.co.id/komunitas/suluh-pajak/1820255 |
 | Zakat | Pengurang penghasilan bruto bila ke BAZNAS/LAZ/lembaga disahkan pemerintah + bukti setor; yang dipotong kantor sudah ada di bukti potong | 🟡 / ✅ (lewat kantor: PMK 168/2023 Ps. 10) | UU PPh Ps. 9 ayat (1) huruf g; PP 60/2010 |
 | Kredit pajak | PPh 21 (A1/A2, bukan pegawai), PPh 22, PPh 23, PPh 24, PPh 25 dibayar; PPh final tidak dikreditkan | 🟡 | UU PPh Ps. 28 |
+| Jasa orang pribadi (tenaga ahli/konsultan, freelancer) | Dipotong **PPh 21 bukan pegawai** oleh pemberi penghasilan (bukti potong BP21), bukan PPh 23; DPP 50% bruto × tarif Ps. 17 | 🟡 | PMK 168/2023 (tenaga ahli pekerjaan bebas termasuk "bukan pegawai") |
+| Setoran PPh final 0,5% atas pekerjaan bebas (salah skema) | Tidak dikreditkan, tidak dilaporkan sebagai penghasilan final; ajukan pengembalian pajak yang seharusnya tidak terutang via Coretax (menu Pembayaran, formulir restitusi). Pemindahbukuan tidak dapat karena setoran PPh final UMKM dianggap penyampaian SPT Masa | 🟡 · ⚠️ PERLU REVIEW konsultan pajak | PMK 81/2024 Ps. 109 ayat (3); PMK 164/2023 Ps. 7 ayat (5); news.ddtc.co.id/berita/nasional/1815095 (10 Nov 2025) |
 | PPh 25 tahun depan | (PPh terutang − PPh 21/22/23/24) ÷ 12 | 🟡 · ⚠️ penerapan untuk karyawan-saja (script hanya menampilkan bila ada usaha) | UU PPh Ps. 25 ayat (1) |
 | Kurang bayar | Dilunasi sebelum SPT dikirim; Coretax membuat kode billing otomatis | ✅ | Coretaxpedia DJP |
 | Lebih bayar | Restitusi atau kompensasi; pengembalian pendahuluan untuk OP tanpa usaha & OP usaha dengan LB ≤ Rp100 jt | 🟡 | UU KUP Ps. 17D; PMK 39/2018 s.t.d.t.d. PMK 209/2021 |

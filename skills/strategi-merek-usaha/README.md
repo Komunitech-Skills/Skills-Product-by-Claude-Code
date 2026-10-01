@@ -58,6 +58,13 @@ Tidak. Agent yang menjalankan script; bila tidak bisa, hitungan manual dengan ru
 Kredit sumber terbuka dan lisensi: lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
 
 ## Riwayat versi
+### Catatan revisi 1.0.3 (2026-10-01)
+- Cek nama kini membandingkan **bunyi**, bukan hanya ejaan: nama yang terdengar sama dengan pesaing yang Anda sebut (mis. "Kicks Klin" vs "Kick Clean") langsung ditandai.
+- Nama yang terbaca seperti kata Inggris berkonotasi buruk (mis. "Sneakuy" ~ "sneaky" = licik) ditandai dan tidak direkomendasikan.
+- Klaim produk (ukuran, bahan, "tanpa pengawet") yang tidak Anda sebut ditulis sebagai `[isi: …]`, bukan dikarang.
+- File kerja disimpan di folder kerja Anda (bukan folder skill) dan lokasinya disebutkan; nomor kelas merek (Nice) disebut di jawaban.
+- Tes regresi bertambah dari 25 menjadi 28.
+
 ### Catatan revisi 1.0.1 (2026-09-30)
 - Penghitung penawaran kini membaca nominal format Indonesia (`38.000`, `Rp38.000`, `38rb`, `1,5jt`, `38.000,50`); bentuk ambigu (`38.5`) ditolak dengan pesan jelas, harga sangat kecil diberi peringatan.
 - Tabel kelas Nice ditambah kelas 5, 37, 44 dan diperiksa ulang terhadap Nice Classification edisi ke-13 (versi 2026).

@@ -41,6 +41,8 @@ Tidak perlu bertanya apa pun untuk laporan pertama: langsung jalankan. Bertanya 
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Laporan sekarang
 Jalankan (Windows: `python` atau `py` sebagai ganti `python3`):
 ```bash

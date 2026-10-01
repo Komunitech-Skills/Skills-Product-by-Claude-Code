@@ -37,6 +37,8 @@ Mengubah "saya mau usaha saya lebih laku" menjadi **satu dokumen rencana 1-3 bul
 Aturan tanya: jika ada info **wajib** yang kurang, tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan pendek bernomor. Jika pengguna minta cepat, pakai default dan tulis asumsinya di bagian atas rencana.
 
 ## Langkah Kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Cek kondisi (bagian 1 rencana).** Ringkas usaha, produk andalan, margin kotor, pelanggan sekarang, kanal yang sudah jalan. Tandai angka yang belum ada sebagai "DATA BELUM ADA".
 2. **Uji layak dulu:** hitung margin per pesanan lewat script `target` (lihat Script). Jika status **RUGI** atau margin di bawah 15% (status TERLALU TIPIS), hentikan rencana iklan berbayar: sarankan perbaiki harga/HPP dulu (`hitung-hpp`, `harga-jual-marketplace`) dan buat rencana organik saja.
 3. **Tujuan SMART.** Satu tujuan utama + maksimal 2 pendukung: angka, tenggat, cara ukur. Contoh: "Naikkan pesanan online dari 120 ke 200 per bulan pada 31 Desember, dihitung dari rekap pesanan."

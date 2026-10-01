@@ -1724,6 +1724,71 @@ class UjiV108(Dasar):
 
 
 
+class UjiCekCatatan(unittest.TestCase):
+    """v1.0.11: rekap catatan kas dari teks/file TANPA database + selisih laci.
+    Verifikasi manual (warung, 1 Okt 2026):
+      pemasukan usaha = 1.250.000 + 1.840.000 + 735.000 = 3.825.000
+      beban usaha     = 66.000 + 412.500 + 110.000 + 200.000 + 170.000 = 958.500 -> hasil usaha 2.866.500
+      laci seharusnya = 500.000 + 3.090.000 - (66.000 + 412.500 + 110.000 + 100.000 + 170.000 + 150.000) = 2.581.500
+      fisik 2.580.000 -> selisih -1.500 (kurang)"""
+
+    BARIS = ["masuk;1.250.000;penjualan;tunai;jual nasi pagi", "masuk;1.840.000;penjualan;tunai;jual nasi siang",
+             "masuk;735.000;penjualan;qris;qris", "keluar;66.000;beli-stok;tunai;gas 3 tabung",
+             "keluar;412.500;beli-stok;tunai;sayur pasar", "keluar;110rb;beli-stok;tunai;ayam 2 ekor",
+             "keluar;200.000;listrik-air;transfer;token listrik", "keluar;100rb;kasbon;tunai;kasbon Dedi",
+             "keluar;170.000;gaji;tunai;gaji harian 2 org", "keluar;150rb;prive;tunai;spp anak"]
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.db = os.path.join(self.dir, "tidak-boleh-dibuat.db")
+
+    def tearDown(self):
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    def jalan(self, *argv):
+        return jalan("cek-catatan", *argv, db=self.db)
+
+    def test_warung_dari_baris(self):
+        argv = ["--laci-awal", "500rb", "--fisik", "2.580.000"]
+        for b in self.BARIS:
+            argv += ["--baris", b]
+        kode, out = self.jalan(*argv)
+        self.assertEqual(kode, 0, out)
+        self.assertEqual(out["pemasukan_usaha"], 3825000)
+        self.assertEqual(out["beban_usaha"], 958500)
+        self.assertEqual(out["hasil_usaha"], 2866500)
+        self.assertEqual(out["laci"]["seharusnya"], 2581500)
+        self.assertEqual(out["laci"]["selisih"], -1500)
+        self.assertIn("KURANG Rp 1.500", out["teks"])
+        self.assertFalse(os.path.exists(self.db), "cek-catatan tidak boleh membuat database")
+
+    def test_dari_file_dan_pecahan(self):
+        p = os.path.join(self.dir, "catatan.txt")
+        with open(p, "w", encoding="utf-8") as f:
+            f.write("# catatan warung\n" + "\n".join(self.BARIS) + "\n")
+        kode, out = self.jalan("--file", p, "--laci-awal", "500rb", "--pecahan", "100rb x25, 50rb x1, koin 30.000")
+        self.assertEqual(kode, 0, out)
+        self.assertEqual(out["laci"]["fisik"], 2580000)
+        self.assertEqual(out["laci"]["selisih"], -1500)
+
+    def test_kategori_tak_jelas_masuk_laci_bukan_hasil_usaha(self):
+        kode, out = self.jalan("--baris", "masuk;100rb;penjualan;tunai;jual", "--baris", "keluar;30rb;;;xyz abc")
+        self.assertEqual(kode, 0, out)
+        self.assertEqual(out["perlu_dicek"], [2])
+        self.assertEqual(out["hasil_usaha"], 100000)
+        self.assertEqual(out["laci"]["seharusnya"], 70000)
+        self.assertTrue(any("dianggap tunai" in a for a in out["asumsi"]))
+
+    def test_input_rusak(self):
+        kode, out = self.jalan("--baris", "keluar;abc;gaji;tunai;x")
+        self.assertEqual(kode, 1)
+        self.assertIn("Baris 1", out["error"])
+        kode, out = self.jalan()
+        self.assertEqual(kode, 1)
+        kode, out = self.jalan("--baris", "masuk;10rb;prive")
+        self.assertEqual(kode, 1)
+
+
 class UjiSingkatanFlag(unittest.TestCase):
     """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
 

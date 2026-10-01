@@ -75,9 +75,13 @@ Di folder kerja pada mesin yang menjalankan OpenClaw (komputer atau VPS milik An
 **Tim saya belum punya target. Apakah target di template bisa langsung dipakai?**
 Target di katalog hanya contoh. Target yang adil berasal dari data 3 bulan terakhir usahamu, ditambah kenaikan wajar, dan dibicarakan dengan orangnya. Kalau belum ada data, pakai bulan pertama untuk mengukur saja, lalu pasang target di bulan berikutnya.
 
+## Catatan revisi 1.1.5 (2026-10-01)
+- Rekap yang disalin/diekspor dari grup WhatsApp kini dibaca benar: cap waktu seperti `[30/09 17.05]`, `[30/09/26 08.15]`, `[17.05, 30/9/2026]`, atau `30/09/26 17.05 - Nama:` diabaikan, sehingga tanggal "30" tidak lagi terbaca sebagai omzet/menit/kali. Tes regresi bertambah menjadi 51.
+
 ## Riwayat versi
 | Versi | Tanggal | Perubahan |
 |---|---|---|
+| 1.1.5 | 2026-10-01 | `baca-teks` mengabaikan cap waktu WA (salinan pesan & ekspor, dengan/tanpa tahun, jam di depan/belakang) sebelum membaca angka; temuan uji OpenClaw 2026-10-01. 51 tes regresi. |
 | 1.1.2 | 2026-09-29 | Perbaikan uji ulang independen v1.1.1 (7/10): **supresi komplementer** di `ekspor-db --anonim`. Dalam satu divisi/kelompok, baris per orang diekspor untuk SEMUA anggota atau tidak sama sekali, sehingga orang yang disembunyikan tidak bisa dihitung balik (mis. 4 × skor divisi − jumlah 3 orang yang tampil). Angka tidak dibulatkan/diacak, hanya disembunyikan. Tes regresi mereproduksi serangan itu dan membuktikannya gagal. 49 tes regresi. |
 | 1.1.1 | 2026-09-29 | Perbaikan uji ulang independen v1.1.0 (8/10). **Privasi dasbor:** `ekspor-db --anonim` kini menerapkan k-anonimitas (`--k-anonim`, default 3): divisi kurang dari 3 orang digabung jadi "Lainnya", baris per orang hanya diekspor bila minimal 3 orang di kelompoknya punya daftar KPI yang sama, target/ambang/realisasi per orang dikosongkan. Nama KPI + jumlah orang tidak lagi bisa menunjuk satu orang (dibuktikan tes regresi). `--k-anonim 1` = perilaku lama (hanya kode) dengan peringatan. Riwayat versi dirapikan. 48 tes regresi. Uji ulang independen: 7/10 karena serangan selisih, diperbaiki di 1.1.2. |
 | 1.1.0 | 2026-09-29 | **Dasbor KPI tanpa software baru.** Perintah `ekspor-db`: rencana + skor + riwayat semua periode ke `kpi.db` (SQLite, dibaca `dasbor-lokal`/Datasette read-only), `kpi-metadata.yml` (query siap klik: perusahaan per periode, divisi & orang periode terbaru, tren per orang, KPI merah), opsi `--grist` (CSV per tabel + petunjuk impor), mode `--anonim`/`--anonim-divisi` (kode acak, kunci terpisah, kode stabil antar ekspor), peringatan dasbor hanya 127.0.0.1. Diuji dengan Datasette 0.65.5 asli. Termasuk perubahan 1.0.2. Uji ulang independen 2026-09-29: 8/10, 45/45 tes, 0 beda angka vs `skor`; temuan privasi mode anonim diperbaiki di 1.1.1. |

@@ -1214,5 +1214,58 @@ class UjiV105NamaPMaxDanTotalAlternatif(_Dasar):
         self.assertIn("totalnya menjadi Rp 152.120", w)
 
 
+class UjiV1010TujuanKampanye(_Dasar):
+    """v1.0.10 (uji OpenClaw 2026-10-01): kampanye Traffic/Awareness tanpa pesan WA tidak disarankan
+    dimatikan; dinilai dari klik/tayangan. "Kolom dibaca" ada di bagian atas teks."""
+
+    META = ("Reporting starts,Reporting ends,Ad name,Results,Result indicator,Impressions,Amount spent (IDR),Link clicks\n"
+            "2026-09-21,2026-09-27,WA - Promo Gamis,64,actions:onsite_conversion.messaging_conversation_started_7d,150000,1250000,2100\n"
+            "2026-09-21,2026-09-27,WA - Retarget,38,actions:onsite_conversion.messaging_conversation_started_7d,60000,600000,900\n"
+            "2026-09-21,2026-09-27,WA - Hijab Baru,12,actions:onsite_conversion.messaging_conversation_started_7d,80000,1100000,1000\n"
+            "2026-09-21,2026-09-27,Katalog IG Oktober,,actions:link_click,145500,850000,2000\n"
+            "2026-09-21,2026-09-27,Video Reels Brand,,reach,100000,400000,400\n")
+
+    def test_kolom_tujuan_traffic_reach_tidak_disarankan_matikan(self):
+        d = self.json_ok("analisis", str(self.tulis("meta.csv", self.META)), "--nama-hasil", "pesan WA")
+        beda = {k["nama"]: k["tujuan_lain"] for k in d["tujuan_berbeda"]}
+        self.assertEqual(beda, {"Katalog IG Oktober": "Traffic", "Video Reels Brand": "Reach"})
+        terburuk = [k["nama"] for k in d["tiga_terburuk"]]
+        self.assertNotIn("Katalog IG Oktober", terburuk)
+        self.assertFalse(any("Katalog IG" in x or "Video Reels" in x for x in d["saran"]), d["saran"])
+        # total tetap memuat semua belanja; catatan memberi biaya per pesan khusus kampanye pesan
+        self.assertEqual(Decimal(str(d["total"]["biaya"])), Decimal(4200000))
+        self.assertTrue(any("Rp 25.877" in c for c in d["catatan"]), d["catatan"])   # 2.950.000 / 114
+        teks = d["teks"]
+        self.assertIn("TUJUAN BERBEDA", teks)
+        self.assertIn("CPC Rp 425", teks)                                               # 850.000 / 2.000
+        baris = teks.splitlines()
+        self.assertTrue(baris[2].startswith("Kolom dibaca: "), baris[:4])
+        self.assertIn("tujuan='Result indicator'", baris[2])
+
+    def test_nama_kampanye_tanpa_kolom_tujuan(self):
+        data = ("WA Promo,500000,40000,600,20\nTraffic - Katalog,300000,50000,900,0\n"
+                "Awareness Reels,200000,80000,100,0\nWA Lama Boros,250000,10000,90,0\n")
+        d = self.json_ok("analisis", str(self.tulis("n.csv", KOLOM_SEDERHANA + data)))
+        self.assertEqual({k["nama"] for k in d["tujuan_berbeda"]}, {"Traffic - Katalog", "Awareness Reels"})
+        self.assertTrue(any("WA Lama Boros" in x and "hentikan" in x for x in d["saran"]), d["saran"])
+        self.assertFalse(any("Traffic - Katalog" in x for x in d["saran"]), d["saran"])
+
+    def test_kolom_tujuan_pesan_mengalahkan_nama(self):
+        teks = ("Campaign name,Objective,Cost,Impressions,Clicks,Conversions\n"
+                "Traffic WA Promo,OUTCOME_ENGAGEMENT_MESSAGES,300000,50000,900,0\n"
+                "WA Utama,Messages,500000,40000,600,20\n")
+        d = self.json_ok("analisis", str(self.tulis("o.csv", teks)))
+        # Sel tujuan menyebut pesan (Meta ODAX: Engagement + Messages) -> tetap kampanye pesan,
+        # walau namanya memuat "Traffic"; 0 hasil -> tetap disarankan ditinjau.
+        self.assertEqual(d["tujuan_berbeda"], [])
+        self.assertTrue(any("Traffic WA Promo" in x and "hentikan" in x for x in d["saran"]), d["saran"])
+
+    def test_tujuan_lain_dengan_hasil_tetap_dinilai_dengan_catatan(self):
+        data = ("WA A,100000,10000,200,20\nWA B,100000,10000,200,20\nTraffic Katalog,300000,50000,900,2\n")
+        d = self.json_ok("analisis", str(self.tulis("h.csv", KOLOM_SEDERHANA + data)))
+        self.assertEqual(d["tujuan_berbeda"], [])
+        self.assertTrue(any("bertujuan Traffic" in x and "CPC" in x for x in d["saran"]), d["saran"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

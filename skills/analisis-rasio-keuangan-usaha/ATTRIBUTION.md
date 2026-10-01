@@ -34,6 +34,12 @@
 Penggunaan tunduk pada `LISENSI.txt` dalam paket pembelian, ditambah ketentuan MIT pada bagian yang disebut di atas.
 
 ## Riwayat versi
+### v1.0.4 (2026-10-01): revisi dari uji OpenClaw asli (paket kantor-manajemen, skenario 03)
+- Pos baru `utang_bank_pendek` (`--utang-bank-pendek`, baris "Utang bank jangka pendek"/"Bagian lancar utang bank"/"Kredit modal kerja") terpisah dari utang lancar lain dan ikut total utang lancar.
+- Pemeriksaan kas vs utang jatuh tempo dengan tingkat risiko bertingkat (RENDAH/RENDAH–SEDANG/SEDANG/TINGGI); tidak pernah "tidak ada risiko". Kas < utang bank jatuh tempo → rasio kas maks. 🟡, saran prioritas, kesiapan kredit tidak "ANGKA CUKUP SEHAT".
+- Skala usaha dari penjualan setahun (PP 7/2021); skala menengah/besar memakai ambang rasio kas & cakupan bunga yang lebih ketat.
+- Versi script diselaraskan (sebelumnya `VERSI = "1.0.2"` padahal katalog 1.0.3). Tes regresi 82 → 90 (I1–I8).
+
 ### v1.0.2 (2026-09-26): revisi dari uji ulang v1.0.1 (skor 9)
 - Koma ribuan kini dideteksi secara umum. Pada tabel berpemisah koma, sel rupiah yang hanya berisi 1–3 digit (mis. `Kas,250,000` pada tabel 2 periode) ditolak dengan GALAT; sebelumnya terbaca Rp 250 + Rp 0 diam-diam. Baris Bulan/Hari dikecualikan. Pada tabel `;`/tab, nilai < Rp 1.000 diberi catatan dan status SEMENTARA. Baris yang kolomnya kurang dari judul diberi catatan "tidak diisi (bukan nol)".
 - Kosong ≠ nol. Kas, persediaan (kecuali jasa), dan aset tetap yang tidak diisi tidak lagi dianggap Rp 0 saat menghitung aset lancar, total aset, dan modal. Pos turunan itu tidak dihitung ("tulis 0 bila memang nol"), status menjadi DATA BELUM CUKUP, dan tidak ada lagi kesimpulan "modal habis" dari data kosong. Angka 0 yang ditulis pengguna tetap dihitung.

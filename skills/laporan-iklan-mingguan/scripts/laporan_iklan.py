@@ -424,6 +424,54 @@ KOLOM_PERIODE_AKHIR = {"reporting ends", "end date", "tanggal selesai", "tanggal
 KOLOM_MATA_UANG = {"currency", "currency code", "mata uang", "kode mata uang", "account currency",
                    "account currency code"}
 
+# v1.0.10: tujuan (objective) kampanye. Kampanye bertujuan Traffic/Awareness/Reach/Video views/
+# Engagement memang tidak dirancang menghasilkan pesan/pembelian, jadi tidak dinilai dari "hasil".
+KOLOM_TUJUAN = {"objective", "campaign objective", "tujuan", "tujuan kampanye", "tujuan iklan",
+                "result indicator", "indikator hasil", "result type", "jenis hasil", "optimization goal",
+                "tujuan optimasi", "campaign type", "jenis kampanye", "tipe kampanye"}
+# (label, kata kunci di sel kolom tujuan, kata kunci di NAMA kampanye/iklan - lebih ketat)
+TUJUAN_LAIN = [
+    ("Traffic", ["traffic", "outcome traffic", "link click", "link clicks", "landing page view",
+                 "landing page views", "lalu lintas", "klik tautan", "kunjungan profil", "profile visit"],
+     ["traffic", "lalu lintas"]),
+    ("Awareness", ["awareness", "outcome awareness", "brand awareness", "kesadaran", "kesadaran merek"],
+     ["awareness", "brand awareness", "kesadaran merek"]),
+    ("Reach", ["reach", "jangkauan"], ["reach", "jangkauan"]),
+    ("Video views", ["video views", "video view", "thruplay", "tayangan video", "video"],
+     ["video views", "thruplay", "tayangan video"]),
+    ("Engagement", ["engagement", "outcome engagement", "post engagement", "interaksi", "keterlibatan"],
+     ["engagement", "keterlibatan"]),
+]
+
+
+KATA_TUJUAN_HASIL = ["message", "messages", "messaging", "pesan", "whatsapp", "conversation", "conversations",
+                     "percakapan", "lead", "leads", "prospek", "purchase", "purchases", "pembelian",
+                     "conversion", "conversions", "konversi", "sales", "penjualan", "app install", "app installs"]
+
+
+def _norm_tujuan(teks):
+    return " ".join(re.sub(r"[_:.\-/|]+", " ", str(teks or "").lower()).split())
+
+
+def deteksi_tujuan_lain(isi_kolom_tujuan, nama_nama):
+    """Label tujuan non-konversi ('Traffic', ...) atau None. Sel kolom tujuan diutamakan;
+    bila kolom itu ada dan berisi tujuan konversi/pesan, nama kampanye TIDAK dipakai."""
+    sel = _norm_tujuan(isi_kolom_tujuan)
+    if sel and any(_ada_kata(k, sel) for k in KATA_TUJUAN_HASIL):
+        return None        # mis. Meta "OUTCOME_ENGAGEMENT" + pesan WA = tetap kampanye pesan
+    if sel:
+        for label, kunci_sel, _ in TUJUAN_LAIN:
+            if any(_ada_kata(k, sel) for k in kunci_sel):
+                return label
+        return None
+    for nama in nama_nama:
+        n = _norm_tujuan(nama)
+        for label, _, kunci_nama in TUJUAN_LAIN:
+            if any(_ada_kata(k, n) for k in kunci_nama):
+                return label
+    return None
+
+
 AMBANG_FINGERPRINT = 2
 FINGERPRINT_PLATFORM = [
     ("Meta Ads (Facebook/Instagram)", [("ad set name", 2), ("reach", 1), ("link clicks", 1),
@@ -827,6 +875,7 @@ def analisis_file(path, override, args):
         catatan.append("File berformat UTF-16 (CSV ala Excel) dan sudah dibaca otomatis.")
 
     kolom_uang = next((h for h in header if _norm(h) in KOLOM_MATA_UANG), None)
+    kolom_tujuan = next((h for h in header if h and _tanpa_label_uang(_norm(h)) in KOLOM_TUJUAN), None)
     kolom_awal = next((h for h in header if _norm(h) in KOLOM_PERIODE_AWAL), None)
     kolom_akhir = next((h for h in header if _norm(h) in KOLOM_PERIODE_AKHIR), None)
 
@@ -912,6 +961,8 @@ def analisis_file(path, override, args):
                  "induk": tuple(" ".join((r.get(h) or "").split()) for h in kolom_induk),
                  "label_lemah": label_total[0] if label_total else None,
                  "tgl_ok": [], "tgl_rusak": []}
+        nilai["tujuan_lain"] = deteksi_tujuan_lain(r.get(kolom_tujuan) if kolom_tujuan else "",
+                                                   [nama] + [x for x in nilai["induk"] if x])
         if st_biaya == "kosong":
             kosong_per_kolom["biaya"].append(nilai)
         for peran in peran_angka[1:]:
@@ -1268,7 +1319,10 @@ def analisis_file(path, override, args):
     # --- agregasi per nama kampanye ---
     per_kampanye = defaultdict(lambda: {"biaya": NOL, "tayangan": NOL, "klik": NOL,
                                         "hasil": NOL, "nilai_hasil": NOL})
+    tujuan_per_kampanye = {}
     for x in rekaman:
+        if x.get("tujuan_lain") and x["nama"] not in tujuan_per_kampanye:
+            tujuan_per_kampanye[x["nama"]] = x["tujuan_lain"]
         k = per_kampanye[x["nama"]]
         k["biaya"] += x["biaya"] * kurs
         k["nilai_hasil"] += x["nilai_hasil"] * kurs
@@ -1281,7 +1335,8 @@ def analisis_file(path, override, args):
     for nama, v in per_kampanye.items():
         for kk in total:
             total[kk] += v[kk]
-        daftar_kampanye.append({"nama": nama, **metrik(v, ada_nilai)})
+        daftar_kampanye.append({"nama": nama, **metrik(v, ada_nilai),
+                                "tujuan_lain": tujuan_per_kampanye.get(nama)})
     t = metrik(total, ada_nilai)
     for idx, b_baris, dihitung in alt_total:                     # v1.0.5 (P-4)
         b_rp = b_baris * kurs
@@ -1366,14 +1421,29 @@ def analisis_file(path, override, args):
         peringatan.append(f"ROAS {fmt_x(t['roas'])} tidak wajar. Kemungkinan kolom biaya ('{kolom['biaya']}') "
                           f"atau nilai ('{kolom.get('nilai_hasil')}') salah pilih. Periksa sebelum dikirim.")
 
-    terbaik, terburuk, dijeda = pilih_terbaik_terburuk(daftar_kampanye, args.top)
+    # v1.0.10: kampanye bertujuan lain (Traffic/Awareness/...) TANPA hasil tidak dinilai dari hasil
+    tujuan_berbeda = sorted((k for k in daftar_kampanye if k.get("tujuan_lain") and k["hasil"] <= 0
+                             and k["biaya"] > 0), key=lambda k: (-k["biaya"], k["nama"]))
+    id_beda = {id(k) for k in tujuan_berbeda}
+    dinilai = [k for k in daftar_kampanye if id(k) not in id_beda]
+    terbaik, terburuk, dijeda = pilih_terbaik_terburuk(dinilai, args.top)
     if dijeda:
         catatan.append(f"{len(dijeda)} kampanye tanpa biaya minggu ini (mis. dijeda) tidak dinilai: "
                        f"{daftar_nama([k['nama'] for k in dijeda])}.")
-    saran = susun_saran(daftar_kampanye, t, nama_hasil, terbaik)
+    saran = susun_saran(dinilai, t, nama_hasil, terbaik)
+    if tujuan_berbeda:
+        biaya_beda = sum((k["biaya"] for k in tujuan_berbeda), NOL)
+        sisa_biaya = t["biaya"] - biaya_beda
+        teks_beda = (f"{len(tujuan_berbeda)} kampanye bertujuan lain ({daftar_nama([k['nama'] for k in tujuan_berbeda])}; "
+                     f"belanja {fmt_rp(biaya_beda)}) dinilai dari klik/tayangan, bukan {nama_hasil}")
+        if t["hasil"] > 0 and sisa_biaya > 0:
+            teks_beda += (f". Biaya per {nama_hasil} di atas ikut menghitung belanja itu; khusus kampanye "
+                          f"bertujuan {nama_hasil}: {fmt_rp(bagi(sisa_biaya, t['hasil']))}")
+        catatan.append(teks_beda + ".")
 
     kolom_dipakai = dict(kolom)
     kolom_dipakai["mata_uang"] = kolom_uang
+    kolom_dipakai["tujuan"] = kolom_tujuan
     return {
         "platform_terdeteksi": platform_terdeteksi,
         "mata_uang": mata_uang_final,
@@ -1395,6 +1465,7 @@ def analisis_file(path, override, args):
         "per_kampanye": sorted(daftar_kampanye, key=lambda k: -k["biaya"]),
         "tiga_terbaik": terbaik,
         "tiga_terburuk": terburuk,
+        "tujuan_berbeda": tujuan_berbeda,
         "saran": saran,
         "catatan": catatan,
         "peringatan": peringatan,
@@ -1449,6 +1520,11 @@ def susun_saran(daftar, t, nama_hasil, terbaik):
                 kalimat = (f"Tinjau/matikan iklan '{k['nama']}': biaya per {nama_hasil} "
                            f"{fmt_rp(k['biaya_per_hasil'])}, {fmt_x(k['biaya_per_hasil'] / rata)} rata-rata "
                            f"semua iklan ({fmt_rp(rata)}).")
+                if k.get("tujuan_lain"):
+                    kalimat = (f"Iklan '{k['nama']}' bertujuan {k['tujuan_lain']}, jadi wajar lebih mahal per "
+                               f"{nama_hasil} ({fmt_rp(k['biaya_per_hasil'])}, {fmt_x(k['biaya_per_hasil'] / rata)} "
+                               f"rata-rata {fmt_rp(rata)}); nilai juga dari CPC {fmt_rp(k['cpc'])} & CTR "
+                               f"{fmt_persen(k['ctr_persen'])} sebelum memutuskan.")
                 if k["hasil"] < AMBANG_SAMPEL_KECIL:
                     kalimat += (f" Baru {fmt_angka(k['hasil'])} {nama_hasil}, sampel kecil: pantau 1 minggu "
                                 "lagi sebelum memutuskan.")
@@ -1520,6 +1596,13 @@ def _blok_peringatan(L, peringatan):
 
 def susun_teks(h, pembanding=None, omzet=None):
     L = [f"LAPORAN IKLAN MINGGUAN — {h['platform_terdeteksi']}", f"Periode: {h['periode']['label']}"]
+    kd = h["kolom_dipakai"]
+    # v1.0.10: "Kolom dibaca" di bagian atas (bukan ekor Catatan) supaya selalu ikut terkirim.
+    L.append("Kolom dibaca: " + ", ".join(
+        f"{lbl}='{kd[p]}'" for p, lbl in (("nama", "nama"), ("biaya", "biaya"), ("tayangan", "tayangan"),
+                                           ("klik", "klik"), ("hasil", "hasil"), ("nilai_hasil", "nilai"),
+                                           ("tujuan", "tujuan"))
+        if kd.get(p)) + ".")
     _blok_peringatan(L, h.get("peringatan", []))
     L.append("")
     t = h["total"]
@@ -1563,6 +1646,15 @@ def susun_teks(h, pembanding=None, omzet=None):
                 L.append(f"{i}. {k['nama']}: {fmt_rp(k['biaya_per_hasil'])}/{nh} "
                          f"({fmt_angka(k['hasil'])} {nh}, {fmt_rp(k['biaya'])})")
 
+    if h.get("tujuan_berbeda"):
+        L.append("")
+        L.append(f"TUJUAN BERBEDA (Traffic/Awareness dll. — tidak dinilai dari {nh}, jangan dimatikan hanya karena 0 {nh})")
+        for i, k in enumerate(h["tujuan_berbeda"], 1):
+            L.append(f"{i}. {k['nama']} [{k['tujuan_lain']}]: {fmt_rp(k['biaya'])} | Klik {fmt_angka(k['klik'])} "
+                     f"| CPC {fmt_rp(k['cpc'])} | CTR {fmt_persen(k['ctr_persen'])} | CPM {fmt_rp(k['cpm'])}")
+        L.append(f"   Bandingkan dengan CPC rata-rata akun {fmt_rp(t['cpc'])}. Matikan hanya bila tujuan itu "
+                 "memang tidak dibutuhkan; untuk mendatangkan pesan, pakai kampanye bertujuan pesan/konversi.")
+
     L.append("")
     L.append("SARAN")
     for i, s in enumerate(h["saran"], 1):
@@ -1576,11 +1668,6 @@ def susun_teks(h, pembanding=None, omzet=None):
                        "tidak dihitung dua kali.")
     if omzet:
         catatan.append(omzet["catatan"])
-    kd = h["kolom_dipakai"]
-    catatan.append("Kolom dibaca: " + ", ".join(
-        f"{lbl}='{kd[p]}'" for p, lbl in (("nama", "nama"), ("biaya", "biaya"), ("tayangan", "tayangan"),
-                                           ("klik", "klik"), ("hasil", "hasil"), ("nilai_hasil", "nilai"))
-        if kd.get(p)) + ".")
     L.append("")
     L.append("Catatan:")
     for c in catatan:

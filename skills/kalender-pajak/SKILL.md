@@ -18,7 +18,7 @@ Memberi pemilik usaha, admin, dan orang pribadi **daftar tanggal pasti** kapan h
 - "Ingatkan saya tiap bulan lewat Telegram."
 
 ## Kapan TIDAK digunakan
-- Menghitung **berapa** pajaknya → `pph-final-umkm` (PPh 0,5%), `pph21-ter` (gaji), `hitung-ppn` (PPN). Skill ini boleh merujuk hasilnya.
+- Menghitung **berapa** pajaknya → `pph-final-umkm` (PPh 0,5%), `pph21-ter` (gaji), `hitung-ppn` (PPN) **bila skill itu terpasang** (cek daftar skill yang tersedia; bila tidak ada, katakan bahwa besaran pajak di luar cakupan skill ini, jangan mengarang angka). Skill ini boleh merujuk hasilnya.
 - Membuat kode billing, mengisi SPT, atau login Coretax atas nama pengguna → jelaskan langkah umum saja; skill tidak mengakses Coretax.
 - Sanksi/denda keterlambatan, pembetulan SPT, pemeriksaan, keberatan → arahkan ke konsultan pajak/AR.
 - Pajak daerah (PBB, BPHTB, pajak restoran/hotel, pajak kendaraan) → di luar cakupan; tenggatnya diatur Perda masing-masing.
@@ -29,6 +29,7 @@ Memberi pemilik usaha, admin, dan orang pribadi **daftar tanggal pasti** kapan h
 |---|---|---|
 | Profil: orang pribadi/badan, UMKM 0,5% atau tarif umum, PKP atau bukan, punya karyawan, memotong PPh 23/4(2) | Ya | tanyakan; bila pengguna ingin cepat: `op-umkm` + sebut asumsi |
 | Tahun & bulan mulai | Tidak | tahun berjalan, Januari (12 bulan) |
+| Orang pribadi PPh 0,5%: omzet per bulan sejak Januari, atau perkiraan omzet setahun | Tidak | Tidak dihitung — bila pengguna menyebutnya, **wajib** dipakai (`--omzet-bulanan` / `--omzet-setahun`) |
 | Format: tabel / checklist / .ics / CSV / pengingat OpenClaw | Tidak | tabel |
 
 Info kurang → tanyakan **sekali** dalam satu pesan bernomor (maks. 4 pertanyaan), mis.: (1) orang pribadi atau badan (PT/CV/koperasi)? (2) pakai PPh final 0,5% atau pembukuan/tarif umum? (3) sudah PKP (memungut PPN)? (4) punya karyawan / membayar jasa atau sewa yang dipotong PPh 23/4(2)?
@@ -50,20 +51,22 @@ Kewajiban tunggal juga boleh dipakai langsung sebagai profil: `ppn`, `pph21`, `u
 
 ## Langkah kerja
 1. Tentukan profil dari cerita pengguna (tabel di atas). Sebut asumsi yang dipakai.
-2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+2. Jalankan script. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
    python3 <folder-skill-ini>/scripts/kalender_pajak.py --profil badan-pkp,pemberi-kerja --tahun 2026
    ```
    - Mulai bulan tertentu: `--bulan-mulai 10` (atau `Okt`), panjang `--jumlah-bulan 1-24` (default 12).
    - Yang jatuh tempo dekat: `--hari-ini 2026-09-25` (atau `--hari-ini hari-ini`), `--rentang 14` (default).
    - Checklist per bulan: `--format checklist`. Kalender: `--format ics --keluar kalender-pajak.ics` (tambah `--acara-pengingat` untuk pengguna Google Calendar). Juga `csv`, `json`.
+   - **Orang pribadi PPh 0,5% yang menyebut omzet** ("omzet setahun kira-kira 600 juta", "Jan 48jt, Feb 45jt, …"): tambahkan `--omzet-setahun 600jt` (dianggap merata) atau `--omzet-bulanan "48jt;45jt;…"` (mulai Januari). Script menghitung bulan pertama omzet kumulatif **melewati** Rp500 juta, porsi omzet yang kena di bulan itu, dan tanggal setoran pertamanya. **Jangan menyimpulkan sendiri** kapan batas Rp500 juta terlewati — kutip blok "Kapan omzet kumulatif melewati Rp500 juta" apa adanya; bila omzet tidak diketahui, katakan belum bisa dipastikan dan tanyakan omzetnya.
    - Daftar profil: `--daftar-profil`. Libur tahun yang belum ada datanya: `--libur libur-2028.csv` (kolom `tanggal,jenis,keterangan`) — dilabeli "data libur dari pengguna" dan PERINGATAN tahun itu tetap tampil.
 3. Salin tabel/checklist dari script **apa adanya** (jangan ubah tanggal). Tambahkan 1–2 kalimat sederhana, mis. "Setor PPh 21 masa Juli bergeser ke Selasa 18 Agustus karena 15–17 Agustus libur."
 4. Untuk .ics: berikan file + cara impor (Google Calendar: Setelan → Impor & ekspor → Impor; Outlook: File → Buka → Impor). Sampaikan apa adanya (jangan janji lebih):
    - File memuat pengingat H-3 & H-1 pukul 09.00. **Apple Calendar & Outlook** biasanya memakainya; **Google Calendar sering mengabaikan pengingat dari file impor** dan memakai notifikasi default kalender. Untuk Google: sarankan atur notifikasi default kalender tujuan (mis. 3 hari & 1 hari sebelumnya), atau buat file dengan `--acara-pengingat` (menambah acara "Pengingat H-3/H-1" terpisah yang pasti terlihat di kalender).
    - Impor ulang: setiap acara punya UID tetap, sehingga Apple/Outlook umumnya memperbarui acara yang sama; **Google Calendar bisa tetap membuat duplikat**. Sarankan impor ke kalender khusus "Pajak" agar mudah dihapus lalu diimpor ulang.
 5. Untuk pengingat OpenClaw: ikuti `references/openclaw-jadwal.md` (Telegram default; tunjukkan perintah dan minta "Lanjut? (ya/tidak)").
-6. Selalu sertakan peringatan (bila ada) dan disclaimer dari output script.
+6. Selalu sertakan peringatan (bila ada) dan disclaimer dari output script — salin apa adanya ke balasan chat (tanggal, alasan geser, dasar aturan), jangan diringkas jadi "sesuai aturan terbaru".
+   **Kode setor (KAP-KJS):** skill ini hanya memuat satu kode, yaitu deposit pajak **KAP 411618, KJS 100**. Kode lain (mis. untuk PPh final UMKM, PPh 21, PPN) **jangan disebut sama sekali** — katakan "pilih jenis pajak yang sesuai di menu Pembayaran Coretax; kode billing dibuat otomatis". Menyebut KAP dari ingatan berisiko salah (mis. 411125 adalah PPh 25/29 orang pribadi, bukan PPh final UMKM).
 7. **Fallback tanpa Python:** susun manual dengan tabel aturan di bawah + daftar libur di `references/libur-nasional-2026.csv` / `-2027.csv`; beri tahu bahwa disusun manual dan periksa ulang tiap pergeseran.
 
 ## Aturan tenggat (PMK 81/2024, berlaku 1 Jan 2025; dicocokkan dengan naskah resmi 2026-09-26)
@@ -125,7 +128,8 @@ Contoh lengkap: `examples/uji-pembuat-01-cv-pkp-okt-des.md`.
 - [ ] Profil & asumsi disebut (OP/badan, 0,5%/tarif umum, PKP, karyawan, pemotong).
 - [ ] Tanggal disalin dari script tanpa diubah; pergeseran dijelaskan.
 - [ ] Peringatan "data libur belum ada" disampaikan bila muncul.
-- [ ] Tidak menyebut besaran pajak; rujuk skill hitung terkait bila ditanya.
+- [ ] Tidak menyebut besaran pajak; rujuk skill hitung terkait (bila terpasang) bila ditanya.
+- [ ] Tidak ada KAP/KJS selain 411618-100 (deposit); kapan omzet melewati Rp500 juta hanya dari blok script (atau tidak disimpulkan).
 - [ ] Profil PKP: batas unggah faktur pajak keluaran (tgl 20) ikut disebut.
 - [ ] .ics: tidak menjanjikan pengingat pasti muncul di Google Calendar atau impor ulang pasti tanpa duplikat.
 - [ ] Butir PERLU REVIEW (BPA1 tanpa geser, unggah faktur tidak bergeser) tidak dinyatakan sebagai kepastian mutlak.
@@ -138,6 +142,6 @@ Contoh lengkap: `examples/uji-pembuat-01-cv-pkp-okt-des.md`.
 - File `--libur` boleh berisi keterangan berkoma (sebaiknya diberi tanda kutip; tanpa kutip pun digabung utuh).
 - Libur daerah/cuti bersama tambahan yang diumumkan belakangan, atau **perpanjangan tenggat khusus dari DJP** atau keringanan sanksi (mis. KEP-55/PJ/2026: jatuh tempo SPT Tahunan OP 2025 tetap 31 Mar 2026, sanksi denda/bunga dihapus bila lapor/bayar s.d. 30 Apr 2026, khusus orang pribadi — hanya diberi catatan, tanggal tidak diubah) tidak otomatis masuk → minta pengguna cek pengumuman DJP.
 - Tanggal yang ditampilkan adalah **batas terakhir**; sarankan setor/lapor 2–3 hari kerja sebelumnya karena Coretax dan bank bisa padat menjelang tenggat.
-- Kode billing dibuat di Coretax (menu Pembayaran) atau lewat saldo **deposit pajak** (KAP 411618, KJS 100); skill tidak membuat kode billing.
+- Kode billing dibuat di Coretax (menu Pembayaran) atau lewat saldo **deposit pajak** (KAP 411618, KJS 100 — satu-satunya kode yang boleh disebut); skill tidak membuat kode billing.
 
 _Bukan nasihat pajak. Dasar: PMK 81/2024, PP 55/2022 jo. PP 20/2026, PER-2/PJ/2024, PER-11/PJ/2025, SKB 3 Menteri libur 2026 & 2027; pasal tenggat dicocokkan dengan naskah resmi di pajak.go.id 2026-09-26, sebagian butir lain dari sumber sekunder. Skill ini tidak menghitung/membulatkan pajak; angka dari skill lain belum dicocokkan dengan Coretax. Cek pengumuman DJP terbaru dan konsultasikan dengan konsultan pajak atau AR._

@@ -40,6 +40,8 @@ Datasette **tidak wajib**. Untuk canned query, `scripts/dasbor.py query ...` sud
 Bila pengguna mau tampilan browser: pasang Datasette sekali mengikuti `docs/panduan-datasette.md` (pip/pipx dari PyPI resmi, **bukan** curl-pipe-sh). Skill akan cek dulu apakah `datasette` sudah ada di PATH (`dasbor.py datasette`); kalau belum, tunjukkan perintah instalasi dari panduan itu, jangan memasangkan sendiri tanpa persetujuan pengguna.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Semua perintah lintas OS (Windows: `python`/`py`). Tambahkan `--json` untuk hasil terstruktur.
 
 ### A. Temukan database yang ada

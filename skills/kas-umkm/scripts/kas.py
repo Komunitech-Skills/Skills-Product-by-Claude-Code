@@ -45,7 +45,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 APLIKASI = "kas-umkm"
-VERSI = "1.0.8"
+VERSI = "1.0.11"
 SKEMA = 1
 BATAS_NOMINAL = 10 ** 12            # Rp 1 triliun: di atas ini pasti salah ketik
 NOMINAL_BESAR = 50 * 10 ** 6        # di atas ini diberi catatan "pastikan jumlah nolnya benar"
@@ -2045,6 +2045,144 @@ PENYEBAB_LEBIH = ["penjualan tunai belum dicatat", "kembalian kurang diberikan k
                   "rekening lain", "salah hitung uang"]
 
 
+def cmd_cek_catatan(args):
+    """v1.0.11: rekap sekali-jalan dari catatan kas teks/file TANPA database (tidak menyimpan apa pun).
+    Hitung pemasukan, beban usaha, hasil usaha (laba kas), uang pemilik/kasbon/pinjaman, uang laci seharusnya,
+    dan selisih dengan hitungan fisik."""
+    baris = list(args.baris or [])
+    if args.file:
+        try:
+            with open(args.file, encoding="utf-8-sig") as f:
+                for x in f.read().splitlines():
+                    if x.strip() and not x.strip().startswith("#"):
+                        baris.append(x.strip())
+        except UnicodeDecodeError:
+            raise Gagal("File '%s' bukan teks UTF-8. Simpan ulang sebagai teks biasa (.txt/.csv)." % args.file)
+    if not baris:
+        raise Gagal("Belum ada catatan. Isi --baris \"arah;jumlah;kategori;metode;catatan\" (bisa diulang) atau "
+                    "--file berisi baris berformat sama.")
+    if args.fisik and args.pecahan:
+        raise Gagal("Isi salah satu: --fisik atau --pecahan.")
+    laci_awal = parse_nominal(args.laci_awal, boleh_nol=True) if args.laci_awal else 0
+    entri, asumsi, perlu_dicek = [], [], []
+    for no, teks in enumerate(baris, 1):
+        b = urai_baris(teks)
+        if b["arah"] not in ("masuk", "keluar"):
+            raise Gagal("Baris %d ('%s'): arah harus masuk atau keluar." % (no, teks))
+        try:
+            jumlah = parse_nominal(b["jumlah"])
+        except Gagal as e:
+            raise Gagal("Baris %d ('%s'): %s" % (no, teks, e.pesan))
+        ket = bersih(b["catatan"], 200)
+        if normal(b["kategori"]) == "pindah":
+            kat, sumber = "pindah", "dipilih"
+        elif b["kategori"]:
+            kat = kode_kategori(b["kategori"])
+            if not kat:
+                raise Gagal("Baris %d: kategori '%s' tidak dikenal. Pilih: %s, pindah." % (
+                    no, b["kategori"], ", ".join(KATEGORI)))
+            sumber = "dipilih"
+        else:
+            kat, kata = tebak_kategori(ket, b["arah"])
+            sumber = "ditebak" if kat else None
+            if kat:
+                asumsi.append("Baris %d '%s': kategori ditebak %s (dari kata '%s')." % (
+                    no, ket or rp(jumlah), label_kat(kat, b["arah"]), kata))
+        if kat and b["arah"] not in SEMUA_KATEGORI[kat][1]:
+            raise Gagal("Baris %d: kategori %s tidak bisa untuk uang %s." % (no, label_kat(kat), b["arah"]))
+        if b["metode"]:
+            metode = kode_metode(b["metode"])
+        else:
+            metode = "tunai"
+            asumsi.append("Baris %d '%s': cara bayar tidak disebut, dianggap tunai (lewat laci)." % (no, ket or rp(jumlah)))
+        e = {"no": no, "arah": b["arah"], "jumlah": jumlah, "kategori": kat or "perlu-dicek",
+             "label": label_kat(kat or "perlu-dicek", b["arah"]), "metode": metode, "catatan": ket,
+             "kategori_sumber": sumber or "belum jelas"}
+        if not kat:
+            perlu_dicek.append(e)
+        entri.append(e)
+
+    def jml(f):
+        return sum(x["jumlah"] for x in entri if f(x))
+
+    grup = lambda x: SEMUA_KATEGORI[x["kategori"]][2]
+    pemasukan = jml(lambda x: grup(x) == "usaha" and x["arah"] == "masuk")
+    beban = jml(lambda x: grup(x) == "usaha" and x["arah"] == "keluar")
+    per_kat = OrderedDict()
+    for x in entri:
+        k = (x["label"], x["arah"], grup(x))
+        per_kat[k] = per_kat.get(k, 0) + x["jumlah"]
+    tunai_masuk = jml(lambda x: x["metode"] == "tunai" and x["arah"] == "masuk")
+    tunai_keluar = jml(lambda x: x["metode"] == "tunai" and x["arah"] == "keluar")
+    seharusnya = laci_awal + tunai_masuk - tunai_keluar
+    non_tunai = OrderedDict()
+    for x in entri:
+        if x["metode"] != "tunai":
+            k = (METODE[x["metode"]][0], x["arah"])
+            non_tunai[k] = non_tunai.get(k, 0) + x["jumlah"]
+    fisik, rincian_fisik, pr = None, None, []
+    if args.fisik:
+        fisik = parse_nominal(args.fisik, boleh_nol=True)
+    elif args.pecahan:
+        fisik, rincian_fisik, pr = urai_pecahan(args.pecahan)
+    selisih = None if fisik is None else fisik - seharusnya
+
+    t = ["CEK CATATAN KAS (hitungan sekali jalan, BELUM disimpan ke buku kas)", ""]
+    t.append("| No | Arah | Jumlah | Kategori | Cara bayar | Catatan |")
+    t.append("|---:|---|---:|---|---|---|")
+    for x in entri:
+        t.append("| %d | %s | %s | %s%s | %s | %s |" % (
+            x["no"], x["arah"], rp(x["jumlah"]), x["label"],
+            " (ditebak)" if x["kategori_sumber"] == "ditebak" else "", METODE[x["metode"]][0], x["catatan"] or "-"))
+    t += ["", "Per kategori:"]
+    for (lab, arah, _g), v in per_kat.items():
+        t.append("- %s (%s): %s" % (lab, arah, rp(v)))
+    t += ["", "HASIL USAHA (laba kas):",
+          "- Pemasukan usaha: %s" % rp(pemasukan),
+          "- Pengeluaran usaha (beban): %s" % rp(beban),
+          "- Hasil usaha: %s%s" % (rp(pemasukan - beban), "  (RUGI)" if pemasukan < beban else "")]
+    luar = [(lab, arah, v) for (lab, arah, g), v in per_kat.items() if g != "usaha"]
+    if luar:
+        t.append("- Tidak dihitung sebagai beban/pendapatan usaha: " + ", ".join(
+            "%s %s" % (lab, rp(v)) for lab, arah, v in luar))
+    t += ["", "UANG LACI (tunai):",
+          "- Uang laci awal: %s%s" % (rp(laci_awal), "" if args.laci_awal else " (tidak disebut, dianggap Rp 0)"),
+          "- + Uang tunai masuk: %s" % rp(tunai_masuk),
+          "- - Uang tunai keluar: %s" % rp(tunai_keluar),
+          "- = Uang laci seharusnya: %s" % rp(seharusnya)]
+    if fisik is not None:
+        t.append("- Uang laci dihitung (fisik): %s" % rp(fisik))
+        if selisih == 0:
+            t.append("- Selisih: Rp 0 (COCOK)")
+        else:
+            t.append("- Selisih: %s %s" % ("KURANG" if selisih < 0 else "LEBIH", rp(abs(selisih))))
+            sebab = PENYEBAB_KURANG if selisih < 0 else PENYEBAB_LEBIH
+            t.append("- Kemungkinan penyebab: " + "; ".join(sebab))
+    if non_tunai:
+        t += ["", "Tidak lewat laci (cek di rekening/aplikasi): " + ", ".join(
+            "%s %s %s" % (lab, arah, rp(v)) for (lab, arah), v in non_tunai.items())]
+    catatan_akhir = ["Hasil usaha = laba kas hari itu: belanja bahan dianggap habis terpakai pada hari yang sama "
+                     "(stok sisa tidak dihitung).",
+                     "Kasbon karyawan = piutang; prive = ambil pribadi; modal/pinjaman = bukan pendapatan. Semuanya "
+                     "tetap mengurangi/menambah uang laci bila lewat laci."]
+    if perlu_dicek:
+        catatan_akhir.insert(0, "PERLU DICEK: baris %s belum jelas kategorinya - ikut hitungan laci, TIDAK ikut hasil "
+                                "usaha. Tanyakan kategorinya." % ", ".join(str(x["no"]) for x in perlu_dicek))
+    t += ["", "Catatan:"] + ["- " + c for c in catatan_akhir + asumsi + pr]
+    t.append("Belum disimpan. Untuk mulai buku kas: catat --baris ... (pratinjau dulu, simpan setelah setuju).")
+    teks = "\n".join(t)
+    data = {"ok": True, "mode": "baca", "entri": entri, "pemasukan_usaha": pemasukan, "beban_usaha": beban,
+            "hasil_usaha": pemasukan - beban,
+            "per_kategori": [{"kategori": lab, "arah": arah, "kelompok": g, "jumlah": v}
+                             for (lab, arah, g), v in per_kat.items()],
+            "laci": {"awal": laci_awal, "tunai_masuk": tunai_masuk, "tunai_keluar": tunai_keluar,
+                     "seharusnya": seharusnya, "fisik": fisik, "selisih": selisih, "rincian_fisik": rincian_fisik},
+            "non_tunai": [{"metode": lab, "arah": arah, "jumlah": v} for (lab, arah), v in non_tunai.items()],
+            "perlu_dicek": [x["no"] for x in perlu_dicek], "asumsi": asumsi, "peringatan": pr,
+            "catatan": catatan_akhir, "teks": teks}
+    return data, teks
+
+
 def cmd_opname(args):
     if args.daftar:
         db, conn = baca_db(args)
@@ -3498,6 +3636,16 @@ def buat_parser():
     s.add_argument("--daftar", action="store_true", help="Riwayat hitung laci")
     s.add_argument("--maks", type=int, default=20)
     s.set_defaults(fungsi=cmd_opname)
+
+    s = sub.add_parser("cek-catatan", parents=[umum],
+                       help="Rekap & cek laci dari catatan teks/file TANPA database (tidak menyimpan)",
+                       allow_abbrev=False)
+    s.add_argument("--baris", action="append", help="'arah;jumlah;kategori;metode;catatan' (bisa diulang)")
+    s.add_argument("--file", help="File teks berisi baris berformat sama (baris diawali # diabaikan)")
+    s.add_argument("--laci-awal", help="Uang laci/modal laci di awal hari")
+    s.add_argument("--fisik", help="Uang laci yang dihitung saat tutup")
+    s.add_argument("--pecahan", help="Rincian uang laci: '100rb x5, 50rb x3, koin 3.500'")
+    s.set_defaults(fungsi=cmd_cek_catatan)
 
     s = sub.add_parser("rekap", parents=[umum, periode], help="Rekap harian/mingguan/bulanan (teks siap Telegram)", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_rekap)

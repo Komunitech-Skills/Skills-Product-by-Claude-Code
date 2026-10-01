@@ -23,15 +23,21 @@ atau humor. Script tidak pernah memberi pilar promo di hari ini.
 ## 3. Momen yang tanggalnya berubah tiap tahun — JANGAN ditebak
 Ramadan, Idulfitri (Lebaran), Iduladha, Imlek, Nyepi, Waisak, Isra Mikraj, Maulid Nabi, Tahun Baru Islam.
 Tanggal resmi mengikuti **SKB 3 Menteri tentang hari libur nasional & cuti bersama** dan sidang isbat
-Kemenag. Minta pengguna menyebut tanggalnya, atau tulis di tabel dengan label **"(perkiraan — cek SKB
-3 Menteri)"** lalu masukkan ke script dengan `--momen "YYYY-MM-DD:Nama (perkiraan):tipe"`.
+Kemenag. Ramadan, Idulfitri, dan Imlek diisi otomatis oleh script dari tabel perkiraan di bawah (berlabel
+"perkiraan"); bila pengguna menyebut tanggalnya, pakai `--awal-ramadan` / `--idulfitri` / `--imlek`. Hari besar
+lain (Iduladha, Nyepi, Waisak, dll.): minta tanggalnya ke pengguna atau tulis `[isi: tanggal]`, lalu masukkan
+dengan `--momen "YYYY-MM-DD:Nama (perkiraan — cek SKB 3 Menteri):tipe"`.
 
 Perkiraan untuk perencanaan awal (**BELUM TERVERIFIKASI**, bisa bergeser ±1 hari):
 | Momen | Perkiraan |
 |---|---|
 | Imlek 2027 | ±6 Feb 2027 |
-| Awal Ramadan 1448 H | ±8 Feb 2027 |
-| Idulfitri 1448 H | ±10 Mar 2027 |
+| Awal Ramadan 1448 H | ±8 Feb 2027 (perkiraan, menunggu sidang isbat) |
+| Idulfitri 1448 H | ±10 Mar 2027 (perkiraan, menunggu sidang isbat) |
+| Awal Ramadan 1449 H | ±28 Jan 2028 (perkiraan kasar, ±1–2 hari) |
+
+Tabel ini juga tertanam di `scripts/buat_kalender.py` (`PERKIRAAN`) dan dipakai otomatis; bila tabel diubah,
+ubah juga script (kesamaannya diuji `uji_regresi.py`). Aturan pakai tabel ini: (1) tanggal hari besar berubah tahunan hanya boleh diambil dari tabel ini atau dari pengguna, selalu dengan label "perkiraan, menunggu sidang isbat / cek SKB 3 Menteri"; (2) **dilarang** menulis "sudah dicek sumber resmi" kecuali pengguna memberi sumbernya; (3) cek konsistensi: Idulfitri − awal Ramadan = 29/30 hari + 1 (Ramadan berlangsung 29–30 hari); (4) tahun di luar tabel: minta tanggal dari pengguna atau tulis `[isi: tanggal Ramadan tahun ini]`, jangan menggeser tanggal tahun lain dengan menebak.
 
 ## 4. Fase konten Ramadan–Lebaran (pakai bila rentang kalender menyentuh Ramadan)
 | Fase | Waktu | Fokus konten |

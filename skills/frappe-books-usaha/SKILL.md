@@ -50,6 +50,8 @@ Info kurang? Tanyakan **sekali** dalam satu pesan, mis.: "1) Di mana file Frappe
 yang mana? 3) Pelanggan biasanya diberi tempo bayar berapa hari?" Jika pengguna ingin cepat: bulan ini, WIB, tempo 30 hari — sebutkan asumsinya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah (Windows: ganti `python3` dengan `python` atau `py`; path relatif terhadap folder skill ini):
 
 1. **Cek file dulu (sekali per sesi):** `python3 scripts/frappe_books.py cek --db "<path .books.db>"`

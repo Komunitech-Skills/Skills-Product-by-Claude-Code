@@ -43,6 +43,13 @@ Dua jalur produksi:
 - **Kunci testnet** untuk uji bot-trading sungguhan disediakan pemilik lewat secret environment (bukan ditempel di chat, tidak pernah masuk repo/log).
 - **Harga bundle final:** `paket-strategi-produk-marketing` Rp599.000 (13 skill, termasuk strategi-merek-usaha & program-referral-loyalitas), `paket-kantor-manajemen` Rp599.000.
 
+**Keputusan pemilik 2026-10-01 (disetujui langsung oleh pemilik):**
+- **strategi-konten-iklan** masuk `paket-strategi-produk-marketing` (kini 14 skill), harga tetap Rp599.000.
+- **Sheet "vip claude"** tidak diubah lagi kecuali pemilik meminta.
+- **Repo lain di organisasi berlisensi EULA "Rin's Runbook"**: cukup diberi catatan (jual ulang/bundling perlu izin pemegang hak); tidak dibundel ke produk Komunitech.
+- **Uji platform OpenClaw otomatis menggantikan uji manusia (Tahap 6.10):** agent Komunitech menguji skill langsung di agent OpenClaw yang sama dengan bot Telegram (model & skill sama), termasuk perbandingan **sebelum/sesudah** (skill dimatikan vs aktif) yang disimpan di `examples/00-openclaw-sebelum-sesudah.md` sebagai bahan jualan. Skill yang lolos ditampilkan lewat bot penguji di grup Telegram (bot-to-bot), tim cukup cek acak. `platform_teruji` ditulis `openclaw (uji otomatis agent)`.
+- **Urutan uji:** solusi VIP dulu, lalu skill dari skor kualitas tertinggi. Skill yang butuh sistem luar (Odoo, Kanboard, Frappe) diuji dengan data contoh; bot-trading-kripto tetap ditunda.
+
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
 Bahasa: Bahasa Indonesia sebagai utama; bilingual ID/EN bila relevan.

@@ -25,7 +25,7 @@ Dasar aturan: `references/dasar-hukum.md` (dicek 26 September 2026).
 
 | # | Cek | Risiko | Perbaikan |
 |---|---|---|---|
-| B1 | Upah **di bawah UMP/UMK** yang berlaku (minta pengguna isi angkanya; jangan mengarang) | 🔴 (🟠 bila usaha mikro/kecil — ada pengecualian dengan batas bawah, ⚠️ perlu dicek) | Naikkan ke minimal UMK; untuk usaha mikro/kecil, upah berdasarkan kesepakatan dengan batas bawah (UU 13/2003 Pasal 90B jo. UU 6/2023; PP 36/2021 Pasal 36) — cek Disnaker. |
+| B1 | Upah **di bawah UMP/UMK** yang berlaku (minta pengguna isi angkanya; jangan mengarang) | 🔴 (🟠 bila usaha mikro/kecil — ada pengecualian dengan batas bawah, ⚠️ perlu dicek) | Naikkan ke minimal UMK; untuk usaha mikro/kecil (status dihitung dengan `scripts/status_usaha.py`, konfirmasi NIB/OSS), upah berdasarkan kesepakatan dengan batas bawah maks(50% rata-rata konsumsi, 125% garis kemiskinan) **tingkat provinsi** (UU 13/2003 Pasal 90B jo. UU 6/2023; PP 36/2021 Pasal 36) — cek Disnaker. |
 | B2 | Upah pokok < 75% dari (upah pokok + tunjangan tetap) | 🟠 | Susun ulang komposisi (UU 13/2003 Pasal 94). |
 | B3 | Tidak ada **BPJS Ketenagakerjaan & Kesehatan**, atau "pekerja menanggung seluruh iuran" | 🔴 | Wajib daftar; bagian iuran pemberi kerja tidak boleh dibebankan ke pekerja. |
 | B4 | Tidak ada **uang kompensasi akhir PKWT**, atau "tidak berhak kompensasi bila mengundurkan diri" | 🔴 | Tambah pasal kompensasi (PP 35/2021 Pasal 15–17). Kompensasi tetap dihitung dari masa yang sudah dijalani. Usaha mikro/kecil: hak kompensasi tetap ada, tetapi **besarannya** boleh sesuai kesepakatan (Pasal 16 ayat (6)). |

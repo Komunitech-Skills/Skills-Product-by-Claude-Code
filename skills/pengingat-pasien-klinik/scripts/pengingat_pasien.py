@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Versi skill: 1.0.2
+"""Versi skill: 1.0.6
 
 Buku jadwal pengingat kontrol/vaksin pasien klinik, praktik mandiri, dan klinik hewan.
 
@@ -28,6 +28,7 @@ Subperintah
 
 Opsi umum: --file (default pasien/DAFTAR.csv), --hari-ini (tanggal acuan, untuk uji),
 --tz (default Asia/Jakarta; WIB/WITA/WIT juga diterima), --json (keluaran JSON, bukan teks).
+Opsi umum boleh ditulis sebelum ATAU sesudah nama perintah (mis. `daftar --kapan besok --json`).
 
 Aturan
   - Tanggal: ISO (2026-10-05), 05-10-2026, 5/10, 5 Okt, 5 Oktober 2026, "besok", "lusa",
@@ -785,9 +786,16 @@ def buat_parser():
     p.add_argument("--hari-ini", help="Tanggal acuan (untuk uji), format bebas mis. 2026-10-01")
     p.add_argument("--tz", default="Asia/Jakarta")
     p.add_argument("--json", action="store_true")
+    # Opsi umum juga diterima SETELAH nama perintah (mis. `daftar --json`). default=SUPPRESS agar
+    # nilai yang ditulis sebelum perintah tidak tertimpa default subparser.
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+    umum.add_argument("--file", default=argparse.SUPPRESS)
+    umum.add_argument("--hari-ini", default=argparse.SUPPRESS)
+    umum.add_argument("--tz", default=argparse.SUPPRESS)
+    umum.add_argument("--json", action="store_true", default=argparse.SUPPRESS)
     sub = p.add_subparsers(dest="perintah", required=True)
 
-    s = sub.add_parser("tambah", allow_abbrev=False)
+    s = sub.add_parser("tambah", parents=[umum], allow_abbrev=False)
     s.add_argument("--nama", required=True)
     s.add_argument("--wa", required=True)
     s.add_argument("--jenis", required=True)
@@ -795,7 +803,7 @@ def buat_parser():
     s.add_argument("--persetujuan", required=True, choices=PERSETUJUAN)
     s.add_argument("--catatan", default="")
 
-    s = sub.add_parser("ubah", allow_abbrev=False)
+    s = sub.add_parser("ubah", parents=[umum], allow_abbrev=False)
     s.add_argument("--id", required=True)
     s.add_argument("--nama")
     s.add_argument("--wa")
@@ -804,38 +812,38 @@ def buat_parser():
     s.add_argument("--catatan")
     s.add_argument("--persetujuan", choices=PERSETUJUAN)
 
-    s = sub.add_parser("ubah-status", allow_abbrev=False)
+    s = sub.add_parser("ubah-status", parents=[umum], allow_abbrev=False)
     s.add_argument("--id", required=True)
     s.add_argument("--status", required=True, choices=STATUS)
     s.add_argument("--berikutnya")
     s.add_argument("--alasan")
 
-    s = sub.add_parser("hapus", allow_abbrev=False)
+    s = sub.add_parser("hapus", parents=[umum], allow_abbrev=False)
     s.add_argument("--id")
     s.add_argument("--wa")
     s.add_argument("--ya", action="store_true")
 
-    s = sub.add_parser("impor", allow_abbrev=False)
+    s = sub.add_parser("impor", parents=[umum], allow_abbrev=False)
     s.add_argument("path")
     s.add_argument("--jenis-default")
     s.add_argument("--tanggal-default")
     s.add_argument("--persetujuan-default", choices=PERSETUJUAN)
     s.add_argument("--ya", action="store_true")
 
-    s = sub.add_parser("daftar", allow_abbrev=False)
+    s = sub.add_parser("daftar", parents=[umum], allow_abbrev=False)
     s.add_argument("--kapan", choices=["terlambat", "hari-ini", "besok", "h-1", "h-3", "minggu-ini", "semua"])
     s.add_argument("--tanpa-draf", dest="tanpa_draf", action="store_true")
     s.add_argument("--klinik", default="")
 
-    s = sub.add_parser("draf", allow_abbrev=False)
+    s = sub.add_parser("draf", parents=[umum], allow_abbrev=False)
     s.add_argument("--id", required=True)
     s.add_argument("--klinik", default="")
 
-    s = sub.add_parser("ringkasan", allow_abbrev=False)
+    s = sub.add_parser("ringkasan", parents=[umum], allow_abbrev=False)
     s.add_argument("--samarkan", action="store_true")
     s.add_argument("--tanpa-nama", dest="tanpa_nama", action="store_true")
 
-    sub.add_parser("info", allow_abbrev=False)
+    sub.add_parser("info", parents=[umum], allow_abbrev=False)
     return p
 
 

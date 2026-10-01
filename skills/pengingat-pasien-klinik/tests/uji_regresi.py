@@ -299,6 +299,51 @@ class TestCLI(unittest.TestCase):
 
 
 
+class UjiPosisiOpsiUmum(unittest.TestCase):
+    """Regresi uji OpenClaw 2026-10-01: `<perintah> [opsi] --json` (sintaks di SKILL.md) gagal rc=2."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji-pasien-")
+        self.file = os.path.join(self.tmp, "DAFTAR.csv")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def jalan(self, argv):
+        return subprocess.run([sys.executable, SCRIPT] + argv, capture_output=True, text=True, timeout=60)
+
+    def test_json_dan_file_setelah_perintah(self):
+        r = self.jalan(["tambah", "--nama", "Bu Sari", "--wa", "0812-0000-1111", "--jenis", "kontrol",
+                        "--tanggal", "besok", "--persetujuan", "ya", "--file", self.file,
+                        "--hari-ini", "2026-09-26", "--json"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertTrue(json.loads(r.stdout)["ok"])
+        r = self.jalan(["daftar", "--kapan", "besok", "--file", self.file, "--hari-ini", "2026-09-26", "--json"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("Bu Sari", json.loads(r.stdout)["teks"])
+
+    def test_posisi_lama_tetap_jalan_dan_tidak_tertimpa(self):
+        r = self.jalan(["--file", self.file, "--hari-ini", "2026-09-26", "--json", "tambah", "--nama", "Bu Sari",
+                        "--wa", "0812-0000-1111", "--jenis", "kontrol", "--tanggal", "besok", "--persetujuan", "ya"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertTrue(os.path.exists(self.file))
+        json.loads(r.stdout)
+        # campuran: --file di depan, --json di belakang
+        r = self.jalan(["--file", self.file, "--hari-ini", "2026-09-26", "info", "--json"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        json.loads(r.stdout)
+        # tanpa --json di posisi mana pun -> teks, bukan JSON
+        r = self.jalan(["--file", self.file, "info"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertFalse(r.stdout.lstrip().startswith("{"))
+
+    def test_contoh_sintaks_skill_md(self):
+        # Contoh persis dari SKILL.md bagian "Cara menjalankan script"
+        r = self.jalan(["ringkasan", "--samarkan", "--file", self.file, "--json"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        json.loads(r.stdout)
+
+
 class UjiSingkatanFlag(unittest.TestCase):
     """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
 

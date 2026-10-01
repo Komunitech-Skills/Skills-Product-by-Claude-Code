@@ -43,17 +43,18 @@ Jika info lain kurang, **jangan tanya lebih dari sekali**: proses dengan default
 
 ## Langkah kerja
 1. **Pastikan ini grup milik/diikuti pengguna sendiri**, bukan permintaan memantau orang lain tanpa izin. Jika ragu, tanyakan singkat: "Ini grup yang kamu ikuti sendiri kan?" Jika jawabannya menyiratkan menyadap pihak lain → tolak dan jelaskan alasannya (lihat Batasan).
-2. **Jalankan parser** pada file ekspor. Path relatif terhadap folder `SKILL.md` ini; Windows pakai `python` atau `py`:
+2. **Jalankan parser** pada file ekspor. Script `parse_ekspor_wa.py` ada di subfolder `scripts/` di folder yang sama dengan file SKILL.md ini (mis. di OpenClaw: `~/.openclaw/skills/ringkas-grup-wa/scripts/parse_ekspor_wa.py`). File ekspor dari pengguna ada di folder kerja — **jangan mencari script atau file ke seluruh disk** (`find /` dsb.); bila file tidak ada di folder kerja, tanyakan lokasinya. Windows pakai `python` atau `py`:
    ```bash
-   python3 <folder-skill-ini>/scripts/parse_ekspor_wa.py "<path file .txt atau .zip>" --indent 0
+   python3 scripts/parse_ekspor_wa.py "<path file .txt atau .zip>" --indent 0
    ```
+   - Tanggal acuan untuk tenggat = hari ini (waktu script dijalankan). Bila pengguna menyebut tanggal lain ("anggap hari ini 1 Okt"), tambahkan `--sekarang 2026-10-01T09:00`.
    Tambahkan sesuai kebutuhan:
    - `--sejak "kemarin 17:00"` atau `--sejak "2026-09-12 08:00"` — hanya pesan sejak waktu itu.
    - `--hari-terakhir 3` — hanya 3 hari terakhir.
    - `--nama-saya "<nama Anda di grup>"` — menandai pesan Anda sendiri (`dari_saya`) dan membuat deteksi mention langsung ke Anda lebih akurat di `kandidat_perlu_perhatian`. Tanyakan sekali di awal jika belum tahu; boleh dilewati.
    - `--samarkan` — samarkan (**upaya terbaik, bukan jaminan mutlak**) pengirim, nama yang disebut di isi pesan/@mention/pesan sistem, sapaan+nama pihak yang bukan anggota terdaftar (mis. "Pak Budi" jadi "Orang N"), dan nomor telepon (Indonesia & internasional). **WAJIB**: setelah pakai `--samarkan`, periksa field `kemungkinan_nama_tersisa` di hasil JSON — itu daftar kata/frasa berhuruf kapital yang *mungkin* masih nama dan lolos dari penyamaran otomatis. Sebutkan isinya ke pengguna sebagai "perlu dicek manual sebelum dibagikan" bila tidak kosong; **jangan mengklaim hasil 100% anonim**.
-   - Script punya uji regresi sendiri: `python3 <folder-skill-ini>/tests/uji_regresi.py` (untuk pengecekan, bukan langkah wajib tiap pemakaian).
-3. **Baca JSON hasil script.** Field penting: `format_terdeteksi`, `urutan_tanggal` (dan `catatan` bila ambigu — sebutkan catatan ini ke pengguna apa adanya, jangan disembunyikan, termasuk peringatan "hanya satu kombinasi tanggal" bila muncul), `statistik` (jumlah pesan per pengirim, jam paling ramai, jumlah media/dihapus), `kandidat_perlu_perhatian[]`, dan `hari[]` (pesan sudah dikelompokkan per tanggal).
+   - Script punya uji regresi sendiri: `python3 tests/uji_regresi.py` (untuk pengecekan, bukan langkah wajib tiap pemakaian).
+3. **Baca JSON hasil script.** Field penting: `tanggal_acuan`, `jumlah_lewat_tenggat`, `format_terdeteksi`, `urutan_tanggal` (dan `catatan` bila ambigu — sebutkan catatan ini ke pengguna apa adanya, jangan disembunyikan, termasuk peringatan "hanya satu kombinasi tanggal" bila muncul), `statistik` (jumlah pesan per pengirim, jam paling ramai, jumlah media/dihapus), `kandidat_perlu_perhatian[]`, dan `hari[]` (pesan sudah dikelompokkan per tanggal).
 4. **Gunakan `kandidat_perlu_perhatian[]` sebagai checklist WAJIB, terutama untuk grup padat (>~50 pesan/hari).** Script menandai setiap pesan obrolan yang mengandung tanda tanya, mention, kata uang/nominal, tenggat/tanggal, atau kata keputusan/komplain. **Setiap item di daftar ini harus dipertimbangkan** (dimasukkan ke Perlu Perhatian, Info, atau sengaja dikeluarkan dengan alasan) — jangan menyisir ulang dari nol tanpa mencocokkan ke checklist ini, supaya tidak ada pertanyaan/tenggat/nominal yang terlewat. Lalu klasifikasikan tiap pesan `jenis: "obrolan"` (lewati `jenis: "sistem"`, hanya dihitung) ke salah satu:
    - **Perlu perhatian**: pertanyaan langsung ke pengguna atau mention nama/`@pengguna`, permintaan keputusan/persetujuan, tenggat/deadline, uang/pembayaran/tagihan, komplain/masalah. Tandai `✅ sudah dijawab` bila jawabannya ada di pesan lain yang lebih baru pada topik yang sama, atau `❗ masih menunggu` bila belum ada jawaban sampai akhir rentang yang diringkas.
    - **Info**: pengumuman, update status, info tanpa perlu balasan.
@@ -62,15 +63,17 @@ Jika info lain kurang, **jangan tanya lebih dari sekali**: proses dengan default
    - Pesan `jenis: "dihapus"` → sebutkan bahwa ada pesan yang dihapus pengirimnya, jam & siapa (jika tidak disamarkan), tanpa menebak isinya.
    - Jika `--nama-saya` diberikan, pesan dengan `dari_saya: true` boleh dikecualikan dari "Perlu Perhatian ke Anda" (itu perkataan Anda sendiri), tapi tetap dihitung dalam statistik/daftar tindakan bila relevan (mis. Anda berjanji melakukan sesuatu).
 5. **Jangan mengarang.** Jika maksud pesan ambigu (mis. pertanyaan retoris vs. serius, sudah dijawab di pesan lain atau belum), masukkan ke Perlu Perhatian dengan tanda `⚠️` dan alasan singkat, daripada menghilangkannya atau memastikan tanpa dasar.
-6. **Susun daftar tindakan** (siapa – apa – tenggat) memakai format yang sama dengan `notulen-rapat`: PIC diambil dari pengirim tugas/yang diberi tugas jika jelas dari teks; tenggat mengikuti tulisan asli (jangan menghitung ulang tanggal relatif secara otomatis di sini — jika ingin dikonversi presisi, arahkan ke `notulen-rapat` yang punya `scripts/tanggal_relatif.py`). Tugas tanpa PIC/tenggat jelas → tandai `⚠️ belum jelas`.
-7. **Sertakan kutipan asli singkat + jam** untuk tiap butir Perlu Perhatian (maks ±15 kata kutipan, bukan parafrase, agar pengguna bisa mengecek langsung di grup).
-8. **Grup sangat ramai** (statistik total pesan tinggi, atau rentang > 1 hari dengan ratusan pesan/hari): sajikan **per hari** memakai grouping `hari[]` dari JSON, hari terbaru duluan; jangan gabung jadi satu daftar panjang tak terkelompok.
-9. Tutup dengan ringkasan angka singkat (statistik) dan tawarkan: ringkas rentang waktu lain, atau ubah ke daftar tindakan saja untuk kirim ke grup (bukan skill ini yang mengirim — pengguna yang menyalin/mengirim sendiri).
+6. **Tandai tenggat yang sudah lewat.** Setiap kandidat dengan `lewat_tenggat: true` → tulis label `label_tenggat` dari script apa adanya (mis. "⏰ LEWAT TENGGAT (29/09/2026, 2 hari lalu) — cek status") di butir Perlu Perhatian **dan** di kolom Tenggat daftar tindakan. Rencana yang tanggalnya sudah lewat tanpa konfirmasi selesai di chat **tidak boleh** ditandai "✅ sudah ada rencana/sudah beres" — tulis "⏰ LEWAT TENGGAT — belum ada konfirmasi selesai di chat". `tenggat_pasti: false` (dari nama hari saja) → tambahkan "(perkiraan)". Sebut juga di baris Rentang: "chat terakhir [tgl], hari ini [tanggal_acuan]".
+7. **Susun daftar tindakan** (siapa – apa – tenggat) memakai format yang sama dengan `notulen-rapat`: PIC diambil dari pengirim tugas/yang diberi tugas jika jelas dari teks; tenggat mengikuti tulisan asli, ditambah tanggal `tenggat_terdeteksi` dari script bila ada (jangan menghitung tanggal sendiri; untuk konversi tanggal relatif yang lebih rumit, arahkan ke `notulen-rapat` yang punya `scripts/tanggal_relatif.py`). Tugas tanpa PIC/tenggat jelas → tandai `⚠️ belum jelas`.
+8. **Sertakan kutipan asli singkat + jam** untuk tiap butir Perlu Perhatian (maks ±15 kata kutipan, bukan parafrase, agar pengguna bisa mengecek langsung di grup).
+9. **Grup sangat ramai** (statistik total pesan tinggi, atau rentang > 1 hari dengan ratusan pesan/hari): sajikan **per hari** memakai grouping `hari[]` dari JSON, hari terbaru duluan; jangan gabung jadi satu daftar panjang tak terkelompok.
+10. **Angka jumlah butir (judul bagian, "(n)", "tiga lainnya", dsb.) jangan ditulis dari perkiraan.** Susun daftar final dulu, lalu hitung ulang jumlah butir yang benar-benar tertulis; angka pesan/pengirim/lewat tenggat diambil dari keluaran script (`statistik`, `jumlah_lewat_tenggat`). Bila menyebut "N lainnya" sambil menyebut nama, jumlah nama harus sama dengan N. Jangan menulis angka jumlah tanpa menghitung. Nama pihak (pelanggan/vendor/supplier) disalin sesuai peran di chat.
+11. Tutup dengan ringkasan angka singkat (statistik) dan tawarkan: ringkas rentang waktu lain, atau ubah ke daftar tindakan saja untuk kirim ke grup (bukan skill ini yang mengirim — pengguna yang menyalin/mengirim sendiri).
 
 ## Format output
 ```
 📋 RINGKASAN GRUP: [nama grup, jika diketahui dari nama file/konteks]
-Rentang: [tanggal awal]–[tanggal akhir] · [N] pesan (dari [jumlah anggota aktif] orang)
+Rentang: [tanggal awal]–[tanggal akhir] · [N] pesan (dari [jumlah anggota aktif] orang) · hari ini [tanggal_acuan]
 [Catatan format/tanggal dari script, jika ada — tulis apa adanya]
 
 🔴 PERLU PERHATIAN ([n])
@@ -81,7 +84,7 @@ Rentang: [tanggal awal]–[tanggal akhir] · [N] pesan (dari [jumlah anggota akt
 📌 DAFTAR TINDAKAN
 | Tugas | PIC | Tenggat |
 |---|---|---|
-| ... | ... | ... atau ⚠️ belum jelas |
+| ... | ... | ... atau ⚠️ belum jelas atau ⏰ LEWAT TENGGAT (dd/mm/yyyy) — cek status |
 
 🔵 INFO ([n])
 - [jam] [ringkasan satu baris info, bukan kutipan penuh]
@@ -135,8 +138,10 @@ Rentang: 12–13 Sep 2026 · 16 pesan (dari 4 orang)
 - [ ] Tidak ada isi/keputusan/nominal yang tidak ada di kutipan asli.
 - [ ] Setiap butir Perlu Perhatian punya kutipan singkat + jam, bukan parafrase bebas.
 - [ ] Setiap item di `kandidat_perlu_perhatian[]` sudah dipertimbangkan (masuk kategori, atau sengaja dikeluarkan).
+- [ ] Setiap "(n)"/"N lainnya" sudah dihitung ulang dari daftar final yang tampil.
 - [ ] Catatan `urutan_tanggal`/ambiguitas dari script disampaikan ke pengguna, tidak disembunyikan — termasuk peringatan "satu kombinasi tanggal" bila ada.
 - [ ] Daftar tindakan: setiap baris punya PIC & tenggat, atau ditandai ⚠️.
+- [ ] Semua kandidat `lewat_tenggat: true` ditandai "⏰ LEWAT TENGGAT" (tidak ada tenggat basi yang tampil seolah masih berlaku).
 - [ ] Grup ramai (>~150 pesan atau >1 hari) disajikan per hari.
 - [ ] Kalau `--samarkan` dipakai: `kemungkinan_nama_tersisa` sudah dicek dan disampaikan ke pengguna bila tidak kosong; tidak diklaim "100% anonim".
 - [ ] Statistik (jumlah per pengirim, jam ramai, media/dihapus) disertakan.

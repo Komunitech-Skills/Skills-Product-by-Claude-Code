@@ -36,6 +36,8 @@ pedoman + tahun, sehingga bisa langsung dicatat di rekam medis klinik sendiri.
   butir soal, instruksi, cara skor per butir). Lihat "Instrumen kognitif" di bawah.
 
 ## Langkah 0 — WAJIB: pastikan peran pengguna
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Jika peran belum jelas, tanyakan sekali: *"Sebelum mulai: Anda tenaga kesehatan (dokter, bidan,
 perawat, ahli gizi, psikolog klinis) yang menangani pasien ini?"*
 - **Ya (nakes)** → lanjut langkah kerja.

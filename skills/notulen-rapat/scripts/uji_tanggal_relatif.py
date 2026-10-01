@@ -75,6 +75,40 @@ class UjiRapatHariMinggu(unittest.TestCase):
         self.assertEqual(t("senin", MINGGU)["status"], "pasti")
 
 
+class UjiAwalanBatas(unittest.TestCase):
+    """v1.0.3 (uji OpenClaw 2026-10-01): 'sebelum rabu' dulu tidak_dikenali. Rapat Kamis 1/10/2026."""
+    KAMIS = date(2026, 10, 1)
+
+    def test_sebelum_rabu(self):
+        h = t("sebelum rabu", self.KAMIS)
+        self.assertEqual((h["tanggal"], h["status"], h["batas"]), ("2026-10-07", "pasti", "sebelum"))
+        self.assertEqual(h["tenggat_teks"], "Sebelum Rabu, 7 Oktober 2026")
+        self.assertIn("Selasa, 6 Oktober 2026", h["catatan"])
+
+    def test_sblm_jumat_singkatan(self):
+        h = t("sblm jumat", self.KAMIS)
+        self.assertEqual((h["tanggal"], h["batas"]), ("2026-10-02", "sebelum"))
+
+    def test_paling_lambat_senin_depan(self):
+        h = t("paling lambat senin depan", self.KAMIS)
+        self.assertEqual((h["tanggal"], h["status"], h["batas"]), ("2026-10-05", "pasti", "paling_lambat"))
+        self.assertEqual(h["tenggat_teks"], "Paling lambat Senin, 5 Oktober 2026")
+
+    def test_awalan_lain_dan_ambigu_tetap_ambigu(self):
+        self.assertEqual(t("maks besok", self.KAMIS)["tanggal"], "2026-10-02")
+        self.assertEqual(t("s.d. akhir bulan", self.KAMIS)["tanggal"], "2026-10-31")
+        h = t("paling lambat jumat depan", self.KAMIS)
+        self.assertEqual((h["status"], h["alternatif"]), ("ambigu", "Jumat, 2 Oktober 2026"))
+
+    def test_awalan_tanpa_isi_atau_tak_dikenal(self):
+        self.assertEqual(t("sebelum", self.KAMIS)["status"], "tidak_dikenali")
+        self.assertEqual(t("sebelum lebaran", self.KAMIS)["status"], "tidak_dikenali")
+
+    def test_tanpa_awalan_tidak_berubah(self):
+        h = t("rabu", self.KAMIS)
+        self.assertEqual((h["tanggal"], h["batas"], h["tenggat_teks"]), ("2026-10-07", None, "Rabu, 7 Oktober 2026"))
+
+
 class UjiCli(unittest.TestCase):
     def jalankan(self, *arg):
         skrip = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tanggal_relatif.py")

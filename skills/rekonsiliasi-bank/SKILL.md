@@ -36,6 +36,8 @@ Menjawab: **"Transfer mana yang sudah masuk, mana yang belum, dan kenapa saldo b
 Jika catatan berupa tabel tempel di chat, simpan dulu sebagai CSV di folder kerja pengguna. Jika info kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Ingatkan privasi (1 kalimat)** sebelum mulai: data rekening hanya dibaca di komputer ini; jangan tempel nomor rekening/PIN/OTP; hapus data sensitif sebelum membagikan hasil. Bila pengguna **sudah** menempel PIN/password/OTP, jangan dipakai atau diulang, dan sarankan segera menggantinya lewat aplikasi/bank.
 2. **Deteksi kolom** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash

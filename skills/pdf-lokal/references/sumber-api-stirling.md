@@ -50,11 +50,11 @@ header `X-API-KEY` (skema `apiKey` di Swagger, `in: header`).
   `{"error":"Authentication required"}`). Untuk pengujian & panduan pembeli dipakai
   `-e SECURITY_ENABLELOGIN=false`.
   **[REVISI 2026-09-24, setelah uji independen skor 5/10 - cacat T1]:** versi awal
-  `docs/panduan-stirling-pdf.md` **lupa menyertakan** flag ini di perintah `docker run`
+  panduan pasang Stirling-PDF (kini diringkas di `references/pasang-stirling.md`) **lupa menyertakan** flag ini di perintah `docker run`
   yang disodorkan ke pembeli, padahal temuan di paragraf ini sudah dicatat sejak awal
   di sini - kesalahan itu adalah env var yang sudah diketahui benar tidak sampai ke
   dokumen yang dibaca pembeli, bukan salah paham soal APInya. Sudah diperbaiki di
-  `docs/panduan-stirling-pdf.md` §3.2 (tag dipin ke `:3.0.0`, flag disertakan,
+  panduan pasang Stirling-PDF (kini diringkas di `references/pasang-stirling.md`) §3.2 (tag dipin ke `:3.0.0`, flag disertakan,
   ditandai jelas kenapa) DAN di `scripts/pdf.py`: perintah `cek` sekarang mencoba 1
   operasi PDF nyata (`rotate-pdf` sudut 0 pada PDF kosong buatan sendiri) supaya tidak
   melapor "siap pakai" hanya berdasarkan `/api/v1/info/status` yang memang tidak
@@ -62,7 +62,7 @@ header `X-API-KEY` (skema `apiKey` di Swagger, `in: header`).
   `SECURITY_ENABLELOGIN=false` sekarang **gagal dengan jelas** (bukan sukses palsu),
   dan berhasil lagi setelah flag ditambahkan / API key benar diisi.
   Belum diverifikasi apakah aplikasi desktop (.msi/.dmg) berperilaku sama persis
-  soal login - lihat `docs/panduan-stirling-pdf.md` bagian Keamanan §5.
+  soal login - lihat panduan pasang Stirling-PDF (kini diringkas di `references/pasang-stirling.md`) bagian Keamanan §5.
 - **Endpoint & nama field yang dipakai skill ini IDENTIK di v2.14.3 dan v3.0.0** -
   ke-12 perintah `scripts/pdf.py` dicoba ulang penuh terhadap kedua versi (image
   `ghcr.io/stirling-tools/stirling-pdf:2.14.3` dan `:3.0.0`, digest dicatat di git

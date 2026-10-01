@@ -33,6 +33,8 @@ Mengubah tumpukan ulasan menjadi laporan satu halaman: apa yang paling sering di
 Jika ulasan belum dikirim, minta **sekali**: (1) tempel ulasan atau kirim file CSV, (2) sertakan bintangnya bila ada, (3) nama produk/toko. Untuk teks tempelan, simpan dulu ke file `.txt` di folder kerja pengguna (satu ulasan per baris, atau pisahkan ulasan dengan baris kosong). Format bintang yang dikenali: `5 | teks`, `★★★★★ teks`, `⭐⭐⭐ teks`, `bintang 4 - teks`, `4/5 teks`, `Rating: 4 teks`. Contoh format: `templates/format-tempel.txt`.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Siapkan file.** CSV dipakai apa adanya (Excel `.xlsx` → minta simpan sebagai CSV). Teks tempelan → tulis ke `ulasan.txt`.
 2. **Jalankan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash

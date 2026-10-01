@@ -60,6 +60,8 @@ isi sisanya dengan default, dan sebutkan asumsinya — kecuali jenjang/kelas mas
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 1. **Tentukan jenjang, fase, dan menit per JP** dari `references/dasar-kurikulum.md` §2–3.
    Jika guru menyebut jumlah pertemuan & JP, hitung total menit; bila tidak, pakai default
    1×2 JP.

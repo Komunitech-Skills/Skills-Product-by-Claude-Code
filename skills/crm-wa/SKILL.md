@@ -65,6 +65,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mulai
 1. `info --json`. Belum ada database → tanyakan nama usaha, nama yang dipakai di pesan, sapaan default (Kak/Bapak/Ibu), dan zona (WIB/WITA/WIT).
 2. `init --nama-usaha "..." --pengirim "..." [--sapaan Kak] [--zona WIB]` → tunjukkan pratinjau **beserta path file database** → tanya "Buat database di lokasi ini? (ya/tidak)" → **tunggu balasan** → hanya bila "ya": ulangi + `--ya`. Pengguna sekaligus minta mencatat kontak? Catat nanti, setelah database dibuat.

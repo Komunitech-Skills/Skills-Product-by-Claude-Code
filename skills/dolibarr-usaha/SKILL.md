@@ -34,6 +34,8 @@ Pemilik usaha yang memakai **Dolibarr di komputernya sendiri** (pengganti Jurnal
 4. Opsi umum (`--url`, `--kunci-file`, `--izinkan-url-luar`, `--tz`, `--json`) boleh ditulis sebelum atau sesudah perintah; bila ditulis dua kali dengan nilai berbeda, script menolak (kode 2).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah (Windows: `python` atau `py` sebagai ganti `python3`). Tambah `--json` bila ingin membaca hasil terstruktur.
 
 ### A. Cek koneksi & hak akses

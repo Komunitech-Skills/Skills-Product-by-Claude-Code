@@ -40,6 +40,8 @@ Membantu penjual/pemilik usaha menulis pesan **pertama** yang dikirim ke calon p
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, pakai default masuk akal dan tulis "Asumsi" di akhir — **kecuali asal kontak**, yang wajib ditanyakan karena tidak boleh dikarang.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Cek cakupan.** Pastikan ini pesan PERTAMA ke kontak yang belum pernah dihubungi. Jika sudah pernah dihubungi atau ini untuk banyak kontak sekaligus, arahkan ke skill yang tepat (lihat "Kapan TIDAK digunakan") dan jangan lanjutkan.
 2. **Pastikan asal kontak sah.** Baca `references/dasar-hukum-wa.md`. Jika sumbernya database beli/bocoran/scraping berlogin, tolak dengan sopan dan jelaskan risikonya.
 3. **Pilih pola pembuka** sesuai sumber kontak di `references/pola-pembuka.md` (referral, pameran, Google Maps, Instagram, grup komunitas, website/situs resmi, atau kontak lama yang dingin kembali).

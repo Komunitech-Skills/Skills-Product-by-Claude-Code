@@ -5,7 +5,7 @@ Membaca rencana penerimaan & pengeluaran dari CSV, menghitung saldo akhir per mi
 menandai minggu kas negatif / di bawah batas aman, dan mensimulasikan beberapa opsi
 tindakan (percepat tagihan piutang, mundurkan bayar supplier, tunda belanja non-kritis).
 
-Hanya library standar Python 3.8+. Tidak ada akses jaringan.
+Hanya library standar Python 3.8+. Tidak ada akses jaringan. Versi 1.0.3 (2026-10-01).
 
 Format CSV input (pemisah , ; tab atau | dideteksi otomatis; judul kolom boleh variasi):
     minggu;jenis;kategori;nominal;keterangan;kritis
@@ -421,6 +421,24 @@ def main():
             urutan_kat[it["jenis"]].append(it["kategori"])
         per_kat.setdefault(key, [0] * n)[it["minggu"] - 1] += it["nominal"]
 
+    # kejadian per minggu: pos apa saja yang jatuh di minggu itu (untuk dikutip apa adanya di narasi)
+    kejadian = {w: {"masuk": [], "keluar": []} for w in range(1, n + 1)}
+    for it in item:
+        if 1 <= it["minggu"] <= n:
+            kejadian[it["minggu"]][it["jenis"]].append(
+                {"kategori": it["kategori"], "nominal": it["nominal"], "keterangan": it["keterangan"]})
+    for w in kejadian:
+        for j in ("masuk", "keluar"):
+            kejadian[w][j].sort(key=lambda x: -x["nominal"])
+
+    def kalimat_kejadian(w):
+        bag = []
+        for j, label in (("keluar", "keluar"), ("masuk", "masuk")):
+            isi = "; ".join(f"{x['kategori']}{' (' + x['keterangan'] + ')' if x['keterangan'] else ''} "
+                            f"{rp(x['nominal'])}" for x in kejadian[w][j])
+            bag.append(f"{label}: {isi or '-'}")
+        return f"Minggu {w}: " + " | ".join(bag)
+
     minggu_data = []
     s_awal = saldo_awal
     for w in range(1, n + 1):
@@ -431,6 +449,8 @@ def main():
             aw = mulai + timedelta(days=7 * (w - 1))
             d["periode"] = f"{fmt_tgl(aw)} – {fmt_tgl(aw + timedelta(days=6))}"
             d["tanggal_awal"] = aw.isoformat()
+        d["kejadian"] = kejadian[w]
+        d["kejadian_teks"] = kalimat_kejadian(w) + (f" ({d['periode']})" if mulai else "")
         minggu_data.append(d)
         s_awal = saldo[w - 1]
 
@@ -526,6 +546,8 @@ def main():
             "minggu_bermasalah_pertama": bermasalah[0] if bermasalah else None,
             "tambahan_dana_agar_tidak_negatif": kebutuhan_negatif,
             "tambahan_dana_agar_di_atas_batas_aman": kebutuhan_batas,
+            "kejadian_minggu_kritis": [minggu_data[w - 1]["kejadian_teks"]
+                                       for w in sorted(set(neg + bawah + [w_rendah]))],
         },
         "per_minggu": minggu_data,
         "per_kategori": {j: {k: per_kat[(j, k)] for k in urutan_kat[j]} for j in ("masuk", "keluar")},
@@ -593,6 +615,11 @@ def cetak_teks(h):
         print(f"Minggu di bawah batas aman: {r['minggu_di_bawah_batas_aman']}.")
     if r["tambahan_dana_agar_di_atas_batas_aman"]:
         print(f"Agar selalu di atas batas aman butuh tambahan {rp(r['tambahan_dana_agar_di_atas_batas_aman'])}.")
+    print()
+    print("Kejadian per minggu (kutip nomor minggu & pos dari sini, jangan menyimpulkan sendiri):")
+    for m in h["per_minggu"]:
+        print(f"- {m['kejadian_teks']}")
+    print()
     for o in h["simulasi_opsi"]:
         print(f"- Simulasi '{o['opsi']}' (menggeser {rp(o['nominal_digeser'])}): saldo terendah jadi "
               f"{rp(o['saldo_terendah_baru'])} (minggu {o['minggu_terendah_baru']}), minggu negatif "

@@ -10,7 +10,7 @@ Bagian ini **bukan** dokumentasi resmi. Menu, nama, dan syarat berubah. Verifika
 | TikTok Shop Ads | Penjualan di TikTok Shop | Toko TikTok Shop aktif | Cocok bila sudah rutin live/video produk |
 | Google Ads | Orang yang mencari produk/jasa (mis. "servis AC Bekasi"), Maps lokal | Halaman tujuan/nomor WA/Google Business Profile | Kuat untuk jasa lokal dengan niat beli tinggi |
 
-Prinsip dasar pembagian awal (di skrip): penjualan condong ke Meta + marketplace, awareness ke Meta + TikTok, leads ke Meta + Google. Ini titik awal; ubah sesuai data 2-4 minggu.
+Prinsip dasar pembagian awal (di skrip): penjualan condong ke Meta + marketplace, awareness ke Meta + TikTok, leads ke Meta + Google. Bila penjualan terbanyak terjadi di satu kanal (mis. toko Shopee), kanal itu menjadi **kanal utama** (`--kanal-utama` / `--jenis marketplace`) dan porsinya 2x kanal pendukung terbesar. Ini titik awal; ubah sesuai data 2-4 minggu.
 
 Kategori terbatas (kesehatan, keuangan, kripto) dan terlarang (judi, rokok/vape, miras, narkoba, senjata, konten dewasa): baca kebijakan iklan resmi masing-masing platform sebelum menyusun kreatif. Skill ini tidak menyusun iklan untuk kategori terlarang.
 

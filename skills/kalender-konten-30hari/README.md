@@ -47,3 +47,12 @@ Bisa. Sebutkan kemampuanmu, nanti jadwalnya disesuaikan.
 
 **File CSV-nya berantakan di Excel?**
 Minta "CSV pakai titik koma" untuk Excel berbahasa Indonesia, atau "pakai koma" untuk Google Sheets.
+
+## Catatan revisi 1.0.5 (2026-10-01)
+- Ramadan, Idulfitri, dan Imlek kini diisi otomatis oleh script dari tabel perkiraan (berlabel "perkiraan"): tiap hari Ramadan diberi "Ramadan hari ke-N", plus Nuzulul Qur'an, 10 malam terakhir, batas THR ±H-7, Lebaran & H+1, dan pasca-Lebaran. Tidak ada lagi "Tanggal tua" di tengah Ramadan.
+- Cek-silang baru `--cek-teks`: tanggal hari besar yang disebut di tips/catatan harus sama dengan tabel (mis. Idulfitri 10 Mar 2027, bukan "19–20 Mar"); jawaban untuk periode Ramadan wajib menyebut Ramadan.
+- Langkah wajib "Fakta dari pengguna" + `--fakta`: layanan/promo yang tidak Anda sebut (mis. "antar-jemput gratis") ditandai GAGAL.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Tanggal hari besar (Ramadan, Lebaran, Imlek) diambil dari tabel perkiraan di skill, mis. awal Ramadan 2027 sekitar 8 Februari 2027 (perkiraan, menunggu sidang isbat), dan tidak pernah diklaim "sudah dicek".
+- Urgensi palsu ("stok terbatas", "hari terakhir") dilarang kecuali faktanya Anda berikan.

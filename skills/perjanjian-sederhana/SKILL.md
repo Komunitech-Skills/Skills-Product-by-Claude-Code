@@ -46,6 +46,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan (maks 5 pertanyaan 
 Jika pengguna ingin cepat, isi dengan default template, biarkan data pribadi sebagai `[[...]]`, dan cantumkan daftar asumsi.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Saring batasan** (daftar "Kapan TIDAK digunakan"). Nilai ≥ Rp500 juta atau jangka > 5 tahun: boleh dibuat, tetapi beri judul "DRAF BAHAN DISKUSI, WAJIB DITINJAU PENGACARA".
 2. **Pilih template** di `templates/`: `reseller-distributor.md`, `supplier-pemasok.md`, `nda-kerahasiaan.md`, `sewa-tempat.md`, `sewa-alat.md`, `bagi-hasil.md`, `jasa-freelance.md`. Baca blok PANDUAN AGENT di atasnya (info wajib, default, peringatan). Kombinasi (mis. reseller + NDA) → gabungkan pasal dari `references/klausul-pilihan.md`.
 3. **Hitung semua angka lewat script** (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):

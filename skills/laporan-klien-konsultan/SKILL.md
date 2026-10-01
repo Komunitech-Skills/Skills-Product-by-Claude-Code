@@ -14,10 +14,9 @@ klien cukup **mencatat pekerjaan sekali jalan** saat selesai dikerjakan, lalu ti
 nol tiap minggu dan tanpa menghitung jam secara manual. Semua angka (total jam, jumlah pekerjaan)
 dihitung `scripts/laporan_klien.py`, bukan diperkirakan.
 
-**Versi 1.0.1** (revisi rendah): konversi "N menit" → desimal jam (mis. 90 menit → `--jam 1.5`)
-sekarang dijelaskan eksplisit di bagian 1 karena `--jam` hanya menerima desimal; file log CSV
-0-byte (bukan sekadar "belum ada catatan", tapi rusak/tanpa header sama sekali) sekarang ditolak
-dengan pesan jelas alih-alih diam-diam dianggap "tidak ada catatan". Uji regresi 28/28.
+**Versi 1.0.5** (revisi uji OpenClaw 2026-10-01): jam tampil sampai 2 desimal (3,25 jam, bukan
+3,2) dan total = jumlah persis jam per baris; file catatan CSV milik pengguna bisa langsung
+dibaca (`--file`); "Rencana berikutnya" tidak lagi mengulang judul tugas. Uji regresi 45/45.
 
 ## Kapan digunakan
 - "Catat: hari ini saya kerjakan rekonsiliasi bank untuk PT Maju, 2,5 jam, selesai."
@@ -56,7 +55,7 @@ dengan pesan jelas alih-alih diam-diam dianggap "tidak ada catatan". Uji regresi
 | Kendala (hambatan di pihak konsultan) | Tidak | Kosong |
 | Butuh dari klien (data/keputusan yang ditunggu) | Tidak | Kosong |
 | Periode laporan (mingguan/bulanan/rentang kustom) | Ya untuk `laporan` | `mingguan` (minggu berjalan Senin-Minggu) |
-| Rencana berikutnya | Tidak | Diturunkan otomatis dari pekerjaan berstatus "berjalan" |
+| Rencana berikutnya | Tidak | Dari ucapan/catatan pengguna; bila tidak ada → isian `[isi: …]` (tidak dikarang) |
 
 Jika info wajib untuk mencatat kurang, tanyakan **sekali** dalam satu pesan singkat. Jika
 pengguna langsung cerita ("kelarin desain logo buat Kopi Senja tadi, 3 jam"), ekstrak
@@ -64,10 +63,25 @@ klien/proyek/pekerjaan/jam dari kalimat itu -- proyek boleh ditebak dari konteks
 logo") bila tidak disebut eksplisit, sebutkan tebakan itu di akhir.
 
 ## Langkah kerja
-Path script relatif terhadap folder SKILL.md ini. Windows: ganti `python3` dengan `python`/`py`.
+Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini
+(`<folder-skill-ini>/scripts/laporan_klien.py`) -- langsung pakai path itu, **jangan mencari ke
+seluruh disk** (mis. `find /`). Windows: ganti `python3` dengan `python`/`py`.
 File log CSV default: `log-kerja-klien.csv` di folder kerja pengguna (bisa diarahkan ke lokasi
 lain dengan `--file`, mis. `laporan/log-kerja-klien.csv`) -- **satu file untuk semua klien**,
 dipilah lewat kolom `klien`.
+
+### 0. Pengguna sudah punya file catatan sendiri (CSV/ekspor Excel/Sheets)?
+Jangan menyalin barisnya satu per satu dengan `catat`. Pakai file itu langsung (hanya dibaca,
+tidak diubah): `python3 <folder-skill-ini>/scripts/laporan_klien.py --file catatan-kerja.csv
+laporan --klien "..." --dari ... --sampai ...`. Path file = yang disebut pengguna (relatif ke
+folder kerja); bila tidak ketemu, **tanya pengguna lokasinya**, jangan mencari ke seluruh disk.
+Script mengenali pemisah `,` `;` tab `|`, BOM/UTF-16/encoding Windows, header umum ID/EN
+(Tanggal/Date, Klien/Client, Proyek/Project, Pekerjaan/Kerjaan/Kegiatan/Task, Jam/Durasi/Hours,
+Status, Kendala, Butuh dari klien, Keterangan/Catatan, Rencana/Next step), durasi "2,5 jam",
+"90 menit", "1 jam 30 menit", "1:30", dan tanggal 22/09/2026 atau "22 Sep 2026". Bila tetap
+gagal, script menyebut baris/kolom yang bermasalah dan cara memperbaikinya -- sampaikan itu ke
+pengguna, jangan menebak isinya. Keterangan yang menyebut klien + "menunggu/butuh" otomatis
+masuk "Butuh dari klien" (ada catatan untuk dicek).
 
 ### 1. Catat pekerjaan (dilakukan tiap kali ada progres)
 ```bash
@@ -77,13 +91,9 @@ python3 <folder-skill-ini>/scripts/laporan_klien.py catat \
 ```
 - `--status` : `selesai` | `berjalan` (default) | `terkendala`. Alias umum dikenali (`done`,
   `progress`, `stuck`, dst.) -- lihat pesan error untuk daftar lengkap bila salah ketik.
-- `--jam` boleh pakai koma (`2,5`) atau titik (`2.5`); kosongkan bila tidak dihitung per jam
-  (mis. retainer bulanan tetap) -- **jangan menebak jam**, biarkan kosong.
-- Script hanya menerima **angka desimal jam** (mis. `2.5`), bukan format "N menit" -- kalau
-  pengguna menyebut waktu dalam menit (mis. "90 menit", "45 menit tadi"), **agent yang mengonversi**
-  ke desimal jam sebelum memanggil `--jam`: menit ÷ 60, dibulatkan 2 desimal bila perlu (contoh:
-  90 menit → `--jam 1.5`; 45 menit → `--jam 0.75`; 100 menit → `--jam 1.67`). Sebutkan hasil
-  konversi ke pengguna sebelum menyimpan, supaya bisa dikoreksi bila salah dengar.
+- `--jam` boleh `2,5`, `2.5`, `"90 menit"`, `"1 jam 30 menit"`, atau `1:30`; disimpan sampai
+  2 desimal (100 menit → 1,67). Kosongkan bila tidak dihitung per jam (mis. retainer bulanan
+  tetap) -- **jangan menebak jam**, biarkan kosong. Sebutkan hasil konversi ke pengguna.
 - `--kendala "..."` untuk hambatan di pihak konsultan (mis. menunggu tools/izin internal).
 - `--butuh-klien "..."` untuk hal yang perlu klien berikan/putuskan (mis. dokumen, approval).
 - **Sebelum mengetik pekerjaan/kendala/kebutuhan**, lihat Batasan di bawah soal data pribadi/
@@ -99,9 +109,15 @@ python3 <folder-skill-ini>/scripts/laporan_klien.py laporan \
 ```
 - `--periode`: `mingguan` (alias `minggu-ini`), `minggu-lalu`, `bulanan` (alias `bulan-ini`),
   `bulan-lalu`, atau rentang kustom `--dari YYYY-MM-DD --sampai YYYY-MM-DD`.
-- `--rencana "..."` (bisa diulang) untuk menentukan rencana berikutnya secara eksplisit. Tanpa
-  ini, rencana diturunkan otomatis dari pekerjaan berstatus `berjalan` ("Lanjutkan: ...") --
-  tinjau dan sesuaikan kalimatnya sebelum dikirim, jangan asal salin apa adanya bila kurang pas.
+- **Rencana berikutnya wajib dari data pengguna**, bukan mengulang judul tugas. Isi dengan
+  `--rencana "..."` (bisa diulang) dari apa yang pengguna katakan/catat (mis. "kirim draf SOP ke
+  Pak Hendra Senin"), atau dari kolom Rencana di file. Tanpa itu, script menaruh isian
+  `[isi: langkah berikutnya untuk "..." + target tanggal]` per pekerjaan berjalan/terkendala
+  (`rencana_perlu_diisi` > 0). Tampilkan isian itu apa adanya dan minta pengguna mengisinya
+  (boleh digabung dengan pertanyaan lain dalam satu pesan) -- **jangan mengarang rencana** dan
+  jangan menulis ulang jadi "Lanjutkan ...".
+- **Jam:** salin angka jam & total persis dari output script (2 desimal, mis. "9,75 jam (9 jam
+  45 menit)"); jangan membulatkan ulang. Total selalu = jumlah jam per baris yang tampil.
 - Tanpa `--json`, keluaran langsung berisi tiga versi berlabel (`=== VERSI EMAIL ===`,
   `=== VERSI WA/TELEGRAM ===`, `=== VERSI MARKDOWN ===`) -- pakai ini untuk langsung menyalin.
   Dengan `--json`, semua field terstruktur tersedia (`teks_email`, `teks_wa`, `markdown`, angka,

@@ -46,6 +46,8 @@ Tanyakan **sekali**, dalam satu pesan bernomor; lewati yang sudah disebut penggu
 Ingin cepat → pakai default, sebut asumsinya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Semua perintah: `python3 scripts/skor_kpi.py <perintah>` dari folder skill ini (Windows:
 `python` atau `py`). Tambah `--json` untuk dibaca agent. Rincian: `references/aturan-skor.md`.
 
@@ -88,8 +90,9 @@ Pilih sesuai sumber data:
   depan, libur/izin/sakit) + jumlah baris obrolan yang diabaikan. "Wulan & Rudi void masing2 1"
   → draf untuk **keduanya** (CEK "masing-masing"); tanpa kata masing-masing/berdua → "tidak terbaca"
   (tanyakan: per orang atau total?). Baris draf bertanda **CEK**
-  (satuan beda, beberapa angka/orang, angka minus) wajib ditanyakan satu per satu, jangan cukup
-  "ok" massal. Tunjukkan tabel draf ke pengguna, minta konfirmasi/koreksi, baru ubah `status_draf` menjadi `dikonfirmasi` dan gabungkan ke file
+  (satuan beda, beberapa angka/orang, angka minus) wajib ditanyakan satu per satu dengan bahasa awam
+  (mis. "Budi: omzet 38 juta, betul?"), jangan cukup "ok" massal. Cap waktu WA (`[30/09 17.05]`,
+  `[30/09/26 08.15]`, `[17.05, 30/9/2026]`, `30/09/26 17.05 - Nama:`) diabaikan script sejak v1.1.5. Tunjukkan tabel draf ke pengguna, minta konfirmasi/koreksi, baru ubah `status_draf` menjadi `dikonfirmasi` dan gabungkan ke file
   realisasi. Baris draf yang belum dikonfirmasi **selalu dilewati** saat menghitung skor.
   Untuk ekspor chat grup yang panjang, ringkas dulu dengan `ringkas-grup-wa` bila terpasang.
 - **Log harian** (komplain, respons CS, pengiriman, produksi): catat di format

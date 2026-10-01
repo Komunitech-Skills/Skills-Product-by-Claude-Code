@@ -40,6 +40,8 @@ Membantu pemilik toko/klinik membangun "karyawan CS AI" yang **selalu tahu isi t
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### 1. Bangun basis pengetahuan (sekali di awal, atau saat diminta perbarui)
 1. Wawancara singkat (satu pesan, bernomor) atau impor dari price list/katalog yang dikirim pengguna.
 2. Tulis **`cs/PENGETAHUAN.md`** (pakai `templates/PENGETAHUAN.template.md`): produk & harga, stok/jam buka, ongkir & cara bayar, kebijakan retur, FAQ, nada brand. Tandai bagian kosong `[isi ...]`.

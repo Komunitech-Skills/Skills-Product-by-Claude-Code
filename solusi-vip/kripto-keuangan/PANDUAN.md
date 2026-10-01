@@ -25,35 +25,49 @@ punya **cara cek berhasil** dan **kalau gagal**.
 
 | Bisa (**[VIP]** = butuh `pantau-pasar-kripto`) | Tidak (sengaja, keputusan Komunitech) |
 |---|---|
-| Ringkasan pagi: harga + berita **bertautan sumber** | Auto-trading / bot beli-jual otomatis |
+| Ringkasan pagi: harga + berita **bertautan sumber** | Auto-trading **di paket ini** (tersedia terpisah lewat `bot-trading-kripto`, belum masuk paket, lihat Bab 0) |
 | Notifikasi bila harga menyentuh ambang **yang Anda tetapkan sendiri** | Rekomendasi beli/jual/tahan, target harga, sinyal entry/exit |
-| Checklist riset proyek (fakta, tim, audit, tokenomics, tanda penipuan) | Menyimpan API key/secret exchange atau mengeksekusi order |
-| Jurnal trading: rapikan catatan, hitung untung/rugi (dihitung script) | Membuat/mengajari membuat bot trading |
+| Checklist riset proyek (fakta, tim, audit, tokenomics, tanda penipuan) | Skill di paket ini menyimpan API key exchange atau mengeksekusi order |
+| Jurnal trading: rapikan catatan, hitung untung/rugi (dihitung script) | Sinyal/strategi buatan Komunitech, janji profit |
 | Anggaran, dana darurat, pelunasan utang, target tabungan | Prediksi harga atau "koin yang akan naik" |
 | Catatan riset lokal & tulisan riset bersitasi | Grup sinyal, kelola dana orang lain |
 
 ---
 
-## 0. Kenapa auto-trading tidak disediakan (penjelasan sopan)
+## 0. Auto-trading: hanya lewat `bot-trading-kripto`, dengan syarat ketat
 
-Kami tahu banyak member menginginkan bot yang trading sendiri. Kami **sengaja tidak
-menyediakannya**, dan permintaan itu akan ditolak dengan sopan oleh skill. Alasannya:
+**Status (2026-10-01):** auto-trading **diizinkan** (keputusan pemilik Komunitech 2026-09-29)
+dan disediakan oleh skill terpisah **`bot-trading-kripto`**. Skill itu **belum masuk paket VIP
+ini** sampai uji testnet selesai (ditunda pemilik). Skill di paket ini (`pantau-pasar-kripto`
+dkk.) tetap **tidak** mengeksekusi order dan tetap menolak permintaan auto-trading; bila Anda
+memintanya, agent akan menjelaskan status ini.
 
-1. **Kesalahan AI = uang sungguhan yang hilang.** Model AI bisa salah membaca angka, salah
-   paham perintah, atau "yakin tapi keliru". Order yang sudah dieksekusi tidak bisa ditarik.
-2. **Berita dan halaman web bisa disusupi.** AI yang membaca konten dari internet dapat
-   terkecoh oleh teks tersembunyi (*prompt injection*) yang mencoba memicu transaksi.
-3. **Kunci exchange adalah kunci brankas.** API key yang tersimpan di komputer yang juga
-   membaca konten luar adalah risiko keamanan. Bila bocor, dana bisa terkuras.
-4. **Kami tidak berizin memberi nasihat investasi.** Pengelolaan dan rekomendasi transaksi
-   aset keuangan adalah kegiatan yang diatur OJK. Kami memilih tetap menjadi alat bantu
-   informasi yang jujur.
-5. **Disiplin tetap di tangan Anda.** Alat terbaik untuk trader pemula bukan otomatisasi,
-   melainkan **jurnal dan riset** yang membuat Anda belajar dari keputusan sendiri.
+Saat `bot-trading-kripto` tersedia, syaratnya **wajib semua**:
+1. **Aturan milik Anda sendiri** (mis. DCA, grid, take-profit/stop-loss, rebalancing) di
+   **akun bursa Anda sendiri**. Komunitech **tidak** memberi sinyal, rekomendasi beli/jual,
+   strategi "pasti cuan", atau janji profit.
+2. **Default simulasi:** backtest → paper trading (harga asli, order pura-pura) → testnet
+   (uang mainan) → baru live setelah konfirmasi bertahap.
+3. **API key tanpa izin tarik dana (withdraw MATI)**, idealnya dibatasi IP, disimpan sendiri
+   oleh Anda (bukan ditempel ke chat). Untuk Indodax: daftar periksa + pernyataan yang Anda
+   ketik sendiri bahwa izin tarik dana mati; skill tidak pernah memanggil metode withdraw.
+4. **Batas risiko wajib:** modal maks per order & total, stop-loss, batas rugi harian,
+   maks order terbuka, dan **tombol berhenti** (hentikan bot kapan saja lewat chat).
+5. **Disclaimer risiko:** kripto berisiko tinggi; bot menjalankan aturan Anda apa adanya,
+   termasuk saat aturan itu merugi. Keputusan dan risiko sepenuhnya milik Anda.
 
-**Yang aman sebagai gantinya:** fitur limit/stop order **bawaan aplikasi exchange resmi**
-(Anda yang memasang dan mengaturnya sendiri di sana), ditambah notifikasi harga dan jurnal
-dari paket ini.
+Kenapa syaratnya ketat:
+- **Kesalahan = uang sungguhan.** Order yang sudah tereksekusi tidak bisa ditarik.
+- **Konten web bisa disusupi** (*prompt injection*); karena itu bot hanya menjalankan aturan
+  tertulis Anda, bukan "pendapat" AI dari berita.
+- **Kunci bursa adalah kunci brankas.** Tanpa izin tarik dana, kunci yang bocor tidak bisa
+  dipakai menguras saldo ke luar akun.
+- **Komunitech tidak berizin memberi nasihat investasi** (diatur OJK), jadi strategi tetap
+  milik Anda.
+
+**Sebelum bot tersedia (atau bila Anda tidak ingin bot):** pakai fitur limit/stop order
+**bawaan aplikasi bursa resmi** (Anda pasang sendiri di sana), ditambah notifikasi harga dan
+jurnal dari paket ini.
 
 **Kalau Anda pernah menempel API key exchange ke chat mana pun:** anggap sudah bocor.
 **Cabut (revoke)** di exchange sekarang, lalu buat yang baru. Skill tidak akan menyimpan
@@ -204,8 +218,13 @@ membeli aset tertentu.
 - Isi `CEKLIS.md` untuk serah-terima.
 
 ## Batasan dan penolakan yang akan Anda temui
-- Diminta "kapan beli/jual?", "koin apa yang akan naik?", atau "buatkan bot trading" → ditolak
-  sopan dan ditawari yang diperbolehkan: data, checklist riset, jurnal, notifikasi ambang Anda.
+- Diminta "kapan beli/jual?", "koin apa yang akan naik?", atau sinyal → ditolak sopan, disertai
+  info singkat bahwa perdagangan kripto diawasi OJK (POJK 27/2024), cara cek platform berizin,
+  dan kanal lapor Satgas PASTI / Kontak OJK 157; lalu ditawari data, checklist riset, jurnal,
+  notifikasi ambang Anda.
+- Diminta "buatkan bot trading" → skill di paket ini tidak mengeksekusi order; agent menjelaskan
+  bahwa auto-trading hanya lewat `bot-trading-kripto` dengan syarat di Bab 0, dan skill itu
+  belum termasuk paket ini.
 - Paket ini bukan pengganti perencana keuangan, konsultan pajak, atau penasihat investasi
   berizin. Untuk keputusan besar, temui profesional berizin.
 - Data harga berasal dari sumber publik pihak ketiga dan bisa tertunda atau gagal; skill akan

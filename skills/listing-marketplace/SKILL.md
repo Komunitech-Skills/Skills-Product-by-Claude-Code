@@ -48,23 +48,36 @@ yang perlu dilengkapi dan asumsinya di akhir.
    Tokopedia paling ketat (70) → buat versi paling ringkas.
 4. **Tulis 5 poin keunggulan** (manfaat + bukti dari spesifikasi, maks. ±80 karakter per poin). Di Shopee
    dan Tokopedia poin ini diletakkan di awal deskripsi karena tidak ada kolom khusus.
+   **Setiap sifat/klaim harus berasal dari kata-kata pengguna.** Jangan menambah sifat, ketahanan, atau
+   janji layanan sendiri (mis. pengguna hanya menyebut "tepi lasercut" → jangan tulis "ga gampang buyar";
+   juga "awet", "kuat", "anti …", "tidak mudah …", "dikirim cepat", "packing aman", "sesuai foto").
+   Kalau terasa perlu, tanyakan dulu ke pengguna atau tulis `[isi: …]`.
 5. **Tulis deskripsi** dengan urutan tetap: pembuka 1–2 kalimat → poin keunggulan → spesifikasi →
    isi paket → cara pakai/perawatan → ukuran/varian → info pengiriman & garansi (hanya yang benar) →
    ajakan beli yang mengarah ke tombol platform ("Klik Beli Sekarang", "Masukkan keranjang").
    TikTok Shop: buat lebih ringkas dan mudah dipindai (pembeli datang dari video).
-6. **Cek otomatis** tiap versi dengan script (path relatif terhadap folder SKILL.md ini):
+6. **Cek otomatis** tiap versi dengan script. Script ada di subfolder `scripts/` di folder yang sama
+   dengan SKILL.md ini (folder skill); jangan mencarinya ke seluruh disk (`find /`).
    ```bash
    python3 <folder-skill-ini>/scripts/cek_listing.py --platform tokopedia \
-     --judul "..." --deskripsi-file deskripsi.txt --kata-kunci "utama,pendukung1,pendukung2"
+     --judul "..." --deskripsi-file deskripsi.txt --kata-kunci "utama,pendukung1,pendukung2" \
+     --fakta "<salin fakta produk persis dari pesan pengguna>"
    ```
    Windows: ganti `python3` dengan `python` atau `py`. `--platform semua` memeriksa ketiganya; tambah
-   `--json` bila perlu. Perbaiki semua temuan **GAGAL** (termasuk indikasi barang tiruan: KW, replika,
+   `--json` bila perlu. **Selalu isi `--fakta`** (atau `--fakta-file`) dengan kata-kata pengguna: frasa
+   sifat/layanan di listing yang tidak ada di fakta → **GAGAL** (hapus, atau tanyakan ke pengguna).
+   Perbaiki semua temuan **GAGAL** (termasuk indikasi barang tiruan: KW, replika,
    grade ori, "mirip <merek>" — hentikan dan jelaskan bahwa listing barang tiruan tidak bisa dibantu);
    tinjau **CEK** (klaim harus didukung data pengguna; klaim kesehatan seperti "turunkan kolesterol",
    "meningkatkan imun", "aman untuk ibu hamil" hanya boleh bila pengguna punya izin edar/bukti yang sesuai).
    **Jika Python tidak bisa dijalankan:** hitung panjang judul/deskripsi secara manual (hitung per karakter,
-   emoji = 2), cocokkan dengan tabel batas, dan periksa manual daftar larangan di checklist. Beri tahu
+   emoji = 2), cocokkan dengan tabel batas, dan periksa manual daftar larangan di checklist (termasuk
+   mencocokkan tiap klaim sifat dengan fakta pengguna). Beri tahu
    pengguna bahwa pengecekan dilakukan manual.
+   **Panjang yang dilaporkan harus dari teks FINAL yang ditampilkan:** jika teks diubah setelah dicek
+   (dipangkas, ditambah, emoji diganti), simpan ulang teks final persis ke file lalu jalankan ulang script
+   dan salin angka `panjang` dari hasil run terakhir itu. Jangan menaksir atau memakai angka dari draf lama.
+   Teks yang ditempel di blok kode harus identik dengan isi file yang dicek (termasuk baris kosong).
 7. Sajikan output sesuai format, lalu tawarkan revisi (nada, fokus kata kunci, versi lebih pendek).
 
 ## Format output
@@ -148,6 +161,7 @@ karena tidak disebutkan. Lengkapi [isi: ...] sebelum tayang.
 - [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, SNI, original, terlaris, termurah, klaim kesehatan)
 - [ ] Tidak menyebut merek lain untuk numpang pencarian
 - [ ] Semua spesifikasi berasal dari pengguna; yang belum ada ditandai `[isi: ...]`
+- [ ] Bandingkan tiap poin keunggulan dengan fakta pengguna: tidak ada sifat/ketahanan/janji layanan tambahan ("ga gampang buyar", "awet", "anti …", "dikirim cepat"); script dengan `--fakta` lulus
 - [ ] Teks deskripsi polos (tanpa markdown) dan siap tempel
 
 ## Batasan & penanganan error

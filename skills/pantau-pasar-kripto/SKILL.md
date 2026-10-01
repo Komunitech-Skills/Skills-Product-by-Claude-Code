@@ -7,6 +7,11 @@ description: Memantau harga kripto (BTC/ETH/dll) terhadap ambang naik/turun % at
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
+**Lokasi script & file:** semua script ada di subfolder `scripts/` di folder yang sama dengan
+SKILL.md ini (`<folder-skill-ini>` = folder tempat file ini berada) -- jangan mencarinya dengan
+`find /`. File member (`kripto/...`, jurnal, mutasi) dicari hanya di folder kerja (workspace)
+atau path yang disebut member, bukan ke seluruh disk.
+
 ## Tujuan
 Membantu member memantau harga & berita kripto, meriset proyek secara terstruktur, dan
 merapikan jurnal trading -- **semua berbasis fakta bersumber, tanpa satu pun rekomendasi
@@ -47,8 +52,15 @@ beli/jual/tahan**. Skill ini adalah alat informasi & pencatatan, bukan bot tradi
 - "Ingatkan saya sesuai rencana yang saya tulis di jurnal."
 
 ## Kapan TIDAK digunakan
-- Minta rekomendasi beli/jual, target harga, atau "kapan waktu terbaik masuk/keluar" →
-  **tolak**, jelaskan Batas Tegas #1, tawarkan data & checklist riset sebagai gantinya.
+- Minta rekomendasi beli/jual, target harga, sinyal, atau "kapan waktu terbaik masuk/keluar" →
+  **tolak**, jelaskan Batas Tegas #1, tawarkan data & checklist riset sebagai gantinya. Dalam
+  penolakan, sebut singkat (1-2 kalimat, tanpa menambah sinyal apa pun): perdagangan aset kripto
+  di Indonesia diawasi **OJK** (POJK 27/2024, diubah POJK 23/2025); cek legalitas platform di
+  daftar resmi PAKD berizin OJK (lihat `references/regulasi.md`); grup/akun "sinyal pasti cuan"
+  atau janji profit patut diwaspadai dan bisa dilaporkan ke **Satgas PASTI** / Kontak OJK 157.
+  Jangan menyebut nama sistem/agent/model (mis. "openclaw") dalam kalimat ke member. Bila member
+  menyebut modal dari uang cicilan/utang/kebutuhan pokok, arahkan ke skill
+  `atur-keuangan-pribadi` (bila terpasang) untuk menata cicilan & dana darurat dulu.
 - Minta auto-trading, bot eksekusi order, atau menyambungkan API key exchange → **tolak**,
   jelaskan Batas Tegas #2. Arahkan ke fitur limit/stop order **bawaan aplikasi exchange
   resmi** (dieksekusi & dipantau manual oleh pengguna sendiri, bukan lewat skill ini).
@@ -56,8 +68,8 @@ beli/jual/tahan**. Skill ini adalah alat informasi & pencatatan, bukan bot tradi
   library Komunitech menolak permintaan itu di skill mana pun.
 - Laporan/notifikasi untuk **grup/pelanggan/broadcast** → di luar cakupan; notifikasi
   hanya untuk pemilik/member sendiri.
-- Kebutuhan pajak transaksi kripto (PPh/PPN kripto) → skill ini tidak menghitung pajak;
-  arahkan ke konsultan pajak/DJP untuk kepastian kewajiban pajak individu.
+- Menghitung SPT/kewajiban pajak tahunan individu → di luar cakupan; arahkan ke konsultan
+  pajak/DJP. (Estimasi PPh final per transaksi jual hanya lewat script jurnal, Langkah D.5.)
 
 ## Input
 
@@ -132,11 +144,7 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    sama sekali): dilaporkan sekali saat terjadi, diredam sampai jeda habis, dan dilaporkan
    lagi sekali saat PULIH (lihat field `pemantauan_bermasalah`/`perlu_lapor_pemantauan`/
    `pemantauan_pulih` per koin) -- bukan didiamkan selamanya, dan bukan pula dilaporkan
-   setiap kali tanpa jeda. **Catatan upgrade dari v1.0.1 ke v1.0.2:** format kunci
-   notifikasi di `kripto/state.json` berubah (kini per jenis ambang, bukan per koin) --
-   riwayat "sudah dilaporkan" yang lama tidak terbaca lagi, jadi kondisi yang sedang
-   terlewati saat upgrade bisa dilaporkan ulang SEKALI di jalan pertama sesudah upgrade
-   (bukan bug, satu kali saja, lalu anti-spam berjalan normal lagi seperti biasa).
+   setiap kali tanpa jeda. (Upgrade dari v1.0.1: kondisi yang sedang terlewati bisa dilaporkan ulang SEKALI -- wajar.)
 6. Exit code script: `0` = tidak ada yang PERLU dilaporkan sekarang, `2` = ADA ambang HARGA
    yang perlu dilaporkan (baru terlewati, atau jeda lapor-ulang habis -- dipakai automation
    untuk memutuskan kapan perlu memanggil agent/mengirim pesan, lihat
@@ -151,7 +159,8 @@ dengan opini sendiri**, hanya merapikan & menghitung.
 2. Untuk berita: **kalau agent punya akses pencarian web** (`web_search`/`web_fetch` di
    OpenClaw, atau alat browsing di platform lain), cari berita terbaru untuk tiap kata
    kunci di `PANTAU.md`, ambil **maksimal 3-5 judul paling relevan hari itu**, dan
-   **selalu sertakan tautan sumber asli** per judul. Kalau **tidak ada** akses pencarian
+   **selalu sertakan URL artikel lengkap** (`https://.../judul-artikel`) per judul -- bukan
+   beranda situs, bukan "via Google News"; berita tanpa URL artikel: buang. Kalau **tidak ada** akses pencarian
    web, katakan itu jujur: *"Ringkasan berita tidak bisa dibuat -- agent ini tidak punya
    akses pencarian web saat ini. Harga & ambang tetap di bawah."* -- jangan menulis
    ringkasan berita dari ingatan tanpa tautan.
@@ -167,13 +176,27 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    ditemukan, jangan ditulis sama sekali (jangan mengarang "kemungkinan ada rilis X").
 4. Susun pesan: harga & perubahan 24 jam (dari Langkah B.1) → berita bertautan (atau
    pernyataan jujur tidak tersedia) → kalender peristiwa (kalau ada) → disclaimer.
+5. **Satu mata uang acuan per tabel (wajib).** Bila harga ditampilkan dalam Rupiah, persen
+   24 jam SEMUA koin diambil dari data IDR yang sama (CoinGecko `idr_24h_change`, atau Indodax
+   untuk semua koin) -- jangan mencampur persen USD dan IDR dalam satu tabel. Harga USD boleh
+   ditulis sebagai keterangan, tetapi persennya tetap dari mata uang acuan tabel. Sebut di atas
+   tabel: **sumber, mata uang acuan persen, dan waktu ambil (WIB)**, mis. *"CoinGecko, persen
+   24 jam dalam Rupiah, data 07:00 WIB"*. **Jam WIB dihitung, bukan ditebak:** pakai `jam_data`
+   dari `cek_ambang.py`, atau ubah waktu sumber (mis. `last_updated` CoinGecko ber-`Z` = UTC)
+   dengan `python3 <folder-skill-ini>/scripts/jam_wib.py <waktu>` dan kutip hasilnya
+   (07:10 UTC = 14:10 WIB). Waktu tanpa zona → jangan diberi label WIB. Bila satu koin tidak punya data IDR, tulis "tidak
+   tersedia" untuk koin itu, bukan diganti angka USD.
 
 ### C. Riset proyek terstruktur (checklist due diligence)
 1. Gunakan checklist di `references/checklist-riset.md` (tim, tokenomics, audit kontrak,
    likuiditas, status legal Indonesia). **Isi HANYA fakta yang punya sumber** (tautan
    resmi: whitepaper, situs proyek, explorer blockchain, laporan audit, OJK). Kolom yang
    tidak ditemukan sumbernya ditulis **"tidak ditemukan / perlu dicek"**, bukan diisi
-   perkiraan.
+   perkiraan. **Tokenomics/alokasi token** hanya dari sumber resmi proyek (dokumentasi/blog
+   resmi, whitepaper terbaru) dan **wajib menyebut tanggal sumbernya**; Wikipedia/artikel lama
+   bukan sumber alokasi. Bila sumber resmi terbaru tidak bisa dibuka, tulis *"alokasi belum
+   bisa saya cek dari sumber resmi terbaru -- perlu dicek"*, jangan mengutip dari ingatan.
+   Harga/volume: sumber + jam WIB hasil `jam_wib.py` (Langkah B.5).
 2. Untuk status legal Indonesia: cek `references/regulasi.md` untuk dasar hukum yang
    sudah terverifikasi (per tanggal referensi doc itu). Kalau member menanyakan status
    terkini yang mungkin sudah berubah, arahkan verifikasi ke ojk.go.id /
@@ -182,6 +205,13 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    netral (lihat Batas Tegas #5).
 4. **Tutup dengan disclaimer, dan JANGAN tambahkan kesimpulan "layak dibeli" atau
    sejenisnya** -- checklist berhenti di fakta, keputusan sepenuhnya di tangan member.
+5. **Format chat (Telegram/WhatsApp):** balasan pertama ringkas **±1.500-2.500 karakter**:
+   5-8 poin fakta terpenting + "Perhatian" (bila ada) + disclaimer, lalu tawarkan *"Mau
+   rincian lengkap per bagian checklist? Bisa saya kirim atau simpan sebagai file."* Rincian
+   lengkap hanya dikirim bila diminta (atau disimpan ke file di folder kerja). **Setiap poin
+   fakta diberi tautan lengkap** (`https://...` ke halaman yang dikutip, mis.
+   `https://api.coingecko.com/api/v3/coins/worldcoin-wld`), bukan nama domain ("world.org",
+   "Wikipedia"). Poin tanpa tautan yang bisa dicek: hapus atau tulis "perlu dicek".
 
 ### D. Jurnal trading (rapikan + hitung P/L)
 1. Jalankan:
@@ -199,16 +229,25 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    sudah lewat script (FIFO).
 3. Kalau ada `baris_bermasalah` (baris rusak atau jual melebihi stok tercatat), sampaikan
    ke member supaya jurnalnya diperbaiki -- jangan diam-diam mengabaikannya.
+   Kalau `cek_biaya` berisi baris (biaya > 1% nilai transaksi, atau jauh berbeda dari
+   transaksi sesisi lain) atau `cek_biaya_beli_vs_jual` terisi, **tandai** baris itu ke member
+   (tanggal, koin, beli/jual, persen biaya) dan minta dicek ke riwayat transaksi exchange --
+   jangan menebak sebabnya (salah ketik, fee + PPh tercampur, dll.) dan jangan mengubah P/L.
+   Jangan pula membandingkan total fee dengan estimasi pajak untuk menyimpulkan apa pun.
 4. Kalau ada `tinjau_ulang_jatuh_tempo` (rencana yang member tulis sendiri dan sudah jatuh
    tempo), sampaikan **persis seperti yang member tulis** di `syarat` -- **jangan** ditambah
    opini baru soal apakah rencana itu masih relevan atau tidak.
-5. **Info pajak (bukan nasihat, sekadar info):** transaksi kripto di platform PAKD
-   (Pedagang Aset Keuangan Digital) berizin OJK dalam negeri dikenai PPh final 0,21% dari
-   nilai transaksi (biasanya sudah dipotong otomatis oleh exchange -- lihat
-   `references/regulasi.md`). Kalau member menanyakan ini, sebutkan info ini dan sarankan
-   memasukkan potongan pajak itu ke kolom `biaya` di `JURNAL.csv` supaya P/L yang dihitung
-   sudah bersih (setelah pajak), lalu tetap arahkan ke konsultan pajak/DJP untuk kepastian
-   kewajiban pajak individu member (skill ini tidak menghitung SPT/pelaporan pajak).
+5. **Pajak (info, bukan nasihat) -- angka HANYA dari script.** Kutip `estimasi_pajak` hasil
+   `hitung_pl_jurnal.py` apa adanya (`ringkasan_teks`, `per_transaksi_jual`,
+   `total_estimasi_pph`); **jangan menghitung pajak sendiri**. Aturannya (PMK 50/2025, sejak
+   1 Agustus 2025, `references/regulasi.md` §4): PPh Pasal 22 final dipungut dari
+   **penjual**, basis = **nilai transaksi JUAL** saja (beli tidak kena PPh); 0,21% di PAKD
+   dalam negeri, 1% di exchange luar negeri (`--platform luar-negeri`; bila exchange belum
+   ditunjuk pemungut, disetor sendiri oleh penjual); PPN atas penyerahan kripto tidak
+   dipungut. Sebut asumsi platform. **Jangan menebak apakah PPh sudah termasuk di kolom
+   `biaya` member** -- katakan itu perlu dicek di riwayat transaksi exchange (kolom
+   pajak/PPh). Bila member memastikan belum termasuk, P/L setelah pajak =
+   `pl_bila_pph_belum_di_kolom_biaya`. SPT/kewajiban tahunan → konsultan pajak/DJP.
 
 ### E. Membuat jadwal otomatis (opsional, setelah A/B pertama kali berhasil manual)
 Lihat `references/openclaw-jadwal.md` untuk perintah `openclaw automations` yang
@@ -227,8 +266,8 @@ mengandalkan `automations run --wait` untuk menyimpulkan bahwa trigger otomatis 
 ## Format output
 Semua keluaran (ringkasan pagi, notifikasi ambang, hasil riset, hasil jurnal) diakhiri
 dengan baris disclaimer: *"Informasi, bukan nasihat investasi. Keputusan & risiko
-sepenuhnya milik Anda."* Notifikasi ambang & ringkasan pagi selalu mencantumkan **sumber
-data & jam data** (dari field `sumber`/`jam_data` hasil `cek_ambang.py`), termasuk kalau
+sepenuhnya milik Anda."* Semua sumber ditulis sebagai URL lengkap ke halaman/artikel yang dikutip. Notifikasi ambang & ringkasan pagi selalu mencantumkan **sumber
+data, mata uang acuan persen, & jam data** (dari field `sumber`/`jam_data` hasil `cek_ambang.py`), termasuk kalau
 sedang memakai data cache/basi.
 
 ## Contoh

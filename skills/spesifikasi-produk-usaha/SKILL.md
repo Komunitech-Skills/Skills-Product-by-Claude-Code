@@ -36,6 +36,8 @@ Mengubah ide produk yang masih di kepala menjadi **satu dokumen spesifikasi 1-3 
 Kalau info kurang: tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan singkat. Bila pengguna ingin cepat, pakai default masuk akal dan **sebutkan asumsinya di bagian atas dokumen**.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Tentukan jenis** dokumen yang diminta: (A) spesifikasi lengkap, (B) prioritas + roadmap, (C) brief ke pihak lain, (D) catatan versi. Kalau tidak jelas, kerjakan A lalu tawarkan B/C.
 2. **Pilih templat** dari `templates/spesifikasi-produk.md` sesuai jenis usaha: F&B/minuman, fashion, kosmetik/perawatan, kerajinan, atau digital/jasa. Buang bagian yang tidak relevan; jangan mengisi bagian yang tidak diketahui dengan karangan.
 3. **Isi bagian inti** (lihat Format Output), termasuk **Ukuran keberhasilan**: 1-3 target terukur dengan batas waktu (jumlah terjual, pembeli ulang, skor uji rasa/pakai, komplain). Kalau pengguna belum punya angka, usulkan dan tandai **[ASUMSI]**. Tulis dalam bahasa sehari-hari; tiap persyaratan harus bisa **dicek** ("botol 250 ml, isi bersih 240-250 ml", bukan "botol bagus").

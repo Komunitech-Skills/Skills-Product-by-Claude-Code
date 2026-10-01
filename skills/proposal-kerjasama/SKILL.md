@@ -38,6 +38,19 @@ Mengubah ide kerja sama yang masih di kepala pengguna menjadi proposal yang meya
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, isi dengan default, beri `[isi ...]` pada data spesifik, dan tulis "Asumsi" di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+0. **Tulis "Fakta dari pengguna" dulu (wajib, sebelum menulis proposal).** Daftar butir yang *benar-benar*
+   disebut pengguna, dengan kata-kata pengguna: nama usaha & produk (persis, mis. "kopi susu literan"), kota &
+   konteksnya (kota usaha? kota mitra?), angka, klaim yang diminta pengguna, bukti yang dilampirkan. Setiap klaim
+   tentang produk, asal, ukuran/kemasan, reputasi ("dikenal", "favorit", "laris"), pasar ("tren terus
+   diminati"), legalitas, dan komitmen di proposal **harus bisa ditelusuri ke satu butir di daftar ini**; yang
+   tidak ada → hapus, `[isi: ...]`, atau tulis di Asumsi. Simpan salinan persis pesan pengguna sebagai `fakta.txt`.
+   Yang paling sering dikarang AI (dilarang):
+   - Reputasi/kalimat turunan: "sudah dikenal pelanggan di Solo", "favorit warga", "tren kopi susu terus diminati".
+     Klaim yang diminta pengguna ("paling laris se-Solo") ditulis versi lunak + `[isi: bukti]`, bukan diperluas.
+   - Ukuran/kemasan: produk "literan" jangan ditulis "botol 250ml"; tulis kata pengguna atau `[isi: ukuran kemasan]`.
+   - Sifat produk yang tidak disebut ("rumahan", "tanpa pengawet", "premium") dan kota asal yang hanya kota mitra.
 1. **Pahami sudut pandang mitra.** Tulis dulu (untuk diri sendiri) 3 hal yang mitra pedulikan: tambahan pemasukan, risiko kecil, kerja tambahan minimal, citra/brand, kebutuhan pelanggannya. Semua bagian proposal harus menjawab ini.
 2. **Pilih kerangka** sesuai jenis kerja sama di `references/kerangka-per-jenis.md` (B2B supply, konsinyasi, reseller/agen, sponsorship, co-branding/kolaborasi).
 3. **Hitung simulasi angka dengan script** bila ada angka (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
@@ -52,11 +65,22 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - Pisahkan skenario dengan `;` (maks. 5), mis. `"50;100;200"`. Label otomatis: Pesimis/Realistis/Optimis. Input ambigu seperti `30,60` ditolak script dengan pesan `ambigu` — tulis ulang dengan `;`.
    - Ada `test_hitung_skema.py` di folder `scripts/` untuk uji regresi (opsional, `python3 scripts/test_hitung_skema.py`).
    - Tabel "Bagian toko/mitra" masuk ke proposal; kolom modal/laba produsen **hanya untuk pengguna**, jangan dimasukkan ke proposal kecuali pengguna minta.
+   - **Saran porsi bagi hasil/komisi/diskon wajib dicek dengan hitungan untung/rugi eksplisit** sebelum disarankan atau dituliskan, dan tampilkan titik impasnya ke pengguna: porsi maksimal mitra/toko agar pemilik tidak rugi = (harga jual − modal) ÷ harga jual (mis. Rp20.000, modal Rp14.000 → 30% = impas, laba Rp0). Jangan menyarankan porsi yang sama dengan atau di atas titik impas; jalankan script dengan porsi yang disarankan dan pastikan laba per unit > 0 (tabel laba hanya untuk pengguna). Untuk bagi hasil laba/reseller, hitung juga margin pemilik/reseller per unit pada porsi tersebut.
    - Jika script menampilkan `PERINGATAN` (skema rugi), sampaikan ke pengguna sebelum menulis proposal.
    - Sponsorship: nilai paket biasanya angka tetap; tidak perlu script kecuali ada potongan/perhitungan. Jika menjumlahkan beberapa paket, jumlahkan manual dan tulis rinciannya.
 4. **Tulis proposal** dengan format di bawah. Versi singkat ≤ ±350 kata; versi lengkap boleh 2–5 halaman.
 5. **Buat pesan pengantar** WA (≤ 8 baris) dan subjek + isi email singkat untuk mengirim proposal.
-6. **Periksa** dengan checklist; tawarkan versi lain (singkat ↔ lengkap, lebih formal, bahasa Inggris).
+6. **Cek-silang fakta dengan script (wajib bila Python bisa jalan).** Simpan proposal + pesan WA + email ke
+   `proposal.md` (di folder kerja), lalu:
+   ```bash
+   python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file proposal.md --fakta-file fakta.txt --abaikan jam
+   ```
+   `fakta.txt` = salinan **persis** pesan pengguna (bukan ringkasan, jangan ditambah). GAGAL ditandai untuk
+   klaim reputasi/pasar/sifat/label/layanan, asal produk, ukuran/kemasan, dan angka kredibilitas (jumlah
+   pelanggan, "sejak 2019") yang tidak ada di fakta. **Semua GAGAL wajib diperbaiki**, lalu jalankan ulang
+   sampai `HASIL: LULUS`. CEK = klaim dari pengguna yang belum ada `[isi: bukti]`. Tanpa Python: lakukan
+   cek-silang manual memakai checklist "Cek-silang fakta" di bawah.
+7. **Periksa** dengan checklist; tawarkan versi lain (singkat ↔ lengkap, lebih formal, bahasa Inggris).
 
 ### Fallback jika Python tidak bisa dijalankan
 Hitung manual dan tulis rumusnya; beri tahu pengguna "angka dihitung manual, mohon dicek":
@@ -107,11 +131,13 @@ Setelah proposal, beri **Pesan pengantar WA** dan **Email (subjek + isi)**, lalu
 ## Contoh
 **Input pengguna:** "Aku punya usaha keripik singkong pedas 'Kriuk Mbok Darmi' di Bantul, mau titip jual di 5 cabang Kopi Senja Jogja. Harga jual 25rb/bungkus, toko dapat 20%. Modalku 14rb. Buat versi singkat."
 
+**Fakta dari pengguna:** keripik singkong pedas "Kriuk Mbok Darmi" · di Bantul · titip jual di 5 cabang Kopi Senja Jogja · harga jual 25rb/bungkus · toko 20% · modal 14rb · versi singkat.
+
 **Output (ringkas):** script konsinyasi skenario 50/100/200 bungkus per cabang per bulan → bagian toko Rp 250.000 / Rp 500.000 / Rp 1.000.000 per cabang. Proposal singkat:
 ```
 # Proposal Kerja Sama Titip Jual – Kriuk Mbok Darmi × Kopi Senja Jogja
 
-**Ringkasan:** Kriuk Mbok Darmi, keripik singkong pedas rumahan dari Bantul, ingin menitipkan produk di 5 cabang Kopi Senja. Kopi Senja mendapat 20% dari setiap bungkus terjual tanpa modal stok, dan pelanggan punya camilan pendamping kopi.
+**Ringkasan:** Kriuk Mbok Darmi, keripik singkong pedas dari Bantul, ingin menitipkan produk di 5 cabang Kopi Senja. Kopi Senja mendapat 20% dari setiap bungkus terjual tanpa modal stok, dan pelanggan punya camilan pendamping kopi.
 
 **Skema kerja sama:**
 - Kami antar stok awal 30 bungkus/cabang dan mengisi ulang tiap minggu.
@@ -128,10 +154,20 @@ Setelah proposal, beri **Pesan pengantar WA** dan **Email (subjek + isi)**, lalu
 (Tabel modal/laba Rp 6.000 per bungkus hanya ditunjukkan ke pengguna, tidak masuk proposal.)
 Asumsi yang disebut di akhir: stok awal 30 bungkus/cabang, isi ulang mingguan, display disediakan, uji coba 3 bulan di 2 cabang — konfirmasi ke pengguna.
 
+## Cek-silang fakta (wajib, sebelum mengirim)
+Telusuri setiap kalimat proposal, pesan WA, email, dan Asumsi terhadap daftar "Fakta dari pengguna":
+- [ ] Nama & jenis produk, kemasan/ukuran persis kata pengguna (tidak ada "250ml"/"500gr" yang tidak disebut)
+- [ ] Tidak ada reputasi/pasar turunan ("sudah dikenal di …", "favorit …", "tren … terus diminati") tanpa butir fakta
+- [ ] Klaim yang diminta pengguna tanpa bukti (BPOM, terlaris) memakai versi lunak + `[isi: bukti]`
+- [ ] Kota hanya dipakai dalam konteks yang disebut pengguna (kota mitra ≠ kota asal produk)
+- [ ] `cek_fakta.py` menulis `HASIL: LULUS` (atau cek manual sudah dilakukan dan disebut ke pengguna)
+
 ## Checklist sebelum mengirim hasil
 - [ ] Setiap bagian menjawab "apa untungnya untuk mitra", bukan hanya memuji produk sendiri.
 - [ ] Angka dari output script (atau hitung manual tertulis + peringatan); tidak ada angka yang dikarang.
-- [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, SNI, "terlaris", jumlah pelanggan, follower).
+- [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, SNI, "terlaris", jumlah pelanggan, follower), termasuk klaim turunan ("dikenal luas di ...", "tren terus diminati"). Bila pengguna meminta klaim yang belum terbukti, tulis versi lunak + `[isi: bukti]`.
+- [ ] Porsi/komisi yang disarankan sudah dicek untung-rugi dan titik impasnya disebut ke pengguna.
+- [ ] Komitmen operasional default (display, stok awal, isi ulang) tercantum di Asumsi.
 - [ ] Skema jelas: alur barang & uang, jadwal bayar, retur/klaim, siapa menanggung apa.
 - [ ] Ada langkah berikutnya yang konkret (uji coba, jadwal meeting) dan kontak.
 - [ ] Data internal (modal, laba) tidak bocor ke proposal kecuali diminta.

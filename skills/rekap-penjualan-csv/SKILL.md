@@ -22,8 +22,8 @@ Mengubah data penjualan mentah menjadi ringkasan yang mudah dipahami pemilik usa
    - nama produk (wajib)
    - jumlah/qty (opsional, default 1)
    - total harga baris (wajib; jika tidak ada, gunakan harga satuan × qty)
-2. **Jalankan script analisis** `scripts/rekap.py`. Path ini relatif terhadap folder yang berisi
-   SKILL.md ini; gunakan path lengkapnya. Di Windows, ganti `python3` dengan `python` atau `py`:
+2. **Jalankan script analisis** `scripts/rekap.py`. Script ada di subfolder `scripts/` di folder yang sama
+   dengan SKILL.md ini (folder skill); gunakan path lengkapnya dan jangan mencarinya ke seluruh disk (`find /`). Di Windows, ganti `python3` dengan `python` atau `py`:
    ```bash
    python3 <folder-skill-ini>/scripts/rekap.py <file.csv> \
      --kolom-tanggal "Tanggal" --kolom-produk "Produk" \
@@ -32,6 +32,8 @@ Mengubah data penjualan mentah menjadi ringkasan yang mudah dipahami pemilik usa
    - Jika tidak ada kolom total tapi ada harga satuan, pakai `--kolom-harga "Harga"` sebagai ganti `--kolom-total`.
    - Jika ada kolom status pesanan (ekspor Shopee/Tokopedia), **selalu** tambahkan `--kolom-status "Status Pesanan"`
      agar pesanan batal/retur/refund tidak dihitung sebagai omzet.
+   - Jika ada kolom nomor pesanan (mis. `No. Pesanan` di Shopee), tambahkan `--kolom-pesanan "No. Pesanan"` agar
+     jumlah transaksi per hari dihitung per pesanan unik, bukan per baris produk.
    - Delimiter (`,` `;` tab), encoding Excel Windows, format angka (`Rp 15.000`, `Rp. 25000`, `15.000,-`, `15.000,50`),
      dan tanggal (`01/09/2026`, `2026-09-01 10:00`, `1 Sep 2026`, `1 Agustus 2026`) dideteksi otomatis.
    - Jika output berisi `peringatan` tentang urutan tanggal ambigu, tanyakan ke pengguna apakah formatnya
@@ -54,7 +56,8 @@ Mengubah data penjualan mentah menjadi ringkasan yang mudah dipahami pemilik usa
 |---|---|---|---|---|
 
 ### Tren harian
-Hari terbaik: <tanggal> (Rp ...). Hari terendah: <tanggal> (Rp ...).
+Hari omzet tertinggi: <tanggal> (Rp ...). Hari omzet terendah: <tanggal> (Rp ...).
+Hari transaksi terbanyak: <tanggal> (<jumlah> pesanan/baris transaksi).
 
 ### Insight
 1. ...
@@ -62,6 +65,9 @@ Hari terbaik: <tanggal> (Rp ...). Hari terendah: <tanggal> (Rp ...).
 ```
 
 ## Aturan & batasan
+
+- Pertanyaan "hari paling rame/ramai" dijawab dari **dua sisi**: omzet (`hari_terbaik`) **dan** jumlah transaksi
+  (`hari_transaksi_terbanyak`, sebut satuannya: pesanan unik atau baris). Bila tanggalnya berbeda, jelaskan bedanya.
 
 - Semua angka rupiah ditulis dengan pemisah ribuan titik: `Rp 1.250.000`.
 - Jangan mengarang angka: semua angka harus berasal dari output script.

@@ -53,6 +53,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mulai ("catat stok toko saya")
 1. `info --json`. Jika gagal karena database belum ada → kirim satu pesan: (1) boleh disimpan di `~/KomunitechData/stok.db`? (2) kirim daftar barang (file Excel/CSV, contoh format `templates/daftar-produk.csv`) atau ketik per baris: nama, varian, harga beli, harga jual, stok sekarang, stok minimum, rak.
 2. `init` → konfirmasi → `init --ya`.

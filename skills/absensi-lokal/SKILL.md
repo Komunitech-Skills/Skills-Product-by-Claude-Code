@@ -56,6 +56,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mulai ("catat absen karyawan saya")
 1. `info --json`. Jika database belum ada → satu pesan: (1) boleh disimpan di `~/KomunitechData/absensi/`? (2) daftar karyawan: nama, pola 5/6 hari, jam masuk–pulang; (3) pakai mesin fingerprint? Jika ya, ID tiap karyawan di mesin; (4) toleransi terlambat berapa menit? (5) mau dihitung rupiah lemburnya? Jika ya, gaji pokok + tunjangan tetap.
 2. `init` → konfirmasi → `init --ya`. Shift selain REG: `shift tambah --kode MALAM --masuk 22.00 --pulang 06.00 [--istirahat 60] [--pulang-hari-pendek 13.00]` (pulang ≤ masuk = otomatis lewat tengah malam).

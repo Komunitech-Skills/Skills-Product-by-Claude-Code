@@ -1,6 +1,6 @@
 # PDF Lokal: Olah PDF di Komputer Sendiri, Tanpa Upload
 
-**Gabung, kompres, OCR, kunci, dan rapikan PDF - lewat Stirling-PDF di laptopmu sendiri, bukan situs online.**
+**Gabung, kompres, OCR, kunci, dan rapikan PDF - di laptopmu sendiri, bukan situs online. Belum pasang Stirling-PDF? Tugas umum tetap jalan dengan alat PDF yang sudah ada di komputermu.**
 
 ## Manfaat
 - ✅ **Privasi terjaga** - script ini hanya bicara ke Stirling-PDF di komputer sendiri
@@ -43,10 +43,12 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Kunci PDF slip gaji karyawan pakai kata sandi"
 - "Susun 8 resi Shopee ini jadi 4 per lembar biar hemat kertas"
 
-**Syarat:** aplikasi **Stirling-PDF** harus sudah terpasang & menyala di komputer yang
-sama (gratis, sekali pasang ±5 menit). Panduan lengkap ada di `docs/panduan-stirling-pdf.md`
-yang ikut dalam paket. Kalau belum sempat memasangnya, skill ini tetap memandu langkah
-manual klik-klik di aplikasinya (lihat SKILL.md bagian "Cara manual tanpa script").
+**Syarat:** paling lengkap dengan aplikasi gratis **Stirling-PDF** yang menyala di komputer
+yang sama (panduan ringkas: `references/pasang-stirling.md` di folder skill ini).
+**Belum ada Stirling-PDF?** Untuk gabung, pisah, kompres, putar, dan kunci/buka sandi,
+AI agent otomatis memakai alat PDF yang **sudah** terpasang di komputermu (qpdf,
+Ghostscript, atau pdftk - umum ada di Linux/macOS dan sebagian Windows), tanpa memasang
+apa pun. OCR, watermark, foto ke PDF, dan rapikan resi tetap butuh Stirling-PDF.
 
 ## Instalasi singkat
 Salin folder `pdf-lokal` ke folder skills AI agent kamu:
@@ -58,8 +60,8 @@ Salin folder `pdf-lokal` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` dan
-`docs/panduan-stirling-pdf.md` (pasang Stirling-PDF-nya) di dalam paket.
+Panduan lengkap memasang skill (termasuk Windows): `docs/instalasi.md` di ZIP paket.
+Cara memasang Stirling-PDF: `references/pasang-stirling.md` di dalam folder skill ini.
 
 ## Status pengujian (jujur, biar tidak salah ekspektasi)
 - Script **sudah diuji nyala ke Stirling-PDF sungguhan versi 2.14.3 DAN 3.0.0** (lewat
@@ -89,6 +91,17 @@ berbayar milik Stirling-Tools sendiri (tanda tangan sertifikat, SSO, tim) yang *
 dipakai/dibutuhkan skill ini.
 
 **Kalau saya belum pasang Stirling-PDF, skill ini percuma?**
-Tidak - skill tetap memandu kamu langkah demi langkah lewat aplikasi Stirling-PDF
-secara manual (klik-klik), dan `docs/panduan-stirling-pdf.md` menuntun pemasangannya
-dari nol (±5-10 menit, gratis).
+Tidak. Gabung, pisah, kompres, putar, dan kunci sandi tetap dikerjakan dengan alat PDF
+yang sudah ada di komputermu (qpdf/Ghostscript/pdftk), tanpa memasang apa pun. Kalau alat
+itu juga tidak ada, AI memandu cara manual (Preview di Mac, "Microsoft Print to PDF" di
+Windows) dan `references/pasang-stirling.md` menuntun pemasangan Stirling-PDF (gratis).
+
+## Catatan revisi 1.0.5 (2026-10-01)
+Dari uji sebelum/sesudah OpenClaw: tanpa Stirling-PDF yang menyala, skill membuat AI
+berhenti padahal qpdf/Ghostscript sudah ada di komputer, dan merujuk panduan yang tidak
+ikut di folder skill. Kini: **jalur cadangan** `scripts/pdf_cadangan.py` mendeteksi qpdf,
+Ghostscript, dan pdftk yang sudah terpasang lalu langsung mengerjakan gabung, pisah,
+kompres, putar, kunci (AES-256 via qpdf), dan buka kunci - tanpa pip install, tanpa unggah,
+file asli tidak ditimpa. Panduan pasang Stirling-PDF diringkas ke
+`references/pasang-stirling.md` (di dalam folder skill). Tes baru `tests/uji_cadangan.py`
+(26 skenario: deteksi alat, pilihan fallback, input buruk, verifikasi hasil dengan qpdf).

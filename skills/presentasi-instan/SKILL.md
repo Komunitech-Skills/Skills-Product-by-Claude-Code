@@ -59,6 +59,8 @@ pakai default masuk akal di atas dan sebutkan asumsi yang dipakai di ringkasan a
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 1. **Tentukan jenis presentasi** dari jawaban pengguna, lalu baca template yang sesuai
    di `templates/`: `pitch-investor.md`, `proposal-b2b.md`, `pengajuan-kur.md`,
    `laporan-bulanan.md`, `profil-perusahaan.md`, `produk-ke-reseller.md`, atau

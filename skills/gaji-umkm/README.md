@@ -59,3 +59,8 @@ Tidak otomatis, karena cara prorata tergantung perjanjian kerja masing-masing us
 
 **Apakah bisa transfer gaji langsung dari aplikasi?**
 Tidak, dan memang disengaja. Aplikasi hanya membuat file CSV daftar transfer. Kamu yang mengunggah ke internet banking dan menyetujuinya. Nomor rekening di file disamarkan, kecuali kamu memintanya lengkap untuk diunggah ke bank.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+- AI tidak lagi berhenti untuk menanyakan tanggal masuk di giliran terpisah (temuan uji OpenClaw). Bila nama, status, dan gaji pokok sudah ada, AI langsung menghitung dengan default wajar (tanggal masuk 1 Januari tahun berjalan, JKK 0,24%, ikut semua BPJS) dan menyebut asumsinya. Semua hal yang perlu dicek — tanggal masuk, **UMK daerah**, tarif JKK — digabung dalam **satu** pesan.
+- Pemakaian pertama: angka langsung keluar di balasan pertama lewat mesin hitung yang sama (hitungan sementara, tanpa menyimpan), lalu database dibuat setelah Anda setuju.
+- Instruksi: script dijalankan dari subfolder `scripts/` di folder skill (tidak mencari ke seluruh disk). Script aplikasi tidak berubah; uji regresi tetap lulus.

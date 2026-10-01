@@ -51,6 +51,8 @@ jalankan dengan default di atas dan sebutkan di akhir laporan bahwa tidak ada pe
 lalu / omzet bila memang tidak diberikan — **jangan mengarang angka pembanding**.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Path script relatif terhadap folder SKILL.md ini. Windows: ganti `python3` dengan `python`/`py`.
 
 ### 1. Satu platform, satu minggu
@@ -113,8 +115,13 @@ Nama file keluaran tidak boleh sama dengan file ekspor asli (ditolak agar tidak 
 ### 4. Tulis laporan ke pengguna
 Kirim field `teks` (dari `--json`) atau keluaran teks langsung **apa adanya**: boleh menambah
 1-2 kalimat pembuka, tapi **jangan mengubah angka/persen**. Blok `⚠️ PERLU DICEK SEBELUM DIPAKAI`
-(di atas) dan `Catatan` (di bawah, termasuk sel kosong yang dihitung 0, baris total yang
-dilewati, dan kolom yang dibaca) wajib ikut terkirim. Bila ada ⚠️, sebutkan di kalimat pembuka.
+(di atas), baris `Kolom dibaca: ...` (baris ke-3), bagian `TUJUAN BERBEDA` (bila ada), dan blok
+`Catatan` (di bawah) wajib ikut terkirim **utuh, baris per baris — jangan diringkas atau dipotong**.
+Bila ada ⚠️, sebutkan di kalimat pembuka.
+**Nilai kampanye terhadap tujuannya:** kampanye bertujuan Traffic/Awareness/Reach/Video views/
+Engagement (dari kolom Objective/Result indicator, atau dari namanya) yang 0 hasil **bukan**
+"iklan gagal". Jangan menyarankan mematikannya karena "0 pesan WA"; kutip CPC/CTR/CPM-nya dari
+bagian `TUJUAN BERBEDA` dan tanyakan apakah tujuan itu masih dibutuhkan.
 
 ### 5. (Lanjutan, opsional) Jadwalkan otomatis
 Setelah pengguna puas dengan hasil laporan manual di atas selama minimal 1 minggu, tawarkan
@@ -138,6 +145,13 @@ Biaya vs omzet   = total biaya ÷ omzet × 100%   (hanya bila --omzet diisi)
 Rata-rata saran  = total biaya ÷ total hasil    (= "Biaya per hasil" di laporan)
 ```
 Semua hitungan memakai `Decimal` (tanpa float). Kampanye berbiaya Rp 0 (dijeda) tidak dinilai.
+**Tujuan kampanye (v1.0.10):** kolom `Objective`/`Result indicator`/`Campaign type` (bila ada)
+diutamakan, bila tidak ada dipakai nama kampanye/iklan/induknya. Sel yang menyebut pesan/lead/
+pembelian/konversi = kampanye hasil. Kampanye bertujuan Traffic/Awareness/Reach/Video views/
+Engagement dengan 0 hasil masuk `TUJUAN BERBEDA` (CPC, CTR, CPM), tidak masuk PERLU PERHATIAN/saran
+hentikan; total belanja tetap memuatnya, dan Catatan menyebut biaya per hasil tanpa belanja itu.
+Kampanye bertujuan lain yang tetap punya hasil dinilai biasa, tapi saran "matikan"-nya diganti
+catatan "wajar lebih mahal per hasil, nilai juga dari CPC & CTR".
 TERBAIK = biaya per hasil termurah; PERLU PERHATIAN = tanpa hasil (biaya terbesar dulu) lalu
 biaya per hasil termahal; keduanya **tidak pernah beririsan**. Saran "matikan" = biaya per hasil
 > 2× rata-rata; "naikkan" = ≤ ½ rata-rata; di bawah 5 hasil diberi catatan "sampel kecil".
@@ -152,6 +166,7 @@ Coretax (tidak relevan untuk laporan iklan, tapi mengikuti standar pembulatan li
 ```
 LAPORAN IKLAN MINGGUAN — <Platform>
 Periode: <awal> s.d. <akhir>             (dari kolom tanggal/Reporting starts-ends/baris judul)
+Kolom dibaca: nama='...', biaya='...', ... (wajib ikut dikirim)
 
 ⚠️ PERLU DICEK SEBELUM DIPAKAI:          (hanya bila ada)
 - ...
@@ -174,12 +189,15 @@ TERBAIK (biaya per hasil termurah)        (maks. 3)
 PERLU PERHATIAN (tanpa hasil / biaya per hasil termahal)   (maks. 3, tanpa irisan)
 1. <nama>: Rp ... terpakai, 0 hasil
 
+TUJUAN BERBEDA (Traffic/Awareness dll. — tidak dinilai dari hasil)   (bila ada)
+1. <nama> [Traffic]: Rp ... | Klik ... | CPC Rp ... | CTR ...% | CPM Rp ...
+
 SARAN
 1. ...
 (Saran berdasarkan angka minggu ini, bukan jaminan hasil. Keputusan tetap di tangan Anda.)
 
 Catatan:
-- ... (mata uang/kurs, sel kosong = 0, baris total dilewati, PPN bila --omzet, kolom dibaca)
+- ... (mata uang/kurs, sel kosong = 0, baris total dilewati, kampanye bertujuan lain, PPN bila --omzet)
 ```
 
 ## Contoh
@@ -197,7 +215,7 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v
   terverifikasi dari ekspor asli**: nama kolom Meta Ads dan perilaku sel `Results` kosong,
   bentuk ekspor Google Ads (baris judul, `Total: Account`), dan beberapa kolom TikTok bersandar
   pada ringkasan/sumber pihak ketiga (status per platform di `references/sumber-kolom.md`).
-  Karena itu laporan selalu mencetak "Kolom dibaca: ..." di Catatan: cocokkan sekali dengan file
+  Karena itu laporan selalu mencetak "Kolom dibaca: ..." di baris ke-3 laporan: cocokkan sekali dengan file
   pengguna. Deteksi gagal → script memberi daftar kolom + cara mengisi manual (`--kolom-...`);
   jangan menebak sendiri.
 - **Baris total (v1.0.3)** dikenali dari kata kepala di awal sel ("Total", "Totals", "Jumlah",
@@ -251,6 +269,7 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v
   pelanggan/nomor kontak yang diproses atau dikirim ke layanan eksternal.
 
 ## Riwayat versi
+- **1.0.10** (2026-10-01): dari uji OpenClaw: kampanye Traffic/Awareness/Reach/Video views/Engagement tanpa pesan tidak lagi disarankan dimatikan — dinilai terhadap tujuannya (bagian `TUJUAN BERBEDA` berisi CPC/CTR/CPM; Catatan menyebut biaya per hasil khusus kampanye hasil). Baris "Kolom dibaca" dipindah ke atas (baris ke-3) agar tidak terpotong; Langkah 4 menegaskan blok dikirim utuh. Tes regresi 98.
 - **1.0.8** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
 - **1.0.7** (2026-09-29): pada file bertingkat (kampanye > grup iklan), baris yang kolom grup iklannya kosong padahal kampanye itu punya baris grup iklan bernama diperiksa: bila biaya, tayangan & kliknya sama dengan jumlah baris grup iklan (total kampanye tanpa label) baris itu tidak dihitung dua kali dan diberi ⚠️; bila tidak sama tetap dihitung dengan ⚠️ "mohon cek". Baris Performance Max tanpa saudara tidak terkena. Tes regresi 94.
 - **1.0.5** (2026-09-29): baris Google Performance Max tanpa grup iklan tidak lagi tampil

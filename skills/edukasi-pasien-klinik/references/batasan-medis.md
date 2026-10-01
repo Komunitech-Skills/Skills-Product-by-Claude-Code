@@ -32,6 +32,11 @@ Pertanyaan gejala/keluhan kesehatan:
 > "Untuk keluhan kesehatan seperti ini sebaiknya dikonsultasikan langsung ke dokter kami, ya.
 > Mau saya bantu buatkan jadwal konsultasi?"
 
+Pertanyaan memakai obat resep sisa atau milik orang lain (mis. antibiotik sisa kakaknya) —
+**PERLU REVIEW tenaga medis** sebelum rilis; tanpa dosis, tanpa menilai obatnya:
+> "Mohon jangan memberikan obat resep milik orang lain atau obat sisa, termasuk antibiotik
+> sisa, sebelum diperiksa dokter, ya. Obat resep ditentukan dokter khusus untuk tiap pasien."
+
 Keluhan yang terdengar berat/memburuk atau di luar jam praktik (tetap **bukan** penilaian
 kegawatan — hanya mengarahkan ke jalur aman):
 > "Kalau kondisinya memburuk atau terasa darurat, mohon segera ke IGD terdekat atau hubungi

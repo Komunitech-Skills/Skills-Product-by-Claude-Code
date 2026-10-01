@@ -5,7 +5,7 @@
 Untuk Meta (Facebook/Instagram) Ads, TikTok Ads, Google Ads, Shopee Ads, dan iklan TikTok Shop/Tokopedia.
 Tanpa memberi password, tanpa login, tanpa API: cukup screenshot, file ekspor, atau menjawab beberapa pertanyaan.
 
-Versi 1.0.1.
+Versi 1.0.4.
 
 ## Manfaat
 - ✅ **Skor kesehatan 0–100 yang bisa dipertanggungjawabkan** — dihitung script dengan bobot jelas, bukan "feeling" AI.
@@ -51,6 +51,11 @@ Salin folder `audit-akun-iklan` ke folder skills AI agent Anda:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script memakai Python bawaan, tanpa instal paket tambahan.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Setiap ROAS yang Anda sebut (target maupun rata-rata) kini selalu dibandingkan dengan ROAS impas oleh script dan dinyatakan **RUGI / IMPAS / UNTUNG** beserta perkiraan rugi/laba per pesanan.
+- Iklan klinik & fasilitas kesehatan: saran mengikuti Permenkes 1787/2010 (tanpa testimoni pasien, tanpa promo diskon, tanpa janji hasil).
+- Lokasi file kerja yang dibuat selalu disebutkan.
 
 ## FAQ
 **Apakah saya harus memberikan password atau akses akun iklan?**

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Uji regresi buat_kalender.py. Jalankan: python3 uji_regresi.py (hanya library standar)."""
+"""Uji regresi buat_kalender.py (+ --cek-teks/--fakta & cek_fakta.py). Jalankan: python3 uji_regresi.py (hanya library standar)."""
 import json
 import os
 import subprocess
@@ -55,6 +55,90 @@ class Uji(unittest.TestCase):
         for arg in (["--mulai", "2026-13-01"], ["--hari", "3"], ["--pilar", "Promo"], ["--momen", "2026-10-10"],
                     ["--isi", "tidak-ada.json"]):
             self.assertEqual(jalan(*arg).returncode, 1, arg)
+
+
+    def tulis(self, isi, nama="teks.md"):
+        f = os.path.join(tempfile.mkdtemp(), nama)
+        with open(f, "w", encoding="utf-8") as h:
+            h.write(isi if isinstance(isi, str) else json.dumps(isi))
+        return f
+
+    def test_ramadan_otomatis_dari_tabel_perkiraan(self):
+        b = kerangka("--mulai", "2027-02-20", "--hari", "30")["baris"]
+        momen = {x["Tanggal"]: x["Momen"] for x in b}
+        self.assertIn("Ramadan hari ke-13", momen["2027-02-20"])
+        self.assertIn("Nuzulul", momen["2027-02-24"])
+        self.assertIn("THR", momen["2027-03-03"])
+        self.assertIn("Idulfitri 1448 H (perkiraan", momen["2027-03-10"])
+        self.assertIn("Lebaran H+1", momen["2027-03-11"])
+        for x in b:  # di tengah Ramadan/Lebaran tidak ada "Tanggal tua"; Lebaran tanpa promo
+            if x["Tanggal"] <= "2027-03-24":
+                self.assertNotIn("Tanggal tua", x["Momen"], x["Tanggal"])
+            if x["Tanggal"] in ("2027-03-10", "2027-03-11"):
+                self.assertNotIn("promo", x["Pilar"].lower())
+
+    def test_tanggal_dari_pengguna_menggantikan_tabel(self):
+        b = kerangka("--mulai", "2027-02-20", "--hari", "30", "--idulfitri", "2027-03-09")["baris"]
+        momen = {x["Tanggal"]: x["Momen"] for x in b}
+        self.assertIn("Idulfitri", momen["2027-03-09"])
+        self.assertIn("dari pengguna", momen["2027-03-09"])
+        self.assertNotIn("Idulfitri", momen["2027-03-10"])
+
+    def test_tabel_script_sama_dengan_references(self):
+        sys.path.insert(0, os.path.dirname(SCRIPT))
+        import buat_kalender as bk
+        with open(os.path.join(os.path.dirname(SCRIPT), "..", "references", "momen-dan-pilar.md"), encoding="utf-8") as f:
+            ref = f.read()
+        for jenis, label in (("imlek", "Imlek"), ("awal_ramadan", "Awal Ramadan"), ("idulfitri", "Idulfitri")):
+            for th, d in bk.PERKIRAAN[jenis].items():
+                self.assertIn("±{} {} {}".format(d.day, bk.BULAN[d.month], th), ref, (jenis, th))
+
+    def test_cek_teks_tanggal_idulfitri_salah_di_tips(self):
+        # Kasus uji ulang OpenClaw 2026-10-01: tips menulis "19-20 Mar (Idulfitri)" padahal tabel 10 Mar 2027.
+        f = self.tulis("Ramadan hari ke-13 dst.\n3. Tanggal 19-20 Mar (Idulfitri) jangan jadwalkan jualan.\n")
+        r = jalan("--mulai", "2027-02-20", "--hari", "30", "--cek-teks", f)
+        self.assertEqual(r.returncode, 2, r.stdout)
+        self.assertIn("19-20 Mar", r.stdout)
+        f = self.tulis("Awal Ramadan ±8 Feb 2027 (perkiraan). Tanggal 10–11 Mar (Idulfitri, perkiraan) cuma ucapan;"
+                       " pre-order sampai 3 Mar sebelum Lebaran.\n| 19 | 10 Mar 2027 | Rabu | Idulfitri |\n")
+        r = jalan("--mulai", "2027-02-20", "--hari", "30", "--cek-teks", f)
+        self.assertEqual(r.returncode, 0, r.stdout)
+
+    def test_cek_teks_ramadan_tidak_boleh_hilang(self):
+        f = self.tulis("Tips: tanggal 10 Mar Idulfitri, cuma ucapan.")
+        r = jalan("--mulai", "2027-02-20", "--hari", "30", "--cek-teks", f)
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("Ramadan", r.stdout)
+
+    def test_isi_mengembalikan_momen_ramadan_yang_diganti(self):
+        d = kerangka("--mulai", "2027-02-20", "--hari", "30")
+        for x in d["baris"]:
+            x["Ide Konten"], x["Hook / Judul"], x["CTA"] = "Ide", "Hook", "Order via WA"
+        d["baris"][0]["Momen"] = "Tanggal tua"
+        d["baris"][27]["Momen"] = "Idulfitri"          # 19 Mar, bukan Idulfitri
+        r = jalan("--isi", self.tulis(d, "isi.json"), "--format", "json")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        h = json.loads(r.stdout)
+        self.assertIn("Ramadan hari ke-13", h["baris"][0]["Momen"])
+        self.assertNotIn("Idulfitri", h["baris"][27]["Momen"])
+        self.assertEqual(len([p for p in h["ringkasan"]["peringatan"] if "kolom Momen diganti" in p]), 2)
+
+    def test_fakta_klaim_layanan_karangan(self):
+        fakta = 'laundry kiloan "Wangi Bersih" di Depok, Rp7.000/kg, bisa antar jemput, order lewat WA.'
+        f = self.tulis("CTA: jemput & antar gratis, tanpa minimal berat. Testimoni [isi: kutipan asli].")
+        r = jalan("--mulai", "2026-11-01", "--cek-teks", f, "--fakta", fakta)
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("gratis", r.stdout)
+        self.assertIn("tanpa minimal", r.stdout)
+        f = self.tulis("CTA: order antar jemput lewat WA. Testimoni [isi: kutipan asli].")
+        self.assertEqual(jalan("--mulai", "2026-11-01", "--cek-teks", f, "--fakta", fakta).returncode, 0)
+        d = kerangka("--mulai", "2026-11-01", "--hari", "7")
+        for x in d["baris"]:
+            x["Ide Konten"], x["Hook / Judul"], x["CTA"] = "Foto hasil cucian", "Hook", "Order via WA"
+        d["baris"][2]["CTA"] = "Gratis ongkir se-Depok"
+        r = jalan("--isi", self.tulis(d, "isi.json"), "--format", "json", "--fakta", fakta)
+        self.assertEqual(r.returncode, 2)
+        self.assertTrue(any("Baris 3" in p and "GAGAL" in p for p in json.loads(r.stdout)["ringkasan"]["peringatan"]))
 
 
 if __name__ == "__main__":

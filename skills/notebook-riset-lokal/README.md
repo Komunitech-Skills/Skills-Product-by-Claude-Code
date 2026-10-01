@@ -67,3 +67,14 @@ Tidak — komputer/laptop biasa dengan RAM cukup (≥8 GB, ≥16 GB bila memakai
 
 **Bisakah AI menghapus dokumen atau notebook saya tanpa sepengetahuan saya?**
 Tidak. Skill ini sengaja **tidak punya** perintah hapus sumber/notebook. Menambah sumber, membuat notebook, dan memulai podcast selalu menunjukkan pratinjau dulu dan baru berjalan setelah Anda menjawab "ya".
+
+**Bisakah tim di kantor cabang ikut membuka Open Notebook saya?**
+Skill ini sengaja tidak membukanya. `127.0.0.1` artinya "komputer ini sendiri" — hanya bisa dibuka dari komputer tempat Open Notebook menyala, dan di komputer itu tidak perlu VPN apa pun. Open Notebook punya kata sandi opsional (`OPEN_NOTEBOOK_PASSWORD`); skill bisa memeriksa apakah sedang aktif lewat perintah cek. Bila tetap butuh akses bersama, itu penyiapan jaringan lanjutan (kata sandi aktif, koneksi terenkripsi, tidak dibuka ke internet) — sebaiknya lewat orang yang paham atau jasa setup Komunitech, karena dokumen usaha bisa terbaca orang lain bila salah atur.
+
+## Catatan revisi 1.0.7 (2026-10-01)
+Hasil uji sebelum/sesudah di OpenClaw (`examples/00-openclaw-sebelum-sesudah.md`):
+- Bagian baru **Keamanan & akses dari komputer lain** di SKILL.md: 127.0.0.1 = komputer itu sendiri (tidak perlu VPN; saran "VPN lalu buka 127.0.0.1" dihapus karena keliru).
+- Status kata sandi **diperiksa** lewat `cek` (field `auth_aktif`), bukan diklaim "tanpa autentikasi". Fakta `OPEN_NOTEBOOK_PASSWORD` dicocokkan dengan dokumentasi resmi Open Notebook (`docs/5-CONFIGURATION/security.md`: tanpa variabel ini autentikasi mati; bila diisi, web & API minta kata sandi; sifatnya pengaman dasar).
+- Agent tidak lagi menawarkan memasang VPN/Tailscale/tunnel; akses dari luar hanya disebut sebagai opsi lanjutan dengan peringatan keamanan.
+- Bahasa awam: tidak menyebut nama perintah ke pengguna.
+

@@ -45,6 +45,8 @@ wawancara. Pakai default di atas, sebutkan asumsinya secara singkat di akhir, da
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 1. **Wawancara** (lihat tabel Input). Tulis ringkasan satu paragraf dari jawaban sebelum lanjut,
    supaya pengguna bisa mengoreksi kalau salah tangkap.
 2. **Cocokkan ke rekomendasi skill.** Gunakan `references/peta-skill.md` (tabel statis) sebagai

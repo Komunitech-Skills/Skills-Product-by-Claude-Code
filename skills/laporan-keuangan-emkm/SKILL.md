@@ -47,6 +47,8 @@ Mengubah catatan uang masuk-keluar sehari-hari menjadi laporan keuangan standar 
 Jika pengguna ingin cepat ("langsung saja"), jalankan dengan default dan tampilkan bagian **Asumsi** dari output script.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Siapkan data.** Jika pengguna menempel tabel di chat, simpan persis apa adanya ke file sementara (mis. `buku-kas.csv` atau `.md` untuk tabel `|`). Jangan mengetik ulang/mengubah angka. File Excel (.xlsx) → minta pengguna simpan sebagai CSV.
 2. **Jalankan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash

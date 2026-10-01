@@ -31,11 +31,14 @@ Membantu orang biasa tahu **sebelum membuka Coretax**: berapa PPh terutang setah
 | Sudah kirim pemberitahuan NPPN ke DJP (paling lambat 31 Maret tahun itu)? | Bila NPPN | Tanyakan |
 | Omzet & PPh final 0,5% (PP 55) setahun | Bila ada | Hanya dicatat. **Hanya untuk usaha** (dagang/produksi/jasa biasa) — penghasilan **pekerjaan bebas** (dokter, pengacara, notaris, akuntan, arsitek, konsultan, seniman/influencer, penceramah, penulis, agen/perantara) tidak boleh 0,5%, wajib NPPN/pembukuan (PP 55/2022 Ps. 56 s.t.d.d. PP 20/2026) |
 | Zakat mandiri ke BAZNAS/LAZ resmi (bukan yang dipotong kantor) | Tidak | 0 |
-| PPh 21 bukan pegawai, PPh 22, PPh 23, angsuran PPh 25 yang sudah dibayar | Tidak | 0 |
+| PPh 21 bukan pegawai, PPh 22, PPh 23, angsuran PPh 25 yang sudah dibayar | Tidak | 0. **Jasa/fee yang diterima orang pribadi** (konsultan, freelancer, tenaga ahli) dipotong klien dengan **PPh 21 bukan pegawai** (bukti potong BP21; PMK 168/2023) → `--pph21-lain`, **bukan PPh 23**. PPh 23 hanya untuk jenis lain (mis. sewa alat, royalti, bunga, hadiah). Saat bertanya, tulis "PPh 21 yang dipotong klien (bukti potong BP21)" |
+| PPh final 0,5% yang terlanjur disetor atas penghasilan **pekerjaan bebas** | Bila ada | `--final-salah-skema` (tidak dikreditkan, tidak masuk Lampiran 2) |
 
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan) + jalur cepat ("kalau mau cepat, sebutkan status & angka di bukti potong, sisanya saya anggap 0"). Contoh: `examples/04-input-kurang.md`.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. Petakan cerita pengguna ke input di atas. Satu pemberi kerja = satu `--a1`. Istri yang hanya bekerja di 1 kantor biasanya **tidak** digabung (pakai K/.., bukan K/I).
 2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
@@ -45,7 +48,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - `--a1-bruto BRUTO PPH21 [BULAN] [IURAN]` — bila neto bukti potong tidak diketahui.
    - `--nppn BRUTO PERSEN` (ulang per jenis usaha) + `--nppn-diberitahukan ya|tidak`.
    - `--pembukuan-neto NETO` · `--lain-neto NETO` · `--omzet-final OMZET --pph-final PPH`.
-   - `--zakat` · `--pph21-lain` · `--pph22` · `--pph23` · `--pph25`.
+   - `--zakat` · `--pph21-lain` (termasuk PPh 21 bukan pegawai yang dipotong klien atas jasa orang pribadi) · `--pph22` · `--pph23` · `--pph25` · `--final-salah-skema`.
    - `--hari-ini YYYY-MM-DD` (cek batas lapor) · `--format json`.
    Angka: format Indonesia (`1.250.000`, `2,5jt`, `500rb`, `1,2 miliar`). Angka ambigu (`1,500`, `2.5jt`, `5m`, `114,000,000`) **ditolak** — tanyakan ulang ke pengguna, jangan menebak.
 3. Salin tabel & angka dari output script **apa adanya**. Lalu tulis penjelasan bahasa awam 3–5 kalimat: kenapa kurang/lebih bayar (mis. "dua kantor sama-sama memakai PTKP penuh, jadi saat digabung ada pajak yang belum terpotong").
@@ -71,6 +74,7 @@ PPh 25 tahun depan (bila ada usaha/pekerjaan bebas) = (PPh terutang − PPh 21/2
 Omzet PPh final 0,5% **tidak** masuk rumus di atas (dilaporkan terpisah). Beda dua jalur ini:
 - **PPh final 0,5%** (PP 55/2022 s.t.d.d. PP 20/2026): untuk **usaha** OP dengan peredaran bruto ≤ Rp4,8 M; omzet s.d. Rp500 jt pertama setahun tidak kena; pajak = 0,5% × omzet (bukan laba), sudah lunas saat disetor, tidak dikreditkan.
 - **Pekerjaan bebas** (profesi/keahlian: dokter, pengacara, notaris, akuntan, arsitek, konsultan, seniman/influencer, penceramah, penulis, perantara, dll.): **tidak boleh** 0,5%; neto dihitung NPPN/pembukuan lalu tarif Pasal 17. Bila pengguna mencampur keduanya, pisahkan dulu; ragu termasuk pekerjaan bebas atau tidak → tanyakan/arahkan ke Kring Pajak.
+- **Pekerjaan bebas yang terlanjur setor 0,5%:** hitung penghasilannya dengan `--nppn`/`--pembukuan-neto` dan isi setoran itu di `--final-salah-skema` (BUKAN `--omzet-final`/`--pph-final`). Setoran itu **tidak dikreditkan** dan **tidak dilaporkan di Lampiran 2**; arahkan ke permohonan **pengembalian pajak yang seharusnya tidak terutang** lewat Coretax (menu Pembayaran, formulir restitusi). Pemindahbukuan umumnya tidak bisa karena setoran PPh final UMKM dianggap penyampaian SPT Masa (PMK 81/2024 Ps. 109 ayat (3)). Wajib sarankan konfirmasi ke KPP/Kring Pajak 1500200 atau konsultan pajak (⚠️ PERLU REVIEW konsultan pajak).
 
 ## Peta ke SPT Coretax (tahun pajak 2025 dst.)
 Formulir 1770/1770S/1770SS **sudah dihapus**; sekarang satu SPT Tahunan PPh OP dinamis (PER-11/PJ/2025). Kode lampiran bisa berubah — cocokkan di layar Coretax.
@@ -78,7 +82,7 @@ Formulir 1770/1770S/1770SS **sudah dihapus**; sekarang satu SPT Tahunan PPh OP d
 | Angka dari script | Bagian di Coretax |
 |---|---|
 | Neto pekerjaan, daftar bukti potong, harta, utang, tanggungan | Lampiran 1 (bukti potong dari pemotong biasanya sudah terisi otomatis) |
-| Omzet & PPh final 0,5% | Lampiran 2 (penghasilan final) & L-3B (rekap peredaran bruto) |
+| Omzet & PPh final 0,5% (**hanya usaha**, bukan setoran salah skema pekerjaan bebas) | Lampiran 2 (penghasilan final) & L-3B (rekap peredaran bruto) |
 | Neto usaha/pekerjaan bebas (NPPN/pembukuan) | Lampiran 3 (L-3A-4 / L-3A-1..3) |
 | Zakat | Pengurang penghasilan (Lampiran 5 / Bagian B) |
 | Neto, PTKP, PKP, PPh terutang | Induk Bagian B & C |

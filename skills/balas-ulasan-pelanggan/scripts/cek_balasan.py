@@ -68,6 +68,22 @@ POLA_JANJI = [r"\bpasti\b", r"\bdijamin\b", r"\b100\s*%", r"\brefund\s+penuh\b",
 POLA_IMBALAN = [r"\bubah\s+(?:ulasan|review|bintang|rating)\b", r"\bganti\s+(?:bintang|rating|ulasan)\b",
                 r"\bhapus\s+(?:ulasan|review)\b", r"\b(?:bintang|rating)\s*5\b.*\b(?:voucher|hadiah|cashback|bonus)\b",
                 r"\b(?:voucher|hadiah|cashback|bonus)\b.*\b(?:bintang|rating)\s*5\b"]
+# Khusus fasilitas kesehatan (--faskes): balasan publik tidak boleh mengonfirmasi bahwa pengulas/keluarganya
+# pasien, atau menyebut tindakan/kondisi/perawatan. Dasar: rahasia kesehatan pasien (UU 17/2023 Ps. 301;
+# PP 28/2024 Ps. 788-789) & data kesehatan = data pribadi spesifik (UU 27/2022 Ps. 4 ayat 2 huruf a).
+POLA_FASKES = [
+    (r"\b(?:periksa|pemeriksaan|diperiksa|memeriksa|perawatan|dirawat|merawat|rawat\s+inap|rawat\s+jalan|tindakan"
+     r"|pengobatan|berobat|diobati|diagnos\w*|resep|obat\w*|terapi|operasi|dioperasi|kontrol|tambal\w*|cabut\w*"
+     r"|behel|kawat\s+gigi|scaling|imunisasi|vaksin\w*|suntik\w*|hasil\s+lab\w*|rekam\s+medis|penyakit|sakit"
+     r"|nyeri|gejala|keluhan\s+(?:gigi|sakit|nyeri|kesehatan)|kondisi\s+(?:gigi|kesehatan|pasien))\b",
+     "menyebut tindakan/kondisi kesehatan"),
+    (r"\b(?:putra|putri|putra/putri|anak|istri|suami|ibu|ayah|keluarga|orang\s+tua)\s*(?:nya\s+)?"
+     r"(?:bapak|ibu|kakak|kak|pak|bu|anda|mas|mbak)\b",
+     "menyebut anggota keluarga pengulas sebagai pasien"),
+    (r"\b(?:pasien\s+kami|sebagai\s+pasien|data\s+pasien|kunjungan\s+(?:bapak|ibu|kakak|kak|anda)"
+     r"|saat\s+(?:(?:bapak|ibu|kakak|kak|anda)\s+)?(?:datang|berkunjung|berobat|kunjungan))\b",
+     "mengonfirmasi status pasien/kunjungan"),
+]
 POLA_MAAF = r"\b(?:maaf|mohon\s+maaf|meminta\s+maaf|minta\s+maaf)\b"
 POLA_TERIMA_KASIH = r"\b(?:terima\s*kasih|makasih|trima\s*kasih|thank)"
 POLA_ESKALASI = r"\b(?:chat|pesan|hubungi|kirim(?:kan)?\s+(?:detail|nomor)|inbox|telepon|telp|dm)\b"
@@ -86,8 +102,14 @@ def temukan(pola, teks, flags=re.IGNORECASE):
     return sorted({m.group(0).strip() for m in re.finditer(pola, teks, flags)})
 
 
-def periksa(teks, platform, jenis):
+def periksa(teks, platform, jenis, faskes=False):
     temuan = []
+    if faskes:
+        for pola, label in POLA_FASKES:
+            for x in temukan(pola, teks):
+                temuan.append(("GAGAL", "FASKES — {}: '{}'. Balasan publik tidak boleh mengonfirmasi status pasien, "
+                                        "tindakan, atau kondisi kesehatan; bahas umum & alihkan ke kanal pribadi."
+                                        .format(label, x)))
     for pola, label in POLA_DATA:
         fl = 0 if label == "kode pesanan/resi" else re.IGNORECASE
         for x in temukan(pola, teks, fl):
@@ -135,7 +157,7 @@ def periksa(teks, platform, jenis):
         temuan.append(("SARAN", "Balasan sangat pendek ({} karakter); terasa seperti template.".format(n)))
 
     return {
-        "platform": platform, "jenis": jenis, "panjang": n, "batas_aman": batas,
+        "platform": platform, "jenis": jenis, "faskes": faskes, "panjang": n, "batas_aman": batas,
         "lulus": not any(t == "GAGAL" for t, _ in temuan),
         "perlu_dicek_privasi": any(p.startswith("PRIVASI") for _, p in temuan),
         "temuan": [{"tingkat": t, "pesan": p} for t, p in temuan],
@@ -150,6 +172,8 @@ def main():
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--teks", help="teks balasan")
     g.add_argument("--file", help="file .txt berisi teks balasan")
+    p.add_argument("--faskes", action="store_true",
+                   help="usaha = fasilitas/layanan kesehatan (klinik, dokter, dokter gigi, bidan, apotek, lab, RS)")
     p.add_argument("--json", action="store_true")
     a = p.parse_args()
 
@@ -170,7 +194,7 @@ def main():
     if not teks:
         galat("Teks balasan kosong.")
 
-    h = periksa(teks, pf, a.jenis)
+    h = periksa(teks, pf, a.jenis, a.faskes)
     if a.json:
         print(json.dumps(h, ensure_ascii=False, indent=2))
         return
