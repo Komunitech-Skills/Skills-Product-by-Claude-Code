@@ -7,7 +7,7 @@
 - ✅ Akar masalah dicari pakai 5 Kenapa yang **mengarah ke proses**, bukan menyalahkan karyawan
 - ✅ Angka dampak selalu dari input Anda — tidak pernah dikarang
 - ✅ Langsung dapat **draf permintaan maaf ke pelanggan** (sopan, tanpa janji berlebihan) + **ringkasan siap tempel ke WA tim/pemilik**
-- ✅ Kalau menyangkut data pelanggan, otomatis diingatkan kewajiban UU PDP secara umum dan diarahkan ke skill kebijakan privasi
+- ✅ Kalau data pribadi pelanggan bocor: tenggat pemberitahuan 3×24 jam (UU PDP Pasal 46) dihitung, plus draf pemberitahuan ke pelanggan terdampak & catatan untuk lembaga (ditandai PERLU REVIEW hukum)
 
 ## Cocok untuk siapa
 - Pemilik toko online/offline yang baru kena masalah operasional (retur massal, stok habis promo, kasir/QRIS error)
@@ -45,7 +45,7 @@ Ikuti panduan instalasi per platform (OpenClaw, Claude Code, Codex, Cursor) di `
 
 ## FAQ
 **1. Apakah skill ini bisa dipakai untuk kebocoran data pelanggan?**
-Bisa untuk kebocoran ringan (mis. data terkirim ke grup salah). Skill akan menjelaskan secara umum kewajiban UU 27/2022 (UU PDP) dan mengarahkan ke skill `kebijakan-privasi-pdp` serta konsultan — ini **bukan nasihat hukum**.
+Bisa (mis. data terkirim ke grup salah). Skill menyebut kewajiban UU 27/2022 Pasal 46 — pemberitahuan tertulis paling lambat 3×24 jam ke pelanggan terdampak dan lembaga — menghitung batas waktunya, dan menyiapkan drafnya. Kalau Anda ingin "diam saja", skill akan mengingatkan dengan sopan bahwa itu wajib. Ini **bukan nasihat hukum**; untuk kepastian penerapan, konsultasikan ke konsultan hukum/DPO.
 
 **2. Apakah laporan ini bisa dipakai untuk memberi sanksi ke karyawan?**
 Tidak dirancang untuk itu. Skill ini sengaja mengarahkan akar masalah ke proses/sistem, bukan ke individu. Untuk tindak lanjut kedisiplinan, gunakan skill `surat-peringatan-karyawan` terpisah.
@@ -55,3 +55,11 @@ Tidak masalah — skill akan menandai bagian itu `[isi: jumlah]` daripada meneba
 
 ---
 *Terinspirasi dari struktur `incident-postmortem`, `customer-incident-update`, dan `apology-letter` (MIT, pm-claude-skills), ditulis ulang & diperluas untuk konteks UMKM Indonesia. Rincian di `ATTRIBUTION.md`.*
+
+## Catatan revisi 1.0.2 (2026-10-01)
+Hasil uji sebelum/sesudah di OpenClaw (`examples/00-openclaw-sebelum-sesudah.md`):
+- **Cabang khusus insiden data pribadi** (Langkah 6 + `references/insiden-data-pribadi.md`): fakta UU 27/2022 Pasal 46 ditulis jelas (tertulis, paling lambat 3×24 jam, ke subjek data & lembaga; isi minimal ayat 2), tenggat dihitung dari jam ketahuan, draf pemberitahuan per pelanggan terdampak, catatan untuk lembaga (bila kanal resmi tersedia, tanpa mengarang alamat). Ditandai PERLU REVIEW HUKUM.
+- Bila pemilik ingin tidak memberi tahu pelanggan, skill mengoreksi dengan sopan (tanpa menakut-nakuti) dan status tetap "Masih ditangani".
+- Hubungi proaktif **semua** yang terdampak, bukan hanya yang sudah komplain.
+- Kanal permintaan maaf mengikuti asal pelanggan (chat marketplace per pesanan / WA pribadi), bukan broadcast/status WA.
+
