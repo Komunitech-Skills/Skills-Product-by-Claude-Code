@@ -192,3 +192,40 @@ Skill terpakai sebagian (batas "bukan dasar sanksi, tolak pengawasan diam-diam" 
 3. Skenario PHK: tambahkan di `references/privasi-etika.md` ringkasan singkat hak pesangon PP 35/2021 (Pasal 40 & 52) dan kompensasi PKWT agar jawaban rujukan konsisten — atau tegaskan rujukan ke skill `surat-peringatan-karyawan`/profesional.
 
 **Cuplikan jualan:** "Rekap grup WA akhir bulan langsung jadi skor KPI tertimbang per orang (Andi 99,8 · Sari 107,2 · Budi 75,6 · Joko 74,6) dengan aturan yang sama tiap bulan — tanpa ranking yang mempermalukan karyawan." *(Pakai setelah cacat 1 diperbaiki.)*
+
+## Uji ulang 2026-10-01
+
+- **Tanggal:** 2026-10-01. Penguji independen; OpenClaw 2026.9.6 lokal, model claude-sonnet-5, TZ Asia/Jakarta, terisolasi (`uji.sh`). Revisi ini hanya perapian, jadi **hanya sisi SESUDAH** dijalankan ulang untuk skenario yang memuat cacat (cek regresi), dengan pesan identik dan home bersih berisi hanya skill versi baru.
+
+### Skenario 1 (ulang, SESUDAH saja) — skor KPI dari rekap grup WA dengan cap waktu `[30/09 17.05]`
+
+**Balasan SESUDAH (skill 1.1.5)** — *tools: read, ls, write, exec*
+
+> Sudah saya baca rekap WA-nya jadi draf realisasi September 2026. Sebelum saya hitung skornya, tolong konfirmasi dulu ya pak — ini draf yang terbaca:
+>
+> | Nama | KPI | Realisasi |
+> |---|---|---|
+> | Andi | Omzet | Rp 46.500.000 |
+> | Andi | Closing | 22 deal |
+> | Budi | Omzet | Rp 38.000.000 |
+> | Budi | Closing | 15 deal |
+> | Sari | Waktu respon | 8 menit |
+> | Sari | Komplain selesai | 85% |
+> | Joko | Salah kirim | 5 pesanan |
+> | Joko | Kirim tepat waktu | 97% |
+>
+> Yang perlu saya cek khusus:
+> - **Joko: salah kirim 5x** — maksudnya 5 kali kejadian salah kirim ya (bukan 5x lipat dari sesuatu)? Script saya tandai "CEK" karena kata "5x" agak ambigu, tapi saya baca sebagai 5 pesanan.
+>
+> Satu baris tidak saya hitung: "Budi: oiya pak oktober saya target 60jt ya" — itu target bulan depan, bukan realisasi September, jadi saya abaikan (nanti saya catat untuk rencana Oktober kalau mau).
+>
+> Boleh saya lanjut hitung skor dengan angka di atas pak?
+
+**Verifikasi (penguji membaca `KPI/draf-2026-09.csv` yang dibuat agent di workspace uji):** Andi 46.500.000 & 22; **Budi 38.000.000** & 15; Sari 8 menit & 85%; Joko 5 & 97% — semua sesuai rekap. Baris Budi "oktober saya target 60jt" diabaikan dengan benar (target bulan depan).
+- **Cacat lama 1 (cap waktu `[30/09 …]` terbaca sebagai angka 30): TERATASI** — tidak ada lagi "Omzet = Rp 30"; satu-satunya baris CEK adalah satuan "5x" vs "pesanan" (wajar).
+- **Cacat lama 2 (bahasa awam): TERATASI** — konfirmasi berupa tabel draf biasa + pertanyaan "5 kali kejadian salah kirim ya?".
+- Catatan (bukan regresi): agent berhenti untuk konfirmasi draf sebelum menghitung skor, jadi skor akhir dan jawaban "siapa paling perlu dibina" belum muncul di giliran ini (alur konfirmasi draf memang langkah skill). File `KPI/…` dibuat tetapi lokasinya tidak disebut di balasan — sebaiknya disebut.
+- Dengan angka draf yang sama, penguji menghitung ulang skor dengan Python (rumus uji pertama: lebih-tinggi-lebih-baik dibatasi 120%, lebih-rendah-lebih-baik = target/realisasi atau 2 − realisasi/target): Andi 99,8 · Budi 75,6 · Sari 107,2 · Joko 74,6 — sama dengan uji pertama.
+- **Regresi: tidak ada.** Skor SESUDAH skenario 1: **8,5** (sama dengan uji pertama; bug cap waktu hilang, tetapi giliran ini belum sampai ke skor).
+
+**VERDIK uji regresi: LULUS (tetap)** — bug cap waktu WA terbukti hilang di OpenClaw asli; cuplikan jualan "rekap grup WA langsung jadi skor KPI" kini boleh dipakai.
