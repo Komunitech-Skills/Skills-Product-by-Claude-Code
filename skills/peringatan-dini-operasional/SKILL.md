@@ -110,7 +110,7 @@ Dari JSON, periksa sebelum melapor:
   sejak 26 Sep, bersamaan dengan catatan 'tepung merk baru' 28 Sep — cek ini lebih dulu"), tanpa
   menyatakannya sebagai penyebab pasti.
 - Tawarkan langkah lanjut: (a) isi 5 kenapa bersama tim untuk peringatan 🔴 teratas,
-  (b) bila sudah ada kerugian/komplain → catat kronologi tertulis (bila skill `laporan-insiden-usaha` terpasang, tawarkan memakainya), (c) jadwal harian (Langkah 4).
+  (b) bila sudah ada kerugian/komplain → catat kronologi tertulis (bila skill `laporan-insiden-usaha` terpasang, tawarkan memakainya). Jadwal harian (Langkah 4) hanya dibahas bila pengguna memintanya; jangan menawarkannya sendiri.
 
 ### 4. (Opsional) Jadwal harian di OpenClaw
 Ikuti `references/jadwal-openclaw.md` — pola `openclaw automations add` di sana disalin dari

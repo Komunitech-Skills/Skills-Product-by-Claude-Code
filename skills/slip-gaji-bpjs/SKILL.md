@@ -50,7 +50,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    Satu karyawan tanpa CSV: `--nama Budi --ptkp K/1 --gaji-pokok 6jt --tunjangan-tetap 500rb --lembur-hari-kerja 2+3`.
    Opsi lain: `--hari-kerja 6`, `--batas-jp <nilai>` (wajib bila periode di luar Maret 2025–Februari 2027), `--pemisah-csv ,`, `--format json`.
 3. Script membuat 3 file di folder `--out`: `slip-gaji-YYYY-MM.md` (tempel ke chat/dokumen), `slip-gaji-YYYY-MM.html` (buka di browser → Cetak/Save as PDF; satu slip per halaman), `rekap-payroll-YYYY-MM.csv` (buka di Excel). Bila ada satu saja data karyawan yang salah, **tidak ada file dibuat** dan script menampilkan daftar kesalahannya.
-4. Sampaikan ke pengguna: tabel rekap dari script, lokasi file, setiap ⚠️ peringatan (UMK, lembur > 4 jam, JKK tidak standar, dsb.), asumsi yang dipakai, dan disclaimer. Bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah slip jadi (hapus hanya bila pengguna setuju).
+4. Sampaikan ke pengguna: tabel rekap dari script, **baris "Total biaya gaji perusahaan = … " disalin persis dari keluaran script** (jangan menjumlah ulang total apa pun di kepala; bila butuh total lain, jalankan script dengan `--format json`), lokasi file, setiap ⚠️ peringatan (UMK, lembur > 4 jam, JKK tidak standar, dsb.), asumsi yang dipakai, dan disclaimer. Bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah slip jadi (hapus hanya bila pengguna setuju).
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tulis langkahnya, tabel TER ada di `references/tabel-ter.md`, dan beri tahu pengguna bahwa hasil dihitung manual (slip HTML/CSV tidak dibuat).
 
 ## Rumus (untuk hitung manual)
@@ -62,7 +62,7 @@ Dasar & sumber: `references/regulasi.md` (berlaku per 2026-09-23).
 - Lembur: upah sejam = upah tetap ÷ 173 (bila ada tunjangan tidak tetap dan upah tetap < 75% total upah, pakai 75% total upah). Hari kerja: jam ke-1 × 1,5, jam berikutnya × 2. Hari libur (5 hari kerja): jam 1–8 × 2, jam 9 × 3, jam 10–12 × 4.
 - Bruto pajak = semua pendapatan + JKK + JKM + BPJS Kesehatan 4% (bagian perusahaan). PPh 21 = TER (kategori dari PTKP) × bruto pajak; Desember/bulan berhenti: hitung ulang setahun (lihat skill `pph21-ter`).
 - Take home pay = total pendapatan − (BPJS Kes 1% + JHT 2% + JP 1% + PPh 21 + zakat + potongan lain) [+ PPh 21 DTP tunai bila berhak].
-- Biaya perusahaan = total pendapatan + BPJS Kes 4% + JHT 3,7% + JKK + JKM + JP 2%.
+- Biaya perusahaan = penghasilan kotor (gaji pokok + tunjangan + lembur + bonus) + BPJS Kes 4% + JHT 3,7% + JKK + JKM + JP 2% (porsi perusahaan saja). Iuran porsi karyawan & PPh 21 **tidak** ditambah lagi — sudah termasuk di penghasilan kotor.
 - Pembulatan: iuran & lembur ke rupiah terdekat; PPh 21 ke bawah. Belum dicocokkan dengan aplikasi BPJS/Coretax.
 
 ## Format output
@@ -82,7 +82,7 @@ Satu slip (isi file MD/HTML): identitas & periode → tabel Pendapatan → tabel
 **Output (ringkas, dari script):** Lembur Rp 794.798 (upah sejam Rp 5.500.000 ÷ 173; 3,5 + 5,5 + 16 jam setara) → total pendapatan Rp 6.894.798; potongan BPJS Kes Rp 55.000, JHT Rp 110.000, JP Rp 55.000, PPh 21 Rp 53.707 (TER B 0,75% × bruto pajak Rp 7.160.998), kasbon Rp 100.000 → **take home pay Rp 6.521.091**; biaya perusahaan Rp 7.474.498.
 
 ## Checklist sebelum mengirim hasil
-- [ ] Semua angka dari script (atau ditandai "dihitung manual").
+- [ ] Semua angka dari script (atau ditandai "dihitung manual"), termasuk total biaya gaji perusahaan (disalin dari baris script, bukan dijumlah sendiri).
 - [ ] Batas JP sesuai periode; BPJS Kesehatan maks Rp 12 jt; JHT tanpa batas.
 - [ ] Peringatan UMK disampaikan bila UMK diisi; bila tidak, sebutkan cek dilewati.
 - [ ] Desember/karyawan berhenti memakai data Januari s.d. bulan lalu (hitung ulang).

@@ -5,7 +5,7 @@ description: Mengoperasikan Vikunja (manajer tugas/proyek open-source, self-host
 
 # Vikunja Tugas (asisten Vikunja lokal)
 
-> Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan). Sebut "kunci yang Anda tempel".
+> Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak sebagian, tidak awalan/akhiran seperti "tk_7f3a9...", tidak disamarkan). Sebut "kunci yang Anda tempel". Sebelum langkah lain, balasan WAJIB memuat templat ini (boleh disesuaikan sedikit, kalimat "segera ganti token ini" tidak boleh dihapus): "Kunci yang Anda tempel sudah terkirim lewat chat, jadi anggap sudah bocor. Jangan kirim token ke chat lagi dan jangan minta token baru dikirim lewat chat. **Segera ganti token ini:** di Vikunja buka Settings → API Tokens, hapus token lama, buat token baru, lalu simpan sendiri di komputer Anda lewat `python3 scripts/vikunja.py simpan-kunci` dari folder skill ini (token diketik tersembunyi, tidak tampil di chat)." Jangan menyimpan kunci itu ke file/memori/jadwal.
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
@@ -151,4 +151,5 @@ Contoh lain (tambah, ringkasan, dari-teks, batch, error) di `examples/`. `--json
 - [ ] Tindakan menulis (tambah, selesai, tugaskan) hanya setelah pratinjau + "ya" eksplisit
 - [ ] `dari-teks` selalu disebut sebagai DRAF, belum masuk Vikunja
 - [ ] Token API tidak muncul di jawaban/berkas
+- [ ] Bila token tertempel di chat: kalimat "Segera ganti token ini" ada di balasan
 - [ ] Batasan (tanpa sub-tugas/label/lampiran/repeat) disebut bila relevan

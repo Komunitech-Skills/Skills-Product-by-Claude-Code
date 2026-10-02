@@ -45,7 +45,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 APLIKASI = "kas-umkm"
-VERSI = "1.0.11"
+VERSI = "1.0.12"
 SKEMA = 1
 BATAS_NOMINAL = 10 ** 12            # Rp 1 triliun: di atas ini pasti salah ketik
 NOMINAL_BESAR = 50 * 10 ** 6        # di atas ini diberi catatan "pastikan jumlah nolnya benar"
@@ -93,7 +93,11 @@ ALIAS_KATEGORI = {
     "pinjaman": ["pinjaman", "cicilan", "angsuran", "kur", "utang bank", "pinjam", "cicilan pinjaman",
                  "pinjaman cicilan", "utang", "hutang", "bayar utang", "bayar hutang", "cicilan utang"],
     "kasbon": ["kasbon", "kas bon", "uang muka karyawan", "pinjaman karyawan", "piutang karyawan", "kasbon karyawan"],
-    "lain-lain": ["lain lain", "lain", "lainnya", "dll", "lain2", "other"],
+    "lain-lain": ["lain lain", "lain", "lainnya", "dll", "lain2", "other",
+                  # v1.0.12: biaya operasional umum = pengeluaran usaha (dicatat lain-lain)
+                  "operasional", "biaya operasional", "ops", "opr", "operational", "beban operasional", "bensin",
+                  "bbm", "solar", "transport", "transportasi", "biaya transport", "ongkir", "ongkos kirim",
+                  "parkir", "tol", "uang makan", "konsumsi", "uang jalan", "ekspedisi", "kurir"],
 }
 # v1.0.8: konteks rumah tangga ("beli gula buat di rumah", "beli sayur untuk rumah", "sarapan anak",
 # "makan keluarga") -> prive. Diperiksa SEBELUM kosakata bahan pangan (beli-stok). Rumah makan/sakit/pelanggan dll.
@@ -132,6 +136,12 @@ TEBAK = [
                             r"es batu|gas elpiji|elpiji|lpg|gas melon|tabung gas|isi gas|gas 3 ?kg|gas 12 ?kg)\b"),
     ("lain-lain", "keluar", r"\b(servis|service|perbaikan|reparasi|fotokopi|fotocopy|print|atk|alat tulis|cetak nota|"
                             r"ongkir|ongkos kirim|parkir|internet|wifi|materai|meterai)\b"),
+    # v1.0.12: biaya operasional umum (BBM, uang makan sopir/kurir, tol, transport) = pengeluaran usaha
+    ("lain-lain", "keluar", r"\b(operasional|operational|biaya ops|bensin|bbm|pertalite|pertamax|solar|dexlite|"
+                            r"biosolar|uang makan|makan (sopir|supir|kurir|driver|tukang|kuli|helper|karyawan|pegawai)|"
+                            r"konsumsi (sopir|supir|kurir|driver|tukang|kuli|karyawan|pegawai|rapat|kerja)|"
+                            r"tol|e toll|etoll|transport|transportasi|uang jalan|ongkos jalan|ekspedisi|kurir|"
+                            r"bongkar muat|ongkos angkut|biaya angkut|ojek|ojol)\b"),
     ("modal", "masuk", r"\b(modal|suntik dana|suntikan dana)\b"),
     ("penjualan", "masuk", r"\b(jual|jualan|penjualan|omzet|omset|laku|terjual|pesanan|orderan|order|pembeli|"
                            r"pelanggan|qris|laundry|londri|cucian|cuci kiloan|kiloan|cuci setrika|setrika|"
@@ -464,7 +474,8 @@ BEBAN_LAIN_EMKM = [(k, re.compile(p)) for k, p in (
     ("beban_perawatan", r"\b(servis|service|perbaikan|reparasi|ganti oli|oli|tambal|sparepart|suku cadang|"
                         r"maintenance|perawatan|betulin|benerin)\b"),
     ("beban_transportasi", r"\b(bensin|bbm|pertalite|pertamax|solar|ongkir|ongkos kirim|ekspedisi|kurir|parkir|"
-                           r"tol|ojek|ojol|gosend|grab|gojek|transport)\b"),
+                           r"tol|e toll|etoll|ojek|ojol|gosend|grab|gojek|transport|transportasi|uang jalan|ongkos jalan|"
+                           r"ongkos angkut|biaya angkut|dexlite|biosolar)\b"),
     ("beban_utilitas", r"\b(internet|wifi|indihome|pulsa|kuota|paket data|telepon|telpon|galon|gas|elpiji|lpg)\b"),
     ("beban_perlengkapan", r"\b(kemasan|packaging|plastik|kresek|kardus|dus|lakban|stiker|label|atk|alat tulis|"
                            r"kertas|tinta|sabun|pembersih|tisu|tissue|masker|sarung tangan)\b"),
@@ -2137,10 +2148,25 @@ def cmd_cek_catatan(args):
     t += ["", "Per kategori:"]
     for (lab, arah, _g), v in per_kat.items():
         t.append("- %s (%s): %s" % (lab, arah, rp(v)))
-    t += ["", "HASIL USAHA (laba kas):",
+    hasil = pemasukan - beban
+    cek_masuk = sum(x["jumlah"] for x in perlu_dicek if x["arah"] == "masuk")
+    cek_keluar = sum(x["jumlah"] for x in perlu_dicek if x["arah"] == "keluar")
+    t += ["", "HASIL USAHA (laba kas)%s:" % (" - SEMENTARA, ada baris PERLU DICEK" if perlu_dicek else ""),
           "- Pemasukan usaha: %s" % rp(pemasukan),
-          "- Pengeluaran usaha (beban): %s" % rp(beban),
-          "- Hasil usaha: %s%s" % (rp(pemasukan - beban), "  (RUGI)" if pemasukan < beban else "")]
+          "- Pengeluaran usaha (beban): %s" % rp(beban)]
+    if perlu_dicek:
+        # v1.0.12: jangan tampilkan satu angka hasil usaha yang tampak final bila masih ada baris belum jelas
+        belum = " dan ".join((["keluar %s" % rp(cek_keluar)] if cek_keluar else []) +
+                             (["masuk %s" % rp(cek_masuk)] if cek_masuk else []))
+        t.append("- Hasil usaha SEMENTARA: %s%s (belum termasuk %s yang perlu dicek, baris %s)" % (
+            rp(hasil), "  (RUGI)" if hasil < 0 else "", belum, ", ".join(str(x["no"]) for x in perlu_dicek)))
+        jika = hasil - cek_keluar + cek_masuk
+        t.append("- Bila semua baris perlu dicek ternyata uang usaha: hasil usaha %s%s" % (
+            rp(jika), "  (RUGI)" if jika < 0 else ""))
+        t.append("- JANGAN kirim hasil usaha sebagai angka final (mis. ke grup) sebelum baris perlu dicek "
+                 "digolongkan.")
+    else:
+        t.append("- Hasil usaha: %s%s" % (rp(hasil), "  (RUGI)" if hasil < 0 else ""))
     luar = [(lab, arah, v) for (lab, arah, g), v in per_kat.items() if g != "usaha"]
     if luar:
         t.append("- Tidak dihitung sebagai beban/pendapatan usaha: " + ", ".join(
@@ -2172,7 +2198,9 @@ def cmd_cek_catatan(args):
     t.append("Belum disimpan. Untuk mulai buku kas: catat --baris ... (pratinjau dulu, simpan setelah setuju).")
     teks = "\n".join(t)
     data = {"ok": True, "mode": "baca", "entri": entri, "pemasukan_usaha": pemasukan, "beban_usaha": beban,
-            "hasil_usaha": pemasukan - beban,
+            "hasil_usaha": hasil, "hasil_usaha_final": not perlu_dicek,
+            "perlu_dicek_jumlah": {"masuk": cek_masuk, "keluar": cek_keluar},
+            "hasil_usaha_bila_perlu_dicek_usaha": hasil - cek_keluar + cek_masuk,
             "per_kategori": [{"kategori": lab, "arah": arah, "kelompok": g, "jumlah": v}
                              for (lab, arah, g), v in per_kat.items()],
             "laci": {"awal": laci_awal, "tunai_masuk": tunai_masuk, "tunai_keluar": tunai_keluar,
@@ -2407,7 +2435,14 @@ def cmd_rekap(args):
             if v["keluar"]:
                 t.append("- %s: %s" % (label_kat(k, "keluar"), rp(v["keluar"])))
         t.append("")
-        t.append("HASIL USAHA (masuk usaha - keluar usaha): %s" % rp(r["hasil_usaha"]))
+        if pdk["id"]:
+            # v1.0.12: dua angka bila masih ada catatan 'Perlu dicek'
+            t.append("HASIL USAHA SEMENTARA (masuk usaha - keluar usaha): %s (belum termasuk 'Perlu dicek' keluar %s, "
+                     "masuk %s)" % (rp(r["hasil_usaha"]), rp(pdk["keluar"]), rp(pdk["masuk"])))
+            t.append("  Bila semua 'Perlu dicek' ternyata uang usaha: %s. Jangan kirim sebagai angka final sebelum "
+                     "digolongkan." % rp(r["hasil_usaha"] - pdk["keluar"] + pdk["masuk"]))
+        else:
+            t.append("HASIL USAHA (masuk usaha - keluar usaha): %s" % rp(r["hasil_usaha"]))
         t.append("  (tidak termasuk modal, pinjaman/cicilan utang, kasbon karyawan, prive, pindah dana, dan catatan 'Perlu "
                  "dicek'; ini hitungan kas, "
                  "bukan laba akuntansi)")
@@ -2471,6 +2506,7 @@ def cmd_rekap(args):
                                              if k <= batas.isoformat())
     data = {"ok": True, "mode": "baca", "periode": {"dari": dari.isoformat(), "sampai": sampai.isoformat(), "jenis": jenis},
             "nama_usaha": cfg["nama_usaha"], "masuk": r["masuk"], "keluar": r["keluar"], "hasil_usaha": r["hasil_usaha"],
+            "hasil_usaha_final": not r["perlu_dicek"]["id"],
             "usaha_masuk": r["usaha_masuk"], "usaha_keluar": r["usaha_keluar"], "prive": r["prive"], "modal": r["modal"],
             "pinjaman_masuk": r["pinjaman_masuk"], "pinjaman_keluar": r["pinjaman_keluar"],
             "per_kategori": r["per_kategori"], "per_metode": r["per_metode"], "per_hari": r["per_hari"],

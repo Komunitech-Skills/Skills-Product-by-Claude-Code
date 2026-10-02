@@ -80,6 +80,7 @@ Untuk "ini catatan kas hari ini, rekap / untung berapa / laci harusnya berapa / 
    ```
    Banyak baris → tulis ke file `catatan-kas-<tanggal>.txt` di folder kerja (satu baris per entri) lalu `--file`.
 3. Salin ke chat apa adanya: tabel per baris, **hasil usaha**, hitungan **uang laci seharusnya**, **selisih (KURANG/LEBIH)**, kemungkinan penyebab, uang yang tidak lewat laci (QRIS/transfer), catatan, dan asumsi (kategori "ditebak", cara bayar dianggap tunai, baris "PERLU DICEK"). Tanyakan sekali, dalam satu pesan, kategori baris yang "PERLU DICEK".
+   **v1.0.12:** selama masih ada baris "PERLU DICEK" (`hasil_usaha_final: false`), script menulis **dua angka**: "Hasil usaha SEMENTARA … (belum termasuk Rp… yang perlu dicek)" dan "bila semua baris perlu dicek ternyata uang usaha". **Dilarang** menulis hasil usaha sebagai angka final (teks grup, laporan pimpinan, ringkasan) sebelum baris itu digolongkan; bila terpaksa mengirim, salin kedua angka beserta kata "sementara". Biaya operasional (operasional, bensin/BBM/solar, uang makan sopir, tol, parkir, transport, ongkir, uang jalan) = pengeluaran usaha (`lain-lain`), bukan "perlu dicek".
 4. Tawarkan menyimpan ke buku kas: jalankan `catat --baris ...` (format sama) → pratinjau → simpan setelah "ya" (Aturan keamanan 1–2).
 
 ### B. Catat uang masuk/keluar (inti)

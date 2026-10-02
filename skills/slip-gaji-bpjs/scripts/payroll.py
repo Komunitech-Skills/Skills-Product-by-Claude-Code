@@ -336,7 +336,8 @@ def hitung_karyawan(r, cfg):
         "dasar_jp": dasar_jp if ikut_jp else Decimal(0), "jkk_persen": jkk_p,
         "pendapatan": pendapatan, "potongan": potongan, "iuran": iur, "lembur": lembur_info,
         "total_pendapatan": total_pendapatan, "total_potongan": total_potongan, "take_home_pay": thp,
-        "iuran_perusahaan": iuran_perusahaan, "biaya_perusahaan": biaya, "pph": pph, "pph_info": pph_info,
+        "penghasilan": penghasilan, "iuran_perusahaan": iuran_perusahaan, "biaya_perusahaan": biaya,
+        "pph": pph, "pph_info": pph_info,
         "dtp": dtp, "pph_disetor": Decimal(0) if dtp else pph_dipotong, "peringatan": peringatan,
     }
 
@@ -494,7 +495,7 @@ def baris_rekap(h):
 
 def total_rekap(hasil):
     t = {}
-    for k in ("total_pendapatan", "take_home_pay", "biaya_perusahaan", "pph_disetor", "iuran_perusahaan"):
+    for k in ("total_pendapatan", "take_home_pay", "biaya_perusahaan", "pph_disetor", "iuran_perusahaan", "penghasilan"):
         t[k] = sum((h[k] for h in hasil), Decimal(0))
     t["iuran_bpjs_kes"] = sum((h["iuran"]["kes_perusahaan"] + h["iuran"]["kes_karyawan"] for h in hasil), Decimal(0))
     t["iuran_bpjs_tk"] = sum((h["iuran"][k] for h in hasil for k in ("jht_perusahaan", "jht_karyawan", "jkk", "jkm",
@@ -547,6 +548,19 @@ def tulis_output(hasil, cfg, folder):
     return {"markdown": md_path, "html": html_path, "csv": csv_path}
 
 
+def baris_biaya_perusahaan(total):
+    """Satu baris siap salin: total biaya gaji perusahaan beserta rumusnya (dihitung script, bukan di kepala).
+
+    Biaya perusahaan = penghasilan kotor (gaji pokok + tunjangan + lembur + bonus) + iuran BPJS porsi perusahaan
+    (BPJS Kes 4% + JHT 3,7% + JKK + JKM 0,3% + JP 2%). Iuran porsi karyawan & PPh 21 TIDAK ditambahkan lagi karena
+    sudah termasuk di dalam penghasilan kotor (dipotong dari gaji).
+    """
+    return ("- Total biaya gaji perusahaan = penghasilan kotor {} + iuran BPJS porsi perusahaan {} = **{}** "
+            "(iuran porsi karyawan & PPh 21 tidak ditambah lagi — sudah termasuk di penghasilan kotor)").format(
+        tc.format_rp(total["penghasilan"]), tc.format_rp(total["iuran_perusahaan"]),
+        tc.format_rp(total["biaya_perusahaan"]))
+
+
 def ringkasan_teks(hasil, cfg, file, total):
     o = ["**Rekap payroll {} — {}** ({} karyawan)".format(nama_periode(cfg), cfg["perusahaan"] or "-", len(hasil)), "",
          "| Nama | Total pendapatan | Potongan | PPh 21 | Take home pay | Biaya perusahaan |",
@@ -559,6 +573,7 @@ def ringkasan_teks(hasil, cfg, file, total):
     o += ["| **Total** | **{}** | | | **{}** | **{}** |".format(
         tc.format_rp(total["total_pendapatan"]), tc.format_rp(total["take_home_pay"]),
         tc.format_rp(total["biaya_perusahaan"])), "",
+        baris_biaya_perusahaan(total),
         "- Setor BPJS Kesehatan (4% + 1%): {}".format(tc.format_rp(total["iuran_bpjs_kes"])),
         "- Setor BPJS Ketenagakerjaan (JHT, JKK, JKM, JP): {}".format(tc.format_rp(total["iuran_bpjs_tk"])),
         "- Setor PPh 21 (tanpa DTP): {}".format(tc.format_rp(total["pph_disetor"]))]

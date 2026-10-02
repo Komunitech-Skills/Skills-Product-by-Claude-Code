@@ -96,6 +96,25 @@ class Uji(unittest.TestCase):
                      "Toko A,INV-01,6300000,2026-09-05,\nCV B,INV-02,\"Rp 12.500.000\",24/08/2026,2500000\n")
         self.cek_rekap(self.rekap(f))
 
+    def test_ringkasan_grup_tanpa_nama(self):
+        f = os.path.join(self.dir, "piutang.csv")
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write("pelanggan,no_invoice,nominal,jatuh_tempo,dibayar,no_wa\n"
+                     "Toko A,INV-01,6300000,2026-09-05,,0812111\nCV B,INV-02,12500000,2026-08-24,2500000,0813222\n"
+                     "UD C,INV-03,4000000,2026-10-30,,0814333\n")
+        h = self.rekap(f)
+        g = h["ringkasan_grup"]
+        # pembanding independen: telat = 6.300.000 + 10.000.000; semua = + 4.000.000
+        self.assertIn("Faktur belum lunas: 3, total Rp 20.300.000", g)
+        self.assertIn("Sudah lewat jatuh tempo: 2 faktur, total Rp 16.300.000", g)
+        self.assertIn("30 hari", g)
+        for rahasia in ("Toko A", "CV B", "UD C", "INV-0", "081"):
+            self.assertNotIn(rahasia, g)
+        kode, out, err = self.jalan("--file", f, "--tanggal", TGL, "--format", "teks")
+        self.assertEqual(kode, 0, err)
+        blok = out.split("Ringkasan aman untuk grup", 1)[1].split("```")[1]
+        self.assertEqual(blok.strip(), g)
+
     def test_xlsx_shared_strings(self):
         f = os.path.join(self.dir, "piutang.xlsx")
         buat_xlsx(f, DATA_XLSX)

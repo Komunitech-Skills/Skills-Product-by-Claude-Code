@@ -829,6 +829,10 @@ class UjiV101(Dasar):
         self.assertEqual(r["hasil_usaha"], 742500)
         self.assertEqual(r["perlu_dicek"]["keluar"], 250000)
         self.assertTrue(any("BELUM DIGOLONGKAN" in p for p in r["peringatan"]))
+        # v1.0.12: dua angka; bila semua perlu dicek uang usaha: 742.500 - 250.000 = 492.500
+        self.assertFalse(r["hasil_usaha_final"])
+        self.assertIn("HASIL USAHA SEMENTARA", r["teks"])
+        self.assertIn("Rp 492.500", r["teks"])
         # ekspor emkm ditolak sampai digolongkan
         e = self.gagal("ekspor", "--format", "emkm", "--bulan", "09/2026")
         self.assertEqual(len(e["perlu_dicek"]), 2)
@@ -841,6 +845,8 @@ class UjiV101(Dasar):
         r = self.ok("rekap", "--bulan", "09/2026")
         self.assertEqual(r["hasil_usaha"], 742500 - 50000)
         self.assertEqual(r["perlu_dicek"]["id"], [])
+        self.assertTrue(r["hasil_usaha_final"])
+        self.assertNotIn("SEMENTARA", r["teks"])
         self.ok("ekspor", "--format", "emkm", "--bulan", "09/2026", "--csv", os.path.join(self.dir, "e.csv"))
         # catatan yang sudah pindah tidak bisa digolongkan ulang
         self.gagal("golongkan", "--id", str(ids[0]), "--kategori", "prive", "--ya")
@@ -1778,6 +1784,47 @@ class UjiCekCatatan(unittest.TestCase):
         self.assertEqual(out["hasil_usaha"], 100000)
         self.assertEqual(out["laci"]["seharusnya"], 70000)
         self.assertTrue(any("dianggap tunai" in a for a in out["asumsi"]))
+
+    def test_operasional_dikenali_sebagai_beban(self):
+        """v1.0.12: biaya operasional (bensin, uang makan sopir, tol, parkir, kategori 'operasional') = beban usaha.
+        Pembanding manual: pemasukan 10.000.000; beban 1.500.000+600.000+350.000+250.000+200.000 = 2.900.000;
+        hasil usaha = 7.100.000."""
+        kode, out = self.jalan("--baris", "masuk;10jt;penjualan;transfer;penjualan minggu ini",
+                               "--baris", "keluar;1,5jt;;transfer;bensin truk antar barang",
+                               "--baris", "keluar;600rb;;tunai;uang makan sopir",
+                               "--baris", "keluar;350rb;operasional;tunai;biaya harian",
+                               "--baris", "keluar;250rb;;tunai;tol + parkir",
+                               "--baris", "keluar;200rb;;tunai;biaya operasional kantor")
+        self.assertEqual(kode, 0, out)
+        self.assertEqual(out["perlu_dicek"], [])
+        self.assertEqual(out["beban_usaha"], 1500000 + 600000 + 350000 + 250000 + 200000)
+        self.assertEqual(out["hasil_usaha"], 10000000 - 2900000)
+        self.assertTrue(out["hasil_usaha_final"])
+        self.assertNotIn("SEMENTARA", out["teks"])
+        for teks in ("isi solar", "BBM pertalite", "transport kurir", "uang jalan supir", "e-toll"):
+            self.assertEqual(K.tebak_kategori(teks, "keluar")[0], "lain-lain", teks)
+        # konteks pribadi tetap menang; kata operasional tidak berlaku untuk uang masuk
+        self.assertEqual(K.tebak_kategori("bensin buat keperluan rumah", "keluar")[0], "prive")
+        self.assertIsNone(K.tebak_kategori("operasional", "masuk")[0])
+        self.assertEqual(K.kode_kategori("Operasional"), "lain-lain")
+        self.assertEqual(K.kode_kategori("BBM"), "lain-lain")
+
+    def test_perlu_dicek_dua_angka_hasil_usaha(self):
+        """v1.0.12: ada baris perlu dicek -> hasil usaha SEMENTARA + angka bila baris itu uang usaha.
+        Pembanding manual: pemasukan 5.000.000, beban 1.000.000 -> sementara 4.000.000;
+        perlu dicek keluar 2.900.000 -> bila usaha 4.000.000 - 2.900.000 = 1.100.000."""
+        kode, out = self.jalan("--baris", "masuk;5jt;penjualan;tunai;jual",
+                               "--baris", "keluar;1jt;beli-stok;tunai;kulakan",
+                               "--baris", "keluar;2,9jt;;tunai;xyz abc")
+        self.assertEqual(kode, 0, out)
+        self.assertEqual(out["perlu_dicek"], [3])
+        self.assertFalse(out["hasil_usaha_final"])
+        self.assertEqual(out["hasil_usaha"], 4000000)
+        self.assertEqual(out["perlu_dicek_jumlah"], {"masuk": 0, "keluar": 2900000})
+        self.assertEqual(out["hasil_usaha_bila_perlu_dicek_usaha"], 1100000)
+        self.assertIn("Hasil usaha SEMENTARA: Rp 4.000.000 (belum termasuk keluar Rp 2.900.000", out["teks"])
+        self.assertIn("hasil usaha Rp 1.100.000", out["teks"])
+        self.assertNotIn("- Hasil usaha: ", out["teks"])
 
     def test_input_rusak(self):
         kode, out = self.jalan("--baris", "keluar;abc;gaji;tunai;x")

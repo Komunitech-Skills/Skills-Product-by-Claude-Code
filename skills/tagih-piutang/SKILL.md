@@ -51,6 +51,7 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - `--sudah-diingatkan N` = jumlah pengingat yang **sudah** terkirim (dari "Riwayat penagihan"; default 0). Script memakainya untuk menentukan tahap.
    - Denda **hanya** jika ada kesepakatan tertulis: tambahkan `--denda-persen 0,1 --denda-per hari` (atau `--denda-per bulan`, `--denda-tetap "Rp 100.000"`), `--tenggang 3`, `--denda-maks 5%`, dan `--dasar-denda "Pasal 4 Perjanjian No. ..."`. Jika script menulis PERINGATAN bahwa dasar denda kosong, jangan cantumkan denda di pesan sampai pengguna mengonfirmasi dasarnya.
    - Banyak tagihan: `--file piutang.csv` atau `--file piutang.xlsx` (opsional `--sheet NamaSheet`) → rekap umur piutang, total yang sudah telat, dan urutan prioritas. Nama kolom umum ID/EN dikenali otomatis (mis. `no_faktur`, `nilai_faktur`, `sudah_dibayar`, `customer`, `due_date`, `amount`, `paid`, atau kolom `sisa`/`outstanding`); kolom lain (no. WA, tanggal faktur) diabaikan; angka format Indonesia (`Rp 1.500.000`, `2,5jt`) dan tanggal `25/09/2026`/`25 Sep 2026` diterima. Jika script menulis `ERROR: kolom wajib tidak ditemukan`, sampaikan pesan itu ke pengguna (minta ganti judul kolom) — jangan menebak isi kolom. Hanya file yang ditunjuk pengguna. Salin tabel & total dari output script ke chat apa adanya.
+   - **Grup/tim:** bila pengguna minta "laporin ke grup/tim", salin **hanya** blok "Ringkasan aman untuk grup" dari output script (jumlah faktur & total telat, tanpa nama pelanggan, nomor invoice, nomor HP, atau sisa per pelanggan; JSON: `ringkasan_grup`). Tabel per pelanggan diberi judul "khusus pemilik/admin keuangan — jangan ditempel ke grup"; jangan menyuruh menyalin tabel/ringkasan lain ke grup. Mode satu tagihan tidak punya versi grup (satu faktur mudah dikenali) — sampaikan ke pemilik saja. Jangan menawarkan jadwal/kirim otomatis ke grup.
    - Script menolak denda > 1% per hari (atau setara per bulan) sebagai kemungkinan salah ketik, serta `--denda-maks` tanpa satuan ≤ 100 atau < Rp 1.000. Tanyakan konfirmasi ke pengguna; tambahkan `--konfirmasi-denda-tinggi` hanya bila pengguna memastikan angka itu memang tertulis di perjanjian.
    - Script keluar dengan kode ≠ 0 dan pesan `ERROR:` bila input salah; perbaiki, jangan menebak.
 2. **Tentukan tahap** dari output `tahap` script:
@@ -132,6 +133,7 @@ Asumsi: tenggat 7 hari. (Jika pengguna belum pernah mengirim pengingat, script m
 - [ ] Denda hanya muncul jika ada dasar tertulis dan dasarnya disebut di pesan.
 - [ ] Tidak ada ancaman kekerasan, ancaman menyebarkan/viralkan, hinaan, atau tekanan ke keluarga/atasan/rekan debitur.
 - [ ] Tidak menyebarkan data/utang debitur ke pihak lain (grup, medsos, status WA).
+- [ ] Bila ada permintaan untuk grup/tim: hanya blok "Ringkasan aman untuk grup" dari script yang disarankan ditempel.
 - [ ] "Langkah hukum" hanya disebut umum dan benar ("sesuai peraturan yang berlaku"); tidak menyebut polisi/pidana untuk utang dagang biasa.
 - [ ] Ada jalan keluar: konfirmasi bila sudah bayar, tawaran jadwal/cicilan.
 - [ ] Nomor invoice, rekening, tenggat jelas; disclaimer ada di bawah hasil tahap 5–6.
