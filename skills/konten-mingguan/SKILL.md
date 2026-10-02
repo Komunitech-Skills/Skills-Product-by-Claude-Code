@@ -164,6 +164,12 @@ posting pakai acuan umum WA Status siang & sore.
 - **Klinik/kecantikan/kesehatan**: foto/video before-after dan testimoni pasien **wajib** ada izin
   tertulis dari pasien (lihat `references/aturan-iklan.md`). Tanpa izin tertulis, materi itu **tidak**
   dipakai di paket — tawarkan alternatif (fasilitas, alat, edukasi umum).
+- **Fasilitas kesehatan (klinik, praktik dokter/dokter gigi/bidan, apotek, lab, fisioterapi):**
+  **tanpa promo "ajak teman"/referral berimbalan** — tidak ada diskon, poin, voucher, hadiah,
+  merchandise, komisi, atau layanan gratis (mis. "cek tensi gratis") untuk pasien yang mengajak
+  atau merujuk orang lain, dan tanpa promosi diskon tindakan medis. Dasar umum: aturan iklan
+  layanan kesehatan (Permenkes 1787/2010) & kode etik profesi — PERLU REVIEW tenaga
+  medis/hukum. Ganti dengan konten edukasi bersumber resmi (lihat `references/aturan-iklan.md`).
 - `nomor_minggu.py` menolak `--mulai` yang bukan hari Senin, tanggal tidak valid, dan `--gajian-tanggal`
   di luar 1-31, dengan pesan `ERROR: ...` (exit code ≠ 0). Perbaiki input lalu jalankan ulang.
 - Momen bertanggal berubah (Ramadan/Lebaran/Imlek/libur sekolah) tidak pernah ditebak tanpa kepastian

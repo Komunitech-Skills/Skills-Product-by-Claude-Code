@@ -58,5 +58,8 @@ apa saja yang diasumsikan di akhir hasil, supaya kamu tinggal koreksi yang perlu
 Tanggal bergerak (Ramadan, Lebaran, Imlek, libur sekolah) tidak ditebak sembarangan — skill akan minta
 tanggalnya ke kamu atau menandainya jelas sebagai perkiraan yang perlu dicek ke kalender resmi tahun itu.
 
+## Catatan revisi 1.0.6 (2026-10-02)
+- Temuan uji gabungan paket klinik (S3): agent menawarkan merchandise/poin/voucher/"cek tensi gratis" untuk pasien yang mengajak teman. Kini ada aturan faskes tanpa imbalan rujukan & tanpa promo diskon tindakan medis (SKILL.md + `references/aturan-iklan.md`). PERLU REVIEW tenaga medis/hukum.
+
 ## Catatan revisi 1.0.5 (2026-10-01)
 dari uji ulang OpenClaw: caption lengkap + hashtag setiap hari wajib tampil di chat (file hanya cadangan); produk pangan olahan/kosmetik/suplemen/obat tradisional diingatkan soal izin edar BPOM/SPP-IRT sebelum dipromosikan.
