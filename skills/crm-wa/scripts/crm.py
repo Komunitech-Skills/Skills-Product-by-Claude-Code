@@ -1880,6 +1880,7 @@ def cmd_hari_ini(args):
     prospek = [r for r in terlambat + hari if r["tahap"] in TAHAP_TERBUKA]
     nilai_perlu = sum(r["nilai"] or 0 for r in prospek)
     t = ["FOLLOW-UP CRM - %s (%s)" % (tgl_panjang(acuan), _JAM["zona"]),
+         "Usaha: %s | Pengirim: %s" % (cfg["nama_usaha"] or "-", cfg["pengirim"] or "-"),
          "Terlambat: %d | Hari ini: %d | Besok: %d | Belum dijadwalkan: %d" % (len(terlambat), len(hari),
                                                                                len(besok), len(tanpa))]
     if prospek:

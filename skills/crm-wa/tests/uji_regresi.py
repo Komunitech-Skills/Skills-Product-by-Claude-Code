@@ -912,5 +912,12 @@ class UjiSingkatanFlag(unittest.TestCase):
             self.assertFalse(os.path.exists(os.path.join(t, "a.db")), "singkatan flag tidak boleh menulis apa pun")
 
 
+class TestProfilUsaha(Dasar):
+    def test_hari_ini_dan_info_menampilkan_profil(self):
+        self.assertIn("Usaha: Dapur Contoh | Pengirim: Sari", self.ok("hari-ini")["teks"])
+        self.assertIn("Usaha: Dapur Contoh", self.ok("info")["teks"])
+        self.assertIn("Dapur Contoh", self.ok("rekap")["teks"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
