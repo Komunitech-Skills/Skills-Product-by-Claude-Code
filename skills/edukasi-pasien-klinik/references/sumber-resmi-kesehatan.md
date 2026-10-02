@@ -30,6 +30,8 @@ halaman masih ada & isinya belum berubah sebelum memakainya untuk konten baru â€
 | Jadwal imunisasi anak | Jadwal Imunisasi | IDAI | cek tanggal terbaru saat dipakai | https://idai.or.id (cari "jadwal imunisasi") |
 | Persiapan medical check-up / puasa lab | Panduan puasa sebelum tes darah | Kemenkes/WHO (cari saat dipakai) | cek tanggal terbaru saat dipakai | who.int / kemkes.go.id |
 | Kesehatan gigi & mulut | Materi edukasi kesehatan gigi | PDGI | cek tanggal terbaru saat dipakai | https://pdgi.or.id |
+| Tanda bahaya umum anak sakit (dipakai di templat balasan aman, tanpa dosis) | *Integrated Management of Childhood Illness - Chart Booklet* ("general danger signs": tidak bisa minum/menyusu, muntah setiap kali, kejang, lemas/tidak sadar) | WHO | Maret 2014 | https://cdn.who.int/media/docs/default-source/mca-documents/child/imci-integrated-management-of-childhood-illness/imci-in-service-training/imci-chart-booklet.pdf |
+| Demam anak: kapan ke dokter & tanda bahaya (sesak, kebiruan, kaku leher, bintik keunguan, bayi < 3 bulan) | "Demam: Kapan Harus ke Dokter?" | IDAI | diakses 2 Oktober 2026 (cek tanggal terbit di halaman) | https://www.idai.or.id/artikel/klinik/pengasuhan-anak/demam-kapan-harus-ke-dokter |
 
 Bila topik yang diminta tidak ada di tabel ini, cari langsung di domain resmi pada daftar bagian
 "Lembaga & organisasi rujukan" di atas, catat judul halaman + tanggal akses persis seperti
