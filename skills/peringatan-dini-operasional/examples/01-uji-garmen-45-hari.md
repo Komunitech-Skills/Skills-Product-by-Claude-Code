@@ -135,3 +135,12 @@ Verifikasi `verif2.py` (spesifikasi v1.0.1: model normal/hitungan, peluang ekor,
 Deret reject per tanggal: 23 Sep 🟡 · 24 Sep ✅ · 25 Sep 🟡 (2,0σ) · **26 Sep 🟠** (2,3σ, 2 dari 3 hari) ·
 28 Sep 🔴 — 🟠 masih 2 hari sebelum target 40 dilanggar (v1.0.0: 3 hari). Label `Stok kain (m)` ✓,
 pertanyaan cek downtime kini spesifik ✓, catatan hari ini tidak dikutip (tanpa `--sertakan-catatan`) ✓.
+
+## Catatan pembuat — perubahan v1.0.5 (2026-10-02)
+Sejak v1.0.5 pencilan hanya dibuang bila **lama** (≥ 7 hari sebelum hari laporan); angka ekstrem
+di 7 hari terakhir dianggap bagian tren berjalan. Pada data ini reject 28 Sep (kemarin, 1 hari sebelum
+laporan) — dulu ikut dibuang — kini tetap di garis dasar: Reject 🔴 menjadi "4,7σ di atas rata-rata 28 hari sebelumnya
+(24)" (dulu 6,4σ / 23,26 dari 27 hari). Warna semua metrik tidak berubah (4 🔴 · 0 🟠 · 2 🟡).
+Baris ℹ️ kini menyebut tanggal: "3 angka ekstrem lama (> 7 hari lalu: Output (pcs) Jum, 4 Sep;
+Downtime (menit) Jum, 4 Sep; % reject Jum, 4 Sep) tidak dipakai di garis dasar." Angka hasil uji
+di atas adalah catatan versi lama.

@@ -52,9 +52,12 @@ walau dipesan hari ini (lead time − sisa hari).
 ## Garis dasar
 - Maksimal 28 angka tercatat **sebelum** hari laporan (hari ini tidak ikut, supaya lonjakan hari
   ini tidak melebarkan batasnya sendiri).
-- Pencilan lama (|z| > 3 terhadap garis dasar) dibuang **sekali** lalu rata-rata & σ dihitung
+- Pencilan lama (|z| > 3 terhadap garis dasar **dan** ≥ 7 hari kalender sebelum hari laporan)
+  dibuang **sekali** lalu rata-rata & σ dihitung
   ulang (tidak dibuang bila σ jadi 0; model hitungan memakai semua angka) — mis. hari listrik padam tidak membuat batas terlalu longgar. Tanggalnya dicatat di JSON
-  `dasar.pencilan_diabaikan`.
+  `dasar.pencilan_diabaikan` dan di baris ℹ️ laporan. Angka ekstrem dalam 7 hari terakhir tidak
+  dibuang (bagian tren yang sedang berjalan, v1.0.5). Garis dasar < 14 angka: tidak ada yang
+  dibuang.
 - Hari khusus (libur nasional, Lebaran, event bazar) sebaiknya dikeluarkan dengan
   `--abaikan-tanggal`, karena pola hari itu memang tidak normal.
 
