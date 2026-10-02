@@ -52,3 +52,7 @@ sebelum itu, prioritaskan temuan #1 (uji kernel asli independen) bila memungkink
 `04-input-tidak-lengkap-uji-akun-b.md`, `05-di-luar-cakupan-uji-akun-b.md`,
 `00-pembanding-tanpa-skill-uji-akun-b.md`, `00-banding-pesaing-uji-akun-b.md`,
 `00-catatan-metodologi-uji-akun-b.md`, `mock_kernel.py`.
+
+
+## Uji ulang OpenClaw v1.0.7 (2026-10-02)
+Skenario U1 (pengguna belum punya SiYuan, server tiruan tidak ada): SEBELUM 6 -> SESUDAH 7, VERDIK BELUM. Jasa setup Komunitech muncul dan tidak ada instalasi, tetapi `references/panduan-siyuan.md` tidak disebut eksplisit dan draf SOP tipis. Rinci: `00-openclaw-sebelum-sesudah.md`.

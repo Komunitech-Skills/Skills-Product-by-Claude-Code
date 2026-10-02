@@ -239,3 +239,59 @@ Perbandingan dengan uji 1 (1.0.4): 5,0 -> 7,7 menjadi 4,7 -> 8,7. Keempat cacat 
 ## Cuplikan jualan
 - "Tanpa skill, agent hanya mengecek port lalu minta token Anda di chat dan tidak mengerjakan apa-apa. Dengan skill: retur, jam buka, dan daftar SOP yang sudah >3 bulan langsung keluar lengkap dari SiYuan Anda sendiri." (server tiruan)
 - "Token SiYuan terlanjur ditempel di chat? Skill tidak memakainya, menyarankan mencabutnya, dan tetap bekerja dengan kunci yang tersimpan. 'Timpa aja' pun tidak langsung menimpa: isi lama ditampilkan, Anda mengetik TIMPA, dan cadangan dibuat dulu." (server tiruan; sisi tanpa skill juga tidak menghapus apa pun)
+
+
+## Uji ulang v1.0.7 (2026-10-02)
+
+**Tujuan:** uji terarah, 1 skenario, pesan identik. Menguji cacat yang diperbaiki: pengguna awam yang BELUM punya SiYuan harus mendapat penyebutan panduan instalasi (`references/`) dan opsi jasa setup Komunitech di jawaban pertama, tanpa agent menginstal apa pun.
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech `claude-sonnet-5`. SEBELUM = home bersih tanpa skill; SESUDAH = home bersih hanya skill `siyuan-sop` v1.0.7 (tanpa `tests/`). Tidak ada server SiYuan dan tidak ada file kunci (pengguna memang belum punya); port 6806 kosong. Tidak ada instalasi/unduhan.
+
+### Skenario U1 - pengguna awam belum punya SiYuan minta dibuatkan SOP
+
+**Pesan pengguna (identik):**
+
+> Kak, saya belum punya SiYuan sama sekali. Tolong bikinin SOP packing pesanan toko saya di SiYuan ya.
+
+**SEBELUM (tanpa skill; tools: tool_search, memory_search, tool_call, plugins, exec, tool_describe, write, openclaw; menulis `SOP-Packing-Pesanan.md` 88 baris di folder kerja; `npm root --global` hanya baca, tidak memasang apa pun):**
+
+> Kak, saya cek dulu kondisinya — ada kendala teknis yang perlu saya jelasin:
+>
+> **Saya nggak bisa install SiYuan langsung di device Kakak.** Soalnya belum ada perangkat (HP/laptop) yang "dipasangkan" (paired) ke sistem saya, jadi saya nggak punya akses buat install aplikasi desktop di device Kakak. SiYuan juga belum ada integrasi/plugin resmi yang bisa saya pakai dari sisi saya.
+>
+> **Tapi saya udah siapin SOP-nya**, biar begitu SiYuan terpasang tinggal copy-paste aja. Filenya ada di workspace:
+>
+>
+> Isinya lengkap: tujuan, alat/bahan, langkah packing A–F, tabel kasus khusus (barang pecah, COD, retur), sampai riwayat revisi — format SOP standar, format Markdown jadi pas di-paste ke SiYuan heading & checklist-nya otomatis kebentuk rapi.
+>
+> **Langkah yang perlu Kakak lakuin sendiri (karena ini di device Kakak):**
+>
+> 1. Download SiYuan dari situs resminya (siyuan-note.club) — ada versi Windows/Mac/Linux/Android/iOS, gratis & open-source.
+> 2. Install, buka, bikin notebook baru misal "SOP Toko".
+> 3. Buat dokumen baru, lalu copy isi file SOP di atas, paste ke situ — SiYuan otomatis render Markdown-nya (heading, checklist, tabel).
+>
+> Kalau nanti Kakak mau pairing device ke saya (biar saya bisa bantu lebih jauh, termasuk kontrol otomatis), bilang aja — saya bisa pandu prosesnya. Atau kalau mau saya tambahin SOP lain (misal SOP retur, SOP stok), tinggal bilang juga.
+
+*(Teks asli kehilangan baris nama berkas setelah "Filenya ada di workspace:"; dicatat apa adanya.)*
+
+**SESUDAH (skill terpakai: ya; tools: read, tool_search, ls, write; menulis `draf-sop-packing-pesanan.md` 30 baris di folder kerja dan menyebut lokasinya; tidak menyentuh API):**
+
+> Draf SOP Packing Pesanan sudah saya susun dan simpan di `draf-sop-packing-pesanan.md` (folder kerja). Isinya: tujuan, 9 langkah packing, checklist harian, dan panduan kalau ada masalah (stok kosong, barang cacat, label salah cetak).
+>
+> Mau saya sesuaikan detailnya dulu (misal: jenis produk Kakak apa, pakai kurir/ekspedisi apa, ada SOP foto bukti packing atau tidak)? Atau sudah cukup seperti ini?
+>
+> Soal SiYuan-nya sendiri, tinggal pilih salah satu:
+> 1. Saya pandu pasang & amankan sendiri sekarang (±10 menit, gratis, data tetap di komputer Kakak).
+> 2. Disambungkan ke jasa setup berbayar Komunitech (dibantu pasang & amankan).
+>
+> Begitu salah satu ini selesai, draf di atas langsung saya masukkan ke SiYuan — nggak perlu nulis ulang.
+
+**Verifikasi:** tidak ada instalasi di kedua sisi; tidak ada permintaan ke 6806. SESUDAH menawarkan 2 jalur (pandu pasang sendiri / jasa setup berbayar Komunitech) dan berjanji memasukkan draf setelah SiYuan siap. Namun jawaban SESUDAH **tidak menyebut nama/lokasi `references/panduan-siyuan.md`** (hanya "saya pandu pasang & amankan, ±10 menit"; angka itu berasal dari panduan), dan klaim "gratis" untuk pemanduan oleh agent tidak ada di SKILL.md. SEBELUM keliru bilang belum bisa karena "belum ada perangkat yang dipasangkan" dan menyuruh unduh sendiri tanpa pengamanan (network serving, kata sandi) dan tanpa menyebut jasa setup.
+
+**Skor:** SEBELUM 6 (jujur tidak memasang, SOP 88 baris lebih kaya, tetapi tanpa pengamanan & tanpa jalur bantuan). SESUDAH 7 (jalur jasa setup benar dan aman, tetapi panduan tidak disebut eksplisit sesuai aturan SKILL.md, draf SOP hanya 30 baris dan menanyakan detail, tidak menampilkan SOP di chat).
+
+**Ringkasan:** skor 6 -> 7. **VERDIK: BELUM** (sesudah < 8). Cacat yang diperbaiki sebagian tertutup: jasa setup Komunitech muncul, panduan `references/` belum disebut.
+
+**Cacat untuk pembuat:** (1) bukti: jawaban SESUDAH tidak memuat "panduan-siyuan" padahal aturan "Kapan TIDAK digunakan" mewajibkannya di jawaban pertama; saran: tulis kalimat baku di SKILL.md, mis. "Panduan pasang & pengamanan: `references/panduan-siyuan.md` (±10 menit). Atau jasa setup berbayar Komunitech." dan larang kata "gratis" untuk bantuan agent. (2) Draf SOP sebaiknya ditampilkan ringkas di chat atau minimal isi sama kaya dengan baseline (88 baris vs 30).
+
+**Cuplikan jualan:** (dikosongkan; pembeda belum jelas.)

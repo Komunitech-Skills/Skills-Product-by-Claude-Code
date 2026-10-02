@@ -52,3 +52,7 @@ Semua butir daftar perbaikan dikerjakan. Diverifikasi ulang pada Fider v0.38.0 a
 - **M5:** draf mengikuti status (tidak menulis "selesai" bila belum), salam netral "Halo", opsi `--topik` pengganti judul mentah.
 - **S1:** impor berkas kunci / berkas berisi kunci / folder `~/.komunitech` ditolak; `cetak()` menyamarkan kunci di semua keluaran. **S2:** `cek` tidak lagi menyebut pasti "Administrator". **S3:** butir tanpa huruf/angka dibuang. **S4:** uraian maks. 5.000 huruf; `simpan-kunci` tanpa terminal = pesan jelas (bukan traceback). **S5:** `--catatan` status/gabung disamarkan. **S6:** aturan 7-8 di SKILL.md; `status ditolak` wajib `--catatan`; klaim `pelanggan` ditandai "tidak diverifikasi" di pratinjau. **S7:** galat Fider umum diterjemahkan (mis. judul sudah ada; dicek di Fider asli).
 - **Rendah:** panduan menyebut `EMAIL_SMTP_ENABLE_STARTTLS` dan tag `stable`; `platform_teruji` tetap kosong. Belum diuji: Windows/macOS, HTTPS VPS, OpenClaw+Telegram, Codex/Cursor.
+
+
+## Uji ulang OpenClaw v1.0.7 (2026-10-02)
+Skenario U1 (ringkasan bernama & bernomor ke papan publik, server tiruan): SEBELUM 5 -> SESUDAH 9, VERDIK LULUS. Pos publik bersih ("Seorang pelanggan", tanpa penanda sensor/nama/nomor/email), pratinjau + konfirmasi tetap ada. Rinci: `00-openclaw-sebelum-sesudah.md`.
