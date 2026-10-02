@@ -275,5 +275,41 @@ class TestPeringatanTemp(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(tmp, "o", "rekap-payroll-2026-09.csv")))
 
 
+class TestTotalBiayaPerusahaan(unittest.TestCase):
+    """Pembanding independen (aritmetika bulat sendiri, tanpa fungsi payroll) untuk kasus uji gabungan 2026-10-03:
+    4 karyawan Oktober 2026, JKK 0,24%. Jawaban salah yang pernah muncul: Rp27.798.120 (iuran karyawan dikurangkan)."""
+    DATA = [  # nama, ptkp, pokok, tunjangan tetap, tunjangan tidak tetap
+        ("Yohanes", "TK/0", 4500000, 500000, 0), ("Maria", "K/1", 6000000, 750000, 525000),
+        ("Daniel", "TK/0", 3800000, 0, 660000), ("Ester", "K/2", 8500000, 1000000, 0)]
+
+    def pembanding(self):
+        kotor = iuran = 0
+        for _, _, pokok, tetap, tidak_tetap in self.DATA:
+            dasar = pokok + tetap  # semua di bawah batas BPJS Kes (12 jt) & JP
+            kotor += pokok + tetap + tidak_tetap
+            # persen dalam basis 10.000 (4% = 400; 3,7% = 370; 2% = 200; 0,24% = 24; 0,3% = 30), bulat terdekat
+            iuran += sum((dasar * b + 5000) // 10000 for b in (400, 370, 200, 24, 30))
+        return kotor, iuran, kotor + iuran
+
+    def test_angka(self):
+        kotor, iuran, biaya = self.pembanding()
+        self.assertEqual((kotor, iuran, biaya), (26235000, 2565120, 28800120))
+        c = cfg("2026-10")
+        hasil = [payroll.hitung_karyawan({"nama": n, "ptkp": p, "gaji_pokok": str(a), "tunjangan_tetap": str(b),
+                                          "tunjangan_tidak_tetap": str(t)}, c) for n, p, a, b, t in self.DATA]
+        total = payroll.total_rekap(hasil)
+        self.assertEqual(total["penghasilan"], D(kotor))
+        self.assertEqual(total["iuran_perusahaan"], D(iuran))
+        self.assertEqual(total["biaya_perusahaan"], D(biaya))
+        baris = payroll.baris_biaya_perusahaan(total)
+        self.assertIn("Total biaya gaji perusahaan", baris)
+        self.assertIn("Rp 26.235.000", baris)
+        self.assertIn("Rp 2.565.120", baris)
+        self.assertIn("Rp 28.800.120", baris)
+        self.assertNotIn("27.798.120", baris)
+        teks = payroll.ringkasan_teks(hasil, c, {"csv": "x.csv"}, total)
+        self.assertIn(baris, teks)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
