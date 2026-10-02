@@ -573,7 +573,7 @@ class Revisi102OpenClaw(unittest.TestCase):
         _, out, _ = jalan("diskon", "--harga", "35000", "--hpp", "14500", "--diskon", "25",
                           "--biaya-persen", "10", "--kanal", "marketplace", "--kategori", "pangan")
         self.assertIn("laba Rp9.125/unit", out)
-        self.assertIn("harga terendah Rp29.000", out)
+        self.assertIn("harga promo terendah Rp29.000 -> DISKON MAKSIMAL 17,14%", out)
         self.assertIn("Potongan marketplace dihitung 10%", out)
 
     def test_hampers_pangan_default_40_di_bawah_min(self):
@@ -597,6 +597,64 @@ class Revisi102OpenClaw(unittest.TestCase):
     def test_skill_md_mewajibkan_cek_baru(self):
         teks = open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8").read()
         for kunci in ("--harga-reseller", "--kanal marketplace", "--kategori pangan", "Margin minimum dipakai"):
+            self.assertIn(kunci, teks)
+
+
+class Revisi106UjiUlang(unittest.TestCase):
+    """Uji ulang OpenClaw 2026-10-02: model menulis 'diskon 15-17% -> promo di atas Rp30.000' (salah: 29.750/29.050),
+    dan menyarankan promo hampers Rp189.900 (margin 35,70%) di bawah lantai 40%."""
+
+    def test_diskon_maks_reseller_dan_margin(self):
+        # reseller 30.000: 1 - 30.000/35.000 = 14,2857% -> 14,29%; persen bulat 14% -> 35.000 x 0,86 = 30.100 (> 30.000)
+        # margin pangan 40%: ceil(14.500/0,6) = 24.167 -> 1 - 24.167/35.000 = 30,951% -> 30,95%
+        # agen 24.500: 1 - 24.500/35.000 = 30%
+        kode, out, _ = jalan("diskon", "--harga", "35000", "--hpp", "14500", "--diskon", "25", "--kategori", "pangan",
+                             "--harga-reseller", "Reseller:30000", "--harga-reseller", "Agen:24500")
+        self.assertEqual(kode, 0)
+        self.assertIn("harga promo terendah Rp24.167 -> DISKON MAKSIMAL 30,95%", out)
+        self.assertIn("harga beli Reseller Rp30.000: harga promo harus DI ATAS angka ini -> diskon harus KURANG DARI 14,29%", out)
+        self.assertIn("KURANG DARI 30%", out)
+        self.assertIn("DISKON MAKSIMAL (persen bulat, memenuhi semua batas di atas): 14% -> harga promo Rp30.100", out)
+
+    def test_rentang_15_17_konflik_reseller(self):
+        # 35.000 x 0,85 = 29.750 ; x 0,84 = 29.400 ; x 0,83 = 29.050 -> semua < 30.000 = KONFLIK
+        # marketplace 10%: laba 15% = 29.750 - 2.975 - 14.500 = 12.275 ; margin 12.275/29.750 = 41,26%
+        kode, out, _ = jalan("diskon", "--harga", "35000", "--hpp", "14500", "--rentang", "14-17", "--kategori", "pangan",
+                             "--harga-reseller", "Reseller:30000", "--biaya-persen", "10", "--volume", "500")
+        self.assertEqual(kode, 0)
+        self.assertIn("TABEL RENTANG DISKON", out)
+        for harga in ("Rp29.750", "Rp29.400", "Rp29.050"):
+            baris = [b for b in out.splitlines() if harga in b][0]
+            self.assertIn("KONFLIK Reseller", baris)
+        self.assertIn("Rp12.275", out)
+        baris14 = [b for b in out.splitlines() if "Rp30.100" in b and b.startswith("|")][0]
+        self.assertIn("OK", baris14)
+        # batas margin marketplace: 14.500 / (1 - 0,1 - 0,4) = 29.000 -> 17,14%
+        self.assertIn("DISKON MAKSIMAL 17,14%", out)
+        self.assertIn("14% -> harga promo Rp30.100", out)
+
+    def test_promo_hampers_189900_di_bawah_min(self):
+        # normal 209.000 termasuk PPN, promo 189.900: DPP 171.081 (171.081 + 18.818 = 189.899, sisa 1),
+        # laba 61.081, margin 35,70% < 40% ; lantai 203.500 -> diskon maks 1 - 203.500/209.000 = 2,63%
+        _, out, _ = jalan("diskon", "--harga", "209000", "--hpp", "110000", "--potongan", "19100",
+                          "--ppn", "termasuk", "--kategori", "pangan")
+        self.assertIn("margin saat promo 35,7% DI BAWAH minimum 40%", out)
+        self.assertIn("harga promo terendah Rp203.500 -> DISKON MAKSIMAL 2,63%", out)
+
+    def test_tanpa_margin_min_diperingatkan(self):
+        _, out, _ = jalan("diskon", "--harga", "35000", "--hpp", "14500", "--diskon", "10")
+        self.assertIn("impas", out)
+        self.assertIn("margin minimum belum diisi", out)
+
+    def test_rentang_rusak_ditolak(self):
+        for r in ("abc", "10-120", "10-20:0"):
+            kode, _, err = jalan("diskon", "--harga", "35000", "--hpp", "14500", "--rentang", r, "--kategori", "pangan")
+            self.assertEqual(kode, 2, r)
+            self.assertIn("GAGAL", err)
+
+    def test_skill_md_aturan_keras(self):
+        teks = open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8").read()
+        for kunci in ("DISKON MAKSIMAL", "--rentang", "benar-benar berlaku", "UU 8/1999", "PERLU REVIEW"):
             self.assertIn(kunci, teks)
 
 
