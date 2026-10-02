@@ -375,3 +375,6 @@ Begitu dua ini jelas, saya langsung jalanin perhitungan margin, alokasi budget, 
 ## Cuplikan jualan
 - "Tanpa skill, AI ikut menyusun blast WA ke 2.000 nomor beli list. Dengan skill, ia menghitung margin Rp0, menolak membakar Rp10 juta iklan, dan menjelaskan risiko UU PDP serta blokir WA."
 - "Angka anggaran per kanal, ROAS impas (2,03 dan 3,40) dan corong 250.000 jangkauan -> 300 pesanan dihitung script, bukan dikira."
+
+---
+**Catatan tindak lanjut (2026-10-02):** cacat label "Minimal pesanan balik modal" (pembulatan ke bawah) diperbaiki di versi 1.0.4 — kini dibulatkan ke atas (472.500 / 42.000 → 12 pesanan), dengan tes regresi. Status naik ke `beta`.
