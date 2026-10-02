@@ -14,7 +14,8 @@ Perintah:
   stok           jumlah stok per barang (barang yang dilacak stoknya)
   laba-rugi      laba rugi ringkas per periode (dari buku besar)
   laporan-harian ringkasan satu hari (untuk jadwal Telegram)
-  ppn            hitung PPN 12% dengan DPP nilai lain 11/12
+  ppn            hitung PPN 12% dengan DPP nilai lain 11/12 untuk SATU harga
+  ppn-periode    PPN keluaran, PPN masukan, dan selisih (kurang/lebih bayar) satu periode dari data
   csv-pelanggan  ubah daftar pelanggan/pemasok biasa -> CSV Import Wizard (Party)
   csv-barang     ubah daftar barang biasa -> CSV Import Wizard (Item)
   csv-transaksi  ubah daftar nota biasa -> CSV Import Wizard (SalesInvoice/PurchaseInvoice)
@@ -36,7 +37,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
-VERSI = "1.0.6"
+VERSI = "1.0.8"
 VERSI_DIUJI = "Frappe Books v0.36.0 (skema juga dicocokkan dengan cabang main 0.37.0, 20 Sep 2026)"
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
 NOL = Decimal(0)
@@ -861,6 +862,147 @@ def cmd_ppn(args):
     print("\n".join(out))
 
 
+def ppn_satu_faktur(dpp):
+    """PPN standar Komunitech per faktur; retur (DPP negatif) mengurangi sebesar PPN nilai positifnya."""
+    if dpp < 0:
+        return -ppn_dari_dpp(-dpp)[2]
+    return ppn_dari_dpp(dpp)[2]
+
+
+def tarif_template(con, tabel):
+    """{nama template Tax: (total tarif, jumlah baris detail)} dari TaxDetail."""
+    if "TaxDetail" not in tabel:
+        return {}
+    hasil = {}
+    for r in q(con, "SELECT parent, rate FROM TaxDetail WHERE parentSchemaName='Tax' OR parentSchemaName IS NULL"):
+        t, n = hasil.get(r["parent"], (NOL, 0))
+        hasil[r["parent"]] = (t + Decimal(str(r["rate"] or 0)), n + 1)
+    return hasil
+
+
+def nilai_baris(r):
+    """Nilai baris setelah diskon baris (Frappe: amount = rate x qty sebelum diskon baris)."""
+    jml = uang(r["amount"])
+    kol = r.keys()
+    if "setItemDiscountAmount" in kol and centang(r["setItemDiscountAmount"]):
+        return jml - uang(r["itemDiscountAmount"])
+    if "itemDiscountPercent" in kol and r["itemDiscountPercent"]:
+        return jml * (1 - Decimal(str(r["itemDiscountPercent"])) / 100)
+    return jml
+
+
+def rekap_ppn(con, tabel, jenis, dari, sampai, tz, tarif):
+    """Pisahkan DPP kena PPN vs tidak kena PPN per invoice final; hitung PPN standar per faktur."""
+    tabel_item = jenis + "Item"
+    cek_skema(con, tabel, [jenis, tabel_item, "TaxSummary"])
+    inv = {i["no"]: i for i in muat_invoice(con, jenis, tz)
+           if i["tgl"] and dari <= i["tgl"] <= sampai and i["final"] and not i["batal"]}
+    kol_inv = kolom_tabel(con, jenis)
+    diskon_nota = set()
+    if "discountAmount" in kol_inv:
+        for r in q(con, f'SELECT name, discountAmount, discountPercent FROM "{jenis}"'):
+            if r["name"] in inv and (uang(r["discountAmount"]) != 0 or (r["discountPercent"] or 0)):
+                diskon_nota.add(r["name"])
+    tercatat = pajak_per_invoice(con, jenis)
+    per = {no: {"kena": NOL, "bebas": NOL, "khusus": set()} for no in inv}
+    for r in q(con, f'SELECT * FROM "{tabel_item}"'):
+        if r["parent"] not in per:
+            continue
+        v = nilai_baris(r) * inv[r["parent"]]["kurs"]
+        t = r["tax"]
+        rate = tarif.get(t, (NOL, 0))[0] if t else NOL
+        if not t or rate == 0:
+            per[r["parent"]]["bebas"] += v
+        else:
+            per[r["parent"]]["kena"] += v
+            if rate != 11:
+                per[r["parent"]]["khusus"].add(f"{t} ({angka(rate)}%)")
+    hasil = {"kena": NOL, "bebas": NOL, "ppn": NOL, "tercatat": NOL, "nota_bebas": [], "khusus": {}, "diskon": sorted(diskon_nota),
+             "jumlah": len(inv), "beda": []}
+    for no in sorted(per):
+        p = per[no]
+        dpp = rupiah_bulat(p["kena"])
+        ppn = ppn_satu_faktur(dpp)
+        catat = tercatat.get(no, NOL) * inv[no]["kurs"]
+        hasil["kena"] += dpp
+        hasil["bebas"] += p["bebas"]
+        hasil["ppn"] += ppn
+        hasil["tercatat"] += catat
+        if p["bebas"] != 0:
+            hasil["nota_bebas"].append((no, p["bebas"]))
+        for k in p["khusus"]:
+            hasil["khusus"].setdefault(k, []).append(no)
+        if abs(catat - ppn) >= 1:
+            hasil["beda"].append((no, ppn, catat))
+    return hasil
+
+
+def cmd_ppn_periode(args):
+    tz = offset_zona(args.tz)
+    con, tabel = buka_db(args.db)
+    cek_skema(con, tabel, ["SingleValue"])
+    info = info_usaha(con)
+    dari, sampai, label = periode(args, tz)
+    tarif = tarif_template(con, tabel)
+    k = rekap_ppn(con, tabel, "SalesInvoice", dari, sampai, tz, tarif)
+    m_ = rekap_ppn(con, tabel, "PurchaseInvoice", dari, sampai, tz, tarif)
+    selisih = k["ppn"] - m_["ppn"]
+    out = [f"PPN PER PERIODE - {info['nama']}", f"Periode: {label}, zona {args.tz.upper()}",
+           "Dasar: hanya invoice FINAL (draf & batal tidak dihitung). Baris kena PPN = baris yang diberi template pajak "
+           "bertarif > 0 di Frappe Books. PPN = DPP x 11/12 x 12% per faktur, dibulatkan ke bawah.",
+           "",
+           f"PPN KELUARAN (penjualan, {k['jumlah']} invoice final)",
+           f"  DPP kena PPN             : {rp(k['kena'])}",
+           f"  Penjualan TANPA PPN      : {rp(k['bebas'])} (tidak masuk DPP PPN)"]
+    for no, v in k["nota_bebas"][:args.batas]:
+        out.append(f"     - {no}: {rp(v)}")
+    out += [f"  PPN keluaran (standar)   : {rp(k['ppn'])}",
+            f"  PPN tercatat di Frappe   : {rp(k['tercatat'])}",
+            "",
+            f"PPN MASUKAN (pembelian, {m_['jumlah']} invoice final)",
+            f"  DPP kena PPN             : {rp(m_['kena'])}",
+            f"  Pembelian TANPA PPN      : {rp(m_['bebas'])}",
+            f"  PPN masukan (standar)    : {rp(m_['ppn'])}",
+            f"  PPN tercatat di Frappe   : {rp(m_['tercatat'])}",
+            "",
+            f"SELISIH (keluaran - masukan): {rp(selisih)}"]
+    if selisih > 0:
+        out.append(f"  => KURANG BAYAR: perkiraan PPN yang disetor {rp(selisih)}")
+    elif selisih < 0:
+        out.append(f"  => LEBIH BAYAR {rp(-selisih)}: tidak ada setoran; kelebihan bisa dikompensasikan ke masa "
+                   "berikutnya atau diminta kembali (ikuti ketentuan DJP)")
+    else:
+        out.append("  => NIHIL: tidak ada setoran")
+    cat = []
+    for nama, r in (("penjualan", k), ("pembelian", m_)):
+        if r["beda"]:
+            cat.append(f"Angka standar beda dengan pajak tercatat di {len(r['beda'])} invoice {nama} ("
+                       + ", ".join(f"{no}: standar {rp(a)} vs tercatat {rp(b)}" for no, a, b in r["beda"][:5])
+                       + "). Selisih kecil (pecahan rupiah) wajar karena Frappe menghitung per baris tanpa pembulatan ke "
+                         "bawah; selisih besar -> buka nota itu dan cek pajak per barisnya. Jangan simpulkan template salah "
+                         "tanpa melihat tarifnya (perintah 'akun').")
+        for t, nos in r["khusus"].items():
+            cat.append(f"Template {t} dipakai di invoice {nama} {', '.join(nos[:5])}: bukan 11%, dihitung tetap 11% "
+                       "(standar barang/jasa non-mewah). Bila barang mewah/tarif khusus, tanyakan konsultan pajak.")
+        if r["diskon"]:
+            cat.append(f"Ada diskon tingkat nota di invoice {nama} {', '.join(r['diskon'][:5])}: DPP di atas belum "
+                       "dikurangi diskon nota; cek nota tersebut.")
+    if cat:
+        out.append("")
+        out += ["Catatan: " + c for c in cat]
+    out += ["",
+            "Syarat: hanya berlaku bila usaha Anda PKP (Pengusaha Kena Pajak). PPN masukan hanya boleh dikreditkan bila "
+            "ada faktur pajak masukan yang sah atas nama usaha Anda; bila angka di faktur pemasok berbeda, pakai angka "
+            "faktur. Pelaporan & setoran resmi lewat Coretax DJP.",
+            "Pembulatan belum dicocokkan dengan Coretax. Dasar: UU HPP & PMK 131/2024 (tarif 12%, DPP nilai lain 11/12 "
+            "untuk barang/jasa non-mewah), dicek 26 September 2026. Alat bantu hitung, bukan nasihat pajak; "
+            "kasus khusus -> DJP (Kring Pajak 1500200) atau konsultan pajak."]
+    catatan = cek_mata_uang(info)
+    if catatan:
+        out.append(catatan)
+    print("\n".join(out))
+
+
 # ---------------------------------------------------------------- CSV Import Wizard
 def norm_kepala(s):
     return re.sub(r"[^a-z0-9]+", " ", (s or "").lower().replace("﻿", "")).strip()
@@ -1511,6 +1653,9 @@ def buat_parser():
     p.add_argument("--dpp")
     p.add_argument("--harga-termasuk")
     p.set_defaults(fungsi=cmd_ppn)
+    p = sub.add_parser("ppn-periode"); dasar(p, periode_=True)
+    p.add_argument("--batas", type=int, default=10)
+    p.set_defaults(fungsi=cmd_ppn_periode)
     p = sub.add_parser("csv-pelanggan"); p.add_argument("--db")
     p.add_argument("--masuk", required=True); p.add_argument("--keluar", required=True)
     p.add_argument("--peran", choices=["pelanggan", "pemasok", "keduanya"], default="pelanggan")

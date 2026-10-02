@@ -806,6 +806,73 @@ class UjiRevisi103(Dasar):
                          "PPN 11% (12% x 11/12)")
 
 
+class UjiPpnPeriode(unittest.TestCase):
+    """Temuan uji OpenClaw 2 Okt 2026: PPN periode jangan dihitung dari total penjualan campuran."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.mkdtemp(prefix="uji ppn periode ")
+        cls.db = os.path.join(cls.tmp, "Sumber Rejeki.books.db")
+        buat_db_contoh.buat_sumber_rejeki(cls.db)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def test_p1_keluaran_masukan_selisih(self):
+        sebelum = sha(self.db)
+        k, out, err = jalan("ppn-periode", "--db", self.db, "--bulan", "2026-09")
+        self.assertEqual(k, 0, err)
+        # Independen: kena PPN = 20x68.000 + 5x250.000 + 24x85.000 = 4.650.000 -> 4.650.000 x 11/100 = 511.500
+        self.assertEqual(20 * 68000 + 5 * 250000 + 24 * 85000, 4650000)
+        self.assertIn("DPP kena PPN             : Rp 4.650.000", out)
+        self.assertIn("Penjualan TANPA PPN      : Rp 160.000", out)
+        self.assertIn("SINV-1003: Rp 160.000", out)
+        self.assertIn("PPN keluaran (standar)   : Rp 511.500", out)
+        self.assertIn("PPN masukan (standar)    : Rp 605.000", out)
+        self.assertIn("SELISIH (keluaran - masukan): -Rp 93.500", out)
+        self.assertIn("LEBIH BAYAR Rp 93.500", out)
+        self.assertNotIn("529.100", out)   # angka keliru lama (12% x 11/12 x 4.810.000)
+        self.assertNotIn("Catatan:", out)  # template benar -> tidak ada tuduhan template salah
+        self.assertIn("PKP", out)
+        self.assertIn("Pembulatan belum dicocokkan dengan Coretax", out)
+        self.assertEqual(sha(self.db), sebelum)
+
+    def test_p2_kurang_bayar_dan_periode_kosong(self):
+        k, out, _ = jalan("ppn-periode", "--db", self.db, "--bulan", "2026-08")
+        self.assertEqual(k, 0)
+        self.assertIn("PPN keluaran (standar)   : Rp 37.400", out)  # 5 x 68.000 x 11%
+        self.assertIn("KURANG BAYAR: perkiraan PPN yang disetor Rp 37.400", out)
+        k, out, _ = jalan("ppn-periode", "--db", self.db, "--bulan", "2026-07")
+        self.assertIn("NIHIL", out)
+
+    def test_p3_template_12_dan_pembulatan_per_faktur(self):
+        db = os.path.join(self.tmp, "salin.books.db")
+        shutil.copy(self.db, db)
+        con = sqlite3.connect(db)
+        con.execute("INSERT INTO Tax (name, createdBy, modifiedBy, created, modified) VALUES ('PPN 12', 'a', 'a', 'x', 'x')")
+        con.execute("INSERT INTO TaxDetail VALUES ('td2', 'Hutang Pajak - 2141.000', NULL, 12, 0, 'PPN 12', 'Tax', 'details')")
+        con.execute("UPDATE SalesInvoiceItem SET tax='PPN 12' WHERE parent='SINV-1002'")
+        con.execute("UPDATE TaxSummary SET amount='150000.00000000000' WHERE parent='SINV-1002'")
+        # DPP 332.345 -> 36.557,95 -> ke bawah 36.557 (selisih < Rp 1 dengan Frappe: tidak dicatat sebagai beda)
+        con.execute("UPDATE SalesInvoiceItem SET amount='332345.00000000000' WHERE parent='SINV-1004'")
+        con.execute("UPDATE TaxSummary SET amount='36557.95000000000' WHERE parent='SINV-1004'")
+        con.commit(); con.close()
+        k, out, _ = jalan("ppn-periode", "--db", db, "--bulan", "2026-09")
+        self.assertEqual(k, 0)
+        # 149.600 + 137.500 (tetap 11%) + 36.557
+        self.assertIn(f"PPN keluaran (standar)   : Rp {149600 + 137500 + 36557:,}".replace(",", "."), out)
+        self.assertIn("Template PPN 12 (12%)", out)
+        self.assertIn("SINV-1002: standar Rp 137.500 vs tercatat Rp 150.000", out)
+        self.assertNotIn("SINV-1004: standar", out)
+
+    def test_p4_input_salah(self):
+        k, _, err = jalan("ppn-periode", "--db", self.db, "--bulan", "2026-13")
+        self.assertEqual(k, 2, err)
+        k, _, err = jalan("ppn-periode", "--db", os.path.join(self.tmp, "tidak-ada.books.db"))
+        self.assertEqual(k, 3, err)
+
+
 if __name__ == "__main__":
     try:
         unittest.main(verbosity=2)
