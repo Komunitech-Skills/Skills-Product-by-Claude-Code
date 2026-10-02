@@ -384,5 +384,38 @@ class TestCLI(unittest.TestCase):
         self.assertIn("NIHIL", out)
 
 
+class TestTenggatNppnTahunBerjalan(unittest.TestCase):
+    """v1.0.4: tenggat pemberitahuan NPPN tahun berjalan (31 Maret) wajib dibandingkan dengan tanggal acuan."""
+
+    def test_sudah_lewat_1_oktober_2026(self):
+        h = hitung("--status", "TK/0", "--nppn", "380jt", "50", "--nppn-diberitahukan", "tidak",
+                   "--final-salah-skema", "1.900.000", hari=datetime.date(2026, 10, 1))
+        n = h["nppn_tahun_berjalan"]
+        self.assertEqual((n["tahun_pajak"], n["batas"], n["sudah_lewat"]), (2026, "2026-03-31", True))
+        self.assertIn("SUDAH LEWAT", n["pesan"])
+        self.assertIn("tahun pajak 2027", n["pesan"])
+        self.assertIn("31 Maret 2027", n["pesan"])
+        self.assertIn(n["pesan"], h["peringatan"])
+        # Tidak boleh ada saran mengirim pemberitahuan untuk 2026 "sebelum 31 Maret 2026"
+        self.assertFalse(any("sebelum 31 Maret 2026" in x for x in h["peringatan"] + h["catatan"]))
+
+    def test_belum_lewat_dan_hari_terakhir(self):
+        # 1 Feb 2026 -> 31 Mar 2026: 28 (sisa Feb) + 31 = 58 hari
+        n = hitung("--status", "TK/0", "--nppn", "200jt", "50", hari=datetime.date(2026, 2, 1))["nppn_tahun_berjalan"]
+        self.assertFalse(n["sudah_lewat"])
+        self.assertIn("sisa 58 hari", n["pesan"])
+        n = spt_op.status_nppn_tahun_berjalan(datetime.date(2026, 3, 31))
+        self.assertFalse(n["sudah_lewat"])
+        self.assertTrue(spt_op.status_nppn_tahun_berjalan(datetime.date(2026, 4, 1))["sudah_lewat"])
+
+    def test_karyawan_saja_tanpa_status_nppn(self):
+        h = hitung("--status", "TK/0", "--a1", "120jt", "2.625.000", hari=datetime.date(2026, 10, 1))
+        self.assertIsNone(h["nppn_tahun_berjalan"])
+
+    def test_omzet_final_ikut_diberi_status(self):
+        h = hitung("--status", "TK/0", "--omzet-final", "300jt", hari=datetime.date(2026, 10, 1))
+        self.assertTrue(h["nppn_tahun_berjalan"]["sudah_lewat"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

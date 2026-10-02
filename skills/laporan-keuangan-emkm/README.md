@@ -50,3 +50,8 @@ Bisa. Format angka Indonesia (`Rp 15.000`, `1,5jt`, `150rb`), tanggal seperti "5
 
 **Kata-kata di catatan saya khas usaha saya. Apakah dikenali?**
 Kata umum seperti bahan, gaji, listrik, ongkir, iklan, dan prive sudah dikenali. Kata khas usahamu (mis. "deterjen" untuk laundry) bisa ditambahkan sekali di file pemetaan, lalu dipakai terus.
+
+## Catatan revisi 1.3.3 (2026-10-01)
+- Modal (ekuitas) negatif kini selalu diperiksa: skill menanyakan aset lama yang belum dicatat dan utang, tidak lagi menyebutnya "wajar".
+- Tambah **Laporan Arus Kas** (operasi/investasi/pendanaan) dan ekspor **siap cetak** (`--html`, buka di browser → simpan PDF, ada kolom tanda tangan) serta CSV arus kas.
+- Permintaan "mark-up omzet" untuk pinjaman ditolak tegas, dijelaskan risikonya, dan diganti tawaran laporan jujur yang rapi (termasuk dari estimasi pemilik bila tidak ada catatan).

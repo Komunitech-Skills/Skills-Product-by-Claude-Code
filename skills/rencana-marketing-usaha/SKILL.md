@@ -60,7 +60,7 @@ python3 scripts/alokasi_anggaran.py target --harga-jual 45000 --hpp 18000 --biay
 python3 scripts/alokasi_anggaran.py funnel --target-pesanan 300 --tahap "Jangkauan>Klik=2" --tahap "Klik>Chat=20" --tahap "Chat>Pesanan=30"
 ```
 - Ambang margin (satu set, dipakai di seluruh skill): < 15% TERLALU TIPIS (jangan iklan berbayar); 15% - < 25% TIPIS (iklan kecil, pantau ketat); >= 25% AMAN.
-- Cara baca keluaran `target`: angka berlabel "Minimal ..." adalah **syarat** agar iklan tidak rugi, dan "Batas atas ..." adalah plafon teoretis bila semua pesanan dari iklan. **Bukan perkiraan hasil dan bukan saran belanja.** Tulis begitu di rencana.
+- Cara baca keluaran `target`: angka berlabel "Minimal ..." adalah **syarat** agar iklan tidak rugi (jumlah pesanan minimal dibulatkan ke ATAS, jadi benar-benar menutup anggaran), dan "Batas atas ..." adalah plafon teoretis bila semua pesanan dari iklan. **Bukan perkiraan hasil dan bukan saran belanja.** Tulis begitu di rencana.
 - `--bulan` harus bilangan bulat >= 1; nilai lain ditolak dengan pesan GAGAL.
 - Persen kanal harus total 100; cadangan eksperimen (default 10%) diambil dulu dari total, sisanya dibagi ke kanal.
 - Rumus: margin = harga - HPP - (harga x biaya platform%) - biaya per pesanan. **CAC titik impas = margin** (dibulatkan ke bawah). **ROAS titik impas = harga / margin** (dibulatkan ke atas). ROAS/CAC target memakai margin dikurangi laba target per pesanan.

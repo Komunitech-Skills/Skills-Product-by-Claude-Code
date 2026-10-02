@@ -5,7 +5,7 @@
 Untuk Meta (Facebook/Instagram) Ads, TikTok Ads, Google Ads, Shopee Ads, dan iklan TikTok Shop/Tokopedia.
 Tanpa memberi password, tanpa login, tanpa API: cukup screenshot, file ekspor, atau menjawab beberapa pertanyaan.
 
-Versi 1.0.4.
+Versi 1.0.5.
 
 ## Manfaat
 - ✅ **Skor kesehatan 0–100 yang bisa dipertanggungjawabkan** — dihitung script dengan bobot jelas, bukan "feeling" AI.
@@ -51,6 +51,10 @@ Salin folder `audit-akun-iklan` ke folder skills AI agent Anda:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script memakai Python bawaan, tanpa instal paket tambahan.
+
+## Catatan revisi 1.0.5 (2026-10-01)
+- Keamanan: bila Anda tidak sengaja menempel password/OTP/token di chat, AI tidak akan mengulang, menyimpan, atau memakainya — Anda akan diminta segera mengganti password dan mengaktifkan verifikasi 2 langkah, lalu audit lanjut dari ekspor data/screenshot saja.
+- Script kini otomatis menyamarkan pola password/OTP/token/nomor kartu di catatan audit menjadi `[DISAMARKAN]`.
 
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Setiap ROAS yang Anda sebut (target maupun rata-rata) kini selalu dibandingkan dengan ROAS impas oleh script dan dinyatakan **RUGI / IMPAS / UNTUNG** beserta perkiraan rugi/laba per pesanan.

@@ -48,9 +48,10 @@ Jika info wajib kurang, tanyakan **sekali** (maks 5 pertanyaan bernomor). Jika p
 4. **Buat checklist harian siap cetak**: kolom centang per hari (Sen–Min) atau per shift, kolom paraf pelaksana & pengecek. Maks 15 butir, diambil dari langkah kritis.
 5. **Tentukan 3–5 indikator keberhasilan** yang bisa diukur tanpa alat canggih (mis. "0 salah kirim per minggu", "toko buka tepat 08.00 minimal 6 dari 7 hari").
 6. **Isi kontrol dokumen**: kode SOP, versi, tanggal berlaku, dibuat oleh, disetujui oleh, riwayat revisi.
-7. Periksa checklist mutu, lalu tawarkan: versi poster A4 ringkas (5–7 langkah inti), versi bahasa Inggris, atau SOP lanjutan yang terkait.
+7. Periksa checklist mutu, **tampilkan SOP utuh di chat** (bukan ringkasan; file hanya tambahan), lalu tawarkan: versi poster A4 ringkas (5–7 langkah inti), versi bahasa Inggris, atau SOP lanjutan yang terkait.
 
 ## Format output
+**Wajib: tampilkan SOP LENGKAP (semua bagian 1–9, termasuk checklist) di balasan chat, siap salin.** Jangan hanya menyimpan ke file lalu memberi ringkasan — pengguna di Telegram/WhatsApp tidak bisa membuka file di workspace. File (mis. `.md`) hanya **tambahan**: tulis bila pengguna meminta atau bila bekerja di folder proyek, sebutkan lokasinya, dan tetap tampilkan isi lengkapnya di chat.
 ```
 # SOP: [Nama Pekerjaan]
 | Kode | SOP-[XX]-[01] | Versi | 1.0 |
@@ -137,6 +138,7 @@ Berlaku untuk: ... | Tidak mengatur: ...
 Contoh SOP lengkap lainnya (buka toko, packing pesanan online, handling komplain, kebersihan dapur) ada di `references/contoh-sop.md`.
 
 ## Checklist sebelum mengirim hasil
+- [ ] SOP lengkap (bagian 1–9) tampil di balasan chat, bukan hanya di file + ringkasan.
 - [ ] Setiap langkah diawali kata kerja, ≤ 15 kata, satu tindakan per langkah.
 - [ ] Tidak ada istilah asing/jargon tanpa penjelasan (mis. "FIFO" → "barang lama dipakai duluan (FIFO)").
 - [ ] Ada angka konkret (jam, batas selisih, jumlah) atau placeholder `[isi]` yang jelas.

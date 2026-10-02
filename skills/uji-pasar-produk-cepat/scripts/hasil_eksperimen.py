@@ -109,6 +109,15 @@ def pct(v, d=1):
 def cmd_hasil(a):
     cek_hitungan(a.ditawari, a.aksi)
     n, x = a.ditawari, a.aksi
+    bayar = a.bayar
+    if bayar is not None:
+        cek_hitungan(n, bayar)
+        if bayar > a.aksi:
+            raise InputSalah(f"--bayar ({bayar}) tidak boleh lebih besar dari --aksi ({a.aksi}): yang sudah bayar adalah bagian dari yang bilang mau.")
+        verbal = a.aksi
+        x = bayar  # keputusan hanya dari komitmen nyata (bayar/DP/transfer)
+        print(f"Minat lisan: {verbal} dari {n} orang = {pct(verbal / n)} (BUKAN konversi; belum ada uang masuk)")
+        print(f"Komitmen nyata (bayar/DP/transfer): {bayar} dari {n} orang")
     p = x / n
     lo, hi = wilson(x, n)
     out = [f"Konversi: {x} dari {n} orang = {pct(p)}",
@@ -117,6 +126,14 @@ def cmd_hasil(a):
     if n < SAMPEL_MIN:
         out.append(f"PERINGATAN SAMPEL KECIL: baru {n} orang (< {SAMPEL_MIN}). Rentangnya lebar; "
                    "anggap ini sinyal arah saja, jangan keputusan besar. Tambah sampel bila bisa.")
+    if bayar is not None and bayar == 0:
+        out.append("KEPUTUSAN: BELUM ADA KOMITMEN NYATA (0 yang bayar/DP). Tidak boleh LANJUT dan jangan keluarkan modal produksi. "
+                   "ULANGI UJI: minta DP/transfer kecil atau pre-order berbayar dari yang bilang mau, dan tambah sampel (minimal "
+                   f"{SAMPEL_MIN} orang). Minat lisan umumnya jauh lebih besar daripada yang benar-benar membayar.")
+        print("\n".join(out))
+        return
+    if a.target is not None and bayar is None:
+        out.append("Catatan: angka --aksi dianggap sudah BAYAR/DP/transfer. Bila baru bilang 'mau' (belum bayar), ulangi dengan --bayar JUMLAH_YANG_SUDAH_BAYAR.")
     if a.target is None and a.batas_stop is not None:
         out.append("PERINGATAN: --batas-stop diberikan tanpa --target, jadi tidak dipakai dan tidak ada keputusan "
                    "LANJUT/UBAH/STOP. Tambahkan --target (persen ambang lanjut) untuk mendapat keputusan.")
@@ -127,11 +144,12 @@ def cmd_hasil(a):
             raise InputSalah("Target harus antara 0 dan 100 (persen), dan batas stop harus lebih kecil dari target.")
         out.append(f"Kriteria (ditetapkan SEBELUM uji): lanjut jika >= {pct(t)}, stop jika < {pct(stop)}.")
         if p >= t:
-            if lo >= t and n >= SAMPEL_MIN:
-                v = "LANJUT (kuat): bahkan batas bawah rentang wajar sudah mencapai target."
+            if n < SAMPEL_MIN:
+                v = (f"ULANGI UJI dengan sampel lebih besar: baru {n} orang (< {SAMPEL_MIN}), terlalu sedikit untuk keputusan LANJUT. "
+                     f"Tawari minimal {SAMPEL_MIN} orang (kontak baru) dan ukur ulang. Sementara itu boleh siapkan paling banyak "
+                     "sebesar pesanan yang SUDAH dibayar, tanpa modal tambahan.")
             elif lo >= t:
-                v = (f"LANJUT BERTAHAP (sampel kecil): batas bawah rentang sudah mencapai target, tapi baru {n} orang "
-                     f"(< {SAMPEL_MIN}). Mulai dari batch kecil dan tambah sampel sebelum modal besar.")
+                v = "LANJUT (kuat): bahkan batas bawah rentang wajar sudah mencapai target."
             else:
                 v = ("LANJUT BERTAHAP: angka mencapai target, tapi batas bawah rentang "
                      f"({pct(lo)}) masih di bawah target. Lanjut bertahap kecil (mis. produksi batch kecil) "
@@ -273,6 +291,8 @@ def main(argv=None):
     h = sub.add_parser("hasil", help="satu uji: konversi + rentang wajar + keputusan")
     h.add_argument("--ditawari", type=angka_bulat, required=True)
     h.add_argument("--aksi", type=angka_bulat, required=True, help="yang benar-benar pre-order/bayar/klik target")
+    h.add_argument("--bayar", type=angka_bulat, help="dari --aksi, berapa yang benar-benar sudah bayar/DP/transfer; "
+                   "isi bila --aksi masih 'bilang mau'. 0 = tidak boleh LANJUT")
     h.add_argument("--target", type=angka_desimal, help="kriteria lanjut, persen (ditetapkan sebelum uji)")
     h.add_argument("--batas-stop", type=angka_desimal, help="batas stop, persen (default: setengah target)")
     h.set_defaults(f=cmd_hasil)

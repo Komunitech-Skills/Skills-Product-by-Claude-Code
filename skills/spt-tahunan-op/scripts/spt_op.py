@@ -26,7 +26,7 @@ import re
 import sys
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP
 
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 
 # ------------------------------------------------------------------ konstanta aturan
 PTKP_DIRI = Decimal(54000000)        # UU 7/2021 HPP Pasal 7 ayat (1); PMK 101/2016
@@ -225,6 +225,33 @@ def pph_pasal17(pkp):
         if atas is not None:
             bawah = atas
     return bulat_bawah(total), rincian
+
+
+# ------------------------------------------------------------------ tenggat NPPN tahun berjalan
+def status_nppn_tahun_berjalan(hari_ini):
+    """Bandingkan batas pemberitahuan NPPN TAHUN BERJALAN (31 Maret) dengan tanggal acuan.
+
+    Dasar: UU PPh Ps. 14 ayat (2) & (5); PMK 81/2024 Ps. 450 ayat (2) — pemberitahuan dalam 3 bulan pertama
+    tahun pajak; tanpa pemberitahuan dianggap memilih pembukuan. Penguncian pembukuan: PMK 81/2024 Ps. 463
+    s.t.d.d. PMK 1/2026 (menurut DJP) — PERLU REVIEW konsultan pajak.
+    """
+    tp = hari_ini.year
+    batas = datetime.date(tp, 3, 31)
+    lewat = hari_ini > batas
+    if not lewat:
+        pesan = ("Pemberitahuan NPPN untuk tahun pajak {tp}: batas 31 Maret {tp} BELUM lewat per {h} (sisa {n} hari). "
+                 "Bila ingin memakai NPPN tahun {tp} dan belum memberitahukan, sampaikan lewat Coretax (layanan "
+                 "AS.04-01) sebelum tanggal itu.").format(tp=tp, h=hari_ini.isoformat(), n=(batas - hari_ini).days)
+    else:
+        pesan = ("Pemberitahuan NPPN untuk tahun pajak {tp}: batas 31 Maret {tp} SUDAH LEWAT per {h} — JANGAN "
+                 "menyarankan mengirimnya lagi untuk tahun {tp}. Bila belum disampaikan, untuk tahun pajak {tp} Anda "
+                 "dianggap memilih PEMBUKUAN (UU PPh Ps. 14 ayat (5); PMK 81/2024 Ps. 450): mulai catat pembukuan "
+                 "(pemasukan, biaya, laba-rugi) sekarang. Pemberitahuan berikutnya hanya bisa untuk tahun pajak {tp1} "
+                 "(1 Januari–31 Maret {tp1}), TETAPI menurut DJP wajib pajak yang sudah menyelenggarakan pembukuan "
+                 "tidak dapat kembali ke NPPN (PMK 81/2024 Ps. 463 s.t.d.d. PMK 1/2026) — pastikan ke KPP/konsultan "
+                 "pajak apakah status 'dianggap pembukuan' ikut mengunci sebelum mengandalkan NPPN {tp1}.").format(
+                     tp=tp, tp1=tp + 1, h=hari_ini.isoformat())
+    return {"tahun_pajak": tp, "batas": batas.isoformat(), "sudah_lewat": lewat, "pesan": pesan}
 
 
 # ------------------------------------------------------------------ hitung utama
@@ -433,6 +460,10 @@ def hitung(args, hari_ini=None):
         if omzet_final > BATAS_NPPN:
             peringatan.append("Omzet final di atas Rp4,8 miliar: tahun berikutnya tidak lagi memenuhi syarat PPh final "
                               "0,5% — konsultasikan ke konsultan pajak.")
+    nppn_berjalan = None
+    if usaha or omzet_final:
+        nppn_berjalan = status_nppn_tahun_berjalan(hari_ini)
+        (peringatan if nppn_berjalan["sudah_lewat"] else catatan).append(nppn_berjalan["pesan"])
     if final_salah:
         peringatan.append(
             "PPh final 0,5% {} terlanjur disetor atas penghasilan PEKERJAAN BEBAS (salah skema): TIDAK "
@@ -491,6 +522,7 @@ def hitung(args, hari_ini=None):
         "keterangan_batas": ket_batas,
         "batas_sudah_lewat": sudah_lewat,
         "tanggal_acuan": hari_ini.isoformat(),
+        "nppn_tahun_berjalan": nppn_berjalan,
         "peringatan": peringatan,
         "catatan": catatan,
         "checklist_dokumen": checklist(pekerjaan, usaha, zakat, omzet_final, args, jenis, status_spt),

@@ -47,3 +47,8 @@ Tidak. Skill membuat brief dan daftar foto yang tinggal kamu kerjakan, lalu memb
 
 **Bolehkah foto dibuat lebih bagus dari aslinya?**
 Foto boleh dibuat terang dan rapi, tapi warna, ukuran, dan isi harus sesuai barang asli. Foto yang berlebihan memicu ulasan "tidak sesuai foto" dan retur.
+
+## Catatan revisi 1.0.3 (2026-10-01)
+- Pemicu baru di deskripsi: foto produk kosmetik/skincare/serum/pemutih/obat/suplemen/jamu, foto before-after, edit foto produk, logo BPOM/halal di foto (uji OpenClaw 2026-10-01: skill tidak terbaca pada permintaan serum pemutih).
+- Aturan "produk wajib izin edar": tidak menyarankan before-after (termasuk "versi realistis"), klaim hasil, logo BPOM/halal yang belum dimiliki, maupun menjual/pre-order/teaser atau menulis "BPOM dalam proses" sebelum izin edar terbit (PerBPOM 18/2024: promosi & iklan hanya untuk kosmetik bernotifikasi).
+- Teks di layar video hanya fakta dari pengguna; selebihnya `[ISI: ...]`.

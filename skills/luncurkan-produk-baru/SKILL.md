@@ -12,7 +12,7 @@ Mengubah "saya mau launching produk" menjadi **rencana peluncuran satu paket yan
 
 ## Kapan digunakan
 - Produk fisik/jasa baru (atau varian besar baru) yang akan dijual ke publik lewat WA, IG, TikTok, marketplace, bazar.
-- Ingin daftar tunggu, pre-order, soft launch, lalu launching resmi.
+- Ingin daftar tunggu, pre-order, soft launch, lalu launching resmi (untuk produk wajib izin edar yang izinnya belum terbit: hanya daftar tunggu tanpa uang sampai izin terbit).
 - Butuh daftar tugas bertanggal dari tanggal peluncuran yang sudah ditentukan.
 
 ## Kapan TIDAK digunakan
@@ -22,7 +22,7 @@ Mengubah "saya mau launching produk" menjadi **rencana peluncuran satu paket yan
 - Butuh keputusan hukum/izin: skill ini hanya pengingat (lihat `references/legalitas-label.md`).
 
 ## Input (tanyakan SEKALI, dalam satu pesan)
-Wajib: (1) produk & harga normal, (2) tanggal peluncuran yang diinginkan (atau "secepatnya"), (3) jenis: makanan/minuman, kosmetik, jasa, atau lain, (4) kanal yang sudah dimiliki (jumlah kontak WA, pengikut IG/TikTok, toko marketplace), (5) anggaran promo+iklan.
+Wajib: (1) produk & harga normal, (2) tanggal peluncuran yang diinginkan (atau "secepatnya"), (3) jenis: makanan/minuman, kosmetik, jasa, atau lain, **dan apakah izin edarnya sudah terbit** (notifikasi BPOM untuk kosmetik; PIRT/BPOM MD untuk pangan olahan; izin edar obat/suplemen/alat kesehatan), (4) kanal yang sudah dimiliki (jumlah kontak WA, pengikut IG/TikTok, toko marketplace), (5) anggaran promo+iklan.
 Opsional: stok awal & kapan barang tiba, foto/aset yang ada, target pesanan.
 Bila pengguna ingin cepat: pakai default (jenis "lain", anggaran Rp 0 = hanya kanal gratis, tanggal = 35 hari dari hari ini) dan **sebutkan asumsinya** di awal jawaban.
 
@@ -30,8 +30,11 @@ Bila pengguna ingin cepat: pakai default (jenis "lain", anggaran Rp 0 = hanya ka
 
 > **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 
+### 0. Gerbang izin edar (WAJIB, sebelum yang lain)
+Untuk produk yang wajib izin edar (kosmetik, pangan olahan, obat/suplemen, alat kesehatan) dan izin **belum terbit**: **penjualan, pre-order, DP, dan promosi yang menerima pesanan DITUNDA sampai izin terbit**. Tidak ada "soft launch" berbayar dan tidak ada "launching tetap jalan tanpa klaim izin". T0 digeser ke minimal 7 hari **setelah** izin terbit (jalankan script dengan `--izin belum --izin-terbit TTTT-BB-HH`). Yang boleh sebelum izin: riset pasar, daftar tunggu **tanpa pembayaran** (tulis jelas "belum menerima pesanan dan belum menerima uang"), persiapan konten/foto/label. Teaser tanpa klaim khasiat boleh. Dasar umum: aturan izin edar BPOM/Kemenkes dan UU Kesehatan; jangan menyebut nomor peraturan dari ingatan, dan arahkan pengguna cek ke BPOM/Dinkes setempat. Detail: `references/legalitas-label.md`. Bila status izin tidak diketahui, tanyakan; jangan menganggap sudah ada.
+
 ### 1. Gerbang kesiapan (2 menit)
-Cek tiga hal di `references/runbook-hari-h.md` bagian A: satu janji jelas, sudah dicoba orang luar, kemasan/label utuh. Jika belum: sarankan soft launch kecil, bukan menunda tanpa batas dan bukan menambah fitur terus.
+Cek tiga hal di `references/runbook-hari-h.md` bagian A: satu janji jelas, sudah dicoba orang luar, kemasan/label utuh. Jika belum (dan produk tidak wajib izin edar, atau izinnya sudah terbit): sarankan soft launch kecil, bukan menunda tanpa batas dan bukan menambah fitur terus.
 
 ### 2. Tetapkan target dan angka dasar
 - Target pesanan minggu 1 dari **daftar tunggu x 15-25%** (patokan awal, tandai sebagai asumsi) atau dari hasil soft launch bila ada.
@@ -45,7 +48,7 @@ Pakai tabel dan skor 0-3 di `references/kanal-checklist.md`. Susun menurut milik
 | Fase | Kira-kira | Isi | Keluaran |
 |------|-----------|-----|----------|
 | Pra-peluncuran / teaser | T-30 s.d. T-15 | janji produk, aset foto/video, formulir daftar tunggu, teaser 1-2, pesan ke tim pertama | daftar tunggu berjalan |
-| Soft launch | T-14 s.d. T-5 | pre-order terbatas 30-50 unit dibuka T-14, dikirim T-10, **baru setelah barang/layanan diterima** (T-5) minta masukan 10 pembeli | perbaikan listing/label/kemasan |
+| Soft launch (hanya bila izin edar tidak diperlukan atau sudah terbit; bila belum: daftar tunggu tanpa uang saja) | T-14 s.d. T-5 | pre-order terbatas 30-50 unit dibuka T-14, dikirim T-10, **baru setelah barang/layanan diterima** (T-5) minta masukan 10 pembeli | perbaikan listing/label/kemasan |
 | Persiapan akhir | T-7 s.d. T-1 | promo diputuskan, stok fisik, uji kirim, listing terjadwal, Go/No-Go H-1 | keputusan Go/No-Go |
 | Grand launch | T0 | runbook per jam (bagian F) | angka hari-1 |
 | Pasca-peluncuran | T+1 s.d. T+30 | kirim cepat, ulasan, bukti sosial, restok, akhiri promo jujur, tinjauan 30 hari | pelajaran + keputusan lanjut |
@@ -55,7 +58,8 @@ Jalankan (Windows: `python` atau `py`):
 ```
 python3 scripts/jadwal_peluncuran.py --tanggal 2026-11-14 --produk "Nama Produk" --jenis pangan
 ```
-Pilihan: `--jenis pangan|kosmetik|jasa|lain` (pangan dan kosmetik mendapat cek label T-28 dan cek foto listing T-3; `jasa` membuang tugas stok/pemasok/kemasan/uji kirim dan menambah tugas kapasitas layanan), `--hari-ini TTTT-BB-HH` (bawaan: hari ini, sehingga peringatan waktu pendek dan tanda LEWAT selalu aktif), `--libur-tambahan 2026-11-20,...`, `--format md|csv|json`. Script memakai Python standar, tanpa instalasi. Tugas pemasok/cetak/izin digeser ke hari kerja terdekat (mundur sebelum peluncuran, maju sesudahnya); konten tidak digeser tetapi diberi catatan bila jatuh di libur. Script juga memperingatkan: tanggal peluncuran di hari libur, dekat tanggal kembar (9.9/10.10/11.11/12.12), waktu tersisa <30 hari, tahun tanpa data libur di bagian mana pun rentang T-30..T+30 (hanya 2026-2027 tersedia; libur di luar itu perlu dicek manual), dan **peluncuran yang bersinggungan dengan Lebaran/cuti bersama Idulfitri** (pemasok/ekspedisi libur, musim mudik). Di keluaran md tiap tugas diberi label T sendiri, mis. **T-5**.
+Pilihan tambahan: `--izin sudah|belum|tidak-wajib` (bawaan sudah; `belum` mengganti pre-order dengan daftar tunggu tanpa uang, menandai tugas jual **TUNDA**, memberi peringatan), `--izin-terbit TTTT-BB-HH`, `--ringkas` (tugas kunci saja). Pilihan: `--jenis pangan|kosmetik|jasa|lain` (pangan dan kosmetik mendapat cek label T-28 dan cek foto listing T-3; `jasa` membuang tugas stok/pemasok/kemasan/uji kirim dan menambah tugas kapasitas layanan), `--hari-ini TTTT-BB-HH` (bawaan: hari ini, sehingga peringatan waktu pendek dan tanda LEWAT selalu aktif), `--libur-tambahan 2026-11-20,...`, `--format md|csv|json`. Script memakai Python standar, tanpa instalasi. Tugas pemasok/cetak/izin digeser ke hari kerja terdekat (mundur sebelum peluncuran, maju sesudahnya); konten tidak digeser tetapi diberi catatan bila jatuh di libur. Script juga memperingatkan: tanggal peluncuran di hari libur, dekat tanggal kembar (9.9/10.10/11.11/12.12), waktu tersisa <30 hari, tahun tanpa data libur di bagian mana pun rentang T-30..T+30 (hanya 2026-2027 tersedia; libur di luar itu perlu dicek manual), dan **peluncuran yang bersinggungan dengan Lebaran/cuti bersama Idulfitri** (pemasok/ekspedisi libur, musim mudik). Di keluaran md tiap tugas diberi label T sendiri, mis. **T-5**; tugas hari kerja yang digeser menyebut tanggal sebenarnya (mis. "T+1: kirim pesanan pertama" yang jatuh di Senin ditulis "dikerjakan Senin 2026-11-23 (= T+3)"; sebut ini apa adanya ke pengguna).
+**Panjang rencana:** bila hasil lebih dari 43 tugas (atau waktu <30 hari), **langsung berikan versi ringkas** (`--ringkas`, ±22 tugas kunci) di jawaban yang sama, lalu sebut bahwa daftar lengkap tersedia; jangan hanya menawarkan.
 Bila script tidak bisa dijalankan: buat jadwal manual dengan pola T-30, T-25, T-21, T-14, T-7, T-3, T-1, T0, T+1, T+3, T+7, T+14, T+30 dan geser tugas pemasok dari Sabtu/Minggu/libur. Katakan bahwa daftar libur belum diperiksa.
 Tanggal libur adalah SKB 3 Menteri 2026/2027 (data 2026 dan 2027 sudah dicocokkan 51/51 dengan lampiran resmi per 2026-09-29); selalu cocokkan pengumuman terbaru.
 
@@ -74,7 +78,7 @@ Terapkan `references/aturan-promo.md`: hitung margin di harga promo terendah, ba
 Catat 5 angka per hari selama T0-T+7 (kunjungan, chat, pesanan, omzet, stok sisa), lalu tinjauan hari 3, 7, 30 di `templates/rencana-peluncuran.md`. Iklan berbayar: laporan mingguan lewat `laporan-iklan-mingguan`. Target tim/karyawan bila ada: `kpi-tim`. Keputusan per kanal: lanjut / ubah / stop berdasarkan biaya per pesanan vs margin.
 
 ### 9. Pengingat legalitas & label
-Untuk makanan/minuman/kosmetik selalu sisipkan pengingat NIB, PIRT/BPOM, halal, dan kecocokan label dengan listing (`references/legalitas-label.md`) dengan tautan situs resmi (oss.go.id, halal.go.id, cekbpom.pom.go.id). Ini pengingat, bukan keputusan; arahkan ke dinas/BPOM/BPJPH atau konsultan.
+Untuk makanan/minuman/kosmetik selalu sisipkan pengingat NIB, PIRT/BPOM, halal, dan kecocokan label dengan listing (`references/legalitas-label.md`) dengan tautan situs resmi (oss.go.id, halal.go.id, cekbpom.pom.go.id). Bila izin edar belum terbit, ingatkan tegas bahwa menjual/pre-order sebelum izin melanggar aturan. Ini pengingat, bukan keputusan; arahkan ke dinas/BPOM/BPJPH atau konsultan.
 
 ## Format output (urut tetap)
 1. **Asumsi** (bila ada default yang dipakai).
@@ -92,7 +96,7 @@ Ringkas: jenis pangan; kanal terpilih WA daftar tunggu + IG + marketplace; jadwa
 
 ## Batasan & penanganan error
 - Tanggal salah format / tidak ada: script keluar dengan pesan "Galat" dan kode 2; minta pengguna menulis ulang TTTT-BB-HH.
-- Tanggal peluncuran kurang dari 30 hari: jangan menolak; tandai tugas LEWAT, padatkan (gabungkan teaser, soft launch minimal 5 pembeli), dan katakan risiko terpangkasnya.
+- Tanggal peluncuran kurang dari 30 hari: jangan menolak; tandai tugas LEWAT, padatkan (gabungkan teaser, soft launch minimal 5 pembeli, **kecuali izin edar belum terbit: tidak ada penjualan sama sekali**), dan katakan risiko terpangkasnya.
 - Angka tidak diberikan: tanya sekali; bila tetap tidak ada, pakai patokan dan tandai "asumsi, ganti dengan angka nyata".
 - Tidak mengirim pesan massal, tidak menjanjikan hasil penjualan, tidak membuat ulasan/testimoni palsu, tidak menyatakan produk halal/berizin/aman: hanya mengingatkan pengecekan.
 - Di luar cakupan (validasi ide, pajak usaha, izin hukum, aplikasi/SaaS): arahkan ke skill lain atau profesional.

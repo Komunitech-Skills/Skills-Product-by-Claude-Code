@@ -49,6 +49,11 @@ Belum. Proposal adalah ajakan. Setelah sepakat, buat perjanjian tertulis (bisa d
 **Bisa dalam bahasa Inggris?**
 Bisa. Minta saja "buat versi bahasa Inggris" setelah proposal jadi.
 
+## Catatan revisi 1.0.7 (2026-10-01)
+- Kota usaha tidak lagi dikarang dari kota mitra: "titip jual ke minimarket di Solo" tidak akan ditulis "kopi susu literan di Solo". Bila kota usaha tidak Anda sebut, ditulis [isi: kota usaha].
+- Modal, HPP, laba/rugi, dan titik impas Anda hanya muncul di "Catatan untuk Anda", tidak di proposal, pesan WA, atau email untuk mitra — termasuk saat AI menjelaskan kenapa porsi toko diturunkan.
+- `cek_fakta.py --dokumen-mitra` menandai GAGAL bila angka internal bocor ke dokumen untuk mitra; kategori baru `lokasi` menandai kota mitra yang dipakai sebagai kota usaha. Ditambah pola klaim rasa/tekstur dan janji kirim ("besok dikirim").
+
 ## Catatan revisi 1.0.6 (2026-10-01)
 - Langkah wajib baru: AI menulis dulu "Fakta dari pengguna", lalu setiap klaim di proposal, pesan WA, dan email harus bisa ditelusuri ke daftar itu.
 - Script baru `scripts/cek_fakta.py`: klaim turunan ("sudah dikenal di Solo", "tren terus diminati", "favorit pelanggan"), ukuran kemasan karangan ("250ml" untuk produk literan), sifat produk ("rumahan", "tanpa pengawet"), dan angka kredibilitas yang tidak Anda sebut ditandai GAGAL dan wajib diperbaiki. Klaim yang Anda minta tetapi belum ada buktinya wajib diberi [isi: bukti].

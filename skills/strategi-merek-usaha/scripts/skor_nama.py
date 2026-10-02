@@ -118,6 +118,31 @@ def skor_suku(n):
     return 1
 
 
+_DIGRAF = ("ng", "ny", "sy", "kh", "gh")   # bunyi lazim Indonesia: memutus rangkaian (sama seperti v1.0.3)
+_KONSONAN = set("bcdfghjklmnpqrstvwxyz")
+
+
+def kluster_konsonan(nama):
+    """Cari rangkaian >= 3 konsonan berturut per kata; ng/ny/sy/kh/gh tidak dihitung (bunyi lazim).
+    Kembalikan daftar (huruf_persis_dari_nama, kata_asli), mis. [('ncl', 'Kinclong')]."""
+    hasil = []
+    for kata in re.findall(r"[A-Za-z]+", nama):
+        low = kata.lower()
+        unit, i = [], 0                      # (mulai, akhir) tiap bunyi
+        while i < len(low):
+            j = i + 2 if low[i:i + 2] in _DIGRAF else i + 1
+            unit.append((i, j))
+            i = j
+        run = []
+        for (a, b) in unit + [(len(low), len(low))]:
+            if a < len(low) and b - a == 1 and low[a] in _KONSONAN:
+                run.append((a, b))
+                continue
+            if len(run) >= 3:
+                hasil.append((kata[run[0][0]:run[-1][1]], kata))
+            run = []
+    return hasil
+
 def skor_ejaan(nama):
     """5 = mudah dieja. Kurangi: angka/simbol (-2), huruf sama 3x berturut (-1),
     3 konsonan berturut di luar ng/ny/sy/kh (-1), huruf q/x (-1). Minimum 1."""
@@ -129,10 +154,10 @@ def skor_ejaan(nama):
     if re.search(r"([a-z])\1\1", low):
         s -= 1
         alasan.append("huruf sama 3x")
-    bersih = re.sub(r"ng|ny|sy|kh|gh", "a", low)
-    if re.search(r"[bcdfghjklmnpqrstvwxyz]{3}", re.sub(r"[^a-z]", " ", bersih)):
+    kluster = kluster_konsonan(nama)
+    if kluster:
         s -= 1
-        alasan.append("3 konsonan berturut")
+        alasan.append("3 konsonan berturut " + ", ".join(f"'{k}' di '{kata}'" for k, kata in kluster))
     if re.search(r"[qx]", low):
         s -= 1
         alasan.append("huruf q/x")

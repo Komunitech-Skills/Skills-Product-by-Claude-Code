@@ -111,7 +111,7 @@ if k != 0 or "tanpa --target" not in o: gagal.append("batas-stop tanpa target: "
 
 # B6: n < 30 dengan batas bawah >= T -> bukan "kuat"
 k, o, _ = jalan("hasil", "--ditawari", "12", "--aksi", "10", "--target", "15")
-if "LANJUT (kuat)" in o or "LANJUT BERTAHAP (sampel kecil)" not in o: gagal.append("10/12 harus LANJUT BERTAHAP (sampel kecil): " + o)
+if "LANJUT (kuat)" in o or "KEPUTUSAN: ULANGI UJI dengan sampel lebih besar" not in o: gagal.append("10/12 harus ULANGI UJI (sampel kecil): " + o)
 # B7: tafsir rentang
 if "dengan data ini, angka sebenarnya" not in o or "kalau uji diulang" in o: gagal.append("tafsir rentang: " + o)
 
@@ -146,6 +146,27 @@ if k != 0 or "1,2%" not in o and "1,3%" not in o: gagal.append("persen desimal k
 # N1: uji z < 0,05 tapi Fisher >= 0,05 -> tidak dinyatakan pemenang
 k, o, e = jalan("banding", "--a-ditawari", "180", "--a-aksi", "3", "--b-ditawari", "190", "--b-aksi", "11")
 if k != 0 or "pemenang untuk kelompok" in o or "Cek silang" not in o: gagal.append("N1 cek silang Fisher: " + o)
+
+# R1 (regresi uji OpenClaw): 12 orang, 5 bilang mau, 0 transfer -> tidak boleh LANJUT apa pun
+k, o, _ = jalan("hasil", "--ditawari", "12", "--aksi", "5", "--bayar", "0", "--target", "15")
+if k != 0 or "KEPUTUSAN: BELUM ADA KOMITMEN NYATA" not in o or "KEPUTUSAN: LANJUT" in o or "ULANGI UJI" not in o:
+    gagal.append("R1 12 orang/0 bayar: " + o)
+if "BUKAN konversi" not in o or "41,7" not in o: gagal.append("R1 minat lisan harus ditandai bukan konversi: " + o)
+# R2: tanpa --target pun, 0 bayar tetap ditolak
+k, o, _ = jalan("hasil", "--ditawari", "12", "--aksi", "5", "--bayar", "0")
+if "BELUM ADA KOMITMEN NYATA" not in o: gagal.append("R2 0 bayar tanpa target: " + o)
+# R3: sampel kecil 12 orang, 5 sudah bayar, target 15 -> ULANGI UJI, bukan LANJUT
+k, o, _ = jalan("hasil", "--ditawari", "12", "--aksi", "5", "--bayar", "5", "--target", "15")
+if "KEPUTUSAN: ULANGI UJI" not in o or "KEPUTUSAN: LANJUT" in o: gagal.append("R3 sampel kecil: " + o)
+# R4: sampel cukup (80), 14 bayar -> tetap LANJUT BERTAHAP seperti semula
+k, o, _ = jalan("hasil", "--ditawari", "80", "--aksi", "14", "--bayar", "14", "--target", "15")
+if "LANJUT BERTAHAP" not in o: gagal.append("R4 80/14 bayar: " + o)
+# R5: --bayar > --aksi ditolak (kode 2)
+k, o, e = jalan("hasil", "--ditawari", "12", "--aksi", "3", "--bayar", "5", "--target", "15")
+if k != 2: gagal.append(f"R5 bayar>aksi harus kode 2, dapat {k}: {o} {e}")
+# R6: tanpa --bayar, ada catatan agar bedakan 'mau' vs bayar
+k, o, _ = jalan("hasil", "--ditawari", "80", "--aksi", "14", "--target", "15")
+if "--bayar" not in o: gagal.append("R6 catatan --bayar: " + o)
 
 if gagal:
     print("GAGAL:\n- " + "\n- ".join(gagal))

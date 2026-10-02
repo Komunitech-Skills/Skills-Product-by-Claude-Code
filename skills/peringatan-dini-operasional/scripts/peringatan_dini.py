@@ -24,7 +24,8 @@ Baris yang diawali "#" diabaikan (komentar).
 
 Rumus (semua Decimal, presisi 28 digit, dibulatkan hanya saat ditampilkan):
   rata-rata 7   = rata-rata 7 angka tercatat terakhir (termasuk hari laporan)
-  garis dasar   = maks. 28 angka tercatat SEBELUM hari laporan; pencilan |z|>3 dibuang sekali
+  garis dasar   = maks. 28 angka tercatat SEBELUM hari laporan; pencilan |z|>3 yang LAMA
+                  (> 7 hari sebelum hari laporan) dibuang sekali; < 14 angka: tidak dibuang
   sigma (σ)     = simpangan baku sampel (n-1) garis dasar; z = (nilai hari ini - rata) / σ
   batas kendali = rata ± 2σ (waspada) dan ± 3σ (bahaya); butuh >= 14 angka garis dasar
   tren          = kemiringan regresi linear (kuadrat terkecil) atas angka dalam 7 hari
@@ -496,17 +497,29 @@ def regresi(titik):
     return b, r2
 
 
-def garis_dasar(titik):
-    """titik = [(tanggal, nilai)] sebelum hari laporan -> dict statistik garis dasar."""
+JENDELA_BARU = 7  # angka dalam 7 hari kalender terakhir = bagian tren berjalan, tidak dibuang
+
+
+def garis_dasar(titik, tanggal_acuan=None):
+    """titik = [(tanggal, nilai)] sebelum hari laporan -> dict statistik garis dasar.
+
+    Pencilan |z| > 3 hanya dibuang bila LAMA: lebih dari 7 hari kalender sebelum tanggal acuan
+    (hari laporan). Angka ekstrem di 7 hari terakhir adalah bagian tren yang sedang berjalan,
+    jadi tetap dipakai (v1.0.5: dulu porsi rusak 30/9 ikut dibuang & disebut "lama").
+    Garis dasar < 14 angka (data pendek): tidak ada pencilan yang dibuang."""
     nilai = [v for _, v in titik]
     hasil = {"n": len(nilai), "pencilan_diabaikan": []}
     if len(nilai) < 2:
         return hasil
+    if tanggal_acuan is None:
+        tanggal_acuan = titik[-1][0] + timedelta(days=1)
     m, s = rata(nilai), sd_sampel(nilai)
     if len(nilai) >= MIN_SIGMA and s and s > 0:
-        bersih = [(t, v) for t, v in titik if abs(v - m) / s <= 3]
+        def dibuang(t, v):
+            return abs(v - m) / s > 3 and (tanggal_acuan - t).days >= JENDELA_BARU
+        bersih = [(t, v) for t, v in titik if not dibuang(t, v)]
         if len(bersih) < len(titik) and sd_sampel([v for _, v in bersih]):
-            hasil["pencilan_diabaikan"] = [t.isoformat() for t, v in titik if abs(v - m) / s > 3]
+            hasil["pencilan_diabaikan"] = [t.isoformat() for t, v in titik if dibuang(t, v)]
             nilai = [v for _, v in bersih]
             m, s = rata(nilai), sd_sampel(nilai)
     hasil.update({"n": len(nilai), "rata": m, "sd": s})
@@ -654,7 +667,7 @@ def evaluasi_metrik(k, arah, target, tgl_lap, uang, kejadian=False):
 
     # garis dasar & sigma (untuk JSON & model normal)
     jendela_dasar = titik[:-1][-JENDELA_DASAR:]
-    dasar = garis_dasar(jendela_dasar)
+    dasar = garis_dasar(jendela_dasar, titik[-1][0])
     h["dasar"] = dasar
     z = None
     if dasar["n"] >= MIN_SIGMA and dasar.get("sd"):
@@ -717,7 +730,7 @@ def evaluasi_metrik(k, arah, target, tgl_lap, uang, kejadian=False):
         if i == 1:
             return {"dasar": dasar, "mentah": mentah}
         jd = titik[:-i][-JENDELA_DASAR:]
-        return {"dasar": garis_dasar(jd), "mentah": [v for _, v in jd]}
+        return {"dasar": garis_dasar(jd, titik[-i][0]), "mentah": [v for _, v in jd]}
 
     def sinyal(v, a, basis):
         """-> (peluang ekor ke arah buruk, level maksimum yang diizinkan besar selisih)."""
@@ -937,7 +950,7 @@ def evaluasi_stok(ks, kp, tgl_lap, lead):
 PERTANYAAN = [
     (("reject", "cacat", "rusak", "gagal", "susut", "waste", "buang", "terbuang"), [
         "Material: ada bahan baku batch/pemasok baru, atau bahan disimpan terlalu lama?",
-        "Mesin: suhu/setting mesin (oven, mixer, sealer) berubah, baru diservis, atau sempat rusak?",
+        "Mesin/peralatan: setting, kalibrasi, atau kondisi alat produksi berubah, baru diservis, atau sempat rusak?",
         "Manusia & metode: operator baru/ganti shift? resep, SOP, atau ukuran batch berubah?"]),
     (("keluhan", "komplain", "complain", "retur", "refund"), [
         "Keluhannya soal apa? Kelompokkan: rasa/kualitas, kemasan, telat, pelayanan.",
@@ -1203,7 +1216,7 @@ def susun_laporan(h, peringatan, normal, nama_usaha):
         if m0.get("jenis") != "stok":
             kata = "naik" if m0["arah"] == "naik" else ("turun" if m0["arah"] == "turun" else "berubah")
         L.append(f"5 kenapa: Kenapa {m0['label']} {kata}? → karena … → kenapa itu terjadi? → … (ulang sampai ketemu hal yang bisa diperbaiki).")
-        L.append("Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).")
+        L.append("Kalau sudah ada kerugian/komplain pelanggan: catat kronologi & dampaknya secara tertulis (bila skill laporan-insiden-usaha terpasang, pakai itu).")
     L.append("")
     info = []
     if kd["hari_kosong"]:
@@ -1219,7 +1232,12 @@ def susun_laporan(h, peringatan, normal, nama_usaha):
         info.append(f"{len(kd['angka_ambigu'])} angka seperti {kd['angka_ambigu'][0]} dibaca ribuan")
     peng = [m for m in h["metrik"] if m.get("dasar", {}).get("pencilan_diabaikan")]
     if peng:
-        info.append(f"{sum(len(m['dasar']['pencilan_diabaikan']) for m in peng)} angka ekstrem lama tidak dipakai di rata-rata")
+        rinci = "; ".join(
+            f"{m.get('label', m.get('kolom', '?'))} "
+            + ", ".join(fmt_tgl(date.fromisoformat(t)) for t in m["dasar"]["pencilan_diabaikan"])
+            for m in peng)
+        info.append(f"{sum(len(m['dasar']['pencilan_diabaikan']) for m in peng)} angka ekstrem lama "
+                    f"(> 7 hari lalu: {rinci}) tidak dipakai di garis dasar")
     if info:
         L.append("ℹ️ Data: " + "; ".join(info) + ".")
     L.append("Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.")

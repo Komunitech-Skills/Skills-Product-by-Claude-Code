@@ -64,7 +64,7 @@ Jika pengguna ingin cepat: katakan "cukup jawab no. 1–3 dulu", lalu buat draf 
    ```bash
    python3 <folder-skill-ini>/scripts/cek_kebijakan.py draf-kebijakan.md
    ```
-   Target: skor struktur 100, tanpa frasa berisiko. Selama masih ada `[isi: ...]`, status = `BELUM SIAP` (kecuali strukturnya pun < 60 → `KURANG LENGKAP`; urutan status: `--daftar` / kunci JSON `alasan_status`) dan skor dibatasi maks. 84 (unsur yang isinya masih kosong ditandai `BELUM DIISI`); sebutkan daftar isian ke pengguna. Skor = **kelengkapan struktur**, bukan jaminan isi benar.
+   Target: skor struktur 100, tanpa frasa berisiko. Selama masih ada `[isi: ...]`, status = `BELUM SIAP` (kecuali strukturnya pun < 60 → `KURANG LENGKAP`; urutan status: `--daftar` / kunci JSON `alasan_status`) dan skor dibatasi maks. 84 (unsur yang isinya masih kosong ditandai `BELUM DIISI`); sebutkan daftar isian ke pengguna. **Jumlah isian di header HARUS sama dengan jumlah butir di daftar** (hitung butir unik `[isi: ...]`; bila ada yang muncul berkali-kali tulis "n isian (m tempat)"). **Setiap asumsi** (masa simpan, jangka waktu, standar vendor, kebijakan internal yang tidak diberikan pengguna, mis. "paling lambat 7 hari", "penyedia ber-standar memadai") ditulis sebagai `[isi: ...]` atau dihapus, dan dicantumkan di "Asumsi yang saya pakai" — jangan ditulis seolah fakta. Langkah pemberitahuan insiden: tindakan yang belum dikonfirmasi pengguna ditulis `[centang bila sudah: ...]`, bukan "sudah kami lakukan". Skor = **kelengkapan struktur**, bukan jaminan isi benar.
 6. **Sajikan** sesuai format output, lalu tawarkan: pemberitahuan singkat (mode 2) untuk formulir/WA, dan template tanggapan hak subjek (mode 4).
 
 ### Mode 2 — PEMBERITAHUAN & PERSETUJUAN
@@ -154,6 +154,7 @@ Sebagian layanan yang kami gunakan (WhatsApp/Meta, Meta Pixel, [isi: layanan clo
 - [ ] Setiap data punya tujuan, dasar pemrosesan, dan masa simpan; promo & data spesifik memakai persetujuan terpisah.
 - [ ] Transfer luar negeri jujur sesuai layanan yang dipakai; ada kalimat "Kami tidak menjual data pribadi Anda."
 - [ ] Hak subjek data + cara mengajukan + 3×24 jam; pemberitahuan kebocoran 3×24 jam.
+- [ ] Jumlah isian di header = jumlah butir di daftar; tidak ada asumsi tanpa placeholder `[isi: ...]`
 - [ ] `cek_kebijakan.py` tanpa temuan pola **dan** draf sudah kamu baca ulang per kategori K1–K16; skor dan sisa isian disebutkan.
 - [ ] Mode CEK: temuan pembacaan agent ditulis lebih dulu, selisih dengan script dijelaskan, tidak ada klaim "aman" yang hanya bersandar pada script.
 - [ ] Disclaimer + tanggal cek + status PP 33/2026 & lembaga pengawas tercantum.

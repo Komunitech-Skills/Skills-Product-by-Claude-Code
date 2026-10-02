@@ -39,7 +39,7 @@ dari ingatan; sumber tidak tercatat.
 **Sesudah (cukup ketik):** "Saya bidan. Bu R, G1, 36 th, hamil 14 minggu, TD 120/80, IMT 31,
 ibunya dulu preeklampsia. Skrining preeklampsia."
 → MAP 93,3; **5 faktor sedang** (nullipara, usia ≥ 35, riwayat keluarga, IMT > 30, MAP ≥ 90) →
-**RISIKO SEDANG — Buku KIA: ANC/persalinan/nifas di RS, rujukan terencana**; daftar faktor yang
+**BERISIKO PREEKLAMPSIA — Buku KIA: ANC/persalinan/nifas di RS, rujukan terencana**; daftar faktor yang
 belum ditanyakan; sumber + penafian. Siap disalin ke rekam medis.
 Bila TD 170/115: hasil diawali **‼️ TANDA BAHAYA — segera evaluasi/rujuk sesuai protokol
 fasilitas** (sumber NICE NG133/ACOG), bukan "ANC rutin".

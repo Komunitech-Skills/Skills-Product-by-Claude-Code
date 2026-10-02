@@ -1,6 +1,6 @@
 # Momen Belanja Lokal & Bobot Minggu
 
-Pakai untuk mengisi `--bobot-minggu` (mis. `1 1 1 2` = minggu ke-4 anggaran dua kali lipat). Momen berubah tiap tahun: **jangan menebak** tanggal yang bergantung kalender agama/keputusan pemerintah; minta pengguna mengonfirmasi.
+Pakai untuk mengisi `--bobot-minggu` (mis. `1 1 1 2` = minggu ke-4 anggaran dua kali lipat). Momen berubah tiap tahun: **jangan menebak** tanggal yang bergantung kalender agama/keputusan pemerintah; minta pengguna mengonfirmasi. Daftar momen bertanggal tetap per bulan bisa dicetak dengan `python3 scripts/alokasi_anggaran.py --momen TAHUN-BULAN` (isi script = tabel ini; ubah keduanya bersamaan). Jangan menyimpulkan "bulan ini tidak ada momen" tanpa mencocokkan bulan itu ke tabel.
 
 | Momen | Waktu | Catatan perencanaan |
 |---|---|---|

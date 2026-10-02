@@ -256,5 +256,24 @@ class UjiBunyiDanKataBuruk(unittest.TestCase):
         self.assertIn("Teratas yang layak dicek: 'Kilap'", o)
 
 
+class UjiKlusterKonsonan(unittest.TestCase):
+    """Uji ulang OpenClaw 2026-10-01: alasan '3 konsonan berturut' harus menunjuk huruf yang benar."""
+
+    def test_menunjuk_huruf_persis(self):
+        self.assertEqual(N.kluster_konsonan("Jejak Kinclong"), [("ncl", "Kinclong")])
+        e, alasan = N.skor_ejaan("Jejak Kinclong")
+        self.assertEqual(e, 4)
+        self.assertIn("'ncl' di 'Kinclong'", alasan[0])
+        self.assertNotIn("ng-k", alasan[0])
+        self.assertEqual(N.kluster_konsonan("Kicks Rapi"), [("cks", "Kicks")])
+        self.assertEqual(N.kluster_konsonan("Strawberry"), [("Str", "Strawberry"), ("rry", "Strawberry")])
+
+    def test_digraf_lazim_tidak_dihitung(self):
+        # ng/ny/sy/kh/gh memutus rangkaian (perilaku skor sama dengan v1.0.3)
+        for nama in ("Angkringan", "Bangkrut", "Bangsa", "Sambal Ndeso", "Kopi Kita", "Sneakuy"):
+            self.assertEqual(N.kluster_konsonan(nama), [], nama)
+            self.assertEqual(N.skor_ejaan(nama)[0], 5, nama)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

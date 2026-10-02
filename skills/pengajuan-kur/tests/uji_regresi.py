@@ -66,6 +66,19 @@ k, h = jalankan("--plafon", "20jt", "--bunga", "6", "--tenor", "24", "--laba-ber
                 "--metode", "anuitas")
 cek("plafon maks 0 dijelaskan", "cicilan lain" in h["hasil"]["anuitas"]["plafon_maks_pada_target_rasio"]["catatan"])
 
+# v1.2.3: opsi pisah akad (modal kerja 36 bln + investasi 60 bln), diverifikasi independen
+k, h = jalankan("--plafon", "75jt", "--tenor", "36", "--kur", "--sektor", "produksi", "--akad-ke", "1",
+                "--laba-bersih", "6,5jt", "--rincian-dana", "Kompresor [inv]=30jt; Sparepart [mk]=45jt")
+ps = h.get("opsi_pisah_akad") or {}
+fas = {f["jenis"]: f for f in ps.get("fasilitas", [])}
+cek("pisah akad: mk 45jt/36 = 1.368.987; inv 30jt/60 = 579.984",
+    fas.get("modal-kerja", {}).get("cicilan_per_bulan") == 1368987 and fas.get("investasi", {}).get("cicilan_per_bulan") == 579984)
+cek("pisah akad: tahap 1 Rp 1.948.971 = 30,0% AMAN; sesudah bln 36 Rp 579.984",
+    ps.get("cicilan_tahap_1") == 1948971 and ps.get("rasio_tahap_1_persen") == 30.0 and
+    ps.get("cicilan_setelah_bulan_36") == 579984)
+k, h = jalankan("--plafon", "50jt", "--bunga", "6", "--tenor", "36", "--rincian-dana", "Bahan [mk]=50jt")
+cek("tanpa dana campuran: tidak ada opsi pisah akad", k == 0 and h["opsi_pisah_akad"] is None)
+
 # Error
 cek("bunga 72% ditolak", jalankan("--plafon", "10jt", "--bunga", "72", "--tenor", "12")[0] == 2)
 cek("> Rp500 jt dengan --kur ditolak", jalankan("--plafon", "600jt", "--tenor", "36", "--kur")[0] == 2)

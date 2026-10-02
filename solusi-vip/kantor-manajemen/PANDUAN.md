@@ -66,7 +66,7 @@ Skill inti: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `laporan-otomatis-terja
 `laporan-status-kantor`, `ringkas-grup-wa`, `notulen-rapat`, `analisis-excel`,
 `analisis-rasio-keuangan-usaha`, `arus-kas-13minggu`, `presentasi-data-ke-atasan`,
 `buku-piutang`, `tagih-piutang`, `buku-stok`, `laporan-insiden-usaha`, `dasbor-lokal`,
-`vikunja-tugas` (butuh aplikasi Vikunja, Bab 5k). **[VIP]** `laporan-harian-usaha`.
+`hitung-thr` (THR prorata dihitung script, bukan dikira), `vikunja-tugas` (butuh aplikasi Vikunja, Bab 5k). **[VIP]** `laporan-harian-usaha`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
@@ -84,6 +84,7 @@ openclaw skills install ./tagih-piutang --global
 openclaw skills install ./buku-stok --global
 openclaw skills install ./laporan-insiden-usaha --global
 openclaw skills install ./dasbor-lokal --global
+openclaw skills install ./hitung-thr --global
 openclaw skills install ./vikunja-tugas --global
 openclaw skills install ./laporan-harian-usaha --global
 ```
@@ -117,6 +118,18 @@ privasi/komputer menyala). Ingin cepat? Jawab "cepat saja".
 - **Cara cek berhasil:** Anda menerima rekomendasi 3 skill pertama + 1 hasil nyata dalam
   percakapan yang sama.
 - **Kalau gagal:** panggil langsung "pakai skill karyawan-ai-mulai".
+
+### Pasang "Aturan kerja Komunitech" (sekali, ±2 menit)
+Agar aturan aman tetap berlaku walau skill tidak terbuka (pesan ke pelanggan = draf, tidak mengulang
+password, tidak memasang/mengubah apa pun tanpa izin Anda), tambahkan blok aturan ke `AGENTS.md`
+OpenClaw — file ini dibaca di setiap percakapan. `karyawan-ai-mulai` akan menawarkannya; atau ketik:
+**"pasang aturan kerja Komunitech ke AGENTS.md"**. Isi blok ada di
+`templates/openclaw-AGENTS-komunitech.md` (paket VIP). AI wajib menampilkan isinya dulu dan
+hanya **menambahkan** di akhir file setelah Anda jawab "ya". Cara manual: Control UI →
+Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawah, simpan.
+
+- **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
+  menyebut aturannya tanpa membuka file lain.
 
 ---
 

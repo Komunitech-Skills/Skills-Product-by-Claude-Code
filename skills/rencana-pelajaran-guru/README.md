@@ -70,3 +70,6 @@ yang sama (CP, tujuan, kegiatan, asesmen), bukan memaksakan format bawaan skill 
 Teks Markdown terstruktur (judul, tabel, daftar) yang tinggal disalin-tempel ke Word atau
 Google Docs — bukan file `.docx` otomatis. Ini sengaja dibuat begitu supaya skill tetap
 100% jalan tanpa instalasi paket tambahan apa pun di komputer kamu.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+dari uji ulang OpenClaw: slot waktu asesmen sumatif dibuat konsisten dengan rincian menit; nama 8 dimensi Profil Lulusan disalin persis dari rujukan resmi (Permendikdasmen No. 10/2025: mis. "Penalaran Kritis", bukan "Bernalar Kritis", dicek 2026-10-01).

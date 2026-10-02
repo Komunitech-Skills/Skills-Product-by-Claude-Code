@@ -81,8 +81,15 @@ tanpa detail lain, pakai default di atas dan sebutkan asumsi yang dipakai di akh
 8. **Untuk pengumuman THR/cuti bersama/libur nasional**: gunakan
    `templates/pengumuman-internal.md` bagian terkait. Tanggal libur nasional/cuti bersama
    dan nominal THR **wajib diisi pengguna** (skill ini tidak menghitung atau mengarang
-   tanggal resmi pemerintah yang berubah tiap tahun) — jika pengguna minta dihitung
-   nominal THR, arahkan ke skill `hitung-thr` lalu tempel hasilnya ke pengumuman.
+   tanggal resmi pemerintah yang berubah tiap tahun).
+   - **Pengumuman untuk grup/seluruh karyawan TIDAK BOLEH memuat nominal gaji/THR per orang
+     atau nama+nominal** — meski pengguna memintanya. Isi hanya info umum: tanggal bayar,
+     dasar aturan, rumus umum. Tolak sopan permintaan itu, jelaskan alasannya (data pribadi),
+     dan tawarkan pesan pribadi/HR per karyawan sebagai gantinya.
+   - **Jangan menghitung THR sendiri.** Bila pengguna minta nominal: pakai skill `hitung-thr`
+     bila terpasang, lalu rincian per orang hanya untuk pesan pribadi/HR. Bila tidak terpasang,
+     katakan nominal perlu dihitung terpisah (mis. oleh HR/akuntan) dan jangan menyertakan
+     angka hitungan sendiri.
 9. Periksa **Checklist** di bawah sebelum menyerahkan hasil ke pengguna.
 
 ## Format output
@@ -133,6 +140,7 @@ format sopan-formal. Ganti jika perlu._
 - [ ] Format sesuai template jenis yang dipilih (urutan bagian tidak diubah sembarangan)
 - [ ] Nada konsisten dari awal sampai akhir (tidak campur formal-santai)
 - [ ] Format kanal sesuai (WA/Telegram: `*tebal*` + bullet pendek; email: heading + kalimat lengkap)
+- [ ] Pengumuman grup tidak memuat nominal gaji/THR per orang; THR tidak dihitung sendiri
 - [ ] Data sensitif karyawan (gaji individu, alasan cuti pribadi, penilaian kinerja personal)
       tidak dicantumkan tanpa izin eksplisit dari pengguna
 - [ ] Asumsi yang dipakai (periode, penerima, nada) disebutkan di akhir jika ditebak

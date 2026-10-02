@@ -7,7 +7,7 @@
 - ✅ Otomatis disesuaikan untuk Instagram, TikTok, Facebook, atau WA Status
 - ✅ Selalu ada hook di awal dan ajakan beli (CTA) yang jelas
 - ✅ Hashtag campuran umum, niche, dan lokal
-- ✅ Aman: tidak mengarang klaim seperti "halal" atau "BPOM" yang tidak kamu sebutkan
+- ✅ Aman: tidak mengarang klaim seperti "halal", "BPOM", "tanpa pengawet", atau "stok terbatas" yang tidak kamu sebutkan, dan menolak klaim kesehatan untuk jamu/makanan/kosmetik
 
 ## Cocok untuk siapa
 - Pemilik UMKM dan online shop yang posting setiap hari
@@ -31,3 +31,9 @@ Bisa. Ceritakan jasamu seperti menceritakan produk.
 
 **Apakah hasilnya selalu sama?**
 Tidak. Setiap kali diminta, hasilnya variasi baru.
+
+## Catatan revisi 1.1.2 (2026-10-01)
+- Format per platform dipertegas: Instagram wajib 80-150 kata (tanpa hashtag) dan 3-8 hashtag di SETIAP variasi; paragraf maks. 2-3 kalimat.
+- Klaim kesehatan (meredakan, mengatasi, "pas asam lambung naik", detox, pengganti obat, dst.) dilarang untuk pangan/jamu/kosmetik sesuai aturan iklan BPOM, termasuk bentuk halusnya; diganti alternatif aman (rasa, aroma, tradisi, cara menikmati).
+- Fakta produk hanya dari kamu: bahan, "tanpa pengawet", stok, antar/ongkir, dan testimoni karangan tidak ditambahkan; yang kurang ditulis [isi: ...].
+- Script baru `scripts/cek_caption.py` (+ `cek_fakta.py`, tes `uji_regresi.py`, Python standar) menghitung kata & hashtag dan menandai klaim karangan/kesehatan sebelum caption dikirim ke kamu.

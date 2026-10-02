@@ -418,5 +418,58 @@ class Perbaikan101(unittest.TestCase):
                             self.assertTrue(all(k["iklan_aktif_maks"] >= 1 for k in h["kanal"]))
 
 
+class MomenPerBulan(unittest.TestCase):
+    """v1.0.4: momen per bulan wajib dari tabel references/momen-belanja.md (regresi: 'Oktober tidak ada momen')."""
+
+    def test_oktober_ada_1010_di_minggu_2(self):
+        # 10 Oktober: (10-1)//7+1 = 2 -> minggu 2 (8-14)
+        m = js("--momen", "2026-10")
+        self.assertEqual([x["tanggal"] for x in m["momen"]], ["10/10/2026"])
+        self.assertIn("10.10", m["momen"][0]["nama"])
+        self.assertEqual(m["momen"][0]["minggu"], 2)
+        self.assertEqual(m["saran_bobot_minggu"], [1, 2, 1, 1])
+        kode, out, _ = jalan("--momen", "2026-10")
+        self.assertEqual(kode, 0)
+        self.assertNotIn("Tidak ada momen", out)
+
+    def test_tanggal_kembar_sep_sampai_des_dan_harbolnas(self):
+        for bulan in (9, 10, 11, 12):
+            m = js("--momen", f"2026-{bulan:02d}")
+            self.assertTrue(any(x["tanggal"] == f"{bulan}/{bulan}/2026" for x in m["momen"]), bulan)
+        nov = js("--momen", "2026-11")["momen"][0]["nama"]
+        self.assertIn("BUKAN Harbolnas", nov)
+        des = js("--momen", "2026-12")
+        self.assertIn("Harbolnas", des["momen"][0]["nama"])
+        # 12 -> minggu 2; 22 & 25 -> minggu 4
+        self.assertEqual([x["minggu"] for x in des["momen"]], [2, 4, 4])
+
+    def test_semua_baris_tanggal_tetap_tabel_tercakup(self):
+        tabel = open(os.path.join(AKAR, "references", "momen-belanja.md"), encoding="utf-8").read()
+        for kata in ("9.9", "10.10", "11.11", "12.12", "17 Agustus", "22 Desember", "25 Desember", "1 Januari"):
+            self.assertIn(kata, tabel)
+        self.assertEqual(js("--momen", "2026-08")["momen"][0]["tanggal"], "17/8/2026")
+        self.assertEqual(js("--momen", "2027-01")["momen"][0]["tanggal"], "1/1/2027")
+
+    def test_bulan_tanpa_momen_tetap_tetap_ingatkan_ramadan(self):
+        kode, out, _ = jalan("--momen", "2026-03")
+        self.assertEqual(kode, 0)
+        self.assertIn("Ramadan", out)
+        self.assertIn("tanggal TETAP", out)
+
+    def test_digabung_dengan_anggaran(self):
+        h = js("--anggaran", "2jt", "--aov", "100rb", "--margin", "40%", "--momen", "2026-10")
+        self.assertEqual(h["momen"]["bulan"], "2026-10")
+        self.assertEqual(sum(h["total_per_minggu"]), 2000000)
+
+    def test_momen_salah_dan_tanpa_anggaran(self):
+        for salah in ("2026-13", "Oktober", "10-2026"):
+            kode, _, err = jalan("--momen", salah)
+            self.assertEqual(kode, 2, salah)
+            self.assertIn("TAHUN-BULAN", err)
+        kode, _, err = jalan("--aov", "100rb")
+        self.assertEqual(kode, 2)
+        self.assertIn("--anggaran wajib", err)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

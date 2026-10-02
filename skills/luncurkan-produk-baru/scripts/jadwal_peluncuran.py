@@ -92,7 +92,7 @@ TUGAS = [
     (0, "Peluncuran", "Live/TikTok", "Siang/malam: sesi live singkat 30-60 menit atau posting video 'unboxing' (skill naskah-live-jualan)", False, "*"),
     (0, "Peluncuran", "Operasional", "Balas semua chat <15 menit, kemas pesanan sore itu, catat pesanan & kendala per jam", False, "*"),
     (0, "Peluncuran", "Pengukuran", "Malam: catat 5 angka hari-1 (kunjungan, chat, pesanan, omzet, sisa barang/slot)", False, "*"),
-    (1, "Pasca-peluncuran", "Kirim", "Kirim semua pesanan hari-1; unggah resi; kabari pembeli lewat pesan singkat", True, "fisik"),
+    (1, "Pasca-peluncuran", "Kirim", "T+1: kirim pesanan pertama (semua pesanan masuk di hari-1); unggah resi; kabari pembeli lewat pesan singkat", True, "fisik"),
     (1, "Pasca-peluncuran", "Konten", "Posting ucapan terima kasih + bukti sosial (tangkapan layar pesanan/testimoni dengan izin)", False, "*"),
     (3, "Pasca-peluncuran", "Ulasan", "Minta ulasan dari pembeli yang barangnya sudah tiba (sekali saja, sopan); balas ulasan (skill balas-ulasan-pelanggan)", False, "*"),
     (3, "Pasca-peluncuran", "Pengukuran", "Tinjau 3 hari pertama: pesanan vs target, keluhan terbanyak, biaya iklan vs omzet", False, "*"),
@@ -137,15 +137,35 @@ def geser(d, arah, ekstra):
     return d
 
 
-def bangun(tgl, jenis="pangan", ekstra=None, hari_ini=None):
+# Mode izin edar belum terbit (--izin belum): tugas yang menerima pesanan/uang/promo dilarang sebelum izin terbit.
+FASE_JUAL = {"Soft launch", "Promo", "Peluncuran", "Pasca-peluncuran"}
+TUGAS_BOLEH_TANPA_IZIN = {"Strategi", "Harga", "Aset", "Izin", "Label", "Pemasok", "Pengemasan", "Kapasitas", "Tim"}
+TEKS_WAITLIST_TANPA_BAYAR = ("Buka DAFTAR TUNGGU tanpa pembayaran (hanya kumpulkan nama & nomor WA; "
+                             "tulis jelas: 'belum menerima pesanan dan belum menerima uang'). Pre-order/penjualan ditunda sampai izin terbit")
+OFFSET_RINGKAS = {-30, -14, -7, -3, -1, 0, 1, 7, 30}
+
+
+def bangun(tgl, jenis="pangan", ekstra=None, hari_ini=None, izin="sudah", ringkas=False):
     ekstra = ekstra or {}
     baris = []
+    izin_belum = izin == "belum"
     for off, fase, kanal, tugas, hk, j in TUGAS:
         if j == "fisik":
             if jenis == "jasa":
                 continue
         elif j != "*" and j != jenis:
             continue
+        if ringkas and off not in OFFSET_RINGKAS and fase != "Legalitas":
+            continue
+        dijual = False
+        if izin_belum:
+            if fase == "Soft launch":
+                if kanal == "Waitlist":
+                    tugas = TEKS_WAITLIST_TANPA_BAYAR
+                else:
+                    continue  # kirim/layani/umpan balik soft launch: tidak ada penjualan sebelum izin
+            elif fase in FASE_JUAL or kanal in ("Marketplace", "Offline", "KOL mikro"):
+                dijual = kanal not in TUGAS_BOLEH_TANPA_IZIN
         asli = tgl + timedelta(days=off)
         d = geser(asli, -1 if off < 0 else 1, ekstra) if hk else asli
         cat = []
@@ -155,6 +175,10 @@ def bangun(tgl, jenis="pangan", ekstra=None, hari_ini=None):
             n = libur_nama(d, ekstra)
             if n:
                 cat.append(f"jatuh di {n}: jadwalkan posting, jangan andalkan pemasok/kurir")
+        if d != asli and off > 0:
+            cat.append(f"dikerjakan {HARI[d.weekday()]} {d.isoformat()} (= T+{(d - tgl).days})")
+        if dijual:
+            cat.append("TUNDA: dilarang sebelum izin edar terbit; mulai hanya setelah izin terbit")
         if hari_ini and d < hari_ini:
             cat.append("LEWAT: kerjakan secepatnya atau padatkan jadwal")
         baris.append({"tanggal": d.isoformat(), "hari": HARI[d.weekday()],
@@ -164,8 +188,15 @@ def bangun(tgl, jenis="pangan", ekstra=None, hari_ini=None):
     return baris
 
 
-def peringatan(tgl, hari_ini=None, ekstra=None):
+def peringatan(tgl, hari_ini=None, ekstra=None, izin="sudah", izin_terbit=None, jenis="lain"):
     w = []
+    if izin == "belum":
+        w.append("IZIN EDAR BELUM TERBIT: dilarang menjual, menerima pre-order/DP, atau mempromosikan sambil menerima pesanan sebelum izin terbit "
+                 "(kosmetik: notifikasi BPOM; pangan olahan: PIRT/BPOM MD; obat/suplemen/alat kesehatan: izin edar BPOM/Kemenkes). "
+                 "Yang boleh sekarang: riset, daftar tunggu TANPA pembayaran, persiapan konten/aset. T0 harus sesudah izin terbit. "
+                 "Dasar umum: UU Kesehatan dan peraturan BPOM tentang izin edar; cek ke BPOM/Dinkes; nomor peraturan sengaja tidak disebut (verifikasi sendiri di situs resmi).")
+        if izin_terbit is None:
+            w.append("Perkiraan tanggal izin terbit belum diisi (--izin-terbit): T0 di jadwal ini hanya KANDIDAT dan wajib digeser setelah izin benar-benar terbit.")
     ekstra = ekstra or {}
     tahun = sorted({(tgl + timedelta(days=o)).year for o in (-30, 30)})
     kurang = [y for y in tahun if y not in TAHUN_DATA]
@@ -229,6 +260,10 @@ def main(argv=None):
     p.add_argument("--hari-ini", help="TTTT-BB-HH; bawaan = hari ini (date.today()); tandai tugas yang sudah lewat")
     p.add_argument("--libur-tambahan", default="", help="tanggal libur/tutup tambahan: 2026-11-20,2026-11-21")
     p.add_argument("--format", choices=["md", "csv", "json"], default="md")
+    p.add_argument("--izin", choices=["sudah", "belum", "tidak-wajib"], default="sudah",
+                   help="status izin edar (notifikasi BPOM/PIRT/BPOM MD/izin obat-alkes); 'belum' = tunda penjualan, pre-order, promo sampai izin terbit")
+    p.add_argument("--izin-terbit", help="perkiraan tanggal izin terbit TTTT-BB-HH; T0 digeser ke minimal 7 hari sesudahnya")
+    p.add_argument("--ringkas", action="store_true", help="versi ringkas (tugas kunci saja); dipakai bila rencana >43 tugas")
     a = p.parse_args(argv)
     try:
         tgl = parse_tanggal(a.tanggal)
@@ -236,11 +271,18 @@ def main(argv=None):
         ekstra = {}
         for x in filter(None, (s.strip() for s in a.libur_tambahan.split(","))):
             ekstra[parse_tanggal(x).isoformat()] = "libur tambahan (dari pengguna)"
+        it = parse_tanggal(a.izin_terbit) if a.izin_terbit else None
     except ValueError as e:
         print(f"Galat: {e}", file=sys.stderr)
         return 2
-    baris = bangun(tgl, a.jenis, ekstra, hi)
-    warn = peringatan(tgl, hi, ekstra)
+    geser_t0 = None
+    if a.izin == "belum" and it and tgl < it + timedelta(days=7):
+        geser_t0 = (tgl, it + timedelta(days=7))
+        tgl = geser_t0[1]
+    baris = bangun(tgl, a.jenis, ekstra, hi, a.izin, a.ringkas)
+    warn = peringatan(tgl, hi, ekstra, a.izin, it, a.jenis)
+    if geser_t0:
+        warn.insert(1, f"T0 digeser dari {geser_t0[0].isoformat()} ke {geser_t0[1].isoformat()} (izin terbit {it.isoformat()} + 7 hari persiapan).")
     if a.format == "json":
         print(json.dumps({"produk": a.produk, "t0": tgl.isoformat(), "peringatan": warn, "tugas": baris},
                          ensure_ascii=False, indent=2))

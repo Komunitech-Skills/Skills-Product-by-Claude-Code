@@ -28,6 +28,7 @@ Gunakan bersama tabel "Foto wajib marketplace" di SKILL.md. Pilih yang relevan; 
 - Ukuran ml/gram di tangan.
 - Label komposisi & nomor izin edar (**hanya yang dimiliki**).
 - Hindari: before-after wajah, klaim "memutihkan/menyembuhkan", foto dengan filter kulit.
+- Izin edar (notifikasi BPOM) wajib sudah terbit sebelum produk difoto untuk dijual/dipromosikan; jangan sarankan pre-order, teaser jualan, atau tulisan "BPOM dalam proses".
 
 ## Elektronik & aksesoris HP
 - Foto utama: produk 45° di latar putih; semua sisi (port, tombol).

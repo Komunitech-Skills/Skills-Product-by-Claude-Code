@@ -53,6 +53,7 @@ Jika pengguna ingin cepat, isi dengan default template, biarkan data pribadi seb
 3. **Hitung semua angka lewat script** (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
    python3 <folder-skill-ini>/scripts/perjanjian.py tanggal 2026-09-23            # kalimat "Pada hari ini, Rabu, tanggal ..."
+   python3 <folder-skill-ini>/scripts/perjanjian.py tanggal                       # tanggal TT belum disebut -> [isi: tanggal]
    python3 <folder-skill-ini>/scripts/perjanjian.py terbilang "Rp 7.500.000"      # Rp 7.500.000 (tujuh juta lima ratus ribu rupiah)
    python3 <folder-skill-ini>/scripts/perjanjian.py termin --total "Rp 7.500.000" --persen 50,50 --nama "Uang muka,Pelunasan"
    python3 <folder-skill-ini>/scripts/perjanjian.py bagihasil --persen 60,40 --pihak "Pemodal,Pengelola" --contoh "Rp 10.000.000"
@@ -62,7 +63,12 @@ Jika pengguna ingin cepat, isi dengan default template, biarkan data pribadi seb
    python3 <folder-skill-ini>/scripts/perjanjian.py meterai --rangkap 2            # kuitansi: --jenis kwitansi --nilai ...
    ```
    Pembulatan: ke rupiah terdekat (0,5 ke atas). Sisa pembulatan termin/bagi hasil masuk ke baris terakhir agar total tepat.
-4. **Isi template.** Ganti setiap `[[...]]` dengan data pengguna. Data yang belum diketahui biarkan `[[...]]` agar terlihat. Hapus blok PANDUAN AGENT. Pertahankan tanda `> ⚠ TINJAU PENGACARA` pada pasal berisiko. Jangan menambah klaim (halal, BPOM, izin) yang tidak diberikan pengguna. Seimbangkan hak kedua pihak. Jangan membuat pasal yang hanya menguntungkan pengguna secara tidak wajar.
+4. **Isi template.** Ganti setiap `[[...]]` dengan data pengguna. Data yang belum diketahui biarkan `[[...]]` agar terlihat.
+   **Tanggal penandatanganan jangan diisi sendiri** (hari ini belum tentu hari tanda tangan): bila pengguna tidak
+   menyebutnya, pakai `perjanjian.py tanggal` tanpa argumen → `Pada hari ini, [isi: hari], tanggal [isi: tanggal] ...`.
+   **Default template** yang dipakai tanpa disebut pengguna (mis. denda keterlambatan 0,1%/hari maks 5%, siapa
+   menanggung PBB/iuran, batas revisi, jangka waktu) wajib dicantumkan di bagian "Asumsi dari template" pada
+   output sebagai hal yang **perlu dikonfirmasi**, lengkap dengan nilainya. Hapus blok PANDUAN AGENT. Pertahankan tanda `> ⚠ TINJAU PENGACARA` pada pasal berisiko. Jangan menambah klaim (halal, BPOM, izin) yang tidak diberikan pengguna. Seimbangkan hak kedua pihak. Jangan membuat pasal yang hanya menguntungkan pengguna secara tidak wajar.
 5. **Periksa draf:** simpan ke file lalu jalankan `python3 <folder-skill-ini>/scripts/perjanjian.py cek draf.md`. Perbaiki semua temuan "Harus diperbaiki" (angka vs terbilang, penomoran pasal, meterai, bagian standar). Temuan "Rujuk profesional" (tanah/PPJB/kavling, investasi/keuntungan tetap per bulan, pinjaman berbunga/BPKB/jaminan, harga jual kembali minimum, pihak asing, dll.) → kembali ke langkah 1. Uji regresi pemeriksa: `python3 <folder-skill-ini>/scripts/uji_regresi.py`.
 6. **Sajikan** sesuai format output, lalu tawarkan versi .docx/PDF atau penyesuaian pasal.
 
@@ -76,7 +82,11 @@ Beri tahu pengguna bahwa angka dihitung manual. Tanggal berakhir = sehari sebelu
 --- (draf perjanjian lengkap: judul, nomor, pembuka tanggal, para pihak, latar belakang, Pasal 1..n, penutup, tabel tanda tangan + [Meterai Rp10.000], lampiran) ---
 
 ### Yang masih perlu dilengkapi
-- [[...]] yang tersisa (dari hasil `cek`)
+- [[...]] / [isi: ...] yang tersisa (dari hasil `cek`), termasuk tanggal penandatanganan bila belum disebut
+
+### Asumsi dari template (mohon dikonfirmasi)
+- Denda keterlambatan: <nilai default, mis. 0,1%/hari dari jumlah terlambat, maks. 5%> — Pasal X
+- <default lain yang dipakai tanpa disebut pengguna: PBB/iuran, jangka waktu, batas revisi, dll.>
 
 ### Pasal yang sebaiknya ditinjau pengacara
 - Pasal X: alasan singkat
@@ -115,6 +125,7 @@ Pasal yang sebaiknya ditinjau pengacara: Pasal 6 (Hak atas Hasil Karya) bila log
 - [ ] Semua nominal ditulis `Rp 1.250.000 (terbilang)` dari output script; `cek` tidak melaporkan ketidakcocokan.
 - [ ] Pasal berisiko bertanda ⚠ dan dirangkum; daftar `[[...]]` tersisa disebutkan.
 - [ ] Checklist sebelum tanda tangan, catatan meterai, dan disclaimer tercantum.
+- [ ] Tanggal tanda tangan tidak diisi sendiri; default template (denda, PBB/iuran, dll.) tercantum di "Asumsi dari template".
 - [ ] Bahasa Indonesia baku tetapi mudah dipahami; tidak ada klaim/izin karangan.
 
 ## Batasan & penanganan error

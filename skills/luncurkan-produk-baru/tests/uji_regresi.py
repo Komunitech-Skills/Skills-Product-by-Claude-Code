@@ -43,7 +43,7 @@ class Uji(unittest.TestCase):
 
     def test_libur_tambahan_dan_konten_tidak_digeser(self):
         b = J.bangun(date(2026, 11, 14), "lain", {"2026-11-13": "tutup"})
-        r = [x for x in b if x["tugas"].startswith("Kirim semua")][0]  # T+1 = Minggu 11-15 -> Senin 11-16
+        r = [x for x in b if x["tugas"].startswith("T+1: kirim pesanan pertama")][0]  # T+1 = Minggu 11-15 -> Senin 11-16
         self.assertEqual(r["tanggal"], "2026-11-16")
         k = [x for x in b if x["t"] == "T0" and x["bidang"] == "Semua kanal"][0]
         self.assertEqual(k["tanggal"], "2026-11-14")  # konten tidak digeser
@@ -177,6 +177,55 @@ class Uji(unittest.TestCase):
             src = f.read()
         self.assertNotIn("PERLU REVIEW", src)
         self.assertEqual(len([k for k in J.LIBUR if k.startswith("2027")]), 26)
+
+    # ---- Izin edar belum terbit (revisi 1.0.4) ----
+    def test_izin_belum_tidak_ada_preorder_kirim_promo_aktif(self):
+        b = J.bangun(date(2026, 11, 14), "kosmetik", None, None, "belum")
+        gabung = " ".join(r["tugas"] for r in b).lower()
+        self.assertNotIn("pre-order terbatas", gabung)
+        self.assertNotIn("kirim pre-order", gabung)
+        self.assertNotIn("tanya 10 pembeli", gabung)
+        wl = [r for r in b if r["fase"] == "Soft launch"]
+        self.assertEqual(len(wl), 1)
+        self.assertIn("tanpa pembayaran", wl[0]["tugas"])
+        self.assertIn("belum menerima uang", wl[0]["tugas"])
+        # semua tugas jual (listing, hari-H, pasca) ditandai TUNDA
+        for r in b:
+            if r["fase"] in ("Peluncuran", "Pasca-peluncuran") and r["bidang"] not in ("Tim",):
+                self.assertIn("TUNDA", r["catatan"], r["tugas"])
+
+    def test_izin_belum_t0_geser_setelah_izin(self):
+        k, out, _ = jalan("--tanggal", "2026-11-14", "--jenis", "kosmetik", "--izin", "belum",
+                          "--izin-terbit", "2026-12-10", "--hari-ini", "2026-10-02")
+        self.assertEqual(k, 0)
+        self.assertIn("T0): **Kamis, 2026-12-17**", out)
+        self.assertIn("T0 digeser dari 2026-11-14", out)
+        self.assertIn("IZIN EDAR BELUM TERBIT", out)
+
+    def test_izin_belum_tanpa_tanggal_izin_memperingatkan(self):
+        k, out, _ = jalan("--tanggal", "2026-11-14", "--jenis", "pangan", "--izin", "belum", "--hari-ini", "2026-10-02")
+        self.assertIn("hanya KANDIDAT", out)
+
+    def test_izin_sudah_tidak_berubah(self):
+        a = J.bangun(date(2026, 11, 14), "pangan")
+        b = J.bangun(date(2026, 11, 14), "pangan", None, None, "sudah")
+        self.assertEqual(a, b)
+        self.assertTrue(any("pre-order terbatas" in r["tugas"] for r in a))
+
+    def test_ringkas_lebih_sedikit_dan_label_t1(self):
+        penuh = J.bangun(date(2026, 11, 14), "pangan")
+        ring = J.bangun(date(2026, 11, 14), "pangan", None, None, "sudah", True)
+        self.assertLess(len(ring), len(penuh))
+        self.assertTrue(any(r["t"] == "T0" for r in ring))
+        t1 = [r for r in penuh if r["t"] == "T+1" and r["bidang"] == "Kirim"][0]
+        self.assertIn("T+1: kirim pesanan pertama", t1["tugas"])
+
+    def test_t1_digeser_menyebut_setara_t_plus(self):
+        # T0 Jumat 2026-11-20 -> T+1 Sabtu 11-21 digeser ke Senin 11-23 (= T+3)
+        b = J.bangun(date(2026, 11, 20), "pangan")
+        t1 = [r for r in b if r["t"] == "T+1" and r["bidang"] == "Kirim"][0]
+        self.assertEqual(t1["tanggal"], "2026-11-23")
+        self.assertIn("= T+3", t1["catatan"])
 
 
 if __name__ == "__main__":

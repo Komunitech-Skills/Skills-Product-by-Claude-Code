@@ -77,6 +77,10 @@ pakai default masuk akal di atas dan sebutkan asumsi yang dipakai di ringkasan a
    dari pengguna. Jika pengguna hanya memberi topik, buat isi contoh yang masuk akal
    untuk konteks itu dan **tandai jelas** bagian yang perlu diisi pengguna (mis.
    `[isi nama perusahaan Anda]`).
+   **Klaim di slide hanya dari fakta pengguna.** Kalimat tentang kinerja, kecepatan, tren,
+   reputasi, atau pertumbuhan (mis. "pelanggan bertambah tiap tahun", "selesai 1–2 hari",
+   "repeat order rutin") yang tidak diberikan pengguna jangan ditulis sebagai fakta; tulis
+   `[isi: ...]` (mis. `[isi: lama pengerjaan]`) atau hapus.
 3. **Baca `references/aturan-desain.md`** dan terapkan: batas kata per slide, kontras
    warna, tumpukan font aman, palet warna, format Rupiah, jumlah slide wajar.
 4. **Baca `references/kerangka-html.md`** dan gunakan kerangkanya sebagai dasar file
@@ -188,7 +192,7 @@ perlu dihitung, **masukkan hasilnya ke slide, jangan menghitung ulang manual/kir
 - [ ] Angka dari CSV penjualan berasal dari `rekap-penjualan-csv`/`scripts/rekap.py`, bukan dijumlah manual.
 - [ ] Tidak ada `<link>`/`<script src>` ke internet, tidak ada gambar dengan path lokal — sudah dicek `validasi_html.py`.
 - [ ] Ada `@page { size: 1920px 1080px; margin: 0; }` dan blok `@media print`, sudah dicoba cetak PDF-nya tidak terpotong.
-- [ ] Tidak ada klaim tanpa dasar (halal, BPOM, "terlaris") kecuali diberikan pengguna.
+- [ ] Tidak ada klaim tanpa dasar (halal, BPOM, "terlaris", "pelanggan bertambah", "selesai 1–2 hari") kecuali diberikan pengguna; selain itu `[isi: ...]`.
 - [ ] Bagian yang belum terisi ditandai jelas, bukan dikarang seolah-olah data asli.
 
 ## Batasan & penanganan error

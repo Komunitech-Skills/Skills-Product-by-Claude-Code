@@ -47,7 +47,7 @@ Stok tepung (kg):
 5 kenapa: Kenapa % reject naik? → karena … → kenapa itu terjadi? → … (ulang sampai ketemu hal yang bisa diperbaiki).
 Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).
 
-ℹ️ Data: 1 hari kosong (Min, 13 Sep) tidak diisi tebakan; 2 angka ekstrem lama tidak dipakai di rata-rata.
+ℹ️ Data: 1 hari kosong (Min, 13 Sep) tidak diisi tebakan; 2 angka ekstrem lama (> 7 hari lalu: Reject (pcs) Sen, 7 Sep; % reject Sen, 7 Sep) tidak dipakai di garis dasar.
 Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.
 ```
 

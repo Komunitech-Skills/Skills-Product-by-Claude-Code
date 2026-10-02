@@ -90,9 +90,10 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
    jaminan untung/"terbaik no.1" tanpa bukti dari pengguna; produk kesehatan/kosmetik/keuangan/pangan →
    sisipkan peringatan singkat (cek BPOM/PIRT/OJK sesuai kategori); musik/gambar berhak cipta hanya yang
    diizinkan di `PROFIL.md`.
+   **Izin edar:** bila produk pangan olahan/minuman, kosmetik, suplemen, atau obat tradisional/obat, ingatkan di awal paket (satu kalimat) bahwa izin edar BPOM / PIRT-SPP-IRT (atau sertifikat halal bila dicantumkan) harus ada **sebelum** dijual dan dipromosikan. Bila pengguna bilang izin "belum ada/masih proses", tampilkan peringatan ini lebih tegas dan jangan menulis klaim izin/BPOM di konten mana pun.
 7. **Simpan arsip** hasil isian ke `konten/minggu-<label_minggu>.md` (label dari output script, mis.
    `minggu-2026-W40.md`) di workspace pengguna, memakai isi lengkap `templates/paket-mingguan.md`.
-8. **Sampaikan ke pengguna** dalam format output di bawah, lalu tawarkan: (a) automation mingguan +
+8. **Sampaikan ke pengguna** dalam format output di bawah. **Caption lengkap + hashtag + hook + CTA setiap hari WAJIB tampil di chat** (pengguna Telegram tidak bisa membuka file workspace); file arsip hanya cadangan, jangan menggantinya dengan ringkasan. Bila terlalu panjang, kirim bertahap per 2-3 hari, bukan dipangkas. Lalu lalu tawarkan: (a) automation mingguan +
    pengingat harian lewat OpenClaw (`references/openclaw-jadwal.md`), (b) buat brief foto detail lewat
    `foto-produk-brief`, (c) buat naskah live untuk salah satu hari lewat `naskah-live-jualan`.
 9. **Jika Python tidak bisa dijalankan:** hitung tanggal manual dari kalender (Senin minggu depan dari

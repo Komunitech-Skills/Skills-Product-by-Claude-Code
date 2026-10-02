@@ -184,6 +184,63 @@ class Uji(unittest.TestCase):
         r, _ = jalankan("nama,nomor\nA,081200000001\n")
         self.assertNotEqual(r.returncode, 0)
 
+    def test_v108_kolom_sapaan_dipakai(self):
+        k = ("Nama,No WA,Sapaan,Setuju Promo,Berhenti\nSiti Rahmawati,081234567801,Bu,ya,\n"
+             "Fajar Nugroho,081234567802,pak,ya,\nRina,081234567803,,ya,\nHj. Nurul Aini,081234567804,,ya,\n"
+             "Ani,081234567805,Ibu,ya,\n")
+        r, b = jalankan(k, "Halo {sapaan} {nama}!\nBalas STOP untuk berhenti.\n")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual([x["pesan"].split("!")[0][5:] for x in b],
+                         ["Bu Siti", "Pak Fajar", "Kak Rina", "Bu Nurul", "Bu Ani"])
+        self.assertEqual(json.loads(r.stdout)["kolom_terdeteksi"]["sapaan"], "Sapaan")
+        r, b = jalankan("nama,nomor,setuju,panggilan\nBudi,081200000001,ya,Mas\n",
+                        "Halo {sapaan} {nama}!\nBalas STOP untuk berhenti.\n")
+        self.assertEqual(b[0]["pesan"].split("!")[0], "Halo Mas Budi")
+
+    def test_v108_versi_daftar_siaran_tanpa_nama_ditolak(self):
+        pesan = PESAN + "---\nHalo Kak, promo roti hari ini.\nBalas STOP untuk berhenti.\n"
+        r, _ = jalankan("nama,nomor,setuju\nA,081200000001,ya\n", pesan)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("daftar siaran", r.stderr)
+
+    def test_v108_klaim_karangan_ditolak(self):
+        fakta = ("Promo 1-7 Oktober: bolu pandan Rp 45.000 jadi Rp 39.000, beli 2 gratis ongkir area Bekasi Timur. "
+                 "Order cukup balas chat aja. Toko Kue Bu Ani Bekasi")
+        k = "nama,nomor,setuju\nA,081200000001,ya\n"
+        jujur = ("Halo {sapaan} {nama}, bolu pandan Rp 39.000 (biasanya Rp 45.000), beli 2 gratis ongkir area "
+                 "Bekasi Timur.\nBalas STOP untuk berhenti.")
+        r, _ = jalankan(k, jujur, "--fakta", fakta)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)["cek_klaim_terhadap_fakta"], "lulus")
+        for karang in ("Yuk order, stok terbatas!", "Bolu terlaris kami.", "Dijamin halal."):
+            r, _ = jalankan(k, jujur + "\n" + karang, "--fakta", fakta)
+            self.assertNotEqual(r.returncode, 0, karang)
+            self.assertIn("tidak disebut pemilik", r.stderr)
+        # v1.0.9: tanpa --fakta, klaim ("gratis ongkir") tetap ditolak; pemeriksaan tidak bisa dilewati.
+        r, _ = jalankan(k, jujur)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("GAGAL cek fakta", r.stderr)
+        bersih = "Halo {sapaan} {nama}, bolu pandan Rp 39.000.\nBalas STOP untuk berhenti."
+        r, _ = jalankan(k, bersih)
+        h = json.loads(r.stdout)
+        self.assertEqual(h["cek_klaim_terhadap_fakta"], "belum")
+        self.assertTrue(any("--fakta-file" in x for x in h["peringatan"]))
+
+    def test_v109_urgensi_karangan_tanpa_dan_dengan_fakta(self):
+        k = "nama,nomor,setuju\nA,081200000001,ya\n"
+        dasar = "Halo {sapaan} {nama}, bolu pandan Rp 39.000. "
+        akhir = "\nBalas STOP untuk berhenti."
+        fakta = "Bolu pandan Rp 39.000 tanggal 1-7 Oktober"
+        for karang in ("Khusus hari ini!", "Pesan sebelum kehabisan.", "Ini promo terakhir.", "Buruan order!",
+                       "Hari ini saja ya.", "Jangan sampai ketinggalan."):
+            for arg in ((), ("--fakta", fakta)):
+                r, _ = jalankan(k, dasar + karang + akhir, *arg)
+                self.assertNotEqual(r.returncode, 0, (karang, arg))
+                self.assertIn("GAGAL cek fakta", r.stderr)
+        # Bila memang dari pemilik, lolos.
+        r, _ = jalankan(k, dasar + "Khusus hari ini!" + akhir, "--fakta", fakta + ". Khusus hari ini saja")
+        self.assertEqual(r.returncode, 0, r.stderr)
+
 
 
 class UjiSingkatanFlag(unittest.TestCase):

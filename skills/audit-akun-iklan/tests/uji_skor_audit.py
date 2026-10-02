@@ -453,6 +453,33 @@ class UjiRevisi101(unittest.TestCase):
         self.assertEqual(jalan("roas-impas", "--harga", "189rb", "--modal", "95rb", "--roas-aktual", "0")[0], 2)
 
 
+    def test_40_samarkan_kredensial(self):
+        # Uji OpenClaw 2026-10-01: password yang ditempel pengguna tidak boleh tercetak ulang
+        f = m.samarkan_kredensial
+        for teks, rahasia in [("login BM: email a@b.id password: Klinik#2026", "Klinik#2026"),
+                              ("password nya Klinik#2026", "Klinik#2026"),
+                              ("kata sandi=Rahasia99!", "Rahasia99!"),
+                              ("kode OTP 482913 dari SMS", "482913"),
+                              ("pin=1234", "1234"),
+                              ("access token EAABsbCS1iHgBAKZCZBZAxyzxyzxyz12", "EAABsbCS1iHgBAKZCZBZAxyzxyzxyz12"),
+                              ("kartu 4111 1111 1111 1111", "4111 1111 1111 1111")]:
+            hasil, n = f(teks)
+            self.assertNotIn(rahasia, hasil, teks)
+            self.assertIn(m.SAMARAN, hasil)
+            self.assertGreaterEqual(n, 1)
+        # kalimat biasa & angka rupiah tidak boleh ikut disamarkan
+        for teks in ["2FA/OTP belum aktif", "pin lokasi Google Maps salah", "token iklan habis",
+                     "Biaya Rp212.000 tanpa pesanan; Rp1.500.000.000", "Frekuensi 7 hari 4,6", "passing grade"]:
+            self.assertEqual(f(teks), (teks, 0), teks)
+        # ujung ke ujung: catatan berisi password -> laporan tanpa password + peringatan ganti password
+        code, out, err = jalan_jawaban({"M01": ("gagal", "admin kasih password: Klinik#2026 di chat")},
+                                       "--usaha", "Klinik Ayu otp 123456")
+        self.assertEqual(code, 0, err)
+        self.assertNotIn("Klinik#2026", out)
+        self.assertNotIn("123456", out)
+        self.assertIn("ganti password", out)
+
+
 def jalan_jawaban(jw, *extra):
     with tempfile.TemporaryDirectory() as d:
         p = Path(d) / "j.csv"

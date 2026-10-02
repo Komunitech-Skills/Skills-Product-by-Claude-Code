@@ -51,6 +51,7 @@ Ringkas 3 baris: apa yang dijual, ke siapa, kesan yang diinginkan. Tanyakan kata
 - **Bacakan nama seperti kata Inggris** (dan slang internet) yang mirip: ada arti buruk? (mis. "Sneakuy" terbaca "sneaky" = licik → `aman_makna` 1). Script juga menandai kemiripan dengan daftar kata Inggris berkonotasi buruk, tetapi daftar itu ringkas — tetap periksa sendiri.
 - **Bandingkan bunyi dengan setiap pesaing yang disebut pengguna**, bukan hanya ejaannya ("Kicks Klin" dibaca sama dengan "Kick Clean" → terlalu mirip). Masukkan **semua** nama pesaing yang disebut pengguna ke `--merek`.
 - Jangan mengklaim asal-usul atau arti slang/daerah tanpa sumber (mis. "akhiran -uy khas Medan"); bila tidak yakin, tulis "perlu ditanyakan ke penutur asli".
+- Alasan ejaan dari script (mis. `3 konsonan berturut 'ncl' di 'Kinclong'`) disalin **persis** — jangan menebak sendiri huruf mana yang dimaksud.
 - Uji ucap: bisa dieja lewat telepon/voice note tanpa salah? Sekali dengar bisa ditulis? Nilai 1-5 ke `aman_makna`, `khas`, `relevan` berikut alasan singkat. Penilaian = pendapat, bukan fakta; katakan begitu.
 
 ### A4. Skor lewat script

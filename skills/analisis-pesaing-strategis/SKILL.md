@@ -1,6 +1,6 @@
 ---
 name: analisis-pesaing-strategis
-description: Analisis pesaing untuk usaha kecil-menengah Indonesia - memetakan pesaing (langsung, tidak langsung, pengganti), mengumpulkan data dari halaman publik atau teks/screenshot yang ditempel, menyusun matriks perbandingan (produk, harga, kanal, promo, ulasan, positioning) dengan skor berbobot yang dihitung script, SWOT, peta posisi teks, kartu jawaban (battlecard) untuk penjual/CS, daftar peluang dan jadwal pantau. Gunakan saat pengguna bilang "analisis pesaing", "siapa saingan saya", "kenapa pelanggan pilih toko sebelah", "cara menang lawan kompetitor", "bandingkan usaha saya dengan yang lain", "buat battlecard", "SWOT usaha saya", atau competitor analysis, competitive landscape, battlecard, positioning map, differentiation. Bukan untuk riset harga per produk marketplace (pakai riset-harga-kompetitor), scraping yang perlu login, ulasan palsu, atau menjelekkan pesaing.
+description: Analisis pesaing untuk usaha kecil-menengah Indonesia - memetakan pesaing (langsung, tidak langsung, pengganti), mengumpulkan data dari halaman publik atau teks/screenshot yang ditempel, menyusun matriks perbandingan (produk, harga, kanal, promo, ulasan, positioning) dengan skor berbobot yang dihitung script, SWOT, peta posisi teks, kartu jawaban (battlecard) untuk penjual/CS, daftar peluang dan jadwal pantau. Gunakan saat pengguna bilang "analisis pesaing", "siapa saingan saya", "kenapa pelanggan pilih toko sebelah", "cara menang lawan kompetitor", "bandingkan usaha saya dengan yang lain", "buat battlecard", "SWOT usaha saya", atau competitor analysis, competitive landscape, battlecard, positioning map, differentiation. Juga untuk menolak sopan + beri alternatif etis (cek manual berkala, pengingat) bila diminta scraping/pantau otomatis akun pesaing, ulasan palsu, atau jatuhkan rating. Bukan untuk riset harga per produk marketplace (pakai riset-harga-kompetitor).
 ---
 
 # Analisis Pesaing Strategis
@@ -88,6 +88,10 @@ Untuk usaha kecil: cek ulang **tiap 1-3 bulan** (atau saat ada pemicu: pesaing b
 - Kesepakatan harga dengan pesaing (kartel) dilarang; jangan pernah menyarankannya.
 - Ini bukan nasihat hukum; untuk kasus serius konsultasikan ke penasihat hukum. Aturan di atas dicek per 2026-09-29; verifikasi versi terbaru.
 
+## Aturan ringkasan chat & label data
+- Ringkasan di chat maks. ±25 baris; analisis lengkap (matriks, SWOT, battlecard) disimpan di berkas dan lokasinya disebut.
+- Butir data pesaing yang tidak bersumber (bukan dari halaman publik, screenshot, atau pengamatan yang dicatat) wajib diberi label "(dugaan)".
+
 ## Format output
 ```
 ## Analisis Pesaing: <usaha> (<kota/area>) - dicek <tanggal>
@@ -114,3 +118,8 @@ Ringkasan 3 kalimat: posisi kita, ancaman terbesar, peluang terbesar.
 - Pesaing raksasa (jaringan nasional): fokus pada apa yang tidak bisa mereka tiru (dekat, personal, fleksibel), bukan adu harga/skala.
 - Usaha kesehatan (klinik, apotek, praktik): saran promosi wajib mematuhi etika iklan layanan kesehatan — tanpa janji kesembuhan, testimoni pasien, harga banting, atau klaim "terbaik/nomor 1"; sarankan cek ke organisasi profesi/dinas kesehatan setempat.
 - Pengguna minta klaim yang menjatuhkan atau ulasan palsu: tolak sopan, tawarkan versi jujur berbasis bukti.
+
+### Balasan baku: scraping akun pesaing / ulasan palsu / pantau otomatis
+Bila pengguna minta mengambil data akun pesaing secara otomatis (scraping, bot pantau), memasang ulasan palsu, atau menjatuhkan rating pesaing, jangan jalankan. Jawab singkat dengan pola ini:
+> "Saya tidak bisa membantu itu. Dasar aturannya secara umum: ulasan/testimoni palsu atau tuduhan tak berdasar dapat melanggar UU ITE (UU 11/2008 jo. UU 19/2016 jo. UU 1/2024) dan UU Perlindungan Konsumen (UU 8/1999, informasi menyesatkan); scraping/otomatisasi akun biasanya melanggar ketentuan layanan platform dan bisa membuat akun Anda diblokir. [PERLU REVIEW bila menyebut pasal tertentu; rujuk ke penasihat hukum.] Alternatif yang aman: (1) cek manual halaman publik pesaing tiap 1-3 bulan dengan checklist 15 menit, (2) saya buatkan pengingat/jadwal cek, (3) kumpulkan ulasan asli dari pelanggan Anda sendiri, (4) tempel teks/screenshot yang Anda lihat, saya analisis."
+Jangan menyebut nama undang-undang di luar daftar ini; bila ragu, tulis "aturan yang berlaku" dan sarankan cek ke penasihat hukum.

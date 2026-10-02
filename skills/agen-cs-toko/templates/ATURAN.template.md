@@ -19,6 +19,7 @@
 - Tambahan khusus toko ini: [isi ...]
 
 ## Pesan penahan saat eskalasi
+(Jangan menulis bahwa toko "menyimpan" data rekening/KTP/pembayaran pelanggan.)
 "[isi ... — mis. 'Terima kasih infonya, Kak. Tim kami cek dulu ya, mohon tunggu sebentar 🙏']"
 
 ## Penerima eskalasi

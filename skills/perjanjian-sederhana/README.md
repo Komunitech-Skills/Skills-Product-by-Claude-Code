@@ -48,3 +48,7 @@ Tetap sah. Meterai Rp10.000 adalah pajak atas dokumen (UU 10/2020), bukan syarat
 
 **Bisa untuk jual beli tanah atau perjanjian dengan investor asing?**
 Tidak. Transaksi seperti jual beli tanah, investasi atau saham, kerja sama dengan pihak asing, pinjaman dengan jaminan, dan kontrak karyawan harus ditangani notaris, PPAT, atau pengacara. Untuk kasus seperti ini, skill akan menjelaskan alasannya, lalu membantu menyiapkan daftar dokumen dan pertanyaan untuk dibawa saat konsultasi.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Tanggal penandatanganan tidak lagi diisi otomatis dengan tanggal hari ini; bila belum disebut, draf memuat `[isi: tanggal]`.
+- Nilai bawaan template (mis. denda keterlambatan 0,1%/hari maks. 5%) kini selalu dicantumkan sebagai asumsi yang perlu kamu konfirmasi.

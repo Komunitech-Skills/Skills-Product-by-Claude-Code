@@ -1,6 +1,6 @@
 ---
 name: surat-peringatan-karyawan
-description: Menyusun Surat Peringatan karyawan (SP1, SP2, SP3) yang proporsional dan terdokumentasi, berisi fakta pelanggaran, dasar perjanjian kerja/peraturan perusahaan, masa berlaku 6 bulan yang dihitung script, harapan perbaikan, kolom tanda tangan, plus berita acara klarifikasi dan catatan proses. Gunakan saat pengguna minta buat SP, surat teguran, surat peringatan pertama/kedua/ketiga, menindak karyawan telat/bolos, atau employee warning letter, disciplinary letter. Bukan untuk surat PHK.
+description: Menyusun Surat Peringatan karyawan (SP1, SP2, SP3) yang proporsional dan terdokumentasi, berisi fakta pelanggaran, dasar perjanjian kerja/peraturan perusahaan, masa berlaku 6 bulan yang dihitung script, harapan perbaikan, kolom tanda tangan, plus berita acara klarifikasi dan catatan proses. Gunakan saat pengguna minta buat SP, surat teguran, surat peringatan pertama/kedua/ketiga, menindak karyawan telat/bolos, atau employee warning letter, disciplinary letter. Juga dipakai saat pengguna ingin langsung memecat/PHK karyawan karena pelanggaran (mis. ketahuan menggelapkan uang): skill memberi langkah aman sebelum PHK (klarifikasi, skorsing dengan upah tetap dibayar, cek dasar di PK/PP/PKB); surat PHK final tidak disusun.
 ---
 
 # Surat Peringatan Karyawan (SP1/SP2/SP3)
@@ -144,6 +144,7 @@ Untuk PHK atau sengketa, konsultasikan ke ahli hukum ketenagakerjaan atau Disnak
 ## Batasan & penanganan error
 - Jangan menulis ancaman PHK langsung. Tulis konsekuensi bertahap sesuai ketentuan perusahaan.
 - Jika pengguna ingin langsung SP3/PHK untuk pelanggaran ringan pertama, jelaskan risiko (tidak proporsional, dapat digugat) dan sarankan SP1.
+- **Pelanggaran berat (pencurian, penggelapan, kekerasan):** dasar PHK tanpa SP berjenjang = PP 35/2021 Pasal 52 ayat (2) — pelanggaran bersifat mendesak **yang diatur dalam PK/PP/PKB**. **Jangan** menyebut syarat "tertangkap tangan / pengakuan / minimal 2 saksi" sebagai aturan: itu Pasal 158 UU 13/2003 lama yang dibatalkan MK (012/PUU-I/2003) dan dihapus UU Cipta Kerja/UU 6/2023. Saksi & berita acara boleh disarankan sebagai praktik baik pembuktian. Jangan menulis "denda" sebagai akibat PHK tidak sah. Lihat `references/regulasi.md`.
 - Jika SP sebelumnya sudah berakhir (cek script), pelanggaran baru umumnya kembali ke SP1 kecuali PK/PP/PKB mengatur lain.
 - Jika script error (format tanggal salah), baca pesan error, perbaiki input (mis. `23-09-2026`), jalankan ulang.
 - Aturan ketenagakerjaan sedang dalam proses perubahan (RUU Pelindungan Ketenagakerjaan ditargetkan Oktober 2026). Dasar aturan, tanggal berlaku, dan hal yang perlu verifikasi ada di `references/regulasi.md`.

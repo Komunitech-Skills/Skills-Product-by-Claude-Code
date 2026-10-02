@@ -50,7 +50,10 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - Reputasi/kalimat turunan: "sudah dikenal pelanggan di Solo", "favorit warga", "tren kopi susu terus diminati".
      Klaim yang diminta pengguna ("paling laris se-Solo") ditulis versi lunak + `[isi: bukti]`, bukan diperluas.
    - Ukuran/kemasan: produk "literan" jangan ditulis "botol 250ml"; tulis kata pengguna atau `[isi: ukuran kemasan]`.
-   - Sifat produk yang tidak disebut ("rumahan", "tanpa pengawet", "premium") dan kota asal yang hanya kota mitra.
+   - Sifat produk yang tidak disebut ("rumahan", "tanpa pengawet", "premium").
+   - **Kota usaha dari kota mitra.** Lokasi usaha hanya dari pengguna. "…ke minimarket Berkah Mart di Solo" berarti
+     *minimarketnya* di Solo — jangan tulis "Kopi Pakde, kopi susu literan di Solo" / "dari Solo". Kota usaha yang
+     tidak disebut → `[isi: kota usaha]` atau tidak ditulis; Solo hanya boleh menempel ke mitra ("Berkah Mart di Solo").
 1. **Pahami sudut pandang mitra.** Tulis dulu (untuk diri sendiri) 3 hal yang mitra pedulikan: tambahan pemasukan, risiko kecil, kerja tambahan minimal, citra/brand, kebutuhan pelanggannya. Semua bagian proposal harus menjawab ini.
 2. **Pilih kerangka** sesuai jenis kerja sama di `references/kerangka-per-jenis.md` (B2B supply, konsinyasi, reseller/agen, sponsorship, co-branding/kolaborasi).
 3. **Hitung simulasi angka dengan script** bila ada angka (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
@@ -65,16 +68,23 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - Pisahkan skenario dengan `;` (maks. 5), mis. `"50;100;200"`. Label otomatis: Pesimis/Realistis/Optimis. Input ambigu seperti `30,60` ditolak script dengan pesan `ambigu` — tulis ulang dengan `;`.
    - Ada `test_hitung_skema.py` di folder `scripts/` untuk uji regresi (opsional, `python3 scripts/test_hitung_skema.py`).
    - Tabel "Bagian toko/mitra" masuk ke proposal; kolom modal/laba produsen **hanya untuk pengguna**, jangan dimasukkan ke proposal kecuali pengguna minta.
+   - **Angka internal (modal, HPP, laba/rugi pemilik, titik impas) hanya di "Catatan untuk Anda"**, tidak di proposal,
+     pesan WA, email, maupun Asumsi yang ikut dikirim — termasuk saat menjelaskan kenapa porsi diturunkan. Di
+     proposal cukup "Kami mengusulkan bagian 25% untuk [mitra]" tanpa alasan modal/laba; alasannya ditulis untuk
+     pengguna. Pengecualian: pengguna sendiri meminta modal/laba dicantumkan (lalu cek dengan `--abaikan internal`).
    - **Saran porsi bagi hasil/komisi/diskon wajib dicek dengan hitungan untung/rugi eksplisit** sebelum disarankan atau dituliskan, dan tampilkan titik impasnya ke pengguna: porsi maksimal mitra/toko agar pemilik tidak rugi = (harga jual − modal) ÷ harga jual (mis. Rp20.000, modal Rp14.000 → 30% = impas, laba Rp0). Jangan menyarankan porsi yang sama dengan atau di atas titik impas; jalankan script dengan porsi yang disarankan dan pastikan laba per unit > 0 (tabel laba hanya untuk pengguna). Untuk bagi hasil laba/reseller, hitung juga margin pemilik/reseller per unit pada porsi tersebut.
    - Jika script menampilkan `PERINGATAN` (skema rugi), sampaikan ke pengguna sebelum menulis proposal.
    - Sponsorship: nilai paket biasanya angka tetap; tidak perlu script kecuali ada potongan/perhitungan. Jika menjumlahkan beberapa paket, jumlahkan manual dan tulis rinciannya.
 4. **Tulis proposal** dengan format di bawah. Versi singkat ≤ ±350 kata; versi lengkap boleh 2–5 halaman.
 5. **Buat pesan pengantar** WA (≤ 8 baris) dan subjek + isi email singkat untuk mengirim proposal.
-6. **Cek-silang fakta dengan script (wajib bila Python bisa jalan).** Simpan proposal + pesan WA + email ke
-   `proposal.md` (di folder kerja), lalu:
+6. **Cek-silang fakta dengan script (wajib bila Python bisa jalan).** Simpan **hanya yang dikirim ke mitra**
+   (proposal + pesan WA + email) ke `proposal.md` di folder kerja; "Catatan untuk Anda" (modal, laba, titik impas,
+   alasan porsi) dan Asumsi ditulis terpisah di chat, bukan di `proposal.md`. Lalu:
    ```bash
-   python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file proposal.md --fakta-file fakta.txt --abaikan jam
+   python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file proposal.md --fakta-file fakta.txt --abaikan jam --dokumen-mitra
    ```
+   `--dokumen-mitra` menandai GAGAL modal/HPP/titik impas/rugi dan laba milik pengguna ("untung Rp1.000/botol bagi
+   kami") yang bocor ke dokumen mitra; kategori `lokasi` menandai kota mitra yang dipakai sebagai kota usaha.
    `fakta.txt` = salinan **persis** pesan pengguna (bukan ringkasan, jangan ditambah). GAGAL ditandai untuk
    klaim reputasi/pasar/sifat/label/layanan, asal produk, ukuran/kemasan, dan angka kredibilitas (jumlah
    pelanggan, "sejak 2019") yang tidak ada di fakta. **Semua GAGAL wajib diperbaiki**, lalu jalankan ulang
@@ -126,7 +136,9 @@ Kontak: [Nama] – [Jabatan] – WA [..] – [email]
 10. Penutup + langkah berikutnya + kontak
 11. Lampiran (katalog, foto, legalitas — hanya jika pengguna punya: NIB, sertifikat, dsb.)
 
-Setelah proposal, beri **Pesan pengantar WA** dan **Email (subjek + isi)**, lalu **Asumsi** (jika ada).
+Setelah proposal, beri **Pesan pengantar WA** dan **Email (subjek + isi)**. Lalu, dipisah garis dan diberi judul
+**"Catatan untuk Anda (jangan dikirim ke mitra)"**: hitungan modal/laba & titik impas, alasan porsi yang diusulkan,
+dan **Asumsi** singkat (3–5 butir). Bagian ini juga yang tampil di chat bila proposal dikirim sebagai lampiran.
 
 ## Contoh
 **Input pengguna:** "Aku punya usaha keripik singkong pedas 'Kriuk Mbok Darmi' di Bantul, mau titip jual di 5 cabang Kopi Senja Jogja. Harga jual 25rb/bungkus, toko dapat 20%. Modalku 14rb. Buat versi singkat."
@@ -159,8 +171,9 @@ Telusuri setiap kalimat proposal, pesan WA, email, dan Asumsi terhadap daftar "F
 - [ ] Nama & jenis produk, kemasan/ukuran persis kata pengguna (tidak ada "250ml"/"500gr" yang tidak disebut)
 - [ ] Tidak ada reputasi/pasar turunan ("sudah dikenal di …", "favorit …", "tren … terus diminati") tanpa butir fakta
 - [ ] Klaim yang diminta pengguna tanpa bukti (BPOM, terlaris) memakai versi lunak + `[isi: bukti]`
-- [ ] Kota hanya dipakai dalam konteks yang disebut pengguna (kota mitra ≠ kota asal produk)
-- [ ] `cek_fakta.py` menulis `HASIL: LULUS` (atau cek manual sudah dilakukan dan disebut ke pengguna)
+- [ ] Kota hanya dipakai dalam konteks yang disebut pengguna (kota mitra ≠ kota usaha/asal produk; "minimarket di Solo" ≠ "Kopi Pakde di Solo")
+- [ ] Proposal/WA/email tidak memuat modal, HPP, laba/rugi pemilik, atau titik impas (semuanya di "Catatan untuk Anda")
+- [ ] `cek_fakta.py ... --dokumen-mitra` menulis `HASIL: LULUS` (atau cek manual sudah dilakukan dan disebut ke pengguna)
 
 ## Checklist sebelum mengirim hasil
 - [ ] Setiap bagian menjawab "apa untungnya untuk mitra", bukan hanya memuji produk sendiri.
@@ -170,7 +183,7 @@ Telusuri setiap kalimat proposal, pesan WA, email, dan Asumsi terhadap daftar "F
 - [ ] Komitmen operasional default (display, stok awal, isi ulang) tercantum di Asumsi.
 - [ ] Skema jelas: alur barang & uang, jadwal bayar, retur/klaim, siapa menanggung apa.
 - [ ] Ada langkah berikutnya yang konkret (uji coba, jadwal meeting) dan kontak.
-- [ ] Data internal (modal, laba) tidak bocor ke proposal kecuali diminta.
+- [ ] Data internal (modal, HPP, laba/rugi, titik impas) tidak bocor ke proposal, pesan WA, email, atau Asumsi yang dikirim kecuali pengguna minta — termasuk saat menjelaskan alasan menurunkan porsi.
 - [ ] Panjang sesuai versi (singkat ≤ ±350 kata).
 
 ## Batasan & penanganan error

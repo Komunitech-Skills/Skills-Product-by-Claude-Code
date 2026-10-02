@@ -22,7 +22,7 @@
 | Main HP berlebihan saat jam kerja | Teguran lisan | SP1 | Perlu aturan tertulis dulu |
 | Selisih kas kasir kecil & tidak disengaja | Teguran + cek prosedur | SP1 | Bedakan kelalaian vs kecurangan |
 | Merokok di area terlarang (gudang/SPBU/dapur) | SP1–SP2 (jika PP mengatur) | SP3 | Terkait keselamatan |
-| Pencurian, penggelapan, kekerasan, pelecehan, narkoba | ⚠️ Jangan tangani dengan SP biasa | — | Amankan bukti, konsultasi ahli hukum/polisi. Jangan kutip nomor pasal KUHP di surat (KUHP baru UU 1/2023 berlaku 2 Jan 2026). Bila karyawan diskors selama proses: upah & hak lain tetap dibayar penuh (UU 13/2003 Ps. 157A s.t.d.d. UU 6/2023) |
+| Pencurian, penggelapan, kekerasan, pelecehan, narkoba | ⚠️ Jangan tangani dengan SP biasa | — | Amankan bukti, konsultasi ahli hukum/polisi. PHK tanpa SP berjenjang hanya bila pelanggaran mendesak itu diatur di PK/PP/PKB (PP 35/2021 Ps. 52 ayat (2)); jangan sebut syarat "tertangkap tangan/2 saksi" (Pasal 158 UU 13/2003 lama, sudah dihapus) — saksi & berita acara = praktik baik, bukan syarat. Jangan kutip nomor pasal KUHP di surat (KUHP baru UU 1/2023 berlaku 2 Jan 2026). Bila karyawan diskors selama proses: upah & hak lain tetap dibayar penuh (UU 13/2003 Ps. 157A s.t.d.d. UU 6/2023) |
 
 ## C. Kalimat netral vs kalimat bermasalah
 | Hindari | Gunakan |

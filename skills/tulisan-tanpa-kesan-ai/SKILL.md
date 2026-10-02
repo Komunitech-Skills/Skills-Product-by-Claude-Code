@@ -1,6 +1,6 @@
 ---
 name: tulisan-tanpa-kesan-ai
-description: Mendeteksi dan memperbaiki pola tulisan "berbau AI" khas Bahasa Indonesia (pembuka basa-basi "di era digital ini", "tidak hanya X tetapi juga Y", "mari kita", penutup "semoga bermanfaat!", klaim superlatif, insight palsu, emoji berderet, em-dash berlebihan) pada caption Instagram/TikTok, deskripsi produk marketplace, pesan WhatsApp ke pelanggan, email kantor, dan artikel blog — tanpa membuat tulisan jadi kaku/formal, sambil menjaga suara asli penulis. Gunakan saat pengguna minta "biar nggak kelihatan AI", "cek tulisan ini AI banget nggak", "perbaiki biar natural", "hilangkan bau AI", atau saat skill konten lain (konten-mingguan, kalender-konten-30hari, copy-landing-page, pesan-prospek-wa, balas-chat-cs) perlu memeriksa hasil tulisannya sebelum dikirim ke pengguna.
+description: Mendeteksi dan memperbaiki pola tulisan "berbau AI" khas Bahasa Indonesia (pembuka basa-basi "di era digital ini", "tidak hanya X tetapi juga Y", "mari kita", penutup "semoga bermanfaat!", klaim superlatif, insight palsu, emoji berderet, em-dash berlebihan) pada caption Instagram/TikTok, deskripsi produk marketplace, pesan WhatsApp ke pelanggan, email kantor, dan artikel blog — tanpa membuat tulisan jadi kaku/formal, sambil menjaga suara asli penulis. Gunakan saat pengguna minta "biar nggak kelihatan AI", "cek tulisan ini AI banget nggak", "perbaiki biar natural", "hilangkan bau AI", Juga dipakai untuk MENOLAK permintaan "bikin tulisan AI lolos Turnitin/GPTZero/detektor AI" untuk skripsi/tugas/ujian (milik sendiri atau teman) dan parafrase karya akademik agar tidak terdeteksi AI/plagiarisme. atau saat skill konten lain (konten-mingguan, kalender-konten-30hari, copy-landing-page, pesan-prospek-wa, balas-chat-cs) perlu memeriksa hasil tulisannya sebelum dikirim ke pengguna.
 ---
 
 # Tulisan Tanpa Kesan AI
@@ -42,6 +42,9 @@ diubah jadi kaku dan formal.
 
 ## Langkah kerja
 
+### Langkah 0 (selalu pertama): cek permintaan akademik
+Bila permintaan: membuat/menulis ulang tulisan AI agar **lolos Turnitin/GPTZero/detektor AI atau cek plagiarisme**, atau "menghilangkan bau AI" pada **skripsi/tugas/makalah/ujian** yang akan diserahkan sebagai karya sendiri (milik pengguna ataupun temannya) → **tolak memakai balasan baku di bagian Batasan**; jangan lanjut ke mode Periksa/Perbaiki, jangan memberi parafrase, dan jangan memberi tips edit manual.
+
 > **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 
 ### Mode Periksa (deteksi + skor, tanpa menulis ulang)
@@ -71,7 +74,7 @@ diubah jadi kaku dan formal.
    deskripsi produk marketplace fokus fakta & manfaat, tanpa basa-basi panjang.
 3. Perbaiki **hanya** bagian yang kena pola dari `references/pola-ai-indonesia.md` — jangan mengubah
    kalimat yang sudah kuat/khas cuma supaya "rapi merata". Perubahan minimum yang efektif.
-4. Jangan menambah klaim, angka, testimoni, atau janji baru yang tidak ada di draf asli. Kalau draf
+4. Jangan menambah klaim, angka, testimoni, janji, atau **fakta apa pun yang tidak ada di teks asli**, termasuk kelangkaan/urgensi ("sebelum kehabisan", "stok terbatas", "promo hari ini saja") dan janji layanan (antar/kirim/cepat). CTA hanya yang ada di draf asli atau netral ("order sekarang", "hubungi kami"). Bila draf ≥ 3 kalimat, pertahankan semua kalimat inti dan jumlahnya; jangan memangkas jadi jauh lebih pendek. Kalau draf
    asli kurang spesifik (mis. "produk bagus" tanpa detail), **tanyakan** detail konkretnya (harga,
    bahan, manfaat spesifik) daripada mengarang — mengarang detail produk berisiko menyesatkan pembeli.
 5. Terapkan `references/panduan-gaya.md` untuk aturan umum (aktif vs pasif, hindari kata pengisi,
@@ -119,6 +122,9 @@ sebelum/sesudah nyata pada dua konteks berbeda.
   ditulis AI atau manusia. Ia hanya menandai pola tulisan yang bisa dibaca & diverifikasi sendiri oleh
   pengguna dari kutipan barisnya. Permintaan "buktikan ini bukan AI" atau "jamin lolos AI-detector"
   **ditolak** dengan penjelasan ini.
+- **Penolakan baku: tulisan akademik & detektor AI.** Berlaku untuk skripsi, tesis, tugas, makalah, ujian, dan karya akademik lain yang akan diserahkan sebagai karya sendiri, termasuk bila "untuk teman". Balas kira-kira:
+  > "Maaf, saya tidak bisa membantu membuat tulisan AI lolos Turnitin, GPTZero, atau detektor lain, karena itu mengelabui aturan integritas akademik. Saya juga tidak memparafrase atau memberi tips edit supaya 'bau AI'-nya hilang pada tugas yang diserahkan sebagai karya sendiri. Yang bisa saya bantu: (1) menjelaskan cara mengecek kebijakan kampus soal penggunaan AI; (2) menyarankan kamu menulis sendiri dan mencantumkan penggunaan AI sesuai aturan kampus; (3) membantu memahami materinya, menyusun kerangka, atau mengajarkan teknik menulis supaya kamu bisa menulis sendiri."
+  Jangan menawarkan parafrase, daftar "kata yang memicu detektor", atau cara mengakali detektor. Skill ini tetap boleh dipakai untuk tulisan non-akademik (caption, email, pesan WA) milik pengguna sendiri.
 - **Tidak mengarang fakta.** Perbaikan tidak pernah menambah klaim, angka, testimoni, atau janji yang
   tidak ada di draf asli — lihat skill `copy-landing-page`/`konten-mingguan` untuk aturan klaim produk
   yang lebih lengkap (BPOM/halal/garansi).

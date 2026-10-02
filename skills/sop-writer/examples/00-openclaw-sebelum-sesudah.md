@@ -359,3 +359,465 @@ Skill terpakai: ya (SKILL.md dibaca).
 **Cuplikan jualan:**
 - "Cerita cara kerja Anda dalam satu pesan — dapat SOP siap cetak: langkah bernomor berbahasa karyawan, langkah kritis bertanda ⚠️ beserta alasannya, dan checklist harian berparaf untuk ditempel di kasir."
 - "Minta aturan dapur yang berisiko? Skill ini tetap menulis SOP Anda, tetapi memasang pagar pengaman: ayam sisa masuk kulkas ≤ 1 jam setelah tutup, sambal disimpan dingin, minyak diganti lebih cepat bila rusak."
+
+## Uji ulang 2026-10-01 (putaran 2)
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; folder skill hanya dibaca, tidak diubah). **Versi diuji:** sop-writer 1.0.3.
+**Cara:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech `claude-sonnet-5`, TZ Asia/Jakarta. Home **terisolasi** per sisi (mount namespace). Hanya sisi SESUDAH skenario 1 (home `r7-sop-writer`, berisi skill ini saja) untuk cek regresi setelah perapian. Pesan **sama persis** dengan uji pertama (diambil otomatis dari bagian 'Pesan pengguna' di atas); bila uji pertama punya giliran 2, jawaban pengguna yang sama dikirim ke kedua sisi. Angka diverifikasi independen dengan Python dan script skill; fakta aturan dicek sendiri. Folder skill terpasang dibandingkan dengan repo setelah uji: identik.
+
+### Skenario 1 — SOP closing kasir laundry (pesan sama persis)
+**SESUDAH (dengan skill)** — tools: read, write
+
+> SOP Closing Kasir buat Laundry Bersih Wangi udah jadi, tersimpan di workspace: `SOP-Closing-Kasir-Laundry-Bersih-Wangi.md`.
+>
+> Isinya:
+>
+> 1. **Tujuan & ruang lingkup** — fokus ke penghitungan laci, cocokkan aplikasi kasir, siapkan setoran.
+> 2. **Langkah bernomor (20 langkah, 4 bagian)**:
+>    - A. Persiapan 15 menit sebelum jam 21.00
+>    - B. Hitung uang & cocokkan laporan aplikasi (tunai + QRIS), dengan rumus: **Modal Rp200.000 + Penjualan Tunai = Uang Seharusnya di Laci**
+>    - C. Siapkan amplop setoran, segel, **foto bukti (laci, laporan aplikasi, amplop) dikirim ke kamu via WhatsApp malam itu juga** — karena kamu baru cek besok pagi, jadi butuh jejak waktu kirim sebagai bukti jujur
+>    - D. Pengecekan kamu sendiri besok pagi (cocokkan amplop vs form vs foto vs laporan aplikasi)
+> 3. **Tabel "Jika terjadi masalah"** — selisih tunai, selisih QRIS, amplop mencurigakan, tutup darurat.
+> 4. **Checklist harian siap cetak** (11 item, kolom Sen–Min + paraf kasir + paraf kamu).
+> 5. **Indikator keberhasilan** dan **riwayat revisi**.
+>
+> Beberapa hal yang kutandai perlu kamu isi/sesuaikan:
+> - `[isi nama aplikasi kasir]` di bagian alat & bahan.
+> - Batas selisih tunai Rp10.000 itu **usulan**, silakan ganti sesuai yang kamu anggap wajar.
+> - Karena kamu baru cek besok pagi (bukan malam itu), aku tambahkan langkah "segel amplop + kirim 3 foto bukti malam itu" sebagai pengaman — supaya ada jejak waktu nyata kalau nanti ada selisih atau amplop dicurigai dibuka duluan.
+>
+> Mau sekalian dibikinin versi poster A4 ringkas (5-7 langkah inti) buat ditempel di kasir?
+**Isi file yang ditulis agent ke workspace** (`SOP-Closing-Kasir-Laundry-Bersih-Wangi.md`, dibaca penguji):
+
+> # SOP: Closing Kasir Harian
+> | Kode | SOP-LBW-01 | Versi | 1.0 |
+> |---|---|---|---|
+> | Usaha | Laundry Bersih Wangi, Yogyakarta | Berlaku mulai | 1 Oktober 2026 |
+> | Dibuat oleh | Pemilik | Disetujui oleh | Pemilik |
+>
+> ## 1. Tujuan
+> Memastikan uang tunai, uang QRIS, dan catatan transaksi di aplikasi kasir cocok setiap malam sebelum laundry tutup, sehingga selisih kas langsung ketahuan dan pemilik mudah mengecek keesokan paginya.
+>
+> ## 2. Ruang lingkup
+> Berlaku untuk: penghitungan uang laci, pencatatan transaksi harian, dan penyiapan setoran di akhir hari (closing) toko Laundry Bersih Wangi.
+> Tidak mengatur: proses cuci/setrika, komplain pelanggan, atau pembukuan bulanan.
+>
+> ## 3. Penanggung jawab
+> | Peran | Siapa | Tugas |
+> |---|---|---|
+> | Pelaksana | Kasir/petugas yang tutup toko jam 21.00 | Menghitung uang, mencocokkan laporan aplikasi, menyiapkan setoran |
+> | Pengecek | Pemilik (cek esok pagi) | Mencocokkan foto bukti, amplop setoran, dan laporan aplikasi |
+>
+> ## 4. Alat & bahan
+> - Aplikasi kasir di HP (yang biasa dipakai mencatat transaksi) [isi nama aplikasi jika perlu]
+> - Laci uang berisi modal awal Rp200.000
+> - Amplop setoran, lakban/stapler, bolpoin
+> - HP untuk foto bukti dan kirim WhatsApp ke pemilik
+> - Form/Buku Closing Kasir (lihat contoh di Lampiran checklist)
+>
+> ## 5. Langkah kerja
+>
+> ### A. Persiapan (15 menit sebelum tutup, sekitar jam 20.45)
+> 1. Layani pelanggan yang masih di tempat sampai selesai.
+> 2. Informasikan ke pelanggan yang datang mendekati jam 21.00 bahwa toko segera tutup.
+> 3. Pastikan semua transaksi hari itu sudah masuk ke aplikasi kasir (tidak ada yang tercatat manual tapi belum diinput).
+>
+> ### B. Hitung uang dan cocokkan laporan (jam 21.00)
+> 4. Buka menu laporan penjualan harian di aplikasi kasir, lalu catat total Penjualan Tunai dan total Penjualan QRIS.
+> 5. Hitung semua uang tunai di laci, pisahkan per pecahan (ribuan, lima ribuan, dst) agar mudah dicek ulang.
+> 6. ⚠️ Hitung uang seharusnya di laci dengan rumus: **Modal Rp200.000 + Penjualan Tunai (dari laporan aplikasi) = Uang Seharusnya di Laci**. Rumus ini dipakai agar selisih uang langsung ketahuan malam itu juga, bukan menunggu pemilik cek besok.
+> 7. Bandingkan Uang Seharusnya di Laci dengan uang tunai hasil hitung di langkah 5. Tulis selisihnya (boleh Rp0, bisa lebih, bisa kurang).
+> 8. Cocokkan total Penjualan QRIS di aplikasi kasir dengan mutasi QRIS (cek notifikasi/riwayat transaksi QRIS di HP), lalu catat jika ada selisih.
+> 9. ⚠️ Jika selisih tunai lebih dari Rp[10.000] (usulan, sesuaikan), hitung ulang sendiri sekali lagi dan cek apakah ada transaksi yang belum tercatat di aplikasi sebelum menyimpulkan selisih. Selisih uang tunai adalah hal paling rawan hilang jejak jika tidak langsung dicatat.
+>
+> ### C. Siapkan setoran dan bukti (sebelum pintu dikunci)
+> 10. Sisihkan Rp200.000 sebagai modal laci untuk besok pagi, simpan terpisah dari uang setoran.
+> 11. Masukkan sisa uang tunai (uang setoran) ke dalam amplop.
+> 12. Tulis di amplop: tanggal, jumlah uang, dan paraf/tanda tangan kasir.
+> 13. ⚠️ Rekatkan/stapler amplop sebagai segel, karena tidak ada orang kedua yang menyaksikan hitungan uang malam itu — segel membuat amplop terlihat jika dibuka sebelum dicek pemilik.
+> 14. Isi Form Closing Kasir: tanggal, Penjualan Tunai, Penjualan QRIS, Uang Seharusnya di Laci, Uang Hasil Hitung, Selisih, dan catatan jika ada kejanggalan.
+> 15. ⚠️ Foto laci uang tersusun per pecahan, foto layar laporan aplikasi kasir, dan foto amplop yang sudah disegel, lalu kirim ketiganya ke pemilik lewat WhatsApp sebelum toko dikunci. Foto dengan waktu kirim yang tercatat ini jadi bukti jujur karena pemilik baru bisa cek langsung esok pagi.
+> 16. Simpan amplop setoran dan modal laci Rp200.000 di tempat terkunci (laci terkunci/brankas kecil).
+> 17. Matikan peralatan, pastikan listrik dan air aman, lalu kunci pintu toko.
+>
+> ### D. Pengecekan pemilik (esok pagi)
+> 18. Pemilik membuka tempat penyimpanan, cocokkan jumlah uang di amplop dengan Form Closing Kasir dan foto yang dikirim semalam.
+> 19. Pemilik cocokkan juga dengan laporan penjualan di aplikasi kasir (Penjualan Tunai + Penjualan QRIS).
+> 20. Jika semua cocok, pemilik paraf Form Closing Kasir sebagai tanda sudah diperiksa.
+>
+> ## 6. Jika terjadi masalah
+> | Jika... | Maka... | Lapor ke |
+> |---|---|---|
+> | Selisih tunai lebih dari Rp[10.000] (usulan, sesuaikan) | Hitung ulang uang dan cek ulang aplikasi kasir (transaksi batal/belum diinput), tulis di Form Closing dengan jelas | Pemilik via WhatsApp malam itu juga, jangan ditunda sampai besok |
+> | QRIS di aplikasi kasir tidak sama dengan mutasi/notifikasi QRIS | Foto bukti mutasi dan catat jam transaksi yang berbeda | Pemilik via WhatsApp malam itu juga |
+> | Amplop setoran terlihat rusak/sudah terbuka saat pemilik cek besok pagi | Jangan disimpulkan sendiri, segera hubungi kasir yang closing semalam untuk klarifikasi | Pemilik, sebelum uang dipakai/disetor ke bank |
+> | Toko harus tutup lebih awal (darurat: listrik padam, pelanggan terakhir belum selesai dilayani) | Tetap jalankan langkah hitung uang & closing, catat alasan tutup lebih awal di Form Closing | Pemilik via WhatsApp |
+>
+> ## 7. Indikator keberhasilan
+> - Form Closing Kasir terisi lengkap dan foto bukti terkirim setiap malam (target 100%).
+> - Selisih tunai di atas Rp[10.000] maksimal 1 kali per bulan (usulan, sesuaikan).
+> - Pemilik sempat mengecek dan memparaf Form Closing Kasir maksimal 1 hari setelah closing.
+> - Modal laci selalu tersedia Rp200.000 setiap pagi sebelum toko buka.
+>
+> ## 8. Checklist harian closing kasir (cetak & tempel)
+> Tempel di dekat meja kasir. Centang tiap malam, paraf kasir dan paraf pemilik (diisi esok paginya).
+>
+> | No | Yang dicek | Sen | Sel | Rab | Kam | Jum | Sab | Min |
+> |---|---|---|---|---|---|---|---|---|
+> | 1 | Semua transaksi sudah diinput di aplikasi | | | | | | | |
+> | 2 | Laporan Penjualan Tunai & QRIS dicatat | | | | | | | |
+> | 3 | Uang tunai dihitung per pecahan | | | | | | | |
+> | 4 | Dibandingkan dengan rumus modal + penjualan tunai | | | | | | | |
+> | 5 | Selisih ditulis di Form Closing (walau Rp0) | | | | | | | |
+> | 6 | QRIS dicocokkan dengan mutasi/notifikasi | | | | | | | |
+> | 7 | Modal Rp200.000 disisihkan untuk besok | | | | | | | |
+> | 8 | Amplop setoran ditulis tanggal & jumlah, lalu disegel | | | | | | | |
+> | 9 | Foto laci, laporan aplikasi, amplop dikirim ke pemilik | | | | | | | |
+> | 10 | Uang disimpan di tempat terkunci | | | | | | | |
+> | 11 | Toko dikunci, listrik/air aman | | | | | | | |
+> | Paraf kasir | | | | | | | | |
+> | Paraf pemilik (cek besok pagi) | | | | | | | | |
+>
+> ## 9. Riwayat revisi
+> | Versi | Tanggal | Perubahan | Oleh |
+> |---|---|---|---|
+> | 1.0 | 1 Oktober 2026 | Dibuat pertama kali | Pemilik |
+
+### Cek regresi
+- **Perapian 1.0.3 terbukti jalan (isi):** modal laci Rp200.000 disisihkan **sekali** (langkah 10), ada rumus eksplisit "Modal Rp200.000 + Penjualan Tunai = Uang Seharusnya di Laci" (langkah 6) dan setoran = sisa di luar modal ✔ — cacat "modal disisihkan dua kali" teratasi. Langkah berawalan kata kerja, ≤ 12 langkah per bagian, ⚠️ + alasan pada langkah kritis, 4 kondisi "jika … maka …", 4 indikator, checklist 11 butir Sen–Min dengan paraf, riwayat revisi ✔. Batas selisih Rp10.000 ditandai "usulan" ✔.
+- **Perubahan bentuk penyampaian (regresi minor):** pada uji pertama SOP ditampilkan utuh di chat; kali ini agent **menulis file** `SOP-Closing-Kasir-Laundry-Bersih-Wangi.md` di workspace (lokasi disebut — sesuai aturan skill) dan di chat hanya memberi **ringkasan**. Bagi pengguna kanal Telegram/WhatsApp, isi SOP tidak terbaca tanpa meminta lagi — kelemahan yang dulu dinilai negatif pada sisi SEBELUM. Isi file (dibaca penguji) lengkap dan benar.
+- Tambahan baru yang baik: kirim 3 foto bukti ke pemilik via WA malam itu (jejak waktu) karena pengecekan baru besok pagi.
+
+**Hasil: tidak ada regresi isi; ada regresi minor penyampaian (SOP di file, chat hanya ringkasan).** Skor sisi SESUDAH skenario 1: **8** (isi 9, penyampaian di kanal chat kurang). **Saran:** di Format Output SKILL.md tambahkan "selalu tampilkan SOP utuh di balasan chat; file hanya tambahan bila diminta/di-workspace".
+
+## Uji ulang 2026-10-01 (putaran 3)
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; folder skill hanya dibaca, tidak diubah). **Versi diuji:** sop-writer 1.0.4.
+**Cara:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech `claude-sonnet-5`, TZ Asia/Jakarta, home terisolasi (mount namespace) berisi skill ini saja, dibuat ulang bersih sebelum tiap sesi (`r12-sop-writer`). Skenario dengan cacat putaran 2 (S1, SOP hanya diringkas di chat, isi di file) diulang dengan **pesan sama persis** di **2 sesi berbeda** (A, B), ditambah 1 varian baru. Sisi SEBELUM tidak diulang (acuan: uji pertama, skor 6,5).
+
+### Skenario 1 — SOP closing kasir laundry (pesan sama persis) — Sesi A
+**Balasan** — tools: read
+
+> # SOP: Closing Kasir
+>
+> | Kode | SOP-LBW-01 | Versi | 1.0 |
+> |---|---|---|---|
+> | Usaha | Laundry Bersih Wangi, Yogyakarta | Berlaku mulai | 1 Oktober 2026 |
+> | Dibuat oleh | Pemilik | Disetujui oleh | Pemilik |
+>
+> ## 1. Tujuan
+> Memastikan transaksi harian tercatat benar, uang tunai dan QRIS cocok dengan laporan aplikasi kasir, dan uang hasil penjualan aman sampai dicek pemilik keesokan harinya.
+>
+> ## 2. Ruang lingkup
+> Berlaku untuk: proses closing kasir setiap malam jam 21.00 di toko Laundry Bersih Wangi.
+> Tidak mengatur: proses pencucian/setrika, penagihan pelanggan yang belum bayar, pembukuan bulanan.
+>
+> ## 3. Penanggung jawab
+> | Peran | Siapa | Tugas |
+> |---|---|---|
+> | Pelaksana | Kasir yang bertugas malam itu | Hitung uang, cocokkan laporan, amankan uang & dokumentasi |
+> | Pengecek | Pemilik | Cek foto malam itu juga (jika sempat) + hitung ulang & paraf form closing esok pagi |
+>
+> ## 4. Alat & bahan
+> - HP dengan aplikasi kasir, baterai cukup/charger siap
+> - Laci kas berisi modal Rp200.000
+> - Amplop untuk menyimpan uang setoran
+> - Tempat terkunci (brankas/laci terkunci) yang kuncinya **tidak** dibawa pulang kasir
+> - Form closing (kertas atau catatan WA ke pemilik)
+>
+> ## 5. Langkah kerja
+>
+> ### A. Persiapan (menjelang jam 21.00)
+> 1. Layani pelanggan yang masih ada di toko sampai selesai.
+> 2. Informasikan ke pelanggan yang datang mendekati jam 21.00 bahwa kasir akan tutup.
+> 3. Pasang papan/tulisan "Tutup" tepat jam 21.00.
+>
+> ### B. Hitung & cocokkan transaksi
+> 4. Buka menu laporan penjualan harian di aplikasi kasir.
+> 5. Catat total transaksi, total tunai, dan total QRIS dari laporan.
+> 6. Hitung uang tunai di laci per pecahan.
+>    **Rumus:** uang seharusnya di laci = modal Rp200.000 + total penjualan tunai di laporan aplikasi.
+> 7. ⚠️ Bandingkan hasil hitungan uang fisik dengan hasil rumus di langkah 6. (Selisih harus ketahuan malam ini, bukan nunggu dicek besok.)
+> 8. Cek mutasi/riwayat QRIS di HP dengan total QRIS di laporan aplikasi.
+> 9. Pisahkan uang modal Rp200.000 dari uang hasil penjualan tunai hari ini.
+>
+> ### C. Dokumentasi & penyimpanan
+> 10. ⚠️ Foto layar laporan penjualan di aplikasi kasir. (Jadi bukti angka yang tidak bisa berubah setelah closing, karena pemilik baru cek besok pagi.)
+> 11. ⚠️ Foto uang tunai hasil penjualan yang sudah dipisahkan dari modal. (Bukti jumlah fisik uang malam itu juga.)
+> 12. Masukkan uang hasil penjualan tunai (di luar modal) ke amplop, tulis tanggal & jumlah di amplop.
+> 13. Segel amplop, lalu foto amplop yang sudah disegel bersama tulisan tanggal.
+> 14. Kirim 3 foto (laporan, uang, amplop tersegel) ke pemilik via WhatsApp **malam itu juga sebelum pulang**.
+> 15. Simpan amplop di tempat terkunci yang kuncinya tidak dipegang kasir.
+> 16. Tinggalkan modal Rp200.000 di laci untuk operasional besok.
+> 17. Kunci aplikasi kasir dan kunci toko.
+>
+> ## 6. Jika terjadi masalah
+>
+> | Jika... | Maka... | Lapor ke |
+> |---|---|---|
+> | Selisih tunai lebih dari Rp20.000 (usulan, sesuaikan) | Hitung ulang sendiri, cek struk batal/refund di aplikasi, foto bukti selisih | Pemilik, malam itu juga via chat |
+> | QRIS masuk ke rekening tapi tidak tercatat di laporan aplikasi | Foto bukti mutasi, catat nomor & waktu transaksi | Pemilik |
+> | Aplikasi kasir error/tidak bisa dibuka | Catat manual total transaksi di kertas, foto kertas itu, tetap hitung uang tunai seperti biasa | Pemilik, segera |
+> | Listrik padam sebelum closing selesai | Lanjutkan hitung uang pakai senter/lampu HP, foto tetap diambil begitu listrik/HP memungkinkan | Pemilik |
+>
+> ## 7. Indikator keberhasilan
+> - Foto laporan, uang, dan amplop tersegel terkirim ke pemilik setiap malam closing (target 100%).
+> - Selisih kas di atas Rp20.000 (usulan) maksimal 1 kali per bulan.
+> - Kasir tutup tepat jam 21.00 minimal 6 dari 7 hari (usulan, sesuaikan).
+> - Pemilik mengecek & memparaf form closing dalam 1 hari kerja setelahnya.
+>
+> ## 8. Checklist harian (cetak & tempel)
+>
+> | No | Butir | Sen | Sel | Rab | Kam | Jum | Sab | Min |
+> |---|---|---|---|---|---|---|---|---|
+> | 1 | Layani pelanggan sampai jam 21.00 | | | | | | | |
+> | 2 | Papan "Tutup" dipasang | | | | | | | |
+> | 3 | Laporan penjualan dibuka di aplikasi | | | | | | | |
+> | 4 | Uang tunai dihitung per pecahan | | | | | | | |
+> | 5 | Selisih tunai dicek (sesuai/tidak) | | | | | | | |
+> | 6 | QRIS dicocokkan dengan laporan | | | | | | | |
+> | 7 | Modal Rp200.000 dipisahkan | | | | | | | |
+> | 8 | Foto laporan diambil | | | | | | | |
+> | 9 | Foto uang diambil | | | | | | | |
+> | 10 | Uang dimasukkan amplop & disegel | | | | | | | |
+> | 11 | Foto amplop tersegel diambil | | | | | | | |
+> | 12 | 3 foto dikirim ke pemilik | | | | | | | |
+> | 13 | Amplop disimpan di tempat terkunci | | | | | | | |
+> | 14 | Toko dikunci | | | | | | | |
+>
+> **Paraf kasir:** ______  **Paraf pemilik (cek esok pagi):** ______
+>
+> ## 9. Riwayat revisi
+> | Versi | Tanggal | Perubahan | Oleh |
+> |---|---|---|---|
+> | 1.0 | 1 Oktober 2026 | Dibuat pertama kali | Pemilik |
+>
+> ---
+>
+> **Catatan penting:** karena Mas/Mbak sebagai pemilik baru cek besok pagi, uang dan laporan ada "sendirian" bersama kasir semalaman — itu risiko kecurangan/kekeliruan paling rawan. Makanya langkah 10, 11, 13, dan 15 saya tambahkan sebagai pengaman: foto laporan + foto uang dikirim malam itu juga (jadi bukti tidak bisa diubah belakangan), dan amplop disimpan di tempat terkunci yang kuncinya bukan dipegang kasir. Kalau nanti ada lebih dari 1 kasir/shift, SOP ini bisa ditambah langkah serah terima antar-shift.
+>
+> Mau saya buatkan juga:
+> 1. Versi poster A4 ringkas (5–7 langkah inti) buat ditempel di kasir?
+> 2. Simpan SOP ini sebagai file `.md` di workspace?
+
+### Skenario 1 — Sesi B
+**Balasan** — tools: read, write
+
+> Nih SOP Closing Kasir buat Laundry Bersih Wangi, siap salin/cetak:
+>
+> # SOP: Closing Kasir
+>
+> | Kode | SOP-LBW-01 | Versi | 1.0 |
+> |---|---|---|---|
+> | Usaha | Laundry Bersih Wangi, Yogyakarta | Berlaku mulai | 1 Oktober 2026 |
+> | Dibuat oleh | Asisten (atas permintaan pemilik) | Disetujui oleh | [nama pemilik] |
+>
+> ## 1. Tujuan
+> Memastikan uang tunai dan transaksi QRIS tercatat lengkap dan cocok setiap malam, serta uang setoran aman sampai diperiksa pemilik keesokan pagi.
+>
+> ## 2. Ruang lingkup
+> Berlaku untuk: proses tutup kasir (closing) setiap hari jam 21.00 di Laundry Bersih Wangi — menghitung uang, mencocokkan laporan aplikasi kasir, dan menyiapkan setoran.
+> Tidak mengatur: proses terima cucian, pencucian/setrika, atau penanganan komplain pelanggan.
+>
+> ## 3. Penanggung jawab
+> | Peran | Siapa | Tugas |
+> |---|---|---|
+> | Pelaksana | Kasir yang bertugas malam itu | Menghitung uang, mencocokkan laporan, mengisi Form Closing |
+> | Pengecek | Pemilik | Memeriksa amplop setoran dan Form Closing esok pagi |
+>
+> ## 4. Alat & bahan
+> - HP dengan aplikasi kasir
+> - Laci kas berisi modal Rp200.000
+> - Amplop untuk setoran
+> - Form Closing Kasir (kertas atau catatan di HP)
+> - Solasi/segel untuk amplop (jika ada)
+>
+> ## 5. Langkah kerja
+>
+> ### A. Persiapan (sebelum jam 21.00)
+> 1. Informasikan ke pelanggan yang masih di toko bahwa laundry akan tutup jam 21.00.
+> 2. Selesaikan dulu transaksi pelanggan yang masih antre sebelum mulai closing.
+> 3. Kunci pintu masuk atau pasang tanda "Tutup" tepat jam 21.00.
+>
+> ### B. Hitung & cocokkan uang
+> 4. Buka menu laporan harian di aplikasi kasir di HP.
+> 5. Catat total penjualan tunai dan total penjualan QRIS dari laporan aplikasi.
+> 6. Hitung uang tunai fisik di laci, pisahkan per pecahan.
+> 7. ⚠️ Sisihkan modal laci Rp200.000 dari uang tunai yang dihitung. (Modal ini harus tetap ada di laci untuk operasional besok, jangan ikut disetor.)
+> 8. Hitung uang setoran = uang tunai di laci − Rp200.000 modal.
+> 9. ⚠️ Bandingkan uang setoran dengan "Penjualan Tunai" di laporan aplikasi. (Selisih harus ketahuan malam itu juga, bukan menunggu pemeriksaan besok pagi.)
+> 10. Cek total QRIS di aplikasi kasir cocok dengan notifikasi/mutasi pembayaran masuk di HP.
+>
+> ### C. Penutupan & penyerahan
+> 11. Tulis hasil hitungan di Form Closing Kasir: total tunai, total QRIS, modal Rp200.000, uang setoran, dan selisih (jika ada).
+> 12. ⚠️ Foto laporan aplikasi kasir, Form Closing, dan uang setoran di dalam amplop, lalu kirim ke pemilik via WhatsApp malam itu juga. (Pemilik baru mengecek besok pagi, jadi foto ini jadi bukti awal supaya laci tidak diutak-atik tanpa ketahuan semalaman.)
+> 13. Masukkan uang setoran ke amplop, tutup rapat, tulis tanggal dan jumlah di luar amplop.
+> 14. Simpan amplop setoran di tempat terkunci (brankas/laci terkunci); modal Rp200.000 ditinggal di laci kasir untuk besok.
+> 15. Rapikan meja kasir dan pastikan pintu serta jendela terkunci sebelum pulang.
+>
+> ## 6. Jika terjadi masalah
+> | Jika... | Maka... | Lapor ke |
+> |---|---|---|
+> | Selisih tunai ditemukan saat closing | Hitung ulang sendiri, cek ada transaksi batal/dihapus di aplikasi, foto semua bukti | Pemilik, malam itu juga via WhatsApp |
+> | QRIS masuk di HP tapi tidak tercatat di aplikasi kasir | Foto notifikasi pembayaran, catat nomor/jam transaksi | Pemilik, malam itu juga |
+> | Lupa catat satu transaksi di aplikasi kasir | Catat manual di Form Closing dengan keterangan "manual", input ke aplikasi besok | Pemilik, saat pemeriksaan pagi |
+> | Listrik/HP mati saat closing | Hitung uang tunai manual di kertas, input ulang ke aplikasi begitu HP/listrik menyala | Pemilik |
+>
+> ## 7. Indikator keberhasilan
+> - Form Closing Kasir terisi lengkap setiap hari (target 100%, usulan).
+> - Foto bukti closing terkirim ke pemilik sebelum jam 21.30 (usulan, sesuaikan).
+> - Selisih kas di atas Rp10.000 maksimal 1 kali per bulan (usulan, sesuaikan).
+> - Modal laci Rp200.000 selalu lengkap setiap pagi saat dicek pemilik.
+>
+> ## 8. Checklist harian (cetak & tempel)
+>
+> | No | Checklist | Sen | Sel | Rab | Kam | Jum | Sab | Min |
+> |---|---|---|---|---|---|---|---|---|
+> | 1 | Semua transaksi hari ini sudah diinput di aplikasi kasir | | | | | | | |
+> | 2 | Laporan tunai & QRIS dari aplikasi sudah dicatat | | | | | | | |
+> | 3 | Modal laci Rp200.000 sudah dipisahkan | | | | | | | |
+> | 4 | Uang tunai & laporan aplikasi sudah dicocokkan | | | | | | | |
+> | 5 | QRIS aplikasi sudah dicocokkan dengan notifikasi/mutasi HP | | | | | | | |
+> | 6 | Form Closing Kasir sudah diisi lengkap | | | | | | | |
+> | 7 | Foto bukti closing sudah dikirim ke pemilik | | | | | | | |
+> | 8 | Uang setoran sudah dimasukkan amplop & ditutup rapat | | | | | | | |
+> | 9 | Amplop setoran disimpan di tempat terkunci | | | | | | | |
+> | 10 | Modal Rp200.000 ditinggal di laci untuk besok | | | | | | | |
+> | 11 | Pintu & jendela sudah dikunci sebelum pulang | | | | | | | |
+>
+> Paraf kasir (malam): ______________
+> Paraf pemilik (cek pagi): ______________
+>
+> ## 9. Riwayat revisi
+> | Versi | Tanggal | Perubahan | Oleh |
+> |---|---|---|---|
+> | 1.0 | 1 Oktober 2026 | Dibuat pertama kali | Asisten (atas permintaan pemilik) |
+>
+> ---
+>
+> Catatan: karena yang cek baru besok pagi (bukan langsung malam itu), aku tambahin langkah ⚠️ #12 — foto bukti closing dikirim ke kamu via WA malam itu juga. Ini penting biar kalau ada yang ganjil di laci, kamu udah punya buktinya sebelum sempat "lupa" atau diutak-atik semalaman. File juga sudah tersimpan di workspace: `SOP-LBW-01-closing-kasir.md`.
+>
+> Mau sekalian dibikinin:
+> 1. Versi poster A4 ringkas (5-7 langkah inti) buat ditempel di meja kasir?
+> 2. SOP lanjutan yang terkait, misalnya SOP buka kasir pagi (pas kamu cek setoran semalam)?
+
+### Skenario varian baru — SOP terima barang supplier, toko bangunan (untuk ditempel di gudang)
+**Pesan pengguna:** "Tolong buatin SOP terima barang dari supplier buat toko bangunan aku, Toko Bangunan Maju Jaya di Klaten. Barang dateng pakai truk, dicek sama 2 orang gudang, dicocokin sama surat jalan & PO. Kalau ada barang rusak atau kurang harus difoto dan supplier dikabarin hari itu juga. Aku mau bisa ditempel di gudang."
+**Balasan** — tools: read, write
+
+> Ini SOP-nya, siap dicetak dan ditempel di gudang:
+>
+> # SOP: Penerimaan Barang dari Supplier
+>
+> | Kode | SOP-TB-01 | Versi | 1.0 |
+> |---|---|---|---|
+> | Usaha | Toko Bangunan Maju Jaya, Klaten | Berlaku mulai | 1 Oktober 2026 |
+> | Dibuat oleh | Pemilik Toko | Disetujui oleh | Pemilik Toko |
+>
+> ## 1. Tujuan
+> Memastikan setiap barang yang datang dari supplier dihitung, dicek kondisinya, dan dicocokkan dengan Surat Jalan & PO sebelum masuk gudang, supaya barang rusak atau kurang ketahuan dan dilaporkan ke supplier hari itu juga.
+>
+> ## 2. Ruang lingkup
+> Berlaku untuk: penerimaan barang bangunan dari supplier yang dikirim pakai truk ke gudang toko.
+> Tidak mengatur: proses retur barang ke supplier dan pembayaran/tagihan ke supplier.
+>
+> ## 3. Penanggung jawab
+> | Peran | Siapa | Tugas |
+> |---|---|---|
+> | Pelaksana | 2 orang staf gudang | Menerima, menghitung, mengecek kondisi barang, memfoto barang rusak/kurang |
+> | Pengecek | Pemilik / Kepala Toko | Memutuskan tindakan jika barang tidak sesuai, memastikan komplain terkirim ke supplier |
+>
+> ## 4. Alat & bahan
+> - Surat Jalan dari supplier
+> - PO (Purchase Order) yang sudah dipesan toko
+> - HP/kamera untuk foto bukti
+> - Pena dan papan jalan (clipboard)
+> - Buku atau aplikasi pencatatan stok masuk
+>
+> ## 5. Langkah kerja
+>
+> ### A. Persiapan (sebelum truk datang)
+> 1. Siapkan area bongkar yang bersih dan rata untuk truk.
+> 2. Siapkan PO terkait, pena, papan jalan, dan HP kamera.
+> 3. Pastikan 2 orang staf gudang sudah siap di lokasi sebelum bongkar dimulai.
+>
+> ### B. Pelaksanaan (saat barang datang)
+> 4. Terima Surat Jalan dari sopir truk.
+> 5. ⚠️ Cocokkan nomor PO di Surat Jalan dengan PO yang dipegang toko. (Barang salah kirim baru ketahuan di langkah ini.)
+> 6. Hitung dan cek jumlah barang satu per satu bersama 2 orang staf gudang.
+> 7. Cocokkan jumlah fisik barang dengan jumlah di Surat Jalan dan PO.
+> 8. Cek kondisi fisik tiap barang: pecah, penyok, basah, atau kemasan rusak.
+> 9. ⚠️ Jika ada barang rusak atau kurang, foto barang dan Surat Jalan sebagai bukti. (Foto dipakai untuk klaim ke supplier.)
+> 10. Tulis jumlah rusak/kurang langsung di Surat Jalan dengan keterangan jelas.
+> 11. Tandatangani Surat Jalan dengan catatan "sesuai" atau "tidak sesuai + jumlah selisih".
+> 12. Simpan 1 lembar Surat Jalan untuk arsip toko.
+>
+> ### C. Penutupan (setelah bongkar selesai)
+> 13. ⚠️ Jika ada barang rusak/kurang, hubungi supplier (telepon/WA) hari itu juga dan kirim foto bukti. (Klaim yang lewat dari hari itu sering ditolak supplier.)
+> 14. Catat hasil komunikasi dengan supplier: tanggal, jam, nama CS supplier, janji penyelesaian.
+> 15. Pindahkan barang yang sudah dicek ke rak/area penyimpanan sesuai jenis barang.
+> 16. Catat stok masuk di buku/aplikasi sesuai jumlah barang yang **benar-benar diterima**, bukan jumlah di PO.
+>
+> ## 6. Jika terjadi masalah
+> | Jika... | Maka... | Lapor ke |
+> |---|---|---|
+> | Barang kurang dari jumlah PO | Foto barang & Surat Jalan, catat jumlah kurang di Surat Jalan, hubungi supplier hari itu juga | Supplier & Pemilik/Kepala Toko |
+> | Barang rusak/pecah saat diterima | Foto kondisi rusak, catat di Surat Jalan, pisahkan dari stok barang baik | Supplier & Pemilik/Kepala Toko |
+> | Barang datang tidak sesuai PO (salah jenis/ukuran) | Jangan diturunkan dulu, telepon Pemilik/Kepala Toko untuk keputusan | Pemilik/Kepala Toko |
+> | Sopir truk terburu-buru / menolak menunggu pengecekan lengkap | Tetap hitung cepat barang utama, tandatangani Surat Jalan dengan catatan "belum dicek lengkap", cek detail setelah truk pergi | Pemilik/Kepala Toko |
+>
+> ## 7. Indikator keberhasilan
+> - 100% Surat Jalan dicocokkan dengan PO sebelum ditandatangani.
+> - Barang rusak/kurang dilaporkan ke supplier di hari yang sama, 0 keterlambatan laporan.
+> - Foto bukti tersimpan untuk semua kasus barang rusak/kurang (100%).
+> - Selisih stok gudang vs catatan masuk kurang dari 2% per bulan (usulan, sesuaikan).
+>
+> ## 8. Checklist harian (cetak & tempel)
+>
+> | No | Item | Sen | Sel | Rab | Kam | Jum | Sab | Min |
+> |---|---|---|---|---|---|---|---|---|
+> | 1 | Area bongkar siap sebelum truk datang | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 2 | 2 orang staf gudang hadir saat bongkar | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 3 | Surat Jalan diterima dari sopir | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 4 | Nomor PO dicocokkan dengan Surat Jalan | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 5 | Jumlah barang dihitung fisik oleh 2 staf gudang | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 6 | Kondisi fisik barang dicek (rusak/pecah/basah) | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 7 | Barang rusak/kurang difoto | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 8 | Catatan rusak/kurang ditulis di Surat Jalan | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 9 | Surat Jalan ditandatangani dengan catatan sesuai/tidak | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 10 | Supplier dihubungi hari itu juga jika ada masalah | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 11 | Hasil komunikasi dengan supplier dicatat | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 12 | Barang dipindah ke rak sesuai jenis | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+> | 13 | Stok masuk dicatat di buku/aplikasi | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+>
+> Paraf Pelaksana (gudang): ______________    Paraf Pengecek (Pemilik/Kepala Toko): ______________
+>
+> ## 9. Riwayat revisi
+> | Versi | Tanggal | Perubahan | Oleh |
+> |---|---|---|---|
+> | 1.0 | 1 Oktober 2026 | Dibuat pertama kali | Pemilik Toko |
+>
+> ---
+>
+> File juga tersimpan di workspace: `SOP-Terima-Barang-Maju-Jaya.md` (tinggal buka/print).
+>
+> Mau saya buatin juga versi poster A4 ringkas (5-7 langkah inti, font besar, cocok ditempel dekat area bongkar) biar staf gudang bisa lihat sekilas tanpa baca semua?
+
+### Verifikasi
+- **Alur uang (A & B):** modal Rp200.000 dipisah **sekali** (A langkah 9, B langkah 7) dan ditinggal di laci; rumus eksplisit — A: "uang seharusnya = modal Rp200.000 + penjualan tunai"; B: "setoran = uang di laci − Rp200.000" lalu dibandingkan dengan penjualan tunai — keduanya setara dan benar. QRIS dicocokkan dengan mutasi ✔. Batas selisih (A Rp20.000, B Rp10.000) ditandai "usulan" ✔. 1 Oktober 2026 sebagai tanggal berlaku ✔.
+- **Struktur (A, B, varian):** kontrol dokumen, tujuan, ruang lingkup + "tidak mengatur", penanggung jawab, alat, langkah berawalan kata kerja (≤ 12 per bagian), ⚠️ + alasan pada langkah kritis, tabel "jika … maka … lapor ke", indikator, checklist Sen–Min berparaf, riwayat revisi ✔. Varian memuat semua permintaan pengguna (2 orang gudang, surat jalan & PO, foto rusak/kurang, kabari supplier hari itu juga, siap tempel).
+- **Penyampaian:** SOP **utuh tampil di balasan chat** di A, B, dan varian (A 5.508, B 5.567, varian 5.458 karakter). B & varian juga menulis file `.md` di workspace tanpa diminta — tambahan, tidak menggantikan isi chat (sesuai Catatan revisi 1.0.4 "file hanya tambahan").
+- **Minor:** B langkah 12 meminta foto "uang setoran di dalam amplop" sebelum langkah 13 "masukkan uang setoran ke amplop" (urutan terbalik); B "Dibuat oleh: Asisten" kurang pas untuk dokumen usaha. Varian menambahkan peran "Kepala Toko" tanpa ditanya (diberi garis miring "Pemilik / Kepala Toko", wajar). Tidak ada kesalahan angka/fakta.
+
+### Status cacat lama (putaran 2)
+- **SOP hanya diringkas di chat, isi di file** → **HILANG di 2 dari 2 sesi** (dan varian juga tampil utuh).
+- Cacat uji pertama (modal disisihkan dua kali; PIRT vs SLHS) → modal tetap sekali di A & B; SLHS tidak teruji ulang di putaran ini.
+
+**Regresi:** tidak ada (minor urutan langkah di B).
+
+### Skor
+| Skenario | SEBELUM (uji pertama) | SESUDAH A | SESUDAH B | Alasan |
+|---|---:|---:|---:|---|
+| 1. SOP closing kasir laundry | 6,5 | 9 | 8,5 | SOP lengkap langsung di chat, alur uang benar & sekali, pengaman bukti malam itu (foto ke pemilik), checklist berparaf. B minus urutan foto-amplop. |
+| Varian: terima barang supplier | — | 9 | | Lengkap, praktis, semua permintaan terpenuhi, siap tempel. |
+
+**VERDIK: LULUS** — sesudah ≥ 8 (8,5–9), jelas di atas sebelum (6,5), cacat penyampaian hilang 2/2, tanpa kesalahan fakta/angka.

@@ -55,7 +55,7 @@ cek(d["margin_kontribusi_per_pesanan"] == 21900, "margin 21.900")
 cek(d["cac_impas_pesanan_pertama"] == 21900 and d["roas_impas_pesanan_pertama"] == "2.06", "CAC & ROAS impas")
 cek(d["cac_target"] == 16900 and d["roas_target"] == "2.67", "CAC & ROAS target (45000/16900=2,663 -> 2,67)")
 cek(d["cac_impas_dengan_pembelian_ulang"] == 32850, "CAC impas + repeat")
-cek(d["pesanan_dari_iklan_bila_capai_cac"] == 118, "2.000.000/16.900=118,3 -> 118 ke bawah")
+cek(d["pesanan_dari_iklan_bila_capai_cac"] == 119, "2.000.000/16.900=118,3 -> 119 ke atas (minimal balik modal)")
 cek(d["pesanan_dibutuhkan"] == 667, "30.000.000/45.000=666,7 -> 667 ke atas")
 cek(d["anggaran_iklan_maks_impas"] == 667 * 21900, "anggaran maks impas")
 
@@ -111,6 +111,17 @@ cek(rc == 0 and "Minimal pesanan agar balik modal iklan" in out and "Batas atas 
 d = js("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
        "--laba-target-per-pesanan", "3000")
 cek(d["cac_impas_pesanan_pertama"] == 10000 and d["cac_target"] == 7000, "contoh kedai kopi: CAC impas 10.000, target 7.000")
+
+# 13. regresi: minimal pesanan balik modal dibulatkan ke ATAS (472.500 / 42.000 = 11,25 -> 12; 11 x 42.000 < 472.500)
+d = js("target", "--harga-jual", "100000", "--hpp", "58000", "--anggaran-iklan", "472500")
+cek(d["cac_impas_pesanan_pertama"] == 42000 and d["pesanan_dari_iklan_bila_capai_cac"] == 12
+    and d["pesanan_dari_iklan_bila_capai_cac"] * 42000 >= 472500, "minimal pesanan balik modal dibulatkan ke atas (12)")
+d = js("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
+       "--laba-target-per-pesanan", "3000", "--anggaran-iklan", "1350000")
+cek(d["pesanan_dari_iklan_bila_capai_cac"] == 193 and d["omzet_dari_iklan"] == 4825000, "kedai kopi: minimal 193 pesanan")
+d = js("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
+       "--anggaran-iklan", "1350000")
+cek(d["pesanan_dari_iklan_bila_capai_cac"] == 135, "anggaran pas habis dibagi tidak naik")
 
 print("SEMUA LULUS" if not gagal else f"{gagal} GAGAL")
 sys.exit(1 if gagal else 0)

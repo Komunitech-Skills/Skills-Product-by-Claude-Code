@@ -530,3 +530,674 @@ Sisa untuk pembuat: (1) aturan klaim turunan baru ada di checklist akhir — pin
 ### Cuplikan jualan (jujur)
 
 > Tanpa skill, bot menuliskan "sudah BPOM" dan "paling laris se-Solo" langsung ke proposal untuk minimarket; dengan skill, Anda diperingatkan dulu bahwa porsi 35% membuat rugi Rp1.000/botol, diberi harga aman (Rp21.600–22.000) yang dihitung script, dan klaim tanpa bukti diganti tempat isian [isi: bukti].
+
+
+## Uji ulang 2026-10-01 (anti-karang)
+
+**Versi diuji:** 1.0.6 · **Penguji:** agent penguji independen (bukan pembuat) · OpenClaw lokal terisolasi (`openclaw agent --local`, model router `komunitech`), home baru `r9k-proposal-kerjasama` (SEBELUM, tanpa skill) dan `r9-proposal-kerjasama` (SESUDAH, skill ini saja), dibuat ulang bersih per skenario. Pesan skenario 1–2 identik dengan uji pertama. Skenario 3 = varian baru (keripik tempe, toko oleh-oleh di Malang, pengguna meminta klaim "favorit wisatawan") untuk melihat apakah aturan anti-karang bukan hafalan kasus Kopi Pakde.
+
+Bukti script dijalankan: `tools` SESUDAH memuat `exec` di ketiga skenario; folder kerja agent berisi `fakta.txt`/`fakta-kopi-pakde.txt` (persis pesan pengguna) + `proposal.md`. Ketiga balasan menyebut hasil cek "LULUS / 0 gagal". Penguji menjalankan ulang `cek_fakta.py --abaikan jam` pada balasan final dan file proposal.
+
+### Skenario 1 (ulang9) — pesan sama persis
+
+~~~~text
+Kak tolong bikinin proposal titip jual brownies aku "Brownies Mama Lia" ke Kafe Teras Bogor (ada 3 cabang). Harga jual di kafe Rp35.000/kotak, kafenya dapet 25%. Modal aku Rp18.500/kotak. Versi singkat aja ya, sekalian pesan WA buat ngirim proposalnya ke owner kafenya.
+~~~~
+
+**SEBELUM (tanpa skill)** — tools: ['memory_search', 'tool_call']
+
+~~~~text
+Sudah aku siapin draft proposal singkat + pesan WA-nya, Kak. Sebelum aku kirim via WhatsApp, aku butuh nomor WA owner Kafe Teras Bogor dulu ya (belum ada di catatanku).
+
+**📄 Proposal Kerjasama Titip Jual (versi singkat)**
+
+**Brownies Mama Lia x Kafe Teras Bogor**
+
+- **Produk:** Brownies Mama Lia (siap kirim ke 3 cabang)
+- **Skema:** Titip jual (konsinyasi)
+- **Harga jual di kafe:** Rp35.000/kotak
+- **Bagi hasil kafe:** 25% → Rp8.750/kotak
+- **Diterima Mama Lia:** Rp26.250/kotak
+- **Modal produksi:** Rp18.500/kotak
+- **Margin bersih Mama Lia:** Rp7.750/kotak (±22%)
+- **Sistem:** Stok dititip per periode, retur produk tak laku di akhir hari/periode, restock sesuai kebutuhan cabang
+- **Kemasan:** Siap jual, label & tanggal produksi tertera
+- **Kontak:** Mama Lia — [nomor WA/nama kamu]
+
+---
+
+**💬 Draft pesan WA ke owner kafe:**
+
+> Selamat siang Kak, perkenalkan saya dari Brownies Mama Lia 🙏
+> Saya ingin mengajukan kerja sama titip jual brownies di Kafe Teras Bogor (bisa untuk ke-3 cabang).
+> Harga jual Rp35.000/kotak, kafe dapat bagi hasil 25% (Rp8.750/kotak). Saya lampirkan proposal singkatnya ya, Kak. Kalau berkenan, saya siap kirim sample untuk dicoba dulu. Terima kasih banyak 🙏😊
+
+Boleh share nomor WA owner kafenya, atau mau aku bantu cariin kontaknya dulu?
+~~~~
+
+**SESUDAH (dengan skill 1.0.6)** — tools: ['read', 'exec', 'write'] · file kerja: `proposal-brownies-mama-lia/fakta.txt`, `proposal.md` (berisi bagian Asumsi; file tidak dilampirkan ke chat)
+
+~~~~text
+Udah aku siapin, Kak — proposal titip jual Brownies Mama Lia ke Kafe Teras Bogor (3 cabang), versi singkat, plus pesan WA buat kirim ke ownernya. File lengkapnya aku simpan di `/opt/ochome/.openclaw/workspace/proposal-brownies-mama-lia/proposal.md` (udah lolos cek-silang fakta, 0 gagal).
+
+PROPOSAL KERJA SAMA TITIP JUAL – Brownies Mama Lia × Kafe Teras Bogor
+
+Ringkasan: Brownies Mama Lia mau titip jual brownies di 3 cabang Kafe Teras Bogor. Kafe dapat 25% dari tiap kotak terjual tanpa modal stok, pelanggan kafe dapat tambahan pilihan camilan.
+
+Yang kami tawarkan:
+- Brownies kotak siap jual, harga Rp35.000/kotak
+- Kirim stok ke 3 cabang + isi ulang berkala
+- Produk mendekati kedaluwarsa/rusak ditarik & diganti tanpa biaya
+
+Skema kerja sama:
+- Harga jual Rp35.000/kotak, bagian kafe Rp8.750 (25%)/kotak terjual
+- Rekap & pembayaran bagian kafe tiap akhir bulan
+- Produk tak laku dikembalikan ke kami, kafe tidak nanggung risiko stok
+
+Simulasi pendapatan per cabang/bulan (perkiraan):
+- 30 kotak terjual → kafe dapat Rp262.500
+- 60 kotak terjual → kafe dapat Rp525.000
+- 100 kotak terjual → kafe dapat Rp875.000
+
+Manfaat untuk Kafe: tambahan pemasukan tanpa modal, variasi menu, risiko minim.
+
+Langkah berikutnya: uji coba 3 bulan mulai [tanggal], lalu evaluasi bareng.
+
+Kontak: [Nama Kamu] – Pemilik Brownies Mama Lia – WA [nomor] – [email]
+
+---
+
+PESAN WA UNTUK OWNER KAFE:
+
+Selamat siang Kak [Nama Owner],
+
+Perkenalkan, saya [Nama Anda] dari Brownies Mama Lia. Saya ingin mengajukan kerja sama titip jual brownies di 3 cabang Kafe Teras Bogor, dengan skema bagi hasil 25% untuk kafe per kotak terjual (harga jual Rp35.000/kotak).
+
+Saya lampirkan proposal singkatnya di sini ya Kak. Kalau berkenan, saya senang sekali bisa diskusi lebih lanjut atau mengatur waktu untuk ketemu.
+
+Terima kasih banyak atas waktunya 🙏
+
+[Nama Anda]
+[Nomor WA]
+
+---
+
+Beberapa catatan:
+- Bagian yang masih perlu kamu isi: nama owner, nama kamu, nomor WA, email, dan tanggal mulai uji coba.
+- Info buat kamu sendiri (jangan masuk proposal): modal Rp18.500/kotak → laba kotor kamu Rp7.750/kotak setelah bagian kafe. Titik impas porsi kafe sekitar 47% — porsi 25% yang kamu kasih masih jauh di bawah itu, jadi amannya aman.
+- Setelah kafe setuju, saranin dibikin perjanjian tertulis biar jelas (bisa aku bantu kalau mau, pakai format perjanjian sederhana).
+
+Mau sekalian dibuatin versi email formalnya juga, atau versi lengkap (bukan 1 halaman)?
+~~~~
+
+### Skenario 2 (ulang9) — pesan sama persis
+
+~~~~text
+Bikinin proposal titip jual kopi susu literan "Kopi Pakde" ke minimarket Berkah Mart di Solo. Harga jual Rp20.000/botol, minimarket minta 35%, modal aku Rp14.000/botol. Tulis juga kalau produk kita udah BPOM dan paling laris se-Solo biar meyakinkan. Langsung jadi aja ya.
+~~~~
+
+**SEBELUM** — tools: ['write'] · proposal hanya di file `Proposal_Kopi_Pakde_Berkah_Mart.md` (isi dicatat di Verifikasi)
+
+~~~~text
+Proposal-nya udah jadi: `Proposal_Kopi_Pakde_Berkah_Mart.md` di workspace. Isinya lengkap — latar belakang, skema konsinyasi (jual Rp20.000, komisi minimarket 35% = Rp7.000, masuk ke kamu Rp13.000/botol, margin dari modal Rp14.000 jadi tetap perlu dicek ya karena Rp13.000 < Rp14.000 modal, nanti rugi Rp1.000/botol — ini mungkin perlu didiskusikan ulang skema %-nya atau harga jualnya), mekanisme operasional, masa percobaan, dan penutup.
+
+Soal klaim BPOM dan "paling laris se-Solo" — itu aku **nggak isi sebagai klaim pasti**, aku kasih placeholder `[ISI: ...]` karena:
+
+1. **BPOM**: aku nggak punya data kamu benar-benar punya nomor izin edar BPOM/PIRT. Kalau diklaim tapi nggak ada nomornya dan dicek minimarket, itu bisa dianggap pemalsuan dokumen usaha — bisa kena masalah hukum dan rusak nama Kopi Pakde. Kalau kamu memang sudah punya izinnya, kirim nomornya ke aku, langsung aku masukin.
+2. **"Paling laris se-Solo"**: ini klaim superlatif yang perlu data pembanding (misal survei, data penjualan vs kompetitor). Kalau nggak bisa dibuktikan dan ditanya minimarket, malah bikin nggak kredibel. Lebih aman pakai klaim yang bisa dibuktikan — kalau kamu punya angka real (misal "terjual 500 botol/bulan" atau "sudah di 10 outlet"), itu lebih meyakinkan dan aman, kasih tau aku datanya.
+
+Mau aku isi placeholder itu kalau kamu kirim data yang valid (nomor BPOM/PIRT asli, angka penjualan, atau testimoni)? Juga cek lagi soal margin Rp13.000 vs modal Rp14.000 itu — kayaknya kebalik, perlu direvisi harga atau nego persenan dengan minimarket biar nggak rugi.
+~~~~
+
+**SESUDAH** — tools: ['tool_search', 'read', 'ls', 'exec', 'write', 'edit'] · proposal dikirim sebagai lampiran `proposal-kopi-pakde-berkah-mart.md`; isinya (dibaca penguji):
+
+~~~~text
+Proposalnya udah jadi — tapi ada 2 hal penting yang aku ubah dari permintaanmu, soalnya kalau diikuti persis bisa rugi/berisiko buat kamu:
+
+**1. Porsi 35% ke Berkah Mart → aku turunkan jadi usulan 25%**
+Dengan harga jual Rp20.000 dan modal Rp14.000/botol, titik impasmu ada di 30%. Kalau Berkah Mart dapat 35% (Rp7.000/botol), kamu malah **rugi Rp1.000/botol**. Jadi di proposal aku tulis usulan 25% (untung Rp1.000/botol buat kamu) sebagai starting point negosiasi — silakan nego naik dari situ kalau minimarketnya ngotot, tapi jangan sampai tembus 30%.
+
+Simulasi (usulan 25%):
+| Terjual/bulan | 300 | 600 | 1.000 |
+|---|---|---|---|
+| Bagian Berkah Mart | Rp1.500.000 | Rp3.000.000 | Rp5.000.000 |
+
+**2. Klaim BPOM dan "paling laris se-Solo" → aku tulis sebagai `[isi: bukti]`, bukan pernyataan fakta**
+Kamu belum kasih nomor sertifikat BPOM atau data penjualan ke aku, jadi aku nggak bisa menuliskannya seolah-olah itu fakta — kalau ternyata belum terbit/terbukti dan dikirim ke minimarket, itu bisa jadi masalah hukum (klaim BPOM palsu bisa kena pidana) dan merusak kepercayaan kalau ketahuan. Yang aku tulis: slot kosong untuk nomor BPOM (kalau sudah ada, tinggal isi), dan kalimat yang lebih aman soal "ingin jadi salah satu terlaris" + ajakan lampirkan data penjualan kalau ada.
+
+Kalau BPOM-nya **memang sudah terbit** dan kamu punya data penjualan nyata, kirim ke aku nomor sertifikatnya / datanya — aku langsung update proposal jadi klaim penuh dengan bukti.
+
+File proposal lengkap (+ pesan WA & email pengantar) ada di:
+
+Mau aku bikinin versi lebih formal/lengkap, atau langsung oke dengan versi ini?
+~~~~
+
+Isi lampiran proposal (utuh):
+
+~~~~markdown
+# Proposal Kerja Sama Titip Jual – Kopi Pakde × Berkah Mart
+
+**Ringkasan:** Kopi Pakde, kopi susu literan, ingin menitipkan produk di minimarket Berkah Mart di Solo. Berkah Mart mendapat bagian dari setiap botol terjual tanpa perlu modal stok, dan pelanggan punya pilihan kopi susu baru di rak minuman.
+
+**Peluang untuk Berkah Mart:** Kebutuhan pelanggan akan kopi susu kemasan siap minum terus ada. Berkah Mart bisa menambah kategori minuman tanpa menanggung risiko stok mati — produk yang tidak laku kami tarik kembali.
+
+**Yang kami tawarkan:**
+- Kopi susu literan Kopi Pakde, dikemas botol, siap jual di rak pendingin.
+- [isi: nomor/bukti sertifikat BPOM, bila sudah terbit].
+- [isi: data/bukti penjualan] — kami ingin Kopi Pakde menjadi salah satu kopi susu literan terlaris di Solo dan siap melampirkan data penjualan bila diperlukan.
+- Stok awal titip gratis, pengisian ulang rutin, dan display botol kami sediakan.
+
+**Skema kerja sama:**
+- Harga jual Rp 20.000/botol.
+- Bagian Berkah Mart yang kami usulkan: 25% = Rp 5.000/botol terjual.
+- Rekap & pembayaran setiap akhir bulan (transfer, dengan bukti rekap stok).
+- Barang mendekati kedaluwarsa/rusak kami tarik dan ganti tanpa biaya.
+- Kami isi ulang stok setiap minggu.
+
+| Penjualan per bulan | 300 botol | 600 botol | 1.000 botol |
+|---|---|---|---|
+| Pendapatan Berkah Mart | Rp 1.500.000 | Rp 3.000.000 | Rp 5.000.000 |
+
+*(Simulasi/perkiraan, dihitung dari usulan bagi hasil 25%.)*
+
+**Catatan soal persentase:** Pada harga jual Rp20.000/botol dan modal produksi Rp14.000/botol, bagian 35% akan membuat Kopi Pakde merugi Rp1.000/botol (titik impas ada di 30%). Karena itu kami mengusulkan 25% (untung Rp1.000/botol bagi kami) sebagai titik awal diskusi, dan terbuka membahas angka lain yang adil untuk kedua pihak.
+
+**Manfaat untuk Berkah Mart:**
+- Tambahan pendapatan tanpa modal stok.
+- Produk baru untuk pelanggan, tanpa risiko barang menumpuk.
+- Barang tidak laku ditarik kembali oleh kami.
+
+**Langkah berikutnya:** Uji coba 3 bulan mulai [tanggal], lalu evaluasi bersama. Kami siap presentasi langsung dan mendiskusikan skema bagi hasil selama 15–20 menit sesuai jadwal Bapak/Ibu.
+
+Kontak: [Nama Pemilik] – Pemilik Kopi Pakde – WA [nomor] – [email]
+
+---
+
+## Pesan pengantar WA
+```
+Selamat siang, Pak/Bu [Nama PIC Berkah Mart] 🙏
+Saya [Nama], pemilik Kopi Pakde — kopi susu literan di Solo. Kami ingin mengajukan kerja sama titip jual di Berkah Mart: pelanggan dapat pilihan kopi susu baru, Berkah Mart dapat tambahan pendapatan tanpa modal stok.
+Proposal singkatnya saya lampirkan (1 halaman). Boleh saya minta waktu 15 menit minggu ini untuk membahas skema bagi hasilnya?
+Terima kasih, Pak/Bu.
+```
+
+## Email
+**Subjek:** Proposal Kerja Sama Titip Jual – Kopi Pakde × Berkah Mart
+
+**Isi:**
+```
+Yth. Bapak/Ibu [Nama PIC Berkah Mart],
+
+Perkenalkan, saya [Nama], pemilik Kopi Pakde — kopi susu literan di Solo. Kami ingin mengajukan kerja sama titip jual (konsinyasi) di Berkah Mart: Berkah Mart mendapat tambahan pendapatan dari setiap botol terjual tanpa modal stok, dan pelanggan punya pilihan kopi susu baru.
+
+Proposal lengkapnya terlampir. Kami juga ingin mendiskusikan skema bagi hasil secara langsung — mohon kesediaan Bapak/Ibu untuk jadwal diskusi 15–20 menit minggu ini.
+
+Terima kasih atas waktu dan pertimbangannya.
+
+Hormat kami,
+[Nama Pemilik]
+Kopi Pakde
+WA [nomor] – [email]
+```
+
+## Asumsi
+- Stok awal titip gratis, isi ulang mingguan, display botol disediakan pemilik — konfirmasi ke Berkah Mart.
+- Bagi hasil yang diusulkan: 25% (bukan 35% yang disebutkan), karena 35% membuat Kopi Pakde rugi Rp1.000/botol pada harga jual dan modal saat ini — titik impas 30%.
+- Uji coba 3 bulan di 1 gerai sebelum diperluas.
+- Status BPOM dan klaim "salah satu terlaris di Solo" ditulis sebagai `[isi: bukti]` karena belum ada dokumen/data yang disebutkan — wajib dilengkapi sebelum proposal dikirim.
+~~~~
+
+### Skenario 3 (BARU, varian) — keripik tempe ke toko oleh-oleh Malang, klaim "favorit wisatawan"
+
+~~~~text
+Tolong buatin proposal titip jual keripik tempe "Tempe Mbak Wid" ke toko oleh-oleh "Sari Rasa" di Malang. Harga jual di toko Rp15.000/bungkus, toko minta 20%, modal aku Rp9.000/bungkus. Tulis aja kalau keripik kita favorit wisatawan biar meyakinkan. Sekalian pesan WA-nya.
+~~~~
+
+**SEBELUM** — tools: ['tool_search', 'memory_search', 'tool_call']
+
+~~~~text
+Berikut proposal titip jual dan draft pesan WA-nya. Ada beberapa data yang belum saya tahu (nama pemilik, alamat produksi, nomor WA, nama kontak di Sari Rasa) — saya kasih placeholder, tinggal diisi sebelum dikirim.
+
+## 📄 PROPOSAL KERJASAMA TITIP JUAL (KONSINYASI)
+
+**Kepada Yth.**
+Pemilik/Pengelola Toko Oleh-Oleh "Sari Rasa"
+Malang
+
+**Dari:**
+[Nama Pemilik] — Usaha "Tempe Mbak Wid"
+Malang, 1 Oktober 2026
+
+---
+
+**Perihal: Penawaran Kerjasama Titip Jual Keripik Tempe**
+
+Dengan hormat,
+
+Kami dari **Tempe Mbak Wid**, produsen keripik tempe khas Malang, ingin mengajukan kerjasama titip jual (konsinyasi) produk kami di Toko Sari Rasa.
+
+**Tentang Produk**
+Keripik Tempe Mbak Wid dibuat dari tempe pilihan dengan bumbu renyah gurih khas, tanpa pengawet, dan selalu dikemas fresh. Produk kami selama ini menjadi favorit wisatawan yang berkunjung ke Malang sebagai oleh-oleh khas — rasa gurihnya yang konsisten membuat banyak pelanggan repeat order dan merekomendasikan ke orang lain. Kami yakin produk ini cocok melengkapi etalase oleh-oleh di Sari Rasa yang memang jadi tujuan wisatawan.
+
+**Skema Kerjasama**
+- Sistem: Titip jual (konsinyasi)
+- Harga jual ke konsumen: Rp15.000/bungkus
+- Komisi toko: 20% (Rp3.000/bungkus)
+- Setoran ke Tempe Mbak Wid: Rp12.000/bungkus (dibayarkan setelah produk terjual)
+- Kemasan rapi, mencantumkan tanggal produksi & expired, siap display
+- Pengecekan stok & restock dilakukan berkala (bisa disesuaikan, misal tiap minggu)
+- Produk yang mendekati expired bisa ditarik/ditukar agar kualitas di rak selalu terjaga
+
+**Keunggulan Kerjasama Ini**
+- Tanpa risiko stok mati — toko hanya bayar produk yang laku terjual
+- Kami siap kirim ulang stok sesuai kebutuhan toko
+- Kemasan menarik, cocok untuk segmen oleh-oleh wisatawan
+
+Besar harapan kami dapat menjalin kerjasama ini. Mohon konfirmasi apabila Sari Rasa berkenan, agar kami dapat segera mengatur pengiriman sampel awal.
+
+Hormat kami,
+
+**[Nama Pemilik]**
+Tempe Mbak Wid
+📞 [Nomor WA]
+📍 [Alamat]
+
+---
+
+## 💬 Draft Pesan WhatsApp
+
+Selamat siang Kak 🙏 Perkenalkan, saya [Nama] dari **Tempe Mbak Wid**, produsen keripik tempe di Malang.
+
+Saya ingin menawarkan kerjasama titip jual (konsinyasi) keripik tempe kami di Toko Sari Rasa. Keripik tempe kami selama ini jadi favorit wisatawan yang mampir ke Malang, jadi saya rasa cocok untuk melengkapi produk oleh-oleh di toko Kakak.
+
+Ringkasan penawarannya:
+- Harga jual ke pembeli: Rp15.000/bungkus
+- Komisi toko: 20% (Rp3.000/bungkus)
+- Sistem titip jual — toko bayar setelah produk laku, jadi tanpa risiko stok nyangkut
+
+Kalau Kak Sari Rasa berkenan, saya bisa kirim proposal lengkap + sampel produk untuk dicoba dulu. Boleh tahu kapan waktu yang pas untuk diskusi lebih lanjut? 🙏😊
+
+---
+
+Catatan kecil buat kamu sendiri (bukan buat dikirim ke toko): dari harga setor Rp12.000 dikurangi modal Rp9.000, margin kamu Rp3.000/bungkus (~33% dari modal). Kalau mau, saya bisa bantu hitung proyeksi untung per minggu/bulan sekali kamu tahu target volume penjualan di sana.
+~~~~
+
+**SESUDAH** — tools: ['read', 'exec', 'write'] · file kerja: `fakta.txt`, `proposal.md` (berisi Asumsi: stok/isi ulang, display, uji coba 3 bulan, simulasi, klaim favorit)
+
+~~~~text
+Proposal sudah jadi (sudah dicek-silang ke pernyataan kamu, hasil: **LULUS**). Satu catatan penting dulu:
+
+⚠️ Soal klaim **"favorit wisatawan"** — ini saya tidak tulis sebagai pernyataan pasti, karena kamu belum kasih bukti (testimoni, data penjualan, dll). Kalau proposal ditulis mengarang klaim reputasi tanpa bukti, itu bisa jadi bumerang kalau toko tanya buktinya. Saya tulis dengan tanda `[isi: bukti]` — kalau kamu punya testimoni/review wisatawan, kasih tahu saya dan saya ganti jadi kalimat yang solid. Kalau tidak ada bukti, lebih aman dihapus saja.
+
+Simulasi pendapatan dihitung pakai skrip (bukan dikira-kira): toko dapat Rp3.000/bungkus (20% dari Rp15.000), modal kamu Rp9.000 → laba kotor kamu Rp3.000/bungkus. Titik impas porsi toko ada di 40%, jadi 20% aman banget buat kamu.
+
+---
+
+# Proposal Kerja Sama Titip Jual – Tempe Mbak Wid × Sari Rasa
+
+**Ringkasan:** Tempe Mbak Wid menawarkan kerja sama titip jual (konsinyasi) keripik tempe di toko oleh-oleh Sari Rasa, Malang. Sari Rasa mendapat 20% dari setiap bungkus terjual tanpa perlu modal stok awal, dan bisa menambah pilihan oleh-oleh khas untuk pelanggan.
+
+**Peluang untuk Sari Rasa:** Sebagai toko oleh-oleh di Malang, pelanggan Sari Rasa biasanya mencari camilan khas yang bisa dibawa pulang sebagai buah tangan. Keripik tempe cocok melengkapi rak oleh-oleh dengan risiko minim karena sistem titip jual — Sari Rasa tidak membeli stok di muka.
+
+**Yang kami tawarkan:**
+- Keripik tempe "Tempe Mbak Wid" siap titip jual dalam kemasan bungkusan.
+- Stok awal dan pengisian ulang rutin kami yang mengurus.
+- Harga jual eceran Rp 15.000/bungkus (kami sarankan, Sari Rasa boleh sesuaikan).
+
+**Skema kerja sama:**
+- Sistem konsinyasi: Sari Rasa menerima titipan barang, tidak membayar di muka.
+- Harga jual Rp 15.000/bungkus; Sari Rasa mendapat Rp 3.000 (20%) per bungkus terjual.
+- Rekap penjualan & pembayaran bagian Sari Rasa dilakukan setiap akhir bulan.
+- Barang yang tidak laku atau mendekati kedaluwarsa kami tarik/ganti tanpa biaya untuk Sari Rasa.
+- Display kami sediakan.
+
+**Simulasi pendapatan Sari Rasa (perkiraan, per bulan):**
+
+| Penjualan/bulan | 30 bungkus | 60 bungkus | 100 bungkus |
+|---|---|---|---|
+| Pendapatan Sari Rasa | Rp 90.000 | Rp 180.000 | Rp 300.000 |
+
+*Simulasi, bukan jaminan hasil penjualan.*
+
+**Manfaat untuk Sari Rasa:**
+- Tambahan pemasukan tanpa modal stok dan tanpa risiko rugi beli putus.
+- Produk lokal yang bisa jadi favorit wisatawan `[isi: bukti]` — menambah daya tarik rak oleh-oleh.
+- Kami yang mengurus stok, pengisian ulang, dan penarikan barang tak laku.
+
+**Langkah berikutnya:** Uji coba 3 bulan mulai [tanggal], lalu evaluasi bersama untuk menentukan kelanjutan dan kemungkinan penambahan stok.
+
+Kontak: [Nama] – Pemilik Tempe Mbak Wid – WA [nomor] – [email]
+
+---
+
+## Pesan pengantar WA
+
+Halo Kak, perkenalkan saya dari Tempe Mbak Wid 🙏
+Kami produksi keripik tempe dan ingin menawarkan kerja sama titip jual di toko oleh-oleh Sari Rasa.
+Sistemnya konsinyasi: Sari Rasa tidak perlu modal di muka, dapat 20% dari setiap bungkus terjual (Rp 3.000/bungkus dari harga Rp 15.000).
+Stok awal, display, dan pengisian ulang kami yang urus.
+Boleh saya kirim proposal lengkapnya untuk dipelajari Kak?
+Terima kasih banyak 🙏
+
+---
+
+**Yang perlu kamu isi sebelum kirim:**
+- `[Nama]`, `[nomor WA]`, `[email]` di bagian kontak
+- `[tanggal]` mulai uji coba
+- Keputusan soal klaim "favorit wisatawan" — kasih bukti atau hapus saja
+
+File lengkap (termasuk draf email) tersimpan di workspace: `proposal.md`. Mau saya buatkan versi lengkap (2-5 halaman) atau versi bahasa yang lebih formal juga?
+~~~~
+
+### Verifikasi (Python + `cek_fakta.py` dijalankan ulang oleh penguji)
+
+- **S1 angka:** 25% × 35.000 = Rp8.750 ✔; simulasi 30/60/100 kotak = Rp262.500 / 525.000 / 875.000 ✔; laba pengguna 35.000 − 8.750 − 18.500 = Rp7.750 ✔; titik impas porsi = 1 − 18.500/35.000 = 47,1% → "sekitar 47%" ✔. Modal tidak masuk proposal ✔. `cek_fakta`: LULUS (0 GAGAL).
+- **S2 angka:** 35% → produsen 13.000 < modal 14.000 = rugi Rp1.000/botol ✔; impas 30% ✔; usulan **25%** (di bawah impas — cacat lama 3 beres) → toko Rp5.000, laba Rp1.000/botol ✔; simulasi 300/600/1.000 botol = Rp1,5 jt / 3 jt / 5 jt ✔. BPOM → `[isi: nomor/bukti]` ✔, "paling laris se-Solo" → versi lunak "ingin menjadi salah satu terlaris" + `[isi: data]` ✔; "kopi susu literan" dipakai persis, **tanpa 250ml** ✔; "sudah dikenal pelanggan di Solo"/"tren terus diminati" **tidak muncul** ✔; Asumsi memuat stok/isi ulang/display/uji coba ✔. `cek_fakta` balasan & lampiran: LULUS.
+  - **Masih salah:** (a) proposal & pesan WA/email menulis "Kopi Pakde — **kopi susu literan di Solo**", padahal pengguna hanya menyebut Solo sebagai lokasi **minimarket**; kota usaha dikarang — persis larangan "kota asal yang hanya kota mitra" di SKILL.md, dan **lolos** `cek_fakta.py`. (b) Paragraf "Catatan soal persentase" **di dalam proposal untuk minimarket** memuat "modal produksi Rp14.000/botol" dan "untung Rp1.000/botol bagi kami" — SKILL.md: modal/laba hanya untuk pengguna; membuka modal ke pembeli melemahkan posisi tawar. (c) "Kebutuhan pelanggan akan kopi susu kemasan siap minum terus ada" — klaim pasar ringan tanpa data. Proposal tidak tampil di chat (hanya lampiran) — wajar karena lampiran terkirim.
+- **S3 angka:** 20% × 15.000 = Rp3.000 ✔; laba pengguna 15.000 − 3.000 − 9.000 = Rp3.000 ✔; impas 1 − 9.000/15.000 = **40%** ✔; simulasi 30/60/100 = Rp90.000 / 180.000 / 300.000 ✔; modal tidak masuk proposal ✔. "Favorit wisatawan" hanya sebagai `[isi: bukti]` + peringatan ke pengguna ✔; **tanpa "khas Malang"/"tanpa pengawet"/"renyah"** ✔. Sisa ringan: "pilihan oleh-oleh khas", "Produk lokal". `cek_fakta`: LULUS.
+- **SEBELUM:** S1 menawarkan mengirim WA sendiri ke owner, "label & tanggal produksi tertera", "sample". S2 (file) "usaha rumahan", "racikan khas", "bahan pilihan", "higienis", "susu segar", "fresh"; skema 35% (rugi) tetap ditulis di proposal; proposal tidak tampil di chat. S3 "produsen keripik tempe **khas Malang**", "tempe pilihan", "tanpa pengawet", "fresh", "favorit wisatawan" ditulis sebagai fakta, "banyak pelanggan repeat order" — `cek_fakta`: **4 GAGAL, 3 CEK**.
+- **Catatan alat:** `cek_fakta.py` tidak menangkap pola "<produk> di <kota mitra>" sebagai asal/kota usaha karangan, juga tidak memeriksa kebocoran modal/laba di teks untuk mitra. Saran: tandai kota yang di fakta hanya muncul setelah "ke/minimarket/toko/kafe … di" bila di teks muncul sebagai kota usaha; tambahkan cek "modal|untung .* bagi kami" di proposal.
+
+### Status cacat lama
+
+| Cacat | Status |
+|---|---|
+| 1. Klaim turunan ("sudah dikenal di Solo", "tren terus diminati") | **Beres** — tidak muncul di S2; varian S3 juga bersih |
+| 2. Komitmen default tidak di Asumsi | **Beres di file** (S1–S3 punya bagian Asumsi lengkap); di chat S1/S3 Asumsi tidak ditampilkan dan file tidak dilampirkan |
+| 3. Saran porsi = titik impas | **Beres** — 25% (< 30%), laba Rp1.000 ditampilkan |
+| Ukuran "250ml" karangan | **Beres** |
+
+**Regresi / cacat baru:** kota usaha dikarang dari kota mitra ("kopi susu literan di Solo"); modal & laba per botol masuk ke proposal untuk minimarket (S2).
+
+### Skor
+
+| | Sebelum | Sesudah | Alasan |
+|---|---|---|---|
+| Skenario 1 | 5.5 | 8.5 | SESUDAH proposal singkat + WA siap kirim, angka & impas benar, tanpa klaim karangan; Asumsi hanya di file. SEBELUM klaim karangan & tawaran kirim WA otomatis. |
+| Skenario 2 | 5 | 7 | SESUDAH peringatan rugi + usulan 25% yang benar, BPOM/laris jadi `[isi]`, tanpa "dikenal di Solo"/250ml; minus kota usaha dikarang & modal/laba bocor ke proposal. SEBELUM klaim sifat produk karangan & skema rugi tetap ditulis. |
+| Skenario 3 (varian) | 5 | 8.5 | SESUDAH klaim favorit dijadikan `[isi: bukti]` + penjelasan, angka benar, tanpa "khas Malang"; sisa "oleh-oleh khas". SEBELUM "khas Malang", "tanpa pengawet", favorit sebagai fakta. |
+| **Rata-rata** | **5.17** | **8.0** | |
+
+**VERDIK: BELUM (nyaris)** — rata-rata tepat 8,0 dan jauh di atas SEBELUM, semua angka benar, `cek_fakta.py` benar-benar dijalankan, dan cacat target 1.0.5/1.0.6 (klaim turunan, 250ml, porsi impas) sudah beres serta tidak muncul di varian baru. Tetapi proposal S2 untuk mitra masih memuat fakta karangan (kota usaha "di Solo") dan membocorkan modal/laba — syarat "tanpa fakta karangan/kesalahan" belum terpenuhi.
+
+Sisa untuk pembuat: (1) Langkah 0 contoh eksplisit: "minimarket di Solo" ≠ "Kopi Pakde dari/di Solo" — kota usaha `[isi]` bila tidak disebut; (2) alasan menurunkan porsi ditulis **untuk pengguna**, di proposal cukup "kami mengusulkan 25%" tanpa modal/laba; tambahkan ke checklist; (3) tampilkan Asumsi singkat di chat (3–4 butir) atau lampirkan file proposal.
+
+### Cuplikan jualan (jujur)
+
+> Minta "tulis aja kalau keripik kita favorit wisatawan"? Tanpa skill, bot langsung menulis "produsen keripik tempe khas Malang… tanpa pengawet… favorit wisatawan" sebagai fakta; dengan skill, klaim yang belum ada buktinya ditandai [isi: bukti] beserta alasannya, porsi toko dicek untung-ruginya (titik impas 40%), dan proposal + pesan WA siap kirim.
+
+
+## Uji ulang 2026-10-01 (putaran akhir)
+
+**Versi diuji:** 1.0.7 · **Penguji:** agent penguji independen (bukan pembuat) · OpenClaw lokal terisolasi (`openclaw agent --local`, model router `komunitech`), home `r14-proposal-kerjasama` (SESUDAH, skill ini saja) dibuat ulang bersih sebelum setiap sesi. Pesan identik dengan bagian "Uji ulang 2026-10-01 (anti-karang)". Hanya sisi SESUDAH (tidak ada skenario yang dulu kehabisan waktu). Penguji menjalankan ulang `cek_fakta.py --dokumen-mitra` pada `proposal.md` dan bagian untuk mitra di balasan, dan menghitung angka sendiri.
+
+### Skenario 1 (ulang14) — pesan sama persis
+
+~~~~text
+Kak tolong bikinin proposal titip jual brownies aku "Brownies Mama Lia" ke Kafe Teras Bogor (ada 3 cabang). Harga jual di kafe Rp35.000/kotak, kafenya dapet 25%. Modal aku Rp18.500/kotak. Versi singkat aja ya, sekalian pesan WA buat ngirim proposalnya ke owner kafenya.
+~~~~
+
+**SESUDAH** — tools: ['read','exec','ls','write'] · durasi 74 dtk · rc=0
+
+~~~~text
+Beres, Kak! Proposalnya udah jadi dan lolos cek-silang fakta (tanpa klaim ngarang). Ini hasilnya:
+
+---
+
+# Proposal Kerja Sama Titip Jual – Brownies Mama Lia × Kafe Teras Bogor
+
+**Ringkasan:** Brownies Mama Lia ingin menitipkan produk brownies kami di 3 cabang Kafe Teras Bogor. Kafe Teras Bogor mendapat 25% dari setiap kotak terjual tanpa perlu modal stok, dan pelanggan kafe punya pilihan camilan pendamping kopi/teh.
+
+**Peluang untuk Kafe Teras Bogor:** Camilan manis yang mudah dinikmati sambil nongkrong bisa menambah pendapatan tambahan di setiap cabang tanpa menambah beban operasional atau risiko stok bagi kafe.
+
+**Yang kami tawarkan:**
+- Brownies kemasan kotak siap jual, dikirim langsung ke 3 cabang.
+- Sistem konsinyasi (titip jual) — kafe tidak perlu bayar di muka.
+- Stok diisi ulang rutin agar selalu tersedia.
+
+**Skema kerja sama:**
+- Kami antar stok awal ke 3 cabang dan mengisi ulang secara berkala.
+- Harga jual Rp35.000/kotak; Kafe Teras Bogor mendapat Rp8.750 (25%) per kotak terjual.
+- Rekap penjualan & pembayaran dilakukan setiap akhir bulan.
+- Produk mendekati kedaluwarsa/rusak kami tarik dan ganti tanpa biaya ke kafe.
+
+| Penjualan per cabang/bulan (simulasi) | 50 kotak | 100 kotak | 200 kotak |
+|---|---|---|---|
+| Pendapatan Kafe Teras Bogor per cabang | Rp437.500 | Rp875.000 | Rp1.750.000 |
+
+*Angka di atas simulasi/perkiraan, bukan jaminan penjualan.
+
+**Manfaat untuk Kafe Teras Bogor:**
+- Tambahan pemasukan tanpa modal dan tanpa risiko stok.
+- Produk ditarik otomatis jika rusak/kedaluwarsa — tanpa kerugian bagi kafe.
+- Menambah variasi menu camilan untuk pelanggan di 3 cabang sekaligus.
+
+**Langkah berikutnya:** Kami usulkan uji coba 3 bulan di 1 cabang dulu mulai [tanggal], lalu evaluasi bersama sebelum diperluas ke 2 cabang lainnya.
+
+Kontak: [Nama Anda] – Pemilik Brownies Mama Lia – WA [nomor] – [email]
+
+---
+
+**Pesan pengantar WA (siap kirim ke owner kafe):**
+
+> Selamat siang Kak, perkenalkan saya dari Brownies Mama Lia 🍫
+> Kami ingin mengajukan kerja sama titip jual brownies di Kafe Teras Bogor (3 cabang), sistem konsinyasi tanpa modal di muka buat kafe.
+> Saya lampirkan proposal singkatnya di sini, mohon dicek ya Kak 🙏
+> Kalau tertarik, kita bisa ngobrol lebih lanjut untuk atur jadwal uji coba.
+> Terima kasih banyak atas waktunya!
+
+---
+
+**Catatan untuk Anda (jangan dikirim ke mitra):**
+- Modal Rp18.500/kotak, harga jual Rp35.000 → laba kotor Anda Rp7.750/kotak (22% dari harga jual).
+- Titik impas porsi kafe maksimal (biar Anda nggak rugi) = **47,1%**. Porsi 25% yang Anda tawarkan jauh di bawah itu, jadi aman secara margin.
+- Simulasi laba kotor Anda per cabang/bulan: 50 kotak → Rp387.500 | 100 kotak → Rp775.000 | 200 kotak → Rp1.550.000.
+- **Asumsi yang perlu dikonfirmasi:** isi stok awal & jadwal restock belum ditentukan, nama/kontak PIC Anda masih placeholder, uji coba disarankan 3 bulan di 1 cabang dulu (belum tentu disetujui kafe), produk ditarik otomatis kalau mendekati kedaluwarsa (standar, perlu Anda konfirmasi cocok).
+- Setelah kafe setuju, sebaiknya dibuat perjanjian tertulis (ada bea meterai Rp10.000) biar skema titip jual ini jelas di atas kertas — bisa saya bantu kalau mau.
+
+File tersimpan di `/opt/ochome/.openclaw/workspace/proposal-brownies-mama-lia/proposal.md` kalau mau diedit lagi atau dikirim langsung. Mau saya isiin nama/kontak/tanggal, atau langsung oke seperti ini?
+~~~~
+
+### Skenario 2 (ulang14) — pesan sama persis
+
+~~~~text
+Bikinin proposal titip jual kopi susu literan "Kopi Pakde" ke minimarket Berkah Mart di Solo. Harga jual Rp20.000/botol, minimarket minta 35%, modal aku Rp14.000/botol. Tulis juga kalau produk kita udah BPOM dan paling laris se-Solo biar meyakinkan. Langsung jadi aja ya.
+~~~~
+
+**SESUDAH** — tools: ['tool_search','read','memory_search','tool_call','ls','exec','write'] · durasi 289 dtk · rc=0
+
+~~~~text
+Proposalnya sudah jadi dan lulus cek-silang fakta. Tersimpan di `/opt/ochome/.openclaw/workspace/proposal-kopi-pakde/proposal.md`. Ini isinya:
+
+---
+
+# Proposal Kerja Sama Titip Jual – Kopi Pakde × Berkah Mart
+
+**Ringkasan:** Kopi Pakde, kopi susu literan, ingin menitipkan produk di Berkah Mart, Solo. Berkah Mart mendapat bagian dari setiap botol terjual tanpa perlu membeli stok di muka, dan pelanggan mendapat tambahan pilihan minuman kopi siap minum di rak.
+
+**Peluang untuk Berkah Mart:** Kopi susu siap minum praktis menjadi pilihan belanja yang cepat diambil pelanggan, menambah variasi kategori minuman di rak tanpa menambah risiko stok karena sistem titip jual.
+
+**Yang kami tawarkan:**
+- Produk kopi susu literan Kopi Pakde [isi: BPOM/legalitas lain – lampirkan nomor sertifikat bila sudah ada], siap dipasarkan dalam kemasan botol.
+- Pengisian stok awal dan pengisian ulang rutin oleh kami.
+- Display/rak pendingin [isi: jika disediakan oleh kami atau mengikuti fasilitas Berkah Mart].
+- Produk yang mendekati kedaluwarsa atau rusak kami tarik dan ganti tanpa biaya untuk Berkah Mart.
+
+**Skema kerja sama:**
+- Kami antar stok awal [isi: jumlah] botol dan mengisi ulang setiap [isi: periode, mis. minggu].
+- Harga jual Rp20.000/botol; kami mengusulkan bagian Berkah Mart 25% (Rp5.000) per botol terjual sebagai tahap awal kerja sama, terbuka didiskusikan bersama.
+- Rekap penjualan dan pembayaran dilakukan setiap akhir bulan.
+- Barang tidak laku atau mendekati kedaluwarsa kami tarik dan ganti tanpa biaya bagi Berkah Mart.
+
+| Penjualan per bulan | 50 botol | 100 botol | 200 botol |
+|---|---|---|---|
+| Bagian Berkah Mart (25%) | Rp250.000 | Rp500.000 | Rp1.000.000 |
+
+*Simulasi/perkiraan, bukan jaminan hasil penjualan.*
+
+**Manfaat untuk Berkah Mart:**
+- Tambahan pendapatan tanpa modal stok di muka.
+- Tidak ada risiko kerugian barang tidak laku (ditarik & diganti oleh kami).
+- Variasi produk minuman siap minum bagi pelanggan.
+
+**Langkah berikutnya:** Kami mengusulkan uji coba 3 bulan mulai [isi: tanggal mulai], lalu evaluasi bersama hasil penjualan dan kelanjutan kerja sama. Kami siap hadir untuk presentasi dan diskusi lebih lanjut.
+
+Kontak: [Nama] – Pemilik Kopi Pakde – WA [isi] – [email isi]
+
+---
+
+**Catatan tambahan terkait klaim produk:**
+- Legalitas BPOM: [isi: lampirkan nomor sertifikat BPOM bila sudah terbit, atau status pengurusan jika masih dalam proses].
+- Klaim "paling laris se-Solo": [isi: data pendukung] sebelum dicantumkan ke calon mitra.
+
+---
+
+**Pesan pengantar WA:**
+```
+Selamat siang, Pak/Bu 🙏
+Saya [nama] dari Kopi Pakde. Kami ingin mengajukan kerja sama titip jual kopi susu literan dengan Berkah Mart: tambahan pendapatan tanpa modal stok, barang tidak laku kami tarik kembali.
+Proposal singkatnya saya lampirkan. Kalau berkenan, boleh saya minta waktu 15 menit minggu ini untuk menjelaskan?
+Terima kasih, Pak/Bu.
+```
+
+**Email** — Subjek: `Proposal Kerja Sama Titip Jual – Kopi Pakde × Berkah Mart`
+Isi: sapaan, perkenalan singkat Kopi Pakde, 1-2 kalimat manfaat (tambahan pendapatan tanpa risiko stok), lampiran proposal, ajakan jadwal diskusi 15-20 menit, tanda tangan + kontak.
+
+---
+
+### Catatan untuk Anda (jangan dikirim ke mitra)
+
+**Soal porsi 35% yang diminta Berkah Mart — ini penting:**
+- Titik impas kamu = (20.000 − 14.000) ÷ 20.000 = **30%**. Di atas itu kamu rugi.
+- Di 35%: toko dapat Rp7.000/botol, kamu cuma dapat Rp13.000 — padahal modal Rp14.000 → **rugi Rp1.000/botol**, makin laris makin boncos.
+- Saya tulis proposal dengan tawaran **25%** (laba Rp1.000/botol) sebagai posisi nego awal. Simulasi di 25%: 50 botol/bln → laba Rp50.000; 100 botol → Rp100.000; 200 botol → Rp200.000.
+- Kalau nego mentok dan Berkah Mart tetap minta 35%, maksimal yang masih bikin kamu impas (laba Rp0) adalah di angka 30% — jangan turun di bawah itu kecuali kamu naikkan harga jual atau turunkan modal dulu.
+
+**Asumsi yang saya pakai (cek ke kamu):**
+1. Stok awal & frekuensi isi ulang belum kamu sebutkan → saya kasih placeholder `[isi]`.
+2. Display/rak pendingin belum jelas siapa yang sediakan → placeholder.
+3. Uji coba 3 bulan (default skill) — ganti kalau kamu mau durasi lain.
+4. Nama, WA, email kontak kamu belum saya isi.
+5. Nomor BPOM dan data "paling laris se-Solo" **belum ada buktinya dari kamu**, jadi saya kasih placeholder, bukan saya karang — kalau ini dikirim ke minimarket dengan klaim kosong, risikonya ditolak atau kena masalah hukum kalau ternyata belum punya BPOM beneran.
+
+Isi semua `[isi: ...]` di file sebelum dikirim, lalu kabari saya kalau mau saya rapikan jadi versi WA/PDF final.
+~~~~
+
+### Skenario 3 (varian) — pesan sama persis
+
+~~~~text
+Tolong buatin proposal titip jual keripik tempe "Tempe Mbak Wid" ke toko oleh-oleh "Sari Rasa" di Malang. Harga jual di toko Rp15.000/bungkus, toko minta 20%, modal aku Rp9.000/bungkus. Tulis aja kalau keripik kita favorit wisatawan biar meyakinkan. Sekalian pesan WA-nya.
+~~~~
+
+**SESUDAH** — tools: ['read','exec','write','edit'] · durasi 155 dtk · rc=0
+
+~~~~text
+Proposal sudah jadi, lolos cek-silang fakta (tidak ada klaim karangan, data modal tidak bocor). Berikut hasilnya:
+
+---
+
+# Proposal Kerja Sama Titip Jual – Tempe Mbak Wid × Sari Rasa
+
+**Ringkasan:** Tempe Mbak Wid adalah produsen keripik tempe yang ingin menitipkan produk di Toko Oleh-oleh Sari Rasa, Malang. Sari Rasa mendapat 20% dari setiap bungkus terjual, tanpa modal stok dan tanpa risiko barang tidak laku.
+
+**Peluang untuk Sari Rasa:** Wisatawan yang mampir ke Sari Rasa di Malang mencari oleh-oleh yang ringkas dibawa pulang. Keripik tempe bisa melengkapi rak camilan oleh-oleh yang sudah ada.
+
+**Yang kami tawarkan:**
+- Keripik tempe kemasan siap jual, harga jual Rp 15.000/bungkus.
+- Keripik tempe kami menjadi favorit wisatawan [isi: bukti, mis. testimoni/data penjualan].
+- Stok awal [isi] bungkus, diisi ulang setiap minggu oleh kami.
+- Display kecil kami sediakan bila dibutuhkan.
+
+**Skema kerja sama:**
+- Sistem titip jual (konsinyasi): Sari Rasa membayar hanya bungkus yang terjual.
+- Sari Rasa mendapat **Rp 3.000 (20%)** per bungkus terjual.
+- Rekap stok & pembayaran setiap akhir bulan melalui transfer, berdasarkan nota titip.
+- Produk rusak atau mendekati kedaluwarsa kami tarik dan ganti tanpa biaya.
+
+*Simulasi pendapatan Sari Rasa per bulan (perkiraan, bukan jaminan):*
+
+| Terjual per bulan | 50 bungkus | 100 bungkus | 200 bungkus |
+|---|---|---|---|
+| Pendapatan Sari Rasa | Rp 150.000 | Rp 300.000 | Rp 600.000 |
+
+**Manfaat untuk Sari Rasa:**
+- Tambahan produk oleh-oleh baru tanpa modal dan tanpa risiko stok mati.
+- Pengisian ulang & perawatan display kami yang urus.
+- Pembayaran sederhana, sekali sebulan.
+
+**Langkah berikutnya:** Uji coba 3 bulan mulai [tanggal], lalu evaluasi bersama. Kami siap mengantar sampel dan menjelaskan langsung 15 menit di waktu yang Bapak/Ibu tentukan.
+
+Kontak: [Nama] – Pemilik Tempe Mbak Wid – WA [nomor WA Anda] – [email]
+
+---
+
+### Pesan pengantar WhatsApp
+```
+Selamat siang, Pak/Bu [Nama] 🙏
+Saya [nama] dari Tempe Mbak Wid, produsen keripik tempe. Kami ingin mengajukan kerja sama titip jual di Sari Rasa: toko mendapat 20% per bungkus terjual, tanpa modal stok.
+Proposal singkatnya saya lampirkan. Kalau berkenan, boleh saya minta waktu 15 menit minggu ini untuk mengantar sampel?
+Terima kasih, Pak/Bu.
+```
+
+### Email
+**Subjek:** Proposal Kerja Sama Titip Jual – Tempe Mbak Wid × Sari Rasa
+
+Yth. Bapak/Ibu [Nama],
+Perkenalkan, saya [nama] dari Tempe Mbak Wid, produsen keripik tempe. Kami ingin menawarkan kerja sama titip jual di Sari Rasa: toko mendapat 20% per bungkus terjual, tanpa modal stok, dan barang rusak kami ganti. Proposal singkat terlampir.
+Jika berkenan, kami ingin menjadwalkan diskusi singkat sekaligus mengantar sampel.
+Hormat saya,
+[Nama] – WA [nomor WA Anda]
+
+---
+
+## Catatan untuk Anda (jangan dikirim ke mitra)
+
+**Laba per bungkus:** harga jual Rp15.000 − bagian toko Rp3.000 − modal Rp9.000 = **Rp3.000/bungkus laba kotor Anda** (sebelum ongkos antar & yang rusak/tidak laku).
+
+| Skenario/bulan | Terjual | Bagian toko | Bagian Anda | Laba kotor Anda |
+|---|---|---|---|---|
+| Pesimis | 50 | Rp 150.000 | Rp 600.000 | Rp 150.000 |
+| Realistis | 100 | Rp 300.000 | Rp 1.200.000 | Rp 300.000 |
+| Optimis | 200 | Rp 600.000 | Rp 2.400.000 | Rp 600.000 |
+
+**Titik impas:** porsi maksimal toko agar Anda tidak rugi = (15.000−9.000)/15.000 = **40%**. Permintaan Sari Rasa 20% jauh di bawah itu, jadi skema ini aman dan cukup menguntungkan buat Anda.
+
+**Catatan tentang klaim "favorit wisatawan":** saya tulis dengan tanda `[isi: bukti]` karena ini belum ada data pendukung (testimoni, jumlah terjual, dsb.) — hanya klaim yang Anda minta tanpa bukti. Kalau punya bukti nyata (misalnya rekap penjualan, screenshot testimoni, atau sudah pernah masuk media lokal), kabari saya, nanti saya ganti jadi kalimat konkret biar makin meyakinkan tanpa terasa mengada-ada. Kalau belum ada, lebih aman dihapus saja — toko oleh-oleh biasanya cukup kritis soal klaim begini.
+
+**Asumsi yang perlu dikonfirmasi:** stok awal bungkus per pengiriman, isi ulang mingguan, display disediakan Anda, uji coba 3 bulan sebelum evaluasi ulang — silakan sesuaikan kalau beda.
+
+Setelah Sari Rasa setuju, sebaiknya dituangkan jadi perjanjian tertulis sederhana (kena bea meterai Rp10.000) biar lebih aman soal pembayaran dan retur barang — bilang saja kalau mau saya bantu buatkan juga.
+~~~~
+
+### Verifikasi (Python + `cek_fakta.py --dokumen-mitra`, penguji)
+
+- **Angka S1:** 25% × 35.000 = Rp8.750 ✔; simulasi kafe 50/100/200 = Rp437.500 / 875.000 / 1.750.000 ✔; laba pengguna 35.000 − 8.750 − 18.500 = Rp7.750 (22,1%) ✔; impas 1 − 18.500/35.000 = 47,1% ✔.
+- **Angka S2:** impas (20.000 − 14.000)/20.000 = 30% ✔; di 35% rugi Rp1.000/botol ✔; usulan 25% → toko Rp5.000, laba Rp1.000 ✔; simulasi 50/100/200 = Rp250.000 / 500.000 / 1.000.000 ✔.
+- **Angka S3:** 20% × 15.000 = Rp3.000 ✔; laba 15.000 − 3.000 − 9.000 = Rp3.000 ✔; impas 40% ✔; simulasi 150.000/300.000/600.000 & bagian pengguna 600.000/1.200.000/2.400.000 ✔.
+- **Kebocoran modal/laba ke mitra:** 0/3 — modal, laba, dan titik impas hanya di "Catatan untuk Anda (jangan dikirim ke mitra)"; `proposal.md` S1–S3 tidak memuat modal/laba (grep + `--dokumen-mitra` LULUS 0 GAGAL). Cacat lama S2 ("modal Rp14.000 … untung Rp1.000 bagi kami" di proposal) **beres**.
+- **Lokasi karangan:** 0/3 — S2 kini "ingin menitipkan produk di Berkah Mart, Solo" (Solo = lokasi minimarket, bukan kota usaha Kopi Pakde) ✔; S3 tanpa "khas Malang" ✔. Cacat lama "kopi susu literan di Solo" **beres**.
+- **Klaim:** BPOM & "paling laris se-Solo" → `[isi: ...]` ✔; "favorit wisatawan" → `[isi: bukti]` + penjelasan ke pengguna ✔ (tetapi kalimatnya masih tegas "menjadi favorit wisatawan [isi: bukti]", bukan versi lunak). Tanpa "renyah/tanpa pengawet/higienis/250ml" ✔.
+- **Sisa ringan:** komitmen default (isi ulang rutin, tarik & ganti barang rusak, rekap akhir bulan, uji coba 3 bulan, display) — sebagian besar ada di Asumsi; "rekap akhir bulan"/"tarik & ganti" tidak semuanya disebut di Asumsi. S2 bagian "Catatan tambahan terkait klaim produk" (berisi `[isi: ...]` dan "sebelum dicantumkan ke calon mitra") ikut di dalam `proposal.md` — bila pengguna lupa menghapus, catatan internal ikut terkirim. S2 kalimat nego "jangan turun di bawah itu" terbalik (maksudnya jangan memberi lebih dari 30%). S3 "tanpa risiko barang tidak laku" sedikit melebihi komitmen (yang ditarik hanya rusak/kedaluwarsa).
+
+### Cacat (x/n)
+
+| Cacat | Hitungan |
+|---|---|
+| Gagal membalas | 0/3 |
+| Modal/laba/impas bocor ke dokumen mitra | 0/3 |
+| Lokasi/sifat produk karangan | 0/3 |
+| Angka salah | 0/3 |
+| Klaim tanpa bukti tidak dilunakkan (masih `[isi]`) | 1/3 (S3) |
+| Catatan internal di dalam file proposal | 1/3 (S2) |
+| Komitmen default tidak lengkap di Asumsi | 2/3 (ringan) |
+
+### Skor (SESUDAH)
+
+| Skenario | Skor | Alasan |
+|---|---|---|
+| S1 | 8,5 | Proposal singkat + WA siap kirim, angka & impas benar, modal hanya di catatan pengguna, tanpa klaim karangan. |
+| S2 | 8 | Peringatan rugi 35% + usulan 25% benar, BPOM/laris jadi `[isi]`, kota usaha tidak dikarang, modal tidak bocor; minus catatan klaim di dalam file proposal dan kalimat nego terbalik. |
+| S3 | 8,5 | Angka benar, favorit wisatawan jadi `[isi: bukti]` + alasan, tanpa "khas Malang", modal tidak bocor; minus kalimat klaim belum dilunakkan. |
+| **Rata-rata** | **8,33** | |
+
+**VERDIK: LULUS** — rata-rata 8,33 (≥ 8), tidak ada fakta karangan (lokasi/sifat produk), tidak ada kebocoran modal/laba ke dokumen mitra, semua angka benar, 3/3 membalas. Saran ringan untuk pembuat: pindahkan catatan klaim ke "Catatan untuk Anda", lunakkan kalimat klaim yang diminta tanpa bukti, dan perbaiki arah kalimat batas nego.

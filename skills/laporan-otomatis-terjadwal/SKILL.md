@@ -7,6 +7,12 @@ description: Menyiapkan laporan rutin (harian/mingguan/bulanan) di OpenClaw yang
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
+> **Aturan aksi (wajib, berlaku sepanjang alur):**
+> 1. **Tidak ada aksi kirim/ubah sebelum "ya".** Mengirim pesan apa pun (termasuk "test koneksi"/uji kirim, `message send`), membuat/menjalankan jadwal (`automations add/run`, `cron add`, tool `cron.add`), atau mengubah kanal (`channels add/login`) **hanya** setelah pengguna membalas "ya" atas ringkasan rencana (Langkah 5b). Sebelum itu semua langkah hanya baca/hitung.
+> 2. **Cek kanal hanya lewat perintah status resmi:** `openclaw channels status` (boleh `--channel telegram`, `--json`) atau tanyakan pemilik. **DILARANG** membuka/membaca file kredensial, secrets, token, `openclaw.json`, `.env`, database/state OpenClaw (mis. `sqlite3`), log Gateway, atau memanggil `secrets.*`/`config.get` untuk mengecek kanal.
+> 3. **Kanal belum siap atau perintah ditolak (`requires credentials`, `token missing`, Gateway mati) → berhenti sekali, jangan dicoba lagi.** Beri panduan singkat (Langkah 4) dan akhiri giliran dengan balasan; jangan mencoba-coba jalur lain.
+> 4. **Ringkas:** paling banyak 1 kali cek kanal per giliran; jangan mengulang perintah yang sudah gagal.
+
 ## Tujuan
 Membuat pengguna OpenClaw yang awam teknologi punya laporan rutin (penjualan, kas,
 stok, piutang, ringkasan bulanan) yang **otomatis terkirim** ke Telegram atau WhatsApp
@@ -117,7 +123,9 @@ lalu yang lupa diganti) tidak lolos tanpa peringatan dan terkirim ulang seolah d
    diminta>" dan hentikan (sama seperti data kosong -- lihat Langkah 2), jangan diam-diam
    mengirim angka yang cakupannya berbeda dari yang dijanjikan ke pengguna.
 3. Ambil angka-angka kunci dari output JSON script itu (JANGAN mengarang atau membulatkan
-   sendiri -- salin apa adanya).
+   sendiri -- salin apa adanya). **Label hitungan harus tepat:** jumlah nota/baris dan jumlah
+   barang (pcs) adalah dua angka berbeda -- tulis "57 nota / 110 pcs", bukan "57 item" (aturan
+   lengkap di `templates/RESEP-penjualan.md`).
 4. Susun JSON pesan (lihat skema di `scripts/susun_pesan.py`, bagian atas file) berisi maksimal
    4-6 baris angka utama + 1 daftar pendek (mis. 3-5 produk terlaris) -- **tanpa nama/kontak
    pelanggan perorangan**, sesuai UU PDP. Isi `catatan` dengan hal netral (mis. cakupan periode),
@@ -158,11 +166,24 @@ lalu yang lupa diganti) tidak lolos tanpa peringatan dan terkirim ulang seolah d
   arahkan ke `broadcast-wa` (dikirim manual/resmi, bukan otomatis).
 
 ### 5. Buat jadwal (SELALU minta izin eksplisit sebelum menjalankan perintah)
-Ringkas dulu ke pengguna: laporan apa, dari data mana, jadwal & zona waktu, dikirim ke kanal &
-tujuan apa. Minta konfirmasi "Lanjut? (ya/tidak)", lalu **berhenti dan tunggu balasan** (permintaan
-awal bukan persetujuan). Perintah ditolak (`requires credentials`, `token missing`, Gateway mati) →
-berhenti, beri langkah persiapan; jangan menyelidiki kredensial. Setelah "ya", jalankan (lihat
-`references/openclaw.md` §1-§2 untuk semua opsi & alasan pemilihannya; Windows: `python`/`py`):
+Berlaku untuk **semua** cara membuat jadwal: CLI `openclaw automations add`/`cron add` maupun
+tool agent (mis. `cron.add`). Urutan wajib, tidak boleh dilompati:
+
+a. **Cek kanal (satu kali, hanya baca):** `openclaw channels status --channel telegram` (atau
+   tanyakan pemilik/minta ia melihat Control UI `Settings → Channels`). Jangan cek dengan cara
+   lain (lihat Aturan aksi 2). Kanal tidak "running"/belum dikonfigurasi, atau ID chat tujuan
+   belum diketahui → **berhenti**: beri panduan singkat Langkah 4 (bot @BotFather → pengguna
+   sendiri mengetik `channels add` di terminal → kirim "halo" ke bot → beri tahu ID chat), lalu
+   akhiri giliran. **Jangan** mengirim pesan uji untuk "memastikan" kanal. Pengakuan pengguna
+   "sudah tersambung" → cek ulang sekali dengan perintah yang sama; masih belum → ulangi panduan.
+b. **Tampilkan ringkasan rencana** dalam satu pesan: isi laporan, sumber data, jadwal (hari &
+   jam, `Asia/Jakarta`), kanal & ID tujuan, perintah yang akan dijalankan, dan bahwa sesudahnya
+   akan ada **satu uji kirim** (Langkah 6). Akhiri dengan "Lanjut? (ya/tidak)".
+c. **Berhenti dan tunggu "ya".** "Lanjut bikin jadwalnya", "gas", "sudah tersambung", atau
+   permintaan awal yang diucapkan **sebelum** ringkasan ditampilkan **bukan** persetujuan.
+
+Setelah "ya", jalankan (lihat `references/openclaw.md` §1-§2 untuk semua opsi; Windows:
+`python`/`py`). Perintah ditolak → Aturan aksi 3 (berhenti, jangan selidiki kredensial):
 
 ```bash
 openclaw automations add "<jadwal cron, mis. 0 7 * * 1>" \
@@ -193,6 +214,8 @@ sempat dicatat, cari lagi dengan `openclaw automations list --json` (cocokkan le
 nama persis selain id).
 
 ### 6. Uji sekali sebelum aktif
+Hanya setelah "ya" di Langkah 5c (uji kirim sudah disebut di ringkasan); ini satu-satunya
+pesan uji -- jangan mengirim "test koneksi" terpisah.
 ```bash
 openclaw automations run <id> --wait
 ```
@@ -251,6 +274,9 @@ lihat/jeda/hapus jadwal (pakai `id`) → ingatkan syarat komputer menyala.
       atau sudah ditinjau ulang bersama pengguna sampai aman.
 - [ ] Penerima adalah pemilik/admin sendiri, bukan grup/pelanggan.
 - [ ] Kalau kanal WhatsApp: nomor terpisah + persetujuan risiko tertulis sudah didapat.
+- [ ] Kanal tujuan sudah dicek tersedia (`openclaw channels status`), ringkasan jadwal sudah
+      ditampilkan, dan pengguna menjawab "ya" **sebelum** jadwal dibuat (CLI maupun `cron.add`).
+- [ ] Label hitungan tepat: "<N> nota / <Q> pcs" (atau "<N> baris penjualan"), tidak "<N> item".
 - [ ] `id` jadwal (dari hasil `automations add`) sudah dicatat.
 - [ ] Jadwal sudah diuji sekali (`automations run <id> --wait`) dan hasilnya sesuai sebelum
       dianggap aktif.
@@ -258,7 +284,7 @@ lihat/jeda/hapus jadwal (pakai `id`) → ingatkan syarat komputer menyala.
 - [ ] Pengguna sudah diberi tahu jadwal butuh komputer menyala terus + opsi-opsinya.
 
 ## Batasan & penanganan error
-- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+- **Kredensial, kanal & aksi (wajib):** ikuti Aturan aksi di atas: tanpa membaca token/secrets/`openclaw.json`/`.env`/database/log OpenClaw atau environment (`env`, `printenv`); cek kanal hanya `openclaw channels status` atau tanya pemilik; tidak ada kirim pesan (termasuk uji) dan tidak ada jadwal sebelum "ya" atas ringkasan rencana; kanal belum siap/perintah ditolak → panduan singkat, berhenti, jangan dicoba-coba.
 - **Data tidak ada/kosong → tidak pernah mengirim angka nol.** Selalu jalankan
   `cek_sumber_data.py` dulu; kalau tidak siap, hentikan proses dan tunjukkan pesannya apa
   adanya. Prompt automation juga sudah diberi instruksi eksplisit untuk melakukan hal yang sama

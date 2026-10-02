@@ -27,7 +27,7 @@ standar), bukan ditebak.
 - Ringkasan harian semua alat lokal Komunitech (kasir, stok, absensi) → `laporan-harian-usaha`.
 - Laporan keuangan/laba rugi → `laporan-keuangan-emkm`; proyeksi kas → `arus-kas-13minggu`.
 - Menyusun laporan kejadian yang **sudah** terjadi (kronologi, dampak, minta maaf) →
-  `laporan-insiden-usaha` (skill ini merujuk ke sana bila peringatan berujung kerugian/komplain).
+  `laporan-insiden-usaha` (skill ini merujuk ke sana hanya bila terpasang, dan bila peringatan berujung kerugian/komplain).
 - Ramalan penjualan bulanan/tahunan, perencanaan produksi, atau "pasti terjadi" → jelaskan jujur
   bahwa skill ini hanya peringatan statistik jangka pendek (≤ 7 hari).
 - Data pasien/diagnosis, data per karyawan yang menyebut nama untuk dinilai → hanya angka
@@ -99,14 +99,18 @@ Dari JSON, periksa sebelum melapor:
   yang dipakai dan periodenya dari JSON (mis. "Sumber: `log-produksi.csv`, data 1–29 Sep 2026, 29 hari").
   Pakai hanya file yang diberikan/ditunjuk pengguna; bila ada beberapa kandidat, tanyakan — jangan memilih diam-diam.
 - `--nama-usaha` hanya diisi dengan nama yang **disebut pengguna**; jangan menebak dari nama file/folder.
-- Tampilkan `laporan_teks` (output mode teks) **apa adanya** — itu versi siap kirim Telegram
-  (± 30 baris, tanpa tabel markdown supaya rapi di HP). Jangan mengubah angka, warna, atau alasan.
+- **WAJIB: tempel `laporan_teks` (output mode teks) persis apa adanya di dalam satu blok kode**
+  — itu versi siap kirim Telegram (± 30 baris, tanpa tabel markdown supaya rapi di HP). Jangan
+  menyunting satu kata pun: tidak mengubah angka, warna, alasan, judul, butir cek, atau frasa
+  seperti "(2 dari 3 hari terakhir)"; tidak menambah nama usaha yang tidak disebut pengguna.
+  Bila perlu menambah atau mengoreksi, tulis **catatan terpisah di bawah blok** (mis. "Catatan
+  agent: …"), bukan di dalam laporan.
 - Di bawahnya (di luar pesan siap kirim), tambahkan maksimal 3 kalimat analisis dari agent:
   kaitkan peringatan dengan `catatan_hari_ini` (JSON) bila relevan — **tanpa menyebut nama orang** (mis. "reject naik
   sejak 26 Sep, bersamaan dengan catatan 'tepung merk baru' 28 Sep — cek ini lebih dulu"), tanpa
   menyatakannya sebagai penyebab pasti.
 - Tawarkan langkah lanjut: (a) isi 5 kenapa bersama tim untuk peringatan 🔴 teratas,
-  (b) bila sudah ada kerugian/komplain → `laporan-insiden-usaha`, (c) jadwal harian (Langkah 4).
+  (b) bila sudah ada kerugian/komplain → catat kronologi tertulis (bila skill `laporan-insiden-usaha` terpasang, tawarkan memakainya), (c) jadwal harian (Langkah 4).
 
 ### 4. (Opsional) Jadwal harian di OpenClaw
 Ikuti `references/jadwal-openclaw.md` — pola `openclaw automations add` di sana disalin dari
@@ -131,7 +135,7 @@ Ringkas: <n> 🔴 · <n> 🟠 · <n> 🟡 · <n> normal
 ❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
 <Metrik>: • 3 pertanyaan (bahan/mesin/orang/cara kerja/pengukuran)
 5 kenapa: Kenapa <metrik> naik? → karena … → …
-Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).
+Kalau sudah ada kerugian/komplain pelanggan: catat kronologi & dampaknya secara tertulis (bila skill laporan-insiden-usaha terpasang, pakai itu).
 
 ℹ️ Data: <hari kosong, baris dilewati, pencilan>
 Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.
@@ -152,6 +156,19 @@ Aturan warna & ambang lengkap: `references/cara-kerja-aturan.md`.
 ```
 
 ## Batasan & penanganan error
+- **Kanal & penerima (wajib):** laporan hanya **draf untuk pemilik/pengguna sendiri**, dikirim
+  lewat kanal yang **sudah** dikonfigurasi pengguna (Telegram default; WhatsApp hanya ke nomor
+  pemilik sendiri) atau disalin manual. **Jangan** memeriksa, mendaftar, atau menyetel kanal,
+  plugin, percakapan, atau sesi (mis. `plugins`, `conversations_list`, `sessions_list`, pairing
+  WhatsApp/Telegram) dan **jangan menawarkan** pengiriman ke grup karyawan, pelanggan, atau
+  pihak ketiga. Diminta "kirim ke grup WA staf" → jawab: "Saya siapkan drafnya untuk Bapak/Ibu;
+  silakan Bapak/Ibu sendiri yang memutuskan dan meneruskannya." Untuk jadwal, ikuti Langkah 4.
+- **Tidak menyalahkan orang (wajib):** diminta mencari/menegur "siapa yang salah" → jangan
+  menuduh atau menyebut nama siapa pun tanpa bukti. Sajikan **fakta** dari laporan (angka,
+  tanggal mulai berubah, catatan yang bersamaan) + **pertanyaan klarifikasi** netral (bahan,
+  mesin, cara kerja, pengukuran, jadwal) untuk dibahas bersama tim. Draf pesan ke tim, bila
+  diminta, berisi ajakan mencari penyebab bersama — bukan teguran/tuduhan — dan tetap diserahkan
+  ke pemilik untuk dikirim sendiri.
 - **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Bukan ramalan pasti.** Peringatan = "angka ini tidak biasa, layak dicek". Proyeksi hanya
   garis lurus 7 hari (ditulis "perkiraan kasar"). Jangan pernah menulis "pasti", "dijamin", atau
@@ -166,8 +183,11 @@ Aturan warna & ambang lengkap: `references/cara-kerja-aturan.md`.
 - **Angka teks** (`1.250`, `1,2rb`, `Rp 9.000.000`, `9,1jt`, `2,5%`) dibaca otomatis. `1,250`
   (koma + 3 angka) dibaca 1250 dan dilaporkan sebagai ambigu. Sel yang tidak terbaca atau negatif
   diabaikan dan dihitung di `sel_rusak` — sampaikan ke pengguna.
-- **Pencilan lama** (mis. hari listrik padam) dibuang sekali dari garis dasar dan disebut di
-  laporan; hari khusus sebaiknya dikeluarkan dengan `--abaikan-tanggal`.
+- **Pencilan lama** (|z| > 3, **lebih dari 7 hari** sebelum hari laporan, mis. hari listrik
+  padam) dibuang sekali dari garis dasar dan disebut beserta tanggalnya di laporan. Angka ekstrem
+  dalam 7 hari terakhir **tidak** dibuang (bagian tren berjalan). Garis dasar < 14 angka (data
+  pendek): tidak ada yang dibuang, laporan menyebut data masih sedikit. Hari khusus sebaiknya
+  dikeluarkan dengan `--abaikan-tanggal`.
 - **Musiman** (Ramadan, Lebaran, akhir tahun, tanggal gajian) wajar memicu peringatan; ingatkan
   pengguna bila periodenya bertepatan.
 - **Tanpa Python:** jangan mengarang σ atau tren. Hitung manual hanya rata-rata 7 hari, banding
@@ -181,6 +201,11 @@ Aturan warna & ambang lengkap: `references/cara-kerja-aturan.md`.
   catatan ditulis tanpa nama orang.
 
 ## Riwayat versi
+- **1.0.5** (2026-10-02): hasil uji OpenClaw — larangan memeriksa/menyetel kanal, plugin, sesi
+  & menawarkan kiriman ke grup/pihak ketiga; tidak menyalahkan orang (fakta + pertanyaan
+  klarifikasi); `laporan_teks` wajib ditempel utuh dalam blok kode; pencilan di 7 hari terakhir
+  tidak lagi dibuang dari garis dasar (dulu angka kemarin bisa disebut "angka ekstrem lama") dan
+  baris ℹ️ menyebut tanggalnya; tes regresi data katering uji OpenClaw.
 - **1.0.3** (2026-09-29): selalu menyebut file log & periode yang dipakai; nama usaha tidak pernah dikarang; tabel tempelan disimpan di folder kerja; aturan kerja standar (hasil uji OpenClaw 2026.9.6).
 - **1.0.1 (2026-09-29)** — revisi hasil uji independen (6/10): aturan warna diganti model peluang
   (normal/hitungan Poisson/kejadian/konstan) dengan syarat selisih minimal & bertahan (2σ satu

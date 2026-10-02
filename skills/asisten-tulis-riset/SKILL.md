@@ -1,6 +1,6 @@
 ---
 name: asisten-tulis-riset
-description: Menulis artikel/blog/materi SEO/whitepaper/newsletter/materi presentasi berbasis riset dengan sitasi [1][2] dan daftar pustaka, untuk UMKM, konsultan, profesional, dosen/guru Indonesia — alur brief, rencana riset, kumpul sumber (prioritas BPS/kementerian/OJK-BI/jurnal SINTA), kerangka, draf, revisi. Gunakan saat pengguna minta "tulis artikel", "artikel SEO", "blog post", "whitepaper", "newsletter", "materi presentasi berbasis data", research writing/content writing dengan kutipan, ATAU cek sumber & anti-halusinasi tulisan. TIDAK untuk caption/kalender medsos singkat (pakai caption-sosmed-umkm/kalender-konten-30hari) dan TIDAK untuk menulis tugas kuliah/skripsi yang diserahkan sebagai karya sendiri.
+description: Menulis artikel/blog/SEO/whitepaper/newsletter/materi presentasi berbasis riset dengan sitasi [1][2] dan daftar pustaka, untuk UMKM, konsultan, profesional, dosen/guru Indonesia — brief, kumpul sumber (BPS/kementerian/OJK-BI/SINTA), kerangka, draf, revisi. Gunakan saat pengguna minta "tulis artikel", "artikel SEO", "blog post", "whitepaper", "newsletter", "materi presentasi berbasis data", research writing/content writing dengan kutipan, ATAU cek sumber & anti-halusinasi tulisan. TIDAK untuk caption/kalender medsos singkat (pakai caption-sosmed-umkm/kalender-konten-30hari) dan TIDAK untuk menulis tugas kuliah/esai/makalah/skripsi yang dikumpulkan sebagai karya sendiri. BACA JUGA saat pengguna menyebut "bikinin esai", "tugas kuliah", "makalah", "skripsi", "paper": TOLAK menulis draf/esai utuh apa pun (termasuk draf "untuk ditulis ulang/dibumbui"); hanya bantu kerangka, sumber, umpan balik/sunting tulisan pengguna sendiri, atau parafrase dengan kutipan.
 ---
 
 # Asisten Tulis Riset
@@ -62,7 +62,8 @@ tujuan, panjang). Jika pengguna ingin cepat, pakai default dan sebutkan asumsiny
    jujur** ke pengguna di awal (lihat Langkah 3), dan tawarkan dua opsi: (a) pengguna menempelkan
    sumber/data sendiri, atau (b) draf ditulis sebagai kerangka + [perlu sumber] di semua klaim faktual,
    tanpa kutipan dikarang.
-7. Sebelum menyerahkan hasil, jalankan **Checklist Verifikasi** di bagian bawah.
+7. **Tidak ada angka tanpa sumber:** perbandingan biaya/tarif/persentase (mis. "EDC memotong 2-3%") juga wajib `[n]` atau `[perlu sumber]` — jangan ditulis dari ingatan.
+8. Sebelum menyerahkan hasil, jalankan **Checklist Verifikasi** di bagian bawah (bila Python ada, jalankan `scripts/cek_sitasi.py` dan tampilkan ringkas hasilnya di akhir jawaban).
 
 ## Langkah kerja
 
@@ -78,6 +79,11 @@ ringkasannya ke pengguna sebelum lanjut, supaya arah tulisan disepakati dulu.
   jelaskan ini soal integritas akademik, dan tawarkan sebagai gantinya: membantu **menyusun kerangka
   belajar**, **menyunting** draf yang sudah ditulis pengguna sendiri, atau **mencari sumber** yang bisa
   ia baca dan tulis ulang sendiri.
+- **Integritas akademik (keras):** pemicunya juga "bikinin esai", "makalah", "paper", "skripsi", "tugas
+  kuliah", "laporan praktikum". Boleh: kerangka, daftar sumber bersitasi, umpan balik atas tulisan
+  pengguna, parafrase suatu sumber **dengan kutipan**, cara menyitir. Tidak boleh: menulis esai/bab/draf
+  yang dikumpulkan sebagai karya pengguna. **Jangan menawarkan draf utuh untuk "ditulis ulang" atau
+  "dibumbui" — itu tetap ghostwriting.** Juga jangan membantu membuat tulisan "tidak ketahuan AI".
 - Jika topik menyangkut klaim kesehatan/medis, hukum, atau keuangan yang berisiko (mis. "obat ini
   menyembuhkan X", nasihat investasi spesifik): tulis dengan hati-hati, beri disclaimer, dan arahkan ke
   profesional — skill ini tidak menggantikan nasihat medis/hukum/keuangan personal.
@@ -170,6 +176,7 @@ pustaka satu per satu, cari angka tanpa kutipan.
 - [ ] Tidak ada URL/nama sumber/angka yang dikarang
 - [ ] Semua `[n]` di teks cocok dengan daftar pustaka; tidak ada nomor kosong/hilang
 - [ ] Angka/statistik penting semuanya berkutipan `[n]` atau ditandai `[perlu sumber]`
+- [ ] Perbandingan dengan produk/biaya/tarif lain (mis. "EDC 2-3%") juga berkutipan `[n]` atau `[perlu sumber]`
 - [ ] Opini penulis dibedakan jelas dari fakta bersumber
 - [ ] Tanggal data disebutkan (minimal tahun)
 - [ ] Kutipan langsung ≤ 25 kata, ditandai kutip, tidak berlebihan

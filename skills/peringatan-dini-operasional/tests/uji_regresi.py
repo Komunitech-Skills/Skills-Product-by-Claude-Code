@@ -193,9 +193,11 @@ class Statistik(unittest.TestCase):
     def test_pencilan_dibuang_sekali(self):
         # 18 angka 9,11,... (rata 10) + 1 angka 40 di hari ke-19 -> tahap 1: rata 220/19 = 11,5789,
         # sigma 6,955, z(40) = 4,09 > 3 -> dibuang. Tahap 2: rata 10, sigma = akar(18/17) = 1,0290.
-        deret = [9, 11] * 9 + [40] + [10]
+        # v1.0.5: pencilan harus LAMA (>= 7 hari sebelum hari laporan) -> 40 diletakkan di hari ke-11
+        # (9 hari sebelum laporan); isi garis dasar sama (10 x 9/11 + 40 + 8 x 9/11) -> angka sama.
+        deret = [9, 11] * 5 + [40] + [9, 11] * 4 + [10]
         m = metrik(jalankan(tabel(["reject"], {"reject": deret})), "reject")
-        self.assertEqual(m["dasar"]["pencilan_diabaikan"], [(MULAI + timedelta(days=18)).isoformat()])
+        self.assertEqual(m["dasar"]["pencilan_diabaikan"], [(MULAI + timedelta(days=10)).isoformat()])
         self.assertEqual(m["dasar"]["n"], 18)
         self.assertEqual(bulat(m["dasar"]["rata"]), D("10.0000"))
         self.assertEqual(bulat(m["dasar"]["sd"]), D("1.0290"))
@@ -454,6 +456,71 @@ class BerkasDanLaporan(unittest.TestCase):
         self.assertEqual(P.parse_angka(t[1][1]), D("1250.125"))         # sel angka Excel tidak ditafsir ulang
         self.assertEqual(P.parse_angka(t[2][1]), D(1300))
 
+    def test_pencilan_baru_tidak_dibuang(self):
+        # Angka ekstrem 1 hari sebelum laporan = bagian tren berjalan -> tetap di garis dasar.
+        deret = [9, 11] * 9 + [40] + [10]
+        m = metrik(jalankan(tabel(["reject"], {"reject": deret})), "reject")
+        self.assertEqual(m["dasar"]["pencilan_diabaikan"], [])
+        self.assertEqual(m["dasar"]["n"], 19)
+        self.assertEqual(bulat(m["dasar"]["rata"]), bulat(D(220) / 19))   # 11,5789
+
+    def test_data_pendek_tidak_buang_pencilan(self):
+        # < 14 angka garis dasar: tidak ada pencilan dibuang walau ekstrem & lama.
+        deret = [10, 10, 100, 10, 10, 10, 10, 10, 10, 10, 10]
+        h = jalankan(tabel(["reject"], {"reject": deret}))
+        self.assertEqual(metrik(h, "reject")["dasar"]["pencilan_diabaikan"], [])
+        self.assertTrue(h["data_sedikit"])
+
+    KATERING = """tanggal,porsi_terkirim,porsi_rusak,keluhan,telat_kirim,stok_beras_kg,pakai_beras_kg,catatan
+2026-09-04,1.271,12,1,0,933,127,
+2026-09-05,1.239,18,0,0,809,124,
+2026-09-06,libur,,,,,,
+2026-09-07,1.304,10,1,0,679,130,
+2026-09-08,1.234,11,1,0,556,123,
+2026-09-09,1.238,13,0,1,432,124,
+2026-09-10,1.284,10,1,0,1054,128,
+2026-09-11,1.258,20,2,1,928,126,
+2026-09-12,1.237,19,1,0,804,124,
+2026-09-13,libur,,,,,,
+2026-09-14,1.236,13,0,1,680,124,
+2026-09-15,1.247,14,1,0,555,125,
+2026-09-16,1.299,11,1,0,425,130,
+2026-09-17,1.301,20,0,0,1045,130,
+2026-09-18,1.304,19,2,0,915,130,
+2026-09-19,1.277,11,1,0,787,128,
+2026-09-20,libur,,,,,,
+2026-09-21,1.302,10,1,0,657,130,
+2026-09-22,1.293,20,1,0,528,129,
+2026-09-23,1.329,15,1,1,395,133,
+2026-09-24,1.288,15,0,0,1016,129,
+2026-09-25,1.253,13,0,1,891,125,
+2026-09-26,1.268,18,1,0,764,127,
+2026-09-27,libur,,,,,,
+2026-09-28,1.283,34,2,1,632,132,ganti pemasok sayur
+2026-09-29,1.159,41,3,0,508,124,
+2026-09-30,1.131,49,4,0,383,125,
+2026-10-01,1.113,58,5,0,255,128,
+"""
+
+    def test_regresi_katering_openclaw_30_9_tidak_dibuang(self):
+        # Data uji OpenClaw (examples/00-openclaw-sebelum-sesudah.md): v1.0.3 membuang porsi
+        # rusak 30/9 (49) sebagai "angka ekstrem lama" padahal 1 hari sebelum laporan 1/10.
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "log-katering.csv")
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(self.KATERING)
+            args = P.buat_parser().parse_args([p, "--target", "porsi_terkirim=1200",
+                                               "--target", "keluhan=2"])
+            h = P.analisis(P.baca_tabel(p), args)
+            teks = h["laporan_teks"]
+        rs = metrik(h, "porsi_rusak")
+        self.assertEqual(rs["dasar"]["pencilan_diabaikan"], [])
+        # garis dasar = 23 angka 4/9-30/9 termasuk 34, 41, 49 -> rata 416/23 = 18,0870 (manual)
+        self.assertEqual(rs["dasar"]["n"], 23)
+        self.assertEqual(bulat(rs["dasar"]["rata"]), bulat(D(416) / 23))
+        self.assertEqual(rs["level"], 3)  # tetap merah
+        self.assertNotIn("ekstrem lama", teks)
+
     def test_contoh_roti_30_hari(self):
         p = os.path.join(AKAR, "examples", "log-roti-30hari.csv")
         args = P.buat_parser().parse_args([p])
@@ -468,7 +535,7 @@ class BerkasDanLaporan(unittest.TestCase):
         self.assertEqual(bulat(st["rata_pakai"]), D("52.2857"))
         self.assertEqual(st["sisa_hari"], D("3.2"))
         teks = h["laporan_teks"]
-        for frasa in ("🔴 Reject (pcs): 63", "laporan-insiden-usaha", "bukan kepastian"):
+        for frasa in ("🔴 Reject (pcs): 63", "bila skill laporan-insiden-usaha terpasang", "bukan kepastian"):
             self.assertIn(frasa, teks)
         # v1.0.1 (temuan penguji #3): catatan teks tidak dikutip kecuali --sertakan-catatan
         self.assertNotIn("oven 2 suhu tidak stabil", teks)

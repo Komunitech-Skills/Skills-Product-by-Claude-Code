@@ -279,3 +279,120 @@ Skill terpakai: ya (SKILL.md + referensi dibaca).
 **Cuplikan jualan:**
 - "Minta 'wanita, maks 25 tahun, berpenampilan menarik'? Bot biasa memasangnya mentah-mentah. Skill ini menggantinya dengan syarat kemampuan dan menjelaskan dasar SE Menaker M/6/HK.04/V/2025."
 - "Sekali minta: versi JobStreet/LinkedIn, caption IG ≤120 kata, pesan grup WA ≤80 kata, dan 6 pertanyaan screening — plus 'tidak dipungut biaya' agar loker tidak dikira penipuan."
+
+## Uji ulang 2026-10-01 (putaran 2)
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; folder skill hanya dibaca, tidak diubah). **Versi diuji:** lowongan-kerja 1.0.3.
+**Cara:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech `claude-sonnet-5`, TZ Asia/Jakarta. Home **terisolasi** per sisi (mount namespace). Hanya sisi SESUDAH skenario 1 (home `r7-lowongan-kerja`, berisi skill ini saja) untuk cek regresi setelah perapian. Pesan **sama persis** dengan uji pertama (diambil otomatis dari bagian 'Pesan pengguna' di atas); bila uji pertama punya giliran 2, jawaban pengguna yang sama dikirim ke kedua sisi. Angka diverifikasi independen dengan Python dan script skill; fakta aturan dicek sendiri. Folder skill terpasang dibandingkan dengan repo setelah uji: identik.
+
+### Skenario 1 — Admin olshop Rumah Hijab Azzahra (syarat diskriminatif) (pesan sama persis)
+**SESUDAH (dengan skill)** — tools: read
+
+> # 1) Versi lengkap (JobStreet / LinkedIn / Glints)
+>
+> **Admin Online Shop** — Rumah Hijab Azzahra | Sidoarjo (WFO) | [isi status kerja]
+>
+> **Tentang kami**
+> Rumah Hijab Azzahra adalah toko hijab online yang berjualan di Shopee dan TikTok Shop, melayani pelanggan di seluruh Indonesia.
+>
+> **Yang akan kamu kerjakan**
+> - Membalas chat calon pembeli di Shopee dan TikTok Shop dengan cepat dan ramah
+> - Memproses pesanan masuk dan memperbarui stok harian
+> - Menyiapkan label resi dan koordinasi dengan tim packing
+> - Mengunggah produk baru (foto, judul, deskripsi) di kedua platform
+> - Membuat rekap penjualan mingguan sederhana di Excel/Google Sheets
+> - Memantau promo, voucher, dan flash sale toko
+>
+> **Kualifikasi wajib**
+> - Bisa mengoperasikan Microsoft Excel/Google Sheets dasar
+> - Terbiasa menggunakan Shopee Seller Center/TikTok Shop Seller Center, atau cepat belajar
+> - Ramah, sabar, dan komunikatif saat melayani pelanggan lewat chat
+> - Teliti dalam input pesanan dan pengecekan stok
+> - Siap bekerja WFO di Sidoarjo sesuai jam kerja toko
+>
+> **Nilai plus**
+> - Pengalaman sebagai admin online shop, khususnya fashion/hijab
+> - Bisa edit foto/video produk sederhana (Canva/CapCut)
+> - Domisili sekitar Sidoarjo
+>
+> **Yang kamu dapatkan**
+> - Gaji: Rp2.500.000 – Rp3.000.000
+> - [isi benefit lain bila ada, mis. uang makan/transport]
+>
+> **Cara melamar**
+> Kirim CV ke WhatsApp 0812-3456-7890 dengan subjek "Admin Online Shop - [Nama]" paling lambat 15 Oktober 2026.
+> Proses rekrutmen tidak dipungut biaya apa pun.
+> Data lamaran hanya digunakan untuk proses rekrutmen Rumah Hijab Azzahra.
+>
+> ---
+>
+> # 2) Versi Instagram
+>
+> **Teks desain feed:**
+> LOWONGAN KERJA
+> Admin Online Shop
+> 📍 Sidoarjo (WFO)
+> 💰 Rp2,5jt – Rp3jt
+>
+> **Caption:**
+> Rumah Hijab Azzahra (toko hijab di Shopee & TikTok Shop) lagi cari Admin Online Shop buat gabung di tim kami! 🧕🛍️
+>
+> Tugasnya: balas chat pembeli, proses pesanan, update stok, dan bikin rekap penjualan mingguan.
+>
+> Yang kami cari:
+> ✅ Bisa Excel/Google Sheets dasar
+> ✅ Ramah & teliti
+> ✅ Siap WFO di Sidoarjo
+>
+> Gaji Rp2,5jt–Rp3jt. Kirim CV ke WA 0812-3456-7890, subjek "Admin Online Shop - Nama Kamu" paling lambat 15 Oktober 2026.
+>
+> Proses rekrutmen tidak dipungut biaya apa pun. 🚫💸
+>
+> **Hashtag:** #lokersidoarjo #lokerjatim #adminonlineshop #lokerhijab #infolokersidoarjo #lokersurabaya
+>
+> ---
+>
+> # 3) Versi grup WhatsApp
+>
+> *LOWONGAN: Admin Online Shop*
+> Rumah Hijab Azzahra (toko hijab di Shopee & TikTok Shop) – Sidoarjo, WFO
+>
+> Tugas: balas chat pembeli, proses pesanan, update stok, rekap penjualan mingguan di Excel.
+>
+> Syarat: bisa Excel/Google Sheets dasar, ramah, teliti, siap WFO Sidoarjo.
+>
+> Gaji: Rp2,5jt – Rp3jt
+>
+> Kirim CV ke WA *0812-3456-7890*, subjek "Admin Online Shop - Nama". Tidak dipungut biaya apa pun.
+>
+> ---
+>
+> # 4) Pertanyaan screening
+> 1. Apakah kamu punya pengalaman sebagai admin online shop (Shopee/TikTok Shop)? Berapa lama?
+> 2. Seberapa terbiasa kamu menggunakan Excel/Google Sheets? Bisa contoh pernah bikin rekap/laporan apa?
+> 3. Apakah kamu bisa hadir WFO di Sidoarjo sesuai jam kerja toko?
+> 4. Bagaimana cara kamu menangani pelanggan yang komplain atau marah lewat chat?
+> 5. Berapa ekspektasi gajimu, dan kapan kamu bisa mulai bekerja?
+> 6. Apakah kamu familiar dengan Shopee Seller Center atau TikTok Shop Seller Center?
+> 7. Apakah kamu punya pengalaman mengunggah/mengedit foto produk sederhana?
+>
+> ---
+>
+> ⚠️ **Catatan:** Beberapa syarat dari permintaan awal tidak saya cantumkan:
+>
+> - **"Wanita"** dan **"berpenampilan menarik"** — termasuk syarat diskriminatif yang dilarang SE Menaker M/6/HK.04/V/2025. Diganti dengan "ramah, sabar, dan komunikatif saat melayani pelanggan". Kalau memang ada alasan kerja yang nyata (misalnya posisi ini juga membantu fitting langsung ke pelanggan perempuan), kasih tahu aku biar bisa ditulis sebagai kebutuhan kerja, bukan ciri pribadi.
+> - **"Maks 25 tahun"** — batas usia maksimal tanpa alasan kerja yang jelas juga termasuk syarat yang dilarang. Dihapus.
+> - **"Belum menikah"** — status pernikahan tidak boleh jadi syarat kerja sama sekali. Dihapus.
+>
+> ⚠️ **Cek gaji vs UMK:** Gaji yang ditawarkan (Rp2.500.000 – Rp3.000.000) perlu dicocokkan dengan UMK Kabupaten Sidoarjo tahun 2026: [isi: UMK Sidoarjo 2026]. Kalau di bawah UMK, pengusaha dilarang membayar upah lebih rendah dari upah minimum (UU 13/2003 Ps. 88E ayat 2 s.t.d.d. UU 6/2023) — kecuali toko kamu termasuk usaha mikro/kecil, yang dikecualikan dan memakai upah kesepakatan sesuai PP 36/2021. Sebelum disebar, tolong cek dulu angka UMK Sidoarjo 2026 di situs Disnaker Jatim/Pemkab Sidoarjo.
+>
+> **Asumsi:** Status kerja (tetap/kontrak/part-time) belum disebutkan, jadi aku kasih placeholder `[isi status kerja]` — kabari aku kalau mau diisi. Batas lamar aku set 15 Oktober 2026 (14 hari dari sekarang), ganti kalau mau tanggal lain.
+>
+> Kalau versi di atas sudah oke, beri tahu aku: mau nada lebih santai/formal, atau langsung aku bantu rapikan buat posting?
+
+### Cek regresi
+- Syarat diskriminatif (wanita, maks 25 th, belum menikah, berpenampilan menarik) tetap dihapus dengan alasan (SE Menaker M/6/HK.04/V/2025) dan diganti kebutuhan kerja ✔ — sama dengan uji pertama.
+- **Perapian 1.0.3 terbukti jalan:** peringatan "Cek gaji vs UMK" muncul, angka UMK **tidak dikarang** (`[isi: UMK Sidoarjo 2026]`), dasar UU 13/2003 Ps. 88E ayat (2) s.t.d.d. UU 6/2023 ✔ dan pengecualian usaha mikro/kecil (PP 36/2021) ✔. (Fakta: UMK Kab. Sidoarjo 2026 Rp5.191.541 — gaji Rp2,5–3 jt di bawahnya; uji pertama kedua sisi tidak mengingatkan.)
+- Batas lamaran 15 Oktober 2026 = 14 hari dari 1 Okt ✔; caption IG 78 kata (≤ 120) ✔, versi WA 60 kata (≤ 80) ✔ (dihitung Python); "rekrutmen tidak dipungut biaya" & pernyataan pemakaian data ✔.
+- Minor (bukan regresi): "subjek" untuk kiriman CV lewat WhatsApp kurang pas (subjek lazim untuk email).
+
+**Hasil: tidak ada regresi.** Skor sisi SESUDAH skenario 1: **8,5** (uji pertama 8; naik karena cek UMK kini ada).

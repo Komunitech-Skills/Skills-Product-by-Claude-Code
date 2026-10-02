@@ -21,6 +21,7 @@ Hanya library standar Python 3.8+. Contoh:
 import argparse
 import csv
 import json
+import os
 import re
 import sys
 from datetime import datetime, time, timedelta
@@ -37,7 +38,8 @@ KOLOM_NAMA = ["nama", "name", "nama pelanggan", "nama kontak", "customer"]
 KOLOM_NOMOR = ["nomor", "no hp", "no. hp", "nohp", "hp", "no wa", "nomor wa", "whatsapp", "wa", "telepon",
                "telp", "phone", "no telepon", "nomor hp", "handphone"]
 KOLOM_SETUJU = ["persetujuan", "setuju", "izin", "opt-in", "optin", "opt in", "consent", "bersedia",
-                "setuju broadcast", "boleh dihubungi"]
+                "setuju broadcast", "boleh dihubungi", "setuju promo", "izin promo", "boleh promo", "terima promo"]
+KOLOM_SAPAAN = ["sapaan", "panggilan", "sapa", "salam", "sebutan", "sapaan pelanggan", "title", "salutation"]
 KOLOM_BERHENTI = ["berhenti", "opt-out", "optout", "opt out", "stop", "unsubscribe", "tolak"]
 YA = {"ya", "y", "iya", "yes", "setuju", "1", "true", "opt-in", "optin", "ok", "oke", "sudah", "v", "✓", "bersedia", "boleh"}
 # Teks berhenti WAJIB berupa instruksi tindakan: balas/ketik/kirim + STOP/BERHENTI (atau setara).
@@ -269,6 +271,9 @@ def main():
     p.add_argument("--kolom-nomor")
     p.add_argument("--kolom-persetujuan")
     p.add_argument("--kolom-berhenti")
+    p.add_argument("--kolom-sapaan", help="kolom sapaan (Bu/Pak/Kak...). Otomatis terdeteksi: Sapaan, Panggilan, dll.")
+    p.add_argument("--fakta", help="kata-kata pengguna tentang promo (salin persis) untuk cek klaim karangan")
+    p.add_argument("--fakta-file", help="file .txt berisi kata-kata pengguna tentang promo (salin persis)")
     p.add_argument("--saya-pastikan-semua-setuju", action="store_true",
                    help="HANYA jika file tidak punya kolom persetujuan dan kamu yakin semua kontak sudah setuju")
     a = p.parse_args()
@@ -287,6 +292,38 @@ def main():
         galat("Variasi ke-{} belum punya teks cara berhenti. Tambahkan, mis.: "
               "\"Tidak ingin menerima info promo lagi? Balas STOP.\"".format(", ".join(tanpa_optout)))
 
+    # Anti-karang: klaim (stok terbatas, terlaris, halal, gratis ongkir, ...) hanya boleh dari fakta pemilik.
+    # Pemeriksaan ini SELALU berjalan (tidak bisa dilewati): tanpa --fakta, semua klaim dianggap tidak disebut pemilik.
+    ada_fakta = a.fakta is not None or a.fakta_file is not None
+    fakta = ""
+    if ada_fakta:
+        if a.fakta is not None and a.fakta_file is not None:
+            galat("Isi salah satu: --fakta atau --fakta-file.")
+        if a.fakta_file is not None:
+            try:
+                with open(a.fakta_file, encoding="utf-8-sig") as f:
+                    fakta = f.read()
+            except (OSError, UnicodeDecodeError) as e:
+                galat("Gagal membaca --fakta-file: {}".format(e))
+        else:
+            fakta = a.fakta
+        if not fakta.strip():
+            galat("Fakta kosong. Salin kata-kata pengguna tentang promo ke --fakta/--fakta-file.")
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import cek_fakta
+    karang = []
+    for i, v in enumerate(variasi, start=1):
+        for t in cek_fakta.periksa(re.sub(r"\{[^{}]+\}", " ", v), fakta, abaikan={"jam"}):
+            if t["level"] == "GAGAL":
+                karang.append("Variasi {}: {}".format(i, t["pesan"]))
+    if karang:
+        galat("GAGAL cek fakta: ada klaim yang tidak disebut pemilik (jangan dikarang). Pesan BELUM siap kirim:\n- "
+              + "\n- ".join(karang) +
+              ("\nHapus klaim itu atau tanyakan ke pemilik, lalu jalankan ulang." if ada_fakta else
+               "\nHapus klaim itu, atau (bila memang dari pemilik) salin kata-kata pemilik apa adanya ke fakta.txt "
+               "dan jalankan ulang dengan --fakta-file fakta.txt."))
+    cek_klaim = "lulus" if ada_fakta else "belum"
+
     header, baris = baca_kontak(a.kontak)
     if not baris:
         galat("File kontak tidak berisi data.")
@@ -294,6 +331,13 @@ def main():
     k_nomor = cari_kolom(header, KOLOM_NOMOR, a.kolom_nomor, "--kolom-nomor")
     k_setuju = cari_kolom(header, KOLOM_SETUJU, a.kolom_persetujuan, "--kolom-persetujuan")
     k_berhenti = cari_kolom(header, KOLOM_BERHENTI, a.kolom_berhenti, "--kolom-berhenti")
+    k_sapaan = cari_kolom(header, KOLOM_SAPAAN, a.kolom_sapaan, "--kolom-sapaan")
+    if k_nama:
+        tanpa_nama = [str(i + 1) for i, v in enumerate(variasi) if not re.search(r"\{\s*nama\s*\}", v, re.IGNORECASE)]
+        if tanpa_nama:
+            galat("Variasi ke-{} tidak memuat {{nama}}. Versi tanpa nama (untuk daftar siaran WhatsApp Business) jangan "
+                  "dimasukkan ke file pesan untuk kontak personal — tampilkan terpisah di chat saja.".format(
+                      ", ".join(tanpa_nama)))
     if not k_nomor:
         galat("Kolom nomor WA tidak ditemukan. Kolom tersedia: {}. Pakai --kolom-nomor \"Nama Kolom\".".format(
             ", ".join(header)))
@@ -393,6 +437,10 @@ def main():
             continue
         sapaan, nama = pecah_nama(b.get(k_nama) if k_nama else "", a.sapaan_default, a.nama_lengkap)
         nilai = {kunci(h): (b.get(h) or "").strip() for h in header}
+        # Kolom Sapaan milik pemilik (Bu/Pak/Kak...) diutamakan; baru jatuh ke awalan nama/gelar/--sapaan-default.
+        isi_sapaan = (b.get(k_sapaan) or "").strip() if k_sapaan else ""
+        if isi_sapaan:
+            sapaan = SAPAAN.get(_bersih(isi_sapaan), isi_sapaan[:1].upper() + isi_sapaan[1:])
         nilai["nama"], nilai["sapaan"] = nama, sapaan
         kosong = [x for x in dipakai if kunci(x) not in ("nama", "sapaan") and not nilai.get(kunci(x))]
         if kosong:
@@ -487,6 +535,9 @@ def main():
             peringatan.append("Variasi {} cukup panjang ({} karakter); pesan singkat lebih jarang dilaporkan spam.".format(i, len(v)))
         if len(re.findall(r"https?://|www\.", v)) > 1:
             peringatan.append("Variasi {} berisi lebih dari 1 link; cukup 1 link.".format(i))
+    if cek_klaim == "belum":
+        peringatan.append("Tidak ada klaim terlarang yang terdeteksi, tetapi kata-kata pemilik belum diberikan. Jalankan ulang "
+                          "dengan --fakta-file fakta.txt agar klaim yang sah dari pemilik dicocokkan.")
     if a.saya_pastikan_semua_setuju and not k_setuju:
         peringatan.append("Kolom persetujuan tidak ada; pengguna menyatakan semua kontak sudah setuju. "
                           "Simpan bukti persetujuan masing-masing kontak.")
@@ -498,7 +549,9 @@ def main():
         "sebaran_varian": {"varian_{}".format(i + 1): n for i, n in enumerate(jumlah_varian)},
         "jadwal_pertama": hasil[0]["jadwal_kirim"] or None,
         "jadwal_terakhir": hasil[-1]["jadwal_kirim"] or None,
-        "kolom_terdeteksi": {"nama": k_nama, "nomor": k_nomor, "persetujuan": k_setuju, "berhenti": k_berhenti},
+        "kolom_terdeteksi": {"nama": k_nama, "nomor": k_nomor, "persetujuan": k_setuju, "berhenti": k_berhenti,
+                             "sapaan": k_sapaan},
+        "cek_klaim_terhadap_fakta": cek_klaim,
         "daftar_berhenti_terbaca": len(berhenti),
         "daftar_berhenti_tidak_terbaca": stop_tak_terbaca,
         "daftar_berhenti_tidak_cocok_kontak": stop_tak_cocok,

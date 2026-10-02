@@ -54,6 +54,7 @@ Semua bukti memakai `[isi: ...]` bila belum ada.
 ## F. Ceklis klaim sebelum dipakai
 - Testimoni/rating/jumlah pelanggan asli? Bila tidak: buang atau placeholder.
 - Klaim kesehatan, "pasti", "100%", "termurah", "terbaik": ganti dengan hal yang bisa dibuktikan.
+- Tagline/bio jangan menyiratkan khasiat atau hasil ("langsing", "diet", "detoks", "glowing dalam 7 hari") tanpa izin edar BPOM yang mencakup klaim itu dan buktinya; pakai pembeda netral ("teh herbal harian").
 - Komposisi, "alami", "herbal", "100% ...", "tanpa pengawet/pewarna", ukuran/isi: hanya bila disebut pengguna; selain itu `[isi: ...]`.
 - Produk pangan/kosmetik/obat herbal: nomor izin BPOM/PIRT dan sertifikat halal sesuai aturan yang berlaku; cek ke sumber resmi.
 - Nama/tagline: cek pangkalan data merek DJKI dan pencarian sederhana di marketplace/IG.

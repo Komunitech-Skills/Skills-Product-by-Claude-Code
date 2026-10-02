@@ -52,3 +52,7 @@ Menurut Permenko Perekonomian 1/2026 (dicek September 2026): KUR Super Mikro 3%,
 
 **Apakah data saya dikirim ke bank?**
 Tidak. Skill tidak mengisi formulir atau mengirim data ke mana pun. Hitungan berjalan di komputermu sendiri.
+
+## Catatan revisi 1.2.3 (2026-10-01)
+- Balasan chat kini diawali **ringkasan singkat** (cicilan, aman/berat, alternatif, dokumen inti); rincian lengkap ditawarkan bila dibutuhkan.
+- Bila dana dipakai untuk alat (investasi) dan stok (modal kerja), skill menghitung **opsi pisah akad** dengan tenor berbeda (mis. investasi 60 bulan) beserta cicilan dan rasio kemampuan bayarnya.

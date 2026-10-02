@@ -329,6 +329,21 @@ class UjiTemplateTeksOkr(Dasar):
         kode, out = jalan("template", "--tim", os.path.join(TPL, "tim-contoh.csv"), "--keluar", self.dir)
         self.assertEqual(kode, 1)                                          # tidak menimpa tanpa --timpa
 
+    def test_baca_teks_sebut_lokasi_file(self):
+        # Uji ulang OpenClaw 2026-10-01: lokasi file draf harus bisa disebut ke pengguna (path lengkap)
+        keluar = os.path.join(self.dir, "KPI", "draf-2026-09.csv")
+        kode, out = jalan("baca-teks", "--rencana", RENCANA, "--teks", os.path.join(TPL, "pesan-wa-contoh.txt"),
+                          "--periode", "2026-09", "--keluar", keluar)
+        self.assertEqual(kode, 0, out)
+        self.assertTrue(os.path.isabs(out["file"]))
+        self.assertTrue(os.path.isfile(out["file"]))
+        self.assertEqual(os.path.realpath(keluar), out["file"])
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            K.main(["baca-teks", "--rencana", RENCANA, "--teks", os.path.join(TPL, "pesan-wa-contoh.txt"),
+                    "--periode", "2026-09", "--keluar", keluar])
+        self.assertIn("File draf disimpan di: " + out["file"], buf.getvalue())
+
     def test_baca_teks_wa(self):
         kode, out = jalan("baca-teks", "--rencana", RENCANA, "--teks", os.path.join(TPL, "pesan-wa-contoh.txt"),
                           "--periode", "2026-09")

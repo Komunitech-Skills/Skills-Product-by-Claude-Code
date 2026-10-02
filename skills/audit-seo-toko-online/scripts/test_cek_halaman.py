@@ -260,6 +260,14 @@ class TesKataKunci(unittest.TestCase):
         self.assertTrue(hasil["di_url"])
         self.assertTrue(hasil["di_paragraf_awal"])
 
+    def test_url_tanda_hubung_dan_variasi_cocok(self):
+        for url in ("https://a.com/Keripik-Pedas", "https://a.com/keripik_pedas",
+                    "https://a.com/keripik%20pedas", "https://a.com/?q=keripik+pedas"):
+            h = analisis_kata_kunci("keripik pedas", "", [], "", url)
+            self.assertTrue(h["di_url"], url)
+        h = analisis_kata_kunci("keripik pedas", "", [], "", "https://a.com/keripikpedas")
+        self.assertFalse(h["di_url"])
+
     def test_tidak_ditemukan(self):
         hasil = analisis_kata_kunci("servis ac bekasi", title="Toko Kue Enak", headings=[], paragraf_awal="", url=None)
         self.assertFalse(hasil["di_title"])

@@ -18,7 +18,7 @@ Salin struktur ini lalu isi. Detail tiap bagian ada di `SKILL.md` Langkah Kerja 
 | Topik | [topik] |
 | Alokasi waktu | [n] pertemuan × [n] JP ([total menit] menit) |
 | Kompetensi awal | [prasyarat yang harus sudah dikuasai siswa] |
-| Profil Lulusan yang dituju | [1–2 dimensi paling relevan, sebut juga padanan Profil Pelajar Pancasila bila sekolah masih pakai istilah itu] |
+| Profil Lulusan yang dituju | [1–2 dimensi paling relevan, nama persis sesuai references/dasar-kurikulum.md, sebut juga padanan Profil Pelajar Pancasila bila sekolah masih pakai istilah itu] |
 | Sarana & prasarana | [alat/bahan yang benar-benar dipakai — harus sama dengan yang disebut di kegiatan] |
 | Target peserta didik | [reguler / dengan kebutuhan khusus / pencapaian tinggi, dst.] |
 | Model pembelajaran | [tatap muka / PJJ / blended] |

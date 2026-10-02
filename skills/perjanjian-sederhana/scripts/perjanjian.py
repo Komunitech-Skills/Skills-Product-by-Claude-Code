@@ -257,7 +257,14 @@ def cmd_retainer(a):
 
 
 def cmd_tanggal(a):
-    d = parse_tanggal(a.tanggal) if a.tanggal else date.today()
+    if not a.tanggal:
+        # Tanggal tanda tangan TIDAK diisi otomatis (hari ini belum tentu hari penandatanganan).
+        return {"tanggal": None, "hari": None, "tanggal_panjang": "[isi: tanggal]",
+                "kalimat_pembuka": "Pada hari ini, [isi: hari], tanggal [isi: tanggal] bulan [isi: bulan] tahun "
+                                   "[isi: tahun]",
+                "catatan": "Tanggal penandatanganan tidak diberikan, jadi dibiarkan kosong untuk diisi saat tanda "
+                           "tangan. Jalankan ulang dengan tanggal (mis. tanggal 2026-10-05) bila sudah pasti."}
+    d = parse_tanggal(a.tanggal)
     kalimat = "Pada hari ini, {}, tanggal {} bulan {} tahun {} ({})".format(
         HARI[d.weekday()], terbilang(d.day), BULAN[d.month - 1], terbilang(d.year),
         d.strftime("%d-%m-%Y"))
@@ -466,7 +473,7 @@ def cmd_cek(a):
     teks = re.sub(r"<!--[\s\S]*?-->", "", teks)  # abaikan blok panduan agent
     rendah = teks.lower()
     masalah, info = [], []
-    placeholder = sorted(set(re.findall(r"\[\[[^\]]+\]\]", teks)))
+    placeholder = sorted(set(re.findall(r"\[\[[^\]]+\]\]|\[isi:[^\]\n]*\]", teks)))
     if placeholder:
         masalah.append("Masih ada {} isian kosong: {}".format(len(placeholder), ", ".join(placeholder[:15]) +
                                                               (" ..." if len(placeholder) > 15 else "")))
@@ -542,6 +549,8 @@ def cetak_teks(perintah, h):
         o.append(h["catatan"])
     elif perintah == "tanggal":
         o.append(h["kalimat_pembuka"])
+        if h.get("catatan"):
+            o.append(h["catatan"])
     elif perintah == "termin":
         o.append("Total: {} ({})".format(h["total_teks"], h["total_terbilang"]))
         for t in h["termin"]:

@@ -82,9 +82,9 @@ isi sisanya dengan default, dan sebutkan asumsinya — kecuali jenjang/kelas mas
    sama dengan total menit pertemuan itu (lihat Langkah 10 untuk verifikasinya).
 7. **Tentukan Profil Lulusan** (istilah terbaru, 8 dimensi) yang relevan — sebutkan juga
    padanan Profil Pelajar Pancasila (6 dimensi lama) bila guru/sekolah masih memakai
-   istilah itu. Ambil 1–2 dimensi yang paling relevan, jangan menempel semuanya asal.
+   istilah itu. Tulis nama dimensi **persis** seperti daftar di `references/dasar-kurikulum.md` (mis. "Penalaran Kritis", bukan "Bernalar Kritis"; "Bernalar Kritis" hanya sebagai padanan lama). Ambil 1–2 dimensi yang paling relevan, jangan menempel semuanya asal.
 8. **Rancang asesmen** diagnostik (awal), formatif (selama kegiatan), dan sumatif (akhir) —
-   masing-masing dengan instrumen konkret, bukan sekadar nama jenisnya.
+   masing-masing dengan instrumen konkret, bukan sekadar nama jenisnya. **Slot waktu sumatif harus konsisten:** bila sumatif dikerjakan di dalam pertemuan, sisakan menitnya di rincian kegiatan (ikut dijumlahkan); bila tidak muat, tulis jelas "sumatif dilaksanakan di pertemuan/jam terpisah (di luar alokasi ini)".
 9. **Rancang diferensiasi** (pengayaan & remedial, konten/proses/produk) mengikuti
    `references/panduan-mapel.md` §Diferensiasi.
 10. **Verifikasi alokasi waktu.** Bila Python 3 tersedia, jalankan:
@@ -148,6 +148,8 @@ Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan gur
 - [ ] Setiap alat/bahan di Sarana-Prasarana benar-benar dipakai di suatu kegiatan
 - [ ] Ada minimal 1 konteks lokal Indonesia yang konkret (bukan generik)
 - [ ] Asesmen diagnostik, formatif, sumatif masing-masing ada instrumennya
+- [ ] Slot waktu sumatif konsisten (menitnya ada di rincian kegiatan, atau ditulis "di pertemuan terpisah")
+- [ ] Nama dimensi Profil Lulusan persis sesuai `references/dasar-kurikulum.md` (Penalaran Kritis, dst.)
 - [ ] Kunci jawaban LKPD/soal sudah dihitung ulang, bukan ditulis kira-kira
 - [ ] Rubrik punya skor eksplisit dan cara menghitung nilai akhir
 - [ ] Tidak ada soal yang meniru/berbau ujian nasional-ANBK bocoran

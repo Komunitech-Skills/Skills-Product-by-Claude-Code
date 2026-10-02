@@ -354,3 +354,478 @@ Skill terpakai: ya (SKILL.md dibaca; script dijalankan di giliran 2). Kedua sisi
 **Cuplikan jualan:**
 - "Konsultan/freelancer yang terlanjur bayar 0,5%? Bot biasa bilang 'nihil'. Skill ini mengenali pekerjaan bebas, menghitung simulasi NPPN (kurang bayar Rp14.400.000), dan memperingatkan risiko 'dianggap pembukuan'."
 - "Angka SPT dihitung script, langsung dipetakan ke bagian Coretax — bukan formulir 1770 S yang sudah dihapus."
+
+## Uji ulang 2026-10-01 (putaran 2)
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; folder skill hanya dibaca, tidak diubah). **Versi diuji:** spt-tahunan-op 1.0.3.
+**Cara:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech `claude-sonnet-5`, TZ Asia/Jakarta. Home **terisolasi** per sisi (mount namespace). SEBELUM = home tanpa skill (`r7k-spt-tahunan-op`), SESUDAH = home berisi skill ini saja (`r7-spt-tahunan-op`); kedua sisi dijalankan **ulang** dan dibuat ulang bersih per skenario. Pesan **sama persis** dengan uji pertama (diambil otomatis dari bagian 'Pesan pengguna' di atas); bila uji pertama punya giliran 2, jawaban pengguna yang sama dikirim ke kedua sisi. Angka diverifikasi independen dengan Python dan script skill; fakta aturan dicek sendiri. Folder skill terpasang dibandingkan dengan repo setelah uji: identik.
+
+### Skenario 1 — Pindah kerja, 2 A1, K/2, belum lapor (pesan sama persis)
+**SEBELUM (tanpa skill) — giliran 1** — tools: (tidak ada)
+
+> Ya, kurang bayar. Berikut rinciannya:
+>
+> **1. Penghasilan Neto Setahun**
+> - Kantor lama (Jan–Jun): Rp72.000.000
+> - Kantor baru (Jul–Des): Rp84.000.000
+> - **Total neto: Rp156.000.000**
+>
+> **2. PTKP (status K/2 — kawin, 2 anak)**
+> - WP sendiri: Rp54.000.000
+> - Status kawin: Rp4.500.000
+> - 2 anak (@Rp4.500.000): Rp9.000.000
+> - **Total PTKP: Rp67.500.000**
+>
+> **3. Penghasilan Kena Pajak (PKP)**
+> 156.000.000 − 67.500.000 = **Rp88.500.000**
+>
+> **4. PPh Terutang Setahun (tarif Pasal 17 UU HPP)**
+> - 5% × 60.000.000 = Rp3.000.000
+> - 15% × 28.500.000 (sisa) = Rp4.275.000
+> - **Total PPh terutang: Rp7.275.000**
+>
+> **5. PPh 21 yang Sudah Dipotong**
+> 1.200.000 + 1.950.000 = **Rp3.150.000**
+>
+> **6. Kurang Bayar (PPh Pasal 29)**
+> 7.275.000 − 3.150.000 = **Rp4.125.000**
+>
+> Jadi kamu kurang bayar **Rp4.125.000**.
+>
+> Kenapa kurang? Karena kantor baru biasanya hanya menghitung PPh 21 dari penghasilan di kantor itu saja (disetahunkan dari Juli–Des), tidak menggabungkan dengan penghasilan dari kantor lama — jadi pemotongan totalnya jadi lebih kecil dari yang seharusnya terutang setahun penuh.
+>
+> **Yang perlu dilakukan sebelum lapor SPT:**
+> 1. Buat kode billing di DJP Online untuk setor kekurangan Rp4.125.000 (kode akun 411125, jenis setoran 200 - PPh Pasal 29 OP).
+> 2. Bayar lewat e-Billing (ATM/bank/DJP Online).
+> 3. Setelah bayar, baru lapor e-Filing SPT 1770 S dengan menggabungkan kedua bukti potong A1.
+> 4. Deadline lapor SPT OP: **31 Maret 2026**. Kalau telat lapor, ada denda Rp100.000; kalau telat bayar setelah 31 Maret, kena bunga per bulan dari tanggal jatuh tempo.
+>
+> Mau aku bantu hitungkan juga detail kode akun/jenis setoran e-Billing-nya, atau bantu susun pengisian 1770 S-nya?
+**SESUDAH (dengan skill) — giliran 1** — tools: read, exec
+
+> ## Hitungan SPT Tahunan PPh OP — Tahun Pajak 2025 (status K/2)
+>
+> **1. Penghasilan neto**
+> | Sumber | Neto |
+> |---|---|
+> | Kantor lama (Jan–Jun, A1) | Rp72.000.000 |
+> | Kantor baru (Jul–Des, A1) | Rp84.000.000 |
+> | **Total neto** | **Rp156.000.000** |
+>
+> **2. PTKP & PKP**
+> - PTKP K/2 = 54jt + 4,5jt (kawin) + 2×4,5jt (anak) = **Rp67.500.000**
+> - PKP = 156.000.000 − 67.500.000 = **Rp88.500.000**
+>
+> **3. PPh terutang (tarif Pasal 17)**
+> - 5% × 60jt = Rp3.000.000
+> - 15% × 28,5jt = Rp4.275.000
+> - **Total PPh terutang: Rp7.275.000**
+>
+> **4. Kredit pajak (PPh 21 yang sudah dipotong)**
+> - Kantor lama: Rp1.200.000
+> - Kantor baru: Rp1.950.000
+> - **Total kredit: Rp3.150.000**
+>
+> **5. Hasil: KURANG BAYAR**
+> Rp7.275.000 − Rp3.150.000 = **Rp4.125.000 harus disetor (PPh Pasal 29)** sebelum lapor.
+>
+> **Kenapa kurang bayar padahal sudah dipotong dua kali?** Masing-masing kantor menghitung PPh 21 bulanan pakai PTKP penuh dan tarif rendah seolah itu satu-satunya penghasilanmu setahun. Begitu dua penghasilan digabung di SPT tahunan, sebagian penghasilan naik ke lapisan tarif 15%, jadi ada selisih pajak yang belum terpotong di manapun. Ini normal untuk orang yang pindah kerja di tengah tahun, bukan tanda ada kesalahan.
+>
+> ⚠️ **Status batas waktu:** Batas lapor normal 31 Maret 2026, dan masa penghapusan sanksi (KEP-55/PJ/2026) berakhir 30 April 2026. Karena hari ini sudah 1 Oktober 2026, **kedua batas itu sudah lewat**. Konsekuensinya kalau belum lapor sama sekali:
+> - Denda telat lapor SPT Tahunan OP: **Rp100.000** (ditagih lewat STP, bukan dibayar sendiri di muka)
+> - Kurang bayar Rp4.125.000 kena **bunga keterlambatan per bulan** sejak 1 April 2026 (tarif bulanan KMK, tidak dihitung di sini — biasanya di kisaran 0,5–2%/bulan tergantung periode, cek tarif terbaru saat bayar)
+> - Semakin cepat lapor & bayar, makin kecil akumulasi bunganya — jangan ditunda lagi.
+>
+> **Peta ke Coretax**
+> - 2 bukti potong A1 → Lampiran 1 (biasanya sudah terisi otomatis dari sistem DJP)
+> - Neto, PTKP, PKP, PPh terutang → Induk Bagian B & C
+> - Kredit pajak & kurang bayar → Induk Bagian D & E
+>
+> **Langkah berikutnya**
+> 1. Login Coretax, cek kedua bukti potong A1 sudah muncul dengan angka yang sama persis seperti di atas.
+> 2. Pastikan status PTKP di sistem = K/2 (kawin, 2 tanggungan) sesuai keadaan 1 Januari 2025.
+> 3. Buat kode billing untuk PPh Pasal 29 Rp4.125.000 **+ bunga keterlambatan** (sistem Coretax/DJP biasanya menghitung otomatis saat bikin billing terlambat; kalau tidak muncul otomatis, tanya KPP/Kring Pajak).
+> 4. Bayar, baru kirim SPT. Siapkan juga daftar harta & utang per 31 Desember 2025, serta data tanggungan (NIK 2 anak).
+>
+> **Checklist dokumen**: akun Coretax aktif, 2 lembar bukti potong A1, daftar harta & utang 31 Des, data keluarga/tanggungan, saldo untuk bayar Rp4.125.000 + bunga.
+>
+> _Ini alat bantu hitung, bukan konsultan pajak. Bunga keterlambatan belum dihitung nominalnya — cocokkan dengan kode billing Coretax atau tanya Kring Pajak 1500200 / konsultan pajak terdaftar sebelum bayar & lapor._
+
+### Skenario 2 — Konsultan IT pakai 0,5%, tanpa NPPN (pesan sama persis)
+**SEBELUM (tanpa skill) — giliran 1** — tools: tool_search, web_fetch, tool_call
+
+> Saya coba cross-check ke situs resmi DJP & beberapa sumber pajak tadi, tapi semua akses web gagal (network/sandbox limitation). Jawaban di bawah saya susun dari pengetahuan yang sudah solid soal PP 23/2018 jo. PP 55/2022 (PPh Final UMKM) dan UU HPP — tapi ada 1 hal yang perlu kamu konfirmasi sendiri ke saya biar hitungannya pasti (lihat poin 1).
+>
+> **1. Cek dulu: kamu mungkin malah overpay PPh Final bulanan**
+> Sejak PP 55/2022, untuk WP **orang pribadi**, omzet sampai dengan **Rp500 juta dalam 1 tahun pajak TIDAK dikenai PPh Final 0,5% sama sekali** — bukan dipotong dari tarif, tapi memang dibebaskan. Omzet kamu setahun Rp380 juta, masih di bawah Rp500 juta.
+>
+> Kalau selama ini kamu setor 0,5% × omzet **tiap bulan tanpa menghitung akumulasi dari Rp0**, kemungkinan besar seharusnya **nihil** sepanjang 2025 (karena kumulatif belum pernah tembus Rp500 juta). Kalau itu yang terjadi, setoran yang sudah kamu bayar itu lebih bayar — bisa diajukan kompensasi/pindah buku atau restitusi lewat SPT Tahunan.
+>
+> Pertanyaan balik: pas hitung setoran bulanan, apa kamu pakai sistem kumulatif (cek akumulasi omzet Jan–bulan berjalan, baru kena 0,5% kalau sudah lewat 500jt), atau langsung 0,5% dari omzet bulan itu tanpa cek threshold? Ini penting biar saya bisa pastikan status lebih/kurang bayarnya.
+>
+> **2. Jangka waktu pakai tarif final 0,5% ada batasnya: 7 tahun pajak (untuk OP)**
+> Dihitung sejak tahun terdaftar jadi WP (kalau terdaftar sebelum 2018, dihitung sejak 2018). Kalau tahun 2025 ini kamu sudah lewat 7 tahun pakai skema final, harusnya kamu sudah pindah ke skema normal (Pasal 17 progresif) sejak awal 2025, bukan 0,5% lagi.
+> → Kapan kamu pertama kali NPWP terdaftar/mulai usaha konsultan IT ini? Supaya saya bisa pastikan 2025 masih dalam jatah 7 tahun atau tidak.
+>
+> **3. Soal pemberitahuan NPPN — ini sebenarnya beda skema, kemungkinan besar tidak relevan buat kamu**
+> Pemberitahuan penggunaan Norma Penghitungan Penghasilan Neto (NPPN) itu wajib buat WP OP yang **tidak** pakai PPh Final 0,5%, tapi memilih skema normal (tarif Pasal 17) dengan dasar penghasilan neto dihitung pakai persentase norma sesuai KLU (karena malas/tidak mau pembukuan). Itu disampaikan di 3 bulan pertama tahun pajak.
+>
+> Karena kamu selama ini pakai PPh Final 0,5% (PP 23/2018), pemberitahuan NPPN **tidak dibutuhkan** — jadi tidak kirim itu bukan masalah, selama kamu memang masih berhak pakai skema final (lihat poin 2). Kalau ternyata jatah 7 tahunmu sudah habis dan seharusnya pakai skema normal tahun ini, barulah NPPN jadi relevan — dan karena belum pernah kirim pemberitahuan, defaultnya DJP anggap kamu wajib pembukuan (bukan norma), yang administrasinya lebih ribet buat freelancer solo kayak kamu.
+>
+> **4. Soal SPT Tahunan — apa saja yang harus disetor/dilaporkan**
+> Karena PPh Final sifatnya final (tidak digabung dan tidak dihitung ulang pakai tarif progresif di SPT Tahunan), **selama skema final masih berlaku untukmu**, normalnya di SPT Tahunan 1770 kamu:
+> - Tidak ada PPh terutang tambahan dari omzet usaha (sudah final lewat setoran bulanan 0,5%, kalau memang terutang).
+> - Tetap wajib lapor peredaran bruto per bulan + PPh Final yang disetor (ada formulir Lampiran khusus PPh Final UMKM pada 1770).
+> - Wajib lapor daftar harta dan utang per 31 Desember 2025.
+> - Kalau ada penghasilan lain di luar usaha (bunga tabungan/deposito, dividen, hadiah, dll) itu dilaporkan sesuai aturan masing-masing (bunga bank biasanya sudah final dipotong bank, tinggal lapor saja, tidak nambah pajak lagi).
+> - Status lajang tanpa tanggungan (PTKP TK/0) tidak relevan di skema final karena final itu dari omzet bruto, bukan penghasilan neto dikurangi PTKP — PTKP baru dipakai kalau kamu pakai skema normal Pasal 17.
+>
+> **Jadi, singkatnya:** kemungkinan besar kamu **tidak** ada tambahan setoran PPh di SPT Tahunan — justru berpotensi lebih bayar kalau threshold Rp500 juta belum pernah kamu terapkan di setoran bulanan. Tapi saya perlu 2 info dari kamu (cara hitung setoran bulanan, dan tahun pertama NPWP/mulai usaha) biar saya bisa kasih kesimpulan pasti, bukan "kemungkinan besar".
+>
+> Mau saya bantu hitung ulang berdasarkan rincian omzet bulananmu kalau kamu kirim angkanya?
+**SESUDAH (dengan skill) — giliran 1** — tools: read
+
+> Sebelum saya hitung angka pastinya, ada temuan penting dulu:
+>
+> **Konsultan IT termasuk "pekerjaan bebas" (profesi/keahlian), bukan "usaha" biasa.** Menurut PP 55/2022 Pasal 56 (s.t.d.d. PP 20/2026), pekerjaan bebas **tidak boleh** pakai skema PPh final UMKM 0,5% — wajib dihitung pakai NPPN (Norma Penghitungan Penghasilan Neto) atau pembukuan, lalu kena tarif progresif Pasal 17. Jadi setoran 0,5% yang kamu bayar tiap bulan sepanjang 2025 itu **salah skema**, bukan "sudah lunas" seperti UMKM dagang/jasa biasa. Konsekuensinya nanti ada dua bagian: (1) hitung ulang pajak terutang setahun pakai NPPN, (2) uang 0,5% yang sudah disetor tidak bisa dikreditkan — perlu diajukan "pengembalian pajak yang seharusnya tidak terutang" lewat Coretax.
+>
+> Dan soal pemberitahuan NPPN yang belum pernah dikirim — hasil hitungannya nanti tetap bisa saya tunjukkan, tapi berstatus **simulasi** karena DJP bisa menganggap kamu "dianggap memilih pembukuan" kalau tidak memberitahukan NPPN (ini perlu dicek ulang ke AR/KPP, bukan hal yang bisa saya pastikan sendiri).
+>
+> Supaya hitungannya akurat, tolong jawab ini (nomor 1 & 2 paling penting):
+>
+> 1. **Persentase norma (NPPN)** untuk jasa konsultan IT kamu — ini tergantung KLU (kode usaha) & kota domisili usaha di Lampiran PER-17/PJ/2015. Kalau belum tahu kodenya, sebutkan kota + jenis jasa spesifik (mis. konsultan sistem informasi, pengembangan software, IT support), saya bantu cari kodenya — tapi persennya sendiri tidak saya tebak.
+> 2. **Total nominal PPh final 0,5% yang sudah kamu setor sepanjang 2025** (total rupiah yang sudah dibayar, bukan omzetnya).
+> 3. Ada klien korporasi yang memotong **PPh 21 bukan pegawai** (bukti potong BP21) atas fee jasa kamu selama 2025? Kalau ada, berapa total potongannya?
+> 4. Ada zakat yang kamu bayar sendiri ke BAZNAS/LAZ resmi (di luar potongan otomatis)? Kalau tidak ada, saya anggap 0.
+>
+> Kalau mau cepat: cukup jawab #1 dan #2, sisanya saya anggap 0.
+**Giliran 2 — jawaban pengguna (sama di kedua sisi):** "NPWP aku dari 2019. Aku setor 0,5% dari omzet tiap bulan mulai Januari, total setahun Rp1.900.000. Domisili Bandung. Kerjaanku bikin & maintain software/website buat klien, murni jasa konsultan IT, ga ada dagang. Ga ada pembukuan, cuma catatan omzet. Ga ada zakat, klien ga pernah motong pajak. KLU aku ga tau, tolong bantu aja"
+**SEBELUM — giliran 2** — tools: (tidak ada)
+
+> Oke, ini ngebantu banget buat mastiin posisimu. Saya coba re-cek sumber resmi DJP barusan tapi akses web lagi error semua di sisi saya (network gagal total, bukan nemu "tidak ada"), jadi perhitungan di bawah saya susun dari ketentuan PP 23/2018 jo. PP 55/2022 yang saya pegang — dan saya kasih tanda bagian mana yang sebaiknya kamu cross-check lagi ke AR KPP Bandung atau konsultan pajak resmi sebelum submit, karena ini menyangkut uang dan ada tenggat.
+>
+> **1. Temuan paling penting: 2025 adalah TAHUN TERAKHIR kamu boleh pakai final 0,5%**
+> Jatah pakai skema PPh Final 0,5% buat WP Orang Pribadi itu **7 tahun pajak**, dihitung sejak tahun NPWP terdaftar. NPWP kamu 2019 → 2019, 2020, 2021, 2022, 2023, 2024, **2025** = tahun ke-7. Jadi:
+> - SPT Tahunan 2025 (yang mau kamu laporkan sekarang): masih sah pakai final 0,5%, aman.
+> - **Mulai tahun pajak 2026, kamu WAJIB pindah ke skema normal (tarif Pasal 17/progresif)**, final 0,5% udah gak boleh dipakai lagi.
+> - Karena kamu gak ada pembukuan (cuma catatan omzet), kamu **harus kirim Pemberitahuan Penggunaan Norma Penghitungan Penghasilan Neto (NPPN) ke KPP paling lambat akhir Maret 2026** (3 bulan pertama tahun pajak 2026). Kalau gak dikirim, DJP anggap kamu wajib pembukuan penuh — padahal kamu gak punya, ini yang bisa bikin runyam nanti.
+>
+> Jadi pertanyaan "aku gak pernah kirim NPPN" itu **belum jadi masalah untuk SPT 2025 ini**, tapi jadi **urgent untuk awal 2026**. Saya catat ini, nanti saya ingetin lagi mendekati Januari-Maret 2026 kalau kamu mau.
+>
+> **2. Soal setoran bulananmu: kemungkinan besar lebih bayar PENUH**
+> Batas Rp500 juta/tahun pajak itu dihitung **kumulatif dari Rp0 di bulan Januari**, bukan per bulan. Karena total omzet kamu setahun cuma Rp380 juta (gak pernah tembus Rp500 juta kumulatif), **seharusnya PPh Final terutang kamu sepanjang 2025 = Rp0**. Tapi kamu udah setor Rp1.900.000 total (persis 0,5% × 380jt tanpa pengurangan threshold).
+>
+> → Artinya kamu **lebih bayar Rp1.900.000 penuh**. Ini dilaporkan di SPT Tahunan 1770 pada lampiran PPh Final: isi peredaran bruto Rp380.000.000, PPh terutang Rp0, PPh yang sudah disetor Rp1.900.000 → otomatis status jadi Lebih Bayar. Dari situ kamu bisa ajukan pengembalian (restitusi) atau minta dikompensasikan.
+>
+> ⚠️ Bagian ini saya gak bisa re-verifikasi live barusan karena akses internet saya gagal total — mekanisme/batas nominal restitusi dipercepat untuk OP bisa saja ada ketentuan teknis terbaru yang saya belum cek. Saran saya: saat lapor SPT via Coretax DJP atau e-Filing, submit apa adanya (Rp0 terutang, lebih bayar Rp1,9jt), lalu ikuti instruksi sistem soal pengembalian, atau konfirmasi dulu ke AR KPP domisili Bandung — nilainya kecil jadi harusnya prosesnya gak ribet.
+>
+> **3. KLU (Klasifikasi Lapangan Usaha)**
+> Dari deskripsimu "bikin & maintain software/website buat klien", yang paling cocok:
+> - **62010 – Aktivitas Pemrograman Komputer** (develop, build, test, maintain software/website) → ini kandidat utama.
+> - Alternatif: **62020 – Aktivitas Konsultasi Komputer**, kalau porsi kerjamu lebih ke advisory/arsitektur tanpa ngoding langsung.
+>
+> Cek juga KLU yang sudah tercatat di profil NPWP kamu di Coretax DJP (menu profil WP) — kalau beda, sebaiknya disamakan dengan yang kamu pakai di SPT. Kalau pas registrasi dulu kamu gak pernah isi KLU spesifik, pakai 62010 aman untuk kerjaanmu.
+>
+> **4. Klien gak pernah potong pajak — gak masalah besar, tapi ada 1 opsi beresin**
+> Karena kamu pakai skema final 0,5% sendiri, secara teori klien badan usaha "harusnya" potong PPh 23 kecuali kamu kasih **Surat Keterangan PP 23 (bebas potong)** dari KPP. Fakta klien gak pernah motong bukan pelanggaran di pihakmu — itu lebih ke risiko administrasi di sisi klien. Gak perlu diurus mendesak, tapi kalau mau rapi (misal klien korporat mulai nanya-nanya), kamu bisa minta Surat Keterangan itu ke KPP, gratis dan sekali proses, biar urusan potong-memotong jelas ke depannya.
+>
+> **5. Zakat & status lajang tanpa tanggungan**
+> Keduanya gak relevan selama pakai skema final 0,5% — final dihitung dari omzet bruto, bukan penghasilan neto dikurangi PTKP atau zakat. Baru relevan kalau sudah pindah ke skema normal Pasal 17 (mulai 2026).
+>
+> **6. Jangan lupa**
+> SPT Tahunan tetap wajib lampirkan **daftar harta dan utang per 31 Desember 2025**, walaupun pajaknya final.
+>
+> ---
+>
+> **Ringkasan aksi:**
+> 1. Lapor SPT 1770 tahun 2025 dengan PPh Final terutang Rp0, setoran Rp1.900.000 → lebih bayar, ajukan pengembalian/kompensasi.
+> 2. Pakai KLU 62010 (cek dulu kecocokan di profil NPWP).
+> 3. Catat tenggat: Maret 2026 kirim pemberitahuan NPPN ke KPP, karena mulai tahun pajak 2026 kamu wajib pindah skema normal.
+>
+> Kalau mau, saya bisa bantu susun draf perhitungan buat diisi di formulir SPT-nya langsung, atau bikin pengingat otomatis buat tenggat NPPN Maret 2026 ini biar gak kelewat?
+**SESUDAH — giliran 2** — tools: ls, read, tool_search, web_fetch, tool_call, exec
+
+> Sudah saya hitung pakai script resmi skill ini. Catatan dulu soal KLU: pekerjaan "bikin & maintain software/website" cocok dengan KLU **62010 – Kegiatan Pemrograman Komputer** (norma 1151 di lampiran PER-17/PJ/2015). Persentase normanya **50%** — dan uniknya untuk KLU ini persentasenya sama rata di tiga kelompok wilayah (10 ibu kota provinsi termasuk Bandung / ibu kota provinsi lain / daerah lain), jadi domisili Bandung tidak mengubah angka. Saya ambil ini dari artikel yang mengutip langsung lampiran PER-17/PJ/2015 (bukan saya tebak), tapi tetap **sarankan kamu cek ulang kode KLU persisnya di Coretax atau tanya KPP** sebelum lapor, karena saya tidak bisa membuka file lampiran PDF resminya langsung hari ini.
+>
+> ## Hitungan SPT Tahunan PPh OP — Tahun Pajak 2025 (status TK/0, lajang tanpa tanggungan)
+>
+> **1. Penghasilan neto**
+> | Sumber | Neto |
+> |---|---|
+> | Jasa konsultan IT (NPPN 50% × Rp380.000.000) | Rp190.000.000 |
+> | **Penghasilan neto** | **Rp190.000.000** |
+>
+> **2. PTKP & PKP**
+> - PTKP TK/0: Rp54.000.000
+> - PKP = Rp190.000.000 − Rp54.000.000 = **Rp136.000.000**
+>
+> **3. PPh terutang (tarif Pasal 17)**
+> - 5% × Rp60.000.000 = Rp3.000.000
+> - 15% × Rp76.000.000 = Rp11.400.000
+> - **PPh terutang: Rp14.400.000**
+>
+> **4. Kredit pajak**
+> - Rp0 — karena kliennya tidak pernah memotong apa pun (tidak ada bukti potong BP21) dan setoran 0,5% tidak bisa dikreditkan.
+>
+> **5. Hasil: KURANG BAYAR Rp14.400.000**
+> Plus perkiraan angsuran PPh 25 tahun 2026: **Rp1.200.000/bulan**.
+>
+> ## ⚠️ Tiga hal penting
+>
+> **1. Setoran 0,5% Rp1.900.000 itu salah skema, bukan "sudah lunas".** Karena kerjaanmu pekerjaan bebas (bukan usaha dagang/jasa biasa), uang itu tidak masuk hitungan di atas dan tidak boleh dilaporkan di Lampiran 2 (penghasilan final). Kamu bisa minta kembali lewat permohonan **pengembalian pajak yang seharusnya tidak terutang** di Coretax (menu Pembayaran → formulir restitusi) — tapi pemindahbukuan biasanya tidak bisa. Konfirmasikan dulu prosedurnya ke KPP/Kring Pajak 1500200 sebelum mengajukan (perlu review konsultan pajak, aturan ini masih agak abu-abu).
+>
+> **2. Karena belum pernah kirim pemberitahuan NPPN, hitungan di atas statusnya simulasi.** Menurut DJP, WP yang tidak memberitahukan NPPN dalam 3 bulan pertama tahun pajak dianggap memilih pembukuan penuh — artinya neto seharusnya dihitung dari pembukuan asli (bukan 50% dari omzet), bukan dari NPPN. Kamu bilang cuma punya catatan omzet, bukan pembukuan lengkap (neraca, laba-rugi). Ini titik paling berisiko — **sangat disarankan konsultasi ke KPP atau konsultan pajak sebelum lapor**, karena bisa mengubah angka kurang bayarnya.
+>
+> **3. Batas lapor SPT Tahunan 2025 adalah 31 Maret 2026 — dan itu sudah lewat per hari ini (1 Oktober 2026).** Masa penghapusan sanksi (KEP-55/PJ/2026, berlaku sampai 30 April 2026) juga sudah berakhir. Konsekuensinya: denda telat lapor Rp100.000 (ditagih lewat STP) + bunga keterlambatan bayar per bulan atas kurang bayar Rp14.400.000 (tarif bulanan berubah-ubah, tidak saya hitung di sini). **Segera lapor secepatnya untuk menghentikan akumulasi bunga.**
+>
+> ## Peta ke Coretax
+> | Angka | Bagian SPT |
+> |---|---|
+> | Neto NPPN Rp190.000.000 | Lampiran 3 (L-3A) |
+> | PTKP, PKP, PPh terutang | Induk Bagian B & C |
+> | Kurang bayar Rp14.400.000 | Induk Bagian D & E |
+> | PPh 25 tahun depan | Induk Bagian H |
+> | Setoran 0,5% salah skema | TIDAK masuk Lampiran 2 — urus terpisah lewat restitusi |
+>
+> ## Langkah berikutnya
+> 1. Konsultasikan status NPPN (belum diberitahukan) dan validitas pencatatan omzet kamu ke KPP/konsultan pajak — ini menentukan apakah angka Rp14.400.000 di atas valid atau harus dihitung ulang dari pembukuan.
+> 2. Cocokkan kode KLU 62010 persis di Coretax saat mengisi SPT (bisa beda penamaan).
+> 3. Siapkan dana Rp14.400.000+ untuk kode billing PPh Pasal 29, lalu lapor SPT secepatnya (sudah lewat tenggat).
+> 4. Setelah SPT tahun ini beres, pertimbangkan ajukan pemberitahuan NPPN tahun 2026 di Coretax sebelum 31 Maret 2026 supaya tahun depan tidak bermasalah lagi, dan hentikan setoran 0,5% karena memang tidak berlaku untuk pekerjaan bebas kamu.
+>
+> **Checklist dokumen**
+> - [ ] Akun Coretax aktif + kode otorisasi
+> - [ ] Rekap omzet bulanan 2025 (pencatatan)
+> - [ ] Bukti setor (NTPN) PPh final 0,5% × 12 bulan (Rp1.900.000) — untuk proses restitusi
+> - [ ] Daftar harta & utang per 31 Desember 2025
+> - [ ] Saldo untuk kode billing PPh Pasal 29 (≥Rp14.400.000 + bunga keterlambatan)
+>
+> _Disclaimer: Ini alat bantu hitung, bukan nasihat pajak resmi. Persentase norma NPPN sudah saya cocokkan dengan KLU yang paling sesuai tapi belum saya verifikasi langsung dari file lampiran PDF resmi — minta dicek ulang di Coretax/KPP. Status pemberitahuan NPPN yang belum dikirim dan setoran 0,5% salah skema adalah dua isu yang perlu review konsultan pajak sebelum kamu lapor. Saya tidak mengisi atau mengirim SPT ke DJP._
+
+### Verifikasi (Python independen + script skill + aturan)
+- **S1:** neto 72 jt + 84 jt = Rp156.000.000; PTKP K/2 = 54 + 4,5 + 2 × 4,5 = Rp67.500.000; PKP Rp88.500.000; PPh = 3.000.000 + 15% × 28.500.000 = **Rp7.275.000**; kredit 3.150.000 → **kurang bayar Rp4.125.000** ✔ (kedua sisi). SEBELUM menyuruh "e-Filing SPT **1770 S**" dan e-Billing DJP Online — untuk TP 2025 SPT OP lewat Coretax dengan bentuk SPT tunggal (PER-11/PJ/2025) → salah prosedur (cacat SEBELUM yang sama dengan uji pertama). SESUDAH: angka dari script (`exec` tercatat), batas 31 Maret 2026 & KEP-55 (s.d. 30 April 2026) sudah lewat ✔, denda Rp100.000 via STP ✔ (UU KUP Ps. 7). Kecil: kisaran bunga "0,5–2%/bulan" terlalu lebar (tarif KMK bulanan = (suku bunga acuan + 5%)/12, beberapa tahun terakhir < 1%/bulan) tetapi diberi label "cek tarif terbaru".
+- **S2:** NPPN 50% × 380 jt = Rp190.000.000; PKP 136.000.000; PPh = 3.000.000 + 15% × 76.000.000 = **Rp14.400.000**; PPh 25 2026 = Rp1.200.000/bulan ✔. Script penguji (`--status TK/0 --nppn 380jt 50 --nppn-diberitahukan tidak --final-salah-skema 1.900.000 --hari-ini 2026-10-01`) **identik**. Norma KLU 62010 = 50% di tiga wilayah ✔ (sudah dicek uji pertama).
+- **Fakta aturan baru (dicek penguji):** jasa ke orang pribadi dipotong **PPh 21 bukan pegawai (BP21)** — PMK 168/2023 ✔; setoran PPh final UMKM tidak bisa dipindahbukukan karena dianggap penyampaian SPT Masa — **PMK 81/2024 Pasal 109 ayat (3)**, jalurnya permohonan pengembalian pajak yang seharusnya tidak terutang (Ps. 123–125) ✔ ([Kring Pajak](https://x.com/kring_pajak/status/1901440860799316418?lang=id), [DDTC](https://news.ddtc.co.id/berita/nasional/1819567/mau-bayar-pph-25-tapi-salah-kode-billing-bisakah-pemindahbukuan)). SESUDAH menyebut keduanya dengan benar.
+- **Kesalahan baru SESUDAH S2:** Langkah 4 — "pertimbangkan ajukan pemberitahuan NPPN **tahun 2026** di Coretax **sebelum 31 Maret 2026**". Hari uji 1 Oktober 2026 → tenggat itu **sudah lewat**; untuk TP 2026 pengguna kini dianggap wajib pembukuan (perlu mulai mencatat), dan pemberitahuan NPPN berikutnya adalah untuk TP 2027 paling lambat 31 Maret 2027. Saran tanggal yang sudah lewat ini menyesatkan. Minor: peta PPh 25 ditulis "Induk Bagian H" padahal keluaran script menyebut Lampiran 4.
+- **SEBELUM S2 (fatal):** menyatakan omzet ≤ Rp500 juta "tidak dikenai PPh final sama sekali" sehingga 0,5% yang disetor = **lebih bayar Rp1.900.000** dan SPT 2025 "aman" pakai final; tidak mengenali pekerjaan bebas (PP 55/2022 Ps. 56); menyebut "harusnya potong PPh 23" (salah untuk penerima OP); formulir 1770; tenggat NPPN "akhir Maret 2026" (juga sudah lewat). Kurang bayar riil (simulasi NPPN) Rp14.400.000 terlewat sepenuhnya.
+
+### Status cacat lama
+1. "Klien potong PPh 23" → **TERATASI** (pertanyaan #3 SESUDAH: "PPh 21 bukan pegawai (bukti potong BP21)").
+2. Setoran 0,5% salah skema di Lampiran 2 → **TERATASI** ("tidak boleh dilaporkan di Lampiran 2", pengembalian pajak yang seharusnya tidak terutang, "pemindahbukuan biasanya tidak bisa").
+3. Ketergantungan internet untuk norma → **tetap** (agent masih `web_fetch` untuk KLU 62010; jujur menyebut belum membuka PDF lampiran resmi).
+
+**Regresi/temuan baru:** tenggat NPPN TP 2026 yang sudah lewat disarankan sebagai langkah (lihat di atas).
+
+### Skor
+| Skenario | SEBELUM | SESUDAH | Alasan |
+|---|---:|---:|---|
+| 1. 2 A1, K/2, telat lapor | 6 | 9 | Angka sama-sama benar; SESUDAH prosedur Coretax, status tenggat & KEP-55, penjelasan kenapa kurang bayar. SEBELUM formulir 1770 S/e-Filing yang sudah tidak dipakai. |
+| 2. Konsultan pakai 0,5%, tanpa NPPN | 1,5 | 8 | SESUDAH aturan inti benar, angka identik script, kedua cacat lama teratasi; minus saran NPPN 2026 "sebelum 31 Maret 2026" (sudah lewat). SEBELUM menyimpulkan lebih bayar — salah fatal. |
+| **Rata-rata** | **3,75** | **8,5** | |
+
+**VERDIK: BELUM** — sesudah ≥ 8 dan jauh di atas sebelum, semua angka benar, dua cacat fakta lama teratasi, **tetapi** ada satu kesalahan fakta tanggal baru (tenggat NPPN TP 2026 yang sudah lewat disarankan sebagai langkah). Perbaikan kecil.
+
+**Saran untuk pembuat:** script (`--hari-ini`) sebaiknya mencetak status NPPN tahun berjalan: "TP {tahun hari-ini}: batas pemberitahuan 31 Maret {tahun} → SUDAH LEWAT/BELUM"; bila lewat, tulis "TP {tahun} dianggap pembukuan — mulai catat pembukuan sekarang; pemberitahuan NPPN berikutnya untuk TP {tahun+1} paling lambat 31 Maret {tahun+1}". Di SKILL.md larang menyebut tenggat tanpa membandingkan dengan tanggal hari ini. Samakan peta PPh 25 (Lampiran 4 vs Induk H) di referensi.
+
+**Cuplikan jualan (jujur, aman dipakai):** "Konsultan IT terlanjur bayar 0,5%? AI biasa bilang 'malah lebih bayar Rp1,9 juta'. Skill ini mengenali pekerjaan bebas, menghitung simulasi NPPN (kurang bayar Rp14.400.000), dan menjelaskan setoran 0,5% diminta kembali lewat pengembalian pajak — bukan Lampiran 2." · "Pindah kerja, 2 bukti potong A1: kurang bayar Rp4.125.000 dihitung script dan dipetakan ke Coretax, bukan formulir 1770 S yang sudah tidak dipakai."
+
+## Uji ulang 2026-10-01 (putaran 3)
+**Penguji:** agent penguji independen Komunitech (bukan pembuat; folder skill hanya dibaca, tidak diubah). **Versi diuji:** spt-tahunan-op 1.0.4.
+**Cara:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech `claude-sonnet-5`, TZ Asia/Jakarta, home terisolasi (mount namespace) berisi skill ini saja, dibuat ulang bersih sebelum tiap sesi (`r12-spt-tahunan-op`). Skenario yang gagal di putaran 2 (S2, saran tenggat NPPN TP 2026 yang sudah lewat) diulang dengan **pesan sama persis** (giliran 1 + jawaban giliran 2 yang sama) di **2 sesi berbeda** (A, B), ditambah 1 varian baru yang langsung menanyakan pendaftaran NPPN 2026. Sisi SEBELUM tidak diulang (acuan: putaran 2, skor 1,5).
+
+### Skenario 2 — Konsultan IT pakai 0,5%, tanpa NPPN (pesan sama persis) — Sesi A
+**Giliran 1** — tools: read
+
+> Sebelum saya hitung, ada dua hal penting dulu soal status pajak kamu:
+>
+> **Konsultan IT = "pekerjaan bebas" (profesi/keahlian), bukan "usaha"** — menurut aturan PP 55/2022 Ps. 56, pekerjaan bebas (termasuk konsultan) **tidak boleh** pakai tarif final 0,5%. Yang benar: hitung penghasilan neto pakai **NPPN (Norma Penghitungan Penghasilan Neto)** atau pembukuan, lalu kena tarif Pasal 17 (progresif). Jadi setoran 0,5% yang kamu bayar tiap bulan selama ini **salah skema**.
+>
+> **Karena kamu tidak pernah kirim pemberitahuan NPPN**, dan batas waktunya untuk tahun pajak 2025 adalah **31 Maret 2025** (sudah lewat jauh, sekarang Oktober 2026) — untuk tahun pajak 2025, kamu **dianggap memilih pembukuan** (UU PPh Ps. 14 ayat (5)), bukan NPPN. Saya tetap bisa hitung simulasi pakai NPPN supaya kamu tahu kira-kira besarannya, tapi saya tandai jelas bahwa itu cuma simulasi — status resminya perlu dikonfirmasi ke KPP/konsultan pajak.
+>
+> Supaya saya bisa hitung, tolong jawab ini (boleh langsung jawab semua):
+>
+> 1. **Total setoran PPh final 0,5%** yang sudah kamu bayar sepanjang 2025 (total semua bulan — kalau flat 0,5% × 380jt tanpa potongan, berarti ~Rp1.900.000, tapi pastikan angka pastinya).
+> 2. **Persentase NPPN** untuk jasa konsultan IT kamu — ini tergantung **KLU usaha + kota domisili**, harus dicek di lampiran PER-17/PJ/2015, saya tidak boleh menebak. Kamu tahu KLU-nya atau kotamu di mana supaya saya bantu cari?
+> 3. Ada klien (PT/badan) yang **memotong PPh 21 bukan pegawai** (bukti potong BP21) saat bayar fee kamu? Kalau ada, berapa totalnya tahun 2025?
+> 4. Ada **zakat** yang kamu bayar sendiri ke BAZNAS/LAZ resmi (bukan dipotong perusahaan)? Kalau tidak, saya anggap 0.
+> 5. Konfirmasi status PTKP: lajang, tanpa tanggungan → **TK/0**, betul?
+>
+> Kalau mau cepat: cukup kasih angka #1 dan #2, sisanya saya anggap 0.
+
+**Giliran 2** (jawaban pengguna sama: "NPWP aku dari 2019. Aku setor 0,5% … KLU aku ga tau, tolong bantu aja") — tools: ls, read, tool_search, web_fetch, tool_call, exec
+
+> Sudah saya cek ke sumber resminya — KLU 62010/62020/62090 (pemrograman, konsultasi komputer, jasa TI lainnya) untuk 10 kota besar termasuk **Bandung** semuanya pakai **norma 50%**. Berikut hasil hitungannya.
+>
+> ## Hitungan SPT Tahunan PPh OP — Tahun Pajak 2025 (status TK/0)
+>
+> **1. Penghasilan neto**
+> | Sumber | Bruto | Norma | Neto |
+> |---|---|---|---|
+> | Jasa konsultan IT (NPPN, KLU 62010/62020) | Rp380.000.000 | 50% | Rp190.000.000 |
+>
+> **2. PTKP & PKP**
+> - PTKP (TK/0): Rp54.000.000
+> - PKP: Rp190.000.000 − Rp54.000.000 = **Rp136.000.000**
+>
+> **3. PPh terutang (tarif Pasal 17)**
+> - 5% × Rp60.000.000 = Rp3.000.000
+> - 15% × Rp76.000.000 = Rp11.400.000
+> - **Total PPh terutang: Rp14.400.000**
+>
+> **4. Kredit pajak:** Rp0 (tidak ada klien yang motong PPh 21)
+>
+> **5. Hasil: KURANG BAYAR Rp14.400.000**
+> - Perkiraan angsuran PPh 25 tahun 2026: ±Rp1.200.000/bulan
+>
+> ## Kenapa segini besar?
+> Karena kerjaanmu "pekerjaan bebas" (konsultan), bukan dagang/usaha, aturan pajaknya beda total dari UMKM biasa: bukan 0,5% dari omzet, tapi dari **laba perkiraan** (50% × omzet = Rp190jt) lalu kena tarif progresif 5–15%. Hasilnya PPh terutang Rp14,4 juta — jauh lebih besar dari setoran bulanan 0,5% (Rp1,9 juta) yang sudah kamu bayar, **dan setoran itu pun tidak bisa dipakai sebagai kredit/pengurang** karena skemanya salah dari awal.
+>
+> ## ⚠️ Peringatan penting
+> 1. **Tanpa pemberitahuan NPPN**, secara resmi kamu dianggap memilih **pembukuan** untuk 2025 — hasil NPPN di atas sifatnya **simulasi**, bukan angka final. Idealnya kamu punya catatan pemasukan & biaya riil (bukan cuma omzet) untuk hitungan yang sah.
+> 2. **Batas lapor SPT 2025 adalah 31 Maret 2026 — sudah lewat lebih dari 6 bulan** (sekarang Oktober 2026). Masa bebas sanksi KEP-55/PJ/2026 (s.d. 30 April 2026) juga sudah lewat. Artinya: kena **denda telat lapor Rp100.000** + **bunga keterlambatan bayar per bulan** sejak April 2026 (saya tidak hitung tarifnya, berubah tiap bulan — cek di Coretax saat buat kode billing).
+> 3. Setoran 0,5% Rp1.900.000 yang terlanjur disetor **tidak bisa dikreditkan dan tidak masuk Lampiran 2**. Untuk minta kembali, harus ajukan **permohonan pengembalian pajak yang seharusnya tidak terutang** lewat Coretax (menu Pembayaran → formulir restitusi) — bukan pemindahbukuan biasa. Ini perlu dikonfirmasi ke KPP/Kring Pajak dulu.
+> 4. Untuk tahun pajak 2026 (berjalan sekarang), batas pemberitahuan NPPN (31 Maret 2026) **juga sudah lewat** — jadi 2026 pun otomatis dianggap pembukuan. Mulai catat pemasukan & biaya dari sekarang.
+>
+> ## Peta ke Coretax
+> | Angka | Bagian |
+> |---|---|
+> | Neto usaha (NPPN) Rp190jt | Lampiran 3 (L-3A) |
+> | Neto, PTKP, PKP, PPh terutang | Induk Bagian B & C |
+> | Kurang bayar Rp14,4jt | Induk Bagian D & E |
+> | PPh 25 tahun depan | Induk Bagian H |
+>
+> ## Langkah berikutnya (prioritas)
+> 1. **Segera lapor dan bayar** — makin lama makin besar bunganya. Buat kode billing untuk kurang bayar Rp14.400.000 di Coretax, bayar, baru kirim SPT.
+> 2. Siapkan rekap omzet bulanan 2025 + bukti setoran 0,5% (NTPN) untuk diajukan sebagai pengembalian pajak salah bayar.
+> 3. Hentikan setoran 0,5% bulanan mulai sekarang (sudah salah skema) — mulai catat pemasukan & pengeluaran usaha untuk basis pembukuan 2026.
+> 4. **Sangat disarankan konsultasi ke KPP terdaftar atau konsultan pajak** untuk: (a) konfirmasi status "dianggap pembukuan", (b) proses restitusi setoran salah skema, (c) hitung bunga keterlambatan yang akurat. Bisa juga telepon **Kring Pajak 1500200**.
+>
+> ## Checklist dokumen
+> - Akun Coretax aktif (NPWP + kode verifikasi)
+> - Rekap omzet bulanan 2025 + bukti setor PPh final 0,5% (NTPN)
+> - Daftar harta & utang per 31 Desember 2025
+> - Dana untuk bayar kurang bayar Rp14,4jt + bunga keterlambatan
+>
+> ---
+> *Disclaimer: Saya bukan konsultan pajak, ini alat bantu hitung bukan nasihat pajak resmi. Angka dihitung dari skill `spt-tahunan-op`, persen NPPN dicek langsung dari Lampiran I PER-17/PJ/2015 (KLU 62010/62020/62090, kota Bandung = 50%). Pembulatan belum dicocokkan dengan Coretax. Saya tidak mengisi/mengirim SPT — itu harus kamu lakukan sendiri lewat Coretax, idealnya dengan pendampingan konsultan pajak mengingat keterlambatan dan isu salah skema di atas.*
+
+### Skenario 2 — Sesi B
+**Giliran 1** — tools: read, ls
+
+> Sebelum saya hitung angka pastinya, ada temuan penting yang perlu kamu tahu dulu:
+>
+> **Konsultan IT lepas (kerja sendiri, jual jasa keahlian) itu tergolong "pekerjaan bebas" di mata pajak — bukan "usaha" biasa.** Itu artinya skema **PPh final 0,5% (PP 55/2022) sebenarnya memang tidak boleh dipakai** untuk penghasilan jasa konsultasimu (PP 55/2022 Ps. 56 ayat (3)–(4)). Daftar profesi yang dikecualikan dari 0,5% termasuk konsultan, dan setoran bulanan yang sudah kamu bayar selama ini **tidak bisa dikreditkan** di SPT Tahunan.
+>
+> Karena kamu **juga tidak pernah mengirim pemberitahuan NPPN** ke DJP (batasnya 31 Maret tahun pajak berjalan), secara aturan kamu **dianggap memilih skema pembukuan** untuk tahun pajak 2025 — bukan NPPN (norma penghitungan). Ini kombinasi yang agak rumit (⚠️ sebaiknya tetap dikonfirmasi ke KPP/konsultan pajak), tapi saya tetap bisa hitung simulasinya pakai NPPN supaya kamu ada gambaran kasar — dengan catatan hasilnya simulasi, bukan angka resmi.
+>
+> Biar saya bisa hitung, boleh dijawab (kalau mau cepat, cukup jawab yang kamu tahu, sisanya saya anggap 0):
+>
+> 1. **KLU usaha** kamu apa (misal "Konsultasi Komputer dan Manajemen Fasilitas Komputer") dan **di kota mana** kamu terdaftar? Ini untuk cek persen norma NPPN di lampiran PER-17/PJ/2015. Kalau kamu sudah tahu persennya (misal 50%), langsung sebutkan saja angkanya.
+> 2. Selama 2025, ada **klien yang memotong PPh 21 bukan pegawai (bukti potong BP21)** atas jasa konsultasimu? Kalau ada, total yang dipotong berapa?
+> 3. **Total PPh final 0,5%** yang sudah kamu setor sepanjang 2025 (jumlah semua setoran bulanan) — berapa?
+> 4. Ada **zakat** yang kamu bayar sendiri ke BAZNAS/LAZ resmi (bukan dipotong kantor)? Kalau ada, berapa?
+> 5. Konfirmasi: status PTKP **TK/0** (lajang, tanpa tanggungan) ya?
+
+**Giliran 2** — tools: ls, tool_search, web_fetch, tool_call, exec
+
+> Sudah saya hitung lewat script resmi skill (angka NPPN 50% saya ambil langsung dari lampiran PDF resmi PER-17/PJ/2015 di situs pajak.go.id — KLU 62020 "Konsultasi Komputer dan Manajemen Fasilitas Komputer" = 50% di semua wilayah, termasuk Bandung). Tapi sebelum angkanya, ada hal mendesak: **hari ini sudah 1 Oktober 2026 — batas lapor SPT Tahunan 2025 (31 Maret 2026, bahkan masa bebas sanksi s.d. 30 April 2026) sudah lewat jauh.** Kalau SPT 2025 kamu belum dilaporkan, ini prioritas nomor satu.
+>
+> ## Hitungan SPT Tahunan PPh OP — Tahun Pajak 2025 (status TK/0)
+>
+> **1. Penghasilan neto**
+> | Sumber | Bruto | % Norma | Neto |
+> |---|---|---|---|
+> | Jasa konsultan IT (KLU 62020, NPPN) | Rp380.000.000 | 50% | **Rp190.000.000** |
+>
+> **2. PTKP & PKP**
+> - PTKP (TK/0): Rp54.000.000
+> - PKP: Rp190.000.000 − Rp54.000.000 = **Rp136.000.000**
+>
+> **3. PPh terutang (tarif Pasal 17)**
+> - 5% × Rp60.000.000 = Rp3.000.000
+> - 15% × Rp76.000.000 = Rp11.400.000
+> - **Total PPh terutang: Rp14.400.000**
+>
+> **4. Kredit pajak:** Rp0 (klien tidak pernah potong apa-apa)
+>
+> **5. Hasil: KURANG BAYAR Rp14.400.000**
+> Plus perkiraan angsuran PPh 25 tahun 2026 ≈ **Rp1.200.000/bulan** (Rp14.400.000 ÷ 12).
+>
+> Setoran PPh final 0,5% Rp1.900.000 yang sudah kamu bayar sepanjang 2025 **tidak dikreditkan** ke angka ini dan **tidak dilaporkan** di Lampiran 2/L-3B — karena skemanya memang salah dari awal (jasa konsultan = pekerjaan bebas, bukan usaha).
+>
+> ## Kenapa begini (bahasa awam)
+> Karena kamu jual jasa keahlian (bikin/maintain software), bukan dagang barang, hukumnya kamu itu "pekerjaan bebas" — kategori yang memang dilarang pakai 0,5% final. Jadi penghasilanmu dihitung pakai Norma (NPPN): separuh omzet (50%) dianggap laba bersih, lalu dikurangi PTKP, baru kena tarif progresif 5%/15%/dst. Karena tidak ada potongan pajak dari klien sama sekali, semua PPh terutang itu jadi kurang bayar murni.
+>
+> ⚠️ **Catatan penting:** karena kamu tidak pernah kirim pemberitahuan NPPN ke DJP, menurut aturan kamu **dianggap memilih pembukuan**, bukan NPPN — jadi angka Rp190 juta di atas **hanya simulasi**, bukan angka yang sah dipakai di Coretax. Harusnya neto dihitung dari pembukuan/pencatatan asli (omzet dikurangi biaya riil: laptop, software, internet, dll — biasanya hasilnya beda, bisa lebih kecil atau lebih besar dari 50%). Ini butuh konfirmasi ke KPP/konsultan pajak sebelum kamu lapor.
+>
+> ## Peta ke Coretax
+> | Angka | Bagian Coretax |
+> |---|---|
+> | Neto usaha/pekerjaan bebas | Lampiran 3 (L-3A) |
+> | PTKP, PKP, PPh terutang | Induk Bagian B & C |
+> | Kredit pajak = 0, KB Rp14.400.000 | Induk Bagian D & E |
+> | PPh 25 tahun 2026 | Induk Bagian H |
+> | Setoran 0,5% salah skema | **Jangan** masuk Lampiran 2 — urus lewat menu Pembayaran > restitusi |
+>
+> ## Langkah berikutnya (urut prioritas)
+> 1. **Segera konfirmasi ke KPP/Kring Pajak 1500200** soal dua hal sebelum lapor: (a) dampak tidak kirim pemberitahuan NPPN — apakah neto memang wajib dihitung dari pembukuan asli, dan (b) status lapor SPT 2025 yang sudah telat — hitung ulang sanksi denda keterlambatan (Rp100.000 lapor + bunga bulanan kurang bayar, tarifnya berubah tiap bulan jadi saya tidak hitung di sini).
+> 2. Siapkan pembukuan/pencatatan 2025 senyata mungkin (omzet per bulan + biaya usaha: laptop, software, hosting, internet, dll) untuk dibandingkan dengan simulasi NPPN di atas.
+> 3. Bayar kurang bayar (buat kode billing di Coretax) lalu lapor SPT secepatnya — makin lama makin besar bunganya.
+> 4. Ajukan permohonan pengembalian setoran 0,5% Rp1.900.000 yang salah skema lewat menu Pembayaran di Coretax (bukan pindah buku).
+> 5. Untuk 2026 ke depan: hentikan setor 0,5% (karena memang tidak boleh untuk jasa konsultan), mulai catat pembukuan rapi, dan siapkan angsuran PPh 25 bulanan ≈Rp1,2 juta (sesuaikan lagi setelah SPT 2025 beres).
+>
+> ## Checklist dokumen
+> - Akun Coretax aktif (NIK/NPWP 16 digit) + kode otorisasi tanda tangan SPT
+> - Daftar harta & utang per 31 Des 2025
+> - Rekap omzet bulanan 2025 (sudah ada catatanmu)
+> - Bukti setor (NTPN) PPh final 0,5% Rp1.900.000 — untuk permohonan restitusi
+> - Saldo untuk bayar KB Rp14.400.000 + kemungkinan denda/bunga keterlambatan
+>
+> _Disclaimer: Saya bukan konsultan pajak; ini alat bantu hitung, bukan nasihat pajak resmi. Pembulatan belum dicocokkan dengan Coretax, dan status pembukuan-vs-NPPN kamu butuh konfirmasi KPP/konsultan sebelum dipakai untuk lapor. Saya tidak mengisi atau mengirim SPT atas namamu._
+
+### Skenario varian baru — desainer grafis ingin "daftar NPPN 2026 sekarang"
+**Pesan pengguna:** "Aku desainer grafis freelance di Surabaya, lajang. Omzet 2025 Rp240.000.000, ga ada pembukuan, belum pernah kirim pemberitahuan NPPN. Kalo buat tahun 2026 ini aku mau pake norma (NPPN) aja, masih bisa daftar sekarang ga? terus SPT 2025 ku gimana?"
+**Balasan** — tools: read, exec
+
+> Sebelum aku hitung pastinya, ada beberapa hal yang perlu dicek dulu — termasuk soal timing NPPN 2026 yang kayaknya udah kelewat. Tapi aku jawab dulu bagian yang bisa dijawab langsung:
+>
+> **Soal daftar NPPN buat 2026 — sayangnya udah lewat.**
+> Pemberitahuan pakai norma (NPPN) itu batasnya 31 Maret di tahun pajak yang bersangkutan (UU PPh Ps. 14(2); PMK 81/2024 Ps. 450(2)). Sekarang 1 Oktober 2026 — batas 31 Maret 2026 udah lewat 6 bulan. Jadi kamu **nggak bisa lagi mengajukan pemberitahuan NPPN untuk tahun pajak 2026**.
+>
+> Konsekuensinya: karena nggak ada pemberitahuan (dan sepertinya ini juga belum pernah terjadi sebelumnya), tahun pajak 2026 ini kamu **dianggap otomatis memilih menyelenggarakan pembukuan** (UU PPh Ps. 14(5)) — bukan NPPN. Masalahnya kamu bilang belum ada pembukuan sama sekali, jadi ini celah yang perlu dibereskan:
+> - Mulai catat pembukuan dari sekarang untuk sisa 2026 (atau rapihkan catatan transaksi sebagai dasar perkiraan).
+> - Kesempatan berikutnya untuk memberitahukan NPPN itu untuk **tahun pajak 2027**, paling lambat **31 Maret 2027**.
+> - ⚠️ Ini situasi yang agak krusial (nggak ada pemberitahuan dari dulu + belum ada pembukuan) — aku sarankan konfirmasi ke KPP tempat kamu terdaftar atau Kring Pajak 1500200 / konsultan pajak, karena ada kemungkinan konsekuensi jangka panjang (termasuk soal bisa/tidaknya balik ke NPPN nanti) yang di luar yang bisa aku pastikan.
+>
+> **Soal SPT 2025** — ini juga ada catatan yang sama: kalau kamu memang belum pernah mengirim pemberitahuan NPPN (termasuk untuk 2025, batasnya dulu 31 Maret 2025), secara aturan DJP tahun 2025 kamu juga dianggap pakai pembukuan, bukan NPPN. Tapi karena kamu nggak punya pembukuan, aku tetap bisa hitungkan **simulasi** pakai NPPN supaya kamu ada gambaran angka — dengan catatan jelas itu cuma simulasi, bukan jaminan diterima apa adanya oleh DJP.
+>
+> Supaya hitungannya akurat, aku perlu beberapa info (jawab yang penting dulu, sisanya boleh aku anggap 0):
+>
+> 1. **Tanggungan** — lajang berarti status PTKP TK, tapi ada tanggungan (misal orang tua/anak asuh) yang jadi tanggungan kamu? (TK/0, TK/1, dst., maks 3)
+> 2. **Persentase norma (NPPN)** untuk jasa desain grafis di Surabaya — ini harus dari lampiran PER-17/PJ/2015 (berdasarkan KLU + kota), aku nggak boleh nebak. Bisa cek kode KLU kamu (biasanya 74100 "Aktivitas Desain Khusus" atau sejenis) di lampiran itu dan kasih tahu persennya?
+> 3. Omzet Rp240.000.000 itu murni dari jasa desain grafis (pekerjaan bebas), atau ada campuran usaha lain (jual produk, dll)?
+> 4. Selama 2025, ada klien yang motong pajak dari pembayaran jasa kamu (bukti potong PPh 21 bukan pegawai / BP21)? Kalau ada, total dipotong berapa?
+> 5. Ada zakat yang kamu bayar sendiri ke BAZNAS/LAZ resmi selama 2025 (di luar potongan kantor, karena kamu freelance)?
+>
+> Kalau mau cepat: cukup kasih tahu **tanggungan** dan **persen norma**, sisanya aku anggap 0.
+
+### Verifikasi (Python independen + aturan, dicek sendiri)
+- **Angka S2 (A & B):** 380.000.000 × 50% = Rp190.000.000; PTKP TK/0 Rp54.000.000; PKP Rp136.000.000; 5% × 60 jt + 15% × 76 jt = 3.000.000 + 11.400.000 = **Rp14.400.000**; kredit 0 → KB Rp14.400.000; PPh 25 2026 = 14.400.000/12 = Rp1.200.000 ✔ (identik dengan putaran 2 dan script; `exec` tercatat).
+- **Fakta NPPN (dicek penguji):** PMK 81/2024 **Pasal 450 ayat (2)** — pemberitahuan NPPN disampaikan dalam **3 bulan pertama tahun pajak** (31 Maret); bila tidak, WP **dianggap memilih pembukuan** ([Kring Pajak tentang Ps. 450](https://x.com/kring_pajak/status/2026882879339577672), [pajak.go.id panduan pemberitahuan NPPN](https://pajak.go.id/panduan-layanan-pajak/konten/layanan-digital/2025/layanan-administrasi/pemberitahuan-penggunaan-nppn-dan-pembukuan-stelsel-kas/pemberitahuan-penggunaan-norma-penghitungan-penghasilan-neto-(nppn)), [DDTC](https://news.ddtc.co.id/berita/nasional/1809657/mau-pakai-nppn-ingat-wp-op-harus-sampaikan-pemberitahuan-bulan-ini)); sejalan dengan UU PPh Ps. 14 ayat (2) & (5) ✔. Pasal 463 PMK 81/2024 (WP OP yang sudah menyelenggarakan pembukuan sejak TP 2022 tidak dapat kembali ke NPPN pada tahun berikutnya) ada; PMK 1/2026 memang perubahan keempat PMK 81/2024 ([JDIH Kemenkeu](https://jdih.kemenkeu.go.id/api/download/b5f99bff-f689-4e4f-ae3a-7c6a9a4cfe8a/2026pmkeuangan001.pdf)). Per hari uji (1 Okt 2026) batas TP 2026 (31 Mar 2026) sudah lewat → TP 2026 dianggap pembukuan; kesempatan berikutnya TP 2027 s.d. 31 Mar 2027 ✔.
+- **A giliran 2 butir 4:** "batas pemberitahuan NPPN (31 Maret 2026) juga sudah lewat — 2026 pun otomatis dianggap pembukuan. Mulai catat…" ✔. **B giliran 2:** tidak menyarankan tanggal apa pun untuk NPPN 2026; langkah 5 "untuk 2026 ke depan … mulai catat pembukuan rapi" ✔. **Varian:** "nggak bisa lagi … untuk TP 2026", dasar PMK 81/2024 Ps. 450(2) & UU PPh Ps. 14(5), "berikutnya TP 2027, paling lambat 31 Maret 2027", dan peringatan "bisa/tidaknya balik ke NPPN nanti" diarahkan ke KPP ✔ — sesuai perbaikan 1.0.4.
+- **Fakta lain:** batas lapor TP 2025 31 Maret 2026, KEP-55/PJ/2026 hanya penghapusan sanksi s.d. 30 April 2026 (keduanya sudah lewat) ✔; denda telat lapor OP Rp100.000 ✔; setoran 0,5% tidak dikreditkan/tidak di Lampiran 2, jalur pengembalian pajak yang seharusnya tidak terutang, bukan pemindahbukuan ✔; BP21 untuk penerima OP ✔; norma KLU 62010/62020 Bandung 50% ✔ (cocok putaran sebelumnya).
+- **Minor (bukan kesalahan fakta):** peta PPh 25 masih "Induk Bagian H" saja (SKILL.md menulis "Induk Bagian H / Lampiran 4"); jalur menu "Pembayaran → restitusi" di Coretax tidak diverifikasi penguji (diberi syarat konfirmasi KPP). Varian belum menghitung SPT 2025 karena bertanya dulu (persen norma, tanggungan) — wajar, satu pesan berisi daftar pertanyaan.
+
+### Status cacat lama (putaran 2)
+- **Saran tenggat NPPN TP 2026 "sebelum 31 Maret 2026" (sudah lewat)** → **HILANG di 2 dari 2 sesi**; varian menjawab benar (tidak bisa, TP 2027).
+- PPh 23 → BP21 dan 0,5% salah skema di Lampiran 2 → tetap teratasi (A & B).
+- Ketergantungan internet untuk norma → masih (web_fetch PER-17 di A & B), tetapi jujur dan hasilnya benar.
+
+**Regresi:** tidak ada.
+
+### Skor
+| Skenario | SEBELUM (putaran 2) | SESUDAH A | SESUDAH B | Alasan |
+|---|---:|---:|---:|---|
+| 2. Konsultan pakai 0,5%, tanpa NPPN | 1,5 | 9 | 9 | Pekerjaan bebas dikenali, simulasi NPPN benar Rp14.400.000, status "dianggap pembukuan" TP 2025 & 2026 benar, setoran 0,5% lewat pengembalian, tenggat & sanksi benar. |
+| Varian: daftar NPPN 2026 sekarang | — | 9 | | Jawaban langsung & benar (tidak bisa; TP 2027 s.d. 31 Mar 2027), dasar pasal tepat, peringatan penguncian dirujuk ke KPP. |
+
+**VERDIK: LULUS** — sesudah ≥ 8 (9), jauh di atas sebelum (1,5), cacat tenggat lewat hilang 2/2, tanpa kesalahan fakta/angka. Tetap ⚠️ PERLU REVIEW konsultan pajak sesuai aturan library.
