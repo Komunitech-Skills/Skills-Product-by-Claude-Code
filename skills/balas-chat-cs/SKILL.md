@@ -1,6 +1,6 @@
 ---
 name: balas-chat-cs
-description: Membuat balasan chat customer service (CS) untuk WhatsApp dan chat marketplace (Shopee, Tokopedia, TikTok Shop, dll.) berbahasa Indonesia sesuai nada brand, mulai dari FAQ (stok, ongkir, cara order, pembayaran, jam buka) sampai komplain (barang rusak, telat, salah kirim, kurang) dengan alur empati → solusi → tindak lanjut; juga bisa menyusun bank jawaban/template quick reply dari info toko. Gunakan saat pengguna minta balas chat pelanggan, template CS, auto reply, quick reply, atau customer service reply / complaint handling. Bukan untuk ulasan/rating publik (pakai balas-ulasan-pelanggan).
+description: Membuat balasan chat customer service (CS) untuk WhatsApp dan chat marketplace (Shopee, Tokopedia, TikTok Shop, dll.) berbahasa Indonesia sesuai nada brand, mulai dari FAQ (stok, ongkir, cara order, pembayaran, jam buka) sampai komplain (barang rusak, telat, salah kirim, kurang) dengan alur empati → solusi → tindak lanjut; juga bisa menyusun bank jawaban/template quick reply dari info toko. Gunakan saat pengguna minta balas chat pelanggan, template CS, auto reply, quick reply, atau customer service reply / complaint handling. Juga untuk satu chat pasien klinik soal jadwal/biaya/daftar (pertanyaan obat/dosis/gejala: TANPA dosis & diagnosis, arahkan ke dokter + IGD/119). Bukan untuk ulasan/rating publik (pakai balas-ulasan-pelanggan).
 ---
 
 # Balas Chat CS
@@ -22,6 +22,16 @@ Membuat admin toko bisa membalas chat pelanggan dengan cepat, ramah, konsisten, 
 - Mengejar calon pembeli yang tidak membalas → `follow-up-prospek`.
 - Kirim promo massal → `broadcast-wa`.
 - Jika skill rujukan di atas tidak terpasang, beri satu draf netral singkat dan jelaskan perbedaannya.
+- **Chat pasien klinik/faskes (klinik, praktik dokter/bidan, apotek):** jadwal, biaya, BPJS, cara
+  daftar boleh dibalas dengan skill ini — selalu **draf** yang dikirim admin, tanpa auto reply,
+  broadcast, atau promo diskon/imbalan "ajak teman". Pertanyaan **gejala, obat, dosis, takaran
+  sirup, hasil lab** → **jangan pernah** menulis dosis (mg, mL, sendok, tiap X jam) atau menebak
+  penyakit, juga tidak "sebagai referensi"; pakai "Templat balasan aman" dari
+  `edukasi-pasien-klinik` bila terpasang. Bila tidak terpasang: "Untuk obat dan dosisnya, mohon
+  maaf kami tidak bisa menentukannya lewat chat — perlu ditentukan dokter/apoteker setelah
+  diperiksa. Mau kami bantu jadwalkan periksa? Bila kejang, sesak napas, sangat lemas/sulit
+  dibangunkan, tidak bisa minum, atau muncul bintik keunguan, segera ke IGD terdekat atau hubungi
+  119." (PERLU REVIEW tenaga medis.)
 - Sengketa hukum, ancaman lapor polisi/BPSK, atau klaim cedera/kesehatan akibat produk: tulis balasan penenang yang netral saja, lalu sarankan pemilik usaha menangani langsung / berkonsultasi dengan ahli hukum.
 
 ## Input
