@@ -486,7 +486,7 @@ def hitung_anggaran(pemasukan, musiman, pos, pola, pokok_juga=(), bukan_pokok=()
         else:
             pokok_keluar.append((nm, n, alasan_bukan_pokok(nm, kel)))
     pokok = sum((n for _, n, _ in pokok_rinci), NOL)
-    # v1.0.8 (uji Telegram 2026-10-02): pisahkan arus RUTIN (gaji tiap bulan) dari MUSIMAN (THR/bonus cair
+    # v1.0.7 (uji Telegram 2026-10-02): pisahkan arus RUTIN (gaji tiap bulan) dari MUSIMAN (THR/bonus cair
     # sekali). Setoran/transfer bulanan hanya boleh dari sisa rutin; THR dicadangkan saat cair (tidak dihitung
     # dua kali). Rasio cicilan memakai pemasukan rutin karena THR tidak ada tiap bulan.
     sisa_rutin = total_bulanan - total_keluar
@@ -568,8 +568,12 @@ def cetak_anggaran(args):
             nama, persen(pp, 0), rp(batas), rp(nyata), ("+" if selisih > 0 else "") + rp(selisih)))
     cat = []
     if h["sisa"] > 0:
-        cat.append("Masih ada {} belum punya tugas. Zero-based: arahkan ke dana darurat, pelunasan utang "
-                   "berbunga tinggi, atau target tabungan sampai sisa Rp0.".format(rp(h["sisa"])))
+        rincian = ""
+        if musiman:
+            rincian = " ({} dari gaji tiap bulan + {} bagian THR/bonus yang cair sekali {})".format(
+                rp(max(h["sisa_rutin"], NOL)), rp(h["sisa"] - max(h["sisa_rutin"], NOL)), rp(h["total_musiman"]))
+        cat.append("Masih ada {} belum punya tugas{}. Zero-based: arahkan ke dana darurat, pelunasan utang "
+                   "berbunga tinggi, atau target tabungan sampai sisa Rp0.".format(rp(h["sisa"]), rincian))
     if h["sisa"] < 0:
         cat.append("DEFISIT {}. Kurangi pos Keinginan dulu, lalu tinjau pos lain. Jangan menutup defisit "
                    "dengan utang baru (paylater/pinjol) - itu gali lubang tutup lubang.".format(rp(-h["sisa"])))

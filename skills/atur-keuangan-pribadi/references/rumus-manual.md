@@ -14,9 +14,14 @@ Pemasukan/bulan = Σ pemasukan bersih rutin + floor(Σ pemasukan tahunan ÷ 12)
 Sisa            = Pemasukan/bulan − Σ semua pos
 Target          : Sisa = Rp0 (setiap rupiah punya tugas)
 Pola 50/30/20   : Batas kebutuhan = 50% × Pemasukan; keinginan 30%; tabungan 20%
-Rasio cicilan   = Σ cicilan ÷ Pemasukan × 100%   (patokan umum ≤ 30%)
+Sisa rutin      = Σ pemasukan bersih rutin − Σ semua pos   ← batas setoran/transfer BULANAN
+THR/bonus       = disetor SEKALIGUS saat cair (nominal penuh), tidak ditambahkan lagi ke setoran bulanan
+Bila sisa rutin < 0: kekurangan/bulan ditambal THR; THR cukup floor(THR ÷ kekurangan) bulan
+Rasio cicilan   = Σ cicilan ÷ Pemasukan RUTIN (tanpa THR/12) × 100%   (patokan umum ≤ 30%)
 ```
-Contoh: gaji 7.500.000; THR 7.500.000 + bonus 5.000.000 → 12.500.000 ÷ 12 = 1.041.666,67 → **1.041.666**. Pemasukan/bulan = 8.541.666.
+Contoh: gaji 7.500.000; THR 7.500.000 + bonus 5.000.000 → 12.500.000 ÷ 12 = 1.041.666,67 → **1.041.666**. Pemasukan/bulan = 8.541.666 (gambaran setahun).
+
+Contoh THR jangan dihitung dua kali: gaji 12.500.000, pos 11.670.000, THR 12.500.000 → sisa rutin **830.000/bulan** (inilah setoran bulanan) + THR **12.500.000 sekali saat cair**. Salah: memindah 1.871.666/bulan (830.000 + THR/12) **dan** menyimpan THR lagi. Rasio cicilan 4.300.000 ÷ 12.500.000 = **34,4%** (bukan 31,8% terhadap 13.541.666).
 
 ## 2. Dana darurat
 ```
@@ -25,7 +30,8 @@ Pokok/bulan = kebutuhan wajib + SEMUA cicilan/utang minimum (PayLater, kartu kre
 Target      = Pengeluaran pokok/bulan × N bulan
               (PNS 3–6 | lajang 3–6 | menikah 6–9 | punya anak/tanggungan 9–12 | pekerja lepas/usaha 12)
 Kekurangan  = max(Target − Saldo, 0)
-Lama (bulan)= ceil(Kekurangan ÷ Setoran/bulan)
+Lama (bulan)= ceil(Kekurangan ÷ Setoran/bulan)      (Setoran = dari gaji saja)
+Dengan THR  : bulan m terkecil dengan Setoran × m + THR × (jumlah THR cair s.d. bulan m) ≥ Kekurangan
 Progres     = Saldo ÷ Target × 100%
 ```
 Contoh: pokok 4.500.000, status punya anak (9 bulan) → 40.500.000; saldo 6.000.000, setor 750.000 → 34.500.000 ÷ 750.000 = **46 bulan**.

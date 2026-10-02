@@ -823,5 +823,77 @@ class TesV102PerbaikanKecil(unittest.TestCase):
         self.assertIn("tidak boleh negatif", r.stderr)
         self.assertNotIn("expected one argument", r.stderr)
 
+class TesTHRMusimanTidakDihitungDuaKali(unittest.TestCase):
+    """v1.0.7 (uji tampilan Telegram 2026-10-02): keluarga Bekasi, gaji 8,5 jt + 4 jt, THR 1x gaji, pos
+    Rp11.670.000. Dulu: sisa Rp1.871.666 (termasuk THR/12) disuruh dipindah tiap bulan dari 'sisa gaji'
+    DAN THR disimpan lagi saat cair -> THR terhitung dua kali. Angka benar (dihitung manual, Fraction):
+      sisa rutin = 12.500.000 - 11.670.000 = 830.000 ; THR/12 = floor(12.500.000/12) = 1.041.666
+      rasio cicilan rutin = 4.300.000/12.500.000 = 34,4% ; dengan THR/12 = 4.300.000/13.541.666 = 31,8%"""
+
+    POS = ["Kontrakan=2,5jt", "Cicilan motor=1,3jt", "KPR=3jt", "Dapur=3jt", "Listrik air=500rb", "SPP=800rb",
+           "Bensin=570rb"]
+    ARG = ["anggaran", "--pemasukan", "Gaji suami=8,5jt", "--pemasukan", "Gaji istri=4jt",
+           "--musiman", "THR suami=8,5jt", "--musiman", "THR istri=4jt"]
+
+    def hitung(self, pos):
+        return k.hitung_anggaran([("Gaji suami", Decimal(8500000)), ("Gaji istri", Decimal(4000000))],
+                                 [("THR suami", Decimal(8500000)), ("THR istri", Decimal(4000000))],
+                                 [k.parse_pos(p) for p in pos], [Decimal(50), Decimal(30), Decimal(20)])
+
+    def test_sisa_rutin_dipisah_dari_thr(self):
+        h = self.hitung(self.POS)
+        self.assertEqual(h["sisa"], Decimal(1871666))
+        self.assertEqual(h["sisa_rutin"], Decimal(830000))
+        self.assertEqual(h["musiman_per_bulan"], Decimal(math.floor(F(12500000, 12))))
+        self.assertEqual(h["tambal_musiman_per_bulan"], Decimal(0))
+
+    def test_rasio_cicilan_basis_rutin(self):
+        h = self.hitung(self.POS)
+        self.assertEqual(h["basis_cicilan"], Decimal(12500000))
+        r = jalankan(*(self.ARG + sum([["--pos", p] for p in self.POS], [])))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("34,4% dari pemasukan RUTIN", r.stdout)
+        self.assertIn("31,8%", r.stdout)
+        self.assertIn("paling banyak **Rp830.000/bulan**", r.stdout)
+        self.assertIn("SEKALI saat cair: Rp12.500.000", r.stdout)
+        self.assertIn("(Rp830.000 dari gaji tiap bulan + Rp1.041.666 bagian THR", r.stdout)
+
+    def test_setoran_melebihi_gaji_ditambal_thr(self):
+        h = self.hitung(self.POS + ["Setoran dana darurat=1,5jt"])
+        self.assertEqual(h["sisa_rutin"], Decimal(-670000))
+        self.assertEqual(h["tambal_musiman_per_bulan"], Decimal(670000))
+        self.assertEqual(h["tambal_musiman_setahun"], Decimal(8040000))
+        self.assertEqual(h["musiman_bebas_setahun"], Decimal(12500000 - 8040000))
+        self.assertEqual(h["bulan_ditambal_musiman"], math.floor(F(12500000, 670000)))   # 18
+        r = jalankan(*(self.ARG + sum([["--pos", p] for p in self.POS + ["Setoran dana darurat=1,5jt"]], [])))
+        self.assertIn("kurang **Rp670.000/bulan** dari gaji", r.stdout)
+        self.assertIn("maks. Rp830.000 (sisa gaji)", r.stdout)
+
+    def test_tanpa_musiman_tidak_ada_bagian_arus(self):
+        r = jalankan("anggaran", "--pemasukan", "Gaji=5jt", "--pos", "Kos=2jt")
+        self.assertNotIn("Arus kas rutin vs musiman", r.stdout)
+
+    def test_dana_darurat_dengan_thr_sekaligus(self):
+        self.assertEqual(k.lama_dengan_musiman(Decimal(95500000), Decimal(830000), Decimal(12500000), 6), 54)
+        # independen: cari m terkecil dengan 830.000*m + 12.500.000*jumlah_cair(m) >= kurang
+        def f_lama(kurang, setor, thr, cair):
+            m = 0
+            while True:
+                m += 1
+                n_cair = 0 if m < cair else (m - cair) // 12 + 1
+                if setor * m + thr * n_cair >= kurang:
+                    return m
+        for kurang, cair in [(95500000, 6), (130000000, 1), (5000000, 12), (12500000, 3)]:
+            self.assertEqual(k.lama_dengan_musiman(Decimal(kurang), Decimal(830000), Decimal(12500000), cair),
+                             f_lama(kurang, 830000, 12500000, cair))
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "11,67jt", "--cicilan", "KPR=0", "--status", "anak",
+                     "--saldo", "8jt", "--setoran", "830rb", "--setoran-tahunan", "12,5jt")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("cair bulan ke-12 dari sekarang (asumsi bawaan", r.stdout)
+        self.assertIn("Lama tercapai (+ THR/bonus)", r.stdout)
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "5jt", "--status", "lajang", "--bulan-cair", "13")
+        self.assertEqual(r.returncode, 2)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

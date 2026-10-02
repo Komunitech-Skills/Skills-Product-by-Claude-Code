@@ -1,6 +1,6 @@
 ---
 name: atur-keuangan-pribadi
-description: Mengatur keuangan pribadi & keluarga Indonesia dalam Rupiah — anggaran bulanan zero-based dan 50/30/20 (kiriman orang tua, arisan, zakat/perpuluhan opsional, cicilan motor/KPR, e-wallet, THR/bonus dibagi 12), target dana darurat 3–12 bulan sesuai status, rencana pelunasan utang Avalanche vs Snowball dengan jadwal bulanan dihitung script (kartu kredit, KTA, paylater, pinjol legal; konversi bunga flat ke efektif; peringatan pinjol ilegal & gali lubang tutup lubang), dan tabungan bulanan untuk target (DP rumah, sekolah anak, haji/umrah, pensiun). Gunakan saat pengguna minta atur gaji, bikin anggaran rumah tangga, hitung dana darurat, lunasi utang/cicilan, atau nabung untuk tujuan — personal budget, household budgeting, emergency fund, debt payoff avalanche snowball, savings goal, financial planning Indonesia. Bukan untuk keuangan usaha (pakai arus-kas-13minggu / laporan-keuangan-emkm), THR karyawan (hitung-thr), atau rekomendasi beli/jual investasi.
+description: Mengatur keuangan pribadi & keluarga Indonesia dalam Rupiah — anggaran bulanan zero-based dan 50/30/20 (kiriman orang tua, arisan, zakat/perpuluhan opsional, cicilan motor/KPR, e-wallet, THR/bonus dipisah dari arus bulanan rutin), target dana darurat 3–12 bulan sesuai status, rencana pelunasan utang Avalanche vs Snowball dengan jadwal bulanan dihitung script (kartu kredit, KTA, paylater, pinjol legal; konversi bunga flat ke efektif; peringatan pinjol ilegal & gali lubang tutup lubang), dan tabungan bulanan untuk target (DP rumah, sekolah anak, haji/umrah, pensiun). Gunakan saat pengguna minta atur gaji, bikin anggaran rumah tangga, hitung dana darurat, lunasi utang/cicilan, atau nabung untuk tujuan — personal budget, household budgeting, emergency fund, debt payoff avalanche snowball, savings goal, financial planning Indonesia. Bukan untuk keuangan usaha (pakai arus-kas-13minggu / laporan-keuangan-emkm), THR karyawan (hitung-thr), atau rekomendasi beli/jual investasi.
 ---
 
 # Atur Keuangan Pribadi
@@ -45,12 +45,13 @@ Jika pengguna ingin cepat, pakai default dan **sebutkan asumsinya**: pola 50/30/
 2. **Kumpulkan & rapikan angka.** Parsing gaya Indonesia: "1,5jt" = 1.500.000; "750rb" = 750.000; "Rp1.500.000". Tolak "5M" (ambigu juta/miliar) — minta ditulis ulang.
 3. **Hitung lewat script bila bisa dijalankan** (`scripts/keuangan.py`, Python standar, lihat di bawah). Jika script tidak bisa dijalankan, hitung manual dengan rumus di `references/rumus-manual.md` dan tunjukkan langkahnya. **Jangan mengira-ngira angka.**
 4. **Anggaran (zero-based):**
-   - Pemasukan/bulan = pemasukan bersih rutin + (THR + bonus tahunan) ÷ 12 (dibulatkan ke bawah). Pekerja berpenghasilan tidak tetap: pakai bulan **terendah** 3–6 bulan terakhir.
+   - Pemasukan/bulan = pemasukan bersih rutin + (THR + bonus tahunan) ÷ 12 (dibulatkan ke bawah) — **hanya gambaran setahun**. Pekerja berpenghasilan tidak tetap: pakai bulan **terendah** 3–6 bulan terakhir.
+   - **THR/bonus cair sekali, bukan tiap bulan.** Bedakan dua arus (script mencetak bagian "Arus kas rutin vs musiman"): **sisa rutin** = gaji bersih − semua pos → inilah batas setoran/transfer **bulanan**; **THR/bonus** = setoran **sekaligus saat cair** (sebut nominal penuhnya). Jangan menyuruh memindah "sisa" yang mengandung THR/12 tiap bulan **dan** menyimpan THR lagi saat cair — itu menghitung THR dua kali. Bila pos bulanan (termasuk setoran tabungan) melebihi gaji, sebut kekurangan per bulan, berapa bulan THR mampu menambalnya, dan turunkan setoran bulanan ke batas sisa rutin.
    - Kelompokkan pos: **Kebutuhan wajib**, **Keluarga & sosial/ibadah** (kiriman orang tua, zakat/perpuluhan/sedekah/persembahan/dana punia — opsional, sesuai keyakinan pengguna, jangan memaksakan), **Keinginan**, **Tabungan & pelunasan ekstra** (dana darurat, target, arisan sebagai tabungan wajib).
    - Setiap rupiah diberi tugas sampai **sisa = Rp0**. Defisit → potong Keinginan dulu; jangan ditutup dengan paylater/pinjol.
    - Banding pola 50/30/20 (Kebutuhan termasuk keluarga/sosial). Keluarga dengan tanggungan/kota mahal: tawarkan 60/20/20 atau 70/10/20 — yang penting tabungan tetap ada.
    - **E-wallet (GoPay/OVO/DANA/ShopeePay):** top-up bukan pengeluaran; catat menurut pemakaiannya agar tidak dobel.
-   - Total cicilan > 30% pemasukan → peringatkan, jangan tambah utang.
+   - Rasio cicilan = total cicilan ÷ **pemasukan rutin** (gaji bersih, tanpa THR/12, karena THR tidak ada tiap bulan); sebutkan basisnya. > 30% → peringatkan, jangan tambah utang.
    - Bila ada data realisasi (mis. mutasi rekening), tampilkan **realisasi bulan lalu vs anggaran** per pos; potongan > 30% dari realisasi ditandai sebagai **target bertahap** (mis. turun bertahap 2–3 bulan), jangan disajikan seolah langsung mudah.
    Detail kategori khas Indonesia: `references/pos-anggaran-indonesia.md`.
 5. **Dana darurat:** dasar (pengeluaran pokok) **wajib dihitung script** dari daftar pos yang dicetak eksplisit — jangan menjumlah sendiri:
@@ -58,6 +59,7 @@ Jika pengguna ingin cepat, pakai default dan **sebutkan asumsinya**: pola 50/30/
    - Dari mutasi/anggaran: jalankan `anggaran`; bagian "Dasar dana darurat" mencetak tabel **pos DIMASUKKAN** dan **pos DIKELUARKAN + alasannya**. Kiriman keluarga **masuk pokok secara bawaan**. Tanpa anggaran: `dana-darurat --pos ... --cicilan ... --keluarga ... --dikeluarkan "nama=jumlah;alasan"`.
    - **Kutip angka script apa adanya** dan di balasan sebutkan **pos yang dimasukkan dan yang dikeluarkan beserta alasannya** (satu-dua baris). Pos keluarga/sosial tidak pernah dikeluarkan diam-diam: bila ragu (mis. kiriman ortu "kadang-kadang"), tetap masukkan dan katakan "bila kiriman ini bisa dihentikan saat darurat, target turun menjadi Rp…" — atau tanyakan sekali. Keputusan pengguna dijalankan ulang dengan `--bukan-pokok "nama pos"` / `--pokok-juga "nama pos"`.
    - Target = pokok × bulan: PNS/pegawai sangat stabil 3–6, lajang 3–6, menikah 6–9, punya anak/tanggungan 9–12, pekerja lepas/pemilik usaha 12. Lama tercapai = kekurangan ÷ setoran (dibulatkan ke atas). Punya utang berbunga tinggi: dana darurat awal ~1 bulan dulu, lalu fokus utang.
+   - `--setoran` = setoran rutin dari **gaji** saja; THR/bonus yang disetor saat cair masuk `--setoran-tahunan` (+ `--bulan-cair`, cair berapa bulan lagi; bawaan 12 = paling hati-hati, sebutkan asumsinya). Script mencetak lama tercapai tanpa dan dengan THR.
    - Angka di "Langkah minggu ini" harus sama dengan tabel (mis. setoran dana darurat yang disebut = setoran di tabel, bukan seluruh uang yang dihemat bila sebagian dipakai menutup defisit).
 6. **Utang:**
    - Bunga **flat** (leasing motor/mobil, sebagian KTA) → konversi ke **efektif** dulu (`konversi-flat`). Jelaskan: flat dihitung dari pokok awal sepanjang tenor, sehingga bunga efektifnya hampir dua kali lipat.
@@ -67,14 +69,15 @@ Jika pengguna ingin cepat, pakai default dan **sebutkan asumsinya**: pola 50/30/
    - Ditawari **take over/refinancing/konsolidasi**? Bandingkan total bunga sisa lama vs total bunga baru + provisi/admin/penalti pelunasan (lihat `references/utang-dan-pinjol.md`). Tanpa rekomendasi produk.
    - **Wajib cek bahaya:** cicilan minimum ≤ bunga bulanan → utang tidak akan lunas; bunga > 0,1%/hari (±3%/bulan) → di atas batas pinjol konsumtif berizin OJK 2026, curigai pinjol ilegal; kartu kredit > 1,75%/bulan → di atas batas BI. Beri kontak resmi OJK (lihat `references/utang-dan-pinjol.md`).
 7. **Target keuangan:** biaya nanti = biaya hari ini × (1 + inflasi/12)^bulan. Tabungan/bulan = (biaya nanti − terkumpul × (1+r)^bulan) × r ÷ ((1+r)^bulan − 1), r = imbal/12; jika r = 0 dibagi jumlah bulan. Dibulatkan ke atas. Banding dengan kemampuan; bila kurang, tawarkan tiga tuas: perpanjang waktu, turunkan target, tambah pemasukan. Urutan prioritas umum: dana darurat awal → utang bunga tinggi → dana darurat penuh → target bertenggat (sekolah) → target fleksibel.
-8. **Tulis hasil** sesuai format di bawah, dengan bahasa sehari-hari yang tidak menghakimi.
+8. **Cek konsistensi sebelum menulis.** Setiap nominal di "Langkah minggu ini" harus berasal dari output script: transfer bulanan ≤ sisa rutin; THR/bonus disebut sebagai tindakan saat cair dengan nominal penuhnya, tidak dijumlahkan lagi ke setoran bulanan. Bila Anda mengalokasikan sisa ke pos baru (mis. setoran dana darurat), jalankan ulang script dengan pos itu agar tabel dan langkah sama.
+9. **Tulis hasil** sesuai format di bawah, dengan bahasa sehari-hari yang tidak menghakimi.
 
 ## Script (opsional, disarankan)
 Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (`scripts/keuangan.py`) — jangan mencarinya dengan `find /`. File milik pengguna (mis. mutasi rekening) dicari **hanya di folder kerja (workspace)** atau path yang disebut pengguna, bukan ke seluruh disk; tidak ketemu → tanyakan lokasinya.
 Jalankan dari folder skill (`python3`; Windows: `python` atau `py`):
 ```
 python3 scripts/keuangan.py anggaran --pemasukan "Gaji=7,5jt" --musiman "THR=7,5jt" --pos "Kontrakan=1,8jt" --pos "Kiriman ortu=750rb" --pos "Nongkrong=400rb:keinginan"
-python3 scripts/keuangan.py dana-darurat --pengeluaran-pokok 4,5jt --cicilan "PayLater=650rb" --cicilan "Motor=1,15jt" --keluarga "Kiriman ortu=1jt" --status anak --saldo 6jt --setoran 750rb
+python3 scripts/keuangan.py dana-darurat --pengeluaran-pokok 4,5jt --cicilan "PayLater=650rb" --cicilan "Motor=1,15jt" --keluarga "Kiriman ortu=1jt" --status anak --saldo 6jt --setoran 750rb [--setoran-tahunan 7,5jt --bulan-cair 6]
 python3 scripts/keuangan.py utang --utang "Kartu kredit;12jt;1,75%/bln;600rb;kk" --utang "Paylater;3jt;2,5%/bln;200rb;paylater" --ekstra 1jt --metode banding [--jadwal]
 python3 scripts/keuangan.py konversi-flat --pokok 30jt --bunga-flat "0,9%/bln" --tenor 24 [--sudah-bayar 6]   # atau "12%/th"
 python3 scripts/keuangan.py target --nama "DP rumah" --biaya-sekarang 60jt --tahun 5 --inflasi 4 [--imbal 5] --terkumpul 10jt --kemampuan 700rb
