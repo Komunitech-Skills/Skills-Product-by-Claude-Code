@@ -326,3 +326,415 @@ SEBELUM: aritmetika benar semua, menjelaskan jebakan THR dengan jelas, menutup d
 
 **Cuplikan jualan:**
 - Tanpa skill: "Dana darurat ideal ±Rp70–105 juta" (perkiraan dari total belanja). Dengan skill: "Pokok Rp10.850.000 (KPR, motor, kiriman ortu masuk; sedekah, kondangan, makan di luar, Netflix dikeluarkan) → target Rp97.650.000; setor Rp830.000/bulan dari gaji + THR Rp12.500.000 sekaligus saat cair → tercapai ±4 tahun."
+
+## Uji ulang v1.0.8 (2026-10-02)
+
+**Cara uji:** tanggal 2026-10-02. OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech `komunitech` → `claude-sonnet-5` (sama dengan bot member). SEBELUM = home tanpa skill; SESUDAH = home berisi hanya `atur-keuangan-pribadi` v1.0.8 (salinan repo). Home bersih dibuat ulang per skenario, pesan identik di kedua sisi; lanjutan memakai id sesi yang sama. Penguji independen (bukan pembuat); semua angka diverifikasi dengan Python dan dengan menjalankan `scripts/keuangan.py` sendiri. Fokus: tiga temuan v1.0.7 — (1) angka skenario alternatif dihitung sendiri, (2) basis persen tercampur, (3) defisit + THR tidak menangani bulan sebelum THR cair.
+
+Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim/posting ke pihak lain, tidak mencari ke seluruh disk. SESUDAH memakai `read` + `exec` (lanjutan S1: `exec` saja); SEBELUM tanpa alat.
+
+### Skenario 1 — keluarga muda Bekasi (normal, wajib) + lanjutan
+
+**Pesan:**
+> Kami tinggal di Bekasi, anak 1 umur 2 tahun (dititip daycare). Gaji bersih suami 8,5 juta, istri 4 juta. THR masing-masing 1x gaji. Cicilan motor 1,2 juta, KPR 3,1 juta, kirim ke orang tua 1 juta. Listrik+PDAM+gas sekitar 650 ribu, belanja dapur 2,2 juta, susu & popok 750 ribu, daycare 1 juta, bensin+tol+parkir 600 ribu, pulsa & internet 350 ribu, sedekah 200 ribu, kondangan rata-rata 150 ribu, makan di luar 400 ribu, Netflix dkk 70 ribu. Dana darurat baru ada 8 juta. Tolong atur anggaran bulanan dan berapa dana darurat yang harus kami punya.
+
+**Balasan SEBELUM (tanpa skill):**
+
+````markdown
+Saya sudah hitung semua angkanya. Ringkasan dan rencananya di bawah.
+
+## 1. Total pemasukan & pengeluaran bulanan
+
+**Pemasukan bersih:** Rp12.500.000 (suami 8,5jt + istri 4jt)
+
+**Pengeluaran rutin:**
+- KPR: Rp3.100.000
+- Cicilan motor: Rp1.200.000
+- Belanja dapur: Rp2.200.000
+- Susu & popok: Rp750.000
+- Daycare: Rp1.000.000
+- Listrik+PDAM+gas: Rp650.000
+- Bensin+tol+parkir: Rp600.000
+- Kirim orang tua: Rp1.000.000
+- Pulsa & internet: Rp350.000
+- Sedekah: Rp200.000
+- Kondangan: Rp150.000
+- Makan di luar: Rp400.000
+- Netflix dkk: Rp70.000
+
+**Total pengeluaran: Rp11.670.000**
+**Sisa (surplus): Rp830.000/bulan (≈6,6% dari gaji)**
+
+## 2. Analisis cepat
+
+- **Rasio cicilan utang (KPR+motor) = 34,4% dari pendapatan.** Ini sudah mendekati batas aman (idealnya di bawah 30-35%). Saran: **jangan ambil utang baru** (kartu kredit, paylater, motor kedua) sampai rasio ini turun atau income naik.
+- **Tabungan hanya 6,6%** — di bawah standar sehat (10-20%). Ini wajar untuk keluarga muda dengan KPR+anak kecil, tapi perlu diperbesar pelan-pelan.
+- Pos terbesar setelah utang: dapur + makan luar (Rp2,6jt, 21%) dan anak (susu/popok+daycare Rp1,75jt, 14%) — keduanya memang kebutuhan, sulit dipotong banyak.
+- Pos "lentur" yang bisa jadi buffer kalau darurat: makan di luar (400rb), kondangan (150rb), Netflix (70rb) — total Rp620rb bisa ditekan sementara kalau perlu.
+
+## 3. Rencana anggaran bulanan (pakai alokasi surplus + THR)
+
+Karena surplus bulanan kecil, cara realistis membesarkan tabungan:
+1. **Sisa Rp830.000/bulan → masuk dana darurat dulu**, jangan untuk investasi apa pun sebelum dana darurat aman.
+2. **THR (total Rp12.500.000/tahun, suami+istri)** dibagi dua:
+   - ~70% (Rp8.750.000) → dana darurat (percepat)
+   - ~30% (Rp3.750.000) → "sinking fund" tahunan: servis motor, pajak kendaraan, kebutuhan sekolah/daycare mendadak, dll. Ini penting supaya pos bulanan tidak jebol kalau ada biaya tahunan tiba-tiba.
+3. Kalau ada rezeki tambahan (bonus, THR naik, kerja sampingan), prioritas tetap ke dana darurat sampai target tercapai.
+
+## 4. Berapa dana darurat yang harus dimiliki?
+
+Rumus standar: **dana darurat = pengeluaran bulanan × jumlah bulan buffer**, jumlah bulan tergantung profil risiko.
+
+Kondisi keluarga Anda: **dual income** (risiko lebih rendah dibanding 1 income), tapi punya **anak kecil + KPR** (fixed obligation besar) → disarankan **6-9 bulan pengeluaran**, bukan standar minimal 3-6 bulan.
+
+Dengan pengeluaran bulanan Rp11.670.000:
+- **Minimal (6 bulan): ≈ Rp70.000.000**
+- **Ideal/aman (9 bulan): ≈ Rp105.000.000**
+
+**Posisi sekarang: Rp8.000.000** — ini baru ~0,7 bulan pengeluaran, jadi memang masih sangat kurang.
+
+**Simulasi mengejar target (pakai surplus Rp830rb/bulan + 70% THR Rp8,75jt/tahun):**
+- Tambahan per tahun ≈ (830rb×12) + 8.750.000 = **Rp18.710.000/tahun**
+- Dari Rp8jt sekarang → target Rp70jt (6 bulan) tercapai **sekitar 3,3 tahun**
+- Target Rp105jt (9 bulan) tercapai **sekitar 5,2 tahun**
+
+Itu lumayan lama karena surplus bulanan memang kecil. Kalau mau lebih cepat, opsi yang paling realistis:
+- Tekan makan di luar + kondangan jadi lebih hemat ±Rp200-300rb/bulan → bisa pangkas waktu ~20-25%.
+- Cari tambahan income kecil (freelance, jualan sampingan) — karena sisi pengeluaran sudah cukup "ramping" untuk kebutuhan keluarga dengan anak dan KPR.
+
+**Catatan penting:** sampai dana darurat minimal 6 bulan (Rp70jt) tercapai, sebaiknya jangan mulai investasi saham/reksadana agresif — amankan buffer ini dulu di tempat likuid (tabungan terpisah/reksadana pasar uang), baru alokasikan dana baru ke investasi jangka panjang untuk pendidikan anak.
+````
+
+**Balasan SESUDAH (skill aktif):**
+
+````markdown
+## Ringkasan
+Pemasukan rutin keluarga Rp12.500.000/bulan (gaji suami+istri), ditambah THR Rp12.500.000 sekali setahun. Masalah utama: kebutuhan wajib + cicilan + kiriman ortu sudah Rp11.200.000/bulan (89,6% dari gaji rutin), jauh di atas pola 50% — wajar untuk keluarga dengan anak kecil dan KPR, tapi artinya sisa untuk ditabung cuma **Rp830.000/bulan** dari gaji. Langkah terpenting: alirkan Rp830.000/bulan itu khusus ke dana darurat, dan setor THR (Rp12.500.000) sekaligus saat cair — jangan dipakai menambah gaya hidup dulu, karena dana darurat kalian baru 8% dari target minimal.
+
+## Anggaran Bulanan (zero-based)
+
+**Pemasukan**
+
+| Sumber | Jumlah |
+|---|---:|
+| Gaji suami | Rp8.500.000 |
+| Gaji istri | Rp4.000.000 |
+| THR (suami+istri Rp12.500.000/th, dibagi 12 — hanya gambaran) | Rp1.041.666 |
+| **Total pemasukan (gambaran tahunan)** | **Rp13.541.666** |
+
+**Pos pengeluaran**
+
+| Pos | Kelompok | Jumlah | % gaji rutin (Rp12.500.000) |
+|---|---|---:|---:|
+| KPR | Kebutuhan wajib | Rp3.100.000 | 24,8% |
+| Belanja dapur | Kebutuhan wajib | Rp2.200.000 | 17,6% |
+| Motor | Kebutuhan wajib | Rp1.200.000 | 9,6% |
+| Daycare | Kebutuhan wajib | Rp1.000.000 | 8,0% |
+| Kiriman ortu | Keluarga/sosial | Rp1.000.000 | 8,0% |
+| Susu & popok | Kebutuhan wajib | Rp750.000 | 6,0% |
+| Listrik+PDAM+gas | Kebutuhan wajib | Rp650.000 | 5,2% |
+| Bensin+tol+parkir | Kebutuhan wajib | Rp600.000 | 4,8% |
+| Makan di luar | Keinginan | Rp400.000 | 3,2% |
+| Pulsa & internet | Kebutuhan wajib | Rp350.000 | 2,8% |
+| Sedekah | Keluarga/sosial | Rp200.000 | 1,6% |
+| Kondangan | Keluarga/sosial | Rp150.000 | 1,2% |
+| Netflix dkk | Keinginan | Rp70.000 | 0,6% |
+| **Total dialokasikan** | | **Rp11.670.000** | 93,4% |
+| **Belum punya tugas** | | **Rp1.871.666*** | — |
+
+\*Dari jumlah ini, hanya **Rp830.000** yang benar-benar uang bulanan (sisa gaji rutin). Sisanya Rp1.041.666 cuma "bagian THR/12" — bukan uang yang ada tiap bulan.
+
+**Arus kas: rutin vs musiman (THR)**
+
+| Arus | Per bulan | Kapan uangnya ada |
+|---|---:|---|
+| Pemasukan rutin (gaji bersih) | Rp12.500.000 | tiap bulan |
+| Total pos wajib+sosial+keinginan | Rp11.670.000 | tiap bulan |
+| **Sisa rutin → ini yang boleh ditransfer tiap bulan** | **Rp830.000** | tiap bulan |
+| THR suami+istri | **Rp12.500.000** | SEKALI saat cair |
+
+**Banding 50/30/20 (basis gaji rutin Rp12.500.000)**
+
+| Kelompok | Batas pola | Rencana kamu | Selisih |
+|---|---:|---:|---:|
+| Kebutuhan (wajib+sosial) | Rp6.250.000 (50%) | Rp11.200.000 | +Rp4.950.000 |
+| Keinginan | Rp3.750.000 (30%) | Rp470.000 | -Rp3.280.000 |
+| Tabungan | Rp2.500.000 (20%) | Rp0 (sebelum dialokasikan) | -Rp2.500.000 |
+
+Kebutuhan jauh di atas 50% — normal untuk keluarga dengan KPR+anak kecil di kota penyangga Jakarta. Rasio cicilan (Motor+KPR) = **24,8%** dari gaji rutin, masih di bawah batas aman 30%, jadi belum perlu buru-buru melunasi lebih cepat/refinancing. Karena Keinginan kalian sudah hemat (hanya 3,8%), alokasikan sisa Rp830.000/bulan sepenuhnya ke tabungan/dana darurat (bukan dipotong dari pos lain).
+
+## Dana Darurat
+
+Status: menikah + punya anak → target **9–12 bulan** pengeluaran pokok.
+
+**Pokok yang dihitung (bukan kira-kira):**
+
+| Pos dimasukkan | Jumlah |
+|---|---:|
+| Belanja dapur, listrik/air/gas, susu-popok, daycare, bensin+tol+parkir, pulsa internet | Rp5.550.000 |
+| Motor (cicilan) | Rp1.200.000 |
+| KPR (cicilan) | Rp3.100.000 |
+| Kiriman ortu (kewajiban keluarga) | Rp1.000.000 |
+| **Total pengeluaran pokok** | **Rp10.850.000** |
+
+Dikeluarkan dari pokok (boleh ditunda saat darurat): Sedekah Rp200rb, Kondangan Rp150rb, Makan di luar Rp400rb, Netflix Rp70rb.
+
+**Target & progres**
+
+| Target | Nominal | Kekurangan dari saldo Rp8jt | Lama tercapai (hanya setoran Rp830rb/bln) | Lama tercapai (+THR tahunan) | Progres |
+|---|---:|---:|---:|---:|---:|
+| 9 bulan | Rp97.650.000 | Rp89.650.000 | ~9 th 1 bln | ~4 tahun | 8% |
+| 12 bulan | Rp130.200.000 | Rp122.200.000 | ~12 th 4 bln | ~6 tahun | 6% |
+
+**Skenario alternatif (siap pakai, kalau kiriman ortu sewaktu-waktu bisa dihentikan saat darurat):**
+Pokok turun ke Rp9.850.000 → target 9 bulan Rp88.650.000, 12 bulan Rp118.200.000. Ini bukan anjuran menghentikan kiriman — hanya opsi bila benar-benar darurat.
+
+**Rekomendasi realistis:** Dengan setoran bulanan sekecil ini, target 9 bulan penuh baru tercapai ~4 tahun (dibantu THR). Fokus dulu capai **1 bulan pokok (~Rp10.850.000)** dalam waktu dekat sebagai bantalan minimum, baru naikkan ke 9–12 bulan begitu ada kenaikan gaji atau pos bisa dipangkas.
+
+## Asumsi yang dipakai
+- Pola 50/30/20 sebagai pembanding; kebutuhan di atas batas wajar untuk keluarga ber-KPR+anak.
+- THR diasumsikan cair 12 bulan dari sekarang (paling konservatif) — sebutkan bulan sebenarnya kalau mau dihitung ulang lebih presisi.
+- Kiriman ortu dihitung sebagai kewajiban rutin pokok (karena belum dikonfirmasi bisa dihentikan).
+- Tidak ada imbal hasil pada dana darurat (disimpan di rekening/tabungan terpisah yang likuid, bukan instrumen naik-turun).
+- Tidak ada utang berbunga tinggi (KK/paylater/pinjol) selain Motor & KPR, jadi tidak perlu strategi Avalanche/Snowball.
+
+## Langkah minggu ini
+1. Buka rekening/tabungan terpisah khusus dana darurat (bukan dicampur rekening harian), auto-transfer **Rp830.000** setiap tanggal gajian.
+2. Saat THR cair nanti, setor **penuh Rp12.500.000** ke rekening dana darurat itu — jangan dipotong-potong ke pos lain.
+3. Target antara: kumpulkan dulu 1 bulan pokok (~Rp10.850.000) sebagai bantalan minimum sebelum mengejar 9–12 bulan.
+4. Jangan tambah cicilan/utang baru — rasio cicilan sudah 24,8% dari gaji rutin, cukup dekat batas aman 30%.
+5. Evaluasi ulang anggaran begitu ada kenaikan gaji/bonus — setiap kenaikan sebaiknya langsung dialokasikan ke dana darurat dulu sebelum gaya hidup naik.
+
+⚠️ Bukan nasihat keuangan/investasi. Angka adalah simulasi dari data & asumsi di atas. Untuk kasus rumit, konsultasikan ke perencana keuangan bersertifikat.
+````
+
+**Pesan lanjutan (id sesi sama):**
+> Kalau kiriman ke orang tua nggak dihitung, targetnya jadi berapa?
+
+**Balasan lanjutan SEBELUM:**
+
+````markdown
+Kalau kiriman ke orang tua (Rp1.000.000) dikeluarkan dari hitungan pengeluaran wajib — misalnya dengan asumsi saat kondisi darurat, kiriman itu bisa ditunda sementara — maka basis hitungannya begini:
+
+## Pengeluaran bulanan (tanpa kiriman ortu)
+
+Rp11.670.000 − Rp1.000.000 = **Rp10.670.000/bulan**
+
+## Target dana darurat baru
+
+- **Minimal (6 bulan):** Rp10.670.000 × 6 = **Rp64.020.000**
+- **Ideal (9 bulan):** Rp10.670.000 × 9 = **Rp96.030.000**
+
+Turun sekitar Rp6 juta dari target sebelumnya (Rp70jt → Rp64jt, dan Rp105jt → Rp96jt).
+
+## Catatan penting
+
+- Ini **hanya mengubah target**, bukan tabungan aktual Anda. Kalau kiriman ke orang tua tetap jalan tiap bulan di dunia nyata (bukan cuma asumsi di atas kertas), **surplus Anda tetap Rp830.000/bulan**, jadi waktu mengejar target tidak berubah — cuma garis finishnya lebih dekat:
+  - Dari Rp8jt sekarang → **Rp64jt** (6 bulan): ≈ **3 tahun**
+  - → **Rp96jt** (9 bulan): ≈ **4,7 tahun**
+  (sedikit lebih cepat dari skenario sebelumnya, karena target lebih rendah)
+
+- Tapi kalau maksudnya kiriman ke orang tua **benar-benar dihentikan/dikurangi** secara permanen, surplus bulanan naik jadi **Rp1.830.000/bulan**, dan itu mempercepat jauh lebih signifikan:
+  - → Rp64jt: ≈ **1,9 tahun**
+  - → Rp96jt: ≈ **3 tahun**
+
+Kalau yang dimaksud skenario kedua (kiriman ortu memang mau dikurangi/dihentikan), kasih tahu saya nominalnya biar saya hitung ulang anggaran bulanannya juga — bukan cuma target dana daruratnya.
+````
+
+**Balasan lanjutan SESUDAH:**
+
+````markdown
+Kalau kiriman ke orang tua (Rp1.000.000/bulan) tidak dihitung sebagai pokok (misalnya karena bisa dihentikan sementara saat darurat), pengeluaran pokok turun jadi **Rp9.850.000/bulan**, dan targetnya:
+
+| Target | Nominal | Kekurangan dari saldo Rp8jt | Lama tercapai (setoran Rp830rb/bln saja) | Lama tercapai (+THR tahunan) |
+|---|---:|---:|---:|---:|
+| 9 bulan | Rp88.650.000 | Rp80.650.000 | ~8 th 2 bln | ~4 tahun |
+| 12 bulan | Rp118.200.000 | Rp110.200.000 | ~11 th 1 bln | ~5 tahun |
+
+Dibanding sebelumnya (kiriman ortu dihitung): turun sekitar **Rp9 juta** (9 bulan) dan **Rp12 juta** (12 bulan) — lumayan, tapi waktu tercapainya tidak berubah drastis karena setoran bulanan tetap kecil (Rp830rb).
+
+Catatan penting: ini cuma skenario "kalau". Kalau kenyataannya kiriman ke orang tua itu wajib dan tidak bisa dihentikan walau kalian sendiri lagi kesulitan (penghasilan berhenti), lebih aman tetap pakai angka yang **memasukkan** kiriman ortu (target Rp97,65jt/Rp130,2jt dari perhitungan sebelumnya) — supaya dana darurat benar-benar cukup menutup semua kewajiban, bukan cuma kebutuhan sendiri.
+````
+
+**Verifikasi (Python independen + `keuangan.py anggaran --status anak` dan `dana-darurat --setoran 830rb --setoran-tahunan 12,5jt --bulan-cair 12` dijalankan penguji):**
+
+| Angka | SEBELUM | SESUDAH | Hitungan penguji |
+|---|---|---|---|
+| Total pos / sisa rutin | Rp11.670.000 / Rp830.000 ✓ | Rp11.670.000 / Rp830.000 ✓ | Rp11.670.000 / Rp830.000 |
+| Kolom persen | "6,6% dari gaji" ✓ | "% gaji rutin": KPR 24,8%, dapur 17,6% … ✓ (basis kolom = judul) | 24,8% (basis Rp12.500.000) |
+| **Rasio cicilan (KPR+motor)** | 34,4% ✓ | **24,8% "masih di bawah batas aman 30%" ✗** (itu persen KPR saja; diulang di Langkah 4) | Rp4.300.000 ÷ Rp12.500.000 = **34,4%** — script: "DI ATAS patokan umum 30%" |
+| Banding 50/30/20 | — | Rp6.250.000/3.750.000/2.500.000 vs Rp11.200.000/470.000/0 ✓ | sama |
+| Pokok dana darurat | basis total belanja Rp11.670.000 (termasuk keinginan) | Rp10.850.000 + pos dikeluarkan disebut ✓ | Rp10.850.000 |
+| Target 9 / 12 bln | 6× ≈ Rp70 jt / 9× ≈ Rp105 jt (aritmetika ✓, basis & kelipatan lebih longgar) | Rp97.650.000 / Rp130.200.000 ✓ | sama |
+| Lama tercapai | 3,3 th / 5,2 th (pakai 70% THR) ✓ | 9 th 1 bln & ~4 th; 12 th 4 bln & ~6 th ✓ | 109/48 bln; 148/72 bln |
+| Progres | — | 8% / 6% ✓ | 8,2% / 6,1% |
+| Alternatif tanpa kiriman ortu (jawaban awal) | — | Rp9.850.000 → Rp88.650.000 / Rp118.200.000 ✓ (disalin dari script) | sama |
+| Lanjutan "tanpa kiriman ortu" | Rp10.670.000 → 6× Rp64.020.000 / 9× Rp96.030.000 ✓; 3 th / 4,7 th ✓; surplus 1,83 jt → 1,9 th (≈1,8) / 3 th | Rp9.850.000; Rp88.650.000 / Rp118.200.000; 8 th 2 bln & ~4 th; 11 th 1 bln & ~5 th ✓ (agent menjalankan script lagi: `exec`) | 98/48 bln; 133/60 bln |
+| THR dobel? | Tidak (70% THR ke DD) | Tidak (Rp830.000/bln + Rp12.500.000 sekali) ✓ | — |
+
+Catatan SESUDAH: temuan v1.0.7 #1 (angka alternatif dihitung sendiri) **sudah beres** — di jawaban awal maupun lanjutan angkanya sama persis dengan script. Temuan #2 (basis persen) **beres** untuk kolom tabel dan banding pola. **Kesalahan baru:** rasio cicilan ditulis 24,8% (persen KPR saja) dengan label "Motor+KPR" dan disimpulkan "di bawah batas aman 30%, belum perlu…", padahal script mencetak 34,4% DI ATAS 30%. Ini mengubah pesan penting (peringatan jangan tambah utang jadi lebih lunak), meski Langkah 4 tetap menyarankan tidak menambah utang.
+
+SEBELUM: aritmetika benar, rasio cicilan benar, alur THR wajar (70% ke DD, 30% sinking fund). Kelemahan: dasar dana darurat memakai total belanja termasuk makan di luar/Netflix, kelipatan 6–9 bulan untuk keluarga beranak balita, menyarankan reksa dana pasar uang (produk), tanpa tabel; lanjutan menjawab dengan baik dan bahkan membedakan "target turun" vs "kiriman benar-benar dihentikan".
+
+**Skor:** SEBELUM **6,5/10**. SESUDAH **7,5/10** — paling lengkap & hampir semua angka dari script, tetapi satu angka kunci (rasio cicilan) salah dan kesimpulannya terbalik. Skill terpakai (read + exec; lanjutan exec).
+
+### Skenario 2 — defisit bulanan, THR baru cair 4 bulan lagi, sudah pakai paylater (jebakan)
+
+Angka pilihan penguji: gaji Rp7.000.000, pos Rp8.100.000 (defisit Rp1.100.000/bln), THR Rp7.000.000 cair bulan ke-4, dana darurat Rp0.
+
+**Pesan:**
+> Pak, gaji bersih saya 7 juta, istri nggak kerja, anak 2 (SD sama TK). Kontrakan 1,8 juta, cicilan motor 850 ribu, belanja dapur 2,3 juta, listrik+air 450 ribu, bensin 450 ribu, SPP & uang saku anak 700 ribu, pulsa+wifi 300 ribu, kirim ortu 500 ribu, rokok+ngopi 450 ribu, jajan & makan di luar 300 ribu. Tiap bulan nombok terus, kemarin sampai gesek paylater. THR 1x gaji baru cair 4 bulan lagi. Dana darurat nol. Gimana ngaturnya biar nggak minus terus?
+
+**Balasan SEBELUM (tanpa skill):**
+
+````markdown
+Pak, saya hitung dulu total pengeluarannya ya — ini yang bikin nombok:
+
+**Total pengeluaran saat ini: Rp 8.100.000**
+(kontrakan 1,8jt + motor 850rb + dapur 2,3jt + listrik/air 450rb + bensin 450rb + SPP&saku anak 700rb + pulsa/wifi 300rb + kirim ortu 500rb + rokok/ngopi 450rb + jajan luar 300rb)
+
+**Gaji: Rp 7.000.000**
+**Defisit: Rp 1.100.000/bulan** — ini angka pasti yang selama ini ditutup pakai paylater.
+
+Kalau dipisah kebutuhan wajib vs keinginan:
+- Kebutuhan pokok (kontrakan, motor, dapur, listrik, bensin, SPP, pulsa/wifi) = **Rp 6.850.000** — ini aja udah makan hampir semua gaji
+- Sisa cuma Rp 150.000, padahal kirim ortu + rokok/ngopi + jajan luar = Rp 1.250.000
+
+Jadi sumber defisitnya jelas: bukan kebutuhan pokok yang kemahalan, tapi pos "keinginan" yang kegedean dibanding sisa uangnya.
+
+**Langkah 1 — Stop dulu paylater.** Jangan dipakai lagi mulai sekarang, bunga/dendanya bisa nambahin masalah. Catat total yang udah kepake biar tau beban pastinya.
+
+**Langkah 2 — Pangkas pos keinginan (target hemat ~700rb):**
+- Rokok+ngopi 450rb → tekan ke 150rb (hemat 300rb). Ini pos paling bisa dikontrol penuh dan dampaknya paling besar.
+- Jajan/makan luar 300rb → 100rb (hemat 200rb)
+- Kirim ortu 500rb → sementara 300rb (hemat 200rb). Bukan berhenti, tapi jujur aja ke ortu kalau lagi berat, naikin lagi kalau sudah stabil.
+
+**Langkah 3 — Trim sedikit di dapur (target hemat 200-300rb):**
+- Belanja mingguan pakai daftar, bukan harian/dadakan
+- Kurangi jajanan kemasan, masak dari bahan mentah
+- Dapur 2,3jt → coba tekan ke 2,1jt
+
+Total penghematan: ±900rb–1,1jt → **cukup buat nutup defisit**, bahkan bisa mulai sisa dikit buat nabung.
+
+**Setelah breakeven (1-2 bulan stabil), urutan prioritas:**
+1. Lunasi utang paylater dulu — jangan ditunda, ini prioritas utama
+2. Mulai nabung dana darurat, meski cuma 100-200rb/bulan. Target awal realistis: 2-3jt dulu, bukan langsung 1x gaji
+3. THR 4 bulan lagi (±7jt) — **jangan dipakai konsumtif**. Pakai urutan: lunasin sisa paylater → isi dana darurat → baru kalau ada sisa, buat kebutuhan besar anak
+
+**Yang perlu dicek lebih lanjut:**
+- Cicilan motor 850rb — berapa sisa tenornya? Kalau masih panjang dan bunganya tinggi, worth dicek apakah bisa dipercepat pelunasan pakai THR nanti.
+- Kalau memungkinkan, istri bisa coba usaha kecil dari rumah (jualan online, katering kecil-kecilan) — dengan 1 sumber penghasilan buat 4 orang, memang mepet banget, jadi tambahan penghasilan kecil pun ngaruh.
+
+Mau saya bikinkan rincian alokasi bulanan baru (versi lengkap per pos) biar Bapak tinggal pakai sebagai pegangan tiap bulan?
+````
+
+**Balasan SESUDAH (skill aktif):**
+
+````markdown
+Oke, saya hitung pakai angka pasti (bukan kira-kira) — ini hasilnya.
+
+## Ringkasan
+Pengeluaran rutin Bapak **Rp8.100.000/bulan**, padahal gaji **Rp7.000.000** → defisit **Rp1.100.000/bulan**, itu sebab kenapa selalu nombok sampai kena paylater. Masalah utamanya bukan satu pos besar, tapi kombinasi: dapur, kontrakan, cicilan motor sudah pas-pasan, dan belum ada dana darurat sama sekali jadi tiap kejutan kecil langsung lari ke utang. THR 4 bulan lagi bisa bantu, tapi cuma penambal sementara — yang wajib dibenahi dulu adalah pos Keinginan & kebutuhan fleksibel, bertahap 3 bulan.
+
+## Anggaran bulanan (zero-based)
+
+| Pos | Kelompok | Sekarang | % gaji rutin |
+|---|---|---:|---:|
+| Kontrakan | Wajib | Rp1.800.000 | 25,7% |
+| Cicilan motor | Wajib | Rp850.000 | 12,1% |
+| Belanja dapur | Wajib | Rp2.300.000 | 32,9% |
+| Listrik & air | Wajib | Rp450.000 | 6,4% |
+| Bensin | Wajib | Rp450.000 | 6,4% |
+| SPP & uang saku anak | Wajib | Rp700.000 | 10,0% |
+| Pulsa & wifi | Wajib | Rp300.000 | 4,3% |
+| Kirim ortu | Keluarga/sosial | Rp500.000 | 7,1% |
+| Rokok & ngopi | Keinginan | Rp450.000 | 6,4% |
+| Jajan & makan luar | Keinginan | Rp300.000 | 4,3% |
+| **Total** | | **Rp8.100.000** | **115,7%** |
+| **DEFISIT** | | **-Rp516.667** (vs gaji+THR/12) | |
+
+Banding pola 50/30/20 (basis gaji rutin Rp7.000.000): Kebutuhan kamu **Rp7.350.000** (pola maks Rp3.500.000), Keinginan **Rp750.000** (pola maks Rp2.100.000, justru di bawah — bukan boros di sini), Tabungan **Rp0** (pola minimal Rp1.400.000). Jadi sebenarnya bukan kebanyakan jajan, tapi kebutuhan wajib memang berat untuk gaji segini — wajar untuk keluarga dengan 2 anak, tapi harus dipangkas sampai pas.
+
+## Menutup defisit TANPA mengandalkan THR (pemangkasan bertahap 3 bulan)
+
+| Pos | Sekarang | Potong | Jadi |
+|---|---:|---:|---:|
+| Rokok & ngopi | Rp450.000 | -Rp220.000 | Rp230.000 |
+| Jajan & makan luar | Rp300.000 | -Rp150.000 | Rp150.000 |
+| Belanja dapur | Rp2.300.000 | -Rp230.000 | Rp2.070.000 |
+| Listrik & air | Rp450.000 | -Rp40.000 | Rp410.000 |
+| Bensin | Rp450.000 | -Rp40.000 | Rp410.000 |
+| Pulsa & wifi | Rp300.000 | -Rp30.000 | Rp270.000 |
+| **Total potongan** | | **-Rp710.000** | |
+
+Dengan pemangkasan maksimal yang wajar ini, defisit turun dari Rp1.100.000 jadi **Rp390.000/bulan** — belum tertutup 100%. Sisa Rp390.000 ini perlu ditutup dari: tambahan penghasilan kecil (ojol/jualan sampingan), atau tinjau ulang pos besar (kontrakan/cicilan motor) — **jangan ditutup paylater/pinjol lagi**.
+
+Jadwal transisi sampai THR cair (bulan ke-4):
+
+| Bulan | Kekurangan bulan itu | Kumulatif | Sumber |
+|---:|---:|---:|---|
+| 1 | Rp840.000 | Rp840.000 | belum ada — talangi dari saldo kalau ada, **bukan** paylater |
+| 2 | Rp610.000 | Rp1.450.000 | sda |
+| 3 | Rp390.000 | Rp1.840.000 | sda |
+| 4 | Rp390.000 | Rp2.230.000 | **THR cair bulan ini** |
+
+Begitu THR Rp7.000.000 cair: **Rp2.230.000** dipakai menutup/mengganti kekurangan 4 bulan transisi tadi, sisanya **Rp4.770.000** jadi modal awal dana darurat.
+
+## Dana darurat
+Pengeluaran pokok (kontrakan+dapur+listrik+bensin+SPP+pulsa+cicilan motor+kirim ortu) = **Rp7.350.000/bulan**. Status menikah+anak → target **9–12 bulan pokok = Rp66.150.000–Rp88.200.000**. Kalau kirim ortu suatu saat bisa dihentikan sementara saat darurat, pokok turun ke Rp6.850.000 → target Rp61.650.000–Rp82.200.000. Sekarang saldo darurat masih Rp0 — wajar, fokus dulu tutup defisit bulan 1-4, baru mulai setor rutin setelah itu.
+
+## Soal paylater
+Saya belum punya saldo & bunga paylater-nya — kalau Bapak kirim (sisa tagihan, bunga per bulan, cicilan minimumnya), saya hitungkan jadwal pelunasan paylater sambil tetap jalan anggaran di atas, biar nggak nambah gali lubang tutup lubang.
+
+## Asumsi yang dipakai
+- THR 1x gaji = Rp7.000.000, cair 4 bulan lagi
+- Status keluarga: menikah + anak → target dana darurat 9-12 bulan
+- Tidak ada data imbal hasil investasi, tidak dihitung
+
+## Langkah minggu ini
+1. Mulai bulan ini: rokok/ngopi Rp450rb→Rp230rb, jajan luar Rp300rb→Rp150rb (langsung hemat Rp370rb)
+2. Bulan depan tambah pangkas: dapur Rp2,3jt→Rp2,07jt, listrik Rp450rb→Rp410rb, bensin Rp450rb→Rp410rb, pulsa/wifi Rp300rb→Rp270rb
+3. Kekurangan Rp390-840rb/bulan selama masa transisi ini jangan pakai paylater baru — cari talangan dari saldo yang ada atau tahan dulu
+4. Kirim saya data paylater yang sudah kepakai (saldo, bunga, cicilan min) biar dihitungkan rencana lunasnya
+5. Pas THR cair bulan ke-4: Rp2.230.000 tutup kekurangan transisi, sisa Rp4.770.000 langsung jadi setoran pertama dana darurat (target Rp66-88 juta)
+
+⚠️ Bukan nasihat keuangan/investasi. Angka adalah simulasi dari data & asumsi di atas. Untuk kasus rumit, konsultasikan ke perencana keuangan bersertifikat.
+````
+
+**Verifikasi (Python independen + `keuangan.py anggaran --musiman "THR=7jt" --status anak --bulan-cair 4` dijalankan penguji):**
+
+| Angka | SEBELUM | SESUDAH | Hitungan penguji / script |
+|---|---|---|---|
+| Total pos / defisit rutin | Rp8.100.000 / Rp1.100.000 ✓ | Rp8.100.000 / Rp1.100.000 ✓; 115,7% gaji rutin ✓ | Rp8.100.000 / Rp1.100.000 / 115,7% |
+| Baris "DEFISIT −Rp516.667 (vs gaji+THR/12)" | — | angka sama dengan script, tetapi muncul di bawah tabel yang judul ringkasannya defisit Rp1,1 jt — membingungkan | script "Catatan: DEFISIT Rp516.667" (basis THR/12) |
+| Banding 50/30/20 | — | Rp7.350.000 / Rp750.000 / Rp0 vs batas Rp3.500.000 / Rp2.100.000 / Rp1.400.000 ✓ | sama |
+| Pemangkasan | rokok −300 rb, jajan −200 rb, ortu −200 rb, dapur −200–300 rb → "±900 rb–1,1 jt, **cukup buat nutup defisit**" ✗ | 6 pos, total −Rp710.000, sisa defisit Rp390.000 ✓ (jujur: belum cukup) | SEBELUM maks. Rp1.000.000 < Rp1.100.000 → **tidak** cukup; SESUDAH = script |
+| Bulan sebelum THR cair | tidak dibahas (dianggap langsung impas) | kekurangan Rp840.000 / 610.000 / 390.000 / 390.000; kumulatif Rp1.840.000 sebelum THR, Rp2.230.000 s.d. bulan ke-4 ✓ | sama dengan script |
+| THR Rp7.000.000 | lunasi paylater → DD | Rp2.230.000 tutup transisi, sisa Rp4.770.000 → "setoran pertama dana darurat" | Rp4.770.000 ✓, tetapi script: sisa itu "hanya cukup menambal sisa defisit Rp390.000/bulan selama 12 bulan berikutnya" (4.770.000 ÷ 390.000 = 12,2) |
+| Setoran DD dari gaji selama defisit | "100–200 rb setelah impas" | Rp0 sampai defisit tertutup ✓ | Rp0 |
+| Pokok, target 9/12 bln | tidak ada target | Rp7.350.000; Rp66.150.000 / Rp88.200.000 ✓ | sama |
+| Alternatif tanpa kirim ortu | — | Rp6.850.000; Rp61.650.000 / Rp82.200.000 ✓ (disalin dari script) | sama |
+| Rasio cicilan | — | tidak disebut (12,1%, aman) | 12,1% |
+| Paylater | stop, lunasi dulu | stop, minta saldo/bunga/minimum untuk dihitung ✓ | — |
+
+Catatan SESUDAH: temuan v1.0.7 #3 **beres** — bulan sebelum THR cair ditangani dengan tabel per bulan, setoran DD dari gaji Rp0, defisit ditutup pemangkasan bertahap (Keinginan dulu), THR hanya penambal transisi. Semua nominal berasal dari script. Sisa cacat: (a) sisa THR Rp4.770.000 disarankan masuk dana darurat padahal sisa defisit Rp390.000/bln masih berjalan setelah bulan ke-4 tanpa sumber pasti (script sendiri menulis sisa THR itu untuk menambal 12 bulan berikutnya; SKILL.md langkah 4(d) menyuruh "sisanya disetor sekaligus ke dana darurat" — instruksi dan script tidak selaras); (b) kekurangan Rp1.840.000 sebelum THR disuruh "talangi dari saldo kalau ada" padahal dana darurat nol — tidak ada sumber konkret selain "jangan paylater"; (c) baris −Rp516.667 di tabel membingungkan pembaca awam.
+
+SEBELUM: ramah, jelas, langsung melarang paylater, ide tambah penghasilan. Tetapi klaim angka salah ("±900 rb–1,1 jt cukup nutup defisit" — maksimal Rp1.000.000), menyebut defisit bersumber dari "keinginan" padahal pokok saja sudah Rp6.850.000 + kiriman ortu, tidak membahas 4 bulan sebelum THR, tanpa target dana darurat.
+
+**Skor:** SEBELUM **6/10**. SESUDAH **8/10** — tepat, siap pakai, jujur bahwa pemangkasan belum cukup; dikurangi karena alokasi sisa THR bertentangan dengan sisa defisit dan talangan pra-THR tanpa sumber. Skill terpakai (read + exec).
+
+### Ringkasan uji ulang v1.0.8
+
+- **Skor rata-rata:** SEBELUM 6,25 → SESUDAH 7,75 (S1 6,5 → 7,5; S2 6 → 8).
+- **Temuan v1.0.7:** ✓ #1 angka alternatif "tanpa kiriman ortu" kini disalin dari script (S1 awal & lanjutan, S2) dan tepat; ✓ #2 kolom persen berbasis gaji rutin dengan judul yang benar, banding pola basis gaji rutin; ✓ #3 bulan sebelum THR cair ditangani (tabel kekurangan per bulan, setoran DD Rp0, pemangkasan bertahap, THR penambal sementara).
+- **VERDIK: BELUM** — ada satu kesalahan angka di S1 (rasio cicilan 24,8% bukan 34,4%, kesimpulan terbalik), dan rata-rata sesudah < 8.
+
+**Cacat untuk pembuat:**
+1. **Rasio cicilan salah baca (SEDANG).** S1: "Rasio cicilan (Motor+KPR) = 24,8% … masih di bawah batas aman 30%" dan Langkah 4 "24,8% … cukup dekat batas aman"; script: "Total cicilan Rp4.300.000 = 34,4% … DI ATAS patokan umum 30%". 24,8% adalah persen KPR di tabel. Saran: script mencetak rasio cicilan sebagai baris/kalimat siap tempel yang menonjol (mis. di bagian ringkasan atas: "Rasio cicilan 34,4% dari gaji rutin — DI ATAS 30%"), dan SKILL.md langkah 9 menambahkan rasio cicilan ke daftar angka yang wajib disalin dari script.
+2. **Sisa THR vs sisa defisit (SEDANG-RENDAH).** S2: sisa THR Rp4.770.000 disuruh jadi setoran pertama dana darurat, padahal defisit Rp390.000/bln masih berjalan setelah bulan ke-4; script sendiri menulis sisa itu "hanya cukup menambal sisa defisit … 12 bulan berikutnya". Akar: SKILL.md langkah 4(d) "sisanya disetor sekaligus ke dana darurat" tidak membedakan kasus pemangkasan cukup vs belum cukup. Saran: selaraskan — bila script menulis "BELUM cukup", sisa THR dicadangkan di rekening terpisah sebagai penambal sisa defisit (dan disebut berapa bulan), DD baru diisi setelah defisit tertutup; wajibkan menyalin kalimat siap tempel ketiga apa adanya.
+3. **Talangan pra-THR tanpa sumber (RENDAH).** Kekurangan Rp1.840.000 sebelum THR → "talangi dari saldo bila ada" padahal saldo Rp0. Saran: bila saldo DD/tabungan 0, script/SKILL.md memberi opsi konkret tanpa utang berbunga (tambahan pemasukan sementara, jual barang tak terpakai, minta keringanan jadwal ke pemilik kontrakan/keluarga, percepat pemangkasan bulan 1) atau menyatakan terang bahwa bulan 1–3 tetap minus.
+4. **Baris defisit basis THR/12 membingungkan (RENDAH).** S2 tabel: "DEFISIT −Rp516.667 (vs gaji+THR/12)" di bawah ringkasan defisit Rp1.100.000. Saran: saat defisit rutin, script melabeli catatan itu "gambaran setahun bila THR dibagi 12" atau tidak mencetaknya, agar agent tidak menaruhnya di tabel utama.
+
+**Cuplikan jualan:**
+- Tanpa skill: "Pangkas rokok, jajan, kiriman ortu, dapur — total ±900 rb–1,1 jt, cukup buat nutup defisit" (padahal maksimal Rp1.000.000 < defisit Rp1.100.000). Dengan skill: "Pemangkasan bertahap 3 bulan −Rp710.000, sisa defisit Rp390.000 dijelaskan terus terang; kekurangan per bulan sampai THR cair dihitung (Rp840.000 → Rp610.000 → Rp390.000), THR Rp7.000.000 menutup Rp2.230.000 masa transisi — tanpa paylater."
+- Tanya "kalau kiriman ortu nggak dihitung?" → dengan skill langsung dihitung ulang oleh script: target 9 bulan Rp88.650.000, tercapai ±4 tahun dengan THR.
