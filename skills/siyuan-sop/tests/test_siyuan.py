@@ -404,8 +404,11 @@ class UjiSiyuan(unittest.TestCase):
         self.assertIn("Cadangan", out)
         berkas = os.listdir("cadangan-siyuan")
         self.assertEqual(len(berkas), 1)
+        self.assertIn("-sebelum-", berkas[0])
         with open(os.path.join("cadangan-siyuan", berkas[0]), encoding="utf-8") as f:
-            self.assertIn("Bungkus rapi", f.read())
+            isi = f.read()
+        self.assertIn("Bungkus rapi", isi)
+        self.assertNotIn("baru", isi.replace("Bungkus", ""))
 
     def test_27e_cari_menyertakan_id_dan_petunjuk_baca(self):
         kode, out = self.jalan(["cari", "ongkir"])

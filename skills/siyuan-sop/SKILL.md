@@ -95,7 +95,7 @@ isinya apa adanya, boleh dirapikan format tampilannya tapi jangan mengubah makna
 4. Jika path sudah ada dokumennya, script **menolak** (kode 7). Tawarkan `tambah` (aman) atau **timpa** dengan alur wajib berikut. "Timpa aja"/"ganti aja" dari pengguna BUKAN konfirmasi akhir:
    1. Pratinjau: `buat ... --timpa` (tanpa `--ya`). Script menampilkan judul, jumlah baris isi lama vs baru, jumlah baris yang hilang, dan cuplikan isi lama. Tunjukkan semuanya ke pengguna.
    2. Konfirmasi akhir eksplisit: minta pengguna mengetik kata tegas (mis. "TIMPA") setelah melihat pratinjau. Tanpa itu, berhenti.
-   3. Jalankan `buat ... --timpa --ya --konfirmasi-timpa`. Script lebih dulu menyimpan **cadangan isi lama** (Markdown) ke `cadangan-siyuan/` di folder kerja, baru menghapus & membuat ulang; bila pembuatan gagal, isi lama dipulihkan otomatis dari cadangan. Sebutkan lokasi berkas cadangan ke pengguna.
+   3. Jalankan `buat ... --timpa --ya --konfirmasi-timpa`. Script lebih dulu menyimpan **cadangan isi lama** (Markdown) ke `cadangan-siyuan/` di folder kerja, baru menghapus & membuat ulang; bila pembuatan gagal, isi lama dipulihkan otomatis dari cadangan. Sebutkan lokasi berkas cadangan ke pengguna. Nama cadangan otomatis `cadangan-siyuan/<judul>-sebelum-<tanggal>.md` dan HANYA berisi isi LAMA; jangan menyimpan draf baru ke folder itu atau memakai nama "cadangan" untuk draf. Simpan draf baru terpisah di berkas bernama `draf-<judul>.md` (di folder kerja, bukan `cadangan-siyuan/`).
    4. Terangkan bahwa hapus-lalu-buat tidak atomik (itulah gunanya cadangan) dan id dokumen berubah. Tawarkan `tambah` bila pengguna sebenarnya hanya ingin menambah.
 
 ### E. Tambah isi ke dokumen yang sudah ada

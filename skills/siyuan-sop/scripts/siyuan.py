@@ -433,7 +433,7 @@ def p_buat(url, token, lokal, notebook, path, markdown, ya, timpa, konfirmasi_ti
     if ada and timpa:
         folder = folder_cadangan or "cadangan-siyuan"
         os.makedirs(folder, exist_ok=True)
-        berkas_cadangan = os.path.join(folder, f"{dt.datetime.now():%Y%m%d-%H%M%S}-{_slug(path)}.md")
+        berkas_cadangan = os.path.join(folder, f"{_slug(path)}-sebelum-{dt.datetime.now():%Y-%m-%d-%H%M%S}.md")
         with open(berkas_cadangan, "w", encoding="utf-8") as f:
             f.write(lama_md)
         panggil(url, token, "/api/filetree/removeDocByID", {"id": ada[0]}, lokal)
