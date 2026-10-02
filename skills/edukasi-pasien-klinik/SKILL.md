@@ -13,8 +13,9 @@ description: Draf balasan AMAN untuk chat pasien/admin klinik yang tanya gejala,
 >    instruksi yang **sudah ditulis dokter** untuk pasien tertentu (mis. dari resep) ke leaflet.
 > 2. **TANPA DIAGNOSIS.** Jangan menebak penyakit, menilai gejala, menafsir hasil lab, atau
 >    menilai gawat-tidaknya kondisi (bukan triase). Jangan menyarankan nama obat.
-> 3. **Pertanyaan obat/dosis/gejala dari pasien** -> pakai "Templat balasan aman" di bawah:
->    arahkan ke dokter/apoteker + tawarkan jadwal periksa + daftar tanda bahaya umum kapan ke
+> 3. **Pertanyaan obat/dosis/gejala dari pasien** -> pakai "Templat balasan aman" di bawah
+>    (A = demam anak/bayi; B = umum: dewasa, gigi, nyeri, keluhan lain):
+>    arahkan ke dokter/dokter gigi/apoteker + tawarkan jadwal periksa + daftar tanda bahaya umum kapan ke
 >    IGD/119 (sama untuk semua pasien, bukan penilaian kegawatan).
 > 4. **Selalu DRAF.** Pesan ke pasien disiapkan di chat; staf/tenaga kesehatan yang meninjau
 >    dan mengirim. Tidak ada kirim otomatis, auto-reply, atau broadcast.
@@ -141,8 +142,12 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 *(Asumsi: nomor kontak klinik belum diberikan, ditandai `[nomor klinik]` — mohon dilengkapi.)*
 
 ## Templat balasan aman: pasien tanya obat/dosis/gejala (PERLU REVIEW tenaga medis)
-Pakai untuk chat seperti "anak saya demam 39, obatnya apa dan dosisnya berapa?". Isi `[...]`
-dari klinik; jangan menambah obat/dosis/penilaian gejala.
+Pilih templat dari **jenis chat**, bukan dari penilaian gawat-tidaknya: **A. Demam anak/bayi**
+(chat menyebut anak/bayi + demam) atau **B. Umum** (dewasa, sakit gigi, nyeri, keluhan lain, atau
+tidak jelas). Isi `[...]` dari klinik; jangan menambah obat/dosis/penilaian gejala.
+
+### A. Demam anak/bayi
+Pakai untuk chat seperti "anak saya demam 39, obatnya apa dan dosisnya berapa?".
 ```
 Terima kasih sudah menghubungi [nama klinik], Bu/Pak. Untuk obat dan takarannya, mohon maaf
 kami tidak bisa menentukannya lewat chat - obat dan dosis perlu ditentukan dokter atau apoteker
@@ -161,6 +166,35 @@ Sumber daftar tanda bahaya (umum, tanpa dosis): WHO, *IMCI Chart Booklet* (Maret
 "general danger signs"; IDAI, "Demam: Kapan Harus ke Dokter?" (idai.or.id, diakses 2 Oktober
 2026). Rincian & tautan: `references/sumber-resmi-kesehatan.md`. Daftar ini dikirim **sama ke
 semua penanya** - skill tidak menilai apakah pasien tertentu gawat.
+
+### B. Umum - dewasa/anak, sakit gigi, nyeri, keluhan lain (PERLU REVIEW tenaga medis)
+Pakai untuk chat seperti "sakit gigi, boleh minum asam mefenamat berapa tablet?" atau "pusing
+dan nyeri, obatnya apa?". Pilih `[dokter / dokter gigi]` sesuai layanan yang ditanyakan (gigi →
+dokter gigi). Jangan menyebut nama obat yang ditanyakan pasien di draf.
+```
+Terima kasih sudah menghubungi [nama klinik], Bu/Pak. Untuk obat dan takarannya, mohon maaf
+kami tidak bisa menentukannya lewat chat - obat dan dosis perlu ditentukan [dokter / dokter
+gigi] atau apoteker setelah [Ibu/Bapak / anak Ibu/Bapak] diperiksa langsung. Kami sarankan
+diperiksakan ke [dokter / dokter gigi]. Mau kami bantu daftarkan jadwal periksa [hari ini, jam
+praktik: ISI]?
+
+Segera ke IGD terdekat atau hubungi 119 (jangan menunggu balasan chat ini) bila ada salah satu:
+- nyeri dada berat seperti tertindih, bisa menjalar ke lengan, rahang, atau punggung, disertai
+  keringat dingin
+- sesak atau sulit bernapas, bibir/kuku kebiruan
+- wajah tiba-tiba mencong, lengan/tungkai lemah atau baal sebelah, bicara pelo, atau sakit
+  kepala hebat mendadak
+- kejang, pingsan, sangat lemas, atau sulit dibangunkan
+- bengkak di mulut, wajah, atau leher; sulit menelan, berbicara, atau membuka mulut; mata
+  bengkak/nyeri
+- tidak mau/tidak bisa minum, atau muntah terus setiap makan/minum
+```
+Sumber daftar tanda bahaya umum (tanpa dosis): Kemenkes (Ayo Sehat), "Kenali Gejala Stroke
+dengan SeGeRa Ke RS" (28 Oktober 2023); Kemenkes (UPK), "Jangan Abaikan Nyeri Dada: Ancaman
+Serangan Jantung Bisa Datang Mendadak" (diakses 2 Oktober 2026); NHS, "Dental abscess" (ditinjau
+18 Maret 2026); WHO, *IMCI Chart Booklet* (Maret 2014). Tautan: `references/sumber-resmi-kesehatan.md`.
+Daftar ini dikirim **sama ke semua penanya** dewasa/gigi/nyeri - bukan penilaian kasus.
+**PERLU REVIEW tenaga medis** sebelum dipakai sebagai templat tetap.
 
 Catatan untuk admin (di luar draf), contoh: "Ini draf; mohon dicek tenaga kesehatan/staf klinik
 sebelum dikirim. Draf **tidak** memberi nama obat/dosis dan **tidak** menilai gejala; hanya
