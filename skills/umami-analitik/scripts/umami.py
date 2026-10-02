@@ -53,12 +53,12 @@ TZ = {"WIB": (7, "Asia/Jakarta"), "WITA": (8, "Asia/Makassar"), "WIT": (9, "Asia
 PERIODE = ["hari-ini", "kemarin", "7hari", "30hari", "minggu-ini", "minggu-lalu", "bulan-ini", "bulan-lalu"]
 KANAL = {
     "direct": "Langsung (termasuk WA/aplikasi tanpa UTM)",
-    "organicSocial": "Media sosial (organik)", "paidSocial": "Media sosial (iklan)",
-    "organicSearch": "Pencarian Google dll (organik)", "paidSearch": "Pencarian (iklan)",
+    "organicSocial": "Media sosial (organik = dari IG/TikTok dll tanpa iklan)", "paidSocial": "Media sosial (iklan)",
+    "organicSearch": "Pencarian Google dll (organik = hasil biasa, bukan iklan)", "paidSearch": "Pencarian (iklan)",
     "paidAds": "Iklan (gclid/fbclid/ttclid)", "referral": "Situs lain (rujukan)", "email": "Email",
     "sms": "SMS", "affiliate": "Afiliasi", "llm": "Asisten AI (ChatGPT dll)",
-    "organicVideo": "Video (organik)", "paidVideo": "Video (iklan)",
-    "organicShopping": "Belanja/marketplace (organik)", "paidShopping": "Belanja (iklan)",
+    "organicVideo": "Video (organik = tanpa iklan)", "paidVideo": "Video (iklan)",
+    "organicShopping": "Belanja/marketplace (organik = tanpa iklan)", "paidShopping": "Belanja (iklan)",
 }
 PERANGKAT = {"mobile": "HP", "desktop": "Komputer (layar besar)", "laptop": "Laptop", "tablet": "Tablet"}
 NEGARA = {"ID": "Indonesia", "MY": "Malaysia", "SG": "Singapura", "US": "Amerika Serikat", "AU": "Australia",

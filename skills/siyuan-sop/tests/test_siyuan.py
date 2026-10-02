@@ -159,6 +159,16 @@ class UjiSiyuan(unittest.TestCase):
     def setUp(self):
         K.reset()
         siyuan._RAHASIA.clear()
+        self._tmp = tempfile.TemporaryDirectory()
+        self._asli_default = siyuan.FILE_KUNCI_DEFAULT
+        siyuan.FILE_KUNCI_DEFAULT = os.path.join(self._tmp.name, "tidak-ada", "kunci.txt")
+        self._cwd = os.getcwd()
+        os.chdir(self._tmp.name)
+
+    def tearDown(self):
+        os.chdir(self._cwd)
+        siyuan.FILE_KUNCI_DEFAULT = self._asli_default
+        self._tmp.cleanup()
 
     # -------- utilitas
     def jalan(self, argv, token=TOKEN_BENAR, izinkan=False):
@@ -363,11 +373,64 @@ class UjiSiyuan(unittest.TestCase):
 
     def test_27_buat_timpa_dengan_ya_mengganti(self):
         kode, out = self.jalan(["buat", "--notebook", "20260101000000-aaaaaaa", "--path", "/FAQ/Ongkos Kirim",
-                                 "--md", "isi ganti total", "--timpa", "--ya"])
+                                 "--md", "isi ganti total", "--timpa", "--ya", "--konfirmasi-timpa"])
         self.assertEqual(kode, 0)
         self.assertNotIn("20260201000000-doc0001", K.docs)
         baru = K.hpath_index[("20260101000000-aaaaaaa", "/FAQ/Ongkos Kirim")]
         self.assertEqual(K.docs[baru]["content"], "isi ganti total")
+
+    def test_27b_timpa_ya_tanpa_konfirmasi_ditolak(self):
+        kode, out = self.jalan(["buat", "--notebook", "20260101000000-aaaaaaa", "--path", "/FAQ/Ongkos Kirim",
+                                 "--md", "isi ganti", "--timpa", "--ya"])
+        self.assertEqual(kode, siyuan.KELUAR_ARG)
+        self.assertIn("konfirmasi", out)
+        self.assertIn("20260201000000-doc0001", K.docs)
+        self.assertFalse(os.path.exists("cadangan-siyuan"))
+
+    def test_27c_pratinjau_timpa_menampilkan_isi_lama_dan_judul(self):
+        kode, out = self.jalan(["buat", "--notebook", "20260101000000-aaaaaaa", "--path", "/SOP/Packing Pesanan",
+                                 "--md", "baru", "--timpa"])
+        self.assertEqual(kode, 0)
+        self.assertIn("Packing Pesanan", out)
+        self.assertIn("ISI LAMA", out)
+        self.assertIn("Bungkus rapi", out)
+        self.assertIn("konfirmasi akhir", out)
+        self.assertIn("20260201000000-doc0002", K.docs)
+
+    def test_27d_timpa_membuat_cadangan_isi_lama(self):
+        kode, out = self.jalan(["buat", "--notebook", "20260101000000-aaaaaaa", "--path", "/SOP/Packing Pesanan",
+                                 "--md", "baru", "--timpa", "--ya", "--konfirmasi-timpa"])
+        self.assertEqual(kode, 0)
+        self.assertIn("Cadangan", out)
+        berkas = os.listdir("cadangan-siyuan")
+        self.assertEqual(len(berkas), 1)
+        with open(os.path.join("cadangan-siyuan", berkas[0]), encoding="utf-8") as f:
+            self.assertIn("Bungkus rapi", f.read())
+
+    def test_27e_cari_menyertakan_id_dan_petunjuk_baca(self):
+        kode, out = self.jalan(["cari", "ongkir"])
+        self.assertEqual(kode, 0)
+        self.assertIn("id 20260201000000-doc0001", out)
+        self.assertIn("baca --id", out)
+
+    def test_09b_kunci_tersimpan_menang_atas_env_default(self):
+        p = siyuan.FILE_KUNCI_DEFAULT
+        os.makedirs(os.path.dirname(p))
+        with open(p, "w", encoding="utf-8") as f:
+            f.write(TOKEN_BENAR + "\n")
+        os.chmod(p, 0o600)
+        kode, out = self.jalan(["cek"], token="token-tempelan-chat-salah")
+        self.assertEqual(kode, 0)
+        self.assertIn("PERINGATAN", out)
+        self.assertIn("DIABAIKAN", out)
+        self.assertNotIn("token-tempelan-chat-salah", out)
+
+    def test_09c_simpan_kunci_dengan_argumen_token_memberi_peringatan(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            kode = siyuan.main(["--url", self.url, "simpan-kunci", "--token", TOKEN_BENAR])
+        self.assertEqual(kode, 0)
+        self.assertIn("PERINGATAN", out.getvalue())
 
     def test_28_buat_path_wajib_garis_miring(self):
         kode, out = self.jalan(["buat", "--notebook", "20260101000000-aaaaaaa", "--path", "SOP/Baru",
