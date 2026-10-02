@@ -192,7 +192,7 @@ class TestRusak(unittest.TestCase):
     def test_rusak(self):
         self.cek(orang(gaji_pokok="abc"))
         self.cek(orang(tanggal_mulai="31-31-2026"))
-        self.cek(orang(tanggal_mulai="2028-01-01"))
+        self.cek(orang(tanggal_mulai="2026-12-01", tanggal_berhenti="2026-11-01"))   # mulai setelah berhenti
         self.cek(orang(tanggal_mulai="", masa_kerja_bulan=""))
         self.cek(orang(jenis="magang"))
         self.cek(orang(jenis="harian", upah_bulanan=""))
@@ -301,6 +301,68 @@ class TesCekTanggalLebaran(unittest.TestCase):
         p = subprocess.run([sys.executable, s, "2027-03-10", "--cek", "idul-fitri"], capture_output=True, text=True, timeout=60)
         self.assertNotIn("PERINGATAN", p.stdout)
         self.assertIn("COCOK", p.stdout)
+
+
+class TesPrivasiDanTanggalMasaDepan(unittest.TestCase):
+    """v1.0.6 (uji OpenClaw 2026-10-02): nominal per orang bocor ke pengumuman grup; tanggal masuk masa depan lolos."""
+
+    CSV = ("nama;gaji_sebulan;tanggal_masuk\nAndi;Rp 5.500.000;01/07/2019\nSari;Rp 4.000.000;01/03/2026\n"
+           "Yohanes;Rp 6.200.000;10/11/2026\nBaru;5jt;05/01/2027\n")
+
+    def jalan(self, *extra):
+        with tempfile.TemporaryDirectory() as tmp:
+            f = os.path.join(tmp, "k.csv")
+            with open(f, "w", encoding="utf-8") as fh:
+                fh.write(self.CSV)
+            return subprocess.run([sys.executable, os.path.join(FOLDER, "thr.py"), "--hari-raya", "2026-12-25",
+                                   "--nama-hari-raya", "Natal 2026", "--data", f, "--hari-ini", "2026-10-02"] +
+                                  list(extra), capture_output=True, text=True, timeout=60)
+
+    def test_masa_depan_diperingatkan(self):
+        c = cfg("2026-12-25")
+        c["hari_ini"] = datetime.date(2026, 10, 2)
+        h = thr.hitung_karyawan(orang(tanggal_mulai="2026-11-10", gaji_pokok="6,2jt"), c)
+        self.assertEqual(h["thr"], 516667)
+        self.assertTrue(any("MASA DEPAN" in x for x in h["peringatan"]))
+        h = thr.hitung_karyawan(orang(tanggal_mulai="2026-03-01", gaji_pokok="4jt"), c)
+        self.assertFalse(any("MASA DEPAN" in x for x in h["peringatan"]))
+        self.assertEqual(h["thr"], 3000000)
+
+    def test_mulai_setelah_hari_raya_tidak_berhak_dan_diperingatkan(self):
+        h = thr.hitung_karyawan(orang(tanggal_mulai="2028-01-01"), cfg())
+        self.assertFalse(h["berhak"])
+        self.assertEqual(h["thr"], 0)
+        self.assertIn("setelah hari raya", h["alasan"])
+        self.assertTrue(any("SETELAH tanggal hari raya" in x for x in h["peringatan"]))
+
+    def test_format_pengumuman_tanpa_nama_dan_nominal(self):
+        r = self.jalan("--format", "pengumuman")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        for kata in ("Andi", "Sari", "Yohanes", "5.500.000", "3.000.000", "516.667", "Rp "):
+            self.assertNotIn(kata, r.stdout, kata)
+        self.assertIn("PRIBADI", r.stdout)
+        self.assertIn("18 Desember 2026", r.stdout)
+        self.assertIn("peringatan", r.stderr)
+
+    def test_teks_dua_blok_terpisah(self):
+        r = self.jalan()
+        self.assertEqual(r.returncode, 0, r.stderr)
+        a = r.stdout.index("KHUSUS PEMILIK/HR")
+        b = r.stdout.index("TEKS GRUP")
+        self.assertLess(a, b)
+        grup = r.stdout[b:]
+        for kata in ("Andi", "Sari", "5.500.000", "516.667"):
+            self.assertNotIn(kata, grup, kata)
+        self.assertIn("MASA DEPAN", r.stdout[:b])
+        self.assertNotIn("— -", r.stdout)
+
+    def test_json_pengumuman_bersih(self):
+        r = self.jalan("--format", "json")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        d = json.loads(r.stdout)
+        self.assertNotIn("Sari", d["pengumuman"])
+        self.assertIn("privasi", d)
+        self.assertEqual([k["thr"] for k in d["karyawan"]], [5500000, 3000000, 516667, 0])
 
 
 if __name__ == "__main__":

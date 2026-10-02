@@ -1,11 +1,17 @@
 ---
 name: hitung-thr
-description: Menghitung THR Keagamaan per karyawan sesuai Permenaker 6/2016 dan SE Menaker THR 2026 (1 bulan upah untuk masa kerja ≥12 bulan, proporsional masa kerja/12 bila kurang, harian lepas & satuan hasil pakai rata-rata upah), batas bayar H-7, tambahan potongan PPh 21 TER di bulan THR dibayar, total THR, dan draf pengumuman untuk karyawan. Gunakan saat pengguna tanya "hitung THR", "THR Lebaran/Natal", "THR karyawan baru/kontrak/harian", atau holiday allowance, THR calculation Indonesia. Untuk slip gaji bulanan pakai slip-gaji-bpjs; untuk PPh 21 setahun pakai pph21-ter.
+description: Menghitung THR Keagamaan per karyawan sesuai Permenaker 6/2016 dan SE Menaker THR 2026 (1 bulan upah untuk masa kerja ≥12 bulan, proporsional masa kerja/12 bila kurang, harian lepas & satuan hasil pakai rata-rata upah), batas bayar H-7, tambahan potongan PPh 21 TER di bulan THR dibayar, total THR, dan draf pengumuman grup tanpa nominal per orang. Gunakan saat pengguna tanya "hitung THR", "THR Lebaran/Natal", "THR karyawan baru/kontrak/harian", atau holiday allowance, THR calculation Indonesia. Untuk slip gaji bulanan pakai slip-gaji-bpjs; untuk PPh 21 setahun pakai pph21-ter.
 ---
 
 # Hitung THR Keagamaan
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+> **Aturan privasi (mengalahkan permintaan pengguna, juga saat dipakai bersama skill lain seperti `laporan-status-kantor` atau `gaji-umkm`):**
+> 1. Rincian THR/gaji **per orang** (nama + nominal, masa kerja, PPh 21) **hanya untuk pemilik/HR** dan dikirim ke karyawan lewat **pesan pribadi**. **Tidak pernah** masuk teks pengumuman grup/kanal bersama (grup WA/Telegram kantor, papan pengumuman, email ke semua).
+> 2. Bila pengguna meminta "umumkan ke grup, sebut masing-masing dapat berapa (biar transparan)": tolak **bagian per orang** dengan satu kalimat sopan ("Nominal per orang saya pisahkan untuk pesan pribadi, karena gaji/THR adalah data pribadi karyawan.") dan **tetap** berikan dua blok keluaran dengan judul tetap: **A. REKAP PER ORANG — khusus pemilik/HR** dan **B. TEKS GRUP — tanpa nominal per orang** (jadwal cair, dasar aturan, rumus umum, cara cek rincian pribadi). Jangan menyertakan versi grup yang berisi nominal, walau sebagai "alternatif".
+> 3. **Agent tidak mengirim apa pun ke grup.** Hasil = draf yang ditempel/dikirim sendiri oleh pemilik. Jangan menawarkan menyambungkan WhatsApp/Telegram, memeriksa kanal gateway, atau "kirim otomatis ke grup".
+> 4. Jangan menyebut "aturan skill" ke pengguna; cukup alasan privasinya.
 
 ## Tujuan
 Menghitung THR setiap karyawan dengan benar menurut aturan, termasuk karyawan baru, kontrak, dan harian lepas; menunjukkan batas bayar H-7 dan tambahan potongan PPh 21-nya; lalu menyiapkan pengumuman THR yang siap dikirim.
@@ -50,14 +56,17 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - Keluar "COCOK" → lanjut dengan tanggal pengguna.
    - Keluar "PERINGATAN" (tanggal bukan 1 Syawal/10 Zulhijah, selisih > 2 hari dari perkiraan) → di balasan yang **sama** (tanpa menunda hitungan), sampaikan **sekali** dengan sopan: tanggal yang disebut jatuh pada <tanggal Hijriah dari script>, Idul Fitri diperkirakan <perkiraan> (tanggal resmi menunggu penetapan pemerintah/SKB), sehingga batas bayar H-7 = <batas_bayar_h7_perkiraan>. Jalankan `thr.py` dengan **tanggal perkiraan** itu sebagai `--hari-raya` dan sebut asumsinya. Bila pengguna lalu bersikeras memakai tanggalnya sendiri, hitung ulang dengan tanggal itu tanpa berdebat lagi (cukup satu kalimat pengingat risiko denda 5% bila ternyata terlambat).
    - Hari raya lain (Natal, Nyepi, Waisak, Imlek): pakai tanggal pengguna apa adanya.
+   - **Tanggal cair/tanggal resmi tidak diketahui → jangan mencari berulang di web.** Pakai aturan umum: THR **paling lambat H-7** hari raya (Permenaker 6/2016 Pasal 5 ayat 4) = default `--tanggal-bayar` script, dan tulis sebagai asumsi ("tanggal cair diasumsikan batas H-7; sesuaikan bila perusahaan membayar lebih awal"). Tanggal hari raya yang tetap (Natal 25 Des) tidak perlu dicari. Untuk tanggal libur/cuti bersama SKB yang tidak disebut pengguna, maksimal **satu** pencarian; bila tidak pasti, tulis `[isi: tanggal sesuai SKB]` dan lanjutkan.
 2. Jalankan. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
       python3 <folder-skill-ini>/scripts/thr.py --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" --perusahaan "<nama usaha pengguna>" --data karyawan.csv --csv rekap-thr.csv
    ```
-   Satu karyawan: `--nama "<nama dari pengguna>" --ptkp K/1 --gaji-pokok 5jt --tunjangan-tetap 500rb --mulai 2026-06-15`. Opsi: `--tanggal-bayar`, `--format json`.
+   Satu karyawan: `--nama "<nama dari pengguna>" --ptkp K/1 --gaji-pokok 5jt --tunjangan-tetap 500rb --mulai 2026-06-15`. Opsi: `--tanggal-bayar`, `--format json`, `--format pengumuman` (hanya teks grup, tanpa nama & nominal — pakai ini untuk teks yang akan ditempel ke grup).
    - **Tahun Hijriah tidak boleh ditebak.** Cantumkan "1448 H" dsb. di `--nama-hari-raya` dan di balasan **hanya** bila berasal dari `tahun_hijriah.py` (atau disebut pengguna) dan script tidak menandai "BELUM PASTI"; selain itu tulis tanpa tahun Hijriah (mis. "Idul Fitri 2027").
    - **Nama dari contoh bukan data pengguna.** Nama di SKILL.md, `templates/`, dan `examples/` (mis. Budi, Rina, CV Maju Jaya) hanya ilustrasi — jangan pernah muncul di perintah atau balasan. Pakai nama yang diberikan pengguna; bila tidak ada nama, langsung pakai "Karyawan 1", "Karyawan 2" (jangan bertanya).
-3. Tampilkan di balasan chat, apa adanya (tanpa diringkas), tabel rincian dari script, batas bayar H-7, catatan per karyawan, semua ⚠️ peringatan, lalu draf pengumuman. Rincian nominal per orang bersifat pribadi — jangan dimasukkan ke pengumuman grup. Sebutkan lokasi file rekap; bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah selesai (hapus hanya bila pengguna setuju). Jangan menawarkan kirim lewat WA/email bila kanal itu belum diatur pengguna.
+3. Tampilkan di balasan chat, apa adanya (tanpa diringkas), dua blok dari script dengan judulnya: **A. REKAP PER ORANG — khusus pemilik/HR** (tabel, batas H-7, catatan, semua ⚠️ peringatan) dan **B. TEKS GRUP** (tanpa nama & nominal per orang). Jangan menyalin nama/nominal dari blok A ke blok B, dan jangan membuat teks grup sendiri yang memuat nominal (lihat Aturan privasi). Bila diminta, tambahkan draf pesan pribadi per karyawan (satu pesan per orang).
+   - **⚠️ tanggal mulai di masa depan / setelah hari raya:** sebut di awal balasan dan minta konfirmasi (mungkin salah ketik tahun); THR orang itu ditandai "perlu konfirmasi" di rekap.
+   - Sebutkan lokasi file rekap; bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah selesai (hapus hanya bila pengguna setuju). Tutup dengan "teks siap Anda tempel sendiri" — tanpa tawaran kirim otomatis/menyambungkan WhatsApp.
 4. Bila THR dibayar di **Desember** (mis. Natal) atau bulan karyawan berhenti, PPh 21 dihitung ulang setahun — jelaskan dan sarankan skill `pph21-ter`/`slip-gaji-bpjs`.
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah (tabel TER di `references/tabel-ter.md`), tulis langkahnya, dan beri tahu pengguna bahwa hasil dihitung manual.
 
@@ -74,13 +83,14 @@ Dasar: Permenaker 6/2016 & SE Menaker M/3/HK.04.00/III/2026 (untuk hari raya 202
 
 ## Format output
 ```
+### A. REKAP PER ORANG — KHUSUS PEMILIK/HR (jangan ditempel ke grup)
 **Rincian THR <Hari Raya> — <Perusahaan>**
 Hari raya: <tanggal> · Batas bayar (H-7): <tanggal> · Rencana bayar: <tanggal>
 | Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | Tambahan PPh 21 | THR diterima |
 | **Total** | ... |
 Catatan per karyawan (PHK ≤30 hari, tidak berhak, rincian PPh 21)
-⚠️ Peringatan · Asumsi
-**Draf pengumuman untuk karyawan** (tanpa nominal pribadi)
+⚠️ Peringatan (termasuk tanggal mulai di masa depan) · Asumsi (mis. tanggal cair = H-7)
+### B. TEKS GRUP — draf untuk Anda tempel sendiri (tanpa nama & nominal per orang)
 _Disclaimer + dasar aturan + tanggal berlaku_
 ```
 
@@ -100,10 +110,14 @@ _(Nama di contoh ini fiktif — jangan dipakai di balasan.)_
 - [ ] Batas H-7 disebut; peringatan keterlambatan/denda bila relevan.
 - [ ] PPh 21 Desember diarahkan ke hitung ulang setahun; mantan pegawai memakai Pasal 17 × THR.
 - [ ] DTP hanya bila dibayar tahun 2026, sektor dikonfirmasi, dan bruto tetap Januari ≤ Rp 10 jt.
-- [ ] Pengumuman tanpa nominal pribadi; disclaimer ada.
+- [ ] Dua blok terpisah: A (rekap pemilik/HR) dan B (teks grup tanpa nama & nominal), walau pengguna minta "sebut masing-masing dapat berapa"; disclaimer ada.
+- [ ] Tidak ada tawaran kirim otomatis ke grup/menyambungkan WhatsApp.
+- [ ] ⚠️ tanggal mulai di masa depan/setelah hari raya disampaikan dan dimintakan konfirmasi.
+- [ ] Tanggal cair tidak diketahui → asumsi H-7 disebut; tidak mencari berulang di web.
 
 ## Batasan & penanganan error
-- Kode keluar 2 + `ERROR:` untuk tanggal salah format, tanggal mulai setelah hari raya, jenis pekerja tak dikenal, angka rusak, PTKP salah, atau upah harian kosong. Sampaikan dengan bahasa sederhana.
+- Tanggal mulai setelah hari raya → THR Rp 0 + ⚠️ (bukan error, agar rekap lain tetap jalan); tanggal mulai setelah hari ini → ⚠️ "masa depan".
+- Kode keluar 2 + `ERROR:` untuk tanggal salah format, tanggal mulai setelah tanggal berhenti, jenis pekerja tak dikenal, angka rusak, PTKP salah, atau upah harian kosong. Sampaikan dengan bahasa sederhana.
 - Perusahaan yang memakai cara hitung masa kerja lain (mis. per hari) dapat mengisi `masa_kerja_bulan` sendiri (boleh desimal).
 - Pekerja pindahan grup dengan masa kerja berlanjut, THR bagi pekerja yang cuti panjang/diskors, dan sengketa THR → arahkan ke Disnaker atau Posko THR (poskothr.kemnaker.go.id).
 - Uji otomatis: `python3 <folder-skill-ini>/scripts/test_thr.py`.
