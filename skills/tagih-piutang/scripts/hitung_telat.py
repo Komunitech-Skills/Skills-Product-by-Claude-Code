@@ -571,12 +571,25 @@ def olah_baris(baris, tgl):
         rekap[d["umur"]]["total"] += d["sisa"]
     telat = [d for d in daftar if d["hari_terlambat"] > 0]
     return {"tanggal_hitung": tgl.isoformat(), "tanggal_hitung_teks": tgl_id(tgl),
+            "ringkasan_grup": ringkasan_grup(tgl, daftar, telat),
             "total_piutang": sum(d["sisa"] for d in daftar),
             "total_telat": sum(d["sisa"] for d in telat), "jumlah_invoice_telat": len(telat),
             "rekap_umur": rekap, "kolom_dipakai": peta,
             "catatan_kolom": (f"Kolom {peta['sisa']!r} dipakai sebagai jumlah yang belum dibayar."
                               if pakai_sisa else None),
             "daftar": daftar, "baris_dilewati": dilewati}
+
+
+def ringkasan_grup(tgl, daftar, telat):
+    """Teks aman untuk grup/tim: hanya jumlah faktur & total (agregat), TANPA nama pelanggan, nomor invoice,
+    nomor HP, atau sisa per pelanggan. Data per pelanggan tetap khusus pemilik/admin keuangan."""
+    b = [f"Rekap piutang per {tgl_id(tgl)}:",
+         f"- Faktur belum lunas: {len(daftar)}, total {rupiah(sum(d['sisa'] for d in daftar))}",
+         f"- Sudah lewat jatuh tempo: {len(telat)} faktur, total {rupiah(sum(d['sisa'] for d in telat))}"]
+    if telat:
+        b.append(f"- Paling lama terlambat: {max(d['hari_terlambat'] for d in telat)} hari")
+    b.append("Penagihan sedang ditindaklanjuti oleh bagian keuangan; rincian per pelanggan tidak dibagikan di grup.")
+    return "\n".join(b)
 
 
 def teks_satu(h):
@@ -619,6 +632,9 @@ def teks_banyak(h):
     if h["baris_dilewati"]:
         b.append("\nBaris dilewati:")
         b += [f"- baris {x['baris']}: {x['alasan']}" for x in h["baris_dilewati"]]
+    b += ["", "### Ringkasan aman untuk grup (tanpa nama pelanggan — salin blok ini saja ke grup/tim)", "```",
+          h["ringkasan_grup"], "```",
+          "(Tabel per pelanggan di atas KHUSUS pemilik/admin keuangan — jangan ditempel ke grup.)"]
     return "\n".join(b)
 
 
