@@ -1,16 +1,23 @@
 ---
 name: dolibarr-usaha
-description: Mengoperasikan Dolibarr ERP/CRM LOKAL milik pengguna (DoliWamp di komputer sendiri) lewat REST API resmi - cek koneksi & hak kunci API, cari/tambah pelanggan, buat DRAF invoice dengan PPN 12% x DPP 11/12 yang dihitung sendiri lalu dicocokkan dengan Dolibarr, daftar piutang belum lunas + umur piutang, cek stok & produk menipis, laporan harian penjualan untuk Telegram pemilik (jadwal OpenClaw). Default hanya baca; menulis butuh konfirmasi; tanpa validasi/bayar/hapus otomatis. Gunakan saat pengguna menyebut Dolibarr/DoliWamp atau minta "buat invoice di Dolibarr", "cek stok Dolibarr", "siapa yang belum bayar", "piutang Dolibarr", "tambah pelanggan Dolibarr", "laporan harian Dolibarr", Dolibarr API, create draft invoice, low stock, accounts receivable aging.
+description: Mengoperasikan Dolibarr ERP/CRM LOKAL milik pengguna (DoliWamp di komputer sendiri) lewat REST API resmi - cek koneksi & hak kunci API, cari/tambah pelanggan, buat DRAF invoice dengan PPN 12% x DPP 11/12 yang dihitung sendiri lalu dicocokkan dengan Dolibarr, daftar piutang belum lunas + umur piutang, cek stok & produk menipis, laporan harian penjualan untuk Telegram pemilik (jadwal OpenClaw). Default hanya baca; menulis butuh konfirmasi; tanpa validasi/bayar/hapus otomatis. Gunakan saat pengguna menyebut Dolibarr/DoliWamp atau minta "buat invoice di Dolibarr", "cek stok Dolibarr", "siapa yang belum bayar", "piutang Dolibarr", "tambah pelanggan Dolibarr", "laporan harian Dolibarr", Dolibarr API, create draft invoice, low stock, accounts receivable aging. Juga untuk ekspor CSV Dolibarr (file daftar invoice): piutang, tagihan belum lunas, umur piutang lewat `piutang-csv` tanpa koneksi. Hanya draf, tidak mengirim ke pelanggan (draf pesan disalin & dikirim sendiri).
 ---
 
 # Dolibarr Usaha (asisten Dolibarr lokal)
+
+## ATURAN WAJIB (baca dulu)
+1. Pesan untuk pelanggan = **hanya DRAF teks**. Dilarang menawarkan/menanyakan "mau saya kirim langsung (WA/email/Telegram)?".
+2. Tutup setiap draf pesan pelanggan dengan kalimat baku: "Draf di atas siap Anda salin dan kirim sendiri lewat WA."
+3. Ada file CSV ekspor/daftar piutang dari pengguna → **wajib** jalankan `piutang-csv` (jangan hitung sendiri).
+4. **Tempel keluaran script apa adanya** di balasan, termasuk baris "Sumber: file CSV ekspor ..." dan kalimat draf-saja di akhirnya.
+5. Angka tidak boleh diubah/dikira; yang menulis/mengirim adalah manusia.
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Pemilik usaha yang memakai **Dolibarr di komputernya sendiri** (pengganti Jurnal/Accurate + Moka + CRM berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/dolibarr.py` untuk membaca atau menyiapkan data lewat **REST API resmi Dolibarr** (`/api/index.php`, header `DOLAPIKEY`). Data tetap di komputer pengguna. Python standar saja, tanpa instalasi paket.
 
-**Versi 1.0.10** (revisi: jalur `piutang-csv` untuk ekspor CSV, larangan kirim langsung ke pelanggan; diuji regresi 98/98). **Status uji (inti, v1.0.5):** diuji dengan **Dolibarr asli 24.0.1 dan 22.0.4** (PHP 8.4 + MariaDB 10.11 di Linux, kunci admin/terbatas; uji independen v1.0.0–v1.0.2 di 24.0.1, v1.0.3 di server tiruan; perbaikan v1.0.4 (koneksi putus saat membuat draf) diuji independen di server tiruan; perbaikan v1.0.5 (galat 5xx/jawaban terpotong saat menulis, draf kosong perintah lain) baru diuji pembuat di server tiruan) + uji regresi dengan server tiruan dari respons asli. **Belum** diuji di DoliWamp Windows sungguhan.
+**Versi 1.0.11** (revisi: aturan wajib di atas; `piutang-csv` mencetak baris Sumber & kalimat draf-saja; diuji regresi). **Status uji (inti, v1.0.5):** diuji dengan **Dolibarr asli 24.0.1 dan 22.0.4** (PHP 8.4 + MariaDB 10.11 di Linux, kunci admin/terbatas; uji independen v1.0.0–v1.0.2 di 24.0.1, v1.0.3 di server tiruan; perbaikan v1.0.4 (koneksi putus saat membuat draf) diuji independen di server tiruan; perbaikan v1.0.5 (galat 5xx/jawaban terpotong saat menulis, draf kosong perintah lain) baru diuji pembuat di server tiruan) + uji regresi dengan server tiruan dari respons asli. **Belum** diuji di DoliWamp Windows sungguhan.
 
 ## Kapan digunakan
 - "Cek Dolibarr saya nyambung?", "kunci API saya aman?" → `cek`
@@ -170,7 +177,7 @@ _Dasar PPN: UU HPP & PMK 131/2024 (tarif 12%, DPP nilai lain 11/12 untuk barang/
 | Daftar kosong | Belum ada data | Sampaikan apa adanya; jangan mengarang |
 - Satu bagian laporan gagal (mis. modul Stok mati) → bagian itu "Tidak bisa dibaca", bagian lain tetap dikirim. **Semua** bagian gagal → kode keluar bukan 0 (jadwal OpenClaw tercatat gagal).
 - Invoice berbaris banyak gagal di tengah (ditolak Dolibarr, koneksi putus, jawaban terpotong, atau galat 5xx) → kode 8; draf tetap ada dan script **tidak menghapus**. Script menyebut baris yang ditolak (galat 4xx, pasti tidak masuk), baris yang *mungkin* sudah masuk (putus/terpotong/5xx) beserta hasil baca ulang ("baris N SUDAH/BELUM masuk"), dan isi draf yang terbaca ulang. Minta pengguna melengkapi/menghapus draf di Dolibarr; pengulangan perintah yang sama ditahan selama draf itu ada.
-- Multi-mata-uang, multi-perusahaan (multicompany), harga termasuk PPN, dan uang masuk per tanggal bayar **belum didukung** v1.0.10. Laporan tanggal lampau memakai status bayar piutang **saat ini** (diberi label).
+- Multi-mata-uang, multi-perusahaan (multicompany), harga termasuk PPN, dan uang masuk per tanggal bayar **belum didukung** v1.0.11. Laporan tanggal lampau memakai status bayar piutang **saat ini** (diberi label).
 - **Python tidak bisa dijalankan:** jangan memanggil API dengan cara lain. Pandu pengguna melihat data yang sama di layar Dolibarr (menu Tagihan > Nota belum dibayar; Produk > Stok) dan beri label "dibaca manual".
 - Uji regresi (`tests/`) hanya ada di repo pengembang Komunitech, tidak ikut paket pembeli.
 

@@ -1465,6 +1465,9 @@ class UjiPiutangCsv(unittest.TestCase):
         self.assertEqual(h["IN2607-0003"], 64)
         self.assertEqual(h["IN2609-0005"], -3)
         self.assertIn("BUKAN koneksi langsung", d["teks"])
+        self.assertIn("Sumber: file CSV ekspor", d["teks"])
+        self.assertIn("kirim sendiri lewat WA", d["teks"])
+        self.assertIn("tidak mengirim", d["teks"])
 
     def test_samarkan_dan_format_inggris_titik_koma(self):
         with tempfile.TemporaryDirectory() as t:

@@ -1474,7 +1474,9 @@ def cmd_piutang_csv(args, offset):
     return susun_laporan_piutang(
         baris, catatan, hari_ini, args,
         "Sumber: file CSV ekspor ({}), BUKAN koneksi langsung ke Dolibarr. Status bayar sesuai saat file diekspor; "
-        "cocokkan dengan layar Dolibarr sebelum menagih.".format(os.path.basename(args.file)))
+        "cocokkan dengan layar Dolibarr sebelum menagih.\n"
+        "Draf di atas siap Anda salin dan kirim sendiri lewat WA. Hanya draf, tidak mengirim ke pelanggan.".format(
+            os.path.basename(args.file)))
 
 
 # ------------------------------------------------------------------ perintah: stok
