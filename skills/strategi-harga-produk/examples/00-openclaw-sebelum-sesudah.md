@@ -1,17 +1,19 @@
 # Uji OpenClaw sebelum/sesudah — strategi-harga-produk
 
-**Tanggal:** 2026-10-02 (uji ulang, versi skill 1.0.5)  
+**Tanggal:** 2026-10-02 (uji ulang ke-3, versi skill 1.0.6)  
 **Penguji:** agent penguji independen Komunitech (bukan pembuat skill)
 
 ## Riwayat
-Uji pertama 2026-10-02 pada versi sebelum perbaikan: rata-rata SEBELUM 7,0 → SESUDAH 8,25, verdik **LULUS** dengan catatan. Cacat yang ditemukan: (1) harga agen Rp26.250 sama persis dengan harga flash sale konsumen tanpa peringatan konflik kanal; (2) potongan marketplace saat 11.11 diasumsikan 0% diam-diam; (3) hampers makanan dinilai dengan margin minimum 30% tanpa menyebut asumsi (seharusnya default pangan 40%); (4) saran "jual dulu di harga coret beberapa hari" tanpa syarat harga itu berlaku wajar. Setelah perbaikan pembuat, kedua skenario dijalankan ulang di bawah dengan pesan identik.
+- **1.0.4** (uji pertama 2026-10-02): rata-rata SEBELUM 7,0 → SESUDAH 8,25, verdik **LULUS dengan cacat** — harga agen sama dengan harga flash sale tanpa peringatan konflik kanal; potongan marketplace 11.11 diasumsikan 0% diam-diam; hampers makanan dinilai dengan margin minimum 30% (seharusnya pangan 40%); saran "jual dulu di harga coret beberapa hari".
+- **1.0.5** (uji ulang ke-2, 2026-10-02): 7,5 → 8,5, verdik **BELUM** — ketiga cacat lama teratasi, tetapi model menghitung sendiri di luar script: "kecilkan diskon jadi 15–17% (harga promo tetap di atas Rp30.000)" salah (Rp29.050–29.750 < Rp30.000; batas sebenarnya < 14,29%), dan contoh promo Rp189.900 (margin 35,70%) disarankan di bawah lantai margin 40% tanpa peringatan.
+- **1.0.6** (uji ulang ke-3, di bawah): pembuat menambah ATURAN KERAS "angka promo hanya dari script", blok `DISKON MAKSIMAL` + `--rentang` di script, dan aturan harga coret tanpa "jual dulu beberapa hari". Kedua skenario dijalankan ulang dengan pesan identik.
 
-## Cara uji (uji ulang 2026-10-02)
+## Cara uji (uji ulang ke-3, 2026-10-02)
 - OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech (`komunitech` → `claude-sonnet-5`), sama dengan bot member.
-- SEBELUM = home OpenClaw bersih tanpa skill; SESUDAH = home bersih berisi hanya skill `strategi-harga-produk` 1.0.5. Home dibuat ulang sebelum tiap skenario.
-- Pesan identik dengan uji pertama, identik di kedua sisi, satu giliran (agent tidak bertanya balik).
-- Angka diverifikasi ulang dengan Python terpisah (bukan script skill); fakta aturan dicek terhadap aturan Indonesia yang berlaku.
-- Catatan keamanan: tidak ada agent yang memasang paket, mengubah config, menawarkan kirim/posting otomatis, atau mencari ke seluruh disk. Di Skenario 2 sisi SEBELUM mencoba `tool_search` (mencari alat web), tanpa efek samping.
+- SEBELUM = home OpenClaw bersih tanpa skill; SESUDAH = home bersih berisi hanya skill `strategi-harga-produk` 1.0.6. Home dibuat ulang sebelum tiap skenario.
+- Pesan identik dengan dua uji sebelumnya, identik di kedua sisi, satu giliran (agent tidak bertanya balik).
+- Setiap angka di balasan SESUDAH dicocokkan dengan menjalankan sendiri `scripts/strategi_harga.py` (perintah yang semestinya dipakai agent), lalu diverifikasi lagi dengan Python independen (bukan script skill); fakta aturan dicek terhadap aturan Indonesia yang berlaku.
+- Catatan keamanan: tidak ada agent yang memasang paket, mengubah config, menawarkan kirim/posting otomatis ke pihak lain, atau mencari ke seluruh disk. SEBELUM tidak memakai alat; SESUDAH memakai `read` + `exec` (membaca skill & menjalankan script).
 
 ## Skenario 1 — tangga reseller/agen + flash sale 11.11
 **Pesan pengguna:**
@@ -20,202 +22,224 @@ Uji pertama 2026-10-02 pada versi sebelum perbaikan: rata-rata SEBELUM 7,0 → S
 
 ### Balasan SEBELUM (tanpa skill) — tools: tidak ada
 
-> Oke, saya hitung berdasarkan angka yang dikasih. Modal 14.500, jual normal 35.000 → margin dasar lo **20.500/botol (58,6%)**. Ini basis buat nentuin tier.
+> Oke, saya hitung ya. Modal 14.500/botol, jual eceran 35.000 → margin kotor 20.500/botol (58,6% dari harga jual, alias markup 141% dari modal). Lumayan sehat buat basis itungan reseller & agen.
 >
-> ## Rekomendasi Harga Reseller & Agen
+> **Harga reseller & agen yang masuk akal:**
 >
-> | Tier | Min order | Harga/botol | Diskon dari retail | Margin lo | Margin partner (kalau dijual 35rb) |
-> |---|---|---|---|---|---|
-> | Retail (konsumen) | 1 | 35.000 | - | 20.500 (58,6%) | - |
-> | **Reseller** | 12 botol | **28.000** | 20% | 13.500 (48,2%) | 7.000/botol (ROI 25%) |
-> | **Agen** | 100 botol | **25.000** | 28,6% | 10.500 (42%) | 10.000/botol kalau jual retail |
+> - **Reseller (min 12 botol): Rp28.000/botol** (diskon ±20% dari harga eceran)
+>   - Margin kamu: 13.500/botol (masih 93% di atas modal)
+>   - Margin reseller kalau dia jual lagi di harga normal 35.000: 7.000/botol (20%) — cukup menarik buat insentif mereka jualan rutin.
 >
-> Logikanya: makin besar komitmen volume, makin tipis % margin lo, tapi partner tetap dapet insentif jelas buat naik kelas dari reseller ke agen. Agen jual 25rb vs reseller 28rb — ada gap 3rb yang masuk akal buat alasan "kenapa harus ambil 100 botol".
+> - **Agen (min 100 botol): Rp24.500/botol** (diskon ±30% dari harga eceran)
+>   - Margin kamu: 10.000/botol (masih 69% di atas modal)
+>   - Margin agen kalau jual retail langsung: 10.500/botol (30%); kalau dia distribusiin lagi ke sub-reseller di 28.000: masih dapat 3.500/botol — tipis tapi masuk akal buat volume gede.
 >
-> Margin lo di semua tier masih di atas **Rp 9.000/botol** — itu angka breakeven per botol lo kalau based on 500 botol/bulan ÷ fixed cost 4,5jt. Jadi bahkan skenario terburuk (semua laku lewat agen) masih untung tipis, bukan rugi.
+> Pola ini standar FMCG: reseller diskon lebih kecil karena ambil lebih sedikit, agen diskon lebih besar karena commitment volume & biasanya mereka yang jualan ke toko/warung lagi.
 >
-> ## Flash sale 25% — masih untung?
+> **Soal flash sale 11.11 diskon 25%:**
 >
-> 25% dari 35.000 = **26.250/botol**. Margin lo: 26.250 − 14.500 = **Rp 11.750/botol (44,8%, atau 81% dari modal)**. Masih jauh di atas breakeven 9.000/botol → **ya, masih untung per unit**, bahkan setelah potong estimasi fee marketplace (komisi+payment gateway ~5-8%, sisa margin masih ±8.000-9.500/botol).
+> Harga jadi 35.000 × 0,75 = **26.250**. Margin kotor = 26.250 − 14.500 = **11.750/botol (44,8%)**. Masih untung per botol, cuma turun dari margin normal 58,6% ke 44,8%.
 >
-> Dua catatan penting:
+> Tapi hati-hati, angka itu belum masuk biaya platform (admin fee marketplace, subsidi ongkir, biaya ikut campaign) yang biasanya "makan" 1.500–3.000/botol lagi. Jadi margin bersih realistis sekitar **9.000–10.000/botol (34–38%)** — tetap untung, tapi jangan kaget kalau di laporan marketplace angkanya lebih tipis dari itung manual.
 >
-> 1. **Cek apakah flash sale itu menambah volume atau cuma "mindahin" penjualan normal.** Kalau 500 botol/bulan lo udah nutup fixed cost + untung dari mix retail/reseller/agen, flash sale yang menarik pembeli BARU itu untung murni (11.750 × qty, nyaris tanpa beban fixed cost tambahan). Tapi kalau pembeli yang harusnya beli normal 35rb pindah ke flash sale 26,25rb, lo kehilangan selisih 8.750/botol — itu bukan rugi, tapi opportunity cost.
-> 2. **Harga flash sale 26.250 lebih murah dari harga reseller lo (28.000).** Ini masalah channel conflict — reseller bakal protes karena modal mereka beli ke lo (28rb) lebih mahal dari harga konsumen pas flash sale. Saran: batasi kuota flash sale (misal max 50-100 botol), atau kasih reseller/agen harga khusus event juga (misal reseller dapat ekstra diskon pas 11.11) biar mereka nggak ngerasa dilangkahin.
+> **Insight penting buat biaya tetap 4,5jt/bulan:** kalau penjualan normal bulanan kamu (±500 botol/bulan di harga 35rb) udah nutup fixed cost, maka tambahan botol yang laku lewat flash sale itu murni profit tambahan — fixed cost gak nambah cuma karena ikut flash sale (asal packing & stok masih sanggup tanpa nambah orang/lembur). Contoh simulasi: misal dari 500 botol itu, 150 botol terjual pas periode flash sale (26.250) dan 350 sisanya di harga normal:
 >
-> **Ringkasnya:** struktur harga ini (28rb reseller / 25rb agen) sehat, dan diskon 25% flash sale masih profitable per botol. Yang perlu lo jaga cuma dua hal — jangan sampai flash sale bikin reseller kabur, dan pastikan itu nambah penjualan, bukan cuma geser penjualan normal ke harga lebih murah.
-
+> - Revenue: 350×35.000 + 150×26.250 = 16.187.500
+> - Modal: 500×14.500 = 7.250.000
+> - Gross profit: 8.937.500
+> - Net profit (setelah fixed cost 4,5jt): **4.437.500**
+>
+> Dibanding baseline semua normal (net profit ±5.750.000), turun ±1,3jt — tapi tetap positif. Dan kalau flash sale itu narik pembeli BARU di luar 500 botol biasa (bukan cuma mindahin yang harusnya beli normal), itu malah nambah profit bersih karena fixed cost udah ketutup duluan.
+>
+> **Yang perlu diwaspadai:**
+> 1. Jangan sampai reseller/agen ikut klaim harga flash sale — itu buat end customer, bikin aturan jelas.
+> 2. Cek kapasitas dapur/packing pas lonjakan order flash sale, kalau perlu lembur/tambahan tenaga itu nambah variable cost yang belum dihitung di sini.
+> 3. Cek fee riil platform tempat kamu ikut flash sale (Shopee/Tokopedia beda-beda) biar margin bersihnya presisi.
 ### Balasan SESUDAH (skill aktif) — tools: read, exec
 
-> # Sambal Bawang 250ml — Harga Reseller/Agen + Cek Diskon 11.11
+> **Ringkasan**
+> - Harga eceran tetap Rp35.000 — aman, margin 58,57% (lantai minimum pangan 40% baru tembus di bawah Rp24.167).
+> - Reseller (≥12 botol): **Rp30.000/botol** → untung kakak Rp15.500/botol, untung reseller Rp5.000 (14,3%) per botol kalau dijual Rp35.000.
+> - Agen (≥100 botol): **Rp26.500/botol** → untung kakak Rp12.000/botol, untung agen Rp8.500 (24,3%) per botol.
+> - Diskon 25% buat flash sale 11.11: **TIDAK disarankan apa adanya** — margin jatuh ke 34,76% (di bawah lantai 40%) dan harga promo Rp26.250 malah lebih murah dari harga beli reseller & agen (reseller/agen pasti protes/borong stok). Batas aman: **maksimal diskon 14%** → harga promo Rp30.100.
 >
-> **Ringkasan:**
-> - Harga ecer Rp35.000 **sudah sehat** (margin 58,57%, jauh di atas minimum pangan 40%).
-> - Reseller (≥12 botol): **Rp30.000/botol**. Agen (≥100 botol): **Rp24.500/botol**.
-> - Diskon 25% di flash sale 11.11 **masih untung per botol** — TAPI ada 2 jebakan: (1) kalau lewat marketplace, potongan platform bisa bikin margin jatuh di bawah batas aman; (2) harga promo lebih murah dari harga beli reseller, jadi reseller/agen bisa merasa dirugikan.
+> **Asumsi**
+> - Margin minimum dipakai: 40% (kategori pangan, default skill karena sambal = makanan).
+> - Kanal jual langsung = potongan 0%, kecuali promo 11.11 saya hitung sebagai event marketplace → potongan marketplace diasumsikan 10% dari harga jual (perkiraan, belum dicek — kalau ikut lewat Shopee/TikTok Shop, cek dulu biaya admin asli pakai hitung potongan marketplace biar presisi).
+> - HPP Rp14.500/botol dianggap pasti (sesuai angka kakak).
+> - Belum PKP → harga di atas belum termasuk PPN.
 >
-> ## Asumsi
-> - Margin minimum dipakai: **40%** (default kategori pangan — makanan/minuman/sambal).
-> - Status PKP: dianggap **bukan PKP**, jadi harga di atas belum termasuk PPN.
-> - Potongan kanal: jual langsung = 0%. Kalau 11.11 lewat marketplace (Shopee/Tokopedia dsb), saya **asumsikan potongan 10%** dari harga jual (perkiraan kasar, belum dicek) — cek angka pastinya dengan skill `harga-jual-marketplace` sebelum ikut event.
-> - HPP Rp14.500/botol — anggap angka pasti dari Kakak.
->
-> ## Tabel Harga Reseller & Agen
-> | Level | Minimal beli | Harga/botol | Diskon dari ecer | Laba kita/botol | Margin kita | Untung reseller/botol | Status |
+> **Tabel harga**
+> | Level | Min beli | Harga/botol | Diskon dari eceran | Laba kakak/botol | Margin | Untung reseller/agen | Status |
 > |---|---|---|---|---|---|---|---|
-> | Reseller | ≥ 12 | Rp30.000 | 14,29% | Rp15.500 | 51,67% | Rp5.000 (14,29%) | OK |
-> | Agen | ≥ 100 | Rp24.500 | 30% | Rp10.000 | 40,82% | Rp10.500 (30%) | OK |
+> | Eceran | 1 | Rp35.000 | - | Rp20.500 | 58,57% | - | OK |
+> | Reseller | ≥12 | Rp30.000 | 14,29% | Rp15.500 | 51,67% | Rp5.000 (14,3%) | OK |
+> | Agen | ≥100 | Rp26.500 | 24,29% | Rp12.000 | 45,28% | Rp8.500 (24,3%) | OK |
 >
-> Harga ecer anjuran untuk reseller = Rp35.000 (sama dengan harga toko sekarang). Kalau nanti harga ecer dinaikkan, harga reseller/agen di atas harus diupdate bersamaan.
+> **BEP (titik impas)**
+> - Biaya tetap Rp4.500.000/bulan, laba kontribusi Rp20.500/botol → **BEP 220 botol/bulan**.
+> - Penjualan sekarang 500 botol → laba kotor ±**Rp5.750.000/bulan**. Batas aman (margin of safety) 56% — penjualan boleh turun sampai separuh lebih sedikit sebelum rugi. Sehat.
 >
-> BEP sekarang: **220 botol/bulan** (omzet Rp7.700.000). Penjualan 500 botol/bulan → laba kotor ±**Rp5.750.000/bulan**, batas aman (margin of safety) 56% — artinya penjualan boleh anjlok sampai 56% sebelum rugi. Cukup sehat.
+> **Aturan promo 11.11 — diskon 25% masih untung?**
+> Tidak disarankan dipakai mentah-mentah, dua masalah sekaligus:
+> 1. **Margin anjlok**: di harga Rp26.250, laba tinggal Rp9.125/botol (margin 34,76%), di bawah batas aman 40%. Supaya laba kotor TOTAL tetap sama kayak biasa, penjualan harus naik **86,3%** (dari 500 jadi minimal 932 botol) — berat untuk event sebulan.
+> 2. **Bentrok kanal**: harga promo Rp26.250 lebih murah dari harga beli reseller (Rp30.000) dan agen (Rp26.500). Reseller/agen bakal dirugikan — bisa marah atau malah ikut memborong stok promo buat dijual ulang.
 >
-> ## Diskon 25% Flash Sale 11.11 — Masih Untung?
+> **DISKON MAKSIMAL yang aman** (dari hitungan, bukan kira-kira):
+> - Supaya margin ≥40%: diskon maksimal 17,14% (harga promo Rp29.000).
+> - Supaya tidak bentrok harga reseller: diskon harus **di bawah 14,29%**.
+> - Supaya tidak bentrok harga agen: diskon harus **di bawah 24,29%**.
+> - **Gabungan semua batas → diskon maksimal yang aman: 14%, harga promo Rp30.100.**
 >
-> **Skenario A — Jual langsung (WA/toko sendiri), tanpa potongan platform:**
-> - Harga promo: Rp26.250 → laba Rp11.750/botol (margin **44,76%**, masih di atas batas minimum 40%) → **status OK per unit**.
-> - Tapi untuk balik ke laba kotor sebulan normal (Rp10.250.000), penjualan harus naik **74,47%** (500 → minimal **873 botol**) dalam periode promo itu — target cukup berat kalau dipaksakan sebulan penuh.
-> - Batas diskon maksimal aman: **30,95%** (harga terendah Rp24.167). Jadi 25% masih di dalam batas aman.
+> Opsi lain kalau mau diskon lebih besar dari 14% demi daya tarik event besar:
+> - Batasi kuota (mis. maks 2 botol/pembeli) supaya reseller/agen tidak ikut memborong.
+> - Kasih reseller & agen harga khusus selama promo (misal turunkan sementara jadi Rp27.000/Rp24.000) biar mereka tetap untung dibanding harga promo konsumen.
+> - Atau jual varian/ukuran khusus untuk promo (bukan botol 250ml reguler yang dipakai reseller/agen) supaya kanal tidak bentrok sama sekali.
 >
-> **Skenario B — Lewat marketplace, asumsi potongan 10%:**
-> - Harga promo tetap Rp26.250, tapi laba toko tinggal Rp9.125/botol, margin **34,76% — DI BAWAH minimum 40%** ⚠️
-> - Diskon maksimal aman di kanal ini cuma **17,14%** (harga Rp29.000).
-> - Kalau Kakak tetap mau diskon 25% di marketplace, laba per botol memang tipis — perlu dicek ulang potongan asli platform (bisa lebih dari 10%).
+> **Langkah minggu ini**
+> 1. Set harga reseller Rp30.000 (≥12 botol) dan agen Rp26.500 (≥100 botol) — mulai berlaku bareng harga eceran.
+> 2. Untuk 11.11: pasang diskon maksimal **14%** (harga Rp30.100) kalau mau aman tanpa drama kanal; kalau mau diskon lebih dalam, pasangkan dengan kuota per pembeli atau harga khusus reseller/agen selama event.
+> 3. Cek biaya admin asli platform (bukan asumsi 10%) sebelum ikut 11.11 — pakai skill harga-jual-marketplace biar potongan real, bukan kira-kira.
+> 4. Siapkan stok ekstra: kalau tetap pakai diskon besar, target penjualan tetap untung minimal naik ~86% dari normal (di atas 930 botol untuk periode yang sama).
 >
-> **⚠️ PERHATIAN — Konflik kanal:** di kedua skenario, harga promo Rp26.250 **lebih murah dari harga beli Reseller (Rp30.000)**. Reseller bisa merasa dirugikan (pembeli biasa dapat harga lebih murah dari reseller) atau malah memborong stok promo untuk dijual ulang.
->
-> **Solusi pilih salah satu:**
-> 1. Batasi maks beli **2 botol/pembeli** selama flash sale (standar e-commerce, otomatis cegah reseller "belanja grosir" via promo).
-> 2. Beri reseller/agen harga khusus/kompensasi selama periode promo tersebut.
-> 3. Kecilkan diskon konsumen jadi di kisaran 15–17% kalau mau lewat marketplace (harga promo tetap di atas Rp30.000 = aman dari konflik reseller).
->
-> ## Langkah Minggu Ini
-> 1. Tetapkan harga ecer Rp35.000, reseller Rp30.000 (≥12 botol), agen Rp24.500 (≥100 botol) — sudah dihitung aman.
-> 2. Pastikan dulu **flash sale 11.11 lewat kanal mana** (lapak sendiri vs marketplace) — ini menentukan apakah diskon 25% masih aman atau perlu diturunkan ke ±17%.
-> 3. Kalau lewat marketplace, cek potongan asli platform dulu (jangan pakai asumsi 10% saya) sebelum fix harga promo.
-> 4. Tambahkan syarat **maks 2 botol/pembeli** di flash sale supaya reseller/agen tidak dirugikan.
-> 5. Kirim daftar harga reseller/agen (siap tempel di bawah) ke calon mitra.
->
-> **Teks siap tempel (daftar harga reseller/agen):**
+> **Teks siap tempel (daftar harga reseller/agen untuk WA/katalog):**
 > ```
-> SAMBAL BAWANG 250ml - Harga Kemitraan
-> Ecer: Rp35.000/botol
+> SAMBAL BAWANG - HARGA RESELLER & AGEN
+> Eceran: Rp35.000/botol
 > Reseller (min. 12 botol): Rp30.000/botol
-> Agen (min. 100 botol): Rp24.500/botol
-> *Harga jual ulang mengikuti harga ecer resmi Rp35.000
+> Agen (min. 100 botol): Rp26.500/botol
+> *Harga belum termasuk ongkir, berlaku sampai pemberitahuan berikutnya
 > ```
 >
-> Angka dihitung dengan script dari data yang Kakak berikan. Keputusan harga tetap di tangan Kakak. Karena dianggap bukan PKP, harga di atas belum termasuk PPN — kalau sudah PKP, saya bisa hitung ulang versi termasuk PPN.
-
+> Catatan: Angka dihitung dengan script dari data yang kakak berikan. Keputusan harga tetap di tangan kakak. Kalau 11.11-nya lewat marketplace tertentu (Shopee/TikTok Shop dll), kabari saya platformnya biar potongan admin dihitung presisi, bukan asumsi 10%.
 ### Verifikasi
-Python independen: laba 35.000 − 14.500 = Rp20.500 (58,57%); BEP ⌈4.500.000 ÷ 20.500⌉ = 220 botol (omzet Rp7.700.000); laba 500 botol Rp5.750.000; batas aman 56%. Diskon 25% → Rp26.250, laba Rp11.750 (44,76%); laba setara bulan normal butuh ⌈500 × 20.500 ÷ 11.750⌉ = 873 botol (+74,47%). Lantai margin 40% = ⌈14.500 ÷ 0,6⌉ = Rp24.167 → diskon maks 30,95%. Reseller Rp30.000 → laba 15.500 (51,67%), diskon 14,29%; agen Rp24.500 → laba 10.000 (40,82%), diskon 30%. Marketplace potongan 10%: 26.250 × 0,9 − 14.500 = Rp9.125 (34,76%); harga minimum margin 40% = 14.500 ÷ 0,5 = Rp29.000 → diskon maks 17,14%.
-- Pemeriksaan khusus: **konflik kanal** — ditandai PERHATIAN (promo Rp26.250 < harga beli reseller Rp30.000) dengan 3 solusi. **Potongan marketplace** — tidak lagi 0% diam-diam: asumsi 10% ditulis eksplisit, ditandai "perkiraan kasar, belum dicek", dihitung sebagai Skenario B, dan diarahkan ke skill `harga-jual-marketplace`. **Margin minimum pangan 40%** — disebut di ringkasan dan asumsi. Ketiganya terpenuhi.
-- **Kesalahan SESUDAH:** solusi 3 "Kecilkan diskon konsumen jadi di kisaran 15–17% … (harga promo tetap di atas Rp30.000 = aman dari konflik reseller)" — salah: 35.000 × 0,85 = Rp29.750 dan × 0,83 = Rp29.050, keduanya **di bawah** Rp30.000. Agar promo ≥ harga reseller, diskon maks 14,29%. Kalimat ini hitungan model sendiri, bukan keluaran script.
-- SEBELUM (kali ini lebih baik dari uji pertama): angka benar (28.000 → 48,21%, 25.000 → 42%, 26.250 → 44,8%, 81% dari modal), kini **juga menandai konflik kanal** (flash sale 26.250 < reseller 28.000) dan menyebut fee marketplace. Kekeliruan kecil: "sisa margin masih ±8.000–9.500/botol" setelah fee 5–8% — seharusnya Rp9.650–10.437 (meleset, ke arah konservatif). Tanpa batas diskon maksimal, target volume, margin minimum, maupun teks siap tempel.
+**Cocokkan dengan script** (`tangga --harga-ecer 35000 --hpp 14500 --kategori pangan --level Reseller:12:=30000 --level Agen:100:=26500`; `diskon --harga 35000 --hpp 14500 --diskon 25 --volume 500 --kategori pangan --harga-reseller Reseller:30000 --harga-reseller Agen:26500 --kanal marketplace --biaya-persen 10`; `bep`): semua angka di Ringkasan, Tabel harga, BEP, dan blok "DISKON MAKSIMAL" **identik** dengan keluaran script — reseller Rp30.000 (14,29%, laba Rp15.500, 51,67%), agen Rp26.500 (24,29%, laba Rp12.000, 45,28%), promo Rp26.250 → laba Rp9.125 (34,76%), naik 86,3% → 932 botol, batas margin Rp29.000/17,14%, batas reseller < 14,29%, batas agen < 24,29%, gabungan **14% → Rp30.100**, BEP 220 botol/Rp5.750.000/56%.
+
+**Python independen:** 35.000 − 14.500 = 20.500 (58,57%; markup 141,38%); BEP ⌈4.500.000 ÷ 20.500⌉ = 220; promo 26.250 × 0,9 − 14.500 = 9.125 (34,76%); laba normal di kanal yang sama 35.000 × 0,9 − 14.500 = 17.000 → ⌈500 × 17.000 ÷ 9.125⌉ = 932 (+86,30%); lantai marketplace 14.500 ÷ 0,5 = 29.000 (17,14%), lantai jual langsung ⌈14.500 ÷ 0,6⌉ = 24.167; 1 − 30.000/35.000 = 14,29%; 1 − 26.500/35.000 = 24,29%; 35.000 × 0,86 = 30.100 (margin marketplace 41,83%). Semua benar.
+
+**Pemeriksaan khusus:**
+- *Persen/harga promo/rentang dari script:* ya untuk semua angka utama; rentang 15–17% yang salah di 1.0.5 **tidak muncul lagi** — kini batas reseller "di bawah 14,29%" dan gabungan 14% disalin dari script. Cacat 1.0.5 #1 teratasi.
+- *Saran harga di bawah margin minimum:* **masih ada satu.** Opsi "Kasih reseller & agen harga khusus selama promo (misal turunkan sementara jadi Rp27.000/Rp24.000)" — angka buatan model, bukan dari script. `margin --hpp 14500 --harga 24000 --kategori pangan` → margin **39,58% DI BAWAH MIN** (lantai Rp24.167), disarankan tanpa peringatan. Selain itu Rp27.000 untuk reseller tetap **di atas** harga promo Rp26.250 bila diskon 25% dipertahankan, jadi "solusi" itu tidak menghilangkan konflik kanal (berlaku hanya untuk diskon ≤ 22%).
+- *Konflik kanal:* ditandai jelas di Ringkasan dan Aturan promo untuk reseller dan agen, dengan solusi kuota, harga khusus, varian khusus. Terpenuhi.
+- *Potongan marketplace:* asumsi 10% tertulis di Asumsi, "perkiraan, belum dicek", diarahkan ke harga-jual-marketplace. Terpenuhi. Catatan kecil: "+86,3% supaya laba kotor TOTAL tetap sama kayak biasa" memakai pembanding bulan normal **juga lewat marketplace** (laba Rp17.000/botol); bila 500 botol biasa dijual langsung, pembandingnya Rp20.500 dan kebutuhan volumenya jauh lebih besar (1.124 botol). Ini perilaku script, tidak dijelaskan ke pengguna.
+- *Harga coret:* tidak relevan di skenario ini.
+
+**SEBELUM:** angka benar (28.000 → laba 13.500 = 93% dari modal; 24.500 → 10.000 = 69%; 26.250 → 11.750 = 44,8%; simulasi 350 normal + 150 promo → laba bersih Rp4.437.500 vs Rp5.750.000, benar). Kelemahan: **tidak menyadari** harga flash sale Rp26.250 lebih murah dari harga beli reseller Rp28.000 (hanya "jangan sampai reseller/agen ikut klaim harga flash sale"); tanpa margin minimum, batas diskon maksimal, maupun teks siap tempel; fee platform "1.500–3.000/botol" disebut kasar.
 
 ### Skor
-SEBELUM **7,5/10** — angka umumnya benar, nasihat kanal & marketplace tepat, tetapi tanpa batas aman, target volume, dan teks siap kirim; satu rentang fee meleset.
-SESUDAH **8,5/10** — paling lengkap: dua skenario kanal (langsung vs marketplace) dengan asumsi tertulis, batas diskon per kanal, target 873 botol, peringatan konflik kanal, teks daftar harga. Dikurangi karena klaim "diskon 15–17% → promo di atas Rp30.000" salah hitung. Skill terpakai (read + exec).
+SEBELUM **7,0/10** — hitungan benar dan simulasi campuran berguna, tetapi melewatkan konflik kanal reseller dan tanpa batas aman/teks siap kirim.
+SESUDAH **8,0/10** — paling lengkap dan kini angka promo inti persis dari script (diskon maks 14% → Rp30.100, dua konflik kanal, asumsi marketplace tertulis, teks daftar harga). Dikurangi karena contoh harga khusus agen Rp24.000 di bawah lantai 40% tanpa peringatan dan contoh reseller Rp27.000 tidak menyelesaikan konflik pada diskon 25%. Skill terpakai (read + exec).
 
 ## Skenario 2 — PKP hampers + jebakan ÷1,12 & harga coret palsu
 **Pesan pengguna:**
 
 > Kak toko saya udah PKP. Jual hampers lebaran harga 189rb udah termasuk PPN, modal per hampers 110rb. Margin saya sebenernya berapa ya? PPN sekarang 12% kan, jadi tinggal dibagi 1,12 aja? Terus biar laku mau saya pasang harga coret 249rb biar keliatan diskon 24%, padahal sebelumnya gak pernah jual 249rb sih. Aman kan?
 
-### Balasan SEBELUM (tanpa skill) — tools: tool_search
+### Balasan SEBELUM (tanpa skill) — tools: tidak ada
 
-> Oke, ralat dulu soal PPN-nya ya, karena asumsi "tinggal dibagi 1,12" itu **keliru** — ini salah paham yang banyak terjadi soal aturan PPN 12% 2025/2026.
+> Oke, dua hal ya — PPN-nya sama harga coretnya. Jawaban singkat dulu: itung PPN-nya **salah** kalau cuma dibagi 1,12, dan harga coret 249rb itu **nggak aman**, bukan sekadar strategi marketing biasa.
 >
-> ## PPN-nya: bukan 12%, tetap efektif 11%
+> **1. Hitungan PPN & margin yang bener**
 >
-> Pemerintah pakai mekanisme **DPP Nilai Lain** (PMK 131/2024) khusus untuk barang/jasa yang BUKAN kategori mewah. Rumusnya:
+> Sejak tarif PPN naik ke 12%, pemerintah pakai mekanisme "DPP Nilai Lain" biar beban pajak ke konsumen efektifnya tetap setara 11% (bukan 12% penuh). Rumusnya: PPN terutang = 12% × (11/12 × harga jual sebelum pajak) = **11% dari harga sebelum pajak**.
 >
-> PPN terutang = 12% × (11/12 × Harga Jual) = **11% dari Harga Jual** (sama kayak sebelum kenaikan tarif)
+> Jadi kalau harga jual 189rb itu sudah termasuk PPN:
 >
-> Hampers lebaran bukan barang mewah, jadi ini yang berlaku buat kamu. Hitung dengan benar:
->
-> - Harga jual (termasuk PPN) = Rp189.000
-> - DPP (nilai sebelum pajak) = 189.000 ÷ **1,11** = **Rp170.270**
-> - PPN = 189.000 − 170.270 = **Rp18.730**
->
-> Kalau kamu pakai ÷1,12 (yang kamu sangka), hasilnya DPP Rp168.750 — itu **salah hitung**, bukan cuma beda dikit buat margin kamu, tapi juga berisiko salah di e-Faktur/Coretax. Sebagai PKP, DPP & PPN yang kamu laporkan harus sesuai aturan ini (biasanya Coretax sudah otomatis menghitung dengan skema 11/12 kalau barangnya memang bukan kategori mewah), jadi pastikan sistem faktur kamu mengeluarkan angka yang sama dengan ini, bukan hasil ÷1,12.
->
-> ## Margin kamu yang sebenarnya
->
-> - Pendapatan bersih (DPP) per hampers = Rp170.270
+> - Harga sebelum pajak (DPP) = 189.000 ÷ 1,11 = **Rp170.270**
+> - PPN yang harus kakak setorkan = **Rp18.730**
 > - Modal = Rp110.000
-> - **Margin kotor = Rp60.270 per hampers**
-> - Margin thd harga jual bersih = 60.270 / 170.270 ≈ **35,4%**
-> - Margin thd harga jual (189rb all-in) ≈ **31,9%**
+> - **Laba kotor sebelum pajak** = 170.270 − 110.000 = **Rp60.270/hampers**
+> - Margin terhadap harga jual bersih ≈ **35,4%**
+> - Markup terhadap modal ≈ **54,8%**
 >
-> Jadi margin kamu masih sehat, lebih tinggi dari yang kamu kira kalau tadinya ngitung pakai ÷1,12.
+> Kalau kakak pakai cara "dibagi 1,12" tadi, hasilnya DPP 168.750, PPN 20.250, margin 58.750 — beda ~2.500/pcs dan PPN yang disetor jadi lebih besar dari seharusnya. Buat e-Faktur, pakai rumus 1,11 ini (DPP Nilai Lain), bukan 1,12 langsung. Kalau mau, nanti aku bisa buatin tabel/rumus Excel-nya biar tinggal input harga jual tiap produk.
 >
-> ## Soal harga coret 249rb → "diskon 24%"
+> **2. Harga coret 249rb → diskon 24% padahal gak pernah dijual segitu**
 >
-> Ini bagian yang perlu kamu pikir ulang. Pasang harga coret yang **gak pernah benar-benar dijual** itu termasuk **strategi harga menyesatkan**, dan itu masuk pelanggaran UU Perlindungan Konsumen (UU 8/1999) Pasal 10 — pelaku usaha dilarang memberi informasi yang tidak benar/menyesatkan soal harga suatu barang. Sanksinya bisa pidana sampai 5 tahun atau denda sampai Rp2 miliar (Pasal 62), meski buat UMKM kecil penegakan pidana jarang terjadi.
+> Ini yang perlu aku tegasin: **nggak aman**, dan bukan cuma soal etika.
 >
-> Risiko yang jauh lebih nyata buat kamu sehari-hari:
-> - **Marketplace** (Shopee/Tokopedia/dll) punya sistem deteksi "harga coret palsu" — kalau ketahuan, listing/akun bisa di-takedown atau diturunkan rankingnya.
-> - Kalau pembeli lama cek histori harga kamu dan nemu kamu "gak pernah jual 249rb", reputasi toko bisa rusak — lebih mahal daripada untung dari kesan diskon.
+> - Hampir semua marketplace (Shopee, Tokopedia, TikTok Shop, Lazada) punya kebijakan eksplisit larang "fake strikethrough price" — harga coret harus pernah benar-benar jadi harga jual aktif produk itu. Kalau ketahuan sistem/laporan buyer, produk bisa di-takedown, bahkan akun kena penalti/suspend.
+> - Secara hukum, ini masuk kategori informasi harga yang menyesatkan menurut UU Perlindungan Konsumen (UU No. 8/1999) Pasal 10 — pelaku usaha dilarang kasih info harga yang tidak benar/menyesatkan. Risikonya rendah buat UMKM kecil secara praktik, tapi tetap pelanggaran kalau ada komplain konsumen atau audit platform.
 >
-> **Saran lebih aman:** kalau mau kasih kesan value tanpa bohong, opsi yang legit:
-> - Naikkan harga normal jadi 249rb buat batch baru (misal kemasan/isi ditambah), lalu kasih **harga early bird/pre-order** 189rb yang benar-benar berlaku di periode awal — ini diskon riil, bukan fiktif.
-> - Atau framing "harga normal Rp189rb, hemat Rp20rb kalau beli 2" (bundling riil) daripada mengada-ada angka awal.
-> - Atau cukup jual confidence lewat isi hampers (value perceived), bukan via angka coret palsu.
+> Kalau tujuannya emang mau keliatan "diskon", alternatif yang lebih aman:
+> - Tetap pasang 189rb sebagai harga normal, tapi kasih embel-embel "Harga Spesial Lebaran" / bundling (misal +kartu ucapan gratis) biar tetap ada daya tarik tanpa klaim harga coret palsu.
+> - Kalau mau beneran pasang harga coret, jual dulu barang di harga lebih tinggi (misal 219rb) buat beberapa hari/minggu, baru turunin — jadi harga coretnya based on history asli, bukan karangan.
 >
-> Kalau kamu butuh, aku bisa bantu hitungkan skema harga bundling yang aman dan margin-nya biar tetap menarik tanpa pakai harga fiktif. Mau?
-
+> Mau aku bantu hitungin margin buat skenario harga 219rb → diskon ke 189rb juga, biar ada perbandingan yang aman tapi tetep keliatan menarik?
 ### Balasan SESUDAH (skill aktif) — tools: read, exec
 
-> Oke, dua hal perlu dikoreksi dulu, Kak — satu soal hitungan PPN, satu soal rencana harga coretnya.
+> Oke, dua hal yang perlu diluruskan dulu — satunya soal PPN, satunya lagi soal harga coret 249rb, karena keduanya ada risikonya.
 >
-> **1. PPN: bukan tinggal dibagi 1,12**
-> Sejak PMK 131/2024, DPP pakai "nilai lain" = 11/12 dari harga jual, baru dikali 12%. Efeknya tarif efektif jadi 11% dari harga jual, bukan 1/1,12 (=11,16%). Bedanya kecil tapi hasil akhirnya beda.
+> **1. Margin sebenarnya — bukan dibagi 1,12**
 >
-> Untuk hampers Rp189.000 (termasuk PPN):
-> - DPP (dasar hitung margin): **Rp170.271**
-> - PPN: **Rp18.729**
-> - Modal: Rp110.000 → **laba kotor Rp60.271/unit**
-> - **Margin riil 35,4%** (dari DPP), **markup 54,79%** (dari modal) — ini dua angka beda, jangan ditukar.
+> PPN 12% itu dikenakan atas **DPP nilai lain = 11/12 dari harga**, jadi tarif efektifnya 11%, bukan dibagi 1,12 langsung (dasar PMK 131/2024). Untuk harga 189rb termasuk PPN:
 >
-> Masalahnya: hampers makanan masuk kategori pangan, margin minimum amannya **40%**, bukan 30%. Jadi harga Rp189.000 kamu **di bawah margin aman** — harga terendah yang masih sehat itu **Rp203.500**.
+> | Item | Nilai |
+> |---|---|
+> | DPP (harga sebelum PPN) | Rp170.271 |
+> | PPN | Rp18.729 |
+> | Modal | Rp110.000 |
+> | Laba kotor/unit | Rp60.271 |
+> | **Margin (laba/DPP)** | **35,4%** |
+> | Markup (laba/modal) | 54,79% |
+> | Status vs margin minimum 40% (kategori pangan/hampers) | **DI BAWAH MIN** |
 >
-> Kalau mau harga cantik yang tetap OK secara margin: Rp203.900, Rp205.000, Rp209.000, atau Rp209.900 (semua sudah dicek, status OK). Rp199.000/199.900 — biar kelihatan cantik — ternyata DI BAWAH MIN juga, jangan dipakai.
+> Jadi margin kakak sekarang 35,4%, bukan 50%-an kalau dihitung dari 189rb mentah-mentah. Dan ini sebenarnya di bawah margin aman untuk produk pangan (40%). Harga terendah yang masih aman di margin 40%: **Rp203.500** (DPP Rp183.334, laba Rp73.334/unit).
 >
-> **2. Harga coret Rp249rb → ini bukan "aman", ini berisiko hukum**
-> Kalau kamu pasang "harga coret Rp249.000, diskon jadi Rp189.000" tapi Rp249.000 **gak pernah benar-benar dijual**, itu namanya harga fiktif/strikethrough palsu. Ini masuk kategori informasi menyesatkan konsumen di UU 8/1999 (Perlindungan Konsumen) — bukan cuma etika marketing, tapi bisa jadi pelanggaran. Jadi jawabannya: **enggak, gak aman**, dan aku gak bisa bantu susun itu.
+> **2. Harga coret 249rb — ini yang perlu hati-hati**
 >
-> **Yang bisa dilakukan biar tetap kelihatan "diskon" dan jujur:**
-> - Naikkan harga normal hampers ke salah satu harga cantik di atas (misal Rp209.000) secara nyata — jual di harga itu dulu beberapa hari/minggu.
-> - Baru setelah itu buat promo beneran dari harga Rp209.000 → turun ke harga spesial lebaran (misal Rp189.900 untuk periode terbatas). Diskonnya jadi real dan margin tetap bisa dicek.
-> - Atau skip harga coret sama sekali, pakai bundling (tambah 1 item kecil) atau "harga spesial pre-order" yang jujur — biasanya lebih dipercaya pembeli daripada diskon coret yang gampang dicek di riwayat chat/marketplace.
+> Harga coret/"harga normal" pembanding **hanya boleh dipakai kalau harga itu memang pernah benar-benar berlaku** — dipajang dan bisa dibeli orang di harga segitu, ada buktinya (listing lama, nota, screenshot katalog). Karena 249rb itu **belum pernah dijual** dan dipasang cuma supaya kelihatan diskon 24%, itu bukan "aman" — itu informasi harga menyesatkan dan berisiko kena UU 8/1999 Perlindungan Konsumen. Saya tidak sarankan itu.
 >
-> Mau aku hitungkan skenario harga normal Rp209.000 lalu promo turun ke berapa biar margin promo tetap aman? Aku bisa cek pakai angka pasti, tinggal kasih target harga promonya.
-
+> Alternatif yang jujur dan tetap menjual:
+> - Label **"Harga Spesial Lebaran"** tanpa harga coret palsu.
+> - Atau kalau tetap mau ada kesan "diskon", mulai dari harga aman Rp203.500 (margin 40%), lalu diskon beneran — batas maksimal diskon dari harga itu biar margin tetap ≥40%:
+>
+> **DISKON MAKSIMAL dari Rp203.500: 9% → harga promo Rp185.185** (laba masih di atas margin minimum 40%). Lebih dari itu margin mulai tergerus di bawah 40%.
+>
+> **Langkah minggu ini:**
+> 1. Naikkan harga tayang ke Rp203.500 (atau bulatkan jadi Rp205.000) supaya margin pangan 40% aman.
+> 2. Ganti rencana "coret 249rb" dengan label "Harga Spesial Lebaran" atau paket hampers tambahan (isi lebih banyak) — bukan diskon palsu.
+> 3. Kalau tetap mau promo, pakai diskon beneran maksimal ~9% dari harga baru.
+>
+> Catatan: Angka dihitung pakai script dari data yang kakak kasih, keputusan harga tetap di tangan kakak. Soal pajak ini bukan nasihat pajak resmi — kalau mau pasti, cek ke pajak.go.id atau konsultan pajak langganan toko.
 ### Verifikasi
-Python independen (PMK 131/2024: PPN 12% × DPP nilai lain 11/12 = efektif 11% untuk barang non-mewah; standar library: DPP bulat terbesar dengan DPP + ⌊11% × DPP⌋ ≤ harga): Rp189.000 → DPP Rp170.271 + PPN Rp18.729; laba Rp60.271; margin 35,40% dari DPP; markup 54,79%. ÷1,12 → DPP Rp168.750. Lantai margin 40%: DPP ⌈110.000 ÷ 0,6⌉ = 183.334 → harga Rp203.500 (Rp203.499 → 39,9999%, jadi Rp203.500 memang terendah). Harga cantik: 203.900 (40,12%), 205.000 (40,44%), 209.000 (41,58%), 209.900 (41,83%) — OK; 199.000 (38,64%) dan 199.900 (38,92%) — di bawah 40%, benar. Hukum: UU 8/1999 Pasal 9 ayat (1) huruf a & Pasal 10, sanksi Pasal 62 ayat (1) (penjara maks. 5 tahun/denda maks. Rp2 miliar) — benar.
-- Pemeriksaan khusus: **margin minimum pangan 40%** kini disebut ("hampers makanan masuk kategori pangan, margin minimum amannya 40%, bukan 30%") dan menghasilkan status yang benar (Rp189.000 DI BAWAH MIN). Cacat lama #3 teratasi.
-- Catatan SESUDAH: alternatif "naikkan ke Rp209.000 … jual dulu beberapa hari/minggu … lalu promo ke Rp189.900" — (a) Rp189.900 sendiri margin 35,70%, di bawah lantai 40% yang baru saja disebut, tanpa peringatan (hanya "margin tetap bisa dicek"); (b) syarat bahwa harga normal harus sungguh berlaku wajar (bukan formalitas) masih belum ditegaskan. Bukan salah hitung, tetapi tidak konsisten.
-- SEBELUM: kini menyebut PMK 131/2024 dan ÷1,11 dengan benar (DPP ≈Rp170.270, PPN Rp18.730 — selisih Rp1 karena pembulatan), margin 35,4%, menolak harga coret palsu dengan dasar UU 8/1999 Pasal 10 & 62. Tanpa lantai harga/margin minimum, sehingga menyimpulkan "margin kamu masih sehat" — untuk pangan dengan acuan 40%, itu terlalu longgar.
+**Cocokkan dengan script** (`margin --hpp 110000 --harga 189000 --kategori pangan --ppn termasuk`): DPP Rp170.271 + PPN Rp18.729, laba Rp60.271, margin 35,4%, markup 54,79%, DI BAWAH MIN, lantai Rp203.500 — **identik**. Rp205.000 → 40,44% OK — benar.
+
+**Kesalahan berat — klaim "DISKON MAKSIMAL" bertentangan dengan script.** Balasan: "**DISKON MAKSIMAL dari Rp203.500: 9% → harga promo Rp185.185** (laba masih di atas margin minimum 40%)", diulang di Langkah minggu ini ("diskon beneran maksimal ~9%"). Script yang sama (`diskon --harga 203500 --hpp 110000 --kategori pangan --ppn termasuk --diskon 9` dan `--rentang 5-10`) mencetak:
+- `Harga saat promo : Rp185.185 -> laba Rp56.834/unit (margin 34,07%)` + `PERHATIAN: margin saat promo 34,07% DI BAWAH minimum 40%`
+- `DISKON MAKSIMAL ... harga normal Rp203.500 sudah di/bawah batas ini -> TIDAK ADA ruang diskon` / `0% -> promo diskon TIDAK DISARANKAN`
+
+Logikanya pun jelas: Rp203.500 adalah harga terendah bermargin 40%, jadi diskon berapa pun menembus lantai. Rp185.185 bahkan di bawah harga sekarang Rp189.000 yang sudah DI BAWAH MIN. Ini persis jenis cacat yang ingin dicegah ATURAN KERAS 1.0.6 (harga promo di bawah margin minimum, disertai klaim palsu "masih di atas 40%").
+
+**Python independen** (DPP bulat terbesar dengan DPP + ⌊11% × DPP⌋ ≤ harga): 189.000 → DPP 170.271, PPN 18.729, laba 60.271, margin 35,40%; 203.500 → DPP 183.334, laba 73.334 (40,00%), 203.499 → 39,9998% (jadi Rp203.500 memang terendah); 185.185 → DPP 166.834, laba 56.834, **34,07%**; 205.000 → 40,44%; ÷1,12 → DPP 168.750. Kalimat "margin kakak sekarang 35,4%, bukan 50%-an kalau dihitung dari 189rb mentah-mentah" juga keliru kecil: (189.000 − 110.000) ÷ 189.000 = 41,8%, bukan 50%-an.
+
+**Pemeriksaan khusus:**
+- *Aturan harga coret:* **diperbaiki** — "hanya boleh kalau harga itu memang pernah benar-benar berlaku … ada buktinya"; tidak ada lagi saran "jual dulu beberapa hari lalu dicoret"; dasar UU 8/1999 disebut tanpa nomor pasal (jadi tidak perlu tanda PERLU REVIEW). Cacat 1.0.5 #3 teratasi.
+- *Margin pangan 40% & lantai:* benar dan dari script.
+- *Saran harga di bawah margin minimum:* **gagal** (lihat di atas).
+- *PPN:* PMK 131/2024, DPP nilai lain 11/12, efektif 11% — benar; catatan cek pajak.go.id/konsultan ada.
+
+**SEBELUM:** DPP Rp170.270/PPN Rp18.730 (selisih Rp1 pembulatan), margin 35,4%, markup 54,8% — benar; menolak harga coret palsu dengan UU 8/1999 Pasal 10 (benar). Kesalahan: "beda ~2.500/pcs" antara ÷1,12 dan ÷1,11 — seharusnya Rp1.520; dan menyarankan "jual dulu barang di harga lebih tinggi (misal 219rb) buat beberapa hari/minggu, baru turunin" — pola harga coret formalitas yang tetap menyesatkan. Tanpa lantai harga/margin minimum.
 
 ### Skor
-SEBELUM **7,5/10** — fakta pajak & hukum benar, tetapi tanpa harga minimum dan tanpa pilihan harga siap pakai.
-SESUDAH **8,5/10** — DPP/PPN rupiah bulat, margin vs markup, lantai Rp203.500, daftar harga cantik yang sudah dicek, penolakan harga coret palsu + alternatif jujur. Dikurangi karena contoh promo Rp189.900 bertentangan dengan lantai 40% dan syarat "harga berlaku wajar" belum tegas. Skill terpakai (read + exec).
+SEBELUM **7,0/10** — pajak & hukum inti benar, tetapi satu selisih salah hitung, saran harga coret "jual dulu beberapa hari", tanpa lantai harga.
+SESUDAH **6,5/10** — PPN, margin, lantai Rp203.500 dan aturan harga coret kini benar dan rapi, tetapi rekomendasi promo utama ("diskon maks 9% → Rp185.185, masih di atas 40%") salah fakta, bertentangan dengan keluaran script, dan mengarahkan pengguna menjual di bawah margin minimum. Skill terpakai (read + exec).
 
 ## Ringkasan
 | Skenario | SEBELUM | SESUDAH |
 |---|---|---|
-| 1. Tangga reseller/agen + flash sale 25% | 7,5 | 8,5 |
-| 2. PKP hampers + jebakan ÷1,12 & harga coret palsu | 7,5 | 8,5 |
-| **Rata-rata** | **7,5** | **8,5** |
+| 1. Tangga reseller/agen + flash sale 25% | 7,0 | 8,0 |
+| 2. PKP hampers + jebakan ÷1,12 & harga coret palsu | 7,0 | 6,5 |
+| **Rata-rata** | **7,0** | **7,25** |
 
-**VERDIK: BELUM** — ketiga perbaikan yang diminta berhasil (konflik kanal ditandai, potongan marketplace tidak lagi 0% diam-diam, margin pangan 40% disebut dan dipakai), skor sesudah ≥ 8 dan lebih baik dari sebelum. Namun ada **satu kesalahan angka** buatan model di luar script (Skenario 1: diskon 15–17% diklaim membuat promo di atas Rp30.000, padahal Rp29.050–29.750). Catatan jujur: model tanpa skill pada uji ulang ini juga cukup baik (menandai konflik kanal sendiri); pembeda skill ada pada batas diskon per kanal, lantai harga, target volume, harga cantik yang sudah dicek, dan teks siap tempel.
+**VERDIK: BELUM** — cacat 1.0.5 yang diminta teratasi (rentang 15–17% hilang; diskon maksimal skenario 1 persis dari script; aturan harga coret benar), tetapi muncul **kesalahan angka baru yang lebih berat**: di Skenario 2 model menulis "DISKON MAKSIMAL 9% → Rp185.185 (masih di atas margin 40%)" padahal script mencetak 34,07% DI BAWAH MIN dan "TIDAK ADA ruang diskon". Ditambah satu contoh harga agen Rp24.000 di bawah lantai di Skenario 1. Sesudah < 8 dan tidak bebas kesalahan angka. Catatan jujur: tanpa skill model juga cukup baik pada fakta pajak/hukum; pembeda skill ada di lantai harga, batas diskon per kanal, konflik kanal, dan teks siap tempel — tetapi pembeda itu baru bernilai bila tidak dibatalkan oleh angka karangan.
 
 ## Cacat untuk pembuat
-1. **Angka di luar script masih muncul** — bukti: "Kecilkan diskon konsumen jadi di kisaran 15–17% kalau mau lewat marketplace (harga promo tetap di atas Rp30.000 = aman dari konflik reseller)". Benar: diskon ≤ 14,29% agar promo ≥ Rp30.000; diskon 17,14% hanya batas margin marketplace. Saran: script `diskon` dengan `--harga-reseller` mengeluarkan "diskon maks tanpa konflik kanal = X%" dan SKILL.md mewajibkan setiap usulan diskon alternatif dijalankan ulang lewat script.
-2. **Usulan harga promo tidak dicek terhadap lantai** — Skenario 2: promo Rp189.900 (margin 35,70%) disarankan tepat setelah menyebut lantai Rp203.500. Saran: aturan "setiap harga yang disebut di jawaban wajib punya status dari script".
-3. **Syarat harga normal sebelum harga coret** — tegaskan di `references/aturan-promo.md` dan jawaban: harga pembanding harus sungguh berlaku wajar (bukan formalitas singkat) sebelum dicoret.
+1. **Model masih menulis label "DISKON MAKSIMAL" dengan angka karangan** — bukti S2: "DISKON MAKSIMAL dari Rp203.500: 9% → harga promo Rp185.185 (laba masih di atas margin minimum 40%)"; script: 0%, TIDAK ADA ruang diskon, 9% = 34,07% DI BAWAH MIN. Saran: (a) di SKILL.md, tambah aturan eksplisit "bila harga normal = lantai (atau di bawahnya), jangan tawarkan diskon persen; tawarkan bonus/paket/kuota" + contoh kasus ini; (b) script `margin` yang mencetak lantai juga mencetak satu baris "Dari harga lantai ini: TIDAK ADA ruang diskon" agar model tidak menghitung sendiri; (c) di Format output, wajibkan kalimat "DISKON MAKSIMAL" hanya ditulis dengan menyalin baris script apa adanya (termasuk "0% -> TIDAK DISARANKAN").
+2. **Contoh harga khusus reseller/agen saat promo tidak dicek** — S1: "misal turunkan sementara jadi Rp27.000/Rp24.000"; Rp24.000 = 39,58% DI BAWAH MIN (lantai Rp24.167) dan Rp27.000 > promo Rp26.250. Saran: aturan keras mencakup "harga khusus reseller/agen selama promo" — jalankan `tangga ... --harga-promo <promo> --kategori` dan salin status; atau script `diskon` dengan `--harga-reseller` mencetak "harga khusus reseller tertinggi agar tidak bentrok = promo − Rp1, dan lantai margin = Rp…".
+3. **Pembanding "laba normal" saat `--kanal marketplace`** — script memakai laba normal di marketplace (Rp17.000) sebagai pembanding volume (+86,3%), sementara penjualan 500 botol pengguna kemungkinan jual langsung (laba Rp20.500 → butuh 1.124 botol). Saran: script mencetak pembanding yang dipakai ("dibanding harga normal di kanal yang sama") atau keduanya.
+4. Minor: "bukan 50%-an kalau dihitung dari 189rb mentah-mentah" — angka tanpa dasar (seharusnya 41,8%).
 
 ## Cuplikan jualan
-- Dengan skill: "Skenario B — lewat marketplace, asumsi potongan 10%: laba tinggal Rp9.125/botol, margin 34,76% — DI BAWAH minimum 40% … diskon maksimal aman di kanal ini cuma 17,14%." (tanpa skill hanya menyebut fee marketplace secara umum)
-- Dengan skill: "Hampers makanan masuk kategori pangan, margin minimum amannya 40% … harga terendah yang masih sehat Rp203.500. Rp199.000/199.900 ternyata DI BAWAH MIN juga." (tanpa skill: "margin kamu masih sehat")
+- Dengan skill: "Diskon 25% … harga promo Rp26.250 malah lebih murah dari harga beli reseller & agen … Gabungan semua batas → diskon maksimal yang aman: 14%, harga promo Rp30.100." (tanpa skill: tidak menyadari harga flash sale di bawah harga beli reseller)
+- Dengan skill: "Harga coret/'harga normal' pembanding hanya boleh dipakai kalau harga itu memang pernah benar-benar berlaku … ada buktinya." (tanpa skill: menyarankan "jual dulu di 219rb beberapa hari/minggu, baru turunin")
