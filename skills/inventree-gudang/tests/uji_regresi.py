@@ -532,6 +532,16 @@ class TesOpname(DasarServer):
         self.assertIn("Belum disimpan", out)
         self.assertEqual(self.tulis(), [])
 
+    def test_nol_peringatan_delete_on_deplete(self):
+        # Rekaman 1.5.6: delete_on_deplete = true (bawaan) -> stok 0 menghapus item; harus diperingatkan di pratinjau
+        f = self.lembar("nol.csv", "id_stok;nama;satuan;stok_sistem;stok_fisik\n1;Singkong;kg;57;0\n5;Bumbu;kg;12,5;12,5\n")
+        k, out, _ = self.jalan("opname", "--file", f, token=TOKEN_GUDANG)
+        self.assertEqual(k, 0)
+        self.assertIn("PERHATIAN: item berikut bertanda 'Delete on Deplete'", out)
+        self.assertIn("(id 1)", out)
+        self.assertNotIn("(id 5)", out)
+        self.assertEqual(self.tulis(), [])
+
     def test_simpan_dengan_ya(self):
         f = self.lembar("y.csv", "id_stok;nama;stok_sistem;stok_fisik\n1;Singkong;57;55\n3;Minyak;17,5;17,5\n")
         k, out, err = self.jalan("opname", "--file", f, "--catatan", "akhir bulan", "--ya", token=TOKEN_GUDANG)

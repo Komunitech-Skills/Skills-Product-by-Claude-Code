@@ -983,6 +983,7 @@ def cmd_opname(args, token):
                             f"sejak lembar dibuat). Buat lembar baru dengan 'opname-draf'.", K_INPUT)
             raise
         x["sistem_kini"] = ke_desimal(now.get("quantity"))
+        x["hapus_saat_habis"] = bool(now.get("delete_on_deplete"))
         x["selisih"] = x["fisik"] - x["sistem_kini"]
         if x["sistem_kini"] != x["sistem_lembar"]:
             berubah.append(x)
@@ -996,6 +997,12 @@ def cmd_opname(args, token):
                     f"sistem {fmt(x['sistem_kini'])}{u}, fisik {fmt(x['fisik'])}{u} -> {tanda}"
                     + (f" | catatan: {x['catatan']}" if x["catatan"] else ""))
     teks.append(f"\nRingkasan: {len(beda)} item selisih, {len(isi) - len(beda)} item sama.")
+    habis = [x for x in isi if x["fisik"] == 0 and x["hapus_saat_habis"] and x["sistem_kini"] != 0]
+    if habis:
+        teks.append("PERHATIAN: item berikut bertanda 'Delete on Deplete' di InvenTree, sehingga stok 0 akan MENGHAPUS "
+                    "item stok itu (bukan hanya menolkan): " + ", ".join(f"{x['nama']} (id {x['id']})" for x in habis)
+                    + ". Bila ingin riwayatnya tetap tampil, matikan tanda itu di layar item stok dulu, atau pindahkan "
+                    "stok ke lokasi arsip.")
     if berubah:
         teks.append("\nBERHENTI: stok berikut BERUBAH di InvenTree sejak lembar dibuat (ada transaksi masuk/keluar):")
         for x in berubah:
