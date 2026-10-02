@@ -513,6 +513,23 @@ class UjiUnit(unittest.TestCase):
         self.assertEqual(fider.samarkan_pribadi("2026-09-29 0812345678")[0], "2026-09-29 [nomor disembunyikan]")
         self.assertEqual(fider.samarkan_pribadi("hub 0812-3456-7890 15 pcs")[0], "hub [nomor disembunyikan] 15 pcs")
 
+    def test_samarkan_nama_orang(self):
+        t, n = fider.samarkan_pribadi("Pak Hendra minta QRIS, hubungi Bu Sari Wulandari di 0812-3456-7890")
+        self.assertNotIn("Hendra", t)
+        self.assertNotIn("Sari", t)
+        self.assertNotIn("0812", t)
+        self.assertEqual(n, 3)
+        self.assertIn("[nama disembunyikan] minta QRIS", t)
+        t2, n2 = fider.samarkan_pribadi("Tambah pembayaran QRIS untuk toko")
+        self.assertEqual((t2, n2), ("Tambah pembayaran QRIS untuk toko", 0))
+
+    def test_impor_pratinjau_menandai_nama_disamarkan(self):
+        butir = [{"judul": "Pak Hendra minta bayar QRIS", "uraian": "Kak Rina bilang kurirnya lambat", "tag": []}]
+        r = fider.siapkan_impor(butir, "WA", [], set())[0]
+        self.assertNotIn("Hendra", r["judul"] + r["uraian"])
+        self.assertNotIn("Rina", r["judul"] + r["uraian"])
+        self.assertEqual(r["disamarkan"], 2)
+
     def test_samarkan_kunci(self):
         self.assertEqual(fider.samarkan("galat abc123 xyz", "abc123"), "galat *** xyz")
 

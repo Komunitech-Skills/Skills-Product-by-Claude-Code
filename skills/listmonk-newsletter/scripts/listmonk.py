@@ -30,7 +30,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 DIR_KONFIG = os.path.join(os.path.expanduser("~"), ".komunitech")
 F_ALAMAT = os.path.join(DIR_KONFIG, "listmonk-alamat.txt")
 F_AKUN = os.path.join(DIR_KONFIG, "listmonk-akun.txt")
@@ -39,6 +39,7 @@ F_UJI = os.path.join(DIR_KONFIG, "listmonk-uji.json")
 F_ALAMAT_UJI = os.path.join(DIR_KONFIG, "listmonk-alamat-uji.txt")
 F_KUNCI = os.path.join(DIR_KONFIG, "listmonk-kunci.txt")
 F_LOG_IMPOR = os.path.join(DIR_KONFIG, "listmonk-log-impor.jsonl")
+F_PRATINJAU_IMPOR = os.path.join(DIR_KONFIG, "listmonk-pratinjau-impor.json")
 MAKS_ALAMAT_UJI = 3
 ALAMAT_BAWAAN = "http://localhost:9000"
 TZ = {"WIB": 7, "WITA": 8, "WIT": 9}
@@ -107,7 +108,43 @@ RE_EMAIL = re.compile(r"^[A-Za-z0-9._%+\-']+@[A-Za-z0-9](?:[A-Za-z0-9\-]*[A-Za-z
 TYPO = {"gmial.com": "gmail.com", "gmai.com": "gmail.com", "gmail.co": "gmail.com",
         "gmail.con": "gmail.com", "gmal.com": "gmail.com", "yahooo.com": "yahoo.com",
         "yaho.com": "yahoo.com", "yahoo.co": "yahoo.com", "hotmial.com": "hotmail.com",
-        "gmail.cm": "gmail.com", "outlok.com": "outlook.com"}
+        "gmail.cm": "gmail.com", "outlok.com": "outlook.com",
+        "gmaill.com": "gmail.com", "gnail.com": "gmail.com", "gmil.com": "gmail.com", "gmaul.com": "gmail.com",
+        "gamil.com": "gmail.com", "hotmal.com": "hotmail.com", "hotnail.com": "hotmail.com",
+        "hotmail.con": "hotmail.com", "yahoo.con": "yahoo.com", "yahho.com": "yahoo.com", "yaoo.com": "yahoo.com",
+        "outlook.con": "outlook.com", "outloo.com": "outlook.com", "icloud.con": "icloud.com", "iclod.com": "icloud.com"}
+DOMAIN_POPULER = ("gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com")
+# domain sah yang kebetulan mirip domain populer (jangan ditandai salah ketik)
+DOMAIN_SAH_MIRIP = {"mail.com", "email.com", "gmx.com", "live.com", "msn.com", "ymail.com", "aol.com", "me.com"}
+
+
+def _jarak1(a, b):
+    """True bila a dan b berbeda paling banyak satu edit (sisip/hapus/ganti/tukar huruf bersebelahan)."""
+    if a == b:
+        return True
+    if abs(len(a) - len(b)) > 1:
+        return False
+    if len(a) == len(b):
+        beda = [i for i in range(len(a)) if a[i] != b[i]]
+        if len(beda) == 1:
+            return True
+        return len(beda) == 2 and beda[1] == beda[0] + 1 and a[beda[0]] == b[beda[1]] and a[beda[1]] == b[beda[0]]
+    if len(a) > len(b):
+        a, b = b, a
+    return any(b[:i] + b[i + 1:] == a for i in range(len(b)))
+
+
+def domain_salah_ketik(dom):
+    """Kembalikan domain yang kemungkinan dimaksud bila `dom` tampak salah ketik domain umum, selain itu ''."""
+    dom = (dom or "").lower()
+    if dom in TYPO:
+        return TYPO[dom]
+    if dom in DOMAIN_POPULER or dom in DOMAIN_SAH_MIRIP:
+        return ""
+    for d in DOMAIN_POPULER:
+        if _jarak1(dom, d):
+            return d
+    return ""
 
 
 class Galat(Exception):
@@ -364,7 +401,7 @@ def bersihkan_teks(t, maks):
     return t[:maks]
 
 
-def analisis_kontak(rows, kol_email=None, kol_nama=None):
+def analisis_kontak(rows, kol_email=None, kol_nama=None, sertakan_typo=False):
     if not rows:
         raise Galat("Berkas kosong.", 3)
     header = [h.strip() for h in rows[0]]
@@ -430,8 +467,11 @@ def analisis_kontak(rows, kol_email=None, kol_nama=None):
             continue
         lihat.add(em)
         dom = em.split("@")[1]
-        if dom in TYPO:
-            hasil["mencurigakan"].append((n, em, f"mungkin maksudnya @{TYPO[dom]}"))
+        maksud = domain_salah_ketik(dom)
+        if maksud:
+            hasil["mencurigakan"].append((n, em, f"mungkin maksudnya @{maksud}"))
+            if not sertakan_typo:
+                continue  # DITAHAN: tidak diimpor otomatis; pemilik perbaiki di berkas atau pakai --sertakan-typo
         nama = (r[inama].strip() if inama is not None and inama < len(r) else "")
         bersih = bersihkan_teks(nama, 200)
         if bersih != nama.strip()[:200]:
@@ -473,9 +513,10 @@ def laporan_kontak(h, tulis=cetak):
         tulis(f"Sel bertanda rumus (=,+,-,@) dibersihkan: {rp_angka(h['formula_dibersihkan'])}")
     tulis(f"Baris kosong                  : {rp_angka(h['kosong'])}")
     if h["mencurigakan"]:
-        tulis(f"Perlu dicek manual (salah ketik?) - TETAP disertakan: {len(h['mencurigakan'])}")
+        tulis(f"Domain tampak SALAH KETIK - DITAHAN, tidak diimpor otomatis: {len(h['mencurigakan'])}")
         for n, e, s in h["mencurigakan"][:10]:
             tulis(f"  baris {n}: {samar_email(e)} ({s})")
+        tulis("  -> perbaiki alamatnya di berkas lalu ulangi, atau (bila memang benar) pakai --sertakan-typo.")
     if h["tidak_valid"]:
         tulis("Contoh baris tidak valid: " + ", ".join(f"baris {n}" for n, _ in h["tidak_valid"][:10]))
     if h["kolom_ekstra"]:
@@ -634,6 +675,24 @@ def konfirmasi_valid(teks):
     return bool(RE_KATA_SETUJU.search(t))
 
 
+def simpan_pratinjau_impor(kunci, jumlah):
+    try:
+        with open(F_PRATINJAU_IMPOR, encoding="utf-8") as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        d = {}
+    d[kunci] = jumlah
+    tulis_rahasia(F_PRATINJAU_IMPOR, json.dumps(d))
+
+
+def pratinjau_impor_ada(kunci, jumlah):
+    try:
+        with open(F_PRATINJAU_IMPOR, encoding="utf-8") as f:
+            return json.load(f).get(kunci) == jumlah
+    except (OSError, ValueError):
+        return False
+
+
 def cmd_impor(args):
     sumber = (args.sumber_persetujuan or "").strip()
     if not args.saya_punya_izin or not sumber:
@@ -670,7 +729,7 @@ def cmd_impor(args):
                     "opt-in, persetujuan tertulis/terekam) dan yang buktinya Anda pegang.", 6)
     cfg = Konfig(args)
     l = cari_list(cfg, args.list)
-    h = analisis_kontak(baca_baris_kontak(args.berkas), args.kolom_email, args.kolom_nama)
+    h = analisis_kontak(baca_baris_kontak(args.berkas), args.kolom_email, args.kolom_nama, args.sertakan_typo)
     laporan_kontak(h)
     if not h["ok"]:
         raise Galat("Tidak ada kontak valid untuk diimpor.", 3)
@@ -682,9 +741,25 @@ def cmd_impor(args):
         catat_impor(dict(rekam, hasil="ditolak-kolom-sumber-terlarang"))
         raise Galat("DITOLAK: kolom 'sumber' di berkas menyebut asal yang tidak berizin (beli/grup WA/scraping/dll) "
                     f"pada {len(h['sumber_terlarang'])} baris. Pisahkan hanya orang yang mendaftar sendiri, lalu ulangi.", 6)
+    kunci_pratinjau = f"{sidik_berkas(args.berkas)}|{l['id']}|{status}|{int(bool(args.sertakan_typo))}"
+    jumlah = len(h["ok"])
     if not args.ya:
-        cetak("BELUM DIIMPOR. Tunjukkan ringkasan ini ke pengguna, lalu jalankan ulang dengan --ya.")
-        raise Galat("Menunggu konfirmasi (--ya).", 6)
+        cetak("CONTOH (disamarkan): " + ", ".join(f"{samar_email(d['email'])} ({d['name'][:20]})" for d in h["ok"][:5]))
+        simpan_pratinjau_impor(kunci_pratinjau, jumlah)
+        cetak(f"RINGKASAN: {rp_angka(jumlah)} valid akan diimpor; {rp_angka(len(h['duplikat']))} duplikat, "
+              f"{rp_angka(len(h['tidak_valid']))} tidak valid, {rp_angka(len(h['mencurigakan']))} domain salah ketik "
+              f"{'(ikut diimpor)' if args.sertakan_typo else '(ditahan)'}, "
+              f"{rp_angka(len(h['tanpa_izin']))} tidak/belum setuju.")
+        cetak("BELUM DIIMPOR. WAJIB tampilkan ringkasan ini ke pengguna dan tanya: "
+              f"'Impor {jumlah} kontak ke list ini? (ya/tidak)'. Hanya bila menjawab ya, ulangi dengan "
+              f"--ya --konfirmasi-jumlah {jumlah}.")
+        raise Galat("Menunggu konfirmasi pengguna (--ya --konfirmasi-jumlah).", 6)
+    if not pratinjau_impor_ada(kunci_pratinjau, jumlah):
+        raise Galat("DITOLAK: impor belum pernah dipratinjau untuk berkas/list ini (atau isi berkas berubah). Jalankan "
+                    "tanpa --ya, tampilkan ringkasan ke pengguna, tunggu jawaban ya, baru ulangi.", 6)
+    if args.konfirmasi_jumlah != jumlah:
+        raise Galat(f"DITOLAK: --konfirmasi-jumlah harus sama dengan jumlah kontak valid yang sudah ditampilkan ke "
+                    f"pengguna ({jumlah}). Tanyakan pengguna dulu; jangan menebak.", 6)
     tmp = io.StringIO()
     w = csv.writer(tmp)
     w.writerow(["email", "name", "attributes"])
@@ -990,8 +1065,30 @@ def cmd_buat_kampanye(args):
             "body": body, "messenger": "email", "template_id": args.template, "tags": args.tag or []}
     if args.dari:
         data["from_email"] = args.dari
-    k = api(cfg, "POST", "/campaigns", data=data)["data"]
-    cetak(f"Draf kampanye dibuat: #{k['id']} '{k['name']}' - status {k['status']} (BELUM dikirim ke siapa pun).")
+    # Cegah kampanye ganda: nama/ID yang sudah ada -> perbarui DRAF yang sama, jangan membuat baru.
+    if args.perbarui:
+        target = ambil_kampanye(cfg, args.perbarui)
+    else:
+        ada, _ = ambil_semua(cfg, "/campaigns", {"no_body": "true"})
+        sama = [x for x in ada if str(x.get("name", "")).strip().casefold() == args.nama.strip().casefold()]
+        if len(sama) > 1:
+            raise Galat("DITOLAK: ada beberapa kampanye bernama sama (" + ", ".join(f"#{x['id']}" for x in sama) +
+                        "). Pilih satu dengan --perbarui <id>, atau pakai nama lain.", 6)
+        target = sama[0] if sama else None
+    if target:
+        if target.get("status") != "draft":
+            raise Galat(f"DITOLAK: kampanye #{target['id']} '{target.get('name')}' berstatus {target.get('status')}, "
+                        "bukan draf, jadi tidak ditimpa. Pakai --nama yang berbeda bila memang ingin kampanye baru.", 6)
+        if not args.dari and target.get("from_email"):
+            data["from_email"] = target["from_email"]
+        if target.get("send_at"):
+            data["send_at"] = target["send_at"]
+        k = api(cfg, "PUT", f"/campaigns/{target['id']}", data=data)["data"]
+        cetak(f"Draf kampanye #{k['id']} '{k['name']}' DIPERBARUI di draf yang sama (tidak membuat kampanye baru). "
+              "Isi berubah -> uji-kirim wajib diulang.")
+    else:
+        k = api(cfg, "POST", "/campaigns", data=data)["data"]
+        cetak(f"Draf kampanye dibuat: #{k['id']} '{k['name']}' - status {k['status']} (BELUM dikirim ke siapa pun).")
     kk = ambil_kampanye(cfg, k["id"])
     g, p = lint_kampanye(cfg, kk)
     for x in g:
@@ -1246,6 +1343,8 @@ def buat_parser():
     s.add_argument("--pengguna-konfirmasi-setuju", help="jawaban pengguna apa adanya, untuk sumber yang tak dikenal")
     s.add_argument("--sudah-terkonfirmasi", action="store_true")
     s.add_argument("--kolom-email"); s.add_argument("--kolom-nama"); s.add_argument("--ya", action="store_true")
+    s.add_argument("--konfirmasi-jumlah", type=int, help="jumlah kontak valid yang sudah ditampilkan & disetujui pengguna")
+    s.add_argument("--sertakan-typo", action="store_true", help="ikutkan domain yang ditandai salah ketik (setelah dicek pemilik)")
     s.set_defaults(f=cmd_impor)
     s = umum(sub.add_parser("kirim-optin")); s.add_argument("--list", required=True)
     s.add_argument("--ya", action="store_true"); s.add_argument("--konfirmasi-penerima", type=int)
@@ -1259,6 +1358,7 @@ def buat_parser():
     s.add_argument("--subjek", required=True); s.add_argument("--list", action="append", required=True)
     s.add_argument("--isi-file", required=True); s.add_argument("--tipe", choices=["html", "markdown", "richtext"], default="html")
     s.add_argument("--template", type=int, default=1); s.add_argument("--dari"); s.add_argument("--tag", action="append")
+    s.add_argument("--perbarui", help="ID draf yang diperbarui (bukan membuat baru); bawaan: draf bernama sama")
     s.set_defaults(f=cmd_buat_kampanye)
     s = umum(sub.add_parser("periksa-kampanye")); s.add_argument("id"); s.set_defaults(f=cmd_periksa_kampanye)
     s = umum(sub.add_parser("daftar-kampanye")); s.add_argument("--batas", type=int, default=10); s.set_defaults(f=cmd_daftar_kampanye)
