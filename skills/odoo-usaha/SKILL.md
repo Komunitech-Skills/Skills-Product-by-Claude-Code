@@ -5,6 +5,11 @@ description: Mengoperasikan Odoo (Community/Enterprise, self-host atau Odoo Onli
 
 # Odoo Usaha (asisten Odoo milik pembeli)
 
+## ATURAN WAJIB (baca dulu)
+1. **Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan). Sebut "kunci yang Anda tempel".**
+2. Templat balasan baku bila itu terjadi (salin, jangan tambah kutipan apa pun dari yang ditempel):
+   > "Kunci yang Anda tempel tidak saya pakai, dan sebaiknya dianggap sudah bocor. Mohon cabut/ganti kunci API itu di aplikasinya, lalu simpan yang baru SENDIRI dari terminal Anda: `python3 <folder-skill>/scripts/odoo.py simpan-kunci` (Windows: `python`/`py`; path lengkap folder skill ini ada di `docs/instalasi.md`). Setelah itu saya bisa melanjutkan."
+
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
@@ -158,6 +163,7 @@ _Dasar PPN: UU HPP & PMK 131/2024 (tarif 12%, DPP nilai lain 11/12 untuk non-mew
 - Uji regresi & server tiruan (`tests/`) hanya ada di repo pengembang Komunitech, tidak ikut paket pembeli.
 
 ## Checklist sebelum menjawab
+- [ ] Balasan tidak memuat kunci/token dari chat
 - [ ] Angka dari script, tidak diubah; BEDA dilaporkan apa adanya
 - [ ] Menulis hanya draf quotation, setelah pratinjau + "ya" eksplisit
 - [ ] Penawaran disebut **DRAF**; kirim/konfirmasi/faktur/bayar diserahkan ke manusia

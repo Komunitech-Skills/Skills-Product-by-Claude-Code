@@ -705,6 +705,15 @@ class UjiPerbaikan101(unittest.TestCase):
         self.assertEqual(k, 2)
         self.assertIn("--izinkan-host", err)
 
+    def test_skill_md_aturan_wajib_larang_ulang_kunci_di_posisi_atas(self):
+        sk = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "SKILL.md"), encoding="utf-8").read()
+        isi = sk.split("\n---\n", 1)[1].splitlines()[:15]
+        atas = "\n".join(isi)
+        self.assertIn("## ATURAN WAJIB", atas)
+        self.assertIn("JANGAN menulis ulang satu karakter pun darinya", atas)
+        self.assertIn("kunci yang Anda tempel", atas)
+        self.assertIn("Balasan tidak memuat kunci/token dari chat", sk)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

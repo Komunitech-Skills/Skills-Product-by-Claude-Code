@@ -5,6 +5,8 @@ description: Mengoperasikan InvenTree (sistem inventori/gudang open-source, self
 
 # InvenTree Gudang (asisten gudang lokal)
 
+> Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan). Sebut "kunci yang Anda tempel".
+
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
