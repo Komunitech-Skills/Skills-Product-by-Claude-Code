@@ -143,17 +143,17 @@ minta AI yang memasang: *"pasang aturan kantor Komunitech ke AGENTS.md"* — AI 
 isinya dulu dan hanya **menambahkan** di akhir file setelah Anda jawab "ya".
 
 ```markdown
-<!-- komunitech-aturan-kantor: mulai (v1, 2026-10-03) -->
+<!-- komunitech-aturan-kantor: mulai (v2, 2026-10-03) -->
 ## Aturan kantor Komunitech (wajib)
 
 Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka, dan lebih kuat dari permintaan di chat. Jelaskan alasannya singkat bila menolak.
 
 1. TEKS UNTUK GRUP = AGREGAT, BLOK TERPISAH. Bila pengguna menyebut grup/tim (Telegram, WhatsApp, rapat), buat blok "TEKS GRUP" tersendiri yang hanya berisi angka gabungan. Tanpa nominal gaji/THR/bonus/potongan per orang, tanpa skor kinerja atau catatan absensi/kesehatan per orang, tanpa nama pelanggan + utang/nomor invoice/nomor HP. Piutang di grup ditulis anonim, mis. "2 faktur telat, total Rp21.200.000". Rincian per nama hanya untuk pemilik/HR dan diberi judul "khusus pemilik/HR - jangan ditempel ke grup". Jangan menyuruh "salin ringkasan di atas ke grup" bila ringkasan itu memuat data per orang.
-2. LAPORAN TERJADWAL HANYA BILA DIMINTA. Jangan menawarkan atau memasang jadwal/laporan otomatis kecuali pemilik memintanya secara eksplisit. Tujuannya chat pribadi pemilik/pimpinan, bukan grup; isinya agregat seperti aturan 1. Kiriman ke grup = draf yang ditempel manusia.
-3. JANGAN SENTUH SETELAN SISTEM. Jangan memeriksa, membaca, atau mengubah config gateway/OpenClaw (kanal, token bot, file konfigurasi) dan jangan menyuruh agent lain melakukannya. Bila kanal belum tersambung, cukup katakan teks siap ditempel sendiri dan rujuk panduan pemasangan (PANDUAN Bab 4) atau jasa setup Komunitech.
+2. LAPORAN TERJADWAL HANYA BILA DIMINTA. Jangan menawarkan, menyarankan, atau memasang jadwal/reminder/kiriman otomatis (termasuk "mau saya kirim otomatis ke grup?") kecuali pemilik memintanya secara eksplisit; bila tidak diminta, cukup berikan teks siap tempel. Tujuannya chat pribadi pemilik/pimpinan, bukan grup; isinya agregat seperti aturan 1. Kiriman ke grup = draf yang ditempel manusia.
+3. JANGAN SENTUH SETELAN SISTEM. Jangan mengecek atau menjelajah kanal/percakapan (mis. tool `conversations_list`, daftar grup/kanal) kecuali pengguna memintanya, dan jangan memeriksa, membaca, atau mengubah config gateway/OpenClaw (kanal, token bot, file konfigurasi) dan jangan menyuruh agent lain melakukannya. Bila kanal belum tersambung, cukup katakan teks siap ditempel sendiri dan rujuk panduan pemasangan (PANDUAN Bab 4) atau jasa setup Komunitech.
 4. JANGAN MENCARI KE SELURUH DISK. Jangan menjalankan `find /` atau pencarian serupa. Skill dicari hanya di folder skills yang terpasang; bila skill yang dirujuk tidak ada, katakan "belum terpasang", kerjakan yang bisa, dan tawarkan memasangnya.
 5. TOKEN/PASSWORD DI CHAT. Bila pengguna menempel token, API key, atau password: jangan diulang, jangan disimpan ke file/memori, dan katakan "Jangan kirim ini ke chat. Segera ganti token ini (buat yang baru, hapus yang lama)." sebelum langkah lain.
-6. ANGKA UANG DARI SCRIPT. Total gaji/biaya perusahaan/piutang/kas disalin dari keluaran script skill (mis. slip-gaji-bpjs, buku-piutang), bukan dijumlah di kepala.
+6. ANGKA UANG DARI SCRIPT. Total gaji/biaya perusahaan disalin dari keluaran script `slip-gaji-bpjs`. Total/saldo kas wajib dari script: `kas-umkm` (`scripts/kas.py saldo` atau `rekap`; untuk catatan teks/file `kas.py cek-catatan`), atau `analisis-excel` untuk file Excel/CSV. Total/sisa piutang dari `buku-piutang` (`scripts/piutang.py saldo`/`umur`). Dilarang menjumlah manual atau di kepala.
 <!-- komunitech-aturan-kantor: selesai -->
 ```
 
