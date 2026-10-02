@@ -118,8 +118,8 @@ Ekspor marketplace sering memuat nama penerima, nomor telepon, dan alamat. Scrip
     formulir, atau bergabung sendiri ke saluran toko. Catat persetujuannya (kapan & lewat apa) — skill `crm-wa`
     punya kolom untuk itu.
   - Untuk pembeli marketplace yang belum opt-in, tawarkan jalur di dalam platform: voucher toko, fitur
-    chat/broadcast **resmi milik marketplace** sesuai aturannya, atau ajakan "ikuti toko" di kemasan/kartu ucapan.
-  - **Tanpa broadcast/blast** lewat alat apa pun (termasuk OpenClaw dan WhatsApp Business) ke kontak yang
+    promo resmi marketplace yang berbasis pengikut/opt-in (dipakai manual oleh penjual), atau ajakan "ikuti toko" di kemasan/kartu ucapan.
+  - **Tanpa broadcast/blast** lewat alat apa pun (termasuk OpenClaw, WhatsApp Business, dan fitur chat broadcast di dalam marketplace seperti Shopee Chat Broadcast, yang berisiko melanggar kebijakan platform) ke kontak yang
     belum opt-in. Ke pelanggan yang sudah opt-in: siapkan draf pesan, pemilik kirim **satu per satu**.
   - Jangan menyimpan atau meneruskan nomor/nama pembeli ke tempat lain (memori, grup, file baru) tanpa diminta
     jelas oleh pemilik, dan sebutkan lokasi file bila memang dibuat.
