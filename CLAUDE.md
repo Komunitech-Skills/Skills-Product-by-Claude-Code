@@ -50,6 +50,11 @@ Dua jalur produksi:
 - **Uji platform OpenClaw otomatis menggantikan uji manusia (Tahap 6.10):** agent Komunitech menguji skill langsung di agent OpenClaw yang sama dengan bot Telegram (model & skill sama), termasuk perbandingan **sebelum/sesudah** (skill dimatikan vs aktif) yang disimpan di `examples/00-openclaw-sebelum-sesudah.md` sebagai bahan jualan. Skill yang lolos ditampilkan lewat bot penguji di grup Telegram (bot-to-bot), tim cukup cek acak. `platform_teruji` ditulis `openclaw (uji otomatis agent)`.
 - **Urutan uji:** solusi VIP dulu, lalu skill dari skor kualitas tertinggi. Skill yang butuh sistem luar (Odoo, Kanboard, Frappe) diuji dengan data contoh; bot-trading-kripto tetap ditunda.
 
+**Keputusan pemilik 2026-10-02 (disetujui langsung oleh pemilik):**
+- **Pilot tampilan Telegram bot-to-bot disetujui** ("setuju pilot Telegram"): perbarui skill uji di bot produksi ke versi repo (backup dulu), sesuaikan setelan OpenClaw agar membalas bot penguji bila perlu (backup dulu), bot penguji mengirim maks. 10 pesan ke grup uji dengan jeda & pengaman anti saling-balas.
+- **brainstorming-ide-usaha tidak dijadikan gratis**: tetap ecer dengan harga usulan, atau dimasukkan ke bundle.
+- **hitung-thr masuk `paket-kantor-manajemen`** (kini 18 skill, harga tetap Rp599.000) dan ke skill inti `solusi-vip/kantor-manajemen`.
+
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
 Bahasa: Bahasa Indonesia sebagai utama; bilingual ID/EN bila relevan.

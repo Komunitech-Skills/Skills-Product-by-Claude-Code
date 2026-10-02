@@ -66,7 +66,7 @@ Skill inti: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `laporan-otomatis-terja
 `laporan-status-kantor`, `ringkas-grup-wa`, `notulen-rapat`, `analisis-excel`,
 `analisis-rasio-keuangan-usaha`, `arus-kas-13minggu`, `presentasi-data-ke-atasan`,
 `buku-piutang`, `tagih-piutang`, `buku-stok`, `laporan-insiden-usaha`, `dasbor-lokal`,
-`vikunja-tugas` (butuh aplikasi Vikunja, Bab 5k). **[VIP]** `laporan-harian-usaha`.
+`hitung-thr` (THR prorata dihitung script, bukan dikira), `vikunja-tugas` (butuh aplikasi Vikunja, Bab 5k). **[VIP]** `laporan-harian-usaha`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
@@ -84,6 +84,7 @@ openclaw skills install ./tagih-piutang --global
 openclaw skills install ./buku-stok --global
 openclaw skills install ./laporan-insiden-usaha --global
 openclaw skills install ./dasbor-lokal --global
+openclaw skills install ./hitung-thr --global
 openclaw skills install ./vikunja-tugas --global
 openclaw skills install ./laporan-harian-usaha --global
 ```
