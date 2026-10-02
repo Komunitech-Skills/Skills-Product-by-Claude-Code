@@ -24,6 +24,8 @@ Perintah:
   cari KATA                            cari teks di semua dokumen (judul + path + cuplikan)
   baca (--id ID | --notebook ID --path /jalur)   baca isi dokumen sebagai Markdown
   buat --notebook ID --path /jalur (--md TEKS | --md-file FILE | --md -)   buat dokumen baru
+                                        (--timpa: cadangan isi lama ke ~/KomunitechData/siyuan/cadangan/,
+                                        path absolut dicetak; ubah dengan --cadangan-dir)
   tambah --id ID (--md TEKS | --md-file FILE | --md -)   tambah isi ke dokumen/blok yang sudah ada
   lama [--hari N] [--notebook ID]      dokumen yang belum diperbarui > N hari (default 90)
   ekspor-basis --notebook ID [--file F] [--filter KATA]   gabungkan semua dokumen 1 buku catatan
@@ -55,6 +57,26 @@ URL_DEFAULT = "http://127.0.0.1:6806"
 BATAS_WAKTU = 20
 FILE_KUNCI_DEFAULT = os.path.expanduser(os.path.join("~", ".komunitech", "siyuan-kunci.txt"))
 PER_HALAMAN_SNIPPET = 400
+
+
+def folder_cadangan_default():
+    """v1.0.10: cadangan isi lama disimpan di folder data pengguna, DI LUAR folder skill (agar tidak ikut
+    terhapus saat skill diperbarui/diinstal ulang), konsisten dengan skill Komunitech lain. Urutan:
+    ENV KOMUNITECH_SIYUAN_CADANGAN -> ENV KOMUNITECH_DATA/siyuan/cadangan -> ~/KomunitechData/siyuan/cadangan."""
+    env = os.environ.get("KOMUNITECH_SIYUAN_CADANGAN")
+    if env:
+        return os.path.abspath(os.path.expanduser(env))
+    data = os.environ.get("KOMUNITECH_DATA")
+    if data:
+        return os.path.abspath(os.path.join(os.path.expanduser(data), "siyuan", "cadangan"))
+    return os.path.join(os.path.expanduser("~"), "KomunitechData", "siyuan", "cadangan")
+
+
+def _folder_cadangan(folder_cadangan=None):
+    """Folder cadangan sebagai path ABSOLUT (dari --cadangan-dir bila diisi, selain itu default)."""
+    if folder_cadangan:
+        return os.path.abspath(os.path.expanduser(folder_cadangan))
+    return folder_cadangan_default()
 
 KELUAR_ARG, KELUAR_KONEKSI, KELUAR_AKSES, KELUAR_LAIN, KELUAR_DOBEL, KELUAR_TIDAK_PASTI = 2, 3, 5, 6, 7, 8
 
@@ -416,7 +438,8 @@ def p_buat(url, token, lokal, notebook, path, markdown, ya, timpa, konfirmasi_ti
         if lama_md is not None:
             teks += ("Tampilkan pratinjau ini ke pengguna dan minta konfirmasi akhir yang eksplisit "
                      "(mis. 'Ketik TIMPA untuk melanjutkan'). Setelah itu jalankan ulang dengan "
-                     "--timpa --ya --konfirmasi-timpa. Cadangan isi lama otomatis disimpan ke folder cadangan-siyuan/.")
+                     f"--timpa --ya --konfirmasi-timpa. Cadangan isi lama otomatis disimpan ke folder {_folder_cadangan(folder_cadangan)} "
+                     "(di luar folder skill).")
         else:
             teks += "Simpan ke SiYuan? Jalankan ulang dengan --ya."
         return {"teks": teks, "pratinjau": pratinjau, "disimpan": False}
@@ -431,9 +454,9 @@ def p_buat(url, token, lokal, notebook, path, markdown, ya, timpa, konfirmasi_ti
         pass  # notebook mungkin sudah terbuka / tidak kritis untuk lanjut
     berkas_cadangan = None
     if ada and timpa:
-        folder = folder_cadangan or "cadangan-siyuan"
+        folder = _folder_cadangan(folder_cadangan)
         os.makedirs(folder, exist_ok=True)
-        berkas_cadangan = os.path.join(folder, f"{dt.datetime.now():%Y%m%d-%H%M%S}-{_slug(path)}.md")
+        berkas_cadangan = os.path.join(folder, f"{_slug(path)}-sebelum-{dt.datetime.now():%Y-%m-%d-%H%M%S}.md")
         with open(berkas_cadangan, "w", encoding="utf-8") as f:
             f.write(lama_md)
         panggil(url, token, "/api/filetree/removeDocByID", {"id": ada[0]}, lokal)
@@ -449,7 +472,8 @@ def p_buat(url, token, lokal, notebook, path, markdown, ya, timpa, konfirmasi_ti
                 pulih = "Pemulihan otomatis GAGAL; pulihkan manual dari berkas cadangan."
             raise Gagal(f"Pembuatan dokumen baru gagal ({g.pesan}). {pulih} Cadangan: {berkas_cadangan}",
                         KELUAR_TIDAK_PASTI, mungkin_terkirim=True) from g
-        return {"teks": f"TERSIMPAN: dokumen '{path}' DITIMPA (id {doc_id}). Cadangan isi lama: {berkas_cadangan}",
+        return {"teks": f"TERSIMPAN: dokumen '{path}' DITIMPA (id {doc_id}). Cadangan isi lama: {berkas_cadangan} "
+                         "(path lengkap, di luar folder skill - sebutkan path ini ke pengguna)",
                 "id": doc_id, "disimpan": True, "cadangan": berkas_cadangan}
     doc_id = panggil(url, token, "/api/filetree/createDocWithMd", {"notebook": notebook, "path": path,
                                                                      "markdown": markdown}, lokal)
@@ -558,7 +582,8 @@ def buat_parser():
     sm.add_argument("--timpa", action="store_true")
     sm.add_argument("--konfirmasi-timpa", action="store_true",
                     help="hanya setelah pengguna mengonfirmasi tegas pratinjau penimpaan")
-    sm.add_argument("--cadangan-dir", help="folder cadangan isi lama (default: cadangan-siyuan/ di folder kerja)")
+    sm.add_argument("--cadangan-dir", help="folder cadangan isi lama (default: ~/KomunitechData/siyuan/cadangan, di luar folder skill; "
+                         "ENV KOMUNITECH_SIYUAN_CADANGAN atau KOMUNITECH_DATA)")
 
     st = sub.add_parser("tambah", allow_abbrev=False)
     st.add_argument("--id", required=True)

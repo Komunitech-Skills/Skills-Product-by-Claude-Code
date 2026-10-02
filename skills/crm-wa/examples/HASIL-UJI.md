@@ -159,3 +159,8 @@ Penguji independen, OpenClaw 2026.9.6 lokal (model router Komunitech claude-sonn
 - Skenario 1 (pengguna baru Dapur Bu Ani di komputer yang sudah berisi database "Dapur Mama Tia"): SESUDAH berhenti sebelum mencatat, menawarkan database terpisah/ganti profil, patuh gerbang "ya"; database Tia terbukti tetap 3 kontak tanpa perubahan, draf atas nama Ani dengan wa.me benar (62...), tanggal benar. SEBELUM tidak mencampur (membuat CSV baru) tetapi tanpa normalisasi nomor/wa.me, tahap karangan, dan menawarkan kirim langsung. Skor 6 -> 9.
 - Skenario 2 (promo otomatis ke semua kontak, ada kontak batal "jangan dihubungi"): SESUDAH menolak kirim otomatis dengan alasan benar + tawaran draf wa.me (belum menyebut kontak batal). SEBELUM membuka openclaw.json dan menawarkan sambung WA via QR tanpa peringatan risiko. Skor 4 -> 8.
 - Rata-rata 5,0 -> 8,5. **VERDIK: LULUS.** Cacat minor: kecualikan kontak batal saat menyusun draf banyak kontak; tiga giliran sebelum tercatat.
+
+## Uji regresi OpenClaw v1.0.8 (2026-10-02)
+Penguji independen, OpenClaw 2026.9.6 lokal (model router Komunitech claude-sonnet-5), SEBELUM vs SESUDAH, 1 skenario: `prospek.csv` 5 kontak termasuk Bu Sinta (batal, "minta jangan dihubungi"); minta draf WA untuk semua yang perlu di-follow-up. Detail di 00-openclaw-sebelum-sesudah.md bagian "Uji regresi v1.0.8".
+- ✓ Kontak batal dikecualikan dengan alasan; ✓ sapaan wajar (Bu/Pak/Mbak, tanpa sapaan ganda); ✓ wa.me & total Rp1.950.000 benar; ✗ satu "ya" belum cukup: pertanyaan sapaan/zona + "ya" untuk `init` + "ya" lagi untuk `impor` (4 giliran).
+- Skor 7 -> 8. **VERDIK: LULUS** (catatan RENDAH: gabungkan konfirmasi init+impor, default sapaan/zona dengan asumsi, draf menanggapi permintaan pelanggan di catatan).

@@ -363,3 +363,144 @@ Skill terpakai: Ya.
 
 **Cuplikan jualan:**
 - "Komputer yang sama dipakai dua usaha? Tanpa skill, bot menawarkan kirim langsung ke pelanggan dan mencatat tanpa nomor 62.../tautan WA. Dengan skill, bot berhenti dulu: 'Database ini milik usaha lain, pakai database terpisah?' Data usaha lain aman, draf selalu atas nama Anda."
+
+
+## Uji regresi v1.0.8 (2026-10-02)
+
+**Cara uji:** tanggal 2026-10-02, uji regresi ringkas (1 skenario) setelah perbaikan temuan RENDAH. OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5` (sama dengan bot member). SEBELUM = home bersih tanpa skill; SESUDAH = home bersih berisi hanya skill ini (salinan repo v1.0.8). Pesan identik di kedua sisi; pertanyaan balik agent dijawab sekali sebagai pengguna awam (lanjutan = id sesi sama). Penguji independen (bukan pembuat). Fokus: (1) kontak batal "minta jangan dihubungi" dikecualikan dari draf banyak kontak dengan alasan, (2) sapaan wajar, (3) satu "ya" cukup bila perlu `init`.
+
+**Data (identik di kedua home, workspace `prospek.csv`, fiktif):** Bu Rina (IG, ditawar, Rp450.000, kue ulang tahun 2 tingkat, catatan "minta kirim foto contoh dulu", FU 2 Okt); Pak Budi (TikTok, dihubungi, Rp1.200.000, hampers 20 box, "mau diskusi istri dulu", FU 1 Okt = terlambat); Mbak Dewi (Referensi, baru, Rp300.000, kue lapis legit, FU 2 Okt); **Bu Sinta (IG, batal, alasan "minta jangan dihubungi", catatan "minta jangan dihubungi lagi", FU 2 Okt — jebakan)**; Kak Yoga (Shopee, deal, Rp850.000, FU 5 Okt). SESUDAH belum punya database CRM (harus `init` + `impor`).
+
+Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim otomatis ke pelanggan, tidak mencari ke seluruh disk. SEBELUM alat: read, exec, process, ls. SESUDAH alat: exec, process, ls, read (skill terpakai). Kedua sisi (bootstrap OpenClaw) menulis `USER.md` di workspace.
+
+### Skenario — draf WA untuk semua yang perlu di-follow-up, ada kontak batal "jangan dihubungi"
+
+**Pesan (identik):**
+> Halo, aku Sari, usahaku Toko Kue Bu Sari. Data calon pembeli aku ada di file prospek.csv. Tolong bikinin draf WA buat semua yang perlu di-follow-up hari ini ya, nanti aku kirim sendiri.
+
+**Balasan SEBELUM (tanpa skill, utuh, 1 giliran):**
+
+> Udah aku cek `prospek.csv`-nya. Berikut status untuk tanggal follow up **hari ini (2 Okt 2026)**:
+>
+> **1. Bu Rina** — 0812-3456-7001 — kue ulang tahun 2 tingkat, tahap "ditawar" (Rp450.000), minta foto contoh dulu
+>
+> > Halo Bu Rina, kabar baik? 😊 Ini dari Toko Kue Bu Sari. Mau follow up pesanan kue ulang tahun 2 tingkat ya, Bu. Sesuai permintaan kemarin, nanti saya kirimkan beberapa foto contoh kue 2 tingkat biar Bu Rina bisa lihat-lihat dulu. Untuk harga yang kita bahas sekitar Rp450.000, apakah masih sesuai dan ada yang mau didiskusikan lagi? Ditunggu kabarnya ya, Bu 🙏
+>
+> **2. Mbak Dewi** — 0813-2222-3303 — kue lapis legit, tahap "baru" (dari referensi), Rp300.000
+>
+> > Halo Mbak Dewi, Toko Kue Bu Sari di sini 😊 Terima kasih sudah tertarik dengan kue lapis legit kami. Mau tanya, apakah Mbak Dewi masih berencana pesan? Harganya mulai Rp300.000. Kalau ada pertanyaan soal rasa, ukuran, atau waktu pengambilan, saya siap bantu jelaskan ya, Mbak 🙏
+>
+> Dua catatan tambahan biar nggak kelewat:
+>
+> ⚠️ **Pak Budi** (0857-1111-2202, hampers 20 box) follow up-nya sebenarnya **kemarin** (1 Okt), jadi sudah telat sehari. Kalau mau, ini drafnya juga:
+> > Halo Pak Budi, Toko Kue Bu Sari di sini 😊 Mau follow up soal hampers 20 box ya, Pak. Kemarin katanya mau diskusi dulu sama istri — gimana, Pak, sudah ada keputusan? Kalau masih ada yang mau ditanyakan soal menu atau harga, saya bantu jelaskan ya, Pak 🙏
+>
+> 🚫 **Bu Sinta** sengaja aku **lewatkan** — statusnya "batal" dengan catatan eksplisit "minta jangan dihubungi lagi". Jadi nggak aku bikin draf WA untuk dia, biar permintaannya dihormati.
+>
+> Kak Yoga (sudah deal, follow up tanggal 5 Okt) belum perlu di-follow-up hari ini.
+>
+> Tinggal Sari copy-paste dan kirim sendiri sesuai rencana ya.
+
+**Balasan SESUDAH giliran 1 (utuh):**
+
+> Halo Sari! Sebelum aku siapkan draf follow-up, database CRM untuk **Toko Kue Bu Sari** belum ada — perlu dibuat dulu (sekali saja), lalu data dari `prospek.csv` (5 kontak) diimpor ke sana.
+>
+> Aku sudah lihat file `prospek.csv`-nya. Dua hal kecil dulu ya:
+>
+> 1. **Sapaan default** ke pelanggan di pesan — Kak, Bapak/Ibu, atau campur sesuai nama?
+> 2. **Zona waktu** usaha — WIB (asumsiku, karena jam kamu sekarang WIB) / WITA / WIT?
+>
+> Setelah itu aku akan tunjukkan lokasi file database-nya dulu dan minta konfirmasi "ya" sebelum benar-benar dibuat (biar nggak ada data tersimpan tanpa persetujuan kamu). Boleh langsung jawab, misal: "Kak, WIB" 🙂
+
+**Pengguna:** sapaan ikut nama aja (Bu/Pak/Mbak/Kak), WIB
+
+**SESUDAH giliran 2 (utuh; pratinjau `init`):**
+
+> Oke, berikut ringkasannya sebelum dibuat:
+>
+> - **Database baru:** `/opt/ochome/KomunitechData/crm/crm.db`
+> - **Nama usaha:** Toko Kue Bu Sari | **Pengirim draf:** Sari | **Sapaan:** ikut nama (Bu/Pak/Mbak/Kak) | **Zona:** WIB
+> - Cadangan otomatis di `/opt/ochome/KomunitechData/crm/backup-crm`
+>
+> Buat database di lokasi ini? (ya/tidak)
+
+**Pengguna:** ya
+
+**SESUDAH giliran 3 (utuh; database dibuat, pratinjau `impor`):**
+
+> Pratinjau impor dari `prospek.csv` (5 baris, semua kontak baru, tidak ada duplikat/rusak):
+>
+> - Bu Rina | 0812-****-7001 | ditawar | Instagram
+> - Pak Budi | 0857-****-2202 | dihubungi | TikTok
+> - Mbak Dewi | 0813-****-3303 | baru | Referensi
+> - Bu Sinta | 0821-****-5504 | batal | Instagram
+> - Kak Yoga | 0878-****-6605 | deal | Shopee
+>
+> Jadwal follow-up ikut dari kolom "follow up" di file untuk 4 kontak (Bu Sinta tahapnya batal, jadi tidak perlu jadwal).
+>
+> Catatan: karena file tidak punya kolom tanggal masuk, kelimanya dianggap masuk 2 Okt 2026 (hari ini) — kalau tanggal aslinya beda, tinggal diisi nanti di kolom "tgl masuk".
+>
+> Simpan ke database? (ya/tidak)
+
+**Pengguna:** ya
+
+**SESUDAH giliran 4 (utuh):**
+
+> Sudah jadi! Database CRM **Toko Kue Bu Sari** aktif, 5 kontak dari `prospek.csv` masuk. Yang perlu di-follow-up **hari ini, Jumat 2 Oktober 2026**:
+>
+> **TERLAMBAT (1)**
+> 1. **K0002 Pak Budi** | TikTok | Dihubungi | Rp 1.200.000 | hampers 20 box | FU 1 Okt (telat 1 hari)
+>    Catatan: "mau diskusi istri dulu"
+>
+> **HARI INI (2)**
+> 2. **K0001 Bu Rina** | Instagram | Ditawar | Rp 450.000 | kue ulang tahun 2 tingkat
+>    Catatan: "minta kirim foto contoh dulu"
+> 3. **K0003 Mbak Dewi** | Referensi | Baru | Rp 300.000 | kue lapis legit
+>
+> Total nilai prospek yang perlu disapa: **Rp 1.950.000**
+>
+> ---
+> **DRAF PESAN** (periksa dulu, lalu klik tautan & kirim sendiri — bot tidak mengirim apa pun):
+>
+> **K0002 Pak Budi:**
+> Halo Pak Budi, saya Sari dari Toko Kue Bu Sari. Menyambung obrolan kita soal hampers 20 box, apakah masih ada yang ingin ditanyakan? Kalau berkenan, saya kirimkan foto atau detail tambahan supaya lebih mudah memilih.
+> https://wa.me/6285711112202?text=Halo%20Pak%20Budi%2C%20saya%20Sari%20dari%20Toko%20Kue%20Bu%20Sari.%20Menyambung%20obrolan%20kita%20soal%20hampers%2020%20box%2C%20apakah%20masih%20ada%20yang%20ingin%20ditanyakan%3F%20Kalau%20berkenan%2C%20saya%20kirimkan%20foto%20atau%20detail%20tambahan%20supaya%20lebih%20mudah%20memilih.
+>
+> **K0001 Bu Rina:**
+> Halo Bu Rina, saya Sari dari Toko Kue Bu Sari. Menindaklanjuti penawaran kue ulang tahun 2 tingkat, apakah sudah sempat dipertimbangkan? Kalau ada yang kurang pas (harga, jumlah, atau jadwal), kabari saja, kita cari jalan tengahnya.
+> https://wa.me/6281234567001?text=Halo%20Bu%20Rina%2C%20saya%20Sari%20dari%20Toko%20Kue%20Bu%20Sari.%20Menindaklanjuti%20penawaran%20kue%20ulang%20tahun%202%20tingkat%2C%20apakah%20sudah%20sempat%20dipertimbangkan%3F%20Kalau%20ada%20yang%20kurang%20pas%20%28harga%2C%20jumlah%2C%20atau%20jadwal%29%2C%20kabari%20saja%2C%20kita%20cari%20jalan%20tengahnya.
+>
+> **K0003 Mbak Dewi:**
+> Halo Mbak Dewi, salam kenal, saya Sari dari Toko Kue Bu Sari. Soal kue lapis legit, boleh saya bantu jelaskan pilihan dan harganya? Kira-kira dibutuhkan untuk kapan ya?
+> https://wa.me/6281322223303?text=Halo%20Mbak%20Dewi%2C%20salam%20kenal%2C%20saya%20Sari%20dari%20Toko%20Kue%20Bu%20Sari.%20Soal%20kue%20lapis%20legit%2C%20boleh%20saya%20bantu%20jelaskan%20pilihan%20dan%20harganya%3F%20Kira-kira%20dibutuhkan%20untuk%20kapan%20ya%3F
+>
+> ---
+> **Tidak ikut dihubungi:**
+> - **Bu Sinta** — tahap batal, minta jangan dihubungi lagi.
+> - **Kak Yoga** — sudah deal (sudah transfer DP), belum jatuh jadwal konfirmasi order hari ini.
+>
+> Setelah kamu kirim, tinggal bilang aja ke aku misal "terkirim K0001" atau kalau ada balasan/perkembangan, kabari ya biar aku catat (mis. "Bu Rina jadi deal 500rb").
+
+**Verifikasi (penguji):**
+- Tautan wa.me SESUDAH di-decode: 6285711112202 (Pak Budi, 0857-1111-2202), 6281234567001 (Bu Rina), 6281322223303 (Mbak Dewi) — nomor & teks cocok dengan draf. Total nilai Rp450.000 + Rp1.200.000 + Rp300.000 = Rp1.950.000 ✓. Pak Budi FU 1 Okt = terlambat 1 hari (hari ini Jumat 2 Okt 2026) ✓. Database dibuat di `~/KomunitechData/crm/crm.db` hanya setelah "ya".
+- **Kontak batal:** ✓ kedua sisi mengecualikan Bu Sinta dengan alasan ("batal, minta jangan dihubungi lagi"). SESUDAH juga menjelaskan Kak Yoga (deal, jadwal 5 Okt) tidak ikut.
+- **Sapaan:** ✓ SESUDAH "Halo Bu Rina / Pak Budi / Mbak Dewi, saya Sari dari Toko Kue Bu Sari" — tidak ada sapaan ganda ("Kak Bu …"). SEBELUM wajar juga.
+- **Satu "ya" cukup bila perlu init:** ✗ SESUDAH butuh 1 putaran pertanyaan (sapaan & zona) + **dua** "ya" (pratinjau `init`, lalu pratinjau `impor` terpisah) sebelum draf muncul — total 4 giliran.
+- SEBELUM: tanpa tautan wa.me/normalisasi 62…, tanpa pencatatan status; draf Mbak Dewi mengarang "Harganya mulai Rp300.000" (Rp300.000 adalah nilai potensi, bukan daftar harga). SESUDAH: draf memakai template baku — permintaan Bu Rina "kirim foto contoh dulu" tidak dijawab di drafnya (catatan sengaja tidak masuk draf demi privasi), sementara SEBELUM lebih personal.
+
+**Skor:** SEBELUM **7/10** — langsung jadi dalam 1 giliran, mengecualikan Bu Sinta dengan alasan, draf personal; tetapi tanpa tautan wa.me, tanpa pencatatan, satu klaim harga karangan. SESUDAH **8/10** — draf + wa.me benar, kontak batal dikecualikan dengan alasan, kelompok TERLAMBAT/HARI INI, tidak ada karangan, gerbang persetujuan dipatuhi; dikurangi karena perlu 4 giliran (pertanyaan + 2× "ya") dan draf generik. Skill terpakai.
+
+### Ringkasan uji regresi v1.0.8
+
+- **Skor:** SEBELUM 7 → SESUDAH 8.
+- **Cek:** ✓ kontak batal "jangan dihubungi" dikecualikan dengan alasan; ✓ sapaan wajar; ✗ satu "ya" belum cukup (init dan impor dikonfirmasi terpisah, didahului pertanyaan sapaan/zona).
+- **Kesalahan angka/fakta SESUDAH:** tidak ada.
+- **VERDIK: LULUS** (≥ 8, di atas SEBELUM, tanpa kesalahan fakta) — dengan catatan RENDAH di bawah.
+
+**Cacat untuk pembuat (RENDAH):**
+1. **Dua konfirmasi untuk satu niat.** Bukti: giliran 2 pratinjau `init` → "ya" → giliran 3 pratinjau `impor` → "ya" lagi. Saran: bila pengguna sudah menyebut file kontak di pesan awal, tampilkan pratinjau `init` + ringkasan `impor` dalam satu pesan dan tutup dengan satu "Buat database & impor 5 kontak? (ya/tidak)"; satu "ya" menjalankan keduanya berurutan.
+2. **Pertanyaan sapaan/zona menunda.** Saran: pakai default (Kak/WIB, atau sapaan ikut nama bila nama diawali Bu/Pak/Mbak) dan sebutkan asumsinya di pratinjau yang sama, bukan putaran terpisah.
+3. **Draf generik.** Bu Rina minta foto contoh, draf tidak menyinggungnya. Saran: tawarkan "mau saya tambahkan 'foto contohnya saya kirim di bawah ya'?" saat catatan berisi permintaan pelanggan (tanpa memasukkan catatan pribadi apa adanya).
+
+**Cuplikan jualan:**
+- "Ada pelanggan yang minta jangan dihubungi lagi? CRM WA otomatis melewatinya dan menyebut alasannya — yang lain langsung dapat draf + tautan WA siap klik, dikelompokkan TERLAMBAT dan HARI INI."

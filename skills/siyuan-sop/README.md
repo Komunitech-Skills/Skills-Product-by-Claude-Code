@@ -63,5 +63,8 @@ Tidak: membuat dokumen baru di path yang sudah terisi akan **ditolak** kecuali A
 **Apakah SiYuan aman?**
 SiYuan software sumber terbuka yang cukup populer dan aktif dikembangkan. Komunitech mengaudit celah keamanan yang diketahui sebelum merilis skill ini (lihat `research/sources/siyuan-2026-09-26.md`) - kesimpulannya aman dipakai **selama** mengikuti panduan keamanan di `references/panduan-siyuan.md` (jangan buka ke internet, jangan pasang plugin pihak ketiga, jangan aktifkan fitur "Publish").
 
+## Riwayat versi
+- **1.0.10 (2026-10-02)** — dari uji regresi OpenClaw v1.0.9 (temuan rendah): cadangan isi lama saat menimpa dokumen kini disimpan di folder data Anda `~/KomunitechData/siyuan/cadangan/` (di luar folder skill, konsisten dengan skill Komunitech lain) sehingga tidak ikut terhapus saat skill diperbarui; sebelumnya bisa tersimpan di dalam folder skill. Script mencetak path lengkap berkas cadangan dan pratinjau timpa menyebut foldernya. Folder bisa diubah dengan `--cadangan-dir` atau ENV `KOMUNITECH_SIYUAN_CADANGAN`/`KOMUNITECH_DATA`. Tes unit ditambah (52 tes).
+
 ---
 Komunitech tidak berafiliasi dengan proyek SiYuan/b3log; SiYuan adalah merek milik pemiliknya.

@@ -233,3 +233,17 @@ Disalin ke scratchpad `uji3-akp/`, dijalankan dari sana. `tests/uji_regresi.py`:
 - **Temuan v1.0.8:** ✓ rasio cicilan 34,4% DI ATAS 30% (S1, Ringkasan & Langkah); ✓ sisa THR Rp2.240.000 dicadangkan untuk sisa defisit Rp560.000/bln bulan 7–10, dana darurat ditunda (S2); ✓ saldo Rp1.500.000 tidak cukup untuk kekurangan pra-THR Rp3.390.000 → kurang Rp1.890.000 + pilihan tanpa utang (percepat → Rp2.800.000; tambah ±Rp380.000/bln); ✓ baris defisit basis THR/12 hilang.
 - **Kesalahan angka SESUDAH:** tidak ada. Catatan RENDAH: (1) arisan RT Rp200.000 diperlakukan sebagai tabungan dan setorannya di-nol-kan tanpa memberi tahu pengguna (bila tetap dibayar, kekurangan pra-THR Rp4.390.000); (2) lanjutan S1 "maju sekitar 1 tahun" — target 9 bulan dengan THR tetap 48 bulan; THR disarankan disetor seluruhnya tanpa pos Lebaran.
 - **Skor OpenClaw:** S1 6,5 → 8,5; S2 6 → 8; rata-rata 6,25 → 8,25. **VERDIK: LULUS** (catatan RENDAH boleh diperbaiki di revisi ringan tanpa uji ulang penuh).
+
+## Uji regresi v1.0.10 — OpenClaw sebelum/sesudah (penguji independen, 2 Okt 2026)
+
+- **Cara:** OpenClaw 2026.9.6 lokal, model router Komunitech (`claude-sonnet-5`), skill dimatikan vs aktif, home bersih, 1 skenario (defisit Rp1.150.000/bln + arisan Rp300.000 + THR cair 5 bulan lagi + saldo Rp1 juta). Rincian & balasan utuh: `00-openclaw-sebelum-sesudah.md` bagian "Uji regresi v1.0.10".
+- **Cek regresi:** ✓ "jeda arisan" disebut eksplisit (TINDAKAN + Langkah 1); ✓ satu angka defisit (Rp1.150.000, basis arisan dijeda; Rp1.450.000 hanya syarat); ✓ kebutuhan Lebaran disinggung sebelum THR ke dana darurat; ✓ semua nominal cocok `keuangan.py` & Python independen.
+- **Catatan RENDAH:** tebakan script tanpa label: "Jajan+Sekolah anak" → Keinginan (dipangkas 50%), "Kirim ibu" belum dikelompokkan; tabel jadwal di balasan berhenti di bulan 4.
+- **Skor OpenClaw:** 6,5 → 9. **VERDIK: LULUS.**
+
+## Uji regresi v1.0.11 — OpenClaw sebelum/sesudah, putaran 2 (penguji independen, 2 Okt 2026)
+
+- **Cara:** OpenClaw 2026.9.6 lokal, model router Komunitech (`claude-sonnet-5`), skill dimatikan vs aktif, home bersih, 1 skenario (gaji Rp6.500.000, defisit Rp1.250.000/bln dengan arisan dijeda, pos tanpa label "Jajan+Sekolah anak", "Kirim ibu", "Makan di luar", THR cair 4 bulan lagi, saldo Rp2 juta). Rincian & balasan utuh: `00-openclaw-sebelum-sesudah.md` bagian "Uji regresi v1.0.11 (2026-10-02, putaran 2)".
+- **Cek regresi:** ✓ pos campuran tidak dipangkas & pemisahannya ditanyakan; ✓ kiriman ibu tidak dipangkas; ✓ hanya keinginan jelas (maks. 50%) + kebutuhan fleksibel (maks. 10%) yang dipangkas; ✓ tabel jadwal 4 baris utuh sampai THR cair; ✓ semua nominal cocok `keuangan.py` & Python independen.
+- **Catatan RENDAH:** sisa THR Rp550.000 disebut "masuk tabungan darurat" (script: DD setelah defisit tertutup); "tabungan di bawah pola justru bagus"; kelompok fleksibel ditulis "Kebutuhan wajib" di tabel.
+- **Skor OpenClaw:** 6,5 → 9. **VERDIK: LULUS.**

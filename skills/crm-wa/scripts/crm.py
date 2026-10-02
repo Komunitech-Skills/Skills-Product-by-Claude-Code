@@ -41,7 +41,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 APLIKASI = "crm-wa"
-VERSI = "1.0.3"
+VERSI = "1.0.8"
 SKEMA = 1
 SKEMA_JSON_REKAP = 1
 
@@ -1028,11 +1028,18 @@ def susun_draf(k, cfg, acuan=None):
             "Kalau ada yang sedang dibutuhkan, saya siap bantu."
         return "sapaan-ulang", teks
     if t == "baru":
-        teks = "Halo %s, terima kasih sudah menghubungi %s." % (p, usaha or "kami")
+        # sapaan bervariasi (stabil per kontak) agar tidak terdengar kaku
+        v = int(k["id"]) % 3
+        if v == 0 and diri:
+            teks = "Halo %s, salam kenal, %s." % (p, diri)
+        elif v == 1 and diri:
+            teks = "Halo %s, senang bisa membantu. Perkenalkan, %s." % (p, diri)
+        else:
+            teks = "Halo %s, terima kasih sudah menyapa %s." % (p, usaha or "kami")
+            if pengirim:
+                teks += " Saya %s." % pengirim
         if telat >= 1:
             teks += " Mohon maaf baru sempat membalas."
-        if pengirim:
-            teks += " Saya %s." % pengirim
         teks += (" Soal %s, boleh saya bantu jelaskan pilihan dan harganya?" % hal) if hal else \
             " Ada yang bisa saya bantu?"
         teks += " Kira-kira dibutuhkan untuk kapan ya?"

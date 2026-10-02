@@ -164,8 +164,19 @@ class UjiSiyuan(unittest.TestCase):
         siyuan.FILE_KUNCI_DEFAULT = os.path.join(self._tmp.name, "tidak-ada", "kunci.txt")
         self._cwd = os.getcwd()
         os.chdir(self._tmp.name)
+        # v1.0.10: cadangan default di folder data pengguna; uji diarahkan ke folder sementara
+        self._env_asli = {k: os.environ.get(k) for k in ("KOMUNITECH_DATA", "KOMUNITECH_SIYUAN_CADANGAN")}
+        os.environ.pop("KOMUNITECH_SIYUAN_CADANGAN", None)
+        self.data_dir = os.path.join(self._tmp.name, "data-pengguna")
+        os.environ["KOMUNITECH_DATA"] = self.data_dir
+        self.cadangan_dir = os.path.join(self.data_dir, "siyuan", "cadangan")
 
     def tearDown(self):
+        for k, v in self._env_asli.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
         os.chdir(self._cwd)
         siyuan.FILE_KUNCI_DEFAULT = self._asli_default
         self._tmp.cleanup()
@@ -386,6 +397,7 @@ class UjiSiyuan(unittest.TestCase):
         self.assertIn("konfirmasi", out)
         self.assertIn("20260201000000-doc0001", K.docs)
         self.assertFalse(os.path.exists("cadangan-siyuan"))
+        self.assertFalse(os.path.exists(self.cadangan_dir))
 
     def test_27c_pratinjau_timpa_menampilkan_isi_lama_dan_judul(self):
         kode, out = self.jalan(["buat", "--notebook", "20260101000000-aaaaaaa", "--path", "/SOP/Packing Pesanan",
@@ -402,10 +414,46 @@ class UjiSiyuan(unittest.TestCase):
                                  "--md", "baru", "--timpa", "--ya", "--konfirmasi-timpa"])
         self.assertEqual(kode, 0)
         self.assertIn("Cadangan", out)
-        berkas = os.listdir("cadangan-siyuan")
+        self.assertFalse(os.path.exists("cadangan-siyuan"))   # v1.0.10: bukan lagi di folder kerja/skill
+        berkas = os.listdir(self.cadangan_dir)
         self.assertEqual(len(berkas), 1)
-        with open(os.path.join("cadangan-siyuan", berkas[0]), encoding="utf-8") as f:
-            self.assertIn("Bungkus rapi", f.read())
+        self.assertIn("-sebelum-", berkas[0])
+        self.assertIn(os.path.join(self.cadangan_dir, berkas[0]), out)   # path absolut dicetak
+        with open(os.path.join(self.cadangan_dir, berkas[0]), encoding="utf-8") as f:
+            isi = f.read()
+        self.assertIn("Bungkus rapi", isi)
+        self.assertNotIn("baru", isi.replace("Bungkus", ""))
+
+    def test_27f_cadangan_default_di_luar_folder_skill(self):
+        folder_skill = os.path.dirname(os.path.dirname(os.path.abspath(siyuan.__file__)))
+        os.environ.pop("KOMUNITECH_DATA", None)
+        d = siyuan.folder_cadangan_default()
+        self.assertEqual(d, os.path.join(os.path.expanduser("~"), "KomunitechData", "siyuan", "cadangan"))
+        self.assertTrue(os.path.isabs(d))
+        self.assertFalse(os.path.abspath(d).startswith(folder_skill + os.sep))
+        os.environ["KOMUNITECH_DATA"] = self.data_dir
+        self.assertEqual(siyuan.folder_cadangan_default(), self.cadangan_dir)
+        os.environ["KOMUNITECH_SIYUAN_CADANGAN"] = os.path.join(self._tmp.name, "cad-khusus")
+        self.assertEqual(siyuan.folder_cadangan_default(), os.path.join(self._tmp.name, "cad-khusus"))
+
+    def test_27g_cadangan_dir_relatif_jadi_absolut_dan_dicetak(self):
+        kode, out = self.jalan(["buat", "--notebook", "20260101000000-aaaaaaa", "--path", "/SOP/Packing Pesanan",
+                                 "--md", "baru", "--timpa", "--ya", "--konfirmasi-timpa", "--cadangan-dir", "cad"])
+        self.assertEqual(kode, 0, out)
+        folder = os.path.join(os.path.realpath(self._tmp.name), "cad")
+        berkas = os.listdir(folder)
+        self.assertEqual(len(berkas), 1)
+        self.assertTrue(os.path.join(folder, berkas[0]) in out or
+                        os.path.join(os.path.abspath("cad"), berkas[0]) in out, out)
+        self.assertFalse(os.path.exists(self.cadangan_dir))
+
+    def test_27h_pratinjau_timpa_menyebut_folder_cadangan_absolut(self):
+        kode, out = self.jalan(["buat", "--notebook", "20260101000000-aaaaaaa", "--path", "/SOP/Packing Pesanan",
+                                 "--md", "baru", "--timpa"])
+        self.assertEqual(kode, 0)
+        self.assertIn(self.cadangan_dir, out)
+        self.assertIn("di luar folder skill", out)
+        self.assertFalse(os.path.exists(self.cadangan_dir))   # pratinjau tidak menulis apa pun
 
     def test_27e_cari_menyertakan_id_dan_petunjuk_baca(self):
         kode, out = self.jalan(["cari", "ongkir"])

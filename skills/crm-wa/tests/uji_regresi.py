@@ -834,6 +834,20 @@ class UjiRevisi101(Dasar):
         self.assertEqual(d["jenis"], "sapaan-ulang")
         self.assertNotIn("terima kasih sudah menghubungi", d["draf"])
 
+    def test_sapaan_awal_tidak_kaku_dan_batal_tidak_ikut_draf_massal(self):
+        for i in range(3):
+            self.ok("tambah", "--nama", "Bu Lead%d" % i, "--wa", "08120000008%d" % i, "--masuk", "24/9/2026",
+                    "--followup", "24/9/2026")
+        for i in range(3):
+            d = self.ok("draf", "--kontak", "Lead%d" % i)["draf"]
+            self.assertNotIn("terima kasih sudah menghubungi", d)
+            self.assertIn("Sari", d)
+        self.ok("tambah", "--nama", "Bu Batal", "--wa", "081200000099", "--followup", "24/9/2026")
+        self.ok("catat", "--kontak", "Batal", "--tahap", "batal", "--alasan", "tidak mau dihubungi")
+        self.assertIn("batal", self.gagal("draf", "--kontak", "Batal")["error"].lower())
+        out = self.ok("hari-ini")
+        self.assertNotIn("Bu Batal", json.dumps(out, ensure_ascii=False))
+
 
 class UjiPersetujuanDatabase(unittest.TestCase):
     """Regresi v1.0.3 (uji platform OpenClaw 2026-09-29): database tidak boleh dibuat sebelum pengguna setuju."""
