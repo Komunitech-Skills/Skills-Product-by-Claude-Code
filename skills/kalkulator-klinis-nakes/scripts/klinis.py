@@ -429,7 +429,14 @@ def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, 
     if tinggi:
         kategori_faktor = f"RISIKO TINGGI (>= 1 faktor tinggi) - {nama}"
     elif len(sedang) >= 2:
-        kategori_faktor = f"RISIKO SEDANG (>= 2 faktor sedang) - {nama}"
+        # Label sesuai makna pedoman: >= 2 faktor sedang = "ibu berisiko preeklampsia"
+        # (Buku KIA) -> rujukan terencana; BUKAN "risiko menengah".
+        if pedoman == "kia":
+            kategori_faktor = ("BERISIKO PREEKLAMPSIA - perlu rujukan terencana "
+                               f"(>= 2 faktor risiko sedang) - {nama}")
+        else:
+            kategori_faktor = ("BERISIKO PREEKLAMPSIA - memenuhi kriteria risiko "
+                               f"(> 1 faktor risiko sedang) - {nama}")
     elif len(sedang) == 1:
         kategori_faktor = f"1 FAKTOR RISIKO SEDANG - {nama}"
     else:

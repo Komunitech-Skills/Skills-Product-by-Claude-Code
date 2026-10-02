@@ -1,6 +1,6 @@
 ---
 name: kalkulator-klinis-nakes
-description: Alat bantu hitung & skrining untuk TENAGA KESEHATAN (dokter, bidan, perawat) di klinik/praktik mandiri/puskesmas — skrining faktor risiko preeklampsia (Buku KIA edisi terbaru cetakan 2025 / NICE NG133) + MAP dengan lapisan tanda bahaya (TD rentang berat → segera evaluasi/rujuk), kalkulator kehamilan (HPL Naegele, usia kehamilan dari HPHT/USG, penanggalan ulang ACOG), IMT pra-hamil & rekomendasi kenaikan BB (IOM 2009), IMT dewasa (Asia-Pasifik & Kemenkes) + lingkar perut, tafsir skor total MMSE/MoCA/AMT yang dimasukkan nakes, dan template catatan sesi stimulasi kognitif. Gunakan saat nakes minta hitung HPL, usia kehamilan, MAP, skrining preeklampsia, IMT, kenaikan berat badan hamil, atau tafsir skor total kognitif. Setiap hasil memuat sumber pedoman + tahun; tanpa dosis obat, tanpa diagnosis — clinical calculator for health professionals, preeclampsia risk screening, due date calculator, gestational age, BMI Asia-Pacific, pregnancy weight gain, cognitive screening total score interpretation.
+description: Alat bantu hitung & skrining untuk TENAGA KESEHATAN (dokter, bidan, perawat): skrining faktor risiko preeklampsia (Buku KIA cetakan 2025 / NICE NG133) + MAP dengan tanda bahaya TD, HPL & usia kehamilan (Naegele, HPHT/USG, ACOG), IMT pra-hamil & kenaikan BB hamil (IOM 2009), IMT dewasa Asia-Pasifik/Kemenkes, tafsir skor total MMSE/MoCA/AMT, catatan sesi kognitif. Gunakan saat nakes minta hitung HPL, usia kehamilan, MAP, skrining preeklampsia, IMT, BB hamil, atau tafsir skor kognitif. JUGA gunakan bila orang awam/ibu hamil/keluarga bertanya soal tensi hamil, preeklampsia, risiko/skor kehamilan atau kognitif, atau dosis obat (aspirin, MgSO4, obat tensi) — untuk membalas dengan batasan: bukan diagnosis, tanpa nama obat & dosis, arahkan ke bidan/dokter/faskes, tanda bahaya → IGD/119. Hasil memuat sumber + tahun — clinical calculator for health professionals, preeclampsia screening, due date, gestational age, BMI, pregnancy weight gain; pregnant patient asking aspirin dose or preeclampsia risk.
 ---
 
 # Kalkulator Klinis untuk Tenaga Kesehatan
@@ -41,7 +41,9 @@ pedoman + tahun, sehingga bisa langsung dicatat di rekam medis klinik sendiri.
 Jika peran belum jelas, tanyakan sekali: *"Sebelum mulai: Anda tenaga kesehatan (dokter, bidan,
 perawat, ahli gizi, psikolog klinis) yang menangani pasien ini?"*
 - **Ya (nakes)** → lanjut langkah kerja.
-- **Bukan / pasien / keluarga** → **jangan** jalankan skrining atau menafsirkan skor. Beri
+- **Bukan / pasien / keluarga**, atau pesan jelas dari orang awam (mis. "saya lagi hamil…",
+  "ibu saya skornya…") → **tidak perlu bertanya peran lagi**; langsung pakai **Template balasan
+  untuk awam** (bagian Batasan). **Jangan** jalankan skrining atau menafsirkan skor. Beri
   edukasi umum singkat, sarankan konsultasi, dan **bila ibu hamil sedang bergejala** (pusing/sakit
   kepala hebat, pandangan kabur, nyeri ulu hati, bengkak mendadak, perdarahan, kejang) minta
   periksa **hari ini** ke bidan/puskesmas/IGD atau 119. Kalimat baku:
@@ -139,8 +141,8 @@ ibunya dulu preeklampsia. Skrining preeklampsia ya."
 🩺 Skrining faktor risiko preeklampsia — Bu R — 29 September 2026
 Hasil:
 - MAP 93,3 mmHg (≥ 90)
-- Kategori (Buku KIA cetakan 2025): RISIKO SEDANG (≥ 2 faktor sedang) — 5 faktor sedang:
-  nullipara, usia ≥ 35, riwayat preeklampsia pada ibu, obesitas pra-hamil (IMT > 30),
+- Kategori (Buku KIA cetakan 2025): BERISIKO PREEKLAMPSIA — perlu rujukan terencana
+  (≥ 2 faktor risiko sedang) — 5 faktor sedang: nullipara, usia ≥ 35, riwayat preeklampsia pada ibu, obesitas pra-hamil (IMT > 30),
   MAP ≥ 90. Faktor tinggi: tidak ada.
 - Belum ditanyakan: diabetes, penyakit ginjal, autoimun/APS, proteinuria.
 Arti untuk tindak lanjut:
@@ -200,3 +202,24 @@ Contoh lengkap lain: `examples/`.
 - **MoCA tanpa lama pendidikan:** script menolak — tanyakan lama sekolah (tahun).
 - **Batas yang PERLU REVIEW tenaga medis:** `references/sumber-pedoman.md` bagian "Status
   verifikasi". Alat ini belum boleh dijual sebelum ditinjau dokter/bidan.
+
+### Template balasan untuk awam (pasien/ibu hamil/keluarga) — WAJIB dipakai
+Berlaku untuk pertanyaan awam tentang skor, risiko, hasil tensi/kognitif, atau dosis/obat.
+Aturan keras: **bukan diagnosis**, **tidak menyebut nama obat apa pun (termasuk aspirin, MgSO4,
+kalsium, obat tensi) dan tidak menyebut dosis/angka mg**, tidak memberi kategori risiko, tidak
+menjalankan script untuk orang awam. Bila ada gejala/TD tinggi, kalimat tanda bahaya di paling atas.
+```
+[Bila ada gejala bahaya atau TD ≥ 140/90 disebut:]
+‼️ Tensi [angka] dengan [gejala] saat hamil perlu diperiksa SEKARANG, jangan ditunda.
+Segera ke IGD rumah sakit / puskesmas / bidan terdekat hari ini. Bila sakit kepala sangat
+hebat, pandangan kabur, kejang, sesak, nyeri ulu hati, atau perdarahan → ke IGD atau
+telepon 119 sekarang. Minta keluarga mengantar; jangan menyetir sendiri.
+
+Saya tidak bisa memastikan diagnosis dari chat — yang bisa memastikan hanya bidan/dokter
+setelah memeriksa langsung (tensi ulang, urine, kondisi janin).
+Soal obat: saya tidak bisa menyebut obat atau dosis apa pun. Mohon jangan minum obat apa pun
+untuk ini tanpa resep dokter/bidan yang memeriksa Anda.
+[Tanpa gejala: ganti baris ‼️ dengan] Silakan tanyakan ke bidan/dokter Anda pada pemeriksaan
+berikutnya (atau lebih cepat bila khawatir); bila muncul tanda bahaya di atas → IGD/119.
+```
+Kalimat lain: `references/batasan-dan-kalimat-baku.md`.

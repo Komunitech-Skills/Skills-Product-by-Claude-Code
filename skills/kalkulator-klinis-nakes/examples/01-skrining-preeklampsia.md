@@ -10,10 +10,10 @@ hamil 31, ibunya dulu preeklampsia. Skrining preeklampsia ya."
 ```
 python3 scripts/klinis.py preeklampsia --faktor nullipara,riwayat-keluarga --sistolik 120 --diastolik 80 --usia-ibu 36 --imt 31
 ```
-**Output script (v1.0.1):**
+**Output script (v1.0.x terbaru):**
 ```
 Pedoman: Buku KIA (cetakan 2025)
-KATEGORI: RISIKO SEDANG (>= 2 faktor sedang) - Buku KIA (cetakan 2025)
+KATEGORI: BERISIKO PREEKLAMPSIA - perlu rujukan terencana (>= 2 faktor risiko sedang) - Buku KIA (cetakan 2025)
 Arti: Memenuhi kriteria ibu berisiko preeklampsia menurut Buku KIA. Buku KIA: pemeriksaan kehamilan, proses melahirkan, dan pemeriksaan nifas dilaksanakan di Rumah Sakit; lakukan rujukan terencana (tidak perlu menunggu inpartu). Pelaksanaan sesuai protokol fasilitas & keputusan dokter.
 Faktor risiko tinggi: -
 Faktor risiko sedang: MAP >= 90 mmHg; Nullipara (kehamilan pertama); Obesitas sebelum hamil (IMT > 30 kg/m2); Riwayat preeklampsia pada ibu atau saudara perempuan; Usia ibu >= 35 tahun
@@ -35,7 +35,8 @@ tidak ada nyeri kepala hebat, pandangan kabur, nyeri ulu hati, bengkak mendadak)
 
 Hasil:
 - MAP 93,3 mmHg (≥ 90)
-- Kategori (Buku KIA cetakan 2025): RISIKO SEDANG (≥ 2 faktor sedang)
+- Kategori (Buku KIA cetakan 2025): BERISIKO PREEKLAMPSIA — perlu rujukan terencana
+  (≥ 2 faktor risiko sedang)
   Faktor sedang (5): nullipara; usia ≥ 35 tahun; riwayat preeklampsia pada ibu;
   obesitas pra-hamil (IMT > 30); MAP ≥ 90. Faktor tinggi: tidak ada.
 - Belum ditanyakan: diabetes, penyakit ginjal, autoimun/APS, proteinuria — mohon dilengkapi

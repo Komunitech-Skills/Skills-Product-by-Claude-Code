@@ -63,7 +63,16 @@ class TesPreeklampsia(unittest.TestCase):
 
     def test_dua_sedang(self):
         h = k.skrining_preeklampsia(["nullipara", "riwayat-keluarga"])
-        self.assertTrue(h["kategori"].startswith("RISIKO SEDANG"))
+        self.assertTrue(h["kategori"].startswith("BERISIKO PREEKLAMPSIA - perlu rujukan terencana"))
+
+    def test_label_berisiko_bukan_risiko_sedang(self):
+        # v1.0.x openclaw: label lama "RISIKO SEDANG" terbaca seperti risiko menengah.
+        for ped in ("kia", "nice"):
+            h = k.skrining_preeklampsia(["nullipara", "riwayat-keluarga"], pedoman=ped)
+            self.assertTrue(h["kategori"].startswith("BERISIKO PREEKLAMPSIA"))
+            self.assertNotIn("RISIKO SEDANG (", h["kategori"])
+        h = k.skrining_preeklampsia(["nullipara", "riwayat-keluarga"])
+        self.assertIn("rujukan terencana", h["kategori"])
 
     def test_satu_sedang_saja(self):
         h = k.skrining_preeklampsia(["nullipara"])
@@ -77,13 +86,13 @@ class TesPreeklampsia(unittest.TestCase):
         # nullipara + MAP 93,3 -> 2 faktor sedang
         h = k.skrining_preeklampsia(["nullipara"], 120, 80)
         self.assertIn("map-90", h["faktor_dari_angka"])
-        self.assertTrue(h["kategori"].startswith("RISIKO SEDANG"))
+        self.assertTrue(h["kategori"].startswith("BERISIKO PREEKLAMPSIA - perlu rujukan terencana"))
 
     def test_map_tepat_90_menambah_faktor(self):
         # Buku KIA cetakan 2025: MAP >= 90 -> nullipara + MAP 90,0 = 2 sedang
         h = k.skrining_preeklampsia(["nullipara"], 110, 80)
         self.assertIn("map-90", h["faktor_dari_angka"])
-        self.assertTrue(h["kategori"].startswith("RISIKO SEDANG"))
+        self.assertTrue(h["kategori"].startswith("BERISIKO PREEKLAMPSIA - perlu rujukan terencana"))
         h = k.skrining_preeklampsia(["nullipara"], 109, 80)  # 89,67
         self.assertTrue(h["kategori"].startswith("1 FAKTOR RISIKO SEDANG"))
 
@@ -416,7 +425,7 @@ class TesRevisi101(unittest.TestCase):
         self.assertTrue(h["kategori"].startswith("1 FAKTOR RISIKO SEDANG"))
         self.assertEqual(h["faktor_tinggi"], [])
         h = k.skrining_preeklampsia(["proteinuria", "nullipara"])
-        self.assertTrue(h["kategori"].startswith("RISIKO SEDANG"))
+        self.assertTrue(h["kategori"].startswith("BERISIKO PREEKLAMPSIA - perlu rujukan terencana"))
 
     def test_T3_td_berat_tidak_pernah_anc_rutin(self):
         for s, d in ((170, 115), (160, 80), (150, 110), (200, 120)):

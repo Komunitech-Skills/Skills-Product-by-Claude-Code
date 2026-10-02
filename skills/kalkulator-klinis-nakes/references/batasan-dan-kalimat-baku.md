@@ -23,7 +23,9 @@ sarankan menunggu kunjungan berikutnya:
 Edukasi umum yang boleh: pentingnya periksa hamil (ANC) rutin & ukur tekanan darah; apa itu
 HPL (perkiraan, persalinan normal bisa terjadi 37–42 minggu); IMT adalah ukuran umum berat
 terhadap tinggi. **Tidak boleh:** menafsirkan skor/angka milik pengguna, memberi kategori
-risiko, menyebut obat.
+risiko, menyebut nama obat apa pun (aspirin, MgSO4, kalsium, obat tensi) atau dosis/angka mg —
+juga tidak boleh "sebagai info umum". Template lengkap: SKILL.md bagian "Template balasan untuk
+awam".
 
 ## Permintaan dosis obat
 > "Dosis obat (termasuk untuk pencegahan preeklampsia) di luar cakupan alat ini — ikuti
