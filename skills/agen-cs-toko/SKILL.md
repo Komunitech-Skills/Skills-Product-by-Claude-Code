@@ -1,6 +1,6 @@
 ---
 name: agen-cs-toko
-description: Menyiapkan agen CS toko/klinik berbasis "basis pengetahuan" lokal (produk & harga, stok, jam buka, ongkir & cara bayar, kebijakan retur, FAQ, nada brand) yang menghasilkan draf balasan mode COPILOT (1-2 draf + tingkat keyakinan + yang perlu dicek manusia — bukan kirim otomatis) untuk WhatsApp/Telegram lewat OpenClaw, lengkap aturan eskalasi (komplain berat, refund, ancaman, data sensitif, pertanyaan medis/hukum), jam kerja, larangan mengarang harga/stok, dan rekap harian pertanyaan. Gunakan saat pengguna minta "bikin CS otomatis toko saya", "asisten WhatsApp/chatbot CS", "agen CS klinik", knowledge base toko, auto-reply pelanggan (AI CS assistant, customer support agent, WhatsApp auto-reply). BUKAN untuk membalas satu chat / bank jawaban saja (pakai balas-chat-cs) dan BUKAN untuk auto-trading, diagnosis medis, atau kirim pesan otomatis ke pelanggan di WA Web.
+description: Menyiapkan agen CS toko/klinik berbasis "basis pengetahuan" lokal (produk & harga, stok, jam buka, ongkir & cara bayar, kebijakan retur, FAQ, nada brand) yang menghasilkan draf balasan mode COPILOT (1-2 draf + tingkat keyakinan + yang perlu dicek manusia — bukan kirim otomatis) untuk WhatsApp/Telegram lewat OpenClaw, lengkap aturan eskalasi (komplain berat, refund, ancaman, data sensitif, medis/hukum), jam kerja, larangan mengarang harga/stok, dan rekap harian pertanyaan. Gunakan saat pengguna minta "bikin CS otomatis toko saya", "asisten WhatsApp/chatbot CS", "agen CS klinik", "aktifin bot WA biar balas otomatis semua chat", "capek balas chat satu-satu", knowledge base toko, auto-reply pelanggan (AI CS assistant, customer support agent, WhatsApp auto-reply bot) — bot WA auto-reply dijawab dengan risiko blokir nomor + mode Copilot. BUKAN untuk membalas satu chat / bank jawaban saja (pakai balas-chat-cs) dan BUKAN untuk auto-trading, diagnosis medis, atau kirim pesan otomatis ke pelanggan di WA Web.
 ---
 
 # Agen CS Toko
@@ -21,9 +21,16 @@ Membantu pemilik toko/klinik membangun "karyawan CS AI" yang **selalu tahu isi t
 - Hanya butuh **satu balasan cepat** atau bank jawaban tanpa basis pengetahuan terstruktur → `balas-chat-cs`.
 - Membalas **ulasan/rating publik** → `balas-ulasan-pelanggan`.
 - Menagih piutang / follow-up prospek → `tagih-piutang` / `follow-up-prospek`.
-- Kirim promo massal / broadcast → **dilarang lewat WA Web** (pakai `broadcast-wa` untuk menyiapkan teks, kirim manual/WA Business resmi).
+- Kirim promo massal / broadcast / blast → **tolak**, lewat alat apa pun (OpenClaw, WhatsApp Business, aplikasi blast). Promo hanya untuk pelanggan yang sudah setuju (opt-in), berupa draf yang dikirim pemilik **satu per satu** (`crm-wa` aturan 10; `broadcast-wa` bila terpasang hanya untuk menulis variasi teks). Pembeli marketplace default belum setuju.
 - Permintaan diagnosis, skrining, atau kalkulator dosis medis → **tolak**, arahkan ke tenaga kesehatan (lihat `references/klinik-dan-data-kesehatan.md`).
-- Permintaan agar bot **mengirim otomatis ke pelanggan lewat WA Web tanpa manusia** → jelaskan risiko blokir nomor & arahkan ke mode Copilot atau WhatsApp resmi (WABA), bukan dijalankan begitu saja.
+- Permintaan agar bot **membalas/mengirim otomatis ke pelanggan lewat WA tanpa manusia** ("aktifin bot WA biar balas otomatis semua chat") → **skill ini yang dipakai, tapi bot auto-reply tidak dipasang**: jawab dengan "Jawaban baku: bot WA auto-reply" di bawah.
+
+## Jawaban baku: bot WA auto-reply
+Bila pengguna minta bot membalas otomatis semua chat WA pelanggan (pakai nomor toko), **selalu** jelaskan ketiga hal ini dengan bahasa sehari-hari (boleh diringkas, isi jangan dihilangkan), lalu langsung tawarkan Copilot:
+1. **Kenapa tidak dipasang:** WhatsApp di OpenClaw tersambung lewat **WhatsApp Web (tidak resmi)**. Balasan otomatis/massal melanggar ketentuan WhatsApp dan bisa membuat **nomor toko diblokir** — termasuk riwayat chat & pelanggan yang menghubungi nomor itu. Bot juga bisa salah jawab ke pembeli yang sedang marah (komplain, refund).
+2. **Yang dipakai: mode Copilot.** Pemilik/admin menempel atau meneruskan chat → agent menyiapkan 1–2 draf balasan + tingkat keyakinan dari basis pengetahuan toko → manusia memeriksa dan menekan Kirim. Tetap jauh lebih cepat daripada mengetik dari nol.
+3. **Batas yang boleh:** notifikasi/rekap ke **pemilik sendiri** lewat Telegram (default). WhatsApp hanya dengan **nomor terpisah** milik pemilik + persetujuan risiko tertulis (lihat `references/eskalasi-dan-kanal.md` §1 & §5). Auto-reply resmi hanya lewat WhatsApp Business Platform (API resmi, vendor resmi) di luar skill ini — tetap tanpa broadcast/blast.
+Bila di pesan yang sama ada chat pelanggan yang perlu dibalas, kerjakan langsung draf Copilot-nya (langkah 2).
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |

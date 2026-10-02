@@ -45,9 +45,12 @@ grup member/Komunitech — jangan lanjut menebak.
 Paket ini berisi (folder skill, dari member area/ZIP paket VIP Anda): `karyawan-ai-mulai`,
 `cek-privasi-openclaw`, `listing-marketplace`, `harga-jual-marketplace`,
 `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`, `naskah-live-jualan`, `buku-stok`,
-`agen-cs-toko`, `foto-produk-brief`, `laporan-otomatis-terjadwal`, `rekap-penjualan-csv`,
-`konten-mingguan`, `pesan-prospek-wa`, `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`,
-`kas-umkm`, `buku-piutang`, `laporan-iklan-mingguan`.
+`agen-cs-toko`, `balas-chat-cs`, `foto-produk-brief`, `laporan-otomatis-terjadwal`,
+`rekap-penjualan-csv`, `konten-mingguan`, `pesan-prospek-wa`, `crm-wa`, `analisis-excel`,
+`brainstorming-ide-usaha`, `kas-umkm`, `buku-piutang`, `laporan-iklan-mingguan`.
+(`balas-chat-cs` dipakai untuk membalas **satu** chat/komplain pembeli dengan cepat; `agen-cs-toko`
+untuk menyiapkan CS toko lengkap dengan basis pengetahuan. Keduanya mode Copilot: AI menyiapkan
+draf, Anda yang mengirim.)
 
 **Cara paling andal (disarankan untuk OpenClaw):**
 ```bash
@@ -61,6 +64,7 @@ openclaw skills install ./promo-kalender --global
 openclaw skills install ./naskah-live-jualan --global
 openclaw skills install ./buku-stok --global
 openclaw skills install ./agen-cs-toko --global
+openclaw skills install ./balas-chat-cs --global
 openclaw skills install ./foto-produk-brief --global
 openclaw skills install ./laporan-otomatis-terjadwal --global
 openclaw skills install ./rekap-penjualan-csv --global
@@ -82,7 +86,7 @@ Atau, kalau Gateway Anda punya halaman **Plugins → Skills** dengan tombol impo
 per satu (fitur ini tersedia di sebagian instalasi Gateway, bukan semua — kalau tidak ada
 tombolnya, pakai cara `openclaw skills install` di atas).
 
-- **Cara cek berhasil:** ketik `openclaw skills list` — semua 21 nama skill di atas muncul. Atau
+- **Cara cek berhasil:** ketik `openclaw skills list` — semua 22 nama skill di atas muncul. Atau
   ketik di chat: "skill apa saja yang saya punya?" (bila `exec` diizinkan agent akan menjalankan
   `openclaw skills list` untuk Anda).
 - **Kalau gagal:**
@@ -123,6 +127,37 @@ Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawa
 
 - **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
   menyebut aturannya tanpa membuka file lain.
+
+### WAJIB untuk toko: tambahkan "Aturan toko Komunitech" di bawah blok umum
+Aturan 3 di blok umum ("jangan menawarkan broadcast") dalam uji 2 Okt 2026 masih ditafsirkan
+"bukan lewat saya" — AI tetap menyarankan *broadcast WhatsApp Business* ke semua pembeli Shopee dan
+tidak menanyakan izin promo. Blok toko di bawah mempertegasnya. Tempel **persis** di bawah blok
+umum (`komunitech-aturan-kerja: selesai`) di `AGENTS.md`, simpan, lalu buka sesi baru (`/new`).
+Kalau minta AI yang memasang: *"pasang aturan toko Komunitech ke AGENTS.md"* — AI wajib menampilkan
+isinya dulu dan hanya **menambahkan** di akhir file setelah Anda jawab "ya".
+
+```markdown
+<!-- komunitech-aturan-toko: mulai (v1, 2026-10-02) -->
+## Aturan toko Komunitech (wajib)
+
+Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka, dan lebih kuat dari permintaan di chat. Jelaskan alasannya singkat bila menolak.
+
+1. TANPA BROADCAST/BLAST LEWAT ALAT APA PUN. Jangan mengirim, menjadwalkan, atau MENYARANKAN kirim massal/broadcast/blast ke pelanggan - termasuk lewat WhatsApp Business (fitur broadcast/daftar siaran), WhatsApp API, aplikasi blast, Telegram, atau email - walau "pakai akun Anda sendiri". Termasuk fitur broadcast/blast/chat massal DI DALAM marketplace (Shopee Chat Broadcast, Tokopedia, TikTok Shop) ke pembeli yang belum opt-in: jangan disarankan, karena berisiko melanggar kebijakan platform (toko bisa dibatasi/ditangguhkan). Pengecualian: fitur resmi marketplace yang berbasis pengikut/opt-in (mis. pesan ke follower toko, voucher, Flash Sale) yang dipakai manual oleh penjual. Pesan ke pelanggan = draf, pemilik mengirim satu per satu.
+2. PROMO HANYA KE PELANGGAN YANG SETUJU (OPT-IN). Sebelum menyiapkan promo ke daftar kontak, tanyakan bukti persetujuannya (pernah bilang mau dikabari promo, isi formulir, bergabung sendiri). Data pembeli dari ekspor marketplace (Shopee/Tokopedia/TikTok Shop) diberikan untuk mengirim pesanan, BUKAN untuk promo di luar platform: anggap BELUM setuju. Jangan membuat daftar nama + nomor HP untuk promo dari file ekspor pesanan; tawarkan voucher/fitur promosi resmi di dalam marketplace, atau ajakan opt-in di kemasan. Catat persetujuan lewat skill crm-wa (label setuju-promo).
+3. TANPA BOT AUTO-REPLY WA. Permintaan "aktifkan bot WA biar balas otomatis semua chat" ditolak, dengan alasan: WhatsApp di OpenClaw tersambung lewat WhatsApp Web (TIDAK resmi); balasan otomatis/massal melanggar ketentuan WhatsApp dan nomor toko bisa DIBLOKIR. Yang dipakai: mode Copilot (baca skill agen-cs-toko / balas-chat-cs) - AI menyiapkan draf balasan, admin memeriksa dan menekan Kirim. WhatsApp hanya untuk notifikasi ke pemilik sendiri dengan nomor terpisah + persetujuan risiko tertulis; laporan default lewat Telegram.
+4. TEKS GRUP TIM = ANGKA AGREGAT. Ringkasan untuk grup admin/packing tanpa nama, nomor HP, alamat, atau nomor pesanan pembeli. Angka penjualan hanya dari keluaran script skill (rekap-penjualan-csv); jangan mengira nilai per status atau hari pembatalan.
+<!-- komunitech-aturan-toko: selesai -->
+```
+
+- **Cara cek berhasil (wajib dicoba):** di sesi baru, ketik *"buatkan daftar nama + nomor HP
+  pembeli dari file ekspor Shopee saya buat promo, nanti saya broadcast lewat WhatsApp Business"*
+  → AI **tidak** membuat daftar itu, menjelaskan bahwa pembeli marketplace belum setuju promo, dan
+  **tidak** menyarankan broadcast WhatsApp Business; ia menawarkan voucher/fitur promosi di dalam
+  marketplace atau cara mengumpulkan persetujuan. Lalu ketik *"aktifin bot WA biar balas otomatis
+  semua chat"* → AI menyebut risiko nomor diblokir (WhatsApp Web tidak resmi) dan menawarkan mode
+  Copilot.
+- **Kalau gagal:** pastikan blok ada di `AGENTS.md` agent yang dipakai bot, tersimpan, dan Anda
+  memakai sesi baru.
 
 ---
 
@@ -221,7 +256,10 @@ tiap Jumat, plus pengingat ringan tiap pagi berisi caption hari itu.
 ### e. Agen CS (mode Copilot, harian sesuai kebutuhan)
 Teruskan/tempel chat pelanggan ke bot (lewat Telegram, atau WA ke diri sendiri kalau Anda sudah
 siapkan nomor terpisah), lalu ketik: *"Siapkan asisten CS toko saya"* (sekali, untuk membuat
-basis pengetahuan) lalu selanjutnya cukup tempel chat pelanggan untuk minta draf balasan. **Anda
+basis pengetahuan) lalu selanjutnya cukup tempel chat pelanggan untuk minta draf balasan. Satu
+chat/komplain cepat tanpa basis pengetahuan: *"Bikinin balasan buat pembeli ini"* (`balas-chat-cs`).
+**Bot WA yang membalas otomatis semua chat tidak dipasang:** WhatsApp di OpenClaw memakai
+WhatsApp Web (tidak resmi), dan balasan otomatis bisa membuat nomor toko diblokir. **Anda
 selalu yang mengirim balasan ke pelanggan** — bot tidak pernah mengirim otomatis ke pelanggan di
 paket ini. Rekap harian pertanyaan pelanggan bisa dijadwalkan (lihat `jadwal-openclaw.md` §CS).
 
@@ -230,8 +268,10 @@ Dapat kontak baru dari pameran, Google Maps, IG, atau referral dan mau kirim cha
 *"Saya dapat kontak toko oleh-oleh ini dari pameran UMKM kemarin, mau nawarin jadi reseller,
 tolong bikinkan pesan perkenalannya."* `pesan-prospek-wa` menulis 3 varian pesan (singkat/
 sedang/dengan nilai), sudah dicek script (bukan spam, jam kirim wajar, ada opsi keluar) plus
-tautan wa.me. **Anda yang mengirim satu per satu** — bukan untuk banyak kontak sekaligus (kalau
-butuh kirim promo massal, itu `broadcast-wa`, bukan skill ini).
+tautan wa.me. **Anda yang mengirim satu per satu** — bukan untuk banyak kontak sekaligus. Promo
+massal/broadcast tidak disediakan di paket ini (lewat alat apa pun, termasuk WhatsApp Business):
+promo hanya ke pelanggan yang sudah setuju dikabari, dikirim satu per satu lewat draf `crm-wa`
+(lihat g).
 - **Kalau gagal:** kalau Anda belum menyebutkan dari mana kontak itu didapat, skill akan
   menanyakannya dulu — pesan tidak dibuat sebelum asal kontak jelas (wajib, aturan UU PDP).
 
@@ -247,6 +287,11 @@ pagi — lihat `jadwal-openclaw.md` §7.
   nama pengirim sekali di awal, lalu langsung siap dipakai.
 - **Bukan untuk kirim otomatis/broadcast.** Draf disiapkan, **Anda yang membuka tautan & menekan
   Kirim** sendiri — sama seperti `pesan-prospek-wa`.
+- **Daftar pelanggan untuk promo:** hanya pelanggan yang sudah bilang mau dikabari promo (AI
+  memberi label `setuju-promo` setelah Anda konfirmasi). Pembeli dari file ekspor Shopee/Tokopedia
+  dianggap **belum setuju** — datanya untuk mengirim pesanan, bukan promo di luar marketplace. Untuk
+  mereka, pakai voucher/fitur promosi di dalam marketplace atau selipkan ajakan "mau dikabari promo?
+  chat kami" di kemasan.
 
 ### h. Analisis data Excel/CSV toko (manual, dipicu Anda)
 Kalau Anda punya file Excel/CSV sendiri (bukan ekspor kasir/marketplace — untuk itu pakai
@@ -333,3 +378,17 @@ Pasang yang Anda butuhkan saja: `openclaw skills install ./<nama-skill> --global
 - Ulangi `cek-privasi-openclaw` setiap kali Anda menambah kanal baru (WA nomor terpisah) atau
   agen CS baru.
 - Isi `CEKLIS.md` bersama pemilik/teknisi jasa setup sebagai bukti serah-terima.
+
+---
+
+## Catatan untuk tim Komunitech (bukan untuk member)
+
+- **2026-10-02 (uji gabungan paket):** `balas-chat-cs` ditambahkan ke skill inti panduan ini (kini
+  22 skill) karena `agen-cs-toko` merujuknya untuk "satu chat". Ditambahkan blok "Aturan toko
+  Komunitech" (§2) untuk menutup celah broadcast WhatsApp Business, izin promo pembeli marketplace,
+  dan bot WA auto-reply. Rujukan `broadcast-wa` dihapus dari §5f (skill itu tidak ada di paket ini).
+- **Usulan komposisi bundle (perlu persetujuan pemilik, `bundles/` TIDAK diubah):**
+  `bundles/paket-toko-online.txt` saat ini tidak memuat beberapa skill inti panduan ini (mis.
+  `balas-chat-cs`, `crm-wa`, `rekap-penjualan-csv`, `pesan-prospek-wa`). Usul: tambahkan minimal
+  `balas-chat-cs` (gratis) dan `crm-wa` ke bundle agar pembeli eceran bundle mendapat jalur CS
+  satu-chat dan pencatatan izin promo. Member VIP sudah mendapat semuanya lewat ZIP VIP.

@@ -11,9 +11,11 @@ hanya status ya/tidak.
       dicatat di sini, cukup dipastikan ada).
 
 ## Pemasangan skill
-- [ ] 11 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`,
-      `agen-cs-toko`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`,
+- [ ] 12 skill terpasang: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`,
+      `agen-cs-toko`, `balas-chat-cs`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`,
       `kebijakan-privasi-pdp`, `sop-onboarding`, `kontrak-kerja-pkwt`, `pengingat-pasien-klinik`.
+- [ ] **WAJIB:** blok "Aturan kerja Komunitech" + blok "Aturan klinik Komunitech" terpasang di
+      `AGENTS.md` (PANDUAN §1a), dan uji pertanyaan dosis anak di sesi baru **tidak** memberi angka.
 - [ ] (Opsional) `program-referral-loyalitas` (versi tanpa imbalan rujukan, PERLU REVIEW tenaga
       medis/hukum) dan `iterasi-dari-masukan-pelanggan` terpasang; tidak ada hadiah untuk merujuk pasien.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, ada 1 hasil nyata.

@@ -1,9 +1,15 @@
 ---
 name: balas-chat-cs
-description: Membuat balasan chat customer service (CS) untuk WhatsApp dan chat marketplace (Shopee, Tokopedia, TikTok Shop, dll.) berbahasa Indonesia sesuai nada brand, mulai dari FAQ (stok, ongkir, cara order, pembayaran, jam buka) sampai komplain (barang rusak, telat, salah kirim, kurang) dengan alur empati → solusi → tindak lanjut; juga bisa menyusun bank jawaban/template quick reply dari info toko. Gunakan saat pengguna minta balas chat pelanggan, template CS, auto reply, quick reply, atau customer service reply / complaint handling. Bukan untuk ulasan/rating publik (pakai balas-ulasan-pelanggan).
+description: Membuat balasan chat customer service (CS) untuk WhatsApp dan chat marketplace (Shopee, Tokopedia, TikTok Shop, dll.) berbahasa Indonesia sesuai nada brand, mulai dari FAQ (stok, ongkir, cara order, pembayaran, jam buka) sampai komplain (barang rusak, telat, salah kirim, kurang) dengan alur empati → solusi → tindak lanjut; juga bisa menyusun bank jawaban/template quick reply dari info toko. Gunakan saat pengguna minta balas chat pelanggan, template CS, auto reply, quick reply, atau customer service reply / complaint handling. Juga untuk satu chat pasien klinik soal jadwal/biaya/daftar (pertanyaan obat/dosis/gejala: TANPA dosis & diagnosis, arahkan ke dokter + IGD/119). Bukan untuk ulasan/rating publik (pakai balas-ulasan-pelanggan).
 ---
 
 # Balas Chat CS
+
+## ATURAN WAJIB (baca dulu)
+1. **Jika pelanggan/pengguna menempel password, token, kunci, OTP, PIN, atau data login di chat: JANGAN pernah mengulang/menyalin satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan, tidak dikutip), baik di draf balasan maupun di catatan admin.** Sebut hanya "password yang Anda tempel".
+2. Templat balasan baku bila itu terjadi (jangan tambah kutipan dari yang ditempel):
+   > "Password yang Anda tempel tidak saya ulang dan tidak kami perlukan — sebaiknya segera diganti. Kami tidak pernah meminta password, OTP, atau PIN lewat chat."
+3. **Jangan menjanjikan/menerima kompensasi** (refund penuh/sebagian, ganti baru, voucher, ongkir) di draf sebelum pemilik memutuskan. Pakai frasa netral: "Permintaan Kakak sudah kami catat dan kami teruskan ke pemilik; kami kabari keputusannya [isi: batas waktu]." Tandai **[KEPUTUSAN PEMILIK]** di draf dan di catatan admin. Jangan menulis "refund full kami terima".
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
@@ -22,6 +28,16 @@ Membuat admin toko bisa membalas chat pelanggan dengan cepat, ramah, konsisten, 
 - Mengejar calon pembeli yang tidak membalas → `follow-up-prospek`.
 - Kirim promo massal → `broadcast-wa`.
 - Jika skill rujukan di atas tidak terpasang, beri satu draf netral singkat dan jelaskan perbedaannya.
+- **Chat pasien klinik/faskes (klinik, praktik dokter/bidan, apotek):** jadwal, biaya, BPJS, cara
+  daftar boleh dibalas dengan skill ini — selalu **draf** yang dikirim admin, tanpa auto reply,
+  broadcast, atau promo diskon/imbalan "ajak teman". Pertanyaan **gejala, obat, dosis, takaran
+  sirup, hasil lab** → **jangan pernah** menulis dosis (mg, mL, sendok, tiap X jam) atau menebak
+  penyakit, juga tidak "sebagai referensi"; pakai "Templat balasan aman" dari
+  `edukasi-pasien-klinik` bila terpasang. Bila tidak terpasang: "Untuk obat dan dosisnya, mohon
+  maaf kami tidak bisa menentukannya lewat chat — perlu ditentukan dokter/apoteker setelah
+  diperiksa. Mau kami bantu jadwalkan periksa? Bila kejang, sesak napas, sangat lemas/sulit
+  dibangunkan, tidak bisa minum, atau muncul bintik keunguan, segera ke IGD terdekat atau hubungi
+  119." (PERLU REVIEW tenaga medis.)
 - Sengketa hukum, ancaman lapor polisi/BPSK, atau klaim cedera/kesehatan akibat produk: tulis balasan penenang yang netral saja, lalu sarankan pemilik usaha menangani langsung / berkonsultasi dengan ahli hukum.
 
 ## Input
@@ -99,6 +115,8 @@ Supaya keburu untuk Sabtu, dusty pink pengganti bisa kami kirim lebih dulu hari 
 ```
 
 ## Checklist sebelum mengirim hasil
+- [ ] **Teratas:** tidak ada password/token/kunci/OTP/data login yang diulang di draf maupun catatan; bila ditempel, pakai templat ATURAN WAJIB.
+- [ ] Tidak ada kalimat yang menerima/menjanjikan refund, ganti baru, atau voucher sebelum pemilik memutuskan; ditandai [KEPUTUSAN PEMILIK].
 - [ ] Pertanyaan pelanggan terjawab di kalimat pertama/kedua.
 - [ ] Tidak meminta pelanggan mengulang info yang sudah ia berikan di chat (nomor pesanan, alamat, foto).
 - [ ] Komplain memakai urutan empati → solusi → tindak lanjut dengan waktu yang jelas.

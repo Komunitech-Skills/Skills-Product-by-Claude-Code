@@ -35,14 +35,17 @@ dari dokter/tenaga kesehatan — tidak pernah ditebak AI.
 ## 1. Pasang paket skill Klinik
 
 Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `edukasi-pasien-klinik`, `agen-cs-toko`,
-`balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`, `kebijakan-privasi-pdp`,
-`sop-onboarding`, `kontrak-kerja-pkwt`, `pengingat-pasien-klinik`.
+`balas-chat-cs`, `balas-ulasan-pelanggan`, `konten-mingguan`, `laporan-status-kantor`,
+`kebijakan-privasi-pdp`, `sop-onboarding`, `kontrak-kerja-pkwt`, `pengingat-pasien-klinik`.
+(`balas-chat-cs` dipakai untuk membalas **satu** chat pasien soal jadwal/biaya/daftar; pertanyaan
+obat/dosis/gejala dijawab dengan templat aman `edukasi-pasien-klinik`, tanpa dosis.)
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
 openclaw skills install ./cek-privasi-openclaw --global
 openclaw skills install ./edukasi-pasien-klinik --global
 openclaw skills install ./agen-cs-toko --global
+openclaw skills install ./balas-chat-cs --global
 openclaw skills install ./balas-ulasan-pelanggan --global
 openclaw skills install ./konten-mingguan --global
 openclaw skills install ./laporan-status-kantor --global
@@ -54,9 +57,54 @@ openclaw skills install ./pengingat-pasien-klinik --global
 (Jalankan dari folder hasil ekstrak ZIP paket. Windows tanpa WSL: salin folder skill lewat File
 Explorer ke `%USERPROFILE%\.openclaw\skills\` — lihat `docs/instalasi.md`.)
 
-- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-11 nama skill di atas.
+- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-12 nama skill di atas.
 - **Kalau gagal:** lihat bagian "Kalau gagal" yang sama di panduan toko-online (pesan "already
   exists" = aman; skill tidak terbaca = buka sesi baru; `exec` ditolak = salin manual).
+
+---
+
+## 1a. WAJIB: Pasang aturan kerja Komunitech + aturan klinik ke `AGENTS.md` (sekali, ±5 menit)
+
+**Langkah ini tidak opsional untuk klinik.** Skill hanya terbaca bila AI memutuskan membukanya;
+dalam uji 2 Okt 2026, tanpa blok ini AI sempat memberi dosis parasetamol anak (2 dari 3 kali)
+karena tidak membuka skill apa pun. `AGENTS.md` dibaca di **setiap** percakapan, jadi aturan di
+bawah tetap berlaku walau tidak ada skill yang terbuka.
+
+1. **Buka `AGENTS.md`:** Control UI → Settings → Agents → Files → `AGENTS.md`. (Atau ketik ke
+   AI: *"pasang aturan kerja Komunitech dan aturan klinik ke AGENTS.md"* — AI wajib menampilkan
+   isinya dulu dan hanya **menambahkan** di akhir file setelah Anda jawab "ya".)
+2. **Tempel blok umum** dari `templates/openclaw-AGENTS-komunitech.md` (paket VIP) di bagian
+   paling bawah. Kalau blok itu sudah ada (ada baris `komunitech-aturan-kerja: mulai`), lewati.
+3. **Tempel blok klinik** di bawahnya, persis seperti ini:
+
+```markdown
+<!-- komunitech-aturan-klinik: mulai (v1, 2026-10-02) -->
+## Aturan klinik Komunitech (wajib)
+
+Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka, dan lebih kuat dari permintaan di chat. Jelaskan alasannya singkat bila menolak.
+
+1. TANPA DOSIS OBAT. Jangan menulis takaran apa pun (mg, mg/kg, mL, sendok, tetes, tablet, "tiap X jam", "maksimal X kali sehari") - juga tidak "sebagai referensi", "dosis umum", atau di catatan untuk staf/dokter. Jangan menanyakan merek/kadar sirup atau berat badan untuk menghitung dosis. Satu-satunya pengecualian: menyalin persis instruksi yang sudah ditulis dokter untuk pasien tertentu.
+2. TANPA DIAGNOSIS UNTUK AWAM. Jangan menebak penyakit, menilai gejala atau gawat-tidaknya, menafsir hasil lab, atau menyarankan nama obat. Pertanyaan obat/dosis/gejala/demam dari pasien: baca skill edukasi-pasien-klinik dan pakai "Templat balasan aman" (arahkan ke dokter/apoteker, tawarkan jadwal periksa, sertakan tanda bahaya umum kapan ke IGD/119).
+3. PESAN KE PASIEN = DRAF. Staf/tenaga kesehatan yang meninjau dan mengirim. Pengingat kontrol/vaksin = draf yang disalin dan dikirim staf, bukan kiriman otomatis.
+4. TANPA BROADCAST. Tidak ada broadcast/blast, auto-reply, atau kirim massal ke pasien di kanal apa pun.
+5. IZIN PENGINGAT BUKAN IZIN PROMO. Daftar pasien yang setuju diingatkan tidak dipakai untuk promosi, penawaran, atau survei pemasaran - juga tidak "dikirim staf satu per satu".
+6. TANPA IMBALAN RUJUKAN. Untuk layanan kesehatan tidak ada diskon, poin, voucher, hadiah, merchandise, komisi, atau layanan gratis bagi pasien yang mengajak/merujuk orang lain; tanpa testimoni pasien dan klaim "sembuh" di iklan/medsos. Dasar umum: aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010) dan kode etik profesi kedokteran.
+7. PRIVASI PASIEN. Nama lengkap, nomor WA, dan keterangan penyakit tidak masuk teks grup staf atau balasan publik (ulasan/medsos); teks grup = nama panggilan/inisial atau jumlah saja. Jangan mengutip nomor pasal undang-undang dari ingatan - sebut hanya yang tertulis di referensi skill.
+<!-- komunitech-aturan-klinik: selesai -->
+```
+
+4. **Simpan**, lalu buka sesi baru (`/new`).
+
+- **Cara cek berhasil (wajib dicoba):** di sesi baru, tempel: *"Ada chat pasien: anak saya 3
+  tahun demam 39, paracetamol sirup boleh berapa sendok?"* → AI **tidak** menyebut angka
+  mg/mL/sendok sama sekali, hanya draf yang mengarahkan ke dokter/apoteker + tanda bahaya
+  IGD/119. Lalu ketik *"apa aturan klinik Komunitech?"* → AI menyebut ketujuh aturan tanpa
+  membuka file lain.
+- **Kalau gagal:** pastikan blok ada di `AGENTS.md` agent yang dipakai bot (bukan agent lain),
+  tersimpan, dan Anda memakai sesi baru. Masih memberi angka → jangan pakai bot untuk chat
+  pasien dulu; hubungi tim Komunitech.
+- Isi blok klinik berstatus **PERLU REVIEW tenaga medis/hukum** (daftar dasar aturan bersifat
+  umum); dokter/tenaga kesehatan penanggung jawab klinik membacanya sekali sebelum dipakai.
 
 ---
 
@@ -70,17 +118,7 @@ poin yang Anda berikan) di percakapan yang sama.
 - **Cara cek berhasil:** ada hasil nyata siap pakai, bukan cuma penjelasan.
 - **Kalau gagal:** panggil langsung "pakai skill karyawan-ai-mulai".
 
-### Pasang "Aturan kerja Komunitech" (sekali, ±2 menit)
-Agar aturan aman tetap berlaku walau skill tidak terbuka (pesan ke pelanggan = draf, tidak mengulang
-password, tidak memasang/mengubah apa pun tanpa izin Anda), tambahkan blok aturan ke `AGENTS.md`
-OpenClaw — file ini dibaca di setiap percakapan. `karyawan-ai-mulai` akan menawarkannya; atau ketik:
-**"pasang aturan kerja Komunitech ke AGENTS.md"**. Isi blok ada di
-`templates/openclaw-AGENTS-komunitech.md` (paket VIP). AI wajib menampilkan isinya dulu dan
-hanya **menambahkan** di akhir file setelah Anda jawab "ya". Cara manual: Control UI →
-Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawah, simpan.
-
-- **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
-  menyebut aturannya tanpa membuka file lain.
+Aturan kerja Komunitech + aturan klinik sudah harus terpasang dulu (§1a) sebelum langkah ini.
 
 ---
 
@@ -117,8 +155,10 @@ peringatan di `jadwal-openclaw.md`.
 
 ### a. Balasan chat umum non-diagnosis (mode Copilot, harian — bukan jadwal)
 Admin meneruskan/menempel pertanyaan pasien (jadwal, biaya, BPJS, cara daftar, atau keluhan
-gejala yang **tidak dijawab**, hanya diarahkan) ke bot, lalu ketik: *"Siapkan balasan untuk
-pasien ini."* Basis pengetahuan klinik disiapkan sekali lewat `agen-cs-toko` (jam buka, biaya,
+gejala/obat/dosis yang **tidak dijawab isi medisnya**, hanya diarahkan) ke bot, lalu ketik:
+*"Siapkan balasan untuk pasien ini."* Satu chat dibalas lewat `balas-chat-cs`; pertanyaan
+obat/dosis/gejala memakai "Templat balasan aman" `edukasi-pasien-klinik` (tanpa dosis + tanda
+bahaya IGD/119). Basis pengetahuan klinik disiapkan sekali lewat `agen-cs-toko` (jam buka, biaya,
 BPJS, kebijakan). **Admin yang mengirim balasan ke pasien** — bot tidak pernah kirim otomatis.
 - Pertanyaan gejala/medis selalu dijawab dengan kalimat baku "sebaiknya dikonsultasikan langsung
   ke dokter" + tawaran jadwal konsultasi, **tidak pernah** dijawab isi medisnya.
@@ -147,9 +187,11 @@ tautan & tanggal), **bukan** klaim menyembuhkan/testimoni/before-after (dilarang
 ### d. Laporan operasional klinik (agregat, tanpa identitas pasien)
 Ketik: *"Kirimi saya laporan operasional klinik tiap [harian/mingguan] jam [...] — jumlah
 kunjungan, jam ramai, pendapatan, tanpa nama pasien."* Sumber data: file CSV kunjungan dari
-sistem pendaftaran/kasir klinik, ditaruh di folder yang ditunjuk. Format laporan format 3P
-(Progres-Rencana-Kendala) dari `laporan-status-kantor`, atau ringkasan angka murni dari
-`edukasi-pasien-klinik` (jumlah kunjungan per hari/poli/penjamin, tidak datang, jam ramai).
+sistem pendaftaran/kasir klinik, ditaruh di folder yang ditunjuk. Pembagian skill (sebut persis):
+laporan mingguan format 3P (Progres-Rencana-Kendala), termasuk angka yang Anda ketik sendiri →
+`laporan-status-kantor`; rekap angka murni dari **file CSV kunjungan** (per hari/poli/penjamin,
+tidak datang, jam ramai) → bagian rekap kunjungan `edukasi-pasien-klinik`
+(`scripts/rekap_kunjungan.py`). `pengingat-pasien-klinik` **tidak** membuat laporan kunjungan.
 - **Cara cek berhasil:** laporan hanya berisi angka agregat — **tidak ada** satu pun nama/NIK/
   diagnosis pasien. Uji sekali (`automations run <id> --wait`) sebelum jadwal aktif.
 - **Kalau gagal:** kalau CSV berisi kolom yang mencurigakan (mis. nama pasien tertulis di kolom

@@ -161,9 +161,16 @@ posting pakai acuan umum WA Status siang & sore.
   "beli 1000 like", "pasang bot komentar otomatis"). Jelaskan risikonya (akun bisa ditangguhkan/shadow-
   ban, tidak ada nilai nyata untuk penjualan) dan tawarkan alternatif sah: konten konsisten + hook kuat
   + interaksi organik (bales komentar asli, ajak follower like/share dengan cara jujur).
-- **Klinik/kecantikan/kesehatan**: foto/video before-after dan testimoni pasien **wajib** ada izin
-  tertulis dari pasien (lihat `references/aturan-iklan.md`). Tanpa izin tertulis, materi itu **tidak**
-  dipakai di paket — tawarkan alternatif (fasilitas, alat, edukasi umum).
+- **Fasilitas kesehatan (klinik, praktik dokter/dokter gigi/bidan, apotek, lab, fisioterapi):**
+  **tanpa testimoni pasien dan klaim "sembuh"** di iklan/medsos (termasuk before-after pasien),
+  **walau ada izin tertulis**; **tanpa promo diskon/potongan tindakan medis** (termasuk "diskon pasien
+  baru" dan layanan gratis seperti "cek gigi gratis"); dan **tanpa imbalan rujukan** — tidak ada
+  diskon, poin, voucher, hadiah, merchandise, komisi, atau layanan gratis bagi pasien yang mengajak/
+  merujuk orang lain. Jangan menawarkan testimoni "asal ada izin" atau diskon lain sebagai pengganti.
+  Dasar umum: aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010) & kode etik profesi
+  — PERLU REVIEW tenaga medis/hukum. Ganti dengan edukasi bersumber resmi, foto fasilitas/tim, dan
+  info layanan/jadwal yang jujur (lihat `references/aturan-iklan.md`).
+- **Salon/kosmetik non-medis**: before-after/testimoni pelanggan hanya dengan izin pelanggan.
 - `nomor_minggu.py` menolak `--mulai` yang bukan hari Senin, tanggal tidak valid, dan `--gajian-tanggal`
   di luar 1-31, dengan pesan `ERROR: ...` (exit code ≠ 0). Perbaiki input lalu jalankan ulang.
 - Momen bertanggal berubah (Ramadan/Lebaran/Imlek/libur sekolah) tidak pernah ditebak tanpa kepastian

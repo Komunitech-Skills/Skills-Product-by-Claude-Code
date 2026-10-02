@@ -11,7 +11,7 @@ tidak boleh masuk bundle ecer (dicek otomatis oleh build.py).
 | paket-gaji-hr | 6 | Rp694.000 | Rp349.000 | Usaha dengan karyawan (gaji, PPh 21, THR, absensi) |
 | paket-kafe-warung | 7 | Rp694.000 | Rp349.000 | Kafe, warung, kedai (kasir lokal + stok + konten) |
 | paket-kantor | 5 | Rp296.000 | Rp199.000 | Admin kantor & sekretaris |
-| paket-klinik | 5 | Rp495.000 | Rp249.000 | Klinik pratama/gigi/kecantikan, praktik mandiri |
+| paket-klinik | 7 | Rp594.000 | Rp249.000 | Klinik pratama/gigi/kecantikan, praktik mandiri |
 | paket-konsultan-freelancer | 8 | Rp742.000 | Rp349.000 | Konsultan, agensi, freelancer B2B |
 | paket-karyawan-ai-openclaw | 5 | Rp347.000 | Rp199.000 | Pengguna OpenClaw pemula (starter kit, privasi, laporan, ringkas grup) |
 | paket-strategi-produk-marketing | 14 | Rp1.566.000 | Rp599.000 | Pemilik usaha/tim yang mengembangkan & memasarkan produk (positioning, merek & penawaran, pesaing, harga, peluncuran, uji pasar, konten & iklan, referral & loyalitas, masukan pelanggan, analitik web, newsletter, papan masukan) |

@@ -62,3 +62,7 @@ Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** membe
 
 ## Catatan revisi 1.0.6 (2026-10-01)
 - Dari uji OpenClaw sebelum/sesudah: draf penahan sempat berbunyi "data rekening kami simpan" dan janji jam 09.00 muncul tanpa disebut sebagai asumsi. Kini draf tidak boleh mengklaim menyimpan data pembayaran/KTP pelanggan (rekening diminta lagi lewat kanal resmi saat klaim disetujui), dan jam kerja default selalu disebut sebagai asumsi.
+
+## Catatan revisi 1.0.7 (2026-10-02)
+- Dari uji gabungan paket Toko Online: permintaan "aktifin bot WA biar balas otomatis semua chat" tidak membuka skill ini, sehingga risiko WhatsApp tidak resmi tidak dijelaskan.
+- Pemicu baru untuk permintaan bot WA auto-reply, plus "Jawaban baku": kenapa tidak dipasang (WhatsApp Web tidak resmi, nomor bisa diblokir), mode Copilot (AI siapkan draf, manusia kirim), dan batas yang boleh (notifikasi ke pemilik lewat Telegram; WA hanya nomor terpisah). Promo massal/broadcast ditolak lewat alat apa pun; promo hanya ke pelanggan yang setuju, satu per satu.
