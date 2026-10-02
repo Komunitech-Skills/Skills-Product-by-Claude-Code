@@ -1133,3 +1133,184 @@ Catatan SESUDAH: (a) **arisan RT diam-diam berhenti dibayar.** Script/agent meng
 **Cuplikan jualan:**
 - Tanpa skill: "Potong rokok, nongkrong, bensin, pulsa — bisa hemat 600–900rb" (rinciannya sendiri maks. Rp750.000) dan 6 bulan sebelum THR tidak direncanakan. Dengan skill: "Pemangkasan bertahap −Rp620.000, sisa defisit Rp560.000/bulan dijelaskan terus terang; kekurangan sampai THR cair Rp3.390.000, tabungan Rp1,5 juta tidak cukup → kurang Rp1.890.000: tambah pemasukan ±Rp380.000/bulan atau percepat pemangkasan — tanpa paylater. Saat THR cair, Rp2.240.000 dicadangkan untuk bulan 7–10."
 - Keluarga muda Bekasi: dengan skill, rasio cicilan 34,4% langsung ditandai DI ATAS batas aman 30%, dan dana darurat dihitung dari pengeluaran pokok (Rp10.850.000 → target 9 bulan Rp97.650.000), bukan dari total belanja termasuk Netflix.
+
+
+## Uji regresi v1.0.10 (2026-10-02)
+
+**Cara uji:** tanggal 2026-10-02, uji regresi ringkas (1 skenario) setelah perbaikan temuan RENDAH. OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5` (sama dengan bot member). SEBELUM = home bersih tanpa skill; SESUDAH = home bersih berisi hanya skill ini (salinan repo v1.0.10). Pesan identik di kedua sisi; pertanyaan balik agent dijawab sekali sebagai pengguna awam (lanjutan = id sesi sama). Penguji independen (bukan pembuat). Fokus: temuan RENDAH v1.0.9 — (1) arisan berhenti dibayar diam-diam, (2) THR disarankan ke dana darurat tanpa menyinggung kebutuhan Lebaran. Setiap nominal diverifikasi dengan Python independen dan dengan menjalankan `scripts/keuangan.py` sendiri.
+
+Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim/posting ke pihak lain, tidak mencari ke seluruh disk. SESUDAH memakai `read` + `exec` (skill terpakai); SEBELUM tanpa alat.
+
+### Skenario — defisit bulanan + arisan + THR cair 5 bulan lagi
+
+**Pesan (identik):**
+> Pak/Bu tolong bantu. Gaji bersih saya 5,8 juta, istri ga kerja, anak 2 masih SD. Kontrakan 1,5 juta, cicilan motor 850 ribu, belanja dapur 2 juta, listrik+air 400 ribu, bensin 400 ribu, pulsa+internet 200 ribu, uang jajan & sekolah anak 600 ribu, kirim ibu 500 ribu, arisan ibu-ibu kompleks 300 ribu, rokok 300 ribu, nongkrong/ngopi 200 ribu. Tiap bulan selalu minus. THR 1x gaji cair 5 bulan lagi. Tabungan tinggal 1 juta. Tolong atur anggaran saya, gimana nutup minusnya.
+
+**Balasan SEBELUM (tanpa skill, utuh):**
+
+> Oke, saya hitung dulu kondisi riilnya biar jelas akar masalahnya.
+>
+> ## Fakta: minus Anda per bulan
+>
+> Total pemasukan: **Rp 5.800.000**
+> Total pengeluaran yang Anda sebutkan: **Rp 7.250.000**
+> → **Minus Rp 1.450.000/bulan**
+>
+> Dengan tabungan cuma Rp 1 juta, ini serius — kalau dibiarkan, tabungan habis bulan depan dan Anda mulai gali lubang tutup lubang (utang/pinjol). THR 5 bulan lagi, jadi 5 bulan ke depan harus survive dulu dengan gaji yang ada.
+>
+> ## Anggaran baru (total pas Rp 5.800.000, tanpa minus)
+>
+> | Pos | Sekarang | Jadi | Ket |
+> |---|---|---|---|
+> | Kontrakan | 1.500.000 | 1.500.000 | tetap |
+> | Cicilan motor | 850.000 | 850.000 | tetap (jangan skip, bahaya ditarik) |
+> | Listrik+air | 400.000 | 400.000 | tetap |
+> | Jajan+sekolah anak | 600.000 | 600.000 | tetap, jangan dikorbankan |
+> | Belanja dapur | 2.000.000 | **1.600.000** | masak sendiri, beli di pasar/grosir bukan minimarket, kurangi lauk daging 2-3x/minggu ganti telur/tahu/tempe |
+> | Bensin | 400.000 | **300.000** | servis motor biar iritl, kurangi pakai motor buat hal non-penting |
+> | Pulsa+internet | 200.000 | **150.000** | ganti paket lebih hemat |
+> | Kirim ibu | 500.000 | **300.000** | *sementara*, dibilangin baik-baik ke ibu kondisi lagi ketat, normal lagi setelah THR |
+> | Arisan | 300.000 | **0** | izin cuti/skip giliran ke pengurus arisan, bilang terus terang |
+> | Rokok | 300.000 | **0** | berat, tapi ini penyelamat terbesar — minimal kurangi jauh |
+> | Nongkrong/ngopi | 200.000 | **0** | pause dulu, ngopi di rumah |
+> | **Tabungan darurat** | 0 | **100.000** | disisihkan di awal bulan, pindah ke rekening lain, jangan dipegang |
+> | **Total** | 7.250.000 | **5.800.000** | pas, surplus kecil masuk tabungan |
+>
+> ## Yang harus dilakukan sekarang
+>
+> 1. **Hari ini**: kabari ibu soal kirim uang turun sementara, dan ke pengurus arisan soal cuti bayar. Ini yang paling berat secara emosional, tapi harus dilakukan duluan sebelum terlambat.
+> 2. **Pisahkan rekening tabungan** dari rekening harian. 100rb/bulan kecil, tapi disiplin > nominal.
+> 3. **Cari tambahan income selama 5 bulan ini** kalau memungkinkan — istri bisa mulai usaha kecil rumahan (jualan online, terima jahit/kue titip jual), atau Bapak ojol/freelance weekend. Minus Rp 1,45 juta itu besar, pemotongan di atas menutup gap tapi bikin hidup pas-pasan banget tanpa ruang darurat.
+> 4. **Rokok** — kalau bisa dikurangi separuh saja dulu (jadi 150rb), itu udah nambah napas. Tapi idealnya berhenti, dampaknya ke kesehatan dan keuangan dua-duanya.
+>
+> ## Rencana THR (5 bulan lagi)
+>
+> Saat THR Rp 5,8 juta cair, **jangan dipakai belanja/liburan dulu**. Prioritas:
+> 1. Isi tabungan darurat sampai minimal Rp 3-5 juta (idealnya 1x biaya hidup bulanan).
+> 2. Kalau leasing motor bisa terima bayar ekstra ke pokok tanpa penalti, bayar ekstra biar cicilan cepat lunas/bunga turun.
+> 3. Sisa baru untuk kebutuhan anak sekolah atau kembalikan normal kirim ke ibu bulan itu.
+>
+> Kalau 5 bulan ke depan masih minus walau sudah dipotong semua ini, berarti memang butuh tambahan income, bukan potong lagi — karena yang tersisa itu sudah kebutuhan pokok (kontrakan, cicilan wajib, makan, sekolah anak).
+
+**Balasan SESUDAH (skill aktif, utuh):**
+
+> ## Ringkasan
+>
+> Gaji rutin Rp5.800.000/bulan, pengeluaran di luar pos tabungan Rp6.950.000/bulan → **DEFISIT Rp1.150.000/bulan** dari gaji (basis: pos tabungan arisan Rp300.000 DIJEDA selama defisit; dihitung dari gaji saja, karena THR cair sekali bukan tiap bulan). Total cicilan motor Rp850.000 = 14,7% dari gaji rutin — masih dalam batas aman 30%, jadi bukan cicilan yang jadi masalah utama, tapi pos sehari-hari yang kebesaran. Langkah terpenting: jeda sementara arisan + pangkas bertahap 6 pos dalam 3 bulan; itu masih kurang Rp600.000/bulan, jadi perlu tambahan pemasukan sementara sampai THR cair bulan ke-5.
+>
+> ## Anggaran Bulanan (zero-based)
+>
+> | Pos | Kelompok | Jumlah | % gaji rutin (Rp5.800.000) |
+> |---|---|---:|---:|
+> | Kontrakan | Kebutuhan wajib | Rp1.500.000 | 25,9% |
+> | Cicilan motor | Kebutuhan wajib | Rp850.000 | 14,7% |
+> | Belanja dapur | Kebutuhan wajib | Rp2.000.000 | 34,5% |
+> | Listrik+Air | Kebutuhan wajib | Rp400.000 | 6,9% |
+> | Bensin | Kebutuhan wajib | Rp400.000 | 6,9% |
+> | Pulsa+Internet | Kebutuhan wajib | Rp200.000 | 3,4% |
+> | Jajan+Sekolah anak | Kebutuhan wajib | Rp600.000 | 10,3% |
+> | Kirim ibu | Keluarga & sosial | Rp500.000 | 8,6% |
+> | Arisan ibu-ibu | Tabungan | Rp300.000 | 5,2% |
+> | Rokok | Keinginan | Rp300.000 | 5,2% |
+> | Nongkrong | Keinginan | Rp200.000 | 3,4% |
+> | **Total** | | **Rp7.250.000** | **125%** |
+> | **DEFISIT dari gaji** (arisan dijeda) | | **-Rp1.150.000** | |
+>
+> **Banding pola 50/30/20** (basis gaji rutin): Kebutuhan 50% = Rp2.900.000 tapi kamu Rp6.450.000 (+Rp3.550.000, wajar untuk keluarga dengan tanggungan/kota kontrak); Keinginan 30%=Rp1.740.000 tapi kamu cuma Rp500.000; Tabungan 20%=Rp1.160.000 tapi kamu Rp300.000.
+>
+> ## Menutup Defisit (Rp1.150.000/bulan) Tanpa Utang Baru
+>
+> **TINDAKAN 1 — jeda arisan:** Jeda Arisan ibu-ibu Rp300.000/bulan selama defisit, bicarakan dengan pengelola arisan (izin cuti sementara atau ambil giliran belakangan). *Catatan: bila tetap dibayar, kekurangan jadi Rp1.450.000/bulan, dan kekurangan sebelum THR cair membengkak jadi Rp4.100.000 (bukan Rp2.900.000).*
+>
+> **TINDAKAN 2 — pangkas bertahap 3 bulan:**
+>
+> | Pos | Sekarang | Potong | Jadi |
+> |---|---:|---:|---:|
+> | Rokok | Rp300.000 | -Rp150.000 | Rp150.000 |
+> | Nongkrong | Rp200.000 | -Rp100.000 | Rp100.000 |
+> | Belanja dapur | Rp2.000.000 | -Rp200.000 | Rp1.800.000 |
+> | Listrik+Air | Rp400.000 | -Rp40.000 | Rp360.000 |
+> | Bensin | Rp400.000 | -Rp40.000 | Rp360.000 |
+> | Pulsa+Internet | Rp200.000 | -Rp20.000 | Rp180.000 |
+> | **Total potong** | | **-Rp550.000** | |
+>
+> Setelah dipangkas penuh masih kurang **Rp600.000/bulan** — ini perlu tambahan pemasukan rutin atau meninjau pos besar (kontrakan/motor), bukan utang baru.
+>
+> **Jadwal sampai THR cair (bulan ke-5):**
+>
+> | Bulan | Kekurangan bulan itu | Kumulatif |
+> |---:|---:|---:|
+> | 1 | Rp940.000 | Rp940.000 |
+> | 2 | Rp760.000 | Rp1.700.000 |
+> | 3 | Rp600.000 | Rp2.300.000 |
+> | 4 | Rp600.000 | Rp2.900.000 |
+>
+> Kekurangan transisi sebelum THR cair total **Rp2.900.000**. Saldo tabunganmu sekarang Rp1.000.000 — **tidak cukup** (kurang Rp1.900.000). Pilihan tanpa utang:
+> 1. Percepat pemangkasan — semua potongan langsung penuh mulai bulan ke-1 → kekurangan sebelum THR turun jadi Rp2.400.000.
+> 2. Tambah pemasukan sementara ±Rp480.000/bulan selama 4 bulan (lembur, jualan kecil, jasa, jual barang tak terpakai).
+> 3. Tunda/kurangi sementara pos yang masih bisa: Kirim ibu (bicarakan baik-baik dulu ke beliau), Rokok, Nongkrong.
+> Jangan ditutup paylater/pinjol/kartu kredit.
+>
+> **Saat THR Rp5.800.000 cair (bulan ke-5):** Rp3.500.000 langsung menutup kekurangan bulan 1–5. Dari sisa Rp2.300.000, sebesar Rp1.800.000 **dicadangkan** untuk menambal sisa defisit Rp600.000/bulan selama bulan ke-6 s.d. ke-8. Mulai bulan ke-9, sisa defisit belum ada sumbernya — perlu tambahan pemasukan atau meninjau pos besar. Dana darurat baru mulai diisi setelah defisit tertutup.
+>
+> ## Dana Darurat (target, setelah defisit selesai)
+>
+> Pengeluaran pokok (kontrakan + motor + dapur + listrik + bensin + pulsa + sekolah anak + kirim ibu) = **Rp6.450.000/bulan**. Karena punya anak (SD), target 9–12 bulan:
+> - 9 bulan = Rp58.050.000
+> - 12 bulan = Rp77.400.000
+>
+> Saldo sekarang Rp1.000.000 → masih kurang Rp57–76 juta (progres 1–2%). Lama tercapai belum bisa dijadwalkan selama defisit rutin masih berjalan.
+>
+> *Bila kiriman ke ibu (Rp500.000) suatu saat bisa dihentikan saat darurat, pokok turun jadi Rp5.950.000, target 9/12 bulan jadi Rp53.550.000/Rp71.400.000 — bukan saran untuk berhenti kirim sekarang, hanya gambaran.*
+>
+> ## Asumsi yang dipakai
+> - Kebutuhan dapur/listrik/bensin/pulsa dipangkas maks 10%/pos, keinginan maks 50%/pos; kontrakan, cicilan motor, sekolah anak, kirim ibu tidak dipotong.
+> - THR dianggap 1x gaji = Rp5.800.000, cair bulan ke-5 sesuai info kamu.
+> - **Belum dihitung:** kebutuhan Lebaran (mudik, baju, kue, angpau) — kalau THR cair mendekati Lebaran, sisihkan dulu sebelum sisanya dipakai menambal defisit/dana darurat. Kalau kamu kasih tahu perkiraan kebutuhan Lebaran, saya hitung ulang biar THR-nya tidak kelebihan dialokasikan.
+> - Target dana darurat pakai status "punya anak" → 9–12 bulan pengeluaran pokok.
+>
+> ## Langkah minggu ini
+> 1. Hubungi pengelola arisan minggu ini, minta izin cuti/jeda sementara (jangan berhenti diam-diam).
+> 2. Mulai potong 6 pos di atas — kalau sanggup langsung full dari bulan ini (bukan bertahap), kekurangan sebelum THR lebih kecil (Rp2.400.000 vs Rp2.900.000).
+> 3. Cari tambahan income ±Rp480.000–600.000/bulan untuk 4 bulan ke depan (lembur/jualan kecil/jasa) — ini kunci biar tidak kepaksa utang.
+> 4. Bicarakan baik-baik ke ibu kalau 4 bulan ke depan kiriman mungkin perlu ditunda/dikurangi sementara karena kondisi, sambil cari alternatif lain dulu.
+> 5. Catat tanggal THR cair pas, dan kasih tahu saya kalau ada rencana Lebaran — supaya alokasi THR (tutup kekurangan vs cadangan vs Lebaran) dihitung ulang dengan benar.
+>
+> ⚠️ Bukan nasihat keuangan/investasi. Angka adalah simulasi dari data & asumsi di atas. Untuk kasus yang lebih rumit, konsultasikan ke perencana keuangan bersertifikat.
+
+**Verifikasi (Python independen + `keuangan.py anggaran` dijalankan penguji dengan label pos seperti di balasan: jajan+sekolah anak = wajib, kirim ibu = sosial, arisan = tabungan; `--status anak --saldo 1jt --bulan-cair 5`):**
+
+| Angka | SEBELUM | SESUDAH | Hitungan penguji | Status |
+|---|---|---|---|---|
+| Total pos / defisit | Rp7.250.000 / Rp1.450.000 (arisan ikut) | Rp7.250.000; defisit **Rp1.150.000** (arisan DIJEDA), Rp1.450.000 hanya sebagai syarat "bila tetap dibayar" | 7.250.000; 1.450.000 / 1.150.000 | ✓ keduanya; SESUDAH satu angka utama konsisten di Ringkasan, tabel, judul bagian |
+| Rasio cicilan | – | 14,7% di bawah 30% | 850.000 ÷ 5.800.000 = 14,66% | ✓ |
+| Pemangkasan & sisa defisit | anggaran baru pas Rp5.800.000 (rokok/nongkrong/arisan Rp0, dapur −400rb, kiriman ibu −200rb) | −Rp550.000 (6 pos); sisa Rp600.000/bln | 550.000; 1.150.000 − 550.000 = 600.000; anggaran SEBELUM = 5.800.000 | ✓ |
+| Kekurangan bulan 1–4 / kumulatif | – | 940.000 / 760.000 / 600.000 / 600.000; Rp2.900.000 | 940.000; 1.700.000; 2.300.000; 2.900.000 | ✓ |
+| Saldo vs kekurangan pra-THR | – | saldo Rp1.000.000 TIDAK cukup, kurang Rp1.900.000; percepat → Rp2.400.000; tambah ±Rp480.000/bln × 4 | 1.900.000; 4 × 600.000 = 2.400.000; 1.900.000 ÷ 4 = 475.000 (script membulatkan ke 480.000) | ✓ |
+| Bila arisan tetap dibayar | – | Rp1.450.000/bln; pra-THR Rp4.100.000 (bukan Rp2.900.000) | 2.900.000 + 4 × 300.000 = 4.100.000 | ✓ |
+| Pemakaian THR | isi tabungan darurat 3–5 juta | Rp3.500.000 tutup bulan 1–5; sisa Rp2.300.000, Rp1.800.000 dicadangkan untuk bulan 6–8; dana darurat setelah defisit tertutup | 5.800.000 − 3.500.000 = 2.300.000; ⌊2.300.000 ÷ 600.000⌋ = 3 → 1.800.000 | ✓ |
+| Dana darurat | "minimal 3–5 juta (idealnya 1x biaya hidup)" | pokok Rp6.450.000; 9/12 bln Rp58.050.000 / Rp77.400.000; tanpa kiriman ibu Rp53.550.000 / Rp71.400.000 | sama persis | ✓ SESUDAH; SEBELUM target terlalu rendah untuk keluarga 2 anak (tanpa dasar) |
+
+**Cek fokus regresi:**
+- **"Jeda arisan" eksplisit:** ✓ SESUDAH — "TINDAKAN 1 — jeda arisan … bicarakan dengan pengelola arisan" + Langkah 1 "minta izin cuti/jeda sementara (jangan berhenti diam-diam)". (SEBELUM juga menyebut izin cuti ke pengurus arisan.)
+- **Satu angka defisit konsisten:** ✓ SESUDAH — Rp1.150.000 di Ringkasan, baris tabel, dan judul "Menutup Defisit"; Rp1.450.000 hanya muncul sebagai syarat bila arisan tetap dibayar.
+- **Lebaran sebelum THR ke dana darurat:** ✓ SESUDAH — Asumsi "Belum dihitung: kebutuhan Lebaran … sisihkan dulu" + Langkah 5 meminta rencana Lebaran agar alokasi THR dihitung ulang; dana darurat baru diisi setelah defisit tertutup. ✗ SEBELUM — THR langsung ke tabungan darurat tanpa menyinggung Lebaran.
+- **Setiap nominal cocok script:** ✓ tidak ada selisih.
+
+Catatan kecil: (a) tabel jadwal SESUDAH berhenti di bulan 4, sedangkan kalimat THR menyebut "menutup kekurangan bulan 1–5 (Rp3.500.000)" — angka benar (script mencetak baris bulan 5), hanya baris ke-5 tidak ikut ditampilkan. (b) Saat penguji menjalankan script **tanpa label pos**, script menebak "Jajan+Sekolah anak" sebagai *Keinginan* (dipangkas 50% → Rp300.000) dan "Kirim ibu" sebagai belum dikelompokkan (ikut dipangkas 50%); agent di uji ini memberi label yang benar sehingga hasil tepat, tetapi tebakan bawaan script berisiko memotong uang sekolah anak.
+
+**Skor:** SEBELUM **6,5/10** — angka benar dan anggaran langsung seimbang, jeda arisan & tambah penghasilan disebut; tetapi pemangkasan drastis sekaligus (rokok/nongkrong Rp0, kiriman ibu −40%) yang bertentangan dengan sarannya sendiri ("kurangi separuh dulu"), target dana darurat tanpa dasar (3–5 juta), THR tanpa pos Lebaran. SESUDAH **9/10** — semua nominal cocok script & Python, ketiga cek regresi terpenuhi, rencana transisi sampai THR jelas tanpa utang; dikurangi karena baris bulan 5 tidak ditampilkan di tabel. Skill terpakai (read + exec).
+
+### Ringkasan uji regresi v1.0.10
+
+- **Skor:** SEBELUM 6,5 → SESUDAH 9.
+- **Temuan RENDAH v1.0.9:** ✓ arisan tidak lagi berhenti diam-diam (TINDAKAN jeda arisan di bagian rencana & Langkah 1; angka "bila tetap dibayar" hanya sebagai syarat); ✓ kebutuhan Lebaran disinggung sebelum THR dialokasikan ke dana darurat.
+- **Kesalahan angka:** tidak ada (SESUDAH maupun SEBELUM).
+- **VERDIK: LULUS** (≥ 8, jelas di atas SEBELUM, tanpa kesalahan fakta/angka).
+
+**Cacat untuk pembuat (RENDAH):**
+1. Tebakan kelompok pos di script: "Jajan+Sekolah anak" → *Keinginan* (dipangkas 50%) karena kata "jajan"; "Kirim ibu" → belum dikelompokkan lalu ikut dipangkas 50%. Bukti: run penguji tanpa label → "Jajan+Sekolah anak Rp600.000 -> Rp300.000; Kirim ibu Rp500.000 -> Rp250.000". Saran: kata "sekolah/SPP/les" mengalahkan "jajan" (wajib), dan "kirim ibu/bapak/ortu/mertua" dikenali sebagai kiriman keluarga (tidak dipotong otomatis).
+2. Tabel jadwal di balasan berhenti di bulan ke-4 padahal THR menutup bulan 1–5. Saran: SKILL.md minta menyalin tabel jadwal script utuh (termasuk baris "THR cair bulan ini").
+
+**Cuplikan jualan:**
+- Tanpa skill: "THR cair → isi tabungan darurat 3–5 juta." Dengan skill: "Kekurangan sampai THR cair Rp2.900.000, tabungan Rp1 juta tidak cukup → kurang Rp1.900.000: percepat pemangkasan atau tambah ±Rp480.000/bulan, tanpa paylater. Arisan dijeda dulu — bicarakan dengan pengelola; kalau tetap dibayar kekurangannya jadi Rp4.100.000. Sebelum THR dibagi, sisihkan dulu kebutuhan Lebaran."
