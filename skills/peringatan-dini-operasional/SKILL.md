@@ -27,7 +27,7 @@ standar), bukan ditebak.
 - Ringkasan harian semua alat lokal Komunitech (kasir, stok, absensi) → `laporan-harian-usaha`.
 - Laporan keuangan/laba rugi → `laporan-keuangan-emkm`; proyeksi kas → `arus-kas-13minggu`.
 - Menyusun laporan kejadian yang **sudah** terjadi (kronologi, dampak, minta maaf) →
-  `laporan-insiden-usaha` (skill ini merujuk ke sana bila peringatan berujung kerugian/komplain).
+  `laporan-insiden-usaha` (skill ini merujuk ke sana hanya bila terpasang, dan bila peringatan berujung kerugian/komplain).
 - Ramalan penjualan bulanan/tahunan, perencanaan produksi, atau "pasti terjadi" → jelaskan jujur
   bahwa skill ini hanya peringatan statistik jangka pendek (≤ 7 hari).
 - Data pasien/diagnosis, data per karyawan yang menyebut nama untuk dinilai → hanya angka
@@ -110,7 +110,7 @@ Dari JSON, periksa sebelum melapor:
   sejak 26 Sep, bersamaan dengan catatan 'tepung merk baru' 28 Sep — cek ini lebih dulu"), tanpa
   menyatakannya sebagai penyebab pasti.
 - Tawarkan langkah lanjut: (a) isi 5 kenapa bersama tim untuk peringatan 🔴 teratas,
-  (b) bila sudah ada kerugian/komplain → `laporan-insiden-usaha`, (c) jadwal harian (Langkah 4).
+  (b) bila sudah ada kerugian/komplain → catat kronologi tertulis (bila skill `laporan-insiden-usaha` terpasang, tawarkan memakainya), (c) jadwal harian (Langkah 4).
 
 ### 4. (Opsional) Jadwal harian di OpenClaw
 Ikuti `references/jadwal-openclaw.md` — pola `openclaw automations add` di sana disalin dari
@@ -135,7 +135,7 @@ Ringkas: <n> 🔴 · <n> 🟠 · <n> 🟡 · <n> normal
 ❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
 <Metrik>: • 3 pertanyaan (bahan/mesin/orang/cara kerja/pengukuran)
 5 kenapa: Kenapa <metrik> naik? → karena … → …
-Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).
+Kalau sudah ada kerugian/komplain pelanggan: catat kronologi & dampaknya secara tertulis (bila skill laporan-insiden-usaha terpasang, pakai itu).
 
 ℹ️ Data: <hari kosong, baris dilewati, pencilan>
 Catatan: ini peringatan statistik (tanda untuk dicek), bukan kepastian masalah atau ramalan pasti.

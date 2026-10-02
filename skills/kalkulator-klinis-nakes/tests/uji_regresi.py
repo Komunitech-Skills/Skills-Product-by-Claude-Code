@@ -61,6 +61,16 @@ class TesPreeklampsia(unittest.TestCase):
         self.assertIn("rujukan terencana", h["arti"])
         self.assertIn("Rumah Sakit", h["arti"])
 
+    def test_belum_ditanyakan_memuat_hipertensi_kronik(self):
+        h = k.skrining_preeklampsia(["nullipara"])
+        t = " ".join(h["catatan"])
+        self.assertIn("Belum ditanyakan", t)
+        for x in ("hipertensi kronik", "diabetes", "penyakit ginjal", "autoimun/APS"):
+            self.assertIn(x, t)
+        h2 = k.skrining_preeklampsia(["hipertensi-kronik", "diabetes"])
+        t2 = " ".join(h2["catatan"])
+        self.assertNotIn("hipertensi kronik,", t2.split("Belum ditanyakan")[-1])
+
     def test_dua_sedang(self):
         h = k.skrining_preeklampsia(["nullipara", "riwayat-keluarga"])
         self.assertTrue(h["kategori"].startswith("BERISIKO PREEKLAMPSIA - perlu rujukan terencana"))

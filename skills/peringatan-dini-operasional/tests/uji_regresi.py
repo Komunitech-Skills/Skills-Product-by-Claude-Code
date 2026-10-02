@@ -535,7 +535,7 @@ class BerkasDanLaporan(unittest.TestCase):
         self.assertEqual(bulat(st["rata_pakai"]), D("52.2857"))
         self.assertEqual(st["sisa_hari"], D("3.2"))
         teks = h["laporan_teks"]
-        for frasa in ("🔴 Reject (pcs): 63", "laporan-insiden-usaha", "bukan kepastian"):
+        for frasa in ("🔴 Reject (pcs): 63", "bila skill laporan-insiden-usaha terpasang", "bukan kepastian"):
             self.assertIn(frasa, teks)
         # v1.0.1 (temuan penguji #3): catatan teks tidak dikutip kecuali --sertakan-catatan
         self.assertNotIn("oven 2 suhu tidak stabil", teks)

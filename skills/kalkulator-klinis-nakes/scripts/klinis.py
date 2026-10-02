@@ -495,6 +495,13 @@ def skrining_preeklampsia(faktor, sistolik=None, diastolik=None, usia_ibu=None, 
         catatan.append(f"'{FAKTOR[k][0]}' tidak tercantum di {nama} (tidak dihitung)" +
                        (f"; di {NAMA_PEDOMAN[lain]} = faktor {kat_lain} - pertimbangkan klinis."
                         if kat_lain else "."))
+    belum = [nm for nm, ks in (("hipertensi kronik", ("hipertensi-kronik",)),
+                               ("diabetes", ("diabetes-pregestasional", "diabetes-gestasional", "diabetes")),
+                               ("penyakit ginjal", ("penyakit-ginjal",)),
+                               ("autoimun/APS", ("autoimun", "antifosfolipid")))
+             if not any(x in kode for x in ks)]
+    if belum:
+        catatan.append("Belum ditanyakan (anggap tidak ada, konfirmasi ke pasien): " + ", ".join(belum) + ".")
     if pedoman == "kia":
         catatan.append("Buku KIA: skrining dilakukan pada usia kehamilan < 20 minggu.")
     catatan.append("Keputusan terapi/obat pencegahan (termasuk dosis) BUKAN bagian alat ini - "

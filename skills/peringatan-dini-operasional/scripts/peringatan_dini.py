@@ -950,7 +950,7 @@ def evaluasi_stok(ks, kp, tgl_lap, lead):
 PERTANYAAN = [
     (("reject", "cacat", "rusak", "gagal", "susut", "waste", "buang", "terbuang"), [
         "Material: ada bahan baku batch/pemasok baru, atau bahan disimpan terlalu lama?",
-        "Mesin: suhu/setting mesin (oven, mixer, sealer) berubah, baru diservis, atau sempat rusak?",
+        "Mesin/peralatan: setting, kalibrasi, atau kondisi alat produksi berubah, baru diservis, atau sempat rusak?",
         "Manusia & metode: operator baru/ganti shift? resep, SOP, atau ukuran batch berubah?"]),
     (("keluhan", "komplain", "complain", "retur", "refund"), [
         "Keluhannya soal apa? Kelompokkan: rasa/kualitas, kemasan, telat, pelayanan.",
@@ -1216,7 +1216,7 @@ def susun_laporan(h, peringatan, normal, nama_usaha):
         if m0.get("jenis") != "stok":
             kata = "naik" if m0["arah"] == "naik" else ("turun" if m0["arah"] == "turun" else "berubah")
         L.append(f"5 kenapa: Kenapa {m0['label']} {kata}? → karena … → kenapa itu terjadi? → … (ulang sampai ketemu hal yang bisa diperbaiki).")
-        L.append("Kalau sudah ada kerugian/komplain pelanggan: susun laporan insiden (skill laporan-insiden-usaha).")
+        L.append("Kalau sudah ada kerugian/komplain pelanggan: catat kronologi & dampaknya secara tertulis (bila skill laporan-insiden-usaha terpasang, pakai itu).")
     L.append("")
     info = []
     if kd["hari_kosong"]:

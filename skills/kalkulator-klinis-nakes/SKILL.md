@@ -87,7 +87,7 @@ Script `map` dan `preeklampsia` selalu memeriksa ini dulu:
 1. Langkah 0 (peran). 2. Kenali kalkulator yang diminta (bisa lebih dari satu).
 3. Petakan bahasa bebas ke kode faktor & gejala (`python3 scripts/klinis.py
    faktor-preeklampsia`, atau `references/preeklampsia.md`). Faktor yang **tidak disebut** →
-   anggap tidak ada, tapi tulis "belum ditanyakan" untuk faktor penting yang tidak dibahas.
+   anggap tidak ada, tapi tulis "belum ditanyakan" untuk faktor penting yang tidak dibahas (minimal: hipertensi kronik, diabetes, penyakit ginjal, autoimun/APS; script mencantumkannya di catatan).
 4. **Jalankan script** (Windows: `python` atau `py`):
    ```
    python3 scripts/klinis.py preeklampsia --faktor nullipara,riwayat-keluarga --sistolik 118 --diastolik 82 --usia-ibu 36 [--gejala pandangan-kabur]
@@ -144,7 +144,7 @@ Hasil:
 - Kategori (Buku KIA cetakan 2025): BERISIKO PREEKLAMPSIA — perlu rujukan terencana
   (≥ 2 faktor risiko sedang) — 5 faktor sedang: nullipara, usia ≥ 35, riwayat preeklampsia pada ibu, obesitas pra-hamil (IMT > 30),
   MAP ≥ 90. Faktor tinggi: tidak ada.
-- Belum ditanyakan: diabetes, penyakit ginjal, autoimun/APS, proteinuria.
+- Belum ditanyakan: hipertensi kronik, diabetes, penyakit ginjal, autoimun/APS, proteinuria.
 Arti untuk tindak lanjut:
 - Memenuhi kriteria ibu berisiko preeklampsia menurut Buku KIA: pemeriksaan kehamilan,
   persalinan, dan nifas di Rumah Sakit; rujukan terencana (tidak perlu menunggu inpartu).
