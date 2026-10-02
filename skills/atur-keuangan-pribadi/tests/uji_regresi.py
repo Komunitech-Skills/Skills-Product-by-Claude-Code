@@ -1194,5 +1194,149 @@ class TesRevisi109(unittest.TestCase):
         self.assertNotIn("sisanya disetor sekaligus ke dana darurat", teks)
 
 
+class TesRevisi1010(unittest.TestCase):
+    """v1.0.10 (uji ulang OpenClaw v1.0.9, temuan RENDAH): (1) pos tabungan/arisan yang di-nol-kan saat defisit
+    dicetak sebagai TINDAKAN eksplisit + kekurangan bila arisan tetap dibayar, satu angka defisit berlabel basis;
+    (2) perbandingan lama tercapai sekarang vs skenario per kolom; --sisih-lebaran sebelum THR ke dana darurat.
+    Pembanding dihitung terpisah (Fraction/integer), bukan memanggil fungsi script."""
+
+    S2_POS = ["Kontrakan=1,5jt", "Cicilan motor=780rb", "Cicilan HP=450rb", "Belanja dapur=2,1jt",
+              "Listrik+air+gas=400rb", "Bensin=350rb", "Sekolah + uang saku anak=600rb", "Pulsa & wifi=250rb",
+              "Kirim mertua=300rb", "Arisan RT=200rb", "Rokok=400rb", "Nongkrong & jajan=250rb"]
+    S2_ARG = ["anggaran", "--pemasukan", "Gaji=6,2jt", "--musiman", "THR=6,2jt", "--status", "anak", "--saldo",
+              "1,5jt", "--bulan-cair", "6"] + TesRevisi108.pos_arg(S2_POS)
+
+    @staticmethod
+    def f_s2(arisan_dibayar):
+        """Defisit, sisa setelah pangkas, kekurangan sebelum THR (bulan 1-5), kekurangan s.d. THR cair (1-6)."""
+        gaji = 6200000
+        non_tab = 1500000 + 780000 + 450000 + 2100000 + 400000 + 350000 + 600000 + 250000 + 300000 + 400000 + 250000
+        if arisan_dibayar:
+            non_tab += 200000
+        defisit = non_tab - gaji
+        potong = {"Rokok": 400000 // 2 // 10000 * 10000, "Nongkrong": 250000 // 2 // 10000 * 10000}
+        perlu = defisit - sum(potong.values())
+        assert perlu > 0
+        flek = {"Dapur": 2100000, "Listrik": 400000, "Bensin": 350000, "Pulsa": 250000}
+        caps = {nm: n // 10 // 10000 * 10000 for nm, n in flek.items()}
+        assert sum(caps.values()) <= perlu
+        potong.update(caps)
+        total = sum(potong.values())
+
+        def ptg(m):
+            return total if m >= 3 else sum(min(p, math.ceil(F(p * m, 3) / 10000) * 10000) for p in potong.values())
+        rows = {m: max(defisit - ptg(m), 0) for m in range(1, 7)}
+        return defisit, defisit - total, sum(rows[m] for m in range(1, 6)), sum(rows.values())
+
+    def test_arisan_dijeda_eksplisit_satu_angka_defisit(self):
+        d0, s0, pra0, cair0 = self.f_s2(False)
+        d1, s1, pra1, _ = self.f_s2(True)
+        self.assertEqual((d0, s0, pra0), (1180000, 560000, 3390000))
+        self.assertEqual((d1, s1, pra1), (1380000, 760000, 4390000))
+        r = jalankan(*self.S2_ARG)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        ring = TesRevisi109.ringkasan(r.stdout)
+        self.assertIn("> TINDAKAN: jeda Arisan RT Rp200.000/bulan selama defisit - bicarakan dengan pengelola arisan",
+                      ring)
+        self.assertIn("> Bila Arisan RT tetap dibayar, kekurangan jadi {}/bulan (bukan {}); setelah pemangkasan penuh "
+                      "masih kurang {}/bulan, dan kekurangan sebelum THR cair menjadi {} (bukan {}).".format(
+                          *(k.rp(Decimal(x)) for x in (d1, d0, s1, pra1, pra0))), ring)
+        self.assertIn("DEFISIT {}/bulan dari gaji (basis: pos tabungan Rp200.000 DIJEDA".format(k.rp(Decimal(d0))),
+                      ring)
+        # satu angka defisit: 1.380.000 hanya muncul di kalimat 'bila tetap dibayar'
+        for baris in r.stdout.splitlines():
+            if k.rp(Decimal(d1)) in baris:
+                self.assertIn("tetap dibayar", baris)
+        self.assertIn("| **DEFISIT dari gaji rutin** (pos tabungan Rp200.000 dijeda) | | **-Rp1.180.000** |", r.stdout)
+        self.assertIn("| **Sisa dari pemasukan rutin** | **-Rp1.180.000** |", r.stdout)
+        gamb = d0 - 6200000 // 12                                        # 663.334
+        self.assertIn("tampak tinggal {}/bulan".format(k.rp(Decimal(gamb))), r.stdout)
+        self.assertIn("THR Rp6.200.000 saat cair: {} menutup".format(k.rp(Decimal(cair0))), ring)
+        self.assertIn("TINDAKAN: defisit rutin Rp1.180.000/bulan ditutup dengan memangkas bertahap", ring)
+
+    def test_tabungan_non_arisan_dihentikan_eksplisit(self):
+        pos = [p if p != "Arisan RT=200rb" else "Dana darurat=200rb" for p in self.S2_POS]
+        r = jalankan(*(self.S2_ARG[:11] + TesRevisi108.pos_arg(pos)))
+        ring = TesRevisi109.ringkasan(r.stdout)
+        self.assertIn("> TINDAKAN: hentikan sementara setoran Dana darurat Rp200.000/bulan sampai defisit tertutup.",
+                      ring)
+        self.assertNotIn("tetap dibayar", r.stdout)
+        self.assertNotIn("Rp1.380.000", r.stdout)
+
+    @staticmethod
+    def f_lama(kurang, setoran, thr, cair):
+        biasa = math.ceil(F(kurang, setoran))
+        m, kum = 0, 0
+        while kum < kurang:
+            m += 1
+            kum += setoran + (thr if m >= cair and (m - cair) % 12 == 0 else 0)
+        return biasa, m
+
+    def test_banding_lama_tercapai_skenario_s1(self):
+        r = jalankan(*TesRevisi109.S1_ARG)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        for b in (9, 12):
+            l0, p0 = self.f_lama(10850000 * b - 8000000, 830000, 12500000, 12)
+            l1, p1 = self.f_lama(9850000 * b - 8000000, 830000, 12500000, 12)
+            sel = lambda a, c: "tidak berubah" if a == c else "{} bulan lebih cepat".format(a - c)  # noqa: E731
+            self.assertIn("| Tanpa Kiriman ortu | {} bulan | {} bulan -> {} bulan | {} | {} bulan -> {} bulan | {} |"
+                          .format(b, l0, l1, sel(l0, l1), p0, p1, sel(p0, p1)), r.stdout)
+        # kasus temuan: target 9 bulan dengan THR TIDAK maju (48 -> 48)
+        self.assertEqual(self.f_lama(97650000 - 8000000, 830000, 12500000, 12)[1],
+                         self.f_lama(88650000 - 8000000, 830000, 12500000, 12)[1])
+        self.assertIn("dengan THR/bonus 48 bulan -> 48 bulan (tidak berubah)", r.stdout)
+        self.assertIn("Jangan meringkas menjadi", r.stdout)
+
+    def test_sisih_lebaran_anggaran(self):
+        r = jalankan(*TesRevisi109.S1_ARG)
+        ring = TesRevisi109.ringkasan(r.stdout)
+        self.assertIn("PENGINGAT: --sisih-lebaran belum diisi", ring)
+        self.assertIn("belum dikurangi kebutuhan Lebaran", ring)
+        r = jalankan(*(TesRevisi109.S1_ARG + ["--sisih-lebaran", "3jt"]))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        ring = TesRevisi109.ringkasan(r.stdout)
+        self.assertNotIn("PENGINGAT: --sisih-lebaran", ring)
+        self.assertIn("sisihkan Rp3.000.000 untuk kebutuhan Lebaran (mudik, baju, kue, angpau), sisanya Rp9.500.000 "
+                      "disetor SEKALIGUS", ring)
+        _, p9 = self.f_lama(97650000 - 8000000, 830000, 9500000, 12)
+        _, p12 = self.f_lama(130200000 - 8000000, 830000, 9500000, 12)
+        self.assertIn("atau {} bulan (~{} th {} bln) bila sisa THR suami + THR istri Rp9.500.000".format(
+            p9, p9 // 12, p9 % 12), ring)
+        self.assertIn("atau {} bulan (~{} th {} bln) bila sisa".format(p12, p12 // 12, p12 % 12), ring)
+        r = jalankan(*(TesRevisi109.S1_ARG + ["--sisih-lebaran", "13jt"]))
+        self.assertEqual(r.returncode, 2)
+        r = jalankan("anggaran", "--pemasukan", "Gaji=5jt", "--pos", "Kos=2jt", "--sisih-lebaran", "1jt")
+        self.assertEqual(r.returncode, 2)
+
+    def test_sisih_lebaran_saat_defisit(self):
+        _, s0, _, cair0 = self.f_s2(False)
+        sisih = 1000000
+        bebas = 6200000 - cair0 - sisih
+        bln = min(bebas // s0, 6 + 12 - 6 - 1)
+        r = jalankan(*(self.S2_ARG + ["--sisih-lebaran", "1jt"]))
+        self.assertIn("{} menutup kekurangan bulan ke-1 s.d. ke-6; lalu Rp1.000.000 disisihkan untuk kebutuhan "
+                      "Lebaran; dari sisanya {}, sebesar {} DICADANGKAN".format(
+                          k.rp(Decimal(cair0)), k.rp(Decimal(bebas)), k.rp(Decimal(bln * s0))), r.stdout)
+        self.assertIn("selama {} bulan (bulan ke-7 s.d. ke-{})".format(bln, 6 + bln), r.stdout)
+
+    def test_sisih_lebaran_dana_darurat(self):
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "10,85jt", "--status", "anak", "--saldo", "8jt",
+                     "--setoran", "830rb", "--setoran-tahunan", "12,5jt", "--sisih-lebaran", "2,5jt")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        _, p9 = self.f_lama(97650000 - 8000000, 830000, 10000000, 12)
+        self.assertIn("Rp10.000.000 sekali setahun (Rp12.500.000 dikurangi kebutuhan Lebaran Rp2.500.000)", r.stdout)
+        self.assertIn("| {} bulan (~{} th {} bln) |".format(p9, p9 // 12, p9 % 12), r.stdout)
+        self.assertNotIn("PENGINGAT", r.stdout)
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "10,85jt", "--status", "anak", "--setoran-tahunan", "5jt")
+        self.assertIn("PENGINGAT: --sisih-lebaran belum diisi", r.stdout)
+        r = jalankan("dana-darurat", "--pengeluaran-pokok", "5jt", "--status", "lajang", "--sisih-lebaran", "1jt")
+        self.assertEqual(r.returncode, 2)
+
+    def test_skill_md_v1010(self):
+        teks = (FOLDER / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("--sisih-lebaran", teks)
+        self.assertIn("TINDAKAN", teks)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
