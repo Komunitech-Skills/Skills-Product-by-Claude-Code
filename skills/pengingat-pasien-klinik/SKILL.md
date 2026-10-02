@@ -15,6 +15,10 @@ siapa yang harus diingatkan (H-3, H-1, hari ini, terlambat) beserta **draf pesan
 disalin**. **Staf yang menyalin dan mengirim sendiri.** Tidak ada pengiriman otomatis, tidak ada
 broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 
+**Versi 1.0.7** (2026-10-02): aturan teks grup staf (nama panggilan, tanpa nomor/keterangan
+medis), izin pengingat ≠ izin promo, dan wajib memberi tahu bila keterangan medis tidak
+disimpan. Script tidak berubah.
+
 **Versi 1.0.6** (revisi rendah, 2026-10-01): opsi umum `--json`, `--file`, `--hari-ini`, `--tz`
 kini diterima sebelum **atau** sesudah nama perintah (sebelumnya `<perintah> --json` gagal kode 2);
 lokasi script ditulis eksplisit. Uji regresi 38/38.
@@ -62,6 +66,24 @@ lokasi script ditulis eksplisit. Uji regresi 38/38.
   permanen. Jalankan segera bila pasien meminta datanya dihapus.
 - Ringkasan untuk pemilik (`ringkasan`) **tidak pernah** memuat nomor WA; pakai `--samarkan`
   agar nama tampil inisial (mis. "Bu S.") untuk laporan yang dikirim lewat jadwal OpenClaw.
+- **Keterangan medis yang sengaja tidak disimpan — WAJIB diberitahukan.** Bila pengguna
+  menyelipkan diagnosis/riwayat penyakit (mis. "pasien diabetes", "darah tinggi", "habis
+  operasi X"), simpan jenis kunjungan yang netral saja dan **katakan terus terang** di
+  konfirmasi: "Keterangan penyakit yang Anda sebut sengaja **tidak** saya simpan (hanya jenis
+  kunjungan umum, demi kerahasiaan pasien & UU PDP)." Jangan membuangnya diam-diam dan jangan
+  mengulang nama penyakitnya di balasan.
+- **Teks untuk grup staf/kanal bersama** (grup WA/Telegram tim, papan tugas, laporan yang
+  dibaca banyak orang): **nama panggilan saja** (atau inisial), **tanpa nomor WA**, **tanpa
+  keterangan medis**. Jenis kunjungan yang menyiratkan penyakit (mis. "kontrol gula darah",
+  "kontrol tensi", "kontrol jantung") ditulis umum menjadi "kontrol"; atau cukup jumlah per
+  kelompok (TERLAMBAT/HARI INI/BESOK). Nomor WA + draf pesan hanya untuk staf yang mengirim,
+  di chat pribadi dengan agent — bukan di grup.
+- **Izin pengingat ≠ izin promo.** Persetujuan `ya` hanya berarti pasien setuju **diingatkan
+  jadwal kunjungannya**. Daftar ini **tidak boleh** dipakai untuk promosi, penawaran, diskon,
+  ucapan berisi promo, survei pemasaran, atau broadcast — juga tidak "dikirim staf satu per
+  satu". Promo butuh persetujuan terpisah dari pasien; untuk faskes, promosi diskon/imbalan
+  rujukan memang dilarang (lihat `edukasi-pasien-klinik`). Diminta memakai daftar untuk promo →
+  tolak dengan alasan ini dan jangan menawarkan daftar pasien sebagai gantinya.
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
@@ -191,6 +213,9 @@ Contoh sesi lengkap: `examples/`.
 - [ ] `jenis` dan `catatan` tidak memuat diagnosis, nama penyakit, atau saran medis.
 - [ ] Tidak ada nomor HP/email/NIK pihak lain yang masuk ke kolom nama/catatan.
 - [ ] Ringkasan untuk pemilik tidak memuat nomor WA.
+- [ ] Teks untuk grup staf: nama panggilan/inisial saja, tanpa nomor WA & keterangan medis.
+- [ ] Keterangan penyakit yang tidak disimpan sudah diberitahukan ke pengguna (tidak dibuang diam-diam).
+- [ ] Daftar pasien tidak dipakai/ditawarkan untuk promo (izin pengingat ≠ izin promo).
 - [ ] Permintaan hapus data dijalankan segera setelah dikonfirmasi.
 - [ ] Tanggal & pengelompokan (terlambat/H-1/H-3) berasal dari script, bukan dihitung manual.
 
