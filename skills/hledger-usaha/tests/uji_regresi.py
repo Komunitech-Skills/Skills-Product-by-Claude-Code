@@ -431,7 +431,7 @@ class UjiHledgerAsli(Dasar):
     MESIN = "hledger"
 
     def hl(self, *arg):
-        r = subprocess.run([HLEDGER, "-n", "-f", self.j] + list(arg), capture_output=True, text=True,
+        r = subprocess.run([HLEDGER] + hu.opsi_awal_hledger(HLEDGER) + ["-f", self.j] + list(arg), capture_output=True, text=True,
                            encoding="utf-8")
         self.assertEqual(r.returncode, 0, r.stderr)
         return r.stdout
@@ -810,6 +810,115 @@ class UjiSingkatanFlag(unittest.TestCase):
             self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
             self.assertIn("unrecognized arguments", p.stdout + p.stderr)
             self.assertFalse(os.path.exists(os.path.join(t, "aturan-bank.rules")), "singkatan flag tidak boleh menulis apa pun")
+
+
+class UjiV105(Dasar):
+    """Temuan uji OpenClaw 2026-10-02: hledger lama (1.30: 'Unknown flag: -n'), file jurnal di folder kerja tidak
+    ditemukan, saran akun keliru untuk potongan 'PPh 23' atas penjualan barang."""
+
+    def hledger_palsu(self, versi, tolak_n=False, wajib_n=False, tolak_print=False):
+        palsu = os.path.join(self.tmp, "hledger-palsu-{}.py".format(versi))
+        asli = HLEDGER or "hledger-tidak-ada"
+        with open(palsu, "w") as f:
+            f.write("#!{py}\nimport os, sys\na = sys.argv[1:]\n"
+                    "if a == ['--version']:\n    print('hledger {v}, linux-x86_64'); sys.exit(0)\n"
+                    "if {tn} and '-n' in a:\n    sys.stderr.write('hledger: Error: Unknown flag: -n (use -h to see usage)\\n'); sys.exit(1)\n"
+                    "if {wn} and a[:1] != ['-n']:\n    sys.stderr.write('opsi -n wajib untuk uji\\n'); sys.exit(1)\n"
+                    "if {tp} and 'print' in a:\n    sys.stderr.write('hledger: Error: Unknown command: print\\n'); sys.exit(1)\n"
+                    "a = [x for x in a if x != '-n']\nos.execv({h!r}, [{h!r}] + a)\n".format(
+                        py=sys.executable, v=versi, tn=tolak_n, wn=wajib_n, tp=tolak_print, h=asli))
+        os.chmod(palsu, os.stat(palsu).st_mode | stat.S_IEXEC)
+        return palsu
+
+    def test_opsi_n_hanya_untuk_hledger_baru(self):
+        hu._INFO_HLEDGER.clear()
+        self.assertEqual(hu.opsi_awal_hledger(self.hledger_palsu("1.30.1", tolak_n=True)), [])
+        self.assertEqual(hu.opsi_awal_hledger(self.hledger_palsu("1.45.2", wajib_n=True)), ["-n"])
+        self.assertEqual(hu.opsi_awal_hledger(self.hledger_palsu("1.40", wajib_n=True)), ["-n"])
+
+    @unittest.skipUnless(HLEDGER, "butuh hledger asli di balik pembungkus palsu")
+    def test_hledger_lama_dan_baru_jalan(self):
+        self.buku_juli()
+        for palsu in (self.hledger_palsu("1.30.1", tolak_n=True), self.hledger_palsu("1.45.2", wajib_n=True)):
+            k, o, e = jalan("laba-rugi", "--jurnal", self.j, "--bulan", "2026-07", mesin="auto", hledger=palsu)
+            self.assertEqual(k, 0, o + e)
+            self.assertIn("LABA BERSIH: Rp 1.600.000", o)
+            self.assertIn("Dihitung dengan: hledger", o)
+            k, o, e = jalan("cek", "--jurnal", self.j, mesin="auto", hledger=palsu)
+            self.assertEqual(k, 0, o + e)
+            self.assertNotIn("Unknown flag", o + e)
+
+    def test_hledger_tidak_cocok_turun_ke_bawaan(self):
+        self.buku_juli()
+        palsu = self.hledger_palsu("1.10", tolak_print=True)
+        k, o, e = jalan("laba-rugi", "--jurnal", self.j, "--bulan", "2026-07", mesin="auto", hledger=palsu)
+        self.assertEqual(k, 0, o + e)
+        self.assertIn("LABA BERSIH: Rp 1.600.000", o)
+        self.assertIn("tidak cocok dengan skill ini", o)
+        self.assertIn("pembaca bawaan", o)
+        # menulis tetap bisa (verifikasi tulis memakai pembaca bawaan, bukan hledger yang tidak cocok)
+        k, o, e = jalan("catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "100rb", "--via", "kas",
+                        "--tanggal", "2026-08-01", "--ya", mesin="auto", hledger=palsu)
+        self.assertEqual(k, 0, o + e)
+        k, o, e = jalan("cek", "--jurnal", self.j, mesin="auto", hledger=palsu)
+        self.assertEqual(k, 0, o + e)
+        self.assertIn("TIDAK COCOK", o)
+        self.assertIn("Pemeriksaan bawaan", o)
+        # --mesin hledger eksplisit: tidak diam-diam turun, pesan jelas (kode 5)
+        k, o, e = jalan("laba-rugi", "--jurnal", self.j, "--bulan", "2026-07", mesin="hledger", hledger=palsu)
+        self.assertEqual(k, hu.K_HLEDGER, o + e)
+        self.assertIn("--mesin bawaan", e)
+
+    def test_cari_jurnal_di_folder_kerja_saja(self):
+        kerja = os.path.join(self.tmp, "workspace")
+        os.makedirs(os.path.join(kerja, "arsip"))
+        self.run_("init", "--jurnal", os.path.join(kerja, "usaha.journal"), "--nama", "Kedai Uji", "--bank", "BCA")
+        env = dict(os.environ, HOME=os.path.join(self.tmp, "rumah"))
+        env.pop("LEDGER_FILE", None)
+        r = subprocess.run([sys.executable, SKRIP, "cek", "--mesin", "bawaan"], capture_output=True, text=True,
+                           encoding="utf-8", cwd=kerja, env=env)
+        self.assertEqual(r.returncode, hu.K_FILE, r.stdout + r.stderr)
+        self.assertIn('--jurnal "usaha.journal"', r.stdout)
+        self.assertIn("jangan membuat buku baru", r.stdout)
+        r = subprocess.run([sys.executable, SKRIP, "laba-rugi", "--mesin", "bawaan"], capture_output=True, text=True,
+                           encoding="utf-8", cwd=kerja, env=env)
+        self.assertEqual(r.returncode, hu.K_FILE)
+        self.assertIn('--jurnal "usaha.journal"', r.stderr)
+        # folder kerja tanpa jurnal: tidak menebak, minta tanya pengguna
+        kosong = os.path.join(self.tmp, "kosong")
+        os.makedirs(kosong)
+        r = subprocess.run([sys.executable, SKRIP, "cek", "--mesin", "bawaan"], capture_output=True, text=True,
+                           encoding="utf-8", cwd=kosong, env=env)
+        self.assertIn("Tanyakan pengguna", r.stdout)
+        self.assertIn("JANGAN langsung", r.stdout)
+
+    def test_potongan_atas_barang_tetap_piutang(self):
+        self.run_("init", "--jurnal", self.j, "--nama", "Kedai Uji", "--bank", "BCA")
+        self.run_("catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "2jt", "--via", "tempo", "--pihak",
+                  "Kantor Maju Jaya", "--tanggal", "2026-09-10", "--ya")
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "2jt", "--diterima",
+                            "1.960.000", "--via", "bank", "--pihak", "Kantor Maju Jaya", "--tanggal", "2026-10-01")
+        self.assertEqual(k, 2, o + e)
+        self.assertNotIn("Administrasi Bank", e)
+        self.assertIn("--nominal 1.960.000", e)
+        self.assertIn("TETAP piutang", e)
+        self.assertIn("potongan belum dikonfirmasi", e)
+        self.assertIn("bukti potong", e)
+        self.assertIn("PERLU REVIEW", e)
+        # perintah yang disarankan benar-benar jalan dan menyisakan piutang 40.000
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "terima-piutang", "--nominal", "1.960.000", "--via",
+                            "bank", "--pihak", "Kantor Maju Jaya", "--tanggal", "2026-10-01", "--ket",
+                            "Pelunasan sebagian - selisih Rp 40.000 potongan belum dikonfirmasi", "--ya")
+        self.assertEqual(k, 0, e)
+        s = hu.saldo_per(hu.parse_jurnal(isi(self.j).decode()))
+        self.assertEqual(s["Aset:Piutang Usaha:Kantor Maju Jaya"], Decimal(40000))
+        self.assertNotIn("Aset:Pajak Dibayar Dimuka:PPh 23", s)
+        # jual langsung dengan --pph23: diarahkan ke tempo + piutang, bukan beban
+        k, o, e = self.run_("catat", "--jurnal", self.j, "--jenis", "jual", "--nominal", "1jt", "--via", "bank",
+                            "--pph23", "2%")
+        self.assertEqual(k, 2)
+        self.assertIn("PIUTANG", e)
+        self.assertNotIn("Administrasi Bank", e)
 
 
 if __name__ == "__main__":
