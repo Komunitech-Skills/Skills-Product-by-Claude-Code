@@ -15,6 +15,8 @@ siapa yang harus diingatkan (H-3, H-1, hari ini, terlambat) beserta **draf pesan
 disalin**. **Staf yang menyalin dan mengirim sendiri.** Tidak ada pengiriman otomatis, tidak ada
 broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 
+**Versi 1.0.8** (2026-10-02): rujukan skill untuk laporan mingguan/rekap kunjungan dipertegas.
+
 **Versi 1.0.7** (2026-10-02): aturan teks grup staf (nama panggilan, tanpa nomor/keterangan
 medis), izin pengingat ≠ izin promo, dan wajib memberi tahu bila keterangan medis tidak
 disimpan. Script tidak berubah.
@@ -42,8 +44,13 @@ lokasi script ditulis eksplisit. Uji regresi 38/38.
   diagnosis pasien — yang tetap ditolak adalah kalimat bernada hasil pemeriksaan, mis. "riwayat
   campak", "positif rabies", "didiagnosis difteri". Kalau ditolak dan bukan diagnosis, tulis jenis
   kunjungan netral, mis. "kontrol lanjutan".
-- Leaflet edukasi pasien, FAQ klinik, balasan chat umum, atau rekap kunjungan agregat →
-  `edukasi-pasien-klinik`.
+- Leaflet edukasi pasien, FAQ klinik, atau balasan chat umum → `edukasi-pasien-klinik`.
+- **Laporan mingguan/operasional klinik** (angka kunjungan, tidak datang, jam ramai, pendapatan
+  yang diketik pengguna) untuk pemilik/grup staf → `laporan-status-kantor` (format 3P). Rekap
+  angka dari **file CSV kunjungan** sistem pendaftaran → bagian rekap kunjungan
+  `edukasi-pasien-klinik` (`scripts/rekap_kunjungan.py`). Skill ini (pengingat) hanya membuat
+  ringkasan pengingat harian, bukan laporan kunjungan/pendapatan. Sebut nama skill rujukan persis
+  seperti ini.
 - **Kirim pesan otomatis/broadcast ke pasien** → **tolak**. Keputusan pemilik: OpenClaw memakai
   WhatsApp Web (tidak resmi); pesan otomatis ke pasien berisiko nomor diblokir **dan** melanggar
   prinsip "manusia yang mengirim" untuk data kesehatan. Skill ini hanya menyiapkan draf.

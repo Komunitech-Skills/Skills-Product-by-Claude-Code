@@ -187,9 +187,11 @@ tautan & tanggal), **bukan** klaim menyembuhkan/testimoni/before-after (dilarang
 ### d. Laporan operasional klinik (agregat, tanpa identitas pasien)
 Ketik: *"Kirimi saya laporan operasional klinik tiap [harian/mingguan] jam [...] — jumlah
 kunjungan, jam ramai, pendapatan, tanpa nama pasien."* Sumber data: file CSV kunjungan dari
-sistem pendaftaran/kasir klinik, ditaruh di folder yang ditunjuk. Format laporan format 3P
-(Progres-Rencana-Kendala) dari `laporan-status-kantor`, atau ringkasan angka murni dari
-`edukasi-pasien-klinik` (jumlah kunjungan per hari/poli/penjamin, tidak datang, jam ramai).
+sistem pendaftaran/kasir klinik, ditaruh di folder yang ditunjuk. Pembagian skill (sebut persis):
+laporan mingguan format 3P (Progres-Rencana-Kendala), termasuk angka yang Anda ketik sendiri →
+`laporan-status-kantor`; rekap angka murni dari **file CSV kunjungan** (per hari/poli/penjamin,
+tidak datang, jam ramai) → bagian rekap kunjungan `edukasi-pasien-klinik`
+(`scripts/rekap_kunjungan.py`). `pengingat-pasien-klinik` **tidak** membuat laporan kunjungan.
 - **Cara cek berhasil:** laporan hanya berisi angka agregat — **tidak ada** satu pun nama/NIK/
   diagnosis pasien. Uji sekali (`automations run <id> --wait`) sebelum jadwal aktif.
 - **Kalau gagal:** kalau CSV berisi kolom yang mencurigakan (mis. nama pasien tertulis di kolom
