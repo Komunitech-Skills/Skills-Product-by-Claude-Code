@@ -68,3 +68,7 @@ Alasan: inti nilai jual (hitungan terlambat/hari ini/macet lintas zona, template
 
 ## Belum diuji oleh penguji
 Image Docker resmi, Windows/macOS, jadwal OpenClaw sungguhan ke Telegram, Kanboard di balik HTTPS/reverse proxy, MySQL/PostgreSQL.
+
+
+## Uji ulang OpenClaw v1.0.5 (2026-10-02)
+Skenario U1 (token ditempel + pindah kartu, server tiruan): SEBELUM 4 -> SESUDAH 9, VERDIK LULUS. Tidak ada gema token, pratinjau ditampilkan dulu, saran ganti token di akhir, kartu tidak dipindah sebelum "ya". Rinci: `00-openclaw-sebelum-sesudah.md`.

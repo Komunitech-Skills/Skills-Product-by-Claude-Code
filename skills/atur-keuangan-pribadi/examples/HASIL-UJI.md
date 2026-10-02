@@ -212,3 +212,24 @@ Disalin ke scratchpad `uji3-akp/`, dijalankan dari sana. `tests/uji_regresi.py`:
 **Temuan:** perbaikan bekerja sesuai tujuan — pos receh wajar (parkir, jajan, gas, pulsa, dll.) tidak lagi berisik, sementara salah ketik jelas (Makan=1.500, Sewa kos=1.200, Listrik=450, Parkir=500) tetap tertangkap. Satu celah kecil (RENDAH, bukan regresi angka): aturan "ber-Rp = disengaja" membebaskan **pos non-receh** juga (mis. "Sewa=Rp5.000", "Zakat=Rp5.000") dari peringatan meski nilainya kemungkinan salah ketik — sebaiknya aturan "Rp" hanya membebaskan pos yang sudah masuk daftar wajar-kecil, bukan semua pos.
 
 ### Skor uji ulang v1.0.3: **9/10** (fungsi utama tepat; satu catatan RENDAH di atas untuk revisi ringan berikutnya)
+
+## Uji ulang v1.0.7 — OpenClaw sebelum/sesudah (penguji independen, 2 Okt 2026)
+
+- **Cara:** OpenClaw 2026.9.6 lokal, model router Komunitech (`claude-sonnet-5`), skill dimatikan vs aktif, home bersih per skenario. Rincian & balasan utuh: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.7".
+- **Fokus revisi THR:** ✓ THR tidak dihitung dua kali (S1: setor Rp830.000/bln dari gaji + THR Rp12.500.000 sekaligus saat cair; S2: THR untuk menambal defisit, tidak dipakai lagi); ✓ setoran bulanan = sisa gaji rutin (S2 diturunkan ke Rp200.000 karena defisit); ✓ rasio cicilan berbasis gaji rutin (34,4%; 15%). Semua angka utama cocok dengan `keuangan.py` yang dijalankan penguji.
+- **Temuan:** (1) SEDANG — angka alternatif "tanpa kiriman ortu" dihitung sendiri oleh agent dan salah (Rp9,45 jt; benar Rp9.850.000, 9 bln Rp88.650.000); (2) RENDAH — `% pemasukan` & banding pola memakai gaji + THR/12, agent melabelinya "% gaji" (KPR 22,9% vs 24,8% gaji rutin); (3) SEDANG — skenario defisit: bulan sebelum THR cair tidak ditangani dan defisit dibiarkan bergantung THR tiap tahun.
+- **Skor OpenClaw:** S1 6,5 → 8; S2 7,5 → 7,5; rata-rata 7,0 → 7,75. **VERDIK: BELUM** (revisi THR berhasil, tetapi butuh perbaikan temuan 1 & 3 lalu uji ulang).
+
+## Uji ulang v1.0.8 — OpenClaw sebelum/sesudah, putaran 2 (penguji independen, 2 Okt 2026)
+
+- **Cara:** OpenClaw 2026.9.6 lokal, model router Komunitech (`claude-sonnet-5`), skill dimatikan vs aktif, home bersih per skenario. Rincian & balasan utuh: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.8".
+- **Temuan v1.0.7:** ✓ angka alternatif "tanpa kiriman ortu" disalin dari script dan tepat (Rp9.850.000; 9 bln Rp88.650.000; 12 bln Rp118.200.000), termasuk di pertanyaan lanjutan; ✓ kolom "% gaji rutin" & banding pola berbasis gaji rutin; ✓ defisit + THR cair 4 bulan lagi: tabel kekurangan per bulan (Rp840.000/610.000/390.000/390.000), setoran DD Rp0, pemangkasan bertahap −Rp710.000, THR penambal sementara. Semua nominal S2 cocok dengan `keuangan.py`.
+- **Temuan baru:** (1) SEDANG — S1 rasio cicilan ditulis 24,8% (persen KPR saja) "di bawah 30%"; benar 34,4% DI ATAS 30% (dicetak script); (2) SEDANG-RENDAH — S2 sisa THR Rp4.770.000 disuruh masuk dana darurat padahal sisa defisit Rp390.000/bln masih berjalan (SKILL.md langkah 4(d) tidak selaras dengan kalimat script); (3) RENDAH — talangan pra-THR "dari saldo" padahal saldo Rp0; (4) RENDAH — baris "DEFISIT −Rp516.667 (vs gaji+THR/12)" membingungkan.
+- **Skor OpenClaw:** S1 6,5 → 7,5; S2 6 → 8; rata-rata 6,25 → 7,75. **VERDIK: BELUM** (satu kesalahan angka rasio cicilan; perbaiki temuan 1–2 lalu uji ulang).
+
+## Uji ulang v1.0.9 — OpenClaw sebelum/sesudah, putaran 3 (penguji independen, 2 Okt 2026)
+
+- **Cara:** OpenClaw 2026.9.6 lokal, model router Komunitech (`claude-sonnet-5`), skill dimatikan vs aktif, home bersih per skenario. Rincian & balasan utuh: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.9". Semua nominal & persen diverifikasi dengan Python independen dan `keuangan.py`.
+- **Temuan v1.0.8:** ✓ rasio cicilan 34,4% DI ATAS 30% (S1, Ringkasan & Langkah); ✓ sisa THR Rp2.240.000 dicadangkan untuk sisa defisit Rp560.000/bln bulan 7–10, dana darurat ditunda (S2); ✓ saldo Rp1.500.000 tidak cukup untuk kekurangan pra-THR Rp3.390.000 → kurang Rp1.890.000 + pilihan tanpa utang (percepat → Rp2.800.000; tambah ±Rp380.000/bln); ✓ baris defisit basis THR/12 hilang.
+- **Kesalahan angka SESUDAH:** tidak ada. Catatan RENDAH: (1) arisan RT Rp200.000 diperlakukan sebagai tabungan dan setorannya di-nol-kan tanpa memberi tahu pengguna (bila tetap dibayar, kekurangan pra-THR Rp4.390.000); (2) lanjutan S1 "maju sekitar 1 tahun" — target 9 bulan dengan THR tetap 48 bulan; THR disarankan disetor seluruhnya tanpa pos Lebaran.
+- **Skor OpenClaw:** S1 6,5 → 8,5; S2 6 → 8; rata-rata 6,25 → 8,25. **VERDIK: LULUS** (catatan RENDAH boleh diperbaiki di revisi ringan tanpa uji ulang penuh).

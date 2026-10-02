@@ -139,3 +139,6 @@ Tanda `'` pelindung dari ekspor dibuang saat impor ulang.
 Ekspor `lengkap`: `kode;nama;no_wa;link_wa;sumber;label;tahap;nilai;kebutuhan;followup;alasan_batal;tgl_masuk;tgl_deal;kontak_terakhir`
 (UTF-8 BOM, `;`). Sel teks diawali `=`, `+`, `-`, `@`, tab → diberi `'` agar tidak dijalankan sebagai rumus Excel.
 Ekspor `pengingat`: `jenis;nama;tanggal;nominal;perihal;kode_crm` (tanpa nomor HP) + JSON `perintah_pengingat`.
+
+## Multi-usaha (beberapa usaha di satu komputer)
+Satu database = satu usaha. Usaha kedua memakai file database sendiri: `init --db ~/KomunitechData/crm-<usaha>/crm.db ...`, lalu tulis `--db` yang sama di setiap perintah (atau ENV `KOMUNITECH_CRM_DB`). `info`, `hari-ini`, dan `rekap` mencetak nama usaha aktif agar mudah dicek.

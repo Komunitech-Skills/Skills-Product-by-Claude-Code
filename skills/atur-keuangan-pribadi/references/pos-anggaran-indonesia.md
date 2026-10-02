@@ -17,8 +17,9 @@ Nongkrong/ngopi, makan di luar, jajan online, langganan streaming, hobi, skincar
 Dana darurat, target (DP rumah, pendidikan anak, haji/umrah, pensiun), pelunasan utang di atas minimum, **arisan** (diperlakukan sebagai tabungan wajib karena uangnya kembali — tetapi tidak berbunga dan ada risiko macet; jangan jadikan satu-satunya tabungan).
 
 ## Pemasukan musiman: THR, bonus, gaji ke-13
-- Jumlahkan setahun, bagi 12 (dibulatkan ke bawah), masukkan sebagai pemasukan bulanan.
-- Saat cair, simpan di rekening terpisah lalu "cairkan" ke anggaran tiap bulan.
+- Jumlahkan setahun, bagi 12 (dibulatkan ke bawah) sebagai **gambaran** pemasukan setahun — uangnya tetap cair sekali.
+- Setoran/transfer bulanan hanya dari **sisa gaji rutin**. THR/bonus: pilih satu, jangan dua-duanya — (a) setor sekaligus saat cair ke dana darurat/target, atau (b) simpan di rekening terpisah lalu "cairkan" ke anggaran tiap bulan untuk menutup kekurangan gaji (sebut berapa bulan tertutup).
+- Rasio cicilan dihitung terhadap gaji rutin, bukan gaji + THR/12.
 - Kebutuhan musiman (Lebaran/Natal/mudik, tahun ajaran baru) juga dijadikan pos bulanan: total ÷ 12.
 
 ## Penghasilan tidak tetap (ojol, freelancer, pedagang, komisi)

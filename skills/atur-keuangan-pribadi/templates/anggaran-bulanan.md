@@ -8,8 +8,11 @@ Bulan: ____________  Disusun oleh: ____________
 | Gaji/penghasilan 1 | Rp |
 | Gaji/penghasilan 2 | Rp |
 | Sampingan | Rp |
-| THR + bonus setahun ÷ 12 | Rp |
+| **Pemasukan RUTIN (gaji, tiap bulan)** | **Rp** |
+| THR + bonus setahun ÷ 12 (gambaran; cair SEKALI Rp …) | Rp |
 | **TOTAL PEMASUKAN (A)** | **Rp** |
+
+> Setoran/transfer bulanan maks. = pemasukan RUTIN − total pos. THR/bonus disetor sekaligus saat cair (jangan dihitung dua kali). Rasio cicilan = cicilan ÷ pemasukan RUTIN.
 
 ## B. Alokasi
 | Pos | Kelompok | Rencana | Realisasi | Selisih |
