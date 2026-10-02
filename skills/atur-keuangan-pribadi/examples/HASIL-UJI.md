@@ -240,3 +240,10 @@ Disalin ke scratchpad `uji3-akp/`, dijalankan dari sana. `tests/uji_regresi.py`:
 - **Cek regresi:** ✓ "jeda arisan" disebut eksplisit (TINDAKAN + Langkah 1); ✓ satu angka defisit (Rp1.150.000, basis arisan dijeda; Rp1.450.000 hanya syarat); ✓ kebutuhan Lebaran disinggung sebelum THR ke dana darurat; ✓ semua nominal cocok `keuangan.py` & Python independen.
 - **Catatan RENDAH:** tebakan script tanpa label: "Jajan+Sekolah anak" → Keinginan (dipangkas 50%), "Kirim ibu" belum dikelompokkan; tabel jadwal di balasan berhenti di bulan 4.
 - **Skor OpenClaw:** 6,5 → 9. **VERDIK: LULUS.**
+
+## Uji regresi v1.0.11 — OpenClaw sebelum/sesudah, putaran 2 (penguji independen, 2 Okt 2026)
+
+- **Cara:** OpenClaw 2026.9.6 lokal, model router Komunitech (`claude-sonnet-5`), skill dimatikan vs aktif, home bersih, 1 skenario (gaji Rp6.500.000, defisit Rp1.250.000/bln dengan arisan dijeda, pos tanpa label "Jajan+Sekolah anak", "Kirim ibu", "Makan di luar", THR cair 4 bulan lagi, saldo Rp2 juta). Rincian & balasan utuh: `00-openclaw-sebelum-sesudah.md` bagian "Uji regresi v1.0.11 (2026-10-02, putaran 2)".
+- **Cek regresi:** ✓ pos campuran tidak dipangkas & pemisahannya ditanyakan; ✓ kiriman ibu tidak dipangkas; ✓ hanya keinginan jelas (maks. 50%) + kebutuhan fleksibel (maks. 10%) yang dipangkas; ✓ tabel jadwal 4 baris utuh sampai THR cair; ✓ semua nominal cocok `keuangan.py` & Python independen.
+- **Catatan RENDAH:** sisa THR Rp550.000 disebut "masuk tabungan darurat" (script: DD setelah defisit tertutup); "tabungan di bawah pola justru bagus"; kelompok fleksibel ditulis "Kebutuhan wajib" di tabel.
+- **Skor OpenClaw:** 6,5 → 9. **VERDIK: LULUS.**
