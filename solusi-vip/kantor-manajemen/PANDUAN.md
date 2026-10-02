@@ -66,7 +66,7 @@ Skill inti: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `laporan-otomatis-terja
 `laporan-status-kantor`, `ringkas-grup-wa`, `notulen-rapat`, `analisis-excel`,
 `analisis-rasio-keuangan-usaha`, `arus-kas-13minggu`, `presentasi-data-ke-atasan`,
 `buku-piutang`, `tagih-piutang`, `buku-stok`, `laporan-insiden-usaha`, `dasbor-lokal`,
-`hitung-thr` (THR prorata dihitung script, bukan dikira), `slip-gaji-bpjs` (slip gaji, iuran BPJS, dan total biaya gaji perusahaan dari script), `pph21-ter` (PPh 21 TER bulanan & hitung ulang Desember), `vikunja-tugas` (butuh aplikasi Vikunja, Bab 5k). **[VIP]** `laporan-harian-usaha`.
+`hitung-thr` (THR prorata dihitung script, bukan dikira), `slip-gaji-bpjs` (slip gaji, iuran BPJS, dan total biaya gaji perusahaan dari script), `pph21-ter` (PPh 21 TER bulanan & hitung ulang Desember), `kas-umkm` (saldo/rekap kas dihitung script), `vikunja-tugas` (butuh aplikasi Vikunja, Bab 5k). **[VIP]** `laporan-harian-usaha`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
@@ -87,6 +87,7 @@ openclaw skills install ./dasbor-lokal --global
 openclaw skills install ./hitung-thr --global
 openclaw skills install ./slip-gaji-bpjs --global
 openclaw skills install ./pph21-ter --global
+openclaw skills install ./kas-umkm --global
 openclaw skills install ./vikunja-tugas --global
 openclaw skills install ./laporan-harian-usaha --global
 ```
@@ -152,7 +153,7 @@ Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka, dan lebih k
 2. LAPORAN TERJADWAL HANYA BILA DIMINTA. Jangan menawarkan, menyarankan, atau memasang jadwal/reminder/kiriman otomatis (termasuk "mau saya kirim otomatis ke grup?") kecuali pemilik memintanya secara eksplisit; bila tidak diminta, cukup berikan teks siap tempel. Tujuannya chat pribadi pemilik/pimpinan, bukan grup; isinya agregat seperti aturan 1. Kiriman ke grup = draf yang ditempel manusia.
 3. JANGAN SENTUH SETELAN SISTEM. Jangan mengecek atau menjelajah kanal/percakapan (mis. tool `conversations_list`, daftar grup/kanal) kecuali pengguna memintanya, dan jangan memeriksa, membaca, atau mengubah config gateway/OpenClaw (kanal, token bot, file konfigurasi) dan jangan menyuruh agent lain melakukannya. Bila kanal belum tersambung, cukup katakan teks siap ditempel sendiri dan rujuk panduan pemasangan (PANDUAN Bab 4) atau jasa setup Komunitech.
 4. JANGAN MENCARI KE SELURUH DISK. Jangan menjalankan `find /` atau pencarian serupa. Skill dicari hanya di folder skills yang terpasang; bila skill yang dirujuk tidak ada, katakan "belum terpasang", kerjakan yang bisa, dan tawarkan memasangnya.
-5. TOKEN/PASSWORD DI CHAT. Bila pengguna menempel token, API key, atau password: jangan diulang, jangan disimpan ke file/memori, dan katakan "Jangan kirim ini ke chat. Segera ganti token ini (buat yang baru, hapus yang lama)." sebelum langkah lain.
+5. TOKEN/PASSWORD DI CHAT. Bila pengguna menempel token, API key, atau password: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak sebagian, tidak awalan/akhiran, tidak disamarkan, mis. jangan menulis "vk_tk_7f3a9..."); sebut saja "kunci yang Anda tempel". Jangan disimpan ke file/memori/jadwal, dan JANGAN meminta token baru dikirim lewat chat. Sebelum langkah lain balas dengan templat ini (boleh disesuaikan sedikit, kalimat "Segera ganti" tidak boleh dihapus): "Kunci yang Anda tempel sudah terkirim lewat chat, jadi anggap sudah bocor. Jangan kirim token ke chat lagi. Segera ganti: hapus token lama di aplikasinya, buat token baru, lalu simpan sendiri di komputer Anda lewat perintah simpan-kunci milik skill terkait, mis. `python3 scripts/vikunja.py simpan-kunci` dari folder skill vikunja-tugas (token diketik tersembunyi, tidak tampil di chat)."
 6. ANGKA UANG DARI SCRIPT. Total gaji/biaya perusahaan disalin dari keluaran script `slip-gaji-bpjs`. Total/saldo kas wajib dari script: `kas-umkm` (`scripts/kas.py saldo` atau `rekap`; untuk catatan teks/file `kas.py cek-catatan`), atau `analisis-excel` untuk file Excel/CSV. Total/sisa piutang dari `buku-piutang` (`scripts/piutang.py saldo`/`umur`). Dilarang menjumlah manual atau di kepala.
 <!-- komunitech-aturan-kantor: selesai -->
 ```
