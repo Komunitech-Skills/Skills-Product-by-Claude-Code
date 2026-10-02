@@ -24,6 +24,7 @@ Menghitung THR setiap karyawan dengan benar menurut aturan, termasuk karyawan ba
 
 ## Kapan TIDAK digunakan
 - Slip gaji bulanan lengkap → `slip-gaji-bpjs`. PPh 21 setahun/Desember → `pph21-ter`.
+  - Diminta THR **dan** slip gaji/total biaya gaji sekaligus: THR dengan skill ini; slip gaji, iuran BPJS, dan "total biaya gaji perusahaan" **hanya** dari `slip-gaji-bpjs` (salin baris totalnya apa adanya) — jangan menyusun tabel slip atau menjumlah total sendiri. Cek keberadaannya cukup di folder skills yang sama (sebelah folder skill ini); bila `slip-gaji-bpjs`/`pph21-ter` tidak ada di sana, **jangan dicari** ke seluruh disk (`find /`): katakan "skill slip gaji belum terpasang", kerjakan THR saja, dan tawarkan memasangnya. Bila pengguna tetap minta angka slip, pakai rumus manual `slip-gaji-bpjs` dengan label "dihitung manual" dan total biaya perusahaan = penghasilan kotor + iuran BPJS porsi perusahaan (iuran porsi karyawan & PPh 21 tidak dikurangkan/ditambahkan).
 - Bonus/insentif kinerja, THR ASN/PNS, pesangon/PHK → jelaskan di luar cakupan dan arahkan ke Disnaker/konsultan.
 - Menetapkan tanggal resmi hari raya → itu wewenang pemerintah (SKB libur nasional). Untuk tahun 2026 pakai `references/libur-nasional-2026.md` (SKB 1497, 2, 5 Tahun 2025); untuk Idul Fitri/Idul Adha tahun lain, skill hanya **mengecek** tanggal dari pengguna terhadap perkiraan (langkah 2b).
 
