@@ -143,7 +143,7 @@ class UjiFungsi(unittest.TestCase):
         self.assertEqual(od.inisial(""), "?")
         self.assertEqual(od.samarkan_hp("+62 812-3456-7890"), "0812****890")
         self.assertEqual(od.samarkan_email("budi.s@contoh.test"), "b***@contoh.test")
-        self.assertEqual(od.samarkan_kunci(st.KUNCI_BACA), "****5e3f")
+        self.assertEqual(od.samarkan_kunci(st.KUNCI_BACA), "(disembunyikan)")
 
     def test_rentang_utc_zona(self):
         import datetime as dt
@@ -209,6 +209,17 @@ class UjiIntegrasi(unittest.TestCase):
             self.assertNotIn("belum diuji ke server Odoo asli", out)
             self.assertIn("- Pesanan penjualan: SEMUA data", out)
             self.assertNotIn("PERINGATAN DATA SEBAGIAN", out)
+
+    def test_keluaran_tidak_memuat_kunci_sebagian_pun(self):
+        for kunci in (st.KUNCI_BACA, st.KUNCI_ADMIN):
+            k, out, err = jalan(self.s[19].port, "cek", kunci=kunci, login="admin" if kunci == st.KUNCI_ADMIN else "baca")
+            gab = out + err
+            self.assertNotIn(kunci, gab)
+            for potong in (kunci[:4], kunci[-4:], kunci[:8], kunci[-6:]):
+                self.assertNotIn(potong, gab)
+            self.assertNotIn("****", gab)
+        k, out, err = jalan(self.s[19].port, "cek", kunci="salah-" + st.KUNCI_BACA[-12:])
+        self.assertNotIn(st.KUNCI_BACA[-12:], out + err)
 
     def test_cek_admin_diberi_risiko(self):
         k, out, _ = jalan(self.s[19].port, "cek", kunci=st.KUNCI_ADMIN, login="admin")

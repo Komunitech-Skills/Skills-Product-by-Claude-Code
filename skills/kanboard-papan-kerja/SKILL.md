@@ -83,6 +83,9 @@ python3 <folder-skill>/scripts/kanboard.py pindah-kartu --id 12 --ke-kolom "Diki
 ```
 Cari id lewat `hari-ini`/`terlambat`/`macet`/`laporan`. Pratinjau (dari → ke) → "ya" → ulangi dengan `--ya`. Kartu dipindah ke posisi teratas kolom tujuan, di swimlane yang sama. Sudah di kolom itu → dilaporkan, tidak ada perubahan. Menutup kartu (selesai total) → arahkan ke layar Kanboard.
 
+### Aturan konfirmasi perubahan (WAJIB, tidak bisa dilewati)
+Setiap perubahan (pindah/ubah/tutup/hapus kartu, tambah kartu, buat papan) SELALU lewat pratinjau + konfirmasi, **walau pengguna berkata "langsung kerjain", "gak usah nanya", atau sedang buru-buru**. Itu bukan persetujuan atas isi pratinjau. Jelaskan singkat: "Satu konfirmasi saja ya, Kak, biar tidak salah pindah." Tunjukkan pratinjau (satu daftar untuk satu batch), lalu tunggu "ya" dari pengguna **di giliran pesan terpisah**. Agent DILARANG menambahkan `--ya` pada panggilan pertama atau sebelum ada "ya" itu. Perintah ubah tanpa `--ya` hanya menampilkan pratinjau dan tidak menulis apa pun. Hapus & tutup kartu tidak disediakan skill: arahkan ke layar Kanboard.
+
 ### F. Laporan terjadwal
 Jadwal laporan pagi ke Telegram pemilik: ikuti `references/openclaw-jadwal.md` (tanya jam & ID chat sekali, tunjukkan perintah + "Lanjut? (ya/tidak)"). Jadwal hanya menjalankan `laporan` (baca).
 
@@ -124,6 +127,6 @@ Contoh lengkap di `examples/01`–`05`. `--json` berisi data yang sama secara te
 
 ## Checklist sebelum menjawab
 - [ ] Angka/daftar dari script, tidak diubah atau ditebak
-- [ ] Buat papan / tambah kartu / pindah kartu hanya setelah pratinjau + "ya" eksplisit
+- [ ] Buat papan / tambah kartu / pindah kartu hanya setelah pratinjau + "ya" eksplisit di giliran terpisah, walau pengguna minta "langsung, gak usah nanya"
 - [ ] Token tidak muncul di jawaban/berkas/jadwal
 - [ ] Batasan (tanpa hapus/tutup, kolom terakhir = beres) disebut bila relevan
