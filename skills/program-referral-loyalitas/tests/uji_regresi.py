@@ -425,5 +425,53 @@ class StatusJujur(unittest.TestCase):
         self.assertIn("PERHATIAN: RUGI Rp167.000 per referral di pesanan pertama", out)      # 33000 - 200000
 
 
+class Revisi104OpenClaw(unittest.TestCase):
+    """Temuan uji OpenClaw 2026-10-02: kue kering, pesanan Rp150.000, margin 45%, teman 15%, pemberi Rp25.000."""
+    DASAR = ("biaya", "--aov", "150rb", "--margin", "45", "--hadiah-pemberi", "25rb", "--hadiah-teman", "15%")
+
+    def test_20_referral_47500_dari_1jt_sisa_50rb(self):
+        # 22.500 + 25.000 = 47.500 ; 20 x 47.500 = 950.000 ; 1.000.000 - 950.000 = 50.000
+        kode, out, _ = jalan(*self.DASAR, "--anggaran", "1jt", "--jumlah-referral", "20")
+        self.assertEqual(kode, 0)
+        self.assertIn("BIAYA PER REFERRAL              : Rp47.500", out)
+        self.assertIn("SISA ANGGARAN (buffer): Rp1.000.000 - terpakai Rp950.000 = Rp50.000", out)
+
+    def test_kuota_maks_dari_anggaran(self):
+        # floor(1.000.000 / 47.500) = 21 ; 21 x 47.500 = 997.500 ; sisa 2.500
+        _, out, _ = jalan(*self.DASAR, "--anggaran", "1jt")
+        self.assertIn("KUOTA MAKS dari anggaran: 21 referral (dibulatkan ke bawah) -> terpakai Rp997.500, sisa Rp2.500", out)
+
+    def test_bandingkan_beberapa_pemberi(self):
+        # laba kotor 67.500 ; saran total floor(67.500 x 50%) = 33.750
+        # pemberi 15.000 -> 37.500 (di atas saran), kuota floor(1jt/37.500)=26 -> 975.000, sisa 25.000; 20x -> sisa 250.000
+        # pemberi 11.250 -> 33.750 (dalam saran), kuota 29 -> 978.750, sisa 21.250
+        _, out, _ = jalan(*self.DASAR, "--anggaran", "1jt", "--jumlah-referral", "20", "--cac-iklan", "40rb",
+                          "--bandingkan-pemberi", "15rb", "--bandingkan-pemberi", "11.250")
+        baris = {b.split("|")[0].strip(): [c.strip() for c in b.split("|")] for b in out.splitlines() if "|" in b}
+        self.assertEqual(baris["Rencana sekarang"][3], "Rp47.500")
+        self.assertEqual(baris["Rencana sekarang"][10], "Rp50.000")
+        self.assertEqual(baris["Pemberi Rp15.000"][3:11],
+                         ["Rp37.500", "25%", "Rp30.000", "DI ATAS SARAN (lebih berisiko)", "26", "Rp975.000", "Rp25.000",
+                          "Rp250.000"])
+        self.assertEqual(baris["Pemberi Rp11.250"][6], "DALAM SARAN")
+        self.assertEqual(baris["Pemberi Rp11.250"][7:10], ["29", "Rp978.750", "Rp21.250"])
+        self.assertEqual(baris["Pemberi Rp15.000"][11], "lebih murah")
+        self.assertIn("lebih berisiko, bukan lebih aman", out)
+
+    def test_bandingkan_teman_dan_kurang_anggaran(self):
+        # teman 30% = 45.000 -> 70.000 > laba 67.500 -> rugi 2.500 ; 20 x 70.000 = 1,4jt -> kurang 400.000
+        _, out, _ = jalan(*self.DASAR, "--anggaran", "1jt", "--jumlah-referral", "20", "--bandingkan-teman", "30%")
+        self.assertIn("KURANG Rp400.000", out)
+        self.assertIn("PERHATIAN: Teman Rp45.000 rugi Rp2.500", out)
+
+    def test_skill_md_kepatuhan(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as f:
+            teks = f.read()
+        self.assertIn("--bandingkan-pemberi", teks)
+        self.assertIn("draf", teks)
+        self.assertNotIn("pengingat kontrol otomatis", teks.lower())
+        self.assertIn("berisiko melanggar", teks)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

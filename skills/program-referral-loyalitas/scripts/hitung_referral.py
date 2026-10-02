@@ -355,15 +355,88 @@ def cetak_biaya(h, jumlah, anggaran, cac):
             sisa = anggaran - total
             out.append(f"Anggaran {rp(anggaran)}: " + (f"cukup (sisa {rp(sisa)})" if sisa >= 0
                                                        else f"TIDAK CUKUP (kurang {rp(-sisa)})"))
-    elif anggaran is not None:
-        n = ke_bawah(anggaran / h["biaya"]) if h["biaya"] > 0 else None
-        if n is not None:
-            out.append(f"Anggaran {rp(anggaran)} cukup untuk maksimal {angka(n)} referral berhasil.")
+            out.append(f"SISA ANGGARAN (buffer): {rp(anggaran)} - terpakai {rp(total)} = {rp(sisa)}")
+    if anggaran is not None:
+        out += _baris_kuota(h["biaya"], anggaran)
     if cac is not None:
         banding = "LEBIH MURAH" if h["biaya"] < cac else ("SAMA" if h["biaya"] == cac else "LEBIH MAHAL")
         out.append(f"Pembanding: biaya per pelanggan baru dari iklan {rp(cac)} -> referral {banding} "
                    f"(selisih {rp(abs(cac - h['biaya']))}).")
     out.append("Hadiah berupa produk sendiri: isi dengan modal (HPP) produk, bukan harga jual.")
+    return "\n".join(out)
+
+
+def _kuota(biaya, anggaran):
+    """(kuota maks dibulatkan ke bawah, terpakai, sisa) atau None bila biaya 0."""
+    if biaya <= 0:
+        return None
+    n = ke_bawah(anggaran / biaya)
+    return n, biaya * n, anggaran - biaya * n
+
+
+def _baris_kuota(biaya, anggaran):
+    k = _kuota(biaya, anggaran)
+    if k is None:
+        return [f"Anggaran {rp(anggaran)}: biaya per referral Rp0, kuota tidak dibatasi anggaran."]
+    n, pakai, sisa = k
+    return [f"Anggaran {rp(anggaran)} cukup untuk maksimal {angka(n)} referral berhasil.",
+            f"KUOTA MAKS dari anggaran: {angka(n)} referral (dibulatkan ke bawah) -> terpakai {rp(pakai)}, sisa {rp(sisa)}"]
+
+
+def bandingkan(aov, margin, pem, tem, lain, alt_pem, alt_tem, anggaran=None, jumlah=None, cac=None):
+    """Bandingkan beberapa nominal hadiah sekaligus. Baris pertama = rencana pengguna."""
+    pilihan = [("Rencana sekarang", pem, tem)]
+    pilihan += [(f"Pemberi {rp(x)}", x, tem) for x in alt_pem]
+    pilihan += [(f"Teman {rp(x)}", pem, x) for x in alt_tem]
+    hasil = []
+    for nama, p_, t_ in pilihan:
+        h = biaya_referral(aov, margin, p_, t_, lain)
+        saran_total = ke_bawah(h["lpo"] * PORSI_SARAN_PESANAN_PERTAMA)
+        r = {"nama": nama, "h": h, "saran_total": saran_total, "dalam_saran": h["biaya"] <= saran_total}
+        if anggaran is not None:
+            r["kuota"] = _kuota(h["biaya"], anggaran)
+            if jumlah is not None:
+                r["sisa_jumlah"] = anggaran - h["biaya"] * jumlah
+        hasil.append(r)
+    return hasil
+
+
+def cetak_banding(hasil, anggaran, jumlah, cac):
+    out = ["PERBANDINGAN PILIHAN HADIAH (salin angka dari tabel ini; jangan menghitung sendiri)"]
+    kepala = ["Pilihan", "Pemberi", "Teman", "Biaya/referral", "% pesanan", "Laba psn pertama setelah hadiah",
+              "Saran konservatif"]
+    if anggaran is not None:
+        kepala += ["Kuota maks", "Terpakai", "Sisa anggaran"]
+        if jumlah is not None:
+            kepala += [f"Sisa bila {angka(jumlah)} referral"]
+    if cac is not None:
+        kepala += ["vs iklan"]
+    baris = []
+    for r in hasil:
+        h = r["h"]
+        b = [r["nama"], rp(h["pemberi"]), rp(h["teman"]), rp(h["biaya"]), pct(h["persen_aov"]), rp(h["laba_setelah"]),
+             "DALAM SARAN" if r["dalam_saran"] else "DI ATAS SARAN (lebih berisiko)"]
+        if anggaran is not None:
+            k = r["kuota"]
+            b += ([angka(k[0]), rp(k[1]), rp(k[2])] if k else ["tak terbatas", "Rp0", rp(anggaran)])
+            if jumlah is not None:
+                s = r["sisa_jumlah"]
+                b.append(rp(s) if s >= 0 else f"KURANG {rp(-s)}")
+        if cac is not None:
+            b.append("lebih murah" if h["biaya"] < cac else ("sama" if h["biaya"] == cac else "lebih mahal"))
+        baris.append(b)
+    lebar = [max(len(str(x[i])) for x in [kepala] + baris) for i in range(len(kepala))]
+    out.append(" | ".join(str(k).ljust(w) for k, w in zip(kepala, lebar)))
+    out.append("-+-".join("-" * w for w in lebar))
+    out += [" | ".join(str(c).ljust(w) for c, w in zip(b, lebar)) for b in baris]
+    out.append(f"Saran konservatif = total hadiah (pemberi + teman + lain) maks. 50% laba kotor pesanan pertama "
+               f"({rp(hasil[0]['saran_total'])}). DI ATAS SARAN berarti lebih berisiko, bukan lebih aman; "
+               "cek batas aman jangka panjang dengan perintah impas.")
+    for r in hasil:
+        if r["h"]["laba_setelah"] < 0:
+            out.append(f"PERHATIAN: {r['nama']} rugi {rp(-r['h']['laba_setelah'])} per referral di pesanan pertama.")
+        if jumlah is not None and anggaran is not None and r["sisa_jumlah"] < 0:
+            out.append(f"PERHATIAN: {r['nama']} melebihi anggaran bila {angka(jumlah)} referral berhasil.")
     return "\n".join(out)
 
 
@@ -461,6 +534,10 @@ def buat_parser():
     b.add_argument("--jumlah-referral", help="jumlah referral berhasil yang direncanakan")
     b.add_argument("--anggaran", help="anggaran hadiah maksimal (Rp)")
     b.add_argument("--cac-iklan", help="biaya iklan per pelanggan baru sebagai pembanding (Rp)")
+    b.add_argument("--bandingkan-pemberi", action="append",
+                   help="nominal hadiah pemberi lain untuk dibandingkan (Rp atau %%), boleh diulang")
+    b.add_argument("--bandingkan-teman", action="append",
+                   help="nominal hadiah teman lain untuk dibandingkan (Rp atau %%), boleh diulang")
 
     i = sub.add_parser("impas", allow_abbrev=False)
     umum(i)
@@ -509,7 +586,13 @@ def jalankan(argv=None):
     cac = parse_rupiah(a.cac_iklan, nama="biaya iklan") if getattr(a, "cac_iklan", None) else None
     if a.perintah == "biaya":
         jml = parse_jumlah(a.jumlah_referral, "jumlah referral", bulat_saja=True) if a.jumlah_referral else None
-        return cetak_biaya(biaya_referral(aov, margin, pem, tem, lain), jml, anggaran, cac)
+        teks = cetak_biaya(biaya_referral(aov, margin, pem, tem, lain), jml, anggaran, cac)
+        if a.bandingkan_pemberi or a.bandingkan_teman:
+            alt_p = [parse_hadiah(x, aov, "hadiah pemberi pembanding") for x in (a.bandingkan_pemberi or [])]
+            alt_t = [parse_hadiah(x, aov, "hadiah teman pembanding") for x in (a.bandingkan_teman or [])]
+            teks += "\n\n" + cetak_banding(bandingkan(aov, margin, pem, tem, lain, alt_p, alt_t, anggaran, jml, cac),
+                                            anggaran, jml, cac)
+        return teks
     if a.perintah == "impas":
         frek = parse_jumlah(a.frekuensi_bulan, "frekuensi per bulan")
         umur = parse_jumlah(a.umur_bulan, "umur pelanggan (bulan)")
