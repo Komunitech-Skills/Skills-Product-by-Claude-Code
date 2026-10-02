@@ -39,7 +39,7 @@ import urllib.parse
 import urllib.request
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR
 
-VERSI = "1.0.1"
+VERSI = "1.0.5"
 INVENTREE_TERUJI = ("1.5.6",)
 API_TERUJI = 530
 KUNCI_DEFAULT = os.path.join(os.path.expanduser("~"), ".komunitech", "inventree-kunci.txt")
@@ -209,11 +209,18 @@ def simpan_kunci(args):
     return 0
 
 
+def perintah_simpan_kunci():
+    """Perintah lengkap dengan path ABSOLUT script ini, siap ditempel pengguna awam di terminal."""
+    skrip = os.path.abspath(__file__)
+    return f'python3 "{skrip}" simpan-kunci' if " " in skrip else f"python3 {skrip} simpan-kunci"
+
+
 def _baca_file_token(path, sumber):
     path = os.path.abspath(os.path.expanduser(path))
     if not os.path.isfile(path):
-        raise Gagal(f"File kunci ({sumber}) tidak ditemukan: {path}. Jalankan dulu "
-                    f"'python3 inventree.py simpan-kunci' (lihat docs/panduan-inventree.md bagian 6).", K_FILE)
+        raise Gagal(f"File kunci ({sumber}) tidak ditemukan: {path}. Jalankan dulu di terminal Anda sendiri: "
+                    f"{perintah_simpan_kunci()} (Windows: ganti python3 dengan python atau py; "
+                    f"lihat docs/panduan-inventree.md bagian 6).", K_FILE)
     cek_izin_file(path)
     with open(path, encoding="utf-8") as f:
         token = f.read().strip()
@@ -322,7 +329,7 @@ def panggil(method, path, args, token=None, body=None, tulis=False):
         if e.code == 401:
             raise Gagal("401 dari InvenTree: token salah, kedaluwarsa, atau sudah dicabut "
                         f"(pesan server: {pesan or '-'}). Buat token baru di profil pengguna > Access Tokens, "
-                        "lalu 'simpan-kunci --ya'. Lihat docs/panduan-inventree.md bagian 6.", K_AUTH)
+                        f"lalu {perintah_simpan_kunci()} --ya. Lihat docs/panduan-inventree.md bagian 6.", K_AUTH)
         if e.code == 403:
             raise Gagal("403 dari InvenTree: akun pemilik token TIDAK PUNYA HAK untuk aksi ini "
                         f"({method} {path}; pesan server: {pesan or '-'}). Atur grup/peran akun itu di "

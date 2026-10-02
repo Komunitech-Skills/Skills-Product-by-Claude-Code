@@ -575,6 +575,8 @@ def ringkas_invoice(args, jenis, judul, kata_pihak):
     catatan = cek_mata_uang(info)
     if catatan:
         out.append(catatan)
+    if final and tax:
+        out.append("PPN yang harus disetor (keluaran - masukan, tanpa penjualan non-PPN): jalankan 'ppn-periode'.")
     out.append("Sumber: file Frappe Books (dibaca saja). Angka dibulatkan ke rupiah terdekat untuk tampilan.")
     print("\n".join(out))
 
@@ -846,7 +848,7 @@ def cmd_ppn(args):
     else:
         dpp = dpp_dari_harga_termasuk(nilai)
     dpp_lain, tepat, ppn = ppn_dari_dpp(dpp)
-    out = ["HITUNG PPN 12% (DPP nilai lain 11/12)",
+    out = ["HITUNG PPN 12% (DPP nilai lain 11/12) - untuk SATU harga/nota. PPN setor bulanan: pakai 'ppn-periode'.",
            f"Harga jual / penggantian (DPP)  : {rp(dpp)}",
            f"DPP nilai lain (11/12)         : Rp {angka(dpp_lain.quantize(Decimal('0.01'), ROUND_HALF_UP))}",
            f"PPN 12% x DPP nilai lain        : Rp {angka(tepat.quantize(Decimal('0.01'), ROUND_HALF_UP))} -> dibulatkan ke bawah {rp(ppn)}",

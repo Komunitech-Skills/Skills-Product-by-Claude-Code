@@ -493,6 +493,8 @@ class TesGalat(DasarServer):
         k, _, err = self.jalan("cari", "x", token=None)
         self.assertEqual(k, inv.K_FILE)
         self.assertIn("simpan-kunci", err)
+        # path lengkap script (bukan relatif) agar pengguna awam tahu persis yang dijalankan
+        self.assertIn(os.path.abspath(SKRIP), err)
 
     def test_kedaluwarsa_format_salah(self):
         k, _, _ = self.jalan("terima-barang", "--po", "PO-0001", "--semua", "--kedaluwarsa", "6/10/2026",
