@@ -30,7 +30,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 
-VERSI = "1.0.3"
+VERSI = "1.0.5"
 DIR_KONFIG = os.path.join(os.path.expanduser("~"), ".komunitech")
 F_ALAMAT = os.path.join(DIR_KONFIG, "listmonk-alamat.txt")
 F_AKUN = os.path.join(DIR_KONFIG, "listmonk-akun.txt")

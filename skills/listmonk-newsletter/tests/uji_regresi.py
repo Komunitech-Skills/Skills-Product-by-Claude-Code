@@ -4,6 +4,7 @@ Tidak butuh listmonk sungguhan; uji nyata terhadap listmonk 6.2.0 ada di example
 import contextlib
 import io
 import json
+import re
 import os
 import sys
 import tempfile
@@ -67,6 +68,9 @@ class H(BaseHTTPRequestHandler):
         STATE["calls"].append((metode, p, q))
         if p == "/api/lists" and metode == "GET":
             return self._out({"data": {"results": list(STATE["lists"].values()), "total": 2}})
+        if p == "/api/campaigns" and metode == "POST":
+            STATE.setdefault("posts", []).append(json.loads(raw))
+            return self._out({"data": STATE["camp"]})
         if p == "/api/campaigns" and metode == "GET":
             return self._out({"data": {"results": [STATE["camp"]], "total": 1}})
         if p == "/api/subscribers" and metode == "GET":
@@ -112,7 +116,12 @@ class H(BaseHTTPRequestHandler):
             STATE["camp"]["status"] = json.loads(raw)["status"]
             return self._out({"data": STATE["camp"]})
         if p == "/api/campaigns/7" and metode == "PUT":
-            STATE["camp"]["send_at"] = json.loads(raw)["send_at"]
+            d_ = json.loads(raw)
+            STATE.setdefault("puts", []).append(d_)
+            if "send_at" in d_:
+                STATE["camp"]["send_at"] = d_["send_at"]
+            if "body" in d_ and "name" in d_:
+                STATE["camp"].update(name=d_["name"], body=d_["body"])
             return self._out({"data": STATE["camp"]})
         if p == "/api/campaigns/analytics/links":
             return self._out({"data": [{"url": "https://wa.me/62", "count": 2}]})
@@ -173,7 +182,8 @@ class Uji(unittest.TestCase):
 
     def setUp(self):
         reset()
-        for f in (lm.F_UJI, lm.F_LOG_IMPOR, lm.F_KUNCI):
+        lm.F_PRATINJAU_IMPOR = os.path.join(self.tmp, "pratinjau-impor.json")
+        for f in (lm.F_UJI, lm.F_LOG_IMPOR, lm.F_KUNCI, lm.F_PRATINJAU_IMPOR):
             if os.path.exists(f):
                 os.remove(f)
         with open(lm.F_ALAMAT_UJI, "w") as f:  # alamat uji milik pemilik (didaftarkan manusia)
@@ -189,13 +199,13 @@ class Uji(unittest.TestCase):
         p = self._csv("﻿Nama;Email;Kota;Setuju\nSari;sari@x.id;Bdg;ya\nAndi;ANDI@x.id;Solo;ya\nDobel;andi@x.id;Solo;ya\n"
                       "Tin;tin@gmial.com;Tgl;ya\nRudi;rudi.x.id;M;ya\nDewi;dewi@x.id;D;tidak\n;;;\n=cmd|x;evil@x.id;J;ya\n")
         h = lm.analisis_kontak(lm.baca_baris_kontak(p))
-        self.assertEqual([d["email"] for d in h["ok"]], ["sari@x.id", "andi@x.id", "tin@gmial.com", "evil@x.id"])
+        self.assertEqual([d["email"] for d in h["ok"]], ["sari@x.id", "andi@x.id", "evil@x.id"])  # typo ditahan
         self.assertEqual(len(h["duplikat"]), 1)
         self.assertEqual(len(h["tidak_valid"]), 1)
         self.assertEqual(len(h["tanpa_izin"]), 1)
         self.assertEqual(len(h["mencurigakan"]), 1)
         self.assertEqual(h["kosong"], 1)
-        self.assertEqual(h["ok"][3]["name"], "cmd|x")  # '=' di depan dibuang
+        self.assertEqual(h["ok"][2]["name"], "cmd|x")  # '=' di depan dibuang
         self.assertEqual(h["formula_dibersihkan"], 1)
         self.assertEqual(h["ok"][0]["attributes"], {"Kota": "Bdg"})
 
@@ -237,12 +247,60 @@ class Uji(unittest.TestCase):
     def test_impor_butuh_ya_lalu_unconfirmed(self):
         p = self._csv("email,nama\na@x.id,Ani\n")
         args = ["impor", p, "--list", "1", "--sumber-persetujuan", "formulir toko", "--saya-punya-izin"]
-        self.assertEqual(jalankan(*args)[0], 6)
+        k0, o0, _ = jalankan(*args)
+        self.assertEqual(k0, 6)
         self.assertEqual(STATE["imports"], [])
-        k, o, _ = jalankan(*args, "--ya")
+        self.assertIn("--konfirmasi-jumlah 1", o0)
+        self.assertIn("RINGKASAN", o0)
+        # --ya tanpa jumlah / jumlah salah ditolak
+        self.assertEqual(jalankan(*args, "--ya")[0], 6)
+        self.assertEqual(jalankan(*args, "--ya", "--konfirmasi-jumlah", "5")[0], 6)
+        self.assertEqual(STATE["imports"], [])
+        k, o, _ = jalankan(*args, "--ya", "--konfirmasi-jumlah", "1")
         self.assertEqual(k, 0)
         self.assertIn(b'"unconfirmed"', STATE["imports"][0])
         self.assertIn("kirim-optin", o)
+
+    def test_impor_ya_tanpa_pratinjau_ditolak(self):
+        p = self._csv("email\na@x.id\nb@x.id\n")
+        args = ["impor", p, "--list", "1", "--sumber-persetujuan", "formulir toko", "--saya-punya-izin",
+                "--ya", "--konfirmasi-jumlah", "2"]
+        k, _, e = jalankan(*args)
+        self.assertEqual(k, 6)
+        self.assertIn("belum pernah dipratinjau", e)
+        self.assertEqual(STATE["imports"], [])
+
+    def test_impor_berkas_berubah_setelah_pratinjau_ditolak(self):
+        p = self._csv("email\na@x.id\n")
+        dasar = ["impor", p, "--list", "1", "--sumber-persetujuan", "formulir toko", "--saya-punya-izin"]
+        jalankan(*dasar)
+        self._csv("email\na@x.id\nb@x.id\n")
+        self.assertEqual(jalankan(*dasar, "--ya", "--konfirmasi-jumlah", "2")[0], 6)
+        self.assertEqual(STATE["imports"], [])
+
+    def test_pratinjau_impor_memuat_ringkasan_dan_contoh(self):
+        p = self._csv("email,nama\nsari@x.id,Sari\nsari@x.id,Dobel\nrusak,Z\nbudi@gmial.com,Budi\n")
+        _, o, _ = jalankan("impor", p, "--list", "1", "--sumber-persetujuan", "formulir toko", "--saya-punya-izin")
+        self.assertIn("CONTOH", o)
+        self.assertIn("1 valid akan diimpor; 1 duplikat, 1 tidak valid, 1 domain salah ketik (ditahan)", o)
+
+    def test_typo_domain_umum_ditahan_dan_tidak_diimpor(self):
+        for em in ("a@gmial.com", "a@gmai.com", "a@yaho.com", "a@hotmial.com", "a@gmaill.com", "a@gnail.com",
+                   "a@yahho.com", "a@outlok.com", "a@gmail.co", "a@icloud.con"):
+            h = lm.analisis_kontak([["email"], [em]])
+            self.assertEqual(h["ok"], [], em)
+            self.assertEqual(len(h["mencurigakan"]), 1, em)
+        for em in ("a@gmail.com", "a@yahoo.co.id", "a@mail.com", "a@email.com", "a@kopinusa.id", "a@live.com"):
+            h = lm.analisis_kontak([["email"], [em]])
+            self.assertEqual(len(h["ok"]), 1, em)
+            self.assertEqual(h["mencurigakan"], [], em)
+        h = lm.analisis_kontak([["email"], ["a@gmial.com"]], sertakan_typo=True)
+        self.assertEqual(len(h["ok"]), 1)
+        # lewat impor sungguhan: typo tidak ikut terkirim ke listmonk
+        _, o, _ = self._impor("formulir toko", isi="email\nok@x.id\nsari99@gmial.com\n")
+        self.assertNotIn(b"gmial", STATE["imports"][0])
+        self.assertIn(b"ok@x.id", STATE["imports"][0])
+        self.assertIn("DITAHAN", o)
 
     def test_kirim_optin_gerbang(self):
         self.assertEqual(jalankan("kirim-optin", "--list", "1")[0], 6)
@@ -474,8 +532,13 @@ class Uji(unittest.TestCase):
 
     # -- P1.4 sumber persetujuan
     def _impor(self, sumber, *extra, isi="email\na@x.id\n"):
-        return jalankan("impor", self._csv(isi), "--list", "1", "--sumber-persetujuan", sumber, "--saya-punya-izin",
-                        "--ya", *extra)
+        p = self._csv(isi)
+        dasar = ["impor", p, "--list", "1", "--sumber-persetujuan", sumber, "--saya-punya-izin", *extra]
+        k0, o0, e0 = jalankan(*dasar)  # pratinjau (wajib sebelum --ya)
+        m = re.search(r"--konfirmasi-jumlah (\d+)", o0)
+        if not m:
+            return k0, o0, e0
+        return jalankan(*dasar, "--ya", "--konfirmasi-jumlah", m.group(1))
 
     def test_sumber_terlarang_ditolak_semua_variasi(self):
         buruk = ["grup WA komunitas", "Grup Whatsapp alumni", "dari vendor", "Vendor data", "hasil beli", "dibeli dari toko data",
@@ -773,6 +836,38 @@ class Uji(unittest.TestCase):
         log = [json.loads(x) for x in open(lm.F_LOG_IMPOR, encoding="utf-8")]
         self.assertEqual([x for x in log if x["hasil"] == "diimpor"][0]["konfirmasi_pengguna"], kalimat)
 
+    def _bkamp(self, *extra, nama="Promo", isi='<p>Hai</p>'):
+        f = os.path.join(self.tmp, "isi.html")
+        open(f, "w", encoding="utf-8").write(isi)
+        return jalankan("buat-kampanye", "--nama", nama, "--subjek", "Halo", "--list", "1", "--isi-file", f, *extra)
+
+    def test_buat_kampanye_nama_sama_memperbarui_draf_bukan_ganda(self):
+        k, o, _ = self._bkamp(isi='<p>Baru <a href="{{ UnsubscribeURL }}">Berhenti</a></p>')
+        self.assertEqual(k, 0, o)
+        self.assertIn("DIPERBARUI", o)
+        self.assertEqual([c for c in STATE["calls"] if c[0] == "POST" and c[1] == "/api/campaigns"], [])
+        self.assertEqual(len(STATE["puts"]), 1)
+        self.assertIn("Baru", STATE["puts"][0]["body"])
+
+    def test_buat_kampanye_nama_baru_membuat(self):
+        k, o, _ = self._bkamp(nama="Nama Lain")
+        self.assertEqual(k, 0, o)
+        self.assertEqual(len([c for c in STATE["calls"] if c[0] == "POST" and c[1] == "/api/campaigns"]), 1)
+        self.assertNotIn("DIPERBARUI", o)
+
+    def test_buat_kampanye_nama_sama_bukan_draf_ditolak(self):
+        STATE["camp"]["status"] = "finished"
+        k, _, e = self._bkamp()
+        self.assertEqual(k, 6)
+        self.assertIn("tidak ditimpa", e)
+        self.assertEqual(STATE.get("puts", []), [])
+
+    def test_buat_kampanye_perbarui_id_eksplisit(self):
+        k, o, _ = self._bkamp("--perbarui", "7", nama="Nama Lain")
+        self.assertEqual(k, 0, o)
+        self.assertIn("DIPERBARUI", o)
+        self.assertEqual(STATE["puts"][0]["name"], "Nama Lain")
+
     def test_dokumen_mengakui_keterbatasan(self):
         d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
         for f in ("SKILL.md", "README.md"):
@@ -781,7 +876,7 @@ class Uji(unittest.TestCase):
             self.assertIn("kelalaian agent", t, f)
 
     def test_versi(self):
-        self.assertEqual(lm.VERSI, "1.0.2")
+        self.assertEqual(lm.VERSI, "1.0.5")
 
 
 if __name__ == "__main__":
