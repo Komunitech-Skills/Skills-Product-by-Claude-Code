@@ -1023,7 +1023,8 @@ class TesRevisi108(unittest.TestCase):
         for m, p, kurang, km in rows:
             self.assertIn("| {} | {} | {} | {} |".format(m, k.rp(Decimal(p)), k.rp(Decimal(kurang)),
                                                          k.rp(Decimal(km))), r.stdout)
-        self.assertIn("sebelum THR cair masih kurang total {}".format(k.rp(Decimal(sebelum))), r.stdout)
+        self.assertIn("sebelum THR cair (bulan ke-1 s.d. ke-2) masih kurang total {}".format(
+            k.rp(Decimal(sebelum))), r.stdout)
         self.assertIn("sisanya {} disetor SEKALIGUS ke dana darurat".format(k.rp(Decimal(thr - total))), r.stdout)
         self.assertIn("penambal SEMENTARA", r.stdout)
         # bulan cair bawaan 12 disebut sebagai asumsi
@@ -1043,6 +1044,154 @@ class TesRevisi108(unittest.TestCase):
     def test_tanpa_defisit_tidak_ada_rencana(self):
         r = jalankan(*(self.S1_ARG + self.pos_arg(self.S1)))
         self.assertNotIn("Menutup defisit rutin", r.stdout)
+
+
+class TesRevisi109(unittest.TestCase):
+    """v1.0.9 (uji ulang OpenClaw v1.0.8): (1) RINGKASAN SIAP TEMPEL di paling atas dengan kalimat rasio cicilan
+    lengkap (agent dulu menulis 24,8% = persen KPR saja), (2) sisa THR dicadangkan untuk sisa defisit dulu,
+    (3) kekurangan sebelum THR dicek terhadap saldo, (4) defisit utama berbasis gaji rutin.
+    Pembanding dihitung terpisah (Fraction/integer), bukan memanggil fungsi script."""
+
+    S1_ARG = TesRevisi108.S1_ARG + TesRevisi108.pos_arg(TesRevisi108.S1) + ["--status", "anak", "--saldo", "8jt"]
+    S2_POS = ["Kontrakan=1,8jt", "Cicilan motor=850rb", "Belanja dapur=2,3jt", "Listrik+air=450rb", "Bensin=450rb",
+              "SPP & uang saku anak=700rb:wajib", "Pulsa+wifi=300rb", "Kirim ortu=500rb",
+              "Rokok+ngopi=450rb:keinginan", "Jajan & makan di luar=300rb:keinginan"]
+    S2_ARG = ["anggaran", "--pemasukan", "Gaji=7jt", "--musiman", "THR=7jt", "--status", "anak",
+              "--bulan-cair", "4"] + TesRevisi108.pos_arg(S2_POS)
+
+    @staticmethod
+    def ringkasan(teks):
+        return teks.split("# Anggaran Bulanan")[0]
+
+    @staticmethod
+    def f_s2():
+        """Jadwal S2 independen: gaji 7jt, potongan per pos (keinginan 50%, fleksibel 10%, kelipatan 10rb)."""
+        gaji, non_tab = 7000000, 8100000
+        defisit = non_tab - gaji                                        # 1.100.000
+        kein = {"Rokok+ngopi": 450000, "Jajan & makan di luar": 300000}
+        flek = {"Belanja dapur": 2300000, "Listrik+air": 450000, "Bensin": 450000, "Pulsa+wifi": 300000}
+        potong = {nm: n // 2 // 10000 * 10000 for nm, n in kein.items()}
+        if sum(potong.values()) > defisit:
+            raise AssertionError("tak terduga")
+        perlu = defisit - sum(potong.values())
+        caps = {nm: n // 10 // 10000 * 10000 for nm, n in flek.items()}
+        if sum(caps.values()) <= perlu:
+            potong.update(caps)
+        total = sum(potong.values())
+        sisa_def = defisit - total
+
+        def ptg(m):
+            return total if m >= 3 else sum(min(p, math.ceil(F(p * m, 3) / 10000) * 10000) for p in potong.values())
+        rows = [(m, max(defisit - ptg(m), 0)) for m in range(1, 5)]
+        return defisit, total, sisa_def, rows
+
+    def test_ringkasan_rasio_cicilan_s1(self):
+        r = jalankan(*self.S1_ARG)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertTrue(r.stdout.startswith("# RINGKASAN SIAP TEMPEL"))
+        ring = self.ringkasan(r.stdout)
+        rasio = F(3100000 + 1200000, 12500000) * 100                  # 34,4%
+        self.assertEqual(round(float(rasio), 1), 34.4)
+        self.assertIn("> Total cicilan Rp4.300.000 = 34,4% dari gaji rutin Rp12.500.000 — DI ATAS batas aman 30%",
+                      ring)
+        self.assertNotIn("24,8%", ring)
+        self.assertIn("sisa Rp830.000/bulan dari gaji", ring)
+        self.assertIn("9 bulan = Rp97.650.000; 12 bulan = Rp130.200.000", ring)
+        # lama tercapai independen: setoran 830rb/bln, THR 12,5jt mulai bulan ke-12 lalu tiap 12 bulan
+        for target, harap in ((97650000 - 8000000, None), (130200000 - 8000000, None)):
+            tanpa = math.ceil(F(target, 830000))
+            m, kum = 0, 0
+            while kum < target:
+                m += 1
+                kum += 830000 + (12500000 if m >= 12 and (m - 12) % 12 == 0 else 0)
+            self.assertIn("tercapai {} bulan".format(tanpa), ring)
+            self.assertIn("atau {} bulan".format(m), ring)
+        self.assertIn("tercapai 109 bulan (~9 th 1 bln)", ring)
+        self.assertIn("atau 48 bulan (~4 th 0 bln)", ring)
+
+    def test_kalimat_cicilan_aman(self):
+        r = jalankan("anggaran", "--pemasukan", "Gaji=10jt", "--pos", "Cicilan motor=1jt", "--pos", "Kos=2jt")
+        self.assertIn("> Total cicilan Rp1.000.000 = 10,0% dari gaji rutin Rp10.000.000 — masih dalam batas aman 30%",
+                      r.stdout)
+        r = jalankan("anggaran", "--pemasukan", "Gaji=4jt", "--pos", "Kos=2jt")
+        self.assertNotIn("> Total cicilan", self.ringkasan(r.stdout))
+        self.assertNotIn("rasio cicilan", self.ringkasan(r.stdout))
+
+    def test_sisa_thr_dicadangkan_untuk_sisa_defisit_s2(self):
+        defisit, total, sisa_def, rows = self.f_s2()
+        self.assertEqual((defisit, total, sisa_def), (1100000, 710000, 390000))
+        sampai_cair = sum(k_ for _, k_ in rows)                          # 2.230.000
+        bebas = 7000000 - sampai_cair                                   # 4.770.000
+        bln = min(bebas // sisa_def, 4 + 12 - 4 - 1)                    # bulan ke-5 s.d. ke-15 (THR berikutnya bln 16)
+        cadangan, ke_dd = bln * sisa_def, bebas - bln * sisa_def
+        self.assertEqual((sampai_cair, bebas, bln, cadangan, ke_dd), (2230000, 4770000, 11, 4290000, 480000))
+        r = jalankan(*self.S2_ARG)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        ring = self.ringkasan(r.stdout)
+        self.assertIn("{} menutup kekurangan bulan ke-1 s.d. ke-4; dari sisanya {}, sebesar {} DICADANGKAN".format(
+            k.rp(Decimal(sampai_cair)), k.rp(Decimal(bebas)), k.rp(Decimal(cadangan))), ring)
+        self.assertIn("selama {} bulan (bulan ke-5 s.d. ke-15)".format(bln), ring)
+        self.assertIn("kelebihan {} baru masuk dana darurat".format(k.rp(Decimal(ke_dd))), ring)
+        self.assertNotIn("Rp4.770.000 disetor SEKALIGUS", r.stdout)
+        self.assertIn("Setoran dana darurat dari gaji Rp0", ring)
+
+    def test_thr_kecil_sisa_defisit_tanpa_sumber(self):
+        args = [a if a != "THR=7jt" else "THR=3jt" for a in self.S2_ARG]
+        r = jalankan(*args)
+        _, _, sisa_def, rows = self.f_s2()
+        bebas = 3000000 - sum(k_ for _, k_ in rows)                     # 770.000 -> 1 bulan
+        bln = bebas // sisa_def
+        self.assertEqual(bln, 1)
+        self.assertIn("selama 1 bulan (bulan ke-5 s.d. ke-5)", r.stdout)
+        self.assertIn("mulai bulan ke-6 sisa defisit belum punya sumber", r.stdout)
+        self.assertNotIn("baru masuk dana darurat", r.stdout)
+
+    def test_kekurangan_pra_thr_saldo_nol(self):
+        defisit, total, sisa_def, rows = self.f_s2()
+        sebelum = sum(k_ for m, k_ in rows if m < 4)                    # 1.840.000
+        cepat = sisa_def * 3                                            # potongan penuh sejak bulan 1
+        per_bln = math.ceil(F(sebelum, 3) / 10000) * 10000
+        r = jalankan(*(self.S2_ARG + ["--saldo", "0"]))
+        ring = self.ringkasan(r.stdout)
+        self.assertIn("masih kurang total {}. Saldo tabungan sekarang Rp0 TIDAK cukup (kurang {})".format(
+            k.rp(Decimal(sebelum)), k.rp(Decimal(sebelum))), ring)
+        self.assertIn("turun dari {} menjadi {}".format(k.rp(Decimal(sebelum)), k.rp(Decimal(cepat))), ring)
+        self.assertIn("tambah pemasukan sementara sekitar {}/bulan selama 3 bulan".format(k.rp(Decimal(per_bln))),
+                      ring)
+        self.assertIn("tunda/kurangi sementara", ring)
+        self.assertIn("Jangan ditutup paylater/pinjol/kartu kredit", ring)
+        self.assertNotIn("talangi dari saldo", r.stdout)
+        self.assertNotIn("pinjam", ring.lower())
+        # tanpa --saldo: disebut dianggap Rp0
+        r = jalankan(*self.S2_ARG)
+        self.assertIn("Rp0 (belum diisi, dianggap Rp0) TIDAK cukup", r.stdout)
+
+    def test_kekurangan_pra_thr_saldo_cukup(self):
+        r = jalankan(*(self.S2_ARG + ["--saldo", "2jt"]))
+        ring = self.ringkasan(r.stdout)
+        self.assertIn("Saldo tabungan Rp2.000.000 cukup untuk menalanginya; ganti dari THR saat cair", ring)
+        self.assertNotIn("TIDAK cukup", ring)
+        self.assertIn("| 1 | Rp260.000 | Rp840.000 | Rp840.000 | talangan dari saldo tabungan |", r.stdout)
+
+    def test_defisit_utama_basis_gaji_rutin(self):
+        r = jalankan(*self.S2_ARG)
+        tabel = r.stdout.split("## Pos pengeluaran")[1].split("## Banding")[0]
+        self.assertIn("| **DEFISIT dari gaji rutin** | | **-Rp1.100.000** |", tabel)
+        gamb = 8100000 - 7000000 - 7000000 // 12                         # 516.667 (THR/12 dibulatkan ke bawah)
+        self.assertEqual(gamb, 516667)
+        self.assertNotIn(k.rp(Decimal(gamb)), tabel)
+        self.assertNotIn(k.rp(Decimal(gamb)), self.ringkasan(r.stdout))
+        self.assertIn("Catatan gambaran setahun (bukan angka utama): kalau THR Rp7.000.000 dibagi rata ke 12 bulan, "
+                      "kekurangannya tampak tinggal {}/bulan".format(k.rp(Decimal(gamb))), r.stdout)
+        self.assertIn("> Pengeluaran rutin Rp8.100.000/bulan lebih besar dari gaji rutin Rp7.000.000 -> DEFISIT "
+                      "Rp1.100.000/bulan", r.stdout)
+        # bagian arus musiman tidak lagi menyuruh THR menambal defisit sendiri
+        self.assertNotIn("Kekurangan ini harus ditutup dari THR", r.stdout)
+
+    def test_skill_md_wajib_salin_ringkasan(self):
+        teks = (FOLDER / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("RINGKASAN SIAP TEMPEL", teks)
+        self.assertNotIn("sisanya disetor sekaligus ke dana darurat", teks)
 
 
 if __name__ == "__main__":
