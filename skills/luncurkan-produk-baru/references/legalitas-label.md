@@ -13,4 +13,16 @@ Ini daftar pertanyaan untuk dicek, bukan keputusan. Aturan berubah; **selalu coc
 | Ulasan/endorse | Aturan platform | Beri tanda jelas jika konten berbayar/endorse |
 | Data pendaftar (nama, nomor WA) | UU 27/2022 PDP | Beri tahu tujuan, simpan seperlunya, sediakan cara berhenti (skill `kebijakan-privasi-pdp` bila perlu) |
 
-Bila produk belum punya izin yang diwajibkan, tunda peluncuran publik; soft launch ke lingkaran kecil pun tetap sebaiknya berizin bila produk dijual.
+## Aturan tegas: izin edar belum terbit
+
+Berlaku untuk kosmetik (notifikasi BPOM), pangan olahan (PIRT/BPOM MD), obat/suplemen/obat tradisional, dan alat kesehatan (izin edar).
+
+| Boleh sebelum izin terbit | DILARANG sebelum izin terbit |
+|---|---|
+| Riset pasar & wawancara calon pembeli | Menjual, termasuk ke teman/lingkaran kecil |
+| Daftar tunggu **tanpa pembayaran** (nama + nomor WA; tulis "belum menerima pesanan dan belum menerima uang") | Pre-order, DP, "booking slot" berbayar |
+| Persiapan foto, label, naskah, listing yang belum aktif | Mengaktifkan listing marketplace, iklan/promo yang menerima pesanan, voucher |
+| Teaser tanpa klaim khasiat dan tanpa tombol beli | Soft launch berbayar atau "launching tetap jalan" tanpa nomor izin |
+| Meminta masukan atas sampel desain (bukan produk dijual) | Membagikan produk jadi sebagai sampel KOL/pembeli sebelum izin |
+
+Akibatnya **T0 digeser ke setelah izin terbit** (skill memberi jarak minimal 7 hari persiapan). Dasar umum: ketentuan izin edar BPOM/Kemenkes dan UU Kesehatan. Nomor dan pasal peraturan **sengaja tidak ditulis di sini** karena sering berubah; cek versi terbaru di jdih.pom.go.id, BPOM, atau Dinkes setempat. PERLU REVIEW oleh pihak berwenang/konsultan sebelum skill ini menyebut nomor peraturan apa pun.
