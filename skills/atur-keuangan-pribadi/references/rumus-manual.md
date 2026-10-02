@@ -13,10 +13,14 @@ Semua rumus di bawah sama persis dengan yang dipakai `scripts/keuangan.py`. Tunj
 Pemasukan/bulan = Σ pemasukan bersih rutin + floor(Σ pemasukan tahunan ÷ 12)
 Sisa            = Pemasukan/bulan − Σ semua pos
 Target          : Sisa = Rp0 (setiap rupiah punya tugas)
-Pola 50/30/20   : Batas kebutuhan = 50% × Pemasukan; keinginan 30%; tabungan 20%
+Pola 50/30/20   : Batas kebutuhan = 50% × Pemasukan RUTIN (tanpa THR/12, sama dengan rasio cicilan); keinginan 30%; tabungan 20%
 Sisa rutin      = Σ pemasukan bersih rutin − Σ semua pos   ← batas setoran/transfer BULANAN
 THR/bonus       = disetor SEKALIGUS saat cair (nominal penuh), tidak ditambahkan lagi ke setoran bulanan
 Bila sisa rutin < 0: kekurangan/bulan ditambal THR; THR cukup floor(THR ÷ kekurangan) bulan
+Defisit rutin    = Σ pos di luar tabungan − gaji; setoran tabungan dari gaji = 0 selama defisit
+Pemangkasan      = Keinginan maks. 50%/pos → kebutuhan fleksibel maks. 10%/pos → sosial non-ibadah maks. 50%/pos,
+                   kelipatan Rp10.000, bertahap 3 bulan (1/3, 2/3, penuh); kekurangan per bulan sampai THR cair
+                   ditutup THR (penambal sementara), sisa THR disetor sekaligus ke dana darurat
 Rasio cicilan   = Σ cicilan ÷ Pemasukan RUTIN (tanpa THR/12) × 100%   (patokan umum ≤ 30%)
 ```
 Contoh: gaji 7.500.000; THR 7.500.000 + bonus 5.000.000 → 12.500.000 ÷ 12 = 1.041.666,67 → **1.041.666**. Pemasukan/bulan = 8.541.666 (gambaran setahun).
