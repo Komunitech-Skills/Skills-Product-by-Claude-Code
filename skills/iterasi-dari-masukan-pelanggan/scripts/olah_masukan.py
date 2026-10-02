@@ -36,7 +36,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.7"
+VERSI = "1.0.8"
 
 
 class Gagal(Exception):
@@ -288,7 +288,34 @@ FRASA_103 = [
     # v1.0.5: "tidak sampai sejam/2 hari sudah ..." = kurang dari (cepat), bukan "belum sampai"
     (r"\btidak\s+(?:sampai|hingga)\s+(?=(?:\d+\s*(?:menit|jam|hari|minggu)|se(?:jam|hari|minggu|menit)|setengah\s+(?:jam|hari))\b)", "dalamwaktu "),  # bukan tema pengiriman
 ]
-FRASA = FRASA_104 + FRASA_103 + [
+# v1.0.8 (temuan uji OpenClaw toko kue): tekstur kue gagal, jamur tanpa kata "jamur", keterlambatan tanpa kata "telat"
+_HARI_JAM = (r"(?:senin|selasa|rabu|kamis|jumat|sabtu|minggu|besok\w*|lusa|pagi|siang|sore|malam|subuh|tengah\s+malam|tanggal\s+\d+|"
+             r"tgl\s+\d+|jam\s+\d+|pukul\s+\d+|\d+\s*(?:jam|hari|minggu))")
+FRASA_108 = [
+    # "roti sobek" = nama produk, bukan barang robek
+    (r"\broti\s+robek(nya)?\b", r"rotisobek\1"),
+    # bintik hijau/putih berbulu di makanan = jamur awal (keamanan), bukan kualitas biasa
+    (r"\b(?:ber)?bintik\w*\s+(?:\w+\s+)?(?:hijau|biru|putih\s+berbulu|hitam\s+berbulu)\b|\bberbulu\s+(?:hijau|putih|halus)\b", "berjamur"),
+    # tekstur kue/roti gagal: "bantat", "tengahnya (masih) basah/mentah/lembek"
+    (r"\b(?:tengah|dalam|bagian\s+dalam)(?:nya)?\s+(?:masih\s+|agak\s+|sedikit\s+|kok\s+)?(?:basah|mentah|lembek|bantat|belum\s+matang)\b",
+     "tengahbasah"),
+    # "nyampe jam 4 padahal janjinya jam 10" = terlambat (tanpa kata telat)
+    (r"\b((?:sampai|datang|tiba|diantar|dikirim|diterima)\w*\s+(?:\w+\s+){0,5}?)(?=,?\s*padahal\s+(?:\w+\s+){0,2}?(?:di)?janji)", r"\1telatlama "),
+    (r"\b((?:sampai|datang|tiba|diantar|dikirim)\w*\s+)(?=(?:\w+\s+){0,2}?(?:lewat|melewati|lebih\s+dari)\s+(?:jam\s+)?(?:janji|estimasi|jadwal))",
+     r"\1telatlama "),
+    # "acara sudah bubar/selesai" saat barang datang = terlambat
+    (r"\bacara\w*(?:\s+[a-z]+)?\s+(?:sudah\s+|telah\s+)?bubar\b|\bacara\w*(?:\s+[a-z]+)?\s+(?:sudah|telah)\s+(?:selesai|kelar|usai)\b",
+     "telatlama acara"),
+    # "baru nyampe hari jumat, padahal pesan senin" / "pesan senin baru sampai jumat"
+    (r"\b(baru\s+(?:sampai|datang|tiba|diterima|dikirim)\w*\s+(?:hari\s+)?" + _HARI_JAM + r")\b(?=[^.!?]{0,30}?\bpadahal\b)", r"\1 sudahlama"),
+    (r"\b((?:pesan|order|checkout|beli|bayar|transfer)\w*\s+(?:(?:dari|sejak|hari|tanggal|tgl)\s+)*" + _HARI_JAM +
+     r"\b[^.!?]{0,40}?\bbaru\s+(?:sampai|datang|tiba|diterima|dikirim)\w*)", r"\1 sudahlama"),
+    # "lama banget pesanannya" / "paket saya kok lama" = pengiriman lambat (bukan "tahan lama")
+    (r"\b(?:lama|lambat)\b(?=\s+(?:banget\s+|sekali\s+|amat\s+)?(?:\w+\s+){0,2}?(?:pesanan|paket|kiriman)\w*\b)", "lama telatlama"),
+    (r"\b((?:pesanan|paket|kiriman)\w*\s+(?:(?!tahan\b)\w+\s+){0,3}?)(?<!tahan )(?:lama|lambat)\b(?!\s+(?:sekali\s+)?(?:dipakai|awet|tahan))",
+     r"\1lama telatlama"),
+]
+FRASA = FRASA_108 + FRASA_104 + FRASA_103 + [
     (r"\bkurang\s+lebih\b", "kuranglebih"),
     (r"(?:\btidak\s+ada\s+(?:yang\s+)?(?:minus|masalah|kendala|keluhan|kekurangan|komplain|cacat|lecet|kurang)(?:nya)?\b"
      r"|\btanpa\s+(?:minus|cacat|kendala|masalah)\b|\bno\s+minus\b)(?:\s+(?:sedikit\s*pun|satu\s*pun|sama\s+sekali|apa\s*pun))?", "tanpaminus"),
@@ -370,7 +397,7 @@ kemahalan kemanisan keasinan kepedasan kepahitan keasaman kusut noda jerawat jer
 berantakan php kosong harganaik sudahlama tunggulama cepatrusak fasilitasrusak musikkeras makanandingin kurangjumlah
 kesal jengkel sebal rugi dirugikan bosan malas batal dibatalkan rembes merembes stuck nyangkut tertahan mandek belumsampai mengelupas
 bolong bengkok karatan konslet korslet longgar kendor deadpixel diabaikan tidakrapat belumdikirim berlendir menggumpal stoklama segelrusak
-tersembunyi telatlama""".split())
+tersembunyi telatlama bantat tengahbasah""".split())
 KELUHAN_KUAT = {"salahpesanan", "kurangjumlah", "bendaasing", "sakitperut", "belumsampai", "belumdikirim", "nyasar", "tidaksesuai",
                 "keracunan", "basi", "kedaluwarsa", "telatlama"}
 PENGUAT = {"begitu", "terlalu", "banget", "sekali", "agak", "sangat", "amat", "cukup", "sih", "juga"}
@@ -402,7 +429,7 @@ TANYA_MINTA = re.compile(r"\b(kapan|bisa|boleh|ada|tolong|mohon|apakah|mau)\b")
 # id, label, dampak (1-5), pola (bagian regex; imbuhan di-/ter-/ke-/ber- dan -nya/-kan/-an/-in/-ya dikenali)
 TEMA_BAWAAN = [
     ("rasa", "Rasa / cita rasa", 4, r"rasa|enak|lezat|nikmat|gurih|hambar|anyep|asin|manis|pedas|pahit|asam|amis|gosong|mentah|renyah|empuk|"
-     r"alot|keras|lembek|pera|bumbu|nendang|kematangan|matang|kemanisan|keasinan|kepedasan|kepahitan|keasaman|makanandingin|masihhangat"),
+     r"alot|keras|lembek|pera|bumbu|nendang|kematangan|matang|kemanisan|keasinan|kepedasan|kepahitan|keasaman|makanandingin|masihhangat|bantat|tengahbasah|tekstur"),
     ("kemasan", "Kemasan / packing", 3, r"kemasan|kemas|packing|packaging|pack|bungkus|dus|kardus|box|kotak|plastik|bubble|bubblewrap|bocor|"
      r"tumpah|penyok|segel|wadah|botol|toples|lakban|kresek|rembes|merembes|tidakrapat|segelrusak"),
     ("harga", "Harga / ongkir", 2, r"harga|mahal|murah|terjangkau|ongkir|diskon|promo|sepadan|biaya|tarif|hemat|pricey|kemahalan|harganaik"),
@@ -524,6 +551,8 @@ def _kata_umum_sapaan(k):
     # v1.0.6 bentuk kata kerja dari imbuhan, bukan daftar tertutup: "lanjutkan", "kirimkan", "teruskan" (akhiran -kan),
     # "dibantu", "diproses", "ditunggu" (awalan + kata dasar yang dikenal). Akhiran -in/-lah TIDAK dipakai (nama: Paimin, Abdullah).
     if len(k) >= 6 and k.endswith("kan"):
+        return True
+    if len(k) >= 6 and k.endswith("nya"):   # v1.0.8 "kak kuenya", "kak rotinya" = benda, bukan nama
         return True
     kamus = STOPWORD_SAPAAN | AKSI | set(POS) | set(NEG)   # kata dasar >= 4 huruf: "dimas" (mas), "dinda" (nda) tetap nama
     for awal in ("di", "me", "ter", "ber"):
@@ -811,19 +840,47 @@ def baca_mentah(path):
 RE_WA1 = re.compile(r"^\u200e?\[?(\d{1,2}[/.]\d{1,2}[/.]\d{2,4}),?\s+\d{1,2}[.:]\d{2}(?:[.:]\d{2})?(?:\s?[APap][Mm])?\]?\s+-?\s*(.*)$")
 
 
+RE_WA_JAM = re.compile(r"^\[?\d{1,2}[/.]\d{1,2}[/.]\d{2,4},?\s+(\d{1,2})[.:](\d{2})(?:[.:]\d{2})?(?:\s?([APap])\.?[Mm])?")
+
+
+def _jam_wa(baris):
+    """Menit sejak tengah malam dari baris ekspor WA, atau None."""
+    m = RE_WA_JAM.match(baris)
+    if not m:
+        return None
+    j, mn = int(m.group(1)), int(m.group(2))
+    if m.group(3):
+        j = j % 12 + (12 if m.group(3).lower() == "p" else 0)
+    return j * 60 + mn if j < 24 and mn < 60 else None
+
+
+def _tanggal_wa(tgl, urutan="hb"):
+    m = re.match(r"(\d{1,2})[/.](\d{1,2})[/.](\d{2,4})", tgl or "")
+    if not m:
+        return None
+    a, b, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    y += 2000 if y < 100 else 0
+    h, bl = (b, a) if urutan == "bh" else (a, b)
+    try:
+        return datetime.date(y, bl, h)
+    except ValueError:
+        return None
+
+
 def baca_wa(teks, staf=None, tanpa_sapaan=False):
-    """Kembalikan (daftar [(tanggal, pengirim, isi)], Counter pengirim)."""
+    """Kembalikan (daftar [(tanggal, pengirim, isi, menit_hari)], Counter pengirim)."""
     pesan = []
     for baris in teks.splitlines():
         baris = baris.replace("\u200e", "").replace("\u202f", " ").replace("\xa0", " ")
         m = RE_WA1.match(baris)
         if m:
             sisa = m.group(2)
+            jam = _jam_wa(baris)
             if ": " in sisa:
                 pengirim, isi = sisa.split(": ", 1)
-                pesan.append([m.group(1), pengirim.strip(), isi])
+                pesan.append([m.group(1), pengirim.strip(), isi, jam])
             else:
-                pesan.append([m.group(1), None, sisa])  # pesan sistem
+                pesan.append([m.group(1), None, sisa, jam])  # pesan sistem
         elif pesan and baris.strip():
             pesan[-1][2] += " " + baris.strip()
     hitung = Counter(p[1] for p in pesan if p[1])
@@ -1108,6 +1165,9 @@ def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skal
             if pr:
                 peringatan.append(pr)
     kolom_identitas = [h for h in header if set(_tok(h)) & (KOLOM_NAMA | {"pesanan", "order", "invoice", "id"}) and h not in kt_nama]
+    # v1.0.8 kolom balasan penjual (Shopee/Tokopedia/Google Maps): dipakai HANYA untuk menghitung ulasan yang belum dibalas
+    k_balas = [h for h in header if h not in kt_nama and (set(_tok(h)) & KATA_BALASAN or
+                                                          (set(_tok(h)) & {"tanggapan", "respon", "respons"} and set(_tok(h)) & KATA_PENJUAL))]
     urutan = "hb"
     if kd:
         urutan, pr_tgl = deteksi_urutan([b.get(kd[0]) for b in baris_semua], urutan_tanggal)
@@ -1129,8 +1189,11 @@ def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skal
                 if isi:
                     hasil.append({"kosong": True})
                 continue
+            dibalas = None
+            if k_balas:
+                dibalas = (baris.get(k_balas[0]) or "").strip().lower() not in KOSONG
             hasil.append({"tgl": tgl, "nilai": nilai, "skala": sk if nilai is not None else None, "isi": isi, "kanal": kanal or None,
-                          "identitas": (k,) + identitas, "peran": peran, "kolom": k, "urutan": urutan})
+                          "identitas": (k,) + identitas, "peran": peran, "kolom": k, "urutan": urutan, "dibalas": dibalas})
     nilai_baris = []
     if kb:
         for baris in baris_semua:
@@ -1140,7 +1203,7 @@ def baca_csv(teks, kolom_teks=None, kolom_bintang=None, kolom_tanggal=None, skal
     responden = sum(1 for b in baris_semua if any((b.get(k) or "").strip().lower() not in KOSONG for k, _ in kt))
     info = {"kolom_teks": kt_nama, "kolom_nilai": kb[0] if kb else None, "nilai_baris": nilai_baris if sk == 10 else [],
             "responden": responden, "skala_nilai": ("0-10" if sk == 10 else "1-5") if kb else None,
-            "kolom_tanggal": kd[0] if kd else None, "baris": len(baris_semua),
+            "kolom_tanggal": kd[0] if kd else None, "baris": len(baris_semua), "kolom_balasan": k_balas[0] if k_balas else None,
             "urutan_tanggal": ("bulan/hari" if urutan == "bh" else "hari/bulan") if kd else None}
     return hasil, info, peringatan
 
@@ -1868,6 +1931,8 @@ def perlu_dibaca(i, kata_pos=None, kata_neg=None):
     """Alasan masukan wajib dibaca agent, atau None. Tidak ada keluhan yang boleh hilang diam-diam:
     - 'tanpa tema': tidak cocok tema mana pun;
     - 'keluhan tanpa tabel': bernada keluhan tetapi tidak dihitung sebagai keluhan di tema mana pun."""
+    if i.get("koreksi") and i["tema"]:
+        return None   # v1.0.8 sudah diputuskan agent lewat --koreksi
     if not i["tema"]:
         return "tanpa tema"
     if any("keluhan" in j for j in i["tema"].values()):
@@ -1908,7 +1973,12 @@ def olah(sumber, opsi, konfigurasi=None):
         if info["jenis"] == "whatsapp":
             meta["pengirim"][kanal] = hitung
             nama = list(hitung)
-            for tgl, pengirim, isi in mentah:
+            balas = _balasan_wa(mentah, staf, info.get("urutan", "hb"), getattr(opsi, "batas_balas_jam", 24))
+            if staf and not any(any(s_ in (p[1] or "").lower() for s_ in staf) for p in mentah):
+                meta["peringatan"].append("%s: tidak ada pesan dari staf (%s) - nama --staf tidak cocok dengan pengirim? Balasan admin TIDAK "
+                                          "dihitung. Cek dengan --daftar-pengirim." % (info["berkas"], ", ".join(getattr(opsi, "staf_list", []))))
+                balas = {}
+            for idx, (tgl, pengirim, isi, _jam) in enumerate(mentah):
                 if pengirim is None or RE_SISTEM_TEKS.search(isi) or RE_PENGIRIM_MEDIA.fullmatch(isi.strip()):
                     dibuang["pesan sistem/media"] += 1
                     continue
@@ -1920,8 +1990,10 @@ def olah(sumber, opsi, konfigurasi=None):
                 if ada_media and not re.search(r"\w", isi) and not RE_EMOJI_KELUHAN.search(isi):
                     dibuang["pesan sistem/media"] += 1
                     continue
+                dibalas, jeda = balas.get(idx, (None, None))
                 item.append(dict(kanal=kanal, tgl=tgl, nilai=None, skala=None, isi=isi, nama=nama, peran="ulasan", urutan=info.get("urutan", "hb"),
-                                 identitas=(info["berkas"], pengirim.lower(), tgl), berkas=info["berkas"], min_kata=2))
+                                 identitas=(info["berkas"], pengirim.lower(), tgl), berkas=info["berkas"], min_kata=2,
+                                 dibalas=dibalas, jeda_balas=jeda, sumber_balas="wa"))
         else:
             for b in mentah:
                 if b.get("kosong"):
@@ -1931,7 +2003,8 @@ def olah(sumber, opsi, konfigurasi=None):
                                  peran=b.get("peran", "ulasan"), kolom=b.get("kolom"), urutan=b.get("urutan", "hb"),
                                  identitas=(info["berkas"],) + b["identitas"] if b.get("identitas") else None, berkas=info["berkas"],
                                  # ulasan 1 kata tetap dihitung bila ada nilai/bintang ("basi" + bintang 1) atau dari kolom permintaan
-                                 min_kata=1 if b.get("peran") == "saran" or b["nilai"] is not None else 2))
+                                 min_kata=1 if b.get("peran") == "saran" or b["nilai"] is not None else 2,
+                                 dibalas=b.get("dibalas"), jeda_balas=None, sumber_balas="csv"))
         info["masukan_mentah"] = len(item) - n_awal
         meta["sumber"].append(info)
         for p in info["peringatan"]:
@@ -1979,7 +2052,8 @@ def olah(sumber, opsi, konfigurasi=None):
                            "kanal": it["kanal"], "bulan": bulan_dari(it["tgl"], it.get("urutan", "hb")),
                            "bintang": int(round(it["nilai"])) if it["nilai"] is not None and it["skala"] == 5 else None,
                            "nilai_0_10": it["nilai"] if it["skala"] == 10 else None, "peran": it["peran"],
-                           "teks": anonim, "sentimen": sent, "tema": {k: sorted(v) for k, v in per_tema.items()}})
+                           "teks": anonim, "sentimen": sent, "tema": {k: sorted(v) for k, v in per_tema.items()},
+                           "dibalas": it.get("dibalas"), "jeda_balas_menit": it.get("jeda_balas"), "sumber_balas": it.get("sumber_balas")})
     sekarang = datetime.date.today()
     depan = sorted({i["bulan"] for i in hasil_item if i["bulan"] and i["bulan"] > "%04d-%02d" % (sekarang.year, sekarang.month)})
     if depan:
@@ -1996,7 +2070,95 @@ def olah(sumber, opsi, konfigurasi=None):
             kol = (" (kolom dipakai: %s)" % ", ".join(info["kolom_teks"])) if info.get("kolom_teks") else ""
             meta["peringatan"].append("%s: %d dari %d masukan terlalu pendek/kosong%s - periksa apakah kolom/berkasnya benar." % (
                 info["berkas"], p, n, kol))
+    if getattr(opsi, "koreksi", None):
+        meta["koreksi"] = terapkan_koreksi(hasil_item, opsi.koreksi, tema, meta["peringatan"])
     return hasil_item, tema, dict(dibuang), meta
+
+
+def _balasan_wa(pesan, staf, urutan="hb", batas_jam=24):
+    """v1.0.8 {indeks pesan pelanggan: (dibalas_dalam_batas, jeda_menit)}. Pesan pelanggan dianggap dibalas bila pesan BERIKUTNYA dari
+    pengirim lain adalah staf, dalam batas jam. Pesan beruntun dari pelanggan yang sama ikut dibalas oleh balasan yang sama.
+    Paling akurat untuk ekspor per pelanggan; di ekspor grup/campuran, balasan untuk orang lain bisa terhitung. Tanpa --staf: {}."""
+    if not staf:
+        return {}
+    hasil = {}
+    n = len(pesan)
+    for i, (tgl, pengirim, isi, jam) in enumerate(pesan):
+        if pengirim is None or any(s_ in pengirim.lower() for s_ in staf):
+            continue
+        j = i + 1
+        while j < n and (pesan[j][1] is None or pesan[j][1] == pengirim):
+            j += 1
+        if j >= n or not any(s_ in pesan[j][1].lower() for s_ in staf):
+            hasil[i] = (False, None)
+            continue
+        t1, t2 = _tanggal_wa(tgl, urutan), _tanggal_wa(pesan[j][0], urutan)
+        jeda = None
+        if t1 and t2 and jam is not None and pesan[j][3] is not None:
+            jeda = (t2 - t1).days * 1440 + pesan[j][3] - jam
+        hasil[i] = (jeda is None or jeda <= batas_jam * 60, jeda)
+    return hasil
+
+
+KOLOM_KOREKSI = ("cuplikan", "tema", "jenis", "sentimen", "catatan")
+
+
+def terapkan_koreksi(hasil_item, path, tema, peringatan):
+    """v1.0.8 koreksi agent yang TERCATAT: CSV kolom cuplikan,tema,jenis,sentimen,catatan. Masukan yang teks (sudah disamarkan) memuat
+    cuplikan diberi tema/jenis/sentimen baru; '-tema' membuang tema. Hitungan lalu dihitung ulang script (bukan diubah tangan)."""
+    teks, _ = baca_mentah(path)
+    try:
+        baris = list(csv.DictReader(io.StringIO(teks.lstrip("\ufeff"))))
+    except csv.Error as e:
+        raise Gagal("berkas koreksi %s tidak bisa dibaca sebagai CSV (%s)." % (path, e))
+    if not baris or "cuplikan" not in {(h or "").strip().lower() for h in baris[0]}:
+        raise Gagal("berkas koreksi %s harus CSV dengan judul kolom: %s (lihat templates/koreksi-contoh.csv)." % (path, ",".join(KOLOM_KOREKSI)))
+    ids = {t["id"] for t in tema}
+    catat = []
+    for no, b in enumerate(baris, 2):
+        b = {(k or "").strip().lower(): (v or "").strip() for k, v in b.items()}
+        cup = re.sub(r"\s+", " ", b.get("cuplikan", "")).lower()
+        if len(cup) < 5:
+            peringatan.append("koreksi baris %d: cuplikan kosong/terlalu pendek (min. 5 huruf) - dilewati." % no)
+            continue
+        jenis = (b.get("jenis") or "keluhan").lower()
+        sent = (b.get("sentimen") or "").lower()
+        if jenis not in ("keluhan", "pujian", "saran", "netral") or sent not in ("", "positif", "netral", "negatif"):
+            peringatan.append("koreksi baris %d: jenis harus keluhan/pujian/saran/netral dan sentimen positif/netral/negatif - dilewati." % no)
+            continue
+        tambah, buang, salah = [], [], []
+        for t in re.split(r"[;,]", b.get("tema", "")):
+            t = t.strip().lower()
+            if not t:
+                continue
+            (buang if t.startswith("-") else tambah).append(t.lstrip("-"))
+            if t.lstrip("-") not in ids:
+                salah.append(t.lstrip("-"))
+        if salah:
+            peringatan.append("koreksi baris %d: tema tidak dikenal: %s (pakai id tema, mis. %s) - dilewati." % (
+                no, ", ".join(salah), ", ".join(sorted(ids)[:6])))
+            continue
+        kena = [i for i in hasil_item if cup in re.sub(r"\s+", " ", i["teks"]).lower()]
+        if not kena:
+            peringatan.append("koreksi baris %d: cuplikan \"%s\" tidak ditemukan di masukan (cocokkan dengan teks yang SUDAH disamarkan) - "
+                              "tidak diterapkan." % (no, b.get("cuplikan")))
+            continue
+        if len(kena) > 1:
+            peringatan.append("koreksi baris %d: cuplikan \"%s\" cocok dengan %d masukan - semuanya dikoreksi; perpanjang cuplikan bila "
+                              "hanya satu yang dimaksud." % (no, b.get("cuplikan"), len(kena)))
+        for i in kena:
+            for t in buang:
+                i["tema"].pop(t, None)
+            for t in tambah:
+                i["tema"][t] = [jenis]
+            if sent:
+                i["sentimen"] = sent
+            if jenis == "keluhan" and tambah:
+                i["nada_keluhan"] = True
+            i["koreksi"] = b.get("catatan") or "koreksi agent"
+        catat.append({"baris": no, "cuplikan": b.get("cuplikan"), "tema": b.get("tema", ""), "jenis": jenis, "sentimen": sent,
+                      "catatan": b.get("catatan", ""), "masukan": len(kena)})
+    return catat
 
 
 def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
@@ -2081,6 +2243,27 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
     internal = {g for pola, g in FRASA if isinstance(g, str) and re.fullmatch(r"[a-z]+", g) and not re.search(r"\b%s\b" % g, pola)}
     kata = Counter(w for i in tanpa for w in re.findall(r"[a-z]{4,}", normalkan(i["teks"]))
                    if w not in STOP and (w not in internal or w in i["teks"].lower()))
+    sent_kanal = {}
+    for i in hasil_item:
+        sent_kanal.setdefault(i["kanal"], {"positif": 0, "netral": 0, "negatif": 0})[i["sentimen"]] += 1
+    respons = {}
+    for i in hasil_item:
+        if i.get("dibalas") is None:
+            continue
+        r_ = respons.setdefault(i["kanal"], {"sumber": "chat WhatsApp" if i.get("sumber_balas") == "wa" else "kolom balasan penjual",
+                                             "masukan": 0, "dibalas": 0, "keluhan": 0, "keluhan_tanpa_balasan": 0,
+                                             "keluhan_dibalas_lambat": 0, "contoh_tanpa_balasan": []})
+        keluhan = any("keluhan" in v for v in i["tema"].values()) or bool(i.get("nada_keluhan"))
+        r_["masukan"] += 1
+        r_["dibalas"] += bool(i["dibalas"])
+        if keluhan:
+            r_["keluhan"] += 1
+            if not i["dibalas"]:
+                if i.get("jeda_balas_menit") is not None:
+                    r_["keluhan_dibalas_lambat"] += 1
+                else:
+                    r_["keluhan_tanpa_balasan"] += 1
+                    r_["contoh_tanpa_balasan"].append(potong(i["teks"], 90))
     nps = None
     nilai10 = [v for s_ in meta.get("sumber", []) for v in s_.get("nilai_baris", [])]
     if not nilai10 and not meta.get("sumber"):
@@ -2096,6 +2279,9 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
                                                           "kolom_tanggal", "baris", "responden", "catatan", "urutan_tanggal")} for s in meta.get("sumber", [])],
         "peringatan": peringatan,
         "per_kanal": dict(kanal.most_common()), "sentimen": {k: sent.get(k, 0) for k in ("positif", "netral", "negatif")},
+        "sentimen_per_kanal": {k: sent_kanal[k] for k, _ in kanal.most_common()},
+        "respons_staf": respons, "batas_balas_jam": getattr(opsi, "batas_balas_jam", 24),
+        "koreksi": meta.get("koreksi", []),
         "nps": nps,
         "per_bulan": bulan_n,
         "tanpa_tanggal": sum(1 for i in hasil_item if not i["bulan"]),
@@ -2141,6 +2327,9 @@ def cetak_teks(r, opsi, maks_tanpa_tema=20):
     if n:
         out.append("Sentimen: positif %d (%.1f%%), netral %d (%.1f%%), negatif %d (%.1f%%)" % (
             s["positif"], s["positif"] * 100.0 / n, s["netral"], s["netral"] * 100.0 / n, s["negatif"], s["negatif"] * 100.0 / n))
+    if len(r.get("sentimen_per_kanal", {})) > 1:
+        out.append("Sentimen per kanal: " + "; ".join("%s: positif %d, netral %d, negatif %d" % (k, v["positif"], v["netral"], v["negatif"])
+                                                      for k, v in r["sentimen_per_kanal"].items()))
     if r.get("nps"):
         x = r["nps"]
         out.append("Nilai 0-10 (NPS): %d responden - promotor %d, pasif %d, detraktor %d -> NPS %+.1f%s" % (
@@ -2152,6 +2341,22 @@ def cetak_teks(r, opsi, maks_tanpa_tema=20):
         out.append("Tidak dihitung: " + ", ".join("%s %d" % kv for kv in r["dibuang"].items()))
     if r.get("data_kecil"):
         out.append("Data < 30 masukan: pakai sebagai arah saja, bukan persentase pasti.")
+    if r.get("koreksi"):
+        out.append("Koreksi agent diterapkan (--koreksi): %d baris, %d masukan - angka di bawah SUDAH termasuk koreksi ini." % (
+            len(r["koreksi"]), sum(k["masukan"] for k in r["koreksi"])))
+        out += ["- \"%s\" -> tema %s, %s%s%s" % (k["cuplikan"], k["tema"] or "-", k["jenis"], (", sentimen " + k["sentimen"]) if k["sentimen"] else "",
+                                             (" (%s)" % k["catatan"]) if k["catatan"] else "") for k in r["koreksi"]]
+    jenis_wa = [s_ for s_ in r.get("sumber", []) if s_["jenis"] == "whatsapp"]
+    if r.get("respons_staf"):
+        out.append("\n## Respons staf / penjual\n")
+        for k, v in r["respons_staf"].items():
+            out.append("- %s (%s): %d dari %d masukan dibalas%s; keluhan TANPA balasan: %d dari %d%s" % (
+                k, v["sumber"], v["dibalas"], v["masukan"], (" <= %d jam" % r.get("batas_balas_jam", 24)) if v["sumber"] == "chat WhatsApp" else "",
+                v["keluhan_tanpa_balasan"], v["keluhan"],
+                (", dibalas > %d jam: %d" % (r.get("batas_balas_jam", 24), v["keluhan_dibalas_lambat"])) if v["keluhan_dibalas_lambat"] else ""))
+            out += ["  - belum dibalas: \"%s\"" % c for c in v["contoh_tanpa_balasan"][:10]]
+    if any(s_["kanal"] not in r.get("respons_staf", {}) for s_ in jenis_wa):
+        out.append("\nRespons admin WhatsApp belum dihitung: jalankan dengan --staf \"Nama Admin\" (lihat --daftar-pengirim).")
     out.append("\n## Isu teratas (skor = jumlah keluhan x dampak 1-5) - KANDIDAT, verifikasi tiap tema\n")
     out.append("| # | Tema | Keluhan (% dari semua) | Pujian | Saran | Dampak | Skor | Tren | Kanal | Prioritas |")
     out.append("|---|---|---|---|---|---|---|---|---|---|")
@@ -2233,6 +2438,8 @@ def main(argv=None):
     ap.add_argument("--contoh", type=int, default=3)
     ap.add_argument("--min-bulan", type=int, default=5, help="Minimal masukan per bulan agar tren dihitung (default 5)")
     ap.add_argument("--format", choices=["teks", "json"], default="teks")
+    ap.add_argument("--koreksi", help="CSV koreksi agent (cuplikan,tema,jenis,sentimen,catatan) - lihat templates/koreksi-contoh.csv")
+    ap.add_argument("--batas-balas-jam", type=float, default=24, help="Batas jam agar pesan WA dianggap dibalas staf (default 24)")
     ap.add_argument("--simpan-anonim", help="Simpan data yang SUDAH disamarkan ke CSV ini (kanal,bulan,bintang,nilai_0_10,sentimen,tema,teks,keluhan_tema,perlu_dibaca)")
     opsi = ap.parse_args(argv)
     opsi.staf_list = [s.strip() for s in opsi.staf.split(",") if s.strip()]
@@ -2258,12 +2465,14 @@ def main(argv=None):
             try:
                 with open(opsi.simpan_anonim, "w", encoding="utf-8", newline="") as f:
                     w = csv.writer(f)
-                    w.writerow(["kanal", "bulan", "bintang", "nilai_0_10", "sentimen", "tema", "teks", "keluhan_tema", "perlu_dibaca"])
+                    w.writerow(["kanal", "bulan", "bintang", "nilai_0_10", "sentimen", "tema", "teks", "keluhan_tema", "perlu_dibaca",
+                                "dibalas", "koreksi"])
                     for i in hasil_item:
                         n10 = i.get("nilai_0_10")
                         w.writerow([i["kanal"], i["bulan"] or "", i["bintang"] or "",
                                     "" if n10 is None else ("%g" % n10), i["sentimen"], ";".join(sorted(i["tema"])), i["teks"],
-                                    ";".join(sorted(k for k, v in i["tema"].items() if "keluhan" in v)), perlu_dibaca(i) or ""])
+                                    ";".join(sorted(k for k, v in i["tema"].items() if "keluhan" in v)), perlu_dibaca(i) or "",
+                                    {True: "ya", False: "tidak"}.get(i.get("dibalas"), ""), i.get("koreksi", "")])
             except OSError as e:
                 raise Gagal("tidak bisa menulis %s (%s)." % (opsi.simpan_anonim, e.strerror or e))
     except Gagal as e:

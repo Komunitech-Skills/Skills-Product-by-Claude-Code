@@ -7,6 +7,7 @@
 - ✅ Nama, nomor HP, email, alamat, dan nomor pesanan pelanggan disamarkan otomatis sebelum dianalisis
 - ✅ Angka dihitung script: isu teratas (rasa, kemasan, harga, pengiriman, layanan, tempat, antrean), sentimen, NPS survei 0-10, dan tren naik/turun tiap bulan
 - ✅ Langsung membaca ekspor Shopee/Tokopedia/TikTok Shop, Google Form, dan chat WA - kolom yang dipakai selalu disebut, file rusak diberi pesan jelas
+- ✅ Menghitung keluhan pelanggan yang **belum dibalas admin** di chat WA (dan ulasan yang belum dibalas penjual) - sering jadi isu terpenting
 - ✅ Rencana perbaikan berurutan: bukti, tindakan, siapa, tenggat, dan ukuran berhasil
 - ✅ Draf balasan ke pelanggan dan "Kabar Perbaikan" siap dikirim, supaya pelanggan tahu masukannya didengar
 
@@ -34,7 +35,7 @@ Salin folder `iterasi-dari-masukan-pelanggan` ke lokasi skill platform Anda: Ope
 Lokasi terverifikasi ada di `docs/instalasi.md` dalam paket. Setelah itu mulai sesi baru.
 
 ## Isi paket
-`SKILL.md` (alur kerja), `scripts/olah_masukan.py` (+ `uji_olah_masukan.py`, `tests/uji_regresi.py`, `tests/uji_regresi_104.py`, `tests/uji_regresi_105.py`), `templates/` (tema untuk katering, fashion, kafe, laundry/jasa; backlog, balasan, kabar perbaikan, cara ekspor WA),
+`SKILL.md` (alur kerja), `scripts/olah_masukan.py` (+ `uji_olah_masukan.py`, `tests/uji_regresi.py`, `tests/uji_regresi_104.py`, `tests/uji_regresi_105.py` s/d `tests/uji_regresi_108.py`), `templates/` (tema untuk katering, fashion, kafe, laundry/jasa; berkas koreksi; backlog, balasan, kabar perbaikan, cara ekspor WA),
 `references/` (prioritas, privasi, siklus bulanan), `examples/` (data fiktif katering harian), `ATTRIBUTION.md`.
 
 ## FAQ
