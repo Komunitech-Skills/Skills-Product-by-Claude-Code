@@ -1,9 +1,11 @@
 ---
 name: frappe-books-usaha
-description: Asisten Frappe Books (software akuntansi desktop gratis, offline, file SQLite .books.db) untuk UMKM Indonesia. Membaca file Frappe Books secara READ-ONLY untuk laporan penjualan/pembelian per periode, piutang & utang jatuh tempo, stok menipis, laba rugi ringkas, dan laporan harian ke Telegram (OpenClaw); menyiapkan CSV Import Wizard resmi dari daftar pelanggan/barang/nota biasa dengan validasi; menghitung PPN 12% DPP 11/12. Gunakan saat pengguna menyebut Frappe Books atau file .books.db, atau minta "laporan penjualan dari Frappe Books", "siapa yang belum bayar", "stok apa yang mau habis", "impor daftar pelanggan/barang ke Frappe Books", Frappe Books report, import CSV, receivables. BUKAN untuk Dolibarr (dolibarr-usaha), hledger (hledger-usaha), e-Faktur/Coretax, atau mengubah data langsung di database.
+description: Asisten Frappe Books (software akuntansi desktop gratis, offline, file SQLite .books.db) untuk UMKM Indonesia. Membaca file Frappe Books secara READ-ONLY untuk laporan penjualan/pembelian per periode, piutang & utang jatuh tempo, stok menipis, laba rugi ringkas, dan laporan harian ke Telegram (OpenClaw); menyiapkan CSV Import Wizard resmi dari daftar pelanggan/barang/nota biasa dengan validasi; menghitung PPN 12% DPP 11/12 per nota dan PPN keluaran/masukan/kurang-lebih bayar per bulan dari data. Gunakan saat pengguna menyebut Frappe Books atau file .books.db, atau minta "laporan penjualan dari Frappe Books", "siapa yang belum bayar", "PPN yang harus disetor bulan ini", "stok apa yang mau habis", "impor daftar pelanggan/barang ke Frappe Books", Frappe Books report, import CSV, receivables. BUKAN untuk Dolibarr (dolibarr-usaha), hledger (hledger-usaha), e-Faktur/Coretax, atau mengubah data langsung di database.
 ---
 
 # Frappe Books Usaha
+
+> Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan). Sebut "kunci yang Anda tempel".
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
@@ -11,14 +13,14 @@ description: Asisten Frappe Books (software akuntansi desktop gratis, offline, f
 Pemilik usaha yang memakai **Frappe Books** di komputernya sendiri (gratis, offline, pengganti Jurnal/Kledo/Paper.id)
 cukup mengetik permintaan biasa, dan agent: (1) membaca file datanya **tanpa mengubah apa pun** untuk membuat laporan,
 (2) mengubah daftar Excel/CSV biasa menjadi file CSV yang siap dimasukkan lewat **Import Wizard** resmi Frappe Books,
-(3) menghitung PPN 12% dengan DPP 11/12, (4) menyiapkan laporan terjadwal ke Telegram lewat OpenClaw.
+(3) menghitung PPN 12% dengan DPP 11/12 (per nota, atau per bulan langsung dari data: keluaran, masukan, kurang/lebih bayar), (4) menyiapkan laporan terjadwal ke Telegram lewat OpenClaw.
 Semua lewat `scripts/frappe_books.py` (Python standar saja, tanpa instalasi paket, tanpa internet).
 
-**Versi 1.0.3. Status uji:** skema dicocokkan dengan kode sumber resmi Frappe Books **v0.36.0** (dan cabang `main` 0.37.0,
+**Versi 1.0.8** (v1.0.8: perintah `ppn-periode`, panduan rapikan draf/batal). **Status uji (dasar 1.0.3):** skema dicocokkan dengan kode sumber resmi Frappe Books **v0.36.0** (dan cabang `main` 0.37.0,
 20 Sep 2026). Diuji tiga kali oleh penguji independen dengan file `.books.db` **asli** v0.36.0: laporan baca cocok; semua CSV diterima
 Import Wizard asli; akun barang berstok & kredit retur (v1.0.2) beres. v1.0.3 menghitung `laba-rugi` persis seperti Profit And Loss
 Frappe (termasuk pengiriman retur); dibuktikan pembuat di aplikasi asli — angka skill = laporan P&L bawaan
-(`examples/uji-pembuat/UJI-PEMBUAT-v1.0.3.md`) — dan 46 uji regresi; **diuji ulang independen (v1.0.3) di aplikasi asli: 9/10, dua siklus cocok dengan P&L/General Ledger/Stock Balance Frappe**.
+(`examples/uji-pembuat/UJI-PEMBUAT-v1.0.3.md`) — dan 46 uji regresi (kini 51 dengan `ppn-periode`); **diuji ulang independen (v1.0.3) di aplikasi asli: 9/10, dua siklus cocok dengan P&L/General Ledger/Stock Balance Frappe**.
 Komunitech tidak berafiliasi dengan Frappe; Frappe Books tidak disertakan dalam paket.
 
 ## Kapan digunakan
@@ -27,7 +29,9 @@ Komunitech tidak berafiliasi dengan Frappe; Frappe Books tidak disertakan dalam 
 - "Stok apa yang mau habis?" → `stok`
 - "Untung rugi bulan lalu?" → `laba-rugi`
 - "Masukkan daftar pelanggan/barang/nota ini ke Frappe Books" → `csv-pelanggan` / `csv-barang` / `csv-transaksi`
-- "Hitung PPN-nya" → `ppn`
+- "PPN yang harus saya setor bulan ini/September?" → **`ppn-periode`** (bukan `ppn`)
+- "Hitung PPN harga ini/nota ini" → `ppn`
+- "Nota draf/batal bikin ribet, hapus dong" → bagian **Merapikan draf & invoice batal** di bawah
 - "Kirim laporan tiap malam ke Telegram saya" → `references/openclaw-jadwal.md`
 
 ## Kapan TIDAK digunakan
@@ -37,6 +41,16 @@ Komunitech tidak berafiliasi dengan Frappe; Frappe Books tidak disertakan dalam 
 - Minta **mengubah/menghapus data langsung di file .books.db** (SQL, editor database) → **tolak**; bisa merusak pembukuan.
   Perubahan hanya lewat aplikasi Frappe Books atau Import Wizard.
 - Retur, pembayaran, jurnal umum, saldo awal → dikerjakan manual di Frappe Books (skill memandu langkahnya).
+
+## Merapikan draf & invoice batal (diminta "hapus")
+Jangan hapus lewat database. Jelaskan dulu: draf dan invoice batal **tidak ikut** angka laporan/PPN/laba rugi.
+- **Draf** yang tidak terpakai: buka nota → menu titik tiga (⋯) → **Delete**. Aman, belum ada jurnal.
+- **Invoice batal (Cancelled):** menurut kode sumber resmi Frappe Books v0.36.0 (`fyo/model/doc.ts`, `canDelete`: dokumen
+  yang sudah dibatalkan boleh dihapus), nota batal **bisa** dihapus lewat menu ⋯ → **Delete** (berdasarkan kode sumber v0.36, belum dicoba langsung di aplikasi); aplikasi memperingatkan bahwa
+  tindakan ini permanen. Saran: **biarkan saja** sebagai jejak (nomor nota tidak bolong, riwayat pembatalan tetap ada);
+  hapus hanya bila pemilik yakin, dan backup file `.books.db` dulu. **PERLU REVIEW:** perilaku ini dibaca dari kode sumber,
+  belum dicoba di aplikasi oleh Komunitech — bila menu Delete tidak muncul, sampaikan apa adanya.
+- Jangan pernah bilang "tidak bisa dihapus" atau "bisa dihapus" tanpa dasar di atas.
 
 ## Input
 - **Lokasi file** `.books.db` (bawaan `Documents/Frappe Books/<nama usaha>.books.db`; di Linux tanpa folder Documents:
@@ -92,7 +106,20 @@ Perintah (Windows: ganti `python3` dengan `python` atau `py`; path relatif terha
    - `--keluar` wajib berakhiran `.csv`; file database (termasuk `.books.db` atau SQLite yang dinamai .csv) ditolak.
    - Setelah LOLOS: sampaikan pratinjau per nota + langkah Import Wizard dari keluaran script (`references/import-wizard.md`),
      ingatkan **backup file .books.db dulu** dan memilih **tidak submit** agar transaksi masuk sebagai draf untuk dicek.
-4. **PPN:** `python3 scripts/frappe_books.py ppn --dpp 1500000` atau `--harga-termasuk 1665000` (`references/ppn-frappe-books.md`).
+4. **PPN** (`references/ppn-frappe-books.md`):
+   - **Cek status PKP DULU, sebelum menghitung PPN apa pun** (`ppn`, `ppn-periode`, atau PPN per nota): tanyakan "Usaha Anda sudah PKP (Pengusaha Kena Pajak)?" kecuali pengguna sudah menyebutnya atau data jelas ber-PPN. Belum PKP → jangan menghitung PPN setor; jelaskan bahwa usaha non-PKP tidak memungut/menyetor PPN, dan arahkan ke konsultan pajak/KPP. Belum tahu → arahkan cek ke konsultan pajak/KPP, hitung hanya sebagai simulasi berlabel "andaikan PKP".
+   - **PPN setor per bulan/periode** → `python3 scripts/frappe_books.py ppn-periode --db "<path>" --bulan 2026-09`.
+     Script membaca invoice **final** saja, memisahkan baris **tanpa PPN** (tanpa template pajak / tarif 0) dari DPP,
+     menghitung PPN keluaran & masukan per faktur (12% × DPP 11/12, dibulatkan ke bawah), dan selisihnya
+     (KURANG BAYAR = setor; LEBIH BAYAR = tidak ada setoran, bisa dikompensasikan).
+   - **Satu harga/nota** → `ppn --dpp 1500000` atau `--harga-termasuk 1665000`.
+   - **Aturan wajib:** angka PPN periode **hanya** dari `ppn-periode`. **Jangan** menjalankan `ppn --dpp` atas total penjualan
+     (total itu bisa berisi penjualan tanpa PPN) dan jangan menghitung di kepala. Sebutkan penjualan tanpa PPN terpisah.
+     Jawaban "PPN yang harus disetor" selalu memuat **keluaran, masukan, dan selisih**, plus syarat: hanya untuk usaha PKP,
+     masukan butuh faktur pajak masukan yang sah, lapor & setor lewat Coretax. Bila status PKP belum jelas, tanyakan.
+   - **Jangan menyalahkan template pajak pengguna tanpa bukti.** Bila "PPN tercatat di Frappe" = angka standar, katakan
+     pengaturannya sudah sesuai. Hanya sebut template bermasalah bila script mencetak catatan tarif ≠ 11% atau selisih
+     per nota; selisih di bawah Rp 1 adalah pecahan pembulatan, bukan kesalahan.
 5. **Jadwal Telegram (OpenClaw):** ikuti `references/openclaw-jadwal.md`; tunjukkan perintah + "Lanjut? (ya/tidak)" dulu.
 
 Judul kolom CSV yang dikenali (tidak peka huruf besar/kecil):
@@ -177,6 +204,7 @@ Alat bantu administrasi, bukan nasihat pajak/akuntansi; kasus khusus → DJP (Kr
 
 ## Checklist sebelum menjawab
 - [ ] Angka diambil dari keluaran script, bukan dihitung/ditebak sendiri
+- [ ] PPN setor bulanan dari `ppn-periode` (keluaran, masukan, selisih), bukan `ppn --dpp` atas total penjualan
 - [ ] Asumsi disebut (periode, zona waktu, tempo pembayaran)
 - [ ] Tidak ada upaya menulis ke `.books.db`
 - [ ] Impor: backup diingatkan, urutan pelanggan/barang → transaksi, pilih "tidak submit" untuk transaksi

@@ -204,6 +204,55 @@ def buat(path, taxid=False):
     return path
 
 
+def buat_sumber_rejeki(path):
+    """Data uji PPN periode (meniru data FIKTIF uji OpenClaw 2 Okt 2026, TB Sumber Rejeki):
+    Sep 2026: 3 invoice ber-PPN (DPP 4.650.000), 1 invoice tanpa PPN (160.000), 1 draf, 1 batal;
+    1 invoice Agustus; 1 pembelian ber-PPN (DPP 5.500.000, PPN 605.000)."""
+    if os.path.exists(path):
+        os.remove(path)
+    con = sqlite3.connect(path)
+    with open(os.path.join(SINI, "skema-frappe-books-v0.36.0.sql"), encoding="utf-8") as f:
+        con.executescript(f.read())
+    isi(con, "SingleValue", [
+        {"name": "sv1", "parent": "AccountingSettings", "fieldname": "companyName", "value": "TB Sumber Rejeki (fiktif)"},
+        {"name": "sv3", "parent": "SystemSettings", "fieldname": "currency", "value": "IDR"},
+        {"name": "sv4", "parent": "SystemSettings", "fieldname": "version", "value": "0.36.0"},
+    ])
+    pajak = "PPN 11% (12% x 11/12)"
+    isi(con, "Tax", [{"name": pajak}])
+    isi(con, "TaxDetail", [{"name": "td1", "account": "Hutang Pajak - 2141.000", "rate": 11, "idx": 0, "parent": pajak,
+                            "parentSchemaName": "Tax", "parentFieldname": "details"}], meta=False)
+    sinv = [  # (no, tgl WIB, pihak, [(barang, qty, harga, pajak?)], submitted, cancelled)
+        ("SINV-1001", "2026-09-02 09:00", "Toko Makmur", [("Semen 50kg", 20, 68000, 1)], 1, 0),
+        ("SINV-1002", "2026-09-08 10:00", "CV Bangun Jaya", [("Cat Tembok 25kg", 5, 250000, 1)], 1, 0),
+        ("SINV-1003", "2026-09-15 11:00", "Pak Darto", [("Paku 1kg", 4, 25000, 0), ("Jasa Antar", 1, 60000, 0)], 1, 0),
+        ("SINV-1004", "2026-09-22 13:00", "Toko Makmur", [("Besi 10mm", 24, 85000, 1)], 1, 0),
+        ("SINV-1005", "2026-09-28 14:00", "CV Bangun Jaya", [("Semen 50kg", 10, 68000, 1)], 0, 0),
+        ("SINV-1006", "2026-09-18 15:00", "Bu Lina", [("Pasir 1m3", 1, 290000, 0)], 1, 1),
+        ("SINV-1007", "2026-08-20 09:00", "Pak Darto", [("Semen 50kg", 5, 68000, 1)], 1, 0),
+    ]
+    pinv = [("PINV-2001", "2026-09-05 10:00", "PT Semen Nusantara", [("Semen 50kg", 100, 55000, 1)], 1, 0)]
+    for skema, data in (("SalesInvoice", sinv), ("PurchaseInvoice", pinv)):
+        for no, tg, pihak, baris, sub, bat in data:
+            net = sum(q * h for _, q, h, _ in baris)
+            tax = sum(q * h * 11 / 100 for _, q, h, p in baris if p)
+            r = {"name": no, "numberSeries": no[:5], "party": pihak, "account": "x", "date": t(tg),
+                 "netTotal": m(net), "grandTotal": m(net + tax), "baseGrandTotal": m(net + tax),
+                 "outstandingAmount": m(net + tax), "exchangeRate": 1, "currency": "IDR",
+                 "submitted": sub, "cancelled": bat, "returnAgainst": None, "isReturned": 0}
+            isi(con, skema, [r])
+            for i, (b, q, h, p) in enumerate(baris):
+                isi(con, skema + "Item", [{"name": f"{no}-{i}", "item": b, "rate": m(h), "quantity": q, "amount": m(q * h),
+                                            "tax": pajak if p else None, "account": "x", "idx": i, "parent": no,
+                                            "parentSchemaName": skema, "parentFieldname": "items"}], meta=False)
+            if tax:
+                isi(con, "TaxSummary", [{"name": f"{no}-tax", "account": "Hutang Pajak - 2141.000", "rate": 11, "amount": m(tax),
+                                         "idx": 0, "parent": no, "parentSchemaName": skema, "parentFieldname": "taxes"}], meta=False)
+    con.commit()
+    con.close()
+    return path
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Pakai: python3 buat_db_contoh.py <keluar.books.db>")

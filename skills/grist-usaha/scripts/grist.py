@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """grist-usaha (Komunitech) - bantu merancang, mengisi, dan membaca dokumen Grist milik
-pengguna yang terpasang di komputernya sendiri (lihat docs/panduan-grist.md).
+pengguna yang terpasang di komputernya sendiri (lihat references/panduan-grist.md).
 
 Dua cara kerja, TIDAK saling bergantung:
 
@@ -188,7 +188,7 @@ def ambil_kunci(arg_kunci_file=None):
     if not p.is_file() or not p.read_text(encoding="utf-8").strip():
         raise Gagal(
             f"Belum ada kunci API tersimpan ({p}). Jalankan 'python3 grist.py simpan-kunci' dulu "
-            "(lihat docs/panduan-grist.md bagian 6). REST API bersifat OPSIONAL - kamu tetap bisa "
+            "(lihat references/panduan-grist.md bagian 6). REST API bersifat OPSIONAL - kamu tetap bisa "
             "memakai 'daftar-tabel'/'ringkasan'/'ekspor-csv' langsung ke file .grist tanpa ini.",
             kode=5,
         )
@@ -260,7 +260,7 @@ def panggil_grist(base_url, kunci, path, method="GET", body=None, timeout=30):
         raise Gagal(f"Grist membalas galat {e.code}{f': {pesan}' if pesan else ''}.", kode=6) from None
     except urllib.error.URLError as e:
         raise Gagal(f"Tidak bisa menghubungi Grist di {base_url} ({e.reason}). Pastikan Grist "
-                    "sedang menyala (docs/panduan-grist.md bagian 3.3).", kode=3) from None
+                    "sedang menyala (references/panduan-grist.md bagian 3.3).", kode=3) from None
     try:
         return json.loads(mentah.decode("utf-8"))
     except (json.JSONDecodeError, UnicodeDecodeError):

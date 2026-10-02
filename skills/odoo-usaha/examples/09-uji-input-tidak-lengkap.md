@@ -21,7 +21,7 @@ Respons agent yang benar menurut SKILL: jelaskan langkah buat kunci, minta pengg
 | File kunci izin 644 | "File kunci ... bisa dibaca pengguna lain. Amankan dulu: chmod 600 ..." | 5 | Benar |
 | Paksa `--protokol json2` ke Odoo 18 | "Protokol JSON-2 baru ada di Odoo 19 ke atas (server ini 18.0-20260926)." | 4 | Benar |
 | Port mati (8099) | "Odoo di http://localhost:8099 tidak bisa dihubungi ([Errno 111] Connection refused)." | 3 | Benar |
-| `simpan-kunci` lewat stdin | "Kunci ****74e7 disimpan di …/odoo-kunci.txt"; folder 700, file 600 | 0 | Benar |
+| `simpan-kunci` lewat stdin | "Kunci disimpan di …/odoo-kunci.txt" (tanpa potongan kunci); folder 700, file 600 | 0 | Benar |
 | `odoo.json` berisi `api_key` | "PERINGATAN: … field 'api_key' (mirip rahasia). DIABAIKAN." Nilai kunci tidak tercetak | 0 | Benar |
 | Harga `62,500` | "harga '62,500' ambigu … Tulis 62500 atau 62.500." | 2 | Benar |
 | Jumlah `abc` | "jumlah 'abc' bukan angka biasa" | 2 | Benar |

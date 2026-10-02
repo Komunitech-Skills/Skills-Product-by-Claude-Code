@@ -317,8 +317,12 @@ def _samarkan_kandidat(c):
     return c, 0
 
 
+RE_NAMA = re.compile(r"\b(?:[Pp]ak|[Bb]apak|[Bb]u|[Ii]bu|[Kk]ak|[Mm]as|[Mm]bak|[Bb]ang|[Cc]ik|[Dd]ek)\.? "
+                     r"[A-Z][a-z]{1,20}(?: [A-Z][a-z]{1,20}){0,2}\b")
+
+
 def samarkan_pribadi(teks):
-    """Papan Fider biasanya publik: sembunyikan nomor HP/telepon & email sebelum ditulis atau ditampilkan.
+    """Papan Fider biasanya publik: sembunyikan nama orang (sapaan + nama), nomor HP/telepon & email sebelum ditulis atau ditampilkan.
     Format yang dikenali: 0812-3456-7890, 0812.3456.7890, (+62) 812 ..., +62-812-..., 62812..., digit berspasi,
     telepon rumah 021-5551234, (0274) 555123, en dash, garis miring."""
     n = 0
@@ -333,7 +337,13 @@ def samarkan_pribadi(teks):
         hasil, j = _samarkan_kandidat(m.group(0))
         n += j
         return hasil
-    teks = RE_EMAIL.sub(ganti_email, teks or "")
+    def ganti_nama(_):
+        nonlocal n
+        n += 1
+        return "[nama disembunyikan]"
+    # Nama orang: sapaan (Pak/Bu/Kak/Mas/Mbak/...) + nama berhuruf kapital. Deteksi sederhana, bukan jaminan.
+    teks = RE_NAMA.sub(ganti_nama, teks or "")
+    teks = RE_EMAIL.sub(ganti_email, teks)
     teks = RE_KANDIDAT.sub(ganti_nomor, teks)
     return teks, n
 
@@ -827,7 +837,7 @@ def cmd_impor(k, args):
         if r["dipotong"]:
             baris.append(f"      uraian dipotong ke {angka(BATAS_URAIAN)} huruf")
         if r["disamarkan"]:
-            baris.append(f"      {r['disamarkan']} nomor HP/telepon/email disembunyikan (papan Fider biasanya publik)")
+            baris.append(f"      {r['disamarkan']} nama orang/nomor HP/telepon/email disembunyikan (ditandai [..disembunyikan]; papan Fider biasanya publik)")
         if r["tag"]:
             baris.append(f"      tag: {', '.join(r['tag'])}")
     if tag_hilang:
@@ -917,7 +927,7 @@ def cmd_gabung(k, args):
                f"Uraian #{dup}: {potong(pd.get('description') or '(kosong)', 160)}\n"
                f"Uraian #{asli}: {potong(pa.get('description') or '(kosong)', 160)}\n"
                "PERIKSA: apakah kedua pos benar-benar meminta HAL YANG SAMA? Sama topik belum tentu sama permintaan."
-               + (f"\n({nsam} nomor HP/email pada catatan disembunyikan.)" if nsam else ""))
+               + (f"\n({nsam} nama/nomor HP/email pada catatan disembunyikan.)" if nsam else ""))
     if kemiripan(pd["title"], pa["title"]) < 0.3:
         ringkas += "\nPERINGATAN: judul kedua pos hampir tidak mirip. Pastikan tidak salah nomor."
     if not wajib_ya(args, ringkas, {"duplikat": dup, "asli": asli}):
@@ -948,7 +958,7 @@ def cmd_status(k, args):
         raise Gagal(f"Pos #{n} berstatus duplikat; ubah pos induknya, bukan yang ini.", K_INPUT)
     ringkas = (f"Akan mengubah status pos #{n} \"{p['title']}\": {NAMA_STATUS.get(p.get('status'))} -> {NAMA_STATUS[baku]}."
                + (f"\nTeks tanggapan publik: \"{catatan}\"" if catatan else "\n(tanpa teks tanggapan)")
-               + (f"\n({nsam} nomor HP/email pada catatan disembunyikan.)" if nsam else ""))
+               + (f"\n({nsam} nama/nomor HP/email pada catatan disembunyikan.)" if nsam else ""))
     if baku == "completed" and not catatan:
         ringkas += "\nSaran: tambahkan --catatan agar pelanggan yang memberi suara tahu alasannya."
     if not wajib_ya(args, ringkas, {"nomor": n, "status": baku}):

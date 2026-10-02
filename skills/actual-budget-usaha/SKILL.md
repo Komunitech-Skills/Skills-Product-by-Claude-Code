@@ -5,6 +5,8 @@ description: Asisten Actual Budget (aplikasi anggaran amplop gratis, MIT, data l
 
 # Actual Budget Usaha (anggaran amplop lokal)
 
+> Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan). Sebut "kunci yang Anda tempel".
+
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
@@ -16,7 +18,7 @@ menyerahkan file mutasi bank atau bertanya "anggaran saya bulan ini gimana?". Ag
    "To Budget", pengeluaran terbesar.
 3. **Ringkasan terjadwal ke Telegram** pemilik lewat OpenClaw.
 
-Versi 1.0.1, diuji dengan budget **Actual 26.9.0 asli** (dibuat lewat API resmi, data fiktif): angka ringkasan sama
+Versi 1.0.6 (1.0.6: pencocokan kategori ke budget, riwayat penerima, pertanyaan dikelompokkan, nama penerima rapi), diuji dengan budget **Actual 26.9.0 asli** (dibuat lewat API resmi, data fiktif): angka ringkasan sama
 persis dengan hitungan Actual sendiri. Belum diuji di layar aplikasi desktop, Windows/macOS, atau mutasi asli bank.
 Tidak berafiliasi dengan proyek Actual Budget.
 
@@ -69,7 +71,10 @@ saja → tanyakan sekali: "Mau dimasukkan ke Actual Budget, atau ke buku kas har
    `--keluaran nama.csv`, `--timpa`, `--json`. Script tidak mengubah file mutasi asli.
 3. Sampaikan dari keluaran script **apa adanya**: jumlah baris, total masuk/keluar, **cek saldo** (COCOK/TIDAK COCOK),
    ringkasan per kategori, daftar **PERLU DICEK**, dan daftar **DILEWATI** beserta alasannya.
-4. Tanyakan semua baris "perlu dicek" dalam **satu pesan** bernomor dengan pilihan kategori yang ada. Aturan penting:
+   Script (v1.0.6) mencocokkan usulan ke kategori yang **ada** di budget (mis. "Iklan & Promosi" -> "Iklan"), memakai kategori
+   riwayat transaksi lama untuk penerima yang sama, dan merapikan nama penerima (tanpa kode/nomor referensi).
+4. Tanyakan baris "perlu dicek" dalam **satu pesan** memakai bagian **PERTANYAAN UNTUK PENGGUNA** dari keluaran script
+   (dikelompokkan, maks. 5 pertanyaan; jangan menanyakan baris satu per satu) dan sebut kategori yang ada. Aturan penting:
    - **Pindah dana milik sendiri** (tarik tunai, top up GoPay/OVO/DANA, bayar kartu kredit) = **transfer**
      di Actual (Payee = akun tujuan), jangan diberi kategori pengeluaran.
    - **Setor tunai**: tanyakan asalnya. Hasil jualan tunai yang belum tercatat = pemasukan; uang laci/dompet yang

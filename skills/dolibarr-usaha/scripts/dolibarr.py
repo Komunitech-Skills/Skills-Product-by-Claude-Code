@@ -1266,6 +1266,10 @@ def cmd_piutang(api, args, offset):
     for x in baris:
         n = nama.get(x["socid"]) or "Pelanggan #{}".format(x["socid"])
         x["pelanggan"] = inisial(n) if args.samarkan else n
+    return susun_laporan_piutang(baris, catatan, hari_ini, args, "")
+
+
+def susun_laporan_piutang(baris, catatan, hari_ini, args, sumber):
     baris.sort(key=lambda x: (-x["hari_lewat"], -x["sisa"]))
     ringkas = {label: {"jumlah": 0, "nilai": Decimal(0)} for label, _, _ in KELOMPOK_UMUR}
     for x in baris:
@@ -1300,7 +1304,179 @@ def cmd_piutang(api, args, offset):
         b.append("CATATAN")
         b += ["- " + c for c in catatan]
     return {"per_tanggal": hari_ini, "total": total, "jumlah": len(baris), "umur": ringkas,
-            "invoice": baris, "catatan": catatan, "teks": "\n".join(b)}
+            "invoice": baris, "catatan": catatan, "teks": "\n".join(b + (["", sumber] if sumber else []))}
+
+
+# ------------------------------------------------------------------ perintah: piutang-csv
+_KOLOM_CSV = {
+    "ref": ("ref", "ref.", "no", "no.", "nomor", "nomor invoice", "no invoice", "invoice", "faktur", "nota", "number"),
+    "pelanggan": ("pelanggan", "customer", "third party", "thirdparty", "pihak ketiga", "nama pelanggan", "nama",
+                  "klien", "client"),
+    "tanggal": ("tanggal", "tgl", "date", "tanggal invoice", "tanggal faktur", "invoice date"),
+    "tempo": ("jatuh tempo", "tanggal jatuh tempo", "tgl jatuh tempo", "due date", "date due", "tempo", "payment due"),
+    "total": ("total", "total ttc", "jumlah", "amount", "amount incl. tax", "amount (inc. tax)", "total incl. tax",
+              "total (termasuk ppn)", "total termasuk ppn", "nilai", "tagihan"),
+    "dibayar": ("dibayar", "sudah dibayar", "terbayar", "received", "paid", "already paid", "payment", "bayar"),
+    "sisa": ("sisa", "sisa tagihan", "remain to pay", "remaining unpaid", "remaintopay", "outstanding", "sisa bayar"),
+    "status": ("status", "state", "keadaan"),
+}
+_STATUS_LEWATI = ("lunas", "paid", "dibayar penuh", "batal", "dibatalkan", "abandoned", "canceled", "cancelled",
+                  "draf", "draft", "konsep")
+
+
+def _norm_kepala(teks):
+    return re.sub(r"\s+", " ", (teks or "").strip().lower().lstrip("\ufeff"))
+
+
+def angka_csv(teks):
+    """Angka gaya Indonesia (1.250.000,50) atau Inggris (1,250,000.50). Ambigu ('62,500') -> ValueError."""
+    t = re.sub(r"(?i)\brp\.?|idr|\s", "", str(teks or "")).strip()
+    if not t:
+        return Decimal(0)
+    neg = t.startswith("-") or (t.startswith("(") and t.endswith(")"))
+    t = t.strip("-()")
+    if not re.fullmatch(r"[0-9.,]+", t):
+        raise ValueError("bukan angka")
+    titik, koma = t.count("."), t.count(",")
+    if titik and koma:
+        desim = "," if t.rfind(",") > t.rfind(".") else "."
+        ribu = "." if desim == "," else ","
+        t = t.replace(ribu, "").replace(desim, ".")
+        if t.count(".") != 1:
+            raise ValueError("format angka tidak konsisten")
+    elif titik > 1 or koma > 1:
+        sep = "." if titik > 1 else ","
+        bagian = t.split(sep)
+        if any(len(x) != 3 for x in bagian[1:]) or not 1 <= len(bagian[0]) <= 3:
+            raise ValueError("format angka tidak konsisten")
+        t = "".join(bagian)
+    elif titik or koma:
+        sep = "." if titik else ","
+        depan, belakang = t.split(sep)
+        if len(belakang) == 3 and sep == ",":
+            raise ValueError("ambigu (ribuan atau desimal?)")
+        t = depan + belakang if len(belakang) == 3 else depan + "." + belakang
+    if t.startswith("."):
+        t = "0" + t
+    try:
+        d = Decimal(t)
+    except InvalidOperation:
+        raise ValueError("bukan angka")
+    return -d if neg else d
+
+
+def tanggal_csv(teks):
+    t = (teks or "").strip()[:10]
+    for pola in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y"):
+        try:
+            return dt.datetime.strptime(t, pola).date()
+        except ValueError:
+            pass
+    return None
+
+
+def baca_csv_piutang(path, hari_ini):
+    try:
+        mentah = open(path, "rb").read()
+    except OSError as e:
+        raise Gagal("File '{}' tidak bisa dibuka ({}).".format(path, e.strerror or e), KELUAR_ARG,
+                    "Periksa nama/lokasi file. Ekspor dari Dolibarr: menu Tagihan > Nota > Daftar > Ekspor CSV.")
+    if len(mentah) > 20 * 1024 * 1024:
+        raise Gagal("File CSV terlalu besar (>20 MB).", KELUAR_ARG)
+    try:
+        teks = mentah.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        teks = mentah.decode("latin-1")
+    import csv as _csv
+    import io
+    contoh = teks[:4096]
+    try:
+        pemisah = _csv.Sniffer().sniff(contoh, delimiters=",;\t|").delimiter
+    except _csv.Error:
+        pemisah = ";" if contoh.count(";") > contoh.count(",") else ","
+    baris_csv = [r for r in _csv.reader(io.StringIO(teks), delimiter=pemisah) if any(c.strip() for c in r)]
+    if len(baris_csv) < 2:
+        raise Gagal("CSV kosong atau hanya berisi judul kolom.", KELUAR_ARG)
+    kepala = [_norm_kepala(c) for c in baris_csv[0]]
+    idx = {}
+    for kunci, alias in _KOLOM_CSV.items():
+        for n, k in enumerate(kepala):
+            if k in alias and n not in idx.values():
+                idx[kunci] = n
+                break
+    perlu = [k for k in ("ref", "tempo") if k not in idx]
+    if "total" not in idx and "sisa" not in idx:
+        perlu.append("total (atau sisa)")
+    if perlu:
+        raise Gagal("Kolom wajib tidak ditemukan di CSV: {}. Judul kolom terbaca: {}."
+                    .format(", ".join(perlu), ", ".join(c for c in baris_csv[0] if c.strip())), KELUAR_ARG,
+                    "Pastikan ekspor memuat nomor invoice, jatuh tempo, dan total/sisa; atau ganti judul kolom.")
+    baris, catatan = [], []
+    dilewati = 0
+
+    def ambil(r, k):
+        n = idx.get(k)
+        return r[n].strip() if n is not None and n < len(r) else ""
+
+    for no, r in enumerate(baris_csv[1:], start=2):
+        ref = ambil(r, "ref")
+        if len([c for c in r[len(kepala):] if c.strip()]):
+            catatan.append("Baris {} ({}) DILEWATI: kolomnya lebih banyak dari judul (angka bertanda koma "
+                           "perlu diberi tanda kutip).".format(no, ref or "tanpa nomor"))
+            continue
+        status = ambil(r, "status").lower()
+        if status and any(x in status for x in _STATUS_LEWATI) and "belum" not in status and "unpaid" not in status:
+            dilewati += 1
+            continue
+        try:
+            total = angka_csv(ambil(r, "total")) if "total" in idx else None
+            dibayar = angka_csv(ambil(r, "dibayar")) if "dibayar" in idx else Decimal(0)
+            sisa = angka_csv(ambil(r, "sisa")) if ("sisa" in idx and ambil(r, "sisa")) else None
+        except ValueError as e:
+            catatan.append("Baris {} ({}) DILEWATI: angka tidak terbaca ({}).".format(no, ref or "tanpa nomor", e))
+            continue
+        if sisa is None:
+            if total is None:
+                catatan.append("Baris {} ({}) DILEWATI: tidak ada total/sisa.".format(no, ref or "tanpa nomor"))
+                continue
+            sisa = total - dibayar
+        tempo = tanggal_csv(ambil(r, "tempo"))
+        if tempo is None:
+            tempo = tanggal_csv(ambil(r, "tanggal"))
+            if tempo is None:
+                catatan.append("Baris {} ({}) DILEWATI: tanggal jatuh tempo tidak terbaca.".format(no, ref or "tanpa nomor"))
+                continue
+            catatan.append("{}: jatuh tempo kosong, memakai tanggal invoice.".format(ref))
+        if total is not None and total < 0:
+            dilewati += 1  # nota kredit
+            continue
+        if sisa <= 0:
+            dilewati += 1
+            continue
+        lewat = (hari_ini - tempo).days
+        baris.append({"id": no, "ref": ref or "(baris {})".format(no), "socid": 0,
+                      "pelanggan": ambil(r, "pelanggan") or "(tanpa nama)", "tanggal": tanggal_csv(ambil(r, "tanggal")),
+                      "jatuh_tempo": tempo, "hari_lewat": lewat, "kelompok": kelompok_umur(lewat),
+                      "total": total if total is not None else sisa + dibayar, "terbayar": dibayar, "sisa": sisa})
+    if dilewati:
+        catatan.append("{} baris tidak dihitung (sudah lunas, batal/draf, atau nota kredit).".format(dilewati))
+    if not baris and any("DILEWATI" in c for c in catatan):
+        raise Gagal("Tidak satu pun baris CSV bisa dibaca.\n" + "\n".join(catatan), KELUAR_ARG)
+    return baris, catatan
+
+
+def cmd_piutang_csv(args, offset):
+    hari_ini = parse_tanggal(args.per_tanggal, offset)
+    baris, catatan = baca_csv_piutang(args.file, hari_ini)
+    for x in baris:
+        if args.samarkan:
+            x["pelanggan"] = inisial(x["pelanggan"])
+    return susun_laporan_piutang(
+        baris, catatan, hari_ini, args,
+        "Sumber: file CSV ekspor ({}), BUKAN koneksi langsung ke Dolibarr. Status bayar sesuai saat file diekspor; "
+        "cocokkan dengan layar Dolibarr sebelum menagih.\n"
+        "Draf di atas siap Anda salin dan kirim sendiri lewat WA. Hanya draf, tidak mengirim ke pelanggan.".format(
+            os.path.basename(args.file)))
 
 
 # ------------------------------------------------------------------ perintah: stok
@@ -1644,6 +1820,13 @@ def buat_parser():
     pi.add_argument("--samarkan", action="store_true", help="Nama pelanggan jadi inisial")
     pi.add_argument("--maks", type=int, default=30)
 
+    pc = sub.add_parser("piutang-csv", parents=[umum1], allow_abbrev=False,
+                        help="Umur piutang dari file CSV ekspor Dolibarr (tanpa koneksi/kunci API)")
+    pc.add_argument("file", help="Path file CSV ekspor daftar invoice")
+    pc.add_argument("--per-tanggal", default="hari-ini")
+    pc.add_argument("--samarkan", action="store_true", help="Nama pelanggan jadi inisial")
+    pc.add_argument("--maks", type=int, default=30)
+
     s = sub.add_parser("stok", parents=[umum1], help="Cek stok produk", allow_abbrev=False)
     s.add_argument("kata", nargs="?")
     s.add_argument("--menipis", action="store_true", help="Hanya yang menipis/habis/minus")
@@ -1667,6 +1850,11 @@ def main(argv=None):
             hasil = cmd_simpan_kunci(args)
         else:
             offset = zona_offset(args.tz)
+            if args.perintah == "piutang-csv":
+                hasil = cmd_piutang_csv(args, offset)
+                hasil["ok"] = True
+                cetak(json.dumps(hasil, ensure_ascii=False, indent=2, default=ke_json) if args.json else hasil["teks"])
+                return 0
             if args.perintah == "invoice" and not 0 <= args.jatuh_tempo <= BATAS_TEMPO:
                 raise Gagal("--jatuh-tempo harus 0 sampai {} hari.".format(BATAS_TEMPO), KELUAR_ARG)
             luar = args.izinkan_url_luar or os.environ.get("DOLIBARR_IZINKAN_URL_LUAR") == "1"

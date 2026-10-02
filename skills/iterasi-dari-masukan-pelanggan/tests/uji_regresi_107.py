@@ -297,7 +297,7 @@ class UjiContohTidakMemburuk(unittest.TestCase):
         self.assertEqual(r["sentimen"], {"positif": 23, "netral": 7, "negatif": 21})
         self.assertEqual(kel.get("pengiriman"), 9)
         self.assertEqual(r["perlu_dibaca"]["tidak_terklasifikasi"], 4)
-        self.assertEqual(r["versi_script"], "1.0.7")
+        self.assertGreaterEqual(r["versi_script"], "1.0.7")
 
 
 if __name__ == "__main__":

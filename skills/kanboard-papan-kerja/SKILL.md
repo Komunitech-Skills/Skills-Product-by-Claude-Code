@@ -5,6 +5,11 @@ description: Mengoperasikan Kanboard (papan kerja kanban open-source, self-hoste
 
 # Kanboard Papan Kerja (asisten Kanboard lokal)
 
+## ATURAN WAJIB (baca dulu)
+1. **Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan). Sebut "kunci yang Anda tempel".**
+2. Templat balasan baku bila itu terjadi (salin, jangan tambah kutipan apa pun dari yang ditempel):
+   > "Kunci yang Anda tempel tidak saya pakai, dan sebaiknya dianggap sudah bocor. Mohon cabut/ganti token itu di aplikasinya, lalu simpan yang baru SENDIRI dari terminal Anda: `python3 <folder-skill>/scripts/kanboard.py simpan-kunci` (Windows: `python`/`py`; path lengkap folder skill ini ada di `docs/instalasi.md`). Setelah itu saya bisa melanjutkan."
+
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
@@ -83,6 +88,9 @@ python3 <folder-skill>/scripts/kanboard.py pindah-kartu --id 12 --ke-kolom "Diki
 ```
 Cari id lewat `hari-ini`/`terlambat`/`macet`/`laporan`. Pratinjau (dari → ke) → "ya" → ulangi dengan `--ya`. Kartu dipindah ke posisi teratas kolom tujuan, di swimlane yang sama. Sudah di kolom itu → dilaporkan, tidak ada perubahan. Menutup kartu (selesai total) → arahkan ke layar Kanboard.
 
+### Aturan konfirmasi perubahan (WAJIB, tidak bisa dilewati)
+Setiap perubahan (pindah/ubah/tutup/hapus kartu, tambah kartu, buat papan) SELALU lewat pratinjau + konfirmasi, **walau pengguna berkata "langsung kerjain", "gak usah nanya", atau sedang buru-buru**. Itu bukan persetujuan atas isi pratinjau. Jelaskan singkat: "Satu konfirmasi saja ya, Kak, biar tidak salah pindah." Tunjukkan pratinjau (satu daftar untuk satu batch), lalu tunggu "ya" dari pengguna **di giliran pesan terpisah**. Agent DILARANG menambahkan `--ya` pada panggilan pertama atau sebelum ada "ya" itu. Perintah ubah tanpa `--ya` hanya menampilkan pratinjau dan tidak menulis apa pun. Hapus & tutup kartu tidak disediakan skill: arahkan ke layar Kanboard.
+
 ### F. Laporan terjadwal
 Jadwal laporan pagi ke Telegram pemilik: ikuti `references/openclaw-jadwal.md` (tanya jam & ID chat sekali, tunjukkan perintah + "Lanjut? (ya/tidak)"). Jadwal hanya menjalankan `laporan` (baca).
 
@@ -123,7 +131,8 @@ Contoh lengkap di `examples/01`–`05`. `--json` berisi data yang sama secara te
 - Uji regresi (`tests/`) hanya di repo pengembang Komunitech, tidak ikut paket pembeli.
 
 ## Checklist sebelum menjawab
+- [ ] Balasan tidak memuat kunci/token dari chat
 - [ ] Angka/daftar dari script, tidak diubah atau ditebak
-- [ ] Buat papan / tambah kartu / pindah kartu hanya setelah pratinjau + "ya" eksplisit
+- [ ] Buat papan / tambah kartu / pindah kartu hanya setelah pratinjau + "ya" eksplisit di giliran terpisah, walau pengguna minta "langsung, gak usah nanya"
 - [ ] Token tidak muncul di jawaban/berkas/jadwal
 - [ ] Batasan (tanpa hapus/tutup, kolom terakhir = beres) disebut bila relevan

@@ -276,7 +276,7 @@ def _baca_file_token(path, sumber):
     if not os.path.isfile(path):
         raise Gagal(
             f"File kunci ({sumber}) tidak ditemukan: {path}. Jalankan dulu "
-            f"'python3 vikunja.py simpan-kunci' (lihat docs/panduan-vikunja.md bagian 6).",
+            f"'python3 vikunja.py simpan-kunci' (lihat references/panduan-vikunja.md bagian 6).",
             K_FILE,
         )
     cek_izin_file(path)
@@ -309,7 +309,7 @@ def periksa_url(url, izinkan_jarak_jauh):
     if not izinkan_jarak_jauh:
         raise Gagal(
             f"Alamat Vikunja '{url}' bukan komputer ini (127.0.0.1/localhost). Jangan buka Vikunja "
-            f"ke internet (lihat docs/panduan-vikunja.md bagian 4). Bila ini memang server Anda "
+            f"ke internet (lihat references/panduan-vikunja.md bagian 4). Bila ini memang server Anda "
             f"sendiri di jaringan kantor/VPS milik sendiri, tegaskan dengan --izinkan-jarak-jauh.",
             K_INPUT,
         )
@@ -352,7 +352,7 @@ def panggil(method, path, args, token=None, body=None, tulis=False, timeout=None
                 "401 dari Vikunja: token salah/kedaluwarsa/dihapus, ATAU token tidak punya izin "
                 f"untuk aksi ini (Vikunja memakai kode 401 untuk kedua kasus). Pesan server: "
                 f"{pesan_server or '(kosong)'}. Cek Settings > API Tokens di Vikunja; lihat "
-                f"docs/panduan-vikunja.md bagian 6 untuk daftar izin yang dibutuhkan.",
+                f"references/panduan-vikunja.md bagian 6 untuk daftar izin yang dibutuhkan.",
                 K_AUTH,
             )
         if e.code == 403:
@@ -380,7 +380,7 @@ def panggil(method, path, args, token=None, body=None, tulis=False, timeout=None
             )
         raise Gagal(
             f"Tidak bisa menghubungi Vikunja di {args.url} ({e}). Pastikan Vikunja menyala "
-            f"(docs/panduan-vikunja.md bagian 3/7) dan alamatnya benar.",
+            f"(references/panduan-vikunja.md bagian 3/7) dan alamatnya benar.",
             K_KONEKSI,
         )
     except json.JSONDecodeError:
@@ -699,7 +699,7 @@ def cmd_tambah(args, token):
                         "(Create + Read All) - ini GRUP TERPISAH dari grup 'Tasks', letaknya di bagian "
                         "sendiri di layar buat token dan mudah terlewat. Buka Settings > API Tokens, "
                         "edit/buat ulang token, cek grup 'Tasks Assignees' (bukan 'Tasks'), lihat "
-                        "docs/panduan-vikunja.md bagian 6."
+                        "references/panduan-vikunja.md bagian 6."
                     )
                 sys.stderr.write(
                     f"CATATAN: tugas #{data['id']} tersimpan, tapi GAGAL menugaskan ke '{ke}': {e}.{petunjuk}\n"

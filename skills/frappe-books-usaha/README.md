@@ -14,7 +14,7 @@ menyiapkan file impor yang rapi, tanpa biaya bulanan.**
   Frappe Books. Harga "Rp 85.000", "18rb", "1,5jt" dibaca benar; nama dobel, satuan belum ada, tanggal mustahil ditolak sebelum
   merusak data. Ada pratinjau total per nota untuk dicocokkan.
 - ✅ **Aman untuk pembukuan.** File data hanya **dibaca** (dikunci read-only), tidak pernah diubah. Laporan harian ke Telegram
-  lewat OpenClaw tanpa nama pelanggan. PPN 12% DPP 11/12 dihitung dengan standar pembulatan yang tidak memungut lebih.
+  lewat OpenClaw tanpa nama pelanggan. PPN 12% DPP 11/12 dihitung dengan standar pembulatan yang tidak memungut lebih, termasuk PPN bulanan (keluaran − masukan = kurang/lebih bayar) langsung dari data, penjualan tanpa PPN dipisah.
 
 ## Cocok untuk siapa
 - UMKM yang ingin berhenti bayar Jurnal/Kledo/Paper.id dan memakai **Frappe Books** di laptop/PC sendiri.
@@ -68,7 +68,7 @@ Setelah terpasang, cukup ketik permintaan biasa:
 Panduan lengkap (termasuk Windows): `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org).
 Tidak butuh internet, akun, kunci API, atau paket tambahan.
 
-**Status uji jujur (versi 1.0.3):** laporan (penjualan, piutang, stok, laba rugi) sudah diuji penguji independen pada file
+**Status uji jujur (laporan diuji pada versi 1.0.3; versi 1.0.8 menambah `ppn-periode`):** laporan (penjualan, piutang, stok, laba rugi) sudah diuji penguji independen pada file
 **asli** buatan Frappe Books v0.36.0 dan angkanya cocok; file CSV pelanggan, barang, penjualan, dan pembelian diterima Import Wizard
 asli; akun barang berstok & kredit retur sudah beres. Versi 1.0.3 menghitung laba rugi dengan cara yang sama seperti laporan
 Profit And Loss Frappe Books (termasuk barang retur yang kembali ke gudang); di aplikasi asli angkanya sama persis dengan P&L

@@ -21,6 +21,7 @@ tidak bisa dibaca, 4 = file budget tidak dikenali / sedang terkunci.
 import argparse
 import csv
 import datetime as dt
+import difflib
 import io
 import json
 import os
@@ -31,7 +32,7 @@ from collections import OrderedDict, defaultdict
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-VERSI = "1.0.1"
+VERSI = "1.0.6"
 ACTUAL_DIUJI = "26.9.0"
 NOL = Decimal(0)
 SERATUS = Decimal(100)
@@ -521,13 +522,128 @@ BUANG_PAYEE = re.compile(
     r"KARTU|MASUK|KELUAR|TARIKAN|BRIVA|VA|VIRTUAL|ACCOUNT|BCA|BRI|BNI|MANDIRI)\b", re.I)
 
 
+POTONG_REF = re.compile(r"\b(NO\.?\s?REF|REF(ERENSI)?|KODE|KD|TRX\s?ID|ID\s?TRX|NO\.?\s?TRX|NOMOR)\b.*$", re.I)
+
+
 def nama_payee(ket):
-    s = re.sub(r"[^\w&.\- ]", " ", ket)
-    kata = [w for w in s.split() if not re.search(r"\d", w) and not BUANG_PAYEE.fullmatch(w) and len(w) > 1]
+    """Nama penerima yang rapi dari keterangan mutasi: buang kode transaksi, nomor, kata bank, dan ekor referensi."""
+    ket = POTONG_REF.sub(" ", ket)
+    ket_kasar = " ".join(w for w in ket.split() if not re.search(r"\w\.\w{2,}", w))   # FB.ME/ADS, WWW.XXX = bukan nama
+    s = re.sub(r"[^\w&.\- ]", " ", ket_kasar)
+    kata = [w for w in s.split()
+            if not re.search(r"\d", w) and not BUANG_PAYEE.fullmatch(w) and len(w) > 1]
     nama = " ".join(kata[:5]).strip(" .-")
     if not nama:
-        nama = re.sub(r"\s+", " ", ket)[:40]
+        nama = re.sub(r"\s+", " ", ket).strip()[:40]
     return nama[:60]
+
+
+# ------------------------------------------------------------------ mencocokkan usulan ke kategori budget
+KATA_SEPADAN = {  # kategori usulan baku -> kata kunci yang lazim dipakai di nama kategori buatan pengguna
+    "iklan & promosi": ("iklan", "promosi", "ads", "marketing", "pemasaran"),
+    "software & langganan": ("software", "langganan", "subscription", "aplikasi", "tools", "digital"),
+    "internet & pulsa": ("internet", "pulsa", "telepon", "komunikasi", "telekomunikasi", "wifi"),
+    "listrik & air": ("listrik", "air", "utilitas", "pln", "pdam"),
+    "biaya bank": ("bank", "admin", "administrasi"),
+    "sewa": ("sewa", "kontrakan", "kost", "coworking", "ruko"),
+    "transportasi": ("transport", "transportasi", "bbm", "bensin", "kendaraan", "perjalanan"),
+    "ongkir & kurir": ("ongkir", "kurir", "pengiriman", "ekspedisi", "logistik"),
+    "gaji & honor": ("gaji", "honor", "upah", "karyawan", "payroll"),
+    "cicilan & pinjaman": ("cicilan", "pinjaman", "angsuran", "utang", "kredit"),
+    "pajak": ("pajak", "tax"),
+    "bpjs": ("bpjs", "asuransi", "jaminan"),
+    "pendapatan usaha": ("pendapatan", "penjualan", "omzet", "income", "usaha", "proyek", "jasa"),
+    "pendapatan lain": ("pendapatan", "lain", "bunga", "income"),
+}
+KATA_SEPADAN_NORM = {}
+KATA_UMUM = {"dan", "biaya", "untuk", "lain", "lainnya", "usaha", "di", "ke", "the"}
+
+
+def _norm_kat(teks):
+    t = re.sub(r"[^a-z0-9 ]+", " ", (teks or "").lower().replace("&", " dan "))
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def _isi_sepadan():
+    for k, v in KATA_SEPADAN.items():
+        KATA_SEPADAN_NORM[_norm_kat(k)] = v
+
+
+def _kata_kat(teks):
+    return [w for w in _norm_kat(teks).split() if w not in KATA_UMUM and len(w) > 1]
+
+
+_isi_sepadan()
+
+
+def cocokkan_kategori(usul, kategori_db, income):
+    """Cocokkan nama kategori usulan ke daftar kategori yang ADA di budget.
+    kategori_db: {nama: info}. income: True bila usulan untuk uang masuk.
+    -> (nama_db atau None, cara, pilihan) ; pilihan = daftar nama bila ambigu."""
+    kandidat = [n for n, v in kategori_db.items() if bool(v["is_income"]) == bool(income)]
+    if not kandidat:
+        return None, None, []
+    nu = _norm_kat(usul)
+    for n in kandidat:                                    # 1. sama persis setelah normalisasi
+        if _norm_kat(n) == nu:
+            return n, "nama sama (normalisasi)", []
+    skor = {}
+    kata_u = set(_kata_kat(usul))
+    sepadan = set(KATA_SEPADAN_NORM.get(nu, ()))
+    for n in kandidat:
+        kata_n = set(_kata_kat(n))
+        sk = 0.0
+        if kata_u and kata_u & kata_n:                    # 2. kata inti sama ("Sewa" ~ "Sewa Coworking")
+            sk = max(sk, 0.9)
+        if sepadan and (sepadan & kata_n):                # 3. kata kunci sepadan ("Iklan & Promosi" ~ "Iklan")
+            sk = max(sk, 0.8)
+        r = difflib.SequenceMatcher(None, nu, _norm_kat(n)).ratio()   # 4. kemiripan tulisan
+        if r >= 0.75:
+            sk = max(sk, r)
+        if sk:
+            skor[n] = sk
+    if not skor:
+        return None, None, []
+    terbaik = max(skor.values())
+    puncak = sorted(n for n, v in skor.items() if v >= terbaik - 1e-9)
+    if len(puncak) == 1:
+        return puncak[0], "mirip", []
+    return None, "ambigu", puncak
+
+
+def _kunci_payee(nama):
+    return re.sub(r"[^A-Z0-9]", "", (nama or "").upper())
+
+
+def riwayat_payee(con):
+    """Riwayat transaksi lama: {kunci payee: Counter(nama kategori)}. Hanya transaksi berkategori, bukan transfer."""
+    kat = {r["id"]: r["nama"] for r in daftar_kategori(con) if not r["tombstone"]}
+    _, _, trx = muat_data(con)
+    peta = defaultdict(lambda: defaultdict(int))
+    for t in trx:
+        if t["transfer"] or not t["kategori"] or t["kategori"] not in kat or not t.get("nama_payee"):
+            continue
+        k = _kunci_payee(nama_payee(t["nama_payee"]))
+        if len(k) >= 4:
+            peta[k][kat[t["kategori"]]] += 1
+    return peta
+
+
+def cari_riwayat(payee, peta):
+    """Kategori paling sering dipakai untuk penerima yang sama (persis, mengandung, atau sangat mirip)."""
+    k = _kunci_payee(payee)
+    if len(k) < 4 or not peta:
+        return None
+    cocok = peta.get(k)
+    if not cocok:
+        for kk, v in peta.items():
+            if (len(k) >= 5 and len(kk) >= 5 and (k in kk or kk in k)) or \
+               difflib.SequenceMatcher(None, k, kk).ratio() >= 0.85:
+                cocok = v
+                break
+    if not cocok:
+        return None
+    return max(sorted(cocok), key=lambda n: cocok[n])
 
 
 def format_angka_csv(v):
@@ -537,6 +653,29 @@ def format_angka_csv(v):
     if v == v.to_integral_value():
         return str(int(v))
     return "{:.2f}".format(v)
+
+
+def susun_pertanyaan(ragu, kategori_db):
+    """Kelompokkan baris 'perlu dicek' jadi maksimal 5 pertanyaan (satu per jenis masalah)."""
+    judul = OrderedDict([
+        ("kategori", "Pilih kategori untuk baris berikut (usulan otomatis tidak ketemu/ambigu di budget Anda)"),
+        ("pindah", "Apakah baris berikut pindah dana milik sendiri (dicatat sebagai TRANSFER ke akun tujuan, tanpa kategori)? "
+                   "Sebutkan nama akun tujuannya di Actual"),
+        ("setor", "Setor tunai berikut: hasil jualan tunai yang belum tercatat (pemasukan) atau uang dari kas yang sudah "
+                  "tercatat (transfer)"),
+        ("lain", "Belanja/pengembalian/pinjaman berikut: pilih kategori atau bilang kalau bukan transaksi usaha"),
+        ("cek", "Cek data: nominal sangat kecil atau baris kembar berikut, apakah sudah benar"),
+    ])
+    hasil = []
+    for g, teks in judul.items():
+        baris = [x for x in ragu if x[6] == g]
+        if not baris:
+            continue
+        if g == "kategori" and kategori_db:
+            pilihan = [n for n, v in kategori_db.items() if not v["is_income"]][:15]
+            teks += " (kategori yang ada: {})".format(", ".join(pilihan))
+        hasil.append({"kelompok": g, "pertanyaan": teks, "baris": [x[0] for x in baris]})
+    return hasil
 
 
 def cmd_konversi(a):
@@ -551,11 +690,17 @@ def cmd_konversi(a):
                     "; ".join("baris {}: {}".format(n, r) for n, r, _ in lewati[:5]))
     aturan = (muat_peta(a.peta) if a.peta else []) + ATURAN_BAWAAN
     kategori_db = None
+    riwayat = {}
     if a.db:
         con, _ = buka_db(a.db)
         kategori_db = {r["nama"]: r for r in daftar_kategori(con) if not r["tombstone"]}
+        try:
+            riwayat = riwayat_payee(con)
+        except sqlite3.Error:
+            riwayat = {}
         con.close()
-    lower_db = {k.lower(): k for k in (kategori_db or {})}
+    else:
+        riwayat = {}
 
     keluar_path = Path(a.keluaran) if a.keluaran else Path(a.mutasi).with_name(Path(a.mutasi).stem + "-actual.csv")
     ragu_path = keluar_path.with_name(keluar_path.stem + "-ragu.csv")
@@ -572,37 +717,62 @@ def cmd_konversi(a):
     hasil, ragu = [], []
     per_kat = defaultdict(lambda: [0, NOL])
     masuk_default = 0
+    dipetakan = OrderedDict()      # usulan baku -> nama kategori di budget
+    dari_riwayat = 0
     for r in rows:
         kat, alasan, pola = usul_kategori(r["ket"], r["jumlah"], aturan)
-        if kat and kategori_db is not None:
+        grup = None
+        if alasan:
+            grup = ("pindah" if alasan == PINDAH else "setor" if alasan == SETOR else
+                    "kategori" if pola is None else "lain")
+        payee = nama_payee(r["ket"])
+        # riwayat transaksi lama untuk penerima yang sama (hanya bila aturan tidak menandai transfer/setor/dll.)
+        if kategori_db is not None and not alasan:
+            lama = cari_riwayat(payee, riwayat)
+            if lama and lama in kategori_db and bool(kategori_db[lama]["is_income"]) == (r["jumlah"] > 0):
+                if lama != kat:
+                    dari_riwayat += 1
+                kat, pola = lama, "(riwayat)"
+        if kat and kategori_db is not None and pola != "(riwayat)":
             if kat in kategori_db:
                 pass
-            elif kat.lower() in lower_db:
-                kat = lower_db[kat.lower()]
             else:
-                alasan = ("Kategori usulan '{}' belum ada di budget Actual Anda. Buat kategorinya di Actual, "
-                          "atau pilih kategori lain yang sudah ada.".format(kat))
-                kat = None
+                nama_db, cara, pilihan = cocokkan_kategori(kat, kategori_db, r["jumlah"] > 0)
+                if nama_db:
+                    dipetakan[kat] = nama_db
+                    kat = nama_db
+                else:
+                    if pilihan:
+                        alasan = ("Kategori usulan '{}' cocok dengan beberapa kategori di budget Anda: {}. "
+                                  "Pilih salah satu.".format(kat, " / ".join(pilihan)))
+                    else:
+                        alasan = ("Kategori usulan '{}' belum ada di budget Actual Anda. Buat kategorinya di Actual, "
+                                  "atau pilih kategori lain yang sudah ada.".format(kat))
+                    grup = "kategori"
+                    kat = None
         if kat and kategori_db is not None:
             # uang masuk wajib ke kategori pemasukan, uang keluar ke kategori pengeluaran
             if r["jumlah"] < 0 and kategori_db[kat]["is_income"] and not alasan:
                 alasan = "Uang keluar diberi kategori PEMASUKAN '{}'. Periksa.".format(kat)
-        if pola == "(bawaan uang masuk)":
+                grup = "lain"
+        if pola == "(bawaan uang masuk)" and kat:
             masuk_default += 1
         if abs(r["jumlah"]) < 100:
             kecil = ("Nominal sangat kecil ({}): pastikan format angka terbaca benar (mis. '12,5' dibaca "
                      "Rp 12,50).".format(rp(abs(r["jumlah"]))))
             alasan = (alasan + " " + kecil) if alasan else kecil
+            grup = grup or "cek"
         if kembar[(r["tanggal"], r["jumlah"], r["ket"])] > 1:
             tambahan = "Baris sama persis muncul {}x di file: pastikan bukan dobel.".format(
                 kembar[(r["tanggal"], r["jumlah"], r["ket"])])
             alasan = (alasan + " " + tambahan) if alasan else tambahan
-        payee = nama_payee(r["ket"])
+            grup = grup or "cek"
         hasil.append([r["tanggal"].isoformat(), payee, r["ket"], kat or "", format_angka_csv(r["jumlah"])])
         per_kat[kat or "(kosong - perlu dipilih)"][0] += 1
         per_kat[kat or "(kosong - perlu dipilih)"][1] += r["jumlah"]
         if alasan:
-            ragu.append([r["no"], r["tanggal"].isoformat(), r["ket"], format_angka_csv(r["jumlah"]), kat or "", alasan])
+            ragu.append([r["no"], r["tanggal"].isoformat(), r["ket"], format_angka_csv(r["jumlah"]), kat or "", alasan,
+                         grup or "lain"])
 
     keluar_path.parent.mkdir(parents=True, exist_ok=True)
     with open(keluar_path, "w", newline="", encoding="utf-8") as f:
@@ -612,7 +782,7 @@ def cmd_konversi(a):
     with open(ragu_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["Baris", "Tanggal", "Keterangan", "Jumlah", "Kategori", "Alasan"])
-        w.writerows(ragu)
+        w.writerows([x[:6] for x in ragu])
 
     total_masuk = sum((r["jumlah"] for r in rows if r["jumlah"] > 0), NOL)
     total_keluar = -sum((r["jumlah"] for r in rows if r["jumlah"] < 0), NOL)
@@ -626,7 +796,9 @@ def cmd_konversi(a):
                                        if saldo else None),
         "per_kategori": {k: {"baris": v[0], "jumlah": str(v[1])} for k, v in per_kat.items()},
         "ragu": [{"baris": x[0], "tanggal": x[1], "keterangan": x[2], "jumlah": x[3], "kategori": x[4],
-                  "alasan": x[5]} for x in ragu],
+                  "alasan": x[5], "kelompok": x[6]} for x in ragu],
+        "pertanyaan": susun_pertanyaan(ragu, kategori_db),
+        "kategori_dipetakan": dict(dipetakan), "dari_riwayat": dari_riwayat,
         "dilewati": [{"baris": n, "alasan": al, "isi": isi} for n, al, isi in lewati],
         "kategori_dicek_ke_budget": kategori_db is not None,
     }
@@ -655,6 +827,10 @@ def cmd_konversi(a):
     if masuk_default:
         out.append("Catatan: {} uang masuk otomatis diusulkan '{}'. Ganti bila itu pinjaman, uang pribadi, "
                    "atau pindahan dari rekening sendiri.".format(masuk_default, KATEGORI_MASUK_DEFAULT))
+    for u, n in dipetakan.items():
+        out.append("Catatan: usulan '{}' dipetakan ke kategori Anda '{}'.".format(u, n))
+    if dari_riwayat:
+        out.append("Catatan: {} baris memakai kategori dari riwayat transaksi lama (penerima yang sama).".format(dari_riwayat))
     if kategori_db is None:
         out.append("Catatan: nama kategori BELUM dicocokkan dengan budget Anda. Actual hanya mengisi kategori bila "
                    "namanya SAMA PERSIS (huruf besar/kecil juga). Jalankan ulang dengan --db agar dicek.")
@@ -665,6 +841,10 @@ def cmd_konversi(a):
             out.append("- Baris {} | {} | {} | {}: {}".format(x[0], x[1], x[2][:45], rp(Decimal(x[3])), x[5]))
         if len(ragu) > 20:
             out.append("- ... {} baris lain di file ragu".format(len(ragu) - 20))
+        out.append("")
+        out.append("PERTANYAAN UNTUK PENGGUNA (kelompok, tanyakan sekaligus dalam satu pesan):")
+        for i, q in enumerate(susun_pertanyaan(ragu, kategori_db), 1):
+            out.append("{}. {}: baris {}".format(i, q["pertanyaan"], ", ".join(str(n) for n in q["baris"])))
     if lewati:
         out.append("")
         out.append("DILEWATI ({} baris, tidak masuk file hasil):".format(len(lewati)))

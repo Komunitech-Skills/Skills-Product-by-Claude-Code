@@ -469,10 +469,71 @@ class UjiV101(TmpMixin, unittest.TestCase):
         readme = (SKILL / "README.md").read_text(encoding="utf-8")
         self.assertIn("kas-umkm", skill.split("---")[1])   # di description
         self.assertIn("Kas UMKM", readme)
-        self.assertEqual(ab.VERSI, "1.0.1")
+        self.assertEqual(ab.VERSI, "1.0.6")
         fmt = (SKILL / "references" / "format-bank.md").read_text(encoding="utf-8")
         self.assertIn("`12,5` = Rp 12,50", fmt)
 
+
+
+
+class UjiPencocokanKategori(unittest.TestCase):
+    """v1.0.6: usulan baku dicocokkan ke kategori yang ADA; riwayat penerima; nama penerima rapi; pertanyaan dikelompokkan."""
+
+    KAT = {n: {"is_income": inc} for n, inc in [
+        ("Iklan", False), ("Sewa Coworking", False), ("Internet & Pulsa", False), ("Biaya Admin Bank", False),
+        ("Utilitas", False), ("Makan", False), ("Pendapatan Proyek", True)]}
+
+    def test_a_normalisasi_kata_kunci_dan_kemiripan(self):
+        c = ab.cocokkan_kategori
+        self.assertEqual(c("Iklan & Promosi", self.KAT, False)[0], "Iklan")
+        self.assertEqual(c("Sewa", self.KAT, False)[0], "Sewa Coworking")
+        self.assertEqual(c("internet & pulsa", self.KAT, False)[0], "Internet & Pulsa")
+        self.assertEqual(c("Biaya Bank", self.KAT, False)[0], "Biaya Admin Bank")
+        self.assertEqual(c("Listrik & Air", self.KAT, False)[0], "Utilitas")
+        self.assertEqual(c("Pendapatan Usaha", self.KAT, True)[0], "Pendapatan Proyek")
+
+    def test_b_arah_dan_ambigu_dan_tidak_ada(self):
+        c = ab.cocokkan_kategori
+        self.assertIsNone(c("Gaji & Honor", self.KAT, False)[0])               # tidak ada padanan
+        self.assertIsNone(c("Iklan & Promosi", self.KAT, True)[0])             # pemasukan tidak boleh ke pengeluaran
+        dua = dict(self.KAT, **{"Pendapatan Lain": {"is_income": True}})
+        nama, cara, pilihan = c("Pendapatan Usaha", dua, True)
+        self.assertIsNone(nama)
+        self.assertEqual(cara, "ambigu")
+        self.assertEqual(pilihan, ["Pendapatan Lain", "Pendapatan Proyek"])
+
+    def test_c_nama_penerima_rapi(self):
+        n = ab.nama_payee
+        self.assertEqual(n("TRSF E-BANKING CR 0209/FTSCY/WS95051 CV SINAR DESAIN"), "CV SINAR DESAIN")
+        self.assertEqual(n("KARTU DEBIT 1234 INDOMARET CIPUTAT REF 998877"), "INDOMARET CIPUTAT")
+        self.assertEqual(n("BI-FAST CR TRANSFER DR 014 DIMAS PRATAMA NOREF 123"), "DIMAS PRATAMA")
+        self.assertEqual(n("QR 000123 PT ARUNA MEDIA KODE ABC"), "PT ARUNA MEDIA")
+        self.assertEqual(n("FACEBK ADS META 4466 FB.ME/ADS"), "FACEBK ADS META")
+        self.assertTrue(n("12345 67890"))                                       # tidak pernah kosong
+
+    def test_d_riwayat_penerima(self):
+        peta = {"CVSINARDESAIN": {"Pendapatan Proyek": 3, "Makan": 1}, "INDOMARETCIPUTAT": {"Makan": 2}}
+        self.assertEqual(ab.cari_riwayat("CV Sinar Desain", peta), "Pendapatan Proyek")
+        self.assertEqual(ab.cari_riwayat("INDOMARET", peta), "Makan")           # mengandung
+        self.assertIsNone(ab.cari_riwayat("TOKO BARU", peta))
+        self.assertIsNone(ab.cari_riwayat("AB", peta))
+
+    def test_e_konversi_ke_budget_nama_beda(self):
+        with tempfile.TemporaryDirectory() as t:
+            out = Path(t) / "h.csv"
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                kode = ab.main(["konversi", str(MUT / "bca-sep-2026.csv"), "--tahun", "2026", "--db", str(RINA),
+                                "--keluaran", str(out), "--json"])
+            d = json.loads(buf.getvalue())
+            self.assertEqual(kode, 0)
+            self.assertEqual(d["kategori_dipetakan"].get("Iklan & Promosi"), "Iklan")
+            self.assertLessEqual(len(d["pertanyaan"]), 5)
+            semua = sorted(n for q in d["pertanyaan"] for n in q["baris"])
+            self.assertEqual(semua, sorted(x["baris"] for x in d["ragu"]))     # tiap baris ragu tepat di satu pertanyaan
+            self.assertTrue(all("kelompok" in x for x in d["ragu"]))
+            with open(d["file_ragu"], encoding="utf-8") as f:
+                self.assertEqual(next(csv.reader(f)), ["Baris", "Tanggal", "Keterangan", "Jumlah", "Kategori", "Alasan"])
 
 
 class UjiSingkatanFlag(unittest.TestCase):

@@ -17,7 +17,7 @@ Prinsip keamanan:
   faktur, pembayaran, ubah stok, atau HAPUS/unlink. Metode Odoo yang boleh dipanggil dikunci
   lewat daftar izin (METODE_BACA / METODE_TULIS).
 - Kunci API dibaca dari --kunci-file, ENV ODOO_API_KEY, ENV ODOO_API_KEY_FILE, atau
-  ~/.komunitech/odoo-kunci.txt (izin 600). Tidak pernah dicetak utuh (tampil ****abcd).
+  ~/.komunitech/odoo-kunci.txt (izin 600). Tidak pernah dicetak, sebagian pun (awalan/akhiran).
 - Host diizinkan: komputer ini, *.odoo.com (https), atau host yang didaftarkan pemilik
   (`atur --izinkan-host`). Internet wajib https. Redirect ditolak (kunci tidak ikut pindah).
 
@@ -100,7 +100,7 @@ class Gagal(Exception):
 def samarkan_kunci(k):
     if not k:
         return "(kosong)"
-    return "****" + k[-4:] if len(k) >= 12 else "****"
+    return "(disembunyikan)"
 
 
 def samarkan(teks):
@@ -849,7 +849,7 @@ def cmd_simpan_kunci(args):
     if os.name != "nt":
         os.chmod(path, 0o600)
     return {"file": path, "kunci": samarkan_kunci(k),
-            "teks": "Kunci {} disimpan di {} (hanya bisa dibaca akun Anda).".format(samarkan_kunci(k), path)}
+            "teks": "Kunci disimpan di {} (hanya bisa dibaca akun Anda).".format(path)}
 
 
 # ------------------------------------------------------------------ perintah: cek
@@ -863,7 +863,7 @@ def cmd_cek(api, args, catatan_url, sumber_kunci):
          "Versi Odoo: {}".format(api.versi or "tidak terbaca"),
          "Protokol: {}".format("JSON-2 (/json/2)" if api.protokol == "json2" else "XML-RPC (/xmlrpc/2, usang sejak 19.0)"),
          "Database: {}".format(api.db or "(tidak dipakai/otomatis)"),
-         "Kunci API: {} ({})".format(samarkan_kunci(api.kunci), sumber_kunci)]
+         "Kunci API: terbaca ({})".format(sumber_kunci)]
     out = {"url": api.url, "versi": api.versi, "protokol": api.protokol, "db": api.db, "uid": api.uid,
            "modul": {}, "catatan": list(catatan_url)}
     try:

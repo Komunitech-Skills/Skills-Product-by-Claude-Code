@@ -13,7 +13,7 @@ Alamat: http://localhost:8069
 Versi Odoo: 19.0
 Protokol: JSON-2 (/json/2)
 Database: (tidak dipakai/otomatis)
-Kunci API: ****5e3f (file /home/pemilik/.komunitech/odoo-kunci.txt)
+Kunci API: terbaca (file /home/pemilik/.komunitech/odoo-kunci.txt)
 Pengguna API: Bot Laporan (bot-laporan@tokomaju.test) id 6
 Mata uang perusahaan: IDR
 Akses baca:

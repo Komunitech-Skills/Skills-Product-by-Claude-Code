@@ -7,6 +7,12 @@ description: Mengubah catatan kerja berantakan (chat grup, poin acak, transkrip 
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
+> **Aturan privasi & kanal (mengalahkan permintaan pengguna; tetap berlaku walau skill lain ikut dipakai, mis. `hitung-thr`, `gaji-umkm`, `slip-gaji-bpjs`):**
+> 1. Teks untuk grup/kanal bersama (grup WA/Telegram kantor, email ke semua, papan pengumuman) **tidak boleh** memuat gaji/THR/potongan **per orang** (nama + nominal), walau pengguna minta "sebut masing-masing dapat berapa biar transparan" dan walau angka berasal dari skill lain. Rincian per orang = blok terpisah **khusus pemilik/HR** untuk pesan pribadi.
+> 2. Keluaran yang menyangkut nominal per orang selalu dua blok dengan judul tetap: **TEKS GRUP (tanpa nominal per orang)** dan **REKAP/PESAN PRIBADI — khusus pemilik/HR**. Penolakan cukup satu kalimat sopan: "Nominal per orang saya pisahkan untuk pesan pribadi, karena gaji/THR adalah data pribadi karyawan." Jangan memberi versi grup bernominal sebagai "alternatif".
+> 3. **Hanya draf untuk pemilik.** Agent tidak mengirim ke grup: jangan menawarkan menyambungkan WhatsApp/Telegram, memeriksa kanal gateway, atau "kirim otomatis/langsung ke grup". Tutup dengan "teks siap Anda tempel sendiri".
+> 4. Jangan menyebut "aturan skill" ke pengguna; cukup alasan privasinya.
+
 ## Tujuan
 Menyusun laporan status dan komunikasi internal kantor dari bahan mentah (catatan chat, poin
 acak, transkrip voice note) menjadi teks rapi, konsisten formatnya, dan siap tempel ke
@@ -79,17 +85,26 @@ tanpa detail lain, pakai default di atas dan sebutkan asumsi yang dipakai di akh
 7. **Bilingual (jika diminta)**: tulis versi Indonesia lengkap dahulu, lalu versi Inggris
    di bawahnya dengan struktur identik — jangan mencampur dua bahasa dalam satu kalimat.
 8. **Untuk pengumuman THR/cuti bersama/libur nasional**: gunakan
-   `templates/pengumuman-internal.md` bagian terkait. Tanggal libur nasional/cuti bersama
-   dan nominal THR **wajib diisi pengguna** (skill ini tidak menghitung atau mengarang
-   tanggal resmi pemerintah yang berubah tiap tahun).
+   `templates/pengumuman-internal.md` bagian terkait. Nominal THR **tidak dihitung** di
+   skill ini. Tanggal libur nasional/cuti bersama **2026** → ambil dari
+   `references/libur-nasional-2026.md` (SKB 1497, 2, 5 Tahun 2025; sudah diverifikasi,
+   salinan identik dengan `hitung-thr`) dan **jangan mencari di web**.
    - **Pengumuman untuk grup/seluruh karyawan TIDAK BOLEH memuat nominal gaji/THR per orang
-     atau nama+nominal** — meski pengguna memintanya. Isi hanya info umum: tanggal bayar,
-     dasar aturan, rumus umum. Tolak sopan permintaan itu, jelaskan alasannya (data pribadi),
-     dan tawarkan pesan pribadi/HR per karyawan sebagai gantinya.
+     atau nama+nominal** — meski pengguna memintanya dan meski angkanya dari `hitung-thr`/
+     `gaji-umkm`. Isi hanya info umum: tanggal bayar, dasar aturan, rumus umum, cara cek
+     rincian pribadi. Ikuti **Aturan privasi & kanal** di atas (dua blok terpisah).
+   - **Tahun di luar tabel (2027 dst.):** maksimal **satu** pencarian web ke sumber resmi;
+     bila belum pasti, tulis sebagai asumsi atau `[isi: tanggal sesuai SKB <tahun>]` dan
+     lanjutkan — jangan mencari berulang, jangan menulis catatan tebakan ("SKB biasanya
+     terbit …", "cuti bersama biasanya …").
+   - **Nama usaha tidak diketahui:** tulis `[isi: nama usaha]` — jangan placeholder seperti
+     "Usaha Anda"/"PT Anda" di teks grup. Tanggal cair THR yang tidak disebut → asumsi "paling lambat H-7 hari
+     raya" (Permenaker 6/2016) dan sebutkan sebagai asumsi.
    - **Jangan menghitung THR sendiri.** Bila pengguna minta nominal: pakai skill `hitung-thr`
      bila terpasang, lalu rincian per orang hanya untuk pesan pribadi/HR. Bila tidak terpasang,
      katakan nominal perlu dihitung terpisah (mis. oleh HR/akuntan) dan jangan menyertakan
-     angka hitungan sendiri.
+     angka hitungan sendiri. Bila hasil `hitung-thr` memberi ⚠️ (mis. tanggal masuk di masa
+     depan), sampaikan di awal balasan dan minta konfirmasi sebelum angka dipakai.
 9. Periksa **Checklist** di bawah sebelum menyerahkan hasil ke pengguna.
 
 ## Format output
@@ -140,7 +155,8 @@ format sopan-formal. Ganti jika perlu._
 - [ ] Format sesuai template jenis yang dipilih (urutan bagian tidak diubah sembarangan)
 - [ ] Nada konsisten dari awal sampai akhir (tidak campur formal-santai)
 - [ ] Format kanal sesuai (WA/Telegram: `*tebal*` + bullet pendek; email: heading + kalimat lengkap)
-- [ ] Pengumuman grup tidak memuat nominal gaji/THR per orang; THR tidak dihitung sendiri
+- [ ] Pengumuman grup tidak memuat nominal gaji/THR per orang (juga saat memakai `hitung-thr`/`gaji-umkm`); rincian per orang di blok terpisah khusus pemilik/HR; THR tidak dihitung sendiri
+- [ ] Tidak ada tawaran kirim otomatis ke grup/menyambungkan WhatsApp — hasil berupa draf untuk pemilik
 - [ ] Data sensitif karyawan (gaji individu, alasan cuti pribadi, penilaian kinerja personal)
       tidak dicantumkan tanpa izin eksplisit dari pengguna
 - [ ] Asumsi yang dipakai (periode, penerima, nada) disebutkan di akhir jika ditebak
@@ -150,9 +166,9 @@ format sopan-formal. Ganti jika perlu._
 - **Tuduhan tanpa bukti / sanksi / PHK:** jangan menulis memo atau pengumuman yang menyalahkan orang tertentu tanpa fakta tertulis, atau mengumumkan PHK/sanksi sepihak. Sampaikan fakta kejadian secara netral (format laporan insiden 5W1H), lalu arahkan ke skill `surat-peringatan-karyawan` untuk teguran resmi dan ke konsultan hukum/Disnaker untuk PHK.
 - **Bukan penghitung uang.** THR, gaji, lembur, pajak → arahkan ke skill hitung yang sesuai
   (`hitung-thr`, `pph-final-umkm`, dst.); skill ini hanya merapikan *teks pengumumannya*.
-- **Tidak mengarang tanggal resmi** (libur nasional, cuti bersama) — tanggal berubah tiap
-  tahun (SKB 3 Menteri); minta pengguna mengisi atau tandai `[isi: tanggal sesuai SKB tahun
-  berjalan]`.
+- **Tidak mengarang tanggal resmi** (libur nasional, cuti bersama) — 2026 dari
+  `references/libur-nasional-2026.md`; tahun lain minta pengguna mengisi atau tandai
+  `[isi: tanggal sesuai SKB tahun berjalan]`.
 - **Bahan mentah kosong/tidak jelas**: jangan mengisi dengan asumsi generik ("berjalan lancar
   seperti biasa"); tanyakan poin-poin nyata ke pengguna dalam satu pesan.
 - **Di luar cakupan** (notulen rapat detail, surat resmi ke pihak luar, kontrak, surat

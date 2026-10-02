@@ -331,6 +331,14 @@ def main():
         ng.data["log"].clear()
         rc, out, err = jalan(["pindah-kartu", "--id", "3", "--ke-kolom", "cek kualitas"], url=url)
         cek("pindah pratinjau", rc == 0 and "PRATINJAU" in out and "moveTaskPosition" not in ng.data["log"], err)
+        n_log = len(ng.data["log"])
+        rc, out, err = jalan(["pindah-kartu", "--id", "3", "--ke-kolom", "Selesai"], url=url)
+        cek("pindah tanpa --ya hanya pratinjau", rc == 0 and "PRATINJAU" in out and "--ya" in out
+            and ng.data["tugas"][3]["column_id"] != 5 and not any(x.startswith(("moveTask", "removeTask", "updateTask", "closeTask")) for x in ng.data["log"][n_log:]), out + err)
+        sk = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "SKILL.md"), encoding="utf-8").read()
+        atas = "\n".join(sk.split("\n---\n", 1)[1].splitlines()[:15])
+        cek("SKILL.md: ATURAN WAJIB larang ulang kunci di 15 baris pertama", "## ATURAN WAJIB" in atas and "JANGAN menulis ulang satu karakter pun darinya" in atas and "kunci yang Anda tempel" in atas and "Balasan tidak memuat kunci/token dari chat" in sk)
+        cek("SKILL.md melarang --ya sebelum ya", "Aturan konfirmasi perubahan" in sk and "DILARANG menambahkan `--ya`" in sk and "gak usah nanya" in sk)
         rc, out, err = jalan(["pindah-kartu", "--id", "3", "--ke-kolom", "cek kualitas", "--ya"], url=url)
         cek("pindah --ya", rc == 0 and ng.data["tugas"][3]["column_id"] == 4
             and ng.data["tugas"][3]["date_moved"] > now - 60, out + err)

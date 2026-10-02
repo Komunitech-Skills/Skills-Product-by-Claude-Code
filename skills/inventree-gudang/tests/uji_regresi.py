@@ -493,6 +493,8 @@ class TesGalat(DasarServer):
         k, _, err = self.jalan("cari", "x", token=None)
         self.assertEqual(k, inv.K_FILE)
         self.assertIn("simpan-kunci", err)
+        # path lengkap script (bukan relatif) agar pengguna awam tahu persis yang dijalankan
+        self.assertIn(os.path.abspath(SKRIP), err)
 
     def test_kedaluwarsa_format_salah(self):
         k, _, _ = self.jalan("terima-barang", "--po", "PO-0001", "--semua", "--kedaluwarsa", "6/10/2026",
@@ -528,6 +530,16 @@ class TesOpname(DasarServer):
         self.assertIn("sistem 57 kg, fisik 55 kg -> KURANG 2 kg", out)
         self.assertIn("1 item selisih, 1 item sama", out)
         self.assertIn("Belum disimpan", out)
+        self.assertEqual(self.tulis(), [])
+
+    def test_nol_peringatan_delete_on_deplete(self):
+        # Rekaman 1.5.6: delete_on_deplete = true (bawaan) -> stok 0 menghapus item; harus diperingatkan di pratinjau
+        f = self.lembar("nol.csv", "id_stok;nama;satuan;stok_sistem;stok_fisik\n1;Singkong;kg;57;0\n5;Bumbu;kg;12,5;12,5\n")
+        k, out, _ = self.jalan("opname", "--file", f, token=TOKEN_GUDANG)
+        self.assertEqual(k, 0)
+        self.assertIn("PERHATIAN: item berikut bertanda 'Delete on Deplete'", out)
+        self.assertIn("(id 1)", out)
+        self.assertNotIn("(id 5)", out)
         self.assertEqual(self.tulis(), [])
 
     def test_simpan_dengan_ya(self):

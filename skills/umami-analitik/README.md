@@ -57,7 +57,7 @@ Setelah Umami terpasang dan tersambung, cukup ketik:
 - "Kirim laporan web ke Telegram saya tiap Senin jam 7 pagi" (OpenClaw)
 
 ## Instalasi singkat
-1. **Umami** sudah terpasang dan menyala. Belum? Ikuti `docs/panduan-umami.md` di paket (Docker resmi, ±20–40 menit, termasuk pengamanan, HTTPS, kode lacak, tombol WA terlacak, dan tautan UTM) — atau pakai **jasa setup Komunitech**.
+1. **Umami** sudah terpasang dan menyala. Belum? Ikuti `references/panduan-umami.md` di paket (Docker resmi, ±20–40 menit, termasuk pengamanan, HTTPS, kode lacak, tombol WA terlacak, dan tautan UTM) — atau pakai **jasa setup Komunitech**.
 2. Salin folder `umami-analitik` ke folder skills AI agent:
 
 | Platform | Folder tujuan |

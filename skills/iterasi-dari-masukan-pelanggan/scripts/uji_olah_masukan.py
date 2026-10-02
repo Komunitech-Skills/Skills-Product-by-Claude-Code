@@ -797,5 +797,58 @@ class UjiRegresi102(unittest.TestCase):
         self.assertNotIn("keluhan", _analisis("stok ready ga kak?")[1].get("stok_ketersediaan", []))
 
 
+class UjiRingkasanSalin(unittest.TestCase):
+    """v1.0.10: script mencetak kalimat siap salin; --koreksi memengaruhi semua hitungan."""
+    CHAT = ("[05/09/2026 09.00.00] Ani: roti sobek ada bintik hijau, berjamur\n"
+            "[05/09/2026 09.01.00] Budi: toples nastar bocor, semut masuk\n"
+            "[06/09/2026 09.00.00] Admin Toko: maaf kak\n"
+            "[07/09/2026 09.00.00] Cici: roti tawar jamuran padahal baru 2 hari\n"
+            "[08/09/2026 09.00.00] Dedi: roti sobek berjamur lagi\n"
+            "[09/09/2026 09.00.00] Eka: ada jamur di rotinya\n"
+            "[10/09/2026 09.00.00] Fani: kapan buka lagi kak?\n")
+
+    def jalan(self, koreksi=None):
+        with tempfile.TemporaryDirectory() as d:
+            p = tulis(d, "chat.txt", self.CHAT)
+            o = Opsi()
+            o.staf_list = ["admin"]
+            if koreksi is not None:
+                o.koreksi = tulis(d, "k.csv", koreksi)
+            item, tema, dibuang, meta = om.olah([p + "=WA"], o, None)
+            return om.ringkas(item, tema, dibuang, o, meta), om.cetak_teks(om.ringkas(item, tema, dibuang, o, meta), o)
+
+    def test_kalimat_siap_salin_dan_rincian_jamur_vs_semut(self):
+        r, teks = self.jalan()
+        aman = next(d for d in r["tema"] if d["id"] == "keamanan")
+        self.assertEqual(aman["rincian"], {"jamur": 4, "hewan/serangga": 1})
+        self.assertEqual(sum(aman["rincian"].values()), aman["keluhan"])
+        self.assertIn("rincian: jamur 4, hewan/serangga 1", teks)
+        v = r["respons_staf"]["WA"]
+        self.assertEqual(v["tanpa_balasan"], 5)       # 6 pesan pelanggan, 1 dibalas admin
+        self.assertIn("pesan tanpa balasan: 5 dari 6 pesan (83,3%)", " ".join(r["ringkasan_siap_salin"]))
+        self.assertIn("Keluhan tanpa balasan (WA): 4 dari 5 keluhan (80%)", " ".join(r["ringkasan_siap_salin"]))
+
+    def test_persen_id(self):
+        self.assertEqual(om._persen_id(11, 13), "84,6%")
+        self.assertEqual(om._persen_id(9, 10), "90%")
+        self.assertEqual(om._persen_id(0, 0), "0%")
+
+    def test_koreksi_bukan_keluhan_ikut_hitungan_respons(self):
+        _, awal = self.jalan()
+        r0, _ = self.jalan()
+        r1, teks = self.jalan("cuplikan,tema,jenis,sentimen,catatan\nada jamur di rotinya,,netral,netral,bukan keluhan\n")
+        self.assertEqual(r0["respons_staf"]["WA"]["keluhan"], 5)
+        v = r1["respons_staf"]["WA"]
+        self.assertEqual((v["keluhan"], v["keluhan_tanpa_balasan"]), (4, 3))
+        aman = next(d for d in r1["tema"] if d["id"] == "keamanan")
+        self.assertEqual(aman["keluhan"], 4)
+        self.assertIn("3 dari 4 keluhan (75%)", " ".join(r1["ringkasan_siap_salin"]))
+        self.assertEqual(v["tanpa_balasan"], 5)       # pesan tanpa balasan tetap menghitung semua pesan
+
+    def test_koreksi_pujian_pada_pesan_bertema(self):
+        r, _ = self.jalan("cuplikan,tema,jenis,sentimen,catatan\nkapan buka lagi,stok_ketersediaan,saran,netral,permintaan\n")
+        self.assertEqual(r["respons_staf"]["WA"]["keluhan"], 5)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
