@@ -77,6 +77,9 @@ Untuk prioritas: tampilkan tabel keluaran script apa adanya (termasuk baris PERI
 
 ## Batasan & penanganan error
 - **Bukan nasihat hukum/perizinan/keamanan pangan.** Persyaratan izin (PIRT, BPOM, halal, merek, label) hanyalah pengingat berdasar pengetahuan umum; aturan, tarif, dan kategori produk bisa berubah. Arahkan pengguna memeriksa tautan resmi dan bertanya ke Dinas Kesehatan setempat/pendamping halal/konsultan. Cantumkan "dicek terakhir: <tanggal>"; bila tidak yakin, tulis "belum diverifikasi".
+- **Tanpa anjuran takaran konsumsi/dosis.** Untuk minuman/pangan fungsional, jangan menulis anjuran "berapa botol/hari", "diminum 2x sehari", atau takaran sejenis, kecuali pengguna sendiri yang menyebutnya dan wajar/aman; bila ada, tandai sebagai kutipan dari pengguna dan arahkan cek ke BPOM/ahli gizi.
+- **Daya simpan tanpa dasar:** jangan mengusulkan umur/daya simpan (mis. "tahan 6 bulan"); tulis "[perlu uji umur simpan]" sampai ada hasil uji.
+- **Ringkasan chat untuk awam:** istilah teknis (RICE, ICE, PIRT, BPOM MD, MOQ) wajib diberi penjelasan singkat bahasa sehari-hari saat pertama muncul, mis. "RICE (skor untuk mengurutkan ide)", "PIRT (izin usaha pangan rumahan dari Dinas Kesehatan)".
 - **Tanpa klaim kesehatan/medis.** Untuk minuman, suplemen, kosmetik: jangan menulis klaim khasiat ("menyembuhkan", "menurunkan gula darah") atau menyarankan dosis; ingatkan bahwa klaim diatur BPOM. Tanpa diagnosis.
 - **Jangan mengarang** harga bahan, hasil uji laboratorium, nomor izin, atau kapasitas maklon. Tulis "[belum ditentukan]" atau minta pengguna mengisi.
 - **Data prioritas buruk** (usaha 0, persen di luar 0-100, keyakinan ditulis pecahan 0,8, angka ambigu `10,000`, angka huruf, judul kolom salah, file kosong): script menolak baris/file itu dan menyebut alasannya, baris lain tetap dihitung. Sampaikan baris yang tidak dihitung ke pengguna dan minta perbaikannya. Jangan menebak angka pengganti.
