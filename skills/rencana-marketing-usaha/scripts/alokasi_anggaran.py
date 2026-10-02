@@ -176,7 +176,7 @@ def hitung_target(a):
     else:
         h["status"] = "AMAN" if mp >= BATAS_AMAN else "TIPIS"
     if a["anggaran_iklan"] is not None:
-        pesanan = lantai(a["anggaran_iklan"] / cac_pakai)
+        pesanan = langit(a["anggaran_iklan"] / cac_pakai)  # MINIMAL pesanan: bulatkan ke ATAS agar benar-benar balik modal
         h["anggaran_iklan"] = bulat(a["anggaran_iklan"])
         h["pesanan_dari_iklan_bila_capai_cac"] = pesanan
         h["omzet_dari_iklan"] = bulat(harga * pesanan)

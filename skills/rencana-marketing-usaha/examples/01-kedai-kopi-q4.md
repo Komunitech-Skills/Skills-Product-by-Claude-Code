@@ -79,8 +79,8 @@ Margin kontribusi per pesanan: Rp 10.000 (40.0%)  STATUS: AMAN
 - CAC impas termasuk pembelian ulang: Rp 20.000
 - CAC target: Rp 7.000
 - ROAS target: 3.58
-- Minimal pesanan agar balik modal iklan (bukan perkiraan): 192
-- Omzet minimal dari iklan (bukan perkiraan): Rp 4.800.000
+- Minimal pesanan agar balik modal iklan (bukan perkiraan): 193
+- Omzet minimal dari iklan (bukan perkiraan): Rp 4.825.000
 Cara baca: angka 'minimal' = syarat agar iklan tidak rugi, BUKAN perkiraan hasil iklan.
 ```
 Artinya: dengan margin sekitar Rp 10.000 per gelas, biaya iklan untuk mendapat 1 pesanan tidak boleh lebih dari Rp 10.000 (impas) dan idealnya Rp 7.000 (sisa laba Rp 3.000). Karena pelanggan beli ulang rata-rata 1x, batas impas efektif Rp 20.000 — tetap pakai target lebih ketat sampai data 4 minggu ada.
