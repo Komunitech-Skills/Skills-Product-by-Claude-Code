@@ -212,3 +212,10 @@ Disalin ke scratchpad `uji3-akp/`, dijalankan dari sana. `tests/uji_regresi.py`:
 **Temuan:** perbaikan bekerja sesuai tujuan — pos receh wajar (parkir, jajan, gas, pulsa, dll.) tidak lagi berisik, sementara salah ketik jelas (Makan=1.500, Sewa kos=1.200, Listrik=450, Parkir=500) tetap tertangkap. Satu celah kecil (RENDAH, bukan regresi angka): aturan "ber-Rp = disengaja" membebaskan **pos non-receh** juga (mis. "Sewa=Rp5.000", "Zakat=Rp5.000") dari peringatan meski nilainya kemungkinan salah ketik — sebaiknya aturan "Rp" hanya membebaskan pos yang sudah masuk daftar wajar-kecil, bukan semua pos.
 
 ### Skor uji ulang v1.0.3: **9/10** (fungsi utama tepat; satu catatan RENDAH di atas untuk revisi ringan berikutnya)
+
+## Uji ulang v1.0.7 — OpenClaw sebelum/sesudah (penguji independen, 2 Okt 2026)
+
+- **Cara:** OpenClaw 2026.9.6 lokal, model router Komunitech (`claude-sonnet-5`), skill dimatikan vs aktif, home bersih per skenario. Rincian & balasan utuh: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.7".
+- **Fokus revisi THR:** ✓ THR tidak dihitung dua kali (S1: setor Rp830.000/bln dari gaji + THR Rp12.500.000 sekaligus saat cair; S2: THR untuk menambal defisit, tidak dipakai lagi); ✓ setoran bulanan = sisa gaji rutin (S2 diturunkan ke Rp200.000 karena defisit); ✓ rasio cicilan berbasis gaji rutin (34,4%; 15%). Semua angka utama cocok dengan `keuangan.py` yang dijalankan penguji.
+- **Temuan:** (1) SEDANG — angka alternatif "tanpa kiriman ortu" dihitung sendiri oleh agent dan salah (Rp9,45 jt; benar Rp9.850.000, 9 bln Rp88.650.000); (2) RENDAH — `% pemasukan` & banding pola memakai gaji + THR/12, agent melabelinya "% gaji" (KPR 22,9% vs 24,8% gaji rutin); (3) SEDANG — skenario defisit: bulan sebelum THR cair tidak ditangani dan defisit dibiarkan bergantung THR tiap tahun.
+- **Skor OpenClaw:** S1 6,5 → 8; S2 7,5 → 7,5; rata-rata 7,0 → 7,75. **VERDIK: BELUM** (revisi THR berhasil, tetapi butuh perbaikan temuan 1 & 3 lalu uji ulang).
