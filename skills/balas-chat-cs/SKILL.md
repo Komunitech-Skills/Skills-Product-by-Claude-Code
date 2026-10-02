@@ -5,6 +5,12 @@ description: Membuat balasan chat customer service (CS) untuk WhatsApp dan chat 
 
 # Balas Chat CS
 
+## ATURAN WAJIB (baca dulu)
+1. **Jika pelanggan/pengguna menempel password, token, kunci, OTP, PIN, atau data login di chat: JANGAN pernah mengulang/menyalin satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan, tidak dikutip), baik di draf balasan maupun di catatan admin.** Sebut hanya "password yang Anda tempel".
+2. Templat balasan baku bila itu terjadi (jangan tambah kutipan dari yang ditempel):
+   > "Password yang Anda tempel tidak saya ulang dan tidak kami perlukan — sebaiknya segera diganti. Kami tidak pernah meminta password, OTP, atau PIN lewat chat."
+3. **Jangan menjanjikan/menerima kompensasi** (refund penuh/sebagian, ganti baru, voucher, ongkir) di draf sebelum pemilik memutuskan. Pakai frasa netral: "Permintaan Kakak sudah kami catat dan kami teruskan ke pemilik; kami kabari keputusannya [isi: batas waktu]." Tandai **[KEPUTUSAN PEMILIK]** di draf dan di catatan admin. Jangan menulis "refund full kami terima".
+
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
@@ -109,6 +115,8 @@ Supaya keburu untuk Sabtu, dusty pink pengganti bisa kami kirim lebih dulu hari 
 ```
 
 ## Checklist sebelum mengirim hasil
+- [ ] **Teratas:** tidak ada password/token/kunci/OTP/data login yang diulang di draf maupun catatan; bila ditempel, pakai templat ATURAN WAJIB.
+- [ ] Tidak ada kalimat yang menerima/menjanjikan refund, ganti baru, atau voucher sebelum pemilik memutuskan; ditandai [KEPUTUSAN PEMILIK].
 - [ ] Pertanyaan pelanggan terjawab di kalimat pertama/kedua.
 - [ ] Tidak meminta pelanggan mengulang info yang sudah ia berikan di chat (nomor pesanan, alamat, foto).
 - [ ] Komplain memakai urutan empati → solusi → tindak lanjut dengan waktu yang jelas.
