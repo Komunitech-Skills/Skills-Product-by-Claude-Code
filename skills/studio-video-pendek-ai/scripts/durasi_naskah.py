@@ -111,7 +111,7 @@ def main(argv=None):
                           "hasil kurang bisa diandalkan.")
     rincian, total = estimasi(adegan, a.wpm, peringatan=peringatan)
     lebih = round(total - a.target, 1)
-    status = "MELEBIHI" if lebih > 0 else ("PAS" if lebih >= -5 else "KEPENDEKAN")
+    status = "MELEBIHI" if lebih > 0 else ("PAS" if lebih >= -0.1 * a.target else "KEPENDEKAN")  # PAS = di bawah target tidak lebih dari 10%
     if a.json:
         print(json.dumps({"wpm": a.wpm, "target": a.target, "total_dtk": total, "selisih_dtk": lebih,
                           "status": status, "peringatan": peringatan, "adegan": rincian}, ensure_ascii=False, indent=2))
@@ -128,7 +128,8 @@ def main(argv=None):
             print(f"PERINGATAN: lebih {lebih} dtk (~{int(lebih / 60 * a.wpm) + 1} kata). Ringkas adegan terpanjang.")
         elif status == "KEPENDEKAN":
             print(f"Catatan: suara hanya {total} dtk dari target {a.target:g} dtk (kurang {-lebih} dtk). Ini wajar "
-                  "bila ada bagian visual tanpa suara; tambah isi hanya bila memang perlu.")
+                  "bila ada bagian visual tanpa suara. Bila suara harus mengisi target (selisih lebih dari 10%), "
+                  "tambah adegan/kalimat dari fakta pengguna atau ubah target, lalu hitung ulang.")
         for w in peringatan:
             print(f"PERINGATAN: {w}")
         print("Ini perkiraan; ukur ulang dengan rekaman suara asli.")

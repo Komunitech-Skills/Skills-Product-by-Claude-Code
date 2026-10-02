@@ -143,5 +143,32 @@ class Uji(unittest.TestCase):
         self.assertEqual(json.loads(out)["peringatan"], [])
 
 
+class UjiV103(unittest.TestCase):
+    def _fakta(self, teks, fakta):
+        import subprocess
+        r = subprocess.run([sys.executable, os.path.join(AKAR, "scripts", "cek_fakta.py"), "--teks", teks, "--fakta", fakta],
+                           capture_output=True, text=True, encoding="utf-8")
+        return r.returncode, r.stdout
+
+    def test_klaim_dikarang_dan_atribusi_palsu_gagal(self):
+        rc, out = self._fakta("Hook | Pakai pisang pilihan, coklat melimpah, sesuai yang Kakak sebut.", "pisang goreng, Rp15.000")
+        self.assertEqual(rc, 2)
+        for kata in ("pilihan", "melimpah", "sesuai yang Kakak sebut"):
+            self.assertIn(kata, out)
+
+    def test_placeholder_dan_fakta_pengguna_lulus(self):
+        rc, _ = self._fakta("Hook | Pisang goreng Rp15.000. [isi: bahan/proses]", "pisang goreng, Rp15.000")
+        self.assertEqual(rc, 0)
+
+    def test_durasi_toleransi_10_persen(self):
+        # 70 kata ~ 28 dtk @150 wpm: dalam 10% dari 30
+        _, out, _ = jalan("--teks", " ".join(["kata"] * 70), "--target", "30")
+        self.assertIn("PAS", out)
+        # 59 kata ~ 23,6 dtk (< 27): kependekan, minta disesuaikan
+        _, out, _ = jalan("--teks", " ".join(["kata"] * 59), "--target", "30")
+        self.assertIn("KEPENDEKAN", out)
+        self.assertIn("lebih dari 10%", out)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
