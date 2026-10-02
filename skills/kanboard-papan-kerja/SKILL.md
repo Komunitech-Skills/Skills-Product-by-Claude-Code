@@ -8,7 +8,8 @@ description: Mengoperasikan Kanboard (papan kerja kanban open-source, self-hoste
 ## ATURAN WAJIB (baca dulu)
 1. **Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan). Sebut "kunci yang Anda tempel".**
 2. Templat balasan baku bila itu terjadi (salin, jangan tambah kutipan apa pun dari yang ditempel):
-   > "Kunci yang Anda tempel tidak saya pakai, dan sebaiknya dianggap sudah bocor. Mohon cabut/ganti token itu di aplikasinya, lalu simpan yang baru SENDIRI dari terminal Anda: `python3 <folder-skill>/scripts/kanboard.py simpan-kunci` (Windows: `python`/`py`; path lengkap folder skill ini ada di `docs/instalasi.md`). Setelah itu saya bisa melanjutkan."
+   > "Kunci yang Anda tempel tidak saya pakai, dan sebaiknya dianggap sudah bocor. Mohon cabut/ganti token itu di aplikasinya (bisa setelah ini), lalu simpan yang baru SENDIRI dari terminal Anda: `python3 <folder-skill>/scripts/kanboard.py simpan-kunci` (Windows: `python`/`py`; path lengkap folder skill ini ada di `docs/instalasi.md`). Setelah itu saya bisa melanjutkan."
+3. **Urutan:** jangan menahan pekerjaan. Bila permintaan pengguna bisa dijawab dengan kunci yang sudah tersimpan (mis. pratinjau), TAMPILKAN pratinjau/hasilnya dulu (tanpa mengulang token), baru di akhir jawaban sarankan mengganti token yang sempat ditempel. Templat di atas dipakai hanya bila kunci tersimpan belum ada.
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
