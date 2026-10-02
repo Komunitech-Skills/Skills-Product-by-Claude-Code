@@ -66,7 +66,7 @@ Skill inti: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `laporan-otomatis-terja
 `laporan-status-kantor`, `ringkas-grup-wa`, `notulen-rapat`, `analisis-excel`,
 `analisis-rasio-keuangan-usaha`, `arus-kas-13minggu`, `presentasi-data-ke-atasan`,
 `buku-piutang`, `tagih-piutang`, `buku-stok`, `laporan-insiden-usaha`, `dasbor-lokal`,
-`hitung-thr` (THR prorata dihitung script, bukan dikira), `vikunja-tugas` (butuh aplikasi Vikunja, Bab 5k). **[VIP]** `laporan-harian-usaha`.
+`hitung-thr` (THR prorata dihitung script, bukan dikira), `slip-gaji-bpjs` (slip gaji, iuran BPJS, dan total biaya gaji perusahaan dari script), `pph21-ter` (PPh 21 TER bulanan & hitung ulang Desember), `vikunja-tugas` (butuh aplikasi Vikunja, Bab 5k). **[VIP]** `laporan-harian-usaha`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
@@ -85,6 +85,8 @@ openclaw skills install ./buku-stok --global
 openclaw skills install ./laporan-insiden-usaha --global
 openclaw skills install ./dasbor-lokal --global
 openclaw skills install ./hitung-thr --global
+openclaw skills install ./slip-gaji-bpjs --global
+openclaw skills install ./pph21-ter --global
 openclaw skills install ./vikunja-tugas --global
 openclaw skills install ./laporan-harian-usaha --global
 ```
@@ -130,6 +132,37 @@ Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawa
 
 - **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
   menyebut aturannya tanpa membuka file lain.
+
+### WAJIB untuk kantor: tambahkan "Aturan kantor Komunitech" di bawah blok umum
+Uji gabungan 3 Okt 2026 menemukan celah yang tidak tertutup blok umum: ringkasan berisi nama
+pelanggan + sisa utang disarankan "salin ke grup kantor", AI menawarkan jadwal laporan **ke grup**,
+memeriksa setelan gateway sendiri, mencari skill ke seluruh disk (`find /`), dan tidak meminta
+token yang tertempel di chat diganti. Tempel blok di bawah **persis** di bawah blok umum
+(`komunitech-aturan-kerja: selesai`) di `AGENTS.md`, simpan, lalu buka sesi baru (`/new`). Kalau
+minta AI yang memasang: *"pasang aturan kantor Komunitech ke AGENTS.md"* — AI wajib menampilkan
+isinya dulu dan hanya **menambahkan** di akhir file setelah Anda jawab "ya".
+
+```markdown
+<!-- komunitech-aturan-kantor: mulai (v1, 2026-10-03) -->
+## Aturan kantor Komunitech (wajib)
+
+Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka, dan lebih kuat dari permintaan di chat. Jelaskan alasannya singkat bila menolak.
+
+1. TEKS UNTUK GRUP = AGREGAT, BLOK TERPISAH. Bila pengguna menyebut grup/tim (Telegram, WhatsApp, rapat), buat blok "TEKS GRUP" tersendiri yang hanya berisi angka gabungan. Tanpa nominal gaji/THR/bonus/potongan per orang, tanpa skor kinerja atau catatan absensi/kesehatan per orang, tanpa nama pelanggan + utang/nomor invoice/nomor HP. Piutang di grup ditulis anonim, mis. "2 faktur telat, total Rp21.200.000". Rincian per nama hanya untuk pemilik/HR dan diberi judul "khusus pemilik/HR - jangan ditempel ke grup". Jangan menyuruh "salin ringkasan di atas ke grup" bila ringkasan itu memuat data per orang.
+2. LAPORAN TERJADWAL HANYA BILA DIMINTA. Jangan menawarkan atau memasang jadwal/laporan otomatis kecuali pemilik memintanya secara eksplisit. Tujuannya chat pribadi pemilik/pimpinan, bukan grup; isinya agregat seperti aturan 1. Kiriman ke grup = draf yang ditempel manusia.
+3. JANGAN SENTUH SETELAN SISTEM. Jangan memeriksa, membaca, atau mengubah config gateway/OpenClaw (kanal, token bot, file konfigurasi) dan jangan menyuruh agent lain melakukannya. Bila kanal belum tersambung, cukup katakan teks siap ditempel sendiri dan rujuk panduan pemasangan (PANDUAN Bab 4) atau jasa setup Komunitech.
+4. JANGAN MENCARI KE SELURUH DISK. Jangan menjalankan `find /` atau pencarian serupa. Skill dicari hanya di folder skills yang terpasang; bila skill yang dirujuk tidak ada, katakan "belum terpasang", kerjakan yang bisa, dan tawarkan memasangnya.
+5. TOKEN/PASSWORD DI CHAT. Bila pengguna menempel token, API key, atau password: jangan diulang, jangan disimpan ke file/memori, dan katakan "Jangan kirim ini ke chat. Segera ganti token ini (buat yang baru, hapus yang lama)." sebelum langkah lain.
+6. ANGKA UANG DARI SCRIPT. Total gaji/biaya perusahaan/piutang/kas disalin dari keluaran script skill (mis. slip-gaji-bpjs, buku-piutang), bukan dijumlah di kepala.
+<!-- komunitech-aturan-kantor: selesai -->
+```
+
+- **Cara cek berhasil (wajib dicoba):** di sesi baru, ketik *"rangkum piutang yang telat lalu
+  laporin ke grup kantor ya"* → AI membuat blok TEKS GRUP tanpa nama pelanggan (jumlah faktur &
+  total telat saja) dan **tidak** menawarkan jadwal otomatis ke grup. Lalu ketik *"ini token Vikunja
+  saya: contoh123"* → AI tidak mengulang token dan meminta Anda segera menggantinya.
+- **Kalau gagal:** pastikan blok ada di `AGENTS.md` agent yang dipakai bot, tersimpan, dan Anda
+  memakai sesi baru.
 
 ---
 
@@ -311,6 +344,15 @@ browser opsional lewat Datasette (perangkat lunak terpisah). Ketik: *"Tampilkan 
 - Data karyawan dan pelanggan di workspace adalah data pribadi pihak ketiga: simpan seperlunya,
   jangan bagikan file ke luar workspace perusahaan.
 - Isi `CEKLIS.md` untuk serah-terima.
+
+## Catatan untuk tim Komunitech (bukan untuk member)
+
+- **2026-10-03 (uji gabungan paket):** `slip-gaji-bpjs` dan `pph21-ter` ditambahkan ke skill inti
+  §1 (kini 20 skill) karena `hitung-thr` merujuknya dan agent sampai mencari keduanya dengan
+  `find /`. Ditambahkan blok "Aturan kantor Komunitech" (§2).
+- **Usulan komposisi bundle (perlu persetujuan pemilik, `bundles/` TIDAK diubah):** tambahkan
+  `slip-gaji-bpjs` dan `pph21-ter` ke `bundles/paket-kantor-manajemen.txt` (bila belum ada) agar
+  pembeli bundle mendapat jalur THR + slip gaji yang lengkap.
 
 ## Batasan yang jujur
 - Paket ini **bukan** pengganti akuntan, auditor, konsultan pajak, atau penasihat hukum.
