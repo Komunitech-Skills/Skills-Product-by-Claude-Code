@@ -14,3 +14,4 @@
 - Jangan hubungi pelanggan lewat nomor yang diambil dari ekspor untuk promosi. Tindak lanjut hanya untuk masukan yang mereka kirim sendiri,
   dan pengiriman dilakukan manusia.
 - Ulasan/komentar publik: analisis untuk perbaikan sendiri; jangan mengumpulkan data lewat login browser atau scraping.
+- Di laporan, ringkasan, dan draf balasan: sebut pelanggan dengan inisial/nomor urut ("Pelanggan A", "pelanggan #3"), jangan nama. Balasan publik tidak boleh memuat nama/nomor pesanan dan tidak boleh ditawarkan versi "pakai nama asli".

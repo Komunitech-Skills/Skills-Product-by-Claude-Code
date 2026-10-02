@@ -60,6 +60,8 @@ Bila belum ada data, tanyakan **sekali**: (1) kanal apa saja & bagaimana mengamb
    - Bandingkan antarkanal: isu di ≥ 2 kanal lebih kuat. Sebut kanal yang bias (mis. WA didominasi pelanggan yang komplain).
 5. **Susun prioritas** dengan `references/prioritas.md`: skor script + penyesuaian (keamanan selalu Segera, jangkauan kanal, tren, usaha). Pecah permintaan pelanggan ("tambah menu X") menjadi masalah di baliknya + 2-3 alternatif solusi + uji murah.
 6. **Buat backlog perbaikan** (`templates/backlog-perbaikan.csv`): tiap baris punya bukti (jumlah + kutipan), tindakan konkret, penanggung jawab, tenggat, ukuran keberhasilan berangka. Maks. 3 perbaikan aktif sebulan (sesuaikan kapasitas).
+   **Aturan nama pelanggan (wajib):** jangan menulis nama pelanggan di ringkasan, laporan, maupun draf balasan; sebut "Pelanggan A/B/C" atau "pelanggan #3" (inisial/nomor urut dipakai konsisten dalam satu laporan). Balasan PUBLIK (ulasan marketplace, Google Maps, komentar) tidak boleh memuat nama, nomor pesanan, atau detail yang mengenali pelanggan, dan **jangan menawarkan versi "pakai nama asli"** untuk balasan publik; yang boleh memakai panggilan hanya balasan pribadi yang dikirim manusia lewat chat si pelanggan sendiri (placeholder `{panggilan}` diisi manusia).
+   **Label tema keamanan:** tulis tiap jenis dari kolom "rincian" script sebagai baris/label sendiri, mis. "Jamur: 4", "Basi/kedaluwarsa: 1", "Hewan/serangga: 1". Jangan membuat label gabungan seperti "Jamur/roti basi" dengan satu angka.
 7. **Tutup lingkaran ke pelanggan** (`templates/balasan-pelanggan.md`): draf balasan per situasi A-E untuk dikirim **manusia** - tulis minimal satu **teks utuh siap tempel** per situasi yang muncul (bukan arahan), utamakan keluhan yang belum dibalas; untuk balasan publik di ulasan arahkan ke `balas-ulasan-pelanggan` bila terpasang (bila tidak: balasan singkat, tenang, tidak defensif, keluhan dipindah ke chat pribadi, tanpa data pribadi). Bila ada perbaikan selesai, tulis **kabar perbaikan** dengan `templates/catatan-perbaikan-pelanggan.md` (bahasa pelanggan, tanpa nama, tanpa janji yang belum pasti).
 8. **Atur siklus bulanan** (`references/siklus-bulanan.md`): simpan `anonim-YYYY-MM.csv`; bulan berikutnya jalankan ulang seluruh file gabungan agar tren muncul; nilai apakah ukuran keberhasilan tercapai; tutup/lanjutkan.
 9. Tulis laporan (format di bawah), lalu periksa checklist.
@@ -121,6 +123,8 @@ Ringkasan: "Pengiriman telat = isu #1: 9 dari 51 masukan (17,6%), muncul di 4 ka
 
 ## Checklist sebelum mengirim hasil
 - [ ] Tidak ada nama, nomor HP, email, alamat, nomor pesanan di laporan (kutipan sudah dibaca ulang)
+- [ ] Pelanggan disebut dengan inisial/nomor urut (mis. "Pelanggan A", "pelanggan #3"), bukan nama; tidak menawarkan draf balasan publik "pakai nama asli"
+- [ ] Tema Keamanan dipisah per jenis (jamur / basi / hewan-serangga / benda asing / sakit), tidak digabung dalam satu label
 - [ ] PERINGATAN & kolom yang dipakai script sudah dicek; skala nilai benar (1-5 atau 0-10)
 - [ ] Setiap tema sudah dibaca kutipannya oleh agent; koreksi tertulis di Catatan metode
 - [ ] Semua angka (termasuk sentimen per kanal & respons staf) disalin dari keluaran script terakhir; koreksi manual ditulis terpisah & ditandai

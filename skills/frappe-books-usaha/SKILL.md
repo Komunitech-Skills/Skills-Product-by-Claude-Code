@@ -44,7 +44,7 @@ Komunitech tidak berafiliasi dengan Frappe; Frappe Books tidak disertakan dalam 
 Jangan hapus lewat database. Jelaskan dulu: draf dan invoice batal **tidak ikut** angka laporan/PPN/laba rugi.
 - **Draf** yang tidak terpakai: buka nota → menu titik tiga (⋯) → **Delete**. Aman, belum ada jurnal.
 - **Invoice batal (Cancelled):** menurut kode sumber resmi Frappe Books v0.36.0 (`fyo/model/doc.ts`, `canDelete`: dokumen
-  yang sudah dibatalkan boleh dihapus), nota batal **bisa** dihapus lewat menu ⋯ → **Delete**; aplikasi memperingatkan bahwa
+  yang sudah dibatalkan boleh dihapus), nota batal **bisa** dihapus lewat menu ⋯ → **Delete** (berdasarkan kode sumber v0.36, belum dicoba langsung di aplikasi); aplikasi memperingatkan bahwa
   tindakan ini permanen. Saran: **biarkan saja** sebagai jejak (nomor nota tidak bolong, riwayat pembatalan tetap ada);
   hapus hanya bila pemilik yakin, dan backup file `.books.db` dulu. **PERLU REVIEW:** perilaku ini dibaca dari kode sumber,
   belum dicoba di aplikasi oleh Komunitech — bila menu Delete tidak muncul, sampaikan apa adanya.
@@ -105,6 +105,7 @@ Perintah (Windows: ganti `python3` dengan `python` atau `py`; path relatif terha
    - Setelah LOLOS: sampaikan pratinjau per nota + langkah Import Wizard dari keluaran script (`references/import-wizard.md`),
      ingatkan **backup file .books.db dulu** dan memilih **tidak submit** agar transaksi masuk sebagai draf untuk dicek.
 4. **PPN** (`references/ppn-frappe-books.md`):
+   - **Cek status PKP DULU, sebelum menghitung PPN apa pun** (`ppn`, `ppn-periode`, atau PPN per nota): tanyakan "Usaha Anda sudah PKP (Pengusaha Kena Pajak)?" kecuali pengguna sudah menyebutnya atau data jelas ber-PPN. Belum PKP → jangan menghitung PPN setor; jelaskan bahwa usaha non-PKP tidak memungut/menyetor PPN, dan arahkan ke konsultan pajak/KPP. Belum tahu → arahkan cek ke konsultan pajak/KPP, hitung hanya sebagai simulasi berlabel "andaikan PKP".
    - **PPN setor per bulan/periode** → `python3 scripts/frappe_books.py ppn-periode --db "<path>" --bulan 2026-09`.
      Script membaca invoice **final** saja, memisahkan baris **tanpa PPN** (tanpa template pajak / tarif 0) dari DPP,
      menghitung PPN keluaran & masukan per faktur (12% × DPP 11/12, dibulatkan ke bawah), dan selisihnya

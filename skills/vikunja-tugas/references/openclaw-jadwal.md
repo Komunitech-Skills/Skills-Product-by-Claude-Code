@@ -18,7 +18,7 @@ Telegram belum diuji (butuh token bot asli). Jika sebuah opsi ditolak, jalankan
 - **Privasi:** teks laporan berisi judul tugas dan nama anggota (username Vikunja), dan akan tersimpan di riwayat chat Telegram pemilik. Beri tahu pemilik. Judul tugas adalah data tim internal (bukan data pelanggan/PII pihak ketiga), tapi tetap sampaikan hal ini sebelum membuat jadwal.
 
 ## Syarat
-- Gateway OpenClaw berjalan di komputer/jaringan yang bisa menjangkau Vikunja (idealnya **komputer yang sama** dengan Vikunja, karena Vikunja dibatasi ke `127.0.0.1` — lihat `docs/panduan-vikunja.md` §4) dan **menyala saat jadwal** (laptop/mini PC yang selalu menyala atau VPS milik pemilik; Komunitech menyediakan jasa setup berbayar).
+- Gateway OpenClaw berjalan di komputer/jaringan yang bisa menjangkau Vikunja (idealnya **komputer yang sama** dengan Vikunja, karena Vikunja dibatasi ke `127.0.0.1` — lihat `references/panduan-vikunja.md` §4) dan **menyala saat jadwal** (laptop/mini PC yang selalu menyala atau VPS milik pemilik; Komunitech menyediakan jasa setup berbayar).
 - Kanal Telegram sudah tersambung dan ID chat pemilik diketahui.
 - Token API **baca-saja** sudah disimpan (`simpan-kunci`, lihat SKILL.md bagian Persiapan) — **jangan** pakai token baca-tulis untuk jadwal otomatis.
 - Zona waktu jadwal (`--tz` di `openclaw automations add` dan `--tz` di `vikunja.py`) sebaiknya sama, mis. `Asia/Jakarta` untuk WIB.

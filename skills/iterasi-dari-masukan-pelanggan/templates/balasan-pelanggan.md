@@ -1,7 +1,9 @@
 # Template balasan "menutup lingkaran"
 Aturan: sebut masalahnya dengan bahasa pelanggan, jangan janji yang belum pasti, jangan tulis nama/nomor
 pelanggan lain, satu pesan = satu tindakan. Untuk balasan PUBLIK di ulasan marketplace/Google Maps pakai
-skill `balas-ulasan-pelanggan` bila terpasang; bila tidak, ikuti prinsipnya: tenang, tidak defensif, keluhan dipindah ke chat pribadi.
+skill `balas-ulasan-pelanggan` bila terpasang (balasan publik TANPA nama pelanggan, nomor pesanan, atau detail pengenal; jangan buat versi "pakai nama asli"); bila tidak, ikuti prinsipnya: tenang, tidak defensif, keluhan dipindah ke chat pribadi.
+
+(`{panggilan}` hanya untuk balasan pribadi yang dikirim manusia lewat chat si pelanggan sendiri. Di laporan/ringkasan, pelanggan disebut "Pelanggan A/B" atau nomor urut.)
 
 ## A. Terima kasih + sudah dicatat (masukan biasa)
 "Halo Kak {panggilan}, terima kasih sudah memberi tahu kami soal {masalah singkat}. Masukan Kakak sudah kami catat
