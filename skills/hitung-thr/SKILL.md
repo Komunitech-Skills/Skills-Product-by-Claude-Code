@@ -25,7 +25,7 @@ Menghitung THR setiap karyawan dengan benar menurut aturan, termasuk karyawan ba
 ## Kapan TIDAK digunakan
 - Slip gaji bulanan lengkap → `slip-gaji-bpjs`. PPh 21 setahun/Desember → `pph21-ter`.
 - Bonus/insentif kinerja, THR ASN/PNS, pesangon/PHK → jelaskan di luar cakupan dan arahkan ke Disnaker/konsultan.
-- Menetapkan tanggal resmi hari raya → itu wewenang pemerintah (SKB libur nasional). Untuk Idul Fitri/Idul Adha, skill hanya **mengecek** tanggal dari pengguna terhadap perkiraan (langkah 2a).
+- Menetapkan tanggal resmi hari raya → itu wewenang pemerintah (SKB libur nasional). Untuk tahun 2026 pakai `references/libur-nasional-2026.md` (SKB 1497, 2, 5 Tahun 2025); untuk Idul Fitri/Idul Adha tahun lain, skill hanya **mengecek** tanggal dari pengguna terhadap perkiraan (langkah 2b).
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
@@ -43,20 +43,21 @@ Menghitung THR setiap karyawan dengan benar menurut aturan, termasuk karyawan ba
 | Sektor/KLU untuk PPh 21 DTP 2026 | Hanya bila THR dibayar tahun 2026 dan gaji tetap ≤ Rp 10 jt | Tanyakan; jangan diasumsikan |
 | Bruto tetap & teratur Januari 2026/bulan pertama kerja (`bruto_tetap_januari`, syarat DTP ≤ Rp 10 jt) | Bila `dtp=ya` | Gaji pokok + tunjangan tetap, dengan peringatan |
 
-Nama karyawan, nama usaha, dan PTKP **bukan** alasan untuk bertanya: bila gaji, tanggal mulai, dan tanggal hari raya sudah ada, langsung hitung (nama → "Karyawan 1", usaha → "Usaha Anda", PTKP → PPh 21 tidak dihitung) lalu sebutkan asumsinya di akhir. Jangan menjelaskan aturan internal skill ke pengguna (mis. "saya tidak boleh pakai nama contoh").
+Nama karyawan, nama usaha, dan PTKP **bukan** alasan untuk bertanya: bila gaji, tanggal mulai, dan tanggal hari raya sudah ada, langsung hitung (nama → "Karyawan 1", usaha → `--perusahaan "[isi: nama usaha]"` — jangan menulis placeholder seperti "Usaha Anda"/"PT Anda" di teks grup, PTKP → PPh 21 tidak dihitung) lalu sebutkan asumsinya di akhir. Jangan menjelaskan aturan internal skill ke pengguna (mis. "saya tidak boleh pakai nama contoh").
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya.
 
 ## Langkah kerja
 1. Susun data karyawan (lihat `templates/karyawan-thr-contoh.csv`; pemisah `;` atau `,`). Kolom: `nama` (wajib), `jenis`, `ptkp`, `gaji_pokok`, `tunjangan_tetap`, `tanggal_mulai` atau `masa_kerja_bulan`, `upah_bulanan` (harian/satuan: upah tiap bulan urut dari terlama, dipisah `+`, mis. `3jt+3,2jt+2,8jt`), `bruto_bulan_bayar`, `thr_kebijakan`, `tanggal_berhenti`, `dtp` (ya/tidak; script menolak otomatis bila THR tidak dibayar di tahun 2026 atau `bruto_tetap_januari` > Rp 10 jt), `bruto_tetap_januari`, `jabatan`.
    **Data gaji = data pribadi sensitif:** tulis CSV karyawan dan `--csv` rekap di **folder kerja yang disepakati dengan pengguna** (mis. folder kerja OpenClaw/agent atau folder yang ia sebut), **bukan `/tmp`** atau folder sementara lain; sebutkan path lengkapnya.
-2a. **Cek tanggal Lebaran/Idul Adha (wajib untuk Idul Fitri & Idul Adha, sebelum thr.py):**
+2a. **Tanggal libur/cuti bersama — pakai tabel dulu:** tahun **2026** → ambil tanggal hari raya, libur nasional, cuti bersama, dan batas H-7 dari `references/libur-nasional-2026.md` (sudah diverifikasi; Idulfitri 1447 H = Sabtu 21 Maret 2026, Natal = Jumat 25 Des 2026, cuti bersama Natal = Kamis 24 Des 2026). **Jangan mencari di web** untuk tahun 2026. Bila tanggal dari pengguna berbeda dengan tabel, sampaikan sekali dengan sopan dan pakai tanggal tabel (sebutkan dasarnya). Tahun di luar tabel → paling banyak **satu** pencarian web ke sumber resmi; bila tetap tidak pasti, tulis sebagai **asumsi** atau `[isi: tanggal sesuai SKB <tahun>]` dan lanjutkan. Jangan menulis catatan tebakan seperti "SKB biasanya terbit …".
+2b. **Cek tanggal Lebaran/Idul Adha (wajib untuk Idul Fitri & Idul Adha di luar tabel, sebelum thr.py):**
    ```bash
    python3 <folder-skill-ini>/scripts/tahun_hijriah.py <tanggal-dari-pengguna> --cek idul-fitri   # atau --cek idul-adha
    ```
    - Keluar "COCOK" → lanjut dengan tanggal pengguna.
    - Keluar "PERINGATAN" (tanggal bukan 1 Syawal/10 Zulhijah, selisih > 2 hari dari perkiraan) → di balasan yang **sama** (tanpa menunda hitungan), sampaikan **sekali** dengan sopan: tanggal yang disebut jatuh pada <tanggal Hijriah dari script>, Idul Fitri diperkirakan <perkiraan> (tanggal resmi menunggu penetapan pemerintah/SKB), sehingga batas bayar H-7 = <batas_bayar_h7_perkiraan>. Jalankan `thr.py` dengan **tanggal perkiraan** itu sebagai `--hari-raya` dan sebut asumsinya. Bila pengguna lalu bersikeras memakai tanggalnya sendiri, hitung ulang dengan tanggal itu tanpa berdebat lagi (cukup satu kalimat pengingat risiko denda 5% bila ternyata terlambat).
    - Hari raya lain (Natal, Nyepi, Waisak, Imlek): pakai tanggal pengguna apa adanya.
-   - **Tanggal cair/tanggal resmi tidak diketahui → jangan mencari berulang di web.** Pakai aturan umum: THR **paling lambat H-7** hari raya (Permenaker 6/2016 Pasal 5 ayat 4) = default `--tanggal-bayar` script, dan tulis sebagai asumsi ("tanggal cair diasumsikan batas H-7; sesuaikan bila perusahaan membayar lebih awal"). Tanggal hari raya yang tetap (Natal 25 Des) tidak perlu dicari. Untuk tanggal libur/cuti bersama SKB yang tidak disebut pengguna, maksimal **satu** pencarian; bila tidak pasti, tulis `[isi: tanggal sesuai SKB]` dan lanjutkan.
+   - **Tanggal cair/tanggal resmi tidak diketahui → jangan mencari berulang di web.** Pakai aturan umum: THR **paling lambat H-7** hari raya (Permenaker 6/2016 Pasal 5 ayat 4) = default `--tanggal-bayar` script, dan tulis sebagai asumsi ("tanggal cair diasumsikan batas H-7; sesuaikan bila perusahaan membayar lebih awal"). Tanggal hari raya yang tetap (Natal 25 Des) tidak perlu dicari. Tanggal libur/cuti bersama yang tidak disebut pengguna → langkah 2a (tabel dulu, web maks. satu kali hanya untuk tahun di luar tabel).
 2. Jalankan. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
       python3 <folder-skill-ini>/scripts/thr.py --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" --perusahaan "<nama usaha pengguna>" --data karyawan.csv --csv rekap-thr.csv
@@ -103,7 +104,9 @@ _(Nama di contoh ini fiktif — jangan dipakai di balasan.)_
 ## Checklist sebelum mengirim hasil
 - [ ] Angka dari script (atau ditandai "dihitung manual").
 - [ ] Tidak menanyakan nama karyawan; tanpa nama → "Karyawan 1".
-- [ ] Idul Fitri/Idul Adha: `tahun_hijriah.py --cek` sudah dijalankan; bila PERINGATAN, perkiraan tanggal & batas H-7-nya disampaikan sekali.
+- [ ] Tanggal 2026 diambil dari `references/libur-nasional-2026.md` (tanpa web); tahun lain web maks. 1 kali, sisanya asumsi/`[isi: ...]`.
+- [ ] Tidak ada placeholder "Usaha Anda" di teks grup; nama usaha tidak diketahui → `[isi: nama usaha]`.
+- [ ] Idul Fitri/Idul Adha di luar tabel: `tahun_hijriah.py --cek` sudah dijalankan; bila PERINGATAN, perkiraan tanggal & batas H-7-nya disampaikan sekali.
 - [ ] Tidak ada nama dari contoh (Budi, Rina, CV Maju Jaya) di balasan; tahun Hijriah hanya dari `tahun_hijriah.py`/pengguna atau dihilangkan.
 - [ ] Masa kerja 11 vs 12 bulan dicek teliti (12 bulan = THR penuh).
 - [ ] Komponen upah hanya gaji pokok + tunjangan tetap (bukan uang makan/transport harian yang tidak tetap).

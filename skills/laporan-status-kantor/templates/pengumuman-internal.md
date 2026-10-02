@@ -31,8 +31,8 @@ Operasional kembali normal pada [tanggal masuk kembali].
 Selamat [nama hari libur] bagi yang merayakan 🙏
 ```
 **Wajib**: tanggal libur nasional/cuti bersama berubah setiap tahun dan ditetapkan lewat
-Surat Keputusan Bersama (SKB) 3 Menteri — skill ini TIDAK mengetahui tanggal terbaru;
-selalu minta pengguna mengisi tanggal, atau tandai `[isi: tanggal sesuai SKB tahun ini]`.
+Surat Keputusan Bersama (SKB) 3 Menteri. Tahun 2026: pakai `references/libur-nasional-2026.md`.
+Tahun lain: minta pengguna mengisi tanggal, atau tandai `[isi: tanggal sesuai SKB tahun ini]`.
 
 ## Varian: Perubahan Jam Kerja
 ```

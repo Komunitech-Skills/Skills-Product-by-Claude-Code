@@ -85,16 +85,20 @@ tanpa detail lain, pakai default di atas dan sebutkan asumsi yang dipakai di akh
 7. **Bilingual (jika diminta)**: tulis versi Indonesia lengkap dahulu, lalu versi Inggris
    di bawahnya dengan struktur identik — jangan mencampur dua bahasa dalam satu kalimat.
 8. **Untuk pengumuman THR/cuti bersama/libur nasional**: gunakan
-   `templates/pengumuman-internal.md` bagian terkait. Tanggal libur nasional/cuti bersama
-   dan nominal THR **wajib diisi pengguna** (skill ini tidak menghitung atau mengarang
-   tanggal resmi pemerintah yang berubah tiap tahun).
+   `templates/pengumuman-internal.md` bagian terkait. Nominal THR **tidak dihitung** di
+   skill ini. Tanggal libur nasional/cuti bersama **2026** → ambil dari
+   `references/libur-nasional-2026.md` (SKB 1497, 2, 5 Tahun 2025; sudah diverifikasi,
+   salinan identik dengan `hitung-thr`) dan **jangan mencari di web**.
    - **Pengumuman untuk grup/seluruh karyawan TIDAK BOLEH memuat nominal gaji/THR per orang
      atau nama+nominal** — meski pengguna memintanya dan meski angkanya dari `hitung-thr`/
      `gaji-umkm`. Isi hanya info umum: tanggal bayar, dasar aturan, rumus umum, cara cek
      rincian pribadi. Ikuti **Aturan privasi & kanal** di atas (dua blok terpisah).
-   - **Tanggal libur/cuti bersama SKB yang tidak disebut pengguna:** maksimal **satu**
-     pencarian web; bila belum pasti, tulis `[isi: tanggal sesuai SKB]` dan lanjutkan — jangan
-     mencari berulang. Tanggal cair THR yang tidak disebut → asumsi "paling lambat H-7 hari
+   - **Tahun di luar tabel (2027 dst.):** maksimal **satu** pencarian web ke sumber resmi;
+     bila belum pasti, tulis sebagai asumsi atau `[isi: tanggal sesuai SKB <tahun>]` dan
+     lanjutkan — jangan mencari berulang, jangan menulis catatan tebakan ("SKB biasanya
+     terbit …", "cuti bersama biasanya …").
+   - **Nama usaha tidak diketahui:** tulis `[isi: nama usaha]` — jangan placeholder seperti
+     "Usaha Anda"/"PT Anda" di teks grup. Tanggal cair THR yang tidak disebut → asumsi "paling lambat H-7 hari
      raya" (Permenaker 6/2016) dan sebutkan sebagai asumsi.
    - **Jangan menghitung THR sendiri.** Bila pengguna minta nominal: pakai skill `hitung-thr`
      bila terpasang, lalu rincian per orang hanya untuk pesan pribadi/HR. Bila tidak terpasang,
@@ -162,9 +166,9 @@ format sopan-formal. Ganti jika perlu._
 - **Tuduhan tanpa bukti / sanksi / PHK:** jangan menulis memo atau pengumuman yang menyalahkan orang tertentu tanpa fakta tertulis, atau mengumumkan PHK/sanksi sepihak. Sampaikan fakta kejadian secara netral (format laporan insiden 5W1H), lalu arahkan ke skill `surat-peringatan-karyawan` untuk teguran resmi dan ke konsultan hukum/Disnaker untuk PHK.
 - **Bukan penghitung uang.** THR, gaji, lembur, pajak → arahkan ke skill hitung yang sesuai
   (`hitung-thr`, `pph-final-umkm`, dst.); skill ini hanya merapikan *teks pengumumannya*.
-- **Tidak mengarang tanggal resmi** (libur nasional, cuti bersama) — tanggal berubah tiap
-  tahun (SKB 3 Menteri); minta pengguna mengisi atau tandai `[isi: tanggal sesuai SKB tahun
-  berjalan]`.
+- **Tidak mengarang tanggal resmi** (libur nasional, cuti bersama) — 2026 dari
+  `references/libur-nasional-2026.md`; tahun lain minta pengguna mengisi atau tandai
+  `[isi: tanggal sesuai SKB tahun berjalan]`.
 - **Bahan mentah kosong/tidak jelas**: jangan mengisi dengan asumsi generik ("berjalan lancar
   seperti biasa"); tanyakan poin-poin nyata ke pengguna dalam satu pesan.
 - **Di luar cakupan** (notulen rapat detail, surat resmi ke pihak luar, kontrak, surat
