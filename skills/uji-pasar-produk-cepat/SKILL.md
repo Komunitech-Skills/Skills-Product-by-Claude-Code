@@ -93,10 +93,13 @@ Jalankan (Windows: `python` atau `py`; script hanya memakai Python standar):
 
 ```
 python3 scripts/hasil_eksperimen.py hasil --ditawari 80 --aksi 14 --target 15
+python3 scripts/hasil_eksperimen.py hasil --ditawari 12 --aksi 5 --bayar 0 --target 15   # 5 bilang mau, 0 transfer
 python3 scripts/hasil_eksperimen.py banding --a-ditawari 60 --a-aksi 9 --b-ditawari 60 --b-aksi 15
 python3 scripts/hasil_eksperimen.py sampel --margin 5 --perkiraan 20
 python3 scripts/hasil_eksperimen.py sampel --banding --a 15 --b 25
 ```
+
+**Bedakan "bilang mau" dari bayar:** `--aksi` = yang beraksi nyata (bayar/DP/transfer/pesan berbayar). Bila pengguna hanya melapor "mau" atau "minat", isi `--bayar` dengan jumlah yang benar-benar sudah bayar (0 bila belum ada). Minat lisan **bukan konversi**; jangan pernah memakainya sebagai dasar LANJUT.
 
 Script mengeluarkan konversi, **rentang wajar 95% (Wilson)**, peringatan sampel kecil, dan keputusan sesuai ambang. Untuk dua varian, script memakai uji z dua proporsi, dan otomatis beralih ke **uji Fisher tepat** bila sampel kecil (< 50 per varian atau ada sel harapan < 5). Pada sampel kecil script **tidak pernah** menyatakan pemenang pasti; paling jauh "ada tanda ... tapi sampel terlalu kecil untuk yakin". Bacakan hasilnya ke pengguna dengan bahasa awam ("dengan data ini, angka sebenarnya kemungkinan besar ada di antara 11% dan 27%"; "selisih sebesar ini jarang muncul hanya karena kebetulan"), jangan sekadar menempel angka. Jangan menyebut p-value sebagai "peluang benar" atau "yakin 95% varian B lebih baik".
 
@@ -107,8 +110,10 @@ Kalau script menolak input (mis. aksi > ditawari, jumlah nol, bukan angka), jela
 ### 6. Putuskan: LANJUT / UBAH / STOP
 | Hasil | Keputusan | Tindakan |
 |---|---|---|
+| **Komitmen nyata (bayar/DP/transfer) = 0**, berapa pun yang bilang "mau" | **BELUM ADA KOMITMEN: ULANGI UJI** (tidak boleh LANJUT) | Minta DP/pre-order berbayar kecil dari yang bilang mau; jangan keluarkan modal produksi |
+| Sampel < 30 orang (berapa pun konversinya) | **ULANGI UJI dengan sampel lebih besar** (tidak boleh LANJUT) | Tawari minimal 30 kontak baru; paling banyak siapkan sebesar pesanan yang sudah dibayar |
 | Konversi >= T, batas bawah rentang >= T, dan sampel >= 30 | **LANJUT** (kuat) | Produksi batch pertama; jadwalkan uji ulang saat skala naik |
-| Konversi >= T tapi batas bawah < T, **atau** sampel < 30 | **LANJUT BERTAHAP** | Batch kecil atau tambah sampel dulu; jangan modal besar |
+| Konversi >= T tapi batas bawah < T, sampel >= 30 | **LANJUT BERTAHAP** | Batch kecil atau tambah sampel dulu; jangan modal besar |
 | S <= konversi < T | **UBAH** | Ubah **satu** variabel (Langkah 7) dan uji ulang, maksimal 2 putaran ubah |
 | Konversi < S | **STOP** | Berhenti atau pivot; jangan tambah modal. Jika batas atas rentang masih >= T dan sampel kecil, boleh satu uji ulang murah |
 | Dua varian, selisih meyakinkan (p < 0,05, sampel >= 50 per varian) | Pilih pemenang | Pemenang jadi acuan uji berikutnya |
@@ -117,7 +122,7 @@ Kalau script menolak input (mis. aksi > ditawari, jumlah nol, bukan angka), jela
 
 **Terjemahkan ke jumlah orang yang perlu ditawari (wajib saat LANJUT/LANJUT BERTAHAP):** target pembeli (mis. unit/pesanan yang ingin terjual) ÷ konversi = orang yang perlu ditawari. Hitung dua kali: dengan konversi hasil uji (perkiraan tengah) dan dengan **batas bawah** rentang (skenario hati-hati). Contoh: ingin 60 pembeli, konversi 17,5%, batas bawah 10,7% -> 60 ÷ 0,175 = 343 orang (tengah) dan 60 ÷ 0,107 = 561 orang (hati-hati). Kalau kontak yang dimiliki kurang dari itu, kecilkan batch atau tambah kanal. Bulatkan ke atas.
 
-Sebelum LANJUT, cek juga margin dan **asumsi lain yang belum diuji** (ulang beli, ongkir/pendinginan, izin). LANJUT pada satu asumsi belum berarti semuanya aman: sebutkan asumsi berisiko berikutnya untuk putaran uji selanjutnya.
+**Urutan wajib: cek margin DULU, baru menyimpulkan.** Sebelum margin/HPP diketahui, dilarang menulis "tidak ada downside", "pasti aman", "tanpa risiko", atau "pasti untung", termasuk saat memilih pemenang dua varian (harga lebih tinggi bisa saja menurunkan margin pasar, harga lebih rendah bisa menggerus untung). Tulis: "pemenang dari sisi minat; margin belum dicek", lalu hitung margin (`hitung-hpp`) atau minta HPP. Sebelum LANJUT, cek juga margin dan **asumsi lain yang belum diuji** (ulang beli, ongkir/pendinginan, izin). LANJUT pada satu asumsi belum berarti semuanya aman: sebutkan asumsi berisiko berikutnya untuk putaran uji selanjutnya.
 
 ### 7. Kalau UBAH atau STOP: opsi pivot
 Diagnosis dulu dari alasan penolakan, lalu pilih **satu** arah (detail di [`references/asumsi-dan-kriteria.md`](references/asumsi-dan-kriteria.md)):
