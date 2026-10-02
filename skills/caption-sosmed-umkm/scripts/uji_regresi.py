@@ -58,6 +58,24 @@ class UjiCaption(unittest.TestCase):
             kode, out = jalan("cek_fakta.py", "--teks", kalimat, "--fakta", FAKTA)
             self.assertEqual(kode, 2, kalimat + "\n" + out)
 
+    def test_kelangkaan_dan_pengiriman_karangan_gagal(self):
+        for kalimat in ("Stok terbatas tiap hari", "Stoknya terbatas banget", "Pesan sekarang sebelum kehabisan!",
+                        "Promo hari ini saja", "Tunggu keripiknya nyampe ya", "Siap antar ke kosmu",
+                        "Order lewat DM, secepatnya kami proses"):
+            kode, out = jalan("cek_fakta.py", "--teks", kalimat, "--fakta", FAKTA)
+            self.assertEqual(kode, 2, kalimat + "\n" + out)
+
+    def test_kelangkaan_disebut_pengguna_lulus(self):
+        kode, out = jalan("cek_fakta.py", "--teks", "Stok terbatas, pesan sebelum kehabisan.",
+                          "--fakta", FAKTA + ", stok terbatas, sebelum kehabisan")
+        self.assertEqual(kode, 0, out)
+
+    def test_fb_di_bawah_50_kata_gagal(self):
+        t = "**Variasi C – Santai**\n" + " ".join(["kata"] * 46) + "\n"
+        kode, out = jalan("cek_caption.py", "--platform", "fb", "--teks", t, "--fakta", FAKTA)
+        self.assertEqual(kode, 2, out)
+        self.assertIn("wajib 50-120", out)
+
     def test_aman_dan_placeholder_lulus(self):
         kode, out = jalan("cek_fakta.py", "--teks", "Segar diminum dingin sore hari. Bahan: [isi: bahan]. Teman santai keluarga.",
                           "--fakta", "jamu kunyit asam botol 250 ml")

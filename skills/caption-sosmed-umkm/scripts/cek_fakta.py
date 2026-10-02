@@ -104,6 +104,16 @@ POLA_KLAIM = [
                 r"|\b(?:dikirim|pengiriman|kirim)\s+(?:cepat|hari\s+ini|di\s+hari\s+yang\s+sama)\b"
                 r"|\b(?:antar|jemput|ongkir|pengiriman|kirim)\s+(?:\S+\s+){0,2}?gratis\b", "semua"),
     ("layanan", r"\b(?P<k>garansi|dijamin|jaminan\s+uang\s+kembali)\b", "k"),
+    # Kelangkaan/urgensi & janji pengiriman: GAGAL kecuali pengguna sendiri menyebutnya (kata kuncinya ada di fakta).
+    ("urgensi", r"\bstok(?:nya)?\s+(?:\w+\s+){0,3}?(?:terbatas|menipis|sedikit|hampir\s+habis|tinggal)\b"
+                r"|\b(?:jumlah|kuota)\s+terbatas\b|\b(?:ready\s+)?terbatas\b(?=[^.!?\n]{0,20}\bstok)", "semua"),
+    ("urgensi", r"\b(?:kehabisan|keabisan|ludes|sold\s*out|habis\s+duluan|buruan|buruan\s+order"
+                r"|promo\s+(?:cuma\s+|hanya\s+)?hari\s+ini(?:\s+saja)?|hari\s+ini\s+saja|jangan\s+sampai\s+(?:telat|ketinggalan|terlewat)"
+                r"|mumpung\s+(?:masih\s+)?ada|selagi\s+(?:masih\s+)?ada|periode\s+terbatas|waktu\s+terbatas)\b", "semua"),
+    ("layanan", r"\b(?:siap|bisa|melayani|layanan)\s+(?:antar|kirim|delivery|pengiriman|ongkir)\b"
+                r"|\b(?:diantar|dianterin|diantarkan|dikirim|dikirimkan|nyampe|sampai\s+(?:di\s+)?rumah|sampai\s+depan\s+pintu"
+                r"|antar\s+(?:ke|sampai)|kirim\s+ke\s+(?:seluruh|semua|mana)|ke\s+seluruh\s+indonesia|delivery|cod|bayar\s+di\s+tempat"
+                r"|secepatnya|langsung\s+(?:sampai|diantar|dikirim))\b", "semua"),
 ]
 POLA_ANGKA = [
     re.compile(r"\b(?P<n>\d[\d.]*)\s*\+?\s*(?:pelanggan|pembeli|reseller|follower|pengikut|testimoni|ulasan"
