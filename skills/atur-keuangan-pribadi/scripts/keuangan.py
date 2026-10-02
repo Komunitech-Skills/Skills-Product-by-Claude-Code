@@ -319,7 +319,7 @@ def pisah_nama_jumlah(teks, label):
 
 KATA_KELOMPOK = [
     ("tabungan", ("tabung", "dana darurat", "investasi", "pensiun", "arisan", "haji", "umrah", "umroh",
-                  "dp rumah", "pendidikan anak", "dana pendidikan", "ekstra utang", "pelunasan",
+                  "dp rumah", "tabungan pendidikan", "dana pendidikan", "ekstra utang", "pelunasan",
                   "reksa", "deposito", "emas")),
     ("sosial", ("kiriman", "orang tua", "ortu", "mertua", "keluarga", "adik", "zakat", "perpuluhan",
                 "sedekah", "infak", "infaq", "persembahan", "kolekte", "kondangan", "sumbangan",
@@ -382,15 +382,79 @@ def adalah_cicilan(nama):
     return any(k in n for k in KATA_CICILAN)
 
 
-def tebak_kelompok(nama):
+# v1.0.11 (uji regresi 2026-10-02): "Jajan+Sekolah anak" ditebak Keinginan lalu dipangkas 50%, dan "Kirim ibu"
+# belum dikelompokkan lalu ikut dipangkas. Kata pendidikan/anak kini mengalahkan "jajan" (wajib), kiriman ke
+# ibu/bapak/ortu dikenali sebagai kiriman keluarga (sosial, tidak dipangkas otomatis), dan pos campuran
+# (mis. "Jajan+Sekolah anak") tidak dipangkas otomatis serta ditandai "(perlu dipisah)".
+KATA_PENDIDIKAN = ("sekolah", "spp", "pendidikan", "anak", "les", "kuliah", "kursus", "seragam", "buku pelajaran",
+                   "uang gedung", "daycare", "pesantren", "mondok", "ukt")
+KATA_KIRIM = ("kirim", "kiriman", "transfer", "tf", "jatah", "uang bulanan")
+KATA_KERABAT_KUAT = ("orang tua", "orangtua", "ortu", "mertua", "keluarga", "tanggungan", "uang bulanan")
+KATA_KERABAT = ("ibu", "bapak", "ayah", "mama", "papa", "emak", "mamak", "bunda", "abah", "umi", "abi", "adik",
+                "kakak", "nenek", "kakek", "mbah", "eyang", "bapak ibu")
+PEMISAH_POS = re.compile(r"\s*(?:\+|&|/|,|\bdan\b|\bdn\b)\s*")
+
+
+def _ada_kata(n, daftar):
+    return any(re.search(r"(?<![a-z])" + re.escape(k) + r"(?![a-z])", n) for k in daftar)
+
+
+def adalah_kiriman_keluarga(nama):
+    """Kiriman/uang bulanan untuk keluarga (Kirim ibu, Transfer ortu, Mertua) -> sosial-keluarga, tidak dipangkas."""
+    n = nama.lower()
+    if _ada_kata(n, KATA_KERABAT_KUAT):
+        return True
+    if _ada_kata(n, KATA_KERABAT):
+        sisa = n
+        for k in KATA_KERABAT + KATA_KIRIM:
+            sisa = re.sub(r"(?<![a-z])" + re.escape(k) + r"(?![a-z])", " ", sisa)
+        # "Kirim ibu" / "Ibu" saja -> kiriman; "Jajan ibu-ibu" / "Arisan ibu" -> bukan (ada kata lain bermakna)
+        return _ada_kata(n, KATA_KIRIM) or not re.sub(r"[^a-z]", "", sisa)
+    return False
+
+
+def _tebak_satu(nama):
     n = nama.lower()
     if adalah_cicilan(nama):   # v1.0.6: "Shopee PayLater" = cicilan (wajib), bukan belanja Shopee (keinginan)
         return "wajib"
-    for kelompok, kata in KATA_KELOMPOK:
+    for k in KATA_KELOMPOK[0][1]:   # tabungan dulu: "Tabungan anak", "Arisan ibu-ibu", "Dana pendidikan"
+        if re.search(r"(?<![a-z])" + re.escape(k), n):
+            return "tabungan"
+    if _ada_kata(n, KATA_PENDIDIKAN):   # "Jajan sekolah anak", "SPP", "Les" -> wajib (mengalahkan "jajan")
+        return "wajib"
+    if adalah_kiriman_keluarga(nama):
+        return "sosial"
+    for kelompok, kata in KATA_KELOMPOK[1:]:
         for k in kata:
             if re.search(r"(?<![a-z])" + re.escape(k), n):
                 return kelompok
     return "lain"
+
+
+def bagian_campuran(nama):
+    """Pos gabungan beda kelompok (mis. "Jajan+Sekolah anak") -> list (bagian, kelompok); [] bila bukan campuran."""
+    bagian = [b.strip() for b in PEMISAH_POS.split(nama.lower()) if b and b.strip()]
+    if len(bagian) < 2:
+        return []
+    kel = [(b, _tebak_satu(b)) for b in bagian]
+    jenis = set(k for _, k in kel if k != "lain")
+    return kel if len(jenis) >= 2 else []
+
+
+def adalah_campuran(nama):
+    return bool(bagian_campuran(nama))
+
+
+def tebak_kelompok(nama):
+    if adalah_cicilan(nama):
+        return "wajib"
+    kel = bagian_campuran(nama)
+    if kel:
+        # campuran: kelompok "paling dilindungi" (wajib > sosial > tabungan > keinginan); tidak dipangkas otomatis
+        for urut in ("wajib", "sosial", "tabungan", "keinginan"):
+            if any(k == urut for _, k in kel):
+                return urut
+    return _tebak_satu(nama)
 
 
 def parse_pos(teks):
@@ -515,7 +579,8 @@ KATA_FLEKSIBEL = ("dapur", "makan", "sembako", "belanja", "listrik", "token", "p
                   "pulsa", "kuota", "internet", "wifi", "bensin", "transport", "ojek", "parkir", "galon",
                   "jajan", "laundry", "sabun", "toiletries")
 KATA_TIDAK_FLEKSIBEL = ("sewa", "kontrakan", "kos", "kost", "kpr", "sekolah", "spp", "bpjs", "asuransi",
-                        "daycare", "obat", "kesehatan", "susu", "popok", "pampers", "iuran", "ipl", "les")
+                        "daycare", "obat", "kesehatan", "susu", "popok", "pampers", "iuran", "ipl", "les",
+                        "pendidikan", "anak", "kuliah", "kursus", "seragam", "pesantren", "ukt")
 KATA_IBADAH = ("zakat", "perpuluhan", "persembahan", "kolekte", "punia", "infak", "infaq", "sedekah")
 # Tahap pemangkasan bertahap (urutan, batas potong maks. per pos): keinginan dulu, lalu kebutuhan yang
 # fleksibel (dapur, pulsa, bensin, listrik), lalu sosial non-ibadah & non-kiriman keluarga (kondangan, arisan).
@@ -534,12 +599,18 @@ def _ke_bawah_kelipatan(x, k=KELIPATAN_PANGKAS):
     return (Decimal(x) / k).to_integral_value(rounding=ROUND_FLOOR) * k
 
 
-def tahap_pangkas(nama, kel):
+def tahap_pangkas(nama, kel, ditebak=False):
     n = nama.lower()
     if adalah_cicilan(nama) or kel == "tabungan":
         return None
-    if kel in ("keinginan", "lain"):
+    if ditebak and adalah_campuran(nama):   # v1.0.11: pos campuran tebakan tidak dipangkas otomatis
+        return None
+    if kel == "sosial" and ditebak and adalah_kiriman_keluarga(nama):
+        return None
+    if kel == "keinginan":
         return "keinginan"
+    if kel == "lain":   # v1.0.11: belum dikelompokkan = belum jelas Keinginan -> tidak dipangkas otomatis
+        return None
     if kel == "wajib":
         if any(k in n for k in KATA_TIDAK_FLEKSIBEL):
             return None
@@ -561,8 +632,8 @@ def rencana_pangkas(pemasukan_rutin, pos, tetap=()):
         if perlu <= 0:
             break
         kandidat = []
-        for nm, n, kel, _ in pos:
-            if nm not in tetap and tahap_pangkas(nm, kel) == tahap:
+        for nm, n, kel, dtb in pos:
+            if nm not in tetap and tahap_pangkas(nm, kel, dtb) == tahap:
                 cap = _ke_bawah_kelipatan(n * batas)
                 if cap > 0:
                     kandidat.append((nm, n, cap))
@@ -831,6 +902,40 @@ def parse_sisih(teks, thr, nama_thr="THR/bonus"):
     return v
 
 
+def catatan_tebakan(a, pos):
+    """v1.0.11: pos campuran / belum dikelompokkan / dipangkas berdasarkan TEBAKAN kelompok -> wajib disebut ke
+    pengguna sebelum hasil pemangkasan dipakai."""
+    out = []
+    for nm, n, kel, dtb in pos:
+        bag = bagian_campuran(nm) if dtb else []
+        if bag:
+            out += ["", "- PERLU DIPISAH: pos '{}' {} berisi bagian beda kelompok ({}) - TIDAK dipangkas otomatis. "
+                    "Tanyakan ke pengguna berapa rupiah untuk masing-masing bagian, lalu jalankan ulang dengan pos "
+                    "terpisah berlabel (mis. {}).".format(
+                        nm, rp(n), "; ".join("{} = {}".format(b, NAMA_KELOMPOK[k]) for b, k in bag),
+                        " ".join("--pos \"{}=...:{}\"".format(b.capitalize(), k if k != "lain" else "wajib")
+                                 for b, k in bag))]
+    lain = [nm for nm, _, kel, _ in pos if kel == "lain"]
+    if lain:
+        out += ["", "- PERLU DITANYAKAN: pos belum dikelompokkan ({}) TIDAK dipangkas otomatis - tanyakan ke pengguna "
+                "apakah wajib/keluarga/keinginan, lalu jalankan ulang dengan label.".format(", ".join(lain))]
+    if a is not None:
+        tebak = {nm for nm, _, _, dtb in pos if dtb}
+        dipangkas = [(nm, t) for nm, _, _, t in a["rp"]["potong"] if nm in tebak]
+        if dipangkas:
+            out += ["", "- SEBUTKAN KE PENGGUNA sebelum memakai hasil pemangkasan: kelompok pos berikut DITEBAK dari "
+                    "namanya: {}. Bila ada yang salah (mis. sebenarnya biaya sekolah/kiriman keluarga), jalankan "
+                    "ulang dengan label ':wajib'/':sosial'.".format(
+                        "; ".join("{} = {}".format(nm, {"keinginan": "Keinginan", "fleksibel": "kebutuhan fleksibel",
+                                                        "sosial": "sosial non-ibadah"}[t]) for nm, t in dipangkas))]
+    if a is not None and a["baris"]:
+        out += ["", "- Tabel 'Jadwal bertahap' (bagian pemangkasan bertahap di bawah) berisi {} baris (bulan ke-1 s.d. "
+                "ke-{}){} - salin tabel itu UTUH, semua baris, jangan dipotong.".format(
+                    len(a["baris"]), a["baris"][-1][0],
+                    ", sampai {} cair".format(a["rinci"]) if a["ada_thr"] else "")]
+    return out
+
+
 def ringkasan_siap_tempel(h, a, pos, musiman, args, saldo):
     """v1.0.9: blok di paling atas keluaran 'anggaran' berisi kalimat lengkap (angka + penilaian) yang WAJIB
     disalin apa adanya oleh agent, agar angka kunci tidak ditulis ulang/ditafsir sendiri."""
@@ -910,6 +1015,7 @@ def ringkasan_siap_tempel(h, a, pos, musiman, args, saldo):
                 "berhenti dibayar tanpa diberitahukan ke pengguna. Defisit yang disebut = angka basis 'pos tabungan "
                 "DIJEDA' di atas{}.".format("; angka 'bila arisan tetap dibayar' hanya disebut sebagai syarat"
                                             if a["alt_jeda"] else "")]
+    out += catatan_tebakan(a, pos)
     if musiman and h["total_musiman"] > 0 and args.sisih_lebaran is None:
         out += ["", "- PENGINGAT: --sisih-lebaran belum diisi (dianggap Rp0 = seluruh THR untuk dana darurat/defisit). "
                 "Tanyakan kebutuhan Lebaran pengguna (mudik, baju, kue, angpau) lalu jalankan ulang dengan "
@@ -1068,7 +1174,8 @@ def cetak_anggaran(args):
         return persen(x * 100 / basis) + (" | " + persen(x * 100 / h["total_masuk"]) if dua else "")
     for n, j, kel, ditebak in pos:
         out.append("| {} | {}{} | {} | {} |".format(
-            n, NAMA_KELOMPOK[kel], " (tebakan)" if ditebak and kel != "lain" else "", rp(j), kol(j)))
+            n, NAMA_KELOMPOK[kel], (" (tebakan, perlu dipisah)" if ditebak and adalah_campuran(n) else
+                                    " (tebakan)" if ditebak and kel != "lain" else ""), rp(j), kol(j)))
     out.append("| **Total dialokasikan** | | **{}** | {} |".format(rp(h["total_keluar"]), kol(h["total_keluar"])))
     isi2 = " |" if dua else ""
     if jeda_tab:
@@ -1160,7 +1267,7 @@ def cetak_anggaran(args):
         cat.append(pesan)
     lain = [n for n, _, k, _ in pos if k == "lain"]
     if lain:
-        cat.append("Pos belum dikelompokkan (dihitung sebagai Keinginan sementara): {}. Tambahkan "
+        cat.append("Pos belum dikelompokkan (dihitung sebagai Keinginan di banding pola, TIDAK dipangkas otomatis): {}. Tambahkan "
                    "':wajib'/':sosial'/':keinginan'/':tabungan' di akhir pos.".format(", ".join(lain)))
     ew = [n for n, _, _, _ in pos if any(k in n.lower() for k in KATA_EWALLET)
           and not any(k in n.lower() for k in KATA_INVESTASI)]

@@ -908,8 +908,10 @@ class TesRevisi108(unittest.TestCase):
           "Sedekah=200rb", "Kondangan=150rb", "Makan di luar=400rb", "Netflix dkk=70rb"]
     S1_ARG = ["anggaran", "--pemasukan", "Gaji suami=8,5jt", "--pemasukan", "Gaji istri=4jt",
               "--musiman", "THR suami=8,5jt", "--musiman", "THR istri=4jt"]
+    # v1.0.11: "Jajan & uang saku anak" kini DITEBAK wajib (kata "anak"); label eksplisit :keinginan menjaga
+    # skenario pangkas v1.0.8 (pos berlabel Keinginan oleh pengguna = jelas, boleh dipangkas otomatis).
     S2 = ["Kontrakan=1,5jt", "Cicilan motor=900rb", "Belanja dapur=2jt", "Listrik+air=400rb", "Bensin=400rb",
-          "Pulsa=200rb", "Kirim ortu=500rb", "Jajan & uang saku anak=300rb", "Ngopi+rokok=400rb",
+          "Pulsa=200rb", "Kirim ortu=500rb", "Jajan & uang saku anak=300rb:keinginan", "Ngopi+rokok=400rb",
           "Dana darurat=500rb"]
     S2_ARG = ["anggaran", "--pemasukan", "Gaji=6jt", "--musiman", "THR=6jt"]
 
@@ -1336,6 +1338,86 @@ class TesRevisi1010(unittest.TestCase):
         teks = (FOLDER / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("--sisih-lebaran", teks)
         self.assertIn("TINDAKAN", teks)
+
+
+class TesRevisi1011TebakanKelompok(unittest.TestCase):
+    """v1.0.11 (uji regresi OpenClaw 2026-10-02): tanpa label, "Jajan+Sekolah anak" ditebak Keinginan lalu
+    dipangkas 50% dan "Kirim ibu" ikut dipangkas. Kini: pendidikan/anak -> wajib, kiriman ibu/bapak/ortu ->
+    sosial-keluarga (tidak dipangkas), pos campuran -> tidak dipangkas + "(perlu dipisah)"; jadwal utuh."""
+    POS = ["Kontrakan=1,5jt", "Cicilan motor=850rb", "Belanja dapur=2jt", "Listrik+air=400rb", "Bensin=400rb",
+           "Pulsa+internet=200rb", "Jajan+Sekolah anak=600rb", "Kirim ibu=500rb", "Arisan ibu-ibu kompleks=300rb",
+           "Rokok=300rb", "Nongkrong/ngopi=200rb"]
+    ARG = ["anggaran", "--pemasukan", "Gaji=5,8jt", "--musiman", "THR=5,8jt", "--bulan-cair", "5",
+           "--saldo", "1jt"]
+
+    def jalankan_s(self, *tambahan):
+        return jalankan(*(self.ARG + sum([["--pos", p] for p in self.POS], []) + list(tambahan)))
+
+    def test_tebakan(self):
+        for nama, kel in [("Sekolah anak", "wajib"), ("SPP", "wajib"), ("Jajan anak", "wajib"),
+                          ("Biaya pendidikan", "wajib"), ("Les piano", "wajib"),
+                          ("Kirim ibu", "sosial"), ("Kirim bapak", "sosial"), ("Transfer ortu", "sosial"),
+                          ("Uang orang tua", "sosial"), ("Kiriman keluarga", "sosial"), ("Ibu", "sosial"),
+                          ("Arisan ibu-ibu kompleks", "tabungan"), ("Tabungan anak", "tabungan"),
+                          ("Dana pendidikan anak", "tabungan"), ("Rokok", "keinginan"), ("Jajan", "keinginan"),
+                          ("Nongkrong/ngopi", "keinginan"), ("Jajan ibu-ibu", "keinginan")]:
+            self.assertEqual(k.tebak_kelompok(nama), kel, nama)
+
+    def test_campuran(self):
+        for nama in ("Jajan+Sekolah anak", "uang jajan & sekolah anak", "Rokok/SPP", "Netflix dan kirim ibu"):
+            self.assertTrue(k.adalah_campuran(nama), nama)
+            self.assertIsNone(k.tahap_pangkas(nama, k.tebak_kelompok(nama), True), nama)
+        for nama in ("Listrik+air", "Pulsa+internet", "Nongkrong/ngopi", "Kirim ibu"):
+            self.assertFalse(k.adalah_campuran(nama), nama)
+        # label eksplisit dari pengguna tetap dihormati (pos jelas Keinginan boleh dipangkas)
+        self.assertEqual(k.tahap_pangkas("Jajan+Sekolah anak", "keinginan", False), "keinginan")
+
+    def test_tidak_dipangkas_otomatis(self):
+        pos = [k.parse_pos(p) for p in self.POS]
+        rp_ = k.rencana_pangkas(Decimal(5800000), pos)
+        dipangkas = {nm for nm, _, _, _ in rp_["potong"]}
+        self.assertNotIn("Jajan+Sekolah anak", dipangkas)
+        self.assertNotIn("Kirim ibu", dipangkas)
+        self.assertIn("Rokok", dipangkas)
+        # pos belum dikelompokkan tidak dipangkas otomatis
+        pos2 = [k.parse_pos("Hadiah ulang tahun=500rb"), k.parse_pos("Rokok=400rb"), k.parse_pos("Kos=3jt")]
+        rp2 = k.rencana_pangkas(Decimal(3000000), pos2)
+        self.assertEqual([nm for nm, _, _, _ in rp2["potong"]], ["Rokok"])
+        # pembanding independen: defisit & potongan (Fraction, kelipatan Rp10.000, tahap keinginan->fleksibel)
+        gaji, non_tab = 5800000, 7250000 - 300000
+        defisit = non_tab - gaji
+        kein = {"Rokok": 300000, "Nongkrong/ngopi": 200000}
+        flek = {"Belanja dapur": 2000000, "Listrik+air": 400000, "Bensin": 400000, "Pulsa+internet": 200000}
+        harap = {nm: math.floor(F(n, 2) / 10000) * 10000 for nm, n in kein.items()}
+        harap.update({nm: math.floor(F(n, 10) / 10000) * 10000 for nm, n in flek.items()})
+        self.assertEqual(rp_["defisit"], Decimal(defisit))
+        self.assertEqual({nm: int(p) for nm, _, p, _ in rp_["potong"]}, harap)
+        self.assertEqual(rp_["sisa_defisit"], Decimal(defisit - sum(harap.values())))
+
+    def test_cli_tanda_dan_peringatan(self):
+        r = self.jalankan_s()
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("| Jajan+Sekolah anak | Kebutuhan wajib (tebakan, perlu dipisah) |", r.stdout)
+        self.assertIn("| Kirim ibu | Keluarga & sosial/ibadah (tebakan) |", r.stdout)
+        self.assertIn("PERLU DIPISAH: pos 'Jajan+Sekolah anak' Rp600.000", r.stdout)
+        self.assertIn("SEBUTKAN KE PENGGUNA sebelum memakai hasil pemangkasan", r.stdout)
+        self.assertNotIn("Jajan+Sekolah anak Rp600.000 -> Rp300.000", r.stdout)
+        self.assertNotIn("Kirim ibu Rp500.000 -> Rp250.000", r.stdout)
+        # semua label eksplisit -> tidak ada pengingat tebakan
+        pos = ["Rokok=300rb:keinginan", "Kos=6jt:wajib"]
+        r = jalankan("anggaran", "--pemasukan", "Gaji=5,8jt", *sum([["--pos", p] for p in pos], []))
+        self.assertNotIn("SEBUTKAN KE PENGGUNA", r.stdout)
+        self.assertNotIn("PERLU DIPISAH", r.stdout)
+
+    def test_jadwal_utuh_sampai_thr_cair(self):
+        r = self.jalankan_s()
+        for m in range(1, 6):
+            self.assertRegex(r.stdout, r"\n\| {} \| Rp".format(m))
+        self.assertIn("| 5 | Rp550.000 | Rp600.000 | Rp3.500.000 | THR cair bulan ini |", r.stdout)
+        self.assertIn("berisi 5 baris (bulan ke-1 s.d. ke-5), sampai THR cair - salin tabel itu UTUH", r.stdout)
+        r = jalankan(*(self.ARG[:5] + ["--bulan-cair", "9"] + sum([["--pos", p] for p in self.POS], [])))
+        self.assertIn("berisi 9 baris (bulan ke-1 s.d. ke-9)", r.stdout)
+        self.assertIn("| 9 | Rp550.000 | Rp600.000 |", r.stdout)
 
 
 if __name__ == "__main__":
