@@ -1,6 +1,6 @@
 # Aturan Iklan & Klaim — Wajib Dicek Tiap Konten
 
-Berlaku per **24 September 2026**. Ringkasan praktis, **bukan nasihat hukum**. Untuk kasus di luar
+Berlaku per **24 September 2026** (aturan fasilitas kesehatan diperbarui 2 Oktober 2026). Ringkasan praktis, **bukan nasihat hukum**. Untuk kasus di luar
 cakupan (kampanye besar, produk kategori berat), arahkan ke konsultan/legal atau instansi terkait
 (BPOM, OJK, Dinas Kesehatan).
 
@@ -15,6 +15,8 @@ cakupan (kampanye besar, produk kategori berat), arahkan ke konsultan/legal atau
 - **Tanpa merendahkan pesaing** (menyebut nama kompetitor secara negatif).
 - **Tanpa kelangkaan/urgensi palsu** ("stok tinggal 2!" padahal stok banyak, hitung mundur palsu).
 - Testimoni/foto pelanggan **hanya dengan izin** — tandai "(dengan izin)" di brief bila dipakai.
+  **Pengecualian fasilitas kesehatan:** testimoni pasien tidak dipakai sama sekali, walau ada izin
+  (lihat tabel di bawah).
 
 ## Kategori sensitif — wajib peringatan singkat di caption/brief
 Tanyakan kategori produk saat mengisi `PROFIL.md`. Jika termasuk salah satu di bawah, tambahkan
@@ -24,8 +26,9 @@ peringatan singkat berikut ke konten yang relevan (boleh diringkas, tapi maknany
 |---|---|
 | Kesehatan/obat/suplemen | "Bukan pengganti pemeriksaan/pengobatan dokter." Tanpa klaim menyembuhkan. Sebut nomor izin edar **hanya jika** pengguna memberikannya sebagai fakta yang benar. |
 | Kosmetik/skincare | Klaim manfaat hanya yang wajar & umum (melembapkan, mencerahkan tampilan kulit kusam) — bukan klaim medis (menghilangkan penyakit kulit). Sebut BPOM **hanya jika** pengguna konfirmasi produknya benar terdaftar. |
-| **Klinik/kecantikan/kesehatan (khusus foto/video before-after & testimoni pasien)** | **Dilarang** memakai foto/video before-after pasien, atau testimoni pasien (nama, wajah, cerita kondisi/hasil perawatan), **tanpa izin tertulis** dari pasien yang bersangkutan. Ini berlaku walau pengguna (pemilik klinik) yang memberikan materinya — tanyakan eksplisit "sudah ada izin tertulis dari pasien untuk dipakai di media sosial?" sebelum memasukkannya ke brief/caption. Belum ada izin tertulis → **jangan** dimasukkan; tawarkan alternatif (foto fasilitas/alat, edukasi umum, testimoni yang sudah eksplisit disetujui tertulis untuk dipublikasikan). |
-| **Fasilitas kesehatan — promo & referral** | **Tanpa** promosi diskon tindakan medis dan **tanpa imbalan rujukan**: tidak ada diskon/poin/voucher/hadiah/merchandise/komisi/layanan gratis (mis. "cek tensi gratis") bagi pasien yang mengajak/merujuk orang lain. Dasar umum: Permenkes 1787/2010 tentang iklan & publikasi pelayanan kesehatan (larangan promosi penjualan termasuk diskon) dan kode etik profesi kedokteran — nomor pasal lain jangan dikutip dari ingatan. **PERLU REVIEW tenaga medis/hukum.** Alternatif: edukasi kesehatan umum bersumber resmi + info layanan/jadwal yang jujur. |
+| **Fasilitas kesehatan — testimoni & before-after** (klinik pratama/gigi/kecantikan medis, praktik dokter/dokter gigi/bidan, apotek, lab, fisioterapi) | **Tanpa testimoni pasien dan tanpa klaim "sembuh"** di iklan/medsos, termasuk foto/video before-after pasien dan cerita kondisi/hasil perawatan pasien — **juga walau ada izin tertulis pasien** (izin pasien tidak membuat testimoni boleh diiklankan). Jangan menawarkan "testimoni boleh asal ada izin tertulis" sebagai alternatif. Dasar umum: aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010, yang melarang testimoni dalam iklan/publikasi pelayanan kesehatan) dan kode etik profesi kedokteran — nomor pasal jangan dikutip dari ingatan. **PERLU REVIEW tenaga medis/hukum.** Alternatif: foto fasilitas/alat/tim (tanpa pasien), edukasi kesehatan umum bersumber resmi, info layanan/jadwal yang jujur. |
+| **Fasilitas kesehatan — promo & referral** | **Tanpa promo diskon/potongan harga tindakan medis** (termasuk "diskon pasien baru", "potongan 20%", paket hemat tindakan, atau layanan gratis seperti "cek gigi gratis"/"cek tensi gratis" dalam bentuk iklan/promosi) dan **tanpa imbalan rujukan**: tidak ada diskon, poin, voucher, hadiah, merchandise, komisi, atau layanan gratis bagi pasien yang mengajak/merujuk orang lain. Jangan menawarkan "diskon pasien baru secara umum" sebagai pengganti promo referral. Info tarif yang jujur boleh di FAQ/info layanan (bukan format iklan berpromosi). Dasar umum: aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010, yang melarang promosi penjualan termasuk pemberian diskon) dan kode etik profesi kedokteran — nomor pasal jangan dikutip dari ingatan. **PERLU REVIEW tenaga medis/hukum.** Alternatif: edukasi kesehatan umum bersumber resmi + info layanan/jadwal yang jujur. |
+| Salon/kecantikan non-medis & produk kosmetik (bukan fasilitas kesehatan) | Foto/video before-after atau testimoni pelanggan **hanya dengan izin** pelanggan (tanyakan "sudah ada izin pelanggan untuk dipakai di media sosial?"); tanpa klaim medis. |
 | Izin edar (pangan olahan/kosmetik/suplemen/obat tradisional) | Satu kalimat peringatan di awal paket: cek izin edar BPOM / SPP-IRT sebelum dijual dan dipromosikan. Bila izin "belum ada/masih proses": peringatan lebih tegas, tanpa klaim izin di konten. |
 | Pangan/kuliner | Klaim "halal", "BPOM", "PIRT", "organik" **hanya jika** pengguna konfirmasi punya izin/sertifikat itu. Alergen (kacang, seafood, susu) disebut jika relevan. |
 | Keuangan/investasi/pinjaman | Tanpa janji imbal hasil pasti. Sebut bahwa produk keuangan diawasi OJK **hanya jika benar berizin OJK** dari pengguna. Tidak membuat konten ajakan investasi tanpa izin/legalitas jelas. |
@@ -45,4 +48,5 @@ relevan disebut.
 ## Data pribadi pelanggan (testimoni/foto)
 Mengikuti UU Pelindungan Data Pribadi (UU PDP No. 27/2022): pakai nama/foto/testimoni pelanggan hanya
 dengan persetujuan mereka. Tandai di brief "(dengan izin pelanggan)" setiap kali memakai materi dari
-pelanggan nyata.
+pelanggan nyata. Untuk fasilitas kesehatan, testimoni pasien tetap **tidak** dipakai di iklan/medsos
+walau ada persetujuan (lihat tabel kategori sensitif).

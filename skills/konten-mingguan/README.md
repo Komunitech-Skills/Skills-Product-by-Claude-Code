@@ -58,6 +58,9 @@ apa saja yang diasumsikan di akhir hasil, supaya kamu tinggal koreksi yang perlu
 Tanggal bergerak (Ramadan, Lebaran, Imlek, libur sekolah) tidak ditebak sembarangan — skill akan minta
 tanggalnya ke kamu atau menandainya jelas sebagai perkiraan yang perlu dicek ke kalender resmi tahun itu.
 
+## Catatan revisi 1.0.7 (2026-10-02)
+- Temuan uji ulang paket klinik (S3): agent masih menawarkan "testimoni pasien boleh asal ada izin tertulis" dan "diskon pasien baru". Kini untuk fasilitas kesehatan: tanpa testimoni pasien & klaim "sembuh" (walau ada izin), tanpa promo diskon/potongan tindakan medis, tanpa imbalan rujukan — sama dengan aturan klinik no. 6 di PANDUAN klinik. PERLU REVIEW tenaga medis/hukum. Script tidak berubah.
+
 ## Catatan revisi 1.0.6 (2026-10-02)
 - Temuan uji gabungan paket klinik (S3): agent menawarkan merchandise/poin/voucher/"cek tensi gratis" untuk pasien yang mengajak teman. Kini ada aturan faskes tanpa imbalan rujukan & tanpa promo diskon tindakan medis (SKILL.md + `references/aturan-iklan.md`). PERLU REVIEW tenaga medis/hukum.
 
