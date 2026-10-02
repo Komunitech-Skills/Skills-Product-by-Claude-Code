@@ -486,7 +486,18 @@ def hitung_anggaran(pemasukan, musiman, pos, pola, pokok_juga=(), bukan_pokok=()
         else:
             pokok_keluar.append((nm, n, alasan_bukan_pokok(nm, kel)))
     pokok = sum((n for _, n, _ in pokok_rinci), NOL)
+    # v1.0.8 (uji Telegram 2026-10-02): pisahkan arus RUTIN (gaji tiap bulan) dari MUSIMAN (THR/bonus cair
+    # sekali). Setoran/transfer bulanan hanya boleh dari sisa rutin; THR dicadangkan saat cair (tidak dihitung
+    # dua kali). Rasio cicilan memakai pemasukan rutin karena THR tidak ada tiap bulan.
+    sisa_rutin = total_bulanan - total_keluar
+    tambal = max(-sisa_rutin, NOL)                     # kekurangan rutin per bulan yang harus ditutup THR
+    basis_cicilan = total_bulanan if total_bulanan > 0 else total_masuk
     return {
+        "sisa_rutin": sisa_rutin, "tambal_musiman_per_bulan": tambal,
+        "tambal_musiman_setahun": tambal * 12, "musiman_bebas_setahun": total_musiman - tambal * 12,
+        "bulan_ditambal_musiman": (int((total_musiman / tambal).to_integral_value(rounding=ROUND_FLOOR))
+                                   if tambal > 0 else None),
+        "basis_cicilan": basis_cicilan, "basis_cicilan_rutin": total_bulanan > 0,
         "pokok_dana_darurat": pokok, "pokok_rinci": pokok_rinci, "pokok_keluar": pokok_keluar,
         "total_bulanan": total_bulanan, "total_musiman": total_musiman,
         "musiman_per_bulan": musiman_per_bulan, "total_masuk": total_masuk,
@@ -573,9 +584,17 @@ def cetak_anggaran(args):
     if h["tabungan"] < t[2]:
         cat.append("Tabungan di bawah pola. Mulai dari jumlah kecil yang rutin (bayar diri sendiri dulu "
                    "di hari gajian).")
-    rasio = h["cicilan"] * 100 / h["total_masuk"]
+    rasio = h["cicilan"] * 100 / h["basis_cicilan"]
     if h["cicilan"] > 0:
-        pesan = "Total cicilan {} = {} dari pemasukan.".format(rp(h["cicilan"]), persen(rasio))
+        if h["basis_cicilan_rutin"]:
+            pesan = "Total cicilan {} = {} dari pemasukan RUTIN per bulan {} (basis tanpa THR/bonus, karena " \
+                    "THR tidak ada tiap bulan).".format(rp(h["cicilan"]), persen(rasio), rp(h["basis_cicilan"]))
+            if musiman:
+                pesan += " Sebagai pembanding, terhadap pemasukan termasuk THR/12: {}.".format(
+                    persen(h["cicilan"] * 100 / h["total_masuk"]))
+        else:
+            pesan = "Total cicilan {} = {} dari pemasukan (hanya ada pemasukan musiman).".format(
+                rp(h["cicilan"]), persen(rasio))
         if rasio > BATAS_RASIO_CICILAN:
             pesan += " DI ATAS patokan umum 30% - jangan menambah utang baru; pertimbangkan subperintah utang."
         cat.append(pesan)
@@ -589,10 +608,13 @@ def cetak_anggaran(args):
         cat.append("Pos {} tampak seperti TOP-UP e-wallet. Top-up hanya pindah dompet, bukan pengeluaran; "
                    "catat menurut pemakaiannya (makan, transport, belanja) agar tidak dobel.".format(", ".join(ew)))
     if musiman:
-        cat.append("Pemasukan musiman (THR/bonus) dibagi 12 dan dibulatkan ke bawah. Simpan saat cair, "
-                   "lalu 'gaji'-kan ke anggaran tiap bulan; jangan dianggap uang bebas.")
+        cat.append("Pemasukan musiman (THR/bonus) dibagi 12 dan dibulatkan ke bawah HANYA untuk gambaran setahun. "
+                   "Uangnya cair sekali - lihat bagian 'Arus kas rutin vs musiman' untuk setoran bulanan yang "
+                   "benar-benar ada.")
     if cat:
         out += ["", "## Catatan", ""] + ["- " + c for c in cat]
+    if musiman:
+        out += cetak_arus_musiman(h, musiman)
     if h["pokok_rinci"] or h["pokok_keluar"]:
         label = {"wajib": "kebutuhan wajib", "cicilan": "cicilan/utang minimum",
                  "keluarga": "kewajiban rutin keluarga", "pengguna": "dimasukkan atas keputusan pengguna"}
@@ -613,6 +635,47 @@ def cetak_anggaran(args):
                 "- Pakai angka ini untuk dana darurat: dana-darurat --pengeluaran-pokok {} --status ...".format(
                     int(h["pokok_dana_darurat"].to_integral_value(rounding=ROUND_HALF_UP)))]
     return "\n".join(out)
+
+
+def cetak_arus_musiman(h, musiman):
+    """Bagian 'Arus kas rutin vs musiman': mencegah THR dihitung dua kali (sekali sebagai /12 di pemasukan
+    bulanan, sekali lagi sebagai setoran sekaligus saat cair)."""
+    rinci = ", ".join(n for n, _ in musiman)
+    out = ["", "## Arus kas rutin vs musiman (THR/bonus)", "",
+           "| Arus | Per bulan | Kapan uangnya ada |", "|---|---:|---|",
+           "| Pemasukan rutin (gaji bersih) | {} | tiap bulan |".format(rp(h["total_bulanan"])),
+           "| Total pos dialokasikan | {} | tiap bulan |".format(rp(h["total_keluar"])),
+           "| **Sisa dari pemasukan rutin** | **{}** | tiap bulan |".format(rp(h["sisa_rutin"])),
+           "| {} (setara /12) | {} | SEKALI saat cair: {} |".format(
+               rinci, rp(h["musiman_per_bulan"]), rp(h["total_musiman"])), ""]
+    if h["sisa_rutin"] >= 0:
+        out += ["- Setoran/transfer BULANAN (dana darurat, target, pelunasan ekstra) paling banyak **{}/bulan** - "
+                "hanya dari gaji. Jangan menyebut sisa {} sebagai uang yang bisa dipindah tiap bulan: "
+                "{} di dalamnya adalah bagian THR/bonus.".format(
+                    rp(h["sisa_rutin"]), rp(h["sisa"]), rp(h["musiman_per_bulan"])),
+                "- {} **{}** dicadangkan/disetor SEKALIGUS saat cair (mis. langsung ke dana darurat atau "
+                "target). Itu setara {} x 12 bulan - jangan ditambahkan lagi ke setoran bulanan "
+                "(dihitung dua kali).".format(rinci, rp(h["total_musiman"]), rp(h["musiman_per_bulan"]))]
+    else:
+        t = h["tambal_musiman_per_bulan"]
+        out += ["- PERHATIAN: pos bulanan {} melebihi pemasukan rutin {} -> kurang **{}/bulan** dari gaji. "
+                "Kekurangan ini harus ditutup dari {}.".format(
+                    rp(h["total_keluar"]), rp(h["total_bulanan"]), rp(t), rinci),
+                "- {} {} hanya cukup menutup kekurangan itu selama **{} bulan**{}.".format(
+                    rinci, rp(h["total_musiman"]), h["bulan_ditambal_musiman"],
+                    "" if h["bulan_ditambal_musiman"] < 12 else " (setahun penuh terpenuhi)")]
+        if h["musiman_bebas_setahun"] >= 0:
+            out.append("- Setelah menambal 12 bulan ({}), sisa {} yang bebas: **{}** (sekali saat cair).".format(
+                rp(h["tambal_musiman_setahun"]), rinci, rp(h["musiman_bebas_setahun"])))
+        else:
+            out.append("- {} TIDAK cukup menambal setahun: kurang {}. Kurangi pos bulanan.".format(
+                rinci, rp(-h["musiman_bebas_setahun"])))
+        out.append("- Sebelum {} cair, kekurangan {}/bulan tidak punya sumber. Bila ada pos setoran tabungan, "
+                   "turunkan setoran bulanan menjadi maks. {} (sisa gaji) dan pindahkan sisanya ke setoran "
+                   "sekaligus saat THR cair.".format(rinci, rp(t), rp(max(h["tabungan"] - t, NOL))))
+    out.append("- Langkah aksi ke pengguna WAJIB memakai angka di tabel ini: setoran bulanan dari sisa rutin, "
+               "THR/bonus sebagai setoran sekaligus saat cair.")
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -643,6 +706,21 @@ def hitung_dana_darurat(pokok, status, saldo, setoran):
         prog = min(saldo * 100 / target, Decimal(100)) if target > 0 else Decimal(100)
         hasil.append({"bulan": bulan, "target": target, "kurang": kurang, "lama": lama, "progres": prog})
     return ket, hasil
+
+
+def lama_dengan_musiman(kurang, setoran, sekaligus, bulan_cair, batas=720):
+    """Bulan sampai kekurangan tertutup bila tiap bulan disetor `setoran` dan setiap 12 bulan (mulai bulan ke
+    `bulan_cair`) disetor `sekaligus` (THR/bonus). None bila tidak tercapai dalam batas."""
+    if kurang <= 0:
+        return 0
+    terkumpul = NOL
+    for m in range(1, batas + 1):
+        terkumpul += setoran
+        if sekaligus > 0 and m >= bulan_cair and (m - bulan_cair) % 12 == 0:
+            terkumpul += sekaligus
+        if terkumpul >= kurang:
+            return m
+    return None
 
 
 def cetak_dana_darurat(args):
@@ -680,12 +758,28 @@ def cetak_dana_darurat(args):
     keluarga_dikeluarkan = any(adalah_keluarga(n) for n, _, _ in keluar)
     saldo = cek_nominal_kecil(parse_rupiah(args.saldo, "Saldo dana darurat"), args.saldo, "Saldo dana darurat")
     setoran = parse_rupiah(args.setoran, "Setoran per bulan")
+    sekaligus = parse_rupiah(args.setoran_tahunan, "Setoran sekaligus tahunan (THR/bonus)")
+    try:
+        bulan_cair = int(str(args.bulan_cair).strip())
+    except ValueError:
+        raise InputSalah("--bulan-cair harus angka bulan 1-12 (THR cair berapa bulan lagi dari sekarang).")
+    if not 1 <= bulan_cair <= 12:
+        raise InputSalah("--bulan-cair harus 1-12 (THR/bonus cair berapa bulan lagi dari sekarang).")
     ket, hasil = hitung_dana_darurat(pokok, args.status, saldo, setoran)
+    for h in hasil:
+        h["lama_musiman"] = lama_dengan_musiman(h["kurang"], setoran, sekaligus, bulan_cair) if sekaligus > 0 else None
     out = ["# Dana Darurat", "", "- Status: {} -> target {} bulan pengeluaran pokok".format(
         ket, "-".join(str(h["bulan"]) for h in hasil)),
         "- Pengeluaran pokok per bulan: {}{}".format(rp(pokok), " (rincian di bawah)" if len(rinci) > 1 else ""),
-        "- Saldo sekarang: {} | Setoran rutin: {}/bulan".format(rp(saldo), rp(setoran)), "",
-        "| Target | Jumlah | Kekurangan | Lama tercapai | Progres |", "|---|---:|---:|---:|---:|"]
+        "- Saldo sekarang: {} | Setoran rutin (dari gaji): {}/bulan".format(rp(saldo), rp(setoran))]
+    if sekaligus > 0:
+        out.append("- Setoran sekaligus THR/bonus: {} sekali setahun, cair bulan ke-{} dari sekarang{} - "
+                   "TIDAK termasuk dalam setoran rutin di atas".format(
+                       rp(sekaligus), bulan_cair, " (asumsi bawaan; tanyakan bulan cairnya)"
+                       if args.bulan_cair_bawaan else ""))
+    out += ["", "| Target | Jumlah | Kekurangan | Lama tercapai (setoran rutin saja) |{} Progres |".format(
+                " Lama tercapai (+ THR/bonus) |" if sekaligus > 0 else ""),
+            "|---|---:|---:|---:|{}---:|".format("---:|" if sekaligus > 0 else "")]
     for h in hasil:
         if h["lama"] is None:
             lama = "tidak tercapai (setoran Rp0)"
@@ -694,8 +788,13 @@ def cetak_dana_darurat(args):
         else:
             lama = "{} bulan (~{} th {} bln)".format(h["lama"], h["lama"] // 12, h["lama"] % 12)
         blok = int((h["progres"] / 5).to_integral_value(rounding=ROUND_FLOOR))
-        out.append("| {} bulan | {} | {} | {} | {} {} |".format(
-            h["bulan"], rp(h["target"]), rp(h["kurang"]), lama, "#" * blok + "." * (20 - blok),
+        kol = ""
+        if sekaligus > 0:
+            lm = h["lama_musiman"]
+            kol = " {} |".format("sudah tercapai" if lm == 0 else (
+                "tidak tercapai" if lm is None else "{} bulan (~{} th {} bln)".format(lm, lm // 12, lm % 12)))
+        out.append("| {} bulan | {} | {} | {} |{} {} {} |".format(
+            h["bulan"], rp(h["target"]), rp(h["kurang"]), lama, kol, "#" * blok + "." * (20 - blok),
             persen(h["progres"], 0)))
     if len(rinci) > 1:
         out += ["", "| Pos DIMASUKKAN ke pokok | Jumlah |", "|---|---:|"]
@@ -1231,7 +1330,11 @@ def buat_parser():
                    help="Pos yang TIDAK dihitung pokok 'nama=jumlah;alasan' - hanya dicetak, tidak dijumlahkan")
     d.add_argument("--status", required=True, choices=sorted(STATUS_DANA_DARURAT))
     d.add_argument("--saldo", default="0", help="Dana darurat yang sudah ada")
-    d.add_argument("--setoran", default="0", help="Setoran rutin per bulan")
+    d.add_argument("--setoran", default="0", help="Setoran rutin per bulan (dari gaji, TANPA bagian THR/12)")
+    d.add_argument("--setoran-tahunan", default="0",
+                   help="Setoran sekaligus sekali setahun dari THR/bonus saat cair (opsional)")
+    d.add_argument("--bulan-cair", default=None,
+                   help="THR/bonus cair berapa bulan lagi dari sekarang (1-12; bawaan 12 = paling hati-hati)")
 
     u = sub.add_parser("utang", help="Pelunasan utang avalanche/snowball/banding")
     u.add_argument("--utang", action="append", help="'nama;saldo;bunga;cicilan_minimum[;jenis]' (berulang)")
@@ -1288,6 +1391,10 @@ def main(argv=None):
     del PERINGATAN_INPUT[:]
     argv = gabung_nilai_negatif(list(sys.argv[1:] if argv is None else argv))
     args = buat_parser().parse_args(argv)
+    if args.perintah == "dana-darurat":
+        args.bulan_cair_bawaan = args.bulan_cair is None
+        if args.bulan_cair is None:
+            args.bulan_cair = "12"
     fungsi = {"anggaran": cetak_anggaran, "dana-darurat": cetak_dana_darurat, "utang": cetak_utang,
               "konversi-flat": cetak_konversi_flat, "target": cetak_target}[args.perintah]
     try:
