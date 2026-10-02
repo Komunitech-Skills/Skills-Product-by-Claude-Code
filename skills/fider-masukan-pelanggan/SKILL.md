@@ -10,7 +10,7 @@ description: Mengelola papan masukan & voting fitur Fider (open-source, penggant
 ## Tujuan
 Pemilik usaha atau tim produk yang memasang **Fider di komputer/server sendiri** (gratis, tanpa biaya bulanan per pengguna) cukup bicara biasa, dan agent menjalankan `scripts/fider.py` yang memanggil **REST API resmi Fider** (`/api/v1/...`, header `Authorization: Bearer <kunci API>`). Hasil: catatan berantakan dari WA/marketplace jadi usulan rapi di papan, duplikat tergabung, ringkasan mingguan siap tempel, status terbarui, dan draf kabar perbaikan siap kirim. Python standar saja; tanpa instalasi paket.
 
-**Versi 1.0.2 (status uji).** Diuji terhadap **Fider v0.38.0 ASLI** (Docker + PostgreSQL 17), termasuk akun Administrator dan Collaborator, ditambah 43 uji regresi otomatis (server tiruan). **Belum diuji:** Windows/macOS, HTTPS di VPS sungguhan, jadwal OpenClaw & pengiriman Telegram, Fider selain v0.38.0.
+**Versi 1.0.5 (status uji).** Diuji terhadap **Fider v0.38.0 ASLI** (Docker + PostgreSQL 17), termasuk akun Administrator dan Collaborator, ditambah 45 uji regresi otomatis (server tiruan). **Belum diuji:** Windows/macOS, HTTPS di VPS sungguhan, jadwal OpenClaw & pengiriman Telegram, Fider selain v0.38.0.
 
 ## Aturan utama (WAJIB)
 1. **Semua perintah yang menulis ke Fider** (`impor`, `tag`, `tag-buat`, `gabung`, `status`, `komentar`) **hanya menampilkan PRATINJAU** kecuali ditambah `--ya`. Urutan: jalankan tanpa `--ya` → tunjukkan pratinjau ke pemilik → tunggu jawaban "ya" → ulangi dengan `--ya`. **Jangan menambahkan `--ya` atas inisiatif sendiri**, dan jangan menulis apa pun bila pemilik belum menyetujui pratinjau itu.
