@@ -96,7 +96,7 @@ diklik langsung oleh Komunitech (lihat bagian 0).
 ### 3.1 Pasang Docker Desktop (lewati bila sudah ada)
 Unduh di https://www.docker.com/products/docker-desktop/, pasang, buka sekali sampai ikonnya
 hijau/"Running". Di Windows biasanya installer meminta **restart** sekali untuk WSL2 — ini
-normal (lihat `docs/panduan-stirling-pdf.md` bagian 3.1 untuk uraian yang sama, karena
+normal (prosesnya sama dengan panduan Docker Desktop lain; karena
 prosesnya identik).
 
 ### 3.2 Jalankan Grist — **hanya untuk komputer sendiri**
