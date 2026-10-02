@@ -36,7 +36,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.8"
+VERSI = "1.0.10"
 
 
 class Gagal(Exception):
@@ -2153,12 +2153,69 @@ def terapkan_koreksi(hasil_item, path, tema, peringatan):
                 i["tema"][t] = [jenis]
             if sent:
                 i["sentimen"] = sent
-            if jenis == "keluhan" and tambah:
-                i["nada_keluhan"] = True
+            if jenis == "keluhan":
+                if tambah:
+                    i["nada_keluhan"] = True
+            else:
+                # v1.0.10: koreksi "bukan keluhan" berlaku untuk SEMUA hitungan (tabel tema, respons staf, perlu dibaca)
+                i["nada_keluhan"] = False
+                for t_, js in list(i["tema"].items()):
+                    js2 = [j for j in js if j != "keluhan"]
+                    i["tema"][t_] = js2 or [jenis]
             i["koreksi"] = b.get("catatan") or "koreksi agent"
         catat.append({"baris": no, "cuplikan": b.get("cuplikan"), "tema": b.get("tema", ""), "jenis": jenis, "sentimen": sent,
                       "catatan": b.get("catatan", ""), "masukan": len(kena)})
     return catat
+
+
+RINCIAN_KEAMANAN = [
+    ("jamur", r"\b(?:jamur|berjamur|jamuran|bulukan|berbulu)\b"),
+    ("hewan/serangga", r"\b(?:semut|lalat|ulat|kecoa|belatung|tikus|serangga|kutu|cicak)\b"),
+    ("basi/kedaluwarsa", r"\b(?:basi|kedaluwarsa|kadaluarsa|expired|berlendir)\b"),
+    ("benda asing", r"\b(?:rambut|kerikil|pecahan|bendaasing|benda\s+asing|staples|paku)\b"),
+    ("sakit (diare/mual/alergi)", r"\b(?:sakit\s*perut|diare|keracunan|mual|muntah|alergi)\b"),
+]
+
+
+def rincian_keamanan(rows):
+    """v1.0.10 pecah keluhan tema Keamanan per jenis (jamur vs hewan/serangga dst.). Satu pesan dihitung ke jenis PERTAMA yang cocok,
+    jadi jumlah rincian = jumlah keluhan tema."""
+    c = Counter()
+    for i in rows:
+        t = (i["teks"] + " " + normalkan(i["teks"])).lower()
+        c[next((n for n, pola in RINCIAN_KEAMANAN if re.search(pola, t)), "lainnya")] += 1
+    urut = [n for n, _ in RINCIAN_KEAMANAN] + ["lainnya"]
+    return {n: c[n] for n in urut if c[n]}
+
+
+def _persen_id(a, b):
+    if not b:
+        return "0%"
+    v = "%.1f" % (a * 100.0 / b)
+    return v.replace(".", ",").replace(",0", "") + "%"
+
+
+def kalimat_siap_salin(r):
+    """v1.0.10 kalimat ringkasan berangka yang dicetak script supaya agent CUKUP MENYALIN (tidak menulis/menghitung angka sendiri)."""
+    n = r["total_masukan"]
+    out = ["Total %d masukan dari %s." % (n, ", ".join("%s %d" % kv for kv in r["per_kanal"].items()))]
+    for k, v in r.get("respons_staf", {}).items():
+        a = v["keluhan_tanpa_balasan"]
+        tb = v["tanpa_balasan"]
+        kal = "Keluhan tanpa balasan (%s): %d dari %d keluhan (%s); pesan tanpa balasan: %d dari %d pesan (%s)" % (
+            k, a, v["keluhan"], _persen_id(a, v["keluhan"]), tb, v["masukan"], _persen_id(tb, v["masukan"]))
+        if v["keluhan_dibalas_lambat"]:
+            kal += "; keluhan dibalas lewat %d jam: %d" % (r.get("batas_balas_jam", 24), v["keluhan_dibalas_lambat"])
+        out.append(kal + ".")
+    if len(r.get("sentimen_per_kanal", {})) > 1:
+        out.append("Sentimen per kanal: " + "; ".join("%s: positif %d, netral %d, negatif %d" % (k, v["positif"], v["netral"], v["negatif"])
+                                                      for k, v in r["sentimen_per_kanal"].items()) + ".")
+    for d in [d for d in r["tema"] if d["keluhan"]][:6]:
+        kal = "%s: %d keluhan (%s dari semua masukan; prioritas %s)" % (d["label"], d["keluhan"], _persen_id(d["keluhan"], n), d["prioritas"])
+        if d.get("rincian"):
+            kal += "; rincian: " + ", ".join("%s %d" % kv for kv in d["rincian"].items())
+        out.append(kal + ".")
+    return out
 
 
 def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
@@ -2206,6 +2263,8 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
             "contoh_pujian": [potong(i["teks"]) for i in p][:n_contoh],
             "contoh_saran": [potong(i["teks"]) for i in s][:n_contoh],
         })
+        if t["id"] == "keamanan" and k:
+            daftar[-1]["rincian"] = rincian_keamanan(k)
     maks = max([d["skor"] for d in daftar] + [1])
     for d in daftar:
         if d["keluhan"] and ((d["dampak"] >= 5) or (d["keluhan"] >= 3 and d["skor"] >= 0.5 * maks)):
@@ -2252,10 +2311,12 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
             continue
         r_ = respons.setdefault(i["kanal"], {"sumber": "chat WhatsApp" if i.get("sumber_balas") == "wa" else "kolom balasan penjual",
                                              "masukan": 0, "dibalas": 0, "keluhan": 0, "keluhan_tanpa_balasan": 0,
-                                             "keluhan_dibalas_lambat": 0, "contoh_tanpa_balasan": []})
+                                             "keluhan_dibalas_lambat": 0, "tanpa_balasan": 0, "contoh_tanpa_balasan": []})
         keluhan = any("keluhan" in v for v in i["tema"].values()) or bool(i.get("nada_keluhan"))
         r_["masukan"] += 1
         r_["dibalas"] += bool(i["dibalas"])
+        if not i["dibalas"] and i.get("jeda_balas_menit") is None:
+            r_["tanpa_balasan"] += 1
         if keluhan:
             r_["keluhan"] += 1
             if not i["dibalas"]:
@@ -2273,7 +2334,7 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
         det = sum(1 for v in nilai10 if v <= 6)
         nps = {"responden": len(nilai10), "promotor_9_10": pro, "pasif_7_8": len(nilai10) - pro - det, "detraktor_0_6": det,
                "nps": round((pro - det) * 100.0 / len(nilai10), 1), "indikatif": len(nilai10) < 30}
-    return {
+    hasil_r = {
         "versi_script": VERSI, "total_masukan": n, "dibuang": dibuang,
         "sumber": [{k: v for k, v in s.items() if k in ("berkas", "kanal", "jenis", "kolom_teks", "kolom_nilai", "skala_nilai",
                                                           "kolom_tanggal", "baris", "responden", "catatan", "urutan_tanggal")} for s in meta.get("sumber", [])],
@@ -2297,6 +2358,8 @@ def ringkas(hasil_item, tema, dibuang, opsi, meta=None):
                          "bernada_keluhan": sum(1 for d in daftar_baca if d["nada_keluhan"]),
                          "daftar": daftar_baca},
     }
+    hasil_r["ringkasan_siap_salin"] = kalimat_siap_salin(hasil_r)
+    return hasil_r
 
 
 def _fmt_tren(d):
@@ -2346,6 +2409,8 @@ def cetak_teks(r, opsi, maks_tanpa_tema=20):
             len(r["koreksi"]), sum(k["masukan"] for k in r["koreksi"])))
         out += ["- \"%s\" -> tema %s, %s%s%s" % (k["cuplikan"], k["tema"] or "-", k["jenis"], (", sentimen " + k["sentimen"]) if k["sentimen"] else "",
                                              (" (%s)" % k["catatan"]) if k["catatan"] else "") for k in r["koreksi"]]
+    out.append("\n## Kalimat ringkasan siap salin (angka sudah dihitung script - SALIN apa adanya, jangan hitung/tulis ulang)\n")
+    out += ["- " + k for k in r.get("ringkasan_siap_salin", [])]
     jenis_wa = [s_ for s_ in r.get("sumber", []) if s_["jenis"] == "whatsapp"]
     if r.get("respons_staf"):
         out.append("\n## Respons staf / penjual\n")

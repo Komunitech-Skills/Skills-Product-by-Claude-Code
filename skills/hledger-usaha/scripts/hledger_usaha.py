@@ -36,7 +36,7 @@ import sys
 import tempfile
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
 
-VERSI = "1.0.5"
+VERSI = "1.0.10"
 HLEDGER_TERUJI = ("1.52.4", "1.30.1")
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
@@ -1403,8 +1403,9 @@ def rencana_dari(j, e, tahun=None):
         raise Gagal("--pph23/--diterima hanya untuk jenis jasa atau terima-piutang (pelanggan memotong PPh 23).")
     if (e.get("pph23") or e.get("diterima")) and jenis in ("jual", "penjualan"):
         raise Gagal("--pph23/--diterima tidak dipakai untuk --jenis jual (penjualan BARANG): PPh 23 dipotong atas jasa, "
-                    "sewa, royalti, dll., bukan atas penjualan barang (UU PPh Pasal 23) - JANGAN dicatat sebagai kredit "
-                    "pajak. Bila pembeli membayar kurang: catat penjualan PENUH dengan --via tempo, lalu --jenis "
+                    "sewa, royalti, dll.; atas penjualan barang umumnya tidak berlaku, TETAPI bisa berlaku bila transaksi "
+                    "sebenarnya jasa (mis. jasa katering) - jadi minta klarifikasi/bukti potong (UU PPh Pasal 23). "
+                    "JANGAN dicatat sebagai kredit pajak sebelum ada bukti potong. Bila pembeli membayar kurang: catat penjualan PENUH dengan --via tempo, lalu --jenis "
                     "terima-piutang --nominal <uang yang benar-benar masuk> --ket \"selisih potongan belum "
                     "dikonfirmasi\"; selisihnya tetap PIUTANG pelanggan sampai ada klarifikasi/bukti potong. Bila yang "
                     "dijual sebenarnya jasa/sewa, pakai --jenis jasa. PERLU REVIEW konsultan pajak.")
@@ -1470,9 +1471,10 @@ def rencana_dari(j, e, tahun=None):
                 nama_p = tags.get("pihak") or "pelanggan"
                 raise Gagal(
                     "--pph23/--diterima ditolak: piutang {d} berasal dari PENJUALAN BARANG (dicatat dengan --jenis jual). "
-                    "PPh 23 dipotong atas jasa, sewa, royalti, dll., bukan atas penjualan barang (UU PPh Pasal 23; jasa "
-                    "lain: PMK 141/PMK.03/2015), jadi potongan {p} JANGAN dicatat sebagai kredit pajak dan JANGAN "
-                    "dibebankan (bukan biaya bank).\n"
+                    "PPh 23 dipotong atas jasa, sewa, royalti, dll.; atas penjualan barang umumnya tidak berlaku, tetapi bisa "
+                    "berlaku bila transaksi sebenarnya jasa (mis. jasa katering; UU PPh Pasal 23, PMK 141/PMK.03/2015). "
+                    "Karena itu minta klarifikasi/bukti potong; sampai ada bukti potong, potongan {p} JANGAN dicatat "
+                    "sebagai kredit pajak dan JANGAN dibebankan (bukan biaya bank).\n"
                     "YANG DISARANKAN (pratinjau dulu, lalu --ya setelah pengguna setuju):\n"
                     "  catat --jenis terima-piutang --nominal {m} --via {v} --pihak \"{n}\" --tanggal {t} "
                     "--ket \"Pelunasan sebagian - selisih {p} potongan belum dikonfirmasi\"\n"
