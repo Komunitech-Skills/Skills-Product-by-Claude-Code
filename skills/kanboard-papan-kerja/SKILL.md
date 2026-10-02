@@ -8,7 +8,7 @@ description: Mengoperasikan Kanboard (papan kerja kanban open-source, self-hoste
 ## ATURAN WAJIB (baca dulu)
 1. **Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak awalan, tidak disamarkan). Sebut "kunci yang Anda tempel".**
 2. Templat balasan baku bila itu terjadi (salin, jangan tambah kutipan apa pun dari yang ditempel):
-   > "Kunci yang Anda tempel tidak saya pakai, dan sebaiknya dianggap sudah bocor. Mohon cabut/ganti token itu di aplikasinya (bisa setelah ini), lalu simpan yang baru SENDIRI dari terminal Anda: `python3 <folder-skill>/scripts/kanboard.py simpan-kunci` (Windows: `python`/`py`; path lengkap folder skill ini ada di `docs/instalasi.md`). Setelah itu saya bisa melanjutkan."
+   > "Kunci yang Anda tempel tidak saya pakai, dan sebaiknya dianggap sudah bocor. Mohon cabut/ganti token itu di aplikasinya (bisa setelah ini), lalu simpan yang baru SENDIRI dari terminal Anda: `python3 scripts/kanboard.py simpan-kunci` (dijalankan dari dalam folder skill ini; path relatif resmi `scripts/kanboard.py`; Windows: `python`/`py`; lokasi folder skill ada di `docs/instalasi.md`; jangan menebak path `~/.openclaw/...`). Setelah itu saya bisa melanjutkan."
 3. **Urutan:** jangan menahan pekerjaan. Bila permintaan pengguna bisa dijawab dengan kunci yang sudah tersimpan (mis. pratinjau), TAMPILKAN pratinjau/hasilnya dulu (tanpa mengulang token), baru di akhir jawaban sarankan mengganti token yang sempat ditempel. Templat di atas dipakai hanya bila kunci tersimpan belum ada.
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
@@ -16,7 +16,7 @@ description: Mengoperasikan Kanboard (papan kerja kanban open-source, self-hoste
 ## Tujuan
 Pemilik/admin usaha yang memakai **Kanboard di komputer/server sendiri** cukup mengetik permintaan biasa; agent menjalankan `scripts/kanboard.py` yang memanggil **JSON-RPC API resmi Kanboard** (`POST <alamat>/jsonrpc.php`, HTTP Basic Auth nama pengguna + token). Data tetap di komputer pengguna. Python standar saja. Komunitech tidak berafiliasi dengan proyek Kanboard.
 
-**Versi 1.0.1.** Diuji pembuat ke **Kanboard v1.2.54 asli** (kode sumber resmi tag `v1.2.54`, PHP 8.4 + SQLite, zona server UTC dan Asia/Jakarta, token pribadi Manager/User dan token aplikasi `jsonrpc`) + uji regresi otomatis dengan server tiruan (142 cek, termasuk 401/403/timeout/5xx/redirect). Belum diuji: image Docker resmi, Windows/macOS sungguhan.
+Diuji pembuat ke **Kanboard v1.2.54 asli** (kode sumber resmi tag `v1.2.54`, PHP 8.4 + SQLite, zona server UTC dan Asia/Jakarta, token pribadi Manager/User dan token aplikasi `jsonrpc`) + uji regresi otomatis dengan server tiruan (142 cek, termasuk 401/403/timeout/5xx/redirect). Belum diuji: image Docker resmi, Windows/macOS sungguhan.
 
 ## Kapan digunakan
 - "Kanboard saya nyambung?" → `cek`
@@ -36,7 +36,7 @@ Pemilik/admin usaha yang memakai **Kanboard di komputer/server sendiri** cukup m
 
 ## Persiapan (sekali, bersama pengguna)
 1. Jalankan `cek`. Gagal → ikuti baris `GAGAL:`/`SARAN:`; panduan lengkap di `docs/panduan-kanboard.md`.
-2. **Token**: pengguna membuat token di Kanboard (avatar → **Profil saya** → **API** → **Generate token baru**), lalu menjalankan SENDIRI di terminalnya `python3 <folder-skill>/scripts/kanboard.py simpan-kunci` (isi nama pengguna + tempel token; tersimpan di `~/.komunitech/kanboard-kunci.json` izin 600). **Jangan pernah minta token ditempel di chat**; bila terlanjur, jangan menyalinnya ke file apa pun dan sarankan menghapus token itu di Kanboard lalu membuat baru. Urutan sumber kunci: `--kunci-file` → ENV `KANBOARD_USER`+`KANBOARD_TOKEN` → ENV `KANBOARD_KUNCI_FILE` → file default.
+2. **Token**: pengguna membuat token di Kanboard (avatar → **Profil saya** → **API** → **Generate token baru**), lalu menjalankan SENDIRI di terminalnya `python3 scripts/kanboard.py simpan-kunci` (dari dalam folder skill ini, path relatif resmi) (isi nama pengguna + tempel token; tersimpan di `~/.komunitech/kanboard-kunci.json` izin 600). **Jangan pernah minta token ditempel di chat**; bila terlanjur, jangan menyalinnya ke file apa pun dan sarankan menghapus token itu di Kanboard lalu membuat baru. Urutan sumber kunci: `--kunci-file` → ENV `KANBOARD_USER`+`KANBOARD_TOKEN` → ENV `KANBOARD_KUNCI_FILE` → file default.
 3. Alamat default `http://127.0.0.1:8080`. Beda port → `--url` atau ENV `KANBOARD_URL`. Kanboard di komputer lain di kantor/VPS → pemilik sendiri menjalankan `atur --url <alamat> --izinkan-host --ya` (internet wajib `https://`).
 4. Akun berperan **Manajer** bisa membuat papan tim; peran **Pengguna** hanya papan pribadi (`--pribadi`).
 
