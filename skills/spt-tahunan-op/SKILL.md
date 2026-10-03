@@ -49,9 +49,11 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - `--nppn BRUTO PERSEN` (ulang per jenis usaha) + `--nppn-diberitahukan ya|tidak`.
    - `--pembukuan-neto NETO` · `--lain-neto NETO` · `--omzet-final OMZET --pph-final PPH`.
    - `--zakat` · `--pph21-lain` (termasuk PPh 21 bukan pegawai yang dipotong klien atas jasa orang pribadi) · `--pph22` · `--pph23` · `--pph25` · `--final-salah-skema`.
-   - `--hari-ini YYYY-MM-DD` (cek batas lapor) · `--format json`.
+   - `--hari-ini YYYY-MM-DD` · `--format json`.
+   **Selalu isi `--hari-ini` dengan tanggal hari ini** (dari percakapan/sistem). Jangan mengira-ngira apakah tenggat sudah lewat.
    Angka: format Indonesia (`1.250.000`, `2,5jt`, `500rb`, `1,2 miliar`). Angka ambigu (`1,500`, `2.5jt`, `5m`, `114,000,000`) **ditolak** — tanyakan ulang ke pengguna, jangan menebak.
-3. Salin tabel & angka dari output script **apa adanya**. Lalu tulis penjelasan bahasa awam 3–5 kalimat: kenapa kurang/lebih bayar (mis. "dua kantor sama-sama memakai PTKP penuh, jadi saat digabung ada pajak yang belum terpotong").
+3. **Salin baris "⏰ Status tenggat lapor" + saran + konsekuensinya dari script apa adanya, di bagian paling atas jawaban** (JSON: `status_tenggat`). Jangan pernah menulis "Batas lapor: 31 Maret …" saja tanpa status itu. Bila status `TERLAMBAT` atau `LEWAT_MASA_BEBAS_SANKSI`: katakan jelas batasnya **sudah lewat**, sarankan **segera lapor (dan bayar bila kurang bayar) setelah konsultasi singkat** ke Kring Pajak 1500200/KPP/konsultan; **jangan** menulis "jangan buru-buru lapor", "masih ada waktu", atau tanggal yang sudah lewat sebagai rencana. Tarif bunga per bulan **jangan dikarang** — sebut cara cek (KMK tarif bunga bulan berjalan, fiskal.kemenkeu.go.id / pajak.go.id / Kring Pajak).
+   Lalu salin tabel & angka dari output script **apa adanya**. Lalu tulis penjelasan bahasa awam 3–5 kalimat: kenapa kurang/lebih bayar (mis. "dua kantor sama-sama memakai PTKP penuh, jadi saat digabung ada pajak yang belum terpotong").
    **Karyawan 1 pemberi kerja tapi hasilnya kurang/lebih bayar** (script memberi peringatan "CEK ULANG bukti potong A1"): jangan langsung suruh bayar. Jelaskan dengan bahasa awam: "Kantor biasanya sudah menghitung ulang pajak setahun di gaji bulan terakhir, jadi kalau hanya satu kantor hasilnya umumnya nihil. Selisih ini tanda ada yang perlu dicek dulu." Sarankan cek dengan HRD/bagian gaji: status PTKP di A1 (menikah/anak sudah diperbarui?), angka neto & PPh 21 yang diketik sama persis dengan A1, dan tidak ada A1 lain/pembetulan. Bila A1 memang benar, hasil script yang dipakai.
 4. Tambahkan **peta ke Coretax** (tabel di bawah) dan **langkah berikutnya** sesuai hasil (KB: bayar dulu lewat kode billing; LB: pilih restitusi/kompensasi; nihil: tinggal lapor).
 5. Sertakan peringatan, catatan, checklist dokumen, dan disclaimer dari output.
@@ -94,6 +96,7 @@ Formulir 1770/1770S/1770SS **sudah dihapus**; sekarang satu SPT Tahunan PPh OP d
 ## Hitungan SPT Tahunan PPh OP — Tahun Pajak <tahun> (status <PTKP>)
 1. Penghasilan neto (tabel)   2. PTKP & PKP   3. PPh terutang per lapisan
 4. Kredit pajak               5. Hasil: KURANG BAYAR / LEBIH BAYAR / NIHIL (+ PPh 25 depan)
+(di awal) ⏰ Status tenggat lapor + saran + konsekuensi       ← dari script, wajib
 Batas lapor · ⚠️ Peringatan · Catatan · Checklist dokumen      ← dari script
 Penjelasan bahasa awam · Peta ke Coretax · Langkah berikutnya   ← dari agent
 _Disclaimer_
@@ -111,6 +114,7 @@ _Disclaimer_
 - [ ] Angka neto diambil dari bukti potong (bukan bruto) bila tersedia; semua bukti potong ikut.
 - [ ] Persen NPPN berasal dari pengguna/lampiran PER-17/PJ/2015, bukan tebakan; status pemberitahuan NPPN ditanyakan.
 - [ ] Zakat lewat kantor tidak dihitung dua kali; omzet final tidak masuk tarif Pasal 17.
+- [ ] Status tenggat (`--hari-ini` = hari ini) disalin di awal; bila terlambat: "sudah lewat" + segera lapor setelah konsultasi, tanpa tarif bunga karangan.
 - [ ] Angka disalin dari script; penjelasan awam + peta Coretax + langkah berikutnya ada.
 - [ ] Disclaimer ada: bukan konsultan pajak, pembulatan belum dicocokkan dengan Coretax, tidak mengirim SPT.
 
@@ -121,5 +125,5 @@ _Disclaimer_
 - **Tenggat wajib dibandingkan dengan tanggal hari ini.** Jangan pernah menyarankan langkah dengan tanggal yang sudah lewat. Pemberitahuan NPPN = paling lambat **31 Maret tahun pajak yang bersangkutan** (UU PPh Ps. 14 ayat (2); PMK 81/2024 Ps. 450 ayat (2)); script mencetak `nppn_tahun_berjalan` (sudah lewat/belum, per `--hari-ini`) — salin apa adanya. Bila sudah lewat: katakan jelas tahun pajak berjalan **dianggap memilih pembukuan** (UU PPh Ps. 14 ayat (5)) → mulai catat pembukuan sekarang; pemberitahuan berikutnya baru untuk tahun pajak berikutnya (s.d. 31 Maret tahun itu), dengan catatan DJP menyatakan WP yang sudah menyelenggarakan pembukuan tidak dapat kembali ke NPPN (PMK 81/2024 Ps. 463 s.t.d.d. PMK 1/2026) → konfirmasi KPP/konsultan (⚠️ PERLU REVIEW konsultan pajak).
 - **Batas lapor:** paling lambat 3 bulan setelah akhir tahun pajak → **31 Maret** tahun berikutnya (UU KUP Ps. 3). TP 2025: jatuh tempo **tetap 31 Maret 2026**; KEP-55/PJ/2026 **bukan perpanjangan**, hanya menghapus sanksi (denda & bunga) bila lapor/bayar s.d. 30 April 2026. Bila 31 Maret jatuh pada Sabtu/Minggu/libur, cek pengumuman DJP terbaru (⚠️ PERLU REVIEW: belum terverifikasi apakah aturan "hari kerja berikutnya" PMK 81/2024 berlaku untuk SPT Tahunan) — sarankan lapor lebih awal.
 - Angka negatif ditolak dengan pesan ramah (isi angka positif). "5,054 miliar" diterima; "5,054 M"/"5m" ditolak (M = juta atau miliar?) → minta ditulis "miliar" atau angka penuh.
-- Sanksi bunga keterlambatan bayar tidak dihitung (tarif berubah tiap bulan); denda telat lapor Rp100.000 disebutkan.
+- Sanksi: denda telat lapor SPT Tahunan OP Rp100.000 (UU KUP Ps. 7 ayat (1)); bunga kurang bayar yang telat disetor (UU KUP Ps. 9 s.t.d.t.d. UU HPP; tarif KMK per bulan, bagian bulan = 1 bulan, maks. 24 bulan) **tidak dihitung** karena tarifnya berubah tiap bulan — script mencetak jumlah bulan terlambat & cara cek tarif.
 - Jangan mengklaim hasil pasti sama dengan Coretax; Coretax yang final. Selalu sarankan cek ulang ke DJP/konsultan untuk kasus besar atau tidak biasa.
