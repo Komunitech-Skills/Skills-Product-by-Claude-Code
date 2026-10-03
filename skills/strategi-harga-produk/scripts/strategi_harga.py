@@ -30,7 +30,7 @@ import re
 import sys
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal as D, InvalidOperation
 
-VERSI = "1.0.7"
+VERSI = "1.0.8"
 NOL = D(0)
 SATU = D(1)
 SERATUS = D(100)
@@ -1060,6 +1060,22 @@ def _kalimat_ruang_diskon(harga, hpp, biaya, mm, pajak, harga_reseller=None):
             f"batas {syarat}) -> promo diskon TIDAK DISARANKAN; pakai bonus/paket/kuota terbatas, bukan potongan harga.")
 
 
+def _harga_normal_untuk_diskon(hpp, mm, biaya, pajak, persen, batas):
+    """Harga normal (rupiah bulat) terkecil yang masih punya ruang diskon `persen` tanpa menembus margin minimum."""
+    h = ke_atas(D(batas) / (1 - persen))
+    while not _lolos_batas(h, hpp, persen, biaya, mm, pajak, None):
+        h += 1
+    while h > batas and _lolos_batas(h - 1, hpp, persen, biaya, mm, pajak, None):
+        h -= 1
+    return h
+
+
+def _contoh_harga_aman(hpp, mm, biaya, pajak, batas, jumlah=4):
+    """Harga cantik >= lantai (dari kandidat_cantik di sekitar lantai), maks `jumlah`."""
+    c = hitung_cantik(batas, hpp, mm, biaya, None, pajak)
+    return [b["harga"] for b in c["baris"] if b["aman"]][:jumlah]
+
+
 def ringkasan_margin(h):
     pajak = h["pajak"]
     k = []
@@ -1074,19 +1090,39 @@ def ringkasan_margin(h):
         k.append(f"Harga {rp(h['harga'])}{ket}: laba {rp(bulat(h['laba']))}/unit{pot}, margin {pct(h['margin'])}, "
                  f"markup {pct(h['markup'])}.")
     if pajak.aktif and pajak.mode == "termasuk" and h["laba"] > 0:
+        # v1.0.8: dua cara hitung KELIRU dicetak terpisah dengan label eksplisit (uji 1.0.7: model menyebut
+        # angka "PPN tidak dipisah" sebagai hasil "dibagi 1,12")
+        if not pajak.mewah:
+            dpp112 = bulat(h["harga"] / D("1.12"))
+            laba112 = dpp112 - h["biaya"] * h["tayang"] - h["hpp"]
+            k.append(f"KELIRU cara 1 - bila harga DIBAGI 1,12 (tarif 12% penuh, salah untuk barang non-mewah): DPP "
+                     f"{rp(dpp112)}, margin {pct(laba112 / dpp112)} - jangan dipakai.")
         salah = (h["harga"] - h["biaya"] * h["tayang"] - h["hpp"]) / h["harga"]
-        k.append(f"Bila PPN lupa dipisah, margin akan terlihat {pct(salah)} - angka itu KELIRU; margin yang benar "
-                 f"{pct(h['margin'])} (dari DPP).")
+        k.append(f"KELIRU cara 2 - bila PPN TIDAK DIPISAH sama sekali (seluruh {rp(h['harga'])} dianggap pendapatan): "
+                 f"margin terlihat {pct(salah)} - jangan dipakai.")
+        k.append(f"BENAR - PPN dipisah dengan tarif efektif 11% (12% x DPP nilai lain 11/12): DPP {rp(h['dpp'])}, "
+                 f"margin {pct(h['margin'])}.")
     if "margin_min" in h:
+        mm, batas = h["margin_min"], h["batas"]
         if h["aman"]:
-            k.append(f"Status: OK, di atas margin minimum {pct(h['margin_min'])} (harga terendah yang aman {rp(h['batas'])}).")
+            k.append(f"Status: OK, di atas margin minimum {pct(mm)} (harga terendah yang aman {rp(batas)}).")
         else:
-            k.append(f"Status: DI BAWAH MIN - margin minimum {pct(h['margin_min'])} butuh harga paling rendah "
-                     f"{rp(h['batas'])}; jangan sarankan harga di bawah angka ini.")
-        if h["laba"] > 0 and h["harga"] > h["batas"]:
-            k.append(_kalimat_ruang_diskon(h["harga"], h["hpp"], h["biaya"], h["margin_min"], pajak))
-        k.append(f"Dari harga lantai {rp(h['batas'])}: TIDAK ADA ruang diskon - harga lantai adalah harga promo "
-                 f"TERENDAH yang masih margin {pct(h['margin_min'])}; promo di harga lantai pakai bonus/paket/kuota.")
+            k.append(f"Status: DI BAWAH MIN - margin minimum {pct(mm)} butuh harga paling rendah {rp(batas)}; "
+                     f"harga {rp(h['harga'])} (termasuk sebagai 'harga lama' sementara/pre-order) hanya boleh disebut "
+                     f"dengan PERINGATAN: di bawah margin minimum {pct(mm)} (lantai {rp(batas)}).")
+        if h["laba"] > 0 and h["harga"] > batas:
+            k.append(_kalimat_ruang_diskon(h["harga"], h["hpp"], h["biaya"], mm, pajak))
+        k.append(f"Dari harga lantai {rp(batas)}: TIDAK ADA ruang diskon - JANGAN tawarkan diskon/promo potongan harga "
+                 f"dari harga ini dan jangan menulis 'dari lantai nanti ada ruang promo'. Yang bisa dilakukan: naikkan "
+                 f"harga normal di atas lantai, tekan HPP/biaya, atau promo tanpa potongan harga (bonus/paket/kuota).")
+        ruang = [f"diskon {pct(x)} butuh harga normal minimal {rp(_harga_normal_untuk_diskon(h['hpp'], mm, h['biaya'], pajak, x, batas))}"
+                 for x in (D("0.05"), D("0.10"))]
+        k.append("Agar ADA ruang promo: " + "; ".join(ruang) +
+                 " (lalu cek dengan `diskon --harga <harga normal> --rentang`).")
+        contoh = _contoh_harga_aman(h["hpp"], mm, h["biaya"], pajak, batas)
+        if contoh:
+            k.append(f"Contoh harga cantik yang aman (>= lantai {rp(batas)}; hanya angka ini yang boleh dipakai sebagai "
+                     f"contoh/'misal'): {', '.join(rp(x) for x in contoh)}.")
     return k
 
 
