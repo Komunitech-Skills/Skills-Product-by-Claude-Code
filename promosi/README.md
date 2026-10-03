@@ -7,7 +7,7 @@
 | `template-halaman.html` | Templat halaman promosi. | Bila desain berubah |
 | `SEBELUM-SESUDAH.md`, `halaman-sebelum-sesudah.html` | Dibuat otomatis oleh `python3 scripts/promosi_sebelum_sesudah.py`. | **Tidak** |
 
-Aturan tampil (keputusan pemilik 2026-10-03): verdik terakhir LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, tidak `tunda_promosi` (mis. PERLU REVIEW medis).
+Aturan tampil (keputusan pemilik 2026-10-03): verdik terakhir LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, kolom `label` tampil sebagai keterangan di kartu (mis. "Belum direview tenaga medis", keputusan pemilik 2026-10-03).
 
 ## Artifact yang dibagikan
 - Nama: **Bukti Sebelum–Sesudah Komunitech** — https://claude.ai/artifact/6zja3WtPTK7YE3MbDTXUtM (private; pemilik membagikan lewat menu Share).

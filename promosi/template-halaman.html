@@ -60,6 +60,7 @@ h1{font:800 clamp(30px,5vw,48px)/1.05 var(--display);margin:0;text-wrap:balance;
 footer{color:var(--muted);font-size:13.5px;max-width:70ch;display:grid;gap:8px}
 footer p{margin:0}
 .empty{color:var(--muted)}
+.badge{justify-self:start;font:500 11.5px/1.3 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--before);border:1px solid var(--before);border-radius:4px;padding:3px 7px}
 </style>
 
 <div class="wrap">
@@ -107,6 +108,7 @@ function card(r){
   const lo = r.b*10, hi = r.a*10;
   return `<article class="card">
     <div style="display:grid;gap:4px"><h3>${esc(r.judul)}</h3><div class="meta">${esc(r.kat)}</div></div>
+    ${r.label ? `<span class="badge">${esc(r.label)}</span>` : ''}
     <div class="ruler" aria-label="Skor tanpa skill ${fmt(r.b)}, dengan skill ${fmt(r.a)} dari 10">
       <div class="track"><div class="span" style="left:${lo}%;width:${hi-lo}%"></div><div class="dot b" style="left:${lo}%"></div><div class="dot a" style="left:${hi}%"></div></div>
       <div class="scores"><span class="b">tanpa skill ${fmt(r.b)}</span><span class="d">+${fmt(r.a-r.b)}</span><span class="a">dengan skill ${fmt(r.a)}</span></div>
