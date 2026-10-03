@@ -22,17 +22,17 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 12 | Laporan Bisnis Otomatis ke HP Tiap Pagi (`laporan-otomatis-terjadwal`) | Produktivitas | 3,5 → 8,6 | +5,1 |
 | 13 | Kanboard Papan Kerja: Pantau Lewat Chat (`kanboard-papan-kerja`) | Produktivitas | 4 → 9 | +5 |
 | 14 | Materi Pasien Rapi, Konsisten, Tanpa Repot Nulis Sendiri (`edukasi-pasien-klinik`) | Customer Service | 3 → 8 | +5 |
-| 15 | InvenTree Gudang: Asisten AI Stok dan Opname (`inventree-gudang`) | Produktivitas | 4,5 → 9 | +4,5 |
-| 16 | Modul Ajar Jadi dalam Semenit (`rencana-pelajaran-guru`) | Pendidikan | 4,5 → 9 | +4,5 |
-| 17 | Papan Saran Pelanggan Sendiri, Tanpa Biaya Bulanan (`fider-masukan-pelanggan`) | Produktivitas | 5 → 9 | +4 |
-| 18 | Kebijakan Privasi Sesuai UU PDP (`kebijakan-privasi-pdp`) | Legal & Dokumen | 5 → 9 | +4 |
-| 19 | Slip Gaji Rapi, BPJS dan Pajak Beres (`slip-gaji-bpjs`) | HR | 5 → 9 | +4 |
-| 20 | Loker Rapi, Bebas Syarat Bermasalah (`lowongan-kerja`) | HR | 4,5 → 8,5 | +4 |
-| 21 | Paket Konten Sosmed Seminggu, Siap Tempel (`konten-mingguan`) | Marketing & Konten | 4 → 8 | +4 |
-| 22 | Artikel Berbasis Riset, Tanpa Karangan (`asisten-tulis-riset`) | Marketing & Konten | 5 → 8,9 | +3,9 |
-| 23 | Dolibarr Usaha: Asisten AI untuk Dolibarr Anda (`dolibarr-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
-| 24 | hledger Usaha: Pembukuan Rapi Tanpa Biaya Bulanan (`hledger-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
-| 25 | Draf Surat Perjanjian Usaha dalam Menit (`perjanjian-sederhana`) | Legal & Dokumen | 5,25 → 9 | +3,75 |
+| 15 | Draf Surat Perjanjian Usaha dalam Menit (`perjanjian-sederhana`) | Legal & Dokumen | 4,25 → 9 | +4,75 |
+| 16 | InvenTree Gudang: Asisten AI Stok dan Opname (`inventree-gudang`) | Produktivitas | 4,5 → 9 | +4,5 |
+| 17 | Modul Ajar Jadi dalam Semenit (`rencana-pelajaran-guru`) | Pendidikan | 4,5 → 9 | +4,5 |
+| 18 | Papan Saran Pelanggan Sendiri, Tanpa Biaya Bulanan (`fider-masukan-pelanggan`) | Produktivitas | 5 → 9 | +4 |
+| 19 | Kebijakan Privasi Sesuai UU PDP (`kebijakan-privasi-pdp`) | Legal & Dokumen | 5 → 9 | +4 |
+| 20 | Slip Gaji Rapi, BPJS dan Pajak Beres (`slip-gaji-bpjs`) | HR | 5 → 9 | +4 |
+| 21 | Loker Rapi, Bebas Syarat Bermasalah (`lowongan-kerja`) | HR | 4,5 → 8,5 | +4 |
+| 22 | Paket Konten Sosmed Seminggu, Siap Tempel (`konten-mingguan`) | Marketing & Konten | 4 → 8 | +4 |
+| 23 | Artikel Berbasis Riset, Tanpa Karangan (`asisten-tulis-riset`) | Marketing & Konten | 5 → 8,9 | +3,9 |
+| 24 | Dolibarr Usaha: Asisten AI untuk Dolibarr Anda (`dolibarr-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
+| 25 | hledger Usaha: Pembukuan Rapi Tanpa Biaya Bulanan (`hledger-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
 | 26 | Program Referral & Loyalitas yang Tetap Untung (`program-referral-loyalitas`) | Marketing & Konten | 5,25 → 9 | +3,75 |
 | 27 | Notebook Riset Lokal, Data Tetap di Komputer (`notebook-riset-lokal`) | Produktivitas | 4,5 → 8,25 | +3,75 |
 | 28 | Hilangkan Bau AI dari Tulisanmu, Tanpa Kaku (`tulisan-tanpa-kesan-ai`) | Marketing & Konten | 5 → 8,7 | +3,7 |
@@ -215,6 +215,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Keterangan:** Belum direview tenaga medis
 - **Catatan jujur:** Hanya 1 skenario regresi. Sumber daftar tanda bahaya belum tercantum; wajib ditinjau tenaga medis sebelum dipakai.
 
+### Draf Surat Perjanjian Usaha dalam Menit — 4,25 → 9
+`perjanjian-sederhana` · Legal & Dokumen · versi 1.0.6 · diuji 2026-10-03
+
+- **Permintaan:** Bikin surat perjanjian sewa kios Rp18 juta per tahun, 2 tahun; juga perjanjian utang dengan jaminan BPKB motor.
+- **Tanpa skill:** Menuliskan klausul 'motor otomatis jadi milik pemberi utang bila telat bayar' dan menyebut tanda tangan di atas meterai membuat sah (keliru).
+- **Dengan skill:** Menjelaskan klausul itu batal demi hukum (Pasal 33 UU Fidusia), menyiapkan daftar dokumen dan pertanyaan untuk notaris; sewa kios lengkap dengan 2 meterai Rp10.000.
+- **Angka kunci:** Skor jebakan BPKB 4 -> 9
+- **Catatan jujur:** Satu bagian naskah masih panjang (±4.000 karakter); status hak kios perlu dipastikan pengguna.
+
 ### InvenTree Gudang: Asisten AI Stok dan Opname — 4,5 → 9
 `inventree-gudang` · Produktivitas · versi 1.0.6 · diuji 2026-10-02
 
@@ -300,15 +309,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Menunjukkan entri dulu, menunggu 'ya', lalu membuat cadangan; laba bersih September Rp7.865.500, neraca seimbang Rp21.515.500; sisa Rp40.000 tetap piutang plus draf klarifikasi.
 - **Angka kunci:** Laba bersih Rp7.865.500; neraca Rp21.515.500; sisa piutang Rp40.000 (bukan lunas)
 - **Catatan jujur:** Pada jurnal kecil selisih angka tipis; pembeda di izin sebelum menulis, cadangan, dan potongan pajak. Uji pertama BELUM.
-
-### Draf Surat Perjanjian Usaha dalam Menit — 5,25 → 9
-`perjanjian-sederhana` · Legal & Dokumen · versi 1.0.4 · diuji 2026-10-01
-
-- **Permintaan:** Bikin surat perjanjian sewa kios Rp18 juta per tahun, 2 tahun; juga perjanjian utang dengan jaminan BPKB motor.
-- **Tanpa skill:** Menuliskan klausul 'motor otomatis jadi milik pemberi utang bila telat bayar' dan menyebut tanda tangan di atas meterai membuat sah (keliru).
-- **Dengan skill:** Menjelaskan klausul itu batal demi hukum (Pasal 33 UU Fidusia), menyiapkan daftar dokumen dan pertanyaan untuk notaris; sewa kios lengkap dengan 2 meterai Rp10.000.
-- **Angka kunci:** Skor jebakan BPKB 4 -> 9
-- **Catatan jujur:** Draf hukum; tetap perlu ditinjau notaris atau profesional. Tanggal tanda tangan sempat terisi otomatis.
 
 ### Program Referral & Loyalitas yang Tetap Untung — 5,25 → 9
 `program-referral-loyalitas` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-02
