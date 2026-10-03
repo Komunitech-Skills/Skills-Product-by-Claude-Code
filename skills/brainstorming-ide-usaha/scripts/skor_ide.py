@@ -536,7 +536,7 @@ def cmd_impas(args):
 
 
 def hitung_rencana(harga, modal_unit, potongan_persen=0.0, biaya_uji=0.0, target=10, modal_awal=None,
-                   margin_target=None, isi_per_unit=None, satuan=None, harga_lama=None, harga_pesaing=None):
+                   margin_target=None, isi_per_unit=None, satuan=None, harga_lama=None, harga_pesaing=None, gap_omzet=None):
     """Hitungan rupiah rencana uji 7 hari. Semua nominal dibulatkan ke rupiah terdekat.
 
     v1.0.6 — cek kewajaran harga (agar saran harga tidak asal):
@@ -603,6 +603,15 @@ def hitung_rencana(harga, modal_unit, potongan_persen=0.0, biaya_uji=0.0, target
     }
     tk = hasil["target_kumulatif"]
     hasil["berhenti_dini"] = {3: 0, 5: tk[3]}   # Hari 3 = 0 -> ganti tawaran; Hari 5 < tk[3] -> hentikan
+    # --- konsistensi saran vs batasan pengguna (v1.0.7)
+    if gap_omzet is not None and (not math.isfinite(gap_omzet) or gap_omzet <= 0):
+        raise DataTidakValid(f"gap omzet harus lebih besar dari 0 (nilai: {gap_omzet!r})")
+    hasil["gap_omzet"] = round(gap_omzet) if gap_omzet else None
+    # omzet 7 hari diproyeksikan 30/7 hari (kasar) dibanding gap omzet per bulan yang disebut pengguna
+    hasil["omzet_bulan_proyeksi"] = round(target * harga * 30 / 7) if gap_omzet else None
+    hasil["tutup_gap_persen"] = (round(hasil["omzet_bulan_proyeksi"] * 100 / hasil["gap_omzet"], 1)
+                                 if gap_omzet else None)
+    hasil["catatan_konsistensi"] = []
     # --- cek kewajaran harga (v1.0.6)
     isi = isi_per_unit or 1
     hasil.update({"margin_target": margin_target, "harga_saran": None, "isi_per_unit": isi,
@@ -628,6 +637,21 @@ def hitung_rencana(harga, modal_unit, potongan_persen=0.0, biaya_uji=0.0, target
                     f"per {hasil['satuan']} {format_rupiah(round(hps))} lebih mahal {_persen(selisih)} dari {label} "
                     f"({format_rupiah(round(acuan))}/{hasil['satuan']}) — sebutkan nilai tambah yang membuat pelanggan "
                     "mau membayar lebih, atau turunkan harga/isi paket.")
+    for kunci, acuan, label in (("lama", harga_lama, "harga eceran Anda sendiri"),
+                                ("pesaing", harga_pesaing, "harga pesaing")):
+        if acuan and hps <= acuan:
+            hasil["catatan_konsistensi"].append(
+                f"per {hasil['satuan']} {format_rupiah(round(hps))} sama/lebih murah dari {label} "
+                f"({format_rupiah(round(acuan))}) - secara efektif ini TURUN HARGA: jangan menulis "
+                "\"bukan turun harga\"; jelaskan alasannya (paket/langganan/volume) dan dampaknya ke "
+                "pelanggan lama yang mungkin pindah ke paket ini (kanibalisasi).")
+            break
+    if hasil["tutup_gap_persen"] is not None:
+        hasil["catatan_konsistensi"].append(
+            f"target uji {_unit(target)} unit x {format_rupiah(harga)} = omzet {format_rupiah(target * harga)}/7 hari "
+            f"(proyeksi kasar {format_rupiah(hasil['omzet_bulan_proyeksi'])}/bulan) = {_persen(hasil['tutup_gap_persen'])} "
+            f"dari gap omzet {format_rupiah(hasil['gap_omzet'])}/bulan - tulis hubungan ini; bila jauh dari 100%, "
+            "katakan uji ini baru langkah pertama.")
     if not harga_lama and not harga_pesaing:
         hasil["kewajaran"] = "BELUM DICEK"
     else:
@@ -686,7 +710,8 @@ def cmd_rencana(args):
         r = hitung_rencana(args.harga, args.modal_unit, args.potongan_persen, args.biaya_uji,
                            args.target, args.modal, margin_target=args.margin_target,
                            isi_per_unit=args.isi_per_unit, satuan=args.satuan,
-                           harga_lama=args.harga_lama, harga_pesaing=args.harga_pesaing)
+                           harga_lama=args.harga_lama, harga_pesaing=args.harga_pesaing,
+                           gap_omzet=args.gap_omzet)
     except DataTidakValid as e:
         print(f"Data tidak valid: {e}", file=sys.stderr)
         return 1
@@ -697,6 +722,8 @@ def cmd_rencana(args):
     print(f"{'Modal per unit (bahan+kemasan)':<{w}}: {format_rupiah(r['modal_unit'])}")
     print(f"{'Untung bersih per unit':<{w}}: {_rp(r['margin_unit'])} ({_persen(r['margin_persen'])} dari harga)")
     _cetak_kewajaran(r, w)
+    for c in r["catatan_konsistensi"]:
+        print(f"KONSISTENSI: {c}")
     if r["rugi_per_unit"]:
         print()
         print("PERINGATAN: RUGI/TIDAK UNTUNG per unit. Jangan uji dengan harga ini - naikkan harga,")

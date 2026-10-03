@@ -7,7 +7,7 @@ import unittest
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 FAKTA = "keripik singkong pedas level 1-5, 200 gram, Rp15.000 per bungkus, 3 bungkus Rp40.000, target mahasiswa Jogja, order WA 0812-2233-4455 atau DM"
-IG_BAIK = "**Variasi A – Storytelling**\n" + " ".join(["Ngemil sambil nugas di kos itu enak banget kalau camilannya renyah"] * 1) + \
+IG_BAIK = "**Variasi A – Storytelling**\n" + " ".join(["Ngemil sambil nugas di kos itu enak banget kalau camilannya enak"] * 1) + \
     " dan pedasnya bisa kamu pilih sendiri dari level 1 sampai 5 sesuai nyali. " + \
     "Keripik singkong pedas ukuran 200 gram cuma Rp15.000 per bungkus, atau ambil 3 bungkus Rp40.000 untuk dibagi bareng teman kos. " + \
     "Cocok menemani begadang, rapat kelompok, sampai nobar akhir pekan di Jogja. Pilih levelmu, lalu pesan lewat WA 0812-2233-4455 atau DM kami sekarang. Siapa tahu levelmu naik terus. Ajak teman sekelas, sekamar, dan sekelompok supaya ngemilnya makin seru. Jangan lupa siapkan minum dingin di samping kamu.\n" \
@@ -68,6 +68,21 @@ class UjiCaption(unittest.TestCase):
     def test_kelangkaan_disebut_pengguna_lulus(self):
         kode, out = jalan("cek_fakta.py", "--teks", "Stok terbatas, pesan sebelum kehabisan.",
                           "--fakta", FAKTA + ", stok terbatas, sebelum kehabisan")
+        self.assertEqual(kode, 0, out)
+
+    def test_v114_jebakan_jamu_klaim_halus_dan_karangan_gagal(self):
+        fakta = "jamu kunyit asam botol 250 ml Rp12.000, order via DM"
+        for kalimat in ("Bantu jaga daya tahan tubuh & bikin badan lebih enteng", "Jaga pencernaan tetap nyaman",
+                        "Biar badan tetep fit", "Jaga stamina tiap hari",
+                        "Dibuat fresh, tanpa pengawet", "Langsung dari dapur sendiri", "Cocok buat stok mingguan",
+                        "Stok terbatas, langsung order ya!", "Khusus hari ini", "Hari ini ada promo",
+                        "Rasa gurih dan pedasnya kerasa di setiap gigitan"):
+            kode, out = jalan("cek_fakta.py", "--teks", kalimat, "--fakta", fakta)
+            self.assertEqual(kode, 2, kalimat + "\n" + out)
+
+    def test_v114_caption_pengganti_aman_lulus(self):
+        kode, out = jalan("cek_fakta.py", "--teks", "Teman santai sore, jamu kunyit asam botol 250 ml Rp12.000. Pesan lewat DM. Bahan: [isi: bahan].",
+                          "--fakta", "jamu kunyit asam botol 250 ml Rp12.000, order via DM")
         self.assertEqual(kode, 0, out)
 
     def test_fb_di_bawah_50_kata_gagal(self):

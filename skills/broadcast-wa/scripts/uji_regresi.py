@@ -241,6 +241,20 @@ class Uji(unittest.TestCase):
         r, _ = jalankan(k, dasar + "Khusus hari ini!" + akhir, "--fakta", fakta + ". Khusus hari ini saja")
         self.assertEqual(r.returncode, 0, r.stderr)
 
+    def test_v1010_draf_jalur_penolakan_cek_fakta(self):
+        """Draf teks tanpa file kontak (jalur penolakan) tetap dicek lewat cek_fakta.py."""
+        import subprocess
+        skrip = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cek_fakta.py")
+        fakta = "Bolu Pandan Rp 39.000 (normal Rp 45.000), Toko Kue Bu Ani"
+
+        def cek(teks):
+            return subprocess.run([sys.executable, skrip, "--teks", teks, "--fakta", fakta, "--abaikan", "jam"],
+                                  capture_output=True, text=True, encoding="utf-8")
+        for karang in ("Hari ini ada promo bolu pandan.", "Khusus hari ini, bolu pandan Rp 39.000.",
+                       "Pesan sebelum kehabisan ya.", "Bolu favorit pelanggan, empuk dan fresh."):
+            self.assertEqual(cek(karang).returncode, 2, karang)
+        aman = cek("Halo {sapaan} {nama}, Bolu Pandan Rp 39.000 (normal Rp 45.000) dari Toko Kue Bu Ani. [isi: periode promo]")
+        self.assertEqual(aman.returncode, 0, aman.stdout)
 
 
 class UjiSingkatanFlag(unittest.TestCase):
