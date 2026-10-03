@@ -1,11 +1,17 @@
 ---
 name: broadcast-wa
-description: Membuat pesan broadcast WhatsApp promosi yang personal ({nama}, {sapaan}) dalam 3–5 variasi, lengkap dengan teks berhenti (opt-out) wajib, saran jadwal kirim bertahap, pengingat UU PDP, dan — bila ada file kontak CSV — daftar kirim siap pakai yang hanya berisi kontak yang setuju plus link wa.me per kontak. Gunakan saat pengguna minta pesan broadcast/blast WA, promo lewat WhatsApp, atau info promo ke pelanggan (WhatsApp broadcast, WA marketing message, bulk message). Bukan untuk membalas chat satu pelanggan (balas-chat-cs) atau menagih utang (tagih-piutang).
+description: Membuat pesan broadcast WhatsApp promosi yang personal ({nama}, {sapaan}) dalam 3–5 variasi, lengkap dengan teks berhenti (opt-out) wajib, saran jadwal kirim bertahap, pengingat UU PDP, dan — bila ada file kontak CSV — daftar kirim siap pakai yang hanya berisi kontak yang setuju plus link wa.me per kontak. Gunakan saat pengguna minta pesan broadcast/blast WA, promo lewat WhatsApp, atau info promo ke pelanggan (WhatsApp broadcast, WA marketing message, bulk message). Berlaku juga saat permintaan ditolak (kontak tanpa izin/database beli): draf pesan yang tetap ditulis wajib lolos cek fakta dan tanpa klaim/urgensi karangan ("Khusus hari ini", "sebelum kehabisan", "stok terbatas"). Bukan untuk membalas chat satu pelanggan (balas-chat-cs) atau menagih utang (tagih-piutang).
 ---
 
 # Broadcast WA
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+## ATURAN WAJIB (berlaku di SEMUA jalur, termasuk saat menolak permintaan)
+
+1. Setiap draf teks pesan yang ditulis, **juga di jalur penolakan tanpa file kontak** (database beli, nomor tanpa izin) dan draf "siap dipakai nanti", WAJIB lolos `python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file pesan.txt --fakta-file fakta.txt --abaikan jam` (`HASIL: LULUS`) sebelum ditampilkan.
+2. DILARANG menulis sifat produk/rasa/tekstur ("empuk", "fresh", "favorit"), urgensi/kelangkaan ("Khusus hari ini", "Hari ini ada promo", "sebelum kehabisan", "stok terbatas"), periode, atau layanan yang tidak diberikan pengguna. Pakai `[isi: periode promo]` atau tanyakan. Hanya angka & frasa dari pengguna.
+3. Jalur penolakan: tolak daftar kirim, jelaskan UU PDP singkat, tawarkan cara kumpulkan izin, lalu bila menulis draf pakai hanya fakta pengguna + placeholder.
 
 ## Tujuan
 Membantu pemilik usaha mengirim promo lewat WhatsApp yang terasa personal, tidak mengganggu, dan patuh
