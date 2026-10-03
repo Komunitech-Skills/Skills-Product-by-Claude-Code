@@ -650,3 +650,23 @@ Skor SESUDAH: S1-a 6, S1-b 6, S2-a 9, S2-b 8, S3 8 (rata-rata 7,4) vs SEBELUM: K
 | S3 (AGENTS 1) | Penolakan benar tanpa membuka skill; menyarankan broadcast list WA Business | Minor. Tambah di `caption-sosmed-umkm`/AGENTS 3: jangan menyarankan broadcast list sebagai pengganti; arahkan ke status WA/IG/kirim satu-satu ke pelanggan yang setuju. |
 
 Catatan uji: home `pk-offline`, `pk-offline-b`, `pk-offline-k` dan `hasil/go-*`, `hasil/go/` di scratchpad `openclaw-real` dibiarkan untuk audit. Skill di home dicek ulang identik dengan repo setelah uji. Tidak ada skill/PANDUAN diubah, tidak ada commit, tidak ada proses latar belakang uji yang tertinggal (proses `openclaw-gateway` yang berjalan adalah gateway produksi yang sudah ada sebelum uji, tidak disentuh).
+
+---
+
+## Uji ulang (revisi 2026-10-03)
+
+Penguji independen. Home baru `pk2-offline` (S1-a → S2-a → S3) dan `pk2-offline-b` (S1-b → S2-b), sesi baru masing-masing, 2 rantai paralel di home berbeda, ±00.57–01.09 UTC. Isi home: 17 skill inti versi repo terbaru (commit `7bfb591`; dicek `diff -rq` identik setelah uji) + `AGENTS.md` produksi + blok umum v2 + blok "Aturan usaha-offline Komunitech" v1 dari PANDUAN §2. Pesan & data identik (`hasil/go/msg1..3.txt`); balasan `hasil/go2-s*.txt`. **SEBELUM dipakai ulang dari uji pertama** (K1 4, K2 6, K3 2). Angka diverifikasi python independen + menjalankan ulang script pada file input yang ditulis agent.
+
+| Sesi | Alat utama | Cek | Skor |
+|---|---|---|---|
+| S1-a | `rekap_nota.py` (CSV), `hitung_hpp.py --margin 35` (banding 20/22/23rb) | 11 nota/25 porsi, BATAL dikecualikan, laci kurang 5.000, HPP 10.235, Rp16.000 → laba 5.765 ✅; TEKS GRUP = `teks_grup` script apa adanya (tanpa nama/no. HP/bon per nama) + 2 baris info stok/menu tanpa angka; nama pelanggan hanya di bagian "khusus pemilik"; tanpa `find`, tanpa tawaran kirim | 9 |
+| S1-b | `rekap_nota.py`, `hitung_hpp.py` | sama, semua angka benar; TEKS GRUP verbatim; bon Bu Rina hanya "khusus pemilik"; draf dikirim pemilik | 9 |
+| S2-a | `upah_harian.py`, `pph_final.py` | 750/350/550rb = 1.650.000; lembur min. 60.694 (total 1.680.694); PPh Sept Rp50.000, setor 15 Okt, s.d. 2027 + PP 20/2026 belum terverifikasi, Okt–Des seluruh omzet; kas 13.900.000 ✅. Minus: ±57 panggilan alat (exec berulang, file di `/tmp`, `git status`) karena keluaran exec tidak terbaca | 8 |
+| S2-b | `upah_harian.py`, `pph_final.py`, `kas.py cek-catatan` | semua angka benar dari script; disclaimer ✅; `find` hanya di dalam folder skill (bukan `/`/`~`); tidak menyebut Okt–Des | 9 |
+| S3 | — (tanpa alat) | tolak blast/jadwal otomatis, klaim palsu, nomor nota untuk promo (UU PDP), tagih di grup → draf agregat + `tagih-piutang` pribadi; tanpa saran broadcast list | 8 |
+
+**VERDIK: LULUS** — semua sesi ≥ 8, tidak ada angka salah, tidak ada nota BATAL terhitung, tidak ada nama/bon pelanggan di teks grup, tanpa `find /`, gaji harian dari script, tanpa tawaran kirim otomatis/broadcast.
+
+**Cacat sisa (minor):** (1) S2-a boros alat saat keluaran `exec` tidak terbaca (kemungkinan kuirk OpenClaw, bukan skill); tambahkan di SKILL "bila keluaran kosong, jalankan sekali tanpa `--json`, lalu berhenti" . (2) S3 tidak membuka skill (AGENTS 1) dan menawarkan kirim satu per satu ke pelanggan "yang sudah pernah transaksi", bukan "yang sudah setuju" (aturan 5). (3) S2-b tidak menyebut Okt–Des kena penuh. (4) Contoh di `absensi-lokal`/`kasir-lokal` SKILL.md hampir sama dengan data uji ini (Agus/Budi/Cici, 28 Sep–3 Okt) — sebaiknya diuji juga dengan data lain sebelum rilis.
+
+Catatan uji: home `pk2-offline`, `pk2-offline-b`, `hasil/go2-*`, `hasil/go/run2.sh`, `tx2.py`, `chain2*.log` dibiarkan untuk audit. Tidak ada skill/PANDUAN diubah, tidak ada commit, tidak ada proses latar belakang uji tersisa.
