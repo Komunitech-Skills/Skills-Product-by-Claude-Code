@@ -141,3 +141,16 @@ Tidak ada angka salah; nilai tambah jelas (semua uang dari script dengan dasar P
 | `tender-checklist` | Baik | — |
 
 Catatan uji: home `pk-kons`, `pk-kons-k`, `hasil/gk/`, `hasil/gk-*` di scratchpad `openclaw-real` dibiarkan untuk audit. Skill di home dicek identik dengan repo setelah uji. Tidak ada skill/PANDUAN diubah, tidak ada commit, tidak ada proses latar belakang uji tersisa (proses `openclaw-gateway` yang berjalan adalah gateway produksi yang sudah ada sebelum uji, tidak disentuh).
+
+## Uji ulang (revisi 2026-10-03)
+
+Repo `cac6293`; home `pk2-kons`/`pk2-kons-b` (18 skill + blok umum & konsultan); pesan identik.
+
+- **S2a:** timeout model (800 dtk), tanpa balasan, alat bersih; diganti S2c.
+- **S2b 9, S2c 9:** perjanjian-sederhana + script denda; denda 10%/hari diperingatkan + alternatif; logo/testimoni ditolak + draf izin; "bukan nasihat hukum".
+- **S1 9:** angka cocok python; nomor INV-RDN-0912 ikut pola.
+- Tanpa `find /`, kill, cek config. S3 putaran 1 = 9.
+
+**VERDIK: LULUS.**
+
+Cacat sisa (minor): laporan klien memuat urusan tagihan; path `/opt/ochome/...` tampil di chat.
