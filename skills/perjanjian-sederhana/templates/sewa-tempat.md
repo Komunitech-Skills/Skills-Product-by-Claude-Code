@@ -3,7 +3,7 @@ PANDUAN AGENT (hapus blok ini dari hasil akhir)
 Jenis: sewa tempat usaha (kios, ruko, lapak, rumah untuk usaha, gudang, booth).
 PIHAK PERTAMA = pemilik/yang menyewakan. PIHAK KEDUA = penyewa.
 Info wajib: identitas kedua pihak, alamat & luas objek, bukti kepemilikan (jenis & nomor sertifikat atau dasar hak menyewakan), peruntukan usaha, jangka waktu, harga sewa & cara bayar, uang jaminan (deposit), siapa bayar listrik/air/PBB/iuran, kota sengketa.
-Default: sewa 1 tahun dibayar penuh di muka; deposit 1 bulan sewa dikembalikan 14 hari setelah serah terima kembali; listrik/air/iuran lingkungan ditanggung penyewa; PBB ditanggung pemilik; renovasi harus izin tertulis.
+Default: sewa 1 tahun dibayar penuh di muka; deposit 1 bulan sewa dikembalikan 14 hari setelah serah terima kembali; listrik/air/iuran lingkungan ditanggung penyewa; PBB ditanggung pemilik; renovasi harus izin tertulis. Kios pasar: iuran/retribusi pengelola pasar default ditanggung penyewa (Pasal 5); tulis pihak yang SAMA di daftar asumsi, jangan disebut di kewajiban pemilik.
 Peringatan wajib ditampilkan ke pengguna:
 - Jika yang menyewakan BUKAN pemilik di sertifikat → minta surat kuasa/izin pemilik; jika sewa ulang (sublet) → minta izin tertulis pemilik asli.
 - Jika objek harta bersama suami-istri → persetujuan tertulis pasangan pemilik.

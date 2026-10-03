@@ -123,6 +123,36 @@ def main():
             f.write("# PERJANJIAN SEWA\nPada hari ini, [isi: hari], tanggal [isi: tanggal] ...\n## Pasal 1\n")
         d = jalan(["cek", fi])
         cek("cek menandai [isi: tanggal] sebagai isian kosong", "[isi: tanggal]" in json.dumps(d, ensure_ascii=False), d)
+        # v1.0.5: konsistensi beban biaya (satu pihak per pos, tidak bertentangan antar pasal/asumsi)
+        dasar = ("# PERJANJIAN SEWA KIOS\n## Pasal 4\n### Hak dan Kewajiban PIHAK PERTAMA\n(2) PIHAK PERTAMA wajib:\n"
+                 "   a. menanggung perbaikan besar yang bukan akibat kesalahan PIHAK KEDUA;\n"
+                 "## Pasal 5\n### Hak dan Kewajiban PIHAK KEDUA\n(2) PIHAK KEDUA wajib:\n"
+                 "   b. membayar listrik, air, dan iuran pengelola pasar selama masa sewa;\n"
+                 "### Asumsi dari template\n")
+        kasus = {
+            "konflik": (dasar + "- PBB/iuran pengelola pasar ditanggung pemilik (Pasal 4).\n", True),
+            "konsisten": (dasar + "- Iuran pengelola pasar ditanggung penyewa (Pasal 5).\n", False),
+            "masing2": (dasar + "- Biaya keamanan ditanggung masing-masing PIHAK PERTAMA dan PIHAK KEDUA.\n", False),
+            "listrik_dua": (dasar + "(3) Biaya listrik dibayar oleh PIHAK PERTAMA.\n", True),
+        }
+        for nama, (isi, harap) in kasus.items():
+            fk = os.path.join(tmp, "beban_" + nama + ".md")
+            with open(fk, "w", encoding="utf-8") as fh:
+                fh.write(isi)
+            d = jalan(["cek", fk])
+            ada = any("bertentangan" in m for m in d["masalah"])
+            cek("beban biaya {}: konflik={}".format(nama, harap), ada == harap, d["masalah"])
+        d = jalan(["cek", os.path.join(tmp, "beban_konflik.md")])
+        cek("konflik menyebut iuran pasar", any("iuran/retribusi pasar" in m for m in d["masalah"]), d["masalah"])
+        cek("perbaikan besar ke PIHAK PERTAMA (bukan pihak yang disebut di anak kalimat)",
+            d["beban_biaya"].get("perbaikan besar") == ["PIHAK PERTAMA"], d["beban_biaya"])
+        d = jalan(["cek", os.path.join(TEMPLATES, "sewa-tempat.md")])
+        cek("template sewa-tempat konsisten", not any("bertentangan" in m for m in d["masalah"]) and
+            d["beban_biaya"].get("PBB") == ["PIHAK PERTAMA"] and d["beban_biaya"].get("listrik") == ["PIHAK KEDUA"],
+            d["beban_biaya"])
+        for n in sorted(os.listdir(TEMPLATES)):
+            d = jalan(["cek", os.path.join(TEMPLATES, n)])
+            cek("template tanpa konflik beban: " + n, not any("bertentangan" in m for m in d["masalah"]), d["masalah"])
         kosong = os.path.join(tmp, "kosong.md")
         open(kosong, "w").close()
         jalan(["cek", kosong], kode=1)

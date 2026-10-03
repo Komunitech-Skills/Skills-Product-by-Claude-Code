@@ -435,6 +435,90 @@ POLA_BAHAYA = [
 ]
 
 
+# Pos biaya yang wajib dibebankan ke SATU pihak saja (v1.0.5). Urutan penting: pos spesifik dulu.
+POS_BIAYA = [
+    ("iuran/retribusi pasar", r"(?:iuran|retribusi)(?:\s+\w+){0,2}\s+pasar|retribusi"),
+    ("iuran lingkungan", r"iuran\s+(?:lingkungan|rt|rw|warga)"),
+    ("iuran (lainnya)", r"\biuran\b"),
+    ("listrik", r"\blistrik\b"),
+    ("air", r"\bair\b|\bpdam\b"),
+    ("internet", r"\binternet\b|\bwifi\b"),
+    ("kebersihan", r"\bkebersihan\b|\bsampah\b"),
+    ("keamanan", r"\bkeamanan\b"),
+    ("PBB", r"\bpbb\b|pajak bumi"),
+    ("perbaikan besar", r"perbaikan\s+besar"),
+    ("perbaikan kecil", r"perbaikan\s+kecil"),
+]
+POLA_BEBAN = r"membayar|dibayar|menanggung|ditanggung|tanggungan|beban|atas biaya|biaya .* oleh"
+
+
+def _pihak_di(baris, sewa):
+    b = baris.lower()
+    ada = set()
+    if re.search(r"pihak\s+pertama", b):
+        ada.add("PIHAK PERTAMA")
+    if re.search(r"pihak\s+kedua", b):
+        ada.add("PIHAK KEDUA")
+    if sewa:
+        if re.search(r"\bpemilik\b|yang menyewakan", b):
+            ada.add("PIHAK PERTAMA")
+        if re.search(r"\bpenyewa\b", b):
+            ada.add("PIHAK KEDUA")
+    return ada
+
+
+def cek_kewajiban(teks):
+    """Cek konsistensi beban biaya: tiap pos (listrik, air, iuran, PBB, perbaikan) hanya ke satu pihak.
+
+    Baris dibaca satu per satu. Pihak = pihak yang disebut di baris itu, atau pihak dari konteks
+    "PIHAK X wajib:" / judul "Kewajiban PIHAK X" bila baris tidak menyebut pihak. Baris yang menyebut
+    kedua pihak atau "masing-masing"/"bersama" dilewati (tidak bisa dipastikan). Hasil: (peta, konflik).
+    """
+    sewa = bool(re.search(r"\bsewa\b", teks.lower()))
+    konteks = None
+    peta = {}
+    for no, baris in enumerate(teks.splitlines(), 1):
+        b = baris.lower()
+        if "tinjau pengacara" in b:
+            continue
+        if re.match(r"\s*#", baris):
+            pk = _pihak_di(baris, False) if "kewajiban" in b else set()
+            konteks = next(iter(pk)) if len(pk) == 1 else None
+            continue
+        m = re.search(r"(pihak\s+pertama|pihak\s+kedua)\s+wajib\s*:", b)
+        if m:
+            konteks = "PIHAK PERTAMA" if "pertama" in m.group(1) else "PIHAK KEDUA"
+            continue
+        if re.match(r"\s*\(\d+\)", baris):
+            konteks = None
+        if not re.search(POLA_BEBAN, b) and not (konteks and re.match(r"\s*[a-z]\.\s", b)):
+            continue
+        if re.search(r"masing-masing|bersama-sama|dibagi\s+(dua|rata)|patungan", b):
+            continue
+        if konteks and re.match(r"\s*[a-z]\.\s", b):
+            pihak = {konteks}  # butir "a. ..." di bawah "PIHAK X wajib:" -> subjeknya PIHAK X
+        else:
+            pihak = _pihak_di(baris, sewa)
+            if not pihak and konteks:
+                pihak = {konteks}
+        if len(pihak) != 1:
+            continue
+        pihak = next(iter(pihak))
+        sisa = b
+        for pos, pola in POS_BIAYA:
+            if re.search(pola, sisa):
+                peta.setdefault(pos, {}).setdefault(pihak, []).append(no)
+                sisa = re.sub(pola, " ", sisa)
+    konflik = []
+    for pos, per in peta.items():
+        if len(per) > 1:
+            konflik.append("Beban '{}' bertentangan: {}. Tetapkan satu pihak saja dan samakan di semua pasal "
+                           "serta daftar asumsi.".format(pos, "; ".join(
+                               "{} (baris {})".format(p, ", ".join(str(x) for x in nos)) for p, nos in sorted(per.items()))))
+    ringkas = {pos: sorted(per) for pos, per in peta.items()}
+    return ringkas, konflik
+
+
 def cari_nominal(teks):
     """Temukan pola 'Rp X (terbilang ...)' dan cek kecocokannya."""
     hasil = []
@@ -525,11 +609,14 @@ def cmd_cek(a):
     for pola, pesan in POLA_BAHAYA:
         if re.search(pola, isi_pasal):
             rujuk.append(pesan)
+    beban, konflik = cek_kewajiban(teks)
+    masalah.extend(konflik)
     if kosong:
         info.append("{} garis/titik isian (____ atau ........) ditemukan; pastikan memang untuk diisi tangan.".format(kosong))
     status = "SIAP DITINJAU" if not masalah and not rujuk else ("RUJUK PROFESIONAL" if rujuk else "PERLU PERBAIKAN")
     return {"file": os.path.basename(a.file), "status": status, "masalah": masalah, "rujuk_profesional": rujuk,
-            "info": info, "jumlah_pasal": len(nomor), "nominal_diperiksa": nominal}
+            "info": info, "jumlah_pasal": len(nomor), "nominal_diperiksa": nominal,
+            "beban_biaya": beban}
 
 
 # ---------------------------------------------------------------------------
@@ -586,6 +673,9 @@ def cetak_teks(perintah, h):
             if isi:
                 o.append(judul + ":")
                 o.extend("- " + x for x in isi)
+        if h.get("beban_biaya"):
+            o.append("Beban biaya per pos: " + "; ".join("{}: {}".format(k, " & ".join(v))
+                                                         for k, v in h["beban_biaya"].items()))
         if h["nominal_diperiksa"]:
             o.append("Nominal + terbilang diperiksa: {} (cocok {})".format(
                 len(h["nominal_diperiksa"]), sum(1 for n in h["nominal_diperiksa"] if n["cocok"])))

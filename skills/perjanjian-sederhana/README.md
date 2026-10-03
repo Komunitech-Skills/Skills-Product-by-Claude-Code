@@ -52,3 +52,8 @@ Tidak. Transaksi seperti jual beli tanah, investasi atau saham, kerja sama denga
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Tanggal penandatanganan tidak lagi diisi otomatis dengan tanggal hari ini; bila belum disebut, draf memuat `[isi: tanggal]`.
 - Nilai bawaan template (mis. denda keterlambatan 0,1%/hari maks. 5%) kini selalu dicantumkan sebagai asumsi yang perlu kamu konfirmasi.
+
+## Catatan revisi 1.0.5 (2026-10-03)
+- Naskah perjanjian lengkap kini selalu ditampilkan langsung di chat (dipecah rapi per pasal bila panjang) sehingga bisa disalin, tidak hanya disimpan sebagai file.
+- Ada pengecekan konsistensi biaya: listrik, air, iuran/retribusi pasar, PBB, dan perbaikan masing-masing ditanggung satu pihak dan sama di semua pasal maupun daftar asumsi. Pemeriksa draf otomatis menandai bila bertentangan.
+- Tetap: draf ini bukan nasihat hukum.
