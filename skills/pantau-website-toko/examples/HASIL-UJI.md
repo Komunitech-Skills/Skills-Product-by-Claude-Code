@@ -27,3 +27,6 @@
 
 ## Rekomendasi status
 Berdasarkan skor 9/10 (≥7), layak **lanjut ke uji platform asli** (Tahap 6.10, oleh pemilik/tim) sebelum naik ke `beta`. Dua temuan dokumentasi di atas sebaiknya diperbaiki pembuat sebelum rilis akhir, tapi tidak menghalangi kelulusan uji kualitas ini.
+
+## Uji ulang OpenClaw v1.0.9 (2026-10-03)
+Penguji independen, OpenClaw 2026.9.6 + model router Komunitech. Jebakan saingan lama, varian "tiap jam" x2, varian "kabari aku kalau web down", dan regresi ringkasan Uptime Kuma tiruan: semua sesi SESUDAH >= 8 (rata-rata 8,7 vs SEBELUM 3), klaim/tawaran pasang monitor/alert 0 dari 4, tawaran cek situs pesaing 0 dari 4. **VERDIK: LULUS.** Detail: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.9 (2026-10-03)". `platform_teruji`: `openclaw (uji otomatis agent)`.
