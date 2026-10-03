@@ -796,7 +796,11 @@ def selesai(a, baris, ringkasan, hitung, kunci, mulai, akhir, fakta, pemisah):
     for x in temuan:
         print(x)
     if fakta is None:
-        print("CEK: --fakta-file tidak diberikan; klaim karangan belum dicek.")
+        # v1.0.7: cek fakta wajib - tanpa salinan pesan pengguna, karangan produk/harga tidak bisa ditangkap.
+        print("GAGAL: --fakta-file tidak diberikan; klaim karangan belum dicek. Simpan pesan pengguna persis "
+              "sebagai fakta.txt lalu jalankan perintah yang sama dengan --fakta-file fakta.txt.")
+        gagal.append("fakta-wajib")
+        temuan.append("GAGAL: fakta-wajib")
     print("HASIL: {} ({} GAGAL, {} CEK)".format("GAGAL" if gagal else "LULUS", len(gagal), len(temuan) - len(gagal)))
     if gagal:
         print("Perbaiki HANYA baris/kalimat yang GAGAL di file isian/catatan, lalu jalankan perintah yang sama sekali lagi.")

@@ -186,6 +186,22 @@ class Uji(unittest.TestCase):
                       "sudah buka lagi"):
             self.assertIn(frasa, r.stdout)
 
+    def test_selesai_tanpa_fakta_gagal(self):
+        """v1.0.7: --selesai tanpa --fakta/--fakta-file = GAGAL (cek karangan wajib)."""
+        folder = tempfile.mkdtemp()
+        r = jalan(*(self.ARG_SARI + ["--isi", self.isian_sari(), "--catatan", self.tulis("Tips: batch video."),
+                                     "--selesai", folder]))
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("--fakta-file tidak diberikan", r.stdout)
+        self.assertIn("HASIL: GAGAL", r.stdout)
+
+    def test_skill_md_aturan_wajib(self):
+        """v1.0.7: SKILL.md memuat ATURAN WAJIB di awal (fakta hanya dari pengguna, ringkas default, bukan /tmp)."""
+        sk = open(os.path.join(os.path.dirname(SCRIPT), "..", "SKILL.md"), encoding="utf-8").read()
+        self.assertLess(sk.index("ATURAN WAJIB"), sk.index("## Tujuan"))
+        for frasa in ("[isi:", "/tmp", "fakta.txt", "ringkas"):
+            self.assertIn(frasa, sk.split("## Tujuan")[0])
+
     def test_selesai_cek_tanggal_di_catatan(self):
         r, _ = self.selesai(self.isian_sari(), "Tips: Idulfitri ±19 Mar 2027 jangan jualan.")
         self.assertEqual(r.returncode, 2)
