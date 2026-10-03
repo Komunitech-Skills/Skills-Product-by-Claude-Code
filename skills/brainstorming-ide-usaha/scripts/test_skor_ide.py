@@ -727,6 +727,49 @@ class TesKewajaranHarga(unittest.TestCase):
             self.assertEqual(modul.main(["rencana", "--modal-unit", "14rb"]), 1)
 
 
+class TesKonsistensiV107(unittest.TestCase):
+    """v1.0.7: saran harga <= harga lama = efektif turun harga (jangan "bukan turun harga"); target uji
+    dikaitkan ke gap omzet; SKILL.md memuat ATURAN WAJIB & larangan /tmp."""
+
+    def test_paket_sama_dengan_pesaing_ditandai_turun_harga(self):
+        r = modul.hitung_rencana(75000, 52000, 0, 300000, 14, isi_per_unit=15, satuan="kg",
+                                 harga_lama=6000, harga_pesaing=5000)
+        self.assertEqual(r["harga_per_satuan"], 5000)
+        self.assertEqual(len(r["catatan_konsistensi"]), 1)
+        self.assertIn("TURUN HARGA", r["catatan_konsistensi"][0])
+        self.assertIn("kanibalisasi", r["catatan_konsistensi"][0])
+
+    def test_harga_di_atas_acuan_tidak_ada_catatan_turun_harga(self):
+        r = modul.hitung_rencana(30000, 15000, 0, 0, 10, isi_per_unit=1, harga_lama=25000)
+        self.assertEqual(r["catatan_konsistensi"], [])
+
+    def test_gap_omzet(self):
+        r = modul.hitung_rencana(75000, 52000, 0, 300000, 14, gap_omzet=2700000)
+        self.assertEqual(r["omzet_bulan_proyeksi"], 4500000)   # 14 x 75.000 = 1.050.000; x 30/7
+        self.assertEqual(r["tutup_gap_persen"], 166.7)         # 4.500.000 / 2.700.000
+        self.assertIn("gap omzet", r["catatan_konsistensi"][0])
+        with self.assertRaises(modul.DataTidakValid):
+            modul.hitung_rencana(75000, 52000, gap_omzet=0)
+
+    def test_cli_konsistensi(self):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc = modul.main(["rencana", "--harga", "75rb", "--modal-unit", "52rb", "--biaya-uji", "300rb",
+                             "--target", "14", "--isi-per-unit", "15", "--satuan", "kg", "--harga-lama", "6rb",
+                             "--harga-pesaing", "5rb", "--gap-omzet", "2,7jt"])
+        self.assertEqual(rc, 0)
+        self.assertIn("KONSISTENSI:", buf.getvalue())
+        self.assertIn("TURUN HARGA", buf.getvalue())
+
+    def test_skill_md_aturan_wajib(self):
+        folder = Path(__file__).resolve().parent.parent
+        sk = (folder / "SKILL.md").read_text(encoding="utf-8")
+        awal = sk.split("## Tujuan")[0]
+        self.assertIn("ATURAN WAJIB", awal)
+        for frasa in ("/tmp", "[isi:", "KONSISTENSI", "--gap-omzet"):
+            self.assertIn(frasa, awal)
+
+
 class TesSkillTanpaPasalPidanaUsang(unittest.TestCase):
     """v1.0.6: SKILL.md tidak mengutip pasal KUHP lama dan melarang pasal pidana tanpa diminta."""
 

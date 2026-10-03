@@ -90,6 +90,11 @@ kumulatif Hari 3/5/7 — dengan rumus tertulis. File kerja hanya disimpan di fol
 Indonesia (status/grup WA, PO + QRIS, titip warung, tanggal gajian). AI tidak lagi
 menyebut angka imbal hasil karangan pada kasus investasi/bagi hasil.
 
+## Catatan revisi 1.0.7 (2026-10-03)
+Dari uji ulang OpenClaw: saran paket dibilang "bukan turun harga" padahal harganya sama dengan pesaing, target uji tidak nyambung ke kekurangan omzet, dan file sempat ditulis ke /tmp. Perbaikan:
+- "Aturan wajib" di awal SKILL.md: fakta hanya dari kamu, angka & skor dari script, tanpa file di /tmp, plus daftar nilai tambah (skor berbobot, rencana uji 7 hari berangka, tanda risiko/legal).
+- `rencana` kini mencetak **KONSISTENSI**: bila harga per satuan sama/lebih murah dari harga lama atau pesaing, ditandai turun harga (sebut dampak ke pelanggan lama); dengan `--gap-omzet`, target uji dihubungkan ke kekurangan omzet per bulan.
+
 ## Catatan revisi 1.0.6 (2026-10-01)
 Dari uji ulang OpenClaw: saran paket laundry keluar Rp8.000–9.000/kg padahal harga
 sendiri Rp6.000/kg dan pesaing Rp5.000/kg, dan pada kasus money game AI mengutip pasal

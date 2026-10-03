@@ -797,6 +797,8 @@ def buat_parser():
                        help="Harga eceran Anda sendiri per satuan dasar saat ini (acuan kewajaran)")
     p_ren.add_argument("--harga-pesaing", type=_tipe_rupiah_cli, default=None,
                        help="Harga pesaing per satuan dasar yang disebut pengguna (acuan pasar)")
+    p_ren.add_argument("--gap-omzet", type=_tipe_rupiah_cli, default=None,
+                       help="Opsional: kekurangan omzet per BULAN yang disebut pengguna; target uji dikaitkan ke gap ini")
     p_ren.set_defaults(func=cmd_rencana)
 
     return p
