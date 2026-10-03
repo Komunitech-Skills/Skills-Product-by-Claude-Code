@@ -80,6 +80,14 @@ gagal diambil, skill memakai data cache terakhir dengan peringatan jelas (jam da
 Anda diberi tahu apa adanya, bukan diberi angka palsu.
 
 ## Riwayat versi
+- **Catatan revisi 1.0.7 (2026-10-03)** — dari uji gabungan paket solusi VIP kripto-keuangan:
+  (1) saat alert dipasang, script menampilkan status **setiap** ambang — "SUDAH TERLEWATI"
+  bila harga sekarang sudah melewati ambang Anda (mis. BTC sudah di bawah ambang bawah), atau
+  "belum terlewati" + jaraknya; (2) angka ambang **hanya dari Anda** — AI tidak lagi memakai
+  default ±5% atau mengarang ambang; koin yang hanya untuk ringkasan pagi boleh tanpa ambang;
+  (3) tautan berita redirect Google News diganti URL artikel asli, atau ditandai "tautan asli
+  belum didapat"; (4) bila jadwal belum bisa dipasang, AI cek sekali lalu memberi draf jadwal —
+  tidak menyelidiki disk/config/gateway sendiri.
 - **Catatan revisi 1.0.6 (2026-10-01)** — dari uji ulang OpenClaw: (1) **perbaikan pajak**:
   estimasi PPh final kini **hanya dihitung script jurnal** dan hanya atas **nilai transaksi
   JUAL** sesuai PMK 50/2025 (0,21% di exchange dalam negeri berizin OJK, 1% di exchange luar

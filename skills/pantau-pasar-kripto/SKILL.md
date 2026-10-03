@@ -94,10 +94,11 @@ Kalau member belum punya `kripto/PANTAU.md`, **tanyakan sekali** (bernomor, maks
 4. Kata kunci berita yang ingin dipantau? (boleh kosong = nama koin saja)
 5. Ringkasan pagi dikirim jam berapa & lewat kanal apa (Telegram/WhatsApp)?
 
-Kalau pengguna ingin cepat: pakai default **ambang ±5% (naik & turun) dari 24 jam
-terakhir, ringkasan jam 07:00 WIB, kanal Telegram**, dan sebutkan bahwa ini cuma titik
-awal yang masuk akal -- angka ambang sepenuhnya **diatur sendiri oleh member**, kapan pun
-bisa diubah dengan mengedit `kripto/PANTAU.md` lalu minta diterjemahkan ulang.
+**Ambang hanya dari pengguna** -- jangan pernah mengisi angka ambang sendiri (juga bukan
+"default teknis"), karena angka ambang = sinyal. Koin yang disebut tanpa ambang (mis. hanya
+untuk ringkasan pagi) ditulis `"tanpa_ambang": true` (hanya harga). Bila pengguna ingin
+notifikasi tetapi belum memberi angka, tanyakan angkanya; yang boleh di-default hanya jam
+ringkasan 07:00 WIB & kanal Telegram (sebutkan asumsinya).
 
 ### 2. Jurnal trading (`kripto/JURNAL.csv`)
 Milik member, format di `templates/JURNAL.csv` (lihat juga docstring
@@ -116,7 +117,12 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    (`idr`/`usd`), `ambang_naik_persen`/`ambang_turun_persen`, `harga_acuan` (kalau member
    mengisi), dan/atau `ambang_harga_di_atas`/`ambang_harga_di_bawah`. File ini yang
    nantinya dipanggil otomatis oleh jadwal -- **tunjukkan isinya ke member** untuk
-   dikonfirmasi sebelum lanjut, supaya salah terjemahan ketahuan.
+   dikonfirmasi sebelum disimpan, supaya salah terjemahan ketahuan. Koin tanpa ambang dari
+   pengguna: `"tanpa_ambang": true` (jangan diisi angka sendiri).
+   **Saat memasang/mengubah ambang, selalu jalankan Langkah A.2 sekali** dan tampilkan
+   harga terkini + `status_ambang` tiap koin: bila ada yang **SUDAH TERLEWATI** (mis. BTC
+   sudah di bawah ambang bawah yang baru diminta), katakan terang-terangan di awal balasan
+   bahwa notifikasi itu akan langsung terpicu.
 2. Jalankan:
    ```bash
    python3 <folder-skill-ini>/scripts/cek_ambang.py \
@@ -160,7 +166,10 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    OpenClaw, atau alat browsing di platform lain), cari berita terbaru untuk tiap kata
    kunci di `PANTAU.md`, ambil **maksimal 3-5 judul paling relevan hari itu**, dan
    **selalu sertakan URL artikel lengkap** (`https://.../judul-artikel`) per judul -- bukan
-   beranda situs, bukan "via Google News"; berita tanpa URL artikel: buang. Kalau **tidak ada** akses pencarian
+   beranda situs, bukan "via Google News"; berita tanpa URL artikel: buang. Tautan redirect
+   agregator (`news.google.com/rss/articles/...`, `news.google.com/...`) **bukan** URL
+   sumber: ikuti/buka ke URL artikel asli di situs media; bila gagal, tulis nama media +
+   judul + tanggal dan tandai *"(tautan asli belum didapat)"* -- jangan menempel redirect. Kalau **tidak ada** akses pencarian
    web, katakan itu jujur: *"Ringkasan berita tidak bisa dibuat -- agent ini tidak punya
    akses pencarian web saat ini. Harga & ambang tetap di bawah."* -- jangan menulis
    ringkasan berita dari ingatan tanpa tautan.
@@ -218,7 +227,8 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    ```bash
    python3 <folder-skill-ini>/scripts/hitung_pl_jurnal.py --jurnal kripto/JURNAL.csv
    ```
-   (`--hari-ini YYYY-MM-DD` opsional, untuk mencocokkan pengingat pada tanggal tertentu.
+   (Baca JSON langsung dari stdout; bila perlu file, simpan di `kripto/`, bukan `/tmp`.
+   `--hari-ini YYYY-MM-DD` opsional, untuk mencocokkan pengingat pada tanggal tertentu.
    `--periode bulan-ini|tahun-ini` atau `--dari YYYY-MM-DD --sampai YYYY-MM-DD` opsional,
    untuk membatasi transaksi JUAL yang dijumlahkan ke `realized_per_koin`/
    `total_realized_pl` -- mis. saat member minta "untung/rugi bulan ini"; FIFO & cost
@@ -282,7 +292,7 @@ konfirmasi → buat 2 jadwal (ringkasan pagi harian, cek ambang tiap jam) mengik
 `references/openclaw-jadwal.md` → uji sekali → jelaskan cara jeda/hapus.
 
 ## Batasan & penanganan error
-- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri. Cek kemampuan jadwal **satu kali** (mis. `automations list`); gagal/tidak tersedia → jelaskan, berikan draf jadwal (perintah + jam dari `references/openclaw-jadwal.md`) untuk dipasang pemilik/jasa setup Komunitech, lalu berhenti. **Dilarang:** `find /`, `locate`, `which`/mencari CLI di luar folder skill, `gateway config.get`, `openclaw doctor`, menanyakan isi `openclaw.json`/status kanal ke tool atau agent sistem, mengubah config/gateway/kanal, atau meminta token bot ke chat.
 - **Tidak ada API key exchange, tidak ada eksekusi order.** Kalau pengguna bersikeras
   minta ini, jelaskan: (1) berita/web yang dipakai agent bisa disusupi instruksi
   tersembunyi (*prompt injection*) yang mencoba memicu transaksi, (2) kesalahan model AI
@@ -290,6 +300,9 @@ konfirmasi → buat 2 jadwal (ringkasan pagi harian, cek ambang tiap jam) mengik
   exchange yang tersimpan di mesin yang juga membaca konten dari luar adalah risiko
   keamanan. Alternatif aman: fitur limit/stop order **bawaan aplikasi exchange resmi**
   (dieksekusi manual oleh member sendiri).
+- **Penolakan sinyal/auto-trade/broadcast** selalu memuat rujukan singkat (POJK 27/2024, cek
+  daftar PAKD berizin di ojk.go.id, lapor Satgas PASTI / Kontak OJK 157) dan diakhiri baris
+  disclaimer baku. Kunci/secret yang ditempel tidak diulang, sebagian maupun utuh.
 - **Sumber harga gagal/data basi:** `cek_ambang.py` tidak pernah mengarang angka. Kalau
   sumber langsung gagal, dipakai cache terakhir dengan peringatan jelas + jam datanya;
   kalau tidak ada cache sama sekali, koin itu ditandai "gagal_total" tanpa angka apa pun.

@@ -1248,5 +1248,81 @@ class UjiV106JamWib(unittest.TestCase):
         self.assertIn("wajib menyebut tanggal sumbernya", skill)
 
 
+class UjiV107StatusAmbang(unittest.TestCase):
+    """v1.0.7 -- uji gabungan paket 2026-10-03 S2: BTC (Rp1,51 M) sudah di bawah ambang
+    Rp1,6 M yang diminta pengguna tetapi tidak disebut; ambang SOL ±8% dikarang agent."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji_kripto107_")
+        self.cfg = os.path.join(self.tmp, "konfigurasi.json")
+        self.state = os.path.join(self.tmp, "state.json")
+        self.harga = os.path.join(self.tmp, "harga.json")
+        tulis_json(self.harga, {
+            "bitcoin_idr_coingecko": {"harga": 1510000000, "perubahan_24jam_persen": -1.2,
+                                      "jam_data": "2026-10-03T16:00:00+07:00", "sumber": "coingecko"},
+            "ethereum_idr_coingecko": {"harga": 48000000, "perubahan_24jam_persen": 2.1,
+                                       "jam_data": "2026-10-03T16:00:00+07:00", "sumber": "coingecko"},
+            "solana_idr_coingecko": {"harga": 3100000, "perubahan_24jam_persen": -0.5,
+                                     "jam_data": "2026-10-03T16:00:00+07:00", "sumber": "coingecko"},
+        })
+
+    def jalankan(self, koin):
+        tulis_json(self.cfg, {"koin": koin})
+        return jalankan_cek_ambang(["--konfigurasi", self.cfg, "--state", self.state,
+                                    "--harga-file", self.harga])
+
+    def test_101_ambang_bawah_sudah_terlewati_saat_pasang(self):
+        kode, out, err = self.jalankan([
+            {"kode": "BTC", "coingecko_id": "bitcoin", "mata_uang": "idr",
+             "ambang_harga_di_bawah": "1.600.000.000"}])
+        self.assertEqual(kode, 2, err)
+        d = json.loads(out)
+        self.assertIn("SUDAH TERLEWATI", d["koin"][0]["status_ambang"][0])
+        self.assertIn("SUDAH TERLEWATI", d["pesan_singkat"])
+        self.assertIn("Ambang SUDAH TERLEWATI saat ini: BTC", d["pesan_singkat"])
+        self.assertIn("AMBANG TERLEWATI", d["pesan_singkat"])  # kompatibel wrapper lama
+
+    def test_102_ambang_belum_terlewati_diberi_jarak(self):
+        kode, out, err = self.jalankan([
+            {"kode": "BTC", "coingecko_id": "bitcoin", "mata_uang": "idr",
+             "ambang_harga_di_bawah": 1400000000, "ambang_harga_di_atas": 1661000000},
+            {"kode": "ETH", "coingecko_id": "ethereum", "mata_uang": "idr", "ambang_naik_persen": 7}])
+        self.assertEqual(kode, 0, err)
+        d = json.loads(out)
+        st = d["koin"][0]["status_ambang"]
+        self.assertTrue(any("Ambang bawah Rp 1.400.000.000: belum terlewati" in t and "perlu turun 7,28%" in t
+                            for t in st), st)
+        self.assertTrue(any("Ambang atas Rp 1.661.000.000: belum terlewati" in t and "perlu naik 10,00%" in t
+                            for t in st), st)
+        self.assertIn("Ambang naik 7%: belum terlewati (perubahan sekarang +2,10%)", d["pesan_singkat"])
+        self.assertIn("Tidak ada ambang yang terlewati", d["pesan_singkat"])
+
+    def test_103_tanpa_ambang_eksplisit_boleh_dan_tidak_mengarang(self):
+        kode, out, err = self.jalankan([
+            {"kode": "SOL", "coingecko_id": "solana", "mata_uang": "idr", "tanpa_ambang": True}])
+        self.assertEqual(kode, 0, err)
+        d = json.loads(out)
+        self.assertEqual(d["koin"][0]["status_ambang"], [])
+        self.assertIn("ambang belum ditetapkan pengguna", d["pesan_singkat"])
+        self.assertNotIn("8%", d["pesan_singkat"])
+
+    def test_104_tanpa_ambang_tetap_ditolak_dan_minta_tanya_pengguna(self):
+        kode, out, _ = self.jalankan([{"kode": "SOL", "coingecko_id": "solana", "mata_uang": "idr"}])
+        self.assertEqual(kode, 1)
+        self.assertIn("HANYA dari pengguna", json.loads(out)["pesan"])
+        kode, out, _ = self.jalankan([{"kode": "SOL", "coingecko_id": "solana", "mata_uang": "idr",
+                                       "tanpa_ambang": True, "ambang_turun_persen": 8}])
+        self.assertEqual(kode, 1)
+
+    def test_105_skill_melarang_ambang_karangan_dan_redirect_berita(self):
+        with open(os.path.join(SKILL_DIR, "SKILL.md"), encoding="utf-8") as f:
+            skill = f.read()
+        self.assertIn("ambang hanya dari pengguna", skill.lower())
+        self.assertIn("news.google.com", skill)
+        self.assertIn("tautan asli belum didapat", skill)
+        self.assertIn("SUDAH TERLEWATI", skill)
+        self.assertNotIn("pakai default **ambang ±5%", skill)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
