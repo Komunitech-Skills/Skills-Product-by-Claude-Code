@@ -80,6 +80,11 @@ gagal diambil, skill memakai data cache terakhir dengan peringatan jelas (jam da
 Anda diberi tahu apa adanya, bukan diberi angka palsu.
 
 ## Riwayat versi
+- **Catatan revisi 1.0.8 (2026-10-03)** — dari uji ulang paket: (1) pemasangan jadwal kini
+  pasti — AI mencoba **sekali**; bila gagal, langsung memberi draf perintah jadwal siap tempel
+  (`scripts/draf_jadwal.py`) tanpa mencoba ulang atau mencari program di komputer Anda;
+  (2) berita dirapikan `scripts/rapikan_berita.py`: hanya judul dengan tautan artikel asli,
+  yang tanpa tautan dibuang atau ditandai "[tanpa tautan]" di akhir.
 - **Catatan revisi 1.0.7 (2026-10-03)** — dari uji gabungan paket solusi VIP kripto-keuangan:
   (1) saat alert dipasang, script menampilkan status **setiap** ambang — "SUDAH TERLEWATI"
   bila harga sekarang sudah melewati ambang Anda (mis. BTC sudah di bawah ambang bawah), atau

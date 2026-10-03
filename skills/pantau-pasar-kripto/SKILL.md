@@ -169,7 +169,11 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    beranda situs, bukan "via Google News"; berita tanpa URL artikel: buang. Tautan redirect
    agregator (`news.google.com/rss/articles/...`, `news.google.com/...`) **bukan** URL
    sumber: ikuti/buka ke URL artikel asli di situs media; bila gagal, tulis nama media +
-   judul + tanggal dan tandai *"(tautan asli belum didapat)"* -- jangan menempel redirect. Kalau **tidak ada** akses pencarian
+   judul + tanggal dan tandai *"(tautan asli belum didapat)"* -- jangan menempel redirect.
+   **Rapikan lewat script:** tulis kandidat ke `kripto/berita.json` (`[{"judul","url","media",
+   "tanggal"}]`) lalu `python3 <folder-skill-ini>/scripts/rapikan_berita.py kripto/berita.json`
+   (`--tandai` = butir tanpa tautan ditaruh di AKHIR berlabel "[tanpa tautan]"); tempel
+   hasilnya. Tanpa script: butir tanpa URL artikel asli tidak dimasukkan. Kalau **tidak ada** akses pencarian
    web, katakan itu jujur: *"Ringkasan berita tidak bisa dibuat -- agent ini tidak punya
    akses pencarian web saat ini. Harga & ambang tetap di bawah."* -- jangan menulis
    ringkasan berita dari ingatan tanpa tautan.
@@ -260,6 +264,20 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    `pl_bila_pph_belum_di_kolom_biaya`. SPT/kewajiban tahunan → konsultan pajak/DJP.
 
 ### E. Membuat jadwal otomatis (opsional, setelah A/B pertama kali berhasil manual)
+**Alur pasti (wajib, tanpa improvisasi):**
+1. Tunjukkan perintah + jam, minta "ya". Setelah "ya", coba buat jadwal **SATU kali**
+   (satu panggilan tool jadwal/`openclaw automations add`). Jangan cek status/daftar
+   berulang sebelum atau sesudahnya.
+2. Berhasil → uji sekali (§3 `references/openclaw-jadwal.md`) dan laporkan id jadwal.
+3. **Gagal / tool tidak tersedia / kanal belum siap → LANGSUNG berhenti.** Jangan mencoba
+   ulang, jangan mencari CLI/berkas (`find`, `locate`, `which`, `ls` di luar folder skill),
+   jangan memeriksa config/gateway. Jalankan
+   `python3 <folder-skill-ini>/scripts/draf_jadwal.py --cek-per-jam --jam-ringkasan HH:MM`
+   (opsi `--chat-id`, `--workspace` bila diketahui) dan tempel hasilnya apa adanya sebagai
+   draf siap tempel untuk pemilik/jasa setup Komunitech. Script tidak bisa dijalankan →
+   salin pola perintah dari `references/openclaw-jadwal.md` §2 dan §4.
+
+Rincian:
 Lihat `references/openclaw-jadwal.md` untuk perintah `openclaw automations` yang
 **terbukti** jalan di Gateway uji (bukan cuma `--help`): pola utama memakai `--command`
 menjalankan `scripts/cek_dan_lapor.py` (wrapper Python lintas OS yang menerjemahkan exit
@@ -292,7 +310,7 @@ konfirmasi → buat 2 jadwal (ringkasan pagi harian, cek ambang tiap jam) mengik
 `references/openclaw-jadwal.md` → uji sekali → jelaskan cara jeda/hapus.
 
 ## Batasan & penanganan error
-- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri. Cek kemampuan jadwal **satu kali** (mis. `automations list`); gagal/tidak tersedia → jelaskan, berikan draf jadwal (perintah + jam dari `references/openclaw-jadwal.md`) untuk dipasang pemilik/jasa setup Komunitech, lalu berhenti. **Dilarang:** `find /`, `locate`, `which`/mencari CLI di luar folder skill, `gateway config.get`, `openclaw doctor`, menanyakan isi `openclaw.json`/status kanal ke tool atau agent sistem, mengubah config/gateway/kanal, atau meminta token bot ke chat.
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri. Coba buat jadwal **satu kali** saja (Langkah E); gagal/tidak tersedia → langsung tempel hasil `scripts/draf_jadwal.py` untuk pemilik/jasa setup Komunitech, lalu berhenti (tanpa coba ulang). **Dilarang:** `find`, `locate`, `which`, `ls` di luar folder skill/mencari CLI, `gateway config.get`, `openclaw doctor`, menanyakan isi `openclaw.json`/status kanal ke tool atau agent sistem, mengubah config/gateway/kanal, atau meminta token bot ke chat.
 - **Tidak ada API key exchange, tidak ada eksekusi order.** Kalau pengguna bersikeras
   minta ini, jelaskan: (1) berita/web yang dipakai agent bisa disusupi instruksi
   tersembunyi (*prompt injection*) yang mencoba memicu transaksi, (2) kesalahan model AI

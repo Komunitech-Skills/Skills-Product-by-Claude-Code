@@ -1324,5 +1324,73 @@ class UjiV107StatusAmbang(unittest.TestCase):
         self.assertNotIn("pakai default **ambang ±5%", skill)
 
 
+import draf_jadwal  # noqa: E402
+import rapikan_berita  # noqa: E402
+
+
+class UjiV108JadwalDanBerita(unittest.TestCase):
+    """v1.0.8 -- uji ulang paket 2026-10-03: jadwal dicek 3-5 kali lalu `find /` mencari CLI;
+    berita tanpa tautan ikut ditampilkan."""
+
+    def test_106_draf_jadwal_siap_tempel_tanpa_mencari(self):
+        args = draf_jadwal.argparse.Namespace(cek_per_jam=True, jam_ringkasan="06:30", chat_id=None,
+                                              workspace=None, python="python3")
+        teks = draf_jadwal.susun(args)
+        self.assertIn('openclaw automations add "30 6 * * *"', teks)
+        self.assertIn('--cron "0 * * * *"', teks)
+        self.assertIn(os.path.join(SCRIPTS_DIR, "cek_dan_lapor.py"), teks)
+        self.assertIn('--tz "Asia/Jakarta"', teks)
+        self.assertIn("<ID chat Telegram pemilik>", teks)
+        self.assertNotIn("find ", teks)
+
+    def test_107_draf_jadwal_jam_rusak_dan_kosong(self):
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "draf_jadwal.py"),
+                               "--jam-ringkasan", "25:00"], capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 1)
+        self.assertNotIn("Traceback", proc.stderr)
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "draf_jadwal.py")],
+                              capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 1)
+        self.assertEqual(draf_jadwal.parse_jam("07.00 WIB"), (7, 0))
+
+    def test_108_berita_tanpa_url_asli_dibuang_atau_ditandai_di_akhir(self):
+        data = [
+            {"judul": "A", "url": "https://news.google.com/rss/articles/CBMiX", "media": "CoinDesk"},
+            {"judul": "B", "url": "https://www.coindesk.com/tech/2026/10/02/blast"},
+            {"judul": "C"},
+            {"judul": "D", "url": "https://coindesk.com/"},
+            {"judul": "b", "url": "https://www.coindesk.com/dupe"},
+        ]
+        sah, tanpa, n = rapikan_berita.rapikan(data)
+        self.assertEqual([b["judul"] for b in sah], ["B"])
+        self.assertEqual(tanpa, [])
+        self.assertEqual(n, 3)
+        sah, tanpa, n = rapikan_berita.rapikan(data, tandai=True)
+        teks = rapikan_berita.ke_teks(sah, tanpa, n)
+        self.assertNotIn("news.google.com", teks)
+        self.assertTrue(teks.startswith("1. B"))
+        self.assertIn("[tanpa tautan] A (CoinDesk)", teks)
+        self.assertLess(teks.index("https://www.coindesk.com"), teks.index("[tanpa tautan]"))
+
+    def test_109_berita_input_rusak_tanpa_traceback(self):
+        tmp = tempfile.mkdtemp(prefix="uji_berita_")
+        f = os.path.join(tmp, "b.json")
+        tulis_teks(f, "{bukan json")
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "rapikan_berita.py"), f],
+                              capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 1)
+        self.assertNotIn("Traceback", proc.stderr)
+        self.assertEqual(rapikan_berita.url_sah("ftp://x.com/a")[0], False)
+        self.assertEqual(rapikan_berita.url_sah("https://bit.ly/abc")[0], False)
+
+    def test_110_skill_alur_jadwal_satu_kali(self):
+        with open(os.path.join(SKILL_DIR, "SKILL.md"), encoding="utf-8") as f:
+            skill = f.read()
+        self.assertIn("coba buat jadwal **SATU kali**", skill)
+        self.assertIn("LANGSUNG berhenti", skill)
+        self.assertIn("draf_jadwal.py", skill)
+        self.assertIn("rapikan_berita.py", skill)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
