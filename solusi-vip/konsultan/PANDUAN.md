@@ -28,7 +28,7 @@ langkah demi langkah.
 Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `proposal-kerjasama`,
 `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`,
 `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`, `tender-checklist`,
-`kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `kalender-pajak`, `hledger-usaha`, `buku-piutang`,
+`kontrak-kerja-pkwt`, `perjanjian-sederhana`, `kebijakan-privasi-pdp`, `kalender-pajak`, `hledger-usaha`, `buku-piutang`,
 `laporan-klien-konsultan`, dan (opsional, hanya kalau agensi punya staf tetap) `gaji-umkm`.
 
 ```bash
@@ -44,6 +44,7 @@ openclaw skills install ./asisten-tulis-riset --global
 openclaw skills install ./presentasi-instan --global
 openclaw skills install ./tender-checklist --global
 openclaw skills install ./kontrak-kerja-pkwt --global
+openclaw skills install ./perjanjian-sederhana --global
 openclaw skills install ./kebijakan-privasi-pdp --global
 openclaw skills install ./kalender-pajak --global
 openclaw skills install ./hledger-usaha --global
@@ -55,7 +56,7 @@ openclaw skills install ./gaji-umkm --global
 Explorer ke `%USERPROFILE%\.openclaw\skills\`. Lewati baris `gaji-umkm` kalau Anda tidak punya
 staf tetap yang digaji bulanan.)
 
-- **Cara cek berhasil:** `openclaw skills list` menampilkan 17 nama skill di atas (atau 18 kalau
+- **Cara cek berhasil:** `openclaw skills list` menampilkan 18 nama skill di atas (atau 19 kalau
   memasang `gaji-umkm`).
 - **Kalau gagal:** sama seperti paket lain — "already exists" aman dilewati, skill tidak terbaca
   → buka sesi baru, `exec` ditolak → salin manual lewat File Explorer/Finder.
@@ -83,6 +84,25 @@ Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawa
 
 - **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
   menyebut aturannya tanpa membuka file lain.
+
+### WAJIB untuk konsultan: tambahkan "Aturan konsultan Komunitech" di bawah blok umum
+Uji gabungan 3 Okt 2026 menemukan AI mencari skill perjanjian ke seluruh disk (`find /`) lalu
+mematikan prosesnya sendiri. Tempel blok berikut di bawah blok umum di `AGENTS.md` (cara sama seperti di atas):
+
+```markdown
+## Aturan konsultan Komunitech (wajib)
+
+Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka. Jelaskan alasannya singkat bila menolak.
+
+1. Skill ada di folder skills OpenClaw. Jangan mencari skill/file ke seluruh disk (`find /`, `locate`), jangan mematikan proses, jangan memeriksa/mengubah config OpenClaw. Bila skill yang dibutuhkan tidak terpasang, katakan dan sarankan memasangnya.
+2. Pesan & laporan untuk klien = DRAF untuk konsultan; konsultan yang mengirim. Jangan menawarkan kiriman otomatis ke klien.
+3. Draf kontrak/perjanjian/proposal selalu diberi catatan "bukan nasihat hukum — tinjau dengan konsultan hukum". Peringatkan klausul yang tidak wajar (mis. denda harian sangat tinggi) dan beri alternatif yang lazim.
+4. Jangan memakai logo, merek, atau testimoni klien tanpa izin tertulis; jangan mengarang testimoni/surat/dokumen.
+5. Angka invoice, pajak (PPh 23/PPN), piutang, dan penawaran wajib dari script skill. Ikuti pola nomor invoice yang disebut pengguna.
+6. Data tiap klien terpisah; jangan mencampur nama/angka klien lain. Password/token yang ditempel tidak diulang (sebagian maupun utuh) — sarankan segera ganti.
+```
+
+- **Cara cek berhasil:** sesi baru, ketik "apa aturan konsultan Komunitech?" — AI menyebut 6 aturan di atas.
 
 ---
 
@@ -165,7 +185,7 @@ termasuk PPN) supaya tidak gugur karena hitungan salah.
 Merekrut asisten atau staf admin dengan status kontrak? Ketik: *"Buatkan kontrak kerja 6 bulan
 untuk asisten riset saya."* `kontrak-kerja-pkwt` menyusun draf PKWT sesuai aturan dan menghitung
 kompensasi akhir kontrak — bukan untuk kontrak kerja sama dengan klien (itu `proposal-kerjasama`/
-gunakan `perjanjian-sederhana` bila tersedia).
+gunakan `perjanjian-sederhana`).
 
 ### i. Kebijakan privasi untuk layanan/website Anda (manual, dipicu Anda)
 Kalau Anda mengumpulkan data klien lewat website/formulir/WA Business, ketik: *"Buatkan kebijakan
