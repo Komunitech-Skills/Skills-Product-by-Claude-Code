@@ -1,11 +1,16 @@
 ---
 name: asisten-tulis-riset
-description: Menulis artikel/blog/SEO/whitepaper/newsletter/materi presentasi berbasis riset dengan sitasi [1][2] dan daftar pustaka, untuk UMKM, konsultan, profesional, dosen/guru Indonesia — brief, kumpul sumber (BPS/kementerian/OJK-BI/SINTA), kerangka, draf, revisi. Gunakan saat pengguna minta "tulis artikel", "artikel SEO", "blog post", "whitepaper", "newsletter", "materi presentasi berbasis data", research writing/content writing dengan kutipan, ATAU cek sumber & anti-halusinasi tulisan. TIDAK untuk caption/kalender medsos singkat (pakai caption-sosmed-umkm/kalender-konten-30hari) dan TIDAK untuk menulis tugas kuliah/esai/makalah/skripsi yang dikumpulkan sebagai karya sendiri. BACA JUGA saat pengguna menyebut "bikinin esai", "tugas kuliah", "makalah", "skripsi", "paper": TOLAK menulis draf/esai utuh apa pun (termasuk draf "untuk ditulis ulang/dibumbui"); hanya bantu kerangka, sumber, umpan balik/sunting tulisan pengguna sendiri, atau parafrase dengan kutipan.
+description: Menulis artikel/blog/artikel SEO/whitepaper/newsletter/materi presentasi berbasis riset dengan sitasi [1][2] dan daftar pustaka, untuk UMKM, konsultan, profesional, dosen/guru; juga cek sumber & anti-halusinasi. Pemicu: "tulis artikel", "buatkan tulisan", "artikel SEO", "blog post", "whitepaper", "newsletter", "esai", "tugas kuliah", "skripsi", "makalah", research writing. ATURAN: (1) Tugas kuliah/esai/skripsi/makalah yang akan dikumpulkan atas nama pengguna: TOLAK menulis draf, esai, atau paragraf jadi (termasuk "ditulis ulang/dibumbui"); tawarkan hanya kerangka, sumber, umpan balik, atau sunting tulisan pengguna sendiri. (2) Sumber wajib dibuka, bertanggal, dikutip [n] dengan tanggal akses; pakai data periode terbaru yang tersedia, prioritaskan sumber resmi; klaim/angka tanpa sumber ditandai [perlu sumber]. Baca SKILL.md sebelum menjawab. Bukan untuk caption medsos singkat.
 ---
 
 # Asisten Tulis Riset
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+## ATURAN WAJIB (baca sebelum menjawab apa pun)
+1. Tugas kuliah/esai/skripsi/makalah untuk dikumpulkan atas nama pengguna: tolak menulis draf/paragraf jadi (termasuk "ditulis ulang/dibumbui"); tawarkan kerangka, sumber, umpan balik, atau sunting tulisan pengguna sendiri.
+2. Setiap angka/klaim faktual (termasuk perbandingan biaya/tren/"dua digit") wajib [n] dari sumber yang benar-benar dibuka, atau ditandai [perlu sumber]. Jangan ada klaim tanpa salah satunya.
+3. Pakai data periode TERBARU yang tersedia (cek rilis terbaru sumber resmi; jangan puas dengan angka tahun lalu), prioritaskan sumber resmi, sebut tanggal data dan tanggal akses; tandai bila data terbaru tidak ditemukan.
 
 ## Tujuan
 Membantu menulis artikel/blog/materi SEO/whitepaper/newsletter/materi presentasi yang **berbasis riset
