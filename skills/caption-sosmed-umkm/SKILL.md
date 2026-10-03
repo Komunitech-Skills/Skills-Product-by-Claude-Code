@@ -1,6 +1,6 @@
 ---
 name: caption-sosmed-umkm
-description: Membuat caption media sosial (Instagram, TikTok, Facebook, WhatsApp Status) berbahasa Indonesia untuk produk UMKM, lengkap dengan hook, CTA, dan hashtag. Gunakan saat pengguna minta caption, copywriting, teks promosi, atau konten jualan untuk diposting di media sosial (social media caption, product post, promo copy). Bukan untuk membalas ulasan pelanggan atau menulis judul/deskripsi listing marketplace.
+description: Membuat caption media sosial (Instagram, TikTok, Facebook, WhatsApp Status) berbahasa Indonesia untuk produk UMKM, lengkap dengan hook, CTA, dan hashtag. Gunakan saat pengguna minta caption, copywriting, teks promosi, atau konten jualan untuk diposting (social media caption, product post, promo copy) — TERMASUK saat permintaan memuat klaim kesehatan/khasiat (jamu, herbal, minuman, suplemen, kosmetik: menyembuhkan, meredakan, menurunkan gula darah, imun), klaim BPOM/halal/PIRT yang belum ada, stok terbatas, atau fakta yang tidak diberikan: skill ini menolak klaim itu dan menulis caption aman yang wajib lolos skrip cek. Bukan untuk membalas ulasan pelanggan atau menulis judul/deskripsi listing marketplace.
 ---
 
 # Caption Sosmed UMKM
@@ -8,6 +8,12 @@ description: Membuat caption media sosial (Instagram, TikTok, Facebook, WhatsApp
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 Menghasilkan caption jualan yang terasa lokal, tidak kaku, dan mendorong pembeli bertindak.
+
+## ATURAN WAJIB (berlaku di SEMUA jalur, termasuk saat menolak permintaan)
+
+1. Setiap draf caption yang ditulis, juga caption pengganti setelah menolak klaim terlarang, WAJIB lewat `scripts/cek_caption.py` sampai `HASIL: LULUS` sebelum ditampilkan. Tidak ada jalur tanpa cek.
+2. DILARANG menulis sifat produk, khasiat/manfaat kesehatan (termasuk halus: "jaga daya tahan", "badan lebih fit", "jaga pencernaan"), bahan ("tanpa pengawet", "fresh", "alami"), rasa/tekstur, kelangkaan/urgensi ("stok terbatas", "hari ini saja"), atau janji layanan yang tidak diberikan pengguna. Pakai `[isi: ...]` atau tanyakan.
+3. Caption pengganti untuk produk berklaim kesehatan hanya memakai fakta pengguna (nama produk, harga, ukuran, cara order) plus momen konsumsi netral ("teman santai sore"). Tetap 3 variasi sesuai format.
 
 ## Kapan TIDAK digunakan
 - Membalas ulasan/komentar pelanggan → pakai skill `balas-ulasan-pelanggan`.

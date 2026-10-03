@@ -47,7 +47,7 @@ Paket ini berisi (folder skill, dari member area/ZIP paket VIP Anda): `karyawan-
 `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`, `naskah-live-jualan`, `buku-stok`,
 `agen-cs-toko`, `balas-chat-cs`, `foto-produk-brief`, `laporan-otomatis-terjadwal`,
 `rekap-penjualan-csv`, `konten-mingguan`, `pesan-prospek-wa`, `crm-wa`, `analisis-excel`,
-`brainstorming-ide-usaha`, `kas-umkm`, `buku-piutang`, `laporan-iklan-mingguan`.
+`kas-umkm`, `buku-piutang`, `laporan-iklan-mingguan`.
 (`balas-chat-cs` dipakai untuk membalas **satu** chat/komplain pembeli dengan cepat; `agen-cs-toko`
 untuk menyiapkan CS toko lengkap dengan basis pengetahuan. Keduanya mode Copilot: AI menyiapkan
 draf, Anda yang mengirim.)
@@ -72,7 +72,6 @@ openclaw skills install ./konten-mingguan --global
 openclaw skills install ./pesan-prospek-wa --global
 openclaw skills install ./crm-wa --global
 openclaw skills install ./analisis-excel --global
-openclaw skills install ./brainstorming-ide-usaha --global
 openclaw skills install ./kas-umkm --global
 openclaw skills install ./buku-piutang --global
 openclaw skills install ./laporan-iklan-mingguan --global
@@ -303,13 +302,6 @@ script**, bukan dikira-kira.
   di tengah), skill akan menandai bagian yang meragukan dan bertanya dulu sebelum memberi angka
   final — jangan minta "pokoknya langsung jawab" untuk file seperti itu.
 
-### i. Brainstorming ide usaha/promo baru (manual, dipicu Anda)
-Bingung mau jualan apa lagi, butuh ide promo, atau usaha sedang sepi? Ketik: *"Usaha laundry
-saya sepi, ada ide promo atau produk tambahan?"* `brainstorming-ide-usaha` menggali batasan nyata
-Anda (modal, waktu, SDM), memunculkan beberapa pendekatan, menyaringnya dengan skor (bukan
-feeling), lalu menutup dengan **rencana aksi 7 hari** yang bisa langsung dikerjakan.
-- **Cara cek berhasil:** Anda menerima 2–3 ide dengan untung-rugi masing-masing + rencana 7 hari,
-  bukan cuma daftar ide acak.
 
 ### j. Ringkasan kas harian (jam 21.00 WIB, terjadwal — kalau catatan kas terpisah dari kasir)
 Kalau Anda mencatat kas masuk/keluar/prive secara terpisah dari `buku-stok`/kasir (mis. usaha

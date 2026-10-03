@@ -68,9 +68,13 @@ Jika pengguna ingin cepat, isi dengan default template, biarkan data pribadi seb
    menyebutnya, pakai `perjanjian.py tanggal` tanpa argumen → `Pada hari ini, [isi: hari], tanggal [isi: tanggal] ...`.
    **Default template** yang dipakai tanpa disebut pengguna (mis. denda keterlambatan 0,1%/hari maks 5%, siapa
    menanggung PBB/iuran, batas revisi, jangka waktu) wajib dicantumkan di bagian "Asumsi dari template" pada
-   output sebagai hal yang **perlu dikonfirmasi**, lengkap dengan nilainya. Hapus blok PANDUAN AGENT. Pertahankan tanda `> ⚠ TINJAU PENGACARA` pada pasal berisiko. Jangan menambah klaim (halal, BPOM, izin) yang tidak diberikan pengguna. Seimbangkan hak kedua pihak. Jangan membuat pasal yang hanya menguntungkan pengguna secara tidak wajar.
-5. **Periksa draf:** simpan ke file lalu jalankan `python3 <folder-skill-ini>/scripts/perjanjian.py cek draf.md`. Perbaiki semua temuan "Harus diperbaiki" (angka vs terbilang, penomoran pasal, meterai, bagian standar). Temuan "Rujuk profesional" (tanah/PPJB/kavling, investasi/keuntungan tetap per bulan, pinjaman berbunga/BPKB/jaminan, harga jual kembali minimum, pihak asing, dll.) → kembali ke langkah 1. Uji regresi pemeriksa: `python3 <folder-skill-ini>/scripts/uji_regresi.py`.
-6. **Sajikan** sesuai format output, lalu tawarkan versi .docx/PDF atau penyesuaian pasal.
+   output sebagai hal yang **perlu dikonfirmasi**, lengkap dengan nilainya. Hapus blok PANDUAN AGENT. Pertahankan tanda `> ⚠ TINJAU PENGACARA` pada pasal berisiko. Jangan menambah klaim (halal, BPOM, izin) yang tidak diberikan pengguna. Seimbangkan hak kedua pihak. Jangan membuat pasal yang hanya menguntungkan pengguna secara tidak wajar. **Pengakhiran/pengosongan** default: teguran tertulis → tenggat → pemberitahuan → musyawarah/pengadilan. Klausul pengosongan/pengambilalihan sepihak (kunci, segel, bongkar, ambil paksa, sisa sewa hangus) hanya bila pengguna sendiri memintanya, sebagai opsi dari `references/klausul-pilihan.md` lengkap dengan peringatan risiko ⚠ TINJAU PENGACARA.
+5. **Cek konsistensi kewajiban para pihak.** Buat daftar pos biaya: listrik, air, internet, kebersihan/keamanan, iuran lingkungan, iuran/retribusi pengelola pasar/gedung, PBB/pajak, perbaikan besar, perbaikan kecil. Setiap pos dibebankan ke **satu pihak saja** (atau tertulis jelas "dibagi ... %"), dan pihak itu **sama** di semua pasal (hak & kewajiban, harga, uang jaminan) **dan** di "Asumsi dari template". Jangan menulis pos yang sama di kewajiban kedua pihak.
+6. **Periksa draf:** simpan ke file lalu jalankan `python3 <folder-skill-ini>/scripts/perjanjian.py cek draf.md`. Perbaiki semua temuan "Harus diperbaiki" (angka vs terbilang, penomoran pasal, meterai, bagian standar, **"Beban '...' bertentangan"** dari cek konsistensi beban biaya; baris "Beban biaya per pos" dipakai untuk mencocokkan daftar asumsi). Temuan "Rujuk profesional" (tanah/PPJB/kavling, investasi/keuntungan tetap per bulan, pinjaman berbunga/BPKB/jaminan, harga jual kembali minimum, pihak asing, dll.) → kembali ke langkah 1. Uji regresi pemeriksa: `python3 <folder-skill-ini>/scripts/uji_regresi.py`.
+7. **Sajikan teks perjanjian LENGKAP di balasan chat** sesuai format output — bukan hanya nama/path file atau ringkasan pasal. Pengguna (mis. di Telegram/WhatsApp) harus bisa langsung menyalin naskah utuh dari chat, karena lampiran bisa gagal terkirim. File boleh tetap disimpan (sebutkan lokasinya) sebagai tambahan, tidak menggantikan teks di chat.
+   - Bila naskah panjang (kanal chat membatasi ±4.000 karakter per pesan), **pecah per bagian** berurutan: (1/n) judul + pembuka + para pihak + latar belakang, lalu beberapa pasal per pesan, terakhir penutup + tanda tangan + meterai. Jangan memotong di tengah pasal/ayat. Beri penanda "Bagian 1/4", "Bagian 2/4", dst., lalu kirim catatan (yang perlu dilengkapi, asumsi, pasal ditinjau, checklist, disclaimer) sebagai pesan terakhir.
+   - Jangan menulis "naskah lengkap ada di file" tanpa menampilkan naskahnya. Bila pengiriman lampiran gagal, tetap tampilkan naskah utuh di chat.
+   - Tutup dengan tawaran versi .docx/PDF atau penyesuaian pasal.
 
 ### Fallback jika Python tidak bisa dijalankan
 Beri tahu pengguna bahwa angka dihitung manual. Tanggal berakhir = sehari sebelum tanggal yang sama pada bulan/tahun berikutnya (mis. 1 Okt 2026 + 12 bulan → 30 Sep 2027). Aturan: terbilang ditulis per kelompok tiga digit (triliun, miliar, juta, ribu); "seribu" dan "seratus" untuk angka 1; 11 = "sebelas", 12–19 = "... belas". Termin = total × persen, dibulatkan ke rupiah, termin terakhir = total − jumlah termin lain. Denda = nilai × persen/hari × hari, maksimal batas yang disepakati. Meterai = Rp10.000 × jumlah rangkap asli. Cek kelengkapan pasal dengan daftar di "Checklist" di bawah secara manual.
@@ -79,14 +83,14 @@ Beri tahu pengguna bahwa angka dihitung manual. Tanggal berakhir = sehari sebelu
 ```
 **⚠ Draf ini bukan nasihat hukum.** [ringkas 1 kalimat + status: SIAP DITINJAU / PERLU DILENGKAPI]
 
---- (draf perjanjian lengkap: judul, nomor, pembuka tanggal, para pihak, latar belakang, Pasal 1..n, penutup, tabel tanda tangan + [Meterai Rp10.000], lampiran) ---
+--- (draf perjanjian LENGKAP ditulis langsung di chat, siap salin: judul, nomor, pembuka tanggal, para pihak, latar belakang, Pasal 1..n, penutup, tabel tanda tangan + [Meterai Rp10.000], lampiran. Panjang → pecah per pasal "Bagian 1/n". File hanya tambahan.) ---
 
 ### Yang masih perlu dilengkapi
 - [[...]] / [isi: ...] yang tersisa (dari hasil `cek`), termasuk tanggal penandatanganan bila belum disebut
 
 ### Asumsi dari template (mohon dikonfirmasi)
 - Denda keterlambatan: <nilai default, mis. 0,1%/hari dari jumlah terlambat, maks. 5%> — Pasal X
-- <default lain yang dipakai tanpa disebut pengguna: PBB/iuran, jangka waktu, batas revisi, dll.>
+- <default lain yang dipakai tanpa disebut pengguna: PBB/iuran, jangka waktu, batas revisi, dll.> — pihak penanggung tiap biaya harus SAMA dengan pasalnya
 
 ### Pasal yang sebaiknya ditinjau pengacara
 - Pasal X: alasan singkat
@@ -125,6 +129,8 @@ Pasal yang sebaiknya ditinjau pengacara: Pasal 6 (Hak atas Hasil Karya) bila log
 - [ ] Semua nominal ditulis `Rp 1.250.000 (terbilang)` dari output script; `cek` tidak melaporkan ketidakcocokan.
 - [ ] Pasal berisiko bertanda ⚠ dan dirangkum; daftar `[[...]]` tersisa disebutkan.
 - [ ] Checklist sebelum tanda tangan, catatan meterai, dan disclaimer tercantum.
+- [ ] Naskah perjanjian utuh tampil di balasan chat (dipecah per pasal bila panjang), bukan hanya path/nama file.
+- [ ] Tiap pos biaya (listrik, air, iuran/retribusi, PBB/pajak, perbaikan) ditanggung satu pihak dan sama di semua pasal + daftar asumsi; `cek` tidak melaporkan "bertentangan".
 - [ ] Tanggal tanda tangan tidak diisi sendiri; default template (denda, PBB/iuran, dll.) tercantum di "Asumsi dari template".
 - [ ] Bahasa Indonesia baku tetapi mudah dipahami; tidak ada klaim/izin karangan.
 

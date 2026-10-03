@@ -55,6 +55,13 @@ Dua jalur produksi:
 - **brainstorming-ide-usaha tidak dijadikan gratis**: tetap ecer dengan harga usulan, atau dimasukkan ke bundle.
 - **hitung-thr masuk `paket-kantor-manajemen`** (kini 18 skill, harga tetap Rp599.000) dan ke skill inti `solusi-vip/kantor-manajemen`.
 
+**Keputusan pemilik 2026-10-03 (disetujui langsung oleh pemilik):**
+- **Skill hanya dilanjutkan bila pembeda sebelum/sesudah jelas** ("kalau kurleb tidak ada gunanya"). Acuan kurator: uji OpenClaw sebelum/sesudah dengan skor sesudah ≥ 8 **dan** selisih rata-rata ≥ 1,5 poin. Skill di bawah acuan itu tidak diiterasi lagi; diusulkan `arsip` (perubahan isi bundle/paket VIP tetap menunggu persetujuan pemilik).
+- **Instalasi OpenClaw bot produksi dipisah** dari instalasi alat uji.
+- **Semua hal yang butuh keputusan pemilik DAN laporan hasil uji** (uji ulang, uji gabungan, gelombang Telegram) dikirim ke grup Telegram uji, topik "Ringkasan uji" (thread 242), dengan tag @nikioktarian (lewat bot penguji, skrip `scratchpad/pilot/tg.py`). Keputusan: ringkasan bernomor + rekomendasi + alasan. Hasil uji: skor tanpa → dengan skill, verdik, satu kalimat pembeda. Chat Claude tetap diberi ringkasan singkat.
+- **Pilot/tampilan Telegram hanya untuk skill yang lolos uji internal** sebelum/sesudah OpenClaw (verdik LULUS, sesudah ≥ 8, selisih ≥ 1,5 — sama dengan daftar tampil di `promosi/`), diurutkan dari selisih terbesar. Setiap gelombang tetap maks. 10 pesan, berurutan dengan jeda, tanpa balas-otomatis, dan tetap minta persetujuan pemilik sebelum dikirim.
+- **Keputusan via Telegram 2026-10-03 (dijawab langsung oleh pemilik):** `balas-chat-cs` tetap di `paket-klinik` (7 skill, Rp249.000). `paket-toko-online` + `balas-chat-cs`, `crm-wa`; `paket-kantor-manajemen` + `slip-gaji-bpjs`, `pph21-ter` (harga bundle tetap). `caption-sosmed-umkm` & `brainstorming-ide-usaha` diarsipkan (keluar dari `paket-kafe-warung` & panduan solusi-vip; folder tidak dihapus). 12 skill lulus dengan selisih < 1,5 **tidak diarsip**: tetap di bundle/VIP, tidak dipromosikan, tidak dikembangkan lagi. Skill medis (`kalkulator-klinis-nakes`, `edukasi-pasien-klinik`) tetap diproses & boleh dipromosikan dengan keterangan "belum direview tenaga medis" sampai pemilik meminta nakes mereview.
+
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
 Bahasa: Bahasa Indonesia sebagai utama; bilingual ID/EN bila relevan.

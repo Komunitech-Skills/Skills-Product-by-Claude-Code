@@ -32,6 +32,11 @@ Hitung contoh dengan `scripts/perjanjian.py denda`.
 > (3) Untuk pengakhiran ini, Para Pihak sepakat mengesampingkan ketentuan Pasal 1266 dan Pasal 1267 Kitab Undang-Undang Hukum Perdata sepanjang mensyaratkan putusan hakim.
 > ⚠ TINJAU PENGACARA: keberlakuan pengesampingan Pasal 1266–1267 masih diperdebatkan.
 
+## Pengosongan sepihak (OPSI, hanya bila pengguna sendiri memintanya; bukan default)
+Jangan sisipkan tanpa permintaan pengguna. Bila diminta, tetap pertahankan teguran tertulis + tenggat, dan tulis peringatan ini tepat di bawah ayatnya serta di "Pasal yang sebaiknya ditinjau pengacara":
+> ⚠ TINJAU PENGACARA: Klausul ini membolehkan pemilik mengosongkan/mengambil alih objek sewa (mengunci, menyegel, memindahkan barang) tanpa putusan pengadilan. Walau disepakati, tindakan sepihak berisiko digugat sebagai perbuatan melawan hukum (Ps. 1365 KUHPerdata) dan dilaporkan pidana (mis. memasuki pekarangan tanpa izin, perusakan/penggelapan barang penyewa). Klausul "sisa sewa hangus" juga bisa dinilai tidak seimbang. Jalur aman: teguran tertulis → tenggat → musyawarah/mediasi → gugatan (bisa gugatan sederhana bila nilai ≤ Rp500 juta, PERMA 4/2019).
+Teks opsi: "Apabila PIHAK KEDUA tidak menyerahkan kembali Objek Sewa dalam tenggat ..., PIHAK KEDUA menyetujui PIHAK PERTAMA [[mengunci Objek Sewa / memindahkan barang PIHAK KEDUA ke ... dengan berita acara disaksikan 2 (dua) orang saksi]], dan barang tersebut tetap milik PIHAK KEDUA serta dapat diambil kembali."
+
 ## Keadaan memaksa (umum)
 > (1) Keadaan memaksa adalah keadaan di luar kendali dan kesalahan Para Pihak yang tidak dapat diperkirakan sebelumnya dan secara langsung menghalangi pelaksanaan Perjanjian, antara lain bencana alam, kebakaran, banjir, wabah yang ditetapkan pemerintah, perang, huru-hara, atau kebijakan pemerintah yang secara langsung melarang pelaksanaan Perjanjian.
 > (2) Pihak yang mengalami keadaan memaksa wajib memberitahukan secara tertulis kepada Pihak lainnya paling lambat [[7]] ([[tujuh]]) hari kalender sejak kejadian, disertai bukti yang wajar.

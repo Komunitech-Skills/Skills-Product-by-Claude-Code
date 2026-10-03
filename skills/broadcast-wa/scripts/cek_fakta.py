@@ -86,6 +86,10 @@ POLA_KLAIM = [
                   r"\s+(?:\w+\s+){0,3}?(?P<k>stamina|daya\s+tahan|imun\w*|kekebalan|kolesterol|gula\s+darah"
                   r"|tekanan\s+darah|metabolisme|pencernaan|kesehatan|lambung|jantung)\b", "k"),
     ("kesehatan", r"\b(?P<k>menyehatkan|antioksidan|bergizi\s+tinggi|kaya\s+(?:vitamin|nutrisi|gizi))\b", "k"),
+    # v1.0.10: urgensi/jadwal karangan pada draf penolakan ("Hari ini ada promo", "promo hari ini").
+    ("urgensi", r"\bhari\s+ini\s+(?:ada|dapat|dapet)\s+(?:promo|diskon|potongan|harga)\b"
+                r"|\b(?:promo|diskon|penawaran|harga\s+spesial)\s+(?:cuma\s+|hanya\s+)?(?:hari|minggu)\s+ini\b"
+                r"|\bsebelum\s+(?:kehabisan|keabisan|habis|promo\s+berakhir)\b|\bmumpung\s+promo\b", "semua"),
     ("urgensi", r"\b(?:stok|kuota|barang|jumlah|slot)\s+(?:tinggal\s+\w+|terbatas|menipis|sedikit|hampir\s+habis)\b",
      "semua"),
     ("urgensi", r"\b(?:hari\s+terakhir|cuma\s+hari\s+ini|hanya\s+hari\s+ini|sebelum\s+kehabisan|batch\s+terakhir"

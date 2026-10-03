@@ -94,6 +94,22 @@ POLA_KLAIM = [
     ("kesehatan", r"\b(?:asam\s+lambung|kembung|maag|diabetes|kolesterol|hipertensi|asam\s+urat|jerawat)\s+"
                   r"(?:naik|kambuh|reda|hilang|sembuh|turun)\b", "selalu"),
     ("kesehatan", r"\b(?P<k>menyehatkan|antioksidan|bergizi\s+tinggi|kaya\s+(?:vitamin|nutrisi|gizi))\b", "k"),
+    # v1.1.4: kesehatan halus ("bikin badan lebih fit/enteng", "badan tetep fit") & rasa/tekstur karangan.
+    ("kesehatan", r"\b(?:bikin|bikinin|buat|membuat|bantu|membantu|jaga|menjaga|bantu\s+jaga)\s+(?:\w+\s+){0,2}?"
+                  r"(?:badan|tubuh|raga|perut|tidur)\s+(?:\w+\s+){0,2}?(?:fit|enteng|bugar|segar|sehat|ringan|nyaman|kuat|prima|nyenyak)\b"
+                  r"|\b(?:badan|tubuh)\s+(?:\w+\s+){0,2}?(?:tetap|tetep|tetap\s+tetap|selalu)\s+(?:fit|bugar|sehat|prima|segar)\b"
+                  r"|\b(?:badan|tubuh)\s+kurang\s+(?:fit|enak|sehat|bugar)\b|\b(?:menjaga|jaga)\s+(?:kebugaran|vitalitas|kesegaran)\b"
+                  r"|\b(?:daya\s+tahan|stamina|imun\w*)\s+(?:tubuh|badan)\b", "selalu"),
+    ("rasa/tekstur", r"\b(?P<k>renyah|garing|crispy|crunchy|kriuk|lumer|legit|gurih|empuk|lembut|juicy|moist|nendang|meresap)\b", "k"),
+    ("rasa/tekstur", r"\b(?:kerasa|terasa|berasa|kerasanya|rasanya)\s+(?:\w+\s+){0,3}?(?:di\s+setiap|tiap|di\s+tiap)\s+(?:gigitan|tegukan|suapan|sendok)\b"
+                     r"|\b(?:setiap|tiap)\s+(?:gigitan|tegukan|suapan)\b", "selalu"),
+    ("sifat produk", r"\b(?:dibuat|dimasak|diolah|dikemas)\s+(?:\w+\s+){0,1}?(?P<k>fresh|segar|manual|sendiri|tiap\s+hari|setiap\s+hari)\b"
+                     r"|\b(?:langsung\s+dari\s+)?dapur\s+sendiri\b|\bhandmade\b|\bbuatan\s+tangan\b", "semua"),
+    ("urgensi", r"\b(?:cocok|pas|buat|untuk)\s+(?:\w+\s+){0,1}?stok\s+(?:mingguan|bulanan|harian|seminggu|sebulan|rumah|dirumah)\b"
+                r"|\bkhusus\s+(?:hari|minggu|malam|pagi|siang|sore)\s+ini\b|\b(?:hari|minggu)\s+ini\s+(?:saja|aja|doang)\b"
+                r"|\bhari\s+ini\s+(?:ada|dapat|dapet)\s+(?:promo|diskon|potongan)\b|\bketerbatasan\s+stok\b"
+                r"|\b(?:langsung|segera)\s+order\s+(?:ya|yuk|sekarang)\b[^.!?\n]{0,5}(?:terbatas)|\blast\s+chance\b"
+                r"|\b(?:promo|penawaran|kesempatan|diskon|harga)\s+terakhir\b", "semua"),
     ("urgensi", r"\b(?:stok|kuota|barang|jumlah|slot)\s+(?:tinggal\s+\w+|terbatas|menipis|sedikit|hampir\s+habis)\b",
      "semua"),
     ("urgensi", r"\b(?:hari\s+terakhir|cuma\s+hari\s+ini|hanya\s+hari\s+ini|sebelum\s+kehabisan|batch\s+terakhir"

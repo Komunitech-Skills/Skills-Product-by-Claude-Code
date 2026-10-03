@@ -67,6 +67,14 @@ Cukup ketik permintaan biasa ke AI agent Anda:
 3. Bila memakai Uptime Kuma: catat alamat status page Anda (bentuk `http://ALAMAT:PORT/status/NAMA-SLUG`, dari `docs/panduan-uptime-kuma.md` §5) — tidak ada token/API key yang perlu disiapkan.
 4. Coba: "Cek website saya masih hidup nggak?" atau "Ringkas status website toko saya."
 
+## Catatan revisi 1.0.9 (2026-10-03)
+
+- Description melarang eksplisit tawaran balik "aku setup/aktifkan pemantauan/alert/cek tiap jam"; pemicu ditambah ("pantau tiap jam", "cek otomatis", "kabari kalau down").
+
+## Catatan revisi 1.0.8 (2026-10-03)
+
+- `description` kini memuat batas keras (tidak memasang Uptime Kuma/alert, tidak mengecek situs pesaing, termasuk cek sekali) beserta kata pemicu, karena model sering menjawab tanpa membuka SKILL.md; ditambah "ATURAN WAJIB" di awal SKILL.md.
+
 ## Catatan revisi 1.0.7 (2026-10-01)
 
 - Kata pemicu ditambah di description ("kabari ke WA kalau web down", "pasang alert website", "pantau/cek website saingan atau kompetitor") agar skill terbaca pada permintaan jebakan; uji ulang putaran 2 menunjukkan agent tidak membaca SKILL.md di skenario itu.
