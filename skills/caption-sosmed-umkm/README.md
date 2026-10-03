@@ -32,6 +32,10 @@ Bisa. Ceritakan jasamu seperti menceritakan produk.
 **Apakah hasilnya selalu sama?**
 Tidak. Setiap kali diminta, hasilnya variasi baru.
 
+## Catatan revisi 1.1.4 (2026-10-03)
+- `description` dan bagian ATURAN WAJIB diperkuat agar skill terpanggil juga pada permintaan berklaim kesehatan/BPOM (jamu, herbal): caption pengganti wajib lewat skrip cek.
+- `cek_fakta.py` kini menandai klaim kesehatan halus ("bikin badan lebih fit", "jaga stamina"), rasa/tekstur karangan ("kerasa di setiap gigitan"), "dapur sendiri", "stok mingguan", dan "khusus/hari ini" bila tidak kamu sebutkan; tes regresi ditambah.
+
 ## Catatan revisi 1.1.2 (2026-10-01)
 - Format per platform dipertegas: Instagram wajib 80-150 kata (tanpa hashtag) dan 3-8 hashtag di SETIAP variasi; paragraf maks. 2-3 kalimat.
 - Klaim kesehatan (meredakan, mengatasi, "pas asam lambung naik", detox, pengganti obat, dst.) dilarang untuk pangan/jamu/kosmetik sesuai aturan iklan BPOM, termasuk bentuk halusnya; diganti alternatif aman (rasa, aroma, tradisi, cara menikmati).
