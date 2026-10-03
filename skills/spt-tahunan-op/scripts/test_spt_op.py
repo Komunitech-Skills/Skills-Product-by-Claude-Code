@@ -417,5 +417,67 @@ class TestTenggatNppnTahunBerjalan(unittest.TestCase):
         self.assertTrue(h["nppn_tahun_berjalan"]["sudah_lewat"])
 
 
+class TestStatusTenggatLapor(unittest.TestCase):
+    """v1.0.5: temuan Telegram 2026-10-03 — TP 2025 belum lapor per Oktober 2026 harus tampil SUDAH TERLAMBAT."""
+    ARGS_KB = ("--status", "K/1", "--tahun", "2025", "--a1", "90jt", "1.350.000", "--a1", "60jt", "0")
+
+    def test_bulan_terlambat_bagian_bulan_penuh(self):
+        b = datetime.date(2026, 3, 31)
+        f = spt_op.bulan_terlambat
+        self.assertEqual(f(b, datetime.date(2026, 3, 31)), 0)
+        self.assertEqual(f(b, datetime.date(2026, 4, 1)), 1)
+        self.assertEqual(f(b, datetime.date(2026, 4, 30)), 1)   # 31 Mar + 1 bulan = 30 Apr
+        self.assertEqual(f(b, datetime.date(2026, 5, 1)), 2)
+        self.assertEqual(f(b, datetime.date(2026, 9, 30)), 6)
+        self.assertEqual(f(b, datetime.date(2026, 10, 3)), 7)   # 6 bulan 3 hari → 7
+        self.assertEqual(f(b, datetime.date(2028, 4, 1)), 25)
+
+    def test_oktober_2026_tp2025_terlambat(self):
+        h = hitung(*self.ARGS_KB, hari=datetime.date(2026, 10, 3))
+        t = h["status_tenggat"]
+        self.assertEqual(h["status_spt"], "KURANG BAYAR")
+        self.assertEqual((t["kode"], t["hari_terlambat"], t["bulan_terlambat"]), ("TERLAMBAT", 186, 7))
+        gabung = " ".join(t["konsekuensi"])
+        self.assertIn("Rp100.000", gabung)
+        self.assertIn("Pasal 7 ayat (1)", gabung)
+        self.assertIn("Pasal 9", gabung)
+        self.assertIn("KMK", gabung)
+        self.assertIn("fiskal.kemenkeu.go.id", gabung)
+        self.assertIn("SEGERA", t["saran"])
+
+    def test_teks_status_tenggat_di_atas_dan_tanpa_buru_buru(self):
+        out = subprocess.run([sys.executable, os.path.join(FOLDER, "spt_op.py")] + list(self.ARGS_KB)
+                             + ["--hari-ini", "2026-10-03"], capture_output=True, text=True, check=True).stdout
+        self.assertIn("SUDAH TERLAMBAT", out)
+        self.assertLess(out.index("SUDAH TERLAMBAT"), out.index("**1. Penghasilan neto**"))
+        self.assertNotIn("buru-buru", out)
+        self.assertIn("status per 2026-10-03: TERLAMBAT", out)
+
+    def test_belum_lewat_sisa_hari(self):
+        t = hitung(*self.ARGS_KB, hari=datetime.date(2026, 2, 10))["status_tenggat"]
+        self.assertEqual((t["kode"], t["sisa_hari"], t["bulan_terlambat"]), ("BELUM_LEWAT", 49, 0))
+        t = hitung(*self.ARGS_KB, hari=datetime.date(2026, 3, 31))["status_tenggat"]
+        self.assertEqual((t["kode"], t["sisa_hari"]), ("BELUM_LEWAT", 0))
+
+    def test_masa_bebas_sanksi_kep55(self):
+        t = hitung(*self.ARGS_KB, hari=datetime.date(2026, 4, 10))["status_tenggat"]
+        self.assertEqual((t["kode"], t["sisa_hari"]), ("LEWAT_MASA_BEBAS_SANKSI", 20))
+        t = hitung(*self.ARGS_KB, hari=datetime.date(2026, 5, 1))["status_tenggat"]
+        self.assertEqual((t["kode"], t["bulan_terlambat"]), ("TERLAMBAT", 2))
+
+    def test_nihil_terlambat_tanpa_bunga(self):
+        h = hitung("--status", "TK/0", "--tahun", "2026", "--a1", "54jt", "0", hari=datetime.date(2027, 6, 1))
+        t = h["status_tenggat"]
+        self.assertEqual(h["status_spt"], "NIHIL")
+        self.assertEqual(t["kode"], "TERLAMBAT")
+        self.assertIn("tidak ada bunga", " ".join(t["konsekuensi"]))
+
+    def test_json_memuat_status_tenggat(self):
+        out = subprocess.run([sys.executable, os.path.join(FOLDER, "spt_op.py")] + list(self.ARGS_KB)
+                             + ["--hari-ini", "2026-10-03", "--format", "json"],
+                             capture_output=True, text=True, check=True).stdout
+        self.assertEqual(json.loads(out)["status_tenggat"]["kode"], "TERLAMBAT")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

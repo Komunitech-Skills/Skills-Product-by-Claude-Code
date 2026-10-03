@@ -25,3 +25,15 @@ Verifikasi angka (kurator, python): slip-gaji bruto pajak 7.500.000 + BPJS Kes 4
 - **kontrak-kerja-pkwt DENGAN skill**: masih menyebut "usaha mikro/kecil boleh kompensasi berdasarkan kesepakatan" — sudah tercatat di uji internal sebagai poin "ambang usaha kecil"; perlu dicek pembuat (perlu dasar pasal yang tepat). Tidak memengaruhi angka.
 - **pengingat-follow-up DENGAN skill**: draf ke Toko Sinar memuat tenggat "paling lambat 6 Okt" yang tidak diminta pengguna (minor).
 - Kuota 10 pesan habis. Giliran lanjutan (SP: jawab "ikut 6 bulan"; SPT: jawab 4 pertanyaan agar angka kurang bayar muncul) perlu persetujuan gelombang berikutnya.
+
+## Giliran lanjutan (disetujui pemilik, 2 pesan, 06.23 UTC)
+Dikirim sebagai *reply* ke jawaban bot di topik DENGAN skill.
+
+| Skill | Balasan penguji | Hasil bot (DENGAN skill) |
+|---|---|---|
+| surat-peringatan-karyawan | "ikut default 6 bulan, bikinin SP1 baru" | SP1 baru lengkap; masa berlaku 3 Okt 2026 s.d. 2 Apr 2027 (dari script `masa_berlaku.py`); Berita Acara Klarifikasi; catatan alasan SP1 bukan SP2; disclaimer. ✅ |
+| spt-tahunan-op | jawab 4 pertanyaan (jasa IT murni, tanpa pembukuan, Bandung, setor 0,5% Rp1,9 jt, tanpa potongan klien) | NPPN 50% → neto Rp190 jt − PTKP TK/0 Rp54 jt = PKP Rp136 jt → PPh 5%×60 jt + 15%×76 jt = **Rp14.400.000 kurang bayar** (✅ python); Rp1,9 jt tidak dikreditkan, jalur pengembalian; status "simulasi" karena tanpa pemberitahuan NPPN. |
+
+Temuan:
+- spt-tahunan-op: menyebut "batas lapor 31 Maret 2026" tanpa menyebut bahwa per Oktober 2026 SPT TP 2025 sudah **terlambat** (denda telat lapor + bunga) — perlu perbaikan kecil di skill. KLU 62020 vs 62010 (norma sama 50%) belum diverifikasi kurator. Jawaban memakai ±55 pemanggilan alat (pencarian lampiran PER-17), lama.
+- **Gangguan infrastruktur:** gateway mati sekali karena memori (±13.16 WIB), lalu restart sendiri ±13.30 WIB karena instalasi OpenClaw bersama (`/tmp/uji-openclaw`) diperbarui ke 2026.9.8 oleh `scripts/uji_openclaw.sh` yang dijalankan agent revisi. Kedua jawaban tetap terkirim. Saran: gateway produksi memakai instalasi terpisah dari alat uji muat.

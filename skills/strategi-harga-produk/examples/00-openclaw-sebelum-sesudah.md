@@ -243,3 +243,693 @@ SESUDAH **6,5/10** — PPN, margin, lantai Rp203.500 dan aturan harga coret kini
 ## Cuplikan jualan
 - Dengan skill: "Diskon 25% … harga promo Rp26.250 malah lebih murah dari harga beli reseller & agen … Gabungan semua batas → diskon maksimal yang aman: 14%, harga promo Rp30.100." (tanpa skill: tidak menyadari harga flash sale di bawah harga beli reseller)
 - Dengan skill: "Harga coret/'harga normal' pembanding hanya boleh dipakai kalau harga itu memang pernah benar-benar berlaku … ada buktinya." (tanpa skill: menyarankan "jual dulu di 219rb beberapa hari/minggu, baru turunin")
+
+---
+
+# Uji ulang v1.0.7 (2026-10-03)
+
+**Penguji:** agent penguji independen Komunitech (bukan pembuat skill). Bagian di atas tidak diubah.
+
+## Cara uji
+- OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech (`komunitech` → `claude-sonnet-5`), sama dengan bot member. Gateway Telegram produksi tidak disentuh.
+- SEBELUM = home bersih tanpa skill; SESUDAH = home bersih berisi hanya `strategi-harga-produk` 1.0.7 (blok `RINGKASAN SIAP TEMPEL`, aturan "harga normal = lantai → tidak ada diskon", larangan angka yang tidak tercetak script). Home dibuat ulang sebelum tiap skenario; satu giliran, agent tidak bertanya balik.
+- Skenario 2 lama diulang dengan pesan identik di kedua sisi; plus satu varian baru (data fiktif berbeda) di sisi SESUDAH saja.
+- Setiap angka SESUDAH dicocokkan dengan menjalankan sendiri `scripts/strategi_harga.py`, lalu Python independen (DPP bulat terbesar dengan DPP + ⌊11% × DPP⌋ ≤ harga). `tests/uji_regresi.py` → OK.
+- Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim/posting otomatis, tidak mencari ke seluruh disk. SEBELUM memakai `web_fetch` (cek aturan PPN).
+
+## Skenario 2 (ulang) — PKP hampers + jebakan ÷1,12 & harga coret palsu
+**Pesan pengguna:**
+
+> Kak toko saya udah PKP. Jual hampers lebaran harga 189rb udah termasuk PPN, modal per hampers 110rb. Margin saya sebenernya berapa ya? PPN sekarang 12% kan, jadi tinggal dibagi 1,12 aja? Terus biar laku mau saya pasang harga coret 249rb biar keliatan diskon 24%, padahal sebelumnya gak pernah jual 249rb sih. Aman kan?
+
+### Balasan SEBELUM (tanpa skill) — tools: tool_search, web_fetch, tool_call
+
+> Oke, dua hal ini kucek dulu biar nggak asal jawab — ternyata keduanya perlu dikoreksi:
+>
+> **1. Soal PPN — bukan dibagi 1,12, tapi 1,11**
+>
+> Tarif PPN statutori memang 12%, tapi sejak PMK 131/2024 (masih berlaku, nggak berubah di 2026), barang non-mewah dikenakan mekanisme "DPP Nilai Lain" (DPP = 11/12 × harga jual) sehingga **PPN efektifnya tetap 11%**, bukan 12%. Yang kena PPN 12% penuh itu khusus barang mewah (mobil mewah, apartemen premium, dll — Pasal 2 ayat 3 PMK 131/2024). Hampers lebaran jelas bukan kategori itu, jadi pakai 11%.
+>
+> Jadi hitungannya:
+> - Harga jual 189.000 (sudah termasuk PPN 11% efektif)
+> - Omzet bersih (exclude PPN) = 189.000 ÷ 1,11 = **Rp170.270**
+> - PPN yang harus disetor = 189.000 − 170.270 = **Rp18.730**
+> - Margin = 170.270 − 110.000 modal = **Rp60.270 per hampers**
+> - Margin % = 60.270 ÷ 170.270 = **≈35,4%** (dari omzet bersih), atau ≈31,9% kalau dihitung dari harga jual kotor
+>
+> Enaknya, pakai 1,11 justru bikin margin kamu **lebih besar** ±Rp1.500/pcs dibanding kalau salah pakai 1,12 (yang cuma kasih Rp58.750). Jadi koreksi ini menguntungkan kamu, bukan merugikan.
+>
+> Catatan tambahan: itu baru margin kotor sebelum biaya lain (kemasan, ongkir subsidi, marketing, biaya platform/admin, gaji, dll). Dan kalau modal 110rb itu udah termasuk PPN masukan dari supplier yang PKP, cek lagi — kalau PPN masukan itu bisa dikreditkan, modal riil kamu bisa sedikit lebih rendah dari 110rb.
+>
+> **2. Harga coret 249rb → 189rb, "diskon" 24% padahal nggak pernah dijual 249rb — ini nggak aman**
+>
+> Ini masuk kategori **diskon palsu / harga coret fiktif**, dan ada dua lapis risiko:
+>
+> - **Hukum**: UU No. 8/1999 Perlindungan Konsumen — Pasal 9(1)(a) & Pasal 10 melarang mengiklankan seolah-olah ada potongan harga/harga khusus yang menyesatkan, Pasal 11(f) secara spesifik melarang **menaikkan harga sebelum mengobral/diskon**. Sanksinya di Pasal 62: pidana penjara maks 5 tahun atau denda maks Rp2 miliar. Jarang sampai dipidana untuk UMKM kecil, tapi aturannya memang eksplisit melarang pola ini.
+> - **Platform**: marketplace (Shopee, TikTok Shop, dll) juga punya kebijakan anti-misleading price sendiri — ketahuan harga coret nggak pernah berlaku, akun bisa kena penalti skor sampai pembatasan fitur toko.
+>
+> Yang bikin "aman" itu simpel: **harga pembanding harus harga yang benar-benar pernah kamu jual**. Kalau 249rb itu fiktif, mending:
+> - Kalau mau ada efek diskon, jual dulu di harga normal yang jujur (misal 209rb) beberapa minggu, baru turunkan jadi 189rb saat promo — itu diskon riil.
+> - Atau skip harga coret, pakai label lain yang jujur: "Harga Spesial Ramadan", bundling (beli 2 gratis ongkir), atau limited stock — ini legal dan tetap menarik tanpa klaim harga palsu.
+> - Kalau platform punya fitur Flash Sale/Campaign resmi, pakai itu — biasanya lebih aman karena harga aslinya tetap konsisten di sistem.
+>
+> Singkatnya: margin kamu sebenarnya lebih sehat dari perkiraan (35,4%, bukan dari salah bagi 1,12), tapi strategi harga coretnya perlu diganti karena itu yang berisiko, bukan marginnya.
+### Balasan SESUDAH (skill 1.0.7 aktif) — tools: read, ls, exec
+
+> Sudah saya hitung dengan script resmi (bukan kira-kira), ini hasilnya, Kak:
+>
+> **1) Soal bagi 1,12 — itu keliru**
+> PPN 12% itu dikenakan atas DPP nilai lain = 11/12 dari harga, jadi tarif efektifnya **11%**, bukan 12% langsung. Kalau Kakak bagi harga jual dengan 1,12, margin yang kelihatan jadi 41,8% — padahal itu angka salah.
+>
+> Perhitungan yang benar untuk hampers Rp189.000 (sudah termasuk PPN), modal Rp110.000, kategori pangan (margin minimum 40% karena hampers = makanan):
+>
+> - Harga Rp189.000 → DPP Rp170.271, PPN Rp18.729
+> - Laba per unit: **Rp60.271**
+> - **Margin sebenarnya: 35,4%** (bukan 41,8%)
+> - Markup: 54,79% (markup ≠ margin, beda rumus)
+> - Status: **DI BAWAH margin minimum 40%** untuk kategori pangan
+>
+> Jadi harga Rp189.000 itu sebenarnya sedikit di bawah batas aman. Harga terendah yang masih margin 40% adalah **Rp203.500**.
+>
+> **2) Harga coret Rp249rb — ini yang perlu saya tahan, bukan cuma risiko margin tapi risiko hukum**
+>
+> Kalau Kakak **belum pernah** benar-benar jual di Rp249.000 (dipajang & bisa dibeli orang di harga itu), maka harga coret itu tergolong **informasi harga yang menyesatkan konsumen**, dilarang oleh UU 8/1999 tentang Perlindungan Konsumen. "Diskon 24%" itu jadi klaim palsu karena harga aslinya memang Rp189.000, bukan Rp249.000 yang "dipotong". Ini bukan soal aman/tidak aman secara untung-rugi doang — ini soal dasar hukumnya tidak boleh.
+>
+> Catatan: ini bukan nasihat hukum resmi, dan kalau mau pasti aman sebaiknya tanya konsultan hukum — tapi sebagai prinsip umum, jangan pajang harga "sebelum diskon" yang tidak pernah benar-benar berlaku.
+>
+> **Karena harga Rp189.000 sudah di bawah lantai margin (35,4% < 40%), sebenarnya tidak ada ruang diskon sama sekali** — bukan cuma soal harga coretnya yang bermasalah, tapi diskon apa pun dari Rp189.000 akan bikin Kakak rugi lebih dalam dari margin minimum sendiri.
+>
+> **Alternatif yang jujur dan tetap menarik:**
+> - Naikkan harga normal ke Rp203.500 (atau rapikan ke harga cantik, bisa saya hitungkan) — ini batas aman margin 40%, baru dari situ nanti ada ruang bikin promo beneran.
+> - Pakai label "Harga Spesial Lebaran" / bundling isi tambahan / kuota terbatas — tanpa angka coret apa pun.
+> - Kalau mau tetap pakai harga Rp189.000, jangan pasang diskon sama sekali; posisikan sebagai harga pas, bukan harga promo.
+>
+> Mau saya hitungkan harga cantik di sekitar Rp203.500 (misal Rp204.900 biar kelihatan rapi), atau susun paket hampers (isi + harga) yang tetap margin 40%? Saya bisa jalankan sekarang kalau mau.
+### Verifikasi
+**Cocok dengan script** (`margin --hpp 110000 --harga 189000 --kategori pangan --ppn termasuk`): DPP Rp170.271, PPN Rp18.729, laba Rp60.271, margin 35,4%, markup 54,79%, DI BAWAH MIN, lantai Rp203.500, "tidak ada ruang diskon" dari Rp189.000 — **identik**. Python independen: 189.000 → DPP 170.271 / PPN 18.729 / margin 35,397%; 203.500 → 40,00%. Cacat utama 1.0.6 ("DISKON MAKSIMAL 9% → Rp185.185") **hilang**: tidak ada lagi persen diskon karangan.
+
+**Angka yang tidak tercetak/salah di SESUDAH:**
+1. **"Kalau Kakak bagi harga jual dengan 1,12, margin yang kelihatan jadi 41,8%"** — salah atribusi. Script mencetak "Bila PPN **lupa dipisah**, margin akan terlihat 41,8%" = (189.000 − 110.000) ÷ 189.000 = 41,80%. Dibagi 1,12 justru memberi DPP Rp168.750 dan margin **34,81%** (Python). Jadi kalimat yang menjawab pertanyaan inti pengguna ("dibagi 1,12 aja?") memuat angka salah.
+2. **"misal Rp204.900 biar kelihatan rapi"** — tidak dicetak script (`cantik --harga 203500` mencetak Rp203.900, Rp205.000, Rp209.000, Rp209.900). Nilainya kebetulan aman (Python & script: 40,41% OK), tetapi melanggar aturan "DILARANG menulis angka yang tidak tercetak script, termasuk 'misal'".
+3. Penilaian bertentangan dengan script: "Naikkan harga normal ke Rp203.500 … baru dari situ nanti ada ruang bikin promo beneran" — script: "Dari harga lantai Rp203.500: TIDAK ADA ruang diskon". (Bukan angka, tetapi menyesatkan arah.)
+
+Harga coret: benar ("hanya boleh kalau harga itu pernah benar-benar berlaku"), UU 8/1999 tanpa klaim pasal/sanksi, ada catatan bukan nasihat hukum. Tidak ada saran "jual dulu beberapa hari".
+
+**SEBELUM:** DPP Rp170.270 / PPN Rp18.730 (selisih Rp1 pembulatan), margin 35,4%, 31,9% dari harga kotor (Python 31,89% ✔), selisih ±Rp1.500 vs ÷1,12 (Python Rp1.520 ✔), 1,12 → laba Rp58.750 ✔. Hukum: UU 8/1999 Pasal 9(1)(a), 10, 11 huruf f (menaikkan harga sebelum obral), sanksi Pasal 62 (5 tahun / Rp2 miliar) — benar. Kelemahan: menyarankan "jual dulu di 209rb beberapa minggu, baru turunkan" (pola harga coret formalitas), tidak menyadari margin di bawah standar pangan dan tanpa lantai harga; menyebut margin "lebih sehat dari perkiraan".
+
+### Skor
+SEBELUM **7,0/10** — pajak & hukum benar dan rinci, tetapi saran harga coret "jual dulu beberapa minggu", tanpa lantai/margin minimum, menyimpulkan margin "sehat".
+SESUDAH **7,5/10** — inti benar & dari script (DPP, margin 35,4%, DI BAWAH MIN, lantai Rp203.500, tidak ada ruang diskon dari Rp189.000, harga coret benar), tetapi jawaban atas pertanyaan "dibagi 1,12?" memuat angka salah (41,8%), satu harga "misal" karangan (Rp204.900), dan klaim "ada ruang promo" dari harga lantai. Skill terpakai (read + exec).
+
+## Varian baru (SESUDAH saja) — PKP frozen food, ÷1,12, harga coret palsu, minta diskon aman
+**Pesan pengguna:**
+
+> Min toko saya udah PKP. Jual paket frozen food 145rb udah termasuk PPN, modal per paket 92rb. Margin saya sebenernya berapa? Saya kira tinggal dibagi 1,12. Terus mau pasang harga coret 199rb biar keliatan diskon 27%, padahal belum pernah jual 199rb. Kalau gak boleh, mending harganya saya naikin terus kasih diskon berapa persen yang masih aman?
+
+### Balasan SESUDAH (skill 1.0.7 aktif) — tools: read, exec, ls, process
+
+> Oke, saya hitung pakai script biar pasti, bukan kira-kira. Ketemu 3 hal penting: margin Anda **bukan** hasil bagi 1,12, harga coret 199rb **tidak boleh**, dan kalau mau naik harga dulu — ini batas diskon amannya.
+>
+> **1. Margin sebenarnya dari harga 145rb (sudah termasuk PPN)**
+> - DPP (harga sebelum PPN) = Rp130.631, bukan Rp145.000 ÷ 1,12.
+> - Laba/unit = Rp38.631, **margin 29,57%** (dari DPP), markup 41,99%.
+> - Kategori pangan → margin minimum standar 40%. Status: **DI BAWAH MIN**. Harga aman terendah seharusnya **Rp170.200**.
+> - Jadi sebenarnya margin Anda sekarang di bawah standar sehat untuk frozen food, bukan ~36% yang kelihatan kalau cuma bagi 1,12.
+>
+> **2. Soal harga coret Rp199.000**
+> Tidak boleh, karena Rp199.000 itu **tidak pernah benar‑benar berlaku** — bukan harga yang pernah dipajang dan bisa dibeli orang. Itu termasuk informasi harga menyesatkan (dilarang UU 8/1999 Perlindungan Konsumen). Menaikkan harga dulu beberapa hari lalu dicoret juga tetap menyesatkan, jadi bukan jalan keluar yang aman.
+>
+> **3. Rencana jujur: naik harga dulu, baru kasih diskon kecil**
+> Karena harga sekarang di bawah margin minimum, langkah yang sehat itu justru **naikkan harga jualnya**, bukan cuma akali tampilan.
+>
+> Kandidat harga baru (margin minimum 40%, sudah termasuk PPN):
+> | Harga | Margin | Status |
+> |---|---|---|
+> | Rp174.900 | 41,61% | OK |
+> | Rp175.000 | 41,65% | OK |
+> | Rp175.900 | 41,94% | OK |
+> | Rp179.000 | 42,95% | OK |
+> | Rp179.900 | 43,24% | OK |
+>
+> Ambil contoh Rp179.900 (biar ada ruang promo nanti): dari harga ini, **diskon maksimal yang masih aman adalah 5%** → harga promo Rp170.905, margin 40,25%. Diskon 10% ke atas sudah di bawah margin minimum (lihat tabel 10%→36,93%, dst — jangan dipakai).
+>
+> **Aturan promo yang menjaga margin:**
+> - Harga normal baru: Rp179.900 (atau pilihan lain di tabel atas), harus benar‑benar dijual di harga itu dulu sebelum ada promo apa pun.
+> - Diskon maksimal dari harga itu: **5%**, harga promo **Rp170.905**.
+> - Kalau mau terasa "diskon besar" tanpa bohong, lebih aman pakai bonus/paket (misal tambah 1 item kecil) atau kuota terbatas ("500 pcs pertama"), bukan persen diskon besar yang menggerus margin.
+>
+> **Langkah minggu ini:**
+> 1. Umumkan harga baru Rp179.900 ke pelanggan 1–2 minggu sebelum berlaku, kasih alasan jujur (bahan/PPN).
+> 2. Beri jendela terbatas "harga lama Rp145.000" untuk pre-order singkat bila mau transisi halus.
+> 3. Setelah harga Rp179.900 berjalan dan benar-benar dijual di harga itu, baru boleh pasang promo maksimal 5% (Rp170.905) atau bundel/bonus.
+> 4. Jangan pasang harga coret Rp199.000 — ganti jadi "Harga Spesial" atau paket bonus kalau mau kesan hemat.
+>
+> Catatan: Angka dihitung dengan script dari data yang Anda berikan. PPN di sini dipisah sesuai aturan PKP (12% × DPP nilai lain 11/12, efektif 11%); pembulatan belum dicocokkan Coretax — kalau beda, ikuti Coretax. Keputusan harga tetap di tangan Anda.
+### Verifikasi
+- `margin --hpp 92000 --harga 145000 --kategori pangan --ppn termasuk`: DPP Rp130.631, laba Rp38.631, margin 29,57%, markup 41,99%, DI BAWAH MIN, lantai Rp170.200 — **identik**. Python: 145.000 → DPP 130.631, 29,573%; 170.200 → 40,00%.
+- Tabel kandidat Rp174.900 / 175.000 / 175.900 / 179.000 / 179.900 dengan margin 41,61 / 41,65 / 41,94 / 42,95 / 43,24% — **identik** dengan `cantik --harga 175000 --hpp 92000 --kategori pangan --ppn termasuk`; Python cocok semua.
+- `diskon --harga 179900 ... --rentang 5-10`: DISKON MAKSIMAL 5% → Rp170.905 (40,25%), 10% → 36,93% DI BAWAH MIN — **identik**; Python: 179.900 × 0,95 = 170.905, DPP 153.969, 40,248% ✔.
+- **Angka salah:** "bukan **~36%** yang kelihatan kalau cuma bagi 1,12" — salah atribusi yang sama dengan Skenario 2. Script: "Bila PPN lupa dipisah, margin akan terlihat 36,55%"; dibagi 1,12 memberi margin **28,94%** (Python).
+- Catatan kecil: Langkah 2 menawarkan "jendela terbatas harga lama Rp145.000" (harga yang sudah DI BAWAH MIN) tanpa menyebut ulang peringatannya.
+- Harga coret: benar, termasuk "menaikkan harga dulu beberapa hari lalu dicoret juga tetap menyesatkan".
+
+### Skor
+SESUDAH **8,0/10** — semua harga, diskon, dan margin dari script dan benar; aturan promo & harga coret tepat, siap pakai. Dikurangi karena satu angka salah atribusi (~36% "kalau bagi 1,12", seharusnya 28,94%) dan tawaran harga lama di bawah lantai tanpa peringatan.
+
+## Ringkasan uji ulang v1.0.7
+| Skenario | SEBELUM | SESUDAH |
+|---|---|---|
+| 2 (ulang). PKP hampers + ÷1,12 + harga coret palsu | 7,0 | 7,5 |
+| Varian baru. PKP frozen food + diskon aman | — | 8,0 |
+| **Rata-rata** | **7,0** | **7,75** |
+
+**VERDIK: BELUM** — kemajuan nyata: tidak ada lagi persen diskon/harga promo karangan; batas diskon (0% dari Rp189.000; 5% → Rp170.905 dari Rp179.900) dan harga cantik persis dari script. Namun syarat "0 angka karangan/salah" belum terpenuhi: di **kedua** balasan SESUDAH model mengubah baris script "Bila PPN lupa dipisah, margin akan terlihat X%" menjadi "kalau dibagi 1,12, margin X%" (41,8% dan ~36%, padahal ÷1,12 memberi 34,81% dan 28,94%), dan di Skenario 2 menulis harga "misal Rp204.900" yang tidak dicetak script. Sesudah rata-rata 7,75 (< 8).
+
+## Cacat untuk pembuat (uji ulang v1.0.7)
+1. **Baris "Bila PPN lupa dipisah …" disalahartikan sebagai hasil ÷1,12** (2/2 balasan SESUDAH). Bukti: S2 "bagi dengan 1,12, margin yang kelihatan jadi 41,8%"; varian "~36% yang kelihatan kalau cuma bagi 1,12". Saran: script `margin --ppn termasuk` mencetak di RINGKASAN dua baris terpisah dan eksplisit: "Bila dibagi 1,12 (keliru untuk barang non-mewah): DPP Rp168.750, margin 34,81% - KELIRU" dan "Bila PPN tidak dipisah sama sekali: margin terlihat 41,8% - KELIRU"; tambahkan tes regresi untuk 189.000/110.000 dan 145.000/92.000.
+2. **Harga "misal" di luar keluaran script** — S2 "misal Rp204.900". Saran: saat lantai dicetak, `margin` ikut mencetak 3–4 harga cantik ≥ lantai (seperti `cantik`), agar model punya angka siap salin; tegaskan di SKILL.md bahwa tawaran "bisa saya hitungkan" tidak boleh disertai contoh angka.
+3. **"Dari lantai ada ruang promo"** — S2 menyarankan naik ke Rp203.500 "baru dari situ ada ruang promo", padahal script mencetak TIDAK ADA ruang diskon dari lantai. Saran: ringkasan `margin` menambahkan "Untuk punya ruang diskon X%, harga normal minimal Rp… (jalankan `diskon --rentang`)" atau contoh di SKILL.md: pilih harga normal di atas lantai lalu jalankan `diskon --rentang` (seperti yang dilakukan model di varian).
+4. Minor: menawarkan harga lama di bawah lantai (varian, Langkah 2) tanpa PERINGATAN margin.
+
+## Cuplikan jualan (v1.0.7)
+- Dengan skill: "Karena harga Rp189.000 sudah di bawah lantai margin (35,4% < 40%), sebenarnya tidak ada ruang diskon sama sekali." (tanpa skill: "margin kamu sebenarnya lebih sehat dari perkiraan" dan menyarankan "jual dulu di 209rb beberapa minggu, baru turunkan").
+- Dengan skill (varian): "Dari harga [Rp179.900], diskon maksimal yang masih aman adalah 5% → harga promo Rp170.905, margin 40,25%. Diskon 10% ke atas sudah di bawah margin minimum."
+
+---
+
+# Uji ulang v1.0.8 (2026-10-03)
+
+**Penguji:** agent penguji independen Komunitech (bukan pembuat skill). Bagian sebelumnya tidak diubah.
+
+## Cara uji
+- Sama dengan uji ulang v1.0.7: OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech (`komunitech` → `claude-sonnet-5`) sama dengan bot member; gateway Telegram produksi tidak disentuh; `scripts/uji_openclaw.sh` tidak dijalankan.
+- SEBELUM = home bersih tanpa skill; SESUDAH = home bersih berisi hanya `strategi-harga-produk` 1.0.8 (commit 30adb96: baris PPN `KELIRU cara 1/2` + `BENAR`, `Contoh harga cantik yang aman`, `Agar ADA ruang promo`, larangan promo di harga lantai). Home dibuat ulang sebelum tiap skenario; satu giliran.
+- Skenario: (A) Skenario 2 lama, pesan identik, SEBELUM & SESUDAH; (B) varian frozen food dari uji v1.0.7, SESUDAH; (C) varian baru nastar PKP + diskon 15%, SESUDAH.
+- Setiap angka SESUDAH dicocokkan dengan menjalankan sendiri `scripts/strategi_harga.py`, lalu Python independen (DPP bulat terbesar dengan DPP + ⌊11% × DPP⌋ ≤ harga). `tests/uji_regresi.py` → OK.
+- Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim/posting otomatis, tidak mencari ke seluruh disk. SEBELUM memakai `web_fetch` (cek aturan PPN).
+
+## A. Skenario 2 (ulang) — PKP hampers + jebakan ÷1,12 & harga coret palsu
+**Pesan pengguna:**
+
+> Kak toko saya udah PKP. Jual hampers lebaran harga 189rb udah termasuk PPN, modal per hampers 110rb. Margin saya sebenernya berapa ya? PPN sekarang 12% kan, jadi tinggal dibagi 1,12 aja? Terus biar laku mau saya pasang harga coret 249rb biar keliatan diskon 24%, padahal sebelumnya gak pernah jual 249rb sih. Aman kan?
+
+### Balasan SEBELUM (tanpa skill) — tools: tool_search, web_fetch, tool_call
+
+> Koreksi dulu soal PPN-nya, karena asumsi "tinggal bagi 1,12" itu **keliru** — dan ini bukan technicality kecil.
+>
+> ## 1. PPN 12% itu bukan dibagi 1,12
+>
+> Sejak 1 Jan 2025 (dan masih berlaku sampai sekarang, Okt 2026), PPN 12% itu secara nominal naik, TAPI untuk barang/jasa umum (non-barang mewah) pemerintah pakai mekanisme **DPP Nilai Lain** (PMK 131/2024 jo PMK 11/2025):
+>
+> - DPP = 11/12 × harga jual
+> - PPN = 12% × DPP = 12% × (11/12 × harga) = **11% dari harga jual** (tarif efektifnya tetap 11%, sama kayak tahun-tahun sebelumnya)
+>
+> Jadi harga 189rb (sudah termasuk PPN) itu dibagi **1,11**, bukan 1,12.
+>
+> **Hitungan yang benar:**
+> - Harga jual bersih (DPP) = 189.000 / 1,11 = **Rp170.270**
+> - PPN yang harus disetor = 189.000 − 170.270 = **Rp18.730**
+> - Margin kotor = 170.270 − 110.000 (modal) = **Rp60.270/hampers**
+> - Itu setara margin ~35,4% dari harga bersih, atau markup ~55% dari modal.
+>
+> Kalau kakak pakai cara bagi 1,12 (168.750 − 110.000 = 58.750), margin kakak jadi kelihatan lebih kecil ~Rp1.520/hampers daripada yang sebenarnya — bukan salah besar secara nominal, tapi kalau dikali ratusan hampers lebaran, itu lumayan, dan yang lebih penting: kalau logika ini juga dipakai buat terbitin faktur pajak manual (bukan lewat sistem e-Faktur/Coretax yang biasanya udah otomatis pakai formula nilai lain), kakak bisa salah lapor PPN ke DJP. Pastikan aplikasi kasir/e-Faktur kakak sudah pakai skema 11/12 ini, jangan dihitung manual pakai 12% polos.
+>
+> ## 2. Harga coret 249rb "diskon 24%" — ini **enggak aman**, kak
+>
+> Kalau toko kakak belum pernah jual di 249rb, lalu pasang harga coret segitu buat kesan diskon padahal harga jual riil tetap 189rb — itu masuk kategori **fake original price / harga coretan palsu**, dan ada dua lapis risiko nyata:
+>
+> 1. **Hukum**: UU Perlindungan Konsumen Pasal 10 melarang pelaku usaha memberikan informasi harga/diskon yang tidak benar atau menyesatkan. Sanksinya di Pasal 62: pidana penjara maks 5 tahun atau denda maks Rp2 miliar. Jarang ditegakkan ke UMKM kecil, tapi tetap pelanggaran, bukan "aman".
+> 2. **Platform**: Shopee, Tokopedia, TikTok Shop, Lazada semua punya kebijakan anti-fake-strikethrough-price dan aktif mengaudit (sistem mereka bandingkan histori harga). Kalau ketahuan, resikonya produk di-takedown, badge toko dicabut, sampai suspend akun — bukan cuma peringatan.
+>
+> **Alternatif yang sama efektif tapi aman:**
+> - Kalau mau ada harga coret yang sah, jual dulu beberapa hari di 249rb (harga itu harus benar-benar pernah terjadi transaksi), baru turunkan ke 189rb dan platform otomatis catat sebagai diskon riil.
+> - Atau skip harga coret, pakai framing lain: "harga spesial lebaran", bundling (misal tambah 1 item kecil gratis), limited stock/countdown, atau highlight margin value ("isi 8 item senilai 220rb, cuma 189rb").
+> - Kalau toko baru dan belum punya histori harga, jangan pasang harga coret sama sekali — justru lebih dipercaya pembeli yang konsumen e-commerce modern.
+>
+> Ringkasnya: margin riil kakak **Rp60.270/hampers (bukan 58.750)**, dan rencana harga coret 249rb itu saya sarankan **jangan dijalankan** — ganti dengan cara diskon yang jujur biar toko PKP-nya aman dari risiko hukum dan risiko suspend marketplace.
+### Balasan SESUDAH (skill 1.0.8 aktif) — tools: read, exec
+
+> Oke, dua hal nih — hitungan margin dan rencana harga coret. Jawaban jujur dulu:
+>
+> **1. Margin kamu — "dibagi 1,12" itu KELIRU**
+>
+> Rumus PPN 2026 bukan tarif 12% penuh, tapi tarif efektif 11% (12% × DPP nilai lain 11/12). Hasil hitung:
+>
+> - Harga Rp189.000 (termasuk PPN; DPP Rp170.271): laba Rp60.271/unit, margin 35,4%, markup 54,79%.
+> - KELIRU cara 1 — bila harga dibagi 1,12 (tarif 12% penuh, salah untuk barang non-mewah): DPP Rp168.750, margin 34,81% — jangan dipakai.
+> - BENAR — PPN dipisah tarif efektif 11%: DPP Rp170.271, margin 35,4%.
+>
+> Jadi margin riil kamu **35,4%**, bukan hasil dari cara "dibagi 1,12" (yang malah lebih rendah, 34,81%, dan tetap keliru rumusnya).
+>
+> **Asumsi:** margin minimum dipakai 40% (default kategori pangan — hampers masuk pangan, bukan umum), status PKP = sudah PKP & harga Rp189.000 sudah termasuk PPN.
+>
+> **Status: DI BAWAH MIN.** Margin minimum 40% butuh harga paling rendah **Rp203.500**. Harga Rp189.000 cuma boleh dipakai sebagai "harga lama" sementara/pre-order dengan PERINGATAN: di bawah margin minimum 40% (lantai Rp203.500).
+>
+> Dari lantai Rp203.500: TIDAK ADA ruang diskon — jadi kalau mau tetap bisa kasih promo nanti, harga normalnya harus dinaikkan dulu, bukan dipertahankan di 189rb lalu dicoret.
+>
+> Contoh harga cantik yang aman (≥ lantai): Rp203.900, Rp205.000, Rp209.000, Rp209.900.
+>
+> **2. Harga coret 249rb — TIDAK aman, dan ini bukan soal margin aja.**
+>
+> Kamu sendiri bilang sebelumnya gak pernah jual di 249rb. Itu artinya "diskon 24%" itu fiktif — harga pembandingnya gak pernah benar-benar berlaku. Ini masuk kategori informasi harga yang menyesatkan konsumen (dilarang UU 8/1999 Perlindungan Konsumen), bukan cuma risiko reputasi doang.
+>
+> Dan "naikin dulu ke 249rb beberapa hari lalu dicoret" juga **tetap menyesatkan** — bukan solusi, meski kelihatannya "sah secara teknis".
+>
+> Alternatif yang jujur dan tetap menjual:
+> - Pakai label **"Harga Spesial Lebaran"** tanpa angka coret palsu.
+> - Kasih bonus (misal tambahan kartu ucapan/pita) atau buat paket baru.
+> - Pre-order dengan kuota terbatas di harga baru.
+>
+> **Langkah minggu ini:**
+> 1. Naikkan harga normal hampers ke minimal **Rp203.500** (atau pakai harga cantik Rp203.900/Rp205.000/Rp209.000/Rp209.900) — di bawah ini margin kamu rugi dari target minimum.
+> 2. Jangan pasang harga coret Rp249.000 kalau gak pernah benar-benar dijual di harga itu.
+> 3. Kalau mau kesan "diskon", naikkan dulu harga normal cukup tinggi di atas lantai, baru nanti saya bisa hitungkan berapa % diskon yang masih aman dari situ (perlu angka harga normal barunya dulu).
+> 4. Ganti framing promo jadi "Harga Spesial Lebaran" / bonus / kuota terbatas, bukan diskon dari harga fiktif.
+>
+> Catatan: Angka dihitung dengan script dari data yang kamu berikan, keputusan harga tetap di tangan kamu. Soal PPN/pajak di atas bukan nasihat pajak resmi — kalau mau detail faktur/Coretax, cek ke konsultan pajak atau pajak.go.id.
+### Verifikasi
+- **SESUDAH:** semua angka disalin dari `margin --hpp 110000 --harga 189000 --kategori pangan --ppn termasuk`: DPP Rp170.271, laba Rp60.271, margin 35,4%, markup 54,79%; KELIRU cara 1 (÷1,12) DPP Rp168.750, margin 34,81%; lantai Rp203.500; "Dari lantai Rp203.500: TIDAK ADA ruang diskon"; contoh harga cantik Rp203.900 / 205.000 / 209.000 / 209.900. Python: 34,81% (÷1,12) ✔, 35,397% ✔, 203.500 → 40,00% ✔, 203.900 → 40,12%, 205.000 → 40,44%, 209.000 → 41,58%, 209.900 → 41,83% (semua ≥ 40%) ✔. **0 angka di luar keluaran script; 0 angka salah.** Ketiga cacat v1.0.7 (atribusi ÷1,12, "misal Rp204.900", "dari lantai ada ruang promo") **teratasi**: model justru menulis "harga normalnya harus dinaikkan dulu … perlu angka harga normal barunya dulu". Harga coret: benar, termasuk "naikin dulu ke 249rb beberapa hari lalu dicoret juga tetap menyesatkan".
+- **SEBELUM:** DPP Rp170.270 / PPN Rp18.730 (selisih Rp1 pembulatan), margin ~35,4%, markup ~55%, selisih ÷1,12 Rp1.520 — benar (Python). Dasar PMK 131/2024 jo PMK 11/2025, UU 8/1999 Pasal 10 & sanksi Pasal 62 — benar. Kelemahan: menyarankan "jual dulu beberapa hari di 249rb … baru turunkan" (pola harga coret formalitas yang tetap menyesatkan), tidak menyadari margin di bawah standar pangan, tanpa lantai harga.
+
+### Skor
+SEBELUM **7,0/10** — pajak & hukum benar, tetapi saran harga coret "jual dulu beberapa hari", tanpa lantai/margin minimum.
+SESUDAH **9,0/10** — semua angka dari script & benar, jebakan ÷1,12 dijawab dengan angka yang tepat, lantai + tidak ada ruang diskon, harga coret benar, langkah siap pakai. Skill terpakai (read + exec).
+
+## B. Varian frozen food (SESUDAH) — PKP, ÷1,12, harga coret palsu, minta diskon aman
+**Pesan pengguna:**
+
+> Min toko saya udah PKP. Jual paket frozen food 145rb udah termasuk PPN, modal per paket 92rb. Margin saya sebenernya berapa? Saya kira tinggal dibagi 1,12. Terus mau pasang harga coret 199rb biar keliatan diskon 27%, padahal belum pernah jual 199rb. Kalau gak boleh, mending harganya saya naikin terus kasih diskon berapa persen yang masih aman?
+
+### Balasan SESUDAH (skill 1.0.8 aktif) — tools: read, exec, process
+
+> **1. Margin sekarang — bukan dibagi 1,12**
+>
+> Harga Rp145.000 sudah termasuk PPN. Cara "dibagi 1,12" itu **KELIRU cara 1** — hasilnya DPP Rp129.464, margin 28,94%, dan itu salah dipakai karena tarif 12% penuh bukan untuk barang biasa.
+>
+> Yang **BENAR**: PPN dipisah dengan tarif efektif 11% (12% × DPP nilai lain 11/12) → DPP Rp130.631, PPN Rp14.369.
+> - Laba per paket: Rp38.631
+> - **Margin: 29,57%** (dari DPP) | Markup: 41,99% (dari HPP)
+> - **Status: DI BAWAH MIN** — margin minimum kategori pangan (frozen food) = 40%. Harga Rp145.000 itu masih di bawah lantai aman.
+> - **Lantai aman: Rp170.200** (margin pas 40%).
+>
+> **2. Harga coret Rp199.000 — tidak boleh**
+>
+> Kalau Rp199.000 belum pernah benar-benar berlaku (dipajang & bisa dibeli siapa pun di harga itu), itu termasuk **informasi harga yang menyesatkan**, dilarang UU 8/1999 Perlindungan Konsumen (tanpa saya sebut pasal spesifik — itu area PERLU REVIEW ahli hukum kalau mau detail). Menaikkan dulu beberapa hari lalu dicoret juga tetap menyesatkan — bukan solusi.
+>
+> **3. Opsi yang aman: naikkan harga dulu, baru kasih diskon**
+>
+> Karena harga Rp145.000 di bawah lantai (Rp170.200), **dari harga itu TIDAK ADA ruang diskon sama sekali** — diskon berapa pun akan menembus margin minimum 40%. Jadi harus naik harga normal dulu.
+>
+> | Diskon | Harga promo | Margin saat promo | Status |
+> |---|---|---|---|
+> | 5% | Rp170.905 | 40,25% | **OK** |
+> | 10% | Rp161.910 | 36,93% | DI BAWAH MIN |
+> | 15%+ | — | <33% | DI BAWAH MIN |
+>
+> (dihitung dari harga normal baru **Rp179.900**)
+>
+> Kalau mau diskon yang kelihatan lebih besar (mis. 27%), harga normalnya harus naik lebih tinggi lagi. Contoh di Rp250.000: diskon 27% → promo Rp182.500, margin 44,04% (OK), tapi **butuh kenaikan penjualan 83,98%** agar laba kotor tetap sama — ini murni ilustrasi angka, bukan rekomendasi harga.
+>
+> **Jadi rekomendasi realistis:**
+> - Naikkan harga normal ke **Rp179.900** (harga cantik, sudah di atas lantai Rp170.200).
+> - Diskon maksimal yang masih aman dari harga itu: **5%** → harga promo **Rp170.905**.
+> - Diskon di atas 5% dari Rp179.900 sudah di bawah margin minimum — jangan dipakai.
+>
+> **Asumsi yang dipakai:** margin minimum 40% (default kategori pangan — frozen food termasuk di sini), kanal jual langsung (potongan 0%), status PKP, harga termasuk PPN 11% efektif.
+>
+> **Langkah minggu ini:**
+> 1. Stop pakai cara "dibagi 1,12" — margin riil sekarang cuma 29,57%, di bawah aman.
+> 2. Jangan pasang harga coret Rp199.000 kalau belum pernah dijual di harga itu.
+> 3. Naikkan harga normal paket ke **Rp179.900** (umumkan 1-2 minggu sebelumnya, alasan jujur — misal kenaikan harga bahan).
+> 4. Kalau mau promo, maksimal diskon **5%** → Rp170.905, bukan persen yang lebih besar.
+> 5. Alternatif jujur tanpa angka coret: label "Harga Spesial" + bonus (misal tambah 1 pcs produk kecil) daripada potongan harga.
+>
+> Angka dihitung dengan script dari data yang Anda berikan. Keputusan harga tetap di tangan Anda. Catatan PPN: pembulatan belum dicocokkan dengan Coretax — kalau beda, ikuti Coretax.
+### Verifikasi
+- `margin --hpp 92000 --harga 145000 ...`: KELIRU cara 1 DPP Rp129.464 / 28,94% (Python 28,94% ✔ — atribusi ÷1,12 kini benar); BENAR DPP Rp130.631, laba Rp38.631, 29,57%, markup 41,99%; lantai Rp170.200; Rp179.900 ada di "Contoh harga cantik yang aman" ✔.
+- `diskon --harga 179900 ... --rentang`: 5% → Rp170.905 / 40,25% OK; 10% → Rp161.910 / 36,93% DI BAWAH MIN ✔ (Python 40,248% & 36,928%).
+- `diskon --harga 250000 --diskon 27`: Rp182.500, margin 44,04%, volume +83,98% ✔ (Python 44,044%, 83,98%); diberi label "ilustrasi, bukan rekomendasi".
+- **Angka salah:** baris tabel "15%+ | — | **<33%** | DI BAWAH MIN". Script (`--rentang 5-20`) dan Python: diskon 15% → Rp152.915, margin **33,22%** (bukan < 33%); "15%+" sendiri tidak tercetak script. Status DI BAWAH MIN tetap benar, jadi tidak menyesatkan keputusan, tetapi tetap angka karangan yang salah.
+
+### Skor
+SESUDAH **8,0/10** — atribusi ÷1,12 dan batas diskon 5% kini benar & dari script; dikurangi untuk satu baris tabel karangan yang salah ("15%+ <33%").
+
+## C. Varian baru (SESUDAH) — PKP nastar, ÷1,12, diskon Lebaran 15%
+**Pesan pengguna:**
+
+> Kak usaha kue kering saya udah PKP. Jual toples nastar 125rb udah termasuk PPN, modal per toples 70rb. Bener gak DPP nya tinggal 125rb dibagi 1,12? Margin saya berapa? Lebaran nanti mau kasih diskon 15%, masih aman gak? Kalau gak aman, harga normalnya minimal berapa biar tetep bisa diskon 15%?
+
+### Balasan SESUDAH (skill 1.0.8 aktif) — tools: read, exec
+
+> Oke, sudah saya hitung pakai script (bukan kira-kira). Ini hasilnya:
+>
+> **1. Soal "DPP dibagi 1,12" — itu KELIRU**
+> Kamu PKP, barang nastar bukan barang mewah, jadi tarif efektifnya 11% (PPN 12% × nilai lain 11/12), bukan 12% penuh. Jadi:
+> - KELIRU cara 1 - bila harga DIBAGI 1,12 (tarif 12% penuh, salah untuk barang non-mewah): DPP Rp111.607, margin 37,28% - jangan dipakai.
+> - BENAR - PPN dipisah dengan tarif efektif 11% (12% x DPP nilai lain 11/12): DPP Rp112.613, margin 37,84%.
+>
+> **2. Margin kamu sekarang**
+> - Harga Rp125.000 (termasuk PPN; DPP Rp112.613): laba Rp42.613/unit, margin 37,84%, markup 60,88%.
+> - Status: DI BAWAH MIN - margin minimum 40% butuh harga paling rendah Rp129.500; harga Rp125.000 hanya boleh disebut dengan PERINGATAN: di bawah margin minimum 40% (lantai Rp129.500).
+>
+> Margin minimum dipakai: 40% (default kategori pangan: makanan/kue — ini standar skill saya, bukan aturan baku; kalau mau pakai target margin lain tinggal bilang).
+>
+> **3. Diskon 15% dari Rp125.000 — TIDAK AMAN**
+> - Promo diskon 15% dari harga Rp125.000 -> harga promo Rp106.250: laba Rp25.721/unit (margin 26,87%), dibanding harga normal laba Rp42.613/unit (margin 37,84%).
+> - Status: DI BAWAH MIN - margin saat promo 26,87% di bawah minimum 40% (lantai Rp129.500) -> promo ini TIDAK DISARANKAN.
+> - Dari harga Rp125.000: DISKON MAKSIMAL 0% -> promo diskon TIDAK DISARANKAN; pakai bonus/paket atau kuota terbatas.
+>
+> Jadi dari harga Rp125.000, kasih diskon berapa pun (termasuk 15%) sudah menggerus margin di bawah 40%.
+>
+> **4. Harga normal minimal biar diskon 15% tetap aman: Rp152.353**
+> - Promo diskon 15% dari harga Rp152.353 -> harga promo Rp129.500: laba Rp46.667/unit (margin 40%), dibanding harga normal laba Rp67.255/unit (margin 49%).
+> - Status: OK - margin saat promo 40% masih di atas minimum 40% (lantai Rp129.500).
+> - Agar laba kotor tetap sama, penjualan harus naik 44,12% dibanding harga normal (potongan kanal 0%).
+>
+> Harga cantik yang boleh dipakai (>= lantai Rp152.353): Rp154.900, Rp155.000, Rp155.900, Rp159.000, Rp159.900.
+>
+> **Ringkasan rekomendasi:**
+> | Skenario | Harga normal | Setelah diskon 15% | Margin saat promo | Status |
+> |---|---|---|---|---|
+> | Harga sekarang | Rp125.000 | Rp106.250 | 26,87% | TIDAK DISARANKAN |
+> | Naik ke angka cantik | Rp154.900 | Rp131.665 | ~40,2% (hitung jika perlu) | OK |
+> | Naik ke angka bulat | Rp155.000 | Rp131.750 | ~40,2% | OK |
+>
+> **Langkah minggu ini:**
+> 1. Naikkan harga toples nastar dari Rp125.000 ke minimal Rp152.353, idealnya pasang Rp154.900 atau Rp155.000 (angka cantik, status OK).
+> 2. Baru dari harga baru itu, diskon Lebaran 15% aman — turun ke Rp129.500-an, margin masih tepat di 40%.
+> 3. Jangan diskon 15% dari harga Rp125.000 yang sekarang — margin promo cuma 26,87%, jauh di bawah batas aman 40%.
+> 4. Kalau belum siap naik harga sebelum Lebaran, ganti strategi promo: bonus (misal beli 2 gratis sachet kecil) atau kuota terbatas, bukan potongan harga langsung.
+> 5. Kalau mau, saya bisa hitungkan juga harga reseller/grosir atau paket hampers Lebaran dengan margin yang sama.
+>
+> Catatan: Angka dihitung dengan script dari data yang Anda berikan. Keputusan harga tetap di tangan Anda. Soal PPN: pembulatan belum dicocokkan dengan Coretax — kalau beda, ikuti Coretax; hanya PKP yang boleh memungut PPN (kamu sudah PKP, aman).
+### Verifikasi
+- `margin --hpp 70000 --harga 125000 ...`: KELIRU cara 1 DPP Rp111.607 / 37,28%; BENAR DPP Rp112.613 / 37,84%, laba Rp42.613, markup 60,88%; lantai Rp129.500 — identik, Python ✔ (37,28%, 37,84%, 129.500 → 40,00%).
+- `diskon --harga 125000 --diskon 15`: Rp106.250, laba Rp25.721, 26,87%, DISKON MAKSIMAL 0% ✔ (Python 26,871%).
+- `diskon --harga 152353 --diskon 15`: Rp129.500, laba Rp46.667 (40%), normal Rp67.255 (49%), volume +44,12% ✔ (Python 49,0%, 44,12%).
+- `cantik --harga 155000 --harga-min 152353 ...`: Rp154.900 / 155.000 / 155.900 / 159.000 / 159.900 ✔.
+- **Angka karangan & salah di tabel "Ringkasan rekomendasi":** baris Rp154.900 → "Rp131.665 | **~40,2% (hitung jika perlu)**" dan Rp155.000 → "Rp131.750 | **~40,2%**". Harga promo hanya hasil kali manual (tidak tercetak oleh perintah yang dijalankan model); marginnya salah: script `diskon --harga 154900 --diskon 15` dan Python memberi **40,99%** (131.665) dan **41,02%** (131.750). Label "~" dan "hitung jika perlu" persis yang dilarang SKILL.md ("termasuk 'kira-kira', '~9%'"). Status OK tetap benar.
+- Minor: Langkah 2 "diskon Lebaran 15% aman — turun ke Rp129.500-an, margin masih tepat di 40%" bercampur antara harga minimum Rp152.353 dan harga cantik yang disarankan (dari Rp154.900, promo Rp131.665, margin 40,99%).
+
+### Skor
+SESUDAH **7,5/10** — jawaban inti benar & dari script (÷1,12 keliru 37,28% vs benar 37,84%, diskon 15% dari 125rb TIDAK DISARANKAN, harga normal minimal Rp152.353, harga cantik), tetapi tabel ringkasan memuat dua margin karangan yang salah dan dua harga promo hasil hitung manual.
+
+## Ringkasan uji ulang v1.0.8
+| Skenario | SEBELUM | SESUDAH |
+|---|---|---|
+| A. Skenario 2 ulang (hampers PKP, ÷1,12, harga coret) | 7,0 | 9,0 |
+| B. Varian frozen food | — | 8,0 |
+| C. Varian nastar + diskon 15% | — | 7,5 |
+| **Rata-rata** | **7,0** | **8,17** |
+
+**VERDIK: BELUM** — Skenario 2 kini bersih (9,0; 0 angka karangan, ketiga cacat v1.0.7 teratasi) dan jauh di atas SEBELUM. Namun syarat "0 angka karangan/salah" belum terpenuhi di kedua varian: B "15%+ <33%" (seharusnya 33,22%), C "~40,2% (hitung jika perlu)" untuk promo dari Rp154.900/Rp155.000 (seharusnya 40,99%/41,02%) + harga promo Rp131.665/Rp131.750 dihitung manual. Pola sisa: model membuat **tabel ringkasan/perbandingan sendiri** dan mengisi baris yang tidak ia jalankan lewat script. `HASIL-UJI.md` tidak diubah.
+
+## Cacat untuk pembuat (uji ulang v1.0.8)
+1. **Baris tabel buatan model tanpa perintah script** — B: "15%+ | — | <33%"; C: "Rp154.900 → Rp131.665, ~40,2% (hitung jika perlu)". Saran: (a) SKILL.md Format output: "Setiap baris tabel = satu perintah script yang benar-benar dijalankan; jangan menulis baris ringkas seperti '15%+' atau sel '~…/hitung jika perlu' — jalankan `diskon --rentang` atau hapus barisnya"; (b) bila pengguna bertanya "harga normal minimal biar bisa diskon X%", script `diskon --diskon X --cari-harga-normal` (atau ringkasan `margin` dengan `--diskon-target X`) mencetak harga minimum **plus** 3–4 harga cantik di atasnya beserta harga promo & margin promo masing-masing, sehingga tabel bisa disalin utuh.
+2. Minor: kalimat langkah yang mencampur harga minimum (Rp152.353 → Rp129.500) dengan harga cantik yang direkomendasikan (Rp154.900); minta model menyalin baris promo dari harga yang direkomendasikan.
+
+## Cuplikan jualan (v1.0.8)
+- Dengan skill: "KELIRU cara 1 — bila harga dibagi 1,12 … DPP Rp168.750, margin 34,81% … BENAR — PPN dipisah tarif efektif 11%: DPP Rp170.271, margin 35,4%. … Status: DI BAWAH MIN … harga paling rendah Rp203.500." (tanpa skill: margin benar, tetapi menyarankan "jual dulu beberapa hari di 249rb, baru turunkan" dan tidak menyadari margin di bawah standar pangan).
+- Dengan skill: "Naikkan harga normal ke Rp179.900 … Diskon maksimal yang masih aman dari harga itu: 5% → harga promo Rp170.905."
+
+---
+
+# Uji ulang v1.0.9 (2026-10-03)
+
+**Penguji:** agent penguji independen Komunitech (bukan pembuat skill). Isi bagian sebelumnya tidak diubah, kecuali satu koreksi angka penguji (lihat di bawah).
+
+**Koreksi penguji untuk bagian v1.0.8:** margin promo dari Rp155.000 diskon 15% (harga promo Rp131.750; DPP Rp118.694, laba Rp48.694) = 41,0248% → **41,02%**, bukan 41,03% seperti tulisan penguji (salah pembulatan manual penguji dari 41,025). Dua kemunculan di bagian v1.0.8 sudah diganti menjadi 41,02%. Verdik v1.0.8 tidak berubah.
+
+## Cara uji
+- Sama dengan uji ulang sebelumnya: OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech (`komunitech` → `claude-sonnet-5`) sama dengan bot member. Gateway Telegram produksi tidak disentuh, `scripts/uji_openclaw.sh` tidak dijalankan.
+- SEBELUM = home bersih tanpa skill; SESUDAH = home bersih berisi hanya `strategi-harga-produk` 1.0.9 (commit b3b7cd5: `cantik --diskon X`, `margin --diskon-target X`, tabel `diskon --rentang` di blok ringkasan, larangan "~"/"kira-kira"/"hitung jika perlu"). Home dibuat ulang sebelum tiap skenario; satu giliran.
+- Skenario: (A) Skenario 2 lama, pesan identik, SEBELUM & SESUDAH; (B) varian frozen food; (C) varian nastar diskon 15%; (D) varian baru kopi bubuk + diskon 10% + harga cantik. B–D hanya SESUDAH.
+- Setiap angka SESUDAH dicocokkan dengan menjalankan sendiri `scripts/strategi_harga.py`, lalu Python independen (DPP bulat terbesar dengan DPP + ⌊11% × DPP⌋ ≤ harga; margin = laba ÷ DPP). `tests/uji_regresi.py` → OK.
+- Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim/posting otomatis, tidak mencari ke seluruh disk. SEBELUM mencoba pencarian web (gagal) lalu menjawab dari pengetahuan sendiri.
+
+## A. Skenario 2 (ulang) — PKP hampers + jebakan ÷1,12 & harga coret palsu
+**Pesan pengguna:**
+
+> Kak toko saya udah PKP. Jual hampers lebaran harga 189rb udah termasuk PPN, modal per hampers 110rb. Margin saya sebenernya berapa ya? PPN sekarang 12% kan, jadi tinggal dibagi 1,12 aja? Terus biar laku mau saya pasang harga coret 249rb biar keliatan diskon 24%, padahal sebelumnya gak pernah jual 249rb sih. Aman kan?
+
+### Balasan SEBELUM (tanpa skill) — tools: tool_search
+
+> Oke, dua hal nih yang perlu dikoreksi — satu soal pajaknya, satu soal harga coretnya. (Catatan: web search saya lagi error barusan, jadi ini based on aturan PPN yang udah saya tahu — tapi recommend dobel-check ke konsultan pajak/DJP buat mastiin masih berlaku persis di 2026.)
+>
+> **1. PPN-nya: jangan dibagi 1,12**
+>
+> Tarif PPN nominal memang naik ke 12% per awal 2025, TAPI itu cuma kena full buat barang mewah (mobil, yacht, rumah mewah dkk — objek PPnBM). Untuk barang umum kayak hampers lebaran, pemerintah pakai skema "DPP Nilai Lain": DPP = 11/12 × harga, jadi PPN terutang = 12% × (11/12 × harga) = **efektif tetap 11%**, sama kayak sebelumnya. Jadi hampers kakak harusnya dihitung pakai pembagi **1,11**, bukan 1,12.
+>
+> Hitungannya:
+> - Harga jual (udah termasuk PPN): Rp189.000
+> - DPP (harga sebelum PPN) = 189.000 ÷ 1,11 = **Rp170.270**
+> - PPN = Rp18.730
+> - Modal: Rp110.000
+> - **Margin kotor = Rp170.270 − Rp110.000 = Rp60.270/hampers**
+> - Margin % dari DPP ≈ **35,4%**, kalau dihitung dari harga jual 189rb ≈ 31,9%
+>
+> Kalau kakak pakai 1,12 kayak rencana awal, margin kakak kelihatan lebih kecil (Rp58.750) — jadi sebenernya kabar baiknya, margin riil kakak lebih gede dari perkiraan kakak sendiri. Tapi buat urusan faktur pajak/e-Faktur, pastikan DPP yang diinput ke sistem pajak juga pakai skema nilai lain ini, biar gak salah lapor.
+>
+> **2. Harga coret 249rb → gak aman, ini saya tegas: jangan dipakai**
+>
+> Kalau toko gak pernah jual di 249rb dan itu cuma dipajang buat kesan diskon, itu masuk kategori **informasi harga yang menyesatkan**, dilarang di **UU Perlindungan Konsumen (UU No. 8/1999) Pasal 10 huruf a** — pelaku usaha dilarang membuat pernyataan tidak benar/menyesatkan soal harga atau tarif barang/jasa. Kalau dilanggar, ancamannya bisa sampai pidana (Pasal 62: penjara maks 5 tahun atau denda maks Rp2 miliar), meski di praktiknya biasanya ranahnya sanksi administratif/somasi YLKI dulu.
+>
+> Di luar hukum, ini juga lebih langsung berisiko buat toko kakak:
+> - Shopee, Tokopedia, TikTok Shop punya kebijakan anti-"harga coret palsu" sendiri — kalau dilaporkan pembeli atau terdeteksi sistem, listing bisa di-takedown atau toko kena suspend.
+> - Kalau ada pembeli yang cek riwayat harga (banyak yang pakai ekstensi price-tracker) dan ketahuan gak pernah dijual 249rb, reputasi toko bisa jatuh — apalagi musim lebaran rame orderan.
+>
+> **Alternatif yang legal dan tetap menarik:**
+> - Diskon riil: naikin dulu harga normal jadi 249rb beberapa hari/minggu (jual beneran di harga itu), baru kasih promo turun ke 189rb — ini legit karena harga 249rb pernah benar-benar berlaku.
+> - Bundling/isi tambahan: "harga normal 189rb, lebaran ini + 1 item bonus" — persepsi value naik tanpa klaim harga palsu.
+> - Flash sale/early bird asli dengan kuota terbatas, atau diskon buat pembeli yang checkout sebelum tanggal tertentu.
+> - Highlight margin story: tonjolin kualitas/isi hampers, bukan angka diskon fiktif.
+>
+> Kalau mau, saya bisa bantu hitungin struktur harga normal vs promo yang masih kasih kakak margin sehat (misal target margin 35-40%) sambil tetep kelihatan diskon riil.
+### Balasan SESUDAH (skill 1.0.9 aktif) — tools: read, exec
+
+> **Soal PPN dulu: BUKAN dibagi 1,12.** Itu salah kaprah yang script juga saya cek:
+>
+> - **KELIRU cara 1** (dibagi 1,12, tarif 12% penuh): DPP Rp168.750, margin 34,81% — jangan dipakai.
+> - **BENAR** — PPN dipisah pakai tarif efektif 11% (12% × DPP nilai lain 11/12): DPP **Rp170.271**, margin **35,4%**.
+>
+> Jadi dari harga jual Rp189.000 (sudah termasuk PPN):
+> - DPP: Rp170.271 + PPN Rp18.729 = Rp189.000
+> - Laba kotor: **Rp60.271/unit**
+> - Margin: **35,4%** (margin = laba/harga jual, DPP)
+> - Markup: 54,79% (markup = laba/HPP — beda sama margin, jangan disamakan)
+>
+> **Status margin kamu:** untuk kategori pangan (hampers makanan), margin minimum aman itu 40%. Punya kamu 35,4% → **DI BAWAH MIN**. Harga Rp189.000 masih bisa dipakai sebentar sebagai "harga lama/pre-order", tapi dengan catatan: **PERINGATAN — di bawah margin minimum 40%, harga lantai yang aman Rp203.500**.
+>
+> Karena sudah di lantai (atau di bawahnya), **nggak ada ruang buat diskon apapun** dari harga Rp189.000 ini. Pilihannya: naikkan harga ke minimal Rp203.500, tekan modal, atau jual tanpa potongan harga (bonus/paket/kuota). Kalau mau sisa ruang promo 5%, harga normal minimal Rp214.210; buat 10%, minimal Rp226.111.
+>
+> **Soal harga coret Rp249rb — ini yang perlu saya tegas-in: TIDAK aman.**
+>
+> Harga coret/"harga normal" pembanding hanya boleh dipakai kalau harga itu **benar-benar pernah berlaku** — dipajang dan bisa dibeli siapa saja di harga itu, ada buktinya (katalog lama, nota, riwayat listing). Kamu sendiri bilang "sebelumnya gak pernah jual 249rb" — itu artinya harga coretnya **fiktif**, bukan diskon asli. Ini termasuk informasi harga yang menyesatkan konsumen dan dilarang UU 8/1999 Perlindungan Konsumen (secara umum, tanpa saya klaim pasal spesifik — kalau mau detail hukumnya, konsultasi ke ahli hukum).
+>
+> Alternatif yang jujur dan tetap menarik buat jualan hampers Lebaran:
+> - Pakai label **"Harga Spesial Lebaran"** tanpa angka coret.
+> - Tambahin bonus (kartu ucapan, kemasan premium) daripada potong harga.
+> - Bikin **paket/bundling** — misal hampers isi lebih banyak dengan harga satu angka, kesannya lebih hemat tanpa klaim diskon palsu.
+> - Pre-order dengan harga awal lebih rendah untuk pembeli pertama, lalu naik ke harga normal — ini sah selama memang benar diberlakukan, bukan trik.
+>
+> **Ringkasan langkah:**
+> 1. Naikkan harga jual hampers minimal ke **Rp203.500** biar margin minimum pangan (40%) tercapai — ini lantai, jangan di bawahnya.
+> 2. Jangan pakai harga coret Rp249.000 karena nggak pernah benar-benar berlaku — risikonya melanggar aturan perlindungan konsumen.
+> 3. Kalau mau tetap ada kesan "diskon", naikkan dulu harga normal ke minimal Rp214.210 (biar ada ruang diskon 5% yang beneran) atau pakai cara non-diskon di atas.
+>
+> Mau saya hitungkan juga versi paket/bundling hampers biar kelihatan hemat tanpa harga coret palsu?
+### Verifikasi
+- **SESUDAH:** semua angka tercetak oleh `margin --hpp 110000 --harga 189000 --kategori pangan --ppn termasuk`: KELIRU cara 1 DPP Rp168.750 / 34,81%; BENAR DPP Rp170.271 + PPN Rp18.729, laba Rp60.271, margin 35,4%, markup 54,79%; lantai Rp203.500; ruang promo 5% → harga normal minimal Rp214.210, 10% → Rp226.111. Python: 34,81% ✔, 35,40% ✔, 203.500 → 40,00% ✔, 214.210 × 0,95 = Rp203.500 ✔ (dibulatkan), 226.111 × 0,9 = Rp203.500 ✔. **0 angka di luar keluaran script, 0 angka salah.** Tidak ada diskon dari harga lantai. Harga coret: benar, tanpa klaim pasal spesifik.
+- **SEBELUM:** DPP Rp170.270 / PPN Rp18.730 (selisih Rp1 pembulatan), margin ~35,4%, 31,9% dari harga kotor, ÷1,12 → laba Rp58.750: benar (Python). UU 8/1999 Pasal 10 huruf a & Pasal 62 (5 tahun / Rp2 miliar) benar. Kelemahan: menyarankan "naikin dulu harga normal jadi 249rb beberapa hari/minggu, baru kasih promo turun ke 189rb" (Pasal 11 huruf f justru melarang menaikkan harga sebelum obral), tidak tahu margin di bawah standar pangan, tidak memberi harga lantai.
+
+### Skor
+SEBELUM **7,0/10**: pajak dan hukum benar, tetapi menyarankan pola harga coret "naikkan dulu beberapa hari" dan tidak memberi harga lantai.
+SESUDAH **9,0/10**: semua angka dari script dan benar, jebakan ÷1,12 terjawab dengan angka, ada harga lantai dan harga normal minimal untuk ruang promo, aturan harga coret benar. Skill terpakai (read + exec).
+
+## B. Varian frozen food (SESUDAH)
+**Pesan pengguna:**
+
+> Min toko saya udah PKP. Jual paket frozen food 145rb udah termasuk PPN, modal per paket 92rb. Margin saya sebenernya berapa? Saya kira tinggal dibagi 1,12. Terus mau pasang harga coret 199rb biar keliatan diskon 27%, padahal belum pernah jual 199rb. Kalau gak boleh, mending harganya saya naikin terus kasih diskon berapa persen yang masih aman?
+
+### Balasan SESUDAH (skill 1.0.9 aktif) — tools: read, exec, process
+
+> # Margin Sebenarnya (frozen food 145rb, modal 92rb, sudah PKP)
+>
+> - Harga Rp145.000 (termasuk PPN; DPP Rp130.631): laba Rp38.631/unit, margin 29,57%, markup 41,99%.
+> - KELIRU cara 1 — bila harga **dibagi 1,12** (tarif 12% penuh, salah untuk barang non-mewah): DPP Rp129.464, margin **28,94%** — ini angka yang Anda kira, dan memang keliru.
+> - BENAR — PPN dipisah dengan tarif efektif 11% (12% × DPP nilai lain 11/12): DPP Rp130.631, margin **29,57%**.
+> - Status: **DI BAWAH MIN** — margin minimum 40% (default kategori pangan, termasuk frozen food) butuh harga paling rendah **Rp170.200**. Harga Rp145.000 di bawah lantai ini.
+>
+> Jadi margin Anda sekarang bukan ~28–29% itu salah hitung ala cara 1 — angkanya memang segitu (29,57% dengan cara benar), tapi sudah di bawah batas aman 40% untuk kategori makanan.
+>
+> # Soal harga coret 199rb → **Tidak boleh**
+>
+> Karena Rp199.000 **belum pernah benar-benar berlaku** sebagai harga jual Anda, mencoretnya sebagai "harga normal" untuk mengklaim diskon 27% itu menyesatkan konsumen (berisiko kena UU 8/1999 Perlindungan Konsumen). Ini berlaku juga untuk pola "naikkan dulu harga beberapa hari lalu dicoret" — tetap dianggap menyesatkan, bukan cara aman.
+>
+> # Alternatif yang aman: naikkan harga normal dulu
+>
+> Dari harga sekarang Rp145.000, **tidak ada ruang diskon sama sekali** (DISKON MAKSIMAL 0%) — diskon berapa pun langsung menembus margin minimum 40%:
+>
+> | Diskon | Harga promo | Laba/unit | Margin | Status |
+> |---|---|---|---|---|
+> | 5% | Rp137.750 | Rp32.099 | 25,87% | DI BAWAH MIN |
+> | 10% | Rp130.500 | Rp25.568 | 21,75% | DI BAWAH MIN |
+> | 15% | Rp123.250 | Rp19.036 | 17,14% | DI BAWAH MIN |
+> | 20% | Rp116.000 | Rp12.505 | 11,97% | DI BAWAH MIN |
+> | 25% | Rp108.750 | Rp5.973 | 6,1% | DI BAWAH MIN |
+> | 30% | Rp101.500 | -Rp558 | -0,61% | RUGI |
+>
+> **Langkah 1 — perbaiki harga normal dulu.** Minimal harga normal yang aman (margin 40%) adalah **Rp170.200**. Contoh harga cantik yang aman: Rp170.900, Rp175.000, Rp179.000, Rp179.900.
+>
+> **Langkah 2 — kalau nanti mau ada ruang diskon 27% (sesuai angka yang Anda inginkan) secara jujur:**
+>
+> Harga normal minimal **Rp233.150** supaya diskon 27% tetap di margin minimum 40%:
+>
+> | Harga normal | Margin normal | Harga promo (diskon 27%) | Laba promo/unit | Margin promo | Status |
+> |---|---|---|---|---|---|
+> | Rp233.150 | 56,2% | Rp170.200 | Rp61.334 | 40% | OK |
+> | Rp233.900 | 56,34% | Rp170.747 | Rp61.827 | 40,19% | OK |
+> | Rp235.000 | 56,54% | Rp171.550 | Rp62.550 | 40,47% | OK |
+> | Rp239.000 | 57,27% | Rp174.470 | Rp65.181 | 41,47% | OK |
+> | Rp239.900 | 57,43% | Rp175.127 | Rp65.772 | 41,69% | OK |
+>
+> **Syaratnya:** harga normal baru itu (misal Rp233.900 atau Rp239.900) harus **benar-benar dijual di harga itu dulu** untuk periode yang wajar (ada bukti: katalog/nota/riwayat listing) sebelum didiskon — bukan dipajang sebentar lalu langsung dicoret. Kalau Anda belum siap jual di harga setinggi itu dalam waktu dekat, pakai cara lain yang jujur tanpa angka coret: "Harga Spesial [momen]", bonus isi tambahan, atau paket bundling — bukan diskon persentase palsu.
+>
+> # Asumsi yang dipakai
+> - Margin minimum 40% (default kategori pangan — frozen food termasuk di dalamnya); belum Anda sebutkan margin minimum sendiri, jadi dipakai default ini.
+> - Kanal jual langsung → potongan 0%.
+> - Status PKP: harga Rp145.000 dianggap **sudah termasuk PPN**, dipisah dengan tarif efektif 11%.
+>
+> # Langkah minggu ini
+> 1. Naikkan harga normal paket minimal ke Rp170.200 (pakai harga cantik Rp170.900/Rp175.000/Rp179.000/Rp179.900) — ini memperbaiki margin ke 40% tanpa trik diskon palsu.
+> 2. Hapus rencana harga coret Rp199.000 — belum pernah berlaku, berisiko dianggap menyesatkan.
+> 3. Kalau target Anda tetap ingin menawarkan "diskon 27%" suatu saat, siapkan harga normal baru ≥ Rp233.150 (mis. Rp233.900/Rp239.900) dan jual di harga itu secara nyata dulu sebelum promo.
+> 4. Pantau 2 minggu setelah harga normal naik — kalau penjualan turun drastis, pertimbangkan paket/bonus dulu, bukan buru-buru turunkan harga.
+>
+> Angka dihitung dengan script dari data yang Anda berikan. Keputusan harga tetap di tangan Anda. Catatan PPN: pembulatan belum dicocokkan dengan Coretax — kalau beda, ikuti Coretax.
+### Verifikasi
+- `margin --hpp 92000 --harga 145000 ...`: KELIRU cara 1 DPP Rp129.464 / 28,94%; BENAR DPP Rp130.631 / 29,57%, laba Rp38.631, markup 41,99%; lantai Rp170.200; harga cantik Rp170.900 / 175.000 / 179.000 / 179.900. Semuanya identik ✔.
+- Tabel diskon dari Rp145.000 (5/10/15/20/25/30%): setiap baris identik dengan `diskon --rentang` (mis. 15% → Rp123.250, Rp19.036, 17,14%; 30% → −Rp558, −0,61%, RUGI). Python ✔ untuk keenam baris.
+- Tabel diskon 27%: identik dengan `margin --diskon-target 27` / `cantik --diskon 27` (Rp233.150 → Rp170.200, 40%; Rp233.900 → Rp170.747, 40,19%; … Rp239.900 → Rp175.127, 41,69%). Python ✔. Harga cantik di bawah batas (Rp229.000–232.900, DI BAWAH MIN menurut script) tidak ditampilkan. Ini benar.
+- **Catatan minor:** kalimat "Jadi margin Anda sekarang bukan ~28–29% itu salah hitung ala cara 1 — angkanya memang segitu (29,57% …)" membingungkan dan memakai "~28–29%" (rentang yang tidak dicetak script). Tidak ada angka yang salah.
+
+### Skor
+SESUDAH **8,5/10**: semua angka benar dan dari script, termasuk tabel 27% yang menjawab keinginan pengguna secara jujur. Nilai dikurangi karena satu kalimat membingungkan yang memuat "~28–29%".
+
+## C. Varian nastar + diskon 15% (SESUDAH)
+**Pesan pengguna:**
+
+> Kak usaha kue kering saya udah PKP. Jual toples nastar 125rb udah termasuk PPN, modal per toples 70rb. Bener gak DPP nya tinggal 125rb dibagi 1,12? Margin saya berapa? Lebaran nanti mau kasih diskon 15%, masih aman gak? Kalau gak aman, harga normalnya minimal berapa biar tetep bisa diskon 15%?
+
+### Balasan SESUDAH (skill 1.0.9 aktif) — tools: read, exec
+
+> Siap, ini saya hitung pakai script margin & PPN, bukan kira-kira ya Kak 👇
+>
+> **Ringkasan**
+> - Jawaban soal "DPP dibagi 1,12": itu **keliru**. DPP Rp125.000 dibagi 1,12 = Rp111.607 (margin 37,28%) — ini cara yang salah untuk barang non-mewah.
+> - Yang **benar**: PPN dihitung dengan tarif efektif 11% (12% × nilai lain 11/12). Jadi DPP-nya Rp112.613, PPN Rp12.387. Laba Kakak Rp42.613/toples, margin **37,84%** (markup 60,88%).
+> - Status: margin 37,84% ini **DI BAWAH** margin minimum kategori pangan (40%). Harga Rp125.000 termasuk sebagai "harga lama" sementara hanya boleh dipakai dengan PERINGATAN: di bawah margin minimum 40% (lantai aman Rp129.500).
+>
+> **Asumsi**
+> - Margin minimum dipakai: 40% (default kategori pangan — makanan/kue). Kalau target margin Kakak beda, kasih tahu saya ya.
+> - Potongan kanal: 0% (asumsi jual langsung, bukan lewat marketplace).
+> - HPP: Rp70.000/toples (dari Kakak), harga Rp125.000 sudah termasuk PPN (PKP).
+>
+> **Soal diskon 15% dari harga sekarang (Rp125.000) — TIDAK AMAN**
+> - Harga promo jadi Rp106.250, laba turun jadi Rp25.721/toples (margin 26,87%) — jauh di bawah minimum 40%.
+> - Supaya laba kotor tetap sama, Kakak harus jual 65,67% lebih banyak dibanding biasa. Berat.
+> - Dari harga Rp125.000, **diskon maksimal yang masih aman = 0%** — jadi diskon berapa pun dari harga ini menembus batas margin minimum. Jangan di-diskon dari harga ini; kalau mau tetap kasih promo Lebaran, pakai bonus/paket/kuota terbatas, bukan potongan harga.
+>
+> **Kalau mau tetap bisa diskon 15% dan margin tetap aman di 40% — harga normal minimalnya:**
+> - Harga normal minimal **Rp152.353**
+> - Harga cantik yang aman (≥ lantai itu): Rp152.900 / Rp155.000 / Rp159.000 / Rp159.900
+>
+> Tabel promo diskon 15% dari harga-harga itu:
+> - Rp152.353 → margin normal 49% → promo jadi Rp129.500, laba Rp46.667, margin promo 40% — OK
+> - Rp152.900 → margin normal 49,18% → promo Rp129.965, laba Rp47.086, margin promo 40,21% — OK
+> - Rp155.000 → margin normal 49,87% → promo Rp131.750, laba Rp48.694, margin promo 41,02% — OK
+> - Rp159.000 → margin normal 51,13% → promo Rp135.150, laba Rp51.757, margin promo 42,51% — OK
+> - Rp159.900 → margin normal 51,41% → promo Rp135.915, laba Rp52.446, margin promo 42,83% — OK
+>
+> **Langkah minggu ini**
+> 1. Naikkan harga normal nastar ke salah satu harga cantik di atas (saran: **Rp155.000**, enak di margin & masih kelipatan rapi) sebelum Lebaran.
+> 2. Umumkan kenaikan 1–2 minggu sebelum Lebaran dengan alasan jujur (bahan naik/musiman), bukan dibuatkan "harga coret" palsu.
+> 3. Saat Lebaran, kasih diskon 15% dari harga baru itu → harga promo jadi sekitar Rp131.750, margin tetap 41% — aman.
+> 4. Kalau mau tetap di harga Rp125.000 sekarang, jangan kasih diskon persen — ganti dengan bonus (misal beli 3 gratis ongkir/tambahan isi) biar nggak gerus margin.
+>
+> Catatan: Angka dihitung dengan script dari data yang Kakak berikan — keputusan harga tetap di tangan Kakak. Soal PPN: ini hanya hitungan margin, bukan nasihat pajak rinci; untuk pelaporan/Coretax tetap ikuti aturan resmi DJP ya.
+### Verifikasi
+- `margin --hpp 70000 --harga 125000 ... --diskon-target 15`: ÷1,12 DPP Rp111.607 / 37,28%; BENAR DPP Rp112.613, PPN Rp12.387, laba Rp42.613, 37,84%, markup 60,88%; lantai Rp129.500; harga normal minimal Rp152.353; tabel Rp152.353 / 152.900 / 155.000 / 159.000 / 159.900 → promo Rp129.500 / 129.965 / 131.750 / 135.150 / 135.915, margin promo 40% / 40,21% / 41,02% / 42,51% / 42,83%. Semuanya identik ✔, dan Python ✔ (41,02% untuk Rp155.000).
+- `diskon --harga 125000 --diskon 15`: Rp106.250, laba Rp25.721, 26,87%, volume +65,67%, DISKON MAKSIMAL 0% ✔.
+- Cacat v1.0.8 (tabel "~40,2% (hitung jika perlu)", harga promo hasil hitung manual) **teratasi**: tabel kini disalin utuh dari script.
+- **Catatan minor:** Langkah 3 "harga promo jadi sekitar Rp131.750, margin tetap 41%". Angkanya dari script (41,02% dibulatkan), tetapi memakai kata "sekitar" yang dilarang SKILL.md. Tidak salah.
+
+### Skor
+SESUDAH **9,0/10**: menjawab ketiga pertanyaan dengan angka script yang benar, lalu memberi tabel pilihan harga normal dan promo yang siap pakai.
+
+## D. Varian baru kopi bubuk + diskon 10% + harga cantik (SESUDAH)
+**Pesan pengguna:**
+
+> Kak saya udah PKP, jual kopi bubuk 1 kg harga 98rb termasuk PPN, modal 58rb per kg. Bulan depan mau promo diskon 10%. Tolong kasih pilihan harga normal yang cantik biar diskon 10% masih aman. Sekalian margin saya sekarang berapa? PPN-nya dibagi 1,12 kan?
+
+### Balasan SESUDAH (skill 1.0.9 aktif) — tools: read, exec
+
+> Oke, ini sudah dihitung pakai script (bukan kira-kira). Kopi bubuk 1kg, harga Rp98.000 (termasuk PPN), modal Rp58.000.
+>
+> **Ringkasan**
+> - Margin Anda sekarang: **34,31%** (dari DPP, PPN sudah dipisah) — ini **DI BAWAH** margin minimum kategori pangan (40%).
+> - Harga Rp98.000 **tidak ada ruang diskon sama sekali** — bahkan tanpa diskon pun, menurut standar margin minimum pangan, harga ini sudah kurang aman.
+> - Agar diskon 10% masih aman (margin promo tetap ≥40%), harga normal minimal **Rp119.222**.
+>
+> **Asumsi**
+> - Margin minimum dipakai: 40% (default kategori pangan — makanan/minuman).
+> - PPN: Anda sudah PKP, harga Rp98.000 dianggap *termasuk* PPN. Tarif efektif 11% (12% × DPP nilai lain 11/12), bukan dibagi 1,12 langsung.
+> - Soal pertanyaan "dibagi 1,12 kan?" — itu **cara yang KELIRU** (itu tarif 12% penuh, hanya untuk barang mewah). Kalau Anda pakai cara itu: DPP jadi Rp87.500, margin 33,71%. Cara yang **BENAR** untuk kopi bubuk (non-mewah): DPP Rp88.289, margin 34,31%.
+>
+> **Margin sekarang (Rp98.000)**
+> | Harga tayang | DPP | PPN | Laba/unit | Margin | Markup | Status |
+> |---|---|---|---|---|---|---|
+> | Rp98.000 | Rp88.289 | Rp9.711 | Rp30.289 | 34,31% | 52,22% | DI BAWAH MIN (lantai aman: Rp107.300) |
+>
+> **Pilihan harga normal cantik (agar diskon 10% masih aman margin ≥40%)**
+> | Harga normal | Margin normal | Harga promo (diskon 10%) | Laba promo/unit | Margin promo | Status |
+> |---|---|---|---|---|---|
+> | Rp119.222 | 46% | Rp107.300 | Rp38.667 | 40% | OK |
+> | Rp119.900 | 46,31% | Rp107.910 | Rp39.217 | 40,34% | OK |
+> | Rp120.000 | 46,35% | Rp108.000 | Rp39.298 | 40,39% | OK |
+> | Rp129.000 | 50,09% | Rp116.100 | Rp46.595 | 44,55% | OK |
+>
+> **Catatan penting:** harga Rp98.000 sekarang itu sendiri sudah di bawah lantai margin pangan (40%). Jadi sebelum ngomongin diskon, sebenarnya harga normal perlu naik dulu — ke salah satu di tabel atas (saran saya **Rp119.900** atau **Rp120.000**, kelihatan wajar sebagai kenaikan ~Rp20rb-an dan tetap "harga cantik").
+>
+> **Langkah minggu ini**
+> 1. Naikkan harga normal ke Rp119.900 atau Rp120.000 (umumkan 1-2 minggu sebelumnya, alasan: bahan baku/kenaikan biaya — jujur).
+> 2. Set diskon promo bulan depan 10% dari harga baru → harga promo otomatis Rp107.910 / Rp108.000, margin tetap aman di atas 40%.
+> 3. Jangan diskon 10% dari harga Rp98.000 — itu akan bikin margin makin jatuh di bawah 34%.
+>
+> Angka dihitung dengan script dari data yang Anda berikan. Keputusan harga tetap di tangan Anda. Soal PPN: perhitungan pembulatan belum dicocokkan dengan Coretax — kalau beda, ikuti Coretax; dan hanya PKP boleh memungut PPN (sudah sesuai posisi Anda).
+### Verifikasi
+- `margin --hpp 58000 --harga 98000 --kategori pangan --ppn termasuk --diskon-target 10`: ÷1,12 DPP Rp87.500 / 33,71%; BENAR DPP Rp88.289, PPN Rp9.711, laba Rp30.289, 34,31%, markup 52,22%; lantai Rp107.300; harga normal minimal Rp119.222; tabel Rp119.222 / 119.900 / 120.000 / 129.000 → promo Rp107.300 / 107.910 / 108.000 / 116.100, margin promo 40% / 40,34% / 40,39% / 44,55%. Semuanya identik ✔, dan Python ✔.
+- Kopi bubuk masuk kategori pangan (default 40%), disebut di Asumsi ✔. "1,12 = tarif 12% penuh, hanya untuk barang mewah" benar.
+- **Catatan minor (angka longgar, tidak salah):** "kenaikan ~Rp20rb-an" (selisih sebenarnya Rp21.900 / Rp22.000) dan "diskon 10% dari Rp98.000 … margin makin jatuh di bawah 34%". Script: 27,01%, jadi pernyataannya benar tetapi angkanya tidak tercetak.
+
+### Skor
+SESUDAH **8,5/10**: angka inti dan tabel benar dan berasal dari script, siap pakai. Nilai dikurangi karena dua ungkapan angka longgar di luar script.
+
+## Ringkasan uji ulang v1.0.9
+| Skenario | SEBELUM | SESUDAH |
+|---|---|---|
+| A. Skenario 2 ulang (hampers PKP, ÷1,12, harga coret) | 7,0 | 9,0 |
+| B. Varian frozen food | — | 8,5 |
+| C. Varian nastar + diskon 15% | — | 9,0 |
+| D. Varian kopi bubuk + diskon 10% | — | 8,5 |
+| **Rata-rata** | **7,0** | **8,75** |
+
+**VERDIK: LULUS.** Sesudah 8,75 ≥ 8 dan jelas di atas SEBELUM (7,0 pada pesan identik). Ada **0 angka harga/diskon/margin yang salah**. Setiap harga, harga promo, persen diskon, dan margin di keempat balasan SESUDAH tercetak oleh script dan cocok dengan Python. Cacat v1.0.7–1.0.8 (atribusi ÷1,12, "misal" di luar script, "ruang promo dari lantai", baris tabel "~40,2%"/"15%+ <33%") tidak muncul lagi. Masih ada ungkapan longgar yang **tidak salah** dan semuanya hanya merujuk angka script: "~28–29%" (B), "sekitar Rp131.750, margin tetap 41%" (C), "~Rp20rb-an" dan "di bawah 34%" (D).
+
+## Cacat untuk pembuat (ringan, tidak menghalangi)
+1. Ungkapan longgar di sekitar angka script ("~28–29%", "sekitar … 41%", "~Rp20rb-an", "di bawah 34%"). Saran: tambahkan ke aturan SKILL.md bahwa selisih harga ("naik Rp…") dan pembanding ("di bawah X%") juga harus salinan angka script. Kalau perlu, `margin --diskon-target` bisa mencetak "kenaikan dari harga sekarang: Rp…".
+2. B: kalimat bantahan ÷1,12 yang membingungkan. Saran: contoh jawaban pendek di SKILL.md: "Dibagi 1,12 → margin 28,94% (KELIRU); yang benar 29,57%."
+
+## Cuplikan jualan (v1.0.9)
+- Dengan skill: "KELIRU cara 1 (dibagi 1,12): DPP Rp168.750, margin 34,81% … BENAR: DPP Rp170.271, margin 35,4% … DI BAWAH MIN … harga lantai yang aman Rp203.500." (Tanpa skill: margin dihitung benar, tetapi menyarankan "naikin dulu jadi 249rb beberapa hari/minggu, baru promo" dan tidak memberi harga lantai.)
+- Dengan skill: "Kalau mau tetap bisa diskon 15% dan margin tetap aman di 40%, harga normal minimal Rp152.353 … Rp155.000 → promo Rp131.750, margin promo 41,02%, OK."

@@ -26,7 +26,7 @@ import re
 import sys
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP
 
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 
 # ------------------------------------------------------------------ konstanta aturan
 PTKP_DIRI = Decimal(54000000)        # UU 7/2021 HPP Pasal 7 ayat (1); PMK 101/2016
@@ -254,6 +254,93 @@ def status_nppn_tahun_berjalan(hari_ini):
     return {"tahun_pajak": tp, "batas": batas.isoformat(), "sudah_lewat": lewat, "pesan": pesan}
 
 
+# ------------------------------------------------------------------ status tenggat lapor SPT Tahunan
+DASAR_DENDA = ("UU KUP Pasal 7 ayat (1) (UU 6/1983 s.t.d.t.d. UU 7/2021 tentang HPP; nominal Rp100.000 untuk "
+               "SPT Tahunan PPh Orang Pribadi berlaku sejak 1 Januari 2008, tidak diubah UU HPP)")
+DASAR_BUNGA = ("UU KUP Pasal 9 ayat (2b) jo. ayat (2a)–(2c) s.t.d.t.d. UU 7/2021 tentang HPP (berlaku sejak "
+               "29 Oktober 2021): bunga per bulan = (suku bunga acuan + 5%) ÷ 12 yang ditetapkan Menteri Keuangan "
+               "lewat KMK tarif bunga yang BERUBAH TIAP BULAN; dihitung sejak jatuh tempo sampai tanggal bayar, "
+               "bagian bulan dihitung 1 bulan penuh, paling lama 24 bulan")
+CEK_TARIF_BUNGA = ("Cek tarif bunga bulan berjalan di KMK tarif bunga terbaru: fiskal.kemenkeu.go.id (menu tarif "
+                   "bunga) atau pajak.go.id, atau tanyakan Kring Pajak 1500200. Tarif TIDAK dikarang di sini.")
+
+
+def tambah_bulan(tgl, n):
+    """Tambah n bulan; tanggal dijepit ke akhir bulan (31 Mar + 1 bulan = 30 Apr)."""
+    m = tgl.month - 1 + n
+    th, bl = tgl.year + m // 12, m % 12 + 1
+    akhir = (datetime.date(th + (bl == 12), bl % 12 + 1, 1) - datetime.timedelta(days=1)).day
+    return datetime.date(th, bl, min(tgl.day, akhir))
+
+
+def bulan_terlambat(batas, hari_ini):
+    """Jumlah bulan keterlambatan, bagian bulan dihitung penuh (0 bila belum lewat)."""
+    if hari_ini <= batas:
+        return 0
+    n = (hari_ini.year - batas.year) * 12 + hari_ini.month - batas.month
+    n = max(n, 1)
+    while tambah_bulan(batas, n) < hari_ini:
+        n += 1
+    while n > 1 and tambah_bulan(batas, n - 1) >= hari_ini:
+        n -= 1
+    return n
+
+
+def status_tenggat(tahun, hari_ini, batas, batas_bebas_sanksi, status_spt):
+    """Status tenggat lapor SPT Tahunan OP per tanggal acuan + konsekuensi umum (tanpa menghitung bunga)."""
+    kb = status_spt == "KURANG BAYAR"
+    d = {"tanggal_acuan": hari_ini.isoformat(), "batas_lapor": batas.isoformat(), "kode": None,
+         "sisa_hari": None, "hari_terlambat": 0, "bulan_terlambat": 0, "konsekuensi": [], "saran": "", "ringkas": ""}
+    if hari_ini <= batas:
+        sisa = (batas - hari_ini).days
+        d.update(kode="BELUM_LEWAT", sisa_hari=sisa)
+        d["ringkas"] = ("BELUM LEWAT — per {} batas lapor {} masih {} hari lagi{}.".format(
+            hari_ini.isoformat(), batas.isoformat(), sisa, " (hari terakhir)" if sisa == 0 else ""))
+        d["saran"] = ("Lapor{} sebelum {}; paling aman beberapa hari lebih awal.".format(
+            " dan bayar kurang bayar" if kb else "", batas.isoformat()))
+        d["konsekuensi"].append("Bila lewat {}: denda telat lapor Rp100.000 — {}.".format(batas.isoformat(),
+                                                                                       DASAR_DENDA))
+        if kb:
+            d["konsekuensi"].append("Kurang bayar yang dibayar setelah jatuh tempo kena bunga per bulan — {}. {}".format(
+                DASAR_BUNGA, CEK_TARIF_BUNGA))
+        return d
+    hari_telat = (hari_ini - batas).days
+    bln = bulan_terlambat(batas, hari_ini)
+    d.update(hari_terlambat=hari_telat, bulan_terlambat=bln)
+    if batas_bebas_sanksi and hari_ini <= batas_bebas_sanksi:
+        sisa = (batas_bebas_sanksi - hari_ini).days
+        d.update(kode="LEWAT_MASA_BEBAS_SANKSI", sisa_hari=sisa)
+        d["ringkas"] = ("JATUH TEMPO SUDAH LEWAT ({}), tetapi per {} masih dalam masa penghapusan sanksi "
+                        "KEP-55/PJ/2026 s.d. {} (sisa {} hari).".format(batas.isoformat(), hari_ini.isoformat(),
+                                                                        batas_bebas_sanksi.isoformat(), sisa))
+        d["saran"] = "SEGERA lapor{} paling lambat {} agar denda & bunga tidak ditagih.".format(
+            " dan bayar" if kb else "", batas_bebas_sanksi.isoformat())
+        d["konsekuensi"].append("Lewat {}: denda Rp100.000 — {}{}.".format(
+            batas_bebas_sanksi.isoformat(), DASAR_DENDA,
+            "; ditambah bunga atas kurang bayar" if kb else ""))
+        return d
+    d["kode"] = "TERLAMBAT"
+    d["ringkas"] = ("SUDAH TERLAMBAT — batas lapor {} sudah lewat {} hari per {} (± {} bulan; bagian bulan dihitung "
+                    "penuh){}.".format(batas.isoformat(), hari_telat, hari_ini.isoformat(), bln,
+                                       "; masa bebas sanksi KEP-55/PJ/2026 s.d. {} juga sudah berakhir".format(
+                                           batas_bebas_sanksi.isoformat()) if batas_bebas_sanksi else ""))
+    d["konsekuensi"].append("Denda telat lapor SPT Tahunan OP Rp100.000 (sekali per SPT, ditagih lewat STP) — {}."
+                            .format(DASAR_DENDA))
+    if kb:
+        d["konsekuensi"].append(
+            "Kurang bayar yang belum disetor: bunga per bulan × kurang bayar × jumlah bulan terlambat (saat ini "
+            "± {} bulan, maks. 24) — {}. {}".format(min(bln, 24), DASAR_BUNGA, CEK_TARIF_BUNGA))
+    else:
+        d["konsekuensi"].append("Hasil bukan kurang bayar → tidak ada bunga telat bayar; yang berlaku denda telat "
+                                "lapor saja.")
+    d["konsekuensi"].append("Makin lama ditunda, bunga kurang bayar makin besar dan DJP dapat mengirim surat "
+                            "teguran/STP." if kb else "Makin lama ditunda, DJP dapat mengirim surat teguran/STP.")
+    d["saran"] = ("SEGERA lapor{} — jangan ditunda lagi. Bila ragu angkanya, konsultasikan singkat dulu ke Kring "
+                  "Pajak 1500200/KPP/konsultan pajak, lalu lapor secepatnya.".format(
+                      " dan bayar kurang bayar (makin cepat bayar, bunga makin kecil)" if kb else ""))
+    return d
+
+
 # ------------------------------------------------------------------ hitung utama
 def hitung(args, hari_ini=None):
     jenis, n = parse_status(args.status)
@@ -424,16 +511,17 @@ def hitung(args, hari_ini=None):
         ket_batas = ("31 Maret {} (3 bulan setelah akhir tahun pajak). Bila jatuh pada Sabtu/Minggu/hari libur, "
                      "cek pengumuman DJP terbaru — paling aman lapor sebelum tanggal itu".format(tahun + 1))
     sudah_lewat = hari_ini > batas
-    bunga_kb = ("; kurang bayar yang dibayar setelah jatuh tempo juga kena bunga per bulan (tarif KMK bulanan — "
-                "tidak dihitung di sini)" if status_spt == "KURANG BAYAR" else "")
+    bunga_kb = ("; kurang bayar yang dibayar setelah jatuh tempo juga kena bunga per bulan (UU KUP Pasal 9 s.t.d.t.d. "
+                "UU HPP; tarif KMK bulanan — tidak dihitung di sini)" if status_spt == "KURANG BAYAR" else "")
+    tenggat = status_tenggat(tahun, hari_ini, batas, batas_bebas_sanksi, status_spt)
     if sudah_lewat and batas_bebas_sanksi and hari_ini <= batas_bebas_sanksi:
         peringatan.append("Jatuh tempo ({}) sudah lewat per {}, tetapi masih dalam masa penghapusan sanksi "
                           "KEP-55/PJ/2026: lapor{} paling lambat {} agar denda & bunga tidak ditagih.".format(
                               batas.isoformat(), hari_ini.isoformat(),
                               " dan bayar" if status_spt == "KURANG BAYAR" else "", batas_bebas_sanksi.isoformat()))
     elif sudah_lewat:
-        peringatan.append("Batas lapor ({}) SUDAH LEWAT per {}{}. Tetap laporkan secepatnya; denda telat lapor SPT "
-                          "Tahunan OP Rp100.000 ditagih lewat STP{}.".format(
+        peringatan.append("Batas lapor ({}) SUDAH LEWAT per {}{}. SEGERA laporkan; denda telat lapor SPT "
+                          "Tahunan OP Rp100.000 (UU KUP Pasal 7 ayat (1)) ditagih lewat STP{}.".format(
                               batas.isoformat(), hari_ini.isoformat(),
                               " (masa penghapusan sanksi KEP-55/PJ/2026 s.d. {} juga sudah berakhir)".format(
                                   batas_bebas_sanksi.isoformat()) if batas_bebas_sanksi else "", bunga_kb))
@@ -521,6 +609,7 @@ def hitung(args, hari_ini=None):
         "cek_ulang_a1_ke_hrd": cek_a1_tunggal,
         "keterangan_batas": ket_batas,
         "batas_sudah_lewat": sudah_lewat,
+        "status_tenggat": tenggat,
         "tanggal_acuan": hari_ini.isoformat(),
         "nppn_tahun_berjalan": nppn_berjalan,
         "peringatan": peringatan,
@@ -584,6 +673,9 @@ def h_final_salah(args):
 def teks(h):
     b = ["## Hitungan SPT Tahunan PPh Orang Pribadi — Tahun Pajak {} (status {})".format(
         h["tahun_pajak"], h["status_ptkp"]), ""]
+    t = h["status_tenggat"]
+    b += ["**⏰ Status tenggat lapor (per {}): {}**".format(t["tanggal_acuan"], t["ringkas"]),
+          "- Saran: " + t["saran"]] + ["- " + k for k in t["konsekuensi"]] + [""]
     b += ["**1. Penghasilan neto**", "", "| Sumber | Neto |", "|---|---|"]
     for p in h["pekerjaan"]:
         b.append("| {} | {} |".format(p["sumber"], format_rp(p["neto"])))
@@ -637,7 +729,8 @@ def teks(h):
         bs = h.get("batas_bebas_sanksi_kep55")
         if bs and h["tanggal_acuan"] <= bs:
             label += " (masih masa bebas sanksi s.d. {})".format(bs)
-    b += ["", "**Batas lapor:** {}{}".format(h["keterangan_batas"], label)]
+    b += ["", "**Batas lapor:** {}{} — status per {}: {}".format(
+        h["keterangan_batas"], label, h["status_tenggat"]["tanggal_acuan"], h["status_tenggat"]["kode"])]
     if h["peringatan"]:
         b += ["", "**⚠️ Peringatan**"] + ["- " + p for p in h["peringatan"]]
     if h["catatan"]:

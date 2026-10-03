@@ -658,5 +658,255 @@ class Revisi106UjiUlang(unittest.TestCase):
             self.assertIn(kunci, teks)
 
 
+# ================================================================ revisi 1.0.7 (uji OpenClaw 1.0.6: RINGKASAN SIAP TEMPEL)
+
+def _ringkasan(out):
+    """Isi blok RINGKASAN SIAP TEMPEL saja."""
+    awal = out.index("=== RINGKASAN SIAP TEMPEL")
+    akhir = out.index("=== AKHIR RINGKASAN ===")
+    return out[awal:akhir]
+
+
+class RingkasanSiapTempel(unittest.TestCase):
+    def test_versi(self):
+        self.assertEqual(S.VERSI, "1.0.9")
+
+    def test_blok_di_atas_detail(self):
+        _, out, _ = jalan("margin", "--hpp", "11500", "--harga", "28000", "--kategori", "pangan")
+        self.assertLess(out.index("RINGKASAN SIAP TEMPEL"), out.index("HPP/modal per unit"))
+        self.assertIn("JANGAN menulis angka harga/diskon/margin", out)
+
+    def test_margin_ppn_di_bawah_min_lantai_tanpa_ruang_diskon(self):
+        # kasus S2 1.0.6: 189.000 termasuk PPN -> DPP 170.271 (170.271 + floor(11% x 170.271 = 18.729,81) = 189.000)
+        # laba 60.271, margin 60.271/170.271 = 35,40%; tanpa memisah PPN (189.000-110.000)/189.000 = 41,80%
+        _, out, _ = jalan("margin", "--hpp", "110000", "--harga", "189000", "--kategori", "pangan", "--ppn", "termasuk")
+        r = _ringkasan(out)
+        self.assertIn("laba Rp60.271/unit, margin 35,4%", r)
+        self.assertIn("PPN TIDAK DIPISAH sama sekali (seluruh Rp189.000 dianggap pendapatan): margin terlihat 41,8%", r)
+        self.assertIn("DI BAWAH MIN", r)
+        self.assertIn("harga paling rendah Rp203.500", r)
+        self.assertIn("Dari harga lantai Rp203.500: TIDAK ADA ruang diskon", r)
+        self.assertNotIn("DISKON MAKSIMAL 9%", r)
+
+    def test_margin_ok_dengan_ruang_diskon(self):
+        # lantai 11.500/0,6 = 19.166,67 -> 19.167; 1 - 19.167/28.000 = 31,55% -> bulat 31% -> 28.000 x 0,69 = 19.320
+        _, out, _ = jalan("margin", "--hpp", "11500", "--harga", "28000", "--kategori", "pangan")
+        r = _ringkasan(out)
+        self.assertIn("Status: OK", r)
+        self.assertIn("Dari harga Rp28.000: DISKON MAKSIMAL 31% -> harga promo Rp19.320", r)
+
+    def test_diskon_9_dari_lantai_bukan_aman(self):
+        # 203.500 x 0,91 = 185.185 -> DPP 166.834 (+ PPN 18.351 = 185.185), laba 56.834, margin 34,07% < 40%
+        _, out, _ = jalan("diskon", "--harga", "203500", "--hpp", "110000", "--diskon", "9", "--kategori", "pangan",
+                          "--ppn", "termasuk")
+        r = _ringkasan(out)
+        self.assertIn("harga promo Rp185.185: laba Rp56.834/unit (margin 34,07%)", r)
+        self.assertIn("Status: DI BAWAH MIN", r)
+        self.assertIn("TIDAK DISARANKAN", r)
+        self.assertIn("TIDAK ADA ruang diskon (DISKON MAKSIMAL 0%", r)
+
+    def test_rentang_tanpa_ok(self):
+        _, out, _ = jalan("diskon", "--harga", "203500", "--hpp", "110000", "--rentang", "5-10", "--kategori", "pangan",
+                          "--ppn", "termasuk")
+        r = _ringkasan(out)
+        self.assertIn("TIDAK ADA diskon berstatus OK", r)
+        self.assertIn("TIDAK ADA ruang diskon", r)
+
+    def test_rentang_dengan_ok(self):
+        _, out, _ = jalan("diskon", "--harga", "28000", "--hpp", "11500", "--rentang", "25-35:5", "--kategori", "pangan")
+        r = _ringkasan(out)
+        # 25% -> 21.000 OK, 30% -> 19.600 OK, 35% -> 18.200 < 19.167 DI BAWAH MIN
+        self.assertIn("diskon berstatus OK di tabel: 25% s.d. 30% (harga promo Rp21.000 s.d. Rp19.600); baris lain", r)
+
+    def test_konflik_sama_dengan_harga_agen(self):
+        # flash sale 25% dari 35.000 = 26.250 = harga beli Agen -> konflik; lantai reseller 14.500/0,6 = 24.167
+        _, out, _ = jalan("diskon", "--harga", "35000", "--hpp", "14500", "--diskon", "25", "--kategori", "pangan",
+                          "--harga-reseller", "Agen:26250")
+        r = _ringkasan(out)
+        self.assertIn("KONFLIK KANAL: harga promo Rp26.250 SAMA DENGAN harga beli Agen Rp26.250", r)
+        self.assertIn("rentang aman Rp24.167 s.d. Rp26.249", r)
+        self.assertIn("contoh angka bulat Rp26.000", r)
+        # gabungan: 1 - 26.250/35.000 = 25% harus KURANG -> 24% -> 26.600
+        self.assertIn("DISKON MAKSIMAL 24% -> harga promo Rp26.600", r)
+
+    def test_harga_khusus_reseller_pakai_lantai_tanpa_potongan_marketplace(self):
+        # promo marketplace 10%: lantai promo 14.500/(1-0,1-0,4) = 29.000; lantai reseller (beli langsung) = 24.167
+        _, out, _ = jalan("diskon", "--harga", "35000", "--hpp", "14500", "--diskon", "25", "--volume", "500",
+                          "--kategori", "pangan", "--harga-reseller", "Reseller:30000", "--harga-reseller", "Agen:26500",
+                          "--kanal", "marketplace", "--biaya-persen", "10")
+        r = _ringkasan(out)
+        self.assertIn("(lantai Rp29.000)", r)
+        self.assertIn("rentang aman Rp24.167 s.d. Rp26.249", r)
+        self.assertNotIn("Rp24.000", r)
+        # pembanding: kanal sama laba 17.000 -> 500 x 17.000/9.125 = 931,5 -> 932;
+        # jual langsung laba 20.500 -> 500 x 20.500/9.125 = 1.123,3 -> 1.124 (naik 124,66%)
+        self.assertIn("di kanal yang sama (potongan 10%): dari 500 jadi minimal 932 unit", r)
+        self.assertIn("laba Rp20.500/unit), penjualan harus naik 124,66%: dari 500 jadi minimal 1.124 unit", r)
+        self.assertIn("DISKON MAKSIMAL 14% -> harga promo Rp30.100", r)
+
+    def test_harga_khusus_tidak_mungkin(self):
+        # 30.000 x 0,8 = 24.000 < lantai 24.167 -> tidak ada harga khusus reseller yang aman
+        _, out, _ = jalan("diskon", "--harga", "30000", "--hpp", "14500", "--diskon", "20", "--kategori", "pangan",
+                          "--harga-reseller", "Reseller:25000")
+        r = _ringkasan(out)
+        self.assertIn("Harga khusus Reseller selama promo TIDAK MUNGKIN", r)
+
+    def test_tangga_konflik_di_ringkasan(self):
+        _, out, _ = jalan("tangga", "--harga-ecer", "35000", "--hpp", "14500", "--kategori", "pangan",
+                          "--level", "Eceran:1:0", "--level", "Agen:100:=26250", "--harga-promo", "26250")
+        r = _ringkasan(out)
+        self.assertIn("Agen (min beli 100): Rp26.250/unit, laba kita Rp11.750/unit, margin 44,76% - OK", r)
+        self.assertIn("SAMA DENGAN harga beli Agen Rp26.250", r)
+        self.assertIn("Lantai margin 40%", r)
+
+    def test_bundel_bep_cantik_punya_ringkasan(self):
+        _, out, _ = jalan("bep", "--biaya-tetap", "6,5jt", "--harga", "28000", "--hpp", "11500")
+        self.assertIn("Titik impas: 394 unit/bulan", _ringkasan(out))   # 6.500.000/16.500 = 393,9 -> 394
+        _, out, _ = jalan("bundel", "--item", "Roti:28000:11500", "--item", "Bolu:45000:19000", "--harga-bundel", "65000",
+                          "--kategori", "pangan")
+        # hemat 73.000-65.000 = 8.000; laba 65.000-30.500 = 34.500 (53,08%)
+        self.assertIn("pembeli hemat Rp8.000", _ringkasan(out))
+        self.assertIn("laba Rp34.500/paket, margin 53,08%", _ringkasan(out))
+        _, out, _ = jalan("cantik", "--harga", "52300", "--hpp", "30000", "--margin-min", "40")
+        self.assertIn(">= lantai Rp50.000", _ringkasan(out))
+        _, out, _ = jalan("ppn", "--harga", "49900", "--mode", "termasuk")
+        self.assertNotIn("RINGKASAN SIAP TEMPEL", out)
+
+    def test_skill_md_wajib_salin_ringkasan(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as f:
+            teks = f.read()
+        for kunci in ("RINGKASAN SIAP TEMPEL", "apa adanya", "Jalankan script lagi", "Harga khusus reseller"):
+            self.assertIn(kunci, teks)
+
+
+# ================================================================ revisi 1.0.8 (uji ulang OpenClaw 1.0.7)
+
+class RevisiSatuNolDelapan(unittest.TestCase):
+    def test_dibagi_112_vs_tidak_dipisah_189000(self):
+        # /1,12: 189.000/1,12 = 168.750 -> (168.750-110.000)/168.750 = 34,81%
+        # tidak dipisah: (189.000-110.000)/189.000 = 41,80% ; benar: DPP 170.271 -> 35,40%
+        _, out, _ = jalan("margin", "--hpp", "110000", "--harga", "189000", "--kategori", "pangan", "--ppn", "termasuk")
+        r = _ringkasan(out)
+        self.assertIn("DIBAGI 1,12 (tarif 12% penuh, salah untuk barang non-mewah): DPP Rp168.750, margin 34,81%", r)
+        self.assertIn("TIDAK DIPISAH sama sekali (seluruh Rp189.000 dianggap pendapatan): margin terlihat 41,8%", r)
+        self.assertIn("BENAR - PPN dipisah dengan tarif efektif 11%", r)
+        self.assertIn("DPP Rp170.271, margin 35,4%.", r)
+        # angka 41,8% tidak boleh berada di kalimat yang menyebut 1,12
+        for baris in r.splitlines():
+            if "1,12" in baris:
+                self.assertNotIn("41,8%", baris)
+
+    def test_dibagi_112_vs_tidak_dipisah_145000(self):
+        # /1,12: 145.000/1,12 = 129.464,29 -> 129.464 -> (129.464-92.000)/129.464 = 28,94%
+        # tidak dipisah: 53.000/145.000 = 36,55% ; benar: DPP 130.631 (130.631 + 14.369 = 145.000) -> 29,57%
+        _, out, _ = jalan("margin", "--hpp", "92000", "--harga", "145000", "--kategori", "pangan", "--ppn", "termasuk")
+        r = _ringkasan(out)
+        self.assertIn("DPP Rp129.464, margin 28,94%", r)
+        self.assertIn("margin terlihat 36,55%", r)
+        self.assertIn("DPP Rp130.631, margin 29,57%", r)
+
+    def test_mewah_tanpa_baris_112(self):
+        _, out, _ = jalan("margin", "--hpp", "110000", "--harga", "189000", "--ppn", "termasuk", "--mewah")
+        self.assertNotIn("DIBAGI 1,12", _ringkasan(out))
+
+    def test_lantai_melarang_promo_dan_harga_untuk_ruang_diskon(self):
+        _, out, _ = jalan("margin", "--hpp", "110000", "--harga", "189000", "--kategori", "pangan", "--ppn", "termasuk")
+        r = _ringkasan(out)
+        self.assertIn("JANGAN tawarkan diskon/promo potongan harga", r)
+        self.assertIn("naikkan harga normal di atas lantai, tekan HPP/biaya", r)
+        # 5%: 214.210 x 0,95 = 203.499,5 -> 203.500 = lantai (OK); 214.209 -> 203.498,55 -> 203.499 < lantai
+        self.assertIn("diskon 5% butuh harga normal minimal Rp214.210", r)
+        self.assertIn("diskon 10% butuh harga normal minimal Rp226.111", r)
+        _, out5, _ = jalan("diskon", "--harga", "214210", "--hpp", "110000", "--diskon", "5", "--kategori", "pangan",
+                           "--ppn", "termasuk")
+        self.assertIn("Status: OK", _ringkasan(out5))
+        _, out5b, _ = jalan("diskon", "--harga", "214209", "--hpp", "110000", "--diskon", "5", "--kategori", "pangan",
+                            "--ppn", "termasuk")
+        self.assertIn("DI BAWAH MIN", _ringkasan(out5b))
+
+    def test_contoh_harga_cantik_aman(self):
+        _, out, _ = jalan("margin", "--hpp", "110000", "--harga", "189000", "--kategori", "pangan", "--ppn", "termasuk")
+        r = _ringkasan(out)
+        self.assertIn("Rp203.900, Rp205.000, Rp209.000, Rp209.900", r)
+        self.assertNotIn("Rp204.900", r)
+        _, oc, _ = jalan("margin", "--hpp", "110000", "--harga", "203900", "--kategori", "pangan", "--ppn", "termasuk")
+        self.assertIn("Status: OK", _ringkasan(oc))
+
+    def test_harga_lama_di_bawah_min_wajib_peringatan(self):
+        _, out, _ = jalan("margin", "--hpp", "92000", "--harga", "145000", "--kategori", "pangan", "--ppn", "termasuk")
+        self.assertIn("'harga lama' sementara/pre-order) hanya boleh disebut dengan PERINGATAN", _ringkasan(out))
+
+    def test_skill_md_1_0_8(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as f:
+            teks = f.read()
+        for kunci in ("KELIRU cara 1", "Contoh harga cantik yang aman", "bisa saya hitungkan"):
+            self.assertIn(kunci, teks)
+
+
+# ================================================================ revisi 1.0.9 (uji ulang OpenClaw 1.0.8: tabel siap salin)
+
+def _baris(r, awalan):
+    return [b for b in r.splitlines() if b.startswith("| " + awalan)][0]
+
+
+class RevisiSatuNolSembilan(unittest.TestCase):
+    def test_cantik_dengan_diskon_tabel_promo(self):
+        # 154.900 x 0,85 = 131.665 -> DPP 118.618 (118.618 + floor(13.047,98)=13.047 = 131.665), laba 48.618, 40,99%
+        # 155.000 x 0,85 = 131.750 -> DPP 118.694 (+13.056 = 131.750), laba 48.694, 41,02%
+        # 149.000 x 0,85 = 126.650 -> DPP 114.099, laba 44.099, 38,65% < 40%
+        _, out, _ = jalan("cantik", "--harga", "155000", "--hpp", "70000", "--kategori", "pangan", "--ppn", "termasuk",
+                          "--diskon", "15")
+        r = _ringkasan(out)
+        b = _baris(r, "Rp154.900")
+        for x in ("Rp131.665", "Rp48.618", "40,99%", "OK"):
+            self.assertIn(x, b)
+        b = _baris(r, "Rp155.000")
+        for x in ("Rp131.750", "Rp48.694", "41,02%", "OK"):
+            self.assertIn(x, b)
+        self.assertIn("DI BAWAH MIN", _baris(r, "Rp149.000"))
+        self.assertIn("salin utuh", r)
+
+    def test_cantik_diskon_tanpa_hpp_ditolak(self):
+        kode, _, err = jalan("cantik", "--harga", "155000", "--diskon", "15")
+        self.assertEqual(kode, 2)
+        self.assertIn("butuh --hpp", err)
+
+    def test_margin_diskon_target(self):
+        # lantai 70.000 -> 129.500; 152.353 x 0,85 = 129.500,05 -> 129.500 (OK); 152.352 -> 129.499,2 -> 129.499 < lantai
+        _, out, _ = jalan("margin", "--hpp", "70000", "--harga", "125000", "--kategori", "pangan", "--ppn", "termasuk",
+                          "--diskon-target", "15")
+        r = _ringkasan(out)
+        self.assertIn("harga normal minimal Rp152.353", r)
+        b = _baris(r, "Rp152.353")
+        self.assertIn("Rp129.500", b)
+        self.assertIn("OK", b)
+        baris_tabel = [x for x in r.splitlines() if x.startswith("| Rp")]
+        self.assertGreaterEqual(len(baris_tabel), 3)
+        for x in baris_tabel:
+            self.assertTrue(x.rstrip(" |").endswith("OK"), x)
+
+    def test_diskon_target_tanpa_margin_min_ditolak(self):
+        kode, _, err = jalan("margin", "--hpp", "70000", "--harga", "125000", "--diskon-target", "15")
+        self.assertEqual(kode, 2)
+        self.assertIn("margin minimum", err)
+
+    def test_rentang_tabel_masuk_ringkasan(self):
+        # 179.900 x 0,85 = 152.915 -> DPP 137.762 (+15.153 = 152.915), laba 45.762, 33,22%
+        _, out, _ = jalan("diskon", "--harga", "179900", "--hpp", "92000", "--rentang", "5-20:5", "--kategori", "pangan",
+                          "--ppn", "termasuk")
+        r = _ringkasan(out)
+        b = _baris(r, "15%")
+        self.assertIn("33,22%", b)
+        self.assertIn("DI BAWAH MIN", b)
+        self.assertIn("hanya 5% (harga promo Rp170.905)", r)
+        self.assertIn("DILARANG '~'", out)
+
+    def test_skill_md_1_0_9(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as f:
+            teks = f.read()
+        for kunci in ("--diskon-target", "cantik --harga", "hitung jika perlu", "disalin utuh"):
+            self.assertIn(kunci, teks)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
