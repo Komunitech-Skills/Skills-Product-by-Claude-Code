@@ -61,3 +61,6 @@ Alasan: semua angka di 3 skenario normal + batas lapisan + pembulatan PKP + PPh 
 - PTKP istri digabung & zakat: naskah PP 60/2010 / UU HPP Ps. 7 belum dibuka langsung penguji.
 - Seluruh skill domain pajak: review konsultan pajak terdaftar sebelum rilis; pembulatan belum dicocokkan dengan Coretax.
 - `platform_teruji`: hanya `claude-code (simulasi agent)`.
+
+## Uji ulang v1.0.5 (2026-10-03) — OpenClaw sebelum/sesudah
+Skenario 2 (konsultan IT 0,5%, tanpa NPPN, 2 giliran) diulang di OpenClaw 2026.9.6 + claude-sonnet-5 per 3 Okt 2026. SESUDAH menyebut SPT TP 2025 **sudah terlambat 186 hari** di baris pertama, denda Rp100.000, bunga tanpa tarif karangan, saran segera lapor setelah konsultasi; KB Rp14.400.000 cocok Python independen. Skor sebelum 2 → sesudah 9. **VERDIK: LULUS** (rincian di `00-openclaw-sebelum-sesudah.md`, bagian "Uji ulang v1.0.5"). Minor: status tenggat baru muncul di giliran 2. `platform_teruji` dapat memuat `openclaw (uji otomatis agent)`.
