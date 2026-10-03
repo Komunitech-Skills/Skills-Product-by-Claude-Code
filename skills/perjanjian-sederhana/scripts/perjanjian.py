@@ -449,6 +449,10 @@ POS_BIAYA = [
     ("perbaikan besar", r"perbaikan\s+besar"),
     ("perbaikan kecil", r"perbaikan\s+kecil"),
 ]
+POLA_SEPIHAK = (r"\b(mengunci|menyegel|menggembok|mengambil alih|membongkar paksa)\b[^.\n]{0,60}"
+                r"(objek sewa|kios|toko|tempat|ruko|alat|barang)|pengosongan (paksa|sepihak)|"
+                r"mengosongkan[^.\n]{0,40}(secara sepihak|secara paksa|sendiri)|(mengambil|menarik)[^.\n]{0,40}secara paksa|"
+                r"tanpa (melalui )?(proses hukum|putusan pengadilan)")
 POLA_BEBAN = r"membayar|dibayar|menanggung|ditanggung|tanggungan|beban|atas biaya|biaya .* oleh"
 
 
@@ -609,6 +613,18 @@ def cmd_cek(a):
     for pola, pesan in POLA_BAHAYA:
         if re.search(pola, isi_pasal):
             rujuk.append(pesan)
+    # v1.0.6: klausul pengosongan/pengambilalihan sepihak (tanpa putusan pengadilan) bukan default
+    sepihak = [b for b in rendah.splitlines() if "tinjau pengacara" not in b
+               and not re.search(r"tidak akan|tidak boleh|dilarang|tanpa persetujuan pihak kedua atau putusan", b)
+               and re.search(POLA_SEPIHAK, b)]
+    if sepihak:
+        pesan = ("Ada klausul pengosongan/pengambilalihan sepihak (kunci, segel, bongkar, ambil paksa) tanpa putusan "
+                 "pengadilan. Default yang aman: teguran tertulis -> tenggat -> musyawarah/pengadilan.")
+        if "tinjau pengacara" in rendah:
+            info.append(pesan + " Pastikan pengguna sendiri yang memintanya dan peringatan risikonya tercantum.")
+        else:
+            masalah.append(pesan + " Ganti dengan mekanisme itu, atau (hanya bila diminta pengguna) beri tanda "
+                                   "TINJAU PENGACARA + peringatan risiko.")
     beban, konflik = cek_kewajiban(teks)
     masalah.extend(konflik)
     if kosong:

@@ -153,6 +153,27 @@ def main():
         for n in sorted(os.listdir(TEMPLATES)):
             d = jalan(["cek", os.path.join(TEMPLATES, n)])
             cek("template tanpa konflik beban: " + n, not any("bertentangan" in m for m in d["masalah"]), d["masalah"])
+        # v1.0.6: pengosongan sepihak bukan default; tanpa peringatan -> harus diperbaiki, dengan peringatan -> info
+        kasus = {
+            "sepihak_polos": ("# SEWA KIOS\n## Pasal 7\n(3) PIHAK PERTAMA berhak mengunci kios dan mengeluarkan barang "
+                              "PIHAK KEDUA tanpa proses hukum.\n", "masalah"),
+            "sepihak_diminta": ("# SEWA KIOS\n## Pasal 7\n(3) PIHAK KEDUA menyetujui PIHAK PERTAMA mengunci Objek Sewa.\n"
+                                "> ⚠ TINJAU PENGACARA: risiko perbuatan melawan hukum.\n", "info"),
+            "aman": ("# SEWA KIOS\n## Pasal 7\n(4) PIHAK PERTAMA tidak akan mengunci, menyegel, atau mengambil alih "
+                     "Objek Sewa tanpa persetujuan PIHAK KEDUA atau putusan pengadilan.\n", None),
+        }
+        for nama, (isi, tempat) in kasus.items():
+            fk = os.path.join(tmp, nama + ".md")
+            with open(fk, "w", encoding="utf-8") as fh:
+                fh.write(isi)
+            d = jalan(["cek", fk])
+            di_m = any("sepihak" in m for m in d["masalah"])
+            di_i = any("sepihak" in m for m in d["info"])
+            cek("pengosongan " + nama, (di_m, di_i) == (tempat == "masalah", tempat == "info"), d)
+        for n in sorted(os.listdir(TEMPLATES)):
+            d = jalan(["cek", os.path.join(TEMPLATES, n)])
+            cek("template tanpa pengosongan sepihak default: " + n,
+                not any("sepihak" in m for m in d["masalah"] + d["info"]), d["masalah"] + d["info"])
         kosong = os.path.join(tmp, "kosong.md")
         open(kosong, "w").close()
         jalan(["cek", kosong], kode=1)
