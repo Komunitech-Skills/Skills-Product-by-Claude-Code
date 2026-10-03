@@ -1,6 +1,6 @@
 ---
 name: absensi-lokal
-description: Aplikasi absensi karyawan lokal (SQLite di komputer pemilik) yang dioperasikan agent: karyawan & shift (termasuk shift malam), catat masuk/pulang lewat chat, impor file mesin fingerprint (CSV/XLSX), izin/sakit/cuti/alpa, rekap bulanan hadir/terlambat/pulang cepat/jam kerja, upah lembur PP 35/2021 hanya dari lembur disetujui, deteksi data ganjil, CSV untuk slip-gaji-bpjs. Gunakan saat pengguna minta "catat absen", "Andi masuk 08.12", "rekap absensi", "hitung lembur", impor data mesin absen, atau attendance, overtime. Slip gaji/BPJS pakai slip-gaji-bpjs.
+description: Aplikasi absensi karyawan lokal (SQLite di komputer pemilik) yang dioperasikan agent: karyawan & shift (termasuk shift malam), catat masuk/pulang lewat chat, impor file mesin fingerprint (CSV/XLSX), izin/sakit/cuti/alpa, rekap bulanan hadir/terlambat/pulang cepat/jam kerja, upah lembur PP 35/2021 hanya dari lembur disetujui, deteksi data ganjil, CSV untuk slip-gaji-bpjs, plus hitung upah mingguan pekerja harian lepas tanpa database (hari x tarif, setengah hari, lembur vs minimum PP 35/2021, kasbon). Gunakan saat pengguna minta "catat absen", "Andi masuk 08.12", "rekap absensi", "hitung lembur", "gaji harian minggu ini", "upah tukang/pekerja harian", impor data mesin absen, atau attendance, overtime. Slip gaji/BPJS pakai slip-gaji-bpjs.
 ---
 
 # Absensi Lokal (pengganti aplikasi absensi bulanan)
@@ -15,6 +15,7 @@ Menjadi "aplikasi absensi" pemilik usaha tanpa langganan: data ada di **satu fil
 - "Ini file dari mesin fingerprint, masukkan", "rekap absensi September", "siapa yang sering telat?"
 - "Joko lembur 3 jam kemarin, disuruh Bu Rina", "hitung lembur bulan ini"
 - "Kirim rekap absen harian ke Telegram saya tiap jam 10 pagi" (OpenClaw)
+- "Hitung gaji minggu ini: Agus 120rb/hari masuk 6 hari + lembur 2 jam, Budi 110rb 5 hari kasbon 200rb" (pekerja **harian lepas**, tanpa database) → bagian **F**
 
 ## Kapan TIDAK digunakan
 - Slip gaji, potongan BPJS, PPh 21 → `slip-gaji-bpjs` (skill ini hanya mengirim jam lembur/rekap ke sana)
@@ -87,6 +88,19 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 ### E. Laporan harian & jadwal
 - `harian [--tanggal ...]` → siapa hadir, terlambat, belum absen, izin/sakit, lembur disetujui.
 - Jadwal otomatis ke Telegram (OpenClaw): ikuti `references/openclaw-jadwal.md`. Jadwal hanya menjalankan `harian`/`rekap` (baca saja).
+
+### F. Upah pekerja harian lepas (tanpa database) — `scripts/upah_harian.py`
+Untuk gajian harian/mingguan (warung, bengkel, toko, tukang) yang diketik di chat. `gaji-umkm` khusus gaji bulanan, jadi **jangan menghitung upah harian manual** — pakai script ini (tidak menyimpan apa pun):
+```bash
+python3 <folder-skill-ini>/scripts/upah_harian.py --pola 6 --periode "28 Sep - 3 Okt 2026" \
+  --pekerja "Agus; tarif=120rb; hari=6; lembur=2; tarif-lembur=15rb" \
+  --pekerja "Budi; tarif=110rb; hari=5; kasbon=200rb" \
+  --pekerja "Cici; tarif=100rb; hari=5; setengah=1" --json
+```
+- Kunci: `tarif` (upah harian, wajib), `hari` (hari penuh), `setengah` (jumlah setengah hari, dibayar ½ tarif — sebut sebagai asumsi), `lembur` (jam lembur di hari kerja, per hari dipisah `+`, mis. `2+1`), `lembur-libur` (jam di hari istirahat/libur), `tarif-lembur` (tarif per jam yang biasa dibayar pemilik, opsional), `tambahan`, `potongan`/`kasbon`, `pola` (6 atau 5 hari kerja/minggu; default `--pola`). Banyak pekerja: `--file pekerja.csv` (kolom sama).
+- Lembur **minimum PP 35/2021**: upah sebulan = harian × 25 (pola 6) / × 21 (pola 5); upah sejam = ÷ 173; hari kerja jam ke-1 × 1,5, berikutnya × 2. Contoh: 120.000 × 25 ÷ 173 = 17.341,04/jam × 3,5 = **Rp 60.694** untuk 2 jam.
+- Bila `tarif-lembur` diisi, `total_dibayar` memakai tarif pemilik dan script memberi **peringatan** bila di bawah minimum, plus `total_versi_minimum_pp35`. Sampaikan keduanya dan peringatannya apa adanya; keputusan di pemilik.
+- Salin `teks` / angka dari script. Lembur hanya yang disetujui/disuruh pemilik. Ingin tercatat tiap hari → tawarkan mode database (bagian A–D).
 
 ## Format output ke pengguna
 **Konfirmasi sebelum menyimpan:**
