@@ -11,6 +11,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "promosi" / "sebelum-sesudah.jsonl"
 OUT = ROOT / "promosi" / "SEBELUM-SESUDAH.md"
+TPL = ROOT / "promosi" / "template-halaman.html"
+HTML = ROOT / "promosi" / "halaman-sebelum-sesudah.html"
 MIN_SESUDAH, MIN_SELISIH = 8.0, 1.5
 
 
@@ -62,6 +64,12 @@ def main():
             else "skor sesudah < 8" if r["skor_sesudah"] < MIN_SESUDAH else "selisih < 1,5")
         L.append(f"| `{r['nama']}` | {angka(r['skor_sebelum'])} → {angka(r['skor_sesudah'])} | {r.get('verdik_terakhir','')} | {alasan} |")
     OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
+    data = [{"judul": r["judul_jualan"] or r["nama"], "kat": r["kategori"], "b": r["skor_sebelum"],
+             "a": r["skor_sesudah"], "tugas": r["tugas"], "tanpa": r["tanpa_skill"], "dengan": r["dengan_skill"],
+             "angka": r.get("angka_kunci", ""), "catatan": r.get("catatan_jujur", "")} for r in ok]
+    tanggal = max(r["tanggal_uji"] for r in ok)
+    html = TPL.read_text(encoding="utf-8").replace("__DATA__", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
+    HTML.write_text(html.replace("__TANGGAL__", tanggal), encoding="utf-8")
     print(f"{OUT.relative_to(ROOT)}: {len(ok)} tampil, {len(lain)} tidak")
 
 
