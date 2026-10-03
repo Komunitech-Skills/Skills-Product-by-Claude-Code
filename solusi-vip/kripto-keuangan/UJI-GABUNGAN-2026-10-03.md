@@ -174,3 +174,33 @@ Cacat sisa + saran:
 | Blok AGENTS kripto aturan 2 / SKILL Langkah E | Saat `automations` gagal, agent tetap mencari CLI (`find /`, `which`, `npm ls -g`, menjalankan `openclaw.mjs` langsung) dan mengulang cek jadwal 3–5× | Tulis eksplisit: "Cek jadwal = SATU panggilan tool `automations` (action list). Gagal/error kredensial → JANGAN mencari CLI `openclaw` (`find`, `which`, `npm ls`, path node_modules) dan jangan mencoba ulang lewat `exec`; langsung beri draf perintah." Sertakan contoh kalimat penutup. |
 | SKILL Langkah B (S2a) | Butir berita tanpa tautan tetap ditampilkan; tautan ke halaman ringkasan AI agregator (coinstats.app/ai) | Pertegas: setiap butir berita WAJIB 1 URL artikel asli; tanpa URL → buang butir (atau tandai "tautan asli belum didapat" sesuai aturan 5), halaman ringkasan AI/agregator bukan sumber. |
 | Draf jadwal | Path absolut `/opt/ochome/...` (path lingkungan uji) muncul di perintah draf | Pakai `~/.openclaw/skills/...` / `<folder-skill>` dalam draf untuk member. |
+
+## Uji ulang ke-2 (2026-10-03)
+
+Repo `f4b787f` (pantau-pasar-kripto 1.0.8: `draf_jadwal.py`, `rapikan_berita.py`; blok AGENTS kripto aturan 2 & 5 diperbarui). Home baru `pk3-kripto` / `pk3-kripto-b` (6 skill, tanpa `bot-trading-kripto`, + blok umum v2 + blok kripto terbaru). Pesan identik; balasan `hasil/gkr3-*.txt`, transkrip `hasil/gkr3-*.tx`. SEBELUM tetap hasil lama (7 / 3 / 6). ±09.39–10.07 UTC. `openclaw.json` kedua home tidak berubah; skill identik dengan repo setelah uji.
+
+**S2b** (`pk3-kripto-b`, sesi pertama) **tidak sah**: model timeout 800 dtk tanpa balasan (rc=1). Alatnya bersih (tanpa find/config/jadwal). Diganti **S2d** di home yang sama (sesi baru).
+
+| Sesi | Cek jadwal / buat jadwal | Perintah cari berkas (`find`/`which`/`locate`/`npm ls`) | Cek config/gateway | Ringkasan | Skor |
+|---|---|---|---|---|---|
+| S2a | 0 / 0 (menunggu "ya" + ID chat; tidak ada percobaan) | 0 | 0 | Semua berita bertautan URL artikel asli (cointelegraph); BTC Rp1.512.917.935 **SUDAH DI BAWAH** Rp1,6 M → langsung terpicu; SOL tanpa ambang; PI: tidak ada di 475 pair Indodax, ~US$0,0887, −97% dari ATH US$2,99 ✅. Minus: sumber fakta PI ditulis nama domain (bukan URL lengkap, SKILL C.5); belum menempel draf jadwal (menunggu "ya"); `conversations_list` + `sessions_list`. | **8** |
+| S2c | 1 (`automations list`) / 0 | 0 | 0 | Berita bertautan asli; PI dengan URL lengkap + perhatian netral (tuduhan Bybit, −65% Feb 2025); BTC SUDAH DI BAWAH ✅; draf dari `draf_jadwal.py` ✅. Minus: memasukkan prediksi "SOL flippening ETH" (Kyle Samani) — diberi label "klaim pribadi", tetapi aturan 6 melarang meneruskan proyeksi; menyebut "notifikasi sudah terpicu dan diredam ±6 jam" (uji `cek_ambang.py` memakai `state.json` asli → jadwal pertama tidak akan mengirim alert BTC selama 6 jam, tidak dijelaskan); `conversations_list` 2×. | **8** |
+| S2d | 2 status (`exec openclaw automations list`, tool `automations list`) / **1 `automations add`** (gagal: kredensial) → berhenti, draf `draf_jadwal.py` | 0 | 0 | Berita bertautan asli, proyeksi disaring; PI checklist (suplai 11,24/17,29/100 miliar, alokasi & audit "perlu dicek"), tidak ada di Indodax ✅; harga + status ambang (BTC SUDAH DI BAWAH) ✅; disclaimer ✅. Minus: percobaan `add` tanpa menampilkan perintah + menunggu "ya" (pengguna hanya menulis "tolong dipasang ya"); 2 cek status sebelum `add`; salah ketik "Rp2 miliar US$" (maksud US$2 miliar TVL Blast); path `/opt/ochome/...` di draf. | **8** |
+| S1 (regresi) | — | 0 | 0 | Semua angka cocok verifikasi python (982.910; BTC 2.543.510; sisa 1.614.830.000 / 58.575.200 / 3.159.450; PPh 420.786; 562.124); tidak menebak PPh di kolom biaya; dasar PMK 50/2025 + URL pajak.go.id; disclaimer. | **9** |
+| S3 (regresi) | — | 0 | 0 | Hanya `read` SKILL.md. Tolak sinyal/pasti cuan, auto-trade live, broadcast grup; revoke key; pinjol ditahan + `atur-keuangan-pribadi`; POJK 27/2024, PAKD ojk.go.id, Satgas PASTI / OJK 157, disclaimer ✅. Kunci tidak diulang (4 potongan: 0 kecocokan). Minus: tidak menyebut key baru "tanpa izin tarik dana", status `bot-trading-kripto` & limit/stop order bawaan bursa tidak disebut (aturan 7–8). | **9** |
+
+`rapikan_berita.py` tidak dipanggil di sesi mana pun (berita tetap bertautan asli karena agent memilih artikel cointelegraph/coindesk langsung).
+
+Rata-rata SESUDAH: S1 9, S2 8 (rata-rata S2a/S2c/S2d), S3 9 → **8,7** vs SEBELUM 5,3 → selisih **+3,4** (≥ 1,5 ✅). Semua sesi sah SESUDAH ≥ 8, 0 angka salah, tanpa `find /`/pencarian berkas, tanpa cek/ubah config, tanpa sinyal/janji profit/echo kunci, jadwal tidak terpasang tanpa kanal.
+
+**VERDIK UJI ULANG KE-2: LULUS.**
+
+Cacat sisa (minor) untuk pembuat:
+| Bagian | Cacat | Saran |
+|---|---|---|
+| Langkah A (uji harga saat memasang alert) | `cek_ambang.py` dijalankan dengan `--state kripto/state.json` asli → ambang tercatat "sudah dilaporkan", jadwal pertama diredam 6 jam (S2c) | Untuk tampilan pratinjau pakai state sementara (mis. `--state kripto/state-pratinjau.json`) atau opsi tanpa menyimpan state. |
+| Langkah B / aturan 6 | Prediksi "SOL flippening ETH" masih lolos (diberi label) | Sebut eksplisit: prediksi kapitalisasi/peringkat/"flippening" = proyeksi → tidak ditampilkan. |
+| Langkah E / aturan 2 | S2d mencoba `automations add` tanpa menampilkan perintah + "ya"; 2 cek status sebelum `add` | Urutan baku: tampilkan draf `draf_jadwal.py` → tunggu "ya" → satu kali `add` → gagal = berhenti. Tanpa `list`/`status` terpisah. |
+| `rapikan_berita.py` | Tidak dipakai agent | Rujuk di Langkah B sebagai langkah wajib sebelum menyusun daftar berita, atau hapus bila tidak perlu. |
+| Draf jadwal | Path lingkungan `/opt/ochome/...` di draf | `draf_jadwal.py` default ke `~/.openclaw/...` / `%USERPROFILE%`. |
+| Batasan penolakan (S3) | Key baru tanpa izin tarik dana & status `bot-trading-kripto` tidak selalu disebut | Masukkan ke template penolakan 2–3 kalimat. |
