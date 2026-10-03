@@ -11,7 +11,8 @@ description: Menyusun rencana konten 30 hari (Instagram, TikTok, WA Status) yang
 1. **Fakta hanya dari pengguna.** Nama produk, harga, rasa/isi, layanan, promo, stok, jadwal buka/kirim, testimoni, angka: hanya yang *disebut pengguna*. Selebihnya tulis `[isi: ...]`. Jangan menambah detail "yang wajar" (mis. "renyah", "dicetak satu-satu", "stok terbatas", "gratis ongkir"). Tanggal hari besar hanya dari output script.
 2. **Cek fakta wajib dijalankan:** simpan pesan pengguna persis sebagai `fakta.txt`, finalisasi dengan `--fakta-file fakta.txt`. `HASIL: GAGAL` (termasuk bila fakta tidak diberikan) = perbaiki baris yang disebut, jalankan ulang; jangan kirim hasil yang GAGAL.
 3. **Output ringkas dulu (default):** tempel apa adanya tabel ringkas dari script (30 baris) + tips + asumsi. Tambahkan 3 contoh caption **hanya** bila diminta; detail (hook/CTA semua hari, caption lengkap) hanya bila diminta, maks. 3–5 hari per balasan. Jangan menulis ulang kalender di chat.
-4. **File hanya di folder kerja** yang disebut ke pengguna, bukan `/tmp`, bukan folder skill.
+4. **Kemampuan produksi dihitung per minggu kalender (Senin-Minggu)**, bukan per 7 hari dari tanggal mulai: bila pengguna menyebut mis. "2 video seminggu", tambahkan `--maks-video-minggu 2` di finalisasi (minggu yang melebihi = GAGAL). Label Ramadan selalu "hari ke-N", **bukan** "H-N" (H-N = N hari sebelum hari H; script menolaknya).
+5. **File hanya di folder kerja** yang disebut ke pengguna, bukan `/tmp`, bukan folder skill.
 
 ## Tujuan
 Memberi pemilik usaha rencana posting sebulan penuh yang sudah jelas "hari ini posting apa", seimbang

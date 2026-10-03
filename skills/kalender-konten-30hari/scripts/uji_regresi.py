@@ -202,6 +202,48 @@ class Uji(unittest.TestCase):
         for frasa in ("[isi:", "/tmp", "fakta.txt", "ringkas"):
             self.assertIn(frasa, sk.split("## Tujuan")[0])
 
+    def selesai_arg(self, isi, *tambah):
+        folder = tempfile.mkdtemp()
+        return jalan(*(self.ARG_SARI + ["--isi", isi, "--fakta", self.FAKTA_SARI, "--catatan",
+                                        self.tulis("Tips: batch video. Asumsi: gajian 25 & 1."),
+                                        "--selesai", folder] + list(tambah)))
+
+    def test_kapasitas_video_per_minggu_kalender(self):
+        """v1.0.8: 2 video/minggu dihitung Senin-Minggu. Isian default: video tiap hari ke-4 (4, 8, 12, ...)."""
+        v = "{} | Video IG+TikTok | Foto toples nastar Rp95.000 | Nastar Dapur Bu Sari | Order lewat WA"
+        # Kam 4 Mar (default) + Sab 6 + Min 7 Mar = 3 video di minggu Senin 1 Mar -> GAGAL
+        r = self.selesai_arg(self.isian_sari({6: v.format(6), 7: v.format(7)}), "--maks-video-minggu", "2")
+        self.assertEqual(r.returncode, 2, r.stdout)
+        self.assertIn("minggu Senin 01 Mar 2027", r.stdout)
+        self.assertIn("3 video", r.stdout)
+        # Jum 5 + Sab 6 Mar lalu Sen 8 Mar (default): 2 per minggu kalender -> blok 7 hari dari tgl 1 tidak relevan
+        r = self.selesai_arg(self.isian_sari({5: v.format(5), 6: v.format(6)}), "--maks-video-minggu", "3")
+        self.assertNotIn("melebihi kemampuan", r.stdout)
+        r = self.selesai_arg(self.isian_sari(), "--maks-video-minggu", "2")
+        self.assertNotIn("melebihi kemampuan", r.stdout)
+
+    def test_video_per_minggu_senin_minggu_bukan_blok_7_hari(self):
+        sys.path.insert(0, os.path.dirname(SCRIPT))
+        import buat_kalender as bk
+        # 4 video: Kam 4, Jum 5 (minggu 1-7 Mar) dan Sen 8, Sel 9 (minggu 8-14 Mar): blok 7 hari dari tgl 1
+        # tidak mengenal batas; per minggu kalender masing-masing 2 -> lolos pada maks 2.
+        baris = [{"No": i, "Tanggal": "2027-03-%02d" % i, "Format": "Video"} for i in (4, 5, 8, 9)]
+        self.assertEqual(bk.periksa_video(baris, 2), [])
+        # Sen 8 s.d. Kam 11 = 4 video dalam satu minggu kalender (blok 7 hari dari 4 Mar juga akan menangkap, tapi
+        # Kam 11-Rab 17 tidak): harus GAGAL.
+        baris = [{"No": i, "Tanggal": "2027-03-%02d" % i, "Format": "Video"} for i in (9, 11, 12, 14)]
+        self.assertEqual(len(bk.periksa_video(baris, 2)), 1)
+
+    def test_label_ramadan_h_n_ditolak(self):
+        isi = self.isian_sari({2: "2 | - | Persiapan | Ramadan H-22 di Dapur Bu Sari | Order lewat WA"})
+        r = self.selesai_arg(isi)
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("Ramadan hari ke-N", r.stdout)
+        f = self.tulis("Tips: saat Ramadan H-22 siapkan stok.")
+        r = jalan(*(self.ARG_SARI + ["--cek-teks", f]))
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("Ramadan hari ke-N", r.stdout)
+
     def test_selesai_cek_tanggal_di_catatan(self):
         r, _ = self.selesai(self.isian_sari(), "Tips: Idulfitri ±19 Mar 2027 jangan jualan.")
         self.assertEqual(r.returncode, 2)

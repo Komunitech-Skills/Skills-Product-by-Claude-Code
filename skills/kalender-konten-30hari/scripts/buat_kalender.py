@@ -299,6 +299,24 @@ KATA_PROMO = re.compile(r"\b(?:promo|diskon|sale|potongan|gratis|cashback|flash|
                         re.IGNORECASE)
 
 
+POLA_RAMADAN_H = re.compile(r"ramadan(?:\s+(?:hari|ke))?\s*[-:]?\s*H\s*-\s*\d+", re.IGNORECASE)
+PESAN_RAMADAN_H = ("label 'Ramadan H-N' menyesatkan (H-N = N hari SEBELUM hari H); tulis 'Ramadan hari ke-N' "
+                   "seperti kolom Momen dari script")
+
+
+def periksa_video(baris, maks):
+    """Kapasitas video dihitung per minggu KALENDER (Senin-Minggu), bukan per 7 hari dari tanggal mulai."""
+    per_minggu = {}
+    for r in baris:
+        if re.search(r"video", r["Format"], re.IGNORECASE):
+            d = parse_tanggal(r["Tanggal"])
+            per_minggu.setdefault(d - timedelta(days=d.weekday()), []).append(r["No"])
+    return ["GAGAL: minggu Senin {} (Senin-Minggu) berisi {} video (baris {}), melebihi kemampuan produksi {} "
+            "video/minggu. Ubah sebagian jadi Foto/Story saja.".format(
+                fmt_tgl(senin), len(no), ", ".join(str(x) for x in no), maks)
+            for senin, no in sorted(per_minggu.items()) if len(no) > maks]
+
+
 def periksa_isi(baris, gajian, momen_user):
     """Hitung ulang momen per tanggal pada hasil isian dan peringatkan promo di hari yang tidak pantas."""
     pesan = []
@@ -329,6 +347,8 @@ def periksa_isi(baris, gajian, momen_user):
                 pesan.append("Baris {} ({}): kolom Momen diganti dengan hasil script ({}). Sesuaikan ide/hook baris "
                              "ini.".format(r["No"], r["Tanggal_tampil"], "; ".join(alasan)))
         teks = " ".join([r["Pilar"], r["Ide Konten"], r["Hook / Judul"], r["CTA"]])
+        if POLA_RAMADAN_H.search(r["Momen"] + " " + teks):
+            pesan.append("GAGAL: Baris {} ({}): {}.".format(r["No"], r["Tanggal_tampil"], PESAN_RAMADAN_H))
         berbau_promo = bool(re.search(r"promo|jual", r["Pilar"], re.IGNORECASE)) or bool(KATA_PROMO.search(teks))
         if peringatan and berbau_promo:
             pesan.append("Baris {} ({}) adalah hari peringatan ({}) tetapi berisi promo/jualan — ganti dengan konten "
@@ -411,6 +431,9 @@ def cek_teks(teks, kunci, mulai, akhir):
                 temuan.append("GAGAL: '{}' disebut sebagai {} ('{}'), padahal tabel: {}. Samakan dengan tabel "
                               "kalender (jangan memakai nomor baris sebagai tanggal).".format(
                                   tm.group(0).strip(), nama_jenis[jenis], baris.strip()[:80], acuan))
+    for baris in teks.splitlines():
+        if POLA_RAMADAN_H.search(baris):
+            temuan.append("GAGAL: '{}' - {}.".format(baris.strip()[:80], PESAN_RAMADAN_H))
     ramadan = kunci.get("ramadan") or set()
     if any(mulai <= d <= akhir for d in ramadan) and not re.search(r"ramadan|ramadhan|puasa", teks, re.IGNORECASE):
         temuan.append("GAGAL: periode {} s.d. {} mencakup Ramadan (perkiraan) tetapi teks tidak menyebut Ramadan sama "
@@ -576,6 +599,8 @@ def main():
     p.add_argument("--catatan", help="file tips + asumsi yang akan ditampilkan ke pengguna (ikut dicek dengan --selesai)")
     p.add_argument("--judul", help="judul kalender, mis. 'Kalender Konten Dapur Bu Sari' (untuk --selesai)")
     p.add_argument("--detail", type=int, default=3, help="jumlah hari pertama yang Hook & CTA-nya tampil di chat (0–5)")
+    p.add_argument("--maks-video-minggu", type=int, help="kemampuan produksi: maks. video per minggu kalender "
+                   "(Senin-Minggu); dengan --isi, minggu yang melebihi ditandai GAGAL")
     p.add_argument("--hari-ini", help=argparse.SUPPRESS)
     a = p.parse_args()
 
@@ -678,6 +703,10 @@ def main():
                 for x in cek_fakta_teks(isi, fakta):
                     if x.startswith("GAGAL"):
                         bentrok.append("Baris {} ({}): {}".format(b["No"], b["Tanggal_tampil"], x))
+        if a.maks_video_minggu is not None:
+            if a.maks_video_minggu < 0:
+                galat("--maks-video-minggu harus 0 atau lebih.")
+            bentrok += periksa_video(baris, a.maks_video_minggu)
         pilar = list(dict.fromkeys(b["Pilar"] for b in baris))
     else:
         baris, bentrok = susun(mulai, a.hari, pilar, platform, gajian, momen_semua)
