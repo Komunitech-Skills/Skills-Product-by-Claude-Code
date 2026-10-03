@@ -12,12 +12,12 @@ pelanggan/nomor HP di repo Komunitech.
       error, memang tidak jalan).
 
 ## Pemasangan skill
-- [ ] 22 skill paket terpasang (`openclaw skills list` menampilkan semuanya):
+- [ ] 21 skill paket terpasang (`openclaw skills list` menampilkan semuanya):
       `karyawan-ai-mulai`, `cek-privasi-openclaw`, `listing-marketplace`,
       `harga-jual-marketplace`, `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`,
       `naskah-live-jualan`, `buku-stok`, `agen-cs-toko`, `balas-chat-cs`, `foto-produk-brief`,
       `laporan-otomatis-terjadwal`, `rekap-penjualan-csv`, `konten-mingguan`, `pesan-prospek-wa`,
-      `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`, `kas-umkm`, `buku-piutang`,
+      `crm-wa`, `analisis-excel`, `kas-umkm`, `buku-piutang`,
       `laporan-iklan-mingguan`.
 - [ ] (Opsional) skill tambahan sesuai kebutuhan: `program-referral-loyalitas`,
       `iterasi-dari-masukan-pelanggan`, `umami-analitik`, `listmonk-newsletter`,
