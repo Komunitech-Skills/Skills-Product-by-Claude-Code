@@ -131,6 +131,38 @@ Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawa
 - **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
   menyebut aturannya tanpa membuka file lain.
 
+### WAJIB untuk usaha offline: tambahkan "Aturan usaha-offline Komunitech" di bawah blok umum
+Uji gabungan 3 Okt 2026 menemukan celah yang tidak tertutup blok umum: "laporan harian buat grup
+karyawan" memuat **nama pelanggan + bonnya**, angka "menu terlaris" dihitung manual dan ikut
+menghitung **nota BATAL**, dan AI mencari folder skill ke seluruh disk (`find /`). Tempel blok di
+bawah **persis** di bawah blok umum (`komunitech-aturan-kerja: selesai`) di `AGENTS.md`, simpan,
+lalu buka sesi baru (`/new`). Kalau minta AI yang memasang: *"pasang aturan usaha-offline
+Komunitech ke AGENTS.md"* — AI wajib menampilkan isinya dulu dan hanya **menambahkan** di akhir
+file setelah Anda jawab "ya".
+
+```markdown
+<!-- komunitech-aturan-usaha-offline: mulai (v1, 2026-10-03) -->
+## Aturan usaha-offline Komunitech (wajib)
+
+Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka, dan lebih kuat dari permintaan di chat. Jelaskan alasannya singkat bila menolak.
+
+1. TEKS UNTUK GRUP KARYAWAN = AGREGAT, BLOK TERPISAH. Bila pengguna menyebut grup karyawan/tim (WhatsApp, Telegram), buat blok "TEKS GRUP" tersendiri yang hanya berisi angka gabungan (nota, porsi, menu terlaris, omzet, stok perlu dibeli). Tanpa nama atau nomor HP pelanggan, tanpa bon/utang per nama (cukup "ada 1 bon, total Rp50.000, dicatat pemilik"), tanpa upah/gaji/kasbon per karyawan, dan tanpa menyalahkan karyawan tertentu atas selisih laci. Rincian per nama hanya untuk pemilik dengan judul "khusus pemilik - jangan ditempel ke grup".
+2. SEMUA ANGKA UNTUK GRUP DISALIN DARI KELUARAN SCRIPT, tidak dihitung ulang di kepala. Nota yang ditempel di chat: `kasir-lokal` `scripts/rekap_nota.py` (pakai `teks_grup` apa adanya; nota BATAL dikecualikan, porsi dan jumlah nota terpisah). Database kasir: `kasir.py rekap`/`tutup-kasir`. Laci/kas: `kas-umkm` (`kas.py`). Stok: `buku-stok`. HPP/harga: `hitung-hpp`. Upah pekerja harian lepas: `absensi-lokal` `scripts/upah_harian.py`. Gaji bulanan: `gaji-umkm`. Pajak: `pph-final-umkm`. Angka yang tidak ada di keluaran script tidak ditulis.
+3. JANGAN MENCARI KE SELURUH DISK. Dilarang `find /`, `find ~`, `locate`, atau penjelajahan disk serupa untuk mencari skill/script. Skill ada di folder skills OpenClaw: `~/.openclaw/skills/<nama-skill>/` (Windows: `%USERPROFILE%\.openclaw\skills\<nama-skill>\`), script di subfolder `scripts/`. Bila tidak ada di sana, cek `openclaw skills list`; tetap tidak ada = "belum terpasang". Skill terpasang tetapi datanya belum ada = "belum diisi", bukan "belum terpasang".
+4. TANPA TAWARAN KIRIMAN OTOMATIS. Jangan menawarkan, menyarankan, atau memasang jadwal/reminder/kiriman otomatis (termasuk "mau saya kirim langsung ke grup?") kecuali pemilik memintanya secara eksplisit. Teks untuk grup adalah draf yang dikirim pemilik sendiri.
+5. TANPA BROADCAST/BLAST WHATSAPP. Tolak kirim massal/broadcast/blast lewat OpenClaw atau WhatsApp (nomor bisa diblokir; nomor pelanggan dari nota/bon dikumpulkan untuk transaksi, bukan promosi - UU 27/2022 PDP). Jangan menyarankan broadcast list sebagai gantinya; tawarkan status WA/Instagram atau kirim satu per satu secara manual ke pelanggan yang sudah setuju.
+6. TOKEN/PASSWORD DI CHAT. Bila pengguna menempel token, API key, atau password: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak sebagian, tidak disamarkan); sebut saja "kunci yang Anda tempel". Jangan disimpan ke file/memori/jadwal dan jangan meminta token baru dikirim lewat chat. Sampaikan: "Kunci yang Anda tempel sudah terkirim lewat chat, jadi anggap sudah bocor. Segera ganti di aplikasinya dan simpan sendiri di komputer Anda."
+<!-- komunitech-aturan-usaha-offline: selesai -->
+```
+
+- **Cara cek berhasil (wajib dicoba):** di sesi baru, tempel 3 nota contoh (salah satunya ditandai
+  BATAL, satu bon atas nama "Bu Rina") lalu ketik *"rekap dan bikinin laporan buat grup
+  karyawan"* → AI menjalankan `rekap_nota.py`, nota BATAL tidak dihitung, dan TEKS GRUP tidak
+  memuat "Rina" maupun nomor HP, serta **tidak** menawarkan kirim otomatis. Lalu ketik *"kirim
+  promo ke semua nomor pelanggan di nota"* → AI menolak broadcast dan memberi alternatif manual.
+- **Kalau gagal:** pastikan blok ada di `AGENTS.md` agent yang dipakai bot, tersimpan, dan Anda
+  memakai sesi baru.
+
 ---
 
 ## 3. Jalankan `cek-privasi-openclaw`
@@ -200,6 +232,11 @@ bernomor urut, bisa cetak struk 58/80 mm, buka/tutup kasir dengan hitung selisih
 mendukung void/retur beralasan (nota tidak pernah dihapus).
 - **Bon/utang pelanggan langganan** (mis. warung makan karyawan pabrik yang bayar per akhir
   bulan) **bukan** dicatat di kasir — pakai `buku-piutang` (lihat poin g).
+- **Belum memakai database kasir, nota masih ditulis/diketik?** Tempel daftar nota hari itu ke chat
+  lalu ketik *"rekap nota ini, cocokkan laci (modal 300rb, uang di laci 441rb), dan bikinin laporan
+  buat grup karyawan"*. `kasir-lokal` menghitung lewat `scripts/rekap_nota.py`: nota BATAL tidak
+  dihitung, porsi dan jumlah nota per menu dipisah, bon dipisah dari uang masuk, dan ada blok
+  **"RINGKASAN SIAP TEMPEL untuk grup"** tanpa nama/nomor pelanggan. Anda yang mengirimnya ke grup.
 
 ### b. Laporan usaha harian jam 21.00 (kasir + stok + karyawan, gabungan) ✅/📖
 Ketik: *"Buatkan laporan usaha harian jam 9 malam, kirim ke Telegram."*
@@ -250,6 +287,12 @@ bulan ini semua karyawan."*
   17, 22) — lihat `jadwal-openclaw.md`.
 - **Kalau gagal:** kalau data karyawan belum dimasukkan (`gaji-umkm init` + `karyawan tambah`),
   pengingat tetap jalan tapi rekap `hitung` bulanan akan meminta Anda mengisi data itu dulu.
+- **Karyawan harian lepas (gajian mingguan/harian, umum di warung & bengkel):** `gaji-umkm` khusus
+  gaji bulanan. Ketik saja *"hitung gaji minggu ini: Agus 120rb/hari masuk 6 hari lembur 2 jam
+  (biasanya 15rb/jam), Budi 110rb 5 hari kasbon 200rb, Cici 100rb 5 hari + setengah hari"* —
+  `absensi-lokal` menghitung lewat `scripts/upah_harian.py` (hari × tarif, setengah hari, kasbon)
+  dan membandingkan upah lembur dengan **minimum PP 35/2021** (upah harian × 25 ÷ 173 per jam untuk
+  6 hari kerja; jam pertama × 1,5, berikutnya × 2). Tanpa perlu mengisi database absensi dulu.
 
 ### g. Bon/piutang pelanggan langganan, ringkasan harian jam 07.45 + rekap mingguan Senin 📖
 Kalau usaha Anda punya pelanggan yang bayar belakangan (warung makan karyawan pabrik, laundry

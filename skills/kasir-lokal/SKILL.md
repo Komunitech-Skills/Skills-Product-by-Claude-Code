@@ -1,6 +1,6 @@
 ---
 name: kasir-lokal
-description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite lokal, tanpa langganan/internet), dioperasikan lewat chat: catat penjualan dari kalimat biasa, diskon item/nota, bayar tunai/QRIS/transfer (hanya dicatat), kembalian, retur/void beralasan, struk 58/80 mm, buka/tutup kasir + selisih kas, rekap harian/bulanan ke Telegram + CSV, opsi PPN 12% DPP 11/12 atau PBJT resto/kafe. Gunakan untuk "catat penjualan", "cetak struk", "tutup kasir", "rekap kasir", cashier, point of sale, receipt.
+description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite lokal, tanpa langganan/internet), dioperasikan lewat chat: catat penjualan dari kalimat biasa, diskon item/nota, bayar tunai/QRIS/transfer (hanya dicatat), kembalian, retur/void beralasan, struk 58/80 mm, buka/tutup kasir + selisih kas, rekap harian/bulanan ke Telegram + CSV, rekap dari daftar nota yang ditempel di chat (nota batal dikecualikan, ringkasan siap tempel untuk grup karyawan tanpa data pelanggan), opsi PPN 12% DPP 11/12 atau PBJT resto/kafe. Gunakan untuk "catat penjualan", "cetak struk", "tutup kasir", "rekap kasir", "rekap nota hari ini", "laporan harian buat grup karyawan", cashier, point of sale, receipt.
 ---
 
 # Kasir Lokal (POS satu outlet)
@@ -17,6 +17,7 @@ Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua tr
 - "Batalkan nota tadi, salah input" (void), "pembeli balikin 1 es teh" (retur)
 - "Rekap hari ini / bulan September", "produk paling laku", "jam paling ramai", "omzet setahun untuk pajak"
 - "Kirim rekap kasir ke Telegram saya tiap malam" (OpenClaw)
+- "Ini nota hari ini (ditempel), tolong rekap + cocokkan laci + bikinin laporan buat grup karyawan" → bagian **H** (tanpa database)
 
 ## Kapan TIDAK digunakan
 - Menerima/memproses pembayaran (membuat QRIS dinamis, menarik kartu di EDC, cek uang masuk otomatis) → tidak bisa. Kasir hanya **mencatat** metode bayar; pembayaran tetap lewat QRIS statis/EDC/bank milik toko.
@@ -95,6 +96,17 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### G. Backup
 Otomatis saat impor produk & tutup kasir (folder `backup-kasir/`). Manual: `backup`; daftar: `backup --daftar`; pulihkan: `restore --dari <file>` (pratinjau → `--ya`).
+
+### H. Rekap dari nota yang DITEMPEL di chat (tanpa database)
+Untuk pemilik yang mengetik/menempel daftar nota (belum memakai database kasir). **Jangan menghitung porsi, jumlah nota, atau rupiah sendiri** — pakai script ini:
+1. Simpan bagian nota saja (bukan stok/resep) ke file di folder kerja (mis. `nota-2026-10-03.txt`), satu nota per baris atau blok "Nota 001" + baris item sampai baris kosong. Boleh juga CSV (kolom nota, menu, qty, harga/subtotal, bayar, status).
+2. `python3 <folder-skill-ini>/scripts/rekap_nota.py nota-2026-10-03.txt --tanggal "Sabtu, 3 Oktober 2026" [--kas-awal 300rb --kas-fisik 441rb] [--kas-keluar 20rb] --json`
+   - Nota bertanda BATAL/void/dibatalkan **dikecualikan** dan didaftar di `nota_batal`; kata "batal" di nota pengganti ("pengganti nota 011 yang batal") tidak membuat nota itu batal. Koreksi: `--batal 011` / `--bukan-batal 012`.
+   - Per menu: **porsi** (jumlah qty) dan **jumlah nota** dihitung terpisah — "terlaris" memakai porsi, jangan menulis jumlah nota sebagai "x".
+   - Harga: `@18rb` = harga satuan; angka lain (`= 36.000`, `36rb`) = jumlah baris. Bon/utang dihitung di omzet tercatat, **tidak** di uang masuk.
+3. Tunjukkan `teks` (untuk pemilik) dan semua `perlu_dicek`/`peringatan` (cara bayar tidak disebut, harga per porsi beda antar nota, nomor nota dobel, item tak terbaca). `diabaikan` = potongan teks yang bukan item; sebutkan bila ada yang mungkin item.
+4. **Teks untuk grup karyawan = `teks_grup` ("RINGKASAN SIAP TEMPEL untuk grup") disalin apa adanya.** Isinya agregat: tanpa nama/nomor pelanggan, tanpa daftar bon per nama, tanpa gaji per orang. Boleh menambah kalimat pembuka/penutup atau info non-angka (stok perlu belanja, menu baru) **tanpa** nama/utang pelanggan; jangan menulis ulang angkanya. `--grup-tanpa-rupiah` bila pemilik tidak mau omzet dibagikan.
+5. Ini draf: pemilik yang mengirim ke grup. Jangan menawarkan kirim otomatis/broadcast. Bon per nama → tawarkan dicatat di `buku-piutang` (untuk pemilik saja).
 
 ## Format output ke pengguna
 **Konfirmasi transaksi** (dari `teks` pratinjau):

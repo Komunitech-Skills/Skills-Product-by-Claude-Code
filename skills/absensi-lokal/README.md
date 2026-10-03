@@ -29,6 +29,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Joko lembur 3 jam kemarin, disuruh Bu Rina"
 - "Rekap absensi September, sekalian file lembur untuk slip gaji"
 - "Kirim rekap absen ke Telegram saya setiap jam 10 pagi" (OpenClaw)
+- "Hitung gaji harian minggu ini: Agus 120 ribu sehari masuk 6 hari lembur 2 jam, Budi 110 ribu 5 hari kasbon 200 ribu" — upah pekerja harian lepas langsung dihitung (tanpa perlu mencatat absen dulu), lengkap dengan cek upah lembur minimum PP 35/2021
 
 Setiap perubahan data selalu ditunjukkan dulu dan baru disimpan setelah kamu setuju.
 
