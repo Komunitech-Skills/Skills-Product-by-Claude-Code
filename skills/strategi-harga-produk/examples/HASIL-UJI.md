@@ -85,3 +85,13 @@ Teks penguji di atas tidak diubah. Status tetap `uji`; perlu uji ulang independe
 **Hasil:** `python3 tests/uji_regresi.py` → 57 tes OK (35 lama + 22 baru). `python3 scripts/validate.py --skill strategi-harga-produk` → lolos.
 **Verifikasi angka independen** (Fraction + brute force, di luar repo; hanya nilai hasil script yang dibandingkan): harga minimum PKP/non-PKP 4.000 kasus (mode termasuk/belum/tanpa, PPN 11%/12%, potongan 0–25%, margin 0–70%; setiap hasil memenuhi target dan 300 harga di bawahnya tidak) → 0 selisih; margin PKP 4.000 → 0; bundel PKP 2.000 → 0; untung reseller & peringatan 2.000 → 0; diskon PKP 2.000 → 0. Verifikasi pertama menemukan 6 kasus salah pada potongan sangat besar (margin + 2 × potongan > 100%, laba naik-turun karena pembulatan PPN); pencarian DPP minimum diganti menjadi scan dari batas bawah matematis → 0 selisih.
 **Tidak berubah untuk non-PKP:** keluaran 11 perintah contoh dibandingkan dengan 1.0.0; perbedaan hanya kolom untung reseller, label "DI BAWAH MIN" di `cantik`, dan keterangan "dari harga".
+
+---
+
+## Catatan uji ulang OpenClaw v1.0.9 (penguji independen, 2026-10-03)
+Teks di atas tidak diubah. Uji sebelum/sesudah di OpenClaw 2026.9.6 lokal (model router Komunitech `claude-sonnet-5`, sama dengan bot member), rinciannya di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.9".
+- Riwayat: v1.0.7 BELUM (7,0→7,75), v1.0.8 BELUM (7,0→8,17), **v1.0.9 LULUS (7,0→8,75)**.
+- Skenario 2 lama (PKP hampers, jebakan ÷1,12, harga coret palsu) dengan pesan identik: SEBELUM 7,0 → SESUDAH 9,0. Tiga varian SESUDAH: frozen food 8,5, nastar diskon 15% 9,0, kopi bubuk diskon 10% 8,5.
+- Ada 0 angka harga/diskon/margin yang salah atau tidak tercetak script. Semua angka dicocokkan dengan script dan Python independen. `tests/uji_regresi.py` OK.
+- Catatan ringan: masih ada ungkapan longgar yang tidak salah ("~28–29%", "sekitar … 41%", "~Rp20rb-an", "di bawah 34%"). Saran perbaikan ada di berkas tersebut.
+- `platform_teruji` boleh ditambah `openclaw (uji otomatis agent)` oleh koordinator. Penguji tidak mengubah catalog.
