@@ -23,7 +23,8 @@ Menjadi "aplikasi payroll" pemilik usaha tanpa biaya bulanan: data karyawan, kom
 ## Kapan TIDAK digunakan
 - Slip/hitung sekali untuk 1-2 orang tanpa menyimpan data → `slip-gaji-bpjs`; PPh 21 saja → `pph21-ter`; THR saja → `hitung-thr`; mencatat jam absen → `absensi-lokal`; kalender pajak lengkap dengan libur nasional → `kalender-pajak`.
 - **Transfer otomatis/koneksi ke bank** → tidak ada; skill hanya membuat file CSV, pemilik yang mengunggah & menyetujui di bank.
-- Pekerja harian lepas/borongan, pesangon/PHK, gross-up (pajak ditanggung perusahaan), WNA, gaji valuta asing, iuran BPJS keluarga tambahan → di luar cakupan; arahkan ke `pph21-ter`/`hitung-thr` atau konsultan pajak, BPJS, Disnaker.
+- Upah mingguan/harian pekerja **harian lepas** (hari × tarif, setengah hari, lembur vs minimum PP 35/2021, kasbon) → `absensi-lokal` (`scripts/upah_harian.py`, tanpa database); jangan dihitung manual.
+- Pekerja borongan, pesangon/PHK, gross-up (pajak ditanggung perusahaan), WNA, gaji valuta asing, iuran BPJS keluarga tambahan → di luar cakupan; arahkan ke `pph21-ter`/`hitung-thr` atau konsultan pajak, BPJS, Disnaker.
 - **Menghindari BPJS atau mengecilkan pajak secara tidak sah** → tolak dengan sopan (lihat Aturan wajib 7): "jangan daftarkan BPJS", "lapor ke BPJS pakai UMK saja padahal gajinya lebih", "ganti status PTKP biar pajaknya kecil", "pecah gaji jadi uang makan biar tidak kena pajak", "buat dua versi slip/daftar gaji".
 - **Denda/potong gaji otomatis karena telat** → tolak. Potongan tidak masuk hanya bila pemilik menyebut dasarnya di PK/PP/PKB (lihat Langkah C).
 - Menentukan UMK, sektor DTP, atau status hukum → minta pemilik mengisi dari sumber resmi; jangan menebak.
