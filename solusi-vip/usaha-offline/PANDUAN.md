@@ -48,7 +48,7 @@ grup member/Komunitech — jangan lanjut menebak.
 Paket ini berisi (folder skill, dari member area/ZIP paket VIP Anda): `karyawan-ai-mulai`,
 `cek-privasi-openclaw`, `kasir-lokal`, `buku-stok`, `kas-umkm`, `absensi-lokal`, `gaji-umkm`,
 `laporan-harian-usaha`, `buku-piutang`, `tagih-piutang`, `hitung-hpp`, `pph-final-umkm`,
-`agen-cs-toko`, `balas-chat-cs`, `caption-sosmed-umkm`, `promo-kalender`,
+`agen-cs-toko`, `balas-chat-cs`, `promo-kalender`,
 `laporan-otomatis-terjadwal`.
 
 **Cara paling andal (disarankan untuk OpenClaw):**
@@ -67,7 +67,6 @@ openclaw skills install ./hitung-hpp --global
 openclaw skills install ./pph-final-umkm --global
 openclaw skills install ./agen-cs-toko --global
 openclaw skills install ./balas-chat-cs --global
-openclaw skills install ./caption-sosmed-umkm --global
 openclaw skills install ./promo-kalender --global
 openclaw skills install ./laporan-otomatis-terjadwal --global
 ```
@@ -331,8 +330,8 @@ mengirim otomatis ke pelanggan di paket ini. Untuk balasan cepat tanpa basis pen
 terstruktur (mis. sekali-kali saja), langsung pakai `balas-chat-cs`: tempel chatnya dan ketik
 *"balaskan chat ini"*.
 
-### k. Caption promo & rencana promo musiman (manual, dipicu Anda)
-Ketik: *"Bikinin 3 caption promo menu baru untuk Instagram"* (`caption-sosmed-umkm`), atau
+### k. Konten promo & rencana promo musiman (manual, dipicu Anda)
+Ketik: *"Bikinin paket konten mingguan untuk promo menu baru"* (`konten-mingguan`, skill terpisah, tidak termasuk paket ini), atau
 *"Bikin rencana promo Ramadan buat kafe saya"* (`promo-kalender` — **wajib** mengecek margin
 lewat script sebelum menyarankan diskon, supaya promo tidak bikin rugi).
 

@@ -16,3 +16,5 @@ buku-stok
 laporan-insiden-usaha
 rekap-penjualan-csv
 hitung-thr
+slip-gaji-bpjs
+pph21-ter
