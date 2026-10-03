@@ -54,3 +54,6 @@ Tidak ada yang bisa memastikan. Yang pasti dihitung: berapa penjualan boleh turu
 
 **Usaha saya PKP, bagaimana dengan PPN?**
 Untung dihitung dari harga sebelum PPN. Bila ingin harga tayang cantik yang sudah termasuk PPN (mis. Rp49.900), skill menghitung DPP dan PPN-nya (tarif 12% × DPP nilai lain 11/12, dibulatkan ke bawah), margin dari DPP, dan harga tayang minimum termasuk PPN — untuk harga satuan, reseller, paket, promo, dan harga cantik. Pembulatan belum dicocokkan dengan Coretax; untuk faktur resmi ikuti Coretax atau konsultan pajak. Bila bukan PKP, Anda tidak boleh memungut PPN.
+
+## Riwayat versi
+- **1.0.7 (2026-10-03)** — dari uji OpenClaw 1.0.6: AI sempat menulis "diskon maksimal 9%" sendiri padahal hitungan menunjukkan tidak ada ruang diskon. Kini setiap hitungan mencetak **ringkasan siap tempel** (harga, laba, margin, status, diskon maksimal, konflik reseller/agen) dan AI wajib menyalinnya apa adanya — tidak boleh menulis angka harga/diskon yang tidak dihitung. Tambahan: rentang aman harga khusus reseller/agen selama promo, pembanding volume promo marketplace terhadap jual langsung, dan peringatan bila margin terlihat besar karena PPN lupa dipisah.

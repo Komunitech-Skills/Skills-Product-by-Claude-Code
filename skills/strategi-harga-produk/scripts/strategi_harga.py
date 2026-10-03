@@ -30,6 +30,7 @@ import re
 import sys
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal as D, InvalidOperation
 
+VERSI = "1.0.7"
 NOL = D(0)
 SATU = D(1)
 SERATUS = D(100)
@@ -547,6 +548,13 @@ def hitung_diskon(harga, hpp, diskon=None, potongan=None, bxgy=None, volume=None
             h["konflik"].append(_pesan_konflik(bulat(harga_promo), nama, D(hb)))
     h["kanal"] = kanal
     h["biaya"] = biaya
+    # v1.0.7: promo marketplace - pembanding kedua = laba normal jual langsung (tanpa potongan)
+    if kanal == "marketplace" and biaya > 0 and not h["rugi"]:
+        laba_langsung = dpp - hpp
+        h["laba_langsung"] = laba_langsung
+        h["langsung_faktor"] = laba_langsung / laba_promo
+        if volume is not None:
+            h["langsung_volume"] = ke_atas(D(volume) * h["langsung_faktor"])
     return h
 
 
@@ -1025,6 +1033,186 @@ def cetak_ppn(h, status):
     return "\n".join(out)
 
 
+# ---------------------------------------------------------------- RINGKASAN SIAP TEMPEL (v1.0.7)
+# Uji OpenClaw 1.0.6: model menulis "DISKON MAKSIMAL 9% -> Rp185.185 (masih di atas margin 40%)" sendiri padahal
+# script mencetak 34,07% DI BAWAH MIN / TIDAK ADA ruang diskon. Kini setiap perintah hitungan mencetak kalimat
+# siap kirim berisi SEMUA angka kunci + penilaiannya; agent wajib menyalinnya apa adanya.
+
+JUDUL_RINGKASAN = ("=== RINGKASAN SIAP TEMPEL (salin kalimat ini apa adanya; JANGAN menulis angka harga/diskon/margin "
+                   "yang tidak tercetak script - butuh angka lain? jalankan script lagi) ===")
+AKHIR_RINGKASAN = "=== AKHIR RINGKASAN ==="
+
+
+def blok_ringkasan(kalimat):
+    return "\n".join([JUDUL_RINGKASAN] + [f"- {k}" for k in kalimat] + [AKHIR_RINGKASAN])
+
+
+def _kalimat_ruang_diskon(harga, hpp, biaya, mm, pajak, harga_reseller=None):
+    """Kalimat DISKON MAKSIMAL dari harga `harga` (dihitung lewat hitung_batas_diskon, bukan kira-kira)."""
+    b = hitung_batas_diskon(harga, hpp, biaya, mm, pajak, harga_reseller)
+    syarat = "margin minimum " + pct(mm) if mm is not None else "impas (margin minimum belum diisi)"
+    if harga_reseller:
+        syarat += " dan harga beli " + ", ".join(n for n, _ in harga_reseller)
+    if b["bulat_maks"] > 0:
+        return (f"Dari harga {rp(D(harga))}: DISKON MAKSIMAL {pct(b['bulat_maks'])} -> harga promo "
+                f"{rp(b['harga_bulat_maks'])} (batas: {syarat}); diskon lebih besar dari ini TIDAK DISARANKAN.")
+    return (f"Dari harga {rp(D(harga))}: TIDAK ADA ruang diskon (DISKON MAKSIMAL 0%; diskon berapa pun menembus "
+            f"batas {syarat}) -> promo diskon TIDAK DISARANKAN; pakai bonus/paket/kuota terbatas, bukan potongan harga.")
+
+
+def ringkasan_margin(h):
+    pajak = h["pajak"]
+    k = []
+    ket = ""
+    if pajak.aktif:
+        ket = (f" (termasuk PPN; DPP {rp(h['dpp'])})" if pajak.mode == "termasuk"
+               else f" (sebelum PPN; harga tayang termasuk PPN {rp(h['tayang'])})")
+    pot = f" setelah potongan {pct(h['biaya'])}" if h["biaya"] else ""
+    if h["laba"] <= 0:
+        k.append(f"Harga {rp(h['harga'])}{ket}: RUGI {rp(bulat(-h['laba']))}/unit{pot} - harga ini TIDAK BOLEH dipakai.")
+    else:
+        k.append(f"Harga {rp(h['harga'])}{ket}: laba {rp(bulat(h['laba']))}/unit{pot}, margin {pct(h['margin'])}, "
+                 f"markup {pct(h['markup'])}.")
+    if pajak.aktif and pajak.mode == "termasuk" and h["laba"] > 0:
+        salah = (h["harga"] - h["biaya"] * h["tayang"] - h["hpp"]) / h["harga"]
+        k.append(f"Bila PPN lupa dipisah, margin akan terlihat {pct(salah)} - angka itu KELIRU; margin yang benar "
+                 f"{pct(h['margin'])} (dari DPP).")
+    if "margin_min" in h:
+        if h["aman"]:
+            k.append(f"Status: OK, di atas margin minimum {pct(h['margin_min'])} (harga terendah yang aman {rp(h['batas'])}).")
+        else:
+            k.append(f"Status: DI BAWAH MIN - margin minimum {pct(h['margin_min'])} butuh harga paling rendah "
+                     f"{rp(h['batas'])}; jangan sarankan harga di bawah angka ini.")
+        if h["laba"] > 0 and h["harga"] > h["batas"]:
+            k.append(_kalimat_ruang_diskon(h["harga"], h["hpp"], h["biaya"], h["margin_min"], pajak))
+        k.append(f"Dari harga lantai {rp(h['batas'])}: TIDAK ADA ruang diskon - harga lantai adalah harga promo "
+                 f"TERENDAH yang masih margin {pct(h['margin_min'])}; promo di harga lantai pakai bonus/paket/kuota.")
+    return k
+
+
+def _harga_khusus_reseller(harga_promo, nama, batas):
+    """Saran harga khusus reseller/agen selama promo: < harga promo dan >= lantai margin."""
+    atas = ke_atas(D(harga_promo)) - 1   # rupiah bulat terbesar yang masih DI BAWAH harga promo
+    if batas is None:
+        return (f"Bila {nama} diberi harga khusus selama promo: harus di bawah {rp(bulat(harga_promo))} "
+                f"(paling tinggi {rp(atas)}); lantai margin belum dicek - jalankan ulang dengan --kategori/--margin-min.")
+    if atas < batas:
+        return (f"Harga khusus {nama} selama promo TIDAK MUNGKIN: harus di bawah {rp(bulat(harga_promo))} tetapi lantai "
+                f"margin {rp(batas)} -> kecilkan diskon atau batasi kuota, jangan turunkan harga {nama}.")
+    contoh = kelipatan(atas, D(500), "bawah")
+    teks = (f"Bila {nama} diberi harga khusus selama promo: rentang aman {rp(batas)} s.d. {rp(atas)} "
+            f"(di bawah harga promo {rp(bulat(harga_promo))}, tidak di bawah lantai margin)")
+    if contoh >= batas and contoh != atas:
+        untung = bulat(harga_promo) - contoh
+        teks += f"; contoh angka bulat {rp(contoh)} (untung {nama} bila jual di harga promo {rp(untung)}/unit"
+        teks += ", tipis - mengecilkan diskon biasanya lebih masuk akal)" if untung < bulat(harga_promo) / 10 else ")"
+    return teks + "."
+
+
+def ringkasan_diskon(h, mm, hpp, reseller):
+    pajak = h["pajak"]
+    k = []
+    ef = " (harga efektif per unit)" if h["bxgy"] else ""
+    k.append(f"Promo {h['label']} dari harga {rp(h['harga'])} -> harga promo {rp(h['harga_promo'])}{ef}: laba "
+             f"{rp(bulat(h['laba_promo']))}/unit (margin {pct(h['margin_promo'])}), dibanding harga normal laba "
+             f"{rp(bulat(h['laba_normal']))}/unit (margin {pct(h['margin_normal'])}).")
+    if h["rugi"]:
+        k.append("Status: RUGI per unit - promo ini TIDAK DISARANKAN (makin laku makin rugi).")
+    elif mm is not None and not h["promo_aman"]:
+        k.append(f"Status: DI BAWAH MIN - margin saat promo {pct(h['margin_promo'])} di bawah minimum {pct(mm)} "
+                 f"(lantai {rp(h['batas'])}) -> promo ini TIDAK DISARANKAN.")
+    elif mm is not None:
+        k.append(f"Status: OK - margin saat promo {pct(h['margin_promo'])} masih di atas minimum {pct(mm)} (lantai {rp(h['batas'])}).")
+    else:
+        k.append("Margin minimum BELUM diisi - jangan menilai promo ini aman; jalankan ulang dengan --kategori atau --margin-min.")
+    if not h["rugi"]:
+        kanal = (f"dibanding harga normal di kanal yang sama (potongan {pct(h['biaya'])})" if h["biaya"]
+                 else "dibanding harga normal (potongan kanal 0%)")
+        teks = f"Agar laba kotor tetap sama, penjualan harus naik {pct(h['tambahan'])} {kanal}"
+        if "volume" in h:
+            teks += f": dari {angka(h['volume'])} jadi minimal {angka(h['volume_perlu'])} unit"
+        if h["tambahan"] > 1:
+            teks += " - kenaikan > 100%, TIDAK DISARANKAN"
+        k.append(teks + ".")
+        if "langsung_faktor" in h:
+            teks = (f"Bila penjualan normal Anda selama ini lewat jual langsung (tanpa potongan, laba "
+                    f"{rp(bulat(h['laba_langsung']))}/unit), penjualan harus naik {pct(h['langsung_faktor'] - 1)}")
+            if "volume" in h:
+                teks += f": dari {angka(h['volume'])} jadi minimal {angka(h['langsung_volume'])} unit"
+            k.append(teks + ".")
+    for nama, hb in reseller:
+        if h["harga_promo"] <= D(hb):
+            sama = "SAMA DENGAN" if bulat(h["harga_promo"]) == D(hb) else "LEBIH MURAH dari"
+            k.append(f"KONFLIK KANAL: harga promo {rp(bulat(h['harga_promo']))} {sama} harga beli {nama} {rp(D(hb))} - "
+                     f"wajib disampaikan; solusi: kecilkan diskon, batasi kuota/maks beli, atau harga khusus {nama}.")
+            # reseller membeli langsung (tanpa potongan marketplace): lantai margin dihitung dengan potongan 0%
+            lantai_r = pajak.minimum(hpp, mm, NOL) if mm is not None else None
+            k.append(_harga_khusus_reseller(h["harga_promo"], nama, lantai_r))
+    k.append(_kalimat_ruang_diskon(h["harga"], hpp, h["biaya"], mm, pajak, reseller))
+    return k
+
+
+def ringkasan_rentang(harga, baris, teks_batas_kalimat):
+    ok = [b for b in baris if b[-1] == "OK"]
+    k = []
+    if ok:
+        k.append(f"Dari harga {rp(D(harga))}, diskon berstatus OK di tabel: {ok[0][0]} s.d. {ok[-1][0]} "
+                 f"(harga promo {ok[0][1]} s.d. {ok[-1][1]})"
+                 + ("; baris lain DI BAWAH MIN/KONFLIK/RUGI - jangan disarankan." if len(ok) < len(baris) else "."))
+    else:
+        k.append(f"Dari harga {rp(D(harga))}, TIDAK ADA diskon berstatus OK di rentang ini - jangan sarankan satu pun.")
+    k.append(teks_batas_kalimat)
+    return k
+
+
+def ringkasan_tangga(h):
+    k = []
+    for b in h["baris"]:
+        teks = (f"{b['nama']} (min beli {b['min']}): {rp(b['harga'])}/unit, laba kita {rp(bulat(b['laba']))}/unit, "
+                f"margin {pct(b['margin'])} - {'OK' if b['aman'] else 'DI BAWAH MIN (jangan dipakai)'}")
+        if b["reseller"]:
+            teks += f"; untung {b['nama']} di harga anjuran {rp(h['anjuran'])}: {rp(b['untung_reseller'])}/unit ({pct(b['margin_reseller'])})"
+        k.append(teks + ".")
+    k.append(f"Lantai margin {pct(h['margin_min'])}: tidak ada level (termasuk harga khusus saat promo) di bawah {rp(h['batas'])}.")
+    k += [p if p.startswith("KONFLIK") else "PERHATIAN: " + p for p in h["peringatan"]]
+    return k
+
+
+def ringkasan_bundel(h):
+    k = [f"Paket {rp(h['harga_bundel'])} (beli satuan {rp(h['total_normal'])}, pembeli hemat {rp(h['hemat'])} = "
+         f"{pct(h['hemat_persen'])}): laba {rp(bulat(h['laba_bundel']))}/paket, margin {pct(h['margin_bundel'])}."]
+    if "batas" in h:
+        k.append(f"Status: {'OK' if h['aman'] else 'DI BAWAH MIN (jangan dipakai)'} - harga paket terendah untuk margin "
+                 f"{pct(h['margin_min'])}: {rp(h['batas'])}.")
+    k += ["PERHATIAN: " + p for p in h["peringatan"]]
+    return k
+
+
+def ringkasan_cantik(h):
+    if h["batas"] is None:
+        return ["Lantai belum dicek (isi --hpp dan --margin-min/--kategori) - kandidat belum boleh direkomendasikan."]
+    ok = [rp(b["harga"]) for b in h["baris"] if b["aman"]]
+    tidak = [rp(b["harga"]) for b in h["baris"] if not b["aman"]]
+    k = [f"Harga cantik yang boleh dipakai (>= lantai {rp(h['batas'])}): {', '.join(ok) if ok else 'TIDAK ADA'}."]
+    if tidak:
+        k.append(f"DI BAWAH MIN, jangan dipakai: {', '.join(tidak)}.")
+    return k
+
+
+def ringkasan_bep(h):
+    judul = "Agar mencapai target laba" if h["target_laba"] else "Titik impas"
+    k = [f"{judul}: {angka(h['unit'])} unit/bulan (omzet {rp(h['omzet'])})"
+         + (f", {angka(h['per_hari'])} unit/hari ({h['hari_jual']} hari jual)" if "per_hari" in h else "") + "."]
+    if "volume" in h:
+        if "batas_aman" in h:
+            k.append(f"Penjualan sekarang {angka(h['volume'])} unit -> laba {rp(bulat(h['laba_sekarang']))}/bulan; "
+                     f"penjualan boleh turun {pct(h['batas_aman'])} sebelum rugi.")
+        else:
+            k.append(f"Penjualan sekarang {angka(h['volume'])} unit -> RUGI {rp(bulat(-h['laba_sekarang']))}/bulan; "
+                     f"kurang {angka(h['kurang'])} unit dari titik impas.")
+    return k
+
+
 # ---------------------------------------------------------------- CLI
 
 def _opsi_biaya(p):
@@ -1170,7 +1358,9 @@ def jalankan(argv=None):
     biaya = parse_persen(getattr(a, "biaya_persen", "0"), nama="biaya persen", maks=D(99))
     pajak = Pajak(getattr(a, "ppn", None), getattr(a, "mewah", False)) if a.perintah != "ppn" else TANPA_PPN
     mm, ket_mm = _mm_pakai(a)
-    hasil = _jalankan_perintah(a, biaya, pajak, mm)
+    hasil, ring = _jalankan_perintah(a, biaya, pajak, mm)
+    if ring:
+        hasil = blok_ringkasan(ring) + "\n\n" + hasil
     if mm is not None and a.perintah in ("margin", "tangga", "diskon", "bundel", "cantik"):
         hasil = f"Margin minimum dipakai: {pct(mm)} ({ket_mm}) - tulis di bagian Asumsi\n" + hasil
     return hasil
@@ -1183,14 +1373,14 @@ def _jalankan_perintah(a, biaya, pajak, mm):
                           margin=parse_persen(a.margin, nama="margin", maks=D(99)) if a.margin else None,
                           markup=parse_persen(a.markup, nama="markup", maks=D(10000)) if a.markup else None,
                           biaya=biaya, pajak=pajak, margin_min=mm)
-        return cetak_margin(h)
+        return cetak_margin(h), ringkasan_margin(h)
     if a.perintah == "bep":
         h = hitung_bep(parse_rupiah(a.biaya_tetap, boleh_nol=True, nama="biaya tetap"), parse_rupiah(a.harga, nama="harga"),
                        parse_rupiah(a.hpp, boleh_nol=True, nama="HPP"), biaya,
                        parse_rupiah(a.target_laba, boleh_nol=True, nama="target laba"),
                        _parse_hari(a.hari_jual) if a.hari_jual is not None else None,
                        parse_rupiah(a.volume, boleh_nol=True, nama="volume") if a.volume else None, pajak=pajak)
-        return cetak_bep(h)
+        return cetak_bep(h), ringkasan_bep(h)
     if a.perintah == "tangga":
         h = hitung_tangga(parse_rupiah(a.harga_ecer, nama="harga eceran"), parse_rupiah(a.hpp, nama="HPP"),
                           [parse_level(x) for x in a.level], _wajib_mm(mm),
@@ -1198,7 +1388,7 @@ def _jalankan_perintah(a, biaya, pajak, mm):
                           harga_anjuran=parse_rupiah(a.harga_anjuran, nama="harga anjuran") if a.harga_anjuran else None,
                           margin_reseller_min=parse_persen(a.margin_reseller_min, nama="margin reseller minimum", maks=D(99)),
                           harga_promo=[parse_rupiah(x, nama="harga promo") for x in (a.harga_promo or [])])
-        return cetak_tangga(h)
+        return cetak_tangga(h), ringkasan_tangga(h)
     if a.perintah == "diskon":
         harga_d, hpp_d = parse_rupiah(a.harga, nama="harga"), parse_rupiah(a.hpp, nama="HPP")
         reseller = [parse_harga_reseller(x) for x in (a.harga_reseller or [])]
@@ -1209,7 +1399,10 @@ def _jalankan_perintah(a, biaya, pajak, mm):
         if a.rentang:
             baris = hitung_rentang(harga_d, hpp_d, parse_rentang(a.rentang), vol, biaya, mm, pajak, reseller)
             teks = _kepala_ppn(pajak) + [cetak_rentang(baris, vol is not None), teks_batas] + _ekor_ppn(pajak)
-            return "\n".join(teks)
+            ring = ringkasan_rentang(harga_d, baris, _kalimat_ruang_diskon(harga_d, hpp_d, biaya, mm, pajak, reseller))
+            if mm is None:
+                ring.append("Margin minimum BELUM diisi - jalankan ulang dengan --kategori atau --margin-min sebelum menilai aman.")
+            return "\n".join(teks), ring
         h = hitung_diskon(parse_rupiah(a.harga, nama="harga"), parse_rupiah(a.hpp, nama="HPP"),
                           diskon=parse_persen(a.diskon, nama="diskon") if a.diskon else None,
                           potongan=parse_rupiah(a.potongan, nama="potongan") if a.potongan else None,
@@ -1217,7 +1410,7 @@ def _jalankan_perintah(a, biaya, pajak, mm):
                           volume=parse_rupiah(a.volume, nama="volume") if a.volume else None,
                           biaya=biaya, margin_min=mm, pajak=pajak,
                           harga_reseller=reseller, kanal=a.kanal)
-        return cetak_diskon(h) + "\n" + teks_batas
+        return cetak_diskon(h) + "\n" + teks_batas, ringkasan_diskon(h, mm, hpp_d, reseller)
     if a.perintah == "bundel":
         item = [parse_item(x) for x in a.item]
         if len(item) < 2 and item[0]["qty"] < 2:
@@ -1225,7 +1418,7 @@ def _jalankan_perintah(a, biaya, pajak, mm):
         h = hitung_bundel(item, parse_rupiah(a.harga_bundel, nama="harga paket"),
                           parse_rupiah(a.biaya_tambahan, boleh_nol=True, nama="biaya tambahan"), biaya,
                           mm, pajak=pajak)
-        return cetak_bundel(h)
+        return cetak_bundel(h), ringkasan_bundel(h)
     if a.perintah == "elastisitas":
         h = hitung_elastisitas(parse_rupiah(a.harga, nama="harga"), parse_rupiah(a.volume, nama="volume"),
                                parse_rupiah(a.hpp, nama="HPP"),
@@ -1233,16 +1426,16 @@ def _jalankan_perintah(a, biaya, pajak, mm):
                                [_parse_el(x) for x in a.elastisitas] if a.elastisitas else None,
                                biaya, parse_rupiah(a.biaya_tetap, boleh_nol=True, nama="biaya tetap"),
                                [parse_rupiah(x, nama="harga baru") for x in (a.harga_baru or [])], pajak=pajak)
-        return cetak_elastisitas(h)
+        return cetak_elastisitas(h), None
     if a.perintah == "cantik":
         h = hitung_cantik(parse_rupiah(a.harga, nama="harga"),
                           parse_rupiah(a.hpp, nama="HPP") if a.hpp else None,
                           mm,
                           biaya, parse_rupiah(a.harga_min, nama="harga minimum") if a.harga_min else None, pajak=pajak)
-        return cetak_cantik(h)
+        return cetak_cantik(h), ringkasan_cantik(h)
     if a.perintah == "ppn":
         h = hitung_ppn(parse_rupiah(a.harga, nama="harga"), a.mode, a.mewah)
-        return cetak_ppn(h, a.status_pkp)
+        return cetak_ppn(h, a.status_pkp), None
     raise InputError("perintah tidak dikenal")
 
 
