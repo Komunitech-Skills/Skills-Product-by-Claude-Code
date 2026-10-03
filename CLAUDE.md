@@ -55,6 +55,10 @@ Dua jalur produksi:
 - **brainstorming-ide-usaha tidak dijadikan gratis**: tetap ecer dengan harga usulan, atau dimasukkan ke bundle.
 - **hitung-thr masuk `paket-kantor-manajemen`** (kini 18 skill, harga tetap Rp599.000) dan ke skill inti `solusi-vip/kantor-manajemen`.
 
+**Keputusan pemilik 2026-10-03 (disetujui langsung oleh pemilik):**
+- **Skill hanya dilanjutkan bila pembeda sebelum/sesudah jelas** ("kalau kurleb tidak ada gunanya"). Acuan kurator: uji OpenClaw sebelum/sesudah dengan skor sesudah ≥ 8 **dan** selisih rata-rata ≥ 1,5 poin. Skill di bawah acuan itu tidak diiterasi lagi; diusulkan `arsip` (perubahan isi bundle/paket VIP tetap menunggu persetujuan pemilik).
+- **Instalasi OpenClaw bot produksi dipisah** dari instalasi alat uji.
+
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
 Bahasa: Bahasa Indonesia sebagai utama; bilingual ID/EN bila relevan.
