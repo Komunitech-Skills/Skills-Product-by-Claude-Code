@@ -17,3 +17,6 @@ Aturan tampil (keputusan pemilik 2026-10-03): verdik terakhir LULUS, skor dengan
 2. `python3 scripts/promosi_sebelum_sesudah.py` (membuat ulang MD + HTML).
 3. Commit `promosi: perbarui <nama>`.
 4. Terbitkan ulang artifact ke URL yang sama: tool Artifact `publish` dengan `file_path` = `promosi/halaman-sebelum-sesudah.html` dan `url` = URL di atas (sesi lain wajib `read` dulu). Jangan buat artifact baru.
+
+## Pemilihan skill untuk gelombang Telegram (keputusan pemilik 2026-10-03)
+Kandidat gelombang Telegram diambil HANYA dari skill yang tampil di `SEBELUM-SESUDAH.md` (lolos uji internal), urut selisih terbesar, dan belum pernah ditampilkan (cek `koordinasi/telegram-*.md`). Utamakan yang mudah dipahami pengusaha awam (angka/aturan yang jelas beda) dan tidak butuh sistem luar. Usulan daftar tetap dikirim ke pemilik dulu; kirim hanya setelah disetujui.

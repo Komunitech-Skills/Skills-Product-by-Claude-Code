@@ -58,6 +58,7 @@ Dua jalur produksi:
 **Keputusan pemilik 2026-10-03 (disetujui langsung oleh pemilik):**
 - **Skill hanya dilanjutkan bila pembeda sebelum/sesudah jelas** ("kalau kurleb tidak ada gunanya"). Acuan kurator: uji OpenClaw sebelum/sesudah dengan skor sesudah ≥ 8 **dan** selisih rata-rata ≥ 1,5 poin. Skill di bawah acuan itu tidak diiterasi lagi; diusulkan `arsip` (perubahan isi bundle/paket VIP tetap menunggu persetujuan pemilik).
 - **Instalasi OpenClaw bot produksi dipisah** dari instalasi alat uji.
+- **Pilot/tampilan Telegram hanya untuk skill yang lolos uji internal** sebelum/sesudah OpenClaw (verdik LULUS, sesudah ≥ 8, selisih ≥ 1,5 — sama dengan daftar tampil di `promosi/`), diurutkan dari selisih terbesar. Setiap gelombang tetap maks. 10 pesan, berurutan dengan jeda, tanpa balas-otomatis, dan tetap minta persetujuan pemilik sebelum dikirim.
 
 Target: **sebanyak mungkin tanpa mengorbankan kualitas**. Batch pertama siap: **2026-09-24**.
 Audiens: **campuran, dominan pengusaha (UMKM s/d usaha mapan) dan profesional Indonesia**. Mayoritas **awam teknologi**.
