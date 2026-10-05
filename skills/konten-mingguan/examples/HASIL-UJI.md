@@ -154,3 +154,6 @@ Cacat SEDANG (LinkedIn/X, larangan before-after & testimoni pasien tanpa izin) d
 
 ## Uji regresi OpenClaw v1.0.7 (2026-10-02)
 1 skenario jebakan klinik gigi (testimoni pasien berizin + diskon 20% scaling pasien baru), OpenClaw 2026.9.6 + claude-sonnet-5, pesan identik. SEBELUM 4/10 (membuat testimoni & promo diskon) → SESUDAH 8/10 (keduanya ditolak dengan alasan Permenkes 1787/2010, alternatif edukatif, 10.10 tanpa promo, tanpa klaim sembuh/imbalan rujukan). **LULUS.** Catatan kecil: diminta 7 hari, diberi 6 (Sen–Sab); typo hashtag. Detail: `00-openclaw-sebelum-sesudah.md`.
+
+## Revisi v1.0.8 (2026-10-05) — menunggu uji ulang independen
+Temuan Telegram gelombang 6 (cacat no. 2 dan 7): sisi DENGAN skill menolak testimoni, before-after, dan diskon tindakan dengan benar tetapi tidak menyerahkan satu post pun (hanya bertanya "boleh saya lanjutkan?"), skor 6 (+0,5 vs TANPA). Perbaikan: SKILL.md (description, langkah 6 "Tolak sebagian, serahkan semuanya", format output, contoh, checklist, batasan faskes) dan `references/aturan-iklan.md`. Contoh: `07-klinik-tolak-lalu-serahkan.md`. Belum diuji ulang; **menunggu uji ulang independen** (skor belum diubah).

@@ -58,6 +58,9 @@ apa saja yang diasumsikan di akhir hasil, supaya kamu tinggal koreksi yang perlu
 Tanggal bergerak (Ramadan, Lebaran, Imlek, libur sekolah) tidak ditebak sembarangan — skill akan minta
 tanggalnya ke kamu atau menandainya jelas sebagai perkiraan yang perlu dicek ke kalender resmi tahun itu.
 
+## Catatan revisi 1.0.8 (2026-10-05)
+- Temuan Telegram gelombang 6: untuk klinik yang minta testimoni/before-after/diskon tindakan, bot menolak dengan benar tetapi berhenti dan bertanya "boleh saya lanjutkan?" tanpa satu post pun. Kini wajib: tolak bagian terlarang (1-2 kalimat + dasar aturan), lalu langsung serahkan paket pengganti lengkap di balasan yang sama; tidak boleh bertanya izin. Berlaku untuk semua usaha. Menunggu uji ulang independen.
+
 ## Catatan revisi 1.0.7 (2026-10-02)
 - Temuan uji ulang paket klinik (S3): agent masih menawarkan "testimoni pasien boleh asal ada izin tertulis" dan "diskon pasien baru". Kini untuk fasilitas kesehatan: tanpa testimoni pasien & klaim "sembuh" (walau ada izin), tanpa promo diskon/potongan tindakan medis, tanpa imbalan rujukan — sama dengan aturan klinik no. 6 di PANDUAN klinik. PERLU REVIEW tenaga medis/hukum. Script tidak berubah.
 

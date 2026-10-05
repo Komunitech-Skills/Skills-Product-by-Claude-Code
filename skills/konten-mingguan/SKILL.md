@@ -1,6 +1,6 @@
 ---
 name: konten-mingguan
-description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari berisi platform (Instagram/TikTok/Facebook/WA Status/LinkedIn/X-Twitter) & format, pilar konten, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting saran — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar, cek Ramadan/Lebaran). TIDAK memposting otomatis ke Instagram/TikTok/Facebook/LinkedIn — hanya menyiapkan draf untuk dijadwalkan sendiri. Gunakan saat pengguna minta "paket konten minggu ini/depan", "rencana konten mingguan", weekly content plan/pack, atau content calendar untuk 1 minggu (bukan 30 hari — untuk sebulan penuh pakai kalender-konten-30hari).
+description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari berisi platform (Instagram/TikTok/Facebook/WA Status/LinkedIn/X-Twitter) & format, pilar konten, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting saran — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar, cek Ramadan/Lebaran). TIDAK memposting otomatis — hanya draf untuk dijadwalkan sendiri. Bila sebagian permintaan dilarang (testimoni pasien, before-after, diskon tindakan medis klinik): tolak bagian itu (1-2 kalimat + dasar aturan) lalu LANGSUNG serahkan paket pengganti lengkap di balasan yang sama, tanpa tanya izin. Gunakan saat pengguna minta "paket konten minggu ini/depan", "rencana konten mingguan", weekly content plan/pack, atau content calendar untuk 1 minggu (bukan 30 hari — untuk sebulan penuh pakai kalender-konten-30hari).
 ---
 
 # Konten Mingguan
@@ -93,6 +93,13 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
    **Izin edar:** bila produk pangan olahan/minuman, kosmetik, suplemen, atau obat tradisional/obat, ingatkan di awal paket (satu kalimat) bahwa izin edar BPOM / PIRT-SPP-IRT (atau sertifikat halal bila dicantumkan) harus ada **sebelum** dijual dan dipromosikan. Bila pengguna bilang izin "belum ada/masih proses", tampilkan peringatan ini lebih tegas dan jangan menulis klaim izin/BPOM di konten mana pun.
 7. **Simpan arsip** hasil isian ke `konten/minggu-<label_minggu>.md` (label dari output script, mis.
    `minggu-2026-W40.md`) di workspace pengguna, memakai isi lengkap `templates/paket-mingguan.md`.
+   **Tolak sebagian, serahkan semuanya (wajib):** bila permintaan memuat unsur terlarang (testimoni/before-after
+   pasien, diskon tindakan medis, imbalan rujukan, klaim menyembuhkan, dsb.), tulis 1-2 kalimat penolakan + dasar
+   aturannya di bagian atas, lalu **di balasan yang SAMA langsung serahkan paket lengkap pengganti yang aman**
+   (default 5-6 hari, setiap hari lengkap: judul/topik, caption siap tempel, ide visual, hashtag, CTA, hari tayang).
+   **DILARANG** berhenti di penolakan, hanya menawarkan daftar topik, atau bertanya "boleh saya lanjutkan?/mau
+   dibuatkan yang aman?" — penolakan bukan alasan menunda hasil. Info yang kurang diisi placeholder/asumsi, bukan
+   pertanyaan izin. Berlaku untuk SEMUA jenis usaha, bukan hanya klinik.
 8. **Sampaikan ke pengguna** dalam format output di bawah. **Caption lengkap + hashtag + hook + CTA setiap hari WAJIB tampil di chat** (pengguna Telegram tidak bisa membuka file workspace); file arsip hanya cadangan, jangan menggantinya dengan ringkasan. Bila terlalu panjang, kirim bertahap per 2-3 hari, bukan dipangkas. Lalu lalu tawarkan: (a) automation mingguan +
    pengingat harian lewat OpenClaw (`references/openclaw-jadwal.md`), (b) buat brief foto detail lewat
    `foto-produk-brief`, (c) buat naskah live untuk salah satu hari lewat `naskah-live-jualan`.
@@ -102,6 +109,8 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
 
 ## Format output
 ```
+[Bila ada unsur terlarang: 1-2 kalimat "Tidak saya buatkan: <unsur> — <dasar aturan>", lalu LANGSUNG paket di bawah, tanpa pertanyaan izin]
+
 # Paket Konten Minggu <label_minggu> — <nama usaha>
 Periode: <Senin, tgl> s.d. <Minggu, tgl>  |  Platform: <daftar>
 
@@ -118,6 +127,7 @@ CTA: <cta>
 
 📥 Arsip disimpan: konten/minggu-<label_minggu>.md
 📝 Asumsi: <daftar asumsi yang dipakai bila profil belum lengkap>
+(Penutup HANYA pernyataan, bukan izin: satu kalimat asumsi + tawaran opsional. Jangan akhiri dengan "boleh saya lanjutkan?".)
 ⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/TikTok Studio (lihat "Cara jadwalkan sendiri" di file arsip), atau aktifkan pengingat harian OpenClaw.
 ```
 
@@ -140,6 +150,28 @@ CTA: Order lewat WA/GoFood
 📝 Asumsi: profil belum lengkap → target pembeli disimpulkan "pekerja & mahasiswa sekitar kedai"; jam
 posting pakai acuan umum WA Status siang & sore.
 
+**Contoh permintaan sebagian terlarang (klinik):** "Buatin konten seminggu klinik gigi saya: testimoni pasien
++ before-after (pasien sudah izin) + diskon scaling 20% pasien baru."
+
+**Output yang benar (cuplikan):**
+```
+Tidak saya buatkan testimoni pasien, before-after, dan diskon tindakan: iklan/publikasi pelayanan kesehatan
+(Permenkes 1787/2010) melarangnya, walau pasien sudah izin (PERLU REVIEW tenaga medis/hukum). Ini paket 6 hari
+pengganti yang aman, siap tempel:
+
+## Senin 12 Okt 2026 — Instagram/Feed
+Pilar: Edukasi  |  Momen: -  |  Jam disarankan: 19.00 (perkiraan umum)
+Hook 3 detik: "Sikat gigi 2x sehari, tapi karang gigi tetap ada?"
+Caption: "Karang gigi tidak hilang dengan sikat biasa. Pemeriksaan rutin tiap 6 bulan membantu ... Jadwal praktik &
+booking: lihat bio."
+Brief foto/video: foto ruang praktik rapi (tanpa pasien), cahaya terang.
+Hashtag: #kliniktgigi #sehatgigi #edukasigigi
+CTA: Booking jadwal lewat WA
+... (Selasa-Sabtu lengkap dengan format yang sama)
+📝 Asumsi: nama klinik/jadwal praktik memakai placeholder [isi]; hari Minggu libur.
+```
+Salah: berhenti setelah penolakan dengan pertanyaan "boleh saya lanjutkan dengan konten edukasi?".
+
 ## Checklist sebelum mengirim hasil
 - [ ] Tanggal & momen dari `nomor_minggu.py` (atau dihitung manual dengan keterangan jelas)
 - [ ] Jumlah hari sesuai kapasitas produksi di `PROFIL.md`, bukan dipaksa 7 hari
@@ -149,6 +181,7 @@ posting pakai acuan umum WA Status siang & sore.
 - [ ] Setiap caption punya hook, CTA, dan panjang sesuai platform
 - [ ] Ditulis jelas bahwa paket ini **belum terposting** dan jam posting adalah **perkiraan**
 - [ ] Arsip `konten/minggu-<label_minggu>.md` disimpan
+- [ ] Bila ada unsur terlarang: penolakan singkat + paket lengkap pengganti ada di balasan yang sama (tanpa pertanyaan izin)
 
 ## Batasan & penanganan error
 - **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
@@ -168,8 +201,8 @@ posting pakai acuan umum WA Status siang & sore.
   diskon, poin, voucher, hadiah, merchandise, komisi, atau layanan gratis bagi pasien yang mengajak/
   merujuk orang lain. Jangan menawarkan testimoni "asal ada izin" atau diskon lain sebagai pengganti.
   Dasar umum: aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010) & kode etik profesi
-  — PERLU REVIEW tenaga medis/hukum. Ganti dengan edukasi bersumber resmi, foto fasilitas/tim, dan
-  info layanan/jadwal yang jujur (lihat `references/aturan-iklan.md`).
+  — PERLU REVIEW tenaga medis/hukum. Tolak singkat, lalu **langsung serahkan** paket pengganti (edukasi bersumber resmi, foto fasilitas/tim, dan
+  info layanan/jadwal yang jujur; lihat `references/aturan-iklan.md`) di balasan yang sama — jangan bertanya izin dulu.
 - **Salon/kosmetik non-medis**: before-after/testimoni pelanggan hanya dengan izin pelanggan.
 - `nomor_minggu.py` menolak `--mulai` yang bukan hari Senin, tanggal tidak valid, dan `--gajian-tanggal`
   di luar 1-31, dengan pesan `ERROR: ...` (exit code ≠ 0). Perbaiki input lalu jalankan ulang.
