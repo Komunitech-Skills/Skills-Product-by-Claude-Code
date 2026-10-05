@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Cek harga kripto vs ambang yang ditetapkan member, tanpa API key. (v1.0.7)
+"""Cek harga kripto vs ambang yang ditetapkan member, tanpa API key. (v1.0.9)
+
+v1.0.9: opsi `--pratinjau` (alias `--tanpa-simpan`) -- untuk MENAMPILKAN harga/status ambang
+ke pengguna saat alert baru dipasang. State dibaca (untuk cache) tetapi TIDAK PERNAH ditulis,
+sehingga ambang tidak tercatat "sudah dilaporkan" dan jadwal pertama tidak diredam. Exit
+code pratinjau: 0 bila ok (bukan sinyal automation), 1 bila error input.
 
 v1.0.7 (uji gabungan paket 2026-10-03): (1) SETIAP ambang selalu diberi status di
 `pesan_singkat` & field `status_ambang` per koin -- "SUDAH TERLEWATI" bila harga terkini
@@ -769,6 +774,10 @@ def main(argv=None):
     ap.add_argument("--keluaran", choices=["json", "teks"], default="json",
                      help="json = satu objek JSON (default, untuk automation/agent). "
                           "teks = hanya pesan_singkat ke stdout.")
+    ap.add_argument("--pratinjau", "--tanpa-simpan", dest="pratinjau", action="store_true",
+                     help="Pratinjau untuk pengguna: JANGAN menulis/mengubah file state (tanpa mencatat 'sudah "
+                          "dilaporkan'), exit code 0 bila ok. Wajib dipakai saat menampilkan harga ke pengguna "
+                          "waktu memasang/mengubah alert.")
     args = ap.parse_args(argv)
 
     try:
@@ -791,7 +800,7 @@ def main(argv=None):
     except KesalahanInput as e:
         state = {}
         try:
-            if os.path.exists(args.state):
+            if os.path.exists(args.state) and not args.pratinjau:
                 cadangan = f"{args.state}.rusak-{int(time.time())}"
                 os.replace(args.state, cadangan)
                 peringatan_global.append(
@@ -828,11 +837,16 @@ def main(argv=None):
             proses_koin(k, indeks, sekarang, data_baru, kesalahan, state, args.usia_basi_jam, args.jeda_ulang_jam)
         )
 
-    try:
-        with open(args.state, "w", encoding="utf-8") as f:
-            json.dump(state, f, ensure_ascii=False, indent=2)
-    except OSError as e:
-        peringatan_global.append(f"Gagal menyimpan cache state: {e}")
+    if args.pratinjau:
+        peringatan_global.append(
+            "PRATINJAU: state tidak disimpan -- status notifikasi 'sudah dilaporkan' tidak dicatat, "
+            "jadi jadwal pertama tetap bisa mengirim notifikasi bila ambang sudah terlewati.")
+    else:
+        try:
+            with open(args.state, "w", encoding="utf-8") as f:
+                json.dump(state, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            peringatan_global.append(f"Gagal menyimpan cache state: {e}")
 
     pesan_singkat = susun_pesan_singkat(daftar_hasil, sekarang, peringatan_global)
 
@@ -851,6 +865,7 @@ def main(argv=None):
 
     keluaran = {
         "status": "ok",
+        "pratinjau": bool(args.pratinjau),
         "jam_cek": sekarang.isoformat(),
         "ambang_terlewati": ada_terlewati,
         "perlu_lapor_sekarang": perlu_lapor_sekarang,
@@ -867,6 +882,8 @@ def main(argv=None):
     else:
         print(json.dumps(keluaran, ensure_ascii=False, indent=2))
 
+    if args.pratinjau:
+        return 0
     if ada_perlu_lapor_ambang:
         return 2
     if ada_perlu_lapor_pemantauan:

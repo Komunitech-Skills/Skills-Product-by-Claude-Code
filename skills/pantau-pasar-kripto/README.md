@@ -80,6 +80,13 @@ gagal diambil, skill memakai data cache terakhir dengan peringatan jelas (jam da
 Anda diberi tahu apa adanya, bukan diberi angka palsu.
 
 ## Riwayat versi
+- **Catatan revisi 1.0.9 (2026-10-05)** — dari uji ulang ke-2 paket: (1) saat alert dipasang,
+  tampilan harga memakai `--pratinjau` sehingga notifikasi pertama tidak lagi diredam;
+  (2) prediksi harga/peringkat/"flippening" dari artikel tidak ditampilkan sama sekali;
+  (3) jadwal: draf ditampilkan dulu, baru dipasang setelah Anda menjawab "ya" atas draf itu;
+  (4) berita selalu dirapikan `rapikan_berita.py`; (5) draf jadwal memakai lokasi standar
+  `~/.openclaw/skills/...`; (6) penolakan auto-trade menyebut key tanpa izin tarik dana,
+  status `bot-trading-kripto`, dan limit/stop order bawaan bursa.
 - **Catatan revisi 1.0.8 (2026-10-03)** — dari uji ulang paket: (1) pemasangan jadwal kini
   pasti — AI mencoba **sekali**; bila gagal, langsung memberi draf perintah jadwal siap tempel
   (`scripts/draf_jadwal.py`) tanpa mencoba ulang atau mencari program di komputer Anda;

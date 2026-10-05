@@ -232,3 +232,7 @@ Tidak diuji ulang: `git diff --stat` v1.0.1→v1.0.2 hanya menyentuh `SKILL.md`,
 
 ## SKOR AKHIR v1.0.2: **9 / 10 — LULUS, SIAP NAIK KE BETA**
 Ketiga cacat sedang v1.0.1 (S2-1, S2-2, S2-3) diperbaiki dan **terbukti** lewat reproduksi independen (unit test + Gateway OpenClaw sungguhan, bukan hanya klaim dokumen). Tidak ditemukan regresi pada bagian yang tidak diklaim berubah. Skor tidak 10 hanya karena dua catatan ringan kosmetik/dokumentasi di atas, yang tidak menghalangi kenaikan status ke `beta` (Tahap 6.11).
+
+
+# Riwayat revisi v1.0.9 (2026-10-05) -- MENUNGGU UJI ULANG INDEPENDEN
+Perbaikan 6 cacat minor dari uji gabungan ke-2 (2026-10-03, `solusi-vip/kripto-keuangan/UJI-GABUNGAN-2026-10-03.md`): (1) `cek_ambang.py --pratinjau`/`--tanpa-simpan` (tanpa tulis state) + SKILL Langkah A wajib; (2) proyeksi/kapitalisasi/"flippening" tidak ditampilkan sama sekali; (3) Langkah E urutan baku draf -> "ya" -> satu `add` -> gagal berhenti, tanpa list/status; (4) `rapikan_berita.py` jadi langkah wajib Langkah B (dipertahankan: menyaring redirect/beranda/duplikat secara deterministik); (5) `draf_jadwal.py` default `~/.openclaw/...` (Windows `%USERPROFILE%`), opsi `--folder-skill`; (6) template penolakan memuat key tanpa izin tarik dana, status `bot-trading-kripto`, limit/stop order bawaan bursa; description diperkuat; PANDUAN solusi-vip disinkronkan. Tes regresi 118 lulus (+5 tes baru, test_111-115). Belum diuji ulang oleh penguji independen/OpenClaw.

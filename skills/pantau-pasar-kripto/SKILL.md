@@ -1,6 +1,6 @@
 ---
 name: pantau-pasar-kripto
-description: Memantau harga kripto (BTC/ETH/dll) terhadap ambang naik/turun % atau harga Rp/USD yang DITETAPKAN MEMBER SENDIRI, mengirim ringkasan pagi (harga + berita bertautan sumber), checklist riset proyek (due diligence, TANPA kesimpulan beli/jual), dan merapikan + menghitung P/L jurnal trading milik member sendiri. TIDAK ADA auto-trading, TIDAK ADA rekomendasi beli/jual/tahan, TIDAK menyimpan API key exchange. Gunakan saat pengguna minta "pantau harga BTC/ETH", "kabari kalau kripto turun/naik X%", "ringkasan berita kripto pagi", "riset koin ini", "cek proyek kripto", "rapikan jurnal trading saya", crypto price alert, crypto watchlist, DYOR checklist, trading journal. JANGAN dipakai untuk eksekusi order, sinyal trading, target harga, atau alokasi portofolio -- skill ini menolak permintaan itu.
+description: Memantau harga kripto (BTC/ETH/dll) terhadap ambang naik/turun % atau harga Rp/USD yang DITETAPKAN MEMBER SENDIRI, ringkasan pagi (harga + berita bertautan URL artikel asli), checklist riset proyek (TANPA kesimpulan beli/jual), dan merapikan + menghitung P/L jurnal trading member sendiri. ATURAN INTI: (1) TIDAK ADA auto-trading/rekomendasi beli-jual-tahan/API key exchange; prediksi harga, kapitalisasi, peringkat atau "flippening" dari artikel = proyeksi, TIDAK ditampilkan sama sekali; (2) jadwal: tampilkan draf draf_jadwal.py, tunggu "ya" eksplisit atas draf itu, SATU kali add, gagal = berhenti & serahkan draf (tanpa list/status/find); pratinjau harga saat pasang alert pakai cek_ambang.py --pratinjau. Gunakan untuk "pantau harga BTC/ETH", "kabari kalau kripto turun X%", "ringkasan berita kripto pagi", "riset koin ini", "rapikan jurnal trading", crypto price alert, DYOR checklist, trading journal. JANGAN untuk eksekusi order, sinyal, target harga, alokasi portofolio.
 ---
 
 # Pantau Pasar Kripto
@@ -64,6 +64,12 @@ beli/jual/tahan**. Skill ini adalah alat informasi & pencatatan, bukan bot tradi
 - Minta auto-trading, bot eksekusi order, atau menyambungkan API key exchange → **tolak**,
   jelaskan Batas Tegas #2. Arahkan ke fitur limit/stop order **bawaan aplikasi exchange
   resmi** (dieksekusi & dipantau manual oleh pengguna sendiri, bukan lewat skill ini).
+  **Template penolakan auto-trade/sinyal (2-3 kalimat, wajib memuat ketiganya):** (a) skill ini
+  tidak mengeksekusi order dan tidak memberi sinyal; (b) API key baru di exchange (bila member
+  membuat sendiri) harus **tanpa izin tarik dana** dan tidak ditempel ke chat; (c) bot trading
+  otomatis ada di skill terpisah `bot-trading-kripto` (belum termasuk paket ini -- statusnya
+  ditunda), sementara itu pakai limit/stop order **bawaan aplikasi bursa resmi** yang Anda atur
+  dan pantau sendiri. Lalu rujukan OJK/PAKD/Satgas PASTI singkat + disclaimer.
 - Minta clone suara/wajah untuk konten promosi koin → di luar cakupan skill ini, dan
   library Komunitech menolak permintaan itu di skill mana pun.
 - Laporan/notifikasi untuk **grup/pelanggan/broadcast** → di luar cakupan; notifikasi
@@ -119,8 +125,16 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    nantinya dipanggil otomatis oleh jadwal -- **tunjukkan isinya ke member** untuk
    dikonfirmasi sebelum disimpan, supaya salah terjemahan ketahuan. Koin tanpa ambang dari
    pengguna: `"tanpa_ambang": true` (jangan diisi angka sendiri).
-   **Saat memasang/mengubah ambang, selalu jalankan Langkah A.2 sekali** dan tampilkan
-   harga terkini + `status_ambang` tiap koin: bila ada yang **SUDAH TERLEWATI** (mis. BTC
+   **Saat memasang/mengubah ambang, selalu jalankan pratinjau SEKALI** -- perintah A.2 dengan
+   opsi **`--pratinjau`** (WAJIB; jangan pernah memakai `--state kripto/state.json` asli untuk
+   pratinjau tanpa opsi itu, karena itu mencatat ambang "sudah dilaporkan" dan jadwal pertama
+   diredam 6 jam):
+   ```bash
+   python3 <folder-skill-ini>/scripts/cek_ambang.py --konfigurasi kripto/konfigurasi.json \
+     --state kripto/state.json --pratinjau
+   ```
+   `--pratinjau` (alias `--tanpa-simpan`) tidak menulis state apa pun dan exit code-nya 0.
+   Tampilkan harga terkini + `status_ambang` tiap koin: bila ada yang **SUDAH TERLEWATI** (mis. BTC
    sudah di bawah ambang bawah yang baru diminta), katakan terang-terangan di awal balasan
    bahwa notifikasi itu akan langsung terpicu.
 2. Jalankan:
@@ -129,7 +143,8 @@ dengan opini sendiri**, hanya merapikan & menghitung.
      --konfigurasi kripto/konfigurasi.json --state kripto/state.json
    ```
    (Windows: `python`/`py`. Uji tanpa jaringan: tambahkan `--harga-file <file-harga-uji>`,
-   lihat docstring script untuk formatnya.)
+   lihat docstring script untuk formatnya.) Hanya jadwal otomatis & cek rutin yang memakai
+   perintah tanpa `--pratinjau` (itu yang boleh menulis state).
 3. Baca field `pesan_singkat` di hasil JSON -- itu sudah siap kirim apa adanya (sudah
    memuat sumber, jam data, peringatan data basi/tua, dan disclaimer per koin). Untuk
    keluaran teks langsung tanpa JSON, tambahkan `--keluaran teks`.
@@ -170,15 +185,22 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    agregator (`news.google.com/rss/articles/...`, `news.google.com/...`) **bukan** URL
    sumber: ikuti/buka ke URL artikel asli di situs media; bila gagal, tulis nama media +
    judul + tanggal dan tandai *"(tautan asli belum didapat)"* -- jangan menempel redirect.
-   **Rapikan lewat script:** tulis kandidat ke `kripto/berita.json` (`[{"judul","url","media",
-   "tanggal"}]`) lalu `python3 <folder-skill-ini>/scripts/rapikan_berita.py kripto/berita.json`
-   (`--tandai` = butir tanpa tautan ditaruh di AKHIR berlabel "[tanpa tautan]"); tempel
-   hasilnya. Tanpa script: butir tanpa URL artikel asli tidak dimasukkan. Kalau **tidak ada** akses pencarian
+   **Rapikan lewat script (WAJIB sebelum menyusun daftar berita):** tulis kandidat ke
+   `kripto/berita.json` (`[{"judul","url","media","tanggal"}]`) lalu jalankan
+   `python3 <folder-skill-ini>/scripts/rapikan_berita.py kripto/berita.json`
+   (`--tandai` = butir tanpa tautan ditaruh di AKHIR berlabel "[tanpa tautan]"); daftar berita
+   di pesan HANYA dari keluaran script itu (ia membuang redirect agregator, beranda situs,
+   butir tanpa URL, dan judul ganda -- hal yang sering lolos bila disaring "dengan mata").
+   Halaman ringkasan AI/agregator (mis. coinstats.app/ai) bukan sumber. Script tidak bisa
+   dijalankan: butir tanpa URL artikel asli tidak dimasukkan. Kalau **tidak ada** akses pencarian
    web, katakan itu jujur: *"Ringkasan berita tidak bisa dibuat -- agent ini tidak punya
    akses pencarian web saat ini. Harga & ambang tetap di bawah."* -- jangan menulis
    ringkasan berita dari ingatan tanpa tautan.
-   **Jangan pernah meneruskan target harga, level support/resistance, prediksi angka, atau
-   rekomendasi analis dari isi artikel** (berita kripto sering memuat ini, mis. "resistance
+   **Proyeksi = TIDAK ditampilkan sama sekali (bukan sekadar diberi label "klaim pribadi").**
+   Prediksi harga, target harga, kapitalisasi pasar/peringkat masa depan (mis. "SOL akan
+   menyalip ETH", "flippening"), level support/resistance, atau rekomendasi analis -- dari
+   siapa pun, termasuk tokoh/pendiri -- tidak dikutip, tidak diparafrasekan, dan butirnya
+   tidak dipakai sebagai judul. Jangan pernah meneruskan itu dari isi artikel (berita kripto sering memuat ini, mis. "resistance
    US$120-130") -- itu sama saja memberi sinyal trading lewat jalur belakang, melanggar
    Batas Tegas #1. Ringkas hanya **peristiwa yang sudah terjadi** (rilis, regulasi,
    kemitraan, listing/delisting, dst.); kalau sebuah artikel memuat proyeksi/target harga,
@@ -264,18 +286,21 @@ dengan opini sendiri**, hanya merapikan & menghitung.
    `pl_bila_pph_belum_di_kolom_biaya`. SPT/kewajiban tahunan → konsultan pajak/DJP.
 
 ### E. Membuat jadwal otomatis (opsional, setelah A/B pertama kali berhasil manual)
-**Alur pasti (wajib, tanpa improvisasi):**
-1. Tunjukkan perintah + jam, minta "ya". Setelah "ya", coba buat jadwal **SATU kali**
-   (satu panggilan tool jadwal/`openclaw automations add`). Jangan cek status/daftar
-   berulang sebelum atau sesudahnya.
-2. Berhasil → uji sekali (§3 `references/openclaw-jadwal.md`) dan laporkan id jadwal.
-3. **Gagal / tool tidak tersedia / kanal belum siap → LANGSUNG berhenti.** Jangan mencoba
-   ulang, jangan mencari CLI/berkas (`find`, `locate`, `which`, `ls` di luar folder skill),
-   jangan memeriksa config/gateway. Jalankan
+**Urutan baku (wajib, tanpa improvisasi):**
+1. **Tampilkan draf dulu:** jalankan
    `python3 <folder-skill-ini>/scripts/draf_jadwal.py --cek-per-jam --jam-ringkasan HH:MM`
-   (opsi `--chat-id`, `--workspace` bila diketahui) dan tempel hasilnya apa adanya sebagai
-   draf siap tempel untuk pemilik/jasa setup Komunitech. Script tidak bisa dijalankan →
-   salin pola perintah dari `references/openclaw-jadwal.md` §2 dan §4.
+   (opsi `--chat-id`, `--workspace` bila diketahui) dan tempel hasilnya apa adanya ke pengguna.
+2. **Tunggu "ya" eksplisit atas draf itu.** Kalimat seperti "tolong dipasang ya" di pesan awal
+   BUKAN persetujuan atas draf yang belum pernah dilihat pengguna; tanpa jawaban "ya" setelah
+   draf tampil, jangan membuat jadwal.
+3. Setelah "ya": **SATU kali** `add` (satu panggilan tool jadwal/`openclaw automations add`).
+   **Tanpa `list`/`status`/cek jadwal terpisah** sebelum maupun sesudahnya, tanpa coba ulang.
+4. Berhasil -> uji sekali (§3 `references/openclaw-jadwal.md`) dan laporkan id jadwal.
+5. **Gagal / tool tidak tersedia / kanal belum siap -> LANGSUNG berhenti** dan serahkan draf
+   dari langkah 1 (sudah ditempel) untuk pemilik/jasa setup Komunitech. Jangan mencoba
+   ulang, jangan mencari CLI/berkas (`find`, `locate`, `which`, `ls` di luar folder skill),
+   jangan memeriksa config/gateway. Script tidak bisa dijalankan -> salin pola perintah dari
+   `references/openclaw-jadwal.md` §2 dan §4.
 
 Rincian:
 Lihat `references/openclaw-jadwal.md` untuk perintah `openclaw automations` yang
@@ -310,7 +335,7 @@ konfirmasi → buat 2 jadwal (ringkasan pagi harian, cek ambang tiap jam) mengik
 `references/openclaw-jadwal.md` → uji sekali → jelaskan cara jeda/hapus.
 
 ## Batasan & penanganan error
-- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri. Coba buat jadwal **satu kali** saja (Langkah E); gagal/tidak tersedia → langsung tempel hasil `scripts/draf_jadwal.py` untuk pemilik/jasa setup Komunitech, lalu berhenti (tanpa coba ulang). **Dilarang:** `find`, `locate`, `which`, `ls` di luar folder skill/mencari CLI, `gateway config.get`, `openclaw doctor`, menanyakan isi `openclaw.json`/status kanal ke tool atau agent sistem, mengubah config/gateway/kanal, atau meminta token bot ke chat.
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas DRAF perintah + jam yang sudah ditampilkan (bukan "tolong dipasang" di pesan awal); kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri. Coba buat jadwal **satu kali** saja (Langkah E); gagal/tidak tersedia → langsung tempel hasil `scripts/draf_jadwal.py` untuk pemilik/jasa setup Komunitech, lalu berhenti (tanpa coba ulang). **Dilarang:** `find`, `locate`, `which`, `ls` di luar folder skill/mencari CLI, `gateway config.get`, `openclaw doctor`, menanyakan isi `openclaw.json`/status kanal ke tool atau agent sistem, mengubah config/gateway/kanal, atau meminta token bot ke chat.
 - **Tidak ada API key exchange, tidak ada eksekusi order.** Kalau pengguna bersikeras
   minta ini, jelaskan: (1) berita/web yang dipakai agent bisa disusupi instruksi
   tersembunyi (*prompt injection*) yang mencoba memicu transaksi, (2) kesalahan model AI

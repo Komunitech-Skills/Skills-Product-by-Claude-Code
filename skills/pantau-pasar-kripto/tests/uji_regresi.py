@@ -1338,7 +1338,7 @@ class UjiV108JadwalDanBerita(unittest.TestCase):
         teks = draf_jadwal.susun(args)
         self.assertIn('openclaw automations add "30 6 * * *"', teks)
         self.assertIn('--cron "0 * * * *"', teks)
-        self.assertIn(os.path.join(SCRIPTS_DIR, "cek_dan_lapor.py"), teks)
+        self.assertIn("pantau-pasar-kripto/scripts/cek_dan_lapor.py", teks.replace("\\", "/"))
         self.assertIn('--tz "Asia/Jakarta"', teks)
         self.assertIn("<ID chat Telegram pemilik>", teks)
         self.assertNotIn("find ", teks)
@@ -1386,10 +1386,96 @@ class UjiV108JadwalDanBerita(unittest.TestCase):
     def test_110_skill_alur_jadwal_satu_kali(self):
         with open(os.path.join(SKILL_DIR, "SKILL.md"), encoding="utf-8") as f:
             skill = f.read()
-        self.assertIn("coba buat jadwal **SATU kali**", skill)
+        self.assertIn("**SATU kali** `add`", skill)
         self.assertIn("LANGSUNG berhenti", skill)
         self.assertIn("draf_jadwal.py", skill)
         self.assertIn("rapikan_berita.py", skill)
+
+
+class UjiV109Pratinjau(unittest.TestCase):
+    """v1.0.9 -- uji ulang ke-2 (2026-10-03): pratinjau memakai state asli (jadwal pertama
+    diredam), proyeksi lolos berlabel, jadwal tanpa draf+"ya", path lingkungan uji di draf."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji_v109_")
+        self.cfg = os.path.join(self.tmp, "konfigurasi.json")
+        self.state = os.path.join(self.tmp, "state.json")
+        self.harga = os.path.join(self.tmp, "harga.json")
+        tulis_json(self.cfg, {"koin": [
+            {"kode": "BTC", "coingecko_id": "bitcoin", "mata_uang": "idr",
+             "ambang_harga_di_bawah": 1600000000}]})
+        tulis_json(self.harga, {"bitcoin_idr_coingecko": {
+            "harga": 1500000000, "perubahan_24jam_persen": -1.0,
+            "jam_data": "2026-10-05T07:00:00+07:00", "sumber": "coingecko"}})
+
+    def _args(self, *extra):
+        return ["--konfigurasi", self.cfg, "--state", self.state, "--harga-file", self.harga, *extra]
+
+    def test_111_pratinjau_tidak_menulis_state_dan_jadwal_pertama_tetap_terpicu(self):
+        kode, out, err = jalankan_cek_ambang(self._args("--pratinjau"))
+        self.assertEqual(kode, 0, err)
+        d = json.loads(out)
+        self.assertTrue(d["pratinjau"])
+        self.assertIn("SUDAH TERLEWATI", d["pesan_singkat"])
+        self.assertIn("PRATINJAU", d["pesan_singkat"])
+        self.assertFalse(os.path.exists(self.state), "pratinjau tidak boleh membuat state")
+        # jalan nyata pertama (tanpa --pratinjau) harus tetap melapor (exit 2), lalu diredam
+        kode, out, err = jalankan_cek_ambang(self._args())
+        self.assertEqual(kode, 2, err)
+        self.assertTrue(os.path.exists(self.state))
+        kode, _, _ = jalankan_cek_ambang(self._args())
+        self.assertEqual(kode, 0)
+
+    def test_112_pratinjau_tidak_mengubah_state_yang_ada(self):
+        jalankan_cek_ambang(self._args())
+        with open(self.state, "rb") as f:
+            sebelum = f.read()
+        kode, out, err = jalankan_cek_ambang(self._args("--tanpa-simpan"))
+        self.assertEqual(kode, 0, err)
+        with open(self.state, "rb") as f:
+            self.assertEqual(f.read(), sebelum)
+
+    def test_113_pratinjau_state_rusak_tidak_dicadangkan_atau_ditimpa(self):
+        tulis_teks(self.state, "{rusak")
+        kode, out, err = jalankan_cek_ambang(self._args("--pratinjau"))
+        self.assertEqual(kode, 0, err)
+        with open(self.state, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "{rusak")
+        self.assertEqual([n for n in os.listdir(self.tmp) if "rusak-" in n], [])
+
+    def test_114_draf_jadwal_default_path_member_bukan_lingkungan_uji(self):
+        args = draf_jadwal.argparse.Namespace(cek_per_jam=True, jam_ringkasan="07:00", chat_id=None,
+                                              workspace=None, python="python3", folder_skill=None)
+        teks = draf_jadwal.susun(args)
+        self.assertIn("~/.openclaw/skills/pantau-pasar-kripto/scripts/cek_dan_lapor.py", teks)
+        self.assertNotIn("/opt/", teks)
+        self.assertNotIn(SKILL_DIR, teks)
+        self.assertEqual(draf_jadwal.folder_skill_default(windows=True),
+                         "%USERPROFILE%\\.openclaw\\skills\\pantau-pasar-kripto")
+        args.folder_skill = draf_jadwal.folder_skill_default(windows=True)
+        teks = draf_jadwal.susun(args)
+        self.assertIn("%USERPROFILE%\\.openclaw\\skills\\pantau-pasar-kripto\\scripts\\cek_dan_lapor.py",
+                      teks.replace("\\\\", "\\"))
+        args.folder_skill = "/home/budi/skills/pantau-pasar-kripto"
+        self.assertIn("/home/budi/skills/pantau-pasar-kripto/scripts/", draf_jadwal.susun(args))
+
+    def test_115_skill_aturan_baru_v109(self):
+        with open(os.path.join(SKILL_DIR, "SKILL.md"), encoding="utf-8") as f:
+            skill = f.read()
+        awal, akhir = skill.index("---"), skill.index("---", 4)
+        fm = skill[awal:akhir]
+        desc = [l for l in fm.splitlines() if l.startswith("description:")][0]
+        self.assertLessEqual(len(desc) - len("description: "), 1024)
+        self.assertEqual([l.split(":")[0] for l in fm.splitlines()[1:] if l.strip()], ["name", "description"])
+        for kata in ("--pratinjau", "flippening", "TIDAK ditampilkan sama sekali", "SATU kali"):
+            self.assertIn(kata, desc if kata in ("flippening", "--pratinjau") else skill)
+        self.assertIn("WAJIB sebelum menyusun daftar berita", skill)
+        self.assertIn("Tunggu \"ya\" eksplisit atas draf itu", skill)
+        self.assertIn("tolong dipasang ya", skill)
+        self.assertIn("Tanpa `list`/`status`", skill.replace("**Tanpa `list`/`status`", "Tanpa `list`/`status`"))
+        self.assertIn("bot-trading-kripto", skill)
+        self.assertIn("tanpa izin tarik dana", skill)
+        self.assertIn("limit/stop order", skill)
 
 
 if __name__ == "__main__":
