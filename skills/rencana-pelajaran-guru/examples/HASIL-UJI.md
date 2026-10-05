@@ -124,3 +124,7 @@ Sisi SESUDAH saja (SEBELUM tetap 5,75 dari v1.0.5): S1-A 8, S1-B 8,5, S2 (RPP Ma
 ---
 ## Riwayat v1.0.7 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.6, menunggu uji ulang independen
 Uji Telegram v1.0.6 (topik 724) skor 5 (TANPA 6): bot hanya mengirim ringkasan, menulis "isi lengkap ada di file .md di workspace" (tidak sampai ke guru), dan bertanya "mau dibuatkan .docx?" padahal guru menyebut supervisi besok. Perbaikan: aturan paling atas (isi utuh di chat, dipecah per bagian; .docx langsung + lampiran kanal chat bila bisa; tidak menulis .md di workspace) dan `description`. Status: menunggu uji ulang independen, termasuk konteks Telegram (isi utuh terkirim berurutan, .docx dilampirkan atau jalur disebut). Belum diuji di OpenClaw.
+
+---
+## Uji ulang v1.0.7 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH saja via `uji-tg.sh` (SEBELUM tetap 5,75). Skenario 1 (pesan persis gelombang 6): 5 percobaan, hanya 1 selesai (skor 8; isi utuh 4 bagian, kunci terpisah, .docx nyata, CP tidak dikarang; jalur file kosong di chat); 4 lainnya tanpa balasan (model idle timeout/900 dtk). Skenario 2 (RPP Matematika SD kelas 4, cetak): skor 6; isi utuh & angka benar, tetapi klaim palsu "File Word ... sudah saya lampirkan". Rata-rata percobaan selesai **7,0**. **VERDIK: BELUM** (rata-rata < 8, 1/5 percobaan skenario 1 lulus, klaim lampiran palsu). Tidak ada salah fakta/angka. Detail & saran di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.7".

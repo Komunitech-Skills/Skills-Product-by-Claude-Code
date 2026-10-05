@@ -604,3 +604,43 @@ Giliran 1 bertanya sekali (kelas/jenjang; opsi "langsung buatkan"). Giliran 2 (j
 **VERDIK: LULUS** (sesudah >= 8, tanpa salah fakta/angka). Cacat v1.0.5 no. 1 (isi utuh) dan no. 2 (`>`, `####`) teratasi; no. 3 (jalur) teratasi di 2 dari 3 percobaan.
 
 **Cacat minor tersisa untuk pembuat:** (1) S1-B menulis "File untuk cetak/supervisi besok:" tanpa jalur — tegaskan aturan jalur juga untuk kalimat pembuka/penutup. (2) `buat_docx.py`: `*...**x**...*` (tebal di dalam miring) menyisakan `*` literal. (3) Bunyi CP persis tidak selalu diberikan (A tidak mengunduh) — pertimbangkan instruksi mencoba web_fetch PDF 046/H/KR/2025 bila tersedia.
+
+---
+
+# Uji ulang v1.0.7 (konteks Telegram) — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5 (sama dengan bot), hanya sisi SESUDAH (skill aktif, `uji-tg.sh` = konteks kanal Telegram, tidak mengirim apa pun), home bersih per percobaan. SEBELUM tetap **5,75** (v1.0.5). Penilaian hanya dari isi balasan chat. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-107-*.txt`. Dasar: cacat Telegram v1.0.6 (isi lengkap "ada di file", .docx tidak dibuat) di `koordinasi/telegram-gelombang-6-2026-10-05.md`.
+
+## Skenario 1 — pesan persis gelombang 6 (5 percobaan, 1 selesai)
+Dua percobaan paralel pertama dan dua percobaan ulang lain berakhir **tanpa balasan**: agent berhenti dengan "The model did not produce a response before the model idle timeout" (rc=1) atau timeout 900 dtk (rc=124); log menunjukkan `transient same-model retry ... reason=timeout`. Di beberapa percobaan gagal itu .docx sudah sempat dibuat di /tmp, jadi macet terjadi pada giliran terakhir (menulis balasan utuh yang panjang). Bagi guru di Telegram hasilnya = tidak ada jawaban. Tidak ada percobaan yang saya buang: 1 selesai, 4 gagal tanpa balasan (percobaan tunggal, tanpa paralel, berhasil sekali).
+
+**Percobaan yang selesai (S1-C, 13.408 karakter):**
+- Isi utuh di chat dalam 4 bagian berurutan ("Bagian 1/4 ... 4/4"): Modul Ajar, LKPD tanpa jawaban ("Jawab: ____"), 5 soal + rubrik, `Kunci Jawaban (untuk guru)` utuh dan terpisah. Tidak ada "isi lengkap ada di file".
+- CP tidak dikarang: menolak menulis bunyi dari ingatan, menyebut BSKAP 046/H/KR/2025, memberi 3 langkah mengambil bunyi CP + kolom tempel. Bunyi CP persis yang diminta guru **tidak** diberikan (agent tidak mengunduh).
+- .docx dibuat tanpa bertanya. File nyata `/tmp/Modul-Ajar-BahasaInggris-Kelas7-DescriptiveText-HewanPeliharaan.docx` (7.507 byte, zipfile testzip None, 203 paragraf, 3 tabel, tanpa `>`/`####` literal, tanpa "Jawaban:" terisi, ada "Kunci Jawaban"). Tidak ada klaim "terkirim".
+- Cacat: kalimat "File tersimpan di jalur di atas" padahal jalur tidak pernah ditulis di chat (jalur kosong) dan file tidak sampai ke guru; kalimat pembuka menjanjikan "lalu file .docx-nya".
+- Verifikasi (python): 10+60+10 = 80; inti 10+15+20+15 = 60; pembukaan 2+3+5 = 10; penutup 5+3+2 = 10; rubrik 3+3+4+3 = 13, 13/16x100 = 81,25 -> 81; contoh skor 20+20+20+0+10 = 70; kunci cocok dengan teks (Milo, cat, likes, Identification, Description).
+
+## Skenario 2 — RPP Matematika SD kelas 4 pecahan, minta cetak (1 percobaan selesai; satu percobaan paralel sebelumnya timeout)
+Pesan: "Tolong buatkan RPP Matematika SD kelas 4 materi pecahan, mau saya cetak." (10.106 karakter, tidak bertanya balik, asumsi 1 pertemuan x 2 JP disebut.)
+- Isi utuh di chat (2 bagian): modul, LKPD bersih, soal, rubrik, kunci terpisah. Angka benar: 10+50+10 = 70 = 2x35; inti 10+15+10+10+5 = 50; 5 soal x 20 = 100; kunci cocok (2/5 < 4/5, 3/4 > 1/4, 1/9 < 2/9 < 5/9 < 7/9, 6/7 > 4/7 > 2/7).
+- .docx dibuat (`/tmp/rpp-pecahan-kelas4/RPP_Pecahan_Kelas4.docx`, 6.026 byte).
+- **Cacat: "File Word siap cetak sudah saya lampirkan"** — tidak ada kemampuan kirim file di konteks ini dan tidak ada jalur disebut: klaim lampiran palsu, melanggar aturan 2 SKILL.md ("jangan klaim terkirim tanpa konfirmasi"). CP ditandai "(cek CP resmi ...)", tidak dikarang.
+
+## Skor SESUDAH
+| Percobaan | Skor | Alasan |
+|---|---|---|
+| S1-A, S1-B, S1-D, S1-E (+ satu ulang) | tanpa balasan | timeout model idle / 900 dtk; tidak ada isi sampai ke guru |
+| S1-C | 8 | isi utuh, kunci terpisah, docx nyata, CP jujur; jalur file kosong, bunyi CP persis tidak diberikan |
+| S2 | 6 | isi utuh & angka benar, tetapi klaim lampiran palsu dan tanpa jalur |
+
+**Rata-rata SESUDAH (percobaan selesai): 7,0** (SEBELUM 5,75, selisih +1,25). Percobaan skenario 1 yang lulus: **1 dari 5** (syarat >= 2/3 tidak terpenuhi).
+**VERDIK: BELUM** (rata-rata < 8, kurang dari 2/3 percobaan skenario 1 lulus, ada klaim lampiran palsu). Tidak ada salah fakta/angka pada balasan yang selesai. Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim otomatis.
+
+**Cacat untuk pembuat:**
+1. Kemacetan model pada balasan akhir yang panjang (4 dari 5 percobaan skenario 1 tanpa balasan). Kemungkinan akibat aturan "isi utuh di chat" + permintaan .docx dalam satu giliran: konteks besar lalu 13-15 ribu karakter keluaran. Saran: urutan tetap (buat .docx dulu dengan script, lalu balasan); bila memungkinkan, balas per bagian lewat beberapa giliran/pesan. Perlu dicek juga apakah ini beban router/infrastruktur (uji ping singkat sehat) dan apakah bot produksi punya batas idle yang sama.
+2. Klaim "sudah saya lampirkan" (S2) dan "jalur di atas" tanpa jalur (S1-C): tambahkan aturan keras "kalimat tentang file hanya boleh memuat jalur nyata dari output buat_docx.py; dilarang kata 'lampirkan/terkirim' bila tidak ada alat kirim file".
+3. Bunyi CP persis tetap tidak diberikan (S1-C): instruksikan mencoba mengunduh PDF CP resmi 046/H/KR/2025 bila alat web tersedia.
+
+### Cuplikan jualan
+(kosong — hasil belum konsisten di konteks Telegram)
