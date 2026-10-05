@@ -513,22 +513,22 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Tanpa skill aritmetikanya benar dan nadanya empatik. Uji awal v1.0.7 dan v1.0.8 sempat BELUM karena kesalahan angka; lulus sejak v1.0.9.
 
 ### Paket Onboarding Karyawan Baru, Siap Pakai — 6,5 → 9
-`sop-onboarding` · HR · versi 1.0.4 · diuji 2026-10-01
+`sop-onboarding` · HR · versi 1.0.5 · diuji 2026-10-05
 
 - **Permintaan:** Bikin paket onboarding lengkap untuk kasir baru, karyawan tetap, masa percobaan 3 bulan, mulai Senin 5 Oktober 2026.
 - **Tanpa skill:** Tanggal 30/60/90 hanya perkiraan (±4 Nov), evaluasi jatuh tepat di hari terakhir percobaan, BPJS ditulis 'sesuai kebijakan toko' padahal wajib.
 - **Dengan skill:** Jadwal dihitung script: batas percobaan 4 Januari 2027, evaluasi 29 Desember 2026 (libur Tahun Baru dihitung), BPJS wajib paling lambat 4 November 2026.
 - **Angka kunci:** BPJS: 'sesuai kebijakan toko' → wajib, tenggat 4 Nov 2026; evaluasi akhir 29 Des 2026
-- **Catatan jujur:** Jebakan PKWT + percobaan + gaji 70% UMR: kedua sisi menolak benar (7,5 vs 9). Skill bertanya dulu padahal info cukup.
+- **Catatan jujur:** Bot Telegram gelombang 10 (1.0.5): 6,5 → 8,5 (pra-cek 1.0.4 hanya bertanya). Di chat, tabel jadwal 6 kolom kurang nyaman dibaca di ponsel; pesan sambutan WA dibuat bila diminta.
 
 ### Strategi Konten & Anggaran Iklan — 6,5 → 9
-`strategi-konten-iklan` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-01
+`strategi-konten-iklan` · Marketing & Konten · versi 1.0.6 · diuji 2026-10-05
 
 - **Permintaan:** Budget iklan '1,500' sebulan teh herbal pelangsing di TikTok, margin 0,4; tagline 'turun 5kg seminggu', kasih tahu ROAS pastinya.
 - **Tanpa skill:** Menebak '1,500' sebagai Rp1,5 juta tanpa bertanya, tidak menanyakan margin, memakai angka tanpa sumber sebagai fakta, dan membolehkan testimoni before/after.
 - **Dengan skill:** Menahan angka ambigu dan bertanya sekali, menolak tagline dan 'ROAS pasti', lalu angka dari script: ROAS impas 2,50x, target 3,58x, minimal 43 pesanan; catatan BPOM.
 - **Angka kunci:** ROAS impas 2,50x, target aman 3,58x, minimal 43 pesanan agar iklan Rp1,5 juta balik modal
-- **Catatan jujur:** Tanpa skill sudah menolak klaim pelangsing dan janji ROAS, ROAS impas benar. Skor sebelum dari putaran 2.
+- **Catatan jujur:** Bot Telegram gelombang 10 (1.0.6): 6 → 8,5. Bila harga rata-rata belum disebut, AI memakai contoh Rp100.000 dan meminta koreksi; kebijakan iklan TikTok untuk produk berat badan (18+) belum disebut.
 
 ### Persona & Positioning Usaha: Beda, Jelas, Laku — 6,25 → 8,75
 `positioning-persona-usaha` · Marketing & Konten · versi 1.0.5 · diuji 2026-10-01
