@@ -9,6 +9,8 @@ Metode: `uji-tg.sh` (konteks kanal Telegram, tanpa kirim), 1 kali per skill, din
 | proposal-kerjasama | 8,33 | 6,5 | YA (bertanya padahal info cukup) | Menolak klaim "sudah BPOM"/"paling laris" dengan tepat, tetapi tidak ada proposal dan tidak memperingatkan porsi 35% rugi (Rp15.000 x 35% = Rp5.250 untuk toko). Hanya 4 pertanyaan. |
 | pengajuan-kur | 9,0 | 9,0 | Tidak | Lengkap di chat, angka benar, opsi tenor 60 bulan, peringatan flat vs efektif, tanpa agunan <= Rp100 jt. |
 | uji-pasar-produk-cepat | 9,0 | 9,0 | Tidak | Keputusan tegas ULANGI UJI, Wilson 0%-24% benar, langkah DP konkret. |
+| pesan-prospek-wa (cadangan) | 9,0 | 7,0 | YA (bertanya padahal info cukup) | Koreksi zona waktu benar (19.30 WIB = 20.30 WITA, usul 19.00 WIB), tetapi tidak ada draf pesan sama sekali; 5 pertanyaan. |
+| pph21-ter (cadangan) | 9,25 | 8,5 | Tidak | Jawaban lengkap di chat, dua skenario DTP, angka benar. Hanya minta konfirmasi KLU (wajar). |
 
 Tidak ada balasan terpotong, timeout, "lihat file", atau kebocoran proses internal.
 
@@ -22,3 +24,8 @@ Tidak ada balasan terpotong, timeout, "lihat file", atau kebocoran proses intern
 
 ## Rekomendasi
 Layak tampil (skor >= 8, tanpa masalah): pengajuan-kur, uji-pasar-produk-cepat, tulisan-tanpa-kesan-ai (8,0 mepet). Tahan luncurkan-produk-baru dan proposal-kerjasama: pada konteks Telegram skill bertanya dulu dan tidak memberi hasil; perlu satu pesan pemicu yang memberi default atau tinjau instruksi "tanya sekali" (jangan ubah skill tanpa persetujuan).
+
+## Tambahan cadangan
+- PPh 21 TER kategori A (TK/0), PMK 168/2023: bruto Rp6.000.000 ada di lapisan >5,95 jt s.d. 6,3 jt = 0,75% -> Rp45.000 (cocok); diterima Rp5.955.000 (cocok).
+- DTP 2026 (PMK 105/2025, web 2026-10-05: ortax, pasardana, dwpconsulting): lima sektor padat karya termasuk tekstil & pakaian jadi, penghasilan bruto tetap <= Rp10 jt/bln, DTP dibayar tunai ke pegawai dan bukan penghasilan kena pajak. Skenario B balasan (Rp6.045.000) konsisten.
+- Rekomendasi cadangan: pph21-ter layak tampil (8,5); pesan-prospek-wa tahan.
