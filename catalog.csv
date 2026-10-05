@@ -117,4 +117,4 @@ strategi-konten-iklan,Marketing & Konten,kurasi,https://github.com/coreyhaines31
 spt-tahunan-op,Keuangan & Akuntansi,orisinal,,,9,ecer,79000,ecer,79000,1.0.5,claude-code (simulasi agent);openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis 2026-10-01),beta,2026-10-03
 kanboard-papan-kerja,Produktivitas,orisinal,,Proprietary Komunitech (Kanboard MIT tidak didistribusikan),8,ecer,99000,ecer,99000,1.0.6,openclaw 2026.9.6–9.7 (uji sebelum/sesudah otomatis dengan data contoh 2026-10-02),beta,2026-10-02
 aktifkan-kembali-pelanggan,Customer Service,kurasi,https://github.com/anthropics/knowledge-work-plugins/tree/main/small-business/skills/reactivate,Apache-2.0 (atribusi & LICENSE-APACHE di folder skill),,ecer,99000,,,1.0.0,,uji,2026-10-05
-tangani-keberatan-pelanggan,Sales,kurasi,https://github.com/anthropics/knowledge-work-plugins/tree/main/sales/skills/handle-objection,Apache-2.0,,ecer,79000,,,1.0.0,,uji,2026-10-05
+tangani-keberatan-pelanggan,Sales,kurasi,https://github.com/anthropics/knowledge-work-plugins/tree/main/sales/skills/handle-objection,Apache-2.0,8,ecer,79000,ecer,79000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-05
