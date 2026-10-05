@@ -2,6 +2,8 @@
 
 **Tanggal:** 2026-10-01 · **Penguji:** agent penguji independen (bukan pembuat skill)
 
+> **KOREKSI 2026-10-05 (versi 1.0.5):** penilaian DTP di dokumen ini memakai acuan yang keliru. Menurut teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5, Lampiran B), PPh 21 tetap dipotong lalu DTP dibayar tunai, sehingga pegawai gaji Rp 6.000.000 menerima **Rp 6.000.000**, bukan Rp 6.045.000. Jawaban "Rp 6.000.000 (utuh)" yang di bawah dinilai SALAH sebenarnya benar angkanya; jawaban "Rp 6.045.000" yang dinilai benar sebenarnya keliru. Cuplikan jualan di akhir dokumen **tidak boleh dipakai**. Riwayat asli dibiarkan apa adanya. Lihat `references/dtp-pmk105.md`.
+
 ## Cara uji
 
 - OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech `komunitech` → `claude-sonnet-5` (sama dengan bot member).

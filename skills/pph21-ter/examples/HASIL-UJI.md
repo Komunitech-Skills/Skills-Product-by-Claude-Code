@@ -44,3 +44,11 @@ Audit keamanan: hanya library standar; tidak ada jaringan, `subprocess` hanya di
 
 ## Status
 **LULUS** (skor 9).
+
+## Riwayat revisi 1.0.5 (2026-10-05) — menunggu uji ulang independen; PERLU REVIEW konsultan pajak
+- Pemicu: penilai independen Telegram gelombang 7 (`koordinasi/telegram-gelombang-7-2026-10-05.md`, cacat no. 1): uang diterima pegawai DTP ditulis gaji + DTP (Rp 6.045.000).
+- Pembuat membaca ulang teks PMK 105/2025: Pasal 2 ayat 1 ("wajib dipotong"), Pasal 5 ayat 1 ("harus dibayarkan secara tunai"), ayat 5 ("telah dipotong dan diberikan insentif"), Pasal 6 ayat 6 ("wajib menyetorkan PPh 21 yang telah dipotong" bila insentif gugur), Lampiran B (Tuan A: 8.000.000 − 120.000 + DTP 120.000 = 8.000.000). Temuan **benar**.
+- Perubahan: `scripts/pph21.py` — `bulan`: PPh dipotong = PPh TER, DTP tunai = nilai sama, kunci baru `pph21_disetor_ke_negara` (Rp 0 bila DTP), diterima = bruto − premi − PPh + DTP − potongan; `setahun`: teks "tetap DIPOTONG" + baris setoran Rp 0 + kunci ringkasan `pph21_disetor_ke_negara`; `harian`: teks DTP diperjelas. SKILL.md langkah 3, format output, checklist; `references/dtp-pmk105.md` (baru), `references/regulasi.md` baris 20; README.
+- Angka: TK/0 Rp 6.000.000 DTP → dipotong Rp 45.000, DTP Rp 45.000, setoran Rp 0, **diterima Rp 6.000.000** (sebelumnya Rp 6.045.000); tanpa DTP Rp 5.955.000.
+- Tes: `scripts/test_pph21.py` diperbarui (+1 tes Lampiran B Tuan A), 42 tes OK.
+- Contoh `00-openclaw-sebelum-sesudah.md` diberi catatan koreksi (penilaiannya memakai acuan lama).
