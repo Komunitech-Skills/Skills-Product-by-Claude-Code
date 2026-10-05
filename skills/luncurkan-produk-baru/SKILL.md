@@ -1,6 +1,6 @@
 ---
 name: luncurkan-produk-baru
-description: Menyusun rencana peluncuran produk baru UMKM Indonesia (makanan, fashion, kriya, jasa) lengkap dengan jadwal bertanggal T-30 sampai T+30, teaser, daftar tunggu WA/Google Form, soft launch, grand launch, kanal (IG, TikTok, marketplace, grup WA, bazar, KOL mikro), runbook hari-H, kesiapan stok, aturan promo, ukuran hasil, dan pengingat label halal/BPOM/PIRT. Pakai saat pengguna bilang "mau luncurkan produk baru", "launching", "soft launch", "pre-order", "jadwal peluncuran", "product launch plan", "go-to-market" untuk produk usaha.
+description: Menyusun rencana peluncuran produk baru UMKM Indonesia (makanan, fashion, kriya, jasa) lengkap dengan jadwal bertanggal T-30 sampai T+30, teaser, daftar tunggu WA/Google Form, soft launch, grand launch, kanal (IG, TikTok, marketplace, grup WA, bazar, KOL mikro), runbook hari-H, kesiapan stok, aturan promo, ukuran hasil, dan pengingat label halal/BPOM/PIRT. Kerjakan dulu dengan asumsi default lalu tanya 1-3 hal singkat di akhir; untuk produk wajib izin edar yang izinnya belum terbit, peringatan tegas + dasar aturan + rencana (jual ditunda, hanya daftar tunggu tanpa uang) diberikan dalam balasan yang sama. Pakai saat pengguna bilang "mau luncurkan produk baru", "launching", "soft launch", "pre-order", "jadwal peluncuran", "product launch plan", "go-to-market" untuk produk usaha.
 ---
 
 # Luncurkan Produk Baru
@@ -21,17 +21,22 @@ Mengubah "saya mau launching produk" menjadi **rencana peluncuran satu paket yan
 - Peluncuran perangkat lunak/aplikasi/startup (Product Hunt dst.): di luar cakupan.
 - Butuh keputusan hukum/izin: skill ini hanya pengingat (lihat `references/legalitas-label.md`).
 
-## Input (tanyakan SEKALI, dalam satu pesan)
+## Aturan utama: kerjakan dulu, tanya di akhir
+Jika pengguna sudah menyebut produk dan (perkiraan) tanggal, **jangan membalas hanya dengan daftar pertanyaan**. Dalam balasan yang SAMA berikan: (1) peringatan izin edar tegas + dasar aturan bila relevan, (2) rencana peluncuran yang langsung bisa dipakai memakai default (sebut asumsinya di awal), (3) paling banyak 1-3 pertanyaan singkat di akhir untuk menyempurnakan (harga, kanal & jumlah kontak, perkiraan tanggal izin terbit). Jangan menahan rencana sampai pertanyaan dijawab. Bertanya-saja baru boleh bila produknya sendiri tidak diketahui. Ini berlaku juga di chat pendek (Telegram/WA): ringkas, tanpa menyuruh membuka file.
+
+## Input (default dipakai bila belum dijawab; tanya maks. 1-3 hal di akhir balasan)
 Wajib: (1) produk & harga normal, (2) tanggal peluncuran yang diinginkan (atau "secepatnya"), (3) jenis: makanan/minuman, kosmetik, jasa, atau lain, **dan apakah izin edarnya sudah terbit** (notifikasi BPOM untuk kosmetik; PIRT/BPOM MD untuk pangan olahan; izin edar obat/suplemen/alat kesehatan), (4) kanal yang sudah dimiliki (jumlah kontak WA, pengikut IG/TikTok, toko marketplace), (5) anggaran promo+iklan.
 Opsional: stok awal & kapan barang tiba, foto/aset yang ada, target pesanan.
-Bila pengguna ingin cepat: pakai default (jenis "lain", anggaran Rp 0 = hanya kanal gratis, tanggal = 35 hari dari hari ini) dan **sebutkan asumsinya** di awal jawaban.
+Bila belum dijawab atau pengguna ingin cepat: pakai default (jenis sesuai produk, anggaran Rp 0 = hanya kanal gratis, kanal = daftar tunggu WA + IG + marketplace yang disebut, tanggal = 35 hari dari hari ini; izin belum terbit dan perkiraan terbit tidak diketahui = anggap terbit 30 hari dari hari ini dan tanggal jual paling cepat 7 hari sesudahnya) dan **sebutkan asumsinya** di awal jawaban.
 
 ## Langkah kerja
 
 > **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 
 ### 0. Gerbang izin edar (WAJIB, sebelum yang lain)
-Untuk produk yang wajib izin edar (kosmetik, pangan olahan, obat/suplemen, alat kesehatan) dan izin **belum terbit**: **penjualan, pre-order, DP, dan promosi yang menerima pesanan DITUNDA sampai izin terbit**. Tidak ada "soft launch" berbayar dan tidak ada "launching tetap jalan tanpa klaim izin". T0 digeser ke minimal 7 hari **setelah** izin terbit (jalankan script dengan `--izin belum --izin-terbit TTTT-BB-HH`). Yang boleh sebelum izin: riset pasar, daftar tunggu **tanpa pembayaran** (tulis jelas "belum menerima pesanan dan belum menerima uang"), persiapan konten/foto/label. Teaser tanpa klaim khasiat boleh. Dasar umum: aturan izin edar BPOM/Kemenkes dan UU Kesehatan; jangan menyebut nomor peraturan dari ingatan, dan arahkan pengguna cek ke BPOM/Dinkes setempat. Detail: `references/legalitas-label.md`. Bila status izin tidak diketahui, tanyakan; jangan menganggap sudah ada.
+Untuk produk yang wajib izin edar (kosmetik, pangan olahan, obat/suplemen, alat kesehatan) dan izin **belum terbit**: **penjualan, pre-order, DP, dan promosi yang menerima pesanan DITUNDA sampai izin terbit**. Tidak ada "soft launch" berbayar dan tidak ada "launching tetap jalan tanpa klaim izin". T0 digeser ke minimal 7 hari **setelah** izin terbit (jalankan script dengan `--izin belum --izin-terbit TTTT-BB-HH`). Yang boleh sebelum izin: riset pasar, daftar tunggu **tanpa pembayaran** (tulis jelas "belum menerima pesanan dan belum menerima uang"), persiapan konten/foto/label. Teaser tanpa klaim khasiat boleh. Dasar umum: aturan izin edar BPOM/Kemenkes dan UU Kesehatan; jangan menyebut nomor peraturan dari ingatan, dan arahkan pengguna cek ke BPOM/Dinkes setempat. Detail: `references/legalitas-label.md`. Bila status izin tidak diketahui, jangan menganggap sudah ada: pakai asumsi belum terbit, kerjakan rencananya, dan tanyakan di akhir.
+
+**Isi peringatan (tulis di awal balasan, tegas, bukan basa-basi):** produk kosmetik wajib sudah ber-notifikasi BPOM sebelum diedarkan; **menjual, menerima pre-order/DP, atau mempromosikan untuk pesanan sebelum nomor notifikasi terbit tidak diperbolehkan**, termasuk lewat Shopee/IG. Dasar (lihat `references/legalitas-label.md`): UU 17/2023 tentang Kesehatan, Peraturan BPOM 12/2023 (pengawasan pembuatan & peredaran kosmetika), Peraturan BPOM 18/2024 (penandaan, promosi, iklan kosmetika). Risikonya: produk/listing ditindak (takedown, penarikan) dan penjual dapat dikenai sanksi. Cek di pom.go.id / cekbpom.pom.go.id. Format balasan pertama untuk kasus ini: peringatan -> asumsi -> rencana (tanggal jual bergantung izin; tanggal pengguna, mis. 12 Okt, dijadikan hari teaser/daftar tunggu) -> boleh sekarang (waitlist tanpa uang, edukasi, konten tanpa klaim khasiat/"pemutih", persiapan listing yang belum aktif) -> linimasa ringkas -> 1-3 pertanyaan.
 
 ### 1. Gerbang kesiapan (2 menit)
 Cek tiga hal di `references/runbook-hari-h.md` bagian A: satu janji jelas, sudah dicoba orang luar, kemasan/label utuh. Jika belum (dan produk tidak wajib izin edar, atau izinnya sudah terbit): sarankan soft launch kecil, bukan menunda tanpa batas dan bukan menambah fitur terus.
@@ -97,7 +102,7 @@ Ringkas: jenis pangan; kanal terpilih WA daftar tunggu + IG + marketplace; jadwa
 ## Batasan & penanganan error
 - Tanggal salah format / tidak ada: script keluar dengan pesan "Galat" dan kode 2; minta pengguna menulis ulang TTTT-BB-HH.
 - Tanggal peluncuran kurang dari 30 hari: jangan menolak; tandai tugas LEWAT, padatkan (gabungkan teaser, soft launch minimal 5 pembeli, **kecuali izin edar belum terbit: tidak ada penjualan sama sekali**), dan katakan risiko terpangkasnya.
-- Angka tidak diberikan: tanya sekali; bila tetap tidak ada, pakai patokan dan tandai "asumsi, ganti dengan angka nyata".
+- Angka tidak diberikan: pakai patokan dan tandai "asumsi, ganti dengan angka nyata".
 - Tidak mengirim pesan massal, tidak menjanjikan hasil penjualan, tidak membuat ulasan/testimoni palsu, tidak menyatakan produk halal/berizin/aman: hanya mengingatkan pengecekan.
 - Di luar cakupan (validasi ide, pajak usaha, izin hukum, aplikasi/SaaS): arahkan ke skill lain atau profesional.
 - Bukan nasihat hukum atau keuangan. Angka perkiraan (15-25%, x1,3) adalah patokan awal dan bukan jaminan.

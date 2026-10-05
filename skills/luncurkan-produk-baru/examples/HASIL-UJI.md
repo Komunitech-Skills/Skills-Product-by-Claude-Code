@@ -63,3 +63,6 @@ Setelah perbaikan B1-B3, uji ulang oleh penguji independen.
 
 ## Catatan revisi (v1.0.1, 2026-09-29)
 Perbaikan butir 1-9 dari bagian 6 sudah diterapkan: soft launch dikirim T-10 baru ditanya T-5 (contoh 02 diselaraskan); `--hari-ini` bawaan hari ini; kosmetik mendapat label T-28 dan foto listing T-3; peringatan tahun libur mencakup seluruh T-30..T+30; rumus stok = (pre-order soft launch + minggu 1) x 1,3; peringatan Lebaran/cuti bersama; label T per baris di md; `--jenis jasa`; label "PERLU REVIEW" 2027 dicabut. Tes regresi bertambah (19 tes OK). Butir 10 (opsional) belum. Belum diuji ulang oleh penguji independen.
+
+## Catatan revisi (v1.0.5, 2026-10-05)
+Temuan pra-cek Telegram (skor konteks 7,0): pesan lengkap tetapi izin BPOM masih proses menghasilkan 5 pertanyaan tanpa rencana. Perbaikan: aturan "kerjakan dulu, tanya di akhir" di SKILL.md dan description; peringatan tegas + dasar aturan kosmetik (UU 17/2023, PerBPOM 12/2023, PerBPOM 18/2024, UU 8/1999; PERLU REVIEW); contoh 06. Status: **menunggu uji ulang independen.**
