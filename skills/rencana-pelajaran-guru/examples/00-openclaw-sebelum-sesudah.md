@@ -672,3 +672,24 @@ Durasi 248 dtk, 6.438 karakter, skor **8**. Modul ringkas, LKPD bersih (6 soal),
 
 **Rata-rata percobaan selesai: 8,0** (SEBELUM 5,75, selisih +2,25); bila timeout dihitung gagal, hanya 2 dari 4 percobaan berhasil. Percobaan skenario 1 yang lulus: **1 dari 3** (syarat >= 2/3 tidak terpenuhi). Tanpa salah fakta/angka.
 **VERDIK: BELUM** (timeout 2/3 pada skenario 1; kualitas balasan yang selesai sudah baik, kemacetan tersisa di model/router, bukan isi). Catatan: format ringkas memperpendek balasan (13 ribu -> 6 ribu karakter) dan perbaikan klaim lampiran berhasil, namun giliran akhir masih rentan idle timeout di skenario 1 (permintaan CP persis memicu web_fetch/tool call tambahan).
+
+
+# Uji ulang v1.0.9 (konteks Telegram) — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5, hanya sisi SESUDAH (`uji-tg.sh` = konteks kanal Telegram, tidak mengirim apa pun), home bersih per percobaan, berurutan. SEBELUM tetap **5,75**. Penilaian hanya dari isi balasan chat. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-109-*.txt`. Perbaikan 1.0.9: dokumen CP tidak diambil lewat web.
+
+| Percobaan | Durasi | Timeout | Tool berhasil | Karakter | Skor |
+|---|---|---|---|---|---|
+| S1-A (modul SMP + CP persis) | 237 dtk | tidak | read, ls, exec, write | 4.947 | 8 |
+| S1-B | 229 dtk | tidak | read, exec, write | 6.518 | 7 |
+| S1-C | 208 dtk | tidak | read, ls, exec, write, edit | 5.563 | 8 |
+| S2 (RPP Mat SD kelas 4 pecahan senilai) | 280 dtk | tidak | read, exec | 4.881 | 9 |
+
+**Tidak ada web_fetch/web_search** pada keempat percobaan; tidak ada timeout (v1.0.8: 2 dari 3 timeout di S1). Durasi turun dari 461-900 dtk menjadi 208-280 dtk.
+
+**Isi (cek independen):** semua balasan berisi modul ringkas, LKPD tanpa jawaban (hanya "Jawab: ____"), kunci guru terpisah, rubrik utuh di chat. CP tidak dikarang: rujukan BSKAP 046/H/KR/2025 + langkah mencari di guru.kemendikdasmen.go.id + kolom "[tempel]" (S1-C dan S2 menambah "ringkasan umum (cek CP resmi)"). Bunyi CP persis tidak diberikan (sengaja; dinyatakan jujur). Tidak ada klaim "lampirkan/terkirim"; baris "File Word: /tmp/..." ditulis pada keempatnya setelah tool write/exec (file ada di sandbox uji, tidak bisa diperiksa ulang di luar sandbox; jalur /tmp tidak bisa diambil guru di Telegram, cacat kecil yang sama dengan 1.0.8).
+**Angka (dihitung ulang):** S1-A 10+15+10+15+20+10 = 80 = 2x40; rubrik 4x4 = 16; skor 1-5 maks 10. S1-B 10+(5+10+10+15+15+5=60)+10 = 80; rubrik 3x4 = 12. S1-C 10+(10+15+10+10+15=60)+10 = 80; skor 10+12+2 = 24, kunci 4+3+1+2 = 10. S2 10+10+15+15+10+10 = 70 = 2x35; rubrik 6x2 = 12; kunci benar (1/3=2/6=3/9; 2/5=4/10=6/15; 6/8=3/4; 2/4=4/8). Tidak ada salah angka/fakta.
+**Catatan nilai:** S1-B dipotong 1 poin: sistem nilai tidak seragam (soal 1-4 & 6 "benar/jumlah soal" vs skor kunci) dan klaim "lampiran BSKAP ±1.700 halaman" tak terverifikasi (tidak mempengaruhi kelulusan).
+
+**Rata-rata SESUDAH: (8+7+8+9)/4 = 8,0** (SEBELUM 5,75, selisih +2,25). Percobaan skenario 1 yang lulus: **3 dari 3**.
+**VERDIK: LULUS** (rata-rata >= 8, >= 2/3 skenario 1 lulus, tanpa salah fakta/angka, tanpa timeout, tanpa web_fetch CP). Pembeda satu kalimat: guru dapat modul + LKPD bersih + kunci + rubrik siap cetak dalam ~4 menit tanpa CP karangan, dengan jalur ambil CP resmi dan kolom tempel.
