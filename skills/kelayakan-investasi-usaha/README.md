@@ -4,7 +4,7 @@
 
 ## Manfaat
 - ✅ Jawaban tegas: **layak / kurang layak / tidak layak**, lengkap dengan alasan dan syarat agar tetap layak
-- ✅ Tahu **kapan balik modal** (biasa dan memperhitungkan nilai waktu uang), NPV, IRR, dan omzet minimal per bulan
+- ✅ Tahu **kapan balik modal** (biasa dan memperhitungkan nilai waktu uang), NPV pada patokan 12% **dan uji ketat 20%**, IRR, dan omzet minimal per bulan
 - ✅ Uji "kalau meleset": omzet turun 10–20% atau biaya naik 10% — dan **batas aman** sebelum rencana jadi rugi
 - ✅ Cocok untuk investasi penghematan juga (beli mobil box vs sewa ekspedisi, beli mesin vs maklon)
 - ✅ Pajak (PPh final 0,5% atau PPh badan) dan nilai jual kembali alat bisa ikut dihitung; semua angka dihitung, bukan dikira
@@ -48,7 +48,11 @@ Tidak. Hasil tergantung perkiraan omzet dan biaya yang kamu masukkan. Karena itu
 Itu asumsi awal: bunga KUR 6% efektif ditambah tambahan risiko usaha 6%. Kamu bisa menggantinya dengan bunga pinjamanmu sendiri atau hasil minimal yang kamu inginkan, dan skill akan menghitung ulang.
 
 **Bisa untuk menilai saham, kripto, atau reksa dana?**
-Tidak. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, renovasi). Untuk produk investasi, konsultasikan ke penasihat keuangan berizin OJK.
+Tidak. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, renovasi). Kalau kamu bertanya "pasti untung berapa kalau di kripto?", AI akan menolak janji untung dengan sopan, menyarankan penasihat keuangan berizin OJK, lalu menawarkan hitungan rencana usahamu.
+
+## Catatan versi
+- **1.0.1 (2026-10-05):** pertanyaan kripto/trading/deposito/"pasti untung" kini tetap memakai skill dengan pola penolakan tetap + arahan ke hitungan usaha; `--nilai-sisa` dan `--nilai-residu` disatukan (hasil identik, omzet impas konsisten); opsi `--jenis penghematan`/`pemasukan` untuk label hasil; NPV uji ketat 20% selalu ditampilkan; rujukan bunga KUR disamakan (Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44); disclaimer wajib di semua balasan.
+- **1.0.0 (2026-10-05):** rilis awal.
 
 ---
 Sebagian rumus dan kasus uji diturunkan dari numpy-financial (BSD-3-Clause, © NumPy Developers) — lihat `ATTRIBUTION.md`. Komunitech tidak berafiliasi dengan NumPy.

@@ -26,8 +26,12 @@ import sys
 from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 DISKONTO_DEFAULT = Decimal("12")
+DISKONTO_KETAT = Decimal("20")
+LABEL_MANFAAT = {"omzet": "Omzet", "penghematan": "Penghematan", "pemasukan": "Pemasukan tambahan"}
+ASAL_DISKONTO = ("bunga KUR Mikro/Kecil sektor produksi 6% efektif/tahun (acuan Permenko Perekonomian "
+                 "No. 1 Tahun 2026 Pasal 37 & 44; konfirmasi ke bank penyalur) + tambahan risiko usaha 6%")
 SENS_DEFAULT = "omzet-10;omzet-20;biaya+10"
 LABEL_AGENT = "[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, tanpa menyebut script/file/proses]"
 DISCLAIMER = ("Bukan nasihat keuangan. Hasil sepenuhnya tergantung asumsi (omzet, biaya, umur, tingkat "
@@ -376,10 +380,12 @@ def bep(p):
 def parse_sens(teks, mode):
     hasil = []
     for bagian in pecah_daftar(teks or SENS_DEFAULT):
-        m = re.fullmatch(r"\s*(omzet|biaya|arus|arus-kas)\s*([+-])\s*(\d+(?:[.,]\d+)?)\s*%?\s*", bagian.lower())
+        m = re.fullmatch(r"\s*(omzet|penghematan|pemasukan|biaya|arus|arus-kas)\s*([+-])\s*(\d+(?:[.,]\d+)?)\s*%?\s*", bagian.lower())
         if not m:
-            raise Galat(f"skenario sensitivitas '{bagian}' tidak terbaca", "Contoh: \"omzet-10;omzet-20;biaya+10\"")
+            raise Galat(f"skenario sensitivitas '{bagian}' tidak terbaca", "Contoh: \"omzet-10;omzet-20;biaya+10\" (omzet = penghematan/pemasukan)")
         jenis = "arus" if m.group(1).startswith("arus") else m.group(1)
+        if jenis in ("penghematan", "pemasukan"):
+            jenis = "omzet"
         besar = Decimal(m.group(3).replace(",", ".")) * (1 if m.group(2) == "+" else -1)
         if mode == "arus" and jenis == "omzet":
             jenis = "arus"
@@ -405,7 +411,9 @@ def siapkan(a):
     n_arg = a.tahun
     if n_arg is not None and not 1 <= n_arg <= 30:
         raise Galat("--tahun harus 1 sampai 30", "Masa proyek dalam tahun, mis. 5.")
-    p = {"investasi": inv, "pajak": Decimal(0), "dasar_pajak": a.dasar_pajak}
+    p = {"investasi": inv, "pajak": Decimal(0), "dasar_pajak": a.dasar_pajak, "jenis": a.jenis}
+    if a.arus_kas and a.jenis != "omzet":
+        raise Galat("--jenis hanya untuk --omzet", "Dengan --arus-kas, angka sudah berupa uang bersih per tahun.")
 
     if a.arus_kas:
         p["mode"] = "arus"
@@ -417,7 +425,8 @@ def siapkan(a):
         p["arus"], p["tahun"] = arus, len(arus)
     else:
         p["mode"] = "omzet"
-        omzet, c = daftar_rupiah(a.omzet, "omzet", None)
+        lbl = LABEL_MANFAAT[a.jenis].lower()
+        omzet, c = daftar_rupiah(a.omzet, lbl, None)
         catatan += c
         n = n_arg or (len(omzet) if len(omzet) > 1 else 5)
         if n_arg is None and len(omzet) == 1:
@@ -426,7 +435,7 @@ def siapkan(a):
             naik = parse_persen(a.kenaikan_omzet, "kenaikan omzet")[0] if a.kenaikan_omzet else Decimal(0)
             omzet = [omzet[0] * (1 + naik / 100) ** t for t in range(n)]
             if naik:
-                asumsi.append(f"Omzet naik {pct(naik, 1)} per tahun.")
+                asumsi.append(f"{lbl.capitalize()} naik {pct(naik, 1)} per tahun.")
         if len(omzet) != n:
             raise Galat(f"jumlah omzet ({len(omzet)}) tidak sama dengan --tahun ({n})",
                         "Isi satu angka omzet atau satu angka per tahun.")
@@ -458,7 +467,7 @@ def siapkan(a):
         if not 0 <= v < 1:
             raise Galat("biaya variabel harus 0% sampai di bawah 100% omzet", "Periksa --hpp-persen.")
         if not a.biaya_variabel and not a.hpp_persen and a.biaya:
-            asumsi.append("Semua biaya dianggap tetap (tidak ikut turun saat omzet turun) - perkiraan hati-hati.")
+            asumsi.append(f"Semua biaya dianggap tetap (tidak ikut turun saat {lbl} turun) - perkiraan hati-hati.")
         p.update({"omzet": omzet, "tetap": tetap, "v": v, "tahun": n})
 
     n = p["tahun"]
@@ -466,9 +475,8 @@ def siapkan(a):
     if a.diskonto is None:
         d = DISKONTO_DEFAULT
         p["sumber_diskonto"] = "default"
-        asumsi.append("Tingkat diskonto 12%/tahun (default): bunga KUR 6% efektif (acuan Permenko 1/2026, "
-                      "sektor produksi) + tambahan risiko usaha 6%. Ganti dengan bunga pinjaman Anda sendiri "
-                      "atau hasil minimal yang Anda harapkan.")
+        asumsi.append(f"Tingkat diskonto 12%/tahun (default): {ASAL_DISKONTO}. Ganti dengan bunga pinjaman "
+                      "Anda sendiri atau hasil minimal yang Anda harapkan.")
     else:
         d, per = parse_persen(a.diskonto, "diskonto")
         p["sumber_diskonto"] = "pengguna"
@@ -491,6 +499,9 @@ def siapkan(a):
         if pj > 0 and p["mode"] == "arus" and a.dasar_pajak == "omzet":
             raise Galat("pajak dari omzet butuh angka omzet",
                         "Pakai --omzet/--biaya, atau --dasar-pajak laba bila pajaknya dari laba.")
+        if pj > 0 and a.jenis == "penghematan" and a.dasar_pajak == "omzet":
+            raise Galat("pajak dari omzet tidak berlaku untuk penghematan (penghematan bukan omzet)",
+                        "Hapus --pajak-persen, atau pakai --dasar-pajak laba bila usaha membayar PPh dari laba.")
         p["pajak"] = pj
         if pj > 0:
             asumsi.append(f"Pajak {pct(pj, 1)} dari {'omzet (seperti PPh final UMKM)' if a.dasar_pajak == 'omzet' else 'laba setelah penyusutan (seperti PPh badan)'}; tanpa kompensasi rugi.")
@@ -501,26 +512,30 @@ def siapkan(a):
     umur = a.umur_ekonomis if a.umur_ekonomis is not None else n
     if not 1 <= umur <= 50:
         raise Galat("umur ekonomis harus 1 sampai 50 tahun", "Mis. mesin 5, mobil 8.")
-    residu = parse_rupiah(a.nilai_residu, "nilai residu")[0] if a.nilai_residu else Decimal(0)
-    if residu < 0 or residu > inv:
-        raise Galat("nilai residu harus 0 sampai sebesar investasi", "Perkiraan harga jual di akhir umur ekonomis.")
-    dep_th = (inv - residu) / umur
-    p["penyusutan"] = [dep_th if t <= umur else Decimal(0) for t in range(1, n + 1)]
-    nilai_buku = inv - dep_th * min(n, umur)
+    # Satu angka nilai sisa (--nilai-sisa = --nilai-residu): perkiraan harga jual kembali di akhir masa proyek.
+    # Bila diisi, penyusutan garis lurus = (investasi - nilai sisa) / masa pakai dalam proyek, sehingga
+    # nilai buku di akhir = nilai sisa. Bila kosong: residu 0, nilai sisa = nilai buku garis lurus.
+    pakai = min(n, umur)
     if a.nilai_sisa is not None:
         ns = parse_rupiah(a.nilai_sisa, "nilai sisa")[0]
         if ns < 0:
             raise Galat("nilai sisa tidak boleh negatif", "Isi 0 bila tidak ada nilai jual kembali.")
         if ns > inv:
-            peringatan.append("Nilai sisa lebih besar dari investasi - pastikan masuk akal.")
+            peringatan.append("Nilai sisa lebih besar dari investasi - pastikan masuk akal (penyusutan dianggap 0).")
+        residu = min(ns, inv)
+        dep_th = (inv - residu) / pakai
         p["nilai_sisa"] = ns
         p["sumber_nilai_sisa"] = "pengguna"
-        asumsi.append(f"Nilai sisa di akhir tahun ke-{n}: {rp(bulat(ns))} (perkiraan pengguna).")
+        asumsi.append(f"Nilai sisa (perkiraan harga jual kembali) di akhir tahun ke-{n}: {rp(bulat(ns))}; "
+                      f"penyusutan rata {rp(bulat(dep_th))}/tahun selama {pakai} tahun.")
     else:
-        p["nilai_sisa"] = nilai_buku
+        residu = Decimal(0)
+        dep_th = inv / umur
+        p["nilai_sisa"] = inv - dep_th * pakai
         p["sumber_nilai_sisa"] = "garis lurus"
-        asumsi.append(f"Nilai sisa = nilai buku garis lurus (umur ekonomis {umur} tahun, nilai residu "
-                      f"{rp(bulat(residu))}): {rp(bulat(nilai_buku))} di akhir tahun ke-{n}.")
+        asumsi.append(f"Nilai sisa = nilai buku garis lurus (umur ekonomis {umur} tahun, nilai akhir Rp0): "
+                      f"{rp(bulat(p['nilai_sisa']))} di akhir tahun ke-{n}.")
+    p["penyusutan"] = [dep_th if t <= pakai else Decimal(0) for t in range(1, n + 1)]
     if n > umur:
         peringatan.append(f"Masa proyek ({n} th) lebih lama dari umur ekonomis ({umur} th): alat mungkin perlu diganti.")
     if n > 10:
@@ -544,8 +559,7 @@ def cari_minimal(a):
         asumsi.append("Masa proyek 5 tahun (default).")
     if a.diskonto is None:
         d = DISKONTO_DEFAULT
-        asumsi.append("Tingkat diskonto 12%/tahun (default): bunga KUR 6% efektif (acuan Permenko 1/2026, "
-                      "sektor produksi) + tambahan risiko usaha 6%. Bisa diubah.")
+        asumsi.append(f"Tingkat diskonto 12%/tahun (default): {ASAL_DISKONTO}. Bisa diubah.")
     else:
         d, per = parse_persen(a.diskonto, "diskonto")
         d = d * 12 if per == "bulan" else d
@@ -583,6 +597,7 @@ def jalankan(a):
     if a.cari_minimal:
         return cari_minimal(a)
     p, catatan, peringatan, asumsi = siapkan(a)
+    lbl = LABEL_MANFAAT[p["jenis"]]
     baris = bangun(p)
     h = hitung(p, baris)
     npv_dec = h.pop("_npv_dec")
@@ -599,6 +614,15 @@ def jalankan(a):
         peringatan.append("IRR punya lebih dari satu jawaban (arus kas berganti tanda beberapa kali); "
                           "pakai NPV sebagai patokan utama.")
 
+    # NPV uji ketat 20% (informasi; tidak mengubah status)
+    if p["diskonto"] < DISKONTO_KETAT:
+        nilai = [-p["investasi"]] + [Decimal(b["arus_kas_bersih"]) for b in baris]
+        h["npv_uji_ketat"] = bulat(npv(DISKONTO_KETAT / 100, nilai))
+        h["diskonto_uji_ketat_persen"] = float(DISKONTO_KETAT)
+    else:
+        h["npv_uji_ketat"] = None
+        h["diskonto_uji_ketat_persen"] = None
+
     # batas aman
     if p["mode"] == "omzet":
         f_turun = cari_faktor(lambda x: npv_skenario(p, f_omzet=Decimal(x)), Decimal(0), Decimal(1)) if npv_dec > 0 else None
@@ -609,7 +633,7 @@ def jalankan(a):
         f_naik_b = None
         f_perlu = cari_faktor(lambda x: npv_skenario(p, f_arus=Decimal(x)), Decimal(1), Decimal(20)) if npv_dec < 0 else None
     h["batas_penurunan_persen"] = None if f_turun is None else float(((1 - f_turun) * 100).quantize(Decimal("0.1")))
-    h["batas_penurunan_dasar"] = "omzet" if p["mode"] == "omzet" else "arus kas"
+    h["batas_penurunan_dasar"] = lbl.lower() if p["mode"] == "omzet" else "arus kas"
     h["batas_kenaikan_biaya_persen"] = None if f_naik_b is None else float(((f_naik_b - 1) * 100).quantize(Decimal("0.1")))
     h["kenaikan_diperlukan_persen"] = None if f_perlu is None else float(((f_perlu - 1) * 100).quantize(Decimal("0.1")))
     h["penyusutan_per_tahun"] = bulat(p["penyusutan_per_tahun"])
@@ -625,7 +649,7 @@ def jalankan(a):
         bs = bangun(p, **kw)
         hs = hitung(p, bs)
         hs.pop("_npv_dec")
-        label = {"omzet": "Omzet", "biaya": "Biaya", "arus": "Arus kas"}[jenis]
+        label = {"omzet": lbl, "biaya": "Biaya", "arus": "Arus kas"}[jenis]
         angka = format(besar, "f")
         angka = angka.rstrip("0").rstrip(".") if "." in angka else angka
         sens.append({"skenario": f"{label} {'+' if besar > 0 else ''}{angka.replace('.', ',')}%",
@@ -654,7 +678,7 @@ def jalankan(a):
         if h["kenaikan_diperlukan_persen"] is not None:
             syarat.append(f"{h['batas_penurunan_dasar'].capitalize()} perlu sekitar {pct(h['kenaikan_diperlukan_persen'], 1)} lebih tinggi dari perkiraan agar impas (NPV = 0).")
         if h.get("bep_ekonomi_omzet_per_bulan"):
-            syarat.append(f"Omzet minimal agar layak: sekitar {rp(h['bep_ekonomi_omzet_per_bulan'])}/bulan (bila omzet sama tiap tahun).")
+            syarat.append(f"{lbl} minimal agar layak: sekitar {rp(h['bep_ekonomi_omzet_per_bulan'])}/bulan (bila sama tiap tahun).")
         syarat.append("Atau tekan nilai investasi (beli bekas/sewa dulu) atau biaya tetap.")
     else:
         rapuh = [s for s in kritis if not s["tetap_layak"]]
@@ -688,7 +712,7 @@ def jalankan(a):
         if h["batas_kenaikan_biaya_persen"] is not None:
             syarat.append(f"Biaya tidak naik lebih dari {pct(h['batas_kenaikan_biaya_persen'], 1)}.")
         if p["mode"] == "omzet" and h.get("bep_ekonomi_omzet_per_bulan"):
-            syarat.append(f"Omzet minimal sekitar {rp(h['bep_ekonomi_omzet_per_bulan'])}/bulan (bila omzet sama tiap tahun).")
+            syarat.append(f"{lbl} minimal sekitar {rp(h['bep_ekonomi_omzet_per_bulan'])}/bulan (bila sama tiap tahun).")
 
     hasil = {
         "versi": VERSI,
@@ -699,6 +723,8 @@ def jalankan(a):
             "pajak_persen": float(p["pajak"]), "dasar_pajak": p["dasar_pajak"] if p["pajak"] > 0 else None,
             "umur_ekonomis_tahun": p["umur"], "nilai_residu": bulat(p["residu"]),
             "sumber_nilai_sisa": p["sumber_nilai_sisa"],
+            "jenis_manfaat": p["jenis"] if p["mode"] == "omzet" else None,
+            "label_manfaat": lbl if p["mode"] == "omzet" else None,
             "biaya_variabel_persen_omzet": float((p["v"] * 100).quantize(Decimal("0.01"))) if p["mode"] == "omzet" else None,
         },
         "tabel_arus_kas": baris,
@@ -720,13 +746,19 @@ def ringkasan(x):
          f"Investasi {rp(i['investasi'])}, masa {i['masa_proyek_tahun']} tahun, diskonto {pct(i['diskonto_persen'], 1)} ({i['sumber_diskonto']}).",
          f"KESIMPULAN: {k['status']}"]
     L += ["  - " + s for s in k["alasan"]]
-    L.append(f"NPV {rp(h['npv'])} | IRR {'tidak ada' if h['irr_persen'] is None else pct(h['irr_persen'])} | PI {str(h['pi']).replace('.', ',')}")
+    L.append(f"NPV {rp(h['npv'])} (diskonto {pct(i['diskonto_persen'], 1)}) | IRR {'tidak ada' if h['irr_persen'] is None else pct(h['irr_persen'])} | PI {str(h['pi']).replace('.', ',')}")
+    if h.get("npv_uji_ketat") is not None:
+        L.append(f"NPV uji ketat (diskonto {pct(h['diskonto_uji_ketat_persen'], 1)}): {rp(h['npv_uji_ketat'])} -> "
+                 f"{'tetap positif' if h['npv_uji_ketat'] >= 0 else 'negatif'}. Arti: bila hasil minimal yang diminta "
+                 f"dinaikkan ke 20%/tahun (bunga lebih mahal atau risiko lebih besar), rencana "
+                 f"{'masih menutup modal plus hasil itu' if h['npv_uji_ketat'] >= 0 else 'tidak lagi menutupnya'} (informasi, tidak mengubah kesimpulan).")
     L.append(f"Balik modal {h['payback_teks']} | terdiskonto {h['payback_diskonto_teks']}")
     if x["mode"] == "omzet":
+        lbl = i["label_manfaat"]
         if h.get("bep_akuntansi_omzet_per_tahun") is not None:
-            L.append(f"BEP omzet (laba = 0): {rp(h['bep_akuntansi_omzet_per_tahun'])}/tahun = {rp(h['bep_akuntansi_omzet_per_bulan'])}/bulan")
+            L.append(f"{lbl} impas (laba pembukuan = 0): {rp(h['bep_akuntansi_omzet_per_tahun'])}/tahun = {rp(h['bep_akuntansi_omzet_per_bulan'])}/bulan")
         if h.get("bep_ekonomi_omzet_per_tahun") is not None:
-            L.append(f"Omzet minimal agar layak (NPV = 0, omzet sama tiap tahun): {rp(h['bep_ekonomi_omzet_per_tahun'])}/tahun = {rp(h['bep_ekonomi_omzet_per_bulan'])}/bulan")
+            L.append(f"{lbl} minimal agar layak (NPV = 0, sama tiap tahun): {rp(h['bep_ekonomi_omzet_per_tahun'])}/tahun = {rp(h['bep_ekonomi_omzet_per_bulan'])}/bulan")
     L.append("Arus kas per tahun (arus kas bersih | kumulatif):")
     for b in x["tabel_arus_kas"]:
         extra = f" (termasuk nilai sisa {rp(b['nilai_sisa'])})" if b["nilai_sisa"] else ""
@@ -758,15 +790,19 @@ def main(argv=None):
     ap.add_argument("--kenaikan-biaya", help="Kenaikan biaya tetap per tahun dalam %% (default 0)")
     ap.add_argument("--tahun", type=int, help="Masa proyek (tahun). Default 5 untuk mode omzet")
     ap.add_argument("--diskonto", help="Tingkat diskonto %%/tahun (default 12)")
-    ap.add_argument("--nilai-sisa", help="Perkiraan nilai jual kembali di akhir masa proyek (mengalahkan hitungan garis lurus)")
+    ap.add_argument("--nilai-sisa", "--nilai-residu", dest="nilai_sisa",
+                    help="Perkiraan harga jual kembali di akhir masa proyek (dua nama opsi ini sama persis). "
+                         "Kosong = nilai buku garis lurus dengan nilai akhir Rp0")
     ap.add_argument("--umur-ekonomis", type=int, help="Umur ekonomis aset (tahun) untuk penyusutan garis lurus. Default = masa proyek")
-    ap.add_argument("--nilai-residu", help="Nilai aset di akhir umur ekonomis (default 0)")
     ap.add_argument("--pajak-persen", help="Pajak dalam %%: 0,5 (PPh final UMKM, dari omzet) atau 22 (PPh badan, dari laba)")
     ap.add_argument("--dasar-pajak", choices=["omzet", "laba"], default="omzet", help="Dasar pajak (default omzet)")
     ap.add_argument("--sensitivitas", nargs="?", const=SENS_DEFAULT, default=SENS_DEFAULT,
                     help="Skenario, default 'omzet-10;omzet-20;biaya+10'")
     ap.add_argument("--cari-minimal", action="store_true",
                     help="Belum ada data omzet/arus kas: hitung uang bersih minimal per bulan/tahun agar layak")
+    ap.add_argument("--jenis", choices=["omzet", "penghematan", "pemasukan"], default="omzet",
+                    help="Arti angka --omzet: omzet (default), penghematan (beli vs sewa/maklon), "
+                         "atau pemasukan (pemasukan tambahan, mis. sewa alat)")
     ap.add_argument("--format", choices=["json", "teks"], default="json")
     a = ap.parse_args(argv)
     try:

@@ -179,7 +179,10 @@ for nama, arg in (("investasi kosong", ["--arus-kas", "10jt"]),
                   ("omzet negatif", ["--investasi", "10jt", "--omzet", "-5jt"]),
                   ("hpp 100%", ["--investasi", "10jt", "--omzet", "50jt", "--hpp-persen", "100"]),
                   ("nilai sisa negatif", ["--investasi", "10jt", "--arus-kas", "5jt", "--nilai-sisa", "-1jt"]),
-                  ("residu > investasi", ["--investasi", "10jt", "--arus-kas", "5jt", "--nilai-residu", "20jt"]),
+                  ("nilai residu negatif (alias)", ["--investasi", "10jt", "--arus-kas", "5jt", "--nilai-residu", "-1jt"]),
+                  ("penghematan + pajak omzet", ["--investasi", "180jt", "--omzet", "6,5jt/bulan", "--biaya", "3jt/bulan",
+                                                 "--jenis", "penghematan", "--pajak-persen", "0,5"]),
+                  ("jenis dengan arus kas", ["--investasi", "10jt", "--arus-kas", "5jt", "--jenis", "penghematan"]),
                   ("daftar dipisah spasi", ["--investasi", "10jt", "--arus-kas", "5000000 6000000"]),
                   ("sensitivitas rusak", ["--investasi", "10jt", "--arus-kas", "5jt", "--sensitivitas", "turun banyak"])):
     k, h = jalankan(*arg)
@@ -210,6 +213,51 @@ cek("H4 cari minimal tanpa investasi -> kode 2", k == 2)
 
 k, h = jalankan("--investasi", "1jt", "--arus-kas", "50jt", "--tahun", "3")
 cek("H5 IRR sangat besar: LAYAK + catatan > 1000%", k == 0 and h["kesimpulan"]["status"] == "LAYAK" and "irr_catatan" in h["hasil"])
+
+# ---------------------------------------------------------------- N. nilai sisa = nilai residu (v1.0.1)
+dasar = ["--investasi", "45jt", "--omzet", "6jt/bulan", "--biaya", "2,5jt/bulan", "--tahun", "5"]
+k1, h1 = jalankan(*dasar, "--nilai-sisa", "5jt")
+k2, h2 = jalankan(*dasar, "--nilai-residu", "5jt")
+cek("N1 --nilai-sisa dan --nilai-residu: hasil identik", k1 == 0 and h1 == h2)
+cek("N2 omzet impas (30jt + (45jt-5jt)/5) / 12 = Rp3.166.667/bulan", h1["hasil"]["bep_akuntansi_omzet_per_bulan"] == 3_166_667)
+vals = [-45e6] + [42e6] * 4 + [47e6]
+cek("N3 NPV tetap = manual Rp109.237.735", h1["hasil"]["npv"] == round(npv_manual(0.12, vals)) == 109_237_735)
+k, h = jalankan("--investasi", "180jt", "--omzet", "6,5jt/bulan", "--biaya", "3jt/bulan", "--tahun", "5",
+                "--umur-ekonomis", "8", "--nilai-sisa", "90jt")
+cek("N4 umur 8 > masa 5 + nilai sisa: penyusutan (180-90)/5 = 18jt, nilai sisa 90jt",
+    h["hasil"]["penyusutan_per_tahun"] == 18_000_000 and h["hasil"]["nilai_sisa"] == 90_000_000)
+k, h = jalankan("--investasi", "10jt", "--arus-kas", "5jt", "--tahun", "3", "--nilai-residu", "20jt")
+cek("N5 nilai sisa > investasi: jalan + peringatan + penyusutan 0",
+    k == 0 and h["hasil"]["penyusutan_per_tahun"] == 0 and any("lebih besar" in x for x in h["peringatan"]))
+
+# ---------------------------------------------------------------- J. label penghematan/pemasukan (v1.0.1)
+mobil = ["--investasi", "180jt", "--omzet", "6,5jt/bulan", "--biaya", "3jt/bulan", "--tahun", "5", "--umur-ekonomis", "8"]
+k0, h0 = jalankan(*mobil)
+k1, h1 = jalankan(*mobil, "--jenis", "penghematan")
+cek("J1 jenis penghematan: angka sama persis dengan jenis omzet",
+    k1 == 0 and {**h1["hasil"], "batas_penurunan_dasar": 0} == {**h0["hasil"], "batas_penurunan_dasar": 0}
+    and h1["tabel_arus_kas"] == h0["tabel_arus_kas"] and h1["hasil"]["batas_penurunan_dasar"] == "penghematan")
+cek("J2 label sensitivitas 'Penghematan -10%'", [x["skenario"] for x in h1["sensitivitas"]][:2] == ["Penghematan -10%", "Penghematan -20%"])
+t = h1["ringkasan_untuk_agent"]
+cek("J3 ringkasan (selain disclaimer) tanpa kata omzet, ada 'Penghematan impas'", "omzet" not in t.lower().split("bukan nasihat keuangan")[0] and "Penghematan impas" in t)
+cek("J4 syarat memakai kata penghematan", any(x.startswith("Penghematan") for x in h1["kesimpulan"]["syarat"]))
+k, h = jalankan(*mobil, "--jenis", "penghematan", "--pajak-persen", "22", "--dasar-pajak", "laba")
+cek("J5 penghematan + pajak dari laba diizinkan", k == 0 and h["input"]["label_manfaat"] == "Penghematan")
+k, h = jalankan(*mobil, "--jenis", "pemasukan", "--sensitivitas", "pemasukan-15;biaya+5")
+cek("J6 jenis pemasukan: label 'Pemasukan tambahan -15%'", k == 0 and h["sensitivitas"][0]["skenario"] == "Pemasukan tambahan -15%")
+
+# ---------------------------------------------------------------- K. NPV uji ketat 20% & rujukan KUR (v1.0.1)
+k, h = jalankan(*dasar, "--nilai-sisa", "5jt", "--format", "json")
+cek("K1 NPV uji ketat 20% = manual", h["hasil"]["npv_uji_ketat"] == round(npv_manual(0.20, vals)))
+cek("K2 ringkasan memuat NPV 12% dan 20%", "diskonto 12,0%" in h["ringkasan_untuk_agent"] and "uji ketat (diskonto 20,0%)" in h["ringkasan_untuk_agent"])
+cek("K3 status tidak berubah karena uji ketat", h["kesimpulan"]["status"] == "LAYAK")
+k, h = jalankan(*dasar, "--diskonto", "25")
+cek("K4 diskonto >= 20%: uji ketat tidak ditampilkan", h["hasil"]["npv_uji_ketat"] is None and "uji ketat" not in h["ringkasan_untuk_agent"])
+k, h = jalankan(*dasar)
+cek("K5 rujukan bunga KUR = Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44",
+    any("Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44" in x for x in h["asumsi"]))
+k, h = jalankan("--investasi", "85jt", "--cari-minimal")
+cek("K6 cari minimal: rujukan sama + disclaimer", any("No. 1 Tahun 2026" in x for x in h["asumsi"]) and "Bukan nasihat keuangan" in h["ringkasan_untuk_agent"])
 
 print()
 print(f"{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'}")

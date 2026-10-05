@@ -14,14 +14,15 @@ Dibaca agent saat menjelaskan hasil ke pengguna awam. Pakai kalimat di kolom "Ba
 | PI (profitability index) | Tiap Rp1 modal kembali berapa (nilai hari ini). > 1 = baik | nilai kini arus kas tahun 1..n ÷ investasi |
 | Omzet impas (BEP akuntansi) | Omzet minimal agar tidak rugi di pembukuan (sudah termasuk penyusutan alat) | (biaya tetap + penyusutan) ÷ (1 − % biaya variabel − % pajak omzet) |
 | Omzet minimal agar layak (BEP ekonomi) | Omzet minimal agar NPV = 0, bila omzet sama tiap tahun | dicari script; memakai "biaya modal tahunan setara" = −PMT(r, n, investasi − nilai kini nilai sisa) |
-| Penyusutan garis lurus | Nilai alat turun sama rata tiap tahun | (investasi − nilai residu) ÷ umur ekonomis |
+| Penyusutan garis lurus | Nilai alat turun sama rata tiap tahun | (investasi − nilai sisa) ÷ masa pakai dalam proyek; tanpa perkiraan harga jual kembali: investasi ÷ umur ekonomis |
 | Nilai sisa | Perkiraan nilai alat di akhir masa hitung (bisa dijual) | investasi − penyusutan × tahun terpakai, atau perkiraan pengguna |
 | Batas aman | Seberapa jauh omzet boleh turun / biaya boleh naik sebelum NPV jadi negatif | dicari script |
 
 Cara menyebut di chat: "NPV Rp60 juta artinya, setelah modal kembali **dan** Anda mendapat hasil minimal 12% per tahun, masih ada kelebihan setara Rp60 juta uang hari ini."
 
 ## 2. Tingkat diskonto default 12%
-- Asal-usul: bunga KUR Mikro/Kecil sektor produksi **6% efektif per tahun** (Permenko Perekonomian 1/2026; lihat juga skill `pengajuan-kur`) ditambah **tambahan risiko usaha 6%** karena omzet rencana baru belum pasti.
+- Asal-usul: bunga KUR Mikro/Kecil sektor produksi **6% efektif per tahun** (Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44; konfirmasi ke bank penyalur; lihat juga skill `pengajuan-kur`) ditambah **tambahan risiko usaha 6%** karena omzet rencana baru belum pasti.
+- **Uji ketat 20%:** NPV juga selalu dihitung pada 20%/tahun. Positif = rencana tetap menutup modal walau bunga lebih mahal atau risiko lebih besar; hanya informasi, kesimpulan tetap dari patokan 12% (atau patokan pengguna).
 - Ini **asumsi pembanding**, bukan rekomendasi dan bukan bunga bank yang berlaku untuk pengguna.
 - Ganti bila: modal dari pinjaman → pakai bunga efektif pinjaman itu (+ tambahan risiko bila mau); modal sendiri → pakai hasil minimal yang pengguna inginkan (mis. "kalau tidak lebih dari deposito/ usaha lain, buat apa").
 - Bunga/cicilan pinjaman **jangan** dimasukkan lagi ke biaya: sudah diwakili diskonto (menghindari hitung dua kali).

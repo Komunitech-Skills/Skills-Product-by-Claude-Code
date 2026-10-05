@@ -1,6 +1,6 @@
 # 02 — Buka cabang warung bakso Rp250 juta (skenario normal, hasil kurang layak)
 
-> Contoh pembuat skill (v1.0.0). Angka dari script, diverifikasi ulang dengan Python terpisah (NPV & IRR identik: 17.299.801 / 14,32%; tes `D10`–`D11`).
+> Contoh pembuat skill (v1.0.0, diperbarui v1.0.1: omzet impas memakai penyusutan sampai nilai sisa, NPV uji ketat 20%). Angka dari script, diverifikasi ulang dengan Python terpisah (NPV & IRR identik: 17.299.801 / 14,32%; tes `D10`–`D11`).
 
 ## Pesan pengguna
 "Mau buka cabang kedua warung bakso. Modal 250 juta untuk renovasi, peralatan, dan modal awal. Perkiraan omzet tahun pertama 380 juta, lalu 470, 500, 520, 540 juta. Bahan baku 45% dari omzet. Gaji, sewa, listrik 14,5 juta sebulan, naik 5% per tahun. Peralatan mungkin laku 40 juta di tahun ke-5. Pajak PPh final 0,5%. Kapan balik modal, layak?"
@@ -11,7 +11,7 @@ python3 scripts/kelayakan.py --investasi 250jt --omzet "380jt;470jt;500jt;520jt;
 ```
 
 ## Verifikasi manual (tahun 1)
-380.000.000 − 171.000.000 (45%) − 174.000.000 (14,5jt × 12) − 1.900.000 (0,5%) = **33.100.000**. Tahun 2: 470jt − 211,5jt − 182,7jt − 2,35jt = 73.450.000. Kumulatif menutup modal di tahun ke-4 → 3 + 62.785.000 ÷ 81.973.250 = 3,77 tahun.
+380.000.000 − 171.000.000 (45%) − 174.000.000 (14,5jt × 12) − 1.900.000 (0,5%) = **33.100.000**. Tahun 2: 470jt − 211,5jt − 182,7jt − 2,35jt = 73.450.000. Kumulatif menutup modal di tahun ke-4 → 3 + 62.785.000 ÷ 81.973.250 = 3,77 tahun. Omzet impas = (174.000.000 + (250jt − 40jt) ÷ 5) ÷ (1 − 0,45 − 0,005) = 396.330.275/tahun = **Rp33.027.523/bulan**. NPV 20% = **−Rp35.845.401**.
 
 ## Contoh balasan chat
 **Cabang kedua Rp250 juta: KURANG LAYAK (dengan asumsi di bawah)**
@@ -21,10 +21,13 @@ Di atas kertas masih untung tipis (imbal hasil 14,3%/tahun vs patokan 12%), teta
 |---|---|---|
 | Balik modal | 3 tahun 9 bulan | dari uang bersih |
 | Balik modal (nilai waktu uang) | belum dalam 5 tahun | butuh hasil jual peralatan di akhir |
-| NPV | Rp17.299.801 | kelebihan tipis di atas patokan |
+| NPV | Rp17.299.801 | kelebihan tipis di atas patokan 12% |
+| NPV uji ketat 20% | −Rp35.845.401 | rugi bila patokan 20%/tahun |
 | IRR | 14,32%/tahun | hanya sedikit di atas 12% |
 | PI | 1,07 | tiap Rp1 kembali Rp1,07 |
-| Omzet impas | Rp34.250.765/bulan | tahun 1 (±Rp31,7 jt/bulan) masih di bawahnya |
+| Omzet impas | Rp33.027.523/bulan | tahun 1 (±Rp31,7 jt/bulan) masih di bawahnya |
+
+Uji ketat: Bila hasil minimal yang diminta dinaikkan ke 20%/tahun (bunga lebih mahal atau risiko lebih besar), cabang ini tidak lagi menutup modal plus hasil itu.
 
 | Tahun | Uang bersih | Kumulatif |
 |---|---|---|
