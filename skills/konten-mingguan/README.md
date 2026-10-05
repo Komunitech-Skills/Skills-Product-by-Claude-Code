@@ -58,6 +58,9 @@ apa saja yang diasumsikan di akhir hasil, supaya kamu tinggal koreksi yang perlu
 Tanggal bergerak (Ramadan, Lebaran, Imlek, libur sekolah) tidak ditebak sembarangan — skill akan minta
 tanggalnya ke kamu atau menandainya jelas sebagai perkiraan yang perlu dicek ke kalender resmi tahun itu.
 
+## Catatan revisi 1.0.10 (2026-10-05)
+- Uji ulang independen v1.0.9: promo/kelangkaan karangan sudah hilang, tetapi fakta usaha lain masih dikarang (sterilisasi, durasi tindakan, "pasien kami", "dibuat sesuai pesanan", "favorit pelanggan", "per loyang", antar, tips simpan). Kini ada aturan tegas: semua fakta usaha hanya dari pengguna atau `[isian]`, dengan contoh boleh/tidak boleh; semua asumsi (hari libur, satuan harga, jam tayang) wajib masuk daftar asumsi; checklist cek ejaan hashtag. Menunggu uji ulang independen.
+
 ## Catatan revisi 1.0.9 (2026-10-05)
 - Uji ulang independen v1.0.8: satu percobaan menyimpan paket ke file, balasan chat tanpa post, lalu keliru menulis "sudah tampil di atas". Kini aturan paling awal (juga di description): seluruh paket wajib di balasan chat; file hanya bila diminta dan setelah chat; frasa "sudah tampil di atas" dilarang bila tidak benar; ada butir checklist akhir. Juga dilarang mengarang promo/harga combo, kelangkaan ("slot terbatas"), dan klaim proses produksi ("dibuat fresh"); pakai [isian]. Menunggu uji ulang independen.
 

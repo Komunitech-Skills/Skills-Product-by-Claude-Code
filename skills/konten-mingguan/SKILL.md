@@ -1,13 +1,15 @@
 ---
 name: konten-mingguan
-description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari: platform, pilar, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar). ATURAN PERTAMA: SELURUH paket post (semua hari, caption lengkap) WAJIB ditulis di balasan chat, bukan hanya di file; file hanya salinan opsional, dan dilarang menulis "sudah tampil di atas" bila tidak benar. Dilarang mengarang promo/harga/kelangkaan yang tidak diberikan pengguna. TIDAK memposting otomatis. Bila sebagian permintaan dilarang (testimoni pasien, before-after, diskon tindakan medis klinik): tolak bagian itu (1-2 kalimat + dasar aturan) lalu LANGSUNG serahkan paket pengganti lengkap di balasan yang sama, tanpa tanya izin. Pakai untuk paket konten minggu ini/depan, weekly content plan/pack (sebulan: kalender-konten-30hari).
+description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari: platform, pilar, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar). ATURAN PERTAMA: SELURUH paket post (semua hari, caption lengkap) WAJIB ditulis di balasan chat; file hanya salinan opsional. Dilarang mengarang fakta usaha (promo, harga, kelangkaan, proses, durasi, pengiriman, jam/hari libur, kepopuleran, sterilisasi, sertifikat) yang tidak diberikan pengguna: pakai [isian]. TIDAK memposting otomatis. Bila sebagian permintaan dilarang (testimoni pasien, before-after, diskon tindakan medis klinik): tolak bagian itu (1-2 kalimat + dasar aturan) lalu LANGSUNG serahkan paket pengganti lengkap di balasan yang sama, tanpa tanya izin. Pakai untuk paket konten minggu ini/depan, weekly content plan/pack (sebulan: kalender-konten-30hari).
 ---
 
 # Konten Mingguan
 
 > **ATURAN PERTAMA (mengalahkan semua yang lain):** SELURUH paket post (setiap hari: hook, caption lengkap, hashtag, CTA, brief) WAJIB ditulis di balasan chat ini juga. Pengguna (mis. Telegram) tidak bisa membuka file. **Jangan menulis file sama sekali kecuali pengguna memintanya**; bila ditulis, file hanya salinan, dibuat SETELAH paket tampil di chat. DILARANG menulis "sudah tampil di atas/di chat di atas/terlampir" kecuali paketnya memang ada di balasan itu. Balasan yang hanya berisi ringkasan, penolakan, atau "tersimpan di file" = GAGAL.
-> **Dilarang mengarang:** promo/diskon/harga paket/combo yang tidak diberikan pengguna, kelangkaan ("slot terbatas", "stok terbatas", "kuota terbatas", "hanya hari ini") dan klaim proses produksi ("dibuat fresh", "handmade", "tanpa pengawet") yang tidak ada di profil. Butuh angka/fakta itu → tulis `[isian]` dan minta pengguna melengkapi.
-
+> **Dilarang mengarang fakta usaha (tegas):** SEMUA fakta tentang usaha ini (layanan/produk, proses & cara membuat, durasi, satuan harga, harga, promo, kelangkaan, pengiriman/antar/COD, jam buka & hari libur, kepopuleran/"favorit"/"pasien kami", alat/bahan, sterilisasi, sertifikat/izin) HANYA boleh ditulis bila diberikan pengguna; selain itu tulis `[isian: ...]` atau kalimat umum yang tidak mengklaim fakta. Edukasi umum yang benar untuk semua usaha sejenis boleh.
+> - Boleh: "scaling dianjurkan berkala sesuai saran dokter gigi", "Pesan lewat WA" (bila cara order diberikan), "Brownies Rp45.000" (persis seperti diberikan).
+> - Tidak boleh (kecuali diberikan pengguna): "alat steril", "scaling 30-60 menit", "pasien kami", "dibuat sesuai pesanan/fresh/handmade", "favorit pelanggan", "Rp45.000 per loyang", "bisa diantar", "Minggu libur", tips simpan kue, "slot/stok terbatas", "tanpa pengawet".
+> - Asumsi yang terpaksa dipakai (hari libur, satuan harga, jam tayang, cara pembuatan) WAJIB dicantumkan di daftar asumsi di akhir; lebih baik tidak dipakai.
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
@@ -143,7 +145,7 @@ order lewat WA/GoFood. Sanggup 2 video seminggu, sisanya foto/Story aja."
 Pilar: Promo Gajian  |  Momen: Hari gajian (tgl 1) — TAPI juga Hari Kesaktian Pancasila (peringatan):
 konten dibuat non-hardselling, promo dipindah ke esok  |  Jam disarankan: 11.00 & 17.00 (perkiraan umum)
 Hook 3 detik: "Gajian udah cair?"
-Caption: "Rayakan gajian pertama bulan ini dengan ngopi santai. Kopi susu gula aren favorit, tetap Rp18.000.
+Caption: "Rayakan gajian pertama bulan ini dengan ngopi santai. Kopi susu gula aren, tetap Rp18.000.
 Order gampang lewat WA/GoFood ya! ☕"
 Brief foto/video: foto gelas kopi dekat jendela, cahaya pagi, tanpa promo besar-besaran (hari peringatan)
 Hashtag: #kopisusu #kedaikopi #gajian #ngopiyuk
@@ -167,10 +169,10 @@ Hook 3 detik: "Sikat gigi 2x sehari, tapi karang gigi tetap ada?"
 Caption: "Karang gigi tidak hilang dengan sikat biasa. Pemeriksaan rutin tiap 6 bulan membantu ... Jadwal praktik &
 booking: lihat bio."
 Brief foto/video: foto ruang praktik rapi (tanpa pasien), cahaya terang.
-Hashtag: #kliniktgigi #sehatgigi #edukasigigi
+Hashtag: #klinikgigi #sehatgigi #edukasigigi
 CTA: Booking jadwal lewat WA
 ... (Selasa-Sabtu lengkap dengan format yang sama)
-📝 Asumsi: nama klinik/jadwal praktik memakai placeholder [isi]; hari Minggu libur.
+📝 Asumsi: nama klinik/jadwal praktik memakai placeholder [isi]; paket 6 hari (Senin-Sabtu) tanpa klaim hari libur klinik.
 ```
 Salah: berhenti setelah penolakan dengan pertanyaan "boleh saya lanjutkan dengan konten edukasi?".
 
@@ -184,6 +186,9 @@ Salah: berhenti setelah penolakan dengan pertanyaan "boleh saya lanjutkan dengan
 - [ ] Ditulis jelas bahwa paket ini **belum terposting** dan jam posting adalah **perkiraan**
 - [ ] **Apakah semua post (setiap hari, caption lengkap) ada di balasan chat ini?** Bukan hanya di file. Jangan menulis "sudah tampil di atas" bila tidak
 - [ ] Tidak ada promo/harga/combo/kelangkaan/klaim produksi karangan; semua dari pengguna atau `[isian]`
+- [ ] Setiap klaim tentang usaha ini (layanan, proses, durasi, satuan, pengiriman, jam/hari libur, kepopuleran, sterilisasi, sertifikat) berasal dari pengguna atau `[isian]`?
+- [ ] Semua asumsi (hari libur, satuan harga, jam tayang, minggu yang dipilih dan alasannya) tercantum di daftar asumsi akhir?
+- [ ] Ejaan hashtag dicek huruf demi huruf (mis. `#klinikgigi`, bukan `#kliniktgigi`) dan nama usaha/kata baku benar
 - [ ] File arsip hanya ditulis bila diminta, dan setelah chat
 - [ ] Bila ada unsur terlarang: penolakan singkat + paket lengkap pengganti ada di balasan yang sama (tanpa pertanyaan izin)
 
