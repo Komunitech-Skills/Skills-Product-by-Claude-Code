@@ -24,31 +24,31 @@ Rp15.000 x 35% = Rp5.250 untuk toko; sisa Rp9.750 per botol untuk Anda.
 **Catatan untuk Anda (jangan dikirim ke mitra) - waspada rugi:** laba per botol = Rp9.750 - `[isi HPP]` - biaya kirim/kemas. Bila HPP + kirim sudah Rp9.750, laba Rp0; contoh HPP + kirim Rp10.000 berarti rugi Rp250 per botol (Rp25.000 per 100 botol). Jadi 35% hanya aman bila HPP + kirim jauh di bawah Rp9.750. Titik impas porsi toko = (15.000 - HPP - kirim) / 15.000; bila terlalu mepet, tawar 25-30% atau naikkan harga jual.
 
 ---
-# Proposal Kerja Sama Titip Jual - `[Nama Usaha]` x `[Nama Minimarket]` (Solo)
+# Proposal Kerja Sama Titip Jual - [Nama Usaha] x [Nama Minimarket] di Solo
 
-**Ringkasan:** `[Nama Usaha]` menawarkan kopi susu botol 250 ml untuk dititipjualkan di `[Nama Minimarket]`, Solo. Minimarket tidak perlu membeli stok di muka dan mendapat Rp5.250 (35%) dari setiap botol terjual.
+**Ringkasan:** [Nama Usaha] menawarkan kopi susu botol 250 ml untuk dititipjualkan di [Nama Minimarket] di Solo. Minimarket tidak perlu membeli stok di muka dan mendapat Rp5.250 (35%) dari setiap botol terjual.
 
-**Peluang untuk `[Nama Minimarket]`:** Minuman siap minum membantu menambah variasi rak dan pemasukan per botol tanpa modal stok.
+**Peluang untuk [Nama Minimarket]:** Minuman siap minum membantu menambah variasi rak dan pemasukan per botol tanpa modal stok.
 
 **Yang kami tawarkan:**
-- Kopi susu botol 250 ml, izin edar `[isi: nomor izin edar BPOM-MD / PIRT]`.
-- Diminati pelanggan: `[isi: bukti penjualan/testimoni]`.
+- Kopi susu botol 250 ml, izin edar [isi: nomor izin edar BPOM-MD / PIRT].
+- Respons pelanggan: [isi: bukti penjualan/testimoni, bila ada].
 
 **Skema kerja sama:**
 - Harga jual Rp15.000/botol; bagian toko Rp5.250 (35%) per botol terjual.
-- Stok awal `[isi: jumlah]` botol, diisi ulang `[isi: jadwal]`; rekap dan pembayaran akhir bulan.
-- Botol rusak/mendekati kedaluwarsa kami tarik dan ganti `[isi: syarat retur]`.
+- Stok awal [isi: jumlah] botol, diisi ulang [isi: jadwal]; rekap dan pembayaran akhir bulan.
+- Botol rusak/mendekati kedaluwarsa kami tarik dan ganti [isi: syarat retur].
 
 | Simulasi (perkiraan) | 50 | 100 | 200 |
 |---|---|---|---|
 | Pendapatan toko per bulan | Rp262.500 | Rp525.000 | Rp1.050.000 |
 
-**Langkah berikutnya:** uji coba 3 bulan mulai `[tanggal]`, lalu evaluasi bersama.
-Kontak: `[Nama - WA - email]`
+**Langkah berikutnya:** uji coba 3 bulan mulai [tanggal], lalu evaluasi bersama.
+Kontak: [Nama - WA - email]
 
-**WA pengantar:** Selamat siang `[Nama]`, saya `[Nama]` dari `[Nama Usaha]`. Kami ingin menitipkan kopi susu botol 250 ml di `[Nama Minimarket]` dengan bagian toko 35%. Proposal terlampir; boleh kami jadwalkan bertemu singkat? Terima kasih.
+**WA pengantar:** Selamat siang [Nama], saya [Nama] dari [Nama Usaha]. Kami ingin menitipkan kopi susu botol 250 ml di [Nama Minimarket] dengan bagian toko 35%. Proposal terlampir; boleh kami jadwalkan bertemu singkat? Terima kasih.
 
-**Asumsi:** versi singkat; uji coba 3 bulan; stok, jadwal isi ulang, dan retur masih `[isi]`; kota usaha tidak disebut (Solo hanya untuk minimarket).
+**Asumsi:** versi singkat; uji coba 3 bulan; stok, jadwal isi ulang, dan retur masih [isi]; kota usaha tidak disebut (Solo hanya untuk minimarket).
 
 **Pertanyaan (maks. 3, jawab singkat):**
 1. Berapa HPP + biaya kirim/kemas per botol (untuk cek rugi)?
