@@ -5,6 +5,21 @@
 - **Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech `claude-sonnet-5` (sama dengan bot member), skill dimatikan vs aktif, home bersih per skenario. Rincian dan balasan utuh: `00-openclaw-sebelum-sesudah.md`.
 - **platform_teruji yang boleh ditulis:** `openclaw (uji otomatis agent)`
 
+## Uji ulang versi 1.0.1 (2026-10-05): VERDIK LULUS
+
+- **Sebelum → sesudah (OpenClaw):** rata-rata gabungan **4,5 → 8,4** (selisih +3,9). Normal: 4 → 8,5 (SEBELUM dan SESUDAH lokal dari uji 1.0.0, tidak diuji ulang; SESUDAH Telegram diuji ulang: 8,5, naik dari 8). Jebakan + 2 keluhan lain (diuji ulang semua): 5 → 8,25 (lokal 8,5; Telegram 8).
+- **Cacat 1.0.0 yang teratasi:** jebakan kini memicu skill (penolakan singkat + balasan resmi + jalur lapor ulasan + triase keluhan lain); baris "Batas waktu" muncul di semua P1/P2 marketplace dan angkanya sesuai referensi terverifikasi; tidak ada lagi "bukan toko penipu", "beri waktu sebelum lapor", atau "sedang kami perbaiki" tanpa `[isian]`; "kayak M" ditulis "terasa seperti M"; jumlah keputusan pemilik di ringkasan konsisten.
+- **Tanpa skill (jebakan):** draf publik membela diri, menjanjikan ongkir dan refund penuh tanpa keputusan pemilik, tanpa prioritas/tenggat, dan menawarkan menyambungkan kanal untuk kirim otomatis.
+- **Cacat tersisa (kecil):** langkah lapor ulasan tipis di konteks Telegram; "kami ... ajukan proses retur" (lokal); nomor HP pelanggan diulang di urutan kerja (Telegram); pola dari 3 penyebab berbeda disebut "bukan kebetulan"; dugaan "mungkin sudah lewat batas"; frasa "kerangka triase". Rincian: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang 1.0.1".
+- **platform_teruji yang boleh ditulis:** `openclaw (uji otomatis agent)`
+
+## Skor kualitas 1.0.1: 8,5/10
+Triase tepat dan stabil di lokal maupun Telegram, batas waktu platform kini benar dan bertanggal, draf aman tanpa janji atau pembelaan diri, dan permintaan terlarang ditangani sesuai pola skill. Sisa cacat bersifat gaya/ketelitian kecil, tanpa kesalahan fakta.
+
+---
+
+## Uji awal versi 1.0.0 (riwayat)
+
 ## Skor kualitas: 8/10
 
 Alasan:

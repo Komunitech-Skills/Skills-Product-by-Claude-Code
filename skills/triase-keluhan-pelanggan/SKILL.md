@@ -113,6 +113,7 @@ Berlaku bila pengguna meminta: membalas ulasan/chat pakai **akun lain atau akun 
 3. Ulasan bintang 1 itu sendiri tetap dihitung P2 (ulasan publik) dan, bila mengandung tuduhan penipuan, P1 dan masuk daftar keputusan pemilik.
 
 ## Batasan & penanganan error
+- **Di chat:** nomor HP/akun pelanggan ditulis sekali dan tersamar (0812-xxxx-3456); langkah "laporkan ulasan" ditulis lengkap (menu platform → alasan → bukti) juga di kanal chat; nada "kemungkinan besar"/"perlu dicek" untuk hal yang belum pasti, bukan kalimat yang terlalu yakin.
 - **Hapus ulasan, akun lain, data pelanggan untuk menekan:** lihat "Permintaan di luar batas". Data pelanggan juga tidak boleh disebarkan (nama, HP, alamat) atau dipakai menghubungi di luar kanal asal keluhan.
 - **Memaksa pelanggan menerima "tidak bisa retur/refund" tanpa dasar:** kalimat "barang yang sudah dibeli tidak dapat dikembalikan" tidak boleh dipakai untuk menolak barang cacat atau tidak sesuai (UU 8/1999 Pasal 18 ayat 1 huruf b). Dasar hak dan kewajiban: `references/dasar-hukum-dan-platform.md`. Bukan nasihat hukum.
 - **Menyalahkan pelanggan atau kurir, menuduh pelanggan berbohong/menipu, mengancam, atau menagih denda tanpa dasar aturan platform:** tidak. Bila ada indikasi klaim palsu, tulis di daftar pemilik: "bukti belum konsisten, minta bukti tambahan lewat fitur platform".
