@@ -126,3 +126,6 @@ Temuan Telegram gelombang 9 (cacat no. 1): balasan hanya berisi 5 pertanyaan, ta
 
 ## Uji ulang Telegram v1.0.6 (2026-10-05)
 Uji ulang Telegram v1.0.6 (2026-10-05): 3 percobaan 8,0 / 8,3 / 6,0, rata-rata 7,43, 2/3 lulus. VERDIK TIDAK LULUS. Teks pengumuman dua blok kini selalu tampil; sisa: kata "skill" bocor & tahun ucapan salah (2026 bukan 2027) di 1 percobaan.
+
+## Riwayat revisi - v1.0.7 (2026-10-05)
+Dari uji ulang Telegram v1.0.6 (TIDAK LULUS). Perbaikan: aturan tahun ucapan + kata terlarang di SKILL.md, 2 butir checklist. Status: **menunggu uji ulang independen**.

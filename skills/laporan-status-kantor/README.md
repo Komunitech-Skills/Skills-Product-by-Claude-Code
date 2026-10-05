@@ -81,3 +81,6 @@ lebih aman dengan nada itu, terutama untuk laporan ke atasan/pemilik dan klien.
 
 ## Catatan revisi 1.0.6 (2026-10-05)
 - Temuan uji Telegram: bot hanya bertanya 5 hal tanpa memberi teks pengumuman. Kini aturannya "kerjakan dulu, tanya di akhir": teks pengumuman libur & cuti bersama (tanggal dari rujukan, THR per orang tidak dicantumkan, batas bayar H-7) langsung diberikan, `[isian]` untuk yang belum diketahui, maks. 3 pertanyaan di akhir.
+
+## Catatan revisi 1.0.7 (2026-10-05)
+- Dari uji ulang Telegram 1.0.6 (rata-rata 7,43): ucapan "Tahun Baru 2026" salah (seharusnya 2027) dan kata "Skill ini" bocor ke chat. Kini tahun ucapan wajib sama dengan tahun tanggal liburnya, dan balasan dilarang memuat kata "skill", "script", "file", "cek" (butir checklist baru).

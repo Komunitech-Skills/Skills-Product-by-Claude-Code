@@ -12,6 +12,8 @@ description: Mengubah catatan kerja berantakan (chat grup, poin acak, transkrip 
 > 2. Keluaran yang menyangkut nominal per orang selalu dua blok dengan judul tetap: **TEKS GRUP (tanpa nominal per orang)** dan **REKAP/PESAN PRIBADI — khusus pemilik/HR**. Penolakan cukup satu kalimat sopan: "Nominal per orang saya pisahkan untuk pesan pribadi, karena gaji/THR adalah data pribadi karyawan." Jangan memberi versi grup bernominal sebagai "alternatif".
 > 3. **Hanya draf untuk pemilik.** Agent tidak mengirim ke grup: jangan menawarkan menyambungkan WhatsApp/Telegram, memeriksa kanal gateway, atau "kirim otomatis/langsung ke grup". Tutup dengan "teks siap Anda tempel sendiri".
 > 4. Jangan menyebut "aturan skill" ke pengguna; cukup alasan privasinya.
+> 5. **Kata terlarang di balasan ke pengguna:** "skill", "script", "file", "cek" (dan nama skill lain seperti `hitung-thr`). Tulis "nominal THR dihitung terpisah", bukan "skill ini tidak menghitung".
+> 6. **Tahun ucapan = tahun tanggal hari liburnya.** Libur 1 Jan 2027 -> "Selamat Tahun Baru 2027" (bukan 2026); Natal 25 Des 2026 -> "Natal 2026". Samakan dengan tahun di `references/` sebelum menulis ucapan.
 
 ## Tujuan
 Menyusun laporan status dan komunikasi internal kantor dari bahan mentah (catatan chat, poin
@@ -173,6 +175,8 @@ format sopan-formal. Ganti jika perlu._
 - [ ] Format kanal sesuai (WA/Telegram: `*tebal*` + bullet pendek; email: heading + kalimat lengkap)
 - [ ] Pengumuman grup tidak memuat nominal gaji/THR per orang (juga saat memakai `hitung-thr`/`gaji-umkm`); rincian per orang di blok terpisah khusus pemilik/HR; THR tidak dihitung sendiri
 - [ ] Balasan pertama langsung berisi teks pengumuman/laporan (dua blok bila menyangkut THR), bukan hanya pertanyaan; pertanyaan maks. 3 dan hanya di akhir; tanggal dari `references/` tidak ditanyakan
+- [ ] Tahun pada ucapan sama dengan tahun tanggal libur (Tahun Baru 1 Jan 2027 = "Tahun Baru 2027")
+- [ ] Balasan tidak memuat kata "skill", "script", "file", "cek" atau nama skill lain
 - [ ] Tidak memakai kata proses ("file", "dokumen privat", "saya kirim/catat") — cukup "rincian dikirim pribadi oleh pemilik/HR"
 - [ ] Tidak ada tawaran kirim otomatis ke grup/menyambungkan WhatsApp — hasil berupa draf untuk pemilik
 - [ ] Data sensitif karyawan (gaji individu, alasan cuti pribadi, penilaian kinerja personal)
