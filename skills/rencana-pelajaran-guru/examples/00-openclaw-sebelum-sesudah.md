@@ -644,3 +644,31 @@ Pesan: "Tolong buatkan RPP Matematika SD kelas 4 materi pecahan, mau saya cetak.
 
 ### Cuplikan jualan
 (kosong — hasil belum konsisten di konteks Telegram)
+
+
+# Uji ulang v1.0.8 (konteks Telegram) — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5, hanya sisi SESUDAH (`uji-tg.sh` = konteks kanal Telegram, tidak mengirim apa pun), home bersih per percobaan, berurutan (tidak paralel). SEBELUM tetap **5,75**. Penilaian hanya dari isi balasan chat. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-108b-*.txt`. Percobaan 1.0.8 sebelumnya (terputus restart kontainer) diabaikan.
+
+## Skenario 1 — pesan persis gelombang 6 (3 percobaan)
+| Percobaan | Durasi | Hasil |
+|---|---|---|
+| S1-A | 782 dtk | GAGAL: "model did not produce a response before the model idle timeout" (rc=1, router/model idle; transient retry 2/8 habis) |
+| S1-B | 900 dtk | GAGAL: timeout total 900 dtk (rc=124), tanpa balasan |
+| S1-C | 461 dtk | Selesai, 6.376 karakter, skor **8** |
+
+**S1-C:** modul ringkas (tabel menit), LKPD tanpa jawaban ("Jawab: ____"), rubrik utuh di chat, "Kunci Jawaban (untuk guru)" terpisah. CP tidak dikarang (rujuk BSKAP 046/H/KR/2025, kolom tempel; bunyi persis yang diminta tidak diberikan, hanya "ringkasan umum (cek CP resmi)"). Jalur .docx ditulis `/tmp/modul-ajar-descriptive-pets.docx` = file nyata (zipfile testzip None, 5.871 byte, memuat "Kunci"); tidak ada klaim lampiran/terkirim. Python: 10+15+20+25+10 = 80 = 2x40; skor A maks 2+2+2+2+2 = 10; rubrik 4x4 = 16. Tidak ada salah angka. Cacat kecil: jalur /tmp tidak bisa diambil guru di Telegram.
+
+## Skenario 2 — RPP Matematika SD kelas 4 pecahan senilai, cetak (1 percobaan)
+Durasi 248 dtk, 6.438 karakter, skor **8**. Modul ringkas, LKPD bersih (6 soal), rubrik utuh, kunci terpisah. Python: 10+50+10 = 70 = 2x35; rubrik 15+15+10+15+25+20 = 100; kunci benar (1/2=2/4=3/6=4/8; 1/3=2/6=3/9=4/12; 2/8=1/4). .docx nyata `/tmp/rpp-pecahan-senilai/RPP_Pecahan_Senilai_Kelas4.docx` (5.372 byte, testzip None). Tidak ada klaim "lampirkan/terkirim" palsu (ada frasa "lihat lampiran" di asesmen, tidak menyangkut file). CP ditandai cek CP resmi.
+
+## Skor SESUDAH
+| Percobaan | Skor |
+|---|---|
+| S1-A | gagal (timeout) |
+| S1-B | gagal (timeout) |
+| S1-C | 8 |
+| S2 | 8 |
+
+**Rata-rata percobaan selesai: 8,0** (SEBELUM 5,75, selisih +2,25); bila timeout dihitung gagal, hanya 2 dari 4 percobaan berhasil. Percobaan skenario 1 yang lulus: **1 dari 3** (syarat >= 2/3 tidak terpenuhi). Tanpa salah fakta/angka.
+**VERDIK: BELUM** (timeout 2/3 pada skenario 1; kualitas balasan yang selesai sudah baik, kemacetan tersisa di model/router, bukan isi). Catatan: format ringkas memperpendek balasan (13 ribu -> 6 ribu karakter) dan perbaikan klaim lampiran berhasil, namun giliran akhir masih rentan idle timeout di skenario 1 (permintaan CP persis memicu web_fetch/tool call tambahan).
