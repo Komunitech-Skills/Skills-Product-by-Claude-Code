@@ -118,6 +118,7 @@ Bila pengguna bertanya cara mencatat agar tidak berantakan lagi, beri 5 aturan s
 - Jangan menyimpan isi data di memori/catatan agent; file hasil hanya di folder kerja pengguna.
 
 ## Batasan & penanganan error
+- **Balasan ringkas:** blok angka ditulis SEKALI (pasangan nomor sama/nama mirip jangan diulang di bagian lain), nama kolom teknis (mis. `_telepon_rumah`, `YYYY-MM-DD`) diganti kata biasa ("telepon rumah/kantor", "tahun-bulan-tanggal") di balasan ke pengguna; targetkan di bawah 2.500 karakter untuk chat.
 - Tabel dengan baris judul ganda di atas, sel gabungan, atau beberapa tabel dalam satu lembar: minta pengguna memisahkan dulu, atau jelaskan bagian yang tidak terbaca.
 - Kolom tidak dikenali otomatis: sebutkan kolom yang terdeteksi, minta koreksi sekali saja.
 - Nama mirip itu **tebakan**: "Ani" dan "Anis" bisa dua orang. Keputusan selalu di pengguna.
