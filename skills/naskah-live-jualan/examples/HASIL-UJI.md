@@ -77,6 +77,7 @@ Lihat `00-pembanding-tanpa-skill.md`. Tanpa skill: 4 blok 15 menit, "stok terbat
 terverifikasi & jujur, urgensi hanya dari fakta. **Skill jelas memberi nilai tambah.**
 
 ## Riwayat revisi
+- **1.0.7 (2026-10-05):** uji ulang Telegram 1.0.6 gagal karena model menyalin kata-kata proses dari SKILL.md. Judul format jadi "Angka promo" (tanpa label dihitung script), file kerja sementara bernama netral & dihapus, istilah "cek-silang" diganti "pemeriksaan internal", larangan klaim popularitas/kelangkaan tanpa data, checklist kata terlarang, ringkasan akhir cek_fakta.py ditujukan ke agent tanpa kata LULUS. **Status: menunggu uji ulang independen.**
 - **1.0.6 (2026-10-05):** pra-cek konteks Telegram menemukan baris proses internal ("Lulus cek-silang fakta (0 GAGAL)") bocor di pembuka balasan. SKILL.md kini melarang menampilkan hasil script/nama script/istilah cek-silang dan mewajibkan balasan dimulai dengan naskah; butir checklist ditambah. **Status: menunggu uji ulang independen.**
 
 ## Uji ulang konteks Telegram v1.0.6 — 2026-10-05

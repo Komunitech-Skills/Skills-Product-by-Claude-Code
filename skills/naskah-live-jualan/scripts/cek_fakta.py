@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cek-silang hasil tulisan (naskah/proposal/kalender) terhadap FAKTA DARI PENGGUNA.
+"""Pemeriksaan hasil tulisan (naskah/proposal/kalender) terhadap FAKTA DARI PENGGUNA.
 
 Tujuan: menangkap fakta yang dikarang AI — hal yang terdengar wajar tetapi tidak pernah disebut pengguna:
 - JAM      : jam (19:00, 19.00) padahal pengguna tidak menyebut jam.
@@ -14,11 +14,12 @@ Tujuan: menangkap fakta yang dikarang AI — hal yang terdengar wajar tetapi tid
 Teks di dalam kurung siku ([isi: ...], [tunjukkan tekstur]) dan kalimat tanya diabaikan.
 Klaim reputasi yang disebut pengguna tetap ditandai CEK bila barisnya tidak memuat [isi: bukti].
 
-Hasil: GAGAL (wajib diperbaiki: hapus, ganti [isi: ...], atau tanyakan ke pengguna) / CEK (periksa) / LULUS.
+Temuan: GAGAL (wajib diperbaiki: hapus, ganti [isi: ...], atau tanyakan ke pengguna) / CEK (periksa).
+Baris ringkas akhir ditujukan ke agent ("UNTUK AGENT SAJA"), bukan untuk dikutip ke pengguna.
 Kode keluar: 0 = tidak ada GAGAL, 2 = ada GAGAL, 1 = input salah.
 
 Hanya library standar Python 3.8+. Tidak ada akses jaringan. Contoh:
-  python3 cek_fakta.py --teks-file naskah.md --fakta-file fakta.txt
+  python3 cek_fakta.py --teks-file <file-kerja> --fakta-file <file-fakta>
   python3 cek_fakta.py --teks-file proposal.md --fakta "kopi susu literan Kopi Pakde, Rp20.000/botol, BPOM"
 """
 import argparse
@@ -283,7 +284,7 @@ def periksa(teks, fakta, abaikan=()):
 
 
 def main():
-    p = argparse.ArgumentParser(description="Cek-silang hasil tulisan terhadap fakta dari pengguna.")
+    p = argparse.ArgumentParser(description="Pemeriksaan hasil tulisan terhadap fakta dari pengguna.")
     p.add_argument("--teks", help="teks hasil yang diperiksa")
     p.add_argument("--teks-file", help="file .md/.txt berisi hasil yang diperiksa")
     p.add_argument("--fakta", help="fakta dari pengguna (salin kata-kata pengguna, jangan ditambah)")
@@ -315,7 +316,8 @@ def main():
     else:
         for t in temuan:
             print("{}: [{}] {}".format(t["level"], t["kategori"], t["pesan"]))
-        print("HASIL: {} ({} GAGAL, {} CEK)".format(hasil, gagal, len(temuan) - gagal))
+        print("UNTUK AGENT SAJA — jangan dikutip ke pengguna: {} ({} perlu diperbaiki, {} perlu dilihat)".format(
+            "bersih" if not gagal else "ada yang harus diperbaiki", gagal, len(temuan) - gagal))
         if gagal:
             print("Perbaiki semua GAGAL (hapus klaim, ganti [isi: ...], atau tanyakan ke pengguna), lalu jalankan ulang.")
     sys.exit(2 if gagal else 0)
