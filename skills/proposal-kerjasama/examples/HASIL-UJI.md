@@ -114,3 +114,6 @@ Cacat berat v1.0.0 sudah diperbaiki dengan benar dan dilindungi uji regresi. Sem
 
 ## Uji ulang konteks Telegram v1.0.9 (2026-10-05) - penguji independen
 3 percobaan: 8,7 / 8,5 / 8,0, rata-rata 8,40, 3/3 lulus. Rumus sisa per botol (Rp9.750 − HPP − kirim) + peringatan rugi + titik impas tampil di chat walau HPP kosong; klaim BPOM/"paling laris" jadi `[isi]`; tanpa kata proses/path; angka benar (python). Minus kecil: "Produk berizin edar resmi" tanpa `[isi]` di percobaan 3. **VERDIK LULUS.** Detail: `00-openclaw-sebelum-sesudah.md`.
+
+## Riwayat revisi - v1.0.10 (2026-10-05)
+Temuan Telegram gelombang 9 (cacat no. 3): "sudah BPOM" disamakan dengan "BPOM MD/PIRT"; komitmen "display/cooler kami sediakan" tercetak padahal tidak diberikan pengguna. Perbaikan: SKILL.md langkah 1 + larangan janji tak diberikan + 2 butir checklist, `references/izin-edar-pangan.md`. Status: **menunggu uji ulang independen**.
