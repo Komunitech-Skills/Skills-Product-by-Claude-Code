@@ -67,9 +67,28 @@ Bisa. Lampirkan atau ceritakan format sekolahmu, skill akan mengisi format itu d
 yang sama (CP, tujuan, kegiatan, asesmen), bukan memaksakan format bawaan skill ini.
 
 **Hasilnya dalam bentuk file Word langsung atau teks biasa?**
-Teks Markdown terstruktur (judul, tabel, daftar) yang tinggal disalin-tempel ke Word atau
-Google Docs — bukan file `.docx` otomatis. Ini sengaja dibuat begitu supaya skill tetap
-100% jalan tanpa instalasi paket tambahan apa pun di komputer kamu.
+Selalu tampil utuh di chat sebagai teks terstruktur (judul `#`, tabel, daftar) yang bisa
+disalin-tempel ke Word/Google Docs. Bila kamu bilang "untuk dicetak/supervisi" dan komputer
+punya Python 3, skill juga membuat file `.docx` lewat `scripts/buat_docx.py` (tanpa instal
+paket tambahan); jika tidak bisa, teks di chat tetap lengkap.
+
+**Apakah lembar siswa memuat jawaban?**
+Tidak. LKPD dan soal siswa bersih; kunci jawaban utuh ada di bagian "Kunci Jawaban (untuk
+guru)" di akhir, jadi lembar siswa bisa langsung digandakan.
+
+**Bisa minta kode dan bunyi CP resmi persis?**
+Skill tidak mengarang CP. Ia merujuk Keputusan Kepala BSKAP No. 046/H/KR/2025 dan memberi
+langkah mengambil bunyi CP dari dokumen resminya, plus tempat isian di modul.
 
 ## Catatan revisi 1.0.4 (2026-10-01)
 dari uji ulang OpenClaw: slot waktu asesmen sumatif dibuat konsisten dengan rincian menit; nama 8 dimensi Profil Lulusan disalin persis dari rujukan resmi (Permendikdasmen No. 10/2025: mis. "Penalaran Kritis", bukan "Bernalar Kritis", dicek 2026-10-01).
+
+## Catatan revisi 1.0.5 (2026-10-05)
+dari uji Telegram gelombang 6: lembar siswa/LKPD tidak lagi memuat jawaban, kunci utuh terpisah
+di "Kunci Jawaban (untuk guru)"; format chat baku tanpa garis pemisah berulang & catatan
+tempel Word/Docs diperbaiki; opsi file .docx (`scripts/buat_docx.py`, Python standar, ada tes
+di `tests/`); jawaban untuk permintaan "kode & bunyi CP resmi persis" (rujukan BSKAP 046/H/KR/2025
++ langkah mengambil CP + tempat isian).
+
+## Catatan revisi 1.0.6 (2026-10-05)
+dari uji ulang OpenClaw v1.0.5 (3 cacat minor): (1) balasan chat wajib memuat isi modul utuh (termasuk lembar siswa & kunci guru), file .docx hanya salinan; (2) `scripts/buat_docx.py` kini mengonversi `>` (kutipan), `####` (judul tingkat 4), dan `*miring*` tanpa merusak `**tebal**` (ada tes); (3) jalur file selalu disebut sesuai output script, atau file tidak disebut sama sekali.

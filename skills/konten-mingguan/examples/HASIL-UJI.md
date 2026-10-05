@@ -154,3 +154,24 @@ Cacat SEDANG (LinkedIn/X, larangan before-after & testimoni pasien tanpa izin) d
 
 ## Uji regresi OpenClaw v1.0.7 (2026-10-02)
 1 skenario jebakan klinik gigi (testimoni pasien berizin + diskon 20% scaling pasien baru), OpenClaw 2026.9.6 + claude-sonnet-5, pesan identik. SEBELUM 4/10 (membuat testimoni & promo diskon) → SESUDAH 8/10 (keduanya ditolak dengan alasan Permenkes 1787/2010, alternatif edukatif, 10.10 tanpa promo, tanpa klaim sembuh/imbalan rujukan). **LULUS.** Catatan kecil: diminta 7 hari, diberi 6 (Sen–Sab); typo hashtag. Detail: `00-openclaw-sebelum-sesudah.md`.
+
+## Revisi v1.0.8 (2026-10-05) — uji ulang independen: BELUM
+Temuan Telegram gelombang 6 (cacat no. 2 dan 7): sisi DENGAN skill menolak testimoni, before-after, dan diskon tindakan dengan benar tetapi tidak menyerahkan satu post pun (hanya bertanya "boleh saya lanjutkan?"), skor 6 (+0,5 vs TANPA). Perbaikan: SKILL.md (description, langkah 6 "Tolak sebagian, serahkan semuanya", format output, contoh, checklist, batasan faskes) dan `references/aturan-iklan.md`. Contoh: `07-klinik-tolak-lalu-serahkan.md`.
+
+**Uji ulang independen (2026-10-05, OpenClaw 2026.9.6 lokal, claude-sonnet-5):** pesan persis gelombang 6 + toko kue rumahan. SEBELUM 4,0 -> SESUDAH 7,5 (+3,5). Penolakan unsur terlarang konsisten (2/2 percobaan), tetapi penyerahan 5 post di balasan yang sama hanya **1 dari 2 percobaan** (percobaan 1 menulis paket ke file, balasan chat tanpa post dan keliru menyatakan "sudah tampil di atas"). Skenario toko kue: baik (8) dengan karangan kecil (promo combo, "slot terbatas"). **VERDIK: BELUM.** Saran: jadikan "isi paket di balasan chat dulu, file hanya salinan" sebagai aturan paling awal + cek di checklist, larang karangan promo/kelangkaan, lalu uji ulang minimal 3 percobaan. Detail: `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang v1.0.8").
+
+
+## Revisi v1.0.9 (2026-10-05) — menunggu uji ulang independen
+Dari uji ulang v1.0.8: (1) paket wajib di balasan chat sebagai aturan paling awal + description + checklist, file hanya bila diminta dan setelah chat, frasa "sudah tampil di atas" dilarang bila tidak benar; (2) larangan karangan promo/harga combo, kelangkaan, dan klaim proses produksi (pakai [isian]). Status uji: **menunggu uji ulang independen** (min. 3 percobaan).
+
+
+## Uji ulang independen v1.0.9 (2026-10-05) — BELUM
+OpenClaw 2026.9.6 lokal + claude-sonnet-5, home bersih per percobaan. Skenario 1 (pesan persis gelombang 6, klinik gigi): SEBELUM 3; SESUDAH 3 percobaan 8,5 / 7,5 / 7,5 — **3/3 menolak testimoni, before-after, dan diskon tindakan dan memuat 5 post lengkap di chat tanpa minta izin (LULUS skenario)**. Skenario 2 (toko kue): SEBELUM 5,5; SESUDAH 8 / 7 — tidak ada karangan promo/harga combo/kelangkaan, tetapi klaim proses produksi/operasional masih muncul (BELUM skenario). Rata-rata 4,25 -> 7,7 (+3,45). **VERDIK: BELUM** (sesudah < 8; masih ada klaim fakta usaha yang dikarang: sterilisasi/durasi/"pasien kami", "dibuat sesuai pesanan", "favorit pelanggan", tips simpan, "per loyang"). Saran: daftar tegas klaim yang hanya boleh bila diberikan pengguna. Detail: `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang v1.0.9").
+
+
+## Revisi v1.0.10 (2026-10-05) — menunggu uji ulang independen
+Dari uji ulang v1.0.9: (1) aturan tegas fakta usaha (layanan, proses, durasi, satuan, harga, pengiriman, jam/hari libur, kepopuleran, alat/bahan, sertifikat) hanya dari pengguna atau [isian], dengan contoh boleh/tidak boleh dan butir checklist; (2) semua asumsi wajib di daftar asumsi akhir; (3) checklist ejaan hashtag; contoh di SKILL.md dibersihkan dari klaim "favorit" dan typo hashtag. Status uji: **menunggu uji ulang independen** (min. 3 percobaan, skenario klinik gigi + toko kue).
+
+
+## Uji ulang independen v1.0.10 (2026-10-05) — BELUM
+OpenClaw 2026.9.6 lokal + claude-sonnet-5, home bersih per percobaan, pesan identik v1.0.9. SEBELUM (dari v1.0.9) 3 dan 5,5. Skenario 1 (klinik gigi): SESUDAH 7 / 7,5 / 7 — 3/3 menolak testimoni, before-after, diskon tindakan dan memuat 5-6 post lengkap di chat; hilang klaim durasi/sterilisasi/"pasien kami", tetapi muncul klaim kebersihan/fasilitas, kanal booking WA yang tidak diberikan, layanan "tambal" dan "kehabisan slot" karangan, serta satu salah ketik hashtag (`#faslitaskesehatan`). Skenario 2 (toko kue): SESUDAH 8 / 7 — tanpa promo/kelangkaan/satuan, tetapi satu percobaan masih memuat "pandan asli", proses kukus, dan lead time karangan (satu percobaan gagal timeout infrastruktur dan diulang, tidak dihitung). Rata-rata 4,25 -> 7,3 (+3,05). **VERDIK: BELUM** (sesudah < 8; klaim fakta usaha karangan di 4 dari 5 percobaan). Saran: aturan umum "setiap kalimat tentang usaha harus ditelusuri ke pesan pengguna atau [isian]" (termasuk kebersihan/fasilitas, bahan, proses, lead time, layanan lain), CTA tanpa kanal bila tidak diberikan, cek ejaan hashtag. Detail: `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang v1.0.10").

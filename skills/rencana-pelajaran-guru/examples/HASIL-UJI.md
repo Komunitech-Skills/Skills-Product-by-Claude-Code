@@ -102,3 +102,21 @@ Alasan:
 CACAT-01 (murah: tambah 1 baris aturan default JP eksplisit + selaraskan §Contoh) sebelum
 `beta`, karena ini menyangkut konsistensi output — prinsip inti "reliable" yang dijanjikan
 ke pembeli awam. CACAT-02 boleh dijadwalkan versi berikutnya.
+
+---
+## Riwayat v1.0.5 (2026-10-05) — menunggu uji ulang independen
+Perbaikan dari cacat no. 3 `koordinasi/telegram-gelombang-6-2026-10-05.md` (DENGAN 7,5; selisih +1,5):
+(a) lembar siswa tanpa jawaban + "Kunci Jawaban (untuk guru)" utuh & terpisah; (b) format baku tanpa
+garis pemisah/baris kosong berulang, catatan tempel Word/Docs sesuai tanda `#`; (c) `scripts/buat_docx.py`
+(zipfile+XML, Python standar) + `tests/uji_buat_docx.py` (10 pemeriksaan lulus: XML valid, tabel, halaman baru,
+lembar siswa tanpa "Jawaban:", 4 input buruk); (d) jawaban permintaan kode/bunyi CP: rujukan BSKAP 046/H/KR/2025
+(18 Juli 2025, diverifikasi web 2026-10-05) + langkah mengambil CP + tempat isian. Contoh: `07-minta-kode-bunyi-cp-resmi.md`.
+Status: **uji ulang independen selesai 2026-10-05 — LULUS** (OpenClaw 2026.9.6 lokal, sebelum/sesudah: rata-rata 5,75 -> 8,5, selisih +2,75; tanpa salah fakta/angka pada sisi SESUDAH). Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.5". Sisa cacat minor (bukan salah fakta): isi utuh tidak ditampilkan di chat, penanda `>`/`####`/`*..*` muncul literal di .docx.
+
+---
+## Riwayat v1.0.6 (2026-10-05) — perbaikan minor pasca-LULUS, menunggu cek penguji
+Menutup 3 cacat minor uji ulang v1.0.5: (1) isi modul utuh wajib di chat (aturan atas SKILL.md, checklist, description); (2) `buat_docx.py` mendukung `>`, `####`, `*miring*` + 9 pemeriksaan baru di `tests/uji_buat_docx.py` (semua lulus); (3) jalur file dicetak script dan wajib disebut sesuai output, atau file tidak disebut. Belum diuji ulang di OpenClaw.
+
+---
+## Cek v1.0.6 (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH saja (SEBELUM tetap 5,75 dari v1.0.5): S1-A 8, S1-B 8,5, S2 (RPP Matematika SD kelas 4 + Word) 9; rata-rata **8,5** (selisih +2,75). **VERDIK: LULUS** — isi utuh di chat, .docx valid tanpa `>`/`####` literal, jalur file nyata, CP tidak dikarang, angka/waktu benar (python). Sisa minor: 1 kalimat "File ...:" tanpa jalur (S1-B), 1 `*` literal di docx (bold di dalam miring), bunyi CP persis tidak selalu diberikan. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.6".

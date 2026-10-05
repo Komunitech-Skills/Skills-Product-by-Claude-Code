@@ -80,6 +80,32 @@ gagal diambil, skill memakai data cache terakhir dengan peringatan jelas (jam da
 Anda diberi tahu apa adanya, bukan diberi angka palsu.
 
 ## Riwayat versi
+- **Catatan revisi 1.0.10 (2026-10-05)** — dari uji ulang ke-3 paket (pesan gabungan berita +
+  riset + alert sering tidak terjawab dalam batas waktu): (1) instruksi skill dipangkas dari 370
+  ke ±190 baris, rincian dipindah ke `references/` dan hanya dibaca bila perlu; ada "anggaran
+  kerja" per pesan (±6 pengambilan web, ±20 langkah) dan urutan jawab tetap: harga & status
+  ambang → berita → riset koin → draf jadwal; (2) berita kini **satu perintah**
+  `scripts/ambil_berita.py` (RSS publik CoinDesk/Cointelegraph/The Block/Decrypt, tanpa API key):
+  langsung keluar daftar final bertautan artikel asli, tanpa judul prediksi harga;
+  (3) riset koin **satu perintah** `scripts/cek_koin.py`: harga, pasokan, tautan resmi, daftar
+  bursa, dan jumlah pair Indodax yang **dihitung** (bukan dikira); (4) draf jadwal memakai folder
+  kerja standar `$HOME/.openclaw/workspace`, tidak lagi diisi path tebakan; (5) `PANTAU.md` &
+  `konfigurasi.json` baru disimpan setelah Anda menjawab "ya", dan lokasinya disebut — pratinjau
+  harga bisa jalan tanpa file; (6) kalimat penolakan auto-trade/sinyal ditulis baku (key tanpa
+  izin tarik dana, status `bot-trading-kripto`, limit/stop order bawaan bursa, POJK 27/2024, cek
+  PAKD di OJK) juga di aturan paket VIP.
+- **Catatan revisi 1.0.9 (2026-10-05)** — dari uji ulang ke-2 paket: (1) saat alert dipasang,
+  tampilan harga memakai `--pratinjau` sehingga notifikasi pertama tidak lagi diredam;
+  (2) prediksi harga/peringkat/"flippening" dari artikel tidak ditampilkan sama sekali;
+  (3) jadwal: draf ditampilkan dulu, baru dipasang setelah Anda menjawab "ya" atas draf itu;
+  (4) berita selalu dirapikan `rapikan_berita.py`; (5) draf jadwal memakai lokasi standar
+  `~/.openclaw/skills/...`; (6) penolakan auto-trade menyebut key tanpa izin tarik dana,
+  status `bot-trading-kripto`, dan limit/stop order bawaan bursa.
+- **Catatan revisi 1.0.8 (2026-10-03)** — dari uji ulang paket: (1) pemasangan jadwal kini
+  pasti — AI mencoba **sekali**; bila gagal, langsung memberi draf perintah jadwal siap tempel
+  (`scripts/draf_jadwal.py`) tanpa mencoba ulang atau mencari program di komputer Anda;
+  (2) berita dirapikan `scripts/rapikan_berita.py`: hanya judul dengan tautan artikel asli,
+  yang tanpa tautan dibuang atau ditandai "[tanpa tautan]" di akhir.
 - **Catatan revisi 1.0.7 (2026-10-03)** — dari uji gabungan paket solusi VIP kripto-keuangan:
   (1) saat alert dipasang, script menampilkan status **setiap** ambang — "SUDAH TERLEWATI"
   bila harga sekarang sudah melewati ambang Anda (mis. BTC sudah di bawah ambang bawah), atau

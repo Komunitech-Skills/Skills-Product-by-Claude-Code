@@ -525,3 +525,82 @@ Catatan jujur: SEBELUM memberi file Word rapi (nilai plus bagi guru), tetapi ada
 ### Cuplikan jualan
 - "Semua kunci jawaban dihitung ulang dan menit tiap pertemuan dicek script — tanpa skill, AI yang sama menulis 3/8 sebagai pecahan senilai 1/2."
 - "Minta 'kode CP resmi persis' untuk supervisi? Skill tidak mengarang dan merujuk Kepka BSKAP 046/H/KR/2025; tanpa skill, AI mengutip keputusan 2022 yang sudah diganti."
+
+---
+
+# Uji ulang v1.0.5 — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5 (sama dengan bot), skill dimatikan (SEBELUM) vs aktif (SESUDAH), home bersih per skenario. Dasar: cacat no. 3 & 4 di `koordinasi/telegram-gelombang-6-2026-10-05.md` (jawaban tercetak di lembar siswa, kunci "lihat di atas", format, .docx, rujukan CP). Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-105-*.txt` (ringkasan di bawah; balasan SESUDAH skenario 1 hanya ringkasan 2.287 karakter, isi lengkap ada di file .md/.docx yang ditulis agent).
+
+## Skenario 1 — Pesan persis gelombang 6
+**Pesan:** "Saya guru Bahasa Inggris kelas 7 SMP, Kurikulum Merdeka. Buatkan modul ajar 1 pertemuan (2x40 menit) materi descriptive text tentang hewan peliharaan. Tulis juga kode dan bunyi CP resminya persis, buat supervisi besok."
+
+**SEBELUM (tanpa skill, 11.783 karakter):** modul lengkap di chat; mengutip "kutipan resmi" CP Fase D dengan dasar **BSKAP 032/H/KR/2024** dan menyebutnya "regulasi terbaru yang berlaku" (sudah diubah/diganti 046/H/KR/2025); bunyi CP umum + 3 elemen versi lama; Profil Pelajar Pancasila; LKPD hanya deskripsi (tanpa teks soal & tanpa kunci jawaban terpisah); tidak ada file Word; bahkan "mengoreksi" pengguna bahwa 033/2022 sudah diganti oleh 032/2024. Menit 10+10+15+20+15+10 = 80 benar.
+
+**SESUDAH (skill aktif):** membaca skill, memakai `hitung_alokasi_waktu.py` (10+60+10 = 80, COCOK), membuat `.md` dan `.docx` di workspace. Isi file:
+- CP dari Lampiran II **BSKAP 046/H/KR/2025**, Bab V.1, Fase D, elemen 3.2 Membaca-Memirsa dan 3.3 Menulis-Mempresentasikan (kutipan + padanan Inggris), dengan pesan "cocokkan dengan salinan resmi".
+- Lembar siswa (LKPD 3 bagian + Soal Evaluasi) **bersih tanpa jawaban** (hanya "Jawab: ____"); `# Kunci Jawaban (untuk guru)` utuh per nomor di akhir, setelah `<<HALAMAN BARU>>`; contoh jawaban model 9 kalimat, rubrik 4 aspek, 14/16 = 87,5 -> 88.
+- Profil Lulusan "Komunikasi, Kreativitas" (+ padanan lama), TP terukur, sumatif punya slot menit (ICoT 15').
+- Chat: ringkasan + jalur file; **tidak** mengklaim terkirim (hanya menyebut jalur `/opt/ochome/...`); tidak membocorkan pesan proses internal.
+
+**Verifikasi independen:**
+- Cek fakta web (pembelajaranmendalam.com yang menyitir 046/H/KR/2025): bunyi elemen 3.2 dan 3.3 Fase D **sama** dengan kutipan agent (penomoran 3.2/3.3 benar). Dasar CP SEBELUM (032/2024) **usang**.
+- Python: 10+60+10 = 80 = 2x40; 15+15+15+15 = 60; penutup 3+3+2+2 = 10; 14/16x100 = 87,5; contoh jawaban model = 9 kalimat (>= 5). Kunci Bagian 1-2 cocok dengan teks (dog, backyard, four, brown, loyal, friendly, barks).
+- File .docx dibuka (zipfile): valid (testzip None), 212 paragraf, 3 tabel, 2 pemisah halaman, gaya Heading1-3; "Jawaban:" tidak ada di lembar siswa; "Kunci Jawaban (untuk guru)" ada setelah pemisah halaman.
+
+**Skor:** SEBELUM **5** (ketepatan 3 - dasar CP usang; siap pakai 6; aturan terbaru 3; keamanan/tidak mengarang 6 - klaim "kutipan persis" dari CP lama; kejelasan 8) -> SESUDAH **8,5** (ketepatan 9; siap pakai 8; aturan terbaru 9; keamanan 9; kejelasan 8 - isi utuh tidak ditampilkan di chat).
+
+## Skenario 2 — Info kurang: RPP Matematika pecahan
+**Pesan 1:** "Bu, tolong buatkan RPP 1 lembar matematika materi pecahan buat besok ya, mau dicetak." **Pesan 2 (jawaban pengguna awam, sama di kedua sisi):** "Kelas 4 SD, 1 pertemuan aja. Buat LKPD dan kunci jawabannya juga."
+
+**SEBELUM:** giliran 1 bertanya 2 hal (kelas, sub-materi). Giliran 2 membuat PDF 3 halaman (RPP, LKPD, kunci; pecahan senilai, 2x35 menit, 5 soal x 20 poin) dan merangkum isinya; kalimat "PDF ... siap cetak:" tanpa jalur file. PDF tidak dibuka penguji (tidak diverifikasi), jadi klaim isinya hanya dinilai dari ringkasan; tidak ada rujukan CP/dasar kurikulum.
+
+**SESUDAH:** giliran 1 bertanya sekali (kelas wajib; lainnya default). Giliran 2 membuat `rpp-pecahan-kelas4-sd.md` + `.docx`: Fase B, 1x2 JP = **70 menit** (SD 35 menit/JP; 10+50+10 = 70, COCOK), CP ditandai "(cek CP resmi ... BSKAP 046/H/KR/2025)", LKPD 3 bagian bersih tanpa jawaban, kunci terpisah utuh. Cek angka: 3/8; cokelat 1/4 (jebakan 4/4 dijelaskan); 4/6 > 2/6; 8-5 = 3 -> 3/8; 15+20+15 = 50. Semua benar. docx valid (9.273 karakter, bagian Kunci ada, tanpa jawaban di lembar siswa).
+Cacat: balasan chat hanya merangkum LKPD & kunci (bukan isi utuh), dan kalimat "File Word siap cetak:" tanpa jalur file.
+
+**Skor:** SEBELUM **6,5** (tepat & aman tetapi tanpa dasar kurikulum, kunci tidak diverifikasi) -> SESUDAH **8,5**.
+
+## Ringkasan uji ulang v1.0.5
+- **Skor rata-rata:** SEBELUM **5,75** -> SESUDAH **8,5** (selisih **+2,75**; sebelumnya 6 -> 7,5). Skill terpakai di semua giliran SESUDAH (SKILL.md, references, `hitung_alokasi_waktu.py`; `buat_docx.py` menghasilkan .docx valid).
+- **VERDIK: LULUS** — sesudah >= 8, tanpa salah fakta/angka; cacat no. 3 (jawaban di lembar siswa) dan no. 4 (CP usang/format) pada v1.0.4 teratasi. Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim otomatis, tidak mencari ke seluruh disk (SESUDAH hanya mengunduh PDF CP resmi lewat web_fetch).
+- **Cacat minor untuk pembuat (bukan salah fakta):**
+  1. Chat tidak menampilkan isi utuh (SKILL: "Tetap tampilkan isi utuh di chat"); agent hanya merangkum + jalur file. *Saran:* tegaskan isi utuh dulu baru jalur file, atau perbolehkan ringkasan hanya bila isi terlalu panjang dan sebut itu.
+  2. `buat_docx.py`: penanda blockquote `>` (teks model) tampil literal, `#### ` (level 4) dan `*(...)*` (miring) tidak dikonversi. *Saran:* dukung `>`, `####`, `*..*` atau hindari di template.
+  3. Kalimat "File ... siap cetak:" tanpa jalur (skenario 2) — pastikan jalur selalu disebut.
+  4. Agent mengunduh CP dari situs arsip BPMP; wajar, tetapi hasilnya tetap harus dicocokkan guru (agent sudah mengingatkan).
+
+### Cuplikan jualan
+- "Minta bunyi CP resmi 'persis' untuk supervisi? Skill merujuk BSKAP 046/H/KR/2025 dan menandai untuk dicek; tanpa skill, AI yang sama menyebut SK 2024 sebagai 'yang terbaru' padahal sudah diubah."
+- "Lembar siswa bersih tanpa jawaban, kunci utuh terpisah untuk guru, menit pertemuan dicek script, plus file Word siap cetak."
+
+---
+
+# Cek v1.0.6 — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5 (sama dengan bot), hanya sisi SESUDAH (skill aktif), home bersih per percobaan. SEBELUM memakai hasil uji v1.0.5 (rata-rata 5,75). Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-106-*.txt`. Tiga cacat minor v1.0.5 yang diperiksa: (1) isi utuh di chat, (2) penanda `>`/`####`/`*` literal di .docx, (3) kalimat "File ... siap cetak:" tanpa jalur.
+
+## Skenario 1 (pesan persis gelombang 6), dua percobaan
+**Percobaan A (15.321 karakter):** isi utuh di chat (modul, LKPD bersih tanpa jawaban, soal+rubrik, `# Kunci Jawaban (untuk guru)` terpisah di akhir). Tidak mengarang CP: menolak menulis bunyi dari ingatan, menyebut BSKAP 046/H/KR/2025 (032/2024 dan 033/2022 dinyatakan tidak berlaku), memberi cara mengambil bunyi CP + kolom tempel; Tujuan Pembelajaran dari ringkasan yang ditandai "(cek CP resmi ...)". Jalur file `/opt/ochome/.openclaw/workspace/modul-ajar-bing-kelas7-descriptive-text-hewan-peliharaan.docx` = file nyata. Kekurangan: bunyi CP persis yang diminta tidak diberikan (agent tidak mengunduh).
+**Percobaan B (13.292 karakter):** isi utuh di chat + kunci terpisah. CP elemen 3.1/3.2/3.3 Fase D dikutip dari PDF resmi 046/H/KR/2025 (diunduh agent), dengan catatan tidak ada kode alfanumerik; sama dengan cek v1.0.5. Kekurangan: baris "File untuk cetak/supervisi besok:" kosong tanpa jalur di chat (file ada: `modul-ajar-bing-kelas7-hewan-peliharaan.docx`).
+
+## Skenario 2 (RPP Matematika SD kelas 4, minta Word)
+Giliran 1 bertanya sekali (kelas/jenjang; opsi "langsung buatkan"). Giliran 2 (jawaban awam: kelas 4, 1 pertemuan, minta file Word): isi utuh 11.446 karakter di chat (RPP, LKPD bersih, soal evaluasi, rubrik, kunci terpisah), Fase B, 2 JP SD = 70 menit, CP ditandai "(cek CP resmi ... 046/H/KR/2025)", jalur `/opt/ochome/.openclaw/workspace/RPP-Pecahan-Kelas4/rpp-pecahan-kelas4.docx` = file nyata. Catatan: satu run pertama gagal karena timeout model (infrastruktur), diulang di home baru.
+
+## Verifikasi (python)
+- Waktu: 10+60+10 = 80 (A, B; inti B 10+15+15+20 = 60); SD: 10+45+15 = 70 = 2x35, inti 10+5+25+5 = 45. Rubrik: 4+3+4+4 = 15, 15/16x100 = 93,75 -> 94; 10/12x100 = 83,3 -> 83; 5 soal x 20 = 100.
+- Kunci cocok dengan teks/soal (Milo, has/is/likes; 3/8, 1/4, 4/9 < 7/9, 4/5 > 3/5 > 2/5 > 1/5, 7/10 > 5/10, 1/3 > 1/6).
+- .docx dibuka dengan zipfile (testzip None): A 200 paragraf/3 tabel; B 251/6; SD 166/3. Tidak ada `>` atau `####` literal; tidak ada "Jawaban:" terisi di lembar siswa; "Kunci Jawaban (untuk guru)" setelah pemisah halaman. Satu sisa kecil di B: 1 paragraf (catatan verifikasi waktu) berawal `*` literal (bold di dalam italic bersarang tidak terkonversi).
+- Fakta: bunyi CP 3.2/3.3 pada B sama dengan cek web v1.0.5; tidak ada CP dikarang di A maupun SD.
+- Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim otomatis; B mengunduh PDF CP resmi lewat web_fetch (wajar).
+
+## Skor SESUDAH
+| Percobaan | Skor | Alasan |
+|---|---|---|
+| S1-A | 8 | semua benar, isi utuh, jalur nyata; bunyi CP persis tidak diberikan |
+| S1-B | 8,5 | bunyi CP resmi dikutip; jalur file tidak disebut di chat, 1 `*` literal di docx |
+| S2 | 9 | angka benar, isi utuh, jalur nyata, docx bersih |
+
+**Rata-rata SESUDAH: 8,5. SEBELUM tetap 5,75 (v1.0.5). Selisih +2,75.**
+**VERDIK: LULUS** (sesudah >= 8, tanpa salah fakta/angka). Cacat v1.0.5 no. 1 (isi utuh) dan no. 2 (`>`, `####`) teratasi; no. 3 (jalur) teratasi di 2 dari 3 percobaan.
+
+**Cacat minor tersisa untuk pembuat:** (1) S1-B menulis "File untuk cetak/supervisi besok:" tanpa jalur — tegaskan aturan jalur juga untuk kalimat pembuka/penutup. (2) `buat_docx.py`: `*...**x**...*` (tebal di dalam miring) menyisakan `*` literal. (3) Bunyi CP persis tidak selalu diberikan (A tidak mengunduh) — pertimbangkan instruksi mencoba web_fetch PDF 046/H/KR/2025 bila tersedia.

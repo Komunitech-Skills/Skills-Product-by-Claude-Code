@@ -85,6 +85,16 @@ urutan komponen, kolom tanda tangan kepala sekolah, dll). **Jika guru melampirka
 menyebut template sekolahnya, ikuti template itu** — isi templatenya dengan hasil
 langkah kerja skill ini, jangan memaksakan format Komunitech.
 
+## Cara mengambil bunyi CP resmi (diverifikasi 2026-10-05)
+Acuan CP terbaru: **Keputusan Kepala BSKAP No. 046/H/KR/2025**, ditetapkan **18 Juli 2025**
+(CP PAUD, dasar, menengah; lampiran sekitar 1.691 halaman, per fase A–F dan mata pelajaran).
+Langkah: (1) unduh PDF dari situs resmi Kemendikdasmen (guru.kemendikdasmen.go.id, cari
+"Capaian Pembelajaran 046/H/KR/2025") atau lewat dinas pendidikan; (2) cari jenjang → mata
+pelajaran → fase; (3) salin paragraf CP fase itu **apa adanya** (beserta elemen/kode bila ada)
+dan catat halamannya; (4) tempel ke kolom "CP (salin dari dokumen resmi)" di modul. Jangan
+memakai CP versi lama (Kepmen 033/H/KR/2022, 32/H/KR/2024). Bunyi CP tidak boleh diketik dari ingatan.
+Sumber verifikasi (diakses 2026-10-05): https://www.komunitasbelajar.id/2025/07/keputusan-kepala-bskap-nomor-046hkr2025.html ; https://guruinovatif.id/artikel/bskap-terbitkan-cp-terbaru-2025-struktur-pembelajaran-mata-pelajaran-koding-ai-di-kurikulum-merdeka ; https://www.pembelajaranmendalam.com/2025/11/download-capaian-pembelajaran-terbaru-jenjang-paud-sd-smp-sma-sederajat-berdasarkan-keputusan-kepala-bskap-nomor-046-h-kr-2025.html
+
 ## Sumber (diakses 2026-09-24)
 
 - Kemendikdasmen — siaran pers Permendikdasmen No. 13/2025: https://www.kemendikdasmen.go.id/siaran-pers/13278-permendikdasmen-nomor-13-tahun-2025-menguatkan-arah-kebijakan-melalui-pembelajaran-mendalam

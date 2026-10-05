@@ -7,11 +7,11 @@ Library **agent skills** siap pakai untuk pengusaha & profesional Indonesia, ole
 > ⚠️ **Repo ini PRIVATE dan berisi produk berbayar.** Jangan ubah visibilitas repo menjadi publik
 > dan jangan bagikan isi repo di luar tim internal.
 
-## Isi library (per 2026-09-30)
+## Isi library (per 2026-10-03)
 
 | Jalur | Isi |
 |---|---|
-| **1. Skill** | 117 skill lulus uji internal (109 di antaranya sudah lulus uji sebelum/sesudah otomatis di OpenClaw dan berstatus beta): keuangan & pajak, HR & gaji & KPI, marketing & strategi produk (positioning, riset pesaing, harga, peluncuran, uji pasar), toko online/marketplace, sales, customer service, produktivitas, data, kesehatan (khusus nakes), kripto |
+| **1. Skill** | 115 skill aktif (110 berstatus beta setelah lulus uji sebelum/sesudah otomatis di OpenClaw, 5 lulus; 2 diarsipkan tidak dihitung): keuangan & pajak, HR & gaji & KPI, marketing & strategi produk (positioning, riset pesaing, harga, peluncuran, uji pasar), toko online/marketplace, sales, customer service, produktivitas, data, kesehatan (khusus nakes), kripto |
 | **2. Produk siap pakai pengganti SaaS** | Software yang jalan di komputer pembeli (data lokal, tanpa biaya bulanan), dioperasikan AI agent: kasir, stok, absensi, piutang, CRM WA, dasbor, PDF, serta asisten untuk Frappe Books, Dolibarr, hledger, Actual Budget, Grist, Vikunja, SiYuan, Open Notebook, Uptime Kuma, InvenTree, Umami (analitik web), listmonk (newsletter), Fider (masukan pelanggan), Odoo, Kanboard |
 | **3. Solusi member VIP** | Paket skill + konfigurasi OpenClaw (jadwal, Telegram) + panduan: toko online, klinik, konsultan, usaha offline, kantor & manajemen, riset kripto & keuangan pribadi — lihat [`solusi-vip/`](solusi-vip/) |
 
@@ -38,9 +38,10 @@ solusi-vip/              # paket solusi per profesi untuk member VIP (OpenClaw)
 docs/                    # instalasi per platform, panduan software lokal, uji platform, program beta
 docs/jasa-setup/         # jasa setup berbayar: menu layanan (usulan harga), SOP teknisi, formulir persiapan member
 research/                # backlog, riset harga, audit sumber & lisensi
+promosi/                 # bahan jualan sebelum/sesudah (hasil uji OpenClaw, halaman HTML, CARA-UJI)
 rejected/                # skill yang gagal audit + alasannya
 templates/               # template SKILL.md, README.md, ATTRIBUTION.md
-scripts/                 # validate.py, build.py, uji_openclaw.sh
+scripts/                 # validate.py, build.py, uji_openclaw.sh, promosi_sebelum_sesudah.py
 reports/                 # laporan per sesi kerja
 koordinasi/              # papan tugas & rutinitas tim kurator
 CLAUDE.md                # aturan kerja kurator (alur Tahap 1–8, lisensi, keamanan)

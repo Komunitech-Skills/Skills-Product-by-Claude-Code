@@ -50,3 +50,5 @@ Mengikuti UU Pelindungan Data Pribadi (UU PDP No. 27/2022): pakai nama/foto/test
 dengan persetujuan mereka. Tandai di brief "(dengan izin pelanggan)" setiap kali memakai materi dari
 pelanggan nyata. Untuk fasilitas kesehatan, testimoni pasien tetap **tidak** dipakai di iklan/medsos
 walau ada persetujuan (lihat tabel kategori sensitif).
+
+**Aturan penyerahan:** menolak bagian terlarang tidak menghentikan pekerjaan — setelah penolakan singkat, langsung serahkan paket pengganti yang aman di balasan yang sama (tanpa bertanya "boleh dilanjutkan?").

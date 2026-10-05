@@ -64,3 +64,14 @@ dependensi paket luar standar Python). Kalau salah satu URL berubah format:
    sengaja dipisah supaya mudah ditambal tanpa mengubah logika ambang/state.
 3. Sambil menunggu perbaikan, gunakan mode `--harga-file` untuk tetap bisa menghitung
    ambang dari harga yang dimasukkan manual oleh member.
+
+## 4. Berita & fakta koin (v1.0.10, dicek sungguhan 2026-10-05)
+- `scripts/ambil_berita.py` -- RSS publik tanpa kunci: Cointelegraph per tag koin
+  (`https://cointelegraph.com/rss/tag/<nama-koin>`, mis. `solana`, `ethereum`, `pi-network`),
+  CoinDesk (`https://www.coindesk.com/arc/outboundfeeds/rss/`), The Block
+  (`https://www.theblock.co/rss.xml`), Decrypt (`https://decrypt.co/feed`). Diambil paralel
+  (±4 detik saat uji); sumber yang gagal disebut, semua gagal → exit 3.
+- `scripts/cek_koin.py` -- CoinGecko `search` + `coins/<id>` (harga, pasokan, tautan resmi,
+  ticker bursa; HTTP 429 dicoba ulang singkat) dan Indodax `https://indodax.com/api/pairs`
+  (daftar pair; pada 2026-10-05 berisi 475 pair -- angka ini selalu dihitung ulang oleh script,
+  jangan dikutip dari sini).

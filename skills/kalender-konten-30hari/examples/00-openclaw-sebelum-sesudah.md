@@ -1280,3 +1280,205 @@ Mau sekalian kubikinin caption lengkap untuk beberapa hari pertama (misal hari 1
 | **Rata-rata** | **7,1** | (tanpa 3a: S3 = 8 → rata-rata 8,0) |
 
 **VERDIK: BELUM LULUS** — perbaikan anti-karang berhasil (tidak ada lagi klaim produk/janji kirim karangan, tanggal Ramadan ±8 Feb & Idulfitri ±10 Mar 2027 benar di semua balasan) dan durasi 2 dari 3 percobaan S3 kini ±4,5 menit. Tetapi **1 dari 3 percobaan varian S3 tetap gagal membalas** (model idle timeout, tanpa file kerja) — syarat "tidak ada kegagalan balas" tidak terpenuhi. Sisa untuk pembuat: (1) keandalan S3 (kemungkinan masih ada langkah generasi besar; perlu uji 3× berturut-turut lolos); (2) kapasitas video dihitung per minggu kalender Senin–Minggu, bukan blok 7 hari dari tanggal mulai; (3) label "Ramadan hari ke-N", jangan "H-N"; (4) platform default wajib di Asumsi chat; (5) kurangi GAGAL palsu script (11.11 sebagai jam, "terbaik" pada nama menu, tanggal di kalimat tips).
+
+
+## Uji ulang v1.0.8 (2026-10-03)
+
+**Versi diuji:** 1.0.8 · **Penguji:** agent penguji independen (bukan pembuat) · OpenClaw lokal terisolasi (`openclaw agent --local`, model router `komunitech`), home baru `k-kalender-konten-30hari` (SEBELUM, tanpa skill) dan `s-kalender-konten-30hari` (SESUDAH, skill ini saja), dibuat ulang bersih sebelum tiap sesi, sesi id baru tiap percobaan. Uji ulang karena uji sebelumnya terputus (kontainer restart). Penguji menghitung tanggal/hari/jumlah video per minggu kalender (Senin–Minggu) dengan Python. Agent OpenClaw tidak memasang paket, tidak mengubah config, tidak menawarkan kirim/posting otomatis.
+
+### Skenario 3 (ulang) — pesan sama persis dari uji lama
+
+~~~~text
+Tolong bikinin kalender konten 30 hari mulai 1 Maret 2027 buat usaha kue kering "Dapur Bu Sari" di Semarang. Jualan nastar Rp95.000/toples, order lewat WA, kirim dalam kota aja. Platform IG sama TikTok, aku sanggupnya 2 video seminggu.
+~~~~
+
+**SEBELUM (tanpa skill)** — tools: ['write'] · durasi 153 dtk · rc=0
+
+~~~~text
+Udah jadi! Kalender konten 30 hari buat **Dapur Bu Sari** (1–30 Maret 2027) sudah disusun dan tersimpan di:
+
+📄 `dapur-bu-sari-kalender-konten-maret2027.md`
+
+**Ringkasan singkat:**
+- **Tema besar:** Maret 2027 pas banget sama momentum Lebaran (perkiraan 9–10 Maret, cek lagi mendekati tanggal karena bisa geser ±1 hari sesuai sidang isbat Kemenag) — jadi kalender dibangun: Minggu 1 pre-order, Minggu 2 Lebaran & pasca, Minggu 3–4 jaga repeat order + edukasi produk, penutup rekap & teaser bulan depan.
+- **Video (2x/minggu, total 9 video):** tiap Selasa & Jumat — footage sama dipakai buat Reels IG & TikTok sekaligus, jadi shoot sekali aja.
+- **Hari lain:** konten ringan (foto HP + caption) di Feed IG & Story — gampang, gak perlu editing berat.
+- **CTA konsisten tiap post:** arahkan order & tanya-tanya ke WA, tegasin kirim cuma dalam kota.
+- Ada juga tips eksekusi: kapan shoot video, pasang highlight "Cara Order" di IG, dan reminder cek tanggal resmi Lebaran biar konten ucapan gak salah hari.
+
+Mau saya sesuaikan lagi — misal ganti hari shoot video, tambahin promo bundling, atau bikin versi caption siap-pakai buat tiap post?
+~~~~
+
+Isi file yang ditulis agent (ringkas): kalender 30 hari tabel per minggu; memuat "stok terbatas", "ASMR gigit nastar renyah + selai nanas meleleh", "flash sale beli 2 toples gratis ongkir", "order sebelum jam 5 sore = kirim hari ini", "mentega, nanas asli, bukan selai instan", "kurir libur", "proses bikin nastar (adonan → cetak → oven)", "testimoni tahun lalu".
+
+**SESUDAH percobaan 1** — tools: [] · durasi 788 dtk · **rc=1, TIDAK MEMBALAS** (model idle timeout, tidak ada file kerja)
+
+~~~~text
+The model did not produce a response before the model idle timeout. Please try again, or increase `models.providers.<id>.timeoutSeconds` for slow local or self-hosted providers. If `agents.defaults.timeoutSeconds` or a run-specific timeout is lower, raise that ceiling too; provider timeouts cannot extend the whole agent run.
+~~~~
+
+**SESUDAH percobaan 2 (sesi baru)** — tools: [] · durasi 625 dtk · **rc=1, TIDAK MEMBALAS** (pesan galat identik dengan percobaan 1)
+
+**SESUDAH percobaan 3 (sesi baru)** — tools: ['write','exec','read','edit'] · durasi 567 dtk · rc=0
+
+~~~~text
+Fakta dari pengguna: usaha kue kering "Dapur Bu Sari" di Semarang, produk nastar Rp95.000/toples, order lewat WA, kirim dalam kota saja, platform IG & TikTok, kemampuan produksi 2 video/minggu, mulai 1 Maret 2027 selama 30 hari.
+
+## Kalender Konten Dapur Bu Sari — 01 Mar 2027 s.d. 30 Mar 2027
+Pilar: Menu & Promo (8 hari), Proses Dapur (6 hari), Ulasan Pelanggan (6 hari), Tips Kue Kering (5 hari), Hiburan Kuliner Lokal (5 hari) | Platform: IG + TikTok
+
+| No | Tanggal | Hari | Momen | Format | Ide Konten |
+|---|---|---|---|---|---|
+| 1 | 01 Mar 2027 | Senin | Ramadan hari ke-22 (perkiraan); Hari gajian (tgl 1) | Video IG+TikTok | Video Bu Sari menyusun nastar ke dalam toples Rp95.000, siap kirim dalam kota Semarang |
+| 2 | 02 Mar 2027 | Selasa | Ramadan hari ke-23 (perkiraan) | Foto IG+TikTok | Foto toples nastar Dapur Bu Sari tersusun rapi di meja dapur |
+| 3 | 03 Mar 2027 | Rabu | Ramadan hari ke-24 (perkiraan); Batas THR cair ±H-7 Lebaran; Tanggal kembar 3.3 | Video IG+TikTok | Video Bu Sari menata beberapa toples nastar untuk dikirim ke pelanggan Semarang |
+| 4 | 04 Mar 2027 | Kamis | Ramadan hari ke-25 (perkiraan) | Foto IG+TikTok | [isi: testimoni pelanggan nastar jika ada, dengan izin] atau foto toples close-up harga Rp95.000 |
+| 5 | 05 Mar 2027 | Jumat | Ramadan hari ke-26 (perkiraan) | Foto IG+TikTok | Carousel [isi: tips seputar nastar/kue kering] dari Dapur Bu Sari |
+| 6 | 06 Mar 2027 | Sabtu | Ramadan hari ke-27 (perkiraan) | Foto IG+TikTok | Foto suasana dapur Bu Sari yang mulai sibuk menjelang Lebaran |
+| 7 | 07 Mar 2027 | Minggu | Ramadan hari ke-28 (perkiraan) | Foto IG+TikTok | Foto toples nastar Rp95.000 dengan reminder kirim hanya dalam kota Semarang |
+| 8 | 08 Mar 2027 | Senin | Ramadan hari ke-29 (perkiraan); Hari Perempuan Internasional | Foto IG+TikTok | Foto Bu Sari di dapur, merayakan Hari Perempuan Internasional sambil siapkan nastar Lebaran |
+| 9 | 09 Mar 2027 | Selasa | Ramadan hari ke-30 (perkiraan); H-1 Lebaran / malam takbiran (perkiraan) | Foto IG+TikTok | Foto toples nastar siap kirim menjelang Idulfitri [isi: jadwal buka/libur toko jika ada] |
+| 10 | 10 Mar 2027 | Rabu | Idulfitri 1448 H (perkiraan) — tanpa jualan | Video IG+TikTok | Video ucapan Selamat Idulfitri dari Dapur Bu Sari untuk pelanggan Semarang, tanpa promosi |
+| 11 | 11 Mar 2027 | Kamis | Lebaran H+1 (perkiraan) — tanpa jualan | Foto IG+TikTok | Foto toples nastar Dapur Bu Sari [isi: info jadwal order kembali setelah Lebaran jika ada] |
+| 12 | 12 Mar 2027 | Jumat | Pasca-Lebaran H+2 (perkiraan) | Foto IG+TikTok | Foto toples nastar Rp95.000 siap kirim dalam kota Semarang pasca Lebaran |
+| 13 | 13 Mar 2027 | Sabtu | Pasca-Lebaran H+3 (perkiraan) | Video IG+TikTok | Video Bu Sari mengecek stok nastar di dapur untuk pesanan pasca Lebaran |
+| 14 | 14 Mar 2027 | Minggu | Pasca-Lebaran H+4 (perkiraan) | Foto IG+TikTok | [isi: testimoni pelanggan nastar jika ada, dengan izin] atau foto toples nastar dari dekat |
+| 15 | 15 Mar 2027 | Senin | Pasca-Lebaran H+5 (perkiraan) | Video IG+TikTok | Video Bu Sari menyiapkan paket nastar untuk dikirim ke pelanggan dalam kota Semarang |
+| 16 | 16 Mar 2027 | Selasa | Pasca-Lebaran H+6 (perkiraan) | Foto IG+TikTok | Carousel [isi: tips menyimpan kue kering agar awet] dari Dapur Bu Sari |
+| 17 | 17 Mar 2027 | Rabu | Pasca-Lebaran H+7 (perkiraan) | Foto IG+TikTok | Foto suasana dapur Bu Sari sambil menyiapkan nastar harian |
+| 18 | 18 Mar 2027 | Kamis | Pasca-Lebaran H+8 (perkiraan) | Foto IG+TikTok | Foto toples nastar Rp95.000 dengan reminder order lewat WA |
+| 19 | 19 Mar 2027 | Jumat | Pasca-Lebaran H+9 (perkiraan) | Video IG+TikTok | Video proses Bu Sari menata nastar ke dalam toples sebelum dikirim |
+| 20 | 20 Mar 2027 | Sabtu | Pasca-Lebaran H+10 (perkiraan) | Foto IG+TikTok | Foto [isi: testimoni pelanggan nastar jika ada, dengan izin] atau foto toples nastar bersanding kopi/teh |
+| 21 | 21 Mar 2027 | Minggu | Pasca-Lebaran H+11 (perkiraan) | Foto IG+TikTok | Foto toples nastar Dapur Bu Sari, reminder gajian sudah cair pesan sekarang |
+| 22 | 22 Mar 2027 | Senin | Pasca-Lebaran H+12 (perkiraan) | Video IG+TikTok | Video Bu Sari menjelaskan isi toples nastar Rp95.000 dari dekat |
+| 23 | 23 Mar 2027 | Selasa | Pasca-Lebaran H+13 (perkiraan) | Foto IG+TikTok | Foto toples nastar siap kirim dalam kota Semarang dengan rapi |
+| 24 | 24 Mar 2027 | Rabu | Pasca-Lebaran H+14 (perkiraan) | Foto IG+TikTok | [isi: testimoni pelanggan nastar jika ada, dengan izin] atau foto proses pengemasan toples |
+| 25 | 25 Mar 2027 | Kamis | Hari gajian (tgl 25) | Video IG+TikTok | Video Bu Sari menyiapkan nastar menjelang hari gajian tanggal 25 |
+| 26 | 26 Mar 2027 | Jumat | - | Foto IG+TikTok | Carousel [isi: tips memilih kue kering yang baik] dari Dapur Bu Sari |
+| 27 | 27 Mar 2027 | Sabtu | - | Foto IG+TikTok | Foto suasana santai menikmati nastar bersama keluarga [isi: momen spesifik jika ada] |
+| 28 | 28 Mar 2027 | Minggu | - | Foto IG+TikTok | Foto toples nastar Rp95.000 dengan reminder stok harian dari Dapur Bu Sari |
+| 29 | 29 Mar 2027 | Senin | - | Video IG+TikTok | Video Bu Sari menutup toples nastar sebelum dikirim ke pelanggan |
+| 30 | 30 Mar 2027 | Selasa | - | Foto IG+TikTok | Foto rekap bulan ini dari Dapur Bu Sari, ucapan terima kasih ke pelanggan Semarang |
+
+(perkiraan) = tanggal Ramadan/Idulfitri belum resmi — menunggu sidang isbat / cek SKB 3 Menteri.
+
+Hook & CTA 3 hari pertama:
+- Senin 01 Mar: "Nastar Lebaran sudah bisa dipesan" — CTA: Order lewat WA
+- Selasa 02 Mar: "Satu toples nastar, siap kirim Semarang" — CTA: Order lewat WA
+- Rabu 03 Mar: "THR cair, nastar Lebaran dipesan sekarang" — CTA: Order lewat WA
+
+📥 File lengkap (11 kolom + CTA semua hari):
+/opt/ochome/.openclaw/workspace/dapur-bu-sari-maret2027/hasil-kalender/kalender.csv (pemisah `;`, buka pakai Excel)
+/opt/ochome/.openclaw/workspace/dapur-bu-sari-maret2027/hasil-kalender/kalender.md
+
+💡 Tips eksekusi:
+1. Sanggup 2 video/minggu → syuting sekaligus di akhir pekan untuk 2 video minggu itu, hari lain cukup foto.
+2. Siapkan beberapa toples nastar jadi properti foto, tidak perlu buka toples baru tiap kali syuting.
+3. Simpan 2-3 foto cadangan toples close-up untuk hari yang butuh konten cepat.
+4. Cek jam posting ramai lewat Insight IG/Analytics TikTok sendiri; titik awal: jam istirahat siang (±11.30-13.00) dan malam (±19.00-21.00).
+5. Periode ini menyentuh Ramadan–Idulfitri (perkiraan): promo jalan sampai H-1, ucapan tanpa jualan di hari H & H+1, lalu normal lagi pasca-Lebaran.
+
+📝 Asumsi:
+- Platform: IG + TikTok saja (sesuai permintaan, WA Status tidak dipakai karena tak disebut).
+- Gajian pelanggan pakai default tgl 25 & 1 (tidak disebutkan).
+- Tanggal Ramadan & Idulfitri 1448 H masih perkiraan — cek SKB 3 Menteri/sidang isbat mendekati waktunya.
+- Testimoni, tips spesifik kue kering, dan jadwal buka/libur toko belum disebutkan — ditandai `[isi: ...]`, tinggal dilengkapi sendiri.
+
+Mau sekalian aku tuliskan caption lengkap untuk beberapa hari (misalnya hari 1-5, atau hari-hari seputar Lebaran)?
+~~~~
+
+### Skenario normal lama (SESUDAH saja, sekali) — pesan sama persis dengan S1 lama
+
+~~~~text
+Bikin kalender konten November 2026 buat laundry kiloan "Wangi Bersih" di Depok, Rp7.000/kg, bisa antar jemput, order lewat WA. Platform IG sama WA Status aja. Aku cuma sanggup bikin 3 video seminggu.
+~~~~
+
+**SESUDAH** — tools: ['exec','read','write'] · durasi 496 dtk · rc=0
+
+~~~~text
+Kalender konten November 2026 buat **Wangi Bersih** udah jadi dan lolos cek fakta. Ini yang kepake:
+
+**Fakta dari kamu:** laundry kiloan "Wangi Bersih" di Depok, Rp7.000/kg, bisa antar jemput, order lewat WA, platform IG + WA Status aja, kapasitas 3 video/minggu.
+
+## Kalender Konten Laundry Wangi Bersih — 01 Nov 2026 s.d. 30 Nov 2026
+Pilar: Promo & Jual (7 hari), Hasil Kerja (6 hari), Tips Perawatan (6 hari), Testimoni (6 hari), Tim & Proses (5 hari) | Platform: IG + WA Status
+
+| No | Tanggal | Hari | Momen | Format | Ide Konten |
+|---|---|---|---|---|---|
+| 1 | 01 Nov 2026 | Minggu | Hari gajian (tgl 1) | Video + Story/Status | Video cucian kiloan rapi terlipat, harga Rp7.000/kg ditulis di layar |
+| 2 | 02 Nov 2026 | Senin | - | Video sebelum-sesudah | Baju kotor masuk, hasil bersih rapi terlipat keluar |
+| 3 | 03 Nov 2026 | Selasa | - | Carousel tips | Tips pisahkan baju putih & warna sebelum dicuci |
+| 4 | 04 Nov 2026 | Rabu | - | Video + Story/Status | Timbangan laundry + hitungan Rp7.000/kg |
+| 5 | 05 Nov 2026 | Kamis | - | Foto testimoni + Story | Cucian rapi + testimoni [isi: testimoni] (dgn izin) |
+| 6 | 06 Nov 2026 | Jumat | - | Video proses | Proses laundry dimasukkan ke mesin cuci |
+| 7 | 07 Nov 2026 | Sabtu | - | Foto sebelum-sesudah | Baju kotor vs bersih terlipat rapi |
+| 8 | 08 Nov 2026 | Minggu | - | Carousel tips | Tips melipat baju agar tidak kusut |
+| 9 | 09 Nov 2026 | Senin | - | Foto produk + Status | Rak baju bersih siap antar, harga Rp7.000/kg |
+| 10 | 10 Nov 2026 | Selasa | Hari Pahlawan — tanpa jualan | Foto apresiasi | Ucapan Hari Pahlawan utk pelanggan setia |
+| 11 | 11 Nov 2026 | Rabu | Tanggal kembar 11.11 | Video + Story/Status | Promo 11.11 [isi: promo jika ada], harga Rp7.000/kg |
+| 12 | 12 Nov 2026 | Kamis | - | Video proses | Kurir jemput baju dari rumah pelanggan |
+| 13 | 13 Nov 2026 | Jumat | - | Foto sebelum-sesudah | Baju kerja kusut → rapi licin |
+| 14 | 14 Nov 2026 | Sabtu | - | Carousel tips | Keluarkan noda kecil sebelum dikirim |
+| 15 | 15 Nov 2026 | Minggu | - | Foto promo + Story | Tumpukan baju weekend, harga Rp7.000/kg |
+| 16 | 16 Nov 2026 | Senin | - | Foto testimoni + Story | Baju rapi dlm plastik + testimoni [isi] |
+| 17 | 17 Nov 2026 | Selasa | - | Video proses | Melipat baju bersih satu per satu |
+| 18 | 18 Nov 2026 | Rabu | - | Video sebelum-sesudah | Seprai kusut kotor → bersih licin rapi |
+| 19 | 19 Nov 2026 | Kamis | - | Carousel tips | Menjemur baju cepat kering musim hujan |
+| 20 | 20 Nov 2026 | Jumat | Tanggal tua — hemat/nilai | Foto testimoni + Story | Testimoni hemat laundry kiloan [isi] |
+| 21 | 21 Nov 2026 | Sabtu | Tanggal tua | Video proses | Timbangan, hemat sistem kiloan Rp7.000/kg |
+| 22 | 22 Nov 2026 | Minggu | Tanggal tua | Foto sebelum-sesudah | Baju numpuk → rapi bersih |
+| 23 | 23 Nov 2026 | Senin | Tanggal tua | Carousel tips | Atur budget laundry bulanan |
+| 24 | 24 Nov 2026 | Selasa | Tanggal tua | Foto testimoni + Story | Testimoni pelanggan hemat [isi] |
+| 25 | 25 Nov 2026 | Rabu | Hari Guru; gajian (tgl 25) | Video + Story/Status | Ucapan Hari Guru + promo gajian, Rp7.000/kg |
+| 26 | 26 Nov 2026 | Kamis | - | Video proses | Kurir antar baju bersih ke rumah |
+| 27 | 27 Nov 2026 | Jumat | - | Foto sebelum-sesudah | Handuk kusam → cerah bersih |
+| 28 | 28 Nov 2026 | Sabtu | - | Carousel tips | Simpan baju bersih tetap rapi |
+| 29 | 29 Nov 2026 | Minggu | - | Video + Story/Status | Tumpukan baju weekend akhir bulan |
+| 30 | 30 Nov 2026 | Senin | - | Foto testimoni + Story | Cucian rapi + testimoni bulan ini [isi] |
+
+**Hook & CTA 3 hari pertama** (semua ada di file):
+- 01 Nov: "Gajian tiba, laundry numpuk?" — CTA: Order lewat WA, bisa antar jemput
+- 02 Nov: "Kotor masuk, bersih keluar" — CTA: Order lewat WA
+- 03 Nov: "Baju putih kuning? Cek ini" — CTA: Simpan & order lewat WA
+
+📥 **File:** `/opt/ochome/.openclaw/workspace/kalender-wangi-bersih/hasil-kalender/kalender.csv` (pemisah `;`, buka langsung di Excel Indonesia) + `kalender.md` (tabel lengkap 11 kolom)
+
+💡 **Tips eksekusi:**
+1. Syuting 3 video/minggu sekaligus di akhir pekan, sisanya foto/Story diambil cepat pakai HP.
+2. Siapkan 1 set foto "sebelum-sesudah" standar yang bisa dipakai ulang.
+3. Kumpulkan testimoni pelanggan via WA tiap minggu (dengan izin) buat isi bagian `[isi: testimoni]`.
+4. Hari Pahlawan (10 Nov) sengaja tanpa CTA jualan.
+5. Siapin dulu ada/nggaknya promo 11.11 sebelum tanggal itu.
+
+📝 **Asumsi:** gajian tgl 1 & 25 (default); platform IG + WA Status sesuai permintaanmu; pilar dipilih sesuai jenis usaha jasa laundry; promo 11.11 dan testimoni belum ada dari kamu jadi ditandai `[isi: ...]`.
+
+Mau aku lanjut bikin caption lengkap buat beberapa hari tertentu (misal minggu pertama)?
+~~~~
+
+### Verifikasi (Python, penguji)
+
+- **Tanggal/hari:** semua 30 baris di kedua kalender cocok hari-tanggalnya. Ramadan 1448 H ±8 Feb 2027 → 1 Mar = hari ke-22 ✔ (label "Ramadan hari ke-22", **tidak ada "H-22"** ✔); Idulfitri ±10 Mar 2027 (Rabu) ✔, 11 Mar H+1 ✔, 3 Mar = H-7 ✔; 8 Mar Hari Perempuan ✔; 10 Nov Hari Pahlawan tanpa jualan ✔, 25 Nov Hari Guru ✔. Semua berlabel "perkiraan" ✔. SEBELUM: menaruh Lebaran "9–10 Maret" dan memakai "H-3", "H-1/H-2" tanpa dasar tanggal.
+- **Kapasitas video per minggu kalender (Senin–Minggu):** S3 sesudah-3: 2/2/2/2/1 ✔ (≤ 2). S1 sesudah: 1/3/2/3/3 ✔ (≤ 3). SEBELUM S3: Selasa+Jumat = 9 video ✔.
+- **Karangan fakta (sesudah-3):** tidak ada klaim produk/janji kirim/promo berat. Ringan 3: "Bu Sari" tampil di video (pengguna hanya menyebut nama usaha), "reminder stok harian"/"mengecek stok nastar" (stok tidak disebut pengguna), "bersama keluarga/kopi-teh" (suasana). Tips baris 2 menyebut "toples" saja (tanpa "kaca") ✔. **Karangan sesudah-1 dan -2: tidak ada (tidak membalas).** S1 sesudah: ringan 3 ("seprai", "handuk", "mesin cuci"/"plastik"/"musim hujan" bukan layanan/fakta yang disebut pengguna).
+- **SEBELUM karangan berat ≥ 7:** stok terbatas, gratis ongkir beli 2 toples, kirim hari ini sebelum jam 5 sore, renyah, mentega & nanas asli, kurir libur, testimoni tahun lalu; angka promo tidak dari pengguna.
+- **Membalas:** SEBELUM 1/1; SESUDAH S3 **1 dari 3** (a1 & a2 timeout 625–788 dtk); S1 1/1.
+
+### Skor
+
+| Sesi | Skor | Alasan |
+|---|---|---|
+| SEBELUM S3 | 5 | Cepat (153 dtk), kalender bagus dibaca, tetapi ±7 klaim/promo karangan, Lebaran 9–10 Mar tanpa dasar, tanpa file kerja yang bisa dibuka Excel. |
+| SESUDAH S3 percobaan 1 | 0 | Tidak membalas. |
+| SESUDAH S3 percobaan 2 | 0 | Tidak membalas. |
+| SESUDAH S3 percobaan 3 | 8 | 30/30 hari, tanggal & label benar, 2 video/minggu, CSV; minus 3 karangan ringan. |
+| SESUDAH S1 | 8 | 30/30 hari, ≤ 3 video/minggu, tanggal benar; minus 3 karangan ringan. |
+
+**Rata-rata SESUDAH:** S3 = 2,7 (0/0/8), semua sesi = 3,2 (0/0/8/8). **SEBELUM S3 = 5**. Selisih S3 sesudah−sebelum = **−2,3** (bila hanya sesi yang membalas: +3).
+
+### VERDIK: BELUM
+
+Syarat LULUS (semua sesi SESUDAH ≥ 8, karangan 0, selisih ≥ 1,5) **tidak terpenuhi**: 2 dari 3 percobaan S3 **tidak membalas** (idle timeout 10–13 menit, sebelumnya 1 dari 3 — makin buruk/tidak stabil), dan karangan ringan masih ada (3 per kalender). Perbaikan v1.0.8 yang terbukti: label "hari ke-22" (bukan "H-22"), kapasitas video per minggu kalender, tanpa "toples kaca", tanpa klaim produk/kirim karangan, tanggal Ramadan/Idulfitri benar.
+
+**Cacat untuk pembuat:** (1) keandalan S3: 2/3 timeout (bukti: `rc=1, tools: []`, tanpa file kerja, 625 & 788 dtk) — prompt/alur terlalu berat untuk model router; kurangi langkah (satu perintah script pembuat + cek, tanpa penulisan berulang) agar < 5 menit; (2) karangan ringan: jangan sebut tokoh ("Bu Sari tampil") atau "stok" bila pengguna tidak menyebut; (3) pembeda jujur hanya bila membalas: sesudah memberi 30 baris + CSV, tanggal Ramadan terhitung, nol klaim promo karangan, sedangkan SEBELUM menambah promo/gratis ongkir karangan.
+
+**Cuplikan jualan:** dikosongkan sampai keandalan balasan terbukti (3 dari 3 percobaan membalas).
