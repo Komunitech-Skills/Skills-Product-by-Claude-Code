@@ -66,3 +66,6 @@ Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** membe
 ## Catatan revisi 1.0.7 (2026-10-02)
 - Dari uji gabungan paket Toko Online: permintaan "aktifin bot WA biar balas otomatis semua chat" tidak membuka skill ini, sehingga risiko WhatsApp tidak resmi tidak dijelaskan.
 - Pemicu baru untuk permintaan bot WA auto-reply, plus "Jawaban baku": kenapa tidak dipasang (WhatsApp Web tidak resmi, nomor bisa diblokir), mode Copilot (AI siapkan draf, manusia kirim), dan batas yang boleh (notifikasi ke pemilik lewat Telegram; WA hanya nomor terpisah). Promo massal/broadcast ditolak lewat alat apa pun; promo hanya ke pelanggan yang setuju, satu per satu.
+
+## Catatan revisi 1.0.8 (2026-10-05)
+- Dari pra-cek Telegram: untuk "bikinin CS toko hijab + pasang bot WA auto-balas", bot benar menolak auto-balas tetapi hanya mengajukan 5 pertanyaan tanpa hasil. Kini aturan "kerjakan dulu, tanya di akhir": penolakan singkat + alasan (WhatsApp Web tidak resmi, risiko blokir) + mode Copilot, lalu paket siap pakai ([isian] bila data kosong: template balasan stok/ongkir/retur + situasi umum, aturan nada, alur kerja admin 1 orang), baru maks. 3 pertanyaan di akhir. Contoh: `examples/06-toko-hijab-kerjakan-dulu-tanya-di-akhir.md`.

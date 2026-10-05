@@ -249,3 +249,6 @@ lolos | angka script diverifikasi independen: **ya**.
 
 ## Catatan koordinator — v1.0.2
 Temuan "Uji ulang v1.0.1" di periksa_draf.py diperbaiki pembuat; `tests/uji_regresi.py` 45/45 lulus. Koordinator mengecek ulang secara independen 5 kasus kunci: kebocoran OTP dalam kalimat "jangan…" → ditandai; "tidak pernah memerlukan kode OTP" → bersih; "Harga Pashmina Ceruti 79.000" (karangan, KB Rp89.000) → ditandai; "Diskon 20% untuk 3 pcs" → bersih; "order ini NIK 3201…" → ditandai. Urutan setup WA di references §2 kini: kunci allowlist dulu, baru login QR; §4 memakai `config validate`. Status tetap lulus (perubahan hanya pada pemeriksa opsional + panduan, disertai uji regresi).
+
+## Catatan revisi v1.0.8 (2026-10-05) — menunggu uji ulang independen
+Pra-cek Telegram gelombang 8: balasan hanya menolak auto-reply lalu bertanya data toko tanpa hasil. Perbaikan: aturan "kerjakan dulu, tanya di akhir" di SKILL.md & description (paket siap pakai dengan [isian] sebelum maks. 3 pertanyaan). Contoh baru: `06-toko-hijab-kerjakan-dulu-tanya-di-akhir.md`. Belum diuji ulang independen di OpenClaw; skor & status tidak diubah di sini.
