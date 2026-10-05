@@ -119,3 +119,6 @@ independen.
 
 ## Catatan koordinator — v1.0.1 (setelah uji, skor 8 LULUS)
 Dua cacat SEDANG diperbaiki dengan menuliskan aturannya secara eksplisit di SKILL.md bagian "Batasan & penanganan error": (1) default privasi nama karyawan di laporan ke atasan/pemilik/klien; (2) penolakan memo tuduhan tanpa bukti / PHK sepihak + rujukan ke `surat-peringatan-karyawan` dan konsultan. Perilaku yang diuji tidak berubah (sebelumnya sudah benar berkat penalaran agent; kini tertulis).
+
+## Riwayat revisi — v1.0.6 (2026-10-05)
+Temuan Telegram gelombang 9 (cacat no. 1): balasan hanya berisi 5 pertanyaan, tanpa teks pengumuman. Perbaikan: aturan "kerjakan dulu, tanya di akhir", kerangka pengumuman libur akhir tahun dua blok, 1 Jan 2027 ditambahkan ke referensi, butir checklist baru. Status: **menunggu uji ulang independen**.

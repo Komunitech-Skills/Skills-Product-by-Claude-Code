@@ -52,7 +52,14 @@ pengguna.
 | Bahasa (ID / EN / bilingual) | Tidak | Bahasa Indonesia |
 | Kanal tujuan (WA/Telegram, email, cetak/dokumen) | Tidak | WA/Telegram (format pendek, `*tebal*`) |
 
-Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan
+**Kerjakan dulu, tanya di akhir (wajib):** bila jenis & maksud permintaan sudah jelas
+(mis. "pengumuman libur Natal & Tahun Baru untuk grup WA, 20 orang"), **langsung tulis
+teks lengkapnya di balasan pertama** — jangan membuka balasan dengan daftar pertanyaan.
+Hal yang belum diketahui ditulis `[isian: ...]` (nama kantor, jam kerja, nama pengirim)
+dan paling banyak **3 pertanyaan singkat** ditaruh di akhir, setelah teksnya. Tanggal yang
+sudah ada di `references/` (libur nasional, cuti bersama) **dicantumkan, bukan ditanyakan**.
+Bila info wajib benar-benar kurang sampai teks tidak bisa disusun (mis. bahan laporan
+kosong), tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan
 singkat bernomor (maks. 5). Jika pengguna terburu-buru atau langsung memberi bahan mentah
 tanpa detail lain, pakai default di atas dan sebutkan asumsi yang dipakai di akhir hasil.
 
@@ -93,6 +100,15 @@ tanpa detail lain, pakai default di atas dan sebutkan asumsi yang dipakai di akh
      atau nama+nominal** — meski pengguna memintanya dan meski angkanya dari `hitung-thr`/
      `gaji-umkm`. Isi hanya info umum: tanggal bayar, dasar aturan, rumus umum, cara cek
      rincian pribadi. Ikuti **Aturan privasi & kanal** di atas (dua blok terpisah).
+   - **Pengumuman libur akhir tahun (kerangka wajib):** dua blok bertajuk tetap —
+     **TEKS GRUP (tanpa nominal per orang)** berisi tanggal libur & cuti bersama dari
+     `references/` (24 Des 2026 cuti bersama, 25 Des Natal, 1 Jan 2027 Tahun Baru; sebut
+     nama hari yang benar sesuai tabel), batas bayar THR "paling lambat H-7 hari raya"
+     (bukan H-3), `[isian]` untuk nama kantor/jam, dan kalimat bahwa **THR per orang tidak
+     dicantumkan di grup; rincian dikirim pribadi**; lalu **REKAP/PESAN PRIBADI — khusus
+     pemilik/HR** (kerangka pesan pribadi tanpa angka karangan). Jangan menawarkan "saya
+     hitungkan THR" kecuali skill `hitung-thr` benar-benar terpasang; bila tidak, tulis
+     bahwa nominal dihitung terpisah oleh HR/akuntan.
    - **Tahun di luar tabel (2027 dst.):** maksimal **satu** pencarian web ke sumber resmi;
      bila belum pasti, tulis sebagai asumsi atau `[isi: tanggal sesuai SKB <tahun>]` dan
      lanjutkan — jangan mencari berulang, jangan menulis catatan tebakan ("SKB biasanya
@@ -156,6 +172,8 @@ format sopan-formal. Ganti jika perlu._
 - [ ] Nada konsisten dari awal sampai akhir (tidak campur formal-santai)
 - [ ] Format kanal sesuai (WA/Telegram: `*tebal*` + bullet pendek; email: heading + kalimat lengkap)
 - [ ] Pengumuman grup tidak memuat nominal gaji/THR per orang (juga saat memakai `hitung-thr`/`gaji-umkm`); rincian per orang di blok terpisah khusus pemilik/HR; THR tidak dihitung sendiri
+- [ ] Balasan pertama langsung berisi teks pengumuman/laporan (dua blok bila menyangkut THR), bukan hanya pertanyaan; pertanyaan maks. 3 dan hanya di akhir; tanggal dari `references/` tidak ditanyakan
+- [ ] Tidak memakai kata proses ("file", "dokumen privat", "saya kirim/catat") — cukup "rincian dikirim pribadi oleh pemilik/HR"
 - [ ] Tidak ada tawaran kirim otomatis ke grup/menyambungkan WhatsApp — hasil berupa draf untuk pemilik
 - [ ] Data sensitif karyawan (gaji individu, alasan cuti pribadi, penilaian kinerja personal)
       tidak dicantumkan tanpa izin eksplisit dari pengguna
