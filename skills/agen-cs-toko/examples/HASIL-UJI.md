@@ -264,3 +264,7 @@ VERDIK: LULUS. Skor 9 / 9 / 8 (rata-rata 8,7), 3/3 lulus, tanpa timeout. Penolak
 
 ## Riwayat revisi - v1.0.10 (2026-10-05)
 Temuan Telegram gelombang 9 (cacat no. 5): template cara bayar berisiko melanggar kebijakan Shopee bila dipakai di chat marketplace. Perbaikan: catatan wajib di SKILL.md, template PENGETAHUAN, referensi + sumber. Status: **menunggu uji ulang independen**.
+
+
+## Uji ulang Telegram v1.0.10 (2026-10-05)
+Uji ulang Telegram v1.0.10 (2026-10-05): 2 percobaan 8,5 / 7,0, rata-rata 7,75, 1/2 lulus. VERDIK TIDAK LULUS. Label khusus WA pada template bayar ada; sisa: nama file/path bocor di 1 percobaan.

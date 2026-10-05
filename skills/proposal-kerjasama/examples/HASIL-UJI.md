@@ -117,3 +117,7 @@ Cacat berat v1.0.0 sudah diperbaiki dengan benar dan dilindungi uji regresi. Sem
 
 ## Riwayat revisi - v1.0.10 (2026-10-05)
 Temuan Telegram gelombang 9 (cacat no. 3): "sudah BPOM" disamakan dengan "BPOM MD/PIRT"; komitmen "display/cooler kami sediakan" tercetak padahal tidak diberikan pengguna. Perbaikan: SKILL.md langkah 1 + larangan janji tak diberikan + 2 butir checklist, `references/izin-edar-pangan.md`. Status: **menunggu uji ulang independen**.
+
+
+## Uji ulang Telegram v1.0.10 (2026-10-05)
+Uji ulang Telegram v1.0.10 (2026-10-05): 2 percobaan 8,3 / 7,8, rata-rata 8,05, 2/2 lulus. VERDIK LULUS (tipis). BPOM/PIRT tidak disamakan secara tegas, rumus laba/rugi tampil.

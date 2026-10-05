@@ -122,3 +122,7 @@ Dua cacat SEDANG diperbaiki dengan menuliskan aturannya secara eksplisit di SKIL
 
 ## Riwayat revisi — v1.0.6 (2026-10-05)
 Temuan Telegram gelombang 9 (cacat no. 1): balasan hanya berisi 5 pertanyaan, tanpa teks pengumuman. Perbaikan: aturan "kerjakan dulu, tanya di akhir", kerangka pengumuman libur akhir tahun dua blok, 1 Jan 2027 ditambahkan ke referensi, butir checklist baru. Status: **menunggu uji ulang independen**.
+
+
+## Uji ulang Telegram v1.0.6 (2026-10-05)
+Uji ulang Telegram v1.0.6 (2026-10-05): 3 percobaan 8,0 / 8,3 / 6,0, rata-rata 7,43, 2/3 lulus. VERDIK TIDAK LULUS. Teks pengumuman dua blok kini selalu tampil; sisa: kata "skill" bocor & tahun ucapan salah (2026 bukan 2027) di 1 percobaan.

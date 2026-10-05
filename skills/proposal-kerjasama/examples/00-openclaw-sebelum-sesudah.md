@@ -1242,3 +1242,17 @@ Penguji independen. Metode: OpenClaw `--channel telegram` (tanpa kirim apa pun),
 Pemeriksaan independen (python): 35% x Rp15.000 = Rp5.250; sisa Rp9.750; Rp9.750 − 6.000 = 3.750; − 11.000 = rugi 1.250; 30/50/60/100/200 botol = Rp157.500/262.500/315.000/525.000/1.050.000 (bagian toko). Semua cocok. Tidak ada kata proses (script, file, LULUS/GAGAL) atau path di ketiga balasan; kata "cek" hanya bermakna biasa ("cek porsi aman").
 
 **VERDIK konteks Telegram v1.0.9: LULUS** (rata-rata 8,40 ≥ 8; 3/3 lulus). Cacat gelombang 8 no. 1 teratasi: rumus laba/titik impas + peringatan rugi tampil walau HPP kosong, tidak ada kebocoran proses/path.
+
+## Uji ulang konteks Telegram v1.0.10 — 2026-10-05
+Penguji independen. Metode: OpenClaw `--channel telegram` (tanpa kirim apa pun), 2 percobaan, home bersih per percobaan, pesan persis kunci `proposal-kerjasama` di teks-g9.json (kopi susu botol 250 ml, Solo, Rp15.000, porsi toko 35%, "sudah BPOM" + "paling laris se-Solo"). Keluaran: `hasil/g9w-proposal-kerjasama-1..2`. Tujuan: cacat gelombang 9 no. 3 (PIRT disamakan dengan BPOM, janji tak diberikan pengguna).
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,3 | Ya | BPOM hanya dengan nomor izin edar (BPOM MD/ML), PIRT tidak disebut; "paling laris" jadi `[isi: bukti]`; rumus laba + tabel rugi/impas (Rp9.750 − HPP − kirim; Rp2.250 rugi) tampil; proposal + WA + email lengkap; 3 pertanyaan. Minus: "uji coba 3 bulan" ditambahkan (diberi label asumsi). |
+| 2 | 7,8 | Ya | Rumus laba/rugi + contoh Rp3.750 / Rp0 / rugi Rp1.250, simulasi 50/100/200 benar, klaim jadi `[isi]`; 3 pertanyaan. Minus: slot placeholder "izin edar [isi: nomor BPOM-MD / PIRT]" menjajarkan PIRT dengan BPOM-MD (tidak menyamakan secara tegas, tetapi kurang tepat untuk produk susu); "uji coba 3 bulan" diberi label asumsi. |
+
+**Rata-rata: 8,05.** 2/2 percobaan lulus.
+
+Pemeriksaan independen (python): 35% x Rp15.000 = Rp5.250; sisa Rp9.750; 50/100/200/400 botol = Rp262.500/525.000/1.050.000/2.100.000 (toko) dan Rp487.500/975.000/1.950.000/3.900.000 (pemilik); 9.750 − 6.000 = 3.750; − 11.000 = rugi 1.250; − 12.000 = rugi 2.250. Cocok. Tidak ada kata proses/path di balasan.
+
+**VERDIK konteks Telegram v1.0.10: LULUS** (rata-rata 8,05 ≥ 8; 2/2 lulus), tipis. Saran: buang "/ PIRT" dari placeholder izin edar dan jangan menambah "uji coba 3 bulan" tanpa diminta.

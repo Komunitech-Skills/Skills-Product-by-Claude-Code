@@ -442,3 +442,18 @@ SESUDAH 9,0 ≥ 8 dan jelas di atas SEBELUM 6,3. Tidak ada kesalahan angka; teks
 ### Cuplikan jualan
 - "Minta 'sebut masing-masing dapat berapa biar transparan'? Anda tetap dapat rekap THR lengkap per orang untuk pemilik/HR, dan teks grup yang aman tanpa membocorkan gaji siapa pun — siap tempel sendiri."
 - "THR karyawan baru dihitung pakai rumus resmi Permenaker 6/2016 (9/12 × Rp4.000.000 = Rp3.000.000), dan tanggal masuk yang janggal (masih di masa depan) langsung ditandai sebelum diumumkan."
+
+## Uji ulang konteks Telegram v1.0.6 — 2026-10-05
+Penguji independen. Metode: OpenClaw `--channel telegram` (tanpa kirim apa pun), 3 percobaan, home bersih per percobaan, pesan persis kunci `laporan-status-kantor` di teks-g9.json (pengumuman libur Natal & Tahun Baru 2026, 20 karyawan, minta nominal THR per orang). Keluaran: `hasil/g9w-laporan-status-kantor-1..3`. Tujuan: cacat gelombang 9 no. 1 (hanya bertanya, tanpa teks pengumuman).
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,0 | Ya | Dua blok (TEKS GRUP + REKAP/PESAN PRIBADI); Kamis 24 Des, Jumat 25 Des 2026, Jumat 1 Jan 2027 benar; THR paling lambat H-7 = Jumat 18 Des 2026; tanpa nominal per orang; 3 pertanyaan di akhir. Minus: menyebut "skill pengumuman ini"/`hitung-thr` (kata proses ke pengguna awam). |
+| 2 | 8,3 | Ya | Dua blok, tanggal & hari benar, kembali kerja Senin 4 Jan 2027, H-7 = 18 Des, tanpa nominal; 3 pertanyaan. Minus: baris templat "Yang perlu dilakukan: tidak ada tindakan khusus" janggal; menyebut `hitung-thr`. |
+| 3 | 6,0 | Tidak | Dua blok, tanggal libur & H-7 benar, tanpa nominal. Gagal: ucapan "Selamat Tahun Baru 2026" (seharusnya 2027), kalimat "Skill ini tidak menghitung nominal THR" bocor ke chat, tanggal masuk kerja dibiarkan samar. |
+
+**Rata-rata: 7,43.** 2/3 percobaan lulus.
+
+Pemeriksaan independen (python): 24 Des 2026 = Kamis, 25 Des 2026 = Jumat, 1 Jan 2027 = Jumat, H-7 dari 25 Des = Jumat 18 Des 2026, Senin 4 Jan 2027. Semua tanggal pada teks percobaan 1-3 cocok; satu-satunya salah fakta adalah tahun pada ucapan percobaan 3. Tidak ada nominal THR per orang di ketiga teks grup.
+
+**VERDIK konteks Telegram v1.0.6: TIDAK LULUS** (rata-rata 7,43 < 8, meski 2/3 lulus). Cacat no. 1 (hanya bertanya) teratasi: ketiganya memberi teks pengumuman lengkap. Sisa untuk pembuat: larang kata "skill" di balasan ke pengguna, dan kunci tahun ucapan = tahun hari raya terakhir (2027 untuk Tahun Baru) lewat contoh/templat.
