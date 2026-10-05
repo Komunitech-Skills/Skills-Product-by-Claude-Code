@@ -1642,3 +1642,15 @@ Penguji independen, 3 percobaan, home bersih, `--channel telegram` (tanpa kirim)
 | 3 | 5,5 | TIDAK | Label "(dihitung script)" bocor; klaim karangan "paket isi 2 itu yang paling banyak diambil malam ini"; menyebut file `naskah.md`. Angka benar (hemat 18.000 vs 2× normal, 2.000/botol vs live). |
 
 Rata-rata 6,3; lulus 1/3. **VERDIK: GAGAL** (syarat rata-rata ≥ 8 dan ≥ 2/3 lulus tidak terpenuhi). Larangan di SKILL.md 1.0.6 belum cukup kuat: label tabel "(dihitung script/sistem)" dan kalimat pembuka cek-silang masih muncul; klaim "paling banyak diambil" perlu dilarang eksplisit.
+
+## Uji ulang konteks Telegram v1.0.7 — 2026-10-05
+
+Penguji independen, 3 percobaan, home bersih, `--channel telegram` (tanpa kirim). Pesan sama dengan v1.0.6 (sambal bawang botol, normal Rp35.000, live Rp28.000, paket 2 botol Rp52.000). Dinilai hanya dari isi chat. Keluaran: `g8v-naskah-live-jualan-1..3`.
+
+| # | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,5 | YA | Naskah 30 menit utuh (14 segmen); judul "Angka promo"; tanpa kata proses; harga benar (20%; paket Rp26.000/botol, hemat Rp18.000 vs 2× normal); stok `[stok nyata]`; detail produk `[isi]`; tanpa klaim popularitas/kelangkaan karangan. |
+| 2 | 8 | YA | Utuh, bersih dari kata proses (satu "cek deskripsi produk ya Kak" adalah kalimat untuk penonton, bukan proses); angka benar (hemat Rp18.000, 25%); sisa ringan: segmen 20:24–20:27 agak tumpang-tindih (rekap dua kali). |
+| 3 | 8 | YA | Utuh, bersih; angka benar; detail `[isi]`; sisa ringan: "Jangan sampai kehabisan harga live-nya" (dorongan ringan, bukan angka/klaim stok karangan). |
+
+Rata-rata 8,17; lulus 3/3. **VERDIK: LULUS** (rata-rata ≥ 8 dan ≥ 2/3 lulus). Kebocoran v1.0.6 ("Cek-silang fakta sudah LULUS", "(dihitung script/sistem)", "paling banyak diambil", `naskah.md`) tidak muncul lagi di ketiga percobaan.

@@ -77,8 +77,11 @@ Lihat `00-pembanding-tanpa-skill.md`. Tanpa skill: 4 blok 15 menit, "stok terbat
 terverifikasi & jujur, urgensi hanya dari fakta. **Skill jelas memberi nilai tambah.**
 
 ## Riwayat revisi
-- **1.0.7 (2026-10-05):** uji ulang Telegram 1.0.6 gagal karena model menyalin kata-kata proses dari SKILL.md. Judul format jadi "Angka promo" (tanpa label dihitung script), file kerja sementara bernama netral & dihapus, istilah "cek-silang" diganti "pemeriksaan internal", larangan klaim popularitas/kelangkaan tanpa data, checklist kata terlarang, ringkasan akhir cek_fakta.py ditujukan ke agent tanpa kata LULUS. **Status: menunggu uji ulang independen.**
+- **1.0.7 (2026-10-05):** uji ulang Telegram 1.0.6 gagal karena model menyalin kata-kata proses dari SKILL.md. Judul format jadi "Angka promo" (tanpa label dihitung script), file kerja sementara bernama netral & dihapus, istilah "cek-silang" diganti "pemeriksaan internal", larangan klaim popularitas/kelangkaan tanpa data, checklist kata terlarang, ringkasan akhir cek_fakta.py ditujukan ke agent tanpa kata LULUS. **Status: LULUS uji ulang Telegram independen (8,17; 3/3).**
 - **1.0.6 (2026-10-05):** pra-cek konteks Telegram menemukan baris proses internal ("Lulus cek-silang fakta (0 GAGAL)") bocor di pembuka balasan. SKILL.md kini melarang menampilkan hasil script/nama script/istilah cek-silang dan mewajibkan balasan dimulai dengan naskah; butir checklist ditambah. **Status: menunggu uji ulang independen.**
 
 ## Uji ulang konteks Telegram v1.0.6 — 2026-10-05
 Penguji independen, 3 percobaan (`--channel telegram`): skor 8,5 / 5 / 5,5, rata-rata 6,3, lulus 1/3. **VERDIK: GAGAL.** Masalah: pembuka "Cek-silang fakta sudah LULUS." (percobaan 2), label "(dihitung script/sistem)" pada judul tabel (2, 3), klaim karangan "paling banyak diambil malam ini" dan penyebutan file naskah.md (3). Angka harga/hemat benar di ketiganya. Detail di `00-openclaw-sebelum-sesudah.md`.
+
+## Uji ulang konteks Telegram v1.0.7 — 2026-10-05
+Penguji independen, 3 percobaan (`--channel telegram`): skor 8,5 / 8 / 8, rata-rata 8,17, lulus 3/3. **VERDIK: LULUS.** Tanpa kata proses, naskah 30 menit utuh, angka harga/hemat benar, tanpa klaim karangan. Sisa ringan: tumpang-tindih rekap (2), "jangan sampai kehabisan" (3). Detail di `00-openclaw-sebelum-sesudah.md`.
