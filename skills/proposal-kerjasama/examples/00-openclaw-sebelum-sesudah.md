@@ -1225,3 +1225,20 @@ Pemeriksaan independen:
 - Catatan: satu dari empat eksekusi mengalami timeout model (infrastruktur); eksekusi pengganti dihitung.
 
 **VERDIK konteks Telegram: LULUS** (rata-rata 8,43 >= 8; 3/3 percobaan valid lulus; tanpa salah fakta/angka). Masalah pra-cek (tanpa proposal, tanpa peringatan rugi) terbukti teratasi.
+
+
+---
+## Uji ulang konteks Telegram v1.0.9 — 2026-10-05
+Penguji independen. Metode: OpenClaw `--channel telegram` (tanpa kirim apa pun), 3 percobaan berurutan, home bersih per percobaan, pesan persis kunci `proposal-kerjasama` di teks-g7.json (kopi susu botol 250 ml, Solo, Rp15.000, porsi toko 35%, "sudah BPOM" + "paling laris se-Solo"). Dinilai hanya dari isi balasan chat. Keluaran: `hasil/g8u-proposal-kerjasama-1..3`. Tujuan: cacat gelombang 8 no. 1 (rumus tidak tampil, baris "HASIL: LULUS" bocor, path file).
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,7 | Ya | Rumus Rp9.750 − HPP − kirim + tabel ilustrasi (Rp6.000/9.750/11.000) + rumus titik impas di "Catatan untuk Anda"; BPOM jadi `[isi: nomor izin edar/PIRT]`, "paling laris" dilunakkan + `[isi: bukti]`; proposal + WA + email lengkap; simulasi 50/100/200 benar; tanpa kata proses/path. Minus kecil: display/rak kecil ditawarkan tanpa diminta. |
+| 2 | 8,5 | Ya | Rumus + peringatan rugi (Rp3.750 / Rp0 / rugi Rp1.250) tampil; klaim ditangani dengan dasar UU; proposal lengkap, simulasi 30/60/100 benar; tanpa kata proses/path. Minus: judul proposal tanpa nama usaha, placeholder kontak tidak memakai format `[isi: ...]`. |
+| 3 | 8,0 | Ya | Rumus + peringatan rugi + contoh tampil, klaim `[isi]`, proposal lengkap, tanpa path/LULUS. Minus: "Produk berizin edar resmi" ditulis tanpa `[isi]` di bagian manfaat; contoh placeholder "data penjualan terbaik di Solo" cenderung mengarahkan klaim superlatif. |
+
+**Rata-rata: 8,40.** 3/3 percobaan lulus.
+
+Pemeriksaan independen (python): 35% x Rp15.000 = Rp5.250; sisa Rp9.750; Rp9.750 − 6.000 = 3.750; − 11.000 = rugi 1.250; 30/50/60/100/200 botol = Rp157.500/262.500/315.000/525.000/1.050.000 (bagian toko). Semua cocok. Tidak ada kata proses (script, file, LULUS/GAGAL) atau path di ketiga balasan; kata "cek" hanya bermakna biasa ("cek porsi aman").
+
+**VERDIK konteks Telegram v1.0.9: LULUS** (rata-rata 8,40 ≥ 8; 3/3 lulus). Cacat gelombang 8 no. 1 teratasi: rumus laba/titik impas + peringatan rugi tampil walau HPP kosong, tidak ada kebocoran proses/path.
