@@ -1,0 +1,9 @@
+pos,jenis,sifat,satuan,unit_anggaran,unit_realisasi,anggaran,realisasi
+Pendapatan kontrak kantor,pendapatan,,,,,145000000,152000000
+Pendapatan jasa panggilan,pendapatan,,,,,20000000,14500000
+Gaji petugas tetap,biaya,,orang,20,21,68000000,71400000
+Lembur petugas,biaya,,jam,150,410,3750000,10865000
+Bahan & chemical,biaya,variabel,,,,12000000,13900000
+Transport petugas,biaya,,,,,6000000,7200000
+BPJS & tunjangan,biaya,,,,,4760000,5000000
+Sewa kantor & gudang,biaya,,,,,4000000,4000000
