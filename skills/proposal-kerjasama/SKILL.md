@@ -1,11 +1,19 @@
 ---
 name: proposal-kerjasama
-description: Menyusun proposal kerja sama bisnis berbahasa Indonesia (B2B, kemitraan, reseller/agen, konsinyasi/titip jual, sponsorship event, co-branding) versi singkat 1 halaman atau lengkap: ringkasan eksekutif, masalah-solusi, penawaran, manfaat mitra, skema & simulasi angka (dihitung script), timeline, penutup + pesan pengantar WA/email. Gunakan saat pengguna minta proposal kerjasama/kemitraan/sponsor, titip jual ke toko/kafe, atau partnership/sponsorship proposal. Bukan untuk rincian harga item (surat-penawaran-harga) atau kontrak (perjanjian-sederhana).
+description: Menyusun proposal kerja sama bisnis berbahasa Indonesia (B2B, kemitraan, reseller/agen, konsinyasi/titip jual, sponsorship event, co-branding) versi singkat 1 halaman atau lengkap: ringkasan eksekutif, masalah-solusi, penawaran, manfaat mitra, skema & simulasi angka (dihitung script), timeline, penutup + pesan pengantar WA/email. Gunakan saat pengguna minta proposal kerjasama/kemitraan/sponsor, titip jual ke toko/kafe, atau partnership/sponsorship proposal. Bukan untuk rincian harga item (surat-penawaran-harga) atau kontrak (perjanjian-sederhana). Kerjakan dulu, tanya di akhir: bila jenis kerja sama, produk, dan angka sudah disebut, langsung tulis proposal lengkap dengan [isi ...] untuk data yang belum ada (maks. 1-3 pertanyaan di akhir, bukan di awal), tolak klaim belum terbukti (BPOM, terlaris) singkat + dasar aturan, dan peringatkan bila porsi mitra membuat pemilik rugi.
 ---
 
 # Proposal Kerja Sama
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+## Aturan "kerjakan dulu, tanya di akhir" (utama, mengalahkan aturan tanya-sekali di bawah)
+Bila pengguna **sudah menyebut** jenis kerja sama (mis. titip jual), produk, dan minimal satu angka/skema, **jangan membalas hanya dengan pertanyaan**. Dalam **satu balasan yang sama**, berurutan:
+1. **Klaim belum terbukti (singkat, 2-4 baris, di paling atas):** "sudah BPOM" hanya ditulis bila pengguna memberi nomor izin edar (MD/BPOM atau PIRT); selain itu tulis `[isi: nomor izin edar/PIRT]`. Superlatif ("paling laris se-Solo", "nomor 1") tidak ditulis tanpa data; pakai versi lunak + `[isi: bukti]`. Dasar: label/iklan pangan tidak boleh menyesatkan dan pangan olahan wajib berizin edar (UU 18/2012 tentang Pangan; PP 69/1999 tentang Label dan Iklan Pangan); klaim keliru juga melanggar UU 8/1999 tentang Perlindungan Konsumen (Pasal 9 dan 17). Nada ramah, bukan ceramah.
+2. **Hitungan angka lewat script** (konsinyasi/bagi hasil/reseller). Tampilkan bagian mitra per unit dan sisa pemilik (mis. Rp15.000 x 35% = Rp5.250; sisa Rp9.750), lalu **peringatan rugi**: laba per unit = sisa pemilik - HPP - biaya kirim/kemas; rugi bila HPP + biaya kirim mendekati/melebihi sisa itu. HPP belum diberi -> tulis `[isi HPP]` dan beri rumusnya + contoh dari script (mis. HPP+kirim Rp10.000 -> rugi Rp250/unit). Bagian ini masuk "Catatan untuk Anda", bukan proposal.
+3. **Proposal lengkap siap kirim** (format di bawah) + pesan WA/email, dengan `[isi: ...]` untuk nama usaha, nama mitra, kota usaha, kontak, nomor izin, bukti. Jangan menunda proposal demi menunggu jawaban.
+4. **Pertanyaan di akhir, maks. 1-3**, hanya yang paling menentukan (mis. HPP+ongkir, nomor izin edar, nama usaha/mitra). Sebut bahwa proposal akan dirapikan setelah dijawab.
+Bila info wajib benar-benar kosong (mis. "buatin proposal dong" tanpa produk/jenis/angka), baru berlaku tanya-sekali di tabel Input. Pengguna ingin cepat -> default + Asumsi.
 
 ## Tujuan
 Mengubah ide kerja sama yang masih di kepala pengguna menjadi proposal yang meyakinkan calon mitra: jelas apa untungnya bagi **mereka**, bagaimana cara kerjanya, dan langkah berikutnya. Angka simulasi (bagi hasil, margin, konsinyasi) dihitung script, bukan dikira.
@@ -35,7 +43,7 @@ Mengubah ide kerja sama yang masih di kepala pengguna menjadi proposal yang meya
 | Masa uji coba | Tidak | 3 bulan uji coba lalu evaluasi |
 | Kontak PIC | Tidak | `[Nama – WA – email]` |
 
-Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, isi dengan default, beri `[isi ...]` pada data spesifik, dan tulis "Asumsi" di akhir.
+Jika info wajib benar-benar kosong (lihat aturan "kerjakan dulu" di atas), tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, isi dengan default, beri `[isi ...]` pada data spesifik, dan tulis "Asumsi" di akhir.
 
 ## Langkah kerja
 

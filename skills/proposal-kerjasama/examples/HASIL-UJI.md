@@ -94,3 +94,11 @@ Cacat berat v1.0.0 sudah diperbaiki dengan benar dan dilindungi uji regresi. Sem
 ### Ringan
 3. `Rp 25.000,-` sebagai nilai skenario ditolak "ambigu" (padahal sebagai `--harga-jual` diterima). Aman, tapi tidak konsisten. *Saran:* di `_pecah_koma()`, perlakukan akhiran `,-` sebagai bagian angka sebelum menghitung koma.
 4. Label untuk 4–5 skenario hanya "Skenario 1…5". Tidak salah, tapi untuk proposal, "Pesimis/…/Optimis" lebih mudah dibaca. *Saran (opsional):* label 5 tingkat.
+
+
+---
+
+## Riwayat revisi 1.0.8 (2026-10-05) - menunggu uji ulang independen
+- Pemicu: pra-cek konteks Telegram gelombang 7 (`koordinasi/pracek-telegram-g7-2026-10-05.md`): skor konteks 6,5; bot hanya membalas 4 pertanyaan padahal jenis kerja sama, produk, dan angka sudah ada; tanpa proposal dan tanpa peringatan bahwa porsi toko 35% bisa merugikan.
+- Perbaikan: aturan baru "kerjakan dulu, tanya di akhir" di SKILL.md dan description (klaim belum terbukti -> hitungan script + peringatan rugi -> proposal lengkap -> maks. 1-3 pertanyaan di akhir). Contoh baru: `07-kerjakan-dulu-tanya-di-akhir-klaim-dan-porsi-rugi.md`.
+- Status: **menunggu uji ulang independen** (belum diuji ulang; skor di atas belum berlaku untuk 1.0.8).
