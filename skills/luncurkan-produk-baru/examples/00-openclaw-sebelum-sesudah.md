@@ -427,3 +427,25 @@ Mau aku bikinkan juga versi jadwal lengkap (43 tugas) atau dihitung ulang begitu
 ## Cuplikan jualan
 - "Kosmetik belum punya notifikasi BPOM? Tanpa skill, AI masih menyarankan pre-order 10 Okt. Dengan skill: penjualan ditunda, hanya daftar tunggu tanpa uang, tanggal rilis jadi kandidat sampai izin terbit."
 - "Nastar premium 20 Nov: stok dihitung (40+20) x 1,3 = 78 toples, jadwal bertanggal T-30 (21 Okt) sampai T+30 (20 Des) dan teks siap tempel, setelah skill memastikan status PIRT."
+
+
+---
+## Uji ulang konteks Telegram v1.0.5 — 2026-10-05
+Penguji independen. Metode: OpenClaw dengan `--channel telegram` (tanpa kirim apa pun), home bersih per percobaan (`g7u-luncurkan-produk-baru-1..3`), pesan persis: "Saya mau launching serum pencerah wajah merek sendiri tanggal 12 Oktober 2026, jualan di Shopee dan IG. Izin BPOM-nya masih proses. Tolong bikinin rencana peluncurannya ya." Dinilai hanya dari isi balasan chat. Pra-cek v1.0.4: 7,0 (hanya 5 pertanyaan, tanpa rencana).
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,5 | Ya | Peringatan BPOM di awal, 12 Okt dijadikan mulai teaser/daftar tunggu (bukan hari jual), T0 digeser 11 Nov (Rabu), 41 tugas bertanggal, 5 teks siap tempel, Go/No-Go, 3 pertanyaan di akhir |
+| 2 | 8,5 | Ya | Sama, jadwal diringkas (poin kunci), teks daftar tunggu "belum menerima uang", KOL baru setelah izin; 3 pertanyaan di akhir |
+| 3 | 8,5 | Ya | Jadwal 41 tugas lengkap, banyak teks siap tempel (WA, IG 1-3, daftar tunggu, H-1, hari-H, balasan cepat), 3 pertanyaan di akhir |
+
+**Rata-rata SESUDAH (konteks Telegram): 8,5.** SEBELUM (uji internal lama, tanpa skill): 5,5. Selisih +3,0.
+
+Pemeriksaan independen:
+- Hasil jadi ada di balasan yang sama; pertanyaan hanya 3 dan di akhir; asumsi disebut (izin terbit ±4 Nov, anggaran Rp0).
+- Gerbang izin: semua percobaan melarang jual/pre-order/DP/listing aktif sebelum notifikasi BPOM terbit; hanya daftar tunggu tanpa uang; klaim khasiat/"pemutih" dihindari.
+- Tanggal (python): 12 Okt 2026 = Senin; T-28 = Rab 14 Okt, T-25 = Sab 17 Okt, T-21 = Rab 21 Okt, T0 = Rab 11 Nov, T+30 = Jum 11 Des; semua cocok. Stok (40+16) x 1,3 = 72,8 ≈ 73 cocok.
+- Fakta aturan (web 2026-10-05, pom.go.id/standar-otskk): kosmetik wajib izin edar berupa notifikasi (PerBPOM 12/2023); penandaan/iklan diatur PerBPOM 18/2024: sesuai yang dikutip balasan.
+- Cacat kecil: percobaan 1 "T-10, Sen" tanpa tanggal pasti; percobaan 2 tidak merinci seluruh 41 tugas; percobaan 1 melarang sampel ke KOL (ketat, aman); percobaan 3 memuat pesan KOL/pengumuman yang diberi syarat "hanya jika izin terbit". Tidak ada salah fakta/angka.
+
+**VERDIK konteks Telegram: LULUS** (rata-rata 8,5 >= 8; 3/3 percobaan lulus; tanpa salah fakta/angka). Masalah pra-cek (bertanya tanpa memberi rencana) terbukti teratasi.

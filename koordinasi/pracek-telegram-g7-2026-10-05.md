@@ -29,3 +29,10 @@ Layak tampil (skor >= 8, tanpa masalah): pengajuan-kur, uji-pasar-produk-cepat, 
 - PPh 21 TER kategori A (TK/0), PMK 168/2023: bruto Rp6.000.000 ada di lapisan >5,95 jt s.d. 6,3 jt = 0,75% -> Rp45.000 (cocok); diterima Rp5.955.000 (cocok).
 - DTP 2026 (PMK 105/2025, web 2026-10-05: ortax, pasardana, dwpconsulting): lima sektor padat karya termasuk tekstil & pakaian jadi, penghasilan bruto tetap <= Rp10 jt/bln, DTP dibayar tunai ke pegawai dan bukan penghasilan kena pajak. Skenario B balasan (Rp6.045.000) konsisten.
 - Rekomendasi cadangan: pph21-ter layak tampil (8,5); pesan-prospek-wa tahan.
+
+## Uji ulang setelah perbaikan (penguji independen, 2026-10-05)
+| skill | versi | skor 3 percobaan | rata-rata | lulus | verdik |
+|---|---|---|---|---|---|
+| luncurkan-produk-baru | 1.0.5 | 8,5 / 8,5 / 8,5 | 8,5 | 3/3 | LULUS (rencana lengkap + gerbang BPOM, tanggal & stok cocok python, 3 pertanyaan di akhir) |
+| proposal-kerjasama | 1.0.8 | 8,3 / 9,0 / 8,0 | 8,43 | 3/3 | LULUS (proposal lengkap, klaim palsu ditangani, Rp5.250/Rp9.750 benar; 1 timeout model diulang) |
+Keduanya layak masuk daftar tampil Telegram. Catatan kecil proposal-kerjasama: percobaan 1 memakai "termasuk yang paling laris" dengan slot bukti.

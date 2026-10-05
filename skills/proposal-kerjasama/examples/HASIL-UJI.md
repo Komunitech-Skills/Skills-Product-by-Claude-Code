@@ -102,3 +102,6 @@ Cacat berat v1.0.0 sudah diperbaiki dengan benar dan dilindungi uji regresi. Sem
 - Pemicu: pra-cek konteks Telegram gelombang 7 (`koordinasi/pracek-telegram-g7-2026-10-05.md`): skor konteks 6,5; bot hanya membalas 4 pertanyaan padahal jenis kerja sama, produk, dan angka sudah ada; tanpa proposal dan tanpa peringatan bahwa porsi toko 35% bisa merugikan.
 - Perbaikan: aturan baru "kerjakan dulu, tanya di akhir" di SKILL.md dan description (klaim belum terbukti -> hitungan script + peringatan rugi -> proposal lengkap -> maks. 1-3 pertanyaan di akhir). Contoh baru: `07-kerjakan-dulu-tanya-di-akhir-klaim-dan-porsi-rugi.md`.
 - Status: **menunggu uji ulang independen** (belum diuji ulang; skor di atas belum berlaku untuk 1.0.8).
+
+## Uji ulang konteks Telegram v1.0.8 (2026-10-05) - penguji independen
+3 percobaan valid (1 timeout infrastruktur diulang): 8,3 / 9,0 / 8,0, rata-rata 8,43 (pra-cek 6,5). Proposal lengkap di balasan yang sama, klaim BPOM/"paling laris" ditangani benar, Rp5.250/sisa Rp9.750 benar, peringatan porsi rugi ada. **VERDIK LULUS.** Detail: `00-openclaw-sebelum-sesudah.md`.
