@@ -146,3 +146,6 @@ Sisi SESUDAH via `uji-tg.sh` (SEBELUM 5,75), berurutan. Skenario 1 (pesan persis
 ---
 ## Riwayat v1.0.10 (2026-10-05) — keputusan pemilik no. 14, menunggu uji ulang independen
 Cacat uji Telegram v1.0.9: file Word tersimpan di komputer bot (mis. /tmp/...) sehingga guru tidak bisa mengambilnya. Perbaikan: setelah isi utuh tampil di chat dan .docx dibuat, agent mencoba melampirkan file lewat alat kirim file kanal chat; berhasil = "File Word terlampir."; gagal/tidak ada = tanpa jalur file + kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan."; kanal CLI/IDE boleh menyebut jalur. Diperbarui: aturan atas SKILL.md, checklist, description, contoh 08, README. Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.10 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+`uji-tg.sh`, 2 percobaan berurutan, home bersih (modul SMP Bahasa Inggris + CP persis + supervisi). A: 401 dtk, skor 6, GAGAL (menulis "File Word terlampir." tanpa lampiran terkirim, tanpa kalimat tawaran "kirim file"). B: 439 dtk, skor 9, lulus (isi utuh, tanpa jalur /tmp, kalimat tawaran ada). Tanpa timeout; CP tidak dikarang; menit dan skor benar. Rata-rata **7,5**, lulus 1/2. **VERDIK: BELUM**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.10".

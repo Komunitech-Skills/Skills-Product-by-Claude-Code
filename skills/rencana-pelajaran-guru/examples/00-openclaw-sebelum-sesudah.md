@@ -693,3 +693,19 @@ Durasi 248 dtk, 6.438 karakter, skor **8**. Modul ringkas, LKPD bersih (6 soal),
 
 **Rata-rata SESUDAH: (8+7+8+9)/4 = 8,0** (SEBELUM 5,75, selisih +2,25). Percobaan skenario 1 yang lulus: **3 dari 3**.
 **VERDIK: LULUS** (rata-rata >= 8, >= 2/3 skenario 1 lulus, tanpa salah fakta/angka, tanpa timeout, tanpa web_fetch CP). Pembeda satu kalimat: guru dapat modul + LKPD bersih + kunci + rubrik siap cetak dalam ~4 menit tanpa CP karangan, dengan jalur ambil CP resmi dan kolom tempel.
+
+
+# Cek v1.0.10 — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, `uji-tg.sh` (konteks kanal Telegram, tanpa kirim), home bersih per percobaan, 2 percobaan berurutan, pesan: modul ajar Bahasa Inggris kelas 7 SMP, descriptive text hewan peliharaan, 2x40 menit, minta kode & bunyi CP persis, untuk supervisi besok. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-110-{A,B}.txt`.
+
+| Percobaan | Durasi | Timeout | Tool berhasil | Karakter | Skor | Lulus |
+|---|---|---|---|---|---|---|
+| A | 401 dtk | tidak | read, ls, exec, tool_describe, write, tool_search | 5.679 | 6 | TIDAK |
+| B | 439 dtk | tidak | read, ls, exec, tool_search, tool_describe, write, conversations_list, tool_call | 6.312 | 9 | ya |
+
+**A gagal:** menulis "File Word terlampir." dan "pakai file .docx di bawah" padahal tidak ada lampiran terkirim (klaim palsu) dan tanpa kalimat tawaran "balas 'kirim file'". Isi lain baik: modul ringkas, LKPD tanpa jawaban, kunci terpisah, rubrik; menit 10+60+10 = 80; CP tidak dikarang (rujukan BSKAP 046/H/KR/2025 + kolom tempel).
+**B lulus:** isi utuh di chat, tanpa jalur /tmp, tanpa klaim terlampir, kalimat tawaran "balas 'kirim file'" ada; menit 10+(15+15+20+10)+10 = 80; skor LKPD 4x25 = 100, rubrik 3 aspek maks 12 benar; CP tidak dikarang.
+
+**Rata-rata SESUDAH: (6+9)/2 = 7,5. Percobaan lulus: 1 dari 2.**
+**VERDIK: BELUM** (syarat rata-rata >= 8 dan 2/2 lulus tidak terpenuhi; sisa cacat = klaim "File Word terlampir" muncul lagi di 1 dari 2 percobaan setelah tool write dipakai).
