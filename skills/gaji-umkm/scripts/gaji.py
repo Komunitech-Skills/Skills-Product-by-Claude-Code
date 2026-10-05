@@ -1451,7 +1451,8 @@ def total_perusahaan(hasil):
                           "total_pendapatan", "bruto_pajak", "potongan_karyawan", "take_home_pay", "biaya_perusahaan",
                           "bpjs_kes_perusahaan", "bpjs_kes_karyawan", "jht_perusahaan", "jht_karyawan", "jkk", "jkm",
                           "jp_perusahaan", "jp_karyawan", "setor_bpjs_kesehatan", "setor_bpjs_ketenagakerjaan",
-                          "pph21_terutang", "setor_pph21", "pph21_dtp_tunai", "pengembalian_pph21",
+                          "pph21_terutang", "pph21_dipotong", "pph21_dtp", "setor_pph21", "pph21_dtp_tunai",
+                          "pengembalian_pph21",
                           "potongan_tidak_masuk", "potongan_lain", "zakat")}
     for h in hasil:
         p = h["payroll"]
@@ -1471,7 +1472,7 @@ def total_perusahaan(hasil):
         for c in ("jht_perusahaan", "jht_karyawan", "jkk", "jkm", "jp_perusahaan", "jp_karyawan"):
             t[c] += D(i[c])
         t["pph21_terutang"] += D(p["pph"])
-        t["setor_pph21"] += D(p["pph_disetor"])
+        t["pph21_dipotong"] += D(pt["PPh 21"])
         t["pph21_dtp_tunai"] += D(pd["PPh 21 DTP dibayar tunai"])
         t["pengembalian_pph21"] += D(pd["Pengembalian kelebihan PPh 21"])
         t["potongan_tidak_masuk"] += D(h["potongan_tidak_masuk"])
@@ -1480,6 +1481,7 @@ def total_perusahaan(hasil):
     t["setor_bpjs_kesehatan"] = t["bpjs_kes_perusahaan"] + t["bpjs_kes_karyawan"]
     t["setor_bpjs_ketenagakerjaan"] = sum((t[c] for c in ("jht_perusahaan", "jht_karyawan", "jkk", "jkm",
                                                            "jp_perusahaan", "jp_karyawan")), NOL)
+    t["pph21_dtp"] = t["pph21_dtp_tunai"]
     t["jumlah_karyawan"] = len(hasil)
     return lengkapi_total(t)
 
@@ -1488,27 +1490,44 @@ def lengkapi_total(t):
     """PPh 21 per masa di SPT Masa dihitung agregat seluruh karyawan: kelebihan potong Masa Pajak Terakhir yang
     dikembalikan ke karyawan mengurangi PPh 21 yang disetor masa itu; bila hasilnya minus = lebih bayar yang dapat
     diperhitungkan ke masa berikutnya (PMK 168/2023 Pasal 21 ayat (1) & (3); artikel DJP 12-03-2025).
-    - pph21_dipotong  : jumlah PPh 21 positif yang dipotong dari gaji bulan ini (jumlah pph_disetor mesin)
+    - pph21_dipotong  : jumlah PPh 21 positif yang DIPOTONG dari gaji bulan ini, TERMASUK bagian DTP
+                        (PMK 105/2025: PPh 21 DTP tetap dipotong lalu dibayar tunai ke karyawan)
+    - pph21_dtp       : bagian PPh 21 DTP (= pph21_dtp_tunai); dibayar tunai ke karyawan, TIDAK disetor
     - pengembalian_pph21: kelebihan potong yang dikembalikan ke karyawan (sudah di gaji bersih)
-    - setor_pph21     : PERKIRAAN setor = max(0, dipotong - dikembalikan)
-    - lebih_bayar_pph21: max(0, dikembalikan - dipotong)
-    Total lama (v1.0.0) belum punya pph21_dipotong; saat itu setor_pph21 = jumlah dipotong."""
+    - pph21_disetor_ke_negara: PERKIRAAN setor = max(0, dipotong - DTP - dikembalikan)
+    - setor_pph21     : sama dengan pph21_disetor_ke_negara (nama lama, dipertahankan untuk kompatibilitas)
+    - lebih_bayar_pph21: max(0, dikembalikan - (dipotong - DTP))
+    Total tersimpan versi lama (<= 1.0.10) belum punya pph21_dtp; di sana pph21_dipotong berisi jumlah yang disetor
+    (tanpa DTP) dan pada v1.0.0 kunci itu belum ada (setor_pph21 = jumlah tersebut). Dilengkapi otomatis di sini."""
     t = dict(t)
-    if "pph21_dipotong" not in t:
-        t["pph21_dipotong"] = t.get("setor_pph21", NOL)
-    dipotong, kembali = D(t["pph21_dipotong"]), D(t.get("pengembalian_pph21"))
-    t["setor_pph21"] = max(dipotong - kembali, NOL)
-    t["lebih_bayar_pph21"] = max(kembali - dipotong, NOL)
+    dtp = D(t.get("pph21_dtp_tunai"))
+    if "pph21_dtp" not in t:                       # total lama: ubah ke arti baru
+        lama = t["pph21_dipotong"] if "pph21_dipotong" in t else t.get("setor_pph21", NOL)
+        t["pph21_dipotong"] = D(lama) + dtp
+        t["pph21_dtp"] = dtp
+    dipotong, dtp, kembali = D(t["pph21_dipotong"]), D(t["pph21_dtp"]), D(t.get("pengembalian_pph21"))
+    wajib_setor = max(dipotong - dtp, NOL)
+    t["pph21_disetor_ke_negara"] = max(wajib_setor - kembali, NOL)
+    t["setor_pph21"] = t["pph21_disetor_ke_negara"]
+    t["lebih_bayar_pph21"] = max(kembali - wajib_setor, NOL)
     return t
 
 
 def baris_setor_pph21(total):
     dipotong, kembali = D(total["pph21_dipotong"]), D(total.get("pengembalian_pph21"))
-    if not kembali:
+    dtp = D(total.get("pph21_dtp"))
+    if not kembali and not dtp:
         return ["- Setor PPh 21: %s" % rp(total["setor_pph21"])]
-    o = ["- PPh 21 dipotong bulan ini: %s" % rp(dipotong),
+    if not kembali:
+        return ["- PPh 21 dipotong dari gaji bulan ini: %s (termasuk DTP %s yang dibayar tunai ke karyawan dan tidak "
+                "disetor, PMK 105/2025)" % (rp(dipotong), rp(dtp)),
+                "- Setor PPh 21 ke negara: %s" % rp(total["setor_pph21"])]
+    o = ["- PPh 21 dipotong bulan ini: %s" % rp(dipotong)]
+    if dtp:
+        o.append("- Bagian PPh 21 DTP (dibayar tunai ke karyawan, tidak disetor, PMK 105/2025): %s" % rp(dtp))
+    o += [
          "- Kelebihan PPh 21 dikembalikan ke karyawan (Masa Pajak Terakhir, sudah di gaji bersih): %s" % rp(kembali),
-         "- Perkiraan setor PPh 21: %s (= dipotong - kelebihan dikembalikan; SPT Masa PPh 21 dihitung gabungan semua "
+         "- Perkiraan setor PPh 21: %s (= dipotong - DTP - kelebihan dikembalikan; SPT Masa PPh 21 dihitung gabungan semua "
          "karyawan, PMK 168/2023 Pasal 21)" % rp(total["setor_pph21"])]
     if D(total.get("lebih_bayar_pph21")):
         o.append("- Lebih bayar PPh 21 %s: tidak ada yang disetor masa ini; kelebihan dapat diperhitungkan dengan PPh 21 "

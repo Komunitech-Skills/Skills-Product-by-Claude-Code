@@ -123,3 +123,10 @@ Lain-lain: `tests/uji_regresi.py` 42 tes OK · `validate.py` ✅ · `uji_opencla
 Cacat (ringan, tanpa dampak uang): kunci JSON `total.pph21_dipotong` (= 308.393) sebenarnya jumlah PPh yang **disetor**, bukan yang dipotong (yang dipotong menurut PMK = 1.256.651 = `pph21_terutang`); docstring `gaji.py` ±baris 1491 masih memakai istilah lama. Tidak tampil di teks pembeli, tetapi bisa menyesatkan agent yang membaca JSON. Sarankan ganti nama/penjelasan di versi berikut.
 
 **Skor: 9/10. Verdik: LULUS uji ulang angka DTP** (tetap **PERLU REVIEW konsultan pajak**).
+
+## Riwayat revisi 1.0.11 (2026-10-05) — menunggu cek penguji
+- Menindaklanjuti cacat ringan uji ulang DTP: `total.pph21_dipotong` kini = total PPh 21 yang **dipotong** (Σ potongan "PPh 21", termasuk DTP; pada data uji di atas seharusnya 1.256.651), kunci baru `pph21_dtp` (= `pph21_dtp_tunai`) dan `pph21_disetor_ke_negara` (= `setor_pph21`, perkiraan setor = max(0, dipotong − DTP − kelebihan dikembalikan)). `lebih_bayar_pph21` = max(0, dikembalikan − (dipotong − DTP)). Angka setor tidak berubah.
+- Kompatibilitas: `setor_pph21` dipertahankan; total tersimpan ≤ 1.0.10 (tanpa `pph21_dtp`) dikonversi otomatis di `lengkapi_total` (dipotong lama + DTP). Tidak ada skill/dasbor lain di repo yang membaca kunci ini (dicek dengan grep).
+- Teks rekap DTP: "PPh 21 dipotong dari gaji bulan ini: … (termasuk DTP …)" + "Setor PPh 21 ke negara: …"; docstring `lengkapi_total` diperbarui; `references/perintah.md` diperbarui.
+- Tes baru: `test_total_dtp_dipotong_vs_disetor_dipisah`, `test_total_lama_v1010_dtp_diubah_ke_arti_baru`; `tests/uji_regresi.py` 46 tes OK. Mesin (`scripts/mesin/`) tidak diubah; sha256 SUMBER.json tetap cocok.
+

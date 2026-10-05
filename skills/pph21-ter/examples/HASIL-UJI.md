@@ -84,3 +84,7 @@ Lain-lain: `test_pph21.py` 42 tes OK · `python3 scripts/validate.py` ✅ 117 sk
 Cacat (ringan): README "Catatan revisi 1.0.4" masih berbunyi "(yang benar Rp 6.045.000)" dan "PPh 21 dipotong dari gaji (Rp 0)" tanpa tanda bahwa kalimat itu sudah dikoreksi di 1.0.5 — membingungkan pembeli yang membaca riwayat; sarankan diberi coret/keterangan "dikoreksi di 1.0.5". Bukti A/B `00-openclaw-sebelum-sesudah.md` dinilai dengan acuan lama (sudah diberi catatan koreksi) → skor sebelum/sesudah perlu uji ulang OpenClaw sebelum dipromosikan lagi.
 
 **Skor: 9/10. Verdik: LULUS uji ulang angka DTP** (tetap **PERLU REVIEW konsultan pajak**; pembulatan belum dicocokkan dengan Coretax).
+
+## Riwayat revisi README (2026-10-05, tanpa naik versi) — menunggu cek penguji
+- Menindaklanjuti cacat ringan uji ulang DTP: butir DTP di README "Catatan revisi 1.0.4" kini dicoret dan diberi tanda **DIKOREKSI di 1.0.5** (diterima Rp 6.000.000 sesuai PMK 105/2025, bukan Rp 6.045.000; PPh tetap dipotong, bukan Rp 0).
+- Dicek ulang file lain yang memuat "6.045.000": `SKILL.md` & `references/dtp-pmk105.md` menyebutnya sebagai contoh yang **salah**; `scripts/test_pph21.py` memastikan angka itu **tidak** muncul; `examples/00-openclaw-sebelum-sesudah.md` sudah diberi banner KOREKSI di atas (riwayat asli dibiarkan); riwayat di file ini sudah bertanda "sebelumnya". Script tidak berubah → versi tetap 1.0.5.
