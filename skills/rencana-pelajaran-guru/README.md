@@ -96,6 +96,9 @@ dari uji ulang OpenClaw v1.0.5 (3 cacat minor): (1) balasan chat wajib memuat is
 ## Catatan revisi 1.0.7 (2026-10-05)
 dari uji ulang Telegram v1.0.6 (bot hanya mengirim ringkasan + "isi lengkap ada di file .md di workspace" dan bertanya dulu soal .docx): (1) aturan paling atas SKILL.md: isi utuh wajib di chat, dipecah "Bagian 1/n" bila panjang, dilarang "isi ada di file"; (2) bila guru menyebut cetak/supervisi/Word/file, .docx langsung dibuat tanpa bertanya dan dikirim sebagai lampiran kanal chat bila bisa, atau jalurnya disebut (tanpa klaim terkirim); (3) di kanal chat tidak menulis .md di workspace kecuali diminta. Contoh alur: `examples/08-alur-telegram-supervisi.md`.
 
+## Catatan revisi 1.0.10 (2026-10-05)
+dari uji Telegram v1.0.9 (file Word tersimpan di komputer bot, mis. /tmp, sehingga guru tidak bisa mengambilnya): setelah isi utuh tampil di chat dan .docx dibuat, agent mencoba melampirkan file lewat kemampuan kirim file kanal chat. Berhasil: "File Word terlampir." Gagal/tidak ada: jalur file tidak disebut; kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan." Di CLI/IDE jalur file tetap boleh disebut.
+
 ## Catatan revisi 1.0.9 (2026-10-05)
 dari uji ulang Telegram v1.0.8 (permintaan "tulis kode dan bunyi CP resminya persis": 2 dari 3 timeout, satu-satunya yang selesai memakai web_fetch 461 dtk): dokumen CP resmi (BSKAP 046/H/KR/2025, ±1.700 halaman) kini TIDAK pernah diambil lewat web (izin "maks. 2 fetch" dihapus). Bila diminta bunyi persis: penjelasan singkat + URL resmi + langkah mencari Fase & elemen + kolom "Tempel bunyi CP resmi di sini", dan TP tetap disusun selaras elemen.
 

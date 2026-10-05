@@ -1,6 +1,6 @@
 ---
 name: rencana-pelajaran-guru
-description: Membuat Modul Ajar/RPP, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, Tujuan Pembelajaran, Profil Lulusan, asesmen, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Format default RINGKAS ala modul ajar 1 lembar (balasan chat sekitar 4.000-6.000 karakter, utuh: modul, LKPD tanpa jawaban, rubrik, kunci guru terpisah); versi lengkap hanya bila diminta. Bila guru menyebut cetak/supervisi/Word/file, jalankan scripts/buat_docx.py sekali lalu tulis hanya 'File Word: <jalur dari output script>', tidak pernah klaim 'terlampir/terkirim' tanpa alat kirim file. CP tidak dikarang dan tidak diambil lewat web (rujuk BSKAP 046/H/KR/2025, kolom tempel bunyi CP resmi). Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal+rubrik. EN: lesson plan, worksheet, answer key, rubric.
+description: Membuat Modul Ajar/RPP, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, Tujuan Pembelajaran, Profil Lulusan, asesmen, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Format default RINGKAS ala modul ajar 1 lembar (balasan chat sekitar 4.000-6.000 karakter, utuh: modul, LKPD tanpa jawaban, rubrik, kunci guru terpisah); versi lengkap hanya bila diminta. Bila guru menyebut cetak/supervisi/Word/file: isi utuh di chat, buat .docx sekali, coba lampirkan lewat alat kirim file kanal chat (berhasil: 'File Word terlampir.'; gagal/tidak ada: jangan sebut jalur file, tawarkan balas 'kirim file'). CP tidak dikarang dan tidak diambil lewat web (rujuk BSKAP 046/H/KR/2025, kolom tempel bunyi CP resmi). Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal+rubrik. EN: lesson plan, worksheet, answer key, rubric.
 ---
 
 # Rencana Pelajaran Guru (Modul Ajar Kurikulum Merdeka)
@@ -10,7 +10,7 @@ description: Membuat Modul Ajar/RPP, RPP 1 lembar, LKPD, serta soal+kunci+rubrik
 > **ATURAN PALING ATAS (kanal chat: Telegram/WhatsApp/web):**
 > 1. **Format default RINGKAS** (ala "modul ajar 1 lembar"), target balasan chat **sekitar 4.000-6.000 karakter** dan tetap **utuh**, bukan ringkasan isi: Modul Ajar ringkas, LKPD (maks. 6 soal, tanpa jawaban), rubrik ringkas, lalu "Kunci Jawaban (untuk guru)" terpisah. Versi lengkap/panjang (modul penuh, soal banyak) **hanya bila guru memintanya**. Balasan terlalu panjang pernah membuat model macet tanpa balasan di Telegram; jangan menulis lebih dari yang diminta.
 > 2. **Isi utuh WAJIB ditulis di chat**; dilarang menulis "isi lengkap ada di file/workspace/folder" sebagai pengganti isi. Bila terpaksa panjang (versi lengkap diminta), pecah "Bagian 1/n ...".
-> 3. **File Word:** bila guru menyebut cetak, print, supervisi, Word, docx, atau file, **setelah isi chat selesai ditulis** jalankan `scripts/buat_docx.py` **sekali** (tanpa bertanya), lalu tulis HANYA kalimat baku: `File Word: <jalur persis dari output script>`. **Dilarang** menulis "sudah saya lampirkan/terlampir/terkirim/saya kirim" kecuali alat kirim file benar-benar dipanggil dan berhasil. Bila script gagal atau jalurnya tidak ada, jangan menyebut file sama sekali.
+> 3. **File Word:** bila guru menyebut cetak, print, supervisi, Word, docx, atau file, **setelah isi chat selesai ditulis** jalankan `scripts/buat_docx.py` **sekali** (tanpa bertanya). File di komputer bot (mis. /tmp/...) tidak bisa diambil guru di Telegram, jadi **coba lampirkan** file itu lewat kemampuan kirim file kanal chat (mis. alat message/attachment OpenClaw) bila tersedia. Berhasil: tulis singkat `File Word terlampir.` Tidak tersedia atau gagal: **JANGAN menyebut jalur file** (tidak ada "File Word: /tmp/...") dan tulis kalimat baku: `Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan.` Dilarang menulis "terlampir/terkirim/saya kirim" kecuali alat kirim file benar-benar dipanggil dan berhasil. Di kanal non-chat (CLI/IDE) jalur file dari output script boleh disebut. Script gagal: jangan menyebut file sama sekali.
 > 4. **Batasi tool call:** baca SKILL.md sekali; **JANGAN pernah web_fetch/web_search dokumen CP** (lampiran BSKAP ±1.700 halaman; pernah membuat timeout). Bila diminta bunyi/kode CP persis: beri rujukan + langkah mencari + kolom tempel, lalu langsung lanjut menyusun modul. Di kanal chat jangan menulis file .md hasil modul di workspace (berkas .md sementara untuk script .docx ditaruh di folder sementara dan dihapus setelahnya).
 
 ## Tujuan
@@ -158,9 +158,8 @@ menulis file tersedia, **setelah isi chat selesai ditulis**, kerjakan tanpa bert
 2. Pisahkan lembar siswa dan kunci dengan baris `<<HALAMAN BARU>>` di atas judul Kunci Jawaban.
 3. Jalankan **sekali** `python3 scripts/buat_docx.py hasil.md hasil.docx` (Windows: `python` atau `py`);
    script mencetak "OK: file ditulis di <jalur>". Hapus file .md sementara setelahnya.
-4. Tulis HANYA kalimat baku: `File Word: <jalur persis dari output script>`. Dilarang menulis
-   "sudah saya lampirkan", "terlampir", "terkirim", "saya kirim" kecuali alat kirim file
-   benar-benar dipanggil dan berhasil. Bila script gagal atau jalurnya tidak ada, jangan menyebut file sama sekali.
+4. Kanal chat (Telegram/WhatsApp/web): coba lampirkan file lewat alat kirim file kanal. Berhasil: tulis `File Word terlampir.` Tidak tersedia/gagal: jangan sebut jalur file; tulis `Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan.` Kanal non-chat (CLI/IDE): tulis `File Word: <jalur persis dari output script>`. Dilarang menulis
+   "terlampir", "terkirim", "saya kirim" kecuali alat kirim file benar-benar dipanggil dan berhasil. Bila script gagal atau jalurnya tidak ada, jangan menyebut file sama sekali.
 5. Isi utuh tetap ditulis di chat; file hanya salinan.
 Bila Python/izin menulis file tidak ada, jangan membuat file palsu: tampilkan teks di chat
 dan jelaskan cara menempel ke Word. Jangan menyalin pesan proses internal ke guru.
@@ -200,8 +199,8 @@ Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan gur
 - [ ] **Lembar siswa/LKPD tidak memuat jawaban**; kunci utuh ada di "Kunci Jawaban (untuk guru)" di akhir (bukan "lihat di atas")
 - [ ] **Format default RINGKAS** (balasan sekitar 4.000-6.000 karakter, LKPD maks. 6 soal, 2-3 TP, kegiatan bertabel menit); versi panjang hanya bila diminta
 - [ ] Isi chat **utuh** (modul ringkas, LKPD, rubrik, kunci guru), bukan ringkasan isi, tanpa kalimat "isi ada di file"
-- [ ] Bila guru menyebut cetak/supervisi/Word/file: `buat_docx.py` dijalankan sekali SETELAH isi chat selesai; kalimatnya hanya `File Word: <jalur dari output script>`
-- [ ] Tidak ada kata "lampirkan/terlampir/terkirim" tanpa alat kirim file yang berhasil; script gagal = file tidak disebut; tidak ada .md modul tertinggal di workspace
+- [ ] Bila guru menyebut cetak/supervisi/Word/file: `buat_docx.py` dijalankan sekali SETELAH isi chat selesai; di kanal chat file dicoba dilampirkan: berhasil = "File Word terlampir."; gagal/tidak ada alat = TANPA jalur file, kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan."; jalur file hanya di kanal CLI/IDE
+- [ ] Tidak ada kata "terlampir/terkirim" tanpa alat kirim file yang berhasil; script gagal = file tidak disebut; tidak ada .md modul tertinggal di workspace
 - [ ] Tool call minimal: SKILL.md dibaca sekali; **tidak ada web_fetch dokumen CP** (CP resmi tidak diambil lewat web)
 - [ ] Format baku: tanpa garis pemisah hiasan/baris kosong berulang; catatan Word/Docs sesuai format (tanda #)
 - [ ] Rubrik punya skor eksplisit dan cara menghitung nilai akhir

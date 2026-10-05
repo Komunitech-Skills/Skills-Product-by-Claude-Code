@@ -142,3 +142,7 @@ Skenario "tulis kode dan bunyi CP resminya persis" pada v1.0.8: 2 dari 3 timeout
 
 ## Uji ulang v1.0.9 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
 Sisi SESUDAH via `uji-tg.sh` (SEBELUM 5,75), berurutan. Skenario 1 (pesan persis gelombang 6) x3: 237/229/208 dtk, tanpa timeout, skor 8/7/8; Skenario 2 (RPP Matematika SD kelas 4, cetak): 280 dtk, skor 9. Tool: read/ls/exec/write/edit, **tanpa web_fetch**. Modul ringkas, LKPD tanpa jawaban, kunci terpisah, rubrik utuh; CP tidak dikarang (rujukan BSKAP 046/H/KR/2025 + kolom tempel); tanpa klaim lampiran palsu; menit & rubrik dihitung ulang benar. Rata-rata **8,0**, skenario 1 lulus 3/3. **VERDIK: LULUS**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.9".
+
+---
+## Riwayat v1.0.10 (2026-10-05) — keputusan pemilik no. 14, menunggu uji ulang independen
+Cacat uji Telegram v1.0.9: file Word tersimpan di komputer bot (mis. /tmp/...) sehingga guru tidak bisa mengambilnya. Perbaikan: setelah isi utuh tampil di chat dan .docx dibuat, agent mencoba melampirkan file lewat alat kirim file kanal chat; berhasil = "File Word terlampir."; gagal/tidak ada = tanpa jalur file + kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan."; kanal CLI/IDE boleh menyebut jalur. Diperbarui: aturan atas SKILL.md, checklist, description, contoh 08, README. Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
