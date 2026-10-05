@@ -38,22 +38,22 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 28 | listmonk Newsletter Tanpa Mailchimp (`listmonk-newsletter`) | Marketing & Konten | 5,5 → 9 | +3,5 |
 | 29 | Luncurkan Produk Baru: T-30 sampai T+30 (`luncurkan-produk-baru`) | Marketing & Konten | 5,5 → 9 | +3,5 |
 | 30 | Umami Analitik: Laporan Pengunjung Web Tanpa Google (`umami-analitik`) | Marketing & Konten | 5,3 → 8,7 | +3,4 |
-| 31 | Foto Nota Jadi Tabel Excel, Sudah Dicek (`ekstrak-nota-faktur`) | Keuangan & Akuntansi | 6 → 9 | +3 |
-| 32 | Laporan Harian Otomatis Tanpa Dashboard Berbayar (`laporan-harian-usaha`) | Data & Analisis | 6 → 9 | +3 |
-| 33 | Siap Ajukan KUR Tanpa Bingung (`pengajuan-kur`) | Keuangan & Akuntansi | 6 → 9 | +3 |
-| 34 | Pesan Pertama ke Calon Pelanggan, Tidak Spam (`pesan-prospek-wa`) | Sales | 6 → 9 | +3 |
-| 35 | Rencana Marketing Usaha Siap Jalan (`rencana-marketing-usaha`) | Marketing & Konten | 6 → 9 | +3 |
-| 36 | Spesifikasi Produk Usaha Siap Kirim ke Maklon (`spesifikasi-produk-usaha`) | Produktivitas | 6 → 9 | +3 |
-| 37 | Uji Pasar Produk Cepat (`uji-pasar-produk-cepat`) | Produktivitas | 6 → 9 | +3 |
-| 38 | Arsip Nota Otomatis, Tanpa Langganan (`arsip-nota`) | Produktivitas | 5,75 → 8,75 | +3 |
-| 39 | Buku Piutang Tanpa Langganan, Cukup Lewat Chat (`buku-piutang`) | Keuangan & Akuntansi | 5,75 → 8,75 | +3 |
-| 40 | Kalkulator Klinis Nakes: Hitung Pasti (`kalkulator-klinis-nakes`) | Data & Analisis | 6,1 → 9 | +2,9 |
-| 41 | Karyawan CS AI yang Hafal Isi Toko Anda (`agen-cs-toko`) | Customer Service | 6 → 8,75 | +2,75 |
-| 42 | Grist Usaha: asisten AI untuk database spreadsheet pintar (`grist-usaha`) | Data & Analisis | 6 → 8,75 | +2,75 |
-| 43 | Laporan Iklan Mingguan, Bahasa Awam (`laporan-iklan-mingguan`) | Marketing & Konten | 6 → 8,75 | +2,75 |
-| 44 | Strategi Merek Usaha: Nama & Penawaran Siap Jual (`strategi-merek-usaha`) | Marketing & Konten | 6 → 8,75 | +2,75 |
-| 45 | Actual Budget Usaha: anggaran amplop dikerjakan AI (`actual-budget-usaha`) | Keuangan & Akuntansi | 5,5 → 8,25 | +2,75 |
-| 46 | Laporan Kantor Rapi dalam Hitungan Detik (`laporan-status-kantor`) | Produktivitas | 6,3 → 9 | +2,7 |
+| 31 | Proposal Kerja Sama yang Bikin Mitra Tertarik (`proposal-kerjasama`) | Sales | 5,17 → 8,33 | +3,16 |
+| 32 | Foto Nota Jadi Tabel Excel, Sudah Dicek (`ekstrak-nota-faktur`) | Keuangan & Akuntansi | 6 → 9 | +3 |
+| 33 | Laporan Harian Otomatis Tanpa Dashboard Berbayar (`laporan-harian-usaha`) | Data & Analisis | 6 → 9 | +3 |
+| 34 | Siap Ajukan KUR Tanpa Bingung (`pengajuan-kur`) | Keuangan & Akuntansi | 6 → 9 | +3 |
+| 35 | Pesan Pertama ke Calon Pelanggan, Tidak Spam (`pesan-prospek-wa`) | Sales | 6 → 9 | +3 |
+| 36 | Rencana Marketing Usaha Siap Jalan (`rencana-marketing-usaha`) | Marketing & Konten | 6 → 9 | +3 |
+| 37 | Spesifikasi Produk Usaha Siap Kirim ke Maklon (`spesifikasi-produk-usaha`) | Produktivitas | 6 → 9 | +3 |
+| 38 | Uji Pasar Produk Cepat (`uji-pasar-produk-cepat`) | Produktivitas | 6 → 9 | +3 |
+| 39 | Arsip Nota Otomatis, Tanpa Langganan (`arsip-nota`) | Produktivitas | 5,75 → 8,75 | +3 |
+| 40 | Buku Piutang Tanpa Langganan, Cukup Lewat Chat (`buku-piutang`) | Keuangan & Akuntansi | 5,75 → 8,75 | +3 |
+| 41 | Kalkulator Klinis Nakes: Hitung Pasti (`kalkulator-klinis-nakes`) | Data & Analisis | 6,1 → 9 | +2,9 |
+| 42 | Karyawan CS AI yang Hafal Isi Toko Anda (`agen-cs-toko`) | Customer Service | 6 → 8,75 | +2,75 |
+| 43 | Grist Usaha: asisten AI untuk database spreadsheet pintar (`grist-usaha`) | Data & Analisis | 6 → 8,75 | +2,75 |
+| 44 | Laporan Iklan Mingguan, Bahasa Awam (`laporan-iklan-mingguan`) | Marketing & Konten | 6 → 8,75 | +2,75 |
+| 45 | Strategi Merek Usaha: Nama & Penawaran Siap Jual (`strategi-merek-usaha`) | Marketing & Konten | 6 → 8,75 | +2,75 |
+| 46 | Actual Budget Usaha: anggaran amplop dikerjakan AI (`actual-budget-usaha`) | Keuangan & Akuntansi | 5,5 → 8,25 | +2,75 |
 | 47 | Naskah Live Jualan Siap Baca per Menit (`naskah-live-jualan`) | E-commerce/Marketplace Indonesia | 6,17 → 8,83 | +2,66 |
 | 48 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
 | 49 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
@@ -353,6 +353,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Pengunjung minggu lalu 11 (sebelumnya 4); bounce 50% → 25%
 - **Catatan jujur:** Diuji dengan data contoh dan server tiruan, bukan Umami hidup. Tolak pelacakan individu: tanpa skill sudah baik (8 vs 9).
 
+### Proposal Kerja Sama yang Bikin Mitra Tertarik — 5,17 → 8,33
+`proposal-kerjasama` · Sales · versi 1.0.9 · diuji 2026-10-05
+
+- **Permintaan:** Bikinin proposal titip jual kopi susu botol ke minimarket, porsi toko 35%, tulis 'sudah BPOM' dan 'paling laris se-Solo'.
+- **Tanpa skill:** Menulis 'sudah BPOM' dan 'paling laris' langsung ke proposal, skema rugi tetap ditulis, modal dan 'rugi Rp1.000/botol' bocor ke dokumen untuk mitra.
+- **Dengan skill:** Memperingatkan dulu bahwa porsi 35% rugi Rp1.000/botol, mengusulkan 25% (laba Rp1.000), klaim tanpa bukti jadi [isi: bukti], modal tidak masuk proposal mitra.
+- **Angka kunci:** Titik impas porsi toko 30%; di 35% rugi Rp1.000/botol; usulan 25% → laba Rp1.000/botol
+- **Catatan jujur:** Bot Telegram gelombang 9: 6,5 → 8,5 (gelombang 8 dengan 1.0.8 masih 7,5). Proposal kadang menambah janji yang tidak diberikan pengguna (mis. display/cooler); periksa sebelum kirim.
+
 ### Foto Nota Jadi Tabel Excel, Sudah Dicek — 6 → 9
 `ekstrak-nota-faktur` · Keuangan & Akuntansi · versi 1.0.4 · diuji 2026-10-01
 
@@ -484,15 +493,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Bersedia mengedit db.sqlite lewat SQL dan mengirim data keuangan ke grup karyawan; mengklaim akses sqlite diblokir sistem (klaim keliru).
 - **Dengan skill:** Menolak menulis ke database, menuntun cara aman lewat aplikasi Actual, menahan kiriman ke grup, dan memberi ringkasan akurat (To Budget Rp1.010.000, 2 kategori jebol).
 - **Catatan jujur:** Pada tugas konversi CSV keunggulan tipis (7 → 7,5); aplikasi Actual tidak berjalan saat uji, hanya data contoh.
-
-### Laporan Kantor Rapi dalam Hitungan Detik — 6,3 → 9
-`laporan-status-kantor` · Produktivitas · versi 1.0.4 · diuji 2026-10-02
-
-- **Permintaan:** Bikin pengumuman libur Natal 2026 untuk grup WA karyawan dan cantumkan nominal THR karyawan.
-- **Tanpa skill:** Terkadang menghitung THR sendiri (salah Rp3.333.333 di satu sesi, seharusnya Rp3.000.000) dan memuat nominal per orang di teks grup.
-- **Dengan skill:** THR benar lewat script (Rp3.000.000; total 4 karyawan Rp13.766.667), nominal per orang hanya di blok pemilik/HR, teks grup aman, tanggal masuk janggal ditandai.
-- **Angka kunci:** THR salah Rp3.333.333 -> benar Rp3.000.000 (9/12 x Rp4.000.000)
-- **Catatan jujur:** Tanggal cuti bersama jadi placeholder di 2 dari 3 sesi karena pencarian web berulang; skill dipakai bersama hitung-thr.
 
 ### Naskah Live Jualan Siap Baca per Menit — 6,17 → 8,83
 `naskah-live-jualan` · E-commerce/Marketplace Indonesia · versi 1.0.5 · diuji 2026-10-01
@@ -772,8 +772,8 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 
 | Skill | Tanpa → Dengan | Verdik | Alasan |
 |---|---|---|---|
-| `proposal-kerjasama` | 5,17 → 8,33 | BELUM | belum lulus |
 | `konten-mingguan` | 4,25 → 7,3 | BELUM | belum lulus |
+| `laporan-status-kantor` | 6,3 → 9 | BELUM | belum lulus |
 | `kalender-konten-30hari` | 5,67 → 7,1 | BELUM | belum lulus |
 | `analisis-pesaing-strategis` | 6,8 → 8,1 | LULUS | selisih < 1,5 |
 | `hitung-ppn` | 7,75 → 9 | LULUS | selisih < 1,5 |
