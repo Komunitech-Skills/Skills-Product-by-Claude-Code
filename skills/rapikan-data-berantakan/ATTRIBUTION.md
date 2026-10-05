@@ -29,3 +29,4 @@ Penggunaan keseluruhan tunduk pada `LISENSI.txt` yang disertakan dalam paket pem
 
 ## Riwayat versi
 ### v1.0.0 (2026-10-05), rilis awal (status `uji`), hasil kurasi ATM.
+### v1.0.1 (2026-10-05), perbaikan nomor baris, telepon rumah, dan blok angka tetap (kode dan teks tulisan sendiri; tidak ada materi sumber baru).

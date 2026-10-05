@@ -16,7 +16,7 @@ Ide kelompok nama mirip (kunci sidik jari / n-gram / kemiripan teks) terinspiras
 menyalin kode OpenRefine.
 
 Keluaran: <folder-keluar>/<nama>-bersih.csv, laporan.json, dan ringkasan teks di layar
-(bertanda UNTUK AGENT SAJA).
+(diawali BLOK ANGKA TETAP yang disalin apa adanya ke balasan, lalu bagian UNTUK AGENT SAJA).
 """
 import argparse
 import csv
@@ -31,7 +31,7 @@ from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from difflib import SequenceMatcher
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 
 # --------------------------------------------------------------------------- umum
 
@@ -45,6 +45,18 @@ def bersihkan_spasi(s):
     s = s.translate(KARAKTER_ANEH).replace(" ", " ").replace(" ", " ").replace("\t", " ")
     s = re.sub(r"[\r\n]+", " ", s)
     return re.sub(r" {2,}", " ", s).strip()
+
+
+def daftar_baris(nomor, batas=12):
+    """[3, 5, 9] -> 'baris 3, 5, 9' (dipotong bila panjang)."""
+    nomor = list(nomor)
+    if len(nomor) <= min(batas, 3):
+        teks = " & ".join(str(x) for x in nomor) if len(nomor) == 2 else ", ".join(str(x) for x in nomor)
+    else:
+        teks = ", ".join(str(x) for x in nomor[:batas])
+        if len(nomor) > batas:
+            teks += " dan {} baris lain".format(len(nomor) - batas)
+    return "baris " + teks
 
 
 def hilangkan_aksen(s):
@@ -119,6 +131,8 @@ def _satu_hp(teks):
         return None, None, "awalan nomor tidak dikenali (bukan 08..., 62..., atau +62...)"
     if not sisa:
         return None, None, "nomor terlalu pendek"
+    if sisa.startswith("80"):  # 0800/0804: bebas pulsa / layanan, bukan nomor HP
+        return "62" + sisa, "tetap", None
     if sisa.startswith("8"):
         if not 9 <= len(sisa) <= 12:
             return None, None, "panjang nomor HP tidak wajar ({} angka setelah 0/62; wajar 9-12)".format(len(sisa))
@@ -128,21 +142,38 @@ def _satu_hp(teks):
     return None, None, "panjang nomor tidak wajar"
 
 
-def normalisasi_hp(nilai):
-    """-> (hasil|None, catatan[list], alasan_gagal|None). Catatan: 'banyak_nomor', 'telepon_tetap'."""
+def _hp_terbaca(nilai):
+    a = analisis_hp(nilai)
+    return bool(a["hp"] or a["tetap"])
+
+
+def analisis_hp(nilai):
+    """Pisahkan isi satu sel HP. Mengembalikan dict:
+    hp (nomor seluler pertama, 628..., atau None), tetap (telepon rumah/kantor, ditulis 0..., bukan WA),
+    lain (nomor seluler tambahan), jumlah (banyak nomor di sel), tak_terbaca (bagian yang gagal),
+    gagal (alasan bila tidak ada satu pun nomor yang bisa dipakai)."""
     bagian = [b for b in re.split(r"[/;,&]|\bdan\b|\batau\b", nilai) if re.search(r"\d", b)]
+    hasil = {"hp": None, "tetap": [], "lain": [], "jumlah": len(bagian), "tak_terbaca": [], "gagal": None}
     if not bagian:
-        return None, [], "tidak ada angka"
-    hasil = [_satu_hp(b) for b in bagian]
-    for h, jenis, _ in hasil:
-        if h:
-            cat = []
-            if len(bagian) > 1:
-                cat.append("banyak_nomor")
-            if jenis == "tetap":
-                cat.append("telepon_tetap")
-            return h, cat, None
-    return None, [], hasil[0][2]
+        hasil["gagal"] = "tidak ada angka"
+        return hasil
+    alasan_pertama = None
+    for b in bagian:
+        h, jenis, alasan = _satu_hp(b)
+        if h is None:
+            alasan_pertama = alasan_pertama or alasan
+            hasil["tak_terbaca"].append(b.strip())
+        elif jenis == "tetap":
+            n = "0" + h[2:]
+            if n not in hasil["tetap"]:
+                hasil["tetap"].append(n)
+        elif hasil["hp"] is None:
+            hasil["hp"] = h
+        elif h != hasil["hp"] and h not in hasil["lain"]:
+            hasil["lain"].append(h)
+    if hasil["hp"] is None and not hasil["tetap"]:
+        hasil["gagal"] = alasan_pertama
+    return hasil
 
 
 # --------------------------------------------------------------------------- tanggal
@@ -518,8 +549,11 @@ def deteksi_kolom(header, baris_data):
             continue
         # HP
         by_header = bool(POLA_HEADER["hp"].search(nm)) and not re.search(r"(?i)nomor (pesanan|order|resi|invoice|faktur)|no\.? ?(pesanan|order|resi|invoice|faktur)", nm)
-        ok_hp = sum(1 for v in isi if normalisasi_hp(v)[0] and re.sub(r"\D", "", v)[:2] in ("08", "62", "00", "81", "82", "83", "85", "87", "88", "89") or v.strip().startswith("+62")) / len(isi)
-        if (by_header and ok_hp >= 0.4) or ok_hp >= 0.8:
+        awalan_hp = ("08", "62", "00", "81", "82", "83", "85", "87", "88", "89")
+        awalan_telp = awalan_hp + ("02", "03", "04", "05", "06", "07")   # kolom bernama HP/telp boleh berisi telepon rumah
+        ok_hp = sum(1 for v in isi if _hp_terbaca(v) and re.sub(r"\D", "", v)[:2] in awalan_hp or v.strip().startswith("+62")) / len(isi)
+        ok_telp = sum(1 for v in isi if _hp_terbaca(v) and re.sub(r"\D", "", v)[:2] in awalan_telp or v.strip().startswith("+62")) / len(isi)
+        if (by_header and ok_telp >= 0.4) or ok_hp >= 0.8:
             hasil["hp"].append(nm)
             alasan[nm] = "hp (nama kolom/isi)"
             terpakai.add(idx)
@@ -577,6 +611,9 @@ class Laporan:
         self.peringatan = []
         self.dibuang = []
         self.ambigu_tanggal = []
+        self.telepon_rumah = []
+        self.hp_ganda = []
+        self.nama_sel_berubah = 0
 
     def catat(self, jenis, baris, kolom, sebelum, sesudah):
         self.perbaikan[jenis] += 1
@@ -590,8 +627,10 @@ def proses(path, opsi):
     rows = list(csv.reader(io.StringIO(teks, newline=""), delimiter=pemisah))
     rows = [r for r in rows]
     # lewati baris kosong di awal
+    awal = 0   # baris kosong di awal file tetap dihitung agar nomor baris = nomor baris di spreadsheet
     while rows and not any(c.strip() for c in rows[0]):
         rows.pop(0)
+        awal += 1
     if not rows:
         raise ValueError("Berkas kosong: tidak ada baris judul maupun data.")
     header = [bersihkan_spasi(h) or "kolom_{}".format(i + 1) for i, h in enumerate(rows[0])]
@@ -607,7 +646,7 @@ def proses(path, opsi):
     n = len(header)
     data = []  # (nomor_baris, [cells])
     kosong = 0
-    for i, r in enumerate(rows[1:], start=2):
+    for i, r in enumerate(rows[1:], start=2 + awal):
         if not any(c.strip() for c in r):
             kosong += 1
             lap.dibuang.append({"baris": i, "alasan": "baris kosong"})
@@ -637,7 +676,8 @@ def proses(path, opsi):
             sel = sel[:n]
         else:
             sel_ekstra = []
-        tabel.append({"baris": i, "sel": sel, "asli": list(sel), "catatan": catatan, "ekstra": sel_ekstra if len(r) > n else []})
+        tabel.append({"baris": i, "sel": sel, "asli": list(sel), "catatan": catatan,
+                      "ekstra": sel_ekstra if len(r) > n else [], "telepon_rumah": [], "nomor_lain": []})
 
     # spasi
     for t in tabel:
@@ -683,29 +723,44 @@ def proses(path, opsi):
     # HP
     for nm in peta["hp"]:
         ci = idx[nm]
-        banyak = telepon_tetap = 0
+        banyak = []
+        rumah = []
         for t in tabel:
             v = t["sel"][ci]
             if not v:
                 continue
-            hasil, cat, gagal = normalisasi_hp(v)
-            if hasil is None:
-                lap.gagal.append({"baris": t["baris"], "kolom": nm, "nilai": v, "alasan": gagal})
-                t["catatan"].append("{}: {}".format(nm, gagal))
+            asli = t["asli"][ci]
+            a = analisis_hp(v)
+            if a["gagal"]:
+                lap.gagal.append({"baris": t["baris"], "kolom": nm, "nilai": v, "isi_asli": asli, "alasan": a["gagal"]})
+                t["catatan"].append("{}: {}".format(nm, a["gagal"]))
                 continue
-            if "banyak_nomor" in cat:
-                banyak += 1
-                t["catatan"].append("{}: ada lebih dari satu nomor, dipakai yang pertama (asli: {})".format(nm, v))
-            if "telepon_tetap" in cat:
-                telepon_tetap += 1
-                t["catatan"].append("{}: tampaknya telepon rumah/kantor, bukan HP/WhatsApp".format(nm))
-            if hasil != v:
+            if a["jumlah"] > 1:
+                banyak.append(t["baris"])
+                lap.hp_ganda.append({"baris": t["baris"], "kolom": nm, "isi_asli": asli, "dipakai_sebagai_hp": a["hp"],
+                                     "nomor_seluler_lain": a["lain"], "telepon_rumah": a["tetap"], "bagian_tidak_terbaca": a["tak_terbaca"]})
+                if a["hp"]:
+                    t["catatan"].append("{}: ada lebih dari satu nomor (asli: {}); dipakai nomor seluler pertama{}".format(
+                        nm, asli, ("; nomor lain dicatat: " + ", ".join(a["lain"])) if a["lain"] else ""))
+                if a["tak_terbaca"]:
+                    t["catatan"].append("{}: bagian yang tidak terbaca dibiarkan: {}".format(nm, ", ".join(a["tak_terbaca"])))
+            if a["tetap"]:
+                rumah.append(t["baris"])
+                lap.telepon_rumah.append({"baris": t["baris"], "kolom": nm, "isi_asli": asli, "nomor": a["tetap"],
+                                          "kolom_hp_dikosongkan": a["hp"] is None})
+                t["telepon_rumah"].extend(a["tetap"])
+                t["catatan"].append("{}: telepon rumah/kantor {}, bukan WhatsApp; dipindah ke kolom _telepon_rumah{}".format(
+                    nm, ", ".join(a["tetap"]), "; kolom HP dikosongkan" if a["hp"] is None else ""))
+            if a["lain"]:
+                t["nomor_lain"].extend(a["lain"])
+            hasil = a["hp"] or ""
+            if hasil and hasil != v:
                 lap.catat("hp_format", t["baris"], nm, v, hasil)
             t["sel"][ci] = hasil
         if banyak:
-            lap.peringatan.append("Kolom {}: {} sel berisi lebih dari satu nomor; hanya nomor pertama dipakai.".format(nm, banyak))
-        if telepon_tetap:
-            lap.peringatan.append("Kolom {}: {} nomor tampak telepon rumah/kantor (bukan HP), tidak cocok untuk WhatsApp.".format(nm, telepon_tetap))
+            lap.peringatan.append("Kolom {}: {} sel berisi lebih dari satu nomor ({}); nomor seluler pertama dipakai sebagai HP, yang lain dicatat.".format(nm, len(banyak), daftar_baris(banyak)))
+        if rumah:
+            lap.peringatan.append("Kolom {}: {} sel berisi telepon rumah/kantor ({}); bukan WhatsApp, dipisah ke kolom _telepon_rumah dan tidak ikut di kolom HP.".format(nm, len(rumah), daftar_baris(rumah)))
 
     # tanggal
     for nm in peta["tanggal"]:
@@ -714,6 +769,8 @@ def proses(path, opsi):
         if warn:
             lap.peringatan.append("Kolom {}: {}".format(nm, warn))
         ambigu_n = dibalik_n = jam_n = serial_n = 0
+        b_dibalik = []
+        b_jam = []
         for t in tabel:
             v = t["sel"][ci]
             if not v:
@@ -721,27 +778,32 @@ def proses(path, opsi):
             iso, info = normalisasi_tanggal(v, urutan)
             if iso is None:
                 alasan = info["alasan"]
-                lap.gagal.append({"baris": t["baris"], "kolom": nm, "nilai": v, "alasan": alasan})
+                lap.gagal.append({"baris": t["baris"], "kolom": nm, "nilai": v, "isi_asli": t["asli"][ci], "alasan": alasan})
                 t["catatan"].append("{}: {}".format(nm, alasan))
                 continue
             if info["ambigu"]:
                 ambigu_n += 1
-                lap.ambigu_tanggal.append({"baris": t["baris"], "kolom": nm, "nilai": v, "dibaca_sebagai": iso})
+                lap.ambigu_tanggal.append({"baris": t["baris"], "kolom": nm, "nilai": v, "isi_asli": t["asli"][ci], "dibaca_sebagai": iso})
                 t["catatan"].append("{}: tanggal ambigu ({}), dibaca {}".format(nm, v, "hari/bulan" if urutan == "dmy" else "bulan/hari"))
             if info["dibalik"]:
                 dibalik_n += 1
+                b_dibalik.append(t["baris"])
                 t["catatan"].append("{}: urutan hari/bulan dibalik agar tanggal valid ({})".format(nm, v))
             jam_n += info["jam_dibuang"]
+            if info["jam_dibuang"]:
+                b_jam.append(t["baris"])
             serial_n += info["serial"]
             if iso != v:
                 lap.catat("tanggal_format", t["baris"], nm, v, iso)
             t["sel"][ci] = iso
         if ambigu_n:
-            lap.peringatan.append("Kolom {}: {} tanggal ambigu (bisa hari/bulan atau bulan/hari), dibaca {}.".format(nm, ambigu_n, "hari/bulan (cara Indonesia)" if urutan == "dmy" else "bulan/hari"))
+            lap.peringatan.append("Kolom {}: {} tanggal ambigu (bisa hari/bulan atau bulan/hari), dibaca {} ({}).".format(
+                nm, ambigu_n, "hari/bulan (cara Indonesia)" if urutan == "dmy" else "bulan/hari",
+                daftar_baris([a["baris"] for a in lap.ambigu_tanggal if a["kolom"] == nm])))
         if dibalik_n:
-            lap.peringatan.append("Kolom {}: {} tanggal hanya valid bila urutannya dibalik, sudah dibalik.".format(nm, dibalik_n))
+            lap.peringatan.append("Kolom {}: {} tanggal hanya valid bila urutannya dibalik, sudah dibalik ({}).".format(nm, dibalik_n, daftar_baris(b_dibalik)))
         if jam_n:
-            lap.peringatan.append("Kolom {}: jam pada {} tanggal dibuang (hanya tanggal disimpan).".format(nm, jam_n))
+            lap.peringatan.append("Kolom {}: jam pada {} tanggal dibuang (hanya tanggal disimpan; {}).".format(nm, jam_n, daftar_baris(b_jam)))
         if serial_n:
             lap.peringatan.append("Kolom {}: {} tanggal berupa nomor seri Excel dikonversi.".format(nm, serial_n))
 
@@ -749,31 +811,38 @@ def proses(path, opsi):
     for nm in peta["rupiah"]:
         ci = idx[nm]
         pemb = amb = gr = 0
+        b_pemb = []
+        b_amb = []
+        b_gr = []
         for t in tabel:
             v = t["sel"][ci]
             if not v:
                 continue
             nilai, info = normalisasi_rupiah(v)
             if nilai is None:
-                lap.gagal.append({"baris": t["baris"], "kolom": nm, "nilai": v, "alasan": info["alasan"]})
+                lap.gagal.append({"baris": t["baris"], "kolom": nm, "nilai": v, "isi_asli": t["asli"][ci], "alasan": info["alasan"]})
                 t["catatan"].append("{}: {}".format(nm, info["alasan"]))
                 continue
             if info["pembulatan"]:
                 pemb += 1
+                b_pemb.append(t["baris"])
                 t["catatan"].append("{}: dibulatkan ke rupiah terdekat (asli {})".format(nm, v))
             if info["ambigu"]:
                 amb += 1
+                b_amb.append(t["baris"])
                 t["catatan"].append("{}: '{}' dibaca sebagai {} (bisa juga 1,5 gaya desimal)".format(nm, v, nilai))
             gr += info["gratis"]
+            if info["gratis"]:
+                b_gr.append(t["baris"])
             if str(nilai) != v:
                 lap.catat("rupiah_format", t["baris"], nm, v, str(nilai))
             t["sel"][ci] = str(nilai)
         if pemb:
-            lap.peringatan.append("Kolom {}: {} nilai mengandung sen/desimal dan dibulatkan ke rupiah terdekat.".format(nm, pemb))
+            lap.peringatan.append("Kolom {}: {} nilai mengandung sen/desimal dan dibulatkan ke rupiah terdekat ({}).".format(nm, pemb, daftar_baris(b_pemb)))
         if amb:
-            lap.peringatan.append("Kolom {}: {} nilai seperti '1,500' dibaca sebagai ribuan (1500), bukan 1,5.".format(nm, amb))
+            lap.peringatan.append("Kolom {}: {} nilai seperti '1,500' dibaca sebagai ribuan (1500), bukan 1,5 ({}).".format(nm, amb, daftar_baris(b_amb)))
         if gr:
-            lap.peringatan.append("Kolom {}: {} nilai 'gratis' dicatat sebagai 0.".format(nm, gr))
+            lap.peringatan.append("Kolom {}: {} nilai 'gratis' dicatat sebagai 0 ({}).".format(nm, gr, daftar_baris(b_gr)))
 
     # nama
     kelompok_semua = []
@@ -787,6 +856,8 @@ def proses(path, opsi):
             if not v:
                 continue
             baru = rapikan_nama(v)
+            if baru != t["asli"][ci]:
+                lap.nama_sel_berubah += 1
             if baru != v:
                 lap.catat("nama_dirapikan", t["baris"], nm, v, baru)
             t["sel"][ci] = baru
@@ -822,6 +893,17 @@ def proses(path, opsi):
     if jenis == "auto":
         jenis = "transaksi" if (peta["tanggal"] or peta["rupiah"]) else "daftar"
     duplikat = {"persis": [], "nomor_hp_sama": [], "hp_sama_nama_beda": []}
+
+    def label(t):
+        if peta["nama"]:
+            v = t["sel"][idx[peta["nama"][0]]]
+            if v:
+                return v
+        return next((c for c in t["sel"] if c), "")
+
+    def isi_asli(t):
+        return {"baris": t["baris"], "isi_asli": [c.strip() for c in t["asli"] if c.strip()]}
+
     kunci_persis = OrderedDict()
     # kolom nomor urut (No, #, ID yang semuanya beda) tidak ikut dibandingkan
     abaikan_dup = set()
@@ -831,7 +913,8 @@ def proses(path, opsi):
             if len(set(nilai_i)) == len(nilai_i):
                 abaikan_dup.add(i)
     for t in tabel:
-        kp = tuple("" if i in abaikan_dup else c for i, c in enumerate(t["sel"])) + tuple(t["ekstra"])
+        kp = (tuple("" if i in abaikan_dup else c for i, c in enumerate(t["sel"])) + tuple(t["ekstra"])
+              + tuple(t["telepon_rumah"]) + tuple(t["nomor_lain"]))
         if not any(kp):
             continue
         kunci_persis.setdefault(kp, []).append(t)
@@ -840,7 +923,8 @@ def proses(path, opsi):
     for kp, daftar in kunci_persis.items():
         if len(daftar) > 1:
             grup_id += 1
-            duplikat["persis"].append({"grup": grup_id, "baris": [t["baris"] for t in daftar], "contoh": {header[i]: kp[i] for i in range(min(n, len(kp))) if kp[i]}})
+            duplikat["persis"].append({"grup": grup_id, "baris": [t["baris"] for t in daftar], "label": label(daftar[0]),
+                                       "isi_asli_per_baris": [isi_asli(t) for t in daftar], "contoh": {header[i]: kp[i] for i in range(min(n, len(kp))) if kp[i]}})
             for t in daftar:
                 t["grup"] = "P{}".format(grup_id)
                 t["catatan"].append("duplikat persis (grup P{}, baris {})".format(grup_id, ", ".join(str(x["baris"]) for x in daftar)))
@@ -860,7 +944,9 @@ def proses(path, opsi):
             for hp, daftar in per_hp.items():
                 nama_beda = sorted({t["sel"][ci_n] for t in daftar})
                 if len(nama_beda) > 1:
-                    duplikat["hp_sama_nama_beda"].append({"hp": hp, "nama": nama_beda, "baris": [t["baris"] for t in daftar]})
+                    duplikat["hp_sama_nama_beda"].append({
+                        "hp": hp, "nama": nama_beda, "baris": [t["baris"] for t in daftar],
+                        "isi_asli_per_baris": [{"baris": t["baris"], "nama_asli": t["asli"][ci_n], "hp_asli": t["asli"][ci]} for t in daftar]})
                     for t in daftar:
                         t["catatan"].append("nomor HP ini juga dipakai nama lain: " + ", ".join(x for x in nama_beda if x != t["sel"][ci_n]))
     if jenis == "daftar":
@@ -874,7 +960,8 @@ def proses(path, opsi):
                 if len(daftar) > 1:
                     grup_id += 1
                     duplikat["nomor_hp_sama"].append({"grup": grup_id, "hp": hp, "baris": [t["baris"] for t in daftar],
-                                                       "nama": [t["sel"][idx[peta["nama"][0]]] for t in daftar] if peta["nama"] else []})
+                                                       "nama": [t["sel"][idx[peta["nama"][0]]] for t in daftar] if peta["nama"] else [],
+                                                       "isi_asli_per_baris": [{"baris": t["baris"], "hp_asli": t["asli"][ci]} for t in daftar]})
                     for t in daftar:
                         t["grup"] = "H{}".format(grup_id)
                         t["catatan"].append("nomor HP sama dengan baris {} (grup H{})".format(", ".join(str(x["baris"]) for x in daftar if x is not t), grup_id))
@@ -909,7 +996,9 @@ def tulis_hasil(path, hasil, opsi):
     keep = [i for i, h in enumerate(hasil["header"]) if h not in hasil["buang_kolom"]]
     ada_grup = any("grup" in t for t in hasil["tabel"])
     kolom_hp = set(hasil["peta"]["hp"])
-    ekstra = ["_catatan"] + (["_grup_duplikat"] if ada_grup else []) + (["_kelebihan"] if hasil["kelebihan"] else [])
+    ada_rumah = any(t["telepon_rumah"] for t in hasil["tabel"])
+    ekstra = (["_catatan"] + (["_telepon_rumah"] if ada_rumah else []) + (["_grup_duplikat"] if ada_grup else [])
+              + (["_kelebihan"] if hasil["kelebihan"] else []))
 
     def baris_csv(t):
         out = []
@@ -919,6 +1008,11 @@ def tulis_hasil(path, hasil, opsi):
                 v = '="{}"'.format(v)
             out.append(v)
         out.append("; ".join(t["catatan"]))
+        if ada_rumah:
+            rumah = list(t["telepon_rumah"])
+            if opsi.hp_untuk_excel:
+                rumah = ['="{}"'.format(x) for x in rumah]
+            out.append(" / ".join(rumah))
         if ada_grup:
             out.append(t.get("grup", ""))
         if hasil["kelebihan"]:
@@ -953,6 +1047,7 @@ def susun_laporan(path, hasil, berkas, berkas_dibuang, opsi):
         "hp_format": ambil("hp_format"), "tanggal_format": ambil("tanggal_format"),
         "rupiah_format": ambil("rupiah_format"), "placeholder_jadi_kosong": ambil("placeholder_jadi_kosong"),
         "nama_digabung_otomatis": ambil("nama_digabung_otomatis"),
+        "nama_sel_berubah": lap.nama_sel_berubah,
     }
     laporan = {
         "versi_alat": VERSI,
@@ -973,18 +1068,96 @@ def susun_laporan(path, hasil, berkas, berkas_dibuang, opsi):
         "kelompok_nama_mirip": hasil["kelompok"],
         "tidak_bisa_diperbaiki": lap.gagal,
         "tanggal_ambigu": lap.ambigu_tanggal,
+        "telepon_rumah": lap.telepon_rumah,
+        "hp_ganda": lap.hp_ganda,
         "baris_dibuang": lap.dibuang,
         "sel_kosong": dict(hasil["sel_kosong"]),
         "kolom_kosong_semua": hasil["kolom_kosong"],
         "peringatan": lap.peringatan,
         "jumlah_baris_bermasalah": baris_bermasalah,
     }
+    laporan["blok_angka_tetap"] = blok_angka(laporan)
     return laporan
+
+
+def _label_baris(nomor):
+    return daftar_baris(nomor, 15)
+
+
+def blok_angka(l):
+    """Daftar baris siap salin ke balasan. Semua angka & nomor baris dihitung di sini, bukan oleh agent.
+    Butir yang berisi daftar baris ditulis sebagai sub-butir (satu item per baris teks)."""
+    rap = l["perbaikan"]
+    dup = l["duplikat"]
+    kol = {k: v["kolom"] for k, v in l["deteksi_kolom"].items()}
+    o = []
+
+    def butir(judul, items=(), batas=15):
+        o.append("- " + judul)
+        items = list(items)
+        for it in items[:batas]:
+            o.append("  - " + it)
+        if len(items) > batas:
+            o.append("  - ... dan {} lainnya (daftar lengkap di kolom _catatan file bersih)".format(len(items) - batas))
+
+    kosong_dibuang = [d for d in l["baris_dibuang"] if "duplikat" not in d["alasan"]]
+    buang = len(l["baris_dibuang"]) - len(kosong_dibuang)
+    kalimat = "Selesai dirapikan: {} baris data".format(l["jumlah_baris_data_isi"])
+    if kosong_dibuang:
+        kalimat += " (+{} baris kosong/judul berulang tidak dihitung)".format(len(kosong_dibuang))
+    kalimat += "; di file bersih: {} baris".format(l["jumlah_baris_keluar"])
+    kalimat += ", {} baris duplikat persis dibuang atas permintaan".format(buang) if buang else ", tidak ada baris yang dihapus"
+    o.append(kalimat + ".")
+    if kol.get("hp"):
+        butir("Nomor HP diseragamkan ke format 62: {}".format(rap["hp_format"]))
+        butir("Telepon rumah/kantor (bukan WhatsApp; dipisah ke kolom _telepon_rumah, tidak ada di kolom HP): {} sel".format(len(l["telepon_rumah"])),
+              ['{} "{}"'.format(_label_baris([x["baris"]]), x["isi_asli"]) for x in l["telepon_rumah"]])
+        butir("Sel berisi lebih dari satu nomor: {} sel".format(len(l["hp_ganda"])), [
+            '{} "{}" -> dipakai sebagai HP: {}{}'.format(
+                _label_baris([x["baris"]]), x["isi_asli"], x["dipakai_sebagai_hp"] or "tidak ada (tidak ada nomor seluler)",
+                "; nomor lain dicatat: " + ", ".join(x["nomor_seluler_lain"]) if x["nomor_seluler_lain"] else "")
+            for x in l["hp_ganda"]])
+    if kol.get("tanggal"):
+        butir("Tanggal diseragamkan ke YYYY-MM-DD: {}".format(rap["tanggal_format"]))
+        if l["tanggal_ambigu"]:
+            butir("Tanggal ambigu (bisa hari/bulan atau bulan/hari; dibaca hari/bulan kecuali ada bukti lain): {} -> {}".format(
+                len(l["tanggal_ambigu"]), _label_baris([a["baris"] for a in l["tanggal_ambigu"]])))
+    if kol.get("rupiah"):
+        butir("Nominal rupiah jadi angka: {}".format(rap["rupiah_format"]))
+    if kol.get("nama"):
+        butir("Nama/produk/kota dirapikan huruf dan spasinya: {}".format(rap["nama_sel_berubah"]))
+    butir("Baris kembar persis (semua kolom sama): {} grup".format(len(dup["persis"])),
+          ['{} ({})'.format(_label_baris(g["baris"]), g["label"]) for g in dup["persis"]])
+    if kol.get("hp") and kol.get("nama"):
+        butir("Nomor HP sama tetapi nama beda (belum tentu orang yang sama, TIDAK digabung): {} kelompok".format(len(dup["hp_sama_nama_beda"])),
+              ['{} ({})'.format(_label_baris(g["baris"]), " / ".join(g["nama"])) for g in dup["hp_sama_nama_beda"]])
+    if dup["nomor_hp_sama"]:
+        butir("Nomor HP sama, tetapi isi lain juga ada yang beda (bukan kembar persis): {} kelompok".format(len(dup["nomor_hp_sama"])),
+              [_label_baris(g["baris"]) for g in dup["nomor_hp_sama"]])
+    menunggu = [k for k in l["kelompok_nama_mirip"] if not k["digabung"]]
+    sudah = [k for k in l["kelompok_nama_mirip"] if k["digabung"]]
+    if sudah:
+        butir("Nama yang sudah digabung atas persetujuan pengguna: {} kelompok ({} sel diganti)".format(len(sudah), rap["nama_digabung_otomatis"]),
+              ['no. {} -> "{}"'.format(k["no"], k["usulan_nama_baku"]) for k in sudah])
+    if menunggu:
+        butir("Nama mirip yang menunggu keputusan: {} kelompok".format(len(menunggu)), [
+            "no. {}: ".format(k["no"]) + " / ".join('"{}" ({})'.format(i["nilai"], _label_baris(i["baris"])) for i in k["isi"])
+            for k in menunggu])
+    gagal = sorted(l["tidak_bisa_diperbaiki"], key=lambda g: g["baris"])
+    butir("Sel tidak bisa diperbaiki (dibiarkan apa adanya): {} sel di {} baris".format(len(gagal), l["jumlah_baris_bermasalah"]), [
+        'baris {}{}{}: {}'.format(g["baris"], "" if g["kolom"] == "(struktur)" else " kolom " + g["kolom"],
+                                  ' "{}"'.format(g["isi_asli"]) if g.get("isi_asli") else "", g["alasan"])
+        for g in gagal])
+    return o
 
 
 def ringkasan_teks(l):
     o = []
-    o.append("UNTUK AGENT SAJA -- ringkasan hitungan. Jangan tempel mentah ke pengguna; tulis ulang dengan bahasa biasa tanpa kata script/path/JSON.")
+    o.append("=== BLOK ANGKA TETAP: salin apa adanya ke balasan sebagai daftar. Angka dan nomor baris di sini SUDAH DIHITUNG; jangan dihitung ulang, jangan diganti nomor baris dari kolom 'No'. ===")
+    o.extend(l["blok_angka_tetap"])
+    o.append("=== AKHIR BLOK ANGKA TETAP ===")
+    o.append("")
+    o.append("UNTUK AGENT SAJA -- rincian tambahan. Jangan tempel mentah ke pengguna; tulis ulang dengan bahasa biasa tanpa kata script/path/JSON.")
     o.append("File: {} | pemisah: {} | encoding: {} | jenis: {}".format(l["file_masuk"], l["pemisah"], l["encoding"], l["jenis_tabel"]))
     o.append("Baris data: {} terisi, {} keluar di file bersih; dibuang: {} (kosong/judul berulang/duplikat yang diminta dibuang)".format(
         l["jumlah_baris_data_isi"], l["jumlah_baris_keluar"], len(l["baris_dibuang"])))

@@ -42,22 +42,46 @@ class UjiHP(unittest.TestCase):
         sama = ["0812-3456-7890", "+62 812 3456 7890", "6281234567890", "81234567890", "0812 3456 7890.0",
                 "+62 (0) 812-3456-7890", "0062 812 3456 7890", "(0812) 3456 7890", "wa 0812 3456 7890"]
         for v in sama:
-            self.assertEqual(R.normalisasi_hp(v)[0], "6281234567890", v)
+            self.assertEqual(R.analisis_hp(v)["hp"], "6281234567890", v)
 
     def test_gagal_dengan_alasan(self):
         for v, kata in [("6.28123E+11", "ilmiah"), ("0812-ABC-5555", "huruf"), ("0812345", "panjang"),
                         ("+1 202 555 0143", "luar negeri"), ("0812345678901234", "panjang"), ("---", "angka")]:
-            hasil, _, alasan = R.normalisasi_hp(v)
-            self.assertIsNone(hasil, v)
-            self.assertIn(kata, alasan, v)
+            a = R.analisis_hp(v)
+            self.assertIsNone(a["hp"], v)
+            self.assertEqual(a["tetap"], [], v)
+            self.assertIn(kata, a["gagal"], v)
 
     def test_banyak_nomor_dan_telepon_tetap(self):
-        h, cat, _ = R.normalisasi_hp("081234567890 / 085611112222")
-        self.assertEqual(h, "6281234567890")
-        self.assertIn("banyak_nomor", cat)
-        h, cat, _ = R.normalisasi_hp("(021) 555-0123")
-        self.assertEqual(h, "62215550123")
-        self.assertIn("telepon_tetap", cat)
+        a = R.analisis_hp("081234567890 / 085611112222")
+        self.assertEqual((a["hp"], a["lain"], a["jumlah"]), ("6281234567890", ["6285611112222"], 2))
+        a = R.analisis_hp("(021) 555-0123")
+        self.assertIsNone(a["hp"])                     # telepon rumah TIDAK boleh jadi nomor WA
+        self.assertEqual(a["tetap"], ["0215550123"])
+        self.assertIsNone(a["gagal"])
+
+    def test_telepon_rumah_berbagai_kode_area(self):
+        for v, e in [("022-7301-554", "0227301554"), ("021 5550 1234", "02155501234"), ("0274 123456", "0274123456"),
+                     ("(031) 8765432", "0318765432"), ("+62 22 7301554", "0227301554"), ("0800-1-234567", "08001234567")]:
+            a = R.analisis_hp(v)
+            self.assertIsNone(a["hp"], v)
+            self.assertEqual(a["tetap"], [e], v)
+
+    def test_hp_seluler_tidak_dikira_telepon_rumah(self):
+        for v in ["0811 2345 678", "0812-3456-7890", "+62 896 7123 4490", "0852 6630 1145"]:
+            a = R.analisis_hp(v)
+            self.assertTrue(a["hp"].startswith("628"), v)
+            self.assertEqual(a["tetap"], [], v)
+
+    def test_dua_nomor_seluler_dan_campuran(self):
+        a = R.analisis_hp("0812 4456 7781 / 0813 9988 1002")
+        self.assertEqual((a["hp"], a["lain"]), ("6281244567781", ["6281399881002"]))
+        a = R.analisis_hp("022-7301-554 / 0813 9988 1002")   # rumah dulu, seluler kedua: seluler jadi HP
+        self.assertEqual((a["hp"], a["tetap"]), ("6281399881002", ["0227301554"]))
+        a = R.analisis_hp("0812 4456 7781 / 0812-4456-7781")  # nomor sama ditulis dua kali
+        self.assertEqual((a["hp"], a["lain"], a["jumlah"]), ("6281244567781", [], 2))
+        a = R.analisis_hp("0812 4456 7781 dan 0812")
+        self.assertEqual((a["hp"], a["tak_terbaca"]), ("6281244567781", ["0812"]))
 
 
 class UjiTanggal(unittest.TestCase):
@@ -251,6 +275,112 @@ class UjiDataContoh(unittest.TestCase):
                 lap = json.load(f)
             for k in ("hp_format", "tanggal_format", "rupiah_format", "nama_dirapikan"):
                 self.assertEqual(lap["perbaikan"][k], 0, k)
+
+
+PELANGGAN = """No,Nama Pelanggan,No HP,Tgl Beli Terakhir,Total Belanja,Kota
+1,Bu Wiranti Sasmaya,0813-7741-2290,03/09/2026,"Rp 1.250.000",Bandung
+2,pak darsono haliman,+62 857 4410 3381,5 Okt 2026,250rb,Cimahi
+3,Bu Wiranti Sasmaya,0813-7741-2290,03/09/2026,"Rp 1.250.000",Bandung
+4,Muh. Fadlan Arkasa,+6281344027719,1 Sep 2026,"2,1jt",Bandung
+5,Muhammad Fadlan Arkasa,081344027719,14/09/2026,350rb,Bandung
+6,Dodi Sumarta,08122,15/09/2026,Rp 200.000,Bandung
+7,,,,,
+8,Indah Larasantika,022-7301-554,13/09/2026,Rp 180.000,Bandung
+9,Bambang Sutrisnadi,0811 2203 9940,31/02/2026,750rb,Cimahi
+10,Hendra Wijayakusuma,0812 4456 7781 / 0813 9988 1002,25/09/2026,"Rp 1.900.000",Bandung
+11,Tono Rusmanadi,0838-2210-5567,20 Sep 2026,Rp 95.000,Garut
+"""
+
+
+class UjiNomorBarisDanBlokAngka(unittest.TestCase):
+    """Cacat uji OpenClaw 2026-10-05: nomor baris salah, telepon rumah masuk kolom HP, angka ringkasan hilang."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.p, cls.lap, cls.baris = jalankan(PELANGGAN)
+        assert cls.p.returncode == 0, cls.p.stderr
+
+    def test_nomor_baris_telepon_rumah_dan_dua_nomor(self):
+        # nomor baris = baris di spreadsheet (judul = baris 1) = kolom "No" + 1
+        self.assertEqual([x["baris"] for x in self.lap["telepon_rumah"]], [9])
+        self.assertEqual(self.lap["telepon_rumah"][0]["isi_asli"], "022-7301-554")
+        self.assertEqual([x["baris"] for x in self.lap["hp_ganda"]], [11])
+        self.assertEqual(self.lap["hp_ganda"][0]["isi_asli"], "0812 4456 7781 / 0813 9988 1002")
+        self.assertEqual(self.lap["hp_ganda"][0]["nomor_seluler_lain"], ["6281399881002"])
+
+    def test_telepon_rumah_tidak_masuk_kolom_hp(self):
+        r = next(b for b in self.baris if b["No"] == "8")
+        self.assertEqual(r["No HP"], "")
+        self.assertEqual(r["_telepon_rumah"], "0227301554")
+        self.assertIn("bukan WhatsApp", r["_catatan"])
+        self.assertNotIn("62227301554", "".join(b["No HP"] for b in self.baris))
+
+    def test_dua_nomor_seluler_pertama_jadi_hp_sisanya_catatan(self):
+        r = next(b for b in self.baris if b["No"] == "10")
+        self.assertEqual(r["No HP"], "6281244567781")
+        self.assertIn("6281399881002", r["_catatan"])
+        self.assertIn("0812 4456 7781 / 0813 9988 1002", r["_catatan"])
+
+    def test_item_laporan_punya_baris_dan_isi_asli(self):
+        for g in self.lap["tidak_bisa_diperbaiki"]:
+            self.assertIsInstance(g["baris"], int)
+            self.assertIn("alasan", g)
+            if g["kolom"] != "(struktur)":
+                self.assertIn("isi_asli", g)
+        gagal = {(g["baris"], g.get("isi_asli")) for g in self.lap["tidak_bisa_diperbaiki"]}
+        self.assertIn((7, "08122"), gagal)
+        self.assertIn((10, "31/02/2026"), gagal)
+        for a in self.lap["tanggal_ambigu"]:
+            self.assertIn("isi_asli", a)
+        teks_peringatan = " ".join(self.lap["peringatan"])
+        self.assertIn("baris 9", teks_peringatan)
+        self.assertIn("baris 11", teks_peringatan)
+
+    def test_duplikat_dan_hp_sama_punya_baris_asli(self):
+        self.assertEqual([g["baris"] for g in self.lap["duplikat"]["persis"]], [[2, 4]])
+        beda = self.lap["duplikat"]["hp_sama_nama_beda"]
+        self.assertEqual([g["baris"] for g in beda], [[5, 6]])
+        self.assertEqual(beda[0]["isi_asli_per_baris"][0]["nama_asli"], "Muh. Fadlan Arkasa")
+
+    def test_blok_angka_tetap(self):
+        blok = "\n".join(self.lap["blok_angka_tetap"])
+        self.assertIn("Selesai dirapikan: 11 baris data", blok)
+        self.assertIn("baris 9 \"022-7301-554\"", blok)
+        self.assertIn("baris 11 \"0812 4456 7781 / 0813 9988 1002\"", blok)
+        self.assertIn("Baris kembar persis (semua kolom sama): 1 grup\n  - baris 2 & 4 (Bu Wiranti Sasmaya)", blok)
+        n_sel, n_baris = len(self.lap["tidak_bisa_diperbaiki"]), self.lap["jumlah_baris_bermasalah"]
+        self.assertEqual((n_sel, n_baris), (3, 3))   # 08122 (baris 7), 31/02/2026 (baris 10), baris 8 hampir kosong
+        self.assertIn("{} sel di {} baris".format(n_sel, n_baris), blok)
+        self.assertIn('baris 7 kolom No HP "08122"', blok)
+        self.assertIn("baris 8: baris hampir kosong", blok)
+        self.assertIn("  - baris 5 & 6 (Muh. Fadlan", blok)   # nomor sama nama beda, label berbeda dari kembar persis
+
+    def test_blok_angka_cocok_hitungan_independen(self):
+        # hitung ulang dari berkas hasil, bukan dari laporan
+        hp_62 = sum(1 for b in self.baris if b["No HP"].startswith("628"))
+        self.assertEqual(hp_62, 8)   # 11 baris - 08122 - baris kosong - telepon rumah
+        self.assertEqual(self.lap["perbaikan"]["hp_format"], 8)   # semuanya berubah dari format asli
+        blok = "\n".join(self.lap["blok_angka_tetap"])
+        self.assertIn("ke format 62: 8", blok)
+
+    def test_blok_tampil_paling_atas_di_layar(self):
+        self.assertTrue(self.p.stdout.startswith("=== BLOK ANGKA TETAP"))
+        self.assertLess(self.p.stdout.index("AKHIR BLOK ANGKA TETAP"), self.p.stdout.index("UNTUK AGENT SAJA"))
+
+    def test_baris_kosong_di_awal_file_tetap_dihitung(self):
+        p, lap, _ = jalankan("\n\nNama,HP\nAni,0812 1111 0000\nBudi,abc\n")
+        self.assertEqual(lap["tidak_bisa_diperbaiki"][0]["baris"], 5)   # judul di baris 3
+
+    def test_hanya_telepon_rumah_di_file_kecil_dan_excel(self):
+        p, lap, baris = jalankan("Nama,HP\nToko A,021 5550 1234\n", "--hp-untuk-excel")
+        self.assertEqual(baris[0]["HP"], "")
+        self.assertEqual(baris[0]["_telepon_rumah"], '="02155501234"')
+        self.assertEqual(lap["perbaikan"]["hp_format"], 0)
+
+    def test_dua_baris_beda_telepon_rumah_bukan_kembar(self):
+        isi = "Nama,HP\nToko A,021 5550 1234\nToko A,022 7301 554\n"
+        _, lap, _ = jalankan(isi)
+        self.assertEqual(lap["duplikat"]["persis"], [])
 
 
 class UjiDataRusak(unittest.TestCase):

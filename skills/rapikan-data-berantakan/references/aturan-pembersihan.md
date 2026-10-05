@@ -7,7 +7,8 @@ Dipakai bila alat hitung tidak bisa dijalankan atau datanya hanya tempelan kecil
 2. Awalan `0062` -> buang `00`. Awalan `62` -> pakai. Awalan `0` -> ganti dengan `62`. Awalan `8` (nol hilang) -> tambah `62`.
 3. Panjang wajar nomor HP: setelah `62` ada 9-12 angka, diawali `8`. Di luar itu: jangan ditebak, tandai.
 4. Berisi huruf, notasi ilmiah (`6.28E+11`), atau `+` selain `+62`: tandai "tidak bisa diperbaiki".
-5. Dua nomor dalam satu sel: pakai yang pertama, catat yang kedua.
+5. Dua nomor dalam satu sel: nomor seluler (`8...`) pertama jadi HP, yang lain dicatat di catatan.
+6. Telepon rumah/kantor (setelah `0`/`62` BUKAN `8`, mis. `021`, `022`, `0274`, atau `0800`): jangan masuk kolom HP/WhatsApp. Pindahkan ke kolom `_telepon_rumah` (ditulis `0...`), kosongkan kolom HP, tandai "bukan WhatsApp".
 
 ## Tanggal -> `YYYY-MM-DD`
 - Nama bulan: Jan, Feb, Mar, Apr, Mei, Jun, Jul, Agu/Agt, Sep, Okt, Nov, Des (Inggris: May, Aug, Oct, Dec ikut dikenali). Nama hari dan jam dibuang.

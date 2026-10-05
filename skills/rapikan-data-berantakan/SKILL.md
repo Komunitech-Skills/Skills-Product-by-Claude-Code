@@ -12,8 +12,8 @@ Mengubah tabel yang kacau menjadi tabel rapi siap pakai (satu baris = satu catat
 
 ## Aturan utama: kerjakan dulu, tanya di akhir
 Jika pengguna sudah memberi data (file CSV, ekspor, atau tempelan), JANGAN membalas hanya dengan pertanyaan. Rapikan dulu pakai pengaturan wajar, lalu dalam **satu balasan** berikan berurutan:
-1. **Ringkasan angka** (satu-dua kalimat): berapa baris, berapa yang sudah diperbaiki per jenis (nomor HP, tanggal, harga, nama), berapa yang tidak bisa diperbaiki.
-2. **Tabel contoh perbaikan** (5-8 baris: Sebelum -> Sesudah, jenisnya).
+1. **Blok angka tetap**: salin APA ADANYA dari keluaran alat (lihat "Aturan angka & nomor baris"), dalam format daftar. Itu sudah memuat jumlah baris, nomor HP/tanggal/nominal yang diperbaiki, telepon rumah, sel dua nomor, baris kembar, nomor sama nama beda, dan sel yang tidak bisa diperbaiki beserta nomor barisnya.
+2. **Tabel contoh perbaikan** (5-8 baris: Sebelum -> Sesudah, jenisnya; ambil dari `contoh_perbaikan` di laporan).
 3. **Yang perlu keputusan Anda** (daftar bernomor, maksimal 3 butir pertanyaan; lihat "Format balasan").
 4. **Asumsi** yang dipakai (mis. "tanggal 05/10/2026 saya baca 5 Oktober").
 5. File bersih: tawarkan "balas *kirim file* kalau mau file bersihnya". Jangan menyebut lokasi file atau cara kerjanya kecuali ditanya.
@@ -41,7 +41,7 @@ Tanpa data sama sekali: tanyakan sekali (maks. 3 pertanyaan): file/tempelan data
 | Urutan tanggal ambigu (05/10: 5 Okt atau 10 Mei) | Tidak | Hari/bulan (cara Indonesia); tanya bila ada yang ambigu |
 
 ## Langkah kerja
-1. **Lihat datanya.** Buka beberapa baris pertama: judul kolom, pemisah, ada tidaknya kolom nomor urut. Bila pengguna cuma menempelkan data (di bawah ±40 baris), rapikan langsung dengan aturan di `references/aturan-pembersihan.md` dan beri tahu bahwa ini dikerjakan manual.
+1. **Lihat datanya.** Buka beberapa baris pertama: judul kolom, pemisah, ada tidaknya kolom nomor urut. Bila pengguna cuma menempelkan data, simpan dulu sebagai file CSV sementara di folder kerja (judul = baris 1, nomor baris mengikuti urutan tempelan) lalu jalankan alat yang sama; jangan menghitung manual bila Python tersedia.
 2. **Rapikan dengan script** `scripts/rapikan.py` (Python standar, tanpa instalasi tambahan):
    ```bash
    python3 <folder-skill-ini>/scripts/rapikan.py <file.csv>
@@ -49,8 +49,8 @@ Tanpa data sama sekali: tanyakan sekali (maks. 3 pertanyaan): file/tempelan data
    - Pemisah (`,` `;` tab), encoding Excel Windows, dan kolom dikenali otomatis. Bila salah, beri `--kolom-nama "Nama Pelanggan|Produk"`, `--kolom-hp "No HP"`, `--kolom-tanggal "Tgl"`, `--kolom-rupiah "Total"`, `--pemisah ";"`.
    - `--jenis daftar` bila 1 baris = 1 pelanggan (nomor HP yang sama ditandai); `--jenis transaksi` bila pelanggan wajar muncul berulang.
    - Hasil ditulis di folder `hasil-rapikan` di sebelah file asli: `<nama>-bersih.csv` dan `laporan.json`. File asli tidak disentuh.
-   - Keluaran layar bertanda "UNTUK AGENT SAJA": baca angkanya, sampaikan dengan bahasa biasa.
-3. **Baca `laporan.json`** untuk: `perbaikan` (jumlah per jenis), `contoh_perbaikan`, `kelompok_nama_mirip`, `duplikat`, `tidak_bisa_diperbaiki`, `tanggal_ambigu`, `peringatan`. Semua angka di balasan wajib dari sana, jangan dikira atau dijumlah sendiri.
+   - Keluaran layar diawali **BLOK ANGKA TETAP** (siap salin ke balasan), lalu bagian "UNTUK AGENT SAJA" (rincian; sampaikan dengan bahasa biasa). Bila keluaran layar terpotong atau tidak terbaca, ambil blok yang sama dari `blok_angka_tetap` di `laporan.json`.
+3. **Baca `laporan.json`** untuk: `blok_angka_tetap`, `perbaikan`, `contoh_perbaikan`, `kelompok_nama_mirip`, `duplikat`, `telepon_rumah`, `hp_ganda`, `tidak_bisa_diperbaiki`, `tanggal_ambigu`, `peringatan`. Setiap butirnya memuat `baris` (nomor baris asli di file sumber) dan `isi_asli` (isi sel sebelum diubah).
 4. **Sampaikan hasil** dengan format di bawah, termasuk setiap `peringatan` yang relevan.
 5. **Terapkan keputusan pengguna** dengan menjalankan ulang (hasil sebelumnya ditimpa di folder `hasil-rapikan`, bukan file asli):
    - Gabung nama: `--gabung-kelompok 1,3` (nomor dari laporan), atau nama baku pilihan sendiri `--nama-baku "2=Muhammad Rizal Pratama"`. `--gabungkan-otomatis` (semua usulan) hanya bila pengguna jelas menyetujui semuanya.
@@ -59,12 +59,18 @@ Tanpa data sama sekali: tanyakan sekali (maks. 3 pertanyaan): file/tempelan data
    - Dibuka di Excel dan nomor HP berubah jadi `6,28E+11`: `--hp-untuk-excel`. Kolom kosong semua: `--buang-kolom-kosong`.
 6. **Serahkan file** hanya bila diminta (lihat "Menyerahkan file").
 
-Jika Python tidak tersedia atau script gagal: rapikan manual dengan `references/aturan-pembersihan.md`, hitung jumlahnya satu per satu, dan sebutkan bahwa hasil ini belum diverifikasi alat hitung.
+Jika Python tidak tersedia atau script gagal: rapikan manual dengan `references/aturan-pembersihan.md`, hitung jumlah dan nomor baris satu per satu (telepon rumah tetap tidak masuk kolom HP), dan sebutkan bahwa hasil ini belum diverifikasi alat hitung.
+
+## Aturan angka & nomor baris (wajib, berlaku di semua kanal)
+- **Angka dan nomor baris di balasan HANYA disalin dari keluaran alat/laporan**, tidak dihitung, dikira, atau dilihat sekilas sendiri. Kolom "No" di file BUKAN nomor baris (baris spreadsheet = "No" + 1 karena judul = baris 1); pakai nomor `baris` dari laporan.
+- Blok angka tetap (baris-barisnya, tanpa baris judul bertanda `===`) disalin **utuh dan berurutan** sebagai daftar (butir dan sub-butir apa adanya), juga di chat Telegram/WhatsApp. Jangan merangkum jadi satu kalimat, jangan menghilangkan butir (terutama telepon rumah, sel dua nomor, sel tidak bisa diperbaiki), jangan mengubah angka. Kata sendiri hanya boleh di tabel contoh, pertanyaan keputusan, dan asumsi.
+- Daftar baris kembar, nomor sama nama beda, dan nama mirip juga hanya dari blok/laporan. Jangan membedakan "kembar" dan "mirip" dengan pandangan sekilas: "kembar persis" = butir baris kembar; "nomor sama nama beda" = butir sendiri.
+- Berlaku juga **saat sebagian permintaan ditolak** (mis. diminta menggabung data grup WA atau mencari nomor dari Instagram): tolak bagian itu, tetapi pengecekan duplikat/rapikan pada file yang pengguna punya tetap dijalankan dengan alat, dan daftarnya disalin dari blok.
+- Nomor di dalam sel (hasil HP, "dipakai sebagai HP") disalin dari blok/laporan, bukan diketik ulang dari ingatan.
 
 ## Format balasan
 ```
-Selesai dirapikan: <N> baris. Diperbaiki: <a> nomor HP, <b> tanggal, <c> harga, <d> nama.
-<k> sel tidak bisa diperbaiki (dibiarkan apa adanya, daftar di bawah).
+<salin blok angka tetap dari alat, apa adanya>
 
 Contoh perbaikan
 | Isi | Sebelum | Sesudah |
@@ -75,23 +81,23 @@ Contoh perbaikan
 | Nama | budi santoso | Budi Santoso |
 
 Perlu keputusan Anda
-1. Nama yang tampaknya orang/barang yang sama: "Budi Santoso" / "Bpk. Budi Santoso" / "Santoso Budi" (baris 2-5). Disatukan jadi "Budi Santoso"?
-2. Baris persis kembar: 13 dan 14 (Hendra Gunawan, 12 Okt, Rp310.000). Sisakan satu?
-3. Tanggal "05/10/2026" dan 7 lainnya bisa 5 Oktober atau 10 Mei; saya baca 5 Oktober. Benar?
+1. Nama yang tampaknya orang/barang yang sama: "Budi Santoso" / "Bpk. Budi Santoso" / "Santoso Budi" (baris dari blok). Disatukan jadi "Budi Santoso"?
+2. Baris persis kembar: baris 13 & 14 (dari blok). Sisakan satu?
+3. Telepon rumah di baris 31 tidak ikut kolom HP. Mau dikosongkan saja, atau dicari nomor WA-nya ke pelanggan?
 
-Tidak bisa diperbaiki: baris 18 nomor HP "6.28123E+11" (Excel menghilangkan digitnya; perlu ekspor ulang kolom itu sebagai teks), ...
+Asumsi: tanggal "05/10/2026" dibaca 5 Oktober (hari/bulan); harga dibulatkan ke rupiah terdekat.
 
 Mau file bersihnya? Balas "kirim file".
 ```
 Aturan penyajian:
-- Pilih **maksimal 3** butir keputusan (yang paling berdampak: nama mirip, duplikat, tanggal ambigu); sisanya ringkas dalam satu kalimat dan tawarkan lanjutannya.
-- Tulis nomor baris sebagaimana di spreadsheet (judul = baris 1).
+- Pilih **maksimal 3** butir keputusan, urutan prioritas: (1) nama mirip / nomor sama nama beda, (2) baris kembar persis, (3) telepon rumah dan sel dua nomor bila data dipakai untuk WhatsApp/promo. Tanggal ambigu cukup di "Asumsi" kecuali ada bukti kolom bercampur (peringatan alat); sisanya ringkas dalam satu kalimat dan tawarkan lanjutannya.
+- Nomor baris sebagaimana di spreadsheet (judul = baris 1), langsung dari blok/laporan.
 - Kata teknis (script, path, JSON, parsing, regex, LULUS, "saya menjalankan") **tidak** muncul di balasan. Katakan hasilnya, bukan prosesnya.
 - Nama mirip **tidak pernah digabung** tanpa persetujuan. Tegaskan bahwa tidak ada data yang dihapus; yang diubah hanya format.
 - Nomor yang tidak bisa dibaca dibiarkan seperti aslinya, jangan ditebak. Sebut alasannya dalam bahasa biasa.
 
 ## Aturan tiap jenis isi (ringkas)
-- **Nomor HP:** semua menjadi `62` + nomor tanpa 0 depan (`0812-3450-0101`, `+62 812 3450 0101`, `812 3450 0101` -> `6281234500101`). Nomor ganda dalam satu sel: dipakai yang pertama dan dilaporkan. Telepon rumah (021...) diberi catatan bukan WhatsApp. Nomor luar negeri, terlalu pendek/panjang, atau berhuruf: dibiarkan dan dilaporkan.
+- **Nomor HP:** semua menjadi `62` + nomor tanpa 0 depan (`0812-3450-0101`, `+62 812 3450 0101`, `812 3450 0101` -> `6281234500101`). Nomor ganda dalam satu sel: dipisah; nomor **seluler** pertama jadi HP, nomor lain dicatat di `_catatan` (tidak dibuang). **Telepon rumah/kantor** (kode area 021, 022, 0274, ... dan 0800) **tidak pernah masuk kolom HP**: dipindah ke kolom `_telepon_rumah` (kolom HP dikosongkan bila tidak ada nomor seluler lain), ditandai "bukan WhatsApp", dan **jangan disebut sebagai nomor WA/siap kirim promo**. Nomor luar negeri, terlalu pendek/panjang, atau berhuruf: dibiarkan dan dilaporkan.
 - **Tanggal:** semua menjadi `YYYY-MM-DD` (bisa diurutkan dan dibaca semua aplikasi). Jam dibuang dan dilaporkan. Tanggal fiktif (31 Februari) dibiarkan dan dilaporkan. Format `05/10/2026` ambigu bila hari dan bulan sama-sama <= 12: dibaca hari/bulan, dihitung dan ditanyakan; bila ada bukti di kolom yang sama (mis. `10/13/2026`), urutan mengikuti bukti.
 - **Rupiah:** menjadi bilangan bulat tanpa titik/"Rp" (`Rp 1.250.000,-` -> `1250000`, `150rb` -> `150000`, `1,5jt` -> `1500000`, "gratis" -> `0`). Sen dibulatkan ke rupiah terdekat dan dilaporkan; `1,500` (koma + 3 digit) dibaca 1.500 dan ditandai.
 - **Nama/produk/kota:** spasi ganda dan huruf besar-kecil dirapikan (Title Case; `PT`, `CV`, `iPhone`, `5kg` dijaga). Singkatan dan sapaan (Muh./Muhammad, Bpk., Jogja/Yogyakarta) tidak diubah di data, hanya dipakai untuk mendeteksi kemiripan.
@@ -103,7 +109,7 @@ Bila pengguna bertanya cara mencatat agar tidak berantakan lagi, beri 5 aturan s
 ## Menyerahkan file
 - **Aplikasi desktop (Claude Code, Codex, Cursor):** sebutkan folder `hasil-rapikan` di sebelah file asli dan isi file bersihnya.
 - **Chat Telegram/WhatsApp:** lampirkan file bersih bila kanal mendukung. Bila tidak bisa, jangan menyebut jalur file; untuk hasil kecil (<= 30 baris) tempel sebagai tabel, untuk yang besar tawarkan memecahnya.
-- File bersih memuat kolom tambahan `_catatan` (apa yang diubah/ditandai), `_grup_duplikat`, dan `_kelebihan` bila ada. Beri tahu bahwa kolom itu boleh dihapus setelah semua keputusan selesai.
+- File bersih memuat kolom tambahan `_catatan` (apa yang diubah/ditandai), `_telepon_rumah`, `_grup_duplikat`, dan `_kelebihan` bila ada. Beri tahu bahwa kolom itu boleh dihapus setelah semua keputusan selesai.
 
 ## Privasi data pelanggan (wajib)
 - Data pelanggan diproses di komputer pengguna dan **tidak dikirim ke layanan atau alat lain**. Jangan mengunggah, meneruskan, atau menyalinnya ke tempat lain tanpa diminta jelas.
