@@ -1,6 +1,6 @@
 # Kerangka draf balasan keluhan
 
-Pakai sebagai bahan, jangan disalin mentah. Sesuaikan dengan nada pelanggan (marah: lebih pendek dan tenang; bingung: lebih rinci). Semua `[isian: ...]` diganti pengguna. Janji waktu harus jatuh di jam kerja admin. Tidak ada janji refund/ganti/voucher sebelum pemilik memutuskan.
+Pakai sebagai bahan, jangan disalin mentah. Sesuaikan dengan nada pelanggan (marah: lebih pendek dan tenang; bingung: lebih rinci). Semua `[isian: ...]` diganti pengguna. Janji waktu harus jatuh di jam kerja admin. Tidak ada janji refund/ganti/voucher sebelum pemilik memutuskan. Tidak membela diri ("kami bukan toko penipu"), tidak meminta pelanggan menunda lapor/ulasan, tidak mengklaim perbaikan yang belum terjadi ("sedang kami perbaiki"); pakai `[isian: tindakan nyata]`.
 
 Susunan: **sapaan, empati yang menyebut masalahnya, langkah nyata sekarang, janji waktu, penutup sopan.** Maksimal sekitar 400 karakter per balasan WA, 1-2 emoji.
 
@@ -45,3 +45,8 @@ Tanpa nama, nomor, atau detail pesanan di balasan publik.
 
 ## Bukan keluhan (pertanyaan)
 > Halo Kak, [jawaban singkat]. Ada yang bisa kami bantu lagi?
+
+## Balasan resmi untuk ulasan yang dituduh tidak adil (pengganti "balas pakai akun lain")
+> Terima kasih masukannya, Kak. Mohon maaf pengalamannya kurang berkesan. Kami ingin membantu, boleh hubungi kami lewat chat [isian: kanal] dengan nomor pesanannya ya. [isian: fakta pesanan yang sudah dicek, tanpa membantah pelanggan]
+
+Dibalas dari akun toko sendiri. Bila ulasan melanggar ketentuan platform, laporkan lewat fitur laporan ulasan di Pusat Penjual (keputusan di platform). Tidak menghapus, tidak membuat akun lain, tidak meminta nomor pembeli untuk menekan.
