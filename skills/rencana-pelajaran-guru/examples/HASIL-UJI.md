@@ -149,3 +149,7 @@ Cacat uji Telegram v1.0.9: file Word tersimpan di komputer bot (mis. /tmp/...) s
 
 ## Uji ulang v1.0.10 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
 `uji-tg.sh`, 2 percobaan berurutan, home bersih (modul SMP Bahasa Inggris + CP persis + supervisi). A: 401 dtk, skor 6, GAGAL (menulis "File Word terlampir." tanpa lampiran terkirim, tanpa kalimat tawaran "kirim file"). B: 439 dtk, skor 9, lulus (isi utuh, tanpa jalur /tmp, kalimat tawaran ada). Tanpa timeout; CP tidak dikarang; menit dan skor benar. Rata-rata **7,5**, lulus 1/2. **VERDIK: BELUM**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.10".
+
+---
+## Riwayat v1.0.11 (2026-10-05) — keputusan pemilik no. 14 (lanjutan), menunggu uji ulang independen
+Cacat uji Telegram v1.0.10 percobaan A: menulis "File Word terlampir." tanpa lampiran terkirim. Perbaikan: di kanal chat tidak ada pelampiran otomatis dan tidak ada kata "terlampir/di bawah/sudah dikirim" untuk file; balasan ditutup kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan."; .docx dibuat hanya setelah guru membalas "kirim file", dan "File Word terlampir." hanya bila alat kirim file mengembalikan sukses (gagal = dikatakan jujur). Diperbarui: aturan atas SKILL.md, checklist, description, contoh 08, README. Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
