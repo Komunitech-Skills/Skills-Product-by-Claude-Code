@@ -1,13 +1,16 @@
 ---
 name: rencana-pelajaran-guru
-description: Membuat Modul Ajar/RPP lengkap, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, ATP, Tujuan Pembelajaran, Profil Lulusan, asesmen diagnostik-formatif-sumatif, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Aturan baku: lembar siswa/LKPD TIDAK memuat jawaban; kunci jawaban ditulis utuh terpisah di bagian "Kunci Jawaban (untuk guru)"; CP tidak pernah dikarang (rujuk BSKAP 046/H/KR/2025 + cara mengambil bunyi CP resmi); isi modul LENGKAP (termasuk lembar siswa & kunci guru) selalu ditulis utuh di balasan chat, bukan ringkasan; file .docx untuk cetak/supervisi hanya salinan bila Python tersedia, dengan jalur file disebut. Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal ulangan+rubrik. EN: lesson plan, worksheet, answer key, rubric.
+description: Membuat Modul Ajar/RPP lengkap, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, ATP, Tujuan Pembelajaran, Profil Lulusan, asesmen diagnostik-formatif-sumatif, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Aturan baku: isi LENGKAP (modul, LKPD tanpa jawaban, soal+rubrik, kunci jawaban guru) selalu ditulis utuh di balasan chat, dipecah per bagian bila panjang, tidak pernah diganti "isi ada di file"; bila guru menyebut cetak/supervisi/Word/file, langsung buat .docx (scripts/buat_docx.py) tanpa bertanya dan kirim sebagai lampiran lewat kanal chat bila bisa; CP tidak pernah dikarang (rujuk BSKAP 046/H/KR/2025 + cara mengambil bunyi CP resmi). Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal ulangan+rubrik. EN: lesson plan, worksheet, answer key, rubric.
 ---
 
 # Rencana Pelajaran Guru (Modul Ajar Kurikulum Merdeka)
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
-> **Aturan isi balasan:** Balasan chat WAJIB memuat isi modul secara lengkap dan utuh (Modul Ajar, LKPD/lembar siswa, soal + rubrik, dan Kunci Jawaban untuk guru) — bukan ringkasan atau daftar isi. File .docx/PDF hanya salinan dari isi yang sama; jangan menggantikan isi di chat dengan "lihat file".
+> **ATURAN PALING ATAS (kanal chat: Telegram/WhatsApp/web):**
+> 1. **Isi utuh WAJIB ditulis di balasan chat** (Modul Ajar, LKPD/lembar siswa tanpa jawaban, soal + rubrik, Kunci Jawaban untuk guru). Bila panjang, pecah menjadi beberapa pesan/bagian berurutan ("Bagian 1/4 ...", "Bagian 2/4 ...") dan jangan meringkas. **Dilarang** menulis "isi lengkap ada di file/workspace/folder" sebagai pengganti isi; guru di chat tidak bisa membuka file di server.
+> 2. **Bila guru menyebut cetak, print, supervisi, Word, docx, atau file:** langsung jalankan `scripts/buat_docx.py` (lihat "File Word" di bawah) **tanpa bertanya** "mau saya buatkan?", lalu kirim file .docx sebagai lampiran lewat kemampuan kirim file kanal chat bila tersedia. Bila tidak bisa dilampirkan, cukup sebut file tersimpan di jalur nyata dari output script dan isi utuh sudah ada di chat. Jangan klaim "terkirim" tanpa konfirmasi.
+> 3. **Di kanal chat, jangan menulis file .md hasil modul di workspace** kecuali guru memintanya. (Berkas .md sementara untuk bahan script .docx ditaruh di folder sementara dan dihapus setelahnya.)
 
 ## Tujuan
 Mengubah satu kalimat permintaan guru (mis. "buatkan modul ajar IPA kelas 7 tentang
@@ -137,19 +140,19 @@ penanda judul — jadikan baris itu Heading lalu hapus tandanya (Cari & Ganti), 
 file .docx (lihat di bawah) yang judul & tabelnya sudah rapi.
 ```
 
-**File Word (.docx) untuk cetak/supervisi.** Bila guru menyebut dicetak, supervisi,
-"minta file Word/docx", atau akan dikumpulkan ke kepala sekolah/pengawas, dan kamu bisa
-menjalankan Python 3 serta menulis file:
-1. Tulis seluruh hasil (format baku di atas) ke satu file `.md` di folder kerja.
+**File Word (.docx) untuk cetak/supervisi.** Bila guru menyebut dicetak, print, supervisi,
+Word/docx/file, atau akan dikumpulkan ke kepala sekolah/pengawas, dan Python 3 serta izin
+menulis file tersedia, **langsung kerjakan tanpa bertanya**:
+1. Tulis seluruh hasil (format baku di atas) ke satu file `.md` **sementara** (folder sementara, bukan workspace guru).
 2. Pisahkan lembar siswa dan kunci dengan baris `<<HALAMAN BARU>>` di atas judul Kunci Jawaban.
 3. Jalankan `python3 scripts/buat_docx.py hasil.md hasil.docx` (Windows: `python` atau `py`);
    script memakai Python standar saja dan mencetak jalur file yang sebenarnya ditulis
-   ("OK: file ditulis di <jalur>"). Sebutkan **jalur persis dari output script itu** ke guru.
-   Jangan menulis kalimat seperti "File Word siap cetak:" tanpa jalur; bila script gagal atau
-   jalurnya tidak ada, jangan menyebut file sama sekali.
-4. **Tetap tampilkan isi utuh di chat** (modul, lembar siswa, soal+rubrik, kunci guru) —
-   file hanya salinan dan lampiran bisa gagal terkirim. Jangan berjanji
-   "sudah saya kirim file" bila pengiriman tidak terkonfirmasi; sebutkan jalur file saja.
+   ("OK: file ditulis di <jalur>"). Hapus file .md sementara setelahnya.
+4. **Kirim .docx sebagai lampiran** lewat kemampuan kirim file kanal chat (Telegram/WhatsApp) bila tersedia.
+   Bila tidak bisa dilampirkan, sebut jalur persis dari output script ("File tersimpan di <jalur>").
+   Jangan menulis "sudah terkirim" tanpa konfirmasi; jangan menulis kalimat "File Word siap cetak:" tanpa jalur;
+   bila script gagal atau jalurnya tidak ada, jangan menyebut file sama sekali.
+5. **Isi utuh tetap ditulis di chat** (aturan paling atas) — file hanya salinan dan lampiran bisa gagal terkirim.
 Bila Python/izin menulis file tidak ada, jangan membuat file palsu: tampilkan teks di chat
 dan jelaskan cara menempel ke Word. Jangan menyalin pesan proses internal ("File sudah
 siap, saya kirim sekarang") ke guru.
@@ -187,7 +190,8 @@ Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan gur
 - [ ] Nama dimensi Profil Lulusan persis sesuai `references/dasar-kurikulum.md` (Penalaran Kritis, dst.)
 - [ ] Kunci jawaban LKPD/soal sudah dihitung ulang, bukan ditulis kira-kira
 - [ ] **Lembar siswa/LKPD tidak memuat jawaban**; kunci utuh ada di "Kunci Jawaban (untuk guru)" di akhir (bukan "lihat di atas")
-- [ ] **Isi modul lengkap (modul, LKPD, soal+rubrik, kunci guru) tertulis utuh di chat**, bukan ringkasan; .docx hanya salinan
+- [ ] **Isi modul lengkap (modul, LKPD, soal+rubrik, kunci guru) tertulis utuh di chat** (dipecah Bagian 1/n bila panjang), bukan ringkasan, tanpa kalimat "isi ada di file"; .docx hanya salinan
+- [ ] Bila guru menyebut cetak/supervisi/Word/file: .docx dibuat langsung tanpa bertanya, dilampirkan bila kanal bisa, atau jalurnya disebut; tidak ada .md modul tertinggal di workspace
 - [ ] Bila menyebut file: jalur file sesuai output script (atau tidak menyebut file sama sekali)
 - [ ] Format baku: tanpa garis pemisah hiasan/baris kosong berulang; catatan Word/Docs sesuai format (tanda #)
 - [ ] Rubrik punya skor eksplisit dan cara menghitung nilai akhir

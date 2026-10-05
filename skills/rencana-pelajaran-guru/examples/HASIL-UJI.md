@@ -120,3 +120,7 @@ Menutup 3 cacat minor uji ulang v1.0.5: (1) isi modul utuh wajib di chat (aturan
 ---
 ## Cek v1.0.6 (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
 Sisi SESUDAH saja (SEBELUM tetap 5,75 dari v1.0.5): S1-A 8, S1-B 8,5, S2 (RPP Matematika SD kelas 4 + Word) 9; rata-rata **8,5** (selisih +2,75). **VERDIK: LULUS** — isi utuh di chat, .docx valid tanpa `>`/`####` literal, jalur file nyata, CP tidak dikarang, angka/waktu benar (python). Sisa minor: 1 kalimat "File ...:" tanpa jalur (S1-B), 1 `*` literal di docx (bold di dalam miring), bunyi CP persis tidak selalu diberikan. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.6".
+
+---
+## Riwayat v1.0.7 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.6, menunggu uji ulang independen
+Uji Telegram v1.0.6 (topik 724) skor 5 (TANPA 6): bot hanya mengirim ringkasan, menulis "isi lengkap ada di file .md di workspace" (tidak sampai ke guru), dan bertanya "mau dibuatkan .docx?" padahal guru menyebut supervisi besok. Perbaikan: aturan paling atas (isi utuh di chat, dipecah per bagian; .docx langsung + lampiran kanal chat bila bisa; tidak menulis .md di workspace) dan `description`. Status: menunggu uji ulang independen, termasuk konteks Telegram (isi utuh terkirim berurutan, .docx dilampirkan atau jalur disebut). Belum diuji di OpenClaw.

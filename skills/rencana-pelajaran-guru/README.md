@@ -92,3 +92,6 @@ di `tests/`); jawaban untuk permintaan "kode & bunyi CP resmi persis" (rujukan B
 
 ## Catatan revisi 1.0.6 (2026-10-05)
 dari uji ulang OpenClaw v1.0.5 (3 cacat minor): (1) balasan chat wajib memuat isi modul utuh (termasuk lembar siswa & kunci guru), file .docx hanya salinan; (2) `scripts/buat_docx.py` kini mengonversi `>` (kutipan), `####` (judul tingkat 4), dan `*miring*` tanpa merusak `**tebal**` (ada tes); (3) jalur file selalu disebut sesuai output script, atau file tidak disebut sama sekali.
+
+## Catatan revisi 1.0.7 (2026-10-05)
+dari uji ulang Telegram v1.0.6 (bot hanya mengirim ringkasan + "isi lengkap ada di file .md di workspace" dan bertanya dulu soal .docx): (1) aturan paling atas SKILL.md: isi utuh wajib di chat, dipecah "Bagian 1/n" bila panjang, dilarang "isi ada di file"; (2) bila guru menyebut cetak/supervisi/Word/file, .docx langsung dibuat tanpa bertanya dan dikirim sebagai lampiran kanal chat bila bisa, atau jalurnya disebut (tanpa klaim terkirim); (3) di kanal chat tidak menulis .md di workspace kecuali diminta. Contoh alur: `examples/08-alur-telegram-supervisi.md`.
