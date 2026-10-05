@@ -421,13 +421,23 @@ def slip_md(h, cfg):
         o.append("_PPh 21: TER kategori {} {} × penghasilan bruto pajak {} (termasuk premi JKK, JKM, BPJS Kesehatan "
                  "perusahaan)._".format(p["kategori"], tc.format_persen(p["tarif"]), tc.format_rp(p["bruto"])))
     if h["dtp"]:
-        o.append("_PPh 21 Ditanggung Pemerintah (PMK 105/2025) dibayarkan tunai; tidak mengurangi gaji._")
+        o.append(catatan_dtp(h))
     if h["lembur"]:
         setara = sum((x["jam_setara"] for x in h["lembur"]["rincian"]), Decimal(0))
         o.append("_Lembur: upah sejam = 1/173 × {} = {}; {} jam setara × upah sejam = {}._".format(
             tc.format_rp(h["lembur"]["dasar_upah"]), tc.format_rp(h["lembur"]["upah_sejam"], True),
             tc.format_persen(setara).rstrip("%"), tc.format_rp(h["pendapatan"]["Lembur"])))
     return "\n".join(o)
+
+
+def catatan_dtp(h):
+    """PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B: PPh 21 tetap dipotong, lalu nilai yang sama
+    dibayar tunai (DTP) -> gaji bersih tidak berkurang pajak; bagian DTP tidak disetor ke negara."""
+    return ("_PPh 21 Ditanggung Pemerintah (PMK 105/2025): PPh 21 {} tetap dipotong, lalu {} dibayar tunai kembali "
+            "bersama gaji (tidak kena pajak), jadi gaji bersih tidak berkurang karena pajak. Setoran PPh 21 ke negara "
+            "untuk karyawan ini: {}._".format(tc.format_rp(h["potongan"]["PPh 21"]),
+                                              tc.format_rp(h["pendapatan"]["PPh 21 DTP dibayar tunai"]),
+                                              tc.format_rp(h["pph_disetor"])))
 
 
 CSS = """body{font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;margin:0;padding:16px}
@@ -468,7 +478,7 @@ def slip_html(h, cfg):
                                                e(tc.format_persen(h["jkk_persen"])), rp(i["jkk"]), rp(i["jkm"]),
                                                rp(i["jp_perusahaan"])))
     if h["dtp"]:
-        b.append('<p class="kecil">PPh 21 Ditanggung Pemerintah (PMK 105/2025) dibayarkan tunai.</p>')
+        b.append('<p class="kecil">{}</p>'.format(e(catatan_dtp(h).strip("_"))))
     b.append('<table class="info" style="margin-top:24px"><tr><td>Diterima oleh,<br><br><br>{}</td>'
              '<td class="n">Disetujui oleh,<br><br><br>________________</td></tr></table>'.format(e(h["nama"])))
     b.append('<p class="kecil">{}</p></div>'.format(e(DISCLAIMER)))

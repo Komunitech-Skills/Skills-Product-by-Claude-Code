@@ -167,6 +167,24 @@ class TestHitung(unittest.TestCase):
         self.assertEqual(h["pph_disetor"], h["pph"])
         self.assertTrue(any("TIDAK memenuhi syarat" in p for p in h["peringatan"]))
 
+    def test_dtp_dipotong_lalu_dibayar_tunai(self):
+        # PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B (penilai gelombang 7, 2026-10-05): PPh dipotong, DTP tunai
+        # dengan nilai sama -> take home pay sama dengan tanpa pajak; setoran ke negara Rp 0 (bukan gaji + DTP)
+        dtp = payroll.hitung_karyawan(orang(gaji_pokok="6jt", dtp="ya", ikut_jp="tidak"), cfg())
+        biasa = payroll.hitung_karyawan(orang(gaji_pokok="6jt", ikut_jp="tidak"), cfg())
+        self.assertTrue(dtp["dtp"])
+        pph = dtp["pph"]
+        self.assertGreater(pph, 0)
+        self.assertEqual(dtp["potongan"]["PPh 21"], pph)
+        self.assertEqual(dtp["pendapatan"]["PPh 21 DTP dibayar tunai"], pph)
+        self.assertEqual(dtp["pph_disetor"], 0)
+        self.assertEqual(dtp["take_home_pay"], biasa["take_home_pay"] + pph)
+        iuran_karyawan = dtp["iuran"]["kes_karyawan"] + dtp["iuran"]["jht_karyawan"] + dtp["iuran"]["jp_karyawan"]
+        self.assertEqual(dtp["take_home_pay"], 6000000 - iuran_karyawan)
+        teks = payroll.slip_md(dtp, cfg()) + payroll.slip_html(dtp, cfg())
+        self.assertIn("tetap dipotong", teks)
+        self.assertIn("Setoran PPh 21 ke negara untuk karyawan ini: Rp 0", teks)
+
     def test_dtp_pakai_bruto_januari(self):
         h = payroll.hitung_karyawan(orang(gaji_pokok="12jt", dtp="ya", bruto_tetap_januari="9jt"), cfg())
         self.assertTrue(h["dtp"])

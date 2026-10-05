@@ -47,3 +47,6 @@ Desember pajaknya dihitung ulang setahun, jadi skill akan meminta total penghasi
 
 **Apakah data gaji karyawan dikirim ke internet?**
 Tidak. Hitungan berjalan di komputer kamu dan file slip disimpan di folder yang kamu tentukan.
+
+## Catatan revisi 1.0.6 (2026-10-05)
+- Pemeriksaan ulang PPh 21 DTP terhadap teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B): hitungan slip **sudah benar** sejak awal (PPh 21 tetap dipotong, DTP dengan nilai sama dibayar tunai, take home pay tidak berkurang karena pajak, setoran PPh 21 bagian DTP Rp 0). Yang diperbaiki: catatan di slip (Markdown & HTML) kini menulis jelas PPh dipotong, DTP dibayar tunai, dan **setoran ke negara Rp 0** per karyawan; tambah tes regresi dan ringkasan dasar hukum `references/dtp-pmk105.md`. **PERLU REVIEW konsultan pajak.**

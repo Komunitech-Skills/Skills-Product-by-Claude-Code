@@ -52,3 +52,8 @@ Sumber aturan (tetap dari uji v1.0.0): PP 35/2021 Pasal 31–33 dibaca langsung.
 
 ## Status
 **LULUS** (skor 9).
+
+## Riwayat revisi 1.0.6 (2026-10-05) — menunggu uji ulang independen; PERLU REVIEW konsultan pajak
+- Pemicu: temuan penilai gelombang 7 di skill `pph21-ter` (uang diterima DTP ditulis gaji + DTP). Skill ini diperiksa dengan teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5 ayat 1 & 5, Pasal 6 ayat 6, Lampiran B).
+- Hasil: angka `scripts/payroll.py` **sudah benar** — potongan "PPh 21" tetap diisi, pendapatan "PPh 21 DTP dibayar tunai" bernilai sama, `pph_disetor` = 0. Contoh TK/0 gaji Rp 6.000.000, tanpa JP: PPh dipotong Rp 47.043, DTP tunai Rp 47.043, setoran Rp 0, take home pay Rp 5.820.000 (= gaji − BPJS karyawan; tidak berubah dari versi sebelumnya).
+- Perubahan: fungsi `catatan_dtp` (slip Markdown & HTML) menampilkan PPh dipotong, DTP tunai, setoran ke negara; tes `test_dtp_dipotong_lalu_dibayar_tunai`; SKILL.md (rumus + checklist), `references/regulasi.md`, `references/dtp-pmk105.md` (baru). `scripts/test_payroll.py`: 27 tes OK.
