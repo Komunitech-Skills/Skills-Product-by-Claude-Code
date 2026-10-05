@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **76 skill** dari 94 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **77 skill** dari 94 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -83,7 +83,8 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 73 | Balas Chat Pelanggan Cepat, Ramah, Tanpa Salah Janji (`balas-chat-cs`) | Customer Service | 6,5 → 8,25 | +1,75 |
 | 74 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
 | 75 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 6,9 → 8,6 | +1,7 |
-| 76 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 76 | Hitung PPh 21 Karyawan Tanpa Salah Tabel (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 77 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -749,6 +750,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Jumlah chat WA 16 (salah) → 13 (benar); 88,9% keluhan WA tidak dibalas
 - **Catatan jujur:** Satu nama pelanggan lolos di laporan; 'jamur 5' bisa terbaca keliru (4 jamur + 1 semut). Uji ke-2b sempat BELUM.
 
+### Hitung PPh 21 Karyawan Tanpa Salah Tabel — 7,25 → 8,9
+`pph21-ter` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-05
+
+- **Permintaan:** Karyawan konveksi gaji Rp6.000.000, TK/0: dapat insentif PPh 21 DTP 2026? Berapa PPh 21 Oktober dan uang yang diterima? (+ Desember K/1 dengan THR)
+- **Tanpa skill:** Angka TER benar, tetapi tidak tahu dasar aturan DTP 2026 dan tidak menanyakan KLU sektor; hitungan Desember butuh ±11 menit dan 12 pencarian web.
+- **Dengan skill:** Cek KLU dulu, lalu: PPh dipotong Rp45.000, DTP dibayar tunai Rp45.000, setoran Rp0, diterima Rp6.000.000 (tanpa DTP Rp5.955.000); Desember+THR dihitung script dalam ±40 detik.
+- **Angka kunci:** TER A 0,75% × Rp6.000.000 = Rp45.000; diterima Rp6.000.000 dengan DTP (PMK 105/2025); Desember K/1: lebih potong Rp220.000
+- **Catatan jujur:** Selisih tipis (+1,65): tanpa skill angkanya juga benar di uji ini. Versi 1.0.4 sempat salah menulis diterima Rp6.045.000 (dikoreksi 1.0.5, diverifikasi independen 13 kasus). PERLU REVIEW konsultan pajak; pembulatan belum dicocokkan dengan Coretax.
+
 ### Analisis Excel Tanpa Rumus, Tinggal Tanya — 7,25 → 8,75
 `analisis-excel` · Data & Analisis · versi 1.0.17 · diuji 2026-10-01
 
@@ -763,7 +773,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | Skill | Tanpa → Dengan | Verdik | Alasan |
 |---|---|---|---|
 | `konten-mingguan` | 4,25 → 7,3 | BELUM | belum lulus |
-| `pph21-ter` | 6,5 → 9,25 | BELUM | belum lulus |
 | `rencana-pelajaran-guru` | 5,75 → 8,5 | BELUM | belum lulus |
 | `kalender-konten-30hari` | 5,67 → 7,1 | BELUM | belum lulus |
 | `analisis-pesaing-strategis` | 6,8 → 8,1 | LULUS | selisih < 1,5 |
