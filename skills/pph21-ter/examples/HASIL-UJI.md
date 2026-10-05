@@ -88,3 +88,11 @@ Cacat (ringan): README "Catatan revisi 1.0.4" masih berbunyi "(yang benar Rp 6.0
 ## Riwayat revisi README (2026-10-05, tanpa naik versi) — menunggu cek penguji
 - Menindaklanjuti cacat ringan uji ulang DTP: butir DTP di README "Catatan revisi 1.0.4" kini dicoret dan diberi tanda **DIKOREKSI di 1.0.5** (diterima Rp 6.000.000 sesuai PMK 105/2025, bukan Rp 6.045.000; PPh tetap dipotong, bukan Rp 0).
 - Dicek ulang file lain yang memuat "6.045.000": `SKILL.md` & `references/dtp-pmk105.md` menyebutnya sebagai contoh yang **salah**; `scripts/test_pph21.py` memastikan angka itu **tidak** muncul; `examples/00-openclaw-sebelum-sesudah.md` sudah diberi banner KOREKSI di atas (riwayat asli dibiarkan); riwayat di file ini sudah bertanda "sebelumnya". Script tidak berubah → versi tetap 1.0.5.
+
+## Uji ulang OpenClaw sebelum/sesudah v1.0.5 (DTP) — 2026-10-05
+Penguji independen baru. OpenClaw 2026.9.8 lokal, model router `komunitech`. Rincian & balasan utuh: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.5 (DTP)".
+- S1 pesan gelombang 7 (DTP konveksi TK/0 Rp6 jt): SEBELUM 6 → SESUDAH 8,75 (2 run `uji-tg.sh` konteks Telegram + 1 lanjutan KLU). Semua balasan SESUDAH: PPh dipotong Rp45.000, DTP tunai Rp45.000, setoran Rp0, **diterima Rp6.000.000**; Rp6.045.000 tidak muncul. **Cacat no. 1 gelombang 7 TERATASI.**
+- S2 Desember K/1 Rp9,5 jt + THR Maret: SEBELUM 8,5 (benar, tapi 11,5 menit/12 panggilan web) → SESUDAH 9 (38 dtk). Desember −Rp220.000 (lebih potong) diverifikasi Decimal.
+- Rata-rata **7,25 → 8,9 (+1,6)**, 0 angka salah. **VERDIK: LULUS** (tipis di atas acuan; di gelombang 7 Telegram sisi TANPA pernah 8).
+- Cacat ringan: syarat bruto Januari 2026 belum ada di jawaban pertama; S2 tidak menyinggung kemungkinan DTP; frasa "dipotong dari slip" bisa membingungkan.
+- Tetap **PERLU REVIEW konsultan pajak**; pembulatan belum dicocokkan dengan Coretax.

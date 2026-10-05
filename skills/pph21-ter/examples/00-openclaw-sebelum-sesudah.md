@@ -505,3 +505,228 @@ _Alat bantu hitung, bukan nasihat pajak final — dasar PP 58/2023, PMK 168/2023
 **VERDIK: LULUS** — sesudah ≥ 8, jelas lebih baik dari sebelum, tanpa kesalahan fakta/angka.
 
 **Cuplikan jualan (jujur):** "Karyawan konveksi gaji Rp6 juta penerima PPh 21 DTP 2026: AI biasa bilang dia terima Rp6.000.000 'utuh'. Dengan skill: dipotong Rp0, DTP Rp45.000 wajib dibayar tunai, **diterima Rp6.045.000** — sesuai PMK 105/2025 Pasal 5." (Untuk kasus normal tanpa DTP, jangan klaim AI biasa salah hitung.)
+
+
+---
+
+## Uji ulang v1.0.5 (DTP) — 2026-10-05
+
+Penguji independen baru (bukan pembuat, tidak mengubah skill). Tujuan: memastikan cacat no. 1 gelombang 7 (`koordinasi/telegram-gelombang-7-2026-10-05.md`: DENGAN menulis "diterima Rp6.045.000") sudah hilang di perilaku bot, bukan hanya di script.
+
+**Cara uji:** OpenClaw 2026.9.8 lokal (`openclaw agent --local`), model router Komunitech (`komunitech`, sama dengan bot), home bersih per skenario/run. SEBELUM = home tanpa skill (`uji.sh`); SESUDAH = home hanya berisi `pph21-ter` 1.0.5. Skenario 1 SESUDAH dijalankan **2× dengan `uji-tg.sh`** (konteks kanal Telegram, tanpa kirim), run A dilanjutkan 1 giliran jawaban pengguna (KLU). Skenario 2 dengan `uji.sh` 1× per sisi. Verifikasi angka: Python `Decimal` milik penguji (`scratchpad/verif-pph21-v105.py`, tabel TER diketik dari PP 58/2023, tidak mengimpor script skill).
+
+### Skenario 1 — pesan gelombang 7 persis (DTP konveksi)
+Pesan: "Karyawan konveksi saya gajinya Rp6.000.000 sebulan, status TK/0. Apa dia dapat insentif PPh 21 DTP tahun 2026? Berapa PPh 21 bulan Oktober dan uang yang dia terima?"
+
+**SEBELUM** (`uji.sh`, tools: tool_search, web_fetch; 223 dtk)
+~~~~text
+Saya coba cek aturan terbaru dulu, tapi mesin pencari yang saya pakai lagi bermasalah (hasilnya nggak relevan/rusak), jadi saya nggak bisa memastikan 100% status insentif PPh 21 DTP untuk tahun pajak 2026 secara live. Berikut yang saya tahu + hitungan pastinya:
+
+**Soal insentif PPh 21 DTP:**
+Program "PPh 21 Ditanggung Pemerintah" untuk sektor industri padat karya (tekstil, garmen/konveksi, kulit, alas kaki, furniture) pernah berlaku untuk **tahun pajak 2025** (lewat PMK 10/2025), dengan syarat utama:
+- Gaji bruto karyawan ≤ Rp10.000.000/bulan
+- Perusahaan masuk klasifikasi KLU industri padat karya tertentu
+- Karyawan punya NPWP/NIK terintegrasi
+- Perusahaan lapor via SPT Masa PPh 21 dengan kode objek pajak DTP (biasanya lewat Coretax)
+
+Gaji karyawan Anda (Rp6.000.000, TK/0) **memenuhi syarat batas gaji** dan konveksi **termasuk sektor padat karya** yang biasanya masuk daftar. Tapi saya **belum bisa konfirmasi apakah program ini diperpanjang resmi untuk tahun pajak 2026** — ini perlu dicek langsung karena programnya biasanya diatur per-PMK dengan periode terbatas (misal Jan-Jun saja). Saran saya: cek ke kantor pajak/konsultan pajak Anda atau akun Coretax perusahaan, cari PMK terbaru soal "PPh 21 DTP industri padat karya 2026" — kalau statusnya aktif, biasanya ada pengumuman resmi dari DJP/Kemenkeu dan fitur khusus di Coretax untuk lapor DTP.
+
+**Hitungan PPh 21 Oktober 2026 (tarif normal, metode TER sesuai PP 58/2023):**
+
+Gaji Rp6.000.000, status TK/0 → masuk kategori **TER A**, bracket gaji >5.950.000 s.d. 6.300.000 → tarif efektif **0,75%**.
+
+PPh 21 = 6.000.000 × 0,75% = **Rp45.000**
+
+**Uang yang diterima karyawan bulan Oktober:**
+
+| Skenario | PPh 21 | Take-home pay |
+|---|---|---|
+| **Tanpa insentif DTP** (dipotong normal) | Rp45.000 | Rp5.955.000 |
+| **Dengan insentif DTP aktif** (pajak ditanggung negara) | Rp45.000 (dibayar pemerintah, tidak dipotong dari gaji) | **Rp6.000.000 full** |
+
+Jadi bedanya cuma Rp45.000/bulan — kecil, tapi kalau DTP aktif, karyawan terima gaji full tanpa potongan pajak, dan perusahaan tetap wajib lapor SPT Masa PPh 21 (nihil dipotong, tapi dilaporkan DTP).
+
+Kalau Anda mau, saya bisa bantu cek ulang begitu akses pencarian saya normal lagi, atau bantu susun pertanyaan untuk ditanyakan ke AR (Account Representative) pajak Anda soal status 2026 ini.
+~~~~
+
+**SESUDAH run A** (`uji-tg.sh`, tools: read, exec `scripts/pph21.py`; 100 dtk)
+~~~~text
+Perhitungan dasar sudah saya jalankan. Untuk PPh 21 Oktober 2026-nya begini:
+
+**PPh 21 Oktober 2026 — status TK/0 (TER kategori A)**
+- Penghasilan bruto: Rp 6.000.000
+- Tarif TER: 0,75% (bruto di atas Rp 5.950.000 s.d. Rp 6.300.000)
+- **PPh 21 dipotong: Rp 45.000**
+
+Soal insentif **PPh 21 DTP 2026** (ditanggung pemerintah, PMK 105/2025), saya belum bisa pastikan karena ini tidak otomatis untuk semua UMKM — hanya berlaku untuk perusahaan di **sektor tertentu**: alas kaki, tekstil & pakaian jadi, furnitur, kulit & barang kulit, atau pariwisata, **dan** kode KLU utama usaha Anda harus tercantum di Lampiran A PMK 105/2025.
+
+Pertanyaannya: **apakah usaha konveksi Anda terdaftar dengan KLU yang masuk kategori tekstil/pakaian jadi di Lampiran A PMK 105/2025?** (Konveksi biasanya cocok, tapi saya tidak mau menebak KLU resminya.)
+
+Kalau jawabannya **ya**, hasilnya jadi:
+- PPh 21 tetap dipotong Rp 45.000 dari slip
+- DTP dibayar tunai Rp 45.000 (nilai sama) ke karyawan bareng gaji
+- Setoran ke negara: Rp 0
+- **Uang yang diterima karyawan: Rp 6.000.000 (gaji penuh)**
+
+Kalau jawabannya **tidak/tidak tahu KLU-nya**, maka tidak dapat DTP, dan:
+- **Uang yang diterima karyawan Oktober: Rp 5.955.000** (Rp 6.000.000 − Rp 45.000 PPh 21)
+
+Catatan: ini perhitungan sebelum potongan lain (misalnya iuran BPJS bagian karyawan), dan belum dicocokkan dengan Coretax. Alat bantu hitung, bukan nasihat pajak — kasus khusus bisa cek Kring Pajak 1500200.
+
+Konfirmasi KLU usahanya, saya hitung ulang pakai angka DTP-nya kalau memang masuk kategori.
+~~~~
+
+Lanjutan run A — pengguna: "Ya, KLU kami 14111 (pakaian jadi konveksi), ada di Lampiran A." (23 dtk)
+~~~~text
+**Ya, karyawan Anda dapat insentif PPh 21 DTP 2026** — KLU 14111 (industri pakaian jadi) termasuk sektor tekstil & pakaian jadi di Lampiran A PMK 105/2025.
+
+**PPh 21 Oktober 2026 — status TK/0 (TER kategori A)**
+- Penghasilan bruto: Rp 6.000.000
+- Tarif TER: 0,75% (bruto di atas Rp 5.950.000 s.d. Rp 6.300.000)
+- **PPh 21 dipotong dari gaji: Rp 45.000**
+- **PPh 21 DTP dibayar tunai ke karyawan: Rp 45.000** (nilai sama, PMK 105/2025 Pasal 5)
+- **Setoran ke negara: Rp 0** (tetap wajib dibuat bukti potong & dilaporkan di SPT Masa)
+- **Uang yang diterima karyawan: Rp 6.000.000** (gaji penuh — bukan Rp 6.045.000)
+
+Jadi secara praktis: karyawan tetap menerima gaji penuh Rp 6.000.000 tanpa potongan pajak, perusahaan Anda tidak perlu menyetor PPh 21-nya ke kas negara, tapi **wajib tetap membuat bukti potong dan melaporkannya di SPT Masa PPh 21/26** — paling lambat **31 Januari 2027**. Kalau lewat batas itu, insentif gugur dan PPh yang dipotong wajib disetor sendiri.
+
+⚠️ Catatan penting: syarat batas gaji ≤ Rp 10 juta untuk DTP seharusnya dicek dari **gaji + tunjangan tetap bulan Januari 2026** (atau bulan pertama kerja tahun ini), bukan bulan Oktober. Kalau gaji karyawan ini sama tiap bulan (Rp 6 juta), aman — tapi kalau Januari berbeda, kabari saya angkanya biar saya pastikan ulang.
+
+_Alat bantu hitung, bukan nasihat pajak resmi. Dasar: PP 58/2023, PMK 168/2023, PMK 105/2025. Kasus khusus: Kring Pajak 1500200 atau konsultan pajak._
+~~~~
+
+**SESUDAH run B** (`uji-tg.sh`, home baru, tools: read, exec; 38 dtk)
+~~~~text
+**PPh 21 Oktober 2026 — Karyawan Konveksi, status TK/0 (TER kategori A)**
+
+Gaji bruto sebulan: Rp 6.000.000 → tarif TER 0,75% (bruto Rp5.950.000–Rp6.300.000)
+
+**Soal insentif DTP — perlu dikonfirmasi dulu:**
+Konveksi *mungkin* masuk kategori tekstil & pakaian jadi yang berhak PPh 21 DTP 2026 (PMK 105/2025), tapi syaratnya bukan sekadar "usaha konveksi" — harus **KLU (Klasifikasi Lapangan Usaha) utama perusahaan yang terdaftar di pajak** memang tercantum di Lampiran A PMK 105/2025 (kategori alas kaki, tekstil & pakaian jadi, furnitur, kulit & barang kulit, atau pariwisata). Mohon konfirmasi: apakah KLU usaha Anda sudah dicek dan cocok dengan lampiran itu?
+
+Sambil menunggu konfirmasi, berikut dua skenario:
+
+**① Jika TIDAK dapat DTP (skenario normal/default):**
+- PPh 21 dipotong: **Rp 45.000** (0,75% × Rp6.000.000)
+- Disetor ke negara: Rp 45.000
+- **Uang diterima karyawan: Rp 5.955.000**
+
+**② Jika DAPAT DTP (KLU cocok & terdaftar):**
+- PPh 21 dipotong dari gaji: Rp 45.000
+- PPh 21 DTP dibayar tunai kembali ke pegawai: Rp 45.000 (nilai sama)
+- Setoran ke negara: Rp 0 (tapi tetap wajib dibuat bukti potong & dilapor di SPT Masa)
+- **Uang diterima karyawan: Rp 6.000.000** (gaji penuh, bukan gaji + Rp45.000)
+
+Asumsi: tidak ada potongan iuran BPJS TK/pensiun karyawan dan tidak ada premi perusahaan yang ditambahkan ke bruto — beri tahu saya jika ada, agar saya hitung ulang.
+
+⚠️ Alat bantu hitung, bukan nasihat pajak resmi. Untuk memastikan status KLU, bisa cek di NPWP perusahaan/profil Coretax atau hubungi Kring Pajak 1500200.
+~~~~
+
+**Verifikasi:** TER A (TK/0), baris "di atas Rp5.950.000 s.d. Rp6.300.000" = 0,75% → 0,75% × 6.000.000 = **Rp45.000**. Tanpa DTP diterima 6.000.000 − 45.000 = **Rp5.955.000**. Dengan DTP (PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B): 6.000.000 − 45.000 + 45.000 = **Rp6.000.000**, setoran Rp0.
+- SESUDAH A, A-lanjutan, B: semua angka **benar**; "Rp6.045.000" tidak muncul sebagai jawaban (A-lanjutan & B justru menegaskan "bukan gaji + DTP"). Keduanya meminta konfirmasi KLU dan memberi dua skenario. Syarat bruto Januari 2026 ≤ Rp10 jt disebut di A-lanjutan (tidak di jawaban pertama A/B), batas lapor 31 Januari 2027 di A-lanjutan.
+- SEBELUM: angka benar (5.955.000 / 6.000.000), tetapi **tidak tahu dasar 2026** (menyebut PMK 10/2025 untuk 2025, "belum bisa konfirmasi diperpanjang 2026"), dan menulis DTP "tidak dipotong dari gaji" (mekanisme tidak persis PMK 105/2025: dipotong lalu dibayar tunai). Tidak minta konfirmasi KLU.
+
+### Skenario 2 — Desember K/1 + THR Maret (jebakan lebih potong)
+Pesan: "Pegawai saya status K/1, gajinya Rp9.500.000 per bulan dari Januari sampai Desember 2026, terus bulan Maret dapat THR Rp9.500.000. Tidak ada potongan BPJS. Berapa PPh 21 yang harus dipotong bulan Desember?"
+
+**SEBELUM** (`uji.sh`, tools: process, exec, read + 12 panggilan web; **691 dtk ≈ 11,5 menit**)
+~~~~text
+Saya sudah dapat sumber resminya langsung dari JDIH Kemenkeu (PP 58/2023 dan PMK 168/2023), jadi perhitungan di bawah ini memakai tarif resmi, bukan perkiraan.
+
+**Cara hitung PPh 21 Desember (skema TER, berlaku sejak 2024):**
+Bulan Desember = Masa Pajak Terakhir → PPh 21 dihitung **ulang disetahunkan** memakai tarif Pasal 17 (progresif), lalu dikurangi total PPh 21 yang sudah dipotong Januari–November (dengan TER bulanan Kategori B, karena K/1).
+
+**1. Penghasilan bruto setahun**
+- Gaji 12 bulan × Rp9.500.000 = Rp114.000.000
+- THR (Maret) = Rp9.500.000
+- **Total = Rp123.500.000**
+
+**2. Biaya jabatan**
+5% × Rp123.500.000 = Rp6.175.000 → dibatasi maks Rp500.000/bulan × 12 = **Rp6.000.000**
+
+**3. Penghasilan neto setahun**
+Rp123.500.000 − Rp6.000.000 = **Rp117.500.000**
+
+**4. PTKP K/1**
+54.000.000 (WP sendiri) + 4.500.000 (kawin) + 4.500.000 (1 anak) = **Rp63.000.000**
+
+**5. PKP setahun**
+Rp117.500.000 − Rp63.000.000 = **Rp54.500.000**
+
+**6. PPh 21 terutang setahun** (tarif Pasal 17: 5% utk lapisan 0–60jt)
+5% × Rp54.500.000 = **Rp2.725.000**
+
+**7. PPh 21 yang sudah dipotong Jan–Nov** (TER bulanan Kategori B, dari PP 58/2023):
+- Rp9.500.000 masuk rentang "di atas Rp9.200.000 s.d. Rp10.750.000" → tarif **1,5%**
+- Jan, Feb, Apr–Nov (10 bulan normal): 1,5% × 9.500.000 = Rp142.500/bulan × 10 = Rp1.425.000
+- Maret (gaji + THR = Rp19.000.000) masuk rentang "di atas Rp18.450.000 s.d. Rp21.850.000" → tarif **8%**: 8% × 19.000.000 = Rp1.520.000
+
+Total Jan–Nov = Rp1.425.000 + Rp1.520.000 = **Rp2.945.000**
+
+**8. PPh 21 Desember = PPh setahun − PPh Jan-Nov**
+Rp2.725.000 − Rp2.945.000 = **−Rp220.000**
+
+## Hasil
+PPh 21 yang harus **dipotong** bulan Desember = **Rp0** (nihil).
+
+Justru terjadi **lebih potong Rp220.000** selama Jan–Nov (karena THR di bulan Maret kena TER 8% jauh lebih tinggi dari tarif efektif riilnya setahun). Sesuai PMK 168/2023, kelebihan ini **dikembalikan ke pegawai** oleh perusahaan pada Masa Pajak Desember, bukan dipotong lagi — jadi slip gaji Desember pegawai ini malah menerima pengembalian PPh 21 sebesar Rp220.000, bukan potongan.
+~~~~
+
+**SESUDAH** (`uji.sh`, tools: read, exec `scripts/pph21.py`; 38 dtk)
+~~~~text
+**PPh 21 Desember 2026 — status K/1, gaji Rp9.500.000/bulan + THR Rp9.500.000 di Maret (TER kategori B)**
+
+Hasil: **PPh 21 bulan Desember = Rp 0, dan ada lebih potong Rp 220.000 yang wajib dikembalikan ke pegawai** (bukan dipotong lagi). Penjelasan:
+
+| Bulan | Bruto | Tarif/Metode | PPh 21 |
+|---|---:|---:|---:|
+| Jan, Feb, Apr–Nov (10 bulan) | Rp 9.500.000 | TER 1,5% | Rp 142.500/bulan |
+| Maret (+ THR) | Rp 19.000.000 | TER 8% | Rp 1.520.000 |
+| **Total dipotong Jan–Nov** | | | **Rp 2.945.000** |
+
+**Hitung ulang Masa Pajak Terakhir (Desember) — pakai Pasal 17, bukan TER:**
+- Total bruto setahun: Rp 123.500.000 (12× gaji + THR)
+- Biaya jabatan 5%, maks Rp 500.000 × 12 bulan: Rp 6.000.000
+- Penghasilan neto setahun: Rp 117.500.000
+- PTKP K/1: Rp 63.000.000
+- PKP (dibulatkan ke bawah ke ribuan): Rp 54.500.000
+- PPh 21 terutang setahun (5% × 54.500.000, masih di lapisan pertama): Rp 2.725.000
+- Sudah dipotong Jan–Nov: Rp 2.945.000
+- **PPh 21 Desember = Rp 2.725.000 − Rp 2.945.000 = −Rp 220.000** → kelebihan potong
+
+Jadi di bulan Desember **tidak ada potongan** lagi, dan perusahaan wajib **mengembalikan Rp 220.000** ke pegawai tersebut, paling lambat akhir Januari 2027.
+
+**Ringkasan setahun:**
+- Total bruto: Rp 123.500.000
+- Total PPh 21 terutang (jadi kredit pajak di SPT Tahunan pegawai): Rp 2.725.000
+- Kelebihan potong yang dikembalikan: Rp 220.000
+
+Asumsi yang dipakai: tidak ada iuran pensiun/BPJS karyawan yang dipotong (sesuai info Anda), tidak ada zakat lewat perusahaan, pegawai bekerja penuh 12 bulan.
+
+_Alat bantu hitung, bukan nasihat pajak. Dasar: PP 58/2023, PMK 168/2023, UU HPP, berlaku per 23 September 2026. Kasus khusus → Kring Pajak 1500200 atau konsultan pajak._
+~~~~
+
+**Verifikasi (Decimal):** TER B 9.500.000 (di atas 9.200.000 s.d. 10.750.000) 1,5% = 142.500 × 10 = 1.425.000; Maret 19.000.000 (di atas 18.450.000 s.d. 21.850.000) 8% = 1.520.000; Jan–Nov **2.945.000**. Setahun: bruto 123.500.000 − biaya jabatan 6.000.000 (maks) = neto 117.500.000 − PTKP K/1 63.000.000 = PKP **54.500.000** × 5% = **2.725.000**. Desember = 2.725.000 − 2.945.000 = **−220.000** (lebih potong, dikembalikan; PMK 168/2023: paling lambat akhir bulan berikutnya). Kedua sisi **benar**. SEBELUM menulis pengembalian "pada Masa Pajak Desember" (kurang presisi) dan tanpa disclaimer; SESUDAH menyebut tenggat akhir Januari 2027, asumsi, dan disclaimer. SESUDAH tidak menyinggung DTP walau 2026 & gaji ≤ Rp10 jt (pengguna tidak bertanya; kekurangan kecil).
+
+### Skor
+| Skenario | SEBELUM | SESUDAH | Alasan |
+|---|---:|---:|---|
+| 1. DTP konveksi (Telegram) | 6 | 8,75 (A 8,5 · B 9) | SEBELUM angka benar tetapi tak tahu aturan 2026 & tak cek KLU; SESUDAH angka sesuai PMK 105/2025 di 2/2 run, cek KLU, 2 skenario, setoran Rp0 — A tanpa syarat bruto Januari di jawaban pertama. |
+| 2. Desember K/1 + THR | 8,5 | 9 | Angka sama benar; SEBELUM 11,5 menit dengan 12 panggilan web (berisiko timeout di bot) & tenggat pengembalian kurang presisi; SESUDAH 38 dtk, tenggat & disclaimer. |
+| **Rata-rata** | **7,25** | **8,9** | selisih **+1,6** |
+
+Angka salah SESUDAH: **0** (dari 4 balasan). Angka salah SEBELUM: 0.
+
+**VERDIK: LULUS** (sesudah 8,9 ≥ 8, selisih +1,6 ≥ 1,5, 0 angka salah). Catatan jujur: selisih tipis di atas batas. Di gelombang 7 Telegram sisi TANPA mendapat 8 untuk pesan yang sama (pencarian web berhasil), jadi pembeda skenario DTP bergantung pada apakah AI biasa berhasil mencari aturan 2026. Pembeda yang stabil: kecepatan, cek KLU, dan empat baris DTP yang konsisten.
+
+**Cacat 1 gelombang 7: TERATASI** — bot dengan skill tidak lagi menulis Rp6.045.000; script & SKILL.md 1.0.5 dipatuhi di konteks Telegram.
+
+**Cacat sisa (ringan, untuk pembuat):**
+1. Jawaban pertama skenario 1 (A & B) belum menyebut syarat bruto tetap **Januari 2026** ≤ Rp10 jt; baru muncul setelah konfirmasi KLU. Saran: wajibkan satu baris syarat itu di blok "Jika DAPAT DTP".
+2. Skenario 2 (tahun 2026, gaji ≤ Rp10 jt): tidak ada satu kalimat "bila usaha di sektor PMK 105/2025, PPh ini bisa DTP" — opsional, jangan sampai menambah pertanyaan.
+3. Frasa "dipotong Rp45.000 dari slip" (run A) bisa dibaca pemilik awam seolah gaji berkurang; run B lebih jelas ("dibayar tunai kembali").
+
+**Cuplikan jualan (jujur):**
+- "Karyawan konveksi Rp6 juta, TK/0, 2026: skill langsung mengecek KLU, lalu memberi dua jawaban siap pakai — tanpa DTP diterima Rp5.955.000; dengan DTP PPh Rp45.000 tetap dipotong, dibayar tunai kembali, setoran Rp0, diterima Rp6.000.000 (PMK 105/2025)."
+- "PPh 21 Desember dengan THR: AI biasa bisa benar, tapi butuh ±11 menit mencari aturan di internet; dengan skill jawabannya keluar ±40 detik, termasuk lebih potong Rp220.000 dan tenggat pengembaliannya."
+(Jangan klaim AI biasa salah angka di dua skenario ini — di uji ini angkanya benar.)
