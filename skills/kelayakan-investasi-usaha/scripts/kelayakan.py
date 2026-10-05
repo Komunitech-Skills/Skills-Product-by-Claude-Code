@@ -151,7 +151,7 @@ def bawah(x):
 
 def rp(n):
     n = int(n)
-    return ("-" if n < 0 else "") + "Rp " + f"{abs(n):,}".replace(",", ".")
+    return ("-" if n < 0 else "") + "Rp" + f"{abs(n):,}".replace(",", ".")
 
 
 def pct(x, d=2):

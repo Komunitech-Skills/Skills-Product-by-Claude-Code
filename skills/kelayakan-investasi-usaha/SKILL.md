@@ -127,6 +127,7 @@ Catatan: bukan nasihat keuangan; hasil tergantung asumsi, tidak ada jaminan untu
 - [ ] Pertanyaan maks. 3, di akhir.
 
 ## Batasan & penanganan error
+- **Balik modal terdiskonto** dihitung dari arus kas operasional saja (nilai sisa/jual kembali tidak dimasukkan); sebutkan ini satu kalimat bila nilai sisa besar. Jangan menulis "balik modal lebih lama dari masa pakai" bila angkanya masih di dalam masa pakai; bandingkan angka dengan benar.
 - Model tahunan sederhana: arus kas dianggap masuk di akhir tiap tahun; inflasi hanya lewat `--kenaikan-*`; modal kerja yang kembali di akhir masukkan ke `--nilai-sisa`; laba/rugi penjualan aset bekas tidak dikenai pajak; rugi tidak dikompensasikan ke tahun berikutnya.
 - PPh final 0,5% (PP 55/2022) hanya untuk omzet ≤ Rp4,8 miliar/tahun dan berbatas waktu; orang pribadi punya omzet tidak kena pajak s.d. Rp500 juta/tahun dari **seluruh** usaha — script tidak tahu omzet usaha lain, jadi pajak bisa lebih kecil dari hitungan. Aturan bisa berubah: sarankan cek ke DJP/konsultan pajak.
 - IRR bisa lebih dari satu bila arus kas berganti tanda beberapa kali (mis. ada overhaul besar) → script memberi peringatan; pakai NPV sebagai patokan.
