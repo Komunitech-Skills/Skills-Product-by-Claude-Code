@@ -75,3 +75,6 @@ Tidak ada cacat berat. Angka promo terverifikasi, urgensi dijaga jujur, dan uji 
 Lihat `00-pembanding-tanpa-skill.md`. Tanpa skill: 4 blok 15 menit, "stok terbatas" palsu untuk kemeja, klaim karangan ("premium", "tidak luntur",
 "pengrajin berpengalaman"), harga daster Rp 80.750 dengan "diskon 15%", tanpa info COD dan bank jawaban. Dengan skill: rundown per menit, angka
 terverifikasi & jujur, urgensi hanya dari fakta. **Skill jelas memberi nilai tambah.**
+
+## Riwayat revisi
+- **1.0.6 (2026-10-05):** pra-cek konteks Telegram menemukan baris proses internal ("Lulus cek-silang fakta (0 GAGAL)") bocor di pembuka balasan. SKILL.md kini melarang menampilkan hasil script/nama script/istilah cek-silang dan mewajibkan balasan dimulai dengan naskah; butir checklist ditambah. **Status: menunggu uji ulang independen.**

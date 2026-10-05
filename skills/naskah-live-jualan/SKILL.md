@@ -100,6 +100,11 @@ pakai default dan sebutkan asumsinya di akhir.
    ukuran/isi, klaim reputasi/sifat/kesehatan/urgensi/layanan yang tidak ada di fakta. **Semua GAGAL wajib
    diperbaiki** (hapus, ganti `[isi: ...]`, atau tanyakan ke pengguna), lalu jalankan ulang sampai `HASIL: LULUS`.
    Tanpa Python: lakukan cek-silang manual memakai checklist "Cek-silang fakta" di bawah.
+   **Hasil script itu catatan kerja untuk agent, bukan bagian balasan.** Jangan tampilkan atau sebut baris
+   `HASIL: ...`, "lulus cek", "0 GAGAL", nama script, atau istilah "cek-silang" kepada pengguna. Balasan
+   **langsung dimulai dengan naskah** (atau tabel angka promo). Bila ada GAGAL yang tidak bisa diperbaiki
+   sendiri, perbaiki naskahnya dulu; bila tetap perlu info dari pengguna, sebut masalahnya dengan bahasa awam
+   di bagian "Hal yang perlu dilengkapi" (mis. "ukuran Sambal Cumi belum Anda sebut, jadi saya tandai [isi: ukuran]").
 8. Periksa dengan checklist, lalu tawarkan revisi (lebih santai, bahasa daerah, durasi lain).
 
 ## Format output
@@ -166,9 +171,10 @@ Telusuri setiap kalimat naskah, rundown, bank jawaban, dan catatan terhadap daft
 - [ ] Asal/proses produk ("dari hutan X", "diambil/dipanen dari X", "khas X") persis disebut pengguna; "kirim dari X" tetap ditulis "dikirim dari X"
 - [ ] Ukuran/isi/berat (ml, gr, kg) persis dari pengguna, selain itu `[isi: ukuran]`
 - [ ] Reputasi ("favorit", "terlaris", "banyak pelanggan"), sifat ("asli", "murni", "tanpa pengawet"), manfaat kesehatan, urgensi, layanan (gratis ongkir, COD, jadwal kirim) masing-masing punya butir fakta
-- [ ] `cek_fakta.py` menulis `HASIL: LULUS` (atau cek manual di atas sudah dilakukan dan disebut ke pengguna)
+- [ ] `cek_fakta.py` menulis `HASIL: LULUS` (atau cek manual di atas sudah dilakukan); hasilnya hanya untuk agent, tidak ditulis di balasan
 
 ## Checklist sebelum mengirim hasil
+- [ ] Tidak ada baris proses/hasil script di balasan (tanpa "lulus cek", "0 GAGAL", nama script); balasan langsung dimulai dengan naskah
 - [ ] Semua angka harga/potongan/persen/per pcs berasal dari script (atau hitung manual tertulis)
 - [ ] Persen yang diucapkan cocok dengan harga akhir (setelah pembulatan, pakai persen sebenarnya atau "hemat RpX")
 - [ ] Detail demo/produk yang tidak diberikan pengguna jadi `[isi: ...]` atau arahan aksi
