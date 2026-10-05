@@ -135,3 +135,7 @@ Menutup cacat uji v1.0.7 (VERDIK BELUM; 1/5 percobaan skenario 1 selesai): (1) f
 
 ## Uji ulang v1.0.8 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
 Sisi SESUDAH via `uji-tg.sh` (SEBELUM 5,75). Skenario 1 (pesan persis gelombang 6) x3 berurutan: S1-A timeout model idle (782 dtk), S1-B timeout 900 dtk, S1-C selesai 461 dtk skor 8 (ringkas 6.376 karakter, LKPD bersih, kunci terpisah, rubrik utuh, .docx nyata, CP tidak dikarang). Skenario 2 (RPP Matematika SD kelas 4, cetak): skor 8, 248 dtk, angka benar (70 menit, rubrik 100), .docx nyata, tanpa klaim lampiran palsu. Rata-rata selesai **8,0**, tetapi skenario 1 hanya 1/3 lulus (timeout = gagal). **VERDIK: BELUM**. Tidak ada salah fakta/angka. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.8".
+
+---
+## Riwayat v1.0.9 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.8, menunggu uji ulang independen
+Skenario "tulis kode dan bunyi CP resminya persis" pada v1.0.8: 2 dari 3 timeout (782 dtk idle, 900 dtk), satu-satunya yang selesai memakai `web_fetch` (461 dtk). Perbaikan: dokumen CP resmi tidak diambil lewat web sama sekali (izin "maks. 2 fetch" dihapus di aturan atas, checklist, Batasan, dan description); jawaban = rujukan BSKAP 046/H/KR/2025 + URL resmi + langkah mencari Fase & elemen + kolom "Tempel bunyi CP resmi di sini" + TP selaras elemen. Checklist baru: "tidak ada web_fetch dokumen CP". Status: menunggu uji ulang independen. Belum diuji di OpenClaw.

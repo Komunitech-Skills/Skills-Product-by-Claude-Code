@@ -1,6 +1,6 @@
 ---
 name: rencana-pelajaran-guru
-description: Membuat Modul Ajar/RPP, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, Tujuan Pembelajaran, Profil Lulusan, asesmen, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Format default RINGKAS ala modul ajar 1 lembar (balasan chat sekitar 4.000-6.000 karakter, utuh: modul, LKPD tanpa jawaban, rubrik, kunci guru terpisah); versi lengkap hanya bila diminta. Bila guru menyebut cetak/supervisi/Word/file, jalankan scripts/buat_docx.py sekali lalu tulis hanya 'File Word: <jalur dari output script>', tidak pernah klaim 'terlampir/terkirim' tanpa alat kirim file. CP tidak dikarang (rujuk BSKAP 046/H/KR/2025, kolom tempel). Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal+rubrik. EN: lesson plan, worksheet, answer key, rubric.
+description: Membuat Modul Ajar/RPP, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, Tujuan Pembelajaran, Profil Lulusan, asesmen, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Format default RINGKAS ala modul ajar 1 lembar (balasan chat sekitar 4.000-6.000 karakter, utuh: modul, LKPD tanpa jawaban, rubrik, kunci guru terpisah); versi lengkap hanya bila diminta. Bila guru menyebut cetak/supervisi/Word/file, jalankan scripts/buat_docx.py sekali lalu tulis hanya 'File Word: <jalur dari output script>', tidak pernah klaim 'terlampir/terkirim' tanpa alat kirim file. CP tidak dikarang dan tidak diambil lewat web (rujuk BSKAP 046/H/KR/2025, kolom tempel bunyi CP resmi). Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal+rubrik. EN: lesson plan, worksheet, answer key, rubric.
 ---
 
 # Rencana Pelajaran Guru (Modul Ajar Kurikulum Merdeka)
@@ -11,7 +11,7 @@ description: Membuat Modul Ajar/RPP, RPP 1 lembar, LKPD, serta soal+kunci+rubrik
 > 1. **Format default RINGKAS** (ala "modul ajar 1 lembar"), target balasan chat **sekitar 4.000-6.000 karakter** dan tetap **utuh**, bukan ringkasan isi: Modul Ajar ringkas, LKPD (maks. 6 soal, tanpa jawaban), rubrik ringkas, lalu "Kunci Jawaban (untuk guru)" terpisah. Versi lengkap/panjang (modul penuh, soal banyak) **hanya bila guru memintanya**. Balasan terlalu panjang pernah membuat model macet tanpa balasan di Telegram; jangan menulis lebih dari yang diminta.
 > 2. **Isi utuh WAJIB ditulis di chat**; dilarang menulis "isi lengkap ada di file/workspace/folder" sebagai pengganti isi. Bila terpaksa panjang (versi lengkap diminta), pecah "Bagian 1/n ...".
 > 3. **File Word:** bila guru menyebut cetak, print, supervisi, Word, docx, atau file, **setelah isi chat selesai ditulis** jalankan `scripts/buat_docx.py` **sekali** (tanpa bertanya), lalu tulis HANYA kalimat baku: `File Word: <jalur persis dari output script>`. **Dilarang** menulis "sudah saya lampirkan/terlampir/terkirim/saya kirim" kecuali alat kirim file benar-benar dipanggil dan berhasil. Bila script gagal atau jalurnya tidak ada, jangan menyebut file sama sekali.
-> 4. **Batasi tool call:** baca SKILL.md sekali; jangan web fetch kecuali guru meminta bunyi CP persis (maks. 2 fetch; bila gagal, beri rujukan + kolom tempel dan lanjut). Di kanal chat jangan menulis file .md hasil modul di workspace (berkas .md sementara untuk script .docx ditaruh di folder sementara dan dihapus setelahnya).
+> 4. **Batasi tool call:** baca SKILL.md sekali; **JANGAN pernah web_fetch/web_search dokumen CP** (lampiran BSKAP ±1.700 halaman; pernah membuat timeout). Bila diminta bunyi/kode CP persis: beri rujukan + langkah mencari + kolom tempel, lalu langsung lanjut menyusun modul. Di kanal chat jangan menulis file .md hasil modul di workspace (berkas .md sementara untuk script .docx ditaruh di folder sementara dan dihapus setelahnya).
 
 ## Tujuan
 Mengubah satu kalimat permintaan guru (mis. "buatkan modul ajar IPA kelas 7 tentang
@@ -202,7 +202,7 @@ Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan gur
 - [ ] Isi chat **utuh** (modul ringkas, LKPD, rubrik, kunci guru), bukan ringkasan isi, tanpa kalimat "isi ada di file"
 - [ ] Bila guru menyebut cetak/supervisi/Word/file: `buat_docx.py` dijalankan sekali SETELAH isi chat selesai; kalimatnya hanya `File Word: <jalur dari output script>`
 - [ ] Tidak ada kata "lampirkan/terlampir/terkirim" tanpa alat kirim file yang berhasil; script gagal = file tidak disebut; tidak ada .md modul tertinggal di workspace
-- [ ] Tool call minimal: SKILL.md dibaca sekali; web fetch hanya bila diminta bunyi CP persis (maks. 2)
+- [ ] Tool call minimal: SKILL.md dibaca sekali; **tidak ada web_fetch dokumen CP** (CP resmi tidak diambil lewat web)
 - [ ] Format baku: tanpa garis pemisah hiasan/baris kosong berulang; catatan Word/Docs sesuai format (tanda #)
 - [ ] Rubrik punya skor eksplisit dan cara menghitung nilai akhir
 - [ ] Tidak ada soal yang meniru/berbau ujian nasional-ANBK bocoran
@@ -213,15 +213,7 @@ Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan gur
   bunyinya bisa direvisi BSKAP sewaktu-waktu). Jangan pernah menuliskan kode/teks CP
   seolah pasti sesuai dokumen resmi kalau tidak yakin — selalu tandai untuk dicek. Jika
   guru menempelkan CP resmi, pakai itu sebagai sumber kebenaran.
-- **Permintaan kode/bunyi CP resmi "persis":** jangan mengarang atau mengutip dari ingatan
-  (CP lama mis. Kepmen 033/H/KR/2022 sudah dicabut). Jawab dengan: (1) rujukan acuan terbaru —
-  Keputusan Kepala BSKAP No. 046/H/KR/2025 (ditetapkan 18 Juli 2025; lampiran per fase & mapel);
-  (2) langkah singkat mengambil CP: buka dokumen CP resmi di situs Kemendikdasmen/guru.kemendikdasmen.go.id
-  (cari "Capaian Pembelajaran 046/H/KR/2025"), pilih jenjang → mata pelajaran → fase (A–F),
-  salin paragraf CP fase itu apa adanya dan elemen/kodenya bila ada; (3) sediakan tempat isian
-  di modul: `CP (salin dari dokumen resmi): [tempel di sini]  Sumber: BSKAP 046/H/KR/2025, hlm. __`;
-  (4) tetap lanjutkan menyusun modul memakai ringkasan umum bertanda "(cek CP resmi)", dan bila
-  guru menempelkan CP, pakai persis itu. Web fetch hanya bila guru meminta bunyi persis: maks. 2 fetch; bila gagal, cukup rujukan + kolom tempel.
+- **Permintaan kode/bunyi CP resmi "persis":** JANGAN mengambil dokumen CP lewat web (tanpa web_fetch/web_search; dokumen ±1.700 halaman) dan jangan mengarang atau mengutip dari ingatan (CP lama mis. Kepmen 033/H/KR/2022 sudah dicabut). Jawab singkat: (1) bunyi resmi harus disalin dari Keputusan Kepala BSKAP No. 046/H/KR/2025 (ditetapkan 18 Juli 2025; lampiran per fase & mapel); (2) langkah 3-4 baris: buka https://guru.kemendikdasmen.go.id, cari "Capaian Pembelajaran 046/H/KR/2025" dan unduh PDF-nya; pilih jenjang lalu mata pelajaran; temukan Fase (A-F) kelas itu; salin paragraf CP dan nama elemen apa adanya beserta nomor halaman; (3) sediakan kolom di modul: `Tempel bunyi CP resmi di sini: [tempel]  Sumber: BSKAP 046/H/KR/2025, hlm. __`; (4) tetap tulis TP yang selaras dengan elemen yang benar (nama/penomoran elemen boleh dari `references/panduan-mapel.md` bila sudah ada dan bersumber; bila tidak yakin, tandai "(cek CP resmi)"); bila guru menempelkan CP, pakai persis itu.
 - **Format sekolah berbeda-beda:** bila guru melampirkan/menyebut template sekolahnya,
   ikuti template itu — isi dengan hasil Langkah Kerja skill ini, jangan memaksakan format
   Komunitech.
