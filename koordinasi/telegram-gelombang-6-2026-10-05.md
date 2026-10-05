@@ -92,3 +92,29 @@ Pembeda: DENGAN menolak sopan memberi harga serok/cut loss ("keputusan Anda send
 3. Judul "29 Sep – 5 Okt" padahal butir pertama 28 Sep; "ARB 2 hari berturut" sementara Katadata menyebut ARB 3 hari beruntun (butir per 29/9 masih benar pada tanggalnya).
 4. Tawaran "saya kabari kalau harga menyentuh" butuh jadwal/notifikasi OpenClaw yang aktif — sebaiknya disebut syaratnya (komputer/Gateway menyala, izin jadwal).
 5. Percobaan pertama timeout — keandalan di lingkungan member perlu dipantau.
+
+## Uji ulang Telegram rencana-pelajaran-guru 1.0.6 (keputusan no. 9)
+
+Versi 1.0.6 (setelah perbaikan cacat no. 3 gelombang 6; LULUS uji internal 8,5) diuji di bot produksi, topik baru 724, pesan identik gelombang 6. Jawaban: `scratchpad/pilot/jawaban-g6-724.txt`. Dinilai dengan rubrik yang sama dan dibandingkan dengan aturan baru SKILL.md 1.0.6 ("isi modul LENGKAP … selalu ditulis utuh di balasan chat, bukan ringkasan; .docx hanya salinan").
+
+**Skor: TANPA 6 → DENGAN 1.0.6 = 5 (selisih −1). DENGAN lama (1.0.5, topik 679) = 7,5.** Tidak memenuhi acuan; hasil di Telegram **lebih buruk** daripada versi lama dan daripada TANPA.
+
+Pembeda: DENGAN 1.0.6 menangani CP paling jujur (tidak mengarang, merujuk BSKAP 046/H/KR/2025, memberi 4 langkah mengambil bunyi CP resmi + kolom isian), tetapi **hanya mengirim ringkasan** modul dan menyatakan "isi lengkap ada di file .md di folder workspace" yang tidak bisa dibuka guru dari Telegram, tanpa .docx padahal guru menyebut supervisi besok; TANPA mengirim modul utuh + DOCX meski CP-nya keliru.
+
+**Verifikasi angka (python)**
+- Pembukaan 10 + inti 60 + penutup 10 = 80 menit ✅; inti 15 + 15 + 10 + 20 = 60 ✅ (bot menyebut diverifikasi `hitung_alokasi_waktu.py`).
+- LKPD, soal, rubrik, dan kunci tidak ditampilkan di chat, sehingga pemisahan kunci jawaban (perbaikan cacat no. 3) **tidak bisa diverifikasi** dari jawaban Telegram.
+
+**Cek fakta**
+- BSKAP 046/H/KR/2025 sebagai dasar CP terbaru ✅ (lihat cek fakta di atas). Profil Lulusan (Komunikasi, Kreativitas) ✅.
+- Alamat "guru.kemendikdasmen.go.id" untuk mengambil CP **belum terverifikasi penilai**; alamat yang ditemukan di sumber web adalah `guru.kemdikbud.go.id/kurikulum/referensi-penerapan/capaian-pembelajaran/` ([Quipper](https://www.quipper.com/id/blog/tanya/referensi-apa-yang-bisa-digunakan-untuk-mendukung-implementasi-capaian-pembelajaran/)) — kemungkinan sudah dialihkan ke domain baru, tetapi sebaiknya dicek sebelum dijadikan teks baku skill.
+
+**Cacat / temuan**
+1. **Melanggar aturan inti 1.0.6** (SKILL.md baris aturan isi balasan): balasan berisi daftar isi/ringkasan, bukan Modul Ajar + LKPD + soal/rubrik + Kunci Jawaban utuh; isi lengkap hanya ditulis ke file `.md` di workspace server (`📝 1 files +239`) yang tidak terkirim ke Telegram. Guru tidak menerima bahan yang bisa dicetak.
+2. **Tidak membuat .docx** padahal guru menyebut "buat supervisi besok" (SKILL.md: bila disebut supervisi/cetak dan Python tersedia → jalankan `scripts/buat_docx.py`); bot justru bertanya "mau saya buatkan sekarang?" walau mengakui Python tersedia.
+3. File (md/docx) tidak dilampirkan ke chat — sama seperti cacat lampiran gelombang 5 (perjanjian-sederhana): alur bot perlu memastikan isi utuh muncul di pesan (dipecah bila panjang) dan file dikirim sebagai lampiran.
+4. Kelebihan: penanganan CP kini paling baik dari ketiga jawaban (langkah ambil CP resmi + kolom isian), dan bot jujur menyebut web_search tidak tersedia.
+
+**Rekomendasi**
+- Uji internal 8,5 tidak tercermin di bot produksi: kemungkinan model mengikuti kebiasaan "tulis file lalu ringkas" di lingkungan OpenClaw. Perkuat SKILL.md (mis. aturan di paling atas: "Kirim isi utuh di chat SEBELUM menulis file; jangan pernah menulis 'isi lengkap ada di file'"; bila terlalu panjang → kirim berurutan per bagian), dan otomatis jalankan `buat_docx.py` + lampirkan bila kata "supervisi/cetak" muncul.
+- Setelah perbaikan, uji ulang Telegram lagi (perlu persetujuan pemilik). Sampai itu, rencana-pelajaran-guru **tidak** masuk daftar tampil.
