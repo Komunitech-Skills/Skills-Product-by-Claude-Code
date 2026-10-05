@@ -163,3 +163,7 @@ Temuan Telegram gelombang 6 (cacat no. 2 dan 7): sisi DENGAN skill menolak testi
 
 ## Revisi v1.0.9 (2026-10-05) — menunggu uji ulang independen
 Dari uji ulang v1.0.8: (1) paket wajib di balasan chat sebagai aturan paling awal + description + checklist, file hanya bila diminta dan setelah chat, frasa "sudah tampil di atas" dilarang bila tidak benar; (2) larangan karangan promo/harga combo, kelangkaan, dan klaim proses produksi (pakai [isian]). Status uji: **menunggu uji ulang independen** (min. 3 percobaan).
+
+
+## Uji ulang independen v1.0.9 (2026-10-05) — BELUM
+OpenClaw 2026.9.6 lokal + claude-sonnet-5, home bersih per percobaan. Skenario 1 (pesan persis gelombang 6, klinik gigi): SEBELUM 3; SESUDAH 3 percobaan 8,5 / 7,5 / 7,5 — **3/3 menolak testimoni, before-after, dan diskon tindakan dan memuat 5 post lengkap di chat tanpa minta izin (LULUS skenario)**. Skenario 2 (toko kue): SEBELUM 5,5; SESUDAH 8 / 7 — tidak ada karangan promo/harga combo/kelangkaan, tetapi klaim proses produksi/operasional masih muncul (BELUM skenario). Rata-rata 4,25 -> 7,7 (+3,45). **VERDIK: BELUM** (sesudah < 8; masih ada klaim fakta usaha yang dikarang: sterilisasi/durasi/"pasien kami", "dibuat sesuai pesanan", "favorit pelanggan", tips simpan, "per loyang"). Saran: daftar tegas klaim yang hanya boleh bila diberikan pengguna. Detail: `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang v1.0.9").
