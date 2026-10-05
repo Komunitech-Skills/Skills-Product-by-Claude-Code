@@ -56,7 +56,7 @@ Bisa. Minta saja "buat versi bahasa Inggris" setelah proposal jadi.
 
 ## Catatan revisi 1.0.8 (2026-10-05)
 - Kerjakan dulu, tanya di akhir: bila Anda sudah menyebut jenis kerja sama, produk, dan angka, AI langsung menulis proposal lengkap (data yang belum ada diberi [isi ...]) dan baru bertanya 1-3 hal di akhir, bukan menahan proposal.
-- Klaim yang belum terbukti ("sudah BPOM", "paling laris se-...") ditolak singkat dengan dasar aturan; BPOM hanya ditulis bila ada nomor izin edar/PIRT.
+- Klaim yang belum terbukti ("sudah BPOM", "paling laris se-...") ditolak singkat dengan dasar aturan; "BPOM" hanya ditulis bila ada nomor BPOM MD/ML; PIRT (dari Dinkes/DPMPTSP kabupaten/kota) bukan BPOM, dan produk susu umumnya wajib BPOM MD.
 - Hitungan porsi toko/mitra memakai script dan disertai peringatan bila HPP + biaya kirim Anda mendekati atau melebihi sisa per unit (hanya di "Catatan untuk Anda").
 - Status: menunggu uji ulang independen.
 
@@ -73,3 +73,7 @@ Bisa. Minta saja "buat versi bahasa Inggris" setelah proposal jadi.
 - Tidak menambah klaim pemasaran yang tidak Anda berikan (termasuk klaim turunan seperti "dikenal luas").
 - Saran porsi bagi hasil/komisi kini dicek dengan hitungan untung-rugi dan titik impas ditampilkan (porsi di titik impas = laba Rp0, tidak disarankan).
 - Komitmen default (display, stok awal, isi ulang) dicatat di Asumsi.
+
+## Catatan revisi 1.0.10 (2026-10-05)
+- Temuan uji Telegram: "sudah BPOM" disamakan dengan "BPOM MD/PIRT". Kini PIRT dibedakan dari BPOM (sumber di `references/izin-edar-pangan.md`).
+- Komitmen yang tidak Anda berikan (mis. "display/cooler kami sediakan") tidak lagi tercetak di proposal; ditulis `[isi: ...]` untuk Anda putuskan.

@@ -240,3 +240,26 @@ Pesan persis (kunci `agen-cs-toko` di teks-g8.json): "Saya punya toko hijab onli
 
 **Rata-rata 8,7. Lulus per percobaan: 3/3 (tidak ada "sudah disimpan di file" sebagai pengganti isi). VERDIK: LULUS.**
 Perbaikan v1.0.9 (isi utuh wajib di chat) terbukti: skor naik dari 3,7 (v1.0.8) ke 8,7.
+
+## Uji ulang konteks Telegram v1.0.10 — 2026-10-05
+Penguji independen. Metode: OpenClaw `--channel telegram` (tanpa kirim apa pun), 2 percobaan, home bersih per percobaan, pesan persis kunci `agen-cs-toko` di teks-g9.json (toko hijab Shopee & WA, admin 1 orang, minta CS + bot WA auto-balas). Keluaran: `hasil/g9w-agen-cs-toko-1..2`. Tujuan: cacat gelombang 9 no. 4 (template cara bayar tanpa label khusus WA di toko Shopee).
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,5 | Ya | Menolak auto-balas WA (WA Web tidak resmi, nomor bisa diblokir) + Copilot; 8 template di chat; template "Cara bayar/COD" berlabel "khusus chat WhatsApp" + larangan arahkan transaksi ke luar Shopee; aturan nada, alur admin, 3 pertanyaan. Minus kecil: frasa "bukan di file" dan "basis pengetahuan". |
+| 2 | 7,0 | Tidak | Penolakan + Copilot benar, template cara bayar berlabel khusus WhatsApp, 8 template, alur admin, 3 pertanyaan. Gagal: kalimat "Belum saya buatkan file `cs/PENGETAHUAN.md` & `cs/ATURAN.md`" (kata proses/path file ke pengguna Telegram); template bayar memuat "BCA/Mandiri" yang tidak diberikan pengguna. |
+
+**Rata-rata: 7,75.** 1/2 percobaan lulus.
+
+**VERDIK konteks Telegram v1.0.10: TIDAK LULUS** (rata-rata 7,75 < 8; 1/2 lulus). Cacat no. 4 teratasi di kedua percobaan (label khusus WA ada). Sisa untuk pembuat: larang menyebut nama file/path & "basis pengetahuan" di balasan chat, dan jangan mengisi nama bank contoh (pakai `[isi: bank]`).
+
+## Uji ulang konteks Telegram v1.0.11 — 2026-10-05
+Penguji independen. OpenClaw `--channel telegram` (tanpa kirim), 3 percobaan, home bersih, pesan persis kunci `agen-cs-toko` di teks-g9.json. Keluaran: `hasil/g9x-agen-cs-toko-1..3`.
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,5 | Ya | Menolak auto-balas (WA Web tidak resmi, risiko blokir) + Copilot; 8 template lengkap; template bayar berlabel "Khusus chat WhatsApp"; 3 pertanyaan; tanpa nama file/path. |
+| 2 | 8,0 | Ya | Sama; label khusus WA; tanpa nama file/path/bank karangan. Minus kecil: template stok menyebut "ready ya". |
+| 3 | 7,5 | Tidak | Isi benar (tolak + Copilot + 8 template + label WA), tetapi 4 pertanyaan (3 daftar + "Mau saya simpan paket ini...?"), melebihi batas 3. |
+
+**Rata-rata 8,0. Lulus 2/3. VERDIK konteks Telegram v1.0.11: LULUS.** Kebocoran nama file/path/"basis pengetahuan" tidak muncul lagi di ketiganya. Catatan pembuat: tahan pertanyaan tambahan "mau saya simpan" agar maks 3.

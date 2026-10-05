@@ -1,0 +1,41 @@
+No,Nama Pelanggan,No HP,Tanggal Order,Produk,Total Bayar,Kota
+1,budi santoso,081234500101,05/10/2026,Kopi Susu Botol,Rp 150.000,Bandung
+2,BUDI SANTOSO,+62 812-3450-0101,2026-10-06,Kopi Susu Botol,150000,bandung
+3,Bpk. Budi Santoso,62812 3450 0101,"7 Okt 2026",Kopi Susu Botol,150rb,Bandung
+4,Budi Santosa,0812.3450.0101,8-10-26,Kopi Susu Botol,"Rp1.250.000,-",Bandung
+5,Santoso Budi,81234500101,09/10/2026,Teh Tarik Sachet,Rp. 75.000,BANDUNG
+6,Siti Rahmawati,0857 7000 0202,13/10/2026,Roti Sobek,1.200.000,Jakarta Selatan
+7,siti  rahmawati ,+6285770000202,"Senin, 5 Oktober 2026",Roti Sobek,1.2jt,Jakarta Selatan
+8,Muh. Rizal Pratama,089900003030,2026/10/07,Kue Kering,"2,5jt",Surabaya
+9,Muhammad Rizal Pratama,0899-0000-3030,07 Oktober 2026,Kue Kering,2500000,Surabaya
+10,Dewi Lestari,081355500404,10/05/2026 14:30,Selai Nanas,Rp 45.000,Medan
+11,Dewi Lestary,081355500404,11-10-2026,Selai Nanas,45rb,Medan
+12,Hendra Gunawan,0878 1111 2222,12/10/2026,Madu Hutan,Rp 310.000,Semarang
+13,Hendra Gunawan,0878 1111 2222,12/10/2026,Madu Hutan,Rp 310.000,Semarang
+14,Toko Maju Jaya,0811 2222 3333,13/10/2026,Beras 5kg,Rp 68.500,Semarang
+15,TOKO MAJU JAYA,0811-2222-3333,13/10/2026,Beras 5kg,"68.500,00",semarang
+16,Ani Wijaya,0822 3333 4444,31/02/2026,Keripik Pisang,gratis,Malang
+17,Rina Marlina,0812-ABC-5555,14/10/2026,Keripik Pisang,15.000,Malang
+18,Joko Susilo,6.28123E+11,15/10/2026,Keripik Singkong,15.000,Yogyakarta
+19,Agus Salim,0812345,16/10/2026,Keripik Singkong,12.500,Jogja
+20,Tono Wibowo,+60 12 345 6789,17/10/2026,Keripik Singkong,abc,Yogyakarta
+21,Lia Anggraini,0831 4444 5555,18/10/2026,Teh Tarik Sachet,Rp 75.000,Bogor
+22,Lia Anggraini,0831 4444 5555 / 0896 6666 7777,19/10/2026,Teh Tarik Sachet,Rp 75.000,Bogor
+23,Bambang Hartono,(021) 555-0123,20/10/2026,Roti Sobek,"Rp 1.500,50",Jakarta Barat
+24,Nur Aini,0813 7777 8888,"20 Okt 2026",Kopi Susu Botol,-,Depok
+25,Fajar Nugraha,0813 7777 9999,21/10/2026,Kopi Susu Botol 250ml,Rp 22.000,Depok
+26,Fajar Nugraha,0813 7777 9999,22/10/2026,Kopi Susu Botol 500ml,Rp 38.000,Depok
+27,Yuni Astuti,0877 8888 9999,23-10-2026,Madu Hutan,N/A,Bekasi
+28,Eko Prasetyo,0838 9999 0000,24/10/2026,Selai Nanas,Rp 45.000,Bekasi
+29,Wulan Sari,0851 2222 1111,25/10/2026,Madu Hutan,Rp 310.000,Tangerang
+30,,,,,,
+31,Wulan Sari,0851 2222 1111,26/10/2026,Roti Sobek,Rp 25.000
+32,Rudi Hermawan,0896 3333 2222,27/10/2026,Beras 5kg,Rp 68.500,Cirebon,catatan tambahan,sisa
+33,Putri Ayu,0817 4444 3333,13/10/2026,Roti Sobek,Rp 25.000,Cirebon
+34,Dian Pertiwi,0852 5555 4444,13/10/2026,Roti Sobek,Rp 25.000,Cirebon
+35,Dedi Kurniawan,0819 6666 5555,28/10/2026,Teh Tarik Sachet,Rp 75.000,Garut
+36,Sri Handayani,0856 7777 6666,29/10/2026,Selai Nanas,"3,5jt",Garut
+37,Lukman Hakim,0859 8888 7777,30/10/2026,Beras 5kg,Rp 68.500,Garut
+38,Nina Safitri,0881 9999 8888,31/10/2026,Beras 5kg,Rp 68.500,Garut
+39,Iwan Setiawan,0823 1111 9999,1 Nov 2026,Madu Hutan,Rp 310.000,Cianjur
+40,Maya Puspita,0838 2222 0000,02/11/2026,Madu Hutan,Rp 310.000,Cianjur

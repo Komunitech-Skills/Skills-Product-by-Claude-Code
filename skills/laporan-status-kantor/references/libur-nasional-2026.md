@@ -52,6 +52,12 @@
 Nama hari diperiksa dengan kalender Python (`datetime`). Rangkaian Lebaran 2026: Rabu 18 Maret
 (cuti Nyepi) s.d. Selasa 24 Maret. Akhir tahun: Kamis 24 s.d. Minggu 27 Desember 2026.
 
+## Awal 2027 (untuk pengumuman akhir tahun)
+| 1 Januari 2027 | Jumat | Tahun Baru 2027 Masehi (tanggal tetap; nama hari dicek dengan `datetime`) |
+
+Rangkaian akhir tahun 2026: Kamis 24 Des (cuti bersama), Jumat 25 Des (Natal), Jumat 1 Jan 2027 (Tahun Baru).
+Cuti bersama lain 2027 belum ada di tabel — jangan ditanyakan; tulis `[isi: sesuai SKB 2027]` bila perlu.
+
 ## Pemakaian untuk THR (hitung-thr)
 | Hari raya 2026 | Tanggal | Batas bayar THR (H-7) |
 |---|---|---|

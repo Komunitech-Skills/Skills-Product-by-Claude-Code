@@ -7,6 +7,8 @@ description: Menyiapkan agen CS toko/klinik berbasis basis pengetahuan lokal (pr
 
 > **ATURAN PERTAMA (mengalahkan semua yang lain):** SEMUA template balasan dan aturan nada WAJIB ditulis lengkap di balasan chat ini juga (pengguna, mis. di Telegram, tidak bisa membuka file di server). Ringkas: maks. ±8 template pendek (stok, ongkir, retur + situasi umum, dengan `[isian]` bila data kosong), aturan nada 3-5 butir, alur admin 3-5 langkah. File (`cs/PENGETAHUAN.md`, `cs/ATURAN.md`) HANYA dibuat bila pengguna minta "simpan/pasang di OpenClaw", dan dibuat SETELAH isi tampil di chat. DILARANG menulis "sudah saya simpan di file X" sebagai pengganti isi. Balasan yang hanya berisi penolakan, ringkasan, atau "tersimpan di file" = GAGAL.
 
+> **Larangan di balasan chat:** jangan menyebut nama file, folder, atau path (mis. `cs/PENGETAHUAN.md`, `cs/ATURAN.md`, "belum saya buatkan file", "basis pengetahuan") kepada pengguna. Cukup "bila mau, saya simpan dan pasangkan di OpenClaw". Jangan mengisi nama bank/rekening contoh; pakai `[isi: bank]`.
+
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
@@ -37,7 +39,7 @@ Bila di pesan yang sama ada chat pelanggan yang perlu dibalas, kerjakan langsung
 ## Aturan utama: kerjakan dulu, tanya di akhir
 Untuk permintaan "bikinkan CS/asisten balas chat" (stok, ongkir, retur, dll.), **jangan membalas hanya dengan pertanyaan**. Balasan pertama selalu berisi hasil, dalam satu pesan, urutan tetap:
 1. **Bila ada permintaan auto-reply WA:** penolakan singkat + alasan (lihat "Jawaban baku") + tawarkan Copilot — maks. 5 baris, lalu langsung lanjut ke paket.
-2. **Paket siap pakai** dengan `[isian]` untuk data yang belum diberikan (jangan mengarang harga/ongkir/stok/syarat retur): template balasan **tanya stok, ongkir, retur** + 2-3 situasi umum lain sesuai usaha (mis. cara bayar/COD, status pesanan/resi, ukuran/bahan atau minta diskon), **aturan nada** (sapaan, emoji, panjang balasan, hal yang dilarang), dan **alur kerja admin** (mis. untuk admin 1 orang: tempel chat -> cek draf & `[isian]` -> kirim; antrean prioritas; eskalasi; rekap harian). Semua ini ditulis di chat; file `cs/PENGETAHUAN.md` & `cs/ATURAN.md` hanya bila pengguna memintanya, setelah isi tampil di chat.
+2. **Paket siap pakai** dengan `[isian]` untuk data yang belum diberikan (jangan mengarang harga/ongkir/stok/syarat retur): template balasan **tanya stok, ongkir, retur** + 2-3 situasi umum lain sesuai usaha (mis. cara bayar/COD, status pesanan/resi, ukuran/bahan atau minta diskon), **aturan nada** (sapaan, emoji, panjang balasan, hal yang dilarang), dan **alur kerja admin** (mis. untuk admin 1 orang: tempel chat -> cek draf & `[isian]` -> kirim; antrean prioritas; eskalasi; rekap harian). Semua ini ditulis di chat; file `cs/PENGETAHUAN.md` & `cs/ATURAN.md` hanya bila pengguna memintanya, setelah isi tampil di chat. **Template cara bayar (transfer/e-wallet/QRIS/COD) wajib diawali catatan: "Khusus chat WhatsApp. Di chat Shopee/marketplace lain, jangan arahkan pembayaran atau transaksi ke luar platform (nomor rekening, WA, link): arahkan pembeli ke checkout resmi marketplace."** (dasar & sumber: `references/eskalasi-dan-kanal.md`, bagian Marketplace.)
 3. **Di akhir: maks. 1-3 pertanyaan** paling penting (mis. daftar harga/ongkir/syarat retur — boleh kirim file/foto), plus asumsi yang dipakai (jam kerja, nada).
 Pengecualian: bila permintaan sama sekali tanpa konteks usaha (tidak jelas toko apa), tanyakan jenis usaha di akhir tetap setelah memberi kerangka umum.
 
@@ -147,6 +149,8 @@ Untuk COD, area Bintaro termasuk yang kami layani (radius 5km). Mau pesan berapa
 
 ## Checklist sebelum mengirim hasil
 - [ ] Apakah semua template (stok, ongkir, retur, situasi umum), aturan nada, dan alur admin ada di balasan chat ini, bukan hanya di file?
+- [ ] Balasan tidak menyebut nama file/folder/path (cs/..., .md) maupun "basis pengetahuan"; tidak ada nama bank contoh (pakai `[isi: bank]`)
+- [ ] Template cara bayar punya catatan "khusus chat WA; di Shopee/marketplace jangan arahkan transaksi ke luar platform"
 - [ ] Setiap harga/stok/janji di draf ada persis di `PENGETAHUAN.md`, bukan dikira-kira.
 - [ ] Pemicu eskalasi sudah dicek; jika kena, draf berupa pesan penahan + ringkasan ke pemilik, bukan janji penyelesaian.
 - [ ] Tidak meminta/mengembalikan data sensitif (KTP/NIK, rekening, OTP, PIN, password) ke pelanggan.

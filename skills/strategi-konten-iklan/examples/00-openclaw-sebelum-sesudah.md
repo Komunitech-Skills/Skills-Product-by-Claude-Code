@@ -1200,3 +1200,37 @@ Skill terpakai: ya (SKILL.md dibaca di giliran 1; script tidak tercatat dijalank
 | Varian: sneakers Shopee "bulan ini" | — | 8,5 | | Angka benar, momen Oktober benar, asumsi disebut; minus label tanggal minggu tidak selaras script (31 Okt tak tercakup). |
 
 **VERDIK: LULUS** — sesudah ≥ 8 (9; varian 8,5), jelas di atas sebelum (6,5), cacat fakta 10.10 hilang 2/2, tanpa kesalahan fakta/angka.
+
+## Uji ulang konteks Telegram v1.0.5 — 2026-10-05
+Penguji independen, `uji-tg.sh` (`--channel telegram`, tanpa kirim), home bersih, 3 percobaan, pesan persis G9 (teh herbal pelangsing, TikTok Rp1.500.000/bulan, margin 40%, tagline "turun 5kg seminggu", minta ROAS pasti). Nilai hanya dari isi chat.
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,0 | ya | Menolak tagline + dasar aturan, ROAS impas 2,50x, target aman 3,58x, rencana mingguan + pilar; contoh harga Rp100.000 diberi label ilustrasi; 3 pertanyaan di akhir; tanpa kata proses. |
+| 2 | 7,5 | ya | Isi benar; asumsi AOV Rp75rb (CPA maks Rp21.000) dilabeli asumsi; rencana lebih generik, mingguan rata. |
+| 3 | 8,5 | ya | Paling bersih: tolak klaim, 2,5x, 3,58x, tanpa angka karangan, cek BPOM + cekbpom.pom.go.id. |
+
+**Rata-rata 8,0 — 3/3 lulus. VERDIK: LULUS.** (Sebelumnya v1.0.4: 6,5, tanpa BPOM/ROAS, kata "script" bocor.)
+
+Verifikasi: ROAS impas 1/0,4 = 2,5 (benar); 3,58 = 1/(0,4x0,7)=3,571 dibulatkan ke atas (konvensi skill); Rp1.500.000/28 = Rp53.571/hari; 10.10.2026 = Sabtu (minggu 2) benar. Web: klaim penurunan berat badan pada pangan olahan diatur Peraturan BPOM 1/2022 (Pengawasan Klaim pada Label dan Iklan Pangan Olahan); PerBPOM 31/2018 (diubah 20/2021) adalah Label Pangan Olahan.
+
+Cacat untuk pembuat (sedang): ketiga balasan menyebut "Peraturan BPOM 31/2018 soal label & iklan pangan" - untuk iklan/klaim yang tepat PerBPOM 1/2022; perbaiki di `references/kepatuhan-klaim-iklan.md`. Produk pelangsing bisa juga masuk obat tradisional/suplemen (izin edar beda) - bagus bila ditanyakan.
+
+## Cek v1.0.6 — 2026-10-05
+Penguji independen, `uji-tg.sh` (`--channel telegram`, tanpa kirim), home bersih, 2 percobaan, pesan persis G9 (teh herbal pelangsing, TikTok Rp1.500.000, margin 40%, tagline "turun 5kg seminggu", minta ROAS pasti). Nilai hanya dari isi chat.
+
+**1. Verifikasi `references/kepatuhan-klaim-iklan.md` (web: pasal.id yang memuat salinan peraturan.go.id/BPK)**
+- PerBPOM 1/2022 "Pengawasan Klaim pada Label dan Iklan Pangan Olahan" (3/4 Jan 2022), Pasal 28 (dilarang klaim mencegah/mengobati/menyembuhkan penyakit): BENAR.
+- PerBPOM 34/2022 "Pengawasan Periklanan Obat Tradisional, Obat Kuasi, dan Suplemen Kesehatan" (23 Des 2022), Pasal 8 persetujuan iklan sebelum tayang: BENAR. Lampiran klaim (Lampiran II) tidak terbaca penuh; dokumen sudah jujur menyebut belum diverifikasi.
+- PerBPOM 25/2023 "Kriteria dan Tata Laksana Registrasi Obat Bahan Alam" (ditetapkan 6 Okt 2023): BENAR.
+- UU 8/1999 Pasal 17 ayat 1 huruf a, c, d: BENAR. Pasal 9 ayat 1 tidak terbaca di sumber.
+- PP 69/1999 dan UU 18/2012 ada; file tidak menulis tanggalnya (PP 69/1999 = 21 Juli 1999, UU 18/2012 = 16 Nov 2012). Catatan PerBPOM 31/2018 = Label Pangan Olahan: BENAR.
+- **Salah fakta: 0.** Belum dicocokkan: bahwa konsiderans PerBPOM 1/2022 merujuk UU 18/2012 & PP 69/1999.
+
+**2. Dua percobaan**
+| Percobaan | Skor | Catatan |
+|---|---|---|
+| 1 | 8,5 | Tolak tagline + 3 alternatif; dasar benar; ROAS impas 2,50x, target aman 3,58x, "tidak ada ROAS pasti"; rencana 300/600/300/300 = Rp1.500.000 (10.10 di minggu 2); pilar, aturan mingguan, langkah; 3 pertanyaan. Tanpa kata proses. |
+| 2 | 8,0 | Dasar benar, 2,50x/3,58x, 4 x Rp375.000, tabel pilar; 10.10 disebut tetapi anggaran minggu 2 tidak dinaikkan; 3 pertanyaan; tanpa kata proses. |
+
+**Rata-rata 8,25, 0 salah fakta. VERDIK: LULUS** (v1.0.5 salah menyebut PerBPOM 31/2018; kini hilang di 2/2).

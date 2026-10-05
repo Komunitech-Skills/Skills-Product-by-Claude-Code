@@ -45,3 +45,15 @@ Penguji: agent independen (bukan pembuat), 2026-09-30. Hanya membaca folder skil
 
 ## Skor: 8/10
 Alasan: semua angka terbukti benar lewat verifikasi independen 406 kasus dan tidak pernah memprediksi hasil; parsing angka ambigu sangat hati-hati; pilar konten dan kepatuhan (kategori terbatas, tanpa jaminan) kuat; menang jelas di A/B dan banding pesaing. Dikurangi karena bug konsistensi kelayakan kanal mingguan (S1), heuristik kanal yang bisa memilih kanal kurang cocok/tidak layak (S2), tujuan campuran belum didukung (S3), dan tumpang tindih pemicu dengan rencana-marketing-usaha (S4). Skor >= 7: boleh `lulus`; perbaikan S1-S4 disarankan sebelum `beta`, lalu uji ulang independen untuk bagian yang diubah.
+
+## Revisi 1.0.5 (2026-10-05) - menunggu uji ulang independen
+Pemicu: pra-cek Telegram G9 skor 6,5 (tanpa dasar BPOM/iklan, hanya bertanya AOV, kata "script" bocor). Perbaikan: aturan "kerjakan dulu, tanya di akhir" (tolak klaim + dasar aturan, ROAS impas 2,5x langsung, tidak ada ROAS pasti), larangan kata proses, checklist, dan `references/kepatuhan-klaim-iklan.md` (PERLU REVIEW pasal). Script tidak berubah; tes regresi dijalankan ulang. **Status: menunggu uji ulang independen** (belum diuji di OpenClaw oleh pembuat).
+
+## Uji ulang konteks Telegram v1.0.5 (2026-10-05) - independen
+3 percobaan (`uji-tg.sh`): 8,0 / 7,5 / 8,5, rata-rata 8,0, 3/3 lulus. Klaim "turun 5kg seminggu" ditolak dengan dasar aturan, ROAS impas 2,5x langsung, rencana ringkas, 3 pertanyaan di akhir. **VERDIK: LULUS.** Cacat sedang: rujukan "PerBPOM 31/2018" untuk iklan keliru (seharusnya PerBPOM 1/2022). Rincian di `00-openclaw-sebelum-sesudah.md`.
+
+## Revisi 1.0.6 (2026-10-05) - menunggu cek penguji
+Pemicu: cacat sedang uji ulang Telegram v1.0.5 (rujukan PerBPOM 31/2018 untuk iklan keliru). Perbaikan: `references/kepatuhan-klaim-iklan.md` ditulis ulang dan diverifikasi web (Peraturan BPOM 1/2022, 34/2022, 25/2023; UU 8/1999 Pasal 9 & 17; kebijakan TikTok Ads; beda pangan vs obat tradisional), rujukan salah dihapus, SKILL.md dilarang menyebut 31/2018 sebagai aturan iklan. Script tidak berubah. **Status: menunggu cek penguji.**
+
+## Cek konteks Telegram v1.0.6 — 2026-10-05
+Penguji independen. Dasar aturan di `references/kepatuhan-klaim-iklan.md` diverifikasi lewat web: 0 salah fakta (lampiran klaim PerBPOM 34/2022 belum terbaca penuh). `uji-tg.sh` 2 percobaan pesan G9: 8,5 dan 8,0, rata-rata 8,25. **VERDIK: LULUS.** Rincian di `00-openclaw-sebelum-sesudah.md`.

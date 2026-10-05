@@ -142,3 +142,17 @@ Skenario "tulis kode dan bunyi CP resminya persis" pada v1.0.8: 2 dari 3 timeout
 
 ## Uji ulang v1.0.9 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
 Sisi SESUDAH via `uji-tg.sh` (SEBELUM 5,75), berurutan. Skenario 1 (pesan persis gelombang 6) x3: 237/229/208 dtk, tanpa timeout, skor 8/7/8; Skenario 2 (RPP Matematika SD kelas 4, cetak): 280 dtk, skor 9. Tool: read/ls/exec/write/edit, **tanpa web_fetch**. Modul ringkas, LKPD tanpa jawaban, kunci terpisah, rubrik utuh; CP tidak dikarang (rujukan BSKAP 046/H/KR/2025 + kolom tempel); tanpa klaim lampiran palsu; menit & rubrik dihitung ulang benar. Rata-rata **8,0**, skenario 1 lulus 3/3. **VERDIK: LULUS**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.9".
+
+---
+## Riwayat v1.0.10 (2026-10-05) — keputusan pemilik no. 14, menunggu uji ulang independen
+Cacat uji Telegram v1.0.9: file Word tersimpan di komputer bot (mis. /tmp/...) sehingga guru tidak bisa mengambilnya. Perbaikan: setelah isi utuh tampil di chat dan .docx dibuat, agent mencoba melampirkan file lewat alat kirim file kanal chat; berhasil = "File Word terlampir."; gagal/tidak ada = tanpa jalur file + kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan."; kanal CLI/IDE boleh menyebut jalur. Diperbarui: aturan atas SKILL.md, checklist, description, contoh 08, README. Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.10 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+`uji-tg.sh`, 2 percobaan berurutan, home bersih (modul SMP Bahasa Inggris + CP persis + supervisi). A: 401 dtk, skor 6, GAGAL (menulis "File Word terlampir." tanpa lampiran terkirim, tanpa kalimat tawaran "kirim file"). B: 439 dtk, skor 9, lulus (isi utuh, tanpa jalur /tmp, kalimat tawaran ada). Tanpa timeout; CP tidak dikarang; menit dan skor benar. Rata-rata **7,5**, lulus 1/2. **VERDIK: BELUM**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.10".
+
+---
+## Riwayat v1.0.11 (2026-10-05) — keputusan pemilik no. 14 (lanjutan), menunggu uji ulang independen
+Cacat uji Telegram v1.0.10 percobaan A: menulis "File Word terlampir." tanpa lampiran terkirim. Perbaikan: di kanal chat tidak ada pelampiran otomatis dan tidak ada kata "terlampir/di bawah/sudah dikirim" untuk file; balasan ditutup kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan."; .docx dibuat hanya setelah guru membalas "kirim file", dan "File Word terlampir." hanya bila alat kirim file mengembalikan sukses (gagal = dikatakan jujur). Diperbarui: aturan atas SKILL.md, checklist, description, contoh 08, README. Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.11 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+`uji-tg.sh`, 3 percobaan berurutan, home bersih. A 385 dtk skor 9, B 350 dtk skor 9, C 120 dtk skor 8: semua lulus giliran pertama (isi utuh di chat, tanpa jalur file, tanpa klaim "terlampir", kalimat baku "balas 'kirim file'" ada, CP tidak dikarang, menit 80 benar). Giliran kedua "kirim file" (C): model timeout, tanpa alat, tanpa klaim palsu; kirim file belum terverifikasi. Rata-rata **8,7**, lulus 3/3. **VERDIK: LULUS**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.11".
