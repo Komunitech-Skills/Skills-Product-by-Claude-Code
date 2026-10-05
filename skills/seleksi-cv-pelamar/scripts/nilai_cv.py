@@ -47,6 +47,7 @@ HEAD_LAIN = re.compile(r"^\W*(keahlian|skills?|kemampuan|kursus|pelatihan|sertif
 PRIBADI = re.compile(r"(lahir|usia|umur|agama|jenis kelamin|gender|status\s*:|status pernikahan|menikah|alamat|domisili|tinggi|berat|nik\b|ktp|jl\.|jalan\s|kode pos|\bhp\b|telp|email|e-mail|whatsapp|\bwa\b\s*:)", re.I)
 PRIBADI_LABEL = re.compile(r"^\W*(alamat|agama|status|jenis kelamin|gender|tempat|tanggal lahir|usia|umur|nik|no\.? ?hp|hp|email|e-mail|telp\w*)\b\s*[:/]", re.I)
 SENSITIF = re.compile(r"(tinggi badan|berat badan|usia|umur|lahir|agama|menikah|lajang|status\s*(?:pernikahan|kawin|:)|hamil|suami|istri|berusia|\bsaya\s+\d{2}\s*(?:tahun|th)\b)", re.I)
+KURSUS = re.compile(r"\b(kursus|pelatihan|training|bootcamp|workshop|webinar|seminar|sertifikasi|sertifikat|course|diklat)\b", re.I)
 INJEKSI = re.compile(r"(abaikan|ignore (all|previous|the)|loloskan saya|beri (saya )?(nilai|skor)|skor\s*100|nilai\s*100|system prompt|instruksi (untuk )?(ai|penilai)|jangan nilai)", re.I)
 
 
@@ -142,6 +143,7 @@ def pisah_blok(teks):
     mode = None
     ada_kepala = False
     blok, lain, edu = [], [], []
+    kursus_aktif = False
     for baris in teks.splitlines():
         s = baris.strip()
         if not s:
@@ -163,6 +165,15 @@ def pisah_blok(teks):
             lain.append(s)
             continue
         m = RENTANG.search(s)
+        if m and KURSUS.search(s):  # baris kursus/pelatihan bukan pengalaman kerja
+            kursus_aktif = True
+            lain.append(s)
+            continue
+        if m:
+            kursus_aktif = False
+        elif kursus_aktif:
+            lain.append(s)
+            continue
         if m and not (mode is None and EDU.search(s)):
             a = int(m.group(1))
             b = m.group(2).lower()
@@ -278,10 +289,11 @@ def proses(kr, cvs, top):
     hasil = [nilai_cv(n, t, kr) for n, t in cvs]
     for r in hasil:  # seri skor: pengalaman relevan terlama (maks. lama pada kriteria), lalu urutan nama berkas
         r["tahun_relevan"] = max([k["tahun"] for k in r["kriteria"]] or [0])
+    for i, r in enumerate(hasil, 1):  # kode mengikuti urutan masuk, bukan peringkat
+        r["kode"] = f"C{i}"
     urut = sorted(hasil, key=lambda r: (r["status"] != "lanjut", -r["skor"], -r["tahun_relevan"], r["sumber"]))
     for i, r in enumerate(urut, 1):
         r["peringkat"] = i
-        r["kode"] = f"C{i}"
     lanjut = [r for r in urut if r["status"] == "lanjut"]
     batas = lanjut[top - 1]["skor"] if top and len(lanjut) >= top else None
     for r in urut:

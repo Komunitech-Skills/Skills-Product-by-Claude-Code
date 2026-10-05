@@ -93,6 +93,18 @@ class Pengalaman(unittest.TestCase):
         self.assertEqual(n.lama_tertulis("kontrak 2,5 tahun"), 2.5)
 
 
+class Kursus(unittest.TestCase):
+    def test_kursus_bukan_pengalaman_kerja(self):
+        teks = cv("2019 - 2020 | Kasir Toko\n2021 - 2023 | Pelatihan Shopee Seller, Bootcamp Marketplace\n- belajar Shopee dan Excel")
+        r = nilai(teks)
+        self.assertEqual(r["tahun_kerja"], 1.0)
+        self.assertEqual(r["kriteria"][0]["tahun"], 0.0)
+
+    def test_kerja_sesudah_kursus_tetap_dihitung(self):
+        teks = cv("2021 - 2022 | Kursus Excel\n2022 - 2024 | Admin, Shopee\n- Excel")
+        self.assertEqual(nilai(teks)["tahun_kerja"], 2.0)
+
+
 class Skor(unittest.TestCase):
     def test_skor_penuh_dan_nol(self):
         penuh = nilai(cv("2019 - 2023 | Admin, Shopee\n- Excel", "Canva"))
@@ -163,6 +175,11 @@ class Berkas(unittest.TestCase):
         self.assertEqual([r["sumber"] for r in h["cv"]], ["a.txt", "c.txt", "b.txt"])
         self.assertEqual([r["shortlist"] for r in h["cv"]], [True, True, False])
         self.assertIn("UNTUK AGENT SAJA", h["ringkasan_untuk_agent"])
+
+    def test_kode_ikut_urutan_masuk(self):
+        d = self.folder({"a.txt": cv("2019 - 2023 | Sopir"), "b.txt": cv("2019 - 2023 | Admin, Shopee\n- Excel", "Canva")})
+        h = json.loads(jalan(self.krit(), d, "--format", "json")[1])
+        self.assertEqual([(r["sumber"], r["kode"]) for r in h["cv"]], [("b.txt", "C2"), ("a.txt", "C1")])
 
     def test_csv_sumber_dan_keluaran(self):
         d = tempfile.mkdtemp()
