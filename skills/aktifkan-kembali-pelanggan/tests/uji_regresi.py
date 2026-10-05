@@ -121,6 +121,20 @@ class TesProses(unittest.TestCase):
         self.assertEqual(h["dipakai"], 1)
         self.assertEqual(h["sasaran"][0]["kode"], "C")  # 277 hari
 
+    def test_kolom_produk_terakhir(self):
+        isi = ("nama,no_hp,tanggal_beli_terakhir,total_belanja,produk\n"
+               "Bu Sari,081234567801,01/03/2026,2000000,Kue lapis\n"
+               "Bu Sari,081234567801,01/06/2026,2500000,Brownies\n"
+               "Pak Eko,081234567802,01/06/2026,500000,\n")
+        h = self.jalankan(path=tulis(isi))
+        per_nama = {p["nama"]: p for p in h["sasaran"]}
+        self.assertEqual(per_nama["Bu Sari"]["produk"], "Brownies")  # pembelian terbaru
+        self.assertEqual(int(per_nama["Bu Sari"]["total"]), 4500000)
+        self.assertEqual(per_nama["Pak Eko"]["produk"], "")
+        self.assertIn("Brownies", S.cetak(h))
+        # tanpa kolom produk tetap jalan
+        self.assertEqual(self.jalankan()["sasaran"][0]["produk"], "")
+
     def test_kolom_wajib_hilang(self):
         with self.assertRaises(ValueError) as cm:
             self.jalankan(path=tulis("nama,telepon\nA,0812\n"))

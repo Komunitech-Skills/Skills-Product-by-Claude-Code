@@ -1,8 +1,8 @@
 # Template Pesan Win-Back (WhatsApp / Telegram)
 
-Aturan semua pesan: di bawah 90 kata, bahasa sehari-hari yang sopan, satu pertanyaan jelas, tanpa urgensi palsu, tanpa klaim yang tidak diberikan pemilik. Kirim satu per satu oleh pemilik. `[isian]` diisi sebelum dikirim; jangan diganti dengan karangan.
+Aturan semua pesan: di bawah 90 kata, **setiap pesan (1, 2, 3) berakhir dengan kalimat opt-out singkat ("balas stop")**, bahasa sehari-hari yang sopan, satu pertanyaan jelas, tanpa urgensi palsu, tanpa klaim yang tidak diberikan pemilik. Kirim satu per satu oleh pemilik. `[isian]` diisi sebelum dikirim; jangan diganti dengan karangan.
 
-Sapaan: `[Kak/Pak/Bu] [nama]`. Hal spesifik: `[yang dulu dibeli]` (mis. "kue lapis pesanan ulang tahun"). Bila tidak diketahui, hapus kalimatnya.
+Sapaan: `[Kak/Pak/Bu] [nama]`. Hal spesifik: `[yang dulu dibeli]` diisi dari kolom produk terakhir di data (mis. "kue lapis pesanan ulang tahun"). Bila kolom produk kosong/tidak ada, hapus kalimatnya, jangan mengarang.
 
 ## PESAN 1 (hari ke-0): menyapa, tidak jualan
 
@@ -23,13 +23,13 @@ Sapaan: `[Kak/Pak/Bu] [nama]`. Hal spesifik: `[yang dulu dibeli]` (mis. "kue lap
 
 ## PESAN 2 (sekitar hari ke-10): hanya bila belum ada balasan
 
-Pilih sesuai kenyataan. **Jangan menulis "ada yang baru" bila tidak ada.**
+Pilih sesuai kenyataan. **Jangan menulis "ada yang baru" bila tidak ada.** Tenggat hanya bila nyata: `[isian: tanggal berlaku]`; jangan "hari ini saja".
 
 **2a. Ada hal nyata yang berubah (pemilik yang menyebutkan)**
-> Halo [Kak/Pak/Bu] [nama], [nama Anda] dari [nama usaha] lagi. Sejak terakhir [Kak/Pak/Bu] datang, ada perubahan di tempat kami: [perubahan nyata, mis. menu baru / jam buka / layanan antar]. Kalau penasaran, kabari saja, nanti kami jelaskan. Kalau tidak tertarik juga tidak apa-apa.
+> Halo [Kak/Pak/Bu] [nama], [nama Anda] dari [nama usaha] lagi. Sejak terakhir [Kak/Pak/Bu] datang, ada perubahan di tempat kami: [perubahan nyata, mis. menu baru / jam buka / layanan antar]. Kalau penasaran, kabari saja, nanti kami jelaskan. Kalau tidak tertarik juga tidak apa-apa. Kalau tidak ingin dihubungi lagi, balas "stop" ya.
 
 **2b. Tidak ada yang berubah (default)**
-> Halo [Kak/Pak/Bu] [nama], [nama Anda] dari [nama usaha]. Mau sekadar menanyakan lagi, kira-kira apa yang paling [Kak/Pak/Bu] cari dari [jenis usaha] seperti kami? Kalau bisa kami bantu, dengan senang hati. Kalau tidak, juga tidak apa-apa dan terima kasih sudah pernah mampir.
+> Halo [Kak/Pak/Bu] [nama], [nama Anda] dari [nama usaha]. Mau sekadar menanyakan lagi, kira-kira apa yang paling [Kak/Pak/Bu] cari dari [jenis usaha] seperti kami? Kalau bisa kami bantu, dengan senang hati. Kalau tidak, juga tidak apa-apa dan terima kasih sudah pernah mampir. Kalau tidak ingin dihubungi lagi, balas "stop" saja.
 
 ## PESAN 3 (sekitar hari ke-24): pesan terakhir, penawaran bila ada
 

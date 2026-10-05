@@ -44,6 +44,8 @@ ALIAS = {
                 "tanggal_transaksi_terakhir", "tanggal"],
     "total": ["total_belanja", "total", "belanja", "omzet", "total_pembelian", "nilai",
               "total_transaksi_rp"],
+    "produk": ["produk", "produk_terakhir", "produk_dibeli", "barang", "item", "menu", "layanan",
+               "nama_produk", "product", "produk_favorit"],
     "transaksi": ["jumlah_transaksi", "jumlah_order", "jml_transaksi", "jml_order",
                   "frekuensi", "order_count"],
 }
@@ -274,15 +276,21 @@ def proses(path, hari_ini, ambang, per_hari, mulai, kecuali_nomor, kecuali_nama,
         if not nama:
             nama = "[nama pelanggan]"
             peringatan.append("baris %d: nama kosong, ditulis [nama pelanggan]" % no)
+        produk = sel(r, "produk")
         if hp in gabung:
             g = gabung[hp]
+            if tgl > g["tanggal"] and produk:
+                g["produk"] = produk  # produk dari pembelian terbaru
+            elif not g["produk"]:
+                g["produk"] = produk
             g["tanggal"] = max(g["tanggal"], tgl)
             g["total"] += tot
             g["transaksi"] += trx
             peringatan.append("baris %d: nomor %s sudah ada (%s), digabung: tanggal terbaru, total dijumlahkan"
                               % (no, hp, g["nama"]))
         else:
-            gabung[hp] = {"nama": nama, "hp": hp, "tanggal": tgl, "total": tot, "transaksi": trx, "baris": no}
+            gabung[hp] = {"nama": nama, "hp": hp, "tanggal": tgl, "total": tot, "transaksi": trx, "baris": no,
+                         "produk": produk}
 
     aktif, dikecualikan, sasaran = 0, [], []
     for p in gabung.values():
@@ -363,12 +371,12 @@ def cetak(h):
                                                           awal.isoformat(), akhir.isoformat()))
         o.append("  Urutan = nilai belanja terbesar dulu. Pesan 2 & 3 HANYA bila pelanggan belum membalas "
                  "dan tidak komplain/minta berhenti.")
-        o.append("  no | segmen | nama | no_wa | hari | total | tag | pesan1 | pesan2 | pesan3")
+        o.append("  no | segmen | nama | no_wa | hari | total | tag | produk terakhir | pesan1 | pesan2 | pesan3")
         for i, p in enumerate(h["sasaran"], 1):
             j = p["jadwal"]
-            o.append("  %d | %s | %s | %s | %d | %s | %s | %s | %s | %s"
+            o.append("  %d | %s | %s | %s | %d | %s | %s | %s | %s | %s | %s"
                      % (i, p["kode"], p["nama"], p["hp"], p["hari"], rupiah(p["total"]), p["tag"] or "-",
-                        j[0].isoformat(), j[1].isoformat(), j[2].isoformat()))
+                        p["produk"] or "-", j[0].isoformat(), j[1].isoformat(), j[2].isoformat()))
         if h["per_hari"] > PER_HARI_MAKS_DISARANKAN:
             o.append("  PERINGATAN: > %d pesan/hari dari satu nomor WA terlalu agresif; risiko dianggap spam."
                      % PER_HARI_MAKS_DISARANKAN)
@@ -391,13 +399,13 @@ def tulis_csv(h, path):
     with open(path, "w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f)
         w.writerow(["no", "segmen", "nama", "no_wa", "link_wa", "hari_sejak_beli", "total_belanja",
-                    "tag", "pesan_ke", "tanggal_kirim", "status"])
+                    "tag", "produk_terakhir", "pesan_ke", "tanggal_kirim", "status"])
         n = 0
         for p in h["sasaran"]:
             n += 1
             for k, d in enumerate(p["jadwal"], 1):
                 w.writerow([n, p["kode"], p["nama"], p["hp"], "https://wa.me/" + p["hp"], p["hari"],
-                            int(p["total"]), p["tag"], k, d.isoformat(), "belum"])
+                            int(p["total"]), p["tag"], p["produk"], k, d.isoformat(), "belum"])
 
 
 def ke_json(h):
