@@ -255,3 +255,6 @@ Pra-cek Telegram gelombang 8: balasan hanya menolak auto-reply lalu bertanya dat
 
 ## Uji ulang konteks Telegram v1.0.8 — 2026-10-05
 Rata-rata 3,7 (5 / 1 timeout / 5); 0/3 lulus. **VERDIK: TIDAK LULUS.** Penolakan auto-balas WA + Copilot benar, tetapi template siap pakai tidak ditampilkan di chat (hanya ditulis ke file workspace). Rincian: `00-openclaw-sebelum-sesudah.md`.
+
+## Catatan revisi v1.0.9 (2026-10-05) — menunggu uji ulang independen
+Dari uji ulang Telegram v1.0.8 (TIDAK LULUS): template hanya dirangkum sebagai file. Perbaikan: ATURAN PERTAMA di SKILL.md & description (template + aturan nada + alur admin wajib lengkap di chat, ringkas; file hanya bila diminta, setelah isi tampil), langkah kerja file jadi opsional, checklist baru. Belum diuji ulang independen; skor & status tidak diubah.

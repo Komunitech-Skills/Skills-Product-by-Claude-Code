@@ -69,3 +69,6 @@ Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** membe
 
 ## Catatan revisi 1.0.8 (2026-10-05)
 - Dari pra-cek Telegram: untuk "bikinin CS toko hijab + pasang bot WA auto-balas", bot benar menolak auto-balas tetapi hanya mengajukan 5 pertanyaan tanpa hasil. Kini aturan "kerjakan dulu, tanya di akhir": penolakan singkat + alasan (WhatsApp Web tidak resmi, risiko blokir) + mode Copilot, lalu paket siap pakai ([isian] bila data kosong: template balasan stok/ongkir/retur + situasi umum, aturan nada, alur kerja admin 1 orang), baru maks. 3 pertanyaan di akhir. Contoh: `examples/06-toko-hijab-kerjakan-dulu-tanya-di-akhir.md`.
+
+## Catatan revisi 1.0.9 (2026-10-05)
+- Dari uji ulang Telegram 1.0.8 (0/3 lulus): penolakan auto-balas WA benar, tetapi template stok/ongkir/retur hanya dirangkum sebagai file `cs/PENGETAHUAN.md` & `cs/ATURAN.md` yang tidak terlihat pengguna Telegram. Kini aturan pertama: semua template (maks. ~8 pendek), aturan nada (3-5 butir), dan alur admin (3-5 langkah) wajib tampil lengkap di chat; file hanya bila diminta "simpan/pasang di OpenClaw", dibuat setelah isi tampil. Checklist baru: "Apakah semua template ada di balasan chat ini?".
