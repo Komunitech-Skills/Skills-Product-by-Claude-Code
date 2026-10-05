@@ -54,3 +54,6 @@ Pemicu: pra-cek Telegram G9 skor 6,5 (tanpa dasar BPOM/iklan, hanya bertanya AOV
 
 ## Revisi 1.0.6 (2026-10-05) - menunggu cek penguji
 Pemicu: cacat sedang uji ulang Telegram v1.0.5 (rujukan PerBPOM 31/2018 untuk iklan keliru). Perbaikan: `references/kepatuhan-klaim-iklan.md` ditulis ulang dan diverifikasi web (Peraturan BPOM 1/2022, 34/2022, 25/2023; UU 8/1999 Pasal 9 & 17; kebijakan TikTok Ads; beda pangan vs obat tradisional), rujukan salah dihapus, SKILL.md dilarang menyebut 31/2018 sebagai aturan iklan. Script tidak berubah. **Status: menunggu cek penguji.**
+
+## Cek konteks Telegram v1.0.6 — 2026-10-05
+Penguji independen. Dasar aturan di `references/kepatuhan-klaim-iklan.md` diverifikasi lewat web: 0 salah fakta (lampiran klaim PerBPOM 34/2022 belum terbaca penuh). `uji-tg.sh` 2 percobaan pesan G9: 8,5 dan 8,0, rata-rata 8,25. **VERDIK: LULUS.** Rincian di `00-openclaw-sebelum-sesudah.md`.
