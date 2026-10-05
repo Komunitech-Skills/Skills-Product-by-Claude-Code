@@ -538,3 +538,18 @@ Mau sekalian saya bikinkan draf kontrak PKWT-nya (lewat skill `kontrak-kerja-pkw
 **Cuplikan jualan:**
 - Tanpa skill, agent menulis BPJS "sesuai kebijakan toko — mulai dari awal masuk atau setelah lulus percobaan". Dengan skill: "Daftar BPJS Ketenagakerjaan … Wajib, paling lambat **4 November 2026**."
 - Dengan skill, tanggal keputusan masa percobaan dihitung pasti: "Evaluasi keputusan akhir masa percobaan **29 Desember 2026**", lima hari kerja sebelum batas 4 Januari 2027, dengan libur Tahun Baru sudah ikut dihitung.
+
+## Uji ulang konteks Telegram v1.0.5 — 2026-10-05
+Penguji independen, `uji-tg.sh` (`--channel telegram`, tanpa kirim), home bersih, 3 percobaan, pesan persis G9 (kasir minimarket, PKWTT, mulai Senin 12 Okt 2026, gaji Rp2.800.000). Nilai hanya dari isi chat.
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,5 | ya | Paket lengkap (checklist, jadwal, sambutan, buku saku, buddy, formulir evaluasi) di balasan yang sama; 3 pertanyaan di akhir; tanpa kata proses. Panjang (±7,7 rb karakter). |
+| 2 | 8,0 | ya | Isi sama lengkap; "tafsir cara hitung skill ini" membocorkan istilah internal (kecil). |
+| 3 | 8,5 | ya | Lengkap, rapi, 3 pertanyaan di akhir. |
+
+**Rata-rata 8,3 — 3/3 lulus. VERDIK: LULUS.** (Sebelumnya v1.0.4: 5, hanya bertanya.)
+
+Verifikasi python: 12 Okt 2026 = Senin; akhir minggu 1 18 Okt (Minggu) digeser ke Senin 19 Okt (toko 6 hari); 30 hari 10 Nov; 60 hari 10 Des; 90 hari 9 Jan 2027 (Sabtu); batas 3 bulan 11 Jan 2027; evaluasi keputusan 6 Jan 2027 (Rabu) - semua cocok di ketiga percobaan. Web: masa percobaan maks. 3 bulan hanya PKWTT, upah tidak boleh di bawah upah minimum (UU 13/2003 Ps. 60; PP 35/2021 melarang percobaan di PKWT) - balasan sesuai. Pengecualian upah usaha mikro/kecil disebut hati-hati.
+
+Cacat kecil untuk pembuat: kata "skill" bocor sesekali; balasan panjang untuk Telegram (pertimbangkan memangkas bagian 4-5).

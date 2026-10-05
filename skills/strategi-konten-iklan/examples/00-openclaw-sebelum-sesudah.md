@@ -1200,3 +1200,18 @@ Skill terpakai: ya (SKILL.md dibaca di giliran 1; script tidak tercatat dijalank
 | Varian: sneakers Shopee "bulan ini" | — | 8,5 | | Angka benar, momen Oktober benar, asumsi disebut; minus label tanggal minggu tidak selaras script (31 Okt tak tercakup). |
 
 **VERDIK: LULUS** — sesudah ≥ 8 (9; varian 8,5), jelas di atas sebelum (6,5), cacat fakta 10.10 hilang 2/2, tanpa kesalahan fakta/angka.
+
+## Uji ulang konteks Telegram v1.0.5 — 2026-10-05
+Penguji independen, `uji-tg.sh` (`--channel telegram`, tanpa kirim), home bersih, 3 percobaan, pesan persis G9 (teh herbal pelangsing, TikTok Rp1.500.000/bulan, margin 40%, tagline "turun 5kg seminggu", minta ROAS pasti). Nilai hanya dari isi chat.
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,0 | ya | Menolak tagline + dasar aturan, ROAS impas 2,50x, target aman 3,58x, rencana mingguan + pilar; contoh harga Rp100.000 diberi label ilustrasi; 3 pertanyaan di akhir; tanpa kata proses. |
+| 2 | 7,5 | ya | Isi benar; asumsi AOV Rp75rb (CPA maks Rp21.000) dilabeli asumsi; rencana lebih generik, mingguan rata. |
+| 3 | 8,5 | ya | Paling bersih: tolak klaim, 2,5x, 3,58x, tanpa angka karangan, cek BPOM + cekbpom.pom.go.id. |
+
+**Rata-rata 8,0 — 3/3 lulus. VERDIK: LULUS.** (Sebelumnya v1.0.4: 6,5, tanpa BPOM/ROAS, kata "script" bocor.)
+
+Verifikasi: ROAS impas 1/0,4 = 2,5 (benar); 3,58 = 1/(0,4x0,7)=3,571 dibulatkan ke atas (konvensi skill); Rp1.500.000/28 = Rp53.571/hari; 10.10.2026 = Sabtu (minggu 2) benar. Web: klaim penurunan berat badan pada pangan olahan diatur Peraturan BPOM 1/2022 (Pengawasan Klaim pada Label dan Iklan Pangan Olahan); PerBPOM 31/2018 (diubah 20/2021) adalah Label Pangan Olahan.
+
+Cacat untuk pembuat (sedang): ketiga balasan menyebut "Peraturan BPOM 31/2018 soal label & iklan pangan" - untuk iklan/klaim yang tepat PerBPOM 1/2022; perbaiki di `references/kepatuhan-klaim-iklan.md`. Produk pelangsing bisa juga masuk obat tradisional/suplemen (izin edar beda) - bagus bila ditanyakan.

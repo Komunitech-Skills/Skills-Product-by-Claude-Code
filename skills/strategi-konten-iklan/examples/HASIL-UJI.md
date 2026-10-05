@@ -48,3 +48,6 @@ Alasan: semua angka terbukti benar lewat verifikasi independen 406 kasus dan tid
 
 ## Revisi 1.0.5 (2026-10-05) - menunggu uji ulang independen
 Pemicu: pra-cek Telegram G9 skor 6,5 (tanpa dasar BPOM/iklan, hanya bertanya AOV, kata "script" bocor). Perbaikan: aturan "kerjakan dulu, tanya di akhir" (tolak klaim + dasar aturan, ROAS impas 2,5x langsung, tidak ada ROAS pasti), larangan kata proses, checklist, dan `references/kepatuhan-klaim-iklan.md` (PERLU REVIEW pasal). Script tidak berubah; tes regresi dijalankan ulang. **Status: menunggu uji ulang independen** (belum diuji di OpenClaw oleh pembuat).
+
+## Uji ulang konteks Telegram v1.0.5 (2026-10-05) - independen
+3 percobaan (`uji-tg.sh`): 8,0 / 7,5 / 8,5, rata-rata 8,0, 3/3 lulus. Klaim "turun 5kg seminggu" ditolak dengan dasar aturan, ROAS impas 2,5x langsung, rencana ringkas, 3 pertanyaan di akhir. **VERDIK: LULUS.** Cacat sedang: rujukan "PerBPOM 31/2018" untuk iklan keliru (seharusnya PerBPOM 1/2022). Rincian di `00-openclaw-sebelum-sesudah.md`.

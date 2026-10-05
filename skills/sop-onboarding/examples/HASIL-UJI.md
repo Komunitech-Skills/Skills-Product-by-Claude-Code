@@ -171,3 +171,6 @@ penuh.
 
 ## Revisi 1.0.5 (2026-10-05) - menunggu uji ulang independen
 Pemicu: pra-cek Telegram G9 skor 5 (hanya 6 pertanyaan, paket tidak ada, kata "sudah saya cek" bocor). Perbaikan: aturan "kerjakan dulu, tanya di akhir" + larangan kata proses + checklist di `SKILL.md` dan `description`. Script tidak berubah; tes regresi dijalankan ulang. **Status: menunggu uji ulang independen** (belum diuji di OpenClaw oleh pembuat).
+
+## Uji ulang konteks Telegram v1.0.5 (2026-10-05) - independen
+3 percobaan (`uji-tg.sh`): 8,5 / 8,0 / 8,5, rata-rata 8,3, 3/3 lulus. Paket onboarding + jadwal + evaluasi masa percobaan bertanggal benar (batas 11 Jan 2027, evaluasi 6 Jan 2027) kini lengkap di chat; pertanyaan 3 di akhir. **VERDIK: LULUS.** Rincian di `00-openclaw-sebelum-sesudah.md`.
