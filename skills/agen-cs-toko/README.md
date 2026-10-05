@@ -75,3 +75,6 @@ Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** membe
 
 ## Catatan revisi 1.0.10 (2026-10-05)
 - Dari uji Telegram: template "cara bayar" kini diberi catatan "khusus chat WhatsApp; di chat Shopee/marketplace jangan arahkan transaksi ke luar platform" agar toko tidak melanggar kebijakan marketplace (sumber di `references/eskalasi-dan-kanal.md`).
+
+## Catatan revisi 1.0.11 (2026-10-05)
+- Dari uji ulang Telegram 1.0.10 (rata-rata 7,75): balasan menyebut `cs/PENGETAHUAN.md` dan "belum saya buatkan file" ke pengguna, dan memakai nama bank contoh. Kini nama file/folder/path dilarang di balasan chat (aturan atas + checklist); bank ditulis `[isi: bank]`.

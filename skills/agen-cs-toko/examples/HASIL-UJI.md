@@ -268,3 +268,6 @@ Temuan Telegram gelombang 9 (cacat no. 5): template cara bayar berisiko melangga
 
 ## Uji ulang Telegram v1.0.10 (2026-10-05)
 Uji ulang Telegram v1.0.10 (2026-10-05): 2 percobaan 8,5 / 7,0, rata-rata 7,75, 1/2 lulus. VERDIK TIDAK LULUS. Label khusus WA pada template bayar ada; sisa: nama file/path bocor di 1 percobaan.
+
+## Riwayat revisi - v1.0.11 (2026-10-05)
+Dari uji ulang Telegram v1.0.10 (TIDAK LULUS). Perbaikan: larangan nama file/path & nama bank contoh di SKILL.md + checklist. Status: **menunggu uji ulang independen**.

@@ -7,6 +7,8 @@ description: Menyiapkan agen CS toko/klinik berbasis basis pengetahuan lokal (pr
 
 > **ATURAN PERTAMA (mengalahkan semua yang lain):** SEMUA template balasan dan aturan nada WAJIB ditulis lengkap di balasan chat ini juga (pengguna, mis. di Telegram, tidak bisa membuka file di server). Ringkas: maks. ±8 template pendek (stok, ongkir, retur + situasi umum, dengan `[isian]` bila data kosong), aturan nada 3-5 butir, alur admin 3-5 langkah. File (`cs/PENGETAHUAN.md`, `cs/ATURAN.md`) HANYA dibuat bila pengguna minta "simpan/pasang di OpenClaw", dan dibuat SETELAH isi tampil di chat. DILARANG menulis "sudah saya simpan di file X" sebagai pengganti isi. Balasan yang hanya berisi penolakan, ringkasan, atau "tersimpan di file" = GAGAL.
 
+> **Larangan di balasan chat:** jangan menyebut nama file, folder, atau path (mis. `cs/PENGETAHUAN.md`, `cs/ATURAN.md`, "belum saya buatkan file", "basis pengetahuan") kepada pengguna. Cukup "bila mau, saya simpan dan pasangkan di OpenClaw". Jangan mengisi nama bank/rekening contoh; pakai `[isi: bank]`.
+
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
@@ -147,6 +149,7 @@ Untuk COD, area Bintaro termasuk yang kami layani (radius 5km). Mau pesan berapa
 
 ## Checklist sebelum mengirim hasil
 - [ ] Apakah semua template (stok, ongkir, retur, situasi umum), aturan nada, dan alur admin ada di balasan chat ini, bukan hanya di file?
+- [ ] Balasan tidak menyebut nama file/folder/path (cs/..., .md) maupun "basis pengetahuan"; tidak ada nama bank contoh (pakai `[isi: bank]`)
 - [ ] Template cara bayar punya catatan "khusus chat WA; di Shopee/marketplace jangan arahkan transaksi ke luar platform"
 - [ ] Setiap harga/stok/janji di draf ada persis di `PENGETAHUAN.md`, bukan dikira-kira.
 - [ ] Pemicu eskalasi sudah dicek; jika kena, draf berupa pesan penahan + ringkasan ke pemilik, bukan janji penyelesaian.
