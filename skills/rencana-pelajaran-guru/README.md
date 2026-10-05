@@ -89,3 +89,6 @@ di "Kunci Jawaban (untuk guru)"; format chat baku tanpa garis pemisah berulang &
 tempel Word/Docs diperbaiki; opsi file .docx (`scripts/buat_docx.py`, Python standar, ada tes
 di `tests/`); jawaban untuk permintaan "kode & bunyi CP resmi persis" (rujukan BSKAP 046/H/KR/2025
 + langkah mengambil CP + tempat isian).
+
+## Catatan revisi 1.0.6 (2026-10-05)
+dari uji ulang OpenClaw v1.0.5 (3 cacat minor): (1) balasan chat wajib memuat isi modul utuh (termasuk lembar siswa & kunci guru), file .docx hanya salinan; (2) `scripts/buat_docx.py` kini mengonversi `>` (kutipan), `####` (judul tingkat 4), dan `*miring*` tanpa merusak `**tebal**` (ada tes); (3) jalur file selalu disebut sesuai output script, atau file tidak disebut sama sekali.

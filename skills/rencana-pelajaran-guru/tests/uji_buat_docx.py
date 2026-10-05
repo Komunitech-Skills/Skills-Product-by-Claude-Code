@@ -37,6 +37,23 @@ def main():
             awal = xml.index('w:br w:type="page"')
             c = "Jawaban: " not in xml[:awal]
             print(" lembar siswa tanpa jawaban:", "LULUS" if c else "GAGAL"); gagal += not c
+        # markdown tambahan: kutipan, judul 4, miring
+        md = os.path.join(d, "m.md"); o2 = os.path.join(d, "m.docx")
+        open(md, "w", encoding="utf-8").write(
+            "#### Judul empat\n\n> Kutipan penting\n\nTeks *miring* dan **tebal** serta ***keduanya*** 2*3*4 a * b\n")
+        r = jalan(md, o2)
+        x = zipfile.ZipFile(o2).read("word/document.xml").decode() if r.returncode == 0 else ""
+        minidom.parseString(x)
+        cek = [("Heading4" in x, "judul 4 -> Heading4"), ("####" not in x, "tanpa #### literal"),
+               ("&gt;" not in x and "Kutipan penting" in x, "kutipan tanpa > literal"),
+               ("w:pBdr" in x and "<w:i/>" in x, "kutipan bergaya miring/indentasi"),
+               ('<w:i/></w:rPr><w:t xml:space="preserve">miring<' in x, "*miring* -> italic"),
+               ('<w:b/></w:rPr><w:t xml:space="preserve">tebal<' in x, "**tebal** tetap bold"),
+               ("*miring*" not in x, "tanpa tanda * literal"),
+               ("a * b" in x, "tanda * tunggal dibiarkan"),
+               (os.path.abspath(o2) in r.stdout, "output menyebut jalur file")]
+        for c, nama in cek:
+            print(" md", nama, ":", "LULUS" if c else "GAGAL"); gagal += not c
         # input buruk
         for args, nama in [((os.path.join(d, "tidak-ada.md"), out), "file tidak ada"),
                            (("a.md",), "argumen kurang"),

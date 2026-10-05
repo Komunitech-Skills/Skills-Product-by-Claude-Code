@@ -1,11 +1,13 @@
 ---
 name: rencana-pelajaran-guru
-description: Membuat Modul Ajar/RPP lengkap, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, ATP, Tujuan Pembelajaran, Profil Lulusan, asesmen diagnostik-formatif-sumatif, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Aturan baku: lembar siswa/LKPD TIDAK memuat jawaban; kunci jawaban ditulis utuh terpisah di bagian "Kunci Jawaban (untuk guru)"; CP tidak pernah dikarang (rujuk BSKAP 046/H/KR/2025 + cara mengambil bunyi CP resmi); file .docx untuk cetak/supervisi bila Python tersedia. Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal ulangan+rubrik. EN: lesson plan, worksheet, answer key, rubric.
+description: Membuat Modul Ajar/RPP lengkap, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, ATP, Tujuan Pembelajaran, Profil Lulusan, asesmen diagnostik-formatif-sumatif, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Aturan baku: lembar siswa/LKPD TIDAK memuat jawaban; kunci jawaban ditulis utuh terpisah di bagian "Kunci Jawaban (untuk guru)"; CP tidak pernah dikarang (rujuk BSKAP 046/H/KR/2025 + cara mengambil bunyi CP resmi); isi modul LENGKAP (termasuk lembar siswa & kunci guru) selalu ditulis utuh di balasan chat, bukan ringkasan; file .docx untuk cetak/supervisi hanya salinan bila Python tersedia, dengan jalur file disebut. Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal ulangan+rubrik. EN: lesson plan, worksheet, answer key, rubric.
 ---
 
 # Rencana Pelajaran Guru (Modul Ajar Kurikulum Merdeka)
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+> **Aturan isi balasan:** Balasan chat WAJIB memuat isi modul secara lengkap dan utuh (Modul Ajar, LKPD/lembar siswa, soal + rubrik, dan Kunci Jawaban untuk guru) — bukan ringkasan atau daftar isi. File .docx/PDF hanya salinan dari isi yang sama; jangan menggantikan isi di chat dengan "lihat file".
 
 ## Tujuan
 Mengubah satu kalimat permintaan guru (mis. "buatkan modul ajar IPA kelas 7 tentang
@@ -141,8 +143,12 @@ menjalankan Python 3 serta menulis file:
 1. Tulis seluruh hasil (format baku di atas) ke satu file `.md` di folder kerja.
 2. Pisahkan lembar siswa dan kunci dengan baris `<<HALAMAN BARU>>` di atas judul Kunci Jawaban.
 3. Jalankan `python3 scripts/buat_docx.py hasil.md hasil.docx` (Windows: `python` atau `py`);
-   script memakai Python standar saja. Sebutkan lokasi file ke guru.
-4. **Tetap tampilkan isi utuh di chat** — lampiran bisa gagal terkirim. Jangan berjanji
+   script memakai Python standar saja dan mencetak jalur file yang sebenarnya ditulis
+   ("OK: file ditulis di <jalur>"). Sebutkan **jalur persis dari output script itu** ke guru.
+   Jangan menulis kalimat seperti "File Word siap cetak:" tanpa jalur; bila script gagal atau
+   jalurnya tidak ada, jangan menyebut file sama sekali.
+4. **Tetap tampilkan isi utuh di chat** (modul, lembar siswa, soal+rubrik, kunci guru) —
+   file hanya salinan dan lampiran bisa gagal terkirim. Jangan berjanji
    "sudah saya kirim file" bila pengiriman tidak terkonfirmasi; sebutkan jalur file saja.
 Bila Python/izin menulis file tidak ada, jangan membuat file palsu: tampilkan teks di chat
 dan jelaskan cara menempel ke Word. Jangan menyalin pesan proses internal ("File sudah
@@ -181,6 +187,8 @@ Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan gur
 - [ ] Nama dimensi Profil Lulusan persis sesuai `references/dasar-kurikulum.md` (Penalaran Kritis, dst.)
 - [ ] Kunci jawaban LKPD/soal sudah dihitung ulang, bukan ditulis kira-kira
 - [ ] **Lembar siswa/LKPD tidak memuat jawaban**; kunci utuh ada di "Kunci Jawaban (untuk guru)" di akhir (bukan "lihat di atas")
+- [ ] **Isi modul lengkap (modul, LKPD, soal+rubrik, kunci guru) tertulis utuh di chat**, bukan ringkasan; .docx hanya salinan
+- [ ] Bila menyebut file: jalur file sesuai output script (atau tidak menyebut file sama sekali)
 - [ ] Format baku: tanpa garis pemisah hiasan/baris kosong berulang; catatan Word/Docs sesuai format (tanda #)
 - [ ] Rubrik punya skor eksplisit dan cara menghitung nilai akhir
 - [ ] Tidak ada soal yang meniru/berbau ujian nasional-ANBK bocoran

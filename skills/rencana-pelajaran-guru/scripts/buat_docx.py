@@ -2,7 +2,7 @@
 """Ubah teks Markdown sederhana (hasil skill) menjadi file Word .docx.
 
 Karya asli Komunitech. Hanya Python standar (zipfile + XML), lintas OS, tanpa paket tambahan.
-Mendukung: judul (#, ##, ###), daftar (- / * / 1.), tabel bergaris tegak (| a | b |),
+Mendukung: judul (#, ##, ###, ####), kutipan (> teks, tampil miring berindentasi), miring (*teks*), daftar (- / * / 1.), tabel bergaris tegak (| a | b |),
 tebal (**teks**), garis pemisah (--- jadi paragraf kosong), dan penanda halaman baru
 "<<HALAMAN BARU>>" (dipakai untuk memisahkan Kunci Jawaban guru dari lembar siswa).
 
@@ -12,6 +12,7 @@ Pakai:
 """
 from __future__ import annotations
 
+import os
 import re
 import sys
 import zipfile
@@ -21,25 +22,37 @@ PAGE_BREAK = "<<HALAMAN BARU>>"
 NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
 
 
-def _runs(text: str, bold_all: bool = False) -> str:
+_TOKEN = re.compile(r"(\*\*.+?\*\*|(?<![*\w])\*(?!\s)[^*]+?(?<!\s)\*(?![*\w]))")
+
+
+def _runs(text: str, bold_all: bool = False, italic_all: bool = False) -> str:
     out = []
-    for i, part in enumerate(re.split(r"\*\*", text)):
+    for part in _TOKEN.split(text):
         if part == "":
             continue
-        b = bold_all or i % 2 == 1
-        rpr = "<w:rPr><w:b/></w:rPr>" if b else ""
+        b, it = bold_all, italic_all
+        if part.startswith("**") and part.endswith("**") and len(part) > 4:
+            part, b = part[2:-2], True
+        elif part.startswith("*") and part.endswith("*") and len(part) > 2:
+            part, it = part[1:-1], True
+        rpr = ("<w:b/>" if b else "") + ("<w:i/>" if it else "")
+        rpr = f"<w:rPr>{rpr}</w:rPr>" if rpr else ""
         out.append(f'<w:r>{rpr}<w:t xml:space="preserve">{escape(part)}</w:t></w:r>')
     return "".join(out)
 
 
-def _para(text: str, style: str | None = None, bold: bool = False, indent: bool = False) -> str:
+def _para(text: str, style: str | None = None, bold: bool = False, indent: bool = False,
+          quote: bool = False) -> str:
     ppr = ""
     if style:
         ppr += f'<w:pStyle w:val="{style}"/>'
     if indent:
         ppr += '<w:ind w:left="360" w:hanging="240"/>'
+    if quote:
+        ppr += ('<w:pBdr><w:left w:val="single" w:sz="12" w:space="6" w:color="808080"/></w:pBdr>'
+                '<w:ind w:left="567"/>')
     ppr = f"<w:pPr>{ppr}</w:pPr>" if ppr else ""
-    return f"<w:p>{ppr}{_runs(text, bold)}</w:p>"
+    return f"<w:p>{ppr}{_runs(text, bold, quote)}</w:p>"
 
 
 def _table(rows: list[list[str]]) -> str:
@@ -88,8 +101,10 @@ def markdown_ke_body(md: str) -> str:
             body.append('<w:p><w:r><w:br w:type="page"/></w:r></w:p>')
         elif re.fullmatch(r"[-─_*]{3,}", s):
             continue
-        elif (m := re.match(r"(#{1,3})\s+(.*)", s)):
+        elif (m := re.match(r"(#{1,4})\s+(.*)", s)):
             body.append(_para(m.group(2), f"Heading{len(m.group(1))}"))
+        elif (m := re.match(r">\s?(.*)", s)):
+            body.append(_para(m.group(1), quote=True))
         elif (m := re.match(r"[-*•]\s+(.*)", s)):
             body.append(_para("• " + m.group(1), indent=True))
         elif (m := re.match(r"(\d+[.)])\s+(.*)", s)):
@@ -111,7 +126,7 @@ def _styles() -> str:
             '<w:sz w:val="22"/></w:rPr></w:rPrDefault></w:docDefaults>'
             '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/>'
             '<w:qFormat/><w:pPr><w:spacing w:after="80"/></w:pPr></w:style>'
-            + h(1, 32) + h(2, 28) + h(3, 24) + '</w:styles>')
+            + h(1, 32) + h(2, 28) + h(3, 24) + h(4, 22) + '</w:styles>')
 
 
 def buat_docx(md: str, path: str) -> None:
@@ -161,7 +176,7 @@ def main(argv: list[str]) -> int:
     except OSError as e:
         print(f"GAGAL menulis {argv[2]}: {e}")
         return 1
-    print(f"OK: {argv[2]} dibuat. Buka dengan Word/Google Docs/LibreOffice dan periksa sebelum dicetak.")
+    print(f"OK: file ditulis di {os.path.abspath(argv[2])} . Buka dengan Word/Google Docs/LibreOffice dan periksa sebelum dicetak.")
     return 0
 
 

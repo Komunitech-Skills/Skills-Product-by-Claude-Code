@@ -112,3 +112,7 @@ garis pemisah/baris kosong berulang, catatan tempel Word/Docs sesuai tanda `#`; 
 lembar siswa tanpa "Jawaban:", 4 input buruk); (d) jawaban permintaan kode/bunyi CP: rujukan BSKAP 046/H/KR/2025
 (18 Juli 2025, diverifikasi web 2026-10-05) + langkah mengambil CP + tempat isian. Contoh: `07-minta-kode-bunyi-cp-resmi.md`.
 Status: **uji ulang independen selesai 2026-10-05 — LULUS** (OpenClaw 2026.9.6 lokal, sebelum/sesudah: rata-rata 5,75 -> 8,5, selisih +2,75; tanpa salah fakta/angka pada sisi SESUDAH). Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.5". Sisa cacat minor (bukan salah fakta): isi utuh tidak ditampilkan di chat, penanda `>`/`####`/`*..*` muncul literal di .docx.
+
+---
+## Riwayat v1.0.6 (2026-10-05) — perbaikan minor pasca-LULUS, menunggu cek penguji
+Menutup 3 cacat minor uji ulang v1.0.5: (1) isi modul utuh wajib di chat (aturan atas SKILL.md, checklist, description); (2) `buat_docx.py` mendukung `>`, `####`, `*miring*` + 9 pemeriksaan baru di `tests/uji_buat_docx.py` (semua lulus); (3) jalur file dicetak script dan wajib disebut sesuai output, atau file tidak disebut. Belum diuji ulang di OpenClaw.
