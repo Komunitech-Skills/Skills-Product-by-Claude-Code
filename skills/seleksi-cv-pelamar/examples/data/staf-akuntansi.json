@@ -1,0 +1,13 @@
+{
+  "posisi": "Staf Akuntansi",
+  "wajib": [
+    {"nama": "Pengalaman akuntansi/pembukuan", "kata": ["akuntansi", "pembukuan", "jurnal", "buku besar"], "bobot": 3, "min_tahun": 2, "gugur_bila_tidak_ada": true},
+    {"nama": "Perangkat akuntansi (Accurate/Zahir/Excel)", "kata": ["accurate", "zahir", "myob", "excel"], "bobot": 2},
+    {"nama": "Rekonsiliasi bank", "kata": ["rekonsiliasi bank", "rekonsiliasi"], "bobot": 2},
+    {"nama": "Laporan keuangan", "kata": ["laporan keuangan"], "bobot": 2}
+  ],
+  "nilai_tambah": [
+    {"nama": "Pajak (PPh 21/PPN)", "kata": ["pph 21", "pph21", "ppn", "e-faktur", "coretax"], "bobot": 3, "min_tahun": 1},
+    {"nama": "Hutang piutang", "kata": ["hutang piutang", "hutang", "piutang"], "bobot": 1}
+  ]
+}

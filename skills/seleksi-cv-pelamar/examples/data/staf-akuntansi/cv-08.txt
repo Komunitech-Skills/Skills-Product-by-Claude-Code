@@ -1,0 +1,21 @@
+CURRICULUM VITAE
+
+Nama: Yusuf Maulana Akbar
+Tempat/Tanggal Lahir: Palembang, 4 Januari 1995
+Jenis Kelamin: Laki-laki
+Status: Menikah
+Agama: Islam
+Alamat: Jl. Contoh Fiktif No. 12, Kota Contoh
+No. HP: 0812-5550-1234
+Email: yusuf@contoh.id
+
+PENDIDIKAN
+2013 - 2017 S1 Manajemen, Universitas Fiktif Raya
+
+PENGALAMAN KERJA
+2018 - 2022 | Admin Gudang dan Keuangan, UD Sumber Pangan
+- Catat penerimaan dan pengeluaran kas
+- Rekap stok bulanan di Excel
+
+KEAHLIAN
+Excel, pembukuan sederhana
