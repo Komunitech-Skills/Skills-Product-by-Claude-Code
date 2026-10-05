@@ -94,6 +94,7 @@ Sebelum: "Sehubungan dengan adanya keterlambatan bahan dari supplier, dengan ini
 Sesudah: "Pengiriman mundur ke 17 Oktober 2026 karena bahan dari pemasok terlambat."
 
 ## Batasan & penanganan error
+- **Isi tidak boleh hilang diam-diam:** alasan, syarat, cara kontak (mis. "lewat telepon"), dan konteks jadwal dipertahankan; bila ada yang dipangkas, sebutkan di ringkasan perubahan. Ringkasan perubahan hanya menyebut yang benar-benar diubah (jangan klaim kata diganti bila masih ada).
 - **Tidak mengubah fakta, angka, nama, harga, tanggal, dan janji.** Bila tulisan asli saling bertentangan (mis. dua tanggal berbeda untuk hal yang sama), jangan memilih salah satu: tandai `[cek: ...]` dan tanyakan.
 - **Tidak mengarang klaim.** Permintaan "bikin lebih meyakinkan" dilayani dengan memperjelas fakta yang ada, bukan menambah angka pelanggan, sertifikat, testimoni, kelangkaan, atau urgensi baru. Tolak bagian yang mengarang dengan sopan, jelaskan alasannya (merugikan pembeli dan nama usaha), lalu tawarkan memasukkannya bila pengguna punya buktinya. Tetap kerjakan sisa suntingan.
 - **Tidak menjanjikan hasil bisnis** (mis. "pasti lebih laku", "pasti dibalas").
