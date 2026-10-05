@@ -4,12 +4,8 @@
 
 **Yang dilakukan agent (urutan):**
 1. Mapel, topik, dan kelas sudah jelas, jadi tidak bertanya; asumsi 1 pertemuan x 2 JP dicatat di akhir.
-2. Menyusun isi lengkap, lalu mengirimnya di chat berurutan, tanpa ringkasan:
-   - "Bagian 1/4 — Modul Ajar" (informasi umum, CP bertanda "cek CP resmi", Tujuan, kegiatan 10+60+10 = 80 menit COCOK, asesmen, diferensiasi)
-   - "Bagian 2/4 — LKPD (lembar siswa, tanpa jawaban)"
-   - "Bagian 3/4 — Soal + Rubrik"
-   - "Bagian 4/4 — Kunci Jawaban (untuk guru)"
-3. Karena guru menyebut "supervisi", agent langsung menjalankan `python3 scripts/buat_docx.py` dari file .md sementara (dihapus setelahnya), tanpa bertanya "mau dibuatkan?".
-4. Agent melampirkan .docx lewat fitur kirim file Telegram. Bila lampiran tidak bisa dikirim, agent menulis: "File Word tersimpan di <jalur dari output script>; isi lengkapnya sudah ada di pesan di atas."
+2. Membaca SKILL.md sekali, tanpa web fetch, lalu menulis balasan RINGKAS tetapi utuh (±4.000-6.000 karakter) dalam satu pesan: modul ajar ringkas (info umum, CP rujukan + kolom tempel, 2-3 TP, tabel kegiatan 10+60+10 = 80 menit COCOK, asesmen singkat), LKPD maks. 6 soal tanpa jawaban, rubrik ringkas, "Kunci Jawaban (untuk guru)". Contoh bentuknya: `09-format-ringkas-telegram.md`.
+3. Karena guru menyebut "supervisi", SETELAH isi chat selesai agent menjalankan `python3 scripts/buat_docx.py` sekali dari file .md sementara (dihapus setelahnya), tanpa bertanya "mau dibuatkan?".
+4. Agent menulis HANYA: "File Word: <jalur persis dari output script>". Tidak ada kata "lampirkan/terkirim" kecuali alat kirim file benar-benar dipanggil dan berhasil. Bila script gagal, file tidak disebut.
 
-**Yang TIDAK boleh muncul:** "isi lengkap ada di file .md di workspace", "mau saya buatkan .docx sekarang?", "sudah saya kirim" tanpa konfirmasi, atau file .md modul yang dibiarkan di workspace.
+**Yang TIDAK boleh muncul:** "isi lengkap ada di file .md di workspace", "mau saya buatkan .docx sekarang?", "sudah saya kirim/lampirkan" tanpa alat kirim file, "File tersimpan di jalur di atas" tanpa jalur, balasan belasan ribu karakter (4 bagian) yang membuat model macet, atau file .md modul yang dibiarkan di workspace.

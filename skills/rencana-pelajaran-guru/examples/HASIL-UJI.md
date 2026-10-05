@@ -128,3 +128,7 @@ Uji Telegram v1.0.6 (topik 724) skor 5 (TANPA 6): bot hanya mengirim ringkasan, 
 ---
 ## Uji ulang v1.0.7 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
 Sisi SESUDAH saja via `uji-tg.sh` (SEBELUM tetap 5,75). Skenario 1 (pesan persis gelombang 6): 5 percobaan, hanya 1 selesai (skor 8; isi utuh 4 bagian, kunci terpisah, .docx nyata, CP tidak dikarang; jalur file kosong di chat); 4 lainnya tanpa balasan (model idle timeout/900 dtk). Skenario 2 (RPP Matematika SD kelas 4, cetak): skor 6; isi utuh & angka benar, tetapi klaim palsu "File Word ... sudah saya lampirkan". Rata-rata percobaan selesai **7,0**. **VERDIK: BELUM** (rata-rata < 8, 1/5 percobaan skenario 1 lulus, klaim lampiran palsu). Tidak ada salah fakta/angka. Detail & saran di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.7".
+
+---
+## Riwayat v1.0.8 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.7, menunggu uji ulang independen
+Menutup cacat uji v1.0.7 (VERDIK BELUM; 1/5 percobaan skenario 1 selesai): (1) format default RINGKAS (±4.000-6.000 karakter, utuh) untuk mencegah idle timeout akibat balasan 13-15 ribu karakter; versi lengkap hanya bila diminta; (2) .docx sekali setelah isi chat, kalimat baku "File Word: <jalur dari output script>", dilarang klaim lampiran/terkirim tanpa alat kirim file; (3) tool call dibatasi (baca SKILL.md sekali, web fetch maks. 2 hanya bila bunyi CP persis diminta). Contoh baru: `09-format-ringkas-telegram.md`. Status: menunggu uji ulang independen di konteks Telegram. Belum diuji di OpenClaw.
