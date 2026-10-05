@@ -180,7 +180,13 @@ def pisah_blok(teks):
             b = date.today().year if re.fullmatch(AKHIR, b, re.I) else int(b)
             blok.append({"baris": [s], "a": a, "b": b})
         elif blok:
-            blok[-1]["baris"].append(s)
+            sisa = re.sub(BULAN, "", RENTANG.sub("", blok[-1]["baris"][0]), flags=re.I)
+            if len(blok[-1]["baris"]) == 1 and KURSUS.search(s) and not re.search(r"[A-Za-z]{3}", sisa):
+                # rentang tahun di baris sendiri, judul di baris berikut berisi kata kursus: bukan pengalaman kerja
+                lain.extend(blok.pop()["baris"] + [s])
+                kursus_aktif = True
+            else:
+                blok[-1]["baris"].append(s)
         else:
             lain.append(s)
     return blok, lain, edu

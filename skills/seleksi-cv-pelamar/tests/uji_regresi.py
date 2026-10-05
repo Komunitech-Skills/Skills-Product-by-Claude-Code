@@ -100,6 +100,12 @@ class Kursus(unittest.TestCase):
         self.assertEqual(r["tahun_kerja"], 1.0)
         self.assertEqual(r["kriteria"][0]["tahun"], 0.0)
 
+    def test_rentang_di_baris_sendiri_judul_kursus(self):
+        for k in ("2021 - 2023\nBootcamp Marketplace Shopee\n- Excel", "2021 - 2023\nSertifikasi Shopee Seller"):
+            r = nilai(cv(k))
+            self.assertEqual(r["tahun_kerja"], 0.0, k)
+            self.assertEqual(r["kriteria"][0]["tahun"], 0.0, k)
+
     def test_kerja_sesudah_kursus_tetap_dihitung(self):
         teks = cv("2021 - 2022 | Kursus Excel\n2022 - 2024 | Admin, Shopee\n- Excel")
         self.assertEqual(nilai(teks)["tahun_kerja"], 2.0)
