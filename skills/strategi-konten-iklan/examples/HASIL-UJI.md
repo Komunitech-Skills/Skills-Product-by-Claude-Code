@@ -51,3 +51,6 @@ Pemicu: pra-cek Telegram G9 skor 6,5 (tanpa dasar BPOM/iklan, hanya bertanya AOV
 
 ## Uji ulang konteks Telegram v1.0.5 (2026-10-05) - independen
 3 percobaan (`uji-tg.sh`): 8,0 / 7,5 / 8,5, rata-rata 8,0, 3/3 lulus. Klaim "turun 5kg seminggu" ditolak dengan dasar aturan, ROAS impas 2,5x langsung, rencana ringkas, 3 pertanyaan di akhir. **VERDIK: LULUS.** Cacat sedang: rujukan "PerBPOM 31/2018" untuk iklan keliru (seharusnya PerBPOM 1/2022). Rincian di `00-openclaw-sebelum-sesudah.md`.
+
+## Revisi 1.0.6 (2026-10-05) - menunggu cek penguji
+Pemicu: cacat sedang uji ulang Telegram v1.0.5 (rujukan PerBPOM 31/2018 untuk iklan keliru). Perbaikan: `references/kepatuhan-klaim-iklan.md` ditulis ulang dan diverifikasi web (Peraturan BPOM 1/2022, 34/2022, 25/2023; UU 8/1999 Pasal 9 & 17; kebijakan TikTok Ads; beda pangan vs obat tradisional), rujukan salah dihapus, SKILL.md dilarang menyebut 31/2018 sebagai aturan iklan. Script tidak berubah. **Status: menunggu cek penguji.**
