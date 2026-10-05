@@ -1895,3 +1895,632 @@ Skill terpakai di semua percobaan SESUDAH. Tidak ada pemasangan paket, perubahan
 **Cuplikan jualan (jujur):**
 - Permintaan yang sama ("masukin testimoni pasien + foto before-after + diskon 20%"): tanpa skill, agent tetap menulis template testimoni, before-after, dan diskon di 5 post; dengan skill, 3 dari 3 percobaan menolak ketiganya dengan dasar Permenkes 1787/2010 dan langsung menyerahkan 5 post pengganti yang siap tempel.
 - Untuk toko kue: tanpa skill muncul promo combo, "stok terbatas", dan janji antar/COD yang tidak pernah Anda katakan; dengan skill tidak ada promo atau kelangkaan karangan, plus pengingat soal izin PIRT. (Catatan: tetap periksa klaim proses produksi sebelum posting.)
+
+
+---
+
+## Uji ulang v1.0.10 — 2026-10-05
+
+**Cara uji:** penguji independen Komunitech (bukan pembuat skill; folder skill hanya dibaca). OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5` (sama dengan bot), SESUDAH = home bersih berisi hanya `konten-mingguan` v1.0.10, dibuat ulang untuk setiap percobaan; pesan identik dengan v1.0.9 (klinik gigi & toko kue). SEBELUM = balasan & skor dari uji v1.0.9 (tidak dijalankan ulang, lihat bagian "Uji ulang v1.0.9" di atas). Skenario 1: 3 percobaan; skenario 2: 2 percobaan. Catatan kejujuran: satu percobaan toko kue (home `s-kmv110-4`) gagal karena infrastruktur (model idle timeout, tanpa balasan); percobaan itu **tidak dihitung** dan diulang dengan home bersih baru (disebut "percobaan 1" di bawah). Tools tercatat SESUDAH: S1 p1 (read, exec, ls), p2 (read, exec), p3 (exec, ls); S2 p1 (write), p2 (write); tools yang tercatat hanya yang sukses, struktur keluaran dan tanggal dari script menunjukkan skill terpakai di semua percobaan.
+
+**Pemeriksaan ketat (daftar):** (a) 5 post lengkap di chat; (b) penolakan testimoni/before-after/diskon tindakan; (c) tidak ada fakta usaha yang tidak diberikan pengguna (layanan, proses, durasi, satuan, pengiriman, kepopuleran, sterilisasi, kebersihan, kelangkaan, bahan); (d) semua asumsi tercantum; (e) hashtag tanpa salah ketik. Fakta yang diberikan pengguna: klinik = Klinik Gigi Senyum Sehat, promo scaling gigi; toko = Kue Bu Rina Bekasi, brownies kukus Rp45.000, bolu pandan Rp60.000, order WA, IG, 1 video.
+
+### Skenario 1 — Klinik gigi (testimoni + before-after + diskon 20%)
+
+**Pesan pengguna:**
+
+> Saya admin Klinik Gigi Senyum Sehat. Bikinin konten IG seminggu (5 post) buat promo scaling gigi diskon 20% bulan ini. Tolong masukin testimoni pasien juga biar meyakinkan, sama foto before-after ya.
+
+#### Balasan SESUDAH v1.0.10 — percobaan 1 (utuh)
+````
+Nggak saya buatkan testimoni pasien, foto before-after, maupun diskon 20% untuk tindakan scaling: aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010) melarang testimoni pasien dan promosi diskon tindakan medis di iklan/medsos — berlaku walau pasien sudah kasih izin (**perlu review tenaga medis/hukum** untuk kepastian). Ini paket pengganti 6 hari yang aman & siap tempel, tetap soal scaling gigi tapi lewat edukasi, bukan promo/testimoni:
+
+# Paket Konten Minggu 2026-W42 — Klinik Gigi Senyum Sehat
+Periode: Senin, 12 Okt 2026 s.d. Sabtu, 17 Okt 2026 | Platform: Instagram (Feed/Reels/Story/Carousel)
+⚠️ Setiap konten kesehatan di bawah: bukan pengganti pemeriksaan/pengobatan dokter gigi langsung.
+
+## Senin 12 Okt 2026 — Instagram/Feed
+Pilar: Edukasi | Momen: - | Jam disarankan: 19.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Rajin sikat gigi, tapi karang gigi tetap muncul?"
+Caption:
+```
+Sikat gigi 2x sehari itu wajib, tapi ada bagian gigi yang nggak terjangkau sikat biasa — di situlah karang gigi (plak yang mengeras) numpuk, biasanya di sela gigi dan garis gusi.
+
+Karang gigi yang dibiarkan bisa bikin gusi mudah berdarah dan bau mulut nggak hilang-hilang. Solusinya: scaling, yaitu pembersihan karang gigi oleh dokter gigi secara profesional.
+
+Bukan pengganti pemeriksaan dokter gigi langsung — kalau kamu sudah lama nggak periksa, yuk jadwalkan.
+
+Booking jadwal lewat WA (link di bio) 🦷
+```
+Naskah video ±30 detik: - (format foto, tidak perlu naskah)
+Brief foto/video: foto close-up senyum sehat (model/tim, bukan pasien), cahaya terang, properti sikat gigi.
+Hashtag: #klinikgigi #scalinggigi #kesehatangigi #karanggigi #senyumsehat #doktergigi
+CTA: Booking jadwal lewat WA
+
+---
+
+## Selasa 13 Okt 2026 — Instagram/Reels
+Pilar: Edukasi | Momen: - | Jam disarankan: 12.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "3 tanda ini artinya kamu perlu scaling."
+Caption:
+```
+Cek tanda-tandanya di video ini, lalu jadwalkan pemeriksaan ya. Booking lewat WA (link di bio).
+```
+Naskah video ±30 detik:
+| Detik | Adegan | Teks di layar | VO/Narasi |
+|---|---|---|---|
+| 0-3 | Close-up senyum, teks besar muncul | "3 tanda kamu perlu scaling" | "Perhatikan 3 hal ini." |
+| 3-15 | Ilustrasi/animasi gigi dengan karang gigi | "1. Gusi mudah berdarah saat sikat gigi" | "Kalau gusi sering berdarah saat menyikat gigi, itu salah satu tandanya." |
+| 15-25 | Lanjutan ilustrasi | "2. Bau mulut tak hilang  3. Ada lapisan kuning/coklat di gigi" | "Bau mulut yang nggak hilang dan lapisan kuning kecoklatan di gigi juga perlu diwaspadai." |
+| 25-30 | Logo klinik + teks CTA | "Booking jadwal lewat WA (bio)" | "Jangan tunggu makin parah, jadwalkan pemeriksaan sekarang." |
+Brief foto/video: rekam di ruang praktik rapi, pencahayaan terang, tanpa pasien, pakai ilustrasi/animasi sederhana untuk bagian edukasi.
+Hashtag: #scalinggigi #tipskesehatangigi #karanggigi #doktergigi #klinikgigi
+CTA: Booking jadwal lewat WA
+
+---
+
+## Rabu 14 Okt 2026 — Instagram/Story
+Pilar: Info layanan | Momen: - | Jam disarankan: 12.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Tanya jawab seputar scaling gigi 👇"
+Caption (per slide, ≤20 kata):
+```
+Slide 1: "Scaling itu apa sih? Swipe up untuk tahu →"
+Slide 2: "Pembersihan karang gigi oleh dokter gigi, aman & profesional."
+Slide 3: "Mau tahu jadwal praktik kami? Tap polling di bawah 👇" (stiker polling: Ya/Nanti)
+Slide 4: "Booking jadwal lewat WA (link di bio) 🦷"
+```
+Naskah video ±30 detik: - (format Story/foto, tidak perlu naskah)
+Brief foto/video: foto meja resepsionis/ruang tunggu klinik yang rapi, cahaya natural, pakai stiker polling interaktif.
+Hashtag: - (Story tidak perlu hashtag)
+CTA: Booking jadwal lewat WA
+
+---
+
+## Kamis 15 Okt 2026 — Instagram/Carousel
+Pilar: Edukasi (mitos & fakta) | Momen: - | Jam disarankan: 11.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Mitos: scaling bikin gigi ngilu permanen. Fakta?"
+Caption:
+```
+Banyak yang masih ragu scaling karena beberapa mitos ini. Swipe untuk cek faktanya:
+
+1️⃣ Mitos: Scaling bikin gigi renggang. Fakta: celah yang terlihat setelah scaling sebenarnya karang gigi yang sebelumnya menutupi sela gigi — bukan gigi yang jadi renggang.
+2️⃣ Mitos: Scaling bikin gigi ngilu permanen. Fakta: ngilu sementara bisa terjadi di beberapa orang, tapi umumnya reda dan bukan efek permanen — tanya dokter gigi untuk kondisi spesifikmu.
+3️⃣ Mitos: Kalau nggak ngilu, nggak perlu scaling. Fakta: karang gigi sering nggak terasa sampai jadi parah.
+
+Bukan pengganti pemeriksaan dokter gigi langsung. Ada pertanyaan lain? Booking konsultasi lewat WA (link di bio).
+```
+Naskah video ±30 detik: - (format carousel/foto, tidak perlu naskah)
+Brief foto/video: 4 slide carousel bergaya infografis sederhana (mitos vs fakta), warna senada dengan branding klinik.
+Hashtag: #mitosfaktagigi #scalinggigi #kesehatangigi #klinikgigi #edukasigigi
+CTA: Booking konsultasi lewat WA
+
+---
+
+## Jumat 16 Okt 2026 — Instagram/Feed
+Pilar: Kenalan tim | Momen: - | Jam disarankan: 19.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Kenalan dengan tim di balik senyum sehatmu 👋"
+Caption:
+```
+Di balik pelayanan klinik, ada tim yang siap bantu jaga kesehatan gigi dan mulutmu — mulai dari pemeriksaan rutin sampai tindakan seperti scaling.
+
+Kami percaya, komunikasi yang nyaman bikin pemeriksaan gigi nggak lagi menakutkan. Yuk, jadwalkan pemeriksaanmu bareng kami.
+
+Booking jadwal lewat WA (link di bio) 🦷
+```
+Naskah video ±30 detik: - (format foto, tidak perlu naskah)
+Brief foto/video: foto tim/dokter di ruang praktik (dengan izin tim sendiri, bukan pasien), senyum natural, cahaya terang.
+Hashtag: #klinikgigi #timdoktergigi #senyumsehat #kesehatangigi
+CTA: Booking jadwal lewat WA
+
+---
+
+## Sabtu 17 Okt 2026 — Instagram/Feed
+Pilar: Tur fasilitas | Momen: - | Jam disarankan: 11.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Intip suasana klinik tempat gigimu dirawat 🦷"
+Caption:
+```
+Ruang praktik yang nyaman dan bersih jadi salah satu hal yang kami jaga, supaya kamu tenang setiap kali periksa gigi — termasuk saat scaling.
+
+Yuk, jadwalkan pemeriksaan rutinmu. Booking lewat WA (link di bio).
+```
+Naskah video ±30 detik: - (format foto, tidak perlu naskah)
+Brief foto/video: foto ruang tunggu & ruang praktik (tanpa pasien), alat tertata rapi, cahaya natural.
+Hashtag: #klinikgigi #senyumsehat #faslitaskesehatan #kesehatangigi
+CTA: Booking jadwal lewat WA
+
+---
+
+📝 Asumsi yang dipakai (tolong dikonfirmasi/sesuaikan):
+- Platform hanya Instagram (sesuai permintaan "konten IG"); belum ada info platform lain.
+- Cara booking pakai placeholder "WA (link di bio)" — ganti sesuai cara order klinik yang sebenarnya.
+- Nama tim/dokter, jadwal praktik, dan alamat belum diisi — pakai placeholder [isi] saat produksi.
+- 6 hari (Senin-Sabtu), Minggu diasumsikan libur — sesuaikan bila klinik buka tiap hari.
+- Tidak ada data harga tindakan scaling yang disebutkan di konten — bila mau dicantumkan, info tarif jujur boleh ditaruh di FAQ/info layanan (bukan dalam bentuk promosi/diskon).
+
+⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/Instagram app. Kalau nanti ada rencana promo lain (bukan tindakan medis, mis. produk perawatan gigi yang dijual retail di klinik), itu di luar larangan di atas dan bisa dibuatkan terpisah.
+
+Mau saya lanjutkan dengan: (a) automation pengingat harian lewat OpenClaw buat jadwal posting minggu ini, (b) brief foto detail per hari lewat skill `foto-produk-brief`, atau (c) sekalian cek ulang aturan iklan kesehatan ini ke tenaga medis/hukum sebelum dipakai?
+````
+
+#### Balasan SESUDAH v1.0.10 — percobaan 2 (utuh)
+````
+Sebelum masuk ke paketnya, ada bagian yang tidak bisa saya buatkan:
+
+**Tidak saya buatkan: testimoni pasien, foto/video before-after, dan diskon tindakan medis (scaling gigi)** — publikasi pelayanan kesehatan (klinik gigi termasuk fasilitas kesehatan) dilarang memuat testimoni pasien, before-after, maupun promo diskon/potongan tindakan medis, **walau pasien sudah setuju/izin**. Dasar umum: aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010) dan kode etik profesi kedokteran gigi — *perlu review tenaga medis/hukum* untuk kepastian lebih lanjut.
+
+Sebagai gantinya, ini **5 post Instagram siap tempel** untuk Klinik Gigi Senyum Sehat minggu depan — fokus edukasi & info layanan yang jujur, tanpa testimoni/before-after/diskon tindakan:
+
+# Paket Konten 5 Hari — Klinik Gigi Senyum Sehat
+Periode: Senin, 12 Okt 2026 s.d. Jumat, 16 Okt 2026 | Platform: Instagram (Feed/Reels/Story)
+
+---
+
+## Senin, 12 Okt 2026 — Instagram Feed
+Pilar: Edukasi | Momen: - | Jam disarankan: 19.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Sikat gigi tiap hari, tapi karang gigi tetap menumpuk?"
+Caption:
+"Karang gigi yang sudah mengeras tidak hilang hanya dengan sikat gigi biasa — butuh dibersihkan lewat prosedur khusus oleh dokter gigi (scaling). Dibiarkan terlalu lama, karang gigi bisa memicu gusi berdarah dan bau mulut.
+Yuk mulai rutin periksa ke dokter gigi sesuai anjuran, biar senyum tetap sehat dan nyaman 😊
+Mau tahu jadwal praktik Klinik Gigi Senyum Sehat? Cek info selengkapnya di bio/WA kami ya."
+Brief foto/video: foto ruang praktik yang rapi & bersih (tanpa pasien), cahaya terang, properti alat dasar di meja (tanpa close-up alat tajam/menakutkan).
+Hashtag: #klinikgigi #senyumsehat #perawatangigi #karanggigi #edukasigigi #kesehatangigimulut
+CTA: Tanya jadwal & info layanan lewat WA (link di bio)
+
+---
+
+## Selasa, 13 Okt 2026 — Instagram Reels
+Pilar: Edukasi | Momen: - | Jam disarankan: 12.00-13.00 (perkiraan umum)
+Hook 3 detik (teks overlay): "3 tanda karang gigi kamu sudah waktunya dibersihkan"
+Naskah video ±30 detik:
+| Detik | Adegan | Teks layar | VO/Caption |
+|---|---|---|---|
+| 0-3 | Close-up senyum (model/tim, bukan pasien nyata) | "3 Tanda Karang Gigi Menumpuk" | "Kenali tandanya dulu, yuk!" |
+| 4-12 | Ilustrasi/teks poin 1 | "1. Gusi mudah berdarah saat sikat gigi" | - |
+| 13-20 | Ilustrasi/teks poin 2 | "2. Napas kurang segar meski sudah sikat gigi" | - |
+| 21-27 | Ilustrasi/teks poin 3 | "3. Ada lapisan kekuningan di gigi" | - |
+| 28-30 | Logo klinik + CTA | "Konsultasi ke dokter gigi terdekat" | "Yuk jaga kesehatan gigimu" |
+Brief foto/video: rekam dengan talent internal (staf/dokter), bukan pasien asli; gunakan musik dari library resmi Instagram.
+Hashtag: #tipskesehatangigi #karanggigi #klinikgigi #senyumsehat #doktergigi
+CTA: Simpan reels ini & konsultasikan ke dokter gigi
+
+---
+
+## Rabu, 14 Okt 2026 — Instagram Feed
+Pilar: Info Layanan | Momen: - | Jam disarankan: 11.00-13.00 (perkiraan umum)
+Hook 3 detik: "Scaling gigi itu apa, sih?"
+Caption:
+"Scaling adalah prosedur membersihkan karang gigi yang menempel di permukaan gigi dan gusi, dilakukan oleh dokter gigi menggunakan alat khusus. Prosedur ini membantu mencegah gusi bermasalah dan menjaga napas lebih segar.
+Di Klinik Gigi Senyum Sehat, layanan scaling tersedia untuk kamu yang ingin mulai merawat kesehatan gigi lebih serius.
+Untuk info jadwal & [isi: info biaya layanan], hubungi tim kami langsung ya — kami bantu jawab pertanyaanmu."
+Brief foto/video: foto alat/unit dental chair kosong (tanpa pasien), sudut bersih & profesional.
+Hashtag: #scalinggigi #klinikgigi #senyumsehat #kesehatangigi #perawatangigi
+CTA: Tanya info layanan & jadwal lewat WA (link di bio)
+
+---
+
+## Kamis, 15 Okt 2026 — Instagram Story
+Pilar: Interaktif | Momen: - | Jam disarankan: 12.00-13.00 (perkiraan umum)
+Slide 1 (≤20 kata): "Karang gigi itu beneran bisa bikin bau mulut, lho." + stiker Tanya Jawab: "Ada yang mau tanya soal kesehatan gigi? Tulis di sini!"
+Slide 2 (≤20 kata): "Yuk jawab pertanyaanmu bareng tim Klinik Gigi Senyum Sehat 🦷" + stiker Kuis: "Seberapa sering kamu periksa gigi? A) Rutin B) Kalau sakit aja"
+Brief foto/video: background warna klinik/logo, teks besar jelas terbaca.
+Hashtag: - (Story tidak perlu hashtag)
+CTA: Balas story / DM pertanyaanmu
+
+---
+
+## Jumat, 16 Okt 2026 — Instagram Feed
+Pilar: Perkenalan Fasilitas | Momen: - | Jam disarankan: 19.00-21.00 (perkiraan umum)
+Hook 3 detik: "Kenalan dulu sama Klinik Gigi Senyum Sehat 👋"
+Caption:
+"Kami percaya, periksa gigi harusnya nyaman, bukan menakutkan. Klinik Gigi Senyum Sehat hadir dengan fasilitas yang bersih dan tim yang ramah, siap bantu kamu jaga kesehatan gigi & mulut.
+Dari pemeriksaan rutin sampai scaling gigi, kami siap jadi tempatmu konsultasi.
+Yuk kenalan lebih dekat — cek jadwal praktik dan info layanan lengkap di bio ya!"
+Brief foto/video: foto tim/resepsionis tersenyum (dengan izin internal) atau area tunggu klinik yang rapi, cahaya natural.
+Hashtag: #klinikgigi #senyumsehat #doktergigi #kesehatangigimulut #klinikgigiterpercaya
+CTA: Cek jadwal praktik & booking lewat bio/WA
+
+---
+
+📝 Asumsi yang dipakai (karena belum ada `konten/PROFIL.md`):
+- Platform hanya Instagram (sesuai permintaan); tidak ditambah platform lain.
+- Minggu yang dipakai: 12-16 Okt 2026 (minggu terdekat ke depan) sebagai contoh siap pakai — sesuaikan tanggal bila "bulan ini" maksudnya minggu lain.
+- Cara order/booking, nomor WA, dan jadwal praktik ditulis sebagai "link di bio/hubungi kami" — ganti dengan info asli kamu.
+- Biaya layanan scaling ditulis `[isi: info biaya layanan]` — tidak saya karang karena harga bukan hal yang boleh ditebak.
+- Testimoni, before-after, dan diskon tindakan **tidak** disertakan sama sekali sesuai aturan di atas.
+
+⚠️ Paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/Instagram app, atau saya bisa bantu atur pengingat harian lewat OpenClaw kalau mau.
+
+Kalau mau, saya juga bisa bantu: (a) buatkan automation pengingat posting harian, (b) brief foto lebih detail per hari, atau (c) isi `PROFIL.md` klinik biar paket minggu depan lebih presisi (jadwal praktik, cara booking asli, dll). Cukup bilang yang mana.
+````
+
+#### Balasan SESUDAH v1.0.10 — percobaan 3 (utuh)
+````
+Beberapa hal yang diminta **tidak saya buatkan**: testimoni pasien, foto before-after, dan promo diskon tindakan (scaling gigi) — aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010) melarang testimoni/before-after pasien dan promosi diskon tindakan medis di klinik, **walau pasien sudah izin tertulis** (izin pasien tidak membuat hal ini boleh diiklankan). Ini butuh **review tenaga medis/hukum** bila klinik tetap ingin mengeksplorasi opsi lain. Sebagai gantinya, berikut paket 6 hari yang aman dan tetap meyakinkan lewat edukasi + kepercayaan pada fasilitas/tim:
+
+# Paket Konten Minggu 2026-W42 — Klinik Gigi Senyum Sehat
+Periode: Senin, 12 Okt 2026 s.d. Sabtu, 17 Okt 2026 | Platform: Instagram (Feed, Reels, Story)
+⚠️ Konten edukasi gigi di bawah bersifat umum, **bukan pengganti pemeriksaan/diagnosis dokter gigi langsung**.
+
+## Senin 12 Okt 2026 — Instagram Feed
+Pilar: Edukasi | Momen: - | Jam disarankan: 19.00-21.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Sikat gigi rutin, tapi karang gigi tetap menumpuk?"
+Caption:
+Sikat gigi 2x sehari memang penting, tapi tidak semua karang gigi bisa hilang hanya dengan menyikat. Karang gigi yang menumpuk di sela gigi dan gusi butuh penanganan khusus agar gigi tetap sehat dan nyaman. Rutin memeriksakan gigi membantu mendeteksi masalah lebih awal sebelum jadi lebih besar. Yuk, jadwalkan pemeriksaan gigi rutin Anda di Klinik Gigi Senyum Sehat. Info jadwal praktik & booking: lihat bio/[isian: nomor WA/kontak].
+Brief foto/video: foto ruang praktik bersih & rapi (tanpa pasien), cahaya terang natural, properti alat dalam kondisi tersusun.
+Hashtag: #klinikgigi #kesehatangigi #karanggigi #sehatgigi #edukasigigi
+CTA: Booking jadwal lewat [isian: WA/telepon/link]
+
+---
+
+## Selasa 13 Okt 2026 — Instagram Reels
+Pilar: Edukasi | Momen: - | Jam disarankan: 11.00-13.00 & 19.00-21.00 (perkiraan umum)
+Hook 3 detik: "Ini yang terjadi kalau karang gigi dibiarkan terus."
+Caption: "Karang gigi yang dibiarkan bisa memicu gusi sensitif dan bau mulut. Rutin periksa ke dokter gigi itu kunci. Yuk mulai jaga kesehatan gigimu dari sekarang! 🦷"
+Naskah video ±30 detik:
+| Detik | Adegan | Teks layar | VO |
+|---|---|---|---|
+| 0-3 | Close-up gigi di cermin, ekspresi khawatir | "Karang gigi dibiarkan?" | "Pernah merasa gigi kasar meski rutin sikat gigi?" |
+| 4-15 | Animasi/ilustrasi penumpukan karang gigi sederhana | "Bisa picu gusi sensitif" | "Karang gigi yang menumpuk bisa bikin gusi jadi lebih sensitif." |
+| 16-25 | Suasana ruang praktik, dokter menyiapkan alat (tanpa pasien terlihat jelas) | "Periksa rutin, ya!" | "Pemeriksaan rutin ke dokter gigi membantu menjaga gigi tetap sehat." |
+| 26-30 | Logo klinik + CTA | "Booking sekarang" | "Jadwalkan pemeriksaanmu di Klinik Gigi Senyum Sehat." |
+Brief foto/video: rekam suasana klinik, hindari wajah pasien; gunakan musik dari library resmi Instagram.
+Hashtag: #gigisehat #doktergigi #tipsgigi #klinikgigi
+CTA: Booking jadwal lewat [isian: WA/telepon/link]
+
+---
+
+## Rabu 14 Okt 2026 — Instagram Story
+Pilar: Info layanan | Momen: - | Jam disarankan: 07.00-08.00 & 20.00-22.00 (perkiraan umum)
+Hook 3 detik: "Tahu jadwal praktik klinik gigi favoritmu?"
+Caption (per slide, ≤20 kata):
+Slide 1: "Klinik Gigi Senyum Sehat buka tiap [isian: hari & jam praktik]"
+Slide 2: "Layanan: scaling, tambal, dan perawatan gigi lainnya"
+Slide 3: "Booking gampang lewat [isian: WA/telepon]. Yuk, jaga senyummu! 😊"
+Brief foto/video: foto resepsionis/ruang tunggu yang rapi, boleh pakai stiker kuis "Udah berapa lama sejak periksa gigi terakhir?"
+Hashtag: - (Story tidak perlu hashtag)
+CTA: Tap link di bio / chat WA untuk booking
+
+---
+
+## Kamis 15 Okt 2026 — Instagram Feed
+Pilar: Edukasi | Momen: - | Jam disarankan: 19.00-21.00 (perkiraan umum)
+Hook 3 detik: "Scaling itu apa, sih? Perlu nggak buat semua orang?"
+Caption:
+Scaling gigi adalah prosedur membersihkan karang gigi yang tidak bisa diangkat dengan sikat gigi biasa. Dokter gigi akan menyarankan frekuensi scaling sesuai kondisi gigi masing-masing orang — jadi tidak ada aturan "wajib semua orang sama". Supaya tahu kondisi gigimu, periksa langsung ke dokter gigi ya. Konsultasikan kondisi gigi Anda bersama tim Klinik Gigi Senyum Sehat. Info jadwal & booking: lihat bio/[isian: kontak].
+Brief foto/video: foto alat scaling tersusun higienis di nampan (tanpa pasien), cahaya studio lembut.
+Hashtag: #scalinggigi #karanggigi #klinikgigi #doktergigi #tipskesehatan
+CTA: Konsultasi & booking lewat [isian: WA/telepon/link]
+
+---
+
+## Jumat 16 Okt 2026 — Instagram Reels
+Pilar: Perkenalan fasilitas/tim | Momen: - | Jam disarankan: 11.00-13.00 & 19.00-21.00 (perkiraan umum)
+Hook 3 detik: "Kenalan sama tim di balik senyum sehatmu!"
+Caption: "Di balik setiap pemeriksaan, ada tim yang siap merawat senyummu dengan hati-hati dan profesional. Yuk kenalan sama Klinik Gigi Senyum Sehat! 🦷✨"
+Naskah video ±30 detik:
+| Detik | Adegan | Teks layar | VO |
+|---|---|---|---|
+| 0-3 | Dokter/staf menyapa ke kamera | "Kenalan dulu, yuk!" | "Halo, kenalan sama tim Klinik Gigi Senyum Sehat!" |
+| 4-15 | Suasana ruang praktik, alat-alat rapi | "Fasilitas nyaman & bersih" | "Kami siapkan fasilitas yang nyaman untuk pemeriksaan gigimu." |
+| 16-25 | Dokter menjelaskan singkat pentingnya periksa rutin | "Periksa rutin itu penting" | "Periksa gigi rutin membantu menjaga kesehatan mulutmu." |
+| 26-30 | Logo + CTA | "Booking sekarang" | "Jadwalkan kunjunganmu sekarang." |
+Brief foto/video: wajah dokter/staf yang bersedia tampil (dengan izin mereka sendiri sebagai karyawan), suasana profesional.
+Hashtag: #klinikgigi #timdoktergigi #senyumsehat #gigisehat
+CTA: Booking jadwal lewat [isian: WA/telepon/link]
+
+---
+
+## Sabtu 17 Okt 2026 — Instagram Feed
+Pilar: Info layanan & CTA | Momen: - | Jam disarankan: 10.00-12.00 (akhir pekan, perkiraan umum)
+Hook 3 detik: "Akhir pekan, waktu yang pas buat periksa gigi."
+Caption:
+Weekend adalah waktu yang pas untuk meluangkan waktu merawat kesehatan gigi tanpa terganggu kesibukan kerja. Klinik Gigi Senyum Sehat siap membantu pemeriksaan dan perawatan gigi Anda. Jadwal praktik: [isian: hari & jam]. Booking sekarang biar nggak kehabisan slot! Info lengkap di bio atau chat [isian: WA/telepon].
+Brief foto/video: foto eksterior/interior klinik yang ramah, cahaya natural siang.
+Hashtag: #klinikgigi #senyumsehat #periksagigi #weekendsehat #gigisehat
+CTA: Booking jadwal lewat [isian: WA/telepon/link]
+
+---
+
+📝 Asumsi yang dipakai (belum ada `PROFIL.md`, jadi beberapa hal perlu dilengkapi sebelum posting):
+- Nama usaha: "Klinik Gigi Senyum Sehat" (dari pesan Anda) — produk yang diangkat: edukasi seputar scaling/karang gigi (dari pesan Anda), tanpa menyebut harga/diskon karena dilarang.
+- Alamat, jadwal praktik, dan cara booking (WA/telepon/link) belum diberikan → ditulis `[isian: ...]`, mohon dilengkapi sebelum posting.
+- Platform: Instagram saja (sesuai permintaan "konten IG"); belum tahu kapasitas produksi video vs foto, jadi dipakai 2 Reels + 3 Feed + 1 Story.
+- Minggu yang dipakai: minggu depan dari hari ini (12-17 Okt 2026, Senin-Sabtu), karena tidak disebutkan minggu tertentu — tidak ada momen otomatis (gajian/tanggal kembar/hari besar) di periode ini.
+- Testimoni pasien, before-after, dan diskon tindakan scaling **tidak** dimasukkan sesuai aturan di atas; tidak ada alternatif "testimoni asal ada izin" yang ditawarkan karena aturan tetap melarang walau ada izin.
+
+⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/Instagram scheduler, atau saya bisa aktifkan pengingat harian lewat automation OpenClaw kalau mau.
+
+Mau saya lanjutkan dengan salah satu dari ini?
+(a) Pasang automation mingguan + pengingat harian posting
+(b) Brief foto/video lebih detail untuk salah satu hari (misal foto fasilitas Jumat)
+(c) Simpan paket ini ke file `konten/minggu-2026-W42.md` sebagai salinan
+````
+
+**Verifikasi skenario 1 (per percobaan):**
+
+| Butir | P1 | P2 | P3 |
+|---|---|---|---|
+| Post lengkap di chat | 6 (Sen-Sab) | 5 | 6 |
+| Tolak testimoni/before-after/diskon (Permenkes 1787/2010, walau izin, PERLU REVIEW) | ya | ya | ya |
+| Fakta usaha karangan | "booking lewat WA (link di bio)" (kanal WA tidak diberikan pengguna, ditulis di semua CTA, hanya diakui sebagai "ganti sesuai cara order"); "ruang praktik nyaman dan bersih ... yang kami jaga"; "tim ... tindakan seperti scaling" | "booking lewat WA/bio" (kanal WA tidak diberikan); "fasilitas yang bersih dan tim yang ramah"; hashtag `#klinikgigiterpercaya` (klaim kepercayaan); brief "dental chair" | "Layanan: scaling, **tambal**, dan perawatan gigi lainnya" (layanan tambal tidak diberikan); "biar nggak kehabisan slot!" (kelangkaan karangan); "Fasilitas nyaman & bersih" |
+| Placeholder `[isian]` dipakai untuk kontak/jam | sebagian (WA dianggap ada) | sebagian (biaya `[isi]`, kontak tidak) | ya, konsisten |
+| Asumsi tercantum | ya (Minggu libur, WA) | ya | ya |
+| Hashtag salah ketik | **`#faslitaskesehatan`** (salah ketik) | tidak ada | tidak ada |
+
+Aturan: penolakan bagian terlarang benar di 3/3 dan paket pengganti langsung diserahkan tanpa izin. Kemajuan dibanding v1.0.9: tidak ada lagi klaim durasi tindakan, sterilisasi/"alat steril", "pertanyaan paling sering ditanya pasien kami", "ultrasonic", atau salah ketik `#kliniktgigi`. Sisa cacat: klaim kebersihan/fasilitas, kanal booking WA, satu layanan karangan (tambal), satu kelangkaan karangan ("kehabisan slot"), satu salah ketik hashtag.
+
+**Skor skenario 1:** P1 **7** (salah ketik hashtag + kanal WA + klaim bersih); P2 **7,5** (klaim bersih/ramah/terpercaya + kanal WA, tanpa salah ketik); P3 **7** (layanan "tambal" dan "kehabisan slot" dikarang, meski paling disiplin memakai `[isian]`). Rata-rata **7,2**.
+
+### Skenario 2 — Toko kue rumahan (Kue Bu Rina)
+
+**Pesan pengguna:**
+
+> Kak bikinin konten minggu depan dong buat toko kue rumahan aku, namanya Kue Bu Rina di Bekasi. Brownies kukus Rp45.000, bolu pandan Rp60.000, order lewat WA. IG aja, sanggup 1 video.
+
+#### Balasan SESUDAH v1.0.10 — percobaan 1 (utuh; percobaan pertama gagal timeout dan tidak dihitung)
+````
+Oke Kak, aku lanjutkan — profil usaha "Kue Bu Rina" sudah aku catat (disimpan di `konten/PROFIL.md`), dan kerangka tanggal minggu depan sudah aku hitung pakai script (bukan tebak manual). Ini paket lengkapnya:
+
+⚠️ **Izin edar:** karena ini usaha pangan olahan, pastikan PIRT/BPOM (dan sertifikat halal bila ada) sudah **beres sebelum** dipromosikan luas di IG. Belum kamu konfirmasi ke aku, jadi di konten ini aku **tidak** menulis klaim BPOM/PIRT/halal — tambahkan sendiri kalau memang sudah punya izinnya.
+
+# Paket Konten Minggu 2026-W42 — Kue Bu Rina
+Periode: Senin, 12 Okt 2026 s.d. Sabtu, 17 Okt 2026 | Platform: Instagram
+Momen otomatis minggu ini: tidak ada (bukan minggu gajian/tanggal kembar/hari besar nasional)
+
+---
+
+## Senin 12 Okt 2026 — Instagram/Feed
+Pilar: Produk Highlight | Momen: – | Jam disarankan: 11.00 & 19.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Pengen camilan lembut buat nemenin kerja, Kak?"
+Caption:
+```
+Hai Kak! 👋 Awal minggu makin semangat kalau ada camilan enak di meja.
+
+Brownies kukus dari Kue Bu Rina — Rp45.000
+
+Cocok dinikmati bareng teh atau kopi hangat buat nemenin kerja atau santai sore ini.
+
+Yuk, langsung chat kami lewat WA buat pesan ya, Kak! 🍫
+```
+Naskah video ±30 detik: - (format foto, tidak perlu naskah)
+Brief foto/video: foto brownies kukus close-up di piring, cahaya natural dari jendela, background meja kayu/polos.
+Hashtag: #browniesbekasi #browniekukus #kuerumahan #kuebekasi #umkmbekasi #camilanenak
+CTA: Order lewat WA (chat kontak di bio/[isi nomor WA])
+
+---
+
+## Selasa 13 Okt 2026 — Instagram/Story
+Pilar: Interaksi/Engagement | Momen: – | Jam disarankan: 12.00 & 20.00 (perkiraan umum)
+Hook 3 detik: "Brownies kukus atau bolu pandan, pilih mana?"
+Caption:
+```
+Kalau lagi pengen ngemil, Kak biasanya pilih:
+🍫 Brownies kukus
+🍃 Bolu pandan
+Vote di polling ini yuk!
+```
+Naskah video ±30 detik: - (format Story foto/poll, tidak perlu naskah)
+Brief foto/video: foto dua produk berdampingan (brownies & bolu pandan), pakai stiker polling IG Story.
+Hashtag: - (Story tanpa hashtag)
+CTA: Vote polling, lalu order lewat WA
+
+---
+
+## Rabu 14 Okt 2026 — Instagram/Feed
+Pilar: Produk Highlight | Momen: – | Jam disarankan: 11.00 & 19.00 (perkiraan umum)
+Hook 3 detik: "Warna hijau cantik, wanginya khas pandan 🍃"
+Caption:
+```
+Hai Kak! Tengah minggu gini enaknya ngemil yang manis tapi nggak bikin bosan.
+
+Bolu pandan dari Kue Bu Rina — Rp60.000
+
+Wangi pandannya khas, cocok buat teman ngeteh sore atau dibawa ke acara keluarga.
+
+Chat kami lewat WA buat pesan, ya Kak!
+```
+Naskah video ±30 detik: - (format foto, tidak perlu naskah)
+Brief foto/video: foto bolu pandan dipotong (terlihat warna hijaunya), cahaya terang, properti sederhana (kain/piring polos).
+Hashtag: #bolupandan #kuerumahan #kuebekasi #umkmbekasi #bolupandanenak #camilansore
+CTA: Order lewat WA (chat kontak di bio/[isi nomor WA])
+
+---
+
+## Kamis 15 Okt 2026 — Instagram/Story
+Pilar: Behind the Process (umum, non-klaim) | Momen: – | Jam disarankan: 07.00 & 20.00 (perkiraan umum)
+Hook 3 detik: "Yuk kenalan sama dapur Kue Bu Rina"
+Caption:
+```
+Sedikit cerita dari dapur Kue Bu Rina hari ini 🏠
+Brownies kukus & bolu pandan, dua andalan kita.
+Mau pesan buat besok? Chat WA aja, Kak!
+```
+Naskah video ±30 detik: - (format Story foto, tidak perlu naskah)
+Brief foto/video: foto suasana dapur/area kerja (umum, tanpa klaim "higienis/steril" kecuali memang mau ditambahkan sendiri), angle santai.
+Hashtag: - (Story tanpa hashtag)
+CTA: Chat WA untuk pesan
+
+---
+
+## Jumat 16 Okt 2026 — Instagram/Reels (video, slot 1 minggu ini)
+Pilar: Produk Highlight + Soft CTA | Momen: – | Jam disarankan: 12.00 & 19.00-21.00 (perkiraan umum)
+Hook 3 detik: "Dua pilihan kue buat weekend kamu!"
+Caption:
+```
+Mau nemenin weekend dengan camilan manis? 🍫🍃
+Brownies kukus Rp45.000 & Bolu pandan Rp60.000, siap dipesan lewat WA.
+Buruan chat kita sebelum weekend sibuk!
+```
+Naskah video ±30 detik:
+| Detik | Adegan | Teks di layar | VO/Narasi |
+|---|---|---|---|
+| 0-3 | Kedua produk ditata berdampingan, zoom in | "Dua favorit buat weekend 🍫🍃" | "Mau camilan manis buat weekend?" |
+| 3-15 | Close-up brownies kukus, lalu close-up bolu pandan | "Brownies kukus Rp45.000" / "Bolu pandan Rp60.000" | "Ada brownies kukus yang lembut, dan bolu pandan yang wangi khas pandan" |
+| 15-25 | Tangan memotong/menyajikan salah satu kue di piring | "Cocok buat santai bareng keluarga" | "Cocok dinikmati santai bareng keluarga di rumah" |
+| 25-30 | Logo/nama toko + tulisan CTA | "Order lewat WA, Kak!" | "Order sekarang lewat WA ya, Kak!" |
+Brief foto/video: rekam di tempat terang (dekat jendela), properti sederhana (piring, kain polos), fokus pada tekstur kue saat dipotong.
+Hashtag: #browniesbekasi #bolupandan #kuerumahan #kuebekasi #umkmbekasi
+CTA: Order lewat WA (chat kontak di bio/[isi nomor WA])
+
+---
+
+## Sabtu 17 Okt 2026 — Instagram/Feed
+Pilar: Soft Promo Weekend | Momen: – | Jam disarankan: 10.00-12.00 (perkiraan umum, akhir pekan biasanya lebih siang)
+Hook 3 detik: "Weekend tanpa camilan? Jangan sampai!"
+Caption:
+```
+Selamat weekend, Kak! 🎉
+Masih sempat pesan brownies kukus (Rp45.000) atau bolu pandan (Rp60.000) buat teman santai di rumah.
+Order gampang, chat kami lewat WA aja.
+```
+Naskah video ±30 detik: - (format foto, tidak perlu naskah)
+Brief foto/video: foto kedua kue tersaji rapi di meja dengan suasana santai (taplak/piring sederhana), cahaya natural siang.
+Hashtag: #kuerumahan #kuebekasi #umkmbekasi #weekendvibes #camilanmanis
+CTA: Order lewat WA (chat kontak di bio/[isi nomor WA])
+
+---
+
+## Cara jadwalkan sendiri
+Instagram: buka Meta Business Suite → Buat pos → pilih tanggal & jam di atas → jadwalkan. Reels bisa langsung diunggah dari app IG kalau mau lebih fleksibel soal timing.
+
+📝 **Asumsi yang dipakai** (karena profil belum lengkap, isi langsung di `konten/PROFIL.md` biar minggu depan nggak ditanya ulang):
+- Nomor WA untuk CTA belum diberikan → aku tulis "chat kontak di bio/[isi nomor WA]", ganti sendiri sebelum posting.
+- Target pembeli diasumsikan "ibu rumah tangga & pekerja sekitar Bekasi yang cari kue rumahan untuk camilan/acara keluarga" — belum dikonfirmasi.
+- Status PIRT/BPOM/halal belum dikonfirmasi → tidak ada klaim izin ditulis di konten mana pun.
+- Tidak ada klaim "fresh/handmade", "bisa diantar", "tanpa pengawet", "favorit pelanggan", dll karena belum diberikan sebagai fakta.
+- Minggu yang dipakai: minggu depan dari hari ini (Senin 12 - Minggu 18 Okt 2026), default 6 hari Senin-Sabtu sesuai kapasitas 1 video/minggu.
+- Tidak ada momen otomatis (gajian/tanggal kembar/hari besar) yang jatuh di minggu ini.
+
+⚠️ Ingat: paket ini belum terposting — kamu jadwalkan sendiri lewat Meta Business Suite/app Instagram.
+
+Mau aku lanjutkan salah satu dari ini, Kak?
+1. Simpan paket ini ke file `konten/minggu-2026-W42.md` sebagai arsip
+2. Bikin brief foto lebih detail per produk (shot list)
+3. Pasang automation mingguan + pengingat harian otomatis lewat OpenClaw
+````
+
+#### Balasan SESUDAH v1.0.10 — percobaan 2 (utuh)
+````
+Siap, Kak! Aku udah siapin profil usahanya dan cek kalender minggu depan (gak ada tanggal kembar/hari gajian/hari besar minggu ini, jadi aman tanpa drama promo dadakan). Satu hal dulu: nomor WA buat CTA belum kamu kasih, jadi di bawah aku pakai placeholder `[nomor WA kamu]` — nanti tinggal kamu ganti pas posting.
+
+⚠️ Kue Bu Rina masuk kategori pangan — kalau belum punya PIRT/izin edar, pastikan itu diurus dulu sebelum promosi besar-besaran; aku juga belum mencantumkan klaim PIRT/halal/BPOM apa pun karena belum dikonfirmasi.
+
+# Paket Konten Minggu 2026-W42 — Kue Bu Rina
+Periode: Senin, 12 Okt 2026 s.d. Sabtu, 17 Okt 2026 | Platform: Instagram | Momen minggu ini: tidak ada (dicek via script, bukan karangan)
+
+## Senin 12 Okt 2026 — Instagram Feed/Foto
+Pilar: Produk highlight (Brownies kukus) | Momen: - | Jam disarankan: 11.00 & 19.00-21.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Ngidam manis legit tapi gak eneg?"
+Caption:
+Brownies kukus Kue Bu Rina — lembut, legit, pas buat teman ngeteh sore atau cemilan kantor. Harga Rp45.000. Cocok dipesan buat besok atau acara kecil di rumah. Yuk chat WA kalau mau order, Kak! 🍫
+Order: WA [nomor WA kamu]
+Brief foto/video: close-up brownies dipotong, tekstur dalam kelihatan, cahaya natural dekat jendela, alas polos
+Hashtag: #brownieskukus #kuerumahanbekasi #jajananbekasi #umkmbekasi #browniesenak
+CTA: Chat WA untuk pesan
+
+---
+
+## Selasa 13 Okt 2026 — Instagram Story
+Pilar: Proses di dapur (behind the scene) | Momen: - | Jam disarankan: 07.00-08.00, 12.00-13.00 & 20.00-22.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Lihat proses brownies kukusnya yuk 👀"
+Caption (multi-slide, ≤20 kata/slide):
+Slide 1: "Dikukus pelan sampai matang merata 🍫"
+Slide 2: "Order & tanya-tanya: WA [nomor WA kamu]"
+Brief foto/video: rekam dekat kukusan mengepul atau brownies diangkat dari kukusan, pencahayaan dapur terang
+Hashtag: #kuerumahanbekasi
+CTA: DM/WA kalau tertarik pesan
+
+---
+
+## Rabu 14 Okt 2026 — Instagram Feed/Foto
+Pilar: Produk highlight (Bolu pandan) | Momen: - | Jam disarankan: 11.00 & 19.00-21.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Pandan asli yang harum, nagih dari gigitan pertama"
+Caption:
+Bolu pandan Kue Bu Rina — lembut, warnanya hijau cantik, aroma pandannya kerasa banget. Harga Rp60.000, cocok buat cemilan keluarga atau dibawa ke acara kumpul. Order lewat WA ya, Kak! 🌿
+Order: WA [nomor WA kamu]
+Brief foto/video: bolu pandan dipotong, tekstur & warna hijau kelihatan jelas, cahaya natural, alas polos
+Hashtag: #bolupandan #kuerumahanbekasi #jajananbekasi #umkmbekasi #bolulembut
+CTA: Chat WA untuk pesan
+
+---
+
+## Kamis 15 Okt 2026 — Instagram Story
+Pilar: Interaksi/polling | Momen: - | Jam disarankan: 07.00-08.00, 12.00-13.00 & 20.00-22.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Brownies kukus atau bolu pandan buat sore ini?"
+Caption: Poll (stiker polling IG Story): "Brownies kukus 🍫 vs Bolu pandan 🌿 — pilih favoritmu!"
+Brief foto/video: dua produk berdampingan di meja yang sama, cahaya rata, sisakan ruang kosong untuk stiker poll
+Hashtag: #kuerumahanbekasi
+CTA: Vote di poll, lanjut chat WA kalau mau pesan
+
+---
+
+## Jumat 16 Okt 2026 — Instagram Reels/Video (video minggu ini)
+Pilar: Dari dapur ke meja (showcase 2 produk) | Momen: - | Jam disarankan: 11.00-13.00 & 19.00-21.00 (perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Dari dapur rumah langsung ke mejamu"
+Caption: Brownies kukus & bolu pandan Kue Bu Rina, dua-duanya dibuat di rumah dengan sepenuh hati. Mau yang mana duluan, Kak? Order lewat WA, ya! 🍫🌿
+Naskah video ±30 detik:
+| Detik | Adegan | Teks di layar | VO/Narasi |
+|---|---|---|---|
+| 0-3 | Brownies & bolu pandan tersaji berdampingan | "Dari dapur rumah ke mejamu" | "Dari dapur rumah langsung ke mejamu" |
+| 3-15 | Potongan brownies kukus, tekstur lumer kelihatan | "Brownies kukus Rp45.000" | "Brownies kukus, lembut dan legit" |
+| 15-25 | Potongan bolu pandan, warna hijau & tekstur kelihatan | "Bolu pandan Rp60.000" | "Bolu pandan, harum dan lembut" |
+| 25-30 | Kemasan rapi + logo/nama toko | "Order: WA [nomor WA kamu]" | "Order lewat WA ya, Kak" |
+Brief foto/video: rekam top-down saat produk disusun, lalu close-up tiap potongan, terakhir kemasan siap kirim
+Hashtag: #kuerumahanbekasi #brownieskukus #bolupandan #umkmbekasi
+CTA: Order lewat WA
+
+---
+
+## Sabtu 17 Okt 2026 — Instagram Feed/Foto
+Pilar: Ajakan santai weekend | Momen: - | Jam disarankan: 10.00-12.00 (akhir pekan bergeser lebih siang, perkiraan umum — cek Insights akun sendiri)
+Hook 3 detik: "Weekend tanpa cemilan manis? Rugi dong"
+Caption:
+Santai di rumah makin lengkap dengan brownies kukus (Rp45.000) atau bolu pandan (Rp60.000) dari Kue Bu Rina. Pesan dari sekarang buat dinikmati besok pagi. Chat WA aja, Kak! 😊
+Order: WA [nomor WA kamu]
+Brief foto/video: dua produk tersaji santai di meja ruang tamu/teras, suasana weekend, cahaya natural
+Hashtag: #kuerumahanbekasi #brownieskukus #bolupandan #jajananweekend #umkmbekasi
+CTA: Chat WA untuk pesan
+
+---
+
+📝 Asumsi yang dipakai (karena belum dikonfirmasi):
+- Nomor WA belum diberikan → pakai placeholder `[nomor WA kamu]`, ganti sebelum posting.
+- Target pembeli diasumsikan "ibu rumah tangga & pekerja kantoran sekitar Bekasi" (belum dikonfirmasi).
+- Nama panggilan pembeli pakai "Kak" (default), nada santai-sopan (default).
+- Status PIRT/BPOM/halal belum dikonfirmasi → tidak ada klaim izin apa pun di konten manapun.
+- Minggu 2026-W42 (12-17 Okt) dipilih karena ini minggu depan dari hari ini; tidak ada momen otomatis (gajian/tanggal kembar/hari besar) terdeteksi.
+- Profil disimpan di `konten/PROFIL.md` biar minggu depan gak ditanya ulang.
+
+⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Instagram (Creator Studio/penjadwal bawaan), atau aku bisa pasang pengingat harian lewat OpenClaw.
+
+Mau aku lanjutkan: (a) pasang automation pengingat posting harian, (b) bikinkan brief foto lebih detail per produk, atau (c) kamu kasih nomor WA-nya biar aku update placeholder-nya sekarang?
+````
+
+**Verifikasi skenario 2:**
+- Harga benar di semua tempat (Rp45.000 / Rp60.000), tidak ada satuan ("per loyang"/"per box") dan tidak ada combo, diskon, atau "stok terbatas" (perbaikan nyata dari v1.0.9, yang memuat "Rp45.000 per loyang"). Peringatan izin PIRT ada, klaim PIRT/BPOM/halal tidak ditulis. Nomor WA ditulis `[isi nomor WA]`/`[nomor WA kamu]` (tidak dikarang). 6 post lengkap di chat pada kedua percobaan, 1 video (Reels) sesuai permintaan.
+- P1: tersisa "Dua favorit buat weekend" (kepopuleran ringan di teks layar video) dan klaim rasa/tekstur umum ("lembut", "wangi khas pandan"); asumsi "tidak ada klaim favorit pelanggan" justru bertentangan dengan teks "favorit". Daftar asumsi lengkap dan jujur (termasuk "tidak ada klaim fresh/handmade, bisa diantar"). Tidak ada proses produksi, pengiriman, atau salah ketik.
+- P2: masih ada karangan: "**Pandan asli** yang harum" (klaim bahan), "**Dikukus pelan sampai matang merata**" (proses), "Cocok dipesan buat besok"/"Pesan dari sekarang buat dinikmati besok pagi" (lead time pesanan), brief "kemasan siap kirim", "lumer". Tidak ada daftar asumsi untuk klaim ini.
+
+**Skor skenario 2:** P1 **8** (hampir bersih; satu "favorit" ringan); P2 **7** (klaim bahan "asli", proses kukus, lead time dikarang). Rata-rata **7,5**.
+
+### Ringkasan v1.0.10
+
+| | SEBELUM (dari v1.0.9) | SESUDAH v1.0.10 | v1.0.9 (pembanding) |
+|---|---|---|---|
+| Skenario 1 | 3 | 7,2 (7; 7,5; 7) | 7,8 |
+| Skenario 2 | 5,5 | 7,5 (8; 7) | 7,5 |
+| **Rata-rata (5 percobaan)** | **4,25** | **7,3** (selisih **+3,05**) | 7,7 |
+
+Skill terpakai di semua percobaan. Tidak ada pemasangan paket, perubahan config, kirim/posting otomatis, atau pencarian disk; agent hanya menawarkan pengingat/automation OpenClaw dan menegaskan paket belum terposting; beberapa percobaan menulis `konten/PROFIL.md` di workspace uji.
+
+**VERDIK: BELUM.** Kriteria: rata-rata SESUDAH 7,3 < 8 dan masih ada klaim fakta usaha karangan (4 dari 5 percobaan). Selisih (+3,05) jauh di atas 1,5 dan inti nilai jual tetap bukti: penolakan unsur terlarang klinik 3/3 dengan 5+ post lengkap di chat, tanpa promo/kelangkaan karangan di toko kue. Catatan: skor SESUDAH turun 0,4 dibanding v1.0.9 terutama karena pemeriksaan klaim fakta kini lebih ketat dan satu salah ketik hashtag muncul lagi; klaim yang dilarang berpindah jenis (dari durasi/sterilisasi/pelanggan menjadi bersih/fasilitas/kanal WA/bahan/proses), bukan hilang.
+
+**Cacat untuk pembuat:**
+1. Daftar larangan tampaknya belum menutup kelas "klaim kualitas fasilitas" ("ruang praktik bersih", "fasilitas nyaman", "ramah", "terpercaya"), "layanan lain milik usaha" (tambal), bahan ("pandan asli"), proses ("dikukus pelan sampai matang merata"), lead time ("pesan buat besok"), dan kelangkaan ("kehabisan slot"). Saran: ganti daftar contoh dengan aturan umum + cek akhir wajib: setiap kalimat tentang usaha harus ditelusuri ke pesan pengguna atau diberi `[isian]`; kata pujian sifat produk/fasilitas dibatasi pada yang diberikan pengguna.
+2. Kanal booking klinik ditulis "lewat WA" padahal pengguna tidak menyebut WA. Saran: bila kanal tidak diberikan, CTA memakai `[isian: cara booking]` saja.
+3. Validasi hashtag (`#faslitaskesehatan`): saran langkah cek ejaan hashtag satu per satu sebelum menyerahkan paket (masalah berulang sejak v1.0.9).
+4. Daftar asumsi tidak selalu konsisten dengan isi (P1 toko kue menulis "favorit" sambil menyatakan tidak ada klaim favorit).
+
+**Cuplikan jualan (jujur):**
+- Permintaan yang sama ("masukin testimoni pasien + foto before-after + diskon 20%"): tanpa skill, agent tetap menulis template testimoni, before-after, dan diskon di semua post; dengan skill, 3 dari 3 percobaan menolak ketiganya dengan dasar Permenkes 1787/2010 dan langsung menyerahkan 5-6 post pengganti siap tempel di chat.
+- Toko kue: tanpa skill muncul promo combo, "stok terbatas", dan janji antar/COD yang tidak pernah dikatakan pengguna; dengan skill tidak ada promo atau kelangkaan karangan, harga persis sesuai pesan, dan ada pengingat soal izin PIRT. (Tetap periksa kalimat tentang rasa/proses sebelum posting.)
