@@ -52,3 +52,35 @@ Audit keamanan: hanya library standar; tidak ada jaringan, `subprocess` hanya di
 - Angka: TK/0 Rp 6.000.000 DTP → dipotong Rp 45.000, DTP Rp 45.000, setoran Rp 0, **diterima Rp 6.000.000** (sebelumnya Rp 6.045.000); tanpa DTP Rp 5.955.000.
 - Tes: `scripts/test_pph21.py` diperbarui (+1 tes Lampiran B Tuan A), 42 tes OK.
 - Contoh `00-openclaw-sebelum-sesudah.md` diberi catatan koreksi (penilaiannya memakai acuan lama).
+
+## Uji ulang DTP PMK 105/2025 — 2026-10-05
+
+Penguji independen (bukan pembuat; tidak mengubah kode/SKILL.md). Teks PMK 105/2025 dibaca langsung: Pasal 2 ayat 1 (PPh 21 **wajib dipotong**), Pasal 2 ayat 3 (Masa Pajak Januari–Desember 2026), Pasal 3 (industri alas kaki, tekstil & pakaian jadi, furnitur, kulit, pariwisata + KLU Lampiran A, 133 baris), Pasal 4 ayat 2–4 (pegawai tetap: bruto tetap & teratur Januari 2026/bulan pertama kerja **≤ Rp10.000.000**; tidak tetap: rata-rata ≤ Rp500.000/hari atau ≤ Rp10.000.000 bila bulanan), Pasal 5 ayat 1–2 (DTP **dibayar tunai**, bukan penghasilan kena pajak), Pasal 5 ayat 5 (kelebihan DTP tidak dikembalikan), Pasal 6 ayat 4–6 (lapor SPT Masa paling lambat 31 Januari 2027, lewat batas → PPh yang telah dipotong wajib disetor), Lampiran B (Tuan A 8.000.000 − 120.000 + 120.000 = 8.000.000; Tuan B K/1). Kesimpulan mekanisme: **dipotong = PPh TER/Pasal 17, DTP tunai = nilai sama, setoran ke negara Rp 0, diterima = bruto − potongan lain** (bukan bruto + DTP).
+
+Metode: kalkulator independen Python `Decimal` milik penguji (tabel TER ditulis ulang, tidak mengimpor script skill), dicocokkan dulu dengan Lampiran B PMK 105/2025 (Tuan A Desember 540.000 / setahun 1.860.000; Tuan B Desember 480.000 / setahun 4.050.000 — cocok). Lalu CLI skill dijalankan (`--format json`/`--json`) dan dibandingkan per kolom: dipotong, DTP tunai, disetor ke negara, diterima.
+
+| # | Kasus (CLI `pph21.py`) | Dipotong | DTP tunai | Disetor | Diterima | Selisih |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | `bulan` TK/0 Rp6.000.000 `--dtp` | 45.000 | 45.000 | 0 | 6.000.000 | 0 |
+| 2 | `bulan` TK/0 Rp6.000.000 tanpa DTP (sektor tidak memenuhi → tanpa `--dtp`) | 45.000 | 0 | 45.000 | 5.955.000 | 0 |
+| 3 | `bulan` K/1 Rp9.500.000 `--dtp` (TER B 1,5%) | 142.500 | 142.500 | 0 | 9.500.000 | 0 |
+| 4 | `bulan` TK/0 tepat Rp10.000.000 `--dtp` (memenuhi, ≤) | 200.000 | 200.000 | 0 | 10.000.000 | 0 |
+| 5 | `bulan` TK/0 Rp10.000.001 `--dtp` (ditolak otomatis) | 200.000 | 0 | 200.000 | 9.800.001 | 0 |
+| 6 | `bulan` K/1 Rp15.000.000 (bonus) `--bruto-tetap 10jt --dtp` (Lampiran B Tuan B Januari) | 900.000 | 900.000 | 0 | 15.000.000 | 0 |
+| 7 | `bulan` TK/0 Rp6.000.000 `--dtp --tahun 2027` (di luar masa) | 45.000 | 0 | 45.000 | 5.955.000 | 0 |
+| 8 | `bulan` K/1 Rp9.500.000 `--dtp --potongan-lain 380rb` | 142.500 | 142.500 | 0 | 9.120.000 | 0 |
+| 9 | `setahun` TK/0 Rp8.000.000 `--dtp` (Lampiran B Tuan A) — Desember Pasal 17 | Des 540.000; setahun 1.860.000 | 1.860.000 | 0 | 8.000.000/bln | 0 |
+| 10 | `setahun` K/1 CSV Tuan B `--dtp` (bonus Jan & Mar, naik 12 jt Okt) | Des 480.000; s.d. Nov 3.570.000; setahun 4.050.000 | 4.050.000 | 0 | = bruto | 0 |
+| 11 | `setahun` K/1 CSV Tuan B tanpa DTP | setahun 4.050.000 | 0 | 4.050.000 | – | 0 |
+| 12 | `harian` Rp480.000 × 20 hari `--dtp` (≤ Rp500.000/hari) | 48.000 | 48.000 | 0 | 9.600.000 | 0 |
+| 13 | `harian` Rp600.000 × 10 hari `--dtp` (> Rp500.000/hari → tidak DTP) | 30.000 | 0 | 30.000 | – | 0 |
+
+Teks keluaran `bulan --dtp` memuat empat baris wajib (dipotong, DTP tunai, setoran Rp 0, diterima) dan menulis "BUKAN gaji + DTP"; `harian --dtp` menulis "PPh tetap dipotong … dibayar tunai kembali … setoran Rp 0". Sektor/KLU tidak dicek script (sesuai desain); SKILL.md mewajibkan konfirmasi pengguna.
+
+Lain-lain: `test_pph21.py` 42 tes OK · `python3 scripts/validate.py` ✅ 117 skill · `bash scripts/uji_openclaw.sh` (instalasi uji terpisah `/tmp/uji-openclaw`, bukan bot produksi) OpenClaw 2026.9.8: 117/117 eligible/modelVisible/commandVisible. SKILL.md & README bagian utama tidak lagi menulis gaji + DTP sebagai diterima.
+
+**Total selisih: 0 dari 13 kasus.**
+
+Cacat (ringan): README "Catatan revisi 1.0.4" masih berbunyi "(yang benar Rp 6.045.000)" dan "PPh 21 dipotong dari gaji (Rp 0)" tanpa tanda bahwa kalimat itu sudah dikoreksi di 1.0.5 — membingungkan pembeli yang membaca riwayat; sarankan diberi coret/keterangan "dikoreksi di 1.0.5". Bukti A/B `00-openclaw-sebelum-sesudah.md` dinilai dengan acuan lama (sudah diberi catatan koreksi) → skor sebelum/sesudah perlu uji ulang OpenClaw sebelum dipromosikan lagi.
+
+**Skor: 9/10. Verdik: LULUS uji ulang angka DTP** (tetap **PERLU REVIEW konsultan pajak**; pembulatan belum dicocokkan dengan Coretax).

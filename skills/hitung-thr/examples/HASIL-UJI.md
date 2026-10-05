@@ -63,3 +63,28 @@ Hasil kasus lama dan contoh resmi:
 - Pemicu: temuan penilai gelombang 7 di skill `pph21-ter` (uang diterima DTP ditulis gaji + DTP). Skill ini diperiksa dengan teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5 ayat 1 & 5, Pasal 6 ayat 6, Lampiran B).
 - Hasil: angka `scripts/thr.py` **sudah benar** — `thr_setelah_pph` = THR bila DTP (tambahan PPh dipotong lalu dibayar tunai kembali). Contoh TK/0 gaji Rp 8.000.000, THR dibayar Juni 2026, DTP: THR diterima = THR (tidak berubah dari versi sebelumnya).
 - Perubahan: kalimat penjelasan DTP di rekap (PPh dipotong, DTP tunai nilai sama, setoran ke negara Rp 0); SKILL.md; `references/dtp-pmk105.md` (baru); tes `test_dtp` diperluas. `scripts/test_thr.py`: 38 tes OK.
+
+## Uji ulang DTP PMK 105/2025 — 2026-10-05
+
+Penguji independen (bukan pembuat; tidak mengubah kode/SKILL.md). Teks PMK 105/2025 dibaca langsung: Pasal 2 ayat 1 (PPh 21 **wajib dipotong**), Pasal 2 ayat 3 (Masa Pajak Januari–Desember 2026), Pasal 3 (industri alas kaki, tekstil & pakaian jadi, furnitur, kulit, pariwisata + KLU Lampiran A, 133 baris), Pasal 4 ayat 2–4 (pegawai tetap: bruto tetap & teratur Januari 2026/bulan pertama kerja **≤ Rp10.000.000**; tidak tetap: rata-rata ≤ Rp500.000/hari atau ≤ Rp10.000.000 bila bulanan), Pasal 5 ayat 1–2 (DTP **dibayar tunai**, bukan penghasilan kena pajak), Pasal 5 ayat 5 (kelebihan DTP tidak dikembalikan), Pasal 6 ayat 4–6 (lapor SPT Masa paling lambat 31 Januari 2027, lewat batas → PPh yang telah dipotong wajib disetor), Lampiran B (Tuan A 8.000.000 − 120.000 + 120.000 = 8.000.000; Tuan B K/1). Kesimpulan mekanisme: **dipotong = PPh TER/Pasal 17, DTP tunai = nilai sama, setoran ke negara Rp 0, diterima = bruto − potongan lain** (bukan bruto + DTP).
+
+Metode: kalkulator independen Python `Decimal` milik penguji (tabel TER ditulis ulang, tidak mengimpor script skill), dicocokkan dulu dengan Lampiran B PMK 105/2025 (Tuan A Desember 540.000 / setahun 1.860.000; Tuan B Desember 480.000 / setahun 4.050.000 — cocok). Lalu CLI skill dijalankan (`--format json`/`--json`) dan dibandingkan per kolom: dipotong, DTP tunai, disetor ke negara, diterima.
+
+| # | Kasus (CLI `thr.py`, hari raya 20-03-2026, bayar 10-03-2026, PKWTT sejak 2020) | THR | Tambahan PPh (dipotong) | DTP tunai | Disetor | THR diterima | Selisih |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 1 | TK/0 gaji Rp6.000.000, DTP — TER A 4% × 12 jt − 0,75% × 6 jt | 6.000.000 | 435.000 | 435.000 | 0 | 6.000.000 | 0 |
+| 2 | TK/0 Rp6.000.000 tanpa DTP (sektor tidak memenuhi) | 6.000.000 | 435.000 | 0 | 435.000 | 5.565.000 | 0 |
+| 3 | K/1 Rp9.500.000 DTP — TER B 8% × 19 jt − 1,5% × 9,5 jt | 9.500.000 | 1.377.500 | 1.377.500 | 0 | 9.500.000 | 0 |
+| 4 | TK/0 tepat Rp10.000.000 DTP — 9% × 20 jt − 2% × 10 jt | 10.000.000 | 1.600.000 | 1.600.000 | 0 | 10.000.000 | 0 |
+| 5 | TK/0 Rp10.000.001 DTP → ditolak otomatis | 10.000.001 | 1.600.000 | 0 | 1.600.000 | 8.400.001 | 0 |
+| 6 | TK/0 Rp6.000.000 DTP, THR 2027 → di luar masa | 6.000.000 | 435.000 | 0 | 435.000 | 5.565.000 | 0 |
+| 7 | Natal, bayar Desember 2026, DTP → script tidak menghitung TER dan mengarahkan ke hitung ulang setahun (Masa Pajak Terakhir) | 6.000.000 | – | – | – | – | sesuai |
+| 8 | Mantan pegawai (berhenti 25-02-2026, THR dibayar Maret) `dtp=ya` → Pasal 17 5% × 6 jt, DTP tidak diterapkan + peringatan | 6.000.000 | 300.000 | 0 | 300.000 | 5.700.000 | 0 |
+
+Teks rekap DTP: "Rp 435.000 tetap dipotong, lalu Rp 435.000 dibayar tunai kembali bersama THR, jadi THR diterima utuh; setoran PPh 21 ke negara untuk bagian ini Rp 0". JSON tidak punya kunci "disetor" terpisah (tersirat dari `dtp`), cukup karena teks menuliskannya.
+
+Lain-lain: `test_thr.py` 38 tes OK · `validate.py` ✅ · `uji_openclaw.sh` (instalasi uji terpisah) 117/117.
+
+**Total selisih: 0 dari 8 kasus.** Cacat baru: tidak ada. Catatan: kasus 8 (mantan pegawai) — PMK 105/2025 tidak memberi DTP bagi bukan pegawai; perlakuan konservatif skill wajar, tetap untuk review konsultan.
+
+**Skor: 9/10. Verdik: LULUS uji ulang angka DTP** (tetap **PERLU REVIEW konsultan pajak**).

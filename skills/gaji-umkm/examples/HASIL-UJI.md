@@ -91,3 +91,35 @@ Alasan: celah dan teks pratinjau tertutup dengan pagar yang tepat sasaran (bulan
 - Pemicu: temuan penilai gelombang 7 di skill `pph21-ter` (uang diterima DTP ditulis gaji + DTP). Diperiksa terhadap teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5 ayat 1 & 5, Pasal 6 ayat 6, Lampiran B).
 - Hasil: hitungan slip gaji-umkm (lewat `mesin/payroll.py`) **sudah benar**; `mesin/pph21.py` hanya dipakai untuk cek ulang setahun tanpa `--dtp`, jadi angka gaji-umkm tidak berubah. Contoh TK/0 gaji Rp 6.000.000, DTP: PPh dipotong = DTP tunai, setoran Rp 0, gaji bersih = Rp 6.000.000 − iuran BPJS karyawan.
 - Perubahan: salinan mesin `payroll.py`/`pph21.py`/`thr.py` disinkronkan + sha256 `SUMBER.json`; catatan DTP di slip (`gaji.py`); `references/dasar-aturan.md`, `references/dtp-pmk105.md` (baru); tes `UjiDTP`. `tests/uji_regresi.py`: 42 tes OK.
+
+## Uji ulang DTP PMK 105/2025 — 2026-10-05
+
+Penguji independen (bukan pembuat; tidak mengubah kode/SKILL.md). Teks PMK 105/2025 dibaca langsung: Pasal 2 ayat 1 (PPh 21 **wajib dipotong**), Pasal 2 ayat 3 (Masa Pajak Januari–Desember 2026), Pasal 3 (industri alas kaki, tekstil & pakaian jadi, furnitur, kulit, pariwisata + KLU Lampiran A, 133 baris), Pasal 4 ayat 2–4 (pegawai tetap: bruto tetap & teratur Januari 2026/bulan pertama kerja **≤ Rp10.000.000**; tidak tetap: rata-rata ≤ Rp500.000/hari atau ≤ Rp10.000.000 bila bulanan), Pasal 5 ayat 1–2 (DTP **dibayar tunai**, bukan penghasilan kena pajak), Pasal 5 ayat 5 (kelebihan DTP tidak dikembalikan), Pasal 6 ayat 4–6 (lapor SPT Masa paling lambat 31 Januari 2027, lewat batas → PPh yang telah dipotong wajib disetor), Lampiran B (Tuan A 8.000.000 − 120.000 + 120.000 = 8.000.000; Tuan B K/1). Kesimpulan mekanisme: **dipotong = PPh TER/Pasal 17, DTP tunai = nilai sama, setoran ke negara Rp 0, diterima = bruto − potongan lain** (bukan bruto + DTP).
+
+Metode: kalkulator independen Python `Decimal` milik penguji (tabel TER ditulis ulang, tidak mengimpor script skill), dicocokkan dulu dengan Lampiran B PMK 105/2025 (Tuan A Desember 540.000 / setahun 1.860.000; Tuan B Desember 480.000 / setahun 4.050.000 — cocok). Lalu CLI skill dijalankan (`--format json`/`--json`) dan dibandingkan per kolom: dipotong, DTP tunai, disetor ke negara, diterima.
+
+Database uji sementara (scratchpad): `init` → `atur --jkk 0,24` → 6 karyawan (`karyawan tambah … --dtp --bruto-tetap-januari`) → `isi --thr` → `hitung --bulan 2026-03 --json`, lalu `rekap` dan `slip`.
+
+| # | Karyawan | Dipotong | DTP tunai | Disetor | Gaji bersih | Selisih |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | A TK/0 Rp6.000.000 DTP | 47.043 | 47.043 | 0 | 5.760.000 | 0 |
+| 2 | B K/1 Rp9.500.000 DTP | 148.969 | 148.969 | 0 | 9.120.000 | 0 |
+| 3 | C TK/0 tepat Rp10.000.000 DTP | 261.350 | 261.350 | 0 | 9.600.000 | 0 |
+| 4 | D TK/0 Rp10.000.001 DTP → ditolak + peringatan | 261.350 | 0 | 261.350 | 9.338.651 | 0 |
+| 5 | E TK/0 Rp6.000.000 tanpa DTP | 47.043 | 0 | 47.043 | 5.712.957 | 0 |
+| 6 | F TK/0 Rp6.000.000 + THR Rp6.000.000 bulan sama, DTP | 490.896 | 490.896 | 0 | 11.760.000 | 0 |
+| Σ | Total perusahaan | 1.256.651 | 948.258 | 308.393 | – | 0 (terutang/DTP/setor) |
+
+Desember & THR memakai mesin yang sama (`mesin/payroll.py`, `mesin/thr.py`) — sudah diverifikasi di slip-gaji-bpjs (Desember DTP 249.777, selisih 0) dan hitung-thr.
+
+SUMBER.json: sha256 kelima file mesin **cocok** dengan file sumber di repo (payroll.py & ter_core.py & ter_tabel.json slip-gaji-bpjs, pph21.py pph21-ter 1.0.5, thr.py hitung-thr 1.0.9; ter_core/ter_tabel di pph21-ter & hitung-thr juga identik).
+
+Teks hitung/rekap: "Setor PPh 21: Rp 308.393" + "PPh 21 DTP dibayar tunai ke karyawan (sudah di gaji bersih): Rp 948.258"; slip: "PPh 21 Rp 47.043 tetap dipotong, lalu Rp 47.043 dibayar tunai kembali … Setoran … Rp 0".
+
+Lain-lain: `tests/uji_regresi.py` 42 tes OK · `validate.py` ✅ · `uji_openclaw.sh` (instalasi uji terpisah) 117/117.
+
+**Total selisih: 0 dari 6 karyawan + total.**
+
+Cacat (ringan, tanpa dampak uang): kunci JSON `total.pph21_dipotong` (= 308.393) sebenarnya jumlah PPh yang **disetor**, bukan yang dipotong (yang dipotong menurut PMK = 1.256.651 = `pph21_terutang`); docstring `gaji.py` ±baris 1491 masih memakai istilah lama. Tidak tampil di teks pembeli, tetapi bisa menyesatkan agent yang membaca JSON. Sarankan ganti nama/penjelasan di versi berikut.
+
+**Skor: 9/10. Verdik: LULUS uji ulang angka DTP** (tetap **PERLU REVIEW konsultan pajak**).
