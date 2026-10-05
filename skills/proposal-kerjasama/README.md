@@ -49,6 +49,11 @@ Belum. Proposal adalah ajakan. Setelah sepakat, buat perjanjian tertulis (bisa d
 **Bisa dalam bahasa Inggris?**
 Bisa. Minta saja "buat versi bahasa Inggris" setelah proposal jadi.
 
+## Catatan revisi 1.0.9 (2026-10-05)
+- Rumus laba per unit (sisa untuk Anda - HPP - ongkir) dan tabel contoh selalu tampil di chat, juga bila Anda belum memberi HPP.
+- Hasil pengecekan internal dan nama/path file tidak lagi muncul di balasan; isi proposal, WA, dan email utuh di chat.
+- Status: menunggu uji ulang independen.
+
 ## Catatan revisi 1.0.8 (2026-10-05)
 - Kerjakan dulu, tanya di akhir: bila Anda sudah menyebut jenis kerja sama, produk, dan angka, AI langsung menulis proposal lengkap (data yang belum ada diberi [isi ...]) dan baru bertanya 1-3 hal di akhir, bukan menahan proposal.
 - Klaim yang belum terbukti ("sudah BPOM", "paling laris se-...") ditolak singkat dengan dasar aturan; BPOM hanya ditulis bila ada nomor izin edar/PIRT.

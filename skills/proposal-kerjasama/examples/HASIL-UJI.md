@@ -105,3 +105,9 @@ Cacat berat v1.0.0 sudah diperbaiki dengan benar dan dilindungi uji regresi. Sem
 
 ## Uji ulang konteks Telegram v1.0.8 (2026-10-05) - penguji independen
 3 percobaan valid (1 timeout infrastruktur diulang): 8,3 / 9,0 / 8,0, rata-rata 8,43 (pra-cek 6,5). Proposal lengkap di balasan yang sama, klaim BPOM/"paling laris" ditangani benar, Rp5.250/sisa Rp9.750 benar, peringatan porsi rugi ada. **VERDIK LULUS.** Detail: `00-openclaw-sebelum-sesudah.md`.
+
+
+## Riwayat revisi 1.0.9 (2026-10-05) - menunggu uji ulang independen
+- Pemicu: cacat no. 1 gelombang 8 Telegram (`koordinasi/telegram-gelombang-8-2026-10-05.md`): rumus laba/titik impas tidak tampil (hanya minta HPP), baris proses "HASIL: LULUS" ikut terkirim, path file tidak bisa dibuka dari Telegram.
+- Perbaikan: rumus + tabel contoh HPP wajib tampil di "Catatan untuk Anda" walau HPP kosong; keluaran `cek_fakta.py` bertanda "UNTUK AGENT SAJA" tanpa LULUS/GAGAL di baris ringkas; larangan menyebut file/proses di balasan, isi utuh di chat.
+- Status: **menunggu uji ulang independen** (skor di atas belum berlaku untuk 1.0.9).
