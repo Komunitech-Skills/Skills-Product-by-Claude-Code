@@ -92,8 +92,11 @@ def cmd_bulan(args):
                                   .format(tc.format_rp(dasar)))
         else:
             peringatan.append("Tidak memenuhi syarat PPh 21 DTP: {}. PPh 21 dipotong normal.".format(alasan))
+    # PMK 105/2025 Pasal 2 ayat 1 & Pasal 5 ayat 1/5, Lampiran B: PPh 21 tetap DIPOTONG, lalu PPh 21 DTP
+    # dibayarkan tunai -> bersihnya pegawai menerima bruto; bagian DTP tidak disetor (setoran Rp 0).
+    dipotong = pph
     dtp = pph if dtp_ok else Decimal(0)
-    dipotong = Decimal(0) if dtp_ok else pph
+    setor = dipotong - dtp
     diterima = bruto - premi - dipotong - potongan + dtp
     catatan = [
         "Berlaku untuk masa Januari–November (dan setiap bulan pegawai tidak tetap yang dibayar bulanan). "
@@ -101,14 +104,17 @@ def cmd_bulan(args):
         "Bruto = seluruh penghasilan bulan itu: gaji, tunjangan, lembur, bonus/THR yang dibayar bulan itu, "
         "plus premi JKK, JKM, dan BPJS Kesehatan bagian perusahaan.",
         "Uang diterima pegawai = bruto − premi bagian perusahaan (--premi-perusahaan) − PPh 21 dipotong − "
-        "potongan lain (--potongan-lain, mis. iuran BPJS bagian karyawan) + PPh 21 DTP tunai. Rincian slip gaji "
+        "potongan lain (--potongan-lain, mis. iuran BPJS bagian karyawan) + PPh 21 DTP tunai (bila DTP). Rincian slip gaji "
         "lengkap: skill slip-gaji-bpjs.",
         tc.CATATAN_PEMBULATAN,
     ]
     if dtp_ok:
-        catatan.insert(0, "PPh 21 DTP (PMK 105/2025 Pasal 5): PPh 21 TIDAK dipotong dari gaji dan WAJIB dibayarkan "
-                          "TUNAI oleh pemberi kerja kepada pegawai bersama gaji; uang DTP ini bukan penghasilan "
-                          "kena pajak. Tetap dibuat bukti potong dan dilaporkan di SPT Masa PPh 21/26. "
+        catatan.insert(0, "PPh 21 DTP (PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B): PPh 21 tetap DIPOTONG "
+                          "seperti biasa, lalu nilai yang sama WAJIB dibayarkan TUNAI kembali ke pegawai bersama gaji "
+                          "(bukan penghasilan kena pajak). Hasil bersihnya pegawai menerima gaji tanpa berkurang pajak "
+                          "— BUKAN gaji + DTP. Bagian DTP tidak disetor ke negara (setoran Rp 0), tetapi tetap dibuat "
+                          "bukti potong dan dilaporkan di SPT Masa PPh 21/26 paling lambat 31 Januari 2027 "
+                          "(lewat batas itu insentif gugur dan PPh yang dipotong wajib disetor — Pasal 6 ayat 5–6). "
                           "Sektor/KLU harus sudah dikonfirmasi (Lampiran A PMK 105/2025).")
     return {
         "jenis": "bulan",
@@ -121,6 +127,7 @@ def cmd_bulan(args):
         "dtp": dtp_ok,
         "pph21_dipotong_dari_gaji": dipotong,
         "pph21_dtp_dibayar_tunai": dtp,
+        "pph21_disetor_ke_negara": setor,
         "premi_perusahaan": premi,
         "potongan_lain": potongan,
         "diterima_pegawai": diterima,
@@ -147,12 +154,15 @@ def teks_bulan(h):
     if h["dtp"]:
         baris += [
             "- PPh 21 terutang: {}".format(tc.format_rp(h["pph21"])),
-            "- **PPh 21 dipotong dari gaji: Rp 0** (ditanggung pemerintah, PMK 105/2025)",
-            "- **PPh 21 DTP yang WAJIB dibayar tunai ke pegawai bersama gaji: {}**".format(
+            "- **PPh 21 dipotong dari gaji: {}**".format(tc.format_rp(h["pph21_dipotong_dari_gaji"])),
+            "- **PPh 21 DTP yang WAJIB dibayar tunai ke pegawai bersama gaji: {}** (PMK 105/2025 Pasal 5)".format(
                 tc.format_rp(h["pph21_dtp_dibayar_tunai"])),
+            "- **Setoran PPh 21 ke negara untuk pegawai ini: {}** (bagian DTP tidak disetor; tetap dibuat bukti "
+            "potong & dilaporkan di SPT Masa)".format(tc.format_rp(h["pph21_disetor_ke_negara"])),
         ]
     else:
         baris.append("- **PPh 21 dipotong: {}**".format(tc.format_rp(h["pph21"])))
+        baris.append("- PPh 21 disetor ke negara: {}".format(tc.format_rp(h["pph21_disetor_ke_negara"])))
     rumus = [tc.format_rp(h["bruto"], desimal=True)]
     if h["premi_perusahaan"]:
         rumus.append("− {} (premi bagian perusahaan, tidak dibayar ke pegawai)".format(
@@ -365,6 +375,8 @@ def cmd_setahun(args):
                                    if hasil["masa_terakhir"] and hasil["masa_terakhir"]["pph_masa_terakhir"] < 0
                                    and not dtp_ok else Decimal(0)),
         "total_dtp_dibayar_tunai": sum((r.get("dtp", Decimal(0)) for r in rows), Decimal(0)) if dtp_ok else Decimal(0),
+        # PMK 105/2025 Pasal 6 ayat 6: PPh yang dipotong untuk bagian DTP tidak disetor selama insentif berlaku
+        "pph21_disetor_ke_negara": Decimal(0) if dtp_ok else total_dipotong,
     }
     if args.disetahunkan:
         peringatan.append("Mode disetahunkan HANYA untuk pegawai yang kewajiban pajak subjektifnya mulai/berakhir "
@@ -448,9 +460,13 @@ def teks_setahun(h):
         out.append("- PPh 21 terutang setahun yang ditanggung pemerintah (hasil hitung ulang Masa Pajak Terakhir): {}".format(tc.format_rp(rk["pph21_terutang_setahun"])))
         out.append("- PPh 21 DTP yang benar-benar dibayar tunai ke pegawai (jumlah bulan yang positif): {}".format(
             tc.format_rp(rk["total_dtp_dibayar_tunai"])))
-        out.append("- **Tiap bulan PPh 21 TIDAK dipotong dari gaji, dan angka kolom \"PPh 21 DTP (dibayar tunai)\" "
-                   "WAJIB dibayarkan tunai ke pegawai bersama gaji** (PMK 105/2025 Pasal 5): uang diterima pegawai "
-                   "= gaji yang dibayar − potongan lain + DTP tunai bulan itu.")
+        out.append("- **Tiap bulan PPh 21 tetap DIPOTONG (kolom \"PPh 21 dipotong\"), lalu angka kolom \"PPh 21 DTP "
+                   "(dibayar tunai)\" WAJIB dibayarkan tunai kembali ke pegawai bersama gaji** (PMK 105/2025 Pasal 5, "
+                   "Lampiran B): uang diterima pegawai = gaji − PPh 21 dipotong + DTP tunai − potongan lain, jadi "
+                   "gaji tidak berkurang karena pajak (BUKAN gaji + DTP).")
+        out.append("- **Setoran PPh 21 ke negara untuk pegawai ini: {}** (bagian DTP tidak disetor; tetap dibuat bukti "
+                   "potong & dilapor di SPT Masa PPh 21/26 paling lambat 31 Januari 2027).".format(
+                       tc.format_rp(rk["pph21_disetor_ke_negara"])))
         if rk["total_dtp_dibayar_tunai"] != rk["pph21_terutang_setahun"]:
             out.append("  Selisih {} = kelebihan DTP yang tidak dikembalikan (PMK 105/2025 Pasal 5 ayat 5).".format(
                 tc.format_rp(rk["total_dtp_dibayar_tunai"] - rk["pph21_terutang_setahun"])))
@@ -519,7 +535,10 @@ def teks_harian(h):
     out.append("- **Total PPh 21 {} hari: {}**".format(h["hari"], tc.format_rp(h["pph_total"])))
     if h["dtp"]:
         out.append("- Memenuhi batas PPh 21 DTP (≤ Rp 500.000/hari) bila KLU perusahaan tercantum di PMK 105/2025: "
-                   "{} dibayar tunai ke pekerja.".format(tc.format_rp(h["pph_total"])))
+                   "PPh {} tetap dipotong, lalu {} dibayar tunai kembali ke pekerja → pekerja menerima upah {} "
+                   "(tidak berkurang pajak); setoran ke negara Rp 0.".format(
+                       tc.format_rp(h["pph_total"]), tc.format_rp(h["pph_total"]),
+                       tc.format_rp(h["bruto_total"], True)))
     if h["peringatan"]:
         out += ["", "⚠️ Peringatan:"] + ["- " + p for p in h["peringatan"]]
     out += ["", "Catatan:"] + ["- " + c for c in h["catatan"]] + ["", "_" + tc.DISCLAIMER + "_"]

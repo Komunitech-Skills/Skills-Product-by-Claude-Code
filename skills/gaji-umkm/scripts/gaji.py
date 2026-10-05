@@ -1859,7 +1859,10 @@ def slip_md(h, kode, per_status, revisi, cfg, karyawan_row):
         o.append("_PPh 21: TER kategori %s %s%% x penghasilan bruto pajak %s (termasuk premi JKK, JKM, BPJS Kesehatan "
                  "bagian perusahaan)._" % (info["kategori"], str(info["tarif"]).replace(".", ","), rp(info["bruto"])))
     if p["dtp"]:
-        o.append("_PPh 21 Ditanggung Pemerintah (PMK 105/2025) dibayarkan tunai; tidak mengurangi gaji._")
+        o.append("_PPh 21 Ditanggung Pemerintah (PMK 105/2025): PPh 21 %s tetap dipotong, lalu %s dibayar tunai kembali "
+                 "bersama gaji, jadi gaji bersih tidak berkurang karena pajak. Setoran PPh 21 ke negara untuk karyawan "
+                 "ini: %s._" % (rp(p["potongan"]["PPh 21"]), rp(p["pendapatan"]["PPh 21 DTP dibayar tunai"]),
+                                rp(p["pph_disetor"])))
     if p.get("lembur"):
         o.append("_Lembur: upah sejam = 1/173 x %s (PP 35/2021)._" % rp(p["lembur"]["dasar_upah"]))
     o += ["", "_" + DISCLAIMER + "_"]

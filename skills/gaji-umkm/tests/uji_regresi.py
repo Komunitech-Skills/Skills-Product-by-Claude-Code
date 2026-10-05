@@ -387,6 +387,26 @@ class UjiSetahun(Dasar):
 
 
 # --------------------------------------------------------------------------- THR
+class UjiDTP(Dasar):
+    def test_slip_dtp_dipotong_lalu_dibayar_tunai(self):
+        # PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B (cek 2026-10-05): PPh 21 dipotong, DTP tunai nilai sama,
+        # gaji bersih tidak berkurang karena pajak (bukan gaji + DTP), setoran bagian DTP Rp 0
+        k = self.tambah("Rina", "--ptkp", "TK/0", "--gaji-pokok", "6jt", "--masuk", "2020-01-01", "--dtp", "ya",
+                        "--bruto-tetap-januari", "6jt")["kode"]
+        h, _ = self.hasil("2026-09")
+        p = h[k]["payroll"]
+        self.assertTrue(p["dtp"])
+        pph = p["potongan"]["PPh 21"]
+        self.assertGreater(pph, 0)
+        self.assertEqual(p["pendapatan"]["PPh 21 DTP dibayar tunai"], pph)
+        self.assertEqual(p["pph_disetor"], 0)
+        i = p["iuran"]
+        self.assertEqual(p["take_home_pay"], 6000000 - i["kes_karyawan"] - i["jht_karyawan"] - i["jp_karyawan"])
+        slip = self.ok("slip", "--bulan", "2026-09", "--karyawan", "Rina", "--keluar", self.dir)["teks"]
+        self.assertIn("tetap dipotong", slip)
+        self.assertIn("Setoran PPh 21 ke negara untuk karyawan ini: Rp 0", slip)
+
+
 class UjiTHR(Dasar):
     def test_thr_cocok_hitung_thr(self):
         self.tambah("Gita", "--ptkp", "TK/0", "--gaji-pokok", "5jt", "--tunjangan-tetap", "500rb", "--masuk", "2019-07-01")

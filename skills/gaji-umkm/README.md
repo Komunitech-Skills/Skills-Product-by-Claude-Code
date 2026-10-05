@@ -67,3 +67,7 @@ Tidak, dan memang disengaja. Aplikasi hanya membuat file CSV daftar transfer. Ka
 
 ## Catatan revisi 1.0.7 (2026-10-02)
 - Mesin THR (`scripts/mesin/thr.py`) disinkronkan dengan `hitung-thr` 1.0.6: peringatan untuk tanggal masuk di masa depan, karyawan yang masuk setelah hari raya ditandai belum berhak (tidak lagi menghentikan seluruh hitungan THR), dan teks pengumuman grup menegaskan rincian THR dikirim pribadi. Angka THR tidak berubah; sha256 baru dicatat di `SUMBER.json`.
+
+## Catatan revisi 1.0.10 (2026-10-05)
+- Pemeriksaan ulang PPh 21 DTP terhadap teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B): gaji bersih di slip **sudah benar** (PPh 21 dipotong, DTP dengan nilai sama dibayar tunai, setoran bagian DTP Rp 0). Catatan DTP di slip kini menulis jelas PPh dipotong, DTP dibayar tunai, dan setoran ke negara Rp 0.
+- Salinan mesin disinkronkan dengan skill sumber: `payroll.py` (slip-gaji-bpjs 1.0.6), `pph21.py` (pph21-ter 1.0.5, koreksi uang diterima DTP), `thr.py` (hitung-thr 1.0.9); sha256 baru di `scripts/mesin/SUMBER.json`. Tambah tes `UjiDTP` dan `references/dtp-pmk105.md`. **PERLU REVIEW konsultan pajak.**

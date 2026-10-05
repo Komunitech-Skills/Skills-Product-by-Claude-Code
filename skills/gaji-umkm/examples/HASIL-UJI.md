@@ -86,3 +86,8 @@ Tanpa regresi: 40 tes OK; `validate.py --skill gaji-umkm` ✅.
 
 ### Skor: **9/10**
 Alasan: celah dan teks pratinjau tertutup dengan pagar yang tepat sasaran (bulan penuh saja, prorata tetap lancar) serta tercatat di log; angka BPJS & PPh 21 tidak berubah dan cocok dengan hitungan independen. Belum 10: DTP, Coretax, dan platform asli belum diuji; catatan kecil `karyawan ubah` dan P3.
+
+## Riwayat revisi 1.0.10 (2026-10-05) — menunggu uji ulang independen; PERLU REVIEW konsultan pajak
+- Pemicu: temuan penilai gelombang 7 di skill `pph21-ter` (uang diterima DTP ditulis gaji + DTP). Diperiksa terhadap teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5 ayat 1 & 5, Pasal 6 ayat 6, Lampiran B).
+- Hasil: hitungan slip gaji-umkm (lewat `mesin/payroll.py`) **sudah benar**; `mesin/pph21.py` hanya dipakai untuk cek ulang setahun tanpa `--dtp`, jadi angka gaji-umkm tidak berubah. Contoh TK/0 gaji Rp 6.000.000, DTP: PPh dipotong = DTP tunai, setoran Rp 0, gaji bersih = Rp 6.000.000 − iuran BPJS karyawan.
+- Perubahan: salinan mesin `payroll.py`/`pph21.py`/`thr.py` disinkronkan + sha256 `SUMBER.json`; catatan DTP di slip (`gaji.py`); `references/dasar-aturan.md`, `references/dtp-pmk105.md` (baru); tes `UjiDTP`. `tests/uji_regresi.py`: 42 tes OK.
