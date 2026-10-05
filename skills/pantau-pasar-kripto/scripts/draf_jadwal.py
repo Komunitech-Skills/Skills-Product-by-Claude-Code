@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Cetak DRAF perintah jadwal OpenClaw siap tempel untuk pemilik (v1.0.9).
+"""Cetak DRAF perintah jadwal OpenClaw siap tempel untuk pemilik (v1.0.10).
+
+v1.0.10: folder kerja default = workspace standar OpenClaw milik member
+(`$HOME/.openclaw/workspace`; Windows `%USERPROFILE%\\.openclaw\\workspace`). Agent TIDAK mengisi
+`--workspace` dengan path hasil tebakan/lingkungan uji -- hanya bila pengguna menyebut foldernya.
+Ringkasan pagi memakai `ambil_berita.py` (satu perintah berita).
 
 Dipakai bila pembuatan jadwal oleh agent GAGAL atau tidak tersedia (tool jadwal ditolak,
 Gateway/kanal belum siap). Agent TIDAK mencari CLI/berkas dan TIDAK mencoba ulang: cukup
@@ -11,7 +16,7 @@ Path skill di draf = lokasi standar milik member: `~/.openclaw/skills/pantau-pas
 Python standar saja, lintas OS.
 
 Pakai:
-  python3 draf_jadwal.py --jam-ringkasan 06:30 --cek-per-jam
+  python3 draf_jadwal.py --cek-per-jam --jam-ringkasan 06:30 --koin BTC ETH SOL
   python3 draf_jadwal.py --jam-ringkasan 07:00 --chat-id 123456 --workspace /home/saya/kerja
   (Windows: python atau py)
 """
@@ -34,6 +39,13 @@ def folder_skill_default(windows=None):
     return "~/.openclaw/skills/" + NAMA_SKILL
 
 
+def workspace_default(windows=None):
+    """Workspace standar OpenClaw milik member ($HOME diekspansi shell member, bukan mesin ini)."""
+    if windows is None:
+        windows = os.name == "nt"
+    return "%USERPROFILE%\\.openclaw\\workspace" if windows else "$HOME/.openclaw/workspace"
+
+
 def gabung(folder, *bagian):
     sep = "\\" if "\\" in folder else "/"
     return sep.join([folder.rstrip("/\\")] + list(bagian))
@@ -52,8 +64,9 @@ def parse_jam(teks):
 def susun(args):
     py = args.python
     tujuan = args.chat_id or "<ID chat Telegram pemilik>"
-    ws = args.workspace or "<folder-workspace-member>"
+    ws = args.workspace or workspace_default()
     folder = getattr(args, "folder_skill", None) or folder_skill_default()
+    koin = " ".join(k.upper() for k in (getattr(args, "koin", None) or [])) or "<KODE koin, mis. BTC ETH>"
     skrip_dir = gabung(folder, "scripts")
     bagian = []
     if args.cek_per_jam:
@@ -72,10 +85,10 @@ def susun(args):
         pesan = (
             f"Jalankan '{py} {gabung(skrip_dir, 'cek_ambang.py')} --konfigurasi "
             "kripto/konfigurasi.json --state kripto/state.json --keluaran teks' untuk harga. "
-            "Cari berita terbaru untuk kata kunci di kripto/PANTAU.md bila ada akses web; "
-            "setiap judul wajib URL artikel asli (bukan redirect news.google.com), rapikan dengan "
-            f"'{py} {gabung(skrip_dir, 'rapikan_berita.py')}'. Ikuti Langkah B SKILL.md "
-            "pantau-pasar-kripto, tanpa sinyal/target harga, akhiri dengan disclaimer."
+            f"Lalu jalankan '{py} {gabung(skrip_dir, 'ambil_berita.py')} {koin} "
+            "--hari 1' untuk berita (daftar final ber-URL artikel asli; gagal = katakan jujur, jangan "
+            "dari ingatan). Ikuti Langkah B SKILL.md pantau-pasar-kripto, tanpa sinyal/target harga/"
+            "proyeksi, akhiri dengan disclaimer."
         )
         nomor = "2" if args.cek_per_jam else "1"
         bagian.append(
@@ -88,8 +101,9 @@ def susun(args):
     if not bagian:
         raise ValueError("Pilih minimal satu: --cek-per-jam dan/atau --jam-ringkasan HH:MM.")
     kepala = (
-        "Jadwal belum bisa saya pasang dari sini. Berikut DRAF perintah siap tempel untuk "
-        "dipasang pemilik (Terminal di komputer Gateway) atau lewat jasa setup Komunitech.\n"
+        "DRAF jadwal -- BELUM dipasang. Balas \"ya\" bila jam & isinya sudah sesuai; setelah itu "
+        "saya pasang SATU kali. Bila pemasangan dari chat gagal, perintah ini bisa ditempel pemilik "
+        "(Terminal di komputer Gateway) atau lewat jasa setup Komunitech.\n"
         "Syarat: Gateway menyala & kanal Telegram sudah terhubung (PANDUAN Bab 4).\n"
         "Ganti teks di dalam <...> bila masih ada. Bila perintah tidak mengenali '~', ganti dengan "
         "folder home Anda (Windows: %USERPROFILE%). Setelah dipasang, cek: "
@@ -103,7 +117,8 @@ def main(argv=None):
     ap.add_argument("--cek-per-jam", action="store_true", help="Sertakan job cek ambang tiap jam.")
     ap.add_argument("--jam-ringkasan", default=None, help="Jam ringkasan pagi WIB, mis. 06:30.")
     ap.add_argument("--chat-id", default=None, help="ID chat Telegram pemilik (opsional).")
-    ap.add_argument("--workspace", default=None, help="Folder kerja berisi kripto/ (opsional).")
+    ap.add_argument("--workspace", default=None, help="Folder kerja berisi kripto/ -- HANYA bila pengguna menyebutnya; default workspace standar OpenClaw.")
+    ap.add_argument("--koin", nargs="+", default=None, help="Kode koin untuk berita ringkasan pagi, mis. BTC ETH SOL.")
     ap.add_argument("--python", default="python3",
                     help="Perintah Python di mesin Gateway (Windows: python).")
     ap.add_argument("--folder-skill", default=None,

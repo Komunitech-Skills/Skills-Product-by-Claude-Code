@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Cek harga kripto vs ambang yang ditetapkan member, tanpa API key. (v1.0.9)
+"""Cek harga kripto vs ambang yang ditetapkan member, tanpa API key. (v1.0.10)
+
+v1.0.10: `--konfigurasi` boleh berupa TEKS JSON langsung (diawali `{`) selain path file, dan
+`--state` opsional bila `--pratinjau` -- supaya pratinjau harga/status ambang bisa ditampilkan
+SEBELUM `kripto/konfigurasi.json` ditulis (file baru ditulis setelah pengguna menjawab "ya").
+Contoh: cek_ambang.py --pratinjau --konfigurasi '{"koin":[{"kode":"BTC","coingecko_id":"bitcoin",
+"mata_uang":"idr","ambang_harga_di_bawah":1600000000}]}'
 
 v1.0.9: opsi `--pratinjau` (alias `--tanpa-simpan`) -- untuk MENAMPILKAN harga/status ambang
 ke pengguna saat alert baru dipasang. State dibaca (untuk cache) tetapi TIDAK PERNAH ditulis,
@@ -761,8 +767,10 @@ def susun_pesan_singkat(daftar_hasil, sekarang, peringatan_global):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Cek harga kripto vs ambang member (tanpa API key).")
-    ap.add_argument("--konfigurasi", required=True, help="Path ke konfigurasi.json (daftar koin & ambang).")
-    ap.add_argument("--state", required=True, help="Path ke state.json (cache harga & status notifikasi, dibuat otomatis).")
+    ap.add_argument("--konfigurasi", required=True,
+                     help="Path ke konfigurasi.json, ATAU teks JSON langsung diawali '{' (untuk pratinjau sebelum file ditulis).")
+    ap.add_argument("--state", default=None,
+                     help="Path ke state.json (cache & status notifikasi). Wajib kecuali --pratinjau.")
     ap.add_argument("--harga-file", default=None,
                      help="Mode offline/uji: path JSON berisi harga simulasi, tanpa jaringan sama sekali.")
     ap.add_argument("--timeout", type=float, default=8.0, help="Timeout per permintaan (detik). Default 8.")
@@ -781,7 +789,15 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     try:
-        cfg = muat_json(args.konfigurasi, wajib=True, nama="Konfigurasi")
+        if not args.state and not args.pratinjau:
+            raise KesalahanInput("--state wajib diisi (mis. kripto/state.json), kecuali saat --pratinjau.")
+        if args.konfigurasi.lstrip().startswith("{"):
+            try:
+                cfg = json.loads(args.konfigurasi)
+            except json.JSONDecodeError as e:
+                raise KesalahanInput(f"Teks JSON konfigurasi rusak: {e}")
+        else:
+            cfg = muat_json(args.konfigurasi, wajib=True, nama="Konfigurasi")
         daftar_koin = validasi_konfigurasi(cfg)
         harga_file_data = None
         if args.harga_file:
@@ -794,13 +810,13 @@ def main(argv=None):
 
     peringatan_global = []
     try:
-        state = muat_json(args.state, wajib=False, nama="State")
+        state = muat_json(args.state, wajib=False, nama="State") if args.state else {}
         if not isinstance(state, dict):
             raise KesalahanInput("State bukan objek JSON (dict), melainkan tipe lain.")
     except KesalahanInput as e:
         state = {}
         try:
-            if os.path.exists(args.state) and not args.pratinjau:
+            if args.state and os.path.exists(args.state) and not args.pratinjau:
                 cadangan = f"{args.state}.rusak-{int(time.time())}"
                 os.replace(args.state, cadangan)
                 peringatan_global.append(

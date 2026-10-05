@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Uji regresi pantau-pasar-kripto v1.0.2 -- SEPENUHNYA OFFLINE (tanpa jaringan sungguhan;
+"""Uji regresi pantau-pasar-kripto (v1.0.2 s/d v1.0.10) -- SEPENUHNYA OFFLINE (tanpa jaringan sungguhan;
 kegagalan jaringan/timeout DIUJI lewat `unittest.mock` pada `urllib.request.urlopen`, tidak
 pernah menghubungi internet sungguhan).
 
@@ -1469,13 +1469,297 @@ class UjiV109Pratinjau(unittest.TestCase):
         self.assertEqual([l.split(":")[0] for l in fm.splitlines()[1:] if l.strip()], ["name", "description"])
         for kata in ("--pratinjau", "flippening", "TIDAK ditampilkan sama sekali", "SATU kali"):
             self.assertIn(kata, desc if kata in ("flippening", "--pratinjau") else skill)
-        self.assertIn("WAJIB sebelum menyusun daftar berita", skill)
+        self.assertIn("Satu perintah, wajib dipakai", skill)  # v1.0.10: ambil_berita.py
         self.assertIn("Tunggu \"ya\" eksplisit atas draf itu", skill)
         self.assertIn("tolong dipasang ya", skill)
         self.assertIn("Tanpa `list`/`status`", skill.replace("**Tanpa `list`/`status`", "Tanpa `list`/`status`"))
         self.assertIn("bot-trading-kripto", skill)
         self.assertIn("tanpa izin tarik dana", skill)
         self.assertIn("limit/stop order", skill)
+
+
+# ---------------------------------------------------------------------------
+# v1.0.10 -- uji ulang ke-3 (2026-10-05): S2 timeout 6/7 (SKILL.md 370 baris dibaca ulang,
+# 27-47 web_*), rapikan_berita.py 0/7 dipakai, angka karangan "~1000+ pair", --workspace
+# path lingkungan di draf, file konfigurasi ditulis sebelum "ya", template penolakan.
+# ---------------------------------------------------------------------------
+import ambil_berita  # noqa: E402
+import cek_koin  # noqa: E402
+
+RSS_CONTOH = b"""<?xml version="1.0"?><rss version="2.0"><channel><title>Contoh</title>
+<link>https://www.coindesk.com</link>
+<item><title>Blast, an Ethereum layer-2, is shutting down after assets plunge</title>
+<link>https://www.coindesk.com/tech/2026/10/02/blast-shutting-down?utm_source=rss&amp;id=7</link>
+<pubDate>Fri, 02 Oct 2026 16:54:29 +0000</pubDate><category>Ethereum News</category></item>
+<item><title>Ethereum layer-2 Blast shutting down after assets plunge 98%</title>
+<link>https://www.theblock.co/news/blast-417583</link>
+<pubDate>Fri, 02 Oct 2026 17:00:00 +0000</pubDate></item>
+<item><title>Ether price prediction: ETH could hit $10,000</title>
+<link>https://www.coindesk.com/markets/eth-prediction</link>
+<pubDate>Sat, 03 Oct 2026 10:00:00 +0000</pubDate></item>
+<item><title>Solana could flip Ethereum, says founder</title>
+<link>https://www.coindesk.com/markets/sol-flip</link>
+<pubDate>Sat, 03 Oct 2026 11:00:00 +0000</pubDate></item>
+<item><title>Ethereum upgrade goes live on Sepolia testnet</title>
+<link>https://news.google.com/rss/articles/CBMiXYZ</link>
+<pubDate>Sat, 03 Oct 2026 12:00:00 +0000</pubDate></item>
+<item><title>Ethereum Foundation old news</title>
+<link>https://www.coindesk.com/tech/2026/09/01/old</link>
+<pubDate>Tue, 01 Sep 2026 12:00:00 +0000</pubDate></item>
+<item><title>Solana Foundation hires payments executive</title>
+<link>https://cointelegraph.com/news/solana-foundation-hire?utm_medium=rss_tag_solana</link>
+<pubDate>Thu, 01 Oct 2026 13:00:00 +0000</pubDate></item>
+<item><title>Polymarket prediction market volume rises on ETH</title>
+<link>https://decrypt.co/1/polymarket-volume</link>
+<pubDate>Thu, 01 Oct 2026 14:00:00 +0000</pubDate></item>
+</channel></rss>"""
+
+ATOM_CONTOH = b"""<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><title>A</title>
+<entry><title>Bitcoin ETF sees inflows</title><link href="https://example.com/news/btc-etf"/>
+<updated>2026-10-04T08:00:00Z</updated></entry></feed>"""
+
+
+class UjiV110AmbilBerita(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji_v110_")
+        self.rss = os.path.join(self.tmp, "rss.xml")
+        with open(self.rss, "wb") as f:
+            f.write(RSS_CONTOH)
+        self.sekarang = ambil_berita.parse_tanggal("2026-10-05T12:00:00+07:00")
+
+    def test_116_parse_rss_dan_atom(self):
+        items = ambil_berita.parse_rss(RSS_CONTOH, "CoinDesk")
+        self.assertEqual(len(items), 8)
+        self.assertEqual(items[0]["kategori"], ["Ethereum News"])
+        atom = ambil_berita.parse_rss(ATOM_CONTOH, "Contoh")
+        self.assertEqual(atom[0]["url"], "https://example.com/news/btc-etf")
+        self.assertIsNotNone(atom[0]["waktu"])
+        with self.assertRaises(ValueError):
+            ambil_berita.parse_rss(b"<rss><bukan", "x")
+
+    def test_117_saring_proyeksi_redirect_rentang_duplikat_utm(self):
+        koin = [ambil_berita.baca_koin("ETH"), ambil_berita.baca_koin("SOL")]
+        items = ambil_berita.parse_rss(RSS_CONTOH, "CoinDesk")
+        per_koin, dibuang = ambil_berita.kumpulkan(koin, [("x", None, items)], self.sekarang, 7, 5)
+        eth = [b["judul"] for b in per_koin["ETH"]]
+        sol = [b["judul"] for b in per_koin["SOL"]]
+        semua = eth + sol
+        self.assertEqual(sum("Blast" in j for j in semua), 1, "berita sama dari 2 media = 1 butir (terbaru)")
+        self.assertFalse(any("prediction:" in j or "could" in j for j in semua), "proyeksi dibuang")
+        self.assertEqual(dibuang["proyeksi"], 2)
+        self.assertNotIn("Ethereum upgrade goes live on Sepolia testnet", semua)  # redirect
+        self.assertNotIn("Ethereum Foundation old news", semua)                   # > 7 hari
+        self.assertIn("Polymarket prediction market volume rises on ETH", semua)  # bukan proyeksi
+        self.assertIn("Solana Foundation hires payments executive", sol)
+        for b in per_koin["ETH"] + per_koin["SOL"]:
+            self.assertNotIn("utm_", b["url"])
+        self.assertEqual(ambil_berita.bersihkan_url("https://a.com/x?utm_source=rss&id=7#c"), "https://a.com/x?id=7")
+
+    def test_118_cli_offline_teks_dan_feed_tag(self):
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "ambil_berita.py"), "ETH", "SOL", "PI",
+                               "--rss-file", f"SOL={self.rss}", "--sekarang", "2026-10-05T12:00:00+07:00"],
+                              capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("https://cointelegraph.com/news/solana-foundation-hire\n", proc.stdout)
+        self.assertIn("Tidak ada berita PI", proc.stdout)
+        self.assertIn("2 judul berisi prediksi", proc.stdout)
+        self.assertNotIn("news.google.com", proc.stdout)
+        self.assertNotIn("10,000", proc.stdout)
+
+    def test_119_semua_sumber_gagal_exit_3_tanpa_traceback(self):
+        import urllib.error
+        with mock.patch("urllib.request.urlopen", side_effect=urllib.error.URLError("jaringan mati")):
+            from io import StringIO
+            with mock.patch("sys.stdout", new=StringIO()) as out:
+                kode = ambil_berita.main(["BTC", "--timeout", "1"])
+        self.assertEqual(kode, 3)
+        self.assertIn("Jangan menulis berita dari ingatan", out.getvalue())
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "ambil_berita.py"), "BTC",
+                               "--rss-file", os.path.join(self.tmp, "tidak-ada.xml")], capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 3)
+        self.assertNotIn("Traceback", proc.stderr + proc.stdout)
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "ambil_berita.py"), "B-T!"],
+                              capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 1)
+        self.assertNotIn("Traceback", proc.stderr)
+
+    def test_120_pola_proyeksi(self):
+        for t in ("Bitcoin price prediction 2027", "SOL to overtake ETH", "BTC eyes $120K", "Ether price analysis",
+                  "ETH flippening near", "Key support at $3,000"):
+            self.assertTrue(ambil_berita.POLA_PROYEKSI.search(t), t)
+        for t in ("Coinbase adds support for SOL", "Prediction market Polymarket grows", "SEC targets fraud ring",
+                  "Blast to wind down network"):
+            self.assertFalse(ambil_berita.POLA_PROYEKSI.search(t), t)
+
+
+def _data_koin_contoh():
+    return {
+        "search": {"coins": [
+            {"id": "pi-network-iou", "symbol": "PI", "name": "Pi Network IOU", "market_cap_rank": None},
+            {"id": "pi-network", "symbol": "PI", "name": "Pi Network", "market_cap_rank": 81},
+            {"id": "vapi-network", "symbol": "VAPI", "name": "Vapi", "market_cap_rank": 2038}]},
+        "coin": {"id": "pi-network", "symbol": "pi", "name": "Pi Network", "market_cap_rank": 81,
+                 "market_data": {"current_price": {"idr": 1555.43, "usd": 0.086723},
+                                 "price_change_percentage_24h_in_currency": {"idr": -1.58119},
+                                 "market_cap": {"usd": 975049322}, "circulating_supply": 11243022455.38,
+                                 "total_supply": 17296957623.66, "max_supply": 100000000000.0,
+                                 "last_updated": "2026-10-05T04:51:40.000Z"},
+                 "links": {"homepage": ["https://minepi.com/", ""], "whitepaper": "https://minepi.com/white-paper/",
+                           "blockchain_site": ["https://blockexplorer.minepi.com/mainnet/"]},
+                 "tickers": [{"market": {"name": "OKX"}}, {"market": {"name": "Gate"}},
+                             {"market": {"name": "OKX"}}]},
+        "indodax_pairs": [
+            {"id": "btcidr", "traded_currency": "btc", "coingecko_id": "bitcoin"},
+            {"id": "pieverseidr", "traded_currency": "pieverse", "coingecko_id": "pieverse"},
+            {"id": "pixelidr", "traded_currency": "pixel", "coingecko_id": "pixels"}],
+    }
+
+
+class UjiV110CekKoin(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji_v110k_")
+
+    def jalankan(self, data, *argv):
+        f = os.path.join(self.tmp, "data.json")
+        tulis_json(f, data)
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "cek_koin.py"), *argv,
+                               "--data-file", f], capture_output=True, text=True)
+        self.assertNotIn("Traceback", proc.stderr)
+        return proc
+
+    def test_121_pilih_kandidat_peringkat_terbaik_dan_peringatan_simbol_sama(self):
+        t, lain = cek_koin.pilih_kandidat(_data_koin_contoh()["search"], "pi")
+        self.assertEqual(t["id"], "pi-network")
+        self.assertEqual(lain, ["pi-network-iou"])
+        self.assertEqual(cek_koin.pilih_kandidat({"coins": []}, "x"), (None, []))
+
+    def test_122_jumlah_pair_dihitung_bukan_dikira(self):
+        proc = self.jalankan(_data_koin_contoh(), "PI", "--keluaran", "json")
+        self.assertEqual(proc.returncode, 0)
+        d = json.loads(proc.stdout)
+        self.assertEqual(d["fakta"]["jumlah_pair_indodax"], 3)
+        self.assertEqual(d["fakta"]["pair_indodax_koin_ini"], [])     # pieverse/pixel bukan PI
+        self.assertEqual(d["fakta"]["jumlah_bursa_di_ticker"], 2)
+        self.assertIn("Indodax: 3 pair (dihitung dari https://indodax.com/api/pairs", d["teks"])
+        self.assertIn("pair PI: TIDAK ADA", d["teks"])
+        self.assertIn("Rp1.555", d["teks"])
+        self.assertIn("05-10-2026 11:51 WIB", d["teks"])
+        self.assertIn("pi-network-iou", d["teks"])
+        self.assertIn("BUKAN status legal", d["teks"])
+        self.assertIn("https://www.coingecko.com/en/coins/pi-network", d["teks"])
+
+    def test_123_pair_ditemukan_lewat_simbol_atau_coingecko_id(self):
+        n, cocok = cek_koin.cek_indodax(_data_koin_contoh()["indodax_pairs"], "BTC", "bitcoin")
+        self.assertEqual((n, cocok), (3, ["btcidr"]))
+        n, cocok = cek_koin.cek_indodax(_data_koin_contoh()["indodax_pairs"], "PIXEL", None)
+        self.assertEqual(cocok, ["pixelidr"])
+        with self.assertRaises(ValueError):
+            cek_koin.cek_indodax({"bukan": "daftar"}, "BTC", None)
+
+    def test_124_sumber_gagal_tidak_mengarang(self):
+        data = _data_koin_contoh()
+        data["coin"] = None
+        proc = self.jalankan(data, "PI")
+        self.assertEqual(proc.returncode, 0)
+        self.assertIn("tidak ditulis (tidak dikarang)", proc.stdout)
+        self.assertNotIn("Rp1.555", proc.stdout)
+        data = {"search": _data_koin_contoh()["search"]}
+        proc = self.jalankan(data, "PI")
+        self.assertEqual(proc.returncode, 3)
+        self.assertIn("jangan sebut jumlah pair", proc.stdout)
+        proc = self.jalankan(_data_koin_contoh(), "zzzqqq")
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("jangan menebak", proc.stdout)
+
+    def test_125_jaringan_mati_via_mock(self):
+        import urllib.error
+        from io import StringIO
+        with mock.patch("urllib.request.urlopen", side_effect=urllib.error.URLError("mati")), \
+                mock.patch("sys.stdout", new=StringIO()) as out:
+            kode = cek_koin.main(["PI", "--timeout", "1"])
+        self.assertEqual(kode, 3)
+        self.assertNotIn("- Harga:", out.getvalue())
+        self.assertIn("jangan sebut jumlah pair", out.getvalue())
+
+
+class UjiV110PratinjauDraftDanDokumen(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji_v110p_")
+        self.harga = os.path.join(self.tmp, "harga.json")
+        tulis_json(self.harga, {"bitcoin_idr_coingecko": {
+            "harga": 1546160913, "perubahan_24jam_persen": -0.5,
+            "jam_data": "2026-10-05T10:57:00+07:00", "sumber": "coingecko"}})
+
+    def test_126_pratinjau_konfigurasi_teks_tanpa_file_tanpa_state(self):
+        cfg = json.dumps({"koin": [{"kode": "BTC", "coingecko_id": "bitcoin", "mata_uang": "idr",
+                                    "ambang_harga_di_bawah": 1600000000}]})
+        sebelum = set(os.listdir(self.tmp))
+        proc = subprocess.run([sys.executable, os.path.join(SCRIPTS_DIR, "cek_ambang.py"), "--pratinjau",
+                               "--konfigurasi", cfg, "--harga-file", self.harga], capture_output=True,
+                              text=True, cwd=self.tmp)
+        self.assertEqual(proc.returncode, 0, proc.stdout)
+        d = json.loads(proc.stdout)
+        self.assertTrue(d["pratinjau"])
+        self.assertIn("SUDAH TERLEWATI", d["pesan_singkat"])
+        self.assertEqual(set(os.listdir(self.tmp)), sebelum, "pratinjau tidak boleh menulis file apa pun")
+        kode, out, _ = jalankan_cek_ambang(["--konfigurasi", cfg, "--harga-file", self.harga])
+        self.assertEqual(kode, 1)
+        self.assertIn("--state wajib", json.loads(out)["pesan"])
+        kode, out, _ = jalankan_cek_ambang(["--pratinjau", "--konfigurasi", "{rusak"])
+        self.assertEqual(kode, 1)
+        self.assertIn("rusak", json.loads(out)["pesan"])
+
+    def test_127_draf_jadwal_workspace_default_dan_koin(self):
+        args = draf_jadwal.argparse.Namespace(cek_per_jam=True, jam_ringkasan="06:30", chat_id=None,
+                                              workspace=None, python="python3", folder_skill=None,
+                                              koin=["btc", "eth", "sol"])
+        teks = draf_jadwal.susun(args)
+        self.assertIn('--command-cwd "$HOME/.openclaw/workspace"', teks)
+        self.assertNotIn("<folder-workspace-member>", teks)
+        self.assertIn("ambil_berita.py BTC ETH SOL --hari 1", teks)
+        self.assertIn("BELUM dipasang", teks)
+        self.assertEqual(draf_jadwal.workspace_default(windows=True), "%USERPROFILE%\\.openclaw\\workspace")
+
+    def test_128_skill_ringkas_anggaran_dan_aturan_baru(self):
+        with open(os.path.join(SKILL_DIR, "SKILL.md"), encoding="utf-8") as f:
+            skill = f.read()
+        self.assertLess(len(skill.splitlines()), 250)
+        for kata in ("Anggaran kerja per pesan", "±6 pengambilan web", "±20 tool call", "Baca SKILL.md **sekali**",
+                     "Urutan jawab", "Anggaran habis", "yang belum", "ambil_berita.py", "cek_koin.py",
+                     "Angka hanya dari hitungan", "~1000+ pair", "jangan mengisi `--workspace`",
+                     "File baru ditulis setelah pengguna menjawab \"ya\"", "sebut lokasi lengkapnya",
+                     "--pratinjau --keluaran teks"):
+            self.assertIn(kata, skill)
+        # harga+status dulu, lalu berita, riset, jadwal
+        urutan = skill.split("**Urutan jawab**")[1].split("\n- ")[0]
+        posisi = [urutan.index(k) for k in ("harga", "berita", "riset", "draf jadwal")]
+        self.assertEqual(posisi, sorted(posisi))
+        # setiap references/ yang dirujuk ada
+        import re as _re
+        for ref in set(_re.findall(r"references/([a-z0-9-]+\.md)", skill)):
+            self.assertTrue(os.path.exists(os.path.join(SKILL_DIR, "references", ref)), ref)
+        fm = skill.split("---")[1]
+        desc = [l for l in fm.splitlines() if l.startswith("description:")][0][len("description: "):]
+        self.assertLessEqual(len(desc), 1024)
+        for kata in ("ambil_berita.py", "cek_koin.py", "--pratinjau", "SATU kali", "Indodax"):
+            self.assertIn(kata, desc)
+
+    def test_129_template_penolakan_di_panduan_kata_per_kata(self):
+        panduan = os.path.join(SKILL_DIR, "..", "..", "solusi-vip", "kripto-keuangan", "PANDUAN.md")
+        if not os.path.exists(panduan):
+            self.skipTest("PANDUAN.md tidak ada di paket ini")
+        with open(panduan, encoding="utf-8") as f:
+            teks = f.read()
+        blok = teks.split("## Aturan kripto Komunitech (wajib)")[1].split("```")[0]
+        aturan8 = [l for l in blok.splitlines() if l.startswith("8. ")][0]
+        kutipan = aturan8.split(': "', 1)[1].rsplit('"', 1)[0]
+        for kata in ("tanpa izin tarik dana", "bot-trading-kripto", "ditunda",
+                     "limit/stop order bawaan aplikasi bursa resmi", "POJK 27/2024", "PAKD terdaftar/berizin OJK",
+                     "Satgas PASTI"):
+            self.assertIn(kata, kutipan)
+        kalimat = [k for k in kutipan.replace("ojk.go.id", "ojk_go_id").split(". ") if k.strip()]
+        self.assertTrue(2 <= len(kalimat) <= 4, kalimat)
+        self.assertIn("ambil_berita.py", blok)
 
 
 if __name__ == "__main__":
