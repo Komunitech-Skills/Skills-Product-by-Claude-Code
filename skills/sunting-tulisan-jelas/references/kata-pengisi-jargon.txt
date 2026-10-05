@@ -1,0 +1,127 @@
+# Daftar kata pengisi & jargon untuk scripts/ukur_keterbacaan.py
+# Format: jenis|frasa (huruf kecil)|saran singkat
+# jenis: pengisi = hampir selalu bisa dihapus; bertele = ada padanan lebih pendek;
+#        jargon = istilah yang sering tidak dipahami pembaca awam; kabur = tidak konkret
+# Baris berawalan # diabaikan. Tambah baris sendiri bila perlu (satu frasa per baris).
+# Daftar ini PENANDA, bukan hukuman: kata yang memang perlu tetap boleh dipakai.
+pengisi|pada dasarnya|hapus
+pengisi|sebenarnya|hapus
+pengisi|sesungguhnya|hapus
+pengisi|perlu diketahui bahwa|hapus, langsung ke isi
+pengisi|perlu dicatat bahwa|hapus, langsung ke isi
+pengisi|dapat dikatakan bahwa|hapus
+pengisi|bisa dibilang|hapus
+pengisi|seperti yang kita ketahui bersama|hapus
+pengisi|sebagaimana kita ketahui|hapus
+pengisi|tentunya|hapus
+pengisi|tentu saja|hapus
+pengisi|sangat|pakai angka atau fakta
+pengisi|amat sangat|pakai angka atau fakta
+pengisi|benar-benar|hapus
+pengisi|sekali lagi|hapus bila tidak perlu
+pengisi|dengan ini kami sampaikan bahwa|langsung ke isi
+pengisi|bersama ini kami informasikan bahwa|langsung ke isi
+pengisi|kami ingin menyampaikan bahwa|langsung ke isi
+pengisi|saya ingin menyampaikan bahwa|langsung ke isi
+pengisi|kami mohon izin untuk|hapus atau "kami mau"
+pengisi|di era digital ini|hapus
+pengisi|di zaman sekarang ini|hapus
+pengisi|perlu kami garis bawahi|hapus
+pengisi|hal ini dikarenakan|karena
+pengisi|merupakan suatu|adalah / hapus
+bertele|dalam rangka|untuk
+bertele|dalam hal ini|hapus atau sebut langsung
+bertele|sehubungan dengan|soal / tentang
+bertele|berkenaan dengan|soal / tentang
+bertele|terkait dengan|soal / tentang
+bertele|terkait|soal / tentang
+bertele|mengenai hal tersebut|soal itu
+bertele|pada saat ini|sekarang
+bertele|pada saat|saat / ketika
+bertele|di dalam|di
+bertele|agar supaya|agar
+bertele|untuk dapat|agar bisa
+bertele|untuk bisa|agar bisa
+bertele|dikarenakan|karena
+bertele|disebabkan oleh karena|karena
+bertele|oleh karena itu|jadi
+bertele|oleh karena itu maka|jadi
+bertele|apabila|jika / kalau
+bertele|sebelum yang bersangkutan|sebelum orangnya
+bertele|melakukan pengecekan|mengecek
+bertele|melakukan pembayaran|membayar
+bertele|melakukan pengiriman|mengirim
+bertele|melakukan pemesanan|memesan
+bertele|melakukan konfirmasi|mengonfirmasi
+bertele|melakukan perbaikan|memperbaiki
+bertele|melakukan pembaruan|memperbarui
+bertele|melakukan penyesuaian|menyesuaikan
+bertele|memberikan informasi|memberi tahu
+bertele|memberikan penjelasan|menjelaskan
+bertele|dilakukan oleh|sebut pelaku sebagai subjek
+bertele|adalah merupakan|adalah
+bertele|para karyawan|karyawan (para = sudah jamak)
+bertele|daripada|dari / dibanding
+bertele|di mana|hapus atau pecah kalimat
+bertele|yang mana|hapus atau pecah kalimat
+bertele|hal tersebut|sebut bendanya
+bertele|hal ini|sebut bendanya
+bertele|tersebut|hapus atau sebut bendanya
+bertele|sejumlah|beberapa / sebut angkanya
+jargon|sinergi|kerja sama
+jargon|optimalisasi|memaksimalkan / memperbaiki
+jargon|mengoptimalkan|memaksimalkan / memperbaiki
+jargon|implementasi|penerapan / menjalankan
+jargon|mengimplementasikan|menerapkan / menjalankan
+jargon|komprehensif|lengkap
+jargon|holistik|menyeluruh
+jargon|eskalasi|laporkan ke atasan / naikkan
+jargon|mengeskalasi|laporkan ke atasan
+jargon|koordinasi|bicarakan / hubungi
+jargon|mengkoordinasikan|mengatur / menghubungi
+jargon|sosialisasi|beri tahu / jelaskan
+jargon|mensosialisasikan|memberi tahu / menjelaskan
+jargon|kolaborasi|kerja sama
+jargon|efektif dan efisien|sebut hasilnya (lebih cepat, lebih murah)
+jargon|solusi|jawaban / cara
+jargon|inisiatif|langkah / usulan
+jargon|stakeholder|pihak terkait (sebut siapa)
+jargon|pihak-pihak terkait|sebut siapa
+jargon|leverage|manfaatkan
+jargon|follow up|tindak lanjut / hubungi lagi
+jargon|follow-up|tindak lanjut / hubungi lagi
+jargon|urgent|sebut tenggat
+jargon|update|kabar terbaru / perbarui
+jargon|briefing|arahan singkat
+jargon|deadline|tenggat
+jargon|support|bantuan
+jargon|workflow|alur kerja
+jargon|best practice|cara terbaik
+jargon|improvement|perbaikan
+jargon|resource|tenaga / bahan
+jargon|platform|(sebut nama aplikasinya)
+jargon|fitur unggulan|sebut fiturnya
+jargon|terintegrasi|tersambung
+jargon|end-to-end|dari awal sampai akhir
+kabur|segera|sebut tanggal/jam
+kabur|secepatnya|sebut tanggal/jam
+kabur|sesegera mungkin|sebut tanggal/jam
+kabur|dalam waktu dekat|sebut tanggal
+kabur|beberapa waktu ke depan|sebut tanggal
+kabur|ke depannya|sebut kapan
+kabur|nantinya|sebut kapan
+kabur|dan lain-lain|sebut semuanya atau hapus
+kabur|dan sebagainya|sebut semuanya atau hapus
+kabur|berbagai macam|sebut contoh
+kabur|berbagai hal|sebut hal-halnya
+kabur|banyak sekali|sebut jumlahnya
+kabur|cukup banyak|sebut jumlahnya
+kabur|kualitas terbaik|sebut buktinya (bahan, uji, garansi)
+kabur|kualitas premium|sebut buktinya (bahan, uji, garansi)
+kabur|terbaik|sebut buktinya
+kabur|berkualitas|sebut buktinya
+kabur|sesuai kebutuhan|sebut kebutuhannya
+kabur|sesuai ketentuan|sebut ketentuannya
+kabur|yang bersangkutan|sebut nama/jabatan
+kabur|pihak terkait|sebut siapa
+kabur|hal-hal yang diperlukan|sebut apa saja

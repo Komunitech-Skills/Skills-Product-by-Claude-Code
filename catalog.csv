@@ -121,3 +121,4 @@ tangani-keberatan-pelanggan,Sales,kurasi,https://github.com/anthropics/knowledge
 rapikan-data-berantakan,Data & Analisis,kurasi,https://github.com/OpenRefine/OpenRefine,BSD-3-Clause;CC-BY-4.0,,ecer,99000,,,1.0.0,,uji,2026-10-05
 triase-keluhan-pelanggan,Customer Service,kurasi,https://github.com/anthropics/knowledge-work-plugins/tree/main/customer-support/skills/ticket-triage,Apache-2.0,,ecer,79000,,,1.0.0,,uji,2026-10-05
 kelayakan-investasi-usaha,Keuangan & Akuntansi,kurasi,https://github.com/numpy/numpy-financial,BSD-3-Clause,,ecer,149000,,,1.0.0,,uji,2026-10-05
+sunting-tulisan-jelas,Produktivitas,kurasi,https://developers.google.com/tech-writing,CC-BY-4.0,,ecer,59000,,,1.0.0,,uji,2026-10-05
