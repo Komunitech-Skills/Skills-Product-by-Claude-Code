@@ -100,3 +100,32 @@ Dibanding pra-cek: luncurkan-produk-baru sejalan (8,5 → 8,5) dan kini langsung
 - **kalkulator-klinis-nakes** (8,5; +2,5): memenuhi acuan; boleh tampil hanya dengan keterangan "belum direview tenaga medis". Perbaikan kecil: daftar faktor "belum ditanyakan" disesuaikan dengan paritas (multipara → pasangan baru, jarak > 10 tahun; jangan sebut nullipara).
 - **strategi-merek-usaha** (8; +2, tepat di batas skor): memenuhi acuan dengan catatan mepet. Perbaikan: kutip Pasal 9/10/12 UU 8/1999 sesuai rujukan skill, sebut syarat harga coret, beri angka asumsi biaya stiker, dan cegah klaim rasa yang tidak diberikan pengguna. Pesan proses (`📝 2 files …`) berasal dari konteks Telegram; perlu dicek apakah bisa diredam di setelan bot (keputusan pemilik, jangan ubah gateway tanpa persetujuan).
 - **proposal-kerjasama** (7,5; +1): **TAHAN, jangan ditampilkan.** Selisih di bawah 1,5 dan DENGAN < 8. Perkuat langkah "Catatan untuk Anda" agar rumus laba per botol dan titik impas porsi **selalu** tampil walau HPP belum diberikan (dengan contoh angka dari script), hapus baris "HASIL: LULUS" dan rujukan path file dari balasan chat, lalu uji ulang internal + `uji-tg.sh` sebelum gelombang Telegram berikutnya (perlu persetujuan pemilik). Sesuai keputusan pemilik 2026-10-03, bila setelah perbaikan tetap di bawah acuan, skill tidak diiterasi lagi.
+
+## Uji Telegram rencana-pelajaran-guru 1.0.9 (keputusan no. 11)
+
+Versi 1.0.9 diuji di bot produksi, topik baru 819, dengan pesan identik gelombang 6 (topik 678/679). Jawaban: `scratchpad/pilot/jawaban-g8-819.txt`; Telegram memecahnya menjadi 3 pesan (822–824). Penilaian memakai rubrik yang sama dan dibandingkan dengan aturan SKILL.md 1.0.9: modul ringkas utuh di chat (±4.000–6.000 karakter), LKPD tanpa jawaban + kunci guru terpisah, CP tidak dikarang dan tidak diambil lewat web, tanpa klaim lampiran palsu.
+
+**Skor: TANPA 6 (topik 678) → DENGAN 1.0.9 = 8,5 (selisih +2,5).** Riwayat: 1.0.4/1.0.5 (topik 679) 7,5; 1.0.6 (topik 724) 5. **Memenuhi acuan** (DENGAN ≥ 8 dan selisih ≥ 1,5).
+
+Pembeda (satu kalimat): DENGAN 1.0.9 menyerahkan modul ringkas utuh di chat (tujuan pembelajaran, langkah 80 menit, asesmen, diferensiasi), LKPD 6 soal tanpa jawaban, rubrik dengan rumus nilai, dan kunci guru terpisah, lalu menangani permintaan "bunyi CP persis" dengan rujukan BSKAP 046/H/KR/2025, langkah mengambilnya, dan kolom tempel; TANPA mengutip CP dari Kepmen 033/H/KR/2022 yang sudah dicabut sebagai "redaksi resmi".
+
+**Verifikasi angka (python)**
+- Alokasi: 1 × 2 JP × 40 menit = 80 menit ✅. Pembukaan 10 + inti 60 + penutup 10 = 80 ✅ (label "COCOK" benar).
+- Inti: 15 + 15 + 10 + 20 = 60 ✅.
+- Rubrik: no. 1–5 maks 5 × 10 = 50 ✅. No. 6 = (jumlah dua aspek ÷ 8) × 50, maks 50 ✅ (contoh skor 6/8 → 37,5). Nilai akhir maks 100 ✅.
+- Panjang isi chat ±4.750 karakter (tanpa penanda pesan), masuk target 4.000–6.000 ✅.
+
+**Cek aturan**
+- CP: rujukan BSKAP 046/H/KR/2025 ✅ (sesuai `references/dasar-kurikulum.md` dan cek web gelombang 6). Kolom "CP (salin dari dokumen resmi): [tempel di sini]" dan langkah ambil lewat guru.kemendikdasmen.go.id ✅. Tidak ada bunyi CP karangan dan tidak ada tanda pengambilan web ✅.
+- Profil Lulusan: Komunikasi; Kreativitas, sesuai nama 8 dimensi (Permendikdasmen 10/2025) ✅.
+- LKPD hanya berisi "Jawab: ____", tanpa jawaban ✅. Kunci di bagian terpisah "Kunci Jawaban (untuk guru)" ✅. Ini memperbaiki cacat utama gelombang 6 (jawaban tercetak di lembar siswa).
+- Tidak ada klaim "terlampir/terkirim". Hanya kalimat baku `File Word: <jalur>` ✅ (sesuai SKILL.md aturan 3).
+
+**Cacat / temuan**
+1. `File Word: /tmp/modul-ajar-tmp/…docx` adalah jalur di mesin bot dan tidak bisa diunduh guru dari Telegram. Kalimatnya jujur dan sesuai aturan 3, tetapi bagi guru yang meminta "buat supervisi besok" file itu tidak berguna. Pertimbangkan: (a) memanggil alat kirim file bila tersedia di kanal Telegram, atau (b) di kanal chat tanpa alat kirim, menulis "file Word bisa dibuat bila skill dipasang di komputer Anda" alih-alih jalur `/tmp`. Perubahan perilaku kirim file butuh keputusan pemilik.
+2. "Ringkasan umum" CP ("memahami dan menghasilkan teks deskriptif sederhana … tentang orang, benda, atau hewan") lebih mirip tujuan pembelajaran daripada CP Fase D yang umum (teks lisan, tulisan, visual dalam konteks beragam). Sudah ditandai "cek CP resmi", jadi risikonya kecil.
+3. LKPD no. 2–4 memakai dua tempat isian ("It has ____ fur…" lalu "Jawab: ____"), sehingga sedikit membingungkan siswa.
+4. Kunci no. 1–4 berisi "bervariasi" + pola + contoh. Itu wajar untuk soal terbuka, tetapi pedoman skornya cukup dirujuk ke rubrik (10/5/0); sudah ada di bagian rubrik.
+5. Kunci terpecah menjadi 3 pesan Telegram (batas panjang pesan). Isinya tetap utuh dan tidak ada yang hilang.
+
+**Rekomendasi:** rencana-pelajaran-guru 1.0.9 **layak masuk daftar tampil** (8,5; +2,5). Perbaikan opsional: cara menyerahkan file Word di kanal Telegram (cacat 1, perlu keputusan pemilik) dan LKPD dengan satu tempat isian per nomor. Sesuai keputusan 2026-10-03, skill ini tidak perlu diiterasi lagi kecuali untuk perbaikan kecil tersebut.
