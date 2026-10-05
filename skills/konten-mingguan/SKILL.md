@@ -1,9 +1,12 @@
 ---
 name: konten-mingguan
-description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari berisi platform (Instagram/TikTok/Facebook/WA Status/LinkedIn/X-Twitter) & format, pilar konten, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting saran — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar, cek Ramadan/Lebaran). TIDAK memposting otomatis — hanya draf untuk dijadwalkan sendiri. Bila sebagian permintaan dilarang (testimoni pasien, before-after, diskon tindakan medis klinik): tolak bagian itu (1-2 kalimat + dasar aturan) lalu LANGSUNG serahkan paket pengganti lengkap di balasan yang sama, tanpa tanya izin. Gunakan saat pengguna minta "paket konten minggu ini/depan", "rencana konten mingguan", weekly content plan/pack, atau content calendar untuk 1 minggu (bukan 30 hari — untuk sebulan penuh pakai kalender-konten-30hari).
+description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari: platform, pilar, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar). ATURAN PERTAMA: SELURUH paket post (semua hari, caption lengkap) WAJIB ditulis di balasan chat, bukan hanya di file; file hanya salinan opsional, dan dilarang menulis "sudah tampil di atas" bila tidak benar. Dilarang mengarang promo/harga/kelangkaan yang tidak diberikan pengguna. TIDAK memposting otomatis. Bila sebagian permintaan dilarang (testimoni pasien, before-after, diskon tindakan medis klinik): tolak bagian itu (1-2 kalimat + dasar aturan) lalu LANGSUNG serahkan paket pengganti lengkap di balasan yang sama, tanpa tanya izin. Pakai untuk paket konten minggu ini/depan, weekly content plan/pack (sebulan: kalender-konten-30hari).
 ---
 
 # Konten Mingguan
+
+> **ATURAN PERTAMA (mengalahkan semua yang lain):** SELURUH paket post (setiap hari: hook, caption lengkap, hashtag, CTA, brief) WAJIB ditulis di balasan chat ini juga. Pengguna (mis. Telegram) tidak bisa membuka file. **Jangan menulis file sama sekali kecuali pengguna memintanya**; bila ditulis, file hanya salinan, dibuat SETELAH paket tampil di chat. DILARANG menulis "sudah tampil di atas/di chat di atas/terlampir" kecuali paketnya memang ada di balasan itu. Balasan yang hanya berisi ringkasan, penolakan, atau "tersimpan di file" = GAGAL.
+> **Dilarang mengarang:** promo/diskon/harga paket/combo yang tidak diberikan pengguna, kelangkaan ("slot terbatas", "stok terbatas", "kuota terbatas", "hanya hari ini") dan klaim proses produksi ("dibuat fresh", "handmade", "tanpa pengawet") yang tidak ada di profil. Butuh angka/fakta itu → tulis `[isian]` dan minta pengguna melengkapi.
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
@@ -91,8 +94,7 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
    sisipkan peringatan singkat (cek BPOM/PIRT/OJK sesuai kategori); musik/gambar berhak cipta hanya yang
    diizinkan di `PROFIL.md`.
    **Izin edar:** bila produk pangan olahan/minuman, kosmetik, suplemen, atau obat tradisional/obat, ingatkan di awal paket (satu kalimat) bahwa izin edar BPOM / PIRT-SPP-IRT (atau sertifikat halal bila dicantumkan) harus ada **sebelum** dijual dan dipromosikan. Bila pengguna bilang izin "belum ada/masih proses", tampilkan peringatan ini lebih tegas dan jangan menulis klaim izin/BPOM di konten mana pun.
-7. **Simpan arsip** hasil isian ke `konten/minggu-<label_minggu>.md` (label dari output script, mis.
-   `minggu-2026-W40.md`) di workspace pengguna, memakai isi lengkap `templates/paket-mingguan.md`.
+7. **Arsip file: hanya bila pengguna memintanya**, dan setelah paket lengkap tampil di chat: simpan ke `konten/minggu-<label_minggu>.md` (mis. `minggu-2026-W40.md`) memakai `templates/paket-mingguan.md`. Tanpa permintaan, jangan menulis file (tawarkan saja).
    **Tolak sebagian, serahkan semuanya (wajib):** bila permintaan memuat unsur terlarang (testimoni/before-after
    pasien, diskon tindakan medis, imbalan rujukan, klaim menyembuhkan, dsb.), tulis 1-2 kalimat penolakan + dasar
    aturannya di bagian atas, lalu **di balasan yang SAMA langsung serahkan paket lengkap pengganti yang aman**
@@ -100,7 +102,7 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
    **DILARANG** berhenti di penolakan, hanya menawarkan daftar topik, atau bertanya "boleh saya lanjutkan?/mau
    dibuatkan yang aman?" — penolakan bukan alasan menunda hasil. Info yang kurang diisi placeholder/asumsi, bukan
    pertanyaan izin. Berlaku untuk SEMUA jenis usaha, bukan hanya klinik.
-8. **Sampaikan ke pengguna** dalam format output di bawah. **Caption lengkap + hashtag + hook + CTA setiap hari WAJIB tampil di chat** (pengguna Telegram tidak bisa membuka file workspace); file arsip hanya cadangan, jangan menggantinya dengan ringkasan. Bila terlalu panjang, kirim bertahap per 2-3 hari, bukan dipangkas. Lalu lalu tawarkan: (a) automation mingguan +
+8. **Sampaikan ke pengguna** dalam format output di bawah. **Caption lengkap + hashtag + hook + CTA setiap hari WAJIB tampil di chat** (lihat ATURAN PERTAMA); file arsip bukan pengganti. Bila terlalu panjang, kirim bertahap per 2-3 hari, bukan dipangkas. Lalu lalu tawarkan: (a) automation mingguan +
    pengingat harian lewat OpenClaw (`references/openclaw-jadwal.md`), (b) buat brief foto detail lewat
    `foto-produk-brief`, (c) buat naskah live untuk salah satu hari lewat `naskah-live-jualan`.
 9. **Jika Python tidak bisa dijalankan:** hitung tanggal manual dari kalender (Senin minggu depan dari
@@ -125,10 +127,10 @@ Hashtag: <daftar>
 CTA: <cta>
 --- (ulangi per hari, 5-7 hari) ---
 
-📥 Arsip disimpan: konten/minggu-<label_minggu>.md
+(Baris arsip HANYA bila pengguna meminta file: "📥 Salinan: konten/minggu-<label_minggu>.md")
 📝 Asumsi: <daftar asumsi yang dipakai bila profil belum lengkap>
 (Penutup HANYA pernyataan, bukan izin: satu kalimat asumsi + tawaran opsional. Jangan akhiri dengan "boleh saya lanjutkan?".)
-⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/TikTok Studio (lihat "Cara jadwalkan sendiri" di file arsip), atau aktifkan pengingat harian OpenClaw.
+⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/TikTok Studio (lihat `references/jadwal-platform.md`), atau aktifkan pengingat harian OpenClaw.
 ```
 
 ## Contoh
@@ -180,7 +182,9 @@ Salah: berhenti setelah penolakan dengan pertanyaan "boleh saya lanjutkan dengan
 - [ ] Kategori sensitif (kesehatan/kosmetik/keuangan/pangan) diberi peringatan singkat
 - [ ] Setiap caption punya hook, CTA, dan panjang sesuai platform
 - [ ] Ditulis jelas bahwa paket ini **belum terposting** dan jam posting adalah **perkiraan**
-- [ ] Arsip `konten/minggu-<label_minggu>.md` disimpan
+- [ ] **Apakah semua post (setiap hari, caption lengkap) ada di balasan chat ini?** Bukan hanya di file. Jangan menulis "sudah tampil di atas" bila tidak
+- [ ] Tidak ada promo/harga/combo/kelangkaan/klaim produksi karangan; semua dari pengguna atau `[isian]`
+- [ ] File arsip hanya ditulis bila diminta, dan setelah chat
 - [ ] Bila ada unsur terlarang: penolakan singkat + paket lengkap pengganti ada di balasan yang sama (tanpa pertanyaan izin)
 
 ## Batasan & penanganan error
